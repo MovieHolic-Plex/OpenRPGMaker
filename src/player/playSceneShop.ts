@@ -89,6 +89,7 @@ export function playShop(
   let merchantGold = beginShopVisit(scene, step, identity);
   return new Promise((resolve) => {
     const overlay = createShopOverlay();
+    overlay.classList.add(`runtime-shop-preset-${step.shopUiPreset ?? "classic"}`);
     let view: ShopView = "menu";
     let mode: ShopMode = defaultShopMode(step);
     let haggleItem: (typeof stockItems)[number] | undefined;

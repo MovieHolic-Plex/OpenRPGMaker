@@ -1,6 +1,7 @@
 // ai/capabilityEscalation.ts
-// Optional discovery ranking for explicitly scoped consumers. AssistantSession exposes
-// the full catalog and does not use ranking as a capability gate or provider limit.
+// Deterministic natural-language ranking for the AssistantSession first-round
+// candidate set and other explicitly scoped consumers. It never acts as a
+// safety/approval gate; an empty or failed route can still use the full fallback.
 import { activeTools } from "@/editor/tools";
 import { matchScore } from "@/editor/tools/discoveryTools";
 import type { OpenAiToolSchema } from "./llmClient";

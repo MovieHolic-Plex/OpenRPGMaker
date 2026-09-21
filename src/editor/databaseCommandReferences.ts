@@ -1,5 +1,5 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
-import { eventDisplayName } from "@/editor/eventMarkerUx";
+import { eventDisplayName } from "@/project/eventDisplayName";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
 
 type CommandReferenceCollection = DatabaseCollection | "monsterSpecies" | "lifeSkills" | "craftRecipes" | "itemUpgrades";
@@ -96,6 +96,7 @@ export function switchVariableReferenceLocations(
         commandListReferencesSwitchVariable(event.commands, kind, id) ||
         (event.pages ?? []).some(
           (page) =>
+            (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
             page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
             commandListReferencesSwitchVariable(page.commands, kind, id)
         );
@@ -128,6 +129,7 @@ export function switchVariableReferencedInProject(project: Project, kind: "switc
           commandListReferencesSwitchVariable(event.commands, kind, id) ||
           (event.pages ?? []).some(
             (page) =>
+              (kind === "switch" && page.movement.living?.destinations.some((destination) => destination.switchId === id)) ||
               page.conditions.some((condition) => conditionReferencesSwitchVariable(condition, kind, id)) ||
               commandListReferencesSwitchVariable(page.commands, kind, id)
           )
@@ -159,7 +161,8 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return (
         collection === "items" &&
           (command.itemIds.includes(id) || (command.stock ?? []).some((entry) => entry.itemId === id))
-      ) || commandListReferences(command.transactionBranch ?? [], collection, id);
+      ) || commandListReferences(command.transactionBranch ?? [], collection, id)
+        || commandListReferences(command.failedTransactionBranch ?? [], collection, id);
     case "inn":
       return commandListReferences(command.notEnoughBranch ?? [], collection, id);
     case "promoteActor":
@@ -177,7 +180,12 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return (collection === "actors" && Boolean(command.actorId) && command.actorId === id)
         || (collection === "skills" && command.skillId === id);
     case "battleProcessing":
-      return collection === "troops" && command.troopId === id;
+      return (collection === "troops" && command.troopId === id)
+        || commandListReferences(command.victoryBranch ?? [], collection, id)
+        || commandListReferences(command.defeatBranch ?? [], collection, id)
+        || commandListReferences(command.escapeBranch ?? [], collection, id);
+    case "spawnFieldEnemy":
+      return collection === "troops" && command.spawn.troopId === id;
     case "changeExp":
       return collection === "actors" && Boolean(command.actorId) && command.actorId === id;
     case "changeLevel":
@@ -197,6 +205,18 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       return collection === "craftRecipes" && command.recipeId === id;
     case "applyItemUpgrade":
       return collection === "itemUpgrades" && command.upgradeId === id;
+    // ── 아래 넷은 로드 검증기(commandReferenceValidation)가 이미 하드 참조로 다루는데
+    //    삭제 가드에는 빠져 있었다. 커버리지가 어긋나면 "경고 없이 삭제 → 다음 로드에서
+    //    프로젝트가 안 열림"이 된다(2026-09-19 리뷰 P0-6). 검증기에 케이스를 더할 때
+    //    여기에도 같이 더할 것. ──
+    case "showAnimation":
+      return collection === "battleAnimations" && command.animationId === id;
+    case "enterHeroName":
+      return collection === "actors" && command.actorId === id;
+    case "addFollower":
+      return collection === "actors" && Boolean(command.actorId) && command.actorId === id;
+    case "equipTool":
+      return collection === "items" && Boolean(command.itemId) && command.itemId === id;
     default:
       return false;
   }
@@ -302,6 +322,7 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
     case "evolveMonster":
       return commandListReferencesSwitchVariable(command.successBranch ?? [], kind, id) || commandListReferencesSwitchVariable(command.failureBranch ?? [], kind, id);
     case "inputWait":
+    case "wait":
     case "inputNumber":
       return kind === "variable" && command.variableId === id;
     case "setSwitch":

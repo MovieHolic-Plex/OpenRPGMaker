@@ -19,7 +19,7 @@ import { renderEventEditor } from "./eventEditor";
 import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { canEditMap } from "@/editor/mapEditLocks";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
-import { basicTileLabel, makeBasicTilePalette } from "@/editor/panels/basicTilePalette";
+import { basicTileLabel, makeBasicTilePalette, type BasicTilePaletteCache } from "@/editor/panels/basicTilePalette";
 import { store } from "@/project/store";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import type { MapId, MapTreeNode, Project, TilesetDef } from "@/project/types";
@@ -63,6 +63,7 @@ let flyoutState: BasicFlyoutState = INITIAL_BASIC_FLYOUT_STATE;
 let lastContainer: HTMLElement | null = null;
 let tileSearchQuery = "";
 let documentListenersInstalled = false;
+const tilePaletteCache: BasicTilePaletteCache = {};
 
 function dispatchFlyout(action: BasicFlyoutAction): void {
   const next = basicFlyoutReducer(flyoutState, action);
@@ -105,14 +106,15 @@ export function resetBasicLeftRailForTests(): void {
   flyoutState = INITIAL_BASIC_FLYOUT_STATE;
   lastContainer = null;
   tileSearchQuery = "";
+  tilePaletteCache.current = undefined;
 }
 
 export function renderBasicLeftRail(container: HTMLElement): void {
+  if (lastContainer !== container) tilePaletteCache.current = undefined;
   const focusSnapshot = captureFocus(container);
   const previousSheet = container.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
   const scroll = { top: previousSheet?.scrollTop ?? 0, left: previousSheet?.scrollLeft ?? 0 };
   if (isStaleFlyoutState(container)) flyoutState = INITIAL_BASIC_FLYOUT_STATE;
-  clearChildren(container);
   lastContainer = container;
   installDocumentListeners();
 
@@ -121,6 +123,9 @@ export function renderBasicLeftRail(container: HTMLElement): void {
   const mapId = state.currentMapId ?? project.startMapId;
   const map = project.maps[mapId];
   const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+  const tilesBody = tileset && state.layer !== "event" ? makeTilesBody(state.selectedTile, state.layer, tileset) : null;
+  const oldShell = container.querySelector<HTMLElement>('[data-testid="basic-left-rail"]');
+  const keepTilesInPlace = tilesBody !== null && tilesBody.parentElement === oldShell;
 
   const shell = el("div", {
     class: "basic-left-rail is-icon-rail",
@@ -138,12 +143,21 @@ export function renderBasicLeftRail(container: HTMLElement): void {
     renderEventEditor(shell);
   } else if (!tileset) {
     shell.append(el("div", { class: "empty-hint", text: uiLabel("tilesetMissing") }));
-  } else {
-    shell.append(makeTilesBody(state.selectedTile, state.layer, tileset));
   }
-  shell.append(makeInlineMapField(project, mapId));
-  if (flyoutState.open === "maps") shell.append(makeMapFlyout());
-  container.append(shell);
+  const mapFlyout = flyoutState.open === "maps" ? makeMapFlyout() : null;
+  if (keepTilesInPlace && oldShell) {
+    for (const child of Array.from(oldShell.children)) if (child !== tilesBody) child.remove();
+    for (const child of Array.from(shell.children)) oldShell.insertBefore(child, tilesBody);
+    oldShell.append(makeInlineMapField(project, mapId));
+    if (mapFlyout) oldShell.append(mapFlyout);
+  } else {
+    if (tilesBody) shell.append(tilesBody);
+    shell.append(makeInlineMapField(project, mapId));
+    if (mapFlyout) shell.append(mapFlyout);
+    clearChildren(container);
+    container.append(shell);
+  }
+
   restoreFocus(container, focusSnapshot);
   // 도구·패널 그룹을 각각 한 개의 탭 스톱으로 만들고 화살표 이동을 준다 — 표준 모드
   // 도구막대와 같은 헬퍼다(이전엔 레일 버튼 11개가 전부 별도 탭 스톱이었다).
@@ -417,5 +431,5 @@ function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: 
         layer: home === "both" ? layer : home,
       });
     },
-  });
+  }, tilePaletteCache);
 }

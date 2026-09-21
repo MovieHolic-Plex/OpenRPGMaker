@@ -1,7 +1,7 @@
 // 원인 확정: 에디터 유래 규칙 `:where(body:has(.editor-layout)) .battle-enemy:disabled`
 // 가 적 버튼을 55% 로 낮추는가. body 에서 .editor-layout 만 떼고 다시 재 본다.
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
 import { openDatabase, switchDatabaseTab, DATABASE_TAB_SPECS } from "./oprn-database-helpers";
 
@@ -13,7 +13,7 @@ test("반투명 원인 확정", async ({ page }: { page: Page }) => {
   const project = createBlankProject();
   project.system.battleUiStyle = "pokemon";
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openDatabase(page);
   await switchDatabaseTab(page, TROOPS_TAB);
   await page.locator(".db-list-row").first().click();

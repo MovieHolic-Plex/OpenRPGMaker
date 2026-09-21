@@ -10,7 +10,7 @@
 import { expect, test } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 type DebugState = {
   readonly gameTime?: { readonly hour: number; readonly minute: number };
@@ -42,7 +42,7 @@ test("주민이 시간표대로 낮 활동으로 옮겨간다", async ({ page })
     timeSystem: { ...project.system.timeSystem!, minutesPerRealSecond: 240 },
   };
 
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

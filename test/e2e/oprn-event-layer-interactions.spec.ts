@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 import type { EventPageGraphic, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { expandEventMovementSection } from "./eventEditorExpandHelpers";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -56,7 +56,7 @@ type MapTileInteraction = {
 };
 
 async function seedProject(page: Page, project: Project): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 async function debugState(page: Page): Promise<DebugState> {
@@ -393,6 +393,8 @@ test("event layer canvas opens the RPG Maker context menu on right click", async
 
   await expect(page.getByTestId("map-context-menu-map_layer")).toBeVisible();
   await expect(page.getByTestId("event-layer-create-event")).toContainText("이벤트 생성...");
+  // 빈 칸: 「AI 로 이벤트 만들기...」 — 이벤트가 있는 칸에서는 라벨이 「고치기」로 바뀐다.
+  await expect(page.getByTestId("event-layer-event-ai-author")).toContainText("AI 로 이벤트 만들기...");
   await expect(page.getByTestId("event-layer-cut")).toHaveAttribute("aria-disabled", "true");
   await expect(page.getByTestId("event-layer-cut")).toContainText("잘라내기");
   await expect(page.getByTestId("event-layer-copy")).toContainText("복사");
@@ -411,6 +413,7 @@ test("event layer canvas opens the RPG Maker context menu on right click", async
   await expect(page.getByTestId("event-layer-copy")).toHaveAttribute("aria-disabled", "false");
   await expect(page.getByTestId("event-layer-cut")).toHaveAttribute("aria-disabled", "false");
   await expect(page.getByTestId("event-layer-delete")).toHaveAttribute("aria-disabled", "false");
+  await expect(page.getByTestId("event-layer-event-ai-author")).toContainText("이 이벤트를 AI 로 고치기...");
   await page.getByTestId("event-layer-copy").click();
 
   await rightClickMapTile(page, 3, 1);

@@ -48,7 +48,7 @@ const SHORTCUT_SECTIONS: readonly ShortcutSection[] = [
     title: "레이어 · 화면",
     entries: [
       { keys: ["F5"], desc: "바닥 레이어" },
-      { keys: ["F6"], desc: "덧그림 레이어" },
+      { keys: ["F6"], desc: "상위 레이어" },
       { keys: ["F7"], desc: "이벤트 레이어" },
       { keys: ["+", "-"], desc: "줌 인 / 줌 아웃" },
       { keys: ["가운데 드래그"], desc: "맵 화면 이동" },
@@ -84,7 +84,7 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
       {
         kind: "list",
         items: [
-          "지도 편집 — 타일 그림판에서 바닥·덧그림·통행을 칠하고 여러 지도를 트리 구조로 관리합니다.",
+          "지도 편집 — 타일 그림판에서 바닥·상위·통행을 칠하고 여러 지도를 트리 구조로 관리합니다.",
           "이벤트 — NPC 대사, 문 열기, 전투, 상점 같은 게임 로직을 명령 조립식으로 작성합니다.",
           "AI 협업 — 맵 이름·NPC 시간표·인카운터 배선 같은 연결조직 작업을 AI 에게 맡기고 결과를 before/after 로 검수합니다.",
           "자료집 — 주인공·직업·스킬·아이템·적·적 그룹 등 게임의 기초 데이터를 편집합니다.",
@@ -127,7 +127,7 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
     blocks: [
       {
         kind: "p",
-        text: "지도는 세 개의 레이어로 겹쳐 그립니다. 바닥 레이어는 지면처럼 캐릭터 발밑에 깔리는 타일, 덧그림 레이어는 캐릭터 위로 덮어 그려지는 것(지붕, 나뭇가지 등), 이벤트 레이어는 NPC·문·보물상자 같은 이벤트가 놓이는 층입니다. F5/F6/F7 또는 왼쪽 패널 위의 바닥·덧그림·이벤트 버튼으로 레이어를 전환합니다.",
+        text: "지도는 세 개의 레이어로 겹쳐 그립니다. 바닥 레이어는 지면처럼 캐릭터 발밑에 깔리는 타일, 상위 레이어는 캐릭터 위로 덮어 그려지는 것(지붕, 나뭇가지 등), 이벤트 레이어는 NPC·문·보물상자 같은 이벤트가 놓이는 층입니다. F5/F6/F7 또는 헤더의 바닥·상위·이벤트 버튼으로 레이어를 전환합니다.",
       },
       {
         kind: "list",
@@ -267,7 +267,11 @@ const GUIDE_SECTIONS: readonly GuideSection[] = [
   },
 ];
 
-export function openHelpModal(): void {
+/**
+ * @param sectionId 열자마자 이동할 목차 항목(GUIDE_SECTIONS 의 id). 생략하면 맨 위.
+ *   호출부가 이미 문맥을 아는 경우(예: DB 모달의 [도움말])에 그 자리로 바로 보낸다.
+ */
+export function openHelpModal(sectionId?: string): void {
   document.querySelector("[data-testid='help-modal']")?.remove();
 
   const closeButton = el("button", {
@@ -387,6 +391,12 @@ export function openHelpModal(): void {
   // Escape 는 공용 모달 스택이 라우팅한다. 자체 document 리스너로 잡으면 도크 모드에서
   // 데이터베이스를 켠 채 이 창을 열었을 때 데이터베이스까지 함께 닫혔다.
   registerModal(backdrop, close);
+  // 호출부가 지정한 섹션으로 바로 이동한다. 스크롤은 부착 뒤여야 먹는다.
+  const requested = sectionId ? sectionNodes.get(sectionId) : undefined;
+  if (requested && sectionId) {
+    requested.scrollIntoView({ block: "start" });
+    setActiveNav(sectionId);
+  }
   closeAction.focus();
 }
 

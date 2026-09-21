@@ -18,7 +18,7 @@
   },
   {
     "file": "test/storePersistence.test.ts",
-    "fullName": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+    "fullName": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
     "classification": "message-difference",
     "baselineAssertionStatus": "failed",
     "integrationMessages": [
@@ -60,7 +60,7 @@
     ],
     "normalizedFullMessagesEqual": false,
     "integrationFullMessages": [
-      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:234:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:91:21\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:234:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:91:21\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
     ],
     "baselineFullMessages": [
       "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:278:17)\n    at <SOURCE>/test/storePersistence.test.ts:91:33\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
@@ -72,7 +72,7 @@
         "TypeError: Cannot read properties of undefined (reading 'ok')"
       ],
       "normalizedFullMessages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:233:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:91:21\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:233:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:91:21\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
       ]
     },
     "finalClassification": "preexisting-exact-configured-control",
@@ -80,7 +80,7 @@
   },
   {
     "file": "test/storePersistence.test.ts",
-    "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+    "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
     "classification": "message-difference",
     "baselineAssertionStatus": "failed",
     "integrationMessages": [
@@ -91,7 +91,7 @@
     ],
     "normalizedFullMessagesEqual": false,
     "integrationFullMessages": [
-      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:234:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:119:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:234:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:119:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
     ],
     "baselineFullMessages": [
       "DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:278:17)\n    at <SOURCE>/test/storePersistence.test.ts:119:29\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
@@ -103,7 +103,7 @@
         "TypeError: Cannot read properties of undefined (reading 'ok')"
       ],
       "normalizedFullMessages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:233:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:119:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:233:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:119:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
       ]
     },
     "finalClassification": "preexisting-exact-configured-control",
@@ -115,17 +115,17 @@
     "classification": "message-difference",
     "baselineAssertionStatus": "failed",
     "integrationMessages": [
-      "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+      "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
     ],
     "baselineMessages": [
       "Error: Read-only classifier: real network prohibited"
     ],
     "normalizedFullMessagesEqual": false,
     "integrationFullMessages": [
-      "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:235:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:235:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
     ],
     "baselineFullMessages": [
-      "Error: Read-only classifier: real network prohibited\n    at blocked (file:///tmp/st_01a079-existing/guard.mjs:36:134)\n    at globalThis.fetch (file:///tmp/st_01a079-existing/guard.mjs:37:39)\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:229:26)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:26)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:33)\n    at <SOURCE>/test/storePersistence.test.ts:151:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+      "Error: Read-only classifier: real network prohibited\n    at blocked (file:///tmp/st_01a079-existing/guard.mjs:36:134)\n    at globalThis.fetch (file:///tmp/st_01a079-existing/guard.mjs:37:39)\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:229:26)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:154:26)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:33)\n    at <SOURCE>/test/storePersistence.test.ts:151:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
     ],
     "configuredControl": {
       "report": "configured-control.json",
@@ -134,7 +134,7 @@
         "Error: Read-only classifier: real network prohibited"
       ],
       "normalizedFullMessages": [
-        "Error: Read-only classifier: real network prohibited\n    at blocked (file:///tmp/st_01a079-existing/guard.mjs:36:134)\n    at globalThis.fetch (file:///tmp/st_01a079-existing/guard.mjs:37:39)\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:229:26)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:26)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:33)\n    at <SOURCE>/test/storePersistence.test.ts:151:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "Error: Read-only classifier: real network prohibited\n    at blocked (file:///tmp/st_01a079-existing/guard.mjs:36:134)\n    at globalThis.fetch (file:///tmp/st_01a079-existing/guard.mjs:37:39)\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:229:26)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:154:26)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:33)\n    at <SOURCE>/test/storePersistence.test.ts:151:17\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
       ]
     },
     "finalClassification": "inconclusive-db-environment",

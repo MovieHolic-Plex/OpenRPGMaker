@@ -1,7 +1,8 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
-import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteScale, isCharsetSpriteTexture, resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { overlappingEventPairs } from "@/project/eventFootprintQuery";
@@ -80,6 +81,8 @@ type EventMarkerPosition = {
 export interface EventMarkerRenderContext {
   readonly scene: Phaser.Scene;
   readonly overlayLayer: Phaser.GameObjects.Container;
+  /** 이 맵의 좌표 단위(px). 렌더·히트테스트가 같은 값을 읽도록 호출자가 넘긴다. */
+  readonly tileSize?: number;
 }
 
 export type EventLayerClickFeedback = {
@@ -100,9 +103,12 @@ export function editorEventMarkerTexture(project: Project, graphic: EventPageGra
  * 배율 없는 그림을 타일 한 칸에 밀어 넣는 축소율. **1x1 폴백과 레이어 배지 전용**이다.
  * 발자국·배율이 있는 이벤트는 `editorSpriteScale` 로 실제 크기를 그린다 — 여기로 보내면
  * 3x3 골렘이 16px 로 쪼그라들어 편집 맵이 크기를 못 보여준다.
+ *
+ * `tileSize` 를 주면 그 좌표 단위로 계산한다. 인자를 생략하면 16(기본 규격) — 기존 호출부와
+ * 테스트가 보던 값이 변하지 않게 하려는 것이고, 편집 렌더는 항상 맵의 값을 넘긴다.
  */
-export function eventMarkerTileScale(width: number, height: number): number {
-  return Math.min((TILE_SIZE - 2) / width, (TILE_SIZE - 2) / height, 1);
+export function eventMarkerTileScale(width: number, height: number, tileSize: number = TILE_SIZE): number {
+  return Math.min((tileSize - 2) / width, (tileSize - 2) / height, 1);
 }
 
 /**
@@ -112,9 +118,10 @@ export function eventMarkerTileScale(width: number, height: number): number {
 export function editorSpriteScale(
   graphic: EventPageGraphic | undefined,
   width: number,
-  height: number
+  height: number,
+  tileSize: number = TILE_SIZE
 ): number {
-  if (graphic?.scale === undefined) return eventMarkerTileScale(width, height);
+  if (graphic?.scale === undefined) return eventMarkerTileScale(width, height, tileSize);
   return normalizeCharacterScale(graphic.scale);
 }
 
@@ -124,9 +131,10 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
   const selectedId = state.selectedEventId;
   const events = editorWorkingEvents(map.events);
   const overlapping = activeLayer === "event" ? overlappingEventIds(events) : new Set<string>();
+  const tileSize = context.tileSize ?? mapTileSize(map);
   for (const event of events) {
-    const cx = event.x * TILE_SIZE + TILE_SIZE / 2;
-    const cy = event.y * TILE_SIZE + TILE_SIZE / 2;
+    const cx = event.x * tileSize + tileSize / 2;
+    const cy = event.y * tileSize + tileSize / 2;
     const position = { x: cx, y: cy };
     if (activeLayer === "event") {
       const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId, project, map);
@@ -136,19 +144,19 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
       const spriteTexture = editorEventMarkerTexture(project, graphic);
       // 몸 사각이 1x1 을 넘으면 사각 오버레이가 크기를 말해 주므로 한 칸 마커는 접는다.
       if (isUnitBody(body)) {
-        context.overlayLayer.add(createEditableEventMarker(context.scene, position, spriteTexture !== null));
+        context.overlayLayer.add(createEditableEventMarker(context.scene, position, spriteTexture !== null, tileSize));
       } else {
-        addFootprintOverlay(context, event, body, passRows, overlapping.has(event.id));
+        addFootprintOverlay(context, event, body, passRows, overlapping.has(event.id), tileSize);
       }
       if (spriteTexture) {
         context.overlayLayer.add(
-          createEditableEventSprite(context.scene, event, body, graphic, spriteTexture)
+          createEditableEventSprite(context.scene, event, body, graphic, spriteTexture, tileSize)
         );
       }
     } else {
-      context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy));
+      context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize));
     }
-    if (event.id === selectedId) addSelectedEventRing(context, position);
+    if (event.id === selectedId) addSelectedEventRing(context, position, tileSize);
   }
 }
 
@@ -172,15 +180,16 @@ function addFootprintOverlay(
   event: GameEvent,
   body: CharacterFootprint,
   passRows: number,
-  overlapping: boolean
+  overlapping: boolean,
+  tileSize: number
 ): void {
   const bodyRect = footprintBounds(event.x, event.y, body);
   const passRect = passageBounds(event.x, event.y, body, passRows);
   const pass = context.scene.add.rectangle(
-    passRect.left * TILE_SIZE,
-    passRect.top * TILE_SIZE,
-    (passRect.right - passRect.left + 1) * TILE_SIZE,
-    (passRect.bottom - passRect.top + 1) * TILE_SIZE,
+    passRect.left * tileSize,
+    passRect.top * tileSize,
+    (passRect.right - passRect.left + 1) * tileSize,
+    (passRect.bottom - passRect.top + 1) * tileSize,
     EVENT_PASS_FILL_COLOR,
     EVENT_PASS_FILL_ALPHA
   );
@@ -188,10 +197,10 @@ function addFootprintOverlay(
   context.overlayLayer.add(pass);
 
   const outline = context.scene.add.rectangle(
-    bodyRect.left * TILE_SIZE,
-    bodyRect.top * TILE_SIZE,
-    (bodyRect.right - bodyRect.left + 1) * TILE_SIZE,
-    (bodyRect.bottom - bodyRect.top + 1) * TILE_SIZE,
+    bodyRect.left * tileSize,
+    bodyRect.top * tileSize,
+    (bodyRect.right - bodyRect.left + 1) * tileSize,
+    (bodyRect.bottom - bodyRect.top + 1) * tileSize,
     EVENT_TILE_FILL_COLOR,
     EVENT_BODY_FILL_ALPHA
   );
@@ -209,13 +218,14 @@ export function renderEventLayerClickFeedback(
   context: EventMarkerRenderContext,
   feedback: EventLayerClickFeedback
 ): void {
-  const worldX = feedback.x * TILE_SIZE;
-  const worldY = feedback.y * TILE_SIZE;
+  const tileSize = context.tileSize ?? mapTileSize(store.getCurrent().maps[feedback.mapId]);
+  const worldX = feedback.x * tileSize;
+  const worldY = feedback.y * tileSize;
   const marker = context.scene.add.rectangle(
     worldX,
     worldY,
-    TILE_SIZE,
-    TILE_SIZE,
+    tileSize,
+    tileSize,
     EVENT_CLICK_FILL_COLOR,
     EVENT_CLICK_FILL_ALPHA
   );
@@ -240,12 +250,12 @@ export function renderEventLayerClickFeedback(
   context.overlayLayer.add(label);
 }
 
-function addSelectedEventRing(context: EventMarkerRenderContext, position: EventMarkerPosition): void {
+function addSelectedEventRing(context: EventMarkerRenderContext, position: EventMarkerPosition, tileSize: number): void {
   const ring = context.scene.add.rectangle(
     position.x,
     position.y,
-    TILE_SIZE,
-    TILE_SIZE,
+    tileSize,
+    tileSize,
     SELECTED_EVENT_RING_COLOR,
     0
   );
@@ -256,14 +266,15 @@ function addSelectedEventRing(context: EventMarkerRenderContext, position: Event
 function createEditableEventMarker(
   scene: Phaser.Scene,
   position: EventMarkerPosition,
-  hasSprite: boolean
+  hasSprite: boolean,
+  tileSize: number
 ): Phaser.GameObjects.Rectangle {
   const fillAlpha = hasSprite ? EVENT_TILE_SPRITE_FILL_ALPHA : EVENT_TILE_FILL_ALPHA;
   const marker = scene.add.rectangle(
     position.x,
     position.y,
-    TILE_SIZE - 4,
-    TILE_SIZE - 4,
+    tileSize - 4,
+    tileSize - 4,
     EVENT_TILE_FILL_COLOR,
     fillAlpha
   );
@@ -291,28 +302,31 @@ function createEditableEventSprite(
   event: GameEvent,
   body: CharacterFootprint,
   graphic: EventPageGraphic | undefined,
-  spriteTexture: EventSpriteTexture
+  spriteTexture: EventSpriteTexture,
+  tileSize: number
 ): Phaser.GameObjects.Image {
-  if (!usesAuthoredSize(body, graphic)) {
+  if (!isCharsetSpriteTexture(spriteTexture) && !usesAuthoredSize(body, graphic)) {
     const legacy = scene.add.image(
-      event.x * TILE_SIZE + TILE_SIZE / 2,
-      event.y * TILE_SIZE + TILE_SIZE / 2,
+      event.x * tileSize + tileSize / 2,
+      event.y * tileSize + tileSize / 2,
       spriteTexture.texture,
       spriteTexture.frame
     );
     legacy.setOrigin(0.5, 0.5);
-    legacy.setScale(eventMarkerTileScale(legacy.width, legacy.height));
+    legacy.setScale(eventMarkerTileScale(legacy.width, legacy.height, tileSize));
     return legacy;
   }
   const rect = footprintBounds(event.x, event.y, body);
   const sprite = scene.add.image(
-    event.x * TILE_SIZE + TILE_SIZE / 2,
-    (rect.bottom + 1) * TILE_SIZE,
+    event.x * tileSize + tileSize / 2,
+    (rect.bottom + 1) * tileSize,
     spriteTexture.texture,
     spriteTexture.frame
   );
   sprite.setOrigin(0.5, 1);
-  sprite.setScale(editorSpriteScale(graphic, sprite.width, sprite.height));
+  sprite.setScale(isCharsetSpriteTexture(spriteTexture)
+    ? eventSpriteScale(spriteTexture, sprite, graphic?.scale, tileSize, graphic?.scaleMode)
+    : editorSpriteScale(graphic, sprite.width, sprite.height, tileSize));
   return sprite;
 }
 
@@ -355,18 +369,21 @@ export function eventPageAtGameStart(event: GameEvent, project: Project, map: Ga
   return resolved ?? event.pages?.[0];
 }
 
-function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number): Phaser.GameObjects.Container {
+function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number, tileSize: number): Phaser.GameObjects.Container {
   const marker = scene.add.container(x, y);
-  const badge = scene.add.circle(0, 0, TILE_SIZE / 2 - 2, EVENT_BADGE_FILL_COLOR, EVENT_BADGE_FILL_ALPHA);
+  const badge = scene.add.circle(0, 0, tileSize / 2 - 2, EVENT_BADGE_FILL_COLOR, EVENT_BADGE_FILL_ALPHA);
   badge.setStrokeStyle(1, EVENT_BADGE_STROKE_COLOR, EVENT_BADGE_STROKE_ALPHA);
   const label = scene.add.text(0, 0, "E", {
     color: "#dbeafe",
     fontFamily: projectFontStack(store.getCurrent().system.fonts, "mono"),
-    fontSize: `${TILE_SIZE - 7}px`,
+    fontSize: `${tileSize - 7}px`,
     fontStyle: "bold",
   }).setOrigin(0.5);
   marker.add(badge);
   marker.add(label);
-  marker.setAlpha(EVENT_BADGE_ALPHA);
+  // 이벤트 레이어가 아닐 때는 배지를 절반으로 내린다(2026-09-21) — 타일 레이어에서는
+  // 배지가 참고 표시이고, 이벤트 레이어에서만 본체다. 레이어 버튼을 눌렀을 때
+  // 배지 대비 변화가 「이제 이벤트 레이어다」라는 즉시 신호가 된다.
+  marker.setAlpha(editorState.get().layer === "event" ? EVENT_BADGE_ALPHA : EVENT_BADGE_ALPHA * 0.45);
   return marker;
 }

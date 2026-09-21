@@ -1,5 +1,8 @@
 import { el } from "@/util/dom";
+import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { store } from "@/project/store";
+import { startSession } from "@/project/session";
+import { stockEntryPrice } from "@/project/shopStock";
 import { shopGreetingText } from "@/project/shopMessages";
 import { resolveTerms } from "@/project/terms";
 import { shopCatalogRecords } from "./shopEditorModel";
@@ -59,7 +62,7 @@ export type CommandPreviewContext = {
   readonly face?: ActiveFace;
   readonly simState?: PreviewSimState;
   readonly hostEventId?: string;
-  readonly forkTaken?: "then" | "else";
+  readonly forkTaken?: "then" | "else" | "unknown";
   readonly skipped?: boolean;
   /**
    * 「말투·연출」 진입 연출을 프리뷰에서 한 번 재생한다. 호출부가 **연출이 바뀐 순간에만**
@@ -826,6 +829,7 @@ function innStage(cmd: Extract<Command, { kind: "inn" }>): HTMLElement {
 
 function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
   const project = store.getCurrent();
+  const previewSeason = project.system.timeSystem?.enabled ? startSession(project).gameTime?.season : undefined;
   // System.png border-image fill 을 쓰면 하단 팔레트 스트립(0123456789)이
   // 미리보기 전체를 덮어 "배경이 깨진" 것처럼 보인다. 상점 프리뷰는 솔리드 창으로 둔다.
   const win = el("div", { class: "ecp-shop-window ecp-shop-window-clean", dataset: { testid: "ecp-shop-window" } });
@@ -862,7 +866,9 @@ function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {
     const record = catalog.get(id);
     const stock = cmd.stock?.find((entry) => entry.itemId === id);
     const name = record?.name ?? "찾을 수 없는 상품";
-    const price = record ? `${(stock?.priceOverride ?? record.price).toLocaleString("ko-KR")} G` : "—";
+    const priceValue = record ? (stock ? stockEntryPrice(stock, previewSeason) : undefined) ?? record.price : undefined;
+    const hasSeasonPrice = Boolean(stock?.priceBySeason && previewSeason && stock.priceBySeason[previewSeason] !== undefined);
+    const price = priceValue === undefined ? "—" : `${priceValue.toLocaleString("ko-KR")} G${hasSeasonPrice ? ` · ${previewSeason}` : ""}`;
     list.append(
       el("div", {
         class: "ecp-shop-item-row",
@@ -1350,7 +1356,7 @@ function legacyScreenEffectCommand(
         return {
           effect: "tint",
           value: m2Field(cmd, "value", "") || m2Field(cmd, "color", "neutral"),
-          durationMs: Number(m2Field(cmd, "duration", "0")) || 300,
+          durationMs: tintDurationMs(cmd.fields),
         };
       case "Flash Screen":
         return {
@@ -1380,7 +1386,9 @@ function legacyScreenEffectCommand(
 function screenEffectStage(cmd: Extract<Command, { kind: "m2Command" }>): HTMLElement {
   const effect = m2Field(cmd, "effect", "fadeIn");
   const value = m2Field(cmd, "value", "");
-  const duration = clampMs(Number(m2Field(cmd, "durationMs", "300")));
+  const duration = m2CommandById(cmd.commandId)?.title === "Tint Screen"
+    ? tintDurationMs(cmd.fields)
+    : clampMs(Number(m2Field(cmd, "durationMs", "300")));
   const model = screenEffectPreviewModel(effect, value, duration);
   const stage = el("div", {
     class: `ecp-stage ecp-screen-effect-stage ecp-screen-effect-${effect}`,

@@ -79,4 +79,4 @@ failure; the supplied Phase 2 candidate report contains 162 failures including
 the exact design regression. Unrelated baseline failures were not changed.
 
 This is engine code plus minimum test fixtures, not authored remote game content.
-No Supabase write, push, PR or merge was performed.
+No LegacyDb write, push, PR or merge was performed.

@@ -1,0 +1,35 @@
+{
+  "checks": [
+    {
+      "live": {
+        "enabled": true,
+        "amount": 0
+      },
+      "reloaded": {
+        "enabled": true,
+        "amount": 0
+      }
+    },
+    {
+      "live": {
+        "enabled": true,
+        "amount": 1
+      },
+      "reloaded": {
+        "enabled": true,
+        "amount": 1
+      }
+    },
+    {
+      "live": {
+        "enabled": true,
+        "amount": 6
+      },
+      "reloaded": {
+        "enabled": true,
+        "amount": 6
+      }
+    }
+  ],
+  "legacyDefault": 3
+}

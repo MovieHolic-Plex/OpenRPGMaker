@@ -18,7 +18,7 @@ beforeEach(() => {
   restoreDom = installFakeDom();
   const storage = new MemoryStorage();
   storage.setItem(
-    "oprn:supabase-project-config",
+    "oprn:legacyDb-project-config",
     JSON.stringify({ anonKey: "anon", projectId: "proj", source: "custom", url: "https://db.test" }),
   );
   storage.setItem("oprn:editor-session-id", "session-self");

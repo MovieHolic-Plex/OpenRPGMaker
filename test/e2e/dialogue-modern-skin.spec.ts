@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -16,7 +16,7 @@ test("modern dialogue skin stays adaptive across chip, bust, choices, and transp
   await page.addInitScript(() => {
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
-  await seedProjectFromSupabaseCanonical(page, modernDialogueProject());
+  await seedProjectForEditor(page, modernDialogueProject());
   await page.getByTestId("mode-play").click({ force: true });
   await startNewGameFromTitle(page);
 

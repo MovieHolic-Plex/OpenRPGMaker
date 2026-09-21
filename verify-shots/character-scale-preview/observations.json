@@ -1,0 +1,73 @@
+{
+  "date": "2026-09-21T01:41:36.591Z",
+  "observations": [
+    {
+      "map": "geometry48",
+      "x": 120,
+      "y": 144,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "scaleX": 1,
+      "scaleY": 1,
+      "displayWidth": 24,
+      "displayHeight": 32,
+      "camera": {
+        "centerX": 160,
+        "centerY": 120,
+        "height": 240,
+        "scrollX": 0,
+        "scrollY": 24,
+        "width": 320,
+        "zoom": 1
+      },
+      "texture": "tex_easyrpg_charset_actor1",
+      "frame": 25
+    },
+    {
+      "map": "geometry48",
+      "x": 120,
+      "y": 144,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "scaleX": 2,
+      "scaleY": 2,
+      "displayWidth": 48,
+      "displayHeight": 64,
+      "camera": {
+        "centerX": 160,
+        "centerY": 120,
+        "height": 240,
+        "scrollX": 0,
+        "scrollY": 24,
+        "width": 320,
+        "zoom": 1
+      },
+      "texture": "tex_easyrpg_charset_actor1",
+      "frame": 25
+    },
+    {
+      "map": "geometry48",
+      "x": 120,
+      "y": 144,
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "scaleX": 3,
+      "scaleY": 3,
+      "displayWidth": 72,
+      "displayHeight": 96,
+      "camera": {
+        "centerX": 160,
+        "centerY": 120,
+        "height": 240,
+        "scrollX": 0,
+        "scrollY": 24,
+        "width": 320,
+        "zoom": 1
+      },
+      "texture": "tex_easyrpg_charset_actor1",
+      "frame": 25
+    }
+  ],
+  "errors": [],
+  "scope": "Temporary runtime sprite-scale comparison; automatic scaling is not implemented and project data is unchanged."
+}

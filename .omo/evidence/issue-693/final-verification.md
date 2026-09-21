@@ -46,7 +46,7 @@ The following supersedes the pending statuses in the earlier checkpoint below.
 - The same saved 8 MiB project was checked through the built production editor:
   actual audio-element bytes retain the original hash, and the real Test Play
   button reached ready in 1,696 ms with zero additional writes or page errors.
-  See `media-supabase-proof.json`.
+  See `media-legacy-db-proof.json`.
 
 While verification ran, main advanced to
 `9c7c88c5fe97da30b78ae32761b40f8b46281273`, adding overlapping fake-DOM,
@@ -115,7 +115,7 @@ diagnostic-export browser replays are also rerunning with the private cache.
 Their output is under `/dev/shm/rpg-zzu-issue693-lead/final/`.
 
 The saved 8 MiB QA project remains `oprn-f51b995ac9`; see
-`media-supabase-proof.json`. Do not create further saved copies merely to repeat
+`media-legacy-db-proof.json`. Do not create further saved copies merely to repeat
 read/play verification. The QA-only credential-bearing proxy process was stopped.
 
 PR 695's premature partial merge is documented in `acceptance.md`. Open the

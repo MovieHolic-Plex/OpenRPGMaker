@@ -1,3 +1,218 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
+## 단독 조수의 병렬 도구 실행 (2026-09-21)
+
+기본 조수도 팀 없이 독립적인 조회·웹 검색·Writer 초안을 한 모델 응답의 여러 호출로
+묶는다. `piAgent/systemPrompt.ts`가 이 규칙과 결과·생성 ID 의존성의 다음 턴 대기를 지시한다.
+`toolAdapter.ts`는 레지스트리 `mode=read`를 Pi 코어 `concurrency=shared`, 쓰기를
+`exclusive`로 매핑한다. 최초 노출·find_tools 승격·미노출 직접 호출이 모두 같은 매핑을 쓴다.
+웹 검색과 Writer는 shared, `finish_stage`는 exclusive다. 팀 배정·메일함의 기존 실행 정책은 유지한다.
+
+`scripts/lib/piAgentRuntime.ts`의 전체 도구용 `executionQueue`는 제거했다. 이 큐 때문에
+DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. 이제 코어가 연속된 읽기를
+함께 실행하고, 쓰기는 앞선 호출의 종료를 기다려 실행·checkpoint 적용까지 단독 점유한다.
+뒤의 조회/쓰기는 승인된 최신 프로젝트를 보며, 검토 후 적용에서도 쓰기는 순서를 지킨다.
+승인 거절이나 중단은 후속 쓰기를 막는다. 초안 작성 후 checkpoint가 실패하면 이전의
+성공 영수증보다 코어 실패를 우선하여 `tool_end.ok=false`로 보고한다.
+
+병렬화는 비동기 대기 시간을 겹치는 것이며 동기 타일 연산을 여러 CPU에서 돌리는 기능은 아니다.
+도구 결과가 필요한 후속 모델 판단은 다음 턴에 실행한다. 제공자별 다중 호출 제한은 변경하지 않는다.
+증거·명령·제약: `reports/2026-09-21-ai-tool-parallel.md`, `.omo/evidence/ai-tool-parallel/`.
+회귀: `test/piToolConcurrency.bun.test.ts`(실제 Pi 루프 + 제어된 모델/검색 전송),
+`piApplyModes.bun.test.ts`, `piAgentToolAdapter.test.ts`.
+실제 모델/실제 검색 재현: `bun scripts/qa/ai-tool-parallel-live.mts` (연결된 제공자 필요,
+읽기 도구만 허용하고 프로젝트 적용이 발생하면 실패한다).
+
+### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+## AI 새 야외·마을의 기본 칩셋 (2026-09-21)
+
+- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 AI 새 야외의 기본값을 소유한다.
+  기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만
+  합본 마을로 폴백한다. `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
+- `create_map`, `generate_map`의 village/forest, `author_village`와 내부 마을 생성,
+  `build_world`의 town/field가 같은 정책을 쓴다. 명시 칩셋은 우선한다.
+  `generate_map` cave는 고정 입구/POI 유무와 관계없이 던전 칩셋을 기본으로 한다.
+  기존 맵, 집에 연결되는 실내, 별도 공간/월드 컴파일러의 명시 재료 계약은 유지한다.
+- `author_village.target.tilesetId`는 **new 전용**이다. 스키마·파서·생성·변이 전 호환성 검사에
+  모두 전달한다. 기존 맵은 해당 맵 칩셋을 검사하며 자동 교체하지 않는다.
+- 숲마을은 합본 마을 0~479의 집·길 번호와 레트로 절벽 구간을 보존하므로 호환 판정에 포함한다.
+  `isCombinedTownTileset` 자체를 바꾸거나 합본 마을 하네스로 숲마을 저작 정의를 덮지 않는다.
+  숲마을 언덕도 morphology + relief 경로를 사용한다.
+- 나무는 `treeKitForTileset`이 숲마을 `tileGroups[].previewMap`의 완성 조립과 셀별 레이어를 읽는다.
+  일반/compact/형태 마을·과수원·지형 패스와 그래픽 비교 화면이 같은 킷을 쓴다.
+  옛 2×4 dark-tree와 직사각형 숲 벽 반복을 숲마을 킷에 넣지 않는다.
+  개별 나무·과수원은 이 조립을 유지하고, 넓은 숲 군락은 아래 연결 수관 문법을 쓴다.
+  길·물은 호환 번호의 기존 시공 알고리즘을 유지한다.
+- 회귀 계약: `test/aiOutdoorTilesetDefaults.test.ts`. 기존 합본 마을 팔레트/파사드 검사는
+  타일셋을 명시해 본래 검사 대상을 유지한다. 이번 세션에서는 vitest/gates/typecheck 미실행.
+  브라우저 관측: `reports/2026-09-21-ai-forest-default.md`.
+
+
+## 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
+
+- 마을 외곽은 `forestGroves.ts` → `forestContour.ts`로 이어지는 **1칸 단위** 경계다.
+  연속 함수로 만든 공터의 좌표를 fBm으로 휘고, 큰 굴곡과 작은 경계 변화를 별도로 합성한다.
+  실제 길·집·마당·수역·이벤트와 기존 스택을 보호하고 집 주변 여백도 둥글게 제외한다.
+  몸통은 `forestTrunkTiles.ts`의 **기존 굽이숲 3행 조립**만 사용한다. 경계를 굽히기 위해
+  `forest-trees:tree` 같은 개별 나무로 교체하면 안 된다(사용자 반려). 공통 끝마감·반복부를
+  온전히 놓고 수관이 가린다. 완성 몸통이 들어가지 않는 돌출부만 1행씩 후퇴시킨다.
+  연구의 적용 범위·출처는 `village-layout-research.md`, 복구 화면은
+  `reports/2026-09-21-restore-original-forest-trunks.md` 참조.
+- 명시된 숲 띠·compact 마스크는 기존 2열×3행 조립을 유지한다. 이 경로는 남쪽 노출 경계
+  **같은 행**에서 밑동을 시작한다. `forest-cabin`의 좌/우 끝마감과
+  2열 반복부 `[[1425,1350],[1429,1428],[1433,1432]]`를 사용하며 항상 3행 전체를 놓는다.
+  끝마감이 안 들어가는 돌출부는 수관 마스크에서 제거한다. 밑동·뿌리를 잘라 맞추지 않는다.
+- 시공 draft의 `prepareVillageTreeKit`만 `defaults/forestGrove.ts`로 어휘를 확장한다.
+  참조 칩셋의 47개 연결 조각은 기존 `tileGrafts` 경로로 현재 마지막 타일 뒤에 추가한다.
+  `forest_harmony_grove_47`은 독립 그룹이다. 옛 1617·수관 그룹·잠긴 메타데이터·기존 graft는
+  덮지 않으며, 사용자 확장 슬롯이 있어도 그 뒤에 추가한다. 조회/그래픽 미리보기는 변이하지 않는다.
+- 승인 원본은 `forest-cliff-village-atlas.png`; 새 그림 생성이나 참조 맵 수정은 없다.
+  Phaser preload·공통 graft bake·내보내기가 같은 번들 소스를 사용한다.
+  `authorVillageScope`는 이 결정론적 추가 결과만 허용하며 다른 칩셋 변경은 계속 거부한다.
+- 일반·compact·형태별 마을과 지형 숲 패스가 같은 페인터를 쓴다. 과수원/집 주변의 개별 나무는
+  완성 나무 스탬프를 유지한다. 합본 마을은 기존 산포 경로를 유지한다.
+- 숲 실측은 실제 타일셋 그룹으로 수관 칸을 센다. 기존 `tree2x2Clusters`에 가짜 나무 개수를
+  더하지 않으며, 필수 숲 검사는 3개 완성 활엽수 또는 36칸 연결 수관을 큰 군락으로 인정한다.
+- 관측: `reports/2026-09-21-forest-groves.md`; 계약: `test/forestGroves.test.ts`(미실행).
+
+
+검색은 실제로 길다 — 실측 31.18초. 그동안 사용자에게 보이는 것은 세 겹이다.
+
+1. **작업 카드 상태 문구.** 검색이 시작되면 `웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)` 로 바뀐다.
+   이전에는 `작업 중…` 만 보여 멈춘 것처럼 읽혔다. 실행 턴과 계획 턴 두 경로에 모두 걸었다 —
+   「해리포터 같은 게임」 시나리오가 검색하는 자리가 바로 계획 턴이다.
+2. **작업 과정 타임라인.** 툴마다 `◌ 웹 검색 · 실행 중` → `✓ 웹 검색 · 완료 · 31.18초` 행이 남고,
+   행에는 `00:12 · 조수 · 31.18초` 처럼 트레이스 시작 기준 경과가 붙는다(`aiActivityView` 의 `clock`).
+   기본 표시 수준은 「간단히 보기」(brief)이고, 설정에서 생략·자세히·매우 자세히로 바꾼다.
+3. **중지 버튼.** 턴이 도는 동안 계속 보인다(`ai-run-stop`).
+
+`web_search` 라벨이 사전에 없으면 타임라인이 `web search` 라는 영문을 그대로 보여 준다(2026-09-21 실측:
+`label="web search" icon=wrench group=build`). 지금은 `웹 검색` · 돋보기 아이콘 · 조회 그룹이다.
+
+## 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+
+사용자가 실존 작품을 비유하면(「해리포터 같은 게임 만들고 싶다」) 조수가 **설계 전에 스스로 검색**하고
+그 사실로 계획을 세운다. 이전에는 `mode=other` 로 분류되며 참조가 조용히 사라져 검색 계기가 없었다.
+
+- **`referenceWork` 는 의도 선언의 사실이다.** `IntentDeclaration.referenceWork`(문자열|null)에 작품명이 남고,
+  `formatIntentNote` 가 `[참조 작품]` 계약을 붙인다 — 검색하라, 암기로 추정하지 마라, 고유명사는 그대로 쓰지 마라.
+- **authoring 게이트에 묶지 마라.** 파서가 `create|modify` 에만 실어 보내면 「만들고 싶다」(mode=other) 발화에서
+  조용히 사라진다(2026-09-21 실측: referenceWork=null, tools=[]). 지금은 모든 모드에서 보존한다.
+- 장르·스타일 설명(「중세 판타지 RPG」)은 작품명이 아니다 — 선언 프롬프트가 그 경계를 가르친다.
+- 시스템 프롬프트(`piAgent/systemPrompt.ts`)도 같은 규칙을 말한다: 지식밖의 사실은 (a) 최신 사실,
+  (b) 실존 작품 비유 두 갈래로 검색한다.
+
+### 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+
+편집기 저장본(`~/.oprn/oh-my-pi-auth.json`)의 Codex 자격이 만료되면 갱신을 시도하는데, `codex` CLI 같은
+다른 도구가 먼저 갱신했으면 `refresh_token_reused` 로 실패한다. 그때 CLI 로그인은 더 신선할 수 있는데도
+`resolveRequestApiKey` 가 저장본만 보고 던져서 **모든 검색·완성이 그 행에 묶여 죽었다**(2026-09-21 실측).
+지금은 갱신 실패 시 `adoptCodexCliCredentials` 로 CLI 자격 채용을 한 번 시도하고, 그것도 못 쓰면 원래
+오류를 올린다.
+
+### 검증
+
+`~/.bun/bin/bun run scripts/ai-reference-work-live-test.mts` — 의도 선언 → 참조 노트 → Pi 루프를
+편집기와 같은 경로로 통과시킨다. 판정은 실제 실행된 툴 호출과 출처 URL 이다.
+실측 2026-09-21: `referenceWork="해리포터"`, 실행 툴 `["web_search","get_project_summary","read_project_wiki"]`,
+출처 `harrypotter.com/features/everything-a-first-year-should-know-about-hogwarts` 외 2건, 판정 PASS.
+회귀: `test/intentDeclaration.test.ts` 의 「참조 작품 비유 — 검색을 부르는 계약」 6케이스.
+
+## 조수 웹 검색 도구 (2026-09-21)
+
+조수가 `web_search({query})` 로 인터넷을 검색한다. 레지스트리 등록은 `src/editor/tools/webSearchTool.ts`,
+업스트림 계약은 `scripts/lib/codexWebSearchRuntime.ts`, Pi 배선은 `scripts/lib/piAgentRuntime.ts` 다.
+
+- **검색 엔진은 Codex(ChatGPT) 백엔드다.** 조수 제공자가 Antigravity(Gemini, 공장 기본)여도 검색은
+  ChatGPT 구독 자격으로 나간다 — `tools:[{type:"web_search"}]` + `stream:true` 계약을 실측으로 고정했다
+  (`stream:false` 는 업스트림이 400 "Stream must be set to true" 로 거절한다. 비스트리밍은 존재하지 않는다).
+- **자격은 서버 경계에만 있다.** `resolveRequestApiKey("openai-codex")` 가 동반 서비스에서 해결해
+  워커로 넘기고(`codexApiKey`), 브라우저로는 나가지 않는다. Codex 미로그인이면 툴이 "Codex 로그인 필요"
+  로 정직하게 실패한다 — 검색 때문에 다른 턴이 죽지 않는다.
+- **레지스트리 `run` 은 순수 핸드오프다.** 툴 규약(`types.ts`)이 브라우저 전역 접근을 금지하므로
+  레지스트리 쪽은 `status:"ui-required"` 만 만들고, 실제 네트워크 실행은 Pi 런타임이 같은 이름으로
+  갈아 끼운다(`generate_image_asset` → `imageAssetGeneration` 과 같은 분업). 그래서 레지스트리 셰이프와
+  실행 셰이프가 **둘 다 선언되면 안 된다** — Pi 런타임이 레지스트리 셰이프를 이름으로 걸러낸다.
+- **노출은 도메인과 무관하다.** "최신 정보가 필요하다" 는 UI 상태로 예측할 수 없어서 `core` 도메인에
+  상시 노출된다. `find_tools` 발견 경로도 같은 실행 셰이프로 간다(`shapeFor`).
+- 팀 실행에서도 하위 에이전트가 검색을 쓴다(`piTeamRuntime.ts` 의 `child()` 가 `codexApiKey` 를 내려보낸다).
+  빠뜨리면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
+
+검증(2026-09-21, 실제 ChatGPT 구독 자격): 레지스트리 노출·인자 거절(빈 검색어·401자)·
+`codex-required` 실패 경로, Pi 루프에서 `web_search` 선언과 실제 검색 실행(PostgREST v16.3 답변 +
+GitHub 출처 6건), `find_tools` 발견 후 다음 턴 실행까지 실측했다.
+
+## 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
+
+- DB 공용 `mergeRecord`는 `mergeRecordPatch`로 중첩 객체의 생략된 필드를 보존한다. 전달한 배열은 교체하며, `kind` 변경은 이전 유니온 변형을 버린다. 빈 객체는 중첩 필드 전체 삭제가 아니다.
+- 생활 스킬/가축 종 갱신은 기존 보상/그래픽/수치를 보존한다. 제작법은 기존 ID에서 미전달 필드를 보존하고, 신규 레시피의 outputItemId는 실행 시 검증한다. 날씨 패치는 계절 규칙을 병합 후 기존 정규화 경로를 탄다.
+- 기본 DB 9종 삭제는 `projectDatabaseReferenceMessage(draft, ...)`, 제작법 삭제는 `craftRecipeReferenceMessage(draft, id)`를 거친다. 전역 UI store를 검사하면 다른 초안을 보호하게 되므로 반드시 draft를 전달한다.
+- `prune_unused`는 로더 아이템 참조 수집기를 사용한다. 상점/전투/승급/진화/여관 분기와 동적 필드 스폰도 수집하고, 삭제 대상 트룹을 제외한 프로젝트에 남는 적 조건 참조를 보존한다. 미사용 슬롯 이름 삭제 역시 공용 스위치/변수 가드에 걸리면 생략한다.
+- 자세한 범위와 남은 rename/repair 문제: `docs/reviews/2026-09-20-data-integrity-fixes.md`. 테스트 작성만 했으며 gates/vitest 미실행.
+
+## 전투 저작 입력 수정 (2026-09-20)
+
+## 이벤트 명령 AI 공용 도구 (2026-09-20)
+
+`event_command_assist({mapId,eventId,pageId,prompt,mode?})`는 기존 이벤트의 한 페이지
+명령을 자연어로 수정하는 `event` 도메인의 쓰기 도구다. `get_event`로 실제 페이지 ID를
+먼저 조회한다. 새 이벤트 생성·다른 페이지·페이지 조건/그래픽 변경은 하지 않는다.
+
+- `eventCommandAssistTool.ts`가 스키마와 대상 조회를 소유한다. `asyncToolRunner.ts`가
+  `runEventCommandAssist`로 생성한 후 `runToolDefinition`의 공용 draft/lint/commit 경계를 탄다.
+  AssistantSession과 Pi toolAdapter가 이 비동기 경로를 호출한다. 동기 `runTool` 직접 호출은
+  `async-tool-required`로 거부하며, 생성됐다고 보고하지 않는다.
+- 이벤트 편집기 생성기의 리소스·참조·착지·세계관 검증 및 최대 3회 생성/수정을 재사용한다.
+  세션에서는 기존 chat 함수·설정·프로젝트 성향 키를 전달한다. 조수의 도구 결과/감사/제안 흐름을
+  그대로 통과하며, 생성기가 store를 직접 수정하지 않는다.
+- 기본 `mode: edit`는 최종 명령 목록 전체를 교체한다. 명령 JSON이 기존 생성기의 12,000자
+  상한을 넘으면 생성 전에 거부한다. `mode: append`를 명시하면 기존 목록 끝에 추가한다. 이벤트 편집기의 선택 경로가 있으면 선택 명령 바로 뒤에 추가한다.
+  모호한 수정 요청을 자동으로 추가 요청으로 바꾸지 않는다.
+- 생성 전 프로젝트 사본을 사용하고, 완료 시 프로젝트 identity와 내용을 재확인한다.
+  취소 또는 프로젝트 변경 시 적용하지 않는다. `dryRun`은 ctx.project도 갱신하지 않는다.
+- `test/eventCommandAssistTool.test.ts`: 페이지/기존 데이터 보존, dryRun, 누락 대상,
+  긴 페이지, 명시 추가, 취소/오래된 결과, 실제 공용 생성기의 검증 재시도 계약.
+  실행 결과와 브라우저 근거는 `reports/2026-09-20-event-command-assistant.md`에 기록한다.
+
+이벤트 편집기의 생성 버튼도 `sendAiAssistantMessage` → `aiChatPanel.sendText` →
+`aiTurnRunner` → `AssistantSession.sendUserMessage` 공용 경로를 사용한다.
+호스트가 전달하는 `eventCommandScope`는 맵·이벤트·페이지와 선택 경로/라벨, edit/append 모드를
+고정한다. **이 스코프가 봉인하는 것은 쓰기다** — `onlyEventPageCommandsChanged` 가 지정 페이지
+밖의 변경을 거부하므로 읽기는 넓혀도 계약이 약해지지 않는다. 쓰기는 `event_command_assist`
+하나뿐이고 다른 대상과 모드 변경은 거부한다. 이 턴에서는 자율 적용·위키 저작·NPC 자동 보완이
+금지된다.
+
+**읽기 툴은 2026-09-20 에 넓혔다.** 종전 허용은 `get_event`·`get_database_records`·`run_lint`
+뿐이라 **맵을 조회할 방법이 없었다.** 조수 세션은 `eventScopeAllowsTool` 로 툴 목록을 거르므로
+여기 없으면 노출조차 안 되고, 그래서 모델은 프롬프트에 실린 맵 한 줄
+(`이름 (가로 W × 세로 H, 밟을 수 있는 칸 예: x,y)`)만 보고 대사를 지어야 했다 — "이 마을
+광장에서"·"여관 안에서" 같은 지시를 받아도 그 자리가 어떤지 볼 수 없었다. 지금은
+`get_map_region`(시맨틱 문자 그리드 + 물 바운딩 박스)·`get_project_summary`·`find_events`·
+`find_layout_regions`·`list_resources` 가 읽기로 허용된다(모두 `mode: "read"`). 프롬프트를
+키우지 않고 모델이 필요한 만큼 파고든다. 계약: `test/eventCommandScopedSession.test.ts`
+("맵을 읽는 툴이 허용된다" + "쓰기 툴은 여전히 봉인된다").
+
+공용 브리지는 바쁜 턴이나 대기 제안이 있으면 이벤트 요청을 거부한다. 생성 결과는
+`deferApply`로 공용 검토를 거친 뒤 before/after 스냅샷을 이벤트 모달에 넘기고 공용 제안을
+해제한다(채팅에 두 번째 적용 권한을 남기지 않는다). 모달은 해당 페이지 외 변경 여부와
+생성 전 명령 목록을 재확인하고 기존 diff/줄 제외/직접 수정/replaceAll 한 번 적용을 유지한다.
+진행 표시는 공용 상태를 읽으며 중단 및 편집기 닫기는 공용 턴을 취소한다.
+
+검증: `test/eventCommandScopedSession.test.ts`는 실제 공용 세션의 도구 루프·범위 위반 거부·
+검토를 검증한다. `test/e2e/event-ai-shared-assistant.spec.ts`는 LLM 응답만 고정하고 실제
+브리지·세션·도구·모달에서 검토 전 미변경, 다른 페이지 보존, 적용과 한 번 되돌리기를 확인한다.
+
+## 전투 저작 입력 수정 (2026-09-20)
+
+`upsert_troop`의 기존 id에 `enemyIds`만 전달하면 로스터 교체다. 기존 `members`를
+상속해 입력을 무시하지 않고 새 members를 합성한다. 이름 등 다른 필드만 바꾸면 기존
+수동 배치·숨김·페이지를 보존한다. `members`를 명시하면 기존처럼 그것을 정본으로 삼는다.
+
+M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서 필수다.
+중첩 분기에도 적용되며 저수준 툴은 기존 `invalid-args` 오류로 반환한다.
+`COMMAND_SCHEMA`의 예시는 실제 전투 명령 `m2-098-change-enemy-hp`와 fields를 사용한다.
+회귀 코드는 `dbToolsIntegrity`와 `battleReviewIntegrity`에 추가했으며 이번 세션에서는 미실행.
+
 ## NPC 공용 얼굴 매핑 연결 (2026-09-18)
 
 `place_npc` / `make_villager`와 `eventCompile`은 `sharedCharacterFaceResolver`의 공용 자료를 사용한다.
@@ -714,32 +929,44 @@ Regressions: `assistantNativeReadDelivery`, `toolReadDelivery`; the 512,029-char
 read plus six summaries is refused after real compaction/clamping, then complete original
 paging or a complete current native result enables the subsequent writer response.
 
-## Full native tool exposure (2026-09-06)
+## Hybrid native tool exposure (2026-09-19)
 
-`AssistantSession.runTurnLoop` sends every active editor tool's complete native description
-and input schema from the first working request. It no longer uses UI/intent domains,
-40-tool quotas, natural-language promotion slots, or a global 128-tool tail clamp to choose
-capabilities. `toolRegistry.toOpenAiTools` still honors an explicit domain filter for scoped
-callers, but retains **every** eligible definition in registry order. There is no pin list.
-Deprecated tools remain hidden; ask mode removes registry and session write schemas and
-still rejects attempted writes at execution. WorkPlan and acceptance tools retain their
-existing lifecycle gates. Schema validation, read-evidence gates, detached drafts,
-cancellation and usage accounting stay in the existing execution pipeline.
+The default editor chat uses **Pi**, not `AssistantSession`. The first hybrid change
+(`eb5c5bea5`) affected only the legacy session; its passing tests did not prove normal chat.
+The production chain is `aiChatPanel.plainPiTurn → runPiCommand → PiAgentRequest →
+runPiAgent`. The panel now uses the shared `sessionToolExposure` candidate builder and
+passes `initialToolNames` through every normal send, queued send, kickoff and bridge path.
+It includes core/control tools, the intent's named tools, adventure foundation tools, and
+natural-language matches. `AssistantSession` additionally supplies its plan/read contracts.
+A failed intent declaration sends the full catalog. Read-only/plan requests retain the
+full read catalog; explicit `/pi` and team members retain their existing role/domain seeds.
 
-The capability index is navigation alongside native schemas, not a promise to unlock
-missing tools later. `find_tools` is optional search, not an exposure prerequisite.
-The supported subscription adapters have no local function-count clipping: Antigravity
-uses Cloud Code Assist `functionDeclarations`; Codex uses a zstd Responses request with
-`input` entries of type `additional_tools`. Do not impose old Chat Completions/Vertex
-limits on these transports. Lead evidence accepted 198 native definitions on Antigravity
-with HTTP 200; Codex live acceptance remains unverified without connected credentials.
-An upstream rejection is surfaced unchanged, never retried with a smaller capability set.
-No domain delegation is needed for the supported, observed full-native path.
+`initialToolNames` is a schema-exposure hint, **not** a permission list. The worker's
+`options.toolNames` and `readOnly` remain hard boundaries. A successful `find_tools` result
+adds allowed native schemas to the same live array before the next Agent request. A successful
+empty search restores the entire permitted catalog. Direct calls to unexposed registered
+tools are still rescued within those boundaries. The old 16-tool promotion cap is removed:
+search success must not silently omit the seventeenth schema. Registry names are deduplicated,
+superseded definitions stay hidden, and an explicitly empty role allowlist allows nothing.
+Team children clear the parent's shortlist and choose their own role/domain catalog.
 
-Regression seams: `aiToolDiscoveryEscalation`, `toolExposureQuota`, `toolDomainScoping`,
-`aiToolCapabilityIndex`, `aiComposerModeSession`, and `ohMyPiFullCatalog.bun.test.ts`.
-The transport fixture crosses counts 40/41, 127/128/129 and 198/207 using the installed
-adapters and verifies names, descriptions, nested schemas and explicit upstream errors.
+The Pi prompt carries the compact capability index when discovery is available, filtered by
+its read/role boundary. Candidate selection does not bypass argument validation, detached
+project drafts, publication, approval, cancellation or scope checks. Full-catalog fallback is
+for routing misses; provider validation errors are not silently retried with another catalog.
+
+Evidence: `.omo/evidence/ai-tool-exposure/README.md`. The fixed RPG intent fixture sends
+34 initial registry schemas versus 236 unique active definitions; JSON schema characters
+fall from 337,554 to 72,620 (78.5%). These are character counts, not billed tokens, and the
+intent is a fixed test input. Browser screenshots use a scripted model with the actual
+editor → HTTP request → Pi Agent → registry execution chain. They do not prove live-model
+intent or authoring quality. Live OAuth providers were disconnected during this verification.
+
+Regression seams: `aiChatPanelComposerMode`, `piAgentRunOutcome`, `piAgentToolAdapter`,
+`piAgentTeamRuntime`, `piAgentToolEscalation.bun.test.ts`, `piApplyModes.bun.test.ts`,
+`aiToolExposureHybrid`, and `aiToolCapabilityIndex`. Reproducible browser QA:
+`bun scripts/qa/ai-tool-exposure-worker.mts`, then
+`BASE=http://127.0.0.1:<worktree-port> node scripts/qa/ai-tool-exposure-browser.mjs`.
 
 ## Review approval lifetime (R3, 2026-09-06)
 
@@ -890,7 +1117,7 @@ protects their intervening human edits. Current-base malicious house changes sti
 fail the independent house guard.
 
 Sources: [adapter and base](../src/editor/tools/applyChangesetToStore.ts),
-[store token](../src/project/store.ts), [key comparator](../src/project/supabaseProjectSync.ts),
+[store token](../src/project/store.ts), [key comparator](../src/project/legacyDbProjectSync.ts),
 [proposal host](../src/editor/panels/aiProposalCard.ts),
 [cluster approval](../src/editor/panels/clusterAiModal.ts).
 Controls: `test/aiMutationApplyAccounting.test.ts`, `test/aiStaleProposal.test.ts`,
@@ -1107,7 +1334,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 - **루트 컨테이너의 게임 느낌은 `src/editor/lootFeedback.ts` 한 곳에서 낸다 (2026-09-04 실측 결함 수정):** `place_chest` 와 `place_concept` 의 `loot` 칩(나무 상자·잡화 상자·캨비닛·술통·진열대)이 「지급 + 텍스트」만 뻑어 상자를 열어도 소리 하나 없고 열림 페이지가 **닫힌 그림**을 그대로 썼고, 공지 문장은 raw `item_potion` id 를 노출했다. 이제 닫힘 페이지는 `chestOpenCommands`(개방 SE `cc0-se-osx-wooded-box-open` → `setEventGraphicPattern` right(반개방) → up(개방), 각 `wait`) → `lootGrantCommands`(아이템 징글 `…nes09` → `changeItem` → 사이 → 동전 `cc0-se-orp-inventory-coin` → `changeGold`) → DB 이름으로 쓴 `text` → `setSelfSwitch` 순이고, 열림 페이지 그래픽은 `chestOpenedGraphic`(같은 슬롯의 up 프레임)이다. 타일 가구인 개념 loot 는 `lootRummageCommands`(같은 나무 SE + wait) 다음 동전→금화→문장. RM2k3 Object 차셋의 상자 슬롯은 **방향 행**이 개방 단계다(down=닫힘, right=반개방, up=개방 — Object1.png 슬롯 6 실측). SE id 는 전부 CC0 카탈로그라 참조 검증을 통과하고 `test/lootFeedback.test.ts` 가 `isSeCatalogResourceId` 로 오타 회귀를 잡는다. 출하 플레이어 증명은 `npm run qa:runtime -- --scenario chest-open`(`openwiki/testing.md`).
 
-- **의도 라우팅은 모델이 한 번 선언한다 (2026-09-03, 키워드 분류기 7종 삭제):** 턴 시작에 `intentDeclarationClient.createLlmIntentDeclarer` 가 lite 모델·`json_object` 로 사용자 원문을 읽어 `{mode, space, facility, targetMapId, useSelection, clarify, needsPlan, resetsContext, tools}` 를 선언하고(`src/ai/intentDeclaration.ts`, 1.7~2초), 세션은 그 선언만 소비한다 — 되묻기(chat 에서만, 모델이 낸 질문 그대로), 플래너 스킵(selection·question·single-step), 플래너 direct 존중, 볼륨 막대(플래너가 `new_plan.volume` 으로 선언한 것만), 툴 노출(코어 + UI 도메인 + 선언 툴의 도메인 + 핀; 선언 툴·원문의 이름 언급·능력 승격은 상한 밖), 수정 대상 맵, 완성도 린트. 본문 모델에는 **의도 노트**(「대장간 = place_concept(query:"대장간"), 야외/실내 다시 묻지 말 것」 등)와 **선택 영역 노트**가 오케스트레이션 메시지로 간다. 「도구 규칙」 가이드 17줄과 카테고리 가이드는 **툴 설명 40곳으로 옮겼고** 메시지는 사용자 발화 + `[컨텍스트]` 사실만 싣는다. 삭제: `modifyIntent`(→`contextFooter.ts`)·`intentClarify`·`plannerSkip`·`regionIntentRouter`·`INTENT_KEYWORDS` 문장 스캔·볼륨 정규식/강제 계획·`detectConstructionIntent`. 근거는 2026-09-03 감사(52문장 매트릭스·브라우저 17회): 가이드(기계 텍스트)를 분류기가 사용자 말로 읽어 chat 되묻기 22/52 오탐, 플래너 protocol-lock 오발, 「이 마을에 상인 하나 추가해줘」 93초·맵 3장 폭주. 설계 노트 `docs/superpowers/specs/2026-09-03-llm-intent-routing-design.md`, 진단 스펙 `test/e2e/_intent-router-cases.spec.ts`(CASES/AGENT_MODE/CASES_OUT). 아래 「도구 규칙 공유」「영역 라우터」「되묻기 정규식」「볼륨 계약 코드 강제」 서술은 이 날짜 이전 상태다.
+- **의도 라우팅은 모델이 한 번 선언한다 (2026-09-03, 키워드 분류기 7종 삭제):** 턴 시작에 `intentDeclarationClient.createLlmIntentDeclarer` 가 lite 모델·`json_object` 로 사용자 원문을 읽어 `{mode, space, facility, targetMapId, useSelection, clarify, needsPlan, resetsContext, tools}` 를 선언하고(`src/ai/intentDeclaration.ts`, 1.7~2초), 세션은 그 선언만 소비한다 — 되묻기(chat 에서만, 모델이 낸 질문 그대로), 플래너 스킵(selection·question·single-step), 플래너 direct 존중, 볼륨 막대(플래너가 `new_plan.volume` 으로 선언한 것만), 하이브리드 툴 노출(코어·조회 제어면 + 선언/계획/자연어 후보, 검색 승격, 실패 시 전체 카탈로그 fallback), 수정 대상 맵, 완성도 린트. 본문 모델에는 **의도 노트**(「대장간 = place_concept(query:"대장간"), 야외/실내 다시 묻지 말 것」 등)와 **선택 영역 노트**가 오케스트레이션 메시지로 간다. 「도구 규칙」 가이드 17줄과 카테고리 가이드는 **툴 설명 40곳으로 옮겼고** 메시지는 사용자 발화 + `[컨텍스트]` 사실만 싣는다. 삭제: `modifyIntent`(→`contextFooter.ts`)·`intentClarify`·`plannerSkip`·`regionIntentRouter`·`INTENT_KEYWORDS` 문장 스캔·볼륨 정규식/강제 계획·`detectConstructionIntent`. 근거는 2026-09-03 감사(52문장 매트릭스·브라우저 17회): 가이드(기계 텍스트)를 분류기가 사용자 말로 읽어 chat 되묻기 22/52 오탐, 플래너 protocol-lock 오발, 「이 마을에 상인 하나 추가해줘」 93초·맵 3장 폭주. 설계 노트 `docs/superpowers/specs/2026-09-03-llm-intent-routing-design.md`, 진단 스펙 `test/e2e/_intent-router-cases.spec.ts`(CASES/AGENT_MODE/CASES_OUT). 아래 「도구 규칙 공유」「영역 라우터」「되묻기 정규식」「볼륨 계약 코드 강제」 서술은 이 날짜 이전 상태다.
 - **시설은 모델이 설계하고 코드가 시공한다 — 「AI 는 소비만」 철회 (2026-09-03):** 「여관 지어줘」가 매번 픽셀 단위로 같은 맵을 냈다. `place_concept` 경로(도면 `layoutConceptFacility` → 구성 `composeConceptRoom` → 카탈로그 그림)에 난수가 한 곳도 없었고 `seed` 는 테마 가구 경로에서만 소비돼 죽어 있었으며, 모델은 시설명 외에 넣을 인자가 없었다. 이제 DB 「맵 → 타일셋 → 개념 꾸러미」의 시설은 **템플릿(출발점)**이다: 모델이 `get_concept_facility(query)` 로 템플릿(plan 모양)·물건 어휘·여관 `variants[]`(시골 단층 / 2층 / double-row)를 읽고, 수식어가 없어도 규모·layout 을 정한 `plan` 을 `place_concept({query, mapId, plan})` 에 넘긴다. 좌표·벽·문·이벤트는 여전히 코드 몫이다(모델이 bbox 를 찍던 옛 경로의 실패를 되풀이하지 않기 위해). 경계는 `src/editor/conceptPlan.ts` `parseConceptPlan` 이 한 번만 검증한다 — 어휘에 없는 objectId·모르는 칩·없는 장소 참조·범위 밖 count/level 은 `invalid-plan` 으로 거절하고 허용값을 문장에 담는다. 템플릿의 `required` 물건을 설계에서 빼면 **경고**(거부 아님). 템플릿에 없는 시설(「목욕탕」)도 plan 이 있으면 짓는다. `plan` 생략 시 종전과 같이 템플릿 그대로. `composeConceptRoom` 은 `seed` 를 받아 방마다(`deterministicRng(seed, "concept", roomId)`) 첫 가구의 좌우, 동률 후보, 구석·러그 자리를 흔든다 — 자리 채움을 깨지 않도록 「가장자리 시작」 규약은 유지하고 서↔동만 뒤집는다. `seed` 생략 시 mapId 해시에서 파생(같은 mapId 는 같은 배치). 의도 선언의 시설 `tools` 는 `[get_concept_facility, place_concept]`. 프롬프트 절 「개념 꾸러미 — 시설 템플릿」과 툴 설명이 같은 순서를 말한다. Tests: `test/placeConceptTool.test.ts` 「place_concept plan」 9건(3객실+주방 설계, 필수 누락 경고, invalid-plan 3종, 템플릿 없는 시설, 2층 설계, seed 변주·재현, 전 seed 자리 채움).
 - **시설 실내는 place_concept 가 개념 꾸러미를 읽는다 (2026-09-02):** 사용자가 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 고친 시설→장소→물건→칩 나무가 정본이다. `place_concept({query, mapId})` 가 그 나무를 풀어 실내 맵을 시공하고, 테마 하드코딩 가구는 끈다. 빈 배열(`[]`)은 재시드하지 않는다. 「여관 지어줘」는 실내 시설로 라우팅하고 야외/실내 되묻기를 하지 않는다(「여관 주인」은 직업이라 빼다). 40툴 상한에는 핀하지 않고, 설명 낱말 승격·`find_tools` 로 손에 넣는다. **시공은 도면·구성·칩 집행까지 한다(2026-09-02 개편):** 장소 `role/size/count` 로 홀(정문)→복도→방 3단 도면(`layoutConceptFacility`), 슬롯 구성(`interiorConceptCompose.ts` — 벽걸이는 벽면, 계단은 복도 끝, 문 앞 통로 비움, 못 놓은 물건은 `concept: … 자리 없음` 경고), 칩 이벤트(`interiorConceptEvents.ts` — sleep=`inn`, transfer=계단 연결 지점, loot=1회 노획, event=조사). 툴 결과 `data.rooms`·`data.connections`(미연결 계단은 대상이 같은 맵 정문) 을 싣는다. 실제 조수 턴 증거 스펙: `test/e2e/_place-concept-inn-evidence.spec.ts`(진단), 보고서 `scripts/gen-place-concept-report.mts`. **두 턴 사이 DB 수정은 세션이 다시 읽는다 (2026-09-02 실측 수정):** 세션 draft 는 마지막 적용 시점 사본이라 사용자가 임시 탭에서 여관→주막으로 고친 뒤 「주막을 새 맵으로 지어줘」가 「찾지 못했다」로 실패했다. 패널 `sendText` 가 새 턴 직전 승인 대기 제안이 없으면 `AssistantSession.syncBaselineFromStoreIfClean(store.getCurrent())` 로 기준을 맞추고 시스템 프롬프트를 재조립한다(`rebaseProject` 는 이제 `turnProposals` 도 비운다). 실측 함정: 「주막 만들어줘」는 여관 맵이 이미 있으면 모델이 기존 맵 단장(`furnish_interior_space`)으로 읽는다 — 새 맵이면 문장에 「새 맵으로」. 영역 라우터(`regionIntentRouter`)는 여관 같은 실내 시설 낱말이 있으면 structure 가이드를 떼지만, 야외 자리 단서(공터·부지·마당·들판·야외)가 함께 오면 남긴다(「이 공터에 여관을 짓고…」는 야외 건물 + 실내). WorkPlan `complete_work_item` 이 직전 `place_concept` 성공을 「기록 없음」으로 거부하던 false negative 는 고쳤다(2026-09-03): 원인은 라운드 끝 successTools 자동 완료가 성공 툴 집합을 비운 뒤 모델이 같은 항목을 명시 완료한 것 — 이미 done/skipped 인 항목은 `completeWorkItemById` 가 `alreadyDone` 으로 idempotent 하게 받고 「다시 시공하지 마세요」라고 답한다(`test/workPlan.test.ts`). 거부 → 재시공으로 같은 맵을 두 번 짓던 실측이 `reports/place-concept-inn/e2e/receipt.json` 에 있다. Tests: `test/placeConceptTool.test.ts`, `test/placeConceptAssistant.test.ts`(스텁 LLM 첫 라운드 노출·호출), `test/placeConceptRender.test.ts`, `test/intentClarify.test.ts`. **시설 아홉 종 (2026-09-02 다양화):** 실내 칩셋 초안은 여관·민가·상점·술집·서재·대장간·교회·창고·길드(`CONCEPT_FACILITY_TEMPLATES`)다. 툴 설명에 그 시설명과 별칭(주막·도서관·성당)을 낱말로 박아 「상점 지어줘」「대장간 만들어줘」가 승격(matchScore ≥ 20)된다 — 설명의 낱말을 지우면 승격이 죽는다(`test/conceptFacilityTemplates.test.ts` 가 모든 초안 라벨로 잠근다). 시스템 프롬프트 개념 꾸러미 절은 **두 단계**다(2026-09-03): 초안 그대로(칩셋에 `scratchConceptBundles` 가 없음)면 시설명 한 줄(`query=시설명`), 사용자가 고친 나무(배열 있음)면 시설마다 한 줄(`query="…"`, 장소 `[역할·크기 ×개수·바닥]`, 물건 라벨 + 표식 `*필수 ⌂수면 $노획 ↔맵 연결`, 벽 재질은 기본값이 아닐 때만, 9시설 ≈ 1,500자). 빈 프로젝트 프롬프트는 20,000자 예산 중 약 19,250자를 이미 써서 초안에도 시설별 줄을 싣자 뒤의 「게임 스타일 문서(발췌)」가 밀려났다(`test/worldAiExclusion.test.ts`) — 프롬프트 절을 늘릴 때 이 테스트가 예산 카나리아다. 찾지 못한 시설명은 오류 문구에 지금 부를 수 있는 시설 목록을 싣는다. **층(2026-09-03):** 장소 `level`(1~3) 이 둘 이상이면 `place_concept` 이 층마다 맵(`<mapId>_2f`, 「<시설명> 2층」)을 짓고 코드가 잇는다 — 아래층 계단(transfer 칩) → 위층 문 자리 북쪽 착지, 위층 정문 이벤트 → 「계단(아래)」 → 아래층 계단 앞. 층마다 밴드 폭을 가장 넓은 층에 맞춘다(`minBandWidth`). 결과 `data.floors`. 아래층에 계단이 없으면 정문 앞으로 내려오고 경고. 초안 아홉 종은 한 층이다(`test/conceptFacilityLevels.test.ts`). **볼륨 계약 폭주의 근인(2026-09-03 수정):** 패널이 매 턴 붙이는 「도구 규칙」 가이드의 마을·상점·NPC 낱말이 의도 스캔에 섞여 모든 공간 요청이 마을 막대를 받았다 — `stripContextFooter` 가 가이드 블록(「도구 규칙:」/「(영역 작업: …)」 첫 줄부터)을 뗀다. `buildVolumeWorkPlan` 은 막대가 요구하는 축만 항목으로 둔다. 실측 「여관 지어줘」 66초·툴 19회 → 10초·툴 3회(`test/e2e/_concept-inn-audit.spec.ts`, 감사 로그 전체 덤프 진단 스펙). **의도 라우터·되묻기에는 여관 외 시설명을 넣지 않았다** — 「대장간 지어줘」는 야외 건물일 수 있어 기존대로 실내/야외를 되묻고, 실내로 답하면 place_concept 이 짓는다(코퍼스 `blacksmith-full` 은 structure+npc-shop 을 기대한다).
 
@@ -1119,6 +1346,8 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **들어가서 걷는 집은 `author_house(interior:"linked-interior")` 한 번이 정답 (2026-09-04):** 외장만 짓고 `create_transfer_pair`/`start_interior_room_session` 으로 잇는 3단계는 가짜 출입구(같은 맵 teleport)와 점유된 문 칸에서 깨진다. `linked-interior` 는 실내맵+문/출구 양방향 전이를 원자적으로 만든다(`houseKitDomain` → `createHouseInteriorMap`). `interior` 생략도 이 모드가 기본. `space:"both"`·야외 집·영역 위 집은 이 경로, 외장 없는 독립 실내만 세션, 개념 시설은 `place_concept`. Tests: `test/intentDeclaration.test.ts`, `test/proposalCompleteness.test.ts`, `test/interiorRoomPipeline.test.ts`, `test/constructionContracts.test.ts`.
 - **다층 linked-interior 의 상층에는 정문 이벤트가 없다 (2026-09-13 실측 수정):** 실내 파이프라인은 맵마다 `ev_entrance_<id>` 를 두는데, 상층 플랜엔 `returnMapId/X/Y` 가 없어 이 이벤트가 **자기 맵의 남벽 칸**을 가리키는 미연결 전이가 됐다 — `transfer-impassable` 로 시공이 통째로 거부됐다. 작사 계단(`authoredDescent`)이 없는 상층에서는 `ev_entrance_` 를 지우고, 상층→하층 하강은 `placeStairTransfer` 의 `ev_exit_f*` 가 소유한다. **하강 착지는 계단 칸이 아니라 그 옆 바닥이다**(`stairFootCell`): 상승 계단 칸에 내리면 playerTouch 위에 선 상태가 된다. 날개별 `stories` 가 선언된 계단식 집의 실내 층수는 가장 높은 날개 층수를 따른다 — 높이 휴리스틱이 선언을 덮어쓰지 않는다(`houseInteriorStories`). 회귀: `test/houseKit.test.ts` 「계단식 2층 linked-interior…」「날개 선언 층수…」.
 - **집 문은 기본 개방 — 걸어 들어가면 열린다 (2026-09-05 갱신):** 실외 집 시공(`author_house`/`build_village`/`build_house_kit`)의 집 문은 문 스프라이트(벽 칸, below 장식) + 문 앞 통행 칸의 투명 발판(`<doorEventId>_step`, playerTouch+below) 두 이벤트다. 문 칸은 벽이라 밟히지 않으므로 playerTouch 발판은 문 앞에만 둔다 — 시작집 문(STARTER_HOUSE_DOOR_APPROACH)과 같은 배치. 발판은 `callMapEvent(doorEventId)`로 문 본체의 활성 페이지를 실행한다. 이전에는 발판이 `transfer`만 가져 문 본체의 열림 SE·프레임·대기를 전부 건너뛰었다. 본체 페이지를 복사하지 않아 이후 사용자가 바꾼 소리·조건·명령도 그대로 따른다. 기존 문을 고칠 때는 발판의 단일 transfer를 문 ID를 가리키는 callMapEvent로 바꾸고 문 그림·페이지·실내·출구는 보존한다. **귀환 착지가 발판과 같아도 즉시 재전이하지 않는다:** `transferTo`는 도착 후 auto만 실행하고 playerTouch는 걸음 완료 때 평가한다. 벽 위 문 그림의 통행 경고와 착지 발판 경고만으로 런타임 불량을 단정하지 말 것. Tests: `test/houseDoorOpen.test.ts`(실제 생성→호출→열림 순서·원본 편집 보존·귀환 시 접촉 미실행).
+
+- **죽은 callMapEvent 경고 — 조용한 무시 종결 (2026-09-20):** 웹 워크스페이스 프로젝트에서 AI 마을 시공으로 만든 집 문 본체 12개의 페이지 명령이 전부 비어 있고, 전이 대상 실내 맵도 사라진 상태가 발견됐다. 런타임은 이런 호출을 조용히 건너뛰므로 발판을 밟아도 아무 일 없이 지나갔다. 경고 노출은 네 곳: (1) 호출부 명령 행 — 대상 페이지가 비어 있으면 `callMapEvent.target-inert`, 대상의 transfer 목적 맵이 사라졌으면 `callMapEvent.transfer-target-missing` 경고(`validateEventDraft`). (2) 대상 이벤트 — 이 이벤트를 부르는 caller가 있는데 페이지 명령이 비어 있으면 `page.empty`가 `callMapEvent.target-page-empty` 경고로 격상(`validateEventDraft`). (3) 마커 툴팁과 좌측 이벤트 목록 호버 — 각 이벤트의 경고를 `⚠` 줄로 가져와 검사 없이도 보이게 한다(`collectCallTargetWarnings`). 판정 정본은 `src/editor/eventCallTargetStatus.ts`의 `callMapEventTargetStatus`. Tests: `test/callMapEventWarnings.test.ts`.
 - **출입구·타일은 벽에 바짝 붙인다 (2026-08-31):** 모델이 벽·맵 끝에서 1칸 안쪽에 좌표를 잡는 버릇이 있다. `create_transfer_pair` 는 `snapFlushToWall`(`src/editor/tools/wallFlush.ts`)로 그 1칸을 당긴다 — 맵 가장자리(x=0 / width-1)와 벽 바로 앞 통행 칸. playerTouch+below 는 벽 칸 위에서 발동하지 않으므로(`openwiki/runtime-sessions.md`) 벽 위 요청도 바로 앞 통행 칸으로 옮긴다. 문 자리 자체가 이벤트에 점유됐으면(여관 문 이벤트 등) 1칸 안쪽을 gate로 쓰지 않는다 — 스냅이 밀려난 자리를 radius=0에서 제외하고 옆 flush 칸을 먼저 찾으며, 착지가 점유된 후보도 버린다(2026-09-04). `fill_region` / `paint_tiles` rect 는 맵 **안 벽** 과의 1칸 틈만 메운다(맵 가장자리까지 늘리면 원형 호수가 남쪽으로 샌다). 프롬프트 정책 「벽 밀착」과 도구 description 이 같은 말을 한다. Tests: `test/wallFlush.test.ts`, `test/transferGateOccupied.test.ts`, `test/agentUxPolicyPrompt.test.ts`.
 
 - **구조물 스탬프는 사람 팔레트 전용 (2026-08-31):** 구조물 스탬프는 LLM 비노출이고 사람 팔레트에서만 쓴다. 프롬프트 수칙 11과 「구조물 스탬프는 사람 팔레트 전용」 절이 같은 금지를 말한다. 집=`author_house`, 마을=`author_village`, 벽=`build_wall`, 지형=`fill_region`, 소품=`place_props`. 사람 팔레트 선반·`applyPaletteStamp` 경로는 그대로다. Tests: `test/structureKitTools.test.ts` 「제거된 구조물 스탬프 호출은 미등록으로 거부된다」.
@@ -1147,9 +1376,9 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 
 - **Authored-data capability parity (2026-08-26):** remaining Database/resource/map mutations that the editor already persisted but the assistant could not name now have typed facades: `upsert_life_skill`, `upsert_life_system` (daily weather + farm animal species), `upsert_battle_animation`, `upsert_resource` / `delete_resource`, `register_structure_kit`, and `shift_map`. `get_database_records` accepts `include:"full"` and lists `lifeSkills` / `farmAnimalSpecies` / `crops`. Intent keywords `생활`/`레시피`/`가축`/`날씨` activate `database`; `포획`/`몬스터 시스템` activate `system`; `사냥터` activates `map`. Pins keep the new write tools inside the 40-tool cap. `delete_resource` is destructive. Isolated event-command assist and tileset vision remain specialized generators; authored mutations they need now exist on the shared registry. Contract: `test/aiEditorCapabilityParity.test.ts`.
 
-- **Pi-path tool escalation (2026-09-13):** the Pi runtime now mounts tools mid-run instead of front-loading the whole registry. `runPiAgent` keeps `state.tools` as a live array (the core loop rebuilds each turn's request from it, so in-place `push` is next turn's declaration — `setTools` array replacement never reaches a running context). Two escalation paths share one resolver, `resolvePiToolShape` (`src/ai/piAgent/toolAdapter.ts`), which honors the run's hard boundaries (`readOnly` → read-mode only; `toolNames` → the role's list): (1) a successful `find_tools` result's `data.matches[].name` are harvested and pushed — declared from the next turn; (2) `resolveFallbackTool` rescues a direct call to an unexposed-but-registered name and also declares it. Declaration growth is capped at `MAX_ESCALATED_TOOLS = 16` per run (the cap bounds prompt size only — a rescued tool still executes undeclared). `antigravityToolEnumPayload` re-walks the live tool list per request so late-escalated integer-enum tools still get the numeric-enum wire workaround, while capture-time validation still fails fast on a malformed initial set. Read-only escalation is impossible: a readOnly run's `find_tools` may *find* write tools but the resolver refuses to make their shapes. Contracts: `test/piAgentToolEscalation.bun.test.ts` (real Agent loop with a scripted `streamFn` — harvest declares next turn, fallback rescues, readOnly boundary holds on both paths), `test/piAgentToolAdapter.test.ts` (resolver/harvest units), `test/aiChatPanelComposerMode.test.ts` (intent→`toolDomains` seeding).
+- **Pi-path tool escalation (2026-09-13):** the Pi runtime now mounts tools mid-run instead of front-loading the whole registry. `runPiAgent` keeps `state.tools` as a live array (the core loop rebuilds each turn's request from it, so in-place `push` is next turn's declaration — `setTools` array replacement never reaches a running context). Two escalation paths share one resolver, `resolvePiToolShape` (`src/ai/piAgent/toolAdapter.ts`), which honors the run's hard boundaries (`readOnly` → read-mode only; `toolNames` → the role's list): (1) a successful `find_tools` result's `data.matches[].name` are harvested and pushed — declared from the next turn; (2) `resolveFallbackTool` rescues a direct call to an unexposed-but-registered name and also declares it. The original 16-tool declaration cap was removed on 2026-09-19; see Hybrid native tool exposure for initial candidates and empty-search recovery. `antigravityToolEnumPayload` re-walks the live tool list per request so late-escalated integer-enum tools still get the numeric-enum wire workaround, while capture-time validation still fails fast on a malformed initial set. Read-only escalation is impossible: a readOnly run's `find_tools` may *find* write tools but the resolver refuses to make their shapes. Contracts: `test/piAgentToolEscalation.bun.test.ts` (real Agent loop with a scripted `streamFn` — harvest declares next turn, fallback rescues, readOnly boundary holds on both paths), `test/piAgentToolAdapter.test.ts` (resolver/harvest units), `test/aiChatPanelComposerMode.test.ts` (intent→`toolDomains` seeding).
 
-- **Editor-wide tool discovery and authored-data facades (2026-08-25):** the normal per-round exposure remains bounded by the 40-tool domain selector. `find_tools` is a read-only search tool that is *not* a `CORE_TOOL_NAMES` pin: `AssistantSession` attaches its schema outside the 40-tool window so interior/map pins and fair domain quotas stay intact. It searches the complete active registry by name/description/domain and returns up to six strict schemas. The session may remember at most 16 discovered tools for the current user turn and recomputes schemas on every LLM round; plan-required, quest-persist, and `set_build_spec` schemas are also reserved outside the 40-tool window. Audit rows `tools:escalated ...` and `tools:exposed ...` make the escalation observable. Discovery resets at the next user message and never bypasses registry mode, schema validation, approval classification, or deprecated-tool filtering. Canonical editor-wide mutations include `duplicate_map`, `manage_map_tree`, expanded `set_map_properties`, `duplicate_database_record`, destructive `delete_database_record`, `upsert_database_utility` for elements/terrains/battle commands, and `set_project_settings` for project identity, terms, resolution, system resources, initial party, and battle defaults. Keep broad editor concepts behind typed facades rather than adding one tool per form control. Contracts: `test/aiEditorFullToolCoverage.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, and `test/aiEditorFullToolSafety.test.ts`.
+- **Editor-wide tool discovery and authored-data facades (2026-08-25; hybrid exposure updated 2026-09-19):** the normal `AssistantSession` request starts with a small control plane plus intent/plan/read-contract and natural-language candidates. `find_tools` searches the complete active registry by name/description/domain and returns up to six strict schemas; the session remembers discovered names for the current user turn and recomputes schemas on every LLM round. A successful empty search or neutral intent fallback restores the full native catalog on the next round. Discovery never bypasses registry mode, schema validation, approval classification, or deprecated-tool filtering. Canonical editor-wide mutations include `duplicate_map`, `manage_map_tree`, expanded `set_map_properties`, `duplicate_database_record`, destructive `delete_database_record`, `upsert_database_utility` for elements/terrains/battle commands, and `set_project_settings` for project identity, terms, resolution, system resources, initial party, and battle defaults. Keep broad editor concepts behind typed facades rather than adding one tool per form control. Contracts: `test/aiToolExposureHybrid.test.ts` and the existing editor reach/safety suites.
 
 - **Canvas AI workbench (2026-08-25):** the expert canvas toolbar now exposes four real quick actions through `src/editor/panels/canvasAiWorkbench.ts`: `만들기` arms the existing deterministic build palette and selection tool, `다듬기` sends the current tile selection through the bounded `openRegionTaskModal` preview/apply flow with a constrained polish prompt, `검사` opens `canvasInspectionPanel.ts` over deterministic `projectLint` results with camera focus and bounded AI-repair handoff, and `AI 요청` opens the same region-task composer for the current selection or whole map. The toolbar wiring lives in `editorZoomToolbar.ts`; browser proof is `test/e2e/canvas-ai-workbench.spec.ts`.
 
@@ -1176,7 +1405,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - **적대적 인자 스윕은 상시 게이트다.** `test/toolHostileArgs.test.ts` 가 전 쓰기 툴(100+)에 `empty`/`nulls`/`wrongTypes`/`deepHoles` 4종 인자를 먹이고, **거부는 허용하되 크래시·`후처리 실패`·`Cannot read properties` 는 금지**한다. 계약은 성공이 아니라 읽을 수 있는 실패다 — 모델이 고칠 수 없는 메시지는 그 자체로 버그다.
 
 - **Soft-confirm (목록 확인) replaces hard unapproved-vocabulary blocks for construction.** `resolveVocabForBuild` in `src/project/tileVocabulary.ts` returns `approved | soft | missing`. Existing groups/tiles soft-allow and paint the map with `data.vocabSoftConfirm`; only missing ids hard-fail. Soft construction proposals set `requiresApproval` and show **cropped** map before/after thumbs (change bbox) plus 상세 재료·배치를 확인할 수 있는 UI; accept (`그대로 적용`) runs `applyVocabSoftConfirmApprovals` so `origin:user` is marked only on explicit accept (autoApprove still blocked). Card-level material warnings skip the second `confirmRuleApproval` modal. `place_props` identical args are deduped once per turn (`writeDedupeKey`). Login modal z-index stays below the proposal modal; proposal open forces guest identity if needed. Region AI (`runRegionTask`) shows no chat proposal card, but its default apply gate is `"approval"` (`runRegionTask.ts:831`) — the change lands only through the `pendingRegionApply` review modal (approve/discard); it auto-applies only via the legacy `gate:"immediate"` path (:850). Region runs also cap the session at `REGION_TASK_MAX_TOOL_CALLS = 24` tool calls (`runRegionTask.ts:50,:222`), and still mark soft vocab on apply and seed harness groups.
-- AI activity/conversation persistence is not best-effort when Supabase is configured. Missing dedicated tables must surface `SupabaseMigrationRequiredError`; apply and verify schema with `npm run db:migrate` / `npm run db:verify-ai`. Historical `ai_analysis_runs` fallback rows remain readable, but new activity logs only write `ai_activity_logs`, and remote log diagnostics are always scoped to the configured project id.
+- AI activity/conversation persistence is not best-effort when LegacyDb is configured. Missing dedicated tables must surface `LegacyDbMigrationRequiredError`; apply and verify schema with `npm run db:migrate` / `npm run db:verify-ai`. Historical `ai_analysis_runs` fallback rows remain readable, but new activity logs only write `ai_activity_logs`, and remote log diagnostics are always scoped to the configured project id.
 - Tile v3 includes `fill_region` in `src/editor/tools/v3/constructionTools.ts` for water/floor/ground surface fills with autotile or animated-terrain groups (soft-confirm when not yet origin:user). Use `fill_region` for lakes, rivers, floors, and terrain areas; keep `place_props` for scattered objects such as trees, rocks, and flowers. `build_wall` requires a supported expandable pattern with defined parts; fixed fence props without that pattern use `place_props`, not `build_wall` or `fill_region`. `fill_region` and `tile_erase` skip only protected start/transfer-destination cells that would become impassable and return a warning for the skipped coordinates instead of rejecting the whole edit.
 - **Erase restoration ground (2026-09-07):** `tile_erase(kind:"all")` ranks only observed compatible lower ground, outside the rectangle first and inside second (row-major ties). Tileset role/group semantics, authored tile-role and layer overrides, metadata passage, and runtime passability must agree; floor/terrain/ground/path can qualify, not walls, roofs, props, water, upper homes, or blocked tiles. An explicit authored ground role can supersede inherited group vocabulary, but cannot bypass runtime layer/passage or completed-house protection. No candidate means `erase-ground-unresolved` before either layer changes, not a grass fallback or a fabricated atlas tile. Inspect the selected tileset and explicitly paint a valid ground surface before retrying. `layer:"upper"` needs no ground and reports `groundTile:null`; start/transfer support and transaction ownership guards still apply. `kind:"market"` retains its separate selective demolition contract. Regressions: `test/tileEraseGround.test.ts` (fresh 12x10 border, captured wall distribution, real crate placement on town222/240 and interior72, authored rules, atomic failure, ownership), plus `test/constructionToolsV3.test.ts` (upper-support passage protection and market behavior).
 - Live MCP bridge for external agents: `src/editor/aiAssistantBridge.ts` registers from `aiChatPanel` and long-polls `http://127.0.0.1:17831` (see `npm run mcp:assistant` / `scripts/oprn-assistant-mcp.mjs`). Same chat session as the UI; tools are `assistant_send` / `status` / `audit` / `harness` / `abort`. Dev auto-connects; `?aiBridge=0` disables. `agy mcp add oprn-assistant node scripts/oprn-assistant-mcp.mjs` registers the bridge in AGY. AGY 1.1.x uses newline-delimited stdio JSON-RPC while older repo clients use `Content-Length`; `scripts/lib/mcpStdioFraming.mjs` detects the first inbound frame and replies in the same format. Keep both paths covered by `test/mcpStdioFraming.node.test.mjs`; a mere `agy mcp list` is not a health check—verify `assistant_ping` and `assistant_status` against an open editor.
@@ -1217,7 +1446,7 @@ Soft-confirm vocabulary, region task routing, AI visual polish, dock modes, tool
 - Region AI (`src/editor/regionTask/runRegionTask.ts`) may still seed build-palette harness groups; soft-confirm means existing tree/prop group ids work without prior origin:user. Prompt lists available group ids. `place_npc`/`make_villager` default graphic to villager when omitted. Each run builds a `RegionTaskLogExport` (audit + toolCalls + uiEvents + harness) on `result.log`, publishes `window.__rpgzzuRegionTaskLog` / `__rpgzzuLastRegionTaskLog()`, and the region modal header has a small **로그** button (`region-task-copy-log`) next to ?뚯쁺???묒뾽??that copies the JSON to the clipboard after a run.
 - AI tool argument normalization is centralized in `src/editor/tools/jsonSchema.ts` before schema validation. It accepts common coordinate shape drift by flattening `{rect|region|area|bounds|at|pos|point:{x,y,w,h}}` into flat `x/y/w/h` tools, wrapping flat `x/y[/w/h]` into the single coordinate object required by v3 tools, and mapping `width/height` aliases to `w/h` (and back) based only on the declared schema.
 - **Reachability coordinate boundary (2026-09-07):** `check_reachability` in `queryTools.ts` applies the existing `validateArgs(COORD_SCHEMA, point)` to `from` and every `targets[i]` before BFS. The shared runner validates only outer object/array types; missing, fractional, nonfinite, or structurally invalid coordinate fields must return `ok:false` / `invalid-args` with no reachability data, not `ok:true, reachable:false`. Existing schema normalization (including numeric strings and coordinate wrappers), extra point metadata, and empty target arrays remain supported. Valid queries still return real reachable/unreachable verdicts with adjacent-or-on semantics. `test/reachabilityArguments.test.ts` covers recorded wire114, nested object/array countercases, real `runTool` -> `ToolVerificationEvidence` retry history, and genuine negative evidence surviving another passing query. This is a local query-boundary fix, not recursive validation for other tools (including `run_lint` specs), verification ownership/canonicalization repair, or retroactive reclassification of an old session ledger.
-- W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromSupabase`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
+- W5 team workflow UI shows current editor identity in the topbar, can reopen the mock login modal, and reads recent `project_commits` through `listProjectCommitsFromLegacyDb`. The mock login only updates the local editor owner label and last-login-method localStorage marker; real Auth/RLS session handling belongs to the Phase 8 switchover.
 - For quick navigation, grep within `src/editor` first, then follow the feature-specific file groups above: map, event, database, resource, tile palette, save/import/export.
 
 
@@ -1589,3 +1818,117 @@ Tests: `test/npcMovementInference.test.ts` (8건).
 `npc-movement` 시나리오 하네스 실행과 probe 직접 실행은 같은 `verify-shots/runtime-qa/npc-movement/`를
 쓰면 서로 덮어쓴다(실측). probe는 `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe`로 분리 실행한다.
 하네스 쪽은 플레이어 고정 + NPC 배치 차이 샷 2장, probe 쪽은 스프라이트 좌표 직접 판정(results.json) + before/after PNG.
+
+## Full RPG first-turn foundation (2026-09-19)
+
+A request such as “중세 게임 RPG를 만들어줘” is a cross-domain authoring request.
+The intent declaration now opens the world, database, system, map and event domains
+even when the model's short `tools` list omits one of them. The adventure preflight
+catalog includes `read_project_wiki`, `set_world_canon`, `upsert_character_profile`,
+`upsert_actor`, `list_resources`, `upsert_equipment`, and `set_project_settings`.
+The expected order is world canon → named character profiles → protagonist actor
+appearance/loadout → database → maps/events → playable verification. `upsert_actor`
+must set real `faceResourceId`, `characterResourceId`/`characterIndex`, battle graphic,
+and `initialEquipment`; creating a weapon record alone does not equip it.
+
+`set_world_canon` stores the concise world backbone (premise, era, tone, technology
+ceiling, absences, and power/gods/death/money laws) as a partial merge in
+`Project.worldCanon`. Full adventure declarations may opt into `world`, `characters`,
+and `appearance`; the completion report then calls out missing lore, profiles, or
+starting-party appearance instead of silently accepting map-only output.
+
+## Party, actor appearance, and event-linked inventory tools (2026-09-19)
+
+`set_party({scope:"start",actorIds})` is the narrow party facade. It validates every
+actor id, rejects duplicates, writes both the authoritative `system.startActorIds`
+and the current session party, and permits an explicit empty list. `scope:"session"`
+only changes `session.partyActorIds`; it does not rewrite a future New Game. The
+older `set_project_settings({startActorIds})` and `set_session_start({partyActorIds})`
+remain compatible routes for combined settings/test setup. Runtime join/leave still
+uses an event `changeParty` command; `add_companion` is only a visual follower.
+
+`upsert_actor` now exposes the actor's shared `appearanceId` and charset
+`characterIndex` (0–7) in addition to face, charset, and battle resource ids. A
+shared appearance id must exist in the character appearance catalog or the write is
+rejected; normalization preserves the selected slot. `delete_character_profile`
+removes only `Project.characters[characterId]` and never deletes the actor or event.
+
+`adventureCompletionProblems` treats a referenced shared appearance's face and
+charset as satisfying the start-party appearance contract; a direct face/charset
+pair is not required when the shared record supplies both.
+
+## Opening, game-over, and audio discovery tools (2026-09-19)
+
+The opening route is live through `get_opening`, `set_opening`, `edit_opening`,
+`list_opening_media`, and `generate_opening_image`. `recommend_bgm` and
+`get_audio_resource` are registered system tools, so the assistant can search
+music by scene or mood and then inspect the full description before assigning a
+`musicResourceId`. The audio tool family was previously implemented but missing
+from the central registry; registration is required for model tool calls.
+
+Game-over now has an AI route as well: `get_game_over` reads `system.gameOver`,
+`set_game_over` writes its title/message/button labels and background resource,
+and `generate_game_over_image` creates a clean 16:9 backdrop. Generation returns
+a resource id; the assistant must connect it with `set_game_over` so the image is
+actually used. Background validation shares the cinematic `still` catalog and
+accepts existing game-over, backdrop, title, picture, and uploaded resources.
+
+Items and event effects already have typed routes. `set_session_start` seeds the
+new-game gold/inventory state, while `upsert_item` and
+`upsert_equipment` author the records; `upsert_event` commands use canonical
+`changeItem`/`changeGold`/`changeParty`/`setSwitch`/`choices` branches; `place_chest`
+and `place_storage_chest` package one-time loot and inventory changes; `make_villager`
+and `set_shop_stock` author shop interactions; `define_quest`/`verify_quest` connect
+items, switches, maps, and rewards. New RPG authoring must read the real item,
+actor, and event ids before writing references, then verify the interaction with a
+walkthrough rather than treating a successful tool call as runtime proof.
+
+## 범용 이미지 에셋 생성 (2026-09-19)
+
+`generate_image_asset`는 특정 화면에 묶이지 않은 이미지 저작 경로다. `kind`는
+`picture`(아이템·소품 아이콘), `title`(타이틀 아트), `backdrop`(맵·전투 배경),
+`monster`(몬스터 스프라이트) 중 하나이며, 이미지 안의 글자·로고·UI·워터마크는
+금지한다. `monster`에는 구체적 외형 `tags`가 필요하며 이름·태그·설명도 몬스터
+메타데이터로 함께 저장한다. 생성 결과는 자동으로 `upsert_resource`에 등록되고 반환된 `resourceId`를
+`upsert_item.iconResourceId`, `upsert_enemy.monsterResourceId`,
+`set_title_screen`, `set_game_over` 또는 해당 이벤트 그래픽 필드에 연결한다.
+오프닝과 게임오버의 전용 생성 툴은 각각의 화면 설정과 연결 검증을 유지하고,
+일반 에셋 생성은 여러 데이터베이스 레코드에서 재사용할 수 있는 리소스를 만든다.
+
+## Feature16 combat and climate authoring tools (2026-09-21)
+
+`upsert_skill` exposes formulas, crit, hit sequences, turn cooldowns and action profiles.
+`upsert_enemy` exposes expanded conditions and conditional drops. New nested inputs
+are validated before normalization: invalid formulas/condition kinds/array overflow
+are rejected atomically. Partial action updates preserve omitted values; top-level
+`clearActionSkill`, `clearActionFieldStatus`, `clearActionItemCost` explicitly clear.
+`set_map_properties` accepts climate or clearClimate. Drop item and condition state/
+switch references participate in load validation, deletion guards and switch rename.
+Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts`.
+## 마을 시공 후 완료 계약 (2026-09-21)
+
+`author_village`의 집 수는 기본 DB 설계서가 채울 수 있다. 고정 숲 없음 설계서에는
+`forestDensity`를 넣지 않는다. `resolveVillageContract`가 평문 단일 마을 요청의 수량과
+대상/bounds를 먼저 고정하고 facade와 같은 DB resolver를 쓴다.
+
+빌더 결과의 `village.residentEventIds`는 NPC 배치 전후 이벤트 ID 차이,
+`village.doorFronts`는 이번에 만든 집의 실제 문앞 좌표다. 계약 완료 검사는
+이 증거로 대사와 통행을 검사하며 ID 접두사나 전체 맵의 미감 점수에 의존하지 않는다.
+`residents[].lines`로 대사를 한 번에 넘기거나 같은 Agent가 `author_npc_cast`로 보충한다.
+무언 주민 요청과 주민 0명은 대사를 강제하지 않는다.
+
+`evaluate_village_look`는 미감 참고 도구로 남는다. 단일 마을 계약 경로에서는 그 점수를
+필수 완료 조건으로 쓰지 않는다. 옛 explicit/team 경로의 `inspectPiVillageCompletion`과
+혼동하지 않는다. 복합 작업까지 이 계약으로 전환한 것은 아니다.
+
+공개 평가 안내는 `find_tools`로 실제 수정 도구를 찾도록 한다. `plant_tree_clusters`,
+`revise_village_plan`, `run_village_pipeline`은 내부 호환용이며 Pi에서 노출·복구되지 않는다.
+재시공이 필요해도 사용자 범위와 DB 설계서를 유지한 `author_village`를 사용한다.
+평가를 통과하려고 고정 설정을 바꾸거나 전체 맵 재시공을 임의로 허가하지 않는다.
+
+
+## 타일 참고문서 선행 조회 (2026-09-21)
+
+[타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+빈 시작 맵 전체 시공에서 예전 좌표가 고립되면 `restoreExistingTargetStart`가 검증된 새
+시작점을 유지한다. 기존 콘텐츠 또는 bounds 요청은 이 예외가 아니다.

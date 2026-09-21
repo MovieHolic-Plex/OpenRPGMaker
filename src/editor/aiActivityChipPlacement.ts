@@ -1,4 +1,4 @@
-import { TILE_SIZE } from "@/assets/bundled";
+import { editorMapTileSize } from "@/editor/mapGeometry";
 
 export interface ChipPlacementRegion {
   readonly x: number;
@@ -52,10 +52,10 @@ export function placeAiActivityChip(input: {
 
   const { camera, chip, region, viewport } = input;
   const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
-  const regionLeft = Math.round((region.x * TILE_SIZE - camera.worldView.x) * zoom);
-  const regionTop = Math.round((region.y * TILE_SIZE - camera.worldView.y) * zoom);
-  const regionWidth = Math.max(1, Math.round(region.width * TILE_SIZE * zoom));
-  const regionHeight = Math.max(1, Math.round(region.height * TILE_SIZE * zoom));
+  const regionLeft = Math.round((region.x * editorMapTileSize() - camera.worldView.x) * zoom);
+  const regionTop = Math.round((region.y * editorMapTileSize() - camera.worldView.y) * zoom);
+  const regionWidth = Math.max(1, Math.round(region.width * editorMapTileSize() * zoom));
+  const regionHeight = Math.max(1, Math.round(region.height * editorMapTileSize() * zoom));
   const left = regionLeft + (regionWidth - chip.width) / 2;
 
   let mode: ChipPlacementMode = "above";

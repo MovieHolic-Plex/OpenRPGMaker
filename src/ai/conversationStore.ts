@@ -44,7 +44,7 @@ const TITLE_LIMIT = 40;
 // 세 겹이었다. (1) 툴콜 인자(맵 셀 배열·이벤트 본문)를 상한 없이 저장했고, (2) 같은 인자가 assistant
 // 항목(`toolCalls[].args` 문자열)과 tool 항목(`args` 객체)에 **두 번** 들어가며, (3) 대화 50건을
 // 매 툴콜마다 localStorage 한 키에 통째로 다시 썼다. (3) 은 IndexedDB 로 옮겨 없앴다(aiRecordDb).
-// (1)(2) 의 압축은 남긴다 — 원격 미러(Supabase)와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없고,
+// (1)(2) 의 압축은 남긴다 — 원격 미러(project storage)와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없고,
 // 대화 기록의 소비자는 복원 화면(툴 상세 <pre>)과 export 뿐이며 진단 원문은 활동 로그(12,000)가 든다.
 /** 툴콜 인자 한 건이 저장될 때의 상한(직렬화 글자 수). 넘으면 `{ _truncated, preview }` 로 바꾼다. */
 export const CONVERSATION_ARGS_MAX_CHARS = 2_000;
@@ -306,7 +306,7 @@ registerRemoteOutboxSender("ai-conversation", async (payload) => {
   const result = await projectRepository().ai.recordConversation({ conversationId: payload.conversationId, title: snapshot.title,
     model: snapshot.model, entries: snapshot.entries, savedAt: payload.savedAt, destinationProjectId: destination,
     ...(scope === null ? {} : { projectContextKey: scope }) });
-  if (result.kind === "not-configured") throw new Error("supabase not configured");
+  if (result.kind === "not-configured") throw new Error("project storage not configured");
 });
 
 // ── 공개 API (모두 비동기, 던지지 않는다) ──────────────────────────────────────────────
@@ -344,7 +344,7 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
   };
   // Payload carries only the destination id, never credentials. Retry cannot adopt the current project.
   void projectRepository().ai.recordConversation(remoteInput, config).catch((error: unknown) => {
-    console.error("[ai-conversation] Supabase mirror failed:", error);
+    console.error("[ai-conversation] Project storage mirror failed:", error);
     enqueueRemoteWrite({ id: compacted.id, kind: "ai-conversation", payload: remoteInput, error });
   });
   return outcome;

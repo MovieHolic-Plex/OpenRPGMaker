@@ -31,9 +31,9 @@ function eventWith(id: string, commands: EventPage["commands"]): GameEvent {
 
 describe("커밋 게이트 반려 사유", () => {
   it("선재 오류는 사유에서 빼고, 이 변경이 새로 만든 오류만 전량 보고한다", async () => {
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-    vi.stubEnv("VITE_SUPABASE_URL", "");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "");
     try {
       // baseline: 시작 위치가 이미 맵 밖이다(선재 blocking 오류).
       const before = createBlankProject();

@@ -114,9 +114,9 @@ describe("reset_project", () => {
   });
 
   it("keeps the pre-reset project available through undo after applying a reset proposal", async () => {
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-    vi.stubEnv("VITE_SUPABASE_URL", "");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "");
     try {
       const before = createBlankProject();
       before.meta.title = "되돌릴 프로젝트";

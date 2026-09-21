@@ -1,9 +1,10 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdir, readFile, realpath, rm, writeFile, rename } from "node:fs/promises";
+import { mkdir, readFile, realpath, rm, writeFile, rename, readdir } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
 import { extname, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
 import { createProjectSessionRegistry, type SessionRegistry } from "../main/sessions";
+import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_CHANNELS } from "../shared/channels";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
@@ -12,6 +13,7 @@ import { sharedCharacterGraphicsMiddleware } from "../../scripts/lib/sharedChara
 import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
 
 import { loginPage, teamPage } from "./teamPage";
+import { sendHttpBody } from "./httpBody";
 
 const BRIDGE_PATH = "/__oprn/bridge";
 const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
@@ -73,7 +75,7 @@ function readRequestBody(request: IncomingMessage, maxBytes = 64 * 1024 * 1024):
     request.on("data", (chunk: Buffer) => {
       if (exceeded) return;
       size += chunk.length;
-      if (size > maxBytes) { exceeded = true; chunks.length = 0; reject(new Error("request exceeds 64 MiB")); request.resume(); return; }
+      if (size > maxBytes) { exceeded = true; chunks.length = 0; reject(new Error(`request exceeds ${maxBytes} bytes`)); request.resume(); return; }
       chunks.push(chunk);
     });
     request.on("end", () => resolvePromise(Buffer.concat(chunks).toString("utf8")));
@@ -81,10 +83,37 @@ function readRequestBody(request: IncomingMessage, maxBytes = 64 * 1024 * 1024):
   });
 }
 
-function sendJson(response: ServerResponse, status: number, body: unknown): void {
+function sendJson(response: ServerResponse, status: number, body: unknown): Promise<void> {
   const text = JSON.stringify(body);
-  response.writeHead(status, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
-  response.end(text);
+  return sendHttpBody(response, status, text, { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" });
+}
+
+function pageCsp(nonce: string): string {
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}'`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob:",
+    "media-src 'self' data: blob:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "worker-src 'self' blob:",
+    "base-uri 'none'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+  ].join("; ");
+}
+
+/** Inline host pages get one nonce. Injected script tags without it do not run. */
+function sendHtml(response: ServerResponse, html: string, status = 200): void {
+  const nonce = randomUUID().replaceAll("-", "");
+  const stamped = html.replaceAll("<script>", `<script nonce="${nonce}">`);
+  response.writeHead(status, {
+    "content-type": "text/html; charset=utf-8",
+    "cache-control": "no-store",
+    "content-security-policy": pageCsp(nonce),
+  });
+  response.end(stamped);
 }
 
 export async function startLocalProjectServer(options: LocalProjectServerOptions): Promise<LocalProjectServer> {
@@ -115,6 +144,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       await rename(pending, accessPath);
     }
   }
+  // Loopback may stay open until an owner opts in. A non-loopback bind (npm start uses
+  // 0.0.0.0) must not treat every visitor as the owner.
+  const bindExposed = host !== LOOPBACK && host !== "localhost" && host !== "::1";
+  if (bindExposed) team.setAccessCodeRequired(true);
   // 동반 서비스도 실행별 토큰을 요구한다(설계 7.4) — 루프백·페이지 출처 모두 같은 머신의 다른
   // 프로세스에 열려 있다. 렌더러는 브리지 설정에서 토큰을 받아 fetch 헤더로 실어 보낸다.
   const companionToken = randomUUID();
@@ -125,9 +158,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
   const token = randomUUID();
 
   const projectsRoot = resolve(sessions.require(SESSION_KEY).projectDir, '.oprn-projects');
+  const isProjectId = (id: string): boolean => /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(id);
   const projectPath = async (id: string): Promise<string> => {
     if (!id) return projectDir;
-    if (!/^[0-9a-f-]{36}$/.test(id)) throw new Error('invalid project id');
+    if (!isProjectId(id)) throw new Error('invalid project id');
     const path = resolve(projectsRoot, id);
     if (await realpath(projectsRoot) !== projectsRoot || await realpath(path) !== path || !sessions.directoryExists(path)) {
       throw new Error('unknown project');
@@ -139,6 +173,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     if (!payload || typeof payload !== "object") throw new Error("invalid request");
     const body = payload as { readonly channel?: unknown; readonly payload?: unknown };
     const channel = typeof body.channel === "string" ? body.channel : "";
+    if (channel === OPRN_CHANNELS.startRecentProjects) {
+      const entries = await readdir(projectsRoot, { withFileTypes: true }).catch(() => []);
+      return entries.filter((entry) => entry.isDirectory() && isProjectId(entry.name)).map((entry) => ({ projectDir: entry.name, title: entry.name }));
+    }
     if (channel === OPRN_CHANNELS.startCreateProject) {
       if (sessions.member(key).role !== 'owner') throw new Error('새 프로젝트는 팀 소유자만 만들 수 있습니다.');
       const input = body.payload as { title?: unknown; seed?: unknown } | null;
@@ -166,6 +204,30 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         throw error;
       } finally {
         sessions.close(temporaryKey);
+      }
+    }
+    if (channel === OPRN_CHANNELS.startOpenFolder) {
+      if (sessions.member(key).role !== 'owner') throw new Error('프로젝트 열기는 팀 소유자만 할 수 있습니다.');
+      const input = body.payload as { bytes?: unknown } | null;
+      if (typeof (input as { projectDir?: unknown } | null)?.projectDir === 'string') {
+        const id = (input as { projectDir: string }).projectDir;
+        const dir = await projectPath(id);
+        const opened = await sessions.open(`open:${id}`, dir, team);
+        return { projectDir: id, isNew: false, projectId: opened.store.projectId };
+      }
+      if (typeof input?.bytes !== 'string') throw new Error('project.sqlite 파일이 필요합니다.');
+      const id = randomUUID();
+      await mkdir(projectsRoot, { recursive: true });
+      const dir = resolve(projectsRoot, id);
+      await mkdir(dir);
+      try {
+        await writeFile(resolve(dir, 'project.sqlite'), Buffer.from(input.bytes, 'base64'), { flag: 'wx' });
+        const opened = await sessions.open(`open:${id}`, dir, team);
+        return { projectDir: id, isNew: false, projectId: opened.store.projectId };
+      } catch (error) {
+        sessions.close(`open:${id}`);
+        await rm(dir, { recursive: true, force: true });
+        throw error;
       }
     }
     const handler = Object.hasOwn(handlers, channel) ? handlers[channel] : undefined;
@@ -216,13 +278,14 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     const extension = extname(target);
     const contentType = MIME_BY_EXTENSION[extension] ?? "application/octet-stream";
     if (extension !== ".html") {
-      response.writeHead(200, { "content-type": contentType });
-      response.end(bytes);
+      const fingerprinted = /^assets\/[^/]+-[A-Za-z0-9_-]{8}\.(?:js|css|woff2|png)$/.test(relative);
+      await sendHttpBody(response, 200, bytes, {
+        "content-type": contentType,
+        "cache-control": fingerprinted ? "private, max-age=31536000, immutable" : "no-cache",
+      });
       return;
     }
-    const html = inject(bytes.toString("utf8"));
-    response.writeHead(200, { "content-type": contentType, "cache-control": "no-store" });
-    response.end(html);
+    sendHtml(response, inject(bytes.toString("utf8")));
   };
 
   const server = createServer((request, response) => {
@@ -235,7 +298,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       // Reject DNS rebinding and cross-origin requests before any filesystem/AI handler.
       const allowedHost = publicOrigin ? new URL(publicOrigin).host : new URL(serverUrl).host;
       if (request.headers.host !== allowedHost || (request.headers.origin && request.headers.origin !== expectedOrigin)) {
-        sendJson(response, 403, { error: 'origin' }); return;
+        await sendJson(response, 403, { error: 'origin' }); return;
       }
       response.setHeader('x-content-type-options', 'nosniff');
       response.setHeader('referrer-policy', 'same-origin');
@@ -243,9 +306,9 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       const signedIn = team.accessCodeRequired() ? (cookie ? team.sessionMember(cookie) : null) : team.owner();
       if (url.pathname === '/__oprn/login' && request.method === 'POST') {
         const member = team.authenticate(new URLSearchParams(await readRequestBody(request, 4096)).get('token') ?? '');
-        if (!member) { response.writeHead(401, { 'content-type': 'text/html; charset=utf-8' }).end(entryLoginPage.replace('id="login-error" hidden', 'id="login-error"')); return; }
+        if (!member) { sendHtml(response, entryLoginPage.replace('id="login-error" hidden', 'id="login-error"'), 401); return; }
         const id = team.createSession(member.id, Date.now() + 12 * 60 * 60 * 1000);
-        if (!id) { sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
+        if (!id) { await sendJson(response, 429, { error: '접속 세션이 너무 많습니다' }); return; }
         response.writeHead(303, { location: returnUrl, 'set-cookie': `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`, 'cache-control': 'no-store' }).end(); return;
       }
       if (url.pathname === '/__oprn/logout' && request.method === 'POST') {
@@ -254,16 +317,16 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (!signedIn) {
         if (request.method === 'GET' && (url.pathname === '/' || url.pathname === '/index.html')) {
-          response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(entryLoginPage);
-        } else sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
+          sendHtml(response, entryLoginPage);
+        } else await sendJson(response, 401, { error: '팀 접속 코드로 로그인하세요' });
         return;
       }
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
-        response.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store' }).end(inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
+        sendHtml(response, inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
       if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
         if (request.method !== 'GET' && signedIn?.role !== 'owner') {
-          sendJson(response, 403, { error: '호스트 공용 자료는 팀 소유자만 수정할 수 있습니다.' }); return;
+          await sendJson(response, 403, { error: '호스트 공용 자료는 팀 소유자만 수정할 수 있습니다.' }); return;
         }
         sharedCharacterGraphicsMiddleware(request, response, () => {});
         return;
@@ -275,8 +338,8 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (isCompanionPath(request.url ?? '')) {
         if (shared || team.accessCodeRequired()) {
-          if (signedIn?.role !== 'owner') { sendJson(response, 403, { error: '호스트 AI는 팀 소유자만 사용할 수 있습니다.' }); return; }
-          if (shared && !options.enableOwnerAi) { sendJson(response, 503, { error: '호스트 AI 연결이 꺼져 있습니다. OPRN_HOST_OWNER_AI=1로 활성화하세요.' }); return; }
+          if (signedIn?.role !== 'owner') { await sendJson(response, 403, { error: '호스트 AI는 팀 소유자만 사용할 수 있습니다.' }); return; }
+          if (shared && !options.enableOwnerAi) { await sendJson(response, 503, { error: '호스트 AI 연결이 꺼져 있습니다. OPRN_HOST_OWNER_AI=1로 활성화하세요.' }); return; }
           // Authenticated owner + same-origin validation replaces the browser token here.
           request.headers['x-oprn-companion-token'] = companionToken;
         }
@@ -286,7 +349,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       if (request.method === "POST" && url.pathname === BRIDGE_PATH) {
         if (request.headers["x-oprn-bridge-token"] !== token) {
-          sendJson(response, 403, { error: "token" });
+          await sendJson(response, 403, { error: "token" });
           return;
         }
         try {
@@ -304,7 +367,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
           sessions.setMember(key, (signedIn ?? team.owner()).id);
           const body = JSON.parse(await readRequestBody(request));
           if (body?.channel === 'oprn:host.access') {
-            if (sessions.member(key).role !== 'owner') { sendJson(response, 403, { error: '접속 설정은 소유자만 변경할 수 있습니다.' }); return; }
+            if (sessions.member(key).role !== 'owner') { await sendJson(response, 403, { error: '접속 설정은 소유자만 변경할 수 있습니다.' }); return; }
             const required = body.payload?.required;
             if (typeof required !== 'boolean') throw new Error('invalid access setting');
             // Establish the current owner's login before enabling the gate.
@@ -314,10 +377,10 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
               response.setHeader('set-cookie', `${cookieName}=${id}; HttpOnly; SameSite=Strict; Path=/; Max-Age=43200${publicOrigin?.startsWith('https:') ? '; Secure' : ''}`);
             }
             team.setAccessCodeRequired(required);
-            sendJson(response, 200, { accessCodeRequired: required, ownerAccessCode: required ? ownerAccessCode : null });
-          } else sendJson(response, 200, await dispatchBridge(body, key));
+            await sendJson(response, 200, { accessCodeRequired: required, ownerAccessCode: required ? ownerAccessCode : null });
+          } else await sendJson(response, 200, await dispatchBridge(body, key));
         } catch (error) {
-          sendJson(response, 400, { error: error instanceof Error ? error.message : String(error) });
+          await sendJson(response, 400, { error: error instanceof Error ? error.message : String(error) });
         }
         return;
       }
@@ -339,7 +402,13 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
             return;
           }
           const bytes = await assetSession.store.assetBytes(asset.sha256);
-          response.writeHead(200, { "content-type": asset.mime, "cache-control": "private, no-cache", "content-security-policy": "sandbox" });
+          // SHA-256 paths of allowlisted types are immutable. Opaque MIME stays uncached.
+          response.writeHead(200, {
+            "content-type": safeAssetContentType(asset.mime),
+            "cache-control": assetCacheControl(asset.mime),
+            "content-security-policy": ASSET_RESPONSE_CSP,
+            "x-content-type-options": "nosniff",
+          });
           response.end(Buffer.from(bytes));
         } finally { sessions.close(assetKey); }
         return;
@@ -350,7 +419,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       }
       response.writeHead(405).end("method not allowed");
     })().catch(error => {
-      if (!response.headersSent) sendJson(response, 500, { error: error instanceof Error ? error.message : 'request failed' });
+      if (!response.headersSent) void sendJson(response, 500, { error: error instanceof Error ? error.message : 'request failed' });
       else response.end();
     });
   });

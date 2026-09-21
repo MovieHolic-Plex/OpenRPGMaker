@@ -32,14 +32,14 @@
 
 ## 검증과 재현
 
-- 원본 프로젝트와 Supabase 저장 후 재로드한 최종 프로젝트 모두 수정된 엔진으로 일반 키보드 검증 통과: 17개 대사, 현재 귀환, 상자 재조사, 이동 복구. 요약에서 지정한 회상 후반/귀환 후 PNG도 확인했다.
+- 원본 프로젝트와 LegacyDb 저장 후 재로드한 최종 프로젝트 모두 수정된 엔진으로 일반 키보드 검증 통과: 17개 대사, 현재 귀환, 상자 재조사, 이동 복구. 요약에서 지정한 회상 후반/귀환 후 PNG도 확인했다.
 - 후속 수정의 관련 테스트 9파일, 139개 통과. 프로젝트 v3 마이그레이션·저장·재로드, 조건 반복 검사, 시간 제한, 경로 실제 프레임 진행, 동적 장애물 정지, 메뉴 대기와 세션 교체, M2 영상 종료 대기를 검증했다.
 - 첫 회상 수정 시 관련 테스트 6파일, 87개 통과. 강제 이동과 저장된 M2 대화 설정 회귀는 수정 전 실패를 확인했다.
 - `npm run gates -- --only typecheck`: app 타입 오류 0, 기준선 대비 회귀 없음.
 - 출하 플레이어 계약 QA 통과: 조건 생산자, 장애물 우회 보행·중간 좌표, 실제 메뉴와 불러오기 패널, video playing/ended, 저장 슬롯 불러오기 후 이전 이벤트 종료와 입력 복구. 화면 6장도 확인했다. 불러오기 패널의 게임 영역 밖 배치도 고쳤다(`src/styles/runtime/title.css`). Chromium의 GPU ReadPixels 성능 경고 4건은 앱 오류와 구분해 report.json에 보존했다.
 - 후속 수정 뒤 「철수의 기억」 17개 대사·귀환·재조사·이동도 다시 통과했다.
 - 최종 런타임 관련 11파일 / 222개 통과. 전체 게이트는 exit 1(12,929 통과 / 208 실패, 표면 실패)이며 마지막 선택 필드 보정 전 실행이다. 기준선 밖 실패 30파일을 base `2489cfef`와 대조해 경고 회귀 2파일을 수정했다. 동시성에 따라 달랐던 편집기 3파일은 `--maxWorkers=1` 재실행에서 base/head 모두 28개 통과했다. 표면 검사 6개 실패와 CSS live-class 실패는 base에서도 동일하다. 전체 통과를 주장하지 않으며, 상세 비교와 제한은 `.omo/evidence/event-runtime-audit/README.md` 및 `gate-comparison.json`에 기록했다.
-- 원격 프로젝트: `rpg-zzu-cheolsu-memory-20260905-df12`. 기존 프로젝트의 `memory_summer/summer_scene`에 설정 명령 두 개만 추가하고 Supabase 저장 후 재로드 대조를 완료했다. 저장 결과 `saved`, 재로드 `true`, SHA-256 `32625f7b4d717e4f708e57b90861f1546ca1d1b43cd410badd2e86f6004ae2b8`.
+- 원격 프로젝트: `rpg-zzu-cheolsu-memory-20260905-df12`. 기존 프로젝트의 `memory_summer/summer_scene`에 설정 명령 두 개만 추가하고 LegacyDb 저장 후 재로드 대조를 완료했다. 저장 결과 `saved`, 재로드 `true`, SHA-256 `32625f7b4d717e4f708e57b90861f1546ca1d1b43cd410badd2e86f6004ae2b8`.
 
 ```bash
 npx tsx scripts/audit-event-runtime.mts
@@ -68,6 +68,6 @@ node scripts/qa-event-runtime.mjs
 - 경로 이동은 명령 시작 시 경로를 계산한다. 이후 장애물이 새로 생기면 남은 절대 방향을 소비하지 않고 정지하며 실패 상태를 남긴다. 실시간 장애물 재탐색은 이번 범위에 넣지 않았다. 경로 교체·Stop All Movement·맵/세션 교체·씬 종료·컷신 스킵 때 이전 작업이 새 루트를 지우지 않도록 소유권을 검사한다.
 - 이벤트 ID는 숫자 변수 계약에 맞춰 현재 맵의 저작 배열 순번(1-based)을 쓴다. 다른 맵에서 옮겨온 이벤트와 동적 생성 이벤트는 현재 맵의 저작 슬롯 뒤에 별도 순번을 배정한다. 없음/범위 밖은 0이다. 문자열 이벤트 ID 자체를 변수에 넣지 않는다.
 - 메뉴·영상·경로의 실동작 검증은 `player.html` 전용 브라우저 하네스가 맡는다. `run_scene_test`의 headless 실행기가 새 경로/메뉴 단계를 지원한 것처럼 넘기지 않도록 명시적인 검증 제한을 반환한다.
-- `test/fixtures/eventRuntimeCommands.ts`는 저장·불러오기·실행 계약 검증만을 위한 최소 테스트 픽스처이며 앱에 싣는 데모나 Supabase 사용자 프로젝트가 아니다.
+- `test/fixtures/eventRuntimeCommands.ts`는 저장·불러오기·실행 계약 검증만을 위한 최소 테스트 픽스처이며 앱에 싣는 데모나 LegacyDb 사용자 프로젝트가 아니다.
 
 PR에 보존한 실행 근거: `.omo/evidence/event-runtime-audit/README.md`와 같은 폴더의 `player-report.json`, `player-SUMMARY.md`, `cheolsu-report.json`, 지정 PNG들.

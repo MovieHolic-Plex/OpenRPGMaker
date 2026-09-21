@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type CameraMetrics = {
@@ -78,7 +78,7 @@ function smallMapProject(): Project {
 
 test("small runtime maps keep the fixed play camera zoom", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, smallMapProject());
+  await seedProjectForEditor(page, smallMapProject());
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("play-canvas")).toBeVisible();

@@ -39,8 +39,9 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
   워크트리 전용 경로나 고유 임시 경로를 지정하라 (`vite.config.ts`가 지원). 공유 캐시의 재최적화가
   겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다. QA용 임시 캐시는 서버 종료 후 정리한다.
 
-콘텐츠(맵·이벤트·데모) 작업이면 `.env.local` 의 `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` /
-`VITE_SUPABASE_PROJECT_ID` 가 있어야 하고, 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
+콘텐츠(맵·이벤트·데모) 작업은 프로젝트 폴더 또는 팀 호스트와 project id를 확인하고,
+SQLite 정본에 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
+LegacyDb 설정은 과거 데이터 이관에만 필요하다. 제거 현황은 `openwiki/storage-retirement.md`.
 
 ## 팀 SQLite 호스트 (2026-09-18)
 
@@ -48,43 +49,24 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 `npm start`에는 기존 SQLite 폴더를 `OPRN_PROJECT_DIR` 또는 `--project-dir`로 지정한다.
 `npm run preview`는 저장 브리지 없는 정적 미리보기다.
 팀 초대·호스팅·백업·충돌 처리 절차는 `openwiki/team-project-host.md`.
-아래 과거 Mac launcher/Supabase 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
+아래 과거 Mac launcher/LegacyDb 설정 설명을 새 팀 호스트의 필수 설정으로 적용하지 않는다.
 
-## 1a. Mac novice launcher / private setup (Phase 1, 2026-09-06)
+## 1a. Mac / 개인 로컬 실행 (2026-09-21)
 
-This path is for a person's own downloaded checkout, **not** agent worktree adoption above.
-Do not copy a maintainer's `.env.local` or use a maintainer project. It requires manually
-installed **Node.js 24 LTS including npm**, a writable extracted folder, and the owner's
-already provisioned Supabase access plus an **existing application project id**.
+Node.js 24 LTS와 npm을 설치하고, 본인에게 쓰기 권한이 있는 체크아웃에서 실행한다.
+`Start RPG Maker.command` 또는 `npm run mac:launch`는 SQLite 저장 브리지가 있는 로컬 호스트를 연다.
+처음에는 프로젝트 폴더를 선택한다. 기존 `project.sqlite` 폴더는 열고, 없는 새 폴더는 초기화한다.
+기존 일반 폴더에는 빈 프로젝트를 덮어 만들지 않는다.
 
-- Double-click `Start RPG Maker.command`, or in Terminal type `/bin/bash ` and drag that
-  file into the window, then press Return (works when ZIP extraction lost the executable bit).
-  Optional: `chmod +x "Start RPG Maker.command"`. Do not disable Gatekeeper or use sudo.
-- Terminal equivalents, from the checkout: `npm run setup:local` creates private settings;
-  `npm run mac:launch` sets up if missing and launches. The `.command` resolves its own folder,
-  including spaces/Unicode, regardless of the current working directory.
-  실행 명령은 `npm run mac:launch` 하나로 통일합니다. 설정 질문과 오류·복구 안내는 한국어로 표시됩니다.
-- The wizard masks the anon/publishable key and performs a bounded read-only GET against
-  `rpg_zzu.projects`. Use an HTTPS Supabase **origin**, or HTTP loopback for a local service.
-  Admin/service-role/database credentials, URL credentials, redirects and remote HTTP are rejected.
-  It does not create projects, run migrations, or write to Supabase.
-- Existing `.env*` files are never rewritten. New `.env.local` uses exclusive creation with mode
-  `0600`, a server-only `SUPABASE_ANON_KEY`, and proxy mode. Failure/cancellation writes nothing.
-  `.env.development*` and shell overrides take precedence in Vite; setup refuses to silently write
-  shadowed settings. Existing/incomplete `.env.local` needs private correction by its owner,
-  followed by a restart. Do not paste keys into command arguments, chat, screenshots or issues.
-- `npm ci` runs **only** when `node_modules` is absent. Existing or broken installs are preserved;
-  recovery is to move the broken folder aside yourself and run `npm ci`. No system tools are installed.
-- The launcher owns only `http://127.0.0.1:9999/?project=<encoded-existing-id>`, with a strict port,
-  TLS disabled and Vite's `configLoader: "runner"`. It opens the browser only after its own listen
-  succeeds. A collision does not open/reuse/kill the other server or choose another port.
-  Browser-open failure prints the same URL; `npm run mac:launch -- --no-open` supports headless QA.
-- Keep the Terminal open; Ctrl-C stops the owned server. Bookmark the same origin and project id.
-  Online saving depends on Supabase availability; export JSON for a separate backup.
-  Bun is optional for editing and Node provider login, but needed for AI completions along with a
-  configured provider. `npm start` is the separate SQLite project host (requires `OPRN_PROJECT_DIR`), not this novice launcher.
-- Linux verification does **not** establish Finder/macOS behavior. The narrow
-  `.github/workflows/mac-onboarding.yml` job is dormant while Actions are disabled.
+- `npm run setup:local`: 개인 경로를 `.oprn-local.json`(0600, gitignored)에 저장한다.
+  기존 `.env*`나 프로젝트 데이터를 덮어쓰지 않는다.
+- `npm run mac:launch -- --project-dir /path/to/project --no-open`: 경로를 명시하고 브라우저 자동 열기를 생략한다.
+  경로 우선순위는 명령 인자 > `OPRN_PROJECT_DIR` > 개인 설정이다.
+- 의존성 폴더가 없을 때만 `npm ci`를 한다. 실행 전 렌더러와 저장 브리지를 빌드한다.
+- 호스트 주소는 `http://127.0.0.1:9999/`다. 포트 충돌 시 기존 서버를 재사용하거나 종료하지 않는다.
+  브라우저는 자체 호스트 시작 성공 후에만 연다. Ctrl-C로 종료한다.
+- 저장에 외부 DB 계정이나 API 키가 필요하지 않다. AI 연결은 별도 설정이다.
+- 공유 팀 호스트는 [team-project-host.md](team-project-host.md)를 따른다.
 
 ## 1b. 전체 BGM은 Release 팩으로 설치
 
@@ -139,6 +121,7 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 |---|---|
 | 맵에 타일이 잘못 찍힌다 / 브러시·도형·되돌리기 | `src/editor/EditScene.ts`, `src/editor/tileActions.ts`, `src/editor/TilePaintEngine.ts` |
 | 맵 렌더·빈 칸 체커·레이어 겹침 | `src/editor/editSceneRender.ts` |
+| Slates 32px 마을 저작 | `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (구조·오차·원본 ID·조립 규칙), `public/assets/slates/slates-study-catalog.json` |
 | 타일 팔레트·칩셋 그리드·스탬프 | `src/editor/panels/tilePalette.ts`, `src/editor/chipsetTileRender.ts`, `src/editor/tilePaletteStamp.ts` |
 | 오토타일·지형 연결 | `openwiki/autotiles.md` → `src/assets` 의 autotile 모듈 |
 | 맵 목록·트리·드래그·썸네일 | `src/editor/panels/mapList.ts`, `src/project/mapTree.ts`, `src/editor/panels/mapThumbnail.ts` |
@@ -161,6 +144,8 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 | 세이브 슬롯·이어하기 | `src/player/saveSlots.ts`, `src/player/saveSlotValidation.ts` |
 | 런타임 세션 상태(스위치·변수·진행) | `src/project/session.ts` |
 | 플레이 화면 부팅·모드 전환 | `src/app/mode.ts`, `src/player/player.ts`, `src/player/createPlayGame.ts`, `src/main.ts` |
+| 전투 상태이상 추가·해제·턴 경과 | `openwiki/state-system.md`, `src/battle/battleStates.ts`, `src/project/types/database.ts` |
+| 실시간 액션 전투·필드 스폰 | `openwiki/runtime-action-combat.md`, `src/player/playSceneActionCombat.ts`, `src/player/playSceneFieldSpawns.ts` |
 | 전투 규칙·턴·보상 | `src/battle/runtime.ts`, `src/battle/types.ts` |
 | 전투 화면 DOM·스킨 | `src/player/battleFieldDom.ts`, `src/styles/runtime/battle/`, `src/styles/runtime/battle-skins/` |
 | 대화창·문장 표시 | `src/player/dialogue.ts`, `src/player/dialoguePresentation.ts`, `src/player/dialoguePagination.ts` |
@@ -190,5 +175,5 @@ SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwi
 
 - 코드 변경: `npm run typecheck:app` 초록 + 관련 테스트 통과 + `npm run gates` 가 **새 실패 0**.
 - UI 변경: 실제 표면 증거(스크린샷/Playwright). 편집기는 `test/e2e` + `scripts/capture-*`, 게임 화면은 `npm run qa:runtime`.
-- 콘텐츠 변경: Supabase 저장 후 **재로드 성공**과 project id 보고. 로컬 fixture·export JSON 은 완료가 아니다.
+- 콘텐츠 변경: SQLite 정본 저장 후 **재로드 성공**과 project id·저장 대상 보고. 로컬 fixture·export JSON 은 완료가 아니다.
 - 문서·위키에 영향을 주는 변경: 해당 `openwiki/*.md` 를 같은 변경에서 고친다.

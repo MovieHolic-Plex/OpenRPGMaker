@@ -1,5 +1,7 @@
+import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import type Phaser from "phaser";
 import { withInlineAsset } from "./inlineAssetStore";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, TilesetDef, TilesetAnimationStrip } from "@/project/types";
 
 /** Uploaded atlases cannot share the bundled exterior texture or its 480 fixed frames. */
@@ -25,11 +27,12 @@ export function loadUploadedTilesets(
   for (const tileset of Object.values(project?.tilesets ?? {})) {
     if (tileset.image.type !== "uploaded") continue;
     const asset = project?.assets.uploaded[tileset.image.id];
-    if (!asset?.dataUrl) continue;
+    const imageUrl = asset ? uploadedAssetUrl(asset) : "";
+    if (!imageUrl) continue;
     const key = uploadedTilesetTextureKey(tileset);
     if (queued.has(key)) continue;
     queued.add(key);
-    scene.load.image(key, withInlineAsset(asset.dataUrl));
+    scene.load.image(key, withInlineAsset(imageUrl));
   }
 }
 
@@ -60,5 +63,28 @@ export function registerUploadedTilesetFrames(
 export function registerUploadedTilesets(scene: Phaser.Scene, project?: Project): void {
   for (const tileset of Object.values(project?.tilesets ?? {})) {
     if (tileset.image.type === "uploaded") registerUploadedTilesetFrames(scene, tileset);
+  }
+}
+
+const pendingSceneTilesets = new WeakMap<Phaser.Scene, Set<string>>();
+
+/** Import and geometry changes happen after preload. Queue once per atlas, not once per cell. */
+export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Project, onReady: () => void): void {
+  const pending = pendingSceneTilesets.get(scene) ?? new Set<string>();
+  pendingSceneTilesets.set(scene, pending);
+  for (const tileset of Object.values(project.tilesets)) {
+    if (tileset.image.type !== "uploaded") continue;
+    const key = uploadedTilesetTextureKey(tileset);
+    if (scene.textures.exists(key) || pending.has(key)) continue;
+    const asset = project.assets.uploaded[tileset.image.id];
+    const url = asset ? uploadedAssetUrl(asset) : "";
+    if (!url) continue;
+    pending.add(key);
+    void ensureSceneImageTexture(scene, key, withInlineAsset(url)).then(loaded => {
+      pending.delete(key);
+      if (!loaded || !scene.sys.isActive()) return;
+      registerUploadedTilesetFrames(scene, tileset, loaded);
+      onReady();
+    });
   }
 }

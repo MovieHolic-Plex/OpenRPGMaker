@@ -37,11 +37,16 @@ test("world canon and codex preserve authoring across save, navigation, search, 
   const tab = (id: string) => worldTab(page, id);
   await tab("db-tab-world-canon");
   await page.getByTestId("world-properties-toggle").click();
-  const power = page.getByTestId("db-world-canon-law-power-note");
-  const gods = page.getByTestId("db-world-canon-law-gods-note");
-  await power.fill("피의 대가"); await gods.fill("신 없음");
-  await page.getByTestId("db-world-canon-law-gods-present").getByText("없음", { exact: true }).click();
-  await expect(power).toHaveValue("피의 대가"); await expect(gods).toHaveValue("신 없음");
+  // 스프레드 뷰: 법칙 카드가 대화상자를 열고, 선택 + 비고를 저장한다.
+  await page.getByTestId("db-world-canon-law-power").click();
+  await page.getByTestId("db-world-canon-law-power-note").fill("피의 대가");
+  await page.getByTestId("db-world-canon-law-power-save").click();
+  await page.getByTestId("db-world-canon-law-gods").click();
+  await page.getByTestId("db-world-canon-law-gods-option-no").click();
+  await page.getByTestId("db-world-canon-law-gods-note").fill("신 없음");
+  await page.getByTestId("db-world-canon-law-gods-save").click();
+  await expect(page.getByTestId("db-world-canon-law-power")).toContainText("피의 대가");
+  await expect(page.getByTestId("db-world-canon-law-gods")).toContainText("없음");
   await page.getByTestId("db-world-canon-name").fill("가".repeat(150));
   await expect(page.getByTestId("db-world-canon-name")).toHaveValue("가".repeat(120));
   await page.screenshot({ path: `${output}/canon.png` });

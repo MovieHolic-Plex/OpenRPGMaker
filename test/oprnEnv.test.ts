@@ -83,15 +83,15 @@ describe("applyLegacyEnvAliases", () => {
   // CI 시크릿은 저장소 밖에 있다 — 옛 이름으로 주입된 원격 인증서 입력이 별칭을 거쳐 게이트를 통과해야 한다.
   it("옛 이름으로 온 원격 인증서 입력도 별칭을 거치면 게이트를 통과한다", () => {
     const ref = "abcdefghijklmnopqrst";
-    const url = `https://${ref}.supabase.co`;
+    const url = `https://${ref}.legacyDb.co`;
     const env: Record<string, string | undefined> = {
       RPGZZU_E2E_REMOTE_CERTIFICATE: "isolated-owned-fixture-v1",
       RPGZZU_E2E_REMOTE_URL: url,
       RPGZZU_E2E_REMOTE_ANON_KEY: "aaa.bbb.ccc",
       RPGZZU_E2E_REMOTE_ISOLATION_MARKER: "rpg-zzu-e2e-owned-only",
       RPGZZU_E2E_REMOTE_PROJECT_REF: ref,
-      VITE_SUPABASE_URL: url,
-      VITE_SUPABASE_ANON_KEY: "aaa.bbb.ccc",
+      VITE_LEGACY_DB_URL: url,
+      VITE_LEGACY_DB_ANON_KEY: "aaa.bbb.ccc",
     };
     expect(validateRemoteCertificateEnvironment(env).ok).toBe(false);
     applyLegacyEnvAliases(env, () => {});

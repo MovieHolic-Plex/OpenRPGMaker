@@ -7,12 +7,8 @@ let override: ProjectRepository | null = null;
 let memory: ProjectRepository | null = null;
 let electron: ProjectRepository | null = null;
 
-/**
- * 이 편집기 세션의 저장소. 부팅 시 고정되지 않고 부를 때마다 고른다 — store 는 모듈
- * 싱글턴이라 테스트가 import 뒤에 주입하기 때문이다. Electron 브리지(window.oprn)가 있으면
- * Electron 어댑터(로컬 폴더 정본), 없으면(웹 빌드·노드) 메모리 어댑터다.
- * 웹 빌드는 편집 도구가 아니라 QA 하네스다 — 원격 행을 쓰던 작업은
- * `scripts/oprn-store.mjs import-supabase` 로 폴더로 옮긴다.
+/** The active folder repository is reached through Electron IPC or the HTTP host bridge.
+ * Without a bridge, the memory repository is for fixtures/previews only and has no durable target.
  */
 export function projectRepository(): ProjectRepository {
   if (override) return override;

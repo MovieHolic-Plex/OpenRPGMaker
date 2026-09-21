@@ -38,9 +38,9 @@
     "DIAG_SUITE_ERRORS": "/tmp/st_01a079-existing/configured-control-errors.json",
     "READONLY_AUDIT": "/tmp/st_01a079-existing/configured-control-audit.jsonl",
     "LANG": "C.UTF-8",
-    "VITE_SUPABASE_URL": "http://dbserver:8100",
-    "VITE_SUPABASE_ANON_KEY": "test-anon-key",
-    "VITE_SUPABASE_PROJECT_ID": "rpg-zzu-house-template-gallery"
+    "VITE_LEGACY_DB_URL": "http://dbserver:8100",
+    "VITE_LEGACY_DB_ANON_KEY": "test-anon-key",
+    "VITE_LEGACY_DB_PROJECT_ID": "rpg-zzu-house-template-gallery"
   },
   "startedAt": "2026-09-06T23:31:54.002411+00:00",
   "durationSeconds": 23.21574622602202,

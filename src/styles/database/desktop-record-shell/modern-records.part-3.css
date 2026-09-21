@@ -1,0 +1,342 @@
+@media (min-width: 800px) {
+.database-modal-body .db-terms-form {
+    align-content: start;
+    display: grid;
+    gap: 12px;
+  }
+
+.database-modal-body .db-terms-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+.database-modal-body .db-terms-form .oprn-db-fieldset {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin: 0;
+    min-width: 0;
+    padding: 14px 14px 12px;
+  }
+
+.database-modal-body .db-terms-form .oprn-db-fieldset legend {
+    color: var(--text-1);
+    font: 700 15px/1.15 var(--font-ui);
+    letter-spacing: 0;
+    padding: 0 4px;
+  }
+
+.database-modal-body .db-terms-form :is(.db-field, .db-readonly-row) {
+    align-items: center;
+    color: var(--db-modern-muted);
+    display: grid;
+    font: 500 13px/1.25 var(--font-ui);
+    gap: 10px;
+    letter-spacing: 0;
+    margin: 0 0 8px;
+    min-width: 0;
+    text-transform: none;
+  }
+
+.database-modal-body .db-terms-form :is(.db-field, .db-readonly-row) {
+    grid-template-columns: minmax(72px, 0.18fr) minmax(0, 1fr);
+  }
+
+.database-modal-body .db-terms-form :is(.db-field, .db-readonly-row) > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+.database-modal-body .db-terms-form :is(input, select, code) {
+    background-color: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--db-modern-text);
+    font: 400 14px/1.25 var(--font-ui);
+    min-height: 30px;
+    min-width: 0;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+/* chevron 밴드(오른쪽 7~17px) 확보 — 위 단축이 8px 로 덮는다. */
+
+.database-modal-body .db-terms-form select {
+    padding-right: 24px;
+  }
+
+.database-modal-body .db-system-preview-label {
+    color: var(--text-1);
+    font: 700 13px/1.2 var(--font-ui);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+.database-modal-body .db-system-preview-frame {
+    align-items: center;
+    aspect-ratio: 4 / 3;
+    background: var(--surface-recessed);
+    border: 1px solid var(--db-modern-line);
+    display: flex;
+    justify-content: center;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+.database-modal-body .db-system-preview-frame img {
+    image-rendering: pixelated;
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+.database-modal-body .db-system-preview-empty {
+    color: var(--db-modern-muted);
+    font: 500 13px/1.3 var(--font-ui);
+    padding: 8px;
+    text-align: center;
+  }
+
+.database-modal-body .db-utility-form {
+    display: grid;
+    gap: 10px 14px;
+    grid-template-columns: minmax(260px, 360px) minmax(0, 1fr);
+    /* 행 구성: 제목 / +추가 툴바 / 범위 적용 / 검색·상세 / 목록·스토리플래그 */
+    grid-template-rows: auto auto auto auto minmax(0, 1fr);
+  }
+
+.database-modal-body .db-utility-form .db-utility-heading,
+  .database-modal-body .db-utility-form .db-utility-toolbar,
+  .database-modal-body .db-utility-form .db-range {
+    grid-column: 1 / -1;
+  }
+
+.database-modal-body .db-utility-form .db-utility-toolbar {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+.database-modal-body .db-utility-heading {
+    color: var(--text-1);
+    font: 700 15px/1.2 var(--font-ui);
+  }
+
+.database-modal-body .db-utility-form .db-range {
+    align-items: end;
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns: minmax(0, 1fr) 84px 84px minmax(160px, 260px) 112px;
+    margin: 0;
+    padding: 10px;
+  }
+
+.database-modal-body .db-utility-form .db-range span {
+    color: var(--db-modern-muted);
+    font: 600 13px/1.2 var(--font-ui);
+    grid-column: auto;
+  }
+
+.database-modal-body .db-utility-form .db-range button {
+    grid-column: auto;
+  }
+
+.database-modal-body .db-utility-form :is(input, button) {
+    box-sizing: border-box;
+    font-family: var(--font-ui);
+    min-width: 0;
+  }
+
+.database-modal-body .db-utility-form :is(input[type="number"], input[type="text"], input[type="search"]) {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--db-modern-text);
+    font-size: 14px;
+    min-height: 30px;
+    padding: 4px 8px;
+    width: 100%;
+  }
+
+.database-modal-body .db-utility-form .db-search {
+    /* 4행 2열을 공유하는 db-utility-detail(약 128px)에 grid 기본 stretch로 끌려가
+       검색 입력창까지 128px로 늘어나 보였다(P11-A/qa-system). 자기 콘텐츠 높이로 고정. */
+    align-self: start;
+    grid-column: 1;
+    margin: 0;
+  }
+
+.database-modal-body .db-utility-form .db-utility-list {
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    grid-column: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+
+.database-modal-body .db-utility-row-wrap {
+    align-items: stretch;
+    border-bottom: 1px solid var(--db-modern-line-soft);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 56px;
+  }
+
+.database-modal-body .db-utility-row,
+  .database-modal-body .db-empty-row,
+  .database-modal-body .db-empty-list-hint {
+    align-items: center;
+    background: var(--bg-raised);
+    border: 0;
+    box-sizing: border-box;
+    color: var(--text-1);
+    display: grid;
+    font: 500 14px/1.25 var(--font-ui);
+    gap: 8px;
+    grid-template-columns: 58px minmax(0, 1fr);
+    min-height: 28px;
+    padding: 0 10px;
+    text-align: left;
+    width: 100%;
+  }
+
+.database-modal-body .db-empty-row {
+    border-bottom: 1px solid var(--db-modern-line-soft);
+  }
+
+.database-modal-body .db-empty-list-hint {
+    color: var(--db-modern-muted);
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 44px;
+  }
+
+.database-modal-body .db-utility-row-delete {
+    border-radius: 0;
+    min-height: 28px;
+    min-width: 0;
+    padding: 0 8px;
+  }
+
+.database-modal-body .db-utility-row:hover {
+    background: var(--bg-raised);
+  }
+
+.database-modal-body .db-utility-row.active {
+    background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 100%);
+    color: var(--text-1);
+  }
+
+.database-modal-body .db-utility-row .db-id,
+  .database-modal-body .db-empty-row .db-id {
+    color: inherit;
+    font-variant-numeric: tabular-nums;
+  }
+
+.database-modal-body .db-utility-row .db-list-name,
+  .database-modal-body .db-empty-row .db-list-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+.database-modal-body .db-utility-detail {
+    align-self: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line);
+    border-radius: 4px;
+    color: var(--db-modern-muted);
+    display: grid;
+    gap: 12px;
+    grid-column: 2;
+    /* +추가 툴바 행이 추가되며 한 칸 아래로(3→4) — 범위 행과의 겹침 방지. */
+    grid-row: 4;
+    min-width: 0;
+    padding: 14px;
+  }
+
+.database-modal-body .db-utility-detail label {
+    color: var(--db-modern-muted);
+    display: grid;
+    font: 600 13px/1.25 var(--font-ui);
+    gap: 8px;
+    letter-spacing: 0;
+    margin: 0;
+    text-transform: none;
+  }
+
+.database-modal-body .db-utility-detail .btn {
+    justify-self: start;
+    min-height: 32px;
+    min-width: 96px;
+  }
+
+.database-modal-body .db-story-flag-list {
+    align-self: start;
+    background: var(--bg-raised);
+    border: 1px solid var(--db-modern-line-soft);
+    border-radius: 4px;
+    display: grid;
+    gap: 0;
+    grid-column: 2;
+    grid-row: 5;
+    overflow: hidden;
+  }
+
+.database-modal-body .db-story-flag-list .db-utility-heading,
+  .database-modal-body .db-story-flag-list .empty-hint {
+    padding: 10px;
+  }
+
+.database-modal-body .oprn-record-troops,
+  .database-modal-body .oprn-record-troops .oprn-record-detail-pane {
+    min-height: 0;
+  }
+
+.database-modal-body .oprn-record-troops .oprn-detail-form {
+    box-sizing: border-box;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: auto;
+  }
+
+.database-modal-body .db-troops-classic-workbench {
+    grid-template-columns: minmax(410px, 0.82fr) minmax(590px, 1fr);
+    grid-template-rows: auto minmax(240px, 0.64fr) minmax(140px, 0.36fr);
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+.database-modal-body .db-troop-event-panel {
+    align-self: stretch;
+    box-sizing: border-box;
+    grid-template-rows: auto 36px 36px 36px 144px minmax(0, 1fr);
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+.database-modal-body .db-troop-event-details {
+    min-height: 0;
+    overflow: auto;
+  }
+
+.database-modal-body .oprn-detail-troops .db-troop-battle-preview-stage {
+    height: min(230px, 100%);
+  }
+
+.database-modal-body .db-troop-event-command-area {
+    box-sizing: border-box;
+    min-width: 522px;
+  }
+}

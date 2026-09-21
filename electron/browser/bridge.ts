@@ -110,8 +110,17 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     flushDone: async () => true,
   },
   start: {
-    recentProjects: async () => [],
-    openFolder: async () => null,
+    recentProjects: async () => await call(OPRN_CHANNELS.startRecentProjects) as Array<{ projectDir: string; title: string }>,
+    openFolder: async (payload?: { projectDir?: string }) => {
+      if (!payload?.projectDir) return null;
+      const opened = await call(OPRN_CHANNELS.startOpenFolder, payload) as { projectDir: string; projectId: string; isNew: boolean };
+      const url = new URL(location.href);
+      url.search = '';
+      url.hash = '';
+      url.searchParams.set('hostProject', opened.projectDir);
+      history.replaceState(null, '', url);
+      return opened;
+    },
     openRecent: async () => null,
     createProject: async (input: unknown) => {
       const created = await call(OPRN_CHANNELS.startCreateProject, input) as { projectDir: string; projectId: string };

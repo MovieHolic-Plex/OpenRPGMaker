@@ -681,17 +681,17 @@ import { viewportVillageBounds } from "@/editor/tools/authorVillageSupp
 
 FILE src/ai/conversationStore.ts
 
-import { supabaseProjectConfig } from "@/project/supabaseProjectConfig";
+import { legacyDbProjectConfig } from "@/project/legacyDbProjectConfig";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
 <<<<<<< HEAD
-import { recordSupabaseConversation, SupabaseProjectSyncError, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import { recordLegacyDbConversation, LegacyDbProjectSyncError, type LegacyDbConversationInput } from "@/project/legacyDbProjectSync";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; }
 export interface ConversationSummary { /** Remote summaries have no transcript/turn count and cannot be deleted locally. */ readonly source?: "remote"; id: string; title: string; model: string; savedAt: number; turnCount: number; projectContextKey?: string; /** 마지막 조수(없으면 사용자) 발화 80자 — 목록에서 고를 근거(데크 2026-09-03). */ readonly preview?: string; }
 =======
-import { listSupabaseConversations, recordSupabaseConversation, type SupabaseConversationInput } from "@/project/supabaseProjectSync";
+import { listLegacyDbConversations, recordLegacyDbConversation, type LegacyDbConversationInput } from "@/project/legacyDbProjectSync";
 import type { Project } from "@/project/types";
 
 export interface ConversationRecord { id: string; title: string; model: string; savedAt: number; entries: AuditEntry[]; projectContextKey?: string; mapIndex?: ConversationMapIndex; }
@@ -732,11 +732,11 @@ export async function loadConversation(id: string, options: ConversationReadOpti
     try {
       const config = await remoteConversationConfig(options.scopeKey);
       if (!config) return null;
-      const { loadSupabaseConversation } = await import("@/project/supabaseProjectSync");
+      const { loadLegacyDbConversation } = await import("@/project/legacyDbProjectSync");
       const scopeKey = `remote:${config.projectId}`;
-      const row = await loadSupabaseConversation(id, config, { scopeKey });
+      const row = await loadLegacyDbConversation(id, config, { scopeKey });
       const candidate = row ? decodeRemoteConversation(row, scopeKey) : null;
-      if (candidate && candidate.id !== id) throw new SupabaseProjectSyncError("요청한 대화 기록과 응답이 일치하지 않습니다.");
+      if (candidate && candidate.id !== id) throw new LegacyDbProjectSyncError("요청한 대화 기록과 응답이 일치하지 않습니다.");
       remote = candidate;
     } catch (error) {
       console.warn("[ai-conversation] 대화를 읽지 못했습니다:", error);
@@ -1245,16 +1245,16 @@ FILE src/project/store.ts
     this.persistInFlight = run;
     this.persistInFlightLine
 
-FILE src/project/supabaseProjectSync.ts
+FILE src/project/legacyDbProjectSync.ts
 
-  const response = await fetch(url, { headers: supabaseJsonHeaders(config, "read"), signal });
+  const response = await fetch(url, { headers: legacyDbJsonHeaders(config, "read"), signal });
   if (!response.ok) {
-    throw new SupabaseProjectSyncError(await response.text(), response.status);
+    throw new LegacyDbProjectSyncError(await response.text(), response.status);
   }
   const parsed: unknown = await response.json();
 <<<<<<< HEAD
   if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) {
-    throw new SupabaseProjectSyncError("Invalid conversation response");
+    throw new LegacyDbProjectSyncError("Invalid conversation response");
   }
 =======
   if (strict && (!Array.isArray(parsed) || !parsed.every(isRecord))) throw new Error("Invalid conversation response");
@@ -1264,7 +1264,7 @@ FILE src/project/supabaseProjectSync.ts
 }
 
 // ── AI 대화 기록 미러 (로컬 정본, 여기는 기기 간 복원/검색용) ────────────────
-export type SupabaseConversationInput = {
+export type LegacyDbConversationInput = {
   readonly conversa
 
         "20260713000000_ai_conversations_user_skills.sql",
@@ -1275,13 +1275,13 @@ export type SupabaseConversationInput = {
 }
 
 /** 대화 요약 목록 — query가 있으면 제목 부분일치(ilike) 검색. entries_json은 내리지 않는다. */
-export async function listSupabaseConversations(
+export async function listLegacyDbConversations(
 <<<<<<< HEAD
   opts: { readonly query?: string; readonly limit?: number; readonly scopeKey?: string } = {},
 =======
   opts: { readonly query?: string; readonly limit?: number; readonly offset?: number; readonly signal?: AbortSignal; readonly includeEntries?: boolean; readonly projectContextKey?: string } = {},
 >>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
-  config = supabaseProjectConfig(),
+  config = legacyDbProjectConfig(),
 ): Promise<readonly Record<string, unknown>[]> {
   if (!config) throw new Error("Conversation recovery is not configured");
   opts.signal?.throwIfAborted();
@@ -1315,9 +1315,9 @@ export async function listSupabaseConversations(
 }
 
 /** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
-export async function loadSupabaseConversation(
+export async function loadLegacyDbConversation(
   conversationId: string,
-  config = supabaseProjectConfig(),
+  config = legacyDbProjectConfig(),
 <<<<<<< HEAD
   options: {
 
@@ -1325,9 +1325,9 @@ export async function loadSupabaseConversation(
 }
 
 /** 대화 1건 전체(entries_json 포함) — 로컬에 없는 대화를 다른 기기에서 복원할 때. */
-export async function loadSupabaseConversation(
+export async function loadLegacyDbConversation(
   conversationId: string,
-  config = supabaseProjectConfig(),
+  config = legacyDbProjectConfig(),
 <<<<<<< HEAD
   options: { readonly scopeKey?: string } = {},
 =======
@@ -1370,7 +1370,7 @@ export async function loadSupabaseConversation(
 
 /** 원격 최신 commit tip 을 세션 맵에 심는다 — 리로드 후 parent_commit 계보 유지. */
 export async function hydrateLastRemoteCommitTip(
-  config = supabaseProjectConfig(),
+  config = legacyDbProjectConfig(),
 ): Promise<string |
 
 FILE test/aiAssistantSession.test.ts
@@ -1388,9 +1388,9 @@ import type { SessionEvent, ToolImageRenderer } from "@/ai/assistantSession";
 >>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
 
 const MILESTONE_TEST_ENV = {
-  VITE_SUPABASE_ANON_KEY: "test-anon-key",
-  VITE_SUPABASE_PROJECT_ID: "rpg-zzu-test-project",
-  VITE_SUPABASE_URL: "http://dbserver:8100",
+  VITE_LEGACY_DB_ANON_KEY: "test-anon-key",
+  VITE_LEGACY_DB_PROJECT_ID: "rpg-zzu-test-project",
+  VITE_LEGACY_DB_URL: "http://dbserver:8100",
 } as const;
 
 function stubSup
@@ -1555,9 +1555,9 @@ describe("completion accounting through real assistant sessions", () => {
 
   it.each(["preserve", "targetChange"] as const)("applies maintenance once but retains canonical %s semantics", async (kind) => {
     const { project } = preservedPaintContext();
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
     vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
     store.replace(project);
@@ -1600,9 +1600,9 @@ describe("completion accounting through real assistant sessions", () => {
   it("accounts for both spatial milestones and applies each write once, only after independent review", async () => {
 >>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8
     const project = projectWithMap();
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-    vi.stubEnv("VITE_SUPABASE_URL"
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_LEGACY_DB_URL"
 
 FILE test/aiRunEndProof.test.ts
 

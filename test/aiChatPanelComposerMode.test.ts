@@ -6,6 +6,8 @@ import { clearConversations } from "@/ai/conversationStore";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { activeTools } from "@/editor/tools";
+import type { IntentDeclaration } from "@/ai/intentDeclaration";
 import { runPiCommand } from "@/editor/panels/aiPiAgentCommand";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -22,7 +24,7 @@ vi.mock("@/editor/panels/aiPiAgentCommand", async (importOriginal) => ({
 const intentDecl = vi.hoisted(() => ({
   mode: "other" as string, source: "llm", needsPlan: false, clarify: null as string | null,
   error: undefined as string | undefined, calls: 0, wait: null as Promise<void> | null,
-  tools: [] as string[],
+  tools: [] as string[], adventure: undefined as IntentDeclaration["adventure"],
 }));
 vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/ai/intentDeclarationClient")>()),
@@ -30,7 +32,7 @@ vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
     intentDecl.calls += 1;
     if (intentDecl.wait) await intentDecl.wait;
     return {
-      intent: { mode: intentDecl.mode, source: intentDecl.source, needsPlan: intentDecl.needsPlan, clarify: intentDecl.clarify, tools: intentDecl.tools },
+      intent: { mode: intentDecl.mode, source: intentDecl.source, needsPlan: intentDecl.needsPlan, clarify: intentDecl.clarify, tools: intentDecl.tools, adventure: intentDecl.adventure },
       error: intentDecl.error, elapsedMs: 1,
     } as never;
   }),
@@ -78,7 +80,7 @@ beforeEach(() => {
   vi.stubEnv("VITE_LLM_API_KEY", "");
   vi.mocked(runPiCommand).mockClear();
   intentDecl.mode = "other";
-  intentDecl.tools = [];
+  intentDecl.tools = []; intentDecl.adventure = undefined;
   intentDecl.calls = 0;
   intentDecl.error = undefined; intentDecl.source = "llm"; intentDecl.needsPlan = false; intentDecl.clarify = null;
   intentDecl.wait = null;
@@ -128,11 +130,11 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     await send(panel, "이벤트가 몇 개지?");
     // maxTurns 는 budgetCap(도구 호출 예산)이 아니라 piMaxTurns(턴 예산)에서 온다 — 둘을
     // 같은 수로 취급하던 배선이 「균형」을 다이얼 미지정보다 나쁘게 만들었다(2026-09-17).
-    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 10 });
+    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: false, maxTurns: 50 });
     // 확인(계획만)은 쓰기까지 막는다 — 계획을 세우면서 실행하면 그건 계획이 아니다.
     selectAutonomy(panel, "confirm");
     await send(panel, "마을 계획을 세워줘");
-    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 10 });
+    expect(lastPlan()).toMatchObject({ readOnly: true, planOnly: true, maxTurns: 50 });
     expect(lastCommand()?.mode).toBe("single");
   });
 
@@ -165,7 +167,7 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     expect(lastPlan()).toMatchObject({ readOnly: true });
     expect(intentDecl.calls).toBeGreaterThan(0);
     // 사용자가 읽기 전용 강등을 모르면 "왜 편집이 안 되지" 가 된다 — 시스템 줄로 알린다.
-    expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("읽기 전용");
+    expect(findByTestId(panel, "ai-chat-log")?.textContent ?? "").toContain("프로젝트를 바꾸지 않고");
   });
 
   it("do 레벨의 수정 발화는 승격하지 않는다 — 오판 역방향 사고 방지", async () => {
@@ -215,28 +217,31 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     expect(intentDecl.calls).toBe(1);
   });
 
-  it("쓰기 발화는 의도가 연 도메인만 초기 노출로 싣는다", async () => {
-    // modify 선언은 편집 3도메인을 연다 — 나머지는 find_tools·폴백이 실행 중 얹는다.
+  it("실제 입력창이 선언한 툴 이름을 Pi 초기 후보로 보낸다", async () => {
     intentDecl.mode = "modify";
-    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
-    await send(panel, "집 한 채 지어줘");
-    expect(lastPlan()?.toolDomains).toEqual(expect.arrayContaining(["core", "tile", "map", "event"]));
-  });
-
-  it("선언한 툴의 도메인도 함께 연다", async () => {
-    intentDecl.mode = "other";
     intentDecl.tools = ["place_npc"];
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await send(panel, "NPC 하나 놓아줘");
-    expect(lastPlan()?.toolDomains).toEqual(expect.arrayContaining(["core", "event"]));
+    expect(lastPlan()?.initialToolNames).toEqual(expect.arrayContaining(["find_tools", "place_npc", "get_database_records"]));
+    expect(lastPlan()?.initialToolNames?.length).toBeLessThan(80);
+    expect(lastPlan()?.toolDomains).toBeUndefined();
   });
 
-  it("선언이 빈 손이면 좁힐 근거가 없다 — 전량 노출로 떨어진다", async () => {
-    // Break: 신호 없이 좁히면 필요한 툴이 선언에서 빠진 채 시작한다 — 폴백이 있어도 낭비다.
-    intentDecl.mode = "other";
+  it("RPG 첫 프롬프트의 세계관·인물·파티 계약이 Pi 후보에 도달한다", async () => {
+    intentDecl.mode = "create";
+    intentDecl.needsPlan = true;
+    intentDecl.adventure = { village: true, dungeon: true, party: true, battle: true, world: true, characters: true, appearance: true };
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "중세 게임 RPG 만들어줘");
+    expect(lastPlan()?.initialToolNames).toEqual(expect.arrayContaining(["set_world_canon", "upsert_character_profile", "upsert_actor", "set_party", "set_session_start"]));
+    expect(lastPlan()?.initialToolNames?.length).toBeLessThan(80);
+  });
+
+  it("분류 실패는 전체 후보로 복귀한다", async () => {
+    intentDecl.source = "fallback";
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await send(panel, "이것저것 해줘");
-    expect(lastPlan()?.toolDomains).toBeUndefined();
+    expect(new Set(lastPlan()?.initialToolNames)).toEqual(new Set(activeTools().map(tool => tool.name)));
   });
 
   it("질문 승격 턴은 도메인을 좁히지 않는다 — 읽기는 넓어야 답한다", async () => {
@@ -245,7 +250,7 @@ describe("자율성 다이얼 → Pi 실행 계획", () => {
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     await send(panel, "뭐가 있지?");
     expect(lastPlan()).toMatchObject({ readOnly: true });
-    expect(lastPlan()?.toolDomains).toBeUndefined();
+    expect(lastPlan()?.initialToolNames).toBeUndefined();
   });
 
   it("읽기 전용 다이얼은 분류 호출 자체를 건너뛴다", async () => {

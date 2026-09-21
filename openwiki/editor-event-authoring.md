@@ -1,4 +1,37 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
+## 감사 후속: 조건 순서와 생활 경로 보존 (2026-09-20)
+
+`pageConditions.ts`의 스위치 슬롯 편집은 기존 조건의 위치에서 교체한다. 첫 조건을 삭제 후 append하면 두 스위치 행이 서로 바뀌어 다음 편집 대상을 오인한다.
+`pageNpcLiving.ts`는 첫 목적지의 좌표/방향만 바꾸고 기존 switchId 및 뒤 목적지를 보존한다. 이 폼이 전체 생활 경로를 다시 정의하는 것은 아니다.
+실제 컴포넌트의 브라우저 관측값과 범위는 `docs/reviews/2026-09-20-data-integrity-fixes.md`에 있다.
+
 # Editor Event Authoring
+
+## 조수에서도 이벤트 명령 생성기 사용 (2026-09-20)
+
+「AI로 명령 만들기」 버튼은 공용 조수 브리지·세션·턴 실행기로 들어간다. 호스트가
+현재 이벤트·페이지·선택 명령을 전달하고, 실행 가능한 도구와 쓰기 대상을 해당 페이지로
+제한한다. `event_command_assist`가 기존 생성/검증을 맡으며 모달 안에서 명령 diff를
+검토하고 줄을 제외·수정한 뒤 기존 일괄 적용과 한 번 되돌리기를 사용한다.
+대상 페이지·추가 전용 모드·취소/오래된 결과 거부 계약은 `editor-ai-tools.md`의
+「이벤트 명령 AI 공용 도구」 절을 따른다.
+
+## 적대적 리뷰 고위험 항목 보정 (2026-09-19)
+
+- 이벤트 삭제 전 확인 문구가 저장하지 않은 초안을 알려 주고, 맵 히스토리 스냅샷이 초안까지 보존하므로 토스트 복구/Ctrl+Z가 새 이벤트와 편집 중인 이벤트를 되살린다. 새 이벤트 모달 재진입은 `draft.kind === "new"`도 계속 편집한다. 원격/교체 스냅샷이 같은 이벤트를 바꾸거나 지우면 로컬 초안을 유지하면서 `draft.conflict`를 표시하고 푸터에 충돌 상태를 알린다.
+- 새 페이지는 현재 승자(선택 페이지가 없으면 마지막 페이지) 앞에 삽입되어 빈 페이지를 만드는 순간 런타임 우선순위가 바뀌지 않는다. 페이지 탭의 추가 안내와 도움말도 이 계약을 설명한다.
+- 명령 피커는 맵·공통·전투 이벤트 컨텍스트에 맞춰 M2 항목을 필터링한다. Tint Screen은 `durationMs`를 정본으로 사용하고(레거시 `duration`만 작은 값을 초로 환산), 폼·요약·미리보기·런타임이 같은 변환을 공유한다. 상점 편집기/미리보기는 현재 계절의 `priceBySeason`을 계산해 표시한다.
+- AI 초안은 생성 시점의 명령 목록 서명을 저장하고 적용 직전에 다시 비교한다. append 응답은 기존 명령과 같은 자기 필드 서명이면 검증 실패로 되돌려 자가 수정한다.
+- 가져오기는 프로젝트 교체 확인을 거치며, 이벤트 모달·서브다이얼로그의 포커스 트랩은 문서 캡처 단계에서 포커스가 바깥으로 빠진 경우에도 첫/마지막 컨트롤로 되돌린다. 상태 텍스트에는 `role=status`/`aria-live`가 있다.
+- M2 명령은 저장·AI 경계에서 카탈로그 ID, 필드 원시 타입, 선택지 값을 검증한다. 명령 목록 컨텍스트 메뉴는 현재 포커스한 menuitem을 활성화하고 방향키로 이동한다.
+
+## 등장 조건은 조건 그룹을 기본으로 펼친다 (2026-09-19)
+
+페이지에 `conditions`가 하나라도 있으면 이벤트 편집기 설정 레일의 첫 활성 그룹은
+「언제 보이나요」(`when`)다. 조건이 없는 페이지는 기존처럼 「모습과 대화」에서 시작한다.
+사용자가 다른 그룹을 선택한 뒤에는 `activeEventRailGroup` 상태를 존중한다. 조건을
+작성했는데도 조건 편집면이 접힌 채 시작해 등장 조건이 안 보이던 UX 회귀를 막는 계약이다.
 
 ## 명령 중심 배치와 AI 작성 모달 (2026-09-18)
 
@@ -223,6 +256,7 @@ P0 문법 고정 뒤에도 「가독성이 여전히 떨어진다」는 피드�
 - **삽입 자리 규칙은 하나다.** 「+ 명령」·Enter(피커)·붙여넣기(Ctrl+V)·우클릭 「아래에 삽입…」/「아래에 주석 삽입」 전부 **선택 행 바로 아래, 같은 깊이**(`commandInspector.defaultInsertionPath / insertionPathAfter`). 여러 행을 골랐으면 마지막 뿌리 선택 아래. 선택이 없으면 루트 끝. 피커 제목이 자리를 말한다(「명령 추가 — 선택한 대기 바로 아래에」). 컨테이너를 명시한 호출(빈 분기 슬롯·「+ 이 분기에 명령 추가」·페이지 끝 줄)만 그 컨테이너 끝에 넣는다. 분기에 명령이 있어도 끝에 `event-command-branch-add-<path>` / `event-storyboard-branch-add-<path>` 줄이 남는다. 스토리 카드는 `user-select: none`.
 - **닫으면 편집 중 상태가 걷힌다.** `closeHandler` 가 `selectedEventPageId` 를 null 로 하고 window 에 `oprn:event-editor-closed`(`eventEditorLifecycleEvents.ts`) 를 알린다. EditScene 은 그 신호로 「편집 위치 x,y」 배너를 지운다. 맵 마커는 편집기가 페이지를 보고 있는 동안만 그 페이지를 그리고, 아니면 **게임 시작 시 켜질 페이지**(`eventPageAtGameStart` = `resolveEventPage(event, project.session, map.locations)`, 없으면 1페이지)를 그린다.
 - **좁은 화면(`narrow.css`, index.css 마지막 import).** 모달 창 grid 의 열을 `minmax(0, 1fr)` 로 못 박았다 — 예전엔 암묵 열이 헤더 max-content(1033px)로 커져 768 에서 「저장하고 닫기」가 화면 밖이었다. ≤1100: 빈 인스펙터 트랙을 예약하지 않고(1024 에서 960px 중 324px 가 빈 판이었다), 명령을 고르면 인스펙터가 오른쪽 **덮개**(absolute, `grid-column: 1 / -1`)로 뜬다. 스토리 카드는 어느 폭·높이에서도 한 줄 — `@media (max-height: 800px)` 의 세로 쌓기와 `@media (max-width: 1100px)` 의 `flex-basis: 158px`(세로 flex 트랙에서 높이가 됐다)를 되돌렸다.
+- **설정 레일의 «레일 + 넓은 시트» 분리는 컨테이너 쿼리가 결정한다 (2026-09-20).** `pages-4.part-2.css` 의 마스터-디테일 블록은 예전에 `@media (min-width: 1441px)` 만 보고 열렸다 — 그 시절 설정 컬럼은 `clamp(660px, 30vw, 780px)` 였다. 명령 중심 배치(`command-workbench.css`, event 레이어 **마지막** import)가 설정 트랙을 240px 로 못 박은 뒤로는 **1680px 에서도 시트의 포함 블록이 205px 인데 `left: 208px`** 이 되어 본문 폭이 음수화되고 패딩 14px 만 남은 **30px 슬리버**가 됐다(실측). 조건 12행은 통째로 보이지 않았고 「모습과 대화」는 스프라이트 한 칸만 남았다. 이제 컨테이너를 `.event-page-props`(아코디언의 직계 부모 — 폭이 아코디언과 정확히 같다)에 걸고 `@container evt-settings-rail (min-width: 430px)` 로 연다: 196px 레일 + 12px 간격 + 218px(조건 2열 그리드 `minmax`) = 426px → 430px. **컨테이너는 자기 쿼리의 영향을 받지 않으므로 아코디언 자신에 걸면 안 된다** — 그렇게 하면 `display: contents`/`position: relative` 가 아코디언에 닿지 않고 본문만 absolute 가 되어 포함 블록이 워크벤치로 새어나간다(실측: 설정 열 517px 일 때 시트가 1230px 로 명령 열을 덮었다). 실측 확인: 1680/1920/2560 에서 시트 203px(세로 아코디언), 리사이저로 설정 열을 469px 이상 넓히면 레일 196 + 시트 261 로 분리, 포함 블록은 아코디언(`offsetParent = .event-editor-settings-accordion`).
 - **입력 change 는 포인터 제스처 뒤에 커밋한다**(`commitAfterPointerGesture.ts`, 이벤트 이름·페이지 이름 상자). 다른 버튼을 누르며 blur 된 change 가 본문을 동기 재렌더해 누르던 버튼이 pointerup 전에 교체됐다 — 「이름을 치고 + 를 눌렀는데 아무 일도 없다」의 원인.
 - P1·P2 에서 고친 것: 「크기와 통행」 입력 56px 보장 + 좁으면 미리보기를 아래로(컨테이너 쿼리) · 피커 트리거 라벨이 개명을 따라감(`recordsOf(kind)` 를 호출 시점에 읽음) · 3단계 서브다이얼로그 배경 반투명(불투명 밑판 제거) · 서브다이얼로그 첫 포커스는 본문의 첫 입력(`focusFirstControl`) · 검증 항목 클릭은 자기 열 안에서만 스크롤(`scrollIntoNearestScroller.ts`) · 커스텀 select 접근성 이름에서 select/button 글 제외(7,019자 → 「값」) · 아무것도 안 만든 빈 페이지엔 `page.invisible-collision` 경고를 내지 않음 · 검증 종 항목은 원인→기대→힌트만 보이고 코드·ID 는 title/dataset · 그래픽 피커 제목 「그래픽」.
 - **남긴 것**: 「움직임과 속도」 fieldset 7개(P1-13), 명령 피커 밀도·아이템 네이티브 select(P2-17), 스토리 뷰 삼중 라벨·자르기(P2-16), 첫 화면 입구 다섯 개(P2-15), 문구 잡음(P2-18). 표면 기준선 픽스처(`test/fixtures/eventEditor*Surface.baseline.json`)는 클래스 목록 변화로 갱신이 필요하다.
@@ -373,8 +407,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **Transparent trunk on lower:** Chip 290 etc. are transparent. On **lower** alone they show black holes (no underlay). Editor/play render must composite **grass under trunk** when drawing a tree-trunk lower tile (`createTrunkOnGrassObject` / play `renderTile` grass-then-trunk). Data stays `lower=290` for solid passage; only the draw path adds the grass underlay.
 - **Tree pair post-hook (required):** Every tree trunk (lower/upper 290/291/292/293) must have its matching canopy on **upper** of the cell **above** (290??60, 291??61, 292??62, 293??63). Implemented in `repairTreePairsOnMap` / `repairTreePairsOnProject` (`src/project/lint/repairTreePairs.ts`). Runs as write-tool postprocess in `toolRunner` (before commit) and after manual paint/erase/fill in `tileActions`. Orphan trunks on row y=0 are removed (no cell above).
 - Selection-based deterministic building palette work lives in `src/editor/panels/buildPalette.ts` and `src/editor/panels/buildPaletteCore.ts`, mounted from `src/editor/panels/editorZoomToolbar.ts`. It consumes `editorState.selection`, stamps path/water/roof/tree/NPC/prop primitives without LLM calls, and routes AI-fill through the existing region task modal/runRegionTask path. The house primitive converts the drag rectangle plus the selected shape (`rect`, `l`, or `u`) into `build_house_kit` wings and exposes the two learned kits (`blue-stone`, `bright-plaster`) plus door-event/interior/window toggles. The village primitive calls `build_village` with `bounds` set to the drag rectangle so the builder's plaza, houses, paths, NPCs, and self-audit stay inside the selected area. When the select tool drag ends, `DragOperationHandler` emits `oprn:ai-selection-context`; `aiChatPanel` arms the bottom command bar with `ai-selection-chip`, focuses the input, and sends Enter through `runRegionTask` until the chip is cleared.
-- **Selection action chips** (`src/editor/selectionActionChips.ts`): left-select exposes a floating toolbar on `.phaser-container` (same slot as build palette when palette is off) with **복사(Copy) / 붙여넣기(Paste) / 지우기(Clear) / ✨AI / ✕(Deselect)** buttons plus a `W×H` size label. Paste is **clipboard-gated** (only shown when `editorState.clipboard` exists). Copy calls `copySelection`; Clear calls `clearSelectionRegion` (empties both layers); Deselect calls `clearSelection` (clears selection + pastePreview). **Paste preview mode:** Ctrl+V or the Paste chip enters `editorState.pastePreview = {x,y}` — a semi-transparent tile ghost follows the cursor (`renderPastePreviewGhost` in EditScene); left-click confirms via `confirmPastePreview` (commits `pasteClipboard` + auto-selects pasted region + toast); Esc/right-click cancels via `cancelPastePreview`. Placement: `fixedSelectionChipsPosition` pins the toolbar to the **bottom-right** of the canvas; CSS: `.selection-action-chips { position:absolute; z-index:30; backdrop-filter }`. `mapClipboard.ts` owns `enterPastePreview`/`movePastePreview`/`confirmPastePreview`/`cancelPastePreview`/`clearSelection`/`clearSelectionRegion`. Esc handling is layered: `handleEscapeKey` in EditScene cancels paste preview first, then clears selection.
-- **Canvas work area fill:** `.editor-canvas-scroll-shell` uses `--editor-canvas-chrome-top` / `--editor-canvas-chrome-bottom` (Figma shell: 48px / 54px to match toolbar reserve + 54px statusbar). `.phaser-container` is `display:block; width/height:100%` (not fixed 1024횞768). `fitCanvas()` resizes Phaser to the host rect.
+- **Selection action chips** (`src/editor/selectionActionChips.ts`): left-select exposes a floating toolbar on `.phaser-container` (same slot as build palette when palette is off) with **복사(Copy) / 붙여넣기(Paste) / 지우기(Clear) / ✨AI / ✕(Deselect)** buttons plus a `W×H` size label. Paste is **clipboard-gated** (only shown when `editorState.clipboard` exists). Copy calls `copySelection`; Clear calls `clearSelectionRegion` (empties both layers); Deselect calls `clearSelection` (clears selection + pastePreview). **Paste preview mode:** Ctrl+V or the Paste chip enters `editorState.pastePreview = {x,y}` — a semi-transparent tile ghost follows the cursor (`renderPastePreviewGhost` in EditScene); the selection toolbar is hidden while the ghost is active (`shouldShowSelectionActionChips`). Left-click confirms via `confirmPastePreview` (commits `pasteClipboard` + toast, **does not** select the pasted region); Esc/right-click cancels via `cancelPastePreview`. Placement: `fixedSelectionChipsPosition` pins the toolbar to the **bottom-right** of the canvas; CSS: `.selection-action-chips { position:absolute; z-index:30; backdrop-filter }`. `mapClipboard.ts` owns `enterPastePreview`/`movePastePreview`/`confirmPastePreview`/`cancelPastePreview`/`clearSelection`/`clearSelectionRegion`. Esc handling is layered: `handleEscapeKey` in EditScene cancels paste preview first, then clears selection.
+- **Canvas work area fill (2026-09-18 갱신):** dense(standard/expert, 플로팅 툴바)에서 `.editor-canvas-scroll-shell` 은 normal flow + `flex:1` 로 배너 뒤에 바로 붙는다 — 고정 `top: 48px` / 배너 시 `74px` 예약이 배너 실측(42px)과 어긋나 상단 빈 띠를 남기던 결함 수정. beginner(도크 툴바)는 absolute 예약을 유지한다. 배너 있을 때 플로팅 툴바는 `.canvas-area:has(.persistence-mode-banner) .canvas-toolbar:not(.is-docked-chrome) { top: 50px }` 로 배너(42px) 아래에 뜬다 — 구 선택자(`.persistence-mode-banner ~ .canvas-toolbar`)는 배너가 호스트 안에 있어 성립하지 않았고 툴바가 배너 닫기 버튼을 가렸다. 도크 툴바(beginner)는 배너와 같은 행에 겹쳐 배너 텍스트를 가렸으므로 `body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .canvas-toolbar.is-docked-chrome { top: 42px }` 로 배너 아래로 내린다 — body 접두는 도크 원 규칙(클래스 4+요소 1)을 이기기 위한 특이도다. 셸(absolute + top:auto)은 static 위치라 자동으로 따라 밀린다. `.phaser-container` 는 `display:block; width/height:100%`(고정 1024×768 아님). `fitCanvas()` 가 호스트 rect 에 맞춰 Phaser 를 리사이즈한다.
 - AI `create_map` in `src/editor/tools/mapTools.ts` creates plain grass maps by default. Its old `border: "wall"` outer frame is **no longer in the model-facing schema** (2026-09-11) — the assistant used to pick it on its own for every cave/dungeon/basement request; the runtime argument still works for scripts, tests and replayed conversations. Details and measurements: `editor-ai-tools.md`. House harness kits in `src/editor/houseKit.ts` add upper-layer windows by default on wall mid rows (`windows: false` preserves exact golden layouts).
 - **Map tree vs `project.maps`:** the map list UI (`mapList.ts`) only walks `project.mapTree`, not every key in `project.maps`. Orphan maps (written into `maps` without a tree node ??e.g. ad-hoc scripts) are invisible until reattached. `create_map` / UI `addMap` always update the tree. Load/normalize runs `repairMapTreeOrphans` (`src/project/mapTree.ts`, from `store.normalizeCurrentProject`) to attach orphans as root children and prune dead nodes. Prefer `create_map` over raw `maps[id]=??.
 - **Market / deck harness (Combined Town):** engine modules still use deck tiles body **222**, edges **228/229/230/192**, rails, etc. (`stampMarketHarness` hardcodes chips). **AI v3 construction tools no longer take `*VocabId` / harness group ids** ??use `material` = tile **label/description** (e.g. `"臾?`, `"침�뿽??`, `"?섎Т ?곸옄"`, `"??吏?踰?`). Resolve via `resolveMaterialByLabel` / `tile_query ask:"labels"`. **Shop pattern:** transparent `action` event **on counter tile** runs `shop`; merchant NPC behind counter is chat-only. Village map: `buildVillageShoppingStreetProject` / `map_village_shopping_street`. Large 100횞100: `buildLargeRiverMarketVillageProject` / `map_large_river_market_village`.
@@ -575,7 +609,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 ## Event draft trust loop (2026-07-30)
 - Opening an event starts an editor-only draft through `eventDraftActions.ts`. Existing events keep their pre-open canonical body in `draft.original`; new events use `draft.kind:"new"`. Editor map markers, event lists, and drag operations intentionally read `editorWorkingEvents()` so the open working body remains visible, while persistence and runtime consumers use the canonical projection described in `runtime-project-schema.md`.
 - **본문이 헤더/푸터만 남고 하얘지면 (2026-09-02):** `modal.ts` 의 `refresh()` 는 동적 본문을 지운 뒤 `renderEventEditorDynamic` 을 그린다. 페이지에 `graphic` / `movement` / `trigger` / `commands` 가 없으면 설정 레일이 `page.movement.type` 에서 던지고 본문이 빈 칸으로 남았다. `normalizeEventPage` 가 화면용 기본값을 채우고, 검증기는 같은 칸을 선택적으로 읽으며, `refresh` 가 그래도 던지면 `event-editor-render-error` 를 남긴다. 레이아웃은 `event-editor.balanced.css` 가 바디를 flex 로 고정하고 에디터 그리드를 페이지바+워크벤치 두 행(`!important`)만 인정한다 — 옛 `auto auto 1fr` 3행이 이기면 워크벤치가 0 높이로 접힌다. 계약: `test/eventEditorModal.test.ts`, `test/eventPageNormalize.test.ts`, `test/eventEditorBalancedShell.test.ts`.
-- Apply and OK run the aggregate validator before `saveEventDraft`; Cancel restores `draft.original` or removes a new draft. Linked display names and field-template switch definitions now live in `draft.authoredWrites` (`eventDraftAuthored.ts`), not canonical profiles/flags. Dirty checks and the existing vault include them; Apply takes one project snapshot when linked writes exist (map-only otherwise), and Cancel drops them without global history. Validation/preview consumers must use `projectWithEventDraftAuthoredWrites(project, mapId, eventId)` for staged references; that working projection must never be persisted. `validateEventDraftBody` now applies that projection itself, and the NPC rail reads the staged name; `test/eventDraftProjectionIntegration.test.ts` covers both the rail and parent Apply. PR #614 is integrated as an incomplete snapshot, not Phase 2 completion; current verification and limitations are recorded in `.omo/evidence/wish-event-audit/PR614_MERGE.md`. The modal checkpoints the working body into `eventDraftVault.ts` and project-scoped localStorage so an autosave merge, remote reload, or interrupted editor render cannot blank the open event. Footer text distinguishes local recovery/draft state from actual Supabase autosave state; “로컬 복구” is never presented as remote success.
+- Apply and OK run the aggregate validator before `saveEventDraft`; Cancel restores `draft.original` or removes a new draft. Linked display names and field-template switch definitions now live in `draft.authoredWrites` (`eventDraftAuthored.ts`), not canonical profiles/flags. Dirty checks and the existing vault include them; Apply takes one project snapshot when linked writes exist (map-only otherwise), and Cancel drops them without global history. Validation/preview consumers must use `projectWithEventDraftAuthoredWrites(project, mapId, eventId)` for staged references; that working projection must never be persisted. `validateEventDraftBody` now applies that projection itself, and the NPC rail reads the staged name; `test/eventDraftProjectionIntegration.test.ts` covers both the rail and parent Apply. PR #614 is integrated as an incomplete snapshot, not Phase 2 completion; current verification and limitations are recorded in `.omo/evidence/wish-event-audit/PR614_MERGE.md`. The modal checkpoints the working body into `eventDraftVault.ts` and project-scoped localStorage so an autosave merge, remote reload, or interrupted editor render cannot blank the open event. Footer text distinguishes local recovery/draft state from actual LegacyDb autosave state; “로컬 복구” is never presented as remote success.
 - Empty pages render six beginner paths in `eventEditor/content.ts`: dialogue NPC, item-reward treasure chest, transfer, shop, battle, and blank/search. The treasure starter compiles to `changeItem += 1` with the first existing item and refuses when the database has no item; reusable item storage remains the separate `openChest` (`보관 상자`) command. Its editor form presents local/shared storage scope, names shared storage in author-facing language, and previews the two-way bag ↔ chest interaction without exposing runtime keys. `eventBeginnerTemplates.ts` otherwise seeds only map/item/troop ids that exist in the current project, chooses a passable transfer cell deterministically, and refuses with an explicit message when a required record does not exist. Each valid starter still opens the normal command edit dialog before insertion.
 - Dialogue command previews use the runtime `--runtime-dialogue-*` dark-glass tokens for `.ecp-message-window`, speaker tabs, faces, and choices. Preserve the preview DOM/testids and keep transparent, face-left/right, bust/full, position, and choice states visually aligned with `src/styles/dialogue.css`.
 - Reactive modal renders preserve settings/command scroll, focused testid/command row, text selection, selected command, and open details. The command picker shortcut is Ctrl/Cmd+K. Focus restoration and draft Cancel behavior are covered by `test/eventEditorTrustLoop.test.ts`; pure starter safety is covered by `test/eventBeginnerTemplates.test.ts`.
@@ -587,7 +621,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - 빈 이벤트의 「회상 오프닝」 CTA(`memoryOpeningTemplate.ts`)는 별도 「컷신」 페이지를 만들지 않고 보고 있던 빈 페이지에 그 프리셋을 심는다.
 - 계약: `test/recollectionBeats.test.ts`, `test/eventEditorMemoryOpeningTemplate.test.ts`, `test/scriptCutsceneIntegration.test.ts`(장면 테스트로 스틸 표시 + 종료 후 입력 잠금 해제까지 검증).
 
-- 맵 기반 회상 예제 **「철수의 기억」** (2026-09-05): Supabase `rpg-zzu-cheolsu-memory-20260905-df12`. 현재 강변의 상자 조사 → 별도 여름 맵 자동 컷신 → 현재 귀환과 후일담. `memory_seen`/`memory_closed`로 완료 상태를 분리하고, 맵 전이는 각 이벤트의 마지막 명령으로 둔다. 재현 저작: `npx tsx scripts/build-cheolsu-memory.mts` (이 ID만 저장 후 재로드 대조). 출하 플레이어 검증: `node scripts/qa-cheolsu-memory.mjs`; 결과 `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md`. 후속 검토에서 NPC 방향 전환의 30초 정지를 발견했다. 해당 구간의 이벤트 이동 허용/복원 명령을 원격 프로젝트에 추가했고, 검증은 일반 키보드 입력과 침묵 시간 상한을 사용한다(`docs/reviews/2026-09-05-event-runtime-audit.md`). 대사창은 장면 중간에도 닫히므로 창 부재만으로 컷신 종료를 단정하지 않고, 대사 내용·진행 스위치·입력 복구를 함께 확인한다.
+- 맵 기반 회상 예제 **「철수의 기억」** (2026-09-05): LegacyDb `rpg-zzu-cheolsu-memory-20260905-df12`. 현재 강변의 상자 조사 → 별도 여름 맵 자동 컷신 → 현재 귀환과 후일담. `memory_seen`/`memory_closed`로 완료 상태를 분리하고, 맵 전이는 각 이벤트의 마지막 명령으로 둔다. 재현 저작: `npx tsx scripts/build-cheolsu-memory.mts` (이 ID만 저장 후 재로드 대조). 출하 플레이어 검증: `node scripts/qa-cheolsu-memory.mjs`; 결과 `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md`. 후속 검토에서 NPC 방향 전환의 30초 정지를 발견했다. 해당 구간의 이벤트 이동 허용/복원 명령을 원격 프로젝트에 추가했고, 검증은 일반 키보드 입력과 침묵 시간 상한을 사용한다(`docs/reviews/2026-09-05-event-runtime-audit.md`). 대사창은 장면 중간에도 닫히므로 창 부재만으로 컷신 종료를 단정하지 않고, 대사 내용·진행 스위치·입력 복구를 함께 확인한다.
 
 ## Guided story arc facade
 
@@ -688,15 +722,15 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 
 ## 조건은 평가기가 셋이다 — 판정 일치를 테스트로 고정한다 (2026-08-29)
 
-같은 17종 `Condition` 유니온(`src/project/types/events.ts:32-55`, 정본 목록
+같은 19종 `Condition` 유니온(`src/project/types/events.ts:59-89`, 정본 목록
 - `relationshipAtLeast` 는 `friendshipAtLeast` 와 같은 소셜 키 규칙을 쓰지만 수치가 아니라 순서 있는 열거(`single | dating | engaged | married`)를 비교한다. 저작 표면 세 곳(간단 행/칩, 고급 목록, fork 조건 폼)에 모두 등록돼 있고, 상태를 바꾸는 명령은 `setRelationship` 뿐이다. 조건만 넣고 명령을 두지 않으면 항상 거짓이다. 연결된 인물이 없으면 `friendshipAtLeast` 와 동일하게 닫힌 채로 거짓이며 검증기가 `condition.relationship.no-character-id` 로 경고한다.
-`src/project/commandKindRegistry.ts:103-120`)을 **세 곳**이 각자 평가한다:
+`src/project/commandKindRegistry.ts:105-124`)을 **세 곳**이 각자 평가한다:
 
 | 평가기 | 위치 | 쓰는 곳 |
 |---|---|---|
-| `evalPageCondition` | `src/project/io/pageResolution.ts:31` | 이벤트 페이지 출현 판정 |
-| `evalCondition` | `src/project/session.ts:735` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
-| `evaluateCondition` | `src/battle/battleEvents.ts` (내부 함수) | 전투 분기 + 트룹 페이지 |
+| `evalPageCondition` | `src/project/io/pageResolution.ts:45` | 이벤트 페이지 출현 판정 |
+| `evalCondition` | `src/project/session.ts:828` | 맵 조건 분기(`interpreter/commandCatalog.ts` fork) |
+| `evaluateCondition` | `src/battle/battleEvents.ts:926` (내부 함수) | 전투 분기 + 트룹 페이지 |
 
 **활동 조건은 프로젝트의 실제 일정에서 후보를 받는다 (2026-08-29).** `activity` 는 자유 문자열이고
 매칭은 완전 일치다. 저작자가 유효한 값을 추측해야 했던 문제를 `collectNpcActivitySuggestions`
@@ -715,10 +749,11 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 **저작은 되는데 절대 참이 될 수 없는** 상태였다. 지금은 전투도 소유 이벤트의 활동을 보고,
 `resolveSocialKey` 를 **재사용**한다(두 번째 해석 규칙을 만들지 않는다).
 
-**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 17종 × (만족/불만족) 을 세 평가기에
+**정본 계약은 `test/conditionEvaluatorParity.test.ts` 다.** 19종 × (만족/불만족) 을 세 평가기에
 동일 입력으로 먹여 판정 일치를 단언하고, `Object.keys(CASES)` 를 `CONDITION_KINDS` 와 순서까지
 비교하므로 **종류를 빠뜨리면 실패한다**. 허용 예외 목록(`ALLOWLISTED_DIVERGENCES`)은 현재 **비어 있다** —
-지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라.
+지우거나 채우기 전에 왜 갈라져야 하는지 근거를 남겨라. `battleResult` 의 표면별 시간 의미 차이(맵=방금 끝난 전투,
+전투 중=직전 전투)는 상태-패리티가 아니라 별도 계약으로, fork 폼 힌트가 설명한다.
 
 ### 함정: 부재 타이머는 0초로 읽혀 조건이 참이 된다
 
@@ -730,6 +765,8 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 RM2K3/EasyRPG 와는 다르다(그쪽은 타이머가 **작동 중**이어야 한다). `PlaySession.timers` 에 running
 비트가 없고 `timer stop` 이 값을 지우지 않으므로, RM 정합은 스키마 변경이다. **"고치지" 말고**
 저작 시점 경고(`condition.timer.always-true`)로 보이게 두라.
+**음수는 폼에서 못 적는다** — 타이머 입력이 `min="0"` 이라 거짓으로 만드는 유일한 방법이 UI에 없다.
+대신 fork 폼이 `event-fork-timer-warning` 인라인 경고를 직접 보여준다(2026-09-18).
 
 ### 고급 조건 목록에서 극성을 벗기지 마라 (D08 재발 방지)
 
@@ -754,6 +791,12 @@ DB 에서 지워진 유령 참조는 `<id> (없음)` 라벨로 **계속 보인�
 때만 판정한다. 종전에는 빈 세션으로 평가해서 16종 중 **7종**(timer/timePhase/season/npcActivity/
 friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모든 타이머 조건이 「충족」으로
 보였다. 계약: `test/conditionEvalPreview.test.ts`.
+
+**뱃지와 시뮬레이션은 같은 맵 입력으로 평가한다 (2026-09-18).** `insideLocation` 은 뱃지가
+무조건 「판정 불가」였는데 시뮬레이션은 map context 없이 `else` 단정이던 갈라짐을 고치면서,
+둘 다 편집 중 맵(`editorState.currentMapId`)의 로케이션 기하로 평가한다. 맵을 모르면
+둘 다 판정 불가다. fork 시뮬레이션의 taken 값도 3상태(`then|else|unknown`)이며 unknown이면
+양쪽 분기를 전부 skipped 로 둔다. 계약: `test/previewSimulation.test.ts`.
 
 ### 조건 문구에 내부 토큰을 넣지 마라
 
@@ -783,3 +826,45 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 숨은 기본 정책을 추가하지 않는다. `normalizeEventPage`는 선택 sight를 보존한다.
 모든 입력은 기존 `updateEventPage` 드래프트/감사 경로를 사용한다. 발견 대기는 ms, 문 대기는 초다.
 필드·런타임·저장 계약과 테스트는 [horror-authoring.md](horror-authoring.md)의 NPC 발견 절을 따른다.
+
+## 명령 툴바는 한 줄이다 — wrap 금지와 폭 흡수 순서 (2026-09-21)
+
+사용자 화면에서 이벤트 편집기 명령 툴바가 두 줄로 접히고 그 위에 빈 밴드가 생겼다.
+`+ 명령`·검색은 첫 줄, 보기 전환(목록/스토리/플로우)과 `AI로 명령 만들기`는 둘째 줄로
+떨어졌다. 원인은 두 겹이다.
+
+1. **흡수 규칙이 죽어 있었다.** 검색 입력은 2026-08-29 에 「입력 + 지우기 + 일치 개수」
+   한 벌로 감싸이면서 `.event-editor-command-search-field` 래퍼가 생겼는데,
+   `command-list.css` 의 «남는 폭은 검색이 흡수한다» 규칙은 여전히
+   `.event-editor-command-toolbar > .event-editor-command-search`(직계 자식)를 본다.
+   래퍼가 끼는 순간 그 선택자는 아무것도 매칭하지 않고, 검색은 `min-width: 96px` 로
+   짜부라진 채 툴바의 남는 폭을 아무도 흡수하지 않았다.
+2. **`flex-wrap: wrap` 이 켜져 있었다.** `command-list.css` 와
+   `command-workbench.css` 가 각각 `flex-wrap: wrap` 을 선언한다.
+
+지금 계약은 **한 줄**이다. 넘침은 순서대로 흡수한다.
+
+- 검색 래퍼(`.event-editor-command-search-field`)가 `flex: 1 1 140px` /
+  `max-width: 320px` / `min-width: 96px` 로 먼저 줄어든다.
+- 그다음 아이콘 툴 버튼(`편집`·`도구`)과 되돌리기/다시 실행이 줄어든다.
+- 보기 전환 세그먼트(`.event-view-toggle`)는 `flex-shrink: 0` 이다 — 낱말이 곧 정보다.
+- `AI로 명령 만들기`(aux 그룹)는 `flex-shrink: 0` 이고 라벨을 항상 유지한다.
+  그 그룹의 유일한 표면이고, 별 글리프만으로는 무엇을 하는 버튼인지 알 수 없다.
+
+좁은 칼럼에서 낱말을 접는 규칙은 `.event-contents-fieldset` 의 컨테이너 쿼리
+`evt-command-column` 하나가 소유한다. **800px 미만이면 보조 도구(aux 제외)가 아이콘만
+남고, 800px 이상이면 낱말이 돌아온다.** 실측(2026-09-21, 인스펙터가 열린 4트랙):
+명령 칼럼은 1440 에서 718px, 1920·2560 에서 764px 이 상한이다. 764px 에 낱말 8개를
+세우면 검색이 102px 로 눌려 검색 구실을 못 하므로 임계값은 800px 이다. 사용자가
+리사이저로 설정 칼럼을 줄이면 낱말이 돌아온다.
+
+같은 변경에 딸린 수정 하나: 검색 지우기 버튼(`event-command-search-clear`)은
+`content.ts` 가 `hidden` 을 켜는데도 화면에 남아 있었다. `dialogs-5.css` 의
+`.event-editor-modal-window .event-editor .event-editor-command-search-clear`(0,3,0)가
+`display: inline-flex` 로 `hidden` 을 이기고 있었고, 그 시트가 `command-list-4.css` 보다
+나중이라 같은 특이도로는 못 이긴다. 창 접두를 붙인 `[hidden]` 규칙으로 잠근다.
+
+소유: `src/styles/event/command-list-4.css`(흡수·접힘·컨테이너 쿼리),
+`src/styles/event/command-list.css`(툴바 한 줄 선언),
+`src/styles/event/command-workbench.css`(툴바 한 줄 + 컨테이너 정의).
+전후 캡처와 실측은 이 세션의 `1440/1920/2560` 프로브(툴바 높이 44px, 자식 y 단일 행).

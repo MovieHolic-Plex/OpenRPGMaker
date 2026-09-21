@@ -21,7 +21,7 @@ Keep editor version, runtime version/build identity, project schema, game
 release identity, and save schema/compatibility separate.
 
 1. Authoring data has a stable game identity independent of title, author, slug,
-   and the editor's current Supabase connection.
+   and the editor's current LegacyDb connection.
 2. Publication settings preserve an explicit runtime target and save
    compatibility identity. Reading or validating legacy data does not generate
    random identity or silently opt into a new engine.

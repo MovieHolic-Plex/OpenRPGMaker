@@ -1,9 +1,14 @@
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { validateMapClimateInput } from "./combatAuthoringValidation";
+import { mapClimateSchema } from "./combatAuthoringSchemas";
+import { normalizeMapClimate } from "@/project/mapClimate";
 // editor/tools/mapTools.ts
 // 맵 생성/타일 페인팅/도로/구조물/시작위치 쓰기 툴.
 
 import { isPassable } from "@/project/collision";
 import { normalizeCloudShadowParams } from "@/player/cloudShadows";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -182,7 +187,7 @@ const createMap: ToolDefinition = {
       // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       seed: { type: "integer", description: "명시 BGM 선택 시드(생략 시 맵 id에서 유도, 이미 쓴 곡 회피)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
-      tilesetId: { type: "string", description: "타일셋 id(생략 시 기본 합본 마을). 프로젝트에 있는 타일셋만." },
+      tilesetId: { type: "string", description: "타일셋 id(생략 시 숲마을 · 거리별 잔디. 실내·던전은 해당 칩셋을 명시). 프로젝트에 있는 타일셋만." },
       bgm: {
         type: "object",
         description: "명시적 BGM 설정. 있으면 자동 선택을 건너뛴다.",
@@ -204,16 +209,20 @@ const createMap: ToolDefinition = {
     assertMapIdAvailable(draft, id);
     const name = args.name as string;
     const size = width * height;
-    const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : DEFAULT_TILESET_ID;
-    if (!draft.tilesets[tilesetId]) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
+    const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
+    const tileset = draft.tilesets[tilesetId];
+    if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const map: GameMap = {
       id,
       name,
       width,
       height,
       tilesetId,
-      tileSize: DEFAULT_TILE_SIZE,
-      lowerTiles: new Array<number>(size).fill(TILE.GRASS),
+      // 맵의 좌표 단위는 **고른 타일셋**에서 온다. 16 을 박으면 32px 타일셋을 고른 순간
+      // 맵만 16 으로 남아 렌더·히트테스트가 반 칸씩 어긋난다(set_map_properties 는 이미
+      // 타일셋 크기를 따라가므로, 생성 경로만 규칙에서 빠져 있었다).
+      tileSize: tileset.tileSize,
+      lowerTiles: new Array<number>(size).fill(isCombinedTownCompatibleTileset(tileset) ? TILE.GRASS : TILE.EMPTY),
       upperTiles: new Array<number>(size).fill(TILE.EMPTY),
       events: [],
     };
@@ -1589,6 +1598,22 @@ const backgroundSchema: JsonSchema = {
     scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     loopX: { type: "boolean" },
     loopY: { type: "boolean" },
+    layers: {
+      type: "array",
+      description: "\ucd94\uac00 \ubc30\uacbd \ub808\uc774\uc5b4(\ucd5c\ub300 3\uc7a5, \uc55e\uc774 \uc544\ub798). CraftPix \uacc4\uce35 \ubc30\uacbd\uc744 \u00ab\uc138\ud2b8 \uae30\ubcf8 \ub808\uc774\uc5b4\u00bb\ub85c \uac00\uc838 \uc62c\ub54c \uc4f0\ub294\ub2e4.",
+      items: {
+        type: "object",
+        properties: {
+          imageId: { type: "string" },
+          scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+          scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+          loopX: { type: "boolean" },
+          loopY: { type: "boolean" },
+        },
+        required: ["imageId"],
+        additionalProperties: false,
+      },
+    },
   },
   required: ["imageId"],
   additionalProperties: false,
@@ -1611,6 +1636,7 @@ const cloudShadowSchema: JsonSchema = {
   type: "object",
   properties: {
     enabled: { type: "boolean" },
+    amount: { type: "integer", minimum: 0, maximum: 6, description: "구름량: 0 없음, 1 적음, 3 보통(기본), 6 많음" },
     opacity: { type: "number", minimum: 0.05, maximum: 0.6 },
     speed: { type: "number", minimum: 0, maximum: 160 },
     angleDeg: { type: "number", minimum: 0, maximum: 359 },
@@ -1623,7 +1649,7 @@ const cloudShadowSchema: JsonSchema = {
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자.",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1648,6 +1674,8 @@ const setMapProperties: ToolDefinition = {
       clearMinimap: { type: "boolean" },
       cloudShadows: cloudShadowSchema,
       clearCloudShadows: { type: "boolean" },
+      climate: mapClimateSchema,
+      clearClimate: { type: "boolean" },
     },
     required: ["mapId"],
   },
@@ -1696,7 +1724,8 @@ const setMapProperties: ToolDefinition = {
       const normalized = normalizeMapBackground(args.background);
       if (!normalized) throw new ToolError("background는 { imageId, scrollX?, scrollY? } 여야 합니다.", { code: "invalid-args" });
       map.background = normalized;
-      changed.push(`배경=${map.background.imageId}`);
+      const layerCount = map.background.layers?.length ?? 0;
+      changed.push(`배경=${map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`);
     }
     if (args.clearBattleBackground === true) {
       delete map.battleBackground;
@@ -1719,6 +1748,16 @@ const setMapProperties: ToolDefinition = {
       map.minimap = structuredClone(args.minimap) as NonNullable<GameMap["minimap"]>;
       changed.push(`미니맵=${map.minimap.enabled ? "켬" : "끔"}`);
     }
+    if (args.clearClimate === true) {
+      delete map.climate;
+      changed.push("기후=전역 상속");
+    } else if (args.climate !== undefined) {
+      validateMapClimateInput(args.climate);
+      const climate = normalizeMapClimate(args.climate);
+      if (!climate) throw new ToolError("climate.mode는 inherit, indoor, fixed 중 하나여야 합니다.", { code: "invalid-args" });
+      map.climate = climate;
+      changed.push(`기후=${climate.mode}`);
+    }
     if (args.clearCloudShadows === true) {
       delete map.cloudShadows;
       changed.push("구름 그림자=끔");
@@ -1727,6 +1766,7 @@ const setMapProperties: ToolDefinition = {
       const params = normalizeCloudShadowParams(shadows);
       map.cloudShadows = {
         enabled: shadows.enabled === true,
+        amount: params.amount,
         opacity: params.opacity,
         speed: params.speed,
         angleDeg: params.angleDeg,

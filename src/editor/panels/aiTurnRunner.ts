@@ -337,7 +337,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       } else if (event.type === "tool_started") {
         // 채팅과 상태 배지 모두 실행 직전에 구체적인 현재 작업을 반영한다.
         setAgentGhostRunningTool(event.name, event.args);
-        deps.surface.startLiveActivity(event.name, event.index);
+        deps.surface.startLiveActivity(event.name, event.index, event.args);
         deps.noteWorkPlanActivity(toolLabel(event.name));
       } else if (event.type === "tool_call") {
         liveToolCalls.push({
@@ -353,7 +353,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
           scope: turnConversationScope,
           entries: [...auditHistoryAtTurnStart, ...session.getAuditEntries()],
         });
-        deps.surface.completeLiveActivity(event.name, event.result, event.args);
+        deps.surface.completeLiveActivity(event.name, event.result, event.args, event.visuals);
         ghostPreviewUpdater.handleToolCall(event);
         // 청사진 진행 — 이번 호출이 어느 칸을 짓고 있는지로 planned/building/done 을 옮긴다.
         // 쓰기 여부를 같이 넘긴다: 이 훅은 성공한 **모든** 툴콜에서 발화하므로 읽기 툴
@@ -616,7 +616,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       // 접힌 채로 턴이 끝나면 레일 점으로 알린다(초록=완료, 빨강=오류 — 펼치는 순간 소거).
       if (deps.surface.collapsed) deps.surface.panel.classList.add(turnFailed ? "is-turn-error" : "is-turn-attention");
       deps.surface.persistConversation({ id: turnConversationId, scope: turnConversationScope, entries: turnEntries }); // 시작 당시 대화 범위로 저장한다.
-      // 채팅 턴마다 활동 로그(로컬 + Supabase best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
+      // 채팅 턴마다 활동 로그(로컬 + project storage best-effort). 영역 작업은 runRegionTask 쪽에서 별도 기록.
       const cfg = loadAiConfig();
       const audit = turnAudit;
       const toolFromAudit = toolCallsFromAudit(audit);

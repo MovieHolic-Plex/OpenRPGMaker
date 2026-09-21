@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Runtime Action Combat
 
 > **2D 타일 액션 전투 지원 (2026-09-07).** 기존 액션 런타임을 신규 저작에도 사용한다. `action-rpg` 장르는 시스템 설정을 켜며, 개별 맵의 옵트인은 계속 명시적으로 지정한다. RM식(`rm2k3`)과 포켓몬식(`gen1`)은 턴제 전투 모델이고, 액션 전투는 별도의 이중 옵트인 패키지다. 스폰 수·대기·턴제 씬 테스트는 액션 검증이 아니다. 브라우저 AI의 완료 판정은 현재 프로젝트에 귀속된 실제 플레이어 전투 증거를 요구한다.
@@ -28,7 +30,7 @@ If either condition is falsy, field-spawn contact routes to standard turn-based 
 
 The shipped action maps are:
 - `map_mine_1f` in the farming demo project (`createFarmingDemoProject` in `src/project/defaults/defaultProject.ts`), spawning `troop_bat_swarm` and `troop_golem_guard`.
-- `map_action_demo` in `createActionCombatDemoProject` (`src/project/defaults/actionCombatDemoProject.ts`, persisted under project id `rpg-zzu-action-demo`).
+- `map_mine_1f` (`ACTION_DEMO_MAP_ID`) in `createActionCombatDemoProject` (`src/project/defaults/actionCombatDemoProject.ts`, persisted under project id `rpg-zzu-action-demo`).
 
 ## Architecture and pure rule modules
 
@@ -258,7 +260,7 @@ runner does not expose this async receipt transport. It starts a private
 Vite server on **45973**, tests the existing authored action demo on
 `map_mine_1f`, and writes
 `verify-shots/runtime-qa/action-rpg/{SUMMARY.md,receipt.json,player-proof.png}`.
-Read `SUMMARY.md` first. No Supabase or project-content writes are made.
+Read `SUMMARY.md` first. No LegacyDb or project-content writes are made.
 The scenario uses a blank host and the real `/export-player/` deployment from
 `devPlayerBundlesPlugin`, without browser request routing. The plugin builds the
 player and standalone bundles on first access; `npm run build:player` is the
@@ -297,3 +299,39 @@ resolve assets inside their own deployment directory.
 - `test/e2e/action-combat.spec.ts`: Full real-time attack, dodge, guard, and enemy response in browser player.
 - `test/e2e/action-survival.spec.ts`: Survival mechanics, stamina depletion, and persistent kills.
 - `test/e2e/_verify-action-demo.spec.ts`: End-to-end demo validation.
+
+## Feature16 field skill profiles (2026-09-21)
+
+`SkillRecord.actionSkill` now accepts `projectile | melee | dash | trap`. System/map
+activation and the three learned-skill slots remain unchanged; `rm2k3`/`gen1`
+selection is independent. `databaseActionSkillForm.ts` owns the action card UI.
+Normalization remains in `project/actionCombat.ts`: damage 1..9999, range 1..20,
+speed 1..30 tiles/s, cooldown 50..30000ms (runtime default 350), trap duration
+100..30000ms (default 5000). Optional `fieldStatus` has `kind: poison | slow` and
+100..30000ms duration. MP and optional ammunition are checked together before
+spending; blocked cooldown/capacity/busy dash attempts cost nothing.
+
+`playSceneActionSkills.ts` owns scene-local cooldown, dash route, at most 16 traps,
+and enemy status timers. `battle/action/skillEffects.ts` owns pure cost eligibility,
+wall ray/line tests, and bounded poison ticks. Melee uses the existing facing/body
+arc with wall occlusion; dash uses the existing player movement route with
+`stopOnBlocked`, normal terrain/placement/event/footprint collision and one hit per
+enemy per cast. Trap placement stops at the last passable tile of its facing ray
+(or the caster tile when immediately blocked); the first eligible enemy consumes
+it. Friendly targets do not consume traps. Projectile endpoint hits are evaluated
+before range expiry; player casts are capped at 128 live projectiles.
+
+Damage retains faction immunity, element multipliers, stagger/knockback, kill
+rewards and field-spawn death handling. Poison deals ceil(maxHP * .05) each active
+second; slow scales mover time and attack progression by .5. Reapplication refreshes
+rather than stacking a same-kind timer. Map reload, scene teardown and enemy removal
+clean up effects; they are transient and not written into saves. Dialogue and
+hitstop pause combat clocks. Existing `session.actorStateIds`, battle states, and
+`applyGen1FieldPoisonStep` (one tick every four completed steps) already support
+other state paths and remain separate.
+
+Parent-owned validation: `npm test -- test/feature16World*.test.ts`;
+`npm run qa:runtime -- --scenario feature16-world` boots the dedicated player;
+`node scripts/capture-feature16-world-player.mjs` adds keyboard door/cast proof for
+all four profiles. Derived JSON stays under `test/fixtures/feature16-world/` and is
+ignored. No project-service content writes are part of these checks.

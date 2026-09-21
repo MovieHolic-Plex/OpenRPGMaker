@@ -1,0 +1,808 @@
+{
+  "source": "slates-v2-32px.png",
+  "tileSize": 32,
+  "columns": 56,
+  "firstDerivedId": 1232,
+  "recipes": [
+    {
+      "id": 1232,
+      "sourceIds": [
+        57
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1233,
+      "sourceIds": [
+        1016
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1234,
+      "sourceIds": [
+        1017
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1235,
+      "sourceIds": [
+        1020
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1236,
+      "sourceIds": [
+        1021
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1237,
+      "sourceIds": [
+        1072
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1238,
+      "sourceIds": [
+        1073
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1239,
+      "sourceIds": [
+        1076
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1240,
+      "sourceIds": [
+        1077
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1241,
+      "sourceIds": [
+        1128
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1242,
+      "sourceIds": [
+        1129
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1243,
+      "sourceIds": [
+        1132
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1244,
+      "sourceIds": [
+        1133
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1245,
+      "sourceIds": [
+        150
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1246,
+      "sourceIds": [
+        151
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1247,
+      "sourceIds": [
+        631
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1248,
+      "sourceIds": [
+        630
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1249,
+      "sourceIds": [
+        1022
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1250,
+      "sourceIds": [
+        541
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1251,
+      "sourceIds": [
+        39
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1252,
+      "sourceIds": [
+        36
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1253,
+      "sourceIds": [
+        629
+      ],
+      "layer": "upper",
+      "passable": true
+    },
+    {
+      "id": 1254,
+      "sourceIds": [
+        204
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1255,
+      "sourceIds": [
+        196
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1256,
+      "sourceIds": [
+        199
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1257,
+      "sourceIds": [
+        205
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1258,
+      "sourceIds": [
+        648
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1259,
+      "sourceIds": [
+        650
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1260,
+      "sourceIds": [
+        649
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1261,
+      "sourceIds": [
+        651
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1262,
+      "sourceIds": [
+        700
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1263,
+      "sourceIds": [
+        702
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1264,
+      "sourceIds": [
+        701
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1265,
+      "sourceIds": [
+        703
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1266,
+      "sourceIds": [
+        198
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1267,
+      "sourceIds": [
+        197
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1268,
+      "sourceIds": [
+        647,
+        940
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1269,
+      "sourceIds": [
+        644
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1270,
+      "sourceIds": [
+        646
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1271,
+      "sourceIds": [
+        645
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1272,
+      "sourceIds": [
+        647
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1273,
+      "sourceIds": [
+        57,
+        4
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1274,
+      "sourceIds": [
+        57,
+        5
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1275,
+      "sourceIds": [
+        644,
+        167
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1276,
+      "sourceIds": [
+        589,
+        1060
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1277,
+      "sourceIds": [
+        589
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1278,
+      "sourceIds": [
+        57,
+        6
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1279,
+      "sourceIds": [
+        588
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1280,
+      "sourceIds": [
+        590
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1281,
+      "sourceIds": [
+        57,
+        60
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1282,
+      "sourceIds": [
+        57,
+        61
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1283,
+      "sourceIds": [
+        57,
+        62
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1284,
+      "sourceIds": [
+        57,
+        116
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1285,
+      "sourceIds": [
+        57,
+        117
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1286,
+      "sourceIds": [
+        57,
+        118
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1287,
+      "sourceIds": [
+        1118
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1288,
+      "sourceIds": [
+        1004
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1289,
+      "sourceIds": [
+        69
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1290,
+      "sourceIds": [
+        108
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1291,
+      "sourceIds": [
+        109
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1292,
+      "sourceIds": [
+        110
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1293,
+      "sourceIds": [
+        111
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1294,
+      "sourceIds": [
+        1006
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1295,
+      "sourceIds": [
+        12
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1296,
+      "sourceIds": [
+        13
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1297,
+      "sourceIds": [
+        14
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1298,
+      "sourceIds": [
+        644,
+        604
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1299,
+      "sourceIds": [
+        647,
+        606
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1300,
+      "sourceIds": [
+        68
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1301,
+      "sourceIds": [
+        70
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1302,
+      "sourceIds": [
+        978
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1303,
+      "sourceIds": [
+        124
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1304,
+      "sourceIds": [
+        125
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1305,
+      "sourceIds": [
+        126
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1306,
+      "sourceIds": [
+        608
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1307,
+      "sourceIds": [
+        609
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1308,
+      "sourceIds": [
+        664
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1309,
+      "sourceIds": [
+        665
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1310,
+      "sourceIds": [
+        243,
+        353
+      ],
+      "layer": "lower",
+      "passable": false
+    },
+    {
+      "id": 1311,
+      "sourceIds": [
+        243,
+        {
+          "tile": 23,
+          "rect": [
+            8,
+            0,
+            16,
+            32
+          ],
+          "dest": [
+            0,
+            0
+          ]
+        },
+        {
+          "tile": 23,
+          "rect": [
+            8,
+            0,
+            16,
+            32
+          ],
+          "dest": [
+            16,
+            0
+          ]
+        }
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1312,
+      "sourceIds": [
+        720
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1313,
+      "sourceIds": [
+        721
+      ],
+      "layer": "upper",
+      "passable": false
+    },
+    {
+      "id": 1314,
+      "sourceIds": [
+        243,
+        243
+      ],
+      "layer": "lower",
+      "passable": false
+    },
+    {
+      "id": 1315,
+      "sourceIds": [
+        243,
+        {
+          "tile": 79,
+          "rect": [
+            8,
+            0,
+            16,
+            32
+          ],
+          "dest": [
+            0,
+            0
+          ]
+        },
+        {
+          "tile": 79,
+          "rect": [
+            8,
+            0,
+            16,
+            32
+          ],
+          "dest": [
+            16,
+            0
+          ]
+        }
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1316,
+      "sourceIds": [
+        243,
+        241
+      ],
+      "layer": "lower",
+      "passable": false
+    },
+    {
+      "id": 1317,
+      "sourceIds": [
+        243,
+        {
+          "tile": 135,
+          "rect": [
+            8,
+            0,
+            16,
+            32
+          ],
+          "dest": [
+            0,
+            0
+          ]
+        },
+        {
+          "tile": 135,
+          "rect": [
+            8,
+            0,
+            16,
+            32
+          ],
+          "dest": [
+            16,
+            0
+          ]
+        }
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1318,
+      "sourceIds": [
+        65
+      ],
+      "layer": "lower",
+      "passable": true
+    },
+    {
+      "id": 1319,
+      "sourceIds": [
+        647,
+        942
+      ],
+      "layer": "upper",
+      "passable": false
+    }
+  ]
+}

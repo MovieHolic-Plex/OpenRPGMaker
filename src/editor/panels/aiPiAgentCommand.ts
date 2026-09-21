@@ -1,3 +1,6 @@
+import { inspectPiVillageCompletion } from "@/ai/piAgent/villageCompletion";
+import { observeActivitySave } from "./aiActivitySave";
+import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityTrace";
 import { createPiPublication } from "./aiPiPublication";
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
@@ -15,7 +18,7 @@ import { modelForRole } from "@/ai/modelRoles";
 //
 // 이 파일은 패널의 나머지와 최소 접점(말풍선·상태 표시·로그 붙이기)만 공유한다 — 기존 세션 루프는 건드리지 않는다.
 
-import { reviewMapHarmony } from "@/ai/ultrabrainReview";
+import { reviewMapHarmony, unresolvedReviewSignature } from "@/ai/ultrabrainReview";
 import { runPiAgentViaCompanion } from "@/ai/piAgent/client";
 import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
@@ -50,7 +53,7 @@ import { changedAreaLabels } from "@/project/changeAreas";
 import { computeChangeSites } from "@/project/changeSites";
 import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
-import { publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
+import { currentTeamActivity, publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
 
 export const PI_COMMAND_PREFIX = "/pi";
@@ -120,6 +123,7 @@ const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝트를 �
 
 /** 이 실행 하나가 해도 되는 것. 패널이 자율성 다이얼에서 풀어 넘긴다(`resolvePiRunPlan`). */
 export interface PiRunOptions {
+  readonly villageContract?: import("@/ai/piAgent/villageContract").VillageContract;
   /** 기존 의도 판정이 확인한 단순 생성·수정. 단독·단일 맵일 때만 별도 모델 단계를 줄인다. */
   readonly routineEdit?: boolean;
   /** 쓰기 툴 미제공 — 질문(읽기 전용) 턴. */
@@ -136,10 +140,12 @@ export interface PiRunOptions {
   /** Legacy caller hint. Role-specific reasoning takes precedence in Pi execution. */
   readonly thinkingLevel?: PiAgentThinkingLevel;
   /**
-   * 의도 선언이 연 툴 도메인 — 초기 노출을 core+이 도메인들로 좁힌다(빠진 툴은 find_tools·
-   * 폴백 에스컬레이션이 실행 중 얹는다). 비우면 레지스트리 전량 노출.
+   * Legacy/domain-scoped callers may seed domains. Normal chat sends initialToolNames.
+   * Both are exposure hints; discovery may expand them.
    */
   readonly toolDomains?: readonly string[];
+  /** Intent-selected initial schemas. Runtime discovery can expand this list. */
+  readonly initialToolNames?: readonly string[];
   /**
    * 의도 선언이 확정한 것을 본문에 전하는 노트(`buildPiIntentNote`). 계획 턴·실행 턴·팀장이 같은 문자열을
    * 읽는다. 로그·보드에는 싣지 않는다 — 거기는 사용자 문장(`command.task`)이다.
@@ -204,7 +210,10 @@ export async function runPiCommand(
   const baseline = new AuthoredProjectBaseline(base);
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
-  const publication = createPiPublication(base, applyMode, surface);
+  const publication = createPiPublication(base, applyMode, surface, {
+    beforeApply: (before, next) => ghost.present(before, next, surface.signal),
+    afterApply: project => ghost.accept(project),
+  });
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
   const effective = options.planOnly || (command.mode === "team" && !options.readOnly)
@@ -212,7 +221,7 @@ export async function runPiCommand(
   const provider = effective.provider;
   const readOnly = options.readOnly === true || options.planOnly === true;
   // 조회 턴에 팀을 켜면 시공 팀원이 아무것도 못 하는 채로 예산만 태운다 — 읽기 전용은 언제나 단독이다.
-  const team = command.mode === "team" && !readOnly;
+  const team = command.mode === "team" && !readOnly && !options.villageContract;
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
@@ -228,10 +237,12 @@ export async function runPiCommand(
   let changedCount = 0;
   let applied = false;
   let harmonyManualReview = false;
+  let villageIncomplete = false;
+  let villageVerified = false;
   let unpublishedChanges = false;
-  /** 사실 팩 하나를 4축으로 투영한다 — 목표 축은 수용 검사의 소유라 여기선 늘 unassessed. */
+  /** 사실 팩 하나를 4축으로 투영한다 — 마을 검사 실패는 incomplete, 나머지 목표 충족은 별도 수용 검사의 소유다. */
   const publishOutcome = (facts: Omit<RunOutcomeFacts, "acceptance" | "visualDelivery">): void => {
-    surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: null }));
+    surface.setRunOutcome?.(deriveRunOutcome({ ...facts, acceptance: villageIncomplete ? "blocked" : villageVerified ? "verified" : null }));
   };
   /** 종료 시점의 4축 하나를 게시한다. 종료 경로가 여러 개라서 하나로 모은다. */
   const publishFinalOutcome = (): void => {
@@ -274,11 +285,14 @@ export async function runPiCommand(
     );
   };
 
-  let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task);
-  const board = createTeamBoard(boardState);
+  let boardState: TeamBoardState = createTeamBoardState(command.mode, command.task, store.getProjectIdentity().id);
+  const board = createTeamBoard(boardState, { externalReview: Boolean(surface.appendReviewPrompt) });
   setTeamReviewActions(null);
   surface.appendCard(board.root);
-  const sync = (): void => { board.update(boardState); publishTeamActivity(boardState); };
+  const sync = (): void => {
+    if (boardState.trace) boardState = { ...boardState, trace: activityPhase(boardState.trace, boardState.phase) };
+    board.update(boardState); publishTeamActivity(boardState);
+  };
   const push = (event: PiAgentEvent): void => {
     boardState = reduceTeamBoard(boardState, event);
     sync();
@@ -298,6 +312,13 @@ export async function runPiCommand(
   // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
   // 단일·병렬·팀이 다리 하나를 공유하며 검토 진입 시 실제 병합 결과로 보정한다.
   const ghost = createPiGhostBridge({ baseProject: base });
+  const showConstructionEvent = (event: PiAgentEvent): void => {
+    let nested = event;
+    while (nested.type === "agent_event") nested = nested.event;
+    // Live modes preview authoritative checkpoints; post-commit deltas must not replay.
+    if (!options.villageContract && isLiveApplyMode(applyMode) && (nested.type === "map_delta" || nested.type === "done")) return;
+    ghost.handleEvent(event);
+  };
   // 워커의 「턴 상한(N)을 넘어 중단했습니다.」를 다이얼 어휘로 옮긴다. 옮기는 자리가 여기인 이유:
   // 이 문장은 `error` 이벤트 하나에서 갈라져 보드 행·실행 요약·적용 캡션·영수증·활동 로그 다섯
   // 군데로 퍼진다. 갈라지기 전에 한 번 고쳐야 다섯 군데가 같은 말을 한다.
@@ -320,10 +341,13 @@ export async function runPiCommand(
   };
   const wrap = (mapIds: readonly string[], index: number) => (raw: PiAgentEvent): void => {
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
-    if (raw.type === "heartbeat") return;
+    if (raw.type === "heartbeat") {
+      if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw) };
+      return;
+    }
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-    if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
+    showConstructionEvent(event);
     if (event.type === "assistant") lastAssistantText = event.text;
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
@@ -337,6 +361,11 @@ export async function runPiCommand(
     if (event.type === "done") { push({ type: "agent_event", agentId, event }); return; }
     push({ type: "agent_event", agentId, event });
     if (event.type === "turn") surface.setStatus(groups.length > 1 ? `작업 중… (${index + 1}/${groups.length})` : "작업 중…");
+    // 검색은 실제로 길다(실측 2026-09-21: 31초). 그동안 화면이 "작업 중…"만 보여 주면 멈춘 것처럼 보인다 —
+    // 무엇을 기다리는지 말해 주면 사용자가 기다릴 지 알 수 있다.
+    if (event.type === "tool_start" && event.name === "web_search") {
+      surface.setStatus("웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)");
+    }
   };
 
   let results: PiAgentDoneEvent[];
@@ -345,7 +374,7 @@ export async function runPiCommand(
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
     const modelTask = composePiTask(command.task, options.intentNote);
     let executionTask = modelTask;
-    if (!readOnly && !team && !routineEdit && applyMode !== "yolo") {
+    if (!options.villageContract && !readOnly && !team && !routineEdit && applyMode !== "yolo") {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
@@ -356,10 +385,17 @@ export async function runPiCommand(
         scopeStrict: command.scopedByUser === true,
         readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
       }, { signal: surface.signal, onEvent: raw => {
-        if (raw.type === "heartbeat") return;
+        if (raw.type === "heartbeat") {
+          if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
+          return;
+        }
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-        if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
+        showConstructionEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
+        // 계획 턴이 참고 작품을 검색하는 자리다 — 사용자는 아직 화면에 "어떻게 바꿀지 정리하고 있어요"만 보고 있다.
+        if (event.type === "tool_start" && event.name === "web_search") {
+          surface.setStatus("웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)");
+        }
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
       } });
@@ -374,6 +410,7 @@ export async function runPiCommand(
       {
         mode: team ? "team" : "single",
         applyMode,
+        villageContract: options.villageContract,
         provider: options.planOnly || team ? brain.providerId! : deep.provider,
         model: options.planOnly || team ? brain.model : deep.model,
         ...(!options.planOnly ? { roleModels: { deep, writer: modelForRole(config, "writer") } } : {}),
@@ -387,10 +424,11 @@ export async function runPiCommand(
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
         ...(options.toolDomains && options.toolDomains.length > 0 ? { toolDomains: options.toolDomains } : {}),
+        ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
         ...(teamSpec ? { team: teamSpec } : {}),
       },
       { signal: surface.signal, onEvent: wrap(mapIds, index),
-        onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => {
+        onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => {
           // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
           if (!team && (command.scopedByUser || groups.length > 1) && mapIds.length) {
             const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
@@ -449,6 +487,8 @@ export async function runPiCommand(
   // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
   const mergedFromBundles = !team && command.mapIds.length > 0
     && (command.scopedByUser === true || groups.length > 1);
+  const villageMapIds = new Set(results.flatMap(result => result.villageCompletion?.mapIds ?? []));
+  villageIncomplete = !!options.villageContract && results.some(result => !result.villageCompletion || result.villageCompletion.issues.length > 0);
   let merged = mergedFromBundles
     ? mergeMapBundles(base, results.map((done, index) => ({ mapIds: groups[index]!, project: done.project })))
     : { project: results[0]!.project, spills: [], conflicts: [] as string[] };
@@ -534,7 +574,7 @@ export async function runPiCommand(
   // Review the merged postprocessed draft once; preserve whole-map context.
   // Negative/unavailable review keeps the existing manual proposal path, never auto-applies.
   // 예상보다 범위가 커졌으면 검토를 복원한다. 생략을 "검수 통과"로 기록하지 않는다.
-  const needsHarmonyReview = applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}`));
+  const needsHarmonyReview = !options.villageContract && applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}`));
   let harmonyApproved = false;
   if (needsHarmonyReview) {
     try {
@@ -552,6 +592,7 @@ export async function runPiCommand(
       // AUTO owns bounded repair; unresolved changes never masquerade as reviewed success.
       for (let attempt = 0; applyMode === "auto" && !harmonyApproved && attempt < 2; attempt++) {
         surface.signal?.throwIfAborted();
+        const before = unresolvedReviewSignature(reviews);
         const repairBase = publication.count ? publication.project : merged.project;
         surface.setStatus(`AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/2).`);
         const repaired = await runPiAgentViaCompanion({
@@ -560,10 +601,28 @@ export async function runPiCommand(
           task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: deep.thinkingLevel,
         }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => publication.publish(c) });
+        const preRepair = merged.project;
+        for (const id of repaired.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         merged = { ...merged, project: repaired.project };
         adoptSpatialToolProof(merged.project, repaired.spatialProof, publication.count ? publication.project : base);
-        reviews = await reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal });
+        // 재검수는 «떨어진 맵 + 수리가 실제로 그림을 바꾼 맵» 만 본다. 예전엔 바뀐 맵 전부를
+        // 매 라운드 다시 그려, 마을 한 채 요청(외경+실내 3장)이 검수만 24회 호출로 불었다.
+        const recheck = new Set<string>([
+          ...reviews.filter(review => !review.harmonious).map(review => review.mapId),
+          ...changedProjectKeys(preRepair, merged.project)
+            .filter(key => key.startsWith("maps."))
+            .map(key => key.slice("maps.".length)),
+        ]);
+        const fresh = await reviewMapHarmony(base, merged.project, command.task, config, { signal: surface.signal, mapIds: recheck });
+        reviews = [...reviews.filter(review => !recheck.has(review.mapId)), ...fresh];
         harmonyApproved = reviews.every(review => review.harmonious);
+        // 수리가 지적을 한 글자도 못 바꿨으면 다음 라운드도 못 바꾼다 — 같은 값을 내려고
+        // 파이 에이전트를 한 번 더 돌리지 않는다(실측: 실내 맵을 「마을이 아니다」로 떨어뜨린
+        // 판정이 두 라운드 내내 동일했고 턴이 끝나지 않았다).
+        if (!harmonyApproved && unresolvedReviewSignature(reviews) === before) {
+          surface.appendProcess?.("검수 지적이 수리 뒤에도 그대로라 반복을 멈췄어요 — 아래 지적은 그대로 남습니다.");
+          break;
+        }
       }
       changed = summarizeChanges(base, merged.project);
       changedKeys = changedProjectKeys(base, merged.project);
@@ -594,7 +653,13 @@ export async function runPiCommand(
   // 「검수 통과」를 찍었고, 그 부분 결과가 그대로 적용돼 맵 12개가 사라졌다. 「tile_paint 로 길을
   // 그려줘」·「여기 좀 허전한데」도 실패한 채로 타일 220·181칸을 적용 후보로 내놨다.
   // 검수는 결과물만 보므로 시공의 실패를 알지 못한다 — 실패 사실은 여기서만 합칠 수 있다.
-  const builderFailed = stoppedByLimit;
+  const villageCompletion = options.villageContract
+    ? { mapIds: [...villageMapIds], issues: results.flatMap(result => result.villageCompletion?.issues ?? ["마을 계약 검사 결과가 없습니다."]) }
+    : inspectPiVillageCompletion(merged.project, base, villageMapIds);
+  villageIncomplete = villageCompletion.issues.length > 0;
+  villageVerified = !!options.villageContract && !villageIncomplete;
+  if (villageIncomplete) surface.appendProcess?.(`마을 완료 검사 미통과\n${villageCompletion.issues.join("\n")}`);
+  const builderFailed = stoppedByLimit || villageIncomplete;
   if (builderFailed) {
     surface.appendBubble(
       "system",
@@ -677,15 +742,21 @@ export async function runPiCommand(
       ? `적용했습니다 — 팀, 툴콜 ${toolCalls}회, 바뀐 맵·항목 ${changedCount}개${spillNotice}${errorDigest()}.`
       : `변경 내용을 적용했습니다${spillNotice}${errorDigest()}.`;
     boardState = markTeamBoardApplied(boardState, appliedText); sync();
+    observeActivitySave((name, summary, status, data) => {
+      if (boardState.trace) boardState = { ...boardState, trace: activityNote(boardState.trace, name, summary, status, data) };
+      board.update(boardState);
+      // Do not replace a newer run in the live team rail.
+      if (currentTeamActivity()?.trace?.id === boardState.trace?.id) publishTeamActivity(boardState);
+    });
     finishLog({ applied: true, changedCount, stoppedReason: "적용됨" });
-    surface.setStatus(harmonyManualReview && applyMode !== "yolo" ? "반영됨 · 확인할 문제 있음" : "적용 완료");
+    surface.setStatus((villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "반영됨 · 확인할 문제 있음" : "적용 완료");
     if (team || !surface.showChangeReceipt || !receiptMapId) surface.appendBubble("system", `변경 내용을 적용했어요.${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`);
     surface.showChangeReceipt?.({
       before: base,
       after: merged.project,
       mapId: receiptMapId,
       title: receiptTitle,
-      detail: `${harmonyManualReview && applyMode !== "yolo" ? "변경은 반영됐지만 검수 문제 또는 미완료 항목이 남아 있어요." : "변경 내용을 적용했어요."}${applyMode === "step" ? " 되돌리기는 마지막으로 적용한 단계부터 복구합니다." : ""}${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
+      detail: `${(villageIncomplete || (harmonyManualReview && applyMode !== "yolo")) ? "변경은 반영됐지만 검수 문제 또는 미완료 항목이 남아 있어요." : "변경 내용을 적용했어요."}${applyMode === "step" ? " 되돌리기는 마지막으로 적용한 단계부터 복구합니다." : ""}${spilledKeys.length ? " 선택한 범위를 벗어난 변경은 제외했어요." : ""}${streamErrors.length ? " 작업 중 일부 문제가 있었어요. 작업 과정을 확인해 주세요." : ""}`,
       chips: receiptChips,
       ledger: receiptLedger,
       toolNames: [team ? "pi_team" : "pi_agent"],
@@ -694,7 +765,7 @@ export async function runPiCommand(
   };
   // 정책에 따라 자동 반영하거나 미적용 초안을 검토 카드에 남긴다.
   // 기준(base)이 그 사이 바뀌면 applyProposedProject 가 stale-base 로 거절한다.
-  if (applyMode === "yolo" || (isLiveApplyMode(applyMode) && !harmonyManualReview)
+  if ((!(options.villageContract ? builderFailed : villageIncomplete) && applyMode === "yolo") || (isLiveApplyMode(applyMode) && !harmonyManualReview)
     || (applyMode === "step" && publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0)) return apply();
   if (applyMode === "auto" && harmonyManualReview && publication.count === 0) {
     ghost.dispose();

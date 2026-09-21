@@ -6,6 +6,7 @@ import type { Project } from "@/project/types";
 import { mixedCompositionRaster, type MixedRaster } from "@/editor/spatial/mixedCompositionRaster";
 import { editAuthoringDraft, visibleAuthoringProject, spatialAuthoringErrorText } from "./spatialAuthoringAccess";
 import { randomUuid } from "@/util/id";
+import { resolveSpatialGraphic } from "@/project/spatial/assets";
 
 export const COMPOSITION_NAMES = { object: "오브젝트", space: "장소", place: "장소", region: "지역", world: "세계" } as const;
 export const COMPOSITION_COLLECTIONS = { object: "objects", space: "spaces", place: "places", region: "regions", world: "worlds" } as const;
@@ -15,6 +16,12 @@ export function defaultComposition(project: Project, node: DesignNode): SpatialC
   if (node.kind === "space") return { tilesetId: node.design.tilesetId,
     width: node.design.width + (node.design.environment === "interior" ? 4 : 0), height: node.design.height + (node.design.environment === "interior" ? 6 : 0), tiles: [], members: [] };
   if (node.kind === "region" || node.kind === "world") return { tilesetId: node.design.terrain.tilesetId, width: node.design.terrain.width, height: node.design.terrain.height, tiles: [], members: [] };
+  if (node.kind === "place" && node.design.exterior && !node.design.children.length) {
+    const graphic = resolveSpatialGraphic(project, node.design.exterior);
+    if (graphic?.source === "authored" && graphic.kit.kind === "section") {
+      return { tilesetId: node.design.exterior.tilesetId, width: graphic.kit.width, height: graphic.kit.height, tiles: [], members: [] };
+    }
+  }
   const firstSpace = Object.values(project.spatialAuthoring?.library.spaces ?? {})[0];
   return { tilesetId: node.kind === "object" ? node.design.graphic.tilesetId : node.design.exterior?.tilesetId ?? firstSpace?.tilesetId ?? Object.keys(project.tilesets)[0], width: 40, height: 30, tiles: [], members: [] };
 }

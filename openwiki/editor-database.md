@@ -1,3 +1,62 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
+## 장소 탭 재설계 — 라이브러리 우선 배치 (2026-09-21)
+
+**문제: 목록이 아니라 나머지가 화면을 먹었다.** 데이터베이스 → 장소를 1600×1000 에서 재 보니
+편집기 셸 안에서 카드 그리드가 791×424 였다 — 화면의 21%. 71장이 3,382px 를 굴러가는데 보이는 건
+4줄(10장)이었다. 세로를 세 곳이 나눠 먹었다: 목적 띠 + 액션 줄이 각각 밴드로 178px, 오른쪽 320px
+속성 패널이 **선택이 없어도** 자리를 차지, 도구·필터가 두 줄로 94px.
+
+바꾼 것과 실측(1600×1000, `output/evidence/places-ux-redesign/impl/`):
+
+1. **목록이 기본.** `.spatial-body.is-library-only` 로 스테이지를 접는다(그리드 1332×527, 7열, 한 화면 14장).
+   스테이지는 DOM 에 남기고 CSS 로만 접는다 — 「속성」 토글이 여닫을 대상이 사라지면 죽은 버튼이 된다.
+   속성을 열면 5열(65%)로 줄고, 닫으면 7열로 돌아온다.
+2. **선택과 편집기 진입의 분리.** 예전 `onSelect` 는 `listView: card.id !== selected?.id` 였다 —
+   아무것도 안 고른 상태에서 카드를 누르면 선택과 동시에 편집기가 열려, 「맵에 놓기」 액션 줄을 볼
+   기회가 없었다. 세션에 `galleryCardId` 를 추가해 **첫 클릭은 선택만**, 같은 카드 재클릭이나
+   액션 줄의 「편집」이 편집기로 들어간다.
+3. **목적 띠 복원.** 3차 수리에서 들어온 `spatial-purpose` 는 타일 화면 개편(2026-09-21) 때 렌더
+   호출만 사라져 CSS(`.spatial-purpose*`)만 남아 있었다 — 화면에는 없었다(프로브 두 번 모두 null).
+   한 줄 띠로 되살리고, 같은 말을 하던 중복 안내문(`.spatial-kind-guidance`)은 장소 셸에서 숨긴다.
+4. **머리 3줄 → 2줄.** 장소 라이브러리 제목·부제·필터·분류 탭·소재 안내를 두 줄로 접고,
+   카드 썸네일 120→84px·캡션 여백을 줄였다. 이름은 두 줄 클램프 — 한 줄 말줄임은
+   「침묵의 묘역 · 무너진 납골당」 같은 이름을 구별 불가능하게 만들었다(40장 중 6장 잘림).
+5. **0건 탈출구.** 필터가 0건이면 「필터 초기화」 버튼을 띄운다(`spatial-filter-reset`).
+   종전에는 문구만 있어 사용자가 손으로 되돌려야 했다.
+6. **「속성」 토글이 1200px 위에서도 보인다.** 종전에는 컨테이너 쿼리로 `display:none` 이라 넓은
+   화면에서 속성을 닫을 수 없었는데, 이제 속성이 opt-in 이라 이 토글이 유일한 입구다.
+
+계약 테스트: `test/spatialPlacesLibraryLayout.test.ts`(첫 렌더는 갤러리 · library-only 클래스 ·
+첫 클릭 선택/재클릭 편집 · 액션 줄 편집 · 0건 초기화).
+
+검증: `typecheck:app` exit 0. `spatialPlacesLibraryLayout`·`spatialIntegratedAuthoring`·
+`spatialShellDrawer`·`spatialNavigation.routes`·`databaseAllTabsRenderWalk` 등 84건 중 81 통과.
+실패 3건(`spatialShellKeyboard`)과 4건(`databaseAllTabsRenderWalk`/`spatialNavigation.routes`)은
+**origin/main 원본 체크아웃에서 같은 이름·같은 메시지로 재현**되는 기존 실패다. CSS 게이트도
+`check-css-graph`(tileset-ai-workspace.css)·`check-dead-css-classes`(.db-ws-stat-neutral)·
+`check-css-surfaces` 위반 0건 신규 — 전부 원본에서 동일하게 재현. hex/undefinedVars 래칫 상향분은
+손대지 않은 파일(`runtime/shop.css` 등)에서 온 것이다.
+
+## 몬스터 종족의 전투 뒷모습 (2026-09-20)
+
+> **2026-09-21 타일 화면 개편:** 타일 탭은 `tilesetSettingsPanel.ts`의 전용 라이브러리이며
+> 첫 내부 탭은 **AI 참고문서**다. 설정 폼은 별도 탭으로 이동했고, 장소용 설계/배치 셸,
+> 별도 AI 분석 런처·JSON 붙여넣기·생성 감사 레일은 타일 UI에서 제거했다.
+> 아래 과거의 "기본 통행 화면" / "생성 감사 레일" 설명보다
+> [현행 구성과 제거 범위](tileset-reference-documents.md#타일-화면-구성-2026-09-21)를 우선한다.
+
+
+종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
+
+## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
+
+- 기본 DB 9종의 삭제 검사는 `databaseRecordReferences.ts`의 `projectDatabaseReferenceMessage(project, collection, id)`가 소유한다. `databaseReferences.ts`는 현재 store를 전달하는 UI 어댑터다. AI 삭제는 자기 draft를 전달한다. store를 AI 도구에 import하지 않는다.
+- 작물 씨앗/수확물, 몬스터 종족의 레벨 스킬, 맵 인카운터/필드 스폰, 직업 간 승급/장비 권한을 검사한다. 아이템은 기존 `collectProjectItemReferenceIds`를 보조 판정으로 재사용한다.
+- 명령 스캐너는 상점 실패 및 전투 결과 3분기까지 검사한다. 생활 목적지 switchId도 삭제/미사용 판정의 참조다.
+- 제작법 삭제와 ID 변경은 `databaseCraftReferences.ts`를 공유한다. 명령·생활 스킬·번들·박물관 보상을 모두 본다.
+- 수정·검증 범위와 미해결 목록: `docs/reviews/2026-09-20-data-integrity-fixes.md`. 회귀 테스트 추가, 이 세션에서는 테스트/게이트 미실행.
+
 ## 장소 편집 1차 UX 수리 — 이름·툴바·속성·카드 (2026-09-15)
 
 장소 탭의 네 가지 결함을 고쳤다. 실측 근거와 함께 남긴다.
@@ -310,6 +369,8 @@ before Apply is enabled. The shared generation controller owns stale-target and
 project-switch checks. World/lore coupling, expression variants and automatic
 cutscene insertion are not part of v1.
 
+Shared-catalog read line (2026-09-19): charset/face slots show one read-only line from the shared catalog (`sharedCharsetRow`/`sharedFaceRow` in `src/project/sharedCharacterFaceResolver.ts`) — label · status · quality · attributes. Bust has no shared concept and is excluded; uploaded/generated pictures state "no shared classification". No value sync, no writes, no schema change.
+
 Tests: `characterAppearanceEditor`, `characterAppearanceLifecycle`,
 `databaseTabIcons` and `databaseSidebarNav`. The supported viewport matrix is
 1024x768, 1280x800 and 1440x900; list and detail have independent bounded scrolls.
@@ -394,7 +455,7 @@ Tests: `databaseCinematics.test.ts`, `cinematicMediaImport.test.ts`,
 `test/e2e/database-cinematics.spec.ts`. Real editor QA uses a fresh unique port,
 `?blankProject=1&aiBridge=0`, and local-only fixtures. Serialization/reload is
 tested through the real project codec and restored UI, not described as a
-remote Supabase save. The blank-project `session-not-persisted` warning remains
+remote LegacyDb save. The blank-project `session-not-persisted` warning remains
 an explicit fixture condition; other browser errors and remote write attempts
 are failures. Optional disk mirroring can be disabled for QA with
 `VITE_EDIT_ACTIVITY_DISK_MIRROR=0`, without disabling in-memory edit annotations.
@@ -645,7 +706,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 
 - **세계 개요 v2:** 본문이 AI 미터+hero stat+이름/전제+뼈대+법칙 2열+본문 순서다. 뼈대(톤·시대·기술 천장·없는 것)와 법칙은 속성 사이드바가 아니라 본문 카드에 둔다 — 272px 사이드바에선 법칙 2열이 1열 덫에 걸린다. 본문 타이핑은 미터·힌트·stat 값을 다시 렌더 없이 갱신한다. testid: `db-world-canon-ai-meter`, `db-world-canon-hero-stats`, `db-world-canon-hero-stat-body`(값 span), `db-world-canon-frame`, `db-world-canon-laws`. CSS: `world-canon-meter`, `world-canon-law-grid`(799px 이하 1열), 카드 헤드 래핑.
 - **이름 카드·미터:** 이름 카드는 `이름과 한 줄` 제목을 단다(카드 순서의 랜드마크). 미터 텍스트는 `role=status`, 막대는 `role=progressbar`(0/600/현재값, 타이핑마다 `aria-valuenow` 갱신).
-- **잘림 신호:** 본문이 600자를 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다(값은 `600 / 600자` 고정). 증거 `verify-shots/world-lore-v2/trunc/`.
+- **잘림 신호:** 본문이 발췌 상한을 넘으면 hero stat이 warn 톤으로 `뒤 N자 잘림`을 표시한다. 값은 하드코딩이 아니라 **조수가 실제로 보내는 상한과 같은 상수**(`WORLD_CANON_BODY_EXCERPT_CHARS`)를 읽는다 — 문구가 어긋나면 사용자가 잘못된 길이에 맞춰 세계관을 쓴다. 2026-09-20 에 600 → 20,000자로 올렸다(사용자 요청: "세계관이 틀리면 안 된다"). 증거 `verify-shots/world-lore-v2/trunc/`.
 - **폴리시 (2026-09-18):** Studio v2 문법 안에서만 — 새 토큰 없음. 미터 바 8px+accent-soft 표면, 법칙 카드 canvas 표면, 선택 카드 좌측 accent 레일, 위키 헤더 hairline+12px 리듬, 톤 칩 on 700. 카드 헤드 래핑은 같은 `database` 레이어라 파일 순서가 아니라 특이성으로 이긴다(풀 체인 0-5-0). 증거 `verify-shots/world-lore-v2/polish2/`(넘침 0, 에러는 자동저장 기준선 17과 동일).
 - **폴리시 2 (2026-09-18):** `database` 레이어라 `map(editor)` 레이어 동급 규칙을 특이성과 무관하게 이긴다. lint 경고·에러 블록 탈포화(루트 muted + Studio strong/danger), 칩·카드 호버 피드백, 포커스 링. 증거 `verify-shots/world-lore-v2/p2/`.
 - **구 레이아웃 기록 (2026-09-06):** `worldCanon`의 표시 이름은 「세계 개요」이며 stable tab/field testid는 유지한다.
@@ -661,7 +722,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - `이 세계` 는 싱글톤 `project.worldCanon` 이다. 이름·한 줄 전제·톤 칩·시대·기술 천장·없는 것 태그·힘/신/죽음/돈 법칙·마크다운 본문. 비어 있으면 키를 저장하지 않는다 (`normalizeWorldCanon` / `compactWorldCanon`). 스키마는 `src/project/world/canon.ts`.
 - 텍스트는 `recordCoalescedSnapshot`, 칩·태그·법칙 토글은 `recordProjectSnapshot`. UI 는 `databaseWorldCanonView.ts`, 계약 `test/worldCanon.test.ts` + `test/databaseWorldCanonView.test.ts`.
 - `설정집` 은 세계관 카드 위키를 `workspaceShell` 셸에 심은 것이다 (`world-panel-embedded` + `db-world-codex-workspace`). 본문은 레이아웃 루트 하나만 자식으로 둬 `.db-body` 자체 스크롤을 만들지 않는다 — 계약 `test/databaseWorldCodexStructure.test.ts`. 톱바 세계관 버튼은 이 그룹의 `이 세계` 탭으로 점프한다.
-- **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 600자. 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
+- **소바자 세 곳 (2026-09-03).** (1) 조수: `src/ai/worldCanonContext.ts` 의 `worldCanonPromptSection` 이 `## 이 세계(세계관 고정)` 블록을 감독 지침과 같은 **예산 밖 고정분**으로 넣는다 — 이름·전제·톤·없는 것(절대 금지)·법칙 + 본문 발췌(2026-09-20 부터 20,000자 상한, `WORLD_CANON_BODY_EXCERPT_CHARS`). 엔티티 다이제스트 배제(`worldAiExclusion`)는 그대로다. (2) 개요 탭 `db-overview-canon` 카드가 이름·전제를 보이고 이 세계 탭으로 점프한다. (3) 환영 장르 포스터(`applyWelcomeGenrePresetToOpenProject`)가 세계관이 뱄 때만 톤·전제 초안을 심는다. 계약 `test/worldCanonConsumers.test.ts`.
 
 ### 세계관 입력 보존·설정집 저장 계약 (2026-09-05)
 
@@ -743,7 +804,7 @@ Database tabs, record views, battle database records, utility records, reference
   호출자 주의: `normalizeCurrentProject` 는 동기 사전 점검 `hasPendingFacesetSheetRepair` 로 거를러 **자를 것이 있을 때만 await** 해야 한다. 로드 경로에 불필요한 자시합을 더하면 지속화 순서가 밀려 `storePersistence`·`storeFlushShaEvidence` 의 순서 계약이 진다(실머 8건). 계약: `test/facesetUploadedSheetMigration.test.ts`.
 
 - **기본 장비 런타임 축 계약 (2026-08-29):** `EquipmentRecord.accuracy`는 일반 공격 최종 명중률에 곱하는 0~100% 보정(기본 100), `criticalRate`는 액터 기본 치명타율에 더하는 0~100%p 보정(기본 0)이다. 일반 공격은 장비의 첫 `attackElementIds` 하나를 속성 배율에 적용하므로 기본 카탈로그는 무기당 공격 속성을 최대 하나만 저작한다. `stateInflictIds`/`stateInflictionChance`는 적중한 일반 공격, `elementalDefenseIds`는 일치 속성 피해 50% 감소, `stateDefenseIds`/`stateResistanceChance`는 `stateDefenseMode:"resist"`일 때 상태 저항 판정에 쓰인다. `twoHanded`는 양손 슬롯 점유, `effectFlags.doubleAttack`/`attackAll`은 일반 공격 횟수/대상을 바꾼다. 반면 장비용 MP 비용은 `EquipmentRecord`에 없고, `preemptive`·`ignoreDodge`·`preventCriticalHits`·`increasePhysicalDodge`·`halfMpCost`·`negateTerrainDamage` 플래그와 `stateDefenseMode:"inflict"`는 턴제 런타임 소비자가 없으므로 기본 장비에 저작하지 않는다. `test/equipmentCatalogRuntimeAxes.test.ts`가 실제 전투 런타임과 결정적 RNG로 명중·치명타·상태 부여·공격 속성·속성 방어·상태 저항을 검증하고, `test/defaultItemCatalogQuality.test.ts`가 기본 카탈로그의 허용 축만 검사한다.
-- 기본 아이템 카탈로그는 `public/assets/cc0/jetrel/icons` 아래의 대응 아이콘과 함께 JRPG 아이템 100종 이상을 제공한다. 기존 Jetrel CC0 아이콘은 유지하고, 맞지 않거나 빠진 아이콘은 가능한 경우 로컬 생성 스크립트로 만든 뒤 `src/assets/cc0IconAssets.ts`에 `generated` 라이선스로 등록한다. `defaultItemRecords()`를 비롯한 기본 데이터베이스 레코드는 `createBlankProject` → `saveProjectToSupabase` 경로로 **새** 프로젝트를 만들며, `ensureDefaultDatabaseIconResources()`는 `normalizeCurrentProject`에서 번들 아이콘 리소스를 연결한다. 불러올 때도 Supabase `current_json` 행이 기준 원본이다. 일반 기본값 보충은 금지하되, `repairSupabaseCurrentJson`은 2026-08 영문 아이템 껍데기 결함만 제한적으로 이전한다. ASCII 슬러그 이름과 `<slug> 기본 아이템입니다.` 설명이 모두 손대지 않은 모양일 때만 행을 교체하고, 이름이나 설명 중 하나라도 고친 부분 편집 행은 의도적으로 보존하며, 복구된 카탈로그에 필요한 승격 장비 9개와 아이템 효과 스킬 2개 및 그 스킬이 참조하는 번들 전투 애니메이션만 추가한다. 참조 없는 옛 장비 아이템 행은 제거하지만, 이벤트·시스템·시작 인벤토리가 참조하는 행은 한국어 비착용 안내 행으로 남겨 참조를 보존한다. 이 복구는 깨끗하게 열기만 해서는 저장 행에 즉시 기록되지 않으며, 이후 다른 편집을 저장할 때 함께 영구 반영된다.
+- 기본 아이템 카탈로그는 `public/assets/cc0/jetrel/icons` 아래의 대응 아이콘과 함께 JRPG 아이템 100종 이상을 제공한다. 기존 Jetrel CC0 아이콘은 유지하고, 맞지 않거나 빠진 아이콘은 가능한 경우 로컬 생성 스크립트로 만든 뒤 `src/assets/cc0IconAssets.ts`에 `generated` 라이선스로 등록한다. `defaultItemRecords()`를 비롯한 기본 데이터베이스 레코드는 `createBlankProject` → `saveProjectToLegacyDb` 경로로 **새** 프로젝트를 만들며, `ensureDefaultDatabaseIconResources()`는 `normalizeCurrentProject`에서 번들 아이콘 리소스를 연결한다. 불러올 때도 LegacyDb `current_json` 행이 기준 원본이다. 일반 기본값 보충은 금지하되, `repairLegacyDbCurrentJson`은 2026-08 영문 아이템 껍데기 결함만 제한적으로 이전한다. ASCII 슬러그 이름과 `<slug> 기본 아이템입니다.` 설명이 모두 손대지 않은 모양일 때만 행을 교체하고, 이름이나 설명 중 하나라도 고친 부분 편집 행은 의도적으로 보존하며, 복구된 카탈로그에 필요한 승격 장비 9개와 아이템 효과 스킬 2개 및 그 스킬이 참조하는 번들 전투 애니메이션만 추가한다. 참조 없는 옛 장비 아이템 행은 제거하지만, 이벤트·시스템·시작 인벤토리가 참조하는 행은 한국어 비착용 안내 행으로 남겨 참조를 보존한다. 이 복구는 깨끗하게 열기만 해서는 저장 행에 즉시 기록되지 않으며, 이후 다른 편집을 저장할 때 함께 영구 반영된다.
 - **로드 정규화 (2026-09-05 변경):** `ensureDefaultDatabaseIconResources()`는 기존 행의 이미지 연결만 보정하며 기본 ITEM/EQUIPMENT 레코드를 재주입하지 않는다. 삭제 보존 계약은 이 페이지 맨 위 참조.
 - **기본 카탈로그 계약:** 아이템과 장비 이름에는 한글이 들어가고, 모든 레코드는 서로 다른 구체적인 한국어 설명을 가진다. 사용 가능한 아이템의 `occasion`, `consumable`, 실행 가능한 회복·상태·스킬·기술서 효과는 서로 맞아야 한다. `occasion: "never"`는 소모하지 않는 재료, 수확물, 도구, 이벤트·퀘스트 물품과 농사 권위자가 소비하는 작물 씨앗에만 쓴다. 농기구에는 유효한 `farmTool`이 있어야 한다. 착용 장비는 `project.database.equipment`에만 두며, 장비 모양 행을 `database.items`에 남기지 않는다. 전투 아이템과 아이템 효과 스킬은 실제 전투 애니메이션 레코드를 참조해야 한다. 전투 대상 해석이 쓰러진 전투원을 제외하므로 부활 아이템은 필드 전용이다. `test/defaultItemCatalogQuality.test.ts`가 데이터와 애니메이션 참조 계약을 검사하고, `test/itemRuntimeUsability.test.ts`가 실제 메뉴·전투·농기구 권위자를 실행한다.
 - **기능 확장 기본 아이템(2026-08-29):** `defaultFeatureItemRecords.ts`가 기본 카탈로그에서 비어 있던 상태 추가, 아군 전체 대상, 몬스터 `careProfile`, 영구 성장 씨앗, `switchId`, 속성 아이템 스킬, 유한 `consumptionLimit` 경로를 출하 레코드로 연결한다. 출하 프로젝트에 연결되지 않은 작물 씨앗은 심기·수확을 약속하지 않도록 카탈로그에서 제외한다. 스위치 아이템은 필드 메뉴에서 아직 꺼진 전용 스위치만 켜고 성공 사용 1회를 공통 아이템 전환 권위자에 넘긴다. 유한 충전은 메뉴와 전투 모두 `transitionItemState(..., { kind: "successfulUse" })`가 계산하며, `allAllies` 전투 아이템은 대상 수와 관계없이 명령당 한 번만 전환한다. 집중 실행 계약은 `test/defaultFeatureItemRuntime.test.ts`다.
@@ -752,7 +813,7 @@ Database tabs, record views, battle database records, utility records, reference
 
 - **Battle effect sheets are generated procedurally, not prompted.** `src/assets/generatedEffectSheets.json` is the single catalog (slug, Korean name, frameCount, tags, scope/position, independent sound/flash/shake seeds); `scripts/gen-effect-sheets.mjs` (`npm run generate:effect-sheets`) renders each slug to `public/assets/generated/effects/effect-<slug>.png` as 96x96 cells with a purpose-specific 8, 10, or 12 frame length. The generated family uses a 75ms frame interval, so total playback remains 600–900ms; legacy/authored animations retain the 120ms default. Rendering runs through `scripts/lib/effectSheet/` (canvas primitives + per-slug painters + fixed-seed PRNG). `src/assets/generatedEffectSheets.ts` re-exports the catalog for the runtime: resource ids are `generated-battle-anim-<slug>`, resolved by `resolveGeneratedEffectAssetUrl` inside `resolveAssetResourceUrl`, registered in `collectResourceIds` (missing = default project fails deserialization), and listed by the `battle` kind of `databaseResourcePickerDialog`. `defaultBattleAnimationRecords()` maps every catalog entry to a record that plays every authored frame and merges same-frame sound/flash/shake into one timing; `anim_magic` / `anim_heal` / `anim_poison` point at `arcane-nova` / `heal-bloom` / `poison-mist` instead of reusing the melee `easyrpg-battle-blow` / `-arrow` art. Why procedural: frame-to-frame continuity is the whole effect, and image models re-imagine the silhouette per frame. Adding one: catalog entry → painter in `render.mjs` `PAINTERS` → run the generator → commit the PNG. `node scripts/gen-effect-sheets.mjs --check` fails on drift, and `test/generatedEffectSheets.test.ts` locks catalog/painter/PNG/record agreement byte-for-byte. `npm run generate:effect-showcase` builds the self-contained audiovisual catalog at `reports/generated-effect-showcase-2026-08-24.html` from those same catalog rows, PNG bytes, and bundled EasyRPG sounds.
 - The generated catalog currently contains **34 audiovisual sets**. The 12 genre-generic monster-battler additions live in `scripts/lib/effectSheet/paintersMonster.mjs`: tackle impact, claw rake, bite crunch, projectile shot, leaf volley, psychic wave, shadow pulse, holy beam, sleep dust, power aura, guard barrier, and capture seal. The next 12 reusable combat/utility additions live in `scripts/lib/effectSheet/paintersUtility.mjs`: critical burst, sonic wave, drain orbs, revive rise, cleanse sparkle, paralysis bind, blind veil, confusion spiral, silence lock, summon portal, smoke vanish, and meteor fall. They deliberately use generic geometric silhouettes rather than copied commercial-game move art. Physical/projectile effects use 8 frames, elemental/status/support effects use 10, and large ritual/seal/meteor effects use 12; every entry owns one bundled sound timed to its impact frame.
-- New projects bind the starter actors, classes, skills, and battle-usable items to purpose-specific generated effects through `generatedBattleEffectBindings.ts`; creating animation records alone is insufficient because runtime playback follows those authored references. Existing Supabase rows remain load-authoritative and receive no silent default backfill. Their explicit upgrade path is Database → Battle Animations → `이펙트 34종 적용` (`db-install-generated-effects`): `installGeneratedBattleEffectPack()` adds missing generated records, upgrades the three retained legacy aliases when they still use old art, and changes only known starter record ids. It preserves unrelated/custom records, records one undo snapshot, and becomes a disabled `적용됨` button when no changes remain.
+- New projects bind the starter actors, classes, skills, and battle-usable items to purpose-specific generated effects through `generatedBattleEffectBindings.ts`; creating animation records alone is insufficient because runtime playback follows those authored references. Existing LegacyDb rows remain load-authoritative and receive no silent default backfill. Their explicit upgrade path is Database → Battle Animations → `이펙트 34종 적용` (`db-install-generated-effects`): `installGeneratedBattleEffectPack()` adds missing generated records, upgrades the three retained legacy aliases when they still use old art, and changes only known starter record ids. It preserves unrelated/custom records, records one undo snapshot, and becomes a disabled `적용됨` button when no changes remain.
 - Database workflows live in `src/editor/databaseActions.ts`, `src/editor/databaseRecordMutators.ts`, `src/editor/databaseReferences.ts`, and `src/editor/databaseCopy.ts`.
 - **상태 변화 · 전투 연출 · 몬스터 돌봄 저작 (2026-09-05 복구):** `databaseItemRecordView.ts`의 현재 카드 계층에 누락 브랜치의 세 컨트롤을 통합했다. 효과 구역은 종류별 패널 → 상태 변화 → 전투 연출 → 연결 스킬, 사용 제한 구역 끝에는 몬스터 돌봄 카드가 온다. 기존 아이템 요약과 최신 `modern/equipment-items.css`는 유지한다.
   - `medicine`/`special`의 상태 변화 행은 상태·확률·부여/해제·삭제를 저작한다(`db-item-state-effect-row-<i>`, `db-field-item-state-effect-{state,chance,op}-<i>`, `db-item-state-effect-add`). 부여 확률은 0..100으로 제한한다. 기존 `healStateIds` 회복 체크박스도 유지한다. CSS는 `skill-item-visuals.css`의 상태 행 규칙을 아이템에도 공유한다.
@@ -947,9 +1008,14 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 공유 셸을 쓴다. 적대적 리뷰(`output/evidence/spatial-ux-review/`) 후 아래 계약이 생겼다.
 
 - **기본 설계는 읽기 전용 카탈로그다.** draft 가 없는 카드도 스테이지·인스펙터가 실제
-  내용을 렌더한다 — 지역·세계는 `catalogRegionDesign`/`catalogWorldDesign`(`catalogSeed.ts`)
-  + 지형 래스터, 공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
+  내용을 렌더한다 — 세계는 `catalogWorldDesign`(`catalogSeed.ts`) + 지형 래스터,
+  공간은 방 종류 요약(필수 역할·분위기), 장소는 카탈로그 번들 래스터.
   인스펙터에 「읽기 전용」안내와 사실표를 둔다.
+  **지역은 예외(2026-09-22):** `REGION_CATALOG` 지형 어휘 더미 6종은 갤러리에 내지 않는다 —
+  실체(설계·맵·편집 표면)가 없어 실제 자료를 가렸다. 지역 탭 기본 카드는 완성 맵 참고 사례
+  (`REGION_REFERENCES`)뿐이고, 지역 탭은 장소 탭과 같은 목록-우선 레이아웃(목적 스트립 ·
+  지역 라이브러리 필터 · 배지 · 「속성」 전까지 스테이지 접음)을 쓴다. 계약은
+  [spatial-geography-ui.md](spatial-geography-ui.md) «Regions gallery contract».
 - **미리보기는 `hasAuthoringDraft()` 일 때만 enabled.** draft 없이 누르면 생기던
   `authoring-draft-missing` 노출을 막는다. 「추가」는 `spatialDocumentPresent` 없으면
   사람 말 안내를 띄운다 — `spatialAuthoring` 문서 없는(레거시·dev) 프로젝트는 읽기 전용이다.
@@ -991,7 +1057,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
   고치고 `grid-template-rows` 를 놔두면 갤러리+스테이지가 32% 높이 행에 눌려
   작업대가 ~0px 로 붕괴한다(1024×768 실측 스테이지 178px). 셸 스코프
   `[data-testid="spatial-shell-tiles"]` 선택자가 `!important` 없이도 이긴다 —
-  `spatial-collections.css` 는 `tilesets.css` 보다 늦게 로드되고 특이도가 높다.
+  `spatial-collections.css` 는 `tilesets-autotile.css` 를 포함한 타일셋 시트보다 늦게 로드되고 특이도가 높다.
 - **시트는 항상 왼쪽 넓은 열.** 비페인트 모드(ai/group)는 DOM 순서가
   `[사이드바, 시트]` 인데 무차별 `grid-column:1` 핀이 시트를 좁은 사이드바 열에
   가뒀다. `passage-paint`(3행 그리드)와 `autotile-compose`(tilesets.css 자체 배치)
@@ -1064,7 +1130,7 @@ Phase 1은 탐색·선택·표현 변경뿐이다. 방 마이그레이션과 마
 - **2026-09-05 — 모든 AI 실내 생성의 정본:** 독립 방 세션·집·마을 연결 실내도 꾸러미를 읽는다. 미등록 시설 조회는 현재 장소·물건을 `sources`로 반환해 조합 설계를 지원한다. 삭제한 빈 꾸러미는 시공하지 않는다. 경로·검증: `openwiki/editor-interior-room-harness.md`의 「모든 AI 실내의 개념 꾸러미 계약」.
 - 데이터: `tileset.scratchConceptBundles`. undefined 는 시드 전, 빈 배열은 사용자가 지운 상태.
 - 실내 칩셋만 **시설 초안 묶음 19종**을 시드한다(`CONCEPT_FACILITY_TEMPLATES`: 기존 여관·민가·상점·술집·서재·대장간·교회·창고·길드 + 진료소·병영·학교·관청·연금술 공방·빵집·농가·귀족 저택·사냥꾼 오두막·은행, 여관이 첫째). 마을 칩셋에는 얹지 않는다. 옛 프로젝트에 여관만 시드돼 있으면 그대로다 — 나머지는 시설 띠의 「초안 넣기」로 골라 넣는다(재시드 아님, 사용자 선택).
-- 기존 프로젝트에 일괄 추가: `npx tsx scripts/expand-concept-bundles.mts --project <id>`로 추가 예정 목록을 읽고 `--apply`로 저장한다. 기존 id/라벨은 보존하고 빈 배열은 거절한다. 프로젝트·타일셋 미러의 변경 시각을 비교해 충돌을 감지하며 저장 뒤 양쪽 원격 데이터와 앱 로드를 확인한다. 증거는 `output/evidence/concept-expansion/supabase-proof.json`.
+- 기존 프로젝트에 일괄 추가: `npx tsx scripts/expand-concept-bundles.mts --project <id>`로 추가 예정 목록을 읽고 `--apply`로 저장한다. 기존 id/라벨은 보존하고 빈 배열은 거절한다. 프로젝트·타일셋 미러의 변경 시각을 비교해 충돌을 감지하며 저장 뒤 양쪽 원격 데이터와 앱 로드를 확인한다. 증거는 `output/evidence/concept-expansion/legacy-db-proof.json`.
 - 물건의 그림은 같은 타일셋 가구 킷/`INTERIOR_OBJECT_CATALOG` id 를 가리킨다. 픽셀을 복제하지 않는다.
 - **2026-09-05 — 용도 검수 보정:** 병실·병영·농가·저택·오두막 침대는 `event`만 사용한다. 현재 `sleep`은 유료 `inn` 동작이므로 수면 가능이라는 일반 의미로 붙이지 않는다. 여관·술집 객실의 숙박은 유지한다. 여관·저택의 피아노는 선택 가구다. 학교는 `study_desk`(기존 사각 탁자+앞쪽 걸상, 1×2) 두 세트를 교실마다 두고 책장은 자료실에 둔다. 은행은 거래 창구·장부·목제 보관장을 사용하며 금고 그림이나 금융 동작이 있는 것으로 표현하지 않는다. 최종 맵의 책상/걸상 쌍을 세 가지 seed로 검증한다.
 - `expand-concept-bundles.mts --baseline <이전 꾸러미 배열.json>`은 저장된 꾸러미가 검토 전 버전과 **완전히 같은 경우에만** 수정 초안으로 갱신한다. 다른 편집이 있으면 보존한다. `--evidence <경로>`로 별도 저장·재로드 증거를 남길 수 있다.
@@ -1686,7 +1752,7 @@ SVG(`database-modal-icon`, `tileToolbarIcons` 규격). 푸터 상태는 전폭 �
 세그먼트.
 
 **폼 문법.** `.db-field` = 라벨(좌, `minmax(min(96px, 38%), max-content)`) | 값(우). 라벨은 **말줄임 금지**
-— 어절로 줄바꿈. `modern/enemies.css:144` · `actors.css:971` 의 ellipsis 를 소스에서 걷었다. 좁은 수치
+— 어절로 줄바꿈. `modern/enemies.css` 의 레코드 라벨 · `actors.part-3.css` 의 그래픽 패널 라벨은 ellipsis 를 소스에서 걷었다. 좁은 수치
 격자(`.db-enemy-stat-grid` · `.db-enemy-reward-grid` · `.db-item-grid` · `.db-state-runtime-panel`)만 라벨
 위. 입력 크롬 한 종류(32px · 8px · `--db-studio-border-default` · 포커스 액센트 링). `select` 는 chevron
 밴드 때문에 `padding` 단축을 쓰지 않는다(`databaseSelectChevronGuard`). 스테퍼는 `28px | 1fr | 28px`
@@ -1765,7 +1831,7 @@ TURN/BATTLE MENU` 칩. 전투 애니메이션 타이밍 표 헤더 `사운드...
 - Proof: `test/databaseAnimationFrameSelect.test.ts` binds the visible catalog name through cancel/confirm/clear (RED on the original configured-status string); `test/e2e/battle-animation-editor-ux.spec.ts` drives the real modal, controlled clock, picker and keyboard. Report/captures: `output/evidence/battle-animation-ux/p2-implementation.md`. The worker verified geometry, PNG integrity and changing stage pixels, not a visual verdict; independent visual approval belongs to the parent.
 ## 검토한 실내 기본값의 원격 반영 (2026-09-05)
 
-`scripts/expand-concept-bundles.mts --project <id> --baseline <old-bundles.json> --tileset-baseline <old-tileset.json> --evidence <dir> --apply`는 검토 전 값과 정확히 같은 꾸러미/메타/그룹만 교체하고 새 id를 추가한다. 사용자 메타·잠금·독립 통행/priority 변경은 보존한다. 기존 furniture kit도 baseline 일치 시에만 바뀐다. 구조물 빈 배열은 사용자 삭제로 보존한다. JSON 경계를 거쳐 undefined 필드를 제거한 뒤 비교하며 projects 해시 CAS와 tileset mirror 갱신 후 원격 및 앱 재로드를 확인한다. 두 테이블 쓰기는 트랜잭션이 아니므로 중간 mirror 충돌은 오류로 남고 완료로 보고하지 않는다. 이번 대상은 `rpg-zzu-house-template-gallery`, 증거는 `output/evidence/concept-v2/supabase-proof.json`.
+`scripts/expand-concept-bundles.mts --project <id> --baseline <old-bundles.json> --tileset-baseline <old-tileset.json> --evidence <dir> --apply`는 검토 전 값과 정확히 같은 꾸러미/메타/그룹만 교체하고 새 id를 추가한다. 사용자 메타·잠금·독립 통행/priority 변경은 보존한다. 기존 furniture kit도 baseline 일치 시에만 바뀐다. 구조물 빈 배열은 사용자 삭제로 보존한다. JSON 경계를 거쳐 undefined 필드를 제거한 뒤 비교하며 projects 해시 CAS와 tileset mirror 갱신 후 원격 및 앱 재로드를 확인한다. 두 테이블 쓰기는 트랜잭션이 아니므로 중간 mirror 충돌은 오류로 남고 완료로 보고하지 않는다. 이번 대상은 `rpg-zzu-house-template-gallery`, 증거는 `output/evidence/concept-v2/legacy-db-proof.json`.
 
 ## 특정 꾸러미의 명시적 교체 (2026-09-06)
 
@@ -1866,8 +1932,116 @@ player preview. The editor probe accepts skin IDs as arguments and an optional
 - 초기 읽기 실패는 빈 자료로 대체하지 않고 편집을 막는다. POST 수락 전에는 성공이라고 표시하지 않는다. 저장 중 편집 잠금, 충돌/오류 안내, 실패한 변경의 JSON 보관, 명시적 다시 불러오기를 제공한다. 이름·속성·메모는 입력 중 포커스를 유지하고 change(다른 칸으로 이동/Enter) 때 저장한다.
 - 기존 프로젝트의 선택적 메타데이터와 IO 계약은 계속 보존한다. 「이 프로젝트의 기존 매핑 가져오기」는 기본 자산의 명시적 슬롯/얼굴 속성을 JSON 초안에 옮긴다. 사용자가 확인하고 「JSON 적용」하면 공용 저장된다. 알 수 없는 ID와 프로젝트 업로드 얼굴은 공용 가져오기에서 제외된다. 기존 v1/v2 JSON 입력도 계속 지원한다.
 - 확인: 격리된 호스트 카탈로그를 사용한 Firefox 실측에서 임시 프로젝트 연결 → 다른 새 프로젝트 재조회(`mapped`), 게임 문서 불변, 저장 충돌 후 기존 연결 유지/JSON 보관을 확인했다. 1440×1000 / 1024×900 캡처와 `browser-proof.json`은 `output/evidence/shared-character-faces/`. 회귀 명세는 `databaseCharacterGraphics.test.ts`, `sharedCharacterGraphicsStore.test.ts`; 세션 규칙에 따라 vitest/게이트는 실행하지 않았다.
-- 복구 조사: Supabase 프로젝트 123개의 `current_json.resourceProfiles`에는 이 섹션의 `characterSlots` 저장본이 없었다. 이는 브라우저에만 남았던 편집이나 별도 JSON 백업의 부재까지 증명하지 않는다. 공용 저장 수정과 과거 수동 매핑 복구를 구별한다.
+- 복구 조사: LegacyDb 프로젝트 123개의 `current_json.resourceProfiles`에는 이 섹션의 `characterSlots` 저장본이 없었다. 이는 브라우저에만 남았던 편집이나 별도 JSON 백업의 부재까지 증명하지 않는다. 공용 저장 수정과 과거 수동 매핑 복구를 구별한다.
 
 ### 공용 기본 매핑 재저작 (2026-09-18)
 
-사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, Supabase 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. Supabase는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
+사용자의 재매핑 지시로 `src/assets/sharedCharacterGraphics.json`을 원본 그림에서 새로 저작했다. 168칸 중 94칸 연결(정확 68·근사 26), 74칸 얼굴 없음, 원본 얼굴 메타데이터 80개다. 공용 저장 파일이 없는 호스트는 이 자료로 시작하며, 이미 저장된 호스트 파일은 우선하여 사용자 편집을 보존한다. 각 근사 대응의 차이는 `note`에 남긴다. `Actor3 #5`를 여성 얼굴에 순번으로 연결하지 않으며, 검은 고양이·Scarloxy 전용 그림·물건·빈 칸에 억지 얼굴을 주지 않는다. 시트·얼굴 대조 PNG, 호스트 저장 후 재읽기, LegacyDb 전용 행 `oprn-shared-character-graphics`의 저장(201) 후 재조회 근거는 `.omo/evidence/shared-character-faces/README.md`에 보존한다. LegacyDb는 재저작 자료의 원격 보관본이고 편집기의 공용 저장 정본은 호스트 파일이다.
+
+## Feature16 climate and action forms (2026-09-21)
+
+Map settings (palette tileset-name chip) → 기후 authors inherit/fixed/indoor mode,
+fixed weather and intensity via `setMapClimate` (map permission + scoped store
+mutation). Selectors: `map-props-tab-climate`, `map-climate-mode`,
+`map-climate-weather`, `map-climate-intensity`.
+Database → 파티 → 스킬 → 액션 스킬 uses the separate
+`databaseActionSkillForm.ts`. `db-field-skill-action-enabled` remains compatible;
+new selectors end in `kind`, `cooldown`, `duration`, `status`, `status-duration`.
+Kinds are projectile/melee/dash/trap. Each callback edits the latest stored profile
+so changing one field cannot restore an older value from another control.
+
+Parent-owned real editor capture (already running editor server):
+`FEATURE16_EDITOR_URL=http://127.0.0.1:<port> node scripts/capture-feature16-world-editor.mjs`.
+It opens real map/database dialogs, operates visible controls, reads the actual
+serializer's result, and writes screenshots/receipt under
+`verify-shots/feature16-world-editor`. No synthetic component mounts or DB writes.
+These scripts and tests were authored without running servers, tests or typecheck
+in the implementation agent's session; centralized validation is still required.
+## Combat authoring studio (feature16, 2026-09-21)
+
+Skills → **전투 규칙 · 피해 수식** (`feature16-combat-studio`) adds a bounded arithmetic formula, editable preview power/attacker ATK/defender DEF, ordered hit multipliers, per-skill critical chance/multiplier and cooldown. Existing effect-card hit rate remains authoritative. Preview displays base damage before model modifiers; other preview variables default to 20, level to 1. Invalid input displays **저장하지 않음**, marks the field invalid and never calls `updateDatabaseRecord`; last valid data remains saved. Blank formula restores model defaults; critical chance -1 restores battler defaults. All persisted edits use existing database mutation labels/history.
+
+Enemies → **보상** adds conditional drop rows (`feature16-drops`); first add preserves a legacy single drop as the first row. Each row has item/quantity/rate and always/turn/HP/MP/status/allies/switch condition controls. Explicit “기존 단일 드롭 사용” removes the array and restores legacy fields. The existing attack-pattern dialog uses the same condition editor, including session switch equality. Unknown/dangling item references are not silently created.
+
+Browser proof: `npx playwright test test/e2e/feature16-combat.spec.ts --project=chromium --workers=1`. Parent owns server and execution. This spec opens the **real editor** at `?freshProject=1`, uses visible database controls, verifies invalid edits do not alter exported data, switches tabs and rechecks persistence. Screenshots are emitted to Playwright's per-test output folder as `feature16-combat-{skills,invalid-formula,drops,enemy-condition}.png`. No remote content mutation; no screenshot claimed until the supervisor runs it.
+## Troop intent and weakness authoring (2026-09-21)
+
+The troop placement preview contains `databaseTroopIntentPanel`: hypothetical turn/MP/target/row, eligible action candidates with shared damage predictions, and actual element multipliers. Existing actions and elementRates are edited through `updateDatabaseRecord`; no new enemy schema. It does not claim exact AI choice or add predictions to the runtime HUD. Details, limitations and real-editor capture: `openwiki/feature16-battle-ui.md`.
+
+## 인게임 HUD 구성 편집기 (2026-09-21)
+
+자료집 → 시스템 → 인게임 HUD(`databaseFieldHud.ts`)에서 생활·농장, 생존·탐험, 파티 RPG, 액션·모험, 고요한 탐험, 기존 HUD를 고른다. 프리셋 선택은 구성 전체를 교체하며 기존 시스템 편집 스냅샷으로 실행 취소할 수 있다. 구성 요소는 최대 24개, 추가·복제·삭제·순서 변경이 가능하다.
+
+- 왼쪽은 요소 목록, 가운데는 시작 맵의 `renderRegionSnapshot` 배경과 실제 `FieldHud`, 오른쪽은 선택 요소의 데이터/표현/앵커/여백/치수/색/패널/표시 조건이다. 이미지 요소는 기존 picture 리소스 선택기를 사용한다.
+- 드래그는 화면 배율을 논리 좌표로 환산하여 좌상단 앵커로 바꾸고 pointerup에 한 번 저장한다. 방향키 1px, Shift+방향키 8px 이동도 같은 편집 경로다. 단순 선택/취소/미리보기 전환은 프로젝트 이력을 만들지 않는다.
+- 체력/마력은 선두 또는 지정 배우, 생활 에너지/액션 스태미나/소지금/변수/타이머/아이템 보유량은 실제 데이터에 연결한다. 상태 요소는 배우 상태와 선택 타이머를 읽는다. 음식 효과를 새로 만들지 않으며 생존형의 음식 슬롯은 휴대 식량의 보유 수량이다.
+- 시작 상태·저체력·전투·화면 아래 접근·대화 상태 미리보기는 프로젝트와 별도의 세션이다. 지원 시스템이 꺼져 있으면 설명을 표시하며, 현재 조건에서 숨겨진 요소는 편집할 수 있도록 흐리게 보인다.
+- 편집은 `databaseSystemView.updateSystem`의 스냅샷/감사/저장 경로를 공유한다. 운영 게임 콘텐츠를 생성하거나 원격 DB를 직접 쓰는 기능이 아니다.
+
+### 장르별 HUD와 글꼴 (2026-09-21 후속)
+
+프리셋은 수집·여행, 고전 JRPG, 상징·호러, 추격·HUD 없음, 하트·모험까지 포함한다.
+수집형은 필드의 지역명과 별도의 `field-list` 세로 명령 메뉴를 사용한다. 고전형/추격형의
+빈 요소 목록은 정상적인 구성이다. 프리셋을 고르면 권장 메뉴와 목표 표시 설정도 함께
+바뀐다. `함께 사용할 메뉴 → 기존 메뉴 설정`으로 시스템의 기존 `menuUiStyle`을 따른다.
+HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한다. 글꼴 선택은 HUD에만
+적용되고 메뉴 스킨은 자체 글꼴을 사용한다. 게이지의 `수치 함께 표시`를 끄면 하트/꽃만
+남길 수 있다. 꽃잎은 실제 연결 데이터 비율을 5단계로 읽으며 임의 그림 상태 교체는 아니다.
+별도 메뉴 편집기의 새 `여행 · 세로 명령창`도 같은 스킨 레지스트리를 사용한다.
+
+## 숲·마을·동굴 공통 기본 장소 13종 (2026-09-21)
+
+`forestPlaceReferences.ts`는 이 작업에서 만든 완성 맵 13개를 `PLACE_REFERENCES`에 등록한다.
+검은 숲의 오두막, 별 모양 숲, 굽이숲, 굽이숲 작은마을·절벽마을, 솔바람 고원마을·협곡,
+고요한 숲마을, 큰 폭포 아래 마을, 숲과 단구의 마을, 언덕 위 숲마을 조화 배치와 동굴 두 개다.
+반복·이음새·언덕 비교용 맵 6개는 공용 목록에서 제외한다.
+
+기존 지역 ID `gubisup-80x72`, `small-forest-village-80x72`, `forest-cliff-village-80x72`는
+그대로 유지하면서 장소 목록으로 옮긴다. AI 행 조회와 다운로드 경로는 바뀌지 않는다.
+`forestPlaceSnapshot`이 저장된 맵·타일셋을 조회하고 기본 장소 카드는 프로젝트와 무관하게 보인다.
+다운로드 문구는 장소/지역을 구분하고 파일명은 해당 사례의 이름을 쓴다.
+
+원본은 로컬 프로젝트 `oprn-hill-forest-harmony-20260918-a4e1`의 현재 저장본이다.
+기존 원격 원본에 과거 버전이 남은 맵도 있으므로 등록을 이유로 원본 프로젝트 전체를 덮어쓰지 않는다.
+공용 스냅샷은 `oprn-place-<slug>-v1`(기존 지역 3종은 `oprn-region-<slug>-v1`)에 저장하고
+재로드한 뒤 `regionReferences/<slug>.json` 및 `public/assets/region-references/<slug>*`로 출하한다.
+이미 발행한 스냅샷은 불변이다. 새 사용자 편집을 반영할 때는 새 개정 ID가 필요하다.
+
+`publish-forest-place-library.mjs`는 지도 이벤트의 이동 대상 맵을 재귀 수집해 다운로드에 함께 넣고,
+로컬 업로드 이미지의 내용 해시를 검증한 뒤 data URL로 포함한다. 동굴 출구가 빠진 문서를 만들지 않는다.
+미리보기는 실제 편집기의 `mapOnlyCapture=1` 화면에서 맵 영역을 찍는다.
+`capture-forest-place-previews.mjs`와 `capture-forest-place-library.mjs`가 이미지·목록·내려받기 증거를 남긴다.
+출하 증거: `.omo/evidence/forest-place-library/`.
+
+
+## 타일셋 참고문서 (2026-09-21)
+
+[타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+
+### 숲마을 공용 소품 및 장소 (2026-09-21)
+
+`sharedVillageObjects.json`의 19개 키트는 `shared_forest_village_objects` 번들이다.
+새 프로젝트와 기존 프로젝트의 `ensureBundledTilesets`가 공급하며,
+`sharedVillageObjectById`는 기존 공용 오브젝트 복사 경로를 사용한다.
+`curatedVillagePlaceReferences.ts`의 7개 곡선 마을은 기존 13개 공용 숲 장소에 추가한다.
+타일별 AI 참고문서·SQLite 저장·불변 원격 v2 보존본은
+`openwiki/tileset-reference-documents.md`와
+`tiledata/tilesets/forest_high_cliff_river/shared-library/`를 참조한다.
+
+### 세계 개요 스프레드 뷰 (2026-09-22)
+
+- 세계 개요 탭을 "문서 먼저" 스프레드 뷰로 다시 쌌다. 본문 순서: 스프레드 헤드(키커 `세계 안내서 · 한 장` + 세계 제목 + 따옴표 감싼 한 줄 전제 에피그래프 + AI 미터 + hero stats) → 이름과 한 줄 → 뼈대(톤·시대·기술·없는 것, 시대/기술은 2열) → **법칙 질문 카드** → 본문. 스키마·store 계약·경계값은 무변경이고 뷰 조립만 바뀌었다.
+- **법칙 카드:** tri-state 세그먼트(미정/없음/있음)는 데이터 모델이 UI 로 샌 형태라 폐기하고 질문 카드(`lawCard`, testid `db-world-canon-law-{kind}`)로 교체했다. 카드 클릭이 대화상자(`db-world-canon-law-dialog`, backdrop z-index `--z-modal-top`)를 열고 옵션 3종(`-option-unset|no|yes`) + 비고(`-note`, 160자) + 저장(`-save`)으로 반영한다. `present: undefined|false|true` 의미는 이전과 완전히 같다. 카드 상태 배지는 결과 말로 쓴다: 미정="조수가 상상합니다", 없음="조수도 없다고 답함".
+- **라이브 미러:** 스프레드 헤드의 제목/전제는 이름·전제 입력 input 에 즉시 따라붙는다(`renderHeadMirror`). 탭 리렌더를 기다리면 미러가 늦게 갱신돼 문서가 아니라 폼처럼 보였다(실측). 빈 값 초안은 초대 문구("세계의 이름을 지어 보세요")로 렌더한다.
+- 계약 이동: `db-world-canon-law-{kind}-note` testid 는 카드 안이 아니라 카드가 여는 대화상자 소유로 이동했다(`worldAuthoringRegression` 수정). tri-state 라디오 testid `db-world-canon-law-{kind}-present` 는 폐기됐다(`worldCanonSpreadView.test.ts` 가 부재를 고정).
+- 검증: 세계관 계약 10파일 59케이스 전부 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` (빈 상태/작성 상태/대화상자/완성 4장, e2e `world-canon-spread-evidence.spec.ts`).
+
+
+### 세계 개요 탭 구조 — 문서 / 조수 전달 (2026-09-22 v2)
+
+- 한 장 스프레드 전체가 세로로 길어 "목업과 다르다"는 피드백을 받았다. 스프레드 헤드(키커·세계 제목·전제 에피그래프·AI 미터·hero stats)는 문서 상단에 고정하고, 나머지는 DB 공용 `inspectorTabs` 문법의 두 탭으로 나눴다: **문서**(이름과 한 줄 → 뼈대 → 법칙 질문 카드 → 본문)와 **조수 전달**(AI 프롬프트 투영 + 전달 상태 타일). 탭 선택은 WeakMap 으로 리렌더 너머 유지된다.
+- **조수 전달 탭**은 목업의 "조수 미리보기 레일"을 실제 구현으로 옮긴 것이다. 상단 안내("여기 보이는 것 = 조수가 아는 것의 전부") + 상태 타일 5개(한 줄 전제·톤·없는 것·법칙 확정·본문 발췌, `data-tone` 으로 누락/경고 왼쪽 레일 색) + `worldCanonPromptSection` 전체 투영(`world-canon-ai-panel-preview`). 문서 탭에서 뭘 고치든 이 탭의 타일/투영이 즉시 따라붙는다(`updateAiPreview` 가 input 캡처로 갱신).
+- 법칙 탭 배지: 미정 법칙이 있으면 탭 라벨에 `미정 N` 배지(`inspectorTabs` badge)가 붙는다 — 조수 전달을 안 열어도 미정이 눈에 보인다.
+- testid: 탭 스트립 `db-ws-section-tabs`, 탭 `db-ws-section-tab-document|ai`, 패널 `db-ws-section-panel-document|ai`, 조수 패널 `world-canon-ai-panel`, 투영 `world-canon-ai-panel-preview`. 기존 계약(헤드 미러·법칙 카드·대화상자·본문)은 모두 유지.
+- 검증: 세계관 계약 10파일 61케이스 전부 통과(탭 계약 2건 추가), `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` — 빈 문서 탭 / 작성된 문서 탭 / 법칙 대화상자 / 조수 전달 탭 4장.
+

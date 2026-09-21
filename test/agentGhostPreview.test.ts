@@ -223,9 +223,9 @@ describe("agent ghost preview live draft diff", () => {
 
 // 좌→우 단일 와이프 계약: 변경 셀은 열(x) 단위로 한 번에 드러난다. 같은 열은 같은 시각,
 // 열은 왼쪽에서 오른쪽으로, 총 길이는 셀 수와 무관하게 GHOST_WIPE_DURATION_MS 고정이다.
-// 셀별 스탬프 간격·이벤트 별도 팝인·2.5초 스윕은 없앴다(사용자 요청: "좌에서 우로 한번에 쏵").
+// 층 순서와 전체 길이를 검증한다.
 describe("buildGhostRevealSchedule", () => {
-  it("같은 열은 같은 시각에 드러나고 열은 왼쪽에서 오른쪽으로 진행한다", () => {
+  it("하위층을 먼저 공개하고 같은 층은 왼쪽에서 오른쪽으로 진행한다", () => {
     const schedule = buildGhostRevealSchedule([
       { x: 2, y: 1, layer: "lower" },
       { x: 0, y: 5, layer: "lower" },
@@ -234,14 +234,14 @@ describe("buildGhostRevealSchedule", () => {
     ]);
 
     expect(schedule.map((entry) => [entry.cell.x, entry.cell.y, entry.startMs])).toEqual([
-      [0, 1, 0],
       [0, 5, 0],
-      [1, 0, GHOST_WIPE_DURATION_MS / 2],
-      [2, 1, GHOST_WIPE_DURATION_MS],
+      [1, 0, GHOST_WIPE_DURATION_MS / 4],
+      [2, 1, GHOST_WIPE_DURATION_MS / 2],
+      [0, 1, GHOST_WIPE_DURATION_MS / 2],
     ]);
   });
 
-  it("같은 좌표의 lower·upper·event 는 같은 시각에 lower→upper→event 순서로 들어간다", () => {
+  it("같은 좌표의 lower·upper·event도 층별 공개 시간을 갖는다", () => {
     const schedule = buildGhostRevealSchedule([
       { x: 1, y: 1, layer: "event" },
       { x: 1, y: 1, layer: "upper" },
@@ -249,7 +249,7 @@ describe("buildGhostRevealSchedule", () => {
     ]);
 
     expect(schedule.map((entry) => entry.cell.layer)).toEqual(["lower", "upper", "event"]);
-    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 0, 0]);
+    expect(schedule.map((entry) => entry.startMs)).toEqual([0, GHOST_WIPE_DURATION_MS / 3, GHOST_WIPE_DURATION_MS * 2 / 3]);
     expect(schedule.map((entry) => entry.kind)).toEqual(["tile", "tile", "event"]);
   });
 
@@ -270,14 +270,14 @@ describe("buildGhostRevealSchedule", () => {
     expect(columnStarts[1] - columnStarts[0]).toBeCloseTo(GHOST_WIPE_DURATION_MS / 19, 6);
   });
 
-  it("빈 입력은 빈 스케줄이고, 한 열뿐이면 0ms 에 한 번에 드러난다", () => {
+  it("빈 입력은 빈 스케줄이고 한 열에서도 층 순서는 유지된다", () => {
     expect(buildGhostRevealSchedule([])).toEqual([]);
     const singleColumn = buildGhostRevealSchedule([
       { x: 4, y: 2, layer: "event" },
       { x: 4, y: 7, layer: "lower" },
     ]);
-    expect(singleColumn.map((entry) => entry.startMs)).toEqual([0, 0]);
-    expect(singleColumn.map((entry) => entry.cell.y)).toEqual([2, 7]);
+    expect(singleColumn.map((entry) => entry.startMs)).toEqual([0, GHOST_WIPE_DURATION_MS / 2]);
+    expect(singleColumn.map((entry) => entry.cell.y)).toEqual([7, 2]);
   });
 
   it("durationMs 로 와이프 길이를 바꿀 수 있고 셀 참조는 그대로 유지된다", () => {
@@ -287,7 +287,7 @@ describe("buildGhostRevealSchedule", () => {
     });
 
     // 와이프 선단은 공간을 지나간다 — 시각은 열 인덱스가 아니라 x 위치에 비례한다.
-    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 200 / 9, 200]);
+    expect(schedule.map((entry) => entry.startMs)).toEqual([0, 100 / 9, 200]);
     expect(schedule[0].cell).toBe(first);
   });
 });

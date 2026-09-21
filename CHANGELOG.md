@@ -5,6 +5,226 @@
 
 <!-- releases -->
 
+## 0.7.0 — 2026-09-22
+
+### 기능
+
+- **editor** — 장소 탭을 라이브러리 우선으로 재설계 (#1082) (`c1b5884`)
+- publish approved river forest village as a shared region (`c02adef`)
+- 숲마을 공용 장소·소품과 타일 AI 참고문서 등록 [skip ci] (`244d180`)
+- generate continuous forest contours with domain-warped fields (`ee44369`)
+- register castle courtyard harbor and stone lodge as shared places (`f858763`)
+- shape winding village forests and add everyday prop clusters (`d498ba2`)
+- **places** — restore preferred castle entrance and publish shared fortress (`8d2c224`)
+- restore river village defaults with connected forest groves (`5f20b7d`)
+- AI assistant work surfaces lean UI + layer reveal (`7ee912c`)
+- assemble village groves like the winding cliff forest (`8c53f63`)
+- add tileset reference library and retire legacy tile UI (`0d86819`)
+- default AI outdoor authoring to forest harmony (`287c074`)
+- support 48px tiles and automatic character scaling (`cc3a2fc`)
+- restore AI tile construction previews with drafting motion (`9296466`)
+- pokemon 데모에 레벨 기술 테이블·상점·야생 트룑을 채운다 (#1059) (`c766129`)
+- **maps** — develop castle exterior rest area and landscape transitions (`9314dd5`)
+- support 32px tilesets and preserve Slates authoring guides (`5e5f45e`)
+- **maps** — improve castle paving borders and contextual prop density (`5deaf88`)
+- **tiles** — bundle castle atlas and preserve reference study with visual audit (`e68a81a`)
+- archive forest tile rules and ten authored village references [skip ci] (`d3e14c6`)
+- publish thirteen forest maps as shared places [skip ci] (`e8f95a8`)
+- 아이템·장비 아이콘 220종을 16비트 픽셀아트로 재생성 (`58823e6`)
+- preview creation choices in the expanded assistant workspace (#1049) (`e7be965`)
+- share decorated forest villages and reviewed props [skip ci] (`dd25c64`)
+- **assets** — bundle OGA greggman backdrops as catalog resources (#1046) (`085ed7d`)
+- 조수 작업을 실제 이미지와 변경 전후로 표시 (#1045) (`012159b`)
+- **hud** — 장르별 프리셋과 한글 서체·수집형 메뉴 추가 (`58cc848`)
+- **hud** — 데이터 연결과 배치를 저작하는 인게임 HUD 구성 편집기 (`d52e63f`)
+- 환경 효과·환경음 프리셋 30종과 편집기 추가 (#1039) (`b98c6c9`)
+- **editor** — 웹 검색이 화면에서 한국어로 보이고, 기다리는 이유를 말한다 (`27c9f51`)
+- finalize sixteen editor and runtime features with QA evidence (`3a818f2`)
+- **ai** — 참조 작품을 지목하면 조수가 스스로 검색하고 설계한다 (`51918e1`)
+- 조수를 대화 중심 작업창으로 재구성 (#1037) (`ede83ca`)
+- improve weather visuals and add rain and thunder audio (#1036) (`0405834`)
+- implement sixteen engine authoring and player features (`84b57f6`)
+- **ai** — 조수에게 웹 검색 도구를 준다 (`7835b0d`)
+- expose assistant activity levels and expand chat with team (#1032) (`bdeca53`)
+- **editor** — 우클릭으로 AI 이벤트 작성 + 세계관 2만자·맵 읽기 툴 (#1030) (`759975b`)
+- route event command editing through the shared assistant (`9143492`)
+- **ai** — add hybrid editor tool exposure (`702e195`)
+
+### 수정
+
+- **electron** — 패키징 앱이 시작하지 못하던 것과 출하 번들 유출을 고친다 (#1088) (`8016d50`)
+- **player** — keep castle AI study JSON out of the release collector (#1087) (`870ccaf`)
+- 공용 숲마을 타일의 AI 참고문서 누락 보완 [skip ci] (#1085) (`a282997`)
+- **player** — keep castle AI study JSON out of the export-player bundle (#1086) (`fbc4a6c`)
+- include castle AI study in every new project (`aa4cf40`)
+- store castle study documents and images in tileset AI references (`ab75f0d`)
+- restore original grove trunks along curved forest boundaries (`cdfd359`)
+- **event-editor** — 명령 툴바가 둘째 줄로 접히던 것을 한 줄로 되돌린다 (`65f3b7b`)
+- run independent assistant tools in parallel (`97980ef`)
+- **tileset** — fill required TileAiMetadata description on grove canopy (#1068) (`8112368`)
+- **battle** — 포켓몬 트룹의 1:1 대치 계약을 복구하고 확정 상태기를 추가한다 (#1062) (`6bfe1e3`)
+- accept map tile sizes in selection screen geometry (`040299d`)
+- **editor** — 죽은 callMapEvent 호출에 경고를 냈다 (#1053) (`c69ef60`)
+- **editor** — declare Vite BASE_URL so creation preview typechecks (#1051) (`c5b2041`)
+- **ai** — skip missing activity-visual records so typecheck passes (#1047) (`44c7543`)
+- enforce Pi village completion and honor saved designs (`694f493`)
+- **editor** — keep typecheck after HUD and prompt-inspection merges (#1042) (`469a3fb`)
+- harden combat prediction cooldown rewards and MP feedback (`d7fc679`)
+- refine feature labels and strengthen real UI evidence checks (`87ff568`)
+- harden feature integration and repair verification fixtures (`ee8663c`)
+- **editor** — 사이드바 AI 추천을 실제로 작동시키고 캔버스 느낌표 버튼으로 옮긴다 (`2b11f55`)
+- show activity level buttons and a labeled assistant expand action (#1034) (`aa3b9bf`)
+- 커스텀 팔레트 원본 배열·밀도와 선택 성능 복구 (#1033) (`8c7eb0a`)
+- **ai** — 자동 작업 기록을 제작 노트와 분리 (#1031) (`74b4901`)
+- **editor** — keep typecheck after follower and data-integrity merges (`9336b7d`)
+- preserve event and database authoring data across edits (`3707e22`)
+- interpolate follower sprites between trail slots with walk animation (`5f48ab1`)
+- use editor monsters in pokemon style battles (`87b1e0e`)
+- align reference stripe grid and measure visual differences (`a266989`)
+- refine pokemon type silhouettes and reference sky colors (`d8893e7`)
+- match Korean pokemon battle reference and support rear sprites (`f115c53`)
+- **event-editor** — 설정 레일 시트가 30px 슬리버로 붕괴하는 것을 고친다 (`e859a9f`)
+- improve battle feedback, stage fit, and oversized enemy placement (`7c0a149`)
+- guard battle outcomes, authoring inputs and returning state (`c0a44dc`)
+- **event-editor** — remediate adversarial review findings (`931c2e3`)
+- **editor** — reduce large-map paint and region-drag lag (`22b437a`)
+- **editor** — Ctrl+V 붙여넣기에 선택 툴바가 따라오지 않게 한다 (`5530f75`)
+- keep tile layers from opening events and rename overlay to 상위 (`d3128c6`)
+- keep editor studio bar controls inside responsive grid (`7383ecf`)
+- load assistant styles with editor bootstrap (`ecdc225`)
+- harden editor first-paint CSS shells (`94c0fae`)
+- make resource modal shell self-contained (`2c5e919`)
+- **database** — move workbench summary type after dead-code cleanup (`2fd6a72`)
+- **ai** — reuse existing omp oauth credentials (`950cd96`)
+- **database** — IA·죽은 코드·색 토큰 정리 (P1-17, P1-18, P1-24, P2/P3) (`9487e37`)
+- **database** — 접근성·카피 결함 (P1-14, P1-15, P1-19, P1-21, P1-22, C1/C3/C7) (`bb7760e`)
+- **database** — 피드백·상태 결함 (P1-10..P1-13, P1-20) (`eaba165`)
+- **database** — 목록 선택·reveal·폼 입력 결함 (P1-2..P1-9) (`a1f66cd`)
+- **editor** — narrow MapEditLockStatus before comparing lock fields (`90a1540`)
+- **ai** — wire hybrid tool exposure through the Pi chat runtime (`1176839`)
+- **test** — 삭제 가드 테스트의 import 경로 수정 (`a84ec4c`)
+
+### 성능
+
+- avoid oversized palette rebuild stalls (`4b9b978`)
+- skip hidden water animation updates (`53542ee`)
+
+### 정리
+
+- retire legacy remote storage and complete SQLite tooling (`ccc3d70`)
+- split editor CSS surfaces and retire dead overrides (`71119e0`)
+- isolate editor CSS ownership and extract static styles (`2603246`)
+
+### 문서
+
+- register new tiles and tile studies in shared scope (`627c56a`)
+- require shared tile registration and record SQLite as project source of truth (`050d23e`)
+- 공용 타일 참고문서 배포 화면 확인 기록 [skip ci] (`4d40ed6`)
+- **readme** — document supported and unsupported map tile formats (#1065) (`f393c09`)
+- record 32px editor and transfer verification after main merge (`2593b05`)
+- record event assistant validation and baseline comparison (`d1e797f`)
+- **review** — DB 리뷰 문서에 처리 결과와 미착수 사유를 기록 (`9d8455e`)
+- record culled water animation contract (`34d1f26`)
+
+### 테스트
+
+- define feature integration and evidence acceptance checks (`d36117c`)
+
+### 잡무
+
+- 증거 스크린샷 압축 최적화와 아카이브 추가 (`02a9d4e`)
+
+## 0.6.0 — 2026-09-19
+
+### 기능
+
+- add generic image asset generation tools (`246a396`)
+- expose game over and audio authoring tools (`de1e679`)
+- add focused party and character authoring tools (`7fcdf5b`)
+- make RPG kickoff author world and character foundation (`b1f8559`)
+- switch project picker to vertical thumbnails (`669920e`)
+- polish hosted project picker (`31fc211`)
+- **database** — 외형 슬롯에 공용 캐릭터·얼굴 분류를 읽기 전용으로 표시 (`00f6180`)
+- add hosted project picker UI (`054381c`)
+- enable web project folder opening (`ceab4c2`)
+- redesign event condition modal (`28b837e`)
+- **player** — 상점 UI 프리셋과 비교·재고 화면을 넣는다 (`df6460d`)
+- classify place library by art style and spatial purpose (`73a01a9`)
+
+### 수정
+
+- **database** — 그룹 컨트롤 캡션 클릭이 첫 라디오·칩을 발화하던 것 수정 (`58a051c`)
+- **database** — 모달 셸의 Escape 소유권·포커스 트랩·푸터 정직성 (`8fab3d5`)
+- **database** — 저장본·편집을 잃던 두 경로를 막는다 (`bf897ea`)
+- **interpreter** — 루프 반복 가드를 루프마다 따로 센다 (`bda03d2`)
+- **ci** — parity 스위트 워커를 2개로 고정해 6GiB 슬라이스 OOM 방지 (`b4bbed0`)
+- **editor** — 큰 맵 지연 깔기에서 mapId가 없을 때는 타일을 만들지 않는다 (`c9c533a`)
+- defer large map tile materialization (`490d51e`)
+- reduce project and map loading overhead (`fe47e3e`)
+- load referenced tileset assets on hosted projects (`ebfd644`)
+- stretch beginner tile rail (`00a5c6f`)
+- fill custom tile palette columns (`454e723`)
+- **database** — 공용 카탈로그 값 import 복원 (`558d611`)
+- **database** — 외형 슬롯 읽기줄 편집에서 남은 배열 꼬리 제거 (`a9ba743`)
+- **editor** — pin beginner canvas shell to fill column (`81ea2de`)
+- **editor** — collapse empty persistence banner host (`e746445`)
+- allow hosted project ids in folder picker (`bc1b807`)
+- explain missing project host connection (`6e21b70`)
+- **test** — approachCorrection 의 vi.fn 클로저가 세션을 붙잡는 걸 끊는다 (#981) (`fa4e113`)
+- **editor** — sqlite 폴더는 웹 호스트에서만 열고, 미리보기는 project.json만 받는다 (`c0ff12b`)
+- **event-fork** — unify preview card labels and refresh evidence (`91aaf75`)
+- **event-fork** — no start-map fallback in preview verdicts (`1305320`)
+- **baseline** — heal pre-existing red gates outside fork scope (`c68f07e`)
+- **event-fork** — pass current map into condition eval badge (`05a7b9d`)
+- **event-fork** — unify branch labels, 3-state preview, scoped validation (`c82c45f`)
+- **gates** — 재판정 예산을 CI 규모에 맞추고 판정 결과를 파일로 남긴다 (`61a1d07`)
+- **ai** — 검수가 예산 부족으로 끊기면 예산을 넓혀 다시 묻는다 (`30b340d`)
+- **ai,village** — 검수 루프가 못 고칠 지적으로 헛돌지 않게, 환촌·광장촌이 목표 채수를 채우게 (`c781480`)
+- **village** — 형태 유형 마을이 «마을처럼» 보이게 — 공터·울타리·바깥 숲 (`a1e192d`)
+- **ai** — never show a running work card that no turn will finish (#973) (`db496f8`)
+- **assets** — give the last nine forest harmony groups placement rules (#972) (`094287c`)
+- **ai** — carry tile grafts the bundle added to an existing tileset (`8729918`)
+- **ai** — report only changes the merge actually dropped (`a993f4e`)
+- **editor** — remove canvas top gap and banner toolbar overlap (`ed9765d`)
+- keep event command single-click selection without inline editing (`888b606`)
+- apply shared face mappings when the assistant creates NPCs (`001af9c`)
+- restore original grass terrain pixels in bundled forest chipset (`a5f188d`)
+
+### 성능
+
+- **database** — 썸네일 크로마키를 요소 가드에서 URL 캐시로 (`46e502b`)
+- reduce hosted editor cold-load stalls (`f43cfc5`)
+- defer cold editor diagnostics (`cfa6c0a`)
+- avoid duplicate hosted project and thumbnail work (`d92553b`)
+- **editor** — 내보내기 미러가 프로젝트를 복제하지 않게 한다 (`6812577`)
+
+### 정리
+
+- **loop** — drop redundant body check in walkHasBreak (`d99e360`)
+
+### 문서
+
+- **review** — DB UI/UX 적대적 리뷰와 2차 재검증 기록 (`1e95dd3`)
+- **database** — 외형 슬롯 공용 분류 읽기줄을 위키에 기록 (`5368d67`)
+- add project folder picker mockup (`fd33ebd`)
+- **event-fork** — record timer negative-input gap (`568395e`)
+- **event-fork** — badge and simulation share map input (`35f5484`)
+- **wiki** — regenerate INDEX after event-authoring edits (`75d50bb`)
+
+### 테스트
+
+- **surface** — refresh fork entries for unified branch labels (`d34dd5a`)
+
+### 잡무
+
+- **gates** — 기준선을 갱신한다 (2026-09-12 → 09-18) — 허용 174→147 (#986) (`b7805db`)
+- **gates** — 기준선을 갱신한다 (2026-09-12 → 09-18) — 허용 174→147 (`9b6e68a`)
+
+### 기타
+
+- **editor** — lock canvas gap screenshots across modes (`c8cce02`)
+- filter workaround proof for chromium composite strip (untracked follow-up) (`45d3233`)
+
 ## 0.5.0 — 2026-09-18
 
 ### 기능
@@ -312,7 +532,7 @@
 - **brand** — 빌드가 자기 버전을 알고 도움말이 그것을 보여준다 (`2670ae7`)
 - **editor** — 목록에서 사용자가 직접 고른 맵 전환도 크로스페이드로 (`436ee4f`)
 - **editor** — 장소 탭이 제 목적을 말하게 한다 — 목적 스트립·쓰임 감사·배치 팝오버 (`93c9dab`)
-- **persistence** — Supabase 어댑터가 기존 sync 모듈을 그대로 감싼다 (`27c7caf`)
+- **persistence** — LegacyDb 어댑터가 기존 sync 모듈을 그대로 감싼다 (`27c7caf`)
 - **persistence** — 메모리 어댑터와 저장소 계약 테스트 (`a988e8a`)
 - **persistence** — 저장소 포트 인터페이스와 대상 타입, 선택기를 둔다 (`b8aef27`)
 - **ai** — 조수의 맵 전환을 크로스페이드로 — 하드컷 + 중앙 스냅 제거 (`f945a59`)

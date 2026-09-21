@@ -410,7 +410,7 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     expect(hostEl.querySelector("[data-testid='ai-ghost-phase-chip']")?.textContent).toContain("초안 완성");
   });
 
-  it("(c) >256-cell preview renders bbox-only (no per-cell sprites) and chip still counts", () => {
+  it("(c) >256-cell preview keeps actual tile sprites and the count", () => {
     let now = 1000;
     const renderer = new AgentGhostPreviewRenderer(
       mockScene,
@@ -431,8 +431,8 @@ describe("AgentGhostPreviewRenderer with mock phaser and DOM", () => {
     replaceAgentGhostPreviewFromProjectDiff(base, draft);
     renderer.render();
 
-    // No image added for cells (>256 fallback)
-    expect(mockScene.add.image).not.toHaveBeenCalled();
+    // Large previews must not collapse to a bounding box.
+    expect(mockScene.add.image).toHaveBeenCalled();
 
     const chip = hostEl.querySelector("[data-testid='ai-ghost-phase-chip']");
     expect(chip).not.toBeNull();

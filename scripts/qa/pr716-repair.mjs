@@ -15,8 +15,8 @@ const evidence = { base, blocked: [], pageErrors: [], toolbar: [], picker: {}, h
 page.on('pageerror', error => evidence.pageErrors.push(error.message));
 await page.route('**/*', async route => {
   const request = route.request(), url = new URL(request.url());
-  // No remote reads, writes, local API writes, or Supabase proxy access.
-  if (request.method() !== 'GET' || url.origin !== base || /^\/(api|supabase|__oprn)(\/|$)/.test(url.pathname)) {
+  // No remote reads, writes, local API writes, or LegacyDb proxy access.
+  if (request.method() !== 'GET' || url.origin !== base || /^\/(api|legacyDb|__oprn)(\/|$)/.test(url.pathname)) {
     evidence.blocked.push({ method: request.method(), path: url.origin === base ? url.pathname : '(external)' });
     return route.abort();
   }

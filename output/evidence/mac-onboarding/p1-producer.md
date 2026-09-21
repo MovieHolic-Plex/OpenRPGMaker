@@ -30,7 +30,7 @@ Host: Linux x64, Node **v24.11.1**, npm **11.6.2**. This is **not macOS/Finder Q
 
 Both new entrypoints require Node 24 and npm. `npm ci` runs only if the `node_modules` path is absent, including preservation of dangling links and partial installs. Recovery instructions leave the decision to move a broken install aside to the owner. Child commands receive cancellation signals and are reaped.
 
-The wizard masks the key in a real Terminal. It accepts an anon-role JWT or publishable key, an HTTPS Supabase origin (HTTP loopback only), and an existing application project id. It rejects admin/service-role/secret/database credentials, URL credentials, paths, queries, fragments, controls and unsafe remote HTTP. Project ids support Unicode, spaces, dollars and URL-sensitive characters; quotes, backslashes, controls and ids over 200 characters are rejected rather than ambiguously serialized.
+The wizard masks the key in a real Terminal. It accepts an anon-role JWT or publishable key, an HTTPS LegacyDb origin (HTTP loopback only), and an existing application project id. It rejects admin/service-role/secret/database credentials, URL credentials, paths, queries, fragments, controls and unsafe remote HTTP. Project ids support Unicode, spaces, dollars and URL-sensitive characters; quotes, backslashes, controls and ids over 200 characters are rejected rather than ambiguously serialized.
 
 The only remote setup request is a GET to `/rest/v1/projects`, with `Accept-Profile: rpg_zzu`, an encoded exact project filter, `select=project_id`, and `limit=1`. It rejects redirects without forwarding credentials and bounds duration (10 seconds) and response size (64 KiB). Auth, schema, server, malformed-response, network and missing-project failures have value-free actionable errors. There are no migrations or remote writes.
 
@@ -65,10 +65,10 @@ The real Vite collision test reserves a temporary occupied port and remaps only 
 - LSP diagnostics on both production `.mjs` files and both test files: **no diagnostics**, including after the final fixes.
 - `node --check` on all four `.mjs` files; `/bin/bash -n 'Start RPG Maker.command'`; executable bit; package JSON parse; workflow YAML parse: **passed**.
 - `npm run typecheck:app`: **exit 0**, [p1-typecheck.log](p1-typecheck.log). An earlier tool invocation was terminated at its 120-second tool limit with no compiler diagnostics; the completed invocation used a sufficient execution bound. This was not a test retry or a suppressed compiler failure.
-- `npm test -- test/supabaseProjectConfig.test.ts test/supabaseProxyPath.test.ts test/supabaseProjectSync.test.ts test/vitePreviewProxy.test.ts`: **4 files / 42 tests passed in one run**, [p1-related-tests.log](p1-related-tests.log).
+- `npm test -- test/legacyDbProjectConfig.test.ts test/legacyDbProxyPath.test.ts test/legacyDbProjectSync.test.ts test/vitePreviewProxy.test.ts`: **4 files / 42 tests passed in one run**, [p1-related-tests.log](p1-related-tests.log).
 - `VITE_CACHE_DIR=.vite-cache/mac-onboarding npm run build:app`: **exit 0**, [p1-build-app.log](p1-build-app.log). Output includes the record-picker circular-chunk warning, five mixed static/dynamic import advisories, the large-chunk advisory, and missing optional AI-key notices. None were suppressed. Application source did not change; same-base warning comparison remains supervisor-owned.
 - `npm run openwiki:verify`: **exit 0**, no failures. `node scripts/openwiki-index.mjs --check`: current. `git diff --check`: passed.
-- In-memory scan of evidence text against the provisioned Supabase key values: **no credential matches**; keys were never printed. The existing private `.env.local` was not copied, printed, edited or committed.
+- In-memory scan of evidence text against the provisioned LegacyDb key values: **no credential matches**; keys were never printed. The existing private `.env.local` was not copied, printed, edited or committed.
 - Full `npm run build`, full suite and `npm run gates` remain supervisor-owned as delegated. No claim is made that those supervisor gates passed or that their same-base failure comparison is complete.
 
 ## Actual terminal and Vite/browser surface
@@ -77,7 +77,7 @@ The real Vite collision test reserves a temporary occupied port and remaps only 
 
 [p1-terminal.json](p1-terminal.json) records actual `node scripts/setup-local.mjs` execution from `/`, in disposable fresh folders:
 
-- Synthetic local Supabase GET received the exact project filter and `rpg_zzu` profile.
+- Synthetic local LegacyDb GET received the exact project filter and `rpg_zzu` profile.
 - Successful setup exited 0 and created `0600` config; the supplied synthetic key never appeared in terminal output.
 - Ctrl-C at key entry exited 1 and left no config file; no key echoed.
 - This proves Linux PTY behavior, not Mac Terminal/Finder behavior.
@@ -88,15 +88,15 @@ The real Vite collision test reserves a temporary occupied port and remaps only 
 
 - Origin: **`http://127.0.0.1:9999`**; project: **`rpg-zzu-house-template-gallery`** (the already provisioned test convenience, not a shipped default).
 - GET `/`: **200**, actual Vite app entry. GET `/auth/providers`: **200**, JSON object, existing Node auth route.
-- **Headless Firefox** loaded the existing project through same-origin `/supabase/rest/v1/projects` and `/maps`, both **200**.
-- Store subscription observed the loaded project title and **2 maps**; persistence was `{ kind: 'ready', projectId: 'rpg-zzu-house-template-gallery', source: 'env', url: '/supabase' }`.
+- **Headless Firefox** loaded the existing project through same-origin `/legacyDb/rest/v1/projects` and `/maps`, both **200**.
+- Store subscription observed the loaded project title and **2 maps**; persistence was `{ kind: 'ready', projectId: 'rpg-zzu-house-template-gallery', source: 'env', url: '/legacyDb' }`.
 - DOM mutation subscription observed the actual editor canvas mounted. Browser page exceptions: **0**.
 - Screenshot: local `output/evidence/mac-onboarding/p1-existing-project.png`, **1440 x 900**. [p1-screenshot.json](p1-screenshot.json) records 654 sampled colors. The image attachment tool cannot render images for this producer, so no visual-inspection claim is made. The PNG and local reproduction runner are intentionally not committed; they remain available in this worktree for independent inspection.
 - SIGINT to the owned launcher: **exit 0**, no terminating signal. Port 9999 had no listener after cleanup. Hash comparison confirmed the provisioned private env file was unchanged.
 
-The provisioned convenience backend uses legacy remote HTTP/client-key configuration, which the new launcher intentionally does not accept as novice configuration. QA used an **ephemeral loopback, GET-only bridge** to that already provisioned backend, passing the private key through process environment only. The actual launcher still enforced its normal URL/probe/proxy contract. This does **not** prove an external HTTPS Supabase deployment end to end.
+The provisioned convenience backend uses legacy remote HTTP/client-key configuration, which the new launcher intentionally does not accept as novice configuration. QA used an **ephemeral loopback, GET-only bridge** to that already provisioned backend, passing the private key through process environment only. The actual launcher still enforced its normal URL/probe/proxy contract. This does **not** prove an external HTTPS LegacyDb deployment end to end.
 
-The bridge forwarded only GETs. The existing editor attempted one `POST /rest/v1/map_edit_locks`; the bridge returned **405** and did not forward it. No content was authored and no remote writes/migrations were performed. Two failed optional `/v1/browser/hello` requests were recorded separately (`NS_ERROR_DOM_BAD_URI`); they are the existing developer bridge, not Supabase failures.
+The bridge forwarded only GETs. The existing editor attempted one `POST /rest/v1/map_edit_locks`; the bridge returned **405** and did not forward it. No content was authored and no remote writes/migrations were performed. Two failed optional `/v1/browser/hello` requests were recorded separately (`NS_ERROR_DOM_BAD_URI`); they are the existing developer bridge, not LegacyDb failures.
 
 ### Preserved browser failure
 

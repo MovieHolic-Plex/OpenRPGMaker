@@ -298,6 +298,28 @@ export function charsetFollowerGraphic(textureKey: string, characterIndex: numbe
   };
 }
 
+/**
+ * 팔로워 슬롯의 논리 좌표(보간 없음). 슬롯이 바뀐 프레임엔 직전 슬롯에서 이번 슬롯으로
+ * 걸음 주기 동안 보간하는 것은 스프라이트 계층(src/player/playSceneFollowers.ts)의
+ * 몫이다 — 슬롯 자체는 궤적 재생이라 결정적이어야 한다(세이브·테스트 계약).
+ */
+export type FollowerSlot = { readonly x: number; readonly y: number; readonly direction?: Dir };
+
+/**
+ * 슬롯별 보간 정보. 슬롯(목적지 칸)이 바뀐 프레임에 {from: 직전 슬롯, to: 이번 슬롯}으로
+ * 걸음 주기(NPC_MOVE_DURATION_MS) 동안 화면 좌표를 이어 간다. 스프라이트의 현재 좌표를
+ * 기준으로 쓰면 프레임마다 목적지가 자기 뒤로 밀리는 점근 추격이 되므로 반드시 슬롯이
+ * 기준이다. 600ms(슬롯 주기 320ms + 여유) 동안 갱신이 없으면 만료시켜 첫 등장/부활이
+ * 스폰 스냅으로 돌아가게 한다.
+ */
+export type FollowerSlotMotion = {
+  readonly from: FollowerSlot;
+  readonly to: FollowerSlot;
+  readonly startedAt: number;
+  /** 이번 걸음의 지속 시간(ms). 플레이어 걸음 주기와 맞춘다. */
+  readonly durationMs: number;
+};
+
 /** 플레이어 사방 인접 4칸. 플레이어 칸 자체는 넣지 않는다 — 겹쳐 서면 동료가 안 보인다. */
 function adjacentFollowerCandidates(x: number, y: number): readonly { readonly x: number; readonly y: number; readonly direction: Dir }[] {
   return [

@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "output/evidence/event-validation-bell";
 
@@ -16,7 +16,7 @@ test("validation warnings surface as a titlebar bell with a count badge", async 
   await mkdir(DIR, { recursive: true });
   await page.setViewportSize({ width: 1536, height: 1024 });
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
 
   const modal = page.getByTestId("event-editor-modal");

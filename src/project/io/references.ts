@@ -1,3 +1,4 @@
+import { combatReferenceIssues } from "@/project/combatReferences";
 import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { characterAppearanceReferenceIssues } from "./characterAppearanceValidation";
 import { resolveAnimalHome } from "../animalHousing";
@@ -42,6 +43,7 @@ export function validateProjectReferences(project: Project): void {
  */
 export function collectProjectItemReferenceIds(project: Project): ReadonlySet<string> {
   const ids = new Set<string>(Object.keys(project.session.inventory));
+  for (const widget of project.system.fieldHud?.widgets ?? []) for (const id of widget.itemIds ?? []) ids.add(id);
   for (const preset of project.testPresets ?? []) {
     for (const itemId of Object.keys(preset.inventory ?? {})) ids.add(itemId);
   }
@@ -53,7 +55,10 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
   for (const actorClass of project.database.classes) {
     for (const promotion of actorClass.promotions ?? []) if (promotion.requires.itemId) ids.add(promotion.requires.itemId);
   }
-  for (const enemy of project.database.enemies) if (enemy.rewards.dropItemId) ids.add(enemy.rewards.dropItemId);
+  for (const enemy of project.database.enemies) {
+    if (enemy.rewards.dropItemId) ids.add(enemy.rewards.dropItemId);
+    for (const drop of enemy.rewards.drops ?? []) ids.add(drop.itemId);
+  }
   for (const species of project.database.monsterSpecies ?? []) {
     for (const evolution of species.evolutions ?? []) if (evolution.requires.itemId) ids.add(evolution.requires.itemId);
   }
@@ -145,7 +150,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   // 호출자(에디터 부팅의 refreshAuthoringJourney)를 죽이지 않는다. 정규화를 거치지 않은
   // 프로젝트(옛 JSON·e2e 시드)에서 검증기가 undefined 필드를 만나 던지면 화면이 통째로
   // 뜨지 않았다. 파일 아래쪽 검증기들은 이미 check() 를 쓰고 있었다 — 계약을 전부로 넓힌다.
-  check(() => issues.push(...growthIssues(project), ...characterAppearanceReferenceIssues(project)));
+  check(() => issues.push(...growthIssues(project), ...characterAppearanceReferenceIssues(project), ...combatReferenceIssues(project)));
   const switchIds = new Set(project.switches.map((record) => record.id));
   const variableIds = new Set(project.variables.map((record) => record.id));
   const actorIds = new Set(project.database.actors.map((record) => record.id));
@@ -162,6 +167,16 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   const endingIds = new Set((project.endings ?? []).map((record) => record.id));
   const mapIds = new Set(Object.keys(project.maps));
   const resourceIds = collectResourceIds(project);
+  check(() => {
+    for (const widget of project.system.fieldHud?.widgets ?? []) {
+      const path = `system.fieldHud.${widget.id}`;
+      if (widget.actorId) assert(actorIds.has(widget.actorId), `${path}: unknown actorId ${widget.actorId}`);
+      if (widget.variableId) assert(variableIds.has(widget.variableId), `${path}: unknown variableId ${widget.variableId}`);
+      if (widget.maxVariableId) assert(variableIds.has(widget.maxVariableId), `${path}: unknown maxVariableId ${widget.maxVariableId}`);
+      if (widget.switchId) assert(switchIds.has(widget.switchId), `${path}: unknown switchId ${widget.switchId}`);
+      for (const id of widget.itemIds ?? []) assert(itemIds.has(id), `${path}: unknown itemId ${id}`);
+    }
+  });
   const context: ReferenceContext = {
     appearanceIds: new Set(project.database.characterAppearances?.map((record) => record.id)),
     actorIds,
@@ -671,6 +686,7 @@ function validateMonsterSpeciesRecords(
       if (evolution.requires.itemId && !itemIds.has(evolution.requires.itemId)) issues.push(`monsterSpecies ${species.id}: evolution itemId does not exist: ${evolution.requires.itemId}`);
     }
     capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.monsterResourceId`, species.graphic.monsterResourceId, resourceIds));
+    capture(issues, () => validateOptionalResource(`monsterSpecies ${species.id}: graphic.backResourceId`, species.graphic.backResourceId, resourceIds));
   }
 }
 

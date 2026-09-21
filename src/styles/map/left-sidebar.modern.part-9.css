@@ -1,0 +1,375 @@
+/* ── 8. figma-editor/10-map-tree.css 에서 이관(순수 이동, 값 불변) ─────────── */
+
+@container (max-width: 220px) {
+  .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+    min-height: 30px;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .selected-tile-status .selected-tile-tileset {
+    display: none;
+  }
+
+  .left-panel-stack[data-testid="left-palette-root"] .palette-work-tab {
+    font-size: 10px;
+    height: 26px;
+  }
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action-icon {
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .tile-inspector-action-label {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .brush-control {
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 8px 0 0;
+  max-width: 232px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .brush-control-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .brush-size-btn {
+  font-size: 13px;
+  height: 32px;
+}
+
+/* Short desktops share space between tiles and the map list. Matches the
+   adaptive sheet reserve in editor.ts (800px dock + 49px studio bar). */
+@media (max-height: 848px) {
+  .editor-layout .left-panel-stack[data-testid="left-palette-root"] .chipset-sheet.tile-palette {
+    min-height: 200px;
+  }
+}
+
+/* Beginner: persistent materials, with the sheet owning its scroll and width. */
+.editor-layout .left-panel-stack .basic-left-rail > .basic-rail-section {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  gap: var(--space-2);
+  overflow: hidden;
+}
+.editor-layout .left-panel-stack .basic-left-rail .chipset-sheet.tile-palette {
+  container-type: inline-size;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow: auto;
+}
+
+.editor-layout .basic-left-rail .basic-selected-tile,
+.editor-layout .basic-left-rail .tile-search-input {
+  flex: 0 0 auto;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar {
+  flex-wrap: wrap;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-tile-toolbar-scroll {
+  flex: 1 1 0;
+}
+
+.editor-layout .left-panel-stack[data-testid="left-palette-root"] .oprn-toolbar-menu > .oprn-tile-tool {
+  width: auto;
+  min-width: 26px;
+  min-height: 26px;
+  height: auto;
+  gap: var(--space-1);
+  padding: var(--space-1);
+}
+
+.sidebar-brush-controls,
+.sidebar-brush-sizes,
+.basic-tile-search-feedback {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  color: var(--text-2);
+  font-size: var(--font-size-sm);
+}
+
+.sidebar-brush-controls {
+  padding-block: var(--space-1);
+}
+
+.sidebar-brush-state {
+  margin-left: auto;
+}
+
+/* 합성 Combo Brush 는 반복 붓(브러시 크기)과 **눈으로** 달라야 한다.
+   문구는 comboBrushBadge 가, 생김새는 이 규칙 하나가 책임진다. */
+.sidebar-brush-state.is-combo-brush {
+  padding-inline: var(--space-1);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm, 4px);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.editor-layout .sidebar-brush-controls .btn,
+.editor-layout .basic-tile-search-feedback .btn {
+  min-height: var(--space-5);
+  min-width: var(--space-5);
+  padding: var(--space-1);
+}
+
+.sidebar-tool-label {
+  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  white-space: nowrap;
+}
+
+.editor-layout .left-panel-stack .tile-brush-mode-row .tile-brush-chip,
+.editor-layout .left-panel-stack .tile-brush-cluster-row .tile-brush-chip,
+.editor-layout .map-context-trigger,
+.editor-layout .map-tree-more {
+  min-height: var(--space-5);
+  min-width: var(--space-5);
+}
+
+/* Focus modes: fixed task chrome, one growing sheet, bounded auxiliary surfaces. */
+.editor-layout .left-panel:has(> .left-panel-stack:only-child) {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.sidebar-map-header,
+.sidebar-paint-options,
+.sidebar-utilities,
+.sidebar-inspection-controls,
+.sidebar-shape-select {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.sidebar-map-header {
+  margin-bottom: var(--space-2);
+}
+
+.sidebar-map-header > :first-child {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.sidebar-map-header .sidebar-surface-button {
+  width: 100%;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  justify-content: flex-start;
+  font-weight: var(--font-weight-semibold);
+}
+
+.sidebar-map-header .sidebar-surface-button::after {
+  content: ' ▾';
+}
+
+.sidebar-paint-options,
+.sidebar-utilities,
+.sidebar-inspection-controls {
+  flex-wrap: wrap;
+}
+
+.sidebar-inspection-controls {
+  max-width: 100%;
+}
+
+/* 도구막대 행 끝의 ⋯ (검사·기록, 2026-09-17 이관). 글자 라벨은 숨기고 아이콘·배지만 — 좌패널 폭에서
+   되돌리기·도구 4·도구 메뉴와 한 줄에 서야 한다. 이름은 title/aria-label 로 남는다. */
+.oprn-tile-toolbar > .sidebar-inspection-controls {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  margin-left: auto;
+}
+
+.oprn-tile-toolbar > .sidebar-inspection-controls [data-testid="oprn-tool-overflow"] > .sidebar-tool-label {
+  display: none;
+}
+
+.sidebar-paint-options {
+  margin-bottom: var(--space-1);
+  font: var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  color: var(--text-2);
+}
+
+.sidebar-paint-options .sidebar-brush-controls {
+  padding: 0;
+}
+
+.sidebar-paint-options .sidebar-brush-state[data-tool='paint'][data-shape='pen'][data-stamp-width='0'],
+.sidebar-paint-options .sidebar-brush-state[data-tool='erase'] {
+  display: none;
+}
+
+.sidebar-paint-options .tile-brush-mode-row {
+  margin-left: auto;
+  gap: var(--space-1);
+}
+
+/* 구조 보조는 이웃 연결 바로 뒤에 붙는다 — 두 줄이 나란히 보여 계약이 둘임을 드러낸다. */
+.sidebar-paint-options .tile-brush-cluster-row {
+  gap: var(--space-1);
+}
+
+.sidebar-paint-options .tile-brush-hint {
+  display: none;
+}
+
+.editor-layout .left-panel-stack .sidebar-map-header .btn,
+.editor-layout .left-panel-stack .sidebar-surface-button,
+.sidebar-paint-options select,
+.editor-layout .left-panel-stack .tile-category-select {
+  min-height: var(--space-5);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: var(--font-weight-medium) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+  padding: var(--space-1);
+  min-width: 0;
+}
+
+.editor-layout .left-panel-stack .palette-filter-search-row {
+  grid-template-columns: minmax(0, 1fr) 72px 26px;
+  gap: var(--space-1);
+}
+
+.editor-layout .left-panel-stack .tile-search-input {
+  min-width: 0;
+  height: 26px;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-scroll {
+  flex: 1 1 auto;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-tool {
+  width: 26px;
+  height: 26px;
+}
+
+/* 되돌리기·다시실행은 한 쌍으로 읽혀야 한다 — 각 행위 단추와 그 펼쳐보기를 도구 간격(2px)
+   보다 좁게 붙여, 「도구가 네 개 늘었다」 가 아니라 「두 짝」 으로 보이게 한다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-group {
+  align-items: center;
+  display: inline-flex;
+  gap: 0;
+}
+
+/* 펼쳐보기는 행위 단추의 종속물이다. 높이는 도구와 맞추고 폭만 줄인다 — 같은 정사각형을
+   주면 눌러야 할 것이 둘인지 하나인지 알 수 없다.
+   **위치가 규칙의 일부다**: 바로 위 `.oprn-tile-tool` 정사각형 규칙이 이 시트의 마지막
+   세대이고 명시도가 (0,4,0) 로 같다. 파일 앞쪽(도구막대 3절)에 두면 클래스 하나를 더 얹어도
+   순서에서 져서 폭이 --space-6 으로 되돌아간다(실측으로 걸렀다). .editor-layout 접두를
+   붙여 명시도로 이기지 않는 이유: 클래식 셸(08-rm-…)은 그 접두 없이 같은 좌패널을 그린다. */
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-tool.oprn-tile-history-toggle {
+  color: var(--text-3);
+  width: 15px;
+}
+
+.left-panel-stack[data-testid="left-palette-root"] .oprn-tile-history-toggle > svg {
+  height: 12px;
+  width: 12px;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .oprn-tile-toolbar-separator {
+  margin-inline: 0;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .selected-tile-status {
+  margin: var(--space-1) 0;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .sidebar-surface {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  width: min(360px, calc(100vw - 16px));
+  min-width: 0;
+  overflow: hidden;
+  z-index: var(--z-popover);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-m);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-2);
+  right: auto;
+  bottom: auto;
+}
+
+.sidebar-surface-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  flex: 0 0 auto;
+  margin-bottom: var(--space-2);
+  font: var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
+}
+
+.sidebar-surface-body {
+  min-height: 0;
+  overflow: auto;
+}
+
+.editor-layout .left-panel-stack[data-testid='left-palette-root'] .sidebar-surface-maps {
+  width: min(720px, calc(100vw - 16px));
+  height: min(560px, calc(100vh - 16px));
+}
+
+.sidebar-surface-maps .sidebar-surface-body,
+.sidebar-map-explorer {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-map-explorer .map-tree-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.sidebar-tool-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.sidebar-tool-options select {
+  min-height: var(--space-6);
+}
+
+.sidebar-surface :is(button, select, input):focus-visible,
+.sidebar-map-header button:focus-visible,
+.sidebar-paint-options select:focus-visible,
+.tile-category-select:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}

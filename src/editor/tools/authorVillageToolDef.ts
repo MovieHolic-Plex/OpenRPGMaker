@@ -1,6 +1,11 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { RIVER_VILLAGE_STYLE_GUIDANCE } from "@/project/defaults/riverVillageStyle";
+import { prepareVillageDefaultTileset } from "./village/defaultTileset";
+import { withVillageMorphologyDefault } from "./village/defaultMorphology";
+import { VILLAGE_MORPHOLOGIES } from "./village/morphologyTypes";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import type { AuthorVillageRequest } from "@/editor/construction/contracts";
-import { TILE, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { TILE } from "@/project/defaults/constants";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import type { GameMap, Project } from "@/project/types";
@@ -78,8 +83,8 @@ function normalizeUnknownHouseTemplates(
 export function createAuthorVillageTool(dependencies: AuthorVillageDependencies = DEFAULT_DEPENDENCIES): ToolDefinition {
   return {
     name: "author_village",
-    description:
-      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. 시공 순서는 집 → 길 → 나무 → 호수·마당·맵 장식이다. 물·마당 자리는 계획에서 예약하고 실제 물은 마지막에 칠한다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 마을 숲은 forestDensity 를 반드시 넣는다(테마 문장만 쓰고 density 를 빼지 말 것). 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
+    description: RIVER_VILLAGE_STYLE_GUIDANCE + " " +
+      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. 시공 순서는 집 → 길 → 나무 → 호수·마당·맵 장식이다. 물·마당 자리는 계획에서 예약하고 실제 물은 마지막에 칠한다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 설계서의 자연 설정이 고정이면 forestDensity는 생략한다(숲 없음에는 지정 금지). 자유 설정에서 숲 요청이 있으면 forestDensity를 넣는다. 숲마을 칩셋의 군락은 「굽이숲 절벽마을」의 연결 수관과 3줄 밑동으로 조립하고 길·집 앞 공터를 보존한다. 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
     mode: "write",
     domains: ["tile", "map"],
     parameters: {
@@ -96,6 +101,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             kind: { type: "string", enum: ["existing", "new"] },
             mapId: { type: "string" },
             name: { type: "string" },
+            tilesetId: { type: "string", description: "kind=new 전용. 생략하면 숲마을 · 거리별 잔디. 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
             width: { type: "integer" },
             height: { type: "integer" },
             bounds: {
@@ -145,6 +151,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
                 type: "string",
                 description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략: ${[...HOUSE_TEMPLATES, ...villageFormTemplates()].map((template) => template.id).join(", ")}. ref-walled-*/ref-castle-* 는 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 셀 레시피다.`,
               },
+              fence: { type: "boolean", description: "이 집에만 울타리. 기본 없음. 명시한 manor(부잣집)는 생략 시 true이며 false로 해제 가능. 중요한 집에만 지정하세요." },
               program: { type: "string", enum: ["dwelling", "shop", "inn", "workshop", "study", "manor"] },
             },
             additionalProperties: false,
@@ -155,20 +162,20 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         morphology: {
           type: "string",
-          enum: ["street", "green", "round", "cluster"],
-          description: "취락 형태 유형. street=가로촌(큰길 하나·집 줄·뒷골목), green=광장촌(렌즈형 녹지와 연못을 두 호가 감싼다), round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → 집 → 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 마을을 '잘 깔아 달라'는 요청엔 이 값을 고르는 것이 기본이다.",
+          enum: [...VILLAGE_MORPHOLOGIES],
+          description: "취락 형태 유형. river=중앙 강·다리·양안 주거(빈 맵의 배치 미지정 기본값), street=가로촌(큰길 하나·집 줄·뒷골목), green=광장촌(렌즈형 녹지와 연못을 두 호가 감싼다), round=환촌(원형 녹지·링 길·남쪽 입구), cluster=괴촌(관심도 성장 시뮬레이션). 지정하면 뼈대 길 → 길에 면한 필지 → 집 → 밭·과수원 → 거리 기울기 나무 순서로 짓고 settlementLayout 은 무시한다. 배치 요청이 없으면 생략한다. 저장 설계서·기존 지형은 기본형보다 우선한다.",
         },
         relief: {
           type: "string",
           enum: ["none", "hills"],
-          description: "고저차. hills=언덕·단구·2단 둔덕(45° 대각 변, 남쪽 절벽 면). 「합본 마을+레트로 월드맵」 혼합 칩셋 맵에서만 그려지고 morphology 와 함께 쓴다. 집·밭은 언덕 띠를 피하고 큰길이 띠를 지나 비탈이 된다.",
+          description: "고저차. hills=언덕·단구·2단 둔덕(45° 대각 변, 남쪽 절벽 면). 숲마을 또는 「합본 마을+레트로 월드맵」 칩셋 맵에서만 그려지고 morphology 와 함께 쓴다. 집·밭은 언덕 띠를 피하고 큰길이 띠를 지나 비탈이 된다.",
         },
         npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Requested village NPC population. 하한 90%(최소 2명 관용)로 판정 — 1~2명 어긋남은 실패가 아니다." },
         residents: {
           type: "array",
           description:
             "주민 이름·역할·대사 [{name, role?, lines?}] — 순서대로 소비된다(집 주인 → 광장). 테마에 맞는 이름, 서로를 언급하는 대사, 세계관 개체 언급을 넣어라. "
-            + "생략하면 주민은 대사 없이 놓이고 세션의 캐스트 라이터가 한 번에 써서 채운다(코드는 대사를 지어내지 않는다).",
+            + "생략하면 주민은 대사 없이 놓인다. residents[].lines를 직접 주거나 author_npc_cast로 보충해야 한다. Pi는 종료 전에 누락을 검사해 보충을 요청하며 남아 있으면 미완료로 보고한다(코드는 대사를 지어내지 않는다).",
           items: {
             type: "object",
             properties: {
@@ -214,15 +221,16 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
-      const designed = resolveVillageDesignInput(draft, args, true);
+      const designed = withVillageMorphologyDefault(draft, resolveVillageDesignInput(draft, args, true));
       // 신규 맵 크기 생략 시 코드가 유일한 환산기(estimateVillageSize)로 채운다 — 모델 창작 아님.
       // 파서보다 먼저 채워야 파서의 plannedMap 합성이 target 값을 볼 수 있다(2026-09-11).
       const sized = fillMissingVillageDimensions(designed, draft);
       const normalized = normalizeUnknownHouseTemplates(sized, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
-      // 기존 맵 타일셋이 combined_town이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
+      // 기존 맵 타일셋이 숲마을·합본 마을 호환이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
       // 스코프 검사(baseline 스냅샷)가 확장을 "target 변경"으로 읽지 않게 성장은 baseline보다 먼저.
+      prepareVillageDefaultTileset(draft, request);
       assertTargetTilesetUsable(draft, request);
       assertTargetCapacity(draft, request);
       const baseline = createDraft(draft);
@@ -264,21 +272,22 @@ export const AUTHOR_VILLAGE_TOOL = createAuthorVillageTool();
 
 /**
  * 변이 전 사전 검사 — 맵 생성·시공보다 먼저.
- * - 타일셋: 기존 맵이 combined_town이 아니면 시공 전에 거부(village-tileset-mismatch).
- *   새 맵은 createExactVillageMap이 DEFAULT_TILESET_ID로 만들므로 항상 통과.
+ * - 타일셋: 기존 맵이 숲마을·합본 마을 호환이 아니면 시공 전에 거부(village-tileset-mismatch).
+ *   새 맵도 선택 칩셋(생략 시 숲마을)을 생성 전에 검사한다.
  * - 수용성: 시공 영역(bounds 또는 맵 전체)이 20×20 미만이면 거부(bounds-too-small/map-too-small).
  *   집 슬롯 1열도 못 놓는 면적에 집 N채 요구가 오면 늦은 no-houses-built 대신 여기서 실패.
  */
 function assertTargetTilesetUsable(draft: Project, request: AuthorVillageRequest): void {
-  if (request.target.kind !== "existing") return;
-  const map = draft.maps[request.target.mapId];
-  if (!map) return; // map-not-found는 기존 순서대로 뒤에서 처리한다.
-  const tileset = draft.tilesets?.[map.tilesetId];
+  const target = request.target;
+  const map = draft.maps[target.mapId];
+  if (target.kind === "existing" && !map) return;
+  const tilesetId = target.kind === "new" ? target.tilesetId ?? defaultOutdoorTilesetId(draft) : map!.tilesetId;
+  const tileset = draft.tilesets?.[tilesetId];
   if (!tileset || !isCombinedTownCompatibleTileset(tileset)) {
     throw new ToolError(
-      `author_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
+      `author_village는 숲마을·합본 마을 호환 칩셋 전용이다 — 요청 타일셋: ${tilesetId}. ` +
         "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
-      { code: "village-tileset-mismatch", mapId: map.id },
+      { code: "village-tileset-mismatch", mapId: target.mapId },
     );
   }
 }
@@ -325,7 +334,7 @@ function assertTargetCapacity(draft: Project, request: AuthorVillageRequest): vo
   // 요청하면 맵은 그대로 둔 채 우겨넣어 집이 덜 서거나 실패했다 —「기존 맵 크기는 사용자가 이미 정한
   // 사실」이라는 전제가, 신축에만 쓰이던 환산기(estimateVillageSize)를 기존 맵에서 막고 있었다.
   // 집 수가 요구하는 크기는 신축·기존 동일하게 같은 환산기가 정한다. 줄이지는 않으므로 비파괴다.
-  const needed = estimateVillageSize({ houseCount: request.houseCount });
+  const needed = estimateVillageSize({ houseCount: request.houseCount, morphology: request.morphology });
   const width = Math.max(w, MIN_BOUNDS_SIZE, needed.width);
   const height = Math.max(h, MIN_BOUNDS_SIZE, needed.height);
   if (width > map.width || height > map.height) growExistingVillageMap(map, width, height);
@@ -370,7 +379,7 @@ export function fillMissingVillageDimensions(args: Record<string, unknown>, proj
   if (profile) return { ...args, target: { ...profile.previewSize, ...record } };
   const declared = typeof args.houseCount === "number" && Number.isSafeInteger(args.houseCount)
     ? { houseCount: args.houseCount } : {};
-  let size = estimateVillageSize(declared);
+  let size = estimateVillageSize({ ...declared, ...(args.morphology === "river" ? { morphology: "river" as const } : {}) });
   const objects = project ? villageObjectHouseCatalog(project, args) : undefined;
   const count = declared.houseCount;
   if (objects?.length && count && count >= 1 && count <= 32) {

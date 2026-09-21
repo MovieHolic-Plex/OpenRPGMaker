@@ -15,6 +15,7 @@ type MapSnapshot = {
   readonly mapId: MapId;
   readonly before: GameMap;
   readonly beforeTilesets?: Project["tilesets"];
+  readonly includeEventDrafts?: boolean;
 };
 
 type HistorySnapshot = ProjectSnapshot | MapSnapshot;
@@ -28,7 +29,13 @@ type HistoryEntry = {
 
 export type MapEditHistoryRecordOptions =
   | { readonly kind?: "project" }
-  | { readonly kind: "map"; readonly mapId?: MapId; readonly includeTilesets?: boolean };
+  | {
+      readonly kind: "map";
+      readonly mapId?: MapId;
+      readonly includeTilesets?: boolean;
+      /** Keep an event draft in the before-state so undo can restore it. */
+      readonly includeEventDrafts?: boolean;
+    };
 
 export type MapEditHistoryEntry = {
   readonly index: number;
@@ -96,7 +103,8 @@ function makeSnapshotFromCurrent(mapId: string | null | undefined, options?: Map
       return {
         kind: "map",
         mapId: snapshotMapId,
-        before: mapWithCommittedEvents(map),
+        before: options.includeEventDrafts ? structuredClone(map) : mapWithCommittedEvents(map),
+        ...(options.includeEventDrafts ? { includeEventDrafts: true } : {}),
         ...(options.includeTilesets ? { beforeTilesets: structuredClone(current.tilesets) } : {}),
       };
     }
@@ -116,7 +124,8 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
       ? {
         kind: "map",
         mapId: entry.snapshot.mapId,
-        before: mapWithCommittedEvents(map),
+        before: entry.snapshot.includeEventDrafts ? structuredClone(map) : mapWithCommittedEvents(map),
+        ...(entry.snapshot.includeEventDrafts ? { includeEventDrafts: true } : {}),
         ...(entry.snapshot.beforeTilesets ? { beforeTilesets: structuredClone(current.tilesets) } : {}),
       }
       : null;

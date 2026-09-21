@@ -8,6 +8,11 @@
 @import "./pages-2.css" layer(event);
 @import "./pages-3.css" layer(event);
 @import "./pages-4.css" layer(event);
+@import "./pages-4.part-2.css" layer(event);
+@import "./pages-4.part-3.css" layer(event);
+@import "./pages-4.part-4.css" layer(event);
+@import "./pages-4.part-5.css" layer(event);
+@import "./pages-4.part-6.css" layer(event);
 @import "./pages-5.css" layer(event);
 @import "./command-list.css" layer(event);
 @import "./command-list-2.css" layer(event);

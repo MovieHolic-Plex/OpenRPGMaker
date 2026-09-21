@@ -338,8 +338,8 @@
       "multiplicity": 1
     },
     {
-      "file": "test/supabaseProjectSync.test.ts",
-      "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+      "file": "test/legacyDbProjectSync.test.ts",
+      "name": "LegacyDb project sync preserves concurrent map tree additions from separate editors",
       "status": "failed",
       "multiplicity": 1
     },
@@ -472,8 +472,8 @@
       "multiplicity": 1
     },
     {
-      "file": "test/supabaseProjectSync.test.ts",
-      "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+      "file": "test/legacyDbProjectSync.test.ts",
+      "name": "LegacyDb project sync preserves concurrent map tree additions from separate editors",
       "status": "passed",
       "multiplicity": 1
     },
@@ -563,7 +563,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "name": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
       "category": "assertion-or-suite-contract",
       "reason": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\n\nReceived: \n\n  1st spy call:\n\n    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-08T06:14:19.001Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at <ROOT>/test/storePersistence.test.ts:35:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
       "multiplicity": 1
@@ -576,10 +576,10 @@
       "multiplicity": 1
     },
     {
-      "file": "test/supabaseProjectSync.test.ts",
-      "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+      "file": "test/legacyDbProjectSync.test.ts",
+      "name": "LegacyDb project sync preserves concurrent map tree additions from separate editors",
       "category": "test-timeout",
-      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/supabaseProjectSync.test.ts:907:3\n    905|   });\n    906| \n    907|   it(\"preserves concurrent map tree additions from separate editors\", …\n       |   ^\n    908|     const baseProject = createHouseTemplateGalleryProject();\n    909|     const firstEditorProject = structuredClone(baseProject);",
+      "reason": "Error: Test timed out in 15000ms.\nIf this is a long-running test, pass a timeout value as the last argument or configure it globally with \"testTimeout\".\n ❯ test/legacyDbProjectSync.test.ts:907:3\n    905|   });\n    906| \n    907|   it(\"preserves concurrent map tree additions from separate editors\", …\n       |   ^\n    908|     const baseProject = createHouseTemplateGalleryProject();\n    909|     const firstEditorProject = structuredClone(baseProject);",
       "multiplicity": 1
     },
     {
@@ -726,7 +726,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "name": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
       "category": "assertion-or-suite-contract",
       "reason": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\n\nReceived: \n\n  1st spy call:\n\n    Array [\n      \"/__oprn/edit-activity\",\n      Object {\n        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-07T18:54:19.011Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n        \"headers\": Object {\n          \"Content-Type\": \"application/json\",\n        },\n        \"method\": \"POST\",\n      },\n    ]\n\n\nNumber of calls: 1\n\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1335:10)\n    at Proxy.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/expect/dist/index.js:1029:14)\n    at Proxy.methodWrapper (file:///home/main/z-project/rpg-zzu/node_modules/chai/index.js:1686:25)\n    at <ROOT>/test/storePersistence.test.ts:35:26\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20",
       "multiplicity": 1

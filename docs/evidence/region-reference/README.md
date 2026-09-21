@@ -3,7 +3,7 @@
 - Reference id: `walled-settlement-43x45`, revision 1, 43×45 tiles.
 - Database → 맵 → 지역 → 성벽으로 둘러싸인 정주지 (완성 맵 사례).
 - Fixed remote copy: `rpg-zzu-region-reference-walled-settlement-v1`.
-- `persistence.json`: Supabase save/load proof, exact map and tile metadata match.
+- `persistence.json`: LegacyDb save/load proof, exact map and tile metadata match.
 - `regions-desktop.png` (1600×1050) and `regions-compact.png` (1100×820): actual
   database UI using the remote snapshot project, without spatial activation.
 - Reproduce: `node scripts/capture-region-reference.mjs http://127.0.0.1:<port>`.

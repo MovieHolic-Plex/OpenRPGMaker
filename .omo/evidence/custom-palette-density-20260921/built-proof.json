@@ -1,0 +1,32 @@
+{
+  "built": true,
+  "metrics": {
+    "columns": 30,
+    "count": 2610,
+    "gap": "0px",
+    "padding": "0px",
+    "border": "0px",
+    "radius": "0px",
+    "cellWidth": 16,
+    "scrollWidth": 480,
+    "xGap": 0,
+    "yGap": 0
+  },
+  "selected": {
+    "border": "0px",
+    "radius": "0px",
+    "shadow": "rgb(74, 87, 214) 0px 0px 0px 1px inset, rgb(255, 255, 255) 0px 0px 0px 2px inset"
+  },
+  "keyboardFocus": true,
+  "dragCells": [
+    1170,
+    1171,
+    1172,
+    1200,
+    1201,
+    1202
+  ],
+  "stamp": null,
+  "savedProjectUnchanged": true,
+  "errors": []
+}

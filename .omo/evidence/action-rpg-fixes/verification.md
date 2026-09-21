@@ -33,7 +33,7 @@ passed afterward. This focused follow-up supplements the 359-test integration
 run rather than representing a new whole-repository green run.
 
 Remote project: `oprn-6d2d581f84`, title `검과 회피 검증`.
-After `store.flush()` returned `saved`, the actual Supabase loader returned:
+After `store.flush()` returned `saved`, the actual LegacyDb loader returned:
 
 - One existing 20x15 map renamed `검과 회피 훈련장`.
 - System and map action-combat flags enabled.

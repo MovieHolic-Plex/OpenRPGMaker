@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Editor Observability — 계측 초크포인트 · 편집 감사 로그 · 오류 트랩
 
 편집기의 mutation 경로를 건드리기 전에, 그리고 "방금 뭘 했더니 이렇게 됐다" 를 사후에 재구성해야 할 때 읽는다.
@@ -17,6 +19,21 @@
 | `src/project/projectCommitLog.ts` | 커밋 경계에서 행위 기록을 잘라 커밋 row 에 싣는다(커서 소유) |
 | `scripts/list-edit-activity.mjs` | `npm run edit:log` (라이브 세션 — 디스크 미러 조회) |
 | `scripts/list-project-commits.mjs` | `npm run commit:log` (저장된 것 — DB 커밋 + 실린 행위 조회) |
+
+## 조수 실행 기록과 표시 수준 (2026-09-21)
+
+작업 이미지의 정본은 `activityVisual.ts`가 도구 실행 시 복사한 대상 데이터다. 화면에서 현재 store로 과거
+그림을 다시 만들지 않는다. `activityMediaArchive.ts`는 텍스트 로그와 별도 IDB에 PNG/렌더 재료를 보존하며,
+`ActivityEntry.visuals`에는 참조만 기록한다. 도구 완료와 초안 적용/저장 성공을 혼동하지 말 것.
+이미지 누락은 로그나 도구 실행 실패로 전파하지 않는다. 상세 계약은 `editor-ai-panel.md`의 이미지 중심 피드 절.
+
+
+`src/ai/activityTrace.ts`의 실행 영수증은 편집 감사/opt-in 진단과 별도다. 기본 작업 표시가
+`간단히 보기`여도 도구 입력·결과·실패는 정해진 상한 안에서 보존한다. `매우 자세히 보기`는
+이 기록을 펼친다. 새 기록만 기기 IndexedDB에 보관하며 원격 업로드나 진단 수집을 시작하지 않는다.
+호출 ID 결합·인증 정보 가림·명시적 생략·보존 상한과 화면 경로는 `editor-ai-panel.md`의
+「작업 표시 네 단계와 별도 실행 기록」을 따른다. 적용 후 저장 표시는 자동저장 관찰만 하고
+추가 저장/재로드를 실행하지 않는다. 모델의 비공개 사고 본문은 수집하지 않는다.
 
 ## Opt-in local diagnostics (issue 693 OUT-009 / OUT-010)
 
@@ -73,7 +90,14 @@
 
 ## 계측 초크포인트는 `store.markLocalMutation` 하나다
 
-`ProjectStore` 에서 상태를 바꾸는 메서드는 5개고, 전부 `markLocalMutation` 을 지난다.
+2026-09-20: AI 적용 후 설정집에 `적용된 작업` 카드를 추가하던 경로를 제거했다.
+새 작업은 기존 mutation 감사 로그와 project commit 경로가 기록한다. 구형 자동 카드는
+원본 ID·시각·내용·관계를 보존하고 `작업 기록 → 행위 기록 → 이전 AI 작업 기록`에서
+읽기 전용으로 조회한다(`legacyWikiActivityPanel.ts`, 30건씩 더 보기).
+설정집/AI 입력에서는 제외하며 사용자 수동 메모는 유지한다. 기존 JSON을 삭제하거나
+현재 시각의 커밋으로 재발행하지 않는 호환 조회 방식이다. 상세 계약은 `project-wiki.md`.
+
+`ProjectStore` 에서 상태를 바꾸는 메서드는 6개고, 전부 `markLocalMutation` 을 지난다.
 그 메서드들의 호출자는 **전부 클래스 안에** 있으므로 우회 경로가 없다 —
 `mutationGeneration` 을 올리는 자리가 곧 계측 자리다.
 
@@ -81,6 +105,7 @@
 |---|---|---|
 | `update(mutator, change)` | `{ scope: "project" }` | 압도적 다수. 호출부 244곳 |
 | `updateMap(mapId, mapMutator, change)` | `{ scope: "map", mapId }` | `cells` 로 셀 수가 넘어온다 |
+| `updateMapTiles(mapId, mapMutator, change)` | `{ scope: "map", mapId }` | 대형 맵의 페인트·지우개·채우기 전용. 타일 배열만 얕게 복제한다 |
 | `replace(project, { change })` | `{ scope: "project" }` | undo·AI 적용·원격 병합이 공유 |
 | `replaceProject(project, change)` | `label: "프로젝트 교체"` | 드래프트 금고를 버린다 |
 | `clearAll()` | `label: "전체 초기화"` | |
@@ -89,7 +114,7 @@
 이 성질 덕분에 **mutation 호출부 전량이 외부 파일 수정 없이 계측된다.**
 
 ```bash
-grep -rnoE "store\.(update|updateMap|replace|replaceProject|clearAll|restoreEventDraftFromVault)\(" src/ | wc -l
+grep -rnoE "store\.(update|updateMap|updateMapTiles|replace|replaceProject|clearAll|restoreEventDraftFromVault)\(" src/ | wc -l
 # 2026-08-29 재측정 277 (store.ts 주석은 275 — 이 브랜치 작업 중 호출부가 늘었다).
 # 정확한 수는 브랜치마다 흔들린다. 계약은 "전량이 한 지점을 지난다" 쪽이다.
 ```
@@ -458,11 +483,23 @@ npx vitest run test/storeUndoSnapshotInventory.test.ts
 - 하네스(검증·밑그림 NPC): 코드가 이유를 붙인다.
 - 프론트 클릭: `사용자 클릭: <label>` (`recordAiUiEvent`).
 - 편집 행위: `EditActivityEntry.reason` — AI 적용은 툴 reason, 사람 편집은 라벨에서 만든다.
-- 저장: 같은 값이 localStorage + Supabase `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
+- 저장: 같은 값이 localStorage + LegacyDb `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
 
 ## 검증
 
-- 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 5메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).
+- 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 6메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).
 - 미러 엔드포인트 계약: `npm test -- test/editActivityEndpoint.test.ts` (상수와 미들웨어 경로가 어긋나면 404 로 조용히 죽는다).
 - 커밋 첨부 계약: `npm test -- test/commitEditActivityAttachment.test.ts` (patch_json 에 실리는지, 커서가 반복을 막는지, 상한이 숫자로 남는지, 리더 CLI 가 같은 키를 읽는지).
 - 위키 변경만 했으면 `npm run openwiki:verify`.
+
+## Feature16 저작 보조 관측 경계 (2026-09-21)
+
+`panels/aiAuthoring/shared.saveSettings`는 프로젝트 undo 스냅샷을 남기고
+`store.update(..., {label, fields:['aiAuthoring']})`로 라이브러리/문체 규칙을 편집한다.
+「프로젝트에 반영」과 실제 저장 receipt는 구분한다. 대사 검토는 읽기 전용이며
+구조 검사와 LLM 검토의 출처를 지적마다 명시한다.
+프롬프트 검사기는 `ai/authoring/promptInspection.ts`의 메모리 한 건만 사용한다.
+LLM 전송 본문과 Pi provider payload에서 민감값을 가린 뒤 표시용 사본만 보관한다.
+Pi의 `prompt_inspection` 이벤트는 client에서 소비하고 일반 감사/대화 이벤트 전달에서
+제외한다. 기존 로컬 진단 수집 동의나 영구 AI 로그에 새 원문 저장 경로를 추가하지 않는다.
+상세 UI/수명/중앙 검증 명령은 `editor-ai-panel.md`의 Feature16 절을 따른다.

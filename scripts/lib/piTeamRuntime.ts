@@ -1,3 +1,4 @@
+import { inspectPiVillageCompletion } from "../../src/ai/piAgent/villageCompletion.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
 import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
@@ -123,6 +124,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const child = (agentId: string, provider = request.provider): RunPiAgentOptions => ({
     apiKey: provider === request.provider ? options.apiKey : undefined,
     providerApiKeys: options.providerApiKeys,
+    // 웹 검색은 Codex 백엔드가 하므로 조수 제공자와 별개로 내려보낸다 — 팀원이 검색을 못 하면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
+    codexApiKey: options.codexApiKey,
     signal: options.signal,
     extraTools: mailbox.tools(agentId),
     subscribeTeamMessages: notify => {
@@ -163,6 +166,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   }
 
   // Only accepted child writes enter the shared team project. Serialize publication across members.
+  const villageMapIds = new Set<string>();
   let publication: Promise<unknown> = Promise.resolve();
   const checkpointFor = (mapId: string | null, snapshot: Project) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
     const next = publication.then(async () => {
@@ -199,7 +203,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       try {
         const done = await runAgent(
           {
-            ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+            ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -208,12 +212,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
-        ledger = settleAssignment(ledger, agentId, true);
+        for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
+        const complete = !done.villageCompletion?.issues.length;
+        ledger = settleAssignment(ledger, agentId, complete);
         toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
-        const summary = summaryOf(done);
-        const outcome: AgentOutcome = { agentId, mapId, member: member.id, phase, ok: true, summary, changedKeys: done.changedKeys, spills, conflicts };
+        const summary = complete ? summaryOf(done) : `마을 미완료: ${done.villageCompletion!.issues.join("; ")}`;
+        const outcome: AgentOutcome = { agentId, mapId, member: member.id, phase, ok: complete, summary, changedKeys: done.changedKeys, spills, conflicts };
         outcomes.set(agentId, outcome);
-        emit({ type: "agent_done", agentId, ok: true, summary, stats: done.stats, changedKeys: done.changedKeys, spills, conflicts });
+        emit({ type: "agent_done", agentId, ok: complete, summary, stats: done.stats, changedKeys: done.changedKeys, spills, conflicts });
         return outcome;
       } catch (error) {
         ledger = settleAssignment(ledger, agentId, false);
@@ -261,7 +267,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const promise = (async (): Promise<AgentOutcome> => {
       try {
         const done = await runAgent({
-          ...request, ...request.roleModels?.deep, mode: "single", project: snapshot,
+          ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", project: snapshot,
           mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length ? { toolDomains: member.toolDomains } : {}),
@@ -279,9 +285,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
         if (mode === "project") working = structuredClone(done.project) as Project;
-        const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: true, summary: report, changedKeys: changes, spills: [], conflicts: [] };
+        for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
+        const complete = !done.villageCompletion?.issues.length;
+        if (!complete) report += `\n마을 미완료: ${done.villageCompletion!.issues.join("; ")}`;
+        const outcome: AgentOutcome = { agentId, mapId: null, member: member.id, phase: "work", ok: complete, summary: report, changedKeys: changes, spills: [], conflicts: [] };
         outcomes.set(agentId, outcome);
-        emit({ type: "agent_done", agentId, ok: true, summary: report, stats: done.stats, changedKeys: changes, spills: [], conflicts: [] });
+        emit({ type: "agent_done", agentId, ok: complete, summary: report, stats: done.stats, changedKeys: changes, spills: [], conflicts: [] });
         return outcome;
       } catch (error) {
         const summary = error instanceof Error ? error.message : String(error);
@@ -341,7 +350,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     try {
       done = await runAgent(
         {
-          ...request, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+          ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
           systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -454,7 +463,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let orchDone: PiAgentDoneEvent;
   try {
     orchDone = await runAgent(
-      { ...request, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
+      { ...request, initialToolNames: undefined, mode: "single", mapIds: candidateMaps, project: working, systemPrompt: [...orch.systemPrompt(base, request.mapIds, request.task, team, request.currentMapId), teamCommunicationPrompt(orchestratorId)], maxTurns: team.workBudget ?? orch.maxTurns },
       { ...child(orchestratorId), toolNames: orch.toolNames, extraTools: orchestratorTools },
     );
   } finally { mailbox.close(orchestratorId); }
@@ -471,13 +480,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: ${outcome.summary}`;
     emit({ type: "team_report", text: finished });
   }
-  emit({ type: "agent_done", agentId: orchestratorId, ok: true, summary: finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
+  for (const id of orchDone.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
+  const villageCompletion = villageMapIds.size ? inspectPiVillageCompletion(working, base, villageMapIds) : undefined;
+  emit({ type: "agent_done", agentId: orchestratorId, ok: !villageCompletion?.issues.length,
+    summary: villageCompletion?.issues.length ? `마을 미완료: ${villageCompletion.issues.join("; ")}` : finished ?? summaryOf(orchDone), stats: orchDone.stats, changedKeys: [], spills: [], conflicts: [] });
   if (!finished) emit({ type: "team_report", text: `${summaryOf(orchDone)} · 팀장이 finish를 호출하지 않았습니다. 미확인 협의 ${mailbox.outstanding().length}건.` });
 
   // 병합본은 살아있는 프로젝트 위에 묶음만 얹은 결과다. 시공 팀원의 프루프는 이 프로세스에만
   // 살아 있으므로, 브라우저의 수용 게이트가 확인할 수 있게 병합 시점에 증거를 다시 찍는다.
   authorMergedSpatialProposal(working, base);
   const done: PiAgentDoneEvent = {
+    ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     project: working,
     stats: { ms: Date.now() - started, turns: orchDone.stats.turns + subTurns, toolCalls: toolCalls + orchDone.stats.toolCalls, toolErrors: toolErrors + orchDone.stats.toolErrors, usage: orchDone.stats.usage },

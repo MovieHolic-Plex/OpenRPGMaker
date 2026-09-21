@@ -8,6 +8,12 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await page.getByTestId("toolbar-resource-manager").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
 
+  // The resource surface can be the first modal opened; it must provide its
+  // own fixed/grid shell instead of relying on the database lazy chunk.
+  const resourceModal = page.getByTestId("resource-modal");
+  await expect(resourceModal).toHaveCSS("position", "fixed");
+  await expect(resourceModal).toHaveCSS("display", "grid");
+  await expect(resourceModal.locator(".resource-modal-window")).toHaveCSS("display", "flex");
   await expect(page.locator(".database-modal-header h2")).toHaveText("리소스 관리자");
   const categories = page.getByTestId("resource-category-list");
   await expect(categories).toBeVisible();
@@ -21,6 +27,22 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   await expect(modal.getByRole("button", { name: "도움말", exact: true })).toBeVisible();
   await expect.poll(async () => modal.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("resource-manager-classic-layout.png"), fullPage: true });
+});
+
+test("resource URL importer keeps its own centered modal shell", async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
+  await page.goto("/?freshProject=1");
+  await page.getByTestId("toolbar-resource-manager").click();
+  await expect(page.getByTestId("resource-modal")).toBeVisible();
+
+  await page.locator(".rm-url-btn").click();
+  const urlModal = page.locator(".rm-url-backdrop");
+  await expect(urlModal).toHaveCSS("position", "fixed");
+  await expect(urlModal).toHaveCSS("inset", "0px");
+  await expect(urlModal.locator(".rm-url-modal-window")).toHaveCSS("display", "flex");
+  await expect(urlModal.locator(".database-modal-header")).toHaveCSS("display", "flex");
+  await expect(urlModal.getByRole("heading", { name: "웹 URL로 리소스 가져오기" })).toBeVisible();
+  await expect(urlModal.locator(".rm-url-input")).toBeFocused();
 });
 
 test("resource manager faceset category hides the generated hero face series", async ({ page }, testInfo) => {

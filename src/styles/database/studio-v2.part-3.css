@@ -1,0 +1,421 @@
+/* ── 5. 폼 문법 — 속성 행 · 입력 크롬 · 묶음 카드 ─────────────────────────── */
+
+/* 속성 행: 라벨(좌, 고정 폭) | 값(우). 라벨은 **절대 말줄임하지 않는다** — 어절 단위로
+   줄을 바꾼다. 「이동 간격(…」 같은 잘림이 사용자가 가장 먼저 지적한 결함이었다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field {
+  align-items: center;
+  column-gap: 10px;
+  display: grid;
+  grid-template-columns: var(--db2-label-col) minmax(0, 1fr);
+  margin: 0;
+  min-height: var(--db2-control-h);
+  min-width: 0;
+  row-gap: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field > span:first-child {
+  color: var(--db-studio-text-2);
+  font: 500 12.5px/1.35 var(--font-ui);
+  min-width: 0;
+  overflow: visible;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: keep-all;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field > span:first-child > label {
+  font: inherit;
+  color: inherit;
+}
+
+/* 텍스트 영역이 있는 행은 라벨을 위 정렬. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(textarea) {
+  align-items: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(textarea) > span:first-child {
+  padding-top: 8px;
+}
+
+/* 체크 상자를 직접 품은 라벨 — 아래 §5 가 네이티브 여백을 0 으로 밀었으니 상자와 글자
+   사이 간격은 여기서 준다(몬스터 종족 타입 칩이 "☐fire" 로 붙어 보였다). */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.actor-check, .db-checkbox-field),
+.database-modal-backdrop .database-modal-window .database-modal-body label:not(.db-field):has(> input:is([type="checkbox"], [type="radio"])) {
+  align-items: center;
+  color: var(--db-studio-text-1);
+  display: inline-flex;
+  gap: 8px;
+  min-height: 28px;
+  min-width: 0;
+}
+
+/* 체크 상자 한 개짜리 행은 라벨-값 격자가 아니라 인라인 한 줄. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field:has(> input[type="checkbox"]) {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 8px;
+  justify-content: flex-start;
+  min-height: 28px;
+}
+
+/* 입력 크롬 — 세 가지가 섞여 있었다(스튜디오 / 네이티브 얇은 테두리 / 점선). 하나로. */
+.database-modal-backdrop .database-modal-window .database-modal-body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)),
+.database-modal-backdrop .database-modal-window .database-modal-body textarea {
+  background-color: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--db2-radius-control);
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.35 var(--font-ui);
+  min-height: var(--db2-control-h);
+  padding: 0 10px;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body select {
+  background-color: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--db2-radius-control);
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.35 var(--font-ui);
+  min-height: var(--db2-control-h);
+  padding-bottom: 0;
+  padding-left: 10px;
+  padding-right: 24px;
+  padding-top: 0;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body textarea {
+  line-height: 1.5;
+  min-height: 72px;
+  padding: 7px 10px;
+  resize: vertical;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):hover:not(:disabled):not(:focus-visible) {
+  border-color: var(--db-studio-border-strong);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):focus-visible {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 3px var(--db2-accent-ring);
+  outline: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):disabled {
+  background-color: var(--db-studio-inset);
+  border-style: solid;
+  color: var(--db-studio-text-3);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body input[type="number"] {
+  font-variant-numeric: tabular-nums;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body input[type="checkbox"] {
+  accent-color: var(--db-studio-accent);
+  cursor: pointer;
+  flex: 0 0 auto;
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body input[type="color"] {
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 6px;
+  height: 28px;
+  /* 30px 격자 칸(타일셋 투명색 행)에서 옆 hex 입력 위로 6px 넘치던 폭 — 칸이 좁으면 칸에 맞춘다. */
+  max-width: 100%;
+  padding: 2px;
+  width: 40px;
+}
+
+/* 숫자 스테퍼 — 한 상자. 가운데 입력은 테두리를 잃고 양쪽 버튼이 헤어라인으로 붙는다.
+   격자가 아니라 flex 인 이유: 좁은 칸에서 단추가 접히면(아래 @container) 입력이 남는 폭을
+   그대로 받아야 한다. 3열 격자는 접힌 단추의 빈 28px 칸을 그대로 남겼다(지형 빠른 편집 실측). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper {
+  align-items: stretch;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--db2-radius-control);
+  box-sizing: border-box;
+  container-type: inline-size;
+  display: inline-flex;
+  height: var(--db2-control-h);
+  min-height: var(--db2-control-h);
+  min-width: 0;
+  overflow: hidden;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper:hover:not(.is-disabled):not(:focus-within) {
+  border-color: var(--db-studio-border-strong);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper.is-disabled {
+  background-color: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper.is-disabled > input[type="number"] {
+  color: var(--db-studio-text-2);
+  cursor: not-allowed;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper:focus-within {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 3px var(--db2-accent-ring);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type="number"] {
+  appearance: textfield;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  box-sizing: border-box;
+  color: var(--db-studio-text-1);
+  font: 400 13px/1.35 var(--font-ui);
+  outline: 0;
+  padding: 0 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  text-align: center;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper > input[type="number"]:focus-visible {
+  box-shadow: none;
+  outline: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input::-webkit-inner-spin-button,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper input::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 0;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  border-radius: 0;
+  flex: 0 0 28px;
+  margin: 0;
+  min-height: 0;
+  justify-content: center;
+  min-width: 0;
+  padding: 0;
+  width: 28px;
+}
+
+/* 좁은 칸(≤120px)에서는 단추를 접고 값을 살린다 — modern-controls 의 계약을 그대로 잇는다.
+   @container 는 특이성을 올려주지 않으므로 위 규칙과 같은 깊이로 다시 적는다(안 그러면 위의
+   display:inline-flex 가 이겨 52px 스테퍼에도 단추가 남고 입력이 + 단추 밑으로 들어간다). */
+@container (max-width: 120px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button {
+    display: none;
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-dec {
+  border-right: 1px solid var(--db2-hairline);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-inc {
+  border-left: 1px solid var(--db2-hairline);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:hover:not(:disabled) {
+  background: var(--db2-accent-tint);
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:active:not(:disabled) {
+  background: var(--db-studio-accent-border);
+  color: var(--db-studio-accent-active);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-button:disabled {
+  color: var(--db-studio-text-3);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-number-stepper-icon {
+  display: block;
+  pointer-events: none;
+  height: 14px;
+  width: 14px;
+}
+
+/* 묶음 카드 — fieldset/legend 세대와 .db-ws-card 세대를 같은 면으로.
+   흰 상세 창 위 옅은 회색 면, 테두리 없음. 제목 13/600, 힌트 12 text-3. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(
+  .db-ws-card,
+  fieldset,
+  .oprn-db-fieldset,
+  .db-panel,
+  .db-class-panel,
+  .db-advanced-panel,
+  .db-state-panel
+) {
+  background: var(--db-studio-canvas);
+  border: 0;
+  border-radius: var(--db2-radius-card);
+  box-shadow: none;
+  margin: 0;
+  min-width: 0;
+  padding: 12px 14px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-card-title, fieldset > legend, .db-panel > h4, .db-ws-card-head h4) {
+  color: var(--db-studio-text-1);
+  float: none;
+  font: 600 13px/1.35 var(--font-ui);
+  letter-spacing: 0;
+  margin: 0;
+  padding: 0;
+  text-transform: none;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body fieldset > legend {
+  margin-bottom: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-head {
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-hint {
+  color: var(--db-studio-text-3);
+  font: 400 12px/1.45 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-card-body {
+  gap: 6px;
+}
+
+/* 카드 안의 입력은 다시 흰 면 — 회색 면 위에 흰 입력이 놓여 깊이가 생긴다. */
+
+/* 서브탭 스트립 — 밑줄형은 유지, 글자만 통일. */
+
+/* 상태/요약 띠 — 색면 타일 네 개가 시선을 뺏었다. 헤어라인 한 줄의 조용한 셀로. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stats {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db2-hairline);
+  border-radius: var(--db2-radius-card);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat {
+  align-items: baseline;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--db2-hairline);
+  border-radius: 0;
+  box-shadow: none;
+  display: flex;
+  flex: 1 1 160px;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-height: 40px;
+  min-width: 0;
+  padding: 8px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat:first-child {
+  border-left: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-clickable:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-label {
+  color: var(--db-studio-text-3);
+  font: 600 11.5px/1.35 var(--font-ui);
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-value {
+  color: var(--db-studio-text-1);
+  font: 700 13px/1.35 var(--font-ui);
+  font-variant-numeric: tabular-nums;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-hint {
+  color: var(--db-studio-text-3);
+  flex-basis: 100%;
+  font: 400 11.5px/1.35 var(--font-ui);
+}
+
+/* 톤은 값 앞의 점 하나로만 말한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-ws-stat-good, .db-ws-stat-warn, .db-ws-stat-bad) .db-ws-stat-value::before {
+  border-radius: 50%;
+  content: "";
+  display: inline-block;
+  height: 7px;
+  margin-right: 6px;
+  vertical-align: 1px;
+  width: 7px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-good .db-ws-stat-value::before { background: var(--db-studio-success); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-warn .db-ws-stat-value::before { background: var(--db-studio-warning); }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-stat-bad .db-ws-stat-value::before { background: var(--db-studio-danger); }
+
+/* 안내 띠 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-ws-notice {
+  border-radius: var(--db2-radius-card);
+  font: 400 12.5px/1.45 var(--font-ui);
+  padding: 8px 12px;
+}
+
+/* 몬스터 탭 안내 문단·수집 경고 — 카드 문법으로. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-record-intro {
+  background: var(--db-studio-canvas);
+  border: 0;
+  border-radius: var(--db2-radius-card);
+  color: var(--db-studio-text-2);
+  font: 400 12.5px/1.5 var(--font-ui);
+  margin: 12px 16px 0;
+  padding: 10px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-collection-gate-warn {
+  align-items: center;
+  background: color-mix(in srgb, var(--db-studio-warning) 8%, transparent);
+  border: 0;
+  border-radius: var(--db2-radius-card);
+  color: var(--db-studio-warning-strong);
+  display: flex;
+  font: 500 12.5px/1.45 var(--font-ui);
+  gap: 12px;
+  justify-content: space-between;
+  margin: 12px 16px 0;
+  padding: 8px 12px;
+}

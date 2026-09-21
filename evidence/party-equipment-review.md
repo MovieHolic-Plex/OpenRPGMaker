@@ -96,4 +96,4 @@ pinning explanatory copy. The two event-form snapshots update only the
 unrelated baseline failures and all snapshot floors remain intact.
 
 This is editor/engine work with QA-only fixtures. No authored game content or
-remote Supabase project row was changed.
+remote LegacyDb project row was changed.

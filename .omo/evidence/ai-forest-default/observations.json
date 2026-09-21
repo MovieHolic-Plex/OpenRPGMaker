@@ -1,0 +1,49 @@
+{
+  "legacy": {
+    "ok": true,
+    "tilesetId": "easyrpg_chipset_combined_town",
+    "summary": "Village authored: 2/2 houses on legacy."
+  },
+  "cave": {
+    "ok": true,
+    "tilesetId": "easyrpg_chipset_dungeon",
+    "summary": "cave/dungeon 맵 'cave 맵'(20x18) 생성 — POI 1개, 통로 수리 0회, 테두리 없음, BGM cc0-bgm-rtp-mne-001"
+  },
+  "hills": {
+    "ok": true,
+    "tilesetId": "forest_harmony",
+    "summary": "Village authored: 4/4 houses on hills."
+  },
+  "blank": {
+    "ok": true,
+    "tilesetId": "forest_harmony",
+    "grass": true
+  },
+  "generated": {
+    "ok": true,
+    "tilesetId": "forest_harmony",
+    "summary": "forest/settlement 맵 'forest 맵'(20x18) 생성 — POI 3개, 통로 수리 0회, 테두리 없음, BGM cc0-bgm-rtp-blr-005"
+  },
+  "built": {
+    "ok": true,
+    "tilesetId": "forest_harmony",
+    "summary": "Village authored: 2/2 houses on village.",
+    "village": {
+      "exteriorMapId": "village",
+      "interiorMapIds": [],
+      "actualHouseCount": 2,
+      "npcCount": 4,
+      "structuralQa": {
+        "ok": true,
+        "doorsConnected": 2,
+        "doorsIntact": 2,
+        "roadComponents": 1,
+        "ridgeInvaded": 0,
+        "critiqueOk": true
+      }
+    }
+  },
+  "contentPersistence": "none — isolated in-memory code QA",
+  "selected": "forest_harmony",
+  "errors": []
+}

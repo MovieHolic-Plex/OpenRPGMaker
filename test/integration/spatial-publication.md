@@ -9,7 +9,7 @@ bash scripts/qa/spatial-sql-local.sh
 The harness uses PostgreSQL 16 at `/usr/lib/postgresql/16/bin`. It creates a
 unique private cluster under `/tmp/spatial-sql-st_01a07acd.*`, accepts only a
 private Unix socket, and registers teardown before startup. It never reads a
-production/admin URL or the application's credentials. Supabase roles are
+production/admin URL or the application's credentials. LegacyDb roles are
 created locally, then the applicable checked-in `rpg_zzu` migrations run
 unchanged. The unrelated public benchmark and DRAFT auth migrations do not run.
 
@@ -117,7 +117,7 @@ must not overlay mirrors.
 - The dedicated writer has no login, role-management powers or memberships.
   Browser roles cannot assume it. Guards run as invoker; a definer trigger's
   current_user would incorrectly turn every caller into the privileged writer.
-- The migration expects Supabase's pgcrypto extension in `extensions`. Task 23
+- The migration expects LegacyDb's pgcrypto extension in `extensions`. Task 23
   must inspect that prerequisite and deploy through the private administrative
   connection. This harness is not deployment verification.
 - Activation never upgrades an older raw project version or repairs raw data.

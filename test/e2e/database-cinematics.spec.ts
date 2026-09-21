@@ -5,8 +5,8 @@ import { resolve } from "node:path";
 import type { Project } from "../../src/project/types";
 
 // Run from this worktree with port 19035 initially unused:
-// DEV_SERVER_PORT=19035 E2E_RETRIES=0 VITE_SUPABASE_URL= VITE_SUPABASE_ANON_KEY=
-// VITE_SUPABASE_PROJECT_ID= VITE_AI_ACTIVITY_DISK_MIRROR=0 VITE_EDIT_ACTIVITY_DISK_MIRROR=0
+// DEV_SERVER_PORT=19035 E2E_RETRIES=0 VITE_LEGACY_DB_URL= VITE_LEGACY_DB_ANON_KEY=
+// VITE_LEGACY_DB_PROJECT_ID= VITE_AI_ACTIVITY_DISK_MIRROR=0 VITE_EDIT_ACTIVITY_DISK_MIRROR=0
 // npm run test:e2e -- test/e2e/database-cinematics.spec.ts
 // The repository's webServer starts Vite with E2E_FREEZE_DEV_SERVER=1.
 // The lead must stop any previous 19035 server before this invocation because
@@ -256,7 +256,7 @@ for (const matrix of [
       await route.fulfill(response);
     });
     // A blank project is local-only. Fail closed if any app path attempts a
-    // remote project write, rather than sending it to a user's Supabase row.
+    // remote project write, rather than sending it to a user's LegacyDb row.
     await page.route(url => /\/rest\/v1\//.test(url.pathname), async route => {
       if (["POST", "PATCH", "PUT", "DELETE"].includes(route.request().method())) {
         errors.push(`Forbidden remote project write: ${route.request().url()}`);
@@ -388,7 +388,7 @@ for (const matrix of [
       expect(authored.system.opening!.enabled).toBe(false);
 
       // Read and roundtrip the real public codec. No hand-constructed wire
-      // fixture and no Supabase save claim: this is JSON serialization/reload.
+      // fixture and no LegacyDb save claim: this is JSON serialization/reload.
       const roundtrip = await page.evaluate(async () => {
         const storePath = "/src/project/store.ts";
         const codecPath = "/src/project/io.ts";

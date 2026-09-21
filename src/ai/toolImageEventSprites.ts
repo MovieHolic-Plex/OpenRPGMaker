@@ -1,4 +1,4 @@
-import { TILE_SIZE } from "@/assets/bundled";
+import { mapTileSize } from "@/project/tileGeometry";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import {
   charsetFrameSource,
@@ -64,7 +64,7 @@ export function resolveRegionEventSprites(
   const sprites: RegionEventSprite[] = [];
   for (const event of map.events) {
     if (!anchorInRegion(event, region)) continue;
-    const resolved = resolveEventSprite(project, event, region, pixelsPerTile);
+    const resolved = resolveEventSprite(project, event, region, pixelsPerTile, mapTileSize(map));
     if (!resolved.ok) return resolved;
     if (resolved.sprite) sprites.push(resolved.sprite);
   }
@@ -105,6 +105,7 @@ function resolveEventSprite(
   event: GameEvent,
   region: RegionBox,
   pixelsPerTile: number,
+  tileSize: number,
 ): { readonly ok: true; readonly sprite: RegionEventSprite | null } | { readonly ok: false; readonly reason: string } {
   const claimed = claimedPageVisuals(project, event);
   if (!claimed.ok) return claimed;
@@ -117,11 +118,11 @@ function resolveEventSprite(
   }
   const visual = claimed.visuals[0];
   if (!visual) return { ok: true, sprite: null };
-  const worldScale = pixelsPerTile / TILE_SIZE;
+  const worldScale = pixelsPerTile / tileSize;
   const destW = visual.frame.width * worldScale * visual.scale;
   const destH = visual.frame.height * worldScale * visual.scale;
-  const feetX = (footprintSpriteX(event.x, visual.footprint) - region.x * TILE_SIZE) * worldScale;
-  const feetY = (characterSpriteY(event.y) - region.y * TILE_SIZE) * worldScale;
+  const feetX = (footprintSpriteX(event.x, visual.footprint, tileSize) - region.x * tileSize) * worldScale;
+  const feetY = (characterSpriteY(event.y, tileSize) - region.y * tileSize) * worldScale;
   return {
     ok: true,
     sprite: {

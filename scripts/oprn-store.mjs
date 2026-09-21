@@ -16,17 +16,14 @@ const USAGE = [
   "  node scripts/oprn-store.mjs import-package <projectDir> --package <file.oprn|file.rpgzzu>",
   "  node scripts/oprn-store.mjs export-json <projectDir> --out <file.json>",
   "  node scripts/oprn-store.mjs backup <projectDir>",
-  "  node scripts/oprn-store.mjs import-supabase <projectDir> --project <id> [--url <url>] [--anon-key <key>]",
 ].join("\n");
 
-const COMMANDS = ["init", "info", "import-json", "import-package", "export-json", "backup", "import-supabase"];
+
+const COMMANDS = ["init", "info", "import-json", "import-package", "export-json", "backup"];
 
 const parsedArgsSchema = z.object({
   command: z.enum(COMMANDS),
   projectDir: z.string().min(1),
-  supabaseProjectId: z.string().min(1).optional(),
-  supabaseUrl: z.string().url().optional(),
-  supabaseAnonKey: z.string().min(1).optional(),
   jsonPath: z.string().min(1).optional(),
   packagePath: z.string().min(1).optional(),
   outPath: z.string().min(1).optional(),
@@ -34,16 +31,13 @@ const parsedArgsSchema = z.object({
 
 export function parseArgs(argv) {
   const [command, projectDir, ...rest] = argv;
-  const options = { jsonPath: undefined, packagePath: undefined, outPath: undefined, supabaseProjectId: undefined, supabaseUrl: undefined, supabaseAnonKey: undefined };
+  const options = { jsonPath: undefined, packagePath: undefined, outPath: undefined };
   for (let index = 0; index < rest.length; index += 1) {
     const flag = rest[index];
     const value = rest[index + 1];
     if (flag === "--json") options.jsonPath = value;
     else if (flag === "--package") options.packagePath = value;
     else if (flag === "--out") options.outPath = value;
-    else if (flag === "--project") options.supabaseProjectId = value;
-    else if (flag === "--url") options.supabaseUrl = value;
-    else if (flag === "--anon-key") options.supabaseAnonKey = value;
     else throw new Error(`unknown argument ${flag}\n${USAGE}`);
     index += 1;
   }
@@ -99,37 +93,6 @@ async function main() {
             : headless.loadHeadlessProjectFromPackage(bytes));
         const saved = await store.saveProject(project);
         printJson({ kind: saved.kind, sha256: saved.sha256, revision: saved.revision, ...store.info() });
-        return;
-      }
-      if (args.command === "import-supabase") {
-        const projectId = requirePath(args.supabaseProjectId, "--project");
-        const supabaseUrl = args.supabaseUrl ?? process.env.VITE_SUPABASE_URL;
-        const supabaseAnonKey = args.supabaseAnonKey ?? process.env.VITE_SUPABASE_ANON_KEY;
-        if (!supabaseUrl || !supabaseAnonKey) throw new Error("Supabase 자격증명이 필요합니다: --url/--anon-key 또는 VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY 환경변수");
-        const headers = { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}`, Accept: "application/json", "Accept-Profile": "rpg_zzu" };
-        const fetchRows = async (table, filter) => {
-          const response = await fetch(`${supabaseUrl}/rest/v1/${table}?${filter}&select=*`, { headers });
-          if (!response.ok) throw new Error(`${table}: ${response.status} ${await response.text()}`);
-          return await response.json();
-        };
-        const storeModule = await withTsModule(STORE_ENTRY, "oprn-local-store.mjs", async (m) => m);
-        const store = await storeModule.initLocalProjectStore({ projectDir: args.projectDir });
-        try {
-          const projectRows = await fetchRows("projects", `project_id=eq.${projectId}`);
-          const commitRows = await fetchRows("project_commits", `project_id=eq.${projectId}`);
-const [activityRows, conversationRows, analysisRows] = await Promise.all([
-            fetchRows("ai_activity_logs", `project_id=eq.${projectId}`),
-            fetchRows("ai_conversations", `project_id=eq.${projectId}`),
-            fetchRows("ai_analysis_runs", `project_id=eq.${projectId}`),
-          ]);
-          const projectRow = projectRows[0];
-          if (!projectRow?.current_json) throw new Error(`Supabase에 프로젝트 문서가 없습니다: ${projectId}`);
-          const serialized = typeof projectRow.current_json === "string" ? projectRow.current_json : JSON.stringify(projectRow.current_json);
-          const saved = await store.saveSerialized(serialized);
-          store.bulkImportSupabase({ commits: commitRows, aiActivityLogs: activityRows, aiConversations: conversationRows, aiAnalysisRuns: analysisRows });
-          const media = await store.separateInlineMedia(store.loadSnapshot()?.project ?? projectFromJson(serialized));
-          printJson({ kind: saved.kind, sha256: saved.sha256, revision: saved.revision, projectId, projectDir: args.projectDir, mediaSeparated: media.changed, migratedAssets: media.migratedAssetIds.length, ...store.info() });
-        } finally { store.close(); }
         return;
       }
       throw new Error(`unhandled command ${args.command}\n${USAGE}`);

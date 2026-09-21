@@ -535,7 +535,6 @@ export function executeCommand(
       frame.pc += 1;
       // 빈 본문이면 한 번의 반복도 의미가 없으므로 건너뛴다.
       if (command.body.length === 0) return { kind: "continue" };
-      state.loopIterations = 0;
       if (pushLoopFrame(state, command.body, frame.commands, frame.pc - 1)) {
         return { kind: "continue" };
       }
@@ -643,6 +642,7 @@ export function executeCommand(
         allowSell: command.allowSell,
         quantityMode: command.quantityMode,
         shopType: command.shopType,
+        shopUiPreset: command.shopUiPreset,
         messageType: command.messageType,
         merchantGold: command.merchantGold,
         branchOnTransaction: command.branchOnTransaction,

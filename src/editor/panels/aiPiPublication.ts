@@ -13,7 +13,10 @@ import { openWideChangeViewer } from "./aiChangePreview";
 import type { PiCommandSurface } from "./aiPiAgentCommand";
 
 /** A single serialized authoring lineage. Never recapture authority from unrelated live edits. */
-export function createPiPublication(base: Project, mode: PiApplyMode, surface: PiCommandSurface) {
+export function createPiPublication(base: Project, mode: PiApplyMode, surface: PiCommandSurface, presentation?: {
+  beforeApply(before: Project, next: Project): Promise<void>;
+  afterApply(project: Project): void;
+}) {
   let project = base;
   let authority = captureProposalBase(base);
   let baseline = new AuthoredProjectBaseline(base);
@@ -48,6 +51,8 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       if (!accepted) throw new Error(loss.cancelNotice);
     }
     surface.signal?.throwIfAborted();
+    await presentation?.beforeApply(project, next);
+    surface.signal?.throwIfAborted();
     adoptSpatialToolProof(next, checkpoint.spatialProof, project);
     const result = await applyProposedProject(next, {
       base: authority, baseline, source: "agent-milestone",
@@ -64,6 +69,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       },
     });
     if (!result.ok) throw new Error(`적용 실패(${result.reason}): ${result.issue ?? "무결성 오류"}`);
+    presentation?.afterApply(project);
     surface.setStatus("실제 맵에 반영하며 작업 중…");
     return project;
   };

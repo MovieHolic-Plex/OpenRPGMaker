@@ -1,3 +1,5 @@
+import { TilesetReferenceEvidence } from "./tilesetReferenceEvidence";
+import { TILESET_REFERENCE_READ_TOOLS } from "@/editor/tools/tilesetReferenceTools";
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
 import type { IntentDeclaration } from "./intentDeclaration";
@@ -32,6 +34,7 @@ function fingerprint(value: unknown): string {
  * Context summaries and successful writes are deliberately not lookup evidence.
  */
 export class ToolReadEvidence {
+  readonly tilesetReferences = new TilesetReferenceEvidence();
   private readonly monsterAppearances = new MonsterAppearanceEvidence();
   private contract: ReadContract | undefined;
   private summaryRead = false;
@@ -45,6 +48,7 @@ export class ToolReadEvidence {
   begin(contract: ReadContract | undefined): void {
     this.contract = contract;
     this.monsterAppearances.clear();
+    this.tilesetReferences.clear();
     this.summaryRead = false;
     this.maps.clear();
     this.events.clear();
@@ -60,7 +64,7 @@ export class ToolReadEvidence {
       this.monsterAppearances.executed(read.toolCallId, read.result);
       return;
     }
-    if (!read.result.ok || !["get_project_summary", "get_map_region", "find_events", "get_event", "get_database_records"].includes(read.name)) return;
+    if (!read.result.ok || !["get_project_summary", "get_map_region", "find_events", "get_event", "get_database_records", "read_tileset_reference"].includes(read.name)) return;
     this.pending.set(read.toolCallId, structuredClone(read));
   }
 
@@ -87,9 +91,10 @@ export class ToolReadEvidence {
   }
 
   requiredReadTools(): readonly string[] {
-    if (!this.contract) return MONSTER_READ_TOOLS;
+    if (!this.contract) return [...MONSTER_READ_TOOLS, ...TILESET_REFERENCE_READ_TOOLS];
     return [
       ...MONSTER_READ_TOOLS,
+      ...TILESET_REFERENCE_READ_TOOLS,
       ...(this.contract.project ? ["get_project_summary", "get_map_region", "find_events"] : []),
       ...(this.contract.references || this.contract.collections.length ? ["get_database_records"] : []),
     ];
@@ -97,6 +102,7 @@ export class ToolReadEvidence {
 
   observe(name: string, args: Record<string, unknown>, result: ToolResult): void {
     this.monsterAppearances.observe(name, args, result);
+    if (name === "read_tileset_reference") this.tilesetReferences.observe(result);
     if (!result.ok) return;
     if (name === "get_project_summary") this.summaryRead = true;
     if (name === "get_map_region" && typeof args.mapId === "string") this.maps.add(args.mapId);
@@ -118,6 +124,8 @@ export class ToolReadEvidence {
   }
 
   beforeWrite(project: Project, name: string, args: Record<string, unknown>): ToolResult | null {
+    const reference = this.tilesetReferences.beforeWrite(project, name, args);
+    if (reference) return reference;
     const appearance = this.monsterAppearances.beforeWrite(project, name, args);
     if (appearance) return appearance;
     const contract = this.contract;

@@ -255,9 +255,11 @@ describe("team model roles", () => {
     const calls: PiAgentRequest[] = [];
     const keys = { "google-antigravity": "brain-test-key", "openai-codex": "deep-test-key" };
     await runPiTeam({ ...request(project), provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high",
+      initialToolNames: ["find_tools", "set_party"],
       roleModels: { deep: { provider: "openai-codex", model: "deep-model", thinkingLevel: "medium" } },
     }, { apiKey: "brain-only-token", providerApiKeys: keys, runAgent: async (req, opts) => {
       calls.push(req);
+      expect(req.initialToolNames).toBeUndefined(); // Assigned roles must not inherit the parent shortlist.
       expect(opts.providerApiKeys).toEqual(keys);
       expect(opts.apiKey).toBe(req.provider === "google-antigravity" ? "brain-only-token" : undefined);
       const tools = opts.extraTools ?? [];
@@ -502,4 +504,26 @@ it("live team checkpoints merge owned maps before another agent's final result",
   expect(publications.at(-1)!.maps.map_b!.name).toBe("live:map_b");
   expect(result.project.maps.map_a!.name).toBe("live:map_a");
   expect(result.project.maps.map_b!.name).toBe("live:map_b");
+});
+
+
+describe("팀 마을 완료 상태", () => {
+  it("팀원 완료 정보를 최종 병합본에서 재검사해 done에도 미완료를 남긴다", async () => {
+    const project = seeded();
+    const events: PiAgentEvent[] = [];
+    const runAgent: NonNullable<RunPiTeamOptions["runAgent"]> = async (req, opts) => {
+      const extra = opts.extraTools ?? [];
+      if (extra.some(tool => tool.name === "assign_map_agent")) {
+        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "마을", member: "builder" });
+        await callTool(extra, "wait_agents", {});
+        return doneWith(req.project);
+      }
+      const next = built(req.project, "map_a", "아직 집이 없는 마을");
+      return { ...doneWith(next, ["maps.map_a"]), villageCompletion: { mapIds: ["map_a"], issues: [] } };
+    };
+    const done = await runPiTeam(request(project), { runAgent, onEvent: event => events.push(event) });
+    expect(done.villageCompletion?.mapIds).toEqual(["map_a"]);
+    expect(done.villageCompletion?.issues.join("\n")).toContain("문 앞 좌표가 0개");
+    expect(events.some(event => event.type === "agent_done" && event.agentId.startsWith("orchestrator-") && !event.ok)).toBe(true);
+  });
 });

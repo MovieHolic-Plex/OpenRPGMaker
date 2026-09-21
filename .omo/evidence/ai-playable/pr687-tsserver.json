@@ -164,7 +164,7 @@
     "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/standaloneExport.ts",
     "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/standaloneRelease.ts",
     "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/store.ts",
-    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/supabaseProjectSync.ts",
+    "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/legacyDbProjectSync.ts",
     "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/toolActions.ts",
     "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/base.ts",
     "/home/main/z-project/rpg-zzu-pr687-integration-st_01a07c86/src/project/types/events.ts",

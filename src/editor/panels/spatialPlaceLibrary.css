@@ -1,5 +1,128 @@
-.place-library-controls{padding:16px 20px;border-bottom:1px solid var(--border-color,#39434b);background:var(--db-studio-canvas,#f7f8f8);color:var(--db-studio-text-1,#24313c)}
-.place-library-heading{display:flex;justify-content:space-between;align-items:center;gap:16px}.place-library-heading strong{font-size:20px}.place-library-heading p{margin:4px 0 12px;opacity:.7;font-size:12px}.place-library-filters{display:flex;flex-wrap:wrap;gap:8px}.place-library-filters select,.place-library-filters input{background:var(--db-studio-inset,#fff);color:inherit;border:1px solid var(--db-studio-border-subtle,#d7dfe5);border-radius:6px;padding:8px 10px;min-width:120px}.place-library-filters input{flex:1}.place-library-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.place-library-tabs button{background:transparent;color:inherit;border:0;border-bottom:2px solid transparent;padding:8px 12px;cursor:pointer}.place-library-tabs button.is-active{color:#235c44;border-bottom-color:#549d77;background:#e6f2ea}.place-library-controls small{opacity:.7;font-size:11px}.place-classification-badges{display:flex;flex-wrap:wrap;gap:4px;padding:4px 8px}.place-classification-badges span{font-size:11px;padding:3px 6px;background:#e4eee8;color:#2d5842;border-radius:4px}.spatial-shell-main:has(.place-library-controls){display:flex;flex-direction:column;min-height:0}.spatial-shell-main:has(.place-library-controls)>.spatial-body{flex:1;min-height:0}
+/* Dynamic place-library controls are loaded by the database panel. Keep them
+   in the database cascade instead of leaving an unlayered island that can
+   override every named editor surface. */
+@layer database {
+  .place-library-controls {
+    /* 한 줄 도구 띠 — 16/20px 여백은 69장짜리 목록에서 그냥 세로 손실이었다. */
+    padding: 7px 12px 8px;
+    border-bottom: 1px solid var(--border-color, var(--border-default));
+    background: var(--db-studio-canvas, var(--bg-canvas));
+    color: var(--db-studio-text-1, var(--text-1));
+  }
 
-.database-modal-body [data-testid="spatial-shell-places"] .spatial-body{grid-template-columns:minmax(360px,60%) minmax(260px,1fr)}
-@media(max-width:1000px){.database-modal-body [data-testid="spatial-shell-places"] .spatial-body{grid-template-columns:minmax(260px,1fr) minmax(220px,1fr)}}
+  .place-library-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .place-library-title { display: inline-flex; align-items: baseline; gap: 8px; flex-wrap: wrap; min-width: 0; }
+  .place-library-heading strong { font-size: 13px; }
+  /* 폴백 hex 를 쓰면 hexLiterals 래칫에 걸린다 — 토큰은 .database-modal-backdrop 에 정의돼 있다. */
+  .place-library-count { font: 600 11.5px/1.4 inherit; color: var(--db-studio-text-3); }
+  .place-library-filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+
+  .place-library-filters select,
+  .place-library-filters input {
+    background: var(--db-studio-inset, var(--bg-raised));
+    color: inherit;
+    border: 1px solid var(--db-studio-border-subtle, var(--border-subtle));
+    border-radius: var(--radius-s);
+    padding: 6px 8px;
+    min-width: 104px;
+    max-width: 190px;
+    font: inherit;
+  }
+
+  .place-library-filters input { flex: 1 1 180px; min-width: 150px; max-width: none; }
+  /* 분류 탭은 도구줄에 이어 붙인다 — 따로 한 줄을 잡으면 목록에서 카드 한 줄이 사라진다. */
+  .place-library-tabs { display: inline-flex; flex-wrap: wrap; gap: 2px; margin: 0 0 0 2px; }
+  .place-library-tabs button {
+    background: transparent;
+    color: inherit;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    padding: 4px 8px;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .place-library-tabs button.is-active {
+    color: var(--success);
+    border-bottom-color: var(--success);
+    background: var(--success-muted);
+  }
+
+  /* 소재 안내문은 제목 옆으로 — 자기 줄을 갖지 않는다. */
+  .place-library-controls small { opacity: 0.7; font-size: 11px; }
+  .place-classification-badges { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 0 2px; }
+  .place-classification-badges span {
+    font-size: 10.5px;
+    padding: 1px 6px;
+    background: var(--success-muted);
+    color: var(--success);
+    border-radius: var(--radius-s);
+  }
+
+  .spatial-shell-main:has(.place-library-controls) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .spatial-shell-main:has(.place-library-controls) > .spatial-body {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .database-modal-body [data-testid="spatial-shell-places"] .spatial-body {
+    /* 카드를 고른 뒤에만 스테이지가 오른쪽에 붙는다. */
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 22%);
+  }
+
+  /* 목록만 보일 때는 라이브러리가 전체 폭을 쓴다 — 여기가 장소 셸의 실제 우선순위 자리라
+     spatial-shell.css 의 .is-library-only 만으로는 이 규칙에 밀린다. */
+  .database-modal-body [data-testid="spatial-shell-places"] .spatial-body.is-library-only {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* 장소 갤러리에서 안내문 두 개가 겹친다 — 목적 띠가 같은 말을 더 잘 한다.
+     한 줄(약 24px)을 목록에 넘긴다. */
+  .database-modal-body [data-testid="spatial-shell-places"] .spatial-kind-guidance {
+    display: none;
+  }
+
+  /* 장소 스테이지(캔버스 + 속성)는 「속성」을 눌렀을 때만 펼친다. 다른 탭은 종전대로
+     항상 캔버스 + 속성 2열이다 — 이 규칙을 장소 셸로 한정하지 않으면 그 탭들의
+     속성이 통째로 사라진다. */
+  .database-modal-body [data-testid="spatial-shell-places"] .spatial-body.is-library-only > .spatial-stage {
+    display: none;
+  }
+  /* 지역 탭도 같은 목록-우선 규약을 공유한다 — 셸 testid 만 다르고 규칙은 동일하다. */
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 22%);
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body.is-library-only {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-kind-guidance {
+    display: none;
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body.is-library-only > .spatial-stage {
+    display: none;
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-stage:not(.is-inspector-open) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .database-modal-body [data-testid="spatial-shell-places"] .spatial-stage:not(.is-inspector-open) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (max-width: 1000px) {
+    .database-modal-body [data-testid="spatial-shell-places"] .spatial-body {
+      grid-template-columns: minmax(260px, 1fr) minmax(220px, 1fr);
+    }
+  }
+}

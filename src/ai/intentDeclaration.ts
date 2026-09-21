@@ -95,6 +95,12 @@ export interface IntentDeclaration {
   readonly functionalRefinements?: readonly FunctionalRefinement[];
   /** Host adapter's independent extraction, never accepted from worker/declaration JSON. */
   readonly requestRequirements?: readonly RequestRequirement[];
+  /**
+   * 사용자가 **실존 작품을 비유해** 말했는가("해리포터 같은", "스타덱 느낌으로").
+   * 있으면 그 작품의 분위기·구조를 **검색으로 확인**한 뒤 설계에 쓴다 — 모델의 암기는 작품 해석이 부정확하고, 그렇게 만든 세계관은 사용자가 기대한 것과 어꺋난다.
+   * 원작 고유명(해리포터·호그워즈 등)은 그대로 쓰지 않는다 — 분위기와 구조만 가져와 새 이름을 짓는다.
+   */
+  readonly referenceWork?: string | null;
   readonly summary: string;
   readonly source: IntentSource;
 }
@@ -147,14 +153,15 @@ Fields:
 - "resetsContext": 사용자가 이전 작업과 무관한 새 작업·처음부터·프로젝트 초기화를 명시하면 true.
 - "tools": 입력 툴 목록에서 이 요청에 쓸 가능성이 높은 이름만, 최대 8개. 모르면 [].
 - "readBeforeWrite": 사용자가 '기존 데이터를 먼저 읽고 이어 작업', '조회 후 실제 ID만 참조'를 명시하면 {"project":true,"collections":["items","enemies","troops"],"references":true}. project 는 프로젝트/기존 맵·이벤트 선행 조회, collections 는 작업에 필요한 DB 컬렉션 이름(실제 조회가 모두 성공하기 전 첫 쓰기 금지), references 는 참조 ID 조회 증거를 뜻한다. 필요한 컬렉션만 선택한다. 그런 조건이 없으면 생략한다. 이것은 작성 요청의 절차 계약이며 별도 허락 질문이 아니다.
-- "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목 모두 true다.
+- "adventure": 시작 마을·던전 탐험·파티 모험을 구성하라는 전체 모험 저작 요청이면 {"village":true,"dungeon":true,"party":true,"battle":true,"world":true,"characters":true,"appearance":true}. 각 항목은 요청한 것만 true. 단순 NPC 추가/질문/DB 시드만/입구 표지판만 요청은 생략한다. 모험 JRPG 장르 프리셋 또는 "중세 게임 RPG를 만들어줘"처럼 프로젝트 전체를 처음 만드는 요청은 세계관·핵심 인물·주인공 외형/장비를 먼저 저작해야 하므로 world/characters/appearance를 true로 선언한다. 모험 JRPG 장르 프리셋 + 파티·던전 탐험 + 시작 마을·기본 전투 적은 네 항목과 새 세 항목 모두 true다.
 - "actionCombat": 실제 필드 액션 전투(공격 적중·처치·피격·회피·스태미나·원거리 적·보상)의 작동을 요구하면 {"targets":[{"mapId":"기존 실제 ID"} 또는 {"newMapName":"새로 만들 정확한 맵 이름"}]}로 필수 검증 대상을 선언한다. 턴제 전투, 장르 질문, 액션을 제외한 요청은 생략한다. 단어가 아니라 요청한 행동으로 판단한다. 이 선언은 계획 교체나 acceptance 수리로 지울 수 없는 완료 조건이다.
 - "statefulNpcs": 사용자가 상태에 따라 달라지는 NPC 행동/대사를 명시했을 때만 true. 보통의 한 페이지 안내 NPC, 인사, 상점이라는 이유로 true를 만들지 않는다.
-- "construction": 마을·집·시설을 짓거나 넓히라는 요청에서 **문장에 실제로 나온 수량만** 옮긴다. {"scale":"small|medium|large|vast","houseCount":20,"npcCount":8,"targetName":"강호 장터 마을"}. 크기어 대응: 아기자기한·작은=small, 보통=medium, 큰·넓은=large, 아주 큰·광활한=vast. 없는 값은 넣지 않는다(추측 금지). width/height는 쓰지 않는다 — 크기 환산은 코드가 한다. 「더 크게」「넓혀줘」「집 더 지어줘」처럼 있는 마을을 키우라는 요청도 mode=modify 로 두고 여기에 규모를 적는다. 공간 시공이 아니면 생략한다.
+- "construction": 마을·집·시설을 짓거나 넓히라는 요청에서 **문장에 실제로 나온 수량만** 옮긴다. {"scale":"small|medium|large|vast","houseCount":20,"npcCount":8,"targetName":"강호 장터 마을"}. 크기어 대응: 아기자기한·작은=small, 보통=medium, 큰·넓은=large, 아주 큰·광활한=vast. 없는 값은 넣지 않는다(추측 금지). width/height는 쓰지 않는다 — 크기 환산은 코드가 한다. 「더 크게」「넓혀줘」「집 더 지어줘」처럼 있는 마을을 키우라는 요청도 mode=modify 로 두고 여기에 규모를 적는다. 공간 시공이 아니면 생략한다. 사용자가 배치를 명시하면 morphology:river|street|green|round|cluster로 옮긴다. river는 중앙 강·다리·양안 주거다. 별도 배치 요청이 없으면 morphology를 생략한다(빈 맵 기본 강변형은 코드가 정한다). 사용자가 명시한 산골·항구·사막 등 테마는 theme에 옮기되 추측으로 만들지 않는다. 주민 0명은 npcCount:0으로 보존한다. 말 없는 주민을 명시하면 residentDialogue:false, 대사를 요구하면 true로 적는다.
 
 - "npcRewards": ONLY for explicit create/modify requests to make an NPC grant currency, items or collected monsters. Omit for ordinary dialogue/NPCs, questions, and reward removal requests. Array example: [{"target":{"eventId":"known_event_id"},"grants":[{"kind":"item","id":"known_item_id","count":2}],"oneTime":true}]. Grant kind may also be "monster" or "gold". Currency uses {"kind":"gold","count":20} with NO id/name, not an inventory item. Do not reinterpret an item named gold/골드 as currency or invent a gold item to represent money. When an ID is unknown, replace target eventId with eventName, or item/monster grant id with name. Each target or item/monster reference must contain exactly ONE of those keys, never both; omit unused keys rather than writing null. Optional mapId belongs inside target. Preserve every requested grant. count is a positive integer for an explicit amount; omit count for an unspecified positive amount. oneTime=true ONLY when requested. Choices are zero-based and only declared when requested; repeatChoices describes the second interaction, normally omitted. Use IDs only when known, otherwise exact names (must resolve uniquely at completion); do not invent IDs or substitute actors/changeParty for collected monsters. If the requested target/reward cannot be identified, include an incomplete requirement so completion remains blocked, not an omitted contract. These expectations come from the REQUEST, never the eventual event commands, and must not be weakened to pass completion.
 - "functionalAcceptance": ONLY requested working purchases or map round-trip travel, not a shop decoration, map listing, genre label, question, or excluded behavior. Array of immutable expectations, never success flags/scripts. Purchase: {"kind":"shopPurchase","target":{"mapId":"actual map"},"start":{"x":1,"y":1},"seller":{"eventId":"known seller"},"item":{"id":"known item"},"count":2,"unitPrice":10}. Round trip: {"kind":"mapRoundTrip","target":{"mapId":"origin"},"start":{"x":1,"y":1},"destination":{"mapId":"destination"},"outgoing":{"eventId":"outgoing transfer"},"returning":{"eventId":"return transfer"}}. Use exact eventName/name instead of invented eventId/id; a new map uses newMapName instead of mapId. Start must be the requested actual project entry, supplied in facts, never a convenient test teleport. Preserve requested seller, stock, price/count, origin/destination and both authored transfers. For missing/ambiguous/unsupported targets or unspecified price/count include {"kind":"functionalUnresolved","reason":"Identify the missing request expectations"}; do not drop the requested behavior. Existing npcRewards already creates mandatory real-interaction acceptance. Non-requested behaviors MUST be omitted.
 - "functionalRefinements": ONLY when this USER message clarifies an unresolvedFunctional requirement supplied in facts. Read its original source.text, current typed expectations and prior user refinements together with the latest message. Output [{"requirementId":"the exact supplied stable promise id","criterionIndex":3,"criterion":{...concrete or partial functional criterion},"corrections":["count"]}]. Copy criterionIndex exactly from facts (zero-based); omission is supported only for a singleton index0. Replace only that unresolved leaf, never its valid siblings. The entire refinement batch must be valid, with unique selectors. Keep the original behavior/targets and known quantities; fill missing fields without inventing them. corrections is optional and names only known top-level fields explicitly corrected by this user's message; never infer a correction to make a failing check pass. A partial criterion retains known fields and stays unresolved until complete. Do not output duplicate functionalAcceptance for this clarification. Do not refine unrelated requirements or concrete contracts; there is no worker repair/replan authority here. For a generic ending/compound-scene placeholder with no typed expectations, a later explicit user clarification may specialize to {"kind":"toolVerdict","tool":"run_scene_test","args":{"mapId":"known map","start":{"x":1,"y":1},"steps":[...]},"interactionTargets":[{"stepIndex":2,"mapId":"known owning map","eventId":"named event"}]}. Use complete native scene input and ordered map-qualified ownership for EVERY named interact step, fixed before execution. No set/debug state, checkpoint retry, arbitrary tool, or first-probe-derived ownership. Require post-interaction outcome assertions (nonzero reward/consumption delta, actual lastTransfer, or endingReached with the exact nonempty ending-ID string, never true); wait, position, interactionComplete or zero-only checks alone are not a functional outcome. Preserve the original requested chain, quantities, repeats, transfers and ending; do not convert typed shop/travel/reward expectations into a scene. The host retains the original request initial-state contract and requires a fresh exact explicit execution after refinement. For an initial unresolved request, preserve all known machine-checkable fields in functionalUnresolved.expectations (e.g. {"kind":"shopPurchase","seller":{"eventName":"Mira"},"item":{"name":"Potion"},"count":2}), not only in the reason string.
+- "referenceWork": 사용자가 **실존 작품을 비유**해 게임을 만들라고 했으면 그 작품명(예: "해리포터", "스타덱밸리"). 아니면 생략한다. "중세 판타지 RPG", "픽셀 노스탠지아" 같은 장르·스타일 설명은 작품명이 아니다. 그러나 "해리포터 같은", "OO 느낌으로" 처럼 고유명사로 지목하면 그대로 적는다 — 그 작품의 분위기·구조를 검색으로 확인한 뒤 설계에 쓴다.
 - "summary": 요청을 한 문장으로.
 
 Rules:
@@ -334,7 +341,15 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
       } } : {}),
       ...("npcRewards" in parsed && (mode === "create" || mode === "modify")
         ? { npcRewards: parseNpcRewardRequirements(parsed.npcRewards) } : {}),
-      ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: { village: parsed.adventure.village === true, dungeon: parsed.adventure.dungeon === true, party: parsed.adventure.party === true, battle: parsed.adventure.battle === true } } : {}),
+      ...(isRecord(parsed.adventure) && (mode === "create" || mode === "modify") ? { adventure: {
+        village: parsed.adventure.village === true,
+        dungeon: parsed.adventure.dungeon === true,
+        party: parsed.adventure.party === true,
+        battle: parsed.adventure.battle === true,
+        ...(parsed.adventure.world === true ? { world: true } : {}),
+        ...(parsed.adventure.characters === true ? { characters: true } : {}),
+        ...(parsed.adventure.appearance === true ? { appearance: true } : {}),
+      } } : {}),
       ...(actionCombat ? { actionCombat } : {}),
       ...(authoring && parsed.functionalAcceptance !== undefined ? { functionalAcceptance: parseFunctionalRequirements(parsed.functionalAcceptance) } : {}),
       ...(authoring && parsed.functionalRefinements !== undefined ? { functionalRefinements: parseFunctionalRefinements(parsed.functionalRefinements) } : {}),
@@ -343,6 +358,12 @@ export function parseIntentDeclaration(raw: string, facts: IntentFacts): IntentP
         const construction = parseConstructionDeclaration(parsed.construction);
         return construction ? { construction } : {};
       })() : {}),
+      // 참조 작품은 지정 사실이지 저작 선언이 아니다 — authoring 게이트에 묶으면 "해리포터 같은 게임 만들고 싶다"처럼 mode=other 로 분류된 발화에서
+      // 조용히 사라진다(2026-09-21 실측: referenceWork=null, tools=[]). 그러면 사용자가 명시한 작품을 검색할 계기가 어디에서도 생기지 않는다.
+      ...(() => {
+        const referenceWork = readString(parsed.referenceWork, 80);
+        return referenceWork ? { referenceWork } : {};
+      })(),
       summary: readString(parsed.summary, 200) ?? facts.userText.trim().slice(0, 200),
       source: "llm",
     },
@@ -417,6 +438,18 @@ export function intentToolDomains(
     domains.add("tile");
     domains.add("map");
     domains.add("event");
+  }
+  // A full adventure is a cross-domain authoring request. Do not make the
+  // first round depend on the model remembering to name every lane in `tools`;
+  // the declaration itself opens the world/lore, character database, map and
+  // event surfaces needed to build a coherent starting slice.
+  if (intent.adventure) {
+    domains.add("world");
+    domains.add("database");
+    domains.add("system");
+    domains.add("map");
+    domains.add("event");
+    if (intent.adventure.battle) domains.add("battle");
   }
   return domains;
 }
@@ -515,6 +548,8 @@ function formatConstructionNote(intent: IntentDeclaration, targetMap: IntentNote
   if (!construction) return null;
   const size = estimateVillageSize(construction);
   const declared = [
+    construction.morphology ? `배치 ${construction.morphology}` : null,
+    construction.theme ? `테마 ${construction.theme}` : null,
     construction.scale ? `규모 ${construction.scale}` : null,
     construction.houseCount !== undefined ? `집 ${construction.houseCount}채` : null,
     construction.npcCount !== undefined ? `주민 ${construction.npcCount}명` : null,
@@ -545,6 +580,7 @@ export function formatIntentNote(
   if (intent.adventure) lines.push(ADVENTURE_AUTHORING_GUIDE);
   if (intent.actionCombat) lines.push(`[액션 완료 계약] 대상 ${JSON.stringify(intent.actionCombat.targets)}의 필드 전투를 run_action_combat_test로 검증하라. wait/스폰 장면 검사와 턴제 시뮬은 액션 증거가 아니며 계획 교체·수리로 이 의무를 지울 수 없다.`);
   if (intent.statefulNpcs) lines.push("[NPC 완료 계약] 명시적으로 요청된 상태별 NPC 행동을 구현하라. 일반 안내 NPC까지 다중 페이지로 확대하지 않는다.");
+  if (intent.referenceWork) lines.push(`[참조 작품] 사용자가 지목한 작품: "${intent.referenceWork}". 설계 전에 web_search 로 그 작품의 분위기·장소·직업·사건 구조를 확인하라. 모델 암기로 추정하지 말고 검색으로 사실을 고정한 뒤, 그 분위기를 장르·색·구성에 옮겨 담는다. 고유명사(인물·지명·마법 이름)는 그대로 쓰지 않는다 — 새 이름을 짓고 분위기만 가져온다.`);
 
   if (intent.functionalAcceptance) lines.push(`[Functional acceptance contract] ${JSON.stringify(intent.functionalAcceptance)}. Immutable request expectations; real engine behavior on applied content decides completion, not images or success prose.`);
   if (intent.npcRewards) {

@@ -1024,7 +1024,7 @@
       "blob": "0805c1448f1b2fbe1e64dd9ec91f2fb0169f6bda"
     },
     {
-      "path": "src/assets/supabaseResourceCache.ts",
+      "path": "src/assets/legacyDbResourceCache.ts",
       "blob": "3031a882ce07789260131e2286291f247f9dec58"
     },
     {
@@ -6708,19 +6708,19 @@
       "blob": "8c34702b6f4fd030c1377331c1509a18dc853c57"
     },
     {
-      "path": "src/project/supabaseProjectConfig.ts",
+      "path": "src/project/legacyDbProjectConfig.ts",
       "blob": "9b0ec4db0522977b0fc287b8f1de7fa7ed7b5339"
     },
     {
-      "path": "src/project/supabaseProjectSync.ts",
+      "path": "src/project/legacyDbProjectSync.ts",
       "blob": "46555330bd68b0c4050bd821ded2896c30a4e607"
     },
     {
-      "path": "src/project/supabaseProxyPath.ts",
+      "path": "src/project/legacyDbProxyPath.ts",
       "blob": "9552a959f9bd62e0f460a462d130f63914fff03e"
     },
     {
-      "path": "src/project/supabaseRecoveryLocation.ts",
+      "path": "src/project/projectRecoveryLocation.ts",
       "blob": "1a6cd632f85e371cc48f2ed8020178f5043ed2bf"
     },
     {

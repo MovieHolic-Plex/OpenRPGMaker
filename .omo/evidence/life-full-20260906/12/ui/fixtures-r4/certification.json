@@ -38,7 +38,7 @@
       "before": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd",
       "after": "c27eb4c534e39a6b0c68c2d3650aadb905c8f42e0d053d10f79c8092aa6cbdfd"
     },
-    "src/project/supabaseProjectSync.ts": {
+    "src/project/legacyDbProjectSync.ts": {
       "before": "7e6c4d4b954353ce4836183fe7d1488def2f417dc1134a760a74a224573f56f2",
       "after": "7e6c4d4b954353ce4836183fe7d1488def2f417dc1134a760a74a224573f56f2"
     },

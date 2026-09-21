@@ -6,7 +6,7 @@
  * 카드 → 「적용」 → applyProposedProject 커밋 게이트 → 되돌리기 라벨까지 한 줄로 검증한다.
  *
  * 전제: `~/.rpg-zzu/oh-my-pi-auth.json` 에 동반 서비스 OAuth 자격이 있어야 한다(머신 공용).
- * `?devProject=1` 은 원격 저장이 꺼진 쇼케이스라 Supabase 에 아무것도 쓰지 않는다.
+ * `?devProject=1` 은 원격 저장이 꺼진 쇼케이스라 LegacyDb 에 아무것도 쓰지 않는다.
  *
  * 사용: QA_BASE_URL=http://127.0.0.1:<port> node scripts/qa/db-ai-review-live.mjs
  * 출력: .omo/evidence/db-ai-review/live-*.png

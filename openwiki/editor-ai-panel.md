@@ -1,4 +1,133 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Editor AI Panel & Tools
+## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
+
+`aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.
+평문 전송은 의도 분류 전에 큰 조수 창을 열고, 쓰기 턴으로 판정된 경우 선택을 기다린다.
+슬래시 명령/브리지도 공통 실행 진입점에서 같은 선택을 거친다. 설명·부정·작은 수정 요청,
+읽기 전용/계획 턴, 현재 프로젝트의 정확한 칩셋 ID/이름을 명시한 요청은 선택을 생략한다.
+현재 감지는 한/영의 제한된 생성 표현이며, 던전·실내 등 모든 제작 의도를 포괄하지 않는다.
+
+- 기존 `createAssistantWide.open()`으로 동일 조수·팀 DOM을 함께 연다. 새 세션을 만들지 않는다.
+- 숲마을을 포함한 합본 마을 호환 칩셋을 제공하고, `forest_harmony`를 기본으로 선택한다. `stampRectHouseKit` + `drawMapTileLayers`로 집 외관 3종을
+  임시 20×15 캔버스에 그린다. 나무는 시공기와 같은 저작 조립/레이어를 쓰고 길의 오토타일 연결을 계산한다. 실제 캐릭터 시트의 2명을 합성하며 외관/캐릭터를 독립 선택한다.
+  이 비교용 데이터는 store, 원격 DB, 게임의 맵 목록에 들어가지 않는다. 다른 칩셋의 동일 좌표가
+  호환된다고 가정하지 말 것. 지원 칩셋이 없으면 실행하지 않고 명시적인 리소스 지정을 안내한다.
+- 추천/이미지 클릭/선택은 실행이 아니다. 이미지가 준비된 뒤 별도의 제작 확정 버튼을 눌러야
+  원문 + 선택한 칩셋/집 키트/캐릭터 ID·인덱스가 실제 Pi task로 전달된다. 결과 품질 보장은
+  기존 실행·검토 흐름이 맡는다. 선택 이미지는 대화에 남으며 선택 값 자체를 프로젝트 기본값으로 저장하지 않는다.
+- 대기 중에는 turn 슬롯을 점유하고, 팀에는 실제 실행 중인 가짜 담당을 만들지 않고 선택 기준만 보여준다.
+  요청 수정은 원문을 복원한다. 작은 창으로 접는 것은 선택을 취소하지 않는다. 대화/프로젝트 전환과
+  dispose는 promise를 해제하며, 확인 전 현재 맵이 바뀌면 실행을 취소한다.
+- 스타일 진입점: `editor-startup-ai.css → 29-creation-choice.css`. 컴포저 대신 선택/수정 버튼을
+  보여 확정 버튼을 가리지 않는다. 좁은 창에서는 비교 카드를 세로로 배치한다.
+
+브라우저 증거/범위: `reports/2026-09-21-assistant-creation-choice.md`.
+
+## 이미지 중심 작업 피드 (2026-09-21)
+
+`activityVisual.ts`는 도구 실행 직전/직후의 **작업 초안**에서 맵 영역·NPC 그래픽·DB 레코드·검색 소재를
+잘라 불변 사본으로 만든다. Pi `toolAdapter → tool_end.visuals`와 일반/영역 `AssistantSession →
+tool_call.visuals → AiRunSurface`가 같은 수집기를 쓴다. 팀/후속 레인도 Pi 이벤트 계약을 그대로 받는다.
+전체 프로젝트나 NPC 커맨드 본문을 이미지 기록에 복사하지 않는다. 최대 32×24 맵 크롭, 40개 이벤트 위치,
+6개 검색 결과, 6개 수치 필드로 제한한다. 업로드 이미지는 당시 data URL(1MB 이하) 또는 내용 주소 ref를
+보존한다. 리소스 ID를 나중의 현재 프로젝트에 다시 조회하지 않는다.
+
+- 기본 보기에는 최근 이미지 작업 3개와 마지막 상태를 남긴다. 같은 도구의 반복은 같은 대상일 때만 묶는다.
+  이미지 없는 기존 워커 이벤트는 기존 최대 네 줄 정책을 유지한다. 자세히/매우 자세히에서도 그림은 바로
+  보이고, 도구 입력·결과만 별도 details로 펼친다. 오른쪽 팀 목록에도 최근 대상 썸네일이 붙는다.
+- 맵 쓰기는 `변경 전 / 초안`, 실패는 `실패 시점`, 읽기는 `확인한 모습`으로 구분한다. 초안 그림을 실제
+  적용/저장 성공 증거로 취급하지 않는다. 실제 적용 상태는 기존 실행/저장 receipt에서 확인한다.
+- 맵은 편집기 타일 렌더러를 공유한다. **NPC는 맵 위 위치 마커**이며 별도 카드에서 실제 charset 한 칸을
+  보여 준다. 게임 플레이 캡처라고 부르지 않는다. 아이템/장비/몬스터는 실제 소재와 해당 시점 수치를 표시한다.
+  등록된 이미지가 없으면 수치 카드, 로드/캡처 실패 또는 보존 기간 만료면 누락 안내를 표시한다.
+- 클릭하면 같은 작업의 그림들이 네이티브 dialog에 크게 열린다. `modalStack`을 등록하여 Escape는 이미지
+  창만 닫고, 조수 큰 창은 유지한다. 키보드 초점은 원래 이미지 버튼으로 복귀한다.
+- `activityMediaArchive.ts`의 별도 IndexedDB `oprn-ai-activity-media`에 불변 렌더 재료와 PNG Blob을 저장한다.
+  텍스트 실행 기록에는 작은 참조만 들어간다. 7일/약 64MB, 메모리 256건/약 16MB 제한이며 배치 후 정리한다.
+  `aiActivityMedia.ts`는 표시 수준이 생략이어도 들어온 재료를 3개 렌더 작업으로 나눠 PNG로 고정한다.
+  이미지가 없는 옛 실행 기록은 복원하지 않는다. 텍스트 JSON 내려받기에 이미지 바이너리를 넣지 않는다.
+- `regionSnapshot`의 선택적 `image` 인자는 업로드/이식 타일셋의 당시 아틀라스를 전달하기 위한 것이다.
+  업로드 원본은 보존한 ref/data에서 읽고, 이식은 정확한 타일셋 사본으로 완전 베이크를 기다린다.
+  실패한 이식 캡처를 원본 타일셋으로 대체하지 않는다.
+
+브라우저 근거: `scripts/qa/ai-visual-feed.mjs`. 실제 편집기와 실제 도구 어댑터로 읽기·도로 쓰기·NPC·소재
+검색·몬스터 실패/재시도·아이템 변경을 재생한다. 모델 전송만 결정적 스트림이며 원격 프로젝트 쓰기를 차단한다.
+수정 이후 기존 이미지 불변, Blob 보관/새로고침, 큰 창/팀/확대/trace 입력과 결과, 1024px 넘침을 확인한다.
+
+## 조수와 팀 크게 보기 (2026-09-21)
+
+조수 `작업 표시` 행의 `ai-wide-open`(아이콘 + **크게 보기** 글자 버튼)은 현재 대화와 오른쪽 팀 패널을 하나의 큰 창으로 옮긴다.
+확대 아이콘만 레일에 두면 발견하기 어려워 표시 수준 버튼 바로 위에 항상 보이도록 배치한다.
+`aiAssistantWide.ts`가 원래 자리의 comment marker를 보관하고 **같은 DOM**을 이동·복원한다.
+세션·실행·입력창·적용 버튼을 두 벌 만들지 않는다. 입력 초안, 실행 중 중지, 검색, 열린 로그,
+선택한 팀원이 유지된다. 팀원이 아직 선택되지 않았으면 첫 팀원을 연다.
+
+- 왼쪽은 대화·실행 기록·입력, 오른쪽은 팀 목록·팀원 상세·후속 대화다. 팀원 상세는 대화를 덮지 않는다.
+- 큰 창은 기본 70:30이며 가운데 경계선을 드래그하거나 초점 후 좌우 방향키로 조절한다. Home/더블클릭은
+  기본 비율로 돌아간다. 대화와 팀 상세는 각자 스크롤한다. 좁은 화면에서는 위아래로 배치한다.
+- 표시 수준 버튼은 기존 노드를 큰 창 상단으로 이동하고 닫을 때 원래 위치에 복원한다. 오른쪽 중복 설정은
+  큰 창에서 숨긴다. 팀 목록은 이름·상태·최근 작업을 행으로 표시하며 선택한 팀원 상세는 목록 아래에 둔다.
+- 기록 카드를 중첩하지 않는다. Pi 보드를 붙인 요청은 중복 `작업 과정` details를 숨기고 결과·검토 결정은 유지한다.
+  별도 경고나 설명이 전달되면 `추가 안내`에서 그대로 읽을 수 있다.
+  입력은 기본 두 줄 높이에서 내용에 따라 늘어난다. 큰 창은 대화 가독성을 위해 카드 테두리를 줄인다.
+- `작은 패널로 돌아가기`, 배경 클릭, Escape는 창만 닫는다. 작업 취소가 아니다. 원래 컨트롤로 초점을 돌린다.
+- `modalStack`에 등록하여 위에 열린 설정 모달과 Escape 소유권을 공유한다. 창 내 Tab 순환을 제공한다.
+- `27-assistant-wide.css`가 별도 레이아웃을 소유한다. 760px 이하는 한 창 안에서 위아래로 배치한다.
+  열기 자체는 작업 표시 수준을 변경하지 않는다. 표시는 양쪽의 동일한 개인 설정을 따른다.
+- 패널 dispose 시 큰 창을 먼저 복원한 후 팀 패널과 기존 구독을 정리한다.
+
+브라우저 근거: `scripts/qa/ai-activity-levels.mjs`, `output/evidence/ai-activity-levels/06-wide.png`,
+`07-wide-compact.png`(1440px/1024px, 같은 DOM·초안·검색 유지 및 Escape 초점 복귀).
+
+## 작업 표시 네 단계와 별도 실행 기록 (2026-09-21)
+
+- 조수 레일 아래 `작업 표시`는 `생략 / 간단히 보기(기본) / 자세히 보기 / 매우 자세히 보기` 네 버튼이다.
+  드롭다운으로 숨기지 않는다. 현재 선택은 `aria-pressed`와 강조 테두리로 표시하고 팀원 상세에도 같은 버튼을 쓴다.
+  `aiActivityPreference.ts`의 개인 키 `oprn:ai-activity-level`만 바꾼다. 실행 권한·모델·답변 예산은 바꾸지 않는다.
+  신규·설정 없는 기존 사용자 모두 brief로 시작한다. 실행 중 전환은 같은 기록을 다시 그리며 재실행하지 않는다.
+- `aiActivityView.ts`는 기본으로 최근 주요 단계 최대 네 줄과 현재 대기 상태를 표시한다. 반복 성공 도구는 묶고
+  조회도 남긴다. detail은 개별 작업·담당·결과·시간, trace는 호출 ID·입력·구조화 결과·오류·모델/연결·단계 적용을
+  보여 준다. 담당자/도구/오류 필터·내용 검색·최신 이동·JSON 내려받기를 제공한다. 50행씩 불러오고 payload는
+  펼칠 때만 DOM으로 만든다. 새 이벤트는 변경 없는 행·열린 상세를 보존하며 강제 스크롤하지 않는다.
+  brief는 짧은 타임라인, trace는 시간·담당·작업·상태·소요 열을 맞춘 목록이다. 좁은 패널은 시간·작업·상태만
+  먼저 표시한다. 실행 ID와 정확한 시각은 행 상세로 옮긴다. 입력/구조화 결과는 해당 행을 펼쳐 읽는다.
+- 단독/팀 Pi는 `TeamBoardState.trace`, 후속 레인은 `LaneState.trace`, 영역/기존 세션은 `AiWorkCard.recordActivity`를
+  같은 렌더러로 보낸다. 팀원 상세와 작업 탭은 해당 actor만 투영한다. 기존 200행 보드 요약은 원본 기록이 아니다.
+  패널에 별도 검토 안내가 있으면 보드의 적용/버리기 버튼을 중복 노출하지 않는다. 질문·오류·중지·검토 안내·변경 보기·
+  되돌리기는 표시 수준 바깥이다. 과거 `작업 과정 기본 접힘` 설명은 이 정책으로 대체한다.
+- `src/ai/activityTrace.ts`는 표시와 무관하게 실행별 최대 2,000행/약 2백만 문자(먼저 닿는 상한)를 보존한다.
+  도구 시작/끝은 actor + call ID로 연결한다. 워커 어댑터도 이름별 FIFO 대신 호출 ID를 쓴다.
+  `tool_end.result/durationMs`와 이벤트 시각은 선택적 전송 필드다. 구 워커의 요약만 있는 결과는 그 한계를 명시한다.
+  모델 비공개 thinking 본문·프로젝트 사본은 보존하지 않는다. 인증 필드와 토큰을 가리고, payload의 크기/깊이/배열
+  제한은 생략 표시로 알린다. heartbeat/stream은 actor별 최신 신호와 누적 횟수로 합친다.
+- `activityTraceArchive.ts`는 별도 IndexedDB `oprn-ai-execution-records`에 기기 내 기록만 보관한다.
+  최근 7일/20개 실행/약 10MB 상한이며, 프로젝트 identity로 조회를 격리한다. 페이지 새로고침 뒤 원격 프로젝트의
+  같은 identity로 다시 열 수 있다. 일회성 dev/local session은 다른 identity로 시작하면 이전 실행이 섞이지 않는다.
+  기록 쓰기 실패는 편집을 중단하지 않는다. 수집 전 과거 데이터는 복원하지 않는다. 기존 opt-in 진단 수집과 무관하다.
+  실행별 serial을 비교하여 오래된 화면의 재렌더가 최종 상태를 덮어쓰지 못하게 한다.
+- 초안 종료·실제 적용·저장은 구별한다. `aiActivitySave.ts`는 적용 직후 세대의 자동저장 상태만 관찰하고 저장을 유발하지
+  않는다. 후속 수정·프로젝트 교체·오류·응답 미확인은 성공으로 표시하지 않는다. 저장 로그 실패가 작업을 막지 않는다.
+- 화면 근거: `scripts/qa/ai-activity-levels.mjs` → `output/evidence/ai-activity-levels/`.
+  실제 편집기에 결정적 Pi 스트림을 재생하여 220개 조회 이후 입력 복원, 실패/재시도 결과, 네 수준과 팀원 동기화,
+  1024px 검토 버튼, 내보내기·IndexedDB 재로드를 확인한다. 라이브 모델 품질이나 원격 콘텐츠 저장을 검증한 것이 아니다.
+  단위 계약: `test/aiActivityTrace.test.ts`, `test/aiActivityView.test.ts` (이번 세션에서 Vitest 실행하지 않음).
+
+
+## 첫 페인트 스타일 소유권 (2026-09-19)
+
+에디터 부트 때 `aiSidebarWorkspace`가 왼쪽 AI 표면과 오른쪽 팀 사이드바를 먼저
+마운트한다. 따라서 이 표면의 스타일은 데이터베이스 모달을 열 때 지연 로드하면 안 된다.
+`src/styles/database/editor-startup-ai.css`가 기존 기능별 시트
+(`assistant-*`, `tabs-b-assistant-panel/01–12`, `18–25` 및 각 `part-*`)를 원래 순서대로
+`database` 레이어에 정적으로 가져온다. `src/styles/database/index.css`에는 이 묶음을
+다시 가져오지 않는다. DB 레코드·모달 전용 시트는 계속 지연 로드한다.
+
+첫 화면을 바꿀 때는 이 정적 매니페스트의 기하와 시각 규칙을 함께 확인하고,
+데이터베이스 모달을 먼저 열지 않은 새로고침에서도
+`.ai-chat-panel`, `.ai-composer`, `[data-testid="ai-team-sidebar"]`의 버튼·입력 컨트롤이
+기본 브라우저 모양으로 보이지 않는지 캡처한다.
 
 ## 채팅 입력창 작업 설정 묶음 (2026-09-18)
 
@@ -145,6 +274,74 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
 - 위치 보기는 맵의 해당 위치로 이동한다. AI와 이어가기는 정확한 맵/이벤트를 담은 요청 초안을 입력창에 넣는다. 자동 전송하거나 수정하지 않는다.
 - 넘긴 제안은 패널 수명 동안 프로젝트·맵·후보별로 기억하고, 관련 근거가 달라질 때만 다시 제안한다. 타일만 바꾸면 상점/이동 제안을 재호출하지 않는다. 기록을 영구 저장하는 기능은 아니다.
 - 검증: `test/projectSuggestions.test.ts`, `scripts/qa/ai-project-suggestions.mjs`. 브라우저 검증은 기존 로컬 showcase에 테스트용 이동 이벤트만 메모리로 추가하고 원격 쓰기를 차단한다. `LIVE=1`은 실제 모델의 읽기 전용 응답을 사용한다. 증거는 `output/evidence/ai-project-suggestions/`와 `output/evidence/ai-project-suggestions-live/`.
+
+## 사이드바 AI 추천이 거의 작동하지 않던 세 원인 (2026-09-20)
+
+왼쪽 사이드바 AI 패널의 추천이 사실상 죽어 있었다. 원인은 셋이고 서로 독립이다.
+
+1. **후보 탐지기가 사실상 0건이었다.** `projectSuggestions.ts` 는 빈 상점 판매목록·없는 이동
+   목적지·적 만나기 켜졌는데 빈 적 그룹 **셋만** 봤다. 실측: LegacyDb 실제 프로젝트 30개
+   (111맵·114이벤트 포함) 전부에서 후보 **0건**. 그래서 패널은 언제나 「지금 확인한 범위에서는
+   새로 제안할 내용이 없어요」로 끝났고 **AI 호출조차 일어나지 않았다**(브라우저 실측 agent
+   호출 0회). 셋은 모두 「이미 만든 것의 연결이 빠졌다」만 잡으므로 처음 만드는 중인 맵은
+   어느 것에도 걸리지 않는다. 이제 저작 여정 규칙을 함께 본다: 나가는/들어오는 이동 없음,
+   이벤트 0개, 이벤트는 있는데 동작이 전부 빔, 이 맵으로 들어오는 문이 통행 불가 칸에 착지,
+   DB 물건·적 그룹이 프로젝트 어디에서도 안 쓰임. 실측 결과 후보가 있는 프로젝트 **25/27**,
+   맵 인스턴스 **184/285**, 비용 **16ms**(전체 27개 프로젝트).
+2. **저작 예제 6개가 죽어 있었다.** 2026-09-06 커밋이 컴포저 추천 팝오버를 채우던
+   `refreshComposerChips`·`refreshNextSteps`·`syncSuggestPopover` 를 삭제했고, 팝오버는
+   **빈 껍데기로 남았다**(DOM 에 빈 div 2개, 열리지도 않음). `aiPanelChrome` 의
+   「preset promotions 를 마운트하지 않는다」 계약은 그대로 두되, 살아 있는 진입점
+   `test/e2e/editor-ai-authoring-entry.spec.ts` 와 어긋난 상태다 — 둘 중 하나는 반드시 틀리다.
+3. **「추천 함께 보기」 설정이 무의미했다.** 대기 화면 3분기(추천 함께/조수만/입력창만)는
+   저장·표시만 되고 **읽는 코드가 하나도 없었다**. 이제 `ink-only`·`map-first` 가 추천
+   패널을 끈다(`data-temperature` CSS 훅).
+
+추가로 고친 것: **쿨다운이 카드까지 막던 문제.** 예전에는 최소 재호출 간격(60초)이 걸리면
+카드가 0장인 채 「바뀐 내용을 잠시 후 다시 살펴볼게요」만 떴다. 탐지기가 후보를 거의 못 내던
+시절에는 차이가 없었지만 규칙이 늘어난 지금은 다르다 — 맵을 옮기거나 문을 고치면 **바로
+보여줄 카드가 있는데도** 최대 60초 화면이 비어 「고쳤는데 아무 일도 안 일어난다」로 읽혔다.
+이제 쿨다운은 **모델 호출만** 늦추고 로컬 탐지 결과는 즉시 깔린다(`renderKey` 를 `key` 와
+분리 — 합치면 모델 호출이 영영 안 일어난다). 좌표가 없는 제안(맵 전체)에는 「위치 보기」가
+없다 — (0,0) 으로 카메라를 옮기면 「가리켰다」는 거짓말이 된다.
+
+계약: `test/projectSuggestions.test.ts` 19건(탐지 규칙 + 수명주기 + 쿨다운 + 위치 버튼),
+`scripts/qa/ai-project-suggestions.mjs` 9검사 통과. 증거: 후보 검출률은 LegacyDb
+`rpg_zzu.projects` 30행 실측, 브라우저는 `?devProject=1&marketTown=1`.
+
+## 진단 카드를 캔버스 오른쪽 아래 느낌표 버튼으로 옮긴다 (2026-09-21)
+
+감독 지시: 「AI 추천이 여기 있으면 좀 어색한거같은데 … 차라리 오른쪽 아래에다가 뭔가
+느낌표 버튼으로 만들고 거기에 뜨게 할까」.
+
+**무엇이 어색했나.** 진단 카드가 왼쪽 AI 패널의 **빈 대화 첫 화면**을 차지하고 있었다. 그
+자리는 「대화를 시작하는」 곳인데 대화와 무관한 진단 목록이 첫인상을 정했고, 대화를 시작하면
+사라져서 「어디 있더라」가 됐다. 게다가 2026-09-20 에 「추천 함께 보기」 설정을 그 첫 화면에
+묶어 두었으므로, 위치가 바뀌면 그 축도 함께 옮겨야 했다.
+
+**지금 구조.** 표면은 하나다 — 캔버스 오른쪽 아래 `ai-suggestion-peek` 버튼 → 팝오버
+(`aiSuggestionPeek.ts`). 카드는 그 팝오버 안(`ai-project-suggestions`)에만 산다. 왼쪽 패널
+빈 화면 규칙(`.ai-chat-sidebar-welcome` 전용 5줄)은 그 자리를 쓰는 표면이 하나도 없어져 걷었다.
+
+**위치가 캔버스 영역 안인 이유.** 오른쪽 아래는 팀 레일(84px, 「팀 작업 없음 / 팀 설정」)이 이미
+쓰고 있다. `position: absolute` 로 `canvas-area` 안에 두면 레일이 시작하는 곳에서 자동으로
+끝나 겹침 계산이 필요 없다(실측 1440×1000: 레일 왼쪽 1357px, 버튼 오른쪽 1340px).
+
+**닫혀 있으면 살펴보지 않는다.** snapshot 의 `active` 가 `peek.isOpen()` 을 포함한다 —
+보이지 않는 표면을 위해 1.5초마다 프로젝트를 훑고 모델까지 부르는 것은 낭비다. 버튼을 누르면
+`suggestions.refresh()` 가 즉시 한 번 돈다(실측: 닫힘 상태 agent 호출 0회, 연 직후 1회).
+
+**배지.** 카드 수를 `onCountChange` 로 알려 버튼이 「살펴볼 것 N개」를 말한다. 「넘기기」로
+줄어드는 것도 즉시 반영되고, 마지막 카드를 넘기면 배지가 사라진다. 살펴볼 것이 있을 때만
+버튼이 강조된다(늘 켜져 있으면 「비었다」와 구분되지 않는다).
+
+**설정과의 관계.** 「추천 함께 보기」(`quiet-gold`)만 버튼을 보이고 「조수만 보기」·「입력창만
+보기」는 버튼째 숨긴다(`refreshTemperatureChrome`). `.ai-suggestion-peek[hidden] { display: none }`
+한 줄이 반드시 필요하다 — `display:flex` 가 `hidden` 을 이겨 실측에서 rootHidden=true 인데도
+화면에 남아 있었다.
+
+계약: `test/projectSuggestions.test.ts` 19건, `scripts/qa/ai-project-suggestions.mjs` 12검사
+(팀 레일 비겹침·배지·위치 보기가 팝오버를 닫는지·마지막 카드에서 배지 소거 포함).
 
 ## 팀 설정 목록과 편집 화면 (2026-09-18)
 
@@ -302,12 +499,14 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   본다(컨텍스트 footer·도구 지시 제외), 실패·지연은 폴백 `mode:"other"` 이라 작성 요청이 읽기 전용으로
   새지 않는다(6초 타임아웃, 캐시 TTL 90초). 승격 시 시스템 줄로 사용자에게 알린다. 명시 `/pi` 는 이
   분류를 거치지 않는다 — `runPiTurn` 진입 전에 `plainPiTurn` 에서만 부른다.
-- **쓰기 발화는 의도가 연 도메인만 초기 노출로 탄다 (2026-09-13):** 승격되지 않은 쓰기·생성 턴은
-  `intentToolDomains(선언, getTool)` 결과에 `"core"` 를 더해 `request.toolDomains` 로 보낸다 —
-  초기 스키마가 전량(219)이 아니라 core+의도 도메인+범용(find_tools·focus_editor_view)이다.
-  빠진 툴은 런타임의 에스컬레이션(find_tools 수확→선언 승격, `resolveFallbackTool` 미노출 구제)이
-  실행 중 얹으므로 오판은 절벽이 아니라 검색 한 번으로 끝난다. 선언이 빈 손(도메인 0)이면 좁힐
-  근거가 없어 전량 노출로 떨어지고, 읽기 전용 턴은 좁히지 않는다(조회는 넓어야 답한다).
+- **초기 노출은 의도 기반 툴 이름 목록이다 (2026-09-19):** `plainPiTurn`이 공유 후보 조립기의
+  core/조회/선언/adventure/자연어 후보를 `initialToolNames`로 보내고, `runPiCommand`가
+  동반 서비스 요청에 보존한다. 큐·프로젝트 시작·브리지 입력도 같은 경로다. 워커는 검색 결과를
+  다음 라운드에 추가하고 빈 검색이면 허용된 전체 카탈로그로 복귀한다. 읽기 전용과 역할별
+  `toolNames`는 이 확장으로 넘을 수 없다. 이전의 도메인 단위 노출은 팀 역할·명시 호출에
+  남아 있다. 실패한 의도 선언은 전체 후보로 시작한다. 상세·검증 근거는 `editor-ai-tools.md`
+  「Hybrid native tool exposure」를 따른다. `AssistantSession`만 수정하고 일반 채팅을
+  검증했다고 보고하지 마라 — 기본 채팅은 그 세션을 실행하지 않는다.
 - 변경-0 종료의 보드 phase 는 **「완료」**(`markTeamBoardDone`)다 — 「적용됨」은 `applyProposedProject` 가
   실제 커밋한 실행에만 쓴다(2026-09-12 실측: 질문 턴이 「적용됨」 배지 + 실패 톤 캡션으로 끝났다).
   답이 남은 턴은 본문 말풍선을 시스템 줄(「프로젝트는 바뀌지 않았습니다」) **앞에** 붙인다. 보드 행의
@@ -696,7 +895,7 @@ of original uncompressed text or a new model-memory system.
   atomically writes a project-qualified tombstone alongside deletion. The legacy
   global clear tombstones all currently known records, including migrated rows.
   Late local saves, legacy re-imports and explicit remote imports cannot resurrect
-  them. Deletion is browser-local, not cross-device Supabase deletion.
+  them. Deletion is browser-local, not cross-device LegacyDb deletion.
 - Archive summaries carry `mapIds`, `viewedMapIds`, `targetMapIds`,
   `mapAttribution` (`complete | partial | unknown`) and `transcriptCompacted`.
   Associations are collected before compaction from structured user context and
@@ -1965,16 +2164,16 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - **유리 도크는 접힌 입력줄로 시작해 아래로 펼친다 (2026-08-30):** **(2026-08-31 에 상위 갱신됨 — 맨 위 「조수는 입력줄 캡슐 하나다」 항목을 먼저 읽어라. 아래는 도크 축이 있던 시절의 기록이며, glass/side 를 가리키는 문장은 지금 코드에 대응하는 표면이 없다.)** 감독 지시 — "기본적으로는 접혀져있다가, 클릭하거나 내용이 나와야 하는 경우만 아래로 자연스럽게 나오는 방식". 패턴 이름: progressive disclosure(원칙) / disclosure 패널(컴포넌트) / 남는 한 줄이 trigger, 아래로 흐르는 본문이 flyout / 입력줄이 위인 형태는 command-palette 형(Spotlight·Raycast). **`is-collapsed`(48px 칩)와 다른 축의 새 상태 `is-glass-folded` 이고 glass 에서만 쓴다** — fold 는 `.ai-chat-body` 만 접고 컴포저와 완료 스트립(`.ai-rising-sticky-zone`, [되돌리기])은 남긴다. side·float 은 손대지 않으며 `ai-collapse` / `oprn:ai-panel-collapsed` / `ai-collapsed-restore` 계약이 그대로다. 대신 **glass 에서는 `ai-collapse` 셰브론이 fold 토글로 의미가 바뀌고**(testid·`aria-expanded` 배선은 유지, 라벨만 `조수 대화 접기/펼치기`), 저장된 `oprn:ai-panel-collapsed === "1"` 도 칩 접힘이 아니라 fold 로 라우팅된다(멱등, 새 키 없음). **fold 자체는 저장하지 않는다** — 유휴 자동 접힘이 있으면 "펼침"은 안정된 사용자 선택이 아니라 낡은 키가 될 뿐이다. 기하: 앵커 `inset: 12px auto auto 12px`(`02-chat-dock.css`)를 **움직이지 않는다** — 좌하단으로 내려가는 `is-collapsed` 와 달리 같은 자리에서 아래로 열리는 것이 이 상태의 핵심이다. 순서 뒤집기는 DOM 이 아니라 glass 전용 `order`(컴포저 -1 / 스티키 0 / 본문 1)로 하고, 여닫기는 `max-height: 100vh ↔ 0` 이다 — `grid-template-rows: 0fr→1fr` 은 본문의 `flex: 1 1 auto`(`02-chat-dock.css`) 와 싸워 펼칠 때 카드가 즉시 최대 높이로 튀고, `height: auto` 도 같은 이유로 못 쓴다. `max-height` 는 flex used size 를 덮으므로 스크롤러(`.ai-chat-log`)를 한 줄도 건드리지 않는다. 인라인 크기는 `applySize` 가 **높이만** 비우고 **폭은 유지**한다(안 그러면 CSS `clamp(360px,38vw,520px)` 로 돌아가 펼칠 때 폭이 튄다). CSS 는 `17-assistant-modern-shell.css` 끝의 fold 섹션 — 새 파일을 만들지 않는 이유는 `check-css-budget.mjs` 가 `cssFileCount` 를 262 로 래칫하기 때문이고, 이 파일이 조수 셸 기하의 마지막 레이어라 캐스케이드 위치가 같다. **접힘 높이 규칙은 `:not()` 짝을 반드시 달아야 한다**: `13-assistant-modern.css:15` 가 `height: min(620px, calc(100% - 24px))` 를 (0,7,0)/(0,6,0) 으로 선언하므로, 짧게 `.chat-dock-glass.is-glass-folded`(0,3,0) 로 쓰면 본문이 `max-height: 0` 으로 접혀도 카드는 620px 로 남는다(실측: 접힘 rect 520×620, 컴포저 156px). 같은 `:not(.is-history-open):not(.is-studio):not(.is-collapsed):not(.is-map-first-idle)` 를 달아 (0,8,0)/(0,7,0) 으로 올린 뒤 접힘 rect 가 **520×174**(컴포저 156 + 카드 인셋)로 줄었다 — 근거 `.omo/evidence/assistant-glass-fold/measure.json`. 같은 실측에서 펼친 뒤 `.ai-chat-log` 는 `clientHeight 392 / scrollHeight 681`, `scrollTop 0→200` 으로 살아 있어 `max-height` 여닫기가 안쪽 스크롤러를 죽이지 않음을 확인했다(1280×720 에서도 352/681). 상단 중앙 도구막대는 `elementFromPoint` 로 `tool-select` 가 패널에 덮이지 않음을 두 해상도에서 확인했다. **자동 재접힘은 2026-08-27 에 걷어낸 동작의 부분 복원이다**(아래 항목 참조): 턴 종료 후 `GLASS_FOLD_IDLE_MS`(8s, `aiPanelLayout.ts`) 유휴면 접는다. 그때 문제(답이 48px 얼굴 뒤로 사라짐)를 막는 안전핀 — 입력줄은 절대 숨지 않고, 무장(armed)은 **턴 종료에서만** 하므로 셰브론으로 직접 펼친 것은 마우스가 떠나도 닫히지 않으며, 실패한 턴(`is-turn-error`·`failed`)·진행 중 턴·답 대기 질문·비어 있지 않은 입력·패널 내부 포커스·포인터 hover·바닥에서 4px 이상 올라간 로그(위로 읽는 중)에서는 접지 않고, `keydown`·`input`·`focusin`·`wheel`·`scroll`·`pointerleave` 는 대기를 처음부터 다시 센다. 접힌 본문은 `inert` 로 Tab 순서에서 빠진다. Owner: `aiChatPanel.ts` 의 `applyGlassFold`/`scheduleGlassFold`/`canScheduleGlassFold`. Tests: `test/aiGlassFold.test.ts`(계약 전부), `test/aiPanelAutoExpand.test.ts`(glass 라우팅 + side 칩 축), `test/aiPanelChrome.test.ts`, `test/aiPanelGlassResize.test.ts`(접힘 시 폭 유지·높이 해제).
 
 - **조수 접기·도크별 크기 조절 (2026-08-28):** **(2026-08-31 에 상위 갱신됨 — 맨 위 「조수는 입력줄 캡슐 하나다」 항목을 먼저 읽어라. 아래는 도크 축이 있던 시절의 기록이며, glass/side 를 가리키는 문장은 지금 코드에 대응하는 표면이 없다.)** 헤더 밴드는 복원하지 않는다. 기존 `ai-collapse` 버튼은 `aiComposer.ts`의 고정 28px 액션 행 맨 왼쪽에 있으며 glass/side/float 모두 실제 클릭·Tab 접근이 된다. 기존 `loadPanelCollapsed`/`savePanelCollapsed`와 `ai-collapsed-restore` 상태기계를 그대로 써 `oprn:ai-panel-collapsed`를 왕복한다. side의 48px 접힘 rail은 유휴 상태에도 가로 `조수` label을 보여 빈 띠가 되지 않는다. `ai-resize-handle`은 DOM에 하나만 두고 도크 전환 때 옮긴다: glass는 카드 우하단에서 W+H, side는 패널 왼쪽 안쪽의 12px edge에서 셸 컬럼 W만, float은 `ai-command-bar` 왼쪽 edge에서 캡슐 W만 바꾼다. side preferred 폭은 `editor.ts`가 소유하며 user commit/load 때만 바뀐다; drag preview와 `resolveSideChatWidth`의 viewport/canvas clamp는 현재 적용 폭일 뿐 preferred를 덮어쓰지 않아 wide→narrow→wide에서 원래 폭이 복구된다. 저장 키는 기존 `oprn:ai-panel-size:glass|side|float`; float 높이는 textarea 행수 계약 때문에 조절하지 않는다. 포인터와 방향키(Shift 큰 step), separator aria 값을 함께 지원한다. Tests: `test/aiPanelChrome.test.ts`, `test/aiPanelGlassResize.test.ts`, `test/aiPanelResizeAndToolBrowser.test.ts`, E2E `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/_ai-composer.spec.ts`. QA: `scripts/qa/assistant-resize-collapse-qa.mjs`는 glass/side=`ai-panel`, float=`ai-command-bar` rect를 기록한다.
-- **채팅 세션의 경계는 프로젝트다 — 맵 이동은 경계가 아니다 (2026-08-28):** 저장/복원 범위는 `conversationScopeKey(identity, project)`(`src/ai/conversationStore.ts`)가 정한다. 원격 프로젝트는 durable row id인 `remote:<projectId>`를 쓰고, durable row가 없는 로컬 세션은 새로고침 뒤에도 재구성되는 `local:<trimmed title or (untitled)>::<startMapId>`를 쓴다. 반면 프로젝트 전환 리셋은 범위 키가 아니라 패널이 캡처한 `store.getProjectIdentity().id`를 비교한다 — 같은 모양의 새 로컬 프로젝트도 런타임 identity가 바뀌면 반드시 새 대화를 시작한다. 전환 시 진행 턴을 abort하고 대기 큐를 버리며, 늦게 정착한 턴은 시작 당시 캡처한 대화 id와 범위에만 저장된다. 로컬 `oprn:ai-conversations` 레코드가 정본이며 각 레코드가 자기 `projectContextKey`를 보존한다. Supabase `ai_conversations`는 best-effort 미러이고 저장 호출 시점에 현재 설정된 `config.projectId` 아래 파일링된다; 복원은 이 테이블을 읽지 않으므로 원격 행의 `project_id`가 로컬 범위 소유권을 뜻하지 않는다. `새 대화`는 모든 도크의 컴포저 고정 액션 행 `+`(`ai-new-chat`)에서 보이고, 기존 숨은 `ai-new-session`과 두 메뉴 항목(`ai-more-new-chat` / `ai-command-menu-new-chat`)도 호환 훅으로 유지한다. 리셋은 로그·제안·자율 런·상태 타임라인을 모두 비우고 `data-ai-conversation="empty"`로 되돌린다.
+- **채팅 세션의 경계는 프로젝트다 — 맵 이동은 경계가 아니다 (2026-08-28):** 저장/복원 범위는 `conversationScopeKey(identity, project)`(`src/ai/conversationStore.ts`)가 정한다. 원격 프로젝트는 durable row id인 `remote:<projectId>`를 쓰고, durable row가 없는 로컬 세션은 새로고침 뒤에도 재구성되는 `local:<trimmed title or (untitled)>::<startMapId>`를 쓴다. 반면 프로젝트 전환 리셋은 범위 키가 아니라 패널이 캡처한 `store.getProjectIdentity().id`를 비교한다 — 같은 모양의 새 로컬 프로젝트도 런타임 identity가 바뀌면 반드시 새 대화를 시작한다. 전환 시 진행 턴을 abort하고 대기 큐를 버리며, 늦게 정착한 턴은 시작 당시 캡처한 대화 id와 범위에만 저장된다. 로컬 `oprn:ai-conversations` 레코드가 정본이며 각 레코드가 자기 `projectContextKey`를 보존한다. LegacyDb `ai_conversations`는 best-effort 미러이고 저장 호출 시점에 현재 설정된 `config.projectId` 아래 파일링된다; 복원은 이 테이블을 읽지 않으므로 원격 행의 `project_id`가 로컬 범위 소유권을 뜻하지 않는다. `새 대화`는 모든 도크의 컴포저 고정 액션 행 `+`(`ai-new-chat`)에서 보이고, 기존 숨은 `ai-new-session`과 두 메뉴 항목(`ai-more-new-chat` / `ai-command-menu-new-chat`)도 호환 훅으로 유지한다. 리셋은 로그·제안·자율 런·상태 타임라인을 모두 비우고 `data-ai-conversation="empty"`로 되돌린다.
 
 - **AI 표면은 조수와 같은 엔드포인트에 한 지점을 통해 닿는다 (2026-08-30):** 전송(`llmClient.chatCompletion`)과 프롬프트(`systemPromptEnvelope`)는 이미 하나였는데 **그 앞단 두 가지가 표면마다 손으로 조립돼 있었다.** (1) 어떤 설정으로 부르는가 — 조수 채팅 `loadAiConfig()`, 클러스터·이벤트 커맨드 `configForLiteModel(loadAiConfig())`, 영역 작업은 거기에 `maxToolCalls` 캡, 타일셋 분석 `{...config, maxTokens: 8192}`, 구조 키트는 생 `loadAiConfig()` — 다섯 군데. (2) 연결 준비를 누가 판정하는가 — 채팅·클러스터·이벤트는 `isAiConfigReady`, 타일셋 분석은 **자기만의** `hasTilesetAiAccess`, 구조 키트는 **아무 판정도 없었다**.
   2번이 실제 결함이었다. `hasTilesetAiAccess` 는 `config.model` 을 보지 않아 모델이 빈 설정에서 조수는 "설정 필요" 로 막는데 타일셋 AI 버튼은 열려 있고 `model: ""` 로 요청이 나갔고, **프로덕션 reader 는 사라졌지만 마이그레이션이 보존하는 레거시 `oprn:llmApiKey` localStorage 키**를 폴백으로 읽어 그 키 하나가 나머지 전체와 어긋난 판정을 만들었다. 구조 키트는 미연결 클릭을 이제 실제 companion 인증 캐시로 막아, 401 `LlmError` 진단 대신 다른 표면과 같은 "AI 연결을 먼저 완료하세요" 안내를 보여 준다.
   이제 `src/ai/assistantEndpoint.ts` 가 **표면 어휘(`AiSurface`)·표면별 설정 정책(`SURFACE_POLICIES`)·준비 판정(`isAssistantEndpointReady`) 세 가지의 유일한 선언 지점**이다. `AiSurface` 는 여기서 소유하고 `systemPromptEnvelope` 가 재노출한다(엔드포인트 정책과 프롬프트 봉투가 같은 표면 목록을 봐야 한다 — 두 벌로 두면 표면을 늘릴 때 한쪽만 갱신된다). `resolveSurfaceAiConfig(surface, base?)` 는 `baseUrl`·`authMode`·`providerId` 를 **손대지 않는다** — 그래서 엔드포인트는 표면과 무관하게 항상 조수와 같다. 표면 정책은 모델 티어(`supervisor`/`lite`)와 두 항목만 얹는다: `maxTokens` 는 **정확 지정**이며, 실제 효과는 더 큰 예산을 지원하는 companion/Codex/Antigravity도 8192로 낮추는 것이다. 이는 통합에서 새로 고른 정책이 아니라 기존 타일셋 분석 동작의 상속이다. `maxToolCallsCeiling` 은 **상한**(사용자가 더 적게 골랐으면 그 값을 존중). `REGION_TASK_MAX_TOOL_CALLS` 는 `REGION_SURFACE_MAX_TOOL_CALLS` 의 재노출로 남았다(진행 표시 "도구 3/24" 를 그리는 `regionTaskModal` 이 그 이름을 쓴다).
   **준비 판정은 표면을 인자로 받지 않는다.** 처음에는 `isSurfaceEndpointReady(surface)` 로 표면별로 재게 만들었는데 새 단위 테스트가 곧바로 잡았다: `configForLiteModel` 이 모델이 하나도 없을 때 `DEFAULT_LITE_MODEL` 을 채우므로, 해석된 설정으로 판정하면 **배치 표면(lite 티어)은 영원히 '준비됨'** 이 된다. 브라우저의 `loadAiConfig()` 자체도 OAuth와 기본 모델을 항상 백필하므로 config 모양만 보는 무인자 판정은 언제나 true였다. 그래서 기본 config 인자를 없애고, 브라우저 호출부(클러스터·구조 키트·타일셋)는 해석 전 저장 config와 `getAiConnectionStatus(config)`의 live cache를 함께 넘긴다. 하단 상태 칩이 제거되어 더는 캐시를 데우지 않으므로 `renderEditor`가 부팅 때 한 번 `refreshAiConnectionStatus()`를 시작한다. 설정 모달 안의 `aiAuthSettings.applyStatus`는 로그인 완료(직접·폴링·붙여넣기), 재확인, 로그아웃이 모두 지나는 단일 성공 경계다. 이 경계가 공유 캐시를 reset한 뒤 즉시 re-warm하며, reset 세대보다 오래된 부팅 조회 응답은 폐기한다 — 따라서 같은 기본 제공자에서 로그인하거나 로그아웃해도 페이지 새로고침 없이 모든 게이트가 바뀐다. 퇴역한 하단 상태바의 `renderAiConnectionStatus`와 그 안의 중복 `onSaved` 배선은 삭제했고 상태바는 다시 마운트하지 않는다. `ready`와 조회 중인 `checking`은 허용해 느린 첫 조회가 사용자를 잠그지 않고, 확인된 `disconnected`·`offline`·`error`는 요청 전에 막는다. 주입 설정(노드 스크립트·벤치마크·이벤트 커맨드)은 status 없이 기존 shape 판정을 그대로 쓴다. `isAiConfigReady`(`aiChatPanelHelpers`)는 이름을 쓰는 호출부가 많아 껍데기로 남아 위임한다.
   이 통합에 들어오지 않는 것: 내부 플래너(`workPlan.ORCHESTRATOR`)·요약기(`contextCompaction`)·성향 증류기(`preferenceDistiller`). 셋은 사람이 여는 표면이 아니라 조수 턴 **안에서** 도는 내부 단계다(`systemPromptEnvelope` 가 봉투를 씌우지 않는 것과 같은 경계). `src/benchmark/llmClient.ts` 도 밖이다 — 노드 벤치 하네스이고 자체 비용 회계를 든다. **남은 비대칭**: AI 활동 로그(`recordAiActivity`)는 여전히 `chat`·`region` 두 표면만 기록하므로 `npm run ai:log` 는 클러스터·구조 키트·타일셋·이벤트 커맨드 턴을 보지 못한다. 엔드포인트 축이 아니라 관측 축이라 이 변경에 넣지 않았다. Tests: `test/assistantEndpoint.test.ts`(엔드포인트 필드 불변·티어·상한/정확지정·준비 판정 경계), `test/tilesetAiClient.test.ts`, `test/aiChatPanelSettings.test.ts`.
-- **사람 성향 기억은 기기 로컬이고, 프롬프트는 공용 봉투 한 지점에서 조립된다 (2026-08-30):** 두 층이다. (1) **성향 기억** — `src/ai/preferenceMemory.ts` 가 `oprn:ai-preference-memory` 에 성향을 저장한다. 스코프는 2층: `global`(사람 습관, 프로젝트를 바꿔도 유지, 상한 16) + `project`(`conversationScopeKey` 를 키로 쓰는 그 게임만의 사실, 상한 8). 신호는 `src/ai/preferenceSignals.ts` 가 LLM 없이 결정론으로 집계한다 — 되돌리기 −3(변경 카드 `onUndo` → `noteAiChangeUndone`; 채팅 제안은 자동 적용이라 **되돌리기가 유일한 강한 부정 신호**다), 정정 발화 −2(직전 변경 턴 뒤 60초 안 부정 어휘), 무사 통과 +1, 명시 선언은 즉시 증류. 문장으로 바꾸는 것은 `src/ai/preferenceDistiller.ts` 의 lite 모델 1회 호출(`response_format: json_object`)이며 **어떤 실패도 throw 하지 않는다** — 카운터는 이미 저장돼 있어 손실이 없고, 연속 3회 실패하면 `pending` 앞 절반을 버려 큐가 막히지 않는다. 프롬프트 블록에는 `PREFERENCE_PRECEDENCE_LINE`("이번 지시와 충돌하면 지시가 우선")이 **필수**다 — 없으면 기억된 취향이 명시 지시를 이긴다. 블록은 `contextBuilder` 의 `withFixedBlocks` 안, 즉 **문자 예산 밖**에 놓인다(능력 색인과 같은 이유 — 13,200자 슬라이싱이 먹으면 "기억하지 못한다"가 그대로 재발한다). 자체 하드캡 12줄·1,200자. (2) **공용 봉투** — `src/ai/systemPromptEnvelope.ts` 의 `composeSystemPrompt({surface, body, includePolicy, includeMemory, projectScopeKey})` 가 `[성향] → [정책] → [본문]` 순으로 조립한다(잘려도 되는 본문 꼬리가 뒤). 이벤트 커맨드 어시스트·구조 키트 편집창·타일셋 분석이 이제 이 봉투를 통과하며, 예전에는 이 세 표면이 `AGENT_UX_POLICY_LINES` 를 한 줄도 못 받았다. `ORCHESTRATOR_SYSTEM_PROMPT`·`SUMMARIZATION_SYSTEM_PROMPT` 는 **의도적으로 감싸지 않는다**(사람과 대화하지 않는 내부 플래너·요약기 — 성향을 넣으면 계획·요약이 취향으로 오염된다). UI 는 **채팅 컴포저 액션 행의 `⌾` 버튼**이 여는 팝오버 "AI 가 기억한 내 성향"(`src/editor/panels/aiPreferenceMemorySettings.ts`): 전역/프로젝트 두 그룹, 항목별 고정·삭제, 직접 추가(전역·강함·고정), 전체 비우기. **AI 설정 모달이 아니라 채팅 패널이다(2026-08-30 감독 지시)** — 성향은 대화에서 배우고 "기억했습니다" 알림도 채팅 버블로 뜨니, 확인·삭제가 모달에 있으면 배운 자리와 고치는 자리가 갈라진다. 설정 모달에 다시 붙이지 말 것. `aiComposer.ts` 의 기존 팝오버 기계에 세 번째 종류(`ComposerPopover = "suggest" | "menu" | "preference"`)로 넣어 배타적 열림·바깥 클릭·Escape 를 그대로 쓰고, 흐름 밖 absolute 라 "바 높이 = f(textarea 줄 수)" 불변식도 안 깨진다. 내용은 `preferenceContent` 로 **주입**한다 — 컴포저가 성향 저장소를 직접 import 하면 컴포저 단위 테스트의 모듈 그래프에 localStorage 층이 들어온다. 스코프는 **함수로** 넘긴다(`projectScopeKey: () => conversationScope`): 그 값은 새 대화·프로젝트 전환에서 재대입되는 let 이라 값으로 굳히면 프로젝트를 바꾼 뒤에도 이전 프로젝트 성향이 목록에 남는다. 설정 모달(`renderAiSettingsForm`)에는 `projectScopeKey` 옵션이 없다 — 성향이 유일한 사용처였을 것이므로 배선을 만들지 않았다. **원격 동기화는 v1 범위 밖이다** — `test/supabaseRlsCoverage.node.test.mjs` 가 신규 마이그레이션의 anon GRANT 를 금지하고 클라이언트는 anon 키만 쓰므로 새 테이블을 브라우저에서 읽고 쓸 수 없다. Phase 8 인증(`DRAFT_20260706_auth_rls.sql`)이 붙은 뒤 별도로 다루고, 그때까지 성향은 기기에만 남는다(기기를 바꾸면 처음부터 다시 배운다). 조회 키는 **호출부가 넘긴다** — 성향 목록이 `store` 를 직접 읽으면 프로젝트 층 전체가 모듈 그래프에 붙어 목록만 렌더하는 단위 테스트가 로딩만으로 15초를 넘겼다. Tests: `test/preferenceMemory.test.ts`, `test/preferenceSignals.test.ts`, `test/preferenceDistiller.test.ts`, `test/systemPromptEnvelope.test.ts`, `test/aiPreferenceMemorySettings.test.ts`, `test/aiPreferenceComposerButton.test.ts`(⌾ 진입점·팝오버 배타성·설정 모달에 없음), `test/contextBuilder.test.ts`(예산 밖 고정), `test/agentUxPolicyPrompt.test.ts`(봉투 통과).
+- **사람 성향 기억은 기기 로컬이고, 프롬프트는 공용 봉투 한 지점에서 조립된다 (2026-08-30):** 두 층이다. (1) **성향 기억** — `src/ai/preferenceMemory.ts` 가 `oprn:ai-preference-memory` 에 성향을 저장한다. 스코프는 2층: `global`(사람 습관, 프로젝트를 바꿔도 유지, 상한 16) + `project`(`conversationScopeKey` 를 키로 쓰는 그 게임만의 사실, 상한 8). 신호는 `src/ai/preferenceSignals.ts` 가 LLM 없이 결정론으로 집계한다 — 되돌리기 −3(변경 카드 `onUndo` → `noteAiChangeUndone`; 채팅 제안은 자동 적용이라 **되돌리기가 유일한 강한 부정 신호**다), 정정 발화 −2(직전 변경 턴 뒤 60초 안 부정 어휘), 무사 통과 +1, 명시 선언은 즉시 증류. 문장으로 바꾸는 것은 `src/ai/preferenceDistiller.ts` 의 lite 모델 1회 호출(`response_format: json_object`)이며 **어떤 실패도 throw 하지 않는다** — 카운터는 이미 저장돼 있어 손실이 없고, 연속 3회 실패하면 `pending` 앞 절반을 버려 큐가 막히지 않는다. 프롬프트 블록에는 `PREFERENCE_PRECEDENCE_LINE`("이번 지시와 충돌하면 지시가 우선")이 **필수**다 — 없으면 기억된 취향이 명시 지시를 이긴다. 블록은 `contextBuilder` 의 `withFixedBlocks` 안, 즉 **문자 예산 밖**에 놓인다(능력 색인과 같은 이유 — 13,200자 슬라이싱이 먹으면 "기억하지 못한다"가 그대로 재발한다). 자체 하드캡 12줄·1,200자. (2) **공용 봉투** — `src/ai/systemPromptEnvelope.ts` 의 `composeSystemPrompt({surface, body, includePolicy, includeMemory, projectScopeKey})` 가 `[성향] → [정책] → [본문]` 순으로 조립한다(잘려도 되는 본문 꼬리가 뒤). 이벤트 커맨드 어시스트·구조 키트 편집창·타일셋 분석이 이제 이 봉투를 통과하며, 예전에는 이 세 표면이 `AGENT_UX_POLICY_LINES` 를 한 줄도 못 받았다. `ORCHESTRATOR_SYSTEM_PROMPT`·`SUMMARIZATION_SYSTEM_PROMPT` 는 **의도적으로 감싸지 않는다**(사람과 대화하지 않는 내부 플래너·요약기 — 성향을 넣으면 계획·요약이 취향으로 오염된다). UI 는 **채팅 컴포저 액션 행의 `⌾` 버튼**이 여는 팝오버 "AI 가 기억한 내 성향"(`src/editor/panels/aiPreferenceMemorySettings.ts`): 전역/프로젝트 두 그룹, 항목별 고정·삭제, 직접 추가(전역·강함·고정), 전체 비우기. **AI 설정 모달이 아니라 채팅 패널이다(2026-08-30 감독 지시)** — 성향은 대화에서 배우고 "기억했습니다" 알림도 채팅 버블로 뜨니, 확인·삭제가 모달에 있으면 배운 자리와 고치는 자리가 갈라진다. 설정 모달에 다시 붙이지 말 것. `aiComposer.ts` 의 기존 팝오버 기계에 세 번째 종류(`ComposerPopover = "suggest" | "menu" | "preference"`)로 넣어 배타적 열림·바깥 클릭·Escape 를 그대로 쓰고, 흐름 밖 absolute 라 "바 높이 = f(textarea 줄 수)" 불변식도 안 깨진다. 내용은 `preferenceContent` 로 **주입**한다 — 컴포저가 성향 저장소를 직접 import 하면 컴포저 단위 테스트의 모듈 그래프에 localStorage 층이 들어온다. 스코프는 **함수로** 넘긴다(`projectScopeKey: () => conversationScope`): 그 값은 새 대화·프로젝트 전환에서 재대입되는 let 이라 값으로 굳히면 프로젝트를 바꾼 뒤에도 이전 프로젝트 성향이 목록에 남는다. 설정 모달(`renderAiSettingsForm`)에는 `projectScopeKey` 옵션이 없다 — 성향이 유일한 사용처였을 것이므로 배선을 만들지 않았다. **원격 동기화는 v1 범위 밖이다** — `test/legacyDbRlsCoverage.node.test.mjs` 가 신규 마이그레이션의 anon GRANT 를 금지하고 클라이언트는 anon 키만 쓰므로 새 테이블을 브라우저에서 읽고 쓸 수 없다. Phase 8 인증(`DRAFT_20260706_auth_rls.sql`)이 붙은 뒤 별도로 다루고, 그때까지 성향은 기기에만 남는다(기기를 바꾸면 처음부터 다시 배운다). 조회 키는 **호출부가 넘긴다** — 성향 목록이 `store` 를 직접 읽으면 프로젝트 층 전체가 모듈 그래프에 붙어 목록만 렌더하는 단위 테스트가 로딩만으로 15초를 넘겼다. Tests: `test/preferenceMemory.test.ts`, `test/preferenceSignals.test.ts`, `test/preferenceDistiller.test.ts`, `test/systemPromptEnvelope.test.ts`, `test/aiPreferenceMemorySettings.test.ts`, `test/aiPreferenceComposerButton.test.ts`(⌾ 진입점·팝오버 배타성·설정 모달에 없음), `test/contextBuilder.test.ts`(예산 밖 고정), `test/agentUxPolicyPrompt.test.ts`(봉투 통과).
 
-- **맵 이동은 대화를 끊지 않고 턴에 상황을 남긴다 (2026-08-28):** 맵을 옮길 때마다 세션을 버리면 진행 중인 계획·제안·자율 런이 날아간다. 대신 두 가지를 한다. (1) 사용자 턴마다 `buildConversationTurnContext`(`src/ai/conversationTurnContext.ts`)가 맵 id·이름·크기·뷰포트·선택 영역을 구조화해 `AuditEntry{kind:"user"}.context` 에 박고, 그대로 대화 기록(localStorage + Supabase `ai_conversations.entries_json`)에 저장된다 — 예전엔 이 사실이 사용자 메시지 꼬리표 문자열에만 있어 기록에서 되읽을 수 없었다. 뷰포트·선택은 **현재 맵의 것이고 맵 범위 안**일 때만 남는다. (2) 턴 사이에 맵이 바뀌면 `mapTransitionNote` 가 `맵 이동: A → B` 를 status 감사/이벤트로 남기고 **시스템 프롬프트를 새 맵으로 다시 조립한다** — `ContextOptions.getCurrentMapId` 가 생기기 전에는 `currentMapId` 가 세션 생성 시점 값으로 고정돼, 라이브 뷰포트 블록은 새 맵을 가리키는데 타일 어휘·구조 키트·맵 요약은 세션이 시작된 맵을 설명하고 있었다. Tests: `test/aiChatSessionScope.test.ts`, `test/conversationTurnContext.test.ts`.
+- **맵 이동은 대화를 끊지 않고 턴에 상황을 남긴다 (2026-08-28):** 맵을 옮길 때마다 세션을 버리면 진행 중인 계획·제안·자율 런이 날아간다. 대신 두 가지를 한다. (1) 사용자 턴마다 `buildConversationTurnContext`(`src/ai/conversationTurnContext.ts`)가 맵 id·이름·크기·뷰포트·선택 영역을 구조화해 `AuditEntry{kind:"user"}.context` 에 박고, 그대로 대화 기록(localStorage + LegacyDb `ai_conversations.entries_json`)에 저장된다 — 예전엔 이 사실이 사용자 메시지 꼬리표 문자열에만 있어 기록에서 되읽을 수 없었다. 뷰포트·선택은 **현재 맵의 것이고 맵 범위 안**일 때만 남는다. (2) 턴 사이에 맵이 바뀌면 `mapTransitionNote` 가 `맵 이동: A → B` 를 status 감사/이벤트로 남기고 **시스템 프롬프트를 새 맵으로 다시 조립한다** — `ContextOptions.getCurrentMapId` 가 생기기 전에는 `currentMapId` 가 세션 생성 시점 값으로 고정돼, 라이브 뷰포트 블록은 새 맵을 가리키는데 타일 어휘·구조 키트·맵 요약은 세션이 시작된 맵을 설명하고 있었다. Tests: `test/aiChatSessionScope.test.ts`, `test/conversationTurnContext.test.ts`.
 
 - **조수 셸 기하는 `17-assistant-modern-shell.css` 한 파일이 정한다 (2026-08-27):** 패널이 갑갑했던 원인은 색이 아니라 기하였다. `origin/main` 실측(`output/evidence/assistant-ui-modern/newmain-before-measure.json`): 헤더 65px 안에 48px 얼굴판이 들어가 여백이 8/12px, 컴포저 134px/8·12px, 빈 대화에서 `.ai-glass-log` 175px + `.ai-history-log-mount` 133px 가 빈 채로 자리를 먹고 그 안의 `.ai-chat-log` 가 22px 회색 캡슐로 남았다(빈 블록 4개). 여백·리듬·표면은 이제 `--ai-shell-gutter/gap/radius/control` 토큰으로 한곳에서 잡는다 — 결과는 헤더 73px/12·16px, 컴포저 156px/12·16px, 빈 블록 1개(`newmain-after-measure.json`). 이 레이어가 13~16 레이어의 상충 기하를 이기는 건 **나중 `@import` 때문이 아니다** — 13 레이어가 `.editor-layout .ai-chat-panel...` 로 한 단계 높은 구상도를 쓰므로 셸 규칙도 같은 구상도를 맞춰야 이긴다(import 순서 재배열 금지). 빈 로그 껍데기를 접는 훅은 `aiChatPanel.ts` 의 `syncConversationState` 가 다는 `.ai-chat-panel[data-ai-conversation="empty"|"active"]` 다. 판정은 **로그의 자식 유무**여야 한다 — 턴 행 `data-testid` 로 세면 복원된 대화(그 testid 를 달지 않는다)를 빈 것으로 보고 숨긴다. 그래서 `refreshNextSteps` 와 `restoreConversationRecord` 양쪽에서 부른다. `:empty` 로도 못 잡는다 — 껍데기 안에 빈 `.ai-chat-log` 엘리먼트가 실제로 들어 있다. 빈 화면 시작 블록의 예시 칩은 2개에서 4개로 늘려 494px 폭을 채운다. Tests: `test/aiPanelModernShell.test.ts`, `test/aiPanelChrome.test.ts`. QA: `node scripts/qa/assistant-ui-modern-qa.mjs --label <name>`(빈 상태 기하 + 360px 좁은 폭 + 복원된 16턴 대화), `node scripts/qa/assistant-adjacent-surfaces-qa.mjs`(캔버스·AI 설정 모달·데이터 화면 회귀).
 
@@ -2027,15 +2226,15 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 ## 세션 수명 · 대화 컨텍스트
 
-- **채팅 세션의 경계는 프로젝트다 — 맵 이동은 경계가 아니다 (2026-08-28):** 저장/복원 범위는 `conversationScopeKey(identity, project)`(`src/ai/conversationStore.ts`)가 정한다. 원격 프로젝트는 durable row id인 `remote:<projectId>`를 쓰고, durable row가 없는 로컬 세션은 새로고침 뒤에도 재구성되는 `local:<trimmed title or (untitled)>::<startMapId>`를 쓴다. 반면 프로젝트 전환 리셋은 범위 키가 아니라 패널이 캡처한 `store.getProjectIdentity().id`를 비교한다 — 같은 모양의 새 로컬 프로젝트도 런타임 identity가 바뀌면 반드시 새 대화를 시작한다. 전환 시 진행 턴을 abort하고 대기 큐를 버리며, 늦게 정착한 턴은 시작 당시 캡처한 대화 id와 범위에만 저장된다. 로컬 `oprn:ai-conversations` 레코드가 정본이며 각 레코드가 자기 `projectContextKey`를 보존한다. Supabase `ai_conversations`는 best-effort 미러이고 저장 호출 시점에 현재 설정된 `config.projectId` 아래 파일링된다; 복원은 이 테이블을 읽지 않으므로 원격 행의 `project_id`가 로컬 범위 소유권을 뜻하지 않는다. `새 대화`는 모든 도크의 컴포저 고정 액션 행 `+`(`ai-new-chat`)에서 보이고, 기존 숨은 `ai-new-session`과 두 메뉴 항목(`ai-more-new-chat` / `ai-command-menu-new-chat`)도 호환 훅으로 유지한다. 리셋은 로그·제안·자율 런·상태 타임라인을 모두 비우고 `data-ai-conversation="empty"`로 되돌린다.
+- **채팅 세션의 경계는 프로젝트다 — 맵 이동은 경계가 아니다 (2026-08-28):** 저장/복원 범위는 `conversationScopeKey(identity, project)`(`src/ai/conversationStore.ts`)가 정한다. 원격 프로젝트는 durable row id인 `remote:<projectId>`를 쓰고, durable row가 없는 로컬 세션은 새로고침 뒤에도 재구성되는 `local:<trimmed title or (untitled)>::<startMapId>`를 쓴다. 반면 프로젝트 전환 리셋은 범위 키가 아니라 패널이 캡처한 `store.getProjectIdentity().id`를 비교한다 — 같은 모양의 새 로컬 프로젝트도 런타임 identity가 바뀌면 반드시 새 대화를 시작한다. 전환 시 진행 턴을 abort하고 대기 큐를 버리며, 늦게 정착한 턴은 시작 당시 캡처한 대화 id와 범위에만 저장된다. 로컬 `oprn:ai-conversations` 레코드가 정본이며 각 레코드가 자기 `projectContextKey`를 보존한다. LegacyDb `ai_conversations`는 best-effort 미러이고 저장 호출 시점에 현재 설정된 `config.projectId` 아래 파일링된다; 복원은 이 테이블을 읽지 않으므로 원격 행의 `project_id`가 로컬 범위 소유권을 뜻하지 않는다. `새 대화`는 모든 도크의 컴포저 고정 액션 행 `+`(`ai-new-chat`)에서 보이고, 기존 숨은 `ai-new-session`과 두 메뉴 항목(`ai-more-new-chat` / `ai-command-menu-new-chat`)도 호환 훅으로 유지한다. 리셋은 로그·제안·자율 런·상태 타임라인을 모두 비우고 `data-ai-conversation="empty"`로 되돌린다.
 
-- **대화 기록 저장은 예산 안에서만 하고 절대 던지지 않는다 (2026-09-03):** 실측 결함 — 조수를 쓰다 「오류: Failed to execute 'setItem' on 'Storage': Setting the value of 'oprn:ai-conversations' exceeded the quota.」 가 말풍선으로 뜨고 그 턴이 끊겼다. `saveConversation` 은 대화 50건을 매 툴콜마다 통째로 다시 쓰는데, 툴콜 인자(맵 셀 배열·이벤트 본문)를 상한 없이 저장했고 같은 인자가 assistant 항목(`toolCalls[].args` 문자열)과 tool 항목(`args` 객체)에 두 번 들어가 오리진 한도(약 5MB)를 넘겼다. 예외는 `aiTurnRunner` 의 `tool_call` 분기와 `finally` 의 `persistConversation` 에서 터져 턴 catch 가 「오류:」 말풍선으로 그렸다. 지금 계약(`src/ai/conversationStore.ts`): (1) 툴 `args` 와 assistant `toolCalls[].args` 는 직렬화 `CONVERSATION_ARGS_MAX_CHARS`(2,000) 를 넘으면 `{ _truncated: true, preview }` 로 바꾼다 — 대화 기록의 소비자는 복원 화면의 툴 상세 `<pre>` 와 export 뿐이고 진단 원문은 활동 로그(12,000)가 든다. (2) 레코드 한 건의 entries 가 `CONVERSATION_RECORD_MAX_CHARS`(200,000) 를 넘으면 머리(첫 발화)와 꼬리(최근)를 남기고 가운데를 접어 `[conversation-trimmed] … N개 항목을 생략` status 표식 **하나**로 남긴다(다시 저장돼도 누적만 되고 표식이 쌓이지 않는다; 복원 렌더와 모델 주입은 status 를 무시한다). (3) 키 전체가 `CONVERSATION_STORE_MAX_CHARS`(1,000,000) 를 넘으면 최신부터 담고 오래된 대화를 밀어낸다 — 활동 로그·원격 outbox(150만) 와 같은 오리진을 나눠 쓰므로 그보다 작다. (4) 그래도 브라우저가 거절하면 절반씩 줄여 재시도하고, 최신 1건도 못 쓰면 `console.warn` 한 번(실패가 이어지는 동안)과 함께 `{ ok:false }` 를 돌려준다. 압축은 **읽어 온 레거시 레코드에도** 적용되므로 이미 부풀어 있던 브라우저도 다음 저장에서 한 번에 회복한다. 원격 미러(Supabase `ai_conversations`)는 로컬과 같은 압축본을 받는다 — 정본이 하나여야 하고 매 툴콜마다 수 MB 를 보내지 않는다. 패널(`aiChatPanel.persistConversation`)은 `ok:false` 일 때만 패널 수명당 한 번 「대화 기록을 이 브라우저에 저장할 수 없습니다(저장 공간 부족)」 토스트를 띄운다. Tests: `test/conversationStore.test.ts` 의 「저장 용량」 describe — 부풀린 레거시 위에서 저장 성공·인자 미리보기·머리/꼬리 접기와 표식 누적·저장소 예산 밀어내기·브라우저 한도 절반 재시도·전면 거절 시 ok:false·원격 압축본 동일.
+- **대화 기록 저장은 예산 안에서만 하고 절대 던지지 않는다 (2026-09-03):** 실측 결함 — 조수를 쓰다 「오류: Failed to execute 'setItem' on 'Storage': Setting the value of 'oprn:ai-conversations' exceeded the quota.」 가 말풍선으로 뜨고 그 턴이 끊겼다. `saveConversation` 은 대화 50건을 매 툴콜마다 통째로 다시 쓰는데, 툴콜 인자(맵 셀 배열·이벤트 본문)를 상한 없이 저장했고 같은 인자가 assistant 항목(`toolCalls[].args` 문자열)과 tool 항목(`args` 객체)에 두 번 들어가 오리진 한도(약 5MB)를 넘겼다. 예외는 `aiTurnRunner` 의 `tool_call` 분기와 `finally` 의 `persistConversation` 에서 터져 턴 catch 가 「오류:」 말풍선으로 그렸다. 지금 계약(`src/ai/conversationStore.ts`): (1) 툴 `args` 와 assistant `toolCalls[].args` 는 직렬화 `CONVERSATION_ARGS_MAX_CHARS`(2,000) 를 넘으면 `{ _truncated: true, preview }` 로 바꾼다 — 대화 기록의 소비자는 복원 화면의 툴 상세 `<pre>` 와 export 뿐이고 진단 원문은 활동 로그(12,000)가 든다. (2) 레코드 한 건의 entries 가 `CONVERSATION_RECORD_MAX_CHARS`(200,000) 를 넘으면 머리(첫 발화)와 꼬리(최근)를 남기고 가운데를 접어 `[conversation-trimmed] … N개 항목을 생략` status 표식 **하나**로 남긴다(다시 저장돼도 누적만 되고 표식이 쌓이지 않는다; 복원 렌더와 모델 주입은 status 를 무시한다). (3) 키 전체가 `CONVERSATION_STORE_MAX_CHARS`(1,000,000) 를 넘으면 최신부터 담고 오래된 대화를 밀어낸다 — 활동 로그·원격 outbox(150만) 와 같은 오리진을 나눠 쓰므로 그보다 작다. (4) 그래도 브라우저가 거절하면 절반씩 줄여 재시도하고, 최신 1건도 못 쓰면 `console.warn` 한 번(실패가 이어지는 동안)과 함께 `{ ok:false }` 를 돌려준다. 압축은 **읽어 온 레거시 레코드에도** 적용되므로 이미 부풀어 있던 브라우저도 다음 저장에서 한 번에 회복한다. 원격 미러(LegacyDb `ai_conversations`)는 로컬과 같은 압축본을 받는다 — 정본이 하나여야 하고 매 툴콜마다 수 MB 를 보내지 않는다. 패널(`aiChatPanel.persistConversation`)은 `ok:false` 일 때만 패널 수명당 한 번 「대화 기록을 이 브라우저에 저장할 수 없습니다(저장 공간 부족)」 토스트를 띄운다. Tests: `test/conversationStore.test.ts` 의 「저장 용량」 describe — 부풀린 레거시 위에서 저장 성공·인자 미리보기·머리/꼬리 접기와 표식 누적·저장소 예산 밀어내기·브라우저 한도 절반 재시도·전면 거절 시 ok:false·원격 압축본 동일.
 
 - **Public remote-history successor (integration st_01a08238 adjudication):** The earlier d2be automatic summary-GET/selected-GET and selectable foreign-local UI is historical, explicitly superseded by the map-scoped archive and separate Recover action above. Browse and ordinary Open use local retained records only; Recover can import absent IDs or update strictly older unchanged local records under the single pre-request value baseline and transactional admission rule. Foreign records remain stored, not listed or adopted; legacy unscoped records remain separately read-only. Ordinary reads do not concatenate or rewrite the selected transcript. Existing outgoing-conversation checkpoints, main retention/tombstones and captured-destination outbox behavior remain. The normal restore callback still drops `AssistantSession` and restores only public audit/transcript, never private ledgers. `test/aiConversationRemoteHistory.test.ts` explicitly migrates the former GET sequence to clock -> Recover -> project filter -> Open while retaining exact entries, race/error/ownership checks and null harness; `historyRecoveryAdmission` proves bounded replacement on native IndexedDB and memory. This source integration does not perform recovery against user records or retroactively restore P7.
 
-- **대화 기록의 로컬 정본은 IndexedDB 다 — localStorage 는 이관 전용 (2026-09-03, 같은 날 후속):** 위 항목의 예산은 응급 처치였다. 근본 원인인 «큰 기록을 5MB 동기 저장소 한 키에 매 툴콜마다 통째로 다시 쓴다» 는 저장소를 바꿔 없앴다. `src/ai/aiRecordDb.ts` 가 IndexedDB `oprn-ai-records`(v1, store `conversations`, keyPath `id`, 인덱스 `savedAt`·`projectContextKey`)를 열고 레코드 단위로 읽고 쓴다. `conversationStore` 의 공개 API(`saveConversation`·`listConversations`·`loadConversation`·`loadLatestConversationForScope`·`deleteConversation`·`clearConversations`)는 **전부 비동기**이며 던지지 않는다. 결과 `ConversationSaveOutcome` 은 `{ ok, durable, evicted }` — `durable:false` 는 IndexedDB 가 없거나(Node) 열기에 실패해(일부 프라이빗 모드) 메모리 폴백으로 살았다는 뜻이고, 패널은 브라우저에 IndexedDB 가 있는데 durable 이 아닐 때만 한 번 토스트한다. 옛 키 `oprn:ai-conversations`(`LEGACY_CONVERSATION_STORAGE_KEY`)는 첫 접근에 읽어 압축해 옮기고 지운다 — e2e 시드·QA 스크립트가 여전히 그 키로 대화를 심어도 그대로 복원되며, 같은 id 는 savedAt 이 큰 쪽이 남는다. 보관 상한은 50건(`CONVERSATION_MAX_RECORDS`), 인자 2,000자·레코드 200,000자 압축은 유지한다(원격 미러와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없다). **호출부 계약이 바뀐 곳:** (1) 부팅 복원은 `renderAiChatPanel` 끝의 `restoreLatestForBoot` 가 비동기로 하며, 그 사이 사용자가 입력·전송·프로젝트 전환을 했으면 복원하지 않는다. (2) 프로젝트 전환 채택(`adoptConversationForCurrentProject`)은 비동기이고 세대 번호로 낡은 조회 결과를 버린다. (3) 히스토리 모달의 목록·열기·삭제는 비동기다. 테스트·헤드리스 하네스는 «렌더 직후» 가 아니라 `whenAiChatPanelSettled()` / `whenAiConversationHistoryModalSettled()`(`src/util/pendingWork.ts` 추적기) 뒤를 본다 — setTimeout 폴링은 흔들린다. 단위 테스트는 `fake-indexeddb`(devDependency) 로 실제 IDB 의미론을 돌리고, 브라우저 증명은 `test/e2e/ai-conversation-indexeddb.spec.ts`(옛 키 이관·새로 고침 뒤 IndexedDB 복원·「오류:」 없음). 활동 로그(`oprn:ai-activity-logs`)와 세션 백업 스냅샷은 아직 localStorage 라 같은 계급의 위험이 남아 있다. Supabase `ai_conversations` 의 수동 기록 읽기 배선은 위 2026-09-08 계약을 따른다. Tests: `test/conversationStore.test.ts`, `test/aiConversationHistoryModal.test.ts`, `test/aiChatSessionScope.test.ts`.
+- **대화 기록의 로컬 정본은 IndexedDB 다 — localStorage 는 이관 전용 (2026-09-03, 같은 날 후속):** 위 항목의 예산은 응급 처치였다. 근본 원인인 «큰 기록을 5MB 동기 저장소 한 키에 매 툴콜마다 통째로 다시 쓴다» 는 저장소를 바꿔 없앴다. `src/ai/aiRecordDb.ts` 가 IndexedDB `oprn-ai-records`(v1, store `conversations`, keyPath `id`, 인덱스 `savedAt`·`projectContextKey`)를 열고 레코드 단위로 읽고 쓴다. `conversationStore` 의 공개 API(`saveConversation`·`listConversations`·`loadConversation`·`loadLatestConversationForScope`·`deleteConversation`·`clearConversations`)는 **전부 비동기**이며 던지지 않는다. 결과 `ConversationSaveOutcome` 은 `{ ok, durable, evicted }` — `durable:false` 는 IndexedDB 가 없거나(Node) 열기에 실패해(일부 프라이빗 모드) 메모리 폴백으로 살았다는 뜻이고, 패널은 브라우저에 IndexedDB 가 있는데 durable 이 아닐 때만 한 번 토스트한다. 옛 키 `oprn:ai-conversations`(`LEGACY_CONVERSATION_STORAGE_KEY`)는 첫 접근에 읽어 압축해 옮기고 지운다 — e2e 시드·QA 스크립트가 여전히 그 키로 대화를 심어도 그대로 복원되며, 같은 id 는 savedAt 이 큰 쪽이 남는다. 보관 상한은 50건(`CONVERSATION_MAX_RECORDS`), 인자 2,000자·레코드 200,000자 압축은 유지한다(원격 미러와 복원 렌더가 매 툴콜마다 수 MB 를 다룰 이유가 없다). **호출부 계약이 바뀐 곳:** (1) 부팅 복원은 `renderAiChatPanel` 끝의 `restoreLatestForBoot` 가 비동기로 하며, 그 사이 사용자가 입력·전송·프로젝트 전환을 했으면 복원하지 않는다. (2) 프로젝트 전환 채택(`adoptConversationForCurrentProject`)은 비동기이고 세대 번호로 낡은 조회 결과를 버린다. (3) 히스토리 모달의 목록·열기·삭제는 비동기다. 테스트·헤드리스 하네스는 «렌더 직후» 가 아니라 `whenAiChatPanelSettled()` / `whenAiConversationHistoryModalSettled()`(`src/util/pendingWork.ts` 추적기) 뒤를 본다 — setTimeout 폴링은 흔들린다. 단위 테스트는 `fake-indexeddb`(devDependency) 로 실제 IDB 의미론을 돌리고, 브라우저 증명은 `test/e2e/ai-conversation-indexeddb.spec.ts`(옛 키 이관·새로 고침 뒤 IndexedDB 복원·「오류:」 없음). 활동 로그(`oprn:ai-activity-logs`)와 세션 백업 스냅샷은 아직 localStorage 라 같은 계급의 위험이 남아 있다. LegacyDb `ai_conversations` 의 수동 기록 읽기 배선은 위 2026-09-08 계약을 따른다. Tests: `test/conversationStore.test.ts`, `test/aiConversationHistoryModal.test.ts`, `test/aiChatSessionScope.test.ts`.
 
-- **맵 이동은 대화를 끊지 않고 턴에 상황을 남긴다 (2026-08-28):** 맵을 옮길 때마다 세션을 버리면 진행 중인 계획·제안·자율 런이 날아간다. 대신 두 가지를 한다. (1) 사용자 턴마다 `buildConversationTurnContext`(`src/ai/conversationTurnContext.ts`)가 맵 id·이름·크기·뷰포트·선택 영역을 구조화해 `AuditEntry{kind:"user"}.context` 에 박고, 그대로 대화 기록(localStorage + Supabase `ai_conversations.entries_json`)에 저장된다 — 예전엔 이 사실이 사용자 메시지 꼬리표 문자열에만 있어 기록에서 되읽을 수 없었다. 뷰포트·선택은 **현재 맵의 것이고 맵 범위 안**일 때만 남는다. (2) 턴 사이에 맵이 바뀌면 `mapTransitionNote` 가 `맵 이동: A → B` 를 status 감사/이벤트로 남기고 **시스템 프롬프트를 새 맵으로 다시 조립한다** — `ContextOptions.getCurrentMapId` 가 생기기 전에는 `currentMapId` 가 세션 생성 시점 값으로 고정돼, 라이브 뷰포트 블록은 새 맵을 가리키는데 타일 어휘·구조 키트·맵 요약은 세션이 시작된 맵을 설명하고 있었다. Tests: `test/aiChatSessionScope.test.ts`, `test/conversationTurnContext.test.ts`.
+- **맵 이동은 대화를 끊지 않고 턴에 상황을 남긴다 (2026-08-28):** 맵을 옮길 때마다 세션을 버리면 진행 중인 계획·제안·자율 런이 날아간다. 대신 두 가지를 한다. (1) 사용자 턴마다 `buildConversationTurnContext`(`src/ai/conversationTurnContext.ts`)가 맵 id·이름·크기·뷰포트·선택 영역을 구조화해 `AuditEntry{kind:"user"}.context` 에 박고, 그대로 대화 기록(localStorage + LegacyDb `ai_conversations.entries_json`)에 저장된다 — 예전엔 이 사실이 사용자 메시지 꼬리표 문자열에만 있어 기록에서 되읽을 수 없었다. 뷰포트·선택은 **현재 맵의 것이고 맵 범위 안**일 때만 남는다. (2) 턴 사이에 맵이 바뀌면 `mapTransitionNote` 가 `맵 이동: A → B` 를 status 감사/이벤트로 남기고 **시스템 프롬프트를 새 맵으로 다시 조립한다** — `ContextOptions.getCurrentMapId` 가 생기기 전에는 `currentMapId` 가 세션 생성 시점 값으로 고정돼, 라이브 뷰포트 블록은 새 맵을 가리키는데 타일 어휘·구조 키트·맵 요약은 세션이 시작된 맵을 설명하고 있었다. Tests: `test/aiChatSessionScope.test.ts`, `test/conversationTurnContext.test.ts`.
 
 - **AI 컨텍스트 압축 (2026-08-27):** 대화가 길어져 모델 컨텍스트 윈도우 상한에 도달하면 `src/ai/contextCompaction.ts`가 앞부분 대화를 LLM 요약 1회로 치환하여 세션 대화 배열(`this.messages`)을 영구 압축한다. 요청 전송 직전 사본을 52,000자로 줄이는 `messageBudget.ts` 클램프 및 12,000자 시스템 프롬프트 예산 `contextBuilder.ts`와 분리된 독립 계층이다. 상세 계약: `openwiki/ai-context-compaction.md`. Tests: `test/contextCompaction.test.ts`, `test/assistantSessionCompaction.test.ts`.
 
@@ -2103,7 +2302,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - House-harness interiors and door events are shared through `src/editor/houseInteriors.ts`. `build_house_kit` and `build_village` default to `interior:true`: they keep the existing exterior grammar, put the door's **appearance on the Object1 charset door event** and therefore **do not paint the 116/146 door tiles** (painting both stacked a tile door under the sprite door — 2026-08-30 fix; the kit wall stays under the event so the wall has no hole), add that door event on the door cell (its page runs `playAudio { resourceId: HOUSE_DOOR_OPEN_SE, loop:false }` → CC0 「문 열기 01」 → three open frames → `transfer`), create one `easyrpg_chipset_interior` child map per house, and add a player-touch exit back to the exterior door-front cell. **Interior map body uses `villager-room-v1` only** (`runInteriorRoomPipeline` via `houseInteriors.ts`). Scales: **cottage-l** 20횞16 **true L floor** (NW kitchen/hearth + NE bedroom notch + south hall only ??SE void; default 1F dwelling/manor; housePlans may set ownerName+program explicitly), **cottage2** 20횞20, **cottage3** 20횞20 three rooms, **mansion** 24횞22 six rooms + corridor (`gold-brick`, 2F+ manor). Demo chief exterior uses housePlans templateId `l` (?깆옄).. Entry/exit landings are force-passable. Old 13횞10 single-room stub is removed. `build_house_kit` clears an impassable south door-front cell to the local majority passable ground tile and warns about the cleanup; if the door front is outside the map, it fails with a south-margin message. Pass `interior:false` to keep the legacy exterior-only result. **Room kits available:** house interiors = `villager-room-v1` only; dungeons = separate `dungeon-room-v1` (not used for village houses).
 - AI/tool changeset commits keep `CommitResult.issues` as the full lint list and expose `CommitResult.blocking` for newly introduced blocking errors. Tool-runner commit failures should show `blocking` first so pre-existing project errors do not mask the new rejection cause. `src/editor/tools/toolRunner.ts` treats post-run diff/commit exceptions as a failed tool result (`?꾩쿂由??ㅽ뙣`) rather than a turn-level crash.
 
-- AI/tool changesets accepted through `src/editor/tools/applyChangesetToStore.ts` or the AI chat panel record one Supabase commit row plus one project change row with editor identity. Manual edits are batched at successful autosave/flush time and deduped by the last recorded serialized project.
+- AI/tool changesets accepted through `src/editor/tools/applyChangesetToStore.ts` or the AI chat panel record one LegacyDb commit row plus one project change row with editor identity. Manual edits are batched at successful autosave/flush time and deduped by the last recorded serialized project.
 
 - AI write-tool proposal generation uses `src/editor/agentGhostPreview.ts` for both legacy tool-argument summaries and live draft-diff previews. `aiChatPanel` and `runRegionTask` throttle successful write `tool_call` events at 150ms, compare the current store/base project to `session.getProposedProject()`, and replace the ghost pub/sub state with changed map cells/events. The map renderer keeps sprites for cells that are already on screen and only creates objects for newly painted cells, so a live tile pass does not destroy and rebuild the preview layer on every throttle tick. `EditScene` renders only previews whose `mapId` matches the currently viewed map, so off-map draft work appears when the user later switches maps. Accept/reject/new-session/modal-close and error/abort paths must call `clearAgentGhostPreview()` before any accepted `agentFocus` highlight runs.
 
@@ -2471,25 +2670,25 @@ e2e `ai-ui-audit-fixes` F10.
 
 이 항목은 **관찰된 사고의 원인**이라는 뜻이지, 검증 미완료 초안을 적용해도 된다는 뜻이 아니다.
 미적용 초안의 검수는 `evaluateForReview`(초안 자체 평가)와 독립 검수 게이트가 그대로 판정한다.
-## 동반 서비스 자격: CLI 토큰 채택과 env 의 한계 (2026-09-16)
+## 동반 서비스 자격: OMP 로그인 재사용과 명시적 해제 (2026-09-19)
 
-편집기의 챗은 동반 서비스가 `~/.oprn/oh-my-pi-auth.json` 의 자격으로 나간다. 이 저장소가
-`~/.codex/auth.json`(Codex CLI 로그인)을 **한 번 옮기는** 경로가 `scripts/lib/aiAuthRuntime.ts` 의
-`adoptCodexCliCredentials` 인데, 조건이 좁다:
+편집기의 챗은 사용자가 `omp`에 이미 로그인한 경우 **다시 OAuth를 요구하지 않는다.** OMP의
+정본은 `~/.omp/agent/agent.db`(환경에 따라 `PI_CODING_AGENT_DIR`/프로필 경로)이고, Node
+companion은 `bun:sqlite`를 직접 로드하지 않으므로 `scripts/lib/omp-auth-probe.mjs`를 짧게
+호출해 기존 OAuth 행을 읽는다. 유효한 행은 `~/.oprn/oh-my-pi-auth.json`에 `source: "omp"`로
+캐시한 뒤 기존 Node 갱신·wire 포맷 경계를 그대로 사용한다. Bun을 찾을 수 없거나 OMP DB가
+없으면 기존 companion 로그인/`~/.codex/auth.json` 채택 경로로 폴백한다.
 
-- `store.has("openai-codex")` 가 참이면 채택하지 않는다 — 저장소에 이미 항목이 있으면(설령 refresh 가
-  죽었어도) CLI 의 새 토큰으로 갈아타지 않는다.
-- `declined` 로 사용자가 연결을 끊었으면 되살리지 않는다(해제가 눈속임이 되지 않게).
+- 기본 auth 경로(`OPRN_OH_MY_PI_AUTH_PATH` 미지정)에서만 OMP 재사용을 시도한다. 테스트·격리
+  경로는 `OPRN_OH_MY_PI_AUTH_PATH` 또는 `OPRN_DISABLE_OMP_AUTH_REUSE=1`로 전역 자격을 읽지 않는다.
+- 사용자가 에디터에서 연결 해제를 누르면 `declined`가 기록되어 OMP 자격을 자동으로 되살리지 않는다.
+- OMP에서 로그아웃해 가져온 행이 사라지면 `source: "omp"` 캐시도 제거한다. 이는 명시적인
+  에디터 연결 해제와 달리 다음 OMP 로그인에서 다시 채택될 수 있다.
+- 인증 상태·전송 모두 비밀을 브라우저에 보내지 않는다. 상태 조회는 공개 필드만 돌려준다.
 
-그리고 `OH_MY_PI_PROVIDERS` 의 `envVars`(예: `OPENAI_CODEX_OAUTH_TOKEN`)는
-`publicProviderStatus()` 의 `env` 플래그만 바꾼다 —  전송에 쓰이는 자격을 바꾸지 않는다.
-그래서 실측(2026-09-16): Codex 는 `401 refresh_token_reused`, Antigravity 는
-`400 Cloud Code Assist` 로 둘 다 죽어 있었고, env 로는 우회되지 않았다. 복구는 사용자의 재로그인
-(또는 저장소 항목을 지워 CLI 채택 경로를 타게 하는 것)이며, **에이전트가 임의로 자격 저장소를
-고쳐서는 안 된다** — 사용자 소유 비밀이고 `declined` 의미를 깨뜨릴 수 있다.
-
-이 상태에서 실제 모델 QA 는 돌지 않는다. `scripts/qa/db-ai-review-live.mjs` 는 그 사실을
-`process.exitCode = 1` 과 상태줄로 정직하게 보고한다(이번에 고침).
+회귀: `test/ohMyPiAuthReuse.node.test.mjs`는 임시 OMP `agent.db`를 만들어 재로그인 없이 상태가
+연결되고 Antigravity wire 자격이 만들어지는지 증명한다. 기존 `ohMyPiAuthStore`·OAuth 흐름
+테스트는 별도 companion 저장소 경계도 계속 검증한다.
 ## 에이전트 레인 — 묶음별 병렬 실행과 레인별 적용 (2026-09-15)
 
 설계: `docs/superpowers/specs/2026-09-15-studio-agent-lanes-design.md` · 목업·QA 캡처: `output/evidence/studio-agent-lanes/`
@@ -2657,3 +2856,106 @@ Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 �
 격리 blankProject와 대본 전송을 사용한다. 증거: `output/evidence/ai-apply-modes/`.
 
 맵 확장 회귀 재현: `node scripts/qa/ai-map-resize.mjs`는 로컬 전용 편집기에서 구형 설정 전환과 새 review 선택 보존을 확인하고, 실제 `resize_map` → `createPiPublication`으로 20×15 → 28×21 즉시 반영을 확인한다. 외부 LLM/원격 저장은 사용하지 않는다. Vite HMR 직후 직접 동적 import로 store를 읽는 QA는 timestamp가 붙은 앱 모듈과 별도 인스턴스를 만들 수 있으므로 서버를 새로 시작해서 실행한다.
+
+## Feature16 — 프롬프트 라이브러리·대사 검토·실제 요청 검사기 (2026-09-21)
+
+- 진입: AI 컴포저 「더보기」 → 「프롬프트 라이브러리」 / 「대사 목록·문체 검토」 /
+  「프롬프트 검사기」. 헤더의 공용 작업 메뉴에도 같은 세 항목이 있다.
+  `aiActionMenu` → `aiChatPanel.sharedMenuActions.openAuthoring` →
+  `panels/aiAuthoring/modal.ts`가 소유한다. 새 컨트롤은 `feature16-*` testid를 사용한다.
+- 라이브러리는 프로젝트 `aiAuthoring.templates`의 id/name/tags/body를 편집한다.
+  `{{변수 이름}}`은 중복 제거한 필수 슬롯이며 누락을 막고 값을 문자 그대로 치환한다.
+  이름·태그·본문 검색, 현재 컴포저로 생성, 저장/편집/2단계 삭제, 변수 미리보기 후
+  컴포저에 **덧붙이기**를 제공한다. 적용은 전송이 아니다. `store.update`와 프로젝트 undo,
+  기존 자동저장/내보내기 경로를 사용하며 UI의 반영 메시지는 원격 저장 성공 주장이 아니다.
+- `ai/authoring/dialogueInventory.ts`는 모든 맵 이벤트의 저장된 모든 페이지를 모은다.
+  페이지가 있으면 레거시 `event.commands` 사본은 제외한다. text, choices.prompt,
+  choices.options 및 `nestedCommandLists`가 아는 모든 중첩 분기를 읽는다.
+  공통 이벤트·임시 이벤트 초안은 범위 밖이며 화면에 명시한다. 화자/맵/텍스트 필터,
+  100개씩 더 보기, source id/map/event/page/command path를 보존한다.
+  원문 이동은 기존 `selectEditorMap`과 `openEventEditorModal({pageId})`로 실제 페이지를 연다.
+- 문체 규칙과 최대 글자 수는 `aiAuthoring.dialogueStyleRules/maxDialogueChars`로 저장한다.
+  구조 검사는 빈 문자열·공백·글자 수만 검사하고 **LLM 아님**으로 표시한다.
+  LLM 검토는 `assistantEndpoint`의 `dialogue-review` 표면 → 공용 `chatCompletion`이다.
+  저장한 규칙과 필터 범위의 원문만 보내며 쓰기 툴이 없다. 60,000자 초과는 사용자가
+  필터를 좁히도록 거부하고 몰래 잘라 보내지 않는다. 응답은 source id와 실제 원문의
+  비어 있지 않은 부분 인용이 모두 일치해야 한다. 인증/제공자/파싱/출력 잘림 오류는
+  성공 또는 0건 지적으로 바꾸지 않는다. 중단·닫기·프로젝트 교체는 요청을 취소하고,
+  검토 중 원문/규칙 변경은 결과를 폐기한다. 원문 변경 후 완료 지적도 지운다.
+- 검사기는 `llmClient.requestBody`의 실제 전송 직전 본문과 Pi worker
+  `onPayload`의 **provider 변환 이후 실제 payload**를 관측한다. Antigravity enum 보정
+  뒤 관측하며 관측 실패가 전송을 막지 않는다. `prompt_inspection` NDJSON 이벤트는 팀
+  중첩 이벤트도 처리하지만 일반 대화/감사 콜백에는 보내지 않는다. 가짜 시스템 프롬프트를
+  브라우저에서 재구성하지 않는다. 미갱신 구형 워커에서는 Pi 요청 관측을 받지 못한다.
+- 최종 관측 한 건만 메모리에 보관한다. 키/토큰/인증 필드/알려진 실제 자격 증명과
+  이미지 본문을 저장 전에 가린다. 각 JSON 절, 실제 도구 이름, 문자÷3 토큰 추정,
+  80,000자 표시 예산의 절별 생략량을 표시한다. 상위 맥락 압축량·이미지 토큰·제공자
+  내부 처리는 이 경계에서 알 수 없다고 명시한다. 관측은 **전송 시도**, 성공 증명이 아니다.
+  새 대화·프로젝트 전환·패널 폐기·새로고침·비우기는 삭제하며 epoch로 늦은 결과의 부활을 막는다.
+- 부모 세션 검증: `npm test -- test/feature16-ai.test.ts test/feature16-ai-review.test.ts test/feature16-ai-transport.test.ts`;
+  `npm run typecheck:app`;
+  `node scripts/capture-feature16-ai.mjs http://127.0.0.1:<부모-서버-포트>`.
+  캡처 스펙은 실제 편집기 `?blankProject=1`에서 보이는 메뉴/컨트롤을 클릭한다.
+  프로젝트 데이터와 LLM 응답만 테스트 내부 fixture이다. 캡처용 별도 Playwright 설정은
+  서버를 시작하지 않는다. `verify-shots/feature16-ai/01-library.png`부터 `04-source-page.png`까지 생성한다.
+  이 변경 작성 세션은 테스트/타입체크/서버/브라우저를 실행하지 않았다. 중앙 검증이 필요하다.
+## Pi 단일 마을 요청 계약 (2026-09-21)
+
+평문 단일 마을 생성은 `plainPiTurn → resolveVillageContract → runPiAgent →
+validateVillageContract → applyProposedProject`로 처리한다. 의도 선언의 대상·선택 영역·집/주민
+수를 실행 전에 고정하고 DB 설계서는 기존 `resolveVillageDesignInput`으로 해석한다.
+주민 0명과 명시적인 무언 주민(`construction.residentDialogue:false`)도 보존한다.
+의도 해석은 30초 제한이며 fallback 선언으로 쓰기 실행을 시작하지 않는다.
+
+- 계약이 있는 요청은 팀 설정과 관계없이 단일 실행이다. 별도 산문 계획과 Vision/Ultrabrain
+  미감 재검수/새 실행의 보수 루프를 생략한다. 복합 모험·보상·기능 검증 요청 및 명시 `/pi`
+  호출은 이 단일 마을 계약으로 바꾸지 않으며 기존 경로를 유지한다.
+- 쓰기는 `author_village` 한 번의 성공 시공, 그 뒤 `author_npc_cast` 대사 보충으로 제한한다.
+  초안은 중간 checkpoint로 게시하지 않고 고스트로 보여 준다. 완료 후 DEFAULT/AUTO/YOLO는
+  기존 수용 게이트로 한 번에 반영하고 REVIEW/STEP은 완성 묶음을 승인 대상으로 둔다.
+  미완료는 YOLO도 자동 반영하지 않는다.
+- `residentEventIds`와 `doorFronts`는 시공기가 실제 생성한 대상의 증거다. 집/주민 수,
+  실제 입구에서 이번 집 문앞까지 타일 통행, 시공 후 지형/기존 이벤트 불변, 주민별 대사를 검사한다.
+  선택 영역 밖의 예전 주민이나 건물을 미감 점수로 재시공하지 않는다.
+- 보충은 같은 Agent의 턴/시간 예산 안에서 최대 2회이며 동일 문제 목록이면 즉시 끝낸다.
+  미감 점수는 이 계약의 완료 조건이 아니다. 시공 실패/누락은 도구 성공 기록이 없어도 미완료다.
+- 빈 시작 맵의 전체 시공 뒤 예전 중앙 좌표가 고립되면 빌더가 검증한 시작점을 유지한다.
+  기존 콘텐츠/부분 범위의 시작점은 보존한다. 실측: 4채 green 형태에서 (10,8)을 복원하면
+  4채 모두 접근 불가였고, 검증된 시작점 (23,16)은 4/4 도달했다.
+
+검증: Bun 계약/실행 루프 6건, 기존 facade/intent-note Vitest 50건 통과.
+실제 에디터 + Gemini 호출은 `author_village` 1회/2턴/9.294초/도구 오류 0으로
+4채·주민 3명·내부 4개를 생성했다. LegacyDb 전용 행
+`village-contract-live-20260921-414a`에 QA 스크립트로 업서트 후 전체 문서 재조회 일치를 확인했다.
+웹 QA 세션 자동 저장 성공으로 해석하면 안 된다. 실행/캡처 절차와 제한은
+`reports/2026-09-21-village-contract-live.md`.
+## Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
+
+`DEFAULT`/`AUTO`/`YOLO`의 승인 정책과 시공 표시는 별개다. `aiPiAgentCommand`는 모든 모드에서
+툴 시작·끝과 밑그림 이벤트를 캔버스에 전달한다. 실시간 모드의 타일 공개는
+`aiPiPublication.beforeApply` → `aiPiGhostBridge.present`가 **직렬화된 checkpoint**를 사용한다.
+삭제/단계 승인을 받은 뒤 초안을 보여 주고, 기존 무결성·stale-base 검사와 저장 경로로 적용한다.
+적용 성공 후 기준선을 갱신하므로 뒤늦은 `map_delta`/`done`이 이미 적용한 타일을 다시 공개하지 않는다.
+표시 중 중단되면 적용 전 signal 검사로 쓰기를 취소한다. 표시가 없거나 탭이 숨겨졌거나
+동작 줄이기가 켜져 있으면 연출 대기를 생략한다. 미리보기는 저장 성공 증거가 아니다.
+
+- `scripts/lib/piAgentRuntime.ts`의 쓰기 실행에는 `set_build_spec` 도구가 있다. 기존 스키마와
+  `validateBuildSpec`/`normalizeBuildSpec`을 재사용하고, 성공한 계획을 `execution_status`의
+  `name=set_build_spec`, `data=BuildSpec`으로 전달한다. 이 도구는 표시 전용이며 프로젝트를
+  바꾸거나 기존 세션의 시공 허가 게이트를 Pi에 추가하지 않는다. 읽기 전용 실행에는 제공하지 않는다.
+- Pi 다리는 명시 계획을 청사진 렌더러에 연결한다. 계획 없는 단순 공간 쓰기도 위치가 명확하면
+  도구 인자의 작업 영역을 먼저 표시한다. 조회 도구는 작업 영역을 만들지 않는다.
+- `agentPreviewRenderers`는 256셀 초과라도 실제 타일을 그린다. 객체 생성은 카메라 주변으로
+  제한하며, 팬하면 새로 보이는 타일을 준비한다. 셀 수 때문에 테두리만 남기는 경로는 제거했다.
+- 하위층→상위층→이벤트 순으로 공개하고, 각 층은 좌→우로 진행한다. 공개 길이는 1.8초,
+  공개 후 유지 시간은 450ms다. 타일은 220ms 동안 4px(상위층 10px) 내려앉으며, 선두에는
+  무광 연필 커서와 옅은 먼지를 표시한다. 빛줄기·발광·불꽃·효과음은 없다. 객체 준비 시간은 공개 시간을
+  소모하지 않는다. 같은 좌표의 타일이 다시 바뀌어도 새로운 공개를 받는다.
+- 밑그림은 구역별 120ms 간격으로 750ms 동안 외곽선을 그린 뒤 눈금과 라벨을 유지한다.
+  완료하면 update 구독을 해제하며, 새 계획·숨김·씬 정리에서도 구독과 객체를 정리한다.
+  동작 줄이기에서는 즉시 표시한다. 적용 뒤 작은 `✓ 반영됨` 표식이 잠깐 올라갔다 사라진다.
+- 촬영: `BROWSER=firefox BASE=http://127.0.0.1:<port> node scripts/capture-ai-construction.mjs`.
+  실제 편집기·Pi 클라이언트·checkpoint 적용을 사용하되 워커 스트림은 재현용으로 대본화한다.
+  `MODE=review OUT=output/evidence/ai-construction-review`로 검토 후 버리기 경로를 확인한다.
+  중간 스크린샷은 Playwright 시계를 멈춰 동일한 공개 프레임을 촬영한다. 실 LLM 저작 품질,
+  원격 저장 또는 새 맵 자동 이동의 연출을 검증한 것으로 확대 해석하지 않는다.

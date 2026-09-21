@@ -21,6 +21,7 @@ export interface ActionEnemyDashState {
 }
 
 export interface ActionProjectile {
+  readonly fieldStatus?: import("@/project/types").ActionSkillProfile["fieldStatus"];
   readonly id: number;
   readonly faction: "enemy" | "player";
   /** 명중 판정에 쓰는 발사자 진영. 발사 시점에 스냅샷한다 — 비행 중 발사자가 죽거나 사라져도 귀속이 남는다. */

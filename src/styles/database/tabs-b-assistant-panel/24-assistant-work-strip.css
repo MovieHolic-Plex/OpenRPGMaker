@@ -144,6 +144,51 @@ body:has(.ai-chat-panel:not(.is-collapsed)) .ai-work-strip {
   background: var(--warning-muted);
 }
 
+/* ── 대화 안 인라인 작업 카드 — 공간 낭비 개선(2026-09-21) ──
+   안내 문구 박스가 아니라 한 줄 pill 머리 + 펼침(드롭다운) 구조. 진행 표시는
+   「작업 중」 글자 대신 회전 아이콘이 맡는다. */
+.ai-work-inline { padding: 0; border: 0; }
+.ai-work-inline > .ai-work-inline-head {
+  align-items: center;
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  font: 500 12px/1.5 var(--font-ui);
+  gap: 7px;
+  max-width: 100%;
+  padding: 4px 12px 4px 9px;
+  text-align: left;
+  width: fit-content;
+}
+.ai-work-inline > .ai-work-inline-head:hover { border-color: var(--border-default); color: var(--text-1); }
+.ai-work-inline > .ai-work-inline-head:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ai-work-inline > .ai-work-inline-head > strong {
+  font-weight: 600;
+  max-width: 30ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-work-inline-spinner { align-items: center; color: var(--gold-deep); display: inline-flex; flex: none; }
+.ai-work-inline-spinner .ai-deck-icon { animation: ai-work-card-spin 1.6s linear infinite; }
+.ai-work-inline[data-state="done"] .ai-work-inline-spinner,
+.ai-work-inline[data-state="failed"] .ai-work-inline-spinner { color: var(--success); animation: none; }
+@keyframes ai-work-card-spin { to { transform: rotate(360deg); } }
+.ai-work-inline > .ai-work-inline-head[aria-expanded="true"] { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.ai-work-inline > .ai-work-inline-head[aria-expanded="true"] .ai-work-inline-status { display: none; }
+.ai-work-inline > .ai-work-inline-head[aria-expanded="true"] + .ai-activity-view,
+.ai-work-inline > .ai-work-inline-head[aria-expanded="true"] ~ .ai-work-inline-actions,
+.ai-work-inline > .ai-work-inline-head[aria-expanded="true"] ~ details { display: block; }
+.ai-work-inline.has-activity > .ai-work-inline-head[aria-expanded="false"] ~ .ai-activity-view,
+.ai-work-inline.has-activity > .ai-work-inline-head[aria-expanded="false"] ~ .ai-work-inline-actions,
+.ai-work-inline.has-activity > .ai-work-inline-head[aria-expanded="false"] ~ details { display: none; }
+.ai-work-inline:not(.has-activity) > .ai-work-inline-head[aria-expanded="false"] ~ .ai-activity-view { display: none; }
+.ai-work-inline[data-state="done"] > .ai-work-inline-head[aria-expanded="false"] ~ .ai-work-inline-actions { display: flex; margin-top: 8px; }
+
 .ai-work-card.is-undone {
   opacity: 0.6;
 }

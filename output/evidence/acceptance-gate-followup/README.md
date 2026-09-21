@@ -132,7 +132,7 @@ See `trace-recovery.json` and `lead-trace-integrity.json`.
 
 ## Real model, remote save and current player
 
-The earlier actual Gemini/Codex authoring and independent Supabase reload are
+The earlier actual Gemini/Codex authoring and independent LegacyDb reload are
 preserved in Git at `5bdc4630` / `e01811cfb`. Incoming main removed those tracked
 run artifacts; this follow-up does not reintroduce the large output tree.
 Only the three hash-checked handoff inputs were restored locally under ignored

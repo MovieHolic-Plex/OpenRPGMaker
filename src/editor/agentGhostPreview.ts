@@ -26,31 +26,25 @@ export interface GhostRevealScheduleOptions {
 }
 
 /** 좌→우 와이프 총 길이 — 셀 수와 무관하게 고정이다. */
-export const GHOST_WIPE_DURATION_MS = 420;
+export const GHOST_WIPE_DURATION_MS = 1800;
 /** 마지막 열이 드러난 뒤 완료로 넘어가기까지의 유지 시간. */
-export const GHOST_WIPE_HOLD_MS = 150;
+export const GHOST_WIPE_HOLD_MS = 450;
 
-/**
- * 좌에서 우로 한 번 지나가는 단일 와이프 스케줄.
- *
- * 이전 구현은 셀 하나하나를 row-major 로 스탬프하며 최대 2.5초 동안 팝·링·스파크를 뿌렸다.
- * 변경 규모가 클수록 오래 걸리고, "무슨 연출인지"가 "무엇이 바뀌었는지"를 가렸다. 이제는
- * 열(x) 단위로 선단이 한 번 지나간다: 같은 열은 같은 시각에, 시각은 열 인덱스가 아니라
- * **x 위치에 비례**하므로 선단이 공간을 등속으로 지나가고, 총 길이는 항상 durationMs 다.
- */
+/** Ground, upper tiles, then events. Each layer sweeps left to right within a fixed total duration. */
 export function buildGhostRevealSchedule(
   cells: readonly AgentGhostCell[],
   opts?: GhostRevealScheduleOptions
 ): readonly GhostRevealStep[] {
   if (cells.length === 0) return [];
   const duration = opts?.durationMs ?? GHOST_WIPE_DURATION_MS;
-  const sorted = [...cells].sort((a, b) => a.x - b.x || a.y - b.y || layerOrder(a.layer) - layerOrder(b.layer));
-  const minX = sorted[0].x;
-  const maxX = sorted[sorted.length - 1].x;
+  const sorted = [...cells].sort((a, b) => layerOrder(a.layer) - layerOrder(b.layer) || a.x - b.x || a.y - b.y);
+  let minX = Infinity, maxX = -Infinity;
+  for (const cell of cells) { minX = Math.min(minX, cell.x); maxX = Math.max(maxX, cell.x); }
+  const layers = [...new Set(sorted.map(cell => cell.layer))];
   const span = maxX - minX;
   return sorted.map((cell) => ({
     cell,
-    startMs: span > 0 ? ((cell.x - minX) / span) * duration : 0,
+    startMs: (layers.indexOf(cell.layer) + (span > 0 ? (cell.x - minX) / span : 0)) * duration / layers.length,
     kind: cell.layer === "event" ? ("event" as const) : ("tile" as const),
   }));
 }
@@ -409,7 +403,9 @@ function emit(): void {
 function mapDiffPreview(mapId: MapId, baseMap: GameMap | undefined, draftMap: GameMap | undefined): AgentGhostPreview | null {
   if (!baseMap && !draftMap) return null;
   if (!baseMap && draftMap) {
-    return finalizeArea(boundsArea(mapId, fullMapBounds(draftMap), "live_project_diff", "새 맵 초안", false) as MutableArea, "live_project_diff", {
+    const area = boundsArea(mapId, fullMapBounds(draftMap), "live_project_diff", "새 맵 초안", false) as MutableArea;
+    collectTileDiffCells(area, { ...draftMap, lowerTiles: Array(draftMap.width * draftMap.height).fill(-1), upperTiles: Array(draftMap.width * draftMap.height).fill(-1), lowerTileStacks: undefined, upperTileStacks: undefined }, draftMap);
+    return finalizeArea(area, "live_project_diff", {
       mapId,
       kind: "created",
     });

@@ -25,7 +25,7 @@ DEV_SERVER_PORT=9871 npx vite --configLoader runner --host 127.0.0.1 --strictPor
 
 1. `src/app/mode.ts bootApp` — 첫 방문(저장된 선택 없음 + `?project=` 없음)이면
    `store.loadNewRemoteProject(createBlankProject())` 로 **새 project id 를 발급**한다.
-   이번 캡처에서 실제 발급: `oprn-b03386cc84` (Supabase `rpg_zzu.projects` 에 존재 확인).
+   이번 캡처에서 실제 발급: `oprn-b03386cc84` (LegacyDb `rpg_zzu.projects` 에 존재 확인).
 2. `finishEditorBoot` → `shouldPresentEditorWelcome` 이 참이면 `presentEditorWelcome` =
    `01-first-screen.png` 의 브리핑. (부팅 후 URL 이 `?project=oprn-xxxxxxxxxx&map=map_blank_start` 로 바뀐다.)
    같은 부팅에서 `presentEditorWelcome` 완료 후 `renderTopbar()` → `enterMode("edit")` 순서라,
@@ -41,5 +41,5 @@ DEV_SERVER_PORT=9871 npx vite --configLoader runner --host 127.0.0.1 --strictPor
 - `?forceWelcome=1` 로 진입하면 `map` URL 동기화가 `?project=` 를 붙여,
   그 뒤 부팅은 딥링크로 판정된다. 그래서 첫 화면 뒤에 로그인 벽이 겹치지 않는다.
 - 개발 서버 콘솔에 `409 (Conflict)` 1건 + `ERR_CONNECTION_REFUSED` 3건이 남는다
-  (`page-errors.txt`). 로컬 Supabase 프록시/동기화 잡음으로 보이며 화면에는 영향이 없다.
+  (`page-errors.txt`). 로컬 LegacyDb 프록시/동기화 잡음으로 보이며 화면에는 영향이 없다.
 - `welcome-copy.json` — 브리핑의 실제 문구/버튼 라벨 29개. `new-project-menu.json` — 「새 프로젝트」 메뉴 항목.

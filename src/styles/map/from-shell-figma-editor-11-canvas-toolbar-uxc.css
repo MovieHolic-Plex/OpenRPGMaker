@@ -13,9 +13,23 @@
   transform: none;
 }
 
-/* shell/figma-editor/11-canvas-toolbar-uxc.css:10-12 */
-.persistence-mode-banner ~ .canvas-toolbar {
-  top: 36px;
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:10-12 — 2026-09-18 변경.
+   구 선택자(.persistence-mode-banner ~ .canvas-toolbar)는 배너가
+   .persistence-banner-host 안에 있어 성립하지 않는다 — 플로팅 툴바가 배너의
+   닫기 버튼을 가려 Playwright 클릭이 인터셉트됐다. :has 로 고치고 top 은
+   배너 실측 42px + 8px 간격. 도크 툴바(beginner, is-docked-chrome)는 제외 —
+   같은 레이어 문서 순서상 :has 규칙이 top:0 을 이겨 도크 바가 밀리는 회귀
+   확인(2026-09-18 beginner 실측 overlap:true). */
+.canvas-area:has(.persistence-mode-banner) .canvas-toolbar:not(.is-docked-chrome) {
+  top: 50px;
+}
+/* 도크 툴바(beginner)는 배너와 같은 행에 겹쳐 배너 텍스트를 가렸다.
+   배너 아래로 내린다. 42px 은 배너 실측 높이(2026-09-18, 1440x900).
+   셸(absolute + top:auto)은 static 위치라 자동으로 42+48=90px 로 밀린다.
+   body 접두는 도크 원 규칙(body.editor-ui-beginner .canvas-toolbar.
+   is-basic-chrome.is-docked-chrome, 클래스 4+요소 1)을 이기기 위한 특이도다. */
+body.editor-ui-beginner .canvas-area:has(.persistence-mode-banner) .canvas-toolbar.is-docked-chrome {
+  top: 42px;
 }
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:14-19 */
@@ -139,15 +153,16 @@
 
 /* shell/figma-editor/11-canvas-toolbar-uxc.css:137-139 */
 
-/* shell/figma-editor/11-canvas-toolbar-uxc.css:146-149 */
-.editor-canvas-scroll-shell {
-  bottom: var(--editor-canvas-chrome-bottom, 0px);
-  top: var(--editor-canvas-chrome-top, 48px);
-}
-
-/* shell/figma-editor/11-canvas-toolbar-uxc.css:151-155 */
-.persistence-mode-banner ~ .editor-canvas-scroll-shell,
-.canvas-area:has(.persistence-mode-banner) .editor-canvas-scroll-shell {
-  --editor-canvas-chrome-top: 74px;
-  top: var(--editor-canvas-chrome-top, 74px);
+/* shell/figma-editor/11-canvas-toolbar-uxc.css:146-155 — 2026-09-18 변경.
+   고정 top 예약(48px, 배너 있을 때 74px)은 배너 실측(42px)과 어긋나
+   canvas-area 상단에 빈 띠를 남겼다. dense(standard/expert, 플로팅 툴바)에서만
+   셸을 normal flow + flex:1 로 배너 뒤에 바로 붙인다(resource-system.part-1.css).
+   beginner(도크 툴바)는 absolute 예약을 유지한다. */
+body.editor-ui-standard .editor-canvas-scroll-shell,
+body.editor-ui-expert .editor-canvas-scroll-shell {
+  bottom: auto;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  top: auto;
 }

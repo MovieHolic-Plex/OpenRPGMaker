@@ -1,0 +1,25 @@
+{
+  "checks": {
+    "regionCount": 46,
+    "filteredRegions": 4,
+    "recipeParts": 4,
+    "originalTile": "#57 · 잔디 · 중심",
+    "island": "9칸",
+    "house": "2행",
+    "tree": "마지막 1행 / 줄기 발판 · 통행 차단",
+    "bridgeCell": "하위 #1233\n상위 없음\n\n타일 플래그: 통행 허용",
+    "bridgeAtlas": "studyAtlas",
+    "bridgePieces": 2,
+    "wheel": "4 / 4",
+    "mobile": {
+      "width": 390,
+      "scrollWidth": 390,
+      "brokenImages": 0
+    },
+    "narrow": {
+      "width": 320,
+      "scrollWidth": 320
+    }
+  },
+  "errors": []
+}

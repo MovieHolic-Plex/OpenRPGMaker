@@ -130,6 +130,8 @@
    "move-route-wait-checkbox"
   ],
   "openChest": [
+   "open-chest-lock-item",
+   "open-chest-lock-switch>select#0",
    "open-chest-scope-select"
   ],
   "playAudio": [

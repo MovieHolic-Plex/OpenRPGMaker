@@ -121,8 +121,7 @@ it("npc cast review apply undo preserves existing manual/locked wiki plus the ne
   expect(session.getResultReview()).toEqual(result.review);
   expect(session.getResultReview()?.status).toBe("approved");
   expect(session.isDraftReviewApproved()).toBe(false);
-  // Undo restores the pre-apply project exactly (applied draft first, then the
-  // coordinator's own post-apply wiki receipt, which owns a separate boundary).
+  // Undo restores the pre-apply project; work logs add no extra wiki snapshot.
   const entries = history.getMapEditHistoryEntries().length;
   expect(entries).toBeGreaterThanOrEqual(1);
   let undone = 0;

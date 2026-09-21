@@ -157,7 +157,7 @@ export function itemEffectStory(project: Project, authoredRecord: ItemRecord): I
     occasion: itemOccasionLabel(record),
     consumption: record.consumable
       ? record.consumptionLimit === "noLimit"
-        ? "사용할 때 1개 소비"
+        ? "사용할 때 1개 소모"
         : `1개당 ${record.consumptionLimit}회 사용`
       : "소비하지 않음",
     effects: effects.length > 0 ? effects : ["직접 효과 없음"],
@@ -254,7 +254,7 @@ function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () =
         updateDatabaseRecord("items", record.id, { description })
       ),
       itemTypeField(record, rerender),
-      el("p", { class: "db-field-hint", text: "종류를 바꾸면 이전 효과는 보관되며 적용되지 않습니다. 착용할 물건은 목록 아래의 ‘+ 장비’로 만드세요." }),
+      el("p", { class: "db-field-hint", text: "종류를 바꾸면 이전 효과는 보관되며 적용되지 않습니다. 착용할 물건은 목록 아래의 ‘+ 추가’로 만든 뒤 종류를 장비로 바꾸세요." }),
       itemPriceField(record.id),
       ...(!isEquipmentItemType(record.type) ? [consumptionLimitField(record, refreshStory)] : []),
       ...(record.type === "normalGoods" || record.farmTool ? [farmToolField(record, refreshStory)] : []),
@@ -366,7 +366,12 @@ function stateEffectsCard(record: ItemRecord, rerender: () => void, refreshStory
   const add = el("button", {
     class: "db-ws-btn db-ws-btn-ghost db-item-state-effect-add",
     text: "+ 상태 추가",
-    attrs: { type: "button", ...(states.length === 0 ? { disabled: "" } : {}) },
+    attrs: {
+      type: "button",
+      ...(states.length === 0
+        ? { disabled: "", title: "[상태] 탭에서 상태를 먼저 만드세요." }
+        : {}),
+    },
     dataset: { testid: "db-item-state-effect-add" },
     on: {
       click: () => {

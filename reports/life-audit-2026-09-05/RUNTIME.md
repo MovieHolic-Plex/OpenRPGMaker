@@ -5,7 +5,7 @@
 
 ## 원격 저장본을 읽었으며 수정하지 않았다
 
-기존 프로젝트 `rpg-zzu-stardew-demo`를 편집기 `/supabase/rest/v1/projects` 프록시에서
+기존 프로젝트 `rpg-zzu-stardew-demo`를 편집기 `/legacyDb/rest/v1/projects` 프록시에서
 `Accept-Profile: rpg_zzu`와 설정된 인증으로 GET했다. 최초 무인증 요청은 401,
 설정된 인증을 사용한 요청은 **HTTP 200, 1행**이었다.
 

@@ -106,7 +106,7 @@
     "test/storeEventDraftPreserve.test.ts",
     "test/storeFlushShaEvidence.test.ts",
     "test/storePersistence.test.ts",
-    "test/supabaseProjectSync.test.ts",
+    "test/legacyDbProjectSync.test.ts",
     "test/teamWorkflowUi.test.ts",
     "test/tileFlowApprovalExpansion.test.ts",
     "test/tileGrafts.test.ts",
@@ -164,7 +164,7 @@
     "test/roleNameComparisonGate.test.ts",
     "test/storeEventDraftPreserve.test.ts",
     "test/storeFlushShaEvidence.test.ts",
-    "test/supabaseProjectSync.test.ts",
+    "test/legacyDbProjectSync.test.ts",
     "test/toolHostileArgs.test.ts",
     "test/uxcLoadFailure.test.ts",
     "test/villageBuilder.test.ts"
@@ -1725,7 +1725,7 @@
       "path": "test/storeFlushShaEvidence.test.ts",
       "assertions": [
         {
-          "name": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+          "name": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
           "message": [
             "Error: STACK_TRACE_ERROR"
           ]
@@ -1736,13 +1736,13 @@
       "path": "test/storePersistence.test.ts",
       "assertions": [
         {
-          "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+          "name": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
           "message": [
             "Error: STACK_TRACE_ERROR"
           ]
         },
         {
-          "name": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+          "name": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
           "message": [
             "TypeError: Cannot read properties of undefined (reading 'ok')"
           ]
@@ -1754,7 +1754,7 @@
           ]
         },
         {
-          "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+          "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
           "message": [
             "TypeError: Cannot read properties of undefined (reading 'ok')"
           ]
@@ -1762,7 +1762,7 @@
         {
           "name": "Project store remote persistence reports why DB persistence is unavailable for local dev showcase projects",
           "message": [
-            "SupabaseProjectSyncError: {"
+            "LegacyDbProjectSyncError: {"
           ]
         },
         {
@@ -1774,16 +1774,16 @@
       ]
     },
     {
-      "path": "test/supabaseProjectSync.test.ts",
+      "path": "test/legacyDbProjectSync.test.ts",
       "assertions": [
         {
-          "name": "Supabase project sync preserves concurrent saves from separate editors touching different maps",
+          "name": "LegacyDb project sync preserves concurrent saves from separate editors touching different maps",
           "message": [
             "Error: STACK_TRACE_ERROR"
           ]
         },
         {
-          "name": "Supabase project sync preserves concurrent map tree additions from separate editors",
+          "name": "LegacyDb project sync preserves concurrent map tree additions from separate editors",
           "message": [
             "Error: STACK_TRACE_ERROR"
           ]

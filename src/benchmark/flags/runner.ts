@@ -62,7 +62,7 @@ export interface FlagRunnerOptions {
   /**
    * 사용자가 한 번 말하고 끝내는 일은 거의 없다 — 라운드 사이에 「계속」을 보내 에이전트가
    * 실제로 산출할 여지를 준다. 에디터의 autonomous 드라이버는 Node 에서 쉼 수 없다
-   * (마일스톤 자동 적용이 에디터 store · Supabase · import.meta.env 를 토굴다).
+   * (마일스톤 자동 적용이 에디터 store · project storage · import.meta.env 를 토굴다).
    */
   readonly maxRounds?: number;
 }

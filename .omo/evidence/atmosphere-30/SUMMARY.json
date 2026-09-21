@@ -1,0 +1,3302 @@
+{
+  "presetCount": 30,
+  "gifs": [
+    {
+      "file": "abyss-rift.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "ancient-ruins.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "arcane-library.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "astral-gate.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "autumn-road.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "bamboo-grove.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "blight-marsh.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "blood-moon.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "boiler-room.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "city-smog.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "cryo-laboratory.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "cursed-land.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "deep-sea.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "demonic.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "desert-wind.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "enchanted-forest.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "factory-chimneys.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "frost-sanctum.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "gaslamp-street.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "immortal-peak.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "industrial.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "iron-foundry.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "magic.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "modern.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "mountain-mist.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "nature-water.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        960,
+        600
+      ]
+    },
+    {
+      "file": "neon-alley.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "plum-courtyard.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "power-station.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "spring-grove.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "steam-station.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "subway-tunnel.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "sunken-temple.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "sword-grave.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "volcanic-forge.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        640,
+        480
+      ]
+    },
+    {
+      "file": "wuxia.gif",
+      "frames": 60,
+      "durationMs": 5760,
+      "size": [
+        960,
+        600
+      ]
+    }
+  ],
+  "captures": [
+    {
+      "id": "enchanted-forest",
+      "label": "정령의 숲",
+      "genre": "마법",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "fireflies",
+          "amount": 0.65,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "insects",
+          "volume": 0.3
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.4,
+          "speed": 0.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.28
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.0019057943277970301,
+          "peak": 0.005312488414347172
+        },
+        {
+          "state": "running",
+          "rms": 0.003113537457907551,
+          "peak": 0.00904237013310194
+        },
+        {
+          "state": "running",
+          "rms": 0.001758274362437929,
+          "peak": 0.005095385015010834
+        },
+        {
+          "state": "running",
+          "rms": 0.0016859504689179681,
+          "peak": 0.005574841983616352
+        },
+        {
+          "state": "running",
+          "rms": 0.002043521024534406,
+          "peak": 0.005648678634315729
+        },
+        {
+          "state": "running",
+          "rms": 0.0037420065223464126,
+          "peak": 0.010489351116120815
+        },
+        {
+          "state": "running",
+          "rms": 0.002581840670057889,
+          "peak": 0.008504648692905903
+        },
+        {
+          "state": "running",
+          "rms": 0.00233068912764867,
+          "peak": 0.005849393084645271
+        },
+        {
+          "state": "running",
+          "rms": 0.0018464266646395946,
+          "peak": 0.0057078199461102486
+        },
+        {
+          "state": "running",
+          "rms": 0.002701281876664095,
+          "peak": 0.008647514507174492
+        },
+        {
+          "state": "running",
+          "rms": 0.0016271717911647899,
+          "peak": 0.004924050532281399
+        },
+        {
+          "state": "running",
+          "rms": 0.0018943774851834013,
+          "peak": 0.0053565120324492455
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "ancient-ruins",
+      "label": "고대 마법 유적",
+      "genre": "마법",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.45,
+          "speed": 0.5,
+          "size": 1.2,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.35
+        },
+        {
+          "kind": "dust",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#efcb81"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.0028496107900835965,
+          "peak": 0.004207649268209934
+        },
+        {
+          "state": "running",
+          "rms": 0.0009715864543260662,
+          "peak": 0.0014372365549206734
+        },
+        {
+          "state": "running",
+          "rms": 0.00032305128129126435,
+          "peak": 0.000476774584967643
+        },
+        {
+          "state": "running",
+          "rms": 9.717732896762183e-05,
+          "peak": 0.0001433863362763077
+        },
+        {
+          "state": "running",
+          "rms": 2.9064413716087767e-05,
+          "peak": 4.2937026591971517e-05
+        },
+        {
+          "state": "running",
+          "rms": 0.004886686676231868,
+          "peak": 0.007258090190589428
+        },
+        {
+          "state": "running",
+          "rms": 0.0014387512011637268,
+          "peak": 0.0021352660842239857
+        },
+        {
+          "state": "running",
+          "rms": 0.00044548667986145813,
+          "peak": 0.0006637921323999763
+        },
+        {
+          "state": "running",
+          "rms": 0.0001332872458304519,
+          "peak": 0.0001983180409297347
+        },
+        {
+          "state": "running",
+          "rms": 3.846397397623629e-05,
+          "peak": 5.7221703173127025e-05
+        },
+        {
+          "state": "running",
+          "rms": 0.006808181464891199,
+          "peak": 0.010164041072130203
+        },
+        {
+          "state": "running",
+          "rms": 0.002235156632589933,
+          "peak": 0.0033363737165927887
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "arcane-library",
+      "label": "비전 도서관",
+      "genre": "마법",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "magic",
+          "amount": 0.7,
+          "speed": 0.35,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.35,
+          "tint": "#d59aff"
+        },
+        {
+          "kind": "runes",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 0.7,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.22,
+          "tint": "#dcadfa"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.004261184888357552,
+          "peak": 0.008617911487817764
+        },
+        {
+          "state": "running",
+          "rms": 0.0017462585000514895,
+          "peak": 0.004833050537854433
+        },
+        {
+          "state": "running",
+          "rms": 0.0010605183841930377,
+          "peak": 0.003406211966648698
+        },
+        {
+          "state": "running",
+          "rms": 0.0008548097139007633,
+          "peak": 0.002551137935370207
+        },
+        {
+          "state": "running",
+          "rms": 0.0007263846774702965,
+          "peak": 0.002808895194903016
+        },
+        {
+          "state": "running",
+          "rms": 0.0060410146722769745,
+          "peak": 0.010546701028943062
+        },
+        {
+          "state": "running",
+          "rms": 0.0020941032840685143,
+          "peak": 0.0045484984293580055
+        },
+        {
+          "state": "running",
+          "rms": 0.0012203007744181022,
+          "peak": 0.003140490036457777
+        },
+        {
+          "state": "running",
+          "rms": 0.0011845465200894594,
+          "peak": 0.003070233855396509
+        },
+        {
+          "state": "running",
+          "rms": 0.0011506899307900612,
+          "peak": 0.00341044832020998
+        },
+        {
+          "state": "running",
+          "rms": 0.012023542732024918,
+          "peak": 0.019879523664712906
+        },
+        {
+          "state": "running",
+          "rms": 0.0038883547457419414,
+          "peak": 0.007762917783111334
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "frost-sanctum",
+      "label": "빙결 성소",
+      "genre": "마법",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "frost",
+          "amount": 0.75,
+          "speed": 1,
+          "size": 1.4,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.3
+        },
+        {
+          "kind": "steam",
+          "amount": 0.35,
+          "speed": 0.25,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.25,
+          "tint": "#a1cce6"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.01042170730297555,
+          "peak": 0.030323851853609085
+        },
+        {
+          "state": "running",
+          "rms": 0.009535942757085818,
+          "peak": 0.028630485758185387
+        },
+        {
+          "state": "running",
+          "rms": 0.007892629191083326,
+          "peak": 0.023296859115362167
+        },
+        {
+          "state": "running",
+          "rms": 0.006534504054893031,
+          "peak": 0.019664665684103966
+        },
+        {
+          "state": "running",
+          "rms": 0.004967039482644065,
+          "peak": 0.013233853504061699
+        },
+        {
+          "state": "running",
+          "rms": 0.004370325131898527,
+          "peak": 0.011728007346391678
+        },
+        {
+          "state": "running",
+          "rms": 0.004590862507104915,
+          "peak": 0.012476670555770397
+        },
+        {
+          "state": "running",
+          "rms": 0.004772782687502046,
+          "peak": 0.015277753584086895
+        },
+        {
+          "state": "running",
+          "rms": 0.006779890568884701,
+          "peak": 0.019907763227820396
+        },
+        {
+          "state": "running",
+          "rms": 0.008967343561441441,
+          "peak": 0.027186283841729164
+        },
+        {
+          "state": "running",
+          "rms": 0.009374702404914389,
+          "peak": 0.03097677230834961
+        },
+        {
+          "state": "running",
+          "rms": 0.010764092743567717,
+          "peak": 0.03371848911046982
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "astral-gate",
+      "label": "별빛 차원문",
+      "genre": "마법",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.6,
+          "speed": 0.8,
+          "size": 1.8,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.3,
+          "tint": "#85c8ff"
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.6,
+          "speed": 1.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.32
+        },
+        {
+          "kind": "magic",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.18,
+          "tint": "#b5ddff"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.004093544219910421,
+          "peak": 0.010283084586262703
+        },
+        {
+          "state": "running",
+          "rms": 0.0033263984643111784,
+          "peak": 0.00886007770895958
+        },
+        {
+          "state": "running",
+          "rms": 0.002849696209027119,
+          "peak": 0.007454996462911367
+        },
+        {
+          "state": "running",
+          "rms": 0.005748916796256859,
+          "peak": 0.014967331662774086
+        },
+        {
+          "state": "running",
+          "rms": 0.0032677442178567166,
+          "peak": 0.010055524297058582
+        },
+        {
+          "state": "running",
+          "rms": 0.0036060975179323294,
+          "peak": 0.010723485611379147
+        },
+        {
+          "state": "running",
+          "rms": 0.004465827014588566,
+          "peak": 0.012316348031163216
+        },
+        {
+          "state": "running",
+          "rms": 0.004392700343966846,
+          "peak": 0.011757200583815575
+        },
+        {
+          "state": "running",
+          "rms": 0.0048378324923429705,
+          "peak": 0.012786399573087692
+        },
+        {
+          "state": "running",
+          "rms": 0.0035170396384112098,
+          "peak": 0.012140900827944279
+        },
+        {
+          "state": "running",
+          "rms": 0.0027048307081669856,
+          "peak": 0.008025506511330605
+        },
+        {
+          "state": "running",
+          "rms": 0.003067298207853963,
+          "peak": 0.009587645530700684
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "cursed-land",
+      "label": "저주받은 땅",
+      "genre": "악마",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "poison",
+          "amount": 0.65,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4,
+          "tint": "#9270b1"
+        },
+        {
+          "kind": "shades",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.25
+        },
+        {
+          "kind": "ash",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.15
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.004669563593525027,
+          "peak": 0.013328969478607178
+        },
+        {
+          "state": "running",
+          "rms": 0.0054943618085361344,
+          "peak": 0.013772336766123772
+        },
+        {
+          "state": "running",
+          "rms": 0.0036941108548266227,
+          "peak": 0.010230422019958496
+        },
+        {
+          "state": "running",
+          "rms": 0.0029783478389873684,
+          "peak": 0.009322716854512691
+        },
+        {
+          "state": "running",
+          "rms": 0.004761242064868448,
+          "peak": 0.012426447123289108
+        },
+        {
+          "state": "running",
+          "rms": 0.006364557723870843,
+          "peak": 0.016937509179115295
+        },
+        {
+          "state": "running",
+          "rms": 0.006798625251806254,
+          "peak": 0.02277316153049469
+        },
+        {
+          "state": "running",
+          "rms": 0.005142686103249465,
+          "peak": 0.012411331757903099
+        },
+        {
+          "state": "running",
+          "rms": 0.003523402166673094,
+          "peak": 0.011501085013151169
+        },
+        {
+          "state": "running",
+          "rms": 0.004106054445145719,
+          "peak": 0.009909117594361305
+        },
+        {
+          "state": "running",
+          "rms": 0.0037713836366167135,
+          "peak": 0.008421171456575394
+        },
+        {
+          "state": "running",
+          "rms": 0.005629380363717035,
+          "peak": 0.013285577297210693
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "volcanic-forge",
+      "label": "지옥의 용암 지대",
+      "genre": "악마",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "embers",
+          "amount": 0.9,
+          "speed": 1.5,
+          "size": 1.3,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.5
+        },
+        {
+          "kind": "ash",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.15
+        },
+        {
+          "kind": "smog",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.25,
+          "tint": "#a65338"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.007486572360311761,
+          "peak": 0.01951604150235653
+        },
+        {
+          "state": "running",
+          "rms": 0.006286370106769975,
+          "peak": 0.01802503690123558
+        },
+        {
+          "state": "running",
+          "rms": 0.008063515993803512,
+          "peak": 0.03668520972132683
+        },
+        {
+          "state": "running",
+          "rms": 0.006539127369517475,
+          "peak": 0.01734955608844757
+        },
+        {
+          "state": "running",
+          "rms": 0.013560194642867455,
+          "peak": 0.02805435284972191
+        },
+        {
+          "state": "running",
+          "rms": 0.006113166306217121,
+          "peak": 0.017839103937149048
+        },
+        {
+          "state": "running",
+          "rms": 0.005465041154111592,
+          "peak": 0.01743195205926895
+        },
+        {
+          "state": "running",
+          "rms": 0.007571624219853377,
+          "peak": 0.02478930726647377
+        },
+        {
+          "state": "running",
+          "rms": 0.0060205228166289645,
+          "peak": 0.01603340543806553
+        },
+        {
+          "state": "running",
+          "rms": 0.00574265094708338,
+          "peak": 0.01460845023393631
+        },
+        {
+          "state": "running",
+          "rms": 0.008662905002301656,
+          "peak": 0.024364236742258072
+        },
+        {
+          "state": "running",
+          "rms": 0.005780324606748337,
+          "peak": 0.017574898898601532
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "abyss-rift",
+      "label": "심연의 균열",
+      "genre": "악마",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "shades",
+          "amount": 0.8,
+          "speed": 0.6,
+          "size": 2,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.45,
+          "tint": "#57366f"
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.25,
+          "tint": "#c177ff"
+        },
+        {
+          "kind": "poison",
+          "amount": 0.3,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.3,
+          "tint": "#584066"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.00731947315692035,
+          "peak": 0.021256493404507637
+        },
+        {
+          "state": "running",
+          "rms": 0.006913105257924918,
+          "peak": 0.01815960928797722
+        },
+        {
+          "state": "running",
+          "rms": 0.006110400492179453,
+          "peak": 0.021307751536369324
+        },
+        {
+          "state": "running",
+          "rms": 0.005582597422898924,
+          "peak": 0.014543842524290085
+        },
+        {
+          "state": "running",
+          "rms": 0.005375531504955443,
+          "peak": 0.017221372574567795
+        },
+        {
+          "state": "running",
+          "rms": 0.0047488778142145485,
+          "peak": 0.016509274020791054
+        },
+        {
+          "state": "running",
+          "rms": 0.004128537008697351,
+          "peak": 0.012581983581185341
+        },
+        {
+          "state": "running",
+          "rms": 0.005040398258989511,
+          "peak": 0.012909585610032082
+        },
+        {
+          "state": "running",
+          "rms": 0.006624853817366271,
+          "peak": 0.0165095292031765
+        },
+        {
+          "state": "running",
+          "rms": 0.007092903848848568,
+          "peak": 0.021237581968307495
+        },
+        {
+          "state": "running",
+          "rms": 0.008103321907939637,
+          "peak": 0.03114767000079155
+        },
+        {
+          "state": "running",
+          "rms": 0.006797760717229889,
+          "peak": 0.016965249553322792
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "blood-moon",
+      "label": "혈월의 의식",
+      "genre": "악마",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.5,
+          "speed": 0.4,
+          "size": 1.7,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4,
+          "tint": "#ff586c"
+        },
+        {
+          "kind": "petals",
+          "amount": 0.6,
+          "speed": 0.55,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2,
+          "tint": "#c94458"
+        },
+        {
+          "kind": "shades",
+          "amount": 0.3,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.25,
+          "tint": "#763943"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.004783307526184745,
+          "peak": 0.016357991844415665
+        },
+        {
+          "state": "running",
+          "rms": 0.007453427526561716,
+          "peak": 0.02155531570315361
+        },
+        {
+          "state": "running",
+          "rms": 0.007088485909556415,
+          "peak": 0.019208870828151703
+        },
+        {
+          "state": "running",
+          "rms": 0.004676364316960735,
+          "peak": 0.014092630706727505
+        },
+        {
+          "state": "running",
+          "rms": 0.004842007523294177,
+          "peak": 0.014834580942988396
+        },
+        {
+          "state": "running",
+          "rms": 0.004590114791946274,
+          "peak": 0.010996092110872269
+        },
+        {
+          "state": "running",
+          "rms": 0.0030371307468823393,
+          "peak": 0.008646830916404724
+        },
+        {
+          "state": "running",
+          "rms": 0.0035703178110308873,
+          "peak": 0.009728696197271347
+        },
+        {
+          "state": "running",
+          "rms": 0.003779720105512889,
+          "peak": 0.010028169490396976
+        },
+        {
+          "state": "running",
+          "rms": 0.0036761385724102345,
+          "peak": 0.009288121946156025
+        },
+        {
+          "state": "running",
+          "rms": 0.0048646513692709,
+          "peak": 0.015225285664200783
+        },
+        {
+          "state": "running",
+          "rms": 0.004922980638590579,
+          "peak": 0.013312878087162971
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "blight-marsh",
+      "label": "마독의 늪",
+      "genre": "악마",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "poison",
+          "amount": 0.85,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4,
+          "tint": "#86ac37"
+        },
+        {
+          "kind": "underwater",
+          "amount": 0.3,
+          "speed": 0.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "bubbles",
+          "volume": 0.3,
+          "tint": "#a8d75a"
+        },
+        {
+          "kind": "fireflies",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.25,
+          "tint": "#cbef42"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.008228658908820536,
+          "peak": 0.021911803632974625
+        },
+        {
+          "state": "running",
+          "rms": 0.007147541842278735,
+          "peak": 0.02009415253996849
+        },
+        {
+          "state": "running",
+          "rms": 0.004076363455653591,
+          "peak": 0.012644890695810318
+        },
+        {
+          "state": "running",
+          "rms": 0.006232822500252867,
+          "peak": 0.01690687984228134
+        },
+        {
+          "state": "running",
+          "rms": 0.004849786921370283,
+          "peak": 0.010975847952067852
+        },
+        {
+          "state": "running",
+          "rms": 0.008539064756243008,
+          "peak": 0.01683272048830986
+        },
+        {
+          "state": "running",
+          "rms": 0.009617922501342475,
+          "peak": 0.020960887894034386
+        },
+        {
+          "state": "running",
+          "rms": 0.00990292412387305,
+          "peak": 0.026671431958675385
+        },
+        {
+          "state": "running",
+          "rms": 0.0051909356570344735,
+          "peak": 0.01786566525697708
+        },
+        {
+          "state": "running",
+          "rms": 0.005317534388920631,
+          "peak": 0.011854332871735096
+        },
+        {
+          "state": "running",
+          "rms": 0.0057722321371318315,
+          "peak": 0.014959244057536125
+        },
+        {
+          "state": "running",
+          "rms": 0.006898049241382035,
+          "peak": 0.018753400072455406
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "bamboo-grove",
+      "label": "바람 부는 죽림",
+      "genre": "무협",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "leaves",
+          "amount": 0.65,
+          "speed": 0.8,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rustle",
+          "volume": 0.45,
+          "tint": "#8bac53"
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.5,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.01784561415283563,
+          "peak": 0.05560692399740219
+        },
+        {
+          "state": "running",
+          "rms": 0.01687295848517782,
+          "peak": 0.05790663883090019
+        },
+        {
+          "state": "running",
+          "rms": 0.013910331313847338,
+          "peak": 0.04213590919971466
+        },
+        {
+          "state": "running",
+          "rms": 0.013350720587537107,
+          "peak": 0.04938853904604912
+        },
+        {
+          "state": "running",
+          "rms": 0.01513143802706016,
+          "peak": 0.04889115318655968
+        },
+        {
+          "state": "running",
+          "rms": 0.007424865932115478,
+          "peak": 0.02354709804058075
+        },
+        {
+          "state": "running",
+          "rms": 0.006337689699220603,
+          "peak": 0.02214071899652481
+        },
+        {
+          "state": "running",
+          "rms": 0.00746994861337375,
+          "peak": 0.02705344185233116
+        },
+        {
+          "state": "running",
+          "rms": 0.012607471180785647,
+          "peak": 0.04033965244889259
+        },
+        {
+          "state": "running",
+          "rms": 0.016497576083085837,
+          "peak": 0.04860338568687439
+        },
+        {
+          "state": "running",
+          "rms": 0.01437266239394297,
+          "peak": 0.04445570334792137
+        },
+        {
+          "state": "running",
+          "rms": 0.014373195595922685,
+          "peak": 0.046064697206020355
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "mountain-mist",
+      "label": "산중 운무",
+      "genre": "무협",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.55,
+          "speed": 0.25,
+          "size": 1,
+          "opacity": 0.6,
+          "sound": "breeze",
+          "volume": 0.35
+        },
+        {
+          "kind": "petals",
+          "amount": 0.3,
+          "speed": 0.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.15
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.011085908602142185,
+          "peak": 0.033568087965250015
+        },
+        {
+          "state": "running",
+          "rms": 0.010817287431073911,
+          "peak": 0.02943694218993187
+        },
+        {
+          "state": "running",
+          "rms": 0.010701660090909861,
+          "peak": 0.03325478360056877
+        },
+        {
+          "state": "running",
+          "rms": 0.008163405552548283,
+          "peak": 0.0215613916516304
+        },
+        {
+          "state": "running",
+          "rms": 0.005602030377565332,
+          "peak": 0.01599021814763546
+        },
+        {
+          "state": "running",
+          "rms": 0.004621602434291606,
+          "peak": 0.014792783185839653
+        },
+        {
+          "state": "running",
+          "rms": 0.004933103291032332,
+          "peak": 0.012835817411541939
+        },
+        {
+          "state": "running",
+          "rms": 0.0069422467443974924,
+          "peak": 0.020054806023836136
+        },
+        {
+          "state": "running",
+          "rms": 0.009956523478506698,
+          "peak": 0.028656654059886932
+        },
+        {
+          "state": "running",
+          "rms": 0.01329167895007965,
+          "peak": 0.03466130793094635
+        },
+        {
+          "state": "running",
+          "rms": 0.01060533234120051,
+          "peak": 0.030672412365674973
+        },
+        {
+          "state": "running",
+          "rms": 0.01177082656338037,
+          "peak": 0.03294345363974571
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "plum-courtyard",
+      "label": "매화 검원",
+      "genre": "무협",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "petals",
+          "amount": 0.9,
+          "speed": 0.6,
+          "size": 1.5,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.4,
+          "tint": "#f79faf"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#ffdcc3"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.02146450892914338,
+          "peak": 0.06887376308441162
+        },
+        {
+          "state": "running",
+          "rms": 0.02271736964141803,
+          "peak": 0.07340909540653229
+        },
+        {
+          "state": "running",
+          "rms": 0.02102990408980323,
+          "peak": 0.07164178043603897
+        },
+        {
+          "state": "running",
+          "rms": 0.016879067254076594,
+          "peak": 0.04725094139575958
+        },
+        {
+          "state": "running",
+          "rms": 0.013342041734520431,
+          "peak": 0.0434190034866333
+        },
+        {
+          "state": "running",
+          "rms": 0.01052811726195595,
+          "peak": 0.0360286682844162
+        },
+        {
+          "state": "running",
+          "rms": 0.007627503491721677,
+          "peak": 0.02747027948498726
+        },
+        {
+          "state": "running",
+          "rms": 0.009130052894148036,
+          "peak": 0.024684567004442215
+        },
+        {
+          "state": "running",
+          "rms": 0.01152744062340282,
+          "peak": 0.03414959833025932
+        },
+        {
+          "state": "running",
+          "rms": 0.014864627808085866,
+          "peak": 0.05258097127079964
+        },
+        {
+          "state": "running",
+          "rms": 0.019806689825487455,
+          "peak": 0.06493689864873886
+        },
+        {
+          "state": "running",
+          "rms": 0.022329228695539452,
+          "peak": 0.08674436807632446
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "sword-grave",
+      "label": "고검의 무덤",
+      "genre": "무협",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "ash",
+          "amount": 0.65,
+          "speed": 0.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.4
+        },
+        {
+          "kind": "shades",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.2,
+          "tint": "#728190"
+        },
+        {
+          "kind": "steam",
+          "amount": 0.3,
+          "speed": 0.15,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#9aabb5"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.011707380588155111,
+          "peak": 0.03746622055768967
+        },
+        {
+          "state": "running",
+          "rms": 0.009989516359753833,
+          "peak": 0.029504163190722466
+        },
+        {
+          "state": "running",
+          "rms": 0.008271609139745553,
+          "peak": 0.029366590082645416
+        },
+        {
+          "state": "running",
+          "rms": 0.006856754130175732,
+          "peak": 0.020813988521695137
+        },
+        {
+          "state": "running",
+          "rms": 0.004290467536750704,
+          "peak": 0.013796431012451649
+        },
+        {
+          "state": "running",
+          "rms": 0.004824891389479145,
+          "peak": 0.015102332457900047
+        },
+        {
+          "state": "running",
+          "rms": 0.005604329390748939,
+          "peak": 0.019785307347774506
+        },
+        {
+          "state": "running",
+          "rms": 0.007302800634985044,
+          "peak": 0.02714613825082779
+        },
+        {
+          "state": "running",
+          "rms": 0.008973020287822694,
+          "peak": 0.026561222970485687
+        },
+        {
+          "state": "running",
+          "rms": 0.011370983403401896,
+          "peak": 0.03356241062283516
+        },
+        {
+          "state": "running",
+          "rms": 0.011320810999243458,
+          "peak": 0.030380945652723312
+        },
+        {
+          "state": "running",
+          "rms": 0.01004115544273278,
+          "peak": 0.028229225426912308
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "immortal-peak",
+      "label": "신선의 봉우리",
+      "genre": "무협",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "runes",
+          "amount": 0.3,
+          "speed": 1,
+          "size": 1.1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.3,
+          "tint": "#f4d187"
+        },
+        {
+          "kind": "steam",
+          "amount": 0.35,
+          "speed": 0.2,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.3
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "whisper",
+          "volume": 0.2,
+          "tint": "#ffe7a3"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.0038845899339516586,
+          "peak": 0.011245837435126305
+        },
+        {
+          "state": "running",
+          "rms": 0.0038532078719056497,
+          "peak": 0.0148263955488801
+        },
+        {
+          "state": "running",
+          "rms": 0.0030452211037905056,
+          "peak": 0.009073538705706596
+        },
+        {
+          "state": "running",
+          "rms": 0.0020342319243867144,
+          "peak": 0.006994921714067459
+        },
+        {
+          "state": "running",
+          "rms": 0.0016037149696070505,
+          "peak": 0.004458368755877018
+        },
+        {
+          "state": "running",
+          "rms": 0.0022215152097511035,
+          "peak": 0.006259560585021973
+        },
+        {
+          "state": "running",
+          "rms": 0.0022574443248281084,
+          "peak": 0.007341722492128611
+        },
+        {
+          "state": "running",
+          "rms": 0.003154132887959335,
+          "peak": 0.011252250522375107
+        },
+        {
+          "state": "running",
+          "rms": 0.0039217140595154765,
+          "peak": 0.011578688398003578
+        },
+        {
+          "state": "running",
+          "rms": 0.00449708490492748,
+          "peak": 0.013447216711938381
+        },
+        {
+          "state": "running",
+          "rms": 0.0029326314889624714,
+          "peak": 0.010731227695941925
+        },
+        {
+          "state": "running",
+          "rms": 0.001886591395573439,
+          "peak": 0.006968453526496887
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "city-smog",
+      "label": "스모그 낀 도시",
+      "genre": "현대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "smog",
+          "amount": 0.6,
+          "speed": 0.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.4
+        },
+        {
+          "kind": "dust",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.009816422576549981,
+          "peak": 0.024819212034344673
+        },
+        {
+          "state": "running",
+          "rms": 0.009877382522629014,
+          "peak": 0.02614710107445717
+        },
+        {
+          "state": "running",
+          "rms": 0.00986031923830528,
+          "peak": 0.02574220485985279
+        },
+        {
+          "state": "running",
+          "rms": 0.0059184998824031426,
+          "peak": 0.012435677461326122
+        },
+        {
+          "state": "running",
+          "rms": 0.006053655144499562,
+          "peak": 0.014673169702291489
+        },
+        {
+          "state": "running",
+          "rms": 0.005118957097005691,
+          "peak": 0.011413918808102608
+        },
+        {
+          "state": "running",
+          "rms": 0.010346892798534653,
+          "peak": 0.024820875376462936
+        },
+        {
+          "state": "running",
+          "rms": 0.00699054314756215,
+          "peak": 0.017101414501667023
+        },
+        {
+          "state": "running",
+          "rms": 0.008375172233048137,
+          "peak": 0.021466178819537163
+        },
+        {
+          "state": "running",
+          "rms": 0.01510726957287616,
+          "peak": 0.026368124410510063
+        },
+        {
+          "state": "running",
+          "rms": 0.00808785879216467,
+          "peak": 0.021998491138219833
+        },
+        {
+          "state": "running",
+          "rms": 0.005938758737489589,
+          "peak": 0.015419763512909412
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "power-station",
+      "label": "손상된 전기 시설",
+      "genre": "현대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "sparks",
+          "amount": 0.65,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.4
+        },
+        {
+          "kind": "steam",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.4,
+          "sound": "steam",
+          "volume": 0.15
+        },
+        {
+          "kind": "leaks",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.3
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.0024207069384138092,
+          "peak": 0.006308343261480331
+        },
+        {
+          "state": "running",
+          "rms": 0.003355355378180857,
+          "peak": 0.008672280237078667
+        },
+        {
+          "state": "running",
+          "rms": 0.004093198922694855,
+          "peak": 0.016523204743862152
+        },
+        {
+          "state": "running",
+          "rms": 0.0021831120563182717,
+          "peak": 0.004982542246580124
+        },
+        {
+          "state": "running",
+          "rms": 0.0022164992752633935,
+          "peak": 0.00479386979714036
+        },
+        {
+          "state": "running",
+          "rms": 0.00221582291535,
+          "peak": 0.004172418266534805
+        },
+        {
+          "state": "running",
+          "rms": 0.002237199397969542,
+          "peak": 0.00464979000389576
+        },
+        {
+          "state": "running",
+          "rms": 0.0022497870458370872,
+          "peak": 0.004821060225367546
+        },
+        {
+          "state": "running",
+          "rms": 0.002358958146328483,
+          "peak": 0.005743592046201229
+        },
+        {
+          "state": "running",
+          "rms": 0.003991964839947245,
+          "peak": 0.010620190761983395
+        },
+        {
+          "state": "running",
+          "rms": 0.002453556019526813,
+          "peak": 0.00615267176181078
+        },
+        {
+          "state": "running",
+          "rms": 0.0023521761937964226,
+          "peak": 0.005685253534466028
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "subway-tunnel",
+      "label": "폐지하철 터널",
+      "genre": "현대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "leaks",
+          "amount": 0.75,
+          "speed": 0.7,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.4
+        },
+        {
+          "kind": "dust",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.25,
+          "tint": "#9ba2aa"
+        },
+        {
+          "kind": "smog",
+          "amount": 0.2,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.003965715901231464,
+          "peak": 0.010054581798613071
+        },
+        {
+          "state": "running",
+          "rms": 0.0038098991854793444,
+          "peak": 0.009515808895230293
+        },
+        {
+          "state": "running",
+          "rms": 0.004268250241922586,
+          "peak": 0.010428506880998611
+        },
+        {
+          "state": "running",
+          "rms": 0.007163240829247445,
+          "peak": 0.01778580993413925
+        },
+        {
+          "state": "running",
+          "rms": 0.002464771298910654,
+          "peak": 0.005503373220562935
+        },
+        {
+          "state": "running",
+          "rms": 0.0028319758077258186,
+          "peak": 0.0064162309281528
+        },
+        {
+          "state": "running",
+          "rms": 0.003978549943374584,
+          "peak": 0.010055158287286758
+        },
+        {
+          "state": "running",
+          "rms": 0.0035137040412566716,
+          "peak": 0.007425968535244465
+        },
+        {
+          "state": "running",
+          "rms": 0.005315249322812298,
+          "peak": 0.013432827778160572
+        },
+        {
+          "state": "running",
+          "rms": 0.0036805485104918385,
+          "peak": 0.01049537118524313
+        },
+        {
+          "state": "running",
+          "rms": 0.0031732561692801187,
+          "peak": 0.007561801001429558
+        },
+        {
+          "state": "running",
+          "rms": 0.0025215336467674177,
+          "peak": 0.005448946729302406
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "neon-alley",
+      "label": "네온 골목",
+      "genre": "현대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.25,
+          "tint": "#bd75ab"
+        },
+        {
+          "kind": "leaks",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.3,
+          "tint": "#77dcdf"
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.2,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.25,
+          "tint": "#f4a5db"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.003244266391188246,
+          "peak": 0.009967604652047157
+        },
+        {
+          "state": "running",
+          "rms": 0.005506727959738586,
+          "peak": 0.016640406101942062
+        },
+        {
+          "state": "running",
+          "rms": 0.0026806214478060997,
+          "peak": 0.008309204131364822
+        },
+        {
+          "state": "running",
+          "rms": 0.0021269009991161246,
+          "peak": 0.006075894460082054
+        },
+        {
+          "state": "running",
+          "rms": 0.0031828679949773967,
+          "peak": 0.009168857708573341
+        },
+        {
+          "state": "running",
+          "rms": 0.0012480256948456732,
+          "peak": 0.003997021820396185
+        },
+        {
+          "state": "running",
+          "rms": 0.001487932847384306,
+          "peak": 0.004369816742837429
+        },
+        {
+          "state": "running",
+          "rms": 0.0019759651302616176,
+          "peak": 0.006393715273588896
+        },
+        {
+          "state": "running",
+          "rms": 0.002536978293767309,
+          "peak": 0.007798969745635986
+        },
+        {
+          "state": "running",
+          "rms": 0.0037247087157831075,
+          "peak": 0.013881833292543888
+        },
+        {
+          "state": "running",
+          "rms": 0.0031412201319903914,
+          "peak": 0.009968839585781097
+        },
+        {
+          "state": "running",
+          "rms": 0.0029324785288150947,
+          "peak": 0.008373899385333061
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "cryo-laboratory",
+      "label": "극저온 연구실",
+      "genre": "현대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.35,
+          "tint": "#b7e2ec"
+        },
+        {
+          "kind": "frost",
+          "amount": 0.5,
+          "speed": 0.4,
+          "size": 0.8,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.2,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "electric",
+          "volume": 0.2
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.008140908413137617,
+          "peak": 0.023942630738019943
+        },
+        {
+          "state": "running",
+          "rms": 0.007885377400720726,
+          "peak": 0.02406785637140274
+        },
+        {
+          "state": "running",
+          "rms": 0.006614148348173171,
+          "peak": 0.020041102543473244
+        },
+        {
+          "state": "running",
+          "rms": 0.004938268037291642,
+          "peak": 0.014213541522622108
+        },
+        {
+          "state": "running",
+          "rms": 0.0036642935019218278,
+          "peak": 0.011100713163614273
+        },
+        {
+          "state": "running",
+          "rms": 0.0030577133200374285,
+          "peak": 0.00967255886644125
+        },
+        {
+          "state": "running",
+          "rms": 0.0034430659299043032,
+          "peak": 0.010365372523665428
+        },
+        {
+          "state": "running",
+          "rms": 0.004675761711044973,
+          "peak": 0.014789494685828686
+        },
+        {
+          "state": "running",
+          "rms": 0.006433389813808232,
+          "peak": 0.017334409058094025
+        },
+        {
+          "state": "running",
+          "rms": 0.007820991290348338,
+          "peak": 0.022816896438598633
+        },
+        {
+          "state": "running",
+          "rms": 0.008480285950566465,
+          "peak": 0.025858480483293533
+        },
+        {
+          "state": "running",
+          "rms": 0.007545074175713178,
+          "peak": 0.022840050980448723
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "boiler-room",
+      "label": "증기 기계실",
+      "genre": "근대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.75,
+          "speed": 1.3,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.45
+        },
+        {
+          "kind": "leaks",
+          "amount": 0.5,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "drips",
+          "volume": 0.3
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.013371815709184673,
+          "peak": 0.039180632680654526
+        },
+        {
+          "state": "running",
+          "rms": 0.012570238778751318,
+          "peak": 0.038611508905887604
+        },
+        {
+          "state": "running",
+          "rms": 0.010173183998406636,
+          "peak": 0.02851148694753647
+        },
+        {
+          "state": "running",
+          "rms": 0.006842344276694015,
+          "peak": 0.021848544478416443
+        },
+        {
+          "state": "running",
+          "rms": 0.005039784284302093,
+          "peak": 0.015045616775751114
+        },
+        {
+          "state": "running",
+          "rms": 0.005439042939609512,
+          "peak": 0.016348455101251602
+        },
+        {
+          "state": "running",
+          "rms": 0.00826676098958801,
+          "peak": 0.02460082620382309
+        },
+        {
+          "state": "running",
+          "rms": 0.011272023077516707,
+          "peak": 0.03358601778745651
+        },
+        {
+          "state": "running",
+          "rms": 0.013566086546390603,
+          "peak": 0.040240101516246796
+        },
+        {
+          "state": "running",
+          "rms": 0.012397566593065774,
+          "peak": 0.03626454249024391
+        },
+        {
+          "state": "running",
+          "rms": 0.011277688399135065,
+          "peak": 0.03723853826522827
+        },
+        {
+          "state": "running",
+          "rms": 0.007477062471784707,
+          "peak": 0.02117212861776352
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "steam-station",
+      "label": "증기기관 정거장",
+      "genre": "근대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "steam",
+          "amount": 0.65,
+          "speed": 1.8,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.5
+        },
+        {
+          "kind": "ash",
+          "amount": 0.65,
+          "speed": 1.5,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2,
+          "tint": "#777477"
+        },
+        {
+          "kind": "embers",
+          "amount": 0.25,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.3
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.011594587602236927,
+          "peak": 0.03410832956433296
+        },
+        {
+          "state": "running",
+          "rms": 0.009454504768534324,
+          "peak": 0.03352951258420944
+        },
+        {
+          "state": "running",
+          "rms": 0.007135172758526711,
+          "peak": 0.023822173476219177
+        },
+        {
+          "state": "running",
+          "rms": 0.005064463539348143,
+          "peak": 0.016483236104249954
+        },
+        {
+          "state": "running",
+          "rms": 0.004826205195804481,
+          "peak": 0.017077041789889336
+        },
+        {
+          "state": "running",
+          "rms": 0.0070894794822586125,
+          "peak": 0.024965088814496994
+        },
+        {
+          "state": "running",
+          "rms": 0.009355866340039112,
+          "peak": 0.030135922133922577
+        },
+        {
+          "state": "running",
+          "rms": 0.011550881554712612,
+          "peak": 0.0394306555390358
+        },
+        {
+          "state": "running",
+          "rms": 0.010608997123209236,
+          "peak": 0.034762490540742874
+        },
+        {
+          "state": "running",
+          "rms": 0.008131134843603113,
+          "peak": 0.024911142885684967
+        },
+        {
+          "state": "running",
+          "rms": 0.005326659306769925,
+          "peak": 0.01765424758195877
+        },
+        {
+          "state": "running",
+          "rms": 0.004354805157995415,
+          "peak": 0.014079423621296883
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "factory-chimneys",
+      "label": "매연의 공장 지대",
+      "genre": "근대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "smog",
+          "amount": 0.8,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.45,
+          "tint": "#a59473"
+        },
+        {
+          "kind": "ash",
+          "amount": 0.8,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2,
+          "tint": "#666364"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.01314336891939299,
+          "peak": 0.03518162667751312
+        },
+        {
+          "state": "running",
+          "rms": 0.01172460910692389,
+          "peak": 0.037920866161584854
+        },
+        {
+          "state": "running",
+          "rms": 0.008645635321720831,
+          "peak": 0.02374156191945076
+        },
+        {
+          "state": "running",
+          "rms": 0.005033741598004479,
+          "peak": 0.012164211831986904
+        },
+        {
+          "state": "running",
+          "rms": 0.0064509129063992495,
+          "peak": 0.01957603543996811
+        },
+        {
+          "state": "running",
+          "rms": 0.009185114193105184,
+          "peak": 0.024510076269507408
+        },
+        {
+          "state": "running",
+          "rms": 0.010918512965543622,
+          "peak": 0.036334387958049774
+        },
+        {
+          "state": "running",
+          "rms": 0.015390105335515665,
+          "peak": 0.037005167454481125
+        },
+        {
+          "state": "running",
+          "rms": 0.013291419409094831,
+          "peak": 0.0385078489780426
+        },
+        {
+          "state": "running",
+          "rms": 0.01089279710818482,
+          "peak": 0.026233531534671783
+        },
+        {
+          "state": "running",
+          "rms": 0.007162506501443858,
+          "peak": 0.01760486140847206
+        },
+        {
+          "state": "running",
+          "rms": 0.005473093116800319,
+          "peak": 0.012446953915059566
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "gaslamp-street",
+      "label": "가스등 안개 거리",
+      "genre": "근대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "sunrays",
+          "amount": 0.8,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.95,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#ffd087"
+        },
+        {
+          "kind": "steam",
+          "amount": 0.4,
+          "speed": 0.2,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "steam",
+          "volume": 0.22,
+          "tint": "#c7b99b"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.45,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.2
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.004716143798574689,
+          "peak": 0.015682291239500046
+        },
+        {
+          "state": "running",
+          "rms": 0.003755517752066942,
+          "peak": 0.014392602257430553
+        },
+        {
+          "state": "running",
+          "rms": 0.0027487803501036606,
+          "peak": 0.009382899850606918
+        },
+        {
+          "state": "running",
+          "rms": 0.0018295061612226757,
+          "peak": 0.006558906752616167
+        },
+        {
+          "state": "running",
+          "rms": 0.002370341130529948,
+          "peak": 0.007995803840458393
+        },
+        {
+          "state": "running",
+          "rms": 0.0033138242035564884,
+          "peak": 0.011613874696195126
+        },
+        {
+          "state": "running",
+          "rms": 0.004702416267405224,
+          "peak": 0.015211930498480797
+        },
+        {
+          "state": "running",
+          "rms": 0.005543680275187443,
+          "peak": 0.019781172275543213
+        },
+        {
+          "state": "running",
+          "rms": 0.0052514096550993,
+          "peak": 0.01796392723917961
+        },
+        {
+          "state": "running",
+          "rms": 0.002727866571304314,
+          "peak": 0.009013261646032333
+        },
+        {
+          "state": "running",
+          "rms": 0.0019414238941054967,
+          "peak": 0.006065831985324621
+        },
+        {
+          "state": "running",
+          "rms": 0.0026687345898051083,
+          "peak": 0.009366169571876526
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "iron-foundry",
+      "label": "제철소",
+      "genre": "근대",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "embers",
+          "amount": 0.95,
+          "speed": 1.8,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.5
+        },
+        {
+          "kind": "sparks",
+          "amount": 0.6,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "fire",
+          "volume": 0.45,
+          "tint": "#ffc27a"
+        },
+        {
+          "kind": "smog",
+          "amount": 0.4,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.2,
+          "tint": "#a17c63"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.007194279036680627,
+          "peak": 0.02366272360086441
+        },
+        {
+          "state": "running",
+          "rms": 0.006957921625606469,
+          "peak": 0.017811404541134834
+        },
+        {
+          "state": "running",
+          "rms": 0.0065828575219860855,
+          "peak": 0.017457660287618637
+        },
+        {
+          "state": "running",
+          "rms": 0.006631445114846195,
+          "peak": 0.015185103751718998
+        },
+        {
+          "state": "running",
+          "rms": 0.0051173239526398455,
+          "peak": 0.016114093363285065
+        },
+        {
+          "state": "running",
+          "rms": 0.008781820011475067,
+          "peak": 0.021364476531744003
+        },
+        {
+          "state": "running",
+          "rms": 0.006234882785678228,
+          "peak": 0.016943413764238358
+        },
+        {
+          "state": "running",
+          "rms": 0.00632412279238253,
+          "peak": 0.017389053478837013
+        },
+        {
+          "state": "running",
+          "rms": 0.008535846853744002,
+          "peak": 0.02843019738793373
+        },
+        {
+          "state": "running",
+          "rms": 0.011100944271926327,
+          "peak": 0.025996152311563492
+        },
+        {
+          "state": "running",
+          "rms": 0.009166066043964739,
+          "peak": 0.02086898870766163
+        },
+        {
+          "state": "running",
+          "rms": 0.005810282549483173,
+          "peak": 0.017014453187584877
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "sunken-temple",
+      "label": "수중 신전",
+      "genre": "자연·수중",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "underwater",
+          "amount": 0.7,
+          "speed": 0.7,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "bubbles",
+          "volume": 0.4
+        },
+        {
+          "kind": "runes",
+          "amount": 0.3,
+          "speed": 0.35,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "chimes",
+          "volume": 0.2,
+          "tint": "#88e8ed"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.010986616505828942,
+          "peak": 0.025125492364168167
+        },
+        {
+          "state": "running",
+          "rms": 0.004523777494300527,
+          "peak": 0.013468194752931595
+        },
+        {
+          "state": "running",
+          "rms": 0.006571773518546372,
+          "peak": 0.016085367649793625
+        },
+        {
+          "state": "running",
+          "rms": 0.004925998434985716,
+          "peak": 0.013002860359847546
+        },
+        {
+          "state": "running",
+          "rms": 0.004989615879722677,
+          "peak": 0.015048605389893055
+        },
+        {
+          "state": "running",
+          "rms": 0.006675147801260501,
+          "peak": 0.016940414905548096
+        },
+        {
+          "state": "running",
+          "rms": 0.0043099540504291265,
+          "peak": 0.013290650211274624
+        },
+        {
+          "state": "running",
+          "rms": 0.00595806826811462,
+          "peak": 0.01363399252295494
+        },
+        {
+          "state": "running",
+          "rms": 0.00955345342379543,
+          "peak": 0.03156019002199173
+        },
+        {
+          "state": "running",
+          "rms": 0.0037222066028496092,
+          "peak": 0.009326101280748844
+        },
+        {
+          "state": "running",
+          "rms": 0.0035678937556384354,
+          "peak": 0.01055221538990736
+        },
+        {
+          "state": "running",
+          "rms": 0.004709461900228746,
+          "peak": 0.01091694738715887
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "spring-grove",
+      "label": "봄꽃 숲",
+      "genre": "자연·수중",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "petals",
+          "amount": 0.7,
+          "speed": 1,
+          "size": 1.3,
+          "opacity": 0.7,
+          "sound": "breeze",
+          "volume": 0.3
+        },
+        {
+          "kind": "fireflies",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "insects",
+          "volume": 0.25
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.5,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.009075455430914503,
+          "peak": 0.028394348919391632
+        },
+        {
+          "state": "running",
+          "rms": 0.00781400995294409,
+          "peak": 0.02957647293806076
+        },
+        {
+          "state": "running",
+          "rms": 0.006539749225848986,
+          "peak": 0.024985451251268387
+        },
+        {
+          "state": "running",
+          "rms": 0.004682536129748167,
+          "peak": 0.01397655624896288
+        },
+        {
+          "state": "running",
+          "rms": 0.003652720913574666,
+          "peak": 0.010242375545203686
+        },
+        {
+          "state": "running",
+          "rms": 0.004101736777492227,
+          "peak": 0.012889998964965343
+        },
+        {
+          "state": "running",
+          "rms": 0.005641682931676126,
+          "peak": 0.015470197424292564
+        },
+        {
+          "state": "running",
+          "rms": 0.007100285726715825,
+          "peak": 0.019427962601184845
+        },
+        {
+          "state": "running",
+          "rms": 0.007537996708203482,
+          "peak": 0.02557271718978882
+        },
+        {
+          "state": "running",
+          "rms": 0.009297205094399498,
+          "peak": 0.029646798968315125
+        },
+        {
+          "state": "running",
+          "rms": 0.008090058524462353,
+          "peak": 0.021583808586001396
+        },
+        {
+          "state": "running",
+          "rms": 0.006511400179180141,
+          "peak": 0.020622264593839645
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "autumn-road",
+      "label": "늦가을 산길",
+      "genre": "자연·수중",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "leaves",
+          "amount": 0.9,
+          "speed": 0.75,
+          "size": 1.5,
+          "opacity": 0.7,
+          "sound": "rustle",
+          "volume": 0.45
+        },
+        {
+          "kind": "dust",
+          "amount": 0.55,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#deb778"
+        },
+        {
+          "kind": "sunrays",
+          "amount": 0.35,
+          "speed": 1,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#edc386"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.01871039271679494,
+          "peak": 0.06288875639438629
+        },
+        {
+          "state": "running",
+          "rms": 0.020081868861476504,
+          "peak": 0.06338071823120117
+        },
+        {
+          "state": "running",
+          "rms": 0.018521992524082154,
+          "peak": 0.05066637694835663
+        },
+        {
+          "state": "running",
+          "rms": 0.02089362090414074,
+          "peak": 0.06388317048549652
+        },
+        {
+          "state": "running",
+          "rms": 0.013293575294294147,
+          "peak": 0.04411504790186882
+        },
+        {
+          "state": "running",
+          "rms": 0.007801211531080821,
+          "peak": 0.02809552475810051
+        },
+        {
+          "state": "running",
+          "rms": 0.009415937995058264,
+          "peak": 0.026821129024028778
+        },
+        {
+          "state": "running",
+          "rms": 0.012081340660704838,
+          "peak": 0.038653165102005005
+        },
+        {
+          "state": "running",
+          "rms": 0.026090398573453247,
+          "peak": 0.08984535932540894
+        },
+        {
+          "state": "running",
+          "rms": 0.019001169453601745,
+          "peak": 0.058906204998493195
+        },
+        {
+          "state": "running",
+          "rms": 0.02391003528511542,
+          "peak": 0.07962965965270996
+        },
+        {
+          "state": "running",
+          "rms": 0.022500745275226677,
+          "peak": 0.06912852078676224
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "desert-wind",
+      "label": "사막의 모래폭풍",
+      "genre": "자연·수중",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "sand",
+          "amount": 0.95,
+          "speed": 1.65,
+          "size": 1,
+          "opacity": 0.9,
+          "sound": "breeze",
+          "volume": 0.6
+        },
+        {
+          "kind": "dust",
+          "amount": 0.65,
+          "speed": 2,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#dcb879"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.03252540757818479,
+          "peak": 0.11428603529930115
+        },
+        {
+          "state": "running",
+          "rms": 0.032530950663213605,
+          "peak": 0.09932784736156464
+        },
+        {
+          "state": "running",
+          "rms": 0.023105883722896802,
+          "peak": 0.07666652649641037
+        },
+        {
+          "state": "running",
+          "rms": 0.018963491818306498,
+          "peak": 0.05577666312456131
+        },
+        {
+          "state": "running",
+          "rms": 0.014022682987213046,
+          "peak": 0.04024669900536537
+        },
+        {
+          "state": "running",
+          "rms": 0.015363150179061529,
+          "peak": 0.04874194785952568
+        },
+        {
+          "state": "running",
+          "rms": 0.021611777182980418,
+          "peak": 0.07354661822319031
+        },
+        {
+          "state": "running",
+          "rms": 0.033434139678353195,
+          "peak": 0.09952672570943832
+        },
+        {
+          "state": "running",
+          "rms": 0.0399712095982125,
+          "peak": 0.12183908373117447
+        },
+        {
+          "state": "running",
+          "rms": 0.030445028399879556,
+          "peak": 0.08772480487823486
+        },
+        {
+          "state": "running",
+          "rms": 0.027409964368993185,
+          "peak": 0.08997125178575516
+        },
+        {
+          "state": "running",
+          "rms": 0.02089854433426585,
+          "peak": 0.05156220123171806
+        }
+      ],
+      "errors": []
+    },
+    {
+      "id": "deep-sea",
+      "label": "심해의 발광 생물",
+      "genre": "자연·수중",
+      "frames": 60,
+      "frameMs": 96,
+      "source": "player.html",
+      "effects": [
+        {
+          "kind": "underwater",
+          "amount": 0.85,
+          "speed": 0.4,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "bubbles",
+          "volume": 0.45,
+          "tint": "#528eaa"
+        },
+        {
+          "kind": "spirits",
+          "amount": 0.6,
+          "speed": 0.35,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "rumble",
+          "volume": 0.3,
+          "tint": "#72d8f0"
+        },
+        {
+          "kind": "dust",
+          "amount": 0.5,
+          "speed": 0.3,
+          "size": 1,
+          "opacity": 0.7,
+          "sound": "none",
+          "volume": 0.35,
+          "tint": "#a0ccd9"
+        }
+      ],
+      "samples": [
+        {
+          "state": "running",
+          "rms": 0.010291812876340954,
+          "peak": 0.02337104268372059
+        },
+        {
+          "state": "running",
+          "rms": 0.008644009040898418,
+          "peak": 0.024712245911359787
+        },
+        {
+          "state": "running",
+          "rms": 0.016696184030924783,
+          "peak": 0.03393854945898056
+        },
+        {
+          "state": "running",
+          "rms": 0.015788232891834852,
+          "peak": 0.03220168128609657
+        },
+        {
+          "state": "running",
+          "rms": 0.01863976150069529,
+          "peak": 0.038885362446308136
+        },
+        {
+          "state": "running",
+          "rms": 0.013998666567379543,
+          "peak": 0.03855956718325615
+        },
+        {
+          "state": "running",
+          "rms": 0.012610408247706534,
+          "peak": 0.0394567996263504
+        },
+        {
+          "state": "running",
+          "rms": 0.009211172425878288,
+          "peak": 0.022300003096461296
+        },
+        {
+          "state": "running",
+          "rms": 0.008852268029482026,
+          "peak": 0.021570298820734024
+        },
+        {
+          "state": "running",
+          "rms": 0.008575195915315822,
+          "peak": 0.020387209951877594
+        },
+        {
+          "state": "running",
+          "rms": 0.005433794225837513,
+          "peak": 0.014735530130565166
+        },
+        {
+          "state": "running",
+          "rms": 0.006833526132537084,
+          "peak": 0.01789429597556591
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

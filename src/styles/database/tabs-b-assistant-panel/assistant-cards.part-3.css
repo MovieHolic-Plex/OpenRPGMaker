@@ -1,0 +1,194 @@
+/* ── 3. 넓은 비교 뷰어(16 에서 그대로 이관) ────────────────────────
+   body 직속 오버레이. 에디터 크롬과 모달(--z-app-modal) 위에 띄우고 화면 전체를 쓴다.
+   DOM(aiChangePreview.ts): .ai-change-wide > .ai-change-wide-head + .ai-change-wide-body,
+   본문의 두 자식은 카드와 같은 figure.ai-change-shot[data-kind]. */
+.ai-change-wide {
+  align-content: center;
+  background: var(--bg-scrim);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-rows: auto minmax(0, 1fr);
+  inset: 0;
+  justify-items: stretch;
+  padding: var(--space-4);
+  position: fixed;
+  z-index: calc(var(--z-app-modal) + 20);
+}
+
+.ai-change-wide-head {
+  align-items: center;
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-wrap: wrap;
+  font-family: var(--font-ui);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+}
+
+.ai-change-wide-title {
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font-size: calc(17px * var(--ai-font-scale, 1));
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-change-wide-modes {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: var(--space-2);
+}
+
+.ai-change-wide:has(.ai-change-wide-body[data-mode="side"]) .ai-change-wide-mode.is-side,
+.ai-change-wide:has(.ai-change-wide-body[data-mode="overlay"]) .ai-change-wide-mode.is-overlay,
+.ai-change-wide-mode[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent-active);
+}
+
+.ai-change-wide-close {
+  margin-left: auto;
+}
+
+.ai-change-wide-body {
+  align-content: center;
+  background: var(--bg-raised);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  min-height: 0;
+  overflow: auto;
+  padding: var(--space-4);
+}
+
+.ai-change-wide-body[data-mode="side"] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.ai-change-wide-body > .ai-change-shot {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  justify-items: center;
+  max-width: 100%;
+  overflow: visible;
+  padding: 0;
+  position: relative;
+}
+
+.ai-change-wide-body[data-mode="side"] > .ai-change-shot {
+  max-width: 45vw;
+  width: 45vw;
+}
+
+.ai-change-wide-body .ai-change-shot-label {
+  font-size: calc(12px * var(--ai-font-scale, 1));
+  justify-self: start;
+  position: static;
+  box-shadow: none;
+  background: transparent;
+  padding: 0 0 6px;
+}
+
+.ai-change-wide-shot {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-m);
+  max-height: none;
+  max-width: 100%;
+  min-height: 0;
+  padding: var(--space-2);
+}
+
+.ai-change-wide-shot canvas,
+.ai-change-wide-shot img {
+  max-height: 72vh;
+  width: auto;
+}
+
+.ai-change-wide-body[data-mode="overlay"] {
+  align-content: center;
+  grid-template: "frame" minmax(0, 1fr) / minmax(0, 1fr);
+  justify-content: center;
+  padding-bottom: var(--space-6);
+}
+
+.ai-change-wide-body[data-mode="overlay"] > .ai-change-shot {
+  align-self: center;
+  grid-area: frame;
+  justify-self: center;
+  max-width: min(92vw, 1400px);
+}
+
+.ai-change-wide-body[data-mode="overlay"] > .ai-change-shot[data-kind="after"] {
+  z-index: var(--z-raised);
+}
+
+.ai-change-wide-body[data-mode="overlay"] .ai-change-shot-label {
+  background: color-mix(in srgb, var(--bg-raised) 82%, transparent);
+  border-radius: var(--radius-s);
+  left: var(--space-2);
+  padding: 2px var(--space-2);
+  position: absolute;
+  top: var(--space-2);
+  z-index: var(--z-canvas-decor);
+}
+
+.ai-change-wide-body[data-mode="overlay"] > .ai-change-shot[data-kind="after"] .ai-change-shot-label {
+  left: auto;
+  right: var(--space-2);
+}
+
+.ai-change-wide-slider {
+  accent-color: var(--accent);
+  cursor: ew-resize;
+  max-width: 100%;
+  width: min(240px, 22vw);
+}
+
+.ai-change-wide:has(.ai-change-wide-body[data-mode="side"]) .ai-change-wide-slider {
+  display: none;
+}
+
+.ai-change-wide:has(.ai-change-wide-body[data-mode="overlay"]) .ai-change-wide-slider {
+  background: color-mix(in srgb, var(--bg-raised) 92%, transparent);
+  border-radius: 999px;
+  bottom: calc(var(--space-4) + var(--space-2));
+  left: 50%;
+  padding: var(--space-1) var(--space-3);
+  position: absolute;
+  translate: -50% 0;
+  width: min(520px, 60vw);
+  z-index: var(--z-raised);
+}
+
+.ai-change-expand:focus-visible,
+.ai-change-undo:focus-visible,
+.ai-change-wide-close:focus-visible,
+.ai-change-wide-mode:focus-visible,
+.ai-change-wide-slider:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-change-expand,
+  .ai-change-undo,
+  .ai-change-wide-close,
+  .ai-change-wide-mode {
+    transition: none;
+  }
+}

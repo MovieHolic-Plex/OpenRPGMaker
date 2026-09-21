@@ -1,4 +1,5 @@
 import { fallHop, jumpHop } from "@/player/characterHop";
+import { mapTileSize } from "@/project/tileGeometry";
 import type { Dir } from "@/player/input";
 import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { AutonomousMover } from "@/player/playSceneTypes";
@@ -173,7 +174,7 @@ export function executeInstantCommand(
       target.mover.moveIntervalMs = npcMoveIntervalMs(target.mover.frequencyRank);
       return true;
     case "changeGraphic":
-      applyMoveRouteGraphicChange(command.spriteId, target.view, target.sprite);
+      applyMoveRouteGraphicChange(command.spriteId, target.view, target.sprite, mapTileSize(routeContext.scene.map));
       return true;
     case "npcTransfer":
       applyNpcTransfer(routeContext, target, command);

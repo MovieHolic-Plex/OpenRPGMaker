@@ -116,7 +116,7 @@ describe("AI tileset workspace entry", () => {
     expect(findByTestId(panel, "tileset-ai-review-manual")).toBeNull();
   });
 
-  it("puts the AI Tileset launcher on the workspace hero, not the editor body", () => {
+  it("retires the separate AI launcher and exposes reference documents in the tile library", () => {
     const editor = renderWithFakeDom(() => renderTilesetEditor(currentTileset(), () => undefined));
     expect(findByTestId(editor, "tileset-ai-workspace-open")).toBeNull();
 
@@ -125,7 +125,8 @@ describe("AI tileset workspace entry", () => {
       renderTilesetsTab(root, () => undefined);
       return root;
     });
-    expect(findByTestId(host, "tileset-ai-workspace-open")?.textContent).toContain("AI");
+    expect(findByTestId(host, "tileset-ai-workspace-open")).toBeNull();
+    expect(findByTestId(host, "tileset-section-tab-references")?.textContent).toBe("AI 참고문서");
   });
 });
 

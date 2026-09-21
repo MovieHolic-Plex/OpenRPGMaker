@@ -1,3 +1,5 @@
+import { actionSkillFields } from "./databaseActionSkillForm";
+import { skillCombatRuleCard } from "@/editor/panels/databaseCombatRuleFields";
 // 스킬 탭 인스펙터 (2026-08 모던 개편).
 //
 // 개편 전 문제(감사 H 축 P0): `skillComposer()` 를 폼 맨 앞에 prepend 하는데, 그 안의
@@ -108,7 +110,7 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({
         title: "위력과 소모",
-        hint: "저장 시 클램프되는 범위와 동일합니다",
+        hint: "저장할 때 이 범위를 벗어난 값은 범위 안으로 맞춰집니다",
         testid: "db-skill-card-cost",
         children: [
           ...(powerNode ? [powerNode] : []),
@@ -157,13 +159,14 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({
         title: "액션 스킬",
-        hint: "필드에서 투사체로 발사",
+        hint: "필드에서 근접·돌진·함정·투사체 사용",
         testid: "db-skill-card-action",
         children: [actionBody],
       }),
     ],
   });
 
+  stack.append(skillCombatRuleCard(currentSkill(record)));
   stack.append(usedByCard(form, currentSkill(record)));
 
   form.replaceChildren(composer, stack);
@@ -339,62 +342,6 @@ function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
   return null;
 }
 
-function actionSkillFields(record: SkillRecord, rerender: () => void): HTMLElement[] {
-  const profile = record.actionSkill;
-  const patchProfile = (mutate: (draft: NonNullable<SkillRecord["actionSkill"]>) => void): void => {
-    const draft: NonNullable<SkillRecord["actionSkill"]> = structuredClone(
-      profile ?? { kind: "projectile", damage: 4, range: 8 }
-    );
-    mutate(draft);
-    updateDatabaseRecord("skills", record.id, { actionSkill: draft });
-  };
-  const items = store.getCurrent().database.items;
-  const fields: HTMLElement[] = [
-    selectLiteral("투사체", "db-field-skill-action-enabled", profile ? "on" : "off", ["off", "on"], (value) => {
-      if (value === "off") updateDatabaseRecord("skills", record.id, { actionSkill: undefined });
-      else patchProfile(() => undefined);
-      rerender();
-    }),
-  ];
-  if (profile) {
-    fields.push(
-      numberField("데미지", "db-field-skill-action-damage", profile.damage, (value) =>
-        patchProfile((draft) => {
-          draft.damage = value;
-        }), { min: 1, max: 9999 }
-      ),
-      numberField("사거리", "db-field-skill-action-range", profile.range, (value) =>
-        patchProfile((draft) => {
-          draft.range = value;
-        }), { min: 1, max: 20 }
-      ),
-      numberField("탄속", "db-field-skill-action-speed", profile.speedTilesPerSec ?? 0, (value) =>
-        patchProfile((draft) => {
-          draft.speedTilesPerSec = value > 0 ? value : undefined;
-        }), { min: 0, max: 30 }
-      ),
-      el("p", { class: "db-skill-card-note", text: "탄속 단위는 타일/초입니다. 0 이면 기본 속도를 씁니다." }),
-      selectField("탄약", "db-field-skill-action-ammo", profile.itemCost?.itemId ?? "", [{ id: "", name: "없음(MP만 소모)" }, ...items], (value) => {
-        const had = Boolean(currentSkill(record).actionSkill?.itemCost);
-        patchProfile((draft) => {
-          draft.itemCost = value ? { itemId: value, amount: draft.itemCost?.amount ?? 1 } : undefined;
-        });
-        // 탄약 유무가 바뀔 때만 다시 그린다 — 같은 상태에서 재렌더하면 포커스만 잃는다.
-        if (had !== Boolean(value)) rerender();
-      })
-    );
-    if (profile.itemCost) {
-      fields.push(
-        numberField("발당 소모", "db-field-skill-action-ammo-amount", profile.itemCost.amount, (value) =>
-          patchProfile((draft) => {
-            if (draft.itemCost) draft.itemCost.amount = value;
-          }), { min: 1, max: 99 }
-        )
-      );
-    }
-  }
-  return fields;
-}
 
 function effectFields(record: SkillRecord, rerender: () => void): HTMLElement[] {
   const controls: HTMLElement[] = [
@@ -483,7 +430,15 @@ function stateEffectFields(record: SkillRecord, rerender: () => void): HTMLEleme
   const add = el("button", {
     class: "db-ws-btn db-ws-btn-ghost db-skill-state-effect-add",
     text: "+ 상태 추가",
-    attrs: { type: "button", ...disabledAttr(store.getCurrent().database.states.length === 0) },
+    attrs: {
+      type: "button",
+      ...disabledAttr(store.getCurrent().database.states.length === 0),
+      // 잠금에는 이유를 같이 준다(databaseControls 의 disabledReason 규약). 이유 없는
+      // 무음 비활성은 "왜 안 눌리지"로 끝난다 — 적 탭이 이미 같은 안내를 쓰고 있다.
+      ...(store.getCurrent().database.states.length === 0
+        ? { title: "[상태] 탭에서 상태를 먼저 만드세요." }
+        : {}),
+    },
     dataset: { testid: "db-skill-state-effect-add" },
     on: {
       click: () => {

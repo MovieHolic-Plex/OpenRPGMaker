@@ -294,6 +294,20 @@ function defaultCollapsedGroups(): Set<string> {
   return new Set(TAB_GROUPS.filter((group) => group.slug !== openSlug).map((group) => group.slug));
 }
 
+/**
+ * 활성 탭 저장. setItem 은 던질 수 있다(프라이빗 모드·할당량) — 같은 파일의
+ * persistCollapsedGroups 는 이미 try/catch 로 막아 두었는데 여기만 무방비라
+ * 저장 실패가 **탭 전환 자체를 중단**시켰다.
+ */
+function persistActiveTab(): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  } catch {
+    // 저장 실패해도 이번 세션의 활성 탭은 메모리에 남는다.
+  }
+}
+
 function persistCollapsedGroups(): void {
   try {
     window.localStorage.setItem(DATABASE_COLLAPSED_GROUPS_KEY, JSON.stringify([...collapsedGroupSlugs()]));
@@ -347,6 +361,15 @@ function openOnlyGroup(slug: string): void {
   for (const group of TAB_GROUPS) if (group.slug !== slug) collapsed.add(group.slug);
 }
 
+/** 그룹 헤더의 펼침/접힘 — 클릭과 키보드(Enter/Space)가 같은 경로를 쓴다. */
+function toggleGroupCollapse(slug: string, header: HTMLElement): void {
+  const collapsed = collapsedGroupSlugs();
+  if (collapsed.has(slug)) openOnlyGroup(slug);
+  else collapsed.add(slug);
+  persistCollapsedGroups();
+  applyGroupCollapse(header);
+}
+
 function expandGroupFor(header: HTMLElement, id: DatabaseTab): void {
   const slug = groupForTab(id)?.slug;
   if (!slug) return;
@@ -368,6 +391,7 @@ const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const DATABASE_COLLAPSED_GROUPS_KEY = "oprn:database.collapsedTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
+let databaseHeaderResizeObserver: ResizeObserver | null = null;
 let spatialDatabaseHost: HTMLElement | null = null;
 
 type DatabaseTabRenderCache = {
@@ -389,7 +413,7 @@ onSpatialTabReveal((tab) => {
   const requested = DATABASE_TAB_BY_SHELL[tab];
   if (activeTab === requested) return;
   activeTab = requested;
-  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  persistActiveTab();
   for (const listener of activeTabListeners) listener(activeTab);
   const host = spatialDatabaseHost;
   if (!host?.isConnected) return;
@@ -431,7 +455,7 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   const shellTab = SHELL_TAB_BY_SPATIAL[activeTab];
   if (legacyOrigin) rememberLegacySpatialRoute(legacyOrigin);
   else if (shellTab) setSpatialTab(shellTab);
-  if (typeof window !== "undefined") window.localStorage.setItem(DATABASE_ACTIVE_TAB_KEY, activeTab);
+  persistActiveTab();
   for (const listener of activeTabListeners) listener(activeTab);
 }
 
@@ -484,7 +508,16 @@ export function renderDatabasePanel(container: HTMLElement): void {
         //  1) 눈에 보이는 부제(.db-tab-group-peek) — hover 없이 읽힌다.
         //  2) 툴팁 — 마우스로도 닿는다.
         //  3) 탭 수 배지 — 안에 몇 개가 접혀 있는지 센다.
-        attrs: { title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}` },
+        // div+onclick 이라 키보드로는 그룹을 펼칠 수 없었고, role 없는 요소의
+        // aria-expanded 는 효력이 없었다. 접힘 상태가 localStorage 에 남으므로 키보드
+        // 사용자는 이전 세션에 접어 둔 그룹의 탭에 **영구히** 도달하지 못했다.
+        // <button> 으로 바꾸면 기본 스타일이 달라 레일 모양이 흔들린다 — role/tabindex 로
+        // 같은 의미만 부여하고 Enter/Space 를 직접 받는다.
+        attrs: {
+          title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}`,
+          role: "button",
+          tabindex: "0",
+        },
         dataset: {
           testid: `db-tab-group-${group.slug}`,
           groupSlug: group.slug,
@@ -500,12 +533,13 @@ export function renderDatabasePanel(container: HTMLElement): void {
           el("span", { class: "db-tab-group-peek", attrs: { hidden: "" } }),
         ],
         on: {
-          click: () => {
-            const collapsed = collapsedGroupSlugs();
-            if (collapsed.has(group.slug)) openOnlyGroup(group.slug);
-            else collapsed.add(group.slug);
-            persistCollapsedGroups();
-            applyGroupCollapse(header);
+          click: () => toggleGroupCollapse(group.slug, header),
+          keydown: (event: Event) => {
+            if (!("key" in event)) return;
+            const key = (event as KeyboardEvent).key;
+            if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
+            event.preventDefault(); // Space 가 레일을 스크롤하지 않게.
+            toggleGroupCollapse(group.slug, header);
           },
         },
       }));
@@ -523,8 +557,12 @@ export function renderDatabasePanel(container: HTMLElement): void {
   container.append(header, body);
   revealActiveTab(header);
   if (typeof ResizeObserver !== "undefined") {
+    // 헤더가 교체되면(탭 레일 재구성) 이전 옵저버는 할 일이 없다. GC 로 수거될 "가능성"에
+    // 기대지 않고 명시적으로 끊는다 — 패널을 여러 번 다시 그리면 그만큼 쌓였다.
+    databaseHeaderResizeObserver?.disconnect();
     const observer = new ResizeObserver(() => revealActiveTab(header));
     observer.observe(header);
+    databaseHeaderResizeObserver = observer;
   }
 }
 
@@ -702,7 +740,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   structureKits: "구조물",
   tilesetSpaces: "공간 종류",
   worldGen: "생성 규칙",
-  spatialTiles: "타일셋 통행 지형 tilesets",
+  spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
   spatialPlaces: "공간 방 실내 실외 건물 개념 꾸러미 시설 scratchConcepts tilesetSpaces",
@@ -810,6 +848,11 @@ function appendTabButton(
       // 나중에 append 하므로 둘을 섞으면 라벨이 아이콘 앞으로 온다. <path> 는 텍스트
       // 노드를 안 가지므로 button.textContent 는 라벨 그대로 남는다(G006 라벨 계약).
       children: [makeDatabaseTabIcon(tab.id), tab.label],
+      // 카운트 배지(CSS `content: attr(data-count)`)는 보조기술이 못 읽는다. 다만 이 버튼은
+      // `aria-label === title === 라벨` 을 계약으로 쓰고 있어(databaseTabIcons·databaseSidebarNav
+      // 가 단언, e2e getByLabel 도 의존) 숫자를 둘 중 어디에도 끼워 넣을 수 없다.
+      // 배지를 읽히게 하려면 시각적 숨김 span 을 버튼 안에 넣어야 하는데, 그건 다시
+      // `button.textContent === 라벨`(G006) 계약과 부딪힌다 — 세 계약을 함께 손보는 별도 작업.
       attrs: { type: "button", title: tab.label, "aria-label": tab.label },
       dataset: {
         testid: tab.testid,
@@ -844,8 +887,12 @@ function updateTabButtons(header: HTMLElement): void {
   const activeTestId = tabFor(primaryTab(activeTab)).testid;
   for (const button of Array.from(header.querySelectorAll(".db-tab"))) {
     if (!(button instanceof HTMLElement)) continue;
-    if (button.dataset.testid === activeTestId) button.classList.add("active");
-    else button.classList.remove("active");
+    const isActive = button.dataset.testid === activeTestId;
+    button.classList.toggle("active", isActive);
+    // `.active` 클래스만으로는 보조기술이 어느 탭에 있는지 알 수 없었다(레일 전체에
+    // aria-current/selected/pressed 가 0건이었다). 맵 패널이 쓰는 aria-current 규약을 맞춘다.
+    if (isActive) button.setAttribute("aria-current", "page");
+    else button.removeAttribute("aria-current");
   }
   revealActiveTab(header);
 }
@@ -1201,7 +1248,12 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
   // Legacy mode routes are facets of the same tileset workspace, not extra rails.
   const context = tab === "tilesetAutotile" || tab === "tilesetUnlabeled" ? "spatialTiles" : tab;
   for (const [child, owner] of Object.entries(MAP_PARENT_TAB)) {
-    if (owner === context && child !== "spatialSpaces" && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
+    // tilesetAutotile·tilesetUnlabeled 는 같은 타일셋 작업대의 facet 이라 별도 링크를 안 건다.
+    // spatialSpaces(「장소 편집」)는 사정이 다르다 — 레일 그룹에서도 빠져 있어서 여기까지
+    // 막으면 **자유 텍스트 검색이 유일한 진입로**가 된다. 정보구조가 스스로 spatialPlaces 를
+    // 부모로 선언해 놓고(MAP_PARENT_TAB) 그 부모에서 오는 링크만 막던 자기모순이었다.
+    // 형제 facet 인 terrain 은 이미 링크가 살아 있다.
+    if (owner === context && child !== "tilesetAutotile" && child !== "tilesetUnlabeled") {
       addLink(child as DatabaseTab);
     }
   }

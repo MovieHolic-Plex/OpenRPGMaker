@@ -1,8 +1,14 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 큰 마을 생성 흐름 (쉽게)
 
 100×100 **「큰 강호 장터 마을」** 이 어떻게 만들어지는지, 코드 기준으로 순서만 정리한다.
 
 목표: **어디를 고치면 뭐가 바뀌는지** 한눈에 보이게 하기.
+
+이 문서의 장터는 명시적으로 요청한 사례다. 2026-09-21부터 미지정 광장과 물가 테마의
+자동 시장 기본값은 제거했다. 강변 기본형의 구현·연구 및 지원 범위는
+[마을 배치 연구](village-layout-research.md)를 참조한다.
 
 ---
 
@@ -89,7 +95,7 @@ AI 초안 간 꾸미기 이월과 완성 맵 직렬화를 검사한다. 관련 �
 `villageTreeCompletion`, `authorVillageFacade`, `villageBuildStages` 6파일과 기존 시작점 복원 후
 접근성을 재검사하는 회귀 사례를 검증한다.
 실제 저작은 `scripts/publish-object-village.mts --apply`로 등록 도구 실행 → CAS 저장 →
-전체 Supabase 재로드 일치를 확인한다. 기존 저장 마을을 자동 재생성하지 않는다.
+전체 LegacyDb 재로드 일치를 확인한다. 기존 저장 마을을 자동 재생성하지 않는다.
 편집기 그림은 `scripts/capture-authored-village.mjs`, 출하 플레이어 검증은
 `scripts/qa/prepare-object-village-walks.mts` 후 `npm run qa:runtime -- --scenario object-village`다.
 
@@ -116,7 +122,7 @@ AI 초안 간 꾸미기 이월과 완성 맵 직렬화를 검사한다. 관련 �
 - 새 소형 외형 12종의 원본 저작은 `scripts/lib/compactVillageHouses.mts`에 있다.
   1층 6종·2층 4종 일반 주택과 회관/여관 2종이며, 회벽·석벽 및 연결된 지붕 조각을 조립한다.
   `scripts/publish-compact-village.mts --apply`는 실제 `upsert_spatial_design` / `author_village`
-  도구를 실행하고 Supabase CAS 저장·재로드까지 수행한다. 새 맵이 이미 있으면 재생성하지 않는다.
+  도구를 실행하고 LegacyDb CAS 저장·재로드까지 수행한다. 새 맵이 이미 있으면 재생성하지 않는다.
 
 검증 파일은 `villageCompactComposition`, `villageOrganicLake`, `compactVillageVegetation`이다.
 최종 원격 검증 스크립트는 저장 시의 canonical SHA와 독립 재로드의 서버 SHA, 모든 맵·공간 문서·

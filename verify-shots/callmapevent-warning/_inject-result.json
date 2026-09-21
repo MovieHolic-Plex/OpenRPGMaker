@@ -1,0 +1,17 @@
+{
+ "injectResult": {
+  "ok": true
+ },
+ "tooltipState": {
+  "ok": false,
+  "reason": "step event missing",
+  "mapId": "map_blank_start",
+  "events": []
+ },
+ "consoleErrors": [
+  "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+  "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+  "Failed to load resource: net::ERR_CONNECTION_REFUSED",
+  "Failed to load resource: net::ERR_CONNECTION_REFUSED"
+ ]
+}

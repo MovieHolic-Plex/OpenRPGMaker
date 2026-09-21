@@ -14,8 +14,23 @@ import { createAiStickyChecklist } from "@/editor/panels/aiStickyChecklist";
 type Call = { name: string; args: Record<string, unknown> };
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks(); });
 
+/**
+ * `vi.fn(impl)` 의 `impl` 은 **모듈 스코프**에 둔다. harness() 안에 인라인으로 쓰면 안 된다.
+ *
+ * @vitest/spy 의 모듈 레벨 `const mocks = new Set()` 은 추가만 하고 제거가 없다
+ * (`vi.clearAllMocks`/`resetAllMocks`/`restoreAllMocks` 는 원소를 순회할 뿐 Set 을 비우지 않는다).
+ * 그래서 impl 이 harness() 스코프를 클로저로 잡으면 그 스코프의 AssistantSession 이
+ * **파일이 끝날 때까지** 살아 있다 — 본문에서 아무것도 참조하지 않아도 V8 은 부모 Context 를
+ * 물고 있으므로 소용없다.
+ *
+ * 실측(2026-09-18): 이 파일이 61테스트에서 **4,253MB** 를 썼다. CI 워커 힙 상한이 3,584MB 라
+ * `Ineffective mark-compacts near heap limit` 으로 워커가 죽고, vitest 가 JSON 리포트도
+ * 못 내고 exit=1 로 끝났다 — 전체 게이트가 통째로 판정 불가가 됐다.
+ */
+const refuseNetwork = () => { throw new Error("Offline recorded-model regression attempted network"); };
+
 function harness(f = p7Approach(), priorTranscript?: string) {
-  const network = vi.fn(() => { throw new Error("Offline recorded-model regression attempted network"); });
+  const network = vi.fn(refuseNetwork);
   vi.stubGlobal("fetch", network);
   let queued: Call[] = [], sequence = 0;
   const events: SessionEvent[] = [];

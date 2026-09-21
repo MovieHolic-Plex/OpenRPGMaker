@@ -1,3 +1,4 @@
+import type { EventCommandScope } from "@/ai/eventCommandScope";
 // editor/aiAssistantBridge.ts
 // 에디터 AI 채팅과 외부 MCP/에이전트를 같은 세션으로 잇는 브리지.
 // - 패널이 register 하면 window.__oprnAiBridge 와 로컬 HTTP 브리지(127.0.0.1)에 연결
@@ -46,6 +47,7 @@ export type AiBridgePendingProposal = {
 };
 
 export type AiBridgeSendOptions = {
+  readonly eventCommandScope?: EventCommandScope;
   /**
    * 턴이 끝나도 초안을 스토어에 적용하지 않는다 — 결과의 `pendingProposal` 로 넘긴다.
    * 검토 게이트를 가진 표면(DB 검토 오버레이)만 쓴다. MCP·외부 전송은 종전대로 즉시 적용이다.

@@ -67,6 +67,7 @@ Hostile-review fixes for event command forms: fork/loop rerender, setSwitch valu
 ## Native media flags and picture completion (2026-09-06, U04)
 
 - Show Picture exposes `waitForPicture` and preserves explicit true/false during other field edits, including zero duration. Omission stays omitted until the user changes the toggle.
+- 2026-09-20 소스 재대조에서 폼에 미반영된 위 U04 계약을 실제 보정했다. 브라우저 관측값: `docs/reviews/2026-09-20-data-integrity-evidence/observations.json`. 이 날짜의 실행 확인은 폼에 한정되며 런타임 QA를 다시 수행한 것은 아니다.
 - Play Movie treats omitted `wait` and `skippable` as true. Switching either off stores explicit false. Native movie skipping uses confirm keys such as Z; Escape is not the movie skip key.
 - `RuntimeDomOverlay.waitForPicture(pictureId)` observes the generation after `syncPictureLayer`. Completion follows the final DOM transform, not a parallel duration timer. Same-object/resource retargeting retains observers until the retargeted final write; authored object/resource replacement or erase resolves prior observers as `cancelled`.
 - Picture cancellation releases the operation but continues its live event once. Session replacement, scene shutdown and destroy still prevent stale continuation. `clearPictures()` cancels the picture frame and observers without clearing unrelated HUD/effects. The interpreter binds cleanup to the captured renderer even for non-waiting pictures; independent consumers must wire their own teardown.

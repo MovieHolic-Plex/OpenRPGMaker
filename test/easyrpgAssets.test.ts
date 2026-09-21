@@ -3,6 +3,8 @@ import {
   BUNDLED_EASYRPG_CHARSET_ASSETS,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
   bundledChipsetFrameCount,
+  bundledChipsetTileSize,
+  bundledChipsetTilesPerRow,
   bundledEasyRpgTilesetId,
 } from "@/assets/bundled";
 import { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -46,8 +48,8 @@ describe("bundled EasyRPG RTP assets", () => {
       expect(tileset).toMatchObject({
         name: asset.name,
         image: { type: "bundled", id: asset.textureKey },
-        tileSize: 16,
-        tilesPerRow: 30,
+        tileSize: bundledChipsetTileSize(asset.textureKey),
+        tilesPerRow: bundledChipsetTilesPerRow(asset.textureKey),
         count: bundledChipsetFrameCount(asset.textureKey),
       });
       // combined_town은 harness가 메타데이터를 채운 공식 디폴트 칩셋(bundled-default).

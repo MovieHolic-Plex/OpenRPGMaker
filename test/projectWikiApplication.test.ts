@@ -4,17 +4,20 @@ import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";
+import { recordProjectCommit } from "@/project/projectCommitLog";
+import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
+import { manualWikiNote, wikiActivity } from "./fixtures/wikiActivity";
 
 vi.mock("@/project/projectCommitLog", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/project/projectCommitLog")>(),
-  recordProjectCommit: async () => ({
+  recordProjectCommit: vi.fn(async () => ({
     commitId: null,
     persisted: false,
     reviewStatus: "approved",
     summary: "Wiki application test",
     toolNames: [],
     recordedAt: "2026-09-07T00:00:00Z",
-  }),
+  })),
 }));
 
 afterEach(() => {
@@ -22,6 +25,33 @@ afterEach(() => {
 });
 
 describe("wiki ownership at authoring application", () => {
+  it.each([false, true])("records repeated work only in history, including commit failure=%s", async (commitFails) => {
+    const project = createBlankProject();
+    project.world = { entities: [wikiActivity(), manualWikiNote], relations: [] };
+    store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
+    store.replace(project);
+    resetMapEditHistory();
+    vi.mocked(recordProjectCommit).mockClear();
+    const flush = vi.spyOn(store, "flush");
+    for (let i = 0; i < 2; i++) {
+      if (commitFails) vi.mocked(recordProjectCommit).mockRejectedValueOnce(new Error("commit unavailable"));
+      const baseline = store.getCurrent();
+      const proposed = structuredClone(baseline);
+      proposed.meta.title = `제목 ${i}`;
+      const result = await applyProposedProject(proposed, {
+        base: captureProposalBase(baseline), baseline: new AuthoredProjectBaseline(baseline),
+        source: "agent", summary: `제목 ${i}`, toolNames: ["set_title_screen"],
+      });
+      expect(result.ok).toBe(true);
+      expect(store.getCurrent().world).toEqual(project.world);
+      expect(store.getCurrent().meta.title).toBe(`제목 ${i}`);
+    }
+    expect(recordProjectCommit).toHaveBeenCalledTimes(2);
+    expect(vi.mocked(recordProjectCommit).mock.calls[1][0]).toMatchObject({ summary: "제목 1", toolNames: ["set_title_screen"] });
+    expect(flush).not.toHaveBeenCalled();
+    expect(getMapEditHistoryEntries()).toHaveLength(2);
+  });
+
   it("preserves the live wiki when a region draft is applied", () => {
     const project = createBlankProject();
     const proposed = structuredClone(project);

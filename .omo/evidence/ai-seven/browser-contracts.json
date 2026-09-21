@@ -1,7 +1,7 @@
 {
   "origin": "http://127.0.0.1:43791",
   "entry": "/?blankProject=1",
-  "httpIsolation": "Supabase and model requests intercepted; no real remote writes",
+  "httpIsolation": "LegacyDb and model requests intercepted; no real remote writes",
   "transport": {
     "action": "ai-new-chat; fill ai-input with 연결 확인; click ai-send; structured intent succeeds, main completion connection refused",
     "running": false,

@@ -1,0 +1,344 @@
+[
+  {
+    "recipeId": "forest-strip",
+    "fault": "cut-root",
+    "placement": {
+      "recipeId": "forest-strip",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 10,
+      "y": 7
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 1,
+      "issues": [
+        {
+          "code": "cut-root",
+          "x": 10,
+          "y": 7,
+          "layer": "lower",
+          "expected": 1363,
+          "actual": 1141,
+          "role": "root"
+        }
+      ],
+      "access": {
+        "anchors": [],
+        "checked": false,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "forest-strip",
+    "fault": "missing-trunk",
+    "placement": {
+      "recipeId": "forest-strip",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 10,
+      "y": 6
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 1,
+      "issues": [
+        {
+          "code": "missing-trunk",
+          "x": 10,
+          "y": 6,
+          "layer": "lower",
+          "expected": 1357,
+          "actual": 1141,
+          "role": "trunk"
+        }
+      ],
+      "access": {
+        "anchors": [],
+        "checked": false,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "forest-strip",
+    "fault": "wrong-edge-direction",
+    "placement": {
+      "recipeId": "forest-strip",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 2,
+      "y": 2
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 1,
+      "issues": [
+        {
+          "code": "wrong-edge-direction",
+          "x": 2,
+          "y": 2,
+          "layer": "upper",
+          "expected": 1410,
+          "actual": 1443,
+          "role": "edge-west"
+        }
+      ],
+      "access": {
+        "anchors": [],
+        "checked": false,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "forest-tree",
+    "fault": "missing-piece",
+    "placement": {
+      "recipeId": "forest-tree",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 2,
+      "y": 4
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 1,
+      "issues": [
+        {
+          "code": "missing-trunk",
+          "x": 2,
+          "y": 4,
+          "layer": "lower",
+          "expected": 1038,
+          "actual": 1141,
+          "role": "trunk"
+        }
+      ],
+      "access": {
+        "anchors": [],
+        "checked": false,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "house-wood",
+    "fault": "blocked-entrance",
+    "placement": {
+      "recipeId": "house-wood",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 6,
+      "y": 9
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 2,
+      "issues": [
+        {
+          "code": "tile-mismatch",
+          "x": 6,
+          "y": 9,
+          "layer": "upper",
+          "expected": -1,
+          "actual": 379,
+          "role": "ground"
+        },
+        {
+          "code": "blocked-entrance",
+          "x": 6,
+          "y": 9
+        }
+      ],
+      "access": {
+        "anchors": [
+          {
+            "x": 6,
+            "y": 9
+          },
+          {
+            "x": 6,
+            "y": 10
+          }
+        ],
+        "checked": true,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "furniture-table",
+    "fault": "wrong-layer",
+    "placement": {
+      "recipeId": "furniture-table",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 2,
+      "y": 2
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 2,
+      "issues": [
+        {
+          "code": "wrong-edge-direction",
+          "x": 2,
+          "y": 2,
+          "layer": "lower",
+          "expected": 1141,
+          "actual": 234,
+          "role": "edge-west"
+        },
+        {
+          "code": "wrong-layer",
+          "x": 2,
+          "y": 2,
+          "layer": "upper",
+          "expected": 234,
+          "actual": -1,
+          "role": "edge-west"
+        }
+      ],
+      "access": {
+        "anchors": [
+          {
+            "x": 3,
+            "y": 3
+          }
+        ],
+        "checked": true,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "fence-gate",
+    "fault": "blocked-entrance",
+    "placement": {
+      "recipeId": "fence-gate",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 5,
+      "y": 6
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 3,
+      "issues": [
+        {
+          "code": "tile-mismatch",
+          "x": 5,
+          "y": 6,
+          "layer": "upper",
+          "expected": -1,
+          "actual": 379,
+          "role": "ground"
+        },
+        {
+          "code": "blocked-entrance",
+          "x": 5,
+          "y": 6
+        },
+        {
+          "code": "disconnected-entrance",
+          "x": 5,
+          "y": 7
+        }
+      ],
+      "access": {
+        "anchors": [
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 5,
+            "y": 6
+          },
+          {
+            "x": 5,
+            "y": 7
+          }
+        ],
+        "checked": true,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "recipeId": "cave-cliff",
+    "fault": "blocked-entrance",
+    "placement": {
+      "recipeId": "cave-cliff",
+      "x": 2,
+      "y": 2
+    },
+    "expectedFault": {
+      "x": 5,
+      "y": 6
+    },
+    "report": {
+      "valid": false,
+      "issueCount": 2,
+      "issues": [
+        {
+          "code": "tile-mismatch",
+          "x": 5,
+          "y": 6,
+          "layer": "upper",
+          "expected": -1,
+          "actual": 379,
+          "role": "ground"
+        },
+        {
+          "code": "blocked-entrance",
+          "x": 5,
+          "y": 6
+        }
+      ],
+      "access": {
+        "anchors": [
+          {
+            "x": 5,
+            "y": 6
+          },
+          {
+            "x": 5,
+            "y": 7
+          }
+        ],
+        "checked": true,
+        "externalEntriesProvided": false
+      },
+      "scope": "registered-recipe footprints; tile passability, not runtime event execution"
+    }
+  },
+  {
+    "case": "disconnected-entrance",
+    "rejected": true,
+    "mapUnchanged": true
+  }
+]

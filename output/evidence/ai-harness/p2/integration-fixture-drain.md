@@ -1,12 +1,12 @@
 # Integration follow-up: owned fixture I/O drainage and user-resume handoff
 
-The fixture cleanup review was correct. `ProjectStore.persistCurrent()` calls `recordManualProjectCommitAfterSave()` before returning its receipt, but that call launches `recordProjectCommitToSupabase()` without awaiting its completion. That writer awaits hashing, both commit table requests, and error response-body handling. Cancellation at the receipt can return from proof while this real writer is still running. Freezing autosave timers does not complete it.
+The fixture cleanup review was correct. `ProjectStore.persistCurrent()` calls `recordManualProjectCommitAfterSave()` before returning its receipt, but that call launches `recordProjectCommitToLegacyDb()` without awaiting its completion. That writer awaits hashing, both commit table requests, and error response-body handling. Cancellation at the receipt can return from proof while this real writer is still running. Freezing autosave timers does not complete it.
 
 This follow-up changes only five test/fixture files plus integration evidence. No production, UI, authority, transport implementation or QA scenario source changed. Worktree/branch remain `/home/main/z-project/rpg-zzu-ai-harness-p2-20260906`, `agent/ai-harness-p2-20260906`, based on `761ed517b188729130e26dad57196aa4218b19ab`.
 
 ## Fix and faithful regression
 
-- `applyFixture()` installs a call-through `vi.spyOn(sync, "recordProjectCommitToSupabase")` before actions. It neither substitutes the writer nor manufactures its result.
+- `applyFixture()` installs a call-through `vi.spyOn(sync, "recordProjectCommitToLegacyDb")` before actions. It neither substitutes the writer nor manufactures its result.
 - `drainOutcomeFixtures()` takes the actual returned writer promises, waits for all their settlements with a real Node-timer 10-second failure deadline, and reports rejected writers via `AggregateError`. Its deadline is always cleared. It does not poll or wait for hypothetical transport traffic.
 - All three fixture consumers now await drainage in async `afterEach` **before** disabling persistence, resetting history/cache, restoring mocks, globals or environment. Restoration remains in `finally` so a drain failure is visible without hiding cleanup.
 - A dedicated regression performs a real manual edit/save, cancels proof at its accepted receipt, and holds the real optional-table error response body in a native `TransformStream`. A call-through observation signals the actual `Response.text()` invocation. Cleanup starts while that body is pending; the stream is then released and the test asserts that the real writer has finished when drainage returns. The writer returns `not-configured` after parsing the genuine `PGRST205` body; no proof or commit authority is faked.

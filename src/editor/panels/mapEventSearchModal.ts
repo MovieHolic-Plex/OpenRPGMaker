@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
-import { openDatabaseModal } from "@/editor/panels/databaseModal";
+import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
   SEARCH_KIND_LABELS,
@@ -302,7 +302,7 @@ export function openMapEventSearchModal(options: OpenMapEventSearchOptions = {})
       return;
     }
     close();
-    openDatabaseModal("commonEvents");
+    openDatabaseModalLazy("commonEvents");
     Array.from(document.querySelectorAll<HTMLElement>("[data-record-id]"))
       .find((row) => row.dataset.recordId === target.commonEventId)
       ?.click();

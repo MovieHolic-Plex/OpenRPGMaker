@@ -56,7 +56,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
     await shot("05-label-edited");
   }
 
-  // 커밋 히스토리 패널 (실 Supabase read)
+  // 커밋 히스토리 패널 (실 LegacyDb read)
   await page.click('[data-testid="commit-history-toggle"]');
   const panel = await page.waitForSelector('[data-testid="commit-history-panel"]', { timeout: 5000 }).catch(() => null);
   check("커밋 히스토리 패널 열림", !!panel);

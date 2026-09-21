@@ -1,3 +1,26 @@
+- **플레이 프리로드는 카탈로그가 아니라 맵이 쓰는 그림만 싣는다 (2026-09-22):**
+  `loadBundledAssets` / `collectPlayReferencedStrings` 는 `resourceProfiles` 와, 어떤 맵·명령도
+  가리키지 않는 `tilesets` 레코드를 훑지 않는다. 빈 프로젝트도 `ensureBundledTilesets` 로 칩셋
+  카탈로그 전체가 들어 있고 프로필은 캐릭셋 텍스처 키를 전부 갖고 있어서, 통째로 보면 시작 맵과
+  무관한 시트의 다운로드·색키·타일 프레임 등록이 테스트 플레이 창을 붙잡는다. 맵 `tilesetId` 와
+  이벤트·액터·명령이 가리키는 타일셋만 다시 읽는다. 대사창·이모트·배치 오버레이 텍스처는 그대로
+  항상 싣는다. 내보내기 ZIP 은 다른 계약이다(`webExportAssets` 는 이미지 프로필을 계속 넣는다).
+  회귀: `test/playBootAssetSelection.test.ts`.
+- **호스트 프로젝트 초기 연결:** `electron/main/sessions.ts`의 세션 오픈은 인라인 `dataUrl`이
+
+## 맵별 16/32/48px 좌표
+
+타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.
+  실제로 들어 있는 문서에서만 미디어 분리용 전체 역직렬화를 수행한다. 일반적인 파일 참조
+  프로젝트는 `project.load()`가 곧 읽을 5~6MiB 문서를 미디어 검사 때문에 한 번 더 복원하지
+  않는다. `electron/main/dispatch.ts`의 `project.load`도 저장된 wire 문자열을 그대로 보내고
+  revision/sha는 메타데이터 조회로 채운다 — 메인 프로세스에서 같은 문서를 먼저 복원하지 않는다.
+  미디어 분리 계약 자체는 유지하되, 이 경로에 새 전체 프로젝트 스캔을 추가하지 않는다.
+- **호스트 정적 자원·브리지 전송:** `electron/serve/runtime.ts`는 해시가 붙은 `assets/` 파일에
+  immutable 캐시를 주고, 1KiB 이상 JSON/JavaScript/CSS/SVG와 프로젝트 브리지 응답은
+  `electron/serve/httpBody.ts`의 gzip 경로를 탄다. 브라우저가 매번 다시 받아야 하는 HTML과
+  세션별 브리지 의미는 no-store로 유지한다. 프로젝트 JSON을 다시 직렬화하거나 캐시 헤더를
+  무효화하는 코드를 호스트 경로에 추가하지 않는다.
 - **좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10):** `playPathfindMove` 는
   이제 `Promise<MovementResult>` 를 돌려준다(도착 + 실패 6종, 정수 코드가 계약이다).
   변수 좌표는 `session.variables[id]` **원시 조회**로 읽어야 한다 — `getVariable` 의 `?? 0`
@@ -266,6 +289,29 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
   형제 명령 둘은 **여전히 소비자가 없다** — 「타일셋 변경」(`map.tileset_override`)과
   「인카운터율 설정」(`map.encounter_rate`)은 같은 모양(`{mapId,x,y,value}`)으로 세션에만 적힌다.
   같은 방식으로 붙이려면 «어느 맵에 적용되는가» 를 먼저 정하라(배경은 명령 시점의 현재 맵으로 정했다).
+
+## 맵 배경 다중 레이어 (2026-09-21)
+
+- **`map.background.layers`(최대 3장, optional)가 생겼다.** 기존 계약은 유지된다 — 첫 장은 예전과 같이 `map.background.imageId`가 그리고, `layers` 배열(앞이 아래)이 그 위에 순서대로 얹히는 구조다. `resolveMapBackgroundLayers` 반환 값이 1장에서 최대 4장 스택으로 늘었고, 렌더·시그니처·스프라이트 재사용 로직은 배열 길이에 맞춰 이미 동작한다(스택으로 짜여 있던 렌더러가 그대로 이어받는다).
+
+- **명령 「먼 배경 변경」(m2-069)은 첫 장만 대체한다** — 추가 레이어(구름·산)는 그대로 유지된다. 명령이 구름까지 지우면 빈 자리가 개어 배경이 깨진다.
+
+- **정규화**: `normalizeMapBackgroundLayers`(`src/project/mapBackground.ts`)가 슬라이스·무효 레이어 제거를 담당한다. 유효한 레이어가 없으면 필드 자체를 생략한다(레거시 JSON 바이트 유지).
+
+- **CraftPix 레이어 팩**(OGA-BY 3.0, 35장 — 4세트 × 합성본+레이어)가 `public/assets/oga/craftpix-horizontal/` 에 들어갔다. 등록은 `src/assets/ogaCraftpixBackgrounds.ts`, 참조 검증·피커·검색에 같이 연결됐다. 편집기 「맵 배경」 탭의 **레이어 세트 선택**(map-bg-layer-set)이 세트를 통째로 얹는 정규 경로다. 합성본은 레이어 합성과 픽셀 수준에서 정확히 대응하지 않는다(업스트림 리샘플 흔적, 불일치 14~21%)—합성본을 레이어 대용으로 쓰면 미묘한 차이가 남는다.
+
+- 참조 검증(`resourceReferenceValidation`)에 카탈로그 35개 id를 등록했다 — 빠지면 역직렬화가 던진다.
+
+- **편집기 캔버스 미리보기도 스택 전체를 그렸다(2026-09-21).** EditScene 미리보기가 첫 장만 그리던 것을 플레이와 같은 구조(첫 장 + layers, depth 순서)로 바꿨다. 저작 화면의 검증 경로(카드 피커 → 적용 → 캔버스 토글)에서 게임 상태를 그대로 보는 것이 증거로 고정됐다: verify-shots/layer-set-picker/evidence-0*.png. 인게임 하늘색 (83,188,198) = CraftPix pines sky.png 원본과 일치.
+
+- **fit(그림 맞추기)이 생겼다 — 없으면 큰 배경 아트가 화면 밖으로 나간다(2026-09-21 실측).** CraftPix 레이어 아트는 1920x1080인데 게임 논리 뷰포트는 320x240이다. 1:1로 그리면 아트 좌상단 22%만 보이고 지면(rocks_1 아트 y=747)과 나무(pines y=953)는 240px 창에 들어올 수 없다. fit: "cover"는 뷰포트를 덮는 최소 배율(16:9 → 4:3이면 240/1080 = 0.2222)로 그린다. native(기본)는 배율 1이라 였 프로젝트 픽셀이 바뀌지 않는다. EasyRPG 640x480 파노라마도 같은 결함이 있었다(절반만 보임).
+- **스크롤 단위와 tilePosition의 관계**: 저작 스크롤은 논리 px/프레임이고 Phaser의 tilePosition은 타일 배율 단위다. 배율 0.2222에서 논리 60px를 움직이려면 tilePosition을 270 올려야 한다(mapBackgroundTilePosition).
+- **레이어 상한이 3에서 8로 올랐다.** CraftPix 세트는 5~9장이라 3장 상한이면 소나무 숲(9장)이 4장으로 잘려 나무와 새가 빠졌다.
+- **고해상도 + 확대 = 도트 개선의 정석(2026-09-22).** 해상도는 픽셀 밀도이고 보이는 범위는 카메라 배율이 정한다. 캔버스 크기를 올리면 CSS 변환이 그만큼 줄어 화면에 보이는 픽셀 수가 같다(실측: 320x240은 matrix(4,0,0,4), 1280x960은 matrix(1,0,0,1), 둘 다 표시 1280x960). 해상도만 올리면 도트만 선명해지고 시야는 그대로다.
+- 배경 아트를 무손실(1:1)로 쓰는 해: 1920x1080 아트에 **1440x1080 + 배율 4.5**. 1440/(16x4.5)=20타일, 1080/72=15타일로 320x240과 동일 시야이고, 배경 배율 0.2222x4.5=1.0이다. 그래서 배율 상한을 4에서 6으로 올렸다(CAMERA_ZOOM_LIMITS, src/player/playSceneCamera.ts). 상한 4로는 시야가 22x17이 되어 클래식과 어깋난다. 증거: verify-shots/layer-set-picker/OPTIMAL-*.
+- **프로젝트 기본 카메라 배율 system.cameraZoom(2026-09-22).** 줌은 원래 연출 상태(session.camera.zoom, 이벤트 명령 m2-201)로만 존재했다. 그래서 고해상도 배경을 1:1로 쓰려면 맵마다 auto 이벤트를 심어 줌을 걸어야 했고 새 맵에서는 1로 돌아갔다. 이제 기본값은 프로젝트가 정하고(생략=1, 1은 저장 안 함) 연출 명령은 그 위에 일시적으로 덮어쓴다.
+- 적용 지점: applyStoredCameraState 가 세션 상태가 없을 때 resolveCameraZoom(store.system) 을 쓴다(예전에는 centerRuntimeCamera가 1로 리셋한 값이 그대로 남았다). 배율 범위의 정본은 src/project/cameraZoom.ts(CAMERA_ZOOM_LIMITS 0.25~6)이고 런타임이 그것을 import 한다 — 둘이 달라지면 「저장은 됐는데 플레이에서는 다른 배율」이 된다.
+- AI: set_project_settings.cameraZoom(0.25~6). 해상도와 함께 서야 시야가 유지된다 — 1440x1080 + 4.5 → 20x15타일(320x240과 동일). 증거: verify-shots/layer-set-picker/SYSTEMZOOM-*.
 - **아직 안 되는 것(알고 있어야 할 경계).**
   - 편집기 **캔버스**는 배경을 그리지 않는다. 빈 칸은 `editSceneRender.createEmptyTile` 의
     **불투명** 체커 사각형이고, 그 체커는 "여기 바닥이 없다" 를 보이게 하는 **의도된 신호**

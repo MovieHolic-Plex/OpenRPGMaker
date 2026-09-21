@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { deserialize, serialize } from "@/project/io";
 import type { GameMap, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeEventState = {
@@ -23,7 +23,7 @@ type RuntimeState = {
 type Direction = "down" | "left" | "right" | "up";
 
 const EVIDENCE_DIR = "output/evidence/map-transfer-existing-city";
-const RECOVERED_PROJECT_PATH = ".omo/recovered/supabase-rpg-zzu-house-template-gallery.json";
+const RECOVERED_PROJECT_PATH = ".omo/recovered/legacyDb-rpg-zzu-house-template-gallery.json";
 const CITY_MAP_NAME = "small_house_01 도시 8채";
 const TARGET_MAP_NAME = "small_house_01 도시 8채 이동 타겟";
 const TARGET_MAP_ID = "map_existing_city_transfer_target";
@@ -196,7 +196,7 @@ test("existing city map transfer fires from the event layer", async ({ page }) =
 
   try {
     await page.setViewportSize({ width: 1280, height: 800 });
-    await seedProjectFromSupabaseCanonical(page, project);
+    await seedProjectForEditor(page, project);
     await page.screenshot({ path: `${runEvidenceDir}/editor-city-map.png`, fullPage: true });
     await page.getByTestId("mode-play").click();
     await startNewGameFromTitle(page);

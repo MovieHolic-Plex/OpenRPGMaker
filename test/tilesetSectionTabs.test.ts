@@ -109,7 +109,7 @@ describe("통행 편집의 레이어 보호", () => {
   });
 });
 
-describe("타일셋 섹션 3탭 UI", () => {
+describe("타일셋 섹션 UI", () => {
   let restoreDom: (() => void) | null = null;
 
   beforeEach(() => {
@@ -128,8 +128,10 @@ describe("타일셋 섹션 3탭 UI", () => {
     return renderTilesetEditor(tileset, () => {}) as unknown as FakeElement;
   }
 
-  it("탭 3개가 렌더되고 기본 규칙 탭에 레이어/통행 컨트롤이 있다", () => {
+  it("참고문서와 설정을 포함한 5탭에서 규칙 탭에 레이어/통행 컨트롤이 있다", () => {
     const editor = renderEditor();
+    expect(findByTestId(editor, "tileset-section-tab-references")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-section-tab-settings")).toBeTruthy();
     expect(findByTestId(editor, "tileset-section-tab-rules")).toBeTruthy();
     expect(findByTestId(editor, "tileset-section-tab-knowledge")).toBeTruthy();
     expect(findByTestId(editor, "tileset-section-tab-compose")).toBeTruthy();

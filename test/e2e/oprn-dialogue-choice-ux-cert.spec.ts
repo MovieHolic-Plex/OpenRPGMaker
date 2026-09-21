@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { debugState, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop12-dialogue-choice-ux";
@@ -19,7 +19,7 @@ test.setTimeout(120_000);
 test("loop12 certifies dialogue face message settings and fixed-height choices", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, dialogueChoiceProject());
+  await seedProjectForEditor(page, dialogueChoiceProject());
   await writeJson("000-scenario.json", { scope: ["text", "displayTextSettings", "changeFace", "choices", "choice branches", "choice cancel branch", "runtime UX"] });
 
   await authorDialogueEvent(page);
@@ -170,7 +170,7 @@ async function runTopTransparentMessage(page: Page, project: Project): Promise<G
 }
 
 async function startPlay(page: Page, project: Project): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project); await page.getByTestId("mode-play").click(); await startNewGameFromTitle(page); await expect(page.getByTestId("runtime-state-json")).toBeVisible();
+  await seedProjectForEditor(page, project); await page.getByTestId("mode-play").click(); await startNewGameFromTitle(page); await expect(page.getByTestId("runtime-state-json")).toBeVisible();
 }
 
 type Geometry = { readonly window: { readonly x: number; readonly y: number; readonly width: number; readonly height: number; readonly bottom: number }; readonly face?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number }; readonly choicesBottom?: number };

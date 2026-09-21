@@ -40,7 +40,7 @@ export function matchScore(name: string, description: string, query: string): nu
 
 export const FIND_TOOLS: ToolDefinition = {
   name: "find_tools",
-  description: "현재 40개 작업 툴에 없을 수 있는 전체 편집기 기능을 검색한다. 기능 키워드나 정확한 툴 이름을 보내면 다음 라운드에서 호출할 수 있는 툴 스키마를 찾는다.",
+  description: "현재 라운드에 노출되지 않은 전체 편집기 기능을 검색한다. 기능 키워드나 정확한 툴 이름을 보내면 다음 라운드에서 호출할 수 있는 툴 스키마를 찾는다. 일반 조수는 검색 결과를 다음 라운드에 추가하고, 결과가 없으면 전체 카탈로그로 복귀한다.",
   mode: "read",
   parameters: {
     type: "object",

@@ -1,0 +1,90 @@
+{
+  "source": "hyptosis-batch3.png",
+  "units": "source pixels; atlas cells 16px",
+  "additions": [
+    {
+      "id": "bare-tree",
+      "rect": [
+        256,
+        128,
+        128,
+        160
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        59,
+        8,
+        10
+      ]
+    },
+    {
+      "id": "autumn-tree",
+      "rect": [
+        224,
+        640,
+        96,
+        96
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        69,
+        6,
+        6
+      ]
+    },
+    {
+      "id": "small-tree",
+      "rect": [
+        416,
+        672,
+        32,
+        32
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        75,
+        2,
+        2
+      ]
+    },
+    {
+      "id": "fine-paving",
+      "rect": [
+        32,
+        0,
+        32,
+        32
+      ],
+      "solid": false,
+      "atlasRect": [
+        0,
+        77,
+        2,
+        2
+      ]
+    },
+    {
+      "id": "cliff",
+      "rect": [
+        576,
+        288,
+        32,
+        64
+      ],
+      "solid": true,
+      "atlasRect": [
+        0,
+        79,
+        2,
+        4
+      ]
+    }
+  ],
+  "sourceSha256": "0ecb297dd35736d41a940efae66c2833cdecc879cfa6391116aa98e2a13f39c3",
+  "author": "Hyptosis",
+  "license": "CC-BY 3.0",
+  "sourcePage": "https://opengameart.org/content/lots-of-free-2d-tiles-and-sprites-by-hyptosis"
+}

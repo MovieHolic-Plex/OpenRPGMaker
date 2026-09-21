@@ -97,14 +97,22 @@ export function movePastePreview(mapId: MapId, x: number, y: number): void {
   const clipboard = editorState.get().clipboard;
   const map = store.getCurrent().maps[mapId];
   if (!clipboard || !map) return;
-  editorState.set({ pastePreview: { x: clampPasteOrigin(x, clipboard.width, map.width), y: clampPasteOrigin(y, clipboard.height, map.height) } });
+  const next = {
+    x: clampPasteOrigin(x, clipboard.width, map.width),
+    y: clampPasteOrigin(y, clipboard.height, map.height),
+  };
+  const current = editorState.get().pastePreview;
+  if (current && current.x === next.x && current.y === next.y) return;
+  editorState.set({ pastePreview: next });
 }
 
 /** 미리보기 확정 → 실제 붙여넣기. */
 export function confirmPastePreview(mapId: MapId): boolean {
   const preview = editorState.get().pastePreview;
   if (!preview) return false;
-  editorState.set({ pastePreview: null });
+  // 붙여넣은 칸에 선택 툴바가 따라오면 Ctrl+V 스탬프 작업을 가린다.
+  // 미리보기 중에도 칩은 숨기고, 확정 뒤에는 원본 선택을 내려 다시 띄우지 않는다.
+  editorState.set({ pastePreview: null, selection: null });
   return pasteClipboard(mapId, preview.x, preview.y);
 }
 
@@ -146,10 +154,6 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
       }
     }
   }, { scope: "map", mapId, cells });
-  // 붙여넣은 영역을 선택으로 표시 — 사용자가 결과를 즉시 확인.
-  const w = Math.min(clipboard.width, map.width - x);
-  const h = Math.min(clipboard.height, map.height - y);
-  editorState.set({ selection: { mapId, x, y, width: w, height: h } });
   showClipboardToast(`${clipboard.width}×${clipboard.height} 붙여넣기 완료`, "ok");
   return true;
 }

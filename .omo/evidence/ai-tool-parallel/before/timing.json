@@ -1,0 +1,56 @@
+{
+  "method": "Real single-agent Pi loop; scripted model and search HTTP responses; no live-model speed claim.",
+  "trace": [
+    {
+      "event": "http_start",
+      "atMs": 330.7,
+      "query": "timing alpha"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 330.8,
+      "id": "1-0",
+      "name": "web_search"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 330.9,
+      "id": "1-1",
+      "name": "web_search"
+    },
+    {
+      "event": "http_end",
+      "atMs": 531.1,
+      "query": "timing alpha"
+    },
+    {
+      "event": "http_start",
+      "atMs": 603,
+      "query": "timing beta"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 603.4,
+      "id": "1-0",
+      "name": "web_search",
+      "ok": true
+    },
+    {
+      "event": "http_end",
+      "atMs": 804.1,
+      "query": "timing beta"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 881.9,
+      "id": "1-1",
+      "name": "web_search",
+      "ok": true
+    },
+    {
+      "event": "peak_concurrency",
+      "atMs": 1059.8,
+      "title": "1"
+    }
+  ]
+}

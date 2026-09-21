@@ -1,0 +1,8 @@
+import fs from 'node:fs';
+const forest=JSON.parse(fs.readFileSync('src/assets/forestHarmonyTileset.json'));
+const castle=JSON.parse(fs.readFileSync('tiledata/castle-tiles-rpgs/parts.json'));
+const parts=castle.parts.map(p=>{const[x,y,w,h]=p.rect;const rows=Array.from({length:h},(_,dy)=>Array.from({length:w},(_,dx)=>p.id==='clock-tree'&&dx>=4&&dy<2?-1:(y+dy)*32+x+dx));return{id:'castle:'+p.id,tilesetId:'opengameart_castle',columns:32,tileSize:16,sourceRect:{x,y,width:w,height:h},width:w,height:h,layer:p.layer,lowerTiles:p.layer==='lower'?rows:rows.map(r=>r.map(()=>-1)),upperTiles:p.layer==='upper'?rows:rows.map(r=>r.map(()=>-1)),tree:p.id==='clock-tree',role:p.id==='clock-tree'?'tree':'part'};});
+for(const name of ['left','body','right']){const g=forest.tileGroups.find(g=>g.id==='forest-repeat:'+name),p=g.previewMap;parts.push({id:'forest:'+name,tilesetId:'forest_harmony',columns:30,tileSize:16,width:p.width,height:p.height,layer:'mixed',lowerTiles:Array.from({length:p.height},(_,y)=>p.lowerTiles.slice(y*p.width,(y+1)*p.width)),upperTiles:Array.from({length:p.height},(_,y)=>p.upperTiles.slice(y*p.width,(y+1)*p.width)),tree:true,role:name==='body'?'trunk':'cap-'+name});}
+for(const p of parts)p.sourceCells={lower:p.lowerTiles.map(r=>r.map(t=>t<0?null:{x:t%p.columns,y:Math.floor(t/p.columns)})),upper:p.upperTiles.map(r=>r.map(t=>t<0?null:{x:t%p.columns,y:Math.floor(t/p.columns)}))};
+fs.writeFileSync('src/assets/tileAssemblyCatalog.json',JSON.stringify({version:1,parts}));
+fs.writeFileSync('tiledata/castle-tiles-rpgs/executable/parts.json',JSON.stringify({version:1,parts},null,2));

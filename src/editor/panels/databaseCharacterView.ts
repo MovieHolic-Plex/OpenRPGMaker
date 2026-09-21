@@ -655,9 +655,9 @@ function giftPrefsCard(
 ): HTMLElement {
   const items = project.database.items.map((item) => ({ id: item.id, name: item.name || item.id }));
   const ranks: readonly { readonly key: keyof GiftPrefs; readonly label: string; readonly testid: string }[] = [
-    { key: "loved", label: "좋아하는 선물 (loved)", testid: "db-character-gift-loved" },
-    { key: "liked", label: "괜찮은 선물 (liked)", testid: "db-character-gift-liked" },
-    { key: "disliked", label: "싫어하는 선물 (disliked)", testid: "db-character-gift-disliked" },
+    { key: "loved", label: "좋아하는 선물", testid: "db-character-gift-loved" },
+    { key: "liked", label: "괜찮은 선물", testid: "db-character-gift-liked" },
+    { key: "disliked", label: "싫어하는 선물", testid: "db-character-gift-disliked" },
   ];
 
   const columns = ranks.map((rank) => {
@@ -704,7 +704,9 @@ function giftPrefsCard(
     const addButton = el("button", {
       class: "db-ws-btn db-ws-btn-ghost",
       text: "추가",
-      attrs: available.length === 0 ? { type: "button", disabled: "true" } : { type: "button" },
+      attrs: available.length === 0
+        ? { type: "button", disabled: "true", title: "추가할 수 있는 아이템이 모두 등록되어 있습니다." }
+        : { type: "button" },
       dataset: { testid: `${rank.testid}-add` },
       on: {
         click: () => {
@@ -741,10 +743,12 @@ function giftPrefsCard(
 
 function giftResponsesCard(characterId: string, responses: GiftResponses | undefined): HTMLElement {
   const keys: readonly { readonly key: keyof GiftResponses; readonly label: string; readonly testid: string }[] = [
-    { key: "loved", label: "loved 반응", testid: "db-character-response-loved" },
-    { key: "liked", label: "liked 반응", testid: "db-character-response-liked" },
-    { key: "neutral", label: "neutral 반응", testid: "db-character-response-neutral" },
-    { key: "disliked", label: "disliked 반응", testid: "db-character-response-disliked" },
+    // 등급 이름은 위 ranks 와 같은 말을 쓴다 — 같은 키가 「좋아하는 선물」/「loved 반응」
+    // 두 표기로 갈려 있었다(영어 원문 노출도 함께 없앤다).
+    { key: "loved", label: "좋아하는 선물 반응", testid: "db-character-response-loved" },
+    { key: "liked", label: "괜찮은 선물 반응", testid: "db-character-response-liked" },
+    { key: "neutral", label: "보통 선물 반응", testid: "db-character-response-neutral" },
+    { key: "disliked", label: "싫어하는 선물 반응", testid: "db-character-response-disliked" },
     { key: "alreadyGifted", label: "이미 선물함", testid: "db-character-response-already-gifted" },
     { key: "noItems", label: "아이템 없음", testid: "db-character-response-no-items" },
   ];

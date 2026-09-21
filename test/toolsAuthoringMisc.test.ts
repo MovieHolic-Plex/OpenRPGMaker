@@ -147,6 +147,18 @@ describe("authoring misc facades", () => {
     expectRejectedWith(rejected, itemId);
   });
 
+  it("deletes character profiles without deleting actors or events", () => {
+    const ctx = context();
+    const actorId = ctx.project.database.actors[0]?.id;
+    ctx.project.characters = { may: { displayName: "메이" } };
+    expect(runTool(ctx, "delete_character_profile", { characterId: "may" }).ok).toBe(true);
+    expect(ctx.project.characters).toBeUndefined();
+    expect(ctx.project.database.actors.some((actor) => actor.id === actorId)).toBe(true);
+
+    ctx.project.characters = { known: { displayName: "남은 인물" } };
+    expectRejectedWith(runTool(ctx, "delete_character_profile", { characterId: "missing" }), "known");
+  });
+
   it("upserts testPresets and validates referenced slots and start position", () => {
     const ctx = context();
     const map = firstMap(ctx.project);
@@ -231,6 +243,7 @@ describe("authoring misc facades", () => {
       upsert_resource_profile: ["system"],
       delete_resource_profile: ["system"],
       upsert_character_profile: ["database"],
+      delete_character_profile: ["database"],
       upsert_test_preset: ["system"],
       delete_test_preset: ["system"],
       manage_flag_slot: ["event"],

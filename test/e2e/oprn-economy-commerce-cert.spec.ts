@@ -4,7 +4,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop10-economy-commerce";
@@ -16,7 +16,7 @@ test.setTimeout(90_000);
 test("loop10 certifies economy party shop and inn commands", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, economyCommerceProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, economyCommerceProject(), "/?e2eVitals=1");
   await writeJson("000-scenario.json", {
     scope: ["changeGold", "changeItem", "changeParty", "shop", "inn", "roundtrip persistence", "runtime state mutation"],
   });

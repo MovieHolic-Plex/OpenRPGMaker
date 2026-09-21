@@ -24,7 +24,7 @@ Do not treat this as a wiki edit. `openwiki/runtime-sessions.md` still says farm
 
 Two load-time contracts that native QA hit and did not change:
 
-1. `normalizeSystemRecords` does not whitelist `system.playerFootprint` / `system.playerPassRows`. Authored 3x3/passRows1 in the QA fixture JSON is dropped on player parse, so native New Game ran as 1x1. Repro: fixture bytes contain the fields; Spaces target after boot is `(8, 9)` not 3x3 `(7, 9)`; Supabase reload proof also has `reloadPlayerFootprint: null`.
+1. `normalizeSystemRecords` does not whitelist `system.playerFootprint` / `system.playerPassRows`. Authored 3x3/passRows1 in the QA fixture JSON is dropped on player parse, so native New Game ran as 1x1. Repro: fixture bytes contain the fields; Spaces target after boot is `(8, 9)` not 3x3 `(7, 9)`; LegacyDb reload proof also has `reloadPlayerFootprint: null`.
 2. `startSession` assigns `farmPlots: {}` and does not copy authored `start.farmPlots`. Native New Game never saw the fixture plot at `7,9`.
 
 INDEX regeneration is parent/Astra-owned.

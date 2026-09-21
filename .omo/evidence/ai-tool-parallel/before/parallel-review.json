@@ -1,0 +1,77 @@
+{
+  "method": "Real single-agent Pi loop; scripted model and search HTTP responses; no live-model speed claim.",
+  "trace": [
+    {
+      "event": "http_start",
+      "atMs": 244,
+      "query": "alpha"
+    },
+    {
+      "event": "http_start",
+      "atMs": 244.1,
+      "query": "beta"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 576.6,
+      "id": "1-0",
+      "name": "web_search"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 576.8,
+      "id": "1-1",
+      "name": "web_search"
+    },
+    {
+      "event": "http_end",
+      "atMs": 576.8,
+      "query": "alpha"
+    },
+    {
+      "event": "http_end",
+      "atMs": 576.8,
+      "query": "beta"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 576.9,
+      "id": "1-2",
+      "name": "get_project_summary"
+    },
+    {
+      "event": "tool_start",
+      "atMs": 577.2,
+      "id": "1-3",
+      "name": "set_project_settings"
+    },
+    {
+      "event": "tool_end",
+      "atMs": 577.2,
+      "id": "1-2",
+      "name": "get_project_summary",
+      "ok": true
+    },
+    {
+      "event": "tool_end",
+      "atMs": 577.4,
+      "id": "1-3",
+      "name": "set_project_settings",
+      "ok": true
+    },
+    {
+      "event": "tool_end",
+      "atMs": 577.5,
+      "id": "1-0",
+      "name": "web_search",
+      "ok": true
+    },
+    {
+      "event": "tool_end",
+      "atMs": 577.5,
+      "id": "1-1",
+      "name": "web_search",
+      "ok": true
+    }
+  ]
+}

@@ -1,13 +1,13 @@
-diff --git a/src/project/supabaseProjectSync.ts b/src/project/supabaseProjectSync.ts
+diff --git a/src/project/legacyDbProjectSync.ts b/src/project/legacyDbProjectSync.ts
 index 20d935b4c..30bb2155c 100644
---- a/src/project/supabaseProjectSync.ts
-+++ b/src/project/supabaseProjectSync.ts
+--- a/src/project/legacyDbProjectSync.ts
++++ b/src/project/legacyDbProjectSync.ts
 @@ -964,7 +964,7 @@ async function insertRows(
    if (rows.length === 0) return;
-   const response = await fetch(supabaseTableInsertUrl(config, table), {
+   const response = await fetch(legacyDbTableInsertUrl(config, table), {
      method: "POST",
--    headers: supabaseJsonHeaders(config, "write"),
-+    headers: { ...supabaseJsonHeaders(config, "write"), Prefer: "return=minimal" },
+-    headers: legacyDbJsonHeaders(config, "write"),
++    headers: { ...legacyDbJsonHeaders(config, "write"), Prefer: "return=minimal" },
      body: JSON.stringify(rows),
    });
    if (!response.ok) {

@@ -1,3 +1,4 @@
+import { mapTileSize } from "@/project/tileGeometry";
 import { carryPursuitThroughDoor } from "./horrorRuntime";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { isPassable, isPassableLanding } from "@/project/collision";
@@ -108,7 +109,7 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   resetFollowerTrailNearPlayer(scene.session, destinationMap, project.system.companions);
   if (request.direction && request.direction !== "retain") scene.facing = request.direction;
   scene.player.setFrame(scene.playerSprite.idleFrameFor(scene.facing));
-  scene.player.setPosition(footprintSpriteX(landing.x, body.footprint), characterSpriteY(landing.y));
+  scene.player.setPosition(footprintSpriteX(landing.x, body.footprint, mapTileSize(scene.map)), characterSpriteY(landing.y, mapTileSize(scene.map)));
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;

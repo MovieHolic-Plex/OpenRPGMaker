@@ -41,7 +41,6 @@ afterEach(() => {
 
 describe("legacy spatial route replacement", () => {
   it.each([
-    ["tilesets", "spatialTiles"],
     ["structureKits", "spatialObjects"],
     ["tilesetSpaces", "spatialSpaces"],
     ["scratchConcepts", "spatialPlaces"],
@@ -57,13 +56,25 @@ describe("legacy spatial route replacement", () => {
     expect(store.getCurrent()).toEqual(before);
   });
 
+  it("maps tilesets to spatialTiles and shows the tileset reference library", () => {
+    // 2026-09-21 타일 화면 개편: 레거시 tilesets 경로는 타일셋 참고문서 라이브러리를 띄운다.
+    expect(resolveCanonicalDatabaseTab("tilesets")).toBe("spatialTiles");
+    const before = structuredClone(store.getCurrent());
+    renderDatabasePanel(host);
+    switchDatabaseActiveTab("tilesets", host);
+    expect(getDatabaseActiveTab()).toBe("spatialTiles");
+    expect(host.querySelector("[data-testid='tileset-db-search']")).not.toBeNull();
+    expect(store.getCurrent()).toEqual(before);
+  });
+
   it("keeps default and owned cards in separate source chips", () => {
     renderDatabasePanel(host);
-    const inn = host.querySelector("[data-testid='spatial-card-inn']");
+    const inn = host.querySelector("[data-testid='spatial-card-region-reference:inn-review']")
+      ?? host.querySelector("[data-testid^='spatial-card-region-reference:']");
     expect(inn).not.toBeNull();
     expect(inn?.getAttribute("data-source")).toBe("default");
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-source-own']")?.click();
-    expect(host.querySelector("[data-testid='spatial-card-inn']")).toBeNull();
+    expect(host.querySelector("[data-testid^='spatial-card-region-reference:']")).toBeNull();
     expect(store.getCurrent().tilesets[Object.keys(store.getCurrent().tilesets)[0]!]?.scratchConceptBundles).toBeUndefined();
   });
 

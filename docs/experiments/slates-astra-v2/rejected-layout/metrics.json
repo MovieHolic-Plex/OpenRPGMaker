@@ -1,0 +1,32 @@
+{
+  "structuralReview": "partial; corrected workshop no longer repeats triangular middle pieces; inn rear cap and wall side/arch retain limits",
+  "compositionReview": "partial pending full-image inspection",
+  "interiorPixels": 1802240,
+  "buildingSilhouettePixels": 687042.266666722,
+  "buildingOccupancyPercent": 38.12157463305231,
+  "buildingTypes": [
+    "courtyard-inn",
+    "house",
+    "low-workshop",
+    "joined-shops"
+  ],
+  "buildingCount": 30,
+  "countsByType": {
+    "house": 9,
+    "joined-shops": 7,
+    "courtyard-inn": 8,
+    "low-workshop": 6
+  },
+  "landmarkCount": 53,
+  "walkableReached": 1240,
+  "unreachableLandmarks": [],
+  "gatePassageReachable": true,
+  "gateSealedExteriorLeakCells": [],
+  "gateSealedReachable": 952,
+  "collisionSource": "bundle map tile IDs -> tileset.passability in both source and destination directions, lower and upper combined",
+  "sourceRectOnly": true,
+  "stored": false,
+  "storageOwner": "supervisor",
+  "atlasCount": 1371,
+  "atlasHeight": 800
+}

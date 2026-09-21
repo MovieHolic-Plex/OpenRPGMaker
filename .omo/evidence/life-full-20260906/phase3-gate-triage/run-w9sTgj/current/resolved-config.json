@@ -134,7 +134,7 @@
       "test/storeEventDraftPreserve.test.ts",
       "test/storeFlushShaEvidence.test.ts",
       "test/storePersistence.test.ts",
-      "test/supabaseProjectSync.test.ts",
+      "test/legacyDbProjectSync.test.ts",
       "test/teamWorkflowUi.test.ts",
       "test/tileFlowApprovalExpansion.test.ts",
       "test/tileGrafts.test.ts",

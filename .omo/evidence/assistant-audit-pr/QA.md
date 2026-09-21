@@ -12,7 +12,7 @@ The original project `oprn-09bce682d0` was not an authoring target.
 | C1: retain A's specification after B, isolate failed updates, expire implicit scope, prune deleted/reset identities | `assistantMultiMapSpec.test.ts`, 18 final cases. Initial RED: 13 failed / 4 passed. The final table correction and added fallback control are explained in `maps/README.md`. Real UI submits A/B specs and subsequently writes A and B successfully. |
 | C2: defer dependent calls honestly, preserve independent work and corrected retries, do not acknowledge incomplete work | `assistantBatchCompletion.test.ts` and `assistantDependencyRetry.test.ts`. Initial batch RED: 3 failed / 2 controls passed. Later explicit-verification RED and invalid-fixture corrections are distinguished in `batch/README.md`. Missing plans, unknown IDs, skipped work and open verification remain rejected. |
 | C3: actionable NPC corrections without accepting unsafe aliases or mutating on failure | `npcAuditRepair.test.ts`, 26 cases; RED: 6 failed / 20 passed. Parsed examples are passed back through the real compiler/runner. Explicit false, sibling conditions, extra fields and ambiguous none conditions have controls. The related three-file run passed 62 tests. |
-| C4: actual assistant surface and remote persistence | `final-browser.json`: real editor, session, tools, application and Supabase paths. Recorded model outputs drive the exact malformed cases deterministically. Both accepted milestones persisted; the final accepted revision was verified; an independent remote GET matched the saved SHA, map IDs and NPC pages. |
+| C4: actual assistant surface and remote persistence | `final-browser.json`: real editor, session, tools, application and LegacyDb paths. Recorded model outputs drive the exact malformed cases deterministically. Both accepted milestones persisted; the final accepted revision was verified; an independent remote GET matched the saved SHA, map IDs and NPC pages. |
 | Existing unpublished reliability work | All eight prior commits remain in ancestry: `986db8d94`, `eea07df30`, `82ae6a92d`, `80431aca1`, `7a4882008`, `aeaefb0b1`, `3bbba0317`, `2c00261e6`. Their reward, scene, schema, retry and applied-accounting regressions remain present. |
 
 ## Final supervisor checks
@@ -57,7 +57,7 @@ baseline main. See `GATES.md`; no whole-suite pass is claimed.
 ## Actual editor and remote proof
 
 - Owned editor: `127.0.0.1:9847`, serving this worktree with HMR disabled.
-- Normal same-origin Supabase proxy. The existing key was supplied only to the
+- Normal same-origin LegacyDb proxy. The existing key was supplied only to the
   server process; no credentials are in these artifacts.
 - Final isolated project: `oprn-fee2e1d872`.
 - Scenario: `browser-replay.mjs`, invoked on an already mounted, remotely

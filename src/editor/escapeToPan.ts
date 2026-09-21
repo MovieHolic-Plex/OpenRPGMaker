@@ -56,7 +56,10 @@ import { editorState } from "@/editor/editorState";
  */
 const ESCAPE_OWNER_SELECTORS: readonly string[] = [
   '[data-testid="basic-rail-flyout"]',
-  ".database-modal-backdrop",
+  // 도크 모드(.is-docked)는 제외한다 — 도크는 맵을 그대로 조작하는 보조 패널이라
+  // Esc 를 소유하지 않는다. 존재만 보던 시절에는 도크를 켜 둔 내내 화면 밀기 전환과
+  // 선택 해제가 영원히 막혔다(2026-09-19 리뷰 P0-3b).
+  ".database-modal-backdrop:not(.is-docked)",
   '[data-testid="ai-change-wide"]',
   // 팝오버/메뉴는 DOM 에 남아 있고 `hidden` 으로만 닫힌다 — 존재가 아니라 보임을 봐야 한다.
   ".ai-composer-popover:not([hidden])",

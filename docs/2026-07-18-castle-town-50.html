@@ -58,7 +58,7 @@ footer{margin-top:64px;color:var(--ink-3);font-size:.84rem;border-top:1px solid 
 <p class="meta">rpg-zzu · 2026-07-18 · 성 = <code>build_castle</code>(2026-07-18 정본 문법) · 마을 = <code>build_house_lots</code>+<code>paint_road</code>+<code>make_villager</code>+<code>plant_tree_clusters</code><br>
 <span class="badge ok">성 평가 100점 · 문법 린트 (a)~(h) 전 항목 통과</span>
 <span class="badge ok">품질 게이트 5/5 통과</span>
-<span class="badge ok">Supabase 저장 + 재로드 검증(기존 16맵 무손실, 시작점 불변)</span>
+<span class="badge ok">LegacyDb 저장 + 재로드 검증(기존 16맵 무손실, 시작점 불변)</span>
 <span class="badge">렌더 PNG 5장 — 전부 data URI 자립</span></p>
 
 <section>
@@ -146,7 +146,7 @@ footer{margin-top:64px;color:var(--ink-3);font-size:.84rem;border-top:1px solid 
 <footer>
 2026-07-18 · <code>map_castle_town_50</code> 시공 보고 · 성 정본 = <code>src/editor/castleKit.ts</code>(007bfe6 정본판) · 시공 툴 경유 원칙(성 손 스탬프 0) ·
 사용 툴: create_map · build_castle · build_house_lots · paint_tiles(포석/우물/화톳불) · paint_road · make_villager · plant_tree_clusters ·
-저장 = saveProjectToSupabase(재로드 대조) · 렌더 = pngjs 칩셋 블리팅(스크래치) · 본 문서는 커밋하지 않는다.
+저장 = saveProjectToLegacyDb(재로드 대조) · 렌더 = pngjs 칩셋 블리팅(스크래치) · 본 문서는 커밋하지 않는다.
 </footer>
 
 </main>

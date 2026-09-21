@@ -752,7 +752,7 @@
 
       <div class="p0-banner"><strong>P0</strong><span>팀 제작·멀티 세션·원격 저장을 생각하면 가장 먼저 고쳐야 한다.</span></div>
 
-      <div class="sequence" role="img" aria-label="작업 중 이벤트 본문이 live project와 autosave를 거쳐 Supabase로 갈 수 있는 흐름을 보여 주는 시퀀스 다이어그램">
+      <div class="sequence" role="img" aria-label="작업 중 이벤트 본문이 live project와 autosave를 거쳐 LegacyDb로 갈 수 있는 흐름을 보여 주는 시퀀스 다이어그램">
         <svg viewBox="0 0 1180 560" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#ffd65a" /></marker>
@@ -763,7 +763,7 @@
             <rect class="lane" x="215" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="295" y="57" text-anchor="middle">Live Project</text>
             <rect class="lane" x="410" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="490" y="57" text-anchor="middle">복구 Vault</text>
             <rect class="lane" x="605" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="685" y="57" text-anchor="middle">Autosave 투영</text>
-            <rect class="lane" x="800" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="880" y="57" text-anchor="middle">Supabase</text>
+            <rect class="lane" x="800" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="880" y="57" text-anchor="middle">LegacyDb</text>
             <rect class="lane" x="995" y="20" width="160" height="62" rx="10"/><text class="lane-title" x="1075" y="57" text-anchor="middle">다른 세션</text>
             <line class="line" x1="100" y1="88" x2="100" y2="520"/><line class="line" x1="295" y1="88" x2="295" y2="520"/><line class="line" x1="490" y1="88" x2="490" y2="520"/><line class="line" x1="685" y1="88" x2="685" y2="520"/><line class="line" x1="880" y1="88" x2="880" y2="520"/><line class="line" x1="1075" y1="88" x2="1075" y2="520"/>
           </g>
@@ -978,7 +978,7 @@
         <thead><tr><th>주장</th><th>핵심 코드</th><th>확인한 내용</th></tr></thead>
         <tbody>
           <tr><td>이벤트 편집 진입</td><td><code>src/editor/EditScene.ts:881–885</code><br /><code>src/editor/eventDraftActions.ts:18–64</code></td><td>기존/신규 이벤트가 modal로 들어가고, 신규 이벤트는 live map 배열에 먼저 삽입된다.</td></tr>
-          <tr><td>P0 draft 의미 불일치</td><td><code>src/project/eventDrafts.ts:30–56</code><br /><code>src/project/supabaseProjectSync.ts:159–163</code></td><td>working body는 투영에 남고 열린 draft metadata는 제거될 수 있다.</td></tr>
+          <tr><td>P0 draft 의미 불일치</td><td><code>src/project/eventDrafts.ts:30–56</code><br /><code>src/project/legacyDbProjectSync.ts:159–163</code></td><td>working body는 투영에 남고 열린 draft metadata는 제거될 수 있다.</td></tr>
           <tr><td>취소·적용·확인</td><td><code>src/editor/panels/eventEditor/modal.ts:170–214</code><br /><code>src/editor/eventDraftActions.ts:66–79</code></td><td>footer에 실제 테스트가 없고 saveEventDraft는 통합 lint 결과를 gate하지 않는다.</td></tr>
           <tr><td>2열 정보 구조</td><td><code>src/editor/panels/eventEditor/content.ts:72–200</code></td><td>왼쪽 페이지 속성, 오른쪽 실행 내용과 보조 도구로 구성된다.</td></tr>
           <tr><td>명령 추가 비용</td><td><code>src/editor/panels/eventEditor/content.ts:234–398</code></td><td>명령 선택 후 다시 command edit dialog를 거쳐 확인해야 한다.</td></tr>
@@ -993,7 +993,7 @@
       <div class="method-box">
         <h3>검토 범위와 한계</h3>
         <p><b>확인함:</b> OpenWiki 편집 라우팅/이벤트 저작/명령/수정/검증 문서, 현행 소스의 modal→draft→autosave→test→PlayScene 경로, 제품 내 도움말 이미지 5장.</p>
-        <p><b>이번 보고서에서 실행하지 않음:</b> 현재 빌드의 신규 브라우저 픽셀 캡처, 실제 Supabase 다중 세션 재현, 대형 프로젝트에서 중복 flush 시간 측정.</p>
+        <p><b>이번 보고서에서 실행하지 않음:</b> 현재 빌드의 신규 브라우저 픽셀 캡처, 실제 LegacyDb 다중 세션 재현, 대형 프로젝트에서 중복 flush 시간 측정.</p>
         <p><b>따라서:</b> 저장 의미 문제는 코드 경로상 P0 위험으로 판정했지만, 원격 재현 동영상이 있는 실측 버그 보고서라고 주장하지 않는다. UI 화면도 제품 내 도움말 자산임을 명시했다.</p>
       </div>
     </section>

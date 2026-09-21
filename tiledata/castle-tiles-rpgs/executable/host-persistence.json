@@ -1,0 +1,12 @@
+{
+  "host": "http://mdc-server:9888",
+  "projectId": "castle-fortress-city-20260921",
+  "sqliteProjectId": "b4706a77-9a38-4dcc-a89d-36244da53967",
+  "saved": true,
+  "reloaded": true,
+  "mapsUnchanged": true,
+  "revision": 23,
+  "category": "tile-assembly-executable",
+  "documents": 21,
+  "images": 1
+}

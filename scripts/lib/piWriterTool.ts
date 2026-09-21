@@ -4,6 +4,7 @@ import type { completeProvider } from "./ohMyPiPiAiRuntime";
 
 export function createWriterTool(writer: RoleModel, complete: typeof completeProvider, apiKey?: string): PiToolShape {
   return {
+    concurrency: "shared",
     name: "consult_writer", label: "Writer", description: "Ask Writer to author story, lore, NPC dialogue or quest prose. Supply relevant existing context and constraints. Returns text only; apply the accepted text with project tools.",
     parameters: { type: "object", properties: { brief: { type: "string" } }, required: ["brief"], additionalProperties: false },
     async execute(_id, params, signal) {

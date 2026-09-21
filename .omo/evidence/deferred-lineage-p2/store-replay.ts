@@ -2,16 +2,16 @@ import assert from "node:assert/strict";
 import { mock } from "bun:test";
 
 const root = process.cwd();
-process.env.VITE_SUPABASE_URL = "https://deferred-replay.invalid";
-process.env.VITE_SUPABASE_ANON_KEY = "test-only";
-process.env.VITE_SUPABASE_PROJECT_ID = "deferred-replay";
-process.env.VITE_SUPABASE_USE_PROXY = "0";
+process.env.VITE_LEGACY_DB_URL = "https://deferred-replay.invalid";
+process.env.VITE_LEGACY_DB_ANON_KEY = "test-only";
+process.env.VITE_LEGACY_DB_PROJECT_ID = "deferred-replay";
+process.env.VITE_LEGACY_DB_USE_PROXY = "0";
 process.env.VITE_EDIT_ACTIVITY_DISK_MIRROR = "0";
 globalThis.fetch = (() => { throw new Error("Unexpected network"); }) as typeof fetch;
 const { createBlankProject } = await import(`${root}/src/project/defaults.ts`);
 const { serialize, deserialize } = await import(`${root}/src/project/io.ts`);
 type Project = ReturnType<typeof createBlankProject>;
-const sync = await import(`${root}/src/project/supabaseProjectSync.ts`);
+const sync = await import(`${root}/src/project/legacyDbProjectSync.ts`);
 let wire = serialize(createBlankProject());
 const writes: string[] = [];
 const save = async (project: Project) => {
@@ -19,13 +19,13 @@ const save = async (project: Project) => {
   wire = serialize(project);
   return { kind: "saved", project: deserialize(wire) };
 };
-mock.module(`${root}/src/project/supabaseProjectSync.ts`, () => ({ ...sync,
-  loadProjectFromSupabase: async () => deserialize(wire),
-  recordProjectCommitToSupabase: async () => ({ kind: "saved", commitId: "local-deferred-replay" }),
-  saveProjectToSupabase: save,
-  saveProjectMapPatchToSupabase: async ({ project }: { project: Project }) => save(project),
+mock.module(`${root}/src/project/legacyDbProjectSync.ts`, () => ({ ...sync,
+  loadProjectFromLegacyDb: async () => deserialize(wire),
+  recordProjectCommitToLegacyDb: async () => ({ kind: "saved", commitId: "local-deferred-replay" }),
+  saveProjectToLegacyDb: save,
+  saveProjectMapPatchToLegacyDb: async ({ project }: { project: Project }) => save(project),
 }));
-mock.module(`${root}/src/assets/supabaseResourceCache.ts`, () => ({ cacheSupabaseRootResources: async () => ({ skipped: [] }) }));
+mock.module(`${root}/src/assets/legacyDbResourceCache.ts`, () => ({ cacheLegacyDbRootResources: async () => ({ skipped: [] }) }));
 let nextTimer = 0;
 const timers = new Map<number, { callback: () => void; ms: number }>();
 globalThis.setTimeout = ((callback: () => void, ms: number) => {

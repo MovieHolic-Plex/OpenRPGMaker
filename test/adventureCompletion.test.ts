@@ -43,6 +43,22 @@ describe("declared adventure completion", () => {
   it("does not impose a genre contract on an unrelated edit", () => {
     expect(adventureCompletionProblems(createBlankProject(), undefined)).toEqual([]);
   });
+  it("accepts a shared character appearance as a complete start-party look", () => {
+    const p = createBlankProject();
+    const actor = p.database.actors[0]!;
+    actor.faceResourceId = undefined;
+    actor.characterResourceId = undefined;
+    actor.appearanceId = "appearance_hero";
+    p.database.characterAppearances = [{
+      id: "appearance_hero",
+      name: "주인공 외형",
+      description: "",
+      charset: { resourceId: "charset_hero", characterIndex: 2 },
+      face: { resourceId: "face_hero" },
+    }];
+    p.session.partyActorIds = [actor.id];
+    expect(adventureCompletionProblems(p, { appearance: true })).toEqual([]);
+  });
   it("rejects grass with an NPC, standalone DB troops, and a solo party", () => {
     const p = createBlankProject();
     expect(adventureCompletionProblems(p, required)).toHaveLength(4);

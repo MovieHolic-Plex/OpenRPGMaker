@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dismissDialogue, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop7-control-flow";
@@ -13,7 +13,7 @@ test.setTimeout(90_000);
 test("loop7 certifies variable operand wait timer and label flow", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, controlProject());
+  await seedProjectForEditor(page, controlProject());
   await writeJson("000-scenario.json", {
     scope: ["setVariable variable operand authoring", "wait blocking", "timer set", "gotoLabel skips command", "reload persistence"],
   });
