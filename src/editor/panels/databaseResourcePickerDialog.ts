@@ -6,6 +6,10 @@ import {
   CHARSET_SHEET_ROWS,
   charsetFrameSource,
 } from "@/assets/easyrpgRtp";
+// 이 모달은 자료집 모달 청크(databaseModal.ts → database/index.css) 밖에서도 열린다
+// (맵 설정 BGM·전투 배경 등). 표면 시트를 여기서 가져온다 — CSS import 는 모듈당 한
+// 번만 평가되므로 자료집 경로와 겹쳐도 중복 주입이 아니고, 늦은 표면이라 승자도 같다.
+import "@/styles/database/index.css";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { audioPlayback } from "./audioResourcePresentation";
 import { createAudioResourcePreview, releaseAudioPreviewOnRemoval } from "./audioResourcePreview";
