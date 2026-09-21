@@ -381,6 +381,9 @@ function createEventBadgeMarker(scene: Phaser.Scene, x: number, y: number, tileS
   }).setOrigin(0.5);
   marker.add(badge);
   marker.add(label);
-  marker.setAlpha(EVENT_BADGE_ALPHA);
+  // 이벤트 레이어가 아닐 때는 배지를 절반으로 내린다(2026-09-21) — 타일 레이어에서는
+  // 배지가 참고 표시이고, 이벤트 레이어에서만 본체다. 레이어 버튼을 눌렀을 때
+  // 배지 대비 변화가 「이제 이벤트 레이어다」라는 즉시 신호가 된다.
+  marker.setAlpha(editorState.get().layer === "event" ? EVENT_BADGE_ALPHA : EVENT_BADGE_ALPHA * 0.45);
   return marker;
 }
