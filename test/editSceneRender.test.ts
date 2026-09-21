@@ -570,6 +570,7 @@ describe("edit scene event rendering", () => {
     const context = {
       scene,
       tileLayer: mockContainer(tileObjects),
+      upperTileLayer: mockContainer(tileObjects),
       overlayLayer: mockContainer(),
       gridGraphics: mockGridGraphics(),
       mapId: map.id,
