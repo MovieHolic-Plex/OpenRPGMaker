@@ -9,6 +9,8 @@
 
 최신 개선: [외부 공간 개선 02](improvements/landscape-02/README.md).
 
+현재 사용본: [개선1 외부 구역 복원 및 공용 장소](shared-place/README.md).
+
 ## 읽을 순서
 
 1. `reference/user-castle.png` 원본과 `reference/rejected-layout.png` 실패작을 나란히 본다.
