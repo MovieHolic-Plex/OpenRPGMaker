@@ -1527,7 +1527,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         class: "ai-autonomous-run-surface",
         dataset: { testid: "ai-autonomous-run-surface" },
       });
-      mainColumn.prepend(workPlanSurface);
+      // 대화 본문 선두가 아니라 컴포저 바로 위 outcomeSlot 로 옮긴다(2026-09-21) —
+      // 대화를 시작하면 첫 답변 위에 목록이 얹혀 스크롤 공간을 통째로 먹던 결함.
+      outcomeSlot.prepend(workPlanSurface);
     }
     panel.classList.add("is-autonomous-run");
     return workPlanSurface;
@@ -1553,6 +1555,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     openWorkPlanBook(input);
   };
   // 계획 도착 시마다 앞면과(열려 있으면) 책 모달을 갱신한다.
+  // 앞면은 접힌 상태가 기본 — 머리 버튼(드롭다운)을 눌러야 목록이 펼쳐진다.
   const refreshWorkPlanSurface = (): void => {
     if (!workPlanSurfaceState?.active || !workPlanSurfaceState.plan) return;
     const surface = ensureWorkPlanSurface();
@@ -3030,7 +3033,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // The editor mounts this sibling in the right rail; this panel owns its lifetime.
   panel.append(teamSidebar.root);
   const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
-  deck.querySelector(".ai-activity-setting-heading")?.append(wideButton);
+  // 작업 표시 헤딩이 아이콘화로 사라졌다(2026-09-21) — 크게 보기는 상단 레일 아이콘 행으로 옮긴다.
+  wideButton.classList.add("ai-deck-wide-open");
+  wideButton.replaceChildren(deckIcon("expand"));
+  deck.querySelector(".ai-deck-rail-actions")?.append(wideButton);
   const wideAssistant = createAssistantWide(panel, teamSidebar.root, wideButton, () => teamSidebar.openFirstMember());
   // 느낌표 버튼도 같은 관례다 — 패널이 수명을 소유하고, 배치는 editor.ts 가 캔버스 영역으로 옮긴다.
   panel.append(peek.root);

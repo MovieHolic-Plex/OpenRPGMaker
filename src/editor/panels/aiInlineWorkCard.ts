@@ -5,6 +5,7 @@ import { bindActivityLevel } from "./aiActivityPreference";
 import { el } from "@/util/dom";
 import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
 import { changePreviewRegion, openWideChangeViewer } from "./aiChangePreview";
+import { deckIcon } from "./aiDeckIcons";
 import type { AiWorkCard } from "./aiWorkStrip";
 
 /**
@@ -20,8 +21,9 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
   let hasExtraProcess = false;
   let writes = 0;
   let hasContent = false;
-  const title = el("strong", { text: "작업 중", attrs: { title: input.title } });
-  const status = el("span", { class: "ai-work-inline-status", text: "작업 중" });
+  const spinner = deckIcon("clock", { size: 15 });
+  const title = el("strong", { text: input.title, attrs: { title: input.title } });
+  const status = el("span", { class: "ai-work-inline-status", text: "진행 중" });
   const live = el("div", { class: "ai-work-inline-live" });
   const steps = el("div", { class: "ai-work-inline-steps" });
   const summary = el("summary", { text: "작업 과정" });
@@ -29,9 +31,20 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
   const actions = el("div", { class: "ai-work-inline-actions" });
   const stop = el("button", { text: "중지", attrs: { type: "button" }, on: { click: input.onStop } });
   actions.append(stop);
+  const head = el("button", {
+    class: "ai-work-inline-head", attrs: { type: "button", "aria-expanded": "false", title: "작업 과정 펼치기" },
+    dataset: { testid: "ai-work-card-toggle" },
+    on: { click: () => {
+      const next = !details.open;
+      details.open = next;
+      head.setAttribute("aria-expanded", String(next));
+      head.setAttribute("title", next ? "작업 과정 접기" : "작업 과정 펼치기");
+    } },
+    children: [el("span", { class: "ai-work-inline-spinner", attrs: { "aria-hidden": "true" }, children: [spinner] }), title, status],
+  });
   const root = el("article", {
     class: "ai-work-inline has-activity", dataset: { testid: "ai-work-card", state: "running" },
-    children: [el("header", { children: [title, status] }), activity.root, actions, details],
+    children: [head, activity.root, actions, details],
   });
   bindActivityLevel(root, level => {
     details.hidden = (hasBoard && !hasExtraProcess) || level === "none" || level === "brief";
@@ -43,6 +56,7 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
     if (!hasBoard) activity.update(trace);
     root.dataset.state = result.ok ? "done" : "failed";
     title.textContent = "작업 결과";
+    head.querySelector(".ai-work-inline-spinner")?.remove();
     status.textContent = result.message || (result.ok ? "완료" : "중단 / 오류");
     stop.remove(); live.replaceChildren();
     if (result.message) steps.append(el("p", { text: result.message }));
@@ -56,7 +70,7 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
       trace = recordActivityEvent(trace, event); activity.update(trace);
     },
     setTitle: (text) => { title.setAttribute("title", text); },
-    setProgress: (done, total) => { status.textContent = total ? `작업 중 · ${done}/${total}` : "작업 중"; },
+    setProgress: (done, total) => { status.textContent = total ? `진행 중 · ${done}/${total}` : "진행 중"; },
     noteReadOnly: () => {},
     appendStep: (entry) => { writes += 1; hasExtraProcess = true; steps.append(entry); root.dispatchEvent(new Event("ai-activity-level")); },
     attachElement: (element) => {

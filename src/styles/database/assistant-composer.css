@@ -477,4 +477,5 @@
 /* ── 도크별 조정 ── */
 
 /* 좁은 카드에서는 팝오버가 카드를 넘지 않게 폭을 맞춘다. */
-
+.ai-status-group { align-items: center; display: flex; flex: 0 1 auto; gap: 6px; min-width: 0; overflow: hidden; }
+.ai-status-group .ai-assistant-status { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
