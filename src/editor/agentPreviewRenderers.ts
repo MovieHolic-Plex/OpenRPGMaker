@@ -468,6 +468,7 @@ export class AgentGhostPreviewRenderer {
     this.layer.removeAll(true);
     this.animGroup = null;
     this.boundsLayer = null;
+    this.sweep = null;
     this.tileLayer = null;
     this.tileLayerParent = null;
     this.tileLayerKey = "";
