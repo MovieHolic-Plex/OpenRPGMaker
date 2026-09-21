@@ -1,3 +1,4 @@
+import { createSharedCastleReferences } from "./sharedCastleReferences";
 import type { PassFlag, TileAiMetadata, TilesetDef } from "../types";
 import {
   CASTLE_TILE_COUNT,
@@ -95,6 +96,7 @@ export function createCastleTileset(): TilesetDef {
     priority: tileMeta.map((meta) => meta.defaultLayer === "lower" ? "lower" : "upper"),
     terrain: Array.from({ length: CASTLE_TILE_COUNT }, () => 0),
     structureKits: createCastleStructureKits(),
+    referenceDocuments: createSharedCastleReferences(),
     tileMeta,
     tileGroups: [],
   };

@@ -121,3 +121,12 @@ SQLite 및 새로 연 에디터에서 다시 읽는다. 원본 29개 맵의 타�
 `ensureSharedVillageObjectReferences`가 보충한다. 사용자 문서나 공유 포인터는 보존한다.
 `tiledata/tilesets/forest_high_cliff_river/shared-library/`는 저작 원문과 선정 기록,
 `src/assets/sharedVillageReferences.json`은 배포용 MD/이미지 묶음이다.
+
+### Castle2 공용 기본 제공 수정
+
+`src/assets/sharedCastleReferences.json`에 3용도 / 20 MD / 19 이미지를 공용 번들로 포함한다.
+`createCastleTileset()`이 새 프로젝트마다 독립 편집 가능한 사본을 넣는다.
+`ensureBundledTilesets()`도 문서 필드가 없는 기존 기본 Castle2에만 보충한다.
+작성한 문서(빈 배열 포함), 공유 포인터, 다른 이미지로 바꾼 타일셋은 보존한다.
+특정 성채 프로젝트나 공용 장소 다운로드를 가져와야 하는 조건은 없다.
+새 빈 프로젝트의 타일 → 성채 · OpenGameArt → AI 참고문서에서 확인한다.
