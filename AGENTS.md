@@ -27,7 +27,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
-   - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 로 커밋하고 `scripts/content/register-*-references.mjs` 로 모든 관련 프로젝트의 참고문서에 등록한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
+   - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
    - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
@@ -164,26 +164,38 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - 한 프로젝트의 `project.tilesets[...]` 에 업로드만 하고 끝내면 다른 프로젝트는 그 타일을 영원히 못 본다.
 - 라이선스·출처 표기(예: `ATTRIBUTION.md`, `CC BY 4.0`)를 같은 변경에 남긴다.
 
-### 2. 타일 학습 결과 → 저장소의 칩셋 폴더 + 참고문서 등록
+### 2. 타일 학습 결과 → 번들이 소유하는 참고문서
 
 공용 AI 문서는 `tiledata/AI-REFERENCE-CONTRACT.md`의 상세 사전·실행 순서·전체 배열·정상/오류 그림·자동 좌표 검증·레이어 정정 조건을 모두 만족해야 한다. 추상적 조언만으로 완료하지 않는다.
 
-- 학습 자료의 **출처 사본은 저장소에 커밋**한다. 선례: `tiledata/castle-tiles-rpgs/` (원문 MD·부품 JSON·비교 그림·출처·`ai-references/`),
-  `tiledata/forest-villages/`.
-- 그 자료를 프로젝트의 `타일 → AI 참고문서` 로 심는 **등록 스크립트**를 남긴다. 선례: `scripts/content/register-castle-references.mjs`.
-  이 스크립트가 문서·그림을 `referenceDocuments` 로 만들고, 원본 소유자와 파생 타일셋 공유(`referenceSourceTilesetId`)를 배선한다.
-- 등록 대상은 그 타일셋을 쓰는 **모든 프로젝트 행과 공용 맵 다운로드**(`public/assets/region-references/*.oprn.json`)다.
-  한 프로젝트에만 넣고 끝내지 않는다.
-- 저장 후 그 프로젝트를 **다시 로드해** 존재를 증명하고, 영수증·화면 증거를 `tiledata/<칩셋>/ai-references/` 에 남긴다.
-- **전역 공용 라이브러리는 아직 없다.** 캐릭터·얼굴 자료(`scripts/lib/sharedCharacterGraphics.ts` + `src/assets/sharedCharacterGraphics.json`)처럼
-  출하 시드 + 호스트 지속본 + 편집기 읽기 경로를 갖춘 공용 저장소는 별도 작업이다. 그것이 생기면 그쪽이 정본이 된다.
-- 다른 프로젝트·외부 에이전트에 자료를 넘길 때는 `scripts/content/export-tileset-references.mjs` 로 추출한다.
+**학습 결과는 프로젝트 행이 아니라 번들이 소유한다.** 그래야 그 타일셋이 있는 모든 프로젝트가 같은 지침을 처음부터 갖는다.
+프로젝트 행을 직접 패치하는 등록 스크립트는 **배포가 아니다** — 스크립트가 지나간 행만 갖고, 나머지는 빈 화면이 된다.
+
+1. **출처 사본을 저장소에 커밋한다.** 선례: `tiledata/castle-tiles-rpgs/`, `tiledata/forest-villages/`.
+2. **배포용 번들 JSON을 만든다.** 선례: `src/assets/sharedCastleReferences.json`(용도 4 · MD 41 · 이미지 20).
+   그림은 `public/assets/castle-references/` 의 축소 사본을 dataURL 로 싣는다. 학습·비교용 그림은 게임 소재로 잘라 쓰지 않으므로
+   긴 변 820px · 128색 수준으로 줄인다 — 실측: 원본 그대로면 14.25MB, 축소하면 3.08MB다.
+   생성·축소는 `scripts/content/prepare-castle-references.mjs`(`--dry` 로 대상만 확인).
+3. **타일셋 정의가 그 자료를 들고 태어나게 한다.** 선례: `castleTileset.ts` 의 `referenceDocuments: createSharedCastleReferences()`.
+4. **이미 있는 프로젝트에도 심는다.** 선례: `defaultAssets.ts` 의 `ensureBundledTilesets` 안 `ensureSharedCastleReferences(...)` —
+   빠진 용도만 덧붙이고, 저자가 직접 쓴 문서나 공유 포인터는 건드리지 않는다.
+5. **파생 타일셋은 원본을 공유한다**(`referenceSourceTilesetId`). 선례: `castle_courtyard_harbor` → `opengameart_castle`.
+6. 검증은 새 프로젝트와 기존 프로젝트 **양쪽**에서 한다. 새 프로젝트만 보면 4번 누락을 못 잡는다. 화면 증거를 `verify-shots/<주제>/` 에 남긴다.
+
+같은 형태의 선례가 더 있다: `src/assets/sharedVillageObjects.json` + `ensureSharedVillageObjectReferences`,
+`forestHarmony` + `ensureForestHarmonyReferences`.
+이미 배포된 공용 맵 다운로드(`public/assets/region-references/*.oprn.json`)나 원격 행에만 자료를 밀어 넣어야 할 때는
+`scripts/content/register-*.mjs` 를 쓴다 — 그 경로는 배포가 아니라 **소급 적용**이다.
+원격에 쓰는 스크립트는 명시적 스위치(`--remote` 등)가 있을 때만 원격을 건드린다.
+다른 프로젝트·외부 에이전트에 자료를 넘길 때는 `scripts/content/export-tileset-references.mjs` 로 추출한다.
 
 ### 3. 왜 강제인가
 
-- 참고문서는 `project.tilesets[id].referenceDocuments` 라는 **프로젝트 행 안의 필드**다. 새 프로젝트를 열면 아무것도 없다.
-- 실측: Slates 32px 자료(4용도 / 14 MD / 109 이미지)를 `rpg-zzu-slates32-38e6` 한 행에만 넣어 두었고,
-  다른 프로젝트에서는 `타일 → AI 참고문서` 가 빈 화면이었다.
+- 참고문서는 `project.tilesets[id].referenceDocuments` 라는 **프로젝트 행 안의 필드**다. 번들에 없으면 새 프로젝트는 아무것도 못 본다.
+- 실측 1: Slates 32px 자료(4용도 / 14 MD / 109 이미지)를 `rpg-zzu-slates32-38e6` 한 행에만 넣어 두었고, 다른 프로젝트에서는 빈 화면이었다.
+- 실측 2(2026-09-22): 성채 학습을 `register-castle-references.mjs` 로 프로젝트 행 몇 개에만 심어서,
+  성 타일셋을 가진 프로젝트 8개 중 6개가 참고문서 0개였고 새 프로젝트는 항상 0개였다.
+  번들 소유(`ensureSharedCastleReferences`)로 옮긴 뒤 새 프로젝트와 기존 프로젝트 모두 4용도를 갖는다.
 - 학습을 프로젝트마다 다시 하는 비용은 이미지 수십 장을 매번 다시 읽는 비용이다.
 
 ## 프로젝트 정본 저장은 필수 (hard rule)
