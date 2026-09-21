@@ -36,6 +36,7 @@ function renderEmptyMap(options: { backgroundPreview?: boolean } = {}): readonly
   renderEditScene({
     scene: mockScene(),
     tileLayer: mockContainer(tiles),
+    upperTileLayer: mockContainer(),
     overlayLayer: mockContainer(),
     gridGraphics: mockGridGraphics(),
     mapId: map.id,
@@ -265,6 +266,7 @@ function renderSelectedNpcEvent(layer: Layer): RenderedScene {
   renderEditScene({
     scene: mockScene(),
     tileLayer: mockContainer(),
+    upperTileLayer: mockContainer(),
     overlayLayer: mockContainer(overlayObjects),
     gridGraphics,
     mapId: map.id,
@@ -306,7 +308,10 @@ describe("edit scene event rendering", () => {
 
     expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0x000000, alpha: 0.45 });
     expect(marker?.stroke).toMatchObject({ lineWidth: 2, color: 0xffffff, alpha: 0.95 });
-    expect(sprite).toMatchObject({ x: 40, y: 40, texture: "tex_easyrpg_charset_people1", frame: 0 });
+    // 2026-09-21 자동 배율(cc3a2fc72) — 캐릭터셋 NPC는 발밑(rect.bottom+1)=48 에 세워진다.
+    // 이 기대값은 그 이전(타일 중앙 40) 시절의 것이다. 같은 스펙이 본 변경 없이도
+    // 동일하게 실패함을 stash A/B 로 확인했다(기준선 실패).
+    expect(sprite).toMatchObject({ x: 40, y: 48, texture: "tex_easyrpg_charset_people1", frame: 0 });
     expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
   });
 
@@ -352,6 +357,7 @@ describe("edit scene event rendering", () => {
     renderEditScene({
       scene: mockScene(),
       tileLayer: mockContainer(),
+      upperTileLayer: mockContainer(),
       overlayLayer: mockContainer(overlayObjects),
       gridGraphics: mockGridGraphics(),
       mapId: map.id,
@@ -445,6 +451,7 @@ describe("edit scene event rendering", () => {
     const context = {
       scene: mockScene(),
       tileLayer: mockContainer(tileObjects),
+      upperTileLayer: mockContainer(tileObjects),
       overlayLayer: mockContainer(),
       gridGraphics: mockGridGraphics(),
       mapId: map.id,
@@ -479,6 +486,7 @@ describe("edit scene event rendering", () => {
     const context = {
       scene: mockScene(),
       tileLayer: mockContainer(tileObjects),
+      upperTileLayer: mockContainer(tileObjects),
       overlayLayer: mockContainer(),
       gridGraphics: mockGridGraphics(),
       mapId: map.id,
@@ -532,6 +540,7 @@ describe("edit scene event rendering", () => {
     const stats = renderEditScene({
       scene: mockScene(),
       tileLayer: mockContainer(),
+      upperTileLayer: mockContainer(),
       overlayLayer: mockContainer(),
       gridGraphics: mockGridGraphics(),
       mapId: map.id,
@@ -627,11 +636,17 @@ describe("edit scene tile culling", () => {
     return tile;
   }
 
-  function cullScene(): { scene: Phaser.Scene; tiles: CullTile[]; tileLayer: Phaser.GameObjects.Container; overlayLayer: Phaser.GameObjects.Container; gridGraphics: Phaser.GameObjects.Graphics } {
+  function cullScene(): { scene: Phaser.Scene; tiles: CullTile[]; tileLayer: Phaser.GameObjects.Container; upperTileLayer: Phaser.GameObjects.Container; overlayLayer: Phaser.GameObjects.Container; gridGraphics: Phaser.GameObjects.Graphics } {
     const tiles: CullTile[] = [];
-    // tileLayer.add 로 들어오는 객체만 컬링 추적 대상이다. overlayLayer.add 로 들어오는
+    // tileLayer/upperTileLayer.add 로 들어오는 객체만 컬링 추적 대상이다. overlayLayer.add 로 들어오는
     // 시작 위치 표시 같은 오버레이는 tiles 배열에서 제외한다.
     const tileLayer: Phaser.GameObjects.Container = {
+      removeAll: () => undefined,
+      remove: (object: CullTile) => { const i = tiles.indexOf(object); if (i >= 0) tiles.splice(i, 1); return object; },
+      sort: () => undefined,
+      add: (object: CullTile) => { tiles.push(object); return object; },
+    } as unknown as Phaser.GameObjects.Container;
+    const upperTileLayer: Phaser.GameObjects.Container = {
       removeAll: () => undefined,
       remove: (object: CullTile) => { const i = tiles.indexOf(object); if (i >= 0) tiles.splice(i, 1); return object; },
       sort: () => undefined,
@@ -666,7 +681,7 @@ describe("edit scene tile culling", () => {
       },
       textures: { exists: () => true },
     } as unknown as Phaser.Scene;
-    return { scene, tiles, tileLayer, overlayLayer, gridGraphics };
+    return { scene, tiles, tileLayer, upperTileLayer, overlayLayer, gridGraphics };
   }
 
   it("renderEditScene 가 만든 타일은 syncTileCulling 이 화면 밖을 숨긴다", () => {
@@ -680,10 +695,11 @@ describe("edit scene tile culling", () => {
     store.replace(project);
     editorState.set({ currentMapId: map.id, layer: "lower", tool: "select", showGrid: false });
 
-    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    const { scene, tiles, tileLayer, upperTileLayer, overlayLayer, gridGraphics } = cullScene();
     renderEditScene({
       scene,
       tileLayer,
+      upperTileLayer,
       overlayLayer,
       gridGraphics,
       mapId: map.id,
@@ -716,10 +732,11 @@ describe("edit scene tile culling", () => {
     store.replace(project);
     editorState.set({ currentMapId: map.id, layer: "lower", tool: "select", showGrid: false });
 
-    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    const { scene, tiles, tileLayer, upperTileLayer, overlayLayer, gridGraphics } = cullScene();
     renderEditScene({
       scene,
       tileLayer,
+      upperTileLayer,
       overlayLayer,
       gridGraphics,
       mapId: map.id,
@@ -745,10 +762,11 @@ describe("edit scene tile culling", () => {
     store.replace(project);
     editorState.set({ currentMapId: map.id, layer: "lower", tool: "select", showGrid: false });
 
-    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    const { scene, tiles, tileLayer, upperTileLayer, overlayLayer, gridGraphics } = cullScene();
     renderEditScene({
       scene,
       tileLayer,
+      upperTileLayer,
       overlayLayer,
       gridGraphics,
       mapId: map.id,
@@ -760,11 +778,12 @@ describe("edit scene tile culling", () => {
 
     // reset 후 같은 host 로 다시 렌더하면 새 타일이 추적된다.
     resetCullableTiles(scene);
-    const { tiles: freshTiles, tileLayer: freshTileLayer, overlayLayer: freshOverlayLayer, gridGraphics: freshGridGraphics } = cullScene();
+    const { tiles: freshTiles, tileLayer: freshTileLayer, upperTileLayer: freshUpperTileLayer, overlayLayer: freshOverlayLayer, gridGraphics: freshGridGraphics } = cullScene();
     // 같은 scene 객체를 쓰되 freshTileLayer 가 새 타일을 받도록 한다.
     renderEditScene({
       scene,
       tileLayer: freshTileLayer,
+      upperTileLayer: freshUpperTileLayer,
       overlayLayer: freshOverlayLayer,
       gridGraphics: freshGridGraphics,
       mapId: map.id,
@@ -797,11 +816,12 @@ describe("edit scene tile culling", () => {
     store.replace(project);
     editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
 
-    const { scene, tiles, tileLayer, overlayLayer, gridGraphics } = cullScene();
+    const { scene, tiles, tileLayer, upperTileLayer, overlayLayer, gridGraphics } = cullScene();
     const tileIndex: EditSceneTileIndex = new Map();
     renderEditScene({
       scene,
       tileLayer,
+      upperTileLayer,
       overlayLayer,
       gridGraphics,
       mapId: map.id,
@@ -818,7 +838,7 @@ describe("edit scene tile culling", () => {
 
     // 증분 렌더 — 화면 밖 먼 셀(60,60)을 칠한다. 8방 이웃도 재렌더된다.
     renderEditSceneTileCells(
-      { scene, tileLayer, overlayLayer, gridGraphics, mapId: map.id, tileIndex },
+      { scene, tileLayer, upperTileLayer, overlayLayer, gridGraphics, mapId: map.id, tileIndex },
       [{ x: 60, y: 60, layer: "lower" }],
     );
 
