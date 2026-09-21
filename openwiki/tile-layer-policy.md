@@ -321,3 +321,25 @@ RGB(224,103,191)만 투명 처리하며 리사이즈/감색/재질 합성을 하
   돌려준 것도 같은 이유다(실제 격자는 1).
 - 정의: `createLpcWoodenFurniture16Tileset` · `seedLpcWoodenFurniture16Kits`.
   기존 프로젝트 반영은 `ensureBundledTilesets`. 시드 계약은 32px 판과 같다(킷이 있으면 불변).
+
+### 픽셀 크기 기록 계약 (2026-09-22)
+
+타일셋·오브젝트·장소가 **한 칸의 픽셀 크기**를 자기 데이터에 새긴다. 칸 수(`width`/`height`)만
+으로는 16px 판과 32px 판을 구별할 수 없기 때문이다 — 같은 그림의 두 판은 타일 번호와 칸
+수가 같고 픽셀만 다르다.
+
+- 왜 필요했나(실측): LPC 나무 가구 32px 판과 16px 판이 **같은 킷 id**(`lpc_bed_plain` 등)를
+  쓴다. `snapshotGraphic` 이 `tilesetId/kitId` 만 보고 `width:2 height:1` 만 돌려주면, 소비자는
+  어느 판인지 알 수 없어 조용히 반쪽 크기로 찍힌다.
+- 새긴 곳: `SectionStructureKitDef.tileSize`(킷), `SpatialKitSnapshot.tileSize`(동결 래스터),
+  `SpatialTerrain.tileSize`(장소 지형), `StructureKitFile.tileset.tileSize`(내보내기 파일).
+  전부 optional — 구 저장 데이터에는 없고, 없으면 소유 타일셋에서 해석한다.
+- 왜 스냅샷에 박는가: 스냅샷은 **동결된 래스터**다. 나중에 타일셋 쪽 크기가 바뀌어도 이미
+  찍힌 배치의 픽셀 의미는 변하면 안 된다. 그래서 값을 복사해 두고, 어긋나면 검증이 멈춘다.
+- 가드 세 곳: `references.ts`(스냅샷 tileSize vs 아틀라스), `geographyTerrain` 의
+  `assertTerrainTileSize`(지형 vs 아틀라스), `planImport` 의 `tileSizeMismatch`(가져오기 파일
+  vs 앨범 — 대화상자가 경고를 띄운다).
+- 해석 실패를 0 이나 기본값으로 뭉개지 않는다. `graphicTileSize` 는 타일셋이 없으면
+  `undefined` 를 돌려주고, 가드는 기록이 없을 때만 검사를 건너뛴다.
+- 새 번들 가구 팩을 넣을 때: 굽는 쪽이 `tileSize` 를 넘겨야 한다(`bakeInteriorObject` 의
+  네 번째 인자, `lpcFurnitureKits(tileSize)`). 빠뜨리면 그 팩만 크기 미상이 된다.

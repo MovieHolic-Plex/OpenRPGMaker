@@ -81,6 +81,8 @@ export type PlaceDesign = SpatialDesignBase & SpatialComposable & {
 };
 export type SpatialTerrain = {
   readonly tilesetId: string; readonly width: number; readonly height: number;
+  /** 아틀라스 한 칸의 픽셀 크기(2026-09-22). 없으면 타일셋에서 해석한다(하위 호환). */
+  readonly tileSize?: number;
   readonly floor: string; readonly areas: readonly SpatialFloorArea[];
 };
 /** 정주지 본문 — 지역 지형을 슬롯 배치 대신 마을 설계서(villagePresets 레코드)와 시드로 채운다. */
@@ -110,6 +112,18 @@ export type SpatialKitSnapshot = SpatialGraphic & {
   /** Frozen placement vocabulary; absent in older snapshots (legacy floor behavior). */
   readonly interior?: { readonly id: string; readonly snap: "wall-north" | "wall-any" | "floor" | "free"; readonly role: string };
   readonly width: number; readonly height: number;
+  /**
+   * 아틀라스 한 칸의 픽셀 크기(2026-09-22). **분리된 래스터의 정본이다.**
+   *
+   * 왜 필요한가: `width`/`height` 는 칸 수라 16px 인지 32px 인지 말하지 않는다. 같은 킷 id 를
+   * 쓰는 32px 판과 16px 판(LPC 나무 가구)이 공존하므로, 픽셀 크기 없이 `tilesetId/kitId` 만
+   * 보고 복원하면 어느 판인지 알 수 없다 — 조용히 반쪽 크기로 찍힌다.
+   *
+   * 왜 여기 박아 두는가: 스냅샷은 **동결된 래스터**다. 나중에 타일셋 쪽 크기가 바뀌어도
+   * 이미 찍힌 배치의 픽셀 의미는 변하면 안 된다(레퍼런스 검증이 어긋남을 잡아낸다).
+   * 구 저장 데이터에는 없으므로 optional — 없으면 타일셋에서 해석한다(하위 호환).
+   */
+  readonly tileSize?: number;
   readonly cells: readonly (SpatialPoint & { readonly layer: "lower" | "upper"; readonly tile: number })[];
 };
 /** Closed transitive definitions retain ordered slots, selections, overrides and layout inputs.
