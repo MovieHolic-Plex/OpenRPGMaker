@@ -52,6 +52,28 @@ map.events.push({
     ],
   }],
 });
+// 상태이상 실측용 — lv3 스파르츄(전기 타입, 전기 기술 보유)를 지급한다. 전기→전기는
+// gen1MajorStatusBlockedByType 이 마비를 막지 않고(전기/마비 차단은 지면 타입 방어만),
+//Thunder Jolt 의 마비 10% 가 확률 판정을 통과하면 배지가 렌더된다.
+map.events.push({
+  id: 'ev_qa_status_trigger',
+  x: 15,
+  y: 13,
+  trigger: { kind: 'action' },
+  commands: [],
+  pages: [{
+    id: 'ev_qa_status_trigger_page',
+    name: 'QA 상태 트리거',
+    conditions: [],
+    graphic: { transparent: true },
+    trigger: { kind: 'action' },
+    priority: 'same',
+    movement: { type: 'fixed', speed: 3, frequency: 3 },
+    commands: [
+      { kind: 'giveMonster', speciesId: 'species_scarloxy_sparchu', level: 10, nickname: '절연' },
+    ],
+  }],
+});
 // 진화 실측용 — 스파르츄(7레벨)를 신드릴로 진화시키는 이벤트. QA 트리거와 같은 칸에 놓고
 // 셀프스위치로 1회만 동작한다. 인스턴스 id 는 giveMonster 가 monster_1 부터 순차 부여한다.
 map.events.push({
