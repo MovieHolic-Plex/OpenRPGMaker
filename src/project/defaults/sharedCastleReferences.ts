@@ -12,7 +12,9 @@ export function createSharedCastleReferences(): TilesetReferenceCategory[] {
 export function ensureSharedCastleReferences(tileset: TilesetDef): boolean {
   if (tileset.id !== CASTLE_TILESET_ID || tileset.image.type !== 'bundled'
     || tileset.image.id !== CASTLE_TILESET_TEXTURE_KEY
-    || tileset.referenceDocuments !== undefined || tileset.referenceSourceTilesetId) return false;
-  tileset.referenceDocuments = createSharedCastleReferences();
+    || tileset.referenceDocuments?.length === 0 || tileset.referenceSourceTilesetId) return false;
+  const missing = saved.filter(category => !(tileset.referenceDocuments ?? []).some(c => c.id === category.id));
+  if (!missing.length) return false;
+  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)];
   return true;
 }
