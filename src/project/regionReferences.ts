@@ -5,6 +5,7 @@ import emeraldSnapshot from "./regionReferences/emerald-basin.json";
 import hillForestSnapshot from "./regionReferences/hill-forest-village.json";
 import snapshot from "./regionReferences/walled-settlement.json";
 import lakeSnapshot from "./regionReferences/lake-village.json";
+import riverForestSnapshot from "./regionReferences/river-forest-village.json";
 import castleSnapshot from "./regionReferences/castle-town.json";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
@@ -53,6 +54,22 @@ export const REGION_REFERENCES = [{
     "울타리 마당·텃밭·우물 쉼터를 배치하고 소품은 작업과 생활 공간별로 모은다.",
     "키 큰 풀은 숲과 물가에 불규칙하게 모으며 마른 나무는 드물게 둔다. 선착장 양끝에 사다리가 있다."],
   limitations: "외관 참고 사례. 실내·낚시·수영·NPC 상호작용은 포함하지 않는다.",
+}, {
+  id: "river-forest-village-78x44", name: "강변 숲마을", kind: "completed-map" as const, regionKind: "settlement" as const,
+  revision: 1, width: 78, height: 44, tilesetId: riverForestSnapshot.tileset.id,
+  preview: "/assets/region-references/river-forest-village.png",
+  tilesetPreview: "/assets/region-references/river-forest-village-atlas.png",
+  projectDownload: "/assets/region-references/river-forest-village.oprn.json",
+  sourceProjectId: "original-grove-trunks-20260921-76a3-1789965905810", sourceMapId: riverForestSnapshot.map.id,
+  snapshotProjectId: "oprn-region-river-forest-village-v1",
+  rules: [
+    "중앙의 굽은 강과 다리 양쪽에 집 8채를 배치하고 집 앞길을 강둑 길에 연결한다.",
+    "외곽 숲은 크고 작은 굴곡을 이어 공터를 감싼다. 몸통·뿌리는 굽이숲의 기존 3행 조립과 끝마감을 유지한다.",
+    "화단·장작과 통·야외 탁자·수확 상자·쉼터·숲 가장자리 꽃덤불을 생활 공간에 모으고 출입 동선을 비운다.",
+    "숲마을 · 거리별 잔디 칩셋을 사용한다. 시장이나 마을 외곽 울타리는 두지 않는다.",
+    "사용자가 승인한 저장본을 보존한다. 내려받는 문서에는 연결된 실내 9개와 기존 출입·주민 이벤트를 포함한다.",
+  ],
+  limitations: "완성 마을 참고 사례. 자동 생성 프리셋이 아니다. 집 앞길 8곳의 연결을 확인했으며 게임 전체 플레이 검증은 별도다.",
 }] as const;
 
 const LAKE_PLACE_REFERENCES = [
@@ -114,7 +131,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = castlePlaceSnapshot(id) ?? forestPlaceSnapshot(id) ?? shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
+  const source = castlePlaceSnapshot(id) ?? forestPlaceSnapshot(id) ?? shipPlaceSnapshot(id) ?? (reference.id === "river-forest-village-78x44" ? riverForestSnapshot : reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
   const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
   const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;
