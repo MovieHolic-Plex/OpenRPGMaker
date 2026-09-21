@@ -166,6 +166,8 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 
 ### 2. 타일 학습 결과 → 저장소의 칩셋 폴더 + 참고문서 등록
 
+공용 AI 문서는 `tiledata/AI-REFERENCE-CONTRACT.md`의 상세 사전·실행 순서·전체 배열·정상/오류 그림·자동 좌표 검증·레이어 정정 조건을 모두 만족해야 한다. 추상적 조언만으로 완료하지 않는다.
+
 - 학습 자료의 **출처 사본은 저장소에 커밋**한다. 선례: `tiledata/castle-tiles-rpgs/` (원문 MD·부품 JSON·비교 그림·출처·`ai-references/`),
   `tiledata/forest-villages/`.
 - 그 자료를 프로젝트의 `타일 → AI 참고문서` 로 심는 **등록 스크립트**를 남긴다. 선례: `scripts/content/register-castle-references.mjs`.

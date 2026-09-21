@@ -145,3 +145,32 @@ SQLite 저장/재로드: `register-forest-public-references.mjs` (대상 호스�
 작성한 문서(빈 배열 포함), 공유 포인터, 다른 이미지로 바꾼 타일셋은 보존한다.
 특정 성채 프로젝트나 공용 장소 다운로드를 가져와야 하는 조건은 없다.
 새 빈 프로젝트의 타일 → 성채 · OpenGameArt → AI 참고문서에서 확인한다.
+
+## 공용 숲 실행 조립법 (2026-09-22)
+
+`forest_harmony`의 `forest-executable-v1` 카테고리는 추상적인 미감 설명을 보완하는
+정확한 10개 부품 배열, 입력/정답 배열, 원본 16px 조립 그림 3개를 담는다.
+정본은 `tiledata/tilesets/forest_harmony/recipes/`이고 생성은
+`node scripts/content/prepare-forest-executable-references.mjs`이다.
+`inspect_forest_recipe` / `stamp_forest_recipe`는 `src/project/forestRecipes.ts`의
+결정론적 조립기를 사용한다. 쓰기 도구는 기존 참고문헌 읽기 게이트를 통과해야 한다.
+지원 범위는 온전한 기존 패턴 7종과 폭 `6N+2`, 높이 6인 반복 숲이다.
+현재 칩셋/부품이 원본과 달라지면 거절한다. 사각형 전체의 두 레이어를 쓰므로 -1도
+지우기이며 투명 병합이 아니다. 기존 이벤트는 항상 보호한다.
+`checkPlaced`는 조립 결과와 실제 배열의 차이를 좌표별로 반환한다.
+`accessPoints`가 있을 때만 타일 통행 BFS를 수행하며 이벤트 조건/미적 품질을 보증하지 않는다.
+저가 모델의 실제 성공률은 아직 측정하지 않았다.
+SQLite 저장은 호스트를 종료한 후 `register-forest-executable-references.mjs <projectDir...>`로
+공식 store API를 사용한다. 사용자 문서와 맵은 보존하며 저장 후 재로드한다.
+
+### 상세 공용 조립 계약 (public-assembly-v2)
+
+사용자 기준은 `tiledata/AI-REFERENCE-CONTRACT.md`이며 AGENTS에서 필수로 연결한다.
+`prepare-public-tile-recipes.mjs`가 6개 건물/가구/숲/울타리/동굴 조립 카탈로그와
+기존 레이어 메타 설명 정정표를 만들고, `render-public-recipe-references.mjs`가
+정확한 배열을 합성해 정상6/오류8 그림과 실제 검증 결과를 만든다.
+`embed-public-tile-recipes.mjs`가 19문서/14그림을 공용 정의에 넣는다.
+`publicTileRecipes.ts`는 원점+recipeId로 원자적 배치와 의미별 오류 좌표를 제공한다.
+접근칸은 카탈로그에 내장되고 외부 맵 입출구는 entryPoints로 명시한다.
+동굴893은 retro_world 413의 투명 이식 및 하위 받침652를 사용한다.
+기존 플레이 그래픽의 레이어 priority는 유지하며 어긋난 설명99개를 정정한다.

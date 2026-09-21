@@ -1,0 +1,596 @@
+[
+  {
+    "scope": "group",
+    "id": "harness-combined-town-fence",
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-windows",
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-bush-props",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-flower-props",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-branch-props",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-bench-horizontal",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-bench-vertical",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-table-horizontal",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-table-vertical",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-table-chairs",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-free-chairs",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-house-yard-props",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-cemetery-props",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-wall-ladder",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-fruit-box",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-wood-box",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-market-rail-upper",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-stone-step-slab",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-magic-circle",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-barrel-prop",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-plaza-statue",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-plaza-pillar",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-village-well",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "harness-combined-town-small-props",
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "group",
+    "id": "forest-trees:round-bush",
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "group",
+    "id": "forest-trees:dark-bush",
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "group",
+    "id": "forest-trees:small-bush",
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "group",
+    "id": "forest-enclosure:북서쪽 굽은 숲",
+    "before": "lower",
+    "after": "mixed"
+  },
+  {
+    "scope": "group",
+    "id": "forest-enclosure:북동쪽 감싸는 숲",
+    "before": "lower",
+    "after": "mixed"
+  },
+  {
+    "scope": "group",
+    "id": "forest-diagonal:2",
+    "before": "lower",
+    "after": "mixed"
+  },
+  {
+    "scope": "group",
+    "id": "forest-diagonal:3",
+    "before": "lower",
+    "after": "mixed"
+  },
+  {
+    "scope": "group",
+    "id": "forest-trunk-assembly:3",
+    "before": "lower",
+    "after": "mixed"
+  },
+  {
+    "scope": "group",
+    "id": "forest-dark-seams:3",
+    "before": "lower",
+    "after": "mixed"
+  },
+  {
+    "scope": "tile",
+    "id": 85,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 87,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 144,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 147,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 148,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 174,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 175,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 176,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 177,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 202,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 203,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 204,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 205,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 206,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 207,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 231,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 234,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 235,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 236,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 237,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 259,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 260,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 261,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 262,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 263,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 266,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 267,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 268,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 288,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 289,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 290,
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "tile",
+    "id": 291,
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "tile",
+    "id": 292,
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "tile",
+    "id": 293,
+    "before": "mixed",
+    "after": "lower"
+  },
+  {
+    "scope": "tile",
+    "id": 296,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 297,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 318,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 319,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 320,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 322,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 323,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 327,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 328,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 348,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 349,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 350,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 351,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 352,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 353,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 358,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 378,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 379,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 380,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 381,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 382,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 383,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 388,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 408,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 409,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 410,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 438,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 439,
+    "before": "lower",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 440,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 468,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 469,
+    "before": "mixed",
+    "after": "upper"
+  },
+  {
+    "scope": "tile",
+    "id": 470,
+    "before": "mixed",
+    "after": "upper"
+  }
+]
