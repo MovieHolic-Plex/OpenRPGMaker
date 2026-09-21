@@ -80,7 +80,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
   return {
     name: "author_village",
     description:
-      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. 시공 순서는 집 → 길 → 나무 → 호수·마당·맵 장식이다. 물·마당 자리는 계획에서 예약하고 실제 물은 마지막에 칠한다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 설계서의 자연 설정이 고정이면 forestDensity는 생략한다(숲 없음에는 지정 금지). 자유 설정에서 숲 요청이 있으면 forestDensity를 넣는다. 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
+      "마을 설계서가 있으면 presetId 또는 기본 설계서를 사용한다. 고정값은 생략하고 범위 안의 값만 요청한다. 충돌(village-design-conflict)은 DB 설계서를 바꾸기 전까지 재시공하지 말고 사용자에게 차이를 알린다. houseCount는 설계서가 없을 때 필수다. 시공 순서는 집 → 길 → 나무 → 호수·마당·맵 장식이다. 물·마당 자리는 계획에서 예약하고 실제 물은 마지막에 칠한다. Canonical village facade. Builds an exact or explicit best-effort house count on one locked existing/new target. 설계서의 자연 설정이 고정이면 forestDensity는 생략한다(숲 없음에는 지정 금지). 자유 설정에서 숲 요청이 있으면 forestDensity를 넣는다. 숲마을 칩셋의 군락은 「굽이숲 절벽마을」의 연결 수관과 3줄 밑동으로 조립하고 길·집 앞 공터를 보존한다. 사용자가 선택 영역을 준 턴은 target:{kind:\"existing\", mapId, bounds} 로 그 맵 그 사각형만 대상으로 하고 새 맵을 만들지 말 것. 「이 마을 정리」처럼 수량이 없어도 같다.",
     mode: "write",
     domains: ["tile", "map"],
     parameters: {

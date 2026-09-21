@@ -96,6 +96,7 @@ const CORE_BUNDLED_IMAGE_ASSETS = [
 
 /** The reference composite is loaded only by projects that explicitly use its board tileset. */
 export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
+  { textureKey: "tex_forest_cliff_reference", path: "assets/region-references/forest-cliff-village-atlas.png", name: "굽이숲 절벽마을 · 숲 조립 참조" },
   { textureKey: CASTLE_REFERENCE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-reference-composite.png", name: "성채 참고 이미지 · 큰 돌다리 제거" },
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -125,6 +126,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
 export function bundledChipsetFrameCount(key: string): number {
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
+  if (key === "tex_forest_cliff_reference") return 2640;
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;

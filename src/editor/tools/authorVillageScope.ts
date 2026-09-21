@@ -1,3 +1,4 @@
+import { ensureForestGroveTileset, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
 import type { AuthorVillageRequest, ConstructionRect } from "@/editor/construction/contracts";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
@@ -326,6 +327,9 @@ function assertTilesets(state: VillageFacadeState): void {
 }
 
 function allowedTargetTilesetChange(before: TilesetDef, after: TilesetDef): boolean {
+  const expected = structuredClone(before);
+  if (after.autotileGroups?.some(group => group.id === FOREST_GROVE_GROUP)) ensureForestGroveTileset(expected);
+  before = expected;
   const beforeGrafts = before.tileGrafts ?? [];
   const afterGrafts = after.tileGrafts ?? [];
   const canAppendInnSign = !beforeGrafts.some((graft) => graft.targetTile === INN_SIGN_GRAFT.targetTile);

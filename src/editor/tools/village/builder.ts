@@ -117,7 +117,7 @@ import { buildMorphologyVillage, type MorphologyBuild } from "./morphologyBuild"
 import { MORPHOLOGY_LABEL, VILLAGE_MORPHOLOGIES, type VillageMorphology } from "./morphologyTypes";
 import type { MorphologyExit } from "./morphologyPlan";
 import { paintRelief, paintReliefStairs, planRelief, RELIEF_STYLES, tilesetHasCliffVocabulary, type ReliefPlan } from "./relief";
-import { treeKitForTileset } from "./treeKit";
+import { prepareVillageTreeKit } from "./treeKit";
 
 export type VillageBuildDomainArgs = Readonly<Record<string, unknown>>;
 
@@ -341,7 +341,7 @@ export function buildVillageDomain(
     }
     if (terrainMasks) for (let i = 0; i < terrainMasks.roles.length; i += 1) if (terrainMasks.roles[i] === "forest") morphForest.add(i);
     // 나무 어휘 — 혼합 칩셋에 숲 나무 확장 띠가 있으면 그 물체(큰 참나무·활엽수·덤불·숲 벽), 아니면 합본 마을 원자.
-    const treeKit = treeKitForTileset(tilesetForMap);
+    const treeKit = prepareVillageTreeKit(tilesetForMap);
     reliefNotes.push(`tree kit ${treeKit.id}`);
     morph = buildMorphologyVillage({
       draft, map, area, seed, intent, morphology,
@@ -547,7 +547,7 @@ export function buildVillageDomain(
       }
     }
     if (requirements.landmarks.includes("forest")) {
-      const treeCells = countTreeCells(map, baseArea);
+      const treeCells = countTreeCells(map, baseArea, draft.tilesets[map.tilesetId]);
       if (treeCells < 15) {
         throw new ToolError(
           `필수 숲 미시공: 실측 나무 ${treeCells}칸 < 15 — place_props(침엽수/활엽수)가 실패했다. 쿼리「${requirements.query}」`,
@@ -817,7 +817,7 @@ export function inspectVillageBuild(
       objectIds: houses.map(house => String(Reflect.get(house, "objectId"))),
       doors: Number(Reflect.get(Reflect.get(data, "exteriorDoors") as object, "doors")),
       reachableDoors: Number(Reflect.get(Reflect.get(data, "exteriorDoors") as object, "reachable")),
-      waterCells: countWaterCells(project.maps[exteriorMapId]!), treeCells: countTreeCells(project.maps[exteriorMapId]!),
+      waterCells: countWaterCells(project.maps[exteriorMapId]!), treeCells: countTreeCells(project.maps[exteriorMapId]!, undefined, project.tilesets[project.maps[exteriorMapId]!.tilesetId]),
       marketDisplays: project.maps[exteriorMapId]!.layoutPlan?.regions.filter(region => region.tags?.includes("market-display")).length ?? 0,
       lakesideAccess: project.maps[exteriorMapId]!.layoutPlan?.regions.filter(region => region.tags?.includes("lakeside")).length ?? 0,
     } } : {}),
