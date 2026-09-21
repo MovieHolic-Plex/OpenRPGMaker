@@ -484,6 +484,11 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const id of strings) {
     if (isGeneratedMonsterSprite(id)) keys.add(id);
   }
+  // 필드 스폰의 그림은 적 레코드에만 있고, 맵 이벤트는 부팅 뒤에 만들어진다.
+  // 적 도감 전체의 monsterResourceId 는 여기서 다시 넣지 않는다.
+  for (const id of fieldSpawnMonsterResourceIds(project)) {
+    if (isGeneratedMonsterSprite(id)) keys.add(id);
+  }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
   }
@@ -531,19 +536,39 @@ function spatialGraphicResourceIds(project: Project): Set<string> {
 }
 
 function collectProjectStrings(value: unknown, out: Set<string>): void {
+  collectPlayStrings(value, out, "");
+}
+
+function collectPlayStrings(value: unknown, out: Set<string>, key: string): void {
+  // 적·종족 도감의 필드 그림 id. 전투 초상은 전투 DOM 이 그때 받고,
+  // 맵에 깔린 스폰만 fieldSpawnMonsterResourceIds 가 다시 넣는다.
+  if (key === "monsterResourceId" || key === "uploaded") return;
   if (typeof value === "string") {
     out.add(value);
     return;
   }
   if (Array.isArray(value)) {
-    for (const item of value) collectProjectStrings(item, out);
+    for (const item of value) collectPlayStrings(item, out, key);
     return;
   }
   if (typeof value !== "object" || value === null) return;
-  for (const [key, child] of Object.entries(value)) {
-    if (key === "uploaded") continue;
-    collectProjectStrings(child, out);
+  for (const [childKey, child] of Object.entries(value)) {
+    collectPlayStrings(child, out, childKey);
   }
+}
+
+/** defaultFieldSpawnGraphic 과 같은 적 선택. 이벤트 생성 전에 그 그림만 미리 싣는다. */
+function fieldSpawnMonsterResourceIds(project: Project): readonly string[] {
+  const ids: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const spawn of map.fieldSpawns ?? []) {
+      const troop = project.database.troops.find((entry) => entry.id === spawn.troopId);
+      const firstEnemyId = troop?.members?.find((member) => member.hidden !== true)?.enemyId ?? troop?.enemyIds?.[0];
+      const resourceId = project.database.enemies.find((enemy) => enemy.id === firstEnemyId)?.monsterResourceId;
+      if (resourceId) ids.push(resourceId);
+    }
+  }
+  return ids;
 }
 
 function registerCharsetTextureFrames(texture: Phaser.Textures.Texture): void {
