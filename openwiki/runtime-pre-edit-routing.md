@@ -1,3 +1,11 @@
+- **플레이 프리로드는 카탈로그가 아니라 맵이 쓰는 그림만 싣는다 (2026-09-22):**
+  `loadBundledAssets` / `collectPlayReferencedStrings` 는 `resourceProfiles` 와, 어떤 맵·명령도
+  가리키지 않는 `tilesets` 레코드를 훑지 않는다. 빈 프로젝트도 `ensureBundledTilesets` 로 칩셋
+  카탈로그 전체가 들어 있고 프로필은 캐릭셋 텍스처 키를 전부 갖고 있어서, 통째로 보면 시작 맵과
+  무관한 시트의 다운로드·색키·타일 프레임 등록이 테스트 플레이 창을 붙잡는다. 맵 `tilesetId` 와
+  이벤트·액터·명령이 가리키는 타일셋만 다시 읽는다. 대사창·이모트·배치 오버레이 텍스처는 그대로
+  항상 싣는다. 내보내기 ZIP 은 다른 계약이다(`webExportAssets` 는 이미지 프로필을 계속 넣는다).
+  회귀: `test/playBootAssetSelection.test.ts`.
 - **좌표 목적지 이동의 실패 계약 (OPRN-OUT-013, 2026-09-10):** `playPathfindMove` 는
   이제 `Promise<MovementResult>` 를 돌려준다(도착 + 실패 6종, 정수 코드가 계약이다).
   변수 좌표는 `session.variables[id]` **원시 조회**로 읽어야 한다 — `getVariable` 의 `?? 0`
