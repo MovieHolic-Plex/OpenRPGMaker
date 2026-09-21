@@ -27,6 +27,9 @@ import {
   COMBINED_TOWN_RETRO_WORLD_NAME,
   COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY,
   COMBINED_TOWN_RETRO_WORLD_TILE_COUNT,
+  LPC_WOODEN_FURNITURE_16_NAME,
+  LPC_WOODEN_FURNITURE_16_TEXTURE_KEY,
+  LPC_WOODEN_FURNITURE_16_TILE_COUNT,
   LPC_WOODEN_FURNITURE_TILE_COUNT,
   LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
@@ -47,7 +50,7 @@ export const TEX_TILESET = "tex_tiles_default";
 export const TEX_DIALOGUE_FRAME = "tex_dialogue_frame";
 
 /** [LPC] Wooden Furniture texture key — re-exported for defaults/webExport wiring. */
-export { LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
+export { LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 
 export type BundledImageAsset = {
   readonly textureKey: string;
@@ -125,6 +128,7 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
   { textureKey: SLATES_32_TEXTURE_KEY, path: "assets/slates/slates-v2-32px.png", name: "Slates 32px · Ivan Voirol (CC-BY 4.0)" },
   { textureKey: LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture.png", name: "LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)" },
+  { textureKey: LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture-16px.png", name: LPC_WOODEN_FURNITURE_16_NAME },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -138,6 +142,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
   if (key === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_TILE_COUNT;
+  if (key === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_16_TILE_COUNT;
   return TILE_FRAME_COUNT;
 }
 
@@ -600,7 +605,8 @@ function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: strin
     textureKey === CASTLE_TILESET_TEXTURE_KEY ||
     textureKey.startsWith(`${CASTLE_TILESET_TEXTURE_KEY}__`) ||
     textureKey === CASTLE_REFERENCE_TILESET_TEXTURE_KEY ||
-    textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY
+    textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY ||
+    textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY
   ) return;
   for (const strip of CHIPSET_ANIMATION_STRIPS) {
     const stripKey = chipsetAnimationKey(textureKey, strip.key);

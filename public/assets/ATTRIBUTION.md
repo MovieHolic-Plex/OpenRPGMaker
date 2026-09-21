@@ -48,6 +48,21 @@
   `opengameart-lpc-wooden-furniture-CREDITS.txt` alongside the PNG and retain
   the author, source, and license notices.
 
+### 16px companion sheet (2026-09-22)
+
+- File: `opengameart-lpc-wooden-furniture-16px.png` (256×512 RGBA)
+- Derivation: the 32px sheet above, halved with unfake.js (unfake-core WASM) median
+  block downscale. Registered as `opengameart_lpc_wooden_furniture_16` /
+  `tex_opengameart_lpc_wooden_furniture_16` so the same furniture can be placed on
+  existing 16px maps (combined town / interior).
+- SHA-256: `6989a08a782a6002c2aed4337f393d674b405443b0cd4d2fc247e0d66856d7be`
+- Modification notice: this is a modified (downscaled) derivative. The original 32px
+  sheet is preserved unchanged and is not replaced by this file. Same authors, same
+  CC-BY-SA 3.0 / GPL 3.0 terms, and the same credits file apply.
+- Only the downscale step of unfake.js was used. Its morphological cleanup and
+  quantization steps removed 1px handles and shelf dividers on this sheet (it is
+  authored pixel art, not AI output, so there is no fake-pixel structure to undo).
+
 ## Galmuri pixel fonts
 
 - Files:

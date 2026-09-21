@@ -1,4 +1,5 @@
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
+import { LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
@@ -93,7 +94,9 @@ function objectCards(): SpatialGalleryCard[] {
         id,
         localId: kit.id,
         name: kit.name || kit.id,
-        source: tileset.id === "tibo_interior_expanded" && kit.id.startsWith("tibo-") ? "default" : "own",
+        // 번들 시트에서 온 가구 팩은 공용 오브젝트다 — Tibo 실내 확장과 LPC 나무 가구가 그렇다.
+        // 나머지 킷은 저작자가 이 프로젝트에서 만든 것이므로 내 오브젝트로 남는다.
+        source: isBundledFurniturePackKit(tileset.id, kit.id) ? "default" : "own",
         kind: "objects",
         usage: 0,
         tilesetId: tileset.id,
@@ -118,6 +121,20 @@ function objectCards(): SpatialGalleryCard[] {
     });
   }
   return cards;
+}
+
+/**
+ * 번들 가구 팩에서 시드된 킷인가 — 자료집의 "공용 오브젝트" 판정.
+ *
+ * 왜 id 접두사가 아니라 타일셋 신원으로 가르는가: 공용성은 **어느 시트에서 왔는가**의
+ * 사실이고, 킷 id 는 저작자가 복제·개명할 수 있는 값이다. 시트가 번들이면 그 팩의
+ * 시드 킷은 공용이고, 저작자가 그 위에 새로 만든 킷은 id 규약이 없어도 내 것으로 남는다.
+ * Tibo 는 복원 시절의 `tibo-` 접두사를 유지해 기존 판정과 결과가 같다.
+ */
+function isBundledFurniturePackKit(tilesetId: string, kitId: string): boolean {
+  if (tilesetId === LPC_WOODEN_FURNITURE_TILESET_ID) return kitId.startsWith("lpc_");
+  if (tilesetId === "tibo_interior_expanded") return kitId.startsWith("tibo-");
+  return false;
 }
 
 function spaceCards(): SpatialGalleryCard[] {
