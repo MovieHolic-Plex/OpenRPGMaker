@@ -1,3 +1,10 @@
+import { clearAgentBlueprint, setAgentBlueprintFromSpec, markAgentBlueprintProgress, commitAgentBlueprintProgress } from "@/editor/agentBlueprint";
+import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
+import { SPATIAL_BUILD_TOOLS, TILE_WRITE_TOOLS, type BuildSpec } from "@/ai/buildSpec";
+import { GHOST_WIPE_DURATION_MS, GHOST_WIPE_HOLD_MS, hasAgentGhostPreviewSubscribers, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
+import { prefersReducedMotion } from "@/util/reducedMotion";
+import { resolveCurrentMapId } from "@/editor/mapSelection";
+import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 // Pi 실행 이벤트 → 캔버스 시공 표시(고스트). 워커가 툴마다 흘리는 `map_delta` 를 초안 맵으로
 // 복원하고, **기존 고스트 기계를 그대로** 돌린다(base↔초안 diff).
 //
@@ -27,6 +34,8 @@ export interface PiGhostBridge {
   readonly handleEvent: (event: PiAgentEvent) => void;
   /** 밀린 갱신을 지금 그린다 — 실행이 끝났는데 마지막 증분이 스로틀 안에서 잠들지 않게. */
   readonly flush: () => void;
+  readonly present: (before: Project, next: Project, signal?: AbortSignal) => Promise<void>;
+  readonly accept: (project: Project) => void;
   /** 검토 화면에는 실제 수용된 병합 결과만 표시한다. */
   readonly reconcile: (project: Project) => void;
   /** 지금까지 쌓인 초안 맵. 검토 카드·테스트가 «무엇이 그려졌나» 를 묻는 창구다. */
@@ -51,7 +60,9 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
   const owner = Symbol("pi-ghost");
   activeOwner = owner;
   clearAgentGhostPreview();
-  const base = options.baseProject;
+  let base = options.baseProject;
+  let explicitPlan = false;
+  clearAgentBlueprint();
   let journal: { agentId: string; deltas: readonly PiMapDelta[] }[] = [];
   let runningAgentId: string | null = null;
   let maps: Record<string, GameMap> = { ...(base.maps ?? {}) };
@@ -88,6 +99,28 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
 
   return {
     reconcile,
+    async present(before, next, signal) {
+      if (disposed || activeOwner !== owner) return;
+      base = before;
+      reconcile(next);
+      const mapId = resolveCurrentMapId();
+      if (!mapId || !getAgentGhostPreviewState().previews.some(preview => preview.mapId === mapId && preview.cells.length > 0) || !hasAgentGhostPreviewSubscribers() || prefersReducedMotion() ||
+          (typeof document !== "undefined" && document.hidden)) return;
+      signal?.throwIfAborted();
+      await new Promise<void>((resolve, reject) => {
+        const done = () => { signal?.removeEventListener("abort", abort); resolve(); };
+        const timer = setTimeout(done, GHOST_WIPE_DURATION_MS + GHOST_WIPE_HOLD_MS + 100);
+        const abort = () => { clearTimeout(timer); signal?.removeEventListener("abort", abort); reject(signal?.reason ?? new Error("중단됨")); };
+        signal?.addEventListener("abort", abort, { once: true });
+      });
+    },
+    accept(project) {
+      if (disposed || activeOwner !== owner) return;
+      base = project;
+      reconcile(project);
+      if (explicitPlan) commitAgentBlueprintProgress();
+      else clearAgentBlueprint();
+    },
     handleEvent(raw): void {
       if (disposed || activeOwner !== owner) return;
       let event = raw;
@@ -102,7 +135,35 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
         schedule();
       }
       if (raw.type === "done") reconcile(raw.project);
+      if (event.type === "execution_status" && event.name === "set_build_spec" && event.ok && event.data) {
+        explicitPlan = true;
+        setAgentBlueprintFromSpec(event.data as BuildSpec);
+        return;
+      }
+      if (event.type === "tool_end" && runningAgentId === agentId) {
+        clearAgentGhostRunningTool();
+        if (!explicitPlan && !event.ok) clearAgentBlueprint();
+      }
       if (event.type === "tool_start") {
+        const args = (event.args && typeof event.args === "object" ? event.args : {}) as Record<string, unknown>;
+        const spatial = SPATIAL_BUILD_TOOLS.has(event.name) || TILE_WRITE_TOOLS.has(event.name);
+        if (spatial) {
+          const target = blueprintRegionsForToolCall(event.name, args);
+          const map = target.mapId ? maps[target.mapId] : undefined;
+          const regions = target.regions.length ? target.regions : target.wholeTarget && map
+            ? [{ mapId: map.id, x: 0, y: 0, w: map.width, h: map.height }] : [];
+          if (!explicitPlan && target.mapId && regions.length) {
+            setAgentBlueprintFromSpec({ mapId: target.mapId, assets: regions.map((r, i) => ({
+              id: `work-${i}`, kind: "작업 영역", x: r.x, y: r.y, w: r.w, h: r.h,
+            })) });
+          }
+          if (explicitPlan) markAgentBlueprintProgress(event.name, args, { write: true });
+          const region = regions[0];
+          if (region && region.mapId === resolveCurrentMapId()) requestEditorCameraFocus({
+            mapId: region.mapId, tileX: region.x + region.w / 2, tileY: region.y + region.h / 2,
+            bounds: { x: region.x, y: region.y, width: region.w, height: region.h }, onlyIfOffscreen: true,
+          });
+        }
         runningAgentId = agentId;
         setAgentGhostRunningTool(event.name, (event.args ?? undefined) as Record<string, unknown> | undefined);
         return;
@@ -138,6 +199,7 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
       activeOwner = null;
       setAgentGhostDraftMapProvider(null);
       clearAgentGhostPreview();
+      clearAgentBlueprint();
     },
   };
 }

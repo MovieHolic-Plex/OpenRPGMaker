@@ -1,14 +1,13 @@
 // editor/agentBlueprintRenderer.ts
 // 확정된 밑그림(BuildSpec)을 착공 전에 맵 위에 청사진으로 그린다.
 //
-// 연출을 늘리지 않는다(2026-08-28 결정: "복잡하게 하지 말고 그냥 좌에서 우로 한번에 쏵").
-// 트윈·펄스·파티클 없이 상태를 선 굵기와 알파로만 구분한다 — 늘리는 것은 움직임이 아니라
-// 정보(무엇을 · 어디에 · 몇 번째 · 끝났는지)다.
+// 계획은 순서대로 제도선을 그려 보여 준다. 밝기 점멸·발광 효과 대신 선과 라벨의 움직임을 쓴다.
 //
 // 텍스트는 Phaser Text 로 그린다(editSceneEventMarkers 와 같은 규약: ui 폰트 스택 + zoom 반영
 // resolution). DOM 마커를 쓰지 않으므로 새 CSS 가 필요 없다.
 
 import type Phaser from "phaser";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import {
   agentBlueprintForMap,
   getAgentBlueprintState,
@@ -21,8 +20,8 @@ import { TILE_SIZE } from "@/assets/bundled";
 import type { MapId } from "@/project/types";
 
 /** 청사진 색 — 종이 위 제도선. 고스트 프리뷰(초록/청록)와 겹쳐도 구분된다. */
-const BLUEPRINT_COLOR = 0x4dabf7;
-const BUILDING_COLOR = 0xffd43b;
+const BLUEPRINT_COLOR = 0x8caca6;
+const BUILDING_COLOR = 0xc8a36b;
 const DONE_COLOR = 0x868e96;
 /**
  * 제도선 아래에 깔리는 어두운 테두리. 밝은 파랑 1px 만으로는 얼음·눈·모래 배경에서 계획이 보이지 않았다
@@ -101,6 +100,14 @@ type SceneWithPhaserObjects = Phaser.Scene & {
 };
 
 export class AgentBlueprintRenderer {
+  private readonly started = new Map<string, number>();
+  private ticker: (() => void) | null = null;
+
+  private stopTicker(): void {
+    if (this.ticker) this.scene.events?.off("update", this.ticker);
+    this.ticker = null;
+  }
+
   constructor(
     private readonly scene: SceneWithPhaserObjects,
     private readonly layer: Phaser.GameObjects.Container,
@@ -108,6 +115,7 @@ export class AgentBlueprintRenderer {
   ) {}
 
   render(): void {
+    this.stopTicker();
     this.layer.removeAll(true);
     // 원본 보기(꾹 누름)는 조수가 덮은 것을 걷어 맵 자체를 보여주는 토글이다. 고스트는 스프라이트·
     // 애니메이션·DOM 마커 모두 이 값을 보는데(agentPreviewRenderers) 청사진만 보지 않아, 꾹 눌러도
@@ -118,26 +126,52 @@ export class AgentBlueprintRenderer {
     if (isAgentGhostPreviewHidden()) return;
     const state = getAgentBlueprintState();
     const entries = agentBlueprintForMap(state, this.mapId());
-    if (entries.length === 0) return;
+    if (entries.length === 0) { this.started.clear(); return; }
 
     const group = this.scene.add.container(0, 0);
     group.setName("agent-blueprint");
     this.layer.add(group);
 
-    for (const placed of blueprintLabelLayout(entries)) {
-      group.add(this.entryGraphic(placed.entry));
+    const now = performance.now();
+    const present = new Set<string>();
+    const drawings = blueprintLabelLayout(entries).map((placed, index) => {
+      const entry = placed.entry;
+      const key = `${state.mapId}:${entry.id}:${entry.x},${entry.y},${entry.w},${entry.h}:${entry.shape ?? "rect"}`;
+      present.add(key);
+      if (!this.started.has(key)) this.started.set(key, now + Math.min(index, 5) * 120);
+      const graphic = this.scene.add.graphics();
+      group.add(graphic);
       const label = this.entryLabel(placed);
       if (label) group.add(label);
-    }
+      return { entry, graphic, label, start: this.started.get(key)! };
+    });
+    for (const key of this.started.keys()) if (!present.has(key)) this.started.delete(key);
+    const draw = (): void => {
+      let complete = true;
+      for (const item of drawings) {
+        const progress = (prefersReducedMotion() || !this.scene.events) ? 1 : Math.min(1, Math.max(0, (performance.now() - item.start) / 750));
+        if (progress < 1) complete = false;
+        this.entryGraphic(item.entry, progress, item.graphic);
+        if (item.label) {
+          item.label.setAlpha(blueprintStatusStyle(item.entry.status).labelAlpha * Math.min(1, progress * 2));
+        }
+      }
+      if (complete) this.stopTicker();
+    };
+    this.ticker = draw;
+    draw();
+    if (this.ticker) this.scene.events?.on("update", this.ticker);
   }
 
   clear(): void {
+    this.stopTicker();
+    this.started.clear();
     this.layer.removeAll(true);
   }
 
-  private entryGraphic(entry: BlueprintEntry): Phaser.GameObjects.Graphics {
+  private entryGraphic(entry: BlueprintEntry, progress: number, graphics: Phaser.GameObjects.Graphics): void {
     const style = blueprintStatusStyle(entry.status);
-    const graphics = this.scene.add.graphics();
+    graphics.clear();
     const x = entry.x * TILE_SIZE;
     const y = entry.y * TILE_SIZE;
     const width = entry.w * TILE_SIZE;
@@ -150,18 +184,48 @@ export class AgentBlueprintRenderer {
     const centerX = x + width / 2;
     const centerY = y + height / 2;
     if (style.fillAlpha > 0) {
-      graphics.fillStyle(style.color, style.fillAlpha);
+      graphics.fillStyle(style.color, style.fillAlpha * progress);
       if (round) graphics.fillEllipse(centerX, centerY, ellipseW, ellipseH);
       else graphics.fillRect(x, y, width, height);
     }
-    // 어두운 테두리를 먼저 깔고 그 위에 제도선 — 밝은 배경에서도 선이 살아남는다.
-    graphics.lineStyle(style.strokeWidth + 2, style.haloColor, style.haloAlpha);
-    if (round) graphics.strokeEllipse(centerX, centerY, ellipseW, ellipseH);
-    else graphics.strokeRect(x, y, width, height);
-    graphics.lineStyle(style.strokeWidth, style.color, style.strokeAlpha);
-    if (round) graphics.strokeEllipse(centerX, centerY, ellipseW, ellipseH);
-    else graphics.strokeRect(x, y, width, height);
-    return graphics;
+    const points: Array<[number, number]> = round
+      ? Array.from({ length: 49 }, (_, i) => {
+          const angle = -Math.PI / 2 + i * Math.PI * 2 / 48;
+          return [centerX + Math.cos(angle) * ellipseW / 2, centerY + Math.sin(angle) * ellipseH / 2];
+        })
+      : [[x, y], [x + width, y], [x + width, y + height], [x, y + height], [x, y]];
+    let perimeter = 0;
+    for (let i = 1; i < points.length; i++) perimeter += Math.hypot(points[i][0] - points[i - 1][0], points[i][1] - points[i - 1][1]);
+    const trace = (lineWidth: number, color: number, alpha: number): void => {
+      let remaining = perimeter * progress;
+      graphics.lineStyle(lineWidth, color, alpha);
+      if (progress === 1) {
+        if (round) graphics.strokeEllipse(centerX, centerY, ellipseW, ellipseH);
+        else graphics.strokeRect(x, y, width, height);
+        return;
+      }
+      graphics.beginPath();
+      graphics.moveTo(points[0][0], points[0][1]);
+      for (let i = 1; i < points.length && remaining > 0; i++) {
+        const [ax, ay] = points[i - 1], [bx, by] = points[i];
+        const length = Math.hypot(bx - ax, by - ay);
+        const t = length ? Math.min(1, remaining / length) : 1;
+        graphics.lineTo(ax + (bx - ax) * t, ay + (by - ay) * t);
+        remaining -= length;
+      }
+      graphics.strokePath();
+    };
+    trace(style.strokeWidth + 2, style.haloColor, style.haloAlpha);
+    trace(style.strokeWidth, style.color, style.strokeAlpha);
+    // Small ruler ticks hold the planning geometry steady after the line is drawn.
+    if (!round && progress === 1) {
+      graphics.lineStyle(1, style.color, style.strokeAlpha * 0.5);
+      graphics.beginPath();
+      for (let dx = TILE_SIZE * 2; dx < width; dx += TILE_SIZE * 2) {
+        graphics.moveTo(x + dx, y); graphics.lineTo(x + dx, y + 3);
+      }
+      graphics.strokePath();
+    }
   }
 
   private entryLabel(placed: BlueprintLabel): Phaser.GameObjects.Text | null {

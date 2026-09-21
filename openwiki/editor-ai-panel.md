@@ -2920,3 +2920,34 @@ Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 �
 - 회귀 계약: `piTurnIntentNote`, `piVillageCompletion`(순수/Vitest 및 실제 Agent 루프/Bun),
   `piAgentTeamRuntime`, `piAgentRunOutcome`. 이 변경 세션에서는 사용자 요청에
   테스트·게이트 실행이 없어 실행하지 않았다. 구문 변환과 HTML 브라우저 확인은 별도다.
+
+## Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
+
+`DEFAULT`/`AUTO`/`YOLO`의 승인 정책과 시공 표시는 별개다. `aiPiAgentCommand`는 모든 모드에서
+툴 시작·끝과 밑그림 이벤트를 캔버스에 전달한다. 실시간 모드의 타일 공개는
+`aiPiPublication.beforeApply` → `aiPiGhostBridge.present`가 **직렬화된 checkpoint**를 사용한다.
+삭제/단계 승인을 받은 뒤 초안을 보여 주고, 기존 무결성·stale-base 검사와 저장 경로로 적용한다.
+적용 성공 후 기준선을 갱신하므로 뒤늦은 `map_delta`/`done`이 이미 적용한 타일을 다시 공개하지 않는다.
+표시 중 중단되면 적용 전 signal 검사로 쓰기를 취소한다. 표시가 없거나 탭이 숨겨졌거나
+동작 줄이기가 켜져 있으면 연출 대기를 생략한다. 미리보기는 저장 성공 증거가 아니다.
+
+- `scripts/lib/piAgentRuntime.ts`의 쓰기 실행에는 `set_build_spec` 도구가 있다. 기존 스키마와
+  `validateBuildSpec`/`normalizeBuildSpec`을 재사용하고, 성공한 계획을 `execution_status`의
+  `name=set_build_spec`, `data=BuildSpec`으로 전달한다. 이 도구는 표시 전용이며 프로젝트를
+  바꾸거나 기존 세션의 시공 허가 게이트를 Pi에 추가하지 않는다. 읽기 전용 실행에는 제공하지 않는다.
+- Pi 다리는 명시 계획을 청사진 렌더러에 연결한다. 계획 없는 단순 공간 쓰기도 위치가 명확하면
+  도구 인자의 작업 영역을 먼저 표시한다. 조회 도구는 작업 영역을 만들지 않는다.
+- `agentPreviewRenderers`는 256셀 초과라도 실제 타일을 그린다. 객체 생성은 카메라 주변으로
+  제한하며, 팬하면 새로 보이는 타일을 준비한다. 셀 수 때문에 테두리만 남기는 경로는 제거했다.
+- 하위층→상위층→이벤트 순으로 공개하고, 각 층은 좌→우로 진행한다. 공개 길이는 1.8초,
+  공개 후 유지 시간은 450ms다. 타일은 220ms 동안 4px(상위층 10px) 내려앉으며, 선두에는
+  무광 연필 커서와 옅은 먼지를 표시한다. 빛줄기·발광·불꽃·효과음은 없다. 객체 준비 시간은 공개 시간을
+  소모하지 않는다. 같은 좌표의 타일이 다시 바뀌어도 새로운 공개를 받는다.
+- 밑그림은 구역별 120ms 간격으로 750ms 동안 외곽선을 그린 뒤 눈금과 라벨을 유지한다.
+  완료하면 update 구독을 해제하며, 새 계획·숨김·씬 정리에서도 구독과 객체를 정리한다.
+  동작 줄이기에서는 즉시 표시한다. 적용 뒤 작은 `✓ 반영됨` 표식이 잠깐 올라갔다 사라진다.
+- 촬영: `BROWSER=firefox BASE=http://127.0.0.1:<port> node scripts/capture-ai-construction.mjs`.
+  실제 편집기·Pi 클라이언트·checkpoint 적용을 사용하되 워커 스트림은 재현용으로 대본화한다.
+  `MODE=review OUT=output/evidence/ai-construction-review`로 검토 후 버리기 경로를 확인한다.
+  중간 스크린샷은 Playwright 시계를 멈춰 동일한 공개 프레임을 촬영한다. 실 LLM 저작 품질,
+  원격 저장 또는 새 맵 자동 이동의 연출을 검증한 것으로 확대 해석하지 않는다.

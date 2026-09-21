@@ -209,7 +209,10 @@ export async function runPiCommand(
   const baseline = new AuthoredProjectBaseline(base);
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
-  const publication = createPiPublication(base, applyMode, surface);
+  const publication = createPiPublication(base, applyMode, surface, {
+    beforeApply: (before, next) => ghost.present(before, next, surface.signal),
+    afterApply: project => ghost.accept(project),
+  });
   const brain = configForUltrabrain(config);
   const deep = modelForRole(config, "deep");
   const effective = options.planOnly || (command.mode === "team" && !options.readOnly)
@@ -307,6 +310,13 @@ export async function runPiCommand(
   // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
   // 단일·병렬·팀이 다리 하나를 공유하며 검토 진입 시 실제 병합 결과로 보정한다.
   const ghost = createPiGhostBridge({ baseProject: base });
+  const showConstructionEvent = (event: PiAgentEvent): void => {
+    let nested = event;
+    while (nested.type === "agent_event") nested = nested.event;
+    // Live modes preview authoritative checkpoints; post-commit deltas must not replay.
+    if (isLiveApplyMode(applyMode) && (nested.type === "map_delta" || nested.type === "done")) return;
+    ghost.handleEvent(event);
+  };
   // 워커의 「턴 상한(N)을 넘어 중단했습니다.」를 다이얼 어휘로 옮긴다. 옮기는 자리가 여기인 이유:
   // 이 문장은 `error` 이벤트 하나에서 갈라져 보드 행·실행 요약·적용 캡션·영수증·활동 로그 다섯
   // 군데로 퍼진다. 갈라지기 전에 한 번 고쳐야 다섯 군데가 같은 말을 한다.
@@ -335,7 +345,7 @@ export async function runPiCommand(
     }
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-    if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
+    showConstructionEvent(event);
     if (event.type === "assistant") lastAssistantText = event.text;
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
@@ -378,7 +388,7 @@ export async function runPiCommand(
           return;
         }
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
-        if (!isLiveApplyMode(applyMode)) ghost.handleEvent(event);
+        showConstructionEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         // 계획 턴이 참고 작품을 검색하는 자리다 — 사용자는 아직 화면에 "어떻게 바꿀지 정리하고 있어요"만 보고 있다.
         if (event.type === "tool_start" && event.name === "web_search") {
