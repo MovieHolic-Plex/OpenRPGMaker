@@ -1598,6 +1598,22 @@ const backgroundSchema: JsonSchema = {
     scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     loopX: { type: "boolean" },
     loopY: { type: "boolean" },
+    layers: {
+      type: "array",
+      description: "\ucd94\uac00 \ubc30\uacbd \ub808\uc774\uc5b4(\ucd5c\ub300 3\uc7a5, \uc55e\uc774 \uc544\ub798). CraftPix \uacc4\uce35 \ubc30\uacbd\uc744 \u00ab\uc138\ud2b8 \uae30\ubcf8 \ub808\uc774\uc5b4\u00bb\ub85c \uac00\uc838 \uc62c\ub54c \uc4f0\ub294\ub2e4.",
+      items: {
+        type: "object",
+        properties: {
+          imageId: { type: "string" },
+          scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+          scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+          loopX: { type: "boolean" },
+          loopY: { type: "boolean" },
+        },
+        required: ["imageId"],
+        additionalProperties: false,
+      },
+    },
   },
   required: ["imageId"],
   additionalProperties: false,
@@ -1708,7 +1724,8 @@ const setMapProperties: ToolDefinition = {
       const normalized = normalizeMapBackground(args.background);
       if (!normalized) throw new ToolError("background는 { imageId, scrollX?, scrollY? } 여야 합니다.", { code: "invalid-args" });
       map.background = normalized;
-      changed.push(`배경=${map.background.imageId}`);
+      const layerCount = map.background.layers?.length ?? 0;
+      changed.push(`배경=${map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`);
     }
     if (args.clearBattleBackground === true) {
       delete map.battleBackground;
