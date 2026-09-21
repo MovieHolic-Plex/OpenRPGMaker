@@ -74,6 +74,34 @@ describe("world canon spread view", () => {
     expect(findByTestId(host, "db-world-canon-law-death")?.textContent).toContain("죽음은 영원한 항해다");
   });
 
+  it("splits the one-pager into document and AI-delivery tabs", () => {
+    const host = renderTab();
+    const tabs = findByTestId(host, "db-ws-section-tabs");
+    expect(tabs).toBeTruthy();
+    const labels = tabs?.textContent ?? "";
+    expect(labels).toContain("문서");
+    expect(labels).toContain("조수 전달");
+    // 초기 탭은 문서다 — 이름/전제/법칙 카드가 눈앞에 있다.
+    expect(findByTestId(host, "db-world-canon-name")).toBeTruthy();
+    expect(findByTestId(host, "db-world-canon-law-gods")).toBeTruthy();
+  });
+
+  it("projects the AI delivery block with live status tiles inside its tab", () => {
+    store.update((draft) => {
+      draft.worldCanon = { name: "비늘의 바다", premise: "바다는 잊지 않는다", tones: ["mythic"], absences: ["총기"], laws: { gods: { present: false } } };
+    });
+    const host = renderTab();
+    findByTestId(host, "db-ws-section-tab-ai")?.click();
+    const panel = findByTestId(host, "db-ws-section-panel-ai");
+    expect(panel?.querySelector("[data-testid='world-canon-ai-panel-preview']")?.textContent).toContain("## 이 세계(세계관 고정)");
+    expect(panel?.querySelector("[data-testid='world-canon-ai-panel-preview']")?.textContent).toContain("신: 없음");
+    const items = Array.from(panel?.querySelectorAll(".world-canon-ai-grid-item") ?? []);
+    expect(items.length).toBe(5);
+    // 문서 탭의 값이 조수 전달 탭에 투영된다.
+    expect(panel?.textContent).toContain("비늘의 바다") ;
+    expect(panel?.textContent).toContain("미정 3");
+  });
+
   it("keeps unset as undefined when saving without a choice", () => {
     const host = renderTab();
     findByTestId(host, "db-world-canon-law-power")?.click();

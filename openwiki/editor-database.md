@@ -1993,3 +1993,12 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - 계약 이동: `db-world-canon-law-{kind}-note` testid 는 카드 안이 아니라 카드가 여는 대화상자 소유로 이동했다(`worldAuthoringRegression` 수정). tri-state 라디오 testid `db-world-canon-law-{kind}-present` 는 폐기됐다(`worldCanonSpreadView.test.ts` 가 부재를 고정).
 - 검증: 세계관 계약 10파일 59케이스 전부 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` (빈 상태/작성 상태/대화상자/완성 4장, e2e `world-canon-spread-evidence.spec.ts`).
 
+
+### 세계 개요 탭 구조 — 문서 / 조수 전달 (2026-09-22 v2)
+
+- 한 장 스프레드 전체가 세로로 길어 "목업과 다르다"는 피드백을 받았다. 스프레드 헤드(키커·세계 제목·전제 에피그래프·AI 미터·hero stats)는 문서 상단에 고정하고, 나머지는 DB 공용 `inspectorTabs` 문법의 두 탭으로 나눴다: **문서**(이름과 한 줄 → 뼈대 → 법칙 질문 카드 → 본문)와 **조수 전달**(AI 프롬프트 투영 + 전달 상태 타일). 탭 선택은 WeakMap 으로 리렌더 너머 유지된다.
+- **조수 전달 탭**은 목업의 "조수 미리보기 레일"을 실제 구현으로 옮긴 것이다. 상단 안내("여기 보이는 것 = 조수가 아는 것의 전부") + 상태 타일 5개(한 줄 전제·톤·없는 것·법칙 확정·본문 발췌, `data-tone` 으로 누락/경고 왼쪽 레일 색) + `worldCanonPromptSection` 전체 투영(`world-canon-ai-panel-preview`). 문서 탭에서 뭘 고치든 이 탭의 타일/투영이 즉시 따라붙는다(`updateAiPreview` 가 input 캡처로 갱신).
+- 법칙 탭 배지: 미정 법칙이 있으면 탭 라벨에 `미정 N` 배지(`inspectorTabs` badge)가 붙는다 — 조수 전달을 안 열어도 미정이 눈에 보인다.
+- testid: 탭 스트립 `db-ws-section-tabs`, 탭 `db-ws-section-tab-document|ai`, 패널 `db-ws-section-panel-document|ai`, 조수 패널 `world-canon-ai-panel`, 투영 `world-canon-ai-panel-preview`. 기존 계약(헤드 미러·법칙 카드·대화상자·본문)은 모두 유지.
+- 검증: 세계관 계약 10파일 61케이스 전부 통과(탭 계약 2건 추가), `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v3/` — 빈 문서 탭 / 작성된 문서 탭 / 법칙 대화상자 / 조수 전달 탭 4장.
+
