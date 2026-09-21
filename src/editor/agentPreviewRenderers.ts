@@ -421,7 +421,7 @@ export class AgentGhostPreviewRenderer {
       if (!step) continue;
       const obj = this.createCellObject(step.cell);
       this.tileLayer.add(obj);
-      this.tileObjects.push({ obj, baseX: step.cell.x * TILE_SIZE, baseY: step.cell.y * TILE_SIZE });
+      this.tileObjects.push({ obj, baseX: step.cell.x * editorMapTileSize(this.mapId()), baseY: step.cell.y * editorMapTileSize(this.mapId()) });
       this.tileObjectKeys.push(desired[index] ?? "");
     }
   }
@@ -432,8 +432,8 @@ export class AgentGhostPreviewRenderer {
     const currentMap = mapId ? project.maps[mapId] : undefined;
     const tilesetId = cell.tilesetId ?? currentMap?.tilesetId;
     const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
-    const px = cell.x * TILE_SIZE;
-    const py = cell.y * TILE_SIZE;
+    const px = cell.x * editorMapTileSize(this.mapId());
+    const py = cell.y * editorMapTileSize(this.mapId());
     if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
       const draftMap = mapId ? getAgentGhostDraftMap(mapId) ?? null : null;
       const composed = draftMap
