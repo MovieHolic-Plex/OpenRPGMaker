@@ -1,9 +1,9 @@
 # OPRN Studio Agent Entry Point
 
-> **AI-log lookup without browser (2026-09-04 incident: prompt hid under oprn-9c35ec902c):** query `rpg_zzu.ai_conversations` with `Accept-Profile: rpg_zzu`, never filter `project_id` first.
-> Search `entries_json` for kind user to find the hidden prompt.
-> Credentials from `/home/main/z-project/rpg-zzu/.env.local`.
-> Browser fallback: IndexedDB `oprn-ai-records`.
+> **AI 기록 조회:** 현재 프로젝트 폴더의 `project.sqlite`에 있는 `ai_conversations`와
+> 브라우저 IndexedDB `oprn-ai-records`를 먼저 확인한다. `entries_json`의 `kind: user`에서 원문을 찾는다.
+> 과거 LegacyDb 기록을 이관·복구할 때만 `Accept-Profile: rpg_zzu`로 조회한다.
+> 2026-09-04에는 다른 project id 아래에 원문이 있었으므로, 과거 기록 검색은 project id로 먼저 제한하지 않는다.
 
 This repository uses a project-local OpenWiki layer so coding agents can understand the editor before changing it.
 
@@ -26,7 +26,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
-   - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 원격/SQLite 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
+   - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
+   - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
    - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
@@ -121,8 +122,8 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    절차·함정은 `openwiki/agent-worktrees.md` 참조. 다른 도구가 만든 워크트리(`.herdr/`, `.claude/worktrees/`)는
    `node_modules`·`.env.local` 이 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다(dev 포트는 `npm run dev:worktree` 가 스스로 고정 배정한다; `npm run dev` 는 워크트리에서 거절된다) —
    보정 없이 실행하면 전역 tsc 가 잡혀 **저장소 설정이 깨진 것처럼 보이는 가짜 오류**가 난다 (`openwiki/quickstart.md` 1절).
-2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** Supabase 프로젝트 행이
-   공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id 를 분리한다.
+2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** 프로젝트 정본이
+   워크트리 밖에서 공유되어 git 이 충돌을 못 본다 — 직렬화하거나 별도의 프로젝트 폴더/호스트 프로젝트로 분리한다.
 3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트는 아래 hard rule 을 따른다.
    에이전트의 "테스트 통과했습니다"와 파이프를 거친 종료 코드는 근거로 쓰지 않는다 (실측: 백그라운드 실행기가 exit 0 을 보고했으나 실제로는
    typecheck exit 2 / vitest exit 1 이었다).
@@ -147,42 +148,82 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - 사용자가 **이번 메시지에서** 테스트/게이트를 하라고 적은 경우, 그 명령만.
 - dirty 는 `wip:` 커밋 또는 파일 사본. stash 아님.
 
-## Supabase DB is mandatory (hard rule)
+## 새 타일·타일 학습은 공용에 추가한다 (hard rule)
 
-**에이전트는 Supabase 프로젝트 DB 연결 없이 게임/맵/이벤트 콘텐츠 작업을 끝내지 않는다.**  
-“코드 fixture만 만들고 끝”, “임시 세션에서만 돌려보기”, “로컬 JSON export만” 은 **완료로 치지 않는다.**
+**타일셋을 새로 넣거나 그 타일을 학습한 결과(참고문서 MD, 아틀라스, 조립 지침, 표본 이미지)를 만들면
+한 프로젝트 행 안에만 넣고 끝내지 않는다.** 같은 작업을 하는 다음 프로젝트·다음 에이전트가 그대로 쓸 수 있게
+공용 계층에 함께 등록한다. "이 프로젝트에서 보인다"는 완료 조건이 아니다.
 
-### 반드시 지킬 것
+공용은 두 갈래이고, 대상이 다르다.
 
-1. **콘텐츠 작업(데모 게임, 마을, 맵, 이벤트, DB 레코드, 예제 어드벤처)을 시작하기 전에**
-   - Supabase URL / anon key / **project id** 가 설정·사용 가능한지 확인한다.
-   - 연결이 안 되면 **작업을 중단**하고 사용자에게 DB 연결(또는 env)을 요청한다. DB 없이 대체 구현으로 때우지 않는다.
+### 1. 타일 그림·타일셋 정의 → 공용 번들
 
-2. **작성·수정한 프로젝트 데이터는 Supabase에 저장(업서트)까지 완료해야 한다.**
-   - `saveProjectToSupabase` / store flush with **remote persistence enabled** / 팀이 쓰는 force-save 스크립트 등 **실제 원격 저장 경로**를 탄다.
-   - 저장 후 **재로드(또는 project id로 다시 load)** 로 존재함을 증명한다.
-   - 완료 보고에 **project id** 와 저장 성공 근거를 남긴다.
+- 그림 파일은 `assets/` 아래에 두고 `src/assets/bundled.ts` 의 `BUNDLED_EASYRPG_CHIPSET_ASSETS` 에 항목을 추가한다.
+- 칸 수·시트 높이·열 수는 `bundledChipsetFrameCount` / `bundledChipsetSheetHeight` / `bundledChipsetTilesPerRow` 에 맞춘다.
+- 타일셋 정의는 `src/project/defaults/defaultAssets.ts` 에 배선해 **모든 새 프로젝트가 처음부터 그 타일셋을 갖게** 한다.
+- 한 프로젝트의 `project.tilesets[...]` 에 업로드만 하고 끝내면 다른 프로젝트는 그 타일을 영원히 못 본다.
+- 라이선스·출처 표기(예: `ATTRIBUTION.md`, `CC BY 4.0`)를 같은 변경에 남긴다.
 
-3. **금지 — 아래만 하고 끝내지 말 것**
-   - `?blankProject=1` / `?freshProject=1` / `dev-showcase` 임시 세션만 사용하고 원격 저장 스킵.
-   - 레포에 `*.json` fixture / `createSampleAdventureProject` 코드 시드만 추가·교체하고 **Supabase 미저장**.
-   - “로컬 메모리·export JSON이면 충분”이라고 판단해 DB 단계를 생략.
-   - remote 저장이 꺼진 상태에서 저장 버튼을 누르고 성공한 것처럼 보고.
+### 2. 타일 학습 결과 → 번들이 소유하는 참고문서
 
-4. **왜 강제인가**
-   - `blankProject` / `freshProject` / 일부 `devProject` 쇼케이스는 의도적으로 `remotePersistenceEnabled = false` (`dev-showcase`) 이다. 이 경로에서는 저장이 Supabase로 가지 않는다.
-   - 사용자 작업물의 정본(source of truth)은 **Supabase 프로젝트 행**이다. 에이전트 산출물도 동일 기준이다.
+공용 AI 문서는 `tiledata/AI-REFERENCE-CONTRACT.md`의 상세 사전·실행 순서·전체 배열·정상/오류 그림·자동 좌표 검증·레이어 정정 조건을 모두 만족해야 한다. 추상적 조언만으로 완료하지 않는다.
 
-5. **허용되는 예외 (좁게)**
-   - **순수 엔진/에디터 코드** 변경만 (UI, 인터프리터, 스키마 마이그레이션 등) 이고 맵·이벤트·데모 콘텐츠를 새로 저작하지 않는 경우 → DB 저장 의무 없음. 단 스키마 변경 시 migration·load/save 검증은 기존 규칙대로.
-   - **단위 테스트용 최소 fixture** (`test/fixtures/...` 계약 테스트) — 앱에 싣는 “예제 게임/데모”가 아닌 경우만.
-   - 사용자가 **명시적으로** “DB 없이 fixture만 / 코드만” 이라고 한 경우만 예외. 모호하면 DB 경로를 따른다.
+**학습 결과는 프로젝트 행이 아니라 번들이 소유한다.** 그래야 그 타일셋이 있는 모든 프로젝트가 같은 지침을 처음부터 갖는다.
+프로젝트 행을 직접 패치하는 등록 스크립트는 **배포가 아니다** — 스크립트가 지나간 행만 갖고, 나머지는 빈 화면이 된다.
 
-6. **데모·예제 게임 작업 시 권장 순서**
-   1. DB 연결 확인  
-   2. 원격 저장이 켜진 상태로 에디터/스크립트에서 저작  
-   3. Supabase 저장 + 재로드 검증  
-   4. (선택) 레포 fixture/코드 시드는 **원격 저장 성공 후** 보조 산출물로만 추가  
+1. **출처 사본을 저장소에 커밋한다.** 선례: `tiledata/castle-tiles-rpgs/`, `tiledata/forest-villages/`.
+2. **배포용 번들 JSON을 만든다.** 선례: `src/assets/sharedCastleReferences.json`(용도 4 · MD 41 · 이미지 20).
+   그림은 `public/assets/castle-references/` 의 축소 사본을 dataURL 로 싣는다. 학습·비교용 그림은 게임 소재로 잘라 쓰지 않으므로
+   긴 변 820px · 128색 수준으로 줄인다 — 실측: 원본 그대로면 14.25MB, 축소하면 3.08MB다.
+   생성·축소는 `scripts/content/prepare-castle-references.mjs`(`--dry` 로 대상만 확인).
+3. **타일셋 정의가 그 자료를 들고 태어나게 한다.** 선례: `castleTileset.ts` 의 `referenceDocuments: createSharedCastleReferences()`.
+4. **이미 있는 프로젝트에도 심는다.** 선례: `defaultAssets.ts` 의 `ensureBundledTilesets` 안 `ensureSharedCastleReferences(...)` —
+   빠진 용도만 덧붙이고, 저자가 직접 쓴 문서나 공유 포인터는 건드리지 않는다.
+5. **파생 타일셋은 원본을 공유한다**(`referenceSourceTilesetId`). 선례: `castle_courtyard_harbor` → `opengameart_castle`.
+6. 검증은 새 프로젝트와 기존 프로젝트 **양쪽**에서 한다. 새 프로젝트만 보면 4번 누락을 못 잡는다. 화면 증거를 `verify-shots/<주제>/` 에 남긴다.
+
+같은 형태의 선례가 더 있다: `src/assets/sharedVillageObjects.json` + `ensureSharedVillageObjectReferences`,
+`forestHarmony` + `ensureForestHarmonyReferences`.
+이미 배포된 공용 맵 다운로드(`public/assets/region-references/*.oprn.json`)나 원격 행에만 자료를 밀어 넣어야 할 때는
+`scripts/content/register-*.mjs` 를 쓴다 — 그 경로는 배포가 아니라 **소급 적용**이다.
+원격에 쓰는 스크립트는 명시적 스위치(`--remote` 등)가 있을 때만 원격을 건드린다.
+다른 프로젝트·외부 에이전트에 자료를 넘길 때는 `scripts/content/export-tileset-references.mjs` 로 추출한다.
+
+### 3. 왜 강제인가
+
+- 참고문서는 `project.tilesets[id].referenceDocuments` 라는 **프로젝트 행 안의 필드**다. 번들에 없으면 새 프로젝트는 아무것도 못 본다.
+- 실측 1: Slates 32px 자료(4용도 / 14 MD / 109 이미지)를 `rpg-zzu-slates32-38e6` 한 행에만 넣어 두었고, 다른 프로젝트에서는 빈 화면이었다.
+- 실측 2(2026-09-22): 성채 학습을 `register-castle-references.mjs` 로 프로젝트 행 몇 개에만 심어서,
+  성 타일셋을 가진 프로젝트 8개 중 6개가 참고문서 0개였고 새 프로젝트는 항상 0개였다.
+  번들 소유(`ensureSharedCastleReferences`)로 옮긴 뒤 새 프로젝트와 기존 프로젝트 모두 4용도를 갖는다.
+- 학습을 프로젝트마다 다시 하는 비용은 이미지 수십 장을 매번 다시 읽는 비용이다.
+
+## 프로젝트 정본 저장은 필수 (hard rule)
+
+**에이전트는 게임/맵/이벤트 콘텐츠를 실제 프로젝트 저장소에 저장하고 다시 읽기 전에는 완료로 보고하지 않는다.**
+현재 정본은 Electron 또는 팀 프로젝트 호스트가 관리하는 `project.sqlite` + `assets/`다.
+LegacyDb는 과거 데이터 이관·복구 경로이며 새 콘텐츠 작업의 필수 연결이 아니다.
+실행·백업 계약은 `openwiki/team-project-host.md`, 제거 현황은 `openwiki/storage-retirement.md`를 따른다.
+
+1. 콘텐츠 작업 전에 **프로젝트 폴더 또는 호스트 주소와 project id**를 확인한다.
+   저장 대상에 접근할 수 없으면 대상 연결 정보를 요청한다. 임시 메모리 세션으로 대체하지 않는다.
+2. 편집기는 실제 저장 브리지가 연결된 상태에서 store flush, 헤드리스 도구는 같은 SQLite
+   저장소 API를 사용한다. 원격 호스트 프로젝트는 해당 호스트의 저장 서비스를 사용한다.
+   실행 중인 호스트의 DB를 별도 프로세스에서 직접 수정하지 않는다.
+3. 저장 후 같은 대상을 다시 load하여 변경을 확인하고 **project id, 저장 대상, 재로드 근거**를 보고한다.
+   SQLite 폴더에 실제 저장한 결과는 완료 근거다. JSON export만으로 이를 대체하지 않는다.
+4. `?blankProject=1` / `?freshProject=1` / `dev-showcase`, 브리지 없는 정적 preview,
+   메모리 어댑터 또는 저장이 비활성화된 세션에서 저장 버튼을 누른 결과는 정본 저장 증거가 아니다.
+5. 순수 엔진/에디터 코드 변경과 단위 테스트용 최소 fixture는 콘텐츠 저장 의무가 없다.
+   사용자가 명시적으로 “DB 없이 fixture만 / 코드만”을 요청한 경우도 예외다.
+   스키마·저장 계약 검증과 테스트 실행 제한은 기존 규칙을 따른다.
+6. 기존 LegacyDb 데이터의 삭제·서비스 종료는 데이터 이관 완료와 별도 작업이다.
+   원본 프로젝트·기록·에셋이 보존되고 대상에서 재로드되는지 확인하기 전에는 폐기하지 않는다.
+
+7. **LegacyDb·Supabase에 임의로 쓰지 않는다.** 읽기·조회는 무해하지만, 사용자가 이번 작업에서
+   명시적으로 시키지 않으면 원격에 쓰지 않는다. 정본이 아닌 곳에 사본을 만들면 어느 쪽이 진짜인지
+   아무도 모르게 된다 — 실측: Slates 32px 참고문서 이관에서 옛 강제 규칙을 따라 Supabase에도 썼고,
+   사용자가 지적했다. 옛 문서의 "정본은 Supabase 행" 문장은 SQLite 호스트 도입(2026-09-18) 이전 것이다.
 
 ## Agent rules
 
@@ -194,4 +235,4 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - **버전을 손으로 올리지 마라.** 릴리스는 `npm run release` 하나로 자르고, 매 머지에 끌려 올리는 것이 아니다.
   커밋 메시지가 릴리스 노트의 원본이다 — `feat:`/`fix:`/`refactor:` 규약을 지켜라. 네 버전 축(앱 · 문서 스키마 · 로컬 스토어 · 발행 게임)의
   구분과 절차는 `openwiki/release-and-version.md`.
-- For **authored game content**, validation is incomplete until **Supabase load after save** succeeds (see hard rule above).
+- For **authored game content**, validation is incomplete until **canonical project store load after save** succeeds (see hard rule above).

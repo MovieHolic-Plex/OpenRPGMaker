@@ -7,11 +7,11 @@
 
  ❯ test/storeSaveOrdering.test.ts (8 tests | 6 failed) 27966ms
    × explicit store flush transport ordering > serializes an explicit B flush behind held A with 'missing' descriptions 4188ms
-     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+     → expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -45,11 +45,11 @@ Received:
 Number of calls: [1m1[22m
 [39m
    × explicit store flush transport ordering > serializes an explicit B flush behind held A with 'cleared' descriptions 3375ms
-     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+     → expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -84,11 +84,11 @@ Received:
 Number of calls: [1m1[22m
 [39m
    × explicit store flush transport ordering > serializes an explicit B flush behind held A with 'authored' descriptions 3389ms
-     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+     → expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -124,11 +124,11 @@ Number of calls: [1m1[22m
 [39m
    ✓ explicit store flush transport ordering > A alone cannot authorize B even after A has settled  2581ms
    × explicit store flush transport ordering > queued B cannot write C (C requests its own flush: false) 3283ms
-     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+     → expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -162,11 +162,11 @@ Received:
 Number of calls: [1m1[22m
 [39m
    × explicit store flush transport ordering > queued B cannot write C (C requests its own flush: true) 4138ms
-     → expected "saveProjectToSupabase" to not be called at all, but actually been called 2 times[90m
+     → expected "saveProjectToLegacyDb" to not be called at all, but actually been called 2 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -196,7 +196,7 @@ Received:
       },
     ]
 
-[1m  2nd saveProjectToSupabase call:
+[1m  2nd saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -231,11 +231,11 @@ Received:
 Number of calls: [1m2[22m
 [39m
    × explicit store flush transport ordering > A's failure remains visible to A callers without rejecting an owned queued B save 2763ms
-     → expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+     → expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -274,11 +274,11 @@ Number of calls: [1m1[22m
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
 
  FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > serializes an explicit B flush behind held A with 'missing' descriptions
-AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+AssertionError: expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -323,11 +323,11 @@ Number of calls: [1m1[22m
 
  FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > serializes an explicit B flush behind held A with 'cleared' descriptions
  FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > serializes an explicit B flush behind held A with 'authored' descriptions
-AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+AssertionError: expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -372,11 +372,11 @@ Number of calls: [1m1[22m
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
 
  FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > queued B cannot write C (C requests its own flush: false)
-AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+AssertionError: expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -420,11 +420,11 @@ Number of calls: [1m1[22m
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
 
  FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > queued B cannot write C (C requests its own flush: true)
-AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 2 times[90m
+AssertionError: expected "saveProjectToLegacyDb" to not be called at all, but actually been called 2 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -454,7 +454,7 @@ Received:
       },
     ]
 
-[1m  2nd saveProjectToSupabase call:
+[1m  2nd saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {
@@ -499,11 +499,11 @@ Number of calls: [1m2[22m
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
 
  FAIL  test/storeSaveOrdering.test.ts > explicit store flush transport ordering > A's failure remains visible to A callers without rejecting an owned queued B save
-AssertionError: expected "saveProjectToSupabase" to not be called at all, but actually been called 1 times[90m
+AssertionError: expected "saveProjectToLegacyDb" to not be called at all, but actually been called 1 times[90m
 
 Received:
 
-[1m  1st saveProjectToSupabase call:
+[1m  1st saveProjectToLegacyDb call:
 
 [22m    Array [
       Object {

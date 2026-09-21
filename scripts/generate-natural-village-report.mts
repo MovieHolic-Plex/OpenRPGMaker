@@ -9,8 +9,8 @@ type Evidence = {
 };
 
 const root = path.resolve("output", "evidence", "natural-village");
-const reference = readEvidence("reference-supabase.json");
-const harness = readEvidence("harness-supabase.json");
+const reference = readEvidence("reference-legacyDb.json");
+const harness = readEvidence("harness-legacyDb.json");
 const referenceMetrics = reference.quality?.metrics ?? {};
 const harnessMetrics = harness.qualityGate?.metrics ?? {};
 const stageLabels = ["지형·개울", "집 형태·키트", "도로·네 출구", "숲·시장·생활 흔적", "주민 일정이 있는 완성본"];
@@ -39,7 +39,7 @@ const html = `<!doctype html>
 ${proofCard("직접 저작 참조본", reference.projectId, reference.reloaded, reference.quality?.score)}
 ${proofCard("하네스 생성본 v2", harness.projectId, harness.reloaded, harness.qualityGate?.score)}
 </section>
-<h2>결과 비교</h2><p class="note">표의 값은 로컬 fixture가 아니라 Supabase 재로드 프로젝트에서 다시 계산했다.</p>
+<h2>결과 비교</h2><p class="note">표의 값은 로컬 fixture가 아니라 LegacyDb 재로드 프로젝트에서 다시 계산했다.</p>
 <table class="metrics"><thead><tr><th>검증 항목</th><th>직접 저작</th><th>하네스 v2</th></tr></thead><tbody>${comparisons.map((row) => `<tr>${row.map((cell) => `<td>${cell}</td>`).join("")}</tr>`).join("")}</tbody></table>
 <div class="callout"><div><h3>집</h3>중복 전에 형태·키트를 순환하고, 다층 집은 창 행 사이를 비워 층을 구분한다. 문은 집마다 116/146 한 쌍만 둔다.</div><div><h3>길</h3>목재 생활 장터를 둘러싼 굽은 길을 북·남·서·동 경계까지 연결한다. 집 footprint 안에는 길이 들어가지 않는다.</div><div><h3>생활감</h3>침엽수와 2×2 활엽수, 짧은 울타리 조각, 마당/시장 소품, 3단계 주민 일정과 고정·배회 이동을 함께 사용한다.</div></div>
 <h2>직접 저작 과정 — 모든 단계</h2>
@@ -51,7 +51,7 @@ ${gallery("3차 — 연결성과 최종 균형", "reference/iteration-03", "대�
 <h2>Combined Town 타일 아틀라스 분석</h2><div class="atlas">
 <div><strong>도로</strong><br><code>421</code> 흙길 body · <code>424</code> 모래길 body</div><div><strong>수역</strong><br><code>120</code> 물 autotile · 서쪽 개울</div><div><strong>수림</strong><br><code>260/290</code> 침엽수 · <code>262/263 + 292/293</code> 활엽수 2×2</div><div><strong>집 외장</strong><br><code>404–407, 467</code> 지붕 · 4개 벽/지붕 키트</div><div><strong>문·창</strong><br><code>116/146</code> 문 한 쌍 · <code>85/87</code> 창문</div><div><strong>생활 소품</strong><br><code>288, 320, 327/328, 349–352, 202/203, 234–237</code></div>
 </div>
-<h2>원격 저장·캡처 증거</h2><ul><li><a href="reference-supabase.json">직접 저작 Supabase 재로드 JSON</a></li><li><a href="harness-supabase.json">하네스 Supabase 재로드·품질 JSON</a></li><li><a href="reference/iteration-03/capture-evidence.json">직접 저작 map-only 캡처 JSON</a></li><li><a href="harness/capture-evidence.json">하네스 map-only 캡처 JSON</a></li></ul>
+<h2>원격 저장·캡처 증거</h2><ul><li><a href="reference-legacyDb.json">직접 저작 LegacyDb 재로드 JSON</a></li><li><a href="harness-legacyDb.json">하네스 LegacyDb 재로드·품질 JSON</a></li><li><a href="reference/iteration-03/capture-evidence.json">직접 저작 map-only 캡처 JSON</a></li><li><a href="harness/capture-evidence.json">하네스 map-only 캡처 JSON</a></li></ul>
 <p class="note">생성일 ${new Date().toISOString()} · PNG 2048×1792 · UI chrome 제외</p>
 </main></body></html>`;
 
@@ -67,7 +67,7 @@ function metric(metrics: Record<string, number>, key: string): number {
 }
 
 function proofCard(title: string, projectId: string, reloaded: boolean, score?: number): string {
-  return `<article class="card"><span class="badge">${reloaded ? "SUPABASE RELOAD PASS" : "RELOAD FAIL"}</span><h3>${title}</h3><p class="project">${projectId}</p><p>품질 점수 <span class="pass">${score ?? "-"}</span> · 원격 정본 확인</p></article>`;
+  return `<article class="card"><span class="badge">${reloaded ? "LEGACY_DB RELOAD PASS" : "RELOAD FAIL"}</span><h3>${title}</h3><p class="project">${projectId}</p><p>품질 점수 <span class="pass">${score ?? "-"}</span> · 원격 정본 확인</p></article>`;
 }
 
 function gallery(title: string, relativeDir: string, subtitle: string, final = false): string {

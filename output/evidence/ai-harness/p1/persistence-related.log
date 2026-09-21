@@ -1,12 +1,12 @@
 
 > rpg-zzu@0.1.0 test
-> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/storePersistence.test.ts test/supabaseProjectSync.test.ts --testTimeout 60000
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/storePersistence.test.ts test/legacyDbProjectSync.test.ts --testTimeout 60000
 
 
  RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
 
  ❯ test/storePersistence.test.ts (11 tests | 6 failed) 30696ms
-   × Project store remote persistence > does not write to Supabase before the canonical project has loaded 13535ms
+   × Project store remote persistence > does not write to LegacyDb before the canonical project has loaded 13535ms
      → expected "spy" to not be called at all, but actually been called 1 times[90m
 
 Received: 
@@ -27,11 +27,11 @@ Received:
 
 Number of calls: [1m1[22m
 [39m
-   × Project store remote persistence > does not auto-save local dev showcase projects to Supabase 785ms
+   × Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb 785ms
      → Cannot read properties of undefined (reading 'ok')
    × Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 1656ms
      → Cannot read properties of undefined (reading 'ok')
-   × Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 1229ms
+   × Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb 1229ms
      → Cannot read properties of undefined (reading 'ok')
    × Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 1320ms
      → {
@@ -44,28 +44,28 @@ Number of calls: [1m1[22m
    ✓ Project store remote persistence > skips remote flush when there are no unsaved changes  583ms
    ✓ Project store remote persistence > keeps local map paint when remote save finishes with a stale snapshot  2294ms
    ✓ Project store remote persistence > does not apply stale map-patch response over newer local paint  3454ms
- ✓ test/supabaseProjectSync.test.ts (29 tests) 40615ms
-   ✓ Supabase project sync > loads a Supabase current_json row through the project parser  1692ms
-   ✓ Supabase project sync > uses the app canonical Supabase project id when the env id is omitted  1013ms
-   ✓ Supabase project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  1103ms
-   ✓ Supabase project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  783ms
-   ✓ Supabase project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  560ms
-   ✓ Supabase project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  807ms
-   ✓ Supabase project sync > treats Supabase current_json as canonical — does not backfill removed database records  927ms
-   ✓ Supabase project sync > repairs legacy sprite references from Supabase rows before project use  1227ms
-   ✓ Supabase project sync > drops Supabase village info documents for maps that no longer exist  1023ms
-   ✓ Supabase project sync > removes legacy sprite references from Supabase save payloads  555ms
-   ✓ Supabase project sync > saves the project as a Supabase projects upsert payload  934ms
-   ✓ Supabase project sync > keeps current_json as canonical when optional normalized tables are absent  688ms
-   ✓ Supabase project sync > merges a changed map into the latest project without replacing other maps  2858ms
-   ✓ Supabase project sync > does not stop a stale same-map save before it overwrites a newer DB map  1882ms
-   ✓ Supabase project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2916ms
-   ✓ Supabase project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  2250ms
-   ✓ Supabase project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  3963ms
-   ✓ Supabase project sync > preserves concurrent saves from separate editors touching different maps  6812ms
-   ✓ Supabase project sync > preserves concurrent map tree additions from separate editors  4580ms
-   ✓ Supabase project sync > does not undo a remote same-map reparent when saving only that map content  3258ms
-   ✓ Supabase project sync > overlays map_json from maps table onto current_json on load  745ms
+ ✓ test/legacyDbProjectSync.test.ts (29 tests) 40615ms
+   ✓ LegacyDb project sync > loads a LegacyDb current_json row through the project parser  1692ms
+   ✓ LegacyDb project sync > uses the app canonical LegacyDb project id when the env id is omitted  1013ms
+   ✓ LegacyDb project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  1103ms
+   ✓ LegacyDb project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  783ms
+   ✓ LegacyDb project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  560ms
+   ✓ LegacyDb project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  807ms
+   ✓ LegacyDb project sync > treats LegacyDb current_json as canonical — does not backfill removed database records  927ms
+   ✓ LegacyDb project sync > repairs legacy sprite references from LegacyDb rows before project use  1227ms
+   ✓ LegacyDb project sync > drops LegacyDb village info documents for maps that no longer exist  1023ms
+   ✓ LegacyDb project sync > removes legacy sprite references from LegacyDb save payloads  555ms
+   ✓ LegacyDb project sync > saves the project as a LegacyDb projects upsert payload  934ms
+   ✓ LegacyDb project sync > keeps current_json as canonical when optional normalized tables are absent  688ms
+   ✓ LegacyDb project sync > merges a changed map into the latest project without replacing other maps  2858ms
+   ✓ LegacyDb project sync > does not stop a stale same-map save before it overwrites a newer DB map  1882ms
+   ✓ LegacyDb project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2916ms
+   ✓ LegacyDb project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  2250ms
+   ✓ LegacyDb project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  3963ms
+   ✓ LegacyDb project sync > preserves concurrent saves from separate editors touching different maps  6812ms
+   ✓ LegacyDb project sync > preserves concurrent map tree additions from separate editors  4580ms
+   ✓ LegacyDb project sync > does not undo a remote same-map reparent when saving only that map content  3258ms
+   ✓ LegacyDb project sync > overlays map_json from maps table onto current_json on load  745ms
  ✓ test/storePersistenceProof.test.ts (16 tests) 84159ms
    ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  16828ms
    ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  4854ms
@@ -86,7 +86,7 @@ Number of calls: [1m1[22m
 
 ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not write to LegacyDb before the canonical project has loaded
 AssertionError: expected "spy" to not be called at all, but actually been called 1 times[90m
 
 Received: 
@@ -117,16 +117,16 @@ Number of calls: [1m1[22m
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:232:17
     230|     signal: options.signal,
     231|   });
     232|   if (!response.ok) {
        |                 ^
-    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    233|     throw new LegacyDbProjectSyncError(await response.text(), response…
     234|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:153:20
  ❯ ProjectStore.load src/project/store.ts:274:27
  ❯ test/storePersistence.test.ts:55:5
 
@@ -134,46 +134,46 @@ TypeError: Cannot read properties of undefined (reading 'ok')
 
  FAIL  test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:232:17
     230|     signal: options.signal,
     231|   });
     232|   if (!response.ok) {
        |                 ^
-    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    233|     throw new LegacyDbProjectSyncError(await response.text(), response…
     234|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:153:20
  ❯ ProjectStore.load src/project/store.ts:274:27
  ❯ test/storePersistence.test.ts:91:21
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
 
- FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase
+ FAIL  test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb
 TypeError: Cannot read properties of undefined (reading 'ok')
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:232:17
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:232:17
     230|     signal: options.signal,
     231|   });
     232|   if (!response.ok) {
        |                 ^
-    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    233|     throw new LegacyDbProjectSyncError(await response.text(), response…
     234|   }
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:153:20
  ❯ ProjectStore.load src/project/store.ts:274:27
  ❯ test/storePersistence.test.ts:119:5
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
 
  FAIL  test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects
-SupabaseProjectSyncError: {
+LegacyDbProjectSyncError: {
   "message":"Invalid authentication credentials"
 }
- ❯ loadProjectSnapshotFromSupabase src/project/supabaseProjectSync.ts:233:11
+ ❯ loadProjectSnapshotFromLegacyDb src/project/legacyDbProjectSync.ts:233:11
     231|   });
     232|   if (!response.ok) {
-    233|     throw new SupabaseProjectSyncError(await response.text(), response…
+    233|     throw new LegacyDbProjectSyncError(await response.text(), response…
        |           ^
     234|   }
     235|   const rows = await parseProjectRows(response);
- ❯ loadProjectFromSupabase src/project/supabaseProjectSync.ts:153:20
+ ❯ loadProjectFromLegacyDb src/project/legacyDbProjectSync.ts:153:20
  ❯ ProjectStore.load src/project/store.ts:274:27
  ❯ test/storePersistence.test.ts:151:5
 

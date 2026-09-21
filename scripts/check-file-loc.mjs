@@ -28,7 +28,6 @@ const ALLOWLIST = new Set([
   "src/editor/tools/mapTools.ts",
   "src/editor/panels/eventEditor/commandBodyPage3Native.ts",
   "src/editor/tools/villageSession.ts",
-  "src/project/supabaseProjectSync.ts",
   "src/editor/panels/eventEditor/commandPreview.ts",
   "src/editor/panels/eventEditor/commandBodyM2Actor.ts",
   "src/editor/panels/eventEditor/commandSummary.ts",

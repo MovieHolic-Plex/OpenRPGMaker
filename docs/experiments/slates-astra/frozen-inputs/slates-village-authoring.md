@@ -90,7 +90,7 @@
 - 원본 메타를 바꿔 기존 맵 통행을 망가뜨리지 않는다. 새 마을 전용 칩셋을 만든다.
 - 문 앞·출구·다리 양끝에서 충돌을 읽어 연결성을 확인한다. 이후 실제 에디터 PNG와
   전용 `player.html`을 확인한다. 타일 배열만 올바른 것은 시각 완료가 아니다.
-- Supabase **연결 확인 → 최신 root 읽기 → SHA 조건 저장 → root/맵/칩셋 재로드 비교**.
+- LegacyDb **연결 확인 → 최신 root 읽기 → SHA 조건 저장 → root/맵/칩셋 재로드 비교**.
   임시 에디터에서 예쁘게 보이는 것만으로 완료하지 않는다. 로컬 SQLite 프로젝트도 갱신한다.
 - 사진이나 참고 스크린샷을 맵 배경으로 붙이지 않는다. 칸별 편집 가능한 원본 타일을 쓴다.
 
@@ -101,7 +101,7 @@
 - 배치/접근 목표 `verify-shots/slates-village-50/layout.json`.
 - 저장 및 재로드 `verify-shots/slates-village-50/persistence.json`, `local-persistence.json`.
 - 스크린샷/관찰 `verify-shots/slates-village-50/SUMMARY.md`.
-- Supabase 프로젝트 `rpg-zzu-slates32-38e6`. 이전 예제 맵과 연구실을 보존한다.
+- LegacyDb 프로젝트 `rpg-zzu-slates32-38e6`. 이전 예제 맵과 연구실을 보존한다.
 
 타일 저작권: Ivan Voirol, **CC BY 4.0**.
 [원본 배포 페이지](https://opengameart.org/content/slates-32x32px-orthogonal-tileset-by-ivan-voirol),
@@ -131,7 +131,7 @@
 node scripts/content/read-slates-project.mjs output/slates-next/source
 ```
 
-이 읽기 전용 명령은 최신 Supabase 문서와 SHA를 받아 저장한다. 이미 있는 스냅샷은 덮지 않는다.
+이 읽기 전용 명령은 최신 LegacyDb 문서와 SHA를 받아 저장한다. 이미 있는 스냅샷은 덮지 않는다.
 새 마을 작업은 해당 스냅샷으로 시작하고, `build-slates-village-50.mjs`의 배치/조립을 참고해
 **새 map id**를 만든다. 이 스크립트의 입력 경로는 이번 50×50 작업용으로 고정돼 있으므로
 그냥 재실행해서 예전 root를 다시 저장하지 않는다. 저장기 `save-slates-village-50.mjs` 역시

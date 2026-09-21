@@ -81,7 +81,7 @@ function stubChat(): { chat: (config: AiConfig, req: ChatRequest) => Promise<Cha
 }
 
 /**
- * LLM 라운드만 세는 계측. 전역 fetch 를 세면 Supabase 미러·활동 로그 같은 best-effort
+ * LLM 라운드만 세는 계측. 전역 fetch 를 세면 LegacyDb 미러·활동 로그 같은 best-effort
  * 쓰기까지 함께 잡혀(실측: 첫 전송 직후 2건) 라운드 수 단정이 무너지고, 그 resolver 가
  * 대기 큐에 섞여 `settle` 이 엉뚱한 요청을 깨운다. 채팅 요청은 본문에 messages 가 있다.
  */

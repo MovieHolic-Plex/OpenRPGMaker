@@ -71,5 +71,5 @@ not masquerade as recovered r2 originals.
 
 Task12 still requires Grok's actual scene reader, all six live ledger calls,
 outside-body targeting, native player.html behavior and mixed
-lifeFieldInteraction coverage. Supabase/native/whole-goal claims are not made
+lifeFieldInteraction coverage. LegacyDb/native/whole-goal claims are not made
 by these nonvisual library and MemoryStorage checks.

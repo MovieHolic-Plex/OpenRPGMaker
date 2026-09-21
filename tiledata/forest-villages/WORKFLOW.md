@@ -12,12 +12,12 @@
 ## 절차
 
 1. 루트 AGENTS와 OpenWiki의 환경/저장 규칙을 읽는다. 이 자료에는 키를 저장하지 않는다.
-2. Supabase URL·키·project id와 실제 load를 확인한다. 로컬 SQLite와 원격 원본은 서로 다를 수 있으므로 각각 별도의 작업 전 사본을 둔다.
+2. LegacyDb URL·키·project id와 실제 load를 확인한다. 로컬 SQLite와 원격 원본은 서로 다를 수 있으므로 각각 별도의 작업 전 사본을 둔다.
 3. 저장된 승인 칩셋의 이미지 해시·16px·열 수·메타데이터를 읽는다.
 4. 새 map id에 마스크/정점/집 발자국 계획을 만든다. 이전 맵에 실험을 덮어쓰지 않는다.
 5. 실제 편집기 `store.update` 및 `paintTilesBulk`로 저작한다. `scope/origin/label`을 기록한다. HMR 중에는 resource URL을 통해 현재 store 모듈을 import한다.
 6. 실제 `canMove` 및 오토타일 엔진으로 검증하고 `store.flush` 후 재로드한다.
-7. Supabase 원본을 다시 읽고 새 맵만 CAS 저장한다. 기존 맵·자산이 바뀌지 않은 것을 확인한다.
+7. LegacyDb 원본을 다시 읽고 새 맵만 CAS 저장한다. 기존 맵·자산이 바뀌지 않은 것을 확인한다.
 8. 실제 편집기의 `mapOnlyCapture=1` 화면을 `__oprnEditWorldToClient` 좌표로 잘라 전체 이미지를 얻는다. 렌더 함수를 흉내 낸 그림을 실제 화면이라고 하지 않는다.
 9. 마을마다 이미지와 수치, 저장 근거를 남긴다.
 

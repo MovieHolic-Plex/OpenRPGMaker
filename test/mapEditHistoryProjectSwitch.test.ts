@@ -29,9 +29,9 @@ function projectNamed(mapName: string): Project {
 }
 
 function stubRemoteProject(project: Project): void {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "previous-project");
-  vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "previous-project");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
   const currentJson = JSON.parse(serialize(project));
   vi.stubGlobal("fetch", vi.fn<typeof fetch>(async (input) => {
     if (String(input).includes("/rest/v1/projects?")) {

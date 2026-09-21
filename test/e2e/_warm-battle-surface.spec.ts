@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 import { openTestPlayWindow } from "./oprnPlayerStatusMenuHelpers";
 
@@ -65,7 +65,7 @@ test("verify battle screen renders correctly under Neo둥근모 and warm skin wi
   page.on("pageerror", (e) => consoleLines.push(`[pageerror] ${e.message}`));
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, project(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, project(), "/?e2eVitals=1");
   await openTestPlayWindow(page);
   await startNewGameFromTitle(page);
 

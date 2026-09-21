@@ -1,4 +1,4 @@
-// Read-only experiential QA against a freshly reloaded Supabase snapshot.
+// Read-only experiential QA against a freshly reloaded LegacyDb snapshot.
 // The source snapshot is never rebuilt or saved back to the server.
 import fs from 'node:fs/promises';
 import { chromium } from '@playwright/test';
@@ -8,7 +8,7 @@ const project = JSON.parse(await fs.readFile('output/evidence/night-monster-revi
 const chaser = project.maps.map_night_corridor.events.find(e => e.pages?.some(p => p.movement.type === 'chase')).id;
 const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu'] });
 const server = await startPlayerQaServer();
-const report = { source: 'Supabase reload; no authored data edits', captures: [], probes: {}, errors: [] };
+const report = { source: 'LegacyDb reload; no authored data edits', captures: [], probes: {}, errors: [] };
 let page;
 async function state() {
   return page.evaluate(id => {

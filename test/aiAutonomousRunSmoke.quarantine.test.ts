@@ -19,10 +19,10 @@ const PROJECT_ID = "rpg-zzu-test-project";
 function installHermeticEnv(project: Project): void {
   resetIntentDeclarationCache();
   vi.useFakeTimers(); // Prevent unrelated autosave, never advance timers to synchronize.
-  vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", PROJECT_ID);
-  vi.stubEnv("VITE_SUPABASE_URL", "http://smoke.invalid");
+  vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", PROJECT_ID);
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://smoke.invalid");
   vi.stubGlobal("window", {
     location: { hostname: "127.0.0.1", pathname: "/", search: "" },
     localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },

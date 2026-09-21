@@ -1,4 +1,4 @@
-import type { MapBackground } from "@/project/types";
+import type { MapBackground, MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 
 /**
  * 맵 배경(파노라마) 저작 규칙 — 타입·클램프·정리.
@@ -29,6 +29,49 @@ export function normalizeMapBackgroundScroll(value: unknown): number | undefined
 }
 
 /**
+ * 추가 레이어 수 상한. 첫 장을 빼고 8장을 더 얹을 수 있다(총 9장 스택).
+ *
+ * 왜 3 에서 올렸나: CraftPix 레이어 팩은 세트당 5~9장이고, 3장 상한이면 지면·나무가
+ * 통째로 잘린다(소나무 숲 9장 → 4장). 상한 자체는 남겨 스택이 무한정 커지지 않게 한다.
+ */
+export const MAP_BACKGROUND_EXTRA_LAYER_LIMIT = 8;
+
+/** 그림 맞추기 기본값. 생략 = native(1:1) 이 옛 JSON 바이트를 유지한다. */
+export function normalizeMapBackgroundFit(value: unknown): MapBackgroundFit | undefined {
+  return value === "cover" || value === "native" ? value : undefined;
+}
+
+function normalizeMapBackgroundLayer(value: unknown): MapBackgroundLayer | undefined {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) return undefined;
+  const record = value as Record<string, unknown>;
+  if (typeof record.imageId !== "string") return undefined;
+  const imageId = record.imageId.trim();
+  if (!imageId) return undefined;
+  const scrollX = normalizeMapBackgroundScroll(record.scrollX);
+  const scrollY = normalizeMapBackgroundScroll(record.scrollY);
+  const fit = normalizeMapBackgroundFit(record.fit);
+  return {
+    imageId,
+    ...(scrollX !== undefined ? { scrollX } : {}),
+    ...(scrollY !== undefined ? { scrollY } : {}),
+    ...(record.loopX === false ? { loopX: false } : {}),
+    ...(record.loopY === false ? { loopY: false } : {}),
+    ...(fit !== undefined ? { fit } : {}),
+  };
+}
+
+/** 추가 레이어 목록 정리. 유효한 레이어가 없으면 필드 자체를 생략한다(레거시 JSON 바이트 유지). */
+export function normalizeMapBackgroundLayers(value: unknown): MapBackgroundLayer[] | undefined {
+  if (!Array.isArray(value)) return undefined;
+  const layers: MapBackgroundLayer[] = [];
+  for (const entry of value.slice(0, MAP_BACKGROUND_EXTRA_LAYER_LIMIT)) {
+    const layer = normalizeMapBackgroundLayer(entry);
+    if (layer) layers.push(layer);
+  }
+  return layers.length > 0 ? layers : undefined;
+}
+
+/**
  * 맵 배경 전체 정리. 객체가 아니거나 `imageId` 가 문자열이 아니면 `undefined`(= 필드 제거).
  *
  * `imageId` 가 빈 문자열인 상태는 **지우지 않는다**: 편집기의 「맵 배경 사용」 을 켜고 아직 그림을
@@ -41,12 +84,16 @@ export function normalizeMapBackground(value: unknown): MapBackground | undefine
   if (typeof record.imageId !== "string") return undefined;
   const scrollX = normalizeMapBackgroundScroll(record.scrollX);
   const scrollY = normalizeMapBackgroundScroll(record.scrollY);
+  const layers = normalizeMapBackgroundLayers(record.layers);
+  const fit = normalizeMapBackgroundFit(record.fit);
   return {
     imageId: record.imageId.trim(),
     ...(scrollX !== undefined ? { scrollX } : {}),
     ...(scrollY !== undefined ? { scrollY } : {}),
+    ...(fit !== undefined ? { fit } : {}),
     // 반복이 기본값이다 — «끈 것» 만 적어 옛 JSON 과 바이트를 맞춘다.
     ...(record.loopX === false ? { loopX: false } : {}),
     ...(record.loopY === false ? { loopY: false } : {}),
+    ...(layers ? { layers } : {}),
   };
 }

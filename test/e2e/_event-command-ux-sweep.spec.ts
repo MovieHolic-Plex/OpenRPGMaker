@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { emptyEventProject, mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor, screenshotEvidence, writeEvidenceJson } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
 import type { Command } from "@/project/types";
 
@@ -15,7 +15,7 @@ test.setTimeout(120_000);
 
 async function openMockup(page: Page) {
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();
@@ -61,7 +61,7 @@ test("01-04 shell / block canvas / form gallery", async ({ page }) => {
   await mkdir(DIR, { recursive: true });
   await page.setViewportSize({ width: 1500, height: 1000 });
   const { project, eventId } = commandUXProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();
@@ -110,7 +110,7 @@ test("05-07 empty / long-list / validation strip", async ({ page }) => {
   await page.setViewportSize({ width: 1500, height: 900 });
   {
     const { project, eventId } = emptyEventProject();
-    await seedProjectFromSupabaseCanonical(page, project);
+    await seedProjectForEditor(page, project);
     await openEventEditor(page, eventId);
     const modal = page.getByTestId("event-editor-modal");
     await expect(modal).toBeVisible();
@@ -129,7 +129,7 @@ test("05-07 empty / long-list / validation strip", async ({ page }) => {
       id: "ev_long", name: "긴 목록", x: 4, y: 4, trigger: { kind: "action" }, commands: [],
       pages: [{ id: "p1", name: "p1", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: cmds }],
     }];
-    await seedProjectFromSupabaseCanonical(page, project);
+    await seedProjectForEditor(page, project);
     await openEventEditor(page, "ev_long");
     const modal = page.getByTestId("event-editor-modal");
     await expect(modal).toBeVisible();

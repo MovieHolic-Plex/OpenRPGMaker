@@ -13,7 +13,7 @@ import {
   writeEvidenceText,
   type DebugState,
 } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop13-m2-pdf-command";
@@ -26,7 +26,7 @@ test("loop13 certifies M2 PDF command authoring persistence and runtime skip", a
   await rm(EVIDENCE_DIR, { recursive: true, force: true });
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, m2Project());
+  await seedProjectForEditor(page, m2Project());
   await writeJson("000-scenario.json", {
     scope: [
       "M2 PDF command picker classification surface",
@@ -57,7 +57,7 @@ test("loop13 certifies M2 PDF command authoring persistence and runtime skip", a
   page.on("console", (message) => {
     if (message.type() === "warning") runtimeWarnings.push(message.text());
   });
-  await seedProjectFromSupabaseCanonical(page, roundtrip.project);
+  await seedProjectForEditor(page, roundtrip.project);
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();

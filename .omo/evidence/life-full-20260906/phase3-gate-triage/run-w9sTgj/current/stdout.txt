@@ -1,35 +1,35 @@
 
  RUN  v3.2.4 /home/main/z-project/rpg-zzu-life-full-p3
 
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > loads a Supabase current_json row through the project parser 812ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > lists Supabase projects for direct project selection 3ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > uses the app canonical Supabase project id when the env id is omitted 778ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다 725ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다 508ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다 550ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다 529ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > treats Supabase current_json as canonical — does not backfill removed database records 463ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > repairs legacy sprite references from Supabase rows before project use 517ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > drops Supabase village info documents for maps that no longer exist 544ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > removes legacy sprite references from Supabase save payloads 327ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > saves the project as a Supabase projects upsert payload 220ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > keeps current_json as canonical when optional normalized tables are absent 194ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > merges a changed map into the latest project without replacing other maps 1235ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > does not stop a stale same-map save before it overwrites a newer DB map 1097ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > does not false-conflict when the load path repairs a saved map (shop commands) 1186ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere) 1260ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order) 1558ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > preserves concurrent saves from separate editors touching different maps 3627ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > preserves concurrent map tree additions from separate editors 3617ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > does not undo a remote same-map reparent when saving only that map content 1565ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > records AI tile analysis runs in Supabase 2ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > treats a missing AI analysis table as an optional logging sink 1ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > records AI activity logs in Supabase 1ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > fails with the required migration when the activity table is missing 2ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > fails with the required migration when the conversation table is missing 1ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > lists AI activity scoped to project and merges primary with fallback 1ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > hydrates last remote commit tip from commit list 1ms
- ✓ test/supabaseProjectSync.test.ts > Supabase project sync > overlays map_json from maps table onto current_json on load 564ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > loads a LegacyDb current_json row through the project parser 812ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > lists LegacyDb projects for direct project selection 3ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > uses the app canonical LegacyDb project id when the env id is omitted 778ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다 725ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다 508ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다 550ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다 529ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > treats LegacyDb current_json as canonical — does not backfill removed database records 463ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > repairs legacy sprite references from LegacyDb rows before project use 517ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > drops LegacyDb village info documents for maps that no longer exist 544ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > removes legacy sprite references from LegacyDb save payloads 327ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > saves the project as a LegacyDb projects upsert payload 220ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > keeps current_json as canonical when optional normalized tables are absent 194ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > merges a changed map into the latest project without replacing other maps 1235ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > does not stop a stale same-map save before it overwrites a newer DB map 1097ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > does not false-conflict when the load path repairs a saved map (shop commands) 1186ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere) 1260ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order) 1558ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > preserves concurrent saves from separate editors touching different maps 3627ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > preserves concurrent map tree additions from separate editors 3617ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > does not undo a remote same-map reparent when saving only that map content 1565ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > records AI tile analysis runs in LegacyDb 2ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > treats a missing AI analysis table as an optional logging sink 1ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > records AI activity logs in LegacyDb 1ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > fails with the required migration when the activity table is missing 2ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > fails with the required migration when the conversation table is missing 1ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > lists AI activity scoped to project and merges primary with fallback 1ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > hydrates last remote commit tip from commit list 1ms
+ ✓ test/legacyDbProjectSync.test.ts > LegacyDb project sync > overlays map_json from maps table onto current_json on load 564ms
  ✓ test/villageBuilder.test.ts > build_village > 빈 프로젝트에서 seed만으로 50x50 마을을 완성한다 1834ms
  ✓ test/villageBuilder.test.ts > build_village > pathStyle:dirt 로 흙길을 쓸 수 있다 302ms
  ✓ test/villageBuilder.test.ts > build_village > theme/housePlans 의도를 받아 집 수와 키트에 반영한다 1546ms
@@ -1400,10 +1400,10 @@ stdout | test/databaseActions.test.ts > Database actions > bulk-renames a switch
 
  ✓ test/databaseActions.test.ts > Database actions > bulk-renames a switch range with exactly one undo snapshot 505ms
  ✓ test/databaseActions.test.ts > Database actions > rejects malformed v3 database references with an actionable message 253ms
-stdout | test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded
+stdout | test/storePersistence.test.ts > Project store remote persistence > does not write to LegacyDb before the canonical project has loaded
 [edit-activity] (라벨 없음: project)
 
- × test/storePersistence.test.ts > Project store remote persistence > does not write to Supabase before the canonical project has loaded 1199ms
+ × test/storePersistence.test.ts > Project store remote persistence > does not write to LegacyDb before the canonical project has loaded 1199ms
    → expected "spy" to not be called at all, but actually been called 1 times
 
 Received: 
@@ -1424,11 +1424,11 @@ Received:
 
 Number of calls: 1
 
- × test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to Supabase 536ms
+ × test/storePersistence.test.ts > Project store remote persistence > does not auto-save local dev showcase projects to LegacyDb 536ms
    → Cannot read properties of undefined (reading 'ok')
  × test/storePersistence.test.ts > Project store remote persistence > always creates a new fresh project instead of reloading local dev overrides 1299ms
    → Cannot read properties of undefined (reading 'ok')
- × test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without Supabase 450ms
+ × test/storePersistence.test.ts > Project store remote persistence > saves and reloads local edits for dev showcase projects without LegacyDb 450ms
    → Cannot read properties of undefined (reading 'ok')
  × test/storePersistence.test.ts > Project store remote persistence > reports why DB persistence is unavailable for local dev showcase projects 638ms
    → fetch failed
@@ -9843,7 +9843,7 @@ stdout | test/teamWorkflowUi.test.ts > team workflow UI > shows the mock login o
  ✓ test/teamWorkflowUi.test.ts > team workflow UI > switches OAuth to name-only mock flow and stores the selected provider 71ms
  × test/teamWorkflowUi.test.ts > team workflow UI > renders topbar identity and allows label edits from the identity menu 102ms
    → window.addEventListener is not a function
- ✓ test/teamWorkflowUi.test.ts > team workflow UI > loads commit history rows through the read-only Supabase commit API 87ms
+ ✓ test/teamWorkflowUi.test.ts > team workflow UI > loads commit history rows through the read-only LegacyDb commit API 87ms
  ✓ test/teamWorkflowUi.test.ts > team workflow UI > renders history and identity as icon-only controls 75ms
  ✓ test/scarloxyPokemonDemo.test.ts > Scarloxy 포켓몬풍 데모 프로젝트 > 직렬화 왕복이 통과한다 (종/적/트룹/이벤트/리소스 참조 무결성) 235ms
  × test/scarloxyPokemonDemo.test.ts > Scarloxy 포켓몬풍 데모 프로젝트 > 팩 몬스터 16종이 종으로 등록되고 배틀러 이미지가 해석된다 60ms
@@ -10220,11 +10220,11 @@ stdout | test/loadNewRemoteProject.test.ts > store.loadNewRemoteProject — welc
 [edit-activity] 프로젝트 정규화 (1종) · [bundledTilesets] · (system) [ { path: 'bundledTilesets', after: true } ]
 
  ✓ test/loadNewRemoteProject.test.ts > store.loadNewRemoteProject — welcome genre remote branch > without DB config stays not-configured rather than load-failed disabled 703ms
-stdout | test/storeFlushShaEvidence.test.ts > Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다
+stdout | test/storeFlushShaEvidence.test.ts > Project store flush sha256 evidence > 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다
 [edit-activity] 프로젝트 교체
 [edit-activity] (라벨 없음: project)
 
- ✓ test/storeFlushShaEvidence.test.ts > Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다 1163ms
+ ✓ test/storeFlushShaEvidence.test.ts > Project store flush sha256 evidence > 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다 1163ms
  ✓ test/storeFlushShaEvidence.test.ts > Project store flush sha256 evidence > 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로 393ms
  ✓ test/commandContracts/evolveMonster.contract.test.ts > evolveMonster 계약 > 정상 효과: 조건을 만족하면 species를 바꾸고 성공 분기를 실행한다 106ms
  × test/commandContracts/evolveMonster.contract.test.ts > evolveMonster 계약 > 아이템 진화: 성공 시 요구 아이템을 1개 소모한다 59ms
@@ -10240,8 +10240,8 @@ stdout | test/storeFlushShaEvidence.test.ts > Project store flush sha256 evidenc
  ✓ test/toolHostileArgs.test.ts > 쓰기 툴 적대적 인자 스윕 > nulls 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다 4704ms
  ✓ test/toolHostileArgs.test.ts > 쓰기 툴 적대적 인자 스윕 > wrongTypes 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다 5925ms
  ✓ test/toolHostileArgs.test.ts > 쓰기 툴 적대적 인자 스윕 > deepHoles 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다 9206ms
- ✓ test/devShowcaseProjects.test.ts > local dev project URL overrides > lets supabaseRecovered load the Supabase canonical project instead of a generated showcase 2ms
- ✓ test/devShowcaseProjects.test.ts > local dev project URL overrides > does not let generated showcase URLs replace the canonical Supabase default by themselves 0ms
+ ✓ test/devShowcaseProjects.test.ts > local dev project URL overrides > lets projectRecovered load the LegacyDb canonical project instead of a generated showcase 2ms
+ ✓ test/devShowcaseProjects.test.ts > local dev project URL overrides > does not let generated showcase URLs replace the canonical LegacyDb default by themselves 0ms
  ✓ test/devShowcaseProjects.test.ts > local dev project URL overrides > creates a true blank project for the blankProject URL 42ms
  × test/devShowcaseProjects.test.ts > local dev project URL overrides > keeps the legacy freshProject URL on the sample adventure (32+ e2e specs rely on it) 55ms
    → expected '이슬 장터 — 30분' to be '이슬 마을의 종' // Object.is equality

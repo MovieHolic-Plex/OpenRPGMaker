@@ -10,7 +10,7 @@ tree **`0745df78be21aa7e4dd26c1495f35feafb318002`**, on starting HEAD
 
 Only three source/test files changed:
 
-- `supabaseProjectSync.ts`: export the already existing `canonicalJsonString`.
+- `legacyDbProjectSync.ts`: export the already existing `canonicalJsonString`.
   Its recursive key-order comparison implementation and save callers are unchanged.
 - `applyChangesetToStore.ts`: use that comparator for proposal content and world
   after the existing JSON projection. This retains JSON omission behavior without
@@ -58,7 +58,7 @@ node scripts/run-vitest.mjs run \
   test/applyChangesetToStore.test.ts test/projectWikiApplication.test.ts \
   test/projectWikiDelivery.test.ts test/aiGateCommitRejection.test.ts \
   test/projectResetTool.test.ts test/storePersistenceProof.test.ts \
-  test/aiRunEpoch.test.ts test/aiRunEpochProof.test.ts test/supabaseProjectSync.test.ts \
+  test/aiRunEpoch.test.ts test/aiRunEpochProof.test.ts test/legacyDbProjectSync.test.ts \
   --config output/evidence/ai-harness/p3/stale/key-order/vitest.config.mjs \
   --configLoader runner --maxWorkers=4 --minWorkers=4 \
   --reporter=verbose --reporter=json \

@@ -35,7 +35,7 @@ npx vitest run test/tilesetSectionTabs.test.ts test/forestTrunkLayers.test.ts \
 실제 Chromium, `http://127.0.0.1:9865/?blankProject=1` → 데이터베이스 → 맵/타일 →
 합본 마을 칩셋 → 「통행·지형」 탭. 1440x900. 단언 실패 시 exit 1.
 고정 sleep 없음 — 앱이 내보내는 `project-export-json` 미러가 갱신될 때까지 기다린다.
-Supabase 에 아무것도 쓰지 않았다: 앱의 「임시 세션」 배너(`save-skip-banner`)로 확인했다.
+LegacyDb 에 아무것도 쓰지 않았다: 앱의 「임시 세션」 배너(`save-skip-banner`)로 확인했다.
 
 | 장면 | 무엇을 실측했나 | PNG |
 |---|---|---|

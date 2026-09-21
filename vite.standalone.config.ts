@@ -37,6 +37,7 @@ export default defineConfig({
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
       { find: /^@\/project\/store$/, replacement: src("player/exportProjectStoreShim.ts") },
       { find: /^@\/app\/phaserRuntime$/, replacement: src("app/phaserRuntimeBundled.ts") },
+      { find: "@/assets/sharedCastleReferences.json", replacement: src("player/emptySharedCastleReferences.json") },
       { find: "@", replacement: src("") },
     ],
     extensions: [".ts", ".js"],

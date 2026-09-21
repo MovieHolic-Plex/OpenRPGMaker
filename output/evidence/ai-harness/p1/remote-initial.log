@@ -4,7 +4,7 @@
   "report": "/home/main/z-project/rpg-zzu-ai-harness-p1-remote-20260906/output/evidence/ai-harness/p1/remote-initial.json",
   "failure": {
     "name": "Error",
-    "message": "본인에게 제공된 HTTPS Supabase 기본 주소만 입력하세요. 주소에 계정 정보, 경로, 쿼리 또는 # 조각을 넣을 수 없습니다. HTTP는 이 컴퓨터의 루프백 주소에서만 허용됩니다."
+    "message": "본인에게 제공된 HTTPS LegacyDb 기본 주소만 입력하세요. 주소에 계정 정보, 경로, 쿼리 또는 # 조각을 넣을 수 없습니다. HTTP는 이 컴퓨터의 루프백 주소에서만 허용됩니다."
   },
   "cleanup": {
     "localTimersCleared": true,

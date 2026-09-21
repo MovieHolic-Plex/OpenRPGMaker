@@ -31,7 +31,7 @@
 스크린샷은 `output/evidence/village-design/`에 저장한다.
 
 `blankProject=1`은 이 UI 검증용 최소 임시 프로젝트에만 사용했다.
-사용자 게임/맵 콘텐츠를 새로 저작하거나 Supabase에 저장한 작업이 아니다.
+사용자 게임/맵 콘텐츠를 새로 저작하거나 LegacyDb에 저장한 작업이 아니다.
 프로젝트 JSON 저장·재로드 계약은 `test/villageDesign.test.ts`에서 검증한다.
 
 ## 구현 범위

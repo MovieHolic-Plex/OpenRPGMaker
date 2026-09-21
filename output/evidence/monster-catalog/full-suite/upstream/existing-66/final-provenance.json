@@ -17,7 +17,7 @@
   "supportingFilesUnchangedBetweenRevisions": {
     "src/editor/editActivityLog.ts": true,
     "src/editor/panels/eventEditor/modal.ts": true,
-    "src/project/supabaseProjectConfig.ts": true,
+    "src/project/legacyDbProjectConfig.ts": true,
     "src/editor/panels/aiStickyChecklist.ts": true,
     "test/fakeDom.ts": true
   },

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Stardew-like Core Elements Research
 
 Research snapshot: 2026-08-25
@@ -88,7 +90,7 @@ The next expansion should keep stable internal tab ids while using these player-
 1. Deterministic daily weather and forecast integrated into the overnight transition.
 2. Calendar/birthday visibility and NPC schedule/reference integrity.
 3. Farm animal species, compatible buildings/capacity, feed/pet/produce, save/load, and runtime UI.
-4. Authored starter content rich enough to exercise the loop, followed by Supabase save and project-id reload proof.
+4. Authored starter content rich enough to exercise the loop, followed by LegacyDb save and project-id reload proof.
 
 Implementation note (2026-08-25): `createFarmingDemoProject` now authors four seasonal weather tables with a three-day forecast, scheduled resident routines, feed/egg/milk items, chicken/cow species, one compatible farm-animal building, and two event-bound starting animals. `scripts/save-stardew-demo.mts` treats all of these counts as mandatory save/reload facts rather than optional showcase fields.
 
@@ -111,7 +113,7 @@ Mining/combat remain a core pillar, but this repository already has a battle/run
 - Authored IDs must participate in global reference validation, rename, deletion impact, repair, load/save, and migration.
 - Editor writes authored project data; runtime writes session state.
 - Visual acceptance uses 1024x768 and 1440x900 browser evidence.
-- Authored game content is incomplete until it is saved to Supabase and reloaded by project id.
+- Authored game content is incomplete until it is saved to LegacyDb and reloaded by project id.
 - Each phase receives focused tests, an independent hostile review, visual QA, and supervisor-run gates.
 
 ## Sources

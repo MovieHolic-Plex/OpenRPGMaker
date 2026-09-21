@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import type { Command } from "@/project/types";
 import { openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "output/evidence/sysux-after";
 const BASE = "C:/Users/USER/Downloads/rpg-zzu-system-ux/output/evidence/sysux-after";
@@ -67,7 +67,7 @@ test("sysux after-evidence: M2 시스템/연출 커맨드 편집 바디 스캔",
   await page.setViewportSize({ width: 1500, height: 1000 });
 
   const { project, eventId } = sysUxProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
   const modal = page.getByTestId("event-editor-modal");
   await expect(modal).toBeVisible();

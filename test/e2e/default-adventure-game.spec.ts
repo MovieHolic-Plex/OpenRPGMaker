@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -20,7 +20,7 @@ test("fresh editor project plays as the dew village sample adventure", async ({ 
   });
   await page.setViewportSize({ width: 1280, height: 900 });
   const project = createSampleAdventureProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await expect.poll(async () => (await projectTitle(page)), { timeout: 20_000 }).toBe("이슬 마을의 종");
   await page.screenshot({ path: testInfo.outputPath("01-editor-adventure-start.png"), fullPage: true });

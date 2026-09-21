@@ -588,7 +588,9 @@
 .event-editor .event-contents-fieldset > .toolbar.event-editor-command-toolbar {
   align-content: center;
   column-gap: 8px;
-  flex-wrap: wrap;
+  /* 한 줄 계약(2026-09-21): wrap 이 켜지면 보기 전환·AI 버튼이 둘째 줄로 떨어지고
+     위에 빈 밴드가 남는다. 넘침은 검색 필드가 먼저 줄어서 흡수한다. */
+  flex-wrap: nowrap;
   justify-content: flex-start;
   min-width: 0;
   /* 마지막 보조 버튼이 명령 컬럼 오른쪽 경계에 닿아 있었다(실측 1439 vs 컬럼 1440).

@@ -4,7 +4,7 @@ import { deserialize } from "@/project/io";
 import { reseedSessionRng } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import type { BattleAnimationRecord } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type BattleProject = ReturnType<typeof deserialize>;
@@ -43,7 +43,7 @@ export async function seedReferenceBattleProject(
   prepareReferenceBattleProject(project);
   if (options.battleFlow !== undefined) project.system.battleFlow = options.battleFlow;
   if (options.battleUiStyle !== undefined) project.system.battleUiStyle = options.battleUiStyle;
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 export async function seedPokemonLayoutBattleProject(page: Page): Promise<void> {
@@ -58,7 +58,7 @@ export async function seedPokemonLayoutBattleProject(page: Page): Promise<void> 
     { enemyId: "enemy_slime", x: 105, y: 105, hidden: false },
     { enemyId: "enemy_slime", x: 185, y: 145, hidden: false },
   ];
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 export async function seedLayoutResultBattleProject(
@@ -73,7 +73,7 @@ export async function seedLayoutResultBattleProject(
   const enemy = project.database.enemies.find((record) => record.id === "enemy_slime");
   if (!enemy) throw new Error("missing enemy_slime fixture");
   enemy.stats.maxHp = 14;
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 export function prepareReferenceBattleProject(project: BattleProject): void {
@@ -98,7 +98,7 @@ export async function seedAnimationAnchorBattleProject(page: Page): Promise<void
   const project = deserialize(fixture);
   prepareReferenceBattleProject(project);
   ensureAnchorAnimationSkill(project);
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 export function prepareAnimationAnchorBattleProject(project: BattleProject): void {

@@ -2,7 +2,7 @@ monitor_id=mon_EHXJ28RJV64K4K7Y
 {"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
 {"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append"}
 {"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
-{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" ✓ test/supabaseAuditAppend.test.ts (5 tests) 17ms"}
+{"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" ✓ test/legacyDbAuditAppend.test.ts (5 tests) 17ms"}
 {"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":""}
 {"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":" Test Files  1 passed (1)"}
 {"type":"line","id":"authoring-3940179","description":"task11 scoped validation","line":"      Tests  5 passed (5)"}
@@ -17,7 +17,7 @@ monitor_id=mon_EHXJ28RJV64K4K7Y
 
  RUN  v3.2.4 /home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-audit-append
 
- ✓ test/supabaseAuditAppend.test.ts (5 tests) 17ms
+ ✓ test/legacyDbAuditAppend.test.ts (5 tests) 17ms
 
  Test Files  1 passed (1)
       Tests  5 passed (5)

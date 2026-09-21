@@ -44,7 +44,7 @@
     "src/project/monsterMetadata.ts",
     "src/project/projectCommitLog.ts",
     "src/project/store.ts",
-    "src/project/supabaseProjectSync.ts",
+    "src/project/legacyDbProjectSync.ts",
     "src/project/types/base.ts",
     "src/project/types/project.ts",
     "src/project/webExport.ts",

@@ -131,7 +131,7 @@ $ npm run qa:runtime -- --scenario loc-transition --project /tmp/loc-transition.
 | `09-teleport-into-plaza.png` | 문을 밟은 **장소 이동**에서 「광장에 들어섰다.」(중간 걸음 없음) |
 
 픽스처(`scripts/qa/runtime/loc-transition-fixture.mts`)는 최소 엔진 계약이고 출하 데모
-콘텐츠가 아니며 원격에 저장하지 않는다 — AGENTS.md 「Supabase 필수」 하드 룰의 좁은 예외
+콘텐츠가 아니며 원격에 저장하지 않는다 — AGENTS.md 「LegacyDb 필수」 하드 룰의 좁은 예외
 (순수 엔진/편집기 코드 변경 + 계약용 최소 픽스처). 새 저작 콘텐츠는 만들지 않았다.
 
 타이밍 운에 기대지 않는다: 걸음은 저작 이동 루트(`playerRoute`) + `waitForPosition` 조건

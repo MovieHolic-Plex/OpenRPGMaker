@@ -34,6 +34,13 @@ export type SpatialAuthoringSession = SpatialTabSlice & {
   readonly inspectorOpen: boolean;
   /** true 이면 canonical 설계가 선택되어 있어도 카드 갤러리를 보여 준다 (「← 장소 목록」). */
   readonly listView: boolean;
+  /**
+   * 장소 갤러리에서 지금 고른 카드. **선택과 편집기 진입을 분리한다** — 예전에는 카드 클릭이
+   * 곧 편집기 진입이라, 아무것도 안 고른 상태에서 카드를 누르면 선택 상태(맵에 놓기·편집 액션 줄)를
+   * 볼 틈도 없이 편집기가 열렸다. 이제 첫 클릭은 여기만 채우고, 편집기는 액션 줄의 「편집」이나
+   * 같은 카드 재클릭으로만 들어간다.
+   */
+  readonly galleryCardId: string | null;
 };
 
 const DEFAULT_CAMERA: SpatialCamera = { x: 0, y: 0, zoom: 1 };
@@ -51,6 +58,7 @@ type StoredSession = {
   readonly regionKindFilter: SpatialRegionKindFilter | null;
   readonly inspectorOpen: boolean;
   readonly listView: boolean;
+  readonly galleryCardId: string | null;
 };
 
 function defaultStored(tab: SpatialShellTab = "places"): StoredSession {
@@ -70,6 +78,7 @@ function defaultStored(tab: SpatialShellTab = "places"): StoredSession {
     regionKindFilter: null,
     inspectorOpen: false,
     listView: false,
+    galleryCardId: null,
   };
 }
 
@@ -83,6 +92,7 @@ function view(stored: StoredSession): SpatialAuthoringSession {
     regionKindFilter: stored.regionKindFilter,
     inspectorOpen: stored.inspectorOpen,
     listView: stored.listView,
+    galleryCardId: stored.galleryCardId,
   };
 }
 
@@ -133,6 +143,7 @@ export function patchSpatialSession(patch: Partial<SpatialAuthoringSession>): Sp
     regionKindFilter: patch.regionKindFilter === undefined ? current.regionKindFilter : patch.regionKindFilter,
     inspectorOpen: patch.inspectorOpen === undefined ? current.inspectorOpen : patch.inspectorOpen,
     listView: patch.listView === undefined ? current.listView : patch.listView,
+    galleryCardId: patch.galleryCardId === undefined ? current.galleryCardId : patch.galleryCardId,
   });
 }
 

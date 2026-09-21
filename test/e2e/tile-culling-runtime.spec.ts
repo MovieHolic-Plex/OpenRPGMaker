@@ -10,7 +10,7 @@ import { expect, test } from "@playwright/test";
 import { PNG } from "pngjs";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const SIZE = 60;
 /** 통과해도 남는 증거 경로 — Playwright 첨부는 성공 시 디스크에 남지 않는다. */
@@ -73,7 +73,7 @@ test("큰 맵에서 컬링을 켜도 화면에 빈 칸이 생기지 않는다", 
   project.startMapId = map.id;
   project.startPos = { x: 20, y: 20 };
 
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

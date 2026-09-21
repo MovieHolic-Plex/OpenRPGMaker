@@ -55,7 +55,7 @@ describe("construction outcome audit vocabulary", () => {
     const resultData = {
       construction: EXACT_OUTCOME,
       houses: [{ mapId: "map_1" }],
-      supabaseAnonKey: "must-not-leak",
+      legacyDbAnonKey: "must-not-leak",
       projectCredentials: { token: "must-not-leak" },
     };
     // When: the canonical construction result is recognized and serialized.
@@ -75,7 +75,7 @@ describe("construction outcome audit vocabulary", () => {
       projectPersistence: "not-requested",
     });
     expect(serialized).not.toContain("must-not-leak");
-    expect(serialized).not.toContain("supabaseAnonKey");
+    expect(serialized).not.toContain("legacyDbAnonKey");
     expect(JSON.parse(serialized)).toMatchObject({
       activityPersistence: "both",
       projectPersistence: "not-requested",

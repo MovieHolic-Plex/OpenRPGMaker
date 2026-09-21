@@ -33,9 +33,9 @@ test("전투에 들어가면 MIDI 를 틀려 하지 않는다", async ({ page })
   });
   await page.setViewportSize({ width: 1280, height: 800 });
 
-  const { seedProjectFromSupabaseCanonical } = await import("./supabaseProjectSeed");
+  const { seedProjectForEditor } = await import("./projectSeed");
   const { startNewGameFromTitle } = await import("./runtimeInput");
-  await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
+  await seedProjectForEditor(page, createSampleAdventureProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

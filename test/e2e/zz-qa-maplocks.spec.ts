@@ -3,9 +3,9 @@ import { createHouseTemplateGalleryProject } from "@/project/defaults/defaultPro
 import { serialize } from "@/project/io";
 
 // Adversarial QA for the map-edit-lock fix: scratch sessions (remotePersistenceEnabled=false)
-// must NEVER touch the Supabase map_edit_locks table; remote-enabled sessions still must.
+// must NEVER touch the LegacyDb map_edit_locks table; remote-enabled sessions still must.
 
-const STORAGE_KEY = "oprn:supabase-project-config";
+const STORAGE_KEY = "oprn:legacyDb-project-config";
 const TEST_CONFIG = {
   anonKey: "test-anon-key",
   projectId: "initial-project",
@@ -15,7 +15,7 @@ const TEST_CONFIG = {
 
 const LOCK_ROUTE = "**/rest/v1/map_edit_locks**";
 
-test("C1: scratch session (freshProject=1) never requests map locks, even with Supabase config present", async ({ page }) => {
+test("C1: scratch session (freshProject=1) never requests map locks, even with LegacyDb config present", async ({ page }) => {
   test.setTimeout(60_000);
   const lockRequests: string[] = [];
   await page.route(LOCK_ROUTE, async (route) => {

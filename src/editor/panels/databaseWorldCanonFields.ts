@@ -272,3 +272,150 @@ export function boundedCanonText(label: string, value: string, onInput: (value: 
   input?.setAttribute("title", `${label}: ${max}자까지`);
   return control;
 }
+
+// ---------------------------------------------------------------------------
+// 법칙 질문 카드 (2026-09-22 스프레드 뷰)
+//
+// tri-state 세그먼트(미정/없음/있음)는 데이터 모델이 UI 로 샌 형태다. 카드는
+// "질문 + 지금 답"을 보여 주고, 클릭하면 팝오버에서 대화형 선택지를 고른다.
+// present 의 세 값(undefined/false/true)의 의미와 store 계약은 lawRow() 와 같다 —
+// 라벨과 배치만 다르다. testid(db-world-canon-law-*, -note)는 lawRow 과 동일하게 유지해
+// 기존 계약(worldAuthoringRegression 등)을 그대로 통과한다.
+// ---------------------------------------------------------------------------
+
+const LAW_CARD_ICONS: Record<WorldCanonLawKind, string> = {
+  power: "✦",
+  gods: "☾",
+  death: "❋",
+  money: "◎",
+};
+
+function lawStateLabel(law: WorldCanonLawState): string {
+  if (law.present === undefined) return "미정 — 조수가 상상합니다";
+  if (law.present) return law.note.trim() ? "있음 — 규칙을 조수에 전달" : "있음";
+  return "없음 — 조수도 없다고 답함";
+}
+
+export function lawCard(
+  kind: WorldCanonLawKind,
+  law: WorldCanonLawState,
+  rerender: () => void,
+): HTMLElement {
+  const card = el("button", {
+    class: "db-world-canon-law-card" + (law.present === undefined ? " is-unset" : ""),
+    attrs: { type: "button", "aria-haspopup": "dialog" },
+    dataset: { testid: "db-world-canon-law-" + kind },
+  });
+  card.append(
+    el("span", {
+      class: "db-world-canon-law-q",
+      children: [
+        el("span", { class: "db-world-canon-law-icon", attrs: { "aria-hidden": "true" }, text: LAW_CARD_ICONS[kind] }),
+        el("span", { text: LAW_LABELS[kind] }),
+        el("span", { class: "db-world-canon-law-arrow", attrs: { "aria-hidden": "true" }, text: "편집 ›" }),
+      ],
+    }),
+    el("span", {
+      class: "db-world-canon-law-state" + (law.present === undefined ? " is-unset" : law.present ? " is-yes" : " is-no"),
+      text: lawStateLabel(law),
+    }),
+    ...(law.note.trim() ? [el("span", { class: "db-world-canon-law-note", text: law.note })] : []),
+  );
+  card.addEventListener("click", () => {
+    openLawDialog(kind, law, rerender);
+  });
+  return card;
+}
+
+function openLawDialog(
+  kind: WorldCanonLawKind,
+  law: WorldCanonLawState,
+  rerender: () => void,
+): void {
+  const backdrop = el("div", { class: "db-world-canon-law-dialog-backdrop", dataset: { testid: "db-world-canon-law-dialog" } });
+  const dialog = el("div", {
+    class: "db-world-canon-law-dialog",
+    attrs: { role: "dialog", "aria-modal": "true", "aria-label": LAW_LABELS[kind] + " 법칙" },
+  });
+  const state: { present: boolean | undefined } = { present: law.present };
+
+  const optionButton = (value: "unset" | "no" | "yes", title: string, desc: string): HTMLElement => {
+    const selected = (value === "unset" && state.present === undefined)
+      || (value === "no" && state.present === false)
+      || (value === "yes" && state.present === true);
+    const button = el("button", {
+      class: "db-world-canon-law-option" + (selected ? " is-selected" : ""),
+      attrs: { type: "button" },
+      dataset: { testid: "db-world-canon-law-" + kind + "-option-" + value },
+      children: [
+        el("span", { class: "db-world-canon-law-option-title", text: title }),
+        el("span", { class: "db-world-canon-law-option-desc", text: desc }),
+      ],
+    });
+    button.addEventListener("click", () => {
+      state.present = value === "unset" ? undefined : value === "yes";
+      dialog.querySelectorAll(".db-world-canon-law-option").forEach((node) => node.classList.remove("is-selected"));
+      button.classList.add("is-selected");
+    });
+    return button;
+  };
+
+  const note = el("textarea", {
+    class: "db-world-canon-law-note-input",
+    attrs: {
+      rows: "2",
+      maxlength: String(WORLD_CANON_BOUNDS.lawNote),
+      placeholder: "비고 — 예: 신은 죽었고, 그 시신이 섬이다",
+      "aria-label": LAW_LABELS[kind] + " 비고",
+    },
+    value: law.note,
+    dataset: { testid: "db-world-canon-law-" + kind + "-note" },
+  });
+
+  const close = (): void => { backdrop.remove(); };
+  const save = el("button", {
+    class: "btn small db-world-canon-law-save",
+    attrs: { type: "button" },
+    text: "카드에 반영",
+    dataset: { testid: "db-world-canon-law-" + kind + "-save" },
+  });
+  save.addEventListener("click", () => {
+    recordProjectSnapshot("세계관 법칙");
+    writeCanon((current) => ({ laws: { ...current.laws, [kind]: { present: state.present, note: note.value.trim() } } }));
+    close();
+    rerender();
+  });
+  dialog.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    event.stopPropagation();
+    close();
+  });
+  backdrop.addEventListener("click", (event) => {
+    if (event.target === backdrop) close();
+  });
+
+  dialog.append(
+    el("h5", { class: "db-world-canon-law-dialog-title", text: LAW_LABELS[kind] + " — " + LAW_HINTS[kind] }),
+    el("div", {
+      class: "db-world-canon-law-options",
+      children: [
+        optionButton("unset", "아직 모르겠어요", "비워 둡니다. 조수가 이 주제를 자유롭게 상상할 수 있습니다."),
+        optionButton("no", "이 세계에는 없어요", "조수에게 명시적으로 전달됩니다 — 이 주제로 답하지 않습니다."),
+        optionButton("yes", "있어요 — 규칙을 정할게요", "아래 비고에 규칙을 적으면 조수가 그 규칙을 따릅니다."),
+      ],
+    }),
+    note,
+    el("p", {
+      class: "db-world-canon-law-tip",
+      children: [
+        el("strong", { text: "미정 주의: " }),
+        document.createTextNode("정하지 않은 질문은 조수가 가장 먼저 상상해 대본에 스며듭니다. 의도한 게 아니면 「없음」이라도 골라 두세요."),
+      ],
+    }),
+    save,
+  );
+  backdrop.append(dialog);
+  document.body.append(backdrop);
+  save.focus();
+}
+

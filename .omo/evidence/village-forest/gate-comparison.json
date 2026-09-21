@@ -38,7 +38,7 @@
       "key": "test/spatialActivationSafety.test.ts :: scoped store lifecycle blocks unsafe follow-up publication when activation encounters dirty-before",
       "duration": 9852.778932000001,
       "timeout": false,
-      "excerpt": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:15845:13\n    at fetchJsonArray (/home/main/.codex/worktrees/2ece/rpg-zzu/src/project/supabaseProjectSync.ts:533:20)\n    at loadMapRowsFromSupabase (/home/main/.codex/worktrees/2ece/rpg-zzu/src/project/supabaseProjectSync.ts:1282:10)\n    at Module.loadProjectSnapshotFromSupabase (/home/"
+      "excerpt": "TypeError: fetch failed\n    at node:internal/deps/undici/undici:15845:13\n    at fetchJsonArray (/home/main/.codex/worktrees/2ece/rpg-zzu/src/project/legacyDbProjectSync.ts:533:20)\n    at loadMapRowsFromLegacyDb (/home/main/.codex/worktrees/2ece/rpg-zzu/src/project/legacyDbProjectSync.ts:1282:10)\n    at Module.loadProjectSnapshotFromLegacyDb (/home/"
     }
   ]
 }

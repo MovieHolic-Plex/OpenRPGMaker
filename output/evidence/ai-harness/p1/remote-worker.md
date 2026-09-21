@@ -1,4 +1,4 @@
-# P1 independent live-Supabase persistence proof
+# P1 independent live-LegacyDb persistence proof
 
 Task `st_01a07615`, 2026-09-06. Scoped QA is GREEN, including mutation RED and
 restored-source GREEN. This is not session integration or P1 release approval.
@@ -38,7 +38,7 @@ and cleanup. `persistence-surface.mjs` was an API reference, not live evidence.
 The harness validates the configured origin, anon/publishable role, and configured
 application project-id syntax without printing keys. It uses the checkout's
 configured self-hosted origin `http://dbserver:8100`; it does not invent a public
-Supabase endpoint or require the unrelated novice launcher's HTTPS-only policy.
+LegacyDb endpoint or require the unrelated novice launcher's HTTPS-only policy.
 The configured default id is recorded as configuration metadata only. There is
 **no read/load/flush/switch/delete against it**.
 
@@ -172,7 +172,7 @@ naturally, without forced success exits or sleeping for teardown.
 | Validator | Result / artifact |
 | --- | --- |
 | Node syntax and LSP, both QA `.mjs` files | no diagnostics; syntax valid |
-| `npm test -- test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts` | exit 0; **47 passed / 2 files**, one invocation; `remote-related-tests.*` |
+| `npm test -- test/storePersistenceProof.test.ts test/legacyDbProjectSync.test.ts` | exit 0; **47 passed / 2 files**, one invocation; `remote-related-tests.*` |
 | `npm run typecheck:app` | exit 0; `remote-typecheck.*` |
 | `npm run build` | exit 0; app/player/standalone build chain; `remote-build.*` |
 | Real remote command after source restoration | exit 0; `remote.json`, `remote.log`, `remote.receipt` |

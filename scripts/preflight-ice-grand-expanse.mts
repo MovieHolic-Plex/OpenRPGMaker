@@ -16,14 +16,14 @@ import {
   buildSourceManifest,
   collectTreeLocations,
   hashValue,
-  normalizeSupabaseOrigin,
+  normalizeLegacyDbOrigin,
   parsePreflightArgs,
   sha256Bytes,
   stableJson,
 } from "./ice-grand-expanse/preflightCore.mjs";
 import { loadRemoteConfig, readProtectedBaseline } from "./ice-grand-expanse/preflightRemote.mjs";
 
-export { PreflightError, assertNoDirtyOverlap, buildSourceManifest, collectTreeLocations, normalizeSupabaseOrigin, parsePreflightArgs, stableJson };
+export { PreflightError, assertNoDirtyOverlap, buildSourceManifest, collectTreeLocations, normalizeLegacyDbOrigin, parsePreflightArgs, stableJson };
 
 const COMMANDS = [
   { argv: ["npx", "vitest", "run", "test/iceGrandExpansePreflight.test.ts", "test/iceDiagonalTerrain.test.ts", "test/iceGrandAdventure.test.ts", "--configLoader", "runner"], phase: "focused-test", timeoutMs: 5 * 60_000 },
@@ -92,7 +92,7 @@ export async function runPreflight(argv: readonly string[], cwd = process.cwd())
     gitHeadOrNull: source.gitHeadOrNull,
     runId,
     startedAt,
-    supabaseOriginSha256: remote.supabaseOriginSha256,
+    legacyDbOriginSha256: remote.legacyDbOriginSha256,
     targetProjectId: args.projectId,
     trackedDiffSha256: source.trackedDiffSha256,
     untrackedInventorySha256: source.untrackedInventorySha256,

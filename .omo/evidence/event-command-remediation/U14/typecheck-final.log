@@ -823,7 +823,7 @@ test/regionTaskRun.test.ts(576,12): error TS18048: 'report' is possibly 'undefin
 test/regionTaskRun.test.ts(579,12): error TS18048: 'report' is possibly 'undefined'.
 test/regionTileStats.test.ts(8,31): error TS2305: Module '"@/project/types"' has no exported member 'RegionRect'.
 test/renderFootprintCenter.test.ts(191,9): error TS2741: Property 'name' is missing in type '{ footprint?: CharacterFootprint | undefined; id: string; conditions: never[]; graphic: {}; trigger: { kind: "action"; }; priority: "same"; movement: { type: "fixed"; speed: number; frequency: number; }; commands: never[]; }' but required in type 'EventPage'.
-test/resourceProfiles.test.ts(4,62): error TS7016: Could not find a declaration file for module '../scripts/supabase-resource-root/catalog.mjs'. '/home/main/z-project/rpg-zzu-event-u14/scripts/supabase-resource-root/catalog.mjs' implicitly has an 'any' type.
+test/resourceProfiles.test.ts(4,62): error TS7016: Could not find a declaration file for module '../scripts/legacy-db-resource-root/catalog.mjs'. '/home/main/z-project/rpg-zzu-event-u14/scripts/legacy-db-resource-root/catalog.mjs' implicitly has an 'any' type.
 test/roguelikeRooms.test.ts(150,15): error TS2322: Type '"eraseEvent"' is not assignable to type '"transfer" | "gameOver" | "text" | "timer" | "loop" | "label" | "setSwitch" | "wait" | "changeFace" | "choices" | "fork" | "inputWait" | "inputNumber" | "gotoLabel" | "breakLoop" | ... 63 more ... | "m2Command"'.
 test/runtime/_battle-feel-filmstrip.spec.ts(8,21): error TS6133: 'Page' is declared but its value is never read.
 test/runtime/esc-menu.spec.ts(15,31): error TS2345: Argument of type '(beat: { failures: string[]; }) => string[]' is not assignable to parameter of type '(this: undefined, value: RuntimeQaBeatReport, index: number, array: RuntimeQaBeatReport[]) => string | readonly string[]'.
@@ -898,7 +898,7 @@ test/stardewDemo.test.ts(231,30): error TS2339: Property 'conditions' does not e
 test/stardewDemo.test.ts(231,54): error TS7006: Parameter 'c' implicitly has an 'any' type.
 test/stardewDemo.test.ts(253,82): error TS2345: Argument of type 'readonly ["char_mayor", "char_seed_merchant", "char_miner", "char_carpenter", "char_herbalist"]' is not assignable to parameter of type 'unknown[]'.
   The type 'readonly ["char_mayor", "char_seed_merchant", "char_miner", "char_carpenter", "char_herbalist"]' is 'readonly' and cannot be assigned to the mutable type 'unknown[]'.
-test/stardewSupabaseRoundtrip.live.test.ts(3,63): error TS2724: '"@/project/supabaseProjectSync"' has no exported member named 'SupabaseProjectConfig'. Did you mean 'SupabaseProjectListConfig'?
+test/stardewLegacyDbRoundtrip.live.test.ts(3,63): error TS2724: '"@/project/legacyDbProjectSync"' has no exported member named 'LegacyDbProjectConfig'. Did you mean 'LegacyDbProjectListConfig'?
 test/studioBarActions.test.ts(94,19): error TS2352: Conversion of type '(handler: TimerHandler, timeout?: number) => NodeJS.Timeout' to type 'typeof setTimeout' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
   Property '__promisify__' is missing in type '(handler: TimerHandler, timeout?: number) => NodeJS.Timeout' but required in type 'typeof setTimeout'.
 test/studioBarActions.test.ts(282,5): error TS2349: This expression is not callable.
@@ -907,7 +907,7 @@ test/studioBarActions.test.ts(284,5): error TS2349: This expression is not calla
   Type 'never' has no call signatures.
 test/studioBarActions.test.ts(287,5): error TS2349: This expression is not callable.
   Type 'never' has no call signatures.
-test/supabaseProjectSync.test.ts(20,3): error TS6133: 'seedLastRemoteCommitTip' is declared but its value is never read.
+test/legacyDbProjectSync.test.ts(20,3): error TS6133: 'seedLastRemoteCommitTip' is declared but its value is never read.
 test/switchVariableModalTrigger.test.ts(4,3): error TS6133: 'switchPicker' is declared but its value is never read.
 test/systemShell.test.ts(199,9): error TS2741: Property 'onOpenGroup' is missing in type '{ onCommand: () => undefined; onSaveSlot: () => undefined; onLoadSlot: () => undefined; onSelectItemTarget: () => undefined; onToggleWait: () => undefined; onToTitle: () => undefined; onUseItem: () => undefined; ... 10 more ...; onMoveMonster: () => undefined; }' but required in type 'PlayerStatusMenuActions'.
 test/termsRuntime.test.ts(175,41): error TS2345: Argument of type '{ scene: PlaySceneContext; step: { kind: "shop"; itemIds: string[]; items?: readonly { readonly itemId: string; readonly price?: number; }[]; allowSell?: boolean; ... 14 more ...; festivalFlag?: string; }; ... 6 more ...; onItem: () => undefined; }' is not assignable to parameter of type 'ShopItemsRenderRequest'.

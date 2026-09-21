@@ -1,10 +1,10 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
-import { loadProjectFromSupabase } from '/home/main/z-project/rpg-zzu/src/project/supabaseProjectSync.ts';
+import { loadProjectFromLegacyDb } from '/home/main/z-project/rpg-zzu/src/project/legacyDbProjectSync.ts';
 const out='/home/main/.herdr/worktrees/rpg-zzu/worktree-clear-harbor-3da2/reports/shop-live-investigation/weapon-shop';
 const env=Object.fromEntries((await readFile('/home/main/z-project/rpg-zzu/.env.local','utf8')).split('\n').filter(l=>l.includes('=')&&!l.startsWith('#')).map(l=>{const i=l.indexOf('=');return [l.slice(0,i),l.slice(i+1).replace(/^['"]|['"]$/g,'')]}));
-const config={url:env.VITE_SUPABASE_URL,anonKey:env.VITE_SUPABASE_ANON_KEY,projectId:"oprn-e98456e1d8"};
-const project=await loadProjectFromSupabase(config);
+const config={url:env.VITE_LEGACY_DB_URL,anonKey:env.VITE_LEGACY_DB_ANON_KEY,projectId:"oprn-e98456e1d8"};
+const project=await loadProjectFromLegacyDb(config);
 if(!project) throw new Error('Configured project missing');
 const text=JSON.stringify(project); await writeFile(out+'/canonical-project.json',text);
 const shops=[];

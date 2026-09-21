@@ -35,7 +35,7 @@
     {
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence does not write to Supabase before the canonical project has loaded"
+        "Project store remote persistence does not write to LegacyDb before the canonical project has loaded"
       ],
       "diff": "--- base\n\n+++ archived-final\n\n@@ -7,7 +7,7 @@\n\n \u001b[22m    Array [\n       \"/__oprn/edit-activity\",\n       Object {\n-        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T05:35:09.223Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n+        \"body\": \"{\"entries\":[{\"seq\":0,\"at\":\"2026-09-06T06:16:00.065Z\",\"scope\":\"project\",\"label\":null,\"origin\":\"human\",\"generation\":1,\"reason\":\"사람이 편집\"}]}\",\n         \"headers\": Object {\n           \"Content-Type\": \"application/json\",\n         },"
     }

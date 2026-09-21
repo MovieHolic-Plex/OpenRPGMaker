@@ -3,7 +3,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { openTestPlayWindow } from "./oprnPlayerStatusMenuHelpers";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".superpowers/sdd/qa-shots/stardew-p0";
 
@@ -26,7 +26,7 @@ async function expectNotClipped(locator: Locator, label: string): Promise<void> 
 
 async function seedFarmingDemo(page: Page): Promise<void> {
   await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, createFarmingDemoProject());
+  await seedProjectForEditor(page, createFarmingDemoProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   const coachSkip = page.getByRole("button", { name: "건너뛰기", exact: true }).first();
   if (await coachSkip.isVisible().catch(() => false)) await coachSkip.click();

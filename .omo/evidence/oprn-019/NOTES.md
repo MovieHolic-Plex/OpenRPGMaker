@@ -143,7 +143,7 @@ polling delays. 5 consecutive runs pass.
 
 ## Deliberately not done
 
-- No Supabase content write: this is editor/schema code, not authored game content, so the
+- No LegacyDb content write: this is editor/schema code, not authored game content, so the
   `AGENTS.md` content rule does not apply. Schema change is proved by load/normalize/save tests
   instead.
 - No automatic capture of a `BuildSpec` into the list, and no automatic prompt injection. Both

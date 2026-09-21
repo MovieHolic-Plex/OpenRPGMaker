@@ -41,7 +41,7 @@ page.on("requestfailed", (request) => {
 });
 await page.addInitScript(() => {
   localStorage.setItem("oprn:editor-ui-mode", "expert");
-  localStorage.removeItem("oprn:supabase-project-config");
+  localStorage.removeItem("oprn:legacyDb-project-config");
 });
 
 async function openMap(mapId: string, focus?: { readonly x: number; readonly y: number }): Promise<void> {

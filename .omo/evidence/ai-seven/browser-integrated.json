@@ -3,7 +3,7 @@
   "entry": "/?blankProject=1",
   "delivery": "Built product after latest-main integration",
   "sharedModule": "/assets/main-BLhLAwp1.js",
-  "networkIsolation": "Model and Supabase HTTP responses intercepted",
+  "networkIsolation": "Model and LegacyDb HTTP responses intercepted",
   "narration": {
     "input": "author_world_bridge 도구로 다리를 만들어줘",
     "observedLiveText": "월드를 구성하는 중",

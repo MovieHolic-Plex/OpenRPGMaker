@@ -36,7 +36,7 @@ Current adds the interactWithLifeField import at line 44 before the two unchange
 
 Only entries[0].at inside the one received edit-activity request body is mapped to <RUN_AT>: current 2026-09-06T17:10:07.941Z; base 2026-09-06T17:24:51.145Z. No other timestamps, counters, request values, IDs or expected values normalized.
 
-Unchanged test/storePersistence.test.ts:11..35 uses fake timers without a fixed system time; unchanged src/editor/editActivityLog.ts:214,223,239 builds at from Date.now() via toISOString(). Both human diagnostics show one POST /__oprn/edit-activity with seq 0, scope project, label null, origin human, generation 1 and reason 사람이 편집. Same failed no-fetch expectation, not proof that a Supabase write occurred.
+Unchanged test/storePersistence.test.ts:11..35 uses fake timers without a fixed system time; unchanged src/editor/editActivityLog.ts:214,223,239 builds at from Date.now() via toISOString(). Both human diagnostics show one POST /__oprn/edit-activity with seq 0, scope project, label null, origin human, generation 1 and reason 사람이 편집. Same failed no-fetch expectation, not proof that a LegacyDb write occurred.
 
 ### Raw root-normalized diff: CF001
 
@@ -127,7 +127,7 @@ Unchanged test/storePersistence.test.ts:11..35 uses fake timers without a fixed 
 
 ### Raw root-normalized diff: CF134
 
-`test/storePersistence.test.ts` - Project store remote persistence does not write to Supabase before the canonical project has loaded
+`test/storePersistence.test.ts` - Project store remote persistence does not write to LegacyDb before the canonical project has loaded
 
 ```diff
 --- base (root-normalized)
@@ -177,14 +177,14 @@ Unresolved current-only [edit-activity] (unlabeled project) log under this repor
 
 `test/aiChatPanelUxRepairs.test.ts` - 진행 상태와 중단 AssistantSession은 AbortSignal을 LLM 호출에 전달하고 중단 결과로 종료한다
 
-Same three complete log bodies in a different order: edit-activity mirror URL-parse warning precedes two Supabase fetch warnings in current, follows them in base. Order retained; relation to common timeout unresolved.
+Same three complete log bodies in a different order: edit-activity mirror URL-parse warning precedes two LegacyDb fetch warnings in current, follows them in base. Order retained; relation to common timeout unresolved.
 
 ```diff
 --- base console
 +++ current console
 @@ -1,3 +1,4 @@
 +[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.
- [ai-conversation] Supabase mirror failed: TypeError: fetch failed
+ [ai-conversation] LegacyDb mirror failed: TypeError: fetch failed
      at node:internal/deps/undici/undici:15845:13
      at processTicksAndRejections (node:internal/process/task_queues:103:5)
 @@ -24,4 +25,3 @@
@@ -361,10 +361,10 @@ Each row is original **failed -> current failed / base failed**, occurrence 1. `
 | CF131 | `test/scatterObject.test.ts`<br>scatter_object 시작칸, 이벤트칸, transfer 목적지를 보호하고 부족 수량을 반환한다 | no | 32306-32313 | 32329-32336 | equal |
 | CF132 | `test/scatterObject.test.ts`<br>scatter_object 영역이 포화되면 가능한 만큼만 배치하고 조용히 성공하지 않는다 | no | 32318-32325 | 32341-32348 | equal |
 | CF133 | `test/setGroupLayout.test.ts`<br>set_group_layout 세로 위/아래 구성을 저장하고 샘플에서 위 칸 260, 아래 칸 290으로 배치한다 | no | 32330-32344 | 32353-32367 | equal |
-| CF134 | `test/storePersistence.test.ts`<br>Project store remote persistence does not write to Supabase before the canonical project has loaded | no | 32349-32375 | 32372-32398 | S3 |
-| CF135 | `test/storePersistence.test.ts`<br>Project store remote persistence does not auto-save local dev showcase projects to Supabase | no | 32380-32390 | 32403-32413 | equal |
+| CF134 | `test/storePersistence.test.ts`<br>Project store remote persistence does not write to LegacyDb before the canonical project has loaded | no | 32349-32375 | 32372-32398 | S3 |
+| CF135 | `test/storePersistence.test.ts`<br>Project store remote persistence does not auto-save local dev showcase projects to LegacyDb | no | 32380-32390 | 32403-32413 | equal |
 | CF136 | `test/storePersistence.test.ts`<br>Project store remote persistence always creates a new fresh project instead of reloading local dev overrides | no | 32395-32405 | 32418-32428 | equal |
-| CF137 | `test/storePersistence.test.ts`<br>Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase | no | 32410-32420 | 32433-32443 | equal |
+| CF137 | `test/storePersistence.test.ts`<br>Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb | no | 32410-32420 | 32433-32443 | equal |
 | CF138 | `test/storePersistence.test.ts`<br>Project store remote persistence reports why DB persistence is unavailable for local dev showcase projects | no | 32425-32439 | 32448-32462 | equal |
 | CF139 | `test/storePersistence.test.ts`<br>Project store remote persistence does not create a DB project when the selected project row is missing | no | 32443-32450 | 32466-32473 | equal |
 | CF140 | `test/teamWorkflowUi.test.ts`<br>team workflow UI renders topbar identity and allows label edits from the identity menu | no | 32486-32499 | 32478-32491 | equal |
@@ -445,9 +445,9 @@ Each row is original **failed -> current passed / base passed**, occurrence 1, a
 | BP046 | `test/regionSelectionPastePreview.test.ts`<br>renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 있으면 붙여넣기 버튼이 나타난다 | yes | 9212 | 9183 | passed |
 | BP047 | `test/regionSelectionPastePreview.test.ts`<br>renderSelectionActionChips — 복사/붙여넣기/지우기/해제 버튼 클립보드가 없으면 붙여넣기 버튼이 없다 | yes | 9213 | 9184 | passed |
 | BP048 | `test/storeEventDraftPreserve.test.ts`<br>store preserves open event drafts across remote autosave keeps a new event draft after map-patch save returns a draft-stripped project | yes | 10408 | 10386 | passed |
-| BP049 | `test/storeFlushShaEvidence.test.ts`<br>Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다 | yes | 10227 | 10205 | passed |
-| BP050 | `test/supabaseProjectSync.test.ts`<br>Supabase project sync preserves concurrent saves from separate editors touching different maps | yes | 22 | 22 | passed |
-| BP051 | `test/supabaseProjectSync.test.ts`<br>Supabase project sync preserves concurrent map tree additions from separate editors | yes | 23 | 23 | passed |
+| BP049 | `test/storeFlushShaEvidence.test.ts`<br>Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다 | yes | 10227 | 10205 | passed |
+| BP050 | `test/legacyDbProjectSync.test.ts`<br>LegacyDb project sync preserves concurrent saves from separate editors touching different maps | yes | 22 | 22 | passed |
+| BP051 | `test/legacyDbProjectSync.test.ts`<br>LegacyDb project sync preserves concurrent map tree additions from separate editors | yes | 23 | 23 | passed |
 | BP052 | `test/toolHostileArgs.test.ts`<br>쓰기 툴 적대적 인자 스윕 empty 인자에 어떤 툴도 크래시하거나 읽을 수 없는 실패를 남기지 않는다 | yes | 10239 | 10217 | passed |
 | BP053 | `test/uxcLoadFailure.test.ts`<br>UXC D01 프로젝트 로드 실패 폴백 오류 원문을 숨기고 안전한 복구 방법과 예제/새 프로젝트 CTA를 제공한다 | yes | 9973 | 9947 | passed |
 | BP054 | `test/uxcLoadFailure.test.ts`<br>UXC D01 프로젝트 로드 실패 폴백 예제 프로젝트 폴백은 저장본을 폐기하지 않고 메모리 프로젝트로 부팅한다 | yes | 9974 | 9948 | passed |
@@ -458,7 +458,7 @@ Each row is original **failed -> current passed / base passed**, occurrence 1, a
 ## Unresolved handoff to parent
 
 - **U1 (two current-only console logs):** Current has an additional unlabeled-project edit-activity log under each of two agentBlueprintTurnEnd failures. No source explanation established; full assertion values still agree.
-- **U2 (timeout and ordered console warnings):** Same 15000ms timeout, but edit-activity/Supabase warning order differs. Do not identify the common timeout cause from matching error text.
+- **U2 (timeout and ordered console warnings):** Same 15000ms timeout, but edit-activity/LegacyDb warning order differs. Do not identify the common timeout cause from matching error text.
 - **U3 (57 original-fail/both-pass cases):** No attribution of original failure/non-reproduction to Phase3 fix, environment, timing, or contamination is established.
 - **U4 (causal attribution and restricted coverage):** Common failure signatures establish paired observation only. Network-restricted failures, original sentinels, matcher elisions and two unhandled errors constrain gate conclusions.
 

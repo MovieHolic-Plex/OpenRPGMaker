@@ -178,7 +178,7 @@ export interface StructurePlacement {
  * 속도: **60Hz 논리 프레임당 px** (`@/project/mapBackground` 의 상한 참조).
  */
 export interface MapBackground {
-  /** 배경 그림 리소스 ID(예: `easyrpg-backdrop-sky1`). 외부 URL 은 해석되지 않는다. */
+  /** 배경 배경 그림 리소스 ID(예: `easyrpg-backdrop-sky1`). 외부 URL 은 해석되지 않는다. */
   imageId: string;
   /** 수평 스크롤 속도 (px/프레임, 0=고정). */
   scrollX?: number;
@@ -188,6 +188,40 @@ export interface MapBackground {
   loopX?: boolean;
   /** 수직 반복(기본 true). */
   loopY?: boolean;
+  /**
+   * 그림을 뷰포트에 맞추는 방식.
+   * - native(기본): 원본 픽셀 그대로(1:1). RPG Maker 파노라마처럼 게임 해상도에 맞춰
+   *   제작된 그림용이다.
+   * - cover: 그림이 화면을 덮을 때까지 확대·축소해 보여준다. 1920x1080 등 더 높은
+   *   배경 아트를 320x240 게임에 그대로 쓰면 좌상단 구석만 보이고 지면·나무가 화면
+   *   밖으로 나간다.
+   */
+  fit?: MapBackgroundFit;
+  /**
+   * 배경 위에 얹는 추가 레이어(최대 8장). 첫 장은 이 객체의 imageId 다 — 레이어
+   * 배열(앞이 아래)과 함께 그려진다. CraftPix 레이어 팩 같은 다중 배경용이고,
+   * 생략하면 단일 그림 저작(레거시 JSON)과 같다.
+   */
+  layers?: MapBackgroundLayer[];
+}
+
+/** 배경 그림을 뷰포트에 맞추는 방식. 자세한 뜻은 MapBackground.fit 참고. */
+export type MapBackgroundFit = "native" | "cover";
+
+/** 맵 배경의 한 레이어. 스크롤 단위·반복 규칙은 MapBackground 와 같다. */
+export interface MapBackgroundLayer {
+  /** 배경 그림 리소스 ID. */
+  imageId: string;
+  /** 수평 스크롤 속도 (px/프레임, 0=고정). */
+  scrollX?: number;
+  /** 수직 스크롤 속도 (px/프레임, 0=고정). */
+  scrollY?: number;
+  /** 수평 반복(기본 true). */
+  loopX?: boolean;
+  /** 수직 반복(기본 true). */
+  loopY?: boolean;
+  /** 그림 맞추기 방식(기본 native). */
+  fit?: MapBackgroundFit;
 }
 
 /** 맵 BGM 설정 — RM2003 BGM 탭 대응. */

@@ -326,7 +326,7 @@
 
       <div class="layer shared">
         <div class="label" style="color:var(--teal)">L0 Shared</div>
-        <div><b>공통 엔진</b> — 맵/이벤트/스위치·변수/인터프리터/세션/저장 · Supabase 프로젝트 행</div>
+        <div><b>공통 엔진</b> — 맵/이벤트/스위치·변수/인터프리터/세션/저장 · LegacyDb 프로젝트 행</div>
       </div>
       <div class="layer runtime">
         <div class="label" style="color:var(--blue)">L1 Runtime</div>
@@ -402,9 +402,9 @@
         <div class="card">
           <div class="body">
             <span class="pill ok">Persistence</span>
-            <h3 style="margin:.45rem 0">Supabase 프로젝트 정본</h3>
+            <h3 style="margin:.45rem 0">LegacyDb 프로젝트 정본</h3>
             <ul class="tiny" style="margin:0;padding-left:1.1rem;color:var(--muted)">
-              <li><code>saveProjectToSupabase</code> / reload</li>
+              <li><code>saveProjectToLegacyDb</code> / reload</li>
               <li><code>?project=</code> 딥링크</li>
               <li>데모 프로젝트 행 (AGENTS 하드 룰)</li>
               <li>웰컴 스킵 + 게스트 자동 (딥링크 UX)</li>
@@ -418,7 +418,7 @@
         <div class="icon-card"><div class="glyph" style="background:#2c5b98">⚙</div><div class="t">Interpreter</div><div class="s">커맨드 실행</div></div>
         <div class="icon-card"><div class="glyph" style="background:#564392">🧰</div><div class="t">Tool surface</div><div class="s">LLM 컴파일</div></div>
         <div class="icon-card"><div class="glyph" style="background:#2a7236">🧪</div><div class="t">scene_test</div><div class="s">헤드리스 증명</div></div>
-        <div class="icon-card"><div class="glyph" style="background:#b86f0f">☁</div><div class="t">Supabase</div><div class="s">정본 저장</div></div>
+        <div class="icon-card"><div class="glyph" style="background:#b86f0f">☁</div><div class="t">LegacyDb</div><div class="s">정본 저장</div></div>
         <div class="icon-card"><div class="glyph" style="background:#a13646">🚪</div><div class="t">Welcome / URL</div><div class="s">진입 경로</div></div>
       </div>
     </section>
@@ -610,7 +610,7 @@
               <li><b>런타임:</b> examine events, inventory gates, (optional) follower</li>
               <li><b>툴:</b> <code>place_examine_hotspots</code> · <code>compile_puzzle</code> · <b><code>make_gallery_room</code></b></li>
               <li><b>라우팅:</b> successTools <code>make_gallery_room</code> (설명만 종료 방지) · 칩 <code>horror-gallery</code></li>
-              <li><b>데모:</b> Supabase <code>rpg-zzu-narrative-horror-demos</code> 갤러리 맵</li>
+              <li><b>데모:</b> LegacyDb <code>rpg-zzu-narrative-horror-demos</code> 갤러리 맵</li>
             </ul>
           </div>
         </div>
@@ -715,7 +715,7 @@
         <div class="card">
           <div class="body">
             <span class="pill blue">Demos</span>
-            <h3 style="margin:.45rem 0">Supabase 정본</h3>
+            <h3 style="margin:.45rem 0">LegacyDb 정본</h3>
             <ul class="tiny" style="margin:0;padding-left:1.1rem;color:var(--muted)">
               <li><code>rpg-zzu-narrative-horror-demos</code></li>
               <li>시작맵(컷신) · 호러 저택 · 갤러리</li>
@@ -780,7 +780,7 @@
               <tr><td>11</td><td>WorkPlan successTools 라우팅</td><td>연출·호러 3축</td><td>설명만 종료 방지</td></tr>
               <tr><td>12</td><td>사냥터 + 승급 + worldGraph</td><td>바람</td><td>성장월드 연결</td></tr>
               <tr><td>13</td><td>scene_test / walkthrough</td><td>전체</td><td>헤드리스 증명</td></tr>
-              <tr><td>14</td><td>Supabase save+reload</td><td>전체</td><td>정본·데모</td></tr>
+              <tr><td>14</td><td>LegacyDb save+reload</td><td>전체</td><td>정본·데모</td></tr>
               <tr><td>15</td><td>웰컴 칩 + 딥링크 UX</td><td>전체</td><td>사람이 들어가는 문</td></tr>
             </tbody>
           </table>

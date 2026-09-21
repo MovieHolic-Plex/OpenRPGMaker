@@ -23,19 +23,19 @@ All 66 selected files have terminal execution receipts and assertion-name/messag
 
 ### storePersistence.test.ts: initially integration-only clean-flush failure is preexisting
 
-`Project store remote persistence skips remote flush when there are no unsaved changes` initially passed pristine, but failed in the configured control with the same one-call spy payload as frozen: POST `/__oprn/edit-activity`, scope `system`, label `프로젝트 정규화 (1종)`, field `bundledTilesets: true`. Only `entries[0].at` differs. This is not a new Supabase write.
+`Project store remote persistence skips remote flush when there are no unsaved changes` initially passed pristine, but failed in the configured control with the same one-call spy payload as frozen: POST `/__oprn/edit-activity`, scope `system`, label `프로젝트 정규화 (1종)`, field `bundledTilesets: true`. Only `entries[0].at` differs. This is not a new LegacyDb write.
 
 Cause: prior load/reconnect normalizes bundled tilesets (`store.ts:1289-1326`), calls `recordChangeActivity`, then `recordEditActivity` queues a debounced mirror (`editActivityLog.ts:421-441`). The timer calls whichever global fetch is current; test teardown resets modules/globals but does not drain/cancel that old module timer. The clean `flush()` branch (`store.ts:888-908`) itself does not fetch. These paths are unchanged between baseline and frozen revisions; the only store diff adds saved-response monster-metadata reconciliation, which the clean branch does not reach.
 
 Minimal test correction: await the real edit-activity mirror completion while the originating test mock is installed, before resetting modules/globals, and distinguish remote persistence requests from the unrelated disk-mirror endpoint. Use the existing flush/reset lifecycle hooks, not sleeps or timing retries. No production monster-metadata fix is supported by this failure.
 
-The earlier `does not write to Supabase before the canonical project has loaded` failure is also identical except its ISO timestamp: its spy incorrectly includes an edit-activity POST in the no-Supabase-call assertion.
+The earlier `does not write to LegacyDb before the canonical project has loaded` failure is also identical except its ISO timestamp: its spy incorrectly includes an edit-activity POST in the no-LegacyDb-call assertion.
 
-The configured control uses only literal `test-anon-key`, `http://dbserver:8100`, and the test-owned project-id value. It reproduces exact frozen TypeErrors for `always creates a new fresh project instead of reloading local dev overrides` and `saves and reloads local edits for dev showcase projects without Supabase`. The primary run instead failed earlier with `DbConnectionRequiredError` because it had no inherited DB config.
+The configured control uses only literal `test-anon-key`, `http://dbserver:8100`, and the test-owned project-id value. It reproduces exact frozen TypeErrors for `always creates a new fresh project instead of reloading local dev overrides` and `saves and reloads local edits for dev showcase projects without LegacyDb`. The primary run instead failed earlier with `DbConnectionRequiredError` because it had no inherited DB config.
 
 ### Four inconclusive assertions: retain, do not call preexisting or fixed
 
-1. `storePersistence.test.ts` / `reports why DB persistence is unavailable for local dev showcase projects`: frozen throws `SupabaseProjectSyncError` with `Invalid authentication credentials`; pristine throws the explicit network-block guard error. The unchanged test supplies DB config but no fetch mock, so exact server behavior is not comparable.
+1. `storePersistence.test.ts` / `reports why DB persistence is unavailable for local dev showcase projects`: frozen throws `LegacyDbProjectSyncError` with `Invalid authentication credentials`; pristine throws the explicit network-block guard error. The unchanged test supplies DB config but no fetch mock, so exact server behavior is not comparable.
 2. `unsavedChangesGuard.test.ts` / `devProject 모드: 변경→true, flush(로컬 기록)→false`: frozen reaches `expected saved to be saved-local`; pristine fails earlier with `DbConnectionRequiredError: 온라인 저장 설정이 필요합니다.`
 3. `unsavedChangesGuard.test.ts` / `freshProject(저장 스킵) 모드: flush가 saved-local이어도 미저장으로 남는다`: same downstream-vs-configuration difference.
 4. `regionAiHouseTreeNpc.probe.test.ts` / `live region task LLM: 집과 나무 1개 npc 배치`: frozen has `expected false to be true`; pristine has native status passed only because the test returns at its missing-credentials branch. No live LLM behavior was exercised. This is the only frozen failed test name without a demonstrated pristine failure after the configured control.

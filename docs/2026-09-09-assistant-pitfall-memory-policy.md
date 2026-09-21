@@ -22,7 +22,7 @@
 | 있는 것 | 근거 |
 | --- | --- |
 | 구조화된 활동 기록(지시·툴콜·감사·진단·실행 결과) | `src/ai/activityLogTypes.ts` |
-| 상한 있는 로컬 활동 링, **조건부 원격 미러링** | `src/ai/activityLog.ts` — `supabaseProjectConfig` / `recordSupabaseAiActivityLog` / `remoteOutbox` |
+| 상한 있는 로컬 활동 링, **조건부 원격 미러링** | `src/ai/activityLog.ts` — `legacyDbProjectConfig` / `recordLegacyDbAiActivityLog` / `remoteOutbox` |
 | 결정적 선호 신호 수집 | `src/ai/preferenceSignals.ts` — `CORRECTION_WINDOW_MS = 60_000`, `CORRECTION_CUES`, `COUNTER_LIMIT = 60` |
 | 임계 초과 시에만 도는 라이트 모델 증류 | `src/ai/preferenceDistiller.ts` |
 | 스코프·근거수·강도·출처·고정·축출·크기상한·삭제를 갖춘 기억 | `src/ai/preferenceMemory.ts` |

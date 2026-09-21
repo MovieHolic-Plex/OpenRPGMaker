@@ -1,4 +1,4 @@
-/** Read-only QA routes from the Supabase-reloaded project, using real collision rules. */
+/** Read-only QA routes from the LegacyDb-reloaded project, using real collision rules. */
 import fs from "node:fs";
 import path from "node:path";
 import assert from "node:assert/strict";

@@ -1,12 +1,12 @@
 import { writeFileSync } from "node:fs";
 import { loadEnv } from "vite";
-import { loadProjectFromSupabase } from "../../../src/project/supabaseProjectSync";
+import { loadProjectFromLegacyDb } from "../../../src/project/legacyDbProjectSync";
 
 const env = loadEnv("development", process.cwd(), "");
 const projectId = "rpg-zzu-qa-world-2026-09-06-f51eb3ca-final";
-const project = await loadProjectFromSupabase({
-  projectId, url: env.VITE_SUPABASE_URL,
-  anonKey: env.SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY,
+const project = await loadProjectFromLegacyDb({
+  projectId, url: env.VITE_LEGACY_DB_URL,
+  anonKey: env.LEGACY_DB_ANON_KEY || env.VITE_LEGACY_DB_ANON_KEY,
 });
 if (!project) throw new Error("QA project missing");
 const map = project.maps[project.startMapId];

@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createStarterHouseInteriorMap } from "@/project/defaults";
 import { createTownArchitectureCityProject } from "@/project/defaults/defaultProject";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 
 declare const process: {
@@ -77,7 +77,7 @@ test("editor-authored city start map has three NPCs and a linked house interior"
   const cityMapId = project.startMapId;
 
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, project, APP_URL);
+  await seedProjectForEditor(page, project, APP_URL);
   await page.getByTestId(`map-tree-node-${cityMapId}`).click();
   await page.getByTestId("map-set-start").click();
   await page.getByTestId("layer-event").click();

@@ -7,7 +7,7 @@
   의도 해석·브라우저 부팅·저장 시간은 이 9.294초에 포함하지 않는다.
 - 집 4채, 주민 3명(각 2줄 대사), 연결 내부 4개. 재조회 문서의 실제 시작점 (23,16)에서
   집 문앞 4/4 타일 통행 가능. 런타임 플레이 QA를 실행한 것은 아니다.
-- Supabase `rpg_zzu.projects` 전용 행 `village-contract-live-20260921-414a`에 실제 업서트,
+- LegacyDb `rpg_zzu.projects` 전용 행 `village-contract-live-20260921-414a`에 실제 업서트,
   재조회 전체 JSON 정규화 비교 및 SHA 필드 일치. 공유 사용자의 원래 프로젝트는 수정하지 않았다.
 - 현재 웹 QA 세션은 메모리 저장소이므로 편집기 자동 저장 경고가 남는다. 원격 저장은
   `scripts/qa/village-contract-live.mjs`가 별도로 수행했다. ‘에디터 저장 성공’으로 포장하지 않는다.

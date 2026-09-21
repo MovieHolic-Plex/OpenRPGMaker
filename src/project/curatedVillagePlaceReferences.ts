@@ -1,0 +1,189 @@
+import type { GameMap, TilesetDef } from "./types";
+import snapshot0 from "./regionReferences/organic-crescent-lake.json";
+import snapshot1 from "./regionReferences/organic-fork-stream.json";
+import snapshot2 from "./regionReferences/organic-terrace-gardens.json";
+import snapshot3 from "./regionReferences/organic-woodland-lane.json";
+import snapshot4 from "./regionReferences/organic-orchard-court.json";
+import snapshot5 from "./regionReferences/organic-fishing-cove.json";
+import snapshot6 from "./regionReferences/organic-five-groves.json";
+type Snapshot = {map: GameMap; tileset: TilesetDef};
+const snapshots: Record<string, Snapshot> = {
+  "organic-crescent-lake-80x72": snapshot0 as unknown as Snapshot,
+  "organic-fork-stream-80x72": snapshot1 as unknown as Snapshot,
+  "organic-terrace-gardens-80x72": snapshot2 as unknown as Snapshot,
+  "organic-woodland-lane-80x72": snapshot3 as unknown as Snapshot,
+  "organic-orchard-court-80x72": snapshot4 as unknown as Snapshot,
+  "organic-fishing-cove-80x72": snapshot5 as unknown as Snapshot,
+  "organic-five-groves-80x72": snapshot6 as unknown as Snapshot,
+};
+export const CURATED_VILLAGE_PLACES = [
+  {
+    "id": "organic-crescent-lake-80x72",
+    "name": "달물 호반마을",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-crescent-lake.png",
+    "tilesetPreview": "/assets/region-references/organic-crescent-lake-atlas.png",
+    "projectDownload": "/assets/region-references/organic-crescent-lake-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_crescent_lake",
+    "snapshotProjectId": "oprn-place-organic-crescent-lake-v2",
+    "rules": [
+      "호수 서쪽과 남쪽을 감싸는 초승달 취락",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  },
+  {
+    "id": "organic-fork-stream-80x72",
+    "name": "두갈래 물길마을",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-fork-stream.png",
+    "tilesetPreview": "/assets/region-references/organic-fork-stream-atlas.png",
+    "projectDownload": "/assets/region-references/organic-fork-stream-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_fork_stream",
+    "snapshotProjectId": "oprn-place-organic-fork-stream-v2",
+    "rules": [
+      "갈라지는 시냇물과 다리",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  },
+  {
+    "id": "organic-terrace-gardens-80x72",
+    "name": "층층 정원마을",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-terrace-gardens.png",
+    "tilesetPreview": "/assets/region-references/organic-terrace-gardens-atlas.png",
+    "projectDownload": "/assets/region-references/organic-terrace-gardens-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_terrace_gardens",
+    "snapshotProjectId": "oprn-place-organic-terrace-gardens-v2",
+    "rules": [
+      "높이가 다른 두 언덕과 아래쪽 마당",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  },
+  {
+    "id": "organic-woodland-lane-80x72",
+    "name": "긴숲 오솔마을",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-woodland-lane.png",
+    "tilesetPreview": "/assets/region-references/organic-woodland-lane-atlas.png",
+    "projectDownload": "/assets/region-references/organic-woodland-lane-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_woodland_lane",
+    "snapshotProjectId": "oprn-place-organic-woodland-lane-v2",
+    "rules": [
+      "대각으로 굽어 내려가는 한 줄기 오솔길",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  },
+  {
+    "id": "organic-orchard-court-80x72",
+    "name": "열매뜰 마을",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-orchard-court.png",
+    "tilesetPreview": "/assets/region-references/organic-orchard-court-atlas.png",
+    "projectDownload": "/assets/region-references/organic-orchard-court-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_orchard_court",
+    "snapshotProjectId": "oprn-place-organic-orchard-court-v2",
+    "rules": [
+      "과수원 둘레를 도는 마당과 생활 공간",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  },
+  {
+    "id": "organic-fishing-cove-80x72",
+    "name": "잔물결 어촌",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-fishing-cove.png",
+    "tilesetPreview": "/assets/region-references/organic-fishing-cove-atlas.png",
+    "projectDownload": "/assets/region-references/organic-fishing-cove-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_fishing_cove",
+    "snapshotProjectId": "oprn-place-organic-fishing-cove-v2",
+    "rules": [
+      "호숫가 작업터와 짧은 나무 선착장",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  },
+  {
+    "id": "organic-five-groves-80x72",
+    "name": "다섯숲 숨은마을",
+    "kind": "completed-place",
+    "placeKind": "settlement",
+    "revision": 2,
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 72,
+    "tilesetId": "forest_high_cliff_river",
+    "preview": "/assets/region-references/organic-five-groves.png",
+    "tilesetPreview": "/assets/region-references/organic-five-groves-atlas.png",
+    "projectDownload": "/assets/region-references/organic-five-groves-v2.oprn.json",
+    "sourceProjectId": "oprn-hill-forest-harmony-20260918-a4e1",
+    "sourceMapId": "map_village_ten_five_groves",
+    "snapshotProjectId": "oprn-place-organic-five-groves-v2",
+    "rules": [
+      "큰 숲 덩어리 주위로 이어지는 다섯 빈터",
+      "16×16 칩과 13칸 수관 오토타일, 온전한 줄기·뿌리 배치를 보존한다.",
+      "최신 곡선 동선 배치본. 집 앞과 출입구 연결을 확인했다."
+    ],
+    "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
+  }
+] as const;
+export function curatedVillageSnapshot(id: string): Snapshot | undefined { return snapshots[id]; }

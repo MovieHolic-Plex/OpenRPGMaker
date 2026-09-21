@@ -94,7 +94,7 @@
       "table": "project_commits",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/project_commits",
+      "path": "/legacyDb/rest/v1/project_commits",
       "query": ""
     },
     {
@@ -111,7 +111,7 @@
       "table": "projects",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?on_conflict=project_id"
     },
     {
@@ -120,7 +120,7 @@
       "table": "maps",
       "method": "DELETE",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -129,7 +129,7 @@
       "table": "maps",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?on_conflict=project_id%2Cmap_id"
     },
     {
@@ -138,7 +138,7 @@
       "table": "tilesets",
       "method": "DELETE",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/tilesets",
+      "path": "/legacyDb/rest/v1/tilesets",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -147,7 +147,7 @@
       "table": "tilesets",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/tilesets",
+      "path": "/legacyDb/rest/v1/tilesets",
       "query": "?on_conflict=project_id%2Ctileset_id"
     },
     {
@@ -156,7 +156,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -220,7 +220,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -229,7 +229,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -264,7 +264,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -273,7 +273,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -295,7 +295,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -555,7 +555,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -564,7 +564,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -763,7 +763,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -772,7 +772,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -826,7 +826,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -835,7 +835,7 @@
       "table": "projects",
       "method": "PATCH",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&current_sha256=eq.31fbe2baa9c2e3b5dacdb51a7df84164b32b2d1301d661b924979f6dbba00457"
     },
     {
@@ -844,7 +844,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -853,7 +853,7 @@
       "table": "project_commits",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/project_commits",
+      "path": "/legacyDb/rest/v1/project_commits",
       "query": ""
     },
     {
@@ -867,7 +867,7 @@
       "table": "project_changes",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/project_changes",
+      "path": "/legacyDb/rest/v1/project_changes",
       "query": ""
     },
     {
@@ -876,7 +876,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -1104,7 +1104,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=current_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -1113,7 +1113,7 @@
       "table": "projects",
       "method": "PATCH",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&current_sha256=eq.ed370eaeb997cc7f52ab12737c549aeed3940ddcb6b6cbe294fe7f70790d0164"
     },
     {
@@ -1122,7 +1122,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -1131,7 +1131,7 @@
       "table": "project_commits",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/project_commits",
+      "path": "/legacyDb/rest/v1/project_commits",
       "query": ""
     },
     {
@@ -1140,7 +1140,7 @@
       "table": "project_changes",
       "method": "POST",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/project_changes",
+      "path": "/legacyDb/rest/v1/project_changes",
       "query": ""
     },
     {
@@ -1149,7 +1149,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {
@@ -1348,7 +1348,7 @@
       "table": "projects",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/projects",
+      "path": "/legacyDb/rest/v1/projects",
       "query": "?select=project_id%2Ccurrent_json%2Ccurrent_sha256&project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4"
     },
     {
@@ -1357,7 +1357,7 @@
       "table": "maps",
       "method": "GET",
       "projectId": "qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4",
-      "path": "/supabase/rest/v1/maps",
+      "path": "/legacyDb/rest/v1/maps",
       "query": "?project_id=eq.qa-ai-surface-182621f8-12fd-4775-a44c-8cb57d19fdd4&select=map_id%2Cmap_json"
     },
     {

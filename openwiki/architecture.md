@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Architecture
 
 - `src/main.ts` boot flow:
@@ -27,7 +29,7 @@
 - Web player export boundary:
   - `player.html` and `src/player/exportEntry.ts` are the Vite player-only entry. They fetch sibling `project.json`, set the exported project store shim, configure the export save namespace, and start the normal player shell without booting the editor.
   - `vite.player.config.ts` builds `dist/export-player` with exact aliases for editor-only boundaries such as `@/app/mode`, `@/project/store`, `@/project/io`, `@/editor/tilesetImage`, `@/editor/cutscene`, and `@/project/eventCommands/m2Catalog`.
-  - Player shims under `src/player/export*Shim.ts` must stay minimal and runtime-facing. Do not import AI, Supabase, editor panels, or generated-asset provenance/validation JSON into the export bundle.
+  - Player shims under `src/player/export*Shim.ts` must stay minimal and runtime-facing. Do not import AI, LegacyDb, editor panels, or generated-asset provenance/validation JSON into the export bundle.
   - `scripts/lib/playerArtifactContract.mjs` is the base artifact API facade. Its bounded seams are `playerContractCore.mjs` (paths/digests/errors), `playerArtifactInventory.mjs` (filesystem inventory/secret scan), and `playerManifestAtomicWriter.mjs` (value-free typed atomic replacement). `playerDeploymentManifest.mjs` is the deployment writer facade over `playerDeploymentContract.mjs` and `playerViteClosure.mjs`.
   - `src/player/runtimeAssets.json` is the single runtime-public-asset inventory. Both Node build validation and browser export validate its schema, normalized ordinal ordering, and case-insensitive collision freedom.
   - `src/project/playerDeploymentManifest.ts` is the browser API facade. Parsing/digests, fetch/hash loading, paths/runtime inventory, Vite closure, errors, and types live in focused `playerDeployment*` / `playerViteDeployment.ts` modules. `src/project/webExport.ts` is the packaging facade over `webExportAssets.ts`, `webExportZip.ts`, and `webExportTypes.ts` used by the editor menu and the headless `check_export_readiness` read tool (old name `export_game` still runs, deprecated).
@@ -38,7 +40,7 @@
 - `src/project` data/persistence:
   - `src/project/store.ts` is the canonical project store. It loads the project, normalizes defaults, emits updates, autosaves, and flushes to local or remote persistence.
   - Store subscribers receive a `ProjectChangeDescriptor` alongside the project. Omitted descriptors fall back to `scope: "project"` for full-refresh compatibility; editor map/tile paths use narrower map/database scopes to avoid unnecessary Phaser and panel redraws.
-  - Persistence can come from Supabase, browser overrides, or dev-showcase overrides depending on environment/config.
+  - Persistence can come from LegacyDb, browser overrides, or dev-showcase overrides depending on environment/config.
   - Local dev `?blankProject=1` means a true blank project. `?freshProject=1` keeps its legacy meaning (sample adventure, no persisted override) because 32+ e2e specs and playtest drivers depend on it; example flags `sampleAdventure=1`/`defaultAdventure=1`/`defaultAdventureVisual` also remain.
   - `src/project/types.ts` defines the shared project schema used by editor, player, and battle systems, including authored ending definitions and optional `system.timeSystem` consumed by the player interpreter.
 

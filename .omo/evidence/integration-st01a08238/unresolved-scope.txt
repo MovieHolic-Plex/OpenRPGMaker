@@ -20,8 +20,8 @@
 8	3	src/editor/projectWikiCoordinator.ts
 0	0	src/project/store.ts
 77	17	src/project/store.ts
-0	0	src/project/supabaseProjectSync.ts
-43	5	src/project/supabaseProjectSync.ts
+0	0	src/project/legacyDbProjectSync.ts
+43	5	src/project/legacyDbProjectSync.ts
 0	0	test/aiAssistantSession.test.ts
 343	179	test/aiAssistantSession.test.ts
 0	0	test/aiCompletionAccounting.test.ts

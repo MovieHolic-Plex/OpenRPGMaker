@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const PASSABLE = { up: true, down: true, left: true, right: true };
 
@@ -26,7 +26,7 @@ async function seedProject(page: Page): Promise<void> {
   page.on("dialog", (dialog) => {
     void dialog.accept();
   });
-  await seedProjectFromSupabaseCanonical(page, projectWithPlacedEvent());
+  await seedProjectForEditor(page, projectWithPlacedEvent());
 }
 
 async function debugState(page: Page): Promise<DebugState> {

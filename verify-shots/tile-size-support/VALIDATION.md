@@ -50,6 +50,6 @@ TILE_EDITOR_URL=http://127.0.0.1:<worktree-port> node scripts/qa/tile-size-suppo
 
 하네스는 런타임 검증용 서버를 직접 시작·종료하고, 게임 검증은 전용 `player.html`과
 export store shim을 통과한다. 6칸짜리 원본 PNG와 세 맵은 엔진 계약 검증용 데이터다.
-Supabase에 게임 콘텐츠를 저작한 작업이 아니며, 원격 저장 검증으로 주장하지 않는다.
+LegacyDb에 게임 콘텐츠를 저작한 작업이 아니며, 원격 저장 검증으로 주장하지 않는다.
 전체 스위트 및 모든 편집 기능을 검증했다는 뜻은 아니다. 48px 지원은 일반 격자 아틀라스
 지원이며 RPG Maker MV/MZ의 A1–E 오토타일 포맷 가져오기는 포함하지 않는다.

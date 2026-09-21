@@ -11,7 +11,7 @@ import {
   writeEvidenceText,
   type DebugState,
 } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop17-move-route-primitives";
@@ -22,7 +22,7 @@ test.setTimeout(100_000);
 test("loop17 certifies move route primitive authoring persistence and runtime effects", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, moveRouteProject());
+  await seedProjectForEditor(page, moveRouteProject());
   await writeJson("000-scenario.json", {
     scope: [
       "moveEvent route editor authoring",

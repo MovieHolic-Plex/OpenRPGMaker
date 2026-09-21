@@ -1,3 +1,4 @@
+import { sharedVillageObjectById } from "@/project/defaults/sharedVillageObjects";
 import { tiboInteriorObjectById } from "@/project/defaults/tiboInterior";
 import { lpcFurnitureObjectById } from "@/project/defaults/lpcWoodenFurnitureObjects";
 import { bakeInteriorObject } from "@/editor/harnessSuggestion/structureKitRasterModel";
@@ -91,7 +92,10 @@ export function openDetachedKitPainter(tilesetId: string, kitId: string, rerende
 }
 
 export function copyBuiltin(target: ObjectDraftTarget, rerender: () => void): void {
-  const builtin = interiorObjectById(target.kitId) ?? tiboInteriorObjectById(target.kitId) ?? lpcFurnitureObjectById(target.kitId);
+  const builtin = interiorObjectById(target.kitId)
+    ?? tiboInteriorObjectById(target.kitId)
+    ?? sharedVillageObjectById(target.kitId)
+    ?? lpcFurnitureObjectById(target.kitId);
   if (!builtin) return;
   const controller = visibleAuthoringProject().spatialAuthoring ? spatialAuthoringController() : null;
   if (controller) {

@@ -56,17 +56,17 @@ describe("development ontology", () => {
     expect(entity?.typeFiles).toEqual(["src/project/types/base.ts"]);
   });
 
-  it("records Supabase as the resource root and local files as cache/bootstrap", () => {
+  it("records LegacyDb as the resource root and local files as cache/bootstrap", () => {
     const resourcePipeline = queryOntologyByCapability(DEVELOPMENT_ONTOLOGY, "ResourcePipeline");
     const projectPersistence = queryOntologyByCapability(DEVELOPMENT_ONTOLOGY, "ProjectPersistence");
     const uploadedAsset = queryOntologyByEntity(DEVELOPMENT_ONTOLOGY, "UploadedAsset");
 
-    expect(resourcePipeline?.purpose).toContain("Supabase-root");
-    expect(projectPersistence?.purpose).toContain("Supabase current_json");
-    expect(resourcePipeline?.contracts).toEqual(expect.arrayContaining(["supabase-resource-root"]));
-    expect(projectPersistence?.contracts).toEqual(expect.arrayContaining(["supabase-resource-root"]));
-    expect(uploadedAsset?.description).toContain("Supabase current_json.assets.uploaded");
-    expect(generatedDevelopmentOntologyMarkdown(DEVELOPMENT_ONTOLOGY)).toContain("supabase-resource-root");
+    expect(resourcePipeline?.purpose).toContain("LegacyDb-root");
+    expect(projectPersistence?.purpose).toContain("LegacyDb current_json");
+    expect(resourcePipeline?.contracts).toEqual(expect.arrayContaining(["legacyDb-resource-root"]));
+    expect(projectPersistence?.contracts).toEqual(expect.arrayContaining(["legacyDb-resource-root"]));
+    expect(uploadedAsset?.description).toContain("LegacyDb current_json.assets.uploaded");
+    expect(generatedDevelopmentOntologyMarkdown(DEVELOPMENT_ONTOLOGY)).toContain("legacyDb-resource-root");
   });
 
   it("maps changed files back to affected capabilities", () => {

@@ -92,7 +92,7 @@
    ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: undefined  672ms
    ✓ audio description recovery snapshots > preserves description states when restoring a backup into an editor package: {"music":{"orphan":" \tBACKUP_VALUE\n ","cleared":"","__proto__":"OWN_ID"},"sound":{"orphan":"SOUND_VALUE","terrainTemplates":""}}  578ms
  ✓ test/storeFlushShaEvidence.test.ts (2 tests) 1740ms
-   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1326ms
+   ✓ Project store flush sha256 evidence > 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다  1326ms
    ✓ Project store flush sha256 evidence > 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로  412ms
  ❯ test/storePersistenceLineage.test.ts (8 tests | 4 failed) 209756ms
    × accepted receipt content lineage > does not resurrect saved authority after reload during PATCH 60014ms

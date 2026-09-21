@@ -11,7 +11,7 @@
 - 준비한 저장 슬롯을 선택해 (3,9)로 로드한 뒤 오른쪽 키로 (4,9) 이동. 이전 이벤트 대사는 재개되지 않음.
 - Chromium GPU ReadPixels 성능 경고 4건은 `player-report.json`에 그대로 기록. 앱 오류/경고 0.
 - 「철수의 기억」: 최종 코드로 17개 대사·현재 귀환·재조사·이동 통과 (`cheolsu-SUMMARY.md`, `cheolsu-report.json`). 지정 PNG 두 장도 확인.
-- 원격 프로젝트 `rpg-zzu-cheolsu-memory-20260905-df12`: 기존 콘텐츠 수정분 Supabase 저장 후 재로드 대조 성공 (`cheolsu-persistence.json`). 후속 엔진 수정은 콘텐츠를 다시 덮어쓰지 않음.
+- 원격 프로젝트 `rpg-zzu-cheolsu-memory-20260905-df12`: 기존 콘텐츠 수정분 LegacyDb 저장 후 재로드 대조 성공 (`cheolsu-persistence.json`). 후속 엔진 수정은 콘텐츠를 다시 덮어쓰지 않음.
 
 재현:
 

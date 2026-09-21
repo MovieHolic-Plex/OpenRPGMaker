@@ -12,7 +12,7 @@ class HarnessCaptureError extends Error {
   }
 }
 
-const persistencePath = path.resolve("output", "evidence", "natural-village", "harness-supabase.json");
+const persistencePath = path.resolve("output", "evidence", "natural-village", "harness-legacyDb.json");
 const persistence = JSON.parse(fs.readFileSync(persistencePath, "utf8")) as { projectId: string; mapId: string };
 const baseUrl = process.env.OPRN_URL ?? "http://127.0.0.1:9999";
 const outputDir = path.resolve("output", "evidence", "natural-village", "harness");
