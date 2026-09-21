@@ -91,3 +91,15 @@ AGENTS의 동일 읽기 절차를 따르고, 프로젝트를 읽어 아래 expor
 `verify-shots/tileset-references/`: 실제 DB UI, 편집/업로드 관찰, 제공자 전달 형식별 차단/허용 관찰,
 저장 영수증. `scripts/qa/capture-tileset-references.mjs`는 브라우저에서 실제 모듈을 호출한다.
 유료 LLM 호출이나 새 마을 생성은 하지 않는다. gates/vitest/전체 typecheck는 실행하지 않았다.
+
+## Castle2 성채 학습 이관
+
+성채 프로젝트 `castle-fortress-city-20260921` 및 SQLite
+`b4706a77-9a38-4dcc-a89d-36244da53967`의 `opengameart_castle`에
+구도·조립·비교 개선 3용도, 20 MD / 19 이미지를 저장했다.
+`castle_courtyard_harbor`는 원본을 공유한다. 전체 성채와 3개 공용 장소의 독립
+저장본 및 칩셋 포함 다운로드에도 자료를 포함한다. 다른 기존 프로젝트를 일괄 수정하지 않는다.
+원본/반려/수정 비교, 16구역 분석, 부품 JSON, 개선1 석조 관리소 최종 선택과 돌다리
+사용 제외를 보존했다. `tiledata/castle-tiles-rpgs/ai-references/README.md`와
+`scripts/content/register-castle-references.mjs` 참조. 저장소 연구 기록만 읽는 것으로
+현재 프로젝트의 참고문서 선행 읽기를 대신하지 않는다.
