@@ -182,7 +182,7 @@ export class AgentGhostPreviewRenderer {
    */
   private accumulateSchedule(previews: readonly AgentGhostPreview[]): readonly GhostRevealStep[] {
     const keyed = previews.flatMap((preview) =>
-      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}:${cell.tileId ?? ""}` }))
+      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}` }))
     );
     if (this.startTime === null) this.startTime = this.clock();
     const elapsedNow = Math.max(0, this.clock() - this.startTime);
@@ -330,11 +330,7 @@ export class AgentGhostPreviewRenderer {
 
     if (isAgentGhostPreviewHidden() || !this.animGroup) return;
 
-    if (cellCount > AGENT_GHOST_MAX_CELL_RECTS) {
-      if (this.tileObjects.length > 0) this.dropTileObjects();
-    } else if (cellCount > 0) {
-      this.drawAnimationLayers(animState);
-    }
+    if (cellCount > 0) this.drawAnimationLayers(animState);
   }
 
   /** Ground, upper decoration, then events; the sweep only accents the leading edge. */
@@ -404,10 +400,6 @@ export class AgentGhostPreviewRenderer {
 
   /** 이미 만든 칸은 유지하고, 새로 깔린 칸만 스프라이트를 추가한다. */
   private buildTileLayer(): void {
-    if (this.schedule.length > AGENT_GHOST_MAX_CELL_RECTS) {
-      this.dropTileObjects();
-      return;
-    }
     this.ensureTileLayer();
     if (!this.tileLayer) return;
     const desired = this.schedule.map((step) => this.cellObjectKey(step.cell));
