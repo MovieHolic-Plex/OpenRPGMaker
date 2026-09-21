@@ -89,6 +89,7 @@ export type ExistingVillageTarget = {
 };
 
 export type NewVillageTarget = {
+  readonly tilesetId?: string;
   readonly kind: "new";
   readonly mapId: string;
   readonly name: string;

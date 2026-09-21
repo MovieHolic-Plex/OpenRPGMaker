@@ -1,4 +1,27 @@
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+## AI 새 야외·마을의 기본 칩셋 (2026-09-21)
+
+- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 AI 새 야외의 기본값을 소유한다.
+  기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만
+  합본 마을로 폴백한다. `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
+- `create_map`, `generate_map`의 village/forest, `author_village`와 내부 마을 생성,
+  `build_world`의 town/field가 같은 정책을 쓴다. 명시 칩셋은 우선한다.
+  `generate_map` cave는 고정 입구/POI 유무와 관계없이 던전 칩셋을 기본으로 한다.
+  기존 맵, 집에 연결되는 실내, 별도 공간/월드 컴파일러의 명시 재료 계약은 유지한다.
+- `author_village.target.tilesetId`는 **new 전용**이다. 스키마·파서·생성·변이 전 호환성 검사에
+  모두 전달한다. 기존 맵은 해당 맵 칩셋을 검사하며 자동 교체하지 않는다.
+- 숲마을은 합본 마을 0~479의 집·길 번호와 레트로 절벽 구간을 보존하므로 호환 판정에 포함한다.
+  `isCombinedTownTileset` 자체를 바꾸거나 합본 마을 하네스로 숲마을 저작 정의를 덮지 않는다.
+  숲마을 언덕도 morphology + relief 경로를 사용한다.
+- 나무는 `treeKitForTileset`이 숲마을 `tileGroups[].previewMap`의 완성 조립과 셀별 레이어를 읽는다.
+  일반/compact/형태 마을·과수원·지형 패스와 그래픽 비교 화면이 같은 킷을 쓴다.
+  옛 2×4 dark-tree와 직사각형 숲 벽 반복을 숲마을 킷에 넣지 않는다.
+  길·물은 호환 번호의 기존 시공 알고리즘을 유지한다. 이 변경은 승인 참고 맵의 연속 수관·거리장
+  조경 전체를 자동 복제하는 기능은 아니다.
+- 회귀 계약: `test/aiOutdoorTilesetDefaults.test.ts`. 기존 합본 마을 팔레트/파사드 검사는
+  타일셋을 명시해 본래 검사 대상을 유지한다. 이번 세션에서는 vitest/gates/typecheck 미실행.
+  브라우저 관측: `reports/2026-09-21-ai-forest-default.md`.
+
 
 검색은 실제로 길다 — 실측 31.18초. 그동안 사용자에게 보이는 것은 세 겹이다.
 

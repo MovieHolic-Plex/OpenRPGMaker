@@ -1,3 +1,4 @@
+import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 // editor/tools/village/treeKit.ts
 // 마을 시공이 심는 나무의 어휘를 타일셋에 따라 고른다.
 //
@@ -31,7 +32,7 @@ export interface TreeStamp {
 }
 
 export interface TreeKit {
-  readonly id: "combined-town" | "forest-trees";
+  readonly id: "combined-town" | "forest-trees" | "forest-harmony";
   /** 큰 나무 — 먼 거리·녹지 한가운데. */
   readonly big: TreeStamp;
   /** 중간 나무 — 녹지 앵커·뒷마당. */
@@ -100,7 +101,30 @@ export function forestTreeKit(): TreeKit {
   return forestKit;
 }
 
-export function treeKitForTileset(tileset: Pick<TilesetDef, "image" | "count"> | undefined): TreeKit {
+/** Use the saved assembly, including its per-cell layers, rather than the old 2×4 dark-tree rectangle. */
+function forestHarmonyTreeKit(tileset: Pick<TilesetDef, "tileGroups">): TreeKit {
+  const read = (id: string): TreeStamp => {
+    const group = tileset.tileGroups?.find(group => group.id === `forest-trees:${id}`);
+    if (!group?.previewMap) throw new Error(`숲마을 나무 조립 정보가 없습니다: ${id}`);
+    const preview = group.previewMap;
+    const members = new Set(group.tileIds);
+    const cells = preview.lowerTiles.map((tile, index): TreeStampCell | null => {
+      const upper = preview.upperTiles[index] ?? -1;
+      if (members.has(upper)) return up(upper);
+      return members.has(tile) ? low(tile) : null;
+    });
+    return { id: group.id, w: preview.width, h: preview.height, cells };
+  };
+  return {
+    id: "forest-harmony", big: read("big-oak"), medium: read("tree"), small: read("tree"),
+    shrubs: [read("round-bush"), read("small-bush")],
+    // The old rectangular forest walls and 2×4 dark-tree stamps are not approved forest assemblies.
+    forest: [],
+  };
+}
+
+export function treeKitForTileset(tileset: Pick<TilesetDef, "image" | "count" | "tileGroups"> | undefined): TreeKit {
+  if (tileset && isForestHarmonyTileset(tileset)) return forestHarmonyTreeKit(tileset);
   return tilesetHasForestTrees(tileset) ? forestTreeKit() : COMBINED_TOWN_TREE_KIT;
 }
 
@@ -181,6 +205,7 @@ export function plantForestBand(
   seed: number,
   kit: TreeKit,
   free: (x: number, y: number) => boolean,
+  placementLimit = Infinity,
 ): ForestBandReport {
   const W = map.width;
   const rng = mulberry32(seed >>> 0);
@@ -189,6 +214,7 @@ export function plantForestBand(
   const open = (x: number, y: number): boolean => inRect(x, y) && !taken.has(y * W + x) && free(x, y);
   let placed = 0, cells = 0, chunks = 0;
   const place = (stamp: TreeStamp, x: number, y: number): boolean => {
+    if (placed >= placementLimit) return false;
     for (let dy = 0; dy < stamp.h; dy += 1) {
       for (let dx = 0; dx < stamp.w; dx += 1) {
         if (stamp.cells[dy * stamp.w + dx] && !open(x + dx, y + dy)) return false;
@@ -223,6 +249,7 @@ export function plantForestBand(
   for (let y = rect.y; y < rect.y + rect.h; y += 1) for (let x = rect.x; x < rect.x + rect.w; x += 1) order.push(y * W + x);
   for (let i = order.length - 1; i > 0; i -= 1) { const j = Math.floor(rng() * (i + 1)); [order[i], order[j]] = [order[j]!, order[i]!]; }
   for (const index of order) {
+    if (placed >= placementLimit) break;
     const x = index % W, y = Math.floor(index / W);
     if (!open(x, y)) continue;
     const roll = rng();
