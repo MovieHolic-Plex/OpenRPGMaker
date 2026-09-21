@@ -1,3 +1,4 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 // editor/tools/generateMapTool.ts
 // 테마 맵 생성기. create_map+paint 계열의 조합으로 구현하되,
 // **생성→도달성 검사→국소 수리(통로 뚫기) 루프를 내장**해 항상 입구에서 모든 POI에 도달 가능한 맵을 반환한다.
@@ -9,7 +10,7 @@ import { connectedDungeonLandings } from "@/editor/dungeonGeneration/connected";
 import type { DungeonRoomPlan } from "@/editor/dungeonRoomPipeline";
 import { DUNGEON_DESIGN_PROPERTIES } from "./dungeonDesignSchema";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { genId } from "@/util/id";
 import type { GameMap } from "@/project/types";
@@ -179,7 +180,7 @@ const generateMap: ToolDefinition = {
     const theme = args.theme as MapTheme;
     if (!["village", "forest", "cave"].includes(theme)) throw new ToolError(`알 수 없는 테마: ${theme}`, { code: "unknown-theme" });
     const connectedDefault = theme === "cave" && args.entrance === undefined && args.pois === undefined;
-    const tilesetId = (args.tilesetId as string | undefined) ?? (connectedDefault ? DUNGEON_ROOM_TILESET_ID : DEFAULT_TILESET_ID);
+    const tilesetId = (args.tilesetId as string | undefined) ?? (theme === "cave" ? DUNGEON_ROOM_TILESET_ID : defaultOutdoorTilesetId(draft));
     const generationProfile = requireMapGenerationProfile(draft, tilesetId);
     if (generationProfile.layout === "rooms") {
       throw new ToolError(

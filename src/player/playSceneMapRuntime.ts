@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
 import { evalCondition } from "@/project/session";
@@ -173,6 +174,7 @@ export function loadMap(scene: PlaySceneContext, mapId: MapId, options: { readon
   if (options.applyMapBgm !== false) startMapBgm(project, scene.session, mapId);
   if (!options.preserveErasedEvents) scene.session.erasedEventIds = [];
   resetMapRuntime(scene);
+  syncPlayerCharacterScale(scene);
   applyMapOverrides(scene);
   initializeFieldSpawnsForScene(scene);
   scene.renderTiles();
@@ -501,7 +503,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
       frame
     );
     placeCharacterSprite(marker, view.priority);
-    marker.setScale(eventSpriteScale(spriteTexture, marker, view.scale));
+    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode));
     scene.eventSprites.set(event.id, marker);
   }
   syncForageWarnings(scene);

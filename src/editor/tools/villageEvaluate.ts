@@ -7,7 +7,7 @@ import { HOUSE_DOOR_CHARSET_TEXTURE } from "@/editor/houseInteriors";
 import { DEFAULT_COBBLE_AUTOTILE_GROUP, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
-import { TILE } from "@/project/defaults/constants";
+import { DEFAULT_TILES_PER_ROW, TILE } from "@/project/defaults/constants";
 import { FOREST_TREE_CELLS } from "@/project/defaults/forestTreesExtension";
 import { resolveTimeSystem } from "@/project/gameTime";
 import type { GameMap, Project } from "@/project/types";
@@ -567,6 +567,18 @@ export function countBroadleaf2x2(map: GameMap): number {
       const botOk =
         (u01 === 292 || l01 === 292) && (u11 === 293 || l11 === 293);
       if (topOk && botOk) n += 1;
+      // The historical metric also accepts a complete forest-atlas broadleaf assembly.
+      const first = FOREST_TREE_CELLS.get(u00);
+      if (first?.dx === 0 && first.dy === 0 && (first.object.id === "tree" || first.object.id === "big-oak")) {
+        const object = first.object;
+        if (x + object.w <= map.width && y + object.h <= map.height && object.cells.every((row, dy) =>
+          [...row].every((kind, dx) => {
+            if (kind === ".") return true;
+            const index = (y + dy) * map.width + x + dx;
+            const tile = u00 + dy * DEFAULT_TILES_PER_ROW + dx;
+            return (kind === "C" ? map.upperTiles[index] : map.lowerTiles[index]) === tile;
+          }))) n += 1;
+      }
     }
   }
   return n;
@@ -656,6 +668,7 @@ function collectMetrics(map: GameMap) {
   let hasBroadleaf = false;
   const propTileIds = new Set<number>();
   const tree2x2Clusters = countBroadleaf2x2(map);
+  const forestSpecies = new Set<string>();
 
   const plazaX0 = Math.floor(map.width / 2) - 4;
   const plazaY0 = Math.floor(map.height / 2) - 3;
@@ -695,6 +708,10 @@ function collectMetrics(map: GameMap) {
       }
       if (upper === 260 || upper === 261 || upper === 290 || upper === 291 || lower === 290 || lower === 291) hasConifer = true;
       if (upper === 262 || upper === 263 || upper === 292 || upper === 293 || lower === 292 || lower === 293) hasBroadleaf = true;
+      for (const tile of [lower, upper]) {
+        const object = FOREST_TREE_CELLS.get(tile)?.object.id;
+        if (object === "big-oak" || object === "tree") forestSpecies.add(object);
+      }
       if (FENCE.has(upper)) fenceCells += 1;
       if (YARD_PROPS.has(upper)) {
         propCells += 1;
@@ -748,7 +765,7 @@ function collectMetrics(map: GameMap) {
     scheduledNpcs: scheduledNpcs.length,
     npcActivityKinds: npcActivities.size,
     npcMovementKinds: npcMovements.size,
-    treeKinds: Number(hasConifer) + Number(hasBroadleaf),
+    treeKinds: Number(hasConifer) + Number(hasBroadleaf) + forestSpecies.size,
     propTileKinds: propTileIds.size,
     longestStraightRoadRun: longestStraightRoadRun(map),
     interiorTreeCells,

@@ -515,9 +515,12 @@ export interface EventPageGraphic {
   transparent?: boolean;
   /**
    * 스프라이트 렌더 배율. 충돌 발자국과 **독립**이다 —
-   * "그림은 3배인데 발자국은 2x2" 같은 연출을 허용한다. 생략 시 1.
+   * "그림은 3배인데 발자국은 2x2" 같은 연출을 허용한다.
+   * 기존 명시 값은 절대 배율. scaleMode:auto에서는 자동 맞춤에 곱할 몸 배율이다.
    */
   scale?: number;
+  /** 생략 시 scale이 없으면 자동, 기존 scale이 있으면 수동(호환). */
+  scaleMode?: "auto" | "manual";
 }
 
 export interface NpcLivingDestination {

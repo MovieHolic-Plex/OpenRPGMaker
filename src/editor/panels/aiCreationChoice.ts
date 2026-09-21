@@ -1,3 +1,7 @@
+import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { treeKitForTileset, stampTree } from "@/editor/tools/village/treeKit";
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { el } from '@/util/dom';
 import type { GameMap, Project, TilesetDef } from '@/project/types';
 import { stampRectHouseKit, type HouseKitId } from '@/editor/houseKit';
@@ -45,10 +49,11 @@ async function scene(tileset: TilesetDef, style: number, people: number): Promis
   map.lowerTiles[(door.y - 1) * map.width + door.x] = 116;
   map.lowerTiles[door.y * map.width + door.x] = 146;
   for (let y = door.y + 1; y < map.height; y++) for (let x = door.x; x <= door.x + 1; x++) map.lowerTiles[y * map.width + x] = 360;
-  for (const x of [2, 16]) {
-    // Exact 2×2 tree from the combined-town atlas.
-    [262, 263, 292, 293].forEach((tile, i) => { map.upperTiles[(6 + Math.floor(i / 2)) * map.width + x + i % 2] = tile; });
-  }
+  const road = autotileGroupsForTileset(tileset).find(group => group.memberTileIds.includes(360));
+  if (road) shapeAutotileGroupAround(map, road, map.lowerTiles.flatMap((tile, i) => tile === 360
+    ? [{ x: i % map.width, y: Math.floor(i / map.width) }] : []));
+  const tree = treeKitForTileset(tileset).medium;
+  for (const x of [2, 16]) stampTree(map, tree, x, 6);
   const [atlas, sprites] = await Promise.all([loadTilesetImage(tileset), characterCanvas(people)]);
   const canvas = el('canvas'); canvas.width = 320; canvas.height = 240;
   const c = canvas.getContext('2d'); if (!c) throw new Error('이미지를 그릴 수 없습니다.');
@@ -65,6 +70,8 @@ export function createCreationChoice(project: Project, subject: string): {
 } | null {
   const tilesets = Object.values(project.tilesets).filter(isCombinedTownCompatibleTileset);
   if (!tilesets.length) return null;
+  const preferred = defaultOutdoorTilesetId(project);
+  tilesets.sort((a, b) => Number(b.id === preferred) - Number(a.id === preferred));
   let tileset = tilesets[0]!, selected: number | null = null, people = 0, revision = 0, settled = false;
   let resolve!: (value: CreationChoiceResult | null) => void;
   const result = new Promise<CreationChoiceResult | null>(r => { resolve = r; });

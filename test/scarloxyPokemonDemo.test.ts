@@ -43,6 +43,53 @@ describe("Scarloxy 포켓몬풍 데모 프로젝트", () => {
     expect(project.database.troops.find((troop) => troop.id === "troop_pkmn_grass_a")?.uncapturable).toBe(false);
   });
 
+  // 포켓몬 스킨은 1:1 대치가 계약이다(적 우상단/아군 좌하단, openwiki/runtime-battle.md).
+  // 야생 트룹에 적을 둘 이상 넣으면 화면 문법이 깨진다 — 더블배틀 시스템이 생기기 전까지 금지.
+  it("포켓몬 데모의 모든 트룹은 적이 정확히 한 마리다 (1:1 대치 계약)", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const pokemonTroops = project.database.troops.filter((troop) => troop.id.startsWith("troop_pkmn_"));
+    expect(pokemonTroops.length).toBeGreaterThan(0);
+    for (const troop of pokemonTroops) {
+      expect(troop.members.length).toBe(1);
+      expect(troop.activeSlots ?? 1).toBe(1);
+    }
+    // 야생 인카운터 목록에도 다수 적 트룹이 섞이지 않는다.
+    const route = project.maps.map_pkmn_route!;
+    for (const troopId of route.troopIds) {
+      const troop = project.database.troops.find((record) => record.id === troopId);
+      expect(troop?.members.length).toBe(1);
+    }
+  });
+
+  it("전기자기파가 확정 마비를 부여한다", () => {
+    const project = createScarloxyPokemonDemoProject();
+    const wave = project.database.skills.find((skill) => skill.id === "skill_scarloxy_wave");
+    expect(wave?.effect).toMatchObject({ kind: "support" });
+    expect(wave?.elementId).toBe("electric");
+    expect(wave?.stateEffects).toEqual([{ stateId: "state_paralysis", chance: 100, operation: "add" }]);
+    // 스파르츄가 실제로 배우는 레벨(원작 피카츄 순서: lv9).
+    const sparchu = (project.database.monsterSpecies ?? []).find((s) => s.id === scarloxySpeciesId("sparchu"))!;
+    expect(sparchu.skillsByLevel?.find((entry) => entry.skillId === "skill_scarloxy_wave")?.level).toBe(9);
+
+    const session = startSession(project, 11);
+    giveMonster(project, session, { speciesId: scarloxySpeciesId("sparchu"), level: 10, nickname: "절연" });
+    const partyMonsters = session.monsterParty.map((id) => session.monsterInstances[id]!);
+    const runtime = createBattleRuntime({
+      project,
+      troopId: "troop_pkmn_grass_a",
+      canEscape: true,
+      canLose: false,
+      battleFlow: "strict",
+      partyMonsters,
+      sessionState: { switches: {}, variables: {}, inventory: {} },
+      // 0.5 는 확률 판정을 통과하지 못한다 — 100% 부여라 상태 바이트와 무관하게 붙는다.
+      rng: () => 0.5,
+    });
+    runtime.performActorCommand({ kind: "skill", skillId: "skill_scarloxy_wave", targetEnemyId: "enemy-1" });
+    const enemy = runtime.snapshot().enemies[0]!;
+    expect(enemy.stateIds).toContain("state_paralysis");
+  });
+
   it("스타터 지급 → 야생 포획 → 레벨 진화 루프가 동작한다", () => {
     const project = createScarloxyPokemonDemoProject();
     const session = startSession(project, 7);

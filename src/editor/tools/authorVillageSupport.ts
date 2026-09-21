@@ -1,3 +1,4 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import type {
   AuthorVillageRequest,
   ConstructionDiffTotals,
@@ -5,7 +6,7 @@ import type {
   ConstructionRect,
   NewVillageTarget,
 } from "@/editor/construction/contracts";
-import { DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { TILE } from "@/project/defaults/constants";
 import { MIN_SIZE } from "./village/constants";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { summarizeChanges } from "./changeset";
@@ -40,13 +41,16 @@ export function createExactVillageMap(project: Project, target: NewVillageTarget
   const width = target.width ?? 74;
   const height = target.height ?? 52;
   const size = width * height;
+  const tilesetId = target.tilesetId ?? defaultOutdoorTilesetId(project);
+  const tileset = project.tilesets[tilesetId];
+  if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
   const map: GameMap = {
     id: target.mapId,
     name: target.name,
     width,
     height,
-    tilesetId: DEFAULT_TILESET_ID,
-    tileSize: DEFAULT_TILE_SIZE,
+    tilesetId,
+    tileSize: tileset.tileSize,
     lowerTiles: new Array<number>(size).fill(TILE.GRASS),
     upperTiles: new Array<number>(size).fill(TILE.EMPTY),
     events: [],

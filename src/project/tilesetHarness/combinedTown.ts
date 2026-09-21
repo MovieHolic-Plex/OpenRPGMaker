@@ -1,3 +1,4 @@
+import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 import type { PassFlag, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, DEFAULT_TILESET_TEXTURE_KEY, TILE } from "@/project/defaults/constants";
 import {
@@ -34,10 +35,10 @@ export function isCombinedTownTileset(tileset: Pick<TilesetDef, "image">): boole
 
 /**
  * 합본 마을 타일 좌표(0~479)가 그대로 맞는 타일셋인가 — 합본 마을 자체, 또는 위 480칸이 합본 마을인
- * 「합본 마을+레트로 월드맵」 혼합 칩셋(2026-09-18). 마을 시공기처럼 원시 타일 id 를 찍는 도구의 스코프 가드.
+ * 「합본 마을+레트로 월드맵」 혼합 칩셋(2026-09-18). 숲마을도 이 480칸을 보존한다. 마을 시공기의 스코프 가드.
  */
 export function isCombinedTownCompatibleTileset(tileset: Pick<TilesetDef, "image">): boolean {
-  return isCombinedTownTileset(tileset)
+  return isCombinedTownTileset(tileset) || isForestHarmonyTileset(tileset)
     || (tileset.image.type === "bundled" && tileset.image.id === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY);
 }
 

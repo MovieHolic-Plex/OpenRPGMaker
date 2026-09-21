@@ -1,3 +1,4 @@
+import { treeKitForTileset, stampTree, treeStampCells } from "./treeKit";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { canMove, tilePassability } from "@/project/collision";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
@@ -39,6 +40,7 @@ export function plantCompactVillageTrees(project: Project, map: GameMap, area: R
     && map.lowerTiles[index] === TILE.GRASS && map.upperTiles[index] === TILE.EMPTY);
   const rng = mulberry32(seed ^ 0x76b421);
   const field = groveField(map, area, eligible, rng);
+  const kit = treeKitForTileset(tileset);
   const planted = new Set<number>(), crowns = new Set<number>(), trunks = new Set<number>();
   const result: CompactTreeCounts = { broadleafTrees: 0, conifers: 0, footprintCells: 0,
     eligibleCells: eligible.length, edgeCells: 0, innerCells: 0, groves: 0, overlapCells: 0 };
@@ -46,6 +48,15 @@ export function plantCompactVillageTrees(project: Project, map: GameMap, area: R
   const stamp = (origin: number, width: 1 | 2): boolean => {
     const x = origin % map.width;
     const y = Math.floor(origin / map.width);
+    if (kit.id === "forest-harmony") {
+      const tree = width === 2 ? kit.big : kit.medium;
+      if (!inside(map, area, x + tree.w - 1, y + tree.h - 1)) return false;
+      const footprint = treeStampCells(tree, x, y, map.width);
+      if (footprint.some(index => !field.has(index) || planted.has(index))) return false;
+      stampTree(map, tree, x, y);
+      for (const index of footprint) planted.add(index);
+      return true;
+    }
     if (!inside(map, area, x + width - 1, y + 1)) return false;
     const footprint = Array.from({ length: width * 2 }, (_, offset) => origin + offset % width + Math.floor(offset / width) * map.width);
     if (footprint.some(index => !field.has(index))) return false;
@@ -71,10 +82,13 @@ export function plantCompactVillageTrees(project: Project, map: GameMap, area: R
   // The larger crowns establish the mass first; conifers fill its narrow pockets.
   const broadleafAreaTarget = field.size * 0.72;
   for (const origin of origins) {
-    if (result.broadleafTrees * 4 >= broadleafAreaTarget) break;
+    if (result.broadleafTrees * (kit.id === "forest-harmony" ? kit.big.w * kit.big.h : 4) >= broadleafAreaTarget) break;
     if (stamp(origin, 2)) result.broadleafTrees += 1;
   }
-  for (const origin of shuffle(origins, rng)) if (stamp(origin, 1)) result.conifers += 1;
+  for (const origin of shuffle(origins, rng)) if (stamp(origin, 1)) {
+    if (kit.id === "forest-harmony") result.broadleafTrees += 1;
+    else result.conifers += 1;
+  }
   result.footprintCells = planted.size;
   result.overlapCells = [...crowns].filter(index => trunks.has(index)).length;
   for (const index of planted) {

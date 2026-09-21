@@ -1,4 +1,4 @@
-# 맵별 타일 크기 (16×16 / 32×32)
+# 맵별 타일 크기 (16×16 / 32×32 / 48×48)
 
 ## 좌표 계약
 
@@ -18,10 +18,34 @@
 - 캐릭터 원본 픽셀 크기와 저작된 배율, px 단위 점프 연출은 별개다. 32px 맵이라고
   모든 캐릭터와 이펙트를 무조건 두 배 확대하지 않는다.
 
+## 캐릭터 자동 배율 (2026-09-21)
+
+`src/project/characterScale.ts`가 보행 캐릭터의 자동 기준을 소유한다:
+`max(1, floor(맵 타일 크기 / 원본 프레임 폭))` (최대 8). 원본을 축소하거나 다시 저장하지
+않고 정수 배율로 표시한다. 기본 24×32 프레임은 16/32px 맵에서 1배, 48px 맵에서
+2배(48×64)다. 원본 폭 16은 48px 맵에서 3배, 원본 폭 48은 1배다.
+
+- 플레이어 생성·맵 전이·그래픽 변경은 `syncPlayerCharacterScale`로 갱신한다. 같은 배율을
+  매 프레임 재설정하지 않아 점프/스윙 트윈을 보존한다. 스윙도 자동 기준 배율로 복원한다.
+- NPC·동료·이동 경로의 그림 교체는 `eventSpriteScale`을 공유한다. 일반 소품과 자동
+  맞춤된 몬스터 배틀러 그림은 기존 배율을 유지한다.
+- 이벤트의 `graphic.scaleMode`는 선택 필드 `auto | manual`이다. 생략하고 `scale`도 없으면
+  자동, 기존 명시 `scale`이 있으면 절대 수동 값으로 보존한다(1배 포함).
+  명시 `auto`에서 `scale`은 몸 크기 배수이며 자동 기준에 곱한다. 최종 상한은 8이다.
+- 이벤트 편집기의 「배율 직접 지정」을 끄면 자동, 켜면 절대 배율이다. 입력에는 실제
+  표시 배율을 보여주고, 저장/재로드 후에도 수동 1배와 자동 2배를 구분한다.
+  맵의 캐릭터 마커와 몸 미리보기는 현재 맵 크기 및 같은 발밑·배율을 사용한다.
+  충돌 몸 크기는 그림 배율과 별개로 유지한다.
+
+재현: `node scripts/qa/character-auto-scale.mjs` (전용 player.html),
+`TILE_EDITOR_URL=http://127.0.0.1:<port> node scripts/qa/character-auto-scale-editor.mjs`.
+근거는 `verify-shots/character-auto-scale/SUMMARY.md` 및 `editor-checks.json`.
+최소 엔진 계약 fixture만 사용하며 게임 콘텐츠를 저작하지 않는다.
+
 ## 원본 아틀라스와 표시 크기의 구분
 
 `TilesetDef.tileSize`, `tilesPerRow`, `count`가 원본 이미지 슬라이싱을 정한다.
-업로드 텍스처 키에는 세 값이 포함된다. 자료 보관함에서 칩셋을 가져올 때 16/32px를
+업로드 텍스처 키에는 세 값이 포함된다. 자료 보관함에서 칩셋을 가져올 때 16/32/48px를
 선택하며, 이미지 양 변이 해당 크기의 배수인지 확인한다. 새 업로드/기하 변경 뒤에는
 `ensureUploadedTilesetTextures`가 프로젝트 변경 시 한 번 로드·등록하고 다시 그린다.
 칸마다 로드를 예약하거나 전역 로드 완료 이벤트를 발행하지 않는다.
@@ -34,6 +58,24 @@ Slates에 기존 물/길 타일 번호나 애니메이션을 적용하지 않는
 팔레트와 공간 미리보기의 **표시 칸**은 고정 크기여도 된다. 하지만 `drawImage`의 원본
 사각형은 반드시 `tileset.tileSize`를 쓴다 (`harnessSuggestion/kitRender.ts` 포함).
 기존 `map.tileSize`/`tileset.tileSize` 필드를 사용하므로 문서 버전 변경은 없다.
+
+## 48px 일반 칩셋 가져오기 (2026-09-21)
+
+`resourceManager.ts`의 크기 선택은 16·32·48 중 이미지 **양 변이 나누어떨어지는**
+크기만 제공한다. 이미지 폭으로 크기를 자동 추정하지 않는다. 선택한 값은 업로드 메타데이터,
+리소스 프로필, 타일셋에 기록되고, 「현재 맵에 적용」은 맵의 `tileSize`도 갱신한다.
+48px는 일반 격자 아틀라스 지원이며 RPG Maker MV/MZ의 A1–E 오토타일 포맷 해석을 뜻하지 않는다.
+
+첫 리소스 가져오기에서 크기 선택 창이 DB의 lazy CSS에 의존하면 리소스 창 뒤에 깔려
+클릭할 수 없다. `src/styles/resources/chipset-import.css`가 해당 창만 대상으로 고정 배치,
+겹침 순서, 크기와 버튼 스타일을 소유한다. DB를 먼저 열거나 강제 클릭하는 QA로 우회하지 않는다.
+
+재현: 보정된 워크트리에서 독립 `VITE_CACHE_DIR`로 `npm run dev:worktree`를 실행한 뒤
+`TILE_EDITOR_URL=http://127.0.0.1:<port> node scripts/qa/tile-size-support.mjs`.
+실제 PNG 가져오기·맵 적용·원본 프레임·포인터 칠하기·undo/redo·직렬화 왕복과
+전용 `player.html`의 이동·충돌·32→48→16→32 이벤트 전이를 assertion으로 검사한다.
+최신 결과와 한계는 `verify-shots/tile-size-support/SUMMARY.md`, 원시 관측은 `checks.json`.
+이 하네스는 엔진 계약용 최소 fixture이며 게임 콘텐츠 저작이나 원격 저장 증거가 아니다.
 
 ## 브라우저 근거
 

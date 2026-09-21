@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { prefersReducedMotion } from "@/util/reducedMotion";
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
 import { placeAiActivityChip } from "@/editor/aiActivityChipPlacement";
@@ -25,10 +26,9 @@ import type { MapId } from "@/project/types";
 
 const AGENT_FOCUS_MAX_CELL_RECTS = 256;
 const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
-export const AGENT_GHOST_MAX_CELL_RECTS = 256;
-const AGENT_GHOST_FILL_COLOR = 0x20c997;
-const AGENT_GHOST_STROKE_COLOR = 0x63e6be;
-const GHOST_SPRITE_ALPHA = 0.62;
+const AGENT_GHOST_FILL_COLOR = 0x687864;
+const AGENT_GHOST_STROKE_COLOR = 0x62715f;
+const GHOST_SPRITE_ALPHA = 0.92;
 
 /** 와이프 셀 상태 — 선단이 지나기 전(pending)이거나 지나간 뒤(revealed) 둘뿐이다. */
 export type CellPhase = "pending" | "revealed";
@@ -145,6 +145,8 @@ export class AgentGhostPreviewRenderer {
   /** 스케줄 순서의 타일 오브젝트 — 프레임마다 와이프 선단으로 visible 게이팅된다. */
   private tileObjects: Array<{ obj: Phaser.GameObjects.Container | Phaser.GameObjects.Image | Phaser.GameObjects.Rectangle; baseX: number; baseY: number }> = [];
 
+  private sweep: Phaser.GameObjects.Graphics | null = null;
+  private viewportKey = "";
   private animGroup: Phaser.GameObjects.Container | null = null;
   private scheduleKey: string = "";
   private tickerBound: (() => void) | null = null;
@@ -177,7 +179,7 @@ export class AgentGhostPreviewRenderer {
    */
   private accumulateSchedule(previews: readonly AgentGhostPreview[]): readonly GhostRevealStep[] {
     const keyed = previews.flatMap((preview) =>
-      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}` }))
+      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}:${cell.tileId ?? ""}` }))
     );
     if (this.startTime === null) this.startTime = this.clock();
     const elapsedNow = Math.max(0, this.clock() - this.startTime);
@@ -215,6 +217,7 @@ export class AgentGhostPreviewRenderer {
 
   render(): void {
     this.layer.removeAll(true);
+    this.sweep = null;
     this.clearDomMarkers();
     const state = this.currentState();
     const previews = agentGhostPreviewsForMap(state, this.mapId());
@@ -316,61 +319,81 @@ export class AgentGhostPreviewRenderer {
     const cellCount = previews.reduce((total, preview) => total + preview.cells.length, 0);
     const now = this.clock();
     const elapsed = this.startTime !== null ? now - this.startTime : 0;
-    // >256셀(bbox-only)에서는 프레임마다 스케줄 전체 상태를 계산하지 않는다 —
-    // 100x100 채움이 셀당 상태 객체를 매 프레임 할당하는 낭비를 막는다. 칩은
-    // 스케줄 길이로 진행/완료를 추정한다(셀별 게이팅은 bbox 케이스에서 불필요).
-    const bboxOnly = cellCount > AGENT_GHOST_MAX_CELL_RECTS;
-    const animState: GhostAnimationState = bboxOnly
-      ? {
-          cellStates: [],
-          isScheduleComplete:
-            this.schedule.length > 0 &&
-            elapsed >= this.schedule[this.schedule.length - 1].startMs + GHOST_WIPE_HOLD_MS,
-          revealedCount: Math.min(
-            // O(log n): 스케줄은 startMs 오름차순 정렬 — 경과 지난 첫 미스를 이분 탐색한다.
-            (() => {
-              const ends = this.schedule;
-              let lo = 0;
-              let hi = ends.length;
-              while (lo < hi) {
-                const mid = (lo + hi) >> 1;
-                if (elapsed >= ends[mid].startMs) lo = mid + 1;
-                else hi = mid;
-              }
-              return lo;
-            })(),
-            cellCount,
-          ),
-        }
-      : computeGhostAnimationState(this.schedule, elapsed);
+    const animState = computeGhostAnimationState(this.schedule,
+      prefersReducedMotion() ? Number.POSITIVE_INFINITY : elapsed);
 
     this.renderOrUpdatePhaseChip(cellCount, animState, previews);
 
     if (isAgentGhostPreviewHidden() || !this.animGroup) return;
 
-    if (cellCount > 0 && cellCount <= AGENT_GHOST_MAX_CELL_RECTS) {
+    if (cellCount > 0) {
       this.drawAnimationLayers(animState);
     }
   }
 
-  /**
-   * 좌→우 와이프 렌더 — 선단이 지난 셀의 타일을 그냥 보이게 만든다.
-   * 셀별 팝/링/잔광/스파크·커서 십자선·완료 샤인은 없앴다: 연출이 변경 내용을 가렸다.
-   * 타일 레이어는 스케줄당 한 번만 만든다(수백 GameObject churn·재생 중 파괴 방지).
-   */
+  /** Ground, upper decoration, then events; the sweep only accents the leading edge. */
   private drawAnimationLayers(animState: GhostAnimationState): void {
     if (!this.animGroup) return;
-
-    if (!this.tileLayer || this.tileLayerKey !== this.scheduleKey || this.tileLayerParent !== this.animGroup) {
+    const view = this.scene.cameras.main.worldView;
+    const viewportKey = [view.x, view.y, view.width, view.height].map(n => Math.floor(n / editorMapTileSize(this.mapId()))).join(":");
+    if (!this.tileLayer || this.tileLayerKey !== this.scheduleKey || this.tileLayerParent !== this.animGroup || this.viewportKey !== viewportKey) {
+      const buildStarted = this.clock();
       this.buildTileLayer();
+      // Texture/object preparation must not consume the visible construction time.
+      if (this.startTime !== null) this.startTime += Math.max(0, this.clock() - buildStarted);
       this.tileLayerKey = this.scheduleKey;
       this.tileLayerParent = this.animGroup;
+      this.viewportKey = viewportKey;
     }
-
+    const reduced = prefersReducedMotion();
+    const elapsed = this.startTime === null ? 0 : this.clock() - this.startTime;
     for (let i = 0; i < this.schedule.length; i++) {
-      if (animState.cellStates[i]?.phase !== "revealed") continue;
-      this.tileObjects[i]?.obj.setVisible(true);
+      const item = this.tileObjects[i];
+      if (!item) continue;
+      const visible = animState.cellStates[i]?.phase === "revealed";
+      item.obj.setVisible(visible);
+      // A short physical settling motion; no bloom or flashes over the artwork.
+      const age = elapsed - this.schedule[i].startMs;
+      const t = reduced ? 1 : Math.min(1, Math.max(0, age / 220));
+      const lift = this.schedule[i].cell.layer === "upper" ? 10 : 4;
+      item.obj.y = item.baseY - lift * (1 - t) * (1 - t);
     }
+    if (!this.sweep) {
+      this.sweep = this.scene.add.graphics();
+      this.animGroup.add(this.sweep);
+    }
+    this.sweep.clear();
+    if (reduced || animState.isScheduleComplete) return;
+    // Opaque drafting cursor and a few neutral dust flecks at the actual frontier.
+    let recent = 0, edgeX = -Infinity, sumY = 0;
+    for (let i = this.schedule.length - 1; i >= 0 && recent < 80; i--) {
+      const step = this.schedule[i];
+      const age = elapsed - step.startMs;
+      if (age < 0 || age > 220 || !this.tileObjects[i]) continue;
+      const x = step.cell.x * editorMapTileSize(this.mapId()), y = step.cell.y * editorMapTileSize(this.mapId());
+      edgeX = Math.max(edgeX, x + editorMapTileSize(this.mapId()));
+      sumY += y + editorMapTileSize(this.mapId()) / 2;
+      if (recent % 4 === 0) {
+        this.sweep.fillStyle(0xa18d70, (1 - age / 220) * 0.55);
+        this.sweep.fillRect(x + 3 + Math.sin(i) * 4, y + editorMapTileSize(this.mapId()) - age / 35, 2, 2);
+      }
+      recent++;
+    }
+    if (!recent) return;
+    const x = edgeX, y = sumY / recent;
+    const g = this.sweep;
+    // Fine construction brackets, then the ochre pencil and its dark nib.
+    g.lineStyle(1, 0x493e30, 0.65);
+    g.strokeRect(x - 10, y - 10, 20, 20);
+    g.fillStyle(0x493e30, 0.25);
+    for (let i = 1; i <= 4; i++) g.fillRect(x - 12 - i * 6, y + 8, 3, 1);
+    g.fillStyle(0x2e302c, 0.95);
+    g.fillRect(x + 1, y - 20, 9, 19);
+    g.fillRect(x - 1, y - 5, 5, 7);
+    g.fillStyle(0xd6a254, 1);
+    g.fillRect(x + 3, y - 18, 5, 14);
+    g.fillStyle(0xf4e6ce, 1);
+    g.fillRect(x + 1, y - 4, 4, 3);
   }
 
   /** 타일 스탬프 레이어(컴포지터 경로 포함)를 스케줄당 한 번 빌드한다. */
@@ -398,8 +421,16 @@ export class AgentGhostPreviewRenderer {
 
     // 스케줄 순서대로 만들어 cellStates 인덱스와 정렬한다 — 프레임마다 phase 게이팅이
     // 이 순서에 의존한다(스탬프 팝·순차 공개). 미공개 셀은 visible=false 로 둔다.
+    const view = this.scene.cameras.main.worldView;
     for (const step of this.schedule) {
       const cell = step.cell;
+      // Preserve schedule indices while materializing only the visible window.
+      if (Number.isFinite(view.width) && Number.isFinite(view.height) &&
+          (cell.x * editorMapTileSize(this.mapId()) < view.x - editorMapTileSize(this.mapId()) || cell.y * editorMapTileSize(this.mapId()) < view.y - editorMapTileSize(this.mapId()) ||
+           cell.x * editorMapTileSize(this.mapId()) > view.x + view.width + editorMapTileSize(this.mapId()) || cell.y * editorMapTileSize(this.mapId()) > view.y + view.height + editorMapTileSize(this.mapId()))) {
+        objects.length++;
+        continue;
+      }
       const px = cell.x * editorMapTileSize(this.mapId());
       const py = cell.y * editorMapTileSize(this.mapId());
       const tilesetId = cell.tilesetId ?? defaultTilesetId;
@@ -415,7 +446,7 @@ export class AgentGhostPreviewRenderer {
           composed.setAlpha(GHOST_SPRITE_ALPHA);
           composed.setVisible(false);
           this.tileLayer.add(composed);
-          objects.push({ obj: composed, baseX: px, baseY: py });
+          objects.push({ obj: composed, baseX: composed.x, baseY: composed.y });
           continue;
         }
         const textureKey = ensureTilesetTexture(this.scene, tileset);
@@ -424,12 +455,12 @@ export class AgentGhostPreviewRenderer {
         tileSprite.setAlpha(GHOST_SPRITE_ALPHA);
         tileSprite.setVisible(false);
         this.tileLayer.add(tileSprite);
-        objects.push({ obj: tileSprite, baseX: px, baseY: py });
+        objects.push({ obj: tileSprite, baseX: tileSprite.x, baseY: tileSprite.y });
       } else {
         const rect = this.cellRect(cell);
         rect.setVisible(false);
         this.tileLayer.add(rect);
-        objects.push({ obj: rect, baseX: px, baseY: py });
+        objects.push({ obj: rect, baseX: rect.x, baseY: rect.y });
       }
     }
     this.tileObjects = objects;
@@ -526,6 +557,8 @@ export class AgentGhostPreviewRenderer {
   }
 
   refreshDomMarkers(previews: readonly AgentGhostPreview[] = this.currentPreviews()): void {
+    // Panning after the reveal must materialize the newly visible tiles too.
+    if (this.animGroup && this.schedule.length) this.update();
     if (typeof document === "undefined") return;
     this.clearDomMarkers();
     this.positionPhaseChip(previews);
@@ -575,6 +608,7 @@ export class AgentGhostPreviewRenderer {
     this.startTime = null;
     this.cellStartMs.clear();
     this.animGroup = null;
+    this.sweep = null;
     this.tileLayer = null;
     this.tileLayerParent = null;
     this.tileLayerKey = "";
@@ -608,9 +642,9 @@ export class AgentGhostPreviewRenderer {
     const y = bounds.y * editorMapTileSize(this.mapId());
     const width = bounds.width * editorMapTileSize(this.mapId());
     const height = bounds.height * editorMapTileSize(this.mapId());
-    graphics.fillStyle(AGENT_GHOST_FILL_COLOR, 0.09);
+    graphics.fillStyle(AGENT_GHOST_FILL_COLOR, 0.025);
     graphics.fillRect(x, y, width, height);
-    graphics.lineStyle(2, AGENT_GHOST_STROKE_COLOR, 0.88);
+    graphics.lineStyle(1, AGENT_GHOST_STROKE_COLOR, 0.65);
     drawDashedRect(graphics, x, y, width, height, 10, 6);
     return graphics;
   }
@@ -656,12 +690,18 @@ export class AgentFocusRenderer {
     if (cells.length > 0 && cells.length <= AGENT_FOCUS_MAX_CELL_RECTS) {
       for (const cell of cells) group.add(this.cellRect(cell));
     }
-    group.add(this.boundsRect(target.bounds, cells.length > AGENT_FOCUS_MAX_CELL_RECTS));
+    group.add(this.boundsRect(target.bounds, false));
+    if (typeof this.scene.add.text === "function") {
+      const badge = this.scene.add.text(target.bounds.x * editorMapTileSize(this.mapId()) + 4, target.bounds.y * editorMapTileSize(this.mapId()) + 4,
+        "✓ 반영됨", { fontFamily: "sans-serif", fontSize: "12px", color: "#f7f3ea", backgroundColor: "#465744", padding: { x: 6, y: 3 } });
+      group.add(badge);
+      if (!prefersReducedMotion()) this.scene.tweens.add({ targets: badge, y: badge.y - 5, duration: 360, ease: "Cubic.easeOut" });
+    }
     group.setAlpha(1);
     this.scene.tweens.add({
       targets: group,
       alpha: 0,
-      duration: AGENT_FOCUS_HIGHLIGHT_MS,
+      duration: prefersReducedMotion() ? 150 : AGENT_FOCUS_HIGHLIGHT_MS,
       ease: "Cubic.easeOut",
       onComplete: () => group.destroy(true),
     });
@@ -674,10 +714,10 @@ export class AgentFocusRenderer {
   }
 
   private cellRect(cell: AgentFocusCell): Phaser.GameObjects.Rectangle {
-    const color = cell.layer === "event" ? 0xff922b : cell.layer === "upper" ? 0x74c0fc : 0xffd43b;
-    const rect = this.scene.add.rectangle(cell.x * editorMapTileSize(this.mapId()), cell.y * editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), color, 0.2);
+    const color = cell.layer === "event" ? 0x957451 : cell.layer === "upper" ? 0x667a7b : 0x7d8869;
+    const rect = this.scene.add.rectangle(cell.x * editorMapTileSize(this.mapId()), cell.y * editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), color, 0.04);
     rect.setOrigin(0, 0);
-    rect.setStrokeStyle(1, color, 0.72);
+    rect.setStrokeStyle(1, color, 0.35);
     return rect;
   }
 
@@ -687,11 +727,11 @@ export class AgentFocusRenderer {
       bounds.y * editorMapTileSize(this.mapId()),
       bounds.width * editorMapTileSize(this.mapId()),
       bounds.height * editorMapTileSize(this.mapId()),
-      0xffd43b,
-      strongFill ? 0.16 : 0.08
+      0x687864,
+      strongFill ? 0.04 : 0.015
     );
     rect.setOrigin(0, 0);
-    rect.setStrokeStyle(3, 0xfff3bf, 0.95);
+    rect.setStrokeStyle(1, 0x52654d, 0.7);
     return rect;
   }
 

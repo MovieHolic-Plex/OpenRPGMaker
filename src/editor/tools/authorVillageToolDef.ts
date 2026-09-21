@@ -1,6 +1,7 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
 import type { AuthorVillageRequest } from "@/editor/construction/contracts";
-import { TILE, DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { TILE } from "@/project/defaults/constants";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import type { GameMap, Project } from "@/project/types";
@@ -96,6 +97,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
             kind: { type: "string", enum: ["existing", "new"] },
             mapId: { type: "string" },
             name: { type: "string" },
+            tilesetId: { type: "string", description: "kind=new 전용. 생략하면 숲마을 · 거리별 잔디. 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
             width: { type: "integer" },
             height: { type: "integer" },
             bounds: {
@@ -161,7 +163,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         relief: {
           type: "string",
           enum: ["none", "hills"],
-          description: "고저차. hills=언덕·단구·2단 둔덕(45° 대각 변, 남쪽 절벽 면). 「합본 마을+레트로 월드맵」 혼합 칩셋 맵에서만 그려지고 morphology 와 함께 쓴다. 집·밭은 언덕 띠를 피하고 큰길이 띠를 지나 비탈이 된다.",
+          description: "고저차. hills=언덕·단구·2단 둔덕(45° 대각 변, 남쪽 절벽 면). 숲마을 또는 「합본 마을+레트로 월드맵」 칩셋 맵에서만 그려지고 morphology 와 함께 쓴다. 집·밭은 언덕 띠를 피하고 큰길이 띠를 지나 비탈이 된다.",
         },
         npcCount: { type: "integer", minimum: 0, maximum: 512, description: "Requested village NPC population. 하한 90%(최소 2명 관용)로 판정 — 1~2명 어긋남은 실패가 아니다." },
         residents: {
@@ -221,7 +223,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const normalized = normalizeUnknownHouseTemplates(sized, knownTemplateIds(draft));
       const request = parseAuthorVillageRequest(normalized.args);
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
-      // 기존 맵 타일셋이 combined_town이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
+      // 기존 맵 타일셋이 숲마을·합본 마을 호환이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
       // 스코프 검사(baseline 스냅샷)가 확장을 "target 변경"으로 읽지 않게 성장은 baseline보다 먼저.
       assertTargetTilesetUsable(draft, request);
       assertTargetCapacity(draft, request);
@@ -264,21 +266,22 @@ export const AUTHOR_VILLAGE_TOOL = createAuthorVillageTool();
 
 /**
  * 변이 전 사전 검사 — 맵 생성·시공보다 먼저.
- * - 타일셋: 기존 맵이 combined_town이 아니면 시공 전에 거부(village-tileset-mismatch).
- *   새 맵은 createExactVillageMap이 DEFAULT_TILESET_ID로 만들므로 항상 통과.
+ * - 타일셋: 기존 맵이 숲마을·합본 마을 호환이 아니면 시공 전에 거부(village-tileset-mismatch).
+ *   새 맵도 선택 칩셋(생략 시 숲마을)을 생성 전에 검사한다.
  * - 수용성: 시공 영역(bounds 또는 맵 전체)이 20×20 미만이면 거부(bounds-too-small/map-too-small).
  *   집 슬롯 1열도 못 놓는 면적에 집 N채 요구가 오면 늦은 no-houses-built 대신 여기서 실패.
  */
 function assertTargetTilesetUsable(draft: Project, request: AuthorVillageRequest): void {
-  if (request.target.kind !== "existing") return;
-  const map = draft.maps[request.target.mapId];
-  if (!map) return; // map-not-found는 기존 순서대로 뒤에서 처리한다.
-  const tileset = draft.tilesets?.[map.tilesetId];
+  const target = request.target;
+  const map = draft.maps[target.mapId];
+  if (target.kind === "existing" && !map) return;
+  const tilesetId = target.kind === "new" ? target.tilesetId ?? defaultOutdoorTilesetId(draft) : map!.tilesetId;
+  const tileset = draft.tilesets?.[tilesetId];
   if (!tileset || !isCombinedTownCompatibleTileset(tileset)) {
     throw new ToolError(
-      `author_village는 combined_town 칩셋(${DEFAULT_TILESET_ID}) 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
+      `author_village는 숲마을·합본 마을 호환 칩셋 전용이다 — 요청 타일셋: ${tilesetId}. ` +
         "다른 타일 그림판에서는 문/울타리/돌마당 타일 id가 전부 다른 그림이 된다.",
-      { code: "village-tileset-mismatch", mapId: map.id },
+      { code: "village-tileset-mismatch", mapId: target.mapId },
     );
   }
 }

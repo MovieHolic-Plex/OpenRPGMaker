@@ -7,6 +7,8 @@ describe("per-map tile geometry", () => {
   it("keeps legacy defaults without changing the geometry of another map", () => {
     expect(mapTileSize(undefined)).toBe(16);
     expect(mapTileSize({ tileSize: 32 })).toBe(32);
+    expect(mapTileSize({ tileSize: 48 })).toBe(48);
+    expect(mapTileSize({}, { tileSize: 48 })).toBe(48);
     expect(mapTileSize({ tileSize: 16 }, { tileSize: 32 })).toBe(16);
     expect(mapTileSize({}, { tileSize: 32 })).toBe(32);
     expect(mapTileSize({ tileSize: NaN })).toBe(16);
@@ -14,10 +16,10 @@ describe("per-map tile geometry", () => {
     expect(characterSpriteY(2)).toBe(48);
   });
 
-  it("places feet and wide bodies on the 32px grid", () => {
-    expect(characterSpriteX(2, 32)).toBe(80);
-    expect(characterSpriteY(2, 32)).toBe(96);
-    expect(footprintSpriteX(2, { width: 2, height: 3 }, 32)).toBe(96);
+  it.each([16, 32, 48])("places feet and wide bodies on the %ipx grid", (size) => {
+    expect(characterSpriteX(2, size)).toBe(2.5 * size);
+    expect(characterSpriteY(2, size)).toBe(3 * size);
+    expect(footprintSpriteX(2, { width: 2, height: 3 }, size)).toBe(3 * size);
   });
 
   it("recomputes culling when the same scene switches map sizes", () => {
@@ -31,6 +33,8 @@ describe("per-map tile geometry", () => {
     expect([near.visible, far.visible]).toEqual([true, false]);
     syncTileCulling(host, viewport, 16);
     expect([near.visible, far.visible]).toEqual([false, true]);
+    syncTileCulling(host, { x: 480, y: 480, width: 48, height: 48 }, 48);
+    expect([near.visible, far.visible]).toEqual([true, false]);
     resetCullableTiles(host);
   });
 });
