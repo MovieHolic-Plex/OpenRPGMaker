@@ -2,7 +2,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
-import { resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteScale, isCharsetSpriteTexture, resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { overlappingEventPairs } from "@/project/eventFootprintQuery";
@@ -305,7 +305,7 @@ function createEditableEventSprite(
   spriteTexture: EventSpriteTexture,
   tileSize: number
 ): Phaser.GameObjects.Image {
-  if (!usesAuthoredSize(body, graphic)) {
+  if (!isCharsetSpriteTexture(spriteTexture) && !usesAuthoredSize(body, graphic)) {
     const legacy = scene.add.image(
       event.x * tileSize + tileSize / 2,
       event.y * tileSize + tileSize / 2,
@@ -324,7 +324,9 @@ function createEditableEventSprite(
     spriteTexture.frame
   );
   sprite.setOrigin(0.5, 1);
-  sprite.setScale(editorSpriteScale(graphic, sprite.width, sprite.height, tileSize));
+  sprite.setScale(isCharsetSpriteTexture(spriteTexture)
+    ? eventSpriteScale(spriteTexture, sprite, graphic?.scale, tileSize, graphic?.scaleMode)
+    : editorSpriteScale(graphic, sprite.width, sprite.height, tileSize));
   return sprite;
 }
 

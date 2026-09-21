@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { automaticCharacterScale } from "@/project/characterScale";
 import { canPayActionSkill } from "@/battle/action/skillEffects";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { applyActionFieldStatus, canCastActionProfile, castActionFieldProfile, clearActionSkills, markActionCast, updateActionSkills } from "./playSceneActionSkills";
@@ -984,18 +985,19 @@ function flashSwingArc(scene: PlaySceneContext, facing: Dir, range: number): voi
 
 // 스윙할 때 캐릭터도 같이 움직여야 궤적만 따로 나가는 느낌이 안 든다.
 // 위치는 playSceneMovement 가 매 프레임 덮어쓰므로(x/y 직접 대입) 손대면 안 되고,
-// 스케일은 아무도 건드리지 않아 안전하다. 눌렀다 펴는 스쿼시로 내지르는 동작을 낸다.
+// 현재 맵의 자동 배율을 기준으로 눌렀다 펴고, 종료 시에도 그 배율로 복원한다.
 function pulsePlayerSwing(scene: PlaySceneContext): void {
   scene.tweens.killTweensOf(scene.player);
-  scene.player.setScale(1, 1);
+  const baseScale = automaticCharacterScale(scene.player.width, mapTileSize(scene.map));
+  scene.player.setScale(baseScale, baseScale);
   scene.tweens.add({
     targets: scene.player,
-    scaleX: 1.16,
-    scaleY: 0.88,
+    scaleX: baseScale * 1.16,
+    scaleY: baseScale * 0.88,
     duration: Math.round(SWING_VFX_MS * 0.35),
     yoyo: true,
     ease: "Quad.easeOut",
-    onComplete: () => scene.player.setScale(1, 1),
+    onComplete: () => scene.player.setScale(baseScale, baseScale),
   });
 }
 
