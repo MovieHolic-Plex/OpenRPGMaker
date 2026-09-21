@@ -954,3 +954,46 @@
   color: var(--db-studio-text-2);
 }
 
+
+/* 세계 개요 헤드 압축 + 평문 폼 (2026-09-22 v4) */
+.world-document-workspace .world-canon-head-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.world-document-workspace .world-canon-help {
+  appearance: none;
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--db-studio-text-3);
+  font: 700 11px/1 var(--font-ui);
+  cursor: help;
+  padding: 0;
+}
+.world-document-workspace .world-canon-help:hover,
+.world-document-workspace .world-canon-help:focus-visible {
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-accent);
+  outline: none;
+}
+.world-document-workspace .world-canon-head-title {
+  font-size: 17px;
+}
+.world-document-workspace .world-canon-fields {
+  display: grid;
+  gap: 10px;
+}
+.world-document-workspace .world-canon-group-title {
+  margin: 6px 0 0;
+  font: 600 12px/1.4 var(--font-ui);
+  color: var(--db-studio-text-2);
+}
+.world-document-workspace .world-canon-fields .db-field {
+  grid-template-columns: minmax(0, 1fr);
+}
+
