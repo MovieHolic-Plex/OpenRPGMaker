@@ -27,7 +27,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`
    - Editor validation: `openwiki/editor-validation.md`
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
-   - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 결과는 공용 참고문서 라이브러리(현재는 `openwiki/` 커밋)로 올린다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
+   - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 로 커밋하고 `scripts/content/register-*-references.mjs` 로 모든 관련 프로젝트의 참고문서에 등록한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
    - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
@@ -164,16 +164,17 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - 한 프로젝트의 `project.tilesets[...]` 에 업로드만 하고 끝내면 다른 프로젝트는 그 타일을 영원히 못 본다.
 - 라이선스·출처 표기(예: `ATTRIBUTION.md`, `CC BY 4.0`)를 같은 변경에 남긴다.
 
-### 2. 타일 학습 결과 → 공용 참고문서 라이브러리
+### 2. 타일 학습 결과 → 저장소의 칩셋 폴더 + 참고문서 등록
 
-- 정본은 **프로젝트 행이 아니라 공용 라이브러리**다. 선례는 캐릭터·얼굴 자료다 —
-  `scripts/lib/sharedCharacterGraphics.ts` 가 호스트 사용자별 파일(`$XDG_DATA_HOME/oprn/…`)을 revision CAS 로 쓰고
-  `/__oprn/…` 엔드포인트로 서비스하며, 출하 기본값은 `src/assets/sharedCharacterGraphics.json` 이다.
-- 타일 참고문서도 같은 구조를 따른다: **출하 시드(레포 커밋) + 호스트 지속본 + 편집기 읽기 경로.**
-- **아직 타일 참고문서용 공용 라이브러리가 없다.** 그래서 지금은 다음 두 가지를 지킨다.
-  1. 학습 결과 자체를 `openwiki/` 에 커밋한다 — 저장소를 보는 모든 에이전트가 읽는 공용 면이다.
-  2. 공용 라이브러리가 생기면 그쪽이 정본이고, 프로젝트의 `referenceDocuments` 는 사본으로 내려간다.
-- 한 프로젝트의 `referenceDocuments` 만 갱신하고 `openwiki/` 를 안 고치는 변경은 미완료로 본다.
+- 학습 자료의 **출처 사본은 저장소에 커밋**한다. 선례: `tiledata/castle-tiles-rpgs/` (원문 MD·부품 JSON·비교 그림·출처·`ai-references/`),
+  `tiledata/forest-villages/`.
+- 그 자료를 프로젝트의 `타일 → AI 참고문서` 로 심는 **등록 스크립트**를 남긴다. 선례: `scripts/content/register-castle-references.mjs`.
+  이 스크립트가 문서·그림을 `referenceDocuments` 로 만들고, 원본 소유자와 파생 타일셋 공유(`referenceSourceTilesetId`)를 배선한다.
+- 등록 대상은 그 타일셋을 쓰는 **모든 프로젝트 행과 공용 맵 다운로드**(`public/assets/region-references/*.oprn.json`)다.
+  한 프로젝트에만 넣고 끝내지 않는다.
+- 저장 후 그 프로젝트를 **다시 로드해** 존재를 증명하고, 영수증·화면 증거를 `tiledata/<칩셋>/ai-references/` 에 남긴다.
+- **전역 공용 라이브러리는 아직 없다.** 캐릭터·얼굴 자료(`scripts/lib/sharedCharacterGraphics.ts` + `src/assets/sharedCharacterGraphics.json`)처럼
+  출하 시드 + 호스트 지속본 + 편집기 읽기 경로를 갖춘 공용 저장소는 별도 작업이다. 그것이 생기면 그쪽이 정본이 된다.
 - 다른 프로젝트·외부 에이전트에 자료를 넘길 때는 `scripts/content/export-tileset-references.mjs` 로 추출한다.
 
 ### 3. 왜 강제인가
