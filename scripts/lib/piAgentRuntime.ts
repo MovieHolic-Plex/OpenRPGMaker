@@ -1,3 +1,5 @@
+import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
+import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
 import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
 import { normalizeBuildSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
@@ -152,6 +154,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
+  const referenceGate = new PiTilesetReferenceGate();
   const model = resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
   const pendingSummaries = new Map<string, { ok: boolean; summary: string; result: unknown; visuals?: readonly ActivityVisual[] }>();
@@ -176,6 +179,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       readOnly: request.readOnly || options.readOnlyTools,
       toolNames: options.toolNames,
       onCall: recordCall,
+      referenceGate,
     });
     return shape ? wrapTool(shape) : undefined;
   };
@@ -243,9 +247,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     domains: request.initialToolNames ? undefined : request.toolDomains,
     readOnly: request.readOnly || options.readOnlyTools,
     toolNames: request.initialToolNames
-      ? allowedDefinitions.filter(tool => request.initialToolNames!.includes(tool.name)).map(tool => tool.name)
+      ? allowedDefinitions.filter(tool => request.initialToolNames!.includes(tool.name) || TILESET_REFERENCE_READ_TOOLS.some(name => name === tool.name)).map(tool => tool.name)
       : options.toolNames,
     onCall: recordCall,
+    referenceGate,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
   // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.
@@ -314,6 +319,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const outgoing = request.provider === "google-antigravity"
         ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
         : payload;
+      referenceGate.payload(outgoing);
       // Observe the actual provider payload after normalization, not a rebuilt prompt.
       try {
         emit({ type: "prompt_inspection", snapshot: inspectPromptPayload(outgoing,
@@ -407,6 +413,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (event.type === "message_end") {
       const message = event.message as { role?: string; content?: unknown[]; usage?: unknown; stopReason?: string; errorMessage?: string } | undefined;
       if (!message || message.role !== "assistant") return;
+      referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
       const text = (message.content ?? [])
         .filter((part): part is { type: "text"; text: string } => !!part && typeof part === "object" && (part as { type?: string }).type === "text")
         .map((part) => part.text)

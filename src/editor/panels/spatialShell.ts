@@ -25,7 +25,7 @@ import {
   type SpatialShellTab,
   type SpatialSourceFilter,
 } from "@/editor/panels/spatialAuthoringSession";
-import { setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
+import { renderTilesetsTab, setSelectedTileset } from "@/editor/panels/tilesetSettingsPanel";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
   dismissSpatialFeedback,
@@ -52,6 +52,7 @@ export function renderSpatialAuthoringShell(
   tab: SpatialShellTab,
   rerender: () => void,
 ): void {
+  if (renderTileLibrary(host, tab, rerender)) return;
   if (spatialSession().tab !== tab && spatialSession().breadcrumb.length === 0) setSpatialTab(tab);
   let session = spatialSession();
   const cards = listSpatialGalleryCards(session);
@@ -362,4 +363,11 @@ function nudge(x: number, y: number, refresh: () => void): void {
   const camera = spatialSession().camera;
   setSpatialCamera({ x: camera.x + x, y: camera.y + y, zoom: camera.zoom });
   refresh();
+}
+
+/** Tiles have no placed-instance authoring modes; keep the spatial shell for other domains. */
+function renderTileLibrary(host: HTMLElement, tab: SpatialShellTab, rerender: () => void): boolean {
+  if (tab !== "tiles") return false;
+  renderTilesetsTab(host, rerender);
+  return true;
 }

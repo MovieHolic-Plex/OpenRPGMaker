@@ -1,3 +1,4 @@
+import { validateTilesetReferences } from "../tilesetReferences";
 import { isInteriorRoomShape } from "@/project/interiorRoomFootprint";
 import { parsePublication } from "../publication";
 import {
@@ -79,6 +80,12 @@ export function validateResourceProfiles(value: unknown): void {
 
 export function validateTileset(id: string, value: unknown): void {
   const tileset = requireRecord(`tileset ${id}`, value);
+  if (tileset.referenceDocuments !== undefined) validateTilesetReferences(tileset.referenceDocuments);
+  if (tileset.referenceSourceTilesetId !== undefined) {
+    const source = requireString(`tileset ${id}.referenceSourceTilesetId`, tileset.referenceSourceTilesetId);
+    assert(source.length > 0 && source !== id, "참고문서 원본은 다른 타일셋이어야 합니다.");
+    assert(!tileset.referenceDocuments || (tileset.referenceDocuments as unknown[]).length === 0, "공유 문서와 자체 문서를 동시에 저장할 수 없습니다.");
+  }
   requireString(`tileset ${id}.id`, tileset.id);
   requireString(`tileset ${id}.name`, tileset.name);
   validateAssetRef(`tileset ${id}.image`, tileset.image);

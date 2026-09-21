@@ -102,6 +102,8 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 
 ## Authored tile placement references
 
+현재 프로젝트의 **DB → 타일 → 참고문서 → 용도**가 우선이다. [타일셋 참고문서](tileset-reference-documents.md)의 MD·이미지 선행 읽기 계약을 따른다. 저장소 학습 자료는 연구 출처이며 프로젝트 정본을 대체하지 않는다.
+
 숲·마을 타일 저작 전에 [tiledata/forest-villages](../tiledata/forest-villages/README.md)의 사용자 검수 규칙·승인본·실패 사례를 읽는다. 새 마을 사례와 전체 스크린샷도 이 디렉토리에 저장한다.
 
 ## How an AI should use this wiki

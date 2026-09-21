@@ -1,5 +1,12 @@
 ## 몬스터 종족의 전투 뒷모습 (2026-09-20)
 
+> **2026-09-21 타일 화면 개편:** 타일 탭은 `tilesetSettingsPanel.ts`의 전용 라이브러리이며
+> 첫 내부 탭은 **AI 참고문서**다. 설정 폼은 별도 탭으로 이동했고, 장소용 설계/배치 셸,
+> 별도 AI 분석 런처·JSON 붙여넣기·생성 감사 레일은 타일 UI에서 제거했다.
+> 아래 과거의 "기본 통행 화면" / "생성 감사 레일" 설명보다
+> [현행 구성과 제거 범위](tileset-reference-documents.md#타일-화면-구성-2026-09-21)를 우선한다.
+
+
 종족 그래픽 영역의 `전투 뒷모습` 리소스 선택기는 `graphic.backResourceId`를 편집한다. monster 리소스를 선택하거나 지울 수 있으며 기존 `currentSpecies`/`updateSpecies` 경로를 사용한다. 별도 필드 그래픽이나 정면 그래픽을 덮어쓰지 않는다. QA 선택자는 `db-monster-species-back-resource`. 후면 전투 방향에서만 적용하며 없으면 기존 그래픽을 사용한다.
 
 ## 감사 후속: 참조를 보존하는 삭제 경로 (2026-09-20)
@@ -1960,3 +1967,8 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 미리보기는 실제 편집기의 `mapOnlyCapture=1` 화면에서 맵 영역을 찍는다.
 `capture-forest-place-previews.mjs`와 `capture-forest-place-library.mjs`가 이미지·목록·내려받기 증거를 남긴다.
 출하 증거: `.omo/evidence/forest-place-library/`.
+
+
+## 타일셋 참고문서 (2026-09-21)
+
+[타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.

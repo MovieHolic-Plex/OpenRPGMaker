@@ -39,7 +39,6 @@
 @import "./tilesets.part-7.css" layer(database);
 @import "./tilesets.part-8.css" layer(database);
 @import "./tilesets-autotile.css" layer(database);
-@import "./tileset-ai-workspace.css" layer(database);
 @import "./tilesets-terrain.css" layer(database);
 @import "./desktop.css" layer(database);
 @import "./desktop-record-shell/01-modal-shell.css" layer(database);
@@ -124,3 +123,5 @@
 
 @import "./spatial-composition.css" layer(database);
 @import "./editor-owned-ai-modal-shell.css" layer(database);
+
+@import "./tileset-references.css" layer(database);
