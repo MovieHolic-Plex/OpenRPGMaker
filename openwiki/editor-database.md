@@ -1972,3 +1972,13 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 ## 타일셋 참고문서 (2026-09-21)
 
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+
+### 숲마을 공용 소품 및 장소 (2026-09-21)
+
+`sharedVillageObjects.json`의 19개 키트는 `shared_forest_village_objects` 번들이다.
+새 프로젝트와 기존 프로젝트의 `ensureBundledTilesets`가 공급하며,
+`sharedVillageObjectById`는 기존 공용 오브젝트 복사 경로를 사용한다.
+`curatedVillagePlaceReferences.ts`의 7개 곡선 마을은 기존 13개 공용 숲 장소에 추가한다.
+타일별 AI 참고문서·SQLite 저장·불변 원격 v2 보존본은
+`openwiki/tileset-reference-documents.md`와
+`tiledata/tilesets/forest_high_cliff_river/shared-library/`를 참조한다.
