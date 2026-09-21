@@ -109,4 +109,4 @@ without debug teleport or camera overrides. All eight replacement screenshots
 were inspected again and passed.
 
 These are test-only generator fixtures, not a shipped demo or a replacement
-for a Supabase project. No user project data was written remotely.
+for a LegacyDb project. No user project data was written remotely.

@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, Project } from "@/project/types";
 import { applyDatabaseChanges, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/task-10-db-playwright";
 const COMMON_EVENTS_TAB = { label: "Common Events", slug: "common-events", testId: "db-tab-common-events" } as const;
@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
 test("database reference guard blocks a skill used only by event command references", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 840 });
-  await seedProjectFromSupabaseCanonical(page, commandReferencedSkillProject());
+  await seedProjectForEditor(page, commandReferencedSkillProject());
   await openDatabase(page);
   await switchDatabaseTab(page, SKILLS_TAB);
 

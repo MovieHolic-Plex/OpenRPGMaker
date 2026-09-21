@@ -1,7 +1,7 @@
 import { test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { createTownArchitectureCityProject } from "@/project/defaults/defaultProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 declare const process: {
   readonly env: {
@@ -24,7 +24,7 @@ test("captures four browser screenshots of the chaotic generated city", async ({
   city.name = "Chaotic generated city";
 
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, project, APP_URL);
+  await seedProjectForEditor(page, project, APP_URL);
   await page.getByTestId(`map-tree-node-${project.startMapId}`).click();
 
   // Standard keeps dense zoom buttons behind the ⋯ expand gate, and the canvas toolbar

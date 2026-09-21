@@ -728,7 +728,7 @@
       <div>
         <span class="eyebrow">2026-08-24 · 코드·로그·브라우저·원격 저장 교차검증</span>
         <h1>내장 AI는<br><span>“꽤 많이”</span> 만든다.</h1>
-        <p class="dek">하지만 기능 목록과 실제 완주율은 다르다. 집·퀘스트·맵 꾸미기를 대상으로 168개 도구 카탈로그, 194개 집중 테스트, 실제 AI 활동 로그, 플레이 왕복, Supabase 재로드를 함께 조사했다.</p>
+        <p class="dek">하지만 기능 목록과 실제 완주율은 다르다. 집·퀘스트·맵 꾸미기를 대상으로 168개 도구 카탈로그, 194개 집중 테스트, 실제 AI 활동 로그, 플레이 왕복, LegacyDb 재로드를 함께 조사했다.</p>
         <div class="hero-callout">한 줄 판정: <strong>길·NPC·상점·상자와 마을/외관 건축은 실전적</strong>이고, <strong>출입 가능한 집은 고수준 경로에서 가능</strong>하다. <strong>퀘스트는 엔진은 강하지만 현재 원샷 에디터 저작은 아직 신뢰하면 안 된다.</strong></div>
         <div class="meta-row">
           <span class="meta">분석 기준 41944ff</span>
@@ -814,7 +814,7 @@
       <div class="gallery">
         <figure class="shot wide" data-lightbox>
           <img src="assets/live-composite-applied.png" alt="AI가 길과 NPC, 상점 재고, 상자를 수정하고 저장 완료한 에디터 화면">
-          <span class="source-tag">실제 적용 + Supabase 저장</span>
+          <span class="source-tag">실제 적용 + LegacyDb 저장</span>
           <figcaption><strong>길·NPC·상점·상자 복합 수정</strong><span>기존 이벤트를 보존하며 상점 재고를 다시 설정한 실제 에디터 세션</span></figcaption>
         </figure>
         <figure class="shot tall" data-lightbox>
@@ -874,7 +874,7 @@
             <li><span class="step">1</span><div><strong>도구 카탈로그</strong><span>헤드리스 목록 168개: 쓰기 118, 읽기 50. 라이브 대화에는 문맥별 일부만 노출된다.</span></div></li>
             <li><span class="step">2</span><div><strong>집중 구조 테스트</strong><span>집/내부 84, 퀘스트 42, 마을/배치 68 — 총 194개를 새로 실행했다.</span></div></li>
             <li><span class="step">3</span><div><strong>실제 AI 활동 + 브라우저</strong><span>도구별 성공/실패 로그와 현재 에디터 UI, 집 문 왕복 E2E를 확인했다.</span></div></li>
-            <li><span class="step">4</span><div><strong>원격 정본 재로드</strong><span>Supabase 프로젝트를 다시 읽어 길·NPC·상점·상자와 런타임 상호작용을 검증했다.</span></div></li>
+            <li><span class="step">4</span><div><strong>원격 정본 재로드</strong><span>LegacyDb 프로젝트를 다시 읽어 길·NPC·상점·상자와 런타임 상호작용을 검증했다.</span></div></li>
           </ol>
         </article>
 

@@ -195,7 +195,7 @@ node scripts/qa-coordinate-move.mjs
 - **`verify-shots/runtime-qa/` 는 `.gitignore` 대상**(하네스가 매 실행 디렉터리째
   재생성한다). 저장소 규약대로 보존본을 `verify-shots/oprn-013/test-play/` 로 복사해
   추적했다. 원본 경로는 재실행으로 언제든 재생산된다.
-- **Supabase 저장 의무 없음.** 이 변경은 순수 엔진/에디터 코드이고, 맵·이벤트·데모
+- **LegacyDb 저장 의무 없음.** 이 변경은 순수 엔진/에디터 코드이고, 맵·이벤트·데모
   콘텐츠를 새로 저작하지 않는다(루트 `AGENTS.md` 하드 룰의 명시적 예외).
   Test Play 픽스처는 계약 검증용 최소 fixture 이며 원격 저장 경로를 타지 않는다.
 - **전체 `npm run typecheck` 와 전체 vitest 는 기준선부터 빨간불**이다(quickstart 2절).

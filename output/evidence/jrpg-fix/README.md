@@ -3,7 +3,7 @@
 `REPORT.html` 또는 `REPORT.md`를 먼저 읽는다. 원래 불합격 보고서는 같은 워크스페이스의
 `../jrpg-adversarial-review/REPORT.html`에 그대로 보관되어 있다.
 
-- 정본 콘텐츠: Supabase 프로젝트 `oprn-399e312698`.
+- 정본 콘텐츠: LegacyDb 프로젝트 `oprn-399e312698`.
 - `review/`: 실제 AI 도구 감사 기록, 변경 전후 비교, 최종 DB·이벤트 설정, 원격 저장 증명, 게이트 비교.
 - `screens/`: 실제 편집기 DB 20개 화면, 전체 맵 4개, AI 실행 및 출하 플레이어 화면.
 - 전체 프로젝트 JSON과 인증정보는 커밋하지 않는다. 런타임 QA는 원격 저장 후 다시 읽은 프로젝트 사본으로 실행했다.
@@ -20,7 +20,7 @@ python output/evidence/jrpg-fix/build-report.py
 
 기록 스크립트는 이 작업의 편집기 `http://127.0.0.1:19861`, Chromium CDP `19862`,
 프로젝트 `oprn-399e312698`을 사용한다. 다른 포트를 쓰면 해당 URL을 맞춘다.
-환경값은 기존 `scripts/lib/supabase-database-ops.mjs`로 읽으며 로그에 키를 출력하지 않는다.
+환경값은 기존 `scripts/lib/legacyDb-database-ops.mjs`로 읽으며 로그에 키를 출력하지 않는다.
 HTTP 전달 코드는 실제 서버 응답을 Node fetch로 받아 브라우저에 전달한다. 응답을 합성하지 않는다.
 
 `run-next.mjs`는 현재 편집기의 실제 store 모듈 URL을 찾아 같은 singleton을 캡처하고,

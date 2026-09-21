@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dismissDialogue, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop8-map-mutation";
@@ -13,7 +13,7 @@ test.setTimeout(90_000);
 test("loop8 certifies editor authored moveEvent and changeTile runtime effects", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, mapMutationProject());
+  await seedProjectForEditor(page, mapMutationProject());
   await writeJson("000-scenario.json", {
     scope: ["changeTile editor authoring", "moveEvent editor authoring", "roundtrip persistence", "runtime map override", "runtime event movement"],
   });

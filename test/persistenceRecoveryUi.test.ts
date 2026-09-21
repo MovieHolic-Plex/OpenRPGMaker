@@ -81,10 +81,10 @@ beforeEach(() => {
     source: "env" as const,
     url: "http://127.0.0.1:9",
   }));
-  vi.stubEnv("VITE_SUPABASE_URL", "http://127.0.0.1:9");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "local-anon");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", projectId.current);
-  vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://127.0.0.1:9");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "local-anon");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", projectId.current);
+  vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
 });
 
 afterEach(() => {
@@ -214,7 +214,7 @@ describe("canonical persistence recovery controls", () => {
       toasted.resolve();
     });
     mocks.liveProjectId.current = "other-fixture";
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "other-fixture");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "other-fixture");
     findByTestId(document.body, "persistence-recovery-reload")?.click();
     await toasted.promise;
     expect(store.reloadFromRemote).not.toHaveBeenCalled();
@@ -225,7 +225,7 @@ describe("canonical persistence recovery controls", () => {
     await saveProjectNow();
     expect(findByTestId(document.body, "persistence-recovery-modal")).not.toBeNull();
     projectId.current = "other-project";
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "other-project");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "other-project");
     const listener = vi.mocked(store.subscribe).mock.calls[0]?.[0];
     listener?.(store.getCurrent(), { scope: "project", origin: "system", projectSwitch: true });
     expect(findByTestId(document.body, "persistence-recovery-modal")).toBeNull();

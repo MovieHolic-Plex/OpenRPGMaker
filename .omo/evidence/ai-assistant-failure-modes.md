@@ -1,6 +1,6 @@
 # AI 조수(`/pi` · 채팅 · 영역 작업) 실패 모드 — 실측 보고
 
-조사일 2026-09-14. 읽기 전용 조사. 자료 출처는 Supabase `rpg_zzu.ai_activity_logs` /
+조사일 2026-09-14. 읽기 전용 조사. 자료 출처는 LegacyDb `rpg_zzu.ai_activity_logs` /
 `rpg_zzu.ai_conversations` 실데이터 + 이 저장소 코드/이력.
 작업 트리 `/home/main/paseo-workspace/worktrees/3lblgwmp/terrific-walrus`,
 HEAD `27c3c5828` (2026-09-14 19:47 +0900, 브랜치 `pr815-merge`, `origin/main` `878d7308c` 를 포함하고 3커밋 앞섬).
@@ -25,7 +25,7 @@ HEAD `27c3c5828` (2026-09-14 19:47 +0900, 브랜치 `pr815-merge`, `origin/main`
 
 | project_id | 활동 로그 행수 | 성격 |
 |---|---|---|
-| `rpg-zzu-house-template-gallery` | 36,145 | **`.env.local` 의 `VITE_SUPABASE_PROJECT_ID` 값**. 모든 워크트리·모든 자동 테스트가 이 id 로 원격 기록한다 |
+| `rpg-zzu-house-template-gallery` | 36,145 | **`.env.local` 의 `VITE_LEGACY_DB_PROJECT_ID` 값**. 모든 워크트리·모든 자동 테스트가 이 id 로 원격 기록한다 |
 | `rpg-zzu-dungeon-example` | 5,961 | 하네스 픽스처 프로젝트 |
 | 나머지 `oprn-*` / `rpg-zzu-*` **58개** | **합계 1,320** | 사람이 편집기에서 만든 실제 프로젝트 |
 
@@ -35,7 +35,7 @@ HEAD `27c3c5828` (2026-09-14 19:47 +0900, 브랜치 `pr815-merge`, `origin/main`
 `늦게 도착한 턴` 은 `test/aiActivityLogIndex.test.ts:199` 의 리터럴이며
 `여기 물 채워줘` 는 `test/aiSelectionChipScope.quarantine.test.ts` 의 리터럴이다. 이 행들은 `model` 이 `null` 이다.
 원인은 `src/ai/activityLog.ts:489-515` — `recordAiActivity` 는 실행 환경을 가리지 않고
-Supabase 설정만 있으면 원격에 쓴다(테스트 가드 없음).
+LegacyDb 설정만 있으면 원격에 쓴다(테스트 가드 없음).
 
 ### 1.2 사용자가 실제로 문장을 친 턴만 골라낸 분모
 
@@ -55,7 +55,7 @@ Supabase 설정만 있으면 원격에 쓴다(테스트 가드 없음).
    2026-07-14 까지 있다. `scripts/prune-ai-logs.mjs` (기본 `--days 30`, 헤더 주석: "5일에 12,735행 페이스")
    가 지운 결과로 보인다. **따라서 이 보고서의 모든 빈도는 20일 창의 값이고, 그 이전 추세는 말할 수 없다.**
 2. `npm run db:verify-ai` 는 **실행 불가**다. 출력:
-   `Supabase schema check failed: Unregistered migrations: 20260830000000_ai_activity_payload_index.sql, 20260907000000_spatial_authoring_cas.sql`
+   `LegacyDb schema check failed: Unregistered migrations: 20260830000000_ai_activity_payload_index.sql, 20260907000000_spatial_authoring_cas.sql`
    — 이 헬퍼는 게이트로 쓸 수 없다(그 자체가 별도 결함).
 3. 브라우저 IndexedDB 폴백(`oprn-ai-records`)과 디스크 미러(`output/ai-activity/`)는 **비어 있다**
    (`output/` 아래에 `evidence/` 만 있음). 이 워크트리에서 dev 서버를 띄운 적이 없으므로 당연하고,
@@ -397,7 +397,7 @@ Unexpected token 'd', "data: {"ch"... is not valid JSON
 ## 3. "왜 이렇게 자주 실패하는가" — 데이터가 말하는 답 (한 문단)
 
 먼저 숫자를 바로잡아야 한다: 원본 표의 27.2%(11,795/43,429) 실패율은 **사람의 경험이 아니다** —
-행의 96.96% 가 이 저장소 자신의 테스트·하네스가 같은 `VITE_SUPABASE_PROJECT_ID`(`rpg-zzu-house-template-gallery`)로
+행의 96.96% 가 이 저장소 자신의 테스트·하네스가 같은 `VITE_LEGACY_DB_PROJECT_ID`(`rpg-zzu-house-template-gallery`)로
 찍은 것이고(`src/ai/activityLog.ts:489-515` 에 환경 가드가 없다), 최대 단일 실패 서명인
 `ownership-lost` 1,374건은 실사용자 프로젝트에서 **0건**이다.
 실제 사용자 프로젝트 58개로 좁히면 사람이 문장을 친 턴 166건 중 **114건(68.7%)** 이 오류로 끝나는데,
@@ -422,8 +422,8 @@ Unexpected token 'd', "data: {"ch"... is not valid JSON
 ### E1 — 스키마 확인 (첫 시도는 실패했다. 그 실패도 증거다)
 
 ```bash
-curl -s "$VITE_SUPABASE_URL/rest/v1/ai_conversations?select=id,project_id,created_at,entries_json&order=created_at.desc&limit=5" \
-  -H "apikey: $VITE_SUPABASE_ANON_KEY" -H "Authorization: Bearer $VITE_SUPABASE_ANON_KEY" -H "Accept-Profile: rpg_zzu"
+curl -s "$VITE_LEGACY_DB_URL/rest/v1/ai_conversations?select=id,project_id,created_at,entries_json&order=created_at.desc&limit=5" \
+  -H "apikey: $VITE_LEGACY_DB_ANON_KEY" -H "Authorization: Bearer $VITE_LEGACY_DB_ANON_KEY" -H "Accept-Profile: rpg_zzu"
 ```
 ```
 {"code":"42703","details":null,"hint":null,"message":"column ai_conversations.id does not exist"}
@@ -437,8 +437,8 @@ curl -s "$VITE_SUPABASE_URL/rest/v1/ai_conversations?select=id,project_id,create
 
 ```bash
 for t in ai_conversations ai_activity_logs ai_analysis_runs; do
-  curl -s -I -X GET "$VITE_SUPABASE_URL/rest/v1/$t?select=created_at&limit=1" \
-    -H "apikey: $VITE_SUPABASE_ANON_KEY" -H "Authorization: Bearer $VITE_SUPABASE_ANON_KEY" \
+  curl -s -I -X GET "$VITE_LEGACY_DB_URL/rest/v1/$t?select=created_at&limit=1" \
+    -H "apikey: $VITE_LEGACY_DB_ANON_KEY" -H "Authorization: Bearer $VITE_LEGACY_DB_ANON_KEY" \
     -H "Accept-Profile: rpg_zzu" -H "Prefer: count=exact" | grep -i "content-range"; done
 ```
 ```
@@ -464,7 +464,7 @@ total:            Content-Range: 0-0/43426
 import { readFileSync, writeFileSync } from "node:fs";
 const env = Object.fromEntries(readFileSync("<worktree>/.env.local","utf8").split("\n")
   .filter(l=>/^[A-Z_]+=/.test(l)).map(l=>[l.slice(0,l.indexOf("=")), l.slice(l.indexOf("=")+1).trim()]));
-const U = env.VITE_SUPABASE_URL.replace(/\/$/,""), K = env.VITE_SUPABASE_ANON_KEY;
+const U = env.VITE_LEGACY_DB_URL.replace(/\/$/,""), K = env.VITE_LEGACY_DB_ANON_KEY;
 const headers = { apikey:K, Authorization:`Bearer ${K}`, "Accept-Profile":"rpg_zzu" };
 const sel = "log_id,project_id,channel,created_at,diag:payload_json->diagnostics,"
           + "res:payload_json->result,idx:payload_json->index,model:payload_json->>model";
@@ -579,8 +579,8 @@ grep -rln "여기 물 채워줘" test src scripts
 npm run db:verify-ai
 ```
 ```
-> node scripts/check-supabase-schema.mjs --verify-ai
-Supabase schema check failed: Unregistered migrations: 20260830000000_ai_activity_payload_index.sql, 20260907000000_spatial_authoring_cas.sql
+> node scripts/check-legacyDb-schema.mjs --verify-ai
+LegacyDb schema check failed: Unregistered migrations: 20260830000000_ai_activity_payload_index.sql, 20260907000000_spatial_authoring_cas.sql
 ```
 → **실행 불가.** 이 조사의 수치는 이 스크립트를 쓰지 않았다.
 
@@ -598,8 +598,8 @@ npm run ai:log -- 5 --issues --remote
 ### E8 — `ai_conversations` (사용자 발화 원문)
 
 ```bash
-curl -s "$VITE_SUPABASE_URL/rest/v1/ai_conversations?select=conversation_id,project_id,created_at,entries_json&project_id=not.in.(rpg-zzu-house-template-gallery,rpg-zzu-dungeon-example)&order=created_at.desc&limit=200" \
-  -H "apikey: $VITE_SUPABASE_ANON_KEY" -H "Authorization: Bearer $VITE_SUPABASE_ANON_KEY" -H "Accept-Profile: rpg_zzu"
+curl -s "$VITE_LEGACY_DB_URL/rest/v1/ai_conversations?select=conversation_id,project_id,created_at,entries_json&project_id=not.in.(rpg-zzu-house-template-gallery,rpg-zzu-dungeon-example)&order=created_at.desc&limit=200" \
+  -H "apikey: $VITE_LEGACY_DB_ANON_KEY" -H "Authorization: Bearer $VITE_LEGACY_DB_ANON_KEY" -H "Accept-Profile: rpg_zzu"
 ```
 ```
 conversations 53  window 2026-08-24T09:16:00Z .. 2026-09-14T09:03:09Z

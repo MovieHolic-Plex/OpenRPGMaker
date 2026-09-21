@@ -321,7 +321,7 @@ test("does not open status menu on title screen", async ({ page }) => {
   await openTestPlayWindow(page);
   // 테스트 플레이 창은 자동 시작이 기본이라 타이틀을 건너뛴다(testPlayModal.ts 의
   // test-play-auto-start). localStorage 선호를 미리 심는 방법은 못 쓴다 —
-  // 프로젝트 시딩이 저장소를 비운다(supabaseProjectSeed.ts). 창의 "타이틀부터" 로 되돌린다.
+  // 프로젝트 시딩이 저장소를 비운다(projectSeed.ts). 창의 "타이틀부터" 로 되돌린다.
   await page.getByTestId("test-play-title").click();
   await expect(page.getByTestId("title-screen")).toBeVisible({ timeout: 30_000 });
 

@@ -53,7 +53,7 @@ const html = `<!doctype html>
 </style></head><body>
 
 <h1>용암던전(<code>map_sc_dungeon_lava</code>) 추가 장식 타일셋 제안서</h1>
-<p class="cap">작성: ${new Date().toISOString()} · 대상 프로젝트: Supabase <code>rpg-zzu-showcase</code> · 분석 전용, 원격 변경 없음</p>
+<p class="cap">작성: ${new Date().toISOString()} · 대상 프로젝트: LegacyDb <code>rpg-zzu-showcase</code> · 분석 전용, 원격 변경 없음</p>
 
 <div class="card">
 <h3>현재 상태와 부족한 점</h3>
@@ -157,7 +157,7 @@ ${img("crop-du-statues.png", "dungeon statues")}
 <li>선택 타일의 tileMeta/통행성을 레포 정본(<code>src/project/defaults/tileSemantics*.ts</code>)에 추가 — <b>먼저 정의 후 배치</b> (이번 용암동굴 사태의 교훈: 의미 없이 배치하면 콘페티가 된다)</li>
 <li>④ 채택 시: PNG 투명 처리 → charset/타일 등록 → 라이선스 표기(CC0)</li>
 <li>존 플랜대로 배치 — 벽 문법·레일 개구 규칙(기존 리포트 v4) 준수</li>
-<li>렌더 검증 → <code>saveProjectToSupabase</code> 저장 → project id 재로드 → 플레이 통행 테스트</li>
+<li>렌더 검증 → <code>saveProjectToLegacyDb</code> 저장 → project id 재로드 → 플레이 통행 테스트</li>
 </ol>
 </div>
 <p class="cap">이미지 출처: <code>public/assets/easyrpg/chipset/*</code>, <code>public/assets/cc0/mabaci-medieval-items/*</code>, <code>public/assets/easyrpg-charset-object*.png</code> · 라이선스: <code>public/assets/ATTRIBUTION.md</code>, <code>public/assets/easyrpg/COPYING</code> 참조</p>

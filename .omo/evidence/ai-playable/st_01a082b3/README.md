@@ -101,8 +101,8 @@ From that checkout, with its own unused port and cache path (no live env file):
 ```sh
 npm test -- test/aiConversationHistoryStartup.test.ts test/aiConversationHistoryModal.test.ts test/aiConversationRemoteHistory.test.ts test/historyRecoveryAdmission.test.ts test/mapConversationRemote.test.ts test/mapConversationStore.test.ts test/conversationStore.test.ts test/aiChatSessionScope.test.ts
 npm run typecheck:app
-VITE_SUPABASE_URL=https://history.invalid VITE_SUPABASE_ANON_KEY=fixture-only \
-VITE_SUPABASE_PROJECT_ID=history-startup-fixture VITE_SUPABASE_USE_PROXY=false \
+VITE_LEGACY_DB_URL=https://history.invalid VITE_LEGACY_DB_ANON_KEY=fixture-only \
+VITE_LEGACY_DB_PROJECT_ID=history-startup-fixture VITE_LEGACY_DB_USE_PROXY=false \
 VITE_CACHE_DIR=/tmp/history-final-parent-cache DEV_SERVER_PORT=9284 E2E_RETRIES=0 \
 npx playwright test test/e2e/ai-map-history.spec.ts \
   --grep 'startup catalog|clock opens history with the current-map filter active|legacy unscoped view'

@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { normalizeItemRecord, normalizeSkillRecord } from "@/project/databaseRecordModel";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(90_000);
 test.use({ serviceWorkers: "block" });
@@ -120,7 +120,7 @@ test("survival: ammo economy, typewriter save menu, persistent kill", async ({ p
   await page.addInitScript(() => window.localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1280, height: 900 });
   const { project, start, mapId } = buildSurvivalProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

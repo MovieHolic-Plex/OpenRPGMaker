@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Autotiles (지형 자동 성형)
 
 ## World 지형과 공통 구조물
@@ -152,11 +154,11 @@ T+3R:   [SW T+90]     [S T+91]        [SE T+92]
 - `test/autotileTemplates.test.ts` — 위저드 순수 계산 + 내장 폴백 승계.
 - `test/villageBuilder.test.ts` — 포석 돌길 성형·길 침범 훅.
 - 실물 확인은 Playwright(`.claude/skills/verify` 레시피): 물/지형을 깔고 캔버스 스크린샷.
-- 저장된 합본 마을 맵의 변형 정합: `src/project/combinedTownAutotileAudit.ts` + `npm run audit:combined-town-autotiles`. 기본 명령은 읽기 전용이며, 멤버 셀마다 `autotileNeighborMask`/`autotileVariantForMask` 로 기대 변형을 계산한다. 호수 쿼터와 잔디 240은 제외. `--write --confirm-write=combined-town-autotiles` 만 변경된 행을 `saveProjectToSupabase` 로 저장하고 재로드 해시를 증명한다. 회귀는 `test/combinedTownAutotileAudit.test.ts`.
+- 저장된 합본 마을 맵의 변형 정합: `src/project/combinedTownAutotileAudit.ts` + `npm run audit:combined-town-autotiles`. 기본 명령은 읽기 전용이며, 멤버 셀마다 `autotileNeighborMask`/`autotileVariantForMask` 로 기대 변형을 계산한다. 호수 쿼터와 잔디 240은 제외. `--write --confirm-write=combined-town-autotiles` 만 변경된 행을 `saveProjectToLegacyDb` 로 저장하고 재로드 해시를 증명한다. 회귀는 `test/combinedTownAutotileAudit.test.ts`.
 
 ## Tibo recovery (2026-09-17)
 
-The e756 workspace was absent. Recovered 353-kit metadata from the saved Supabase
+The e756 workspace was absent. Recovered 353-kit metadata from the saved LegacyDb
 comparison project; recovered native sprite content from integer-scaled contact
 sheets in the conversation, and raw sheets from the generation server. Four latest
 approved warm furniture sprites append at slot 1890. Global pack

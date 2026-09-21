@@ -189,7 +189,7 @@ ${pair(image("ev_hide-before","숨김 전","Hide Screen 실행 전"),image("ev_h
 <ol><li><strong>필드 신뢰성:</strong> item charge, usable class, seed bonus, two-handed, 장비 스킬·상태 효과를 런타임 권위에 연결하고 저작 전용 필드는 배지로 공개했다.</li><li><strong>기본 실행 루프:</strong> 기본 모드 테스트 플레이를 유지하고 키보드 실행을 회귀검증한다.</li><li><strong>첫 이벤트 발견성:</strong> 단일 클릭 좌표 선택 + 생성 CTA + 실제 캔버스 저작 E2E를 추가했다.</li><li><strong>partial 명령 발견성:</strong> 메인 피커에서 검색 가능하고 포커스 가능한 정보 행과 대체 경로를 제공한다.</li><li><strong>날씨 정본:</strong> 죽은 DOM 경로를 제거하고 Phaser 경로만 유지한다.</li><li><strong>원격 증명:</strong> 전용 격리 인증서가 있을 때만 생성·저장·재로드·플레이·소유 행 삭제를 수행하는 fail-closed 라이프사이클을 둔다.</li></ol>
 
 <h2>9. 방법과 한계</h2>
-<p class="sources"><strong>초기 실측:</strong> Playwright Chromium 1440×900/1280×800, 기본/전문가 DOM inventory, 키보드 포커스, 화면효과 픽셀 비교(Jimp), 런타임 상태 확인. <strong>개선 검증:</strong> 실제 캔버스 이벤트 생성, 로컬 flush/reload, 전체 및 선택 이벤트 플레이, item/equipment transition 단위·통합 테스트, 프로덕션 번들 브리지 부재 검사. <strong>남은 외부 조건:</strong> 라이브 Supabase 인증은 전용 격리 인증서와 사람이 제공하는 대상 자격증명이 있을 때만 실행된다.</p>
+<p class="sources"><strong>초기 실측:</strong> Playwright Chromium 1440×900/1280×800, 기본/전문가 DOM inventory, 키보드 포커스, 화면효과 픽셀 비교(Jimp), 런타임 상태 확인. <strong>개선 검증:</strong> 실제 캔버스 이벤트 생성, 로컬 flush/reload, 전체 및 선택 이벤트 플레이, item/equipment transition 단위·통합 테스트, 프로덕션 번들 브리지 부재 검사. <strong>남은 외부 조건:</strong> 라이브 LegacyDb 인증은 전용 격리 인증서와 사람이 제공하는 대상 자격증명이 있을 때만 실행된다.</p>
 <p class="sources">생성 데이터: <code>output/evidence/adversarial-ui-ux/probes.json</code>, <code>authoring-cost.json</code>. 진단 스펙: <code>test/e2e/_adversarial-ui-ux-ceiling.spec.ts</code>, <code>_adversarial-authoring-cost.spec.ts</code>. 보고서는 이미지 16장을 base64로 포함한 단일 HTML이다.</p>
 </div></main></body></html>`;
 

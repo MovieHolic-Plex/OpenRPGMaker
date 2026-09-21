@@ -1,0 +1,52 @@
+bun test v1.4.2 (744846f84)
+
+test/piToolConcurrency.bun.test.ts:
+(pass) single-agent parallel tool execution > two 200ms searches overlap in the default single-agent path [619.90ms]
+(pass) single-agent parallel tool execution > default starts independent searches together, then writes [1064.13ms]
+(pass) single-agent parallel tool execution > auto starts independent searches together, then writes [991.27ms]
+(pass) single-agent parallel tool execution > yolo starts independent searches together, then writes [995.95ms]
+(pass) single-agent parallel tool execution > step starts independent searches together, then writes [936.03ms]
+(pass) single-agent parallel tool execution > review starts independent searches together, then writes [606.73ms]
+(pass) single-agent parallel tool execution > publication blocks later reads and writes (fallback=%s) [1667.28ms]
+(pass) single-agent parallel tool execution > publication blocks later reads and writes (fallback=%s) [1636.21ms]
+(pass) single-agent parallel tool execution > stage approval holds later calls in the same model response [1593.13ms]
+(pass) single-agent parallel tool execution > a rejected publication prevents remaining same-response calls [859.99ms]
+(pass) single-agent parallel tool execution > one failed parallel search preserves the other result and permits recovery [1057.90ms]
+[pi-agent] aborted by client after 1 turns / 1 tool calls
+(pass) single-agent parallel tool execution > abort cancels both searches without running the queued write [285.59ms]
+
+test/piAgentTeamMessaging.bun.test.ts:
+(pass) running Agent receives a teammate notification and reads the actual mailbox on its next turn [307.77ms]
+
+test/piApplyModes.bun.test.ts:
+(pass) Pi application checkpoints > yolo publishes writes before the next model turn [1628.86ms]
+(pass) Pi application checkpoints > auto publishes writes before the next model turn [1628.26ms]
+(pass) Pi application checkpoints > default publishes writes before the next model turn [1747.10ms]
+(pass) Pi application checkpoints > review keeps all writes detached [627.70ms]
+(pass) Pi application checkpoints > step waits at an authored stage, not each tool, and resumes only after approval [1977.60ms]
+(pass) Pi application checkpoints > declining publication stops subsequent writes [843.32ms]
+(pass) Pi application checkpoints > read-only blocks fallback writes and publication in YOLO [295.01ms]
+[pi-agent] aborted by client after 1 turns / 0 tool calls
+(pass) checkpoint wait is retired when the core aborts the active tool [721.53ms]
+
+test/piAgentToolEscalation.bun.test.ts:
+(pass) piAgent 툴 에스컬레이션 > find_tools 수확이 다음 턴 선언에 툴을 얹는다 [628.18ms]
+(pass) piAgent 툴 에스컬레이션 > 미노출 툴의 직접 호출도 폴백이 구제한다 [604.54ms]
+(pass) piAgent 툴 에스컬레이션 > 읽기 전용 실행은 폴백이 쓰기 툴을 못 만든다 — 승격이 경계를 넘지 않는다 [310.49ms]
+(pass) piAgent 툴 에스컬레이션 > find_tools 로 찾은 쓰기 툴도 읽기 전용에선 주입되지 않는다 [323.46ms]
+(pass) piAgent 툴 에스컬레이션 > initial candidates cross the worker boundary and permit discovery outside them [673.76ms]
+(pass) piAgent 툴 에스컬레이션 > empty search restores all permitted schemas on the next real Agent turn [322.04ms]
+(pass) piAgent 툴 에스컬레이션 > empty search and direct calls cannot escape read-only or role allowlists [604.02ms]
+(pass) piAgent 툴 에스컬레이션 > more than sixteen discovered tools remain declared instead of silently disappearing [467.03ms]
+(pass) piAgent 툴 에스컬레이션 > discovered authoring tools change actual world, portrait, charset, equipment and party data [1666.84ms]
+
+test/piAgentAbortReason.bun.test.ts:
+(pass) Pi 에이전트 중단 사유 > 턴 상한을 넘으면 「Request was aborted」가 아니라 상한 문구가 이벤트에 실린다 [321.03ms]
+[pi-agent] aborted by client after 1 turns / 1 tool calls
+(pass) Pi 에이전트 중단 사유 > 클라이언트가 끊으면 끊김 문구가 실린다 [381.42ms]
+(pass) Pi 에이전트 중단 사유 > 시간 상한에 걸리고 툴 호출이 없으면 상한 문구로 502 를 던진다 [278.72ms]
+
+ 33 pass
+ 0 fail
+ 142 expect() calls
+Ran 33 tests across 5 files. [29.98s]

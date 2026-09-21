@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
@@ -55,7 +55,7 @@ function eventPage(
 }
 
 async function seedProject(page: Page, project: Project): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 async function runtimeState(page: Page): Promise<RuntimeState> {

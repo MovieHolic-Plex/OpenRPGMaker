@@ -1,0 +1,58 @@
+[
+  {
+    "id": "organic-crescent-lake-80x72",
+    "slug": "organic-crescent-lake",
+    "mapId": "map_village_ten_crescent_lake",
+    "name": "달물 호반마을",
+    "kind": "settlement",
+    "note": "호수 서쪽과 남쪽을 감싸는 초승달 취락"
+  },
+  {
+    "id": "organic-fork-stream-80x72",
+    "slug": "organic-fork-stream",
+    "mapId": "map_village_ten_fork_stream",
+    "name": "두갈래 물길마을",
+    "kind": "settlement",
+    "note": "갈라지는 시냇물과 다리"
+  },
+  {
+    "id": "organic-terrace-gardens-80x72",
+    "slug": "organic-terrace-gardens",
+    "mapId": "map_village_ten_terrace_gardens",
+    "name": "층층 정원마을",
+    "kind": "settlement",
+    "note": "높이가 다른 두 언덕과 아래쪽 마당"
+  },
+  {
+    "id": "organic-woodland-lane-80x72",
+    "slug": "organic-woodland-lane",
+    "mapId": "map_village_ten_woodland_lane",
+    "name": "긴숲 오솔마을",
+    "kind": "settlement",
+    "note": "대각으로 굽어 내려가는 한 줄기 오솔길"
+  },
+  {
+    "id": "organic-orchard-court-80x72",
+    "slug": "organic-orchard-court",
+    "mapId": "map_village_ten_orchard_court",
+    "name": "열매뜰 마을",
+    "kind": "settlement",
+    "note": "과수원 둘레를 도는 마당과 생활 공간"
+  },
+  {
+    "id": "organic-fishing-cove-80x72",
+    "slug": "organic-fishing-cove",
+    "mapId": "map_village_ten_fishing_cove",
+    "name": "잔물결 어촌",
+    "kind": "settlement",
+    "note": "호숫가 작업터와 짧은 나무 선착장"
+  },
+  {
+    "id": "organic-five-groves-80x72",
+    "slug": "organic-five-groves",
+    "mapId": "map_village_ten_five_groves",
+    "name": "다섯숲 숨은마을",
+    "kind": "settlement",
+    "note": "큰 숲 덩어리 주위로 이어지는 다섯 빈터"
+  }
+]

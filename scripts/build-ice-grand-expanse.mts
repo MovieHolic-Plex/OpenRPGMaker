@@ -32,7 +32,7 @@ export function parseBuildIceGrandExpanseArgs(argv: readonly string[]): BuildArg
     if (key === "--save" || key === "--verify-reload") {
       throw new IceGrandExpanseBuildError(
         "REMOTE_MUTATION_NOT_IMPLEMENTED",
-        "Supabase mutation is reserved for Todo 8 and is disabled in this builder",
+        "LegacyDb mutation is reserved for Todo 8 and is disabled in this builder",
       );
     }
     if (value === undefined || (key !== "--project-json" && key !== "--expected-canonical-map-sha")) {

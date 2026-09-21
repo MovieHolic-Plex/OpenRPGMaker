@@ -5,7 +5,7 @@ import {
   MODERN_MAP,
   MODERN_SWITCH,
 } from "@/project/defaults/modernNocturneGame";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const OUT = "output/evidence/modern-exteriors-rpg/browser";
 
@@ -26,7 +26,7 @@ test("plays the live Modern Exteriors investigation through its ending", async (
   await mkdir(OUT, { recursive: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   const consoleLines: string[] = [];
-  await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createModernNocturneProject(), "/?e2eVitals=1");
 
   await expect(page.getByText("해오름구 · 자정", { exact: true }).first()).toBeVisible();
   const editorCanvas = page.getByTestId("edit-canvas").locator("canvas").first();

@@ -110,7 +110,7 @@
         "test/storeEventDraftPreserve.test.ts",
         "test/storeFlushShaEvidence.test.ts",
         "test/storePersistence.test.ts",
-        "test/supabaseProjectSync.test.ts",
+        "test/legacyDbProjectSync.test.ts",
         "test/teamWorkflowUi.test.ts",
         "test/tileFlowApprovalExpansion.test.ts",
         "test/tileGrafts.test.ts",
@@ -609,7 +609,7 @@
           "message": ""
         },
         {
-          "path": "test/supabaseProjectSync.test.ts",
+          "path": "test/legacyDbProjectSync.test.ts",
           "status": "passed",
           "message": ""
         },
@@ -807,7 +807,7 @@
         "test/storeEventDraftPreserve.test.ts",
         "test/storeFlushShaEvidence.test.ts",
         "test/storePersistence.test.ts",
-        "test/supabaseProjectSync.test.ts",
+        "test/legacyDbProjectSync.test.ts",
         "test/teamWorkflowUi.test.ts",
         "test/tileFlowApprovalExpansion.test.ts",
         "test/tileGrafts.test.ts",
@@ -1306,7 +1306,7 @@
           "message": ""
         },
         {
-          "path": "test/supabaseProjectSync.test.ts",
+          "path": "test/legacyDbProjectSync.test.ts",
           "status": "passed",
           "message": ""
         },

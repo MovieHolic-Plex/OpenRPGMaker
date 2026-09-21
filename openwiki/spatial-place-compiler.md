@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Nested spatial place compiler (task9 backend)
 
 Entry: `src/editor/spatial/compileSpatialOccurrence.ts`. A place request returns a
@@ -159,7 +161,7 @@ records (including retained legacy facility-context identities) and eight new
 physically divided small interiors. `scripts/lib/reviewedInteriorCatalog.mts`
 authors the library; `scripts/publish-reviewed-interiors.mts --apply` fresh-loads,
 refreshes the cottage/3-floor inn/4-floor workshop through `edit_spatial_occurrence`,
-CAS-saves to Supabase, and compares the full reloaded project. Unrelated maps and
+CAS-saves to LegacyDb, and compares the full reloaded project. Unrelated maps and
 start position are preserved. Registration is idempotent. Facade catalog replay
 must preserve an existing `interiorLayout` instead of resetting it to 12×10.
 
@@ -212,7 +214,7 @@ walking assertions; they pass 12 and 15 beats, with no runtime errors.
 ## Reviewed default places (2026-09-15)
 
 `defaults/spatial/reviewedPlaceCatalog.ts` ships 25 reviewed dungeon, mountain and
-interior designs independently of the selected Supabase project. The catalog's
+interior designs independently of the selected LegacyDb project. The catalog's
 27 records include the two child floors of one inn. Default cards do not resolve
 coincident user-library IDs. Native PNG previews require no remote project fetch.
 The existing duplicate action copies the selected transitive place closure and

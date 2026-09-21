@@ -1,6 +1,6 @@
 # Slates structure study — coverage and limits
 
-Source project: Supabase `rpg-zzu-slates32-38e6`.
+Source project: LegacyDb `rpg-zzu-slates32-38e6`.
 40 observation kits: 28 reference contexts, 4 controlled variants, 8 mechanism poses.
 46 reviewed regions cover all 1232 v2 source slots. Coverage is NOT proof of every possible assembly.
 New atlas: 1232 original slots + 536 source-rectangle observation tiles = 1768.

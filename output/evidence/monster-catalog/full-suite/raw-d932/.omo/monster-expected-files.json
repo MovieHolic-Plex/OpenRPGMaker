@@ -4350,7 +4350,7 @@
     "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stardewDemo.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stardewSupabaseRoundtrip.live.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/stardewLegacyDbRoundtrip.live.test.ts"
   },
   {
     "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/starterDoorTransfer.test.ts"
@@ -4440,25 +4440,25 @@
     "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/suggestedCommands.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseCanonicalRoundtrip.live.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyDbCanonicalRoundtrip.live.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseFixtureLoad.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyDbFixtureLoad.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseProjectConfig.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyDbProjectConfig.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseProjectSync.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyDbProjectSync.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseProxyPath.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyDbProxyPath.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseRecoveryLocation.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/projectRecoveryLocation.test.ts"
   },
   {
-    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/supabaseResourceCache.test.ts"
+    "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/legacyDbResourceCache.test.ts"
   },
   {
     "file": "/home/main/z-project/rpg-zzu-monster-catalog-0907/test/surfaceGateSupport.test.ts"

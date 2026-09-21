@@ -741,12 +741,12 @@
     },
     {
       "file": "storePersistence.test.ts",
-      "name": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "name": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
       "errorHead": "AssertionError: expected \"spy\" to not be called at all, but actually been called 1 times\u001b[90m"
     },
     {
       "file": "storePersistence.test.ts",
-      "name": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+      "name": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
       "errorHead": "TypeError: Cannot read properties of undefined (reading 'ok')"
     },
     {
@@ -756,13 +756,13 @@
     },
     {
       "file": "storePersistence.test.ts",
-      "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+      "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
       "errorHead": "TypeError: Cannot read properties of undefined (reading 'ok')"
     },
     {
       "file": "storePersistence.test.ts",
       "name": "Project store remote persistence reports why DB persistence is unavailable for local dev showcase projects",
-      "errorHead": "SupabaseProjectSyncError: {"
+      "errorHead": "LegacyDbProjectSyncError: {"
     },
     {
       "file": "storePersistence.test.ts",

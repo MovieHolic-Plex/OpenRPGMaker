@@ -17,6 +17,7 @@ import { listSpatialGalleryCards, type SpatialGalleryCard } from "./spatialCatal
 import { renderSpatialCardThumb } from "./spatialGallery";
 import { renderSpatialChrome, renderSpatialInspector } from "./spatialStage";
 import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
+import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { openTilesetTileBrowser } from "./tilesetTileBrowser";
 import { tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { wouldCycleComposition, COMPOSITION_COLLECTIONS, COMPOSITION_NAMES, compositionPreview, currentComposition, defaultComposition, editComposition, editExistingComponent } from "./spatialCompositionAccess";
@@ -108,8 +109,13 @@ export function renderSpatialCompositionWorkspace(session: SpatialAuthoringSessi
   let preview: ReturnType<typeof compositionPreview> | undefined;
   try {
     const raster = compositionPreview(project, source); preview = raster;
-    board.append(renderTileCellsToCanvas({ tileset: project.tilesets[raster.map.tilesetId], widthTiles: raster.map.width, heightTiles: raster.map.height,
-      cells: cellsFromMapRect(raster.map, { x: 0, y: 0, width: raster.map.width, height: raster.map.height }), scale: PX / 16, backgroundTile: null, transparentBackground: true }));
+    const tileset = project.tilesets[raster.map.tilesetId];
+    const cells = cellsFromMapRect(raster.map, { x: 0, y: 0, width: raster.map.width, height: raster.map.height }).flatMap(cell => {
+      const backing = cell.layer === "lower" ? tileBackingTile(tileset, cell.tile) : null;
+      return backing === null ? [cell] : [{ ...cell, tile: backing }, cell];
+    });
+    board.append(renderTileCellsToCanvas({ tileset, widthTiles: raster.map.width, heightTiles: raster.map.height,
+      cells, scale: PX / 16, backgroundTile: null, transparentBackground: true }));
   } catch (error) { board.append(el("p", { class: "spatial-mixed-error", text: `미리보기: ${error instanceof Error ? error.message : String(error)}` })); }
   const point = (event: MouseEvent): SpatialPoint => { const bounds = board.getBoundingClientRect(); return { x: Math.floor((event.clientX - bounds.left) / (PX * state.zoom)), y: Math.floor((event.clientY - bounds.top) / (PX * state.zoom)) }; };
   const visualMembers = preview ? preview.projections.filter(item => item.occurrence.parentId === preview!.projections[0]?.occurrence.id).map(item => ({

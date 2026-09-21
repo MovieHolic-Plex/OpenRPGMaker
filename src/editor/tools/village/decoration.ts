@@ -23,7 +23,7 @@ export function finishVillageDecoration(
   const sealed = captureHouseProtection(project);
   const check = (): void => assertHouseProtection(sealed, project, []);
   if (plan.fences) {
-    placeHouseLotFences(map, plan.houses, plan.seed, plan.area);
+    placeHouseLotFences(map, plan.houses.filter(house => house.fence !== false), plan.seed, plan.area);
     check();
   }
   let placed = 0;

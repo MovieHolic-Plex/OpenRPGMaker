@@ -23,7 +23,7 @@
 - 건물·별동 12개, 열린 쌍탑 남문, 우물 광장, 정원, 시장. 원본 1232 + 파생 96 = 전용 타일 1328개.
 - lower/upper 2500칸씩. 실제 에디터 역직렬화·텍스처 로드·3200×3200 PNG 내보내기 성공, page error 없음.
 - 실제 엔진 `canMove`로 1380칸, 접근 목표 20/20 연결. spawn 통행 가능. 남문 4칸을 가상 차단하면 외부→광장 불가: 성벽 우회 누출 없음. [관측 JSON](engine-observation.json).
-- Supabase `rpg-zzu-slates32-38e6` 저장 후 root·11개 맵 미러·6개 칩셋 미러 재로드 일치. SHA `49c29e8f13b751bc2e171d62ff8093347e0034d52aeeddb8b8cd42b5638987cb`. [저장 근거](persistence.json).
+- LegacyDb `rpg-zzu-slates32-38e6` 저장 후 root·11개 맵 미러·6개 칩셋 미러 재로드 일치. SHA `49c29e8f13b751bc2e171d62ff8093347e0034d52aeeddb8b8cd42b5638987cb`. [저장 근거](persistence.json).
 - 기존 10개 맵·칩셋·시작 위치 보존. 로컬 SQLite 프로젝트 `c8c53479-8d1a-42da-96ee-e493598ef498`, revision 8에서도 콘텐츠 재로드 일치. [로컬 근거](local-persistence.json).
 - 전용 `player.html`에서 저장된 프로젝트의 복사본을 새 맵 시작점으로 열고 실제 북쪽 이동을 관측했다. 에러 없음. 운영 시작 맵은 변경하지 않았다. [런타임 관측](runtime-observation.json), [PNG](../../../reports/slates-astra-experiment/runtime.png).
 - gates/vitest/전체 typecheck는 실행하지 않았다. 위 수치는 콘텐츠 렌더·통행 관측이다.

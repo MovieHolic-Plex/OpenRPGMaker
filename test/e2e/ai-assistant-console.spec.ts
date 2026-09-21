@@ -1,5 +1,5 @@
 /**
- * 감독 console contract. No live LLM. No Supabase.
+ * 감독 console contract. No live LLM. No LegacyDb.
  *
  * Run:
  *   DEV_SERVER_PORT=9183 npx playwright test test/e2e/ai-assistant-console.spec.ts --project=chromium

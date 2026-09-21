@@ -4,7 +4,7 @@ Created by exactly three `gpt-6-astra` agents at `xhigh`, ten houses each. These
 new reusable exterior objects assembled from the project's wall and roof tiles.
 Visible floor counts do not imply authored interiors or navigation events.
 
-| Group | Scope | Agent commit | Isolated Supabase project |
+| Group | Scope | Agent commit | Isolated LegacyDb project |
 |---|---|---|---|
 | 01–10 | Small and single-storey houses | `bd6a4496c3f0a5186a19559a209a2b4a74f71671` | `rpg-zzu-house-30-a-20260912` |
 | 11–20 | Two-storey houses | `3ad5ab794ce45d9784821d85fcaf83fdc5ef36da` | `rpg-zzu-house-30-b-20260912` |
@@ -23,11 +23,11 @@ catalog serially to **`rpg-zzu-house-template-gallery`**. No credentials are inc
   `map_house_30_c_20260912`. Existing maps and start position remain intact.
 - Existing designs, kits, built occurrences and the legacy-import receipt were compared
   independently after publication and remain unchanged (`preservation-proof.json`).
-- `supabase-proof.json`: successful canonical save, mirror synced, full-project
+- `legacy-db-proof.json`: successful canonical save, mirror synced, full-project
   deep-equal reload and a SHA256 of the saved library. Per-agent receipts are also included.
 - `houses-30.png`: overview; `houses-a.png` / `houses-b.png` / `houses-c.png`: group boards.
   `index.html`: standalone gallery with group filters and click-to-enlarge. All pixels
-  come from the actual editor `mapTileDraw` using the Supabase-reloaded project.
+  come from the actual editor `mapTileDraw` using the LegacyDb-reloaded project.
   Group boards retain one-times tile scale; overview cards fit the available space.
 
 ## Validation
@@ -65,7 +65,7 @@ are preserved separately and have their own runtime evidence.
 
 ## Reproduction
 
-Set the existing Supabase connection and project id in `.env.local`; never put keys
+Set the existing LegacyDb connection and project id in `.env.local`; never put keys
 in the command line or committed evidence. These commands run from the repository:
 
 ```sh

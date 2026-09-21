@@ -162,7 +162,7 @@ async function standalone() {
   const url = `http://127.0.0.1:${port}/`;
   const server = spawn("node", ["node_modules/vite/bin/vite.js", "--host", "127.0.0.1", "--port", String(port), "--strictPort", "--configLoader", "runner"], {
     env: { ...process.env, VITE_CACHE_DIR: join(process.cwd(), owned, "editor-cache"), E2E_FREEZE_DEV_SERVER: "1",
-      VITE_SUPABASE_URL: "", VITE_SUPABASE_ANON_KEY: "", VITE_SUPABASE_USE_PROXY: "0" }, stdio: ["ignore", "pipe", "pipe"],
+      VITE_LEGACY_DB_URL: "", VITE_LEGACY_DB_ANON_KEY: "", VITE_LEGACY_DB_USE_PROXY: "0" }, stdio: ["ignore", "pipe", "pipe"],
   });
   let browser;
   try {

@@ -2,7 +2,7 @@
 
 Scope: repair connected pursuit and add authorable sight-triggered trainer encounters.
 This is engine/editor work with minimal test fixtures, not authored demo content.
-No Supabase project content was changed. Publication requires the final gates and review below.
+No LegacyDb project content was changed. Publication requires the final gates and review below.
 
 ## Behavioral evidence
 

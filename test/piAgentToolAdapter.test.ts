@@ -15,6 +15,8 @@ describe("piAgent toolAdapter", () => {
       expect(typeof tool.description).toBe("string");
       expect(tool.parameters).toBeTruthy();
       expect(typeof tool.execute).toBe("function");
+      // Every registry tool, including newly discovered tools, must carry a policy.
+      expect(tool.concurrency).toBe(live.find(def => def.name === tool.name)!.mode === "read" ? "shared" : "exclusive");
     }
   });
 
@@ -75,6 +77,8 @@ describe("piAgent toolAdapter", () => {
       const ctx = { project: createBlankProject() };
       // 쓰기 가능 실행 — 쓰기 툴도 만든다.
       expect(resolvePiToolShape(ctx, "set_project_settings")).toBeTruthy();
+      expect(resolvePiToolShape(ctx, "set_project_settings")?.concurrency).toBe("exclusive");
+      expect(resolvePiToolShape(ctx, "get_project_summary")?.concurrency).toBe("shared");
       // 읽기 전용 실행 — 쓰기 툴은 절대 못 만든다(질문 승격의 구조적 보장).
       expect(resolvePiToolShape(ctx, "set_project_settings", { readOnly: true })).toBeUndefined();
       expect(resolvePiToolShape(ctx, "get_project_summary", { readOnly: true })).toBeTruthy();

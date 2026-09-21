@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { emptyEventProject, mockupProject } from "./mockupProbeSeeds";
 import { dispatchChange, openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "output/evidence/event-editor-balanced";
 
@@ -15,7 +15,7 @@ test.setTimeout(120_000);
 async function openMockupState(page: Page, viewport = { width: 1536, height: 1024 }): Promise<Locator> {
   await page.setViewportSize(viewport);
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
   const modal = page.getByTestId("event-editor-modal");
   await modal.getByTestId("event-page-tab-3").click();
@@ -144,7 +144,7 @@ test("page actions are immediate and destructive deletion is cancelable", async 
 test("header test and save actions route to the real workflow", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   const { project, eventId } = emptyEventProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openEventEditor(page, eventId);
   const modal = page.getByTestId("event-editor-modal");
 

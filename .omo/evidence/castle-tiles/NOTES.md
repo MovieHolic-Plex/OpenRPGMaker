@@ -2,7 +2,7 @@
 
 Scope: add a bundled choice for new and existing projects. Keep the startup
 tileset unchanged. The castle reference board and its spatial catalog were
-also published to the canonical Supabase project.
+also published to the canonical LegacyDb project.
 
 Manual browser capture:
 
@@ -58,7 +58,7 @@ and a 2×2 source drag. `inspection.json`: observed data and actual Phaser frame
   east moat bank/bridge landing, and south rest plaza. Complete measured props
   (market stalls, crates, clock trees, lamps, statues, benches and fountain)
   make those zones legible instead of leaving a blank grass ring.
-- Latest Supabase save proof: project `rpg-zzu-house-template-gallery`, SHA
+- Latest LegacyDb save proof: project `rpg-zzu-house-template-gallery`, SHA
   `c5bda3ca390e0ea2905b5e2e7c98fb161c24d508128c677b1e455f5ce5c215d0`;
   `saved: true`, `reloaded: true`, and 60 protected maps were unchanged.
   `courtyard-castle-browser.png` is the 1× editor capture (page errors: 0);
@@ -103,12 +103,12 @@ The same canonical map now has 9 fixed, action-triggered events: 7 named people
 west market, clock-tree garden and south gate, with short Korean interaction
 lines. The saved comparison map was not changed.
 
-- Latest Supabase project: `rpg-zzu-house-template-gallery`.
+- Latest LegacyDb project: `rpg-zzu-house-template-gallery`.
 - Latest published/reloaded SHA:
   `ce5dd9518ac2cf6cd2a0330dd0c8845efbc66970e9294e76e95333d5c713ff7e`.
 - Save proof: `saved: true`, `reloaded: true`, `protectedMapsUnchanged: 61`.
 - Runtime screenshots use the dedicated `player.html` QA harness with the
-  Supabase-reloaded project. `harbor-npc-runtime.png`, `garden-npc-runtime.png`,
+  LegacyDb-reloaded project. `harbor-npc-runtime.png`, `garden-npc-runtime.png`,
   and `south-guard-runtime.png` show actual character sprites over the tiles;
   `market-runtime.png` shows the market stalls and crop bed in the same pass.
 - Runtime page and console errors were both 0 for these captures. The player

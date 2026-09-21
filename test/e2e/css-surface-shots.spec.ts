@@ -2,7 +2,7 @@
 // 기준선은 표면 작업 시작 전 main 에서 찍고, 표면 작업 중에는 갱신하지 않는다.
 import { expect, test, type Page } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 // 레일 버튼은 database.ts 의 tabs 레지스트리가 이미 `db-tab-<kebab>` testid 를 붙인다 — 그 이름을 그대로 쓴다.
 const NAV_TESTID = (tab: string) => `db-tab-${tab.replace(/[A-Z]/g, (ch) => `-${ch.toLowerCase()}`)}`;
@@ -51,7 +51,7 @@ async function boot(page: Page, w: number, h: number, mode: UiMode = "standard")
   let lastError: unknown;
   for (let attempt = 1; attempt <= BOOT_ATTEMPTS; attempt += 1) {
     try {
-      if (attempt === 1) await seedProjectFromSupabaseCanonical(page, seed.project);
+      if (attempt === 1) await seedProjectForEditor(page, seed.project);
       else {
         await page.reload();
         await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });

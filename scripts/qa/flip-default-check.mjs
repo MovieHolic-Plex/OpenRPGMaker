@@ -17,9 +17,9 @@ const BACKUP = join(REPO, ".flip-default-check.bak");
 const LOCK = join(REPO, ".flip-default-check.lock");
 
 const FLIPS = [
-  ['import { createSupabaseRepository } from "./supabaseRepository";', 'import { createMemoryRepository } from "./memoryRepository";'],
+  ['import { createLegacyDbRepository } from "./legacyDbRepository";', 'import { createMemoryRepository } from "./memoryRepository";'],
   ["let remote: ProjectRepository | null = null;", "let memory: ProjectRepository | null = null;"],
-  ["  remote ??= createSupabaseRepository();\n  return remote;", "  memory ??= createMemoryRepository({ target: null });\n  return memory;"],
+  ["  remote ??= createLegacyDbRepository();\n  return remote;", "  memory ??= createMemoryRepository({ target: null });\n  return memory;"],
 ];
 
 function restore() {
@@ -78,7 +78,7 @@ for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     killVitestTree();
     rmSync(LOCK, { force: true });
     const now = readFileSync(TARGET, "utf8");
-    console.error(now.includes("remote ??= createSupabaseRepository();")
+    console.error(now.includes("remote ??= createLegacyDbRepository();")
       ? `--- ${signal} 수신, 원복했다 ---`
       : `--- ${signal} 수신, 원복 실패! repository.ts 를 손으로 확인하라 ---`);
     process.exit(130);
@@ -96,9 +96,9 @@ try {
   restore();
   rmSync(LOCK, { force: true });
   const now = readFileSync(TARGET, "utf8");
-  console.log(now.includes("remote ??= createSupabaseRepository();")
-    ? "--- 원복 확인: 기본 저장소는 Supabase 어댑터다 ---"
+  console.log(now.includes("remote ??= createLegacyDbRepository();")
+    ? "--- 원복 확인: 기본 저장소는 LegacyDb 어댑터다 ---"
     : "--- 원복 실패! repository.ts 를 손으로 확인하라 ---");
-  if (!now.includes("remote ??= createSupabaseRepository();")) code = 3;
+  if (!now.includes("remote ??= createLegacyDbRepository();")) code = 3;
 }
 process.exit(code);

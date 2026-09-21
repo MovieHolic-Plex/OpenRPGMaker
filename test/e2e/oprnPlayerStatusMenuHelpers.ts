@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 export const C001_SCREENSHOT = ".omo/ulw-loop/status-menu-fullscreen-20260628/evidence/c001-fullscreen-panels.png";
@@ -35,7 +35,7 @@ export const COMMAND_LABELS = [
 
 export async function startActualPlay(page: Page, project = seededStatusMenuProject(), route = "/?e2eVitals=1"): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, project, route);
+  await seedProjectForEditor(page, project, route);
   await openTestPlayWindow(page);
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 15000 });
@@ -75,7 +75,7 @@ function relabelItem(project: Project, id: string, name: string, description: st
 }
 
 export async function seedDefaultProject(page: Page): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, seededStatusMenuProject());
+  await seedProjectForEditor(page, seededStatusMenuProject());
 }
 
 export function recoveryItemProject(recoveryAmount: number): Project {

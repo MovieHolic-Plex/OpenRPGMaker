@@ -70,7 +70,7 @@ Tests include `workPlanIdentity`, `assistantFinalAudit`,
   polished-aesthetic claim is made.
 - A QA script imported a second Vite HMR store instance and accidentally saved an
   empty map to this QA ID. The genuine model-authored backup was restored through
-  `saveProjectToSupabase`, after checking the remote row still matched that accidental
+  `saveProjectToLegacyDb`, after checking the remote row still matched that accidental
   write. Reload proved exact map restoration. The script now pins the actual UI
   module URL and rejects an uninitialized/wrong-sized store. User projects were not touched.
 - A renderer crash stalled an attempt after successful remote writes. Remote
@@ -95,7 +95,7 @@ Tests include `workPlanIdentity`, `assistantFinalAudit`,
 
 ## Reproduction
 
-Use the repository's configured Supabase and real companion credentials.
+Use the repository's configured LegacyDb and real companion credentials.
 No credentials are included in these artifacts.
 
 ```sh
@@ -117,6 +117,6 @@ QA_ATTEMPT=reproduction \
 ```
 
 The full 5 MB project snapshots, raw model transcripts and failed-run logs remain
-in the local evidence directory; the final project also remains in Supabase.
+in the local evidence directory; the final project also remains in LegacyDb.
 The committed selection contains the compact proof, input driver and selected
 screenshots rather than publishing all raw conversation payloads.

@@ -1,31 +1,31 @@
 
 > rpg-zzu@0.1.0 test
-> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/supabaseProjectSync.test.ts --testTimeout 60000
+> node scripts/run-vitest.mjs run --configLoader bundle test/storePersistenceProof.test.ts test/legacyDbProjectSync.test.ts --testTimeout 60000
 
 
  RUN  v3.2.4 /home/main/z-project/rpg-zzu-ai-harness-p1-20260906
 
- ✓ test/supabaseProjectSync.test.ts (29 tests) 40693ms
-   ✓ Supabase project sync > loads a Supabase current_json row through the project parser  1981ms
-   ✓ Supabase project sync > uses the app canonical Supabase project id when the env id is omitted  921ms
-   ✓ Supabase project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  781ms
-   ✓ Supabase project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  631ms
-   ✓ Supabase project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  714ms
-   ✓ Supabase project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  1093ms
-   ✓ Supabase project sync > treats Supabase current_json as canonical — does not backfill removed database records  634ms
-   ✓ Supabase project sync > repairs legacy sprite references from Supabase rows before project use  992ms
-   ✓ Supabase project sync > drops Supabase village info documents for maps that no longer exist  1360ms
-   ✓ Supabase project sync > removes legacy sprite references from Supabase save payloads  367ms
-   ✓ Supabase project sync > saves the project as a Supabase projects upsert payload  604ms
-   ✓ Supabase project sync > merges a changed map into the latest project without replacing other maps  1792ms
-   ✓ Supabase project sync > does not stop a stale same-map save before it overwrites a newer DB map  2507ms
-   ✓ Supabase project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2852ms
-   ✓ Supabase project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  2266ms
-   ✓ Supabase project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  3503ms
-   ✓ Supabase project sync > preserves concurrent saves from separate editors touching different maps  5812ms
-   ✓ Supabase project sync > preserves concurrent map tree additions from separate editors  5913ms
-   ✓ Supabase project sync > does not undo a remote same-map reparent when saving only that map content  3548ms
-   ✓ Supabase project sync > overlays map_json from maps table onto current_json on load  2083ms
+ ✓ test/legacyDbProjectSync.test.ts (29 tests) 40693ms
+   ✓ LegacyDb project sync > loads a LegacyDb current_json row through the project parser  1981ms
+   ✓ LegacyDb project sync > uses the app canonical LegacyDb project id when the env id is omitted  921ms
+   ✓ LegacyDb project sync > 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다  781ms
+   ✓ LegacyDb project sync > 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다  631ms
+   ✓ LegacyDb project sync > 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다  714ms
+   ✓ LegacyDb project sync > 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다  1093ms
+   ✓ LegacyDb project sync > treats LegacyDb current_json as canonical — does not backfill removed database records  634ms
+   ✓ LegacyDb project sync > repairs legacy sprite references from LegacyDb rows before project use  992ms
+   ✓ LegacyDb project sync > drops LegacyDb village info documents for maps that no longer exist  1360ms
+   ✓ LegacyDb project sync > removes legacy sprite references from LegacyDb save payloads  367ms
+   ✓ LegacyDb project sync > saves the project as a LegacyDb projects upsert payload  604ms
+   ✓ LegacyDb project sync > merges a changed map into the latest project without replacing other maps  1792ms
+   ✓ LegacyDb project sync > does not stop a stale same-map save before it overwrites a newer DB map  2507ms
+   ✓ LegacyDb project sync > does not false-conflict when the load path repairs a saved map (shop commands)  2852ms
+   ✓ LegacyDb project sync > does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)  2266ms
+   ✓ LegacyDb project sync > does not false-conflict on jsonb key reordering (alphabetical vs insertion order)  3503ms
+   ✓ LegacyDb project sync > preserves concurrent saves from separate editors touching different maps  5812ms
+   ✓ LegacyDb project sync > preserves concurrent map tree additions from separate editors  5913ms
+   ✓ LegacyDb project sync > does not undo a remote same-map reparent when saving only that map content  3548ms
+   ✓ LegacyDb project sync > overlays map_json from maps table onto current_json on load  2083ms
  ✓ test/storePersistenceProof.test.ts (16 tests) 96022ms
    ✓ accepted revision persistence proof > verifies the accepted content through actual save/read transport and reuses its clean-flush receipt  18439ms
    ✓ accepted revision persistence proof > compares normalized values rather than JSONB object-key order  3734ms

@@ -107,6 +107,8 @@ export type NewVillageTarget = {
 export type AuthorVillageTarget = ExistingVillageTarget | NewVillageTarget;
 
 export type VillageHousePlan = {
+  /** Only important/requested houses get a fence. manor defaults to true. */
+  readonly fence?: boolean;
   /** Saved building exterior object. Mutually exclusive with the legacy kit/template. */
   readonly objectId?: string;
   readonly kitId?: HouseKitId;
@@ -220,8 +222,8 @@ export type ConstructionDiffTotals = {
   readonly systemChanged: boolean;
 };
 
-export type ActivityPersistence = "not-recorded" | "local" | "supabase" | "both" | "failed-remote";
-export type ProjectPersistence = "not-requested" | "pending" | "local" | "supabase" | "both" | "failed";
+export type ActivityPersistence = "not-recorded" | "local" | "project-store" | "both" | "failed-remote";
+export type ProjectPersistence = "not-requested" | "pending" | "local" | "project-store" | "both" | "failed";
 
 type ConstructionOutcomeCommon = {
   readonly requestedEntrypoint: ConstructionWriteEntrypoint;

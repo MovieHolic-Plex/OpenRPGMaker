@@ -1,7 +1,7 @@
 /**
  * jsonb 키 정렬 불변 비교 문자열(todo 8 실측 결함).
  *
- * Supabase의 current_json/map_json 컬럼은 PostgreSQL jsonb 로 저장되어 키가
+ * project storage의 current_json/map_json 컬럼은 PostgreSQL jsonb 로 저장되어 키가
  * **알파벳순으로 정렬**된다(실측: {z:1,a:2,m:3} → {a:2,m:3,z:1}). 반면 에디터 메모리
  * (persistedBaseline/로컬 드래프트)의 객체는 삽입 순서 키를 유지한다. 같은 논리 맵도
  * JSON.stringify 결과가 달라져 매 flush가 가짜 conflict로 끝났다(첫 마일스톤 이후 저장 불가).

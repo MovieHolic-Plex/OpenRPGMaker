@@ -208,7 +208,7 @@ fail-closed 계약(`playable: false` 고정)은 그대로 둔다. spec 충족은
 | 완료 게이트 | 종 0개 상태에서 `define_monster_species` 성공 신호만 준 뒤 항목이 done 되지 않음을 단정 |
 | 런 종료 게이트 | 조항 1개를 일부러 비운 프로젝트로 `configured === false` + 감사에 `genre_spec_unmet` |
 | 결정적 선적용 | 포스터 클릭 후 AI 0턴 상태에서 `system.monsterCollection === true` |
-| 저장 | 콘텐츠를 저작하므로 Supabase 저장 후 재로드 검증 필수 (`AGENTS.md` hard rule). project id 를 완료 보고에 남긴다 |
+| 저장 | 콘텐츠를 저작하므로 LegacyDb 저장 후 재로드 검증 필수 (`AGENTS.md` hard rule). project id 를 완료 보고에 남긴다 |
 
 비결정성 금지: 자율 런 테스트는 고정 대기(sleep/polling)를 쓰지 않고 세션 이벤트
 (`milestone_applied`, `status`)를 구독해 기다린다.

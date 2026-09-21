@@ -4,7 +4,7 @@
 // 대신 .battle-scene 아래 모든 노드의 계산 스타일을 안정 경로 키로 떠서 JSON 으로 남긴다.
 // 애니메이션이 만지는 속성(transform/opacity/animation/filter)은 제외한다.
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
 // 데모 프로젝트 팩터리는 배럴이 아니라 defaultProject 에 있다 — 배럴은 가벼운 것만 내보낸다.
 import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
@@ -30,7 +30,7 @@ const PROPS = [
 
 async function dump(page: Page, label: string, project: Project): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openDatabase(page);
   await switchDatabaseTab(page, TROOPS_TAB);
   await page.locator(".db-list-row").first().click();

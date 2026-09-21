@@ -28,6 +28,7 @@
   padding: 12px;
 }
 .event-editor-command-focused .event-preview-heading { margin: 0 0 12px; font-size: 16px; font-weight: 600; }
+.event-editor-modal-window .event-editor.event-editor-command-focused .event-contents-fieldset { container: evt-command-column / inline-size; }
 .event-editor-command-focused .event-contents-fieldset { overflow: auto; }
 .event-editor-command-focused .event-inspector-body { padding: 12px 0; }
 .event-editor-command-focused .event-editor-inspector-column .event-page-preview { min-height: 0; }
@@ -99,8 +100,9 @@
 .event-editor-command-focused .ai-event-preview-actions { margin-top: auto; justify-content: flex-end; }
 /* Keep command rows in one scroll surface. */
 .event-editor-command-focused .event-contents-fieldset { display: block; height: auto; overflow: auto; }
-.event-editor-command-focused .event-contents-fieldset > .event-editor-command-toolbar { position: sticky; top: 0; z-index: 3; height: auto; min-height: 44px; flex-wrap: wrap; }
+/* 툴바는 한 줄이 계약이다 — wrap 이 켜지면 보기 전환·AI 버튼이 둘째 줄로 떨어지고
+   위에 빈 밴드가 남는다(2026-09-21 사용자 화면 재현, 1440/1920 실측). */
+.event-editor-command-focused .event-contents-fieldset > .event-editor-command-toolbar { position: sticky; top: 0; z-index: 3; height: auto; min-height: 44px; flex-wrap: nowrap; }
 .event-editor-command-focused .event-contents-fieldset > .cmd-list,
 .event-editor-command-focused .event-contents-fieldset > .event-storyboard-host { height: auto; max-height: none; overflow: visible; }
 .event-editor-command-focused .event-editor-inspector-column .event-command-text-preview-card { margin: 0; padding: 10px; }
-

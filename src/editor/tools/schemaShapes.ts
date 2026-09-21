@@ -335,6 +335,7 @@ export const ITEM_AMOUNT_SCHEMA: JsonSchema = {
 export const VILLAGE_HOUSE_PLAN_SCHEMA: JsonSchema = {
   type: "object",
   properties: {
+    fence: { type: "boolean", description: "이 집만 울타리(기본 없음). 중요한 집에만 지정." },
     kitId: { type: "string", description: "집 킷 id" },
     ownerName: { type: "string" },
     interior: { type: "boolean", description: "내부 맵 생성 여부" },

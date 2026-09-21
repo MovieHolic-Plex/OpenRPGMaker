@@ -31,6 +31,8 @@ export interface PiToolShape {
   readonly label: string;
   readonly description: string;
   readonly parameters: unknown;
+  /** Pi core schedules shared calls together and treats exclusive calls as ordered barriers. */
+  readonly concurrency?: "shared" | "exclusive";
   execute(toolCallId: string, params: unknown, signal?: AbortSignal): Promise<PiToolExecResult>;
 }
 
@@ -163,6 +165,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
     label: tool.name,
     description: tool.description,
     parameters: tool.parameters,
+    concurrency: tool.mode === "read" ? "shared" as const : "exclusive" as const,
     async execute(_toolCallId, params, signal) {
       const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];

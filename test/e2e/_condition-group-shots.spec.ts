@@ -2,7 +2,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { openSeededEventEditor } from "./eventStoryboardPicker";
 
 const DIR = "output/evidence/condition-groups";
@@ -14,7 +14,7 @@ async function openEditor(page: Page): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 900 });
   const seed = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, seed.project);
+  await seedProjectForEditor(page, seed.project);
   const eventLayer = page.getByTestId("layer-event");
   if (await eventLayer.count()) await eventLayer.click();
   const row = page.getByTestId(`event-list-row-${seed.eventId}`);

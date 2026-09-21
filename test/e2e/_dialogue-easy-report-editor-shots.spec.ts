@@ -12,7 +12,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "reports/dialogue-easy/shots";
 const EVENT_ID = "ev_easy_editor";
@@ -69,7 +69,7 @@ test("에디터에서 말투를 고르는 자리와 프리뷰 재생을 찍는�
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await installPreviewFreeze(page);
-  await seedProjectFromSupabaseCanonical(page, editorProject());
+  await seedProjectForEditor(page, editorProject());
 
   // 캔버스 더블클릭에 의존하지 않는다 — 이벤트 목록에서 여는 경로가 결정적이다
   // (test/e2e/eventEditorCertEvidence.ts 의 openEventEditor 와 같은 순서).

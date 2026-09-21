@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject, createStarterHouseInteriorMap } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { debugState, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop11-scene-flow";
@@ -15,7 +15,7 @@ test.setTimeout(120_000);
 test("loop11 certifies transfer battle and terminal scene commands", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, sceneFlowProject());
+  await seedProjectForEditor(page, sceneFlowProject());
   await writeJson("000-scenario.json", {
     scope: ["transfer", "battleProcessing", "gameOver", "ending", "returnToTitle", "roundtrip persistence", "runtime screens"],
     transferProof: { clickedEventId: "ev_transfer", uniqueTargetMapId: TARGET_MAP_ID },
@@ -195,7 +195,7 @@ async function runReturnToTitle(page: Page, project: Project): Promise<void> {
 }
 
 async function startPlay(page: Page, project: Project): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await expect(page.getByTestId("runtime-state-json")).toBeVisible();

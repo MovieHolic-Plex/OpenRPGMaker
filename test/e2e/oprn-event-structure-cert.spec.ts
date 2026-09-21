@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop5-editor-structure";
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -15,7 +15,7 @@ test.setTimeout(120_000);
 test("loop5 certifies editor page, command, choice branch, cancel branch, and fork branch structure", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, structureProject());
+  await seedProjectForEditor(page, structureProject());
   await writeJson("000-scenario.json", {
     runId: "loop5-editor-structure",
     scope: [

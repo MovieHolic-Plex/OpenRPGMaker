@@ -27,7 +27,7 @@
 
 ## 실제 저장
 
-- Supabase project **rpg-zzu-slates32-38e6**, map **slates_astra_v3_walled_50**.
+- LegacyDb project **rpg-zzu-slates32-38e6**, map **slates_astra_v3_walled_50**.
 - 저장 후 root 및 maps/tilesets mirrors 재로드 일치. 총 13 maps / 8 tilesets. SHA `24c4dea267dc50dbfde27b8fc667912fe2148f83d674cf65fd9e2ce3ca3f3af6`.
 - 기존 12개 지도와 시작 위치 보존. [통합](integration.json), [원격 재로드](persistence.json).
 - 로컬 SQLite project `c8c53479-8d1a-42da-96ee-e493598ef498`, **revision 10**, maps/tilesets/assets/mapTree/startMapId/startPos 재로드 일치. [로컬 근거](local-persistence.json).

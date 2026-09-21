@@ -125,7 +125,7 @@ try {
   await stopOwnedPreview(preview, previewPid);
   await waitForPortClosed(port);
   const receipt = {
-    status: "INTERIM_LOCAL_NOT_SUPABASE_SAVED", runId: ICE_EXPANSE_RUN_ID,
+    status: "INTERIM_LOCAL_NOT_LEGACY_DB_SAVED", runId: ICE_EXPANSE_RUN_ID,
     sourceManifestSha256: ICE_EXPANSE_SOURCE_MANIFEST_SHA256, derivedMapSha256: local.derivedMapSha256,
     mapId: ICE_GRAND_EXPANSE_MAP_ID, targetUrl: `http://${HOST}:${port}/`, viewport: { width: 1_440, height: 1_000, deviceScaleFactor: 1 },
     build: { command: "npm run build", startedAt: buildStartedAt, finishedAt: buildFinishedAt },

@@ -145,7 +145,7 @@
     "old pre-fix editor bash_6 already killed before current-source QA"
   ],
   "limits": [
-    "Temporary engine QA project; no Supabase content writes",
+    "Temporary engine QA project; no LegacyDb content writes",
     "No pixel/auditory model judgment claimed",
     "Pre-fix broad integration gates timedout30m, not a passing baseline; independent of this unit focused proofs"
   ]

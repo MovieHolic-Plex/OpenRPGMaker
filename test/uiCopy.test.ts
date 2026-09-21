@@ -6,7 +6,7 @@ import { layerShortLabel } from "@/editor/panels/aiAgentBrief";
 describe("uiCopy", () => {
   it("plain style uses beginner-friendly words without tool jargon", () => {
     expect(uiLabel("database", "plain")).toBe("자료집");
-    expect(uiLabel("database", "plain")).not.toMatch(/DB|Supabase|chipset|autotile/);
+    expect(uiLabel("database", "plain")).not.toMatch(/DB|LegacyDb|chipset|autotile/);
     // 2026-08-30: `자료` 단독은 폐기했다 — `자료 보관함`(소재)과 앞 두 글자가 겹쳐 한 헤더에
     // 다른 뜻의 두 라벨이 같은 말로 보였다. 축약형은 정본의 축약이어야 하고, `자료집`은
     // 4글자로 툴바에 들어간다.

@@ -55,7 +55,7 @@ npm test -- --maxWorkers=1 test/npcGraphicRecovery.test.ts test/npcGraphicPicker
 ```
 
 The browser driver creates only a temporary freshProject event draft and blocks
-remote project/AI writes. It never touches the shared Supabase project. No new
+remote project/AI writes. It never touches the shared LegacyDb project. No new
 production content, dependency or resolver abstraction is included.
 
 ## Limitations and infrastructure

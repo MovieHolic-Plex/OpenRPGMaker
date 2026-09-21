@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { ActorRecord, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 type CompanionEntry = {
   readonly commandId: string;
@@ -34,7 +34,7 @@ test("동료·전투 탭을 전수 클릭하고 DB 동료가 이미지로 나온
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1586, height: 992 });
   const project = companionProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   const eventId = await page.evaluate(async (mapId) => {
     // dev 서버 절대 URL 동적 import — 정적 분석(TS2307) 회피를 위해 변수 경로로 우회한다.
     const specifier = ["/src/editor/panels", "eventEditor", "modal.ts"].join("/");

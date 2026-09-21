@@ -13,7 +13,7 @@ import {
  * accepted, shutdown closes nothing it spawned, and another agent's/app's server can satisfy QA.
  *
  * The start-live-session and content-digest bindings are also missing: the capture asserts
- * projectId only, so a Supabase row with the right id but the wrong startMapId/startPos, or
+ * projectId only, so a LegacyDb row with the right id but the wrong startMapId/startPos, or
  * different content, still passes.
  *
  * This names both breaks: the ownership planner must reject an occupied/foreign port (never reuse),

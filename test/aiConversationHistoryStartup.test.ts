@@ -60,10 +60,10 @@ beforeEach(() => {
   vi.stubGlobal("indexedDB", new IDBFactory());
   vi.stubGlobal("localStorage", { getItem: () => null, setItem: vi.fn(), removeItem: vi.fn() });
   resetAiRecordDbForTest();
-  vi.stubEnv("VITE_SUPABASE_URL", "https://history.invalid");
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "fixture-only");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "history-startup-fixture");
-  vi.stubEnv("VITE_SUPABASE_USE_PROXY", "false");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "https://history.invalid");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "fixture-only");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "history-startup-fixture");
+  vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "false");
   vi.stubGlobal("fetch", vi.fn(() => { throw new Error("Unexpected network request"); }));
   observed.work.length = 0;
 });

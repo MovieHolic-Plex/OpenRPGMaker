@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId, createForestHarmonyTileset, FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import type {
   AuthorVillageRequest,
   ConstructionDiffTotals,
@@ -41,6 +41,7 @@ export function createExactVillageMap(project: Project, target: NewVillageTarget
   const width = target.width ?? 74;
   const height = target.height ?? 52;
   const size = width * height;
+  project.tilesets[FOREST_HARMONY_ID] ??= createForestHarmonyTileset();
   const tilesetId = target.tilesetId ?? defaultOutdoorTilesetId(project);
   const tileset = project.tilesets[tilesetId];
   if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });

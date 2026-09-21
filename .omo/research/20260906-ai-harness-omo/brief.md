@@ -37,7 +37,7 @@ owns all journal/claim/plan writes. No nested swarms or runtime changes.
   observability only if their state contracts are machine-enforced.
 - RPG already has planning, loop continuation, compaction and tool validation;
   adoption must not duplicate them or restore removed approval friction.
-- Browser game-authoring transactions and Supabase persistence differ from
+- Browser game-authoring transactions and LegacyDb persistence differ from
   filesystem coding-agent edits; generic parallel execution cannot be copied.
 - UI success must reflect actual applied/persisted/verified state, not model prose.
 

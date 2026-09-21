@@ -1,9 +1,9 @@
 # OPRN Studio Agent Entry Point
 
-> **AI-log lookup without browser (2026-09-04 incident: prompt hid under oprn-9c35ec902c):** query `rpg_zzu.ai_conversations` with `Accept-Profile: rpg_zzu`, never filter `project_id` first.
-> Search `entries_json` for kind user to find the hidden prompt.
-> Credentials from `/home/main/z-project/rpg-zzu/.env.local`.
-> Browser fallback: IndexedDB `oprn-ai-records`.
+> **AI 기록 조회:** 현재 프로젝트 폴더의 `project.sqlite`에 있는 `ai_conversations`와
+> 브라우저 IndexedDB `oprn-ai-records`를 먼저 확인한다. `entries_json`의 `kind: user`에서 원문을 찾는다.
+> 과거 LegacyDb 기록을 이관·복구할 때만 `Accept-Profile: rpg_zzu`로 조회한다.
+> 2026-09-04에는 다른 project id 아래에 원문이 있었으므로, 과거 기록 검색은 project id로 먼저 제한하지 않는다.
 
 This repository uses a project-local OpenWiki layer so coding agents can understand the editor before changing it.
 
@@ -122,8 +122,8 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    절차·함정은 `openwiki/agent-worktrees.md` 참조. 다른 도구가 만든 워크트리(`.herdr/`, `.claude/worktrees/`)는
    `node_modules`·`.env.local` 이 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다(dev 포트는 `npm run dev:worktree` 가 스스로 고정 배정한다; `npm run dev` 는 워크트리에서 거절된다) —
    보정 없이 실행하면 전역 tsc 가 잡혀 **저장소 설정이 깨진 것처럼 보이는 가짜 오류**가 난다 (`openwiki/quickstart.md` 1절).
-2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** SQLite 정본(프로젝트 폴더)이
-   공유 싱글턴이라 git 이 충돌을 못 본다 — 직렬화하거나 project id·프로젝트 폴더를 분리한다.
+2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** 프로젝트 정본이
+   워크트리 밖에서 공유되어 git 이 충돌을 못 본다 — 직렬화하거나 별도의 프로젝트 폴더/호스트 프로젝트로 분리한다.
 3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트는 아래 hard rule 을 따른다.
    에이전트의 "테스트 통과했습니다"와 파이프를 거친 종료 코드는 근거로 쓰지 않는다 (실측: 백그라운드 실행기가 exit 0 을 보고했으나 실제로는
    typecheck exit 2 / vitest exit 1 이었다).
@@ -183,53 +183,32 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
   다른 프로젝트에서는 `타일 → AI 참고문서` 가 빈 화면이었다.
 - 학습을 프로젝트마다 다시 하는 비용은 이미지 수십 장을 매번 다시 읽는 비용이다.
 
-## 프로젝트 DB 저장은 정본 호스트로 한다 (hard rule)
+## 프로젝트 정본 저장은 필수 (hard rule)
 
-**에이전트는 프로젝트 DB 저장 없이 게임/맵/이벤트/타일 콘텐츠 작업을 끝내지 않는다.**
-“코드 fixture만 만들고 끝”, “임시 세션에서만 돌려보기”, “로컬 JSON export만” 은 **완료로 치지 않는다.**
+**에이전트는 게임/맵/이벤트 콘텐츠를 실제 프로젝트 저장소에 저장하고 다시 읽기 전에는 완료로 보고하지 않는다.**
+현재 정본은 Electron 또는 팀 프로젝트 호스트가 관리하는 `project.sqlite` + `assets/`다.
+LegacyDb는 과거 데이터 이관·복구 경로이며 새 콘텐츠 작업의 필수 연결이 아니다.
+실행·백업 계약은 `openwiki/team-project-host.md`, 제거 현황은 `openwiki/storage-retirement.md`를 따른다.
 
-### 정본은 SQLite 호스트다
+1. 콘텐츠 작업 전에 **프로젝트 폴더 또는 호스트 주소와 project id**를 확인한다.
+   저장 대상에 접근할 수 없으면 대상 연결 정보를 요청한다. 임시 메모리 세션으로 대체하지 않는다.
+2. 편집기는 실제 저장 브리지가 연결된 상태에서 store flush, 헤드리스 도구는 같은 SQLite
+   저장소 API를 사용한다. 원격 호스트 프로젝트는 해당 호스트의 저장 서비스를 사용한다.
+   실행 중인 호스트의 DB를 별도 프로세스에서 직접 수정하지 않는다.
+3. 저장 후 같은 대상을 다시 load하여 변경을 확인하고 **project id, 저장 대상, 재로드 근거**를 보고한다.
+   SQLite 폴더에 실제 저장한 결과는 완료 근거다. JSON export만으로 이를 대체하지 않는다.
+4. `?blankProject=1` / `?freshProject=1` / `dev-showcase`, 브리지 없는 정적 preview,
+   메모리 어댑터 또는 저장이 비활성화된 세션에서 저장 버튼을 누른 결과는 정본 저장 증거가 아니다.
+5. 순수 엔진/에디터 코드 변경과 단위 테스트용 최소 fixture는 콘텐츠 저장 의무가 없다.
+   사용자가 명시적으로 “DB 없이 fixture만 / 코드만”을 요청한 경우도 예외다.
+   스키마·저장 계약 검증과 테스트 실행 제한은 기존 규칙을 따른다.
+6. 기존 LegacyDb 데이터의 삭제·서비스 종료는 데이터 이관 완료와 별도 작업이다.
+   원본 프로젝트·기록·에셋이 보존되고 대상에서 재로드되는지 확인하기 전에는 폐기하지 않는다.
 
-- Electron 과 `npm run serve:project` / `npm start` 는 **로컬·서버 SQLite 정본**을 쓴다 (`openwiki/quickstart.md` 「팀 SQLite 호스트」).
-  `npm start` 에는 기존 SQLite 폴더를 `OPRN_PROJECT_DIR` 또는 `--project-dir` 로 지정한다.
-- **Supabase `rpg_zzu` 행은 정본이 아니다.** 옛 문서가 "정본은 Supabase 행"이라고 적어 둔 자리가 있지만
-  그 문장은 SQLite 호스트 도입(2026-09-18) 이전의 것이다. 지금은 **SQLite 가 정본**이고 Supabase 는 별도 경로다.
-- **사용자가 이번 작업에서 명시적으로 시키지 않으면 Supabase 에 쓰지 않는다.**
-  읽기·조회는 무해하지만 쓰기는 다른 정본을 만들어 팀 작업을 갈라놓는다.
-- 실측 사고: Slates 32px 참고문서 이관에서 옛 강제 규칙을 따라 Supabase 에도 썼다.
-  정본이 아닌 곳에 사본을 만든 것으로, 사용자가 지적했다.
-
-### 반드시 지킬 것
-
-1. **콘텐츠 작업(데모 게임, 마을, 맵, 이벤트, DB 레코드, 예제 어드벤처)을 시작하기 전에**
-   - SQLite 정본(로컬 폴더 또는 팀 호스트)에 연결·사용 가능한지 확인한다.
-   - 연결이 안 되면 **작업을 중단**하고 사용자에게 정본 경로(또는 `OPRN_PROJECT_DIR`)를 요청한다. DB 없이 대체 구현으로 때우지 않는다.
-
-2. **작성·수정한 프로젝트 데이터는 정본에 저장까지 완료해야 한다.**
-   - 실제 저장 경로를 탄다: 편집기의 저장/자동저장, `store` flush, 또는 팀이 쓰는 저장 스크립트.
-   - 저장 후 **재로드(또는 project id 로 다시 load)** 로 존재함을 증명한다.
-   - 완료 보고에 **정본 위치(프로젝트 폴더·project id)** 와 저장 성공 근거를 남긴다.
-
-3. **금지 — 아래만 하고 끝내지 말 것**
-   - `?blankProject=1` / `?freshProject=1` / `dev-showcase` 임시 세션만 사용하고 저장 스킵.
-   - 레포에 `*.json` fixture / `createSampleAdventureProject` 코드 시드만 추가·교체하고 **정본 미저장**.
-   - “로컬 메모리·export JSON이면 충분”이라고 판단해 저장 단계를 생략.
-   - 저장이 꺼진 상태(예: `dev-showcase`, `shared-demo`)에서 저장 버튼을 누르고 성공한 것처럼 보고.
-
-4. **왜 강제인가**
-   - `blankProject` / `freshProject` / 일부 `devProject` 쇼케이스는 의도적으로 `remotePersistenceEnabled = false` (`dev-showcase`) 다.
-   - 사용자 작업물의 정본(source of truth)은 하나여야 한다. 두 곳에 쓰면 어느 쪽이 진짜인지 아무도 모른다.
-
-5. **허용되는 예외 (좁게)**
-   - **순수 엔진/에디터 코드** 변경만 (UI, 인터프리터, 스키마 마이그레이션 등) 이고 맵·이벤트·데모 콘텐츠를 새로 저작하지 않는 경우 → 저장 의무 없음. 단 스키마 변경 시 migration·load/save 검증은 기존 규칙대로.
-   - **단위 테스트용 최소 fixture** (`test/fixtures/...` 계약 테스트) — 앱에 싣는 “예제 게임/데모”가 아닌 경우만.
-   - 사용자가 **명시적으로** “DB 없이 fixture만 / 코드만” 이라고 한 경우만 예외. 모호하면 정본 경로를 따른다.
-
-6. **데모·예제 게임 작업 시 권장 순서**
-   1. 정본(SQLite 호스트) 연결 확인
-   2. 저장이 켜진 상태로 에디터/스크립트에서 저작
-   3. 정본 저장 + 재로드 검증
-   4. (선택) 레포 fixture/코드 시드는 **저장 성공 후** 보조 산출물로만 추가
+7. **LegacyDb·Supabase에 임의로 쓰지 않는다.** 읽기·조회는 무해하지만, 사용자가 이번 작업에서
+   명시적으로 시키지 않으면 원격에 쓰지 않는다. 정본이 아닌 곳에 사본을 만들면 어느 쪽이 진짜인지
+   아무도 모르게 된다 — 실측: Slates 32px 참고문서 이관에서 옛 강제 규칙을 따라 Supabase에도 썼고,
+   사용자가 지적했다. 옛 문서의 "정본은 Supabase 행" 문장은 SQLite 호스트 도입(2026-09-18) 이전 것이다.
 
 ## Agent rules
 
@@ -241,4 +220,4 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 - **버전을 손으로 올리지 마라.** 릴리스는 `npm run release` 하나로 자르고, 매 머지에 끌려 올리는 것이 아니다.
   커밋 메시지가 릴리스 노트의 원본이다 — `feat:`/`fix:`/`refactor:` 규약을 지켜라. 네 버전 축(앱 · 문서 스키마 · 로컬 스토어 · 발행 게임)의
   구분과 절차는 `openwiki/release-and-version.md`.
-- For **authored game content**, validation is incomplete until **정본(SQLite 호스트) load after save** succeeds (see hard rule above).
+- For **authored game content**, validation is incomplete until **canonical project store load after save** succeeds (see hard rule above).
