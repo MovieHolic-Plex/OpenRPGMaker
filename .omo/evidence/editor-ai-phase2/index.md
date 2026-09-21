@@ -1,7 +1,7 @@
 # Editor AI phase 2 evidence
 
 - Date: 2026-08-24
-- Supabase project: `oprn-97906517a7`
+- LegacyDb project: `oprn-97906517a7`
 - Active in-editor provider: `OpenAI Codex` (OAuth)
 - External controller: AGY 1.1.19 with enabled `rpgzzu-assistant` MCP; live `assistant_ping=true` and `assistant_status.ready=true`
 

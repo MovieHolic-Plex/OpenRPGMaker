@@ -1,5 +1,5 @@
 /**
- * 에디터 URL ↔ Supabase project 식별자 동기화.
+ * 에디터 URL ↔ project storage project 식별자 동기화.
  *
  * - `?project=<projectId>`  : 로드 대상 (정본)
  * - `?name=<title>`         : 사람이 읽는 제목 (공유/북마크용, 로드에는 불필요)

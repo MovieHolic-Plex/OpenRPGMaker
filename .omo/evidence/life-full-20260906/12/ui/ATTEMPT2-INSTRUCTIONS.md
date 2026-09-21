@@ -78,7 +78,7 @@ Add genuine failing tests for these incomplete cases before correcting them.
 
 The first native fixture was1x1 with no plots, edge or last-exit setup. It cannot
 cover the required native3x3/passRows1 and failure cases. Author an adequate
-minimal isolated QA project/input set, verify Supabase save/reload before using
+minimal isolated QA project/input set, verify LegacyDb save/reload before using
 new authored content, and record its exact ID/hash/body settings. Preserve the
 first fixture/proof and the existing stardew demo/user content.
 

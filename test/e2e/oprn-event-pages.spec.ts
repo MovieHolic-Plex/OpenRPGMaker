@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expandEventConditions, expandEventMovementSection } from "./eventEditorExpandHelpers";
 import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 test.setTimeout(60_000);
@@ -279,7 +279,7 @@ function loadEventFixture(): MutableEventFixture {
 }
 
 async function seedProject(page: Page, project: SeedProject): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
 }
 
 test("event editor manages RM2K3-style pages with conditions and page-owned text", async ({ page }, testInfo) => {

@@ -9,7 +9,7 @@
 
 `node scripts/qa/capture-restored-river-village.mjs`로 현재 도구를 브라우저에서 실행했다.
 인자는 새 맵, 집 8채, 주민 4명, 내부 생성, seed 17이며 형태·테마·크기를 지정하지 않았다.
-Supabase 저장 후 재조회한 전체 문서와 SHA가 일치함을 확인하고 그 문서를 렌더링했다.
+LegacyDb 저장 후 재조회한 전체 문서와 SHA가 일치함을 확인하고 그 문서를 렌더링했다.
 
 - Project ID: `river-groves-restored-20260921-76a3-1789960908442`
 - SHA-256: `aad45cfee7aa3edff3ca1e2427eb12f4f978204e1e72d16c710956b0c5ce1939`

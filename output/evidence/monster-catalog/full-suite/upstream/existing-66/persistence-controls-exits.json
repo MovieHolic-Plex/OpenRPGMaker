@@ -40,9 +40,9 @@
       "READONLY_AUDIT": "/tmp/st_01a079-existing/persistence-authentication-error-audit.jsonl",
       "PERSISTENCE_CONTROL_MODE": "authentication-error",
       "PERSISTENCE_CONTROL_TRACE": "/tmp/st_01a079-existing/persistence-authentication-error-fetch.jsonl",
-      "VITE_SUPABASE_URL": "http://127.0.0.1:1",
-      "VITE_SUPABASE_ANON_KEY": "test-anon-key",
-      "VITE_SUPABASE_PROJECT_ID": "rpg-zzu-house-template-gallery"
+      "VITE_LEGACY_DB_URL": "http://127.0.0.1:1",
+      "VITE_LEGACY_DB_ANON_KEY": "test-anon-key",
+      "VITE_LEGACY_DB_PROJECT_ID": "rpg-zzu-house-template-gallery"
     },
     "startedAt": "2026-09-06T23:41:38.328997+00:00",
     "durationSeconds": 7.050797706004232,
@@ -88,9 +88,9 @@
       "READONLY_AUDIT": "/tmp/st_01a079-existing/persistence-success-audit.jsonl",
       "PERSISTENCE_CONTROL_MODE": "success",
       "PERSISTENCE_CONTROL_TRACE": "/tmp/st_01a079-existing/persistence-success-fetch.jsonl",
-      "VITE_SUPABASE_URL": "http://127.0.0.1:1",
-      "VITE_SUPABASE_ANON_KEY": "test-anon-key",
-      "VITE_SUPABASE_PROJECT_ID": "rpg-zzu-house-template-gallery"
+      "VITE_LEGACY_DB_URL": "http://127.0.0.1:1",
+      "VITE_LEGACY_DB_ANON_KEY": "test-anon-key",
+      "VITE_LEGACY_DB_PROJECT_ID": "rpg-zzu-house-template-gallery"
     },
     "startedAt": "2026-09-06T23:41:38.330237+00:00",
     "durationSeconds": 12.862400455982424,

@@ -1,6 +1,6 @@
 import { addShopGoods } from "./shopAuthoring";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import {
   exportedProject,
   makeCommerceProject,
@@ -109,7 +109,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
   await page.setViewportSize({ width: 1280, height: 800 });
   const authoringProject = makeCommerceProject();
   authoringProject.maps.map_shop.events = [];
-  await seedProjectFromSupabaseCanonical(page, authoringProject);
+  await seedProjectForEditor(page, authoringProject);
   await openEventEditorAtMapTile(page);
 
   await expect(page.getByTestId("event-command-kind-select")).toHaveCount(0);
@@ -195,7 +195,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
 
   await page.getByTestId("event-editor-modal-close").click();
   await expect(page.getByTestId("event-editor-modal")).toHaveCount(0);
-  await seedProjectFromSupabaseCanonical(page, makeCommerceProject());
+  await seedProjectForEditor(page, makeCommerceProject());
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
@@ -227,7 +227,7 @@ test("shop and inn commands are readable in the editor and playable at runtime",
 
 test("common event inline commands use readable Korean command labels", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, makeCommerceProject());
+  await seedProjectForEditor(page, makeCommerceProject());
   await page.getByTestId("toolbar-database").click();
   // 29개 탭은 그룹 아코디언 안에 있고 한 그룹만 펼쳐진다(database.ts defaultCollapsedGroups).
   // '공용 이벤트' 는 '세계' 그룹 소속이라 먼저 그 그룹을 열어야 탭이 보인다(예전 slug 는 `map`).
@@ -250,7 +250,7 @@ test("common event inline commands use readable Korean command labels", async ({
 
 test("shop and inn keep the player in the panel when gold is insufficient", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, makeInsufficientCommerceProject());
+  await seedProjectForEditor(page, makeInsufficientCommerceProject());
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
@@ -278,7 +278,7 @@ test("shop supports quantity purchase and item selling when enabled", async ({ p
   const pageCommands = project.maps.map_shop.events[0]?.pages?.[0]?.commands;
   if (!pageCommands) throw new Error("missing commerce commands");
   pageCommands[1] = { kind: "shop", itemIds: ["item_potion"], allowSell: true, quantityMode: "select" };
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);
@@ -320,7 +320,7 @@ test("shop supports quantity purchase and item selling when enabled", async ({ p
 
 test("inn restores party HP and MP after payment", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, makeInnRecoveryProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, makeInnRecoveryProject(), "/?e2eVitals=1");
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);
   await waitForRuntimeInput(page);

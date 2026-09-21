@@ -116,7 +116,7 @@ const html = `<!doctype html>
 <body>
 <header>
   <h1>맵 쇼케이스 프로젝트 — 에디터가 만들 수 있는 맵 전 유형</h1>
-  <div class="sub">2026-07-20 · 총 ${rendered.length}맵 · 프로젝트 <code>${PROJECT_ID}</code> (Supabase 저장 완료)</div>
+  <div class="sub">2026-07-20 · 총 ${rendered.length}맵 · 프로젝트 <code>${PROJECT_ID}</code> (LegacyDb 저장 완료)</div>
   <div class="open">에디터에서 열기: URL 뒤에 <code>?project=${PROJECT_ID}</code> 를 붙이면 이 프로젝트가 로드됩니다.
   직접 수정하시면 그 상태를 기준으로 피드백 루프를 돌립니다.</div>
 </header>

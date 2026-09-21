@@ -5,7 +5,7 @@ import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { tapKey, startNewGameFromTitle } from "./runtimeInput";
 
 type RuntimeState = {
@@ -53,7 +53,7 @@ test("build_village open door transfers on step into the generated house interio
   }, null, 2), "utf8");
 
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, scenario.project);
+  await seedProjectForEditor(page, scenario.project);
   await page.screenshot({ path: `${EVIDENCE_DIR}/editor-village.png`, fullPage: true });
   await page.getByTestId("mode-play").click();
   await startNewGameFromTitle(page);

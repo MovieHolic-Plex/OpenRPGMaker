@@ -122,7 +122,7 @@ code{font-family:var(--mono);font-size:12px;background:#0b1426;border:1px solid 
   <div class="grid3">
     <div class="card bad"><span class="tag p0">P0</span><h3>상점은 경제, 배치 아님</h3><p>AI가 <code>상점 주인</code> 이름만 보고 <code>shop { itemIds: [] }</code> 를 꽂는다 — 검증은 <code>shop.items.empty</code> 에러를 던진다. 빈 점포가 “성공”처럼 보인다. 상인 소지금(100G)·계절 재고·소셜 할인은 에디터에 미리보기가 없다.</p></div>
     <div class="card bad"><span class="tag p0">P0</span><h3>타일셋은 계약, 그림 아님</h3><p>하네스는 <code>DEFAULT_TILESET_TEXTURE_KEY</code> 전용. 업로드 칩셋은 의미·통행·레이어가 모두 없다. graft는 <code>djb2 → hex</code> 충돌 가능, 커스텀 소스는 <code>warn 후 skip</code> 으로 조용히 사라진다.</p></div>
-    <div class="card warn"><span class="tag p1">P1</span><h3>리소스는 검증, 존재 아님</h3><p><code>validateOptionalResource</code> 가 <code>generated-enemy-/farming-crop-/easyrpg-monster-</code> 접두사를 무조건 통과시킨다. 오타가 검증도, 빌드도 안 터뜨리고 런타임 404로만 드러난다. Supabase 캐시는 base64 dataUrl만 캐시한다.</p></div>
+    <div class="card warn"><span class="tag p1">P1</span><h3>리소스는 검증, 존재 아님</h3><p><code>validateOptionalResource</code> 가 <code>generated-enemy-/farming-crop-/easyrpg-monster-</code> 접두사를 무조건 통과시킨다. 오타가 검증도, 빌드도 안 터뜨리고 런타임 404로만 드러난다. LegacyDb 캐시는 base64 dataUrl만 캐시한다.</p></div>
   </div>
   <div class="callout blue" style="margin-top:14px">
     <b>적대적 질문 3개</b> — (1) 빈 상점을 AI가 만들어도 사용자는 왜 모를까? → 에러는 DraftValidator에만 있고, AI 완료 토스트는 “성공”이다. (2) 커스텀 칩셋에 나무를 심으면 왜 검은 배경이 보일까? → <code>enforceTransparentOverlayPriority</code> 가 기본 칩셋에서만 동작한다. (3) 리소스 오타가 왜 조용할까? → 접두사 예외가 assert를 우회한다.
@@ -395,7 +395,7 @@ code{font-family:var(--mono);font-size:12px;background:#0b1426;border:1px solid 
 <!-- 3 RESOURCE -->
 <section id="resource" class="block">
   <h2>3. 리소스 관리 — 모으는 건 넓고, 검증은 좁다</h2>
-  <p>실사: <code>src/project/io/resourceReferenceValidation.ts</code> / <code>src/assets/generatedAssetResourceResolver.ts</code> / <code>src/assets/supabaseResourceCache.ts</code> / <code>src/project/resourceProfiles.ts</code> / <code>src/assets/resourceSlicing.ts</code> / <code>src/assets/resourceSearch.ts</code></p>
+  <p>실사: <code>src/project/io/resourceReferenceValidation.ts</code> / <code>src/assets/generatedAssetResourceResolver.ts</code> / <code>src/assets/legacyDbResourceCache.ts</code> / <code>src/project/resourceProfiles.ts</code> / <code>src/assets/resourceSlicing.ts</code> / <code>src/assets/resourceSearch.ts</code></p>
 
   <div class="figure">
     <svg viewBox="0 0 1180 300" role="img" aria-label="Resource pipeline">
@@ -435,7 +435,7 @@ code{font-family:var(--mono);font-size:12px;background:#0b1426;border:1px solid 
       <!-- bottom: cache & slicing -->
       <g>
         <rect x="14" y="104" width="560" height="82" rx="10" fill="#0f1a30" stroke="#23324e"/>
-        <text x="26" y="122" fill="#b48bff" font-size="11" font-family="JetBrains Mono">Supabase Cache — base64 dataUrl만</text>
+        <text x="26" y="122" fill="#b48bff" font-size="11" font-family="JetBrains Mono">LegacyDb Cache — base64 dataUrl만</text>
         <g font-family="JetBrains Mono" font-size="8" fill="#9aa8c4">
           <text x="26" y="138">parseBase64DataUrl(/^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/)</text>
           <text x="26" y="150">Cache API put(cacheUrl, Response(blob)) · cacheUrl=/__rpg-zzu-cache__/resources/{id}</text>
@@ -476,9 +476,9 @@ code{font-family:var(--mono);font-size:12px;background:#0b1426;border:1px solid 
 assert(knownResourceIds.has(id), `존재하지 않습니다: ${id}`)</code></pre>
       <p>오타 <code>generated-enemy-slime-blu</code>(e 누락)도, 존재하지 않는 <code>farming-crop-ghost-pepper</code> 도 검증·역직렬화를 통과한다. 런타임에 404로만 드러나고, 그 404는 <code>generatedAssetResourceResolver.ts:hero-03-face</code> 주석처럼 “얼굴 노드 제거”로 조용히 처리된다. 사용자는 “왜 내 몬스터가 안 보이냐”를 검증 패널이 아니라 게임 화면에서 처음 안다.</p>
     </div>
-    <div class="card warn"><span class="tag p1">P1 — 캐시 사각</span><h3>Supabase 캐시는 base64만 안다</h3>
-      <p><code>supabaseResourceCache.ts:BASE64_DATA_URL = /^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/</code> — <code>parseBase64DataUrl</code> 가 이 정규식에 안 맞으면 <code>skipped: not-base64-data-url</code> 로 버린다. 외부 URL 업로드, blob URL, plain text dataUrl은 전부 스킵. <code>cacheStorage == undefined</code> 면 <code>cache-api-unavailable</code> 로 전량 스킵. 리포트 <code>{ cached, skipped }</code> 는 반환되지만, 어디에도 경고 토스트가 없다. 오프라인/배포 시 리소스가 조용히 빠진다.</p>
-      <div class="callout warn" style="margin-top:10px">추가로 <code>SUPABASE_RESOURCE_CACHE_NAME = "…-v1"</code> 이 하드코딩. 프로젝트가 바뀌어도 같은 캐시 이름이라 오래된 리소스가 남는다. 무효화 키가 없다.</div>
+    <div class="card warn"><span class="tag p1">P1 — 캐시 사각</span><h3>LegacyDb 캐시는 base64만 안다</h3>
+      <p><code>legacyDbResourceCache.ts:BASE64_DATA_URL = /^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/</code> — <code>parseBase64DataUrl</code> 가 이 정규식에 안 맞으면 <code>skipped: not-base64-data-url</code> 로 버린다. 외부 URL 업로드, blob URL, plain text dataUrl은 전부 스킵. <code>cacheStorage == undefined</code> 면 <code>cache-api-unavailable</code> 로 전량 스킵. 리포트 <code>{ cached, skipped }</code> 는 반환되지만, 어디에도 경고 토스트가 없다. 오프라인/배포 시 리소스가 조용히 빠진다.</p>
+      <div class="callout warn" style="margin-top:10px">추가로 <code>LEGACY_DB_RESOURCE_CACHE_NAME = "…-v1"</code> 이 하드코딩. 프로젝트가 바뀌어도 같은 캐시 이름이라 오래된 리소스가 남는다. 무효화 키가 없다.</div>
     </div>
   </div>
 
@@ -528,7 +528,7 @@ assert(knownResourceIds.has(id), `존재하지 않습니다: ${id}`)</code></pre
           <rect x="806" y="52" width="360" height="36" rx="8" fill="#2a1420" stroke="#5a2030"/><text x="986" y="66" fill="#ff8fa0">접두사 우회 — 오타가 검증 통과</text><text x="986" y="80" fill="#ff8fa0">404는 런타임에서만 발견</text>
           <rect x="14" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="194" y="114" fill="#ffd8a8">merchantGold/season/social 미리보기 없음</text><text x="194" y="128" fill="#ffd8a8">플레이어가 처음 본다</text>
           <rect x="410" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="590" y="114" fill="#ffd8a8">graft 해시 충돌·조용한 실패</text><text x="590" y="128" fill="#ffd8a8">warn 후 빈칸, 캐시 키 충돌</text>
-          <rect x="806" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="986" y="114" fill="#ffd8a8">Supabase cache base64만</text><text x="986" y="128" fill="#ffd8a8">http 업로드는 스킵</text>
+          <rect x="806" y="100" width="360" height="36" rx="8" fill="#2a1e12" stroke="#5a3d1a"/><text x="986" y="114" fill="#ffd8a8">LegacyDb cache base64만</text><text x="986" y="128" fill="#ffd8a8">http 업로드는 스킵</text>
           <rect x="14" y="148" width="360" height="36" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="194" y="162" fill="#8ec8ff">quantity select 힌트 없음</text><text x="194" y="176" fill="#8ec8ff">←→ 로 수량, 몰라서 1개씩</text>
           <rect x="410" y="148" width="360" height="36" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="590" y="162" fill="#8ec8ff">검색 점수 태그 개수 비례</text><text x="590" y="176" fill="#8ec8ff">그룹 3개면 태그 3배</text>
           <rect x="806" y="148" width="360" height="36" rx="8" fill="#15233a" stroke="#2a3a5c"/><text x="986" y="162" fill="#8ec8ff">슬라이싱 오디오 무검사</text><text x="986" y="176" fill="#8ec8ff">깨진 오디오도 ok:true</text>
@@ -553,7 +553,7 @@ assert(knownResourceIds.has(id), `존재하지 않습니다: ${id}`)</code></pre
       <tr><td>타일셋 하네스</td><td><code>tilesetHarness/combinedTown.ts / themePacks.ts</code> <code>resourceSlicing.ts: chipset 480</code></td><td>하네스는 번들 전용, enforceTransparentOverlayPriority, 나무 수관/밑동 예외</td></tr>
       <tr><td>타일 graft</td><td><code>tileGrafts.ts / tileGraftImageCache.ts</code></td><td>djb2 해시, rowAligned 확장, dual bake, warn+skip</td></tr>
       <tr><td>리소스 수집·검증</td><td><code>resourceReferenceValidation.ts: collectResourceIds / validateOptionalResource</code></td><td>8소스 수집, 접두사 3개 무조건 통과</td></tr>
-      <tr><td>리소스 캐시·규격</td><td><code>supabaseResourceCache.ts / resourceProfiles.ts</code></td><td>base64만 캐시, v1 하드코딩, audio 무검사</td></tr>
+      <tr><td>리소스 캐시·규격</td><td><code>legacyDbResourceCache.ts / resourceProfiles.ts</code></td><td>base64만 캐시, v1 하드코딩, audio 무검사</td></tr>
       <tr><td>검색</td><td><code>resourceSearch.ts: bundledTileSemantics / tileCandidates / queryScore</code></td><td>번들→그룹→메타 병합, 한영 동의어, 공백 합산 점수</td></tr>
     </tbody>
   </table>
@@ -612,7 +612,7 @@ assert(knownResourceIds.has(id), `존재하지 않습니다: ${id}`)</code></pre
       <tr><td><span class="tag p0">P0-3</span></td><td><b>접두사 예외 축소</b> — <code>generated-enemy-/farming-crop-/easyrpg-monster-</code> 를 무조건 통과 대신, <code>collectResourceIds</code> 에 실제 존재하는지만 통과. 오타는 에러로.</td><td>404를 검증에서 잡아야 한다</td><td>S</td></tr>
       <tr><td><span class="tag p1">P1-1</span></td><td><b>상점 경제 미리보기</b> — 상점 폼에 <code>merchantGold / 시즌(봄·여름·가을·겨울) / 소셜 할인</code> 3줄 미리보기. 0원·무료 할인은 노란 경고. 테스트는 이미 있다.</td><td>에디터와 런타임의 간극 1순위</td><td>M</td></tr>
       <tr><td><span class="tag p1">P1-2</span></td><td><b>커스텀 칩셋 하네스 v1</b> — 업로드 칩셋도 <code>투명 타일→upper / 불투명→lower</code> 최소 계약 + 팔레트에 “하네스 없음 — 수동 레이어 지정 필요” 배지. 검색은 해당 칩셋 라벨이 없을 때 combinedTown 라벨을 붙이지 마라.</td><td>업로드 경로가 완전히 무계약</td><td>M</td></tr>
-      <tr><td><span class="tag p1">P1-3</span></td><td><b>quantity select 힌트 + Supabase 캐시 경고</b> — 상점 아이템 리스트에 “←→ 수량” 힌트, 캐시 리포트 <code>skipped.length&gt;0</code> 이면 에디터 토스트. <code>CACHE_NAME v1→v2</code> 마이그레이션 키 추가.</td><td>작은 UX 빚, 발견 비용 큼</td><td>S</td></tr>
+      <tr><td><span class="tag p1">P1-3</span></td><td><b>quantity select 힌트 + LegacyDb 캐시 경고</b> — 상점 아이템 리스트에 “←→ 수량” 힌트, 캐시 리포트 <code>skipped.length&gt;0</code> 이면 에디터 토스트. <code>CACHE_NAME v1→v2</code> 마이그레이션 키 추가.</td><td>작은 UX 빚, 발견 비용 큼</td><td>S</td></tr>
       <tr><td><span class="tag p2">P2-1</span></td><td><b>graft 해시 강화 + 카운트 표시</b> — <code>djb2</code> 를 <code>SHA-1 8자리</code> 또는 <code>FNV-1a 64</code> 로, 캔버스 확장 시 에디터에 “510 tiles (30×17)” 배지 노출.</td><td>충돌은 드물지만 캐시 오염 시 디버깅 지옥</td><td>S</td></tr>
       <tr><td><span class="tag p2">P2-2</span></td><td><b>검색 점수 상한 + itemIds/stock 단일화</b> — 태그 점수 상한, <code>stock</code> 이 있으면 <code>itemIds</code> 를 숨기거나 동기화. 0원 상점은 <code>info</code> 로라도 알려라.</td><td>점수 쏠림·이중 기록 혼란</td><td>S</td></tr>
     </tbody>

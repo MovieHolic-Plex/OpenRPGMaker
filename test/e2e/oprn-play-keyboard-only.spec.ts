@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { makeCommerceProject, runtimeState, tapKey } from "./oprn-commerce-fixtures";
 
 test("runtime shop ignores mouse clicks but buys through keyboard", async ({ page }) => {
@@ -8,7 +8,7 @@ test("runtime shop ignores mouse clicks but buys through keyboard", async ({ pag
     (globalThis as { __oprnForcePointerBlock?: boolean }).__oprnForcePointerBlock = true;
   });
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, makeCommerceProject());
+  await seedProjectForEditor(page, makeCommerceProject());
   await page.getByTestId("mode-play").click();
   await startTitleWithKeyboard(page);
   await expectRuntimeInput(page);

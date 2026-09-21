@@ -102,7 +102,7 @@ Pure LOC: production file **78**, regression file **132** (both below 200).
   serializer and in-memory store/history. No mocks of the asserted integration.
 - No fixed sleeps, polling, timer changes, DB writes, schema/SQL/grant changes,
   UI/CSS/images, legacy adapter edits, new workers, push, PR or merge.
-- Remote persistence is explicitly disabled and Supabase env inputs blanked in tests.
+- Remote persistence is explicitly disabled and LegacyDb env inputs blanked in tests.
   This is offline backend evidence, not real-provider, browser or persisted-DB proof.
 - No full legacy/old80 suite or build was run. Parent integration/build and the other
   adversarial findings remain outside this change.

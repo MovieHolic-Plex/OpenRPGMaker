@@ -28,18 +28,18 @@ type UiEvent = { readonly action: string; readonly surface: string; readonly det
 
 /**
  * 원격 왕복 실측용(선택). 기본 실행은 로컬 전용이다 — 이 워크트리에는 `.env.local` 이 없어서
- * Supabase 가 미설정이고, 그 상태 자체가 검증 대상 중 하나다(하네스의 「기록 로컬 전용」 배지).
+ * LegacyDb 가 미설정이고, 그 상태 자체가 검증 대상 중 하나다(하네스의 「기록 로컬 전용」 배지).
  *
  * DB 까지 확인할 때만 켠다:
- *   PROBE_SUPABASE_URL=… PROBE_SUPABASE_ANON_KEY=… PROBE_SUPABASE_PROJECT_ID=e2e-ui-event-log-probe
+ *   PROBE_LEGACY_DB_URL=… PROBE_LEGACY_DB_ANON_KEY=… PROBE_LEGACY_DB_PROJECT_ID=e2e-ui-event-log-probe
  * projectId 는 **일부러 새 값**을 쓴다. 공유 프로젝트를 지목하면 freshProject=1 이 그 프로젝트의
  * 맵을 덮어쓴다(vitest.live.config.ts 가 경고하는 그 사고).
  */
-const REMOTE_PROBE = process.env.PROBE_SUPABASE_URL && process.env.PROBE_SUPABASE_ANON_KEY
+const REMOTE_PROBE = process.env.PROBE_LEGACY_DB_URL && process.env.PROBE_LEGACY_DB_ANON_KEY
   ? {
-      url: process.env.PROBE_SUPABASE_URL,
-      anonKey: process.env.PROBE_SUPABASE_ANON_KEY,
-      projectId: process.env.PROBE_SUPABASE_PROJECT_ID ?? "e2e-ui-event-log-probe",
+      url: process.env.PROBE_LEGACY_DB_URL,
+      anonKey: process.env.PROBE_LEGACY_DB_ANON_KEY,
+      projectId: process.env.PROBE_LEGACY_DB_PROJECT_ID ?? "e2e-ui-event-log-probe",
       source: "custom" as const,
     }
   : null;
@@ -53,8 +53,8 @@ async function boot(page: Page): Promise<void> {
   }, FAKE_CONFIG);
   if (REMOTE_PROBE) {
     await page.addInitScript((probe) => {
-      localStorage.setItem("oprn:supabase-project-config", JSON.stringify(probe));
-      localStorage.setItem("oprn:supabase-selected-project", probe.projectId);
+      localStorage.setItem("oprn:legacyDb-project-config", JSON.stringify(probe));
+      localStorage.setItem("oprn:legacyDb-selected-project", probe.projectId);
     }, REMOTE_PROBE);
   }
   await page.goto("/?freshProject=1");

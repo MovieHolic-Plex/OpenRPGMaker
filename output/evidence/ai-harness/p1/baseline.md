@@ -109,7 +109,7 @@ The script's intended later path uses the real composer/session/tool/apply/store
 and event subscriptions armed before actions. It deliberately uses
 `?blankProject=1`, asserts remote persistence disabled, and blocks non-read
 requests except its scripted local LLM endpoint. Even a passing execution of
-this script would not prove Supabase save/read consistency or autonomous
+this script would not prove LegacyDb save/read consistency or autonomous
 milestone remote proof. No remote test fixture was authored by this baseline.
 
 ## Exact current persistence proof gap (source inspection)
@@ -135,7 +135,7 @@ These findings are from the tested HEAD, not from a passing remote experiment.
    path, but still leave the plan marker consumed.
 
 3. **Target, accepted content and commit are not bound together.**
-   The session reads `supabaseProjectConfigDraft().projectId` after reload,
+   The session reads `legacyDbProjectConfigDraft().projectId` after reload,
    takes only optional `flushResult.sha256`, and asks `list_project_commits`
    for the latest row (`assistantSession.ts:2537-2563`). That row is not the
    actual apply receipt. `ProjectFlushResult` (`store.ts:109-119`) exposes no
@@ -144,7 +144,7 @@ These findings are from the tested HEAD, not from a passing remote experiment.
 
 4. **The proof read mutates the editor and can erase newer local edits.**
    `reloadFromRemote` checks dirty state only before awaiting
-   `loadProjectFromSupabase()`. After the await, it replaces `this.current`,
+   `loadProjectFromLegacyDb()`. After the await, it replaces `this.current`,
    normalizes, resets the persisted baseline and clears dirty state
    (`store.ts:669-690`) without a mutation-generation check. A local edit made
    while the read is in flight is not protected by that pre-await check.

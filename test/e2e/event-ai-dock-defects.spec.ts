@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 /**
  * 「AI로 명령 만들기」 도크가 **보기 방식과 무관하게** 초안을 보여야 한다는 계약.
@@ -79,7 +79,7 @@ async function mockLlmGated(page: Page, commands: readonly Command[]): Promise<v
 }
 
 async function openDock(page: Page, project: Project): Promise<Locator> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(async (mapId) => {
     const modalPath = "/src/editor/panels/eventEditor/modal.ts";
     const modalModule = (await import(modalPath)) as typeof import("@/editor/panels/eventEditor/modal");

@@ -194,7 +194,7 @@
       "bytes": 19171,
       "match": true
     },
-    "src/project/supabaseProjectSync.ts": {
+    "src/project/legacyDbProjectSync.ts": {
       "sha256": "27e5a0de2dbe154e65686be85a832022369503f8a8ecd25f12ab11a198aad31b",
       "bytes": 60954,
       "match": true

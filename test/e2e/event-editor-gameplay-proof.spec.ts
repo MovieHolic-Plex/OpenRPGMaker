@@ -4,7 +4,7 @@ import type { Command, EventPage, Project } from "@/project/types";
 import { defaultDatabase } from "@/project/defaults/defaultDatabase";
 import { openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText } from "./eventEditorCertEvidence";
 import { tapKey, startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-gameplay-proof";
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -43,7 +43,7 @@ test.setTimeout(120_000);
 test("event editor popups produce real gameplay direction route and frequency proof", async ({ page }) => {
   await resetEvidence();
   await page.setViewportSize({ width: 1478, height: 926 });
-  await seedProjectFromSupabaseCanonical(page, gameplayProofProject());
+  await seedProjectForEditor(page, gameplayProofProject());
 
   await openEventEditor(page, "ev_text");
   await authorAndEditTextCommand(page);

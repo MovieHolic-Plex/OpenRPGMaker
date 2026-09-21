@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { openDatabase } from "./oprn-database-helpers";
 
 /**
@@ -70,7 +70,7 @@ async function canvasStats(locator: Locator): Promise<CanvasStats> {
 
 test("빈 프로젝트의 시작 화면이 원형 전경 PNG 6장으로 열린다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 그림"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 그림"));
   await openVillageTab(page);
 
   // 시작 화면은 빈 상태를 **감싼다** — 두 빈 판 testid 가 그대로 살아 있어야 기존 계약이 산다.
@@ -105,7 +105,7 @@ test("빈 프로젝트의 시작 화면이 원형 전경 PNG 6장으로 열린�
 
 test("집 형태 히어로 캔버스에 실제 타일이 들어간다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 그림"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 그림"));
   await openVillageTab(page);
 
   await page.getByTestId("db-village-start-shape-l").click();
@@ -139,7 +139,7 @@ test("집 형태 히어로 캔버스에 실제 타일이 들어간다", async ({
 
 test("날개 손잡이를 끌면 값이 커밋되고 그림이 다시 그려진다", async ({ page }) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 그림"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 그림"));
   await openVillageTab(page);
   await page.getByTestId("db-village-start-shape-l").click();
 
@@ -186,7 +186,7 @@ test("날개 손잡이를 끌면 값이 커밋되고 그림이 다시 그려진�
 
 test("프리셋 「미리보기 만들기」가 실제 시공 결과를 그린다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 그림"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 그림"));
   await openVillageTab(page);
 
   await page.getByTestId("db-village-archetype-farm-rural").click();
@@ -216,7 +216,7 @@ test("프리셋 「미리보기 만들기」가 실제 시공 결과를 그린�
 
 test("프리셋 형태 화이트리스트에 집 그림이 들어간다", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1600, height: 1000 });
-  await seedProjectFromSupabaseCanonical(page, createEmptyToolProject("마을 그림"));
+  await seedProjectForEditor(page, createEmptyToolProject("마을 그림"));
   await openVillageTab(page);
 
   await page.getByTestId("db-village-archetype-farm-rural").click();

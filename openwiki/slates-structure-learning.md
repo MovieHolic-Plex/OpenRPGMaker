@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Slates 구조 학습 — 성곽 마을을 위한 교정 기록
 
 **구조 관찰의 배경 문서. 새 저작의 시작은 [단계별 조립 지침](slates-assembly-playbook.md).** 이전 `slates-village-authoring.md`의 단순 주택/50×50 물버들 마을은
@@ -114,7 +116,7 @@
 - 생성기: `scripts/content/build-slates-mastery.mjs`, `build-slates-mastery-report.mjs`.
   수동 규칙: `slates-mastery-specs.mjs`, `slates-mastery-notes.mjs`.
 - 저장/재로드 근거: `verify-shots/slates-mastery/persistence.json`, `local-persistence.json`, `SUMMARY.md`.
-- 다음 작업 전 최신 Supabase root를 `read-slates-project.mjs`로 읽고 SHA 조건 저장한다.
+- 다음 작업 전 최신 LegacyDb root를 `read-slates-project.mjs`로 읽고 SHA 조건 저장한다.
   기존 입력 스냅샷을 최신인 것처럼 재사용하지 않는다.
 
 아직 완료로 말하면 안 되는 것: **정확한 성문 내부 복원, 임의 T/L자 건물 생성, 모든 성벽 방향의

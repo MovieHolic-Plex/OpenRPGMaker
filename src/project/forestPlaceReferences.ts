@@ -1,3 +1,4 @@
+import { CURATED_VILLAGE_PLACES, curatedVillageSnapshot } from "./curatedVillagePlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
 import snapshot0 from "./regionReferences/forest-cabin.json";
 import snapshot1 from "./regionReferences/forest-star.json";
@@ -32,6 +33,7 @@ const snapshots: Record<string, ForestPlaceSnapshot> = {
 };
 
 export const FOREST_PLACE_REFERENCES = [
+...CURATED_VILLAGE_PLACES,
 {
   "id": "forest-cabin-40x30",
   "name": "검은 숲의 오두막",
@@ -347,5 +349,5 @@ export const FOREST_PLACE_REFERENCES = [
 ] as const;
 
 export function forestPlaceSnapshot(id: string): ForestPlaceSnapshot | undefined {
-  return snapshots[id];
+  return snapshots[id] ?? curatedVillageSnapshot(id);
 }

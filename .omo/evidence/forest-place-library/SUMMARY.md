@@ -2,7 +2,7 @@
 
 Source: `oprn-hill-forest-harmony-20260918-a4e1` (current local saved project).
 
-- 13 immutable Supabase snapshots loaded after save; source project unchanged (`persistence.json`).
+- 13 immutable LegacyDb snapshots loaded after save; source project unchanged (`persistence.json`).
 - Actual editor captures at native 16px grid for all 13 maps (`preview-proof.json`).
 - All 13 default-place cards opened in the production build, images decoded, downloads compared exactly, and AI paged tile rows reconstructed exactly (`catalog-proof.json`).
 - Four linked village/cave documents include their destination maps, tilesets and uploaded images.

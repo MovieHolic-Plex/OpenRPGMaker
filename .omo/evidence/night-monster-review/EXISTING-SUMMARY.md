@@ -1,6 +1,6 @@
 # 기존 화면 우선 시각 감사
 
-현재 Supabase snapshot과 직전 QA snapshot의 maps가 JSON.stringify 비교에서 동일함을 확인했다.
+현재 LegacyDb snapshot과 직전 QA snapshot의 maps가 JSON.stringify 비교에서 동일함을 확인했다.
 아래 기존 스크린샷은 맵 배치 감사를 위해 즉시 확인한다. 창 스킨 등 맵 밖 설정은 달라졌으므로
 현재 부팅/기능 동작의 증거로 대신 쓰지 않는다.
 

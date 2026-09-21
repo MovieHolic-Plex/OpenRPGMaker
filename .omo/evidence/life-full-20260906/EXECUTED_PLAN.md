@@ -33,7 +33,7 @@ Your next move: 고정밀 계획 검토를 마친 뒤 별도 실행 요청으로
 - 감사 원장: 통합 기준의 `reports/life-audit-2026-09-05/AUDIT.md`, `RUNTIME.md`, `EXECUTION.md`. 현재 워크트리에는 아직 없으므로 계획 중 읽은 사본은 `/home/main/z-project/rpg-zzu-life-audit-p2/reports/life-audit-2026-09-05/`다. 실행자는 통합 브랜치의 추적 파일을 정본으로 쓴다.
 - 해당 두 기준 사이 project/player/database/test 변경은 없음으로 확인했다. 실행 시작 때 최신 기준과 다시 비교하되 이미 해결된 항목을 다시 구현하지 않고 동등한 검증으로 충족한다.
 - 모든 `CLAUDE.md` 지침은 사용자 명시 지시로 제외한다. 나머지 AGENTS/OpenWiki의 워크트리·저장·런타임 QA 계약은 유지한다.
-- 새 비용·서비스·패키지 없이 기존 TypeScript, Phaser, Vitest, Playwright, Supabase를 사용한다. 대상은 기존 단일 플레이어와 편집기 지원 화면이다.
+- 새 비용·서비스·패키지 없이 기존 TypeScript, Phaser, Vitest, Playwright, LegacyDb를 사용한다. 대상은 기존 단일 플레이어와 편집기 지원 화면이다.
 - 동작 변경은 TDD, 문구만의 변경은 산문 고정 테스트 없이 실제 표시 검증. 이미 성공한 기능도 전체 51행의 회귀 커버리지에 포함한다.
 
 ### 실행자가 재결정하지 않을 상세 계약
@@ -368,8 +368,8 @@ Phase는 순차, phase 내부는 아래 matrix가 허용하는 작업만 병렬.
   - Commit: Y(수정/검증자료 있으면) | `test(life): verify complete player and authoring journeys`.
 
 - [ ] 19. 검증 프로젝트를 분리 저장하고 원격 재로드를 증명한다
-  - Recommended task executor category: unspecified-high — 기존 Supabase 저장 경로 재사용과 데이터 격리.
-  - Scope/References: `supabaseProjectSync.ts:saveProjectToSupabase`, `src/project/store.ts`, `scripts/save-stardew-demo.mts`는존재확인후참고만, 신규 `scripts/qa/save-life-full.mts`, task17fixture.
+  - Recommended task executor category: unspecified-high — 기존 LegacyDb 저장 경로 재사용과 데이터 격리.
+  - Scope/References: `legacyDbProjectSync.ts:saveProjectToLegacyDb`, `src/project/store.ts`, `scripts/save-stardew-demo.mts`는존재확인후참고만, 신규 `scripts/qa/save-life-full.mts`, task17fixture.
   - Work: 별도 ID `rpg-zzu-life-full-<execution-session-slug>`를생성. 동일ID가이미있으면이실행의영수증과hash가맞는경우만재사용, 타인의행이면중단하고새session-suffix사용. 시작전URL/key/ID·연결확인. remotePersistenceEnabled=true인실제save→같은IDload→validate→hash/의미비교. 비밀정보기록금지.
   - Acceptance/QA: `./node_modules/.bin/vite-node scripts/qa/save-life-full.mts --project-id <실제ID>`; happy저장성공과재조회전체생활정의·시작배치동일, failure미설정/잘못된key는실패영수증과쓰기0/성공미표시. 재로드데이터를task18player시나리오입력으로한번실행. 기존demo행불변증명. `E/19/remote-receipt.json`.
   - Commit: Y | `test(life): verify isolated remote save and reload`.

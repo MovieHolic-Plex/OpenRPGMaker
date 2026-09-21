@@ -1,10 +1,10 @@
 {
-  "../rpg-zzu/node_modules/phaser/dist/phaser.min.js": {
+  "../../../../z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js": {
     "file": "assets/phaser.min-CwlHMuXa.js",
-    "src": "../rpg-zzu/node_modules/phaser/dist/phaser.min.js"
+    "src": "../../../../z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js"
   },
-  "_PlayScene-DWs2s4K0.js": {
-    "file": "assets/PlayScene-DWs2s4K0.js",
+  "_PlayScene-C0oLFE-C.js": {
+    "file": "assets/PlayScene-C0oLFE-C.js",
     "name": "PlayScene",
     "isDynamicEntry": true,
     "imports": [
@@ -20,10 +20,10 @@
     "src": "player.html",
     "isEntry": true,
     "dynamicImports": [
-      "_PlayScene-DWs2s4K0.js"
+      "_PlayScene-C0oLFE-C.js"
     ],
     "css": [
-      "assets/player-BsonWbrb.css"
+      "assets/player-CEU4NWnk.css"
     ],
     "assets": [
       "assets/phaser.min-CwlHMuXa.js",
@@ -55,13 +55,13 @@
     "src": "public/assets/ui/windowskin-warm.png"
   },
   "src/player/playSceneBattle.ts": {
-    "file": "assets/playSceneBattle-C5SB7qUN.js",
+    "file": "assets/playSceneBattle-D_1Gy-CC.js",
     "name": "playSceneBattle",
     "src": "src/player/playSceneBattle.ts",
     "isDynamicEntry": true,
     "imports": [
       "player.html",
-      "_PlayScene-DWs2s4K0.js"
+      "_PlayScene-C0oLFE-C.js"
     ]
   }
 }

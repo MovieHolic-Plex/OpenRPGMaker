@@ -182,7 +182,7 @@
 ### 3.10 병렬 에이전트·운용 (AX)
 
 - **[P1] wt create/dev:worktree가 VITE_CACHE_DIR를 세팅하지 않는다** — vite.config 주석이 실측 피해(액션 QA 3회 사망)까지 기록했는데 provision/ensureWorktreeDevPort/dev-server 어디에도 캐시 격리 없음, 완화법은 quickstart에만. → 포트 배정과 같은 자동 처리로 주입+가이드 정합화. (A07-1)
-- **[P1] 전투 코드 검증 흐름이 공유 Supabase 행에 자동저장을 쏠 수 있다** — 워크트리 .env 복사(실키 포함)→store.load() 자동→원격 저장 기본 켜짐 4초 디바운스. 가이드는 저작 콘텐츠만 금지. → blankProject 강제/원격 저장 비활성 env/가이드 1행. (A07-2)
+- **[P1] 전투 코드 검증 흐름이 공유 LegacyDb 행에 자동저장을 쏠 수 있다** — 워크트리 .env 복사(실키 포함)→store.load() 자동→원격 저장 기본 켜짐 4초 디바운스. 가이드는 저작 콘텐츠만 금지. → blankProject 강제/원격 저장 비활성 env/가이드 1행. (A07-2)
 - **[P2] CSS 매니페스트(index.css)가 단일 병합 앵커+rm2000/rm2003이 _rm2000.css 한 파일 공유** — 상대 순서 뒤바뀜을 잡는 게이트 없음. → 삽입 앵커+순서 게이트 테스트+glass 베이스/오버라이드 분리. (A07-3)
 - **[P2] test/fixtures/projects/battle-v3.json이 50+ 테스트·QA 시나리오가 당기는 전역 레지스트리** — 내용 의존 심어둔 곳이 조용히 흔들림. → 동결 선언+sha256 핀 테스트. (A07-4)
 - **[P2] 스킨 추가 1건이 열거 계약 5곳 동시 충돌**(리터럴·활성 하드코딩·toHaveLength(12)·브랜드 테스트·CSS 매니페스트) — 파생값 전환으로 충돌면 제거. (A07-5)

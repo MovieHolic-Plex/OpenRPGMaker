@@ -51,7 +51,7 @@ test("P2 낚시·채집·박물관과 공간 저작 화면을 두 해상도에�
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1440, height: 900 });
   await expectRemoteProject(page);
-  // Bootstrap retries deliberately recover transient Supabase fetch failures; scope the
+  // Bootstrap retries deliberately recover transient LegacyDb fetch failures; scope the
   // clean-console assertion to the successfully loaded editor session under test.
   errors.length = 0;
   failedRequests.length = 0;

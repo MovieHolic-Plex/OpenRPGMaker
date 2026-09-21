@@ -11,15 +11,15 @@ import { store } from "@/project/store";
 import type { ProposedCall } from "@/ai/assistantSession";
 
 const TEST_ENV = {
-  VITE_SUPABASE_ANON_KEY: "test-anon-key",
-  VITE_SUPABASE_PROJECT_ID: "rpg-zzu-test-project",
-  VITE_SUPABASE_URL: "http://dbserver:8100",
+  VITE_LEGACY_DB_ANON_KEY: "test-anon-key",
+  VITE_LEGACY_DB_PROJECT_ID: "rpg-zzu-test-project",
+  VITE_LEGACY_DB_URL: "http://dbserver:8100",
 } as const;
 
-function stubSupabaseEnv(values: Partial<typeof TEST_ENV> = TEST_ENV): void {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", values.VITE_SUPABASE_ANON_KEY ?? "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", values.VITE_SUPABASE_PROJECT_ID ?? "");
-  vi.stubEnv("VITE_SUPABASE_URL", values.VITE_SUPABASE_URL ?? "");
+function stubLegacyDbEnv(values: Partial<typeof TEST_ENV> = TEST_ENV): void {
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", values.VITE_LEGACY_DB_ANON_KEY ?? "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", values.VITE_LEGACY_DB_PROJECT_ID ?? "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", values.VITE_LEGACY_DB_URL ?? "");
 }
 
 afterEach(() => {
@@ -74,9 +74,9 @@ describe("canonical construction apply and undo policy", () => {
 });
 
 describe("recordProjectCommit awaited variant", () => {
-  it("(d) supabase 미설정 환경에서도 결정적으로 CommitRow로 resolve한다", async () => {
-    // 저장소 .env 가 VITE_SUPABASE_* 를 제공하므로 빈 값으로 덮어 미설정을 재현한다.
-    stubSupabaseEnv({});
+  it("(d) legacyDb 미설정 환경에서도 결정적으로 CommitRow로 resolve한다", async () => {
+    // 저장소 .env 가 VITE_LEGACY_DB_* 를 제공하므로 빈 값으로 덮어 미설정을 재현한다.
+    stubLegacyDbEnv({});
     const project = createBlankProject();
 
     const row = await recordProjectCommit({
@@ -97,9 +97,9 @@ describe("recordProjectCommit awaited variant", () => {
     expect(Number.isNaN(Date.parse(row.recordedAt))).toBe(false);
   });
 
-  it("(d) supabase 설정 + 정상 응답이면 커밋 row를 영속하고 commitId를 돌려준다", async () => {
+  it("(d) legacyDb 설정 + 정상 응답이면 커밋 row를 영속하고 commitId를 돌려준다", async () => {
     const calls: { input: RequestInfo | URL; init: RequestInit | undefined }[] = [];
-    stubSupabaseEnv();
+    stubLegacyDbEnv();
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
       return new Response(null, { status: 201 });
@@ -131,7 +131,7 @@ describe("applyProposedProject shared apply path", () => {
 
   it("스냅샷 → store.replace → await 커밋 순서로 제안 프로젝트를 적용한다", async () => {
     const calls: { input: RequestInfo | URL; init: RequestInit | undefined }[] = [];
-    stubSupabaseEnv();
+    stubLegacyDbEnv();
     vi.stubGlobal("fetch", (async (input, init) => {
       calls.push({ input, init });
       return new Response(null, { status: 201 });

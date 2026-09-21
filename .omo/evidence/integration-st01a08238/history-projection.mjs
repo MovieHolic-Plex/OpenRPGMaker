@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { relative, resolve } from 'node:path';
 export const root = process.cwd();
 export const ref = '72f1f179b39972c3838922746c7641a57e95fce8';
-const upstreamFiles = ['src/ai/conversationStore.ts', 'src/editor/panels/aiConversationHistoryModal.ts', 'src/project/supabaseProjectSync.ts'];
+const upstreamFiles = ['src/ai/conversationStore.ts', 'src/editor/panels/aiConversationHistoryModal.ts', 'src/project/legacyDbProjectSync.ts'];
 const upstream = new Map(upstreamFiles.map(file => [file, execFileSync('git', ['show', `${ref}:${file}`], { encoding: 'utf8' })]));
 const conflict = /^<<<<<<< HEAD\n([\s\S]*?)^=======\n([\s\S]*?)^>>>>>>> 72f1f179b39972c3838922746c7641a57e95fce8\n/gm;
 export function projection(path) {

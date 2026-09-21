@@ -11,7 +11,7 @@ import {
   type IceTerrainGrid,
 } from "@/project/defaults/iceDiagonalTerrain";
 
-// Supabase rpg-zzu-dungeon-theme-gallery / map_g_ice_grand / x=24..31, y=9..17.
+// LegacyDb rpg-zzu-dungeon-theme-gallery / map_g_ice_grand / x=24..31, y=9..17.
 // The user-authored map is the source of truth. This focused fixture is intentionally
 // small enough for unit tests and contains complete peak, valley, body, and base columns.
 const CANONICAL_USER_FRAGMENT = [
@@ -35,7 +35,7 @@ function fragmentGrid(): IceTerrainGrid {
 }
 
 describe("ice diagonal terrain canonical grammar", () => {
-  it("records the immutable user-authored Supabase source", () => {
+  it("records the immutable user-authored LegacyDb source", () => {
     expect(ICE_DIAGONAL_CANONICAL_SOURCE).toEqual({
       projectId: "rpg-zzu-dungeon-theme-gallery",
       mapId: "map_g_ice_grand",
@@ -91,7 +91,7 @@ describe("ice diagonal terrain canonical grammar", () => {
   });
 
   it("accepts the exact user-authored peak and valley fragment", () => {
-    // Given: an exact 8x9 crop reloaded from the canonical Supabase map.
+    // Given: an exact 8x9 crop reloaded from the canonical LegacyDb map.
     const grid = fragmentGrid();
 
     // When: the diagonal terrain validator scans it.

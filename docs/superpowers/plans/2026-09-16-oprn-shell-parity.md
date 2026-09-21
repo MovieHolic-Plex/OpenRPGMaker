@@ -21,10 +21,10 @@
 
 ## 증분 (각 증분은 커밋 하나, 끝났다는 증거가 붙는다)
 
-- **I1. 백업 만들기를 렌더러 UI로.** OS 메뉴가 아니라 편집기 UI에 둔다 — 그래야 앱과 웹이 **동시에** 얻는다. 포트에 `backup?()` 을 뚫고 프로젝트 메뉴(`src/editor/panels/menu.ts`)에 붙였다. 파일을 가진 어댑터(앱·로컬 서버)만 구현하고 Supabase·메모리는 `undefined` 라 메뉴가 사유를 띄운다.
+- **I1. 백업 만들기를 렌더러 UI로.** OS 메뉴가 아니라 편집기 UI에 둔다 — 그래야 앱과 웹이 **동시에** 얻는다. 포트에 `backup?()` 을 뚫고 프로젝트 메뉴(`src/editor/panels/menu.ts`)에 붙였다. 파일을 가진 어댑터(앱·로컬 서버)만 구현하고 LegacyDb·메모리는 `undefined` 라 메뉴가 사유를 띄운다.
   - 증거: `menu-project-backup` 항목, `electronRepository.backup()` → 브리지 `project.backup`, `test/serve/localServer.test.ts` + `test/persistence/electronRepository.test.ts` 에서 HTTP·IPC 양쪽으로 `backups` 경로가 돌아온다.
   - **남은 것**: 폴더 보기(`shell.showItemInFolder`)는 미착수 — Electron 전용이라 웹은 비활성 표시가 필요하다.
-- **I2. 동기 커밋 조회 삭제(완료).** 당초 계획은 "`peekTip`을 비동기 캐시로 바꾼다"였는데, 실측해보니 **`peekTip`의 호출자가 프로덕션에 0곳**이었다(포트 선언·어댑터 셋·픽스처·계약 테스트뿐). 그래서 캐시로 바꾸는 대신 `peekTip`·`commits.listSync`·`oprn:commits.listSync` 채널을 통째로 지웠다. AI 도구 `list_project_commits` 의 동기 XHR 은 브리지가 아니라 Supabase PostgREST 를 직접 보는 별개 경로라 영향이 없다(그리고 그 도구는 이미 브라우저 PostgREST 전용으로 게이트돼 있다).
+- **I2. 동기 커밋 조회 삭제(완료).** 당초 계획은 "`peekTip`을 비동기 캐시로 바꾼다"였는데, 실측해보니 **`peekTip`의 호출자가 프로덕션에 0곳**이었다(포트 선언·어댑터 셋·픽스처·계약 테스트뿐). 그래서 캐시로 바꾸는 대신 `peekTip`·`commits.listSync`·`oprn:commits.listSync` 채널을 통째로 지웠다. AI 도구 `list_project_commits` 의 동기 XHR 은 브리지가 아니라 LegacyDb PostgREST 를 직접 보는 별개 경로라 영향이 없다(그리고 그 도구는 이미 브라우저 PostgREST 전용으로 게이트돼 있다).
   - 증거: `grep -rn 'peekTip\|listSync\|commitsListSync' src electron test` → **0건**. Electron 스모크에서 `bridge.commits.listSync` 프로브를 제거하고 통과. 두 껍데기의 브리지 모양이 같아졌다.
 - **I3. 활동 미러 2종을 양쪽에(완료).** 미러 본체(약 250줄)를 `vite.config.ts` 플러그인에서 `scripts/lib/activityMirror.mjs` 로 꺼냈다. 이제 세 껍데기가 같은 함수를 부른다: vite(dev·preview)는 node 미들웨어 어댑터로, `oprn-serve` 는 같은 어댑터로, 일렉트론 앱은 `app://` 프로토콜 핸들러에서.
   - 왜 필요했나: 클라이언트는 `/__oprn/ai-activity` 를 **페이지 출처 상대 경로**로 fetch 한다. 그런데 미들웨어가 vite 플러그인 안에만 있어서 앱과 `oprn-serve` 에는 받는 쪽이 없었고, 404 는 fetch 가 throw 하지 않고 클라이언트는 첫 실패에 미러를 스스로 끄므로 **두 껍데기에서 로그가 조용히 0줄**이었다.
@@ -42,7 +42,7 @@
 
 ## 이 단계에서 하지 않는 것
 
-- **P6(Supabase 퇴역)** — 하지 않는다. 웹 편집기 유지가 확정이므로 원격 어댑터를 남긴다.
+- **P6(LegacyDb 퇴역)** — 하지 않는다. 웹 편집기 유지가 확정이므로 원격 어댑터를 남긴다.
 - 인터넷 호스팅(공개 URL·다중 사용자) — 범위 밖. 인증·RLS가 먼저 필요하다.
 - 협업(맵 편집 잠금·실시간 병합) — 범위 밖. `mapEditLocks`는 원격 전용으로 남는다.
 

@@ -64,7 +64,7 @@
       },
       {
         "file": "test/storePersistence.test.ts",
-        "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+        "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
         "durationMs": 15003.933920000003,
         "message": "Error: STACK_TRACE_ERROR"
       }
@@ -114,7 +114,7 @@
         "durationMs": 1530.0095440000005
       },
       {
-        "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+        "name": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
         "status": "passed",
         "durationMs": 2104.7345450000003
       }

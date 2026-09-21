@@ -67,7 +67,7 @@
         "sha256": "c6563b2a159e6a33959b23d66323c025130eab3e35fe093b0b54dc0953b1ccfa",
         "indexBlob": "23858a9f3e51b1a8178742006a4d627381689301"
       },
-      "src/project/supabaseProjectSync.ts": {
+      "src/project/legacyDbProjectSync.ts": {
         "sha256": "97ba91f8c7b7c2a9e4563d5c7e81c5e83dcc9f11c14b22f9b0e9261dd23dc626",
         "indexBlob": "6936655d9e1a3d40d646fba572fa2f0ad4025653"
       },
@@ -214,7 +214,7 @@
         "sha256": "c6563b2a159e6a33959b23d66323c025130eab3e35fe093b0b54dc0953b1ccfa",
         "indexBlob": "23858a9f3e51b1a8178742006a4d627381689301"
       },
-      "src/project/supabaseProjectSync.ts": {
+      "src/project/legacyDbProjectSync.ts": {
         "sha256": "97ba91f8c7b7c2a9e4563d5c7e81c5e83dcc9f11c14b22f9b0e9261dd23dc626",
         "indexBlob": "6936655d9e1a3d40d646fba572fa2f0ad4025653"
       },

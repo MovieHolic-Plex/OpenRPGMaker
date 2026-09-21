@@ -272,7 +272,7 @@
       "bytes": 19171,
       "match": true
     },
-    "src/project/supabaseProjectSync.ts": {
+    "src/project/legacyDbProjectSync.ts": {
       "sha256": "27e5a0de2dbe154e65686be85a832022369503f8a8ecd25f12ab11a198aad31b",
       "bytes": 60954,
       "match": true
@@ -282,7 +282,7 @@
       "bytes": 29533,
       "match": true
     },
-    "test/supabaseMapPatchRecovery.test.ts": {
+    "test/legacyDbMapPatchRecovery.test.ts": {
       "sha256": "020847c182a0ba5e0ce92c08b8c708b859048fcc3bfc1ab39d7dec9ad658a1df",
       "bytes": 21045,
       "match": true

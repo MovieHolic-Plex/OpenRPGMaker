@@ -15,7 +15,7 @@ OUTPUT=output/evidence/natural-village-edges PROJECT_PREFIX=natural-village-edge
 ```
 
 형태·테마·크기 지정 없이 집 8채, 주민 4명, 내부 생성, seed 17로 생성했다.
-Supabase 연결 확인 후 전용 새 프로젝트에 저장하고, 전체 문서 및 SHA 일치를 재조회로 확인했다.
+LegacyDb 연결 확인 후 전용 새 프로젝트에 저장하고, 전체 문서 및 SHA 일치를 재조회로 확인했다.
 스크린샷은 재조회 문서를 실제 타일 렌더러로 그린 화면이며 이벤트 스프라이트는 포함하지 않는다.
 
 - Project ID: `natural-village-edges-20260921-76a3-1789962957764`

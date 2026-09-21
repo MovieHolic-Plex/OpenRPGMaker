@@ -17,10 +17,10 @@
     .phase{display:grid;grid-template-columns:150px 1fr;gap:24px;padding:28px 0;border-top:1px solid var(--line)}.phase-id{font:900 3.4rem/1 Georgia,serif;color:var(--leaf)}.phase ul{columns:2;column-gap:30px}.proof{display:flex;flex-wrap:wrap;gap:8px}.proof span{background:#10231a;border:1px solid #315840;border-radius:6px;padding:4px 8px;font-size:.8rem;color:#bfe4c4}
     .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.shot{margin:0;background:#101b16;border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:zoom-in}.shot img{width:100%;aspect-ratio:16/10;object-fit:cover;object-position:top}.shot figcaption{padding:10px 12px;color:var(--muted)}
     table{width:100%;border-collapse:collapse;background:var(--panel);border-radius:12px;overflow:hidden}th,td{text-align:left;padding:12px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--gold);font-size:.82rem}td{color:var(--muted)}td strong{color:var(--ink)}
-    .supabase{background:linear-gradient(120deg,#123729,#17251f);border:1px solid #3a7257;border-radius:16px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px}.hash{word-break:break-all;background:#09150f;border-radius:7px;padding:9px 11px;color:#a8e4bd}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.fact{background:rgba(0,0,0,.22);border-radius:8px;padding:10px}.fact b{display:block;color:var(--gold);font-size:1.25rem}
+    .legacyDb{background:linear-gradient(120deg,#123729,#17251f);border:1px solid #3a7257;border-radius:16px;padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px}.hash{word-break:break-all;background:#09150f;border-radius:7px;padding:9px 11px;color:#a8e4bd}.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.fact{background:rgba(0,0,0,.22);border-radius:8px;padding:10px}.fact b{display:block;color:var(--gold);font-size:1.25rem}
     .verdict{border:1px solid #5a7d60;background:linear-gradient(135deg,#1d3b27,#17261e);border-radius:18px;padding:30px}.path{padding:12px;background:#080d0a;border:1px dashed #5a7d60;border-radius:8px;overflow:auto;white-space:nowrap}.footer{padding:42px 0 70px;color:var(--muted);font-size:.86rem}
     dialog{width:min(1180px,96vw);padding:0;border:1px solid #6d826f;border-radius:12px;background:#07100b;color:#fff;box-shadow:0 30px 80px #000}dialog::backdrop{background:rgba(0,0,0,.86)}dialog img{width:100%;max-height:88vh;object-fit:contain}dialog button{position:absolute;right:10px;top:10px;background:#101a14;color:#fff;border:1px solid #fff;border-radius:99px;width:38px;height:38px;font-size:20px}
-    @media(max-width:850px){.grid.three,.grid.four,.art-grid{grid-template-columns:repeat(2,1fr)}.phase{grid-template-columns:1fr}.phase ul{columns:1}.supabase{grid-template-columns:1fr}.facts{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:850px){.grid.three,.grid.four,.art-grid{grid-template-columns:repeat(2,1fr)}.phase{grid-template-columns:1fr}.phase ul{columns:1}.legacyDb{grid-template-columns:1fr}.facts{grid-template-columns:repeat(2,1fr)}}
     @media(max-width:560px){.wrap{width:min(100% - 20px,1180px)}.gallery,.art-grid,.grid.three,.grid.four{grid-template-columns:1fr}.rename{grid-template-columns:1fr}.arrow{transform:rotate(90deg);width:max-content}.hero{min-height:76vh}.hero:before{background:linear-gradient(0deg,rgba(5,12,8,.96) 0 55%,rgba(5,12,8,.24)),url("../public/assets/farming/life-ui/foraging-card.png") center/cover}}
   </style>
 </head>
@@ -29,10 +29,10 @@
     <div class="kicker">RPG ZZU · implementation certificate · 2026-08-25</div>
     <h1>별빛 농장 마을<br>P0–P2 완료</h1>
     <p>“데이터베이스에 이름만 있고 내용은 없는 것 같다”에서 출발해, 농사 경제부터 날씨·동물·낚시·채집·박물관·건물·집 꾸미기까지 실제 저작·플레이·저장되는 제품 흐름으로 확장했습니다.</p>
-    <div class="chips"><span class="chip good">Supabase 저장·재로드</span><span class="chip good">Visual QA 1024 / 1440</span><span class="chip good">E2E 2/2</span><span class="chip good">기준선 대비 회귀 0</span></div>
+    <div class="chips"><span class="chip good">LegacyDb 저장·재로드</span><span class="chip good">Visual QA 1024 / 1440</span><span class="chip good">E2E 2/2</span><span class="chip good">기준선 대비 회귀 0</span></div>
     <a class="cta" href="#verdict">최종 판정 보기 ↓</a>
   </div></header>
-  <nav><div class="wrap navin"><a href="#renamed">이름 정리</a><a href="#art">핵심 요소</a><a href="#phases">P0–P2</a><a href="#hostile">적대 검증</a><a href="#visual">Visual QA</a><a href="#db">Supabase</a><a href="#gates">테스트</a><a href="#verdict">결론</a></div></nav>
+  <nav><div class="wrap navin"><a href="#renamed">이름 정리</a><a href="#art">핵심 요소</a><a href="#phases">P0–P2</a><a href="#hostile">적대 검증</a><a href="#visual">Visual QA</a><a href="#db">LegacyDb</a><a href="#gates">테스트</a><a href="#verdict">결론</a></div></nav>
 
   <main>
     <section id="renamed"><div class="wrap">
@@ -65,7 +65,7 @@
     <section id="phases"><div class="wrap">
       <div class="eyebrow">03 · delivery map</div><h2>세 Phase가 하나의 닫힌 루프로 이어집니다</h2>
       <div class="phase"><div><div class="phase-id">P0</div><span class="status">완료</span></div><div><h3>생활 경제의 뼈대</h3><ul><li>에너지 소비·일일 회복</li><li>출하함·일일 정산·가격표</li><li>꾸러미 기여와 보상·세계 해금</li><li>생활 기술 5종과 레벨 보상</li><li>제작기 처리 시간·수령</li><li>도구 강화 범위와 배율</li></ul><div class="proof"><span>원자적 트랜잭션</span><span>세이브 왕복</span><span>생활 장부 UI</span><span>Visual/E2E</span></div></div></div>
-      <div class="phase"><div><div class="phase-id">P1</div><span class="status">완료</span></div><div><h3>살아 있는 농장</h3><ul><li>4계절 결정적 날씨와 3일 예보</li><li>비·폭풍·눈과 농장 물주기 연결</li><li>닭·소, 건초, 달걀·우유 생산</li><li>축사 수용량과 개체 배정</li><li>주민 5명 생일·선호·대화</li><li>시간대 일정과 표시 이벤트</li></ul><div class="proof"><span>적대 검증 5/5</span><span>Supabase 재로드</span><span>두 해상도 QA</span></div></div></div>
+      <div class="phase"><div><div class="phase-id">P1</div><span class="status">완료</span></div><div><h3>살아 있는 농장</h3><ul><li>4계절 결정적 날씨와 3일 예보</li><li>비·폭풍·눈과 농장 물주기 연결</li><li>닭·소, 건초, 달걀·우유 생산</li><li>축사 수용량과 개체 배정</li><li>주민 5명 생일·선호·대화</li><li>시간대 일정과 표시 이벤트</li></ul><div class="proof"><span>적대 검증 5/5</span><span>LegacyDb 재로드</span><span>두 해상도 QA</span></div></div></div>
       <div class="phase"><div><div class="phase-id">P2</div><span class="status">완료</span></div><div><h3>탐색·수집·공간 성장</h3><ul><li>물고기 2종과 조건부 농장 낚시터</li><li>농장·광산 계절 채집 구역 2곳</li><li>9종 도감과 박물관 기부·보상 2단계</li><li>2레벨 범용 농장 작업실</li><li>회전 가능한 집 장식 2종·시작 배치</li><li>에디터 CRUD와 런타임 생활 장부 행동</li></ul><div class="proof"><span>적대 검증 10/10</span><span>P2 회귀 95/95</span><span>원격 E2E 2/2</span><span>Visual QA 10장</span></div></div></div>
     </div></section>
 
@@ -99,20 +99,20 @@
     </div></section>
 
     <section id="db"><div class="wrap">
-      <div class="eyebrow">06 · canonical persistence</div><h2>Supabase가 정본입니다</h2>
-      <div class="supabase"><div><h3>저장 후 동일 ID 재로드 성공</h3><p>코드 fixture나 임시 <code>freshProject</code> 세션으로 끝내지 않았습니다. 실제 원격 저장 경로를 타고 같은 project id로 다시 불러와 authored/reloaded facts가 모두 일치함을 확인했습니다.</p><div class="hash"><b>projectId</b><br>rpg-zzu-stardew-demo<br><br><b>sha256</b><br>bd9b8c08c077808ff3de43cde16939d2354c1f7445ec5eecb572e47d1cde2641</div></div>
+      <div class="eyebrow">06 · canonical persistence</div><h2>LegacyDb가 정본입니다</h2>
+      <div class="legacyDb"><div><h3>저장 후 동일 ID 재로드 성공</h3><p>코드 fixture나 임시 <code>freshProject</code> 세션으로 끝내지 않았습니다. 실제 원격 저장 경로를 타고 같은 project id로 다시 불러와 authored/reloaded facts가 모두 일치함을 확인했습니다.</p><div class="hash"><b>projectId</b><br>rpg-zzu-stardew-demo<br><br><b>sha256</b><br>bd9b8c08c077808ff3de43cde16939d2354c1f7445ec5eecb572e47d1cde2641</div></div>
       <div class="facts"><div class="fact"><b>8</b>작물</div><div class="fact"><b>5</b>주민 프로필</div><div class="fact"><b>5</b>생활 기술</div><div class="fact"><b>21</b>출하 품목</div><div class="fact"><b>2</b>물고기</div><div class="fact"><b>2</b>채집 구역</div><div class="fact"><b>9</b>도감·기부 품목</div><div class="fact"><b>3</b>공간 시작 배치</div></div></div>
     </div></section>
 
     <section id="gates"><div class="wrap">
       <div class="eyebrow">07 · supervisor verification</div><h2>마지막 숫자</h2>
       <div class="grid four"><div class="card"><div class="metric">95/95</div><h3>P2 집중 회귀</h3><p>15개 테스트 파일</p></div><div class="card"><div class="metric">2/2</div><h3>원격 브라우저 E2E</h3><p>편집기 + 런타임</p></div><div class="card"><div class="metric">6,914</div><h3>전체 통과 테스트</h3><p>감독자 gates 실측</p></div><div class="card"><div class="metric">0</div><h3>기준선 대비 회귀</h3><p>gates exit 0</p></div></div>
-      <table style="margin-top:18px"><tbody><tr><td><strong>TypeScript</strong></td><td><code>typecheck:app</code> exit 0</td></tr><tr><td><strong>OpenWiki</strong></td><td><code>openwiki:verify</code> ok true</td></tr><tr><td><strong>기존 기준선</strong></td><td>148개 실패는 기존 red baseline; 새 회귀 없음</td></tr><tr><td><strong>Visual QA</strong></td><td>1024×768 / 1440×900, 이미지 naturalWidth·가로 overflow·메뉴 containment·console/request 확인</td></tr><tr><td><strong>Supabase</strong></td><td><code>saveKind=saved</code>, <code>reloaded=true</code>, authored/reloaded facts 동일</td></tr></tbody></table>
+      <table style="margin-top:18px"><tbody><tr><td><strong>TypeScript</strong></td><td><code>typecheck:app</code> exit 0</td></tr><tr><td><strong>OpenWiki</strong></td><td><code>openwiki:verify</code> ok true</td></tr><tr><td><strong>기존 기준선</strong></td><td>148개 실패는 기존 red baseline; 새 회귀 없음</td></tr><tr><td><strong>Visual QA</strong></td><td>1024×768 / 1440×900, 이미지 naturalWidth·가로 overflow·메뉴 containment·console/request 확인</td></tr><tr><td><strong>LegacyDb</strong></td><td><code>saveKind=saved</code>, <code>reloaded=true</code>, authored/reloaded facts 동일</td></tr></tbody></table>
     </div></section>
 
     <section id="verdict"><div class="wrap"><div class="verdict">
       <div class="eyebrow">final verdict</div><h2>이제 “빈 데이터베이스 항목”이 아닙니다</h2>
-      <p>저작자는 명확한 생활 도메인 탭에서 내용을 만들고, 플레이어는 생활 장부에서 진행도와 행동을 확인하며, 모든 결과는 저장·재로드와 참조 복구를 거칩니다. P0–P2 구현, Phase별 적대 검증, Visual QA, 원격 E2E, Supabase 정본 저장, 전체 게이트까지 완료했습니다.</p>
+      <p>저작자는 명확한 생활 도메인 탭에서 내용을 만들고, 플레이어는 생활 장부에서 진행도와 행동을 확인하며, 모든 결과는 저장·재로드와 참조 복구를 거칩니다. P0–P2 구현, Phase별 적대 검증, Visual QA, 원격 E2E, LegacyDb 정본 저장, 전체 게이트까지 완료했습니다.</p>
       <h3>이 보고서의 절대 경로</h3><div class="path">C:\Users\USER\.herdr\worktrees\rpg-zzu\stardew\reports\stardew-p0-p2-implementation-report.html</div>
     </div></div></section>
   </main>

@@ -24,7 +24,7 @@ server and the corrected channel allowlist. Failure images are not shipped.
 
 The source project has earlier local-only differences in other experimental maps.
 Those were preserved, not bulk-synchronized; only map_forest_cliff_village is
-asserted identical between the local project and Supabase.
+asserted identical between the local project and LegacyDb.
 
 No Vitest suite, full typecheck, gates, build or GitHub CI was run. This change
 used browser inspection, native document round trips, content connectivity audits

@@ -9,7 +9,7 @@ const out = resolve(process.env.GROWTH_QA_OUTPUT ?? '.omo/evidence/growth-integr
 const persistence = resolve(process.env.GROWTH_QA_FIXTURE_DIR ?? '.omo/evidence/growth-integrated/persistence');
 const proof = JSON.parse(await readFile(`${persistence}/proof.json`, 'utf8'));
 assert.equal(proof.reloaded, true);
-const verificationSource = proof.verificationSource ?? 'Supabase reload';
+const verificationSource = proof.verificationSource ?? 'LegacyDb reload';
 await mkdir(out, { recursive: true });
 const server = await startPlayerQaServer();
 const browser = await firefox.launch({ headless: true });

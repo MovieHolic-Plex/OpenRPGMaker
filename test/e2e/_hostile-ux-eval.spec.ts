@@ -2,7 +2,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const SHOT_DIR = "verify-shots/event-editor-hostile";
 mkdirSync(SHOT_DIR, { recursive: true });
@@ -12,7 +12,7 @@ const TILE = 16;
 async function openApp(page: Page, mode: string, w = 1440, h = 1000) {
   await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
-  await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createModernNocturneProject(), "/?e2eVitals=1");
   await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
 }

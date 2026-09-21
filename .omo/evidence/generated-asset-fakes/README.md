@@ -51,7 +51,7 @@ node --test test/oprnGeneratedAssets.test.mjs
 |---|---|
 | 현재 트리 | 가짜(fake=1.00) |
 | 초기 스냅샷 `0864daf96` (2026-06-23) 및 개명 커밋 `a39762825` 전후 | 가짜 (5492/787/363 bytes 그대로) |
-| Supabase 리소스 캐시 덤프 `51031f6ae` 의 `output/evidence/supabase-root-cache*/supabase-resource-cache/` | **같은 가짜 바이트** |
+| LegacyDb 리소스 캐시 덤프 `51031f6ae` 의 `output/evidence/legacyDb-root-cache*/legacyDb-resource-cache/` | **같은 가짜 바이트** |
 | 저장소 CC0 팩(`public/assets/cc0/jetrel/icons`) | `potion-red.png`·`bronze-sword.png` 는 진짜지만 **다른 계열**(생성 아트가 아님) |
 
 즉 이 5장은 처음부터 가짜로 커밋됐고, 프로젝트 리소스 캐시에 들어간 사본도 같은 가짜다.
@@ -80,7 +80,7 @@ node scripts/oprn-generated-assets.mjs validate-only \
 node --test test/generatedAssetPlaceholder.test.mjs
 ```
 
-주의: 이 5장의 사본은 **Supabase 리소스 캐시에도 같은 가짜 바이트**로 들어가 있다(위 표).
+주의: 이 5장의 사본은 **LegacyDb 리소스 캐시에도 같은 가짜 바이트**로 들어가 있다(위 표).
 저장소 파일만 갈아도 프로젝트가 들고 있는 리소스는 그대로이므로, 실제 프로젝트에 반영하려면
 리소스 재업로드 경로가 필요하다 — 그건 프로젝트 행을 만지는 작업이라 사용자 승인 없이 하지 않는다.
 
@@ -108,5 +108,5 @@ node --test test/generatedAssetPlaceholder.test.mjs
 - **캐릭터셋의 옷 색이 hero-01 의 얼굴·배틀 아트와 다르다.** 계획의 프롬프트가 색을 지정하지 않아
   ("young field scout") 생성기가 초록 계열로 그렸고, 배틀·얼굴은 파란 옷 + 주황 머리다. 맞추려면 프롬프트를
   고쳐 다시 생성해야 한다(이번 작업은 "깨진 것을 살린다" 범위).
-- 이 저장소 파일만 고쳤다. **Supabase 리소스 캐시에 올라간 사본은 그대로 가짜**이므로, 그 id 를 쓰는
+- 이 저장소 파일만 고쳤다. **LegacyDb 리소스 캐시에 올라간 사본은 그대로 가짜**이므로, 그 id 를 쓰는
   프로젝트는 리소스 재업로드가 있어야 화면이 바뀐다(프로젝트 행을 만지는 작업이라 별도 승인 필요).

@@ -2,10 +2,10 @@
 // 사람 손편집의 원격 커밋 로그가 **실제 diff** 를 담는지 고정한다.
 //
 // 실측(2026-08-29): `manualDiffSummary()` 가 `systemChanged = true` 만 세워서, 타일 3000장을
-// 칠했든 NPC 를 지웠든 Supabase 커밋 summary 가 항상 `"변경 저장: 시스템"` 이었다.
+// 칠했든 NPC 를 지웠든 LegacyDb 커밋 summary 가 항상 `"변경 저장: 시스템"` 이었다.
 // 진짜 diff 계산기(`summarizeChanges`)는 이미 있었지만 AI 경로만 쓰고 있었다.
 //
-// 두 번째 결함: `.then()` 이 성공과 `not-configured`(supabase 미설정 / project_commits 테이블
+// 두 번째 결함: `.then()` 이 성공과 `not-configured`(legacyDb 미설정 / project_commits 테이블
 // 누락 → **정상 resolve**)를 구분하지 않아 dedup baseline 이 전진했다. 설정이 붙은 뒤 동일 내용
 // 재저장이 dedup 에 걸려 그 커밋이 영구히 기록되지 않았다.
 
@@ -109,7 +109,7 @@ describe("dedup baseline 은 실제 기록에만 전진한다", () => {
     await flushPending();
     expect(recordSpy).toHaveBeenCalledTimes(1);
 
-    // supabase 설정이 붙었다고 가정하고 같은 내용을 다시 저장한다.
+    // legacyDb 설정이 붙었다고 가정하고 같은 내용을 다시 저장한다.
     recordSpy!.mockImplementation(async () => ({ kind: "saved" as const, commitId: "commit-2" }));
     recordManualProjectCommitAfterSave(saved, baseline);
     await flushPending();

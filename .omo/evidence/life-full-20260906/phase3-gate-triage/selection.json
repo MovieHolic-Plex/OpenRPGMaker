@@ -6949,9 +6949,9 @@
             "ancestorTitles": [
               "local dev project URL overrides"
             ],
-            "fullName": "local dev project URL overrides lets supabaseRecovered load the Supabase canonical project instead of a generated showcase",
+            "fullName": "local dev project URL overrides lets projectRecovered load the LegacyDb canonical project instead of a generated showcase",
             "status": "passed",
-            "title": "lets supabaseRecovered load the Supabase canonical project instead of a generated showcase",
+            "title": "lets projectRecovered load the LegacyDb canonical project instead of a generated showcase",
             "duration": 28.96423700000014,
             "failureMessages": [],
             "meta": {}
@@ -6960,9 +6960,9 @@
             "ancestorTitles": [
               "local dev project URL overrides"
             ],
-            "fullName": "local dev project URL overrides does not let generated showcase URLs replace the canonical Supabase default by themselves",
+            "fullName": "local dev project URL overrides does not let generated showcase URLs replace the canonical LegacyDb default by themselves",
             "status": "passed",
-            "title": "does not let generated showcase URLs replace the canonical Supabase default by themselves",
+            "title": "does not let generated showcase URLs replace the canonical LegacyDb default by themselves",
             "duration": 0.9177589999999327,
             "failureMessages": [],
             "meta": {}
@@ -12223,9 +12223,9 @@
             "ancestorTitles": [
               "Project store flush sha256 evidence"
             ],
-            "fullName": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+            "fullName": "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
             "status": "failed",
-            "title": "전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+            "title": "전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
             "duration": 16468.544058,
             "failureMessages": [
               "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storeFlushShaEvidence.test.ts:50:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
@@ -12261,9 +12261,9 @@
             "ancestorTitles": [
               "Project store remote persistence"
             ],
-            "fullName": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+            "fullName": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
             "status": "failed",
-            "title": "does not write to Supabase before the canonical project has loaded",
+            "title": "does not write to LegacyDb before the canonical project has loaded",
             "duration": 15103.650033999998,
             "failureMessages": [
               "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:11:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
@@ -12274,12 +12274,12 @@
             "ancestorTitles": [
               "Project store remote persistence"
             ],
-            "fullName": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+            "fullName": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
             "status": "failed",
-            "title": "does not auto-save local dev showcase projects to Supabase",
+            "title": "does not auto-save local dev showcase projects to LegacyDb",
             "duration": 7455.420666000002,
             "failureMessages": [
-              "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+              "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
             ],
             "meta": {}
           },
@@ -12300,12 +12300,12 @@
             "ancestorTitles": [
               "Project store remote persistence"
             ],
-            "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+            "fullName": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
             "status": "failed",
-            "title": "saves and reloads local edits for dev showcase projects without Supabase",
+            "title": "saves and reloads local edits for dev showcase projects without LegacyDb",
             "duration": 11015.576195000001,
             "failureMessages": [
-              "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+              "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
             ],
             "meta": {}
           },
@@ -12318,7 +12318,7 @@
             "title": "reports why DB persistence is unavailable for local dev showcase projects",
             "duration": 9488.87281,
             "failureMessages": [
-              "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+              "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
             ],
             "meta": {}
           },
@@ -12399,49 +12399,49 @@
       }
     },
     {
-      "path": "test/supabaseProjectSync.test.ts",
+      "path": "test/legacyDbProjectSync.test.ts",
       "sha256": "63c547ed44858a87c707bf6d4b0a03c8f6610ea2c0d0bdbe19128dbec6299201",
       "outsideRecordedBaseline": true,
       "original": {
         "assertionResults": [
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync loads a Supabase current_json row through the project parser",
+            "fullName": "LegacyDb project sync loads a LegacyDb current_json row through the project parser",
             "status": "passed",
-            "title": "loads a Supabase current_json row through the project parser",
+            "title": "loads a LegacyDb current_json row through the project parser",
             "duration": 2450.2492889999994,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync lists Supabase projects for direct project selection",
+            "fullName": "LegacyDb project sync lists LegacyDb projects for direct project selection",
             "status": "passed",
-            "title": "lists Supabase projects for direct project selection",
+            "title": "lists LegacyDb projects for direct project selection",
             "duration": 2.602882999999565,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync uses the app canonical Supabase project id when the env id is omitted",
+            "fullName": "LegacyDb project sync uses the app canonical LegacyDb project id when the env id is omitted",
             "status": "passed",
-            "title": "uses the app canonical Supabase project id when the env id is omitted",
+            "title": "uses the app canonical LegacyDb project id when the env id is omitted",
             "duration": 1219.1825839999983,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다",
+            "fullName": "LegacyDb project sync 옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다",
             "status": "passed",
             "title": "옛 전투 애니메이션 묶음의 실제 행을 복구해 아이템을 실행 가능한 상태로 불러온다",
             "duration": 751.4842250000002,
@@ -12450,9 +12450,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다",
+            "fullName": "LegacyDb project sync 참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다",
             "status": "passed",
             "title": "참조된 옛 장비 아이템 19종을 명시적 대응 장비의 한국어 안내 행으로 보존한다",
             "duration": 510.145493,
@@ -12461,9 +12461,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다",
+            "fullName": "LegacyDb project sync 액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다",
             "status": "passed",
             "title": "액션 탄약과 상점 상태에서만 참조한 옛 아이템 행을 보존한다",
             "duration": 610.5757230000017,
@@ -12472,9 +12472,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다",
+            "fullName": "LegacyDb project sync 손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다",
             "status": "passed",
             "title": "손대지 않은 영문 아이템 껍데기만 고치고 필요한 스킬만 추가한다",
             "duration": 2601.4026489999997,
@@ -12483,64 +12483,64 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync treats Supabase current_json as canonical — does not backfill removed database records",
+            "fullName": "LegacyDb project sync treats LegacyDb current_json as canonical — does not backfill removed database records",
             "status": "passed",
-            "title": "treats Supabase current_json as canonical — does not backfill removed database records",
+            "title": "treats LegacyDb current_json as canonical — does not backfill removed database records",
             "duration": 903.8779939999986,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync repairs legacy sprite references from Supabase rows before project use",
+            "fullName": "LegacyDb project sync repairs legacy sprite references from LegacyDb rows before project use",
             "status": "passed",
-            "title": "repairs legacy sprite references from Supabase rows before project use",
+            "title": "repairs legacy sprite references from LegacyDb rows before project use",
             "duration": 9570.139237,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync drops Supabase village info documents for maps that no longer exist",
+            "fullName": "LegacyDb project sync drops LegacyDb village info documents for maps that no longer exist",
             "status": "passed",
-            "title": "drops Supabase village info documents for maps that no longer exist",
+            "title": "drops LegacyDb village info documents for maps that no longer exist",
             "duration": 2902.2002109999958,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync removes legacy sprite references from Supabase save payloads",
+            "fullName": "LegacyDb project sync removes legacy sprite references from LegacyDb save payloads",
             "status": "passed",
-            "title": "removes legacy sprite references from Supabase save payloads",
+            "title": "removes legacy sprite references from LegacyDb save payloads",
             "duration": 971.960874000004,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync saves the project as a Supabase projects upsert payload",
+            "fullName": "LegacyDb project sync saves the project as a LegacyDb projects upsert payload",
             "status": "passed",
-            "title": "saves the project as a Supabase projects upsert payload",
+            "title": "saves the project as a LegacyDb projects upsert payload",
             "duration": 735.5470590000041,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync keeps current_json as canonical when optional normalized tables are absent",
+            "fullName": "LegacyDb project sync keeps current_json as canonical when optional normalized tables are absent",
             "status": "passed",
             "title": "keeps current_json as canonical when optional normalized tables are absent",
             "duration": 437.6804059999995,
@@ -12549,9 +12549,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync merges a changed map into the latest project without replacing other maps",
+            "fullName": "LegacyDb project sync merges a changed map into the latest project without replacing other maps",
             "status": "passed",
             "title": "merges a changed map into the latest project without replacing other maps",
             "duration": 1979.613685999997,
@@ -12560,9 +12560,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync does not stop a stale same-map save before it overwrites a newer DB map",
+            "fullName": "LegacyDb project sync does not stop a stale same-map save before it overwrites a newer DB map",
             "status": "passed",
             "title": "does not stop a stale same-map save before it overwrites a newer DB map",
             "duration": 4166.474975000005,
@@ -12571,9 +12571,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync does not false-conflict when the load path repairs a saved map (shop commands)",
+            "fullName": "LegacyDb project sync does not false-conflict when the load path repairs a saved map (shop commands)",
             "status": "passed",
             "title": "does not false-conflict when the load path repairs a saved map (shop commands)",
             "duration": 4204.514586999998,
@@ -12582,9 +12582,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)",
+            "fullName": "LegacyDb project sync does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)",
             "status": "passed",
             "title": "does not false-conflict when only the repair pipeline differs (dangling refs elsewhere)",
             "duration": 11564.930575999999,
@@ -12593,9 +12593,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync does not false-conflict on jsonb key reordering (alphabetical vs insertion order)",
+            "fullName": "LegacyDb project sync does not false-conflict on jsonb key reordering (alphabetical vs insertion order)",
             "status": "passed",
             "title": "does not false-conflict on jsonb key reordering (alphabetical vs insertion order)",
             "duration": 13071.945390000008,
@@ -12604,35 +12604,35 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync preserves concurrent saves from separate editors touching different maps",
+            "fullName": "LegacyDb project sync preserves concurrent saves from separate editors touching different maps",
             "status": "failed",
             "title": "preserves concurrent saves from separate editors touching different maps",
             "duration": 15848.491395999998,
             "failureMessages": [
-              "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/supabaseProjectSync.test.ts:854:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+              "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/legacyDbProjectSync.test.ts:854:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
             ],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync preserves concurrent map tree additions from separate editors",
+            "fullName": "LegacyDb project sync preserves concurrent map tree additions from separate editors",
             "status": "failed",
             "title": "preserves concurrent map tree additions from separate editors",
             "duration": 15464.424427000005,
             "failureMessages": [
-              "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/supabaseProjectSync.test.ts:907:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+              "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/legacyDbProjectSync.test.ts:907:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
             ],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync does not undo a remote same-map reparent when saving only that map content",
+            "fullName": "LegacyDb project sync does not undo a remote same-map reparent when saving only that map content",
             "status": "passed",
             "title": "does not undo a remote same-map reparent when saving only that map content",
             "duration": 8693.289667999998,
@@ -12641,20 +12641,20 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync records AI tile analysis runs in Supabase",
+            "fullName": "LegacyDb project sync records AI tile analysis runs in LegacyDb",
             "status": "passed",
-            "title": "records AI tile analysis runs in Supabase",
+            "title": "records AI tile analysis runs in LegacyDb",
             "duration": 1.2722159999975702,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync treats a missing AI analysis table as an optional logging sink",
+            "fullName": "LegacyDb project sync treats a missing AI analysis table as an optional logging sink",
             "status": "passed",
             "title": "treats a missing AI analysis table as an optional logging sink",
             "duration": 4.314398000002257,
@@ -12663,20 +12663,20 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync records AI activity logs in Supabase",
+            "fullName": "LegacyDb project sync records AI activity logs in LegacyDb",
             "status": "passed",
-            "title": "records AI activity logs in Supabase",
+            "title": "records AI activity logs in LegacyDb",
             "duration": 1.1306929999991553,
             "failureMessages": [],
             "meta": {}
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync fails with the required migration when the activity table is missing",
+            "fullName": "LegacyDb project sync fails with the required migration when the activity table is missing",
             "status": "passed",
             "title": "fails with the required migration when the activity table is missing",
             "duration": 2.5587519999971846,
@@ -12685,9 +12685,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync fails with the required migration when the conversation table is missing",
+            "fullName": "LegacyDb project sync fails with the required migration when the conversation table is missing",
             "status": "passed",
             "title": "fails with the required migration when the conversation table is missing",
             "duration": 1.5141310000035446,
@@ -12696,9 +12696,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync lists AI activity scoped to project and merges primary with fallback",
+            "fullName": "LegacyDb project sync lists AI activity scoped to project and merges primary with fallback",
             "status": "passed",
             "title": "lists AI activity scoped to project and merges primary with fallback",
             "duration": 1.6804850000044098,
@@ -12707,9 +12707,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync hydrates last remote commit tip from commit list",
+            "fullName": "LegacyDb project sync hydrates last remote commit tip from commit list",
             "status": "passed",
             "title": "hydrates last remote commit tip from commit list",
             "duration": 0.6162520000070799,
@@ -12718,9 +12718,9 @@
           },
           {
             "ancestorTitles": [
-              "Supabase project sync"
+              "LegacyDb project sync"
             ],
-            "fullName": "Supabase project sync overlays map_json from maps table onto current_json on load",
+            "fullName": "LegacyDb project sync overlays map_json from maps table onto current_json on load",
             "status": "passed",
             "title": "overlays map_json from maps table onto current_json on load",
             "duration": 770.7931979999994,
@@ -12732,7 +12732,7 @@
         "endTime": 1788711794205.7932,
         "status": "failed",
         "message": "",
-        "name": "/home/main/z-project/rpg-zzu-life-full-p3/test/supabaseProjectSync.test.ts"
+        "name": "/home/main/z-project/rpg-zzu-life-full-p3/test/legacyDbProjectSync.test.ts"
       }
     },
     {
@@ -12802,9 +12802,9 @@
             "ancestorTitles": [
               "team workflow UI"
             ],
-            "fullName": "team workflow UI loads commit history rows through the read-only Supabase commit API",
+            "fullName": "team workflow UI loads commit history rows through the read-only LegacyDb commit API",
             "status": "passed",
-            "title": "loads commit history rows through the read-only Supabase commit API",
+            "title": "loads commit history rows through the read-only LegacyDb commit API",
             "duration": 828.5836529999942,
             "failureMessages": [],
             "meta": {}

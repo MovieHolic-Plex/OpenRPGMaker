@@ -112,9 +112,9 @@ function runProposed(ctx: ToolContext, name: string, args: Record<string, unknow
 beforeEach(() => {
   restoreDom = installFakeDom();
   installBrowserGlobals();
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });

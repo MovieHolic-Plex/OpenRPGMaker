@@ -1,7 +1,7 @@
 # Task37 verification
 
 Base: cbd880f2f3900ab1a85cd88f4cc9772e71c43f1b on fix/spatial-audit-append.
-Product change: one replacement line in src/project/supabaseProjectSync.ts insertRows.
+Product change: one replacement line in src/project/legacyDbProjectSync.ts insertRows.
 No SQL, privileges, auth, shared headers, or ordinary upsert code changed.
 
 ## RED / GREEN
@@ -18,8 +18,8 @@ No SQL, privileges, auth, shared headers, or ordinary upsert code changed.
   or increased deadlines. Both monitors used flock -w 60 and timeout 180.
 - Focused build: Bun bundled 306 modules / 2.0 MB / exit 0 in each private cluster.
   Source entry ran against actual PostgreSQL 16 + PostgREST 13.0.7.
-- LSP diagnostics: no diagnostics on src/project/supabaseProjectSync.ts,
-  test/supabaseAuditAppend.test.ts and scripts/qa/spatial-audit-append.mts.
+- LSP diagnostics: no diagnostics on src/project/legacyDbProjectSync.ts,
+  test/legacyDbAuditAppend.test.ts and scripts/qa/spatial-audit-append.mts.
   bash -n scripts/qa/spatial-audit-local.sh and source git diff --check passed.
   Staging raw Bun build.log files exposed their trailing blank line as a diff
   whitespace error. Lossless build.log.gz copies preserve the original bytes

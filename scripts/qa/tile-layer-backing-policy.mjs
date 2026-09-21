@@ -217,7 +217,7 @@ try {
   await page.getByTestId('tileset-section-tab-rules').click();
   await page.getByTestId('tileset-rule-layer').waitFor({ state: 'visible' });
 
-  // 이 QA 는 Supabase 에 아무것도 쓰지 않는다. 앱이 스스로 그 사실을 배너로 말한다.
+  // 이 QA 는 LegacyDb 에 아무것도 쓰지 않는다. 앱이 스스로 그 사실을 배너로 말한다.
   const sessionBanner = (await page.getByTestId('save-skip-banner').textContent() ?? '').trim();
   assert.ok(sessionBanner.includes('임시 세션'), `remote persistence must be off for QA, banner said: ${sessionBanner}`);
 

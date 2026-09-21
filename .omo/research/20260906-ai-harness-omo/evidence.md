@@ -72,7 +72,7 @@ Each case invokes the same instance method twice:
 
 Verdict: `agent_run_saved` is not proof of successful reload, and the plan-id
 attempt marker prevents a second proof attempt on the same plan. This is a
-faithful branch probe, not a live Supabase outage or browser failure reproduction.
+faithful branch probe, not a live LegacyDb outage or browser failure reproduction.
 Cleanup: only memory objects and transpiled strings; no store, project, network,
 process, temporary file or actual goal mutation.
 

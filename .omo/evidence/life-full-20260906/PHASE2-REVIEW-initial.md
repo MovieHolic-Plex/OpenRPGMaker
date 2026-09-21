@@ -175,7 +175,7 @@ Independently parsed archived full reports and command receipts, not mutable lat
 | Base87de7378 | 13487 | 13307 | 165 | 15 | 1 |
 | Final tested34c279bb | 13669 | 13488 | 166 | 15 | 1 |
 
-All165 shared failed assertions have matching headlines after root substitution. **160 full messages** match after that substitution alone. Inspected the remaining five complete diffs: two shifted source stack lines, one source-line-only brand scan shift, one internal runner stack-tail difference, and one timestamp inside the same local `/__oprn/edit-activity` request. The separate three-file store reports have the same nine failures, with only that local timestamp differing in one payload; this is not evidence of a new Supabase write.
+All165 shared failed assertions have matching headlines after root substitution. **160 full messages** match after that substitution alone. Inspected the remaining five complete diffs: two shifted source stack lines, one source-line-only brand scan shift, one internal runner stack-tail difference, and one timestamp inside the same local `/__oprn/edit-activity` request. The separate three-file store reports have the same nine failures, with only that local timestamp differing in one payload; this is not evidence of a new LegacyDb write.
 
 The sole final-only failure is the documented dashboard `empty project renders empty states without NaN paths`: previously failed at4e2d1762, passed at66f2cdb7, and failed at34c279bb with identical production code. Its exact historical stall cause remains unproven. The earlier task28 timing attributions are not silently upgraded to causal proof.
 

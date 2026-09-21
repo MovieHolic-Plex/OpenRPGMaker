@@ -2,7 +2,7 @@
 import { test, type Page } from "@playwright/test";
 import { mkdirSync } from "node:fs";
 import { createModernNocturneProject } from "@/project/defaults/modernNocturneGame";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 const SHOT_DIR = "verify-shots/event-editor-hostile/after";
 mkdirSync(SHOT_DIR, { recursive: true });
 const TILE = 16;
@@ -10,7 +10,7 @@ const TILE = 16;
 async function openApp(page: Page, mode = "standard", w = 1440, h = 1000) {
   await page.addInitScript((m) => localStorage.setItem("oprn:editor-ui-mode", m), mode);
   await page.setViewportSize({ width: w, height: h });
-  await seedProjectFromSupabaseCanonical(page, createModernNocturneProject(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, createModernNocturneProject(), "/?e2eVitals=1");
   await page.waitForFunction(() => typeof (window as any).__oprnEditWorldToClient === "function", undefined, { timeout: 20_000 });
   await page.waitForTimeout(600);
   const skip = page.getByText("건너뛰기", { exact: true }).first();

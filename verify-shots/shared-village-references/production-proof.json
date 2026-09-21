@@ -1,0 +1,20 @@
+{
+  "origin": "http://127.0.0.1:9825",
+  "productionBuild": true,
+  "sqliteProjectOpened": true,
+  "checked": [
+    {
+      "tilesetId": "forest_high_cliff_river",
+      "documents": 2,
+      "images": 7,
+      "allImagesDecoded": true
+    },
+    {
+      "tilesetId": "shared_forest_village_objects",
+      "documents": 1,
+      "images": 1,
+      "allImagesDecoded": true
+    }
+  ],
+  "errors": []
+}

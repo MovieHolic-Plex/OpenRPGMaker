@@ -1,2 +1,2 @@
-{"kind":"conditional-app-typecheck-not-final-merge","historyProjection":"72f1f179b39972c3838922746c7641a57e95fce8","projectedFiles":["src/ai/conversationStore.ts","src/editor/panels/aiConversationHistoryModal.ts","src/project/supabaseProjectSync.ts","src/editor/panels/aiChatPanel.ts","src/editor/projectWikiCoordinator.ts"]}
+{"kind":"conditional-app-typecheck-not-final-merge","historyProjection":"72f1f179b39972c3838922746c7641a57e95fce8","projectedFiles":["src/ai/conversationStore.ts","src/editor/panels/aiConversationHistoryModal.ts","src/project/legacyDbProjectSync.ts","src/editor/panels/aiChatPanel.ts","src/editor/projectWikiCoordinator.ts"]}
 

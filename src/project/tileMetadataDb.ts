@@ -27,32 +27,20 @@ type AiAnalysisRunInput = {
 };
 
 export async function loadProjectFromCanonicalStore(): Promise<StoredProject> {
-  return loadProjectFromSupabaseCanonicalStore();
-}
-
-export async function saveProjectToCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SaveResult> {
-  return saveProjectToSupabaseCanonicalStore(project, authority);
-}
-
-export async function clearCanonicalProjectStore(): Promise<void> {
-  await clearSupabaseCanonicalProjectStore();
-}
-
-export async function loadProjectFromSupabaseCanonicalStore(): Promise<StoredProject> {
   const repository = projectRepository();
   const target = repository.currentTarget();
   const snapshot = target ? await repository.loadSnapshot(target) : null;
   return snapshot ? { found: true, project: snapshot.project, authority: snapshot.authority } : { found: false, project: null };
 }
 
-export async function saveProjectToSupabaseCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SaveResult> {
+export async function saveProjectToCanonicalStore(project: Project, authority?: ProjectWriteAuthority): Promise<SaveResult> {
   const repository = projectRepository();
   const target = repository.currentTarget();
   if (!target) return { kind: "not-configured" };
   return repository.save(projectWithoutEventDrafts(project), target, authority);
 }
 
-export async function clearSupabaseCanonicalProjectStore(): Promise<void> {
+export async function clearCanonicalProjectStore(): Promise<void> {
   await Promise.resolve();
 }
 

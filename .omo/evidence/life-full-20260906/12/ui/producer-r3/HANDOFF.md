@@ -27,7 +27,7 @@ Native observation for interpolating NPC (final run): player at `(16,2)` facing 
 Do not reuse the r2 1x1 remote blob.
 
 - New project id `rpg-zzu-life-full-p4-t12-ui-01a07b22` (not stardew-demo / WISH / `…-01a07a93`).
-- Supabase saveKind `saved`, sha256 `350f3b2d133b555976eadf60dbbfdce9121e4b4146922f13fca6abd4fc99df27`.
+- LegacyDb saveKind `saved`, sha256 `350f3b2d133b555976eadf60dbbfdce9121e4b4146922f13fca6abd4fc99df27`.
 - Reload: `playerFootprint` `{width:3,height:3}`, `playerPassRows` 1, `farmPlots` `{}`.
 - Local `fixture.json` is `serialize(reloaded)` of that codec output.
 - Native New Game: start `(8,8)`, empty `farmPlots`, Spaces target `(7, 9)` not 1x1 `(8, 9)`.

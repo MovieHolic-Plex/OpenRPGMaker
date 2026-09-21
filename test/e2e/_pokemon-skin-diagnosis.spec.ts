@@ -3,7 +3,7 @@
 //  B) 장르 프리셋 monster-collect (skin + battleModel=gen1 둘 다)
 // 목적: 어색함이 "스타일 버그"인지 "문법 불일치"인지 가른다.
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
 // 데모 프로젝트 팩터리는 배럴이 아니라 defaultProject 에 있다 — 배럴은 가벼운 것만 내보낸다.
 import { createScarloxyPokemonDemoProject } from "@/project/defaults/defaultProject";
@@ -91,7 +91,7 @@ async function probe(page: Page): Promise<Record<string, unknown>> {
 
 async function runPath(page: Page, label: string, project: Project): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openBattleTest(page);
 
   await shot(page, `${label}-01-command`);

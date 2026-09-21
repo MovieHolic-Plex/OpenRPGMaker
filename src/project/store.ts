@@ -339,7 +339,7 @@ class ProjectStore {
       }
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = "load-failed";
-      log.error("Supabase canonical project load failed", error);
+      log.error("Canonical project load failed", error);
       throw error;
     }
     this.loaded = true;
@@ -368,7 +368,7 @@ class ProjectStore {
   }
 
   /**
-   * 현재 저장 대상이 로컬 폴더 정본인가(원격 Supabase 행이 아님).
+   * 현재 저장 대상이 로컬 폴더 정본인가(원격 project storage 행이 아님).
    *
    * 협업 락·원격 전용 표면이 판별에 쓴다 — `isRemotePersistenceEnabled()` 는 로컬 폴더에서도
    * true(폴더가 곧 저장소)라 "원격에 쓰는가"의 답이 아니다. 로컬 정본은 단일 작성자라
@@ -439,7 +439,7 @@ class ProjectStore {
   }
 
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
-  // store.load()가 Supabase 네트워크/인증에 결합되어 있어 단위 테스트에서
+  // store.load()가 project storage 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
   /** @internal */
   isRemotePersistenceEnabled(): boolean {
@@ -479,7 +479,7 @@ class ProjectStore {
 
   /**
    * Temporarily exposes an in-memory project to read-only runtime consumers.
-   * Store updates, autosave, export projections, and Supabase persistence keep
+   * Store updates, autosave, export projections, and project storage persistence keep
    * using the canonical `current` project. The returned release is idempotent.
    */
   beginReadOnlyProjectSnapshot(project: Project): () => void {
@@ -1098,7 +1098,7 @@ class ProjectStore {
       if (this.contentLineage !== lineage || this.autoSaveTimer !== timer) return;
       this.autoSaveTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
-        log.error("Supabase auto-save failed", error);
+        log.error("Project auto-save failed", error);
       });
     }, this.autoSaveDelayMs);
     this.autoSaveTimer = timer;
@@ -1123,7 +1123,7 @@ class ProjectStore {
       if (this.contentLineage !== lineage || this.autoSaveRetryTimer !== timer) return;
       this.autoSaveRetryTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
-        log.error("Supabase auto-save retry failed", error);
+        log.error("Project auto-save retry failed", error);
       });
     }, delay);
     this.autoSaveRetryTimer = timer;

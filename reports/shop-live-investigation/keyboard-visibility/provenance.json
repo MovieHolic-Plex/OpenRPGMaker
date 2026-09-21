@@ -1,7 +1,7 @@
 {
   "projectId": "oprn-e98456e1d8",
   "loadedAt": "2026-09-08T07:13:46.138Z",
-  "loader": "/home/main/z-project/rpg-zzu/src/project/supabaseProjectSync.ts#loadProjectFromSupabase",
+  "loader": "/home/main/z-project/rpg-zzu/src/project/legacyDbProjectSync.ts#loadProjectFromLegacyDb",
   "snapshotSha256": "2684a77c47d1ea75eb5ba9b4f17e09ff556550b08f42f0db81f67e616976ab3b",
   "priorSnapshotSha256": "2684a77c47d1ea75eb5ba9b4f17e09ff556550b08f42f0db81f67e616976ab3b",
   "identicalToPrior": true,

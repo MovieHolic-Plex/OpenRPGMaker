@@ -1,4 +1,4 @@
-/** Contract-only player fixtures. Never shipped as demo content or written to Supabase. */
+/** Contract-only player fixtures. Never shipped as demo content or written to LegacyDb. */
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage } from "@/project/types";
 

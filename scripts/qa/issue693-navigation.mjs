@@ -18,7 +18,7 @@ try {
     page.setDefaultTimeout(30000);
     await page.route("**/*", route => {
       const request = route.request();
-      if (!["GET", "HEAD", "OPTIONS"].includes(request.method()) && /supabase|\/api\//.test(request.url())) {
+      if (!["GET", "HEAD", "OPTIONS"].includes(request.method()) && /legacyDb|\/api\//.test(request.url())) {
         return route.abort("blockedbyclient");
       }
       return route.continue();

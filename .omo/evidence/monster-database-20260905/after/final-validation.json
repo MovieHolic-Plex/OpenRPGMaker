@@ -49,7 +49,7 @@
       "test/roleNameComparisonGate.test.ts",
       "test/storeEventDraftPreserve.test.ts",
       "test/storeFlushShaEvidence.test.ts",
-      "test/supabaseFixtureLoad.test.ts",
+      "test/legacyDbFixtureLoad.test.ts",
       "test/transactionalNewRemoteProject.test.ts",
       "test/uxcLoadFailure.test.ts",
       "test/villageBuilder.test.ts",
@@ -641,14 +641,14 @@
       },
       "storeFlushShaEvidence.test.ts": {
         "passed": [
-          "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+          "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
           "Project store flush sha256 evidence 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로"
         ],
         "failed": []
       },
-      "supabaseFixtureLoad.test.ts": {
+      "legacyDbFixtureLoad.test.ts": {
         "passed": [
-          "Supabase 프로젝트 픽스처 불러오기 기존에 열리던 모든 프로젝트 픽스처를 실제 Supabase 로드 경로로 연다"
+          "LegacyDb 프로젝트 픽스처 불러오기 기존에 열리던 모든 프로젝트 픽스처를 실제 LegacyDb 로드 경로로 연다"
         ],
         "failed": []
       },
@@ -1011,14 +1011,14 @@
       },
       "storeFlushShaEvidence.test.ts": {
         "passed": [
-          "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+          "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
           "Project store flush sha256 evidence 변경 없음 fast path 는 saved(sha256 없음) — sha256 은 선택 필드 계약 그대로"
         ],
         "failed": []
       },
-      "supabaseFixtureLoad.test.ts": {
+      "legacyDbFixtureLoad.test.ts": {
         "passed": [
-          "Supabase 프로젝트 픽스처 불러오기 기존에 열리던 모든 프로젝트 픽스처를 실제 Supabase 로드 경로로 연다"
+          "LegacyDb 프로젝트 픽스처 불러오기 기존에 열리던 모든 프로젝트 픽스처를 실제 LegacyDb 로드 경로로 연다"
         ],
         "failed": []
       },

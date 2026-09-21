@@ -235,7 +235,7 @@ docs/2026-07-16-village-harness-adversarial-review.md · docs/2026-07-18-castle-
 </div>
 
 <div class="case sev1">
-<h4><span class="badge b-p1">P1</span> CI가 라이브 Supabase에 업서트 <span class="badge b-fixed">해소</span></h4>
+<h4><span class="badge b-p1">P1</span> CI가 라이브 LegacyDb에 업서트 <span class="badge b-fixed">해소</span></h4>
 <dl>
 <dt>증상</dt><dd><code>lakeVillageRebuildFinal.test.ts</code>가 테스트 실행마다 라이브 DB에 마을을 저장.</dd>
 <dt>해소</dt><dd>기본 vitest에서 exclude, 라이브 검증은 <code>vitest.live.config.ts</code>로 분리(옵트인).</dd>

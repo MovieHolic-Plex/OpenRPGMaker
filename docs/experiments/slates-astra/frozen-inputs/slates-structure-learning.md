@@ -114,7 +114,7 @@
 - 생성기: `scripts/content/build-slates-mastery.mjs`, `build-slates-mastery-report.mjs`.
   수동 규칙: `slates-mastery-specs.mjs`, `slates-mastery-notes.mjs`.
 - 저장/재로드 근거: `verify-shots/slates-mastery/persistence.json`, `local-persistence.json`, `SUMMARY.md`.
-- 다음 작업 전 최신 Supabase root를 `read-slates-project.mjs`로 읽고 SHA 조건 저장한다.
+- 다음 작업 전 최신 LegacyDb root를 `read-slates-project.mjs`로 읽고 SHA 조건 저장한다.
   기존 입력 스냅샷을 최신인 것처럼 재사용하지 않는다.
 
 아직 완료로 말하면 안 되는 것: **정확한 성문 내부 복원, 임의 T/L자 건물 생성, 모든 성벽 방향의

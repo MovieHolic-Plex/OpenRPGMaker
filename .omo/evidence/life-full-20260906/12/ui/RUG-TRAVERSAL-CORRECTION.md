@@ -13,7 +13,7 @@ No source fix or repeated full UI implementation follows from this gap.
 ## One fresh scenario closes traversal and actual restoration
 
 The candidate below is assigned to Astra for core preflight and a NEW isolated
-Supabase input under `fixtures-r5/`. It is not yet a native result.
+LegacyDb input under `fixtures-r5/`. It is not yet a native result.
 
 - Retain the open arena, player3x3/passRows1, initial foot `(8,8)` facing down.
 - Author a real nonblocking rug2x1 and a distant legitimate starting building,

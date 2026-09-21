@@ -2,7 +2,7 @@
 
 공용 장소 `강변 성채`의 확정본에서 다음 구역을 분리했다. 프로젝트 전용 library가 아니라 `CASTLE_PLACE_REFERENCES`에 등록하여 빈 프로젝트에서도 표시된다.
 
-| 장소 | 원본 좌표 x,y,w,h | 공용 id / 맵 id | Supabase 독립 저장본 |
+| 장소 | 원본 좌표 x,y,w,h | 공용 id / 맵 id | LegacyDb 독립 저장본 |
 |---|---|---|---|
 | 고목·분수 뒤뜰 | 28,28,64,36 | castle-courtyard | oprn-place-castle-courtyard-v1 |
 | 나룻배 두 척과 작은 선착장 | 90,42,36,22 | castle-small-harbor | oprn-place-castle-small-harbor-v1 |

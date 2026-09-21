@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 마을 설계서 (2026-09-05)
 
 검토한 `output/village-direction/index.html` 방향성의 첫 구현. 프리셋의 외형·배치·자연 설정을 한곳에서 저작하고 **시공 코드에서** 고정/범위를 집행한다.
@@ -77,7 +79,7 @@
   바꾸면 안 된다. 참고는 원격 「고양이」(`oprn-343607fd0e`)의 `map_blank_start`,
   `(25,20)`부터 13×12칸인 아래쪽 2층 집이다. 참고 프로젝트는 읽기만 한다.
 - `scripts/build-house-study-gallery.mts`: 설정된 프로젝트를 먼저 load하고 새 전시 맵과
-  section 구조물을 추가한다. `--apply`는 동시 편집 검사, 백업, 앱의 Supabase 저장,
+  section 구조물을 추가한다. `--apply`는 동시 편집 검사, 백업, 앱의 LegacyDb 저장,
   재로드 후 기존 맵·시작점 보존과 새 맵·구조물의 일치를 확인한다. 각 집의 실제 타일에서
   지붕 연결 성분 1개, 제외 칩 0개, 출입구 앞 빈 땅을 검사한다.
 - `scripts/capture-house-study-gallery.mjs --reloaded`: 저장 후 다시 읽은 데이터로
@@ -105,7 +107,7 @@
 - `scripts/build-house-height-gallery.mts --apply`: 기존 2층 2채와 새 3·4층 4채를
   별도 맵 `map_house_heights_20260912`(「집 층수 연구 · 2층에서 4층까지」)에 저장한다.
   기존 2층 section 동일성, 모든 층의 외벽 보존, 지붕 연결, 제외 칩 0개, 문 앞 빈 땅을
-  검사한다. Supabase 저장 후 다시 load하여 새 맵·section 일치와 기존 맵·시작점을 확인한다.
+  검사한다. LegacyDb 저장 후 다시 load하여 새 맵·section 일치와 기존 맵·시작점을 확인한다.
 - `scripts/capture-house-height-gallery.mjs --reloaded`: 실제 에디터 타일 렌더로
   같은 배율·지면 기준의 2/3/4층 비교 PNG와 독립 HTML을 `output/evidence/house-heights/`에 쓴다.
 - 이 층수는 외장 연구의 보이는 층이다. 실내 맵·계단·층간 이동 이벤트를 추가한 것은 아니다.
@@ -132,7 +134,7 @@
 - 원격 서버에 저장 RPC가 없어 기존 `20260907000000_spatial_authoring_cas.sql`을 적용했다.
   적용 전 전역 canonical 프로젝트 0개, `pgcrypto`의 `extensions` 스키마, RLS·추가 FK·트리거
   부재를 확인했다. 기존 프로젝트 내용은 마이그레이션이 변경하지 않는다.
-  현재 프로젝트의 저장·재로드 증거는 `.omo/evidence/house-spatial-catalog/supabase-proof.json`.
+  현재 프로젝트의 저장·재로드 증거는 `.omo/evidence/house-spatial-catalog/legacy-db-proof.json`.
   앞 절의 전시 맵은 당시 저장 기록이며, 현재 등록 증거의 맵 ID는 이 영수증을 따른다.
 
 마을 세션의 강가 추가 활엽수 배치도 물·집 마당 예약지를 뺀 영역에만 수행한다.
@@ -162,7 +164,7 @@
 - 통합 전시 맵: `map_house_30_a_20260912`, `map_house_30_b_20260912`,
   `map_house_30_c_20260912`. 오브젝트 검색 태그는 `집 형태 30종 20260912`.
 - `node scripts/capture-house30.mjs --batch all --base http://127.0.0.1:19841`:
-  Supabase 재로드를 실제 `mapTileDraw`로 렌더한다. 번호별 PNG, 10종 비교판,
+  LegacyDb 재로드를 실제 `mapTileDraw`로 렌더한다. 번호별 PNG, 10종 비교판,
   30종 개요와 클릭 확대가 있는 독립 HTML을 만든다. `--preview`는 미리보기 입력이다.
 - `npx tsx scripts/verify-house30-builds.mts`: 저장된 30개 오브젝트를 각각 독립 검증 맵에
   실제 `preview_spatial_build` → `apply_spatial_build`로 배치하고 완성 셀 일치를 확인한다.

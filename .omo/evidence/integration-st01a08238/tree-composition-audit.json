@@ -1953,7 +1953,7 @@
       "manual": false
     },
     {
-      "path": ".omo/evidence/issue-693/media-supabase-proof.json",
+      "path": ".omo/evidence/issue-693/media-legacy-db-proof.json",
       "retainedExact": true,
       "manual": false
     },
@@ -4920,7 +4920,7 @@
       "matchesMain": false
     },
     {
-      "path": "src/project/supabaseProjectSync.ts",
+      "path": "src/project/legacyDbProjectSync.ts",
       "manual": true,
       "matchesOurs": false,
       "matchesMain": false

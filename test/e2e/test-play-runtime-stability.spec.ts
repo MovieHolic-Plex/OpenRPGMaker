@@ -7,7 +7,7 @@
 //  3. 대화 한 번에 타일 계층이 다시 만들어지지 않고 카메라 startFollow 스냅이 없다.
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const SIZE = 24;
@@ -68,7 +68,7 @@ test("편집기 테스트 플레이: 짧은 탭도 한 걸음 · 편집기 게�
     window.localStorage.setItem("oprn:test-play-auto-start", "0");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, openFieldProject());
+  await seedProjectForEditor(page, openFieldProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
 
   await page.getByTestId("mode-play").click({ force: true });
@@ -126,7 +126,7 @@ test("런타임 디버그 패널의 숫자 입력창에 치는 글자는 게임 
     window.localStorage.setItem("oprn:test-play-auto-start", "1");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, openFieldProject());
+  await seedProjectForEditor(page, openFieldProject());
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });
   await expect(page.getByTestId("runtime-state-json")).toBeVisible({ timeout: 30_000 });

@@ -7,11 +7,11 @@ describe("local dev project URL overrides", () => {
     vi.unstubAllGlobals();
   });
 
-  it("lets supabaseRecovered load the Supabase canonical project instead of a generated showcase", () => {
+  it("lets projectRecovered load the LegacyDb canonical project instead of a generated showcase", () => {
     vi.stubGlobal("window", {
       location: {
         hostname: "127.0.0.1",
-        search: "?supabaseRecovered=1&townCityShowcase=1",
+        search: "?projectRecovered=1&townCityShowcase=1",
       },
     });
 
@@ -20,7 +20,7 @@ describe("local dev project URL overrides", () => {
     expect(project).toBeNull();
   });
 
-  it("does not let generated showcase URLs replace the canonical Supabase default by themselves", () => {
+  it("does not let generated showcase URLs replace the canonical LegacyDb default by themselves", () => {
     vi.stubGlobal("window", {
       location: {
         hostname: "127.0.0.1",

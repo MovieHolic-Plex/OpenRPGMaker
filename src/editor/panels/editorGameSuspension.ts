@@ -10,7 +10,7 @@
 // 이벤트가 큐에 쌓여 깨어나는 순간 한꺼번에 EditScene 단축키로 쏟아진다.
 //
 // 게임 접근자는 `src/app/mode.ts` 가 부팅 때 주입한다 — 이 모듈이 `@/app/mode` 를 직접 끌어오면
-// 테스트 플레이 창을 여는 모든 단위 테스트가 편집기 셸 전체(store·Supabase)를 적재하게 된다.
+// 테스트 플레이 창을 여는 모든 단위 테스트가 편집기 셸 전체(store·project storage)를 적재하게 된다.
 
 type SuspendableGame = {
   /** Phaser.Game.isRunning — destroy 뒤 false. 잠든 사이 파괴된 게임은 깨우지 않는다. */

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Object, space and place catalog UI
 
 ## Concept and selection contract (2026-09-12)
@@ -78,7 +80,7 @@ User authorized the audited indoor removal list. Removed 29 indoor-only reviewed
 
 Live SQLite project `c779e278-8cec-4da4-9c2f-df423460b60d`: revision 50 → 51, twelve house interior maps removed through the authenticated host save service with expected SHA. Door graphics were retained with their old transfer/animation command sequences cleared. Four outdoor maps remain. Backup and load-after-save evidence: `output/evidence/interior-removal-executed/host-proof.json` in the ab8d worktree.
 
-Shared Supabase archive `oprn-shared-tibo-places-20260918`: removed 36 interior maps, their occurrences and source spaces, and the imported default interior place definitions; retained eleven exterior maps plus the blank start map and all 847 object definitions. Graph refresh/deletion releases ownership but deliberately retains map data, so the cleanup explicitly removes the approved orphaned interior maps and tree entries after graph operations. Saved with CAS and reloaded.
+Shared LegacyDb archive `oprn-shared-tibo-places-20260918`: removed 36 interior maps, their occurrences and source spaces, and the imported default interior place definitions; retained eleven exterior maps plus the blank start map and all 847 object definitions. Graph refresh/deletion releases ownership but deliberately retains map data, so the cleanup explicitly removes the approved orphaned interior maps and tree entries after graph operations. Saved with CAS and reloaded.
 
 `public/places-mockup.html` is a standalone interaction mockup, not the production database panel. Primary hierarchy: tileset art style → outdoor/indoor/dungeon → purpose; Tibo is a compatible material extension within EasyRPG. Shared originals remain global; project placement creates copies. Mockup includes retained example previews, indoor empty state, search, purpose filter, detail pane, and create dialog, with no DB mutations. Live preview: `/places-mockup.html`.
 
@@ -100,7 +102,7 @@ Category and environment are not generator shape enums: a dungeon can be outdoor
 `reviewedPlaceCatalog.ts`는 `riverVillagePlace.ts`의 「강변 숲마을」
 (`place_river_forest_village`)을 공용 장소 맨 앞에 포함한다. 분류는 EasyRPG / 마을·도시 /
 실외 / 주거·마을 꾸밈 기준이다. 기존 공용 장소와 같은 미리보기·복사·컴파일 경로를 사용한다.
-`reviewedPlaces/riverVillage.json`은 Supabase `river-village-live-20260921-414a`의 승인된
+`reviewedPlaces/riverVillage.json`은 LegacyDb `river-village-live-20260921-414a`의 승인된
 78×44 실외 타일을 보관한다. 이벤트 문은 복사 가능한 정적 문 타일로 표현한다.
 이 도안에는 NPC·실내·이동 이벤트가 없으며, 원본 프로젝트의 이벤트와 내부 맵은 보존한다.
 미리보기 PNG는 `public/assets/reviewed-places/place_river_forest_village.png`이다.

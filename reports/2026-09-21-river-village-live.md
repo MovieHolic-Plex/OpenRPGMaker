@@ -12,7 +12,7 @@
 ## Live evidence
 
 Used the real `AUTHOR_VILLAGE_TOOL.run` in the Vite browser environment. This run did not invoke an LLM or replay a mock model response.
-Checked Supabase connectivity before authoring. Separate script performed an upsert followed by a GET and normalized full-document comparison.
+Checked LegacyDb connectivity before authoring. Separate script performed an upsert followed by a GET and normalized full-document comparison.
 Rendered the returned database document with the native `renderHarmonyMapImages` renderer.
 
 | Variant | Project ID | Houses / residents | Actual door reachability | Remote reload |

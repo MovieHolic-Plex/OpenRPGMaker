@@ -21,7 +21,7 @@
 이 워크트리에서 `npm run dev:worktree`로 40261 포트를 열고 `node .omo/evidence/village-design-followup/browser-qa.mjs`를 실행한다.
 스크린샷은 `output/evidence/village-design-followup/`에 저장된다.
 Chromium은 호스트 인터페이스 변경으로 `ERR_NETWORK_CHANGED`가 나 모듈 적재에 실패했다. 저장소의 기존 `test/e2e/database-sidebar-rail-modern.spec.ts`와 동일하게 Firefox로 검증한다.
-QA는 `blankProject=1`의 임시 테스트 프로젝트에서 최소 fixture로 생성 기록 화면을 확인한다. 원격 게임 콘텐츠 저작이 아니며 Supabase에 쓰지 않는다.
+QA는 `blankProject=1`의 임시 테스트 프로젝트에서 최소 fixture로 생성 기록 화면을 확인한다. 원격 게임 콘텐츠 저작이 아니며 LegacyDb에 쓰지 않는다.
 
 실제 Firefox 편집기 검증 exit 0: 브라우저 오류 0, 1280px/1024px 가로 넘침 0. 시공 개정 3의 기록을 유지한 채 현재 설계서를 개정 4로 바꾸면 변경 상태를 표시했다. `browser-results.json`, `history-1586.png`, `history-1024.png`.
 

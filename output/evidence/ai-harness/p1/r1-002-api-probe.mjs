@@ -18,8 +18,8 @@ const committed = new Map();
 const server = await createServer({ root, configFile: false, envDir: false,
   cacheDir: '/home/main/z-project/rpg-zzu-ai-harness-p1-r1-commit-20260906/output/evidence/ai-harness/p1/r1-002-cache',
   resolve: { alias: { '@': `${root}/src` } },
-  define: Object.fromEntries(Object.entries({ VITE_SUPABASE_URL: 'http://p1-review.invalid', VITE_SUPABASE_ANON_KEY: 'test-anon-key',
-    VITE_SUPABASE_PROJECT_ID: projectId, VITE_SUPABASE_USE_PROXY: '0', VITE_EDIT_ACTIVITY_DISK_MIRROR: '0' })
+  define: Object.fromEntries(Object.entries({ VITE_LEGACY_DB_URL: 'http://p1-review.invalid', VITE_LEGACY_DB_ANON_KEY: 'test-anon-key',
+    VITE_LEGACY_DB_PROJECT_ID: projectId, VITE_LEGACY_DB_USE_PROXY: '0', VITE_EDIT_ACTIVITY_DISK_MIRROR: '0' })
     .map(([k, v]) => [`import.meta.env.${k}`, JSON.stringify(v)])),
   server: { middlewareMode: true, hmr: false, watch: null },
 });

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Editor Validation Expectations
 
 ## 규칙 감사 배지는 UI 선택만으로 재검사하지 않는다 (2026-09-18)
@@ -173,7 +175,7 @@ with interaction-position and movable-body checks.
 - `databaseLifeCraftingView` 회귀는 중복 ID 입력/중복 판매가·amount item 추가 방어, shipping 비활성화 시 history/allowed 값 보존, 명시적 optional 설정 제거, `changeLifeSkillExp`/`craftRecipe`/`applyItemUpgrade` command-reference 삭제 및 rename 차단, bundle 보상 recipe/worldUnlock rename 차단, capability 9×9 clamp를 포함한다. 일정 회귀는 min/max 우회 clamp 및 앞선 `when:{}` shadow 경고도 포함한다.
 - P0 수량/세이브 공격 회귀는 `test/p0SafetyHardening.test.ts`, `test/p0SessionPersistence.test.ts`, `test/p0ToolCapability.test.ts`, `test/p0ProjectSchema.test.ts`를 함께 실행한다. `1e300`, safe-integer지만 공통 stack cap을 넘는 값, 결과 overflow는 inventory/charge/domain state를 하나도 바꾸지 않아야 한다. 로드는 현재 project의 life-skill ID와 XP 기반 level만 보존하고 unsafe maker deadline을 버리며 bundle completion/reward receipt를 같은 집합으로 복원한다. capability는 shape/editor/runtime 모두 축 9·총 81 상한을 사용하고 farming 범위는 map bounds와 교차한 뒤 최대 81칸만 순회한다.
 - 2차 경제 공격 회귀는 `test/p0EconomySafetyFollowup.test.ts`를 추가한다. chest save parse/direct restore는 `ITEM_QUANTITY_MAX` 밖의 row를 버리고, deposit/withdraw는 player와 chest를 함께 무변이로 실패해야 한다. craft는 중복 ingredient를 item별로 합산하고 output grant까지 한 atomic batch로 검증한 뒤에만 gold를 차감한다. shop buy는 full/`MAX+1`/`1e300` stack에서 player gold, trade count, merchant gold를 모두 유지해야 한다.
-- 이 범위가 UI 코드 단위 구현으로 제한된 작업에서는 Playwright·Supabase authored-content 검증을 대신 실행하지 않는다. 병합 전 시각 QA는 `/` editor에서 Database → `생활 기술·제작`과 이벤트 편집기 → `NPC 일정`을 1024×768 / 1440×900로 확인한다.
+- 이 범위가 UI 코드 단위 구현으로 제한된 작업에서는 Playwright·LegacyDb authored-content 검증을 대신 실행하지 않는다. 병합 전 시각 QA는 `/` editor에서 Database → `생활 기술·제작`과 이벤트 편집기 → `NPC 일정`을 1024×768 / 1440×900로 확인한다.
 
 Wiki verification, Playwright evidence, and focused test guidance for editor changes.
 
@@ -181,14 +183,14 @@ Wiki verification, Playwright evidence, and focused test guidance for editor cha
 
 - Run `test/aiEditorFullToolCoverage.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, and `test/aiEditorFullToolSafety.test.ts` together with provider-schema, hostile-argument, approval, plan exposure, quota, and message-budget tests. Required behavior: map metadata/tree/duplication writes, database utility CRUD facade, project/system settings, second-round discovery escalation, typed unknown/malformed failures, and approval-required classification for destructive calls.
 - The 40-tool base selector remains a regression contract. Editor-wide reachability is proven by `find_tools` followed by a later-round schema exposure, not by raising the base cap or sending the whole catalog. Request payload compaction and the provider schema ceiling must remain green.
-- Browser proof for an editor-wide assistant change must show (1) one non-map AI request changing actual project state, (2) one destructive request displaying approval while the pre-approval serialized project SHA stays unchanged, and (3) one multi-domain request with successful cross-domain tool/audit rows and a saveable project. Any authored QA project must be persisted to Supabase and reloaded by project id.
+- Browser proof for an editor-wide assistant change must show (1) one non-map AI request changing actual project state, (2) one destructive request displaying approval while the pre-approval serialized project SHA stays unchanged, and (3) one multi-domain request with successful cross-domain tool/audit rows and a saveable project. Any authored QA project must be persisted to LegacyDb and reloaded by project id.
 
 ## Roguelike run validation (2026-08-24)
 
 - `runControl` and `run` are registered native kinds and participate in command/condition coverage, project shape validation, reference validation, summaries, and story explanation.
 - Project shape validation checks the action/query discriminant and its action-specific fields. Draft validation reports an empty run-condition flag as `condition.run.flag-empty`; run commands have no project-record references.
 - Optional room metadata validation checks boolean `resetEventState`, non-empty unique slot ids, non-empty choices, unique choices within a slot, positive integer weights, integer floor bounds 1–9999, ordered floor ranges, and same-map `fieldSpawnId` references. `configure_roguelike_room` rejects invalid references before applying the edit; import validation remains the trust boundary for external JSON.
-- The run itself is runtime session state and the Phase 0–3 work is engine/editor code only, so it does not require Supabase content persistence. Any demo/map authored with these commands or room slots still falls under the mandatory Supabase save-and-reload rule.
+- The run itself is runtime session state and the Phase 0–3 work is engine/editor code only, so it does not require LegacyDb content persistence. Any demo/map authored with these commands or room slots still falls under the mandatory LegacyDb save-and-reload rule.
 
 ## Validation Expectations
 

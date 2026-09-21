@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(60_000);
 test.use({ serviceWorkers: "block" });
@@ -84,7 +84,7 @@ test("action combat: HUD, contact damage, swing kill, EXP grant", async ({ page 
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, buildActionProject());
+  await seedProjectForEditor(page, buildActionProject());
 
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 20_000 });

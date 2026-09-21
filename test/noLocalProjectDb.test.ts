@@ -20,7 +20,7 @@ const loadFs = async (): Promise<FsLike> => {
 
 const runtimeSourceRoots = ["src/project", "src/editor"] as const;
 const removedLocalDbFiles = [
-  "src/project/defaults/supabaseRecoveredHouseTemplateProject.json",
+  "src/project/defaults/projectRecoveredHouseTemplateProject.json",
   "src/project/tileMetadataDbIdb.ts",
   "src/project/tileMetadataDbProject.ts",
   "src/project/tileMetadataDbSchema.ts",
@@ -32,8 +32,8 @@ const forbiddenRuntimePatterns = [
   "sqlite",
   "sql.js",
   "better-sqlite",
-  "createSupabaseFallbackProject",
-  "supabaseRecoveredHouseTemplateProject",
+  "createLegacyDbFallbackProject",
+  "projectRecoveredHouseTemplateProject",
 ] as const;
 
 function forbiddenLocalDbReferences(text: string): readonly string[] {

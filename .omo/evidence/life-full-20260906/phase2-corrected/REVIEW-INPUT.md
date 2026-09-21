@@ -75,7 +75,7 @@ publication only after approval, and no further remote merge is authorized.
 
 Preserve WISH.md, dependencies, baseline files, tracked caches, other people's
 changes, and existing rpg-zzu-stardew-demo. This phase contains engine/test work;
-new authored game content and isolated Supabase save/reload remain later-phase
+new authored game content and isolated LegacyDb save/reload remain later-phase
 requirements and must not be represented as already complete.
 
 Parent owns review-worktree, generated dist/cache and reporter cleanup, archives

@@ -4,16 +4,16 @@ import { resolve } from "node:path";
 import { createServer } from "vite";
 
 // Real session/tool/apply/store entry points. Only LLM and HTTP are deterministic.
-// This is not browser or live-Supabase acceptance; the surface worker owns those.
+// This is not browser or live-LegacyDb acceptance; the surface worker owns those.
 const projectId = "p1-session-surface-fixture";
 const server = await createServer({
   configFile: false, envDir: false,
   resolve: { alias: { "@": resolve("src") } },
   define: {
-    "import.meta.env.VITE_SUPABASE_URL": JSON.stringify("http://p1-session.invalid"),
-    "import.meta.env.VITE_SUPABASE_ANON_KEY": JSON.stringify("test-anon-key"),
-    "import.meta.env.VITE_SUPABASE_PROJECT_ID": JSON.stringify(projectId),
-    "import.meta.env.VITE_SUPABASE_USE_PROXY": JSON.stringify("0"),
+    "import.meta.env.VITE_LEGACY_DB_URL": JSON.stringify("http://p1-session.invalid"),
+    "import.meta.env.VITE_LEGACY_DB_ANON_KEY": JSON.stringify("test-anon-key"),
+    "import.meta.env.VITE_LEGACY_DB_PROJECT_ID": JSON.stringify(projectId),
+    "import.meta.env.VITE_LEGACY_DB_USE_PROXY": JSON.stringify("0"),
     "import.meta.env.VITE_EDIT_ACTIVITY_DISK_MIRROR": JSON.stringify("0"),
   },
   server: { middlewareMode: true, hmr: false, watch: null },

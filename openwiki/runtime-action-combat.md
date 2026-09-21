@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Runtime Action Combat
 
 > **2D 타일 액션 전투 지원 (2026-09-07).** 기존 액션 런타임을 신규 저작에도 사용한다. `action-rpg` 장르는 시스템 설정을 켜며, 개별 맵의 옵트인은 계속 명시적으로 지정한다. RM식(`rm2k3`)과 포켓몬식(`gen1`)은 턴제 전투 모델이고, 액션 전투는 별도의 이중 옵트인 패키지다. 스폰 수·대기·턴제 씬 테스트는 액션 검증이 아니다. 브라우저 AI의 완료 판정은 현재 프로젝트에 귀속된 실제 플레이어 전투 증거를 요구한다.
@@ -258,7 +260,7 @@ runner does not expose this async receipt transport. It starts a private
 Vite server on **45973**, tests the existing authored action demo on
 `map_mine_1f`, and writes
 `verify-shots/runtime-qa/action-rpg/{SUMMARY.md,receipt.json,player-proof.png}`.
-Read `SUMMARY.md` first. No Supabase or project-content writes are made.
+Read `SUMMARY.md` first. No LegacyDb or project-content writes are made.
 The scenario uses a blank host and the real `/export-player/` deployment from
 `devPlayerBundlesPlugin`, without browser request routing. The plugin builds the
 player and standalone bundles on first access; `npm run build:player` is the
