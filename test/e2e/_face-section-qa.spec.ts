@@ -2,7 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import { openCommandPicker, openMapEventEditor } from "./eventStoryboardPicker";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const DIR = "output/evidence/face-section-qa";
 
@@ -59,7 +59,7 @@ async function snap(page: Page, dialog: Locator, name: string): Promise<unknown>
 
 async function openCommand(page: Page, label: string): Promise<Locator> {
   await page.setViewportSize({ width: 1600, height: 1100 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject());
+  await seedProjectForEditor(page, createBlankProject());
   const skip = page.getByTestId("coach-mark-skip");
   if (await skip.isVisible().catch(() => false)) await skip.click();
   await openMapEventEditor(page);

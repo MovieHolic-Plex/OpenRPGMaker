@@ -2,7 +2,7 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(180_000);
 
@@ -11,7 +11,7 @@ const OUT = `output/evidence/event-view-toggle/${PHASE}`;
 
 async function openEditor(page: Page): Promise<Locator> {
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(async ({ mapId, id }) => {
     const m = await import("/src/editor/panels/eventEditor/modal.ts");
     m.openEventEditorModal(mapId, id);

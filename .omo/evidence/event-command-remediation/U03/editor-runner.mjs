@@ -15,7 +15,7 @@ await new Promise((resolve, reject) => probe.close(error => error ? reject(error
 const cache = join(root, "editor-cache");
 const url = `http://127.0.0.1:${port}`;
 const env = { ...process.env, E2E_FREEZE_DEV_SERVER: "1", VITE_CACHE_DIR: cache,
-  VITE_SUPABASE_URL: "", VITE_SUPABASE_ANON_KEY: "", VITE_SUPABASE_USE_PROXY: "0",
+  VITE_LEGACY_DB_URL: "", VITE_LEGACY_DB_ANON_KEY: "", VITE_LEGACY_DB_USE_PROXY: "0",
   U03_OWNED_ROOT: root, U03_EDITOR_URL: url, U03_FIXTURE: join(root, "fixtures/project.json"), U03_FIXTURE_DIR: join(root, "fixtures") };
 await writeFile(`${out}/editor-launch.json`, JSON.stringify({ browser: "firefox", url, port, cache, fixture: env.U03_FIXTURE, freshContext: true, frozen: true, retries: 0 }, null, 2));
 const server = spawn(process.execPath, ["node_modules/vite/bin/vite.js", "--host", "127.0.0.1", "--port", String(port), "--strictPort", "--configLoader", "runner"], { env, stdio: ["ignore", "pipe", "pipe"] });

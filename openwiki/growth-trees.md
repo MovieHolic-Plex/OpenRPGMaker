@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 직업 승급 트리와 스킬 트리 (2026-09-05)
 
 ## 소유권과 데이터
@@ -218,7 +220,7 @@ HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복
   bounded deadline을 사용한다(일반 15초, cold Vite boot 120초).
   `.omo/evidence/growth-integrated/browser-presets/report.json`과 screenshots가 근거다.
   `applied-bundle.json`은 실제 UI 추가 결과이며 주인공을 자동 지정하지 않은 별도 QA 입력이다.
-  Supabase 별도 QA 프로젝트 저장/재로드와 출하 플레이어 최종 증거는 lead 소유다.
+  LegacyDb 별도 QA 프로젝트 저장/재로드와 출하 플레이어 최종 증거는 lead 소유다.
   이미지 도구가 unsupported이므로 이 증거는 주관적 시각 승인으로 주장하지 않는다.
 
 ## 검증
@@ -250,6 +252,6 @@ HP/MP는 하향 제한만 하며 회복하지 않는다. 기존 레벨업 회복
   `ERR_NETWORK_CHANGED`로 실패할 수 있다(`openwiki/testing.md`의 기존 기록 참조).
   `GROWTH_QA_BROWSER=chromium`으로 변경 가능하며 DB 전체 계측은 `PROBE_BROWSER=firefox`를 지원한다.
 - 위 두 브라우저의 데이터는 기존 하네스를 확장한 최소 계약 fixture이며 제품 데모가 아니다.
-  사용자의 Supabase 프로젝트를 변경하지 않는다. 실제 게임 콘텐츠를 저작할 때는 기존 DB 저장 규칙을 따른다.
+  사용자의 LegacyDb 프로젝트를 변경하지 않는다. 실제 게임 콘텐츠를 저작할 때는 기존 DB 저장 규칙을 따른다.
 
 병합 검증 (2026-09-05): `growthTrees.test.ts`의 저장 슬롯 왕복은 성장 투자와 `horror` 추격·은신 상태를 한 세션에 넣어 실제 저장·파싱·복원 모두에서 두 확장을 보존하는지 확인한다.

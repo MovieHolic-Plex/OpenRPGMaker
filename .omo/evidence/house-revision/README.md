@@ -29,7 +29,7 @@ This is not evidence of a natural-language LLM provider session.
 
 ## Evidence
 
-- `supabase-proof.json`: CAS save and complete normalized reload comparison.
+- `legacy-db-proof.json`: CAS save and complete normalized reload comparison.
 - `final-remote-check.json`: independent canonical SHA and authored-content comparison after QA.
 - `houses-a.png` through `houses-d.png`, `houses-30.png`, `index.html`: native editor tile renders.
   The HTML embeds all 34 reviewed cards and supports enlargement; older compact/study entries
@@ -61,7 +61,7 @@ is covered by focused tests after the full run, not by a second full-suite rerun
 
 The final six high-floor window changes did not affect the village map. `post-polish-map-proof.json`
 compares its exact map SHA against both the earlier editor and runtime checks. Final source-of-truth
-SHA is recorded in `supabase-proof.json` and independently checked in `final-remote-check.json`.
+SHA is recorded in `legacy-db-proof.json` and independently checked in `final-remote-check.json`.
 
 Reduced-concurrency recheck of seven selected files: **96/96 passed**, including all 20 assertions
 from those files that had newly failed in the full run. The epoch/browser deadlines and both

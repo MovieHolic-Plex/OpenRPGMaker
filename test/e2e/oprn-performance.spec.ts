@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import systemShellProject from "../fixtures/projects/system-shell-v3.json" with { type: "json" };
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 type PerfMetricsRecord = Record<string, unknown>;
@@ -18,7 +18,7 @@ function modeSwitchMs(metrics: PerfMetricsRecord): readonly unknown[] {
 }
 
 async function seedProject(page: Page): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, systemShellProject);
+  await seedProjectForEditor(page, systemShellProject);
 }
 
 async function perfMetrics(page: Page): Promise<PerfMetricsRecord> {

@@ -2,7 +2,7 @@
 // 잡을 수 없다 — 쌓임 문맥과 실제 히트 테스트가 걸려 있기 때문이다.
 import { expect, test } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(120_000);
 
@@ -18,7 +18,7 @@ async function commandKinds(page: import("@playwright/test").Page): Promise<stri
 test("스토리 보기에서 고른 명령이 인스펙터·툴바에 그대로 이어진다", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 1000 });
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(
     async ({ mapId, id }) => {
       const m = await import("/src/editor/panels/eventEditor/modal.ts");
@@ -59,7 +59,7 @@ test("스토리 보기에서 고른 명령이 인스펙터·툴바에 그대로 
 test("미리보기는 편집을 견디고, 검색은 못 하는 척하지 않는다", async ({ page }) => {
   await page.setViewportSize({ width: 1680, height: 1000 });
   const { project, eventId } = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(
     async ({ mapId, id }) => {
       const m = await import("/src/editor/panels/eventEditor/modal.ts");

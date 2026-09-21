@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createBlankProject } from "@/project/defaults";
 import { openCommandPicker, showCommandList } from "./eventStoryboardPicker";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 
 const EVIDENCE = resolve("output/evidence/event-preview-paint/browser");
@@ -32,7 +32,7 @@ test("event preview paint surfaces at 1024/1440 normal and max", async ({ page }
     localStorage.setItem("oprn:standard-welcome-seen", "1");
     localStorage.setItem("oprn:editor-welcome-dismissed", "1");
   });
-  await seedProjectFromSupabaseCanonical(page, PROJECT, "/?blankProject=1");
+  await seedProjectForEditor(page, PROJECT, "/?blankProject=1");
   actions.push("goto http://127.0.0.1:9829/?blankProject=1 with local e2e seed; rest writes aborted");
   const skip = page.getByTestId("coach-mark-skip");
   if (await skip.isVisible().catch(() => false)) {

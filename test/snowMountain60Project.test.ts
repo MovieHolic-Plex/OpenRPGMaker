@@ -73,7 +73,7 @@ describe("설산 60×60 직접 URL", () => {
 
   it("devProject 없이 snowMountain60 만 주면 열리지 않는다 — 레지스트리 계약", () => {
     // 이 파일의 계약: 생성형 쇼케이스 URL 은 `devProject` 와 **함께** 와야 한다.
-    // 단독으로 열리면 Supabase 기본 프로젝트를 조용히 덮어쓴다.
+    // 단독으로 열리면 LegacyDb 기본 프로젝트를 조용히 덮어쓴다.
     vi.stubGlobal("window", {
       location: { hostname: "localhost", search: "?snowMountain60=1" },
     });

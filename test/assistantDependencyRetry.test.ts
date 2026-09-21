@@ -33,9 +33,9 @@ function setup(rounds: Call[][], options: { planned?: boolean; maxToolCalls?: nu
   const ctx = { project: createBlankProject() };
   for (const id of ["m1", "m2"]) expect(runTool(ctx, "create_map", { id, name: id, width: 20, height: 20 }).ok).toBe(true);
   for (const c of [npc(), npc(GOOD_PAGES, "npc_other")]) expect(runTool(ctx, c.name, c.args).ok).toBe(true);
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-  vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(ctx.project);

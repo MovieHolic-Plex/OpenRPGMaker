@@ -6,7 +6,7 @@
  */
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { makeCommerceProject, tapKey } from "./oprn-commerce-fixtures";
 import type { Command, Project } from "@/project/types";
 
@@ -48,7 +48,7 @@ async function collapseAiDock(page: Page): Promise<void> {
 }
 
 async function openShop(page: Page, project: Project): Promise<Locator> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await collapseAiDock(page);
   await page.getByTestId("mode-play").click({ force: true });
   const title = page.getByTestId("title-screen");

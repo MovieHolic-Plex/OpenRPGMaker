@@ -1,4 +1,4 @@
-// Walk the Supabase-reloaded house examples through actual player.html transfers.
+// Walk the LegacyDb-reloaded house examples through actual player.html transfers.
 import { readFileSync } from "node:fs";
 const flag = process.argv.indexOf("--project");
 const projectFixture = flag >= 0 ? process.argv[flag + 1] : "output/evidence/house-spatial-catalog/reloaded-project.json";

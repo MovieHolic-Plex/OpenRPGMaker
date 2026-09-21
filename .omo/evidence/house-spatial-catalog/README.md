@@ -6,11 +6,11 @@ settlements). A graphic does not imply rooms or navigation.
 
 ## Published content
 
-- Supabase project: `rpg-zzu-house-template-gallery`.
+- LegacyDb project: `rpg-zzu-house-template-gallery`.
 - 15 reviewed exterior objects, 15 yard spaces, 4 reusable room spaces, 15 facility places.
 - Two instantiated examples: `house-example:inn-3f` and `house-example:workshop-4f`.
   These contain two yards and seven indoor maps, with explicit bidirectional doors/stairs.
-- `supabase-proof.json`: real save followed by a full-project deep-equal reload;
+- `legacy-db-proof.json`: real save followed by a full-project deep-equal reload;
   library SHA256 independently recomputed by the review agent.
 - `discovery-proof.json`: registered list tools discover 15 objects, 19 spaces and 15 places.
   All 15 places also passed registered get/preview/apply tools on detached project copies.
@@ -20,7 +20,7 @@ settlements). A graphic does not imply rooms or navigation.
   Earlier gallery-map evidence is historical; the live examples are the map IDs in the receipt.
 - Excluded house chips: 196, 197, 226, 227, 256, 257. Balcony study 08 remains excluded.
 
-`connected-houses.png` uses the actual editor tile renderer on the Supabase-reloaded
+`connected-houses.png` uses the actual editor tile renderer on the LegacyDb-reloaded
 project. It shows the exterior and every usable floor of both examples. Interiors
 are basic reusable rooms; they are not bespoke furnished plans for every facade.
 `editor-place.png` and `editor-proof.json` cover the editor's category guidance and
@@ -30,7 +30,7 @@ The picker changes the draft, and does not silently save it.
 ## Persistence prerequisite
 
 The configured database was missing the already-tracked spatial activation/save RPCs.
-Applied the unchanged `supabase/migrations/20260907000000_spatial_authoring_cas.sql`
+Applied the unchanged `legacyDb/migrations/20260907000000_spatial_authoring_cas.sql`
 after checking zero canonical project markers, pgcrypto in `extensions`, and no
 additional RLS/FK/user-trigger constraints on the affected tables. Reloaded PostgREST's
 schema cache. The migration adds canonical write fences without rewriting legacy
@@ -44,7 +44,7 @@ prerequisites checked before enabling canonical content.
 Configure `.env.local` for the project above. With the repository dependencies installed:
 
 ```sh
-# Read-only preview: loads Supabase, registers on copies, checks every place.
+# Read-only preview: loads LegacyDb, registers on copies, checks every place.
 npx tsx scripts/register-house-spatial-catalog.mts
 # Authorized publication: save and reload, producing reloaded-project.json.
 npx tsx scripts/register-house-spatial-catalog.mts --apply

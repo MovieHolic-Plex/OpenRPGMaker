@@ -2,7 +2,7 @@
 
 [상세 리뷰](../../../docs/reviews/2026-09-05-event-runtime-adversarial.md). 실제 Chromium 창을 Xvfb 가상 화면에서 실행했다. 모든 게임 입력은 키보드이며 디버그 훅은 관찰에만 사용했다.
 
-- 최신 Supabase 프로젝트 읽기: `remote-load.json`. 프로젝트 `rpg-zzu-cheolsu-memory-20260905-df12`, 기존 저장본과 SHA-256 동일. 이번 작업은 원격 콘텐츠를 변경하지 않았다.
+- 최신 LegacyDb 프로젝트 읽기: `remote-load.json`. 프로젝트 `rpg-zzu-cheolsu-memory-20260905-df12`, 기존 저장본과 SHA-256 동일. 이번 작업은 원격 콘텐츠를 변경하지 않았다.
 - 회상 17개 대사·귀환·재조사·이동: `cheolsu-report.json`, `cheolsu-SUMMARY.md`.
 - 카메라/반응형 화면: 1280×720, 640×480의 288표본에서 경계 이탈 없음. 100ms 이하 표본 간 카메라 이동 최대 논리 7px. 직접 확인한 PNG: `cheolsu-12-dialogue.png`, `cheolsu-16-dialogue.png`, `cheolsu-sweep-1280x720.png`, `cheolsu-sweep-640x480.png`.
 - 메뉴·로드·영상·조건·장애물 우회 계약: `commands-report.json`, `commands-SUMMARY.md`, 직접 확인한 `commands-01-path.png` ~ `commands-06-loaded.png`. 앱 오류/경고 0, GPU ReadPixels 성능 경고 4개는 보존했다.

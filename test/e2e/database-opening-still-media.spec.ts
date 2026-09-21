@@ -2,8 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { Project } from "../../src/project/types";
 
-// DEV_SERVER_PORT=19036 E2E_RETRIES=0 VITE_SUPABASE_URL= VITE_SUPABASE_ANON_KEY=
-// VITE_SUPABASE_PROJECT_ID= VITE_AI_ACTIVITY_DISK_MIRROR=0 VITE_EDIT_ACTIVITY_DISK_MIRROR=0
+// DEV_SERVER_PORT=19036 E2E_RETRIES=0 VITE_LEGACY_DB_URL= VITE_LEGACY_DB_ANON_KEY=
+// VITE_LEGACY_DB_PROJECT_ID= VITE_AI_ACTIVITY_DISK_MIRROR=0 VITE_EDIT_ACTIVITY_DISK_MIRROR=0
 // npm run test:e2e -- test/e2e/database-opening-still-media.spec.ts
 const origin = `http://127.0.0.1:${process.env.DEV_SERVER_PORT ?? "9173"}`;
 const prefix = "db-cinematic-";

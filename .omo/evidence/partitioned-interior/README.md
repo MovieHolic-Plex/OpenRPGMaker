@@ -12,7 +12,7 @@ and two partition arms are stored in the source design for subsequent AI builds.
 - `interior-4x.png`: native tile render, pixelated 4× enlargement.
 - `walkthroughs.json`: all 29 walkable cells connected; blocking the internal
   doorway disconnects the two rooms; real movement routes to all four areas.
-- `supabase-proof.json`: CAS save and exact project reload.
+- `legacy-db-proof.json`: CAS save and exact project reload.
 - `final-remote-check.json`: independent remote read of maps and source definitions.
 - `focused-tests.json`: 15 compiler/preservation tests, including stale interior
   plan metadata replacement after compilation.

@@ -6,7 +6,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { openCommandPicker, openMapEventEditor, showCommandList } from "./eventStoryboardPicker";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { makeCommerceProject, runtimeState, tapKey } from "./oprn-commerce-fixtures";
 import type { Command, Project } from "@/project/types";
 
@@ -53,7 +53,7 @@ async function collapseAiDock(page: Page): Promise<void> {
 }
 
 async function openShop(page: Page, project: Project): Promise<Locator> {
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await collapseAiDock(page);
   // force: 편집기 오버레이가 히트테스트를 가로채도 모드 전환은 이뤄져야 한다.
   await page.getByTestId("mode-play").click({ force: true });

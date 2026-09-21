@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/runtime-warm-skin";
 const EVIDENCE_JSON = `${EVIDENCE_DIR}/title-surface.json`;
@@ -41,7 +41,7 @@ test("verify title screen renders correctly under Neo둥근모 and warm skin wit
 
   await page.setViewportSize({ width: 1280, height: 900 });
 
-  await seedProjectFromSupabaseCanonical(page, project(), "/?e2eVitals=1");
+  await seedProjectForEditor(page, project(), "/?e2eVitals=1");
 
   // Disable auto-start in localStorage so test play boots directly into Title Screen
   await page.evaluate(() => {

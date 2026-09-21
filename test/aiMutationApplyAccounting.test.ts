@@ -18,8 +18,8 @@ function tool(name: string, args: string): ChatResult {
   return { message: { role: 'assistant', content: null, tool_calls: [{ id: name, type: 'function', function: { name, arguments: args } }] }, finishReason: 'tool_calls' };
 }
 beforeEach(() => {
-  vi.stubEnv('VITE_SUPABASE_USE_PROXY', '0'); vi.stubEnv('VITE_SUPABASE_URL', ''); vi.stubEnv('VITE_SUPABASE_ANON_KEY', '');
-  vi.stubEnv('VITE_SUPABASE_PROJECT_ID', '');
+  vi.stubEnv('VITE_LEGACY_DB_USE_PROXY', '0'); vi.stubEnv('VITE_LEGACY_DB_URL', ''); vi.stubEnv('VITE_LEGACY_DB_ANON_KEY', '');
+  vi.stubEnv('VITE_LEGACY_DB_PROJECT_ID', '');
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(createBlankProject()); resetMapEditHistory();
 });

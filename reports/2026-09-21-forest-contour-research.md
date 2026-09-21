@@ -43,7 +43,7 @@ OUTPUT=output/evidence/forest-contour-research PROJECT_PREFIX=forest-contour-res
 
 - Project ID: `forest-contour-research-20260921-76a3-1789964515534`
 - SHA-256: `8015a544d98fab7d5f25c6b9a8ef13e3fba9ced5785f937a7772927b7653a69f`
-- 생성 전 Supabase 연결 확인 → 새 전용 프로젝트 저장 → 전체 문서·SHA 재조회 일치 확인.
+- 생성 전 LegacyDb 연결 확인 → 새 전용 프로젝트 저장 → 전체 문서·SHA 재조회 일치 확인.
 - 재조회 문서를 실제 타일 렌더러로 캡처. 이벤트 스프라이트는 미포함.
 - 동일 조건: 집 8채, 주민 4명, 내부 생성, seed 17, 형태·테마·크기 미지정.
 - 78×44, 수관 1,335칸, 물 220칸, 다리 10칸, 현관 도달/문 보존 8/8, 길 연결 성분 1.

@@ -12,9 +12,9 @@ ProjectFormatError: map map_blank_start.farmableArea[0].w가 숫자가 아닙니
     at validateMaps (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/shapeEventFields.ts:43:41)
     at validateProjectV4 (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/shape.ts:82:16)
     at deserialize (/home/main/z-project/rpg-zzu-life-full-p4/src/project/io/serialize.ts:42:42)
-    at deserializeSupabaseCurrentJson (/home/main/z-project/rpg-zzu-life-full-p4/src/project/supabaseProjectSync.ts:1285:12)
-    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p4/src/project/supabaseProjectSync.ts:227:19)
+    at deserializeLegacyDbCurrentJson (/home/main/z-project/rpg-zzu-life-full-p4/src/project/legacyDbProjectSync.ts:1285:12)
+    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p4/src/project/legacyDbProjectSync.ts:227:19)
     at processTicksAndRejections (node:internal/process/task_queues:103:5)
-    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p4/src/project/supabaseProjectSync.ts:151:20)
+    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p4/src/project/legacyDbProjectSync.ts:151:20)
 
 Node.js v24.11.1

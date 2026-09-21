@@ -32,11 +32,11 @@ page.on("console", (msg) => {
 });
 page.on("pageerror", (error) => mark("pageerror", String(error).slice(0, 500)));
 page.on("requestfailed", (req) => {
-  if (/\/v1\/|\/supabase|\/auth\//.test(req.url())) mark("requestfailed", `${req.method()} ${req.url()} ${req.failure()?.errorText}`);
+  if (/\/v1\/|\/legacyDb|\/auth\//.test(req.url())) mark("requestfailed", `${req.method()} ${req.url()} ${req.failure()?.errorText}`);
 });
 page.on("response", async (res) => {
   const url = res.url();
-  if (!/\/v1\/chat\/completions|\/auth\/|\/supabase\/rest/.test(url)) return;
+  if (!/\/v1\/chat\/completions|\/auth\/|\/legacyDb\/rest/.test(url)) return;
   mark("response", `${res.status()} ${res.request().method()} ${url.replace(BASE, "")}`);
   if (res.status() >= 400) {
     let body = "";

@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 타일셋 참고문서 — 프로젝트 데이터
 
 ## 사용자 경로와 정본
@@ -41,8 +43,8 @@
 
 `src/project/tilesetReferences.ts`: 용도/MD/이미지 타입과 한도·검증·문서 소유자 해석·내용 revision.
 `TilesetDef.referenceDocuments?`와 `referenceSourceTilesetId?`는 선택 필드다.
-미작성 레거시 문서에는 기본값을 심지 않는다. JSON/OPRN/SQLite/Supabase tileset JSON 왕복에서 유지한다.
-Supabase 별도 테이블 마이그레이션은 필요 없다. `src/project/webExport.ts`는 게임 실행에 필요 없는
+미작성 레거시 문서에는 기본값을 심지 않는다. JSON/OPRN/SQLite/LegacyDb tileset JSON 왕복에서 유지한다.
+LegacyDb 별도 테이블 마이그레이션은 필요 없다. `src/project/webExport.ts`는 게임 실행에 필요 없는
 참고문서와 공유 포인터만 내보내기 사본에서 제외한다. 편집 프로젝트 원본은 보존한다.
 
 용도 32개, 용도당 MD 64개·이미지 256개, MD 120,000자, 이미지 4MB 제한.

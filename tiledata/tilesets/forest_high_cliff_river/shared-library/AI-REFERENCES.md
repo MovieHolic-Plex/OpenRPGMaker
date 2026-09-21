@@ -7,7 +7,7 @@
 현재 로컬 프로젝트의 정본은 `.oprn-projects/<project-id>/project.sqlite`다.
 AI 참고문서도 `tilesets[id].referenceDocuments`에 들어가 SQLite와 프로젝트 내보내기에 함께 저장된다.
 공용 장소·오브젝트의 앱 번들은 모든 프로젝트가 사용하는 배포본이다.
-Supabase 스냅샷은 별도 원격 보존본이며 로컬 정본을 대체하지 않는다.
+과거 원격 스냅샷은 별도 보존본이며 로컬 정본을 대체하지 않는다.
 
 ## 공용 장소의 선택
 

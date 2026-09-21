@@ -3,7 +3,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
 import { debugState, dispatchChange, openEventEditor, runtimeState, screenshotEvidence, writeEvidenceJson, writeEvidenceText, type DebugState } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop16-timer-countdown";
@@ -13,7 +13,7 @@ test.setTimeout(90_000);
 test("loop16 certifies timer set start stop countdown hud and state", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1366, height: 768 });
-  await seedProjectFromSupabaseCanonical(page, timerProject());
+  await seedProjectForEditor(page, timerProject());
   await writeJson("000-scenario.json", {
     scope: ["Timer set/start/stop authoring", "save/reload persistence", "runtime countdown HUD", "stop leaves paused remaining state"],
   });

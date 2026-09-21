@@ -85,7 +85,7 @@ footer{margin-top:3em;color:var(--faint);font-size:.85rem;border-top:1px solid v
   <li><b>설계서에서 값을 고른다</b>(데이터베이스 → <code>마을</code> 탭, 또는 <code>presetId</code>). 집 수·길 스타일·숲 밀도·광장 모양·마당 성격.</li>
   <li><b><code>author_village</code> 를 한 번 부른다.</b> 집 배치 → 문/지붕/울타리 → 길 연결 → 나무·물 → (선택) 실내·주민까지 코드가 순서대로 시공하고 스스로 감사한다.</li>
   <li><b>눈으로 확인한다.</b> <code>look_at_houses</code> 로 &ldquo;같은 집만 깔렸는지&rdquo;를 되읽는다.</li>
-  <li><b>Supabase 에 저장</b>하고 다시 불러 존재를 확인한다.</li>
+  <li><b>LegacyDb 에 저장</b>하고 다시 불러 존재를 확인한다.</li>
 </ol>
 
 <h2>2. 실렌더 — 참조 그림과 같은 마을</h2>

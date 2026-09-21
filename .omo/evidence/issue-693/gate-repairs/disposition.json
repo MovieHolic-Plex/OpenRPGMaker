@@ -3509,7 +3509,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "assertion": "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+      "assertion": "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
       "occurrence": 1,
       "mainStatus": "failed",
       "comparison": "changed-diagnostic",
@@ -3522,7 +3522,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "assertion": "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+      "assertion": "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
       "occurrence": 1,
       "mainStatus": "failed",
       "comparison": "same-diagnostic",
@@ -3546,7 +3546,7 @@
     },
     {
       "file": "test/storePersistence.test.ts",
-      "assertion": "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+      "assertion": "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
       "occurrence": 1,
       "mainStatus": "failed",
       "comparison": "same-diagnostic",
@@ -3562,7 +3562,7 @@
       "occurrence": 1,
       "mainStatus": "failed",
       "comparison": "same-diagnostic",
-      "candidateDiagnostic": "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}",
+      "candidateDiagnostic": "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}",
       "candidateFailureHash": "46efa36327de6e156e578e0c11c7e913424a3accabc82c970a30b2181f3980f2",
       "mainFailureHash": "1beb91db4d92eb373192567a71dae7f1ac4d52fe99d74937b39e0c1eee8c600e",
       "disposition": "pre-existing-same-failure",

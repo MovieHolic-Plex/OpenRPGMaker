@@ -15,7 +15,7 @@ const errors = [];
 page.on('pageerror', error => errors.push(error.message));
 // Local engine QA only: never send a write to the shared project or AI provider.
 await page.route('**/*', route => {
-  if (!['GET', 'HEAD'].includes(route.request().method()) && /supabase|\/rest\/v1\/|\/ai\//.test(route.request().url())) return route.abort('blockedbyclient');
+  if (!['GET', 'HEAD'].includes(route.request().method()) && /legacyDb|\/rest\/v1\/|\/ai\//.test(route.request().url())) return route.abort('blockedbyclient');
   return route.continue();
 });
 await page.addInitScript(() => {

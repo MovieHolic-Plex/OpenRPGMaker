@@ -106,7 +106,7 @@ export type AiActivityLogRecord = {
   readonly index: AiActivityIndex;
   /** 예산에 걸려 버린 양. 조용히 자르면 나중에 "원래 그만큼이었다" 로 읽힌다. */
   readonly truncated?: { readonly audit?: number; readonly toolCalls?: number; readonly uiActions?: number };
-  readonly persisted?: "local" | "supabase" | "both" | "failed-remote";
+  readonly persisted?: "local" | "project-store" | "both" | "failed-remote";
 };
 
 export type AiActivityIndex = {

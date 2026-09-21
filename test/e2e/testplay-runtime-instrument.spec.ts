@@ -28,7 +28,7 @@ test("테스트 플레이는 창을 채우고, 타이틀 없이 시작하고, �
   page.on("console", (message) => {
     if (message.type() !== "error") return;
     const text = message.text();
-    // 워크트리 환경의 Supabase 프록시 거부는 런타임 결함이 아니다.
+    // 워크트리 환경의 LegacyDb 프록시 거부는 런타임 결함이 아니다.
     if (text.includes("ERR_CONNECTION_REFUSED")) return;
     consoleErrors.push(text.slice(0, 300));
   });

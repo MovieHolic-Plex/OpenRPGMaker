@@ -24,7 +24,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(180_000);
 test.use({ serviceWorkers: "block" });
@@ -190,7 +190,7 @@ async function bootRuntime(page: Page): Promise<void> {
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await installEnterProbe(page);
-  await seedProjectFromSupabaseCanonical(page, presentationProject());
+  await seedProjectForEditor(page, presentationProject());
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 60_000 });
   // 상태 덤프까지 기다린다. waitForRuntimeState:false 로 건너뛰면 자동시작 분기에서

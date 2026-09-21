@@ -1,5 +1,5 @@
 // 액션 전투 데모 프로젝트 팩토리의 저작 계약(오프라인).
-// Supabase 저장 스크립트(scripts/save-action-demo.mts)가 이 팩토리를 그대로 쓰므로,
+// LegacyDb 저장 스크립트(scripts/save-action-demo.mts)가 이 팩토리를 그대로 쓰므로,
 // 여기서 깨지는 계약은 원격 저장/재로드 검증도 같이 깨진다.
 import { describe, expect, it } from "vitest";
 
@@ -132,7 +132,7 @@ describe("액션 전투 데모 프로젝트 팩토리", () => {
   });
 
   it("슬롯 순서가 저장 정규화(learnedSkills 정렬)를 건너가도 그대로다", () => {
-    // 실제 Supabase 왕복에서 잡힌 버그: 재로드하면 learnedSkills 가 (level, skillId) 로
+    // 실제 LegacyDb 왕복에서 잡힌 버그: 재로드하면 learnedSkills 가 (level, skillId) 로
     // 정렬되어 슬롯 1/2 가 서로 바뀌었다. 저작 순서가 아니라 id 정렬이 슬롯을 정하므로,
     // 데모의 스킬 id 는 의도한 슬롯 순서로 정렬되어야 한다.
     const project = createActionCombatDemoProject();

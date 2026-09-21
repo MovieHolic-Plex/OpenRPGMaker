@@ -190,7 +190,7 @@ or all-green claim. Each increment's test run is recorded separately above.
 - Full gates, build, browser sweeps, real browser layout/focus acceptance, and remote
   persistence verification were deliberately not run: parent-owned per delegation.
 - Unit encounter coverage executes real store/history, serialize/deserialize and
-  runtime eligibility; it is not evidence of Supabase persistence or Phaser visuals.
+  runtime eligibility; it is not evidence of LegacyDb persistence or Phaser visuals.
 - Logs and the isolated runner config remain locally available in
   `output/editor-636-639-640/` (`pr636-*`, `pr639-*`, `pr640-*`).
 - Incoming PR636/640 browser specs and historical PR636 evidence are merged snapshots,

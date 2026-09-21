@@ -1,6 +1,6 @@
 # Slates reference maps
 
-Supabase project: rpg-zzu-slates32-38e6; captures use reloaded-project.json.
+LegacyDb project: rpg-zzu-slates32-38e6; captures use reloaded-project.json.
 Three editable 17×15 maps, 32px cells; original grove preserved.
 Source Slates atlases + source-rectangle recipes, no screenshot pixels in map artwork.
 Runtime captures use the dedicated player.html/export shim.

@@ -15,7 +15,7 @@ count is not replaced with the example's eight houses.
 
 ## Persistence and compilation
 
-- Source read from Supabase `river-village-live-20260921-414a` before authoring.
+- Source read from LegacyDb `river-village-live-20260921-414a` before authoring.
 - Converted an independent project copy through `convertLegacySpatialSnapshot`.
 - Copied through `copyReviewedPlace`, then executed actual `preview_spatial_build` and
   `apply_spatial_build`; serialized/deserialized through project IO.

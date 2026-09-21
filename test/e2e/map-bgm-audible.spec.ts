@@ -9,7 +9,7 @@
 import { expect, test } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 declare global {
   interface Window {
@@ -41,7 +41,7 @@ test("게임을 시작하면 재생 가능한 BGM 이 실제로 요청된다", a
   });
   await page.setViewportSize({ width: 1280, height: 900 });
 
-  await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
+  await seedProjectForEditor(page, createSampleAdventureProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
 
   await page.getByTestId("mode-play").click({ force: true });

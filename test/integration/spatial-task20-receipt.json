@@ -11,8 +11,8 @@
     "src/project/spatial/persistenceHttp.ts": "37a7179be231c8543eb38c1ccb3cc965a01b5104f526aa216ac8d93def727407",
     "src/project/spatial/saveRouting.ts": "2b52f017773687073d93fd6bb1852f433e059ad17c868ab2bbdc1834a1fb2389",
     "src/project/store.ts": "3240176c3e862ce5aeb319596eeb04c2163f9825c2d423f1dbd7150e2b3a7fd3",
-    "src/project/supabaseProjectSync.ts": "d05c4805bbaecbcaccae776b68dbae56d8c35c19ce974e66ecb97b8bc706d57e",
-    "supabase/migrations/20260907000000_spatial_authoring_cas.sql": "70ce773972d6bc42b2acd39d4c6655f41101dbb91cac1f4dcd3bf1ab1f9ae93b"
+    "src/project/legacyDbProjectSync.ts": "d05c4805bbaecbcaccae776b68dbae56d8c35c19ce974e66ecb97b8bc706d57e",
+    "legacyDb/migrations/20260907000000_spatial_authoring_cas.sql": "70ce773972d6bc42b2acd39d4c6655f41101dbb91cac1f4dcd3bf1ab1f9ae93b"
   },
   "evidenceRoot": "/home/main/z-project/rpg-zzu-tile-to-world/.omo/worktrees/spatial-persistence-races/output/evidence/tile-to-world/task-20",
   "artifactIndex": {
@@ -72,7 +72,7 @@
     "Headless edit-activity disk mirroring logs its unsupported relative dev-server URL. No dev server or browser was run.",
     "The combined mon_2Z3FAAP3ZY4RJNVH run was interrupted during Q9 after unit/Q7/Q8 completion; it is not an overall pass. Final Q scopes passed separately without assertion changes or test deadline inflation.",
     "Interrupted Postgres inherited the flock descriptor. One attempted monitored reacquisition timed out. Exact owned-cluster lightweight teardown released the inherited lock; no foreign process was touched. The harness now closes that descriptor and asserts non-inheritance.",
-    "A loopback byte recorder strips /rest/v1 and redacts only run-owned JWT/key header values; actual PostgREST supplies responses. Local JWT/ACL proof is not deployed Supabase gateway, credentials, RLS or migration deployment proof.",
+    "A loopback byte recorder strips /rest/v1 and redacts only run-owned JWT/key header values; actual PostgREST supplies responses. Local JWT/ACL proof is not deployed LegacyDb gateway, credentials, RLS or migration deployment proof.",
     "Q8 preview.json is data, not preview.png; browser/image work was explicitly excluded. Deployed Q7-pre remains task23."
   ],
   "cleanup": {

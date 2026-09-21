@@ -26,7 +26,7 @@ The user explicitly requested that implementation stop here and that this file b
 - Todo 9 child explorers were also interrupted.
 - Do not assume an interrupted agent completed or cleaned its partial edits.
 - No commit was created.
-- No Supabase, network, `.env`, authored game content, or project DB work was performed for this plan.
+- No LegacyDb, network, `.env`, authored game content, or project DB work was performed for this plan.
 
 ## Mandatory first reads
 
@@ -283,7 +283,7 @@ Partial unverified scaffold now exists:
 
 The package file also contains concurrent unrelated user work such as `browser-verify:genre`; preserve it.
 
-The harness was not completed, executed, typechecked, or independently verified. It depends on Todo 7 landing real canonical registry/spec-gate behavior. Resume implementation without reading `.env.local`, network, Supabase, project IDs, or authoring demo content.
+The harness was not completed, executed, typechecked, or independently verified. It depends on Todo 7 landing real canonical registry/spec-gate behavior. Resume implementation without reading `.env.local`, network, LegacyDb, project IDs, or authoring demo content.
 
 ## Worktree and baseline cautions
 
@@ -317,11 +317,11 @@ Repository-wide TypeScript diagnostic counts later varied as concurrent dirty wo
 
 LSP fresh diagnostics repeatedly timed out at 3 seconds in this environment. Record timeout honestly and use bounded full/scoped TypeScript diagnostics; never claim LSP-clean without a real response.
 
-## Supabase rule
+## LegacyDb rule
 
 This plan is pure editor/engine/UI code and has authored no map/event/demo content, so the AGENTS.md pure-code exception applies.
 
-If the resumed work authors any game, map, village, event, or demo content, stop first and verify Supabase URL, anon key, and project id. Completion then requires real remote save plus reload proof. Do not use blank/fresh/dev-showcase or a local fixture as a substitute.
+If the resumed work authors any game, map, village, event, or demo content, stop first and verify LegacyDb URL, anon key, and project id. Completion then requires real remote save plus reload proof. Do not use blank/fresh/dev-showcase or a local fixture as a substitute.
 
 ## Recommended resume order
 

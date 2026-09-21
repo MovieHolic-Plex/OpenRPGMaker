@@ -1,7 +1,7 @@
 # Task20: real HTTP persistence boundaries
 
 The task20 lane adds PostgREST to the existing run-owned PostgreSQL harness. It
-never connects to a deployed Supabase instance or reads application credentials.
+never connects to a deployed LegacyDb instance or reads application credentials.
 The old `--local-only` loopback fixture remains transport-only coverage.
 
 ## Invocation
@@ -39,7 +39,7 @@ bun scripts/qa/spatial-migration.mts --scenario legacy-matrix --evidence "$E/Q9"
 
 These commands must inherit `SPATIAL_TEST_DATABASE_URL` from the harness. The
 strict socket parser rejects missing, foreign, network and appended connection
-strings. Application Supabase/proxy variables and libpq defaults are unset before
+strings. Application LegacyDb/proxy variables and libpq defaults are unset before
 startup. The product migrations run unchanged. A test-only invoker identity RPC
 records the actual JWT-selected `anon`, session `authenticator`, backend PID, and
 absence of writer-role membership. The role is not emulated by the recorder.
@@ -74,7 +74,7 @@ sleep, echo, cancellation/retry, or elapsed-duration assertion proves overlap.
 
 `http.json` stores raw request bodies and original response status/message,
 header pairs and response bodies from PostgREST. Only the ephemeral JWT/key
-request header values are redacted. The recorder strips the Supabase `/rest/v1`
+request header values are redacted. The recorder strips the LegacyDb `/rest/v1`
 path prefix but does not fabricate SQL results, authorization, or statuses.
 PostgREST maps SQLSTATE 42501 to **401 for its anon role**, including a JWT whose
 role is anon; the older transport fixture's 403 is not the real anon wire code.
@@ -119,6 +119,6 @@ append-only writer's request preference, not the privilege fence, in a separatel
 authorized production change. Headless edit-activity disk mirroring also logs
 its unsupported relative dev-server URL; no dev server or browser is claimed.
 
-Local PostgREST/JWT/ACL evidence does not prove deployed Supabase keys, gateway,
+Local PostgREST/JWT/ACL evidence does not prove deployed LegacyDb keys, gateway,
 RLS policies, migration deployment, or browser presentation. Q7-pre's deployed
 pre-migration vulnerability capture remains a separate task23 obligation.

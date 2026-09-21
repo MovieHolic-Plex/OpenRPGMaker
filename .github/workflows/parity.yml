@@ -78,7 +78,6 @@ jobs:
       - uses: actions/checkout@v4
       - run: npm ci
       - run: node scripts/check-file-loc.mjs
-      - run: node scripts/check-supabase-content-gate.mjs
       - run: npm run openwiki:verify
 
   # CSS 게이트는 ax-gates 와 **별도 job** 이다. GitHub Actions 는 job 안에서 첫 실패 step 에서

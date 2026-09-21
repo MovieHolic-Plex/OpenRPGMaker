@@ -1,8 +1,8 @@
-# Ember Supabase persistence gate
+# Ember LegacyDb persistence gate
 
 Completed for **`rpg-zzu-event-command-ember-20260908`**. The corrected factory
-project was saved through `saveProjectToSupabase` and independently reloaded
-through `loadProjectFromSupabase` in a fresh OS process. No production source was
+project was saved through `saveProjectToLegacyDb` and independently reloaded
+through `loadProjectFromLegacyDb` in a fresh OS process. No production source was
 changed. This is only the pending Ember DB gate, not a repeat of other campaign QA.
 
 ## Provenance and isolation
@@ -18,7 +18,7 @@ changed. This is only the pending Ember DB gate, not a repeat of other campaign 
   executing project modules. Vite used `configFile: false`, an isolated cache,
   no watchers/HMR, and no listening browser server.
 - Credentials came only from this worktree's `.env.local`:
-  `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`. The script hardcodes the authorized
+  `VITE_LEGACY_DB_URL` / `VITE_LEGACY_DB_ANON_KEY`. The script hardcodes the authorized
   target and never uses the environment's default project id.
 - The integration worktree was read-only. No npm script, checkout, or write ran
   there. No push, PR, full build, full tests, or gates were run for this item.
@@ -70,7 +70,7 @@ repeated both checks and made the immediate real-loader absence check.
 | --- | --- | --- |
 | GET projects, select project_id, limit 0 | 200 | Connectivity confirmed |
 | GET exact project id | 200 | 0 rows; unused/absent |
-| `loadProjectFromSupabase(config)` | 200 | `null`; still absent before write |
+| `loadProjectFromLegacyDb(config)` | 200 | `null`; still absent before write |
 | POST projects | 201 | Real project upsert succeeded |
 | DELETE maps, exact target filter | 204 | Real mirror replacement path |
 | POST maps | 201 | Target map mirror saved |

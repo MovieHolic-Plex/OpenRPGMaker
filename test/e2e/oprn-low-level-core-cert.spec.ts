@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-cert/loop4-low-level-core";
@@ -27,7 +27,7 @@ test.setTimeout(90_000);
 test("loop4 certifies quest-grade low-level event parts in editor and runtime", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 800 });
-  await seedProjectFromSupabaseCanonical(page, lowLevelProject());
+  await seedProjectForEditor(page, lowLevelProject());
   await writeJson("000-scenario.json", {
     runId: "loop4-low-level-core",
     scope: [

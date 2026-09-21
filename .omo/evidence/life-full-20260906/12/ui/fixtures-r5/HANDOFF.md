@@ -4,9 +4,9 @@ Status: remotely saved/reloaded input with strict public-core passage and reloca
 
 ## Immutable consumed input
 
-- Supabase project: `rpg-zzu-life-full-p4-t12-rug-st-01a07be4` (new owned ID; absent before authoring).
+- LegacyDb project: `rpg-zzu-life-full-p4-t12-rug-st-01a07be4` (new owned ID; absent before authoring).
 - Load only `rug.reloaded.json`, mode0444, SHA256 `265f600a710025ee451361b70746b50ca2bf9165e6815d4ce0aa582e7eca520b`.
-- Actual `saveProjectToSupabase` returned saved; subsequent `loadProjectFromSupabase` serialization equals authored bytes and save SHA. Public remote reads after probing still equal this input.
+- Actual `saveProjectToLegacyDb` returned saved; subsequent `loadProjectFromLegacyDb` serialization equals authored bytes and save SHA. Public remote reads after probing still equal this input.
 - Source arena was read remotely and compared byte-for-byte with fixtures-r4/arena.reloaded.json before authoring. Its project and files remain unchanged.
 - Project4 authored start, NOT a mutated PlaySession or game Save. No invented Project farmPlots. Native initial facing down is the existing scene contract, not a new authored facing field.
 - Open passable20x15 `map_blank_start`, existing floor/art, player3x3/passRows1, foot8,8; events empty, runtime plots/placeables empty, chests omitted.

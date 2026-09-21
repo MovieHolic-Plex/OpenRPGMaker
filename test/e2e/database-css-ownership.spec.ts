@@ -40,7 +40,7 @@ test.beforeEach(async ({}, info) => {
 async function bootEditor(page: Page) {
   page.setDefaultTimeout(15_000);
   // Intercept project persistence, not thousands of immutable Vite modules/images.
-  // Both remote Supabase and the local /supabase proxy use /rest/v1/.
+  // Both remote LegacyDb and the local /legacyDb proxy use /rest/v1/.
   await page.route('**/rest/v1/**', async route => {
     if (!['GET', 'HEAD', 'OPTIONS'].includes(route.request().method())) await route.abort();
     else await route.continue();

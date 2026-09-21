@@ -1,4 +1,4 @@
-// Read-only experiential QA against the prepared or reloaded Supabase revision.
+// Read-only experiential QA against the prepared or reloaded LegacyDb revision.
 // This probe never rebuilds the source snapshot or writes to the remote project.
 import fs from 'node:fs/promises';
 import { chromium } from '@playwright/test';

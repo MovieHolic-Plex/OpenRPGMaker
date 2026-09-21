@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 맵별 타일 크기 (16×16 / 32×32 / 48×48)
 
 ## 좌표 계약
@@ -85,10 +87,10 @@ Slates에 기존 물/길 타일 번호나 애니메이션을 적용하지 않는
 실제 action 이벤트로 실행한다 (`__oprnDebug.teleport`는 스프라이트 재배치를 하지 않음).
 전체 테스트/전체 타입 검사는 세션 규칙에 따라 실행하지 않았다.
 
-Slates 원본·변경·라이선스는 `public/assets/ATTRIBUTION.md`. 데모는 별도 Supabase
+Slates 원본·변경·라이선스는 `public/assets/ATTRIBUTION.md`. 데모는 별도 LegacyDb
 프로젝트 `rpg-zzu-slates32-38e6`에 저장하며, 원격 재로드 영수증은
 `verify-shots/slates32/persistence.json`에 둔다. 현재 웹 저장소는 메모리 어댑터이므로
-브라우저 저장 버튼을 Supabase 저장 근거로 삼지 않는다.
+브라우저 저장 버튼을 LegacyDb 저장 근거로 삼지 않는다.
 
 ## Slates 참고 맵 3종
 

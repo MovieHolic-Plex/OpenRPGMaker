@@ -2,7 +2,7 @@ import { mkdir } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 /** 재설계 전(=main, 3438cacd) 도크의 실제 화면. 보고서 «전» 칸에 쓴다. */
 const SHOT_DIR = "output/evidence/event-ai-dock-baseline";
@@ -66,7 +66,7 @@ function probeProject(): Project {
 
 async function openDock(page: Page): Promise<Locator> {
   const project = probeProject();
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await page.evaluate(async (mapId) => {
     const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
     modalModule.openEventEditorModal(mapId, "ev_ai_dock");

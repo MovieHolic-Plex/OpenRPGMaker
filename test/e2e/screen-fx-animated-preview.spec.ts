@@ -14,7 +14,7 @@ import { mkdir } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
 import type { Command, GameEvent, Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const AFTER_DIR = ".omo/evidence/screen-fx-2/after";
 const EVENT_ID = "ev_screen_fx_preview";
@@ -61,7 +61,7 @@ function fxProject(): Project {
 }
 
 async function openFirstScreenEffectModal(page: Page): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, fxProject());
+  await seedProjectForEditor(page, fxProject());
   // 코치마크가 열려 있으면 좌측 레일 클릭을 가로챈다.
   const skip = page.getByRole("button", { name: "건너뛰기" });
   if (await skip.count()) await skip.click();
@@ -81,7 +81,7 @@ async function openFirstScreenEffectModal(page: Page): Promise<void> {
 
 test.beforeEach(async ({ page }) => {
   await mkdir(AFTER_DIR, { recursive: true });
-  // 시드(seedProjectFromSupabaseCanonical)는 localStorage 를 비우면서 editor-ui-mode 만 보존한다.
+  // 시드(seedProjectForEditor)는 localStorage 를 비우면서 editor-ui-mode 만 보존한다.
   // 맵 이벤트 목록(event-list-row-*)은 전문가 모드에서만 렌더된다.
   await page.addInitScript(() => {
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
@@ -92,7 +92,7 @@ test("계약: 화면 효과 프리뷰는 실측 크기를 갖고 재생하면 �
   const consoleErrors: string[] = [];
   const pageErrors: string[] = [];
   page.on("console", (message) => {
-    // dev 환경은 Supabase 등 원격 리소스 실패를 상시 찍는다 — 이 스펙은 색 입력이
+    // dev 환경은 LegacyDb 등 원격 리소스 실패를 상시 찍는다 — 이 스펙은 색 입력이
     // 앱을 깨뜨렸는가만 보면 되므로 네트워크 로드 소음은 걸러낸다.
     if (message.type() === "error" && !/Failed to load resource/u.test(message.text())) {
       consoleErrors.push(message.text());

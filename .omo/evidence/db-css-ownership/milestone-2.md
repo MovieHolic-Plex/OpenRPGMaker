@@ -192,7 +192,7 @@ Do not run concurrent Playwright commands into the same test-results directory.
 
 No screenshot has received pixel-level visual approval. Both supervisor provider
 paths failed to receive pixels. Retain screenshots for human review; DOM/computed
-and event evidence is not an aesthetic PASS. No remote Supabase game writes were
+and event evidence is not an aesthetic PASS. No remote LegacyDb game writes were
 performed: test contexts use freshProject and abort non-GET/HEAD/OPTIONS requests.
 
 ## Changed paths preserved after the first implementation commit

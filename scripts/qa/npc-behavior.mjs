@@ -225,7 +225,7 @@ async function runCase(name, fixtureKind, body, width = 1024) {
       const request = route.request(), url = new URL(request.url());
       const localAudit = scenario === 'editor' && url.origin === server.url
         && url.pathname === '/__oprn/edit-activity' && request.method() === 'POST';
-      if (url.origin !== server.url || /\/(supabase|rest\/v1)(\/|$)/.test(url.pathname)
+      if (url.origin !== server.url || /\/(legacyDb|rest\/v1)(\/|$)/.test(url.pathname)
         || (!['GET', 'HEAD'].includes(request.method()) && !localAudit)) {
         result.blockedRequests.push({ method: request.method(), origin: url.origin, path: url.pathname });
         await route.abort('blockedbyclient');

@@ -1,7 +1,7 @@
 # Request-bound functional acceptance verification
 
 Base: `f22d64f7c`; branch: `feat/ai-functional-acceptance`.
-Scope: engine/harness code, minimal test fixtures, public-API smoke and focused documentation. No demo/world/Supabase content authoring.
+Scope: engine/harness code, minimal test fixtures, public-API smoke and focused documentation. No demo/world/LegacyDb content authoring.
 
 ## Result
 

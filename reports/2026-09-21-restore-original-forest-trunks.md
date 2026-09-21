@@ -18,7 +18,7 @@ OUTPUT=output/evidence/restored-original-trunks PROJECT_PREFIX=original-grove-tr
 
 - 프로젝트: `original-grove-trunks-20260921-76a3-1789965905810`
 - SHA-256: `95bc46b0e21fcd627e0a8f30afbcf3eb541d38a45cd730c135ceadd34c1723cc`
-- 생성 전 Supabase 연결 확인, 전용 프로젝트 저장, 전체 문서와 SHA 재조회 일치.
+- 생성 전 LegacyDb 연결 확인, 전용 프로젝트 저장, 전체 문서와 SHA 재조회 일치.
 - 재조회 문서를 실제 맵 타일 렌더러로 캡처. 이벤트 스프라이트 미포함.
 - seed 17, 집 8채, 현관 도달/보존 8/8, 연결 길 성분 1, 물 220칸, 다리 10칸.
 - 수관 1301칸, 생활 소품 23묶음/90칸, 시장·울타리 0, 브라우저 오류 0.

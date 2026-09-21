@@ -515,7 +515,7 @@
         "sha256": "c5d2cfc0063ed7904be5bffdc2d4922b0ef8f04c2c449b7f9481de3b06d49960",
         "indexBlob": "365a4a7cae2217d9a0c308cb1880ae2ef5f73490"
       },
-      "scripts/apply-supabase-migrations.mjs": {
+      "scripts/apply-legacyDb-migrations.mjs": {
         "sha256": "f2ed6ba1d8fa21e6199abd5af7bb5a14ce56522510aef0067a87069c62530599",
         "indexBlob": "9e69d33d82f53d1f18a4e4831a24896db23c3ae6"
       },
@@ -1155,11 +1155,11 @@
         "sha256": "ebc90525e5d74486850bdae0ef340deccc7568396a498703f54fd72cc1dd3518",
         "indexBlob": "278b4b589ad693d20d07490603876739d1999e11"
       },
-      "scripts/check-supabase-content-gate.mjs": {
+      "scripts/check-legacy-db-content-gate.mjs": {
         "sha256": "3b1823b06fe080e8e1b9819ce53e41fb04f87533854785470b9e1441fa6047fb",
         "indexBlob": "5e5b07c18934236fc454720e5f3d0dcddf95e179"
       },
-      "scripts/check-supabase-schema.mjs": {
+      "scripts/check-legacyDb-schema.mjs": {
         "sha256": "e881e868cd4aec0f1559aebad71b59498fd31d0e72abb52e8951531a7eb7f6ee",
         "indexBlob": "0448b7f41c41e80f7739e1a607b2b614988ec14b"
       },
@@ -1935,7 +1935,7 @@
         "sha256": "68bc1da33a7131edab01fcaa1fd8cc4b8397216e68a997dc657661c8863998a8",
         "indexBlob": "85f6ec63e326bca262761f90c4cc6282009ae02c"
       },
-      "scripts/lib/supabase-database-ops.mjs": {
+      "scripts/lib/legacyDb-database-ops.mjs": {
         "sha256": "c1d0f17dd072f212cd2365f6dda024a4631c3a545250399997b64d48b6dad858",
         "indexBlob": "ed01f99be59ebc597d0fc186345ab27f215b17aa"
       },
@@ -2999,7 +2999,7 @@
         "sha256": "4ea721a8442a9eed46be6e34cc9a4bade1fddbb728c8114a97e9892c27bc86bf",
         "indexBlob": "78ce081322e514b5757f43fb602c5877869ec947"
       },
-      "scripts/save-inn-map-to-supabase.mts": {
+      "scripts/save-inn-map-to-legacyDb.mts": {
         "sha256": "d63217a453cdd179e28034f90d2039641d99b060c2864246f868dc999f86f620",
         "indexBlob": "2e07fa0ae2024b5fedadba3c43d49d3593a3fbf1"
       },
@@ -3115,19 +3115,19 @@
         "sha256": "74d326627b0d931cf69bef4bc1ba55d28935f4d2b3fa0944e003ae6358bedcd5",
         "indexBlob": "058d04d4d3aebac9ead9b8d1c23bc8bc8b9d3d3c"
       },
-      "scripts/supabase-resource-root.mjs": {
+      "scripts/legacyDb-resource-root.mjs": {
         "sha256": "1815657f07c1f46ad3175bb1bd96fd12ae648f0e21723e83018c3c0d02ca27d3",
         "indexBlob": "1a0cfd10d836f165d9b8abe629729aff3c71a8d9"
       },
-      "scripts/supabase-resource-root/catalog.mjs": {
+      "scripts/legacy-db-resource-root/catalog.mjs": {
         "sha256": "b44c0576ff2281ba2229d551a06ce64628b8b3daaffed6e8c859356eb65786fd",
         "indexBlob": "bd4272c92cb6ba5e41926f196fdfaf55075bdadb"
       },
-      "scripts/supabase-resource-root/projectUploads.mjs": {
+      "scripts/legacyDb-resource-root/projectUploads.mjs": {
         "sha256": "c68aa0938b848e2786f2da0f099c657ab4defae0b55d21a2577e8c7fd202617e",
         "indexBlob": "ad8d4c2de8f44e10273d5d3574c5d37621399b29"
       },
-      "scripts/supabase-resource-root/supabaseRest.mjs": {
+      "scripts/legacyDb-resource-root/legacyDbRest.mjs": {
         "sha256": "463d30a17c2f5485be6a320cf71af99a44fc101a74b405ec39e03a2814478d02",
         "indexBlob": "fcb619d4f76ea27815e3655a832a98dd0de8a63a"
       },
@@ -3859,7 +3859,7 @@
         "sha256": "3d4387ae018b60bbae797409d18ee7cb56b32d46b9042329a760492b5fe28a78",
         "indexBlob": "0805c1448f1b2fbe1e64dd9ec91f2fb0169f6bda"
       },
-      "src/assets/supabaseResourceCache.ts": {
+      "src/assets/legacyDbResourceCache.ts": {
         "sha256": "c8be3353fe676200a1b3f6d004acbf5b345cb19e4f7628d5faefa1255dd2ded4",
         "indexBlob": "3031a882ce07789260131e2286291f247f9dec58"
       },
@@ -9503,19 +9503,19 @@
         "sha256": "522faa57e9b982f611654908864ab6b7bdb3ea772f75dfcc8989dc54105f08e7",
         "indexBlob": "8c34702b6f4fd030c1377331c1509a18dc853c57"
       },
-      "src/project/supabaseProjectConfig.ts": {
+      "src/project/legacyDbProjectConfig.ts": {
         "sha256": "20b22edcb577796e6bf233dc830dac81db332cbc4b92b98df840a1831f37aea1",
         "indexBlob": "9b0ec4db0522977b0fc287b8f1de7fa7ed7b5339"
       },
-      "src/project/supabaseProjectSync.ts": {
+      "src/project/legacyDbProjectSync.ts": {
         "sha256": "a53755bc7cf6da37c2b30e00ecfbabf1b26146cd448d002c681c59ad1b5b5ad6",
         "indexBlob": "a405be5d7e5980a22250c78755c83db0e7aec281"
       },
-      "src/project/supabaseProxyPath.ts": {
+      "src/project/legacyDbProxyPath.ts": {
         "sha256": "f90f06795454faba7b03daaf56d4ae4d041ed9f5f6bdd6f04033794d1df4044d",
         "indexBlob": "9552a959f9bd62e0f460a462d130f63914fff03e"
       },
-      "src/project/supabaseRecoveryLocation.ts": {
+      "src/project/projectRecoveryLocation.ts": {
         "sha256": "cc53c5a76a3f5f556f518131f8cb44b806b06df7a89b561114dca41e875518ac",
         "indexBlob": "1a6cd632f85e371cc48f2ed8020178f5043ed2bf"
       },
@@ -15451,15 +15451,15 @@
         "sha256": "8447dce4ff60ededbe573702656d5f72c5a464681321e13bc8968ceefb5a739f",
         "indexBlob": "7456dae8af1049403c60772027a446060932db37"
       },
-      "test/e2e/supabase-project-picker.spec.ts": {
+      "test/e2e/project-picker.spec.ts": {
         "sha256": "48a1508296b0641df96bb35b7bd2dd57f19fefd0f07f0ec51464171042d0f88a",
         "indexBlob": "0d5cb91937dbe023d30125d6711ea0b928f06561"
       },
-      "test/e2e/supabase-root-cache.spec.ts": {
+      "test/e2e/legacyDb-root-cache.spec.ts": {
         "sha256": "e32cda57ecb5732bf7e85b90f8d69a4f2aa12bfa1bc95c4c2d95821876bc556f",
         "indexBlob": "e0f32960babbfa9765529e474af8a86e3f029d77"
       },
-      "test/e2e/supabaseProjectSeed.ts": {
+      "test/e2e/projectSeed.ts": {
         "sha256": "4568ef6bcd024277348fe65686c5dd056b91e3013c2f3e1c3b03e4efd991c83b",
         "indexBlob": "f3bd2fb62243750eed176cb7f8fba3dee4ccd726"
       },
@@ -19291,7 +19291,7 @@
         "sha256": "f0ecf8a1c67f67392ea8c6e243c89aa4fac4485be72b599d0a85e520102a78e5",
         "indexBlob": "d249155024b2820498b241c702db3d562fc218ef"
       },
-      "test/stardewSupabaseRoundtrip.live.test.ts": {
+      "test/stardewLegacyDbRoundtrip.live.test.ts": {
         "sha256": "8e212bebb7e0f0b470177c632ba96d8d6e6cd8580c9456750cf6b169de71a9f2",
         "indexBlob": "8845ca1368526ed46d011ddc63d33aca3438fac5"
       },
@@ -19411,39 +19411,39 @@
         "sha256": "6a3d64430ed3e79e68f73d91d33466b9a7be60aff7c19cba13ef327fab3ad3fe",
         "indexBlob": "b28ef734f844a55720d96f1422b465c6d4d8eba5"
       },
-      "test/supabaseCanonicalRoundtrip.live.test.ts": {
+      "test/legacyDbCanonicalRoundtrip.live.test.ts": {
         "sha256": "20d07bc2122efffad678e7fa1876cfc1d9f40a4fbc3115ca6194d2594322ad2f",
         "indexBlob": "a003153b0061a407d1620959034b029b2723334c"
       },
-      "test/supabaseDatabaseOps.node.test.mjs": {
+      "test/legacyDbDatabaseOps.node.test.mjs": {
         "sha256": "6d8ec12186097a524816e6ea165bc52993f43f65be11149fab6f94ac1510ac68",
         "indexBlob": "bbc6adb8318da21794cea9e862ff795f56359411"
       },
-      "test/supabaseFixtureLoad.test.ts": {
+      "test/legacyDbFixtureLoad.test.ts": {
         "sha256": "ff101a2c1acaef0620820bdafadb241195634161400cdbe5bfb60aee9a4fc0bd",
         "indexBlob": "badc5362b665c4c820dc7d75ec689e7b05481800"
       },
-      "test/supabaseProjectConfig.test.ts": {
+      "test/legacyDbProjectConfig.test.ts": {
         "sha256": "738ce3a10b7ed5f8052978de2ad3b8aad0af13e5fce9b17594459eaa7a9bd927",
         "indexBlob": "0cc88ac8746ccd639beec52db1d1f8ed15704533"
       },
-      "test/supabaseProjectSync.test.ts": {
+      "test/legacyDbProjectSync.test.ts": {
         "sha256": "63c547ed44858a87c707bf6d4b0a03c8f6610ea2c0d0bdbe19128dbec6299201",
         "indexBlob": "bea120618b34513b46ebb11b9471a47f088e661a"
       },
-      "test/supabaseProxyPath.test.ts": {
+      "test/legacyDbProxyPath.test.ts": {
         "sha256": "d8c02033cf48886b219b655238a2c415425d93f3b2fc93d036df203d8975bb1f",
         "indexBlob": "e7bedf58e146c2d443ab8d170ebb5a2b5dbe21e8"
       },
-      "test/supabaseRecoveryLocation.test.ts": {
+      "test/projectRecoveryLocation.test.ts": {
         "sha256": "42894f06b2908df6d0cc144a0a56abbb9e14c1f24632abf76ac50a50a6a5e445",
         "indexBlob": "4c8d44d16dd1c79b9a7c401e6e66332d8edcfdfe"
       },
-      "test/supabaseResourceCache.test.ts": {
+      "test/legacyDbResourceCache.test.ts": {
         "sha256": "ed0bbdce6ff18d936efcaeaac96b40ee783e28999387e330d4d77bc094d6970e",
         "indexBlob": "928651867025ef4379faa6e47a34418653664d61"
       },
-      "test/supabaseRlsCoverage.node.test.mjs": {
+      "test/legacyDbRlsCoverage.node.test.mjs": {
         "sha256": "9c78d4bcc4dbb9134c7d9dad2bd90b821bb74e0fff37b8e8cbff2a355a5a9f78",
         "indexBlob": "5773c20d7124343fb75c9f8d5ad5ff66d396676e"
       },
@@ -20937,7 +20937,7 @@
         "sha256": "c5d2cfc0063ed7904be5bffdc2d4922b0ef8f04c2c449b7f9481de3b06d49960",
         "indexBlob": "365a4a7cae2217d9a0c308cb1880ae2ef5f73490"
       },
-      "scripts/apply-supabase-migrations.mjs": {
+      "scripts/apply-legacyDb-migrations.mjs": {
         "sha256": "f2ed6ba1d8fa21e6199abd5af7bb5a14ce56522510aef0067a87069c62530599",
         "indexBlob": "9e69d33d82f53d1f18a4e4831a24896db23c3ae6"
       },
@@ -21577,11 +21577,11 @@
         "sha256": "ebc90525e5d74486850bdae0ef340deccc7568396a498703f54fd72cc1dd3518",
         "indexBlob": "278b4b589ad693d20d07490603876739d1999e11"
       },
-      "scripts/check-supabase-content-gate.mjs": {
+      "scripts/check-legacy-db-content-gate.mjs": {
         "sha256": "3b1823b06fe080e8e1b9819ce53e41fb04f87533854785470b9e1441fa6047fb",
         "indexBlob": "5e5b07c18934236fc454720e5f3d0dcddf95e179"
       },
-      "scripts/check-supabase-schema.mjs": {
+      "scripts/check-legacyDb-schema.mjs": {
         "sha256": "e881e868cd4aec0f1559aebad71b59498fd31d0e72abb52e8951531a7eb7f6ee",
         "indexBlob": "0448b7f41c41e80f7739e1a607b2b614988ec14b"
       },
@@ -22357,7 +22357,7 @@
         "sha256": "68bc1da33a7131edab01fcaa1fd8cc4b8397216e68a997dc657661c8863998a8",
         "indexBlob": "85f6ec63e326bca262761f90c4cc6282009ae02c"
       },
-      "scripts/lib/supabase-database-ops.mjs": {
+      "scripts/lib/legacyDb-database-ops.mjs": {
         "sha256": "c1d0f17dd072f212cd2365f6dda024a4631c3a545250399997b64d48b6dad858",
         "indexBlob": "ed01f99be59ebc597d0fc186345ab27f215b17aa"
       },
@@ -23421,7 +23421,7 @@
         "sha256": "4ea721a8442a9eed46be6e34cc9a4bade1fddbb728c8114a97e9892c27bc86bf",
         "indexBlob": "78ce081322e514b5757f43fb602c5877869ec947"
       },
-      "scripts/save-inn-map-to-supabase.mts": {
+      "scripts/save-inn-map-to-legacyDb.mts": {
         "sha256": "d63217a453cdd179e28034f90d2039641d99b060c2864246f868dc999f86f620",
         "indexBlob": "2e07fa0ae2024b5fedadba3c43d49d3593a3fbf1"
       },
@@ -23537,19 +23537,19 @@
         "sha256": "74d326627b0d931cf69bef4bc1ba55d28935f4d2b3fa0944e003ae6358bedcd5",
         "indexBlob": "058d04d4d3aebac9ead9b8d1c23bc8bc8b9d3d3c"
       },
-      "scripts/supabase-resource-root.mjs": {
+      "scripts/legacyDb-resource-root.mjs": {
         "sha256": "1815657f07c1f46ad3175bb1bd96fd12ae648f0e21723e83018c3c0d02ca27d3",
         "indexBlob": "1a0cfd10d836f165d9b8abe629729aff3c71a8d9"
       },
-      "scripts/supabase-resource-root/catalog.mjs": {
+      "scripts/legacy-db-resource-root/catalog.mjs": {
         "sha256": "b44c0576ff2281ba2229d551a06ce64628b8b3daaffed6e8c859356eb65786fd",
         "indexBlob": "bd4272c92cb6ba5e41926f196fdfaf55075bdadb"
       },
-      "scripts/supabase-resource-root/projectUploads.mjs": {
+      "scripts/legacyDb-resource-root/projectUploads.mjs": {
         "sha256": "c68aa0938b848e2786f2da0f099c657ab4defae0b55d21a2577e8c7fd202617e",
         "indexBlob": "ad8d4c2de8f44e10273d5d3574c5d37621399b29"
       },
-      "scripts/supabase-resource-root/supabaseRest.mjs": {
+      "scripts/legacyDb-resource-root/legacyDbRest.mjs": {
         "sha256": "463d30a17c2f5485be6a320cf71af99a44fc101a74b405ec39e03a2814478d02",
         "indexBlob": "fcb619d4f76ea27815e3655a832a98dd0de8a63a"
       },
@@ -24281,7 +24281,7 @@
         "sha256": "3d4387ae018b60bbae797409d18ee7cb56b32d46b9042329a760492b5fe28a78",
         "indexBlob": "0805c1448f1b2fbe1e64dd9ec91f2fb0169f6bda"
       },
-      "src/assets/supabaseResourceCache.ts": {
+      "src/assets/legacyDbResourceCache.ts": {
         "sha256": "c8be3353fe676200a1b3f6d004acbf5b345cb19e4f7628d5faefa1255dd2ded4",
         "indexBlob": "3031a882ce07789260131e2286291f247f9dec58"
       },
@@ -29925,19 +29925,19 @@
         "sha256": "522faa57e9b982f611654908864ab6b7bdb3ea772f75dfcc8989dc54105f08e7",
         "indexBlob": "8c34702b6f4fd030c1377331c1509a18dc853c57"
       },
-      "src/project/supabaseProjectConfig.ts": {
+      "src/project/legacyDbProjectConfig.ts": {
         "sha256": "20b22edcb577796e6bf233dc830dac81db332cbc4b92b98df840a1831f37aea1",
         "indexBlob": "9b0ec4db0522977b0fc287b8f1de7fa7ed7b5339"
       },
-      "src/project/supabaseProjectSync.ts": {
+      "src/project/legacyDbProjectSync.ts": {
         "sha256": "a53755bc7cf6da37c2b30e00ecfbabf1b26146cd448d002c681c59ad1b5b5ad6",
         "indexBlob": "a405be5d7e5980a22250c78755c83db0e7aec281"
       },
-      "src/project/supabaseProxyPath.ts": {
+      "src/project/legacyDbProxyPath.ts": {
         "sha256": "f90f06795454faba7b03daaf56d4ae4d041ed9f5f6bdd6f04033794d1df4044d",
         "indexBlob": "9552a959f9bd62e0f460a462d130f63914fff03e"
       },
-      "src/project/supabaseRecoveryLocation.ts": {
+      "src/project/projectRecoveryLocation.ts": {
         "sha256": "cc53c5a76a3f5f556f518131f8cb44b806b06df7a89b561114dca41e875518ac",
         "indexBlob": "1a6cd632f85e371cc48f2ed8020178f5043ed2bf"
       },
@@ -35873,15 +35873,15 @@
         "sha256": "8447dce4ff60ededbe573702656d5f72c5a464681321e13bc8968ceefb5a739f",
         "indexBlob": "7456dae8af1049403c60772027a446060932db37"
       },
-      "test/e2e/supabase-project-picker.spec.ts": {
+      "test/e2e/project-picker.spec.ts": {
         "sha256": "48a1508296b0641df96bb35b7bd2dd57f19fefd0f07f0ec51464171042d0f88a",
         "indexBlob": "0d5cb91937dbe023d30125d6711ea0b928f06561"
       },
-      "test/e2e/supabase-root-cache.spec.ts": {
+      "test/e2e/legacyDb-root-cache.spec.ts": {
         "sha256": "e32cda57ecb5732bf7e85b90f8d69a4f2aa12bfa1bc95c4c2d95821876bc556f",
         "indexBlob": "e0f32960babbfa9765529e474af8a86e3f029d77"
       },
-      "test/e2e/supabaseProjectSeed.ts": {
+      "test/e2e/projectSeed.ts": {
         "sha256": "4568ef6bcd024277348fe65686c5dd056b91e3013c2f3e1c3b03e4efd991c83b",
         "indexBlob": "f3bd2fb62243750eed176cb7f8fba3dee4ccd726"
       },
@@ -39713,7 +39713,7 @@
         "sha256": "f0ecf8a1c67f67392ea8c6e243c89aa4fac4485be72b599d0a85e520102a78e5",
         "indexBlob": "d249155024b2820498b241c702db3d562fc218ef"
       },
-      "test/stardewSupabaseRoundtrip.live.test.ts": {
+      "test/stardewLegacyDbRoundtrip.live.test.ts": {
         "sha256": "8e212bebb7e0f0b470177c632ba96d8d6e6cd8580c9456750cf6b169de71a9f2",
         "indexBlob": "8845ca1368526ed46d011ddc63d33aca3438fac5"
       },
@@ -39833,39 +39833,39 @@
         "sha256": "6a3d64430ed3e79e68f73d91d33466b9a7be60aff7c19cba13ef327fab3ad3fe",
         "indexBlob": "b28ef734f844a55720d96f1422b465c6d4d8eba5"
       },
-      "test/supabaseCanonicalRoundtrip.live.test.ts": {
+      "test/legacyDbCanonicalRoundtrip.live.test.ts": {
         "sha256": "20d07bc2122efffad678e7fa1876cfc1d9f40a4fbc3115ca6194d2594322ad2f",
         "indexBlob": "a003153b0061a407d1620959034b029b2723334c"
       },
-      "test/supabaseDatabaseOps.node.test.mjs": {
+      "test/legacyDbDatabaseOps.node.test.mjs": {
         "sha256": "6d8ec12186097a524816e6ea165bc52993f43f65be11149fab6f94ac1510ac68",
         "indexBlob": "bbc6adb8318da21794cea9e862ff795f56359411"
       },
-      "test/supabaseFixtureLoad.test.ts": {
+      "test/legacyDbFixtureLoad.test.ts": {
         "sha256": "ff101a2c1acaef0620820bdafadb241195634161400cdbe5bfb60aee9a4fc0bd",
         "indexBlob": "badc5362b665c4c820dc7d75ec689e7b05481800"
       },
-      "test/supabaseProjectConfig.test.ts": {
+      "test/legacyDbProjectConfig.test.ts": {
         "sha256": "738ce3a10b7ed5f8052978de2ad3b8aad0af13e5fce9b17594459eaa7a9bd927",
         "indexBlob": "0cc88ac8746ccd639beec52db1d1f8ed15704533"
       },
-      "test/supabaseProjectSync.test.ts": {
+      "test/legacyDbProjectSync.test.ts": {
         "sha256": "63c547ed44858a87c707bf6d4b0a03c8f6610ea2c0d0bdbe19128dbec6299201",
         "indexBlob": "bea120618b34513b46ebb11b9471a47f088e661a"
       },
-      "test/supabaseProxyPath.test.ts": {
+      "test/legacyDbProxyPath.test.ts": {
         "sha256": "d8c02033cf48886b219b655238a2c415425d93f3b2fc93d036df203d8975bb1f",
         "indexBlob": "e7bedf58e146c2d443ab8d170ebb5a2b5dbe21e8"
       },
-      "test/supabaseRecoveryLocation.test.ts": {
+      "test/projectRecoveryLocation.test.ts": {
         "sha256": "42894f06b2908df6d0cc144a0a56abbb9e14c1f24632abf76ac50a50a6a5e445",
         "indexBlob": "4c8d44d16dd1c79b9a7c401e6e66332d8edcfdfe"
       },
-      "test/supabaseResourceCache.test.ts": {
+      "test/legacyDbResourceCache.test.ts": {
         "sha256": "ed0bbdce6ff18d936efcaeaac96b40ee783e28999387e330d4d77bc094d6970e",
         "indexBlob": "928651867025ef4379faa6e47a34418653664d61"
       },
-      "test/supabaseRlsCoverage.node.test.mjs": {
+      "test/legacyDbRlsCoverage.node.test.mjs": {
         "sha256": "9c78d4bcc4dbb9134c7d9dad2bd90b821bb74e0fff37b8e8cbff2a355a5a9f78",
         "indexBlob": "5773c20d7124343fb75c9f8d5ad5ff66d396676e"
       },

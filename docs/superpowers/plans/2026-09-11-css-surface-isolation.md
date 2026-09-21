@@ -667,7 +667,7 @@ export default defineConfig(base, {
 import { expect, test, type Page } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
 import { openEventEditor } from "./eventEditorCertEvidence";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const NAV_TESTID = (tab: string) => `database-nav-${tab}`;
 const VIEWPORTS = [{ w: 1280, h: 800 }, { w: 1440, h: 900 }];
@@ -688,7 +688,7 @@ async function settle(page: Page) {
 async function boot(page: Page, w: number, h: number) {
   await page.setViewportSize({ width: w, height: h });
   const seed = mockupProject();
-  await seedProjectFromSupabaseCanonical(page, seed.project);
+  await seedProjectForEditor(page, seed.project);
   await expect(page.getByTestId("toolbar-database")).toBeVisible({ timeout: 60_000 });
   await settle(page);
   return seed;

@@ -32,7 +32,7 @@ type Row = Record<string, unknown>;
 const MAP_PATCH_MAX_ATTEMPTS = 4;
 
 /**
- * 테스트용 저장소. legacy 문서의 Supabase 경로와 같은 의미를 core 함수만으로 낸다.
+ * 테스트용 저장소. legacy 문서의 project storage 경로와 같은 의미를 core 함수만으로 낸다.
  * spatial 발행은 모델링하지 않는다 — 문서에 spatialAuthoring 마커가 있어도 일반 저장으로 다룬다.
  */
 export function createMemoryRepository(options: { readonly target: ProjectTarget | null; readonly now?: () => string }): MemoryRepository {
@@ -128,7 +128,7 @@ export function createMemoryRepository(options: { readonly target: ProjectTarget
         const resolved = resolve(target);
         if (!resolved) return { kind: "not-configured" };
         const serialized = input.serialized ?? serialize(projectWithoutEventDrafts(input.project));
-        await sha256HexText(serialized); // Supabase 경로와 같은 비용·순서(current_sha256 계산)를 유지한다.
+        await sha256HexText(serialized); // project storage 경로와 같은 비용·순서(current_sha256 계산)를 유지한다.
         const commitId = randomUuid();
         const list = bucket(commits, resolved.projectId);
         list.unshift({

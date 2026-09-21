@@ -1,7 +1,7 @@
 // Executable action proof scenario (not the turn-based sceneTestRunner).
 // node scripts/qa/runtime/action-rpg.scenario.mjs
 // Uses a private player.html server on 45973, the exported store shim, and the
-// existing authored action demo. No Supabase or authored content writes.
+// existing authored action demo. No LegacyDb or authored content writes.
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { fileURLToPath, pathToFileURL } from "node:url";

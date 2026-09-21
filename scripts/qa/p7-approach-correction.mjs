@@ -98,7 +98,7 @@ try {
         return route.fulfill({ json: { choices: [{ message, finish_reason: message.tool_calls ? "tool_calls" : "stop" }] } });
       }
       if (url.pathname.includes("/auth/status")) return route.fulfill({ json: { connected: true, authKind: "oauth", expired: false, env: false } });
-      if (url.pathname.includes("/rest/v1/") || url.pathname.includes("/supabase/")) {
+      if (url.pathname.includes("/rest/v1/") || url.pathname.includes("/projectStore/")) {
         report.networkBlocked.push({ method: request.method(), url: request.url() });
         return route.fulfill({ json: [] });
       }

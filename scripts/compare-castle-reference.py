@@ -73,7 +73,7 @@ def compare(reference: Image.Image, candidate: Image.Image) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--project", required=True, help="project JSON export or Supabase response JSON")
+    parser.add_argument("--project", required=True, help="project JSON export or LegacyDb response JSON")
     parser.add_argument("--map", dest="map_id", required=True)
     parser.add_argument("--reference", default=REFERENCE_DEFAULT)
     parser.add_argument("--out", default="")

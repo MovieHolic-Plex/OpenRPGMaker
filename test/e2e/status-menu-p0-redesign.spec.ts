@@ -8,7 +8,7 @@ import {
   seededStatusMenuProject,
   selectCommand,
 } from "./oprnPlayerStatusMenuHelpers";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { startNewGameFromTitle } from "./runtimeInput";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/status-menu-p0-redesign";
@@ -108,7 +108,7 @@ test("keeps the redesigned status menu readable without clipping any text", asyn
     필요 없고, 그 대기는 이 환경에서 메뉴 스펙 전반을 막고 있다(main 에서도 동일하게 실패). */
 async function startPlayOnMap(page: Page): Promise<void> {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, seededStatusMenuProject());
+  await seedProjectForEditor(page, seededStatusMenuProject());
   await openTestPlayWindow(page);
   await startNewGameFromTitle(page, { waitForRuntimeState: false });
   await expect(page.getByTestId("play-stage")).toBeVisible({ timeout: 15000 });

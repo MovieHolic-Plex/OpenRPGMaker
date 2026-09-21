@@ -59,7 +59,7 @@ GROWTH_QA_BROWSER=firefox timeout 300 node scripts/qa/growth-tree-runtime.mjs
 
 Inspected, not executed here. This existing runner creates a temporary engine-contract fixture, starts the dedicated player QA server, blocks non-loopback write requests, exercises keyboard growth investment/promotion/refund, and cleans up its fixture. It does not run the connected persistence script. The original runner covers legacy current-class tree behavior, not the complete new connected-lineage browser flow.
 
-**Do not run** `scripts/qa/growth-connected-persistence.mts`: it writes to Supabase. `growth-connected-runtime.mjs` requires that script's persisted proof and reloaded project; it is not a standalone local-fixture command and was not used here.
+**Do not run** `scripts/qa/growth-connected-persistence.mts`: it writes to LegacyDb. `growth-connected-runtime.mjs` requires that script's persisted proof and reloaded project; it is not a standalone local-fixture command and was not used here.
 
 ### Safe local shop presentation QA without build or remote writes
 

@@ -14,7 +14,7 @@ test('feature16: real editor library, dialogue review, source navigation and wir
   await mkdir(output, { recursive: true });
   // No authored DB traffic. Fixtures live only in the blank-project test session.
   await page.route('**/*', async route => {
-    if (/supabase\./u.test(new URL(route.request().url()).hostname) && !['GET', 'HEAD', 'OPTIONS'].includes(route.request().method())) { await route.abort(); return; }
+    if (/legacyDb\./u.test(new URL(route.request().url()).hostname) && !['GET', 'HEAD', 'OPTIONS'].includes(route.request().method())) { await route.abort(); return; }
     await route.continue();
   });
   await page.goto('/?blankProject=1');

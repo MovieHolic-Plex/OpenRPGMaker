@@ -32,7 +32,7 @@
 - `oprn-shared-forest-village-objects-v1`은 원격 보존용 스냅샷이며,
   번들 정의와 같은 19개 키트를 이미지와 함께 포함한다.
 
-재현 순서: 최신 로컬 SQLite와 Supabase를 읽어 `output/evidence/shared-village-curation/`
+재현 순서: 최신 로컬 SQLite와 LegacyDb를 읽어 `output/evidence/shared-village-curation/`
 의 local-before.json / remote-before.json에 보관 → `prepare-shared-village.py` →
 `publish-shared-villages.mjs` / `publish-shared-village-objects.mjs`.
 동일 스냅샷 ID의 내용이 다르면 중단한다. 수정판은 새 리비전을 사용한다.
@@ -49,3 +49,5 @@
 `apply-shared-village-references.mjs`(에디터/SQLite) →
 `save-shared-village-reference-snapshots.mjs`(원격 보존본).
 위 스크립트들은 `scripts/content/`에 있다. 사용자 문서와 맵을 덮어쓰지 않는다.
+
+위 원격 발행·스냅샷 스크립트는 저장 전환에서 제거한 과거 작업 기록이다. 생성된 자료는 보존하며 현재 프로젝트 저장은 `project.sqlite` + `assets/`를 사용한다.

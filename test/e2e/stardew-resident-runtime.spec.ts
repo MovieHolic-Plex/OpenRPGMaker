@@ -2,7 +2,7 @@ import { mkdirSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { createFarmingDemoProject } from "@/project/defaults/defaultProject";
 import { startNewGameFromTitle, tapKey } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const MAP_ID = "map_farming_demo";
 const EVIDENCE_DIR = "output/evidence/stardew/runtime";
@@ -38,7 +38,7 @@ test("광부에게 좋아하는 선물을 주면 전용 반응과 호감도 상�
   mkdirSync(EVIDENCE_DIR, { recursive: true });
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.setViewportSize({ width: 1280, height: 900 });
-  await seedProjectFromSupabaseCanonical(page, projectWithStationaryMiner());
+  await seedProjectForEditor(page, projectWithStationaryMiner());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
   await page.getByTestId("mode-play").click({ force: true });
   await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

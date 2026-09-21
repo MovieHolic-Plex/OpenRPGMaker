@@ -95,5 +95,5 @@ This is not a four-case pass or a demonstrated Escape behavior defect.
   task30 worktree. Original reviewed commits remain ancestors of the merge.
 - Browser/SSR/window/cache closures and port refusal receipts are retained.
 - Phase1's open-PR worktree and the active Phase2 integration worktree are kept.
-- Full51 authoring/play/day/save/resume and isolated Supabase save/reload are
+- Full51 authoring/play/day/save/resume and isolated LegacyDb save/reload are
   later obligations. Phase approval must not mark them completed.

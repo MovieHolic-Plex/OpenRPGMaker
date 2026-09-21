@@ -4,7 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { EventPage, Project } from "@/project/types";
 import { debugState, writeEvidenceJson } from "./eventEditorCertEvidence";
 import { expandEventMovementSection } from "./eventEditorExpandHelpers";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-editor-controls-1-3-5-6";
 const TEAM_ARTIFACTS_DIR = ".omo/teams/team-15e46b80/artifacts";
@@ -25,7 +25,7 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await mkdir(TEAM_ARTIFACTS_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 820 });
-  await seedProjectFromSupabaseCanonical(page, createBlankProject(), `${APP_URL}/?freshProject=1`);
+  await seedProjectForEditor(page, createBlankProject(), `${APP_URL}/?freshProject=1`);
 
   const editor = await openEventEditor(page);
   const ids = await openEditorIds(editor);

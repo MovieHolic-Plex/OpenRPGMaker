@@ -222,8 +222,8 @@ export type ConstructionDiffTotals = {
   readonly systemChanged: boolean;
 };
 
-export type ActivityPersistence = "not-recorded" | "local" | "supabase" | "both" | "failed-remote";
-export type ProjectPersistence = "not-requested" | "pending" | "local" | "supabase" | "both" | "failed";
+export type ActivityPersistence = "not-recorded" | "local" | "project-store" | "both" | "failed-remote";
+export type ProjectPersistence = "not-requested" | "pending" | "local" | "project-store" | "both" | "failed";
 
 type ConstructionOutcomeCommon = {
   readonly requestedEntrypoint: ConstructionWriteEntrypoint;

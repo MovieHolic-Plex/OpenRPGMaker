@@ -42,7 +42,7 @@ try {
   // Driver-level interception aborts Vite's large CSS module on this host.
   // The disposable boot disables persistence; assert that before every fixture mutation.
   page.on('request', request => {
-    if (request.method() !== 'GET' && /\/supabase\/|\/rest\/v1\//.test(request.url())) {
+    if (request.method() !== 'GET' && /\/legacyDb\/|\/rest\/v1\//.test(request.url())) {
       results.remoteWrites.push({ method: request.method(), url: new URL(request.url()).pathname });
     }
   });

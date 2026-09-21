@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 이미지 참조 필드 3종
 
 사용자 쌍폭포·절벽·강·나무다리 이미지를 World 원본 타일로 저작했다.
@@ -23,7 +25,7 @@
 - `scripts/refine-emerald-reference.mts`: World 원본 타일 및 쿼터만 복사해서 전용 팔레트를 만들고
   맵을 수정한다. 타일 선택과 쿼터 조립은 편집 가능한 저작 데이터다.
 - 전용 타일셋 `tileset_twinfalls_reference_20260914`와 업로드 리소스
-  `asset_twinfalls_native_quarters_20260914`는 **Supabase 프로젝트 데이터에 포함**한다.
+  `asset_twinfalls_native_quarters_20260914`는 **LegacyDb 프로젝트 데이터에 포함**한다.
   480개 원본 칩, 19개 경계 조합, 가로 재배열한 폭포 애니메이션을 사용한다.
 - 전용 custom 팔레트는 원본 RM 지형 자동 재해석을 적용하지 않는다. 일반 칩을 선택해
   계속 편집할 수 있다. 물가의 쿼터 방향을 현재 맵 이웃에 맞춰 재계산하면 참조 그림이 바뀐다.
@@ -103,7 +105,7 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
 
 ## 넓은 후속 맵 — 비취 대계곡 (2026-09-14)
 
-사용자의 후속 요청으로 `map_field_emerald_basin_20260914`, **필드 04 · 비취 대계곡**, **80×64**를 같은 Supabase 프로젝트에 추가했다. 기존 27개 맵과 프로젝트 시작 위치를 보존한다. 새 맵은 맵 목록에서 선택한다. 다른 맵으로의 이동 이벤트는 추가하지 않았다.
+사용자의 후속 요청으로 `map_field_emerald_basin_20260914`, **필드 04 · 비취 대계곡**, **80×64**를 같은 LegacyDb 프로젝트에 추가했다. 기존 27개 맵과 프로젝트 시작 위치를 보존한다. 새 맵은 맵 목록에서 선택한다. 다른 맵으로의 이동 이벤트는 추가하지 않았다.
 
 - 지형: 북쪽 연속 절벽과 삼폭포, 서쪽 고지대 계단, 중앙 섬 호수, 하류 굽이, 서쪽 입석 쉼터, 남쪽 숲길.
 - 동선: 나무다리 세 곳을 포함한 순환로와 고지대 왕복 지선. 나무 221그루는 원본 2×2 모듈을 완전하게 배치한다.
@@ -114,7 +116,7 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
 - `bun scripts/qa/prepare-emerald-wide.mts`: 저장본 시작 위치만 QA용 `(3,55)`로 바꾸고 엔진 `canMove`로 총 290칸의 경로를 구한다. DB에 쓰지 않는다.
 - `OPRN_QA_SOURCE_ROOT=<호환 소스> node scripts/qa/emerald-wide-runtime.mjs`: 전용 player.html로 10개 보행 구간, 부팅 포함 12개 비트를 검사한다. `verify-shots/runtime-qa/emerald-wide/SUMMARY.md`와 `VISUAL-SUMMARY.md`를 먼저 읽고 지정 샷만 연다.
 
-콘텐츠 저작/QA의 호환 소스는 위와 같은 `/tmp/rpg-zzu-fields-runtime-qa`를 사용한다. 새 엔진 변경은 없다. 근거는 `output/evidence/emerald-wide/`의 `supabase-proof.json`, `checks.json`, `editor-saved-proof.json`, 전체 맵 PNG 및 실제 플레이 보고서다.
+콘텐츠 저작/QA의 호환 소스는 위와 같은 `/tmp/rpg-zzu-fields-runtime-qa`를 사용한다. 새 엔진 변경은 없다. 근거는 `output/evidence/emerald-wide/`의 `legacy-db-proof.json`, `checks.json`, `editor-saved-proof.json`, 전체 맵 PNG 및 실제 플레이 보고서다.
 
 ## 두 이미지 기반 재저작 — 폭포·물길·건널목·혼합 식생
 
@@ -136,7 +138,7 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
 - 네 계단은 절벽 높이와 동일하게 3/3/2/2행. 양쪽 계단 열 모두 정확한 타일 수, 진입부 비계단 여부, 진입부 도달을 검사한다.
 - 서쪽 `(0,55..56)`, 동쪽 `(79,49..50)`, 남쪽 `(22..23,63)`에 두 칸 폭의 길을 연결했다. 다음 맵은 해당 반대편 경계에서 같은 좌표/폭으로 이어 저작한다. 아직 대상 맵을 새로 만들거나 전환 이벤트를 지정한 것은 아니다.
 - 쿼터 합성 때 출입구 바깥에만 가상 흙길 이웃을 주어 막다른 길의 둥근 마감을 방지한다. 다른 외곽은 기존 undefined 이웃 의미를 유지한다. `exit-seam-proof.json`은 출입구 여섯 칸의 바깥쪽 중앙 픽셀이 실제 흙길 색인지 확인한다.
-- QA 경로는 343칸, 네 계단의 아래/위 진입부와 세 경계를 포함한다. 최신 시각 목록은 계단 아래 세 장과 동/남 경계 두 장이다. 최신 수치는 `checks.json` / `supabase-proof.json`을 따른다.
+- QA 경로는 343칸, 네 계단의 아래/위 진입부와 세 경계를 포함한다. 최신 시각 목록은 계단 아래 세 장과 동/남 경계 두 장이다. 최신 수치는 `checks.json` / `legacy-db-proof.json`을 따른다.
 
 ### 대각 절벽 적극 활용
 
@@ -186,7 +188,7 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
 - `scripts/register-emerald-region.mts`는 canonical DB를 새로 읽고 지역·배치만 추가한다.
   기본값은 검증된 preview, `--save`는 CAS 원격 저장 후 전체 정규화 reload 동등성을 확인한다.
   공간 문서 외 프로젝트·맵·타일셋·리소스가 모두 불변임을 assert한다.
-- 증거: `output/evidence/emerald-region/supabase-proof.json`, `editor-saved-proof.json`,
+- 증거: `output/evidence/emerald-region/legacy-db-proof.json`, `editor-saved-proof.json`,
   `region-saved.png`, `map-open-saved.png`.
 
 ## 프로젝트 공통 기본 장소 (2026-09-15 정정)
@@ -196,7 +198,7 @@ QA는 호환 스키마 커밋 `858f254e5`의 별도 `/tmp/rpg-zzu-fields-runtime
 `emerald-basin-80x64` / 비취 대계곡을 자연 장소 사례로 등록한다. 별도 프로젝트 선택이나
 공간 설계 활성화가 필요 없다. 호수마을 부분 장소와 달리 전체 80×64 맵을 읽는다.
 
-- `src/project/regionReferences/emerald-basin.json`: Supabase 저장본에서 재로드한 맵·타일셋.
+- `src/project/regionReferences/emerald-basin.json`: LegacyDb 저장본에서 재로드한 맵·타일셋.
 - `public/assets/region-references/emerald-basin.png`: 동일 맵의 검증된 전체 미리보기.
 - `emerald-basin-atlas.png`: 전용 업로드 타일셋 원본. `tilesetPreview`로 AI 참고 조회에 노출한다.
 - 프로젝트별 기존 지역 연결은 보존한다. 공통 항목은 완성 배치 참고 자료이며 자동 생성·배치

@@ -84,7 +84,7 @@ The seven remaining failures also fail against frozen production source in
 1. `layerRouting.m1`: all fence tiles preserve ground (expected 303, received 243).
 2. `tilesetHarness`: castle roof-deck/wall-face/round-tower default groups
    (expected true, received false).
-3. `storePersistence`: no Supabase writes before load (unexpected test fetch).
+3. `storePersistence`: no LegacyDb writes before load (unexpected test fetch).
 4. `storePersistence`: dev showcase does not autosave (undefined response.ok).
 5. `storePersistence`: fresh project ignores local override (undefined response.ok).
 6. `storePersistence`: dev showcase save/reload (undefined response.ok).

@@ -162,10 +162,10 @@ describe("review approval ownership", () => {
 
     // When storage recovers, exercise the real save/read proof over a local wire fixture.
     vi.useFakeTimers(); // Disable unrelated autosave, not the proof's explicit flush/read.
-    vi.stubEnv("VITE_SUPABASE_USE_PROXY", "0");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://r3-proof.invalid");
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "fixture-anon");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "r3-local-proof");
+    vi.stubEnv("VITE_LEGACY_DB_USE_PROXY", "0");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://r3-proof.invalid");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "fixture-anon");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "r3-local-proof");
     vi.stubGlobal("window", { location: { hostname: "127.0.0.1", pathname: "/", search: "" },
       localStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} } });
     const rows = new Map<string, string>();
