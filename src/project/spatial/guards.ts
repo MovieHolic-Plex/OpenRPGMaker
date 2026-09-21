@@ -135,8 +135,9 @@ const place: Parser<S.PlaceDesign> = (v, p) => {
   return { ...base(r, p), ...composable(r, p), kind: choice(["facility", "settlement", "natural"] as const)(r.kind, `${p}.kind`), children: list(r.children, `${p}.children`, child(choice(["space", "place"] as const))), layout: choice(["row", "double-row", "manual"] as const)(r.layout, `${p}.layout`), ports: ports(r.ports, `${p}.ports`), connections: list(r.connections, `${p}.connections`, localConnection), ...(r.exterior === undefined ? {} : { exterior: graphic(r.exterior, `${p}.exterior`) }) };
 };
 const terrain: Parser<S.SpatialTerrain> = (v, p) => {
-  const r = record(v, p, "tilesetId width height floor areas");
-  return { tilesetId: id(r.tilesetId, `${p}.tilesetId`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), areas: list(r.areas, `${p}.areas`, area) };
+  const r = record(v, p, "tilesetId width height floor areas tileSize");
+  return { tilesetId: id(r.tilesetId, `${p}.tilesetId`), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), floor: text(r.floor, `${p}.floor`), areas: list(r.areas, `${p}.areas`, area),
+    ...(r.tileSize === undefined ? {} : { tileSize: size(r.tileSize, `${p}.tileSize`) }) };
 };
 const route: Parser<S.SpatialRoute> = (v, p) => {
   const r = record(v, p, "id from to bidirectional points");
@@ -166,12 +167,13 @@ const interiorKit: Parser<NonNullable<S.SpatialKitSnapshot["interior"]>> = (v, p
   return { id: text(r.id, `${p}.id`), snap: choice(["wall-north", "wall-any", "floor", "free"] as const)(r.snap, `${p}.snap`), role: text(r.role, `${p}.role`) };
 };
 const kit: Parser<S.SpatialKitSnapshot> = (v, p) => {
-  const r = record(v, p, "tilesetId kitId width height cells interior");
+  const r = record(v, p, "tilesetId kitId width height cells interior tileSize");
   const cells = list(r.cells, `${p}.cells`, (c, cp) => {
     const cell = record(c, cp, "x y layer tile");
     return { ...point(cell, cp), layer: choice(["lower", "upper"] as const)(cell.layer, `${cp}.layer`), tile: integer([-1, Number.MAX_SAFE_INTEGER])(cell.tile, `${cp}.tile`) };
   });
   return { ...graphic({ tilesetId: r.tilesetId, kitId: r.kitId }, p), width: size(r.width, `${p}.width`), height: size(r.height, `${p}.height`), cells,
+    ...(r.tileSize === undefined ? {} : { tileSize: size(r.tileSize, `${p}.tileSize`) }),
     ...(r.interior === undefined ? {} : { interior: interiorKit(r.interior, `${p}.interior`) }) };
 };
 const snapshot = <P extends S.SpatialPort>(parsePort: Parser<P>): Parser<S.SpatialCompositionSnapshot<P>> => (v, p) => {

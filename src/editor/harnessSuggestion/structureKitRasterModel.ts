@@ -298,6 +298,8 @@ export function bakeStructureKit(kit: SectionStructureKitDef, id: string, name: 
     width: size.width,
     height: size.height,
     rows,
+    // 픽셀 크기는 복제해도 따라간다 — 안 넘기면 32px 킷 사본이 "크기 미상" 이 된다.
+    ...(kit.tileSize === undefined ? {} : { tileSize: kit.tileSize }),
     ...(kit.parts && kit.parts.length > 0 ? { parts: kit.parts.map((part) => ({ ...part })) } : {}),
     ...(kit.cellHints && kit.cellHints.length > 0
       ? { cellHints: kit.cellHints.map((hint) => ({ ...hint })) }
@@ -310,13 +312,20 @@ export function bakeStructureKit(kit: SectionStructureKitDef, id: string, name: 
 /**
  * 실내 오브젝트 → section.
  */
-export function bakeInteriorObject(object: InteriorObjectDef, id: string, name: string): SectionStructureKitDef {
+export function bakeInteriorObject(
+  object: InteriorObjectDef,
+  id: string,
+  name: string,
+  /** 이 오브젝트가 저작된 아틀라스의 픽셀 크기. 호출부가 타일셋에서 읽어 넘긴다. */
+  tileSize?: number,
+): SectionStructureKitDef {
   return {
     id,
     kind: "section",
     name,
     width: Math.max(1, object.width),
     height: Math.max(1, object.height),
+    ...(tileSize === undefined ? {} : { tileSize }),
     rows: bakeCellsToRows(
       object.cells.map((cell) => ({ dx: cell.dx, dy: cell.dy, layer: cell.layer, tile: cell.tile })),
       Math.max(1, object.width),
