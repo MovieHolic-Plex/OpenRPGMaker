@@ -182,7 +182,7 @@ export class AgentGhostPreviewRenderer {
    */
   private accumulateSchedule(previews: readonly AgentGhostPreview[]): readonly GhostRevealStep[] {
     const keyed = previews.flatMap((preview) =>
-      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}:${cell.tileId ?? ""}` }))
+      preview.cells.map((cell) => ({ cell, key: `${preview.mapId}:${cell.layer}:${cell.x},${cell.y}` }))
     );
     if (this.startTime === null) this.startTime = this.clock();
     const elapsedNow = Math.max(0, this.clock() - this.startTime);
@@ -330,11 +330,7 @@ export class AgentGhostPreviewRenderer {
 
     if (isAgentGhostPreviewHidden() || !this.animGroup) return;
 
-    if (cellCount > AGENT_GHOST_MAX_CELL_RECTS) {
-      if (this.tileObjects.length > 0) this.dropTileObjects();
-    } else if (cellCount > 0) {
-      this.drawAnimationLayers(animState);
-    }
+    if (cellCount > 0) this.drawAnimationLayers(animState);
   }
 
   /** Ground, upper decoration, then events; the sweep only accents the leading edge. */
@@ -404,10 +400,6 @@ export class AgentGhostPreviewRenderer {
 
   /** 이미 만든 칸은 유지하고, 새로 깔린 칸만 스프라이트를 추가한다. */
   private buildTileLayer(): void {
-    if (this.schedule.length > AGENT_GHOST_MAX_CELL_RECTS) {
-      this.dropTileObjects();
-      return;
-    }
     this.ensureTileLayer();
     if (!this.tileLayer) return;
     const desired = this.schedule.map((step) => this.cellObjectKey(step.cell));
@@ -421,7 +413,7 @@ export class AgentGhostPreviewRenderer {
       if (!step) continue;
       const obj = this.createCellObject(step.cell);
       this.tileLayer.add(obj);
-      this.tileObjects.push({ obj, baseX: step.cell.x * TILE_SIZE, baseY: step.cell.y * TILE_SIZE });
+      this.tileObjects.push({ obj, baseX: step.cell.x * editorMapTileSize(this.mapId()), baseY: step.cell.y * editorMapTileSize(this.mapId()) });
       this.tileObjectKeys.push(desired[index] ?? "");
     }
   }
@@ -432,8 +424,8 @@ export class AgentGhostPreviewRenderer {
     const currentMap = mapId ? project.maps[mapId] : undefined;
     const tilesetId = cell.tilesetId ?? currentMap?.tilesetId;
     const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
-    const px = cell.x * TILE_SIZE;
-    const py = cell.y * TILE_SIZE;
+    const px = cell.x * editorMapTileSize(this.mapId());
+    const py = cell.y * editorMapTileSize(this.mapId());
     if (tileset && typeof cell.tileId === "number" && cell.tileId > TILE.EMPTY) {
       const draftMap = mapId ? getAgentGhostDraftMap(mapId) ?? null : null;
       const composed = draftMap
