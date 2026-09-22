@@ -444,7 +444,7 @@ keydown 을 document **캡처** 단계에서 잡아 `stopPropagation` 하므로(
   content/position ratios. Width-only and height-only regressions retain the same
   view/worldView objects and verify subsequent native input is converted once.
 - Canvas-only cancelable Ctrl+wheel consumes browser zoom and steps existing
-  1/2/3/4/6/8 levels around the pointer, including trackpad Ctrl-style pinch on
+  0.25/0.5/1/2/3/4/6/8 levels around the pointer, including trackpad Ctrl-style pinch on
   Linux/Windows/macOS. Command-only and ordinary wheel retain their previous
   behavior. An in-flight edit consumes Ctrl+wheel without changing coordinates.
 - Neutral primary pan is Select on an outside-map target with no selection,
