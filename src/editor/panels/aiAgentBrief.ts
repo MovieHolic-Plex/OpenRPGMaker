@@ -122,8 +122,15 @@ export function readAgentBrief(): AgentBrief {
   };
 }
 
-export function formatComposerPlaceholder(_brief: AgentBrief): string {
-  return "한 문장으로 지시";
+/**
+ * 입력창 안내문. AI 가 연결되지 않았으면 **그 사실을 먼저** 말한다.
+ *
+ * 실측(2026-09-22): 미연결 상태에서도 placeholder 가 "한 문장으로 지시" 였다. 그래서 사용자는
+ * 지시를 쓰고 보낸 뒤에야 — "의도 읽는 중…" 에서 멈춘 뒤에야 — 로그인이 필요하다는 걸 알았다.
+ * 할 수 없는 일을 하라고 안내하지 않는다.
+ */
+export function formatComposerPlaceholder(_brief: AgentBrief, aiReady = true): string {
+  return aiReady ? "한 문장으로 지시" : "AI 연결 후 지시할 수 있어요 — 오른쪽 위 상태 칩을 누르세요";
 }
 
 export function idlePresenceLine(brief: AgentBrief): string {
