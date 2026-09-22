@@ -303,8 +303,8 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
    「preset promotions 를 마운트하지 않는다」 계약은 그대로 두되, 살아 있는 진입점
    `test/e2e/editor-ai-authoring-entry.spec.ts` 와 어긋난 상태다 — 둘 중 하나는 반드시 틀리다.
 3. **「추천 함께 보기」 설정이 무의미했다.** 대기 화면 3분기(추천 함께/조수만/입력창만)는
-   저장·표시만 되고 **읽는 코드가 하나도 없었다**. 이제 `ink-only`·`map-first` 가 추천
-   패널을 끈다(`data-temperature` CSS 훅).
+   저장·표시만 되고 **읽는 코드가 하나도 없었다**. 당시에는 `ink-only`·`map-first` 가 추천
+   패널을 끄게 했다. 2026-09-23에 3분기 자체를 삭제했다 — 버튼은 항상 보인다.
 
 추가로 고친 것: **쿨다운이 카드까지 막던 문제.** 예전에는 최소 재호출 간격(60초)이 걸리면
 카드가 0장인 채 「바뀐 내용을 잠시 후 다시 살펴볼게요」만 떴다. 탐지기가 후보를 거의 못 내던
@@ -344,10 +344,11 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
 줄어드는 것도 즉시 반영되고, 마지막 카드를 넘기면 배지가 사라진다. 살펴볼 것이 있을 때만
 버튼이 강조된다(늘 켜져 있으면 「비었다」와 구분되지 않는다).
 
-**설정과의 관계.** 「추천 함께 보기」(`quiet-gold`)만 버튼을 보이고 「조수만 보기」·「입력창만
-보기」는 버튼째 숨긴다(`refreshTemperatureChrome`). `.ai-suggestion-peek[hidden] { display: none }`
-한 줄이 반드시 필요하다 — `display:flex` 가 `hidden` 을 이겨 실측에서 rootHidden=true 인데도
-화면에 남아 있었다.
+**설정과의 관계.** 대기 화면 3분기(`quiet-gold` / `ink-only` / `map-first`)는 2026-09-23에 걷었다.
+빈 대화 화면이 없어진 뒤 라디오가 정하던 것은 이 버튼을 숨길지뿐이었고, 「조수만 보기」와
+「입력창만 보기」는 같은 일이었다. 버튼은 항상 보인다. `.ai-suggestion-peek[hidden] { display: none }`
+한 줄은 그대로 둔다 — `display:flex` 가 `hidden` 을 이겨, 닫기 이외의 숨김이 생겨도 화면에 남던
+실측이 있었다.
 
 계약: `test/projectSuggestions.test.ts` 19건, `scripts/qa/ai-project-suggestions.mjs` 12검사
 (팀 레일 비겹침·배지·위치 보기가 팝오버를 닫는지·마지막 카드에서 배지 소거 포함).
@@ -2210,13 +2211,13 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 
 - **Dock/menu correction (2026-08-24):** the header and composer action menus keep their shared actions, but dock labels now describe the destination: glass `오른쪽에 고정`, side `입력줄로 떼기`, float `왼쪽 카드로 열기`. The side header also exposes an always-visible `↗` (`ai-chat-detach`) escape to float. The header popup is viewport-fixed and clamped through `anchoredPopupPosition`, because an absolute popup inside `.ai-chat-side-panel { overflow: hidden }` was fully clipped. The top-bar `▤` menu no longer renders the generic workspace `assistant` row (that row only mutated workspace JSON and could not move ChatDock); it owns an icon picker wired to `setChatDock`: `◧` 왼쪽 카드, `▥` 오른쪽 고정, `⌨` 입력줄. `refreshDockLabels()` runs on `editorState` changes so menu-driven moves update the panel dataset and labels immediately.
 
-- **Assistant idle-screen choice (2026-08-24):** persisted `AssistantTemperature` ids remain `quiet-gold | ink-only | map-first`, but the UI never exposes those opaque names. Both action menus use the same icon-only radio picker from `aiTemperatureMenu.ts`: `✦` 추천 함께 보기 (suggestion cards), `◫` 조수만 보기 (no suggestion cards), `⌨` 입력창만 보기 (composer only). Every icon has a Korean `title`/`aria-label`. Input-only mode must keep the composer `☰` visible and unclipped so the user can select another mode; glass therefore allows the popover to overflow while idle. Layout persistence stores this choice beside `chatDock`.
+- **Assistant idle-screen choice:** 2026-09-23에 삭제. `quiet-gold` / `ink-only` / `map-first` 와 `aiTemperatureMenu.ts` 는 없다. 캔버스 「살펴볼 것」 버튼은 항상 보인다. 레이아웃 JSON의 `assistantTemperature` 는 읽지 않는다.
 
 - Side work log is RM-style `@>` command rows (`data-testid="ai-command-row"`), not chat bubbles. There is no pending-proposal pin: a turn's writes are applied as the turn ends, so the command row is followed by the applied change card (`ai-change-card`) with its `되돌리기` button.
 
 - **Assistant skills removed (2026-08-27):** the assistant-side skill feature is gone — no skill drawer, no `/` slash skill list, no skill palette section, no skill prompt plumbing (`src/ai/skills.ts`, `aiSkillDrawer.ts`, `assistant-skills.css`, `explicitSkillId`, `appendSkillPromptToggle` all deleted). The composer is free text + send only, and a leading `/` is ordinary text with no popover. Ctrl+K keeps 명령 + 맵 이동 sections. Game skills (battle/life/`database.skills`) are unrelated and untouched. Regression test: `test/assistantSkillsRemoved.test.ts`.
 
-- **Assistant temperature:** `AssistantTemperature = "quiet-gold" | "ink-only" | "map-first"` is persisted with `chatDock` in `oprn:editor-layout:v4` (`src/editor/assistantTemperature.ts`). The header and float command menus expose A 조용한 골드 / B 잉크만 / C 맵 우선. Quiet Gold shows at most two idle hints, Ink Only hides gold idle chrome, and Map First hides the idle card until a turn exists. Tests: `test/assistantTemperature.test.ts`, `test/aiPanelChrome.test.ts`, `test/editorLayoutPersist.test.ts`.
+- **Assistant temperature:** 삭제됨(2026-09-23). 저장 키를 다시 읽거나 라디오를 되돌리지 않는다.
 
 - **Decision surface:** 없다. 쓰기가 있는 턴은 그대로 적용되고, 조수 창에 남는 것은 적용 로그 한 줄 + 변경 카드(`ai-change-card`)의 `되돌리기` 다. 변경 0건 턴만 `ai-proposal-notice-host` 에 완성도 린트 안내(`renderEmptyProposalNotice`)를 띄운다.
 
@@ -2379,7 +2380,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 - Header plate (`data-testid="ai-director-plate"`): 48px faceset crop of `easyrpg-faceset-actor1` index 0 + name `조수` + one-line `readAgentBrief().line`. Plate tokens already live in DESIGN.md (name `--text-1` 13px/600, line `--text-2` 12px/400, gap `--space-2`, face well `--studio-inset` / `--studio-line` or `--bg-inset` / `--border-subtle`). Collapsed restore is a 48px face button, `aria-label="AI 어시스턴트"`.
 - **Action menus share one item implementation (2026-08-22):** the header `☰` (`.ai-more-menu`) and the composer `☰` (`.ai-command-menu`) build their eight shared items — 되돌리기 · 내보내기 · dock toggle · 전체 기록 · 툴 브라우저 · 🎓 맵 인터뷰 · 📐 선택 여역 학습 · ✍️ 시연으로 가르치기 — from `createAiActionMenuItems` (`src/editor/panels/aiActionMenu.ts`). Containers, positioning and open-state stay per-surface (header owns its own pointerdown/Escape handlers; the composer menu is a `.ai-composer-popover` owned by the composer shell), only the item list is shared. testids differ by surface and are part of the test contract: header `ai-more-*`, composer `ai-command-menu-*` (composer 전체 기록 has none). `applyDockModeChrome` relabels both dock items in one loop, so the two surfaces legitimately show different dock labels at the same time (header "아래 바로" while composer shows "왼쪽 유리"). Header always-visible buttons are now only `ai-new-session` and `ai-more-menu-toggle` — settings (`ai-settings-toggle`) moved into the header menu as an item, and `ai-settings-command-bar` is an item in the composer menu. The hidden `.ai-chat-toolbar` is a **test-hook container, not dead buttons**: 8 of its 9 controls are referenced by tests and the menu items act by calling their `click()`. Only `chat-dock-toggle-bar` had zero references and was removed. Regression spec: `test/e2e/_ai-composer.spec.ts` (shared-item order + header button list).
 - **Dock/menu correction (2026-08-24) — 2026-08-31 에 대부분 무효:** 이 항목이 도입한 도크 라벨 3종(`오른쪽에 고정`/`입력줄로 떼기`/`왼쪽 카드로 열기`), side 헤더의 `↗` 탈출(`ai-chat-detach`), 상단바 `▤` 의 아이콘 도크 선택기(`◧`/`▥`/`⌨`), 그리고 `refreshDockLabels()` 는 도크 축과 함께 전부 삭제됐다(`refreshDockLabels` → `applyAssistantViewPolicy` 로 개명, 라벨 재계산 없음). **살아 있는 부분:** 헤더 팝업은 뷰포트 고정이고 `anchoredPopupPosition` 으로 clamp 한다 — 원래 이유(`.ai-chat-side-panel { overflow: hidden }` 안의 absolute 팝업이 통째로 잘렸다)는 사라졌지만 clamp 자체는 좁은 뷰포트에서 여전히 필요하다. 상단바 `▤` 는 workspace JSON 만 건드리던 일반 `assistant` 행을 렌더하지 않는다.
-- **Assistant idle-screen choice (2026-08-24):** persisted `AssistantTemperature` ids remain `quiet-gold | ink-only | map-first`, but the UI never exposes those opaque names. Both action menus use the same icon-only radio picker from `aiTemperatureMenu.ts`: `✦` 추천 함께 보기 (suggestion cards), `◫` 조수만 보기 (no suggestion cards), `⌨` 입력창만 보기 (composer only). Every icon has a Korean `title`/`aria-label`. Input-only mode must keep the composer `☰` visible and unclipped so the user can select another mode; glass therefore allows the popover to overflow while idle. Layout persistence stores this choice beside `chatDock`.
+- **Assistant idle-screen choice:** 2026-09-23에 삭제. `quiet-gold` / `ink-only` / `map-first` 와 `aiTemperatureMenu.ts` 는 없다. 캔버스 「살펴볼 것」 버튼은 항상 보인다. 레이아웃 JSON의 `assistantTemperature` 는 읽지 않는다.
 - Side work log is RM-style `@>` command rows (`data-testid="ai-command-row"`), not chat bubbles. There is no pending-proposal pin: a turn's writes are applied as the turn ends, so the command row is followed by the applied change card (`ai-change-card`) with its `되돌리기` button.
 - **Assistant skills removed (2026-08-27):** the assistant-side skill feature is gone — no skill drawer, no `/` slash skill list, no skill palette section, no skill prompt plumbing (`src/ai/skills.ts`, `aiSkillDrawer.ts`, `assistant-skills.css`, `explicitSkillId`, `appendSkillPromptToggle` all deleted). The composer is free text + send only, and a leading `/` is ordinary text with no popover. Ctrl+K keeps 명령 + 맵 이동 sections. Game skills (battle/life/`database.skills`) are unrelated and untouched. Regression test: `test/assistantSkillsRemoved.test.ts`.
 - AI system-prompt UX policy is centralized in `src/ai/promptPolicies.ts` and injected by `src/ai/contextBuilder.ts`. Keep refusal of unsupported engine requests, one-sentence clarification for low-information prompts, one-queue proceed behavior after "진행/계속" instructions, non-destructive self-repair such as `resize_map`, honest "preparation only" status, draft-tense wording before acceptance, and beginner-facing 3-5 sentence final responses covered by unit tests when editing the prompt.

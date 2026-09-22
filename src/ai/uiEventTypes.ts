@@ -65,7 +65,6 @@ export const AI_UI_ACTIONS = {
   newConversation: "new-conversation",
   turnAbort: "turn-abort",
   turnRetry: "turn-retry",
-  temperatureSwitch: "temperature-switch",
 } as const;
 
 export type AiUiActionName = (typeof AI_UI_ACTIONS)[keyof typeof AI_UI_ACTIONS];

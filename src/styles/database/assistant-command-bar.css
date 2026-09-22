@@ -132,38 +132,7 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
   background: color-mix(in srgb, var(--accent) 16%, transparent);
 }
 
-.ai-temperature-section {
-  display: grid;
-  gap: 4px;
-  padding-bottom: 5px;
-}
-
-.ai-temperature-label {
-  color: var(--text-3);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: .04em;
-  padding: 2px 4px;
-}
-
-.ai-temperature-picker {
-  display: grid;
-  gap: 4px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-/* after.html: 헤더 ☰ 대기 화면은 한 줄 아이콘이 아니라 라벨이 보이는 세로 목록 */
-.ai-more-menu .ai-temperature-picker {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.ai-more-menu .ai-temperature-option.ai-more-menu-item {
-  justify-content: flex-start;
-  font-size: 13px;
-  text-align: left;
-}
-
-/* after.html hug: 대기 화면만 먼저 보이고, 5개 액션은 접힌 작업 안.
+/* 더보기 액션은 접힌 작업 안.
    details 에 display:grid 를 주면 접기 위젯이 깨지니 기본 display 를 유지한다. */
 .ai-more-actions {
   border-top: 1px solid var(--border-subtle);
@@ -186,24 +155,6 @@ body.ai-chat-dock-float.ai-command-bar-active .editor-layout {
 }
 
 .ai-more-actions[open] > .ai-more-actions-summary {
-  color: var(--text-1);
-}
-
-.ai-temperature-option.ai-more-menu-item,
-.ai-temperature-option.ai-command-menu-item {
-  align-items: center;
-  border: 1px solid var(--border-subtle);
-  display: inline-flex;
-  font-size: 16px;
-  justify-content: center;
-  min-height: 34px;
-  padding: 6px;
-  text-align: center;
-}
-
-.ai-temperature-option[aria-checked="true"] {
-  background: color-mix(in srgb, var(--accent, var(--gold)) 15%, transparent);
-  border-color: var(--accent-border);
   color: var(--text-1);
 }
 
