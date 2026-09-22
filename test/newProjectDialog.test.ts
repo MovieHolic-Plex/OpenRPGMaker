@@ -16,6 +16,7 @@ import {
 } from "@/editor/ui/newProjectDialog";
 import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 import { createBlankProject } from "@/project/defaults";
+import { completeInterviewChoices } from "./helpers/gameDesignBrief";
 
 afterEach(() => {
   document.body.replaceChildren();
@@ -134,7 +135,8 @@ describe("새 프로젝트 다이얼로그", () => {
     monster!.checked = true;
     monster!.dispatchEvent(new Event("change", { bubbles: true }));
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    await expect(pending).resolves.toEqual({ title: "달빛 항구", choiceId: "monster-collect" });
+    await completeInterviewChoices();
+    await expect(pending).resolves.toMatchObject({ title: "달빛 항구", choiceId: "monster-collect", gameDesignBrief: { presetId: "monster-collect" } });
   });
 
   it("선택지는 첫 화면 포스터와 같은 그림을 실어 보여 준다", async () => {

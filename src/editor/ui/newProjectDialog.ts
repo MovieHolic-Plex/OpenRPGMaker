@@ -9,6 +9,8 @@
 
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
+import { showProjectInterview } from "./projectInterviewDialog";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import {
   NEW_PROJECT_DIALOG_CHOICE_ORDER,
   newProjectChoiceById,
@@ -21,6 +23,7 @@ export type NewProjectDialogResult = {
   readonly title: string;
   /** null = 빈 프로젝트. 값이 있으면 그 선택지의 시스템 프리셋을 씨앗에 적용한다. */
   readonly choiceId: NewProjectChoiceId | null;
+  readonly gameDesignBrief?: GameDesignBrief;
 };
 
 export type NewProjectDialogOptions = {
@@ -97,6 +100,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host },
     });
     let settled = false;
+    let interviewing = false;
     let selectedChoiceId: NewProjectChoiceId | null = opts.defaultChoiceId ?? null;
     const done = (value: NewProjectDialogResult | null): void => {
       if (settled) return;
@@ -131,7 +135,10 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       }) as HTMLInputElement;
       radio.checked = option.id === selectedChoiceId;
       radio.addEventListener("change", () => {
-        if (radio.checked) selectedChoiceId = option.id;
+        if (radio.checked) {
+          selectedChoiceId = option.id;
+          confirmButton.textContent = opts.confirmLabel ?? (option.id ? "다음 · 게임 기획" : "만들기");
+        }
       });
       // 장르 그림은 첫 화면 포스터와 같은 자산을 쓴다. 빈 프로젝트는 그림이 없으므로 +.
       // 자산이 없으면 img 를 떼어 격자 배경만 남긴다 — 깨진 그림 아이콘을 보여 주지 않는다.
@@ -162,16 +169,24 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       });
     });
 
-    const confirmSelection = (): void => {
-      done({ title: nameInput.value.trim() || fallbackTitle, choiceId: selectedChoiceId });
+    const confirmSelection = async (): Promise<void> => {
+      if (interviewing || settled) return;
+      const choiceId = selectedChoiceId;
+      if (!choiceId) { done({ title: nameInput.value.trim() || fallbackTitle, choiceId }); return; }
+      interviewing = true;
+      confirmButton.disabled = true;
+      try {
+        const gameDesignBrief = await showProjectInterview(choiceId);
+        if (gameDesignBrief && !settled) done({ title: nameInput.value.trim() || fallbackTitle, choiceId, gameDesignBrief });
+      } finally { interviewing = false; confirmButton.disabled = false; }
     };
 
     const confirmButton = el("button", {
       class: "app-modal-button is-confirm",
-      text: opts.confirmLabel ?? "만들기",
+      text: opts.confirmLabel ?? (selectedChoiceId ? "다음 · 게임 기획" : "만들기"),
       attrs: { type: "button" },
       dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.confirm },
-      on: { click: confirmSelection },
+      on: { click: () => void confirmSelection() },
     });
     const cancelButton = el("button", {
       class: "app-modal-button",
@@ -183,7 +198,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     nameInput.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        confirmSelection();
+        void confirmSelection();
       }
     });
 

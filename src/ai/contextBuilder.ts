@@ -34,6 +34,7 @@ import { confidenceScore } from "@/project/tilesetPalette";
 import { approvedVocabulary } from "@/project/tileVocabulary";
 import { aiInstructionsSection } from "./projectInstructions";
 import { worldCanonPromptSection } from "./worldCanonContext";
+import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { projectWikiContext } from "./projectWikiContext";
 import { AGENT_UX_POLICY_LINES } from "./promptPolicies";
 import { ASSISTANT_PRESENTATION_BLOCK } from "./eventBeatStaging";
@@ -755,6 +756,8 @@ export function buildSystemPrompt(project: Project, options: ContextOptions = {}
   assembled += `\n\n${regionReferenceContext()}`;
   const designContract = villageDesignContext(project);
   if (designContract) assembled += `\n\n${designContract}`;
+  const gameBrief = gameDesignBriefContext(project.gameDesignBrief);
+  if (gameBrief) assembled += `\n\n${gameBrief}`;
   const wiki = projectWikiContext(project, { query: options.wikiQuery ?? "", mapId: currentMapId });
   if (wiki.text) assembled += `\n\n## 프로젝트 위키 — 현재 작업의 근거\n아래는 저장된 설정과 제작 결정이다. 명시적 결정과 현재 맵 예외를 따르고, 추론·실제 적용 상태를 구별한다. 자세한 본문은 read_project_wiki로 조회한다.\n${wiki.text}`;
   return withProjectInstructions(

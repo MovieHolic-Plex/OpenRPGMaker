@@ -1,6 +1,7 @@
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeAiAuthoring } from "../aiAuthoring";
+import { normalizeGameDesignBrief } from "../gameDesignBrief";
 import { assertGrowthShape } from "@/project/growth/validation";
 import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateSpatialAuthoring } from "../spatial/guards";
@@ -164,6 +165,7 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   // JSON.stringify just to satisfy the validator doubles the cost of a heavy load.
   const project = adoptParsed ? ownedParsedProject(data) : cloneJson<Project>(data);
   if (data.aiAuthoring !== undefined) project.aiAuthoring = normalizeAiAuthoring(data.aiAuthoring);
+  if (data.gameDesignBrief !== undefined) project.gameDesignBrief = normalizeGameDesignBrief(data.gameDesignBrief);
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];

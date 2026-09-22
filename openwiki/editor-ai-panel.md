@@ -1,6 +1,15 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
 # Editor AI Panel & Tools
+## 새 프로젝트 게임 기획 전달 (2026-09-22)
+
+프리셋별 최대 5문항 인터뷰의 확정 기획은 `Project.gameDesignBrief`에 저장한다.
+초기 생성 프롬프트와 이후 `contextBuilder`, Pi builder/team/reviewer 시스템 프롬프트가
+같은 `gameDesignBriefContext`를 사용한다. 수정한 최종 요약이 원래 답변·프리셋 톤보다
+우선하고 추천 출처는 유지한다. 메뉴 생성은 새 SQLite 폴더의 부팅 뒤에만 전송을 예약한다.
+미연결이면 초안으로 남기며 기획 수정 메뉴는 자동 전송하지 않는다. 상세 계약은
+[장르 프리셋 인터뷰](editor-genre-packs.md)의 저장·handoff 절을 따른다.
+
 ## 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
 
 `aiCreationChoice.ts` + `aiChatPanel.runPiTurn`은 마을·도시·집의 새 생성 요청에 제작 전 선택을 둔다.

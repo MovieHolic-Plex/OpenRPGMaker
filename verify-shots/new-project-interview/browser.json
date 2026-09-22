@@ -1,0 +1,116 @@
+{
+  "kind": "isolated-real-component-browser-evidence",
+  "monsterQuestion": "수집 여정의 공포는 어디서 생기나요?",
+  "galleryQuestion": "동료를 의심하게 만드는 일은 무엇인가요?",
+  "result": {
+    "title": "기억을 먹는 숲",
+    "choiceId": "monster-collect",
+    "gameDesignBrief": {
+      "version": 1,
+      "presetId": "monster-collect",
+      "answers": {
+        "experience": {
+          "question": "어떤 분위기의 수집 여정을 원하나요?",
+          "label": "분위기",
+          "text": "공포",
+          "source": "user"
+        },
+        "activity": {
+          "question": "수집 게임에서 가장 중요한 재미는 무엇인가요?",
+          "label": "핵심 행동",
+          "text": "새로운 종을 발견하고 수집",
+          "source": "user"
+        },
+        "progression": {
+          "question": "게임은 어떤 흐름으로 이어지면 좋을까요?",
+          "label": "진행 구조",
+          "text": "마을의 사건을 따라 조사",
+          "source": "user"
+        },
+        "detail": {
+          "question": "수집 여정의 공포는 어디서 생기나요?",
+          "label": "공포의 원인",
+          "text": "포획할수록 마을이 이상해짐",
+          "source": "user"
+        },
+        "scope": {
+          "question": "첫 초안은 어느 순간까지 만들까요?",
+          "label": "첫 제작 범위",
+          "text": "첫 포획 뒤 이상 징후 발견까지",
+          "source": "user"
+        }
+      },
+      "summary": "분위기: 공포\n핵심 행동: 새로운 종을 발견하고 수집\n진행 구조: 마을의 사건을 따라 조사\n공포의 원인: 포획할수록 마을이 이상해짐\n첫 제작 범위: 첫 포획 뒤 이상 징후 발견까지"
+    }
+  },
+  "geometry": {
+    "width": 1024,
+    "scrollWidth": 1024,
+    "dialog": {
+      "x": 32,
+      "y": 24,
+      "width": 960,
+      "height": 720,
+      "top": 24,
+      "right": 992,
+      "bottom": 744,
+      "left": 32
+    }
+  },
+  "savesBefore": 0,
+  "savesAfterCancel": 0,
+  "welcome": {
+    "saves": [
+      {
+        "packId": "monster-collect",
+        "brief": {
+          "version": 1,
+          "presetId": "monster-collect",
+          "answers": {
+            "experience": {
+              "question": "어떤 분위기의 수집 여정을 원하나요?",
+              "label": "분위기",
+              "text": "공포",
+              "source": "user"
+            },
+            "activity": {
+              "question": "수집 게임에서 가장 중요한 재미는 무엇인가요?",
+              "label": "핵심 행동",
+              "text": "새로운 종을 발견하고 수집",
+              "source": "user"
+            },
+            "progression": {
+              "question": "게임은 어떤 흐름으로 이어지면 좋을까요?",
+              "label": "진행 구조",
+              "text": "마을의 사건을 따라 조사",
+              "source": "user"
+            },
+            "detail": {
+              "question": "수집 여정의 공포는 어디서 생기나요?",
+              "label": "공포의 원인",
+              "text": "포획할수록 마을이 이상해짐",
+              "source": "user"
+            },
+            "scope": {
+              "question": "첫 초안은 어느 순간까지 만들까요?",
+              "label": "첫 제작 범위",
+              "text": "첫 포획 뒤 이상 징후 발견까지",
+              "source": "user"
+            }
+          },
+          "summary": "분위기: 공포\n핵심 행동: 새로운 종을 발견하고 수집\n진행 구조: 마을의 사건을 따라 조사\n공포의 원인: 포획할수록 마을이 이상해짐\n첫 제작 범위: 첫 포획 뒤 이상 징후 발견까지"
+        }
+      }
+    ],
+    "result": {
+      "intent": "몬스터 수집",
+      "prompt": "장르 프리셋: 몬스터 수집\n\n## 사용자가 확정한 게임 기획\n프리셋은 기본 플레이 방식이다. 분위기·서사 변주와 별개로 보존한다. 예: 몬스터 수집 + 공포는 수집 시스템을 유지한다.\n아래 확정 요약은 인터뷰 이후 저자가 수정할 수 있는 최신 기획이다. 고정 프리셋의 톤·배경·체크리스트보다 우선한다. 이후 사용자의 명시적 변경 요청은 반영한다.\n기획에 맞는 핵심 행동 → 진행 → 사건의 결과를 실제로 연결하고, 첫 제작 범위 안에서 완주 가능한 구간을 만든다. 추천안을 사용자 원문으로 바꾸어 주장하지 않는다.\n{\"preset\":\"monster-collect\",\"summary\":\"분위기: 공포\\n핵심 행동: 새로운 종을 발견하고 수집\\n진행 구조: 마을의 사건을 따라 조사\\n공포의 원인: 포획할수록 마을이 이상해짐\\n첫 제작 범위: 첫 포획 뒤 이상 징후 발견까지\",\"answers\":{\"experience\":{\"question\":\"어떤 분위기의 수집 여정을 원하나요?\",\"label\":\"분위기\",\"text\":\"공포\",\"source\":\"user\"},\"activity\":{\"question\":\"수집 게임에서 가장 중요한 재미는 무엇인가요?\",\"label\":\"핵심 행동\",\"text\":\"새로운 종을 발견하고 수집\",\"source\":\"user\"},\"progression\":{\"question\":\"게임은 어떤 흐름으로 이어지면 좋을까요?\",\"label\":\"진행 구조\",\"text\":\"마을의 사건을 따라 조사\",\"source\":\"user\"},\"detail\":{\"question\":\"수집 여정의 공포는 어디서 생기나요?\",\"label\":\"공포의 원인\",\"text\":\"포획할수록 마을이 이상해짐\",\"source\":\"user\"},\"scope\":{\"question\":\"첫 초안은 어느 순간까지 만들까요?\",\"label\":\"첫 제작 범위\",\"text\":\"첫 포획 뒤 이상 징후 발견까지\",\"source\":\"user\"}}}\n\n확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.\n\n현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.\n\n기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.\n\n한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
+      "autoSend": false,
+      "presetId": "monster-collect",
+      "source": "chip",
+      "dismiss": true,
+      "action": "start"
+    }
+  },
+  "errors": []
+}
