@@ -3,6 +3,7 @@ import { setProjectRepositoryForTest } from "@/project/persistence/repository";
 import type { LocalProjectTarget } from "@/project/persistence/target";
 import type { Project } from "@/project/types";
 import { serialize } from "@/project/io";
+import { applyProjectDocumentPatch, type ProjectDocumentPatch } from "@/project/persistence/core/projectPatch";
 
 export type BridgeSaveGate = {
   entered(): Promise<void>;
@@ -93,9 +94,21 @@ export async function installElectronBridgeSession(
         revision += 1;
         return { kind: "saved" as const, sha256: sha, revision };
       },
-      saveMapPatch: async (payload: { readonly serialized: string }) => {
+      saveMapPatch: async (payload: {
+        readonly serialized?: string;
+        readonly baseSerialized?: string;
+        readonly baseSha?: string | null;
+        readonly patch?: ProjectDocumentPatch;
+      }) => {
         calls.mapPatch += 1;
-        serialized = payload.serialized;
+        if (payload.patch) {
+          if (payload.baseSerialized === undefined && payload.baseSha !== sha) return { kind: "stale-base" as const };
+          const baseText = payload.baseSerialized ?? serialized;
+          if (!baseText) return { kind: "stale-base" as const };
+          serialized = JSON.stringify(applyProjectDocumentPatch(JSON.parse(baseText) as unknown, payload.patch));
+        } else if (payload.serialized) {
+          serialized = payload.serialized;
+        }
         if (options.wire) options.wire.current = serialized;
         revision += 1;
         return { kind: "saved" as const, sha256: sha, revision };

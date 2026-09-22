@@ -11,12 +11,29 @@ export const saveProjectSchema = z.object({
   expectedSha: z.string().min(1).nullable(),
 });
 
+const dictPatchSchema = z.object({
+  set: z.record(z.string(), z.unknown()).optional(),
+  del: z.array(z.string()).optional(),
+});
+
+/** 전체 문서 둘 또는 변경분. 변경분만 있으면 64MB 본문 한도를 넘지 않는다. */
 export const saveMapPatchSchema = z.object({
   projectDir,
-  baseSerialized: z.string().min(1),
-  serialized: z.string().min(1),
+  baseSerialized: z.string().min(1).optional(),
+  serialized: z.string().min(1).optional(),
+  baseSha: z.string().min(1).nullable().optional(),
+  patch: z.object({
+    set: z.record(z.string(), z.unknown()).optional(),
+    del: z.array(z.string()).optional(),
+    maps: dictPatchSchema.optional(),
+    database: dictPatchSchema.optional(),
+    tilesets: dictPatchSchema.optional(),
+  }).optional(),
   changedMapIds: z.array(z.string().min(1)).optional(),
-});
+}).refine(
+  (value) => (value.baseSerialized !== undefined && value.serialized !== undefined) || value.patch !== undefined,
+  "patch or full documents required",
+);
 
 export const listLimitSchema = z.object({ projectDir, limit: positiveLimit });
 
