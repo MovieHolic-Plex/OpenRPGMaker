@@ -18,6 +18,7 @@ import { DEFAULT_OH_MY_PI_PROVIDER, parseOhMyPiProvider } from "@/ai/ohMyPiProvi
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { companionTokenHeaders } from "@/ai/companionToken";
 
 // OpenAI 메시지 규약(우리가 쓰는 필드만).
 export interface ToolCall { id: string; type: "function"; function: { name: string; arguments: string } }
@@ -436,7 +437,7 @@ function headers(config: AiConfig): Record<string, string> {
   const h: Record<string, string> = { "Content-Type": "application/json" };
   if (usesOhMyPiCompanion(config)) {
     h["X-Oprn-Provider"] = parseOhMyPiProvider(config.providerId);
-    return h;
+    return { ...h, ...companionTokenHeaders() };
   }
   // proxyAuth: 프록시가 서버 측에서 Authorization 을 주입한다 — 클라이언트는 키를 보내지 않는다.
   if (config.authMode === "apiKey" && !isProxyAuth(config)) {
