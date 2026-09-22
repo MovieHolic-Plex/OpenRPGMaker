@@ -221,7 +221,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-용도 ID는 `diverse-villages-v1`, 문서 33개/이미지 8개/실제 타일 사전 232개다.
+용도 ID는 `diverse-villages-cliff-v2`, 문서 34개/이미지 13개/실제 타일 사전 225개다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -231,3 +231,14 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 용도만 채운다. 기존 저자 문서/공유 포인터/다른 이미지의 동명 칩셋은 건드리지 않는다.
 지역 다운로드에도 새 용도가 포함된다. 원격 행 등록만으로 배포 완료를 주장하지 않는다.
 새/기존 프로젝트 배포, 다운로드 직렬화 왕복, 실제 문서 화면 근거는 `verify-shots/village-diversity/`.
+
+
+### 절벽 조립 교정 (2026-09-23)
+
+‘큰 폭포 아래 마을’의 실제 상위 배열을 기준으로 세 마을을 revision2로 교정했다.
+얇은 둘레 띠 대신 굽은 윗선·반복 면·같은 윤곽의 밑단을 사용하고 좌우 사선 원본231/232를 구분한다.
+암벽은 upper, 계단은 lower+upper 비움이다. 높이에 맞춘 계단 양끝과 문앞 연결을 확인한다.
+`src/project/defaults/forestHarmony.ts`는 `previous-reference.json`의 revision과 정확히 같은
+미편집 v1만 교체한다. 사용자 수정본/공유 포인터는 보존하고 새 용도를 제공한다.
+정확한 원본 배열과 픽셀 일치·8종 오류·SQLite 재로드 근거는
+`tiledata/forest-villages/diverse/cliff-source.json`, `verify-shots/village-cliff-repair/`에 있다.

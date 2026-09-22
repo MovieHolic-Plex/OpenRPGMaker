@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 const source = process.argv[2];
 if (!source) throw Error("Usage: verify-diverse-village-distribution.mjs existing-project.json");
-const category = "diverse-villages-v1", out = "verify-shots/village-diversity", proof = {};
+const category = "diverse-villages-cliff-v2", out = "verify-shots/village-diversity", proof = {};
 let blank;
 await withTsModule("src/project/defaults/blankProject.ts", "fresh.mjs", (m) => blank = m.createBlankProject());
 assert.equal(blank.tilesets.forest_harmony.referenceDocuments.filter((c) => c.id === category).length, 1);
@@ -15,7 +15,11 @@ await withTsModule("src/project/defaults/defaultAssets.ts", "backfill.mjs", (m) 
   const before = structuredClone(t.referenceDocuments);
   m.ensureBundledTilesets(old);
   assert.equal(t.referenceDocuments.filter((c) => c.id === category).length, 1);
-  for (const c of before) assert.deepEqual(t.referenceDocuments.find((a) => a.id === c.id), c);
+  for (const c of before) {
+    if (c.id === "diverse-villages-v1") assert(!t.referenceDocuments.some((a) => a.id === c.id));
+    else assert.deepEqual(t.referenceDocuments.find((a) => a.id === c.id), c);
+  }
+  proof.shippedV1Replaced = before.some((c) => c.id === "diverse-villages-v1");
   const once = JSON.stringify(old);
   m.ensureBundledTilesets(old);
   assert.equal(JSON.stringify(old), once);
@@ -24,6 +28,16 @@ await withTsModule("src/project/defaults/defaultAssets.ts", "backfill.mjs", (m) 
   proof.idempotent = true;
 });
 await withTsModule("src/project/defaults/forestHarmony.ts", "guards.mjs", (m) => {
+  const edited = structuredClone(JSON.parse(fs.readFileSync(source)).tilesets.forest_harmony);
+  const authored = edited.referenceDocuments.find((c) => c.id === "diverse-villages-v1");
+  if (authored) {
+    authored.documents[0].markdown += "\n저자 수정 보존";
+    const copy = structuredClone(authored);
+    m.ensureForestHarmonyReferences(edited);
+    assert.deepEqual(edited.referenceDocuments.find((c) => c.id === copy.id), copy);
+    assert(edited.referenceDocuments.some((c) => c.id === category));
+    proof.editedV1PreservedAndV2Added = true;
+  }
   const shared = m.createForestHarmonyTileset();
   shared.referenceDocuments = [];
   shared.referenceSourceTilesetId = "my-owner";
@@ -45,8 +59,8 @@ await withTsModule("src/project/io/serialize.ts", "roundtrip.mjs", (m) => {
     assert.deepEqual(after.tilesets.forest_harmony.tileGrafts, p.tilesets.forest_harmony.tileGrafts);
     assert.deepEqual(after.tilesets.forest_harmony.priority, p.tilesets.forest_harmony.priority);
     const c = after.tilesets.forest_harmony.referenceDocuments.find((c2) => c2.id === category);
-    assert.equal(c.documents.length, 33);
-    assert.equal(c.images.length, 8);
+    assert.equal(c.documents.length, 34);
+    assert.equal(c.images.length, 13);
   }
   proof.exportRoundtrip = ids;
 });

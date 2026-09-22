@@ -1,5 +1,7 @@
 import { DEFAULT_TILESET_ID } from "./constants";
 import saved from "@/assets/forestHarmonyTileset.json";
+import { referenceRevision } from "../tilesetReferences";
+import previousDiverseReference from "../../../tiledata/forest-villages/diverse/previous-reference.json";
 import diverseReferences from "@/assets/sharedDiverseVillageReferences.json";
 import proseCorrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-prose-corrections.json";
 import corrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-corrections.json";
@@ -50,6 +52,12 @@ export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
   if (mouth && mouth.layerBacking === undefined && !tileset.tileGrafts?.some(g => g.targetTile === 893)) {
     const graft = canonical.tileGrafts?.find(g => g.targetTile === 893);
     if (graft) { tileset.tileGrafts = [...(tileset.tileGrafts ?? []), structuredClone(graft)]; mouth.layerBacking = 652; changed = true; }
+  }
+  // Replace only the exact shipped v1; a locally edited copy remains authored data.
+  const previous = tileset.referenceDocuments?.find(c => c.id === previousDiverseReference.id);
+  if (previous && referenceRevision(previous) === previousDiverseReference.revision) {
+    tileset.referenceDocuments = tileset.referenceDocuments!.filter(c => c !== previous);
+    changed = true;
   }
   const missing = [...saved.referenceDocuments, ...diverseReferences].filter(category =>
     !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));

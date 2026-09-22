@@ -1,4 +1,4 @@
-// Exact study comparison, not an aesthetic scorer or detector for arbitrary villages.
+import { inspectVillageCliffs } from "./lib/village-cliffs.mjs";
 import fs from "node:fs";
 import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -29,6 +29,7 @@ async function validateVillageStudy(project, mapId) {
     }
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }
+  for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
   await withTsModule("src/project/lint/reachability.ts", "study-reach.mjs", (api) => {
     const seen = api.computeReachableCells(project, m, plan.start.x, plan.start.y);
     for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add("blocked-entrance", a.x, a.y, { role: a.role });
@@ -46,6 +47,17 @@ function studyFaults() {
   const front = plan.houses[0].front;
   return [{ code: "cut-root", ...find(1430, "lower"), replacement: 240 }, { code: "missing-trunk", ...find(1426, "lower"), replacement: 240 }, { code: "wrong-edge-direction", ...find(2577, "upper"), replacement: 2589 }, { code: "wrong-layer", ...find(2639, "upper"), replacement: -1, move: true }, { code: "blocked-entrance", mapId: id, ...front, layer: "upper", tile: m.upperTiles[front.y * m.width + front.x], replacement: 237 }];
 }
+function cliffFaults() {
+  const mapId = "terrace-cliff-village", m = catalog.maps[mapId], p = catalog.plans.find((p2) => p2.id === mapId), b = catalog.cliffBindings;
+  const side = p.cliffColumns.find((c) => c.side === "right" && c.x > 60);
+  const flat = p.cliffColumns.find((c) => c.side === "front" && c.x === 40);
+  const [x, y, h] = p.stairs[1];
+  return [
+    { code: "cliff-face-direction", mapId, x: side.x, y: side.y + 2, layer: "upper", tile: b[232], replacement: b[231] },
+    { code: "cliff-toe-gap", mapId, x: flat.x, y: flat.y + flat.height, layer: "upper", tile: b[202], replacement: -1 },
+    { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 }
+  ];
+}
 function applyStudyFault(project, f) {
   const m = project.maps[f.mapId], i = f.y * m.width + f.x;
   m[f.layer + "Tiles"][i] = f.replacement;
@@ -61,6 +73,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 export {
   applyStudyFault,
   catalog,
+  cliffFaults,
   studyFaults,
   validateVillageStudy
 };

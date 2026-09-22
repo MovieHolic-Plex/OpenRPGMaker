@@ -4,176 +4,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
-    "tile": 2616,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 8,
-    "sourceX": 2,
-    "sourceY": 1,
-    "pixelX": 32,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 6,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2617,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 9,
-    "sourceX": 3,
-    "sourceY": 1,
-    "pixelX": 48,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2618,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 10,
-    "sourceX": 4,
-    "sourceY": 1,
-    "pixelX": 64,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 8,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "채소밭",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2619,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 11,
-    "sourceX": 5,
-    "sourceY": 1,
-    "pixelX": 80,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 9,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "채소밭",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2620,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 12,
-    "sourceX": 0,
-    "sourceY": 2,
-    "pixelX": 0,
-    "pixelY": 32,
-    "width": 16,
-    "height": 16,
-    "targetX": 10,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "빨랫줄",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2621,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -1330,7 +1160,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 0,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1343,7 +1173,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 18",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -1363,7 +1193,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 1,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1376,7 +1206,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 19",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -1396,7 +1226,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 2,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1409,7 +1239,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 48",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -1429,7 +1259,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 3,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1442,109 +1272,10 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 49",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
-    }
-  },
-  {
-    "tile": 2675,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_world",
-    "sourceTile": 79,
-    "sourceX": 19,
-    "sourceY": 2,
-    "pixelX": 304,
-    "pixelY": 32,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 원본 79",
-      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
-      "role": "cliff",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
-    }
-  },
-  {
-    "tile": 2677,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_world",
-    "sourceTile": 108,
-    "sourceX": 18,
-    "sourceY": 3,
-    "pixelX": 288,
-    "pixelY": 48,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 원본 108",
-      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
-      "role": "cliff",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
-    }
-  },
-  {
-    "tile": 2678,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_world",
-    "sourceTile": 110,
-    "sourceX": 20,
-    "sourceY": 3,
-    "pixelX": 320,
-    "pixelY": 48,
-    "width": 16,
-    "height": 16,
-    "targetX": 8,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 원본 110",
-      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
-      "role": "cliff",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
     }
   },
   {
@@ -1561,23 +1292,23 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 10,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower",
     "tileMeta": {
       "label": "절벽 원본 139",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
-      "passage": "passable"
+      "passage": "solid"
     }
   },
   {
@@ -1594,7 +1325,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 13,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1607,7 +1338,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 172",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -1627,7 +1358,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 16,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1640,7 +1371,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 202",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -1660,7 +1391,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 18,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1673,7 +1404,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "절벽 원본 231",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -1726,7 +1457,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "targetX": 20,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1739,11 +1470,44 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "label": "동굴 입구",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid",
       "layerBacking": 2683
+    }
+  },
+  {
+    "tile": 2691,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "sourceTile": 232,
+    "sourceX": 22,
+    "sourceY": 7,
+    "pixelX": 352,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 89,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "절벽 원본 232",
+      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
+      "role": "cliff",
+      "defaultLayer": "upper",
+      "source": "user",
+      "userLocked": true,
+      "passage": "solid"
     }
   }
 ]

@@ -1739,6 +1739,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 1476,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1476,
+    "sourceX": 6,
+    "sourceY": 49,
+    "pixelX": 96,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1476",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1478,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -1772,6 +1805,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 1479,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1479,
+    "sourceX": 9,
+    "sourceY": 49,
+    "pixelX": 144,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 9,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1479",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1480,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -1796,39 +1862,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1480",
-      "source": "user",
-      "passage": "passable",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1484,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1484,
-    "sourceX": 14,
-    "sourceY": 49,
-    "pixelX": 224,
-    "pixelY": 784,
-    "width": 16,
-    "height": 16,
-    "targetX": 14,
-    "targetY": 49,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "road 연결 1484",
       "source": "user",
       "passage": "passable",
       "userLocked": true,
@@ -2159,39 +2192,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1498",
-      "source": "user",
-      "passage": "passable",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1500,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1500,
-    "sourceX": 0,
-    "sourceY": 50,
-    "pixelX": 0,
-    "pixelY": 800,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 50,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "road 연결 1500",
       "source": "user",
       "passage": "passable",
       "userLocked": true,

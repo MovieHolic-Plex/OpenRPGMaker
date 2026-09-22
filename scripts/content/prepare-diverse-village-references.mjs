@@ -24,7 +24,7 @@ doc("guide", "세 마을을 다르게 만드는 기준", `# 산촌·절벽·포�
 2. 같은 직선 길 양쪽에 집을 대칭 배치하지 않는다. 집마다 x,y를 지정하고 문앞을 길의 가지로 연결한다. 각 마을 문서에 좌표와 폭·높이를 고정 기록했다.
 3. 절벽의 내부·외부와 계단 착지칸을 먼저 확정한다. 다음 물→건물 전체 조립→길→숲 전체 조립→생활 소품→독립 나무 순서. 소품이 문·계단·선착장 접근을 막으면 그 소품만 철회한다.
 4. 꽃/빨래, 수확/씨앗, 장작/작업대, 약초/화분을 생활권별로 모은다. 1칸마다 무작위로 뿌리지 않는다. 큰 숲 내부는 검은 생략 수관, 열린 구역은 잔디·길·생활 소품이다.
-5. 입력/정답: 각 마을의 plateaus, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
+5. 입력/정답: 각 마을의 cliffs, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
 6. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
 
 ## 실제 구분
@@ -38,12 +38,12 @@ for (const p of c.plans) {
   const m = c.maps[p.id];
   doc(p.id, p.name + " · 지형과 배치", `# ${p.name}
 
-${p.note}. 시작점 (${p.start.x},${p.start.y}); 집 ${p.houses.length}채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. plateaus는 모서리를 깎은 직사각형의 합집합이며 x1,y1은 배타 끝점. stairs는 폭2·높이3의 시작 열과 가운데 행이다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
+${p.note}. 시작점 (${p.start.x},${p.start.y}); 집 ${p.houses.length}채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
 
 ![${p.name} 완성](image:${p.id})
 
 ## 입력 계획과 예약할 접근칸
-${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, plateaus: p.plateaus, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
+${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, cliffs: p.cliffs, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
 
 ## 건물의 전체 하위·상위
 ${p.houses.map((h) => "### " + h.id + "\n" + block({ ...h, ...crop(m, h.x, h.y, h.w, h.h) })).join("\n")}
@@ -70,24 +70,38 @@ const dictionary = used.map((tile) => {
 });
 fs.writeFileSync(dir + "/part-dictionary.json", JSON.stringify(dictionary, null, 2));
 for (let i = 0; i < dictionary.length; i += 60) doc("dictionary-" + (i / 60 + 1), "원본·이식·레이어 사전 " + (i / 60 + 1), "# 사용 타일 부품 사전\n\nsource는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/높이는 픽셀이다. 레이어와 통행은 별개.\n" + block(dictionary.slice(i, i + 60)));
-doc("cliff-assembly", "절벽·계단·동굴 · 정확한 결합", `# 절벽과 계단의 실제 원본 결합
+const sourceCliffs = JSON.parse(fs.readFileSync(dir + "/cliff-source.json"));
+doc("cliff-assembly", "절벽 개정2 · 윗선–암벽 면–밑단", `# 큰 폭포 아래 마을의 절벽 문법
 
-기본 forest_harmony에서 652,682,711,854는 현재 다른 그림/벽 번호와 겹친다. 옛 ‘레트로 원본+480’ 설명을 이 시트에 그대로 적용하지 않는다. 이번 세 마을은 tex_easyrpg_chipset_retro_world의 검수한 21칸을 빈 행부터 이식했다. 모두 lower. 새 대상에서 아래 번호가 이미 쓰이고 있으면 count/최대 이식 번호 이후의 30열 경계부터 옮기고 모든 참조를 다시 매핑한다.
+개정1의 ‘대지 둘레 얇은 띠·남면 2행’은 사용자가 지적한 잘못된 구성이다. 북·서·동쪽에 같은 띠를 둘러 성벽처럼 닫지 않는다. 굽은 남향 윗선에서 충분한 높이의 면을 내리고, 같은 윤곽을 아래로 평행 이동해 밑단을 닫는다. 좌우 사선 몸통은 서로 다른 그림이다.
+
+![참고 · 큰 폭포 아래 마을](image:cliff-reference)
+![수정 전 · 얇은 테두리](image:cliff-before)
+![수정 후 · 연속 암벽 면과 계단](image:terrace-cliff-village)
+
+## 번호와 레이어 정정
+참고 맵의 498/499/528/529/619/652/682/711/712는 tex_easyrpg_chipset_retro_world 원본 18/19/48/49/139/172/202/231/232와 픽셀이 동일하다. forest_harmony의 동명 번호를 그대로 복사하지 않는다. 이식표를 사용한다. 개정1은 오른쪽 사선 몸통232도 빠뜨렸다.
 ${block(c.cliffBindings)}
 
-방향은 ‘잔디가 차지하는 반쪽’ 기준: NE18, NW19, SW48, SE49. 북서/북/북동 테두리78/79/80, 서108, 동110, 남서/남/남동 윗선138/139/140. 남쪽 면은 원본172→202, 옆/대각 몸통231이다. 대지 안부터 테두리→면 순서로 배치하고 남면만 2행 아래로 드리운다. 실제 대지 윤곽 입력은 각 마을의 plateaus, 정확한 모서리 출력은 전체 배열이다.
+암벽은 **upper**, 아래 잔디/지면은 **lower에 보존**한다. stairs374는 lower이며 같은 칸 upper=-1이다. 이 표본의 암벽은 통행 불가, 계단은 통행 가능이다. 홈 레이어와 렌더 우선순위는 별개다. old ‘모두 lower’ 설명을 적용하지 않는다.
 
-남향 직선 절벽 너비 w≥3: 왼쪽 마감138→139 반복 w-2→오른쪽 마감140을 첫 행에, 그 아래172 반복, 마지막202 반복을 둔다. 맵 내부 기존 대지와 결합할 때는 모서리 이웃의 방향을 확인한다. 절벽을 수직으로 무한 늘리지 않는다.
+## 그대로 실행하는 열 조립
+1. points의 두 꼭짓점 (x0,y0),(x1,y1) 사이를 y=round(y0+(y1-y0)*(x-x0)/(x1-x0))로 채운다. x는 정수, |y1-y0|≤x1-x0. 한 열만 튀어나와 좌우 캡이 동시에 필요한 꼭짓점은 금지한다.
+2. 현재 y가 왼쪽 열보다 크면 왼쪽 사선, 오른쪽 열보다 크면 오른쪽 사선, 나머지는 정면이다. 첫/마지막 열의 바깥 이웃은 현재 y-1로 간주한다.
+3. 왼쪽: 원본18 → 231을 h-1번 → 48. 정면: 139 → 172를 h-1번 → 202. 오른쪽: 19 → 232를 h-1번 → 49. 각 열 upper의 y..y+h에 쓴다. 타일 그림을 늘이거나 좌우 반전하지 않는다.
+4. 계단 [x,y,h]: lower에 원본374를 폭2·높이h+1 반복하고 upper를 전부 비운다. 착지칸 y-1/y+h+1을 길로 잇는다. 사선 위에 걸치지 않고 두 열의 윗선 높이가 같은 곳에서만 연결한다.
+5. 절벽 전체→계단·입구→집→길→숲→소품. 면이 차지할 모든 칸을 먼저 예약한다. 집·뿌리·문앞을 덮으면 그 배치를 중단한다. 새 표본 높이 h=5 또는6; 원본 표본은 h=7이다.
 
-예시 원점(10,10), 폭5, 높이3. 양끝 마감→가운데 반복의 전체 lower:
-${rows([138, 139, 139, 139, 140, 172, 172, 172, 172, 172, 202, 202, 202, 202, 202].map((n) => c.cliffBindings[n]), 5)}
-upper 전체:
-${rows(Array(15).fill(-1), 5)}
+## 기준 맵에서 그대로 추출한 정상 열
+원점과 전체 두 레이어 배열이다. 높이8=윗선1+몸통6+밑단1. upper의 번호는 참고 맵 원본 번호이며 위의 원본-480→이식표를 거쳐 새 칩셋에서 사용한다.
+${block(sourceCliffs)}
 
-계단은 원본374→${c.cliffBindings[374]}. (x,y)는 가운데 행. lower=[tile,tile]을 y-1,y,y+1 세 행에 배치하고 upper 전부 -1. y-2/y+2 착지칸을 길로 연결한다. 방향별 통행은 사전 표를 따른다.
-동굴은 원본413→${c.cliffBindings[413]}, lower에 놓고 받침 ${c.cliffBindings[172]}를 보존한다. 층바위 (71,45)의 실제 입구이며 접근칸(71,47)은 비워 둔다. 이 지역은 외관 자료이므로 동굴 이동 이벤트는 없다.
+## 실제 입력과 출력
+${c.plans.map(p=>"### "+p.name+"\n"+block({cliffs:p.cliffs,stairs:p.stairs})).join("\n")}
+전체 출력은 각 rows 문서의 두 레이어 배열을 사용한다. 구현은 scripts/content/lib/village-cliffs.mjs의 cliffColumns/paintVillageCliffs다.
 
-선착장은 포구 (56,45), 폭21·높이2. lower 물/땅을 그대로 두고 upper199를 반복한다. 마지막 (76,45)까지 연결을 검사한다. 물에 놓였다고 lower 물을 잔디로 바꾸지 않는다.
+동굴 입구는 층바위 (71,52), upper 원본413이며 받침은 원본172다. 접근칸 (71,54)은 비워 둔다. 실내 전이 이벤트는 없다.
+선착장은 포구 (56,45), 폭21·높이2. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (76,45)까지 연결을 검사한다.
 `);
 doc("forest-assembly", "숲·가구·울타리 · 전체 조각 규칙", `# 3행 숲과 생활 소품
 
@@ -104,15 +118,15 @@ ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 가로 탁자: upper [234,235,236], 폭3·높이1 고정. 과일상자 upper[202,203], 별도 상위 조각. 하위 KEEP. 같은 상위 칸에 겹쳐 넣지 않는다.
 울타리 소품: upper[2636,2637], 폭2·높이1의 완결 패널이다. 회전하거나 잘라 모서리로 쓰지 않는다. 닫힌 울타리가 필요하면 기존 공용 fence-gate의 NW378/NE380/SW438/SE410, 수평379, 수직408을 쓰고 출입구를 비운다. 이번 표본에는 닫힌 울타리 조립을 쓰지 않았다.
 `);
-let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
+let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하고, 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
-doc("validation", "좌표 검증 · 정상/오류 5종", checks);
+doc("validation", "좌표 검증 · 정상/오류 8종", checks);
 const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png")).sort().map((n) => {
   const file = preview + "/" + n;
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
-const category = { id: "diverse-villages-v1", name: "다양한 마을 · 산촌·절벽·포구", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 5종 오류 검사", documents: docs, images };
+const category = { id: "diverse-villages-cliff-v2", name: "다양한 마을 · 산촌·절벽·포구 (절벽 개정2)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 8종 오류 검사", documents: docs, images };
 if (docs.length > 64 || docs.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit");
 fs.writeFileSync(target, JSON.stringify([category]) + "\n");
 console.log({ documents: docs.length, images: images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });

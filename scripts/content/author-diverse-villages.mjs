@@ -1,4 +1,5 @@
 // New exterior studies built from verified whole parts; never edits the source project.
+import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import path from "node:path";
@@ -8,37 +9,33 @@ if (!input || !out) throw Error("Usage: author-diverse-villages.mjs canonical-ex
 fs.mkdirSync(out, { recursive: true });
 const source = JSON.parse(fs.readFileSync(input)), ts = structuredClone(source.tilesets.forest_harmony), original = source.maps.dewbank_village;
 const parts = JSON.parse(fs.readFileSync("tiledata/tilesets/forest_harmony/dewbank-village/parts.json")).props;
-const cliffIds = [18, 19, 48, 49, 78, 79, 80, 108, 110, 138, 139, 140, 171, 172, 173, 201, 202, 203, 231, 374, 413];
+const cliffIds = [18, 19, 48, 49, 78, 79, 80, 108, 110, 138, 139, 140, 171, 172, 173, 201, 202, 203, 231, 374, 413, 232];
 const offset = Math.ceil(ts.count / 30) * 30, cliff = Object.fromEntries(cliffIds.map((n, i) => [n, offset + i]));
 for (const [i, n] of cliffIds.entries()) {
   const id = offset + i;
   ts.tileGrafts.push({ sourceChipset: "tex_easyrpg_chipset_retro_world", sourceTile: n, targetTile: id });
-  const walk = [78, 79, 80, 108, 110, 138, 139, 140, 374].includes(n);
+  const walk = n === 374;
   ts.priority[id] = "lower";
   ts.terrain[id] = 0;
   ts.passability[id] = { up: walk, down: walk, left: walk, right: walk };
-  ts.tileMeta[id] = { label: n === 374 ? "돌계단" : n === 413 ? "동굴 입구" : `절벽 원본 ${n}`, description: "레트로 월드맵 원본을 번호 혼동 없이 이식", role: n === 374 ? "floor" : "cliff", defaultLayer: "lower", source: "user", userLocked: true, passage: walk ? "passable" : "solid", ...n === 413 ? { layerBacking: cliff[172] } : {} };
+  ts.tileMeta[id] = { label: n === 374 ? "돌계단" : n === 413 ? "동굴 입구" : `절벽 원본 ${n}`, description: "레트로 월드맵 원본을 번호 혼동 없이 이식", role: n === 374 ? "floor" : "cliff", defaultLayer: n === 374 ? "lower" : "upper", source: "user", userLocked: true, passage: walk ? "passable" : "solid", ...n === 413 ? { layerBacking: cliff[172] } : {} };
 }
 ts.count = Math.ceil((offset + cliffIds.length) / 30) * 30;
 while (ts.terrain.length < ts.count) ts.terrain.push(0);
 while (ts.priority.length < ts.count) ts.priority.push("lower");
 while (ts.passability.length < ts.count) ts.passability.push({ up: false, down: false, left: false, right: false });
 while (ts.tileMeta.length < ts.count) ts.tileMeta.push({ label: "미사용", source: "unknown" });
-let relief, forest, reach;
-await withTsModule("src/editor/tools/village/relief.ts", "diverse-relief.mjs", (m) => {
-  relief = m;
-});
+let forest, reach;
 await withTsModule("src/editor/tools/village/forestContour.ts", "diverse-forest.mjs", (m) => {
   forest = m;
 });
 await withTsModule("src/project/lint/reachability.ts", "diverse-reach.mjs", (m) => {
   reach = m;
 });
-const chamfer = (x0, y0, x1, y1, c = 3) => ({ x0, y0, x1, y1, nw: c, ne: c, sw: c, se: c });
 const plans = [
-  { id: "pine-hamlets", name: "솔바람 흩어진 산촌", width: 80, height: 64, seed: 191, start: { x: 40, y: 60 }, note: "세 빈터에 흩어진 집, 두 둔덕, 갈라지는 오솔길과 작은 샘", houses: [[12, 9, 3], [33, 6, 0], [61, 12, 7], [17, 31, 5], [44, 28, 1], [61, 43, 6], [29, 47, 2]], plateaus: [{ level: 1, parts: [chamfer(8, 5, 26, 23), chamfer(20, 6, 30, 16, 2)] }, { level: 1, parts: [chamfer(55, 7, 75, 27), chamfer(50, 7, 61, 15, 2)] }], stairs: [[19, 23], [64, 27]], ponds: [[10, 47, 5, 4]], spine: [[40, 60], [40, 54], [38, 43], [29, 28], [30, 21], [42, 19], [49, 24], [56, 37], [66, 36]], farms: [[20, 41, 6, 4], [37, 13, 6, 4]], trees: 28 },
-  { id: "terrace-cliff-village", name: "층바위 절벽마을", width: 88, height: 72, seed: 347, start: { x: 42, y: 68 }, note: "세 높이의 대지, 네 계단과 절벽 아래 작업 마당", houses: [[27, 9, 0], [49, 11, 4], [13, 29, 1], [37, 30, 7], [65, 28, 5], [18, 54, 2], [47, 54, 6], [70, 51, 3]], plateaus: [{ level: 1, parts: [chamfer(8, 6, 39, 46, 4), chamfer(34, 4, 61, 48, 4), chamfer(56, 8, 81, 45, 4)] }, { level: 2, parts: [chamfer(21, 5, 47, 23, 3), chamfer(43, 8, 70, 26, 3)] }], stairs: [[34, 23], [58, 26], [26, 46], [46, 48]], ponds: [], spine: [[42, 68], [42, 63], [29, 52], [26, 45], [30, 40], [34, 26], [34, 20], [58, 20], [58, 27], [59, 39], [60, 51], [70, 60]], farms: [[43, 40, 9, 4], [11, 41, 8, 3]], trees: 28, cave: [71, 45] },
-  { id: "reed-bay-village", name: "갈대물굽이 포구", width: 88, height: 64, seed: 521, start: { x: 6, y: 33 }, note: "물굽이를 따라 비껴 앉은 집, 좁은 골목과 긴 선착장", houses: [[11, 9, 3], [31, 5, 7], [52, 12, 0], [12, 25, 1], [34, 22, 5], [52, 31, 6], [12, 42, 2], [34, 39, 4]], plateaus: [{ level: 1, parts: [chamfer(7, 5, 25, 22, 3)] }], stairs: [[19, 22]], ponds: [], coast: true, spine: [[6, 33], [21, 36], [26, 29], [29, 18], [43, 17], [48, 26], [48, 40], [56, 43], [57, 47]], farms: [[20, 13, 4, 4], [25, 47, 6, 4]], trees: 18, dock: [56, 45, 21, 2] }
+  { id: "pine-hamlets", name: "솔바람 흩어진 산촌", width: 80, height: 64, seed: 191, start: { x: 40, y: 60 }, note: "세 빈터에 흩어진 집, 두 둔덕, 갈라지는 오솔길과 작은 샘", houses: [[12, 9, 3], [33, 6, 0], [61, 12, 7], [17, 31, 5], [44, 28, 1], [61, 43, 6], [29, 47, 2]], cliffs: [{ points: [[8, 17], [14, 23], [24, 23], [29, 18]], height: 5 }, { points: [[50, 18], [59, 27], [70, 27], [76, 21]], height: 5 }], stairs: [[19, 23, 5], [64, 27, 5]], ponds: [[10, 47, 5, 4]], spine: [[40, 60], [40, 54], [38, 43], [29, 28], [30, 21], [42, 19], [49, 24], [56, 37], [66, 36]], farms: [[20, 41, 6, 4], [37, 13, 6, 4]], trees: 28 },
+  { id: "terrace-cliff-village", name: "층바위 절벽마을", width: 88, height: 72, seed: 347, start: { x: 42, y: 68 }, note: "세 높이의 대지, 네 계단과 절벽 아래 작업 마당", houses: [[27, 9, 0], [49, 11, 4], [13, 29, 1], [37, 33, 7], [65, 36, 5], [18, 55, 2], [47, 59, 6], [70, 56, 3]], cliffs: [{ points: [[7, 40], [14, 47], [30, 47], [34, 51], [57, 51], [61, 47], [73, 47], [82, 38]], height: 6 }, { points: [[20, 17], [27, 24], [45, 24], [49, 28], [63, 28], [72, 19]], height: 6 }], stairs: [[34, 24, 6], [58, 28, 6], [26, 47, 6], [46, 51, 6]], ponds: [], spine: [[42, 68], [42, 63], [26, 55], [26, 46], [30, 40], [34, 31], [34, 23], [34, 20], [58, 20], [58, 27], [58, 35], [60, 40], [46, 50], [46, 58], [70, 66]], farms: [[43, 40, 9, 4], [11, 41, 8, 3]], trees: 28, cave: [71, 52] },
+  { id: "reed-bay-village", name: "갈대물굽이 포구", width: 88, height: 64, seed: 521, start: { x: 6, y: 33 }, note: "물굽이를 따라 비껴 앉은 집, 좁은 골목과 긴 선착장", houses: [[11, 9, 3], [31, 5, 7], [52, 12, 0], [12, 30, 1], [34, 22, 5], [52, 31, 6], [12, 42, 2], [34, 39, 4]], cliffs: [{ points: [[7, 16], [13, 22], [20, 22], [26, 16]], height: 5 }], stairs: [[19, 22, 5]], ponds: [], coast: true, spine: [[6, 33], [21, 36], [26, 29], [29, 18], [43, 17], [48, 26], [48, 40], [56, 43], [57, 47]], farms: [[20, 13, 4, 4], [25, 47, 6, 4]], trees: 18, dock: [56, 45, 21, 2] }
 ];
 const neighbors = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]];
 const houseSources = original.layoutPlan.regions.filter((r) => r.role === "house");
@@ -58,23 +55,20 @@ for (const spec of plans) {
   const reserve = (x, y, w, h, pad = 0) => {
     for (let yy = y - pad; yy < y + h + pad; yy++) for (let xx = x - pad; xx < x + w + pad; xx++) if (inside(xx, yy)) reserved.add(point(xx, yy));
   };
-  const reliefPlan = relief.rasterize(spec.plateaus, W, H, area);
-  relief.paintRelief(m, reliefPlan);
-  for (let i = 0; i < W * H; i++) {
-    if (m.lowerTiles[i] !== 240) {
-      const n = m.lowerTiles[i] - 480;
-      assert(cliff[n] !== void 0, "Missing cliff source " + n);
-      m.lowerTiles[i] = cliff[n];
+  const cliffPlan = paintVillageCliffs(m, spec.cliffs, cliff);
+  for (const [x, y, height] of spec.stairs) {
+    for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
+      const i = point(xx, yy);
+      assert(cliffPlan.cliff.has(i), "Stair must span the whole face");
+      m.lowerTiles[i] = cliff[374];
+      m.upperTiles[i] = -1;
     }
-  }
-  for (const [x, y] of spec.stairs) {
-    for (let yy = y - 1; yy <= y + 1; yy++) for (let xx = x; xx < x + 2; xx++) m.lowerTiles[point(xx, yy)] = cliff[374];
-    reserve(x, y - 2, 2, 5, 1);
-    access.push({ role: "stairs-top", x, y: y - 2 }, { role: "stairs-bottom", x, y: y + 2 });
+    reserve(x, y - 1, 2, height + 3, 1);
+    access.push({ role: "stairs-top", x, y: y - 1 }, { role: "stairs-bottom", x, y: y + height + 1 });
   }
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     const wet = spec.ponds.some(([cx, cy, rx, ry]) => ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 < 1 + 0.12 * Math.sin(x + y)) || spec.coast && (y > 52 + 3 * Math.sin(x / 10) || x > 70 + 4 * Math.sin(y / 9));
-    if (wet && reliefPlan.cells[point(x, y)] === "ground") water.add(point(x, y));
+    if (wet && cliffPlan.cells[point(x, y)] === "ground") water.add(point(x, y));
   }
   const paintGroup = (cells, g, layer = "lower") => {
     for (const i of cells) {
@@ -92,6 +86,7 @@ for (const spec of plans) {
     const h = houseSources[template];
     for (let dy = 0; dy < h.h; dy++) for (let dx = 0; dx < h.w; dx++) {
       const to = point(x + dx, y + dy), from = (h.y + dy) * 88 + h.x + dx;
+      assert.equal(m.upperTiles[to], -1, `House overlaps cliff ${spec.id} ${x + dx},${y + dy}`);
       assert.equal(m.lowerTiles[to], 240, `House overlaps relief ${spec.id} ${x + dx},${y + dy}`);
       m.lowerTiles[to] = original.lowerTiles[from];
       m.upperTiles[to] = original.upperTiles[from];
@@ -105,7 +100,7 @@ for (const spec of plans) {
   const project = { tilesets: { [ts.id]: ts }, maps: { [m.id]: m } };
   const solid = new Set();
   for (const h of houses) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) solid.add(point(x, y));
-  for (let i = 0; i < W * H; i++) if (water.has(i) || reliefPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
+  for (let i = 0; i < W * H; i++) if (water.has(i) || cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
   const route = (a, b) => {
     const start = point(...a), end = point(...b), dist = new Map([[start, 0]]), prev = new Map(), q = [start];
     let found = false;
@@ -169,11 +164,11 @@ for (const spec of plans) {
   }
   if (spec.cave) {
     const [x, y] = spec.cave;
-    m.lowerTiles[point(x, y)] = cliff[413];
+    m.upperTiles[point(x, y)] = cliff[413];
     reserve(x, y, 1, 3, 2);
     access.push({ role: "cave-approach", x, y: y + 2 });
   }
-  const grove = forest.paintContouredForest(m, area, group("forest_harmony_grove_47"), (x, y) => reliefPlan.cells[point(x, y)] === "ground" && m.lowerTiles[point(x, y)] === 240 && !reserved.has(point(x, y)), spec.seed, 0.48);
+  const grove = forest.paintContouredForest(m, area, group("forest_harmony_grove_47"), (x, y) => cliffPlan.cells[point(x, y)] === "ground" && m.lowerTiles[point(x, y)] === 240 && m.upperTiles[point(x, y)] === -1 && !reserved.has(point(x, y)), spec.seed, 0.48);
   const freeRect = (x, y, w, h) => x >= 2 && y >= 2 && x + w < W - 2 && y + h < H - 2 && Array.from({ length: w * h }, (_, n) => point(x + n % w, y + Math.floor(n / w))).every((i) => m.lowerTiles[i] === 240 && m.upperTiles[i] === -1 && !roads.has(i) && !reserved.has(i));
   const stamp = (name, x, y, w, h, lower, upper, kind) => {
     for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) {
@@ -239,7 +234,7 @@ for (const spec of plans) {
   assert.equal(blocked.length, 0, "Blocked " + spec.id + ": " + JSON.stringify(blocked));
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note };
   result.maps[m.id] = m;
-  result.plans.push({ ...spec, houses, placements, access, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, roadCells: [...roads] });
+  result.plans.push({ ...spec, houses, placements, access, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
   console.log(spec.id, { houses: houses.length, objects: placements.length, forest: grove.canopyCells, reachable: reachable.size });
 }
 fs.writeFileSync(path.join(out, "authored.json"), JSON.stringify(result));
