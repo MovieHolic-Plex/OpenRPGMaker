@@ -257,6 +257,7 @@ export function renderDatabaseCinematicTab(
       menuForm.append(cinematicGameOverForm({
         ...formContext,
         settings: store.getCurrent().system.gameOver,
+        redraw,
       }));
     }
     renderList();

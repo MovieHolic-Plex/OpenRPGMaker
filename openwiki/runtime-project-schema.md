@@ -349,6 +349,20 @@ apply-commit correlation. [P1 evidence](../output/evidence/ai-harness/p1/README.
 records real editor and isolated LegacyDb proof. This adds no schema migration,
 durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
 
+## 패배 흐름과 엔딩 프레젠테이션 (2026-09-22)
+
+기존 v4 문서에 선택 필드만 추가한다. `system.gameOver.presentation?: "classic"|"horror"|"blackout"`,
+`recovery?: {mapId:string,x:number,y:number}`. 좌표는 음이 아닌 안전한 정수이며 참조 검증에서
+기존 맵 범위를 확인한다. 미지정은 그대로 미지정으로 왕복한다. blackout은 새 저장 슬롯이나
+영구 진행 필드를 만들지 않고 현재 세션에서 회복한다. 체크포인트의 저장 수명은 바꾸지 않는다.
+
+`EndingDef.presentation` 및 `{kind:"ending"}`의 `presentation`은
+`{tone?:"warm"|"dark",credits?:string,backgroundResourceId?:string,musicResourceId?:string}`.
+미지 필드/잘못된 tone/20,000자 초과 credits를 거절한다. 배경·음악은 기존 리소스 참조 검증 및
+내보내기 문자열 수집을 따른다. 엔딩 정규화는 선택 필드를 보존하고 `triggerEnding`의 에필로그
+뒤에도 전달한다. 브라우저 편집기에서 recovery 설정의 serialize→deserialize 동등성을 확인했다.
+단위 계약은 `test/defeatRecovery.test.ts` (이번 세션에서 테스트 스위트 미실행).
+
 ## Opening and game-over cinematic settings (2026-09-06)
 
 `SystemRecords.opening?: CinematicSequence` and `gameOver?: GameOverSettings` are additive, opt-in project-v4 authoring records. No schema bump, server migration, or default/demo content is needed. `src/project/cinematicSettings.ts` owns the mutable authored types and pure normalization; all four types are re-exported through `@/project/types`:

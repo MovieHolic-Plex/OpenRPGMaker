@@ -67,7 +67,7 @@ export function registerAutonomousMover(
 }
 
 export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): void {
-  const terminalOpen = () => Boolean(dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"]'));
+  const terminalOpen = () => Boolean(dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]'));
   if (terminalOpen()) return;
   const activeEvents = scene.activeRuntimeEvents("parallel");
   const activeCommonEvents = activeParallelCommonEvents(scene);
@@ -167,7 +167,7 @@ function consumeParallelSteps(
   firstResult: StepResult
 ): void {
   // Async parallel work may settle after another event has opened the terminal.
-  if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"]')) return;
+  if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) return;
   let result = firstResult;
   let guard = 0;
   while (result.kind !== "done" && guard < 16) {
@@ -189,7 +189,7 @@ function consumeParallelSteps(
         void move.then((outcome) => {
           if (scene.parallelProcesses.get(key) !== process) return;
           process.pendingTimeTransition = undefined;
-          if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"]')) {
+          if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) {
             process.stopped = true;
             return;
           }
@@ -251,7 +251,7 @@ function startParallelTimeTransition(
   void pending.then((ok) => {
     if (scene.parallelProcesses.get(key) !== process || process.pendingTimeTransition !== pending) return;
     process.pendingTimeTransition = undefined;
-    if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"]')) {
+    if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) {
       process.stopped = true;
       return;
     }
@@ -381,7 +381,8 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showGameOverScreen(step.message);
       return true;
     case "returnToTitle":
-      scene.returnToTitle();
+      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);
+      else scene.returnToTitle();
       return true;
     case "done":
     case "text":

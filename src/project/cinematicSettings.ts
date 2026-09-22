@@ -19,7 +19,20 @@ export type CinematicSequence = {
   scenes: CinematicScene[];
 };
 
+export type DefeatPresentation = "classic" | "horror" | "blackout";
+export type RecoveryDestination = { mapId: string; x: number; y: number };
+/** Each authored ending can own its closing image, mood and credits. */
+export type EndingPresentation = {
+  musicResourceId?: string;
+  tone?: "warm" | "dark";
+  backgroundResourceId?: string;
+  credits?: string;
+};
+
 export type GameOverSettings = {
+  presentation?: DefeatPresentation;
+  /** Blackout preserves progress; this is a destination, never a save rollback. */
+  recovery?: RecoveryDestination;
   sequence?: CinematicSequence;
   title?: string;
   message?: string;

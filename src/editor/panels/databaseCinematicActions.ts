@@ -206,6 +206,20 @@ export function createDatabaseCinematicActions(options: {
       return replaceScene(id, "텍스트 장면으로 변경", scene => sceneWithKind(scene, "text", ""));
     },
 
+    setDefeatPresentation(value: import("@/project/cinematicSettings").DefeatPresentation): boolean {
+      if (target !== "gameOver") return false;
+      return commit("패배 흐름 변경", project => { (project.system.gameOver ??= {}).presentation = value; });
+    },
+
+    setRecovery(value: import("@/project/cinematicSettings").RecoveryDestination | undefined): boolean {
+      if (target !== "gameOver") return false;
+      return commit("패배 귀환 지점 변경", project => {
+        const settings = project.system.gameOver ??= {};
+        if (value) settings.recovery = value;
+        else delete settings.recovery;
+      });
+    },
+
     setGameOverText(field: GameOverTextField, value: string): boolean {
       if (target !== "gameOver") return false;
       const settings = store.getCurrent().system.gameOver;

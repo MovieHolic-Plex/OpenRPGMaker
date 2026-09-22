@@ -396,12 +396,12 @@ function triggerEnding(
   }
 
   state.session.flags[`ending:${ending.id}`] = true;
-  const finalCommand: Command = { kind: "ending", title: ending.name, message: "" };
+  const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   const epilogueCommands = compileEndingEpilogue(state, ending);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "" });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) });
 }
 
 function selectEnding(
@@ -724,6 +724,7 @@ export function executeCommand(
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
+        ...(command.presentation ? { presentation: command.presentation } : {}),
       });
     case "returnToTitle":
       return pause("returnToTitle", { kind: "returnToTitle" });

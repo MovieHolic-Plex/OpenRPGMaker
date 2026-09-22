@@ -1638,24 +1638,22 @@ function currentAudioLabel(resourceId: string, project: Project): string {
 
 function endingBody(context: CommandEditContext, cmd: Extract<Command, { kind: "ending" }>): HTMLElement {
   const title = textInput(cmd.title, "엔딩 제목", "ending-title-input");
-  const message = el("textarea", {
-    attrs: { placeholder: "엔딩 메시지" },
-    dataset: { testid: "ending-message-input" },
-  }) as HTMLTextAreaElement;
+  const message = el("textarea", { attrs: { placeholder: "엔딩 메시지", "aria-label": "엔딩 메시지" }, dataset: { testid: "ending-message-input" } });
   message.value = cmd.message;
+  const credits = el("textarea", { attrs: { placeholder: "크레딧 · 줄바꿈으로 역할과 이름을 구분합니다", "aria-label": "엔딩 크레딧", maxlength: "20000" }, dataset: { testid: "ending-credits-input" } });
+  credits.value = cmd.presentation?.credits ?? "";
+  const tone = simpleSelect([["warm", "여운 · 따뜻한 엔딩"], ["dark", "정적 · 어두운 엔딩"]], cmd.presentation?.tone ?? "warm", "ending-tone-input");
+  tone.setAttribute("aria-label", "엔딩 분위기");
   const apply = () => {
     context.actions.replaceCommand(context.path, {
-      kind: "ending",
-      title: title.value.trim() || "The End",
-      message: message.value,
+      kind: "ending", title: title.value.trim() || "The End", message: message.value,
+      presentation: { ...cmd.presentation, tone: tone.value as "warm" | "dark", credits: credits.value },
     });
   };
-  title.addEventListener("change", apply);
-  title.addEventListener("input", apply);
-  message.addEventListener("change", apply);
-  message.addEventListener("input", apply);
+  for (const control of [title, message, credits, tone]) control.addEventListener("change", apply);
+  for (const control of [title, message, credits]) control.addEventListener("input", apply);
   const wrap = el("span", {});
-  wrap.append(title, message);
+  wrap.append(title, message, tone, credits);
   return wrap;
 }
 

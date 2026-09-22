@@ -491,7 +491,7 @@ export type Command =
   | { kind: "killPlayer"; message?: string }
   | { kind: "triggerEnding"; endingId?: string }
   | { kind: "gameOver" }
-  | { kind: "ending"; title: string; message: string }
+  | { kind: "ending"; title: string; message: string; presentation?: import("../cinematicSettings").EndingPresentation }
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
   | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }

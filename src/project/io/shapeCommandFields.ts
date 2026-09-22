@@ -1,3 +1,4 @@
+import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
 import { SHOP_MESSAGE_TYPES } from "@/project/shopMessages";
@@ -310,6 +311,11 @@ function validateCommandShape(label: string, value: unknown): void {
     }
     case "killPlayer":
       if (command.message !== undefined) requireString(`${label}.message`, command.message);
+      return;
+    case "ending":
+      if (command.title !== undefined) requireString(`${label}.title`, command.title);
+      if (command.message !== undefined) requireString(`${label}.message`, command.message);
+      if (command.presentation !== undefined) validateEndingPresentation(command.presentation, `${label}.presentation`);
       return;
     case "triggerEnding":
       if (command.endingId !== undefined) requireString(`${label}.endingId`, command.endingId);

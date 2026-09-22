@@ -164,7 +164,6 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "removeLight":
     case "setWeather":
     case "gameOver":
-    case "ending":
     case "returnToTitle":
     case "displayTextSettings":
       return;
@@ -172,6 +171,10 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       if (!context.factionIds) return;
       assert(context.factionIds.has(command.a), `changeFactionStance: faction A가 존재하지 않습니다: ${command.a}`);
       assert(context.factionIds.has(command.b), `changeFactionStance: faction B가 존재하지 않습니다: ${command.b}`);
+      return;
+    case "ending":
+      validateOptionalCommandResource("ending.presentation.musicResourceId", command.presentation?.musicResourceId ?? "", context.resourceIds);
+      validateOptionalCommandResource("ending.presentation.backgroundResourceId", command.presentation?.backgroundResourceId ?? "", context.resourceIds);
       return;
     case "triggerEnding":
       if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);

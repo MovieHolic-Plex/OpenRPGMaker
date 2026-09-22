@@ -1,3 +1,4 @@
+import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeAiAuthoring } from "../aiAuthoring";
@@ -301,6 +302,7 @@ function validateEndings(value: unknown): void {
       const kind = (condition as { kind?: unknown }).kind;
       assert(kind === "switch" || kind === "variable", `endings[${index}].conditions[${conditionIndex}]는 switch 또는 variable 조건이어야 합니다.`);
     }
+    if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
     if (ending.epilogue !== undefined) {
       for (const [beatIndex, beat] of requireArray(`endings[${index}].epilogue`, ending.epilogue).entries()) {

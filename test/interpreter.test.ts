@@ -728,7 +728,6 @@ describe("battleProcessing / common event guard", () => {
       { kind: "shop", itemIds: ["item_potion"] },
       { kind: "inn", price: 50 },
       { kind: "ending", title: "The End", message: "Peace returned." },
-      { kind: "returnToTitle" },
     ];
     const it = createInterpreter(cmds, mkSession());
     const kinds: string[] = [];
@@ -737,10 +736,10 @@ describe("battleProcessing / common event guard", () => {
       kinds.push(r.kind);
       r = it.resume(undefined);
     }
-    expect(kinds).toEqual(["showPicture", "playAudio", "shop", "inn", "returnToTitle", "returnToTitle"]);
+    expect(kinds).toEqual(["showPicture", "playAudio", "shop", "inn", "returnToTitle"]);
   });
 
-  it.each(["gameOver", "killPlayer"] as const)("%s terminates nested events and their callers", kind => {
+  it.each(["gameOver", "killPlayer", "returnToTitle"] as const)("%s terminates nested events and their callers", kind => {
     const session = mkSession();
     session.commonEvents = [{ id: "terminal", commands: [
       { kind }, { kind: "setSwitch", switchId: "after_inner", value: true },
@@ -749,7 +748,7 @@ describe("battleProcessing / common event guard", () => {
       { kind: "callCommonEvent", commonEventId: "terminal" },
       { kind: "setSwitch", switchId: "after_outer", value: true },
     ], session);
-    expect(interpreter.start().kind).toBe("gameOver");
+    expect(interpreter.start().kind).toBe(kind === "returnToTitle" ? "returnToTitle" : "gameOver");
     expect(interpreter.resume(undefined).kind).toBe("done");
     expect(interpreter.isDone()).toBe(true);
     expect(interpreter.resume(undefined).kind).toBe("done");

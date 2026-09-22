@@ -191,10 +191,17 @@ function validateCinematicSequence(label: string, value: unknown): void {
   }
 }
 
-function validateGameOverSettings(value: unknown): void {
+export function validateGameOverSettings(value: unknown): void {
   const label = "system.gameOver";
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId"]);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery"]);
+  if (settings.presentation !== undefined) assert(typeof settings.presentation === "string" && ["classic", "horror", "blackout"].includes(settings.presentation), `${label}.presentation is invalid.`);
+  if (settings.recovery !== undefined) {
+    const recovery = requireRecord(`${label}.recovery`, settings.recovery);
+    requireOnlyFields(`${label}.recovery`, recovery, ["mapId", "x", "y"]);
+    requireNonBlankString(`${label}.recovery.mapId`, recovery.mapId);
+    for (const key of ["x", "y"]) assert(Number.isSafeInteger(recovery[key]) && Number(recovery[key]) >= 0, `${label}.recovery.${key} must be a nonnegative integer.`);
+  }
   if (settings.sequence !== undefined) validateCinematicSequence(`${label}.sequence`, settings.sequence);
   for (const key of ["title", "message", "retryLabel", "titleLabel"]) {
     if (settings[key] !== undefined) requireString(`${label}.${key}`, settings[key]);
@@ -780,4 +787,16 @@ function assertSafeIntegerInRange(label: string, value: unknown, min: number, ma
 function assertFiniteNumberInRange(label: string, value: unknown, min: number, max: number): void {
   const result = requireNumber(label, value);
   assert(result >= min && result <= max, `${label} must be between ${min} and ${max}.`);
+}
+
+export function validateEndingPresentation(value: unknown, label = "ending.presentation"): void {
+  const settings = requireRecord(label, value);
+  requireOnlyFields(label, settings, ["tone", "backgroundResourceId", "musicResourceId", "credits"]);
+  if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
+  if (settings.tone !== undefined) assert(settings.tone === "warm" || settings.tone === "dark", `${label}.tone is invalid.`);
+  if (settings.credits !== undefined) {
+    requireString(`${label}.credits`, settings.credits);
+    assert((settings.credits as string).length <= 20000, `${label}.credits is too long.`);
+  }
+  if (settings.backgroundResourceId !== undefined) requireNonBlankString(`${label}.backgroundResourceId`, settings.backgroundResourceId);
 }

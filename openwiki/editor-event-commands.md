@@ -239,3 +239,11 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 ## Recovered native emote command (2026-09-05)
 
 `showEmote` displays one of the 12 `src/project/emotes.ts` icons above the player or an event, then immediately continues. An empty eventId means the executing event. The native picker places it under tab 3 「화면 연출」. The picker/schema/factory, `showEmoteBody` pictorial radio grid, command summary, draft validator and interpreter share that contract. Duration defaults to 1200ms and clamps to 200–10000ms. Invalid named event references warn during authoring; load repair converts removed targets to the current-event sentinel without making the project unloadable. Troop context explicitly reports unsupported.
+
+## 패배·엔딩 저작 (2026-09-22)
+
+DB → 게임 오버에서 클래식/공포/회복 귀환을 고른다. 귀환 지점은 맵과 타일 좌표다.
+`set_game_over`도 같은 presentation/recovery 레코드를 변경하며 나머지 시퀀스를 보존한다.
+`ending` 명령 폼은 분위기(warm/dark)와 크레딧을 편집하고 기존 배경/음악 참조를 유지한다.
+엔딩 레지스트리의 `define_ending`은 `presentation`으로 엔딩별 분위기·배경·음악·크레딧을 받는다.
+연출 순서와 진행 유지 계약은 `runtime-sessions.md`의 장르별 패배와 엔딩 흐름 절을 따른다.

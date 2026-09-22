@@ -64,7 +64,7 @@ try{
   await page.waitForSelector('[data-testid="game-over-screen"]',{state:'detached'});await page.waitForTimeout(600);await beat('restored');
   result.restored=await page.evaluate(()=>({x:window.__oprnDebug.readState().x,y:window.__oprnDebug.readState().y,audio:[...document.querySelectorAll('audio[data-oprn-audio]')].map(a=>({paused:a.paused}))}));assert.equal(result.restored.x,14);assert.equal(result.restored.y,18);assert(result.restored.audio.some(a=>!a.paused));
   await page.keyboard.press('ArrowDown');await page.waitForTimeout(300);await page.keyboard.press('ArrowUp');await page.waitForTimeout(300);await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');
-  await page.waitForSelector('[data-testid="game-over-screen"]');await page.waitForTimeout(1000);await page.keyboard.press('ArrowDown');await page.waitForTimeout(600);await page.keyboard.press('Enter');
+  await page.waitForSelector('[data-testid="return-title"]');await page.waitForTimeout(1000);await page.keyboard.press('ArrowDown');await page.waitForTimeout(600);await page.keyboard.press('Enter');
   await page.waitForSelector('[data-testid="title-screen"]');await beat('returned-title');await page.waitForTimeout(1000);result.clipEnd=Date.now();
  }
  await writeFile(resolve(out,'results.json'),JSON.stringify(results,null,2));
