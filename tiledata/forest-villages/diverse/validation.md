@@ -143,32 +143,37 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "code": "wrong-layer",
     "mapId": "terrace-cliff-village",
     "x": 34,
-    "y": 12,
+    "y": 15,
     "layer": "upper",
-    "tile": 2611,
+    "tile": 2620,
     "replacement": -1,
     "move": true
   },
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 2,
+    "totalErrors": 3,
     "errors": [
       {
         "code": "tile-mismatch",
         "x": 34,
-        "y": 12,
+        "y": 15,
         "layer": "lower",
         "expected": 240,
-        "actual": 2611
+        "actual": 2620
       },
       {
         "code": "wrong-layer",
         "x": 34,
-        "y": 12,
+        "y": 15,
         "layer": "upper",
-        "expected": 2611,
+        "expected": 2620,
         "actual": -1
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 37,
+        "y": 16
       }
     ],
     "truncated": false,
@@ -585,31 +590,36 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "scarecrow-without-garden",
     "mapId": "terrace-cliff-village",
-    "x": 57,
-    "y": 17,
+    "x": 70,
+    "y": 41,
     "layer": "upper",
     "tile": 2613,
     "replacement": -1,
-    "errorX": 57,
-    "errorY": 15
+    "errorX": 70,
+    "errorY": 39
   },
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 2,
+    "totalErrors": 3,
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 57,
-        "y": 17,
+        "x": 70,
+        "y": 41,
         "layer": "upper",
         "expected": 2613,
         "actual": -1
       },
       {
         "code": "scarecrow-without-garden",
-        "x": 57,
-        "y": 15
+        "x": 70,
+        "y": 39
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 73,
+        "y": 42
       }
     ],
     "truncated": false,
@@ -619,3 +629,49 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
 ```
 
 ![왼쪽 정상, 오른쪽 오류](images/scarecrow-without-garden.png)
+
+## prop-purpose-anchor-missing
+```json
+{
+  "input": {
+    "code": "prop-purpose-anchor-missing",
+    "mapId": "terrace-cliff-village",
+    "x": 46,
+    "y": 38,
+    "layer": "upper",
+    "tile": 234,
+    "replacement": -1,
+    "errorX": 46,
+    "errorY": 36
+  },
+  "result": {
+    "valid": false,
+    "mapId": "terrace-cliff-village",
+    "totalErrors": 3,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 46,
+        "y": 38,
+        "layer": "upper",
+        "expected": 234,
+        "actual": -1
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 46,
+        "y": 36
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 48,
+        "y": 36
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/prop-purpose-anchor-missing.png)

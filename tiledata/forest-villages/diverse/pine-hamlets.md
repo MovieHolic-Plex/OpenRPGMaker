@@ -18,18 +18,20 @@
   "yards": [
     {
       "ownerId": "pine-hamlets-house-1",
-      "kit": "home",
-      "name": "주거 마당",
+      "kit": "laundry",
+      "name": "세탁·건조",
+      "reason": "상단 서쪽 집의 생활 마당을 세탁·건조 공간으로 지정",
       "x": 17,
-      "y": 10,
+      "y": 13,
       "side": "right",
       "w": 4,
-      "h": 5
+      "h": 2
     },
     {
       "ownerId": "pine-hamlets-house-2",
-      "kit": "garden",
-      "name": "텃밭 마당",
+      "kit": "growing",
+      "name": "텃밭 돌보기",
+      "reason": "집 동쪽의 평탄한 빈터를 가족 텃밭으로 지정",
       "x": 40,
       "y": 10,
       "side": "right",
@@ -38,18 +40,31 @@
     },
     {
       "ownerId": "pine-hamlets-house-3",
-      "kit": "work",
-      "name": "작업 마당",
-      "x": 55,
+      "kit": "woodwork",
+      "name": "목재 가공",
+      "reason": "북동 숲 생활권의 집에 목재 작업 기능을 부여",
+      "x": 57,
       "y": 13,
       "side": "left",
-      "w": 5,
+      "w": 3,
       "h": 3
     },
     {
+      "ownerId": "pine-hamlets-house-5",
+      "kit": "laundry",
+      "name": "세탁·건조",
+      "reason": "중앙 갈림길의 주거 집에는 세탁 기능만 지정",
+      "x": 39,
+      "y": 29,
+      "side": "left",
+      "w": 4,
+      "h": 2
+    },
+    {
       "ownerId": "pine-hamlets-house-6",
-      "kit": "garden",
-      "name": "텃밭 마당",
+      "kit": "growing",
+      "name": "텃밭 돌보기",
+      "reason": "남동 집 옆 빈터를 소규모 자급 텃밭으로 지정",
       "x": 67,
       "y": 44,
       "side": "right",
@@ -58,15 +73,17 @@
     },
     {
       "ownerId": "pine-hamlets-house-7",
-      "kit": "work",
-      "name": "작업 마당",
-      "x": 23,
-      "y": 49,
-      "side": "left",
-      "w": 5,
-      "h": 3
+      "kit": "storage",
+      "name": "물자 보관",
+      "reason": "남쪽 진입 생활권의 집을 물자 보관 거점으로 지정",
+      "x": 36,
+      "y": 52,
+      "side": "right",
+      "w": 3,
+      "h": 1
     }
   ],
+  "activitySites": {},
   "entrance": {
     "x": 40,
     "y": 63
@@ -387,7 +404,7 @@
 ```json
 {
   "id": "pine-hamlets-house-1",
-  "role": "house",
+  "role": "주거",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
   "x": 12,
   "y": 9,
@@ -402,6 +419,8 @@
     "x": 13,
     "y": 16
   },
+  "activity": "laundry",
+  "reason": "상단 서쪽 집의 생활 마당을 세탁·건조 공간으로 지정",
   "width": 4,
   "height": 7,
   "lowerTiles": [
@@ -499,7 +518,7 @@
 ```json
 {
   "id": "pine-hamlets-house-2",
-  "role": "house",
+  "role": "텃밭집",
   "label": "왕궁 도시 · 파랑 박공 회벽집 6×8 ②",
   "x": 33,
   "y": 6,
@@ -514,6 +533,8 @@
     "x": 35,
     "y": 14
   },
+  "activity": "growing",
+  "reason": "집 동쪽의 평탄한 빈터를 가족 텃밭으로 지정",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -655,7 +676,7 @@
 ```json
 {
   "id": "pine-hamlets-house-3",
-  "role": "house",
+  "role": "목공 작업집",
   "label": "파랑 석벽 rect-wide 집",
   "x": 61,
   "y": 12,
@@ -670,6 +691,8 @@
     "x": 64,
     "y": 18
   },
+  "activity": "woodwork",
+  "reason": "북동 숲 생활권의 집에 목재 작업 기능을 부여",
   "width": 8,
   "height": 6,
   "lowerTiles": [
@@ -803,7 +826,7 @@
 ```json
 {
   "id": "pine-hamlets-house-4",
-  "role": "house",
+  "role": "약초 작업집",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
   "x": 17,
   "y": 31,
@@ -818,6 +841,8 @@
     "x": 18,
     "y": 38
   },
+  "activity": "herbs",
+  "reason": "서쪽 숲길 가까운 집의 야외 작업을 약초 손질로 지정",
   "width": 4,
   "height": 7,
   "lowerTiles": [
@@ -915,7 +940,7 @@
 ```json
 {
   "id": "pine-hamlets-house-5",
-  "role": "house",
+  "role": "주거",
   "label": "오렌지 회벽 l-mirror 집",
   "x": 44,
   "y": 28,
@@ -930,6 +955,8 @@
     "x": 48,
     "y": 36
   },
+  "activity": "laundry",
+  "reason": "중앙 갈림길의 주거 집에는 세탁 기능만 지정",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -1071,7 +1098,7 @@
 ```json
 {
   "id": "pine-hamlets-house-6",
-  "role": "house",
+  "role": "텃밭집",
   "label": "왕궁 도시 · 파랑 회벽집 5×7",
   "x": 61,
   "y": 43,
@@ -1086,6 +1113,8 @@
     "x": 62,
     "y": 50
   },
+  "activity": "growing",
+  "reason": "남동 집 옆 빈터를 소규모 자급 텃밭으로 지정",
   "width": 5,
   "height": 7,
   "lowerTiles": [
@@ -1197,7 +1226,7 @@
 ```json
 {
   "id": "pine-hamlets-house-7",
-  "role": "house",
+  "role": "물자 보관집",
   "label": "왕궁 도시 · 주황 박공 회벽집 6×8",
   "x": 29,
   "y": 47,
@@ -1212,6 +1241,8 @@
     "x": 31,
     "y": 55
   },
+  "activity": "storage",
+  "reason": "남쪽 진입 생활권의 집을 물자 보관 거점으로 지정",
   "width": 6,
   "height": 8,
   "lowerTiles": [

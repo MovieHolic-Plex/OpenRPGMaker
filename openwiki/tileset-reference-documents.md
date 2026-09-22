@@ -221,7 +221,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-households-v5`, 문서33개/이미지21개/실제 타일 사전207개다.
+현재 용도 ID는 `diverse-villages-purpose-v6`, 문서33개/이미지22개/실제 타일 사전204개다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -271,3 +271,13 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 완전한 묶음 접근 검증, 허수아비-채소밭 동반 조건, 마당 밖 소품 좌표 검사를 추가했다.
 숲·절벽·개별 나무·길·집 배열은 그대로다. 지역 revision5 / 참고문서 v5,
 33 MD·21 이미지·14종 오류. 정본 revision11 저장/재조회와 근거는 `verify-shots/household-props/`.
+
+### 사용 목적 개정6 (2026-09-23)
+
+‘집 옆’만으로 배치 목적을 대신하지 않는다. 집 순번 n%4의 묶음 교대를 제거했다.
+prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/compact를 저작한다.
+기존 밭 돌보기는 실제 밭, 어업 준비는 실제 부두, 목재/완제품 상자는 작업대에 연결한다.
+검사에서 실제 기준 대상의 전체 타일과 거리, 소유자의 활동, 접근 가능성을 확인한다.
+원형의 꽃 등 필요 없는 장식은 활동에 자동 동반하지 않는다. 활동을 바꾸는 fallback도 없다.
+지역 revision6, 공용 문서 v6(33 MD/22이미지), 정본 revision12 저장/재조회.
+좌표 검사15종과 활동/세탁/부두/기존 밭/작업대 변조5종의 근거: `verify-shots/prop-purpose/`.

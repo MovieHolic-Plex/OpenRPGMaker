@@ -28,7 +28,7 @@ for (const plan of catalog.plans) {
     name: plan.name,
     kind: "completed-map",
     regionKind: "settlement",
-    revision: 5,
+    revision: 6,
     width: map.width,
     height: map.height,
     tilesetId: map.tilesetId,
@@ -36,14 +36,14 @@ for (const plan of catalog.plans) {
     projectDownload: `/assets/region-references/${plan.id}.oprn.json`,
     sourceProjectId: projectId,
     sourceMapId: map.id,
-    snapshotProjectId: `oprn-region-${plan.id}-v5`,
+    snapshotProjectId: `oprn-region-${plan.id}-v6`,
     rules: [
       plan.note + ".",
       `집 ${plan.houses.length}채의 문 앞과 계단 ${plan.stairs.length}곳을 시작점에서 연결한다.`,
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (생활 마당 개정5)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (사용 목적 개정6)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     limitations: "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   });

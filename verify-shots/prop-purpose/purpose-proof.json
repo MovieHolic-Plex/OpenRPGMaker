@@ -1,0 +1,44 @@
+{
+  "normal": [
+    "pine-hamlets",
+    "terrace-cliff-village",
+    "reed-bay-village"
+  ],
+  "checks": [
+    {
+      "name": "owner activity mismatch",
+      "mapId": "terrace-cliff-village",
+      "code": "prop-purpose-mismatch",
+      "x": 34,
+      "y": 15
+    },
+    {
+      "name": "actual washing anchor removed",
+      "mapId": "terrace-cliff-village",
+      "code": "prop-purpose-anchor-missing",
+      "x": 37,
+      "y": 16
+    },
+    {
+      "name": "actual dock removed",
+      "mapId": "reed-bay-village",
+      "code": "prop-purpose-anchor-missing",
+      "x": 58,
+      "y": 35
+    },
+    {
+      "name": "existing field removed",
+      "mapId": "reed-bay-village",
+      "code": "scarecrow-without-garden",
+      "x": 31,
+      "y": 44
+    },
+    {
+      "name": "work surface removed",
+      "mapId": "terrace-cliff-village",
+      "code": "prop-purpose-anchor-missing",
+      "x": 46,
+      "y": 36
+    }
+  ]
+}
