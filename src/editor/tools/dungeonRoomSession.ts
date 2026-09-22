@@ -79,7 +79,7 @@ export const DUNGEON_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     name: "run_dungeon_room_pipeline",
     description:
       "던전을 공간 구조부터 생성한다. 기본 connected: 역할별 방·굽은 통로·순환 길 → 천장 하단 직선 벽 → 공동의 단차 → 통로를 보존한 소품. "
-      + "theme(lava/stone/ice), character(cavern/mine/crystal/crypt), seed와 graph(방·연결)를 지정한다. "
+      + "theme(lava/stone/ice), character(cavern/mine/crystal/crypt), path(straight|cave|winding, 세계관과 이번 요청), seed와 graph(방·연결)를 지정한다. "
       + "생성 후 evaluate_dungeon_room으로 통행·지지·철로를 검사하고 show_map_region으로 전체 시각 검토하라. demo는 기존 작은 단일 방이다.",
     mode: "write",
     parameters: {
