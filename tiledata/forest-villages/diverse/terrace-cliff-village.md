@@ -748,7 +748,7 @@
     },
     {
       "id": "cave-camp",
-      "name": "동굴 앞 채집꾼 쉼터",
+      "name": "동쪽 아랫단 불자리",
       "anchor": {
         "type": "house",
         "id": "terrace-cliff-village-house-8",
@@ -760,7 +760,7 @@
           "name": "모닥불",
           "x": 74,
           "y": 53,
-          "purpose": "동굴에서 돌아온 채집꾼이 몸을 녹이는 불"
+          "purpose": "저녁에 동쪽 집 주민이 모이는 불"
         },
         {
           "id": "cave-camp-2",
@@ -775,14 +775,14 @@
           "name": "나무 상자",
           "x": 67,
           "y": 53,
-          "purpose": "동굴에서 캐 온 광석을 담는 상자"
+          "purpose": "땔감과 불쏘시개를 담는 상자"
         },
         {
           "id": "cave-camp-4",
           "name": "술통",
           "x": 65,
           "y": 54,
-          "purpose": "채집 도구를 씻을 물통",
+          "purpose": "불 곁에 두는 물통",
           "near": "나무 상자"
         }
       ],
@@ -1180,10 +1180,7 @@
   "ponds": [],
   "coast": false,
   "dock": null,
-  "cave": [
-    71,
-    50
-  ],
+  "cave": null,
   "spine": [
     [
       42,
@@ -1401,11 +1398,6 @@
       "role": "map-entrance",
       "x": 43,
       "y": 67
-    },
-    {
-      "role": "cave-approach",
-      "x": 71,
-      "y": 52
     },
     {
       "role": "civic-use",

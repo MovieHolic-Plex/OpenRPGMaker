@@ -221,7 +221,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-terrace-v8`, 문서42개/이미지26개/실제 타일 사전246개다.
+현재 용도 ID는 `diverse-villages-terrace-v8`, 문서42개/이미지26개/실제 타일 사전243개다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -304,5 +304,6 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 문: 1×2 문 위 칸 359→329(같은 시트 바로 위 완전 검정). 문 이벤트 없이 출입구로 읽힌다. 23채.
 - 소품: 기본 시트의 온전한 소품 8종을 `extra-parts.json`으로 civic 부품에 추가(벤치·술통·오크통·모닥불·이정표·장작·과일 좌판·3×2 노점).
   전망 쉼터·계단 길잡이·장터·불자리·선착장 짐터·땔감 21곳 46개. 지형이 옮겨 겹친 보존 나무는 자르지 않고 뺀다.
-- 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision14 재오픈 전체 일치.
+- 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision16 재오픈 전체 일치.
   미편집 civic-v7 은 `previous-reference.json` 기록으로 교체, 저자 편집본은 보존. 근거 `verify-shots/village-terrace/`.
+- 후속 판정: 과일 바구니는 사과가 시트보다 큰 배율이라 제외(`extra-parts.json` oversized → 부품 목록에서 제거). 층바위 동굴 입구 삭제.

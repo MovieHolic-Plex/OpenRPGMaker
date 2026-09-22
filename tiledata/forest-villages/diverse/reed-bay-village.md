@@ -116,14 +116,6 @@
           "purpose": "수확물을 선별하고 판매하는 작업면"
         },
         {
-          "id": "market-2",
-          "name": "과일 바구니",
-          "x": 25,
-          "y": 38,
-          "purpose": "소량 판매용 과일 진열",
-          "near": "가로 탁자"
-        },
-        {
           "id": "market-3",
           "name": "과일 상자",
           "x": 28,
@@ -1406,13 +1398,6 @@
       "y": 41,
       "placeId": "market",
       "propId": "market-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 25,
-      "y": 39,
-      "placeId": "market",
-      "propId": "market-2"
     },
     {
       "role": "civic-use",

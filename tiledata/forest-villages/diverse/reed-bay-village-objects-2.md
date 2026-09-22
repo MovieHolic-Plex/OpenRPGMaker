@@ -1,45 +1,6 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 과일 상자
-```json
-{
-  "id": "market-3",
-  "name": "과일 상자",
-  "x": 28,
-  "y": 40,
-  "purpose": "판매대에 보충할 과일 저장",
-  "near": "가로 탁자",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "market",
-  "lower": "KEEP",
-  "upper": [
-    202,
-    203
-  ],
-  "useAt": {
-    "x": 28,
-    "y": 41
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      202,
-      203
-    ]
-  ]
-}
-```
-
 ## 게시판
 ```json
 {
@@ -1262,6 +1223,45 @@
   "upperTiles": [
     [
       381
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "beach-fire-2",
+  "name": "벤치",
+  "x": 17,
+  "y": 52,
+  "purpose": "물가를 보고 앉는 자리",
+  "near": "모닥불",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "beach-fire",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 17,
+    "y": 53
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
     ]
   ]
 }

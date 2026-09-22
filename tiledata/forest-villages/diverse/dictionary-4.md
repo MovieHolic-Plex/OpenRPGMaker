@@ -781,74 +781,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 2628,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 24,
-    "sourceX": 0,
-    "sourceY": 4,
-    "pixelX": 0,
-    "pixelY": 64,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "과일 바구니",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2629,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 25,
-    "sourceX": 1,
-    "sourceY": 4,
-    "pixelX": 16,
-    "pixelY": 64,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "과일 바구니",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2630,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -2009,6 +1941,72 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "절벽 · 숲마을 711",
+      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
+      "role": "cliff",
+      "defaultLayer": "upper",
+      "source": "user",
+      "userLocked": true,
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 2689,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 854,
+    "sourceX": 14,
+    "sourceY": 28,
+    "pixelX": 224,
+    "pixelY": 448,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 89,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "돌계단",
+      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
+      "role": "floor",
+      "defaultLayer": "lower",
+      "source": "user",
+      "userLocked": true,
+      "passage": "passable"
+    }
+  },
+  {
+    "tile": 2691,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 8,
+    "sourceX": 8,
+    "sourceY": 0,
+    "pixelX": 128,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 89,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "절벽 · 숲마을 712",
       "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
       "role": "cliff",
       "defaultLayer": "upper",

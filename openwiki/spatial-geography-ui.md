@@ -403,5 +403,6 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 문: 1×2 문 위 칸 359→329(같은 시트 바로 위 완전 검정). 문 이벤트 없이 출입구로 읽힌다. 23채.
 - 소품: 기본 시트의 온전한 소품 8종을 `extra-parts.json`으로 civic 부품에 추가(벤치·술통·오크통·모닥불·이정표·장작·과일 좌판·3×2 노점).
   전망 쉼터·계단 길잡이·장터·불자리·선착장 짐터·땔감 21곳 46개. 지형이 옮겨 겹친 보존 나무는 자르지 않고 뺀다.
-- 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision14 재오픈 전체 일치.
+- 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision16 재오픈 전체 일치.
   미편집 civic-v7 은 `previous-reference.json` 기록으로 교체, 저자 편집본은 보존. 근거 `verify-shots/village-terrace/`.
+- 후속 판정: 과일 바구니는 사과가 시트보다 큰 배율이라 제외(`extra-parts.json` oversized → 부품 목록에서 제거). 층바위 동굴 입구 삭제.
