@@ -30,21 +30,16 @@ describe("world canon spread view", () => {
 
   afterEach(() => cleanupDom?.());
 
-  it("renders the document head that mirrors name and premise", () => {
-    store.update((draft) => {
-      draft.worldCanon = { name: "비늘의 바다", premise: "바다는 잊지 않는다" };
-    });
+  it("drops the spread head entirely and keeps the excerpt counter on the body card", () => {
     const host = renderTab();
-    const head = findByTestId(host, "db-world-canon-workspace")?.querySelector(".world-canon-spread-head");
-    expect(head?.querySelector(".world-canon-head-title")?.textContent).toBe("비늘의 바다");
-  });
-
-  it("shows a neutral head title when the world is unnamed", () => {
-    const host = renderTab();
-    const head = findByTestId(host, "db-world-canon-workspace")?.querySelector(".world-canon-spread-head");
-    expect(head?.querySelector(".world-canon-head-title")?.textContent).toBe("세계 개요");
-    // 각 장소의 긴 안내는 아이콘 tooltip으로 축약된다.
-    expect(findByTestId(host, "db-world-canon-help")?.getAttribute("title")).toContain("조수");
+    // 헤드(제목·미터·통계 띠)는 삭제됐다 — 정보는 본문 카드 힌트와 조수 전달 탭이 소유한다.
+    expect(findByTestId(host, "db-world-canon-workspace")?.querySelector(".world-canon-spread-head")).toBeNull();
+    expect(findByTestId(host, "db-world-canon-ai-meter")).toBeNull();
+    expect(findByTestId(host, "db-world-canon-hero-stats")).toBeNull();
+    expect(findByTestId(host, "db-world-canon-help")).toBeNull();
+    // 발췌 카운터는 본문 카드 힌트에 남는다.
+    const hint = findByTestId(host, "db-world-canon-body-card")?.querySelector(".db-ws-card-hint");
+    expect(hint?.textContent).toContain("0자를 본다");
   });
 
   it("shows law answers as question cards with conversational state", () => {

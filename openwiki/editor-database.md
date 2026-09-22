@@ -2082,3 +2082,12 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - AI 미연결이면 대화에 `(연결 실패) …` 한 줄로 정직하게 표시하고 입력을 되살린다 — 폼이 아니라 대화라 오류도 대화의 한 줄이어야 한다.
 - 검증: `test/worldCanonInterview.test.ts` 7케이스(파싱·펜스 내성·클램프·병합·컨텍스트 주입·표면 렌더·저장 경로) + 세계관 계약 10파일 = **69케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 5장.
 
+
+### 세계 개요 스프레드 헤드 삭제 (2026-09-22 v6)
+
+- 사용자 요청: "이 부분 그냥 삭제해"(스크린샷 = 제목 + ? 버튼 + 미터 바 + 4칸 통계 띠). 헤드 전체를 화면에서 걷어냈다.
+- **삭제 범위:** `world-canon-spread-head`(키커·제목·도움말 버튼·미터 바·발췌 문구·hero stats) DOM 을 제거하고, `headNameMirror` 리스너와 `meterFill`/`meterText`/`heroStats` 생성을 지웠다. 레이아웃 자식은 탭 스트립 하나만 남는다.
+- **정보는 사라지지 않았다:** 본문 발췌 카운터는 본문 카드 힌트(`db-world-canon-body-card` 의 `.db-ws-card-hint`)가 그대로 소유하고, 전달 상태 타일·프롬프트 투영은 조수 전달 탭이 소유한다. 죽은 testid `db-world-canon-ai-meter`·`db-world-canon-hero-stats`·`db-world-canon-hero-stat-body`·`db-world-canon-help` 는 폐기됐고 테스트가 부재를 고정한다.
+- **죽은 CSS 정리:** 헤드·미터 규칙 22개를 스타일시트에서 제거했다(숨김 처리로 덧대지 않는다 — DOM 이 없으면 죽은 규칙이다).
+- 검증: 세계관 계약 11파일 **68케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 재캡처(헤드 없이 탭이 바로 시작), e2e 통과.
+

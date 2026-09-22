@@ -8,7 +8,7 @@ import {
   writeCanon,
   WORLD_CANON_TONE_LABELS,
 } from "@/editor/panels/databaseWorldCanonFields";
-import { detailPane, inspectorTabs, sectionCard, statStrip, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { detailPane, inspectorTabs, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { worldDocumentProperties } from "./worldDocumentProperties";
 import { WORLD_CANON_BODY_EXCERPT_CHARS, worldCanonPromptSection } from "@/ai/worldCanonContext";
 import { mergeInterviewPatch, requestWorldCanonInterview } from "@/ai/worldCanonInterview";
@@ -41,39 +41,6 @@ function excerptHint(filled: number): string {
 
 export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): void {
   const canon = resolveWorldCanon(store.getCurrent().worldCanon);
-  const meterFill = el("div", {
-    class: "world-canon-meter-fill",
-    attrs: {
-      role: "progressbar",
-      "aria-label": "AI 전달 본문 분량",
-      "aria-valuemin": "0",
-      "aria-valuemax": String(EXCERPT_MAX),
-      "aria-valuenow": String(Math.min(EXCERPT_MAX, canon.body.trim().length)),
-      style: `width:${Math.min(100, Math.round((Math.min(EXCERPT_MAX, canon.body.trim().length) / EXCERPT_MAX) * 100))}%`,
-    },
-  });
-  const meterText = el("span", {
-    class: "world-canon-meter-text",
-    attrs: { role: "status" },
-    dataset: { testid: "db-world-canon-ai-meter" },
-    text: excerptHint(canon.body.trim().length),
-  });
-  const heroStats = statStrip([
-    {
-      label: "AI 전달 본문",
-      value: `${Math.min(EXCERPT_MAX, canon.body.trim().length)} / ${EXCERPT_MAX}자`,
-      hint: canon.body.trim().length > EXCERPT_MAX ? `뒤 ${canon.body.trim().length - EXCERPT_MAX}자 잘림` : "앞부분만 읽는다",
-      tone: canon.body.trim().length > EXCERPT_MAX ? "warn" : "neutral",
-      testid: "db-world-canon-hero-stat-body",
-    },
-    { label: "톤", value: `${canon.tones.length}종`, hint: "8종 중" },
-    { label: "없는 것", value: `${canon.absences.length}개`, hint: "부분일치" },
-    {
-      label: "법칙",
-      value: `${WORLD_CANON_LAW_KINDS.filter((kind) => canon.laws[kind].present !== undefined || canon.laws[kind].note.trim()).length} / 4`,
-      hint: "힘·신·죽음·돈",
-    },
-  ], { testid: "db-world-canon-hero-stats" });
   const bodyCard = sectionCard({
     title: "본문",
     hint: "형식 없음",
@@ -86,18 +53,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
       ?.value.trim().length ?? canon.body.trim().length;
     const hint = bodyCard.querySelector(".db-ws-card-hint");
     if (hint) hint.textContent = excerptHint(filled);
-    meterText.textContent = excerptHint(filled);
-    meterFill.setAttribute("style", `width:${Math.min(100, Math.round((Math.min(EXCERPT_MAX, filled) / EXCERPT_MAX) * 100))}%`);
-    meterFill.setAttribute("aria-valuenow", String(Math.min(EXCERPT_MAX, filled)));
-    const statTile = heroStats.querySelector("[data-testid='db-world-canon-hero-stat-body']");
-    const statValue = statTile?.querySelector(".db-ws-stat-value");
-    if (statValue) statValue.textContent = `${Math.min(EXCERPT_MAX, filled)} / ${EXCERPT_MAX}자`;
-    const statHint = statTile?.querySelector(".db-ws-stat-hint");
-    if (statHint) statHint.textContent = filled > EXCERPT_MAX ? `뒤 ${filled - EXCERPT_MAX}자 잘림` : "앞부분만 읽는다";
-    if (statTile) {
-      statTile.classList.remove("db-ws-stat-neutral", "db-ws-stat-warn", "db-ws-stat-good", "db-ws-stat-bad");
-      statTile.classList.add(filled > EXCERPT_MAX ? "db-ws-stat-warn" : "db-ws-stat-neutral");
-    }
   }
   hintLine();
   const aiPreview = el("pre", { class: "world-ai-preview", dataset: { testid: "world-canon-ai-preview" } });
@@ -189,42 +144,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     aiDetails,
   ], propertiesOpen.get(host) ?? false, (open) => propertiesOpen.set(host, open));
 
-  // 헤드는 짧게: 공개하는 제목 + 아이콘 설명 버튼으로 축약(2026-09-22 사용자 피드백).
-  // 긴 전제 문장과 "등대를 구해라" 안내는 각 장소의 tooltip으로 모바.
-  const headTitle = el("h3", { class: "world-canon-head-title", text: canon.name.trim() || "세계 개요" });
-  const headNameMirror = (): void => {
-    headTitle.textContent = resolveWorldCanon(store.getCurrent().worldCanon).name.trim() || "세계 개요";
-  };
-  headNameMirror();
-  const helpText = [
-    "이 한 장은 조수가 매 턴 읽는 세계 설정이다.",
-    "본문 탭 — 역사·땅·문화를 쓰는 도화지.",
-    "세계 설정 탭 — 이름·전제·톤·법칙.",
-    "조수 전달 탭 — 조수가 실제로 읽는 문장.",
-  ].join("\n");
-  const spreadHead = el("div", {
-    class: "world-canon-spread-head",
-    children: [
-      el("div", { class: "world-canon-head-row", children: [
-        headTitle,
-        el("button", {
-          class: "world-canon-help",
-          attrs: { type: "button", "aria-label": "세계 개요 설명", title: helpText },
-          dataset: { testid: "db-world-canon-help" },
-          text: "?",
-        }),
-      ] }),
-      el("div", {
-        class: "world-canon-meter",
-        children: [
-          el("div", { class: "world-canon-meter-bar", children: [meterFill] }),
-          meterText,
-        ],
-      }),
-      heroStats,
-    ],
-  });
-
   // ---- 탭 구성: 본문(도화지)이 첫 화면의 주인공이다 ----
   // 세계 개요를 클릭하면 폼이 아니라 쓰기 시작할 수 있는 도화지가 먼저 보여야 한다(2026-09-22 사용자 피드백).
   const bodyPanel = el("div", {
@@ -295,7 +214,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
           children: [
             el("div", {
               class: "world-document-content",
-              children: [spreadHead, tabs],
+              children: [tabs],
             }),
             properties,
           ],
@@ -304,7 +223,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     });
   workspace.classList.add("world-document-workspace", "world-canon-workspace");
   workspace.addEventListener("input", updateAiPreview);
-  workspace.addEventListener("input", headNameMirror);
   host.append(workspace);
 }
 
