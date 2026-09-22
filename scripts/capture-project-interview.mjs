@@ -9,6 +9,10 @@ const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
   const errors = [];
+  const capture = async filename => {
+    await page.locator(".project-interview-aside > img").evaluate(async image => { await image.decode(); });
+    await page.screenshot({ path: `${folder}/${filename}` });
+  };
   page.on("pageerror", error => errors.push(error.message));
   await page.route("**/__interview_capture", route => route.fulfill({ contentType: "text/html", body: '<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body><div id="root"></div></body></html>' }));
   await page.goto(`${base}/__interview_capture`);
@@ -29,9 +33,9 @@ try {
   };
   await answer(3); await answer(0); await answer(1);
   const monsterQuestion = await page.locator("#project-interview-question").innerText();
-  await page.screenshot({ path: `${folder}/01-monster-horror.png` });
+  await capture("01-monster-horror.png");
   await answer(0); await answer(1);
-  await page.screenshot({ path: `${folder}/02-summary.png` });
+  await capture("02-summary.png");
   await page.getByTestId("project-interview-confirm").click();
   const result = await page.evaluate(() => window.captureResult);
   await page.evaluate(async () => {
@@ -41,7 +45,7 @@ try {
   await answer(1); await answer(1); await answer(3);
   await page.setViewportSize({ width: 1024, height: 768 });
   const galleryQuestion = await page.locator("#project-interview-question").innerText();
-  await page.screenshot({ path: `${folder}/03-gallery-1024.png` });
+  await capture("03-gallery-1024.png");
   const geometry = await page.evaluate(() => ({
     width: innerWidth, scrollWidth: document.documentElement.scrollWidth,
     dialog: document.querySelector(".project-interview-window").getBoundingClientRect().toJSON(),

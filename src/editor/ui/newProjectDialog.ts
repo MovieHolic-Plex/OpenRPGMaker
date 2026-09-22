@@ -163,7 +163,10 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       }) as HTMLInputElement;
       radio.checked = option.id === selectedChoiceId;
       radio.addEventListener("change", () => {
-        if (radio.checked) selectedChoiceId = option.id;
+        if (radio.checked) {
+          selectedChoiceId = option.id;
+          confirmButton.textContent = opts.confirmLabel ?? (option.id ? "다음 · 게임 기획" : "만들기");
+        }
       });
       // 장르 그림은 첫 화면 포스터와 같은 자산을 쓴다. 빈 프로젝트는 그림이 없으므로 +.
       // 자산이 없으면 img 를 떼어 격자 배경만 남긴다 — 깨진 그림 아이콘을 보여 주지 않는다.
