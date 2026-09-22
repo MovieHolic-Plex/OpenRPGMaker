@@ -38,6 +38,30 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [],
     "truncated": false,
     "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  },
+  {
+    "valid": true,
+    "mapId": "chapel-hill-parish",
+    "totalErrors": 0,
+    "errors": [],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  },
+  {
+    "valid": true,
+    "mapId": "ford-castle-town",
+    "totalErrors": 0,
+    "errors": [],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  },
+  {
+    "valid": true,
+    "mapId": "mistpond-hollow",
+    "totalErrors": 0,
+    "errors": [],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
   }
 ]
 ```
@@ -1579,3 +1603,88 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
 ```
 
 ![왼쪽 정상, 오른쪽 오류](images/wall-light-backing.png)
+
+## mixed-windows
+```json
+{
+  "input": {
+    "code": "mixed-windows",
+    "mapId": "ford-castle-town",
+    "x": 13,
+    "y": 16,
+    "layer": "upper",
+    "tile": 87,
+    "replacement": 85
+  },
+  "result": {
+    "valid": false,
+    "mapId": "ford-castle-town",
+    "totalErrors": 2,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 13,
+        "y": 16,
+        "layer": "upper",
+        "expected": 87,
+        "actual": 85
+      },
+      {
+        "code": "mixed-windows",
+        "x": 13,
+        "y": 16,
+        "house": "ford-castle-town-house-1",
+        "expected": 87,
+        "actual": 85
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/mixed-windows.png)
+
+## landmark-sealed
+```json
+{
+  "input": {
+    "code": "landmark-sealed",
+    "mapId": "chapel-hill-parish",
+    "x": 14,
+    "y": 13,
+    "layer": "upper",
+    "tile": -1,
+    "replacement": 439,
+    "errorX": 14,
+    "errorY": 12
+  },
+  "result": {
+    "valid": false,
+    "mapId": "chapel-hill-parish",
+    "totalErrors": 2,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 14,
+        "y": 13,
+        "layer": "upper",
+        "expected": -1,
+        "actual": 439
+      },
+      {
+        "code": "landmark-sealed",
+        "x": 14,
+        "y": 12,
+        "role": "yard-inside",
+        "landmark": "chapel-hill-parish-graveyard"
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/landmark-sealed.png)

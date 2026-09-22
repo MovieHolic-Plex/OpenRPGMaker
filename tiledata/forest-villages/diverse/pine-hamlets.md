@@ -4,6 +4,7 @@
 
 ![솔바람 흩어진 산촌 완성](images/pine-hamlets.png)
 
+
 ## 입력 계획과 예약할 접근칸
 ```json
 {
@@ -1425,6 +1426,9 @@
   "id": "pine-hamlets-house-1",
   "role": "주거",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
+  "window": 85,
+  "abandoned": false,
+  "vines": [],
   "x": 12,
   "y": 9,
   "w": 4,
@@ -1539,6 +1543,9 @@
   "id": "pine-hamlets-house-2",
   "role": "텃밭집",
   "label": "왕궁 도시 · 파랑 박공 회벽집 6×8 ②",
+  "window": 85,
+  "abandoned": false,
+  "vines": [],
   "x": 33,
   "y": 6,
   "w": 6,
@@ -1697,6 +1704,9 @@
   "id": "pine-hamlets-house-3",
   "role": "목공 작업집",
   "label": "파랑 석벽 rect-wide 집",
+  "window": 87,
+  "abandoned": false,
+  "vines": [],
   "x": 61,
   "y": 12,
   "w": 8,
@@ -1847,6 +1857,9 @@
   "id": "pine-hamlets-house-4",
   "role": "약초 작업집",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
+  "window": 85,
+  "abandoned": false,
+  "vines": [],
   "x": 17,
   "y": 31,
   "w": 4,
@@ -1961,6 +1974,9 @@
   "id": "pine-hamlets-house-5",
   "role": "주거",
   "label": "오렌지 회벽 l-mirror 집",
+  "window": 85,
+  "abandoned": false,
+  "vines": [],
   "x": 44,
   "y": 28,
   "w": 6,
@@ -2119,6 +2135,9 @@
   "id": "pine-hamlets-house-6",
   "role": "텃밭집",
   "label": "왕궁 도시 · 파랑 회벽집 5×7",
+  "window": null,
+  "abandoned": false,
+  "vines": [],
   "x": 61,
   "y": 43,
   "w": 5,
@@ -2247,6 +2266,9 @@
   "id": "pine-hamlets-house-7",
   "role": "물자 보관집",
   "label": "왕궁 도시 · 주황 박공 회벽집 6×8",
+  "window": 85,
+  "abandoned": false,
+  "vines": [],
   "x": 29,
   "y": 47,
   "w": 6,

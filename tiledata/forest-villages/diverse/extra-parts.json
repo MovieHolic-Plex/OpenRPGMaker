@@ -89,6 +89,118 @@
           236
         ]
       ]
+    },
+    {
+      "name": "무기 거치대",
+      "width": 1,
+      "height": 2,
+      "targetUpper": [
+        [
+          687
+        ],
+        [
+          717
+        ]
+      ]
+    },
+    {
+      "name": "돌 석상",
+      "width": 1,
+      "height": 2,
+      "targetUpper": [
+        [
+          266
+        ],
+        [
+          296
+        ]
+      ]
+    },
+    {
+      "name": "흰 돌기둥",
+      "width": 1,
+      "height": 2,
+      "targetUpper": [
+        [
+          267
+        ],
+        [
+          297
+        ]
+      ]
+    },
+    {
+      "name": "돌 십자가",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          659
+        ]
+      ]
+    },
+    {
+      "name": "묘비",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          353
+        ]
+      ]
+    },
+    {
+      "name": "마른 묘목",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          740
+        ]
+      ]
+    },
+    {
+      "name": "해골",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          383
+        ]
+      ]
+    },
+    {
+      "name": "부서진 울타리",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          410
+        ]
+      ]
+    },
+    {
+      "name": "통나무 더미",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          741
+        ]
+      ]
+    },
+    {
+      "name": "돌 오벨리스크",
+      "width": 1,
+      "height": 2,
+      "targetUpper": [
+        [
+          569
+        ],
+        [
+          599
+        ]
+      ]
     }
   ],
   "oversized": {

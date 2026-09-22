@@ -31,6 +31,11 @@ async function validateVillageStudy(project, mapId) {
     }
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }
+  // One window kind per house (84 stained glass is for the church only; 88 broken marks an abandoned house).
+  for (const h of plan.houses) if (h.window) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) {
+    const tile = m.upperTiles[y * m.width + x];
+    if ([84, 85, 86, 87, 88].includes(tile) && tile !== h.window) add("mixed-windows", x, y, { house: h.id, expected: h.window, actual: tile });
+  }
   for(const e of inspectCivicProps(m,plan)) add(e.code,e.x,e.y);
   for(const e of inspectHouseholdProps(m,plan)) add(e.code,e.x,e.y);
   for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
@@ -49,7 +54,7 @@ async function validateVillageStudy(project, mapId) {
   await withTsModule("src/project/lint/reachability.ts", "study-reach.mjs", (api) => {
     const seen = api.computeReachableCells(project, m, plan.start.x, plan.start.y);
     for(const a of plan.access.filter(a=>a.role==='map-entrance')) if(!seen.has(a.x+','+a.y)) add('map-entrance-blocked',a.x,a.y);
-    for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add("blocked-entrance", a.x, a.y, { role: a.role });
+    for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add(a.landmarkId ? "landmark-sealed" : "blocked-entrance", a.x, a.y, { role: a.role, ...a.landmarkId ? { landmark: a.landmarkId } : {} });
     for(const o of plan.placements.filter(o=>o.kind==='civic-prop'&&o.useAt))if(!seen.has(o.useAt.x+','+o.useAt.y))add('civic-use-blocked',o.useAt.x,o.useAt.y,{name:o.name});
     // Height: with every stair shut, no terrace cell above a cliff may be reachable. Reported at the open cliff end.
     const shut = structuredClone(m), W = m.width, face = catalog.cliffBindings[172];
@@ -139,6 +144,15 @@ function civicFaults() {
   {code:'wall-light-backing',mapId,x:lamp.x,y:lamp.y,layer:'lower',tile:m.lowerTiles[lamp.y*m.width+lamp.x],replacement:240}
  ];
 }
+function landmarkFaults() {
+ const castle=catalog.plans.find(p=>p.id==='ford-castle-town'),cm=catalog.maps[castle.id];
+ const h=castle.houses.find(h=>h.window===87),i=Array.from({length:h.w*h.h},(_,k)=>(h.y+Math.floor(k/h.w))*cm.width+h.x+k%h.w).find(i=>cm.upperTiles[i]===87);
+ const chapel=catalog.plans.find(p=>p.id==='chapel-hill-parish'),yard=chapel.landmarks.find(l=>l.kind==='graveyard');
+ return [
+  {code:'mixed-windows',mapId:castle.id,x:i%cm.width,y:Math.floor(i/cm.width),layer:'upper',tile:87,replacement:85},
+  {code:'landmark-sealed',mapId:chapel.id,x:yard.gate.x,y:yard.gate.y,layer:'upper',tile:-1,replacement:439,errorX:yard.gate.x,errorY:yard.gate.y-1}
+ ];
+}
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [input, mapId] = process.argv.slice(2);
   if (!input || !mapId) throw Error("Usage: validate-diverse-villages.mjs project.json mapId");
@@ -148,6 +162,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 export {
   civicFaults,
+  landmarkFaults,
   applyStudyFault,
   catalog,
   cliffFaults,

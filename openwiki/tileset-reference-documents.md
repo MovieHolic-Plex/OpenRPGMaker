@@ -221,7 +221,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-river-v9`, 문서51개/이미지28개다.
+현재 용도 ID는 `diverse-villages-windows-v10`(문서52개/이미지30개)과 `concept-villages-v1`(문서26개/이미지3개)이다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -319,3 +319,19 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 검증기 `waterfall-gap` 추가(20종). 폭포는 번들 칩셋에 애니메이션이 없어 정지 그림.
 - 같은 개정: 과일 바구니는 사과 배율이 커서 부품 목록에서 제거, 층바위 동굴 삭제.
 - 지역 revision9 / `diverse-villages-river-v9`(51 MD·28 이미지), 정본 revision18 재오픈 일치. 근거 `verify-shots/village-river/`.
+
+### 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+
+비취 대계곡 방식의 강·폭포 위에 마을마다 다른 랜드마크를 통째로 세운 지역 3개. 「지역」과 「장소」 두 곳에 모두 나온다(두 폭포 강마을도 장소에 추가).
+- 종탑 언덕 교구마을(80×64): 윗단에 스테인드글라스 교회, 외곽에 울타리 친 묘지, 폭포 하나와 소.
+- 여울성 나루(100×92): 맨 윗단에 작은 성(42×33) — 「왕궁이 있는 이중 성벽 도시」 내성을 x=49.5 축으로 대칭화하고 같은 열·행만 빼서 줄인 것.
+  두 겹 성벽·보행로412·테두리18~20/78/80/108~110·벽면51/81·둥근 탑138~143·층층 궁. 첫 판(성벽 조각을 정면도처럼 쌓은 것)은 사용자 판정으로 폐기. 동쪽 강 폭포 둘, 다리 둘.
+- 안개못 폐촌(80×64): 울타리 친 못과 섬 위 석상, 폐가 여섯(깨진 창88·벽 덩굴), 못지기 집 하나(덧문86), 외곽의 잊힌 묘지.
+- 랜드마크: `tiledata/forest-villages/diverse/landmarks.json`. 건물(교회 7×9, 성 42×33)은 두 레이어 배열 통째, 마당(묘지·울타리 못)은 울타리 고리
+  378/379/380·양옆408·438/439…409/410(호수마을 울타리 마당 조립) + 입구 공백 + 내용물. 영역이 하나라도 겹치면 저작 중단. 문앞·마당 입구는 길 뼈대에 연결되고 접근칸으로 검사.
+- 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
+- 칩셋 라벨: 84·86·88과 성 조각(윗면21·보행로412·테두리18~20/78/80/108~110·벽면51/81·탑138~143/24/25/54/55·궁 지붕49·정문448/478·안뜰248/276~338·화살 구멍28), 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
+  `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
+- 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
+- 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.

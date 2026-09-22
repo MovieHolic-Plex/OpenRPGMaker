@@ -11,6 +11,7 @@ function site(zone,plan,map) {
  if(a.type==='house')return plan.houses.find(h=>h.id===a.id);
  if(a.type==='farm')return plan.placements.find(o=>o.kind==='farm'&&o.x===a.x&&o.y===a.y);
  if(a.type==='dock')return plan.activitySites.dock;
+ if(a.type==='landmark')return plan.landmarks?.find(l=>l.id===a.id);
  if(a.type==='road'&&plan.roadCells.includes(a.y*map.width+a.x))return {...a,w:1,h:1};
 }
 export function placeCivicProps({map,plan,parts,project,reach}) {

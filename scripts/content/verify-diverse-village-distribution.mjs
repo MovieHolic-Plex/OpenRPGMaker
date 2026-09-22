@@ -3,10 +3,13 @@ import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 const source = process.argv[2];
 if (!source) throw Error("Usage: verify-diverse-village-distribution.mjs existing-project.json");
-const category = "diverse-villages-river-v9", out = "verify-shots/village-diversity", proof = {};
+const shipped = JSON.parse(fs.readFileSync("src/assets/sharedDiverseVillageReferences.json")), [category, concept] = shipped.map((c) => c.id), out = "verify-shots/village-diversity", proof = {};
+const retired = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/previous-reference.json")).map((r) => r.id);
 let blank;
 await withTsModule("src/project/defaults/blankProject.ts", "fresh.mjs", (m) => blank = m.createBlankProject());
 assert.equal(blank.tilesets.forest_harmony.referenceDocuments.filter((c) => c.id === category).length, 1);
+assert.equal(blank.tilesets.forest_harmony.referenceDocuments.filter((c) => c.id === concept).length, 1);
+assert.equal(blank.tilesets.forest_harmony.tileMeta[84].label, "스테인드글라스 창");
 assert.equal(blank.tilesets.forest_harmony_grass_joins.count,10);
 assert.equal(blank.tilesets.forest_harmony_grass_joins.referenceSourceTilesetId,"forest_harmony");
 proof.freshProject = true;
@@ -18,11 +21,14 @@ await withTsModule("src/project/defaults/defaultAssets.ts", "backfill.mjs", (m) 
   const before = structuredClone(t.referenceDocuments);
   m.ensureBundledTilesets(old);
   assert.equal(t.referenceDocuments.filter((c) => c.id === category).length, 1);
+  assert.equal(t.referenceDocuments.filter((c) => c.id === concept).length, 1);
+  assert.equal(t.tileMeta[86].label, "덧문 창");
+  proof.blankLabelsFilled = true;
   for (const c of before) {
-    if (["diverse-villages-v1","diverse-villages-cliff-v2","diverse-villages-grass-v3","diverse-villages-winding-v4","diverse-villages-households-v5","diverse-villages-purpose-v6","diverse-villages-civic-v7","diverse-villages-terrace-v8"].includes(c.id)) assert(!t.referenceDocuments.some((a) => a.id === c.id));
+    if (retired.includes(c.id)) assert(!t.referenceDocuments.some((a) => a.id === c.id));
     else assert.deepEqual(t.referenceDocuments.find((a) => a.id === c.id), c);
   }
-  proof.shippedPreV9Replaced = before.some((c) => ["diverse-villages-v1","diverse-villages-cliff-v2","diverse-villages-grass-v3","diverse-villages-winding-v4","diverse-villages-households-v5","diverse-villages-purpose-v6","diverse-villages-civic-v7","diverse-villages-terrace-v8"].includes(c.id));
+  proof.shippedPreviousReplaced = before.some((c) => retired.includes(c.id));
   const once = JSON.stringify(old);
   m.ensureBundledTilesets(old);
   assert.equal(JSON.stringify(old), once);
@@ -35,14 +41,14 @@ await withTsModule("src/project/defaults/defaultAssets.ts", "backfill.mjs", (m) 
 });
 await withTsModule("src/project/defaults/forestHarmony.ts", "guards.mjs", (m) => {
   const edited = structuredClone(JSON.parse(fs.readFileSync(source)).tilesets.forest_harmony);
-  const authored = edited.referenceDocuments.find((c) => ["diverse-villages-v1","diverse-villages-cliff-v2","diverse-villages-grass-v3","diverse-villages-winding-v4","diverse-villages-households-v5","diverse-villages-purpose-v6","diverse-villages-civic-v7","diverse-villages-terrace-v8"].includes(c.id));
+  const authored = edited.referenceDocuments.find((c) => retired.includes(c.id));
   if (authored) {
     authored.documents[0].markdown += "\n저자 수정 보존";
     const copy = structuredClone(authored);
     m.ensureForestHarmonyReferences(edited);
     assert.deepEqual(edited.referenceDocuments.find((c) => c.id === copy.id), copy);
     assert(edited.referenceDocuments.some((c) => c.id === category));
-    proof.editedPreviousPreservedAndV9Added = true;
+    proof.editedPreviousPreservedAndCurrentAdded = true;
   }
   const shared = m.createForestHarmonyTileset();
   shared.referenceDocuments = [];
@@ -65,8 +71,12 @@ await withTsModule("src/project/io/serialize.ts", "roundtrip.mjs", (m) => {
     assert.deepEqual(after.tilesets.forest_harmony.tileGrafts, p.tilesets.forest_harmony.tileGrafts);
     assert.deepEqual(after.tilesets.forest_harmony.priority, p.tilesets.forest_harmony.priority);
     const c = after.tilesets.forest_harmony.referenceDocuments.find((c2) => c2.id === category);
-    assert.equal(c.documents.length, 51);
-    assert.equal(c.images.length, 28);
+    for (const [n, want] of [category, concept].entries()) {
+      const got = after.tilesets.forest_harmony.referenceDocuments.find((c2) => c2.id === want);
+      assert.equal(got.documents.length, shipped[n].documents.length);
+      assert.equal(got.images.length, shipped[n].images.length);
+    }
+    assert(c.documents.length <= 64);
   }
   proof.exportRoundtrip = ids;
 });
