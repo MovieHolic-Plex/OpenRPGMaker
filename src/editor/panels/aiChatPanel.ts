@@ -168,6 +168,7 @@ import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
+import { getAiConnectionStatus } from "./aiConnectionStatus";
 import {
   backupProjectSnapshot,
   dropSession,
@@ -2291,7 +2292,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
   const refreshComposerPlaceholder = (): void => {
-    const placeholder = formatComposerPlaceholder(readAgentBrief());
+    // 연결 상태를 함께 본다 — 미연결이면 "한 문장으로 지시" 대신 어디를 눌러야 하는지 말한다.
+    const placeholder = formatComposerPlaceholder(readAgentBrief(), isAiConfigReady(loadAiConfig(), getAiConnectionStatus(loadAiConfig())));
     if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
     syncConversationState();
   };
