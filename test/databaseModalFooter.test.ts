@@ -50,18 +50,36 @@ describe("database modal footer — honest auto-save UI", () => {
     expect(applyButton?.textContent).toBe("지금 저장");
   });
 
-  it("shows a discard-to-open-state option (not a bare 'save' warning) when closing with dirty edits", () => {
+  it("closes and keeps store edits from the footer 닫기 button and the header X", () => {
     openDatabaseModal("actors");
     const actorId = store.getCurrent().database.actors[0]?.id ?? "";
     updateDatabaseRecord("actors", actorId, { name: "Dirty Actor" });
 
     document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.ok}']`)?.click();
 
+    expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
+    expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor");
+
+    openDatabaseModal("actors");
+    updateDatabaseRecord("actors", actorId, { name: "Dirty Actor X" });
+    document.querySelector<HTMLElement>("[data-testid='database-modal-close']")?.click();
+
+    expect(document.querySelector("[data-testid='database-modal']")).toBeNull();
+    expect(store.getCurrent().database.actors.find((actor) => actor.id === actorId)?.name).toBe("Dirty Actor X");
+  });
+
+  it("Escape still offers restore-to-open for store edits", () => {
+    openDatabaseModal("actors");
+    const actorId = store.getCurrent().database.actors[0]?.id ?? "";
+    updateDatabaseRecord("actors", actorId, { name: "Dirty Actor" });
+
+    document.dispatchEvent(Object.assign(new Event("keydown"), { key: "Escape" }));
+
     const prompt = document.querySelector<HTMLElement>("[data-testid='database-dirty-prompt']");
     expect(prompt?.textContent).toContain("이 세션에서 바뀐 내용이 있습니다");
-
     // 「되돌리기」는 Ctrl+Z 한 단계의 이름이고, 세션 전체 복구는 「복구」로 분리했다.
     const discardButton = document.querySelector<HTMLElement>("[data-testid='database-dirty-discard']");
     expect(discardButton?.textContent).toBe("열 때 상태로 복구하고 닫기");
+    expect(document.querySelector("[data-testid='database-modal']")).not.toBeNull();
   });
 });

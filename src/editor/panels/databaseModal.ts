@@ -105,7 +105,8 @@ let activeModal: ActiveDatabaseModalHandle | null = null;
 //
 // "battleTest"는 읽기 행위이므로 dirty 세션 확인 없이 즉시 close()만 수행한다(리스너 정리가
 // 목적) — discard는 하지 않는다. 자동 저장 모델이라 데이터는 이미 안전하다(C2와 정합).
-// 그 외 reason은 기존처럼 controller.requestClose를 거쳐 dirty 프롬프트를 존중한다.
+// 그 외 reason은 controller.requestClose를 거친다. 푸터 「닫기」와 헤더 X 는 여기서
+// 타지 않는다 — 스토어에 있는 편집은 바로 닫고, 설정집 초안만 프롬프트를 본다.
 export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "battleTest"): void {
   if (!activeModal) return;
   if (reason === "battleTest") {
@@ -438,7 +439,6 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   });
 
   activeModal = { close, onClose, requestClose: controller.requestClose, navigate: (tab) => switchDatabaseActiveTab(tab, body) };
-  controller.bindCloseButton(closeButton);
   // 도크 모드에서는 최대화·드래그를 비활성, 바깥 클릭 닫기도 끈다(맵 조작이 곧 바깥 클릭).
   maximizeButton.addEventListener("click", () => {
     if (dockMode) return;
@@ -528,6 +528,24 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     undoButton.title = label ? `되돌리기: ${label} (Ctrl+Z)` : "되돌릴 편집이 없습니다";
   };
   syncUndoButton();
+  // 레코드 편집은 키 입력 순간에 이미 스토어에 들어간다. 자동 저장이 그 값을 남기므로
+  // 닫기·헤더 X 가 「세션이 더럽다」는 이유만으로 멈추면, 선택지가 52px 푸터에 묻힌 채
+  // 창이 안 닫힌다. 스토어 밖인 설정집 카드 초안만 묻고, 그 상태에서 한 번 더 누르면
+  // 초안을 커밋하고 닫는다(커밋이 거절되면 오류를 남기고 연 채로 둔다).
+  const dismissKeepingEdits = (attempt: "cancel" | "x"): void => {
+    if (!codexSession.isDirty()) {
+      close();
+      return;
+    }
+    if (dirtyPrompt.childElementCount > 0) {
+      void saveAndMarkClean().then(() => {
+        if (!codexSession.isDirty()) close();
+      });
+      return;
+    }
+    controller.requestClose(attempt);
+  };
+  closeButton.addEventListener("click", () => dismissKeepingEdits("x"));
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
@@ -538,7 +556,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         text: "닫기",
         attrs: { type: "button" },
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
-        on: { click: () => controller.requestClose("cancel") },
+        on: { click: () => dismissKeepingEdits("cancel") },
       }),
       el("button", {
         class: "database-footer-button primary",
