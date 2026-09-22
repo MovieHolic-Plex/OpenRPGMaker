@@ -17,10 +17,10 @@ SQLite 프로젝트 ID: `44d88b94-58eb-4dee-a11a-88737da7001b`.
 근거: `verify-shots/village-diversity/storage-proof.json` 및 `README.md`.
 
 - `catalog.json`: 동결한 세 맵, 합성 칩셋, 지형 입력, 집·소품 좌표.
-- `part-dictionary.json`: 실제 사용 타일 232개의 원본/합성 좌표, 메타데이터와 통행.
+- `part-dictionary.json`: 실제 사용 타일 225개의 원본/합성 좌표, 메타데이터와 통행.
 - `*-rows-*.md`: 상위·하위 전체 배열. 각 문서는 최대 16행.
 - `cliff-assembly.md`, `forest-assembly.md`: 결합 순서, 반복과 마감, 층·방향·접근칸.
-- `validation.md`, `validation.json`, `images/`: 정상 및 의도적으로 손상한 5종 비교.
+- `validation.md`, `validation.json`, `images/`: 정상 및 의도적으로 손상한 8종 비교.
 - `images/`는 원본 렌더, `public/assets/diverse-village-references/`는 열람용 축소본. 축소 그림을 게임 타일로 잘라 쓰지 않는다.
 
 ```bash
@@ -44,6 +44,21 @@ BASE=http://127.0.0.1:9816 node scripts/qa/capture-diverse-village-regions.mjs
 
 새 그림을 생성하거나 원본 나무 몸통을 다시 그리지 않았다. 기존 번들의 `tex_forest_harmony`, `tex_forest_cliff_reference`, `tex_shared_forest_village_objects`, `tex_easyrpg_chipset_retro_world`를 사용한다. 그림의 기존 출처/라이선스는 `public/assets/ATTRIBUTION.md`, `public/assets/easyrpg/COPYING`, 기존 `tiledata/tilesets/forest_harmony/dewbank-village/` 자료를 따른다. 이 문서와 좌표 설계가 신규 저작이다.
 
-절벽 2670..2690은 이 세 맵의 명시적 이식 번호다. 일반 forest_harmony의 그 번호가 같은 그림이라고 가정하지 않는다. 다른 프로젝트의 빈 슬롯으로 옮길 때는 사전과 전체 배열을 함께 재매핑한다.
+절벽 2670..2691은 이 세 맵의 명시적 이식 번호다. 일반 forest_harmony의 그 번호가 같은 그림이라고 가정하지 않는다. 다른 프로젝트의 빈 슬롯으로 옮길 때는 사전과 전체 배열을 함께 재매핑한다.
 
 집 문앞·계단 양끝·동굴 접근칸·선착장 끝까지 엔진 타일 통행을 확인했다. 실내·NPC·문 전이 이벤트와 게임 전체 플레이 검증은 포함하지 않는다. 자동 검증은 동결 표본의 배열·이식과 접근 경로 비교이며 임의 마을을 판정하는 범용 생성 검증기가 아니다.
+
+## 절벽 개정2 — 큰 폭포 아래 마을에서 교정
+
+공용 지역 revision=2, 참고문서 용도 `diverse-villages-cliff-v2` (34 MD/13 이미지).
+이전 얇은 둘레 띠를 버리고 참고 맵의 상위 윗선/반복 면/밑단을 적용한다. 왼쪽 원본18→231→48,
+정면139→172→202, 오른쪽19→232→49를 구분한다. `cliff-source.json`은 기준 맵에서 읽은 실제 전체 열이다.
+`cliffs.points`가 윗선이며 h는 윗선과 밑단 사이 y 차이다. stairs=[x,y,h]는 폭2·높이h+1이다.
+암벽은 upper, 바닥은 lower에 남긴다. 계단은 lower에 놓고 같은 칸 upper를 비운다.
+
+`previous-reference.json`의 내용 revision과 일치하는 미편집 v1만 v2로 교체한다.
+사용자가 편집한 v1은 보존하며 v2를 덧붙인다. 기존 사용자 지도는 자동 재생성하지 않는다.
+이슬여울·큰 폭포 아래 마을은 보존하고 이번 세 참고 지도만 갱신했다.
+절벽에 겹치던 집 원점과 소품은 새 높이에 맞췄으며 집/나무의 그림 부품은 다시 그리지 않았다.
+자동 검사는 기존 5종 외에 사선 면 방향, 밑단, 계단 끝을 열 문법으로 검사한다.
+근거와 수정 전후: `verify-shots/village-cliff-repair/`.

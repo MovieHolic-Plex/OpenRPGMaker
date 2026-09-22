@@ -327,6 +327,17 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 2열을 중첩하면 그림이 20px로 축소된다(`spatialPlaceLibrary.css`의 지역 참조 한정 규칙).
 실제 카드·속성·다운로드·AI 행 일치 근거: `verify-shots/village-diversity/`.
 
-공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (33 MD/8 이미지).
+공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (34 MD/13 이미지).
 정확한 원본 좌표·레이어·전체 배열·반복 조립·오류 좌표는 `tiledata/forest-villages/diverse/`에 있다.
 생성/배포 명령 및 정본 보존 계약은 그 디렉터리의 README를 따른다.
+
+
+### 절벽 조립 교정 (2026-09-23)
+
+‘큰 폭포 아래 마을’의 실제 상위 배열을 기준으로 세 마을을 revision2로 교정했다.
+얇은 둘레 띠 대신 굽은 윗선·반복 면·같은 윤곽의 밑단을 사용하고 좌우 사선 원본231/232를 구분한다.
+암벽은 upper, 계단은 lower+upper 비움이다. 높이에 맞춘 계단 양끝과 문앞 연결을 확인한다.
+`src/project/defaults/forestHarmony.ts`는 `previous-reference.json`의 revision과 정확히 같은
+미편집 v1만 교체한다. 사용자 수정본/공유 포인터는 보존하고 새 용도를 제공한다.
+정확한 원본 배열과 픽셀 일치·8종 오류·SQLite 재로드 근거는
+`tiledata/forest-villages/diverse/cliff-source.json`, `verify-shots/village-cliff-repair/`에 있다.

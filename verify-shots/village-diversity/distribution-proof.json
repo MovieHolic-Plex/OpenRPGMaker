@@ -1,8 +1,10 @@
 {
   "freshProject": true,
+  "shippedV1Replaced": true,
   "existingProjectBackfill": true,
   "authorDocumentsPreserved": true,
   "idempotent": true,
+  "editedV1PreservedAndV2Added": true,
   "sharedPointerAndOtherAtlasPreserved": true,
   "exportRoundtrip": [
     "pine-hamlets",

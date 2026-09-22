@@ -1,0 +1,72 @@
+[
+  {
+    "referenceTile": 498,
+    "sourceTile": 18,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "3ec63d2e2f1c3b631906d0fed0cb7076f1228c2ea48416fa1f126de1155a2087"
+  },
+  {
+    "referenceTile": 499,
+    "sourceTile": 19,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "154024ae01ff70f4a0f31ad56a09b2fc86a93e1aaab47ec356a42e55c97ae854"
+  },
+  {
+    "referenceTile": 528,
+    "sourceTile": 48,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "dddc945de365ae1899ef09b20a8f306e90f1db2d4dfb778180b6cc3d0e3f4283"
+  },
+  {
+    "referenceTile": 529,
+    "sourceTile": 49,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "eee78176c0fe018c2b9454e92080812118f8e371976e54af9e1dbc6a2bfb0017"
+  },
+  {
+    "referenceTile": 619,
+    "sourceTile": 139,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "602a0814db2aaa7dfd1770e844aa50b20b9ffb05f03276644a479d48b54b9f09"
+  },
+  {
+    "referenceTile": 652,
+    "sourceTile": 172,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "62a329071dad1cb99df6f7b7edf817ebb78722285977e0ea7c2ff0785a9763c6"
+  },
+  {
+    "referenceTile": 682,
+    "sourceTile": 202,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "cb8898a3a478acf7760d42499de547db612894850dac5875715314f299950738"
+  },
+  {
+    "referenceTile": 711,
+    "sourceTile": 231,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "e20d47be6e372126d982e5e483a0dea2aaf03854d7ea363fbf84de868f23c34f"
+  },
+  {
+    "referenceTile": 712,
+    "sourceTile": 232,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "db9fc3d071f64a4c03cd5bb83e5a898c54b527a9972d13b77e064a67d0b01e63"
+  },
+  {
+    "referenceTile": 854,
+    "sourceTile": 374,
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "pixelsIdentical": true,
+    "rgbaSHA256": "7602d2a91991d729f5ce787bdaebb306732eecfd6e06936e9acd0c632995a112"
+  }
+]

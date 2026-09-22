@@ -3800,6 +3800,39 @@
     }
   },
   {
+    "tile": 1476,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1476,
+    "sourceX": 6,
+    "sourceY": 49,
+    "pixelX": 96,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1476",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1478,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -3833,6 +3866,39 @@
     }
   },
   {
+    "tile": 1479,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1479,
+    "sourceX": 9,
+    "sourceY": 49,
+    "pixelX": 144,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 9,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1479",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1480,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -3857,39 +3923,6 @@
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1480",
-      "source": "user",
-      "passage": "passable",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1484,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1484,
-    "sourceX": 14,
-    "sourceY": 49,
-    "pixelX": 224,
-    "pixelY": 784,
-    "width": 16,
-    "height": 16,
-    "targetX": 14,
-    "targetY": 49,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "road 연결 1484",
       "source": "user",
       "passage": "passable",
       "userLocked": true,
@@ -4361,39 +4394,6 @@
     }
   },
   {
-    "tile": 1505,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1505,
-    "sourceX": 5,
-    "sourceY": 50,
-    "pixelX": 80,
-    "pixelY": 800,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
-    "targetY": 50,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "road 연결 1505",
-      "source": "user",
-      "passage": "passable",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
     "tile": 1506,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -4451,39 +4451,6 @@
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1508",
-      "source": "user",
-      "passage": "passable",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1509,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1509,
-    "sourceX": 9,
-    "sourceY": 50,
-    "pixelX": 144,
-    "pixelY": 800,
-    "width": 16,
-    "height": 16,
-    "targetX": 9,
-    "targetY": 50,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "road 연결 1509",
       "source": "user",
       "passage": "passable",
       "userLocked": true,
@@ -4583,6 +4550,39 @@
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1512",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1513,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1513,
+    "sourceX": 13,
+    "sourceY": 50,
+    "pixelX": 208,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 13,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1513",
       "source": "user",
       "passage": "passable",
       "userLocked": true,
@@ -5120,39 +5120,6 @@
     }
   },
   {
-    "tile": 2551,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1565,
-    "sourceX": 5,
-    "sourceY": 52,
-    "pixelX": 80,
-    "pixelY": 832,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2552,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
@@ -5296,39 +5263,6 @@
     "width": 16,
     "height": 16,
     "targetX": 13,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2565,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1588,
-    "sourceX": 28,
-    "sourceY": 52,
-    "pixelX": 448,
-    "pixelY": 832,
-    "width": 16,
-    "height": 16,
-    "targetX": 15,
     "targetY": 85,
     "layers": [
       "upper"
@@ -5516,39 +5450,6 @@
     }
   },
   {
-    "tile": 2581,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2562,
-    "sourceX": 12,
-    "sourceY": 85,
-    "pixelX": 192,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2582,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
@@ -5626,39 +5527,6 @@
     "width": 16,
     "height": 16,
     "targetX": 4,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2585,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2566,
-    "sourceX": 16,
-    "sourceY": 85,
-    "pixelX": 256,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
     "targetY": 86,
     "layers": [
       "upper"
@@ -5824,39 +5692,6 @@
     "width": 16,
     "height": 16,
     "targetX": 10,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2591,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2572,
-    "sourceX": 22,
-    "sourceY": 85,
-    "pixelX": 352,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 11,
     "targetY": 86,
     "layers": [
       "upper"
@@ -7574,7 +7409,7 @@
     "targetX": 0,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7587,7 +7422,7 @@
       "label": "절벽 원본 18",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -7607,7 +7442,7 @@
     "targetX": 1,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7620,7 +7455,7 @@
       "label": "절벽 원본 19",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -7640,7 +7475,7 @@
     "targetX": 2,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7653,7 +7488,7 @@
       "label": "절벽 원본 48",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -7673,7 +7508,7 @@
     "targetX": 3,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7686,109 +7521,10 @@
       "label": "절벽 원본 49",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
-    }
-  },
-  {
-    "tile": 2675,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_world",
-    "sourceTile": 79,
-    "sourceX": 19,
-    "sourceY": 2,
-    "pixelX": 304,
-    "pixelY": 32,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 원본 79",
-      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
-      "role": "cliff",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
-    }
-  },
-  {
-    "tile": 2677,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_world",
-    "sourceTile": 108,
-    "sourceX": 18,
-    "sourceY": 3,
-    "pixelX": 288,
-    "pixelY": 48,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 원본 108",
-      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
-      "role": "cliff",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
-    }
-  },
-  {
-    "tile": 2678,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_world",
-    "sourceTile": 110,
-    "sourceX": 20,
-    "sourceY": 3,
-    "pixelX": 320,
-    "pixelY": 48,
-    "width": 16,
-    "height": 16,
-    "targetX": 8,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 원본 110",
-      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
-      "role": "cliff",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
     }
   },
   {
@@ -7805,23 +7541,23 @@
     "targetX": 10,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower",
     "tileMeta": {
       "label": "절벽 원본 139",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
-      "passage": "passable"
+      "passage": "solid"
     }
   },
   {
@@ -7838,7 +7574,7 @@
     "targetX": 13,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7851,7 +7587,7 @@
       "label": "절벽 원본 172",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -7871,7 +7607,7 @@
     "targetX": 16,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7884,7 +7620,7 @@
       "label": "절벽 원본 202",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -7904,7 +7640,7 @@
     "targetX": 18,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7917,7 +7653,7 @@
       "label": "절벽 원본 231",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid"
@@ -7970,7 +7706,7 @@
     "targetX": 20,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -7983,11 +7719,44 @@
       "label": "동굴 입구",
       "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
       "role": "cliff",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "source": "user",
       "userLocked": true,
       "passage": "solid",
       "layerBacking": 2683
+    }
+  },
+  {
+    "tile": 2691,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "sourceTile": 232,
+    "sourceX": 22,
+    "sourceY": 7,
+    "pixelX": 352,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 89,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "절벽 원본 232",
+      "description": "레트로 월드맵 원본을 번호 혼동 없이 이식",
+      "role": "cliff",
+      "defaultLayer": "upper",
+      "source": "user",
+      "userLocked": true,
+      "passage": "solid"
     }
   }
 ]
