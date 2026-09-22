@@ -53,6 +53,13 @@ export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
     const graft = canonical.tileGrafts?.find(g => g.targetTile === 893);
     if (graft) { tileset.tileGrafts = [...(tileset.tileGrafts ?? []), structuredClone(graft)]; mouth.layerBacking = 652; changed = true; }
   }
+  // Labels that shipped blank (or as the bare "창문" on 85/87) take the canonical wording; edited labels stay.
+  canonical.tileMeta?.forEach((meta, tile) => {
+    const own = tileset.tileMeta?.[tile];
+    if (!meta?.label || !own || own.label === meta.label) return;
+    const blank = !own.label && !own.description, bareWindow = (tile === 85 || tile === 87) && own.label === "창문" && !own.description;
+    if (blank || bareWindow) { tileset.tileMeta![tile] = { ...own, label: meta.label, description: meta.description ?? "" }; changed = true; }
+  });
   // Retire exact shipped revisions only; keep any locally edited guidance.
   for (const revision of previousDiverseReference) {
     const previous = tileset.referenceDocuments?.find(c => c.id === revision.id);

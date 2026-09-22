@@ -7,12 +7,15 @@ if (process.argv.includes("--dry")) {
   process.exit(0);
 }
 fs.mkdirSync(preview, { recursive: true });
-const c = JSON.parse(fs.readFileSync(dir + "/catalog.json")), validation = JSON.parse(fs.readFileSync(dir + "/validation.json")), t = c.tileset, docs = [];
+const c = JSON.parse(fs.readFileSync(dir + "/catalog.json")), validation = JSON.parse(fs.readFileSync(dir + "/validation.json")), t = c.tileset, docs = [], conceptDocs = [];
+// One category holds at most 64 documents, so the concept villages (church, castle, abandoned hamlet) ship as their own category.
+const seriesOf = (id) => c.plans.find((p) => p.id === id)?.series === "concept" ? "concept" : "base";
+const basePlans = c.plans.filter((p) => seriesOf(p.id) === "base"), conceptPlans = c.plans.filter((p) => seriesOf(p.id) === "concept");
 const block = (o) => "```json\n" + JSON.stringify(o, null, 2) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
-function doc(id, name, markdown) {
+function doc(id, name, markdown, series = "base") {
   fs.writeFileSync(dir + "/" + id + ".md", markdown.replaceAll(/\(image:([^)]+)\)/g, "(images/$1.png)").trimEnd() + "\n");
-  docs.push({ id, name, markdown });
+  (series === "concept" ? conceptDocs : docs).push({ id, name, markdown });
 }
 const crop = (m, x, y, w, h) => ({ width: w, height: h, lowerTiles: Array.from({ length: h }, (_, dy) => m.lowerTiles.slice((y + dy) * m.width + x, (y + dy) * m.width + x + w)), upperTiles: Array.from({ length: h }, (_, dy) => m.upperTiles.slice((y + dy) * m.width + x, (y + dy) * m.width + x + w)) });
 doc("guide", "네 마을을 다르게 만드는 기준", `# 산촌·절벽·포구·강마을 — 서로 다른 네 마을
@@ -29,30 +32,32 @@ doc("guide", "네 마을을 다르게 만드는 기준", `# 산촌·절벽·포�
 7. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
 9. 강·폭포·다리(개정9, 두 폭포 강마을). river={width,points,pools}: 중심선을 따라 폭 width의 가로 붓으로 칸을 칠하고 호수 오토타일(lake_47, 비취 대계곡의 World 물120과 같은 그림)로 그린다. 강이 절벽을 지나는 열은 윗선 칸=물, 면·밑단 칸=폭포(World123 이식, 통행 불가)다. 폭포가 지나는 열과 그 좌우 열의 윗선 높이를 같게 두어 사선 면이 폭포에 붙지 않게 한다. 폭포 칸도 오토타일 이웃으로 세어 윗선 물·소 사이에 둑이 생기지 않는다. pools는 폭포 아래 소. bridges=[x,y,w]: 강 위 2행(윗줄102·아랫줄103 이식, 통행 가능), 양 끝은 뭍이며 길에 잇는다. 번들 칩셋은 타일 애니메이션이 없어 폭포는 정지 그림이다.
 8. 문은 1×2다. 아래 칸은 원본 문 타일359, 위 칸은 같은 시트에서 그 바로 위의 완전한 검정329(문/입구)다. 문 그림 이벤트 없이도 출입구로 읽힌다. 두 칸 모두 359로 두면 검은 두 칸이 보라 띠로 끊긴다.
+10. 창문은 집마다 한 종류다(개정10). 85 격자 유리창·86 덧문 창·87 아치 유리창 가운데 하나를 houses[i][3]으로 고르면 그 집 상층의 모든 창 칸(84~88)을 그 번호로 바꾼다. 84 스테인드글라스는 교회, 88 깨진 창은 폐가에만 쓴다. 섞이면 mixed-windows. 창이 없는 집 그림(파랑 회벽집 5×7)은 창을 새로 만들지 않는다. 교회·작은 성·묘지·울타리 못은 별도 분류 「컨셉 마을」 문서에 있다.
 
 ## 실제 구분
-${c.plans.map((p) => `- ${p.name}: ${p.width}×${p.height}, 집 ${p.houses.length}채. ${p.note}.`).join("\n")}
+${basePlans.map((p) => `- ${p.name}: ${p.width}×${p.height}, 집 ${p.houses.length}채. ${p.note}.`).join("\n")}
 
 ## 보존과 재현
-catalog.json은 새 네 맵/부품/좌표의 정답. 이슬여울 정본 프로젝트는 변경하지 않았다. 원본 픽셀 그림은 images/ 및 공용 지역 PNG, 번들 열람용 그림은 긴 변 820px 이내/128색 축소본으로 구분한다. 축소 그림은 타일로 잘라 쓰지 않는다.
-지역 카드는 각각 pine-hamlets-80x64, terrace-cliff-village-88x72, reed-bay-village-88x64. 다운로드에는 해당 맵, 모든 필요한 이식과 통행 메타데이터가 있다. 새 프로젝트/기존 프로젝트 모두 forest_harmony의 번들 참고문서 보충 경로로 이 자료를 얻는다. 원격 행 패치는 배포 방식이 아니다.
+catalog.json은 새 맵/부품/좌표의 정답(컨셉 마을 세 곳 포함). 이슬여울 정본 프로젝트는 변경하지 않았다. 원본 픽셀 그림은 images/ 및 공용 지역 PNG, 번들 열람용 그림은 긴 변 820px 이내/128색 축소본으로 구분한다. 축소 그림은 타일로 잘라 쓰지 않는다.
+지역 카드는 각각 ${basePlans.map((p) => p.id + "-" + p.width + "x" + p.height).join(", ")}. 다운로드에는 해당 맵, 모든 필요한 이식과 통행 메타데이터가 있다. 새 프로젝트/기존 프로젝트 모두 forest_harmony의 번들 참고문서 보충 경로로 이 자료를 얻는다. 원격 행 패치는 배포 방식이 아니다.
 `);
 for (const p of c.plans) {
-  const m = c.maps[p.id];
+  const m = c.maps[p.id], series = seriesOf(p.id);
   doc(p.id, p.name + " · 지형과 배치", `# ${p.name}
 
 ${p.note}. 시작점 (${p.start.x},${p.start.y}); 집 ${p.houses.length}채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
 
 ![${p.name} 완성](image:${p.id})
+${p.landmarks?.length ? "\n## 랜드마크\n" + block(p.landmarks) : ""}
 
 ## 입력 계획과 예약할 접근칸
 ${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, yards:p.yards, activitySites:p.activitySites, civicPlaces:p.civicPlaces, entrance:p.entrance, crest:p.crest, patches:p.patches, clearings:p.clearings, cliffs: p.cliffs, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
 
 ## 건물의 전체 하위·상위
 ${p.houses.map((h) => "### " + h.id + "\n" + block({ ...h, ...crop(m, h.x, h.y, h.w, h.h) })).join("\n")}
-`);
+`, series);
   for (let i = 0; i < p.placements.length; i += 32) {
-    doc(p.id + "-objects-" + (i / 32 + 1), p.name + " · 소품 " + (i / 32 + 1), "# 실제 소품의 완전한 두 레이어 배열\n\n각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.\n" + p.placements.slice(i, i + 32).map((o) => "## " + o.name + "\n" + block({ ...o, ...crop(m, o.x, o.y, o.w, o.h) })).join("\n"));
+    doc(p.id + "-objects-" + (i / 32 + 1), p.name + " · 소품 " + (i / 32 + 1), "# 실제 소품의 완전한 두 레이어 배열\n\n각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.\n" + p.placements.slice(i, i + 32).map((o) => "## " + o.name + "\n" + block({ ...o, ...crop(m, o.x, o.y, o.w, o.h) })).join("\n"), series);
   }
   for (let y = 0; y < m.height; y += 16) {
     doc(p.id + "-rows-" + y, p.name + ` · ${y}행부터 전체 배열`, `# ${p.name} 전체 배열 y=${y}..${Math.min(y + 15, m.height - 1)}
@@ -63,7 +68,7 @@ ${p.houses.map((h) => "### " + h.id + "\n" + block({ ...h, ...crop(m, h.x, h.y, 
 ${rows(m.lowerTiles.slice(y * m.width, Math.min(y + 16, m.height) * m.width), m.width)}
 ## upperTiles
 ${rows(m.upperTiles.slice(y * m.width, Math.min(y + 16, m.height) * m.width), m.width)}
-`);
+`, series);
   }
 }
 const used = [...new Set(Object.values(c.maps).flatMap((m) => [...m.lowerTiles, ...m.upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
@@ -156,18 +161,50 @@ ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 `);
 let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n4개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
-doc("validation", "좌표 검증 · 정상/오류 20종", checks);
+doc("validation", "좌표 검증 · 정상/오류 " + validation.examples.length + "종", checks);
 doc('household-props','소품의 사용 목적 · 기준 대상과 동선',fs.readFileSync(dir+'/household-props.md','utf8'));
 doc('prop-programs','사용 목적 입력 사전 · 집별 활동과 부품 관계','# 활동별 부품·상대좌표·목적·기준 및 집별 명시 선언\n\n'+block(JSON.parse(fs.readFileSync(dir+'/prop-programs.json'))));
 doc('civic-props','공동 공간·정원·환대 · 실행 배치 규칙',fs.readFileSync(dir+'/civic-props.md','utf8'));
-for(const [id,zones] of Object.entries(JSON.parse(fs.readFileSync(dir+'/civic-programs.json'))))doc('civic-'+id,'장소별 소품 입력 · '+c.plans.find(p=>p.id===id).name,'# 공동 공간과 정원의 명시 배치 입력\n\n'+block(zones));
+for(const [id,zones] of Object.entries(JSON.parse(fs.readFileSync(dir+'/civic-programs.json'))))doc('civic-'+id,'장소별 소품 입력 · '+c.plans.find(p=>p.id===id).name,'# 공동 공간과 정원의 명시 배치 입력\n\n'+block(zones),seriesOf(id));
 doc('research-layout','최근 연구 적용 · 지형·숲·입구',fs.readFileSync(dir+'/research-layout.md','utf8'));
+const landmarks = JSON.parse(fs.readFileSync(dir + "/landmarks.json")), labels = JSON.parse(fs.readFileSync(dir + "/tile-labels.json"));
+doc("concept-guide", "교회·작은 성·묘지·울타리 못 · 통째 조립", `# 컨셉 마을 세 곳 — 교회 언덕·여울성·안개못 폐촌
+
+비취 대계곡의 강·폭포 방식(개정9 river/bridges)을 그대로 쓰고, 마을마다 다른 랜드마크를 하나씩 세운다. 원본·이식 사전과 절벽·잔디·숲·생활 소품 규칙은 「다양한 마을」 분류 문서를 따른다. 좌표는 0기준 맵 좌표다.
+
+${conceptPlans.map((p) => `- ${p.name} (${p.id}, ${p.width}×${p.height}): ${p.note}. 랜드마크 ${p.landmarks.map((l) => l.label + " (" + l.x + "," + l.y + ")").join(", ")}.`).join("\n")}
+
+## 실행 순서
+절벽→계단→강·폭포→다리→집(창문 한 종류로 교체)→랜드마크→길(문앞·계단·다리목·랜드마크 문·마당 입구를 가장 가까운 길 뼈대에 연결)→숲→생활 마당→공동 공간. 랜드마크 영역은 전부 lower=240·upper=-1·물 아님·예약 아님이어야 하며, 하나라도 겹치면 저작을 멈춘다. 영역 전체와 그 둘레를 길·숲·소품에서 예약한다.
+
+## 건물 — 교회와 작은 성
+lower/upper는 행 우선 w×h 배열이다. doors는 1×2 문의 아래 칸(359)이며 바로 위는 329, 문앞(한 칸 아래)이 접근칸이다. 성의 탑·본채 사이 잔디 칸(lower240·upper-1)도 영역에 포함되어 다른 부품을 놓지 않는다.
+- 교회: 목골 석벽12~14/42~44/72~74 위에 주황 지붕376/404/377과 처마405(양끝 상층384/385). 지붕 가운데 상층659 돌 십자가. 좌우 벽에 84 스테인드글라스를 위아래 두 칸 겹쳐 긴 창으로 쓴다.
+- 작은 성: 뒤쪽 본채(21~23 윗단, 51~53·81~83 면, 창87), 앞 성벽(21~23 흉벽, 51~53·81~83 면, 141~143 밑단), 양끝 둥근 탑24/25·54/55와 그 아래 51/53·81/83·141/143, 성벽 면 상층에 깃발179/209 두 개, 폭2 성문(329 위·359 아래).
+${block(landmarks.buildings)}
+
+## 울타리 마당 — 묘지와 울타리 못
+울타리 고리: 윗변 378·379…379·380, 왼변408, 오른변564, 밑변438·439…439·594. gate=[dx,폭]만큼 밑변을 비운다. 마당 안은 걸을 수 있고 contents의 상층 소품(묘비353, 십자 묘323·568, 오벨리스크569/599, 해골383, 마른 묘목740, 석상266/296)은 통행 불가다. 접근칸은 입구 바깥(yard-gate)과 안쪽(yard-inside) 두 곳.
+울타리 못: pond=[cx,cy,rx,ry]의 타원(가장자리 0.14·sin(1.7dx+2.3dy) 굴곡)을 pondBounds 안에서만 호수 오토타일로 칠하고, island 칸은 비워 섬으로 남긴다. 젖은 이웃이 두 칸 미만인 한 칸 돌기는 없어질 때까지 깎는다. 섬 가운데 석상266/296.
+${block(landmarks.yards)}
+
+## 창문과 라벨
+집 창은 한 종류(85·86·87), 폐가는 88이며 폐가의 맨 벽 한 열에 덩굴265/295를 겹친다. 폐가의 생활 마당은 「버려진 마당」(마른 묘목과 부서진 울타리)이다. 비어 있던 칩셋 라벨은 아래 표로 채웠다. 기존 프로젝트는 라벨이 비어 있거나 원래 「창문」인 칸만 채운다.
+${block(labels.tiles)}
+
+## 검사
+- mixed-windows: 한 집 안에 다른 창 번호가 섞였다(좌표는 섞인 칸).
+- landmark-sealed: 교회·성 문앞이나 마당 입구 안쪽에 시작점에서 닿지 못한다(좌표는 막힌 접근칸).
+두 검사의 정상/오류 그림은 「다양한 마을」 분류의 좌표 검증 문서에 있다.
+`, "concept");
 const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png")).sort().map((n) => {
   const file = preview + "/" + n;
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
-const category = { id: "diverse-villages-river-v9", name: "다양한 마을 · 산촌·절벽·포구·강마을 (강과 폭포 개정9)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 20종 오류 검사", documents: docs, images };
-if (docs.length > 64 || docs.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit");
-fs.writeFileSync(target, JSON.stringify([category]) + "\n");
-console.log({ documents: docs.length, images: images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });
+const conceptImages = new Set(conceptPlans.map((p) => p.id));
+const category = { id: "diverse-villages-windows-v10", name: "다양한 마을 · 산촌·절벽·포구·강마을 (창문 개정10)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
+const concept = { id: "concept-villages-v1", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
+for (const k of [category, concept]) if (k.documents.length > 64 || k.documents.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit " + k.id);
+fs.writeFileSync(target, JSON.stringify([category, concept]) + "\n");
+console.log({ documents: docs.length, conceptDocuments: conceptDocs.length, images: category.images.length, conceptImages: concept.images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });

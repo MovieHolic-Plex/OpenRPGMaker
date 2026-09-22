@@ -188,6 +188,29 @@
         0,
         1
       ]
+    },
+    "abandoned": {
+      "name": "버려진 마당",
+      "items": [
+        [
+          "마른 묘목",
+          0,
+          0,
+          "손길이 끊겨 말라 버린 마당 나무",
+          "house"
+        ],
+        [
+          "부서진 울타리",
+          2,
+          0,
+          "무너진 채 남은 마당 경계",
+          "마른 묘목"
+        ]
+      ],
+      "compact": [
+        0,
+        1
+      ]
     }
   },
   "houses": {
@@ -352,6 +375,127 @@
         "activity": "storage",
         "role": "물자 보관집",
         "reason": "아랫단 동쪽 다리목 집을 짐 보관 거점으로 둔다"
+      }
+    },
+    "chapel-hill-parish": {
+      "46,7": {
+        "activity": "herbs",
+        "role": "사제관",
+        "reason": "교회 옆 사제관에서 제단에 올릴 약초를 기른다"
+      },
+      "66,6": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "윗단 강 건너 집은 세탁 마당만 둔다"
+      },
+      "10,32": {
+        "activity": "woodwork",
+        "role": "목수집",
+        "reason": "아랫마을 서쪽 목수집이 교회 의자와 관을 짠다"
+      },
+      "24,35": {
+        "activity": "storage",
+        "role": "종지기 집",
+        "reason": "종지기가 초와 종 밧줄을 보관한다"
+      },
+      "46,33": {
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "폭포 아래 강둑 평지를 가족 텃밭으로 쓴다"
+      },
+      "12,50": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "남서쪽 집은 세탁 마당만 둔다"
+      },
+      "46,50": {
+        "activity": "field-tending",
+        "role": "밭집",
+        "reason": "바로 옆 밭을 돌본다"
+      }
+    },
+    "ford-castle-town": {
+      "14,8": {
+        "activity": "storage",
+        "role": "기사 숙소",
+        "reason": "성 서쪽 기사 숙소에 마구와 보급품을 쌓아 둔다"
+      },
+      "74,8": {
+        "activity": "woodwork",
+        "role": "망루지기 집",
+        "reason": "강 건너 망루지기가 창 자루를 깎는다"
+      },
+      "10,30": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "가운데 단 서쪽 집은 세탁 마당만 둔다"
+      },
+      "22,33": {
+        "activity": "herbs",
+        "role": "약방",
+        "reason": "성 병사를 돌보는 약초 손질집"
+      },
+      "48,30": {
+        "activity": "storage",
+        "role": "성 곳간",
+        "reason": "성으로 올릴 곡식과 물자를 보관한다"
+      },
+      "76,31": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "강 건너 가운데 단 집은 세탁 마당만 둔다"
+      },
+      "12,55": {
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "아랫단 서쪽 집이 가족 텃밭을 기른다"
+      },
+      "44,56": {
+        "activity": "woodwork",
+        "role": "목수집",
+        "reason": "나루 배와 다리를 고치는 목수집"
+      },
+      "56,57": {
+        "activity": "storage",
+        "role": "나루 창고",
+        "reason": "나루로 들어온 짐을 보관한다"
+      }
+    },
+    "mistpond-hollow": {
+      "6,5": {
+        "activity": "abandoned",
+        "role": "폐가",
+        "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다"
+      },
+      "52,5": {
+        "activity": "abandoned",
+        "role": "폐가",
+        "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다"
+      },
+      "20,26": {
+        "activity": "abandoned",
+        "role": "폐가",
+        "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다"
+      },
+      "54,27": {
+        "activity": "abandoned",
+        "role": "폐가",
+        "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다"
+      },
+      "22,47": {
+        "activity": "abandoned",
+        "role": "폐가",
+        "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다"
+      },
+      "58,46": {
+        "activity": "abandoned",
+        "role": "폐가",
+        "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다"
+      },
+      "44,48": {
+        "activity": "herbs",
+        "role": "못지기 집",
+        "reason": "마지막으로 남은 못지기가 못가 약초를 손질하며 석상을 돌본다"
       }
     }
   }

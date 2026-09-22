@@ -1,0 +1,17 @@
+{
+  "projectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
+  "projectDir": "/home/main/.codex/worktrees/76a3/rpg-zzu/.oprn-projects/village-diversity-20260923",
+  "revision": 19,
+  "sha256": "e763830d2512e6d0e9400e10ac8eb16f4da38fadeb33378dc3d66ab48aca16e9",
+  "saved": true,
+  "reopened": true,
+  "maps": [
+    "pine-hamlets",
+    "terrace-cliff-village",
+    "twin-falls-river-village",
+    "reed-bay-village",
+    "chapel-hill-parish",
+    "ford-castle-town",
+    "mistpond-hollow"
+  ]
+}

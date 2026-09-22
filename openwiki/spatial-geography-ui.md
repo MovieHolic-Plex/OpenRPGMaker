@@ -418,3 +418,18 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 검증기 `waterfall-gap` 추가(20종). 폭포는 번들 칩셋에 애니메이션이 없어 정지 그림.
 - 같은 개정: 과일 바구니는 사과 배율이 커서 부품 목록에서 제거, 층바위 동굴 삭제.
 - 지역 revision9 / `diverse-villages-river-v9`(51 MD·28 이미지), 정본 revision18 재오픈 일치. 근거 `verify-shots/village-river/`.
+
+### 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+
+비취 대계곡 방식의 강·폭포 위에 마을마다 다른 랜드마크를 통째로 세운 지역 3개. 「지역」과 「장소」 두 곳에 모두 나온다(두 폭포 강마을도 장소에 추가).
+- 종탑 언덕 교구마을(80×64): 윗단에 스테인드글라스 교회, 외곽에 울타리 친 묘지, 폭포 하나와 소.
+- 여울성 나루(88×72): 맨 윗단에 둥근 탑·깃발·본채가 있는 작은 성, 동쪽 강이 두 줄 절벽에서 폭포 둘, 다리 둘.
+- 안개못 폐촌(80×64): 울타리 친 못과 섬 위 석상, 폐가 여섯(깨진 창88·벽 덩굴), 못지기 집 하나(덧문86), 외곽의 잊힌 묘지.
+- 랜드마크: `tiledata/forest-villages/diverse/landmarks.json`. 건물(교회 7×9, 성 12×8)은 두 레이어 배열 통째, 마당(묘지·울타리 못)은 울타리 고리
+  378/379/380·408·564·438/439/594 + 입구 공백 + 내용물. 영역이 하나라도 겹치면 저작 중단. 문앞·마당 입구는 길 뼈대에 연결되고 접근칸으로 검사.
+- 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
+- 칩셋 라벨: 84·86·88과 성벽 21~25/51~55/81~83/141~143, 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
+  `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
+- 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
+- 지역 revision10, 정본 revision19 재오픈 일치. 근거 `verify-shots/village-concept/`.

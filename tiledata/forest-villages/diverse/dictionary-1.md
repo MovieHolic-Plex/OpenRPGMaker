@@ -214,6 +214,161 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 21,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 21,
+    "sourceX": 21,
+    "sourceY": 0,
+    "pixelX": 336,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 0,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 윗단 · 왼쪽",
+      "description": "흉벽이 있는 성벽 윗단. 21·22…22·23 으로 가로 반복하고 아래로 51~53, 81~83, 141~143 을 잇는다.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 22,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 22,
+    "sourceX": 22,
+    "sourceY": 0,
+    "pixelX": 352,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 0,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 윗단 · 가운데",
+      "description": "흉벽이 있는 성벽 윗단의 반복 칸.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 23,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 23,
+    "sourceX": 23,
+    "sourceY": 0,
+    "pixelX": 368,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 0,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 윗단 · 오른쪽",
+      "description": "흉벽이 있는 성벽 윗단의 오른쪽 끝.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 24,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 24,
+    "sourceX": 24,
+    "sourceY": 0,
+    "pixelX": 384,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 0,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "둥근 탑 머리 · 왼쪽",
+      "description": "둥근 망루 꼭대기(2×2 중 왼쪽 위). 아래 54, 오른쪽 25.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 25,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 25,
+    "sourceX": 25,
+    "sourceY": 0,
+    "pixelX": 400,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 0,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "둥근 탑 머리 · 오른쪽",
+      "description": "둥근 망루 꼭대기(2×2 중 오른쪽 위). 아래 55.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
     "tile": 42,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -421,6 +576,161 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "description": "",
       "defaultLayer": "lower",
       "repeatability": "repeat"
+    }
+  },
+  {
+    "tile": 51,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 51,
+    "sourceX": 21,
+    "sourceY": 1,
+    "pixelX": 336,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 1,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 면 · 왼쪽",
+      "description": "짙은 돌 성벽 면. 51·52…52·53.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 52,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 52,
+    "sourceX": 22,
+    "sourceY": 1,
+    "pixelX": 352,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 1,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 면 · 가운데",
+      "description": "짙은 돌 성벽 면의 반복 칸. 창·깃발은 상층에 겹친다.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 53,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 53,
+    "sourceX": 23,
+    "sourceY": 1,
+    "pixelX": 368,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 1,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 면 · 오른쪽",
+      "description": "짙은 돌 성벽 면의 오른쪽 끝.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 54,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 54,
+    "sourceX": 24,
+    "sourceY": 1,
+    "pixelX": 384,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 1,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "둥근 탑 몸통 · 왼쪽",
+      "description": "둥근 망루 몸통(24 아래). 성벽 윗단 높이에 맞춘다.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 55,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 55,
+    "sourceX": 25,
+    "sourceY": 1,
+    "pixelX": 400,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 1,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "둥근 탑 몸통 · 오른쪽",
+      "description": "둥근 망루 몸통(25 아래).",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
     }
   },
   {
@@ -634,6 +944,130 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 81,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 81,
+    "sourceX": 21,
+    "sourceY": 2,
+    "pixelX": 336,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 2,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 면 아래 · 왼쪽",
+      "description": "성벽 면 둘째 줄. 여러 줄 반복해 높이를 준다.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 82,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 82,
+    "sourceX": 22,
+    "sourceY": 2,
+    "pixelX": 352,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 2,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 면 아래 · 가운데",
+      "description": "성벽 면 둘째 줄의 반복 칸.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 83,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 83,
+    "sourceX": 23,
+    "sourceY": 2,
+    "pixelX": 368,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 2,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 면 아래 · 오른쪽",
+      "description": "성벽 면 둘째 줄의 오른쪽 끝.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 84,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 84,
+    "sourceX": 24,
+    "sourceY": 2,
+    "pixelX": 384,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 2,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "스테인드글라스 창",
+      "description": "교회 벽에 거는 색유리 창. 위아래 두 칸을 겹치면 긴 첨두창이 된다. 집 창으로 쓰지 않는다.",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
+    }
+  },
+  {
     "tile": 85,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -658,14 +1092,45 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "upper",
     "tileMeta": {
       "role": "prop",
-      "label": "창문",
+      "label": "격자 유리창",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "하늘색 유리 여섯 칸의 나무틀 창. 한 집의 창은 한 종류만 쓴다.",
       "defaultLayer": "upper",
       "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 86,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 86,
+    "sourceX": 26,
+    "sourceY": 2,
+    "pixelX": 416,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 2,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "덧문 창",
+      "description": "흰 커튼이 비치는 나무 덧문 창. 한 집의 창은 한 종류만 쓴다.",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
     }
   },
   {
@@ -693,14 +1158,138 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "upper",
     "tileMeta": {
       "role": "prop",
-      "label": "창문",
+      "label": "아치 유리창",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "돌테 아치 위에 격자 유리를 끼운 창. 석벽 집·성 본채에 어울린다. 한 집의 창은 한 종류만 쓴다.",
       "defaultLayer": "upper",
       "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 88,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 88,
+    "sourceX": 28,
+    "sourceY": 2,
+    "pixelX": 448,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 28,
+    "targetY": 2,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "깨진 창",
+      "description": "판자가 빠지고 유리가 깨진 창. 사람이 떠난 폐가에만 쓴다.",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 141,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 141,
+    "sourceX": 21,
+    "sourceY": 4,
+    "pixelX": 336,
+    "pixelY": 64,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 4,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 밑단 · 왼쪽",
+      "description": "화살 구멍이 난 성벽 밑단. 땅에 닿는 줄.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 142,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 142,
+    "sourceX": 22,
+    "sourceY": 4,
+    "pixelX": 352,
+    "pixelY": 64,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 4,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 밑단 · 가운데",
+      "description": "성벽 밑단의 반복 칸.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 143,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 143,
+    "sourceX": 23,
+    "sourceY": 4,
+    "pixelX": 368,
+    "pixelY": 64,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 4,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "성벽 밑단 · 쪽문",
+      "description": "좁은 어두운 구멍이 난 성벽 밑단 끝.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
     }
   },
   {
@@ -736,6 +1325,37 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "description": "",
       "defaultLayer": "upper",
       "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 179,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 179,
+    "sourceX": 29,
+    "sourceY": 5,
+    "pixelX": 464,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 29,
+    "targetY": 5,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "성 깃발 위",
+      "description": "붉은 바탕에 금빛 문장이 있는 세로 깃발 윗칸. 아래 209. 성벽 면 상층에 건다.",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
     }
   },
   {
@@ -928,6 +1548,37 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 209,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 209,
+    "sourceX": 29,
+    "sourceY": 6,
+    "pixelX": 464,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 29,
+    "targetY": 6,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "성 깃발 아래",
+      "description": "세로 깃발의 제비꼬리 아랫칸(179 아래).",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
+    }
+  },
+  {
     "tile": 234,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -1103,256 +1754,18 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 327,
+    "tile": 265,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 327,
-    "sourceX": 27,
-    "sourceY": 10,
-    "pixelX": 432,
-    "pixelY": 160,
-    "width": 16,
-    "height": 16,
-    "targetX": 27,
-    "targetY": 10,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "벤치 좌",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 328,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 328,
-    "sourceX": 28,
-    "sourceY": 10,
-    "pixelX": 448,
-    "pixelY": 160,
-    "width": 16,
-    "height": 16,
-    "targetX": 28,
-    "targetY": 10,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "벤치 우",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 329,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 329,
-    "sourceX": 29,
-    "sourceY": 10,
-    "pixelX": 464,
-    "pixelY": 160,
-    "width": 16,
-    "height": 16,
-    "targetX": 29,
-    "targetY": 10,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "building",
-      "label": "문/입구",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 349,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 349,
-    "sourceX": 19,
-    "sourceY": 11,
-    "pixelX": 304,
-    "pixelY": 176,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 11,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "장작 더미",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 350,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 350,
-    "sourceX": 20,
-    "sourceY": 11,
-    "pixelX": 320,
-    "pixelY": 176,
-    "width": 16,
-    "height": 16,
-    "targetX": 20,
-    "targetY": 11,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "우편함",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 352,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 352,
-    "sourceX": 22,
-    "sourceY": 11,
-    "pixelX": 352,
-    "pixelY": 176,
-    "width": 16,
-    "height": 16,
-    "targetX": 22,
-    "targetY": 11,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "항아리",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 354,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 354,
-    "sourceX": 24,
-    "sourceY": 11,
-    "pixelX": 384,
-    "pixelY": 176,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 11,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "",
-      "description": ""
-    }
-  },
-  {
-    "tile": 355,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 355,
+    "sourceTile": 265,
     "sourceX": 25,
-    "sourceY": 11,
+    "sourceY": 8,
     "pixelX": 400,
-    "pixelY": 176,
+    "pixelY": 128,
     "width": 16,
     "height": 16,
     "targetX": 25,
-    "targetY": 11,
+    "targetY": 8,
     "layers": [
       "upper"
     ],
@@ -1364,254 +1777,26 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     },
     "priority": "upper",
     "tileMeta": {
-      "label": "",
-      "description": ""
+      "label": "벽 덩굴 위",
+      "description": "벽을 타고 오른 덩굴 윗칸. 아래 295·325. 손길이 끊긴 폐가 벽에 겹친다.",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
     }
   },
   {
-    "tile": 356,
+    "tile": 266,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 356,
+    "sourceTile": 266,
     "sourceX": 26,
-    "sourceY": 11,
+    "sourceY": 8,
     "pixelX": 416,
-    "pixelY": 176,
+    "pixelY": 128,
     "width": 16,
     "height": 16,
     "targetX": 26,
-    "targetY": 11,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "",
-      "description": ""
-    }
-  },
-  {
-    "tile": 357,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 357,
-    "sourceX": 27,
-    "sourceY": 11,
-    "pixelX": 432,
-    "pixelY": 176,
-    "width": 16,
-    "height": 16,
-    "targetX": 27,
-    "targetY": 11,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "",
-      "description": ""
-    }
-  },
-  {
-    "tile": 359,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 359,
-    "sourceX": 29,
-    "sourceY": 11,
-    "pixelX": 464,
-    "pixelY": 176,
-    "width": 16,
-    "height": 16,
-    "targetX": 29,
-    "targetY": 11,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "building",
-      "label": "문/입구",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 374,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 374,
-    "sourceX": 14,
-    "sourceY": 12,
-    "pixelX": 224,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 14,
-    "targetY": 12,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "repeat"
-    }
-  },
-  {
-    "tile": 375,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 375,
-    "sourceX": 15,
-    "sourceY": 12,
-    "pixelX": 240,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 15,
-    "targetY": 12,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "repeat"
-    }
-  },
-  {
-    "tile": 376,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 376,
-    "sourceX": 16,
-    "sourceY": 12,
-    "pixelX": 256,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 16,
-    "targetY": 12,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "repeat"
-    }
-  },
-  {
-    "tile": 377,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 377,
-    "sourceX": 17,
-    "sourceY": 12,
-    "pixelX": 272,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 12,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "repeat"
-    }
-  },
-  {
-    "tile": 381,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 381,
-    "sourceX": 21,
-    "sourceY": 12,
-    "pixelX": 336,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 21,
-    "targetY": 12,
+    "targetY": 8,
     "layers": [
       "upper"
     ],
@@ -1624,7 +1809,7 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "upper",
     "tileMeta": {
       "role": "prop",
-      "label": "모닥불",
+      "label": "석상 상단",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
@@ -1635,123 +1820,18 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 384,
+    "tile": 267,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 384,
-    "sourceX": 24,
-    "sourceY": 12,
-    "pixelX": 384,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 12,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕 캡",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 385,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 385,
-    "sourceX": 25,
-    "sourceY": 12,
-    "pixelX": 400,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 25,
-    "targetY": 12,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕 캡",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 386,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 386,
-    "sourceX": 26,
-    "sourceY": 12,
-    "pixelX": 416,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 26,
-    "targetY": 12,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕 캡",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 387,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 387,
+    "sourceTile": 267,
     "sourceX": 27,
-    "sourceY": 12,
+    "sourceY": 8,
     "pixelX": 432,
-    "pixelY": 192,
+    "pixelY": 128,
     "width": 16,
     "height": 16,
     "targetX": 27,
-    "targetY": 12,
+    "targetY": 8,
     "layers": [
       "upper"
     ],
@@ -1763,8 +1843,8 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     },
     "priority": "upper",
     "tileMeta": {
-      "role": "roof",
-      "label": "사선 지붕 캡",
+      "role": "prop",
+      "label": "돌기둥 상단",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
@@ -1775,20 +1855,20 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 404,
+    "tile": 295,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 404,
-    "sourceX": 14,
-    "sourceY": 13,
-    "pixelX": 224,
-    "pixelY": 208,
+    "sourceTile": 295,
+    "sourceX": 25,
+    "sourceY": 9,
+    "pixelX": 400,
+    "pixelY": 144,
     "width": 16,
     "height": 16,
-    "targetX": 14,
-    "targetY": 13,
+    "targetX": 25,
+    "targetY": 9,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1796,34 +1876,30 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "left": false,
       "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "fixed"
+      "label": "벽 덩굴 가운데",
+      "description": "벽 덩굴 가운데 칸.",
+      "role": "prop",
+      "defaultLayer": "upper",
+      "passage": "solid"
     }
   },
   {
-    "tile": 405,
+    "tile": 296,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 405,
-    "sourceX": 15,
-    "sourceY": 13,
-    "pixelX": 240,
-    "pixelY": 208,
+    "sourceTile": 296,
+    "sourceX": 26,
+    "sourceY": 9,
+    "pixelX": 416,
+    "pixelY": 144,
     "width": 16,
     "height": 16,
-    "targetX": 15,
-    "targetY": 13,
+    "targetX": 26,
+    "targetY": 9,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1831,34 +1907,34 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "left": false,
       "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
+      "role": "prop",
+      "label": "석상 하단",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
       "terrainTag": 0,
       "description": "",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "repeatability": "fixed"
     }
   },
   {
-    "tile": 406,
+    "tile": 297,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 406,
-    "sourceX": 16,
-    "sourceY": 13,
-    "pixelX": 256,
-    "pixelY": 208,
+    "sourceTile": 297,
+    "sourceX": 27,
+    "sourceY": 9,
+    "pixelX": 432,
+    "pixelY": 144,
     "width": 16,
     "height": 16,
-    "targetX": 16,
-    "targetY": 13,
+    "targetX": 27,
+    "targetY": 9,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1866,137 +1942,32 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "left": false,
       "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
+      "role": "prop",
+      "label": "돌기둥 하단",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
       "terrainTag": 0,
       "description": "",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "repeatability": "fixed"
     }
   },
   {
-    "tile": 407,
+    "tile": 323,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 407,
-    "sourceX": 17,
-    "sourceY": 13,
-    "pixelX": 272,
-    "pixelY": 208,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 13,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 436,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 436,
-    "sourceX": 16,
-    "sourceY": 14,
-    "pixelX": 256,
-    "pixelY": 224,
-    "width": 16,
-    "height": 16,
-    "targetX": 16,
-    "targetY": 14,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 437,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 437,
-    "sourceX": 17,
-    "sourceY": 14,
-    "pixelX": 272,
-    "pixelY": 224,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 14,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 443,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_retro_house",
-    "sourceTile": 443,
+    "sourceTile": 323,
     "sourceX": 23,
-    "sourceY": 14,
+    "sourceY": 10,
     "pixelX": 368,
-    "pixelY": 224,
+    "pixelY": 160,
     "width": 16,
     "height": 16,
     "targetX": 23,
-    "targetY": 14,
+    "targetY": 10,
     "layers": [
       "upper"
     ],
@@ -2008,42 +1979,14 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     },
     "priority": "upper",
     "tileMeta": {
-      "label": "",
-      "description": ""
-    }
-  },
-  {
-    "tile": 467,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 467,
-    "sourceX": 17,
-    "sourceY": 15,
-    "pixelX": 272,
-    "pixelY": 240,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 15,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "building",
-      "label": "지붕-벽 경계",
+      "role": "prop",
+      "label": "묘지",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
       "terrainTag": 0,
       "description": "",
-      "defaultLayer": "lower",
+      "defaultLayer": "upper",
       "repeatability": "fixed"
     }
   }
