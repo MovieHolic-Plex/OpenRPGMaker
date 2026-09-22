@@ -5,7 +5,8 @@
 
 import { queryNpcGraphics } from "@/assets/charsetQuery";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
-import { searchResources, type ResourceSearchKind } from "@/assets/resourceSearch";
+import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
+import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -370,7 +371,7 @@ const findSwitchUsage: ToolDefinition = {
   },
 };
 
-const RESOURCE_KINDS: readonly ResourceSearchKind[] = ["tile", "charset", "monster", "backdrop", "bgm", "se"];
+const RESOURCE_KINDS: readonly (ResourceSearchKind | "picture")[] = ["tile", "charset", "monster", "backdrop", "bgm", "se", "picture"];
 
 const listNpcGraphics: ToolDefinition = {
   name: "list_npc_graphics",
@@ -404,7 +405,7 @@ const listNpcGraphics: ToolDefinition = {
 
 const listResources: ToolDefinition = {
   name: "list_resources",
-  description: "리소스를 시맨틱 검색한다(resourceSearch 위임). kind: tile/charset/monster/backdrop/bgm/se.",
+  description: "리소스를 검색한다. kind: tile/charset/monster/backdrop/bgm/se(시맨틱 검색) 또는 picture(업로드·생성 그림 name/id 부분 일치).",
   mode: "read",
   parameters: {
     type: "object",
@@ -431,13 +432,27 @@ const listResources: ToolDefinition = {
     if (typeof limit !== "number" || !Number.isInteger(limit) || limit < 1 || limit > 50) {
       throw new ToolError("limit은 1~50의 정수여야 합니다.", { code: "invalid-args" });
     }
-    // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
-    const all = searchResources(kind, args.query, {
-      tileset: project.tilesets[DEFAULT_TILESET_ID],
-      charsetLabels: project.charsetLabels,
-      audioProject: project,
-      monsterProject: project,
-    });
+    let all: Pick<ResourceSearchResult, "id" | "label" | "description">[];
+    if (kind === "picture") {
+      // 그림(picture)은 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본 목록에서
+      // name/id 부분 일치로 찾는다. query='*' 는 전체 훑어보기 관례를 따른다.
+      const needle = args.query.trim().toLocaleLowerCase();
+      const browse = needle.length === 0 || needle === "*" || needle === "all" || needle === "전체";
+      all = listDatabaseResourceOptions("picture", project)
+        .filter(option => browse
+          || option.name.toLocaleLowerCase().includes(needle)
+          || option.id.toLocaleLowerCase().includes(needle)
+          || (option.searchTerms ?? []).some(term => term.toLocaleLowerCase().includes(needle)))
+        .map(option => ({ id: option.id, label: option.name }));
+    } else {
+      // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
+      all = searchResources(kind, args.query, {
+        tileset: project.tilesets[DEFAULT_TILESET_ID],
+        charsetLabels: project.charsetLabels,
+        audioProject: project,
+        monsterProject: project,
+      });
+    }
     const matches = all.slice(offset, offset + limit).map(match =>
       match.description === undefined
         ? match
@@ -748,4 +763,3 @@ export const QUERY_TOOLS: readonly ToolDefinition[] = [
   listProjectCommits,
   findLayoutRegionsTool,
 ];
-
