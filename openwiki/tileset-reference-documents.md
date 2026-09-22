@@ -216,3 +216,18 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 새 프로젝트는 두 번들 팩토리에서 즉시 제공한다. 기존 프로젝트는 번들 타일셋 보충 경로가
 빠진 카테고리만 추가한다. 사용자 업로드/공유 원본 포인터/편집 문서는 덮어쓰지 않는다.
 등록 및 SQLite 재로드 영수증과 실제 참고문서 컴포넌트 화면은 해당 폴더의 `ai-references/`에 있다.
+
+## 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+
+`tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
+`src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
+용도 ID는 `diverse-villages-v1`, 문서 33개/이미지 8개/실제 타일 사전 232개다.
+완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
+잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
+자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
+
+이미지는 원본을 source에 보존하고 번들용만 긴 변 820px/128색으로 줄인다. 새 프로젝트 생성 시
+바로 가지며, `ensureBundledTilesets` → `ensureForestHarmonyReferences`로 기존 프로젝트의 빠진
+용도만 채운다. 기존 저자 문서/공유 포인터/다른 이미지의 동명 칩셋은 건드리지 않는다.
+지역 다운로드에도 새 용도가 포함된다. 원격 행 등록만으로 배포 완료를 주장하지 않는다.
+새/기존 프로젝트 배포, 다운로드 직렬화 왕복, 실제 문서 화면 근거는 `verify-shots/village-diversity/`.

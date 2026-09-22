@@ -1,0 +1,36 @@
+{
+  "regions": [
+    {
+      "id": "pine-hamlets-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true,
+      "filename": "솔바람 흩어진 산촌.oprn.json"
+    },
+    {
+      "id": "terrace-cliff-village-88x72",
+      "aiRowsExact": true,
+      "preview": [
+        1408,
+        1152
+      ],
+      "downloadExact": true,
+      "filename": "층바위 절벽마을.oprn.json"
+    },
+    {
+      "id": "reed-bay-village-88x64",
+      "aiRowsExact": true,
+      "preview": [
+        1408,
+        1024
+      ],
+      "downloadExact": true,
+      "filename": "갈대물굽이 포구.oprn.json"
+    }
+  ],
+  "activeProjectUnchanged": true,
+  "errors": []
+}

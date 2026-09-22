@@ -1,3 +1,6 @@
+import diverse0 from "./regionReferences/pine-hamlets.json";
+import diverse1 from "./regionReferences/terrace-cliff-village.json";
+import diverse2 from "./regionReferences/reed-bay-village.json";
 import type { GameMap, TilesetDef, UploadedAsset } from "./types";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 import courtyard from "./regionReferences/castle-courtyard.json";
@@ -65,6 +68,10 @@ const forestSnapshots: Record<string, PlaceSnapshot> = {
 };
 
 const regionSnapshots: Record<string, PlaceSnapshot> = {
+  "pine-hamlets-80x64": diverse0 as unknown as PlaceSnapshot,
+  "terrace-cliff-village-88x72": diverse1 as unknown as PlaceSnapshot,
+  "reed-bay-village-88x64": diverse2 as unknown as PlaceSnapshot,
+
   "river-forest-village-78x44": riverForestSnapshot as unknown as PlaceSnapshot,
   "emerald-basin-80x64": emeraldSnapshot as unknown as PlaceSnapshot,
   "hill-forest-village-64x64": hillForestSnapshot as unknown as PlaceSnapshot,

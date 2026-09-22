@@ -1,3 +1,4 @@
+import { DIVERSE_VILLAGE_REGIONS } from "./diverseVillageReferences";
 import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
 import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
@@ -68,7 +69,7 @@ export const REGION_REFERENCES = [
     "사용자가 승인한 저장본을 보존한다. 내려받는 문서에는 연결된 실내 9개와 기존 출입·주민 이벤트를 포함한다.",
   ],
   limitations: "완성 마을 참고 사례. 자동 생성 프리셋이 아니다. 집 앞길 8곳의 연결을 확인했으며 게임 전체 플레이 검증은 별도다.",
-}] as const;
+}, ...DIVERSE_VILLAGE_REGIONS] as const;
 
 export const LAKE_PLACE_REFERENCES = [
   { id: "lake-pier-workyard", name: "호숫가 선착장 작업터", x: 29, y: 33, width: 14, height: 13,

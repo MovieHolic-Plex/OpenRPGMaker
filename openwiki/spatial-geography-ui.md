@@ -311,3 +311,22 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 브라우저 관측: `scripts/qa/capture-shared-river-forest-region.mjs`.
 저장 재조회·실제 지역 카드·다운로드·전체 행 조회 근거:
 `reports/2026-09-21-shared-river-forest-region.md`.
+
+## 서로 다른 새 마을 3종 공용 지역 (2026-09-23)
+
+이슬여울 원본을 변형하지 않고 별도 SQLite 프로젝트 `44d88b94-58eb-4dee-a11a-88737da7001b`에
+솔바람 흩어진 산촌(80×64), 층바위 절벽마을(88×72), 갈대물굽이 포구(88×64)를 저장·재로드했다.
+`diverseVillageReferences.ts`를 `REGION_REFERENCES` 끝에 추가하며 기존 네 인덱스는 유지한다.
+`regionReferenceSnapshots.ts`의 전체 행 조회와 공용 PNG/다운로드가 같은 저장본을 가리킨다.
+집 전체 부품·3행 숲 몸통은 재사용하되 지형·길·집 원점은 독립 설계다. 실내·NPC·문 전이는 없다.
+
+지역 갤러리도 `is-library-only`로 속성을 접으므로, `spatial-shell-regions`의 「속성」 버튼은
+장소와 마찬가지로 모든 폭에서 보여야 한다. 카드는 선택만 하고 속성은 사용자가 열도록 유지한다.
+그 버튼을 숨기면 미리보기와 다운로드가 DOM에만 있고 접근할 수 없다.
+읽기 전용 지역의 300px 속성 열에서는 그림/설명을 세로로 쌓는다. 공통 캔버스+280px 속성의
+2열을 중첩하면 그림이 20px로 축소된다(`spatialPlaceLibrary.css`의 지역 참조 한정 규칙).
+실제 카드·속성·다운로드·AI 행 일치 근거: `verify-shots/village-diversity/`.
+
+공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (33 MD/8 이미지).
+정확한 원본 좌표·레이어·전체 배열·반복 조립·오류 좌표는 `tiledata/forest-villages/diverse/`에 있다.
+생성/배포 명령 및 정본 보존 계약은 그 디렉터리의 README를 따른다.

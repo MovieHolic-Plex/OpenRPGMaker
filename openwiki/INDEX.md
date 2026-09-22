@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **85쪽 / 3296KB / 약 938,801 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **85쪽 / 3299KB / 약 939,712 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -93,7 +93,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-catalog-ui.md` | 2 | `output/evidence/interior-removal-executed/host-proof.json`, `output/evidence/place-previews/proof.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
-| `openwiki/spatial-geography-ui.md` | 3 | `.oprn.json`, `lake-persistence.json`, `lake-regions-desktop.png` |
+| `openwiki/spatial-geography-ui.md` | 4 | `.oprn.json`, `diverseVillageReferences.ts`, `lake-persistence.json`, `lake-regions-desktop.png` |
 | `openwiki/spatial-place-compiler.md` | 2 | `interior-catalog-editor.mjs`, `scripts/register-house-spatial-catalog.mts` |
 | `openwiki/stardew-core-elements-research.md` | 1 | `scripts/save-stardew-demo.mts` |
 | `openwiki/storage-retirement.md` | 1 | `.oprn-local.json` |
@@ -1373,7 +1373,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 19KB · 314줄 · ~4,952 토큰
+### `openwiki/spatial-geography-ui.md` — 20KB · 333줄 · ~5,458 토큰
 
 - `L9` Public modules
 - `L27` Regions gallery contract (2026-09-22)
@@ -1389,6 +1389,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L246` 기존 완성 맵을 지역에 연결
 - `L262` Shared forest regions and village trails (2026-09-21)
 - `L297` 승인된 강변 숲마을 공용 지역 (2026-09-21)
+- `L315` 서로 다른 새 마을 3종 공용 지역 (2026-09-23)
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 
@@ -1604,7 +1605,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 16px 병행판 (2026-09-22)
   - `L325` 픽셀 크기 기록 계약 (2026-09-22)
 
-### `openwiki/tileset-reference-documents.md` — 17KB · 219줄 · ~5,283 토큰
+### `openwiki/tileset-reference-documents.md` — 18KB · 234줄 · ~5,688 토큰
 
 - `L5` 사용자 경로와 정본
 - `L21` 타일 화면 구성 (2026-09-21)
@@ -1620,6 +1621,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L167` 공용 숲 실행 조립법 (2026-09-22)
   - `L184` 상세 공용 조립 계약 (public-assembly-v2)
 - `L196` 이슬여울 마을 장식 표본 (2026-09-22)
+- `L220` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 
