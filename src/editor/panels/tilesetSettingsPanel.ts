@@ -66,7 +66,7 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
       el("header", { class: "tileset-library-heading", children: [
         el("div", { children: [el("small", { text: "자료집 / 맵 / 타일" }), el("h2", { text: selected.name })] }),
         el("span", { class: "tileset-library-chip", text: `${selected.tileSize}×${selected.tileSize}px · ${selected.count.toLocaleString()} 타일` }),
-      ] }), renderAtlasPreview(selected), renderTilesetEditor(selected, rerender),
+      ] }), ...renderAtlasPreview(selected), renderTilesetEditor(selected, rerender),
     ] }) : el("div", { class: "tileset-library-empty", text: "소재 관리자에서 타일셋을 가져오세요." }),
   ] }));
 }
@@ -139,16 +139,14 @@ function thumbAnchor(id: string): string {
   return "0% 0%";
 }
 
-function renderAtlasPreview(tileset: TilesetDef): HTMLElement {
+/**
+ * 숲 시트에 붙은 선별 소품 안내만 남긴다. 예전엔 모든 타일셋 위에 「시트 · 타일셋 하나」 띠로
+ * 시트를 한 번 더 잘라 보였는데, 바로 아래 통행·자동 연결 탭이 같은 시트를 칸 단위로 전부 그린다.
+ * 같은 그림 두 장이 화면 위쪽 170px 을 먹었다(2026-09-23 사용자 지적).
+ */
+function renderAtlasPreview(tileset: TilesetDef): HTMLElement[] {
   const imageUrl = tilesetImageUrl(tileset);
-  const bands = [
-    el("article", { class: "tileset-library-band", children: [
-      el("header", { children: [el("strong", { text: "시트" }), el("span", { text: "타일셋 하나" })] }),
-      el("div", { class: "tileset-library-sheet", children: [
-        el("img", { attrs: { src: imageUrl, alt: "", style: `object-position:${thumbAnchor(tileset.id)}` } }),
-      ] }),
-    ] }),
-  ];
+  const bands: HTMLElement[] = [];
   const props = (tileset.structureKits ?? []).filter((kit) => kit.id.startsWith("shared-village:"));
   if (tileset.id === "forest_harmony" && props.length > 0) {
     bands.push(el("article", { class: "tileset-library-band", dataset: { testid: "forest-selected-props" }, children: [
@@ -160,5 +158,5 @@ function renderAtlasPreview(tileset: TilesetDef): HTMLElement {
       el("p", { class: "tileset-library-prop-note", text: "왼쪽 목록의 줄이 아닙니다. 이 숲 시트의 아래 구간입니다." }),
     ] }));
   }
-  return el("div", { class: "tileset-library-atlas", children: bands });
+  return bands.length ? [el("div", { class: "tileset-library-atlas", children: bands })] : [];
 }
