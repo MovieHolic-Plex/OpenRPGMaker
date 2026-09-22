@@ -8,10 +8,21 @@ export type OpeningStillPackEntry = {
 };
 
 const OPENING_STILL_PACK_ENTRIES: readonly (readonly [string, OpeningStillPackEntry])[] = [
+  ["oprn-pack-still-desert-01", { fileName: "desert-01.jpg" }],
+  ["oprn-pack-still-desert-02", { fileName: "desert-02.jpg" }],
+  ["oprn-pack-still-desert-03", { fileName: "desert-03.jpg" }],
+  ["oprn-pack-still-desert-04", { fileName: "desert-04.jpg" }],
+  ["oprn-pack-still-modern-01", { fileName: "modern-01.jpg" }],
+  ["oprn-pack-still-modern-02", { fileName: "modern-02.jpg" }],
+  ["oprn-pack-still-modern-03", { fileName: "modern-03.jpg" }],
   ["oprn-pack-still-ocean-01", { fileName: "ocean-01.jpg" }],
   ["oprn-pack-still-ocean-02", { fileName: "ocean-02.jpg" }],
   ["oprn-pack-still-ocean-03", { fileName: "ocean-03.jpg" }],
   ["oprn-pack-still-ocean-04", { fileName: "ocean-04.jpg" }],
+  ["oprn-pack-still-sky-01", { fileName: "sky-01.jpg" }],
+  ["oprn-pack-still-sky-02", { fileName: "sky-02.jpg" }],
+  ["oprn-pack-still-sky-03", { fileName: "sky-03.jpg" }],
+  ["oprn-pack-still-sky-04", { fileName: "sky-04.jpg" }],
   ["oprn-pack-still-winter-01", { fileName: "winter-01.jpg" }],
   ["oprn-pack-still-winter-02", { fileName: "winter-02.jpg" }],
   ["oprn-pack-still-winter-03", { fileName: "winter-03.jpg" }],

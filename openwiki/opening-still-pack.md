@@ -9,11 +9,15 @@ Provider: Google Antigravity / gemini-3.1-flash-image, using the existing privat
 OAuth store. No credentials or provider responses are committed. Original images
 stay in staging; full-frame JPEG delivery copies retain their native resolution.
 
-The first release contains **32 new stills**, eight themes × four shots: winter,
-underwater, sky islands, modern town, desert, forest, gothic mystery and space.
+The first release contains **19 reviewed stills** across winter, underwater, sky islands, modern town and
+desert. Four shots each, except modern town with three. The plan has 13 pending
+shots: 12 were blocked by tibo quota exhaustion, and one modern-town image was
+rejected for a baked-in English caption. Pending images are not in the release
+or runtime catalog.
 The 18 earlier bundled mood stills remain available without installation. This
 is an initial pack, **not a claim that thousands of images have been produced**.
-Larger batches use the same resumable manifest and delivery pipeline.
+Larger batches use the same resumable manifest and delivery pipeline. Quota
+exhaustion stops the batch without retrying every remaining prompt.
 
 `npm run stills:pack -- --staging artifacts/stills-staging` validates every image,
 builds the tar and checksums, regenerates the runtime and searchable catalogs,
@@ -67,3 +71,15 @@ before writing local evidence. `scripts/qa/capture-opening-examples.mjs` consume
 those reloaded documents in the dedicated shipped-player harness, checks all four
 images and title card, checks attribution interaction and records two GIFs. Results
 and persistence receipts are under `verify-shots/opening-examples/` (local evidence).
+
+The final export proof (`scripts/qa/verify-opening-export.mts`) builds real ZIPs
+using a CDN source adapter, serves only ZIP entries under `/games/<theme>/`,
+blocks external CDN requests and checks all scenes plus the attribution dialog.
+The runtime manifest must not list `generated/opening/*.png`: those paths omitted
+`assets/` and broke SDK packaging. Opening pictures are usage-selected dependencies
+from the project, not mandatory files for every exported game.
+
+The license button is an explicit pointer owner in both the runtime event blocker
+and shipped player CSS; updating only the event blocker leaves it unclickable in
+exports. Its dialog stops key propagation to the game. The pointer CSS checker
+recognizes the same owner, and the shared runtime rule includes that owner selector.

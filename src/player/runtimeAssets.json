@@ -68,11 +68,6 @@
     "assets/scarloxy/scarloxy-monster-larvea.png",
     "assets/scarloxy/scarloxy-monster-mossling.png",
     "assets/ui/windowskin-default.png",
-    "generated/battle-reference-forest.png",
-    "generated/opening/dark-citadel.png",
-    "generated/opening/desert-ruin.png",
-    "generated/opening/farm-golden.png",
-    "generated/opening/kingdom-day.png",
-    "generated/opening/snow-village.png"
+    "generated/battle-reference-forest.png"
   ]
 }

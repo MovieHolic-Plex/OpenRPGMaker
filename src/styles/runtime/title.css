@@ -129,7 +129,7 @@
 }
 
 /* 라이선스 한 줄 표기 — 조작 안내 창(하단 고정, 40px 여유) 위에 얹는다. */
-.rm-title-screen .rm-title-license {
+.rm-title-screen [data-play-input-owner="license-notice"].rm-title-license {
   pointer-events: auto;
   position: absolute;
   left: 0;
@@ -148,8 +148,8 @@
   cursor: pointer;
 }
 
-.rm-title-screen .rm-title-license:hover,
-.rm-title-screen .rm-title-license:focus-visible {
+.rm-title-screen [data-play-input-owner="license-notice"].rm-title-license:hover,
+.rm-title-screen [data-play-input-owner="license-notice"].rm-title-license:focus-visible {
   color: var(--runtime-window-text);
   text-decoration: underline;
 }
@@ -159,8 +159,8 @@
   width: min(560px, 86vw);
   max-height: 78vh;
   padding: 12px;
-  color: var(--runtime-window-text);
-  background: var(--runtime-window-bg);
+  color: var(--text-1);
+  background: var(--bg-canvas);
   border: 1px solid rgb(255 255 255 / 22%);
   box-shadow: 0 18px 48px rgb(0 0 0 / 55%);
 }

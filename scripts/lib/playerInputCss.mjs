@@ -2,6 +2,8 @@ import { readFile } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
 
 const OWNER_SELECTORS = [
+  "[data-play-input-owner=\"license-notice\"]",
+  "[data-play-input-owner='license-notice']",
   "[data-play-input-owner=\"touch-controls\"]",
   "[data-play-input-owner='touch-controls']",
   "[data-play-input-owner=\"host-fullscreen\"]",

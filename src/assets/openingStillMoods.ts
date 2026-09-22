@@ -111,6 +111,48 @@ export const OPENING_STILL_MOODS: readonly OpeningStillMood[] = [
 // BEGIN generated pack stills — 이 줄과 END 사이는 생성 영역이다.
 const PACK_STILL_MOODS: readonly OpeningStillMood[] = [
   {
+    id: "oprn-pack-still-desert-01",
+    name: "사막 · 시작의 풍경",
+    tags: ["사막", "desert", "새벽", "caravan crossing immense dunes at sunrise"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-desert-02",
+    name: "사막 · 세계 속으로",
+    tags: ["사막", "desert", "탐험", "oasis city with blue tiled domes"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-desert-03",
+    name: "사막 · 숨겨진 비밀",
+    tags: ["사막", "desert", "미스터리", "half-buried temple interior lit by a shaft of sun"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-desert-04",
+    name: "사막 · 새로운 여정",
+    tags: ["사막", "desert", "출발", "night market under stars and hanging lanterns"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-modern-01",
+    name: "현대 · 시작의 풍경",
+    tags: ["현대", "modern", "새벽", "rainy railway platform at twilight"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-modern-02",
+    name: "현대 · 세계 속으로",
+    tags: ["현대", "modern", "탐험", "empty school music room at golden hour"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-modern-03",
+    name: "현대 · 숨겨진 비밀",
+    tags: ["현대", "modern", "미스터리", "rooftop overlooking city lights in the night"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
     id: "oprn-pack-still-ocean-01",
     name: "해저 · 시작의 풍경",
     tags: ["해저", "ocean", "새벽", "sunlit coast and lighthouse overlooking the ocean"],
@@ -132,6 +174,30 @@ const PACK_STILL_MOODS: readonly OpeningStillMood[] = [
     id: "oprn-pack-still-ocean-04",
     name: "해저 · 새로운 여정",
     tags: ["해저", "ocean", "출발", "ocean surface at dawn seen from a sailing ship"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-sky-01",
+    name: "공중 · 시작의 풍경",
+    tags: ["공중", "sky", "새벽", "sunrise harbor on a floating island"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-sky-02",
+    name: "공중 · 세계 속으로",
+    tags: ["공중", "sky", "탐험", "airship crossing an endless sea of clouds"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-sky-03",
+    name: "공중 · 숨겨진 비밀",
+    tags: ["공중", "sky", "미스터리", "storm around a ruined floating tower"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-sky-04",
+    name: "공중 · 새로운 여정",
+    tags: ["공중", "sky", "출발", "golden light across a sky garden"],
     // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
   },
   {
