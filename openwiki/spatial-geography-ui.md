@@ -391,3 +391,17 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 지역 revision7 / 공용 AI 용도 civic-v7(38 MD·25이미지·18종 오류), 정본 revision13 재오픈 전체 일치.
 새/기존 프로젝트 공급과 저자 편집 보존·브라우저 근거는 `verify-shots/village-civic/` 및 `verify-shots/village-diversity/`.
 이는 외관 저작이며 상점·우편·NPC 생활 이벤트·동적 조명은 추가하지 않았다.
+
+### 계단 대지 개정8 (2026-09-23)
+
+사용자 판정: 절벽에 높이가 없다. 원인은 모양이 아니라 **닫힘**이었다 — V자·톱니 끝을 돌아 윗단으로 걸어갈 수 있어
+절벽이 둔덕이 아니라 들판의 홈으로 보였다. 참고(큰 폭포 아래 마을)는 절벽이 숲에서 숲까지 이어져 계단으로만 오른다.
+- `author-diverse-villages.mjs`: 절벽 각 끝 바깥 4열을 숲 강제 칸 + 길 경로 차단(`cliffs[i].left/right:"open"`로 해제,
+  `leftFrom/rightFrom`로 시작 행). 끝에서 「모든 계단을 막으면 윗단 칸에 닿지 않는다」를 단언한다.
+- 검증기 `terrace-without-stairs`: 같은 판정을 열린 절벽 끝 좌표로 보고. 고장 예시는 솔바람 서쪽 끝 숲 제거(19종째).
+- 윤곽: 솔바람 V자 둘→한 줄+계단3, 층바위 톱니→수평 굽이, 갈대물굽이 오른쪽 끝을 북쪽 숲까지 봉쇄+계단2.
+- 문: 1×2 문 위 칸 359→329(같은 시트 바로 위 완전 검정). 문 이벤트 없이 출입구로 읽힌다. 23채.
+- 소품: 기본 시트의 온전한 소품 8종을 `extra-parts.json`으로 civic 부품에 추가(벤치·술통·오크통·모닥불·이정표·장작·과일 좌판·3×2 노점).
+  전망 쉼터·계단 길잡이·장터·불자리·선착장 짐터·땔감 21곳 46개. 지형이 옮겨 겹친 보존 나무는 자르지 않고 뺀다.
+- 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision14 재오픈 전체 일치.
+  미편집 civic-v7 은 `previous-reference.json` 기록으로 교체, 저자 편집본은 보존. 근거 `verify-shots/village-terrace/`.

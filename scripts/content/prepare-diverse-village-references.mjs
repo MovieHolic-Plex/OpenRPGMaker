@@ -20,13 +20,14 @@ doc("guide", "세 마을을 다르게 만드는 기준", `# 산촌·절벽·포�
 이슬여울 맵을 변형하지 않고 빈 지면에서 새로 저작했다. 집 그림과 3행 숲 몸통 등 검수된 부품을 재사용하며 지형·길·집 원점은 별도로 설계했다. 모두 16px, forest_harmony 기반 30열. 이 자료의 정확한 이식 정의는 catalog.json의 tileset 및 부품 결합 사전에 있다. 기본 타일셋의 같은 숫자가 같은 그림이라고 추정하지 않는다.
 
 ## 다양성을 만드는 결정 순서
-1. 지형과 생활권부터 고른다. 산촌은 떨어진 두 둔덕과 평지 집, 절벽마을은 중첩 대지와 높이별 생활권, 포구는 남·동쪽 물굽이와 선착장이다.
+1. 지형과 생활권부터 고른다. 산촌은 한 줄 절벽 위 윗단과 아랫마을, 절벽마을은 중첩 대지와 높이별 생활권, 포구는 남·동쪽 물굽이와 선착장이다.
 2. 같은 직선 길 양쪽에 집을 대칭 배치하지 않는다. 집마다 x,y를 지정하고 문앞을 길의 가지로 연결한다. 각 마을 문서에 좌표와 폭·높이를 고정 기록했다.
-3. 절벽의 내부·외부와 계단 착지칸을 먼저 확정한다. 다음 물→건물 전체 조립→길→숲 전체 조립→생활 소품→독립 나무 순서. 소품은 집 소유자와 생활 마당을 지정하고 묶음 전체의 접근을 검사한다. 실패한 묶음은 전체 철회한다.
+3. 절벽의 내부·외부와 계단 착지칸을 먼저 확정한다. 윗단은 계단으로만 오른다: 절벽 양 끝을 숲에 묻고 계단을 막은 채 윗단에 닿는지 검사한다(개정8). 다음 물→건물 전체 조립→길→숲 전체 조립→생활 소품→독립 나무 순서. 소품은 집 소유자와 생활 마당을 지정하고 묶음 전체의 접근을 검사한다. 실패한 묶음은 전체 철회한다.
 4. 집의 용도와 할 일을 명시하고 필요한 물건을 실제 기준 대상 가까이에 놓는다. 집 순서로 활동을 교대하지 않는다. 목재는 작업대, 어구는 실제 부두, 허수아비는 실제 밭에 연결한다. 중앙 무작위 배치는 금지한다. 구체적인 상대좌표와 충돌 조건은 생활 마당 문서에 있다. 큰 숲 내부는 검은 생략 수관, 열린 구역은 잔디·길·생활 소품이다.
 5. 우물터·공지·길 안내·정원·환대도 목적이다. 공동 공간 문서와 civic 입력에 지정한 장소에만 완전한 소품을 더하고 실제 사용칸과 출입구 통행을 재검사한다.
 6. 입력/정답: 각 마을의 cliffs, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
 7. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
+8. 문은 1×2다. 아래 칸은 원본 문 타일359, 위 칸은 같은 시트에서 그 바로 위의 완전한 검정329(문/입구)다. 문 그림 이벤트 없이도 출입구로 읽힌다. 두 칸 모두 359로 두면 검은 두 칸이 보라 띠로 끊긴다.
 
 ## 실제 구분
 ${c.plans.map((p) => `- ${p.name}: ${p.width}×${p.height}, 집 ${p.houses.length}채. ${p.note}.`).join("\n")}
@@ -92,7 +93,8 @@ ${block(c.cliffBindings)}
 2. 현재 y가 왼쪽 열보다 크면 왼쪽 사선, 오른쪽 열보다 크면 오른쪽 사선, 나머지는 정면이다. 첫/마지막 열의 바깥 이웃은 현재 y-1로 간주한다.
 3. 왼쪽: 원본18 → 231을 h-1번 → 48. 정면: 139 → 172를 h-1번 → 202. 오른쪽: 19 → 232를 h-1번 → 49. 각 열 upper의 y..y+h에 쓴다. 타일 그림을 늘이거나 좌우 반전하지 않는다.
 4. 계단 [x,y,h]: lower에 원본374를 폭2·높이h+1 반복하고 upper를 전부 비운다. 착지칸 y-1/y+h+1을 길로 잇는다. 사선 위에 걸치지 않고 두 열의 윗선 높이가 같은 곳에서만 연결한다.
-5. 절벽 전체→계단·입구→집→길→숲→소품. 면이 차지할 모든 칸을 먼저 예약한다. 집·뿌리·문앞을 덮으면 그 배치를 중단한다. 새 표본 높이 h=5 또는6; 원본 표본은 h=7이다.
+5. 높이는 닫힘에서 나온다(개정8). 한 절벽은 숲에서 숲까지(또는 맵 끝까지) 끊지 않고 잇는다. 끝을 돌아 윗단으로 걸어갈 수 있으면 V자·톱니여도 둔덕이 아니라 홈으로 보인다. 각 끝의 바깥 4열(기본 윗선-3행~밑단+1행, cliffs[i].leftFrom/rightFrom으로 시작 행 지정)을 숲 강제 칸으로 두고 길 경로에서도 막는다. 윤곽은 거의 수평에 1행씩 완만한 굽이; 긴 45° 톱니 V는 쓰지 않는다. 검사: 모든 계단을 막았을 때 시작점에서 윗선 위 칸에 닿으면 terrace-without-stairs.
+6. 절벽 전체→계단·입구→집→길→숲→소품. 면이 차지할 모든 칸을 먼저 예약한다. 집·뿌리·문앞을 덮으면 그 배치를 중단한다. 새 표본 높이 h=5 또는6; 원본 표본은 h=7이다.
 
 ## 기준 맵에서 그대로 추출한 정상 열
 원점과 전체 두 레이어 배열이다. 높이8=윗선1+몸통6+밑단1. upper의 번호는 참고 맵 원본 번호이며 역사적 구조 표본이다. 색은 이 개정3 출력과 다르므로 이 배열을 색 기준으로 재사용하지 않는다. 새 맵은 cliffBindings와 현재 tileGrafts를 함께 사용한다.
@@ -153,7 +155,7 @@ ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 `);
 let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
-doc("validation", "좌표 검증 · 정상/오류 18종", checks);
+doc("validation", "좌표 검증 · 정상/오류 19종", checks);
 doc('household-props','소품의 사용 목적 · 기준 대상과 동선',fs.readFileSync(dir+'/household-props.md','utf8'));
 doc('prop-programs','사용 목적 입력 사전 · 집별 활동과 부품 관계','# 활동별 부품·상대좌표·목적·기준 및 집별 명시 선언\n\n'+block(JSON.parse(fs.readFileSync(dir+'/prop-programs.json'))));
 doc('civic-props','공동 공간·정원·환대 · 실행 배치 규칙',fs.readFileSync(dir+'/civic-props.md','utf8'));
@@ -164,7 +166,7 @@ const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png"))
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
-const category = { id: "diverse-villages-civic-v7", name: "다양한 마을 · 산촌·절벽·포구 (공동 공간 개정7)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 18종 오류 검사", documents: docs, images };
+const category = { id: "diverse-villages-terrace-v8", name: "다양한 마을 · 산촌·절벽·포구 (계단 대지 개정8)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 19종 오류 검사", documents: docs, images };
 if (docs.length > 64 || docs.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit");
 fs.writeFileSync(target, JSON.stringify([category]) + "\n");
 console.log({ documents: docs.length, images: images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });

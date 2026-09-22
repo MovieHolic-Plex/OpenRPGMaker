@@ -9,8 +9,12 @@ import { withTsModule } from "../ontology-ts-loader.mjs";
 const [input, out] = process.argv.slice(2);
 if (!input || !out) throw Error("Usage: author-diverse-villages.mjs canonical-export.json output-dir");
 fs.mkdirSync(out, { recursive: true });
+// Layout iteration aid: VILLAGE_DUMP=file.json keeps the last map being authored, even when an assertion stops the run.
+let lastMap = null;
+if (process.env.VILLAGE_DUMP) process.on("exit", () => lastMap && fs.writeFileSync(process.env.VILLAGE_DUMP, JSON.stringify(lastMap)));
 const source = JSON.parse(fs.readFileSync(input)), ts = structuredClone(source.tilesets.forest_harmony), original = source.maps.dewbank_village;
 const parts = JSON.parse(fs.readFileSync("tiledata/tilesets/forest_harmony/dewbank-village/parts.json")).props;
+parts.push(...JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/extra-parts.json")).props);
 const cliffIds = [18, 19, 48, 49, 78, 79, 80, 108, 110, 138, 139, 140, 171, 172, 173, 201, 202, 203, 231, 374, 413, 232];
 const offset = Math.ceil(ts.count / 30) * 30, cliff = Object.fromEntries(cliffIds.map((n, i) => [n, offset + i]));
 for (const [i, n] of cliffIds.entries()) {
@@ -44,9 +48,9 @@ await withTsModule("src/project/lint/reachability.ts", "diverse-reach.mjs", (m) 
   reach = m;
 });
 const plans = [
-  { id: "pine-hamlets", name: "솔바람 흩어진 산촌", width: 80, height: 64, seed: 191, start: { x: 40, y: 60 }, note: "세 빈터에 흩어진 집, 두 둔덕, 갈라지는 오솔길과 작은 샘", houses: [[12, 9, 3], [33, 6, 0], [61, 12, 7], [17, 31, 5], [44, 28, 1], [61, 43, 6], [29, 47, 2]], cliffs: [{ points: [[8, 17], [11,20], [14,20], [17,23], [21,23], [24,20], [26,20], [29,17]], height: 5 }, { points: [[50,18],[54,22],[57,22],[62,27],[66,27],[69,24],[72,24],[76,20]], height: 5 }], stairs: [[19, 23, 5], [64, 27, 5]], ponds: [[10, 47, 5, 4]], spine: [[40, 60], [40, 54], [38, 43], [29, 28], [30, 21], [42, 19], [49, 24], [56, 37], [66, 36]], farms: [[20, 41, 6, 4], [37, 13, 6, 4]], trees: 28 },
-  { id: "terrace-cliff-village", name: "층바위 절벽마을", width: 88, height: 72, seed: 347, start: { x: 42, y: 68 }, note: "세 높이의 대지, 네 계단과 절벽 아래 작업 마당", houses: [[27, 9, 0], [49, 11, 4], [13, 29, 1], [37, 33, 7], [65, 36, 5], [18, 55, 2], [47, 59, 6], [70, 56, 3]], cliffs: [{ points: [[7,40],[13,46],[17,46],[20,43],[22,43],[26,47],[28,47],[32,43],[35,43],[42,50],[44,50],[45,51],[49,51],[53,47],[56,47],[60,51],[63,51],[67,47],[73,47],[78,42],[80,42],[83,39]], height: 6 }, { points: [[20,17],[25,22],[28,22],[30,24],[36,24],[40,20],[43,20],[49,26],[51,26],[54,23],[56,23],[58,25],[62,25],[68,19],[70,19],[74,15]], height: 6 }], stairs: [[34, 24, 6], [58, 25, 6], [26, 47, 6], [46, 51, 6]], ponds: [], spine: [[42, 68], [42, 63], [26, 55], [26, 46], [30, 40], [34, 31], [34, 23], [34, 20], [58, 20], [58, 24], [58, 33], [60, 40], [46, 50], [46, 58], [70, 66]], farms: [[43, 40, 9, 4], [11, 41, 8, 3]], trees: 28, cave: [71, 52] },
-  { id: "reed-bay-village", name: "갈대물굽이 포구", width: 88, height: 64, seed: 521, start: { x: 6, y: 33 }, note: "물굽이를 따라 비껴 앉은 집, 좁은 골목과 긴 선착장", houses: [[11, 9, 3], [31, 5, 7], [52, 12, 0], [12, 30, 1], [34, 22, 5], [52, 31, 6], [12, 42, 2], [34, 39, 4]], cliffs: [{ points: [[7,16],[10,19],[12,19],[15,22],[20,22],[23,19],[24,19],[27,16]], height: 5 }], stairs: [[19, 22, 5]], ponds: [], coast: true, spine: [[6, 33], [21, 36], [26, 29], [29, 18], [43, 17], [48, 26], [48, 40], [56, 43], [57, 47]], farms: [[20, 13, 4, 4], [25, 47, 6, 4]], trees: 18, dock: [56, 45, 21, 2] }
+  { id: "pine-hamlets", name: "솔바람 흩어진 산촌", width: 80, height: 64, seed: 191, start: { x: 40, y: 60 }, note: "숲에서 숲까지 이어진 절벽 위 윗단과 아랫마을, 계단 세 곳, 갈라지는 오솔길과 작은 샘", houses: [[12, 9, 3], [33, 6, 0], [61, 12, 7], [17, 31, 5], [44, 28, 1], [61, 43, 6], [29, 47, 2]], cliffs: [{ points: [[6,21],[10,21],[12,20],[22,20],[24,19],[30,19],[32,18],[46,18],[48,19],[52,19],[55,22],[70,22],[72,21],[76,21]], height: 5 }], stairs: [[16, 20, 5], [39, 18, 5], [62, 22, 5]], ponds: [[10, 47, 5, 4]], spine: [[40, 60], [40, 54], [38, 43], [31, 33], [19, 29], [31, 33], [39, 26], [39, 16], [24, 17], [39, 16], [52, 17], [62, 20], [62, 30], [56, 37], [66, 36]], farms: [[20, 41, 6, 4], [37, 13, 6, 4]], trees: 28 },
+  { id: "terrace-cliff-village", name: "층바위 절벽마을", width: 88, height: 72, seed: 347, start: { x: 42, y: 68 }, note: "세 높이의 대지, 네 계단과 절벽 아래 작업 마당", houses: [[27, 9, 0], [49, 11, 4], [13, 29, 1], [37, 33, 7], [65, 36, 5], [18, 55, 2], [47, 59, 6], [70, 56, 3]], cliffs: [{ points: [[7,45],[14,45],[16,46],[28,46],[30,47],[40,47],[42,46],[56,46],[58,45],[83,45]], height: 6 }, { points: [[19,21],[30,21],[32,20],[36,20],[38,21],[44,21],[46,22],[58,22],[60,21],[66,21],[68,20],[74,20]], height: 6 }], stairs: [[34, 20, 6], [62, 21, 6], [26, 46, 6], [45, 46, 6]], ponds: [], spine: [[42, 68], [42, 63], [27, 56], [27, 53], [27, 40], [34, 31], [34, 27], [34, 18], [62, 19], [62, 28], [60, 40], [46, 44], [46, 53], [46, 58], [70, 66]], farms: [[43, 40, 9, 4], [11, 41, 8, 3]], trees: 28, cave: [71, 50]},
+  { id: "reed-bay-village", name: "갈대물굽이 포구", width: 88, height: 64, seed: 521, start: { x: 6, y: 33 }, note: "물굽이를 따라 비껴 앉은 집, 좁은 골목과 긴 선착장", houses: [[11, 9, 3], [31, 5, 7], [52, 12, 0], [12, 30, 1], [34, 22, 5], [52, 31, 6], [12, 42, 2], [34, 39, 4]], cliffs: [{ points: [[7,19],[12,19],[14,18],[26,18],[29,15],[41,15]], height: 5, rightFrom: 8 }], stairs: [[18, 18, 5], [31, 15, 5]], ponds: [], coast: true, spine: [[6, 33], [21, 36], [26, 29], [19, 24], [26, 29], [32, 23], [48, 26], [48, 40], [56, 43], [57, 47]], farms: [[20, 13, 4, 4], [25, 47, 6, 4]], trees: 18, dock: [56, 45, 21, 2] }
 ];
 const terrainDetails = {
   'pine-hamlets': { entrance:{x:40,y:63}, crest:{x:9,y:4,width:20,shoulder:3}, patches:[[5,12,12,9,9],[43,3,10,9,10],[76,19,10,14,8]], clearings:[[20,8,9,6,9]] },
@@ -62,12 +66,23 @@ delete ts.referenceDocuments;
 const result = { tileset: ts, cliffBindings: cliff, grassBindings, plans: [], maps: {} };
 for (const spec of plans) {
   const W = spec.width, H = spec.height, area = { x: 0, y: 0, w: W, h: H }, m = { id: spec.id, name: spec.name, width: W, height: H, tileSize: 16, tilesetId: ts.id, lowerTiles: Array(W * H).fill(240), upperTiles: Array(W * H).fill(-1), events: [] };
+  lastMap = m;
   const point = (x, y) => y * W + x, inside = (x, y) => x >= 0 && y >= 0 && x < W && y < H;
   const reserved = new Set(), roads = new Set(), water = new Set(), houses = [], placements = [], access = [];
   const reserve = (x, y, w, h, pad = 0) => {
     for (let yy = y - pad; yy < y + h + pad; yy++) for (let xx = x - pad; xx < x + w + pad; xx++) if (inside(xx, yy)) reserved.add(point(xx, yy));
   };
   const cliffPlan = paintVillageCliffs(m, spec.cliffs, cliff);
+  // A cliff only reads as height when its ends die into forest: the terrace is reachable by stairs alone.
+  const wings = new Set();
+  for (const c of spec.cliffs) for (const side of ["left", "right"]) {
+    if (c[side] === "open") continue;
+    const [ex, ey] = side === "left" ? c.points[0] : c.points.at(-1), reach0 = c[side + "Reach"] ?? 4;
+    for (let y = Math.max(0, c[side + "From"] ?? ey - 3); y <= Math.min(H - 1, ey + c.height + 1); y++) for (let d = 1; d <= reach0; d++) {
+      const x = side === "left" ? ex - d : ex + d;
+      if (inside(x, y) && cliffPlan.cells[point(x, y)] !== "cliff") wings.add(point(x, y));
+    }
+  }
   for (const [x, y, height] of spec.stairs) {
     for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
       const i = point(xx, yy);
@@ -103,6 +118,9 @@ for (const spec of plans) {
       m.lowerTiles[to] = original.lowerTiles[from];
       m.upperTiles[to] = original.upperTiles[from];
     }
+    // The 1x2 doorway: keep the source bottom tile, the cell above it is solid black (source 329 above 359).
+    const doorTop = point(x + h.doorAt.x - h.x, y + h.doorAt.y - h.y - 1);
+    if (m.lowerTiles[doorTop] === 359) m.lowerTiles[doorTop] = 329;
     const house = { id: spec.id + "-house-" + (n + 1), role: "house", label: h.label, x, y, w: h.w, h: h.h, template, doorAt: { x: x + h.doorAt.x - h.x, y: y + h.doorAt.y - h.y }, front: { x: x + h.front.x - h.x, y: y + h.front.y - h.y } };
     const program=PROP_PROGRAMS.houses[spec.id]?.[x+","+y];
     assert(program,"Missing authored house purpose");
@@ -115,7 +133,7 @@ for (const spec of plans) {
   const project = { tilesets: { [ts.id]: ts }, maps: { [m.id]: m } };
   const solid = new Set();
   for (const h of houses) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) solid.add(point(x, y));
-  for (let i = 0; i < W * H; i++) if (water.has(i) || cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
+  for (let i = 0; i < W * H; i++) if (water.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
   const route = (a, b) => {
     const start = point(...a), end = point(...b), dist = new Map([[start, 0]]), prev = new Map(), q = [start];
     let found = false;
@@ -205,7 +223,8 @@ for (const spec of plans) {
   const field=(x,y)=> {
     const influence=([cx,cy,rx,ry,strength])=>strength*Math.exp(-(((x-cx)/rx)**2+((y-cy)/ry)**2));
     return forest.forestContourScore(x,y,area,spec.seed,0.48)
-      +spec.patches.reduce((v,p)=>v+influence(p),0)-spec.clearings.reduce((v,p)=>v+influence(p),0);
+      +spec.patches.reduce((v,p)=>v+influence(p),0)-spec.clearings.reduce((v,p)=>v+influence(p),0)
+      +(wings.has(point(Math.floor(x),Math.floor(y)))?50:0);
   };
   const grove = forest.paintContouredForest(m, area, group("forest_harmony_grove_47"), (x,y)=>m.lowerTiles[point(x,y)]===240 && m.upperTiles[point(x,y)]===-1 && !reserved.has(point(x,y)), spec.seed, 0.48, undefined, field);
   const freeRect = (x, y, w, h) => x >= 2 && y >= 2 && x + w < W - 2 && y + h < H - 2 && Array.from({ length: w * h }, (_, n) => point(x + n % w, y + Math.floor(n / w))).every((i) => m.lowerTiles[i] === 240 && m.upperTiles[i] === -1 && !roads.has(i) && !reserved.has(i));
@@ -228,7 +247,8 @@ for (const spec of plans) {
   // Retain the already approved individual trees exactly while reorganizing props.
   const retained=JSON.parse(fs.readFileSync('tiledata/forest-villages/diverse/retained-vegetation.json'))[spec.id];
   for(const o of retained) {
-    assert(freeRect(o.x,o.y,o.w,o.h),'Retained vegetation overlaps terrain');
+    // Terrain moved under a kept tree (cliff/forest rework): drop that tree rather than cut it.
+    if(!freeRect(o.x,o.y,o.w,o.h)) continue;
     stamp(o.name,o.x,o.y,o.w,o.h,o.lower,o.upper,o.kind);
   }
   const activitySites={...(spec.dock?{dock:{x:spec.dock[0],y:spec.dock[1],w:spec.dock[2],h:spec.dock[3]}}:{}),...(()=>{const farm=placements.find(o=>o.kind==='farm');return farm?{farm:{x:farm.x,y:farm.y,w:farm.w,h:farm.h}}:{};})()};
@@ -243,6 +263,13 @@ for (const spec of plans) {
   const civicPlan={houses,placements,activitySites,roadCells:[...roads],access,entrance:spec.entrance};
   const civic=placeCivicProps({map:m,plan:civicPlan,parts,project,reach});
   reachable=reach.computeReachableCells(project,m,spec.start.x,spec.start.y);
+  {
+    const shut = structuredClone(m);
+    for (const [x, y, height] of spec.stairs) for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) shut.lowerTiles[point(xx, yy)] = cliff[172];
+    const below = reach.computeReachableCells({ tilesets: { [ts.id]: ts }, maps: { [m.id]: shut } }, shut, spec.start.x, spec.start.y);
+    const leaks = [...below].map((k) => k.split(",").map(Number)).filter(([x, y]) => cliffPlan.cells[point(x, y)] === "plateau");
+    assert.equal(leaks.length, 0, "Terrace reachable without stairs " + spec.id + " " + JSON.stringify(leaks.slice(0, 6)));
+  }
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance, civicPlaces:civic.zones };
   result.maps[m.id] = m;
   result.plans.push({ ...spec, houses, placements, activitySites, civicPlaces:civic.zones, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
