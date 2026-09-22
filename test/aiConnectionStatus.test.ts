@@ -315,7 +315,8 @@ describe("다섯 상태를 서로 다르게 말한다", () => {
     }));
     await refreshAiConnectionStatus(() => undefined);
     const status = getAiConnectionStatus();
-    expect(status.kind).toBe("offline");
+    // 응답은 왔으니 도달 불가(offline)가 아니다 — 칩이 「닿지 못했습니다」를 덧붙이면 거짓이 된다.
+    expect(status.kind).toBe("error");
     expect(status.label).toContain("서버에서 꺼짐");
     expect(status.title).toContain("OPRN_HOST_OWNER_AI=1");
     expect(status.title).not.toContain("껐다 켜");

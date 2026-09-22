@@ -153,7 +153,7 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
   // dev 서버와 단독 동반 서비스는 같은 pi-ai 워커를 쓰므로 npm run ai:oauth 는 해결책이 아니다.
   if (aiOAuthCachedStatus.serverMessage && isHostAiDisabledMessage(aiOAuthCachedStatus.serverMessage)) {
     return statusFor(config, {
-      kind: "offline",
+      kind: "error",
       authMode: "chatgpt",
       label: "AI 서버에서 꺼짐",
       title: HOST_AI_DISABLED_GUIDANCE,
