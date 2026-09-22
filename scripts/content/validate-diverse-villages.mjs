@@ -32,11 +32,19 @@ async function validateVillageStudy(project, mapId) {
   for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
   for (const j of plan.grassJoins) {
     const actual=m.lowerTiles[j.y*m.width+j.x];
-    if(actual!==j.tile) add([504,505].includes(actual)?'grass-color-mismatch':'grass-edge-direction',j.x,j.y,{expected:j.tile,actual});
+    if(actual!==j.tile) add([504,505,559].includes(actual)?'grass-color-mismatch':'grass-edge-direction',j.x,j.y,{expected:j.tile,actual});
     if(t.tileMeta[j.tile]?.layerBacking!==240) add('grass-backing',j.x,j.y,{expected:240,actual:t.tileMeta[j.tile]?.layerBacking});
   }
+  const crest=plan.crest;
+  for(let dx=0;dx<crest.width;dx++) {
+    const end=crest.width-1-dx,x=crest.x+dx,y=crest.y+Math.max(0,crest.shoulder-Math.min(dx,end));
+    const source=dx<=crest.shoulder?504:end<=crest.shoulder?505:559;
+    if(m.lowerTiles[y*m.width+x]!==catalog.grassBindings[source]) add('grass-crest-gap',x,y,{sourceTile:source});
+  }
+  if(plan.entrance.x!==0 && plan.entrance.y!==m.height-1) add('entrance-not-on-boundary',plan.entrance.x,plan.entrance.y);
   await withTsModule("src/project/lint/reachability.ts", "study-reach.mjs", (api) => {
     const seen = api.computeReachableCells(project, m, plan.start.x, plan.start.y);
+    for(const a of plan.access.filter(a=>a.role==='map-entrance')) if(!seen.has(a.x+','+a.y)) add('map-entrance-blocked',a.x,a.y);
     for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add("blocked-entrance", a.x, a.y, { role: a.role });
     for (const o of plan.placements.filter((o2) => o2.kind === "prop")) if (!Array.from({ length: o.w * o.h }, (_, i) => [o.x + i % o.w, o.y + Math.floor(i / o.w)]).some(([x, y]) => api.isAdjacentOrOn(seen, x, y))) add("inaccessible-object", o.x, o.y, { name: o.name });
   });
@@ -72,7 +80,9 @@ function grassFaults() {
   const mapId='terrace-cliff-village', j=catalog.plans.find(p=>p.id===mapId).grassJoins.find(j=>j.sourceTile===504);
   return [
     {code:'grass-edge-direction',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:catalog.grassBindings[505]},
-    {code:'grass-color-mismatch',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:504}
+    {code:'grass-color-mismatch',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:504},
+    {code:'grass-crest-gap',mapId,...(()=>{const q=catalog.plans.find(p=>p.id===mapId).grassJoins.find(j=>j.sourceTile===559);return{x:q.x,y:q.y,layer:'lower',tile:q.tile,replacement:240}})()},
+    {code:'map-entrance-blocked',mapId,...catalog.plans.find(p=>p.id===mapId).entrance,layer:'upper',tile:-1,replacement:237}
   ];
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

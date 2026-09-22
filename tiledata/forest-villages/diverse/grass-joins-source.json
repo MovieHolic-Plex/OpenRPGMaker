@@ -3,8 +3,8 @@
   "sourceSha256": "430f254fe1e0abb081defe98dc3d216d62c58ae59cf60755a0050515dff779bf",
   "floorTile": 240,
   "texture": "tex_forest_harmony_grass_joins",
-  "tilesPerRow": 9,
-  "count": 9,
+  "tilesPerRow": 10,
+  "count": 10,
   "rockPalette": {
     "108,72,53": [
       139,
@@ -160,6 +160,18 @@
       "grassPixels": 0,
       "opaquePixels": 256,
       "change": "rock palette only"
+    },
+    {
+      "sourceTile": 559,
+      "sourceX": 19,
+      "sourceY": 18,
+      "targetTile": 9,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 256,
+      "opaquePixels": 256,
+      "change": "grass pixels only"
     }
   ]
 }

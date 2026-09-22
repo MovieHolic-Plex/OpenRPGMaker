@@ -456,10 +456,10 @@ other bundled assets documented above.
 
 ## Forest grass joins — palette adaptation (2026-09-23)
 
-`forest-harmony/grass-joins.png` (144×16, nine 16px cells) derives from the
+`forest-harmony/grass-joins.png` (160×16, ten 16px cells) derives from the
 existing `forest-harmony/chipset.png` and inherited EasyRPG retro-world material
 attributed above. It keeps the 504/505 alpha silhouettes and adapts their grass
-pixels, plus the grass portions of 498/499/528/529/619, to the unchanged floor240.
+pixels and the 559 horizontal repeat, plus the grass portions of 498/499/528/529/619, to the unchanged floor240.
 Cell2 is an exact floor240 copy; cell8 matches the right rock face712 palette to711.
 No tree/building artwork is altered. This is a modified derivative, not a new
 original-art or licence claim. Existing mixed-source notices still apply.

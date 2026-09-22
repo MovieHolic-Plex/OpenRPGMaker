@@ -43,7 +43,7 @@ ${p.note}. 시작점 (${p.start.x},${p.start.y}); 집 ${p.houses.length}채. 0�
 ![${p.name} 완성](image:${p.id})
 
 ## 입력 계획과 예약할 접근칸
-${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, cliffs: p.cliffs, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
+${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, entrance:p.entrance, crest:p.crest, patches:p.patches, clearings:p.clearings, cliffs: p.cliffs, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
 
 ## 건물의 전체 하위·상위
 ${p.houses.map((h) => "### " + h.id + "\n" + block({ ...h, ...crop(m, h.x, h.y, h.w, h.h) })).join("\n")}
@@ -65,7 +65,7 @@ ${rows(m.upperTiles.slice(y * m.width, Math.min(y + 16, m.height) * m.width), m.
 }
 const used = [...new Set(Object.values(c.maps).flatMap((m) => [...m.lowerTiles, ...m.upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
 const dictionary = used.map((tile) => {
-  const g = t.tileGrafts.find((g2) => g2.targetTile === tile), sourceTile = g?.sourceTile ?? tile, sourceChipset = g?.sourceChipset ?? t.image.id, cols = sourceChipset === "tex_shared_forest_village_objects" ? 6 : sourceChipset === "tex_forest_harmony_grass_joins" ? 9 : 30;
+  const g = t.tileGrafts.find((g2) => g2.targetTile === tile), sourceTile = g?.sourceTile ?? tile, sourceChipset = g?.sourceChipset ?? t.image.id, cols = sourceChipset === "tex_shared_forest_village_objects" ? 6 : sourceChipset === "tex_forest_harmony_grass_joins" ? 10 : 30;
   return { tile, tilesetId: t.id, sourceChipset, sourceTile, sourceX: sourceTile % cols, sourceY: Math.floor(sourceTile / cols), pixelX: sourceTile % cols * 16, pixelY: Math.floor(sourceTile / cols) * 16, width: 16, height: 16, targetX: tile % 30, targetY: Math.floor(tile / 30), layers: ["lower", "upper"].filter((l) => Object.values(c.maps).some((m) => m[l + "Tiles"].includes(tile))), passability: t.passability[tile], priority: t.priority[tile], tileMeta: t.tileMeta[tile] };
 });
 fs.writeFileSync(dir + "/part-dictionary.json", JSON.stringify(dictionary, null, 2));
@@ -105,41 +105,41 @@ ${c.plans.map(p=>"### "+p.name+"\n"+block({cliffs:p.cliffs,stairs:p.stairs})).jo
 선착장은 포구 (56,45), 폭21·높이2. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (76,45)까지 연결을 검사한다.
 `);
 const grassSource = JSON.parse(fs.readFileSync(dir + "/grass-joins-source.json"));
-doc("grass-joins", "504·505 사선 · 현재 바닥색 유지", `# 사선 잔디 경계와 바닥색
+doc("grass-joins", "504–559–505 · 완전한 잔디 마감", `# 사선 잔디 경계와 바닥색
 
-사용자 확정: 기본 바닥240의 그림/색을 유지하고 504·505와 498·499·528·529의 경계를 맞춘다. 원본 시트의 밝은 589로 바닥 전체를 바꾸지 않는다. 공용 tex_forest_harmony_grass_joins는 16px·9열·9칸의 별도 파생 시트다. 기존 forest_harmony 시트 바이트와 이슬여울은 그대로다.
+사용자 확정: 기본 바닥240의 그림/색을 유지하고 504·505와 498·499·528·529의 경계를 맞춘다. 원본 시트의 밝은 589로 바닥 전체를 바꾸지 않는다. 공용 tex_forest_harmony_grass_joins는 16px·10열·10칸의 별도 파생 시트다. 기존 forest_harmony 시트 바이트와 이슬여울은 그대로다.
 
 ![수정 전 · 경계 잔디색 불일치](image:grass-before)
 ![수정 후 · 바닥색 유지](image:terrace-cliff-village)
 
 ## 정확한 부품 사전
-![공용 색 맞춤 시트 · 왼쪽부터 0..8](image:grass-joins-atlas)
+![공용 색 맞춤 시트 · 왼쪽부터 0..9](image:grass-joins-atlas)
 ${block(grassSource)}
 ${block({tilesetId:'forest_harmony',grassBindings:c.grassBindings,grafts:t.tileGrafts.filter(g=>g.sourceChipset==='tex_forest_harmony_grass_joins')})}
 
-새 공용 시트 0=504 북서 사선(잔디는 남동쪽), 1=505 북동 사선(잔디는 남서쪽), 2=기존 바닥240 픽셀 그대로. 3/4=498/499 윗 모서리, 5/6=528/529 밑 모서리, 7=619 정면 윗선. 사선 투명 알파는 원본과 동일하며 잔디 세 색 영역만 바닥240 텍스처와 원래 명암 위치로 교체했다. 8=712 오른쪽 암벽: 기존 시트에 남아 있던 어두운 원본 팔레트만 왼쪽711과 맞춘다. 픽셀 위치/형태를 반전하거나 늘이지 않는다. 암벽 모서리의 비잔디 픽셀은 현재 forest_harmony와 같다.
+새 공용 시트 0=504 북서 사선(잔디는 남동쪽), 1=505 북동 사선(잔디는 남서쪽), 2=기존 바닥240 픽셀 그대로. 3/4=498/499 윗 모서리, 5/6=528/529 밑 모서리, 7=619 정면 윗선. 사선 투명 알파는 원본과 동일하며 잔디 세 색 영역만 바닥240 텍스처와 원래 명암 위치로 교체했다. 9=559 수평 반복 잔디. 8=712 오른쪽 암벽: 기존 시트에 남아 있던 어두운 원본 팔레트만 왼쪽711과 맞춘다. 픽셀 위치/형태를 반전하거나 늘이지 않는다. 암벽 모서리의 비잔디 픽셀은 현재 forest_harmony와 같다.
 
 ## 레이어 정정과 실행 순서
-옛 tileMeta의 504/505 ‘녹색 삼각 지붕’ 설명을 이 용도에 사용하지 않는다. 여기서는 **잔디 경계**다. 새 시트 0/1은 lower, layerBacking=2. forest_harmony에 이식한 2692/2693은 lower, layerBacking=240. 상위 소품을 그대로 두고 바닥240 위에 사선만 합성한다. passage=passable, priority=lower. 암벽 3..8은 upper·solid이며 두 속성을 섞지 않는다.
+옛 tileMeta의 504/505 ‘녹색 삼각 지붕’ 설명을 이 용도에 사용하지 않는다. 여기서는 **잔디 경계**다. 새 시트 0/1/9는 lower, layerBacking=2. forest_harmony에 이식한 2692/2693/2694는 lower, layerBacking=240. 상위 소품을 그대로 두고 바닥240 위에 사선만 합성한다. passage=passable, priority=lower. 암벽 3..8은 upper·solid이며 두 속성을 섞지 않는다.
 
-1. 절벽 열·계단→집·길·숲·소품 배치를 끝낸다.
-2. 절벽 첫 꼭짓점 (x0,y0)에서 북서 사선504를 (x0+k,y0-1-k), 마지막 꼭짓점 (x1,y1)에서 북동 사선505를 (x1-k,y1-1-k)에 놓는다. k=0..3.
-3. lower가 정확히240이고 길이 아닌 칸만 교체한다. 길·건물 바닥·뿌리/줄기 칸은 건너뛴다. upper는 어떤 칸도 바꾸지 않는다. 바닥 받침은240을 지정한다.
-4. 실제 적용 좌표는 아래 표를 정답으로 한다. 일부 칸이 길/건물이라 생략됐다고 빈칸에 임의 부품을 추가하지 않는다.
+1. 절벽 열·계단→건물→맵 가장자리의 폭3 입구와 길→완전한 잔디 마감→숲→생활 소품 순서다.
+2. crest={x,y,width,shoulder}. dx=0..width-1, end=width-1-dx, 배치 좌표=(x+dx,y+max(0,shoulder-min(dx,end))). dx≤shoulder면504, end≤shoulder면505, 나머지는559다. 따라서 왼쪽 올라가는 사선→수평 반복→오른쪽 내려가는 사선으로 끊김 없는 /—\\ 모양이 된다.
+3. 모든 대상 lower=240, upper=-1, 길 아님을 먼저 확인한다. 한 칸이라도 충돌하면 배치 전체를 거절한다. 잘린 조각을 남기거나 집/뿌리를 덮지 않는다. 전체 조립 주변1칸을 숲/소품에서 예약한다.
+4. 이 마감은 북쪽의 낮은 잔디 경계이며 높이5/6의 암벽 면 자체가 아니다. 아래 완성 좌표·전체 배열이 정답이다. 색은 바닥240과 일치하므로 명암 경계는 미세하다.
 ${c.plans.map(p=>'### '+p.name+'\n'+block(p.grassJoins)).join('\n')}
 
 ## 입력 → 완전한 두 레이어 출력
-층바위 절벽의 북서 마감과 북동 마감. 좌표는 맵 기준, 배열은 행 단위다.
-${block({x:18,y:13,...crop(c.maps['terrace-cliff-village'],18,13,8,8)})}
-${block({x:68,y:13,...crop(c.maps['terrace-cliff-village'],68,13,8,10)})}
+층바위의 완전한 /—\\ 입력과 출력. 좌표는 맵 기준, 배열은 행 단위다.
+${block(c.plans.find(p=>p.id==='terrace-cliff-village').crest)}
+${block({x:26,y:4,...crop(c.maps['terrace-cliff-village'],26,4,39,4)})}
 
-자동 검사 grass-edge-direction은 반대 사선, grass-color-mismatch는 밝은 원본504/505를 잘못 쓴 칸, grass-backing은 받침240 누락의 좌표를 반환한다. 정상/오류 그림은 검증 문서 참조. 위의 파생 시트는 모든 새/기존 프로젝트에서 번들 등록되며 문서는 forest_harmony를 공유한다.
+자동 검사 grass-edge-direction은 반대 사선, grass-color-mismatch는 밝은 원본504/505/559를 잘못 쓴 칸, grass-backing은 받침240 누락의 좌표를 반환한다. grass-crest-gap은 빠진 수평 반복·양쪽 마감, map-entrance-blocked는 맵 가장자리 폭3 통로의 막힌 칸을 반환한다. 정상/오류 그림은 검증 문서 참조. 위의 파생 시트는 모든 새/기존 프로젝트에서 번들 등록되며 문서는 forest_harmony를 공유한다.
 `);
 doc("forest-assembly", "숲·가구·울타리 · 전체 조각 규칙", `# 3행 숲과 생활 소품
 
 상위 수관은 forest_harmony_grove_47, 원본 tex_forest_cliff_reference. lower 몸통 첫 행은 남쪽 수관 마지막 행과 같은 y. 왼쪽3열→2열 반복→오른쪽3열, 최소폭8, 높이3을 통째로 놓는다. 기존 6행 forest-repeat 조립법과 시작 행을 혼동하지 않는다.
 ${block({ left: [[1422, 1423, 1424], [1426, 1427, 1428], [1430, 1431, 1432]], body: [[1425, 1350], [1429, 1428], [1433, 1432]], right: [[1453, 1454, 1455], [1457, 1458, 1459], [1461, 1462, 1463]] })}
-폭 w>4는 span=max(8,2*ceil(w/2)). 왼쪽 s, 몸통 s+3+2*k, 오른쪽 s+span-3. 영역에 안 맞으면 s+w-span을 원점으로 전체 조각을 다시 시도한다. 폭≤4는 LEFT+BODY첫열 또는 BODY둘째열+RIGHT의 4×3 마감만 사용한다. 3행 전부가 자유칸이고 첫행 전체에 수관이 있어야 한다. 안 맞으면 노출 수관 행을 줄여 맞춘다. 뿌리를 자르지 않는다. 이 예제의 대지 내부에는 큰 숲을 새로 깔지 않고 독립 나무를 사용해 절벽·집을 가리지 않았다.
+폭 w>4는 span=max(8,2*ceil(w/2)). 왼쪽 s, 몸통 s+3+2*k, 오른쪽 s+span-3. 영역에 안 맞으면 s+w-span을 원점으로 전체 조각을 다시 시도한다. 폭≤4는 LEFT+BODY첫열 또는 BODY둘째열+RIGHT의 4×3 마감만 사용한다. 3행 전부가 자유칸이고 첫행 전체에 수관이 있어야 한다. 안 맞으면 노출 수관 행을 줄여 맞춘다. 뿌리를 자르지 않는다. 개정4는 plateau라는 이유만으로 숲을 금지하지 않는다. 바닥·상위·예약 칸과 완전한 3행 조립 가능 여부로 판단한다. 군집과 빈터의 연속 밀도장은 연구 적용 문서에 있다. 나무 몸통 그림·높이·배열은 유지한다.
 
 이웃 bit 순서 N,E,S,W,NE,SE,SW,NW. 이웃 수관일 때 bit=1. 아래 variantMap으로 외곽/안쪽 모서리를 선택한다.
 ${block(t.autotileGroups.find((g) => g.id === "forest_harmony_grove_47").variantMap)}
@@ -152,13 +152,14 @@ ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 `);
 let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
-doc("validation", "좌표 검증 · 정상/오류 10종", checks);
+doc("validation", "좌표 검증 · 정상/오류 12종", checks);
+doc('research-layout','최근 연구 적용 · 지형·숲·입구',fs.readFileSync(dir+'/research-layout.md','utf8'));
 const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png")).sort().map((n) => {
   const file = preview + "/" + n;
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
-const category = { id: "diverse-villages-grass-v3", name: "다양한 마을 · 산촌·절벽·포구 (잔디 경계 개정3)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 10종 오류 검사", documents: docs, images };
+const category = { id: "diverse-villages-winding-v4", name: "다양한 마을 · 산촌·절벽·포구 (굽은 지형·입구 개정4)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 12종 오류 검사", documents: docs, images };
 if (docs.length > 64 || docs.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit");
 fs.writeFileSync(target, JSON.stringify([category]) + "\n");
 console.log({ documents: docs.length, images: images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });

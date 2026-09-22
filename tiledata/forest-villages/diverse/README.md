@@ -17,10 +17,10 @@ SQLite 프로젝트 ID: `44d88b94-58eb-4dee-a11a-88737da7001b`.
 근거: `verify-shots/village-diversity/storage-proof.json` 및 `README.md`.
 
 - `catalog.json`: 동결한 세 맵, 합성 칩셋, 지형 입력, 집·소품 좌표.
-- `part-dictionary.json`: 실제 사용 타일 227개의 원본/합성 좌표, 메타데이터와 통행.
+- `part-dictionary.json`: 실제 사용 타일 235개의 원본/합성 좌표, 메타데이터와 통행.
 - `*-rows-*.md`: 상위·하위 전체 배열. 각 문서는 최대 16행.
 - `cliff-assembly.md`, `forest-assembly.md`: 결합 순서, 반복과 마감, 층·방향·접근칸.
-- `validation.md`, `validation.json`, `images/`: 정상 및 의도적으로 손상한 10종 비교.
+- `validation.md`, `validation.json`, `images/`: 정상 및 의도적으로 손상한 12종 비교.
 - `images/`는 원본 렌더, `public/assets/diverse-village-references/`는 열람용 축소본. 축소 그림을 게임 타일로 잘라 쓰지 않는다.
 
 ```bash
@@ -76,3 +76,12 @@ BASE=http://127.0.0.1:9816 node scripts/qa/capture-diverse-village-regions.mjs
 미편집 v1/v2만 내용 revision으로 교체한다. 사용자 편집본은 보존한다.
 정본 revision8 저장/재로드, 새·기존 프로젝트와 실제 지역/문서 화면 근거는
 `verify-shots/village-grass-joins/` 및 갱신한 `verify-shots/village-diversity/`.
+
+## 현재: 굽은 지형·입구 개정4
+
+공용 용도 `diverse-villages-winding-v4`, 35 MD/19 이미지. 지역 revision4.
+504–559–505 완전한 마감(9번559 추가, 총10칸), 절벽 굴곡과 계단 평탄부,
+군집/빈터 숲 밀도장, 맵 가장자리 폭3 출입구. 나무 몸통 원본·기본 바닥240은 유지한다.
+옛 조립 지침은 역사적 설명이며 현재 입력/정답은 catalog와 개정4 문서다.
+연구 출처·실제 적용·미구현 범위는 `research-layout.md`.
+현재 정본 저장은 revision10, 근거 `verify-shots/winding-villages/`.

@@ -327,7 +327,7 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 2열을 중첩하면 그림이 20px로 축소된다(`spatialPlaceLibrary.css`의 지역 참조 한정 규칙).
 실제 카드·속성·다운로드·AI 행 일치 근거: `verify-shots/village-diversity/`.
 
-공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (35 MD/17 이미지).
+공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (35 MD/19 이미지).
 정확한 원본 좌표·레이어·전체 배열·반복 조립·오류 좌표는 `tiledata/forest-villages/diverse/`에 있다.
 생성/배포 명령 및 정본 보존 계약은 그 디렉터리의 README를 따른다.
 
@@ -351,3 +351,13 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 사선은 lower+받침240, 모서리/암벽은 upper다. 상위 소품과 바닥 그림은 유지한다.
 미편집 v1/v2 문서만 내용 revision 일치로 교체하고 편집본은 보존하면서 개정3을 추가한다.
 세 지역 revision3, 10종 오류 예제 및 grass-backing 검사. 근거 `verify-shots/village-grass-joins/`.
+
+### 굽은 지형·입구 개정4 (2026-09-23)
+
+3개 공용 지역 revision4. 504–559–505를 완전한 /—\ 조립으로 만들고, 중간 충돌을 건너뛰지 않는다.
+바닥240을 유지한 파생 시트는10열10칸으로 늘고, 기존9칸 정의는 저자 메타데이터를 보존하며9번559만 추가한다.
+절벽의 골·돌출부와 계단 평탄부를 분리하고, 숲은 plateau 전체 제외를 없애 군집/빈터 밀도장을 적용한다.
+맵 가장자리 폭3·깊이5 출입구를 도로에 연결해 모두 검사한다. 12종 오류에 마감 누락·막힌 맵 출입구가 포함된다.
+공용 AI 자료는 v1/v2/v3 중 미편집 배포본만 교체하며 저자 편집본·공유 포인터는 보존한다.
+연구의 적용 범위와 재현 수식은 `tiledata/forest-villages/diverse/research-layout.md`,
+정본 revision10 저장/재로드 및 화면 증거는 `verify-shots/winding-villages/`.

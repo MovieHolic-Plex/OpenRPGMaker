@@ -142,7 +142,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_cliff_reference") return 2640;
   if (key === "tex_shared_forest_village_objects") return sharedVillageObjects.count;
   if (key === "tex_forest_harmony") return forestHarmony.count;
-  if (key === "tex_forest_harmony_grass_joins") return 9;
+  if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
