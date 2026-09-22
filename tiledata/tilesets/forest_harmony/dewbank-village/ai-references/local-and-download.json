@@ -1,0 +1,31 @@
+{
+  "category": "dewbank-village-v1",
+  "documents": 24,
+  "images": 9,
+  "downloads": [
+    {
+      "file": "public/assets/region-references/river-forest-village.oprn.json",
+      "tilesetIds": [
+        "forest_harmony",
+        "shared_forest_village_objects"
+      ],
+      "reloaded": true,
+      "mapsUnchanged": true
+    }
+  ],
+  "projects": [
+    {
+      "projectId": "31250868-3eb7-42c9-a1f6-bd7d1d8e8245",
+      "projectDir": "/home/main/.codex/worktrees/76a3/rpg-zzu/.oprn-projects/dewbank-village-20260922",
+      "storage": "SQLite",
+      "saved": true,
+      "reopened": true,
+      "revision": 3,
+      "tilesetIds": [
+        "shared_forest_village_objects",
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    }
+  ]
+}
