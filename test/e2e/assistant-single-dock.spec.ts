@@ -8,7 +8,7 @@
 //   · 입력은 보이고 포커스를 받고 값을 유지한다
 //   · 로그는 유리 마운트 한 칸에만 붙고 사이드 전용 오버레이는 어디에도 없다
 //   · 접기 → 복원이 왕복하고 `oprn:ai-panel-collapsed` 로 살아남는다
-//   · 대기 화면(온도) 선택은 아이콘 + 한글 라벨이고 메뉴는 닫힌다
+//   · 대기 화면 선택은 메뉴와 설정 모달 어디에도 없다
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
 const EDITOR_LAYOUT_KEY = "oprn:editor-layout:v4";
@@ -139,38 +139,21 @@ test.describe("조수 단일 도크", () => {
     expect(await page.locator(".ai-chat-log").count()).toBe(1);
   });
 
-  test("대기 화면 선택은 설정 모달의 한 절이고, ☰ 메뉴에는 없다 (데크 D6)", async ({ page }) => {
+  test("대기 화면 선택은 메뉴와 설정 모달 어디에도 없다", async ({ page }) => {
     test.setTimeout(120_000);
     await page.setViewportSize({ width: 1440, height: 900 });
     await openEditor(page);
 
-    // ☰ 메뉴에는 대기 화면 3분기가 없다 — 취향 설정은 설정 모달로 갔다(2026-09-03).
     await page.getByTestId("ai-command-menu-toggle").click();
     await expect(page.getByTestId("ai-command-menu")).toBeVisible();
     expect(await page.getByTestId("ai-command-temperature-map-first").count()).toBe(0);
     await page.getByTestId("ai-command-menu-settings").click();
-    await expect(page.getByTestId("ai-command-menu")).toBeHidden();
 
     const modal = page.getByTestId("ai-settings-modal");
     await expect(modal).toBeVisible();
-    // 「대기 화면」은 설정 모달의 추가 절로, 레일의 자체 탭에 있다.
-    await modal.getByTestId("ai-settings-tab-extra-temperature").click();
-    await expect(modal.getByTestId("ai-settings-section-temperature")).toBeVisible();
-    const choices = [
-      ["quiet-gold", "✦", "추천 함께 보기"],
-      ["ink-only", "◫", "조수만 보기"],
-      ["map-first", "⌨", "입력창만 보기"],
-    ] as const;
-    for (const [id, icon, label] of choices) {
-      const choice = modal.getByTestId(`ai-command-temperature-${id}`);
-      await expect(choice).toHaveText(`${icon} ${label}`);
-      await expect(choice).toHaveAttribute("aria-label", label);
-    }
-
-    await modal.getByTestId("ai-command-temperature-map-first").click();
-    await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-temperature", "map-first");
-    await modal.getByTestId("ai-command-temperature-quiet-gold").click();
-    await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-temperature", "quiet-gold");
+    expect(await modal.getByTestId("ai-settings-tab-extra-temperature").count()).toBe(0);
+    expect(await modal.getByTestId("ai-settings-section-temperature").count()).toBe(0);
+    expect(await page.getByTestId("ai-panel").getAttribute("data-temperature")).toBeNull();
     await page.getByTestId("ai-settings-close").click();
     await expect(modal).toBeHidden();
   });

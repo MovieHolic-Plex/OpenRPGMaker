@@ -1,11 +1,6 @@
 import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
-import {
-  DEFAULT_ASSISTANT_TEMPERATURE,
-  parseAssistantTemperature,
-  type AssistantTemperature,
-} from "@/editor/assistantTemperature";
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
@@ -108,7 +103,6 @@ type LoadedEditorLayout = {
   readonly mapTreeHeight: number;
   /** 맵 트리 높이를 내용에 맞춰 자동으로 잡는가. 리사이저를 끌면 false 가 된다. */
   readonly mapTreeAuto: boolean;
-  readonly assistantTemperature: AssistantTemperature;
 };
 
 const initialLayout = loadEditorLayout();
@@ -141,7 +135,6 @@ let mapTreeAutoHeight = MAP_TREE_DEFAULT_HEIGHT;
 let mapTreeFitRaf = 0;
 let mapTreeObserver: MutationObserver | null = null;
 let unsubMapPanel: (() => void) | null = null;
-let assistantTemperature = initialLayout.assistantTemperature;
 let unsubUiMode: (() => void) | null = null;
 let unsubLayoutBbox: (() => void) | null = null;
 let unsubLocationLayer: (() => void) | null = null;
@@ -219,10 +212,7 @@ export function renderEditor(main: HTMLElement): void {
   aiSidebarWorkspace?.dispose();
   aiSidebarWorkspace = createAiSidebarWorkspace(left, chatFloatHost, () => { applyLayout(); scheduleFitCanvas(); });
   layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea);
-  const aiPanel = renderAiChatPanel({
-    getAssistantTemperature: () => assistantTemperature,
-    onAssistantTemperatureChange: setAssistantTemperature,
-  });
+  const aiPanel = renderAiChatPanel();
   const teamSidebar = aiPanel.querySelector<HTMLElement>(".ai-team-sidebar");
   if (teamSidebar) layout.append(teamSidebar);
   // 조수 느낌표 버튼은 **캔버스 영역 안**에 놓는다. 오른쪽 아래는 팀 레일(84px)이 이미 쓰고
@@ -481,13 +471,6 @@ export function teardownEditor(): void {
   document.body.classList.remove("ai-chat-dock-float", "editor-ui-beginner", "editor-ui-standard", "editor-ui-expert");
 }
 
-export function setAssistantTemperature(next: AssistantTemperature): void {
-  assistantTemperature = parseAssistantTemperature(next, assistantTemperature);
-  editorState.set({ assistantTemperature });
-  if (aiChatPanelRoot) aiChatPanelRoot.dataset.temperature = assistantTemperature;
-  saveEditorLayout();
-}
-
 /**
  * 조수 패널을 캔버스 위 float 호스트에 붙인다.
  *
@@ -496,8 +479,6 @@ export function setAssistantTemperature(next: AssistantTemperature): void {
  */
 function mountAssistantOverlay(): void {
   if (!chatFloatRoot || !aiChatPanelRoot) return;
-  editorState.set({ assistantTemperature });
-  aiChatPanelRoot.dataset.temperature = assistantTemperature;
   aiChatPanelRoot.classList.add("is-left-sidebar");
   if (aiChatPanelRoot.classList.contains("is-history-open")) {
     aiChatPanelRoot.classList.add("is-docked");
@@ -1235,9 +1216,9 @@ function loadEditorLayout(): LoadedEditorLayout {
       mapTreeAuto: typeof parsed.mapTreeAuto === "boolean"
         ? parsed.mapTreeAuto
         : typeof parsed.mapTreeHeight !== "number" || parsed.mapTreeHeight === MAP_TREE_DEFAULT_HEIGHT,
-      // 저장된 `chatDock` 은 읽지 않는다 — 도크가 하나뿐이라 복원할 것이 없다.
-      // 낡은 키는 다음 저장에서 자연히 사라진다(마이그레이션 불필요).
-      assistantTemperature: parseAssistantTemperature(parsed.assistantTemperature, fallback.assistantTemperature),
+      // 저장된 `chatDock`·`assistantTemperature` 는 읽지 않는다.
+      // 도크는 하나뿐이고, 대기 화면 3분기는 빈 대화 화면과 함께 걷었다.
+      // 낡은 키는 다음 저장에서 자연히 사라진다.
     };
   } catch (error) {
     if (error instanceof SyntaxError) return fallback;
@@ -1250,7 +1231,6 @@ function defaultEditorLayout(): LoadedEditorLayout {
     leftWidth: LEFT_PANEL_DEFAULT_WIDTH,
     mapTreeHeight: MAP_TREE_DEFAULT_HEIGHT,
     mapTreeAuto: true,
-    assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
   };
 }
 
@@ -1259,7 +1239,6 @@ function saveEditorLayout(): void {
     leftWidth,
     mapTreeHeight,
     mapTreeAuto,
-    assistantTemperature,
   }));
 }
 

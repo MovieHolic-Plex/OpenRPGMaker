@@ -34,11 +34,6 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import {
-  parseAssistantTemperature,
-  persistAssistantTemperature,
-  type AssistantTemperature,
-} from "@/editor/assistantTemperature";
 import { editorState } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
@@ -108,7 +103,6 @@ import { resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { AI_STUDIO_TOGGLE_EVENT, publishAiStudioChange } from "@/editor/aiStudioMode";
 import { createAiActionMenuItems, type AiActionMenuActions } from "./aiActionMenu";
 import { downloadAiUsageLogText } from "./aiUsageLogDownload";
-import { createAssistantTemperatureMenuSection } from "./aiTemperatureMenu";
 import { createComposerElements, type ComposerElements, type ComposerMode, type ComposerPopover } from "./aiComposer";
 import { createPlanningReuseControl, type PlanningReuseControl } from "./aiPlanningReuse";
 import { describePlanningReuse } from "@/project/mapPlanningItems";
@@ -120,7 +114,7 @@ import { toolIconKey } from "./aiToolLabels";
 import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
-import { openAiSettingsModal, registerAiSettingsPanel, type AiSettingsExtraSection } from "./aiSettingsModal";
+import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -293,8 +287,6 @@ export type AiActivityScheduler = (callback: () => void, delayMs: number) => () 
 export interface AiChatPanelOptions {
   readonly clock?: () => number;
   readonly activityScheduler?: AiActivityScheduler;
-  readonly getAssistantTemperature?: () => AssistantTemperature;
-  readonly onAssistantTemperatureChange?: (next: AssistantTemperature) => void;
   readonly regionTaskRunner?: (options: RegionTaskOptions) => Promise<RegionTaskResult>;
 }
 
@@ -332,9 +324,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     return () => globalThis.clearTimeout(timer);
   });
   const runRegion = options.regionTaskRunner ?? runRegionTask;
-  const readTemperature = (): AssistantTemperature =>
-    parseAssistantTemperature(options.getAssistantTemperature?.() ?? editorState.get().assistantTemperature);
-  let refreshTemperatureChrome: () => void = () => {};
   const controller: ChatController = { session: null, auditHistory: [], statusTimeline: [] };
   const outcomeSlot = el("div");
   /** Pi 경로(2026-09-10 이후 기본)가 종료 4축을 남긴다. 세션 경로는 getRunOutcome 이 계속 소유한다 — 마지막 게시가 이긴다. */
@@ -584,8 +573,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // 설정은 전용 모달로 연다(채팅 본문 인라인 폼 제거 — UX P0/P1).
   // 저장 시 진행 중 세션 config도 즉시 갱신한다.
-  // 설정 모달에 실리는 패널 소유 절(대기 화면 3분기 — 제안서 D6). 데크 조립 뒤 채운다.
-  let settingsExtraSections: readonly AiSettingsExtraSection[] = [];
   const unregisterSettingsPanel = registerAiSettingsPanel(() => ({
     fontRoot: panel,
     onSaved: (config) => {
@@ -597,7 +584,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       composerShell.syncApplyMode();
       teamPanel.setEnabled(config.piTeam ?? DEFAULT_PI_TEAM);
     },
-    extraSections: settingsExtraSections,
   }));
   const openAiSettings = (focusTarget: "first" | "apiKey" = "first"): void => {
     // The menu item is hidden before its action runs; restore to its visible opener instead.
@@ -2378,7 +2364,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshContextChips();
     refreshComposerPlaceholder();
     applyAssistantViewPolicy();
-    refreshTemperatureChrome();
     if (studioShell?.attached()) {
       studioShell.refreshScenes();
       studioShell.refreshMonitor();
@@ -2491,18 +2476,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   let applyAssistantViewPolicy: () => void = () => {};
   let syncGlassIdle: () => void = () => {};
-  const applyTemperature = (next: AssistantTemperature): void => {
-    const from = readTemperature();
-    const parsed = parseAssistantTemperature(next);
-    if (options.onAssistantTemperatureChange) options.onAssistantTemperatureChange(parsed);
-    else {
-      editorState.set({ assistantTemperature: parsed });
-      persistAssistantTemperature(parsed);
-    }
-    refreshTemperatureChrome();
-    // 같은 지시가 온도에 따라 다르게 끝난다 — 어느 온도로 돌았는지가 사후 재현의 전제다.
-    recordAiUiEvent({ surface: "command-menu", action: AI_UI_ACTIONS.temperatureSwitch, detail: { from, to: parsed } });
-  };
   // 도크 전환 진입점 5개(`chat-dock-toggle` 숨은 토글 · `ai-dock-mode-btn` 모드 배지 ·
   // `ai-chat-detach` 떼기 · 두 ☰ 메뉴의 「도크 전환」 항목)는 전부 걷었다. 남겨 두면
   // 「입력줄」이라고만 적힌 채 눌러도 토스트만 뜨는 노드가 되어, 있지도 않은 선택지를
@@ -2682,10 +2655,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         const open = moreMenu.hidden;
         moreMenu.hidden = !open;
         moreMenuToggle.setAttribute("aria-expanded", String(open));
-        if (open) {
-          refreshTemperatureChrome();
-          positionMoreMenu();
-        }
+        if (open) positionMoreMenu();
       },
     },
   }) as HTMLButtonElement;
@@ -2756,13 +2726,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     close: closeMoreMenu,
     actions: sharedMenuActions,
   });
-  const headerTemperatureSection = createAssistantTemperatureMenuSection({
-    variant: "header",
-    current: readTemperature,
-    close: closeMoreMenu,
-    onChange: applyTemperature,
-  });
-  // after.html: 헤더 ☰ 는 대기 화면 3줄을 먼저 보인다. 되돌리기·도크 등은 작업 접기 안에 둔다.
+  // 더보기는 작업 접기만 담는다. 대기 화면 라디오는 빈 대화 화면과 함께 걷었다.
   const headerActionsFold = el("details", {
     class: "ai-more-actions",
     dataset: { testid: "ai-more-actions" },
@@ -2776,7 +2740,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     ],
   });
 
-  moreMenu.replaceChildren(headerTemperatureSection, headerActionsFold);
+  moreMenu.replaceChildren(headerActionsFold);
   const moreWrap = el("div", {
     class: "ai-more-wrap",
     children: [moreMenuToggle, moreMenu],
@@ -3041,7 +3005,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       testid: "ai-panel",
       uiDensity: "shared",
       chatDock: "float",
-      temperature: readTemperature(),
       aiConversation: "empty",
     },
     children: [toolbar, deck, collapsedRestore, collapsedUndo, stickyProposalZone],
@@ -3199,19 +3162,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   syncRailContext();
   syncDeckState();
-  refreshTemperatureChrome = (): void => {
-    const current = readTemperature();
-    panel.dataset.temperature = current;
-    for (const button of panel.querySelectorAll<HTMLElement>(".ai-temperature-option")) {
-      button.setAttribute("aria-checked", button.dataset.temperature === current ? "true" : "false");
-    }
-    // 「추천 함께 보기」만 느낌표 버튼을 보인다. 카드가 왼쪽 패널을 떠난 뒤(2026-09-21)에도
-    // 이 설정이 실제로 무언가를 정해야 한다 — 아니면 라디오가 광고판이 된다.
-    // 「조수만 보기」·「입력창만 보기」는 조용한 화면을 원한다는 뜻이므로 버튼도 감춘다.
-    peek.root.hidden = current !== "quiet-gold";
-    if (peek.root.hidden) peek.close();
-    syncGlassIdle();
-  };
   const applyComposerViewPolicy = (): void => {
     if (!historyOpen && !studio) removeStartScreen();
     mountLog();
@@ -3422,20 +3372,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerMenu.setAcceptanceState(available, hidden);
   };
   refreshAcceptanceMenus();
-  // 대기 화면 3분기(추천 함께 / 조수만 / 입력창만)는 취향 설정이다 — ☰ 메뉴 최상단이 아니라 설정 모달의
-  // 한 절로 옮겼다(제안서 D6). testid(ai-command-temperature-*)와 동작은 그대로다.
-  const composerTemperatureSection = createAssistantTemperatureMenuSection({
-    variant: "composer",
-    current: readTemperature,
-    close: () => {},
-    onChange: applyTemperature,
-  });
-  settingsExtraSections = [{
-    id: "temperature",
-    title: "대기 화면",
-    description: "조수가 쉬는 동안 무엇을 보일지 정합니다.",
-    content: composerTemperatureSection,
-  }];
   // 구 이름은 `refreshDockLabels` 였다 — 도크별 버튼 라벨을 다시 계산하는 일이 본업이었고,
   // 그 일이 없어진 지금 남은 것은 "패널 표면을 현재 상태에 맞춰 다시 그린다" 하나다.
   applyAssistantViewPolicy = (): void => {
@@ -3447,7 +3383,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   applyAssistantViewPolicy();
   commandMenu.replaceChildren(secondaryActions, ...composerMenu.items);
-  refreshTemperatureChrome();
+  syncGlassIdle();
 
   // 초기 적용: 스튜디오가 켜져 있으면 스튜디오가 이기고, 아니면 기록 패널은 숨긴다.
   if (studio) applyStudio(true);
