@@ -17,6 +17,7 @@
 
 import { findLocationById, mapLocations } from "./mapNamedLocations";
 import type { Command, Condition, GameMap, Project } from "./types";
+import { mapPresentItemBranches, presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export type MapLocationReferenceSite =
   | { readonly kind: "encounter"; readonly mapId: string; readonly entryIndex: number }
@@ -300,6 +301,8 @@ function commandBranches(command: Command): readonly Command[][] {
   switch (command.kind) {
     case "choices":
       return [...command.options.map((option) => option.branch), command.cancelBranch ?? []];
+    case "presentItem":
+      return presentItemBranchLists(command);
     case "loop":
       return [command.body];
     case "shop":
@@ -396,6 +399,13 @@ function repairCommands(
       const cancel = command.cancelBranch ? repairCommands(command.cancelBranch, missingId, plan) : undefined;
       if (cancel) changed += cancel.changed;
       return { ...command, options, ...(cancel === undefined ? {} : { cancelBranch: cancel.commands }) };
+    }
+    if (command.kind === "presentItem") {
+      return mapPresentItemBranches(command, (commands) => {
+        const branch = repairCommands(commands, missingId, plan);
+        changed += branch.changed;
+        return branch.commands;
+      });
     }
     if (command.kind === "loop") {
       const body = repairCommands(command.body, missingId, plan);

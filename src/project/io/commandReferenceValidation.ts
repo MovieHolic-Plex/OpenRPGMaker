@@ -93,6 +93,15 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
       for (const option of command.options) collectCommandItemReferenceIds(option.branch, ids);
       collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
       return;
+    case "presentItem":
+      for (const itemId of command.itemIds ?? []) ids.add(itemId);
+      for (const option of command.options) {
+        ids.add(option.itemId);
+        collectCommandItemReferenceIds(option.branch, ids);
+      }
+      collectCommandItemReferenceIds(command.otherwiseBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
+      return;
     case "fork":
       collectConditionItemReferenceIds(command.condition, ids);
       collectCommandItemReferenceIds(command.then, ids);
@@ -186,6 +195,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "choices":
       for (const option of command.options) validateCommands(option.branch, context);
+      validateCommands(command.cancelBranch ?? [], context);
+      return;
+    case "presentItem":
+      requireExistingIds("presentItem: itemIds", command.itemIds ?? [], context.itemIds);
+      requireExistingIds("presentItem: option itemId", command.options.map((option) => option.itemId), context.itemIds);
+      for (const option of command.options) validateCommands(option.branch, context);
+      validateCommands(command.otherwiseBranch ?? [], context);
       validateCommands(command.cancelBranch ?? [], context);
       return;
     case "loop":

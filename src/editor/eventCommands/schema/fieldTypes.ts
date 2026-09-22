@@ -104,6 +104,7 @@ export type FieldSpec =
 export type CustomWidgetId =
   | "moveRoute"
   | "choiceOptions"
+  | "presentOptions"
   | "condition"
   | "shopStock"
   | "faceGraphic"

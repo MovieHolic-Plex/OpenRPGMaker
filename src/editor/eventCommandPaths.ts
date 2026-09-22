@@ -12,6 +12,8 @@ export const INN_NOT_ENOUGH_BRANCH_INDEX = -8;
 export const BATTLE_VICTORY_BRANCH_INDEX = -9;
 export const BATTLE_DEFEAT_BRANCH_INDEX = -10;
 export const BATTLE_ESCAPE_BRANCH_INDEX = -11;
+/** presentItem 의 「틀린 것을 냈을 때」. 정답 option 은 0 이상, 닫음은 CHOICE_CANCEL_BRANCH_INDEX 를 쓴다. */
+export const PRESENT_OTHERWISE_BRANCH_INDEX = -13;
 
 type MissingBranchMode = "read" | "create";
 
@@ -109,6 +111,8 @@ function resolveCommandBranch(
   switch (command.kind) {
     case "choices":
       return resolveChoicesBranch(command, branchIndex, missingBranchMode(options));
+    case "presentItem":
+      return resolvePresentItemBranch(command, branchIndex, missingBranchMode(options));
     case "fork":
       return resolveForkBranch(command, branchIndex, missingBranchMode(options));
     case "loop":
@@ -133,6 +137,22 @@ function resolveChoicesBranch(
   branchIndex: number,
   mode: MissingBranchMode
 ): Command[] | null {
+  if (branchIndex === CHOICE_CANCEL_BRANCH_INDEX) {
+    if (!command.cancelBranch && mode === "create") command.cancelBranch = [];
+    return command.cancelBranch ?? null;
+  }
+  return command.options[branchIndex]?.branch ?? null;
+}
+
+function resolvePresentItemBranch(
+  command: Extract<Command, { kind: "presentItem" }>,
+  branchIndex: number,
+  mode: MissingBranchMode
+): Command[] | null {
+  if (branchIndex === PRESENT_OTHERWISE_BRANCH_INDEX) {
+    if (!command.otherwiseBranch && mode === "create") command.otherwiseBranch = [];
+    return command.otherwiseBranch ?? null;
+  }
   if (branchIndex === CHOICE_CANCEL_BRANCH_INDEX) {
     if (!command.cancelBranch && mode === "create") command.cancelBranch = [];
     return command.cancelBranch ?? null;

@@ -31,6 +31,7 @@ const MINIMAL_COMMANDS: Record<CommandKind, Command> = {
   text: { kind: "text", body: "hello" },
   changeFace: { kind: "changeFace", resourceId: "res1", position: "left", flipHorizontally: false },
   choices: { kind: "choices", options: [{ text: "a", branch: [] }] },
+  presentItem: { kind: "presentItem", options: [{ itemId: "item1", branch: [] }] },
   fork: { kind: "fork", condition: { kind: "switch", switchId: "sw1", value: true }, then: [], else: [] },
   wait: { kind: "wait", ms: 100 },
   inputWait: { kind: "inputWait" },

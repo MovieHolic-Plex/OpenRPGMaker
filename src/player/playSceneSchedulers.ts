@@ -371,6 +371,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
     case "done":
     case "text":
     case "choices":
+    case "presentItem":
     case "wait":
     case "waitForAllMovement":
     case "inputWait":
@@ -393,6 +394,7 @@ function isParallelBlockingStep(step: StepResult): boolean {
     step.kind === "openLoadMenu" ||
     step.kind === "text" ||
     step.kind === "choices" ||
+    step.kind === "presentItem" ||
     step.kind === "inputWait" ||
     step.kind === "inputNumber" ||
     step.kind === "enterHeroName" ||

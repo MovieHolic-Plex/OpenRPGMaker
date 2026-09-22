@@ -194,6 +194,8 @@ export type SceneStep =
   | { kind: "purchase"; eventId: string; itemId: string; count: number; unitPrice: number }
   | { kind: "gift"; eventId?: string; itemId: string }
   | { kind: "choose"; index: number }
+  /** 대기 중인 presentItem 에 아이템을 낸다. itemId 를 생략하면 아무것도 내지 않고 닫는다. */
+  | { kind: "present"; itemId?: string }
   | { kind: "retryCheckpoint" }
   | { kind: "advanceDays"; days: number }
   | SceneExpectStep;
@@ -306,6 +308,7 @@ export interface SceneTestResult {
 type PumpStop =
   | { stop: "done" }
   | { stop: "choices"; choiceCount: number }
+  | { stop: "present"; itemIds: readonly string[] }
   | { stop: "animation" }
   | { stop: "shop"; step: ShopStep }
   | { stop: "failed"; reason: string };
@@ -358,7 +361,8 @@ interface RunnerState {
   readonly messages: string[];
   gameOver: boolean;
   held: ({ interp: Interpreter; currentEventId?: string } & (
-    { mode: "choices"; choiceCount: number } | { mode: "animation" } | { mode: "shop"; step: ShopStep }
+    { mode: "choices"; choiceCount: number } | { mode: "present"; itemIds: readonly string[] }
+    | { mode: "animation" } | { mode: "shop"; step: ShopStep }
   )) | null;
   runtimeFailure: string | null;
   executingEventId?: string;
@@ -453,6 +457,7 @@ function isSceneStep(value: unknown): value is SceneStep {
     case "choose": return shape({
       index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
     }, ["index"]);
+    case "present": return shape({ itemId: sceneText });
     case "advanceDays": return shape({ days: sceneCount }, ["days"]);
     case "expect": return Object.keys(value).length > 1 && shape(sceneExpectFields);
     default: return false;
@@ -592,6 +597,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runGiftStep(state, step);
     case "choose":
       return runChooseStep(state, step.index);
+    case "present":
+      return runPresentStep(state, step.itemId);
     case "retryCheckpoint":
       return runRetryCheckpointStep(state);
     case "advanceDays":
@@ -936,6 +943,21 @@ function runChooseStep(state: RunnerState, index: number): string | null {
   return stop.stop === "failed" ? stop.reason : null;
 }
 
+function runPresentStep(state: RunnerState, itemId: string | undefined): string | null {
+  const held = state.held;
+  if (!held || held.mode !== "present") return "present를 처리할 대기 중 아이템 제시가 없습니다.";
+  if (itemId !== undefined && !held.itemIds.includes(itemId)) {
+    return `Item ${itemId} is not presentable (offered: ${held.itemIds.join(", ") || "none"}).`;
+  }
+  state.held = null;
+  state.executingEventId = held.currentEventId;
+  state.log.push(itemId === undefined ? "present: cancel" : `present: ${itemId}`);
+  const stop = pump(state, held.interp, held.interp.resume(itemId));
+  refreshRoguelikeRoomForRunner(state);
+  updateHeldInterpreter(state, held.interp, stop, held.currentEventId);
+  return stop.stop === "failed" ? stop.reason : null;
+}
+
 function runEventView(state: RunnerState, view: RuntimeEventView): string | null {
   state.interactions.push({ stepIndex: state.stepIndex, mapId: state.session.currentMapId, eventId: view.event.id });
   const proof = state.rewardProof;
@@ -982,9 +1004,10 @@ function updateHeldInterpreter(
     state.runtimeFailure = `Nested interaction still waiting for ${state.held.mode}; cannot replace its interpreter`;
     return;
   }
-  if (stop.stop === "choices" || stop.stop === "animation" || stop.stop === "shop") {
+  if (stop.stop === "choices" || stop.stop === "present" || stop.stop === "animation" || stop.stop === "shop") {
     state.held = stop.stop === "choices"
       ? { interp, mode: "choices", currentEventId, choiceCount: stop.choiceCount }
+      : stop.stop === "present" ? { interp, mode: "present", currentEventId, itemIds: stop.itemIds }
       : stop.stop === "shop" ? { interp, mode: "shop", currentEventId, step: stop.step }
       : { interp, mode: "animation", currentEventId };
     return;
@@ -1006,6 +1029,14 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         return { stop: "failed", reason: `${step.kind}: 출하 플레이어 하네스로 검증해야 하는 명령` };
       case "choices":
         return { stop: "choices", choiceCount: step.options.length };
+      case "presentItem":
+        if (step.prompt) state.messages.push(step.prompt);
+        // 보여줄 것이 없으면 실플레이어처럼 prompt 만 띄우고 닫힘(취소)으로 이어 간다.
+        if (step.items.length === 0) {
+          step = interp.resume(undefined);
+          break;
+        }
+        return { stop: "present", itemIds: step.items.map((item) => item.itemId) };
       case "text":
         state.messages.push(step.body);
         step = interp.resume(undefined);
@@ -1568,7 +1599,7 @@ function runDayEndHookForRunner(state: RunnerState): string | null {
   const interp = createInterpreter([...hook.commands], state.session, state.project);
   const stop = pump(state, interp, interp.start());
   if (stop.stop === "failed") return stop.reason;
-  if (stop.stop === "choices" || stop.stop === "animation") return `onDayEnd ${hook.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
+  if (stop.stop === "choices" || stop.stop === "present" || stop.stop === "animation") return `onDayEnd ${hook.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
   state.log.push(`onDayEnd ${hook.id} done`);
   return null;
 }

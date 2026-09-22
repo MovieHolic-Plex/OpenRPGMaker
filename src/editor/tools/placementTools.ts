@@ -19,6 +19,7 @@ import { placementSoftPenalty } from "./placementScoring";
 import { resolvePlacementStructure, type StructureCellEdit } from "./placementStructure";
 import { mulberry32 } from "@/util/rng";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 type Area = { readonly x: number; readonly y: number; readonly w: number; readonly h: number };
 type Rect = Area;
@@ -702,6 +703,8 @@ export function protectedEventCells(project: Project, map: GameMap): Set<string>
       else if (command.kind === "choices") {
         for (const option of command.options) visit(option.branch);
         visit(command.cancelBranch ?? []);
+      } else if (command.kind === "presentItem") {
+        presentItemBranchLists(command).forEach(visit);
       } else if (command.kind === "fork") {
         visit(command.then);
         visit(command.else ?? []);

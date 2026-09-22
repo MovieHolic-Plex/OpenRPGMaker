@@ -10,6 +10,7 @@ import { ToolError, type ToolExecResult } from "@/editor/tools/types";
 import type { Command, GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 const ROOM_SESSION_BAG = "roomHarnessSessions";
 
@@ -299,6 +300,8 @@ function reconcileInboundTransfers(project: Project, mapId: string): string[] {
       if (command.kind === "choices") {
         for (const option of command.options) collect(option.branch);
         collect(command.cancelBranch);
+      } else if (command.kind === "presentItem") {
+        presentItemBranchLists(command).forEach(collect);
       } else if (command.kind === "fork") {
         collect(command.then);
         collect(command.else);

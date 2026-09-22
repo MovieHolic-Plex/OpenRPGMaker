@@ -43,6 +43,7 @@ export const COMMAND_KIND_OPTIONS = [
   { value: "displayTextSettings", label: "문장 표시 설정" },
   { value: "changeFace", label: "얼굴 바꾸기" },
   { value: "choices", label: "선택지 표시" },
+  { value: "presentItem", label: "아이템 제시" },
   { value: "fork", label: "조건 분기" },
   { value: "setSwitch", label: "스위치 조작" },
   { value: "setVariable", label: "변수 조작" },

@@ -15,6 +15,10 @@ export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolea
       if (cmd.kind === "choices") {
         for (const option of cmd.options) walk(option.branch);
         walk(cmd.cancelBranch);
+      } else if (cmd.kind === "presentItem") {
+        for (const option of cmd.options) walk(option.branch);
+        walk(cmd.otherwiseBranch);
+        walk(cmd.cancelBranch);
       } else if (cmd.kind === "fork") {
         walk(cmd.then);
         walk(cmd.else);

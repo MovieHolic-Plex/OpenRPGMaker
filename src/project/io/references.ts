@@ -31,6 +31,7 @@ import { ensureItemSwitchDefs } from "../itemSwitchDefs";
 import { monsterEvolutionCycleSpeciesIds } from "../monsterCollection";
 import { inBounds, isPassable } from "../collision";
 import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "../spatialPlacements";
+import { mapPresentItemBranches } from "@/project/eventCommands/presentItemBranches";
 
 export function validateProjectReferences(project: Project): void {
   const issues = collectProjectReferenceIssues(project);
@@ -1484,6 +1485,10 @@ function pruneDanglingCommandRefs(
         options: command.options.map((option) => ({ ...option, branch: recurse(option.branch) })),
         cancelBranch: command.cancelBranch ? recurse(command.cancelBranch) : undefined,
       });
+      continue;
+    }
+    if (command.kind === "presentItem") {
+      pruned.push(mapPresentItemBranches(command, recurse));
       continue;
     }
     if (command.kind === "fork") {
