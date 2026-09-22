@@ -1,6 +1,7 @@
 import { z, type ZodType } from "zod";
 import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
+import { resolveMapPatchDocuments } from "../../src/project/persistence/core/projectPatch";
 import type { Project } from "../../src/project/types";
 import { OPRN_CHANNELS } from "../shared/channels";
 import {
@@ -42,6 +43,30 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
   const cached = services.get(sessions);
   if (cached) return cached;
   const store = (key: SessionKey) => sessions.require(key).store;
+  const preparedPatches = new WeakMap<object, { base: Project; project: Project; changedMapIds?: readonly string[] }>();
+
+  function prepareMapPatch(key: SessionKey, payload: unknown):
+    | { readonly kind: "stale-base" }
+    | { readonly kind: "ready"; readonly base: Project; readonly project: Project; readonly changedMapIds?: readonly string[] } {
+    if (payload !== null && typeof payload === "object" && preparedPatches.has(payload)) {
+      return { kind: "ready", ...preparedPatches.get(payload)! };
+    }
+    const input = parseOrThrow(saveMapPatchSchema, payload, OPRN_CHANNELS.projectSaveMapPatch);
+    const stored = store(key);
+    const info = stored.info();
+    const resolved = resolveMapPatchDocuments(input, {
+      serialized: stored.exportSerialized(),
+      sha256: info.sha256 ?? null,
+    });
+    if (resolved.kind === "stale-base") return resolved;
+    const ready = {
+      base: deserializeStoredProjectJson(resolved.baseJson),
+      project: deserializeStoredProjectJson(resolved.localJson),
+      ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
+    };
+    if (payload !== null && typeof payload === "object") preparedPatches.set(payload, ready);
+    return { kind: "ready", ...ready };
+  }
 
   const raw: Record<string, Handler> = {
     [OPRN_CHANNELS.teamStatus]: (key) => {
@@ -118,11 +143,12 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
     },
 
     [OPRN_CHANNELS.projectSaveMapPatch]: async (key, payload) => {
-      const input = parseOrThrow(saveMapPatchSchema, payload, OPRN_CHANNELS.projectSaveMapPatch);
+      const prepared = prepareMapPatch(key, payload);
+      if (prepared.kind === "stale-base") return prepared;
       return await store(key).saveMapPatch({
-        baseProject: projectFromSerialized(input.baseSerialized),
-        project: projectFromSerialized(input.serialized),
-        ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
+        baseProject: prepared.base,
+        project: prepared.project,
+        ...(prepared.changedMapIds ? { changedMapIds: prepared.changedMapIds } : {}),
       });
     },
 
@@ -258,10 +284,17 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       if (channel === OPRN_CHANNELS.assetsPruneUnused && sessions.require(key).team.list().length > 1) throw new Error('팀 작업 중에는 미사용 에셋 정리를 실행할 수 없습니다');
       if ([OPRN_CHANNELS.assetsPruneUnused, OPRN_CHANNELS.projectSeparateMedia, OPRN_CHANNELS.projectBackup].some(candidate => candidate === channel)) requireOwner(key);
       if (channel === OPRN_CHANNELS.projectSave || channel === OPRN_CHANNELS.projectSaveMapPatch) {
-        const input = channel === OPRN_CHANNELS.projectSave
-          ? saveProjectSchema.parse(payload) : saveMapPatchSchema.parse(payload);
-        const local = projectFromSerialized(input.serialized);
-        const base = 'baseSerialized' in input ? projectFromSerialized(input.baseSerialized) : store(key).loadSnapshot()?.project;
+        let base: Project | undefined;
+        let local: Project;
+        if (channel === OPRN_CHANNELS.projectSave) {
+          local = projectFromSerialized(saveProjectSchema.parse(payload).serialized);
+          base = store(key).loadSnapshot()?.project;
+        } else {
+          const prepared = prepareMapPatch(key, payload);
+          if (prepared.kind === "stale-base") return prepared;
+          base = prepared.base;
+          local = prepared.project;
+        }
         const session = sessions.require(key);
         const conflicts = [...session.locks].filter(([resource, lease]) => {
           if (lease.session === key || lease.expiresAt <= Date.now()) return false;
