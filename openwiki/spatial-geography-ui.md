@@ -327,7 +327,7 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 2열을 중첩하면 그림이 20px로 축소된다(`spatialPlaceLibrary.css`의 지역 참조 한정 규칙).
 실제 카드·속성·다운로드·AI 행 일치 근거: `verify-shots/village-diversity/`.
 
-공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (35 MD/19 이미지).
+공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (33 MD/21 이미지).
 정확한 원본 좌표·레이어·전체 배열·반복 조립·오류 좌표는 `tiledata/forest-villages/diverse/`에 있다.
 생성/배포 명령 및 정본 보존 계약은 그 디렉터리의 README를 따른다.
 
@@ -361,3 +361,12 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 공용 AI 자료는 v1/v2/v3 중 미편집 배포본만 교체하며 저자 편집본·공유 포인터는 보존한다.
 연구의 적용 범위와 재현 수식은 `tiledata/forest-villages/diverse/research-layout.md`,
 정본 revision10 저장/재로드 및 화면 증거는 `verify-shots/winding-villages/`.
+
+### 생활 마당 개정5 (2026-09-23)
+
+무작위 중앙 소품과 집 주변 산개를 제거했다. `village-household-props.mjs`는 집별 ownerId와
+주거/텃밭/작업·보관/약초 묶음을 좌우 벽에서1칸 떨어진 마당에2–4개씩 배치한다.
+큰 묶음→같은 용도의 좁은 묶음→배치 생략 순서이며 중앙으로 밀어내지 않는다.
+완전한 묶음 접근 검증, 허수아비-채소밭 동반 조건, 마당 밖 소품 좌표 검사를 추가했다.
+숲·절벽·개별 나무·길·집 배열은 그대로다. 지역 revision5 / 참고문서 v5,
+33 MD·21 이미지·14종 오류. 정본 revision11 저장/재조회와 근거는 `verify-shots/household-props/`.

@@ -2,8 +2,8 @@
   "source": "SQLite reopened project",
   "realComponent": "renderTilesetReferences",
   "readOnlyHarness": true,
-  "category": "diverse-villages-winding-v4",
-  "images": 12,
+  "category": "diverse-villages-households-v5",
+  "images": 14,
   "missing": 0,
   "errors": []
 }

@@ -1,3 +1,4 @@
+import { inspectHouseholdProps } from "./lib/village-household-props.mjs";
 import { inspectVillageCliffs } from "./lib/village-cliffs.mjs";
 import fs from "node:fs";
 import { resolve } from "node:path";
@@ -29,6 +30,7 @@ async function validateVillageStudy(project, mapId) {
     }
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }
+  for(const e of inspectHouseholdProps(m,plan)) add(e.code,e.x,e.y);
   for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
   for (const j of plan.grassJoins) {
     const actual=m.lowerTiles[j.y*m.width+j.x];
@@ -58,7 +60,7 @@ function studyFaults() {
     return { mapId: id, x: i % m.width, y: Math.floor(i / m.width), layer, tile };
   };
   const front = plan.houses[0].front;
-  return [{ code: "cut-root", ...find(1430, "lower"), replacement: 240 }, { code: "missing-trunk", ...find(1426, "lower"), replacement: 240 }, { code: "wrong-edge-direction", ...find(2577, "upper"), replacement: 2589 }, { code: "wrong-layer", ...find(2639, "upper"), replacement: -1, move: true }, { code: "blocked-entrance", mapId: id, ...front, layer: "upper", tile: m.upperTiles[front.y * m.width + front.x], replacement: 237 }];
+  return [{ code: "cut-root", ...find(1430, "lower"), replacement: 240 }, { code: "missing-trunk", ...find(1426, "lower"), replacement: 240 }, { code: "wrong-edge-direction", ...find(2577, "upper"), replacement: 2589 }, { code: "wrong-layer", ...find(2611, "upper"), replacement: -1, move: true }, { code: "blocked-entrance", mapId: id, ...front, layer: "upper", tile: m.upperTiles[front.y * m.width + front.x], replacement: 237 }];
 }
 function cliffFaults() {
   const mapId = "terrace-cliff-village", m = catalog.maps[mapId], p = catalog.plans.find((p2) => p2.id === mapId), b = catalog.cliffBindings;
@@ -85,6 +87,15 @@ function grassFaults() {
     {code:'map-entrance-blocked',mapId,...catalog.plans.find(p=>p.id===mapId).entrance,layer:'upper',tile:-1,replacement:237}
   ];
 }
+function householdFaults() {
+ const mapId='terrace-cliff-village',p=catalog.plans.find(p=>p.id===mapId),m=catalog.maps[mapId];
+ const bed=p.placements.find(o=>o.name==='채소밭'),scare=p.placements.find(o=>o.name==='허수아비'&&o.ownerId===bed.ownerId);
+ const barrel=p.placements.find(o=>o.name==='나무통');
+ const i=m.upperTiles.findIndex((t,i)=>t===-1&&m.lowerTiles[i]===240&&i%m.width>20&&i%m.width<60&&Math.floor(i/m.width)>30&&Math.floor(i/m.width)<65&&!p.houses.some(h=>Math.abs(h.x-i%m.width)<10&&Math.abs(h.y-Math.floor(i/m.width))<10)&&!p.roadCells.includes(i));
+ if(i<0)throw Error('No unowned-prop fault target');
+ return [{code:'unowned-prop',mapId,x:i%m.width,y:Math.floor(i/m.width),layer:'upper',tile:-1,replacement:barrel.upper[0]},
+ {code:'scarecrow-without-garden',mapId,x:bed.x,y:bed.y,layer:'upper',tile:bed.upper[0],replacement:-1,errorX:scare.x,errorY:scare.y}];
+}
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [input, mapId] = process.argv.slice(2);
   if (!input || !mapId) throw Error("Usage: validate-diverse-villages.mjs project.json mapId");
@@ -97,6 +108,7 @@ export {
   catalog,
   cliffFaults,
   grassFaults,
+  householdFaults,
   studyFaults,
   validateVillageStudy
 };

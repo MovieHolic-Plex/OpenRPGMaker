@@ -15,6 +15,88 @@
     "x": 6,
     "y": 33
   },
+  "yards": [
+    {
+      "ownerId": "reed-bay-village-house-1",
+      "kit": "home",
+      "name": "주거 마당",
+      "x": 16,
+      "y": 10,
+      "side": "right",
+      "w": 4,
+      "h": 5
+    },
+    {
+      "ownerId": "reed-bay-village-house-2",
+      "kit": "garden",
+      "name": "텃밭 마당",
+      "x": 28,
+      "y": 7,
+      "side": "left",
+      "w": 2,
+      "h": 4
+    },
+    {
+      "ownerId": "reed-bay-village-house-3",
+      "kit": "work",
+      "name": "작업 마당",
+      "x": 46,
+      "y": 15,
+      "side": "left",
+      "w": 5,
+      "h": 3
+    },
+    {
+      "ownerId": "reed-bay-village-house-4",
+      "kit": "herbs",
+      "name": "약초 마당",
+      "x": 19,
+      "y": 31,
+      "side": "right",
+      "w": 2,
+      "h": 4
+    },
+    {
+      "ownerId": "reed-bay-village-house-5",
+      "kit": "home",
+      "name": "주거 마당",
+      "x": 39,
+      "y": 24,
+      "side": "right",
+      "w": 4,
+      "h": 5
+    },
+    {
+      "ownerId": "reed-bay-village-house-6",
+      "kit": "garden",
+      "name": "텃밭 마당",
+      "x": 58,
+      "y": 34,
+      "side": "right",
+      "w": 5,
+      "h": 4
+    },
+    {
+      "ownerId": "reed-bay-village-house-7",
+      "kit": "work",
+      "name": "작업 마당",
+      "x": 8,
+      "y": 49,
+      "side": "left",
+      "w": 3,
+      "h": 1
+    },
+    {
+      "ownerId": "reed-bay-village-house-8",
+      "kit": "herbs",
+      "name": "약초 마당",
+      "x": 29,
+      "y": 43,
+      "side": "left",
+      "w": 4,
+      "h": 4
+    }
+  ],
   "entrance": {
     "x": 0,
     "y": 33

@@ -15,6 +15,78 @@
     "x": 42,
     "y": 68
   },
+  "yards": [
+    {
+      "ownerId": "terrace-cliff-village-house-1",
+      "kit": "home",
+      "name": "주거 마당",
+      "x": 34,
+      "y": 12,
+      "side": "right",
+      "w": 4,
+      "h": 5
+    },
+    {
+      "ownerId": "terrace-cliff-village-house-2",
+      "kit": "garden",
+      "name": "텃밭 마당",
+      "x": 57,
+      "y": 15,
+      "side": "right",
+      "w": 5,
+      "h": 4
+    },
+    {
+      "ownerId": "terrace-cliff-village-house-3",
+      "kit": "work",
+      "name": "작업 마당",
+      "x": 7,
+      "y": 34,
+      "side": "left",
+      "w": 5,
+      "h": 3
+    },
+    {
+      "ownerId": "terrace-cliff-village-house-4",
+      "kit": "herbs",
+      "name": "약초 마당",
+      "x": 46,
+      "y": 34,
+      "side": "right",
+      "w": 4,
+      "h": 4
+    },
+    {
+      "ownerId": "terrace-cliff-village-house-5",
+      "kit": "home",
+      "name": "주거 마당",
+      "x": 70,
+      "y": 38,
+      "side": "right",
+      "w": 4,
+      "h": 5
+    },
+    {
+      "ownerId": "terrace-cliff-village-house-7",
+      "kit": "work",
+      "name": "작업 마당",
+      "x": 53,
+      "y": 65,
+      "side": "right",
+      "w": 3,
+      "h": 1
+    },
+    {
+      "ownerId": "terrace-cliff-village-house-8",
+      "kit": "herbs",
+      "name": "약초 마당",
+      "x": 65,
+      "y": 59,
+      "side": "left",
+      "w": 4,
+      "h": 4
+    }
+  ],
   "entrance": {
     "x": 42,
     "y": 71
