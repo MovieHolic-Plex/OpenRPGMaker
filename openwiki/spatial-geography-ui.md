@@ -327,7 +327,7 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 2열을 중첩하면 그림이 20px로 축소된다(`spatialPlaceLibrary.css`의 지역 참조 한정 규칙).
 실제 카드·속성·다운로드·AI 행 일치 근거: `verify-shots/village-diversity/`.
 
-공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (34 MD/13 이미지).
+공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (35 MD/17 이미지).
 정확한 원본 좌표·레이어·전체 배열·반복 조립·오류 좌표는 `tiledata/forest-villages/diverse/`에 있다.
 생성/배포 명령 및 정본 보존 계약은 그 디렉터리의 README를 따른다.
 
@@ -341,3 +341,13 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 미편집 v1만 교체한다. 사용자 수정본/공유 포인터는 보존하고 새 용도를 제공한다.
 정확한 원본 배열과 픽셀 일치·8종 오류·SQLite 재로드 근거는
 `tiledata/forest-villages/diverse/cliff-source.json`, `verify-shots/village-cliff-repair/`에 있다.
+
+### 잔디 경계 개정3 (2026-09-23)
+
+사용자 확정은 기존 바닥240 유지다. 504/505의 사선 및498/499/528/529/619의 잔디 픽셀만
+그 바닥에 맞춘다. 기존 아틀라스를 덮어쓰지 않고 공용 `forest_harmony_grass_joins`
+(16px·9열·9칸)을 추가했다. 생성기는 `prepare-forest-grass-joins.mjs`, 실제 치수는 bundled
+기하와 defaultAssets 생성자가 공유한다. 새 프로젝트/기존 프로젝트에 등록하며 AI 문서는 forest_harmony를 공유한다.
+사선은 lower+받침240, 모서리/암벽은 upper다. 상위 소품과 바닥 그림은 유지한다.
+미편집 v1/v2 문서만 내용 revision 일치로 교체하고 편집본은 보존하면서 개정3을 추가한다.
+세 지역 revision3, 10종 오류 예제 및 grass-backing 검사. 근거 `verify-shots/village-grass-joins/`.

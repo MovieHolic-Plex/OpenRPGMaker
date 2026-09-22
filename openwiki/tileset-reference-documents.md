@@ -221,7 +221,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-용도 ID는 `diverse-villages-cliff-v2`, 문서 34개/이미지 13개/실제 타일 사전 225개다.
+용도 ID는 `diverse-villages-grass-v3`, 문서 35개/이미지 17개/실제 타일 사전 227개다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -242,3 +242,13 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 미편집 v1만 교체한다. 사용자 수정본/공유 포인터는 보존하고 새 용도를 제공한다.
 정확한 원본 배열과 픽셀 일치·8종 오류·SQLite 재로드 근거는
 `tiledata/forest-villages/diverse/cliff-source.json`, `verify-shots/village-cliff-repair/`에 있다.
+
+### 잔디 경계 개정3 (2026-09-23)
+
+사용자 확정은 기존 바닥240 유지다. 504/505의 사선 및498/499/528/529/619의 잔디 픽셀만
+그 바닥에 맞춘다. 기존 아틀라스를 덮어쓰지 않고 공용 `forest_harmony_grass_joins`
+(16px·9열·9칸)을 추가했다. 생성기는 `prepare-forest-grass-joins.mjs`, 실제 치수는 bundled
+기하와 defaultAssets 생성자가 공유한다. 새 프로젝트/기존 프로젝트에 등록하며 AI 문서는 forest_harmony를 공유한다.
+사선은 lower+받침240, 모서리/암벽은 upper다. 상위 소품과 바닥 그림은 유지한다.
+미편집 v1/v2 문서만 내용 revision 일치로 교체하고 편집본은 보존하면서 개정3을 추가한다.
+세 지역 revision3, 10종 오류 예제 및 grass-backing 검사. 근거 `verify-shots/village-grass-joins/`.

@@ -1,0 +1,165 @@
+{
+  "sourcePath": "public/assets/forest-harmony/chipset.png",
+  "sourceSha256": "430f254fe1e0abb081defe98dc3d216d62c58ae59cf60755a0050515dff779bf",
+  "floorTile": 240,
+  "texture": "tex_forest_harmony_grass_joins",
+  "tilesPerRow": 9,
+  "count": 9,
+  "rockPalette": {
+    "108,72,53": [
+      139,
+      106,
+      57
+    ],
+    "26,22,21": [
+      67,
+      44,
+      30
+    ],
+    "78,51,36": [
+      78,
+      51,
+      36
+    ],
+    "74,60,51": [
+      107,
+      78,
+      42
+    ],
+    "55,38,36": [
+      97,
+      64,
+      38
+    ],
+    "139,80,52": [
+      139,
+      80,
+      52
+    ],
+    "36,25,36": [
+      81,
+      58,
+      33
+    ],
+    "127,93,66": [
+      127,
+      93,
+      66
+    ],
+    "177,139,87": [
+      177,
+      139,
+      87
+    ]
+  },
+  "tiles": [
+    {
+      "sourceTile": 504,
+      "sourceX": 24,
+      "sourceY": 16,
+      "targetTile": 0,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 138,
+      "opaquePixels": 138,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 505,
+      "sourceX": 25,
+      "sourceY": 16,
+      "targetTile": 1,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 134,
+      "opaquePixels": 134,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 240,
+      "sourceX": 0,
+      "sourceY": 8,
+      "targetTile": 2,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 0,
+      "opaquePixels": 256,
+      "change": "identical floor copy"
+    },
+    {
+      "sourceTile": 498,
+      "sourceX": 18,
+      "sourceY": 16,
+      "targetTile": 3,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 122,
+      "opaquePixels": 256,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 499,
+      "sourceX": 19,
+      "sourceY": 16,
+      "targetTile": 4,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 120,
+      "opaquePixels": 256,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 528,
+      "sourceX": 18,
+      "sourceY": 17,
+      "targetTile": 5,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 112,
+      "opaquePixels": 256,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 529,
+      "sourceX": 19,
+      "sourceY": 17,
+      "targetTile": 6,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 114,
+      "opaquePixels": 256,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 619,
+      "sourceX": 19,
+      "sourceY": 20,
+      "targetTile": 7,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 217,
+      "opaquePixels": 256,
+      "change": "grass pixels only"
+    },
+    {
+      "sourceTile": 712,
+      "sourceX": 22,
+      "sourceY": 23,
+      "targetTile": 8,
+      "width": 16,
+      "height": 16,
+      "alphaUnchanged": true,
+      "grassPixels": 0,
+      "opaquePixels": 256,
+      "change": "rock palette only"
+    }
+  ]
+}

@@ -30,6 +30,11 @@ async function validateVillageStudy(project, mapId) {
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }
   for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
+  for (const j of plan.grassJoins) {
+    const actual=m.lowerTiles[j.y*m.width+j.x];
+    if(actual!==j.tile) add([504,505].includes(actual)?'grass-color-mismatch':'grass-edge-direction',j.x,j.y,{expected:j.tile,actual});
+    if(t.tileMeta[j.tile]?.layerBacking!==240) add('grass-backing',j.x,j.y,{expected:240,actual:t.tileMeta[j.tile]?.layerBacking});
+  }
   await withTsModule("src/project/lint/reachability.ts", "study-reach.mjs", (api) => {
     const seen = api.computeReachableCells(project, m, plan.start.x, plan.start.y);
     for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add("blocked-entrance", a.x, a.y, { role: a.role });
@@ -63,6 +68,13 @@ function applyStudyFault(project, f) {
   m[f.layer + "Tiles"][i] = f.replacement;
   if (f.move) m[(f.layer === "upper" ? "lower" : "upper") + "Tiles"][i] = f.tile;
 }
+function grassFaults() {
+  const mapId='terrace-cliff-village', j=catalog.plans.find(p=>p.id===mapId).grassJoins.find(j=>j.sourceTile===504);
+  return [
+    {code:'grass-edge-direction',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:catalog.grassBindings[505]},
+    {code:'grass-color-mismatch',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:504}
+  ];
+}
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [input, mapId] = process.argv.slice(2);
   if (!input || !mapId) throw Error("Usage: validate-diverse-villages.mjs project.json mapId");
@@ -74,6 +86,7 @@ export {
   applyStudyFault,
   catalog,
   cliffFaults,
+  grassFaults,
   studyFaults,
   validateVillageStudy
 };

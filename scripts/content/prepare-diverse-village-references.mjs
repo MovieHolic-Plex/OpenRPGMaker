@@ -65,13 +65,13 @@ ${rows(m.upperTiles.slice(y * m.width, Math.min(y + 16, m.height) * m.width), m.
 }
 const used = [...new Set(Object.values(c.maps).flatMap((m) => [...m.lowerTiles, ...m.upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
 const dictionary = used.map((tile) => {
-  const g = t.tileGrafts.find((g2) => g2.targetTile === tile), sourceTile = g?.sourceTile ?? tile, sourceChipset = g?.sourceChipset ?? t.image.id, cols = sourceChipset === "tex_shared_forest_village_objects" ? 6 : 30;
+  const g = t.tileGrafts.find((g2) => g2.targetTile === tile), sourceTile = g?.sourceTile ?? tile, sourceChipset = g?.sourceChipset ?? t.image.id, cols = sourceChipset === "tex_shared_forest_village_objects" ? 6 : sourceChipset === "tex_forest_harmony_grass_joins" ? 9 : 30;
   return { tile, tilesetId: t.id, sourceChipset, sourceTile, sourceX: sourceTile % cols, sourceY: Math.floor(sourceTile / cols), pixelX: sourceTile % cols * 16, pixelY: Math.floor(sourceTile / cols) * 16, width: 16, height: 16, targetX: tile % 30, targetY: Math.floor(tile / 30), layers: ["lower", "upper"].filter((l) => Object.values(c.maps).some((m) => m[l + "Tiles"].includes(tile))), passability: t.passability[tile], priority: t.priority[tile], tileMeta: t.tileMeta[tile] };
 });
 fs.writeFileSync(dir + "/part-dictionary.json", JSON.stringify(dictionary, null, 2));
 for (let i = 0; i < dictionary.length; i += 60) doc("dictionary-" + (i / 60 + 1), "원본·이식·레이어 사전 " + (i / 60 + 1), "# 사용 타일 부품 사전\n\nsource는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/높이는 픽셀이다. 레이어와 통행은 별개.\n" + block(dictionary.slice(i, i + 60)));
 const sourceCliffs = JSON.parse(fs.readFileSync(dir + "/cliff-source.json"));
-doc("cliff-assembly", "절벽 개정2 · 윗선–암벽 면–밑단", `# 큰 폭포 아래 마을의 절벽 문법
+doc("cliff-assembly", "절벽 개정3 · 잔디색과 사선 경계", `# 큰 폭포 아래 마을의 절벽 문법
 
 개정1의 ‘대지 둘레 얇은 띠·남면 2행’은 사용자가 지적한 잘못된 구성이다. 북·서·동쪽에 같은 띠를 둘러 성벽처럼 닫지 않는다. 굽은 남향 윗선에서 충분한 높이의 면을 내리고, 같은 윤곽을 아래로 평행 이동해 밑단을 닫는다. 좌우 사선 몸통은 서로 다른 그림이다.
 
@@ -80,7 +80,8 @@ doc("cliff-assembly", "절벽 개정2 · 윗선–암벽 면–밑단", `# 큰 �
 ![수정 후 · 연속 암벽 면과 계단](image:terrace-cliff-village)
 
 ## 번호와 레이어 정정
-참고 맵의 498/499/528/529/619/652/682/711/712는 tex_easyrpg_chipset_retro_world 원본 18/19/48/49/139/172/202/231/232와 픽셀이 동일하다. forest_harmony의 동명 번호를 그대로 복사하지 않는다. 이식표를 사용한다. 개정1은 오른쪽 사선 몸통232도 빠뜨렸다.
+개정3은 바닥240의 색을 유지한다. 참고 마을의 밝은 잔디 원본을 그대로 가져오던 개정2를 폐기한다. 아래 cliffBindings의 키는 열 문법 식별용 옛 원본 번호이며, 현재 그림의 실제 출처는 tileGrafts다. 498/499/528/529/619의 잔디 픽셀만 바닥색으로 맞추고, 암벽 면은 forest_harmony 팔레트로 연결한다. 504/505는 별도 잔디 사선 마감이며 682/711 암벽 면을 대체하는 타일이 아니다. 개정1은 오른쪽 사선 몸통232도 빠뜨렸다.
+${block(t.tileGrafts.filter(g=>g.targetTile>=2670))}
 ${block(c.cliffBindings)}
 
 암벽은 **upper**, 아래 잔디/지면은 **lower에 보존**한다. stairs374는 lower이며 같은 칸 upper=-1이다. 이 표본의 암벽은 통행 불가, 계단은 통행 가능이다. 홈 레이어와 렌더 우선순위는 별개다. old ‘모두 lower’ 설명을 적용하지 않는다.
@@ -93,7 +94,7 @@ ${block(c.cliffBindings)}
 5. 절벽 전체→계단·입구→집→길→숲→소품. 면이 차지할 모든 칸을 먼저 예약한다. 집·뿌리·문앞을 덮으면 그 배치를 중단한다. 새 표본 높이 h=5 또는6; 원본 표본은 h=7이다.
 
 ## 기준 맵에서 그대로 추출한 정상 열
-원점과 전체 두 레이어 배열이다. 높이8=윗선1+몸통6+밑단1. upper의 번호는 참고 맵 원본 번호이며 위의 원본-480→이식표를 거쳐 새 칩셋에서 사용한다.
+원점과 전체 두 레이어 배열이다. 높이8=윗선1+몸통6+밑단1. upper의 번호는 참고 맵 원본 번호이며 역사적 구조 표본이다. 색은 이 개정3 출력과 다르므로 이 배열을 색 기준으로 재사용하지 않는다. 새 맵은 cliffBindings와 현재 tileGrafts를 함께 사용한다.
 ${block(sourceCliffs)}
 
 ## 실제 입력과 출력
@@ -102,6 +103,37 @@ ${c.plans.map(p=>"### "+p.name+"\n"+block({cliffs:p.cliffs,stairs:p.stairs})).jo
 
 동굴 입구는 층바위 (71,52), upper 원본413이며 받침은 원본172다. 접근칸 (71,54)은 비워 둔다. 실내 전이 이벤트는 없다.
 선착장은 포구 (56,45), 폭21·높이2. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (76,45)까지 연결을 검사한다.
+`);
+const grassSource = JSON.parse(fs.readFileSync(dir + "/grass-joins-source.json"));
+doc("grass-joins", "504·505 사선 · 현재 바닥색 유지", `# 사선 잔디 경계와 바닥색
+
+사용자 확정: 기본 바닥240의 그림/색을 유지하고 504·505와 498·499·528·529의 경계를 맞춘다. 원본 시트의 밝은 589로 바닥 전체를 바꾸지 않는다. 공용 tex_forest_harmony_grass_joins는 16px·9열·9칸의 별도 파생 시트다. 기존 forest_harmony 시트 바이트와 이슬여울은 그대로다.
+
+![수정 전 · 경계 잔디색 불일치](image:grass-before)
+![수정 후 · 바닥색 유지](image:terrace-cliff-village)
+
+## 정확한 부품 사전
+![공용 색 맞춤 시트 · 왼쪽부터 0..8](image:grass-joins-atlas)
+${block(grassSource)}
+${block({tilesetId:'forest_harmony',grassBindings:c.grassBindings,grafts:t.tileGrafts.filter(g=>g.sourceChipset==='tex_forest_harmony_grass_joins')})}
+
+새 공용 시트 0=504 북서 사선(잔디는 남동쪽), 1=505 북동 사선(잔디는 남서쪽), 2=기존 바닥240 픽셀 그대로. 3/4=498/499 윗 모서리, 5/6=528/529 밑 모서리, 7=619 정면 윗선. 사선 투명 알파는 원본과 동일하며 잔디 세 색 영역만 바닥240 텍스처와 원래 명암 위치로 교체했다. 8=712 오른쪽 암벽: 기존 시트에 남아 있던 어두운 원본 팔레트만 왼쪽711과 맞춘다. 픽셀 위치/형태를 반전하거나 늘이지 않는다. 암벽 모서리의 비잔디 픽셀은 현재 forest_harmony와 같다.
+
+## 레이어 정정과 실행 순서
+옛 tileMeta의 504/505 ‘녹색 삼각 지붕’ 설명을 이 용도에 사용하지 않는다. 여기서는 **잔디 경계**다. 새 시트 0/1은 lower, layerBacking=2. forest_harmony에 이식한 2692/2693은 lower, layerBacking=240. 상위 소품을 그대로 두고 바닥240 위에 사선만 합성한다. passage=passable, priority=lower. 암벽 3..8은 upper·solid이며 두 속성을 섞지 않는다.
+
+1. 절벽 열·계단→집·길·숲·소품 배치를 끝낸다.
+2. 절벽 첫 꼭짓점 (x0,y0)에서 북서 사선504를 (x0+k,y0-1-k), 마지막 꼭짓점 (x1,y1)에서 북동 사선505를 (x1-k,y1-1-k)에 놓는다. k=0..3.
+3. lower가 정확히240이고 길이 아닌 칸만 교체한다. 길·건물 바닥·뿌리/줄기 칸은 건너뛴다. upper는 어떤 칸도 바꾸지 않는다. 바닥 받침은240을 지정한다.
+4. 실제 적용 좌표는 아래 표를 정답으로 한다. 일부 칸이 길/건물이라 생략됐다고 빈칸에 임의 부품을 추가하지 않는다.
+${c.plans.map(p=>'### '+p.name+'\n'+block(p.grassJoins)).join('\n')}
+
+## 입력 → 완전한 두 레이어 출력
+층바위 절벽의 북서 마감과 북동 마감. 좌표는 맵 기준, 배열은 행 단위다.
+${block({x:18,y:13,...crop(c.maps['terrace-cliff-village'],18,13,8,8)})}
+${block({x:68,y:13,...crop(c.maps['terrace-cliff-village'],68,13,8,10)})}
+
+자동 검사 grass-edge-direction은 반대 사선, grass-color-mismatch는 밝은 원본504/505를 잘못 쓴 칸, grass-backing은 받침240 누락의 좌표를 반환한다. 정상/오류 그림은 검증 문서 참조. 위의 파생 시트는 모든 새/기존 프로젝트에서 번들 등록되며 문서는 forest_harmony를 공유한다.
 `);
 doc("forest-assembly", "숲·가구·울타리 · 전체 조각 규칙", `# 3행 숲과 생활 소품
 
@@ -118,15 +150,15 @@ ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 가로 탁자: upper [234,235,236], 폭3·높이1 고정. 과일상자 upper[202,203], 별도 상위 조각. 하위 KEEP. 같은 상위 칸에 겹쳐 넣지 않는다.
 울타리 소품: upper[2636,2637], 폭2·높이1의 완결 패널이다. 회전하거나 잘라 모서리로 쓰지 않는다. 닫힌 울타리가 필요하면 기존 공용 fence-gate의 NW378/NE380/SW438/SE410, 수평379, 수직408을 쓰고 출입구를 비운다. 이번 표본에는 닫힌 울타리 조립을 쓰지 않았다.
 `);
-let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하고, 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
+let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
-doc("validation", "좌표 검증 · 정상/오류 8종", checks);
+doc("validation", "좌표 검증 · 정상/오류 10종", checks);
 const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png")).sort().map((n) => {
   const file = preview + "/" + n;
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
-const category = { id: "diverse-villages-cliff-v2", name: "다양한 마을 · 산촌·절벽·포구 (절벽 개정2)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 8종 오류 검사", documents: docs, images };
+const category = { id: "diverse-villages-grass-v3", name: "다양한 마을 · 산촌·절벽·포구 (잔디 경계 개정3)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 10종 오류 검사", documents: docs, images };
 if (docs.length > 64 || docs.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit");
 fs.writeFileSync(target, JSON.stringify([category]) + "\n");
 console.log({ documents: docs.length, images: images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });
