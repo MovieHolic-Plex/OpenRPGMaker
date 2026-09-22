@@ -176,6 +176,10 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+.database-modal-body .spatial-stage.is-deferred {
+  display: none;
+}
+
 /* 속성이 닫힌 장소 갤러리에서는 스테이지를 접는다. DOM 에는 남긴다 — 「속성」 토글이
    여닫는 대상이 사라지면 아무것도 못 여는 죽은 버튼이 된다. */
 

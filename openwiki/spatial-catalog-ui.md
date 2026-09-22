@@ -123,3 +123,22 @@ canonical spatial 프로젝트는 일반 projects upsert가 거부되므로 `pub
 `defaultComposition`이 외형 section 킷의 실제 크기를 사용한다(종전 40×30 고정은
 78×44 마을을 잘랐다). 복합 캔버스는 하위 셀마다 `tileBackingTile`의 기존 받침 정책을
 함께 그려 나무 아래가 투명 격자로 보이지 않게 한다. 맵 타일·통행 데이터는 바꾸지 않는다.
+
+## 2026-09-22 — 기본 방 종류 카드 7종을 갤러리에서 제거
+
+데이터베이스 → 장소(및 공간) 탭의 「침실·서재·식당/홀·주방·창고·선술집·복도」 카드는
+저장된 설계가 아니라 `BUILTIN_INTERIOR_ROOM_KINDS`(코드 폴백 문법)가 카드로 렌더링된 것이었다.
+사용자는 이를 "오브젝트 하나 딸린 빈 장소"로 오독했고, 지우는 방법도 없었다.
+
+변경: `spatialCatalog.ts`의 `spaceCards()`가 기본 7종 카드를 만들지 않는다. 갤러리 공간 카드는
+① 타일셋에 저작된 `interiorRoomKinds`(호환 방 규칙, source: own)와 ② 라이브러리 `spaces`
+설계(source: own)만 남는다. 장소 탭 합침(`places: () => [...placeCards(), ...spaceCards()]`)도
+`places: placeCards`로 분리해 방 종류 문법이 장소 탭에 다시 섞이지 않게 했다.
+
+문법 자체는 남아 있다. `roomKindOf`·`renderRoomKindThumb`·`INTERIOR_ROOM_THEME_CATALOG`는
+타일셋 「공간 종류」 저작(`tilesetSpacesTab`)과 실내 방 생성 파이프라인의 폴백으로 계속 쓰인다.
+삭제한 것은 갤러리 노출뿐이다. 레일 검색 키에서도 spatialPlaces의 "공간·tilesetSpaces" 토큰을
+빼서 공간 편집(장소 편집) 탭으로 유도한다.
+
+검증: `npx tsc -p tsconfig.app.json --noEmit` 초록, `test/spatialCatalog.test.ts`(16)·
+`spatialLegacyEditing`·`spatialSpaceMemberUi`·`spatialNavigation.routes` 35건 통과.

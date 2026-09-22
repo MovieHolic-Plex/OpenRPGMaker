@@ -267,3 +267,121 @@ export function mergeInterviewPatch(canon: ResolvedWorldCanon, patch: InterviewP
   return next;
 }
 
+
+// ---------------------------------------------------------------------------
+// 세계관 본문 초안 (2026-09-22)
+//
+// 세계 설정은 인터뷰가 채우지만, 본문(역사·땅·문화)은 장문 prose 라 문답만으로는 안 된다.
+// 저자가 "무엇을 쓸지" 막막한 지점에서 조수가 초안을 잡아 주고, 이미 쓴 글이 있으면
+// 그 톤과 사실을 이어받아 다음 절을 쓴다.
+//
+// 두 모드 모두 **제안**이다 — 결과는 편집기의 textarea 에 들어가고, 저자가 저장을 눌러야
+// 정본이 된다(인터뷰처럼 자동 저장하지 않는다). 본문은 길고 되돌리기 비용이 크다.
+// ---------------------------------------------------------------------------
+
+export type BodyDraftMode = "draft" | "continue";
+
+const BODY_SYSTEM_PROMPT = [
+  "You write the body prose of a Korean game world bible.",
+  "Return exactly one JSON object: {\"body\": string, \"notes\": string[]}",
+  "",
+  "Rules:",
+  "- Write in Korean, plain and concrete. No headings with markdown fences, no meta commentary inside body.",
+  "- body: the prose itself. Use short paragraphs. Use \"## 절\" headings only when the author's existing text already uses them.",
+  "- Stay inside the established canon below. Never introduce anything listed as 없는 것(절대 금지).",
+  "- If the canon is thin, invent conservatively and mark each invention in notes so the author can veto it.",
+  "- notes: 0-5 short Korean bullets naming what you invented or assumed, so the author can accept or reject each.",
+  "- Never contradict the author's existing body text.",
+].join("\n");
+
+export type BodyDraftRequest = {
+  readonly mode: BodyDraftMode;
+  /** 저자가 이미 쓴 본문. continue 모드는 이 끝을 이어받는다. */
+  readonly existingBody: string;
+  /** 저자가 덧붙인 지시(선택). 예: "왕도 멸망만 3문단". */
+  readonly instruction: string;
+  readonly canon: ResolvedWorldCanon;
+  readonly signal?: AbortSignal;
+};
+
+export type BodyDraftResult =
+  | { readonly ok: true; readonly body: string; readonly notes: readonly string[] }
+  | { readonly ok: false; readonly message: string };
+
+export function bodyDraftMessages(request: BodyDraftRequest): ChatMessage[] {
+  const canonBlock = knownSlotSummary(request.canon);
+  const task = request.mode === "continue"
+    ? [
+        "이어쓰기: 아래 기존 본문의 마지막 문단을 자연스럽게 이어서 다음 절을 써라.",
+        "기존 문장을 반복하거나 요약하지 말고, 새 내용만 쓴다.",
+      ].join("\n")
+    : [
+        "초안: 이 세계의 본문을 처음부터 써라.",
+        "역사 → 땅 → 문화 → 숨겨 둔 것 순서로 4~6문단.",
+      ].join("\n");
+  const parts = [
+    task,
+    "",
+    "## 이 세계(고정 설정)",
+    canonBlock,
+  ];
+  if (request.existingBody.trim()) {
+    parts.push("", "## 저자가 이미 쓴 본문", request.existingBody.trim());
+  }
+  if (request.instruction.trim()) {
+    parts.push("", "## 저자 지시(최우선)", request.instruction.trim());
+  }
+  return [
+    { role: "system", content: composeSystemPrompt({ surface: "world-canon-body", body: BODY_SYSTEM_PROMPT, includePolicy: true }) },
+    { role: "user", content: parts.join("\n") },
+  ];
+}
+
+export async function requestWorldCanonBodyDraft(request: BodyDraftRequest): Promise<BodyDraftResult> {
+  const config = resolveSurfaceAiConfig("world-canon-body");
+  if (!isAssistantEndpointReady(config, getAiConnectionStatus(config))) {
+    return { ok: false, message: "AI 연결이 필요합니다. 편집기 헤더의 AI 설정에서 로그인하거나 API 키를 넣어 주세요." };
+  }
+  try {
+    const result = await chatCompletion(config, {
+      messages: bodyDraftMessages(request),
+      response_format: { type: "json_object" },
+      temperature: 0.7,
+      ...(request.signal ? { signal: request.signal } : {}),
+    });
+    const content = typeof result.message.content === "string" ? result.message.content : "";
+    const parsed = parseBodyDraft(content);
+    if (!parsed) return { ok: false, message: "조수 응답을 해석하지 못했습니다. 다시 시도해 주세요." };
+    return { ok: true, body: parsed.body, notes: parsed.notes };
+  } catch (error) {
+    if (error instanceof LlmError) return { ok: false, message: error.message };
+    return { ok: false, message: error instanceof Error ? error.message : String(error) };
+  }
+}
+
+/** 모델 출력 → {body, notes}. 본문은 WORLD_CANON_BOUNDS.body 로 자른다. */
+export function parseBodyDraft(raw: string): { readonly body: string; readonly notes: readonly string[] } | null {
+  const json = extractJsonObject(raw);
+  if (!json) return null;
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(json);
+  } catch {
+    return null;
+  }
+  if (typeof parsed !== "object" || parsed === null) return null;
+  const record = parsed as Record<string, unknown>;
+  if (typeof record.body !== "string" || record.body.trim().length === 0) return null;
+  const notes = Array.isArray(record.notes)
+    ? record.notes.filter((note): note is string => typeof note === "string" && note.trim().length > 0).slice(0, 5)
+    : [];
+  return { body: record.body.trim().slice(0, WORLD_CANON_BOUNDS.body), notes };
+}
+
+/** 초안을 기존 본문에 합친다. continue 는 이어 붙이고 draft 는 교체 후보다. */
+export function composeBodyWithDraft(existing: string, draft: string, mode: BodyDraftMode): string {
+  const base = existing.trimEnd();
+  if (mode === "draft" || base.length === 0) return draft.slice(0, WORLD_CANON_BOUNDS.body);
+  return `${base}\n\n${draft}`.slice(0, WORLD_CANON_BOUNDS.body);
+}
+

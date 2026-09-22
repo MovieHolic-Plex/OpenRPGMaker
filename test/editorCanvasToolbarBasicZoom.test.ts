@@ -59,7 +59,7 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     for (const z of [1, 2, 4]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
     }
-    for (const z of [3, 6, 8]) {
+    for (const z of [0.25, 0.5, 3, 6, 8]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeNull();
     }
     // No expand control / map-save / AI workbench in basic path
@@ -89,7 +89,7 @@ describe("renderCanvasToolbar basic zoom visibility", () => {
     expect(fake.querySelector('[data-testid="canvas-ai-polish"]')).toBeTruthy();
     expect(fake.querySelector('[data-testid="canvas-ai-inspect"]')).toBeTruthy();
     expect(fake.querySelector('[data-testid="canvas-ai-ask"]')).toBeTruthy();
-    for (const z of [1, 2, 3, 4, 6, 8]) {
+    for (const z of [0.25, 0.5, 1, 2, 3, 4, 6, 8]) {
       expect(fake.querySelector(`[data-testid="editor-zoom-${z}"]`)).toBeTruthy();
     }
   });

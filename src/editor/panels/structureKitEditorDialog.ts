@@ -71,6 +71,7 @@ import {
   PLACEMENT_ZONES,
   placementZoneLabel,
 } from "@/project/placementSurface";
+import { EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
 import { store } from "@/project/store";
 import type {
   PlacementSurfaceCondition,
@@ -95,9 +96,6 @@ import { toast } from "@/util/toast";
  */
 const CANVAS_FALLBACK_W = 1040;
 const CANVAS_FALLBACK_H = 620;
-
-/** 확대 단계 — 맵 편집기의 줌 스테퍼와 같은 눈금. */
-const ZOOM_STEPS: readonly number[] = [1, 2, 3, 4, 6, 8];
 
 /** 편집기 다이얼로그의 testid — openDialog 가 이 값을 오버레이 dataset 에 그대로 박는다. */
 const EDITOR_DIALOG_TESTID = "structure-kit-editor";
@@ -1437,8 +1435,8 @@ function drawViewBar(
   const stepZoom = (direction: 1 | -1): void => {
     const base = session.zoom ?? history.currentScale;
     const next = direction > 0
-      ? ZOOM_STEPS.find((step) => step > base)
-      : [...ZOOM_STEPS].reverse().find((step) => step < base);
+      ? EDITOR_ZOOM_LEVELS.find((step) => step > base)
+      : [...EDITOR_ZOOM_LEVELS].reverse().find((step) => step < base);
     if (next === undefined) return;
     session.zoom = next;
     redraw();

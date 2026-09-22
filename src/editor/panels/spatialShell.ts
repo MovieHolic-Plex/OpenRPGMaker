@@ -239,13 +239,17 @@ export function renderSpatialAuthoringShell(
     ],
   });
 
-  const stage = el("div", {
-    class: `spatial-stage${session.inspectorOpen ? " is-inspector-open" : ""}`,
-    children: [
-      renderSpatialCanvas(session, selected, refresh),
-      renderSpatialInspector(selected, session.inspectorOpen, refresh),
-    ],
-  });
+  // 목록만 보는 동안 선택 장소의 맵을 컴파일하지 않는다. 스테이지 요소는 남겨 토글 계약은 유지한다.
+  const deferPlacesStage = placesGallery && !regionGallery && !session.inspectorOpen;
+  const stage = deferPlacesStage
+    ? el("div", { class: "spatial-stage is-deferred", attrs: { "aria-hidden": "true" } })
+    : el("div", {
+      class: `spatial-stage${session.inspectorOpen ? " is-inspector-open" : ""}`,
+      children: [
+        renderSpatialCanvas(session, selected, refresh),
+        renderSpatialInspector(selected, session.inspectorOpen, refresh),
+      ],
+    });
 
   // 장소 목록이 기본이다. 스테이지(미리보기·속성)는 「속성」을 눌렀을 때만 오른쪽에 붙는다.
   // 카드 선택만으로 열지 않는다 — 그러면 71장짜리 목록이 5열로 줄어든다(실측 98% → 65%).

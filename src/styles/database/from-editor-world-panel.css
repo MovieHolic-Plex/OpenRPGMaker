@@ -1110,3 +1110,51 @@
   color: var(--db-studio-accent);
   margin-bottom: 8px;
 }
+
+/* 본문 AI 도움 (2026-09-22) — 초안/이어쓰기 제안. 결과는 textarea 에 들어가고 저장은 저자가 한다. */
+.world-document-workspace .world-canon-body-ai {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 12px;
+  background: var(--db-studio-inset);
+}
+.world-document-workspace .world-canon-body-ai-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.world-document-workspace .world-canon-body-ai-instruction {
+  flex: 1 1 220px;
+  min-width: 0;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface, #fff);
+  color: var(--db-studio-text-1);
+  font: 400 12.5px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-canon-body-ai-status {
+  min-height: 16px;
+  color: var(--db-studio-text-3);
+  font: 400 11.5px/1.5 var(--font-ui);
+}
+.world-document-workspace .world-canon-body-ai-notes {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 3px;
+  color: var(--db-studio-text-2);
+  font: 400 12px/1.55 var(--font-ui);
+}
+.world-document-workspace .world-canon-body-ai-notes-head {
+  list-style: none;
+  margin-left: -18px;
+  color: var(--db-studio-warning-strong, var(--db-studio-warning));
+  font-weight: 700;
+}
+

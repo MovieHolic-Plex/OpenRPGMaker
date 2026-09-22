@@ -10,8 +10,9 @@
 바꾼 것과 실측(1600×1000, `output/evidence/places-ux-redesign/impl/`):
 
 1. **목록이 기본.** `.spatial-body.is-library-only` 로 스테이지를 접는다(그리드 1332×527, 7열, 한 화면 14장).
-   스테이지는 DOM 에 남기고 CSS 로만 접는다 — 「속성」 토글이 여닫을 대상이 사라지면 죽은 버튼이 된다.
+   스테이지 껍데기는 DOM 에 남긴다. 목록을 여는 동안에는 맵을 컴파일하지 않는다 — 속성을 열 때 그린다.
    속성을 열면 5열(65%)로 줄고, 닫으면 7열로 돌아온다.
+   완성 사례의 타일 원본(약 38MB)과 검토 장소 래스터는 카드 목록과 분리되어, 행 단위로 읽거나 복제할 때만 불러온다.
 2. **선택과 편집기 진입의 분리.** 예전 `onSelect` 는 `listView: card.id !== selected?.id` 였다 —
    아무것도 안 고른 상태에서 카드를 누르면 선택과 동시에 편집기가 열려, 「맵에 놓기」 액션 줄을 볼
    기회가 없었다. 세션에 `galleryCardId` 를 추가해 **첫 클릭은 선택만**, 같은 카드 재클릭이나
@@ -2090,4 +2091,15 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - **정보는 사라지지 않았다:** 본문 발췌 카운터는 본문 카드 힌트(`db-world-canon-body-card` 의 `.db-ws-card-hint`)가 그대로 소유하고, 전달 상태 타일·프롬프트 투영은 조수 전달 탭이 소유한다. 죽은 testid `db-world-canon-ai-meter`·`db-world-canon-hero-stats`·`db-world-canon-hero-stat-body`·`db-world-canon-help` 는 폐기됐고 테스트가 부재를 고정한다.
 - **죽은 CSS 정리:** 헤드·미터 규칙 22개를 스타일시트에서 제거했다(숨김 처리로 덧대지 않는다 — DOM 이 없으면 죽은 규칙이다).
 - 검증: 세계관 계약 11파일 **68케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 재캡처(헤드 없이 탭이 바로 시작), e2e 통과.
+
+
+### 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
+
+- 요구: "세계관 작성에 AI 의 도움을 받을 수 있어야함." 인터뷰는 `세계 설정`(이름·전제·톤·법칙)만 채우고, **본문(역사·땅·문화)** 은 여전히 사람이 처음부터 써야 했다.
+- **표면:** `AiSurface` 에 `world-canon-body` 추가(supervisor, maxTokens 8192 — 장문 prose 라 인터뷰 4096 보다 크다).
+- **클라이언트** `worldCanonInterview.ts` 확장: `requestWorldCanonBodyDraft` + `bodyDraftMessages` + `parseBodyDraft` + `composeBodyWithDraft`. 모델은 `{body, notes}` JSON 하나를 돌려주고, notes 는 "조수가 새로 지어낸 것" 목록이라 저자가 veto 할 수 있다.
+- **두 모드:** `초안 잡기`(설정만으로 4~6문단 새로 씀, 기존 본문이 있으면 confirm 으로 확인 후 아니면 이어쓰기로 전환) · `이어쓰기`(기존 본문 끝을 이어받아 다음 절). 둘 다 `지시(선택)` 입력을 최우선으로 받는다.
+- **제안이지 자동 저장이 아니다:** 결과는 textarea 에 들어가고 `writeCanon` 으로 반영되지만, 본문은 길고 되돌리기 비용이 커서 인터뷰처럼 자동 확정하지 않는다. 상태줄이 "고친 뒤 저장하세요"로 안내한다.
+- AI 미연결이면 상태줄에 연결 안내가 뜨고 버튼이 되살아난다.
+- 검증: `test/worldCanonInterview.test.ts` 12케이스(본문 초안 파싱·클램프·펜스 내성·합성 규칙·컨텍스트 주입·표면 렌더 포함) + 세계관 계약 11파일 = **73케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v6/` 4장.
 

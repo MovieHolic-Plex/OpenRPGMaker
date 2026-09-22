@@ -84,6 +84,22 @@ export function closeAiSettingsModal(): void {
     return;
   }
   document.querySelector("[data-testid='ai-settings-modal']")?.remove();
+  notifyAiSettingsClosed();
+}
+
+/**
+ * 설정 모달이 닫혔다는 신호. **닫힘 경로가 둘 이상이라 이벤트가 필요하다** —
+ * `closeAiSettingsModal()` 직접 호출과, 모달 내부의 `close()`(닫기 버튼·배경 클릭·Escape).
+ *
+ * 왜 필요한가 (2026-09-22): AI 미연결 잠금 막은 막을 누를 때만 다시 판정했다. 그래서
+ * "AI 연결하기 → 로그인 → 모달 닫기 → 막 아무 데나 누르기" 라는 한 단계가 더 있었다.
+ * 로그인을 마친 사람이 막이 걷히지 않은 화면을 보면 그게 더 나쁘다.
+ */
+export const AI_SETTINGS_CLOSED_EVENT = "oprn:ai-settings-closed";
+
+export function notifyAiSettingsClosed(): void {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent(AI_SETTINGS_CLOSED_EVENT));
 }
 
 export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): HTMLElement {
@@ -168,6 +184,7 @@ export function openAiSettingsModal(options: OpenAiSettingsModalOptions = {}): H
     backdrop.remove();
     if (activeAiSettingsClose === close) activeAiSettingsClose = null;
     restoreFocus();
+    notifyAiSettingsClosed();
   });
   activeAiSettingsClose = close;
   closeButton.addEventListener("click", close);
