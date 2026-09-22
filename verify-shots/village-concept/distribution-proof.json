@@ -2,11 +2,10 @@
   "freshProject": true,
   "sharedGrassTilesAndGuidance": true,
   "blankLabelsFilled": true,
-  "shippedPreviousReplaced": true,
+  "shippedPreviousReplaced": false,
   "existingProjectBackfill": true,
   "authorDocumentsPreserved": true,
   "idempotent": true,
-  "editedPreviousPreservedAndCurrentAdded": true,
   "sharedPointerAndOtherAtlasPreserved": true,
   "exportRoundtrip": [
     "pine-hamlets",

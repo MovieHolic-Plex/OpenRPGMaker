@@ -51,11 +51,11 @@
       "filename": "download"
     },
     {
-      "id": "ford-castle-town-88x72",
+      "id": "ford-castle-town-100x92",
       "aiRowsExact": true,
       "preview": [
-        1408,
-        1152
+        1600,
+        1472
       ],
       "downloadExact": true,
       "filename": "download"
@@ -83,7 +83,7 @@
       "card": true
     },
     {
-      "id": "ford-castle-town-place-88x72",
+      "id": "ford-castle-town-place-100x92",
       "aiRowsExact": true,
       "card": true
     },

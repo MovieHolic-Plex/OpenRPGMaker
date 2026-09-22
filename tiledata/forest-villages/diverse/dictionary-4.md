@@ -4,6 +4,831 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
+    "tile": 1458,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1458,
+    "sourceX": 18,
+    "sourceY": 48,
+    "pixelX": 288,
+    "pixelY": 768,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 48,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "Tibo 오른쪽 숲 마감",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1459,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1459,
+    "sourceX": 19,
+    "sourceY": 48,
+    "pixelX": 304,
+    "pixelY": 768,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 48,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "Tibo 오른쪽 숲 마감",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1461,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1461,
+    "sourceX": 21,
+    "sourceY": 48,
+    "pixelX": 336,
+    "pixelY": 768,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 48,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "Tibo 오른쪽 숲 마감",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1462,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1462,
+    "sourceX": 22,
+    "sourceY": 48,
+    "pixelX": 352,
+    "pixelY": 768,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 48,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "Tibo 오른쪽 숲 마감",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1463,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1463,
+    "sourceX": 23,
+    "sourceY": 48,
+    "pixelX": 368,
+    "pixelY": 768,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 48,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "Tibo 오른쪽 숲 마감",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1471,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1471,
+    "sourceX": 1,
+    "sourceY": 49,
+    "pixelX": 16,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 1,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1471",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1472,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1472,
+    "sourceX": 2,
+    "sourceY": 49,
+    "pixelX": 32,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 2,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1472",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1474,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1474,
+    "sourceX": 4,
+    "sourceY": 49,
+    "pixelX": 64,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1474",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1475,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1475,
+    "sourceX": 5,
+    "sourceY": 49,
+    "pixelX": 80,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1475",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1476,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1476,
+    "sourceX": 6,
+    "sourceY": 49,
+    "pixelX": 96,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1476",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1478,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1478,
+    "sourceX": 8,
+    "sourceY": 49,
+    "pixelX": 128,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1478",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1480,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1480,
+    "sourceX": 10,
+    "sourceY": 49,
+    "pixelX": 160,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 10,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1480",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1486,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1486,
+    "sourceX": 16,
+    "sourceY": 49,
+    "pixelX": 256,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1486",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1487,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1487,
+    "sourceX": 17,
+    "sourceY": 49,
+    "pixelX": 272,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1487",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1488,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1488,
+    "sourceX": 18,
+    "sourceY": 49,
+    "pixelX": 288,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1488",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1490,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1490,
+    "sourceX": 20,
+    "sourceY": 49,
+    "pixelX": 320,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1490",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1491,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1491,
+    "sourceX": 21,
+    "sourceY": 49,
+    "pixelX": 336,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1491",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1492,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1492,
+    "sourceX": 22,
+    "sourceY": 49,
+    "pixelX": 352,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1492",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1494,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1494,
+    "sourceX": 24,
+    "sourceY": 49,
+    "pixelX": 384,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1494",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1496,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1496,
+    "sourceX": 26,
+    "sourceY": 49,
+    "pixelX": 416,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1496",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1497,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1497,
+    "sourceX": 27,
+    "sourceY": 49,
+    "pixelX": 432,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1497",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1498,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1498,
+    "sourceX": 28,
+    "sourceY": 49,
+    "pixelX": 448,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 28,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1498",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1500,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1500,
+    "sourceX": 0,
+    "sourceY": 50,
+    "pixelX": 0,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 0,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1500",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1501,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1501,
+    "sourceX": 1,
+    "sourceY": 50,
+    "pixelX": 16,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 1,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1501",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1503,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1503,
+    "sourceX": 3,
+    "sourceY": 50,
+    "pixelX": 48,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1503",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1504,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -1138,831 +1963,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "height": 16,
     "targetX": 10,
     "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2563,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1585,
-    "sourceX": 25,
-    "sourceY": 52,
-    "pixelX": 400,
-    "pixelY": 832,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2565,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1588,
-    "sourceX": 28,
-    "sourceY": 52,
-    "pixelX": 448,
-    "pixelY": 832,
-    "width": 16,
-    "height": 16,
-    "targetX": 15,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2567,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1591,
-    "sourceX": 1,
-    "sourceY": 53,
-    "pixelX": 16,
-    "pixelY": 848,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2568,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1617,
-    "sourceX": 27,
-    "sourceY": 53,
-    "pixelX": 432,
-    "pixelY": 848,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2569,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2550,
-    "sourceX": 0,
-    "sourceY": 85,
-    "pixelX": 0,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2572,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2553,
-    "sourceX": 3,
-    "sourceY": 85,
-    "pixelX": 48,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 22,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2573,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2554,
-    "sourceX": 4,
-    "sourceY": 85,
-    "pixelX": 64,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 23,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2575,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2556,
-    "sourceX": 6,
-    "sourceY": 85,
-    "pixelX": 96,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 25,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2576,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2557,
-    "sourceX": 7,
-    "sourceY": 85,
-    "pixelX": 112,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 26,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2577,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2558,
-    "sourceX": 8,
-    "sourceY": 85,
-    "pixelX": 128,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 27,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2579,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2560,
-    "sourceX": 10,
-    "sourceY": 85,
-    "pixelX": 160,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 29,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2580,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2561,
-    "sourceX": 11,
-    "sourceY": 85,
-    "pixelX": 176,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2581,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2562,
-    "sourceX": 12,
-    "sourceY": 85,
-    "pixelX": 192,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2582,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2563,
-    "sourceX": 13,
-    "sourceY": 85,
-    "pixelX": 208,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 2,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2583,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2564,
-    "sourceX": 14,
-    "sourceY": 85,
-    "pixelX": 224,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 3,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2584,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2565,
-    "sourceX": 15,
-    "sourceY": 85,
-    "pixelX": 240,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 4,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2585,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2566,
-    "sourceX": 16,
-    "sourceY": 85,
-    "pixelX": 256,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2586,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2567,
-    "sourceX": 17,
-    "sourceY": 85,
-    "pixelX": 272,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 6,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2587,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2568,
-    "sourceX": 18,
-    "sourceY": 85,
-    "pixelX": 288,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2588,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2569,
-    "sourceX": 19,
-    "sourceY": 85,
-    "pixelX": 304,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 8,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2589,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2570,
-    "sourceX": 20,
-    "sourceY": 85,
-    "pixelX": 320,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 9,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2590,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2571,
-    "sourceX": 21,
-    "sourceY": 85,
-    "pixelX": 336,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 10,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2591,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2572,
-    "sourceX": 22,
-    "sourceY": 85,
-    "pixelX": 352,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 11,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2592,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2573,
-    "sourceX": 23,
-    "sourceY": 85,
-    "pixelX": 368,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 12,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2593,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2574,
-    "sourceX": 24,
-    "sourceY": 85,
-    "pixelX": 384,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 86,
     "layers": [
       "upper"
     ],

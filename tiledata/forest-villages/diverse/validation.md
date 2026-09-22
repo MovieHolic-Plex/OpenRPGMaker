@@ -1610,8 +1610,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "mixed-windows",
     "mapId": "ford-castle-town",
-    "x": 15,
-    "y": 12,
+    "x": 13,
+    "y": 16,
     "layer": "upper",
     "tile": 87,
     "replacement": 85
@@ -1623,16 +1623,16 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 15,
-        "y": 12,
+        "x": 13,
+        "y": 16,
         "layer": "upper",
         "expected": 87,
         "actual": 85
       },
       {
         "code": "mixed-windows",
-        "x": 15,
-        "y": 12,
+        "x": 13,
+        "y": 16,
         "house": "ford-castle-town-house-1",
         "expected": 87,
         "actual": 85

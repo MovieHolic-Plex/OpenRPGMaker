@@ -415,47 +415,52 @@
       }
     },
     "ford-castle-town": {
-      "14,8": {
+      "12,12": {
         "activity": "storage",
         "role": "기사 숙소",
         "reason": "성 서쪽 기사 숙소에 마구와 보급품을 쌓아 둔다"
       },
-      "74,8": {
+      "89,14": {
         "activity": "woodwork",
         "role": "망루지기 집",
         "reason": "강 건너 망루지기가 창 자루를 깎는다"
       },
-      "10,30": {
+      "16,31": {
+        "activity": "laundry",
+        "role": "병사 숙소",
+        "reason": "성 아래 서쪽 병사 숙소는 빨래 마당만 둔다"
+      },
+      "10,54": {
         "activity": "laundry",
         "role": "주거",
         "reason": "가운데 단 서쪽 집은 세탁 마당만 둔다"
       },
-      "22,33": {
+      "26,55": {
         "activity": "herbs",
         "role": "약방",
         "reason": "성 병사를 돌보는 약초 손질집"
       },
-      "48,30": {
+      "58,53": {
         "activity": "storage",
         "role": "성 곳간",
         "reason": "성으로 올릴 곡식과 물자를 보관한다"
       },
-      "76,31": {
+      "90,55": {
         "activity": "laundry",
         "role": "주거",
         "reason": "강 건너 가운데 단 집은 세탁 마당만 둔다"
       },
-      "12,55": {
+      "12,78": {
         "activity": "growing",
         "role": "텃밭집",
         "reason": "아랫단 서쪽 집이 가족 텃밭을 기른다"
       },
-      "44,56": {
+      "52,79": {
         "activity": "woodwork",
         "role": "목수집",
         "reason": "나루 배와 다리를 고치는 목수집"
       },
-      "56,57": {
+      "62,80": {
         "activity": "storage",
         "role": "나루 창고",
         "reason": "나루로 들어온 짐을 보관한다"

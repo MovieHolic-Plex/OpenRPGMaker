@@ -78,7 +78,7 @@ const regionSnapshots: Record<string, PlaceSnapshot> = {
   "reed-bay-village-88x64": diverse2 as unknown as PlaceSnapshot,
   "twin-falls-river-village-88x72": diverse3 as unknown as PlaceSnapshot,
   "chapel-hill-parish-80x64": diverse4 as unknown as PlaceSnapshot,
-  "ford-castle-town-88x72": diverse5 as unknown as PlaceSnapshot,
+  "ford-castle-town-100x92": diverse5 as unknown as PlaceSnapshot,
   "mistpond-hollow-80x64": diverse6 as unknown as PlaceSnapshot,
 
   "river-forest-village-78x44": riverForestSnapshot as unknown as PlaceSnapshot,

@@ -122,13 +122,13 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
   {
-    "id": "ford-castle-town-88x72",
+    "id": "ford-castle-town-100x92",
     "name": "여울성 나루",
     "kind": "completed-map",
     "regionKind": "settlement",
     "revision": 10,
-    "width": 88,
-    "height": 72,
+    "width": 100,
+    "height": 92,
     "tilesetId": "forest_harmony",
     "preview": "/assets/region-references/ford-castle-town.png",
     "projectDownload": "/assets/region-references/ford-castle-town.oprn.json",
@@ -136,8 +136,8 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "sourceMapId": "ford-castle-town",
     "snapshotProjectId": "oprn-region-ford-castle-town-v10",
     "rules": [
-      "맨 윗단에 둥근 탑과 깃발을 단 작은 성이 서고, 동쪽 강이 두 줄 절벽에서 폭포로 떨어지며 성 아랫마을 세 단을 다리로 잇는다.",
-      "집 9채의 문 앞과 계단 4곳, 작은 성의 문과 입구를 시작점에서 연결한다.",
+      "맨 윗단에 두 겹 성벽·둥근 탑·층층 궁을 갖춘 작은 성(왕궁이 있는 이중 성벽 도시의 내성을 줄인 것)이 서고, 동쪽 강이 두 줄 절벽에서 폭포로 떨어지며 성 아랫마을 세 단을 다리로 잇는다.",
+      "집 10채의 문 앞과 계단 4곳, 작은 성의 문과 입구를 시작점에서 연결한다.",
       "집마다 창문은 한 종류(85 격자·86 덧문·87 아치)이고, 84 스테인드글라스는 교회, 88 깨진 창은 폐가에만 쓴다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
@@ -231,12 +231,12 @@ export const DIVERSE_VILLAGE_PLACES = [
     "y": 0
   },
   {
-    "id": "ford-castle-town-place-88x72",
+    "id": "ford-castle-town-place-100x92",
     "name": "여울성 나루",
     "kind": "completed-place",
     "revision": 10,
-    "width": 88,
-    "height": 72,
+    "width": 100,
+    "height": 92,
     "tilesetId": "forest_harmony",
     "preview": "/assets/region-references/ford-castle-town.png",
     "projectDownload": "/assets/region-references/ford-castle-town.oprn.json",
@@ -244,8 +244,8 @@ export const DIVERSE_VILLAGE_PLACES = [
     "sourceMapId": "ford-castle-town",
     "snapshotProjectId": "oprn-place-ford-castle-town-v10",
     "rules": [
-      "맨 윗단에 둥근 탑과 깃발을 단 작은 성이 서고, 동쪽 강이 두 줄 절벽에서 폭포로 떨어지며 성 아랫마을 세 단을 다리로 잇는다.",
-      "집 9채의 문 앞과 계단 4곳, 작은 성의 문과 입구를 시작점에서 연결한다.",
+      "맨 윗단에 두 겹 성벽·둥근 탑·층층 궁을 갖춘 작은 성(왕궁이 있는 이중 성벽 도시의 내성을 줄인 것)이 서고, 동쪽 강이 두 줄 절벽에서 폭포로 떨어지며 성 아랫마을 세 단을 다리로 잇는다.",
+      "집 10채의 문 앞과 계단 4곳, 작은 성의 문과 입구를 시작점에서 연결한다.",
       "집마다 창문은 한 종류(85 격자·86 덧문·87 아치)이고, 84 스테인드글라스는 교회, 88 깨진 창은 폐가에만 쓴다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
@@ -253,7 +253,7 @@ export const DIVERSE_VILLAGE_PLACES = [
       "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다.",
-    "regionReferenceId": "ford-castle-town-88x72",
+    "regionReferenceId": "ford-castle-town-100x92",
     "placeKind": "settlement",
     "x": 0,
     "y": 0
