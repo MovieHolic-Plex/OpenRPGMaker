@@ -34,6 +34,7 @@ import {
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import {
   refreshAiConnectionStatus,
   resetAiConnectionStatusCache,
@@ -467,6 +468,13 @@ export function renderAiAuthSettings(
     // 같은 지점에서 똑같이 죽는다. 안내를 따르면 시간만 버린다.
     hint.hidden = true;
     serverError.hidden = false;
+    if (isHostAiDisabledMessage(detail)) {
+      setStatus("서버에서 AI가 꺼져 있음", "offline");
+      serverError.textContent = HOST_AI_DISABLED_GUIDANCE;
+      cardAuth.set(providerId, "error");
+      renderCardPill(providerId);
+      return;
+    }
     const guidance = /codex/iu.test(detail)
       ? "codex 프로그램 쪽 문제일 수 있어요. 개발 서버를 껐다 켜 보세요."
       : "개발 서버를 껐다 켜 보세요. 그래도 안 되면 이 화면을 복사해 개발자에게 알려주세요.";

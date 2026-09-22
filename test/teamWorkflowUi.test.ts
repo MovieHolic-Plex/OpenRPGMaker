@@ -146,6 +146,8 @@ describe("team workflow UI", () => {
     openLoginModalIfNeeded();
     expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
     expect(storage.getItem(LAST_LOGIN_METHOD_KEY)).toBe("guest");
+    // 사용자가 아무것도 안 했는데 「목업 로그인 신원을 설정했습니다」가 뜨면 개발용 문구가 첫 화면에 샌다.
+    expect(findByTestId(fakeBody(), "toast")).toBeNull();
   });
 
   it("suppresses the boot login modal in automation/dev boot contexts", () => {
