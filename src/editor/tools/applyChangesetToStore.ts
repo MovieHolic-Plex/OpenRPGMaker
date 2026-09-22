@@ -23,6 +23,7 @@ import { ToolError, type ToolContext, type ToolResult } from "./types";
 import { assertHouseProtection, captureHouseProtection } from "./houseProtection";
 import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivityLog";
 import type { ProjectChangeAnnotation } from "@/project/store";
+import { mapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
 import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "@/ai/approvalPolicy";
 
@@ -391,9 +392,12 @@ export async function applyProposedProject(
       summary: options.summary, toolNames: options.toolNames, recordedAt: new Date().toISOString(),
     } });
   };
+  const renderCells = options.resetProject === true
+    ? null
+    : mapCellApply(before, appliedProject, options.snapshotMapId ?? null);
   const commitProject = options.resetProject === true
     ? store.replaceProject(appliedProject, { ...change, projectSwitch: false }, onApplied)
-    : store.replace(appliedProject, { change, onApplied });
+    : store.replace(appliedProject, { change, onApplied, ...(renderCells ? { renderCells } : {}) });
   if (!options.operation?.signal.aborted) focusAcceptedAgentChanges(before, appliedProject);
   const commitInput: CommitLogInput = {
     project: appliedProject,

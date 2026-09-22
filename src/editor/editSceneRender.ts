@@ -117,6 +117,19 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   return { tileObjectsUpdated };
 }
 
+/** 칸 갱신 뒤에 이벤트 마커만 다시 그린다. 타일 레이어는 건드리지 않는다. */
+export function refreshEditSceneOverlay(context: EditSceneRenderContext): void {
+  const map = store.getCurrent().maps[context.mapId];
+  if (!map) return;
+  const state = editorState.get();
+  context.overlayLayer.removeAll(true);
+  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
+  renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, tileSize);
+  if (state.tool === "collision") renderCollisionOverlay(context, map);
+  renderStartPosition(context);
+  renderEventMarkers({ ...context, tileSize }, map, state.layer);
+}
+
 export function renderEditSceneTileCells(
   context: EditSceneRenderContext & { readonly tileIndex: EditSceneTileIndex },
   cells: readonly ProjectChangeCell[]

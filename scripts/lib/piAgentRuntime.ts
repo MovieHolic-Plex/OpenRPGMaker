@@ -34,7 +34,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
-import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
+import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
@@ -214,7 +214,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     }
   };
   const incremental = !contract && !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
-  let accepted = structuredClone(base) as Project;
+  let accepted = snapshotProjectKeepingHeavy(ctx.project);
   let rejected = false;
   const checkpoint = async (label: string, toolName: string, signal?: AbortSignal): Promise<void> => {
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
@@ -222,10 +222,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
     if (scoped) authorMergedSpatialProposal(project, accepted);
     if (changedProjectKeys(accepted, project).length === 0) return;
+    const unchangedKeys: PiCheckpointHeavyKey[] = [];
+    if (project.tilesets === accepted.tilesets) unchangedKeys.push("tilesets");
+    if (project.database === accepted.database) unchangedKeys.push("database");
     try {
-      const published = await options.onCheckpoint!({ project: structuredClone(project), label, toolName, spatialProof: exportSpatialToolProof(project) }, signal ?? options.signal);
-      accepted = structuredClone(published ?? project);
-      ctx.project = published ?? project;
+      const published = await options.onCheckpoint!({
+        project: structuredClone(slimCheckpointProject(project, unchangedKeys)) as Project,
+        label, toolName, spatialProof: exportSpatialToolProof(project), unchangedKeys,
+      }, signal ?? options.signal);
+      const merged = restoreCheckpointProject(project, published ?? project, unchangedKeys);
+      ctx.project = merged;
+      accepted = snapshotProjectKeepingHeavy(merged);
       finishSpatialToolAcceptance(ctx.project);
     } catch (error) {
       rejected = true;
