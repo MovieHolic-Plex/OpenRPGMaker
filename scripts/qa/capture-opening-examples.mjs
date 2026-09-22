@@ -1,6 +1,6 @@
 // Actual shipped-player path, consuming the documents reloaded from Supabase.
 import assert from 'node:assert/strict';
-import {mkdir,readFile,writeFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile,rm} from 'node:fs/promises';
 import {chromium} from '@playwright/test';
 import {startPlayerQaServer} from '../lib/runtimeQaRun.mjs';
 import {spawnSync} from 'node:child_process';
@@ -12,7 +12,7 @@ try {
  for(const theme of ['winter','ocean']){
   const json=await readFile(out+'/'+theme+'.json','utf8');
   const project=JSON.parse(json);
-  const dir=out+'/'+theme+'-frames';await mkdir(dir,{recursive:true});
+  const dir=out+'/'+theme+'-frames';await rm(dir,{recursive:true,force:true});await mkdir(dir,{recursive:true});
   const context=await browser.newContext({viewport:{width:960,height:540},deviceScaleFactor:1,recordVideo:{dir:out+'/'+theme+'-video',size:{width:960,height:540}}});
   const page=await context.newPage();
   const errors=[];const loaded=[];
@@ -21,7 +21,7 @@ try {
   await page.addInitScript(()=>{window.__OPENRPG_BOOT__={projectUrl:'/__opening-example.json',saveNamespace:'opening-proof',qaInstrumentation:true};});
   await page.route('**/__opening-example.json',r=>r.fulfill({status:200,contentType:'application/json',body:json}));
   await page.goto(server.url+'/player.html',{waitUntil:'domcontentloaded'});
-  await page.getByTestId('title-screen').waitFor({timeout:120000});
+  await page.getByTestId('title-screen').waitFor({timeout:60000}).catch(async error=>{await page.screenshot({path:out+'/'+theme+'-capture-failure.png'});console.error('CAPTURE_BOOT_FAILED',JSON.stringify({errors,text:await page.locator('body').innerText()}));throw error;});
   // Exercise the attribution button through the real runtime pointer handler.
   await page.getByTestId('title-license-notice').click();
   await page.locator('dialog.rm-license-dialog').waitFor();
@@ -57,6 +57,10 @@ try {
   const gif=out+'/'+theme+'.gif';
   const encode=spawnSync('ffmpeg',['-hide_banner','-loglevel','error','-y','-framerate',String(fps),'-i',dir+'/%04d.png','-vf','fps=8,scale=768:-1:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=128[p];[s1][p]paletteuse=dither=bayer','-loop','0',gif],{encoding:'utf8'});
   assert.equal(encode.status,0,encode.stderr);
+  const probe=spawnSync('ffprobe',['-v','error','-show_entries','stream=duration,nb_frames','-of','json',gif],{encoding:'utf8'});
+  assert.equal(probe.status,0,probe.stderr);
+  const stream=JSON.parse(probe.stdout).streams[0];
+  assert.ok(Number(stream.duration)>15 && Number(stream.nb_frames)>100,'GIF must include the entire opening, not stale tail frames');
   records.push({theme,title:project.meta.title,scenes:[...seen],frames,loaded,errors,gif,videoPath});
   console.log('GIF_READY',gif);
  }
