@@ -1,8 +1,7 @@
 import { clearAgentBlueprint, setAgentBlueprintFromSpec, markAgentBlueprintProgress, commitAgentBlueprintProgress } from "@/editor/agentBlueprint";
 import { blueprintRegionsForToolCall } from "@/editor/agentBlueprintRegions";
 import { SPATIAL_BUILD_TOOLS, TILE_WRITE_TOOLS, type BuildSpec } from "@/ai/buildSpec";
-import { GHOST_WIPE_DURATION_MS, GHOST_WIPE_HOLD_MS, hasAgentGhostPreviewSubscribers, getAgentGhostPreviewState } from "@/editor/agentGhostPreview";
-import { prefersReducedMotion } from "@/util/reducedMotion";
+import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "@/editor/aiLiveCanvas";
 import { resolveCurrentMapId } from "@/editor/mapSelection";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 // Pi 실행 이벤트 → 캔버스 시공 표시(고스트). 워커가 툴마다 흘리는 `map_delta` 를 초안 맵으로
@@ -71,19 +70,40 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
 
   // 스로틀·flush·cancel 은 세션 경로와 같은 기계를 쓴다. 그쪽은 «쓰기 툴이 성공했나» 로 갱신을
   // 예약하는데, 여기서는 증분이 도착한 것 자체가 그 증거라 항상 참이다.
+  const applyPreview = (baseProject: Project, draft: Project): void => {
+    if (activeOwner !== owner || !isAiLiveCanvasEnabled()) return;
+    (options.apply ?? replaceAgentGhostPreviewFromProjectDiff)(baseProject, draft);
+  };
   const updater = createThrottledAgentGhostPreviewUpdater({
     getBaseProject: () => base,
     getDraftProject: draftProject,
     isWriteTool: () => true,
     ...(options.throttleMs === undefined ? {} : { throttleMs: options.throttleMs }),
-    apply: (baseProject, draft) => {
-      if (activeOwner !== owner) return;
-      (options.apply ?? replaceAgentGhostPreviewFromProjectDiff)(baseProject, draft);
-    },
+    apply: applyPreview,
     ...(options.setTimeoutFn ? { setTimeoutFn: options.setTimeoutFn } : {}),
     ...(options.clearTimeoutFn ? { clearTimeoutFn: options.clearTimeoutFn } : {}),
   });
-  const schedule = (): void => updater.handleToolCall({ type: "tool_call", name: "map_delta", result: { ok: true } });
+  const schedule = (): void => {
+    if (!isAiLiveCanvasEnabled()) {
+      updater.cancel();
+      return;
+    }
+    updater.handleToolCall({ type: "tool_call", name: "map_delta", result: { ok: true } });
+  };
+  const paintNow = (): void => {
+    updater.cancel();
+    if (disposed || activeOwner !== owner || !isAiLiveCanvasEnabled()) return;
+    applyPreview(base, draftProject());
+  };
+  const onLiveCanvas = (): void => {
+    if (disposed || activeOwner !== owner) return;
+    if (!isAiLiveCanvasEnabled()) {
+      updater.cancel();
+      return;
+    }
+    paintNow();
+  };
+  const unsubscribeLiveCanvas = subscribeAiLiveCanvas(onLiveCanvas);
 
   // 렌더러가 컴포지터 경로(호수 쿼터·도로 오토타일·밑동 합성)로 실제 타일을 찍으려면 초안 맵이
   // 필요하다. 없으면 셀이 단색 사각형으로 떨어진다.
@@ -93,26 +113,21 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
     if (disposed || activeOwner !== owner) return;
     maps = { ...project.maps };
     journal = [];
+    if (!isAiLiveCanvasEnabled()) {
+      updater.cancel();
+      return;
+    }
     schedule();
     updater.flush();
   };
 
   return {
     reconcile,
-    async present(before, next, signal) {
+    async present(before, _next, signal) {
       if (disposed || activeOwner !== owner) return;
-      base = before;
-      reconcile(next);
-      const mapId = resolveCurrentMapId();
-      if (!mapId || !getAgentGhostPreviewState().previews.some(preview => preview.mapId === mapId && preview.cells.length > 0) || !hasAgentGhostPreviewSubscribers() || prefersReducedMotion() ||
-          (typeof document !== "undefined" && document.hidden)) return;
+      // 공개 애니메이션은 다음 쓰기 도구를 붙잡지 않는다. 실제 칸은 적용 알림이 그린다.
       signal?.throwIfAborted();
-      await new Promise<void>((resolve, reject) => {
-        const done = () => { signal?.removeEventListener("abort", abort); resolve(); };
-        const timer = setTimeout(done, GHOST_WIPE_DURATION_MS + GHOST_WIPE_HOLD_MS + 100);
-        const abort = () => { clearTimeout(timer); signal?.removeEventListener("abort", abort); reject(signal?.reason ?? new Error("중단됨")); };
-        signal?.addEventListener("abort", abort, { once: true });
-      });
+      base = before;
     },
     accept(project) {
       if (disposed || activeOwner !== owner) return;
@@ -159,7 +174,7 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
           }
           if (explicitPlan) markAgentBlueprintProgress(event.name, args, { write: true });
           const region = regions[0];
-          if (region && region.mapId === resolveCurrentMapId()) requestEditorCameraFocus({
+          if (isAiLiveCanvasEnabled() && region && region.mapId === resolveCurrentMapId()) requestEditorCameraFocus({
             mapId: region.mapId, tileX: region.x + region.w / 2, tileY: region.y + region.h / 2,
             bounds: { x: region.x, y: region.y, width: region.w, height: region.h }, onlyIfOffscreen: true,
           });
@@ -182,17 +197,23 @@ export function createPiGhostBridge(options: PiGhostBridgeOptions): PiGhostBridg
           clearAgentGhostRunningTool();
           runningAgentId = null;
         }
-        updater.flush();
+        if (isAiLiveCanvasEnabled()) updater.flush();
+        else updater.cancel();
       }
     },
     flush(): void {
       if (disposed || activeOwner !== owner) return;
+      if (!isAiLiveCanvasEnabled()) {
+        updater.cancel();
+        return;
+      }
       updater.flush();
     },
     draftProject,
     dispose(): void {
       if (disposed) return;
       disposed = true;
+      unsubscribeLiveCanvas();
       updater.cancel();
       journal = [];
       if (activeOwner !== owner) return;

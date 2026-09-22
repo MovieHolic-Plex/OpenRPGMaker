@@ -1,4 +1,5 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { setAiLiveCanvasEnabled } from "@/editor/aiLiveCanvas";
 import { createPiGhostBridge } from "@/editor/panels/aiPiGhostBridge";
 import { diffMapsForDelta } from "@/ai/piAgent/mapDelta";
 import type { PiAgentEvent } from "@/ai/piAgent/protocol";
@@ -40,8 +41,13 @@ function fakeTimers() {
 
 describe("aiPiGhostBridge", () => {
   beforeEach(() => {
+    setAiLiveCanvasEnabled(true);
     clearAgentGhostPreview();
     setAgentGhostDraftMapProvider(null);
+  });
+
+  afterEach(() => {
+    setAiLiveCanvasEnabled(true);
   });
 
   it("map_delta 를 받아 고스트 프리뷰를 그린다 — 턴이 끝나기 전에", () => {
@@ -149,6 +155,22 @@ describe("aiPiGhostBridge", () => {
     bridge.handleEvent(workerDelta(base.maps, working.maps));
     bridge.flush();
     expect(getAgentGhostPreviewState().previews).toHaveLength(0);
+  });
+
+  it("헤드리스에서는 초안만 갱신하고 맵 연출은 그리지 않는다", () => {
+    setAiLiveCanvasEnabled(false);
+    const base = seed();
+    const bridge = createPiGhostBridge({ baseProject: base });
+    const working = clone(base);
+    working.maps.map_east!.lowerTiles[42] = 7;
+    bridge.handleEvent(workerDelta(base.maps, working.maps));
+    bridge.flush();
+    expect(getAgentGhostPreviewState().previews).toHaveLength(0);
+    expect(bridge.draftProject().maps.map_east!.lowerTiles[42]).toBe(7);
+
+    setAiLiveCanvasEnabled(true);
+    expect(getAgentGhostPreviewState().previews.some((preview) => preview.cells.length > 0)).toBe(true);
+    bridge.dispose();
   });
 
   it("빈 증분은 아무것도 예약하지 않는다", () => {

@@ -32,6 +32,7 @@ import {
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
 import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
@@ -69,6 +70,7 @@ import {
   editSceneTileWindowKey,
   renderEditScene,
   renderEditSceneTileCells,
+  refreshEditSceneOverlay,
   renderVisibleEditSceneTiles,
   applyCameraView,
   shouldLazilyRenderEditMap,
@@ -319,6 +321,10 @@ export class EditScene extends PhaserRuntime.Scene {
   private buildPalettePopup: HTMLElement | null = null;
   private buildPalettePopupKey = "";
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
+  private readonly handleLiveCanvas = (): void => {
+    this.renderAgentGhostPreview();
+    this.renderAgentBlueprint();
+  };
   private activeRegionTask: { readonly mapId: string; readonly region: RegionRect; readonly phase: "running" | "pending"; readonly runId: number | null } | null = null;
   private regionTaskBadge: HTMLElement | null = null;
   /** 선택 영역 위에 붙는 W×H 배지. 드래그 중에도 갱신되어 크기를 놓기 전에 알려준다. */
@@ -465,6 +471,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.addEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     // 편집기가 닫히면 「편집 위치 x,y」 배너를 거둔다 — 결과물이 아니라 편집 중 크롬이다(2026-09-17 리뷰 P0-4).
     window.addEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
@@ -551,6 +558,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentBlueprintLayer();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.removeEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     window.removeEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
     window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
@@ -1891,6 +1899,9 @@ export class EditScene extends PhaserRuntime.Scene {
       mapId: mid,
       tileIndex: this.tileIndex,
     }, cells);
+    if (cells.some((cell) => cell.layer === "event")) {
+      refreshEditSceneOverlay({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid });
+    }
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();

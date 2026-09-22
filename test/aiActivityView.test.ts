@@ -2,6 +2,7 @@ import { Window } from "happy-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createActivityTrace, recordActivityEvent } from "@/ai/activityTrace";
 import { createActivityView } from "@/editor/panels/aiActivityView";
+import { isAiLiveCanvasEnabled, setAiLiveCanvasEnabled } from "@/editor/aiLiveCanvas";
 import { createActivityLevelControl, getActivityLevel, setActivityLevel } from "@/editor/panels/aiActivityPreference";
 
 beforeEach(() => {
@@ -10,8 +11,12 @@ beforeEach(() => {
   vi.stubGlobal("localStorage", window.localStorage);
   vi.stubGlobal("Event", window.Event);
   setActivityLevel("brief");
+  setAiLiveCanvasEnabled(true);
 });
-afterEach(() => { vi.unstubAllGlobals(); });
+afterEach(() => {
+  setAiLiveCanvasEnabled(true);
+  vi.unstubAllGlobals();
+});
 describe("AI activity display levels", () => {
   it("defaults to brief and synchronizes existing main/member views without executing work", () => {
     expect(getActivityLevel()).toBe("brief");
@@ -32,6 +37,20 @@ describe("AI activity display levels", () => {
     setActivityLevel("detail");
     expect(main.root.hidden).toBe(false);
     expect(main.root.querySelectorAll(".ai-activity-entry")).toHaveLength(12);
+  });
+
+  it("toggles map construction visuals without changing the work log", () => {
+    const control = createActivityLevelControl();
+    document.body.append(control);
+    const button = control.querySelector("[data-testid='ai-live-canvas']");
+    expect(button?.getAttribute("aria-pressed")).toBe("true");
+    expect(isAiLiveCanvasEnabled()).toBe(true);
+    (button as HTMLButtonElement).click();
+    expect(isAiLiveCanvasEnabled()).toBe(false);
+    expect(button?.getAttribute("aria-pressed")).toBe("false");
+    expect(getActivityLevel()).toBe("brief");
+    (button as HTMLButtonElement).click();
+    expect(isAiLiveCanvasEnabled()).toBe(true);
   });
   it("keeps unchanged rows and open payloads while another tool completes", () => {
     setActivityLevel("trace");

@@ -1,7 +1,7 @@
 import { isMapDestruction } from "@/ai/approvalPolicy";
 import type { PiApplyMode } from "@/ai/piAgent/applyMode";
 import type { PiProjectCheckpoint } from "@/ai/piAgent/protocol";
-import { changedProjectKeys } from "@/ai/piAgent/protocol";
+import { changedProjectKeys, restoreCheckpointProject } from "@/ai/piAgent/protocol";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { adoptSpatialToolProof } from "@/editor/tools/spatialToolState";
@@ -42,7 +42,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
   const publish = async (checkpoint: PiProjectCheckpoint): Promise<Project> => {
     surface.signal?.throwIfAborted();
     if (mode === "review") throw new Error("검토 후 적용 모드는 실행 중 변경을 반영하지 않습니다.");
-    const next = checkpoint.project;
+    const next = restoreCheckpointProject(project, checkpoint.project, checkpoint.unchangedKeys);
     if (!changedProjectKeys(project, next).length) return project;
     if (mode === "step") await approveStage(next, checkpoint.label);
     const loss = mapLossConfirmRequest(project, next) ?? (isMapDestruction(checkpoint.toolName) ? { title: "맵 전체 청소 확인", message: "맵의 타일을 전부 비웁니다. 계속할까요?", confirmLabel: "전체 청소", cancelNotice: "맵 청소를 취소했습니다." } : null);
