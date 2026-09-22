@@ -114,7 +114,7 @@ export function rebaseOpenEditDraft(
  * 프로젝트를 복제하지 않는다. 반환 객체는 원본과 타일 배열까지 구조를 공유하므로
  * **읽기/직렬화 외의 용도로 쓰면 안 된다.** 변형이 필요하면 projectWithoutEventDrafts 를 쓸 것.
  */
-function projectViewWithoutEventDrafts(project: Project): Project {
+export function projectViewWithoutEventDrafts(project: Project): Project {
   let maps: Record<string, GameMap> | null = null;
   for (const [mapId, map] of Object.entries(project.maps)) {
     if (!map.events.some((event) => event.draft !== undefined)) continue;
