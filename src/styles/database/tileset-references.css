@@ -30,8 +30,6 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-band > header { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid var(--border-default); background:var(--surface-2,#f8fafc); }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-band > header strong { font-size:12px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-band > header span { color:var(--text-3); font-size:11px; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sheet { height:168px; background:#111; overflow:hidden; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sheet img { width:100%; height:168px; object-fit:cover; image-rendering:pixelated; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-prop-row { display:flex; gap:10px; padding:10px; align-items:flex-start; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-prop-crop { width:96px; height:140px; flex:none; image-rendering:pixelated; background-repeat:no-repeat; background-size:480px auto; background-position:0 -1360px; background-color:#111; border-radius:4px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-prop-names { display:flex; flex-wrap:wrap; gap:4px; align-content:flex-start; }
