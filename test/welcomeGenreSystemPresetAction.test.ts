@@ -2,9 +2,19 @@ import { describe, expect, it, vi } from "vitest";
 import { applyWelcomeGenreSystemPresetPlan } from "@/editor/welcomeGenreSystemPresetAction";
 import { welcomeGenreSystemPresetPlanById } from "@/editor/welcomeGenrePresets";
 import { createBlankProject } from "@/project/defaults";
+import { interviewBrief } from "./helpers/gameDesignBrief";
 
 describe("confirmed welcome blank-project system preset boundary", () => {
-  it("passes a detached preset result only to the verified remote switch path", async () => {
+  it("saves the confirmed interview in the detached seed before adoption", async () => {
+    const brief = interviewBrief();
+    const adoptProject = vi.fn(async (_project: unknown, _options: unknown) => undefined);
+    const result = await applyWelcomeGenreSystemPresetPlan(welcomeGenreSystemPresetPlanById("monster-collect"), {
+      adoptProject, focusStartMap: vi.fn(),
+    }, brief);
+    expect(adoptProject.mock.calls[0]?.[0]).toMatchObject({ gameDesignBrief: brief, system: { monsterCollection: true } });
+    expect(result.project.worldCanon).toBeUndefined();
+  });
+  it("passes a detached preset result to the folder adoption boundary", async () => {
     const openProject = createBlankProject();
     openProject.meta.title = "keep-open-project";
     const before = structuredClone(openProject);
@@ -26,7 +36,7 @@ describe("confirmed welcome blank-project system preset boundary", () => {
     expect(focusStartMap).toHaveBeenCalledOnce();
   });
 
-  it("does not focus or report success when the remote switch fails", async () => {
+  it("does not focus or report success when adoption fails", async () => {
     const focusStartMap = vi.fn();
     await expect(applyWelcomeGenreSystemPresetPlan(
       welcomeGenreSystemPresetPlanById("farm-life"),

@@ -1067,6 +1067,18 @@ Focused coverage: `test/audioDescriptionTools.test.ts`,
 `test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
 `test/audioDescriptionSessionPrompt.test.ts`.
 
+## list_resources picture 검색 (2026-09-21)
+
+`list_resources`의 `kind`는 이제 `tile/charset/monster/backdrop/bgm/se/picture` 7종이다.
+`picture`는 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본
+`listDatabaseResourceOptions("picture", project)`(`src/editor/resourceOptions.ts`)에서
+name·id·searchTerms 부분 일치로 찾는다 — 업로드 그림과 promoted 생성 그림이 모두 잡힌다.
+`query="*"`(또는 `all`/`전체`)는 전체 훑어보기 관례를 따른다. 결과는 기존과 같은
+`data.matches`(id/label)+`total`+`nextOffset` 봉투다. 모델이 `kind:"image"`/`"icon"`으로
+부치면 여전히 enum 검증 실패다 — 시스템 프롬프트(`src/ai/contextBuilder.ts` RESOURCE_HINT)에
+허용 kind 7종과 '새 그림은 generate_image_asset' 안내를 심어 두었다. 회귀 지점:
+`src/editor/tools/queryTools.ts`의 listResources.
+
 ## P3 captured proposal base (2026-09-07)
 
 `applyProposedProject(proposed, options)` requires both `options.base: ProposalBase`

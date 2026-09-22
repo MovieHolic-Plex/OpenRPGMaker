@@ -702,6 +702,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       // 「저장」은 톱바의 저장 버튼(toolbar-save, Ctrl+S)이 집이다 — 여기엔 두지 않는다.
       return [
         item("새 프로젝트", "menu-project-new", () => void newProject()),
+        ...(store.getCurrent().gameDesignBrief ? [item("게임 기획...", "menu-project-design-brief", () => void editGameDesignBrief())] : []),
         item("열기", "menu-project-load", () => void doLoad()),
         item("저장본 다시 불러오기", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
@@ -865,7 +866,34 @@ function playModeButton(mode: string): HTMLButtonElement {
   });
 }
 
+let creatingProject = false;
 async function newProject(): Promise<void> {
+  if (creatingProject) return;
+  creatingProject = true;
+  try { await createProjectFromDialog(); } finally { creatingProject = false; }
+}
+
+async function editGameDesignBrief(): Promise<void> {
+  const initialBrief = store.getCurrent().gameDesignBrief;
+  if (!initialBrief) return;
+  const identity = JSON.stringify(store.getProjectIdentity());
+  const { showProjectInterview } = await import("@/editor/ui/projectInterviewDialog");
+  const brief = await showProjectInterview(initialBrief.presetId, { initialBrief, confirmLabel: "기획 저장" });
+  if (!brief || identity !== JSON.stringify(store.getProjectIdentity())) return;
+  const { recordProjectSnapshot } = await import("@/editor/mapEditHistory");
+  recordProjectSnapshot("게임 기획 수정");
+  store.update(project => { project.gameDesignBrief = brief; }, { scope: "project", label: "게임 기획 수정", origin: "human" });
+  if (!(await saveProjectNow())) return;
+  const { prefillAiAssistantInput } = await import("@/editor/aiBootIntent");
+  const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt } = await import("@/editor/welcomeGenrePresets");
+  const preset = welcomeGenrePresetById(brief.presetId);
+  const prefilled = preset && prefillAiAssistantInput(buildWelcomeGenrePresetPrompt(preset, brief), { preserveDraft: true });
+  toast(prefilled
+    ? "기획을 저장했습니다. 조수 입력창에서 작업 범위를 확인한 뒤 보낼 수 있습니다."
+    : "기획을 저장했습니다. 다음 AI 대화부터 이 기획을 참고합니다.", "ok");
+}
+
+async function createProjectFromDialog(): Promise<void> {
   // 2026-08-18 UX 리뷰 P0: "현재 작업을 지우고" + 빨간 버튼은 위협적이고,
   // clearAll()은 열려 있던 원격 project id를 그대로 쓰며 공유 행을 덮어썼다.
   // 새 프로젝트는 이름과 시작 장르를 받고 별도 SQLite 폴더에 저장한다.
@@ -882,6 +910,7 @@ async function newProject(): Promise<void> {
   if (selection.screenSize === "wide") {
     seed.system.playResolution = { width: 640, height: 360 };
   }
+  if (selection.gameDesignBrief) seed.gameDesignBrief = { ...selection.gameDesignBrief, generationPending: true };
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
   if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return;
   let created: boolean;
@@ -895,24 +924,9 @@ async function newProject(): Promise<void> {
     toast("프로젝트 저장 서버에 연결하거나 데스크톱 앱에서 열어 주세요.", "error");
     return;
   }
-  const genreSuffix = choiceId ? ` · ${newProjectChoiceLabel(choiceId)}` : "";
-  toast(`「${title}」${genreSuffix} 준비 완료 — 타일을 놓아 마을부터 만들어 보세요`, "ok");
-  if (choiceId) {
-    // 프리셋으로 만들면 장르 프롬프트를 AI 조수에 바로 자동 전송한다 —
-    // 엔진 토글은 씨앗에 들어 있고, AI는 그 위의 콘텐츠만 채운다.
-    // 빈 프로젝트는 조용히 둔다.
-    const { sendAiBootIntent, setPendingAiBootIntent, applyPendingAiBootIntent } = await import("@/editor/aiBootIntent");
-    const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt } = await import("@/editor/welcomeGenrePresets");
-    // 선택지 id 로 바로 찾는다 — 예전에는 packId 로 역추적해서 같은 팩 2장 중 하나만 골랐다.
-    const preset = welcomeGenrePresetById(choiceId);
-    if (preset) {
-      const prompt = buildWelcomeGenrePresetPrompt(preset);
-      if (!sendAiBootIntent(prompt)) {
-        setPendingAiBootIntent(prompt, { autoSend: true });
-        applyPendingAiBootIntent();
-      }
-    }
-  }
+  const genreSuffix = choiceId ? ` — 시작 장르: ${newProjectChoiceLabel(choiceId)}` : "";
+  toast(`'${title}' 프로젝트를 만들었습니다 — 새 폴더에 저장됩니다${genreSuffix}`, "ok");
+  // The new folder's saved brief owns generation. Do not send to the old store before reload.
   // 데스크톱은 열린 폴더, 웹은 hostProject 주소를 부팅 attach가 다시 연다.
   if (window.oprn?.start) window.location.reload();
 }

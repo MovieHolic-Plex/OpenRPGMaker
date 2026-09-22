@@ -80,7 +80,12 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     attrs: { type: "search", placeholder: "검색 (이름 또는 ID)", autocomplete: "off" },
     dataset: { testid: `${prefix}-search` },
   }) as HTMLInputElement;
-  const list = el("div", { class: "db-resource-picker-list", dataset: { testid: `${prefix}-list` } });
+  const list = el("div", {
+    class: options.kind === "icon" || options.kind === "image"
+      ? "db-resource-picker-list db-resource-picker-list-icons"
+      : "db-resource-picker-list",
+    dataset: { testid: `${prefix}-list` },
+  });
   const preview = el("div", { class: "db-resource-picker-preview", dataset: { testid: `${prefix}-preview` } });
   const indexPanel = el("div", { class: "db-resource-picker-index-panel" });
   const audioPreview = options.kind === "music" || options.kind === "sound" ? createAudioResourcePreview() : undefined;
@@ -235,6 +240,29 @@ const AI_GENERATABLE_PICKER_KINDS: Readonly<Record<string, "title" | "backdrop" 
   still: "backdrop",
 };
 
+/** 상세 헤더의 큰 아이콘. 외형 카드가 접혀 있어도 이 그림에서 바로 아이콘을 고른다. */
+export function iconChangeButton(input: {
+  readonly className: string;
+  readonly name: string;
+  readonly url: string | null;
+  readonly testid: string;
+  readonly onClick: () => void;
+}): HTMLElement {
+  const icon = el("button", {
+    class: `${input.className}${input.url ? "" : " db-image-placeholder"}`,
+    attrs: {
+      type: "button",
+      "aria-label": input.url ? `${input.name} 아이콘. 눌러서 바꿉니다` : `${input.name} 이미지 없음`,
+      title: "아이콘 바꾸기",
+    },
+    dataset: { testid: input.testid },
+    text: input.url ? undefined : "이미지 없음",
+    on: { click: input.onClick },
+  });
+  if (input.url) icon.style.backgroundImage = `url("${input.url}")`;
+  return icon;
+}
+
 export function resourcePickerControl(input: {
   readonly label: string;
   readonly resourceId: string | undefined;
@@ -268,7 +296,11 @@ export function resourcePickerControl(input: {
   const optionName = listDatabaseResourceOptions(input.kind, project).find((option) => option.id === input.resourceId)?.name;
   const rawName = optionName ?? (input.resourceId ? prettyId(input.resourceId) : "");
   const graphic = input.presentation === "graphic";
-  const displayName = graphic ? rawName || "선택한 그래픽이 없습니다" : input.kind === "music" || input.kind === "sound" ? rawName || "(미설정)" : input.resourceId ? "설정됨" : "(미설정)";
+  // 아이콘·이미지는 이름 없이 "설정됨"만 보이면 무엇을 골랐는지 목록을 다시 열기 전에는 알 수 없다.
+  const showsName = graphic || input.kind === "music" || input.kind === "sound" || input.kind === "icon" || input.kind === "image";
+  const displayName = showsName
+    ? rawName || (graphic ? "선택한 그래픽이 없습니다" : "(미설정)")
+    : input.resourceId ? "설정됨" : "(미설정)";
   // Keep a real text input with the historical testid so e2e/unit fill() paths stay compatible.
   const idInput = el("input", {
     class: "db-resource-picker-inline-id db-authoring-id",

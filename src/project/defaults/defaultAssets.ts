@@ -85,13 +85,29 @@ export function defaultTilesets(): Record<string, TilesetDef> {
   return tilesets;
 }
 
-export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef> }): boolean {
+function villageObjectTilesetUsedByMaps(project: { maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
+  const maps = project.maps;
+  // 맵 목록이 없으면 사용 중인지 알 수 없다. 그 경우 시트를 지우지 않는다.
+  if (!maps) return true;
+  return Object.values(maps).some((map) => map?.tilesetId === SHARED_VILLAGE_OBJECT_ID);
+}
+
+export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
   let changed = false;
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     // 존재 확인이 **먼저**다. 생성자를 먼저 부르면 타일셋이 이미 있는 흔한 경우에도
     // 3~5MB 짜리 JSON 사본을 만들어 그대로 버린다 — 실측 2026-09-22: 프로젝트 로드마다
     // 164ms 였고 그 대부분이 버려지는 사본이었다(수정 후 26ms).
     const id = bundledTilesetIdForAsset(asset);
+    // 선별 소품 19종은 숲 시트 아래 행으로 붙인다. 이 시트를 타일셋으로 쓰는 맵이 없을 때만
+    // 목록에서 빼며, 맵이 있으면 칸 번호가 깨지지 않게 시트를 남긴다.
+    if (id === SHARED_VILLAGE_OBJECT_ID && !villageObjectTilesetUsedByMaps(project)) {
+      if (project.tilesets[id]) {
+        delete project.tilesets[id];
+        changed = true;
+      }
+      continue;
+    }
     if (project.tilesets[id]) {
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;

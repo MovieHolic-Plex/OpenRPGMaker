@@ -11,6 +11,7 @@ import {
   shouldSuppressEditorWelcomeForAutomation,
 } from "@/editor/editorWelcome";
 import { GENRE_PACK_IDS } from "@/project/genrePackId";
+import { completeInterviewChoices } from "./helpers/gameDesignBrief";
 
 function clearStorage(): void {
   try {
@@ -280,7 +281,9 @@ describe("presentEditorWelcome", () => {
     void pending.then(delivered);
     host.querySelector<HTMLButtonElement>("[data-testid='editor-welcome-template-card-0']")?.click();
     expect(document.querySelector("[data-testid='app-modal-confirm']")).toBeNull();
-    expect(applySystemPreset).toHaveBeenCalledWith(expect.objectContaining({ packId: "monster-collect" }));
+    expect(applySystemPreset).not.toHaveBeenCalled();
+    await completeInterviewChoices();
+    expect(applySystemPreset).toHaveBeenCalledWith(expect.objectContaining({ packId: "monster-collect" }), expect.objectContaining({ presetId: "monster-collect" }));
     expect(delivered).not.toHaveBeenCalled();
     expect(isEditorWelcomeDismissed()).toBe(false);
     // Enter must not bypass disabled buttons during project preparation.
@@ -360,6 +363,7 @@ describe("presentEditorWelcome", () => {
       observer.observe(error, { attributes: true, attributeFilter: ["hidden"] });
     });
     host.querySelector<HTMLButtonElement>(`[data-testid='editor-welcome-${card}-card-0']`)?.click();
+    if (card === "template") await completeInterviewChoices();
     document.querySelector<HTMLButtonElement>("[data-testid='app-modal-confirm']")?.click();
     await errorShown;
     expect(applySystemPreset).toHaveBeenCalledOnce();

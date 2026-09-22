@@ -13,7 +13,7 @@ import {
 } from "@/editor/panels/databaseControls";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
-import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { iconChangeButton, openDatabaseResourcePickerDialog, resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { actorDerivedStats } from "@/battle/battleBattlers";
 import { normalizeActorRecord } from "@/project/actorModel";
 import { DEFAULT_SWING_COOLDOWN_MS, DEFAULT_SWING_RANGE } from "@/project/actionCombat";
@@ -408,12 +408,25 @@ function equipmentSpecStrip(record: EquipmentRecord): HTMLElement {
 function equipmentHeader(record: EquipmentRecord, summaryHost: HTMLElement, refreshSummaryChips: () => void): HTMLElement {
   const project = store.getCurrent();
   const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
-  const icon = el("div", {
-    class: `db-equipment-inspector-icon${url ? "" : " db-image-placeholder"}`,
-    attrs: { role: "img", "aria-label": url ? `${record.name} 아이콘` : `${record.name} 이미지 없음` },
-    text: url ? undefined : "이미지 없음",
+  const icon = iconChangeButton({
+    className: "db-equipment-inspector-icon",
+    name: record.name,
+    url,
+    testid: "db-equipment-inspector-icon",
+    onClick: () => {
+      openDatabaseResourcePickerDialog({
+        kind: "icon",
+        title: "장비 아이콘",
+        currentId: record.iconResourceId,
+        allowClear: true,
+        testidPrefix: "db-equipment-inspector-icon-dialog",
+        onConfirm: (result) => {
+          updateDatabaseRecord("equipment", record.id, { iconResourceId: emptyToUndefined(result.resourceId) });
+          refreshSummaryChips();
+        },
+      });
+    },
   });
-  if (url) icon.style.backgroundImage = `url("${url}")`;
   const name = textField("이름", "db-field-name", record.name, (name) =>
     updateDatabaseRecord("equipment", record.id, { name })
   );

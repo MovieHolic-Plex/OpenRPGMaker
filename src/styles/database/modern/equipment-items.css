@@ -72,10 +72,16 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-eq-ws .db-equipment-inspector-icon,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-item-ws .db-item-inspector-icon {
+  appearance: none;
   border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1));
   border-radius: 8px;
+  color: inherit;
+  cursor: pointer;
   flex: 0 0 64px;
+  font: inherit;
   height: 64px;
+  margin: 0;
+  padding: 0;
   width: 64px;
 }
 

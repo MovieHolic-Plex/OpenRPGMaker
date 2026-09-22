@@ -174,7 +174,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     clearPendingAiBootIntent();
   } else {
     clearWelcomeIntentBootFlags();
-    showBriefing = !demoHoldsFirstScreen && shouldPresentEditorWelcome({
+    showBriefing = !store.getCurrent().gameDesignBrief && !demoHoldsFirstScreen && shouldPresentEditorWelcome({
       modeShellMounted: false,
       deepLinkedProject: deepLinkedProjectAtBoot,
     });
@@ -208,7 +208,7 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
       import("@/editor/panels/aiChatPanelHelpers"),
       import("@/editor/panels/aiConnectionStatus"),
     ]);
-    const aiReady = ((): boolean => {
+    const aiReady = (): boolean => {
       try {
         // config 모양만 보면 chatgpt 모드가 **언제나 true** 다(assistantEndpoint.ts 주석 참고).
         // 실제 연결은 동반 서비스 캐시가 판정한다 — 그걸 함께 넘겨야 죽은 게이트가 되지 않는다.
@@ -218,10 +218,10 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
         // 판정을 못 하면 막지 않는다 — 설정이 멀쩡한 사용자를 잘못 가로막는 게 더 나쁘다.
         return true;
       }
-    })();
+    };
     const result = await presentEditorWelcome(elements.root, {
-      applySystemPreset: (plan) => applyWelcomeGenreSystemPresetPlan(plan),
-      canGenerate: () => aiReady,
+      applySystemPreset: (plan, brief) => applyWelcomeGenreSystemPresetPlan(plan, undefined, brief),
+      canGenerate: aiReady,
       openAiSettings: () => {
         void import("@/editor/panels/aiSettingsModal")
           .then(({ openAiSettingsModal }) => { openAiSettingsModal(); })
@@ -249,6 +249,10 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
     }
   }
 
+  if (store.getCurrent().gameDesignBrief?.generationPending) {
+    const { prepareProjectInterviewStartup } = await import("@/editor/projectInterviewStartup");
+    await prepareProjectInterviewStartup();
+  }
   const hadWelcomeIntent =
     wasWelcomeIntentAppliedThisBoot()
     || peekPendingAiBootIntent() !== null;
