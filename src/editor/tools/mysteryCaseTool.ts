@@ -11,6 +11,7 @@
 // 증거 대면·지목은 아직 presentItem 명령 없이 choices + 아이템 소지 조건 분기로 컴파일한다.
 // 갈아 끼울 지점은 compileEvidencePresentation / compileAccusationChoice 두 함수뿐이다.
 
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 import { isPassable } from "@/project/collision";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
@@ -580,6 +581,8 @@ function eventCommands(event: GameEvent): Command[] {
         walk(command.else);
       } else if (command.kind === "loop") {
         walk(command.body);
+      } else if (command.kind === "presentItem") {
+        for (const branch of presentItemBranchLists(command)) walk(branch);
       }
     }
   };
@@ -597,27 +600,30 @@ export interface EvidenceReaction {
 }
 
 /**
- * 「증거를 들이민다」 분기. presentItem 이 없으므로 가진 증거를 앞에서부터 확인하는 조건 분기 사슬이다.
- * 첫 번째로 가진 관련 증거에만 반응한다.
+ * 「증거를 들이민다」 분기. 사건 증거 전부를 후보로 presentItem 목록을 띄워 플레이어가 고르게 한다 —
+ * 가진 증거 중 무엇을 낼지가 추리의 손맛이다. 이 용의자와 상관없는 증거를 내면 otherwiseBranch,
+ * 닫거나 아직 가진 증거가 없으면 cancelBranch. 증거는 소모하지 않는다(다른 용의자에게도 내민다).
  */
 export function compileEvidencePresentation(input: {
   readonly speaker: string;
   readonly reactions: readonly EvidenceReaction[];
+  readonly candidateItemIds: readonly string[];
 }): Command[] {
-  const chain = (index: number): Command[] => {
-    const reaction = input.reactions[index];
-    if (!reaction) return [{ kind: "text", body: "보여 줄 만한 증거가 아직 없다." }];
-    return [{
-      kind: "fork",
-      condition: { kind: "item", itemId: reaction.itemId, present: true },
-      then: [
+  return [{
+    kind: "presentItem",
+    prompt: "어떤 증거를 내밀까?",
+    itemIds: [...input.candidateItemIds],
+    options: input.reactions.map((reaction) => ({
+      itemId: reaction.itemId,
+      branch: [
         { kind: "text", body: `${withJosa(reaction.clueName, "을/를")} 내밀었다.` },
         ...say(input.speaker, reaction.lines),
       ],
-      else: chain(index + 1),
-    }];
-  };
-  return chain(0);
+    })),
+    otherwiseBranch: say(input.speaker, ["…그게 저와 무슨 상관이죠?"]),
+    cancelBranch: [{ kind: "text", body: "보여 줄 만한 증거가 아직 없다." }],
+    consume: false,
+  }];
 }
 
 export interface AccusationInput {
@@ -703,7 +709,7 @@ function interrogationChoice(spec: MysteryCase, suspect: SuspectSpec): Command {
   }
   const reactions = evidenceReactions(spec, suspect);
   if (reactions.length > 0) {
-    options.push({ text: "증거를 들이민다", branch: compileEvidencePresentation({ speaker: suspect.name, reactions }) });
+    options.push({ text: "증거를 들이민다", branch: compileEvidencePresentation({ speaker: suspect.name, reactions, candidateItemIds: spec.clues.map((clue) => mysteryClueItemId(spec.caseId, clue.id)) }) });
   }
   options.push({ text: "그만둔다", branch: [] });
   return { kind: "choices", prompt: `${suspect.name}에게 무엇을 묻겠습니까?`, options, cancelBehavior: "branch", cancelBranch: [] };

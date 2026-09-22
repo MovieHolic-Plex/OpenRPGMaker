@@ -1,3 +1,4 @@
+import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import { MYSTERY_ITEM_PREFIX, compileAccusationChoice, mysteryClueItemId } from "@/editor/tools/mysteryCaseTool";
@@ -434,8 +435,32 @@ describe("author_mystery_case — run_scene_test 로 끝까지 플레이", () =>
     const project = authored();
     const leo = eventNamed(project, "사냥꾼 레오");
     const note = eventsOf(project).find((event) => event.id === "ev_mystery_manor_clue_tavern_note")!;
-    const result = play(project, [...talk(note), ...talk(leo), { kind: "choose", index: 2 }, { kind: "wait", ticks: 1200 }]);
+    const result = play(project, [...talk(note), ...talk(leo), { kind: "choose", index: 2 }, W,
+      { kind: "present", itemId: mysteryClueItemId("manor", "tavern_note") }, { kind: "wait", ticks: 1200 }]);
     expect(result.failureReason ?? null).toBeNull();
     expect(JSON.stringify(result.finalState.messages)).toContain("노름");
+  });
+
+  // 증거 대면은 presentItem 목록이다 — 무엇을 낼지 플레이어가 고른다. 상관없는 증거엔 반응하지 않는다.
+  it("상관없는 증거를 내밀면 진술을 번복하지 않고, 닫으면 아무 일도 없다", () => {
+    const project = authored();
+    const leo = eventNamed(project, "사냥꾼 레오");
+    const present = allCommands(leo).find((command): command is Extract<Command, { kind: "presentItem" }> => command.kind === "presentItem");
+    assert(present);
+    const reacted = new Set(present.options.map((option) => option.itemId));
+    const unrelated = (present.itemIds ?? []).find((itemId) => !reacted.has(itemId));
+    assert(unrelated, "레오와 상관없는 사건 증거가 있어야 한다");
+    const clueId = unrelated.replace(mysteryClueItemId("manor", ""), "");
+    const clue = eventsOf(project).find((event) => event.id === `ev_mystery_manor_clue_${clueId}`);
+    assert(clue, `조사로 얻는 증거여야 한다: ${clueId}`);
+    const wrong = play(project, [...talk(clue), ...talk(leo), { kind: "choose", index: 2 }, W,
+      { kind: "present", itemId: unrelated }, { kind: "wait", ticks: 1200 }]);
+    expect(wrong.failureReason ?? null).toBeNull();
+    expect(JSON.stringify(wrong.finalState.messages)).toContain("무슨 상관");
+    expect(JSON.stringify(wrong.finalState.messages)).not.toContain("노름");
+    const closed = play(project, [...talk(clue), ...talk(leo), { kind: "choose", index: 2 }, W,
+      { kind: "present" }, { kind: "wait", ticks: 1200 }]);
+    expect(closed.failureReason ?? null).toBeNull();
+    expect(closed.finalState.inventory[unrelated]).toBe(1);
   });
 });
