@@ -72,6 +72,14 @@ function eventNamed(project: Project, name: string): GameEvent {
   return event;
 }
 
+// 시작 맵 구석에 주막으로 가는 문을 단다 — 사건 맵은 시작 맵에서 갈 수 있어야 한다.
+function linkInn(project: Project): void {
+  project.maps[project.startMapId].events.push({
+    id: "ev_inn_door", name: "주막 문", x: 19, y: 14, trigger: { kind: "playerTouch" },
+    commands: [{ kind: "transfer", mapId: "map_inn", x: 1, y: 1 }],
+  } as never);
+}
+
 const W: SceneStep = { kind: "wait", ticks: 400 };
 
 // 대상 이벤트 바로 아래 칸에 서서 위를 보고 조사한다.
@@ -195,6 +203,73 @@ describe("check_mystery_case — 사건 일관성 검사", () => {
     const problems = (runTool({ project }, "check_mystery_case", caseSpec(map.id)).data as { problems: { code: string; message: string }[] }).problems;
     expect(problems.some((p) => p.code === "mystery-unreachable" && p.message.includes("독이 남은 찻잔") && p.message.includes("조사할 수 없"))).toBe(true);
     expect(problems.some((p) => p.code === "mystery-unreachable" && p.message.includes("사냥꾼 레오") && p.message.includes("닿을 수 없"))).toBe(true);
+  });
+
+  // 실측(run5): 지목 NPC 가 project.startPos 에 놓여 플레이어가 NPC 와 겹쳐 스폰됐는데 검사를 통과했다.
+  it("플레이어 시작 칸에 둔 인물·조사 지점을 거부하고 시작 칸이 아닌 후보를 제안한다", () => {
+    const project = fixture();
+    const { x, y } = project.startPos;
+    const spec = caseSpec(project.startMapId, (s) => {
+      s.accuser.at = { mapId: project.startMapId, x, y };
+      s.clues[1].at = { mapId: project.startMapId, x, y };
+    });
+    const check = runTool({ project }, "check_mystery_case", spec);
+    expect(check.data).toMatchObject({ ok: false });
+    const problems = (check.data as { problems: { code: string; message: string }[] }).problems;
+    for (const label of ["경비대장 로버트", "약방 영수증"]) {
+      const problem = problems.find((p) => p.code === "mystery-unreachable" && p.message.includes(label) && p.message.includes("시작 위치"));
+      assert(problem, `${label} 의 시작 칸 거부가 없다: ${JSON.stringify(problems)}`);
+      expect(problem.message).toContain(`(${x}, ${y})`);
+      const hint = /가까운 후보: \((\d+), (\d+)\)/.exec(problem.message);
+      assert(hint, problem.message);
+      expect(`${hint[1]},${hint[2]}`).not.toBe(`${x},${y}`);
+    }
+    const write = runTool({ project }, "author_mystery_case", spec);
+    expect(write.ok).toBe(false);
+  });
+
+  it("시작 맵이 아닌 맵의 같은 좌표는 시작 칸이 아니다", () => {
+    const project = fixture();
+    const ctx = { project };
+    expect(runTool(ctx, "create_map", { id: "map_inn", name: "주막", width: 20, height: 15 }).ok).toBe(true);
+    linkInn(ctx.project);
+    const { x, y } = ctx.project.startPos;
+    const spec = caseSpec(ctx.project.startMapId, (s) => { s.clues[2].at = { mapId: "map_inn", x, y }; });
+    const check = runTool(ctx, "check_mystery_case", spec);
+    expect(check.data, JSON.stringify(check.data)).toMatchObject({ ok: true });
+  });
+
+  // 실측(run6): 벽 위 단서의 유일한 통행 가능 옆 칸에 집 문 이벤트가 있었는데 검사를 통과했다 — 조사하려면 문을 밟아야 한다.
+  it("조사할 옆 칸이 모두 다른 이벤트로 막힌 단서를 거부하고 후보를 제안한다", () => {
+    const project = fixture();
+    const map = project.maps[project.startMapId];
+    const wall = (x: number, y: number) => { map.lowerTiles[y * map.width + x] = TILE.WALL; };
+    // 찻잔 (3,10) 은 벽 위, 열린 옆 칸은 (3,11) 하나뿐이고 거기에 문 이벤트가 있다.
+    for (const [x, y] of [[3, 10], [3, 9], [2, 10], [4, 10]]) wall(x, y);
+    map.events.push({ id: "ev_door", name: "집 문", x: 3, y: 11, trigger: { kind: "playerTouch" }, commands: [] } as never);
+    const problems = (runTool({ project }, "check_mystery_case", caseSpec(map.id)).data as { problems: { code: string; message: string }[] }).problems;
+    const problem = problems.find((p) => p.code === "mystery-unreachable" && p.message.includes("독이 남은 찻잔"));
+    assert(problem, JSON.stringify(problems));
+    expect(problem.message).toContain("다른 이벤트로 막혀");
+    expect(problem.message).toMatch(/가까운 후보: \(\d+, \d+\)/);
+  });
+
+  // 실측(run7): 시작 위치가 빈 기본 맵에 남아 사건 맵(마을)으로 갈 길이 없었는데, set 순간이동 시나리오는 통과했다.
+  it("시작 맵에서 문·연결로 갈 수 없는 맵의 사건 배치를 맵 단위로 한 번 거부한다", () => {
+    const project = fixture();
+    const ctx = { project };
+    expect(runTool(ctx, "create_map", { id: "town", name: "마을", width: 20, height: 15 }).ok).toBe(true);
+    const check = runTool(ctx, "check_mystery_case", caseSpec("town"));
+    expect(check.data).toMatchObject({ ok: false });
+    const problems = (check.data as { problems: { code: string; message: string }[] }).problems.filter((p) => p.message.includes("갈 수 없습니다"));
+    expect(problems).toHaveLength(1);
+    // 인물 라벨 없이 맵 단위로, 좌표 이동으로는 안 풀린다고, 바로 쓸 시작 좌표까지 준다(run8: 인물 좌표만 옮기며 3회 헛돎).
+    expect(problems[0].message).not.toMatch(/^용의자|^지목 NPC|^조사 단서/);
+    expect(problems[0].message).toContain("좌표를 옮겨도");
+    const suggested = /set_start_position\(\{mapId:"town", x:(\d+), y:(\d+)\}\)/.exec(problems[0].message);
+    assert(suggested, problems[0].message);
+    expect(runTool(ctx, "set_start_position", { mapId: "town", x: Number(suggested[1]), y: Number(suggested[2]) }).ok).toBe(true);
+    expect(runTool(ctx, "check_mystery_case", caseSpec("town")).data).toMatchObject({ ok: true });
   });
 
   it("다른 이벤트가 이미 서 있는 칸의 단서를 거부한다", () => {
@@ -462,5 +537,86 @@ describe("author_mystery_case — run_scene_test 로 끝까지 플레이", () =>
       { kind: "present" }, { kind: "wait", ticks: 1200 }]);
     expect(closed.failureReason ?? null).toBeNull();
     expect(closed.finalState.inventory[unrelated]).toBe(1);
+  });
+});
+
+// author_mystery_case 는 이 사건을 끝까지 도는 run_scene_test 입력을 data 에 동봉한다.
+// 실측(run5): 에이전트가 검증 시나리오를 손으로 짜다 7번 헛돌았다(좌표 형식·증언 선택지·지목 페이지).
+describe("author_mystery_case — 동봉 검증 시나리오", () => {
+  type Scene = { mapId: string; start: { x: number; y: number }; steps: SceneStep[] };
+  function bundled(result: ReturnType<typeof runTool>): Scene {
+    const data = result.data as { verificationScene?: Scene } | undefined;
+    assert(data?.verificationScene, `verificationScene 이 없다: ${JSON.stringify(result.data)}`);
+    return data.verificationScene;
+  }
+
+  function runBundled(project: Project, scene: Scene) {
+    const viaTool = runTool({ project }, "run_scene_test", structuredClone(scene) as never);
+    expect(viaTool.ok, viaTool.summary).toBe(true);
+    const data = viaTool.data as { ok: boolean; failureReason?: string; failedStepIndex?: number; finalState: { endingsReached: string[]; messages: string[] } };
+    expect(data.ok, `${viaTool.summary} @${data.failedStepIndex} ${JSON.stringify(scene.steps[data.failedStepIndex ?? 0])}`).toBe(true);
+    return data;
+  }
+
+  it("그대로 run_scene_test 에 넣으면 증거 수집 → 증거 대면 → 정답 지목 → solved 엔딩까지 통과한다", () => {
+    const project = fixture();
+    const { ctx, result } = author(project);
+    expect(result.ok, result.summary).toBe(true);
+    const scene = bundled(result);
+    expect(scene.mapId).toBe(ctx.project.startMapId);
+    expect(scene.start).toEqual(ctx.project.startPos);
+    // 증언은 탐문 선택지로, 대면은 presentItem 으로, 지목은 2페이지 선택지로 한다.
+    expect(scene.steps.some((step) => step.kind === "present" && step.itemId !== undefined)).toBe(true);
+    expect(scene.steps.filter((step) => step.kind === "choose").length).toBeGreaterThanOrEqual(3);
+    expect(scene.steps.at(-1)).toEqual({ kind: "expect", endingReached: "ending_mystery_manor_solved" });
+    // 방향은 set.facing 이 아니라 face 스텝으로 — 모델이 옮겨 적으며 set.facing 만 빠뜨렸다(run6).
+    expect(scene.steps.some((step) => step.kind === "set" && "facing" in step)).toBe(false);
+    scene.steps.forEach((step, index) => {
+      if (step.kind === "interact") expect(scene.steps[index - 1]?.kind, `steps[${index - 1}]`).toBe("face");
+    });
+    const data = runBundled(ctx.project, scene);
+    expect(data.finalState.endingsReached).toContain("ending_mystery_manor_solved");
+    // 대면 예시는 레오의 거짓말(주막 장부)을 무너뜨린다.
+    expect(JSON.stringify(data.finalState.messages)).toContain("노름");
+    expect(result.summary).toContain("verificationScene");
+  });
+
+  it("시간 시스템이 켜지고 용의자에게 시간표가 있어도(재사용 주민 포함) 통과한다", () => {
+    const project = fixture();
+    project.system.timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26 };
+    const map = project.maps[project.startMapId];
+    map.events.push({
+      id: "ev_village_roofer", name: "레오", placementRole: "npc", x: 16, y: 6, trigger: { kind: "action" }, commands: [],
+      schedule: [
+        { when: { timePhase: "day" }, at: { mapId: map.id, x: 17, y: 2 }, activity: "지붕 수리" },
+        { when: { timePhase: "evening" }, at: { mapId: map.id, x: 16, y: 6 }, activity: "장터 소식 나누기" },
+      ],
+      pages: [{
+        id: "p0", name: "레오", conditions: [], trigger: { kind: "action" }, priority: "same",
+        overlapForbidden: true, animationType: "fixedGraphic", movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "text", speaker: "레오", body: "지붕 고치느라 바빠." }],
+      }] as never,
+    });
+    const spec = caseSpec(map.id, (s) => {
+      s.suspects[2].eventId = "ev_village_roofer";
+      s.suspects[2].activity = "주막 앞에서 서성임";
+      s.suspects[1].activity = "약방 앞 정리";
+    });
+    const { ctx, result } = author(project, spec);
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues)}`).toBe(true);
+    runBundled(ctx.project, bundled(result));
+  });
+
+  it("조사 지점이 다른 맵에 있으면 set 스텝으로 그 맵에 들어가 조사한다", () => {
+    const project = fixture();
+    const ctx = { project };
+    expect(runTool(ctx, "create_map", { id: "map_inn", name: "주막", width: 20, height: 15 }).ok).toBe(true);
+    linkInn(ctx.project);
+    const spec = caseSpec(ctx.project.startMapId, (s) => { s.clues[2].at = { mapId: "map_inn", x: 5, y: 5 }; });
+    const result = runTool(ctx, "author_mystery_case", spec);
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues)}`).toBe(true);
+    const scene = bundled(result);
+    expect(scene.steps.some((step) => step.kind === "set" && step.mapId === "map_inn")).toBe(true);
+    runBundled(ctx.project, scene);
   });
 });

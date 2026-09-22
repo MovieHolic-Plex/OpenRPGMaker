@@ -433,51 +433,169 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   shopStock: value => sceneShape(value, { eventId: sceneText, itemIds: sceneStrings, prices: sceneNumbers, mapId: sceneText }, ["eventId", "itemIds"]),
 };
 
-function isSceneStep(value: unknown): value is SceneStep {
-  if (!sceneRecord(value)) return false;
-  const shape = (fields: Readonly<Record<string, SceneFieldCheck>>, required: readonly string[] = []): boolean =>
-    sceneShape(value, { kind: sceneText, ...fields }, ["kind", ...required]);
-  switch (value.kind) {
-    case "wait": return shape({ ticks: sceneCount }, ["ticks"]);
-    case "face": return shape({ dir: sceneDirection }, ["dir"]);
-    case "move": return shape({ dir: sceneDirection, to: scenePoint })
-      && (Object.hasOwn(value, "dir") !== Object.hasOwn(value, "to"));
-    case "walk": return shape({ to: scenePoint, adjacent: sceneBoolean }, ["to"]);
-    case "set": return shape({
-      mapId: sceneText, x: sceneCount, y: sceneCount, facing: sceneDirection,
-      switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
-      variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
-    });
-    case "interact": return shape({ eventId: sceneText });
-    case "snapshotRewards": case "retryCheckpoint": return shape({});
-    case "gift": return shape({ eventId: sceneText, itemId: sceneText }, ["itemId"]);
-    case "purchase": return shape({ eventId: sceneText, itemId: sceneText,
+// 스텝 종류별 허용 필드·필수 필드. 판정(isSceneTestInput)과 거부 문구(sceneTestInputProblem)가 이 표 하나를 쓴다.
+interface SceneStepSpec {
+  readonly fields: Readonly<Record<string, SceneFieldCheck>>;
+  readonly required?: readonly string[];
+  /** 필드 단위로 표현할 수 없는 조건. 어기면 고칠 방법을 담은 문구를 돌려준다. */
+  readonly extra?: (value: Record<string, unknown>) => string | null;
+}
+const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
+  wait: { fields: { ticks: sceneCount }, required: ["ticks"] },
+  face: { fields: { dir: sceneDirection }, required: ["dir"] },
+  move: {
+    fields: { dir: sceneDirection, to: scenePoint },
+    extra: value => Object.hasOwn(value, "dir") === Object.hasOwn(value, "to")
+      ? `dir 과 to 중 하나만 주세요(${Object.hasOwn(value, "dir") ? "둘 다 있음" : "둘 다 없음"}) — 한 칸 이동은 {kind:'move',dir:'up'}, 좌표까지 걷기는 {kind:'move',to:{x,y}}`
+      : null,
+  },
+  walk: { fields: { to: scenePoint, adjacent: sceneBoolean }, required: ["to"] },
+  set: { fields: {
+    mapId: sceneText, x: sceneCount, y: sceneCount, facing: sceneDirection,
+    switches: entry => sceneStrings(entry) || (sceneRecord(entry) && Object.values(entry).every(sceneBoolean)),
+    variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
+  } },
+  interact: { fields: { eventId: sceneText } },
+  snapshotRewards: { fields: {} },
+  retryCheckpoint: { fields: {} },
+  gift: { fields: { eventId: sceneText, itemId: sceneText }, required: ["itemId"] },
+  purchase: {
+    fields: { eventId: sceneText, itemId: sceneText,
       count: entry => sceneCount(entry) && Number(entry) > 0 && Number(entry) <= 99,
-      unitPrice: sceneCount }, ["eventId", "itemId", "count", "unitPrice"]);
-    case "choose": return shape({
-      index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1,
-    }, ["index"]);
-    case "present": return shape({ itemId: sceneText });
-    case "advanceDays": return shape({ days: sceneCount }, ["days"]);
-    case "expect": return Object.keys(value).length > 1 && shape(sceneExpectFields);
-    default: return false;
+      unitPrice: sceneCount },
+    required: ["eventId", "itemId", "count", "unitPrice"],
+  },
+  choose: { fields: { index: entry => typeof entry === "number" && Number.isSafeInteger(entry) && entry >= -1 }, required: ["index"] },
+  present: { fields: { itemId: sceneText } },
+  advanceDays: { fields: { days: sceneCount }, required: ["days"] },
+  expect: {
+    fields: sceneExpectFields,
+    extra: value => Object.keys(value).length > 1
+      ? null
+      : `검사할 필드가 하나도 없습니다. 허용: ${Object.keys(sceneExpectFields).join(", ")}`,
+  },
+};
+
+// 값이 틀렸을 때 기대 형식. 없는 필드는 일반 문구로 짚는다.
+const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
+  ticks: "0 이상의 정수", days: "0 이상의 정수", x: "0 이상의 정수", y: "0 이상의 정수", unitPrice: "0 이상의 정수",
+  count: "1~99 정수", gold: "숫자", index: "-1 이상의 정수(선택지 0부터, -1 은 취소)",
+  dir: "up|down|left|right", facing: "up|down|left|right",
+  to: "{x,y} 0 이상의 정수 좌표", adjacent: "true/false",
+  mapId: "비어 있지 않은 맵 id 문자열", eventId: "비어 있지 않은 이벤트 id 문자열", itemId: "비어 있지 않은 아이템 id 문자열",
+  manualHint: "비어 있지 않은 문자열",
+  switches: "스위치 id 배열 또는 {스위치id: true/false}", variables: "{변수id: 숫자}", inventory: "{아이템id: 개수}",
+  playerAt: "{x,y,mapId?}", switchOn: "스위치 id 또는 id 배열", switchOff: "스위치 id 또는 id 배열",
+  variableEquals: "{변수id: 숫자} 또는 {variableId,value}", variableAtLeast: "{변수id: 숫자} 또는 {variableId,value}",
+  eventAt: "{eventId,x,y,mapId?}", eventOnMap: "{eventId,mapId}", eventDistanceToPlayerLessThan: "{eventId,distance,mapId?}",
+  endingReached: "엔딩 id 문자열(예: ending_escape, 불리언 아님)", inventoryCount: "{아이템id: 개수} 또는 {itemId,count}",
+  goldDelta: "정수 또는 {atLeast:정수}", inventoryDelta: "{아이템id: 정수 또는 {atLeast}}", ownedMonsterDelta: "{종id: 정수 또는 {atLeast}}",
+  interactionComplete: "true/false", messageShown: "true/false", gameOver: "true/false", cutsceneLocked: "true/false",
+  lastTransfer: "{fromMapId,eventId,toMapId}", timePhase: "시간대 이름", weatherKind: "none|rain|storm|snow|fog",
+};
+
+// 모델이 자주 쓰는 틀린 필드 이름 → 올바른 이름.
+const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  set: { switch: "switches", switchIds: "switches", variable: "variables", items: "inventory", item: "inventory", position: "x/y", pos: "x/y", dir: "facing", direction: "facing" },
+  present: { item: "itemId", items: "itemId", id: "itemId" },
+  interact: { id: "eventId", event: "eventId", target: "eventId" },
+  choose: { option: "index", choice: "index", value: "index" },
+  wait: { ms: "ticks", frames: "ticks", duration: "ticks" },
+  move: { direction: "dir", target: "to", position: "to" },
+  gift: { item: "itemId" },
+  expect: { ending: "endingReached", ended: "endingReached", inventory: "inventoryCount", position: "playerAt", switch: "switchOn" },
+};
+
+function sceneValuePreview(value: unknown): string {
+  const text = JSON.stringify(value);
+  return text === undefined ? String(value) : text.length > 60 ? `${text.slice(0, 57)}...` : text;
+}
+
+/** 좌표 필드({x,y}) 안쪽까지 짚는다. */
+function sceneFieldProblem(key: string, value: unknown, check: SceneFieldCheck): string | null {
+  if (check(value)) return null;
+  if ((key === "to" || key === "playerAt") && sceneRecord(value)) {
+    for (const axis of ["x", "y"] as const) {
+      if (!sceneCount(value[axis])) return `${key}.${axis}: 0 이상의 정수여야 합니다(받은 값 ${sceneValuePreview(value[axis])})`;
+    }
   }
+  const expected = SCENE_FIELD_EXPECTATIONS[key];
+  return `${key}: ${expected ? `${expected} 여야 합니다` : "값 형식이 맞지 않습니다"}(받은 값 ${sceneValuePreview(value)})`;
+}
+
+function sceneShapeProblem(
+  value: Record<string, unknown>,
+  fields: Readonly<Record<string, SceneFieldCheck>>,
+  required: readonly string[],
+  aliases: Readonly<Record<string, string>> = {},
+): string | null {
+  const missing = required.filter(key => !Object.hasOwn(value, key));
+  if (missing.length > 0) return `필수 필드 누락: ${missing.join(", ")}`;
+  const extras = Object.keys(value).filter(key => !Object.hasOwn(fields, key));
+  if (extras.length > 0) {
+    const renames = extras.flatMap(key => aliases[key] ? [`${key} → ${aliases[key]}`] : []);
+    const allowed = Object.keys(fields).filter(key => key !== "kind");
+    return `unexpected field(s): ${extras.join(", ")}${renames.length > 0 ? ` (${renames.join(", ")} 로 쓰세요)` : ""} — 허용 필드: ${allowed.length > 0 ? allowed.join(", ") : "(없음)"}`;
+  }
+  for (const [key, entry] of Object.entries(value)) {
+    const problem = sceneFieldProblem(key, entry, fields[key]);
+    if (problem) return problem;
+  }
+  return null;
+}
+
+function sceneStepProblem(value: unknown): string | null {
+  if (!sceneRecord(value)) return `스텝은 객체여야 합니다(받은 값 ${sceneValuePreview(value)})`;
+  const kinds = Object.keys(SCENE_STEP_SPECS).join(", ");
+  if (!Object.hasOwn(value, "kind")) return `kind 가 없습니다. 허용 kind: ${kinds}`;
+  const spec = typeof value.kind === "string" && Object.hasOwn(SCENE_STEP_SPECS, value.kind) ? SCENE_STEP_SPECS[value.kind] : undefined;
+  if (!spec) return `kind ${typeof value.kind === "string" ? `'${value.kind}'` : sceneValuePreview(value.kind)} 는 지원하지 않습니다. 허용 kind: ${kinds}`;
+  return sceneShapeProblem(value, { kind: sceneText, ...spec.fields }, ["kind", ...(spec.required ?? [])], SCENE_FIELD_ALIASES[value.kind as string])
+    ?? spec.extra?.(value) ?? null;
+}
+
+/**
+ * run_scene_test 입력의 첫 결함을 「steps[3] (move): …」 처럼 위치·필드·허용값과 함께 돌려준다. 문제 없으면 null.
+ * 뭉뚱그린 거부 문구로는 모델이 같은 실수를 반복한다(run5 에서 4연속 거부).
+ */
+export function sceneTestInputProblem(value: unknown): string | null {
+  if (!sceneRecord(value)) return "입력은 {mapId,start:{x,y},steps:[...]} 객체여야 합니다";
+  const top = sceneShapeProblem(value, {
+    mapId: sceneText,
+    start: entry => sceneRecord(entry) && sceneCount(entry.x) && sceneCount(entry.y),
+    steps: Array.isArray,
+  }, ["mapId", "start", "steps"], { startPos: "start", map: "mapId", scenario: "steps" });
+  if (top) {
+    if (top.startsWith("start:") && sceneRecord(value.start)) {
+      for (const axis of ["x", "y"] as const) {
+        if (!sceneCount(value.start[axis])) return `start.${axis}: 0 이상의 정수여야 합니다(받은 값 ${sceneValuePreview(value.start[axis])})`;
+      }
+    }
+    if (top.startsWith("steps:")) return `steps: 스텝 배열이어야 합니다(받은 값 ${sceneValuePreview(value.steps)})`;
+    return top;
+  }
+  const steps = value.steps as readonly unknown[];
+  for (let index = 0; index < steps.length; index += 1) {
+    const problem = sceneStepProblem(steps[index]);
+    if (!problem) continue;
+    const step = steps[index];
+    const kind = sceneRecord(step) && typeof step.kind === "string" && Object.hasOwn(SCENE_STEP_SPECS, step.kind) ? ` (${step.kind})` : "";
+    return `steps[${index}]${kind}: ${problem}`;
+  }
+  return null;
 }
 
 /** Validate the complete script before autoruns, movement, or any debug-set step. */
 export function isSceneTestInput(value: unknown): value is SceneTestInput {
-  return sceneShape(value, {
-    mapId: sceneText,
-    start: entry => sceneRecord(entry) && sceneCount(entry.x) && sceneCount(entry.y),
-    steps: steps => Array.isArray(steps) && steps.every(isSceneStep),
-  }, ["mapId", "start", "steps"]);
+  return sceneTestInputProblem(value) === null;
 }
 
 export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof): SceneTestResult {
   const session = startSession(project, 1);
-  if (!isSceneTestInput(input)) {
+  const inputProblem = sceneTestInputProblem(input);
+  if (inputProblem) {
     return result(false, project, session, emptyEventPositions(project), emptyCamera(session), [], [],
-      [], 0, undefined, "Malformed scene test input", null, false, false, [],
+      [], 0, undefined, `Malformed scene test input: ${inputProblem}`, null, false, false, [],
       { kind: "invalid-input", stepIndex: 0, mapId: session.currentMapId });
   }
   const runtimeMaps = structuredClone(project.maps);

@@ -15,7 +15,9 @@ import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranc
 import { isPassable } from "@/project/collision";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
+import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import type { Command, EventPage, EventPageCondition, GameEvent, GameMap, Project } from "@/project/types";
+import type { SceneStep, SceneTestInput } from "@/testing/sceneTestRunner";
 import { withJosa } from "@/util/josa";
 import { ENDING_TOOLS } from "./endingTools";
 import { EVENT_TOOLS, passableLanding } from "./eventTools";
@@ -426,7 +428,15 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
     reachableByMap.set(map.id, cells);
     return cells;
   };
-  for (const placement of placements(spec)) {
+  const all = placements(spec);
+  const reachableMaps = reachableMapIdsFromStart(project);
+  const reportedMaps = new Set<string>();
+  // 이 배치 말고 그 맵에 서 있을 것들: 사건 밖 이벤트 + 다른 사건 배치.
+  const othersAt = (map: GameMap, self: Placement): Set<string> => new Set([
+    ...map.events.filter((event) => !event.id.startsWith(prefix) && event.id !== self.reuseEventId).map((event) => `${event.x},${event.y}`),
+    ...all.filter((other) => other !== self && other.at.mapId === map.id).map((other) => `${other.at.x},${other.at.y}`),
+  ]);
+  for (const placement of all) {
     const { at, label } = placement;
     const map = project.maps[at.mapId];
     if (!map) {
@@ -436,6 +446,17 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
     if (!inMapBounds(map, at.x, at.y)) {
       push(`${label}: (${at.x}, ${at.y}) 가 맵 '${map.id}'(${map.width}×${map.height}) 밖입니다.`);
       continue;
+    }
+    // 시작 맵에서 문·연결로 못 가는 맵은 플레이어가 영영 못 본다(run7 실측: 시작이 빈 기본 맵에 남아 마을로 갈 길이 없었다).
+    // 동봉 검증 시나리오는 set 으로 순간이동하므로 이 결함을 가리지 못한다 — 여기서 막는다.
+    // 배치 라벨을 붙이면 모델이 그 인물 좌표만 옮기며 헛돈다(run8: 3회) — 맵 단위 문구와 바로 쓸 시작 좌표를 준다.
+    if (!reachableMaps.has(map.id) && !reportedMaps.has(map.id)) {
+      reportedMaps.add(map.id);
+      const onMap = all.filter((other) => other.at.mapId === map.id);
+      const anchor = onMap.find((other) => other.kind === "character" && other.label.startsWith("지목 NPC")) ?? onMap[0];
+      const occupied = new Set([...map.events.map((event) => `${event.x},${event.y}`), ...onMap.map((other) => `${other.at.x},${other.at.y}`)]);
+      const start = nearestFreeCell(project, map, anchor.at, occupied);
+      push(`사건 맵 '${map.id}' 은 시작 맵 '${project.startMapId}' 에서 이동(transfer)·연결로 갈 수 없습니다(사건 배치 ${onMap.length}곳). 명세 좌표를 옮겨도 풀리지 않습니다 — 먼저 ${start ? `set_start_position({mapId:"${map.id}", x:${start.x}, y:${start.y}})` : "set_start_position"} 으로 시작 위치를 이 맵에 두거나, 시작 맵에서 이 맵으로 가는 문을 이으세요.`);
     }
     const key = `${map.id}:${at.x},${at.y}`;
     const other = seen.get(key);
@@ -453,6 +474,11 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
       const near = nearestUsableCell(project, map, at, placement.kind, reachable);
       return near ? ` 가까운 후보: (${near.x}, ${near.y}).` : "";
     };
+    // 플레이어가 이 칸에 스폰된다 — 인물이 서면 겹쳐 나오고, 조사 지점은 밟고 선 채 시작한다(run5 실측).
+    if (isStartCell(project, map, at.x, at.y)) {
+      push(`${label}: (${at.x}, ${at.y}) 는 플레이어 시작 위치라 ${placement.kind === "character" ? "인물이 설" : "조사 지점을 둘"} 수 없습니다.${hint()}`);
+      continue;
+    }
     if (placement.kind === "character" && !isPassable(project, map, at.x, at.y)) {
       push(`${label}: (${at.x}, ${at.y}) 는 통행 불가 칸이라 인물이 설 수 없습니다.${hint()}`);
       continue;
@@ -461,13 +487,45 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
       push(`${label}: (${at.x}, ${at.y}) 의 상하좌우가 모두 막혀 조사할 수 없습니다.${hint()}`);
       continue;
     }
+    // 통행 가능한 옆 칸이 있어도 거기 다른 이벤트(문·주민)가 서 있으면 설 수 없다(run6 실측: 벽 위 단서의 유일한 옆 칸이 집 문).
+    if (placement.kind === "interaction" && !interactionStandCell(project, map, at.x, at.y, othersAt(map, placement))) {
+      push(`${label}: (${at.x}, ${at.y}) 를 조사할 옆 칸이 모두 다른 이벤트로 막혀 있습니다.${hint()}`);
+      continue;
+    }
     if (reachable && !isAdjacentOrOn(reachable, at.x, at.y)) {
       push(`${label}: 시작 위치 (${project.startPos.x}, ${project.startPos.y}) 에서 걸어서 닿을 수 없습니다 (${at.x}, ${at.y}).${hint()}`);
     }
   }
 }
 
-/** 거부 메시지에 붙일 가까운 대체 칸(반경 4). 다른 이벤트가 없고, 시작 맵이면 시작 위치에서 닿는 칸. */
+/** 기준 칸 둘레(반경 4)에서 통행 가능하고 비어 있는 가장 가까운 칸. */
+function nearestFreeCell(project: Project, map: GameMap, at: CaseAt, occupied: ReadonlySet<string>): { x: number; y: number } | null {
+  for (let radius = 1; radius <= 4; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const x = at.x + dx;
+        const y = at.y + dy;
+        if (inMapBounds(map, x, y) && isPassable(project, map, x, y) && !occupied.has(`${x},${y}`)) return { x, y };
+      }
+    }
+  }
+  return null;
+}
+
+/** 조사 지점에 실제로 설 칸: 상하좌우 또는 발밑 중 통행 가능하고 다른 이벤트가 없는 칸. */
+function interactionStandCell(project: Project, map: GameMap, x: number, y: number, occupied: ReadonlySet<string>): { x: number; y: number } | null {
+  for (const cell of [{ x, y: y + 1 }, { x, y: y - 1 }, { x: x + 1, y }, { x: x - 1, y }, { x, y }]) {
+    if (inMapBounds(map, cell.x, cell.y) && isPassable(project, map, cell.x, cell.y) && !occupied.has(`${cell.x},${cell.y}`)) return cell;
+  }
+  return null;
+}
+
+function isStartCell(project: Project, map: GameMap, x: number, y: number): boolean {
+  return map.id === project.startMapId && project.startPos.x === x && project.startPos.y === y;
+}
+
+/** 거부 메시지에 붙일 가까운 대체 칸(반경 4). 다른 이벤트가 없고 시작 칸이 아니며, 시작 맵이면 시작 위치에서 닿는 칸. */
 function nearestUsableCell(
   project: Project,
   map: GameMap,
@@ -482,8 +540,8 @@ function nearestUsableCell(
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
         const x = at.x + dx;
         const y = at.y + dy;
-        if (!inMapBounds(map, x, y) || occupied.has(`${x},${y}`)) continue;
-        const usable = kind === "character" ? isPassable(project, map, x, y) : passableLanding(project, map, x, y) !== null;
+        if (!inMapBounds(map, x, y) || occupied.has(`${x},${y}`) || isStartCell(project, map, x, y)) continue;
+        const usable = kind === "character" ? isPassable(project, map, x, y) : interactionStandCell(project, map, x, y, occupied) !== null;
         if (!usable) continue;
         if (reachable && !isAdjacentOrOn(reachable, x, y)) continue;
         return { x, y };
@@ -989,6 +1047,106 @@ function assertEndingsGated(draft: Project, spec: MysteryCase, eventIds: readonl
   }
 }
 
+// ── 동봉 검증 시나리오 ───────────────────────────────────────────────────────
+// 실측(run5): 성공 요약만 보고 모델이 run_scene_test 입력을 손으로 짜다 7번 헛돌았다
+// (좌표 형식, 증언은 탐문 선택지를 골라야 얻는다는 점, 지목 페이지 선택지 위치).
+// 컴파일된 이벤트에서 직접 뽑은, 그대로 넣으면 끝까지 도는 입력을 돌려준다.
+
+const TALK_WAIT: SceneStep = { kind: "wait", ticks: 400 };
+// 이벤트 쪽을 보게 되는 인접 칸(아래·위·왼쪽·오른쪽 순).
+const APPROACH: readonly { readonly dx: number; readonly dy: number; readonly facing: "up" | "down" | "left" | "right" }[] = [
+  { dx: 0, dy: 1, facing: "up" }, { dx: 0, dy: -1, facing: "down" }, { dx: -1, dy: 0, facing: "right" }, { dx: 1, dy: 0, facing: "left" },
+];
+
+function locateEvent(draft: Project, eventId: string): { map: GameMap; event: GameEvent } {
+  for (const map of Object.values(draft.maps)) {
+    const event = map.events.find((entry) => entry.id === eventId);
+    if (event) return { map, event };
+  }
+  throw new ToolError(`검증 시나리오: 이벤트 '${eventId}' 를 찾지 못했습니다.`, { code: "mystery-place-failed" });
+}
+
+/**
+ * 이벤트 옆 칸으로 순간이동(set)해 마주 보고(face) 말을 건다. 시간표가 인물을 옮길 수 있어 걷기 대신 set 을 쓴다 —
+ * 사건 인물의 시간표는 사건 자리에 고정되므로(placeCharacter) 컴파일 직후 좌표가 곧 실행 좌표다.
+ * 방향은 set.facing 이 아니라 따로 face 스텝으로 준다 — 재실행(run6)에서 모델이 시나리오를 옮겨 적으며 set.facing 만 빠뜨려
+ * 엉뚱한 칸을 조사했다. 옆 칸이 없으면 던지고, 호출부가 경고로 바꾼다(검사기가 먼저 거부해야 할 경우다).
+ */
+function talkSteps(draft: Project, eventId: string, reachable: (map: GameMap) => ReadonlySet<string> | null): SceneStep[] {
+  const { map, event } = locateEvent(draft, eventId);
+  const cells = reachable(map);
+  const occupied = new Set(map.events.filter((entry) => entry.id !== event.id).map((entry) => `${entry.x},${entry.y}`));
+  const free = (x: number, y: number) => inMapBounds(map, x, y) && isPassable(draft, map, x, y) && !occupied.has(`${x},${y}`);
+  const usable = APPROACH.map(({ dx, dy, facing }) => ({ x: event.x + dx, y: event.y + dy, facing })).filter(({ x, y }) => free(x, y));
+  const spot = usable.find(({ x, y }) => !cells || cells.has(`${x},${y}`)) ?? usable[0];
+  if (!spot) throw new ToolError(`검증 시나리오: '${event.name ?? event.id}' 옆에 설 칸이 없습니다.`, { code: "mystery-unreachable", mapId: map.id, x: event.x, y: event.y });
+  return [
+    { kind: "set", mapId: map.id, x: spot.x, y: spot.y },
+    { kind: "face", dir: spot.facing },
+    { kind: "interact", eventId: event.id },
+    TALK_WAIT,
+  ];
+}
+
+function choiceIndex(event: GameEvent, pageName: string | null, pick: (option: { text: string; branch: readonly Command[] }) => boolean): number {
+  const pages = (event.pages ?? []).filter((page) => pageName === null || page.name === pageName);
+  for (const page of pages) {
+    const choices = page.commands.find((command): command is Extract<Command, { kind: "choices" }> => command.kind === "choices");
+    const index = choices?.options.findIndex(pick) ?? -1;
+    if (index >= 0) return index;
+  }
+  throw new ToolError(`검증 시나리오: '${event.name ?? event.id}' 에서 고를 선택지를 찾지 못했습니다.`, { code: "mystery-place-failed" });
+}
+
+function buildVerificationScene(
+  draft: Project,
+  spec: MysteryCase,
+  ids: { readonly clueEvents: readonly string[]; readonly suspectEvents: readonly string[]; readonly accuserEvent: string },
+): SceneTestInput {
+  const reachableByMap = new Map<string, Set<string>>();
+  const reachable = (map: GameMap): ReadonlySet<string> | null => {
+    if (map.id !== draft.startMapId) return null;
+    if (!reachableByMap.has(map.id)) reachableByMap.set(map.id, computeReachableCells(draft, map, draft.startPos.x, draft.startPos.y));
+    return reachableByMap.get(map.id)!;
+  };
+  const suspectEvent = new Map(spec.suspects.map((suspect, index) => [suspect.id, ids.suspectEvents[index]]));
+  const steps: SceneStep[] = [];
+  // 1) 조사 지점: 옆에 서서 조사.
+  for (const eventId of ids.clueEvents) steps.push(...talkSteps(draft, eventId, reachable));
+  // 2) 증언 단서: 준 용의자에게 말을 걸고 「증언을 듣는다」. 한 사람의 증언은 한 분기에서 모두 받는다.
+  const testifiers = new Set(spec.clues.filter((clue) => clue.obtainedBy === "testimony").flatMap((clue) => testimonyGiver(spec, clue)?.id ?? []));
+  for (const suspectId of testifiers) {
+    const eventId = suspectEvent.get(suspectId)!;
+    const { event } = locateEvent(draft, eventId);
+    steps.push(...talkSteps(draft, eventId, reachable), { kind: "choose", index: choiceIndex(event, null, (option) => option.text === "증언을 듣는다") }, TALK_WAIT);
+  }
+  steps.push({ kind: "expect", inventoryCount: Object.fromEntries(spec.clues.map((clue) => [mysteryClueItemId(spec.caseId, clue.id), 1])) });
+  // 3) 증거 대면 예시 한 번: 거짓말을 무너뜨리는 증거가 있으면 그것, 없으면 첫 반응 증거.
+  const presented = spec.suspects
+    .map((suspect) => ({ suspect, reactions: evidenceReactions(spec, suspect) }))
+    .filter((entry) => entry.reactions.length > 0)
+    .sort((a, b) => Number(Boolean(b.suspect.lie)) - Number(Boolean(a.suspect.lie)))[0];
+  if (presented) {
+    const eventId = suspectEvent.get(presented.suspect.id)!;
+    const { event } = locateEvent(draft, eventId);
+    steps.push(
+      ...talkSteps(draft, eventId, reachable),
+      { kind: "choose", index: choiceIndex(event, null, (option) => option.text === "증거를 들이민다") }, TALK_WAIT,
+      { kind: "present", itemId: presented.reactions[0].itemId }, { kind: "wait", ticks: 1200 },
+    );
+  }
+  // 4) 지목: 필수 증거를 모두 가졌으니 2페이지(범인 지목)가 뜬다. 정답(범인) 선택지를 고른다.
+  const { event: accuser } = locateEvent(draft, ids.accuserEvent);
+  const solvedIndex = choiceIndex(accuser, "범인 지목", (option) =>
+    option.branch.some((command) => command.kind === "triggerEnding" && command.endingId === spec.endings.solved.id));
+  steps.push(
+    ...talkSteps(draft, ids.accuserEvent, reachable),
+    { kind: "choose", index: solvedIndex }, { kind: "wait", ticks: 1500 },
+    { kind: "expect", endingReached: spec.endings.solved.id },
+  );
+  return { mapId: draft.startMapId, start: { x: draft.startPos.x, y: draft.startPos.y }, steps };
+}
+
 function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const warnings: string[] = [];
   const removed = removePreviousCaseEvents(draft, spec);
@@ -999,8 +1157,18 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const accuserEvent = placeAccuser(draft, spec, warnings);
   assertEndingsGated(draft, spec, [...clueEvents, ...suspectEvents, accuserEvent]);
   const culprit = spec.suspects.find((suspect) => suspect.id === spec.culprit)!;
+  // 시나리오는 검증 보조물이다 — 못 만들어도 저작은 성공시키고 사유를 경고로 남긴다(run6: 여기서 던져 저작 전체가 실패했다).
+  let verificationScene: SceneTestInput | null = null;
+  try {
+    verificationScene = buildVerificationScene(draft, spec, { clueEvents, suspectEvents, accuserEvent });
+  } catch (error) {
+    if (!(error instanceof ToolError)) throw error;
+    warnings.push(`${error.message} — data.verificationScene 없이 저작했습니다. run_scene_test 입력을 직접 짜라.`);
+  }
   return {
-    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. run_scene_test 로 증거 수집 → 지목을 플레이 검증하라.`,
+    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${verificationScene
+      ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
+      : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라."}`,
     data: {
       caseId: spec.caseId,
       culprit: culprit.id,
@@ -1010,6 +1178,7 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
       suspectEventIds: suspectEvents,
       accuserEventId: accuserEvent,
       endings: { solved: spec.endings.solved.id, wrong: spec.endings.wrong.id },
+      ...(verificationScene ? { verificationScene } : {}),
     },
     ...(warnings.length > 0 ? { warnings } : {}),
   };
@@ -1159,7 +1328,7 @@ const authorMysteryCase: ToolDefinition = {
     "추리/살인사건/탐정 게임은 author_mystery_case 로 만든다(place_examine_hotspots·place_npc·define_ending 을 따로 조립하지 말 것). " +
     "사건 명세 하나로 증거 아이템(스위치 없음)·한 번만 주는 조사 지점·용의자 탐문(알리바이/동기/증언/증거 대면)·" +
     "지목 NPC(증거 부족=힌트, 필수 증거 전부=이름 목록→solved/wrong 엔딩)를 컴파일한다. 기존 주민은 suspects[].eventId 로 재사용(시간표 정리). " +
-    "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. 저작 뒤 run_scene_test 로 플레이 검증.",
+    "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. 저작 결과 data.verificationScene(끝까지 도는 run_scene_test 입력)을 그대로 run_scene_test 에 넣어 플레이 검증.",
   mode: "write",
   parameters: CASE_PARAMETERS,
   invalidArgsExample: CASE_EXAMPLE,

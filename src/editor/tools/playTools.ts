@@ -1,7 +1,7 @@
 // editor/tools/playTools.ts
 // Play validation tools. They create their own runtime sessions and never mutate the project.
 
-import { isSceneTestInput, runSceneTest } from "@/testing/sceneTestRunner";
+import { isSceneTestInput, runSceneTest, sceneTestInputProblem } from "@/testing/sceneTestRunner";
 import { runWalkthrough } from "@/testing/walkthroughRunner";
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { ToolError } from "./types";
@@ -30,6 +30,7 @@ const playWalkthrough: ToolDefinition = {
             mapId: { type: "string" },
             x: { type: "integer" },
             y: { type: "integer" },
+            facing: { type: "string", enum: ["up", "down", "left", "right"], description: "set 전용: 순간이동 뒤 바라볼 방향" },
             eventId: { type: "string" },
             index: { type: "integer", minimum: 0 },
             switchId: { type: "string" },
@@ -82,7 +83,7 @@ const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
-    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'present',itemId?}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
+    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?,facing?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'present',itemId?}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
     " present 는 대기 중인 presentItem(아이템 제시)에 itemId 를 내고, itemId 를 빼면 닫는다(cancelBranch)." +
     " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, goldDelta, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
     "Purchase proof: walk to/interact with the intended seller, then purchase {eventId,itemId,count,unitPrice}; assert goldDelta and inventoryDelta. Opens a real pending shop; no transaction means interactionComplete:false. Ordinary player-buy stock only, not haggle/shopkeeper/services. lastTransfer:{fromMapId,eventId,toMapId} asserts the last actual interpreter transfer. " +
@@ -135,7 +136,8 @@ const runSceneTestTool: ToolDefinition = {
     required: ["mapId", "start", "steps"],
   },
   run(project, args): ToolExecResult {
-    if (!isSceneTestInput(args)) throw new ToolError("Malformed scene test input: use supported step fields, integer coordinates, and exactly one move dir or to.", { code: "invalid-scene-test" });
+    const problem = sceneTestInputProblem(args);
+    if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
       summary: result.ok
