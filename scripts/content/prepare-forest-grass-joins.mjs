@@ -6,7 +6,7 @@ import { PNG } from 'pngjs';
 const sourcePath='public/assets/forest-harmony/chipset.png';
 const source=PNG.sync.read(fs.readFileSync(sourcePath));
 const original=PNG.sync.read(fs.readFileSync('public/assets/region-references/great-falls-atlas.png'));
-const ids=[504,505,240,498,499,528,529,619,712];
+const ids=[504,505,240,498,499,528,529,619,712,559];
 const out=new PNG({width:ids.length*16,height:16});
 const at=(im,tile,x,y)=>((Math.floor(tile/30)*16+y)*im.width+tile%30*16+x)*4;
 const key=(im,i)=>Array.from(im.data.subarray(i,i+3)).join(',');
@@ -37,5 +37,5 @@ for(const [n,tile] of ids.entries()){
  proof.push({sourceTile:tile,sourceX:tile%30,sourceY:Math.floor(tile/30),targetTile:n,width:16,height:16,alphaUnchanged:true,grassPixels,opaquePixels:opaque,change:tile===240?'identical floor copy':tile===712?'rock palette only':'grass pixels only'});
 }
 fs.writeFileSync('public/assets/forest-harmony/grass-joins.png',PNG.sync.write(out));
-fs.writeFileSync('tiledata/forest-villages/diverse/grass-joins-source.json',JSON.stringify({sourcePath,sourceSha256:createHash('sha256').update(fs.readFileSync(sourcePath)).digest('hex'),floorTile:240,texture:'tex_forest_harmony_grass_joins',tilesPerRow:9,count:9,rockPalette,tiles:proof},null,2)+'\n');
+fs.writeFileSync('tiledata/forest-villages/diverse/grass-joins-source.json',JSON.stringify({sourcePath,sourceSha256:createHash('sha256').update(fs.readFileSync(sourcePath)).digest('hex'),floorTile:240,texture:'tex_forest_harmony_grass_joins',tilesPerRow:10,count:10,rockPalette,tiles:proof},null,2)+'\n');
 console.log(proof);

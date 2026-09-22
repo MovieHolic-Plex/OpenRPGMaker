@@ -5,7 +5,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "솔바람 흩어진 산촌",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 3,
+    "revision": 4,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -13,14 +13,14 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "projectDownload": "/assets/region-references/pine-hamlets.oprn.json",
     "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
     "sourceMapId": "pine-hamlets",
-    "snapshotProjectId": "oprn-region-pine-hamlets-v3",
+    "snapshotProjectId": "oprn-region-pine-hamlets-v4",
     "rules": [
       "세 빈터에 흩어진 집, 두 둔덕, 갈라지는 오솔길과 작은 샘.",
       "집 7채의 문 앞과 계단 2곳을 시작점에서 연결한다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (잔디 경계 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (굽은 지형·입구 개정4)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -29,7 +29,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "층바위 절벽마을",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 3,
+    "revision": 4,
     "width": 88,
     "height": 72,
     "tilesetId": "forest_harmony",
@@ -37,14 +37,14 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "projectDownload": "/assets/region-references/terrace-cliff-village.oprn.json",
     "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
     "sourceMapId": "terrace-cliff-village",
-    "snapshotProjectId": "oprn-region-terrace-cliff-village-v3",
+    "snapshotProjectId": "oprn-region-terrace-cliff-village-v4",
     "rules": [
       "세 높이의 대지, 네 계단과 절벽 아래 작업 마당.",
       "집 8채의 문 앞과 계단 4곳을 시작점에서 연결한다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (잔디 경계 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (굽은 지형·입구 개정4)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -53,7 +53,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "갈대물굽이 포구",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 3,
+    "revision": 4,
     "width": 88,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -61,14 +61,14 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "projectDownload": "/assets/region-references/reed-bay-village.oprn.json",
     "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
     "sourceMapId": "reed-bay-village",
-    "snapshotProjectId": "oprn-region-reed-bay-village-v3",
+    "snapshotProjectId": "oprn-region-reed-bay-village-v4",
     "rules": [
       "물굽이를 따라 비껴 앉은 집, 좁은 골목과 긴 선착장.",
       "집 8채의 문 앞과 계단 1곳을 시작점에서 연결한다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (잔디 경계 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (굽은 지형·입구 개정4)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   }

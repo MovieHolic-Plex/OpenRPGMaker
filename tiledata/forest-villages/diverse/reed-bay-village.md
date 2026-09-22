@@ -15,6 +15,48 @@
     "x": 6,
     "y": 33
   },
+  "entrance": {
+    "x": 0,
+    "y": 33
+  },
+  "crest": {
+    "x": 9,
+    "y": 4,
+    "width": 17,
+    "shoulder": 3
+  },
+  "patches": [
+    [
+      3,
+      12,
+      10,
+      12,
+      12
+    ],
+    [
+      46,
+      2,
+      14,
+      8,
+      10
+    ],
+    [
+      66,
+      22,
+      9,
+      12,
+      9
+    ]
+  ],
+  "clearings": [
+    [
+      20,
+      8,
+      11,
+      6,
+      8
+    ]
+  ],
   "cliffs": [
     {
       "points": [
@@ -23,7 +65,15 @@
           16
         ],
         [
-          13,
+          10,
+          19
+        ],
+        [
+          12,
+          19
+        ],
+        [
+          15,
           22
         ],
         [
@@ -31,7 +81,15 @@
           22
         ],
         [
-          26,
+          23,
+          19
+        ],
+        [
+          24,
+          19
+        ],
+        [
+          27,
           16
         ]
       ],
@@ -142,6 +200,81 @@
       "role": "door-front",
       "x": 37,
       "y": 48
+    },
+    {
+      "role": "map-entrance",
+      "x": 0,
+      "y": 32
+    },
+    {
+      "role": "map-entrance",
+      "x": 0,
+      "y": 33
+    },
+    {
+      "role": "map-entrance",
+      "x": 0,
+      "y": 34
+    },
+    {
+      "role": "map-entrance",
+      "x": 1,
+      "y": 32
+    },
+    {
+      "role": "map-entrance",
+      "x": 1,
+      "y": 33
+    },
+    {
+      "role": "map-entrance",
+      "x": 1,
+      "y": 34
+    },
+    {
+      "role": "map-entrance",
+      "x": 2,
+      "y": 32
+    },
+    {
+      "role": "map-entrance",
+      "x": 2,
+      "y": 33
+    },
+    {
+      "role": "map-entrance",
+      "x": 2,
+      "y": 34
+    },
+    {
+      "role": "map-entrance",
+      "x": 3,
+      "y": 32
+    },
+    {
+      "role": "map-entrance",
+      "x": 3,
+      "y": 33
+    },
+    {
+      "role": "map-entrance",
+      "x": 3,
+      "y": 34
+    },
+    {
+      "role": "map-entrance",
+      "x": 4,
+      "y": 32
+    },
+    {
+      "role": "map-entrance",
+      "x": 4,
+      "y": 33
+    },
+    {
+      "role": "map-entrance",
+      "x": 4,
+      "y": 34
     },
     {
       "role": "dock-end",
