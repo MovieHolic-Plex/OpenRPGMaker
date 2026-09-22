@@ -499,8 +499,8 @@ export async function runPiCommand(
   if (mergedFromBundles) authorMergedSpatialProposal(merged.project, base);
   else adoptSpatialToolProof(merged.project, results[0]!.spatialProof, base);
   if (merged.conflicts.length > 0) {
-    surface.appendBubble("system", "여러 팀원이 같은 맵을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
-    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
+    surface.appendBubble("system", "여러 팀원이 같은 맵이나 설정을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
+    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵·설정을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }
   spilledKeys.push(...merged.spills.flatMap((spill) => spill.keys));
   if (spilledKeys.length) surface.appendBubble("system", "선택한 작업 범위를 벗어난 변경은 제외했어요.");

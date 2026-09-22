@@ -4,6 +4,7 @@ import { changedProjectKeys, createPiAgentLineDecoder, encodePiAgentEvent } from
 import { commitChangeset } from "@/editor/tools";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { ensureForestGroveTileset, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
 import type { Project } from "@/project/types";
 
 function clone<T>(value: T): T {
@@ -282,8 +283,14 @@ describe("piAgent mapBundle", () => {
     const 트리뗌 = clone(base);
     트리뗌.mapTree.children = 트리뗌.mapTree.children.filter((node) => node.mapId !== "map_west");
 
+    const 전체설정 = { project: clone(base) };
+    runTool(전체설정, "configure_time_system", { enabled: true });
+    runTool(전체설정, "set_project_genre", { genre: "story-cutscene" });
+    runTool(전체설정, "set_world_canon", { canon: { name: "안개골" } });
+
     for (const [이름, mapIds, project] of [
       ["루트에 실내 추가", [rootId], 실내추가],
+      ["시간 시스템과 게임 전체 설정", ["map_east"], 전체설정.project],
       ["남의 맵 편집", ["map_east"], 남의맵],
       ["묶음 밖 트리 뗌", ["map_east"], 트리뗌],
     ] as const) {
@@ -318,6 +325,140 @@ describe("piAgent mapBundle", () => {
     expect(merged.project.maps.map_east_inner?.name).toBe("동쪽 실내");
     expect(merged.project.maps.map_west_inner?.name).toBe("서쪽 실내");
     expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  // 실측(2026-09-23 추리 도그푸딩, `--maps town`): 마을 룩 게이트가 시간표 주민을 요구해 에이전트가
+  // configure_time_system 으로 시간 시스템을 켰는데, 병합이 system 을 통째로 spill 로 버려 병합본에선
+  // 꺼져 있었다 — 맵 NPC 의 시간표가 죽은 데이터가 된다. «새로 켠 것» 은 묶음 저작에 딸려 온다.
+  it("묶음이 새로 켠 시간 시스템은 함께 옮긴다", () => {
+    const base = seed();
+    const ctx = { project: clone(base) };
+    expect(runTool(ctx, "configure_time_system", { enabled: true }).ok).toBe(true);
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: ctx.project }]);
+
+    expect(merged.project.system.timeSystem).toEqual(ctx.project.system.timeSystem);
+    expect(merged.spills).toEqual([]);
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  // 경계 고정: 이미 켜져 있던 시간 시스템을 바꾸거나 끄는 것은 기존 설정의 수정·삭제다 — 버리고 보고한다.
+  it("이미 켜진 시간 시스템을 바꾸거나 끈 것은 옮기지 않고 spill 로 보고한다", () => {
+    const seeded = { project: seed() };
+    expect(runTool(seeded, "configure_time_system", { enabled: true }).ok).toBe(true);
+    const base = seeded.project;
+    const 변경 = { project: clone(base) };
+    runTool(변경, "configure_time_system", { enabled: true, dayStartHour: 8 });
+    const 끔 = { project: clone(base) };
+    runTool(끔, "configure_time_system", { enabled: false });
+
+    for (const ctx of [변경, 끔]) {
+      const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: ctx.project }]);
+      expect(merged.project.system.timeSystem).toEqual(base.system.timeSystem);
+      expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["system"] }]);
+    }
+  });
+
+  // 같은 맵을 두 결과가 주장할 때와 같은 규칙: 뒤의 것이 이기고 conflicts 로 알린다.
+  it("두 결과가 시간 시스템을 서로 다르게 새로 켜면 뒤의 것이 이기고 conflicts 로 보고한다", () => {
+    const base = seed();
+    const a = { project: clone(base) };
+    runTool(a, "configure_time_system", { enabled: true, dayStartHour: 6 });
+    const b = { project: clone(base) };
+    runTool(b, "configure_time_system", { enabled: true, dayStartHour: 9 });
+    const same = { project: clone(base) };
+    runTool(same, "configure_time_system", { enabled: true, dayStartHour: 6 });
+
+    const merged = mergeMapBundles(base, [
+      { mapIds: ["map_east"], project: a.project },
+      { mapIds: ["map_west"], project: b.project },
+    ]);
+    expect(merged.project.system.timeSystem).toEqual(b.project.system.timeSystem);
+    expect(merged.conflicts).toEqual(["system.timeSystem"]);
+    expect(merged.spills).toEqual([]);
+
+    // 같은 설정을 둘 다 켰으면 충돌이 아니다.
+    const agreed = mergeMapBundles(base, [
+      { mapIds: ["map_east"], project: a.project },
+      { mapIds: ["map_west"], project: same.project },
+    ]);
+    expect(agreed.conflicts).toEqual([]);
+    expect(agreed.spills).toEqual([]);
+  });
+
+  // 실측(2026-09-23 같은 실행): author_village 의 나무 시공이 굽이숲 이식 47칸과 오토타일 그룹
+  // `forest_harmony_grove_47` 을 기존 타일셋에 덧댔는데, 병합은 이식·꼬리만 옮기고 그룹을 버렸다.
+  // 병합본의 맵은 그 칸을 12곳 깔았고, 그룹이 없으니 다음 나무 시공의 ensureForestGroveTileset 이
+  // 같은 수관을 끝에 **또** 이식한다.
+  it("묶음이 기존 타일셋에 새로 단 오토타일 그룹은 함께 옮긴다", () => {
+    const base = seed();
+    const tilesetId = base.maps.map_east!.tilesetId;
+    const a = clone(base);
+    ensureForestGroveTileset(a.tilesets[tilesetId]!);
+    expect(a.tilesets[tilesetId]!.autotileGroups?.some((group) => group.id === FOREST_GROVE_GROUP)).toBe(true);
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
+
+    expect(merged.project.tilesets[tilesetId]).toEqual(a.tilesets[tilesetId]);
+    expect(merged.spills).toEqual([]);
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  it("기존 오토타일 그룹의 수정은 옮기지 않고 spill 로 보고한다", () => {
+    const base = seed();
+    const tilesetId = base.maps.map_east!.tilesetId;
+    const a = clone(base);
+    const groups = a.tilesets[tilesetId]!.autotileGroups!;
+    groups[0] = { ...groups[0]!, name: "남의 그룹" };
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
+
+    expect(merged.project.tilesets[tilesetId]).toEqual(base.tilesets[tilesetId]);
+    expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["tilesets"] }]);
+  });
+
+  // 실측(2026-09-23 같은 실행): author_npc_cast 가 맵 NPC 를 세계관(world) 의 character 개체와
+  // locatedIn 관계로 등록했는데 병합이 world 를 버렸다. 개체가 맵 이벤트를 refs 로 가리키는 정의다.
+  it("묶음이 세계관에 새로 등록한 개체·관계는 함께 옮기고, 기존 개체 수정은 버린다", () => {
+    const base = seed();
+    const ctx = { project: clone(base) };
+    expect(runTool(ctx, "place_npc", { mapId: "map_east", id: "npc_a", x: 5, y: 5, name: "민우", pages: [{ lines: ["..."] }] }).ok).toBe(true);
+    const npc = ctx.project.maps.map_east?.events.find((event) => event.id === "npc_a");
+    const pageId = npc?.pages?.[0]?.id;
+    expect(pageId).toBeTruthy();
+    const cast = runTool(ctx, "author_npc_cast", { mapId: "map_east", residents: [{ eventId: "npc_a", name: "민우", role: "주민", summary: "마을 사람", pages: [{ pageId, lines: ["안녕"] }] }] });
+    expect(cast.ok, cast.summary).toBe(true);
+    expect(ctx.project.world?.entities.length).toBeGreaterThan(0);
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: ctx.project }]);
+    expect(merged.project.world).toEqual(ctx.project.world);
+    expect(merged.spills).toEqual([]);
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+
+    // 이미 있던 개체를 고친 것은 범위 밖 편집이다.
+    const edited = clone(merged.project);
+    edited.world = { ...edited.world!, entities: edited.world!.entities.map((entity, index) => (index === 0 ? { ...entity, summary: "남이 고친 요약" } : entity)) };
+    const again = mergeMapBundles(merged.project, [{ mapIds: ["map_east"], project: edited }]);
+    expect(again.project.world).toEqual(merged.project.world);
+    expect(again.spills).toEqual([{ mapIds: ["map_east"], keys: ["world"] }]);
+  });
+
+  // 경계 고정(2026-09-23 같은 실행의 나머지 spill): 제목·저자·장르·해상도·세계관 정본은 맵이 가리키지 않는
+  // 게임 전체 설정이다. 비어 있던 것을 채웠어도 «묶음이 만든 정의» 가 아니다 — 버리고 보고한다.
+  it("게임 전체 설정(제목·장르·해상도·세계관 정본)은 옮기지 않고 spill 로 보고한다", () => {
+    const base = seed();
+    const ctx = { project: clone(base) };
+    expect(runTool(ctx, "set_world_canon", { canon: { name: "안개골 살인사건", premise: "안개 낀 마을의 살인" } }).ok).toBe(true);
+    expect(runTool(ctx, "set_project_genre", { genre: "story-cutscene" }).ok).toBe(true);
+    expect(runTool(ctx, "set_project_settings", { title: "안개골 살인사건", author: "AI", playResolution: { width: 640, height: 480 } }).ok).toBe(true);
+    expect(runTool(ctx, "configure_time_system", { enabled: true }).ok).toBe(true);
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: ctx.project }]);
+
+    expect(merged.spills).toEqual([{ mapIds: ["map_east"], keys: ["meta", "system", "worldCanon"] }]);
+    expect(merged.project.meta).toEqual(base.meta);
+    expect(merged.project.worldCanon).toEqual(base.worldCanon);
+    expect(merged.project.system).toEqual({ ...base.system, timeSystem: ctx.project.system.timeSystem });
   });
 
   it("NDJSON 디코더는 조각 경계와 깨진 줄을 견딘다", () => {
