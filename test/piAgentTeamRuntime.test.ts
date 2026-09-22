@@ -164,6 +164,34 @@ describe("팀 런타임 — 시작/확인 분리", () => {
     expect(agents).toEqual([expect.objectContaining({ agentId: "builder-1", state: "완료", changedKeys: ["maps.map_a"] })]);
   });
 
+  // 깨질 것(2026-09-23): wait_agents 가 10초마다 돌아와 팀장이 대기만으로 턴을 쌓았다(10분 시공 ≈ 60턴).
+  // 이제 먼저 끝난 배정 하나에 돌아오고, 끝날 때까지는 시간으로 돌아오지 않는다.
+  it("wait_agents 는 먼저 끝난 배정에 돌아오고 나머지는 계속 돈다", async () => {
+    const reasons: string[] = [];
+    let releaseB = (): void => {};
+    const gateB = new Promise<void>(resolve => { releaseB = resolve; });
+    const runAgent = async (req: PiAgentRequest, opts: { extraTools?: readonly PiToolShape[] }): Promise<PiAgentDoneEvent> => {
+      const extra = opts.extraTools ?? [];
+      if (extra.some(tool => tool.name === "assign_map_agent")) {
+        await callTool(extra, "assign_map_agent", { mapId: "map_a", task: "집", member: "builder" });
+        await callTool(extra, "assign_map_agent", { mapId: "map_b", task: "집", member: "builder" });
+        const first = await callTool(extra, "wait_agents", {});
+        reasons.push(String(first.reason));
+        const states = (first.agents as { agentId: string; state: string }[]).map(agent => agent.state).sort();
+        expect(states).toEqual(["실행 중", "완료"]);
+        releaseB();
+        const second = await callTool(extra, "wait_agents", {});
+        reasons.push(String(second.reason));
+        await callTool(extra, "finish", { report: "끝" });
+        return doneWith(req.project);
+      }
+      if (req.mapIds[0] === "map_b") await gateB;
+      return doneWith(built(req.project, req.mapIds[0]!, `${req.mapIds[0]} 지음`), [`maps.${req.mapIds[0]}`]);
+    };
+    await runPiTeam(request(seeded()), { runAgent: runAgent as RunPiTeamOptions["runAgent"] });
+    expect(reasons).toEqual(["agent_finished", "completed"]);
+  });
+
   // 깨질 것: finish 가 진행 중 배정을 못 본 채 끝나면 팀장 보고가 아직 없는 결과를 말한다.
   it("finish 는 진행 중인 배정이 있으면 거절한다", async () => {
     const errors: string[] = [];

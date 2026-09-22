@@ -1,17 +1,22 @@
 /* Loaded with the editor AI shell, never dependent on opening the database. */
 .ai-activity-toolbar { align-items: center; display: flex; flex: 0 0 auto; gap: 6px; justify-content: space-between; padding: 2px 12px; }
-.ai-activity-setting { display: flex; gap: 6px; font: 12px/1.5 var(--font-ui); color: var(--text-2); padding: 0; min-width: 0; }
-.ai-activity-setting-heading { display: none; }
-.ai-activity-level-buttons { align-items: center; display: flex; gap: 2px; border: 1px solid var(--border-subtle); border-radius: 999px; padding: 2px; background: var(--bg-inset); }
-.ai-activity-level-buttons button { align-items: center; display: inline-flex; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--text-3); cursor: pointer; min-height: 24px; padding: 0 5px; }
-.ai-activity-level-buttons button[aria-pressed="true"] { color: var(--accent); background: var(--bg-raised); border-color: var(--accent); font-weight: 600; }
-.ai-activity-level-buttons button:hover { color: var(--text-1); }
-.ai-activity-level-buttons .ai-deck-icon { flex: none; }
+.ai-activity-setting { position: relative; font: 12px/1.5 var(--font-ui); color: var(--text-2); min-width: 0; }
+.ai-activity-setting-summary { align-items: center; display: inline-flex; gap: 5px; list-style: none; cursor: pointer; border: 1px solid var(--border-subtle); border-radius: 999px; background: var(--bg-inset); color: var(--text-2); min-height: 24px; padding: 0 9px; user-select: none; }
+.ai-activity-setting-summary::-webkit-details-marker { display: none; }
+.ai-activity-setting-summary:hover { color: var(--text-1); }
+.ai-activity-setting-summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.ai-activity-setting-summary .ai-deck-icon:last-child { width: 12px; height: 12px; }
+.ai-activity-setting-current { color: var(--text-1); font-weight: 600; }
+.ai-activity-setting[open] .ai-activity-setting-summary { border-color: var(--accent); }
+.ai-activity-setting-panel { position: absolute; z-index: 20; top: calc(100% + 4px); left: 0; display: flex; flex-direction: column; gap: 6px; min-width: 190px; padding: 6px; border: 1px solid var(--border-default); border-radius: var(--radius-s); background: var(--bg-raised); box-shadow: var(--shadow-pop); }
+.ai-activity-level-buttons { display: flex; flex-direction: column; gap: 2px; }
+.ai-activity-level-buttons button, .ai-live-canvas-toggle { align-items: center; display: flex; gap: 8px; width: 100%; border: 1px solid transparent; border-radius: var(--radius-s); background: transparent; color: var(--text-2); cursor: pointer; min-height: 28px; padding: 0 8px; font: inherit; text-align: left; }
+.ai-activity-level-buttons button[aria-pressed="true"] { color: var(--accent); background: var(--accent-muted); font-weight: 600; }
+.ai-activity-level-buttons button:hover, .ai-live-canvas-toggle:hover { color: var(--text-1); background: var(--bg-inset); }
+.ai-activity-level-buttons .ai-deck-icon, .ai-live-canvas-toggle .ai-deck-icon { flex: none; }
 .ai-activity-level-buttons button:focus-visible, .ai-live-canvas-toggle:focus-visible, .ai-activity-expand:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.ai-live-canvas-toggle { align-items: center; display: inline-flex; border: 1px solid var(--border-subtle); border-radius: 999px; background: var(--bg-inset); color: var(--text-3); cursor: pointer; min-height: 24px; padding: 0 5px; }
-.ai-live-canvas-toggle[aria-pressed="true"] { color: var(--accent); background: var(--bg-raised); border-color: var(--accent); }
-.ai-live-canvas-toggle:hover { color: var(--text-1); }
-.ai-live-canvas-toggle .ai-deck-icon { flex: none; }
+.ai-live-canvas-toggle { border-top: 1px solid var(--border-subtle); border-radius: 0 0 var(--radius-s) var(--radius-s); padding-top: 4px; }
+.ai-live-canvas-toggle[aria-pressed="true"] { color: var(--text-1); }
 .ai-activity-expand { display: inline-flex; align-items: center; gap: 5px; padding: 5px 9px; border: 1px solid var(--border-default); border-radius: var(--radius-s); color: var(--accent); background: var(--bg-raised); font: 12px/1.5 var(--font-ui); cursor: pointer; }
 .ai-activity-expand:hover { background: var(--accent-muted); }
 .ai-activity-history { color: var(--text-2); font: 12px/1.5 var(--font-ui); }

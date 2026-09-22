@@ -22,10 +22,9 @@ import {
 import { mapBundleSpill, mergeMapBundles } from "@/ai/piAgent/mapBundle";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
-import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
-import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { authorMergedSpatialProposal } from "@/editor/tools/spatialToolState";
 import type { LaneGhostSink } from "./aiLaneGhost";
 
@@ -261,8 +260,7 @@ export function createLaneManager(options: LaneManagerOptions = {}): LaneManager
     const applied = await applyProposedProject(merged.project, {
       // 기준은 «지금» 으로 새로 잡는다. 제안 자체가 지금 위에 얹힌 것이므로 전체 등가 기준을
       // 그대로 요구하면 이 레인이 방금 읽은 그 기준과 같아 통과한다. 묶음 충돌은 위에서 이미 걸렀다.
-      base: captureProposalBase(current),
-      baseline: new AuthoredProjectBaseline(current),
+      ...captureApplyAuthority(current),
       source: "agent",
       agentName: lane.spec.agentLabel,
       summary: `${lane.spec.label} — ${lane.spec.agentLabel}`,

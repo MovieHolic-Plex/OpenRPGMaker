@@ -3,7 +3,7 @@ import { el } from "@/util/dom";
 import { activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
 import { bindActivityLevel, createActivityLevelControl, getActivityLevel } from "./aiActivityPreference";
-import { toolLabel } from "./aiToolLabels";
+import { toolGroup, toolLabel } from "./aiToolLabels";
 
 export interface ActivityView { root: HTMLElement; update(trace: ActivityTrace | undefined, actor?: string): void }
 const clock = (ms: number): string => `${Math.floor(Math.max(0, ms) / 60000).toString().padStart(2, "0")}:${Math.floor(Math.max(0, ms) / 1000 % 60).toString().padStart(2, "0")}`;
@@ -85,7 +85,9 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     if (level === "brief") {
       const latestPhase = rows.filter(e => e.name === "run.phase").at(-1)?.id;
       const latestSave = rows.filter(e => e.name.startsWith("save.")).at(-1)?.id;
-      rows = rows.filter(e => (e.name !== "run.phase" || e.id === latestPhase) && (!e.name.startsWith("save.") || e.id === latestSave));
+      // 체크포인트 반영 성공은 쓰기마다 한 줄씩 쌓이는 배관 소식이다 — 실패만 남긴다.
+      rows = rows.filter(e => (e.name !== "run.phase" || e.id === latestPhase) && (!e.name.startsWith("save.") || e.id === latestSave)
+        && !(e.name === "checkpoint.apply" && e.status !== "error"));
       // Merge adjacent successful repetitions; keep failures and active calls individually visible.
       const grouped: ActivityEntry[] = [];
       const counts = new Map<string, number>();
@@ -98,9 +100,14 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       }
       const active = grouped.filter(e => e.status === "running");
       const completed = grouped.filter(e => e.status !== "running");
-      const illustrated = completed.filter(e => e.visuals?.length).slice(-3);
+      // 그림은 가장 최근 한 장만 — 좁은 패널에 변경 전/초안 쌍이 세 번 쌓이면 대화가 그림에 묻힌다.
+      // 조회 도구(화면 이동·영역 읽기)의 「확인한 모습」보다 실제로 바꾼 그림을 먼저 고른다.
+      const pictured = completed.filter(e => e.visuals?.length);
+      const changedPicture = pictured.filter(e => e.kind !== "tool" || toolGroup(e.name) !== "inspect");
+      const illustrated = (changedPicture.length ? changedPicture : pictured).slice(-1);
       rows = illustrated.length ? [...illustrated, ...completed.filter(e => !e.visuals?.length).slice(-1), ...active.slice(-3)].sort((a, b) => a.at - b.at) : [...completed.slice(-Math.max(1, 4 - active.length)), ...active.slice(-3)];
     } else if (level === "trace") rows = rows.filter(e => (!selectedActor || actor || e.actor === selectedActor) && (severity === "all" || (severity === "tool" ? e.kind === "tool" : e.status === "error")) && (!query || entrySearchText(e).includes(query)));
+    const soloActor = new Set(candidates.map(e => e.actor).filter(id => id !== "system")).size <= 1;
     const total = rows.length;
     if (level !== "brief") rows = rows.slice(-shown);
     more.hidden = level === "brief" || total <= shown;
@@ -108,15 +115,18 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     const keep = new Set<HTMLElement>();
     let previousRow: HTMLElement | null = null;
     for (const entry of rows) {
-      const signature = `${level}:${entry.status}:${entry.endedAt}:${entry.summary}:${entry.at}:${entry.visuals?.map(v => v.id).join(",")}`;
+      const signature = `${level}:${soloActor}:${entry.status}:${entry.endedAt}:${entry.summary}:${entry.at}:${entry.visuals?.map(v => v.id).join(",")}`;
       let row = existing.get(entry.id);
       if (!row || row.dataset.signature !== signature) {
         const mark = entry.status === "running" ? "◌" : entry.status === "ok" ? "✓" : entry.status === "error" ? "!" : "·";
         const text = level === "trace" ? `${entry.name} · ${entry.summary}` : `${entry.kind === "agent_done" && level === "brief" ? (entry.status === "error" ? "작업 실패" : "맡은 작업 완료") : activityText(label(entry), level === "brief" ? 140 : 1000)}${entry.kind === "tool" ? ` · ${entry.status === "running" ? "실행 중" : entry.status === "error" ? "실패" : entry.status === "info" ? "종료 응답 없음" : /^\d+건/.test(entry.summary) ? entry.summary : "완료"}` : ""}`;
         const heading = el("div", { class: "ai-activity-entry-title", children: [el("span", { class: "ai-activity-mark", text: mark, attrs: { "aria-hidden": "true" } }), el("span", { text })] });
-        const detail = `${actorLabel(current, entry.actor)}${entry.durationMs === undefined ? "" : ` · ${(entry.durationMs / 1000).toFixed(2)}초`}`;
+        // 담당이 하나뿐이면 행마다 같은 이름(「시공」)을 되풀이하지 않는다. 0.1초 미만은 시간을 적지 않는다(「0.00초」).
+        const who = level === "brief" && soloActor ? "" : actorLabel(current, entry.actor);
+        const took = entry.durationMs === undefined || (level === "brief" && entry.durationMs < 100) ? "" : `${(entry.durationMs / 1000).toFixed(level === "brief" ? 1 : 2)}초`;
+        const detail = [who, took].filter(Boolean).join(" · ");
         let next: HTMLElement;
-        if (level === "brief") next = el("div", { children: [heading, el("small", { text: detail })] });
+        if (level === "brief") next = el("div", { children: detail ? [heading, el("small", { text: detail })] : [heading] });
         else {
           const summary = el("summary", { children: [heading, el("small", { text: `${clock(entry.at - current.startedAt)} · ${detail}` })] });
           if (level === "trace") {

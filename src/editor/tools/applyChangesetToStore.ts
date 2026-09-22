@@ -14,7 +14,7 @@ import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/projec
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { canonicalJsonString } from "@/project/persistence/core/canonicalJson";
-import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
+import { AuthoredProjectBaseline, authoredIdentity, contentIdentity, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
@@ -222,11 +222,58 @@ function proposalContent(project: Project): string {
   return canonicalJsonString(JSON.parse(JSON.stringify({ ...project, world: undefined })));
 }
 
+/**
+ * 한 동기 구간 안에서만 같은 객체의 정체성 문자열을 한 번만 만든다.
+ *
+ * 왜(2026-09-23 실측, 34.9 MB 프로젝트): 체크포인트 하나가 같은 객체를 두고 proposalContent·
+ * authoredIdentity·contentIdentity 를 겹쳐 계산했다 — 한 번에 0.5 s 씩 메인 스레드가 멈췄다.
+ *
+ * 구간을 넘겨 기억하지 않는다: 사람은 세대를 올리지 않고 객체를 제자리에서 고칠 수 있고
+ * (aiMutationApplyAccounting «live content changes without a generation increment»), 그걸
+ * 잡는 게 바로 stale-base 검사다. 기억을 세대에 묶었더니 그 편집 위로 옛 제안이 적용됐다.
+ */
+interface IdentityMemo { content?: string; authored?: string; complete?: string }
+let identityScope: WeakMap<Project, IdentityMemo> | null = null;
+function withIdentityScope<T>(run: () => T): T {
+  if (identityScope) return run();
+  identityScope = new WeakMap();
+  try { return run(); } finally { identityScope = null; }
+}
+function memoOf(project: Project): IdentityMemo | null {
+  if (!identityScope) return null;
+  let memo = identityScope.get(project);
+  if (!memo) identityScope.set(project, memo = {});
+  return memo;
+}
+function proposalContentOf(project: Project): string {
+  const memo = memoOf(project);
+  return memo ? (memo.content ??= proposalContent(project)) : proposalContent(project);
+}
+const storeIdentities: ProjectIdentitySource = {
+  authored: project => {
+    const memo = memoOf(project);
+    return memo ? (memo.authored ??= authoredIdentity(project)) : authoredIdentity(project);
+  },
+  complete: project => {
+    const memo = memoOf(project);
+    return memo ? (memo.complete ??= contentIdentity(project)) : contentIdentity(project);
+  },
+};
+
+export function captureAuthoredBaseline(project: Project): AuthoredProjectBaseline {
+  return new AuthoredProjectBaseline(project, storeIdentities);
+}
+
 export function captureProposalBase(project: Project): ProposalBase {
   return Object.freeze({
     version: store.getVersionToken(), identity: JSON.stringify(store.getProjectIdentity()),
-    content: proposalContent(project), world: canonicalJsonString(JSON.parse(JSON.stringify(project.world ?? null))),
+    content: proposalContentOf(project), world: canonicalJsonString(JSON.parse(JSON.stringify(project.world ?? null))),
   });
+}
+
+/** 적용 권위(기준 + 초안 기준선)를 한 번에 잡는다. 둘을 따로 잡으면 같은 직렬화를 두 번 한다. */
+export function captureApplyAuthority(project: Project): { base: ProposalBase; baseline: AuthoredProjectBaseline } {
+  return withIdentityScope(() => ({ base: captureProposalBase(project), baseline: captureAuthoredBaseline(project) }));
 }
 
 function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boolean {
@@ -236,7 +283,7 @@ function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boole
   // Compare authored values even for unchanged counters: save reconciliation and
   // detached callers do not necessarily share the current object. No-op updates
   // and our own saves remain valid; unrelated human edits never refresh the base.
-  return proposalContent(current) === base.content
+  return proposalContentOf(current) === base.content
     && (!resetProject || canonicalJsonString(JSON.parse(JSON.stringify(current.world ?? null))) === base.world);
 }
 
@@ -301,11 +348,13 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
-  if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
+  const before = store.getCurrent();
+  const authority = withIdentityScope(() => !isProposalBaseCurrent(options.base, options.resetProject === true) ? "stale-base"
+    : !options.baseline.matches(before, options.resetProject === true, storeIdentities) ? "stale-baseline" : null);
+  if (authority === "stale-base") {
     return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
   }
-  const before = store.getCurrent();
-  if (!options.baseline.matches(before, options.resetProject === true)) {
+  if (authority === "stale-baseline") {
     const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
     return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
   }

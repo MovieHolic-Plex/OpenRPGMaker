@@ -101,7 +101,7 @@ export function buildToolCapabilityIndex(tools: readonly ToolDefinition[] = acti
     "",
     RULE_HEADING,
     "1. 목록에 있는 이름은 전부 호출 가능한 실제 기능이다.",
-    "2. 없는 스키마는 find_tools(query)로 찾고 다음 라운드에 호출한다. 빈 결과면 일반 조수는 전체 카탈로그로 복귀한다.",
+    "2. 없는 스키마는 find_tools(query)로 찾고 다음 라운드에 호출한다. 빈 결과면 다른 기능어나 영문 툴 이름으로 다시 찾는다.",
     "3. 목록에 있는 기능을 \"그 기능이 없습니다\"·\"지원하지 않습니다\"라고 보고하거나 work item 을 skip 하는 것은 결함이다 — 실제 도구 정의와 실행 결과를 확인한다.",
     "4. 단, UX 정책의 진짜 엔진 한계(3D, 외부 API/플러그인, 실제 배포 미지원)는 그대로다. 실시간 액션 전투는 set_action_combat과 make_action_enemy로 지원한다.",
   );
