@@ -191,6 +191,23 @@
   padding: 0 12px !important;
 }
 
+/* 확인 줄은 푸터 버튼과 같은 52px 줄에 있으면 폭이 0으로 줄고 선택지가 잘린다.
+   그때 닫기는 화면상 아무 일도 안 한 것처럼 보인다. 프롬프트가 있을 때만 줄을 늘린다. */
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer:has(.database-modal-dirty-prompt) {
+  align-items: stretch;
+  flex: 0 0 auto !important;
+  flex-wrap: wrap;
+  height: auto !important;
+  min-height: 52px !important;
+  padding-bottom: 8px !important;
+  padding-top: 8px !important;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer:has(.database-modal-dirty-prompt) .database-modal-dirty-prompt-region {
+  flex: 1 0 100%;
+  order: -1;
+}
+
 /* container query wins when supported; media fallback below */
 @container db-modal (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs {
