@@ -118,7 +118,7 @@
 - The float deck stands just inside those tracks (`--ai-deck-inset`), never over
   them, and stays within the edge-flush tolerance that makes the occlusion model
   read it as an edge column.
-- Ctrl+wheel over the canvas steps the existing 1/2/3/4/6/8 zoom marks about the
+- Ctrl+wheel over the canvas steps the existing 0.25/0.5/1/2/3/4/6/8 zoom marks about the
   pointer on Linux, Windows and macOS (including Ctrl-style trackpad pinch).
   Unmodified wheel remains pan; Command-only wheel is not editor zoom. Accepted
   Ctrl gestures suppress page zoom, including at limits. No animated zoom.
@@ -1012,7 +1012,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Map editor**: Phaser canvas on a 16×16 logical grid; `image-rendering: pixelated`, nearest-neighbor.
 - **Grid**: grid lines are overlays (`--pixel-grid`), toggleable, default on in Edit mode.
 - **Overlays**: collision, event, start position, hover preview — tokenized, visually distinct.
-- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top`. Standard/expert keep map-save/build behind the ⋯ gate.
+- **Zoom**: steps `0.25, 0.5, 1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top` and shows `1x 2x 4x` until the current scale is outside that set. Standard/expert keep map-save/build behind the ⋯ gate.
 
 ### Database & resource modals
 

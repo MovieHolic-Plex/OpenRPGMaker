@@ -26,7 +26,8 @@ export type AutoConnectMode = boolean;
  */
 export type ClusterAssistMode = boolean;
 export type ActivePaletteStamp = PaletteStamp | null;
-export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
+/** 맵 캔버스 배율. 0.25·0.5 는 넓은 맵을 한눈에 보는 축소이고, 상한 8 은 픽셀 편집이다. */
+export const EDITOR_ZOOM_LEVELS = [0.25, 0.5, 1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
 export const EDITOR_BRUSH_SIZES = [1, 2, 3, 4] as const;
 export type EditorBrushSize = typeof EDITOR_BRUSH_SIZES[number];
