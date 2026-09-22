@@ -380,3 +380,14 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 원형의 꽃 등 필요 없는 장식은 활동에 자동 동반하지 않는다. 활동을 바꾸는 fallback도 없다.
 지역 revision6, 공용 문서 v6(33 MD/22이미지), 정본 revision12 저장/재조회.
 좌표 검사15종과 활동/세탁/부두/기존 밭/작업대 변조5종의 근거: `verify-shots/prop-purpose/`.
+
+### 공동 공간·정원 개정7 (2026-09-23)
+
+집의 작업 소품 이외에 공동 급수·공지·길 안내·정원·환대·영역 구분을 명시한다.
+`civic-programs.json`의 장소별 anchor/purpose/near를 `village-civic-props.mjs`가 완전한 부품으로 배치한다.
+우물·실제 밭·부두·길·집과의 관계, 부품 사이 거리, 실제 기준 대상의 배열, 사용칸을 검사한다.
+벽등만 빈 상위+하위 벽42..47을 허용하고 문 열 ±1을 피한다. 일반 소품 하위240은 유지한다.
+산촌18·절벽18·포구24개 추가, 세 마을 전체25종 사용. 하위와 기존 상위 타일을 보존했다.
+지역 revision7 / 공용 AI 용도 civic-v7(38 MD·25이미지·18종 오류), 정본 revision13 재오픈 전체 일치.
+새/기존 프로젝트 공급과 저자 편집 보존·브라우저 근거는 `verify-shots/village-civic/` 및 `verify-shots/village-diversity/`.
+이는 외관 저작이며 상점·우편·NPC 생활 이벤트·동적 조명은 추가하지 않았다.

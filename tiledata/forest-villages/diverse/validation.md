@@ -675,3 +675,184 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
 ```
 
 ![왼쪽 정상, 오른쪽 오류](images/prop-purpose-anchor-missing.png)
+
+## civic-anchor-missing
+```json
+{
+  "input": {
+    "code": "civic-anchor-missing",
+    "mapId": "reed-bay-village",
+    "x": 42,
+    "y": 24,
+    "layer": "upper",
+    "tile": 2639,
+    "replacement": -1,
+    "errorX": 44,
+    "errorY": 26
+  },
+  "result": {
+    "valid": false,
+    "mapId": "reed-bay-village",
+    "totalErrors": 4,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 42,
+        "y": 24,
+        "layer": "upper",
+        "expected": 2639,
+        "actual": -1
+      },
+      {
+        "code": "civic-part-missing",
+        "x": 42,
+        "y": 24
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 44,
+        "y": 26
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 42,
+        "y": 27
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/civic-anchor-missing.png)
+
+## civic-use-blocked
+```json
+{
+  "input": {
+    "code": "civic-use-blocked",
+    "mapId": "reed-bay-village",
+    "x": 41,
+    "y": 24,
+    "layer": "upper",
+    "tile": -1,
+    "replacement": 237
+  },
+  "result": {
+    "valid": false,
+    "mapId": "reed-bay-village",
+    "totalErrors": 4,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 41,
+        "y": 24,
+        "layer": "upper",
+        "expected": -1,
+        "actual": 237
+      },
+      {
+        "code": "unowned-prop",
+        "x": 41,
+        "y": 24
+      },
+      {
+        "code": "blocked-entrance",
+        "x": 41,
+        "y": 24,
+        "role": "civic-use"
+      },
+      {
+        "code": "civic-use-blocked",
+        "x": 41,
+        "y": 24,
+        "name": "낮은 돌 우물"
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/civic-use-blocked.png)
+
+## wall-light-backing
+```json
+{
+  "input": {
+    "code": "wall-light-backing",
+    "mapId": "reed-bay-village",
+    "x": 36,
+    "y": 9,
+    "layer": "lower",
+    "tile": 46,
+    "replacement": 240
+  },
+  "result": {
+    "valid": false,
+    "mapId": "reed-bay-village",
+    "totalErrors": 10,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 36,
+        "y": 9,
+        "layer": "lower",
+        "expected": 46,
+        "actual": 240
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 43,
+        "y": 12
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 40,
+        "y": 12
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 46,
+        "y": 12
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 43,
+        "y": 14
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 49,
+        "y": 13
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 40,
+        "y": 16
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 46,
+        "y": 16
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 36,
+        "y": 9
+      },
+      {
+        "code": "wall-light-backing",
+        "x": 36,
+        "y": 9
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/wall-light-backing.png)

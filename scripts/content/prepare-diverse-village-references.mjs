@@ -24,8 +24,9 @@ doc("guide", "세 마을을 다르게 만드는 기준", `# 산촌·절벽·포�
 2. 같은 직선 길 양쪽에 집을 대칭 배치하지 않는다. 집마다 x,y를 지정하고 문앞을 길의 가지로 연결한다. 각 마을 문서에 좌표와 폭·높이를 고정 기록했다.
 3. 절벽의 내부·외부와 계단 착지칸을 먼저 확정한다. 다음 물→건물 전체 조립→길→숲 전체 조립→생활 소품→독립 나무 순서. 소품은 집 소유자와 생활 마당을 지정하고 묶음 전체의 접근을 검사한다. 실패한 묶음은 전체 철회한다.
 4. 집의 용도와 할 일을 명시하고 필요한 물건을 실제 기준 대상 가까이에 놓는다. 집 순서로 활동을 교대하지 않는다. 목재는 작업대, 어구는 실제 부두, 허수아비는 실제 밭에 연결한다. 중앙 무작위 배치는 금지한다. 구체적인 상대좌표와 충돌 조건은 생활 마당 문서에 있다. 큰 숲 내부는 검은 생략 수관, 열린 구역은 잔디·길·생활 소품이다.
-5. 입력/정답: 각 마을의 cliffs, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
-6. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
+5. 우물터·공지·길 안내·정원·환대도 목적이다. 공동 공간 문서와 civic 입력에 지정한 장소에만 완전한 소품을 더하고 실제 사용칸과 출입구 통행을 재검사한다.
+6. 입력/정답: 각 마을의 cliffs, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
+7. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
 
 ## 실제 구분
 ${c.plans.map((p) => `- ${p.name}: ${p.width}×${p.height}, 집 ${p.houses.length}채. ${p.note}.`).join("\n")}
@@ -43,7 +44,7 @@ ${p.note}. 시작점 (${p.start.x},${p.start.y}); 집 ${p.houses.length}채. 0�
 ![${p.name} 완성](image:${p.id})
 
 ## 입력 계획과 예약할 접근칸
-${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, yards:p.yards, activitySites:p.activitySites, entrance:p.entrance, crest:p.crest, patches:p.patches, clearings:p.clearings, cliffs: p.cliffs, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
+${block({ mapId: p.id, width: p.width, height: p.height, seed: p.seed, start: p.start, yards:p.yards, activitySites:p.activitySites, civicPlaces:p.civicPlaces, entrance:p.entrance, crest:p.crest, patches:p.patches, clearings:p.clearings, cliffs: p.cliffs, stairs: p.stairs, ponds: p.ponds, coast: p.coast ?? false, dock: p.dock ?? null, cave: p.cave ?? null, spine: p.spine, access: p.access })}
 
 ## 건물의 전체 하위·상위
 ${p.houses.map((h) => "### " + h.id + "\n" + block({ ...h, ...crop(m, h.x, h.y, h.w, h.h) })).join("\n")}
@@ -152,16 +153,18 @@ ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 `);
 let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village\n```\n\n3개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.\n" + block(validation.normal);
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
-doc("validation", "좌표 검증 · 정상/오류 15종", checks);
+doc("validation", "좌표 검증 · 정상/오류 18종", checks);
 doc('household-props','소품의 사용 목적 · 기준 대상과 동선',fs.readFileSync(dir+'/household-props.md','utf8'));
 doc('prop-programs','사용 목적 입력 사전 · 집별 활동과 부품 관계','# 활동별 부품·상대좌표·목적·기준 및 집별 명시 선언\n\n'+block(JSON.parse(fs.readFileSync(dir+'/prop-programs.json'))));
+doc('civic-props','공동 공간·정원·환대 · 실행 배치 규칙',fs.readFileSync(dir+'/civic-props.md','utf8'));
+for(const [id,zones] of Object.entries(JSON.parse(fs.readFileSync(dir+'/civic-programs.json'))))doc('civic-'+id,'장소별 소품 입력 · '+c.plans.find(p=>p.id===id).name,'# 공동 공간과 정원의 명시 배치 입력\n\n'+block(zones));
 doc('research-layout','최근 연구 적용 · 지형·숲·입구',fs.readFileSync(dir+'/research-layout.md','utf8'));
 const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png")).sort().map((n) => {
   const file = preview + "/" + n;
   execFileSync("convert", [dir + "/images/" + n, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
-const category = { id: "diverse-villages-purpose-v6", name: "다양한 마을 · 산촌·절벽·포구 (사용 목적 개정6)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 15종 오류 검사", documents: docs, images };
+const category = { id: "diverse-villages-civic-v7", name: "다양한 마을 · 산촌·절벽·포구 (공동 공간 개정7)", description: "서로 다른 새 지역 3개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 18종 오류 검사", documents: docs, images };
 if (docs.length > 64 || docs.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit");
 fs.writeFileSync(target, JSON.stringify([category]) + "\n");
 console.log({ documents: docs.length, images: images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });

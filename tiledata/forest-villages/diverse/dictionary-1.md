@@ -760,6 +760,76 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 202,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 202,
+    "sourceX": 22,
+    "sourceY": 6,
+    "pixelX": 352,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 6,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "과일박스 좌",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 203,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 203,
+    "sourceX": 23,
+    "sourceY": 6,
+    "pixelX": 368,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 6,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "과일박스 우",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
     "tile": 208,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -988,6 +1058,41 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "tileMeta": {
       "role": "prop",
       "label": "장작 더미",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 350,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 350,
+    "sourceX": 20,
+    "sourceY": 11,
+    "pixelX": 320,
+    "pixelY": 176,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 11,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "우편함",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",
@@ -1960,136 +2065,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "description": "숲 나무 확장 띠 — 둥근 덤불 3×3 칸의 (1,1). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
       "defaultLayer": "lower",
       "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 984,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 984,
-    "sourceX": 24,
-    "sourceY": 32,
-    "pixelX": 384,
-    "pixelY": 512,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 32,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "둥근 덤불",
-        "밑동"
-      ],
-      "label": "Tibo round-bush 2,1",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 둥근 덤불 3×3 칸의 (2,1). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 985,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 985,
-    "sourceX": 25,
-    "sourceY": 32,
-    "pixelX": 400,
-    "pixelY": 512,
-    "width": 16,
-    "height": 16,
-    "targetX": 25,
-    "targetY": 32,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "둥근 덤불",
-        "밑동"
-      ],
-      "label": "Tibo round-bush 3,1",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 둥근 덤불 3×3 칸의 (3,1). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 1008,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1008,
-    "sourceX": 18,
-    "sourceY": 33,
-    "pixelX": 288,
-    "pixelY": 528,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 33,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "활엽수",
-        "투명",
-        "수관"
-      ],
-      "label": "Tibo tree 1,2",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "star",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 활엽수 3×4 칸의 (1,2). 수관은 상위 레이어(★)로 사람 위에 그려지고 지나갈 수 있다.",
-      "defaultLayer": "upper",
-      "layerBacking": "none",
       "repeatability": "fixed"
     }
   }

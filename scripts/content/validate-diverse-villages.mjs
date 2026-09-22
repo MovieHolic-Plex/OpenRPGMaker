@@ -1,3 +1,4 @@
+import { inspectCivicProps } from "./lib/village-civic-props.mjs";
 import { inspectHouseholdProps } from "./lib/village-household-props.mjs";
 import { inspectVillageCliffs } from "./lib/village-cliffs.mjs";
 import fs from "node:fs";
@@ -30,6 +31,7 @@ async function validateVillageStudy(project, mapId) {
     }
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }
+  for(const e of inspectCivicProps(m,plan)) add(e.code,e.x,e.y);
   for(const e of inspectHouseholdProps(m,plan)) add(e.code,e.x,e.y);
   for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
   for (const j of plan.grassJoins) {
@@ -48,6 +50,7 @@ async function validateVillageStudy(project, mapId) {
     const seen = api.computeReachableCells(project, m, plan.start.x, plan.start.y);
     for(const a of plan.access.filter(a=>a.role==='map-entrance')) if(!seen.has(a.x+','+a.y)) add('map-entrance-blocked',a.x,a.y);
     for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add("blocked-entrance", a.x, a.y, { role: a.role });
+    for(const o of plan.placements.filter(o=>o.kind==='civic-prop'&&o.useAt))if(!seen.has(o.useAt.x+','+o.useAt.y))add('civic-use-blocked',o.useAt.x,o.useAt.y,{name:o.name});
     for (const o of plan.placements.filter((o2) => o2.kind === "prop")) if (!Array.from({ length: o.w * o.h }, (_, i) => [o.x + i % o.w, o.y + Math.floor(i / o.w)]).some(([x, y]) => api.isAdjacentOrOn(seen, x, y))) add("inaccessible-object", o.x, o.y, { name: o.name });
   });
   return { valid: totalErrors === 0, mapId, totalErrors, errors, truncated: totalErrors > errors.length, scope: "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring." };
@@ -98,6 +101,17 @@ function householdFaults() {
  {code:'scarecrow-without-garden',mapId,x:bed.x,y:bed.y,layer:'upper',tile:bed.upper[0],replacement:-1,errorX:scare.x,errorY:scare.y},
  {code:'prop-purpose-anchor-missing',mapId,x:table.x,y:table.y,layer:'upper',tile:table.upper[0],replacement:-1,errorX:wood.x,errorY:wood.y}];
 }
+function civicFaults() {
+ const mapId='reed-bay-village',plan=catalog.plans.find(p=>p.id===mapId),m=catalog.maps[mapId];
+ const well=plan.placements.find(o=>o.kind==='civic-prop'&&o.name==='낮은 돌 우물');
+ const jar=plan.placements.find(o=>o.kind==='civic-prop'&&o.placeId===well.placeId&&o.name==='항아리');
+ const lamp=plan.placements.find(o=>o.kind==='civic-prop'&&o.name==='벽걸이 등불');
+ return [
+  {code:'civic-anchor-missing',mapId,x:well.x,y:well.y,layer:'upper',tile:well.upper[0],replacement:-1,errorX:jar.x,errorY:jar.y},
+  {code:'civic-use-blocked',mapId,...well.useAt,layer:'upper',tile:m.upperTiles[well.useAt.y*m.width+well.useAt.x],replacement:237},
+  {code:'wall-light-backing',mapId,x:lamp.x,y:lamp.y,layer:'lower',tile:m.lowerTiles[lamp.y*m.width+lamp.x],replacement:240}
+ ];
+}
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [input, mapId] = process.argv.slice(2);
   if (!input || !mapId) throw Error("Usage: validate-diverse-villages.mjs project.json mapId");
@@ -106,6 +120,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (!result.valid) process.exitCode = 1;
 }
 export {
+  civicFaults,
   applyStudyFault,
   catalog,
   cliffFaults,

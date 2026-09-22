@@ -44,7 +44,7 @@ export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,re
  return {placed,yards};
 }
 export function inspectHouseholdProps(map,plan) {
- const errors=[],props=plan.placements.filter(o=>o.kind==='prop'),allowed=new Set(),ids=new Set(props.flatMap(o=>o.upper).filter(n=>n>=0));
+ const errors=[],props=plan.placements.filter(o=>o.kind==='prop'),allowed=new Set(),ids=new Set(plan.placements.filter(o=>['prop','civic-prop'].includes(o.kind)).flatMap(o=>o.upper).filter(n=>n>=0));
  for(const o of [...plan.placements,...plan.houses]) for(let y=o.y;y<o.y+o.h;y++)for(let x=o.x;x<o.x+o.w;x++)allowed.add(y*map.width+x);
  for(let i=0;i<map.upperTiles.length;i++)if(ids.has(map.upperTiles[i])&&!allowed.has(i))errors.push({code:'unowned-prop',x:i%map.width,y:Math.floor(i/map.width)});
  for(const o of props) {
