@@ -79,7 +79,7 @@
 
 재생성: `node scripts/content/build-slates-astra-v2.mjs`
 
-작성 파일은 이 생성기와 `verify-shots/slates-astra-v2/` 아래 JSON/PNG/보고서뿐이다. 커밋·stash·하위 에이전트·웹 조회·앱 코드 탐색을 하지 않았다. 작성자는 한 명이다. Supabase 프로젝트 `rpg-zzu-slates32-38e6`의 연결/최신 SHA 확인 및 최종 저장·재로드는 감독자가 담당한다. 이 보고서는 원격 저장 성공 근거가 아니다.
+작성 파일은 이 생성기와 `verify-shots/slates-astra-v2/` 아래 JSON/PNG/보고서뿐이다. 커밋·stash·하위 에이전트·웹 조회·앱 코드 탐색을 하지 않았다. 작성자는 한 명이다. LegacyDb 프로젝트 `rpg-zzu-slates32-38e6`의 연결/최신 SHA 확인 및 최종 저장·재로드는 감독자가 담당한다. 이 보고서는 원격 저장 성공 근거가 아니다.
 
 감독자의 그림 검토를 받은 뒤 작은 거리와 50×50 새 배치로 진행한다.
 

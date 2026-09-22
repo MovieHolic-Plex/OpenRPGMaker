@@ -43,9 +43,6 @@ export class FakeNode {
     return globalThis.document;
   }
 
-  get isConnected(): boolean {
-    return globalThis.document?.body.contains(this as unknown as Node) ?? false;
-  }
 
   /** True while attached under document.body (or any parent chain). */
   get isConnected(): boolean {
@@ -327,7 +324,7 @@ export class FakeElement extends FakeNode {
   }
   isContentEditable = false;
   readonly attrs: Record<string, string> = {};
-  readonly tagName: string;
+  tagName: string;
   /** HTMLElement 호환 — 제안 모달 open()이 빈 host 가드에 사용. */
   get childElementCount(): number {
     return this.childNodes.filter((child) => child instanceof FakeElement).length;
@@ -855,6 +852,12 @@ function matchesSelector(element: FakeElement, selector: string): boolean {
   if (dataPresence) {
     const key = dataPresence.replace(/-([a-z])/gu, (_, ch: string) => ch.toUpperCase());
     return key in element.dataset || `data-${dataPresence}` in element.attrs;
+  }
+  if (simpleSelector.startsWith('[') && !simpleSelector.startsWith('[data-')) {
+    const generic = simpleSelector.match(/^\[([a-zA-Z-]+)=['"]?([^'"\]]+)['"]?\]$/u);
+    if (generic) return (element.getAttribute(generic[1] ?? '') ?? null) === (generic[2] ?? '');
+    const presence = simpleSelector.match(/^\[([a-zA-Z-]+)\]$/u);
+    if (presence) return element.getAttribute(presence[1] ?? '') !== null;
   }
   const dataAttr = simpleSelector.match(/^\[data-([a-z0-9-]+)=['"]?([^'"\]]*)['"]?\]$/iu);
   if (dataAttr) {

@@ -10,7 +10,7 @@ import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 // Pi 경로는 루프가 Bun 쪽에 있어 브라우저는 진행 이벤트만 받고, 마지막 `done` 에 결과
 // 프로젝트가 실린다. 적용은 브라우저의 커밋 게이트가 그대로 맡는다.
 
-import type { Project } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
 import type { PiMapDelta } from "./mapDelta";
 import type { PiTeamSpec } from "./teamSpec";
 
@@ -19,6 +19,7 @@ export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 export type PiAgentMode = "single" | "team";
 
 export interface PiAgentRequest {
+  readonly villageContract?: import("./villageContract").VillageContract;
   readonly applyMode?: PiApplyMode;
   /** 기본 single. team 이면 팀장 에이전트가 맵별 시공·검수 에이전트를 띄운다. */
   readonly mode?: PiAgentMode;
@@ -90,11 +91,15 @@ export const PI_AGENT_DELTA_FLUSH_MS = 1_000;
 
 export interface PiTeamAgentStats extends PiAgentStats {}
 
+export type PiCheckpointHeavyKey = "tilesets" | "database";
+
 export interface PiProjectCheckpoint {
   readonly project: Project;
   readonly label: string;
   readonly toolName: string;
   readonly spatialProof?: SpatialToolProof | null;
+  /** 이 키는 project 에서 뺐다. 받는 쪽이 직전 프로젝트의 같은 객체를 다시 붙인다. */
+  readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
 }
 export type PiAgentEvent = PiAgentEventPayload & { readonly at?: number };
 type PiAgentEventPayload =
@@ -181,13 +186,63 @@ export function changedProjectKeys(before: Project, after: Project): string[] {
     if (key === "maps") {
       const ids = new Set([...Object.keys(before.maps ?? {}), ...Object.keys(after.maps ?? {})]);
       for (const id of ids) {
-        if (JSON.stringify(before.maps?.[id]) !== JSON.stringify(after.maps?.[id])) out.push(`maps.${id}`);
+        const left = before.maps?.[id];
+        const right = after.maps?.[id];
+        if (left === right) continue;
+        if (mapContentChanged(left, right)) out.push(`maps.${id}`);
       }
       continue;
     }
     const a = (before as unknown as Record<string, unknown>)[key];
     const b = (after as unknown as Record<string, unknown>)[key];
+    if (a === b) continue;
     if (JSON.stringify(a) !== JSON.stringify(b)) out.push(key);
   }
   return out.sort();
+}
+
+function mapContentChanged(left: GameMap | undefined, right: GameMap | undefined): boolean {
+  if (left === right) return false;
+  if (!left || !right) return true;
+  const count = Math.max(left.lowerTiles.length, right.lowerTiles.length);
+  for (let index = 0; index < count; index += 1) {
+    if (left.lowerTiles[index] !== right.lowerTiles[index] || left.upperTiles?.[index] !== right.upperTiles?.[index]) return true;
+  }
+  return JSON.stringify(mapWithoutTileArrays(left)) !== JSON.stringify(mapWithoutTileArrays(right));
+}
+
+function mapWithoutTileArrays(map: GameMap): Record<string, unknown> {
+  const copy = { ...map } as Record<string, unknown>;
+  delete copy.lowerTiles;
+  delete copy.upperTiles;
+  return copy;
+}
+
+/** 체크포인트 줄에서 빼도 되는 무거운 키. 받는 쪽이 unchangedKeys 로 다시 붙인다. */
+export function slimCheckpointProject(project: Project, unchangedKeys: readonly PiCheckpointHeavyKey[]): Project {
+  if (unchangedKeys.length === 0) return project;
+  const next = { ...project };
+  for (const key of unchangedKeys) {
+    if (key === "tilesets") next.tilesets = {} as Project["tilesets"];
+    if (key === "database") next.database = {} as Project["database"];
+  }
+  return next;
+}
+
+export function restoreCheckpointProject(current: Project, incoming: Project, unchangedKeys: readonly PiCheckpointHeavyKey[] | undefined): Project {
+  if (!unchangedKeys?.length) return incoming;
+  const next = { ...incoming };
+  if (unchangedKeys.includes("tilesets")) next.tilesets = current.tilesets;
+  if (unchangedKeys.includes("database")) next.database = current.database;
+  return next;
+}
+
+/** 비교용 스냅샷. 타일셋·데이터베이스는 같은 객체를 공유해 매 도구 JSON 비교를 피한다. */
+export function snapshotProjectKeepingHeavy(project: Project): Project {
+  const tilesets = project.tilesets;
+  const database = project.database;
+  const cloned = structuredClone({ ...project, tilesets: undefined, database: undefined }) as Project;
+  cloned.tilesets = tilesets;
+  cloned.database = database;
+  return cloned;
 }

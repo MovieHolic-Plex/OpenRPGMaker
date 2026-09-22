@@ -4,7 +4,7 @@ import { createBlankProject } from "@/project/defaults";
 import type { Command, EventPage, Project } from "@/project/types";
 import { openEventEditor, screenshotEvidence } from "./eventEditorCertEvidence";
 import { expandEventConditions, expandEventMovementSection } from "./eventEditorExpandHelpers";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "output/evidence/event-editor-ux-progressive";
 
@@ -96,7 +96,7 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   await page.addInitScript(() => {
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
-  await seedProjectFromSupabaseCanonical(page, evidenceProject());
+  await seedProjectForEditor(page, evidenceProject());
 
   // Dismiss first-run coach marks / edit-lock / confirm overlays if present.
   const skipCoach = page.getByRole("button", { name: "건너뛰기" });

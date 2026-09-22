@@ -2,7 +2,7 @@
 
 ## Decisive finding
 
-The configured canonical project currently has **no shop**. Its NPC named `상인` is dialogue-only. I played the actual Supabase-loaded project through the shipping player, triggered that NPC with the keyboard, advanced both authored messages, and returned to the field without any shop being mounted.
+The configured canonical project currently has **no shop**. Its NPC named `상인` is dialogue-only. I played the actual LegacyDb-loaded project through the shipping player, triggered that NPC with the keyboard, advanced both authored messages, and returned to the field without any shop being mounted.
 
 This establishes a **project/content mismatch**, not a reproduced equipment-comparison rendering defect. It would be false to claim that compact CSS, legacy item goods, stale comparison wiring, or an equipment restriction caused the user's original shop symptom: there is no purchasable goods list in the configured snapshot to test. No replacement fixture or shop was authored.
 
@@ -12,7 +12,7 @@ This establishes a **project/content mismatch**, not a reproduced equipment-comp
 - Canonical project ID: `rpg-zzu-house-template-gallery`.
 - Canonical content title: `호수 마을`.
 - Runtime URL exercised: **http://127.0.0.1:9841/export-player/player.html**.
-- The isolated browser's `/__runtime-qa/project.json` response contained the unchanged result of main's `loadProjectFromSupabase`, including its normal maps-table overlay and migration path. `canonical-project.json` is that data, not an authored fixture.
+- The isolated browser's `/__runtime-qa/project.json` response contained the unchanged result of main's `loadProjectFromLegacyDb`, including its normal maps-table overlay and migration path. `canonical-project.json` is that data, not an authored fixture.
 - Loaded snapshot SHA-256: `f8723892939ac574bc7c834429144a735181339e80c0e39a170ceba6b68b489a`.
 - Main source HEAD observed: `d79e602eacbb8cc827c690e8e20388a6613892f1`.
 - Separate read-only raw-row verification: `updated_at=2026-09-08T05:44:00.402+00:00`, `current_sha256=60f1b9d1070aa5091e45967f65edcff4fb5d406e4cd02720795ec83ebd4f8e06`. This raw wire hash is not the normalized/overlay snapshot hash above.
@@ -21,7 +21,7 @@ This establishes a **project/content mismatch**, not a reproduced equipment-comp
 
 ## Concrete reproduction
 
-1. Boot the shipping player with the configured Supabase snapshot in a new isolated context, QA instrumentation enabled, and private save namespace `st_01a07f83:live-readonly`.
+1. Boot the shipping player with the configured LegacyDb snapshot in a new isolated context, QA instrumentation enabled, and private save namespace `st_01a07f83:live-readonly`.
 2. Press **Enter** on `title-new-game`.
 3. Start map: `map_lake_village` (50x50), authored start `(18,24)`. The shipping startup validator itself repairs this impassable start to `(17,24)`; this was not a project edit by the probe.
 4. Merchant: `ev_village_42_map_lake_village_3`, page `ev_village_42_map_lake_village_3_p0`, authored/runtime observed position `(30,26)`, action trigger.

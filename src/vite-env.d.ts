@@ -12,18 +12,14 @@ interface ImportMetaEnv {
   // 앞의 둘은 키를 클라이언트 번들에 인라인하던 통로이고, 마지막 것은 에디터의 인증
   // 모드를 정해 AI 를 반복적으로 죽인 통로다(llmClient.defaultAiConfig 주석 참고).
   // 되살리지 말 것 — 게이트웨이가 필요한 소비자는 설정을 직접 주입한다.
-  // 레거시 — 클라이언트 번들에 anon 키를 인라인한다. VITE_SUPABASE_USE_PROXY=1 을 쓰면
-  // 서버 전용 SUPABASE_ANON_KEY 를 /supabase 프록시가 주입하므로 이 값이 필요 없다.
-  readonly VITE_SUPABASE_ANON_KEY?: string;
-  readonly VITE_SUPABASE_PROJECT_ID?: string;
-  readonly VITE_SUPABASE_URL?: string;
-  /** "1"/"true" 면 브라우저가 항상 같은-오리진 /supabase 로 나가고 자격증명은 서버가 붙인다. */
-  readonly VITE_SUPABASE_USE_PROXY?: string;
+
   /** AI 활동 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
   readonly VITE_AI_ACTIVITY_DISK_MIRROR?: string;
   /** 편집 행위 로그 디스크 미러. 미지정=첫 요청으로 판별, "0"=빌드에서 완전히 제거. */
   readonly VITE_EDIT_ACTIVITY_DISK_MIRROR?: string;
   readonly VITE_TOUCH_CONTROLS?: string;
+  /** CC0 BGM 카탈로그 CDN 베이스. 미설정이면 같은 오리진 로컬 경로로 떨어진다. */
+  readonly VITE_BGM_CDN_BASE?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
 }
@@ -79,7 +75,7 @@ interface Window {
     apply: () => void;
     discard: () => void;
   };
-  // AI 활동 로그 링버퍼 (채팅·영역 등) — localStorage + optional Supabase.
+  // AI 활동 로그 링버퍼 (채팅·영역 등) — localStorage + optional project storage.
   __oprnAiActivityLog?: unknown;
   __oprnListAiActivityLogs?: (limit?: number) => readonly unknown[];
   __oprnGetAiActivityLog?: (id: string) => unknown;

@@ -270,7 +270,7 @@
  src/project/monsterMetadata.ts                     |    98 +
  src/project/projectCommitLog.ts                    |     3 +
  src/project/store.ts                               |    11 +-
- src/project/supabaseProjectSync.ts                 |     8 +
+ src/project/legacyDbProjectSync.ts                 |     8 +
  src/project/types/base.ts                          |     9 +
  src/project/types/project.ts                       |     4 +
  src/project/webExport.ts                           |     1 +

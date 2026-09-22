@@ -26,9 +26,9 @@ type ChatResult = import("@/ai/llmClient").ChatResult;
 type ToolEvent = Extract<import("@/ai/assistantSession").SessionEvent, { type: "tool_call" }>;
 
 function installHermeticEnv(project: Project): void {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-  vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
   vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(project);

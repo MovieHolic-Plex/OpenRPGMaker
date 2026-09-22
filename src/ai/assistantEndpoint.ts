@@ -32,7 +32,7 @@ import { configForLiteModel, isProxyAuth, loadAiConfig, type AiConfig } from "./
 /**
  * AI 표면 식별자 — 사람이 에디터에서 직접 여는 AI 진입점.
  *
- * activityLogTypes.AiActivityChannel 과 값이 일부 겹치지만 별 타입이다: 그쪽은 Supabase
+ * activityLogTypes.AiActivityChannel 과 값이 일부 겹치지만 별 타입이다: 그쪽은 project storage
  * ai_activity_logs.channel 컬럼에 그대로 실리는 로깅 어휘라, 표면을 하나 늘리는 사정으로 DB 어휘가
  * 따라 늘어나면 안 된다.
  */
@@ -43,6 +43,8 @@ export type AiSurface =
   | "cluster"
   | "event-command"
   | "structure-kit"
+  | "world-canon-interview"
+  | "world-canon-body"
   | "tileset-analysis";
 
 /** 표면이 쓰는 모델 티어. 조수 설정의 감독 모델(supervisor) 또는 실행 모델(lite). */
@@ -87,6 +89,10 @@ const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   "cluster": { tier: "lite" },
   "event-command": { tier: "lite" },
   "structure-kit": { tier: "supervisor" },
+  // 세계관 인터뷰: 사람과 문장을 주고받으며 설정을 함께 채우는 감독 판단이라 supervisor + 고정 예산.
+  "world-canon-interview": { tier: "supervisor", maxTokens: 4096 },
+  // 세계관 본문 초안/이어쓰기: 산출물이 장문 prose 라 인터뷰보다 예산을 크게 준다.
+  "world-canon-body": { tier: "supervisor", maxTokens: 8192 },
   "tileset-analysis": { tier: "supervisor", maxTokens: TILESET_ANALYSIS_MAX_TOKENS },
 };
 

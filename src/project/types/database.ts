@@ -1107,6 +1107,18 @@ export interface SystemRecords {
   /** Omitted means the legacy 320x240 viewport. */
   playResolution?: PlayResolution;
   /**
+   * 프로젝트 기본 카메라 배율. 생략하면 1(클래식).
+   *
+   * 왜 system 인가: 줌은 원래 연출 상태(session.camera.zoom, 이벤트 명령 m2-201)로만
+   * 존재했다. 그래서 고해상도 배경(1920x1080)을 1:1 로 쓰려면 맵마다 auto 이벤트를 심어
+   * 줌을 걸어야 했고, 새 맵에서는 1 로 돌아갔다. 기본값은 프로젝트가 정하고 연출은 그 위에
+   * 일시적으로 덮어쓰는 것이 맞다.
+   *
+   * playResolution 과의 관계: 해상도는 픽셀 밀도이고 시야는 배율이 정한다.
+   * 1440x1080 + 4.5 면 20x15 타일(320x240 과 동일 시야)에 배경이 1:1 로 맞는다.
+   */
+  cameraZoom?: number;
+  /**
    * 주인공의 **몸 크기**(타일, 발밑 앵커). 생략하면 1x1 — 기존 프로젝트와 동작이 같다.
    * 이벤트의 `EventPage.footprint` 와 같은 규약이다(2차 스펙 §9).
    */

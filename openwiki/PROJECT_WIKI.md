@@ -56,7 +56,7 @@ This is not the in-app user manual. It is the pre-edit context layer for agents.
    - CC0 SE catalog (635 sounds, in-repo assets, provisional labels): `openwiki/se-catalog.md`
    - Test and evidence strategy: `openwiki/testing.md`
    - Screenshot-only agent UI discovery pilot: `openwiki/ui-discovery-pilot.md`
-   - Community site (Next.js asset/game sharing, Supabase tables `openrpg_*`): `openwiki/community-site.md`
+   - Community site (Next.js asset/game sharing, PostgreSQL tables `openrpg_*`): `openwiki/community-site.md`
 4. Inspect the actual source files named by the focused page before editing.
 
 ## Project identity
@@ -117,11 +117,13 @@ Use this checklist before editing:
 - For UI work, verify through the browser surface and save screenshots or logs under `output/evidence` or `evidence`.
 - If the change reveals stale wiki guidance, update the wiki as part of the same work.
 
-## Supabase DB mandatory (see root `AGENTS.md`)
+## 프로젝트 정본 저장 (see root `AGENTS.md`)
 
-Root `AGENTS.md` hard rule: **do not finish map/event/demo/content work without Supabase save + reload proof.**  
-`blankProject` / `freshProject` / `dev-showcase` skip remote persistence — never treat those sessions as a complete deliverable.  
-Engine-only code changes and narrow unit-test fixtures are the only default exceptions.
+콘텐츠 작업은 Electron/팀 호스트의 SQLite 프로젝트에 저장한 뒤 같은 대상을 재로드해야 완료다.
+브리지 없는 preview·메모리·dev-showcase는 정본 저장을 대신하지 않는다.
+과거 기록은 오프라인 아카이브에서 복구한다. 외부 DB 연결은 사용하지 않는다. 현재 경로는
+[team-project-host.md](team-project-host.md), 제거 현황은 [storage-retirement.md](storage-retirement.md)를 따른다.
+순수 엔진 코드와 단위 테스트용 최소 fixture는 콘텐츠 저장 의무의 예외다.
 
 ## Desktop UI integration truth (2026-08-11)
 

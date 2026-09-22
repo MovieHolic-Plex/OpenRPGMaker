@@ -27,6 +27,8 @@ export const EDITOR_WELCOME_TESTIDS = {
   host: "editor-welcome",
   skip: "editor-welcome-skip",
   systemPresetError: "editor-welcome-system-preset-error",
+  aiNotice: "editor-welcome-ai-notice",
+  aiNoticeAction: "editor-welcome-ai-notice-action",
   promptInput: "editor-welcome-prompt-input",
   promptSubmit: "editor-welcome-prompt-submit",
   /** Poster button — featured first, then collapsed hidden presets. */
@@ -54,6 +56,16 @@ export type EditorWelcomeResult = {
 export type EditorWelcomeOptions = {
   /** Creates and verifies the preset project before either manual completion or AI handoff. */
   readonly applySystemPreset?: (plan: GenreBlankProjectSystemPresetPlan) => Promise<unknown>;
+  /**
+   * AI 로 초안을 만들 수 있는 상태인가. false 면 "만들기" 를 받지 않고 설정으로 안내한다.
+   *
+   * 왜 필요한가 (2026-09-22 실측): 브리핑은 AI 준비 여부를 보지 않았고, 미설정 상태에서
+   * "만들기" 를 누르면 채팅 패널이 "의도 읽는 중…" 에서 30초 넘게 멈췄다. 실패 토스트조차
+   * 뜨지 않아 초심자에게는 앱이 고장난 것으로 보인다. 없는 능력을 약속하지 않는다.
+   */
+  readonly canGenerate?: () => boolean;
+  /** AI 설정을 열어 준다. 안내 문구의 버튼이 부른다. */
+  readonly openAiSettings?: () => void;
 };
 
 export type ShouldPresentEditorWelcomeOptions = {
@@ -215,6 +227,13 @@ export function presentEditorWelcome(
     const startFreeText = (label: string): void => {
       const trimmed = label.trim();
       if (!trimmed || applyingSystemPreset) return;
+      // AI 가 없으면 보내지 않는다 — 보내면 "의도 읽는 중…" 에서 조용히 멈춘다(실측 30초+).
+      // 대신 왜 안 되는지와 어디를 눌러야 하는지를 같은 자리에 띄운다.
+      if (options.canGenerate && !options.canGenerate()) {
+        aiReadinessNotice.hidden = false;
+        return;
+      }
+      aiReadinessNotice.hidden = true;
       settle({
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
@@ -230,6 +249,26 @@ export function presentEditorWelcome(
       class: "editor-welcome-system-preset-error",
       attrs: { role: "alert", "aria-live": "polite", hidden: "" },
       dataset: { testid: EDITOR_WELCOME_TESTIDS.systemPresetError },
+    });
+
+    /**
+     * AI 가 준비되지 않았을 때 "만들기" 옆에 뜨는 안내. 문구는 **다음 행동**을 말한다 —
+     * "AI 설정이 필요합니다" 만으로는 초심자가 어디를 눌러야 하는지 알 수 없다.
+     */
+    const aiReadinessNotice = el("div", {
+      class: "editor-welcome-ai-notice",
+      attrs: { role: "status", "aria-live": "polite", hidden: "" },
+      dataset: { testid: EDITOR_WELCOME_TESTIDS.aiNotice },
+      children: [
+        el("span", { text: "AI 연결이 없어 초안을 만들 수 없습니다. 장르 카드의 ⚙ 로 AI 없이 시작할 수 있습니다." }),
+        el("button", {
+          class: "editor-welcome-ai-notice-action",
+          text: "AI 설정 열기",
+          attrs: { type: "button" },
+          dataset: { testid: EDITOR_WELCOME_TESTIDS.aiNoticeAction },
+          on: { click: () => options.openAiSettings?.() },
+        }),
+      ],
     });
 
     const startPreset = async (presetId: WelcomeGenrePresetId, label: string, autoSend: boolean): Promise<void> => {
@@ -439,6 +478,7 @@ export function presentEditorWelcome(
           class: "editor-welcome-prompt-row",
           children: [promptInput, submit],
         }),
+        aiReadinessNotice,
         cards,
         el("p", {
           class: "editor-welcome-note",

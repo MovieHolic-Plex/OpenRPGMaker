@@ -7,7 +7,7 @@
 ![저장된 소규모 마을](render/map-overview.png)
 
 - [네이티브 확대 지도](render/index.html) · [실제 에디터 설계서](editor-small-village-design.png)
-- Supabase project: `rpg-zzu-house-template-gallery`
+- LegacyDb project: `rpg-zzu-house-template-gallery`
 - 설계서: `small-village-dense`, 개정 1, 기준 크기 76×76
 - 지역: `small-village:region:dense`; 예시 occurrence: `small-village:example:20260913`
 - 맵: `spatial-geography:30:small-village:example:20260913`, 시드 20260913
@@ -19,7 +19,7 @@
 
 ## 저장과 실행 증거
 
-- [CAS 저장·전체 정규화 재로드 일치](supabase-proof.json)
+- [CAS 저장·전체 정규화 재로드 일치](legacy-db-proof.json)
 - [독립 DB 재조회: 서버 SHA·맵·공간 문서·그래픽 일치](final-remote-check.json)
 - [실제 에디터 부팅·원격 저장 활성화·맵 일치](editor-proof.json)
 - [지역 카드에서 설계서 열기·23/3 규칙·실제 26채 미리보기](editor-design-proof.json)

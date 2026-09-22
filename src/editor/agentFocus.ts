@@ -86,6 +86,7 @@ export function summarizeAcceptedAgentChanges(before: Project, after: Project): 
     const afterMap = after.maps[mapId];
     if (!afterMap) continue;
     const beforeMap = before.maps[mapId];
+    if (beforeMap === afterMap) continue;
     const focus = ensureFocus(focusByMap, mapId, order++);
     if (!beforeMap) {
       includeBounds(focus, fullMapBounds(afterMap));

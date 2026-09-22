@@ -1,3 +1,4 @@
+import { DEFAULT_WORLD_GEN_RULES, riverBandDepth } from "@/project/worldGenRules";
 // editor/tools/village/morphologyPlan.ts
 // 취락 형태 유형(morphology) 기반 마을 설계 — 순수 기하. 맵을 만지지 않는다.
 //
@@ -11,6 +12,8 @@
 // 가로 길엔 북쪽 줄이 길을 보고, 남쪽 줄은 뒷골목(Hintergasse)을 본다. 세로 길엔 양쪽 집이
 // 남쪽 문에서 짧은 옆길로 길에 붙는다.
 
+import { ToolError } from "../types";
+import { planVillageRiver, type RiverVillagePlan } from "./riverPlan";
 import { mulberry32, type Rng } from "@/util/rng";
 import type { HouseTemplate, Plaza, Point, Rect } from "./constants";
 
@@ -60,6 +63,7 @@ export interface MorphologyPlan {
   readonly plaza: Plaza;
   /** 녹지 안 연못(타원 fill). */
   readonly pond?: Rect;
+  readonly river?: RiverVillagePlan;
   /** 녹지·뒷마당 큰나무(2×2) 앵커. */
   readonly bigTrees: readonly Point[];
   readonly exits: readonly MorphologyExit[];
@@ -85,6 +89,7 @@ export interface MorphologyPlanArgs {
   /** 절벽 띠(고저차) — 집·필지·밭·옆길·골목 성장은 못 들어가고 큰길·링 길만 가로지른다(비탈이 된다). */
   readonly cliffBlocked?: ReadonlySet<number>;
   readonly roadWidth: number;
+  readonly riverWidth?: number;
 }
 
 /** 점유표 값. */
@@ -176,7 +181,9 @@ export function planVillageMorphology(args: MorphologyPlanArgs): MorphologyPlan 
   let commons: Rect;
   let plaza: Plaza;
   let pond: Rect | undefined;
+  let river: RiverVillagePlan | undefined;
   switch (args.morphology) {
+    case "river": ({ commons, plaza, river } = planRiverVillage(ctx)); break;
     case "street": ({ commons, plaza } = planStreetVillage(ctx)); break;
     case "green": ({ commons, plaza, pond } = planGreenVillage(ctx)); break;
     case "round": ({ commons, plaza, pond } = planRoundVillage(ctx)); break;
@@ -193,12 +200,60 @@ export function planVillageMorphology(args: MorphologyPlanArgs): MorphologyPlan 
     commons,
     plaza,
     ...(pond ? { pond } : {}),
+    ...(river ? { river } : {}),
     bigTrees: ctx.bigTrees,
     exits: ctx.exits,
     occupancy: grid.occ,
     mapWidth: args.mapWidth,
     notes: ctx.notes,
   };
+}
+
+/** Plan water first, then connected bank paths and plots on both banks. */
+function planRiverVillage(ctx: PlanCtx): { commons: Rect; plaza: Plaza; river: RiverVillagePlan } {
+  const { area, grid } = ctx;
+  const river = planVillageRiver(area, ctx.args.seed, ctx.args.riverWidth ?? riverBandDepth(Math.min(area.w, area.h), DEFAULT_WORLD_GEN_RULES.water));
+  for (const cell of river.cells) {
+    if (grid.get(cell.x, cell.y) === OCC.reserved || grid.get(cell.x, cell.y) === OCC.cliff) {
+      throw new ToolError("강 예정지에 기존 지형·건물이 있습니다. 빈 영역을 선택하세요.", { code: "village-river-conflict" });
+    }
+    grid.set(cell.x, cell.y, OCC.pond);
+  }
+  const width = clampInt(ctx.args.roadWidth, 2, 3) as 2 | 3;
+  const west = addRoad(ctx, connect4(river.westRoad), width, "main");
+  const east = addRoad(ctx, connect4(river.eastRoad), width, "main");
+  // The bridge is part of the road graph, while its lower water remains reserved.
+  for (const cell of river.bridge) grid.set(cell.x, cell.y, OCC.free);
+  addRoad(ctx, river.crossing, 1, "main");
+  const entry = river.westRoad[river.crossingY - area.y]!;
+  const commons = findFreeRect(ctx, { x: entry.x - 3, y: entry.y + 3 }, 3, 3, 8);
+  if (!commons) throw new ToolError("강변 쉼터를 둘 빈 땅이 없습니다.", { code: "village-river-capacity" });
+  grid.setRect(commons, OCC.commons);
+  const midpoint = river.bounds.x + Math.floor(river.bounds.w / 2);
+  const banks = [
+    { cells: west, side: "west" as const, limit: Math.ceil(ctx.args.maxHouses / 2), center: { x: entry.x - 6, y: entry.y } },
+    { cells: east, side: "east" as const, limit: ctx.args.maxHouses, center: { x: midpoint + 8, y: entry.y + 2 } },
+  ];
+  for (const bank of banks) {
+    const bankArea = bank.side === "west" ? { ...area, w: midpoint - area.x }
+      : { ...area, x: midpoint, w: area.x + area.w - midpoint };
+    const local: PlanCtx = { ...ctx, area: bankArea, args: { ...ctx.args, maxHouses: bank.limit } };
+    const rows = rowExtents(bank.cells);
+    planColumnBeside(local, y => bank.side === "west" ? rows.get(y)?.left : rows.get(y)?.right,
+      area.y + 2 + (bank.side === "east" ? 2 : 0), area.y + area.h - 2, bank.side, { back: [1, 2], verge: 0 });
+    growHousesOnRoads(local, bank.center);
+  }
+  if (ctx.args.maxHouses > 1 && !["west", "east"].every(side => ctx.houses.some(h => {
+    const row = Math.max(0, Math.min(area.h - 1, h.bbox.y - area.y));
+    const centerX = h.bbox.x + h.bbox.w / 2;
+    return side === "west" ? centerX < river.westRoad[row]!.x + 3 : centerX > river.eastRoad[row]!.x - 3;
+  }))) {
+    throw new ToolError("강 양쪽에 주택을 배치할 공간이 부족합니다.", { code: "village-river-capacity" });
+  }
+  if (countStrokeComponents(ctx.roads) !== 1) throw new ToolError("강변 길과 건널목이 연결되지 않았습니다.", { code: "village-river-access" });
+  ctx.exits.push({ id: "river-west-north", ...river.westRoad[0]! }, { id: "river-east-south", ...river.eastRoad[river.eastRoad.length - 1]! });
+  ctx.notes.push(`강변 수로 ${river.cells.length}칸, 다리 ${river.bridge.length}칸, 양안 주거`);
+  return { commons, plaza: { rect: commons, centerX: entry.x, centerRow: entry.y }, river };
 }
 
 /** 계획 길(옆길 제외)의 4-이웃 성분 수 — 1 이 정상. 막힌 칸(물·기존 집)이 큰길을 끊으면 2 이상. */
@@ -719,7 +774,15 @@ function growHousesOnRoads(ctx: PlanCtx, center: Point): number {
       let bbox: Rect;
       let parcel: Rect;
       let front: Point;
-      if (above) {
+      if (ctx.args.morphology === "river" && rng() < 0.8) {
+        // Bank paths run north–south. Place alongside them, then connect the south-facing door.
+        const west = rng() < 0.5;
+        const offset = 2 + Math.floor(rng() * 9);
+        bbox = { x: west ? anchor.x - template.w - offset : anchor.x + offset,
+          y: anchor.y - template.h + jitter(rng, 2), w: template.w, h: template.h };
+        front = { x: bbox.x + Math.floor(bbox.w / 2), y: bbox.y + bbox.h };
+        parcel = { x: bbox.x - 1, y: bbox.y - 1, w: bbox.w + 2, h: bbox.h + 2 };
+      } else if (above) {
         const gap = rng() < 0.6 ? 1 : 2;
         front = { x: anchor.x + jitter(rng, 1), y: anchor.y - gap };
         bbox = { x: front.x - Math.floor(template.w / 2), y: front.y - template.h, w: template.w, h: template.h };
@@ -742,7 +805,7 @@ function growHousesOnRoads(ctx: PlanCtx, center: Point): number {
         if (dist <= 14) neighbours += 1;
       }
       // 옆길을 지금 확보한다 — 길 아래 집은 문 앞에서 필지를 돌아 길에 붙는다(못 붙으면 후보 탈락).
-      const spur = planSpur(ctx, front, parcel, above ? 4 : 14);
+      const spur = planSpur(ctx, front, parcel, ctx.args.morphology === "river" ? 18 : above ? 4 : 14);
       if (!spur) continue;
       const sociability = ctx.houses.length === 0 ? 1 : Math.min(1, 0.35 + neighbours * 0.22);
       const centrality = 1 - 0.5 * Math.min(1, Math.hypot(front.x - center.x, front.y - center.y) / maxDist);

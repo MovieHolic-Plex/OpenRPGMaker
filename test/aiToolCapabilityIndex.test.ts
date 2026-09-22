@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildSystemPrompt, DEFAULT_BUDGET_CHARS } from "@/ai/contextBuilder";
 import { buildToolCapabilityIndex } from "@/ai/toolCapabilityIndex";
+import { ASSISTANT_PRESENTATION_BLOCK } from "@/ai/eventBeatStaging";
 import { EVENT_PAGE_SEMANTICS_BLOCK } from "@/ai/eventPageSemantics";
 import { activeTools, allTools, createEmptyToolProject } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -85,13 +86,15 @@ describe("tool capability index", () => {
     const prompt = buildSystemPrompt(createEmptyToolProject("x"), {});
 
     // 베이스 실측: 이 fixture 는 색인 이전에 11,978자로 예산(12,000) 이하였다. 예산 밖 고정 블록이
-    // 그 자리를 먹지 않았음을 고정한다. 고정 블록은 둘이다 — 툴 능력 색인 + 이벤트 페이지 의미론.
+    // 그 자리를 먹지 않았음을 고정한다. 고정 블록은 셋이다 — 툴 능력 색인 + 이벤트 페이지 의미론 + 충격 연출.
     expect(prompt).not.toContain("[예산 초과");
     const withoutFixed = prompt
       .replace(`${buildToolCapabilityIndex()}\n\n`, "")
-      .replace(`${EVENT_PAGE_SEMANTICS_BLOCK}\n\n`, "");
+      .replace(`${EVENT_PAGE_SEMANTICS_BLOCK}\n\n`, "")
+      .replace(`${ASSISTANT_PRESENTATION_BLOCK}\n\n`, "");
     expect(withoutFixed).not.toContain("## 툴 능력 색인");
     expect(withoutFixed).not.toContain("## 이벤트 페이지 의미론");
+    expect(withoutFixed).not.toContain("## 충격 연출");
     expect(withoutFixed.length).toBeLessThanOrEqual(DEFAULT_BUDGET_CHARS);
     expect(withoutFixed).toContain("## 프로젝트 요약");
   });
@@ -99,6 +102,7 @@ describe("tool capability index", () => {
   it("keeps the event page semantics block whole at the smallest calibrated budget", () => {
     const prompt = buildSystemPrompt(createBlankProject(), { budgetChars: CALIBRATED_MIN_BUDGET });
     expect(prompt).toContain(EVENT_PAGE_SEMANTICS_BLOCK);
+    expect(prompt).toContain(ASSISTANT_PRESENTATION_BLOCK);
   });
 
   it("stays under the stated char ceiling", () => {

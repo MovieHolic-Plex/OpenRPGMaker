@@ -1,4 +1,4 @@
-// AI 활동 로그 — 채팅/영역 작업/타일셋 분석 등 AI가 할 때마다 로컬 링버퍼 + (가능하면) Supabase에 남긴다.
+// AI 활동 로그 — 채팅/영역 작업/타일셋 분석 등 AI가 할 때마다 로컬 링버퍼 + (가능하면) project storage에 남긴다.
 // 대화 기록(conversationStore)과 분리: 턴 단위 진단 페이로드(툴 args·결과·uiEvents)를 유지한다.
 import type { AuditEntry } from "@/ai/assistantSession";
 import {
@@ -479,7 +479,7 @@ registerRemoteOutboxSender("ai-activity", async (payload) => {
 /**
  * AI 활동 1건 기록.
  * - 항상 로컬 localStorage 링버퍼에 저장 (표시용 캐시)
- * - Supabase 설정이 있으면 원격에 저장하고, 실패하면 outbox 에 남겨 나중에 재전송
+ * - project storage 설정이 있으면 원격에 저장하고, 실패하면 outbox 에 남겨 나중에 재전송
  * - Vite 미러 엔드포인트로 디스크 기록 (output/ai-activity/) — 미들웨어가 있을 때만
  * - 같은 id 의 시작/중간/종료 기록은 직렬화한다. 빈 pending 시작 행이 풍부한 행을
  *   덮어쓰지 않는다(2026-09-02: 검토 턴이 tile_erase 를 남기고도 로그는 빈 pending 만).
@@ -607,7 +607,7 @@ function warnMirrorFailure(reason: string): void {
 /**
  * 기록이 어디까지 갔는지. 하네스 모달이 「로컬 전용」 배지를 그리는 근거다.
  *
- * 왜 필요한가 (실측 2026-08-30): 워크트리 53개 중 19개에 `.env.local` 이 없어 Supabase 가 미설정
+ * 왜 필요한가 (실측 2026-08-30): 워크트리 53개 중 19개에 `.env.local` 이 없어 project storage 가 미설정
  * 이었고, 표본을 열어 보니 `output/ai-activity/` 도 0개였다. 즉 그 세션들의 AI 기록은 브라우저
  * localStorage 100건 링버퍼에만 있었고, 링버퍼가 밀어내는 순간 영구히 사라졌다. 그런데 화면에는
  * 아무 표시도 없어서 «남는 줄 알고» 계속 썼다. 조용한 유실이 가장 나쁘다.
@@ -624,8 +624,8 @@ function warnLocalOnlyOnce(): void {
   if (state.remote || state.diskMirror) return;
   localOnlyWarned = true;
   console.warn(
-    "[ai-activity] 원격(Supabase)도 디스크 미러도 없다 — AI 기록이 이 탭의 localStorage 링버퍼" +
-      `(${MAX_LOGS}건)에만 남고, 넘치면 사라진다. .env.local 의 Supabase 설정이나 dev/preview 서버를 확인할 것.`,
+    "[ai-activity] 프로젝트 저장소도 디스크 미러도 없다 — AI 기록이 이 탭의 localStorage 링버퍼" +
+      `(${MAX_LOGS}건)에만 남고, 넘치면 사라진다. 프로젝트 폴더·팀 호스트 연결이나 dev/preview 디스크 미러를 확인할 것.`,
   );
 }
 

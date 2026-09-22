@@ -1,3 +1,4 @@
+import { resolveVillageContract } from "@/ai/piAgent/villageContract";
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
@@ -167,6 +168,8 @@ import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
+import { getAiConnectionStatus } from "./aiConnectionStatus";
+import { createAiLockScrim } from "./aiLockScrim";
 import {
   backupProjectSnapshot,
   dropSession,
@@ -1526,7 +1529,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         class: "ai-autonomous-run-surface",
         dataset: { testid: "ai-autonomous-run-surface" },
       });
-      mainColumn.prepend(workPlanSurface);
+      // 대화 본문 선두가 아니라 컴포저 바로 위 outcomeSlot 로 옮긴다(2026-09-21) —
+      // 대화를 시작하면 첫 답변 위에 목록이 얹혀 스크롤 공간을 통째로 먹던 결함.
+      outcomeSlot.prepend(workPlanSurface);
     }
     panel.classList.add("is-autonomous-run");
     return workPlanSurface;
@@ -1552,6 +1557,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     openWorkPlanBook(input);
   };
   // 계획 도착 시마다 앞면과(열려 있으면) 책 모달을 갱신한다.
+  // 앞면은 접힌 상태가 기본 — 머리 버튼(드롭다운)을 눌러야 목록이 펼쳐진다.
   const refreshWorkPlanSurface = (): void => {
     if (!workPlanSurfaceState?.active || !workPlanSurfaceState.plan) return;
     const surface = ensureWorkPlanSurface();
@@ -2084,6 +2090,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }, plan ? {
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
+        villageContract: plan.villageContract,
         planOnly: plan.planOnly,
         maxTurns: plan.maxTurns,
         // 상한에 걸려 멈췄을 때 「무엇을 올리면 되는지」를 말하려면 단계 이름이 필요하다.
@@ -2118,7 +2125,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     let initialToolNames: readonly string[] | undefined;
     let intentNote: string | null = null;
     if (!plan.readOnly) {
-      piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 6_000 });
+      piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 });
       setStatus("의도 읽는 중…");
       const project = store.getCurrent();
       const currentMapId = editorState.get().currentMapId ?? null;
@@ -2130,6 +2137,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         selection,
         hasActivePlan: workPlanSurfaceState?.active === true,
       }));
+      if (declared.intent.source === "fallback") throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
       // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
       // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
       const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
@@ -2147,6 +2155,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         && (declared.intent.mode === "create" || declared.intent.mode === "modify")
         && declared.intent.needsPlan === false
         && declared.intent.clarify === null };
+      plan = { ...plan, villageContract: resolveVillageContract(project, declared.intent, currentMapId, selection ?? null) };
       if (declared.intent.mode === "question") {
         plan = { ...plan, readOnly: true };
         questionPromoted = true;
@@ -2284,7 +2293,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
   const refreshComposerPlaceholder = (): void => {
-    const placeholder = formatComposerPlaceholder(readAgentBrief());
+    // 연결 상태를 함께 본다 — 미연결이면 "한 문장으로 지시" 대신 어디를 눌러야 하는지 말한다.
+    const placeholder = formatComposerPlaceholder(readAgentBrief(), isAiConfigReady(loadAiConfig(), getAiConnectionStatus(loadAiConfig())));
     if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
     syncConversationState();
   };
@@ -3008,6 +3018,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   deckRoot = deck;
 
+  /**
+   * AI 미연결 잠금 막. 채팅창 위를 덮어 "지금은 쓸 수 없다" 를 몸으로 알게 한다.
+   *
+   * 왜 오버레이인가 (2026-09-22): 이전에는 placeholder 문구와 톱바 칩으로만 알렸는데,
+   * 그건 **읽어야 아는** 신호다. 사용자는 지시를 쓰고 보낸 뒤에야 막힌다는 걸 알았다.
+   * 이 앱에서 AI 는 핵심 시스템이므로, 없으면 그 자리가 비어 보여야 한다.
+   *
+   * 입력 자체를 비활성하지는 않는다 — 쓰다가 로그인하면 그대로 이어 쓸 수 있어야 하고,
+   * 무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다.
+   */
+  const lockScrim = createAiLockScrim({
+    onOpenSettings: () => openAiSettingsModal(),
+    onLockChange: (locked) => { panel?.classList.toggle("is-ai-locked", locked); },
+  });
+  deck.append(lockScrim.element);
+
   const panel = el("aside", {
     class: "ai-chat-panel is-left-sidebar",
     attrs: { "aria-label": "AI" },
@@ -3025,8 +3051,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const teamSidebar = createAiTeamSidebar({ settings: teamPanel.root });
   // The editor mounts this sibling in the right rail; this panel owns its lifetime.
   panel.append(teamSidebar.root);
+  // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
+  // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
+  lockScrim.sync();
   const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
-  deck.querySelector(".ai-activity-setting-heading")?.append(wideButton);
+  // 작업 표시 헤딩이 아이콘화로 사라졌다(2026-09-21) — 크게 보기는 상단 레일 아이콘 행으로 옮긴다.
+  wideButton.classList.add("ai-deck-wide-open");
+  wideButton.replaceChildren(deckIcon("expand"));
+  deck.querySelector(".ai-deck-rail-actions")?.append(wideButton);
   const wideAssistant = createAssistantWide(panel, teamSidebar.root, wideButton, () => teamSidebar.openFirstMember());
   // 느낌표 버튼도 같은 관례다 — 패널이 수명을 소유하고, 배치는 editor.ts 가 캔버스 영역으로 옮긴다.
   panel.append(peek.root);
@@ -3680,6 +3712,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    lockScrim.dispose();
     cancelCreationChoice?.();
     closeAiAuthoringModal();
     clearPromptInspection();

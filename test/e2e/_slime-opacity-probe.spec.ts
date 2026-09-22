@@ -1,7 +1,7 @@
 // 몬스터가 반투명한가 — 배경을 바꿔 찍어 몸통 픽셀이 따라 변하는지 본다.
 // 변하면 합성 단계의 투명(opacity/blend), 그대로면 스프라이트 자체 무늬다.
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import { createBlankProject } from "@/project/defaults";
 import { openDatabase, switchDatabaseTab, DATABASE_TAB_SPECS } from "./oprn-database-helpers";
 
@@ -13,7 +13,7 @@ test("슬라임 반투명 판정", async ({ page }: { page: Page }) => {
   const project = createBlankProject();
   project.system.battleUiStyle = "pokemon";
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
-  await seedProjectFromSupabaseCanonical(page, project);
+  await seedProjectForEditor(page, project);
   await openDatabase(page);
   await switchDatabaseTab(page, TROOPS_TAB);
   await page.locator(".db-list-row").first().click();

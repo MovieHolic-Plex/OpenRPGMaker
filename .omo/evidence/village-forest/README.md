@@ -1,6 +1,6 @@
 # 겹치는 숲과 외곽 풀밭
 
-- Supabase project: `rpg-zzu-house-template-gallery`
+- LegacyDb project: `rpg-zzu-house-template-gallery`
 - Map: `spatial-geography:30:small-village:example:20260913`
 - Actual raster: overlap 0 → 721 cells; 243 family 667 → 914 cells.
 - All 26 house rasters/positions preserved (23 single-storey, 3 multi-storey).

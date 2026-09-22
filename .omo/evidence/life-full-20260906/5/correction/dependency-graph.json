@@ -160,14 +160,14 @@
     "src/project/upgrades.ts",
     "src/project/io/pageResolution.ts",
     "src/project/io/serialize.ts",
-    "src/project/supabaseProjectSync.ts",
+    "src/project/legacyDbProjectSync.ts",
     "src/project/eventDrafts.ts",
-    "src/project/supabaseProjectConfig.ts",
+    "src/project/legacyDbProjectConfig.ts",
     "src/project/projectUrl.ts",
-    "src/project/supabaseProxyPath.ts",
+    "src/project/legacyDbProxyPath.ts",
     "src/util/sha256.ts",
     "src/project/eventDraftVault.ts",
-    "src/assets/supabaseResourceCache.ts",
+    "src/assets/legacyDbResourceCache.ts",
     "src/project/persistenceStatus.ts",
     "src/project/projectCommitLog.ts",
     "src/editor/tools/changeset.ts",
@@ -614,13 +614,13 @@
       "src/project/defaults/defaultDatabaseIconResources.ts",
       "src/project/defaults/defaultDatabase.ts",
       "src/project/devProjectPersistence.ts",
-      "src/project/supabaseProjectSync.ts",
+      "src/project/legacyDbProjectSync.ts",
       "src/project/eventDrafts.ts",
       "src/project/io.ts",
       "src/project/eventDraftVault.ts",
-      "src/assets/supabaseResourceCache.ts",
+      "src/assets/legacyDbResourceCache.ts",
       "src/project/projectUrl.ts",
-      "src/project/supabaseProjectConfig.ts",
+      "src/project/legacyDbProjectConfig.ts",
       "src/project/persistenceStatus.ts",
       "src/project/projectCommitLog.ts",
       "src/project/mapTree.ts",
@@ -1438,7 +1438,7 @@
       "src/project/io/migration.ts",
       "src/project/io/shape.ts"
     ],
-    "src/project/supabaseProjectSync.ts": [
+    "src/project/legacyDbProjectSync.ts": [
       "src/brand.ts",
       "src/project/io.ts",
       "src/project/defaults/defaultAssets.ts",
@@ -1448,25 +1448,25 @@
       "src/project/defaults/defaultDatabaseStarterRecords.ts",
       "src/project/io/references.ts",
       "src/project/eventDrafts.ts",
-      "src/project/supabaseProjectConfig.ts",
+      "src/project/legacyDbProjectConfig.ts",
       "src/util/sha256.ts",
       "src/util/id.ts",
-      "src/project/supabaseProjectConfig.ts"
+      "src/project/legacyDbProjectConfig.ts"
     ],
     "src/project/eventDrafts.ts": [],
-    "src/project/supabaseProjectConfig.ts": [
+    "src/project/legacyDbProjectConfig.ts": [
       "src/project/projectUrl.ts",
-      "src/project/supabaseProxyPath.ts"
+      "src/project/legacyDbProxyPath.ts"
     ],
     "src/project/projectUrl.ts": [],
-    "src/project/supabaseProxyPath.ts": [],
+    "src/project/legacyDbProxyPath.ts": [],
     "src/util/sha256.ts": [],
     "src/project/eventDraftVault.ts": [
-      "src/project/supabaseProjectConfig.ts"
+      "src/project/legacyDbProjectConfig.ts"
     ],
-    "src/assets/supabaseResourceCache.ts": [],
+    "src/assets/legacyDbResourceCache.ts": [],
     "src/project/persistenceStatus.ts": [
-      "src/project/supabaseProjectConfig.ts"
+      "src/project/legacyDbProjectConfig.ts"
     ],
     "src/project/projectCommitLog.ts": [
       "src/editor/tools/changeset.ts",
@@ -1475,7 +1475,7 @@
       "src/project/editorIdentity.ts",
       "src/project/eventDrafts.ts",
       "src/project/io.ts",
-      "src/project/supabaseProjectSync.ts"
+      "src/project/legacyDbProjectSync.ts"
     ],
     "src/editor/tools/changeset.ts": [
       "src/editor/detachedDraftMemory.ts",

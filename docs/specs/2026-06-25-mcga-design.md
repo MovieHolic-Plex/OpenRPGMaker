@@ -157,7 +157,7 @@ API 서버 (Node / Edge function)
   └─ 봇 인계 로직
                │
                ▼
-Postgres (Supabase)
+Postgres (LegacyDb)
   세계 상태 = 단일 진실
   + 세계 틱 워커 (cron/scheduled)
 ```
@@ -167,7 +167,7 @@ Postgres (Supabase)
 2. 세계 틱 워커가 서버에서 자동 실행 → 아무도 접속 안 해도 세계 변함.
 3. GPT API 키는 서버에만.
 4. 동기화: MVP엔 폴링. WebSocket은 시즌2.
-5. 부모 리포의 Supabase 재사용 → 인프라 비용 절감.
+5. 부모 리포의 LegacyDb 재사용 → 인프라 비용 절감.
 
 ### 세계 틱 (예: 5분 간격, 서버 cron)
 ```
@@ -381,10 +381,10 @@ Postgres (Supabase)
 | 프론트 | Vite + 바닐라 TS + SVG/CSS | 부모 리포 스택 재사용, 무거운 프레임워크 배제 |
 | 렌더링 | 인라인 SVG + CSS | 그림 자원 최소, 빠른 MVP |
 | 백엔드 | Node (Hono 또는 Express) | 가벼운 API, Edge 배포 가능 |
-| DB | Supabase (Postgres) | 부모 리포 재사용, RLS/인증/Realtime 내장 |
-| 세계 틱 | Supabase scheduled function (pg_cron) 또는 별도 Node 워커 | 24시간 자동 진행 |
+| DB | LegacyDb (Postgres) | 부모 리포 재사용, RLS/인증/Realtime 내장 |
+| 세계 틱 | LegacyDb scheduled function (pg_cron) 또는 별도 Node 워커 | 24시간 자동 진행 |
 | LLM | GPT 5.4 mini (JSON 모드) | 왕 판결·대사 |
-| 배포 | Vercel (프론트) + Supabase (DB/함수) | 서버리스, 비용 최소 |
+| 배포 | Vercel (프론트) + LegacyDb (DB/함수) | 서버리스, 비용 최소 |
 
 ### 6-D. 폴더 구조 (새 별도 프로젝트)
 ```
@@ -403,7 +403,7 @@ mcga/                              ← 부모 리포와 분리된 새 프로젝�
 │   └── tick/                      세계 틱 워커
 ├── shared/
 │   └── types.ts                   클라/서버 공통 타입
-└── supabase/
+└── legacyDb/
     ├── schema.sql                 세계 상태 테이블
     └── migrations/
 ```

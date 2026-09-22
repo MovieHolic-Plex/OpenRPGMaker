@@ -32,9 +32,9 @@ describe("예산 소진 초안 적용", () => {
   // 2026-09-17 예산 소진 = 초안 폐기 규칙 폐지 — 예산이 바닥나도 결정적 검사(lint error 0)를 통과하면
   // final 로 바뀌고 초안이 승인 상태가 된다. 검수 모델은 호출되지 않는다.
   it.each(["max-tool-calls", "token-budget"])("%s에서 결정적 검사를 통과한 제안 2건을 final 로 승인한다", async (stop) => {
-    vi.stubEnv("VITE_SUPABASE_ANON_KEY", "test-anon-key");
-    vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "rpg-zzu-test-project");
-    vi.stubEnv("VITE_SUPABASE_URL", "http://dbserver:8100");
+    vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
+    vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
+    vi.stubEnv("VITE_LEGACY_DB_URL", "http://dbserver:8100");
     vi.stubGlobal("fetch", (async () => new Response(null, { status: 201 })) satisfies typeof fetch);
     const project = createBlankProject();
     store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });

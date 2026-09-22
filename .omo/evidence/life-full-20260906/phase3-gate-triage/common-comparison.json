@@ -157,7 +157,7 @@
           "CF134"
         ],
         "normalization": "Only entries[0].at inside the one received edit-activity request body is mapped to <RUN_AT>: current 2026-09-06T17:10:07.941Z; base 2026-09-06T17:24:51.145Z. No other timestamps, counters, request values, IDs or expected values normalized.",
-        "evidence": "Unchanged test/storePersistence.test.ts:11..35 uses fake timers without a fixed system time; unchanged src/editor/editActivityLog.ts:214,223,239 builds at from Date.now() via toISOString(). Both human diagnostics show one POST /__oprn/edit-activity with seq 0, scope project, label null, origin human, generation 1 and reason 사람이 편집. Same failed no-fetch expectation, not proof that a Supabase write occurred."
+        "evidence": "Unchanged test/storePersistence.test.ts:11..35 uses fake timers without a fixed system time; unchanged src/editor/editActivityLog.ts:214,223,239 builds at from Date.now() via toISOString(). Both human diagnostics show one POST /__oprn/edit-activity with seq 0, scope project, label null, origin human, generation 1 and reason 사람이 편집. Same failed no-fetch expectation, not proof that a LegacyDb write occurred."
       }
     ]
   },
@@ -25404,7 +25404,7 @@
       "id": "CF134",
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+        "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
         1
       ],
       "outsideRecordedBaseline": false,
@@ -25462,7 +25462,7 @@
           "sharedBodyKeys": [
             [
               "test/storePersistence.test.ts",
-              "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+              "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
               1
             ]
           ],
@@ -25491,7 +25491,7 @@
           "sharedBodyKeys": [
             [
               "test/storePersistence.test.ts",
-              "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+              "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
               1
             ]
           ],
@@ -25614,7 +25614,7 @@
       "id": "CF135",
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+        "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
         1
       ],
       "outsideRecordedBaseline": false,
@@ -25647,7 +25647,7 @@
         }
       },
       "originalFailureMessages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:55:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "human": {
         "current": {
@@ -25672,7 +25672,7 @@
           "sharedBodyKeys": [
             [
               "test/storePersistence.test.ts",
-              "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+              "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
               1
             ]
           ],
@@ -25701,7 +25701,7 @@
           "sharedBodyKeys": [
             [
               "test/storePersistence.test.ts",
-              "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+              "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
               1
             ]
           ],
@@ -26034,7 +26034,7 @@
       "id": "CF137",
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+        "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
         1
       ],
       "outsideRecordedBaseline": false,
@@ -26067,7 +26067,7 @@
         }
       },
       "originalFailureMessages": [
-        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "TypeError: Cannot read properties of undefined (reading 'ok')\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:221:17)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:119:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "human": {
         "current": {
@@ -26092,7 +26092,7 @@
           "sharedBodyKeys": [
             [
               "test/storePersistence.test.ts",
-              "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+              "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
               1
             ]
           ],
@@ -26121,7 +26121,7 @@
           "sharedBodyKeys": [
             [
               "test/storePersistence.test.ts",
-              "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+              "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
               1
             ]
           ],
@@ -26277,7 +26277,7 @@
         }
       },
       "originalFailureMessages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (/home/main/z-project/rpg-zzu-life-full-p3/src/project/supabaseProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:222:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (/home/main/z-project/rpg-zzu-life-full-p3/src/project/legacyDbProjectSync.ts:151:20)\n    at ProjectStore.load (/home/main/z-project/rpg-zzu-life-full-p3/src/project/store.ts:258:27)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/storePersistence.test.ts:151:5\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "human": {
         "current": {
@@ -30693,7 +30693,7 @@
       "caseId": "CF134",
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+        "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
         1
       ],
       "classification": "same-call-arguments-except-run-clock-at",
@@ -30902,8 +30902,8 @@
           }
         }
       ],
-      "diff": "--- base console\n+++ current console\n@@ -1,3 +1,4 @@\n+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.\n [ai-conversation] Supabase mirror failed: TypeError: fetch failed\n     at node:internal/deps/undici/undici:15845:13\n     at processTicksAndRejections (node:internal/process/task_queues:103:5)\n@@ -24,4 +25,3 @@\n     hostname: 'dbserver'\n   }\n }\n-[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.\n",
-      "assessment": "Same three complete log bodies in a different order: edit-activity mirror URL-parse warning precedes two Supabase fetch warnings in current, follows them in base. Order retained; relation to common timeout unresolved."
+      "diff": "--- base console\n+++ current console\n@@ -1,3 +1,4 @@\n+[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.\n [ai-conversation] LegacyDb mirror failed: TypeError: fetch failed\n     at node:internal/deps/undici/undici:15845:13\n     at processTicksAndRejections (node:internal/process/task_queues:103:5)\n@@ -24,4 +25,3 @@\n     hostname: 'dbserver'\n   }\n }\n-[edit-activity] 디스크 미러 실패 (/__oprn/edit-activity: Failed to parse URL from /__oprn/edit-activity) — output/edit-activity/ 가 갱신되지 않는다.\n",
+      "assessment": "Same three complete log bodies in a different order: edit-activity mirror URL-parse warning precedes two LegacyDb fetch warnings in current, follows them in base. Order retained; relation to common timeout unresolved."
     },
     {
       "caseId": "CF116",
@@ -34526,7 +34526,7 @@
       "id": "BP049",
       "key": [
         "test/storeFlushShaEvidence.test.ts",
-        "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+        "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
         1
       ],
       "outsideRecordedBaseline": true,
@@ -34594,8 +34594,8 @@
     {
       "id": "BP050",
       "key": [
-        "test/supabaseProjectSync.test.ts",
-        "Supabase project sync preserves concurrent saves from separate editors touching different maps",
+        "test/legacyDbProjectSync.test.ts",
+        "LegacyDb project sync preserves concurrent saves from separate editors touching different maps",
         1
       ],
       "outsideRecordedBaseline": true,
@@ -34628,7 +34628,7 @@
         }
       },
       "originalFailureMessages": [
-        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/supabaseProjectSync.test.ts:854:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/legacyDbProjectSync.test.ts:854:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
       ],
       "olderPhase2FailureMessages": [],
       "stdout": {
@@ -34663,8 +34663,8 @@
     {
       "id": "BP051",
       "key": [
-        "test/supabaseProjectSync.test.ts",
-        "Supabase project sync preserves concurrent map tree additions from separate editors",
+        "test/legacyDbProjectSync.test.ts",
+        "LegacyDb project sync preserves concurrent map tree additions from separate editors",
         1
       ],
       "outsideRecordedBaseline": true,
@@ -34697,7 +34697,7 @@
         }
       },
       "originalFailureMessages": [
-        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/supabaseProjectSync.test.ts:907:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
+        "Error: STACK_TRACE_ERROR\n    at task (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:638:27)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:662:16)\n    at Object.<anonymous> (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:458:28)\n    at chain (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:369:14)\n    at /home/main/z-project/rpg-zzu-life-full-p3/test/legacyDbProjectSync.test.ts:907:3\n    at file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:40\n    at runWithSuite (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1849:8)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:734:10)\n    at Object.collect (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:738:54)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at collectTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1179:25)\n    at startTests (file:///home/main/z-project/rpg-zzu/node_modules/@vitest/runner/dist/chunk-hooks.js:1817:17)\n    at file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:117:26\n    at withEnv (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:84:3)\n    at run (file:///home/main/z-project/rpg-zzu/node_modules/vitest/dist/chunks/runBaseTests.9Ij9_de-.js:109:2)"
       ],
       "olderPhase2FailureMessages": [],
       "stdout": {
@@ -36777,7 +36777,7 @@
     {
       "key": [
         "test/storeFlushShaEvidence.test.ts",
-        "Project store flush sha256 evidence 전체 저장 경로: saveProjectToSupabase 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
+        "Project store flush sha256 evidence 전체 저장 경로: saveProjectToLegacyDb 의 sha256 이 flush 결과(saved.sha256)로 흘러든다",
         1
       ],
       "caseId": "BP049",
@@ -36786,7 +36786,7 @@
     {
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence does not write to Supabase before the canonical project has loaded",
+        "Project store remote persistence does not write to LegacyDb before the canonical project has loaded",
         1
       ],
       "caseId": "CF134",
@@ -36795,7 +36795,7 @@
     {
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence does not auto-save local dev showcase projects to Supabase",
+        "Project store remote persistence does not auto-save local dev showcase projects to LegacyDb",
         1
       ],
       "caseId": "CF135",
@@ -36813,7 +36813,7 @@
     {
       "key": [
         "test/storePersistence.test.ts",
-        "Project store remote persistence saves and reloads local edits for dev showcase projects without Supabase",
+        "Project store remote persistence saves and reloads local edits for dev showcase projects without LegacyDb",
         1
       ],
       "caseId": "CF137",
@@ -36839,8 +36839,8 @@
     },
     {
       "key": [
-        "test/supabaseProjectSync.test.ts",
-        "Supabase project sync preserves concurrent saves from separate editors touching different maps",
+        "test/legacyDbProjectSync.test.ts",
+        "LegacyDb project sync preserves concurrent saves from separate editors touching different maps",
         1
       ],
       "caseId": "BP050",
@@ -36848,8 +36848,8 @@
     },
     {
       "key": [
-        "test/supabaseProjectSync.test.ts",
-        "Supabase project sync preserves concurrent map tree additions from separate editors",
+        "test/legacyDbProjectSync.test.ts",
+        "LegacyDb project sync preserves concurrent map tree additions from separate editors",
         1
       ],
       "caseId": "BP051",
@@ -37204,7 +37204,7 @@
       "caseIds": [
         "CF020"
       ],
-      "detail": "Same 15000ms timeout, but edit-activity/Supabase warning order differs. Do not identify the common timeout cause from matching error text."
+      "detail": "Same 15000ms timeout, but edit-activity/LegacyDb warning order differs. Do not identify the common timeout cause from matching error text."
     },
     {
       "id": "U3",

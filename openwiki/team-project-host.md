@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 팀 프로젝트 호스트 (2026-09-18)
 
 ## 소유와 실행 위치
@@ -49,7 +51,7 @@ SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
 
 - `OPRN_PROJECT_DIR` 또는 `npm start -- --project-dir /path/to/project`로 **기존**
   `project.sqlite` 폴더를 지정한다. 미설정/없는 폴더는 실행을 거절한다. 임의 프로젝트
-  선택·빈 프로젝트 생성·Supabase 자동 이관은 하지 않는다.
+  선택·빈 프로젝트 생성·LegacyDb 자동 이관은 하지 않는다.
 - 폴더와 public origin 설정 우선순위는 CLI > 프로세스 env > `.env.local` > `.env`.
   상대 폴더는 저장소 루트 기준이다. 기본 주소는 기존 `http://mdc-server:9888`이며
   `--host`, `--port`, `--public-origin`, `--dist`, `--bridge`도 전달한다.
@@ -104,6 +106,15 @@ DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 
   공유 호스트의 AI 경로 비공개.
 - `test/localStore/conflict.test.ts`: 변경 맵 힌트로 실제 변경을 숨길 수 없는 계약으로 갱신.
 - 테스트 실행은 AGENTS.md의 명시 요청 규칙을 따른다. 작성과 실행을 구분해서 보고한다.
+
+## 호스트 페이지 CSP (2026-09-22)
+
+팀 호스트가 주는 HTML 은 응답마다 nonce 를 붙인 `script-src` 를 가진다. 로그인 실패(401)도
+같은 경로다. 인라인 스크립트는 그 nonce 가 있을 때만 실행된다. 에셋 응답의 Content-Type 은
+이미지·음성·영상·폰트·SVG 만 허용하고, 그 밖은 `application/octet-stream` 이다. 허용된 타입의
+`oprn-asset` 응답은 `public, max-age=31536000, immutable` 이고, 불투명 바이트는 `private, no-cache`
+다. 에셋 응답에는 `sandbox` CSP 를 붙인다.
+루프백이든 `0.0.0.0` 이든 접속 코드는 기동 때 켜지 않는다. 팀 관리에서 켠 값만 유지된다.
 
 ## 적대적 리뷰 수정 (2026-09-18)
 

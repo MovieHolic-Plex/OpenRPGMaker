@@ -1,0 +1,44 @@
+{
+  "baselineCommit": "81123682b",
+  "before": {
+    "startGapMs": 272.3,
+    "searchWindowMs": 473.4
+  },
+  "after": {
+    "startGapMs": 0.2,
+    "searchWindowMs": 204.2
+  },
+  "live": {
+    "startGapMs": 0,
+    "searchWindowMs": 14597
+  },
+  "checks": {
+    "bun": {
+      "exitCode": 0,
+      "passed": 33,
+      "failed": 0
+    },
+    "vitest": {
+      "exitCode": 0,
+      "passed": 32,
+      "failed": 0
+    },
+    "appTypecheckGate": {
+      "exitCode": 0,
+      "errors": 0
+    },
+    "liveSmoke": {
+      "exitCode": 0,
+      "peakSearchConcurrency": 2,
+      "toolErrors": 0,
+      "changedKeys": []
+    },
+    "negativeControl": {
+      "exitCode": 1,
+      "newTestsPassed": 2,
+      "newTestsFailed": 10,
+      "legacyTestsPassed": 6,
+      "legacyTestsFailed": 3
+    }
+  }
+}

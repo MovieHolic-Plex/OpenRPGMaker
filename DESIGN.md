@@ -118,7 +118,7 @@
 - The float deck stands just inside those tracks (`--ai-deck-inset`), never over
   them, and stays within the edge-flush tolerance that makes the occlusion model
   read it as an edge column.
-- Ctrl+wheel over the canvas steps the existing 1/2/3/4/6/8 zoom marks about the
+- Ctrl+wheel over the canvas steps the existing 0.25/0.5/1/2/3/4/6/8 zoom marks about the
   pointer on Linux, Windows and macOS (including Ctrl-style trackpad pinch).
   Unmodified wheel remains pan; Command-only wheel is not editor zoom. Accepted
   Ctrl gestures suppress page zoom, including at limits. No animated zoom.
@@ -1012,7 +1012,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Map editor**: Phaser canvas on a 16×16 logical grid; `image-rendering: pixelated`, nearest-neighbor.
 - **Grid**: grid lines are overlays (`--pixel-grid`), toggleable, default on in Edit mode.
 - **Overlays**: collision, event, start position, hover preview — tokenized, visually distinct.
-- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top`. Standard/expert keep map-save/build behind the ⋯ gate.
+- **Zoom**: steps `0.25, 0.5, 1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top` and shows `1x 2x 4x` until the current scale is outside that set. Standard/expert keep map-save/build behind the ⋯ gate.
 
 ### Database & resource modals
 
@@ -1057,7 +1057,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 
 ### First run and online save
 
-- The first required screen speaks in user concepts: **작업**, **온라인 저장**, **작업 선택**. Do not expose `DB`, `Supabase`, `Anon key`, `Project ID`, or `.env` in the default path.
+- The first required screen speaks in user concepts: **작업**, **온라인 저장**, **작업 선택**. Do not expose `DB`, `LegacyDb`, `Anon key`, `Project ID`, or `.env` in the default path.
 - `작업 열기` is a card-first picker. Each card shows the work title, preview, map/tileset counts, and last-saved time; selecting a card immediately opens it. Connection credentials stay inside a closed `연결 문제 해결` disclosure.
 - The required first-run picker cannot be dismissed until a work opens. Loading, empty, offline, and error states use recovery copy that tells the user what to do next without dumping provider errors.
 - The status bar says `온라인 저장`; help, save, reload, and recovery copy use the same vocabulary. Provider names and raw credentials are reserved for internal implementation and the advanced troubleshooting disclosure.

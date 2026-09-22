@@ -134,7 +134,7 @@ function usedBgmResourceIds(draft: Project, excludeMapId: string): string[] {
 export function assignCreatedMapBgm(
   map: GameMap,
   args: Record<string, unknown>,
-  options?: { readonly themeOrName?: string; readonly draft?: Project },
+  options?: { readonly themeOrName?: string; readonly fallbackTheme?: string; readonly draft?: Project },
 ): string {
   const explicitBgm = args.bgm;
   if (explicitBgm && typeof explicitBgm === "object" && !Array.isArray(explicitBgm)) {
@@ -163,7 +163,10 @@ export function assignCreatedMapBgm(
     ? namespacedBgmSeed(args.seed)
     : seedFromMapId(map.id);
   const excludeIds = options?.draft !== undefined ? usedBgmResourceIds(options.draft, map.id) : undefined;
-  const resourceId = recommendMapBgm(themeOrName, seed, excludeIds);
+  const resourceId = recommendMapBgm(themeOrName, seed, excludeIds, {
+    descriptions: options?.draft?.audioDescriptions?.music,
+    fallbackTheme: options?.fallbackTheme,
+  });
   map.bgm = { mode: "custom", resourceId };
   return resourceId;
 }
@@ -175,7 +178,7 @@ const createMap: ToolDefinition = {
   // 설명을 "명시 요청 때만" 으로 바꿔도 선택은 그대로였다(3/3). 스키마에서 감추면 0/3.
   // 맵 밖은 이미 엔진이 통행 불가라(project/collision.ts canMove 의 inBounds) 테두리 벽은 화면 장식일 뿐이고,
   // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
-  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. 이름에서 테마를 읽어 BGM을 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
+  description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -1598,6 +1601,22 @@ const backgroundSchema: JsonSchema = {
     scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
     loopX: { type: "boolean" },
     loopY: { type: "boolean" },
+    layers: {
+      type: "array",
+      description: "\ucd94\uac00 \ubc30\uacbd \ub808\uc774\uc5b4(\ucd5c\ub300 3\uc7a5, \uc55e\uc774 \uc544\ub798). CraftPix \uacc4\uce35 \ubc30\uacbd\uc744 \u00ab\uc138\ud2b8 \uae30\ubcf8 \ub808\uc774\uc5b4\u00bb\ub85c \uac00\uc838 \uc62c\ub54c \uc4f0\ub294\ub2e4.",
+      items: {
+        type: "object",
+        properties: {
+          imageId: { type: "string" },
+          scrollX: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+          scrollY: { type: "number", minimum: -MAP_BACKGROUND_SCROLL_LIMIT, maximum: MAP_BACKGROUND_SCROLL_LIMIT },
+          loopX: { type: "boolean" },
+          loopY: { type: "boolean" },
+        },
+        required: ["imageId"],
+        additionalProperties: false,
+      },
+    },
   },
   required: ["imageId"],
   additionalProperties: false,
@@ -1708,7 +1727,8 @@ const setMapProperties: ToolDefinition = {
       const normalized = normalizeMapBackground(args.background);
       if (!normalized) throw new ToolError("background는 { imageId, scrollX?, scrollY? } 여야 합니다.", { code: "invalid-args" });
       map.background = normalized;
-      changed.push(`배경=${map.background.imageId}`);
+      const layerCount = map.background.layers?.length ?? 0;
+      changed.push(`배경=${map.background.imageId}${layerCount > 0 ? ` + 레이어 ${layerCount}장` : ""}`);
     }
     if (args.clearBattleBackground === true) {
       delete map.battleBackground;

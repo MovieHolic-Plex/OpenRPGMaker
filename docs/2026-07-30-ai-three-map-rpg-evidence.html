@@ -54,7 +54,7 @@
   </p>
 
   <div class="cards">
-    <div class="card"><div class="k">프로젝트</div><div class="v">세 갈래 여정</div><div class="n">Supabase <code>rpg-zzu-three-map-rpg</code></div></div>
+    <div class="card"><div class="k">프로젝트</div><div class="v">세 갈래 여정</div><div class="n">LegacyDb <code>rpg-zzu-three-map-rpg</code></div></div>
     <div class="card"><div class="k">맵</div><div class="v">3장</div><div class="n">마을 · 던전 · 실내</div></div>
     <div class="card"><div class="k">이벤트</div><div class="v">9개</div><div class="n">NPC · 상자 · 출입구</div></div>
     <div class="card"><div class="k">맵 이동</div><div class="v">4개</div><div class="n">양방향 왕복 2쌍</div></div>
@@ -67,7 +67,7 @@
     AI 에게 "맵 3개짜리 짧은 RPG 를 만들어라" 하나만 던졌다. AI 는 <code>create_map</code> 으로 맵 3장을 만들고,
     <code>lay_path</code> · <code>author_house</code> · <code>place_props</code> 로 길과 건물을 깔고,
     <code>place_npc</code> 로 주민을 심고, <code>place_chest</code> 로 던전에 보물을 두고,
-    <code>create_transfer_pair</code> 로 맵 사이를 왕복 연결했다. 결과는 Supabase 에 저장되고,
+    <code>create_transfer_pair</code> 로 맵 사이를 왕복 연결했다. 결과는 LegacyDb 에 저장되고,
     다시 불러와서 에디터에 그려지고, 테스트 플레이에서 <span class="ok">실제로 플레이된다</span>.
   </p>
 
@@ -212,7 +212,7 @@
 
   <h2>이 증거를 다시 만드는 방법</h2>
   <ul>
-    <li>저작 + Supabase 저장/재로드 검증:
+    <li>저작 + LegacyDb 저장/재로드 검증:
       <code>RPG_ZZU_AI_THREE_MAP=1 node node_modules/vitest/vitest.mjs run test/aiThreeMapRpg.live.test.ts --configLoader bundle</code></li>
     <li>스크린샷 증거 수집:
       <code>RPG_ZZU_AI_THREE_MAP_SHOTS=1 npx playwright test test/e2e/ai-three-map-rpg-evidence.spec.ts</code></li>
@@ -220,7 +220,7 @@
   </ul>
   <div class="note">
     <p style="margin:0">
-      <strong>왜 Supabase 저장까지 하는가</strong> — 이 저장소 규칙(<code>AGENTS.md</code>)상 AI 가 만든 게임 콘텐츠는
+      <strong>왜 LegacyDb 저장까지 하는가</strong> — 이 저장소 규칙(<code>AGENTS.md</code>)상 AI 가 만든 게임 콘텐츠는
       메모리나 로컬 JSON 에만 있으면 완료로 치지 않는다. 원격에 저장하고 <strong>다시 불러와서</strong> 존재를 증명해야 한다.
       위 표의 수치는 전부 <em>재로드 후</em> 측정한 값이다.
     </p>

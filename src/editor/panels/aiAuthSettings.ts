@@ -288,12 +288,13 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-device-code-row" },
     children: [deviceUserCode, copyCodeButton],
   });
+  const deviceStep1 = el("span", { text: "1. 아래 주소를 열고", dataset: { testid: "ai-oauth-device-step1" } });
   const deviceStep2 = el("span", { text: "2. 이 코드를 입력하세요", dataset: { testid: "ai-oauth-device-step2" } });
   const pasteInput = el("input", {
     class: "ai-config-input ai-oauth-paste-url",
     attrs: {
       type: "url",
-      placeholder: "http://127.0.0.1:…/oauth-callback?code=…",
+      placeholder: "http://localhost:…/oauth-callback?code=…",
       "aria-label": "OAuth 콜백 주소",
     },
     dataset: { testid: "ai-oauth-paste-url" },
@@ -327,7 +328,7 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-device-code" },
     children: [
       el("div", { class: "ai-oauth-device-steps", children: [
-        el("span", { text: "1. 아래 주소를 열고" }),
+        deviceStep1,
         deviceUrl,
         deviceStep2,
         deviceCodeRow,
@@ -518,12 +519,106 @@ export function renderAiAuthSettings(
   };
 
   // ── 기기 로그인 폴링 ───────────────────────────────────────────────────────
+  let stopPasteWatch: (() => void) | undefined;
+  let pasteSubmitted = "";
+
+  /** 원격 로그인 탭이 남기는 localhost 콜백만 받는다. 다른 주소는 연결 시도로 보지 않는다. */
+  function loopbackLoginUrl(raw: string): string {
+    let url: URL;
+    try {
+      url = new URL(raw.trim());
+    } catch {
+      return "";
+    }
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    if (url.hostname !== "localhost" && url.hostname !== "127.0.0.1") return "";
+    if (url.pathname !== "/oauth-callback" && url.pathname !== "/auth/callback") return "";
+    if (!url.searchParams.get("code")) return "";
+    return url.toString();
+  }
+
+  function submitPastedLogin(raw: string): void {
+    const url = loopbackLoginUrl(raw);
+    if (!url) {
+      devicePoll.textContent = "로그인 탭의 주소창 전체를 붙여 넣으세요.";
+      return;
+    }
+    if (url === pasteSubmitted || pasteButton.disabled) return;
+    pasteSubmitted = url;
+    pasteInput.value = url;
+    pasteButton.disabled = true;
+    const gen = opGeneration;
+    const provider = providerId;
+    void completeOAuthPaste(url)
+      .then(async () => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        devicePoll.textContent = "연결하는 중…";
+        const auth = await fetchChatGptAuthStatus(provider);
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        if (hasStoredCompanionCredential(auth)) {
+          stopPolling();
+          applyStatus(auth);
+        }
+      })
+      .catch((error: unknown) => {
+        pasteSubmitted = "";
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        if (isChatGptCompanionResponseError(error)) showServerError(error);
+        else showUnreachable(error);
+      })
+      .finally(() => {
+        if (!disposed && gen === opGeneration) pasteButton.disabled = false;
+      });
+  }
+
+  function watchPastedLogin(): void {
+    stopPasteWatch?.();
+    const takeClipboard = (): void => {
+      if (disposed || deviceBlock.hidden || pasteRow.hidden) return;
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") return;
+      pasteInput.focus();
+      const clipboard = typeof navigator !== "undefined" ? navigator.clipboard : undefined;
+      if (!clipboard?.readText) return;
+      void clipboard.readText()
+        .then((text) => {
+          if (disposed || deviceBlock.hidden || pasteRow.hidden) return;
+          if (loopbackLoginUrl(text)) submitPastedLogin(text);
+        })
+        .catch(() => undefined);
+    };
+    const onPaste = (event: Event): void => {
+      const data = (event as ClipboardEvent).clipboardData?.getData("text") ?? "";
+      if (!loopbackLoginUrl(data)) return;
+      event.preventDefault();
+      submitPastedLogin(data);
+    };
+    const onKey = (event: Event): void => {
+      if ((event as KeyboardEvent).key !== "Enter") return;
+      submitPastedLogin(pasteInput.value);
+    };
+    pasteInput.addEventListener("paste", onPaste);
+    pasteInput.addEventListener("keydown", onKey);
+    document.addEventListener("visibilitychange", takeClipboard);
+    const win = typeof window !== "undefined" ? window : undefined;
+    if (typeof win?.addEventListener === "function") win.addEventListener("focus", takeClipboard);
+    stopPasteWatch = () => {
+      pasteInput.removeEventListener("paste", onPaste);
+      pasteInput.removeEventListener("keydown", onKey);
+      document.removeEventListener("visibilitychange", takeClipboard);
+      win?.removeEventListener?.("focus", takeClipboard);
+      stopPasteWatch = undefined;
+    };
+    takeClipboard();
+  }
+
   function stopPolling(): void {
     if (pollTimer !== undefined) {
       clearTimeout(pollTimer);
       pollTimer = undefined;
     }
     pollAttempt = 0;
+    stopPasteWatch?.();
+    pasteSubmitted = "";
     deviceBlock.hidden = true;
   }
 
@@ -574,33 +669,7 @@ export function renderAiAuthSettings(
   });
 
   pasteButton.addEventListener("click", () => {
-    const url = pasteInput.value.trim();
-    if (!url) {
-      devicePoll.textContent = "콜백 주소를 붙여 넣으세요.";
-      return;
-    }
-    pasteButton.disabled = true;
-    const gen = opGeneration;
-    const provider = providerId;
-    void completeOAuthPaste(url)
-      .then(async () => {
-        if (disposed || gen !== opGeneration || provider !== providerId) return;
-        devicePoll.textContent = "콜백을 전달했습니다. 연결 확인 중…";
-        const auth = await fetchChatGptAuthStatus(provider);
-        if (disposed || gen !== opGeneration || provider !== providerId) return;
-        if (hasStoredCompanionCredential(auth)) {
-          stopPolling();
-          applyStatus(auth);
-        }
-      })
-      .catch((error: unknown) => {
-        if (disposed || gen !== opGeneration || provider !== providerId) return;
-        if (isChatGptCompanionResponseError(error)) showServerError(error);
-        else showUnreachable(error);
-      })
-      .finally(() => {
-        if (!disposed && gen === opGeneration) pasteButton.disabled = false;
-      });
+    submitPastedLogin(pasteInput.value);
   });
 
   copyCodeButton.addEventListener("click", () => {
@@ -689,12 +758,19 @@ export function renderAiAuthSettings(
         deviceCodeRow.hidden = !login.userCode;
         pasteRow.hidden = login.pasteCallback !== true;
         pasteInput.value = "";
-        deviceStep2.textContent = login.pasteCallback
-          ? "2. 로그인 후 주소창의 127.0.0.1 주소를 붙여 넣으세요"
-          : login.userCode
+        pasteButton.textContent = login.pasteCallback ? "연결하기" : "콜백 전달";
+        if (login.pasteCallback) {
+          deviceStep1.textContent = "1. 열린 탭에서 로그인을 마치세요. 주소가 localhost 로 바뀌고 페이지가 안 열려도 됩니다.";
+          deviceStep2.textContent = "2. 그 탭의 주소창을 복사하고 이 화면으로 돌아오세요. 연결은 알아서 합니다.";
+          devicePoll.textContent = "주소창을 복사하면 이 화면이 연결합니다.";
+          watchPastedLogin();
+        } else {
+          deviceStep1.textContent = "1. 아래 주소를 열고";
+          deviceStep2.textContent = login.userCode
             ? "2. 이 코드를 입력하세요"
             : "2. 로그인을 마치면 자동으로 연결됩니다";
-        devicePoll.textContent = `로그인 확인 중… (0/${DEVICE_POLL_MAX_ATTEMPTS})`;
+          devicePoll.textContent = `로그인 확인 중… (0/${DEVICE_POLL_MAX_ATTEMPTS})`;
+        }
         setStatus("브라우저에서 로그인 대기 중", "checking");
         // 링크를 눌러 열 수도 있게 남겨 둔 채 자동 실행도 시도한다(팝업 차단 시 링크가 대안).
         if (login.verificationUrl && typeof window !== "undefined" && typeof window.open === "function") {

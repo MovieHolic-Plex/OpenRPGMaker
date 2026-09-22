@@ -141,7 +141,7 @@ describe("shipped project battle skin authoring", () => {
     // createIcePlain64Project, createTrainingExamplesProject, createShopShowcaseProject,
     // createSmallHouseVariantProject, createTownArchitectureCityProject, createTownArchitectureTestProject,
     // createTownCityShowcaseProject, createTownHouseShowcaseProject, createModernNocturneProject,
-    // createSkyStairProject. Factories requiring arguments or network/Supabase access are intentionally skipped.
+    // createSkyStairProject. Factories requiring arguments or network/LegacyDb access are intentionally skipped.
     // createVillageShoppingStreetProject 는 이제 editor 층(@/editor/content/villageShoppingStreetProject)
     // 에 있고 정적 import 로 불러올 수 있다 — 예전의 순환 차단용 CJS require("@/...") 는 vitest 에서
     // vite alias 를 못 풀어 호출 자체가 깨졌고, 번들러는 그 호출을 정적으로 따라가 플레이어 번들에

@@ -48,7 +48,19 @@ const store = createOhMyPiAuthStore(defaultOhMyPiAuthPath());
 /** Antigravity 는 projectId 없이는 요청이 불가능하므로 상태 판정에 그것까지 본다. */
 const PROJECT_SCOPED_PROVIDERS = new Set<string>([ANTIGRAVITY_PROVIDER_ID]);
 const OMP_PROBE_TTL_MS = 2_000;
-const OMP_AUTH_PROBE_SCRIPT = fileURLToPath(new URL("./omp-auth-probe.mjs", import.meta.url));
+
+/**
+ * 프로브 스크립트 경로. **호출 시점에** 푼다.
+ *
+ * 왜 지연인가: esbuild 가 Electron 메인을 CJS 로 번들하면 `import.meta.url` 이 빈 값이 된다
+ * (`"import.meta" is not available with the "cjs" output format`). 모듈 로드 시점에
+ * `new URL(..., import.meta.url)` 을 평가하면 **앱이 창을 띄우기도 전에 죽는다** —
+ * 2026-09-22 실측: 패키징 AppImage 가 `TypeError: Invalid URL` 로 시작 실패했다.
+ * 지연 평가면 이 값을 쓰지 않는 경로(대부분의 실행)가 영향을 받지 않는다.
+ */
+function ompAuthProbeScript(): string {
+  return process.env.OPRN_OMP_AUTH_PROBE_SCRIPT || fileURLToPath(new URL("./omp-auth-probe.mjs", import.meta.url));
+}
 
 type OmpProbeResult = {
   available: boolean;
@@ -122,7 +134,7 @@ function probeOmpAuth(provider: string): OmpProbeResult {
 
   let result: OmpProbeResult = { available: false };
   try {
-    const output = execFileSync(ompCommand(), [OMP_AUTH_PROBE_SCRIPT, provider], {
+    const output = execFileSync(ompCommand(), [ompAuthProbeScript(), provider], {
       cwd: process.cwd(),
       env: { ...process.env },
       encoding: "utf8",

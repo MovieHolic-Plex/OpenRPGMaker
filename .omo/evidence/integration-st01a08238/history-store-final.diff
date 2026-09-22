@@ -252,7 +252,7 @@ index a5a18b3fd..009fc05b4 100644
        // Defer remote rewrite of normalize fixes so boot is not blocked on Tailscale/dbserver RTT.
 +      this.dirtySinceLastPersist = false;
        await this.normalizeCurrentProject({ persistIfChanged: false });
-       this.refreshSupabaseResourceCache();
+       this.refreshLegacyDbResourceCache();
      } catch (error) {
 @@ -313,7 +317,7 @@ class ProjectStore {
        throw error;
@@ -285,7 +285,7 @@ index a5a18b3fd..009fc05b4 100644
 +        await this.normalizeCurrentProject();
          this.syncProjectUrlBar();
          this.emit({ scope: "project", projectSwitch: true });
-         this.refreshSupabaseResourceCache();
+         this.refreshLegacyDbResourceCache();
 @@ -761,10 +765,10 @@ class ProjectStore {
        this.remotePersistenceEnabled = true;
        this.remotePersistenceDisabledReason = null;
@@ -310,7 +310,7 @@ index a5a18b3fd..009fc05b4 100644
 +      if (this.contentLineage !== lineage || this.autoSaveTimer !== timer) return;
        this.autoSaveTimer = null;
        void this.saveCurrentWithAutoSaveState().catch((error) => {
-         log.error("Supabase auto-save failed", error);
+         log.error("LegacyDb auto-save failed", error);
        });
      }, this.autoSaveDelayMs);
 +    this.autoSaveTimer = timer;
@@ -337,7 +337,7 @@ index a5a18b3fd..009fc05b4 100644
 +      if (this.contentLineage !== lineage || this.autoSaveRetryTimer !== timer) return;
        this.autoSaveRetryTimer = null;
        void this.saveCurrentWithAutoSaveState().catch((error) => {
-         log.error("Supabase auto-save retry failed", error);
+         log.error("LegacyDb auto-save retry failed", error);
        });
      }, delay);
 -    this.startHealthCheck();
@@ -521,4 +521,4 @@ index a5a18b3fd..009fc05b4 100644
 +      && this.current === repairTarget && this.contentLineage === repairLineage) this.scheduleAutoSave();
    }
  
-   private refreshSupabaseResourceCache(): void {
+   private refreshLegacyDbResourceCache(): void {

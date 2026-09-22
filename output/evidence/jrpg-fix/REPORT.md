@@ -142,7 +142,7 @@
 
 ## 저장과 검증 한계
 
-원격 저장 활성 상태의 store.flush 이후 Supabase HTTP 200으로 해당 프로젝트를 다시 조회하고 store.reloadFromRemote를 실행했다. 첫 비교에서 레거시 대사 lines→body와 빈 상점 분기의 로드 정규화 차이가 있었으며, 로드한 정규 데이터를 저장한 뒤 세 값을 다시 비교했다.
+원격 저장 활성 상태의 store.flush 이후 LegacyDb HTTP 200으로 해당 프로젝트를 다시 조회하고 store.reloadFromRemote를 실행했다. 첫 비교에서 레거시 대사 lines→body와 빈 상점 분기의 로드 정규화 차이가 있었으며, 로드한 정규 데이터를 저장한 뒤 세 값을 다시 비교했다.
 
 최종 비교 일치: `True`. 브라우저 저장 전 / 원격 / 브라우저 재로드 SHA-256: `ed254ee162e783808c4a3baef103e8dac7372e8ae3c2b68a4343dcc57c5111d2`. 전체 근거는 `review/persistence.json`.
 

@@ -33,7 +33,20 @@ export function openLoginModalIfNeeded(onIdentityChanged?: () => void): void {
     completeMockLogin("게스트", "guest", onIdentityChanged);
     return;
   }
-  openMockLoginModal(onIdentityChanged);
+  // 부팅 게이트에서는 더 이상 묻지 않는다 (2026-09-22).
+  //
+  // 이 모달은 "로그인" 이라고 부르지만 실제로 하는 일은 **커밋 기록의 이름표 설정**뿐이다
+  // (`setOwnerLabel` + localStorage 키 하나). 팀 권한과는 코드 경로가 하나도 겹치지 않는다 —
+  // 권한은 `teamSession` 이 서버의 `member.role` 로 정하고, 팀 호스트는 파일 메뉴에서 따로
+  // 시작한다. 그래서 팀을 쓰지 않는 대부분의 사용자에게는 **아무 의미 없는 관문**이었다.
+  //
+  // 더 나빴던 것: `LAST_LOGIN_METHOD_KEY` 하나로 판단하므로 **한 번 넘기면 영영 안 뜬다.**
+  // 초심자는 뭔지도 모른 채 "게스트로 계속" 을 누르고, 그 뒤로는 팀 기능이 있다는 것도 모른다.
+  // 정작 팀 협업을 시작하려는 사람에게 안내가 없는 것이다.
+  //
+  // 게스트 신원은 어차피 자동으로 붙는다(`브라우저 4419` 같은 라벨). 이름은 상단 인물
+  // 아이콘에서 언제든 바꿀 수 있고, 팀 협업을 시작할 때 묻는 것이 자연스럽다.
+  completeMockLogin("게스트", "guest", onIdentityChanged);
 }
 
 /** AI 제안 UI가 로그인 모달에 가리지 않도록 게스트 신원을 확보한다. */

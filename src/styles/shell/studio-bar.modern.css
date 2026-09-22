@@ -281,6 +281,83 @@
   display: none;
 }
 
+/* AI 연결 상태 칩 — 톱바에 상시 붙는다.
+   저장 칩(.topbar-save-status)은 조용할 때 접지만, 이 칩은 ready 에서도 남는다:
+   연결 여부는 "처음 한 번 반드시 물어봐야 하는 것" 이고, 안 보이면 정상이라는 학습이
+   끝난 사용자는 진짜 문제일 때도 못 본다. */
+.studio-bar .ai-connection-chip {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 1 auto;
+  max-width: 220px;
+  min-width: 0;
+  margin-left: 2px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* 누를 수 있는 상태(ready 아님)에서만 손가락 커서와 hover 를 준다 —
+   누를 수 없는데 hover 가 반응하면 "눌렀는데 아무 일도 안 일어난다" 로 읽힌다. */
+.studio-bar .ai-connection-chip.is-actionable {
+  cursor: pointer;
+}
+
+.studio-bar .ai-connection-chip.is-actionable:hover {
+  background: var(--surface);
+  border-color: var(--text-muted);
+}
+
+.studio-bar .ai-connection-chip:focus-visible {
+  outline: 2px solid var(--focus-ring, var(--accent));
+  outline-offset: 1px;
+}
+
+.studio-bar .ai-connection-chip .ai-connection-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.studio-bar .ai-connection-chip .ai-connection-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.5;
+}
+
+/* 상태별 색. 확인 중(회색)과 정상(초록)이 확실히 갈려야 한다 —
+   둘 다 회색이면 "확인 중" 에서 영영 기다리는 것처럼 보인다. */
+.studio-bar .ai-connection-chip[data-kind="ready"] {
+  color: var(--status-success);
+  border-color: color-mix(in srgb, var(--status-success) 35%, var(--border));
+}
+
+.studio-bar .ai-connection-chip[data-kind="ready"] .ai-connection-dot {
+  opacity: 1;
+}
+
+.studio-bar .ai-connection-chip[data-kind="checking"] {
+  color: var(--status-warning);
+}
+
+.studio-bar .ai-connection-chip[data-kind="disconnected"],
+.studio-bar .ai-connection-chip[data-kind="offline"],
+.studio-bar .ai-connection-chip[data-kind="error"] {
+  color: var(--status-error);
+  border-color: color-mix(in srgb, var(--status-error) 35%, var(--border));
+}
+
 .studio-bar .topbar-ai-studio-label {
   display: inline;
 }

@@ -81,7 +81,7 @@ async function shot(page: Page, name: string): Promise<void> {
   else await page.screenshot({ path: `${DIR}/${name}.png` });
 }
 
-test("audit: esc status menu on the real supabase project", async ({ page }) => {
+test("audit: esc status menu on the real legacyDb project", async ({ page }) => {
   test.setTimeout(240_000);
   mkdirSync(DIR, { recursive: true });
   const consoleLines: string[] = [];

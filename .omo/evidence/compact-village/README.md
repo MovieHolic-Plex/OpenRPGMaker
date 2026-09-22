@@ -1,6 +1,6 @@
 # Compact village from saved exterior objects
 
-**오밀조밀 장터 마을 · 작은 집 26채** is saved in Supabase project
+**오밀조밀 장터 마을 · 작은 집 26채** is saved in LegacyDb project
 `rpg-zzu-house-template-gallery`, map `map_compact_market_village_20260913` (**80×80**).
 The first 128×128 draft remains available as an earlier reference.
 
@@ -21,7 +21,7 @@ The first 128×128 draft remains available as an earlier reference.
 
 ## Persistence and execution evidence
 
-`supabase-proof.json` records actual CAS save, a successful complete normalized readback,
+`legacy-db-proof.json` records actual CAS save, a successful complete normalized readback,
 and the canonical server SHA. `final-remote-check.json` independently checks that server
 revision plus all authored maps, spatial content and village graphics after browser QA.
 The existing 15 maps, all previous objects and spatial occurrences were preserved.
@@ -29,7 +29,7 @@ The project now has 16 maps; the new 12 compact exterior objects are saved along
 original 30-house catalog.
 
 - [Native map / zoomable viewer](render/index.html) and [overview](render/map-overview.png)
-  are rendered from the Supabase readback using the editor's `drawMapTileLayers`.
+  are rendered from the LegacyDb readback using the editor's `drawMapTileLayers`.
 - [Actual editor](editor-saved-village.png), `editor-proof.json`: normal project URL,
   remote persistence enabled, exact map match, 30 prior + 12 new houses, no browser errors
   and no content writes by the read-only check.

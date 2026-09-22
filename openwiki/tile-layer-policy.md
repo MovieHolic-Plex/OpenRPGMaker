@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 타일 레이어·배경 정책 (OPRN-OUT-026)
 
 투명한지 여부(시각 사실), 어느 레이어에 사는지(논리 소속), 하위에 그릴 때 아래에 무엇을 깔지
@@ -173,7 +175,7 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 `bundled.ts`가 텍스처와 프레임 수를 등록하고 `defaultAssets.ts`가 복제된
 통행/레이어/오토타일/조립 정의를 생성한다. 새 프로젝트에 포함되며 기존 프로젝트는
 `ensureBundledTilesets` 정규화로 열 때 추가된다. 기존 맵의 타일셋은 바꾸지 않는다.
-원본 프로젝트에 기본 정의와 리소스 프로필을 저장하고 Supabase 재로드를 확인했다.
+원본 프로젝트에 기본 정의와 리소스 프로필을 저장하고 LegacyDb 재로드를 확인했다.
 신규/기존 등록, 반복 로딩 정의 유지, PNG 크기/칸 수 일치를 직접 확인했다.
 
 숲마을 번들의 마지막 행 여백 26칸도 `count=2550`에 포함된다. 통행·레이어·지형 배열이
@@ -244,3 +246,100 @@ RGB(224,103,191)만 투명 처리하며 리사이즈/감색/재질 합성을 하
 
 카탈로그의 이전 `confidence: high` 표시는 실측 검증이 아니었다. 208=물가, 188=시계나무 조각,
 215/216=벤치, 233=상자이며 기존 농경지·선착장·나룻배 명칭을 그대로 사용하지 않는다.
+2026-09-21 마을 생성 기본값: `author_village`의 새 맵 및 기존 기본 칩셋의 빈 전체 맵은
+`forest_harmony`를 선택한다. `treeKitForTileset`이 저장된 나무 조립의 `previewMap`을 읽고,
+물은 `forest_harmony_lake_47` 정의를 쓴다. 집·길의 합본 호환 판정과 나무/물 조립 선택은
+별개다. 기존 콘텐츠·선택 영역·명시적으로 다른 칩셋을 선택한 맵의 타일셋은 보존한다.
+자세한 경로·울타리 정책은 [마을 배치 연구](village-layout-research.md)를 따른다.
+
+## LPC 나무 가구 공통 기본 제공 타일셋 (2026-09-21)
+
+`opengameart_lpc_wooden_furniture` / `tex_opengameart_lpc_wooden_furniture`,
+표시명 `LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)`. 성채 칩셋과 마찬가지로
+**모든 프로젝트의 선택 목록에 추가**이며 기본 선택은 바꾸지 않는다.
+
+- 원본: https://opengameart.org/content/lpc-wooden-furniture — 저자 bluecarrot16,
+  Basto, Sharm, William Thompson, Reemax, Janna/Lilius/Jannax. 라이선스는
+  CC-BY-SA 3.0 / GPL 3.0 (구성 요소별 상위 라이선스는 원본 크레딧 파일 참고).
+  `public/assets/opengameart-lpc-wooden-furniture.png`은 페이지의 투명 배경 변형
+  `clean_furniture.png`(512×1024)를 수정 없이 보존한다. 가군 배경 미리보기 변형은
+  묶지 않는다. 해시·출처·수정 없음 표기는 `ATTRIBUTION.md`.
+  게임 내보내기는 PNG와 `opengameart-lpc-wooden-furniture-CREDITS.txt`를 함께 수집한다.
+- LPC 표준 32×32px 시트다(16열 × 32행 = 512칸). 격자는 실측으로 확정했다: 침실 벽장
+  타일은 LPC 관습대로 32px 셀 하단에 그려지고, 주방 캐비닛·오븐·유리장은 32px 경계에서
+  정확히 잘린다. 에지 에너지·거터 분석은 격자 판별에 쓰지 않는다(가구 너비가 16/32 섞여
+  결과가 뒤집힌다). 원본 한 타일이 곧 엔진 한 칸이므로 32px · 16열 ·
+  `kind: "custom"` 으로 등록하고 16px RM2K 오토타일/물 애니 스트립은 등록하지 않는다.
+- 통행/레이어 초기값은 Slates 32px와 같은 계약(전부 통행 가능·하위, 메타 unknown)이다.
+  성채의 알파 E/T/O 표 방식으로 통행을 추정해 막지 않는다 — 가구 시트는 부분 투명
+  오브젝트가 대부분이라 알파 추정의 오답률이 더 높다. 칸 단위 조정은 타일 메타데이터
+  도구의 몫이다. `applyCustomChipsetMinimalHarness`는 이 시트를 건너뛴다(합본 마을
+  16px 투명 칩 표가 무관한 번호를 재해석하지 않게).
+- 정의: `src/project/defaults/lpcWoodenFurniture.ts`. 프레임 등록·리소스 프로필·자료
+  보관함 기하는 `bundledChipsetGeometry.ts`가 공유한다.
+
+### 공용 오브젝트 (2026-09-22)
+
+이 시트의 가구 39종은 **모든 프로젝트의 자료집 → 맵 → 오브젝트 → 공용 오브젝트**에
+나온다. Tibo 실내 확장과 같은 경로다 — 타일셋 `structureKits` 로 굽고, 자료집이 그 킷을
+공용으로 판정한다.
+
+- 정본: `src/project/defaults/lpcWoodenFurnitureObjects.ts` (39종, 좌표는 셀 격자).
+  굽기·시드는 `lpcWoodenFurniture.ts` 의 `lpcFurnitureKits` / `seedLpcWoodenFurnitureKits`,
+  기존 프로젝트 반영은 `ensureBundledTilesets`(로드 경로)가 맡는다.
+- 시드 계약: **킷이 하나라도 있으면 손대지 않는다.** 사람이 지운 상태를 되살리지 않기
+  위해서다(Tibo `extendTiboInteriorDefaults` 와 같은 보수 규칙).
+- 공용 판정: `spatialCatalog.isBundledFurniturePackKit` 이 타일셋 신원 + id 접두사로
+  가른다(`lpc_*` · `tibo-*`). 저작자가 복제해 만든 `kit_*` 는 내 오브젝트로 남는다.
+- 레이어: 이 시트 가구는 전부 **상위 레이어 실루엣**이다. 하위로 깔면 발밑 바닥을 덮어
+  맵이 걸어다닐 수 없게 된다. 통행 판정은 셀 메타(`role: prop`)가 막는다.
+- 좌표는 **자동 분할로 뽑지 않았다.** 연결 요소·최대 사각형은 인접 가구가 붙어 있어
+  뭉치거나 잘린다(실측: 102개 컴포넌트가 여러 가구를 한 덩어리로 묶었다). 셀 번호판을
+  얹은 확대도로 하나씩 확정하고, 확정 좌표를 실제 타일로 렌더한 연락처 시트로 검증했다.
+  특히 침대는 2×1(머리판 줄) · 1×2(세로형) · 2×3(캐노피)로 제각각이고, 오르간은
+  `c5 r26 3×3`, 그랜드 피아노는 `c0 r26 2×3` 이다.
+- 복제 경로 폴백: `copyBuiltin` 과 `copyBuiltinObjectIntoProject` 는 원래
+  `interiorObjectById` · `tiboInteriorObjectById` 만 봤다. LPC 킷은 그 둘에 없어서
+  "내 오브젝트로 복제" 가 조용히 아무 일도 하지 않았다 — `lpcFurnitureObjectById` 폴백을
+  추가했다. 새 번들 가구 팩을 넣을 때 같은 폴백을 빠뜨리면 같은 증상이 난다.
+
+### 16px 병행판 (2026-09-22)
+
+`opengameart_lpc_wooden_furniture_16` / `tex_opengameart_lpc_wooden_furniture_16`,
+표시명 `LPC 나무 가구 16px · OpenGameArt (CC-BY-SA 3.0)`. 32px 판과 **같은 킷 id 39종**을
+쓴다 — 자료집 카드·복제·배치가 두 판을 같은 물건으로 보고, 사용자는 맵 타일셋만 바꿔
+같은 가구를 고른다. 좌표도 같다(축소본은 정확히 절반, 16열 유지).
+
+- 왜 병행하는가: 32px 판은 자기 타일셋 맵에서만 쓸 수 있고 기존 16px 맵(합본 마을·실내)에는
+  격자가 맞지 않아 찍을 수 없다(`atlasMismatch`). 16px 판이 그 제약을 없앤다.
+- 파일: `public/assets/opengameart-lpc-wooden-furniture-16px.png`(256×512). 원본 32px 판은
+  **손대지 않고 보존**한다 — 축소본이 원본을 대체하지 않는다. 해시·수정 표기는 `ATTRIBUTION.md`.
+- 생성: unfake.js(unfake-core WASM) median 블록 다운스케일. **다운스케일 단계만 쓴다.**
+  morph(구멍 메우기)와 양자화는 이 시트에 해로웠다 — 얇은 손잡이·칸막이를 노이즈로 보고
+  지운다(실측: 긴 탁자 다리 소실, 선반 칸막이 뭉개짐). unfake 는 AI 생성물의 "가짜 픽셀"을
+  되돌리는 도구인데 이 시트는 진짜 픽셀아트라 되돌릴 것이 없다. `detect_auto` 가 15 를
+  돌려준 것도 같은 이유다(실제 격자는 1).
+- 정의: `createLpcWoodenFurniture16Tileset` · `seedLpcWoodenFurniture16Kits`.
+  기존 프로젝트 반영은 `ensureBundledTilesets`. 시드 계약은 32px 판과 같다(킷이 있으면 불변).
+
+### 픽셀 크기 기록 계약 (2026-09-22)
+
+타일셋·오브젝트·장소가 **한 칸의 픽셀 크기**를 자기 데이터에 새긴다. 칸 수(`width`/`height`)만
+으로는 16px 판과 32px 판을 구별할 수 없기 때문이다 — 같은 그림의 두 판은 타일 번호와 칸
+수가 같고 픽셀만 다르다.
+
+- 왜 필요했나(실측): LPC 나무 가구 32px 판과 16px 판이 **같은 킷 id**(`lpc_bed_plain` 등)를
+  쓴다. `snapshotGraphic` 이 `tilesetId/kitId` 만 보고 `width:2 height:1` 만 돌려주면, 소비자는
+  어느 판인지 알 수 없어 조용히 반쪽 크기로 찍힌다.
+- 새긴 곳: `SectionStructureKitDef.tileSize`(킷), `SpatialKitSnapshot.tileSize`(동결 래스터),
+  `SpatialTerrain.tileSize`(장소 지형), `StructureKitFile.tileset.tileSize`(내보내기 파일).
+  전부 optional — 구 저장 데이터에는 없고, 없으면 소유 타일셋에서 해석한다.
+- 왜 스냅샷에 박는가: 스냅샷은 **동결된 래스터**다. 나중에 타일셋 쪽 크기가 바뀌어도 이미
+  찍힌 배치의 픽셀 의미는 변하면 안 된다. 그래서 값을 복사해 두고, 어긋나면 검증이 멈춘다.
+- 가드 세 곳: `references.ts`(스냅샷 tileSize vs 아틀라스), `geographyTerrain` 의
+  `assertTerrainTileSize`(지형 vs 아틀라스), `planImport` 의 `tileSizeMismatch`(가져오기 파일
+  vs 앨범 — 대화상자가 경고를 띄운다).
+- 해석 실패를 0 이나 기본값으로 뭉개지 않는다. `graphicTileSize` 는 타일셋이 없으면
+  `undefined` 를 돌려주고, 가드는 기록이 없을 때만 검사를 건너뛴다.
+- 새 번들 가구 팩을 넣을 때: 굽는 쪽이 `tileSize` 를 넘겨야 한다(`bakeInteriorObject` 의
+  네 번째 인자, `lpcFurnitureKits(tileSize)`). 빠뜨리면 그 팩만 크기 미상이 된다.

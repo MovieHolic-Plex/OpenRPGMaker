@@ -11,7 +11,7 @@
 // 앱 자신의 모듈 그래프를 동적 import 해서 읽는다. 이게 통과하면 라벨은 화면까지 도달한다.
 import { expect, test } from "@playwright/test";
 import { createSampleAdventureProject } from "@/project/defaults/defaultProject";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -38,7 +38,7 @@ test("재감사로 고친 라벨이 실행 중인 에디터 번들에서 그대�
     window.localStorage.setItem("oprn:editor-ui-mode", "expert");
   });
   await page.setViewportSize({ width: 1440, height: 950 });
-  await seedProjectFromSupabaseCanonical(page, createSampleAdventureProject());
+  await seedProjectForEditor(page, createSampleAdventureProject());
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 20_000 });
 
   // 타일 팔레트는 타일 레이어에만 있다 — 에디터는 이벤트 레이어로 열린다.

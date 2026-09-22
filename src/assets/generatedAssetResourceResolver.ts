@@ -9,6 +9,7 @@ import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
 import { resolveScarloxyAssetUrl } from "./scarloxyPack";
 import { resolveOgaBackdropAssetUrl } from "./ogaBackdropAssets";
+import { resolveOgaCraftpixAssetUrl } from "./ogaCraftpixBackgrounds";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { FACESET_FACE_ASSETS } from "@/assets/facesetFaceAssets";
 import type { GeneratedAssetManifest } from "./generatedAssetManifest";
@@ -330,6 +331,7 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveFarmingAssetUrl(resourceId) ??
     resolveCc0IconAssetUrl(resourceId) ??
     resolveOgaBackdropAssetUrl(resourceId) ??
+    resolveOgaCraftpixAssetUrl(resourceId) ??
     resolveCc0AudioAssetUrl(resourceId) ??
     // 281곡 CC0 BGM 카탈로그. 파일이 레포에 없고 CDN 에서 오므로 절대 URL 이 나올 수 있다.
     resolveBgmCatalogAssetUrl(resourceId) ??

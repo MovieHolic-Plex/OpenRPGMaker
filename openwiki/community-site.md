@@ -4,10 +4,11 @@ Next.js 16 companion site for sharing OpenRPGMaker assets and games. Lives in `c
 
 ## Data
 
-- Tables `public.openrpg_assets` / `public.openrpg_games` / `public.openrpg_game_releases` on the shared dbserver Supabase (`dbserver:8100` PostgREST; Postgres via supavisor `dbserver:5433`, user `postgres.your-tenant-id`). Never use that shared service for automated release QA; the release integration test creates a private disposable PostgreSQL cluster.
-- Migrations: `community-site/db/0001_openrpg_community.sql` (tables, read-only RLS for anon), `0002_lock_down_writes.sql` (writes revoked from anon/authenticated — only the site's server-side `pg` pool writes).
-- Seed: `npx tsx community-site/db/seed-community.mts` (from repo root) — the seed game package is produced by the editor's own `createBlankProject` + `createProjectPackage`.
-- The site never uses PostgREST for reads/writes; it connects server-side via `COMMUNITY_DATABASE_URL` (see `community-site/.env.local`).
+- The site uses a server-side `pg.Pool` and `COMMUNITY_DATABASE_URL` with a standalone PostgreSQL database.
+- The existing migrations and deployment of this separate site are unchanged by the editor migration.
+  Browser clients use the site's HTTP routes.
+- Data migration and deployment of this separate, unfinished site are excluded from the current user request.
+- Release integration checks use a private disposable PostgreSQL cluster, never an operational DB.
 
 ## Interop contract (do not break)
 
@@ -173,5 +174,4 @@ The following records the old implementation and its fidelity repairs. It is not
 - Turbopack dev hands page `params` percent-encoded while route handlers get them decoded; detail pages call `decodeURIComponent` defensively.
 - `Content-Disposition` with Korean filenames 500s; use RFC 5987 `filename*=UTF-8''...`.
 - Slugify must use NFKC, not NFKD — NFKD decomposes Hangul syllables into jamo outside the `가-힣` range.
-- `dbserver:5432` is a different Postgres cluster (app DBs, `postgres`/`postgres`) — NOT the Supabase one. The Supabase data is only reachable via `:8100` (REST) or `:5433` (supavisor).
-- As of 2026-07-21, the editor's own tables (`public.projects` etc.) do not exist on this Supabase instance; editor saves would fail until `supabase/migrations` are applied there.
+- Choose an operator-owned `COMMUNITY_DATABASE_URL`; do not assume a shared host/port or default credentials.

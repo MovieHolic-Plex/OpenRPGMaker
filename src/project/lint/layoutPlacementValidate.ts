@@ -1,5 +1,6 @@
 // 배치 완료 후 시맨틱 검증 — 툴 단위 projectLint 와 별도로, "다 깐 뒤" 한 번 검사한다.
 // 순수 함수(브라우저/헤드리스 공용). throw 하지 않고 LintIssue[] 반환.
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isPassable } from "@/project/collision";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { TILE } from "@/project/defaults/constants";
@@ -78,7 +79,7 @@ export function scrubPlacementConflicts(project: Project, map: GameMap, canWrite
     const upper = map.upperTiles[index];
     if (upper === TILE.EMPTY || upper < 0) continue;
     // 1) 물 위 upper 소품/수관 — checkPropsOnWater 규칙.
-    if (isLakeAutotileTile(lower)) {
+    if (isLakeAutotileTile(lower) && !isWaterBridge(project, map, index)) {
       map.upperTiles[index] = TILE.EMPTY;
       propsOnWater += 1;
       continue;
@@ -124,9 +125,16 @@ function forEachCell(region: LayoutRegion, fn: (x: number, y: number, index: num
   }
 }
 
+/** Combined-town 199 is a walkable wooden deck over water, not stray decoration. */
+function isWaterBridge(project: Project, map: GameMap, index: number): boolean {
+  const tileset = project.tilesets[map.tilesetId];
+  return map.upperTiles[index] === 199 && !!tileset && isCombinedTownCompatibleTileset(tileset)
+    && isPassable(project, map, index % map.width, Math.floor(index / map.width));
+}
+
 /** 물 위 upper 소품(나무 포함) — error */
 function checkPropsOnWater(
-  _project: Project,
+  project: Project,
   map: GameMap,
   mapId: string,
   region: LayoutRegion,
@@ -135,7 +143,7 @@ function checkPropsOnWater(
   let count = 0;
   let sample: { x: number; y: number } | undefined;
   forEachCell(region, (x, y, index) => {
-    if (!isLakeAutotileTile(map.lowerTiles[index])) return;
+    if (!isLakeAutotileTile(map.lowerTiles[index]) || isWaterBridge(project, map, index)) return;
     if (map.upperTiles[index] === TILE.EMPTY || map.upperTiles[index] < 0) return;
     count += 1;
     if (!sample) sample = { x, y };

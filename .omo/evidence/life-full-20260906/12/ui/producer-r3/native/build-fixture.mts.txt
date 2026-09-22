@@ -1,0 +1,165 @@
+import { writeFile } from "node:fs/promises";
+import { readFileSync, existsSync } from "node:fs";
+import { createBlankProject } from "@/project/defaults";
+import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
+import { serialize } from "@/project/io";
+import { loadProjectFromLegacyDb, saveProjectToLegacyDb } from "@/project/legacyDbProjectSync";
+
+const PROJECT_ID = "rpg-zzu-life-full-p4-t12-ui-01a07b22";
+const CLOUD = "easyrpg-picture-cloud";
+
+function loadEnv(): Record<string, string> {
+  const env: Record<string, string> = {};
+  for (const file of [".env", ".env.local"]) {
+    if (!existsSync(file)) continue;
+    for (const line of readFileSync(file, "utf8").split(/\r?\n/)) {
+      const match = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
+      if (!match?.[1] || match[2] === undefined) continue;
+      env[match[1]] = match[2].replace(/^["']|["']$/g, "");
+    }
+  }
+  return env;
+}
+
+function buildProject() {
+  const project = createBlankProject();
+  const potion = project.database.items.find((item) => item.id === "item_potion") ?? project.database.items[0];
+  const hoe = project.database.items.find((item) => item.id === "item_hoe");
+  if (!potion) throw new Error("blank project requires a starter item");
+  if (!hoe) throw new Error("blank project requires item_hoe");
+  project.name = "Task12 live placement QA r3";
+  project.startPos = { x: 8, y: 8 };
+  project.system = {
+    ...project.system,
+    playerFootprint: { width: 3, height: 3 },
+    playerPassRows: 1,
+  };
+  project.database.farmBuildingTypes = [{
+    id: "shed",
+    name: "Shed",
+    levels: [
+      { level: 1, footprint: { width: 2, height: 1 }, capacity: 4, cost: { gold: 10 }, graphicResourceId: CLOUD },
+      { level: 2, footprint: { width: 3, height: 2 }, capacity: 8, cost: { gold: 20 }, graphicResourceId: CLOUD },
+    ],
+  }];
+  project.database.homeDecorationTypes = [
+    {
+      id: "rug",
+      name: "Rug",
+      placementItemId: potion.id,
+      footprint: { width: 2, height: 1 },
+      blocksMovement: false,
+      allowedOrientations: ["down", "left"],
+      graphicResourceId: CLOUD,
+    },
+    {
+      id: "table",
+      name: "Table",
+      placementItemId: potion.id,
+      footprint: { width: 1, height: 1 },
+      blocksMovement: true,
+      allowedOrientations: ["down", "left", "right", "up"],
+      graphicResourceId: CLOUD,
+    },
+  ];
+  project.session = {
+    ...project.session,
+    gold: 500,
+    inventory: {
+      ...project.session.inventory,
+      [potion.id]: 8,
+      [hoe.id]: 1,
+    },
+    farmBuildingPlacements: [],
+    homeDecorationPlacements: [],
+  };
+  const map = project.maps[project.startMapId];
+  if (!map) throw new Error("missing start map");
+  map.farmableArea = [{ x: 0, y: 0, w: map.width, h: map.height }];
+  map.events = [{
+    id: "npc_walker",
+    x: 16,
+    y: 5,
+    trigger: { kind: "action" },
+    commands: [],
+    pages: [{
+      id: "walk",
+      name: "walk",
+      conditions: [],
+      graphic: { sprite: { type: "bundled", id: DEFAULT_EASYRPG_CHARSET_ID }, direction: "down", pattern: 0 },
+      trigger: { kind: "action" },
+      priority: "same",
+      overlapForbidden: true,
+      movement: {
+        type: "custom",
+        speed: 1,
+        frequency: 8,
+        route: {
+          moves: [{ kind: "move", dir: "down" }, { kind: "move", dir: "up" }],
+          repeat: true,
+        },
+      },
+      commands: [],
+      footprint: { width: 3, height: 3 },
+      passRows: 1,
+    }],
+  }];
+  return { project, itemId: potion.id, hoeId: hoe.id, mapId: project.startMapId };
+}
+
+const fileEnv = loadEnv();
+const config = {
+  url: (process.env.VITE_LEGACY_DB_URL ?? fileEnv.VITE_LEGACY_DB_URL ?? "").replace(/\/$/, ""),
+  anonKey: process.env.VITE_LEGACY_DB_ANON_KEY ?? fileEnv.VITE_LEGACY_DB_ANON_KEY ?? "",
+  projectId: PROJECT_ID,
+};
+if (!config.url || !config.anonKey) throw new Error("LegacyDb URL and anon key are required");
+if (!/^https?:\/\//.test(config.url)) throw new Error("LegacyDb URL is missing a scheme");
+if (config.projectId.includes("stardew-demo") || config.projectId.toLowerCase().includes("wish")) {
+  throw new Error("refusing to author stardew-demo/WISH");
+}
+
+const { project, itemId, hoeId, mapId } = buildProject();
+const saved = await saveProjectToLegacyDb(project, config);
+if (saved.kind !== "saved") throw new Error(`LegacyDb save failed: ${saved.kind}`);
+const reloaded = await loadProjectFromLegacyDb(config);
+if (!reloaded) throw new Error(`LegacyDb reload failed: ${PROJECT_ID}`);
+if (!reloaded.system.playerFootprint || reloaded.system.playerFootprint.width !== 3 || reloaded.system.playerFootprint.height !== 3) {
+  throw new Error(`reload playerFootprint not 3x3: ${JSON.stringify(reloaded.system.playerFootprint ?? null)}`);
+}
+if (reloaded.system.playerPassRows !== 1) {
+  throw new Error(`reload playerPassRows not 1: ${JSON.stringify(reloaded.system.playerPassRows ?? null)}`);
+}
+if (JSON.stringify(reloaded.session.farmPlots ?? {}) !== "{}") {
+  throw new Error(`reload farmPlots must start empty, got ${JSON.stringify(reloaded.session.farmPlots ?? null)}`);
+}
+const fixturePath = new URL("./fixture.json", import.meta.url);
+await writeFile(fixturePath, serialize(reloaded), "utf8");
+const startMap = reloaded.maps[reloaded.startMapId];
+const proof = {
+  projectId: PROJECT_ID,
+  saveKind: saved.kind,
+  sha256: saved.sha256 ?? null,
+  reloadMapId: reloaded.startMapId,
+  reloadStartPos: reloaded.startPos,
+  reloadPlayerFootprint: reloaded.system.playerFootprint ?? null,
+  reloadPlayerPassRows: reloaded.system.playerPassRows ?? null,
+  reloadBuildingTypes: reloaded.database.farmBuildingTypes?.map((entry) => entry.id) ?? [],
+  reloadDecorationTypes: reloaded.database.homeDecorationTypes?.map((entry) => entry.id) ?? [],
+  reloadNpc: startMap?.events.map((event) => ({
+    id: event.id,
+    footprint: event.pages[0]?.footprint ?? null,
+    passRows: event.pages[0]?.passRows ?? null,
+    x: event.x,
+    y: event.y,
+  })) ?? [],
+  reloadPlots: reloaded.session.farmPlots ?? {},
+  itemId,
+  hoeId,
+  mapId,
+  mapSize: startMap ? { width: startMap.width, height: startMap.height } : null,
+  farmableArea: startMap?.farmableArea ?? null,
+  uniqueVsR2: PROJECT_ID !== "rpg-zzu-life-full-p4-t12-ui-01a07a93",
+};
+await writeFile(new URL("./remote-proof.json", import.meta.url), `${JSON.stringify(proof, null, 2)}\n`);
+console.log(JSON.stringify(proof));

@@ -62,7 +62,7 @@
 <section class="chapter" id="runtime" aria-labelledby="heading-runtime"><div class="section-heading"><span class="number">03</span><h2 id="heading-runtime">한 플레이 세션에서 확인한 것</h2></div>
 <p class="lead">원격에서 읽은 기존 마을을 출하 플레이어에 공급했다. 바뀐 것은 격리된 플레이 세션이지, 원격 프로젝트가 아니다.</p>
 <ul>
-<li>대상은 <code>rpg-zzu-stardew-demo</code>, 제목 <strong>별빛 농장 마을</strong>이다. 편집기 <code>/supabase/rest/v1/projects</code> 프록시에서 <code>Accept-Profile: rpg_zzu</code>와 설정된 인증으로 GET했다. 최초 무인증 요청은 401, 인증된 요청은 <strong>HTTP 200, 1행</strong>이었다. 인증 키 자체는 보고서에 기록하지 않는다.</li>
+<li>대상은 <code>rpg-zzu-stardew-demo</code>, 제목 <strong>별빛 농장 마을</strong>이다. 편집기 <code>/legacyDb/rest/v1/projects</code> 프록시에서 <code>Accept-Profile: rpg_zzu</code>와 설정된 인증으로 GET했다. 최초 무인증 요청은 401, 인증된 요청은 <strong>HTTP 200, 1행</strong>이었다. 인증 키 자체는 보고서에 기록하지 않는다.</li>
 <li>맵 2개, 작물 8종, 생활 기술 5종, 시작 동물 2마리, 어종 2종이며 박물관이 활성화돼 있다. 저장본의 <code>current_sha256</code>은 <strong><code>bd9b8c08c077808ff3de43cde16939d2354c1f7445ec5eecb572e47d1cde2641</code></strong>이다. 이는 조회된 행의 값이며 이 합성 작업이 원격 JSON 해시를 독립 재계산한 결과라고 주장하지 않는다.</li>
 <li><strong>원격 프로젝트 행에 쓰기·저장·업서트는 없었다.</strong> 과거 저장본의 현재 조회 성공이며 이번 작업의 신규 콘텐츠 저장 영수증이 아니다.</li>
 <li>편집기는 <code>http://127.0.0.1:40059/</code>의 격리 브라우저 세션에서 읽은 JSON을 기존 <code>__RPG_ZZU_E2E_PROJECT__</code> 훅에 주입했다. 따라서 B-loaded는 그 저장본의 탭 이동·레코드 표시 증거이지 편집기의 일반 원격 열기 흐름 전체를 검증한 것은 아니다.</li>

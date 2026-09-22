@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # Slates 시각 도감과 조합 연구실
 
 다음 마을 저작은 [성곽 구조 교정 기록](slates-structure-learning.md) → [AI 조립 매뉴얼](slates-village-authoring.md) 순서로 읽는다.
@@ -54,7 +56,7 @@ AI 분류에 `layerBacking`만 써서는 렌더러에 적용되지 않는다. �
 
 ## 재현 순서
 
-1. Supabase 프로젝트를 읽어 `output/slates-study/source-project.json`과 SHA 포함 `source-row.json` 저장.
+1. LegacyDb 프로젝트를 읽어 `output/slates-study/source-project.json`과 SHA 포함 `source-row.json` 저장.
 2. `node scripts/content/build-slates-study.mjs`.
 3. `node scripts/content/save-slates-study.mjs` (다른 SHA이면 중단).
 4. `node scripts/qa/capture-slates-study.mjs verify-shots/slates-study/reloaded-project.json`.

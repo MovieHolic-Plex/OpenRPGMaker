@@ -1,0 +1,16 @@
+{
+  "payload": {
+    "cats": [
+      "castle-art-direction(4MD/7img)",
+      "castle-assembly(8MD/2img)",
+      "castle-revisions(8MD/10img)",
+      "tile-assembly-executable(21MD/1img)"
+    ],
+    "mb": 3.04
+  },
+  "imageDims": {
+    "w": 820,
+    "h": 819
+  },
+  "errors": []
+}

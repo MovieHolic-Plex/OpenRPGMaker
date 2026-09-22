@@ -73,7 +73,7 @@ export function createEpochContracts(harness) {
     gate.used = true;
     record('deferred-arrived', { owner: gate.id, seam: gate.seam, rows }); gate.arrived.resolve();
     await bounded(gate.release.promise, 'late real commit transport release');
-    // This is the original request to real Supabase, never a fabricated commit.
+    // This is the original request to real LegacyDb, never a fabricated commit.
     await route.continue();
     record('deferred-released', { owner: gate.id, seam: gate.seam }); gate.completed.resolve();
     return true;

@@ -31,7 +31,7 @@
 | 구조 | partial, 첫 실험 대비 개선 | 반칸 돌출층·상점의 다른 높이·분리된 기단. 작업장 톱니 반복은 반려 후 수정. 여관 북쪽 끝·상점 결 전환·얇은 성벽·새 얕은 아치는 아직 한계 |
 | 구성 | partial | 5/6개의 반복 가로 띠를 폐기하고 길드 회랑·상점 거리·시장 광장·정원·공방 중정으로 재배치. 빈 공간이 여전히 넓고 건축 점유율 28.46%는 제안 미달 |
 | 통행 | 확인 범위 내 pass | 실제 엔진으로 47/47 접근 목표·1196칸 연결, 문 통로 8칸 연결. 남문을 가상 차단한 내부 탐색에서 지도 경계 누출 없음 |
-| 저장 | pass | Supabase root/맵/칩셋 재로드 일치. 기존 11개 맵과 시작 위치 보존. 로컬 SQLite revision 9 재로드 일치 |
+| 저장 | pass | LegacyDb root/맵/칩셋 재로드 일치. 기존 11개 맵과 시작 위치 보존. 로컬 SQLite revision 9 재로드 일치 |
 
 건물 4형태·26개. 점유율은 모듈 사각 패딩이 아닌 바닥·그림자·수목·소품을 뺀 알파 실루엣 합집합으로 계산했다. 참고의 수작업 다각형과 이번 알파 면적은 측정 방법이 다르므로 정밀한 직접 비교 수치가 아니다. 새 숫자를 맞추려고 같은 집을 더 복제하는 것을 완료 조건으로 삼지 않았다.
 
@@ -47,7 +47,7 @@
 
 - 실제 에디터 3200×3200 PNG를 2배 격자로 비교했을 때 최종 bundle 미리보기와 다른 픽셀 **0**. [렌더 비교](editor-render-comparison.json), [통행/에디터 관측](engine-observation.json).
 - 전용 `player.html`에서 재로드 프로젝트의 시작점만 바꾼 복사본으로 실제 남문 북쪽 이동·통과를 확인. 에디터 play 경로를 쓰지 않았다. [런타임](runtime-observation.json), [PNG](../../../reports/slates-astra-v2/runtime.png).
-- Supabase project `rpg-zzu-slates32-38e6`, map `slates_astra_v2_walled_50`, 전체 12 maps / 7 tilesets. root SHA `ec17ce658ed24fdff49ab15b3dd335cd1b6d3735cb0f086c9c8801591e3a1261`. [저장·재로드](persistence.json).
+- LegacyDb project `rpg-zzu-slates32-38e6`, map `slates_astra_v2_walled_50`, 전체 12 maps / 7 tilesets. root SHA `ec17ce658ed24fdff49ab15b3dd335cd1b6d3735cb0f086c9c8801591e3a1261`. [저장·재로드](persistence.json).
 - 로컬 project `c8c53479-8d1a-42da-96ee-e493598ef498`, revision 9. [로컬 재로드](local-persistence.json).
 - 에디터 캡처는 독립 임시 미리보기에서 수행했다. 원격 저장 성공의 근거는 별도 저장기의 실제 DB 재로드이며 화면의 저장 표시가 아니다.
 - gates/vitest/전체 typecheck는 실행하지 않았다. 콘텐츠 형식·렌더·통행·저장 관측이다. NPC/실내/거래/문 개폐 기능은 저작하지 않았다.

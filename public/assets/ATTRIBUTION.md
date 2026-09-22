@@ -25,6 +25,44 @@
   composite is distributed under CC BY-SA 3.0; full credits accompany exports
   in `opengameart-castle-reference-composite-CREDITS.txt`.
 
+## [LPC] Wooden Furniture — OpenGameArt
+
+- File: `opengameart-lpc-wooden-furniture.png` (512×1024 RGBA, original pixels
+  unchanged)
+- Authors and required credit: bluecarrot16, Baŝto, Lanea Zimmerman (Sharm),
+  William Thompson, Tuomo Untinen (Reemax), Janna/Lilius/Jannax. The upstream
+  bundled `CREDITS-furniture.txt` is mirrored at
+  `opengameart-lpc-wooden-furniture-CREDITS.txt` and lists each component
+  license; "All information in this file must be included" applies.
+- Source: https://opengameart.org/content/lpc-wooden-furniture
+- Download: https://opengameart.org/sites/default/files/clean_furniture.png
+  (the transparent-background "clean furniture" variant; the opaque preview
+  variant is not bundled)
+- License: CC-BY-SA 3.0 / GPL 3.0 (per-component upstream licenses as listed in
+  the credits file)
+- SHA-256: `6e0a4e5129790d757415e83704f089af27accc9865ccc197cd43f8c3fe2a489d`
+- Notes: LPC standard 32×32px tiles, 16 columns × 32 rows (512 cells). The sheet
+  is registered at its native 32px cell size (custom atlas, no RM2K autotile or
+  water animation). Passability/layer defaults start fully passable and lower
+  layer for authoring. Games exporting this asset must ship
+  `opengameart-lpc-wooden-furniture-CREDITS.txt` alongside the PNG and retain
+  the author, source, and license notices.
+
+### 16px companion sheet (2026-09-22)
+
+- File: `opengameart-lpc-wooden-furniture-16px.png` (256×512 RGBA)
+- Derivation: the 32px sheet above, halved with unfake.js (unfake-core WASM) median
+  block downscale. Registered as `opengameart_lpc_wooden_furniture_16` /
+  `tex_opengameart_lpc_wooden_furniture_16` so the same furniture can be placed on
+  existing 16px maps (combined town / interior).
+- SHA-256: `6989a08a782a6002c2aed4337f393d674b405443b0cd4d2fc247e0d66856d7be`
+- Modification notice: this is a modified (downscaled) derivative. The original 32px
+  sheet is preserved unchanged and is not replaced by this file. Same authors, same
+  CC-BY-SA 3.0 / GPL 3.0 terms, and the same credits file apply.
+- Only the downscale step of unfake.js was used. Its morphological cleanup and
+  quantization steps removed 1px handles and shelf dividers on this sheet (it is
+  authored pixel art, not AI output, so there is no fake-pixel structure to undo).
+
 ## Galmuri pixel fonts
 
 - Files:
@@ -63,6 +101,24 @@
 - Notes: bundled 2026-09-21 as map panorama / battle backdrop candidates. Registered in
   `src/assets/ogaBackdropAssets.ts`. The two 1080p sources were downscaled to match the
   upstream 720p attachments; no other pixels were edited.
+
+## OGA CraftPix — Horizontal 2D Backgrounds
+
+- Files:
+  - `oga/craftpix-horizontal/bg1/composite.png` — upstream `game_background_1/game_background_1.png`
+  - `oga/craftpix-horizontal/bg1/composite-parallax.png` — upstream `game_background_1/game_background_1_parallax.png`
+  - `oga/craftpix-horizontal/bg1/layers/*.png` (7) — upstream `game_background_1/layers/*.png`, copied as-is
+  - `oga/craftpix-horizontal/bg2/composite.png` + `layers/*.png` (8) — upstream `game_background_2/*`
+  - `oga/craftpix-horizontal/bg3/composite-1.png`, `composite-2.png` + `layers/*.png` (8) — upstream `game_background_3/*`
+  - `oga/craftpix-horizontal/bg4/composite.png` + `layers/*.png` (5) — upstream `game_background_4/*`
+- Author: CraftPix.net 2D Game Assets (https://opengameart.org/users/craftpixnet-2d-game-assets)
+- Source: https://opengameart.org/content/horizontal-2d-backgrounds
+- License: **OGA-BY 3.0** (https://opengameart.org/content/oga-by-30-faq), attribution
+  required, commercial use allowed. Do not remove this section while any of these files or
+  derived resource ids (`oga-craftpix-*`) remain in the project.
+- Notes: bundled 2026-09-21 as map panorama multi-layer / single-image candidates. All 35
+  PNGs were copied without pixel edits (only renamed: set folders bg1–bg4, layer composites
+  named `composite*.png`). Registered in `src/assets/ogaCraftpixBackgrounds.ts`.
 
 ## EasyRPG RTP bundled map and object assets
 
@@ -381,3 +437,7 @@ src/assets/openingStillMoods.ts. The remaining oprn-still-* ids point at existin
 bundled artwork (welcome poster slides and title art) whose provenance is
 documented in their sections above; this section registers no new claim for those
 files.
+
+## Shared river fortress place
+
+`region-references/river-fortress-atlas.png` and its portable map preserve Castle2 and the Hyptosis/Daniel Eddeland supplemental provenance. See `castle-surroundings/CREDITS.txt`. Atlas composites and restored entrance cells do not change those licences. No reference-screenshot pixels or removed stone bridge are included.

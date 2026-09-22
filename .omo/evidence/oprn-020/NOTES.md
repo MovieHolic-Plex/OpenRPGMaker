@@ -148,7 +148,7 @@ the primitive already exists (`adoptLayoutRegionsAsLocations`, idempotent, role-
 
 ## Notes for the reviewer
 
-- The Supabase content rule does not apply: this is editor/engine code with no authored game
+- The LegacyDb content rule does not apply: this is editor/engine code with no authored game
   content. Schema changes are proven by load/migrate/save tests instead.
 - Two existing shared contracts had to widen, both deliberately and both machine-guarded:
   `BATTLE_CONDITION_SESSION_STATE_FIELDS` gained `currentMapId`/`x`/`y` (its own comment

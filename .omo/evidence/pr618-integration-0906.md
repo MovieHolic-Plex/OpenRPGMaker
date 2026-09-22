@@ -3,7 +3,7 @@
 Worktree: `/home/main/z-project/rpg-zzu-integration-pr618-0906`.
 PR618 merge: `5ffc905283467f48fa83a08567777ba754019962`, parents `9d5134e5a54766bf27a6c8f394058e967ef71892` and `8c470a41f4955cd6bbb317985c3a3b216f934e15`.
 The handoff merge additionally includes shared-main PR615 commit `0eb0a06c754d46019631baeb84cf9469e83cbf66`. PR616 is supervisor-owned and excluded.
-No shared-root files/index/branch/server were changed. No pushes, PR comments, Supabase reads/writes, or authoring-save scripts were performed by this integration.
+No shared-root files/index/branch/server were changed. No pushes, PR comments, LegacyDb reads/writes, or authoring-save scripts were performed by this integration.
 
 ## Resolutions
 
@@ -69,7 +69,7 @@ npm run build:player
 FACILITY_QA_FIREFOX=1 node scripts/qa-facility-player.mjs pr618-integration
 ```
 
-That player script intentionally excludes inn; it will cover 18 other facilities. For inn/hearth use the three local fixture JSONs with the built `player.html`/export store shim, direct Firefox and QA instrumentation. Best player entry: `qa_inn`, at manifest start; keyboard-walk/interact through all four stair transfers, then verify lodging. Observe actual fire frames 124/154/184/214 while cold hearth remains 463. No editor shell, save flags, or Supabase loader is necessary.
+That player script intentionally excludes inn; it will cover 18 other facilities. For inn/hearth use the three local fixture JSONs with the built `player.html`/export store shim, direct Firefox and QA instrumentation. Best player entry: `qa_inn`, at manifest start; keyboard-walk/interact through all four stair transfers, then verify lodging. Observe actual fire frames 124/154/184/214 while cold hearth remains 463. No editor shell, save flags, or LegacyDb loader is necessary.
 
 ## Shared dirty-patch replay concerns
 

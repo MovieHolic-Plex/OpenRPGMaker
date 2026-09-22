@@ -32,6 +32,7 @@ import {
 import { subscribeAgentBlueprint } from "@/editor/agentBlueprint";
 import { AgentBlueprintRenderer } from "@/editor/agentBlueprintRenderer";
 import { isAgentGhostPreviewHidden, subscribeAgentGhostPreview } from "@/editor/agentGhostPreview";
+import { AI_LIVE_CANVAS_EVENT } from "@/editor/aiLiveCanvas";
 import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPreviewRenderers";
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
@@ -41,7 +42,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
-import { mapBackgroundLayout, mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
+import { mapBackgroundFitScale, mapBackgroundLayout, mapBackgroundTextureKey } from "@/player/playSceneMapBackground";
 import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
@@ -69,6 +70,7 @@ import {
   editSceneTileWindowKey,
   renderEditScene,
   renderEditSceneTileCells,
+  refreshEditSceneOverlay,
   renderVisibleEditSceneTiles,
   applyCameraView,
   shouldLazilyRenderEditMap,
@@ -221,6 +223,8 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 맵 배경 미리보기(토글이 켜져 있을 때만). 하층 타일 아래 depth 의 컨테이너다. */
   private mapBackgroundLayer: Phaser.GameObjects.Container | null = null;
   private mapBackgroundSprites: Phaser.GameObjects.TileSprite[] = [];
+  /** 미리보기 중인 레이어 스펙(배율 재계산용). */
+  private mapBackgroundPreviewSpecs: readonly { readonly fit: "native" | "cover" }[] = [];
   private unsubAgentFocus: (() => void) | null = null;
   private unsubCameraFocus: (() => void) | null = null;
   private unsubInlineApproval: (() => void) | null = null;
@@ -246,7 +250,6 @@ export class EditScene extends PhaserRuntime.Scene {
   private cameraScrollbars: CameraScrollbars | null = null;
   private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
   private navigationResizeObserver: ResizeObserver | null = null;
-  private navigationMutationObserver: MutationObserver | null = null;
 
   private readonly handleCanvasZoomWheel = (event: WheelEvent): void => this.zoomAtWheel(event);
 
@@ -318,6 +321,10 @@ export class EditScene extends PhaserRuntime.Scene {
   private buildPalettePopup: HTMLElement | null = null;
   private buildPalettePopupKey = "";
   private readonly handleBuildPaletteVisibilityChange = (): void => this.renderBuildPaletteOverlay();
+  private readonly handleLiveCanvas = (): void => {
+    this.renderAgentGhostPreview();
+    this.renderAgentBlueprint();
+  };
   private activeRegionTask: { readonly mapId: string; readonly region: RegionRect; readonly phase: "running" | "pending"; readonly runId: number | null } | null = null;
   private regionTaskBadge: HTMLElement | null = null;
   /** 선택 영역 위에 붙는 W×H 배지. 드래그 중에도 갱신되어 크기를 놓기 전에 알려준다. */
@@ -464,6 +471,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
     this.scale.on("resize", this.handleResize, this);
     window.addEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.addEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.addEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     // 편집기가 닫히면 「편집 위치 x,y」 배너를 거둔다 — 결과물이 아니라 편집 중 크롬이다(2026-09-17 리뷰 P0-4).
     window.addEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
@@ -520,7 +528,6 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cancelCameraFocus(false);
     this.unbindCanvasPanGuards();
     this.navigationResizeObserver?.disconnect();
-    this.navigationMutationObserver?.disconnect();
     this.cameraScrollbars?.destroy();
     this.cameraScrollbars = null;
     this.navigationGeometry = null;
@@ -551,6 +558,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.clearAgentBlueprintLayer();
     this.clearAgentFocusHighlight();
     window.removeEventListener(BUILD_PALETTE_VISIBILITY_EVENT, this.handleBuildPaletteVisibilityChange);
+    window.removeEventListener(AI_LIVE_CANVAS_EVENT, this.handleLiveCanvas);
     window.removeEventListener(REGION_TASK_STATUS_EVENT, this.handleRegionTaskStatus);
     window.removeEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
     window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
@@ -633,19 +641,13 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private observeNavigationGeometry(): void {
-    const invalidate = () => { this.overlayGeometryReadAtMs = 0; };
-    const host = document.querySelector(".ai-chat-float-host");
-    this.navigationResizeObserver = new ResizeObserver(invalidate);
+    // 캔버스 크기만 즉시 무효화한다. AI 패널의 class/style/높이는 스트리밍 중 토큰마다 바뀌고,
+    // 그때 시계를 0으로 돌리면 250ms TTL 이 풀려 매 프레임 getBoundingClientRect 가 편집을 막는다.
+    // 조수 카드 가림은 update() 가 TTL 안에 다시 잰다.
+    this.navigationResizeObserver = new ResizeObserver(() => {
+      this.overlayGeometryReadAtMs = 0;
+    });
     this.navigationResizeObserver.observe(this.game.canvas);
-    for (const node of host?.querySelectorAll(".ai-deck, [data-testid='ai-command-bar'], [data-testid='ai-chat-body']") ?? []) {
-      this.navigationResizeObserver.observe(node);
-    }
-    if (host) {
-      this.navigationMutationObserver = new MutationObserver(invalidate);
-      this.navigationMutationObserver.observe(host, {
-        subtree: true, attributes: true, attributeFilter: ["class", "style", "hidden"],
-      });
-    }
   }
 
   private syncNavigationGeometry(): void {
@@ -1809,46 +1811,77 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!container) return;
     const mapId = this.mapId();
     const background = mapId ? store.getCurrent().maps[mapId]?.background : undefined;
-    const imageId = mapBackgroundPreviewEnabled() ? (background?.imageId ?? "").trim() : "";
-    const url = imageId ? resolveAssetResourceUrl(imageId, { project: store.getCurrent() }) : null;
-    if (!imageId || !url) {
+    const enabled = mapBackgroundPreviewEnabled();
+    // 플레이와 같은 스택(첫 장 + layers, 앞이 아래)로 미리보기 — 저작 화면에서 보는 게임 상태와 렌더가 달라지 않게.
+    const specs = enabled && background
+      ? [background, ...(background.layers ?? [])].filter((entry) => (entry.imageId ?? "").trim() !== "")
+      : [];
+    if (specs.length === 0) {
       this.clearMapBackgroundPreview();
       return;
     }
-    const textureKey = mapBackgroundTextureKey(imageId);
+    const missing = specs.filter((spec) => !this.textures.exists(mapBackgroundTextureKey(spec.imageId)));
+    if (missing.some((spec) => !resolveAssetResourceUrl(spec.imageId, { project: store.getCurrent() }))) {
+      // 플레이는 경고를 남기고 건너뛴 — 미리보기도 같은 귟c칙으로 그림을 생략한다.
+      this.clearMapBackgroundPreview();
+      return;
+    }
     const apply = (): void => {
       if (this.mapId() !== mapId || !mapBackgroundPreviewEnabled()) return;
-      let sprite = this.mapBackgroundSprites[0];
-      if (!sprite) {
-        sprite = this.add.tileSprite(0, 0, 16, 16, textureKey);
-        sprite.setOrigin(0, 0);
-        sprite.setScrollFactor(0);
-        container.add(sprite);
-        this.mapBackgroundSprites = [sprite];
-      } else if (sprite.texture.key !== textureKey) {
-        sprite.setTexture(textureKey);
+      const ready = specs.filter((spec) => this.textures.exists(mapBackgroundTextureKey(spec.imageId)));
+      const previous = this.mapBackgroundSprites;
+      const sprites: Phaser.GameObjects.TileSprite[] = [];
+      for (const [index, spec] of ready.entries()) {
+        const textureKey = mapBackgroundTextureKey(spec.imageId);
+        let sprite = previous[index];
+        if (!sprite) {
+          sprite = this.add.tileSprite(0, 0, 16, 16, textureKey);
+          sprite.setOrigin(0, 0);
+          sprite.setScrollFactor(0);
+          container.add(sprite);
+        } else if (sprite.texture.key !== textureKey) {
+          sprite.setTexture(textureKey);
+        }
+        sprite.setDepth(MAP_BACKGROUND_LAYER_DEPTH + index);
+        // 플레이와 같은 배율 규칙(cover 면 뷰포트를 덮게 확대). 1:1 이면 1920x1080 아트가
+        // 좌상단 구석만 보여 «저작 화면과 게임 화면이 다른» 상태가 된다.
+        applyPreviewFit(this, sprite, spec.fit);
+        sprites.push(sprite);
       }
+      for (const leftover of previous.slice(ready.length)) leftover.setVisible(false);
+      this.mapBackgroundSprites = sprites;
+      this.mapBackgroundPreviewSpecs = ready.map((entry) => ({ fit: entry.fit ?? "native" }));
       this.layoutMapBackgroundPreview();
     };
-    if (this.textures.exists(textureKey)) {
+    if (missing.length === 0) {
       apply();
       return;
     }
-    void ensureSceneImageTexture(this, textureKey, url).then((key) => {
-      if (key) apply();
+    void Promise.all(
+      missing.map((spec) => {
+        const url = resolveAssetResourceUrl(spec.imageId, { project: store.getCurrent() });
+        return url ? ensureSceneImageTexture(this, mapBackgroundTextureKey(spec.imageId), url) : Promise.resolve(undefined);
+      }),
+    ).then(() => {
+      if (this.mapId() !== mapId || !mapBackgroundPreviewEnabled()) return;
+      apply();
     });
   }
 
-  /** 화면 고정 배치를 카메라에 맞춘다. 노드는 그대로, 크기·좌표만 다시 쓴다. */
-  private layoutMapBackgroundPreview(): void {
-    const sprite = this.mapBackgroundSprites[0];
-    if (!sprite || !sprite.visible) return;
-    const layout = mapBackgroundLayout(this.cameras.main);
-    if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
-    sprite.setPosition(layout.x, layout.y);
+    private layoutMapBackgroundPreview(): void {
+    const specs = this.mapBackgroundPreviewSpecs;
+    for (const [index, sprite] of this.mapBackgroundSprites.entries()) {
+      if (!sprite.visible) continue;
+      const spec = specs[index];
+      if (spec) applyPreviewFit(this, sprite, spec.fit);
+      const layout = mapBackgroundLayout(this.cameras.main);
+      if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
+      sprite.setPosition(layout.x, layout.y);
+    }
   }
 
   private clearMapBackgroundPreview(): void {
+    this.mapBackgroundPreviewSpecs = [];
     for (const sprite of this.mapBackgroundSprites) sprite.setVisible(false);
   }
 
@@ -1866,6 +1899,9 @@ export class EditScene extends PhaserRuntime.Scene {
       mapId: mid,
       tileIndex: this.tileIndex,
     }, cells);
+    if (cells.some((cell) => cell.layer === "event")) {
+      refreshEditSceneOverlay({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid });
+    }
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
     this.renderBuildPaletteOverlay();
@@ -2583,4 +2619,36 @@ function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
   if (!node) return;
   node.textContent = text;
+}
+
+/** 미리보기 스프라이트의 타일 배율. 플레이와 같은 규칙(cover = 뷰포트를 덮는 배율)이다. */
+function applyPreviewFit(
+  scene: {
+    readonly cameras: { readonly main: { readonly zoom: number; readonly width: number; readonly height: number } };
+    readonly textures: Phaser.Textures.TextureManager;
+  },
+  sprite: Phaser.GameObjects.TileSprite,
+  fit: "native" | "cover" | undefined,
+): void {
+  if (fit !== "cover") {
+    if (sprite.tileScaleX !== 1 || sprite.tileScaleY !== 1) sprite.setTileScale(1, 1);
+    return;
+  }
+  const camera = scene.cameras.main;
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const source = scene.textures.get(sprite.texture.key).getSourceImage() as {
+    readonly width?: number;
+    readonly naturalWidth?: number;
+    readonly height?: number;
+    readonly naturalHeight?: number;
+  };
+  const scale = mapBackgroundFitScale(
+    "cover",
+    { width: camera.width / zoom, height: camera.height / zoom },
+    {
+      width: Math.max(1, Number(source.naturalWidth ?? source.width ?? 0)),
+      height: Math.max(1, Number(source.naturalHeight ?? source.height ?? 0)),
+    },
+  );
+  if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
 }

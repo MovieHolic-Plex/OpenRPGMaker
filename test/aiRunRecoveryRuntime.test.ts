@@ -33,7 +33,7 @@ beforeEach(async () => {
   const values = new Map([[llm.AI_CONFIG_STORAGE_KEY, JSON.stringify(config)]]);
   vi.stubGlobal("localStorage", { getItem: (key: string) => values.get(key) ?? null,
     setItem: (key: string, value: string) => values.set(key, value), removeItem: (key: string) => values.delete(key) });
-  vi.stubEnv("VITE_SUPABASE_URL", ""); vi.stubEnv("VITE_SUPABASE_ANON_KEY", ""); vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", ""); vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", ""); vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   const project = createBlankProject();
   const map = project.maps[project.startMapId];

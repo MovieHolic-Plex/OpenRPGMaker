@@ -1,3 +1,4 @@
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { GameMap, Project, TilesetDef, UploadedAsset } from "@/project/types";
 
 /** Execution-time, bounded visual evidence. No live project references or command bodies. */
@@ -27,6 +28,30 @@ function asset(project: Project, resourceId: unknown): Pick<ActivityVisual, "res
   const source = project.assets.uploaded[id];
   const data = source?.dataUrl;
   return { resourceId: id || undefined, ...(source?.ref ? { uploadedAsset: structuredClone({ ...source, dataUrl: undefined }) } : data && data.length <= 1_000_000 ? { uploaded: data } : {}) };
+}
+
+/** Search rows identify a hit (`charset:sheet:index`, `backdrop:id`). Pictures need the file id. */
+function searchedDrawableId(row: Record<string, any>): string {
+  const spriteId = str(obj(obj(row.nativeGraphic).sprite).id);
+  if (spriteId) return spriteId;
+  const direct = str(row.resourceId || row.textureKey);
+  if (direct) return direct;
+  const id = str(row.id);
+  return id.match(/^charset:([^:]+):\d+$/)?.[1]
+    ?? id.match(/^backdrop:(.+)$/)?.[1]
+    ?? id;
+}
+
+function searchedFrame(row: Record<string, any>): number | undefined {
+  const pattern = obj(row.nativeGraphic).pattern;
+  if (typeof pattern === "number" && Number.isFinite(pattern)) return pattern;
+  if (typeof row.characterIndex !== "number" || !Number.isFinite(row.characterIndex)) return undefined;
+  return Math.floor(row.characterIndex / 4) * 48 + (row.characterIndex % 4) * 3 + 1;
+}
+
+function canDrawAsset(project: Project, resourceId: string): boolean {
+  const drawn = asset(project, resourceId);
+  return Boolean(drawn.uploaded || drawn.uploadedAsset || (drawn.resourceId && resolveAssetResourceUrl(drawn.resourceId)));
 }
 
 export function captureActivityVisuals(project: Project, name: string, input: unknown, result?: unknown, phase: ActivityVisual["phase"] = "read"): ActivityVisual[] {
@@ -80,9 +105,13 @@ function capture(project: Project, name: string, args: Record<string, any>, data
   }
   if (/resource|graphic/.test(name)) {
     const matches = data.resources ?? data.matches ?? (data.resource ? [data.resource] : []);
-    if (Array.isArray(matches)) for (const match of matches.slice(0, 6)) {
-      const row = obj(match), id = str(row.resourceId || row.textureKey || row.id);
-      if (id && !["bgm", "se", "music", "sound"].includes(args.kind)) visuals.push({ kind: "asset", title: str(row.name || row.label || id), caption: "검색된 소재", phase, target: `resource:${id}`, ...asset(project, id), ...(typeof row.characterIndex === "number" ? { pattern: Number(obj(row.nativeGraphic).pattern ?? (Math.floor(row.characterIndex / 4) * 48 + row.characterIndex % 4 * 3 + 1)) } : {}) });
+    if (Array.isArray(matches) && !["bgm", "se", "music", "sound"].includes(args.kind)) for (const match of matches.slice(0, 6)) {
+      const row = obj(match);
+      const searchId = str(row.resourceId || row.textureKey || row.id);
+      const drawableId = searchedDrawableId(row);
+      if (!searchId || !canDrawAsset(project, drawableId)) continue;
+      const pattern = searchedFrame(row);
+      visuals.push({ kind: "asset", title: str(row.name || row.label || searchId), caption: "검색된 소재", phase, target: `resource:${searchId}`, ...asset(project, drawableId), ...(pattern === undefined ? {} : { pattern }) });
     }
   }
   return visuals.slice(0, 6);

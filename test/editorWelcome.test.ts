@@ -386,4 +386,57 @@ describe("presentEditorWelcome", () => {
     expect(result.action).toBe("skip");
     expect(result.systemPresetPlan).toBeUndefined();
   });
+
+  it("AI 미연결이면 만들기를 보내지 않고 안내와 설정 버튼을 보여준다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    let settled = false;
+    const opened: string[] = [];
+    const pending = presentEditorWelcome(host, {
+      canGenerate: () => false,
+      openAiSettings: () => { opened.push("settings"); },
+    }).then((result) => { settled = true; return result; });
+
+    const input = host.querySelector<HTMLInputElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)!;
+    const notice = host.querySelector<HTMLElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.aiNotice}']`)!;
+    expect(notice.hidden).toBe(true);
+
+    input.value = "눈 내리는 마을";
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)!.click();
+    await Promise.resolve();
+
+    // 보내지 않는다 — 보내면 채팅 패널이 "의도 읽는 중…" 에서 조용히 멈춘다(실측 30초+).
+    expect(settled).toBe(false);
+    expect(notice.hidden).toBe(false);
+    expect(notice.textContent).toContain("AI 연결이 없어");
+    // 다음 행동을 말해야 한다 — "AI 설정이 필요합니다" 만으로는 어디를 누를지 모른다.
+    expect(notice.textContent).toContain("⚙");
+
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.aiNoticeAction}']`)!.click();
+    expect(opened).toEqual(["settings"]);
+
+    // 빈 맵으로 시작은 여전히 열려 있어야 한다 — 막다른 길을 만들지 않는다.
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.skip}']`)!.click();
+    const result = await pending;
+    expect(result.action).toBe("skip");
+  });
+
+  it("AI 가 준비되면 안내를 띄우지 않고 그대로 보낸다", async () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const pending = presentEditorWelcome(host, { canGenerate: () => true });
+
+    const input = host.querySelector<HTMLInputElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptInput}']`)!;
+    input.value = "눈 내리는 마을";
+    // settle 이 오버레이를 DOM 에서 걷어내므로, 안내의 상태는 보내기 **전에** 확인한다.
+    const noticeBefore = host.querySelector<HTMLElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.aiNotice}']`)!;
+    expect(noticeBefore.hidden).toBe(true);
+    host.querySelector<HTMLButtonElement>(`[data-testid='${EDITOR_WELCOME_TESTIDS.promptSubmit}']`)!.click();
+
+    const result = await pending;
+    expect(result.action).toBe("start");
+    expect(result.autoSend).toBe(true);
+    // 보내기 전에 안내가 뜨지 않았다는 것이 계약이다 — 뜨면 AI 가 있는데도 겁을 준다.
+    expect(noticeBefore.hidden).toBe(true);
+  });
 });

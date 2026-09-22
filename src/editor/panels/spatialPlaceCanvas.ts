@@ -113,7 +113,7 @@ export function renderSpatialPlacesCanvas(
     }
   } else if (card && session.mode !== "instances") {
     // 꾸러미 시설 등 설계 레코드가 없는 카드 — 카탈로그 래스터로 무엇인지 보여 준다(읽기 전용).
-    const preview = placeCatalogRasters(project, card, PLACE_TILE_PX / 16);
+    const preview = placeCatalogRasters(project, card, PLACE_TILE_PX / 16, rerender);
     world.style.width = `${Math.max(preview.width, 8) * PLACE_TILE_PX}px`;
     world.style.height = `${Math.max(preview.height, 6) * PLACE_TILE_PX}px`;
     for (const stamp of preview.stamps) world.append(stamp.canvas);

@@ -4,6 +4,7 @@ import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
 import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
+import type { MapBackgroundFit, MapBackgroundLayer } from "@/project/types";
 import { store } from "@/project/store";
 
 /**
@@ -42,6 +43,8 @@ export type MapBackgroundLayerSpec = {
   readonly opacity: number;
   /** 스크롤 속도 배율(깊이감). 지금은 항상 1. */
   readonly parallax: number;
+  /** 그림 맞추기. native = 1:1, cover = 뷰포트를 덮도록 확대. */
+  readonly fit: MapBackgroundFit;
 };
 
 export type MapBackgroundLayout = {
@@ -85,6 +88,32 @@ export function advanceMapBackgroundScroll(position: number, speed: number, delt
   return position + speed * (Math.max(0, deltaMs) / 1000) * BACKGROUND_FRAMES_PER_SECOND;
 }
 
+/**
+ * 그림을 뷰포트에 맞추는 배율. native 는 1, cover 는 뷰포트를 다 덮는 최소 확대/축소다.
+ *
+ * 왜 필요한가(2026-09-21 실측): CraftPix 레이어 아트는 1920x1080 인데 게임 논리 뷰포트는
+ * 320x240 이다. 1:1 로 그리면 아트 좌상단 320x240, 즉 세로 22% 만 보이고 지면(y=646~1079)과
+ * 나무(y=953~1079)는 **영원히 화면 밖**이다. 16:9 아트를 4:3 뷰포트에 cover 하면 배율이
+ * 240/1080 = 0.2222 라 세로가 정확히 맞고 가로만 넘쳐(426>320) 반복으로 이어진다.
+ */
+export function mapBackgroundFitScale(
+  fit: MapBackgroundFit,
+  viewport: { readonly width: number; readonly height: number },
+  source: { readonly width: number; readonly height: number },
+): number {
+  if (fit !== "cover") return 1;
+  const sourceWidth = Math.max(1, Number(source.width) || 0);
+  const sourceHeight = Math.max(1, Number(source.height) || 0);
+  const viewWidth = Math.max(1, Number(viewport.width) || 0);
+  const viewHeight = Math.max(1, Number(viewport.height) || 0);
+  return Math.max(viewWidth / sourceWidth, viewHeight / sourceHeight);
+}
+
+/** 논리 px(저작 단위) → Phaser tilePosition 단위. 타일이 scale 배로 그려지므로 나눈다. */
+export function mapBackgroundTilePosition(logicalPx: number, scale: number): number {
+  return scale > 0 && Number.isFinite(scale) ? logicalPx / scale : logicalPx;
+}
+
 export function mapBackgroundTextureKey(imageId: string): string {
   return `${TEXTURE_PREFIX}${imageId.replace(/[^a-z0-9_-]/gi, "_")}`;
 }
@@ -106,7 +135,7 @@ export function resolveMapBackgroundLayers(
   const overridden = overrideId !== "" && (overrideMapId === "" || overrideMapId === scene.map?.id);
   const imageId = overridden ? overrideId : (background?.imageId ?? "").trim();
   if (!imageId) return [];
-  return [{
+  const base: MapBackgroundLayerSpec = {
     imageId,
     scrollX: background?.scrollX ?? 0,
     scrollY: background?.scrollY ?? 0,
@@ -115,7 +144,25 @@ export function resolveMapBackgroundLayers(
     loopY: background?.loopY !== false,
     opacity: 1,
     parallax: 1,
-  }];
+    fit: background?.fit ?? "native",
+  };
+  // 추가 레이어(앞이 아래). 명령의 「먼 배경 변경」이 첫 장을 대체할 뿐 추가 레이어는 그대로 유지한다 —
+  // 구름과 산을 명령이 지우면 같은 자리가 빈 것이 되어 일부가 어색하게 보이게 된다.
+  const extra = (background?.layers ?? []).map((layer) => layerSpecFromAuthoring(layer));
+  return [base, ...extra];
+}
+
+function layerSpecFromAuthoring(layer: MapBackgroundLayer): MapBackgroundLayerSpec {
+  return {
+    imageId: layer.imageId,
+    scrollX: layer.scrollX ?? 0,
+    scrollY: layer.scrollY ?? 0,
+    loopX: layer.loopX !== false,
+    loopY: layer.loopY !== false,
+    opacity: 1,
+    parallax: 1,
+    fit: layer.fit ?? "native",
+  };
 }
 
 /** 적용·로드 중 판정에 쓰는 서명 — 그림 id 목록이면 충분하다. */
@@ -198,8 +245,14 @@ export function updateMapBackground(scene: PlaySceneContext, deltaMs: number): v
     const spec = specs[index]!;
     if (!sprite.visible) continue;
     const layout = layoutMapBackground(scene, sprite, spec);
-    sprite.tilePositionX = advanceMapBackgroundScroll(sprite.tilePositionX, spec.scrollX * spec.parallax, deltaMs);
-    sprite.tilePositionY = advanceMapBackgroundScroll(sprite.tilePositionY, spec.scrollY * spec.parallax, deltaMs);
+    // 저작 스크롤 단위는 **논리 px/프레임** 이다. 타일이 scale 배로 그려지면 같은 화면 이동에
+    // 필요한 tilePosition 증가량이 1/scale 이 되므로, 논리 px 로 환산해 진행하고 되돌려 쓴다.
+    const scaleX = sprite.tileScaleX || 1;
+    const scaleY = sprite.tileScaleY || 1;
+    const logicalX = advanceMapBackgroundScroll(sprite.tilePositionX * scaleX, spec.scrollX * spec.parallax, deltaMs);
+    const logicalY = advanceMapBackgroundScroll(sprite.tilePositionY * scaleY, spec.scrollY * spec.parallax, deltaMs);
+    sprite.tilePositionX = mapBackgroundTilePosition(logicalX, scaleX);
+    sprite.tilePositionY = mapBackgroundTilePosition(logicalY, scaleY);
     applyAxisScroll(sprite, layout, spec);
   }
 }
@@ -227,6 +280,7 @@ function applyMapBackgroundSpecs(
     // depth 는 목록 순서를 따른다(앞이 아래). 같은 depth 를 쓰면 그리는 순서가 삽입 순서에 맡겨진다.
     sprite.setDepth(MAP_BACKGROUND_LAYER_DEPTH + index);
     sprite.setAlpha(spec.opacity);
+    applySpriteFit(scene, sprite, spec);
     sprite.setVisible(true);
     sprites.push(sprite);
   }
@@ -258,7 +312,12 @@ function layoutMapBackground(
   sprite: Phaser.GameObjects.TileSprite,
   spec: MapBackgroundLayerSpec,
 ): MapBackgroundLayout {
-  const layout = mapBackgroundLayout(scene.cameras.main, sourceSizeOf(scene, sprite), { x: spec.loopX, y: spec.loopY });
+  applySpriteFit(scene, sprite, spec);
+  const source = sourceSizeOf(scene, sprite);
+  // 타일이 scale 배로 그려지므로 «그림 한 장의 화면 크기» 도 그만큼이다. 비반복 축은
+  // 그 크기까지만 그린다 — 1:1 로 넘기면 축소된 그림이 화면 왼쪽 일부만 채운다.
+  const drawn = { width: source.width * (sprite.tileScaleX || 1), height: source.height * (sprite.tileScaleY || 1) };
+  const layout = mapBackgroundLayout(scene.cameras.main, drawn, { x: spec.loopX, y: spec.loopY });
   // setSize 는 내부 채움 텍스처를 다시 그린다 — 배율·뷰포트·그림이 실제로 바뀔 때만 부른다.
   if (sprite.width !== layout.width || sprite.height !== layout.height) sprite.setSize(layout.width, layout.height);
   return layout;
@@ -271,8 +330,35 @@ function applyAxisScroll(
 ): void {
   // 양수 속도 = 그림이 왼쪽/위로 흐른다. 반복 축은 UV 를 밀고(무한 반복),
   // 비반복 축은 스프라이트를 반대로 밀어 그림이 화면을 떠나게 한다(빈 자리가 남는다).
-  sprite.x = spec.loopX ? layout.x : layout.x - sprite.tilePositionX;
-  sprite.y = spec.loopY ? layout.y : layout.y - sprite.tilePositionY;
+  // tilePosition 은 Phaser 단위(논리 px / scale)라 화면 이동량으로 되돌릴 때 다시 곱한다.
+  const scaleX = sprite.tileScaleX || 1;
+  const scaleY = sprite.tileScaleY || 1;
+  sprite.x = spec.loopX ? layout.x : layout.x - sprite.tilePositionX * scaleX;
+  sprite.y = spec.loopY ? layout.y : layout.y - sprite.tilePositionY * scaleY;
+}
+
+/**
+ * 스프라이트의 타일 배율을 저작 fit 에 맞춘다. 값이 같으면 건드리지 않는다(불필요한 dirty 방지).
+ *
+ * 뷰포트는 **카메라 기준**(width/zoom)이다 — 화면 고정 객체가 그리는 크기와 같아야 배율이 맞는다.
+ * PLAY_RESOLUTION 고정값을 쓰면 배율 < 1 에서 배경이 화면을 못 덮어 가장자리가 빈다.
+ */
+function applySpriteFit(
+  scene: PlaySceneContext,
+  sprite: Phaser.GameObjects.TileSprite,
+  spec: MapBackgroundLayerSpec,
+): void {
+  if (spec.fit !== "cover") {
+    if (sprite.tileScaleX !== 1 || sprite.tileScaleY !== 1) sprite.setTileScale(1, 1);
+    return;
+  }
+  const camera = scene.cameras.main;
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const scale = mapBackgroundFitScale(spec.fit, {
+    width: (camera.width || PLAY_RESOLUTION.width) / zoom,
+    height: (camera.height || PLAY_RESOLUTION.height) / zoom,
+  }, sourceSizeOf(scene, sprite));
+  if (sprite.tileScaleX !== scale || sprite.tileScaleY !== scale) sprite.setTileScale(scale, scale);
 }
 
 function sourceSizeOf(

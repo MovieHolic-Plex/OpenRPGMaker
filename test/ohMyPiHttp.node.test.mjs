@@ -52,6 +52,30 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(next.pasteCallback, true);
   });
 
+  it("원격 origin 의 Google 인가 URL 은 붙여넣기를 켜고 주소는 그대로 둔다", () => {
+    const verificationUrl = "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri="
+      + encodeURIComponent("http://localhost:34099/oauth-callback");
+    const remote = publishLoopbackLaunch(
+      { verificationUrl, userCode: "" },
+      "http://mdc-server:9888",
+    );
+    assert.equal(remote.verificationUrl, verificationUrl);
+    assert.equal(remote.pasteCallback, true);
+
+    const local = publishLoopbackLaunch({ verificationUrl, userCode: "" }, "");
+    assert.equal(local.pasteCallback, undefined);
+
+    const codex = publishLoopbackLaunch(
+      {
+        verificationUrl: "https://auth.openai.com/oauth/authorize?redirect_uri="
+          + encodeURIComponent("http://localhost:1455/auth/callback"),
+        userCode: "",
+      },
+      "http://mdc-server:9888",
+    );
+    assert.equal(codex.pasteCallback, true);
+  });
+
   it("provider 쿼리·헤더·본문이 없으면 google-antigravity 로 둔다", () => {
     assert.equal(resolveCompanionProvider({ url: "/auth/status" }), "google-antigravity");
     assert.equal(resolveCompanionProvider({ url: "/auth/status?provider=groq" }), "groq");

@@ -42,6 +42,8 @@ export function committedEvents(events: readonly GameEvent[]): GameEvent[] {
   for (const event of events) {
     if (event.draft?.kind === "new") continue;
     if (event.draft?.kind === "edit") {
+      // A deleted canonical event must not be written back from the pre-edit snapshot.
+      if (event.draft.conflict?.kind === "remote-delete") continue;
       if (event.draft.original) committed.push(structuredClone(event.draft.original));
       continue;
     }
@@ -73,6 +75,41 @@ export function projectWithoutEventDrafts(project: Project): Project {
 }
 
 /**
+ * A new draft has never been canonical, so a save round-trip must put it back.
+ * An edit draft whose id is missing from the incoming project was deleted.
+ * Putting that event back would undo the deletion on the next save.
+ */
+export function shouldRetainOpenEventDraft(
+  incomingEvents: readonly { readonly id: string }[] | undefined,
+  event: GameEvent,
+): boolean {
+  if (!event.draft) return false;
+  if (event.draft.kind === "new") return true;
+  return (incomingEvents ?? []).some((item) => item.id === event.id);
+}
+
+/**
+ * Keep the on-screen working body, but point an edit draft's save baseline at the
+ * incoming canonical event when that body is no longer `draft.original`.
+ * The next `committedEvents` write then persists the incoming event, not the stale pre-edit snapshot.
+ * A matching baseline (ordinary autosave round-trip) stays untouched. Conflict metadata on the draft is kept.
+ */
+export function rebaseOpenEditDraft(
+  incomingEvents: readonly GameEvent[] | undefined,
+  liveEvent: GameEvent,
+): GameEvent {
+  const next = structuredClone(liveEvent);
+  if (next.draft?.kind !== "edit") return next;
+  const incoming = (incomingEvents ?? []).find((item) => item.id === next.id);
+  if (!incoming || incoming.draft) return next;
+  const canonical = eventWithoutDraft(incoming);
+  const original = next.draft.original;
+  if (original && diffValues(original, canonical, "event").length === 0) return next;
+  next.draft = { ...next.draft, kind: "edit", original: canonical };
+  return next;
+}
+
+/**
  * 직렬화 전용 투영 — 같은 이벤트 규약(새 초안 제외, 편집 초안은 원본)을 적용하되
  * 프로젝트를 복제하지 않는다. 반환 객체는 원본과 타일 배열까지 구조를 공유하므로
  * **읽기/직렬화 외의 용도로 쓰면 안 된다.** 변형이 필요하면 projectWithoutEventDrafts 를 쓸 것.
@@ -93,6 +130,7 @@ function committedEventsView(events: readonly GameEvent[]): GameEvent[] {
   for (const event of events) {
     if (event.draft?.kind === "new") continue;
     if (event.draft?.kind === "edit") {
+      if (event.draft.conflict?.kind === "remote-delete") continue;
       if (event.draft.original) committed.push(event.draft.original);
       continue;
     }
@@ -133,8 +171,12 @@ export function projectWithPreservedEventDrafts(saved: Project, live: Project): 
       if (!liveEvent.draft) continue;
       const index = targetMap.events.findIndex((event) => event.id === liveEvent.id);
       if (index >= 0) {
-        // Prefer live working body + draft meta over the stripped snapshot.
-        targetMap.events[index] = structuredClone(liveEvent);
+        // Working body stays on screen. A changed canonical body becomes the next save baseline.
+        targetMap.events[index] = rebaseOpenEditDraft(targetMap.events, liveEvent);
+      } else if (liveEvent.draft.kind === "edit") {
+        const preserved = structuredClone(liveEvent);
+        preserved.draft = { ...preserved.draft!, conflict: { kind: "remote-delete", detectedAt: Date.now() } };
+        targetMap.events.push(preserved);
       } else {
         targetMap.events.push(structuredClone(liveEvent));
       }

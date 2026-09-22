@@ -26,9 +26,9 @@ vi.mock("@/ai/yieldToUi", () => ({ defaultYieldToUi: async () => {} }));
 vi.mock("@/util/toast", () => ({ toast: vi.fn() }));
 
 beforeEach(() => {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
   localStorage.clear();
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
     authMode: "apiKey", apiKey: "test-key", baseUrl: "https://example.test",

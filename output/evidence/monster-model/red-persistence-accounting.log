@@ -149,7 +149,7 @@ AssertionError: expected { raw: { name: 'L', tags: [ 'B' ] } } to deeply equal {
  ❯ test/monsterMetadataPersistence.test.ts:60:70
      58|     expect(result.kind).toBe("saved");
      59|     expect(transport.rejectedCas).toBe(1);
-     60|     expect((await loadProjectFromSupabase(CONFIG))?.monsterMetadata).t…
+     60|     expect((await loadProjectFromLegacyDb(CONFIG))?.monsterMetadata).t…
        |                                                                      ^
      61|   }, 30_000);
      62|
@@ -214,7 +214,7 @@ AssertionError: expected { raw: { name: 'S', description: '' } } to deeply equal
     112|     expect(reconciled.maps).toBe(fresh.maps);
     113|     expect(reconciled.monsterMetadata).toEqual({ raw: { name: "S", tag…
        |                                        ^
-    114|     expect((await loadProjectFromSupabase(CONFIG))?.monsterMetadata).t…
+    114|     expect((await loadProjectFromLegacyDb(CONFIG))?.monsterMetadata).t…
     115|     expect(store.hasUnsavedChanges()).toBe(false);
 
 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯

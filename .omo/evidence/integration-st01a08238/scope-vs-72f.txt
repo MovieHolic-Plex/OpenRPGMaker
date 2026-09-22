@@ -252,7 +252,7 @@ src/project/defaults/interiorCabinetLegacy.ts
 src/project/defaults/interiorTransparentPropLayerRepair.ts
 src/project/lint/clusterRuleValidators.ts
 src/project/store.ts
-src/project/supabaseProjectSync.ts
+src/project/legacyDbProjectSync.ts
 src/project/tilesetHarness/combinedTown.ts
 src/project/tilesetHarness/interiorLongTableLegacy.ts
 src/project/tilesetHarness/interiorRoomGroups.ts

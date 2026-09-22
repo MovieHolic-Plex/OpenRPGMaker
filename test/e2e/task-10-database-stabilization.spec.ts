@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { createBlankProject } from "@/project/defaults";
 import type { Command, Project } from "@/project/types";
 import { applyDatabaseChanges, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = ".omo/evidence/task-10-db-playwright";
 const COMMON_EVENTS_TAB = { label: "Common Events", slug: "common-events", testId: "db-tab-common-events" } as const;
@@ -24,7 +24,7 @@ test.beforeEach(async ({ page }) => {
 test("database reference guard blocks a skill used only by event command references", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 840 });
-  await seedProjectFromSupabaseCanonical(page, commandReferencedSkillProject());
+  await seedProjectForEditor(page, commandReferencedSkillProject());
   await openDatabase(page);
   await switchDatabaseTab(page, SKILLS_TAB);
 
@@ -38,7 +38,7 @@ test("database reference guard blocks a skill used only by event command referen
   await page.screenshot({ path: `${EVIDENCE_DIR}/db-reference-blocking-toast.png`, fullPage: true });
 });
 
-test("database dirty prompt keeps editing and discards back to the modal-open snapshot", async ({ page }) => {
+test("database footer 닫기 keeps edits; Escape can still discard back to the open snapshot", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 840 });
   await page.goto("/?freshProject=1");
@@ -46,19 +46,24 @@ test("database dirty prompt keeps editing and discards back to the modal-open sn
   await switchDatabaseTab(page, SKILLS_TAB);
 
   await page.getByTestId("db-field-name").fill("Task 10 Unsaved Skill");
-  await page.getByTestId("database-footer-ok").click();
+  await page.keyboard.press("Escape");
   await expect(page.getByTestId("database-dirty-prompt")).toContainText("이 세션에서 바뀐 내용");
   await page.getByTestId("database-dirty-prompt").screenshot({ path: `${EVIDENCE_DIR}/db-unsaved-prompt.png` });
   await page.getByTestId("database-dirty-keep-editing").click();
   await expect(page.getByTestId("database-dirty-prompt")).toHaveCount(0);
   await expect(page.getByTestId("db-field-name")).toHaveValue("Task 10 Unsaved Skill");
 
-  await page.getByTestId("database-footer-ok").click();
+  await page.keyboard.press("Escape");
   await page.getByTestId("database-dirty-discard").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await openDatabase(page);
   await switchDatabaseTab(page, SKILLS_TAB);
   expect((await exportedProject(page)).database.skills.some((skill) => skill.name === "Task 10 Unsaved Skill")).toBe(false);
+
+  await page.getByTestId("db-field-name").fill("Task 10 Kept Skill");
+  await page.getByTestId("database-footer-ok").click();
+  await expect(page.getByTestId("database-modal")).toBeHidden();
+  expect((await exportedProject(page)).database.skills.some((skill) => skill.name === "Task 10 Kept Skill")).toBe(true);
 });
 
 test("database common events use full command dialogs for nested command editing", async ({ page }) => {

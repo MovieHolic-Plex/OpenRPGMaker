@@ -96,6 +96,40 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
   publish 설정과 latest.yml 을 같이 도입한다.
 - GitHub Release 파일 상한(2GB/파일) 안이므로 AppImage·dmg 모두 문제없다.
 
+### 윈도우 zip 은 리눅스에서 만든다 (2026-09-22 실측)
+
+`electron-builder.config.mjs` 의 `win.target` 은 zip 하나뿐이라 **wine 없이 리눅스에서 빌드된다**.
+NSIS 설치본(`.exe`)을 넣으면 wine 이 필요해지지만, zip 타깃은 압축만 하므로 해당 없다.
+
+```bash
+# 릴리스 커밋에 체크아웃한 워크트리에서 (버전이 package.json 에서 온다)
+git worktree add -B win-build <경로> v<version>
+npm run build:packaged && npm run build:electron   # dist/ 와 dist-electron/ 를 먼저 만든다
+node <electron-builder>/out/cli/cli.js --config electron-builder.config.mjs --win --x64
+# → release/OPRN Studio-<version>-win.zip
+```
+
+**검증은 wine 으로 창이 뜨는 것까지만 본다.** 실측(0.7.0):
+
+```bash
+sudo apt-get install -y --no-install-recommends wine64
+WINEPREFIX=/tmp/oprn-wine /usr/lib/wine/wine64 wineboot --init
+Xvfb :78 -screen 0 1400x900x24 &
+DISPLAY=:78 WINEPREFIX=/tmp/oprn-wine /usr/lib/wine/wine64 "OPRN Studio.exe" --no-sandbox --disable-gpu
+DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 부팅 성공
+```
+
+- **픽셀 증거는 못 얻는다.** wine 의 GPU 컨텍스트 생성이 실패해(`Failed to create shared context for
+  virtualization`) Xvfb 스크린샷이 1-bit 회색 빈 화면으로 나온다. `xwininfo` 의 창 크기와 로그로만
+  판정하고, 화면 증거가 필요하면 실제 윈도우 머신에서 찍어야 한다.
+- **`scripts/qa/verifyPackagedApp.mjs` 는 윈도우를 못 몬다.** 실행 경로가 `release/linux-unpacked/oprn`
+  으로 박혀 있다. 윈도우는 위의 `xwininfo` + asar 추출 검사가 사실상 전부다.
+- **asar 안을 직접 열어 확인하는 편이 빠르다.** 두 결함(시작 실패·번들 유출)은 여기서 잡혔다:
+  `npx @electron/asar extract-file release/win-unpacked/resources/app.asar dist-electron/main.cjs`
+  로 꺼내 `Invalid URL` 을 만들던 줄이 없는지, `dist/assets/main-*.js` 에서 dev 주소·키가 0건인지 본다.
+- **빌드는 wine 설치 전에 끝난다.** 실측에서 zip 은 wine 없이 만들어졌고, wine 은 그 뒤 실행 검증에만
+  썼다. 그러니 wine 설치 실패가 빌드를 막지는 않는다.
+
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는

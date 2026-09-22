@@ -41,7 +41,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
-import { structuralJson } from "@/util/structuralJson";
+import { normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -340,7 +340,7 @@ class ProjectStore {
       }
       this.remotePersistenceEnabled = false;
       this.remotePersistenceDisabledReason = "load-failed";
-      log.error("Supabase canonical project load failed", error);
+      log.error("Canonical project load failed", error);
       throw error;
     }
     this.loaded = true;
@@ -369,7 +369,7 @@ class ProjectStore {
   }
 
   /**
-   * 현재 저장 대상이 로컬 폴더 정본인가(원격 Supabase 행이 아님).
+   * 현재 저장 대상이 로컬 폴더 정본인가(원격 project storage 행이 아님).
    *
    * 협업 락·원격 전용 표면이 판별에 쓴다 — `isRemotePersistenceEnabled()` 는 로컬 폴더에서도
    * true(폴더가 곧 저장소)라 "원격에 쓰는가"의 답이 아니다. 로컬 정본은 단일 작성자라
@@ -440,7 +440,7 @@ class ProjectStore {
   }
 
   // 테스트 전용: loaded 플래그와 원격 저장 활성화 상태를 직접 제어.
-  // store.load()가 Supabase 네트워크/인증에 결합되어 있어 단위 테스트에서
+  // store.load()가 project storage 네트워크/인증에 결합되어 있어 단위 테스트에서
   // flush()/persistCurrent() 경로만 격리하려 검증할 때 사용한다.
   /** @internal */
   isRemotePersistenceEnabled(): boolean {
@@ -480,7 +480,7 @@ class ProjectStore {
 
   /**
    * Temporarily exposes an in-memory project to read-only runtime consumers.
-   * Store updates, autosave, export projections, and Supabase persistence keep
+   * Store updates, autosave, export projections, and project storage persistence keep
    * using the canonical `current` project. The returned release is idempotent.
    */
   beginReadOnlyProjectSnapshot(project: Project): () => void {
@@ -730,6 +730,8 @@ class ProjectStore {
     options: {
       readonly preserveEventDrafts?: boolean;
       readonly change?: ProjectChangeAnnotation;
+      /** 맵 칸만 바뀌었을 때 전체 재렌더 대신 그 칸만 그리게 한다. */
+      readonly renderCells?: { readonly mapId: MapId; readonly cells: readonly ProjectChangeCell[] };
       /** Account the actual mutation before any synchronous observers can retire its owner. */
       readonly onApplied?: (project: Project) => void;
       /** Trusted synchronous history commit, after adoption and before mutation observers. */
@@ -758,11 +760,15 @@ class ProjectStore {
     }
     const applied = this.current;
     options.commitHistory?.();
+    const annotation = options.change ?? {};
+    const descriptor: ProjectChangeDescriptor = options.renderCells
+      ? { scope: "map", mapId: options.renderCells.mapId, cells: options.renderCells.cells, ...annotation }
+      : { scope: "project", ...annotation };
     try {
-      this.markLocalMutation({ scope: "project", ...(options.change ?? {}) }, options.onApplied);
+      this.markLocalMutation(descriptor, options.onApplied);
     } finally {
       // The project is already live even if application accounting's observer throws.
-      this.emit({ scope: "project", ...(options.change ?? {}) });
+      this.emit(descriptor);
       this.scheduleAutoSave();
     }
     return applied;
@@ -1099,7 +1105,7 @@ class ProjectStore {
       if (this.contentLineage !== lineage || this.autoSaveTimer !== timer) return;
       this.autoSaveTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
-        log.error("Supabase auto-save failed", error);
+        log.error("Project auto-save failed", error);
       });
     }, this.autoSaveDelayMs);
     this.autoSaveTimer = timer;
@@ -1124,7 +1130,7 @@ class ProjectStore {
       if (this.contentLineage !== lineage || this.autoSaveRetryTimer !== timer) return;
       this.autoSaveRetryTimer = null;
       void this.saveCurrentWithAutoSaveState().catch((error) => {
-        log.error("Supabase auto-save retry failed", error);
+        log.error("Project auto-save retry failed", error);
       });
     }, delay);
     this.autoSaveRetryTimer = timer;
@@ -1440,8 +1446,9 @@ class ProjectStore {
     if (!canWriteTeamProject()) return;
     const persistIfChanged = options.persistIfChanged !== false;
     // Helpers can report transient changes while reaching the same final structure.
-    // Compare raw records, not deserialize/canonical hashing: no authored fields are forgiven.
-    const before = structuralJson(this.current);
+    // The fingerprint keeps every field and array position. Tile grids and long
+    // strings are digested so opening a heavy project does not stringify them twice.
+    const before = normalizationFingerprint(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
@@ -1467,7 +1474,7 @@ class ProjectStore {
       ["defaultOpening", ensureDefaultOpeningSequence(this.current)],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = before !== structuralJson(this.current);
+    const changed = before !== normalizationFingerprint(this.current);
     if (changed) {
       this.markLocalMutation({
         scope: "system",

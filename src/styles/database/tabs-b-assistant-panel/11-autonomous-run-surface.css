@@ -8,11 +8,59 @@
   flex-direction: column;
   font-size: 12px;
   gap: 4px;
-  margin: 4px 8px 2px;
+  margin: 0 8px 6px;
   max-height: none;
   overflow: visible;
   padding: 0;
 }
+
+/* ── 할 일 목록 앞면 — 아이콘 + 드롭다운 한 줄(2026-09-21) ──
+   펼친 목록이 아니라 pill 머리 한 줄이 기본이다. 눌러야 본문(활동·진행·계획 보기)이 열린다. */
+.ai-work-plan-dropdown { border: 0; margin: 0; padding: 0; }
+.ai-work-plan-dropdown > .ai-work-plan-head {
+  align-items: center;
+  appearance: none;
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: flex;
+  font: 500 12px/1.5 var(--font-ui);
+  gap: 7px;
+  list-style: none;
+  max-width: 100%;
+  min-width: 0;
+  padding: 4px 10px;
+}
+.ai-work-plan-dropdown > .ai-work-plan-head::-webkit-details-marker { display: none; }
+.ai-work-plan-dropdown > .ai-work-plan-head:hover { border-color: var(--border-default); color: var(--text-1); }
+.ai-work-plan-dropdown.is-open > .ai-work-plan-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+.ai-plan-head-icon { align-items: center; color: var(--gold-deep); display: inline-flex; flex: none; }
+.ai-work-plan-head-label { color: var(--text-1); flex: none; font-weight: 600; }
+.ai-work-plan-head-status {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-autonomous-run-surface .ai-autonomous-progress { flex: none; }
+.ai-plan-head-chevron { align-items: center; display: inline-flex; flex: none; color: var(--text-3); transition: transform 160ms ease; }
+.ai-work-plan-dropdown.is-open .ai-plan-head-chevron { transform: rotate(180deg); }
+.ai-work-plan-dropdown[open] > .ai-work-plan-body {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0 0 var(--radius-m) var(--radius-m);
+  border-top: 0;
+  color: var(--text-2);
+  display: flex;
+  flex-direction: column;
+  font-size: 11px;
+  gap: 8px;
+  padding: 8px 12px 10px;
+}
+.ai-work-plan-body > .ai-plan-book-open { align-self: flex-start; }
 
 .ai-chat-panel.is-autonomous-run .ai-status-group {
   display: none;

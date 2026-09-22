@@ -7,6 +7,7 @@ import {
   BUNDLED_REFERENCE_CHIPSET_ASSETS,
   BUNDLED_EASYRPG_CHARSET_ASSETS,
   BUNDLED_EASYRPG_CHIPSET_ASSETS,
+  collectPlayReferencedStrings,
   TEX_DIALOGUE_FRAME,
 } from "@/assets/bundled";
 import { hasInlineAssets } from "@/assets/inlineAssetStore";
@@ -76,8 +77,7 @@ export function resetBundledPlayAssetWarmup(): void {
 }
 
 function projectReferencedTextureKeys(project: Project): Set<string> {
-  const strings = new Set<string>();
-  collectStrings(project, strings);
+  const strings = collectPlayReferencedStrings(project);
   const keys = new Set<string>([ASSET_TILESET, TEX_DIALOGUE_FRAME]);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
@@ -92,21 +92,4 @@ function projectReferencedTextureKeys(project: Project): Set<string> {
     if (strings.has(asset.id)) keys.add(asset.id);
   }
   return keys;
-}
-
-function collectStrings(value: unknown, out: Set<string>): void {
-  if (typeof value === "string") {
-    out.add(value);
-    return;
-  }
-  if (Array.isArray(value)) {
-    for (const item of value) collectStrings(item, out);
-    return;
-  }
-  if (typeof value !== "object" || value === null) return;
-  for (const [key, child] of Object.entries(value)) {
-    // 업로드 바이너리 dataUrl 은 문자열 폭발·오탐 방지용으로 스킵.
-    if (key === "uploaded") continue;
-    collectStrings(child, out);
-  }
 }

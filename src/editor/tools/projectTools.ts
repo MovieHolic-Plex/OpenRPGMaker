@@ -1,4 +1,5 @@
 import { createBlankProject } from "@/project/defaults";
+import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
@@ -66,7 +67,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -75,7 +76,28 @@ const setProjectSettings: ToolDefinition = {
       title: { type: "string" },
       author: { type: "string" },
       terms: { type: "object", properties: termSchema, additionalProperties: false },
-      playResolution: { type: "object", properties: { width: { type: "integer", minimum: 160, maximum: 1920 }, height: { type: "integer", minimum: 120, maximum: 1080 } }, required: ["width", "height"], additionalProperties: false },
+      cameraZoom: {
+        type: "number",
+        minimum: CAMERA_ZOOM_LIMITS.min,
+        maximum: CAMERA_ZOOM_LIMITS.max,
+        description:
+          "프로젝트 기본 카메라 배율(0.25~6, 생략=1). 해상도는 픽셀 밀도이고 보이는 범위는 이 배율이 정한다."
+          + " 1920x1080 배경 아트를 1:1로 쓰려면 playResolution 1440x1080 + cameraZoom 4.5."
+          + " 이벤트 명령(m2-201)은 이 값을 일시적으로 덮어쓴다.",
+      },
+      playResolution: {
+        type: "object",
+        description:
+          "게임 논리 해상도(픽셀 밀도). 올려도 보이는 범위는 안 늘고 도트만 선명해진다 — "
+          + "범위는 카메라 배율(script_cutscene 의 camera.zoom, CAMERA_ZOOM_LIMITS 0.25~6)이 정한다. "
+          + "1920x1080 배경 아트를 1:1로 쓰려면 1440x1080 + zoom 4.5(시야 20x15 타일 = 320x240 과 동일, 배경 배율 1.0).",
+        properties: {
+          width: { type: "integer", minimum: 160, maximum: 1920 },
+          height: { type: "integer", minimum: 120, maximum: 1080 },
+        },
+        required: ["width", "height"],
+        additionalProperties: false,
+      },
       resources: {
         type: "object",
         properties: {
@@ -114,6 +136,10 @@ const setProjectSettings: ToolDefinition = {
       const patch = Object.fromEntries(Object.entries(args.terms).filter((entry): entry is [string, string] => typeof entry[1] === "string" && entry[1].trim().length > 0));
       draft.meta.terms = { ...draft.meta.terms, ...patch } as Terms;
       changed.push("용어");
+    }
+    if (typeof args.cameraZoom === "number") {
+      storeCameraZoom(draft.system, args.cameraZoom);
+      changed.push(`카메라 배율=${resolveCameraZoom(draft.system)}`);
     }
     if (args.playResolution && typeof args.playResolution === "object" && !Array.isArray(args.playResolution)) {
       const resolution = args.playResolution as { width: number; height: number };

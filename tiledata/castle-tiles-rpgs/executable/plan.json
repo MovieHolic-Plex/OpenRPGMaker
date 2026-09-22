@@ -1,0 +1,36 @@
+{
+  "stamps": [
+    {
+      "partId": "forest:left",
+      "x": 3,
+      "y": 2
+    },
+    {
+      "partId": "forest:body",
+      "x": 7,
+      "y": 2,
+      "fromColumn": 3,
+      "columns": 3
+    },
+    {
+      "partId": "forest:body",
+      "x": 10,
+      "y": 2,
+      "fromColumn": 0,
+      "columns": 3
+    },
+    {
+      "partId": "forest:right",
+      "x": 13,
+      "y": 2
+    }
+  ],
+  "entrances": [
+    {
+      "x": 10,
+      "y": 9,
+      "fromX": 10,
+      "fromY": 10
+    }
+  ]
+}

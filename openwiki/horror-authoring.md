@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 # 공포 게임 제작 — 추격·가구·은신
 
 2026-09-05 밤의 괴물 체험 QA에서 발견한 결함을 공용 제작 기능으로 반영했다.
@@ -140,7 +142,7 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 
 검증은 `runtimeMovementStability.test.ts`의 4방향·두 입력·중간 좌표·주사율·메뉴·재렌더·취소·맵 리셋·
 저장 계약과 `scripts/qa/runtime/furniture-push.probe.mjs`의 출하 플레이어 연속 프레임을 사용한다.
-프로브는 준비/재로드된 Supabase 스냅샷을 읽기만 한다. `furniture-push-before`/`furniture-push-after`의
+프로브는 준비/재로드된 LegacyDb 스냅샷을 읽기만 한다. `furniture-push-before`/`furniture-push-after`의
 `SUMMARY.md`를 먼저 읽고 `motion-sheet.png`에서 중간 프레임과 접촉 간격을 확인한다.
 이전 `night-monster-upgrade` 프로브의 이동 전후 두 장만으로는 애니메이션 품질을 검증할 수 없다.
 
@@ -164,7 +166,7 @@ AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이
 - `scripts/qa/runtime/night-monster-upgrade.probe.mjs`: 전용 `player.html`에서 실제 이동과
   상호작용, 문 통과→은신→추격자 진입→수색 종료. 복도는 달리기 입력, 지하실은 기존
   `playerRoute`의 일반 보행(충돌·시간 진행 유지)으로 재현한다. `SUMMARY.md`를 먼저 읽고 PNG를 연다.
-- `scripts/revise-night-monster.mts --read`: 현재 Supabase 게임 확인.
+- `scripts/revise-night-monster.mts --read`: 현재 LegacyDb 게임 확인.
   인자 없음은 현재 게임의 개정본 준비, `--save`는 저장과 재로드 비교까지 실행한다.
   제작 중 원격 값이 바뀌면 저장을 중단한다. 기존 DB·스킨·에셋은 보존한다.
 

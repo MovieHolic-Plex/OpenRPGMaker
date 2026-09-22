@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { REGION_REFERENCES, PLACE_REFERENCES, readRegionReference, regionReferenceContext } from "@/project/regionReferences";
+import { REGION_REFERENCES, PLACE_REFERENCES, regionReferenceContext } from "@/project/regionReferences";
+import { readRegionReference } from "@/project/regionReferenceSnapshots";
 import emeraldSnapshot from "@/project/regionReferences/emerald-basin.json";
 import hillSnapshot from "@/project/regionReferences/hill-forest-village.json";
 import { COMBINED_TOWN_RETRO_WORLD_TILESET_ID } from "@/project/defaults/constants";
@@ -134,7 +135,7 @@ describe("completed region references", () => {
   it("ships all seven saved maps as default places independent of project activation", () => {
     const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const };
     const cards = listSpatialGalleryCards(session);
-    expect(SHIP_PLACE_REFERENCES).toHaveLength(7);
+    expect(SHIP_PLACE_REFERENCES).toHaveLength(4);
     for (const entry of SHIP_PLACE_REFERENCES) {
       const expected = ships.maps[entry.sourceMapId as keyof typeof ships.maps];
       const lower: number[] = [], upper: number[] = [];

@@ -173,11 +173,11 @@
 
 <h2>3. 수동 저장 커밋 summary</h2>
 
-<p><code>manualDiffSummary()</code> 가 <code>systemChanged = true</code> 만 세웠다. 그래서 타일 3000장을 칠했든 NPC 를 지웠든 사람 손편집의 Supabase 커밋 요약은 <strong>항상</strong> <code>"변경 저장: 시스템"</code> 이었다 — 원격 감사 기록이 사실상 무용지물이었다.</p>
+<p><code>manualDiffSummary()</code> 가 <code>systemChanged = true</code> 만 세웠다. 그래서 타일 3000장을 칠했든 NPC 를 지웠든 사람 손편집의 LegacyDb 커밋 요약은 <strong>항상</strong> <code>"변경 저장: 시스템"</code> 이었다 — 원격 감사 기록이 사실상 무용지물이었다.</p>
 
 <p>진짜 diff 계산기는 이미 있었다. <code>summarizeChanges(before, after)</code> 가 타일·이벤트·맵·DB 컬렉션·타일셋·스위치·변수·세계관·엔딩을 전부 비교하는데, <strong>쓰는 건 AI 경로뿐이었다.</strong> 비대칭의 뿌리가 여기다 — 감사 파이프라인이 AI 쪽에서만 자랐다.</p>
 
-<p>함께 고친 버그: dedup baseline 이 <code>not-configured</code>(Supabase 미설정 / 테이블 누락)에서도 전진해, 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 <strong>그 커밋이 영구히 기록되지 않았다.</strong></p>
+<p>함께 고친 버그: dedup baseline 이 <code>not-configured</code>(LegacyDb 미설정 / 테이블 누락)에서도 전진해, 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 <strong>그 커밋이 영구히 기록되지 않았다.</strong></p>
 
 <h2>4. 되돌리기 스택과 감사 로그는 분리를 유지한다</h2>
 

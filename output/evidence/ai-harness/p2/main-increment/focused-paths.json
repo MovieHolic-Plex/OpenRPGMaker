@@ -11,7 +11,7 @@
   "src/ai/proposalCompleteness.ts",
   "src/ai/runRecap.ts",
   "src/project/store.ts",
-  "src/project/supabaseProjectSync.ts",
+  "src/project/legacyDbProjectSync.ts",
   "src/project/io/serialize.ts",
   "src/project/monsterMetadata.ts",
   "src/assets/monsterResourceCatalog.ts",

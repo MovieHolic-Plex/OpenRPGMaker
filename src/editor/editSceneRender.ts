@@ -117,6 +117,19 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   return { tileObjectsUpdated };
 }
 
+/** 칸 갱신 뒤에 이벤트 마커만 다시 그린다. 타일 레이어는 건드리지 않는다. */
+export function refreshEditSceneOverlay(context: EditSceneRenderContext): void {
+  const map = store.getCurrent().maps[context.mapId];
+  if (!map) return;
+  const state = editorState.get();
+  context.overlayLayer.removeAll(true);
+  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
+  renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, tileSize);
+  if (state.tool === "collision") renderCollisionOverlay(context, map);
+  renderStartPosition(context);
+  renderEventMarkers({ ...context, tileSize }, map, state.layer);
+}
+
 export function renderEditSceneTileCells(
   context: EditSceneRenderContext & { readonly tileIndex: EditSceneTileIndex },
   cells: readonly ProjectChangeCell[]
@@ -129,10 +142,19 @@ export function renderEditSceneTileCells(
   const uniqueCells = uniqueRenderableTileCells(cells)
     .slice()
     .sort((a, b) => (a.layer === b.layer ? 0 : a.layer === "lower" ? -1 : 1));
+  const lazyWindow = shouldLazilyRenderEditMap(map) ? cameraTileWindow(context.scene, map) : null;
+  const limitToWindow = lazyWindow !== null && isPartialTileWindow(lazyWindow, map);
   let tileObjectsUpdated = 0;
   for (const cell of uniqueCells) {
     if (cell.x < 0 || cell.y < 0 || cell.x >= map.width || cell.y >= map.height) continue;
     const key = tileIndexKey(cell.layer, cell.x, cell.y);
+    if (limitToWindow && lazyWindow && isOutsideTileWindow(lazyWindow, cell.x, cell.y)) {
+      // 화면 밖은 맵 배열이 정본이다. 객체를 만들면 팬으로 이미 줄어든 창이 다시 맵 전체가 된다.
+      const previous = context.tileIndex.get(key) ?? [];
+      for (const object of previous) context.tileLayer.remove(object, true);
+      context.tileIndex.delete(key);
+      continue;
+    }
     const previous = context.tileIndex.get(key) ?? [];
     for (const object of previous) {
       context.tileLayer.remove(object, true);
@@ -181,6 +203,12 @@ export function renderVisibleEditSceneTiles(
   const map = store.getCurrent().maps[context.mapId];
   if (!map || !shouldLazilyRenderEditMap(map)) return { tileObjectsUpdated: 0 };
   const window = cameraTileWindow(context.scene, map);
+  for (const [key, objects] of context.tileIndex) {
+    const parsed = parseTileIndexKey(key);
+    if (!parsed || !isOutsideTileWindow(window, parsed.x, parsed.y)) continue;
+    for (const object of objects) context.tileLayer.remove(object, true);
+    context.tileIndex.delete(key);
+  }
   let tileObjectsUpdated = 0;
   for (let y = window.minY; y <= window.maxY; y++) {
     for (let x = window.minX; x <= window.maxX; x++) {
@@ -214,11 +242,14 @@ function renderTileCellLayer(
   const i = y * map.width + x;
   const tileSize = mapTileSize(map, tileset);
   if (layer === "lower") {
-    const lowerAlpha = activeLayer === "upper" ? 0.58 : 1;
+    // 비활성 레이어의 실물을 눈으로 분리한다(2026-09-21). upper 에서는 물들인 회록,
+    // event 에서도 0.62 로 내린다 — 이벤트 배지만 선명하면 배지가 어디에 떠 있는지가 즉시 읽힌다.
+    const lowerAlpha = activeLayer === "upper" ? 0.58 : activeLayer === "event" ? 0.62 : 1;
     const lower = map.lowerTiles[i];
     if (lower >= 0) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
+      if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 0, x, y);
     } else {
       addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, x, y);
@@ -226,6 +257,7 @@ function renderTileCellLayer(
     for (const stackedLower of tileStackAt(map, "lower", i)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
       lowerTile.setAlpha(lowerAlpha);
+      if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 1, x, y);
     }
   } else {
@@ -291,6 +323,20 @@ function uniqueRenderableTileCells(cells: readonly ProjectChangeCell[]): readonl
 
 function tileIndexKey(layer: "lower" | "upper", x: number, y: number): string {
   return `${layer}:${x},${y}`;
+}
+
+function parseTileIndexKey(key: string): { readonly x: number; readonly y: number } | null {
+  const match = /^(?:lower|upper):(-?\d+),(-?\d+)$/.exec(key);
+  if (!match) return null;
+  return { x: Number(match[1]), y: Number(match[2]) };
+}
+
+function isOutsideTileWindow(window: EditSceneTileWindow, x: number, y: number): boolean {
+  return x < window.minX || y < window.minY || x > window.maxX || y > window.maxY;
+}
+
+function isPartialTileWindow(window: EditSceneTileWindow, map: GameMap): boolean {
+  return window.minX > 0 || window.minY > 0 || window.maxX < map.width - 1 || window.maxY < map.height - 1;
 }
 
 function tintIfPossible(object: Phaser.GameObjects.GameObject, tint: number): void {

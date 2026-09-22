@@ -1,11 +1,19 @@
 import type { SpatialGalleryCard } from './spatialCatalog';
 import { visibleAuthoringProject } from './spatialAuthoringAccess';
-import { reviewedPlaceClassificationSource } from '@/project/defaults/spatial/reviewedPlaceCatalog';
+import { reviewedPlaceSummary } from '@/project/defaults/spatial/reviewedPlaceIndex';
 
 export const PLACE_CATEGORIES = ['마을·도시', '자연', '건물·시설', '던전·유적', '이동수단'] as const;
 export const PLACE_ENVIRONMENTS = ['실외', '건물 내부', '지하', '수중'] as const;
 export type PlaceClassification = { style: string; category: string; environment: string; purposes: string[] };
 export const placeLibraryFilters = { style: '', category: '', environment: '', purpose: '', search: '' };
+/** 0건 화면의 탈출구 — 분류 필터를 손으로 되돌리게 두지 않는다. */
+export function resetPlaceLibraryFilters(): void {
+  placeLibraryFilters.style = '';
+  placeLibraryFilters.category = '';
+  placeLibraryFilters.environment = '';
+  placeLibraryFilters.purpose = '';
+  placeLibraryFilters.search = '';
+}
 export function classificationTags(value: PlaceClassification): string[] {
   return [`그림체:${value.style}`, `장소유형:${value.category}`, `공간형태:${value.environment}`, ...value.purposes.map(p => `용도:${p.trim()}`).filter(p => p !== '용도:')];
 }
@@ -18,10 +26,10 @@ export function classifyPlaceCard(card: SpatialGalleryCard): PlaceClassification
   const ref = card.canonicalSource;
   const source = ref?.kind === 'place' ? p.spatialAuthoring?.library.places[ref.id]
     : ref?.kind === 'space' ? p.spatialAuthoring?.library.spaces[ref.id] : undefined;
-  const reviewed = card.reviewedPlaceId ? reviewedPlaceClassificationSource(card.reviewedPlaceId) : undefined;
+  const reviewed = card.reviewedPlaceId ? reviewedPlaceSummary(card.reviewedPlaceId) : undefined;
   const tags = source?.tags ?? reviewed?.tags ?? [];
   const tag = (prefix: string) => tags.find(t => t.startsWith(prefix))?.slice(prefix.length);
-  let tid = card.tilesetId ?? reviewed?.tilesetId;
+  let tid: string | undefined = card.tilesetId ?? reviewed?.tilesetId ?? undefined;
   if (source && 'tilesetId' in source) tid = source.tilesetId;
   if (source && 'exterior' in source) tid = source.exterior?.tilesetId ?? tid;
   if (!tid && source && 'children' in source) {

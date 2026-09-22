@@ -168,6 +168,10 @@ function validateSnapshot(occurrence: S.SpatialOccurrence, assets: S.SpatialAsse
     assert(graphic !== undefined, `${path}.kitCells.${id}: missing graphic owner`);
     assert(graphic.tilesetId === kit.tilesetId && graphic.kitId === kit.kitId, `${path}.kitCells.${id}: graphic mismatch`);
     const tileset = own(assets.tilesets, kit.tilesetId, `${path}.kitCells.${id}.tilesetId`);
+    // 동결된 래스터의 픽셀 크기와 지금 타일셋의 픽셀 크기가 다르면 여기서 멈춘다.
+    // 조용히 넘기면 32px 로 찍힌 배치가 16px 로 해석되어 반쪽 크기로 재현된다.
+    assert(kit.tileSize === undefined || kit.tileSize === tileset.tileSize,
+      `${path}.kitCells.${id}.tileSize: ${kit.tileSize} vs atlas ${tileset.tileSize}`);
     bounds(kit.cells, kit, `${path}.kitCells.${id}.cells`);
     kit.cells.forEach((cell, i) => assert(cell.tile < tileset.count, `${path}.kitCells.${id}.cells[${i}].tile: outside atlas`));
   }

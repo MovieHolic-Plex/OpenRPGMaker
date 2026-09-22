@@ -138,7 +138,11 @@ describe("piAgent 툴 에스컬레이션", () => {
         { name: "set_project_settings", args: { title: "Pi initial candidates" } },
       ]) as never,
     });
-    expect(new Set(calls[0]!.toolNames)).toEqual(new Set(["get_project_summary", "find_tools"]));
+    // Reference reads, search and the preview-only build spec are always exposed.
+    // Keep exact membership checks so unrelated authoring tools cannot leak in.
+    expect(new Set(calls[0]!.toolNames)).toEqual(new Set([
+      "get_project_summary", "find_tools", "list_tileset_references", "read_tileset_reference", "web_search", "set_build_spec",
+    ]));
     expect(calls[1]!.toolNames).toContain("set_project_settings");
     expect(done.project.meta.title).toBe("Pi initial candidates");
     expect(done.stats.toolErrors).toBe(0);
@@ -149,8 +153,10 @@ describe("piAgent 툴 에스컬레이션", () => {
     await runPiAgent(request({ initialToolNames: ["find_tools"] }), {
       streamFn: scriptedStream(calls, [{ name: "find_tools", args: { query: "쀍쀍쀍쀍쀍" } }]) as never,
     });
-    expect(calls[0]!.toolNames).toEqual(["find_tools"]);
-    expect(new Set(calls[1]!.toolNames)).toEqual(new Set(selectPiToolDefinitions().map(tool => tool.name)));
+    expect(new Set(calls[0]!.toolNames)).toEqual(new Set([
+      "find_tools", "list_tileset_references", "read_tileset_reference", "web_search", "set_build_spec",
+    ]));
+    expect(new Set(calls[1]!.toolNames)).toEqual(new Set([...selectPiToolDefinitions().map(tool => tool.name), "set_build_spec"]));
     expect(calls[1]!.toolNames.length).toBe(new Set(calls[1]!.toolNames).size);
   });
 
@@ -164,9 +170,9 @@ describe("piAgent 툴 에스컬레이션", () => {
           { name: "set_party", args: { actorIds: [] } },
         ]) as never,
       });
-      expect(calls[0]!.toolNames).toEqual(["find_tools"]);
+      expect(calls[0]!.toolNames).toEqual(readOnly ? ["find_tools"] : ["find_tools", "set_build_spec"]);
       expect(new Set(calls[1]!.toolNames)).toEqual(new Set(readOnly
-        ? ["find_tools", "get_project_summary"] : ["find_tools", "get_project_summary", "set_project_settings"]));
+        ? ["find_tools", "get_project_summary"] : ["find_tools", "get_project_summary", "set_project_settings", "set_build_spec"]));
       expect(done.changedKeys).toEqual([]);
       expect(done.stats.toolErrors).toBe(1);
     }

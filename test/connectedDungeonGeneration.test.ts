@@ -4,7 +4,7 @@ import { serialize, deserialize } from "@/project/io";
 import { getRoomKit } from "@/editor/roomHarness/registry";
 import { runRoomPipeline, startRoomSession, advanceRoomBuild } from "@/editor/roomHarness/engine";
 import { evaluateConnectedDungeon } from "@/editor/dungeonGeneration/connected";
-import { validateDungeonGraph } from "@/editor/dungeonGeneration/topology";
+import { dungeonFloorMask, resolveDungeonPath, validateDungeonGraph, type DungeonGraph } from "@/editor/dungeonGeneration/topology";
 import { runTool } from "@/editor/tools/toolRunner";
 import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 import type { DungeonRoomPlan } from "@/editor/dungeonRoomPipeline";
@@ -108,5 +108,49 @@ describe("connected dungeon production generation", () => {
     expect((evaluation.data as { report: { issues: string[] } }).report.issues).toEqual([]);
     const schema = toOpenAiTools().find(t => t.function.name === "run_dungeon_room_pipeline")!;
     expect(schema.function.parameters.properties).toHaveProperty("graph");
+    expect(schema.function.parameters.properties).toHaveProperty("path");
+  });
+  it("path follows the request, and omitting it keeps the historical silhouette", () => {
+    expect(resolveDungeonPath({ character: "crypt" })).toBe("straight");
+    expect(resolveDungeonPath({ character: "cavern" })).toBe("cave");
+    expect(resolveDungeonPath({ character: "crypt", path: "winding" })).toBe("winding");
+    const graph: DungeonGraph = { rooms: [
+      { id: "mouth", role: "entrance", x: 16, y: 40, width: 12, height: 10 },
+      { id: "hall", role: "chamber", x: 40, y: 40, width: 14, height: 12 },
+      { id: "altar", role: "shrine", x: 40, y: 18, width: 12, height: 10 },
+    ], connections: [
+      { from: "mouth", to: "hall", width: 8, via: [{ x: 28, y: 40 }] },
+      { from: "hall", to: "altar", width: 8, via: [{ x: 40, y: 29 }] },
+    ] };
+    const mask = (path?: "straight" | "cave" | "winding", character: "cavern" | "crypt" = "cavern") => dungeonFloorMask(56, 48, graph, { seed: 4, character, ...(path ? { path } : {}) });
+    const count = (path?: "straight" | "cave" | "winding") => mask(path).filter(Boolean).length;
+    expect(mask()).toEqual(mask());
+    expect(mask(undefined, "crypt")).toEqual(mask(undefined, "crypt"));
+    expect(count("cave")).toBeGreaterThan(count("straight"));
+    expect(count("winding")).not.toBe(count("straight"));
+    expect(mask()).not.toEqual(mask("straight"));
+    const project = createBlankProject();
+    for (const path of ["straight", "cave", "winding"] as const) {
+      const result = runRoomPipeline(project, kit.kitId, { mapId: `path_${path}`, theme: "lava", character: "cavern", path, width: 56, height: 48, seed: 4, graph });
+      expect((result.data as { ok?: boolean }).ok, result.summary).toBe(true);
+      expect((project.maps[`path_${path}`]!.roomHarnessPlan!.plan as DungeonRoomPlan).path).toBe(path);
+    }
+    expect(() => runRoomPipeline(createBlankProject(), kit.kitId, { mapId: "bad_path", theme: "stone", path: "maze", width: 32, height: 32 })).toThrow(/path/);
+  });
+  it("returns outside, marks the far room, and patrols a known troop", () => {
+    const project = createBlankProject();
+    const outside = project.startMapId;
+    project.database.troops.push({ id: "troop_bat", name: "박쥐", enemyIds: [], members: [], autoAlign: true, battleEventPages: [] });
+    const result = runRoomPipeline(project, kit.kitId, {
+      mapId: "linked", theme: "stone", character: "crypt", path: "straight", width: 48, height: 40, seed: 3,
+      linkMapId: outside, landmark: "gate", pressure: "patrol", troopId: "troop_bat",
+    });
+    expect((result.data as { ok?: boolean }).ok, result.warnings?.join("; ")).toBe(true);
+    const map = project.maps.linked!;
+    const leaves = (events: typeof map.events, mapId: string) => events?.some((event) => event.pages[0]?.commands.some((command) => command.kind === "transfer" && command.mapId === mapId));
+    expect(leaves(map.events, outside)).toBe(true);
+    expect(leaves(project.maps[outside]!.events, "linked")).toBe(true);
+    expect(map.upperTiles.includes(298)).toBe(true);
+    expect(map.fieldSpawns?.some((spawn) => spawn.troopId === "troop_bat" && spawn.chase)).toBe(true);
   });
 });

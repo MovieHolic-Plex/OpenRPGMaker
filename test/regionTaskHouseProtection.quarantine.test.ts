@@ -20,9 +20,9 @@ import { fixedDeclarer } from "./intentFixture";
 const REGION = { x: 0, y: 0, width: 2, height: 2 };
 
 beforeEach(() => {
-  vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
-  vi.stubEnv("VITE_SUPABASE_PROJECT_ID", "");
-  vi.stubEnv("VITE_SUPABASE_URL", "");
+  vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "");
+  vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "");
+  vi.stubEnv("VITE_LEGACY_DB_URL", "");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   const ctx = { project: createBlankProject() };
   ctx.project.startPos = { x: 0, y: 0 };

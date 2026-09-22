@@ -1,3 +1,4 @@
+import sharedVillageObjects from "./sharedVillageObjects.json";
 import forestHarmony from "./forestHarmonyTileset.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
@@ -27,6 +28,11 @@ import {
   COMBINED_TOWN_RETRO_WORLD_NAME,
   COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY,
   COMBINED_TOWN_RETRO_WORLD_TILE_COUNT,
+  LPC_WOODEN_FURNITURE_16_NAME,
+  LPC_WOODEN_FURNITURE_16_TEXTURE_KEY,
+  LPC_WOODEN_FURNITURE_16_TILE_COUNT,
+  LPC_WOODEN_FURNITURE_TILE_COUNT,
+  LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { EASYRPG_PICTURE_ASSETS } from "@/assets/easyrpgRtp";
@@ -43,6 +49,9 @@ export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 
 export const TEX_TILESET = "tex_tiles_default";
 export const TEX_DIALOGUE_FRAME = "tex_dialogue_frame";
+
+/** [LPC] Wooden Furniture texture key — re-exported for defaults/webExport wiring. */
+export { LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY } from "@/project/defaults/constants";
 
 export type BundledImageAsset = {
   readonly textureKey: string;
@@ -101,6 +110,7 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
+  {textureKey:"tex_shared_forest_village_objects",path:"assets/shared-village/objects.png",name:"숲마을 · 선별 소품 19종"},
   {textureKey:"tex_forest_harmony",path:"assets/forest-harmony/chipset.png",name:"숲마을 · 거리별 잔디"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
@@ -119,6 +129,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, path: "assets/easyrpg-chipset-combined-town-retro-world-transparent.png", name: COMBINED_TOWN_RETRO_WORLD_NAME },
   { textureKey: "tex_modern_exteriors_nocturne", path: "assets/modern-exteriors/modern-city-atlas.png", name: "Modern Exteriors · 네온 녹턴" },
   { textureKey: SLATES_32_TEXTURE_KEY, path: "assets/slates/slates-v2-32px.png", name: "Slates 32px · Ivan Voirol (CC-BY 4.0)" },
+  { textureKey: LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture.png", name: "LPC 나무 가구 · OpenGameArt (CC-BY-SA 3.0)" },
+  { textureKey: LPC_WOODEN_FURNITURE_16_TEXTURE_KEY, path: "assets/opengameart-lpc-wooden-furniture-16px.png", name: LPC_WOODEN_FURNITURE_16_NAME },
   ...SCARLOXY_CHIPSET_ASSETS,
 ] as const satisfies readonly BundledImageAsset[];
 
@@ -127,10 +139,13 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_cliff_reference") return 2640;
+  if (key === "tex_shared_forest_village_objects") return sharedVillageObjects.count;
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
+  if (key === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_TILE_COUNT;
+  if (key === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return LPC_WOODEN_FURNITURE_16_TILE_COUNT;
   return TILE_FRAME_COUNT;
 }
 
@@ -447,10 +462,14 @@ function uploadedSourceHeight(source: HTMLImageElement | HTMLCanvasElement): num
 }
 
 function projectBundledTextureKeys(project: Project): Set<string> {
-  const strings = new Set<string>();
-  collectProjectStrings(project, strings);
+  const strings = collectPlayReferencedStrings(project);
   const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
   for (const id of strings) {
+    if (isGeneratedMonsterSprite(id)) keys.add(id);
+  }
+  // 필드 스폰의 그림은 적 레코드에만 있고, 맵 이벤트는 부팅 뒤에 만들어진다.
+  // 적 도감 전체의 monsterResourceId 는 여기서 다시 넣지 않는다.
+  for (const id of fieldSpawnMonsterResourceIds(project)) {
     if (isGeneratedMonsterSprite(id)) keys.add(id);
   }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
@@ -500,19 +519,53 @@ function spatialGraphicResourceIds(project: Project): Set<string> {
 }
 
 function collectProjectStrings(value: unknown, out: Set<string>): void {
+  collectPlayStrings(value, out, "");
+}
+
+/**
+ * 플레이 부팅이 실제로 읽는 문자열.
+ * 리소스 프로필과, 어떤 맵도 가리키지 않는 타일셋 카탈로그는 제외한다.
+ */
+export function collectPlayReferencedStrings(project: Project): Set<string> {
+  const strings = new Set<string>();
+  collectProjectStrings({ ...project, resourceProfiles: [], tilesets: {} }, strings);
+  for (const tileset of Object.values(project.tilesets)) {
+    if (!strings.has(tileset.id)) continue;
+    collectProjectStrings(tileset, strings);
+  }
+  return strings;
+}
+
+function collectPlayStrings(value: unknown, out: Set<string>, key: string): void {
+  // 적·종족 도감의 필드 그림 id. 전투 초상은 전투 DOM 이 그때 받고,
+  // 맵에 깔린 스폰만 fieldSpawnMonsterResourceIds 가 다시 넣는다.
+  if (key === "monsterResourceId" || key === "uploaded") return;
   if (typeof value === "string") {
     out.add(value);
     return;
   }
   if (Array.isArray(value)) {
-    for (const item of value) collectProjectStrings(item, out);
+    for (const item of value) collectPlayStrings(item, out, key);
     return;
   }
   if (typeof value !== "object" || value === null) return;
-  for (const [key, child] of Object.entries(value)) {
-    if (key === "uploaded") continue;
-    collectProjectStrings(child, out);
+  for (const [childKey, child] of Object.entries(value)) {
+    collectPlayStrings(child, out, childKey);
   }
+}
+
+/** defaultFieldSpawnGraphic 과 같은 적 선택. 이벤트 생성 전에 그 그림만 미리 싣는다. */
+function fieldSpawnMonsterResourceIds(project: Project): readonly string[] {
+  const ids: string[] = [];
+  for (const map of Object.values(project.maps)) {
+    for (const spawn of map.fieldSpawns ?? []) {
+      const troop = project.database.troops.find((entry) => entry.id === spawn.troopId);
+      const firstEnemyId = troop?.members?.find((member) => member.hidden !== true)?.enemyId ?? troop?.enemyIds?.[0];
+      const resourceId = project.database.enemies.find((enemy) => enemy.id === firstEnemyId)?.monsterResourceId;
+      if (resourceId) ids.push(resourceId);
+    }
+  }
+  return ids;
 }
 
 function registerCharsetTextureFrames(texture: Phaser.Textures.Texture): void {
@@ -592,7 +645,9 @@ function registerTileAnimationsForTexture(scene: Phaser.Scene, textureKey: strin
   if (
     textureKey === CASTLE_TILESET_TEXTURE_KEY ||
     textureKey.startsWith(`${CASTLE_TILESET_TEXTURE_KEY}__`) ||
-    textureKey === CASTLE_REFERENCE_TILESET_TEXTURE_KEY
+    textureKey === CASTLE_REFERENCE_TILESET_TEXTURE_KEY ||
+    textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY ||
+    textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY
   ) return;
   for (const strip of CHIPSET_ANIMATION_STRIPS) {
     const stripKey = chipsetAnimationKey(textureKey, strip.key);

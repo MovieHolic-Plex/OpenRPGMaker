@@ -36,8 +36,8 @@
 - `src/editor/tools/villageSession.ts:504-508` — water/forest/critique/look은 전부 `verifyLayer` 게이트가 있는데 settlement만 build_village 호출 후 무조건 `status="done"`. `verifyLayer("settlement")`(1041-1044)는 선택적 read 툴로만 도달.
 - F3과 연쇄: 빈 settlement → critique 트리비얼 통과 → look까지 직행.
 
-### F6. CI 스위트에 라이브 Supabase 저작 스크립트가 테스트로 위장
-- `test/lakeVillageRebuildFinal.test.ts:23-30,50-57,644-653` — `.env.local` 직독(없으면 즉사) + `saveProjectToSupabase` 라이브 업서트 assert + evidence 파일 쓰기. `vitest.config.ts:13` include에 포함 → 클린 체크아웃/CI 무조건 빨강, 로컬에선 **테스트 실행마다 원격 공유 프로젝트 덮어씀.**
+### F6. CI 스위트에 라이브 LegacyDb 저작 스크립트가 테스트로 위장
+- `test/lakeVillageRebuildFinal.test.ts:23-30,50-57,644-653` — `.env.local` 직독(없으면 즉사) + `saveProjectToLegacyDb` 라이브 업서트 assert + evidence 파일 쓰기. `vitest.config.ts:13` include에 포함 → 클린 체크아웃/CI 무조건 빨강, 로컬에선 **테스트 실행마다 원격 공유 프로젝트 덮어씀.**
 
 ---
 
@@ -73,7 +73,7 @@
 
 ## 스크립트·재현성 실태
 
-- 마을 스크립트 31개 중: 순수 재현 가능(네트워크 불요) **0개**, 조건부(a) 9개(전부 `.env.local`+Supabase 쓰기 결합), 일회성(b) 16개(그중 특정 런 GUID 맵 id 하드코딩으로 **재실행 자체 불가 2개**: `clean-and-save-village-dungeon.mts:21`, `complete-dew-30min-quest.mts:11`), 죽은/tmp(c) 4개(`_tmp_*` 커밋 2개 포함).
+- 마을 스크립트 31개 중: 순수 재현 가능(네트워크 불요) **0개**, 조건부(a) 9개(전부 `.env.local`+LegacyDb 쓰기 결합), 일회성(b) 16개(그중 특정 런 GUID 맵 id 하드코딩으로 **재실행 자체 불가 2개**: `clean-and-save-village-dungeon.mts:21`, `complete-dew-30min-quest.mts:11`), 죽은/tmp(c) 4개(`_tmp_*` 커밋 2개 포함).
 - project id 하드코딩 26개, localhost 포트 하드코딩 6개. wipe 계열 6종 중 4종의 기본 타깃이 공유 갤러리 프로젝트.
 - **npm script 0개.** 실질 정본은 `test/villageBuilder.test.ts:323-354`의 `run_village_pipeline` 테스트 케이스 하나이며 CLI 미노출.
 - 캡처/리포트 3종(`capture-natural-village-harness.mts` 등)은 특정 projectId·경로 하드코딩 일회성 저작 도구 — 픽셀 판정 0, Visual QA 자동화는 존재하지 않음.

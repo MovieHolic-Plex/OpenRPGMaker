@@ -7,6 +7,7 @@ import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/s
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
+import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
@@ -105,6 +106,10 @@ export type CameraControlStep = {
 export function applyStoredCameraState(scene: PlaySceneContext): void {
   const state = scene.session.camera;
   if (!state) {
+    // 연출 상태가 없을 때의 배율은 **프로젝트 기본값**이다. 예전에는
+    // centerRuntimeCamera 가 1 로 리셋한 값이 그대로 남았다 — 그래서 고해상도
+    // 배경을 쓰려면 맵마다 auto 이벤트로 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다.
+    applyCameraZoom(scene.cameras.main, resolveCameraZoom(store.getCurrent().system));
     followCameraTarget(scene, { kind: "player" });
     return;
   }
@@ -228,9 +233,11 @@ function resolveCameraTarget(
   return { x: scene.player.x + offsetX, y: scene.player.y + offsetY };
 }
 
+/** 카메라 배율 범위의 정본은 @/project/cameraZoom 에 있다 — 저작 정규화와 같은 값을 봐야
+ * 「저장은 됐는데 플레이에서는 다른 배율」이 안 생긴다. */
 function applyCameraZoom(camera: Phaser.Cameras.Scene2D.Camera, zoom: number | undefined): void {
   if (zoom === undefined || !Number.isFinite(zoom) || zoom <= 0) return;
-  camera.setZoom(Math.min(4, Math.max(0.25, zoom)));
+  camera.setZoom(Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
 }
 
 export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: number, durationMs: number): Promise<void> {

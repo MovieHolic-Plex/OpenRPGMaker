@@ -12,7 +12,7 @@ The appropriate content correction, if requested, is to stock actual canonical e
 
 - Project ID: **`oprn-e98456e1d8`**, title **`용사의 여정`**.
 - Actual runtime URL: **http://127.0.0.1:9841/export-player/player.html**.
-- Data: main's `loadProjectFromSupabase` with this explicit project ID, including normal maps-table overlays; unchanged canonical load result delivered to the shipping player's `projectUrl` in an isolated Firefox context. No fixture, shop, party, gold or inventory replacement.
+- Data: main's `loadProjectFromLegacyDb` with this explicit project ID, including normal maps-table overlays; unchanged canonical load result delivered to the shipping player's `projectUrl` in an isolated Firefox context. No fixture, shop, party, gold or inventory replacement.
 - Snapshot SHA-256: `2684a77c47d1ea75eb5ba9b4f17e09ff556550b08f42f0db81f67e616976ab3b`.
 - Start: `map_blank_start`, `(3,8)`; press Enter on the real title screen.
 - Shop map: **`map_weapon_shop`**, `무기 상점`, 12x16.

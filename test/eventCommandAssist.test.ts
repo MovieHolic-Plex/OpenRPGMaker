@@ -137,6 +137,10 @@ describe("buildEventAssistPrompt", () => {
     expect(prompt).toContain("sw_0001: 보물상자 열림");
     // 출력 규약.
     expect(prompt).toContain("JSON 배열");
+    // 충격은 대사보다 앞. 화면을 덮는 마법 id 가 목록에 있어야 조수가 문장만 쓰지 않는다.
+    expect(prompt).toContain("## 충격 연출(문장만 두지 말 것)");
+    expect(prompt).toContain("wait:true");
+    expect(prompt).toMatch(/anim_magic: .+ \(화면을 덮음\)/u);
   });
 
   it("AI 저작 표면에서 제외된 명령은 kind 목록과 예시에 노출하지 않는다", () => {

@@ -5,7 +5,7 @@
 // `_` 접두어는 진단 스펙이라 기본 스위트에서 제외된다(playwright.config.ts 주석).
 import { mkdir } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 import type { Project } from "@/project/types";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots/event-ai-author-entry";
@@ -83,7 +83,7 @@ function blankProject(): Project {
 }
 
 async function seedProject(page: Page): Promise<void> {
-  await seedProjectFromSupabaseCanonical(page, blankProject());
+  await seedProjectForEditor(page, blankProject());
 }
 
 async function rightClickMapTile(page: Page, x: number, y: number): Promise<void> {

@@ -4,7 +4,7 @@ import json, os, pathlib, subprocess, sys, time
 root = pathlib.Path(__file__).resolve().parents[4]
 out = pathlib.Path(__file__).resolve().parent
 name, *command = sys.argv[1:]
-env = {k: v for k, v in os.environ.items() if not any(s in k.upper() for s in ['TOKEN', 'SECRET', 'PASSWORD', 'API_KEY', 'SUPABASE'])}
+env = {k: v for k, v in os.environ.items() if not any(s in k.upper() for s in ['TOKEN', 'SECRET', 'PASSWORD', 'API_KEY', 'LEGACY_DB'])}
 env['TMPDIR'] = '/dev/shm/st_01a0793a/tmp'
 env['VITE_CACHE_DIR'] = '/dev/shm/st_01a0793a/vite-cache'
 if name in ['focused', 'bgm-node']:

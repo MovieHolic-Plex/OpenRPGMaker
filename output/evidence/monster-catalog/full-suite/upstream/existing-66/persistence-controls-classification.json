@@ -12,16 +12,16 @@
       "report": "persistence-authentication-error.json",
       "exactNormalizedErrorMessageMatch": true,
       "integrationMessages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
       ],
       "controlMessages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}"
       ],
       "integrationFullMessages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:235:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:235:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:155:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:281:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "controlFullMessages": [
-        "SupabaseProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:234:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromSupabase (<SOURCE>/src/project/supabaseProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
+        "LegacyDbProjectSyncError: {\n  \"message\":\"Invalid authentication credentials\"\n}\n    at loadProjectSnapshotFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:234:11)\n    at processTicksAndRejections (node:internal/process/task_queues:103:5)\n    at loadProjectFromLegacyDb (<SOURCE>/src/project/legacyDbProjectSync.ts:154:20)\n    at ProjectStore.load (<SOURCE>/src/project/store.ts:280:27)\n    at <SOURCE>/test/storePersistence.test.ts:151:5\n    at file://<NODE_MODULES>/@vitest/runner/dist/chunk-hooks.js:752:20"
       ],
       "normalizedFullStacksEqual": false,
       "actualDBServiceProof": false
@@ -117,9 +117,9 @@
         "READONLY_AUDIT": "/tmp/st_01a079-existing/persistence-authentication-error-audit.jsonl",
         "PERSISTENCE_CONTROL_MODE": "authentication-error",
         "PERSISTENCE_CONTROL_TRACE": "/tmp/st_01a079-existing/persistence-authentication-error-fetch.jsonl",
-        "VITE_SUPABASE_URL": "http://127.0.0.1:1",
-        "VITE_SUPABASE_ANON_KEY": "test-anon-key",
-        "VITE_SUPABASE_PROJECT_ID": "rpg-zzu-house-template-gallery"
+        "VITE_LEGACY_DB_URL": "http://127.0.0.1:1",
+        "VITE_LEGACY_DB_ANON_KEY": "test-anon-key",
+        "VITE_LEGACY_DB_PROJECT_ID": "rpg-zzu-house-template-gallery"
       },
       "startedAt": "2026-09-06T23:41:38.328997+00:00",
       "durationSeconds": 7.050797706004232,
@@ -165,9 +165,9 @@
         "READONLY_AUDIT": "/tmp/st_01a079-existing/persistence-success-audit.jsonl",
         "PERSISTENCE_CONTROL_MODE": "success",
         "PERSISTENCE_CONTROL_TRACE": "/tmp/st_01a079-existing/persistence-success-fetch.jsonl",
-        "VITE_SUPABASE_URL": "http://127.0.0.1:1",
-        "VITE_SUPABASE_ANON_KEY": "test-anon-key",
-        "VITE_SUPABASE_PROJECT_ID": "rpg-zzu-house-template-gallery"
+        "VITE_LEGACY_DB_URL": "http://127.0.0.1:1",
+        "VITE_LEGACY_DB_ANON_KEY": "test-anon-key",
+        "VITE_LEGACY_DB_PROJECT_ID": "rpg-zzu-house-template-gallery"
       },
       "startedAt": "2026-09-06T23:41:38.330237+00:00",
       "durationSeconds": 12.862400455982424,

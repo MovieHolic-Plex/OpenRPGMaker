@@ -1,19 +1,19 @@
-import { FOREST_PLACE_REFERENCES, forestPlaceSnapshot } from "./forestPlaceReferences";
-import { SHIP_PLACE_REFERENCES, shipPlaceSnapshot } from "./shipPlaceReferences";
-import emeraldSnapshot from "./regionReferences/emerald-basin.json";
-import hillForestSnapshot from "./regionReferences/hill-forest-village.json";
-import snapshot from "./regionReferences/walled-settlement.json";
-import lakeSnapshot from "./regionReferences/lake-village.json";
-import castleSnapshot from "./regionReferences/castle-town.json";
+import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
+import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
+import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
-export const REGION_REFERENCES = [{
+export const REGION_REFERENCES = [
+  // 완성 맵 사례 — 실제 저장본에서 온 읽기 전용 자료만 배송한다. 지형 어휘 더미는 내지 않는다.
+  // LAKE_PLACE_REFERENCES 가 REGION_REFERENCES[2](호수마을)를 원본으로 삼으므로
+  // 기존 네 사례의 순서·인덱스를 유지하고, 새 사례는 배열 뒤에 추가한다.
+  {
   id: "walled-settlement-43x45", name: "성벽으로 둘러싸인 정주지", kind: "completed-map" as const, regionKind: "settlement" as const,
-  revision: 1, width: 43, height: 45, tilesetId: snapshot.tileset.id,
+  revision: 1, width: 43, height: 45, tilesetId: "easyrpg_chipset_combined_town",
   preview: "/assets/region-references/walled-settlement.png",
   sourceProjectId: "rpg-zzu-reference-houses-20260913-6890",
-  sourceMapId: snapshot.map.id,
+  sourceMapId: "map_reference_gabled_houses_20260913",
   snapshotProjectId: "rpg-zzu-region-reference-walled-settlement-v1",
   rules: [
     "성벽의 수직 벽면은 3칸. 난간·보행로는 별도이며 동쪽 계단으로 접근한다.",
@@ -26,10 +26,10 @@ export const REGION_REFERENCES = [{
   limitations: "완성 맵 참고 사례. 생성 프리셋이나 배치 명령이 아니다. 실내·우물 상호작용은 포함하지 않는다.",
 }, {
   id: "castle-town-100x100", name: "왕궁이 있는 이중 성벽 도시", kind: "completed-map" as const, regionKind: "settlement" as const,
-  revision: 1, width: 100, height: 100, tilesetId: castleSnapshot.tileset.id,
+  revision: 1, width: 100, height: 100, tilesetId: "easyrpg_chipset_combined_town",
   preview: "/assets/region-references/castle-town.png",
   sourceProjectId: "rpg-zzu-castle-town-100-20260913-6890",
-  sourceMapId: castleSnapshot.map.id,
+  sourceMapId: "map_castle_town_100",
   snapshotProjectId: "rpg-zzu-region-reference-castle-town-v1",
   rules: [
     "100×100 도시. 북쪽에 강이 흐르고, 외성과 내성을 떨어뜨려 배치한다. 각 성벽은 남쪽 문만 개방한다.",
@@ -43,18 +43,34 @@ export const REGION_REFERENCES = [{
   limitations: "외관 배치 참고 사례. 궁전 3개 층의 실내 맵과 상호작용은 포함하지 않는다. 사용자 최종 수정 이후의 플레이 검증은 별도다.",
 }, {
   id: "lake-village-60x60", name: "숲과 선착장이 있는 호수마을", kind: "completed-map" as const, regionKind: "settlement" as const,
-  revision: 1, width: 60, height: 60, tilesetId: lakeSnapshot.tileset.id,
+  revision: 1, width: 60, height: 60, tilesetId: "easyrpg_chipset_combined_town",
   preview: "/assets/region-references/lake-village.png",
-  sourceProjectId: "rpg-zzu-lake-village-60-20260913-6890", sourceMapId: lakeSnapshot.map.id,
+  sourceProjectId: "rpg-zzu-lake-village-60-20260913-6890", sourceMapId: "map_lake_village_60",
   snapshotProjectId: "rpg-zzu-region-reference-lake-village-v1",
   rules: ["호숫가를 도는 모래길과 작은 집 13채. 선착장 앞은 짐을 놓는 넓은 공터다.",
     "2×2 활엽수와 1×2 나무를 섞고, 하층 줄기 위로 상층 수관을 대각으로 겹친다.",
     "울타리 마당·텃밭·우물 쉼터를 배치하고 소품은 작업과 생활 공간별로 모은다.",
     "키 큰 풀은 숲과 물가에 불규칙하게 모으며 마른 나무는 드물게 둔다. 선착장 양끝에 사다리가 있다."],
   limitations: "외관 참고 사례. 실내·낚시·수영·NPC 상호작용은 포함하지 않는다.",
+}, {
+  id: "river-forest-village-78x44", name: "강변 숲마을", kind: "completed-map" as const, regionKind: "settlement" as const,
+  revision: 1, width: 78, height: 44, tilesetId: "forest_harmony",
+  preview: "/assets/region-references/river-forest-village.png",
+  tilesetPreview: "/assets/region-references/river-forest-village-atlas.png",
+  projectDownload: "/assets/region-references/river-forest-village.oprn.json",
+  sourceProjectId: "original-grove-trunks-20260921-76a3-1789965905810", sourceMapId: "restored_river",
+  snapshotProjectId: "oprn-region-river-forest-village-v1",
+  rules: [
+    "중앙의 굽은 강과 다리 양쪽에 집 8채를 배치하고 집 앞길을 강둑 길에 연결한다.",
+    "외곽 숲은 크고 작은 굴곡을 이어 공터를 감싼다. 몸통·뿌리는 굽이숲의 기존 3행 조립과 끝마감을 유지한다.",
+    "화단·장작과 통·야외 탁자·수확 상자·쉼터·숲 가장자리 꽃덤불을 생활 공간에 모으고 출입 동선을 비운다.",
+    "숲마을 · 거리별 잔디 칩셋을 사용한다. 시장이나 마을 외곽 울타리는 두지 않는다.",
+    "사용자가 승인한 저장본을 보존한다. 내려받는 문서에는 연결된 실내 9개와 기존 출입·주민 이벤트를 포함한다.",
+  ],
+  limitations: "완성 마을 참고 사례. 자동 생성 프리셋이 아니다. 집 앞길 8곳의 연결을 확인했으며 게임 전체 플레이 검증은 별도다.",
 }] as const;
 
-const LAKE_PLACE_REFERENCES = [
+export const LAKE_PLACE_REFERENCES = [
   { id: "lake-pier-workyard", name: "호숫가 선착장 작업터", x: 29, y: 33, width: 14, height: 13,
     rules: ["T자 선착장과 양끝 사다리. 진입 공터의 상자·통은 가운데 통로를 비우고 옆으로 모은다."] },
   { id: "lake-well-rest", name: "호수마을 우물 쉼터", x: 20, y: 35, width: 10, height: 11,
@@ -67,13 +83,13 @@ const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
-  tilesetId: emeraldSnapshot.tileset.id,
+  tilesetId: "tileset_emerald_basin_20260914",
   preview: "/assets/region-references/emerald-basin.png",
   tilesetPreview: "/assets/region-references/emerald-basin-atlas.png",
-  sourceProjectId: "rpg-zzu-house-template-gallery", sourceMapId: emeraldSnapshot.map.id,
+  sourceProjectId: "rpg-zzu-house-template-gallery", sourceMapId: "map_field_emerald_basin_20260914",
   rules: [
     "쌍폭포에서 시작된 강이 굽어 흐르고 지류와 합류한다. 다리는 양쪽 강둑과 길을 잇는다.",
     "대각 절벽의 윗선과 아랫선을 연결하고, 계단 높이를 해당 절벽 높이에 맞춘다.",
@@ -86,10 +102,10 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
   // 재생성: scripts/author-hill-forest-village-reference.mts (씨앗 7). 집 문 이벤트는 실내 맵이 없어 뺐다.
   id: "hill-forest-village-64x64", name: "언덕 위 숲마을", kind: "completed-place" as const,
   placeKind: "settlement" as const, revision: 1, x: 0, y: 0, width: 64, height: 64,
-  tilesetId: hillForestSnapshot.tileset.id,
+  tilesetId: "easyrpg_chipset_combined_town_retro_world",
   preview: "/assets/region-references/hill-forest-village.png",
   tilesetPreview: "/assets/easyrpg-chipset-combined-town-retro-world-transparent.png",
-  sourceProjectId: "oprn-hill-forest-village-reference-20260918", sourceMapId: hillForestSnapshot.map.id,
+  sourceProjectId: "oprn-hill-forest-village-reference-20260918", sourceMapId: "map_hill_forest_village_20260918",
   rules: [
     "괴촌(Haufendorf): 큰길 하나에서 막다른 골목이 갈라지고 집 10채가 골목마다 붙는다. 문 앞은 모두 길에 닿는다.",
     "언덕은 대지 윗선(139)·가장자리 테(78/79/80/108/110)·암벽 면(172→202)·45° 대각(18/19/48/49)으로 두르고, 큰길만 띠를 지난다. 둔덕 위에 2단 둔덕이 겹친다.",
@@ -103,30 +119,6 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
 
 export function regionReference(id: string) {
   return [...REGION_REFERENCES, ...PLACE_REFERENCES].find(entry => entry.id === id);
-}
-
-/** Bounded rows let AI recover the complete raster without truncating a single large response. */
-export function readRegionReference(id: string, row = 0, rows = 8) {
-  const reference = regionReference(id);
-  if (!reference) throw new Error(`Unknown region reference: ${id}`);
-  if (!Number.isInteger(row) || !Number.isInteger(rows) || row < 0 || row >= reference.height || rows < 1 || rows > 16) {
-    throw new Error("row must be within the map; rows must be 1..16");
-  }
-  const place = LAKE_PLACE_REFERENCES.find(p => p.id === id);
-  const source = forestPlaceSnapshot(id) ?? shipPlaceSnapshot(id) ?? (reference.id === "emerald-basin-80x64" ? emeraldSnapshot : reference.id === "hill-forest-village-64x64" ? hillForestSnapshot : reference.id === "castle-town-100x100" ? castleSnapshot : reference.id === "walled-settlement-43x45" ? snapshot : lakeSnapshot);
-  const crop = (tiles: number[]) => Array.from({length: reference.height}, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
-  const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
-  const endRow = Math.min(reference.height, row + rows), { map, tileset } = selected;
-  const lowerTiles = map.lowerTiles.slice(row * map.width, endRow * map.width);
-  const upperTiles = map.upperTiles.slice(row * map.width, endRow * map.width);
-  const used = [...new Set([...lowerTiles, ...upperTiles])].filter(tile => tile >= 0);
-  return structuredClone({ ...reference, map: {
-    id: map.id, width: map.width, height: map.height, tileSize: map.tileSize,
-    tilesetId: map.tilesetId, row, rows: endRow - row, nextRow: endRow < map.height ? endRow : null,
-    lowerTiles, upperTiles, events: map.events,
-  }, tileset: { id: tileset.id, image: tileset.image, tileSize: tileset.tileSize, tilesPerRow: tileset.tilesPerRow,
-    tiles: used.map(tile => ({ tile, passability: tileset.passability[tile], priority: tileset.priority[tile], terrain: tileset.terrain[tile] })),
-  } });
 }
 
 /**

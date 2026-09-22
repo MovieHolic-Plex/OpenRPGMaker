@@ -1,3 +1,5 @@
+> 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
+
 ## 감사 후속: 조건 순서와 생활 경로 보존 (2026-09-20)
 
 `pageConditions.ts`의 스위치 슬롯 편집은 기존 조건의 위치에서 교체한다. 첫 조건을 삭제 후 append하면 두 스위치 행이 서로 바뀌어 다음 편집 대상을 오인한다.
@@ -452,6 +454,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - **Event AI 초안 표시·프롬프트 계약 (2026-08-30, 실측 기반):**
   - **초안은 보기 방식보다 우선한다.** `content.ts` 의 `applyViewMode` 는 초안이 있으면 `stagedHost` 를 무조건 보인다. 예전에는 스토리·미리보기에서 `stagedHost` 를 숨기면서 목록도 숨겨, 기본 보기(스토리)에서 「위 목록에 표시했어요」라고 말하며 **아무것도 보여주지 않았다**. 기존 e2e 는 도크를 열기 전에 「목록 보기」를 눌러 이 경로를 지나지 않았다.
   - **완료 렌더는 살아 있는 도크로 간다.** `aiAssist.ts` 의 `liveDock` 이 현재 렌더 인스턴스를 들고 있고, 생성 완료 콜백은 자기 클로저가 아니라 그쪽에 그린다. 생성 중 스토어가 갱신되면(본문 재렌더) 예전 코드는 문서에서 떨어져 나간 `stagedHost` 에 그려 초안이 영원히 안 보였다. 재렌더된 도크는 `statusKind === "busy"` 면 생성 버튼을 계속 잠근다.
+  - **충격은 대사보다 앞이다 (2026-09-22).** `buildEventAssistPrompt` 의 「충격 연출」 절이 함정·피격·마법·사망을 `playAudio`(효과음) → `showAnimation`(wait:true) → 상태 변화 → text 순으로 쓰게 한다. 화면을 덮는 애니메이션 id 를 목록 앞에 둔다. 게임오버 창의 그림·제목은 이 명령 배열 밖이고, 스튜디오 조수의 `set_game_over` 가 `system.gameOver` 를 고친다. 가드: `test/eventCommandAssist.test.ts`. 게임오버 그림은 `generate_game_over_image` 뒤 `set_game_over` 다.
   - **리소스 저작 능력을 유지하되 id 는 종류별로 준다.** `playAudio`/`showPicture`/`changeFace`/`playMovie`를 kind 목록에서 빼지 않는다. 대신 `src/ai/eventResourceCatalog.ts`가 슬롯별(`faceset`/`music`/`sound`/`picture`/`movie`) 목록을 만들고 프롬프트가 절을 나눠 실으며, 각 절은 `refSection`의 `MAX_REF_ENTRIES`로 잘린다. **한 덩어리 `collectResourceIds` 는 쓰지 않는다** — 실측으로 블랭크 프로젝트가 1851개였고 앞 40개가 전부 `tex_*` 칩셋과 `cc0-jetrel-*` 아이콘이라 얼굴·음악·효과음·그림 id 가 하나도 노출되지 않았다. **얼굴·음악·효과음은 에디터 폼과 같은 카탈로그**(`AUTHORABLE_FACESET_FACE_ASSETS`, `BGM_CATALOG`/`SE_CATALOG`+CC0·EasyRPG 오디오)를 쓴다. 얼굴 절은 흉상·전신 프리셋(`generated-face-*`)을 **맨 앞에** 둔다 — 낱장 얼굴 80장 뒤에 붙이면 상한 40개에 잘려 대형 초상 레이아웃이 가능하다는 사실이 프롬프트에서 사라진다. **그림 절은 성격이 다르다: 제안용이다.** 폼이 자유 입력이고 「그림 선택」 픽커는 `kind:"image"`로 454개를 제시하므로 큐레이션 목록은 «추천»일 뿐이고 유효성은 런타임 해석기가 정한다(아래 항목). 그 목록은 `resolvePictureSource`로 한 번 걸러 **검증이 받아 주는 집합의 부분집합**으로 유지한다 — 칩셋 이미지 10개(`newCommand("showPicture")`의 기본값 `tex_tiles_default` 포함)는 해석되지 않아 화면에 아무것도 안 나오므로 추천에서 뺀다.
   - **고를 리소스가 없는 kind 는 프로젝트를 보고 뺀다.** `aiCommandKinds(project)`가 슬롯이 빈 kind 를 제외한다. 동영상은 업로드로만 들어오므로 블랭크 프로젝트에서 `playMovie` 는 어떤 id 를 써도 구조적으로 틀린다 — 하드코딩이 아니라 프로젝트 상태로 판정한다.
   - **resourceId 검증은 종류까지 본다 — 단, 그림 칸의 권위는 런타임 해석기다.** `io/commandReferenceValidation`은 전역 집합 소속만 보므로 `{"kind":"playAudio","resourceId":"tex_easyrpg_chipset_dungeon"}`가 통과해 **소리 없는 이벤트**로 출하됐다(자가수정 루프가 볼 오류가 아예 없었다). `parseAndValidate`의 `validateResourceSlots`가 얼굴·음악·효과음·동영상은 슬롯 집합으로, **그림은 `resolvePictureSource`(런타임과 같은 함수)로** 판정한다. 그림을 큐레이션 집합으로 판정하던 구현은 픽커가 권한 이미지 **164개**를 반려했다(실측 454개 중; `scarloxy-monster-icon-*`, `monster` 종류로 올린 업로드 등) — false accept 보다 나쁜 false reject 였다(자가수정 3회를 태우고 하드 실패한다). 해석기가 오디오 업로드를 거부하므로 종류 교차 보호는 그대로다: 오디오 업로드를 그림 칸에 쓰면 여전히 반려된다. 빈 문자열은 「얼굴 지우기」라 통과시킨다. 알려진 한계: `playMovie` 는 미등록 id 를 `/assets/movies/<id>.mp4` 로 폴백하므로(`playSceneMovies.ts:30-39`) 이론상 같은 false-reject 가 가능하지만, 동영상 슬롯이 비면 kind 자체가 빠져 오늘은 도달 불가다.
@@ -607,7 +610,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 ## Event draft trust loop (2026-07-30)
 - Opening an event starts an editor-only draft through `eventDraftActions.ts`. Existing events keep their pre-open canonical body in `draft.original`; new events use `draft.kind:"new"`. Editor map markers, event lists, and drag operations intentionally read `editorWorkingEvents()` so the open working body remains visible, while persistence and runtime consumers use the canonical projection described in `runtime-project-schema.md`.
 - **본문이 헤더/푸터만 남고 하얘지면 (2026-09-02):** `modal.ts` 의 `refresh()` 는 동적 본문을 지운 뒤 `renderEventEditorDynamic` 을 그린다. 페이지에 `graphic` / `movement` / `trigger` / `commands` 가 없으면 설정 레일이 `page.movement.type` 에서 던지고 본문이 빈 칸으로 남았다. `normalizeEventPage` 가 화면용 기본값을 채우고, 검증기는 같은 칸을 선택적으로 읽으며, `refresh` 가 그래도 던지면 `event-editor-render-error` 를 남긴다. 레이아웃은 `event-editor.balanced.css` 가 바디를 flex 로 고정하고 에디터 그리드를 페이지바+워크벤치 두 행(`!important`)만 인정한다 — 옛 `auto auto 1fr` 3행이 이기면 워크벤치가 0 높이로 접힌다. 계약: `test/eventEditorModal.test.ts`, `test/eventPageNormalize.test.ts`, `test/eventEditorBalancedShell.test.ts`.
-- Apply and OK run the aggregate validator before `saveEventDraft`; Cancel restores `draft.original` or removes a new draft. Linked display names and field-template switch definitions now live in `draft.authoredWrites` (`eventDraftAuthored.ts`), not canonical profiles/flags. Dirty checks and the existing vault include them; Apply takes one project snapshot when linked writes exist (map-only otherwise), and Cancel drops them without global history. Validation/preview consumers must use `projectWithEventDraftAuthoredWrites(project, mapId, eventId)` for staged references; that working projection must never be persisted. `validateEventDraftBody` now applies that projection itself, and the NPC rail reads the staged name; `test/eventDraftProjectionIntegration.test.ts` covers both the rail and parent Apply. PR #614 is integrated as an incomplete snapshot, not Phase 2 completion; current verification and limitations are recorded in `.omo/evidence/wish-event-audit/PR614_MERGE.md`. The modal checkpoints the working body into `eventDraftVault.ts` and project-scoped localStorage so an autosave merge, remote reload, or interrupted editor render cannot blank the open event. Footer text distinguishes local recovery/draft state from actual Supabase autosave state; “로컬 복구” is never presented as remote success.
+- Apply and OK run the aggregate validator before `saveEventDraft`; Cancel restores `draft.original` or removes a new draft. Linked display names and field-template switch definitions now live in `draft.authoredWrites` (`eventDraftAuthored.ts`), not canonical profiles/flags. Dirty checks and the existing vault include them; Apply takes one project snapshot when linked writes exist (map-only otherwise), and Cancel drops them without global history. Validation/preview consumers must use `projectWithEventDraftAuthoredWrites(project, mapId, eventId)` for staged references; that working projection must never be persisted. `validateEventDraftBody` now applies that projection itself, and the NPC rail reads the staged name; `test/eventDraftProjectionIntegration.test.ts` covers both the rail and parent Apply. PR #614 is integrated as an incomplete snapshot, not Phase 2 completion; current verification and limitations are recorded in `.omo/evidence/wish-event-audit/PR614_MERGE.md`. The modal checkpoints the working body into `eventDraftVault.ts` and project-scoped localStorage so an autosave merge, remote reload, or interrupted editor render cannot blank the open event. Footer text distinguishes local recovery/draft state from actual LegacyDb autosave state; “로컬 복구” is never presented as remote success.
 - Empty pages render six beginner paths in `eventEditor/content.ts`: dialogue NPC, item-reward treasure chest, transfer, shop, battle, and blank/search. The treasure starter compiles to `changeItem += 1` with the first existing item and refuses when the database has no item; reusable item storage remains the separate `openChest` (`보관 상자`) command. Its editor form presents local/shared storage scope, names shared storage in author-facing language, and previews the two-way bag ↔ chest interaction without exposing runtime keys. `eventBeginnerTemplates.ts` otherwise seeds only map/item/troop ids that exist in the current project, chooses a passable transfer cell deterministically, and refuses with an explicit message when a required record does not exist. Each valid starter still opens the normal command edit dialog before insertion.
 - Dialogue command previews use the runtime `--runtime-dialogue-*` dark-glass tokens for `.ecp-message-window`, speaker tabs, faces, and choices. Preserve the preview DOM/testids and keep transparent, face-left/right, bust/full, position, and choice states visually aligned with `src/styles/dialogue.css`.
 - Reactive modal renders preserve settings/command scroll, focused testid/command row, text selection, selected command, and open details. The command picker shortcut is Ctrl/Cmd+K. Focus restoration and draft Cancel behavior are covered by `test/eventEditorTrustLoop.test.ts`; pure starter safety is covered by `test/eventBeginnerTemplates.test.ts`.
@@ -619,7 +622,7 @@ Event authoring, event pages, event commands, move routes, command dialogs, and 
 - 빈 이벤트의 「회상 오프닝」 CTA(`memoryOpeningTemplate.ts`)는 별도 「컷신」 페이지를 만들지 않고 보고 있던 빈 페이지에 그 프리셋을 심는다.
 - 계약: `test/recollectionBeats.test.ts`, `test/eventEditorMemoryOpeningTemplate.test.ts`, `test/scriptCutsceneIntegration.test.ts`(장면 테스트로 스틸 표시 + 종료 후 입력 잠금 해제까지 검증).
 
-- 맵 기반 회상 예제 **「철수의 기억」** (2026-09-05): Supabase `rpg-zzu-cheolsu-memory-20260905-df12`. 현재 강변의 상자 조사 → 별도 여름 맵 자동 컷신 → 현재 귀환과 후일담. `memory_seen`/`memory_closed`로 완료 상태를 분리하고, 맵 전이는 각 이벤트의 마지막 명령으로 둔다. 재현 저작: `npx tsx scripts/build-cheolsu-memory.mts` (이 ID만 저장 후 재로드 대조). 출하 플레이어 검증: `node scripts/qa-cheolsu-memory.mjs`; 결과 `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md`. 후속 검토에서 NPC 방향 전환의 30초 정지를 발견했다. 해당 구간의 이벤트 이동 허용/복원 명령을 원격 프로젝트에 추가했고, 검증은 일반 키보드 입력과 침묵 시간 상한을 사용한다(`docs/reviews/2026-09-05-event-runtime-audit.md`). 대사창은 장면 중간에도 닫히므로 창 부재만으로 컷신 종료를 단정하지 않고, 대사 내용·진행 스위치·입력 복구를 함께 확인한다.
+- 맵 기반 회상 예제 **「철수의 기억」** (2026-09-05): LegacyDb `rpg-zzu-cheolsu-memory-20260905-df12`. 현재 강변의 상자 조사 → 별도 여름 맵 자동 컷신 → 현재 귀환과 후일담. `memory_seen`/`memory_closed`로 완료 상태를 분리하고, 맵 전이는 각 이벤트의 마지막 명령으로 둔다. 재현 저작: `npx tsx scripts/build-cheolsu-memory.mts` (이 ID만 저장 후 재로드 대조). 출하 플레이어 검증: `node scripts/qa-cheolsu-memory.mjs`; 결과 `verify-shots/runtime-qa/cheolsu-keyboard-fixed/SUMMARY.md`. 후속 검토에서 NPC 방향 전환의 30초 정지를 발견했다. 해당 구간의 이벤트 이동 허용/복원 명령을 원격 프로젝트에 추가했고, 검증은 일반 키보드 입력과 침묵 시간 상한을 사용한다(`docs/reviews/2026-09-05-event-runtime-audit.md`). 대사창은 장면 중간에도 닫히므로 창 부재만으로 컷신 종료를 단정하지 않고, 대사 내용·진행 스위치·입력 복구를 함께 확인한다.
 
 ## Guided story arc facade
 
@@ -824,3 +827,45 @@ friendshipAtLeast/battleResult/run)을 틀리게 확신했고, 특히 거의 모
 숨은 기본 정책을 추가하지 않는다. `normalizeEventPage`는 선택 sight를 보존한다.
 모든 입력은 기존 `updateEventPage` 드래프트/감사 경로를 사용한다. 발견 대기는 ms, 문 대기는 초다.
 필드·런타임·저장 계약과 테스트는 [horror-authoring.md](horror-authoring.md)의 NPC 발견 절을 따른다.
+
+## 명령 툴바는 한 줄이다 — wrap 금지와 폭 흡수 순서 (2026-09-21)
+
+사용자 화면에서 이벤트 편집기 명령 툴바가 두 줄로 접히고 그 위에 빈 밴드가 생겼다.
+`+ 명령`·검색은 첫 줄, 보기 전환(목록/스토리/플로우)과 `AI로 명령 만들기`는 둘째 줄로
+떨어졌다. 원인은 두 겹이다.
+
+1. **흡수 규칙이 죽어 있었다.** 검색 입력은 2026-08-29 에 「입력 + 지우기 + 일치 개수」
+   한 벌로 감싸이면서 `.event-editor-command-search-field` 래퍼가 생겼는데,
+   `command-list.css` 의 «남는 폭은 검색이 흡수한다» 규칙은 여전히
+   `.event-editor-command-toolbar > .event-editor-command-search`(직계 자식)를 본다.
+   래퍼가 끼는 순간 그 선택자는 아무것도 매칭하지 않고, 검색은 `min-width: 96px` 로
+   짜부라진 채 툴바의 남는 폭을 아무도 흡수하지 않았다.
+2. **`flex-wrap: wrap` 이 켜져 있었다.** `command-list.css` 와
+   `command-workbench.css` 가 각각 `flex-wrap: wrap` 을 선언한다.
+
+지금 계약은 **한 줄**이다. 넘침은 순서대로 흡수한다.
+
+- 검색 래퍼(`.event-editor-command-search-field`)가 `flex: 1 1 140px` /
+  `max-width: 320px` / `min-width: 96px` 로 먼저 줄어든다.
+- 그다음 아이콘 툴 버튼(`편집`·`도구`)과 되돌리기/다시 실행이 줄어든다.
+- 보기 전환 세그먼트(`.event-view-toggle`)는 `flex-shrink: 0` 이다 — 낱말이 곧 정보다.
+- `AI로 명령 만들기`(aux 그룹)는 `flex-shrink: 0` 이고 라벨을 항상 유지한다.
+  그 그룹의 유일한 표면이고, 별 글리프만으로는 무엇을 하는 버튼인지 알 수 없다.
+
+좁은 칼럼에서 낱말을 접는 규칙은 `.event-contents-fieldset` 의 컨테이너 쿼리
+`evt-command-column` 하나가 소유한다. **800px 미만이면 보조 도구(aux 제외)가 아이콘만
+남고, 800px 이상이면 낱말이 돌아온다.** 실측(2026-09-21, 인스펙터가 열린 4트랙):
+명령 칼럼은 1440 에서 718px, 1920·2560 에서 764px 이 상한이다. 764px 에 낱말 8개를
+세우면 검색이 102px 로 눌려 검색 구실을 못 하므로 임계값은 800px 이다. 사용자가
+리사이저로 설정 칼럼을 줄이면 낱말이 돌아온다.
+
+같은 변경에 딸린 수정 하나: 검색 지우기 버튼(`event-command-search-clear`)은
+`content.ts` 가 `hidden` 을 켜는데도 화면에 남아 있었다. `dialogs-5.css` 의
+`.event-editor-modal-window .event-editor .event-editor-command-search-clear`(0,3,0)가
+`display: inline-flex` 로 `hidden` 을 이기고 있었고, 그 시트가 `command-list-4.css` 보다
+나중이라 같은 특이도로는 못 이긴다. 창 접두를 붙인 `[hidden]` 규칙으로 잠근다.
+
+소유: `src/styles/event/command-list-4.css`(흡수·접힘·컨테이너 쿼리),
+`src/styles/event/command-list.css`(툴바 한 줄 선언),
+`src/styles/event/command-workbench.css`(툴바 한 줄 + 컨테이너 정의).
+전후 캡처와 실측은 이 세션의 `1440/1920/2560` 프로브(툴바 높이 44px, 자식 y 단일 행).

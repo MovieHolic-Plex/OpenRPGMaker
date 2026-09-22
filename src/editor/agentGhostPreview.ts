@@ -1,4 +1,5 @@
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "@/editor/aiLiveCanvas";
 import { lineCells, type Point } from "@/editor/tools/mapHelpers";
 
 export type AgentGhostLayer = "lower" | "upper" | "event";
@@ -107,6 +108,9 @@ const STRUCTURE_FOOTPRINT = { width: 18, height: 16 } as const;
 export const AGENT_GHOST_LIVE_UPDATE_THROTTLE_MS = 150;
 
 const listeners = new Set<Listener>();
+subscribeAiLiveCanvas(() => {
+  if (!isAiLiveCanvasEnabled()) clearAgentGhostPreview();
+});
 let previews: AgentGhostPreview[] = [];
 let revision = 0;
 let runningToolName = "";
@@ -193,6 +197,7 @@ export function appendAgentGhostPreviewForToolCall(
   toolName: string,
   args: Record<string, unknown>
 ): readonly AgentGhostPreview[] {
+  if (!isAiLiveCanvasEnabled()) return [];
   const next = summarizeAgentGhostPreviewForToolCall(project, toolName, args);
   if (next.length === 0) return next;
   appendPreviews(next);
@@ -203,6 +208,7 @@ export function replaceAgentGhostPreviewFromProjectDiff(
   baseProject: Project,
   draftProject: Project
 ): readonly AgentGhostPreview[] {
+  if (!isAiLiveCanvasEnabled()) return previews;
   const next = summarizeAgentGhostPreviewForProjectDiff(baseProject, draftProject);
   replacePreviews(next);
   return next;
@@ -401,6 +407,9 @@ function emit(): void {
 }
 
 function mapDiffPreview(mapId: MapId, baseMap: GameMap | undefined, draftMap: GameMap | undefined): AgentGhostPreview | null {
+  // applyMapDeltas 가 손대지 않은 맵은 같은 객체를 돌려준다. 여기서 빠지지 않으면
+  // 150ms 마다 프로젝트의 모든 맵을 칸 단위로 훑는다.
+  if (baseMap && draftMap && baseMap === draftMap) return null;
   if (!baseMap && !draftMap) return null;
   if (!baseMap && draftMap) {
     const area = boundsArea(mapId, fullMapBounds(draftMap), "live_project_diff", "새 맵 초안", false) as MutableArea;
@@ -432,7 +441,8 @@ function mapDiffPreview(mapId: MapId, baseMap: GameMap | undefined, draftMap: Ga
     mapId,
     kind: "changed",
     bounds: normalized.bounds,
-    cells: normalized.cells,
+    cellCount: normalized.cells.length,
+    fingerprint: cellFingerprint(normalized.cells),
   });
 }
 
@@ -456,14 +466,17 @@ function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap
   const width = Math.min(before.width, after.width);
   const height = Math.min(before.height, after.height);
   if (!before.lowerTiles || !after.lowerTiles) return;
+  const lowerChanged = before.lowerTiles !== after.lowerTiles || before.lowerTileStacks !== after.lowerTileStacks;
+  const upperChanged = before.upperTiles !== after.upperTiles || before.upperTileStacks !== after.upperTileStacks;
+  if (!lowerChanged && !upperChanged) return;
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const index = y * before.width + x;
       const nextIndex = y * after.width + x;
-      if (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex])) {
+      if (lowerChanged && (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex]))) {
         includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId, tileId: afterTileId(after, "lower", nextIndex) });
       }
-      if (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex])) {
+      if (upperChanged && (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex]))) {
         includeCell(area, { x, y, layer: "upper", tilesetId: after.tilesetId, tileId: afterTileId(after, "upper", nextIndex) });
       }
     }
@@ -485,7 +498,7 @@ function collectEventDiffCells(area: MutableArea, before: GameMap, after: GameMa
       includeCell(area, { x: oldEvent.x, y: oldEvent.y, layer: "event" });
       continue;
     }
-    if (!oldEvent || !newEvent) continue;
+    if (!oldEvent || !newEvent || oldEvent === newEvent) continue;
     const moved = oldEvent.x !== newEvent.x || oldEvent.y !== newEvent.y;
     const changed = moved || stableStringify(oldEvent) !== stableStringify(newEvent);
     if (!changed) continue;
@@ -851,6 +864,17 @@ function stringValue(value: unknown): string | null {
 
 function numberValue(value: unknown): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
+function cellFingerprint(cells: readonly AgentGhostCell[]): string {
+  let hash = 2166136261;
+  for (const cell of cells) {
+    hash = Math.imul(hash ^ cell.x, 16777619);
+    hash = Math.imul(hash ^ cell.y, 16777619);
+    hash = Math.imul(hash ^ (cell.tileId ?? 0), 16777619);
+    hash = Math.imul(hash ^ (cell.layer === "lower" ? 1 : cell.layer === "upper" ? 2 : 3), 16777619);
+  }
+  return (hash >>> 0).toString(36);
 }
 
 function dedupeCells(cells: readonly AgentGhostCell[]): readonly AgentGhostCell[] {

@@ -26,14 +26,27 @@ function input(root: FakeElement, id: string, value: string): void {
 function canonView(): FakeElement {
   const host = document.createElement("div"); renderWorldCanonTab(host, () => {}); return host as unknown as FakeElement;
 }
+/** 법윹 카드는 세계 설정 탭안에 있다. */
+function openSettingsTab(root: FakeElement): void {
+  findByTestId(root, "db-ws-section-tab-settings")?.click();
+}
 
 describe("world authoring data preservation", () => {
   it("merges law notes and toggles with the latest law values", () => {
-    const host = canonView();
-    input(host, "db-world-canon-law-power-note", "피의 대가");
-    input(host, "db-world-canon-law-gods-note", "여신");
-    const yes = control(host, "db-world-canon-law-gods-present").querySelectorAll("input").find((n) => n.attrs.value === "yes")!;
-    (yes as FakeElement & { checked: boolean }).checked = true; yes.dispatchEvent(new Event("change"));
+    const host = canonView(); openSettingsTab(host);
+    // 스프레드 뷰: 법칙 카드 -> 대화상자에서 선택/비고 -> 저장. tri-state 데이터 계약은 그대로다.
+    function openLaw(id: string): void {
+      control(host, "db-world-canon-law-" + id).click();
+    }
+    function commitLaw(id: string, option: "unset" | "no" | "yes", note: string): void {
+      openLaw(id);
+      if (option !== "unset") control(document.body as unknown as FakeElement, "db-world-canon-law-" + id + "-option-" + option).click();
+      const noteBox = control(document.body as unknown as FakeElement, "db-world-canon-law-" + id + "-note") as unknown as FakeElement & { value: string };
+      noteBox.value = note; noteBox.dispatchEvent(new Event("input"));
+      control(document.body as unknown as FakeElement, "db-world-canon-law-" + id + "-save").click();
+    }
+    commitLaw("power", "unset", "피의 대가");
+    commitLaw("gods", "yes", "여신");
     expect(store.getCurrent().worldCanon?.laws).toEqual({ power: { note: "피의 대가" }, gods: { note: "여신", present: true } });
   });
 
@@ -48,9 +61,18 @@ describe("world authoring data preservation", () => {
   });
 
   it("limits every bounded authoring control at the input boundary", () => {
-    const host = canonView();
-    for (const [id, max] of Object.entries({ name: 120, premise: 280, era: 80, tech: 80, body: 50000, "law-power-note": 160, "law-gods-note": 160, "law-death-note": 160, "law-money-note": 160 })) {
+    const host = canonView(); openSettingsTab(host);
+    for (const [id, max] of Object.entries({ name: 120, premise: 280, era: 80, tech: 80 })) {
       expect(control(host, `db-world-canon-${id}`).getAttribute("maxlength"), id).toBe(String(max));
+    }
+    findByTestId(host, "db-ws-section-tab-body")?.click();
+    expect(control(host, "db-world-canon-body").getAttribute("maxlength"), "body").toBe("50000");
+    // 법칙 비고 상한은 카드 안이 아니라 카드가 여는 대화상자 소유다.
+    for (const kind of ["power", "gods", "death", "money"]) {
+      control(host, "db-world-canon-law-" + kind).click();
+      const noteBox = control(document.body as unknown as FakeElement, "db-world-canon-law-" + kind + "-note");
+      expect(noteBox.getAttribute("maxlength"), kind).toBe("160");
+      control(document.body as unknown as FakeElement, "db-world-canon-law-" + kind + "-save").click();
     }
   });
 

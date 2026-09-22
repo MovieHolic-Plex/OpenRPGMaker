@@ -5,7 +5,7 @@ import { writeFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 import { createSkyStairProject, SKY_MAP } from "@/editor/content/skyStairGame";
 import { startNewGameFromTitle } from "./runtimeInput";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 test.setTimeout(240_000);
 test.use({ serviceWorkers: "block" });
@@ -32,7 +32,7 @@ for (const shot of SHOTS) {
         window.localStorage.setItem("oprn:editor-ui-mode", "expert");
       });
       await page.setViewportSize({ width: 1280, height: 900 });
-      await seedProjectFromSupabaseCanonical(page, project);
+      await seedProjectForEditor(page, project);
       await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 30_000 });
       await page.getByTestId("mode-play").click({ force: true });
       await expect(page.getByTestId("test-play-window")).toBeVisible({ timeout: 30_000 });

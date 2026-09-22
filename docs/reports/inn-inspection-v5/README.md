@@ -20,7 +20,7 @@ image enlargement work without a server.
 
 | Scenario | Artifact | Observed |
 | --- | --- | --- |
-| Saved definitions and unchanged inn geometry | `supabase-proof.json` | Supabase save and application reload; no QA map added |
+| Saved definitions and unchanged inn geometry | `legacy-db-proof.json` | LegacyDb save and application reload; no QA map added |
 | Real player fire animation | `animation-proof.json` | Four frames in order, cold hearth remains 463 |
 | Paid and exact-price lodging | `lodging-proof.json` | 100 to 80G and 20 to 0G; HP/MP restored |
 | Insufficient funds and cancellation | `lodging-proof.json` | 19G, 0G, No, and Escape preserve state |
@@ -59,7 +59,7 @@ original project. This PR does not claim that workflow is fixed.
 
 ## Regeneration
 
-With the configured Supabase connection:
+With the configured LegacyDb connection:
 
 ```sh
 npx vite-node --script scripts/inspect-inn.mts

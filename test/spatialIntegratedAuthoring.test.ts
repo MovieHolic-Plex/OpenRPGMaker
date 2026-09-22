@@ -80,6 +80,9 @@ describe("spatial Database authoring integration", () => {
     setDatabaseActiveTab("spatialPlaces");
     selectSpatialDesign(libraryPlaceCardId(village().id));
     paint();
+    // 장소 갤러리는 목록이 기본이다 — 편집기(보드)는 「편집」으로 들어간다.
+    expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-edit']")?.click();
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-place-floors']")).not.toBeNull();
   });
@@ -90,6 +93,8 @@ describe("spatial Database authoring integration", () => {
     setSpatialTab("places");
     selectSpatialDesign(libraryPlaceCardId(selected.id));
     paint();
+    // 목록이 기본이므로 편집기로 먼저 들어간다.
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-edit']")?.click();
     const picker = host.querySelector<HTMLSelectElement>("[data-testid='composition-design']");
     if (picker) { picker.value = libraryPlaceCardId(selected.id); picker.dispatchEvent(new Event("change")); }
     else host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();
@@ -112,6 +117,9 @@ describe("spatial Database authoring integration", () => {
     expect(getDatabaseActiveTab()).toBe("spatialPlaces");
     expect(spatialSession().tab).toBe("places");
     expect(spatialSession().designId).toBe(libraryPlaceCardId(selected.id));
+    // 「← 장소 목록」이 켜져 있으므로 목록이 보인다 — 다시 편집기로 들어가 보드가 돌아오는지 본다.
+    expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-edit']")?.click();
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
     expect(host.querySelector("[data-testid='composition-board']")).toBeNull();
   });
@@ -132,6 +140,7 @@ describe("spatial Database authoring integration", () => {
     const created = Object.values(visibleAuthoringProject().spatialAuthoring?.library.places ?? {})
       .find((place) => !Object.hasOwn(live.spatialAuthoring?.library.places ?? {}, place.id));
     expect(created).toBeDefined();
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-cell-edit']")?.click();
     const picker = host.querySelector<HTMLSelectElement>("[data-testid='composition-design']");
     if (picker) { picker.value = libraryPlaceCardId(selected.id); picker.dispatchEvent(new Event("change")); }
     else host.querySelector<HTMLButtonElement>(`[data-testid='spatial-card-${libraryPlaceCardId(selected.id)}']`)?.click();

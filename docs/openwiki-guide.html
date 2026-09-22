@@ -693,7 +693,7 @@
         <article class="file-card">
           <span class="badge b-entry">ENTRY</span>
           <h3>PROJECT_WIKI.md</h3>
-          <p>AI 엔트리 포인트. 프로젝트 정체성, 소유 경계, 필수 읽기 순서, Supabase 강제 규칙.</p>
+          <p>AI 엔트리 포인트. 프로젝트 정체성, 소유 경계, 필수 읽기 순서, LegacyDb 강제 규칙.</p>
           <div class="when">언제: 모든 코드 작업 시작 시 무조건</div>
         </article>
         <article class="file-card">
@@ -777,7 +777,7 @@
         <div class="flow-step">
           <div class="n">1</div>
           <h3>AGENTS.md</h3>
-          <p>루트 입구. “wiki 먼저 읽어” + Supabase 하드 룰 확인.</p>
+          <p>루트 입구. “wiki 먼저 읽어” + LegacyDb 하드 룰 확인.</p>
         </div>
         <div class="flow-step">
           <div class="n">2</div>
@@ -898,7 +898,7 @@
         <div class="ask">
           <div class="label">시나리오 C</div>
           <h3>“100×100 강 마을 만들어”</h3>
-          <p>콘텐츠 저작. 코드 수정만이 아니라 Supabase 저장이 완료 조건.</p>
+          <p>콘텐츠 저작. 코드 수정만이 아니라 LegacyDb 저장이 완료 조건.</p>
         </div>
         <ul class="path-list">
           <li>
@@ -926,7 +926,7 @@
             <span class="step-n">4</span>
             <div>
               <strong>완료 조건</strong>
-              <span>Supabase upsert + project id 재로드 증명</span>
+              <span>LegacyDb upsert + project id 재로드 증명</span>
             </div>
           </li>
         </ul>
@@ -993,7 +993,7 @@
         <div class="loop-box p4">
           <div class="phase">Phase 4 · After</div>
           <h3>검증 + 보고</h3>
-          <p>가장 가벼운 테스트부터. UI는 브라우저 증거. 콘텐츠는 Supabase 재로드 증명.</p>
+          <p>가장 가벼운 테스트부터. UI는 브라우저 증거. 콘텐츠는 LegacyDb 재로드 증명.</p>
         </div>
       </div>
 
@@ -1015,7 +1015,7 @@
 <span class="c"># 작업 끝</span>
 [ ] 관련 openwiki 페이지 갱신 (구조/규칙 변경 시)
 [ ] 최소 검증 실행
-[ ] 콘텐츠면 Supabase save + reload + project id 보고
+[ ] 콘텐츠면 LegacyDb save + reload + project id 보고
 </pre>
       </div>
     </section>
@@ -1075,7 +1075,7 @@ scripts/verify-openwiki-editor-wiki.mjs</pre>
           <h3>❌ OpenWiki가 아닌 것</h3>
           <ul>
             <li>플레이어용 게임 도움말 / 제품 UI</li>
-            <li>맵·이벤트 콘텐츠 정본 (정본은 Supabase)</li>
+            <li>맵·이벤트 콘텐츠 정본 (정본은 LegacyDb)</li>
             <li>blankProject / fixture만으로 끝내는 변명</li>
             <li>API 키·실자격 증명 저장소</li>
             <li>소스 대신 믿는 절대 진리 (충돌 시 소스가 이김)</li>
@@ -1090,7 +1090,7 @@ scripts/verify-openwiki-editor-wiki.mjs</pre>
           <p style="margin:0" class="muted">
             <code>?blankProject=1</code> / <code>?freshProject=1</code> / 일부 dev-showcase는
             <b>remotePersistenceEnabled = false</b> 입니다.
-            그 경로에서 저장 버튼을 눌러도 Supabase로 안 갑니다.
+            그 경로에서 저장 버튼을 눌러도 LegacyDb로 안 갑니다.
             마을·맵·이벤트·데모 게임 작업은 <b>원격 저장 + 재로드 증명</b>까지가 완료입니다.
           </p>
         </div>
@@ -1120,7 +1120,7 @@ wiki가 지목한 <span class="f">src/...</span> 소스만 수정
    │
    ├─ 구조/규칙 바뀜? → 같은 작업에서 openwiki 갱신
    ├─ UI? → 브라우저/Playwright 증거
-   └─ 콘텐츠? → Supabase save + reload + project id
+   └─ 콘텐츠? → LegacyDb save + reload + project id
 </pre>
       </div>
     </section>

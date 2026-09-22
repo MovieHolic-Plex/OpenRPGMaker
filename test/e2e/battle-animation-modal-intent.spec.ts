@@ -13,10 +13,10 @@ test.setTimeout(240_000);
 test.use({ viewport: { width: 1440, height: 900 } });
 
 async function openAnimations(page: Page): Promise<void> {
-  await page.route("https://*.supabase.co/**", async (route) => {
+  await page.route("https://*.legacyDb.co/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
-    if (url.hostname.endsWith("supabase.co") && !["GET", "HEAD", "OPTIONS"].includes(request.method())) {
+    if (url.hostname.endsWith("legacyDb.co") && !["GET", "HEAD", "OPTIONS"].includes(request.method())) {
       throw new Error(`Unexpected remote write: ${request.method()} ${request.url()}`);
     }
     await route.continue();

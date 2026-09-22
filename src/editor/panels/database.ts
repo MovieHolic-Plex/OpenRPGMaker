@@ -743,7 +743,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
-  spatialPlaces: "공간 방 실내 실외 건물 개념 꾸러미 시설 scratchConcepts tilesetSpaces",
+  spatialPlaces: "장소 방 실내 실외 건물 개념 꾸러미 시설 scratchConcepts",
   spatialRegions: "생성 규칙 지역 마을 정주지 worldGen villages",
   spatialWorlds: "세계 맵",
 };

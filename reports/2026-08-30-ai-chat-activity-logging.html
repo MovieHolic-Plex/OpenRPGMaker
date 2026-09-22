@@ -135,7 +135,7 @@ footer .in{max-width:1120px;margin:0 auto}
     <td><code>ownsTurn(true)</code> 가 false 면 대화만 저장하고 <code>return</code> — 활동 로그를 건너뛴다</td>
     <td><code>orphaned: true</code> + <code>stoppedReason</code> 으로 남긴다. 소유권이 끊긴 사실 자체가 진단이다</td></tr>
 <tr><td class="n">5</td><td>워크트리 <b>19/53</b> 은 어디에도 안 남는다</td>
-    <td><code>.env.local</code> 없음 → Supabase 미설정. 표본의 <code>output/ai-activity/</code> 도 0개. localStorage 100건이 전부</td>
+    <td><code>.env.local</code> 없음 → LegacyDb 미설정. 표본의 <code>output/ai-activity/</code> 도 0개. localStorage 100건이 전부</td>
     <td>둘 다 죽었으면 콘솔 경고 1회 + 하네스에 <b>「기록 로컬 전용 — 300건 링버퍼」</b> 배지</td></tr>
 <tr><td class="n">6</td><td>남아도 <b>SQL 로 못 찾는다</b></td>
     <td>전부 <code>payload_json</code> 안. "이벤트 툴을 부른 턴" 을 알려면 169KB payload 를 받아 grep 해야 했다(실제로 그렇게 찾았다)</td>
@@ -200,7 +200,7 @@ footer .in{max-width:1120px;margin:0 auto}
     <rect x="966" y="112" width="106" height="66" rx="10" fill="#1b2331" stroke="rgba(255,255,255,.12)"/>
     <text x="1019" y="136" fill="#e8eef8" text-anchor="middle" font-size="12" font-weight="600">활동 로그</text>
     <text x="1019" y="154" fill="#9aa8bf" text-anchor="middle" font-size="10.5">로컬 · 디스크</text>
-    <text x="1019" y="169" fill="#9aa8bf" text-anchor="middle" font-size="10.5">· Supabase</text>
+    <text x="1019" y="169" fill="#9aa8bf" text-anchor="middle" font-size="10.5">· LegacyDb</text>
   </g>
 </svg>
 
@@ -297,7 +297,7 @@ GET /rest/v1/ai_activity_logs?channel=eq.ui&amp;payload_json=cs.<span class="s">
 <tr><td>하네스 UI 행</td><td><b>26행</b></td><td>타임라인에 실제로 그려진 손 줄 수</td></tr>
 <tr><td>수치를 실은 의미 이벤트</td><td><b>8건</b></td><td><code>instructions-save {chars:32}</code>, <code>turn-rewind {reason:"turn-busy"}</code>, <code>dock-switch {from:"glass"}</code> …</td></tr>
 <tr><td>턴 행 <code>uiActions</code></td><td><b>5건</b></td><td>턴 구간에 눌린 것만 — 턴 밖 13건은 <code>channel:"ui"</code> 행으로 갔다</td></tr>
-<tr><td>Supabase 왕복</td><td><span class="tag ok">both</span></td><td>로컬 + 원격 둘 다 성공. 되읽기로 두 행 확인</td></tr>
+<tr><td>LegacyDb 왕복</td><td><span class="tag ok">both</span></td><td>로컬 + 원격 둘 다 성공. 되읽기로 두 행 확인</td></tr>
 </tbody>
 </table>
 
@@ -333,8 +333,8 @@ GET /rest/v1/ai_activity_logs?channel=eq.ui&amp;payload_json=cs.<span class="s">
 
 <h2><span class="n">06</span>남은 것</h2>
 <ul>
-  <li><b>마이그레이션은 적용하지 않았다.</b> 공유 Supabase 스키마라 파일만 뒀다
-      (<code>supabase/migrations/20260830000000_ai_activity_payload_index.sql</code>).
+  <li><b>마이그레이션은 적용하지 않았다.</b> 공유 LegacyDb 스키마라 파일만 뒀다
+      (<code>legacyDb/migrations/20260830000000_ai_activity_payload_index.sql</code>).
       <code>CREATE INDEX CONCURRENTLY</code> 는 트랜잭션 밖에서 실행해야 한다는 주석을 파일에 남겼다.
       <code>channel</code> 에 CHECK 제약이 없어 <code>"ui"</code> 채널 추가에는 스키마 변경이 필요 없다.</li>
   <li><b>맵 캔버스·타일 팔레트는 범위 밖.</b> 드래그 같은 연속 입력이 섞이면 로그량이 수십 배가 되고 별도 샘플링 설계가 필요하다.</li>

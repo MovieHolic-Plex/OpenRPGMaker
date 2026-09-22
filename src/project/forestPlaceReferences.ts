@@ -1,37 +1,9 @@
-import type { GameMap, TilesetDef } from "./types";
-import snapshot0 from "./regionReferences/forest-cabin.json";
-import snapshot1 from "./regionReferences/forest-star.json";
-import snapshot2 from "./regionReferences/gubisup.json";
-import snapshot3 from "./regionReferences/small-forest-village.json";
-import snapshot4 from "./regionReferences/forest-cliff-village.json";
-import snapshot5 from "./regionReferences/high-cliff-village.json";
-import snapshot6 from "./regionReferences/cliff-forest-bridge.json";
-import snapshot7 from "./regionReferences/peaceful-forest.json";
-import snapshot8 from "./regionReferences/great-falls.json";
-import snapshot9 from "./regionReferences/rebuilt-forest-village.json";
-import snapshot10 from "./regionReferences/harmony-hill-village.json";
-import snapshot11 from "./regionReferences/hill-forest-cave.json";
-import snapshot12 from "./regionReferences/rebuilt-forest-cave.json";
+import { CURATED_VILLAGE_PLACES } from "./curatedVillagePlaceReferences";
 
 // Reviewed authored maps, independent of the active project. Keep legacy IDs stable.
-type ForestPlaceSnapshot = { map: GameMap; tileset: TilesetDef };
-const snapshots: Record<string, ForestPlaceSnapshot> = {
-  "forest-cabin-40x30": snapshot0 as unknown as ForestPlaceSnapshot,
-  "forest-star-64x56": snapshot1 as unknown as ForestPlaceSnapshot,
-  "gubisup-80x72": snapshot2 as unknown as ForestPlaceSnapshot,
-  "small-forest-village-80x72": snapshot3 as unknown as ForestPlaceSnapshot,
-  "forest-cliff-village-80x72": snapshot4 as unknown as ForestPlaceSnapshot,
-  "high-cliff-village-80x88": snapshot5 as unknown as ForestPlaceSnapshot,
-  "cliff-forest-bridge-80x72": snapshot6 as unknown as ForestPlaceSnapshot,
-  "peaceful-forest-100x100": snapshot7 as unknown as ForestPlaceSnapshot,
-  "great-falls-100x100": snapshot8 as unknown as ForestPlaceSnapshot,
-  "rebuilt-forest-village-64x64": snapshot9 as unknown as ForestPlaceSnapshot,
-  "harmony-hill-village-64x64": snapshot10 as unknown as ForestPlaceSnapshot,
-  "hill-forest-cave-20x16": snapshot11 as unknown as ForestPlaceSnapshot,
-  "rebuilt-forest-cave-20x16": snapshot12 as unknown as ForestPlaceSnapshot,
-};
-
+// Tile rasters live in regionReferenceSnapshots and load only when a row is read.
 export const FOREST_PLACE_REFERENCES = [
+...CURATED_VILLAGE_PLACES,
 {
   "id": "forest-cabin-40x30",
   "name": "검은 숲의 오두막",
@@ -345,7 +317,3 @@ export const FOREST_PLACE_REFERENCES = [
   "limitations": "완성 배치 참고 사례. 기존 이벤트와 연결된 동굴·마을은 파일에 포함되며, 새 실내·이동 이벤트는 추가하지 않는다."
 }
 ] as const;
-
-export function forestPlaceSnapshot(id: string): ForestPlaceSnapshot | undefined {
-  return snapshots[id];
-}

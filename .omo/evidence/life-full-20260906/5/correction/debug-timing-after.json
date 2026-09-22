@@ -955,11 +955,11 @@
         "selfTime": 0.4984199999998964,
         "totalTime": 0.4984199999998964
       },
-      "/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProxyPath.ts": {
+      "/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProxyPath.ts": {
         "selfTime": 0.42212800000015704,
         "totalTime": 0.42212800000015704
       },
-      "/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectConfig.ts": {
+      "/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectConfig.ts": {
         "selfTime": 42.77799899999991,
         "totalTime": 43.69854699999996
       },
@@ -967,7 +967,7 @@
         "selfTime": 0.6589639999992869,
         "totalTime": 0.6589639999992869
       },
-      "/home/main/z-project/rpg-zzu-life-full-p2/src/project/supabaseProjectSync.ts": {
+      "/home/main/z-project/rpg-zzu-life-full-p2/src/project/legacyDbProjectSync.ts": {
         "selfTime": 107.33327800000006,
         "totalTime": 152.81361199999992
       },
@@ -975,7 +975,7 @@
         "selfTime": 1.209034999999858,
         "totalTime": 1.209034999999858
       },
-      "/home/main/z-project/rpg-zzu-life-full-p2/src/assets/supabaseResourceCache.ts": {
+      "/home/main/z-project/rpg-zzu-life-full-p2/src/assets/legacyDbResourceCache.ts": {
         "selfTime": 0.8583969999999681,
         "totalTime": 0.8583969999999681
       },

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import type { Project } from "@/project/types";
-import { seedProjectFromSupabaseCanonical } from "./supabaseProjectSeed";
+import { seedProjectForEditor } from "./projectSeed";
 
 const EVIDENCE_DIR = "evidence/browser-screenshots";
 const PASSABLE = { up: true, down: true, left: true, right: true };
@@ -26,7 +26,7 @@ async function openEventLayerContextMenu(page: Page, width: number, height: numb
   await page.route("**/rest/v1/map_edit_locks**", async (route) => {
     await route.fulfill({ status: 404, contentType: "text/plain", body: "PGRST205" });
   });
-  await seedProjectFromSupabaseCanonical(page, projectWithPlacedEvent(`map_figma_${width}_${height}`));
+  await seedProjectForEditor(page, projectWithPlacedEvent(`map_figma_${width}_${height}`));
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.getByTestId("layer-event").click();
   await page.getByTestId("tool-event").click();
