@@ -200,7 +200,7 @@ const generateMap: ToolDefinition = {
       if (args.border !== undefined && args.border !== "none") throw new ToolError("border는 none, wall 중 하나여야 합니다.", { code: "invalid-args" });
       if (args.dungeonDesign !== undefined && (!args.dungeonDesign || typeof args.dungeonDesign !== "object" || Array.isArray(args.dungeonDesign))) throw new ToolError("dungeonDesign must be an object", { code: "invalid-args" });
       const design = (args.dungeonDesign ?? {}) as Record<string, unknown>;
-      const built = runRoomPipeline(draft, DUNGEON_ROOM_KIT_ID, { layout: design.layout, character: design.character, graph: design.graph, mapId: id, name: args.name ?? "연결 동굴", theme: "stone", width, height, seed: design.seed ?? args.seed ?? 1 });
+      const built = runRoomPipeline(draft, DUNGEON_ROOM_KIT_ID, { layout: design.layout, character: design.character, path: design.path, graph: design.graph, linkMapId: design.linkMapId, landmark: design.landmark, pressure: design.pressure, troopId: design.troopId, mapId: id, name: args.name ?? "연결 동굴", theme: "stone", width, height, seed: design.seed ?? args.seed ?? 1 });
       if ((built.data as { ok?: boolean }).ok === false) throw new ToolError(`던전 구조 검사 실패: ${(built.warnings ?? []).join("; ")}`, { code: "invalid-args" });
       const map = draft.maps[id]!;
       const plan = map.roomHarnessPlan!.plan as DungeonRoomPlan;

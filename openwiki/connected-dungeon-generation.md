@@ -21,11 +21,14 @@
 ## 설계 입력
 
 `character`: cavern / mine / crystal / crypt. `theme`: stone / lava / ice.
+`path`: straight / cave / winding. 조수가 세계관과 이번 요청으로 정한다. 생략하면 crypt만 곧은 방이고 그 외는 동굴 실루엣이다. straight는 직사각형 방과 좁은 곧은 길, cave는 방 경계가 녹는 공동, winding은 방은 직사각형으로 남기고 길만 꺾는다.
+
+`linkMapId`가 있고 그 맵이 프로젝트에 있으면 던전 입구와 양방향 전이를 놓는다. `landmark`(altar/tower/gate/sound)는 입구에서 가장 먼 방 옆의 열린 칸에 표지를 찍는다. `pressure`의 patrol은 `troopId`가 실제 트룹일 때만 순찰 스폰을 두고, tide와 rising은 입구 옆에서 배회하는 사건으로 둔다.
 
 `graph.rooms`: id, role(entrance/chamber/crystal/worksite/shrine/storage/collapse), x/y 중심, width/height.
 `graph.connections`: from/to 방 id, width(6–16), 선택 via 좌표 배열. 모든 방은 연결되어야 한다. 최대 32개 방과 64개 연결.
 
-사용자가 지정한 graph는 보존한다. 생략하면 seed로 생성한 실제 graph를 플랜에 저장한다. 같은 설계·seed는 동일 타일 결과를 낸다. 자연 방에만 완만한 공간 잡음을 사용하고 crypt의 인공 방은 직선을 유지한다. 시드 생성은 레벨 디자인의 출발점이며 역할/연결을 직접 저작할 수 있다.
+사용자가 지정한 graph는 보존한다. 생략하면 seed로 생성한 실제 graph를 플랜에 저장한다. 같은 설계·seed는 동일 타일 결과를 낸다. 자연 방에만 완만한 공간 잡음을 사용하고 crypt의 인공 방은 직선을 유지한다. 시드 생성은 레벨 디자인의 출발점이며 역할/연결을 직접 저작할 수 있다. 방 크기는 걸어 다닐 크기(대략 9–18칸)로 두고, 맵이 커지면 방을 늘린다. 가로 160·세로 110을 넘으면 최대 6×5, 방 수는 32를 넘기지 않는다. 한가운데 방을 맵 크기에 비례해 키우지 않는다.
 
 ## 검증 및 증거
 
