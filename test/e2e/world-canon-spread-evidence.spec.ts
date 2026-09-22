@@ -24,9 +24,8 @@ test("world canon compact head + plain form evidence", async ({ page }) => {
   if (!await tabButton.isVisible()) await page.getByTestId("db-tab-group-lore").click();
   await tabButton.click();
   await expect(page.getByTestId("db-world-canon-workspace")).toBeVisible();
-  // 첫 화면: 본문 도화지 + 압축 헤드 + ? 도움말
+  // 첫 화면: 본문 도화지(헤드 없음)
   await expect(page.getByTestId("db-ws-section-tab-body")).toHaveClass(/active/);
-  await expect(page.getByTestId("db-world-canon-help")).toBeVisible();
   await page.screenshot({ path: SHOT_DIR + "/01-body-canvas.png" });
 
   await page.getByTestId("db-world-canon-body").fill("천 년 전, 왕도 아르가론은 바다에 가라앉았다. 사람들은 그것을 재앙이라 부르지 않는다.");

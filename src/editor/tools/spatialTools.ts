@@ -1,5 +1,6 @@
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
-import { REGION_REFERENCES, PLACE_REFERENCES, readRegionReference } from "@/project/regionReferences";
+import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
+import { readRegionReference } from "@/project/regionReferenceSnapshots";
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";

@@ -15,6 +15,7 @@ import {
   type BlueprintEntryStatus,
 } from "@/editor/agentBlueprint";
 import { isAgentGhostPreviewHidden } from "@/editor/agentGhostPreview";
+import { isAiLiveCanvasEnabled } from "@/editor/aiLiveCanvas";
 import { EVENT_LABEL_FONT_SIZE, eventLabelFontFamily, eventLabelResolution } from "@/editor/editSceneEventMarkers";
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import type { MapId } from "@/project/types";
@@ -123,7 +124,7 @@ export class AgentBlueprintRenderer {
     // 나머지 경로(새 대화·대화 복원·프로젝트 전환·패널 닫기)는 대화까지 버린다. **다 지어진**
     // 계획은 이 토글을 기다리지 않는다: agentBlueprintForMap 이 전 칸 done 인 계획에 빈 목록을
     // 내므로 아래 `entries.length === 0` 에서 스스로 물러난다(그 함수 주석 참조).
-    if (isAgentGhostPreviewHidden()) return;
+    if (isAgentGhostPreviewHidden() || !isAiLiveCanvasEnabled()) return;
     const state = getAgentBlueprintState();
     const entries = agentBlueprintForMap(state, this.mapId());
     if (entries.length === 0) { this.started.clear(); return; }
@@ -147,6 +148,11 @@ export class AgentBlueprintRenderer {
     });
     for (const key of this.started.keys()) if (!present.has(key)) this.started.delete(key);
     const draw = (): void => {
+      if (!isAiLiveCanvasEnabled()) {
+        this.stopTicker();
+        this.layer.removeAll(true);
+        return;
+      }
       let complete = true;
       for (const item of drawings) {
         const progress = (prefersReducedMotion() || !this.scene.events) ? 1 : Math.min(1, Math.max(0, (performance.now() - item.start) / 750));

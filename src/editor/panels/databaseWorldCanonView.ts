@@ -8,9 +8,10 @@ import {
   writeCanon,
   WORLD_CANON_TONE_LABELS,
 } from "@/editor/panels/databaseWorldCanonFields";
-import { detailPane, inspectorTabs, sectionCard, statStrip, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { detailPane, inspectorTabs, sectionCard, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { worldDocumentProperties } from "./worldDocumentProperties";
 import { WORLD_CANON_BODY_EXCERPT_CHARS, worldCanonPromptSection } from "@/ai/worldCanonContext";
+import { composeBodyWithDraft, mergeInterviewPatch, requestWorldCanonInterview, requestWorldCanonBodyDraft, type BodyDraftMode } from "@/ai/worldCanonInterview";
 
 /**
  * 조수가 실제로 보는 본문 길이. 표시 문구가 이 값과 어긋나면 사용자가 "앞 600자만 본다"고
@@ -40,39 +41,6 @@ function excerptHint(filled: number): string {
 
 export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): void {
   const canon = resolveWorldCanon(store.getCurrent().worldCanon);
-  const meterFill = el("div", {
-    class: "world-canon-meter-fill",
-    attrs: {
-      role: "progressbar",
-      "aria-label": "AI 전달 본문 분량",
-      "aria-valuemin": "0",
-      "aria-valuemax": String(EXCERPT_MAX),
-      "aria-valuenow": String(Math.min(EXCERPT_MAX, canon.body.trim().length)),
-      style: `width:${Math.min(100, Math.round((Math.min(EXCERPT_MAX, canon.body.trim().length) / EXCERPT_MAX) * 100))}%`,
-    },
-  });
-  const meterText = el("span", {
-    class: "world-canon-meter-text",
-    attrs: { role: "status" },
-    dataset: { testid: "db-world-canon-ai-meter" },
-    text: excerptHint(canon.body.trim().length),
-  });
-  const heroStats = statStrip([
-    {
-      label: "AI 전달 본문",
-      value: `${Math.min(EXCERPT_MAX, canon.body.trim().length)} / ${EXCERPT_MAX}자`,
-      hint: canon.body.trim().length > EXCERPT_MAX ? `뒤 ${canon.body.trim().length - EXCERPT_MAX}자 잘림` : "앞부분만 읽는다",
-      tone: canon.body.trim().length > EXCERPT_MAX ? "warn" : "neutral",
-      testid: "db-world-canon-hero-stat-body",
-    },
-    { label: "톤", value: `${canon.tones.length}종`, hint: "8종 중" },
-    { label: "없는 것", value: `${canon.absences.length}개`, hint: "부분일치" },
-    {
-      label: "법칙",
-      value: `${WORLD_CANON_LAW_KINDS.filter((kind) => canon.laws[kind].present !== undefined || canon.laws[kind].note.trim()).length} / 4`,
-      hint: "힘·신·죽음·돈",
-    },
-  ], { testid: "db-world-canon-hero-stats" });
   const bodyCard = sectionCard({
     title: "본문",
     hint: "형식 없음",
@@ -85,18 +53,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
       ?.value.trim().length ?? canon.body.trim().length;
     const hint = bodyCard.querySelector(".db-ws-card-hint");
     if (hint) hint.textContent = excerptHint(filled);
-    meterText.textContent = excerptHint(filled);
-    meterFill.setAttribute("style", `width:${Math.min(100, Math.round((Math.min(EXCERPT_MAX, filled) / EXCERPT_MAX) * 100))}%`);
-    meterFill.setAttribute("aria-valuenow", String(Math.min(EXCERPT_MAX, filled)));
-    const statTile = heroStats.querySelector("[data-testid='db-world-canon-hero-stat-body']");
-    const statValue = statTile?.querySelector(".db-ws-stat-value");
-    if (statValue) statValue.textContent = `${Math.min(EXCERPT_MAX, filled)} / ${EXCERPT_MAX}자`;
-    const statHint = statTile?.querySelector(".db-ws-stat-hint");
-    if (statHint) statHint.textContent = filled > EXCERPT_MAX ? `뒤 ${filled - EXCERPT_MAX}자 잘림` : "앞부분만 읽는다";
-    if (statTile) {
-      statTile.classList.remove("db-ws-stat-neutral", "db-ws-stat-warn", "db-ws-stat-good", "db-ws-stat-bad");
-      statTile.classList.add(filled > EXCERPT_MAX ? "db-ws-stat-warn" : "db-ws-stat-neutral");
-    }
   }
   hintLine();
   const aiPreview = el("pre", { class: "world-ai-preview", dataset: { testid: "world-canon-ai-preview" } });
@@ -162,34 +118,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     on: { toggle: updateAiPreview },
   });
   updateAiPreview();
-  const frameCard = el("section", {
-    class: "world-canon-fields",
-    dataset: { testid: "db-world-canon-frame" },
-    children: [
-      el("h5", { class: "world-canon-group-title", text: "토" }),
-      toneRow(canon.tones, rerender),
-      el("div", {
-        class: "world-canon-spread-era",
-        children: [
-          boundedCanonText("시대", canon.era, (value) => writeCanon({ era: value }, "db-world-canon-era"), "db-world-canon-era", WORLD_CANON_BOUNDS.era),
-          boundedCanonText("기술 수준", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech", WORLD_CANON_BOUNDS.techCeiling),
-        ],
-      }),
-      el("h5", { class: "world-canon-group-title", text: "세계에 없는 것 (부분일치)" }),
-      absenceEditor(canon.absences, rerender),
-    ],
-  });
-  const lawsCard = el("section", {
-    class: "world-canon-fields",
-    dataset: { testid: "db-world-canon-laws" },
-    children: [
-      el("h5", { class: "world-canon-group-title", text: "법칙 (힘·신·죽음·돈 — 비어 있으면 조수가 멜다로 채운다)" }),
-      el("div", {
-        class: "world-canon-law-grid is-cards",
-        children: WORLD_CANON_LAW_KINDS.map((kind) => lawCard(kind, canon.laws[kind], rerender)),
-      }),
-    ],
-  });
   const properties = worldDocumentProperties([
     sectionCard({
       title: "문서 설정",
@@ -216,43 +144,6 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     aiDetails,
   ], propertiesOpen.get(host) ?? false, (open) => propertiesOpen.set(host, open));
 
-  // 헤드는 짧게: 공개하는 제목 + 아이콘 설명 버튼으로 축약(2026-09-22 사용자 피드백).
-  // 긴 전제 문장과 "등대를 구해라" 안내는 각 장소의 tooltip으로 모바.
-  const headTitle = el("h3", { class: "world-canon-head-title", text: canon.name.trim() || "세계 개요" });
-  const headNameMirror = (): void => {
-    headTitle.textContent = resolveWorldCanon(store.getCurrent().worldCanon).name.trim() || "세계 개요";
-  };
-  headNameMirror();
-  const helpText = [
-    "이 한 장은 조수가 매 턴 읽는 세계 설정이다.",
-    "본문 탭 — 역사·땅·문화를 쓰는 도화지.",
-    "세계 설정 탭 — 이름·전제·톤·법칙.",
-    "조수 전달 탭 — 조수가 실제로 읽는 문장.",
-  ].join("\n");
-  const spreadHead = el("div", {
-    class: "world-canon-spread-head",
-    children: [
-      el("div", { class: "world-canon-head-row", children: [
-        el("span", { class: "world-canon-kicker", text: "세계 안내서" }),
-        el("button", {
-          class: "world-canon-help",
-          attrs: { type: "button", "aria-label": "세계 개요 설명", title: helpText },
-          dataset: { testid: "db-world-canon-help" },
-          text: "?",
-        }),
-      ] }),
-      headTitle,
-      el("div", {
-        class: "world-canon-meter",
-        children: [
-          el("div", { class: "world-canon-meter-bar", children: [meterFill] }),
-          meterText,
-        ],
-      }),
-      heroStats,
-    ],
-  });
-
   // ---- 탭 구성: 본문(도화지)이 첫 화면의 주인공이다 ----
   // 세계 개요를 클릭하면 폼이 아니라 쓰기 시작할 수 있는 도화지가 먼저 보여야 한다(2026-09-22 사용자 피드백).
   const bodyPanel = el("div", {
@@ -265,10 +156,18 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
       bodyCard,
     ],
   });
-  const settingsPanel = el("div", {
-    class: "world-canon-tab-body",
-    children: [identityCard(canon), frameCard, lawsCard],
-  });
+
+  // 본문 도화지에도 AI 도움을 붙인다 — 초안/이어쓰기 제안. 저장은 저자가 한다.
+  const bodyArea = bodyCard.querySelector("[data-testid='db-world-canon-body']") as HTMLTextAreaElement | null;
+  if (bodyArea) {
+    bodyPanel.append(buildBodyAiAssist(bodyArea, () => {
+      const hint = bodyCard.querySelector(".db-ws-card-hint");
+      if (hint) hint.textContent = excerptHint(bodyArea.value.trim().length);
+    }));
+  }
+  // 세계 설정 탭 = AI 문답 인터뷰(2026-09-22 사용자 피드백: 폼으로 나열하지 말고 질의응답으로).
+  // 값은 기존 writeCanon 경로로 들어간다 — 스키마·경계값은 그대로고 입력 방식만 바뀌다.
+  const settingsPanel = buildInterviewPanel(canon, rerender, updateAiPreview);
   // ---- 탭 2: 조수 전달 (AI 프롬프트 투영 + 전달 상태) ----
   const buildAiPanel = (): HTMLElement => {
     const wrap = el("div", { class: "world-canon-tab-body world-canon-ai-panel", dataset: { testid: "world-canon-ai-panel" } });
@@ -324,7 +223,7 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
           children: [
             el("div", {
               class: "world-document-content",
-              children: [spreadHead, tabs],
+              children: [tabs],
             }),
             properties,
           ],
@@ -333,9 +232,285 @@ export function renderWorldCanonTab(host: HTMLElement, rerender: () => void): vo
     });
   workspace.classList.add("world-document-workspace", "world-canon-workspace");
   workspace.addEventListener("input", updateAiPreview);
-  workspace.addEventListener("input", headNameMirror);
   host.append(workspace);
 }
+
+
+// ---------------------------------------------------------------------------
+// 세계 설정 = AI 문답 인터뷰 (2026-09-22)
+//
+// 폼을 나열하는 대신 조수가 한 번에 한 칸씩 묻고, 사용자가 답하면 그 답이 스키마 패치로 들어온다.
+// 값 저장은 기존 writeCanon 하나로 모은다 — 경계값·undo 스냅숏·AI 투영이 전부 그 경로를 탄다.
+// ---------------------------------------------------------------------------
+
+type InterviewLine = { readonly role: "user" | "assistant"; readonly text: string };
+
+const interviewHistory = new WeakMap<HTMLElement, InterviewLine[]>();
+const interviewBusy = new WeakMap<HTMLElement, boolean>();
+
+
+// ---------------------------------------------------------------------------
+// 본문 AI 도움 (2026-09-22)
+//
+// 본문은 장문 prose 라 인터뷰처럼 한 칸씩 채울 수 없다. 저자가 막막한 지점에서
+//  · "초안 잡기" — 지금까지의 설정만으로 본문 4~6문단을 새로 쓴다
+//  · "이어쓰기" — 이미 쓴 본문의 끝을 이어받아 다음 절을 쓴다
+// 두 모드를 버튼 하나씩으로 제공한다. 결과는 **제안**으로 textarea 에 들어가고
+// 저장은 저자가 한다(본문은 길고 되돌리기 비용이 크다).
+// ---------------------------------------------------------------------------
+
+function buildBodyAiAssist(area: HTMLTextAreaElement, onApplied: () => void): HTMLElement {
+  const wrap = el("div", { class: "world-canon-body-ai", dataset: { testid: "world-canon-body-ai" } });
+  const instruction = el("input", {
+    class: "world-canon-body-ai-instruction",
+    attrs: {
+      type: "text",
+      placeholder: "지시(선택) — 예: 왕도 멸망만 3문단",
+      "aria-label": "본문 AI 지시",
+      maxlength: "200",
+    },
+    dataset: { testid: "world-canon-body-ai-instruction" },
+  }) as HTMLInputElement;
+  const draftButton = el("button", {
+    class: "btn small world-canon-body-ai-draft",
+    attrs: { type: "button", title: "지금까지의 세계 설정만으로 본문을 새로 씁니다. 기존 본문을 덮어쓸지 물어봅니다." },
+    text: "초안 잡기",
+    dataset: { testid: "world-canon-body-ai-draft" },
+  });
+  const continueButton = el("button", {
+    class: "btn small world-canon-body-ai-continue",
+    attrs: { type: "button", title: "지금 적힌 본문의 끝을 이어받아 다음 절을 씁니다." },
+    text: "이어쓰기",
+    dataset: { testid: "world-canon-body-ai-continue" },
+  });
+  const status = el("span", { class: "world-canon-body-ai-status", dataset: { testid: "world-canon-body-ai-status" } });
+  const notes = el("ul", { class: "world-canon-body-ai-notes", dataset: { testid: "world-canon-body-ai-notes" } });
+  let busy = false;
+
+  const setBusy = (next: boolean, message = ""): void => {
+    busy = next;
+    for (const button of [draftButton, continueButton]) {
+      if (next) button.setAttribute("disabled", "");
+      else button.removeAttribute("disabled");
+    }
+    instruction.toggleAttribute("disabled", next);
+    status.textContent = message;
+  };
+  const showNotes = (items: readonly string[]): void => {
+    notes.replaceChildren();
+    if (items.length === 0) return;
+    notes.append(el("li", { class: "world-canon-body-ai-notes-head", text: "조수가 새로 지어낸 것 — 아니면 지우세요:" }));
+    for (const item of items) notes.append(el("li", { text: item }));
+  };
+
+  const run = async (mode: BodyDraftMode): Promise<void> => {
+    if (busy) return;
+    const existing = area.value;
+    if (mode === "draft" && existing.trim().length > 0) {
+      const replace = typeof window.confirm === "function"
+        ? window.confirm("이미 쓴 본문이 있습니다. 초안으로 덮어쓸까요? (취소하면 이어쓰기로 바뀝니다)")
+        : false;
+      if (!replace) {
+        await run("continue");
+        return;
+      }
+    }
+    setBusy(true, mode === "draft" ? "조수가 초안을 쓰는 중…" : "조수가 이어 쓰는 중…");
+    showNotes([]);
+    const result = await requestWorldCanonBodyDraft({
+      mode,
+      existingBody: existing,
+      instruction: instruction.value,
+      canon: resolveWorldCanon(store.getCurrent().worldCanon),
+    });
+    if (!result.ok) {
+      setBusy(false, result.message);
+      return;
+    }
+    area.value = composeBodyWithDraft(existing, result.body, mode);
+    writeCanon({ body: area.value }, "db-world-canon-body");
+    onApplied();
+    showNotes(result.notes);
+    setBusy(false, mode === "draft" ? "초안을 넣었습니다. 고친 뒤 저장하세요." : "이어썼습니다. 고친 뒤 저장하세요.");
+  };
+
+  draftButton.addEventListener("click", () => { void run("draft"); });
+  continueButton.addEventListener("click", () => { void run("continue"); });
+
+  wrap.append(
+    el("div", { class: "world-canon-body-ai-row", children: [draftButton, continueButton, instruction] }),
+    status,
+    notes,
+  );
+  return wrap;
+}
+
+
+function buildInterviewPanel(
+  canon: ResolvedWorldCanon,
+  rerender: () => void,
+  onCanonChanged: () => void,
+): HTMLElement {
+  const host = el("div", {
+    class: "world-canon-tab-body world-canon-interview",
+    dataset: { testid: "world-canon-interview" },
+  });
+  const log = el("div", { class: "world-canon-interview-log", dataset: { testid: "world-canon-interview-log" } });
+  const quick = el("div", { class: "world-canon-interview-quick", dataset: { testid: "world-canon-interview-choices" } });
+  const input = el("textarea", {
+    class: "world-canon-interview-input",
+    attrs: {
+      rows: "2",
+      placeholder: "답을 적거나 위 선택지를 누르세요 (Enter 전송, Shift+Enter 줄바꿈)",
+      "aria-label": "세계 설정 답변",
+    },
+    dataset: { testid: "world-canon-interview-input" },
+  }) as HTMLTextAreaElement;
+  const send = el("button", {
+    class: "btn small world-canon-interview-send",
+    attrs: { type: "button" },
+    text: "보내기",
+    dataset: { testid: "world-canon-interview-send" },
+  });
+  const startButton = el("button", {
+    class: "btn small world-canon-interview-start",
+    attrs: { type: "button" },
+    text: "시작하기",
+    dataset: { testid: "world-canon-interview-start" },
+  });
+  const status = el("span", { class: "world-canon-interview-status", dataset: { testid: "world-canon-interview-status" } });
+  const summary = el("div", { class: "world-canon-interview-summary", dataset: { testid: "world-canon-interview-summary" } });
+
+  // 패널은 탭을 열 때마다 새로 만들어지지만 기록은 host 기준 WeakMap 에 남는다.
+  const history = interviewHistory.get(host) ?? [];
+  interviewHistory.set(host, history);
+
+  const renderLog = (): void => {
+    log.replaceChildren();
+    if (history.length === 0) {
+      log.append(el("p", {
+        class: "world-canon-interview-empty",
+        text: "조수가 세계 설정을 한 칸씩 함께 정한다. 「시작하기」를 누르면 첫 질문이 온다.",
+      }));
+      return;
+    }
+    for (const line of history) {
+      log.append(el("div", { class: `world-canon-interview-line is-${line.role}`, text: line.text }));
+    }
+    log.scrollTop = log.scrollHeight;
+  };
+  const renderChoices = (choices: readonly string[]): void => {
+    quick.replaceChildren();
+    for (const choice of choices) {
+      const button = el("button", { class: "world-canon-interview-choice", attrs: { type: "button" }, text: choice });
+      button.addEventListener("click", () => { void submit(choice); });
+      quick.append(button);
+    }
+  };
+  const renderSummary = (): void => {
+    const next = resolveWorldCanon(store.getCurrent().worldCanon);
+    const chip = (label: string, value: string, filled: boolean): HTMLElement =>
+      el("span", { class: `world-canon-interview-chip${filled ? " is-filled" : ""}`, text: `${label} ${value}` });
+    const decided = WORLD_CANON_LAW_KINDS.filter((kind) => next.laws[kind].present !== undefined).length;
+    summary.replaceChildren(
+      chip("이름", next.name.trim() || "—", Boolean(next.name.trim())),
+      chip("전제", next.premise.trim() ? "작성" : "—", Boolean(next.premise.trim())),
+      chip("톤", next.tones.length > 0 ? `${next.tones.length}종` : "—", next.tones.length > 0),
+      chip("법칙", `${decided}/4`, decided === 4),
+      chip("없는 것", next.absences.length > 0 ? `${next.absences.length}개` : "—", next.absences.length > 0),
+      chip("시대", next.era.trim() ? "작성" : "—", Boolean(next.era.trim())),
+      chip("기술", next.techCeiling.trim() ? "작성" : "—", Boolean(next.techCeiling.trim())),
+    );
+  };
+  const setBusy = (busy: boolean, message = ""): void => {
+    interviewBusy.set(host, busy);
+    if (busy) { send.setAttribute("disabled", ""); input.setAttribute("disabled", ""); }
+    else { send.removeAttribute("disabled"); input.removeAttribute("disabled"); }
+    status.textContent = message;
+  };
+  const submit = async (text: string): Promise<void> => {
+    const answer = text.trim();
+    if (!answer || interviewBusy.get(host)) return;
+    history.push({ role: "user", text: answer });
+    renderLog();
+    renderChoices([]);
+    input.value = "";
+    setBusy(true, "조수가 답을 반영하는 중…");
+    const result = await requestWorldCanonInterview({
+      history,
+      canon: resolveWorldCanon(store.getCurrent().worldCanon),
+    });
+    if (!result.ok) {
+      history.push({ role: "assistant", text: `(연결 실패) ${result.message}` });
+      renderLog();
+      setBusy(false, result.message);
+      return;
+    }
+    const turn = result.turn;
+    if (turn.recap) history.push({ role: "assistant", text: turn.recap });
+    if (turn.question) history.push({ role: "assistant", text: turn.question });
+    if (!turn.recap && !turn.question) history.push({ role: "assistant", text: "(빈 응답이 왔습니다. 다시 말해 주세요.)" });
+    renderLog();
+    renderChoices(turn.choices);
+    const patch = mergeInterviewPatch(resolveWorldCanon(store.getCurrent().worldCanon), turn.patch);
+    if (Object.keys(patch).length > 0) {
+      recordProjectSnapshot("세계관 인터뷰");
+      writeCanon(patch);
+      renderSummary();
+      onCanonChanged();
+    }
+    setBusy(false, turn.done ? "조수가 준비 완료로 표시했다. 더 물어보거나 본문 탭에서 이어 쓰세요." : "");
+  };
+
+  send.addEventListener("click", () => { void submit(input.value); });
+  startButton.addEventListener("click", () => { void submit("세계 설정을 처음부터 함께 정하자. 첫 질문을 해 줘."); });
+  input.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
+    event.preventDefault();
+    void submit(input.value);
+  });
+
+  renderLog();
+  renderSummary();
+  host.append(
+    el("p", {
+      class: "world-canon-interview-lead",
+      text: "조수가 한 번에 한 칸씩 묻는다. 답하면 이름·전제·톤·법칙으로 정리되어 이 세계에 저장된다.",
+    }),
+    summary,
+    log,
+    quick,
+    el("div", { class: "world-canon-interview-compose", children: [input, el("div", { class: "world-canon-interview-actions", children: [startButton, send] })] }),
+    status,
+    el("details", {
+      class: "world-canon-interview-manual",
+      children: [
+        el("summary", { text: "직접 입력하기 (인터뷰 없이 손으로)" }),
+        el("div", { class: "world-canon-fields", children: [
+          identityCard(canon),
+          el("h5", { class: "world-canon-group-title", text: "톤" }),
+          toneRow(canon.tones, rerender),
+          el("div", {
+            class: "world-canon-spread-era",
+            children: [
+              boundedCanonText("시대", canon.era, (value) => writeCanon({ era: value }, "db-world-canon-era"), "db-world-canon-era", WORLD_CANON_BOUNDS.era),
+              boundedCanonText("기술 수준", canon.techCeiling, (value) => writeCanon({ techCeiling: value }, "db-world-canon-tech"), "db-world-canon-tech", WORLD_CANON_BOUNDS.techCeiling),
+            ],
+          }),
+          el("h5", { class: "world-canon-group-title", text: "세계에 없는 것 (부분일치)" }),
+          absenceEditor(canon.absences, rerender),
+          el("h5", { class: "world-canon-group-title", text: "법칙 (힘·신·죽음·돈)" }),
+          el("div", {
+            class: "world-canon-law-grid is-cards",
+            children: WORLD_CANON_LAW_KINDS.map((kind) => lawCard(kind, canon.laws[kind], rerender)),
+          }),
+        ] }),
+      ],
+    }),
+  );
+  return host;
+}
+
 
 function identityCard(canon: ResolvedWorldCanon): HTMLElement {
   const name = el("input", {

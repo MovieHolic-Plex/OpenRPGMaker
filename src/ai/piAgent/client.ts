@@ -4,7 +4,7 @@ import type { Project } from "@/project/types";
 // NDJSON 진행 이벤트를 받는다. checkpoint는 실제 적용/승인 뒤 ACK하며 done을 최종 결과로 돌려준다.
 
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
-import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
+import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -70,9 +70,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           issue = error instanceof Error ? error.message : String(error);
         }
         options.onEvent?.({ type: "execution_status", name: "checkpoint.apply", summary: issue ? "단계 적용 실패" : "단계 적용 완료", ok: issue === undefined, data: { checkpointId: event.checkpointId, issue } });
+        const ackProject = project && event.unchangedKeys?.length
+          ? slimCheckpointProject(project, event.unchangedKeys)
+          : project;
         const ack = await doFetch(companionAuthUrl("/v1/agent/checkpoint", request.provider), {
           method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project }),
+          body: JSON.stringify({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project: ackProject }),
           ...(options.signal ? { signal: options.signal } : {}),
         });
         if (!ack.ok) throw new PiAgentClientError("적용 응답을 전달하지 못했습니다.", ack.status);

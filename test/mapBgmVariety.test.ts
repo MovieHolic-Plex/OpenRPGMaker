@@ -1,7 +1,7 @@
 // 테마별 맵 BGM 자동 선택 — generate_map/create_map 이 전부 같은 기본곡을 쓰지 않게 지킨다.
 import { describe, expect, it } from "vitest";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
-import { BGM_CATALOG, findBgmTrack } from "@/assets/bgmCatalog";
+import { BGM_CATALOG, findBgmTrack, type BgmCatalogTrack } from "@/assets/bgmCatalog";
 import { findBgmRuntimeEntry, isBgmCatalogResourceId } from "@/assets/bgmCatalogRuntime";
 import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID } from "@/assets/bgmStarterTracks";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
@@ -15,26 +15,8 @@ function catalogId(resourceId: string): string {
   return resourceId;
 }
 
-// village 카테고리 바늘 상위집합. 테마 풀을 비우면 starterFallback 만 남아야 한다.
-const VILLAGE_CATEGORY_NEEDLES = [
-  "마을",
-  "도시",
-  "광장",
-  "길드",
-  "회관",
-  "시장",
-  "축제",
-  "과수원",
-  "어촌",
-  "찻집",
-  "공원",
-  "양봉",
-] as const;
-
-function villageThemePoolIds(): string[] {
-  return BGM_CATALOG.filter((track) =>
-    VILLAGE_CATEGORY_NEEDLES.some((needle) => track.category.includes(needle)),
-  ).map((track) => track.id);
+function sceneText(track: BgmCatalogTrack): string {
+  return [track.title, track.category, track.brief, ...track.tags].join("\n");
 }
 
 describe("recommendMapBgm", () => {
@@ -91,11 +73,28 @@ describe("recommendMapBgm", () => {
     expect(recommendMapBgm("깊은 숲", seed)).toBe(recommendMapBgm("forest", seed));
   });
 
-  it("테마 풀을 전부 exclude 하면 스타터 id 로 떨어진다", () => {
-    const pool = villageThemePoolIds();
-    expect(pool.length).toBeGreaterThan(0);
-    expect(pool.includes(STARTER_DEFAULT_BGM_ID)).toBe(false);
-    expect(catalogId(recommendMapBgm("village", 1, pool))).toBe(STARTER_DEFAULT_BGM_ID);
+  it("설명에 맞는 곡을 전부 exclude 하면 스타터 id 로 떨어진다", () => {
+    const exclude = BGM_CATALOG.map((track) => track.id).filter((id) => id !== STARTER_DEFAULT_BGM_ID);
+    expect(catalogId(recommendMapBgm("village", 1, exclude))).toBe(STARTER_DEFAULT_BGM_ID);
+  });
+
+  it("테마 낱말에 없는 장소 이름은 곡 설명에서 찾는다", () => {
+    const id = catalogId(recommendMapBgm("등불항구", 1));
+    expect(id).not.toBe(STARTER_DEFAULT_BGM_ID);
+    expect(sceneText(findBgmTrack(id)!)).toMatch(/항구/);
+  });
+
+  it("기획 설명에만 있는 장소도 고른다", () => {
+    const id = catalogId(recommendMapBgm("여관", 1));
+    expect(findBgmTrack(id)?.brief).toMatch(/여관/);
+  });
+
+  it("프로젝트에 덮어쓴 설명을 이름과 대조한다", () => {
+    const target = BGM_CATALOG[0]!.id;
+    const place = "힣퀴뷁촥";
+    expect(recommendMapBgm(place, 1, undefined, {
+      descriptions: { [target]: `이 곡은 ${place} 장면을 위한 음악이다.` },
+    })).toBe(target);
   });
 });
 describe("자동 BGM 다양성 (seed 생략 반복)", () => {
@@ -264,7 +263,7 @@ describe("create_map BGM", () => {
     const data = result.data as { bgmResourceId: string };
     expect(ctx.project.maps.map_cave?.bgm).toEqual({ mode: "custom", resourceId: data.bgmResourceId });
     catalogId(data.bgmResourceId);
-    expect(findBgmTrack(data.bgmResourceId)?.category).toMatch(/동굴|광산|광물/);
+    expect(sceneText(findBgmTrack(data.bgmResourceId)!)).toMatch(/동굴|광산|광물/);
   });
 
   it("명시적 bgmResourceId 가 있으면 자동 선택을 건너뛴다", () => {

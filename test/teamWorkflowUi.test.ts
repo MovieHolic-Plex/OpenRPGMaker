@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderCommitHistoryButton, renderIdentityTopbarControl, openLoginModalIfNeeded } from "@/editor/teamWorkflowUi";
+import { renderCommitHistoryButton, renderIdentityTopbarControl, openLoginModalIfNeeded, openMockLoginModal } from "@/editor/teamWorkflowUi";
 import { renderTopbar } from "@/editor/panels/menu";
 import { createBlankProject } from "@/project/defaults";
 import { setOwnerLabel } from "@/project/editorIdentity";
@@ -119,8 +119,8 @@ afterEach(() => {
 });
 
 describe("team workflow UI", () => {
-  it("shows the mock login once and stores email identity without network auth", () => {
-    openLoginModalIfNeeded();
+  it("명시적으로 열면 이메일 신원을 저장한다 (네트워크 인증 없음)", () => {
+    openMockLoginModal();
     const modal = findByTestId(fakeBody(), "login-modal");
     const email = findByTestId(fakeBody(), "login-email") as FakeElement | null;
     const submit = findByTestId(fakeBody(), "login-submit");
@@ -137,6 +137,15 @@ describe("team workflow UI", () => {
 
     openLoginModalIfNeeded();
     expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
+  });
+
+  it("부팅 게이트는 로그인 벽을 세우지 않고 게스트 신원만 확보한다", () => {
+    // 2026-09-22: 이 모달은 "로그인" 이지만 실제로는 커밋 이름표만 정한다. 팀 권한과 코드 경로가
+    // 겹치지 않으므로 팀을 안 쓰는 사용자에게는 의미 없는 관문이었고, 한 번 넘기면 영영 안 떠서
+    // 정작 팀을 시작하려는 사람에게 안내가 없었다. 부팅에서는 묻지 않는다.
+    openLoginModalIfNeeded();
+    expect(findByTestId(fakeBody(), "login-modal")).toBeNull();
+    expect(storage.getItem(LAST_LOGIN_METHOD_KEY)).toBe("guest");
   });
 
   it("suppresses the boot login modal in automation/dev boot contexts", () => {
@@ -159,7 +168,8 @@ describe("team workflow UI", () => {
   });
 
   it("switches OAuth to name-only mock flow and stores the selected provider", () => {
-    openLoginModalIfNeeded();
+    // 부팅 게이트는 더 이상 모달을 열지 않으므로, OAuth 흐름은 명시적 호출로 확인한다.
+    openMockLoginModal();
     findByTestId(fakeBody(), "login-oauth-google")?.click();
     const name = findByTestId(fakeBody(), "login-name") as FakeElement | null;
     if (!name) throw new Error("login-name missing");

@@ -2,7 +2,6 @@ import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { LPC_WOODEN_FURNITURE_16_ID, LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
 import { SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "@/project/defaults/sharedVillageObjects";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
-import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { placeCards, placedCards, regionCards, worldCards } from "@/editor/panels/spatialCatalogHierarchy";
 import type { SpatialAuthoringSession, SpatialShellTab, SpatialSourceFilter } from "@/editor/panels/spatialAuthoringSession";
@@ -150,17 +149,7 @@ function isBundledFurniturePackKit(tileset: Pick<TilesetDef, "id" | "image">, ki
 
 function spaceCards(): SpatialGalleryCard[] {
   const project = visibleAuthoringProject();
-  const tilesetId = boundInteriorTilesetId();
-  const cards: SpatialGalleryCard[] = BUILTIN_INTERIOR_ROOM_KINDS.map((kind) => ({
-    id: kind.id,
-    localId: kind.id,
-    name: kind.label,
-    source: "default",
-    kind: "spaces",
-    usage: 0,
-    tilesetId,
-    subtitle: kind.walkway ? "통로" : undefined,
-  }));
+  const cards: SpatialGalleryCard[] = [];
   const known = new Set(cards.map((card) => card.id));
   for (const tileset of Object.values(project.tilesets)) {
     for (const kind of tileset.interiorRoomKinds ?? []) {
@@ -203,7 +192,7 @@ const DESIGN_LISTERS: Record<SpatialShellTab, () => SpatialGalleryCard[]> = {
   tiles: tileCards,
   objects: objectCards,
   spaces: spaceCards,
-  places: () => [...placeCards(), ...spaceCards()],
+  places: placeCards,
   regions: regionCards,
   worlds: worldCards,
 };

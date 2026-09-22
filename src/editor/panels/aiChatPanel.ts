@@ -168,6 +168,8 @@ import { createAiTurnRunner } from "./aiTurnRunner";
 import { openLocalDiagnosticsDialog } from "./localDiagnosticsDialog";
 import { createAiRegionTaskRunner } from "./aiRegionTaskRunner";
 import type { AiRunSurface, ConversationPersistTarget as ConversationPersistTargetContract } from "./aiRunSurface";
+import { getAiConnectionStatus } from "./aiConnectionStatus";
+import { createAiLockScrim } from "./aiLockScrim";
 import {
   backupProjectSnapshot,
   dropSession,
@@ -2291,7 +2293,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
   const refreshComposerPlaceholder = (): void => {
-    const placeholder = formatComposerPlaceholder(readAgentBrief());
+    // 연결 상태를 함께 본다 — 미연결이면 "한 문장으로 지시" 대신 어디를 눌러야 하는지 말한다.
+    const placeholder = formatComposerPlaceholder(readAgentBrief(), isAiConfigReady(loadAiConfig(), getAiConnectionStatus(loadAiConfig())));
     if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
     syncConversationState();
   };
@@ -3015,6 +3018,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   deckRoot = deck;
 
+  /**
+   * AI 미연결 잠금 막. 채팅창 위를 덮어 "지금은 쓸 수 없다" 를 몸으로 알게 한다.
+   *
+   * 왜 오버레이인가 (2026-09-22): 이전에는 placeholder 문구와 톱바 칩으로만 알렸는데,
+   * 그건 **읽어야 아는** 신호다. 사용자는 지시를 쓰고 보낸 뒤에야 막힌다는 걸 알았다.
+   * 이 앱에서 AI 는 핵심 시스템이므로, 없으면 그 자리가 비어 보여야 한다.
+   *
+   * 입력 자체를 비활성하지는 않는다 — 쓰다가 로그인하면 그대로 이어 쓸 수 있어야 하고,
+   * 무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다.
+   */
+  const lockScrim = createAiLockScrim({
+    onOpenSettings: () => openAiSettingsModal(),
+    onLockChange: (locked) => { panel?.classList.toggle("is-ai-locked", locked); },
+  });
+  deck.append(lockScrim.element);
+
   const panel = el("aside", {
     class: "ai-chat-panel is-left-sidebar",
     attrs: { "aria-label": "AI" },
@@ -3032,6 +3051,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   const teamSidebar = createAiTeamSidebar({ settings: teamPanel.root });
   // The editor mounts this sibling in the right rail; this panel owns its lifetime.
   panel.append(teamSidebar.root);
+  // panel 이 선언된 뒤에 첫 판정을 한다 — 앞에서 부르면 TDZ 로 죽는다(실측: 부팅이
+  // `Cannot access 'panel' before initialization` 로 멈추고 캔버스가 그려지지 않았다).
+  lockScrim.sync();
   const wideButton = el("button", { class: "ai-activity-expand", attrs: { type: "button", "aria-label": "조수와 팀 크게 보기", "aria-expanded": "false", "aria-haspopup": "dialog" }, dataset: { testid: "ai-wide-open" }, children: [deckIcon("expand"), el("span", { text: "크게 보기" })] }) as HTMLButtonElement;
   // 작업 표시 헤딩이 아이콘화로 사라졌다(2026-09-21) — 크게 보기는 상단 레일 아이콘 행으로 옮긴다.
   wideButton.classList.add("ai-deck-wide-open");
@@ -3690,6 +3712,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   activeAiChatPanelCleanup = () => {
     if (disposed) return;
     disposed = true;
+    lockScrim.dispose();
     cancelCreationChoice?.();
     closeAiAuthoringModal();
     clearPromptInspection();

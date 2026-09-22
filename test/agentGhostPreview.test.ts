@@ -27,6 +27,23 @@ afterEach(() => {
 });
 
 describe("agent ghost preview area extraction", () => {
+  it("skips unchanged map objects and keeps the live diff id small", () => {
+    const kept = blankMap("kept", 40, 30);
+    const edited = blankMap("edited", 40, 30);
+    const base = projectWithMaps(kept, edited);
+    const same = projectWithMaps(kept, edited);
+    expect(summarizeAgentGhostPreviewForProjectDiff(base, same)).toEqual([]);
+
+    const changedTiles = edited.lowerTiles.slice();
+    for (let index = 0; index < changedTiles.length; index += 3) changedTiles[index] = 4;
+    const changed = { ...edited, lowerTiles: changedTiles };
+    const draft = projectWithMaps(kept, changed);
+    const previews = summarizeAgentGhostPreviewForProjectDiff(base, draft);
+    expect(previews.map((preview) => preview.mapId)).toEqual(["edited"]);
+    expect(previews[0]?.cells.length).toBeGreaterThan(100);
+    expect(previews[0]?.id.length).toBeLessThan(400);
+  });
+
   it("canonical house and nested village targets produce ghost bounds", () => {
     // Given: one existing exterior map and canonical construction calls.
     const project = projectWithMaps(blankMap("m1", 30, 24));

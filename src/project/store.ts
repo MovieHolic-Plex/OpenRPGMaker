@@ -729,6 +729,8 @@ class ProjectStore {
     options: {
       readonly preserveEventDrafts?: boolean;
       readonly change?: ProjectChangeAnnotation;
+      /** 맵 칸만 바뀌었을 때 전체 재렌더 대신 그 칸만 그리게 한다. */
+      readonly renderCells?: { readonly mapId: MapId; readonly cells: readonly ProjectChangeCell[] };
       /** Account the actual mutation before any synchronous observers can retire its owner. */
       readonly onApplied?: (project: Project) => void;
       /** Trusted synchronous history commit, after adoption and before mutation observers. */
@@ -757,11 +759,15 @@ class ProjectStore {
     }
     const applied = this.current;
     options.commitHistory?.();
+    const annotation = options.change ?? {};
+    const descriptor: ProjectChangeDescriptor = options.renderCells
+      ? { scope: "map", mapId: options.renderCells.mapId, cells: options.renderCells.cells, ...annotation }
+      : { scope: "project", ...annotation };
     try {
-      this.markLocalMutation({ scope: "project", ...(options.change ?? {}) }, options.onApplied);
+      this.markLocalMutation(descriptor, options.onApplied);
     } finally {
       // The project is already live even if application accounting's observer throws.
-      this.emit({ scope: "project", ...(options.change ?? {}) });
+      this.emit(descriptor);
       this.scheduleAutoSave();
     }
     return applied;

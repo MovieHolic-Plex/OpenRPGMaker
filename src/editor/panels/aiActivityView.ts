@@ -9,6 +9,29 @@ export interface ActivityView { root: HTMLElement; update(trace: ActivityTrace |
 const clock = (ms: number): string => `${Math.floor(Math.max(0, ms) / 60000).toString().padStart(2, "0")}:${Math.floor(Math.max(0, ms) / 1000 % 60).toString().padStart(2, "0")}`;
 const label = (entry: ActivityEntry): string => entry.kind === "tool" ? toolLabel(entry.name) : entry.summary;
 const actorLabel = (trace: ActivityTrace, actor: string): string => trace.actors[actor] ?? (actor === "system" ? "실행" : actor === "agent" ? "조수" : actor);
+const searchText = new WeakMap<ActivityEntry, string>();
+function boundedSearchText(value: unknown, depth = 0): string {
+  if (value == null || typeof value === "number" || typeof value === "boolean") return String(value ?? "");
+  if (typeof value === "string") return value.length > 180 ? value.slice(0, 180) : value;
+  if (depth >= 2) return "";
+  if (Array.isArray(value)) {
+    if (value.length > 24) return `[${value.length}]`;
+    return value.map((item) => boundedSearchText(item, depth + 1)).join(" ");
+  }
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (entries.length > 24) return `{${entries.length}}`;
+    return entries.map(([key, item]) => `${key} ${boundedSearchText(item, depth + 1)}`).join(" ");
+  }
+  return "";
+}
+function entrySearchText(entry: ActivityEntry): string {
+  const cached = searchText.get(entry);
+  if (cached !== undefined) return cached;
+  const text = `${entry.name}\n${entry.summary}\n${boundedSearchText(entry.input)}\n${boundedSearchText(entry.output)}`.toLowerCase();
+  searchText.set(entry, text);
+  return text;
+}
 
 export function createActivityView(options: { archive?: boolean; historical?: boolean } = {}): ActivityView {
   let trace: ActivityTrace | undefined;
@@ -77,7 +100,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const completed = grouped.filter(e => e.status !== "running");
       const illustrated = completed.filter(e => e.visuals?.length).slice(-3);
       rows = illustrated.length ? [...illustrated, ...completed.filter(e => !e.visuals?.length).slice(-1), ...active.slice(-3)].sort((a, b) => a.at - b.at) : [...completed.slice(-Math.max(1, 4 - active.length)), ...active.slice(-3)];
-    } else if (level === "trace") rows = rows.filter(e => (!selectedActor || actor || e.actor === selectedActor) && (severity === "all" || (severity === "tool" ? e.kind === "tool" : e.status === "error")) && (!query || JSON.stringify(e).toLowerCase().includes(query)));
+    } else if (level === "trace") rows = rows.filter(e => (!selectedActor || actor || e.actor === selectedActor) && (severity === "all" || (severity === "tool" ? e.kind === "tool" : e.status === "error")) && (!query || entrySearchText(e).includes(query)));
     const total = rows.length;
     if (level !== "brief") rows = rows.slice(-shown);
     more.hidden = level === "brief" || total <= shown;

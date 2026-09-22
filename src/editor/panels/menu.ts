@@ -14,6 +14,7 @@ import {
 } from "@/editor/editorUiMode";
 import { openAudioTestDialog } from "@/editor/panels/audioTestDialog";
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { renderAiConnectionChip } from "@/editor/panels/aiConnectionChip";
 import {
   AI_STUDIO_CHANGE_EVENT,
   readStudioMode,
@@ -100,6 +101,7 @@ let disposeSaveStatus: (() => void) | null = null;
 let paintSaveDot: ((state: AutoSaveState) => void) | null = null;
 let disposeLayerSwitcher: (() => void) | null = null;
 let disposeStudioButton: (() => void) | null = null;
+let disposeAiConnectionChip: (() => void) | null = null;
 let disposeFullscreenButton: (() => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
@@ -117,6 +119,8 @@ export function renderTopbar(topbar: HTMLElement): void {
   disposeLayerSwitcher = null;
   disposeStudioButton?.();
   disposeStudioButton = null;
+  disposeAiConnectionChip?.();
+  disposeAiConnectionChip = null;
   disposeFullscreenButton?.();
   disposeFullscreenButton = null;
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
@@ -198,7 +202,7 @@ export function renderTopbar(topbar: HTMLElement): void {
     cluster.append(renderMenu("help", "도움말", menuCommands("help", topbar), { icon: "help", className: "studio-icon-button" }));
   }
   cluster.append(renderCommitHistoryButton(), renderTopbarIdentityControl(topbar));
-  if (mode === "edit") cluster.append(renderTopbarAiSettingsButton());
+  if (mode === "edit") cluster.append(renderTopbarAiSettingsButton(), renderTopbarAiConnectionChip());
   cluster.append(renderFullscreenButton());
   trailing.append(cluster);
   menuBar.append(trailing);
@@ -373,6 +377,22 @@ function renderTopbarAiSettingsButton(): HTMLElement {
     children: [makeSvgIcon("gear"), el("span", { class: "visually-hidden", text: "AI 설정" })],
     on: { click: () => openAiSettingsModal() },
   });
+}
+
+/**
+ * AI 연결 상태를 톱바에 **상시** 보여 준다.
+ *
+ * 위 주석(2026-09-03)의 판단 — "연결이 안 된 첫 사용은 조수 패널의 「연결하기」 카드가 이미
+ * 안내하므로 톱바에는 아이콘 하나로 충분하다" — 은 실측으로 뒤집혔다(2026-09-22):
+ * 편집기 첫 화면 어디에도 연결 상태가 없었고("연결됨"·"확인 중"·"ChatGPT" 문자열 0건),
+ * 사용자는 첫 문장을 보내고 나서야 — 그것도 "의도 읽는 중…" 에서 멈춘 뒤에야 — 알았다.
+ * 이 앱에서 AI 는 핵심 시스템이므로 상태가 사후에만 보이면 안 된다.
+ */
+function renderTopbarAiConnectionChip(): HTMLElement {
+  disposeAiConnectionChip?.();
+  const chip = renderAiConnectionChip(() => openAiSettingsModal());
+  disposeAiConnectionChip = chip.dispose;
+  return chip.element;
 }
 
 /**

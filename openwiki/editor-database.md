@@ -10,8 +10,9 @@
 바꾼 것과 실측(1600×1000, `output/evidence/places-ux-redesign/impl/`):
 
 1. **목록이 기본.** `.spatial-body.is-library-only` 로 스테이지를 접는다(그리드 1332×527, 7열, 한 화면 14장).
-   스테이지는 DOM 에 남기고 CSS 로만 접는다 — 「속성」 토글이 여닫을 대상이 사라지면 죽은 버튼이 된다.
+   스테이지 껍데기는 DOM 에 남긴다. 목록을 여는 동안에는 맵을 컴파일하지 않는다 — 속성을 열 때 그린다.
    속성을 열면 5열(65%)로 줄고, 닫으면 7열로 돌아온다.
+   완성 사례의 타일 원본(약 38MB)과 검토 장소 래스터는 카드 목록과 분리되어, 행 단위로 읽거나 복제할 때만 불러온다.
 2. **선택과 편집기 진입의 분리.** 예전 `onSelect` 는 `listView: card.id !== selected?.id` 였다 —
    아무것도 안 고른 상태에서 카드를 누르면 선택과 동시에 편집기가 열려, 「맵에 놓기」 액션 줄을 볼
    기회가 없었다. 세션에 `galleryCardId` 를 추가해 **첫 클릭은 선택만**, 같은 카드 재클릭이나
@@ -672,7 +673,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
 - Nav is a **labeled 220px rail** (group headers visible) that collapses to 56px only below 800px. Tab `textContent` / `db-tab-*` testids stay. Each tab button's first child is an inline `svg.db-tab-icon` from `databaseTabIcons.ts`; CSS owns only its size and `color`.
 - Record lists are **name-first** with muted `#n` meta. Do not put `0001:` back in `databaseRecordViews.ts` / utility / common-event rows. Unused switch/variable reserve rows are not rendered.
-- Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Dirty 3-way Save/Discard/Keep is unchanged.
+- Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Record edits are already in the store, so footer 닫기 and the header X close immediately and keep them. A world-codex card draft is not in the store yet: the first 닫기/X shows Save / Discard / Keep, and a second press commits the draft and closes (a rejected commit stays open). Escape and the backdrop still ask before closing any session change. The prompt grows the footer instead of sharing the 52px button row.
 - Keep G006 in-modal `switchDatabaseActiveTab`, gallery+list toggles, and every `db-field-*` / `db-record-row-*` / `db-record-card-*` / `db-system-nav-*` / `db-type-chart-*` testid.
 - **Modal geometry has exactly one owner (2026-08-27):** `.database-modal-backdrop .database-modal-window:has(.db-shared-workspace)` in `src/styles/database/sidebar.css` declares the studio frame's `width` / `height` / `max-*` / `min-*`. No tab-content selector (`:has(.oprn-record-*)`, `:has(.db-elements-classic)`, `:has(:is(...workspace...))`) may declare window geometry again — that pattern is what made the modal jump 1628 → 1584 → 1530 px between sidebar tabs (98px width, 49px horizontal shift, measured at 1920x1200). `test/e2e/database-modal-size-invariant.spec.ts` walks every `DATABASE_TAB_SPECS` entry at 1920x1200 / 1280x800 / 1024x768 and fails on **any** non-zero delta in the window's `width` / `height` / `left` / `top`. `.maximized`, `.floating`, `.is-docked`, `.village-info-window`, and `.ai-settings-window` are separate modes and keep their own geometry.
 - **Floating/maximized는 앵커 두 겹을 인라인으로 이긴다 (2026-09-18 실측):** `ai-bar.css`의 `.database-modal-backdrop .database-modal-window { position: relative }`(0,2,0, `tabs-a.part-1.css`보다 나중에 import)가 `.floating { position: fixed }`(0,2,0)와 동점이라 소스 순서로 이겼고, `.maximized`(0,2,0)는 `sidebar.css`의 지오메트리 단일 소유자(`:has(.db-shared-workspace)`, (0,3,0))에 졌다. 증상: 드래그 후 `position: relative`로 남아 커서를 못 따라오고(left/top만 20px 이동), 최대화는 left/top만 8px로 가고 크기 그대로(2000×1200 실측: 1628×900 유지). 선택자 특이성 경쟁은 CSS 게이트 R2에 새 지문을 남기므로(기존 `.floating`/`.maximized`도 기준선 실패), `startModalDrag`·`toggleMaximizedDatabaseModal`·`applyDockMode`에서 인라인 스타일(`position/left/top/width/height`, 최대화는 `max-*` 포함)로 이기고 해제 시 비운다. 또한 헤더 버튼 안 SVG 아이콘에서 시작한 mousedown이 드래그를 유발했으므로 `startModalDrag`는 `closest("button")`으로 거른다.
@@ -826,7 +827,7 @@ Database tabs, record views, battle database records, utility records, reference
 - `src/editor/databaseFieldSupport.ts` is the source of truth for item/equipment field support disclosures shown by database record views. Keep each field's runtime/authoring-only status and help text aligned with the executing authority: finite-use item charges use `src/project/itemTransitions.ts`, while equipment changes use `src/project/equipmentRules.ts` atomically for fixed/cursed, dual-wield, and two-handed invariants. Fields with no runtime consumer remain authoring-only disclosure and must not be advertised as gameplay-active.
 - Visual resource picking is shared through `src/editor/panels/databaseResourcePickerDialog.ts` (searchable thumbnail grid + large preview). Items/equipment icons and images, enemy/species monsters, system title/system/system2 graphics, and actor faceset/charset/battleCharset all open this picker. List thumbnails live in `databaseRecordThumbnails.ts` (32px; actors/enemies/items/equipment/skills/animations/classes/troops/states). Actor `characterIndex` is an optional sheet cell (0..7, default 0) used by charset previews and thumbs; faces use standalone 48×48 face graphic resource ids directly without an index.
 - **In-modal Database navigation contract (G006 residual binding):** When the Database modal is already open, cross-tab jumps (e.g. Enemy ??linked Species) MUST keep the same modal instance: call `setSelectedMonsterSpeciesId(speciesId)` then `switchDatabaseActiveTab("monsterSpecies")` (or the shared tab switch that re-renders body only ??same path as sidebar tab clicks). **Forbid** `openDatabaseModal(...)` as an in-modal jump: reopening tears down/rebuilds the shell, resets dirty baseline/session selection, and can leak document keydown listeners if close is skipped. `openDatabaseModal(initialTab?)` remains the outside-entry path (menu/toolbar/world manager) and still uses `setDatabaseActiveTab` only on first open. Append G006 action buttons only on enemy/species views (`speciesFields` array extension point in `databaseEnemyRecordView.ts`); do not scatter jump controls across unrelated tabs.
-- `src/editor/panels/databaseModal.ts` owns the Database modal shell. Modal close attempts are guarded by `src/editor/panels/editorModalDirtyState.ts`: clean Cancel closes directly, while dirty Cancel/Escape/backdrop/X show Save / Discard / Keep Editing. Discard restores the modal-open project snapshot; Apply/Save persist and reset the dirty baseline.
+- `src/editor/panels/databaseModal.ts` owns the Database modal shell. Escape and the backdrop go through `src/editor/panels/editorModalDirtyState.ts`: a clean session closes, and a session that differs from open (store edits or a world-codex draft) shows Save / Discard / Keep Editing. Discard restores the modal-open project snapshot; Apply/Save persist and reset the dirty baseline. Footer 닫기 and the header X do not use that gate for store edits — those are already applied — and close while keeping them. They prompt only for an uncommitted world-codex draft.
 - Save-refresh reentry: `database.ts:renderActiveTab` commits the focused control under a render-depth guard before replacing tab DOM. Synchronous blur/change rerenders are queued and drained as fresh renders, avoiding nested `replaceChildren` without dropping the edit or a later save-refresh edit. Coverage: `test/databaseTabRenderReentry.test.ts`.
 - **Database tab chrome unify (2026-07-14):** Shared shell CSS `:has()` targets generic `.rm2k3-record-workspace` / `.db-record-workspace` (not only actors/classes/??list) so crops/characters/monster-species get the same modal size, header, and sidebar as core records. Empty list panes reserve min-height + inset frame; list toolbars use shared `db-toolbar-button` density; detail empty states use a card. CSS: `src/styles/database/desktop-record-shell/10-tab-chrome-unify.css` (imported last from `desktop-record-shell.css`). Evidence: `output/evidence/database-ui-unify/{before,after}/`.
 - Database write tools in `src/editor/tools/dbTools.ts` use read-modify-write semantics: existing records are merged with only the supplied fields before normalization, unknown fields are rejected with allowed-field guidance, and successful upserts return the full resulting record in `ToolResult.data`.
@@ -2062,4 +2063,43 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - **세계 설정 평문 폼**: `이름과 한 줄`/`뼈대`/`네 가지 질문` 3개 sectionCard 를 폐기하고, 라벨 + 입력 나열(`world-canon-fields`, 그룹 제목은 `world-canon-group-title`)로 교체. 법칙 질문 카드·대화상자 인터랙션은 유지.
 - 계약 갱신: 헤드 제목은 "세계 개요"(빈 세계), identity 카드 라벨 단언은 "이름", head-sub 단언 제거(요소 삭제), help tooltip 단언 추가.
 - 검증: 세계관 계약 10파일 62케이스 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v4/` 4장(도화지/평문 폼/법칙 대화상자/조수 전달), e2e 통과.
+
+
+### 세계 개요 헤드 v5 + 법칙 대화상자 토큰 스코프 수정 (2026-09-22)
+
+- 사용자 피드백 2건. (1) "세계 안내서" 키커를 치워라. (2) 법칙 대화상자가 제대로 보이지 않는다.
+- **키커 제거:** `world-canon-kicker` 행을 없애고 헤드를 제목 + `?` 도움말 버튼 한 줄로 압축. 제목 16px, 미터 바 4px·11px 캡션으로 낮춰 헤드 전체 높이를 절반 이하로 줄였다.
+- **대화상자 대비 붕괴 원인(실측):** `openLawDialog` 가 backdrop 을 `document.body` 에 붙였다. `--db-studio-*` 토큰은 `.database-modal-backdrop` 스코프에만 정의돼 있어, 모달 밖에서는 `var(--db-studio-surface)` 가 무효값으로 떨어지고 배경·글자색이 상속 회색으로 무너졌다(스크린샷 실측: 패널이 #a19f9c 회색 덩어리). 수정: `document.querySelector(".database-modal-backdrop") ?? document.body` 에 마운트하고, 대화상자 CSS 에 폴백 값(`var(--db-studio-surface, #fff)` 등)을 함께 적어 스코프가 어긋나도 읽히게 했다. backdrop 은 `position: fixed` + `--z-modal-top` 유지.
+- 검증: 세계관 계약 10파일 62케이스 통과, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v4/` 재캡처(대화상자 흰 배경 + 본문 텍스트 확인), e2e 통과.
+
+
+### 세계 설정 = AI 문답 인터뷰 (2026-09-22 v6)
+
+- 사용자 피드백: "세계 설정을 저렇게 넣지 말고 AI 랑 질의응답하면서 할 수 있게 해." 폼 나열을 버리고 인터뷰 표면으로 교체했다.
+- **표면 계약:** `AiSurface` 에 `world-canon-interview` 추가(supervisor 티어, maxTokens 4096). 엔드포인트는 조수와 동일하고 정책 표(`SURFACE_POLICIES`)가 유일한 선언 지점이라는 불변식을 따른다.
+- **클라이언트** `src/ai/worldCanonInterview.ts`: 매 턴 모델이 `{recap, question, choices, patch, done}` JSON 하나를 돌려준다. `patch` 는 기존 WorldCanon 스키마 필드만 담고, `sanitizePatch` 가 스키마 밖 키·범위 초과 값을 버리고 `WORLD_CANON_BOUNDS` 로 클램프한다. 저장은 기존 `writeCanon` 경로 하나로 모아 undo 스냅숏·AI 투영이 그대로 붙는다.
+- **병합 규칙:** 톤·없는 것은 합집합(기존 값 유지), 본문은 이어 붙이기, 법칙은 필드 단위 갱신. `mergeInterviewPatch` 가 순수 함수라 단위 테스트로 고정된다.
+- **패널:** `buildInterviewPanel` — 대화 로그(말풍선) + 진행 칩 7개(이름/전제/톤/법칙/없는 것/시대/기술) + 선택지 버튼 + 입력줄(Enter 전송, Shift+Enter 줄바꿈) + `시작하기`. 대화 기록은 `WeakMap<HTMLElement, InterviewLine[]>` 로 탭 전환을 넘어 유지된다. 손으로 채우고 싶은 사람을 위해 `직접 입력하기` 접힌 details 안에 기존 폼(이름·톤·시대·기술·없는 것·법칙 카드)을 남겼다.
+- AI 미연결이면 대화에 `(연결 실패) …` 한 줄로 정직하게 표시하고 입력을 되살린다 — 폼이 아니라 대화라 오류도 대화의 한 줄이어야 한다.
+- 검증: `test/worldCanonInterview.test.ts` 7케이스(파싱·펜스 내성·클램프·병합·컨텍스트 주입·표면 렌더·저장 경로) + 세계관 계약 10파일 = **69케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 5장.
+
+
+### 세계 개요 스프레드 헤드 삭제 (2026-09-22 v6)
+
+- 사용자 요청: "이 부분 그냥 삭제해"(스크린샷 = 제목 + ? 버튼 + 미터 바 + 4칸 통계 띠). 헤드 전체를 화면에서 걷어냈다.
+- **삭제 범위:** `world-canon-spread-head`(키커·제목·도움말 버튼·미터 바·발췌 문구·hero stats) DOM 을 제거하고, `headNameMirror` 리스너와 `meterFill`/`meterText`/`heroStats` 생성을 지웠다. 레이아웃 자식은 탭 스트립 하나만 남는다.
+- **정보는 사라지지 않았다:** 본문 발췌 카운터는 본문 카드 힌트(`db-world-canon-body-card` 의 `.db-ws-card-hint`)가 그대로 소유하고, 전달 상태 타일·프롬프트 투영은 조수 전달 탭이 소유한다. 죽은 testid `db-world-canon-ai-meter`·`db-world-canon-hero-stats`·`db-world-canon-hero-stat-body`·`db-world-canon-help` 는 폐기됐고 테스트가 부재를 고정한다.
+- **죽은 CSS 정리:** 헤드·미터 규칙 22개를 스타일시트에서 제거했다(숨김 처리로 덧대지 않는다 — DOM 이 없으면 죽은 규칙이다).
+- 검증: 세계관 계약 11파일 **68케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 재캡처(헤드 없이 탭이 바로 시작), e2e 통과.
+
+
+### 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
+
+- 요구: "세계관 작성에 AI 의 도움을 받을 수 있어야함." 인터뷰는 `세계 설정`(이름·전제·톤·법칙)만 채우고, **본문(역사·땅·문화)** 은 여전히 사람이 처음부터 써야 했다.
+- **표면:** `AiSurface` 에 `world-canon-body` 추가(supervisor, maxTokens 8192 — 장문 prose 라 인터뷰 4096 보다 크다).
+- **클라이언트** `worldCanonInterview.ts` 확장: `requestWorldCanonBodyDraft` + `bodyDraftMessages` + `parseBodyDraft` + `composeBodyWithDraft`. 모델은 `{body, notes}` JSON 하나를 돌려주고, notes 는 "조수가 새로 지어낸 것" 목록이라 저자가 veto 할 수 있다.
+- **두 모드:** `초안 잡기`(설정만으로 4~6문단 새로 씀, 기존 본문이 있으면 confirm 으로 확인 후 아니면 이어쓰기로 전환) · `이어쓰기`(기존 본문 끝을 이어받아 다음 절). 둘 다 `지시(선택)` 입력을 최우선으로 받는다.
+- **제안이지 자동 저장이 아니다:** 결과는 textarea 에 들어가고 `writeCanon` 으로 반영되지만, 본문은 길고 되돌리기 비용이 커서 인터뷰처럼 자동 확정하지 않는다. 상태줄이 "고친 뒤 저장하세요"로 안내한다.
+- AI 미연결이면 상태줄에 연결 안내가 뜨고 버튼이 되살아난다.
+- 검증: `test/worldCanonInterview.test.ts` 12케이스(본문 초안 파싱·클램프·펜스 내성·합성 규칙·컨텍스트 주입·표면 렌더 포함) + 세계관 계약 11파일 = **73케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v6/` 4장.
 

@@ -43,6 +43,8 @@ export type AiSurface =
   | "cluster"
   | "event-command"
   | "structure-kit"
+  | "world-canon-interview"
+  | "world-canon-body"
   | "tileset-analysis";
 
 /** 표면이 쓰는 모델 티어. 조수 설정의 감독 모델(supervisor) 또는 실행 모델(lite). */
@@ -87,6 +89,10 @@ const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   "cluster": { tier: "lite" },
   "event-command": { tier: "lite" },
   "structure-kit": { tier: "supervisor" },
+  // 세계관 인터뷰: 사람과 문장을 주고받으며 설정을 함께 채우는 감독 판단이라 supervisor + 고정 예산.
+  "world-canon-interview": { tier: "supervisor", maxTokens: 4096 },
+  // 세계관 본문 초안/이어쓰기: 산출물이 장문 prose 라 인터뷰보다 예산을 크게 준다.
+  "world-canon-body": { tier: "supervisor", maxTokens: 8192 },
   "tileset-analysis": { tier: "supervisor", maxTokens: TILESET_ANALYSIS_MAX_TOKENS },
 };
 
