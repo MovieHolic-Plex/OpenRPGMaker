@@ -1872,6 +1872,13 @@ music by scene or mood and then inspect the full description before assigning a
 `musicResourceId`. The audio tool family was previously implemented but missing
 from the central registry; registration is required for model tool calls.
 
+`create_map` / `generate_map` automatic BGM uses those same descriptions.
+`recommendMapBgm` matches the map name (and `generate_map`'s theme, when the name
+has no hit) against each track's title, category, tags, catalog brief, and
+listening draft. A project `audioDescriptions.music` override replaces that
+draft for the track. Seamless loops are still preferred, and an unmatched name
+falls back to the field category instead of scanning the whole catalog.
+
 Game-over now has an AI route as well: `get_game_over` reads `system.gameOver`,
 `set_game_over` writes its title/message/button labels and background resource,
 and `generate_game_over_image` creates a clean 16:9 backdrop. Generation returns
