@@ -192,3 +192,27 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 접근칸은 카탈로그에 내장되고 외부 맵 입출구는 entryPoints로 명시한다.
 동굴893은 retro_world 413의 투명 이식 및 하위 받침652를 사용한다.
 기존 플레이 그래픽의 레이어 priority는 유지하며 어긋난 설명99개를 정정한다.
+
+## 이슬여울 마을 장식 표본 (2026-09-22)
+
+`dewbank-village-v1` / **이슬여울 · 25종 장식 조립**은 승인된 88×60 마을을
+`forest_harmony`와 `shared_forest_village_objects`의 공용 참고문서에 제공한다.
+정본은 `tiledata/tilesets/forest_harmony/dewbank-village/`: 24 MD, 실제 타일 이미지 9장,
+25종 부품·85개 배치·225개 사용 타일 결합 사전, 하위/상위 전체 배열, 8개 문/접근칸.
+다른 칩셋에서 2610번을 고정 소품 번호로 쓰면 안 된다. 원본 그림+칸으로 이식하고
+빈 행부터 배정한다. 3행 굽이숲 몸통과 기존 6행 forest-repeat 레이어 규칙을 구분한다.
+
+- `scripts/content/build-dewbank-references.mjs`: 커밋된 표본/MD/그림에서 번들 자료집 재생성.
+- `scripts/content/render-dewbank-evidence.mjs`: 표본의 정상 및 5가지 실제 변조를 렌더링;
+  `DEWBANK_DEV_URL`로 현재 워크트리 Vite 주소 지정. 저장소/원본 프로젝트는 변경하지 않는다.
+- `scripts/content/validate-dewbank-village.mjs <project.json> [mapId]`: 읽기 전용 표본 비교.
+  정확한 88×60 배열/이식 결합과 엔진 타일 도달성만 확인하고 오류 좌표를 반환한다.
+  임의 마을 미학/이벤트 실행을 판정하는 도구가 아니다. 결과는 최대128개+전체 오류 수.
+- `scripts/content/register-dewbank-references.mjs`: 관련 공용 다운로드에 보충.
+  `--project-dir <offline-folder>` 또는 `--host <url> --project-id <id>`로 SQLite 저장·재로드.
+  `--host <url> --all-host-projects`는 기본 프로젝트와 호스트 목록의 관련 프로젝트 모두에
+  추가한다. 기존 같은 ID의 사용자 문서는 보존하고 맵 불변 및 SHA CAS를 확인한다.
+
+새 프로젝트는 두 번들 팩토리에서 즉시 제공한다. 기존 프로젝트는 번들 타일셋 보충 경로가
+빠진 카테고리만 추가한다. 사용자 업로드/공유 원본 포인터/편집 문서는 덮어쓰지 않는다.
+등록 및 SQLite 재로드 영수증과 실제 참고문서 컴포넌트 화면은 해당 폴더의 `ai-references/`에 있다.

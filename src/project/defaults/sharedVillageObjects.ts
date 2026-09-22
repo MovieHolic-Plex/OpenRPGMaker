@@ -18,7 +18,10 @@ export function sharedVillageObjectById(id: string): InteriorObjectDef | undefin
 /** Add shipped guidance to older copies without replacing authored documents. */
 export function ensureSharedVillageObjectReferences(tileset: TilesetDef): boolean {
   if (tileset.image.type !== 'bundled' || tileset.image.id !== SHARED_VILLAGE_OBJECT_TEXTURE
-    || tileset.referenceDocuments !== undefined || tileset.referenceSourceTilesetId) return false;
-  tileset.referenceDocuments = createSharedVillageObjectsTileset().referenceDocuments;
+    || tileset.referenceSourceTilesetId) return false;
+  const missing = saved.referenceDocuments.filter(category =>
+    !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));
+  if (!missing.length) return false;
+  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)];
   return true;
 }

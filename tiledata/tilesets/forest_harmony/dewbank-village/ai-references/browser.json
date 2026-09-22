@@ -1,0 +1,9 @@
+{
+  "source": "SQLite reopened project",
+  "realComponent": "renderTilesetReferences",
+  "readOnlyHarness": true,
+  "category": "dewbank-village-v1",
+  "images": 5,
+  "missing": 0,
+  "errors": []
+}
