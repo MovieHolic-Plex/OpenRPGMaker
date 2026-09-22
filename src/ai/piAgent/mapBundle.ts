@@ -115,23 +115,35 @@ function pruneSubtrees(node: MapTreeNode, roots: ReadonlySet<string>): MapTreeNo
   };
 }
 
-/** 묶음 밖에서 달라진 키. 범위를 벗어난 에이전트를 잡아내는 감사용. */
-export function mapBundleSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
-  const roots = new Set(mapIds);
+function bundleMapIdSet(base: Project, result: Project, mapIds: readonly string[]): Set<string> {
   const bundle = new Set<string>();
   for (const id of mapIds) {
     for (const bid of mapBundleIds(result, id)) bundle.add(bid);
     for (const bid of mapBundleIds(base, id)) bundle.add(bid);
   }
+  return bundle;
+}
+
+/** 묶음 밖에서 달라진 맵만(`maps.<id>`). 호출 시점 범위 가드(toolAdapter)와 `mapBundleSpill` 이 같은 판정을 쓴다. */
+export function mapBundleMapSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
+  const bundle = bundleMapIdSet(base, result, mapIds);
+  const spill: string[] = [];
+  const ids = new Set([...Object.keys(base.maps ?? {}), ...Object.keys(result.maps ?? {})]);
+  for (const id of ids) {
+    if (bundle.has(id)) continue;
+    if (!same(base.maps?.[id], result.maps?.[id])) spill.push(`maps.${id}`);
+  }
+  return spill;
+}
+
+/** 묶음 밖에서 달라진 키. 범위를 벗어난 에이전트를 잡아내는 감사용. */
+export function mapBundleSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
+  const roots = new Set(mapIds);
   const spill: string[] = [];
   const keys = new Set([...Object.keys(base), ...Object.keys(result)]);
   for (const key of keys) {
     if (key === "maps") {
-      const ids = new Set([...Object.keys(base.maps ?? {}), ...Object.keys(result.maps ?? {})]);
-      for (const id of ids) {
-        if (bundle.has(id)) continue;
-        if (!same(base.maps?.[id], result.maps?.[id])) spill.push(`maps.${id}`);
-      }
+      spill.push(...mapBundleMapSpill(base, result, mapIds));
       continue;
     }
     if (key === "mapTree") {

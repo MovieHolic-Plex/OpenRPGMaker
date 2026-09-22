@@ -15,6 +15,8 @@ import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import type { Project } from "@/project/types";
+import { mapBundleMapSpill } from "./mapBundle";
 
 export interface PiToolTextContent {
   readonly type: "text";
@@ -58,6 +60,13 @@ export interface CreatePiToolsetOptions {
   readonly maxDataChars?: number;
   /** 실패 본문에 실을 issues 상한. */
   readonly maxIssues?: number;
+  /**
+   * 맵 묶음 실행의 뿌리 맵들. 주면 쓰기 호출이 묶음 밖 기존 맵(`maps.<id>`)을 바꿀 때 그 호출을
+   * 되돌리고 실패로 돌려준다 — 병합이 어차피 버릴 변경을 모델이 성공으로 믿지 않게.
+   * 실측(run10): 묶음 밖 빈 시작 맵에 단 문이 병합에서 버려져 시작 맵→마을 길이 끊겼다.
+   * 다른 키(mapTree·database 등)의 정책은 병합(`mergeMapBundles`)이 정한다 — 여기선 맵만 본다.
+   */
+  readonly scopeMapIds?: readonly string[];
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
@@ -138,6 +147,7 @@ export interface ResolvePiToolOptions {
   readonly toolNames?: readonly string[];
   readonly onCall?: (record: PiToolCallRecord) => void;
   readonly maxDataChars?: number;
+  readonly scopeMapIds?: readonly string[];
 }
 
 /**
@@ -152,8 +162,27 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
     referenceGate: options.referenceGate,
     readOnly: options.readOnly,
     onCall: options.onCall,
+    scopeMapIds: options.scopeMapIds,
     ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
   }).find(tool => tool.name === name);
+}
+
+/**
+ * 묶음 밖 기존 맵을 바꾼 호출이면 거부 결과를, 아니면 null. 묶음 밖에 **새로** 생긴 맵은 여기서 막지
+ * 않는다 — 다음 호출에서 묶음 아래로 옮겨질 수 있고, 끝까지 밖에 남으면 병합이 정리한다.
+ */
+function scopeViolation(before: Project, after: Project, scopeMapIds: readonly string[], toolName: string): ToolResult | null {
+  const outside = mapBundleMapSpill(before, after, scopeMapIds)
+    .map(key => key.slice("maps.".length))
+    .filter(id => before.maps[id] !== undefined);
+  if (outside.length === 0) return null;
+  const names = outside.map(id => `${before.maps[id]!.name ?? id}(${id})`).join(", ");
+  return {
+    ok: false,
+    summary: `${toolName} 호출을 되돌렸습니다: ${names} 은(는) 이번 작업 범위(${scopeMapIds.join(", ")}와 그 실내 맵) 밖이라 이 변경은 병합 때 버려집니다.`
+      + ` 범위 밖 맵에 문·이벤트·타일을 달지 마세요. 게임 시작 지점이 범위 밖 맵이면 set_start_position 으로 시작 위치를 범위 안 맵(${scopeMapIds[0]})으로 옮기고,`
+      + " 맵 사이 연결은 범위 안 맵끼리(실내는 place_concept·start_interior_room_session 으로 범위 안에 만든다) 만드세요.",
+  };
 }
 
 export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOptions = {}): PiToolShape[] {
@@ -170,9 +199,18 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const args = params && typeof params === "object" ? (params as Record<string, unknown>) : {};
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
-      const result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
+      const beforeProject = ctx.project;
+      let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
         : runTool(ctx, tool.name, args));
+      // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
+      if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
+        const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name);
+        if (violation) {
+          ctx.project = beforeProject;
+          result = violation;
+        }
+      }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
       options.onCall?.({ toolCallId: _toolCallId, name: tool.name, args, result, visuals: [...before, ...after] });
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));

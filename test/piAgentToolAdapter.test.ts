@@ -97,4 +97,45 @@ describe("piAgent toolAdapter", () => {
       expect(calls).toEqual(["set_project_settings"]);
     });
   });
+
+  describe("맵 묶음 범위 가드", () => {
+    // run10 재현: 빈 시작 맵(map_blank_start)은 묶음 밖인데 문을 달았고, 병합이 그 맵을 버려 길이 끊겼다.
+    function townProject() {
+      const ctx = { project: createBlankProject() };
+      const [create] = createPiToolset(ctx, { toolNames: ["create_map"] });
+      return { ctx, create: create! };
+    }
+
+    it("묶음 밖 맵을 바꾸는 쓰기는 되돌리고 실패로 돌려준다", async () => {
+      const { ctx, create } = townProject();
+      await create.execute("c0", { id: "town", name: "마을", width: 48, height: 36 });
+      const startMapId = ctx.project.startMapId;
+      expect(startMapId).not.toBe("town");
+      const before = ctx.project;
+      const results: boolean[] = [];
+      const tools = createPiToolset(ctx, { scopeMapIds: ["town"], onCall: (record) => results.push(record.result.ok) });
+      const pair = tools.find((tool) => tool.name === "create_transfer_pair")!;
+      await expect(pair.execute("t1", { a: { mapId: startMapId, x: 10, y: 8 }, b: { mapId: "town", x: 24, y: 22 } }))
+        .rejects.toThrow(new RegExp(`${startMapId}.*set_start_position`, "s"));
+      expect(ctx.project).toBe(before);
+      expect(results).toEqual([false]);
+    });
+
+    it("묶음 안 맵과 묶음 아래 새 실내 맵은 통과한다", async () => {
+      const { ctx, create } = townProject();
+      await create.execute("c0", { id: "town", name: "마을", width: 48, height: 36 });
+      await create.execute("c1", { id: "house", name: "집", width: 12, height: 10 });
+      // 실내 맵을 마을 아래로 옮긴다 — 묶음(mapTree 부분 트리) 안이다.
+      const root = ctx.project.mapTree;
+      root.children = root.children.filter((child) => child.mapId !== "house");
+      root.children.find((child) => child.mapId === "town")!.children.push({ mapId: "house", children: [] });
+      const tools = createPiToolset(ctx, { scopeMapIds: ["town"] });
+      const pair = tools.find((tool) => tool.name === "create_transfer_pair")!;
+      const out = await pair.execute("t2", { a: { mapId: "house", x: 6, y: 9 }, b: { mapId: "town", x: 24, y: 22 } });
+      expect(JSON.parse(out.content[0]!.text)).toMatchObject({ ok: true });
+      const start = tools.find((tool) => tool.name === "set_start_position")!;
+      await start.execute("s1", { mapId: "town", x: 5, y: 5 });
+      expect(ctx.project.startMapId).toBe("town");
+    });
+  });
 });
