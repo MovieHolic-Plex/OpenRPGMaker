@@ -75,7 +75,7 @@ export function shouldBlockPlayPointerEvent(event: PlayPointerEvent): boolean {
 export function isExplicitPointerOwner(target: EventTarget | null | undefined): boolean {
   return hasClosestTarget(
     target,
-    "[data-play-input-owner='touch-controls'], [data-play-input-owner='host-fullscreen']",
+    "[data-play-input-owner='touch-controls'], [data-play-input-owner='host-fullscreen'], [data-play-input-owner='license-notice']",
   );
 }
 

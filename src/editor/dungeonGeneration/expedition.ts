@@ -1,6 +1,6 @@
 /** After the silhouette exists: a way out, one visible goal, one thing that moves. */
 import { isPassable } from "@/project/collision";
-import type { GameEvent, GameMap, Project } from "@/project/types";
+import type { EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { connectedDungeonLandings, connectedDungeonOpen, type ConnectedDungeonPlan } from "./connected";
 import type { DungeonGraph } from "./topology";
 
@@ -27,7 +27,7 @@ const MARK: Record<DungeonLandmark, readonly number[]> = {
 const FIXED = { type: "fixed" as const, speed: 3, frequency: 3 };
 const WANDER = { type: "random" as const, speed: 2, frequency: 3 };
 
-function page(id: string, name: string, commands: GameEvent["pages"][number]["commands"], movement: GameEvent["pages"][number]["movement"]): GameEvent["pages"][number] {
+function page(id: string, name: string, commands: EventPage["commands"], movement: EventPage["movement"]): EventPage {
   return { id: `${id}_page`, name, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below", overlapForbidden: false, movement, commands };
 }
 

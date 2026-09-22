@@ -23,7 +23,8 @@ on:
   pull_request:
 
 concurrency:
-  group: ci-fast-${{ github.ref }}
+  # The push and pull_request events for one branch must share the memory budget.
+  group: ci-fast-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -36,6 +37,8 @@ jobs:
       - run: npm ci
 
       - name: 타입체크 (src 만)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run typecheck:app
 
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데

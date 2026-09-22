@@ -1,6 +1,7 @@
 // editor/panels/databaseCinematicPresetGallery.ts
 // 오프닝 탭의 프리셋 카드 묶음. 그림·움직임·곡·자동 넘김이 이미 물려 있는 시퀀스를 한 번에 깐다.
 import { cinematicNote as note } from "@/editor/panels/databaseCinematicControls";
+import { showConfirm } from "@/editor/ui/modal";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import {
   openingPresetCoverResourceId,
@@ -26,7 +27,8 @@ function presetCard(preset: OpeningPreset, onPick: () => void): HTMLElement {
   const cover = el("span", { class: "db-cinematic-preset-cover" });
   if (coverUrl) {
     // 장식 이미지다 — 카드 이름이 이미 접근 가능한 이름을 준다.
-    const image = el("img", { attrs: { alt: "", draggable: "false", loading: "lazy" } });
+    // 카드가 점프하지 않게: 커버 칸이 aspect-ratio 로 높이를 먼저 확보하고, 그림은 eager 로 바로 채운다.
+    const image = el("img", { attrs: { alt: "", draggable: "false", loading: "eager", decoding: "async" } });
     image.src = coverUrl;
     cover.append(image);
   }
@@ -55,11 +57,12 @@ function presetCard(preset: OpeningPreset, onPick: () => void): HTMLElement {
  * 작성자가 쓴 장면이 있으면 그 사실을 먼저 알린다(되돌리기를 아는 사람만 쓰는 기능이 아니다).
  */
 export function createOpeningPresetGallery(options: OpeningPresetGalleryOptions): HTMLElement {
-  const pick = (preset: OpeningPreset): void => {
+  const pick = async (preset: OpeningPreset): Promise<void> => {
     const existing = options.sceneCount();
-    if (existing > 0 && !globalThis.confirm(
-      `「${preset.name}」 프리셋으로 바꿀까요? 지금 장면 ${existing}개와 배경음악 설정이 교체됩니다. 실행 취소로 되돌릴 수 있습니다.`,
-    )) return;
+    if (existing > 0) {
+      const message = "「" + preset.name + "」 프리셋으로 바꿀까요? 지금 장면 " + existing + "개와 배경음악 설정이 교체됩니다. 실행 취소(Ctrl+Z)로 되돌릴 수 있습니다.";
+      if (!(await showConfirm({ title: "오프닝 프리셋 교체", message, confirmLabel: "바꾸기" }))) return;
+    }
     if (!options.applyPreset(preset)) return;
     options.setStatus(`「${preset.name}」 프리셋을 적용했습니다. 장면 ${preset.scenes.length}개가 자동으로 넘어갑니다 — 시퀀스 미리보기로 확인하세요.`);
   };
@@ -70,7 +73,7 @@ export function createOpeningPresetGallery(options: OpeningPresetGalleryOptions)
     children: [
       el("div", {
         class: "db-cinematic-preset-grid",
-        children: OPENING_PRESETS.map(preset => presetCard(preset, () => pick(preset))),
+        children: OPENING_PRESETS.map(preset => presetCard(preset, () => void pick(preset))),
       }),
       note("배경화·화면 움직임·타이틀 카드·배경음악이 함께 들어옵니다. 적용한 뒤 장면을 골라 문장만 바꿔도 됩니다. 내레이션의 「제목」 자리에는 프로젝트 제목이 들어갑니다."),
     ],

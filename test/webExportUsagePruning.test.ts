@@ -23,7 +23,12 @@ describe("web export usage pruning", () => {
   it("ships exactly the tracks the project plays plus the ones the player hardcodes", () => {
     // Given
     const project = createBlankProject();
-    const played = [project.system.defaultBgmResourceId, project.system.battleBgmResourceId]
+    // 2026-09-21: 기본 오프닝이 스타터 타이틀 곡(cc0-bgm-rtp-ttl-001)을 시퀀스 BGM 으로 쓴다.
+    const played = [
+      project.system.defaultBgmResourceId,
+      project.system.battleBgmResourceId,
+      project.system.opening?.musicResourceId,
+    ]
       .map((id) => audioFileOf(project, id))
       .filter((path): path is string => path !== null);
     // 맵에 BGM 이 없을 때의 폴백처럼 소스에 박힌 재생 — 프로젝트 문자열에는 없다.
@@ -35,7 +40,7 @@ describe("web export usage pruning", () => {
     const audio = audioPaths(project);
 
     // Then
-    expect(played.length).toBe(2);
+    expect(played.length).toBe(3);
     expect(hardcoded.length).toBeGreaterThan(0);
     // 「0 개가 아니다」 로는 카탈로그 전량이 실려도 통과한다 — 집합 자체를 고정한다.
     expect([...audio].sort()).toEqual([...new Set([...played, ...hardcoded])].sort());

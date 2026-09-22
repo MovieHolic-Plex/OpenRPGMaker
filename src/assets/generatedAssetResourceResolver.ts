@@ -2,6 +2,8 @@ import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
 import { resolveBgmCatalogAssetUrl } from "./bgmCatalogResolver";
+import { openingStillPackUrl } from "./openingStillPackCdn";
+import { findOpeningStillPackEntry } from "./openingStillPackRuntime";
 import { resolveSeCatalogAssetUrl } from "./seCatalogResolver";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
@@ -33,6 +35,30 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "modern-nocturne-battle-rooftop": "/assets/modern-exteriors/modern-nocturne-battle-rooftop.png",
   "oprn-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
   "rpg-zzu-title-logo-crest": "/assets/generated/title/title-logo-crest.png",
+  // ── 오프닝 무드 슬라이드 (2026-09-22) ─────────────────────────────────
+  // 에디터 첫 화면(웰컴 브리핑)의 장르 포스터 그림을 시네마틱 스틸로도 쓴다.
+  // 1408×768 · 16:9 라 전체화면 오프닝 무드컷에 맞고, 웰컴 표면과 같은 파일을
+  // 가리키므로 레포 용량 증가가 없다. "오프닝 무드 슬라이드"는 still 피커와
+  // list_opening_media 의 배경화 그룹에 잡히고, 검색어는 openingStillMoods.ts 가 담는다.
+  "oprn-still-hero-dawn": "/assets/generated/welcome/slide-00-hero.png",
+  "oprn-still-rally": "/assets/generated/welcome/slide-01.png",
+  "oprn-still-corridor": "/assets/generated/welcome/slide-02.png",
+  "oprn-still-harbor": "/assets/generated/welcome/slide-03.png",
+  "oprn-still-forest-path": "/assets/generated/welcome/slide-04.png",
+  "oprn-still-festival": "/assets/generated/welcome/slide-05.png",
+  "oprn-still-ride": "/assets/generated/welcome/slide-06.png",
+  "oprn-still-moon-meadow": "/assets/generated/welcome/mini-03-moon.png",
+  "oprn-still-manor-night": "/assets/generated/welcome/mini-04-mansion.png",
+  "oprn-still-dream": "/assets/generated/welcome/mini-02-yume.png",
+  "oprn-still-metropolis": "/assets/generated/welcome/mini-05-meta.png",
+  "oprn-still-lullaby": "/assets/generated/welcome/mini-06-mother.png",
+  "oprn-still-quiet-room": "/assets/generated/welcome/mini-01-omori.png",
+  // tibo(gemini-3.1-flash-image) 로 새로 만든 무드 슬라이드 — 웰컴 팩에 없던 축을 채운다.
+  "oprn-still-farm-golden": "/assets/generated/opening/farm-golden.png",
+  "oprn-still-snow-village": "/assets/generated/opening/snow-village.png",
+  "oprn-still-desert-ruin": "/assets/generated/opening/desert-ruin.png",
+  "oprn-still-kingdom-day": "/assets/generated/opening/kingdom-day.png",
+  "oprn-still-dark-citadel": "/assets/generated/opening/dark-citadel.png",
   "generated-actor-hero-01-battle": "/assets/generated/starter/hero-01-battle.png",
   "generated-actor-hero-01-charset": "/assets/generated/starter/hero-01-charset.png",
   "generated-actor-hero-01-face": "/assets/generated/starter/hero-01-face.png",
@@ -309,6 +335,8 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveCc0AudioAssetUrl(resourceId) ??
     // 281곡 CC0 BGM 카탈로그. 파일이 레포에 없고 CDN 에서 오므로 절대 URL 이 나올 수 있다.
     resolveBgmCatalogAssetUrl(resourceId) ??
+    // 오프닝 스틸 릴리스 팩. 파일이 레포에 없고 CDN/설치 경로에서 온다.
+    resolveOpeningStillPackUrl(resourceId) ??
     // 456개 CC0 효과음 카탈로그. 파일이 레포에 있어(public/assets/se/) 항상 동일 출처 경로다.
     resolveSeCatalogAssetUrl(resourceId);
   if (packagedUrl !== null) return withInlineAsset(packagedUrl);
@@ -322,6 +350,12 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
 
 export function builtinGeneratedResourceIds(): string[] {
   return Object.keys(BUILTIN_GENERATED_RESOURCE_URLS);
+}
+
+/** 릴리스 팩 스틸 — 설치되지 않은 환경에서도 경로는 결정론적이다(그림이 404 나면 onerror 처리). */
+export function resolveOpeningStillPackUrl(resourceId: string): string | null {
+  const entry = findOpeningStillPackEntry(resourceId);
+  return entry ? openingStillPackUrl(entry.fileName) : null;
 }
 
 export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: GeneratedAssetManifest): string | null {
