@@ -244,6 +244,12 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
         autoSend: result.autoSend,
         source: result.source === "chip" ? "chip" : "free-text",
       });
+      // AI 없이 인터뷰를 끝내면 기획 프롬프트가 조수 입력창에 담기기만 한다. 설명이 없으면 빈 맵과
+      // 낯선 지시문만 남아 「아무 일도 안 일어났다」로 보인다 — 메뉴의 새 프로젝트 경로와 같은 안내를 준다.
+      if (!result.autoSend) {
+        const { toast } = await import("@/util/toast");
+        toast("게임 기획을 저장하고 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
+      }
     } else {
       clearWelcomeIntentBootFlags();
     }

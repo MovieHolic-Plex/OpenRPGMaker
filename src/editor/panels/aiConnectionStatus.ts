@@ -14,6 +14,7 @@
 // env 자격은 연결로 세지 않는다(감독 결정 2026-08-21): 동반 서비스는 셸 환경 변수만 있어도
 // connected:true 를 주지만, 에디터가 만들지도 지우지도 못하는 자격이라 "연결됨"이라 말하면
 // 화면이 제어할 수 없는 상태를 진실처럼 보여 준다.
+import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 // 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
 // 타입 가드는 타입 전용으로 가져와 이름 기반 판별에 쓴다.
@@ -150,6 +151,14 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
   }
   // (B) 응답했지만 내부 오류 — "보조 프로그램이 켜져 있지 않아요" 안내는 사실과 다르다.
   // dev 서버와 단독 동반 서비스는 같은 pi-ai 워커를 쓰므로 npm run ai:oauth 는 해결책이 아니다.
+  if (aiOAuthCachedStatus.serverMessage && isHostAiDisabledMessage(aiOAuthCachedStatus.serverMessage)) {
+    return statusFor(config, {
+      kind: "error",
+      authMode: "chatgpt",
+      label: "AI 서버에서 꺼짐",
+      title: HOST_AI_DISABLED_GUIDANCE,
+    });
+  }
   if (aiOAuthCachedStatus.serverMessage) {
     return statusFor(config, {
       kind: "error",

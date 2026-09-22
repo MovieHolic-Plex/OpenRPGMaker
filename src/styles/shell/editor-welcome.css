@@ -256,6 +256,11 @@
     line-height: 1.5;
   }
 
+  /* display:flex 가 [hidden] 을 이겨 AI 가 있어도 안내가 늘 떠 있었고, 「만들기」는 눌러도 바뀌는 게 없었다. */
+  .editor-welcome-briefing .editor-welcome-ai-notice[hidden] {
+    display: none;
+  }
+
   .editor-welcome-briefing .editor-welcome-ai-notice-action {
     flex: none;
     padding: 6px 10px;

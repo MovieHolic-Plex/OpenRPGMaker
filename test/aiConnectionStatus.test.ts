@@ -303,6 +303,25 @@ describe("다섯 상태를 서로 다르게 말한다", () => {
     expect(new Set([unreachable.label, errored.label, loggedOut.label]).size).toBe(3);
   });
 
+  it("호스트가 AI 를 꺼 둔 503 은 재시작 안내 대신 서버 설정을 말한다", async () => {
+    // 재시작으로는 풀리지 않는다 — 서버를 띄운 사람이 OPRN_HOST_OWNER_AI=1 을 줘야 한다.
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus, resetAiConnectionStatusCache } = await loadModule();
+    resetAiConnectionStatusCache();
+    fetchChatGptAuthStatus.mockRejectedValue(Object.assign(new Error("off"), {
+      name: "ChatGptCompanionResponseError",
+      serverMessage: "호스트 AI 연결이 꺼져 있습니다. OPRN_HOST_OWNER_AI=1로 활성화하세요.",
+    }));
+    await refreshAiConnectionStatus(() => undefined);
+    const status = getAiConnectionStatus();
+    // 응답은 왔으니 도달 불가(offline)가 아니다 — 칩이 「닿지 못했습니다」를 덧붙이면 거짓이 된다.
+    expect(status.kind).toBe("error");
+    expect(status.label).toContain("서버에서 꺼짐");
+    expect(status.title).toContain("OPRN_HOST_OWNER_AI=1");
+    expect(status.title).not.toContain("껐다 켜");
+  });
+
   it("env 자격만 있으면 연결됨이 아니다 (감독 결정)", async () => {
     const store = installLocalStorage();
     saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });

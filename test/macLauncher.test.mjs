@@ -18,6 +18,8 @@ test('browser opens only after SQLite host is ready and bridge is supplied', asy
   const pending = launchServer({ ...config, open: async () => { opened = true; }, startServer: async input => {
     assert.equal(input.projectDir, config.projectDir); assert.equal(input.browserBridgeSource, '// bridge');
     assert.equal(input.host, '127.0.0.1'); assert.equal(input.port, 9999);
+    // 개인 실행은 루프백 전용 모드여야 한다. publicOrigin 을 넘기면 공유 호스트가 되어 AI 가 503 으로 꺼진다.
+    assert.equal(input.publicOrigin, undefined); assert.equal(input.enableOwnerAi, undefined);
     await ready.promise; return { url: 'http://127.0.0.1:9999/', close: async () => { closed++; } };
   } });
   assert.equal(opened, false); ready.resolve(); const running = await pending; assert.equal(opened, true);

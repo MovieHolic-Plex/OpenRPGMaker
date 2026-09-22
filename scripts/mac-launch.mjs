@@ -21,8 +21,8 @@ export async function launchServer({ root, projectDir, startServer, open = openB
   try {
     server = await startServer({ projectDir, distDir: resolve(root, 'dist'),
       browserBridgeSource: readFileSync(resolve(root, 'dist-electron/browser-bridge.js'), 'utf8'),
-      host: '127.0.0.1', port: 9999, publicOrigin: 'http://127.0.0.1:9999',
-      enableOwnerAi: process.env.OPRN_HOST_OWNER_AI === '1' });
+      // 루프백 전용 개인 모드. publicOrigin 을 주면 공유 호스트로 분류되어 AI 가 꺼진다.
+      host: '127.0.0.1', port: 9999 });
     if (stopping) { await close(); throw new SetupError('CANCELLED', '실행을 취소했습니다.'); }
     log(`OPRN 실행 주소: ${server.url}`);
     log(`저장 폴더: ${projectDir}. 이 터미널을 열어 두세요. 종료: Ctrl-C`);
