@@ -36,6 +36,8 @@ Local evidence: `verify-shots/opening-examples/{persistence,playback,export-proo
 Capture scripts use the dedicated shipped-player route, never editor play mode.
 The real ZIPs contain four used pack images each. The ZIP-only server is mounted at
 `/games/<theme>/player.html`, has no fallback assets and blocks the simulated CDN.
+The QA exporter loads modules through Vite so `import.meta.env` actually contains
+the CDN setting; it asserts that the CDN was requested before starting playback.
 All four image scenes and title card played, then map entry completed; attribution
 was retrieved below that subdirectory, and Escape closed it without starting play.
 

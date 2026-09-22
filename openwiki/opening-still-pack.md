@@ -75,6 +75,8 @@ and persistence receipts are under `verify-shots/opening-examples/` (local evide
 The final export proof (`scripts/qa/verify-opening-export.mts`) builds real ZIPs
 using a CDN source adapter, serves only ZIP entries under `/games/<theme>/`,
 blocks external CDN requests and checks all scenes plus the attribution dialog.
+It loads exporter modules through Vite to populate `import.meta.env`; plain tsx
+imports cannot exercise the CDN setting. The script asserts a CDN source fetch.
 The runtime manifest must not list `generated/opening/*.png`: those paths omitted
 `assets/` and broke SDK packaging. Opening pictures are usage-selected dependencies
 from the project, not mandatory files for every exported game.

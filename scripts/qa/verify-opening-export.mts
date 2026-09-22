@@ -2,16 +2,24 @@
 import assert from 'node:assert/strict';
 import {createServer} from 'node:http';
 import {readFile,writeFile} from 'node:fs/promises';
-import {extname,join} from 'node:path';
+import {extname,resolve} from 'node:path';
 import {chromium} from '@playwright/test';
-import {deserialize} from '../../src/project/io';
-import {createWebPlayerExportPackage} from '../../src/project/webExport';
+import {createServer as createViteServer} from 'vite';
 import {readStoredZipEntry,readStoredZipEntryNames} from '../../src/project/packageZip';
 const out='verify-shots/opening-examples';
 const packages=new Map<string,Map<string,Uint8Array>>();
 const requests:string[]=[];
 // Explicitly exercise the editor's CDN -> local exported filename conversion.
 process.env.VITE_STILL_CDN_BASE='https://fixture-cdn.invalid';
+// Resolve import.meta.env through Vite, as in the editor. Plain tsx imports do
+// not expose VITE_* and silently test only the local fallback path.
+const vite=await createViteServer({configFile:false,cacheDir:'.vite-cache/opening-export-qa',server:{watch:null},resolve:{alias:{'@':resolve('src')}}});
+let deserialize:typeof import('../../src/project/io').deserialize;
+let createWebPlayerExportPackage:typeof import('../../src/project/webExport').createWebPlayerExportPackage;
+try{
+ ({deserialize}=await vite.ssrLoadModule('/src/project/io.ts'));
+ ({createWebPlayerExportPackage}=await vite.ssrLoadModule('/src/project/webExport.ts'));
+}finally{await vite.close();}
 for(const theme of ['winter','ocean']){
  const p=deserialize(await readFile(out+'/'+theme+'.json','utf8'));
  const {blob,summary}=await createWebPlayerExportPackage(p,{fetchBytes:async url=>{
