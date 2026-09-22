@@ -42,11 +42,22 @@ function typedPreviewError(error: unknown): GeographyPreviewError | undefined {
 }
 
 /** Clone-only preview: original project and any retained private atlas stay intact. */
+const geographyPreviewCache = new WeakMap<object, Map<string, GeographyPreviewMap>>();
+
+function geographyPreviewKey(design: GeographyDesign, occurrenceId?: SpatialId): string {
+  const terrain = design.terrain;
+  const links = "routes" in design ? design.routes.length : design.connections.length;
+  return `${occurrenceId ?? ""}:${design.id}:${design.revision}:${terrain.width}x${terrain.height}:${terrain.floor}:${terrain.areas.length}:${links}`;
+}
+
 export function geographyPreviewMap(
   project: Project,
   design: GeographyDesign,
   occurrenceId?: SpatialId,
 ): GeographyPreviewMap {
+  const key = geographyPreviewKey(design, occurrenceId);
+  const cached = geographyPreviewCache.get(project.tilesets)?.get(key);
+  if (cached) return cached;
   const id = geographyPreviewMapId(design, occurrenceId);
   const identity = { id, name: design.name };
   const next = structuredClone(project);
@@ -65,18 +76,24 @@ export function geographyPreviewMap(
     if (!typed) throw error;
     return { project: next, error: typed };
   }
-  const painted = structuredClone(next);
-  const routed = structuredClone(terrain);
+  const routed: GameMap = { ...terrain, lowerTiles: [...terrain.lowerTiles], upperTiles: [...terrain.upperTiles] };
   try {
-    for (const route of previewRoutes(design)) paintGeographyRoute(painted, routed, route);
+    for (const route of previewRoutes(design)) paintGeographyRoute(next, routed, route);
   } catch (error) {
     const typed = typedPreviewError(error);
     if (!typed) throw error;
     next.maps[id] = terrain;
     return { project: next, map: terrain, error: typed };
   }
-  painted.maps[id] = routed;
-  return { project: painted, map: routed };
+  next.maps[id] = routed;
+  const result = { project: next, map: routed };
+  let bucket = geographyPreviewCache.get(project.tilesets);
+  if (!bucket) {
+    bucket = new Map();
+    geographyPreviewCache.set(project.tilesets, bucket);
+  }
+  bucket.set(key, result);
+  return result;
 }
 
 export function geographyRasterTile(map: GameMap, x: number, y: number): number {
