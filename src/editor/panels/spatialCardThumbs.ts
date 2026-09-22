@@ -96,12 +96,27 @@ function measurable(slot: HTMLElement): "visible" | "near" | "waiting" | "gone" 
   }
 }
 
+function reusableThumb(cardId: string): HTMLElement | undefined {
+  const candidate = bakedThumbs().get(cardId);
+  // The gallery and composition picker can show the same card simultaneously.
+  // Moving a connected node steals the first view's image; cloning loses canvas pixels
+  // and pending image-load handlers. Rebuild only that additional view instead.
+  const images = candidate instanceof HTMLImageElement
+    ? [candidate] : [...(candidate?.querySelectorAll("img") ?? [])];
+  const failed = candidate?.matches('[data-preview-state="error"]')
+    || candidate?.querySelector('[data-preview-state="error"]')
+    || images.some(image => image.complete && image.naturalWidth === 0);
+  return candidate?.isConnected || failed ? undefined : candidate;
+}
+
 function bake(entry: PendingThumb): void {
   // 한 장이 실패해도 대기열은 계속 돌아야 한다 — 프레임 콜백에서 던지면 아무도 받지 못하고
   // 남은 카드가 영원히 자리표시자로 남는다. 실패한 카드는 빈 그림으로 자리를 채운다.
   let art: HTMLElement;
   try {
-    art = entry.build();
+    // A shell replacement detaches the old art after queuing this slot. Recheck
+    // here so ordinary rerenders still reuse it without recompiling the map.
+    art = reusableThumb(entry.cardId) ?? entry.build();
   } catch {
     art = el("div", { class: "spatial-card-fallback", dataset: { thumbError: "build" } });
   }
@@ -165,11 +180,11 @@ function listen(): void {
 
 /**
  * 카드 썸네일 자리를 돌려주고, 실제 굽기는 화면에 들어올 때까지 미룬다.
- * 이미 구워 둔 그림이 있으면 그대로 붙인다(갤러리는 한 번에 하나만 떠 있다).
+ * 이미 구워 둔 그림은 분리된 노드일 때 재사용한다. 다른 화면이 쓰는 그림은 옮기지 않는다.
  */
 export function deferredSpatialCardThumb(card: SpatialGalleryCard, build: () => HTMLElement): HTMLElement {
   adoptDocument();
-  const cached = bakedThumbs().get(card.id);
+  const cached = reusableThumb(card.id);
   const slot = el("div", {
     class: "spatial-card-thumb-slot",
     dataset: { thumb: cached ? "ready" : "pending", thumbCard: card.id },
