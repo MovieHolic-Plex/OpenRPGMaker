@@ -2092,3 +2092,14 @@ HUD 글꼴은 스타일 권장/갈무리9/Neo둥근모/기본 UI 중 선택한�
 - **죽은 CSS 정리:** 헤드·미터 규칙 22개를 스타일시트에서 제거했다(숨김 처리로 덧대지 않는다 — DOM 이 없으면 죽은 규칙이다).
 - 검증: 세계관 계약 11파일 **68케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v5/` 재캡처(헤드 없이 탭이 바로 시작), e2e 통과.
 
+
+### 세계관 본문 AI 도움 — 초안·이어쓰기 (2026-09-22 v7)
+
+- 요구: "세계관 작성에 AI 의 도움을 받을 수 있어야함." 인터뷰는 `세계 설정`(이름·전제·톤·법칙)만 채우고, **본문(역사·땅·문화)** 은 여전히 사람이 처음부터 써야 했다.
+- **표면:** `AiSurface` 에 `world-canon-body` 추가(supervisor, maxTokens 8192 — 장문 prose 라 인터뷰 4096 보다 크다).
+- **클라이언트** `worldCanonInterview.ts` 확장: `requestWorldCanonBodyDraft` + `bodyDraftMessages` + `parseBodyDraft` + `composeBodyWithDraft`. 모델은 `{body, notes}` JSON 하나를 돌려주고, notes 는 "조수가 새로 지어낸 것" 목록이라 저자가 veto 할 수 있다.
+- **두 모드:** `초안 잡기`(설정만으로 4~6문단 새로 씀, 기존 본문이 있으면 confirm 으로 확인 후 아니면 이어쓰기로 전환) · `이어쓰기`(기존 본문 끝을 이어받아 다음 절). 둘 다 `지시(선택)` 입력을 최우선으로 받는다.
+- **제안이지 자동 저장이 아니다:** 결과는 textarea 에 들어가고 `writeCanon` 으로 반영되지만, 본문은 길고 되돌리기 비용이 커서 인터뷰처럼 자동 확정하지 않는다. 상태줄이 "고친 뒤 저장하세요"로 안내한다.
+- AI 미연결이면 상태줄에 연결 안내가 뜨고 버튼이 되살아난다.
+- 검증: `test/worldCanonInterview.test.ts` 12케이스(본문 초안 파싱·클램프·펜스 내성·합성 규칙·컨텍스트 주입·표면 렌더 포함) + 세계관 계약 11파일 = **73케이스 통과**, `typecheck:app` 0 에러, 브라우저 증거 `verify-shots/world-lore-v6/` 4장.
+

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
-import { mergeInterviewPatch, parseInterviewTurn, interviewHistoryToMessages } from "@/ai/worldCanonInterview";
+import { bodyDraftMessages, composeBodyWithDraft, mergeInterviewPatch, parseBodyDraft, parseInterviewTurn, interviewHistoryToMessages } from "@/ai/worldCanonInterview";
+import { WORLD_CANON_BOUNDS } from "@/project/world/canon";
 import { resolveWorldCanon } from "@/project/world/canon";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -109,6 +110,54 @@ describe("world canon interview", () => {
     });
     expect(store.getCurrent().worldCanon?.name).toBe("비늘의 바다");
     expect(interview).toBeTruthy();
+  });
+});
+
+describe("world canon body AI draft", () => {
+  let cleanupDom2: (() => void) | undefined;
+  beforeEach(() => {
+    cleanupDom2 = installFakeDom();
+    store.replace(createBlankProject());
+  });
+  afterEach(() => cleanupDom2?.());
+
+  it("parses a draft and clamps it to the body bound", () => {
+    const parsed = parseBodyDraft(JSON.stringify({ body: "가".repeat(60_000), notes: ["왕도 이름을 지어냄", 42] }));
+    expect(parsed?.body.length).toBe(WORLD_CANON_BOUNDS.body);
+    expect(parsed?.notes).toEqual(["왕도 이름을 지어냄"]);
+  });
+
+  it("survives a fenced reply and rejects an empty body", () => {
+    const fenced = parseBodyDraft("```json\n{\"body\":\"짧은 본문\",\"notes\":[]}\n```");
+    expect(fenced?.body).toBe("짧은 본문");
+    expect(parseBodyDraft(JSON.stringify({ body: "   ", notes: [] }))).toBeNull();
+    expect(parseBodyDraft("no json")).toBeNull();
+  });
+
+  it("appends a continuation but replaces on a fresh draft", () => {
+    expect(composeBodyWithDraft("기존 문단", "새 문단", "continue")).toBe("기존 문단\n\n새 문단");
+    expect(composeBodyWithDraft("기존 문단", "새 문단", "draft")).toBe("새 문단");
+    // 빈 본문에서는 모드와 무관하게 초안이 그대로 들어간다.
+    expect(composeBodyWithDraft("   ", "새 문단", "continue")).toBe("새 문단");
+  });
+
+  it("feeds the canon, existing body, and instruction to the model", () => {
+    const canon = resolveWorldCanon({ name: "비늘의 바다", absences: ["총기"], laws: { gods: { present: false } } });
+    const messages = bodyDraftMessages({ mode: "continue", existingBody: "천 년 전 왕도가 가라앉았다.", instruction: "왕도 멸망만 3문단", canon });
+    const text = messages.map((message) => message.content).join("\n");
+    expect(text).toContain("비늘의 바다");
+    expect(text).toContain("총기");
+    expect(text).toContain("천 년 전 왕도가 가라앉았다.");
+    expect(text).toContain("왕도 멸망만 3문단");
+    expect(text).toContain("이어쓰기");
+  });
+
+  it("shows draft and continue controls on the body canvas", () => {
+    const host = renderTab();
+    expect(findByTestId(host, "world-canon-body-ai")).toBeTruthy();
+    expect(findByTestId(host, "world-canon-body-ai-draft")).toBeTruthy();
+    expect(findByTestId(host, "world-canon-body-ai-continue")).toBeTruthy();
+    expect(findByTestId(host, "world-canon-body-ai-instruction")).toBeTruthy();
   });
 });
 
