@@ -142,10 +142,10 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "wrong-layer",
     "mapId": "terrace-cliff-village",
-    "x": 38,
-    "y": 15,
+    "x": 34,
+    "y": 12,
     "layer": "upper",
-    "tile": 2639,
+    "tile": 2611,
     "replacement": -1,
     "move": true
   },
@@ -156,18 +156,18 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 38,
-        "y": 15,
+        "x": 34,
+        "y": 12,
         "layer": "lower",
         "expected": 240,
-        "actual": 2639
+        "actual": 2611
       },
       {
         "code": "wrong-layer",
-        "x": 38,
-        "y": 15,
+        "x": 34,
+        "y": 12,
         "layer": "upper",
-        "expected": 2639,
+        "expected": 2611,
         "actual": -1
       }
     ],
@@ -194,7 +194,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 2,
+    "totalErrors": 3,
     "errors": [
       {
         "code": "tile-mismatch",
@@ -203,6 +203,11 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "layer": "upper",
         "expected": -1,
         "actual": 237
+      },
+      {
+        "code": "unowned-prop",
+        "x": 29,
+        "y": 17
       },
       {
         "code": "blocked-entrance",
@@ -500,7 +505,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
+    "totalErrors": 4,
     "errors": [
       {
         "code": "tile-mismatch",
@@ -509,6 +514,11 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "layer": "upper",
         "expected": -1,
         "actual": 237
+      },
+      {
+        "code": "unowned-prop",
+        "x": 42,
+        "y": 71
       },
       {
         "code": "map-entrance-blocked",
@@ -529,3 +539,83 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
 ```
 
 ![왼쪽 정상, 오른쪽 오류](images/map-entrance-blocked.png)
+
+## unowned-prop
+```json
+{
+  "input": {
+    "code": "unowned-prop",
+    "mapId": "terrace-cliff-village",
+    "x": 23,
+    "y": 31,
+    "layer": "upper",
+    "tile": -1,
+    "replacement": 2638
+  },
+  "result": {
+    "valid": false,
+    "mapId": "terrace-cliff-village",
+    "totalErrors": 2,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 23,
+        "y": 31,
+        "layer": "upper",
+        "expected": -1,
+        "actual": 2638
+      },
+      {
+        "code": "unowned-prop",
+        "x": 23,
+        "y": 31
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/unowned-prop.png)
+
+## scarecrow-without-garden
+```json
+{
+  "input": {
+    "code": "scarecrow-without-garden",
+    "mapId": "terrace-cliff-village",
+    "x": 57,
+    "y": 17,
+    "layer": "upper",
+    "tile": 2613,
+    "replacement": -1,
+    "errorX": 57,
+    "errorY": 15
+  },
+  "result": {
+    "valid": false,
+    "mapId": "terrace-cliff-village",
+    "totalErrors": 2,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 57,
+        "y": 17,
+        "layer": "upper",
+        "expected": 2613,
+        "actual": -1
+      },
+      {
+        "code": "scarecrow-without-garden",
+        "x": 57,
+        "y": 15
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/scarecrow-without-garden.png)

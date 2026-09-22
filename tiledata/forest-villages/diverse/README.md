@@ -17,10 +17,10 @@ SQLite 프로젝트 ID: `44d88b94-58eb-4dee-a11a-88737da7001b`.
 근거: `verify-shots/village-diversity/storage-proof.json` 및 `README.md`.
 
 - `catalog.json`: 동결한 세 맵, 합성 칩셋, 지형 입력, 집·소품 좌표.
-- `part-dictionary.json`: 실제 사용 타일 235개의 원본/합성 좌표, 메타데이터와 통행.
+- `part-dictionary.json`: 실제 사용 타일 207개의 원본/합성 좌표, 메타데이터와 통행.
 - `*-rows-*.md`: 상위·하위 전체 배열. 각 문서는 최대 16행.
 - `cliff-assembly.md`, `forest-assembly.md`: 결합 순서, 반복과 마감, 층·방향·접근칸.
-- `validation.md`, `validation.json`, `images/`: 정상 및 의도적으로 손상한 12종 비교.
+- `validation.md`, `validation.json`, `images/`: 정상 및 의도적으로 손상한 14종 비교.
 - `images/`는 원본 렌더, `public/assets/diverse-village-references/`는 열람용 축소본. 축소 그림을 게임 타일로 잘라 쓰지 않는다.
 
 ```bash
@@ -85,3 +85,11 @@ BASE=http://127.0.0.1:9816 node scripts/qa/capture-diverse-village-regions.mjs
 옛 조립 지침은 역사적 설명이며 현재 입력/정답은 catalog와 개정4 문서다.
 연구 출처·실제 적용·미구현 범위는 `research-layout.md`.
 현재 정본 저장은 revision10, 근거 `verify-shots/winding-villages/`.
+
+## 현재: 생활 마당 개정5
+
+공용 용도 `diverse-villages-households-v5`,33 MD/21 이미지, 지역 revision5.
+중앙/집 주변 무작위 소품을 제거하고 집 소유자와 용도가 있는 좌·우 마당 묶음으로 배치한다.
+소품 수는 산촌64→17, 절벽65→21, 포구70→22. 집마다2–4개 묶음 하나이며 맞지 않으면 비워 둔다.
+지형·숲·개별 나무·길·집은 이전과 정확히 같다. retained-vegetation.json은 승인한 독립 나무 좌표다.
+정본 revision11 저장/재오픈 근거와 소품 외 배열 보존 증거: `verify-shots/household-props/`.

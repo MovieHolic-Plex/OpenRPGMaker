@@ -15,6 +15,58 @@
     "x": 40,
     "y": 60
   },
+  "yards": [
+    {
+      "ownerId": "pine-hamlets-house-1",
+      "kit": "home",
+      "name": "주거 마당",
+      "x": 17,
+      "y": 10,
+      "side": "right",
+      "w": 4,
+      "h": 5
+    },
+    {
+      "ownerId": "pine-hamlets-house-2",
+      "kit": "garden",
+      "name": "텃밭 마당",
+      "x": 40,
+      "y": 10,
+      "side": "right",
+      "w": 5,
+      "h": 4
+    },
+    {
+      "ownerId": "pine-hamlets-house-3",
+      "kit": "work",
+      "name": "작업 마당",
+      "x": 55,
+      "y": 13,
+      "side": "left",
+      "w": 5,
+      "h": 3
+    },
+    {
+      "ownerId": "pine-hamlets-house-6",
+      "kit": "garden",
+      "name": "텃밭 마당",
+      "x": 67,
+      "y": 44,
+      "side": "right",
+      "w": 5,
+      "h": 4
+    },
+    {
+      "ownerId": "pine-hamlets-house-7",
+      "kit": "work",
+      "name": "작업 마당",
+      "x": 23,
+      "y": 49,
+      "side": "left",
+      "w": 5,
+      "h": 3
+    }
+  ],
   "entrance": {
     "x": 40,
     "y": 63

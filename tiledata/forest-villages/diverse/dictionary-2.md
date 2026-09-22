@@ -4,136 +4,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
-    "tile": 984,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 984,
-    "sourceX": 24,
-    "sourceY": 32,
-    "pixelX": 384,
-    "pixelY": 512,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 32,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "둥근 덤불",
-        "밑동"
-      ],
-      "label": "Tibo round-bush 2,1",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 둥근 덤불 3×3 칸의 (2,1). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 985,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 985,
-    "sourceX": 25,
-    "sourceY": 32,
-    "pixelX": 400,
-    "pixelY": 512,
-    "width": 16,
-    "height": 16,
-    "targetX": 25,
-    "targetY": 32,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "둥근 덤불",
-        "밑동"
-      ],
-      "label": "Tibo round-bush 3,1",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 둥근 덤불 3×3 칸의 (3,1). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 1008,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1008,
-    "sourceX": 18,
-    "sourceY": 33,
-    "pixelX": 288,
-    "pixelY": 528,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 33,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "활엽수",
-        "투명",
-        "수관"
-      ],
-      "label": "Tibo tree 1,2",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "star",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 활엽수 3×4 칸의 (1,2). 수관은 상위 레이어(★)로 사람 위에 그려지고 지나갈 수 있다.",
-      "defaultLayer": "upper",
-      "layerBacking": "none",
-      "repeatability": "fixed"
-    }
-  },
-  {
     "tile": 1009,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -2192,6 +2062,105 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1498",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1500,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1500,
+    "sourceX": 0,
+    "sourceY": 50,
+    "pixelX": 0,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 0,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1500",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1501,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1501,
+    "sourceX": 1,
+    "sourceY": 50,
+    "pixelX": 16,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 1,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1501",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1503,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1503,
+    "sourceX": 3,
+    "sourceY": 50,
+    "pixelX": 48,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1503",
       "source": "user",
       "passage": "passable",
       "userLocked": true,

@@ -1,4 +1,5 @@
 // New exterior studies built from verified whole parts; never edits the source project.
+import { placeHouseholdProps } from "./lib/village-household-props.mjs";
 import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
 import fs from "node:fs";
 import assert from "node:assert/strict";
@@ -59,11 +60,6 @@ const roadGroup = group("forest_harmony_road_47"), waterGroup = group("forest_ha
 delete ts.referenceDocuments;
 const result = { tileset: ts, cliffBindings: cliff, grassBindings, plans: [], maps: {} };
 for (const spec of plans) {
-  let rand = spec.seed;
-  const rng = () => {
-    rand = Math.imul(rand, 1664525) + 1013904223 >>> 0;
-    return rand / 4294967296;
-  };
   const W = spec.width, H = spec.height, area = { x: 0, y: 0, w: W, h: H }, m = { id: spec.id, name: spec.name, width: W, height: H, tileSize: 16, tilesetId: ts.id, lowerTiles: Array(W * H).fill(240), upperTiles: Array(W * H).fill(-1), events: [] };
   const point = (x, y) => y * W + x, inside = (x, y) => x >= 0 && y >= 0 && x < W && y < H;
   const reserved = new Set(), roads = new Set(), water = new Set(), houses = [], placements = [], access = [];
@@ -225,55 +221,23 @@ for (const spec of plans) {
       placements.push({ name: "텃밭", x, y, w, h, kind: "farm", lower: Array(w * h).fill(188), upper: Array(w * h).fill(-1) });
     }
   }
-  const byName = (name) => parts.find((p) => p.name === name);
-  const themes = [["꽃 화단", "화분", "빨랫줄", "새집", "우편함"], ["채소밭", "허수아비", "씨앗 자루", "과일 바구니", "나무 울타리"], ["장작", "나무통", "과일 상자", "나무 상자", "가로 탁자"], ["약초 화분", "덩굴 아치", "돌등", "항아리", "표지판"]];
-  for (const [n, h] of houses.entries()) for (let k = 0; k < 9; k++) {
-    const name = themes[n % 4][k % 5], p = byName(name);
-    let placed = false;
-    for (let attempt = 0; attempt < 100 && !placed; attempt++) {
-      const x = h.x - 5 + Math.floor(rng() * (h.w + 10)), y = h.y + Math.floor(rng() * (h.h + 8));
-      if (freeRect(x, y, p.width, p.height)) {
-        stamp(name, x, y, p.width, p.height, null, p.targetUpper.flat(), "prop");
-        placed = true;
-      }
-    }
+  // Retain the already approved individual trees exactly while reorganizing props.
+  const retained=JSON.parse(fs.readFileSync('tiledata/forest-villages/diverse/retained-vegetation.json'))[spec.id];
+  for(const o of retained) {
+    assert(freeRect(o.x,o.y,o.w,o.h),'Retained vegetation overlaps terrain');
+    stamp(o.name,o.x,o.y,o.w,o.h,o.lower,o.upper,o.kind);
   }
-  for (const name of ["낮은 돌 우물", "게시판", "가로 탁자", "과일 바구니", "표지판", "돌등", "낚시 바구니"]) {
-    const p = byName(name), anchor = spec.spine[Math.floor(spec.spine.length / 2)];
-    for (let attempt = 0; attempt < 120; attempt++) {
-      const x = anchor[0] - 8 + Math.floor(rng() * 17), y = anchor[1] - 5 + Math.floor(rng() * 14);
-      if (freeRect(x, y, p.width, p.height)) {
-        stamp(name, x, y, p.width, p.height, null, p.targetUpper.flat(), "prop");
-        break;
-      }
-    }
-  }
-  const vegetation = ["forest-trees:tree", "forest-trees:round-bush", "forest-trees:small-bush"];
-  for (let n = 0; n < spec.trees; n++) {
-    const g = ts.tileGroups.find((g2) => g2.id === vegetation[n % 3]), v = g.previewMap;
-    for (let attempt = 0; attempt < 100; attempt++) {
-      const x = 3 + Math.floor(rng() * (W - 7)), y = 3 + Math.floor(rng() * (H - 8));
-      if (freeRect(x, y, v.width, v.height)) {
-        stamp(g.name, x, y, v.width, v.height, v.lowerTiles, v.upperTiles, "vegetation");
-        break;
-      }
-    }
-  }
+  const household=placeHouseholdProps({map:m,houses,parts,roads,access,cliffCells:cliffPlan.cliff,reachable:reach.computeReachableCells(project,m,spec.start.x,spec.start.y),stamp});
+  for(const o of household.placed) Object.assign(placements.find(p=>p.kind==='prop'&&p.x===o.x&&p.y===o.y),{ownerId:o.ownerId,kit:o.kit,side:o.side});
   let reachable = reach.computeReachableCells(project, m, spec.start.x, spec.start.y);
-  for (let n = placements.length - 1; n >= 0; n--) {
-    const o = placements[n];
-    if (o.kind !== "prop") continue;
-    if (!Array.from({ length: o.w * o.h }, (_, i) => [o.x + i % o.w, o.y + Math.floor(i / o.w)]).some(([x, y]) => reach.isAdjacentOrOn(reachable, x, y))) {
-      for (let dy = 0; dy < o.h; dy++) for (let dx = 0; dx < o.w; dx++) m.upperTiles[point(o.x + dx, o.y + dy)] = -1;
-      placements.splice(n, 1);
-    }
-  }
+  const rejectedOwners=new Set(placements.filter(o=>o.kind==='prop'&&!Array.from({length:o.w*o.h},(_,i)=>[o.x+i%o.w,o.y+Math.floor(i/o.w)]).some(([x,y])=>reach.isAdjacentOrOn(reachable,x,y))).map(o=>o.ownerId));
+  for(let n=placements.length-1;n>=0;n--) {const o=placements[n];if(o.kind==='prop'&&rejectedOwners.has(o.ownerId)){for(let dy=0;dy<o.h;dy++)for(let dx=0;dx<o.w;dx++)m.upperTiles[point(o.x+dx,o.y+dy)]=-1;placements.splice(n,1);}}
   reachable = reach.computeReachableCells(project, m, spec.start.x, spec.start.y);
   const blocked = access.filter((a) => !reachable.has(a.x + "," + a.y));
   assert.equal(blocked.length, 0, "Blocked " + spec.id + ": " + JSON.stringify(blocked));
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance };
   result.maps[m.id] = m;
-  result.plans.push({ ...spec, houses, placements, access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
+  result.plans.push({ ...spec, houses, placements, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
   console.log(spec.id, { houses: houses.length, objects: placements.length, forest: grove.canopyCells, reachable: reachable.size });
 }
 fs.writeFileSync(path.join(out, "authored.json"), JSON.stringify(result));
