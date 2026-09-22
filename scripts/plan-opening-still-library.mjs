@@ -2,10 +2,15 @@
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {dirname,resolve} from 'node:path';
 import {parseArgs} from 'node:util';
-const {values}=parseArgs({options:{out:{type:'string',default:'artifacts/stills-library-plan.json'}}});
+const {values}=parseArgs({options:{out:{type:'string',default:'artifacts/stills-library-plan.json'},'include-initial':{type:'boolean'}}});
 const plan=JSON.parse(await readFile(new URL('../assets/opening-still-library-plan.json',import.meta.url),'utf8'));
 const stills=[];
-for(const world of plan.worlds) for(const light of plan.lighting) for(const shot of plan.shots){
+if(values['include-initial'])stills.push(...JSON.parse(await readFile(new URL('../assets/opening-stills-plan-v1.json',import.meta.url),'utf8')).stills);
+// Complete a four-beat opening for every world before spending quota on variations.
+const first=['panorama','home','threat','road'];
+const phases=[first.map(id=>plan.shots.find(shot=>shot.id===id)),plan.shots.filter(shot=>!first.includes(shot.id))];
+if(phases[0].some(shot=>!shot))throw new Error('Missing opening beat');
+for(const light of plan.lighting) for(const shots of phases) for(const world of plan.worlds) for(const shot of shots){
   const place=world.places[shot.place];
   if(!place)throw new Error('Missing place: '+world.id+'/'+shot.place);
   const name=`${world.name} · ${shot.name} · ${light.name}`;

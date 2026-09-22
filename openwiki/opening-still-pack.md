@@ -28,6 +28,47 @@ Both catalog generation and packing reject unapproved rows. Approved v1 contains
 19 images; quota exhaustion on this follow-up produced **zero additional images**.
 No pending ID is inserted into the runtime or AI catalog.
 
+## Quota-aware production job
+
+The expanded plan now fills four beats (panorama → home → threat → road) for all
+24 worlds before other shots or lighting variants. `--include-initial` prepends
+the initial 32-image plan so its 13 missing shots are completed as well.
+
+```bash
+node scripts/plan-opening-still-library.mjs --include-initial --out artifacts/stills-production/plan.json
+node scripts/run-opening-still-queue.mjs --plan artifacts/stills-production/plan.json --staging artifacts/stills-production --batch-size 32 --jobs 2
+node scripts/run-opening-still-queue.mjs --staging artifacts/stills-production --status
+```
+
+The queue runs finite batches through the existing tibo generator. Quota failures
+record the provider reset time plus a one-minute margin and wait without making
+API requests. Unknown reset times wait six hours. `--not-before <ISO date>` can
+carry a known quota response into the first start. SIGTERM saves the waiting time
+and releases locks; restarting with the same plan resumes it. Ordinary failures,
+invalid/missing batch receipts, no progress and <2 GiB free disk stop the job.
+The queue checks the plan hash on resume rather than silently switching work.
+
+Each successful image atomically checkpoints its dimensions, byte count and hash.
+Existing output is verified and skipped. Corrupt manifests fail rather than
+resetting the queue and spending quota again. Separate `.queue.lock` and
+`.generate.lock` prevent competing writers. Inspect their owner PID before
+removing a stale lock after a process crash; do not automatically delete locks.
+
+`queue-status.json` shows progress and the next attempt; `run-status.json` is a
+unique receipt for the latest batch. `review/index.html` and 32-image pages are
+rebuilt after each batch. They label unreviewed descriptions as **generation
+requests**, not verified descriptions. Finishing generation means
+`awaiting_review`; the queue never changes the catalog, approves images or
+publishes a Release.
+
+This task's running service is `oprn-opening-stills.service` in the user systemd
+manager, working in the 99ba checkout. Use `systemctl --user status
+oprn-opening-stills`, `journalctl --user -u oprn-opening-stills`, and
+`systemctl --user stop oprn-opening-stills` to inspect or stop it. It is a transient
+service, not a boot-time automation: keep this checkout and staging until the job
+is finished. Its finite plan contains 2,336 rows (32 initial + 2,304 library),
+including the 19 already reviewed images copied into production staging.
+
 ## Initial pack
 
 `assets/opening-stills-plan-v1.json` contains the authored tibo Imagen prompt plan.
