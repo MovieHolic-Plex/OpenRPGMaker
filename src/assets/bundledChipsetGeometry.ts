@@ -25,6 +25,7 @@ export function bundledChipsetTileSize(key: string): number {
 }
 
 export function bundledChipsetTilesPerRow(key: string): number {
+  if (key === "tex_forest_harmony_grass_joins") return 9;
   if (key === "tex_shared_forest_village_objects") return 6;
   if (key === "tex_slates_32") return 56;
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILES_PER_ROW;

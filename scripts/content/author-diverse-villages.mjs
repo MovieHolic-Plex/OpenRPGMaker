@@ -13,14 +13,23 @@ const cliffIds = [18, 19, 48, 49, 78, 79, 80, 108, 110, 138, 139, 140, 171, 172,
 const offset = Math.ceil(ts.count / 30) * 30, cliff = Object.fromEntries(cliffIds.map((n, i) => [n, offset + i]));
 for (const [i, n] of cliffIds.entries()) {
   const id = offset + i;
-  ts.tileGrafts.push({ sourceChipset: "tex_easyrpg_chipset_retro_world", sourceTile: n, targetTile: id });
+  const matched = {18:3,19:4,48:5,49:6,139:7,232:8}[n];
+  ts.tileGrafts.push(matched !== undefined ? { sourceChipset:"tex_forest_harmony_grass_joins", sourceTile:matched, targetTile:id } : { sourceChipset: n === 413 ? "tex_easyrpg_chipset_retro_world" : "tex_forest_harmony", sourceTile: n === 413 ? n : n + 480, targetTile: id });
   const walk = n === 374;
   ts.priority[id] = "lower";
   ts.terrain[id] = 0;
   ts.passability[id] = { up: walk, down: walk, left: walk, right: walk };
-  ts.tileMeta[id] = { label: n === 374 ? "돌계단" : n === 413 ? "동굴 입구" : `절벽 원본 ${n}`, description: "레트로 월드맵 원본을 번호 혼동 없이 이식", role: n === 374 ? "floor" : "cliff", defaultLayer: n === 374 ? "lower" : "upper", source: "user", userLocked: true, passage: walk ? "passable" : "solid", ...n === 413 ? { layerBacking: cliff[172] } : {} };
+  ts.tileMeta[id] = { label: n === 374 ? "돌계단" : n === 413 ? "동굴 입구" : `절벽 · 숲마을 ${n + 480}`, description: "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.", role: n === 374 ? "floor" : "cliff", defaultLayer: n === 374 ? "lower" : "upper", source: "user", userLocked: true, passage: walk ? "passable" : "solid", ...n === 413 ? { layerBacking: cliff[172] } : {} };
 }
-ts.count = Math.ceil((offset + cliffIds.length) / 30) * 30;
+const grassBindings = { 504: offset + cliffIds.length, 505: offset + cliffIds.length + 1 };
+for (const [i, original] of [504,505].entries()) {
+  const id = grassBindings[original];
+  ts.tileGrafts.push({ sourceChipset:'tex_forest_harmony_grass_joins', sourceTile:i, targetTile:id });
+  ts.passability[id] = { up:true, down:true, left:true, right:true };
+  ts.priority[id] = 'lower'; ts.terrain[id] = 0;
+  ts.tileMeta[id] = { label:`잔디 사선 ${original} · 색 맞춤`, description:'바닥240 유지. 원본 사선의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.', role:'terrain', defaultLayer:'lower', layerBacking:240, passage:'passable', source:'user', userLocked:true };
+}
+ts.count = Math.ceil((offset + cliffIds.length + 2) / 30) * 30;
 while (ts.terrain.length < ts.count) ts.terrain.push(0);
 while (ts.priority.length < ts.count) ts.priority.push("lower");
 while (ts.passability.length < ts.count) ts.passability.push({ up: false, down: false, left: false, right: false });
@@ -42,7 +51,7 @@ const houseSources = original.layoutPlan.regions.filter((r) => r.role === "house
 const group = (id) => ts.autotileGroups.find((g) => g.id === id);
 const roadGroup = group("forest_harmony_road_47"), waterGroup = group("forest_harmony_lake_47");
 delete ts.referenceDocuments;
-const result = { tileset: ts, cliffBindings: cliff, plans: [], maps: {} };
+const result = { tileset: ts, cliffBindings: cliff, grassBindings, plans: [], maps: {} };
 for (const spec of plans) {
   let rand = spec.seed;
   const rng = () => {
@@ -232,9 +241,19 @@ for (const spec of plans) {
   reachable = reach.computeReachableCells(project, m, spec.start.x, spec.start.y);
   const blocked = access.filter((a) => !reachable.has(a.x + "," + a.y));
   assert.equal(blocked.length, 0, "Blocked " + spec.id + ": " + JSON.stringify(blocked));
+  // The grass return turns north from each cliff shoulder; preserve all existing floors/objects.
+  const grassJoins = [];
+  for (const profile of spec.cliffs) for (const [edge,dx,sourceTile] of [[profile.points[0],1,504],[profile.points.at(-1),-1,505]]) {
+    for(let step=0;step<4;step++) {
+      const x=edge[0]+step*dx, y=edge[1]-1-step, i=point(x,y);
+      if(!inside(x,y) || m.lowerTiles[i]!==240 || roads.has(i)) continue;
+      const tile=grassBindings[sourceTile];
+      m.lowerTiles[i]=tile; grassJoins.push({x,y,sourceTile,tile,layer:'lower',backing:240,upper:m.upperTiles[i]});
+    }
+  }
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note };
   result.maps[m.id] = m;
-  result.plans.push({ ...spec, houses, placements, access, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
+  result.plans.push({ ...spec, houses, placements, access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
   console.log(spec.id, { houses: houses.length, objects: placements.length, forest: grove.canopyCells, reachable: reachable.size });
 }
 fs.writeFileSync(path.join(out, "authored.json"), JSON.stringify(result));

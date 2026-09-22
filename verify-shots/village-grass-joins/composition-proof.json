@@ -1,0 +1,75 @@
+{
+  "floor240Exact": true,
+  "sourceAtlasUnchanged": true,
+  "defaultAndBackfill": "../village-diversity/distribution-proof.json",
+  "maps": [
+    {
+      "id": "pine-hamlets",
+      "upperArraysIdentical": true,
+      "baseFloorPixelsUnchanged": true,
+      "grassJoins": 12
+    },
+    {
+      "id": "terrace-cliff-village",
+      "upperArraysIdentical": true,
+      "baseFloorPixelsUnchanged": true,
+      "grassJoins": 14
+    },
+    {
+      "id": "reed-bay-village",
+      "upperArraysIdentical": true,
+      "baseFloorPixelsUnchanged": true,
+      "grassJoins": 7
+    }
+  ],
+  "backingErrors": [
+    {
+      "code": "grass-backing",
+      "x": 7,
+      "y": 39,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 8,
+      "y": 38,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 9,
+      "y": 37,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 10,
+      "y": 36,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 20,
+      "y": 16,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 21,
+      "y": 15,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 22,
+      "y": 14,
+      "expected": 240
+    },
+    {
+      "code": "grass-backing",
+      "x": 23,
+      "y": 13,
+      "expected": 240
+    }
+  ]
+}

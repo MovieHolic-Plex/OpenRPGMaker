@@ -7,7 +7,132 @@
 ![수정 후 · 연속 암벽 면과 계단](images/terrace-cliff-village.png)
 
 ## 번호와 레이어 정정
-참고 맵의 498/499/528/529/619/652/682/711/712는 tex_easyrpg_chipset_retro_world 원본 18/19/48/49/139/172/202/231/232와 픽셀이 동일하다. forest_harmony의 동명 번호를 그대로 복사하지 않는다. 이식표를 사용한다. 개정1은 오른쪽 사선 몸통232도 빠뜨렸다.
+개정3은 바닥240의 색을 유지한다. 참고 마을의 밝은 잔디 원본을 그대로 가져오던 개정2를 폐기한다. 아래 cliffBindings의 키는 열 문법 식별용 옛 원본 번호이며, 현재 그림의 실제 출처는 tileGrafts다. 498/499/528/529/619의 잔디 픽셀만 바닥색으로 맞추고, 암벽 면은 forest_harmony 팔레트로 연결한다. 504/505는 별도 잔디 사선 마감이며 682/711 암벽 면을 대체하는 타일이 아니다. 개정1은 오른쪽 사선 몸통232도 빠뜨렸다.
+```json
+[
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 3,
+    "targetTile": 2670
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 4,
+    "targetTile": 2671
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 5,
+    "targetTile": 2672
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 6,
+    "targetTile": 2673
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 558,
+    "targetTile": 2674
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 559,
+    "targetTile": 2675
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 560,
+    "targetTile": 2676
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 588,
+    "targetTile": 2677
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 590,
+    "targetTile": 2678
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 618,
+    "targetTile": 2679
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 7,
+    "targetTile": 2680
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 620,
+    "targetTile": 2681
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 651,
+    "targetTile": 2682
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 652,
+    "targetTile": 2683
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 653,
+    "targetTile": 2684
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 681,
+    "targetTile": 2685
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 682,
+    "targetTile": 2686
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 683,
+    "targetTile": 2687
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 711,
+    "targetTile": 2688
+  },
+  {
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 854,
+    "targetTile": 2689
+  },
+  {
+    "sourceChipset": "tex_easyrpg_chipset_retro_world",
+    "sourceTile": 413,
+    "targetTile": 2690
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 8,
+    "targetTile": 2691
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 0,
+    "targetTile": 2692
+  },
+  {
+    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceTile": 1,
+    "targetTile": 2693
+  }
+]
+```
+
 ```json
 {
   "18": 2670,
@@ -46,7 +171,7 @@
 5. 절벽 전체→계단·입구→집→길→숲→소품. 면이 차지할 모든 칸을 먼저 예약한다. 집·뿌리·문앞을 덮으면 그 배치를 중단한다. 새 표본 높이 h=5 또는6; 원본 표본은 h=7이다.
 
 ## 기준 맵에서 그대로 추출한 정상 열
-원점과 전체 두 레이어 배열이다. 높이8=윗선1+몸통6+밑단1. upper의 번호는 참고 맵 원본 번호이며 위의 원본-480→이식표를 거쳐 새 칩셋에서 사용한다.
+원점과 전체 두 레이어 배열이다. 높이8=윗선1+몸통6+밑단1. upper의 번호는 참고 맵 원본 번호이며 역사적 구조 표본이다. 색은 이 개정3 출력과 다르므로 이 배열을 색 기준으로 재사용하지 않는다. 새 맵은 cliffBindings와 현재 tileGrafts를 함께 사용한다.
 ```json
 {
   "referenceId": "great-falls-100x100",

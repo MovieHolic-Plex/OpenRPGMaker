@@ -53,11 +53,13 @@ export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
     const graft = canonical.tileGrafts?.find(g => g.targetTile === 893);
     if (graft) { tileset.tileGrafts = [...(tileset.tileGrafts ?? []), structuredClone(graft)]; mouth.layerBacking = 652; changed = true; }
   }
-  // Replace only the exact shipped v1; a locally edited copy remains authored data.
-  const previous = tileset.referenceDocuments?.find(c => c.id === previousDiverseReference.id);
-  if (previous && referenceRevision(previous) === previousDiverseReference.revision) {
-    tileset.referenceDocuments = tileset.referenceDocuments!.filter(c => c !== previous);
-    changed = true;
+  // Retire exact shipped revisions only; keep any locally edited guidance.
+  for (const revision of previousDiverseReference) {
+    const previous = tileset.referenceDocuments?.find(c => c.id === revision.id);
+    if (previous && referenceRevision(previous) === revision.revision) {
+      tileset.referenceDocuments = tileset.referenceDocuments!.filter(c => c !== previous);
+      changed = true;
+    }
   }
   const missing = [...saved.referenceDocuments, ...diverseReferences].filter(category =>
     !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));

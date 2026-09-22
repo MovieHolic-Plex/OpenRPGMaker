@@ -287,6 +287,76 @@
         "truncated": false,
         "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
       }
+    },
+    {
+      "input": {
+        "code": "grass-edge-direction",
+        "mapId": "terrace-cliff-village",
+        "x": 7,
+        "y": 39,
+        "layer": "lower",
+        "tile": 2692,
+        "replacement": 2693
+      },
+      "result": {
+        "valid": false,
+        "mapId": "terrace-cliff-village",
+        "totalErrors": 2,
+        "errors": [
+          {
+            "code": "tile-mismatch",
+            "x": 7,
+            "y": 39,
+            "layer": "lower",
+            "expected": 2692,
+            "actual": 2693
+          },
+          {
+            "code": "grass-edge-direction",
+            "x": 7,
+            "y": 39,
+            "expected": 2692,
+            "actual": 2693
+          }
+        ],
+        "truncated": false,
+        "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+      }
+    },
+    {
+      "input": {
+        "code": "grass-color-mismatch",
+        "mapId": "terrace-cliff-village",
+        "x": 7,
+        "y": 39,
+        "layer": "lower",
+        "tile": 2692,
+        "replacement": 504
+      },
+      "result": {
+        "valid": false,
+        "mapId": "terrace-cliff-village",
+        "totalErrors": 2,
+        "errors": [
+          {
+            "code": "tile-mismatch",
+            "x": 7,
+            "y": 39,
+            "layer": "lower",
+            "expected": 2692,
+            "actual": 504
+          },
+          {
+            "code": "grass-color-mismatch",
+            "x": 7,
+            "y": 39,
+            "expected": 2692,
+            "actual": 504
+          }
+        ],
+        "truncated": false,
+        "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+      }
     }
   ]
 }

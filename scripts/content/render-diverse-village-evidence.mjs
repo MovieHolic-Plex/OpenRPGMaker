@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
-import { catalog, validateVillageStudy, studyFaults, cliffFaults, applyStudyFault } from "./validate-diverse-villages.mjs";
+import { catalog, validateVillageStudy, studyFaults, cliffFaults, grassFaults, applyStudyFault } from "./validate-diverse-villages.mjs";
 const project = { maps: catalog.maps, tilesets: { forest_harmony: catalog.tileset } }, normal = [];
 for (const id of Object.keys(project.maps)) {
   const r = await validateVillageStudy(project, id);
@@ -9,7 +9,7 @@ for (const id of Object.keys(project.maps)) {
   normal.push(r);
 }
 const examples = [];
-for (const f of [...studyFaults(), ...cliffFaults()]) {
+for (const f of [...studyFaults(), ...cliffFaults(), ...grassFaults()]) {
   const p = structuredClone(project);
   applyStudyFault(p, f);
   const result = await validateVillageStudy(p, f.mapId);
@@ -66,7 +66,7 @@ try {
       out[f.code] = c.toDataURL();
     }
     return out;
-  }, { project, faults: [...studyFaults(), ...cliffFaults()] });
+  }, { project, faults: [...studyFaults(), ...cliffFaults(), ...grassFaults()] });
   for (const [id, url] of Object.entries(images)) fs.writeFileSync(dir + "/images/" + id + ".png", Buffer.from(url.split(",")[1], "base64"));
 } finally {
   await b.close();

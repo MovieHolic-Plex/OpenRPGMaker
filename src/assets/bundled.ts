@@ -112,6 +112,7 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_shared_forest_village_objects",path:"assets/shared-village/objects.png",name:"숲마을 · 선별 소품 19종"},
   {textureKey:"tex_forest_harmony",path:"assets/forest-harmony/chipset.png",name:"숲마을 · 거리별 잔디"},
+  {textureKey:"tex_forest_harmony_grass_joins",path:"assets/forest-harmony/grass-joins.png",name:"숲마을 · 잔디 사선 경계"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
@@ -141,6 +142,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_cliff_reference") return 2640;
   if (key === "tex_shared_forest_village_objects") return sharedVillageObjects.count;
   if (key === "tex_forest_harmony") return forestHarmony.count;
+  if (key === "tex_forest_harmony_grass_joins") return 9;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
