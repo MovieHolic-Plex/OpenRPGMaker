@@ -64,7 +64,11 @@ export function renderTileCellsToCanvas(input: KitRenderInput): HTMLCanvasElemen
       }
     }
   };
-  withTilesetImage(input.tileset, draw);
+  canvas.dataset.previewState = "pending";
+  withTilesetImage(input.tileset, image => {
+    draw(image);
+    canvas.dataset.previewState = "ready";
+  }, () => { canvas.dataset.previewState = "error"; });
   return canvas;
 }
 
@@ -133,7 +137,7 @@ function drawTile(
   );
 }
 
-function withTilesetImage(tileset: TilesetDef, draw: (image: HTMLImageElement) => void): void {
+function withTilesetImage(tileset: TilesetDef, draw: (image: HTMLImageElement) => void, failed: () => void): void {
   const url = tilesetImageUrl(tileset);
   const cached = imageCache.get(url);
   if (cached) {
@@ -141,11 +145,17 @@ function withTilesetImage(tileset: TilesetDef, draw: (image: HTMLImageElement) =
       draw(cached);
     } else {
       cached.addEventListener("load", () => draw(cached), { once: true });
+      cached.addEventListener("error", failed, { once: true });
     }
     return;
   }
   const image = new Image();
   imageCache.set(url, image);
   image.addEventListener("load", () => draw(image), { once: true });
+  // A failed Image never fires load again. Do not keep handing it to later cards.
+  image.addEventListener("error", () => {
+    if (imageCache.get(url) === image) imageCache.delete(url);
+    failed();
+  }, { once: true });
   image.src = url;
 }

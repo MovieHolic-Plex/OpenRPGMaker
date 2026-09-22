@@ -21,9 +21,11 @@ const mocks = vi.hoisted(() => ({
   openAiSettingsModal: vi.fn(),
   saveProjectNow: vi.fn(async () => undefined),
   showNewProjectDialog: vi.fn(
-    async (): Promise<{ readonly title: string; readonly choiceId: NewProjectChoiceId | null }> => ({
+    async (): Promise<{ readonly title: string; readonly choiceId: NewProjectChoiceId | null; readonly screenSize: "classic" | "wide"; readonly titleVibe: "none" | "snow" | "fireflies" }> => ({
       title: "새 프로젝트",
       choiceId: null,
+      screenSize: "classic",
+      titleVibe: "none",
     }),
   ),
   sendAiBootIntent: vi.fn((_text: string): boolean => true),

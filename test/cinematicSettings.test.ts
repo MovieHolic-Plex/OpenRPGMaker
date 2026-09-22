@@ -64,7 +64,10 @@ const malformedScenes: ReadonlyArray<readonly [string, unknown]> = [
 
 describe("cinematic persistence", () => {
   it("leaves legacy absence absent through normalization and repeated roundtrips", () => {
+    // 2026-09-21 부터 새 프로젝트는 기본 오프닝을 싣는다. 이 계약은 «없는 프로젝트»의
+    // 불변성이므로, 픽스처가 오프닝 없는 상태임을 명시한다(옛 프로젝트 모형).
     const project = deserialize(serialize(createBlankProject()));
+    delete project.system.opening;
     const normalized = normalizeSystemRecords(project.system);
     expect(normalized).not.toHaveProperty("opening");
     expect(normalized).not.toHaveProperty("gameOver");

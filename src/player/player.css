@@ -48,12 +48,14 @@ body {
   -webkit-user-select: none !important;
   -webkit-user-drag: none;
 }
+.player-layout.system-shell [data-play-input-owner="license-notice"],
 .player-layout.system-shell [data-play-input-owner="touch-controls"],
 .player-layout.system-shell [data-play-input-owner="touch-controls"] *,
 .player-layout.system-shell [data-play-input-owner="host-fullscreen"],
 .player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
   pointer-events: auto !important;
 }
+.player-layout.system-shell [data-play-input-owner="license-notice"],
 .player-layout.system-shell [data-play-input-owner="touch-controls"] *,
 .player-layout.system-shell [data-play-input-owner="host-fullscreen"],
 .player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {

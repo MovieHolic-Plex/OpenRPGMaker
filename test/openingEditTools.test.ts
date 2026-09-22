@@ -70,7 +70,10 @@ describe("오프닝 배경음악", () => {
 
 describe("edit_opening 부분 편집", () => {
   it("빈 프로젝트에 장면을 이어 붙인다", () => {
+    // 2026-09-21: 새 프로젝트는 기본 오프닝(장면 4개)이 이미 있다. «빈 프로젝트» 시나리오는
+    // 오프닝 없는 상태를 명시적으로 만들어 검증한다.
     const ctx = context();
+    delete ctx.project.system.opening;
     const result = runTool(ctx, "edit_opening", {
       op: "append", scene: { kind: "image", resourceId: BACKDROP, narration: "시작", durationMs: 2000 },
     });
@@ -157,7 +160,8 @@ describe("edit_opening 부분 편집", () => {
     const ctx = context();
     const narration = "🌙 별빛\n둘째 줄 — 끝";
     expect(runTool(ctx, "edit_opening", { op: "append", scene: { kind: "text", narration, durationMs: 0 } }).ok).toBe(true);
-    expect(opening(ctx)?.scenes[0].narration).toBe(narration);
+    // 기본 오프닝이 있는 새 프로젝트에서도 append 는 끝에 붙는다(첫 장면 교체가 아니다).
+    expect(opening(ctx)?.scenes.at(-1)?.narration).toBe(narration);
   });
 });
 

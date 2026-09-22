@@ -56,19 +56,19 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
     scenes: [
       {
         narration: "강을 낀 왕국에는 오래도록 전쟁이 없었다.",
-        resourceId: "oprn-title-bright",
+        resourceId: "oprn-still-kingdom-day",
         motion: "zoom",
         durationMs: 5200,
       },
       {
         narration: "하늘이 갈라지던 날, 빛은 산 너머로 물러났다.",
-        resourceId: "battle-skin-ff-backdrop",
+        resourceId: "oprn-still-dark-citadel",
         motion: "pan",
         durationMs: 5200,
       },
       {
         narration: "달빛만 남은 호숫가에서, 한 사람이 검을 집어 들었다.",
-        resourceId: "battle-skin-chrono-backdrop",
+        resourceId: "oprn-still-hero-dawn",
         motion: "zoom",
         durationMs: 5200,
       },
@@ -83,19 +83,19 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
     scenes: [
       {
         narration: "천 년 전, 이 길 끝에는 도시가 있었다.",
-        resourceId: "battle-skin-octopath-backdrop",
+        resourceId: "oprn-still-desert-ruin",
         motion: "zoom",
         durationMs: 5200,
       },
       {
         narration: "지도에 없는 사막을 건너 우리는 그 이름을 쫓았다.",
-        resourceId: "battle-skin-goldensun-backdrop",
+        resourceId: "oprn-still-forest-path",
         motion: "pan",
         durationMs: 5000,
       },
       {
         narration: "돌은 아직 따뜻했다. 폐허는 누군가를 기다리고 있었다.",
-        resourceId: "battle-skin-ff-backdrop",
+        resourceId: "oprn-still-corridor",
         motion: "fade",
         durationMs: 4800,
       },
@@ -110,19 +110,19 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
     scenes: [
       {
         narration: "초대장에는 날짜가 적혀 있지 않았다.",
-        resourceId: "horror-mystery-blue-gallery",
+        resourceId: "oprn-still-manor-night",
         motion: "zoom",
         durationMs: 5400,
       },
       {
         narration: "마을 사람들은 언덕 위 그 집 이야기를 하지 않는다.",
-        resourceId: "oprn-title-field",
+        resourceId: "oprn-still-quiet-room",
         motion: "pan",
         durationMs: 5000,
       },
       {
         narration: "그날 밤, 호수에 비친 달이 두 개였다.",
-        resourceId: "battle-skin-chrono-backdrop",
+        resourceId: "oprn-still-moon-meadow",
         motion: "fade",
         durationMs: 4800,
       },
@@ -137,19 +137,19 @@ export const OPENING_PRESETS: readonly OpeningPreset[] = [
     scenes: [
       {
         narration: "그날 밤, 하늘에 구멍이 뚫렸다.",
-        resourceId: "battle-skin-mother-backdrop",
+        resourceId: "oprn-still-metropolis",
         motion: "zoom",
         durationMs: 5000,
       },
       {
         narration: "호수가 별을 삼키고, 세계는 다른 이름을 얻었다.",
-        resourceId: "battle-skin-chrono-backdrop",
+        resourceId: "oprn-still-dream",
         motion: "pan",
         durationMs: 5200,
       },
       {
         narration: "아침은 아무 일 없었다는 듯 찾아왔다. 단 한 사람만 빼고.",
-        resourceId: "oprn-title-bright",
+        resourceId: "oprn-still-moon-meadow",
         motion: "fade",
         durationMs: 5000,
       },

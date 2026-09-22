@@ -1,0 +1,311 @@
+{
+  "license": "project-generated",
+  "provider": "google-antigravity",
+  "model": "gemini-3.1-flash-image",
+  "stills": [
+    {
+      "id": "oprn-pack-still-desert-01",
+      "fileName": "desert-01.jpg",
+      "name": "사막 · 시작의 풍경",
+      "tags": [
+        "사막",
+        "desert",
+        "새벽",
+        "caravan crossing immense dunes at sunrise"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: caravan crossing immense dunes at sunrise. World: an original desert fantasy world of sandstone kingdoms and buried civilizations. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 1 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "512fa8ef4075cb41655a71a603cae32e713f27e4d68337cb4c87ff8a987f2608",
+      "bytes": 258156
+    },
+    {
+      "id": "oprn-pack-still-desert-02",
+      "fileName": "desert-02.jpg",
+      "name": "사막 · 세계 속으로",
+      "tags": [
+        "사막",
+        "desert",
+        "탐험",
+        "oasis city with blue tiled domes"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: oasis city with blue tiled domes. World: an original desert fantasy world of sandstone kingdoms and buried civilizations. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 2 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "9a8ff693ae665c785cead4b2281874b0eadb5e649d7382e42bab5ca9d92a02e2",
+      "bytes": 440606
+    },
+    {
+      "id": "oprn-pack-still-desert-03",
+      "fileName": "desert-03.jpg",
+      "name": "사막 · 숨겨진 비밀",
+      "tags": [
+        "사막",
+        "desert",
+        "미스터리",
+        "half-buried temple interior lit by a shaft of sun"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: half-buried temple interior lit by a shaft of sun. World: an original desert fantasy world of sandstone kingdoms and buried civilizations. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 3 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "0eac848e964625709466d24f1d135a39e70f4a0001d1d25edaa463a00c2be14b",
+      "bytes": 303458
+    },
+    {
+      "id": "oprn-pack-still-desert-04",
+      "fileName": "desert-04.jpg",
+      "name": "사막 · 새로운 여정",
+      "tags": [
+        "사막",
+        "desert",
+        "출발",
+        "night market under stars and hanging lanterns"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: night market under stars and hanging lanterns. World: an original desert fantasy world of sandstone kingdoms and buried civilizations. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 4 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "df410cd7e82b1b9d4238f530bb0e8924c4fd5e2a4dedb466a2d207700ccfd883",
+      "bytes": 391132
+    },
+    {
+      "id": "oprn-pack-still-modern-01",
+      "fileName": "modern-01.jpg",
+      "name": "현대 · 시작의 풍경",
+      "tags": [
+        "현대",
+        "modern",
+        "새벽",
+        "rainy railway platform at twilight"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: rainy railway platform at twilight. World: a quiet modern Japanese-inspired small town with everyday architecture and cinematic anime atmosphere. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 1 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "e19c846fd4b9019285a8f3c5337a693f12c48d619e860fb77c72f2d0db708ad8",
+      "bytes": 391801
+    },
+    {
+      "id": "oprn-pack-still-modern-02",
+      "fileName": "modern-02.jpg",
+      "name": "현대 · 세계 속으로",
+      "tags": [
+        "현대",
+        "modern",
+        "탐험",
+        "empty school music room at golden hour"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: empty school music room at golden hour. World: a quiet modern Japanese-inspired small town with everyday architecture and cinematic anime atmosphere. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 2 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "e1ea2839bcd3b989b0c94cd98be9e7a5ad0fc6eda48804a6c05ebfb51262ced0",
+      "bytes": 380348
+    },
+    {
+      "id": "oprn-pack-still-modern-03",
+      "fileName": "modern-03.jpg",
+      "name": "현대 · 숨겨진 비밀",
+      "tags": [
+        "현대",
+        "modern",
+        "미스터리",
+        "rooftop overlooking city lights in the night"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: rooftop overlooking city lights in the night. World: a quiet modern Japanese-inspired small town with everyday architecture and cinematic anime atmosphere. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 3 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "dc379e3f9ea1e3224b6e2167708962b09db201b7bb88694e7f401c9bc1b96d2b",
+      "bytes": 428892
+    },
+    {
+      "id": "oprn-pack-still-ocean-01",
+      "fileName": "ocean-01.jpg",
+      "name": "해저 · 시작의 풍경",
+      "tags": [
+        "해저",
+        "ocean",
+        "새벽",
+        "sunlit coast and lighthouse overlooking the ocean"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: sunlit coast and lighthouse overlooking the ocean. World: an ancient underwater civilization with coral gardens, bioluminescent architecture and sunken stone temples. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 1 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "55b6c6186b13ecb7139801e70b1fd0a620598237588556fd9c3e08e841a8a42c",
+      "bytes": 384825
+    },
+    {
+      "id": "oprn-pack-still-ocean-02",
+      "fileName": "ocean-02.jpg",
+      "name": "해저 · 세계 속으로",
+      "tags": [
+        "해저",
+        "ocean",
+        "탐험",
+        "submerged gateway surrounded by reef fish"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: submerged gateway surrounded by reef fish. World: an ancient underwater civilization with coral gardens, bioluminescent architecture and sunken stone temples. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 2 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "adb8e759d4910dcb19e104fedb8e9e0cf82ba6893651c2dd510c56c66761f6a9",
+      "bytes": 328096
+    },
+    {
+      "id": "oprn-pack-still-ocean-03",
+      "fileName": "ocean-03.jpg",
+      "name": "해저 · 숨겨진 비밀",
+      "tags": [
+        "해저",
+        "ocean",
+        "미스터리",
+        "deep blue palace with a glowing pearl altar"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: deep blue palace with a glowing pearl altar. World: an ancient underwater civilization with coral gardens, bioluminescent architecture and sunken stone temples. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 3 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "db8168548ed0af81e6f3e1b76d10bfbbbaf646fa5da5de260208c41bdcabde5f",
+      "bytes": 438129
+    },
+    {
+      "id": "oprn-pack-still-ocean-04",
+      "fileName": "ocean-04.jpg",
+      "name": "해저 · 새로운 여정",
+      "tags": [
+        "해저",
+        "ocean",
+        "출발",
+        "ocean surface at dawn seen from a sailing ship"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: ocean surface at dawn seen from a sailing ship. World: an ancient underwater civilization with coral gardens, bioluminescent architecture and sunken stone temples. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 4 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "f5d8c1e04526e2019c37967b62b7c451259814133fb6435cdb5350b4eceaa1dc",
+      "bytes": 403999
+    },
+    {
+      "id": "oprn-pack-still-sky-01",
+      "fileName": "sky-01.jpg",
+      "name": "공중 · 시작의 풍경",
+      "tags": [
+        "공중",
+        "sky",
+        "새벽",
+        "sunrise harbor on a floating island"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: sunrise harbor on a floating island. World: a fantasy archipelago of floating islands, windmills, airships and stone sky bridges. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 1 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "ad64f0531f36ca95bbfc4a0a259927e17dfc6e90e5cc321c8c9443a7a1c9a710",
+      "bytes": 429266
+    },
+    {
+      "id": "oprn-pack-still-sky-02",
+      "fileName": "sky-02.jpg",
+      "name": "공중 · 세계 속으로",
+      "tags": [
+        "공중",
+        "sky",
+        "탐험",
+        "airship crossing an endless sea of clouds"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: airship crossing an endless sea of clouds. World: a fantasy archipelago of floating islands, windmills, airships and stone sky bridges. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 2 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "1e524a894ec9c06541fcd2a657e4f9e5c8cc803697b9e0f5bd31cbcfbb9c3a55",
+      "bytes": 320661
+    },
+    {
+      "id": "oprn-pack-still-sky-03",
+      "fileName": "sky-03.jpg",
+      "name": "공중 · 숨겨진 비밀",
+      "tags": [
+        "공중",
+        "sky",
+        "미스터리",
+        "storm around a ruined floating tower"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: storm around a ruined floating tower. World: a fantasy archipelago of floating islands, windmills, airships and stone sky bridges. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 3 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "f1231001a992b996acf32d10d38562b0ea445d0eb21db89f75b908e5e8c60d51",
+      "bytes": 300984
+    },
+    {
+      "id": "oprn-pack-still-sky-04",
+      "fileName": "sky-04.jpg",
+      "name": "공중 · 새로운 여정",
+      "tags": [
+        "공중",
+        "sky",
+        "출발",
+        "golden light across a sky garden"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: golden light across a sky garden. World: a fantasy archipelago of floating islands, windmills, airships and stone sky bridges. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 4 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "248b58187a46f72154e7e77ad184d937c1ad63e633b929bb1f721e8321f6de41",
+      "bytes": 407501
+    },
+    {
+      "id": "oprn-pack-still-winter-01",
+      "fileName": "winter-01.jpg",
+      "name": "겨울 · 시작의 풍경",
+      "tags": [
+        "겨울",
+        "winter",
+        "새벽",
+        "mountain pass at blue dawn"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: mountain pass at blue dawn. World: a northern fantasy village with timber lodges, warm windows, snow-covered pines and a frozen river. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 1 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "512da161e39e93ff55f74d12700ec914de63c349ecdb1882380c2b27a19b761e",
+      "bytes": 397881
+    },
+    {
+      "id": "oprn-pack-still-winter-02",
+      "fileName": "winter-02.jpg",
+      "name": "겨울 · 세계 속으로",
+      "tags": [
+        "겨울",
+        "winter",
+        "탐험",
+        "lantern village square at dusk"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: lantern village square at dusk. World: a northern fantasy village with timber lodges, warm windows, snow-covered pines and a frozen river. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 2 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "d63d728e3bafe137ffa6fecdc2d6dae2c5b1a20c7bb889a862dff272b80758ba",
+      "bytes": 398042
+    },
+    {
+      "id": "oprn-pack-still-winter-03",
+      "fileName": "winter-03.jpg",
+      "name": "겨울 · 숨겨진 비밀",
+      "tags": [
+        "겨울",
+        "winter",
+        "미스터리",
+        "abandoned ice temple under aurora"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: abandoned ice temple under aurora. World: a northern fantasy village with timber lodges, warm windows, snow-covered pines and a frozen river. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 3 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "1839cb4f074613f41bd26974e67d16257f46b7c3ce83687fca383efbbb0e0e8b",
+      "bytes": 458813
+    },
+    {
+      "id": "oprn-pack-still-winter-04",
+      "fileName": "winter-04.jpg",
+      "name": "겨울 · 새로운 여정",
+      "tags": [
+        "겨울",
+        "winter",
+        "출발",
+        "morning sun over the thawing valley"
+      ],
+      "prompt": "Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1536x864. Scene: morning sun over the thawing valley. World: a northern fantasy village with timber lodges, warm windows, snow-covered pines and a frozen river. Consistent hand-painted anime background art, detailed environmental storytelling, cinematic lighting, atmospheric depth, refined colors, clean silhouettes. Composition: wide establishing shot with readable focal subject and gentle space for a bottom narration overlay. No lettering, no logos, no watermark, no panel borders, no collage, no UI, no recognizable copyrighted characters. This is frame 4 of a four-image opening; draw only this scene.",
+      "width": 1376,
+      "height": 768,
+      "sha256": "bb6112a1feeb87fd872d539d9ed28d3fdbcb3025c725c1bbb84f0adec7474046",
+      "bytes": 315507
+    }
+  ]
+}

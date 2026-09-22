@@ -392,6 +392,18 @@ Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
 ## Opening still media, sequence music and AI generation (2026-09-14)
 
+### 새 프로젝트 기본 오프닝 (2026-09-21)
+
+새 프로젝트는 createBlankProject에서 «왕국의 서막»(kingdom-day, dark-citadel,
+hero-dawn과 스타터 타이틀 곡)을 받는다. createNewProjectSeed(packId, title)는
+인터뷰의 제목을 meta와 마지막 타이틀 카드에 함께 넣는다. **store 로드 정규화에서
+오프닝을 채우지 않는다.** undefined는 기존/삭제된 오프닝 없음이므로 저장·로드에 걸쳐
+유지해야 한다. enabled:false도 그대로 유지한다. 9/21의 자동 채택 정규화기는
+remove_opening 후 재로드 시 삭제를 되돌리는 결함으로 제거했다.
+
+이미지 팩 생성·설치·검색·내보내기 계약과 실제 분량은 [opening-still-pack.md](opening-still-pack.md).
+AI 컨텍스트는 intro 25번 줄에 이 사실을 명시한다.
+
 오프닝·게임오버 탭의 그림 슬롯은 picker kind `image`(아이템 아이콘 457개) 대신 신설 kind **`still`** 을 쓴다:
 배경화 → 타이틀 아트 → 생성·업로드 그림 순서가 앞에 오고, 기존 `image` 목록은 뒤에 통째로 남아 **아이콘으로
 저작해 둔 저장본이 그대로 유효하다**. 버튼 배선은 그대로고 `databaseCinematicMediaFields`(표시)와

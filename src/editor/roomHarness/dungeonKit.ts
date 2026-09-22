@@ -12,7 +12,8 @@ import {
   type DungeonRoomPlan,
   type DungeonRoomTheme,
 } from "@/editor/dungeonRoomPipeline";
-import { planDungeonGraph, validateDungeonGraph, type DungeonDesign, type DungeonGraph } from "@/editor/dungeonGeneration/topology";
+import { DUNGEON_LANDMARKS, DUNGEON_PRESSURES, type DungeonLandmark, type DungeonPressure } from "@/editor/dungeonGeneration/expedition";
+import { DUNGEON_PATHS, planDungeonGraph, validateDungeonGraph, type DungeonDesign, type DungeonGraph, type DungeonPath } from "@/editor/dungeonGeneration/topology";
 import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { ToolError } from "@/editor/tools/types";
 import type { RoomHarnessKit } from "./types";
@@ -41,8 +42,16 @@ function parseDungeonPlan(args: Record<string, unknown>): DungeonRoomPlan {
   if (!Number.isSafeInteger(seed)) throw new ToolError("seed must be a safe integer", { code: "invalid-args" });
   const character = (args.character ?? "cavern") as DungeonDesign["character"];
   if (!["cavern", "mine", "crystal", "crypt"].includes(character!)) throw new ToolError("unknown dungeon character", { code: "invalid-args" });
+  const path = args.path === undefined ? undefined : String(args.path) as DungeonPath;
+  if (path !== undefined && !DUNGEON_PATHS.includes(path)) throw new ToolError("path must be straight|cave|winding", { code: "invalid-args" });
+  const linkMapId = typeof args.linkMapId === "string" && args.linkMapId.trim() ? args.linkMapId.trim() : undefined;
+  const landmark = args.landmark === undefined ? undefined : String(args.landmark) as DungeonLandmark;
+  if (landmark !== undefined && !DUNGEON_LANDMARKS.includes(landmark)) throw new ToolError("landmark must be altar|tower|gate|sound", { code: "invalid-args" });
+  const pressure = args.pressure === undefined ? undefined : String(args.pressure) as DungeonPressure;
+  if (pressure !== undefined && !DUNGEON_PRESSURES.includes(pressure)) throw new ToolError("pressure must be patrol|tide|rising", { code: "invalid-args" });
+  const troopId = typeof args.troopId === "string" && args.troopId.trim() ? args.troopId.trim() : undefined;
   if (layout === "connected" && (width < 18 || height < 18)) throw new ToolError("connected dungeon requires at least 18×18", { code: "invalid-args" });
-  const plan: DungeonRoomPlan = { mapId, name, width, height, theme, hazard, layout, seed, character };
+  const plan: DungeonRoomPlan = { mapId, name, width, height, theme, hazard, layout, seed, character, ...(path ? { path } : {}), ...(linkMapId ? { linkMapId } : {}), ...(landmark ? { landmark } : {}), ...(pressure ? { pressure } : {}), ...(troopId ? { troopId } : {}) };
   if (layout === "connected") {
     // Validate before any map allocation/mutation; the engine checks the overall map-size limit.
     if (args.graph !== undefined && (!args.graph || typeof args.graph !== "object")) throw new ToolError("graph must be an object", { code: "invalid-args" });

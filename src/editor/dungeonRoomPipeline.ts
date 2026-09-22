@@ -10,6 +10,7 @@
  * 레이어: ceiling(천장 프레임) → wall(천장 하단 직선 벽) → floor(바닥 오토타일) → hazard(용암/구덩이/급류 + 판자 다리).
  */
 import { applyConnectedDungeonLayer, evaluateConnectedDungeon } from "./dungeonGeneration/connected";
+import { applyDungeonExpedition, type DungeonLandmark, type DungeonPressure } from "./dungeonGeneration/expedition";
 import type { DungeonDesign } from "./dungeonGeneration/topology";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
@@ -39,6 +40,13 @@ export type DungeonRoomPlan = DungeonDesign & {
   readonly theme: DungeonRoomTheme;
   /** 중앙 위험지형(용암/구덩이/급류) + 판자 다리 배치 여부. 기본 true. */
   readonly hazard?: boolean;
+  /** 바깥 맵으로 돌아가는 출입구. 그 맵이 있을 때만 양방향 전이를 놓는다. */
+  readonly linkMapId?: string;
+  /** 입구에서 가장 먼 방에 먼저 눈에 띄는 표지. */
+  readonly landmark?: DungeonLandmark;
+  /** 방 안에 가만히 있지 않는 것. patrol은 troopId가 있을 때만 스폰한다. */
+  readonly pressure?: DungeonPressure;
+  readonly troopId?: string;
 };
 
 // 테마별 벽 세트 — 천장(공허 오토타일) + 천장 하단 직선 벽 밴드[좌끝·증식·우끝]/아랫줄 + 바닥 브러시 + 위험지형.
@@ -194,6 +202,7 @@ export function runDungeonRoomPipeline(plan: DungeonRoomPlan, project?: Project)
     log.push(`[${layer}] ${r.summary}`);
     warnings.push(...r.warnings);
   }
+  if (project && plan.layout === "connected") warnings.push(...applyDungeonExpedition(project, map, plan));
   return { map, log, warnings, ok: warnings.length === 0 };
 }
 
