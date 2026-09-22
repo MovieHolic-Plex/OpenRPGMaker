@@ -17,7 +17,7 @@ import { emptyState, sectionCard } from "@/editor/panels/databaseWorkspace";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
 import { itemCaptureFields, itemPriceField, itemScopeField } from "@/editor/panels/databaseBasicRecordFields";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
-import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
+import { iconChangeButton, openDatabaseResourcePickerDialog, resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { FARM_TOOLS, isFarmTool } from "@/project/farmModel";
 import { isItemActorEligible } from "@/project/itemEligibility";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
@@ -177,7 +177,7 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
   // 카드는 db-ws-stack(auto-fit minmax) 이라 폭이 남으면 열이 늘고, 좁아지면 접힌다.
   form.classList.add("db-item-ws");
   form.append(
-    itemHeader(record),
+    itemHeader(record, rerender),
     el("div", {
       class: "db-ws-detail-body",
       children: [
@@ -547,15 +547,28 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
   });
 }
 
-function itemHeader(record: ItemRecord): HTMLElement {
+function itemHeader(record: ItemRecord, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
   const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
-  const icon = el("div", {
-    class: `db-item-inspector-icon${url ? "" : " db-image-placeholder"}`,
-    attrs: { role: "img", "aria-label": url ? `${record.name} 아이콘` : `${record.name} 이미지 없음` },
-    text: url ? undefined : "이미지 없음",
+  const icon = iconChangeButton({
+    className: "db-item-inspector-icon",
+    name: record.name,
+    url,
+    testid: "db-item-inspector-icon",
+    onClick: () => {
+      openDatabaseResourcePickerDialog({
+        kind: "icon",
+        title: "아이템 아이콘",
+        currentId: record.iconResourceId,
+        allowClear: true,
+        testidPrefix: "db-item-inspector-icon-dialog",
+        onConfirm: (result) => {
+          updateDatabaseRecord("items", record.id, { iconResourceId: emptyToUndefined(result.resourceId) });
+          rerender();
+        },
+      });
+    },
   });
-  if (url) icon.style.backgroundImage = `url("${url}")`;
   const name = textField("이름", "db-field-name", record.name, (name) => updateDatabaseRecord("items", record.id, { name }));
   return el("div", {
     class: "db-item-inspector-header db-ws-hero",

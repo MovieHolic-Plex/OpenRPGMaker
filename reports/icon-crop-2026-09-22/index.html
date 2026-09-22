@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>전투 도끼 아이콘이 잘려 보이던 이유</title>
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: #121014;
+    color: #ece8e2;
+    font: 16px/1.55 "NanumSquare", "Noto Sans CJK KR", "Noto Sans KR", sans-serif;
+  }
+  main { max-width: 1180px; margin: 0 auto; padding: 40px 24px 80px; }
+  h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin: 0 0 8px; }
+  h2 { font-size: 18px; margin: 40px 0 12px; letter-spacing: -0.02em; }
+  p { margin: 0 0 12px; max-width: 68ch; color: #d5d0c8; }
+  .kicker { color: #a89f94; font-size: 13px; margin-bottom: 18px; }
+  .hero, .bar, .shot img {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #12141a;
+    image-rendering: auto;
+  }
+  .hero { max-width: 1100px; }
+  .bar { max-width: 520px; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+  figure { margin: 0; }
+  .note {
+    border-top: 1px solid #2c2830;
+    margin-top: 18px;
+    padding-top: 14px;
+    color: #a89f94;
+    font-size: 14px;
+  }
+  table { border-collapse: collapse; font-size: 14px; margin: 8px 0 16px; }
+  th, td { text-align: left; padding: 6px 14px 6px 0; border-bottom: 1px solid #2c2830; }
+  th { color: #a89f94; font-weight: 500; }
+  code { font-family: ui-monospace, monospace; font-size: 0.92em; color: #f0e6d4; }
+  @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <p class="kicker">아이템 · 장비 아이콘 · 2026-09-22</p>
+  <h1>전투 도끼는 화면이 자른 게 아니다</h1>
+  <p>출고된 32×32 파일 안에, 잘린 도끼와 가로줄과 작은 조각이 한 장으로 들어 있었다. 목록·인벤토리·상점은 이 파일을 통째로 줄여 그리므로, 칸에 맞추기만 해도 잘린 채로 보인다.</p>
+
+  <h2>세 장을 같은 크기로</h2>
+  <p>왼쪽이 지금까지 쓰던 파일, 가운데가 128px 원본, 오른쪽이 그 원본을 32px에 다시 맞춘 지금 파일이다. 픽셀은 그대로 확대해서 보간하지 않았다.</p>
+  <img class="hero" src="img/axe-hero.png" alt="전투 도끼. 고치기 전 32px, 128px 원본, 고친 뒤 32px">
+
+  <h2>파일 안에서 어디가 끊겼나</h2>
+  <p>32칸짜리 그림의 24번째 줄(0부터 세면 y=24)은 알파가 최대 42인 희미한 가로줄이다. 거의 안 보이지만 폭은 30칸이다. 그 위 도끼는 머리가 프레임에 닿아 잘렸고, 줄 아래에는 도끼가 아닌 조각이 따로 있다.</p>
+  <img class="bar" src="img/axe-bar.png" alt="고치기 전 전투 도끼. 24번째 줄에 빨간 가로줄">
+  <table>
+    <tr><th>줄</th><th>무엇이 있나</th></tr>
+    <tr><td>y 1–22</td><td>도끼 본체. 위·오른쪽 머리가 칸 끝에 붙어서 날 끝이 없다</td></tr>
+    <tr><td>y 23</td><td>빈 줄</td></tr>
+    <tr><td>y 24</td><td>희미한 가로줄. 불투명에 가까운 픽셀은 0개, 알파 최대 42</td></tr>
+    <tr><td>y 26–30</td><td>아래쪽에 따로 놓인 작은 조각</td></tr>
+  </table>
+  <p class="note">같은 결로 고친 아이콘은 48장이다. 판정은 가운데를 가르는 희미한 줄, 또는 본체가 끝난 뒤 빈 줄을 두고 아래에 다시 그림이 있는 경우다. 원본은 <code>asset-backups/icon-pixelate-2026-09-21/jetrel-icons-128/</code> 이다.</p>
+
+  <h2>같은 증상</h2>
+  <p>각 칸의 왼쪽이 고치기 전, 오른쪽이 고친 뒤다. 큰 도끼·단검·레이피어·채찍·낫·망치도 아래에 조각이 남아 있었다.</p>
+  <div class="grid">
+    <figure class="shot">
+        <img src="img/gen-axe-great.png" alt="대형 도끼 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-dagger-scout.png" alt="정찰 단검 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-rapier-noble.png" alt="귀족 레이피어 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-whip-leather.png" alt="가죽 채찍 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-scythe-reaper.png" alt="사신 낫 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-hammer-war.png" alt="전쟁 망치 고치기 전과 후">
+      </figure>
+  </div>
+
+  <h2>같이 고친 나머지</h2>
+  <div class="grid">
+    <figure class="shot">
+        <img src="img/gen-amulet-moon.png" alt="달 부적 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-amulet-sun.png" alt="태양 부적 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-antidote-leaf.png" alt="해독 잎 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-armor-leather.png" alt="가죽 갑옷 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-badge-guard.png" alt="경비 배지 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-boomerang-wood.png" alt="부메랑 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-boots-swift.png" alt="신속 장화 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-bow-short.png" alt="단궁 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-brooch-rose.png" alt="장미 브로치 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-charm-luck.png" alt="행운 부적 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-claw-beast.png" alt="야수 발톱 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-cloak-shadow.png" alt="그림자 망토 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-crossbow-hand.png" alt="손 석궁 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-echo-bell.png" alt="메아리 종 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-fang-beast.png" alt="야수 이빨 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-gloves-iron.png" alt="철 장갑 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-gun-flint.png" alt="화승총 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-hat-traveler.png" alt="여행자 모자 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-hat-witch.png" alt="마녀 모자 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-helm-horned.png" alt="뿔 투구 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-helm-iron.png" alt="철 투구 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-holy-water.png" alt="성수 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-ice-shard.png" alt="얼음 조각 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-katana-east.png" alt="동방 도 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-lamp-oil.png" alt="기름 등불 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-letter-sealed.png" alt="봉인된 편지 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-map-scroll.png" alt="지도 두루마리 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-net-trap.png" alt="포획 그물 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-orb-mana.png" alt="마나 구슬 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-pelt-wolf.png" alt="늑대 가죽 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-poison-flask.png" alt="독 플라스크 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-ring-power.png" alt="힘의 반지 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-scale-dragon.png" alt="용의 비늘 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-shield-iron.png" alt="철 방패 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-shield-mirror.png" alt="거울 방패 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-shield-tower.png" alt="타워 실드 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-shield-wood.png" alt="나무 방패 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-spear-iron.png" alt="철 창 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-staff-crystal.png" alt="수정 지팡이 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-sword-flame.png" alt="화염 검 고치기 전과 후">
+      </figure><figure class="shot">
+        <img src="img/gen-wand-spark.png" alt="불꽃 마법봉 고치기 전과 후">
+      </figure>
+  </div>
+
+  <h2>아이콘을 바꾸는 쪽</h2>
+  <p>아이템·장비 상세의 큰 아이콘을 누르면 고르기 창이 열린다. 외형 카드를 펼치지 않아도 된다. 고르기 창은 「설정됨」 대신 아이콘 이름을 보여주고, 아이콘과 이미지는 한 줄 목록이 아니라 격자로 고른다.</p>
+</main>
+</body>
+</html>
