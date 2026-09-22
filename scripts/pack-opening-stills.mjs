@@ -33,6 +33,7 @@ if (!values.staging) {
 const staging = resolve(values.staging);
 const manifest = JSON.parse(await readFile(join(staging, "manifest.json"), "utf8"));
 const stills = validateStillRows(manifest.stills).sort((a, b) => a.id.localeCompare(b.id));
+if(stills.some(still=>still.reviewStatus !== 'approved')) throw new Error('모든 이미지를 검수하고 실제 그림 설명을 확인한 뒤 reviewStatus:approved로 승인하세요.');
 if (!Array.isArray(stills) || stills.length === 0) throw new Error("manifest.stills 가 비어 있다");
 
 const checkout = resolve(import.meta.dirname, "..");
@@ -91,4 +92,3 @@ await copyFile(manifestPath, join(checkout, "assets/stills-release-v1.json"));
 
 console.log("팩 생성 완료: " + stills.length + "장 · tar " + tarBytes + " bytes");
 console.log("출력: " + outDir);
-

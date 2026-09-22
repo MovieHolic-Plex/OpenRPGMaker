@@ -127,33 +127,6 @@ describe("shared sequence playback", () => {
       expect(key("PageDown").defaultPrevented).toBe(false);
     } finally { document.removeEventListener("keydown", fallthrough); }
   });
-  it("shows the scrolling hint only for measured overflow and disconnects on scene cleanup", async () => {
-    let height = 100;
-    vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockReturnValue(100);
-    vi.spyOn(HTMLElement.prototype, "scrollHeight", "get").mockImplementation(() => height);
-    const observers: { notify: () => void; observe: ReturnType<typeof vi.fn>; disconnect: ReturnType<typeof vi.fn> }[] = [];
-    vi.spyOn(window, "ResizeObserver").mockImplementation(callback => {
-      const observer = { observe: vi.fn(), unobserve: vi.fn(), disconnect: vi.fn() };
-      observers.push({ ...observer, notify: () => callback([], observer) });
-      return observer;
-    });
-    start([text, image]);
-    const hint = root().querySelector<HTMLElement>('[data-testid="cinematic-scroll-hint"]');
-    expect(hint).not.toBeNull();
-    expect(hint?.hidden).toBe(true);
-    expect(observers[0].observe).toHaveBeenCalledWith(root().querySelector(".cinematic-narration"));
-    height = 400; observers[0].notify();
-    expect(hint?.hidden).toBe(false);
-    height = 100; observers[0].notify();
-    expect(hint?.hidden).toBe(true);
-    height = 400; key("Enter");
-    expect(observers[0].disconnect).toHaveBeenCalled();
-    expect(root().querySelector<HTMLElement>('[data-testid="cinematic-scroll-hint"]')?.hidden).toBe(false);
-    expect(vi.getTimerCount()).toBe(0);
-    controller.abort();
-    expect(await playback.done).toBe("aborted");
-    expect(observers[1].disconnect).toHaveBeenCalled();
-  });
   it("skips only when authored and removes its key listener on completion", async () => {
     start([text], true); key("Escape"); expect(await playback.done).toBe("skipped");
     expect(key("Enter").defaultPrevented).toBe(false);

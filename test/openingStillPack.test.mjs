@@ -25,7 +25,7 @@ test('catalog builder emits parseable TS for multiline prompts and preserves bun
   await mkdir(join(root,'scripts'));await mkdir(join(root,'src/assets'),{recursive:true});
   await copyFile(resolve('scripts/build-opening-still-catalog.mjs'),join(root,'scripts/build-opening-still-catalog.mjs'));
   await copyFile(resolve('src/assets/openingStillMoods.ts'),join(root,'src/assets/openingStillMoods.ts'));
-  await writeFile(join(root,'manifest.json'),JSON.stringify({stills:[{id:'oprn-pack-still-one',fileName:'one.png',name:'장면',tags:['겨울'],prompt:'first\nline\r\u2028const bad = ;'}]}));
+  await writeFile(join(root,'manifest.json'),JSON.stringify({stills:[{id:'oprn-pack-still-one',fileName:'one.png',name:'장면',tags:['겨울'],description:'눈 덮인 마을',mood:['고요'],useCases:['세계 소개'],series:'winter',cautions:[],reviewStatus:'approved',prompt:'first\nline\r\u2028const bad = ;'}]}));
   const result=spawnSync(process.execPath,[join(root,'scripts/build-opening-still-catalog.mjs'),'--staging',root],{encoding:'utf8'});
   assert.equal(result.status,0,result.stderr);
   const source=await readFile(join(root,'src/assets/openingStillMoods.ts'),'utf8');

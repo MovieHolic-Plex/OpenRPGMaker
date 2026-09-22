@@ -29,6 +29,8 @@ try {
   await page.getByRole('button',{name:'닫기',exact:true}).click();
   await page.keyboard.press('Enter');
   await page.getByTestId('cinematic-sequence').waitFor({timeout:20000});
+  assert.equal(await page.locator('.cinematic-hint').count(),0,'Opening must not show keyboard instructions');
+  assert.doesNotMatch(await page.getByTestId('cinematic-sequence').innerText(),/Z\/Enter\/Space|Esc 건너뛰기/);
   const seen=new Set();let frames=0;
   const clip=await page.locator(".play-stage").boundingBox();
   assert.ok(clip);

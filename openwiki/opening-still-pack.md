@@ -1,6 +1,34 @@
 # Opening still release pack
 
-## Source and delivery
+## Reviewed descriptions and production queue (2026-09-22)
+
+`list_opening_media(kind:"image")` must use `PICKER_KIND.image` (`still`), not the
+generic `image` picker. The latter omits the dedicated mood catalog. Results now
+include actual visual `description`, `mood`, narrative `useCases`, coherent
+`series`, `cautions`, and `suitableForOpening`. Queries match every space-separated
+word across names and metadata. Prompt text is not used as a visual description.
+
+All 37 existing entries were visually reviewed. The 13 reused welcome images had
+invented names unrelated to their pixels; their names, tags and descriptions are
+corrected. Two contain collage/UI and are marked unsuitable reference images.
+Standalone bundled art uses distinct series IDs; sharing an art style does not
+prove a shared world. Four-shot release groups retain their reviewed series.
+`opening-stills-source-v1.json` is also attached to the existing Release as a
+description/provenance sidecar. The pinned image archive and manifest are unchanged.
+
+`assets/opening-still-library-plan.json` is a **production plan, not delivered art**:
+24 worlds × 12 narrative shots × 8 lighting setups = 2,304 pending images.
+`node scripts/plan-opening-still-library.mjs` expands it to
+`artifacts/stills-library-plan.json`, including prompts and intended descriptions.
+Use `bun scripts/generate-opening-stills.mts --plan artifacts/stills-library-plan.json
+--staging artifacts/stills-library-staging --jobs 3 --limit 32` for bounded batches.
+Generated entries have `reviewStatus:pending`; inspect actual pixels, correct the
+description/cautions, reject lettering/collage/defects, then approve explicitly.
+Both catalog generation and packing reject unapproved rows. Approved v1 contains
+19 images; quota exhaustion on this follow-up produced **zero additional images**.
+No pending ID is inserted into the runtime or AI catalog.
+
+## Initial pack
 
 `assets/opening-stills-plan-v1.json` contains the authored tibo Imagen prompt plan.
 `bun scripts/generate-opening-stills.mts --staging artifacts/stills-staging --jobs 3`
@@ -49,6 +77,10 @@ owns editor/AI labels and search tags. The catalog generator preserves the array
 declaration and bundled mood rows, and flattens prompt newlines in generated comments.
 `resourceReferenceValidation.collectResourceIds` includes every pack ID, so choosing
 a catalog image survives serialize/deserialize even on another machine.
+
+Normal cinematic playback renders only imagery and authored narration; there is
+no keyboard/scroll instruction footer. Keyboard advance/skip and narration scroll
+still work. Loading/failure status remains only while media needs attention.
 
 The resolver uses `VITE_STILL_CDN_BASE/stills/v1/<file>` when configured; otherwise
 `/assets/stills/pack/<file>`. The export collector fetches the configured CDN source

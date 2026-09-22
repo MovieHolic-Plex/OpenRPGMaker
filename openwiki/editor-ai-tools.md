@@ -302,6 +302,13 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 
 ## 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
 
+2026-09-22: `list_opening_media(kind:"image")`는 반드시 `still` 피커를 조회한다.
+일반 `image` 피커를 조회하던 누락을 수정했다. 검수된 스틸에는 실제 그림 설명
+`description`, 분위기 `mood`, 서사 용도 `useCases`, 같은 세계관 `series`, 제약
+`cautions`, 오프닝 적합 여부 `suitableForOpening`가 함께 반환된다. 공백으로 나눈
+검색어를 모두 일치시키므로 `겨울 신전`, `해저 비밀`로 찾을 수 있다. 생성 계획과
+미검수 이미지는 후보에 넣지 않는다. 상세: [opening-still-pack.md](opening-still-pack.md).
+
 사용자 요청: "사용자가 커스텀한 오프닝을 에디터 내에 있는 ai 를 통해 할 수 있게 만들고싶음".
 
 - 실측 공백: `system.opening` 은 DB 「오프닝」 탭(`db-tab-opening`, `databaseCinematic*`)으로만 저작됐고

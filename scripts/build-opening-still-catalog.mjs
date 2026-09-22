@@ -42,10 +42,18 @@ if (!Array.isArray(stills) || stills.length === 0) fail("stills 배열이 비어
 const seenIds = new Set();
 const seenFiles = new Set();
 const validated = stills.map((still) => {
+  if (still.reviewStatus !== "approved") fail("검수 승인 필요: " + still.id);
   if (!ID.test(still.id)) fail("잘못된 id: " + JSON.stringify(still.id));
   if (!FILE.test(still.fileName)) fail("잘못된 파일명: " + JSON.stringify(still.fileName));
   if (!Array.isArray(still.tags) || still.tags.length === 0 || still.tags.some((tag) => typeof tag !== "string" || tag.trim() === "")) fail("태그 누락: " + still.id);
   if (typeof still.name !== "string" || still.name.trim() === "") fail("이름 누락: " + still.id);
+  for (const field of ["description", "series"]) {
+    if (typeof still[field] !== "string" || !still[field].trim()) fail(field + " 누락: " + still.id);
+  }
+  for (const field of ["mood", "useCases", "cautions"]) {
+    if (!Array.isArray(still[field]) || (field !== "cautions" && !still[field].length)
+      || still[field].some(value => typeof value !== "string" || !value.trim())) fail(field + " 오류: " + still.id);
+  }
   if (seenIds.has(still.id)) fail("id 중복: " + still.id);
   if (seenFiles.has(still.fileName)) fail("파일명 중복: " + still.fileName);
   seenIds.add(still.id);
@@ -55,6 +63,12 @@ const validated = stills.map((still) => {
     fileName: still.fileName,
     name: still.name.trim(),
     tags: still.tags.map((tag) => tag.trim()),
+    description: still.description.trim(),
+    mood: still.mood,
+    useCases: still.useCases,
+    series: still.series.trim(),
+    cautions: still.cautions,
+    suitableForOpening: true,
     prompt: typeof still.prompt === "string" ? still.prompt : "",
   };
 });
@@ -108,6 +122,7 @@ const moodBody = validated.map((still) => {
     "    id: " + q(still.id) + ",",
     "    name: " + q(still.name) + ",",
     "    tags: [" + still.tags.map((tag) => q(tag)).join(", ") + "],",
+    ...["description", "mood", "useCases", "series", "cautions", "suitableForOpening"].map(field => "    " + field + ": " + q(still[field]) + ","),
   ];
   if (still.prompt) lines.push("    // prompt: " + still.prompt.replace(/[\r\n\u2028\u2029]/g, " ").slice(0, 140));
   lines.push("  },");
@@ -126,4 +141,3 @@ await writeFile(OUT_RUNTIME, runtimeTs);
 await writeFile(OUT_MOODS, moodsSource.slice(0, begin) + packSection + moodsSource.slice(end + MOODS_END.length));
 
 console.log("카탈로그 갱신 완료: 팩 스틸 " + validated.length + "장");
-

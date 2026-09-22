@@ -105,7 +105,6 @@ export function playCinematicSequence(options: {
     cleanScene = () => {
       alive = false;
       releaseMedia();
-      resizeObserver.disconnect();
       clearTimeout(advanceTimer);
     };
     root.replaceChildren();
@@ -114,14 +113,6 @@ export function playCinematicSequence(options: {
     root.dataset.mediaState = "ready";
     root.style.setProperty("--cinematic-motion-ms", `${scene.durationMs || 8000}ms`);
     const narration = el("div", { class: "cinematic-narration", text: scene.narration });
-    const hint = el("div", { class: "cinematic-hint", text: (scene.kind === "video" ? "동영상 재생" : "Z/Enter/Space 계속") + (sequence.skippable ? " · Esc 건너뛰기" : "") });
-    const scrollHint = el("span", { text: " · ↑↓/PgUp/PgDn 스크롤", dataset: { testid: "cinematic-scroll-hint" } });
-    scrollHint.hidden = true;
-    hint.append(scrollHint);
-    const updateScrollHint = (): void => {
-      scrollHint.hidden = narration.scrollHeight <= narration.clientHeight;
-    };
-    const resizeObserver = new ResizeObserver(updateScrollHint);
     scrollNarration = key => {
       // Stage-logical pixels; synchronous assignment lets the browser clamp at both ends.
       switch (key) {
@@ -142,14 +133,14 @@ export function playCinematicSequence(options: {
       root.dataset.mediaState = state;
       canContinueVideo = true;
       status.textContent = state === "blocked"
-        ? "자동 재생이 차단되었습니다. R 재생 재시도 · Z/Enter/Space 계속"
-        : "미디어를 재생할 수 없습니다. Z/Enter/Space 계속";
+        ? "자동 재생이 차단되었습니다. R 키로 다시 재생할 수 있습니다."
+        : "미디어를 재생할 수 없습니다.";
       if (state === "error") releaseMedia();
     };
     const beginLoading = (): void => {
       root.dataset.mediaState = "loading";
       canContinueVideo = true;
-      status.textContent = "미디어 불러오는 중 · Z/Enter/Space 계속";
+      status.textContent = "미디어 불러오는 중";
       clearTimeout(loadTimer);
       loadTimer = setTimeout(() => {
         if (root.dataset.mediaState === "loading" || root.dataset.mediaState === "waiting") fail("error");
@@ -209,7 +200,7 @@ export function playCinematicSequence(options: {
           if (event.type === "stalled" && video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) return;
           root.dataset.mediaState = "waiting";
           canContinueVideo = true;
-          status.textContent = "동영상 재생 대기 중 · Z/Enter/Space 계속";
+          status.textContent = "동영상 재생 대기 중";
         };
         video.addEventListener("waiting", waiting, { signal: lifetime.signal });
         video.addEventListener("stalled", waiting, { signal: lifetime.signal });
@@ -219,9 +210,7 @@ export function playCinematicSequence(options: {
         break;
       }
     }
-    root.append(narration, status, hint);
-    updateScrollHint();
-    resizeObserver.observe(narration);
+    root.append(narration, status);
     if (scene.narrationAudioResourceId && mediaActive) {
       const audio = el("audio", {});
       root.append(audio);
