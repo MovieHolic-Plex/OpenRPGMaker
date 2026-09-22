@@ -101,3 +101,11 @@ prop-programs.json이 집별 용도/할 일/지정 이유 및 부품의 목적/�
 부두 없는 낚시 준비, 밭 없는 허수아비, 작업대 없는 재료/완제품 배치는 오류다.
 원문 지침 household-props.md와 입력 사전 prop-programs.md는 공용 문서 v6에 포함된다.
 지역 revision6,33 MD/22이미지. 정본 revision12 저장/재조회: verify-shots/prop-purpose/.
+
+## 공동 공간·정원 개정7
+
+`civic-programs.json` → 명시 장소·목적·관계 → `village-civic-props.mjs` 전체 부품 배치.
+공동 우물터·정원·계단 안내·판매 자리·현관·선착장에 60개 소품을 더한다(산촌18/절벽18/포구24).
+기존11종에14종을 더해 세 마을 전체25종을 사용한다. 하위 및 기존 상위 보존.
+`civic-props.md` 실행 규칙과 장소별 입력/전체 배열/사용칸/정상·오류 그림을 공용 civic-v7에 포함한다.
+현재38 MD/25이미지/237사용타일/18종 오류. 정본SQLite revision13 저장·재오픈 및 보존/동선 근거: `verify-shots/village-civic/`.

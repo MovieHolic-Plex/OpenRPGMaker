@@ -1,3 +1,4 @@
+import { placeCivicProps } from "./lib/village-civic-props.mjs";
 // New exterior studies built from verified whole parts; never edits the source project.
 import { placeHouseholdProps, PROP_PROGRAMS } from "./lib/village-household-props.mjs";
 import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
@@ -239,9 +240,12 @@ for (const spec of plans) {
   reachable = reach.computeReachableCells(project, m, spec.start.x, spec.start.y);
   const blocked = access.filter((a) => !reachable.has(a.x + "," + a.y));
   assert.equal(blocked.length, 0, "Blocked " + spec.id + ": " + JSON.stringify(blocked));
-  m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance };
+  const civicPlan={houses,placements,activitySites,roadCells:[...roads],access,entrance:spec.entrance};
+  const civic=placeCivicProps({map:m,plan:civicPlan,parts,project,reach});
+  reachable=reach.computeReachableCells(project,m,spec.start.x,spec.start.y);
+  m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance, civicPlaces:civic.zones };
   result.maps[m.id] = m;
-  result.plans.push({ ...spec, houses, placements, activitySites, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
+  result.plans.push({ ...spec, houses, placements, activitySites, civicPlaces:civic.zones, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
   console.log(spec.id, { houses: houses.length, objects: placements.length, forest: grove.canopyCells, reachable: reachable.size });
 }
 fs.writeFileSync(path.join(out, "authored.json"), JSON.stringify(result));

@@ -42,3 +42,7 @@ prop-programs.json의 houses[mapId]["x,y"]에 role(집/공간 용도), activity(
 - prop-owner-missing / prop-outside-yard / unowned-prop: 소유자·마당 범위 및 마당 밖 소품 좌표.
 
 부두의 upper199 전체, 기존 밭의 lower188 전체, 동반 소품의 upper 전체 배열을 확인한다. ‘계획에 기준이 있다고 쓰여 있다’만으로 통과시키지 않는다. 작업대를 일부러 지운 비교 그림은 남겨진 목재의 좌표를 오류로 반환한다. 정상·오류 문서 참조. 동결 참고 표본과 저작 계획의 구조·통행 검사이며 임의 마을의 미적 점수/실제 NPC 작업 시뮬레이션은 아니다.
+
+## 공동 공간 개정7
+
+위 마당 규칙은 kind=prop인 집의 작업 소품에 적용한다. 공동 우물터/정원/현관/안내는 kind=civic-prop와 placeId를 사용하며 civic-props의 실제 장소·사용칸 규칙으로 검사한다. 모든 소품을 집 좌우 마당에만 제한하지 않는다. 정원 가꾸기·환대도 명시한 배치 목적이다.

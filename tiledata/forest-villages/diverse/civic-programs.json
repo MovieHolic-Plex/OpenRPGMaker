@@ -1,0 +1,694 @@
+{
+  "pine-hamlets": [
+    {
+      "id": "well",
+      "name": "두 둔덕 사이 공동 우물터",
+      "anchor": {
+        "type": "road",
+        "x": 30,
+        "y": 26,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "well-1",
+          "name": "낮은 돌 우물",
+          "x": 34,
+          "y": 26,
+          "purpose": "두 둔덕과 중앙 주거지의 공동 급수"
+        },
+        {
+          "id": "well-2",
+          "name": "항아리",
+          "x": 37,
+          "y": 27,
+          "purpose": "길어 온 물을 담는 용기",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-3",
+          "name": "징검돌",
+          "x": 34,
+          "y": 29,
+          "purpose": "우물 앞 물 튀는 땅의 발 디딤",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-4",
+          "name": "게시판",
+          "x": 33,
+          "y": 23,
+          "purpose": "우물에 모인 주민의 마을 공지"
+        },
+        {
+          "id": "well-5",
+          "name": "돌등",
+          "x": 32,
+          "y": 27,
+          "purpose": "우물과 연결 길목 조명",
+          "near": "낮은 돌 우물"
+        }
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "샘 윗집의 앞마당 정원",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-4",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "garden-1",
+          "name": "덩굴 아치",
+          "x": 21,
+          "y": 40,
+          "purpose": "집에서 정원으로 들어가는 열린 문"
+        },
+        {
+          "id": "garden-2",
+          "name": "꽃 화단",
+          "x": 18,
+          "y": 41,
+          "purpose": "정원 입구의 왼쪽 화단",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-3",
+          "name": "꽃 화단",
+          "x": 24,
+          "y": 41,
+          "purpose": "정원 입구의 오른쪽 화단",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-4",
+          "name": "징검돌",
+          "x": 21,
+          "y": 43,
+          "purpose": "정원 안 보행 자리",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-5",
+          "name": "새집",
+          "x": 24,
+          "y": 39,
+          "purpose": "정원 가장자리 새 쉼터",
+          "near": "꽃 화단"
+        },
+        {
+          "id": "garden-6",
+          "name": "나무 울타리",
+          "x": 18,
+          "y": 44,
+          "purpose": "정원 남쪽 경계의 짧은 패널",
+          "near": "꽃 화단"
+        },
+        {
+          "id": "garden-7",
+          "name": "나무 울타리",
+          "x": 23,
+          "y": 44,
+          "purpose": "열린 가운데 통로를 남긴 경계",
+          "near": "꽃 화단"
+        }
+      ]
+    },
+    {
+      "id": "entry",
+      "name": "남쪽 입구 안내",
+      "anchor": {
+        "type": "road",
+        "x": 40,
+        "y": 58,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "entry-1",
+          "name": "표지판",
+          "x": 37,
+          "y": 58,
+          "purpose": "산촌으로 들어오는 여행자 방향 안내"
+        },
+        {
+          "id": "entry-2",
+          "name": "돌등",
+          "x": 42,
+          "y": 57,
+          "purpose": "입구 오솔길 조명"
+        }
+      ]
+    },
+    {
+      "id": "front",
+      "name": "북쪽 집의 현관",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-1",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "front-1",
+          "name": "우편함",
+          "x": 16,
+          "y": 15,
+          "purpose": "집 입구에서 우편 수취"
+        },
+        {
+          "id": "front-2",
+          "name": "화분",
+          "x": 10,
+          "y": 14,
+          "purpose": "현관 옆 환영 식물"
+        }
+      ]
+    },
+    {
+      "id": "lamp-3",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-3",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-3-1",
+          "name": "벽걸이 등불",
+          "x": 66,
+          "y": 16,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    },
+    {
+      "id": "lamp-6",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-6",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-6-1",
+          "name": "벽걸이 등불",
+          "x": 64,
+          "y": 48,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    }
+  ],
+  "terrace-cliff-village": [
+    {
+      "id": "well",
+      "name": "상단 두 집의 공동 우물터",
+      "anchor": {
+        "type": "road",
+        "x": 43,
+        "y": 19,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "well-1",
+          "name": "낮은 돌 우물",
+          "x": 44,
+          "y": 16,
+          "purpose": "상단 주택에서 계단을 내려가지 않고 물 긷기"
+        },
+        {
+          "id": "well-2",
+          "name": "항아리",
+          "x": 47,
+          "y": 17,
+          "purpose": "물을 담아 집으로 옮기는 용기",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-3",
+          "name": "징검돌",
+          "x": 44,
+          "y": 18,
+          "purpose": "급수 작업 발 디딤",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-4",
+          "name": "꽃 화단",
+          "x": 44,
+          "y": 13,
+          "purpose": "주민이 가꾸는 우물터 화단",
+          "near": "낮은 돌 우물"
+        }
+      ]
+    },
+    {
+      "id": "stairs",
+      "name": "중단 계단의 안내 자리",
+      "anchor": {
+        "type": "road",
+        "x": 34,
+        "y": 32,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "stairs-1",
+          "name": "게시판",
+          "x": 30,
+          "y": 31,
+          "purpose": "층별 생활권과 공동 작업 공지"
+        },
+        {
+          "id": "stairs-2",
+          "name": "표지판",
+          "x": 36,
+          "y": 31,
+          "purpose": "상단 주거지와 하단 출구 방향"
+        },
+        {
+          "id": "stairs-3",
+          "name": "돌등",
+          "x": 32,
+          "y": 31,
+          "purpose": "계단 하단 야간 조명"
+        }
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "아랫집의 작은 꽃마당",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-6",
+        "maxDistance": 16
+      },
+      "items": [
+        {
+          "id": "garden-1",
+          "name": "덩굴 아치",
+          "x": 33,
+          "y": 56,
+          "purpose": "집에서 꽃마당으로 들어가는 문"
+        },
+        {
+          "id": "garden-2",
+          "name": "꽃 화단",
+          "x": 30,
+          "y": 56,
+          "purpose": "마당 입구 화단",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-3",
+          "name": "꽃 화단",
+          "x": 36,
+          "y": 56,
+          "purpose": "마당 입구 화단",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-4",
+          "name": "징검돌",
+          "x": 33,
+          "y": 58,
+          "purpose": "꽃마당의 보행 자리",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-5",
+          "name": "새집",
+          "x": 36,
+          "y": 58,
+          "purpose": "정원의 조용한 새 쉼터",
+          "near": "꽃 화단"
+        },
+        {
+          "id": "garden-6",
+          "name": "나무 울타리",
+          "x": 36,
+          "y": 60,
+          "purpose": "통로를 가리지 않는 정원 경계",
+          "near": "꽃 화단"
+        }
+      ]
+    },
+    {
+      "id": "front",
+      "name": "아랫집 현관",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-6",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "front-1",
+          "name": "우편함",
+          "x": 24,
+          "y": 62,
+          "purpose": "길에서 접근하는 우편 수취"
+        },
+        {
+          "id": "front-2",
+          "name": "화분",
+          "x": 17,
+          "y": 60,
+          "purpose": "집 앞을 가꾸는 화분"
+        }
+      ]
+    },
+    {
+      "id": "lamp-2",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-2",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-2-1",
+          "name": "벽걸이 등불",
+          "x": 54,
+          "y": 18,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    },
+    {
+      "id": "lamp-4",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-4",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-4-1",
+          "name": "벽걸이 등불",
+          "x": 42,
+          "y": 37,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    },
+    {
+      "id": "lamp-7",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-7",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-7-1",
+          "name": "벽걸이 등불",
+          "x": 50,
+          "y": 64,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    }
+  ],
+  "reed-bay-village": [
+    {
+      "id": "market",
+      "name": "밭과 골목 사이 수확물 판매 자리",
+      "anchor": {
+        "type": "farm",
+        "x": 25,
+        "y": 47,
+        "maxDistance": 11
+      },
+      "items": [
+        {
+          "id": "market-1",
+          "name": "가로 탁자",
+          "x": 25,
+          "y": 40,
+          "purpose": "수확물을 선별하고 판매하는 작업면"
+        },
+        {
+          "id": "market-2",
+          "name": "과일 바구니",
+          "x": 25,
+          "y": 38,
+          "purpose": "소량 판매용 과일 진열",
+          "near": "가로 탁자"
+        },
+        {
+          "id": "market-3",
+          "name": "과일 상자",
+          "x": 28,
+          "y": 40,
+          "purpose": "판매대에 보충할 과일 저장",
+          "near": "가로 탁자"
+        },
+        {
+          "id": "market-4",
+          "name": "게시판",
+          "x": 23,
+          "y": 38,
+          "purpose": "판매 자리와 마을 소식 안내"
+        },
+        {
+          "id": "market-5",
+          "name": "징검돌",
+          "x": 25,
+          "y": 42,
+          "purpose": "판매자와 손님이 서는 자리",
+          "near": "가로 탁자"
+        },
+        {
+          "id": "market-6",
+          "name": "나무 울타리",
+          "x": 25,
+          "y": 46,
+          "purpose": "밭 북쪽 경계 보호"
+        }
+      ]
+    },
+    {
+      "id": "well",
+      "name": "중앙 골목의 공동 우물",
+      "anchor": {
+        "type": "road",
+        "x": 48,
+        "y": 26,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "well-1",
+          "name": "낮은 돌 우물",
+          "x": 42,
+          "y": 24,
+          "purpose": "주택과 선착장 이용자의 급수"
+        },
+        {
+          "id": "well-2",
+          "name": "항아리",
+          "x": 44,
+          "y": 26,
+          "purpose": "우물물을 담는 용기",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-3",
+          "name": "징검돌",
+          "x": 42,
+          "y": 27,
+          "purpose": "우물 앞 보행 자리",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-4",
+          "name": "게시판",
+          "x": 41,
+          "y": 22,
+          "purpose": "골목 주민의 공동 공지"
+        }
+      ]
+    },
+    {
+      "id": "garden",
+      "name": "윗집의 환영 정원",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-2",
+        "maxDistance": 16
+      },
+      "items": [
+        {
+          "id": "garden-1",
+          "name": "덩굴 아치",
+          "x": 43,
+          "y": 12,
+          "purpose": "집 옆 정원 입구"
+        },
+        {
+          "id": "garden-2",
+          "name": "꽃 화단",
+          "x": 40,
+          "y": 12,
+          "purpose": "정원 입구 화단",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-3",
+          "name": "꽃 화단",
+          "x": 46,
+          "y": 12,
+          "purpose": "정원 입구 화단",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-4",
+          "name": "징검돌",
+          "x": 43,
+          "y": 14,
+          "purpose": "정원 안 보행 자리",
+          "near": "덩굴 아치"
+        },
+        {
+          "id": "garden-5",
+          "name": "새집",
+          "x": 49,
+          "y": 13,
+          "purpose": "정원의 조용한 가장자리",
+          "near": "꽃 화단"
+        },
+        {
+          "id": "garden-6",
+          "name": "나무 울타리",
+          "x": 40,
+          "y": 16,
+          "purpose": "정원 남쪽 경계",
+          "near": "꽃 화단"
+        },
+        {
+          "id": "garden-7",
+          "name": "나무 울타리",
+          "x": 46,
+          "y": 16,
+          "purpose": "열린 보행 틈을 남긴 정원 경계",
+          "near": "꽃 화단"
+        }
+      ]
+    },
+    {
+      "id": "dock",
+      "name": "선착장 진입 안내",
+      "anchor": {
+        "type": "dock",
+        "x": 56,
+        "y": 45,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "dock-1",
+          "name": "표지판",
+          "x": 60,
+          "y": 42,
+          "purpose": "선착장 이용 방향 안내"
+        },
+        {
+          "id": "dock-2",
+          "name": "돌등",
+          "x": 62,
+          "y": 43,
+          "purpose": "선착장 진입부 조명"
+        }
+      ]
+    },
+    {
+      "id": "front",
+      "name": "여관의 환영 마당",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-6",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "front-1",
+          "name": "화분",
+          "x": 58,
+          "y": 39,
+          "purpose": "여관 현관 옆 환영 식물"
+        },
+        {
+          "id": "front-2",
+          "name": "우편함",
+          "x": 51,
+          "y": 37,
+          "purpose": "여관 투숙객 우편 수취"
+        }
+      ]
+    },
+    {
+      "id": "lamp-2",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-2",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-2-1",
+          "name": "벽걸이 등불",
+          "x": 36,
+          "y": 9,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    },
+    {
+      "id": "lamp-6",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-6",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-6-1",
+          "name": "벽걸이 등불",
+          "x": 55,
+          "y": 36,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    },
+    {
+      "id": "lamp-8",
+      "name": "현관 옆 벽등",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-8",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lamp-8-1",
+          "name": "벽걸이 등불",
+          "x": 39,
+          "y": 46,
+          "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    }
+  ]
+}
