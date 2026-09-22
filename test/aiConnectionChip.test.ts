@@ -17,11 +17,11 @@ vi.mock("@/editor/panels/aiConnectionStatus", () => ({
 
 let currentStatus: { kind: string; label: string; title: string; authMode: string; providerId: string; providerLabel: string } = {
   kind: "disconnected",
-  label: "Google Antigravity 로그인 필요",
+  label: "Google 로그인 필요",
   title: "AI 기능을 쓰려면 로그인이 필요해요.",
   authMode: "chatgpt",
   providerId: "antigravity",
-  providerLabel: "Google Antigravity",
+  providerLabel: "Google",
 };
 
 const { renderAiConnectionChip, AI_CONNECTION_CHIP_TESTIDS } = await import("@/editor/panels/aiConnectionChip");
@@ -43,7 +43,7 @@ describe("AI 연결 칩", () => {
     const label = chip.element.querySelector(`[data-testid='${AI_CONNECTION_CHIP_TESTIDS.label}']`);
     // refreshAiConnectionStatus 는 chatgpt 가 아니면 콜백을 안 부른다 — 초기 칠을 그 콜백에
     // 기대면 칩이 빈 채로 남는다(실측: text:"").
-    expect(label?.textContent).toBe("Google Antigravity 로그인 필요");
+    expect(label?.textContent).toBe("Google 로그인 필요");
     expect(chip.element.dataset.kind).toBe("disconnected");
   });
 
@@ -56,13 +56,13 @@ describe("AI 연결 칩", () => {
   });
 
   it("ready 면 눌러도 설정을 열지 않는다 — 열어도 할 게 없다", () => {
-    currentStatus = { ...currentStatus, kind: "ready", label: "Google Antigravity 연결됨", title: "연결됨" };
+    currentStatus = { ...currentStatus, kind: "ready", label: "Google 연결됨", title: "연결됨" };
     const opened: string[] = [];
     const chip = mount(() => opened.push("settings"));
     expect(chip.element.classList.contains("is-actionable")).toBe(false);
     (chip.element as HTMLButtonElement).click();
     expect(opened).toEqual([]);
-    currentStatus = { ...currentStatus, kind: "disconnected", label: "Google Antigravity 로그인 필요" };
+    currentStatus = { ...currentStatus, kind: "disconnected", label: "Google 로그인 필요" };
   });
 
   it("상태별로 다음 행동을 title 에 담는다", () => {
@@ -74,7 +74,7 @@ describe("AI 연결 칩", () => {
   });
 
   it("확인 중과 ready 를 다른 kind 로 구분한다", () => {
-    currentStatus = { ...currentStatus, kind: "checking", label: "Google Antigravity 확인 중…" };
+    currentStatus = { ...currentStatus, kind: "checking", label: "Google 확인 중…" };
     const chip = mount();
     expect(chip.element.dataset.kind).toBe("checking");
     // 확인 중에도 할 일이 있다 — 기다리라고 말해야 "영영 멈춘 것" 과 구분된다.

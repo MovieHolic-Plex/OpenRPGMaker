@@ -80,8 +80,8 @@ describe("getAiConnectionStatus — apiKey 모드 동기 평가", () => {
     const status = getAiConnectionStatus({ ...APIKEY_READY, providerId: "openai-codex" });
     expect(status.kind).toBe("ready");
     expect(status.providerId).toBe("openai-codex");
-    expect(status.providerLabel).toBe("OpenAI Codex");
-    expect(status.label).toContain("OpenAI Codex");
+    expect(status.providerLabel).toBe("ChatGPT");
+    expect(status.label).toContain("ChatGPT");
     expect(status.label).toContain("연결됨");
     expect(status.title).toContain("API 키로 연결됨");
   });
@@ -140,9 +140,9 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     expect(changed).toBe(1);
     const status = getAiConnectionStatus();
     expect(status.kind).toBe("ready");
-    expect(status.providerLabel).toBe("Google Antigravity");
-    expect(status.label).toContain("Google Antigravity");
-    expect(status.label).toContain("PLUS");
+    expect(status.providerLabel).toBe("Google");
+    // 칩 이름은 카드·패널과 같은 계정 이름이다(옛 「Google Antigravity 연결됨」).
+    expect(status.label).toBe("Google 연결됨 · PLUS");
   });
 
   it("제공자를 바꾼 새 설정은 이전 제공자의 ready 캐시를 재사용하지 않는다", async () => {
@@ -161,7 +161,7 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     await refreshAiConnectionStatus(() => undefined);
     const codex = getAiConnectionStatus();
     expect(codex.kind).toBe("ready");
-    expect(codex.providerLabel).toBe("OpenAI Codex");
+    expect(codex.providerLabel).toBe("ChatGPT");
 
     saveConfig(storage, {
       authMode: "chatgpt",
@@ -171,7 +171,7 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     });
 
     const switched = getAiConnectionStatus();
-    expect(switched.providerLabel).toBe("Google Antigravity");
+    expect(switched.providerLabel).toBe("Google");
     expect(switched.kind).toBe("checking");
 
     // 새 제공자로 조회하면 그 제공자 이름으로 나간다.
@@ -211,13 +211,13 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
     pending[1]?.({ connected: true });
     await newRefresh;
     expect(getAiConnectionStatus().kind).toBe("ready");
-    expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
+    expect(getAiConnectionStatus().providerLabel).toBe("Google");
 
     // 늦게 도착한 이전(Codex) 조회의 실패 상태가 현재 제공자의 ready 를 덮어쓰지 않는다.
     pending[0]?.({ connected: false });
     await oldRefresh;
     expect(getAiConnectionStatus().kind).toBe("ready");
-    expect(getAiConnectionStatus().providerLabel).toBe("Google Antigravity");
+    expect(getAiConnectionStatus().providerLabel).toBe("Google");
   });
 
   it("companion 이 응답하지 않으면 offline 으로 캐시하고 onChange 를 부른다", async () => {
@@ -298,6 +298,7 @@ describe("다섯 상태를 서로 다르게 말한다", () => {
     const loggedOut = getAiConnectionStatus();
     expect(loggedOut.kind).toBe("disconnected");
     expect(loggedOut.label).toContain("로그인");
+    expect(loggedOut.label).toMatch(/^(Google|ChatGPT) 로그인 필요$/u);
 
     // 세 라벨이 서로 겹치지 않는다 — 예전에는 전부 "AI 로그인" 이었다.
     expect(new Set([unreachable.label, errored.label, loggedOut.label]).size).toBe(3);
