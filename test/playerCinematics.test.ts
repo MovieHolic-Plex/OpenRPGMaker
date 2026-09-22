@@ -153,12 +153,19 @@ describe("game-over sequence lifecycle", () => {
     expect(events.listenerCount("shutdown")).toBe(0);
     expect(events.listenerCount("destroy")).toBe(0);
   });
-  it("keeps legacy game over synchronous and retry conditional", () => {
+  it("keeps the default terminal synchronous and retry conditional", () => {
     project.system.gameOver = { message: "default-message" };
     const { scene, events } = terminal(false);
     showGameOverScreen(scene);
     expect(main.querySelector('[data-testid="checkpoint-retry"]')).toBeNull();
     expect(main.querySelector('.runtime-overlay-message')?.textContent).toBe(project.system.gameOver.message);
+    expect(main.querySelector('.game-over-panel')).toBeNull();
+    expect(main.querySelector('.game-over-screen')).not.toBeNull();
+    const art = main.querySelector<HTMLImageElement>('.cinematic-background');
+    expect(art?.src).toContain('Game%20Over.png');
+    expect(main.querySelector<HTMLElement>('.game-over-heading')?.hidden).toBe(true);
+    art?.dispatchEvent(new Event('error'));
+    expect(main.querySelector<HTMLElement>('.game-over-heading')?.hidden).toBe(false);
     events.emit("destroy");
     expect(main.querySelector('[data-testid="game-over-screen"]')).toBeNull();
   });

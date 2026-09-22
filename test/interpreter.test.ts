@@ -721,13 +721,12 @@ describe("battleProcessing / common event guard", () => {
     expect(expectTextResult(r).body).toBe("after");
   });
 
-  it("picture, audio, shop, inn, gameOver, and title commands suspend as typed handoffs", () => {
+  it("picture, audio, shop, inn, and title commands suspend as typed handoffs", () => {
     const cmds: Command[] = [
       { kind: "showPicture", pictureId: "pic1", resourceId: "tex_tiles_default", x: 1, y: 2 },
       { kind: "playAudio", resourceId: "theme", loop: true },
       { kind: "shop", itemIds: ["item_potion"] },
       { kind: "inn", price: 50 },
-      { kind: "gameOver" },
       { kind: "ending", title: "The End", message: "Peace returned." },
       { kind: "returnToTitle" },
     ];
@@ -738,7 +737,24 @@ describe("battleProcessing / common event guard", () => {
       kinds.push(r.kind);
       r = it.resume(undefined);
     }
-    expect(kinds).toEqual(["showPicture", "playAudio", "shop", "inn", "gameOver", "returnToTitle", "returnToTitle"]);
+    expect(kinds).toEqual(["showPicture", "playAudio", "shop", "inn", "returnToTitle", "returnToTitle"]);
+  });
+
+  it.each(["gameOver", "killPlayer"] as const)("%s terminates nested events and their callers", kind => {
+    const session = mkSession();
+    session.commonEvents = [{ id: "terminal", commands: [
+      { kind }, { kind: "setSwitch", switchId: "after_inner", value: true },
+    ] }];
+    const interpreter = createInterpreter([
+      { kind: "callCommonEvent", commonEventId: "terminal" },
+      { kind: "setSwitch", switchId: "after_outer", value: true },
+    ], session);
+    expect(interpreter.start().kind).toBe("gameOver");
+    expect(interpreter.resume(undefined).kind).toBe("done");
+    expect(interpreter.isDone()).toBe(true);
+    expect(interpreter.resume(undefined).kind).toBe("done");
+    expect(session.switches.after_inner).not.toBe(true);
+    expect(session.switches.after_outer).not.toBe(true);
   });
 
   it("ending returns a title handoff with ending screen copy", () => {

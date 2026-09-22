@@ -49,8 +49,21 @@
   per-host replacement plus scene shutdown/destroy detach playback, terminal
   cursor listeners and DOM. Authored labels/background apply; an event message
   takes precedence over the configured default, including explicit empty text.
-  Retry remains conditional on hasCheckpoint. Without a sequence/background the
-  legacy immediate panel and underlying-map presentation remain intact.
+  Retry remains conditional on hasCheckpoint. The default terminal is now an opaque
+  full-stage scene, not the field's window skin: bundled `easyrpg-game-over-game-over`
+  art, small text choices below its center, and keyboard hints (`runtime/gameOver.css`).
+  The art is an implicit web-export dependency even when no project setting/profile
+  references it. Authored backgrounds/text/labels still override defaults; the built-in
+  art's baked-in title is not duplicated, and image failure reveals the text fallback.
+  A black scene remains behind sequence teardown, so completing a cinematic cannot
+  expose the field/HUD. Entry stops shared field audio; checkpoint applySession owns
+  audio restoration. Long body copy scrolls with PgUp/PgDn independently of menu arrows.
+  `interpreter/resume.ts` terminates the whole stack on the gameOver handoff (including
+  killPlayer and nested common-event callers); it must never advance post-terminal commands.
+  Foreground completion callbacks are suppressed for this outcome. Parallel scheduling
+  stops when the terminal opens, including asynchronous continuations in the same session.
+  Actual player/GIF evidence: `docs/reviews/2026-09-22-game-over/README.md`;
+  reproducible probe: `scripts/qa/runtime/game-over-scene.probe.mjs`.
 - `runtime/playSurface.css` owns cinematic presentation in the shared `playerRuntime.css` closure
   (exported player and editor). Uploaded video MIME resolution uses the existing
   generatedAssetResourceResolver; no movie-command fallback behavior changed.

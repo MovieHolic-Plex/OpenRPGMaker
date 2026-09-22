@@ -244,6 +244,7 @@ export async function runCommands(
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       const step = result;
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
+      if (step.kind === "gameOver") normalCompletion = false;
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
     }
     if (result.kind === "done" && base.isDone() && normalCompletion && current()) {

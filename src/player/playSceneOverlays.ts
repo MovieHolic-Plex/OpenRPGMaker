@@ -1,6 +1,8 @@
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
+import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
+import { stopAllAudio } from "@/player/audio";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { dialogueHost } from "@/player/playSceneDom";
 import { applySystemGraphic } from "@/player/systemGraphics";
@@ -50,11 +52,17 @@ export function showGameOverScreen(scene: PlaySceneContext, message?: string): v
   const project = store.getCurrent();
   const settings = project.system.gameOver;
   const root = document.createElement("div");
-  root.className = "cinematic-terminal";
+  root.className = "cinematic-terminal game-over-screen";
+  root.setAttribute("role", "dialog");
+  root.setAttribute("aria-modal", "true");
+  root.setAttribute("aria-label", settings?.title || "게임 오버");
   // Retain the existing modal boundary for movement, time, minimap and shell input.
   root.dataset.testid = "game-over-screen";
   host.append(root);
   scene.input_.releaseAllKeys();
+  // The checkpoint retains its own audio snapshot; applySession resumes it on retry.
+  // Stop field music before a cinematic can start its independently owned soundtrack.
+  stopAllAudio();
   const controller = new AbortController();
   let detachCursor = (): void => undefined;
   const observer = new MutationObserver(() => {
@@ -74,46 +82,68 @@ export function showGameOverScreen(scene: PlaySceneContext, message?: string): v
   scene.events.once("destroy", cleanup);
   observer.observe(host.ownerDocument, { childList: true, subtree: true });
   const renderTerminal = (): void => {
-    const backgroundUrl = resolveAssetResourceUrl(settings?.backgroundResourceId, { project });
+    const backgroundId = settings?.backgroundResourceId || DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID;
+    const backgroundUrl = resolveAssetResourceUrl(backgroundId, { project });
+    const title = document.createElement("h1");
+    title.className = "runtime-overlay-title game-over-heading";
+    title.textContent = settings?.title ?? "게임 오버";
+    // The bundled image already contains GAME OVER. Do not print a second title over it.
+    title.hidden = backgroundId === DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID && settings?.title === undefined;
     if (backgroundUrl) {
       const background = document.createElement("img");
       background.className = "cinematic-background";
       background.alt = "";
       background.draggable = false;
       background.src = backgroundUrl;
-      background.addEventListener("error", () => background.remove(), { once: true });
+      background.addEventListener("error", () => { background.remove(); title.hidden = false; }, { once: true });
       root.append(background);
-    }
+    } else title.hidden = false;
     const overlay = document.createElement("div");
-    overlay.className = "runtime-overlay game-over-panel";
-    applySystemGraphic(overlay);
-    const title = document.createElement("div");
-    title.className = "runtime-overlay-title";
-    title.textContent = settings?.title ?? "게임 오버";
+    overlay.className = "game-over-content";
     overlay.append(title);
     const resolvedMessage = message ?? settings?.message;
     if (resolvedMessage) {
       const body = document.createElement("div");
-      body.className = "runtime-overlay-message";
+      body.className = "runtime-overlay-message game-over-message";
       body.textContent = resolvedMessage;
       overlay.append(body);
     }
     const buttons: HTMLButtonElement[] = [];
+    const actions = document.createElement("div");
+    actions.className = "game-over-actions";
     if (scene.hasCheckpoint()) {
       const retry = document.createElement("button");
       retry.type = "button";
+      retry.className = "game-over-choice";
       retry.dataset.testid = "checkpoint-retry";
-      retry.textContent = settings?.retryLabel ?? "다시 시도";
+      retry.textContent = settings?.retryLabel ?? "체크포인트에서 다시 시작";
       retry.addEventListener("click", () => { cleanup(); scene.restoreCheckpoint(); });
       buttons.push(retry);
     }
     const titleButton = document.createElement("button");
     titleButton.type = "button";
+    titleButton.className = "game-over-choice";
     titleButton.dataset.testid = "return-title";
-    titleButton.textContent = settings?.titleLabel ?? "타이틀로";
+    titleButton.textContent = settings?.titleLabel ?? "타이틀로 돌아가기";
     titleButton.addEventListener("click", () => { cleanup(); scene.returnToTitle(); });
     buttons.push(titleButton);
-    overlay.append(...buttons);
+    actions.append(...buttons);
+    overlay.append(actions);
+    const hint = document.createElement("div");
+    hint.className = "game-over-hint";
+    hint.textContent = "↑↓ 선택 · Z/Enter 결정 · Esc 타이틀";
+    const messageBody = overlay.querySelector<HTMLElement>(".game-over-message");
+    if (messageBody) {
+      // Keep arrows for the menu; long authored prose has an independent keyboard scroll.
+      hint.textContent += " · PgUp/PgDn 본문";
+      host.ownerDocument.defaultView?.addEventListener("keydown", event => {
+        if (event.isComposing || (event.key !== "PageUp" && event.key !== "PageDown")) return;
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        messageBody.scrollTop += (event.key === "PageUp" ? -1 : 1) * messageBody.clientHeight * 0.9;
+      }, { capture: true, signal: controller.signal });
+    }
+    overlay.append(hint);
     root.append(overlay);
     detachCursor = attachCursorMenu(overlay, { items: buttons, cancelEl: titleButton });
   };

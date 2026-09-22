@@ -54,6 +54,7 @@
 @import "./transitions.css" layer(runtime);
 @import "./nameEntry.css" layer(runtime);
 @import "./keyboardNav.css" layer(runtime);
+@import "./gameOver.css" layer(runtime);
 @import "./juice.css" layer(runtime);
 @import "../dialogue.css" layer(runtime);
 @import "./zoneFeedback.css" layer(runtime);
