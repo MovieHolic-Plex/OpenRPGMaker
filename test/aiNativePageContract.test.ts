@@ -133,7 +133,10 @@ describe("native upsert page contract", () => {
     expect(pages?.properties?.lines).toBeUndefined();
     expect(pages?.properties?.graphic?.properties?.sprite?.properties?.id?.type).toBe("string");
     expect(pages?.properties?.trigger?.properties?.kind?.enum).toContain("action");
-    expect(COMMAND_SCHEMA.properties?.options?.items?.required).toEqual(["text", "branch"]);
+    // options 는 choices({text,branch})와 presentItem({itemId,branch})이 함께 쓴다 — 공통 필수는 branch.
+    expect(COMMAND_SCHEMA.properties?.options?.items?.required).toEqual(["branch"]);
+    expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.text?.type).toBe("string");
+    expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.itemId?.type).toBe("string");
     expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.branch?.items?.properties?.kind?.enum)
       .toContain("triggerEnding");
     expect(() => JSON.stringify(getTool("upsert_event")?.parameters)).not.toThrow();

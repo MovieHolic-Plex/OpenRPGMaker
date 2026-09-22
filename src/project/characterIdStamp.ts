@@ -1,6 +1,7 @@
 // One-shot legacy stamp: social events without characterId get characterId = event.id.
 // docs/specs/2026-07-14-character-id-relationship-gate.md §3
 import type { Command, Condition, GameEvent, Project } from "./types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** Mutates events in place. Idempotent: never overwrites non-empty characterId. */
 export function stampCharacterIdsForSocialEvents(project: Project): void {
@@ -54,6 +55,8 @@ function commandIsSocial(command: Command): boolean {
     case "choices":
       return command.options.some((option) => commandsHaveSocial(option.branch))
         || commandsHaveSocial(command.cancelBranch);
+    case "presentItem":
+      return presentItemBranchLists(command).some((branch) => commandsHaveSocial(branch));
     case "loop":
       return commandsHaveSocial(command.body);
     case "shop":

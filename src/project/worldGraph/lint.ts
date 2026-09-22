@@ -14,6 +14,7 @@ import type {
   WorldGraphEntry,
   WorldGraphSide,
 } from "./types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 interface BoundaryProfile {
   readonly side: WorldGraphSide;
@@ -274,6 +275,8 @@ function collectTransfers(command: Command, out: Extract<Command, { kind: "trans
   if (command.kind === "choices") {
     for (const option of command.options) for (const child of option.branch) collectTransfers(child, out);
     for (const child of command.cancelBranch ?? []) collectTransfers(child, out);
+  } else if (command.kind === "presentItem") {
+    for (const branch of presentItemBranchLists(command)) for (const child of branch) collectTransfers(child, out);
   } else if (command.kind === "fork") {
     for (const child of command.then) collectTransfers(child, out);
     for (const child of command.else ?? []) collectTransfers(child, out);

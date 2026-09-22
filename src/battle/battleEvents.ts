@@ -872,6 +872,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "ending":
       case "returnToTitle":
       case "inputNumber":
+      case "presentItem":
       case "enterHeroName":
       case "callMapEvent":
       case "cutsceneControl":

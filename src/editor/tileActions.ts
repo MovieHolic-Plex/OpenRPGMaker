@@ -18,6 +18,7 @@ import {
 import { toast } from "@/util/toast";
 import type { AutotileGroup, Command, GameMap, MapId, PassFlag, Project, TilesetDef } from "@/project/types";
 import { markUserTileRuntimeMetadata } from "./runtimeTileMetadata";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 밑동 → 수관 (repairTreePairs 와 동일). 지우개 시 짝을 같이 지운다. */
 const TRUNK_TO_CANOPY: Readonly<Record<number, number>> = {
@@ -811,6 +812,9 @@ function collectTransferTargets(commands: readonly Command[], mapId: string, blo
       case "choices":
         for (const option of command.options) collectTransferTargets(option.branch, mapId, blocked);
         collectTransferTargets(command.cancelBranch ?? [], mapId, blocked);
+        break;
+      case "presentItem":
+        for (const branch of presentItemBranchLists(command)) collectTransferTargets(branch, mapId, blocked);
         break;
       case "fork":
         collectTransferTargets(command.then, mapId, blocked);

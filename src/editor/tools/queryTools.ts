@@ -32,6 +32,7 @@ import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
 import { validateArgs } from "./jsonSchema";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
 export function isMapWaterTile(tile: number): boolean {
@@ -45,6 +46,8 @@ function walkCommands(commands: readonly Command[], visit: (command: Command) =>
     if (command.kind === "choices") {
       for (const option of command.options) walkCommands(option.branch, visit);
       if (command.cancelBranch) walkCommands(command.cancelBranch, visit);
+    } else if (command.kind === "presentItem") {
+      for (const branch of presentItemBranchLists(command)) walkCommands(branch, visit);
     } else if (command.kind === "fork") {
       walkCommands(command.then, visit);
       if (command.else) walkCommands(command.else, visit);

@@ -104,6 +104,7 @@ export function projectLint(project: Project, opts: LintOptions = {}): LintIssue
   checkTileGrafts(project, issues);
   checkSystemOptInConsistency(project, issues);
   checkShopIntegrity(project, issues);
+  checkPresentItemIntegrity(project, issues);
   checkMapNamedLocations(project, issues);
   return issues;
 }
@@ -757,6 +758,16 @@ function visitCommand(command: Command, visit: (command: Command) => void, issue
     if (command.cancelBranch) visitCommands(command.cancelBranch, visit, issues, `${label}.cancelBranch`);
     return;
   }
+  if (command.kind === "presentItem") {
+    if (!Array.isArray(command.options)) {
+      pushCommandShapeWarning(issues, `${label}.options`, `presentItem options 배열이 아니어서 분기 순회를 건너뜁니다: ${valueKind(command.options)}`);
+      return;
+    }
+    for (const [index, option] of command.options.entries()) visitCommands(option.branch, visit, issues, `${label}.options[${index}].branch`);
+    if (command.otherwiseBranch) visitCommands(command.otherwiseBranch, visit, issues, `${label}.otherwiseBranch`);
+    if (command.cancelBranch) visitCommands(command.cancelBranch, visit, issues, `${label}.cancelBranch`);
+    return;
+  }
   if (command.kind === "fork") {
     visitCommands(command.then, visit, issues, `${label}.then`);
     if (command.else) visitCommands(command.else, visit, issues, `${label}.else`);
@@ -872,6 +883,30 @@ function checkShopIntegrity(project: Project, issues: LintIssue[]): void {
         };
         walk(page.commands, "commands");
       }
+    }
+  }
+}
+
+// 아이템 제시: 없는 아이템은 참조 검증(checkReferences)이 잡는다. 여기서는 저작 실수 둘 —
+// 정답이 후보(itemIds) 밖이라 절대 고를 수 없음, 정답이 하나도 없어 무엇을 내도 틀림.
+function checkPresentItemIntegrity(project: Project, issues: LintIssue[]): void {
+  const inspect = (command: Command, mapId: string, eventId: string): void => {
+    if (command.kind !== "presentItem" || !Array.isArray(command.options)) return;
+    const where = { mapId, eventId };
+    if (command.options.length === 0) {
+      issues.push({ severity: "warning", code: "presentItem.no-options", message: `${eventId}: 아이템 제시에 정답이 없다 — 무엇을 내도 otherwiseBranch 로 간다.`, ...where });
+    }
+    if (!command.itemIds) return;
+    for (const option of command.options) {
+      if (!command.itemIds.includes(option.itemId)) {
+        issues.push({ severity: "warning", code: "presentItem.option-not-offered", message: `${eventId}: 정답 ${option.itemId} 이(가) 후보 itemIds 에 없어 목록에 뜨지 않는다 — 이 분기는 실행될 수 없다.`, ...where });
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      visitCommands(event.commands, (command) => inspect(command, map.id, event.id));
+      for (const page of event.pages ?? []) visitCommands(page.commands, (command) => inspect(command, map.id, event.id));
     }
   }
 }

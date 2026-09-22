@@ -10,6 +10,7 @@
 
 import { isUnauthoredMap } from "./workItemOutcome";
 import type { Command, GameEvent, Project } from "@/project/types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export interface VolumeSnapshot {
   readonly authoredMaps: number;
@@ -152,6 +153,8 @@ function commandsHaveShop(commands: readonly Command[] | undefined): boolean {
         if (commandsHaveShop(option.branch)) return true;
       }
       if (commandsHaveShop(command.cancelBranch)) return true;
+    } else if (command.kind === "presentItem") {
+      if (presentItemBranchLists(command).some((branch) => commandsHaveShop(branch))) return true;
     } else if (command.kind === "fork") {
       if (commandsHaveShop(command.then) || commandsHaveShop(command.else)) return true;
     } else if (command.kind === "loop") {

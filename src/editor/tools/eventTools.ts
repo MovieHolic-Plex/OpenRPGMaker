@@ -336,6 +336,10 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
     } else if (command.kind === "choices") {
       for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
+    } else if (command.kind === "presentItem") {
+      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);
+      if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "fork") {
       ensureConditionStoryFlags(project, command.condition, eventId, warnings);
       ensureCommandStoryFlags(project, command.then, eventId, warnings);
@@ -507,7 +511,7 @@ function routeRootCommandsIntoPage(
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.`,
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다.`,
   mode: "write",
   parameters: {
     type: "object",
