@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { REGION_REFERENCES, PLACE_REFERENCES, readRegionReference, regionReferenceContext } from "@/project/regionReferences";
+import { REGION_REFERENCES, PLACE_REFERENCES, regionReferenceContext } from "@/project/regionReferences";
+import { readRegionReference } from "@/project/regionReferenceSnapshots";
 import emeraldSnapshot from "@/project/regionReferences/emerald-basin.json";
 import hillSnapshot from "@/project/regionReferences/hill-forest-village.json";
 import { COMBINED_TOWN_RETRO_WORLD_TILESET_ID } from "@/project/defaults/constants";

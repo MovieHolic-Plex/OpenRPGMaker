@@ -1,21 +1,3 @@
-import type { GameMap, TilesetDef } from "./types";
-import snapshot0 from "./regionReferences/organic-crescent-lake.json";
-import snapshot1 from "./regionReferences/organic-fork-stream.json";
-import snapshot2 from "./regionReferences/organic-terrace-gardens.json";
-import snapshot3 from "./regionReferences/organic-woodland-lane.json";
-import snapshot4 from "./regionReferences/organic-orchard-court.json";
-import snapshot5 from "./regionReferences/organic-fishing-cove.json";
-import snapshot6 from "./regionReferences/organic-five-groves.json";
-type Snapshot = {map: GameMap; tileset: TilesetDef};
-const snapshots: Record<string, Snapshot> = {
-  "organic-crescent-lake-80x72": snapshot0 as unknown as Snapshot,
-  "organic-fork-stream-80x72": snapshot1 as unknown as Snapshot,
-  "organic-terrace-gardens-80x72": snapshot2 as unknown as Snapshot,
-  "organic-woodland-lane-80x72": snapshot3 as unknown as Snapshot,
-  "organic-orchard-court-80x72": snapshot4 as unknown as Snapshot,
-  "organic-fishing-cove-80x72": snapshot5 as unknown as Snapshot,
-  "organic-five-groves-80x72": snapshot6 as unknown as Snapshot,
-};
 export const CURATED_VILLAGE_PLACES = [
   {
     "id": "organic-crescent-lake-80x72",
@@ -186,4 +168,3 @@ export const CURATED_VILLAGE_PLACES = [
     "limitations": "외관 배치 참고. 집 내부·NPC·상호작용은 포함하지 않는다."
   }
 ] as const;
-export function curatedVillageSnapshot(id: string): Snapshot | undefined { return snapshots[id]; }
