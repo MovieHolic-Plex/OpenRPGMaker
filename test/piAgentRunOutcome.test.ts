@@ -102,6 +102,7 @@ vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-an
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),
+  captureApplyAuthority: () => ({ base: {}, baseline: {} }),
   applyProposedProject: async () => { h.applyCalls += 1; return { ok: true }; },
 }));
 

@@ -3,7 +3,7 @@ import { checkedDocument } from "@/project/spatial/domain";
 import { validateSpatialProject } from "@/project/spatial/overviewPairs";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringPreview } from "@/editor/spatial/authoringTypes";
-import { sha256HexTextSync } from "@/util/sha256";
+import { contentFingerprint } from "@/util/fingerprint";
 import { ToolError } from "./types";
 
 const KEY = "spatial-tool-proposal";
@@ -13,10 +13,10 @@ type IssuedPreview = { readonly id: string; readonly baseline: string; readonly 
 
 /** Editor-only issued state follows the existing detached draft clone path; never project JSON. */
 export function spatialToolFingerprint(project: Project): string {
-  return sha256HexTextSync(JSON.stringify(project));
+  return contentFingerprint(JSON.stringify(project));
 }
 function spatialFingerprint(project: Project): string {
-  return sha256HexTextSync(JSON.stringify(project.spatialAuthoring));
+  return contentFingerprint(JSON.stringify(project.spatialAuthoring) ?? "");
 }
 export function beginSpatialToolProposal(project: Project, before: Project): void {
   if (before.spatialAuthoring === undefined) return;

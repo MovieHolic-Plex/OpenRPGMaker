@@ -42,8 +42,14 @@ export function renderRunOutcome(outcome: RunOutcome): HTMLElement {
     dataset: { testid: "ai-run-outcome", execution: outcome.execution, goal: outcome.goal, delivery: outcome.delivery,
       ...(receipt ? { imageDelivery: receipt } : {}) },
     attrs: { role: "status", "aria-live": "polite", "aria-atomic": "true" },
-    text: [EXECUTION_LABEL[outcome.execution], GOAL_LABEL[outcome.goal], DELIVERY_LABEL[outcome.delivery],
-      ...(receipt ? [DELIVERY_RECEIPT_LABEL[receipt]] : [])].join(" · "),
+    // 평소 상태(정상 종료·목표 미평가)는 말하지 않는다 — 「응답 종료 · 목표 미평가 · 적용됨」은 사용자에게
+    // «적용됐다» 한 마디였다. 세 축은 dataset 에 그대로 남아 기계가 읽는다.
+    text: [
+      ...(outcome.execution === "response-final" ? [] : [EXECUTION_LABEL[outcome.execution]]),
+      ...(outcome.goal === "unassessed" ? [] : [GOAL_LABEL[outcome.goal]]),
+      DELIVERY_LABEL[outcome.delivery],
+      ...(receipt ? [DELIVERY_RECEIPT_LABEL[receipt]] : []),
+    ].join(" · "),
   });
 }
 

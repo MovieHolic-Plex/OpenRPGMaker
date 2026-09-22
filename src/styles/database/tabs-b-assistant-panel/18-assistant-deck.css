@@ -113,7 +113,10 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-work-inline { flex: 0 0 auto; background: transparent; border: 1px solid var(--border-subtle); border-radius: var(--radius-m); padding: 10px 12px; font-size: 12px; }
 .ai-work-inline header { display: flex; align-items: baseline; gap: 10px; justify-content: space-between; }
 .ai-work-inline header strong { font-weight: 500; overflow-wrap: anywhere; }
-.ai-work-inline-status { flex-shrink: 0; color: var(--text-3); font-size: 11px; }
+.ai-work-inline-status { flex-shrink: 0; color: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.ai-work-inline-now { margin: 6px 0 0; color: var(--text-2); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.ai-work-inline-now[hidden] { display: none; }
+.ai-work-inline-changed { margin: 8px 0 0; color: var(--text-1); font-size: 12px; font-weight: 500; overflow-wrap: anywhere; }
 .ai-work-inline[data-state="done"] .ai-work-inline-status { color: var(--success); }
 .ai-work-inline[data-state="failed"] .ai-work-inline-status { color: var(--danger); }
 .ai-work-inline-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }

@@ -16,6 +16,7 @@ import type { AiActivityToolCall } from "@/ai/activityLogTypes";
 import type { AuditEntry } from "@/ai/session/types";
 import { randomUuid } from "@/util/id";
 import type { TeamBoardState } from "./teamBoardState";
+import { addPiAgentUsage, type PiAgentUsage } from "./protocol";
 
 export interface PiRunContext {
   readonly applyMode?: import("./applyMode").PiApplyMode;
@@ -84,6 +85,7 @@ export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
           ...(facts.error ? { error: facts.error } : {}),
           ...(facts.stoppedReason ? { stoppedReason: facts.stoppedReason } : {}),
           ...(facts.board.report ? { assistantText: facts.board.report } : {}),
+          ...(boardUsage(facts.board) ? { usage: boardUsage(facts.board) } : {}),
         },
         { toolCalls: agentToolCalls(facts.board), audit },
       );
@@ -99,7 +101,9 @@ export function startPiRunLog(context: PiRunContext): PiRunLogHandle {
 function agentToolCalls(board: TeamBoardState): AiActivityToolCall[] {
   return board.agents.map((agent) => {
     const where = agent.mapName ?? "프로젝트 전체";
-    const counters = `${agent.turns}턴/${agent.toolCalls}툴콜${agent.toolErrors > 0 ? ` · 오류 ${agent.toolErrors}` : ""}`;
+    const usage = agent.stats?.usage;
+    const tokens = usage ? ` · 입력 ${usage.input + usage.cacheRead}(캐시 ${usage.cacheRead})/출력 ${usage.output} 토큰` : "";
+    const counters = `${agent.turns}턴/${agent.toolCalls}툴콜${agent.toolErrors > 0 ? ` · 오류 ${agent.toolErrors}` : ""}${tokens}`;
     return {
       name: `pi:${agent.kindLabel}`,
       args: {
@@ -111,6 +115,13 @@ function agentToolCalls(board: TeamBoardState): AiActivityToolCall[] {
       summary: `${agent.roleLabel} — ${agent.state} · ${where} · ${counters}${agent.lastLine ? ` — ${agent.lastLine}` : ""}`,
     };
   });
+}
+
+/** 보드의 모든 에이전트 행 토큰 합계. 팀이면 팀장 행과 팀원 행이 각자 자기 몫만 든다. */
+function boardUsage(board: TeamBoardState): PiAgentUsage | undefined {
+  let total: PiAgentUsage | undefined;
+  for (const agent of board.agents) total = addPiAgentUsage(total, agent.stats?.usage);
+  return total;
 }
 
 function runAudit(context: PiRunContext, facts: PiRunFacts): AuditEntry[] {

@@ -13,6 +13,7 @@ import type { SpatialToolProof } from "@/editor/tools/spatialToolState";
 import type { GameMap, Project } from "@/project/types";
 import type { PiMapDelta } from "./mapDelta";
 import type { PiTeamSpec } from "./teamSpec";
+import { jsonEqual } from "../../util/structuralJson";
 
 export type PiAgentThinkingLevel = "off" | "low" | "medium" | "high";
 
@@ -62,7 +63,38 @@ export interface PiAgentStats {
   readonly turns: number;
   readonly toolCalls: number;
   readonly toolErrors: number;
-  readonly usage?: unknown;
+  readonly usage?: PiAgentUsage;
+}
+
+/**
+ * 실행 하나의 토큰 합계(모든 모델 호출). 예전엔 마지막 호출의 값으로 덮어써서 원장이 사실상 비었다 —
+ * 캐시 적중·도구 스키마 비용을 아무도 볼 수 없었다.
+ */
+export interface PiAgentUsage {
+  readonly input: number;
+  readonly output: number;
+  readonly cacheRead: number;
+  readonly cacheWrite: number;
+  readonly totalTokens: number;
+  /** 합친 모델 호출 수. */
+  readonly calls: number;
+}
+
+/** 두 합계를 더한다. 제공자가 준 한 호출분(`{input, output, …}`)도 받는다 — 모르는 모양은 0으로 센다. */
+export function addPiAgentUsage(total: PiAgentUsage | undefined, next: unknown): PiAgentUsage | undefined {
+  if (!next || typeof next !== "object") return total;
+  const raw = next as Record<string, unknown>;
+  const n = (key: string) => (typeof raw[key] === "number" && Number.isFinite(raw[key]) ? raw[key] as number : 0);
+  const calls = typeof raw.calls === "number" ? raw.calls : 1;
+  const base = total ?? { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0, calls: 0 };
+  return {
+    input: base.input + n("input"),
+    output: base.output + n("output"),
+    cacheRead: base.cacheRead + n("cacheRead"),
+    cacheWrite: base.cacheWrite + n("cacheWrite"),
+    totalTokens: base.totalTokens + (n("totalTokens") || n("input") + n("output") + n("cacheRead") + n("cacheWrite")),
+    calls: base.calls + calls,
+  };
 }
 
 export type PiTeamRoleId = "orchestrator" | "builder" | "reviewer";
@@ -133,7 +165,9 @@ type PiAgentEventPayload =
    * 쓰기 실행의 정본 증거. 프루프가 객체 정체성에 살아 이 경계를 넘지 못하므로 다이제스트로
    * 실어 보낸다 — 브라우저의 수용 게이트가 이걸로 «도구가 만든 제안»임을 확인한다.
    */
-  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null };
+  | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
+      /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
+      readonly unchangedKeys?: readonly PiCheckpointHeavyKey[] };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 
@@ -153,27 +187,43 @@ export function parsePiAgentEventLine(line: string): PiAgentEvent | null {
   }
 }
 
-/** 스트림 조각을 줄 단위 이벤트로 바꾼다. 조각 경계가 줄 중간에 걸려도 된다. */
+/**
+ * 스트림 조각을 줄 단위 이벤트로 바꾼다. 조각 경계가 줄 중간에 걸려도 된다.
+ * 새 조각만 훑고 미완 줄은 조각 배열로 모은다 — 버퍼를 처음부터 다시 훑으면 수십 MB 짜리
+ * done·체크포인트 한 줄이 조각 수의 제곱으로 느려진다(33.5 MB 에 3~51 s).
+ */
 export function createPiAgentLineDecoder(onEvent: (event: PiAgentEvent) => void): {
   push(chunk: string): void;
   flush(): void;
 } {
-  let buffer = "";
+  let pending: string[] = [];
+  const emit = (line: string) => {
+    const event = parsePiAgentEventLine(line);
+    if (event) onEvent(event);
+  };
   return {
     push(chunk) {
-      buffer += chunk;
-      let index = buffer.indexOf("\n");
+      let start = 0;
+      let index = chunk.indexOf("\n");
       while (index >= 0) {
-        const event = parsePiAgentEventLine(buffer.slice(0, index));
-        buffer = buffer.slice(index + 1);
-        if (event) onEvent(event);
-        index = buffer.indexOf("\n");
+        const head = chunk.slice(start, index);
+        if (pending.length) {
+          pending.push(head);
+          const line = pending.join("");
+          pending = [];
+          emit(line);
+        } else {
+          emit(head);
+        }
+        start = index + 1;
+        index = chunk.indexOf("\n", start);
       }
+      if (start < chunk.length) pending.push(start === 0 ? chunk : chunk.slice(start));
     },
     flush() {
-      const event = parsePiAgentEventLine(buffer);
-      buffer = "";
-      if (event) onEvent(event);
+      const line = pending.join("");
+      pending = [];
+      emit(line);
     },
   };
 }
@@ -196,7 +246,7 @@ export function changedProjectKeys(before: Project, after: Project): string[] {
     const a = (before as unknown as Record<string, unknown>)[key];
     const b = (after as unknown as Record<string, unknown>)[key];
     if (a === b) continue;
-    if (JSON.stringify(a) !== JSON.stringify(b)) out.push(key);
+    if (!jsonEqual(a, b)) out.push(key);
   }
   return out.sort();
 }
@@ -208,7 +258,7 @@ function mapContentChanged(left: GameMap | undefined, right: GameMap | undefined
   for (let index = 0; index < count; index += 1) {
     if (left.lowerTiles[index] !== right.lowerTiles[index] || left.upperTiles?.[index] !== right.upperTiles?.[index]) return true;
   }
-  return JSON.stringify(mapWithoutTileArrays(left)) !== JSON.stringify(mapWithoutTileArrays(right));
+  return !jsonEqual(mapWithoutTileArrays(left), mapWithoutTileArrays(right));
 }
 
 function mapWithoutTileArrays(map: GameMap): Record<string, unknown> {
@@ -216,6 +266,21 @@ function mapWithoutTileArrays(map: GameMap): Record<string, unknown> {
   delete copy.lowerTiles;
   delete copy.upperTiles;
   return copy;
+}
+
+/** 기준과 내용이 같은 무거운 키. 이 키들은 줄에서 빼고 받는 쪽이 자기 사본을 다시 붙인다. */
+export function unchangedHeavyKeys(base: Project, project: Project): PiCheckpointHeavyKey[] {
+  const keys: PiCheckpointHeavyKey[] = [];
+  if (jsonEqual(project.tilesets, base.tilesets)) keys.push("tilesets");
+  if (jsonEqual(project.database, base.database)) keys.push("database");
+  return keys;
+}
+
+/** 줄로 내보낼 done. 무거운 키가 요청 그대로면 빼서 보낸다 — 타일셋 이미지만 수십 MB 다. */
+export function slimDoneEvent(done: PiAgentDoneEvent, base: Project): PiAgentDoneEvent {
+  const unchangedKeys = unchangedHeavyKeys(base, done.project);
+  if (unchangedKeys.length === 0) return done;
+  return { ...done, project: slimCheckpointProject(done.project, unchangedKeys), unchangedKeys };
 }
 
 /** 체크포인트 줄에서 빼도 되는 무거운 키. 받는 쪽이 unchangedKeys 로 다시 붙인다. */

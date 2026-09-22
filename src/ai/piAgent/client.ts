@@ -4,7 +4,7 @@ import type { Project } from "@/project/types";
 // NDJSON 진행 이벤트를 받는다. checkpoint는 실제 적용/승인 뒤 ACK하며 done을 최종 결과로 돌려준다.
 
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
-import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
+import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -53,7 +53,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     }
     return event.type === "agent_event" && receiveInspection(event.event);
   };
-  const decoder = createPiAgentLineDecoder((event) => {
+  const decoder = createPiAgentLineDecoder((raw) => {
+    // 워커는 요청 그대로인 무거운 키(타일셋 이미지·DB)를 빼고 done 을 보낸다 — 요청 프로젝트의 것을 다시 붙인다.
+    const event = raw.type === "done" && raw.unchangedKeys?.length ? restoreDone(raw, request.project) : raw;
     // Never persist request contents into conversation/audit event logs.
     if (receiveInspection(event)) return;
     if (event.type === "checkpoint") {
@@ -117,4 +119,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     throw new PiAgentClientError(`워커에서 ${Math.round((Date.now() - lastLineAt) / 1000)}초 동안 신호가 없어 연결을 끊었습니다. 워커가 응답하지 않습니다 — 다시 시도하고, 반복되면 개발 서버 콘솔의 [oh-my-pi-worker] 줄을 봐 주세요.`);
   }
   throw new PiAgentClientError(lastError ?? "Pi 에이전트가 결과를 돌려주지 않았습니다");
+}
+
+function restoreDone(done: PiAgentDoneEvent, requestProject: PiAgentRequest["project"]): PiAgentDoneEvent {
+  const { unchangedKeys, ...rest } = done;
+  return { ...rest, project: restoreCheckpointProject(requestProject, done.project, unchangedKeys) };
 }

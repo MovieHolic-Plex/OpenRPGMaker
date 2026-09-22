@@ -89,7 +89,7 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
   const roster = el("div", { class: "ai-team-avatar-list", dataset: { testid: "ai-team-avatar-list" }, attrs: { "aria-label": "팀원" } });
   const empty = el("p", { class: "ai-team-sidebar-empty", text: "팀 작업\n없음" });
   const settings = el("button", {
-    class: "ai-team-settings-button", attrs: { type: "button", "aria-label": "AI 팀 설정" },
+    class: "ai-team-settings-button", attrs: { type: "button", "aria-label": "AI 팀 설정", title: "AI 팀 설정" },
     children: [deckIcon("gear"), el("span", { text: "팀 설정" })],
     on: { click: () => { view = "settings"; render(); } },
   });
@@ -223,6 +223,8 @@ export function createAiTeamSidebar(options: { settings: HTMLElement }): { root:
       if (focusKey) Array.from(roster.querySelectorAll<HTMLButtonElement>("button")).find(b => b.dataset.agentId === focusKey)?.focus();
     }
     empty.hidden = rows.length > 0;
+    // 팀 작업이 없으면 레일을 톱니 하나 폭으로 접는다 — 84px 가 「팀 작업 없음」 한 줄을 위해 늘 캔버스를 먹었다.
+    root.classList.toggle("is-idle", rows.length === 0 && view === "team" && selected === null);
     team.setAttribute("aria-pressed", String(view === "team"));
     renderDetail();
   }

@@ -424,6 +424,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     status.dataset.statusTone = statusToneOf(text);
     setAiBridgeLastStatus(text);
     studioShell?.setStatus(text);
+    if (turnBusy) workCard?.setStatusLine?.(text);
     syncDeckState();
     if (record) controller.statusTimeline.push({ at: new Date().toISOString(), status: text });
   };
@@ -1969,7 +1970,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * Pi 턴 하나 — 조수 채팅의 유일한 실행 경로다(2026-09-11). 명시 `/pi` 든 평문이든 여기로 모인다:
    * 중단 버튼·상태·보드·영수증 배선이 한 곳에 있어야 두 입구가 어긋나지 않는다.
    */
-  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean; readonly slotClaimed?: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null }): Promise<void> => {
+  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean; readonly slotClaimed?: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null;
+    /** 보낸 문장 말풍선을 send() 가 분류 전에 이미 붙였다. */
+    readonly echoed?: boolean }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -1979,7 +1982,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     pendingReviewPrompt?.remove();
     pendingReviewPrompt = null;
     workCardTitle = (displayText || command.task).replace(/\s+/gu, " ").trim().slice(0, 48);
-    if (displayText) appendBubble("user", displayText);
+    if (displayText && !opts?.echoed) appendBubble("user", displayText);
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     // An exact existing resource is already a graphic decision by the user.
     const graphicSpecified = Object.values(store.getCurrent().tilesets).some(tileset =>
@@ -2200,6 +2203,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 어떤 실패 경로로도 슬롯은 반드시 풀린다(안 풀면 패널이 영구히 잠긴다).
     runSurface.turnBusy = true;
     refreshSendEnabled();
+    // 보낸 문장과 진행 카드는 분류를 **기다리지 않고** 바로 선다. 예전에는 입력창은 즉시 비는데
+    // 말풍선은 의도 분류(1~30 s) 뒤에야 떠서, 그동안 사용자가 쓴 문장이 화면에서 사라져 있었다.
+    workCardTitle = text.replace(/\s+/gu, " ").trim().slice(0, 48);
+    appendBubble("user", text);
+    ensureWorkCard();
     let classified: PlainPiTurn;
     try {
       classified = await plainPiTurn(text);
@@ -2208,12 +2216,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
       // unhandled error 로 잡았고 사용자에게는 아무 표시도 남지 않았다).
       runSurface.turnBusy = false;
+      finishWorkCard({ ok: false, message: "지시 해석 실패" });
       refreshSendEnabled();
       setStatus("대기");
       appendBubble("system", `지시를 해석하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);
       return;
     }
-    await runPiTurn(classified.command, text, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
+    await runPiTurn(classified.command, text, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: classified.intentNote });
+    // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
+    if (!turnBusy) finishWorkCard({ ok: true });
   };
 
   sendButton.addEventListener("click", () => void send());
