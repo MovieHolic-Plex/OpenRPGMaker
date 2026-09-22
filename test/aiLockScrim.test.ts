@@ -17,6 +17,8 @@ vi.mock("@/ai/llmClient", async (importOriginal) => {
 vi.mock("@/editor/panels/aiChatPanelHelpers", () => ({ isAiConfigReady: () => state.ready }));
 vi.mock("@/editor/panels/aiConnectionStatus", () => ({
   getAiConnectionStatus: () => ({ kind: state.ready ? "ready" : "disconnected" }),
+  // revalidate 가 캐시를 새로 읽는 경로 — mock 에서는 동기적으로 콜백만 부른다.
+  refreshAiConnectionStatus: async (onChange?: () => void) => { onChange?.(); },
 }));
 
 const { createAiLockScrim, AI_LOCK_SCRIM_TESTIDS } = await import("@/editor/panels/aiLockScrim");
@@ -59,5 +61,28 @@ describe("AI 미연결 잠금 막", () => {
     scrim.sync();
     expect(seen).toEqual([true, false]);
   });
-});
 
+  it("설정 모달이 닫히면 스스로 다시 판정한다 — 로그인 후 한 단계를 없앤다", async () => {
+    const { AI_SETTINGS_CLOSED_EVENT } = await import("@/editor/panels/aiSettingsModal");
+    const scrim = createAiLockScrim({ onOpenSettings: () => undefined });
+    document.body.append(scrim.element);
+    expect(scrim.sync()).toBe(true);
+    expect(scrim.element.hidden).toBe(false);
+
+    // 로그인을 마치고 모달이 닫힌 순간 — 사용자가 막을 다시 누르지 않아도 걷혀야 한다.
+    state.ready = true;
+    window.dispatchEvent(new CustomEvent(AI_SETTINGS_CLOSED_EVENT));
+    expect(scrim.element.hidden).toBe(true);
+  });
+
+  it("dispose 뒤에는 닫힘 이벤트에 반응하지 않는다", async () => {
+    const { AI_SETTINGS_CLOSED_EVENT } = await import("@/editor/panels/aiSettingsModal");
+    const scrim = createAiLockScrim({ onOpenSettings: () => undefined });
+    scrim.sync();
+    scrim.dispose();
+    state.ready = true;
+    window.dispatchEvent(new CustomEvent(AI_SETTINGS_CLOSED_EVENT));
+    // 리스너가 남아 있으면 걷혔을 것이다 — dispose 가 실제로 떼어냈는지 본다.
+    expect(scrim.element.hidden).toBe(false);
+  });
+});
