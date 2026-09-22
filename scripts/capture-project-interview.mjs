@@ -18,7 +18,10 @@ try {
     window.captureResult = null;
     void showNewProjectDialog({ defaultValue: "기억을 먹는 숲" }).then(result => { window.captureResult = result; });
   });
+  await page.getByTestId("new-project-next").click();
   await page.getByTestId("new-project-genre-option-monster-collect").check();
+  await page.getByTestId("new-project-next").click();
+  await page.getByTestId("new-project-size-option-wide").check();
   await page.getByTestId("new-project-confirm").click();
   const answer = async index => {
     await page.getByTestId(`project-interview-option-${index}`).click();

@@ -262,15 +262,21 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-item-inspector-icon {
+  appearance: none;
   background-color: var(--db-light-bg-inset);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
   border: 1px solid var(--db-light-border-default);
   border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
   flex: 0 0 96px;
+  font: inherit;
   height: 96px;
   image-rendering: pixelated;
+  margin: 0;
+  padding: 0;
   width: 96px;
 }
 
@@ -416,15 +422,21 @@
 }
 
 .database-modal-backdrop .database-modal-window .db-equipment-inspector-icon {
+  appearance: none;
   background-color: var(--db-light-bg-inset);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
   border: 1px solid var(--db-light-border-default);
   border-radius: 6px;
+  color: inherit;
+  cursor: pointer;
   flex: 0 0 96px;
+  font: inherit;
   height: 96px;
   image-rendering: pixelated;
+  margin: 0;
+  padding: 0;
   width: 96px;
 }
 

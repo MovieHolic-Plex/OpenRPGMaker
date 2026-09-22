@@ -130,6 +130,75 @@ describe("toolRegistry", () => {
     expect(matches[0]?.id.startsWith("charset:")).toBe(true);
   });
 
+  it("list_resources는 원래 실패한 picture/potion 호출로 기본 포션 그림을 찾는다", () => {
+    const ctx: ToolContext = { project: createEmptyToolProject() };
+    const result = runTool(ctx, "list_resources", { query: "potion", kind: "picture" }, {});
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({
+      matches: expect.arrayContaining([
+        expect.objectContaining({ id: "generated-item-potion-red-image" }),
+      ]),
+    });
+    const schema = toOpenAiTools().find(tool => tool.function.name === "list_resources");
+    expect(schema?.function.parameters.properties?.kind.enum).toContain("picture");
+  });
+
+  it("list_resources picture 검색은 업로드 그림을 name/id로 찾는다", () => {
+    const project = createEmptyToolProject();
+    project.assets.uploaded["picture_potion_red"] = {
+      id: "picture_potion_red",
+      name: "빨간 포션 그림",
+      kind: "picture",
+      dataUrl: "data:image/png;base64,iVBORw0KGgo=",
+      meta: {},
+    };
+    const ctx: ToolContext = { project };
+    const hit = runTool(ctx, "list_resources", { kind: "picture", query: "포션" }, {});
+    expect(hit.ok, hit.summary).toBe(true);
+    const hits = (hit.data as { matches: Array<{ id: string; label: string }>; total: number }).matches;
+    expect(hits.some((entry) => entry.id === "picture_potion_red" && entry.label === "빨간 포션 그림")).toBe(true);
+    const all = runTool(ctx, "list_resources", { kind: "picture", query: "*" }, {});
+    expect(all.ok, all.summary).toBe(true);
+    expect(all.data).toMatchObject({ matches: expect.arrayContaining([
+      { id: "picture_potion_red", label: "빨간 포션 그림" },
+    ]) });
+    const byId = runTool(ctx, "list_resources", { kind: "picture", query: " PICTURE_POTION_RED " }, {});
+    expect(byId.ok, byId.summary).toBe(true);
+    expect(byId.data).toEqual({
+      matches: [{ id: "picture_potion_red", label: "빨간 포션 그림" }],
+      total: 1,
+      nextOffset: null,
+    });
+    const miss = runTool(ctx, "list_resources", { kind: "picture", query: "searchWhichDoesNotExist" }, {});
+    expect(miss.ok, miss.summary).toBe(true);
+    expect((miss.data as { total: number }).total).toBe(0);
+  });
+
+  it("list_resources picture 검색은 페이지를 누락·중복 없이 반환한다", () => {
+    const project = createEmptyToolProject();
+    for (const id of ["qa_picture_one", "qa_picture_two", "qa_picture_three"]) {
+      project.assets.uploaded[id] = { id, name: id, kind: "picture", dataUrl: "data:image/png;base64,iVBORw0KGgo=", meta: {} };
+    }
+    const ctx: ToolContext = { project };
+    const first = runTool(ctx, "list_resources", { kind: "picture", query: "qa_picture_", limit: 2 }, {});
+    expect(first.ok, first.summary).toBe(true);
+    expect(first.data).toEqual({
+      matches: [{ id: "qa_picture_one", label: "qa_picture_one" }, { id: "qa_picture_two", label: "qa_picture_two" }],
+      total: 3,
+      nextOffset: 2,
+    });
+    const last = runTool(ctx, "list_resources", { kind: "picture", query: "qa_picture_", offset: 2, limit: 2 }, {});
+    expect(last.ok, last.summary).toBe(true);
+    expect(last.data).toEqual({ matches: [{ id: "qa_picture_three", label: "qa_picture_three" }], total: 3, nextOffset: null });
+  });
+
+  it("list_resources picture는 kind enum 밖의 image를 거부한다", () => {
+    const project = createEmptyToolProject();
+    const ctx: ToolContext = { project };
+    const result = runTool(ctx, "list_resources", { kind: "image", query: "potion" }, {});
+    expect(result.ok).toBe(false);
+  });
+
   it("list_npc_graphics가 자유 질의로 구조화 메타데이터를 반환한다", () => {
     expect(allTools().map((tool) => tool.name)).toContain("list_npc_graphics");
     expect(TOOL_CATEGORIES.flatMap((category) => category.tools.map((tool) => tool.name))).toContain("list_npc_graphics");

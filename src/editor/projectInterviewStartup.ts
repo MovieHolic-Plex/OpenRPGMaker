@@ -22,6 +22,9 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     store.update(project => {
       if (project.gameDesignBrief) delete project.gameDesignBrief.generationPending;
     }, { scope: "project", label: "새 프로젝트 기획 전달 준비", origin: "system" });
+    if (!stillCurrent() || store.getCurrent().gameDesignBrief?.generationPending) {
+      throw new Error("게임 기획 전달 상태를 변경하지 못했습니다.");
+    }
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("게임 기획 저장을 확인하지 못했습니다.");
     if (!stillCurrent()) return;

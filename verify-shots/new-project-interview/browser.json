@@ -5,6 +5,7 @@
   "result": {
     "title": "기억을 먹는 숲",
     "choiceId": "monster-collect",
+    "screenSize": "wide",
     "gameDesignBrief": {
       "version": 1,
       "presetId": "monster-collect",

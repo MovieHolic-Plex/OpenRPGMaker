@@ -39,7 +39,7 @@ Controls (including keyboard input) are blocked during the interview and saving.
 - Free text can explicitly answer later slots. `src/ai/projectInterviewAnswers.ts` uses the bounded `project-interview` AI surface to extract only verbatim quotes for unanswered slots. An unavailable endpoint, failure or 12-second timeout falls back to the remaining local questions and preserves the original answer. No invented recommendation is labelled as user text. Final confirmation always shows all five answers, including any extracted quotes and recommendation provenance.
 - `Project.gameDesignBrief` persists the preset, original answers and sources, editable confirmed summary, and optional reload handoff marker. The latest summary takes priority over raw earlier answers and preset defaults. The preset's engine mechanics remain separate from its tone.
 - `buildWelcomeGenrePresetPrompt` uses the confirmed brief instead of fixed tone/content quotas. Legacy context and Pi builder/team/reviewer prompts include the saved brief on later turns. First scope is a complete playable segment, not a promise of an already generated game.
-- `프로젝트 → 게임 기획...` reopens existing briefs, saves changes with a project snapshot, and prefills the composer without auto-sending. Blank projects and manual system-only setup do not need an interview.
+- `프로젝트 → 게임 기획...` reopens existing briefs, saves changes with a project snapshot, and prefills the composer without auto-sending. Blank projects and manual system-only setup do not need an interview. The menu preserves its name/genre/screen-size setup stages before the five game-design questions. `screenSize` still configures the seed viewport.
 
 Browser evidence: `verify-shots/new-project-interview/SUMMARY.md` and `scripts/capture-project-interview.mjs`. These inspect real UI components in isolation, with the welcome save callback stubbed and no live model or canonical project writes. They do not prove end-to-end generated gameplay or SQLite reload. Focused regression cases were authored but not executed locally under the session's test restriction.
 
@@ -77,7 +77,7 @@ commands remain `blocked` (`test/genrePackReceiptCli.test.ts`).
 |---|---|---|
 | Module | `src/editor/editorWelcome.ts` | `src/editor/ui/newProjectDialog.ts` |
 | Chrome | inline posters above the canvas, no Escape layer | modal overlay via `modalStack` |
-| Returns | `EditorWelcomeResult` (`prompt`, `systemPresetPlan`) | `{ title, choiceId, gameDesignBrief? }` |
+| Returns | `EditorWelcomeResult` (`prompt`, `systemPresetPlan`) | `{ title, choiceId, screenSize, gameDesignBrief? }` |
 | Art | poster `thumb` | `newProjectChoiceRowThumb` (falls back to `thumb`) |
 
 Before the merge the two lists had drifted apart with no shared record: `story-cutscene` read

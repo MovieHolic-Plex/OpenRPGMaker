@@ -239,10 +239,6 @@ export function restoreCheckpointProject(current: Project, incoming: Project, un
 
 /** 비교용 스냅샷. 타일셋·데이터베이스는 같은 객체를 공유해 매 도구 JSON 비교를 피한다. */
 export function snapshotProjectKeepingHeavy(project: Project): Project {
-  const tilesets = project.tilesets;
-  const database = project.database;
-  const cloned = structuredClone({ ...project, tilesets: undefined, database: undefined }) as Project;
-  cloned.tilesets = tilesets;
-  cloned.database = database;
-  return cloned;
+  const { tilesets, database, ...light } = project;
+  return { ...structuredClone(light), tilesets, database };
 }

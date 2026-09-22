@@ -42,6 +42,14 @@ it("does not send on save failure and leaves the brief resumable", async () => {
   expect(project.gameDesignBrief!.generationPending).toBe(true);
 });
 
+it("does not send when project permissions reject the claim mutation", async () => {
+  vi.mocked(store.update).mockImplementation(() => {});
+  await prepareProjectInterviewStartup();
+  expect(store.flush).not.toHaveBeenCalled();
+  expect(setPendingAiBootIntent).not.toHaveBeenCalled();
+  expect(project.gameDesignBrief!.generationPending).toBe(true);
+});
+
 it("does not send to a different project opened while saving", async () => {
   let finish!: (value: { kind: "saved" }) => void;
   vi.mocked(store.flush).mockReturnValue(new Promise(resolve => { finish = resolve; }));

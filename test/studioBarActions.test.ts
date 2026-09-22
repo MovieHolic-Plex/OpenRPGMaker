@@ -27,6 +27,7 @@ const mocks = vi.hoisted(() => ({
     async (): Promise<NewProjectDialogResult | null> => ({
       title: "새 프로젝트",
       choiceId: null,
+      screenSize: "classic",
     }),
   ),
   sendAiBootIntent: vi.fn((_text: string): boolean => true),
@@ -212,13 +213,13 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
 
   it("새 프로젝트는 확정 기획과 선택한 시스템을 새 폴더 씨앗에 저장한다", async () => {
     const brief = interviewBrief();
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect", gameDesignBrief: brief });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect", screenSize: "wide", gameDesignBrief: brief });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
     await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
     expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledWith("달빛 항구", expect.objectContaining({
-      system: expect.objectContaining({ genre: "monster-collect", monsterCollection: true }),
+      system: expect.objectContaining({ genre: "monster-collect", monsterCollection: true, playResolution: { width: 640, height: 360 } }),
       gameDesignBrief: { ...brief, generationPending: true },
     }));
     // Reloaded new-project boot owns the handoff, never the project being left.
@@ -238,7 +239,7 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
   });
 
   it("빈 프로젝트는 기획이나 AI 전달 표식을 만들지 않는다", async () => {
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null });
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null, screenSize: "classic" });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();

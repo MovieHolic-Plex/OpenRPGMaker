@@ -904,7 +904,12 @@ async function createProjectFromDialog(): Promise<void> {
   const title = selection.title.trim() || "새 프로젝트";
   const choiceId = selection.choiceId;
   const packId = choiceId === null ? null : newProjectChoiceById(choiceId)?.packId ?? null;
-  const seed = createNewProjectSeed(packId);
+  const seed = createNewProjectSeed(packId, title);
+  // 인터뷰 3단계 응답 적용 — 게임 화면 크기는 논리 뷰포트다. 타이틀 그림·파티클·음악은
+  // 질문하지 않는다: AI 가 장르에 맞게 넣고 저작자는 DB 에서 고친다(2026-09-22 합의).
+  if (selection.screenSize === "wide") {
+    seed.system.playResolution = { width: 640, height: 360 };
+  }
   if (selection.gameDesignBrief) seed.gameDesignBrief = { ...selection.gameDesignBrief, generationPending: true };
   const { createProjectFolderWithSeed } = await import("@/editor/projectFolderActions");
   if (store.hasUnsavedChanges() && !store.isSharedDemoSession() && !(await saveProjectNow())) return;

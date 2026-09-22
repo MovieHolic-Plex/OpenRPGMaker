@@ -266,6 +266,38 @@
   overflow: auto;
 }
 
+/* 아이콘·이미지는 이름 한 줄보다 그림으로 고른다. 한 열 목록은 200종이 넘으면 비교가 안 된다. */
+.db-resource-picker-list.db-resource-picker-list-icons {
+  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  max-height: 360px;
+  padding: 6px;
+}
+
+.db-resource-picker-list.db-resource-picker-list-icons button {
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  min-height: 0;
+  padding: 6px 4px;
+  text-align: center;
+}
+
+.db-resource-picker-list.db-resource-picker-list-icons button > span:last-child {
+  font-size: 11px;
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: normal;
+}
+
+.db-resource-picker-list.db-resource-picker-list-icons .db-resource-picker-option-thumb {
+  height: 48px;
+  max-width: 48px;
+  min-height: 48px;
+  min-width: 48px;
+  width: 48px;
+}
+
 .db-resource-picker-list button {
   align-items: center;
   background: transparent;

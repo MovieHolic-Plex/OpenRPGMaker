@@ -1,3 +1,4 @@
+import { listOpeningStillPackIds } from "@/assets/openingStillPackRuntime";
 import type {
   ActorRecord,
   BattleAnimationRecord,
@@ -33,6 +34,7 @@ export function collectResourceIds(project: Project): Set<string> {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
   for (const id of builtinGeneratedResourceIds()) ids.add(id);
+  for (const id of listOpeningStillPackIds()) ids.add(id);
   for (const asset of EASYRPG_RTP_ASSETS) {
     ids.add(asset.id);
     if ("textureKey" in asset) ids.add(asset.textureKey);
