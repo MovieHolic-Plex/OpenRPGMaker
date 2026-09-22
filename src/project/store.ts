@@ -40,7 +40,7 @@ import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { sha256HexText } from "@/util/sha256";
-import { structuralJson } from "@/util/structuralJson";
+import { normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -1445,8 +1445,9 @@ class ProjectStore {
     if (!canWriteTeamProject()) return;
     const persistIfChanged = options.persistIfChanged !== false;
     // Helpers can report transient changes while reaching the same final structure.
-    // Compare raw records, not deserialize/canonical hashing: no authored fields are forgiven.
-    const before = structuralJson(this.current);
+    // The fingerprint keeps every field and array position. Tile grids and long
+    // strings are digested so opening a heavy project does not stringify them twice.
+    const before = normalizationFingerprint(this.current);
     // 어느 정규화기가 실제로 손을 댔는지 이름으로 남긴다.
     // 실측(2026-08-29): 이 13개는 `this.current` 를 in-place 로 고치면서 markLocalMutation 을
     // 부르지 않는다 — 프로젝트가 로드 중에 조용히 바뀌는데 그 사실이 어디에도 안 남아서
@@ -1469,7 +1470,7 @@ class ProjectStore {
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
-    const changed = before !== structuralJson(this.current);
+    const changed = before !== normalizationFingerprint(this.current);
     if (changed) {
       this.markLocalMutation({
         scope: "system",

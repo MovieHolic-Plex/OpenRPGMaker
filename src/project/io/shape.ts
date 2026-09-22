@@ -77,11 +77,11 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
 }
 
 /** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
-export function validateProjectV4(data: JsonRecord): Project {
+export function validateProjectV4(data: JsonRecord, options?: { readonly adoptParsed?: boolean }): Project {
   const spatialAuthoring = data.spatialAuthoring === undefined ? undefined : validateSpatialAuthoring(data.spatialAuthoring);
   validateAudioDescriptions(data.audioDescriptions);
   validateMonsterMetadata(data.monsterMetadata);
-  const project = normalizeProjectV4(data);
+  const project = normalizeProjectV4(data, options?.adoptParsed === true);
   // Spatial authoring is validated against the normalized project before reference
   // repair, so a canonical overview pair cannot be pruned as an unknown reference.
   if (spatialAuthoring !== undefined) {
@@ -104,7 +104,11 @@ export function readProjectV4MapMergeSnapshot(data: JsonRecord): Pick<Project, "
   return { maps: project.maps, mapTree: project.mapTree };
 }
 
-function normalizeProjectV4(data: JsonRecord): Project {
+function ownedParsedProject(data: JsonRecord): Project {
+  return data as unknown as Project;
+}
+
+function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   assertGrowthShape(data.growth);
   validateMeta(data.meta);
   validateAssets(data.assets);
@@ -156,7 +160,9 @@ function normalizeProjectV4(data: JsonRecord): Project {
   requirePosition("startPos", data.startPos);
   requireRecord("flags", data.flags);
 
-  const project = cloneJson<Project>(data);
+  // A string from JSON.parse is already a detached tree. Copying it again with
+  // JSON.stringify just to satisfy the validator doubles the cost of a heavy load.
+  const project = adoptParsed ? ownedParsedProject(data) : cloneJson<Project>(data);
   if (data.aiAuthoring !== undefined) project.aiAuthoring = normalizeAiAuthoring(data.aiAuthoring);
   project.mapTree = mapTree;
   project.mapConnections ??= [];
