@@ -1,5 +1,21 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 확정된 게임 기획 (2026-09-22)
+
+`Project.gameDesignBrief?: GameDesignBrief`는 새 프로젝트 인터뷰의 저작 메타데이터다.
+`version: 1`, 8개 선택지의 `presetId`, experience/activity/progression/detail/scope별
+질문·항목명·원문·출처(`user | recommended`), 수정 가능한 확정 `summary`를 보존한다.
+정규화는 `src/project/gameDesignBrief.ts`가 소유하고 `io/shape.ts`에서 읽는다. 필드가 없던
+기존 프로젝트에는 값을 만들지 않으며, 존재하는 잘못된 값은 조용히 버리지 않고 거절한다.
+답변은 각각 1,000자, 요약은 4,000자 한도다. 원문은 요약 수정과 별개로 남는다.
+SQLite 및 JSON 저장/내보내기에는 일반 프로젝트 필드로 함께 들어가며 게임 Save 슬롯은 아니다.
+문서 스키마·앱 버전을 손으로 올리지 않는다.
+
+선택적 `generationPending`은 메뉴 생성 시 새 폴더 부팅으로 AI 지시를 넘기는 표식이다.
+새로 연 프로젝트에서만 삭제·저장한 뒤 전송을 예약한다. 실패하면 같은 프로젝트의 표식을
+다시 살리고 보내지 않는다. 확정 기획은 고정 프리셋 분위기보다 우선하지만 선택한 시스템을
+바꾸지는 않는다. 구현/UX/검증 범위는 [장르 프리셋 인터뷰](editor-genre-packs.md).
+
 ## LegacyDb 잔여 의존 정리 (2026-09-21)
 
 현재 정본은 SQLite다. `tileMetadataDb.ts`의 load/save/clear 공개 함수는 저장소 중립 이름을

@@ -13,6 +13,8 @@
 
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "./modalStack";
+import { showProjectInterview } from "./projectInterviewDialog";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import {
   NEW_PROJECT_DIALOG_CHOICE_ORDER,
   newProjectChoiceById,
@@ -30,6 +32,7 @@ export type NewProjectDialogResult = {
   readonly choiceId: NewProjectChoiceId | null;
   /** 게임 화면 크기. classic = 320×240(기본), wide = 640×360. */
   readonly screenSize: NewProjectScreenSize;
+  readonly gameDesignBrief?: GameDesignBrief;
 };
 
 export type NewProjectDialogOptions = {
@@ -123,6 +126,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.host },
     });
     let settled = false;
+    let interviewing = false;
     let step = 0;
     let selectedChoiceId: NewProjectChoiceId | null = opts.defaultChoiceId ?? null;
     let selectedSize: NewProjectScreenSize = "classic";
@@ -159,7 +163,10 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       }) as HTMLInputElement;
       radio.checked = option.id === selectedChoiceId;
       radio.addEventListener("change", () => {
-        if (radio.checked) selectedChoiceId = option.id;
+        if (radio.checked) {
+          selectedChoiceId = option.id;
+          confirmButton.textContent = opts.confirmLabel ?? (option.id ? "다음 · 게임 기획" : "만들기");
+        }
       });
       // 장르 그림은 첫 화면 포스터와 같은 자산을 쓴다. 빈 프로젝트는 그림이 없으므로 +.
       // 자산이 없으면 img 를 떼어 격자 배경만 남긴다 — 깨진 그림 아이콘을 보여 주지 않는다.
@@ -290,10 +297,10 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
     });
     const confirmButton = el("button", {
       class: "app-modal-button is-confirm",
-      text: opts.confirmLabel ?? "만들기",
+      text: opts.confirmLabel ?? (selectedChoiceId ? "다음 · 게임 기획" : "만들기"),
       attrs: { type: "button" },
       dataset: { testid: NEW_PROJECT_DIALOG_TESTIDS.confirm },
-      on: { click: confirmSelection },
+      on: { click: () => void confirmSelection() },
     });
     const cancelButton = el("button", {
       class: "app-modal-button",
@@ -321,7 +328,7 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       for (const [index, panel] of stepPanels.entries()) {
         panel.hidden = index !== step;
       }
-      progress.textContent = "질문 " + String(step + 1) + "/" + String(STEP_COUNT) + " · " + STEP_QUESTIONS[step]!;
+      progress.textContent = "설정 " + String(step + 1) + "/" + String(STEP_COUNT) + " · " + STEP_QUESTIONS[step]!;
       backButton.hidden = step === 0;
       nextButton.hidden = step === STEP_COUNT - 1;
       confirmButton.hidden = step !== STEP_COUNT - 1;
@@ -331,12 +338,16 @@ export function showNewProjectDialog(opts: NewProjectDialogOptions = {}): Promis
       }
     }
 
-    function confirmSelection(): void {
-      done({
-        title: nameInput.value.trim() || fallbackTitle,
-        choiceId: selectedChoiceId,
-        screenSize: selectedSize,
-      });
+    async function confirmSelection(): Promise<void> {
+      if (interviewing || settled) return;
+      const selection = { title: nameInput.value.trim() || fallbackTitle, choiceId: selectedChoiceId, screenSize: selectedSize };
+      if (!selection.choiceId) { done(selection); return; }
+      interviewing = true;
+      confirmButton.disabled = true;
+      try {
+        const gameDesignBrief = await showProjectInterview(selection.choiceId);
+        if (gameDesignBrief && !settled) done({ ...selection, gameDesignBrief });
+      } finally { interviewing = false; confirmButton.disabled = false; }
     }
 
     nameInput.addEventListener("keydown", (event) => {

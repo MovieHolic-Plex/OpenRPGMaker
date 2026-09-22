@@ -47,6 +47,7 @@ export const AREA_LABELS: Readonly<Record<string, string>> = {
   defaultVillagePresetId: "기본 설계서",
   aiDocuments: "AI 문서",
   aiInstructions: "AI 지시문",
+  gameDesignBrief: "게임 기획",
   worldCanon: "세계 정본",
   worldGraph: "세계 그래프",
   factions: "세력",
