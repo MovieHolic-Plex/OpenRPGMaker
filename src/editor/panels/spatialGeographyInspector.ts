@@ -70,11 +70,7 @@ export function renderSpatialGeographyInspector(view: GeographyView, rerender: (
         el("dd", { text: `${design.ports.length}곳` }),
       ],
     }));
-    body.push(el("p", {
-      class: "spatial-readonly-note",
-      text: "기본 설계는 읽기 전용입니다. 「추가」로 내 설계를 만들면 편집할 수 있습니다.",
-      dataset: { testid: "spatial-readonly-note" },
-    }));
+    // 읽기 전용 안내는 캔버스 위에 한 번만 둔다(spatialGeographyCanvas) — 상세에서 되풀이하지 않는다.
   }
   if (design && target) {
     body.push(el("label", {

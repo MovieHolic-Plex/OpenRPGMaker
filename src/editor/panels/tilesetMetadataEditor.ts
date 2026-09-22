@@ -73,7 +73,9 @@ import type { PassFlag, TileAiMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 let selectedTile = 0;
-let standaloneTab: "references" | "settings" | null = "references";
+// 첫 화면은 통행(규칙) 탭이다. 타일셋을 연 사람이 가장 먼저 하는 일이 통행 칠하기이고,
+// 비어 있는 AI 참고문서 목록이 첫 화면이면 할 일이 안 보였다(2026-09-23 맵 자료집 UI 정리).
+let standaloneTab: "references" | "settings" | null = null;
 let editMode: TilesetEditMode = "passage";
 /** 방향별 통행. 리렌더마다 접히면 연속으로 방향을 못 고친다. */
 let compassOpen = true;

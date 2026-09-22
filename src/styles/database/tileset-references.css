@@ -118,3 +118,9 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs { padding:0 8px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs > button { padding:10px 8px; }
 }
+/* 통행 칠하기 도구 열(140px)은 레거시 2열 그리드를 물려받아 붓 묶음이 66px 칸에 갇혔고,
+   「시트에서 클릭·드래그로 칠합니다」가 한 글자씩 세로로 쪼개졌다. 한 열로 세운다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools { display:flex; flex-direction:column; align-items:stretch; align-self:start; gap:6px; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools > button { height:auto; min-height:30px; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage { min-width:0; margin:4px 0 0; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-passage-paint-hint { display:block; white-space:normal; word-break:keep-all; font-size:11px; line-height:1.4; color:var(--text-3); }

@@ -2,10 +2,11 @@ import { el } from '@/util/dom';
 import type { SpatialGalleryCard } from './spatialCatalog';
 import { classifyRegionCard, matchesRegionClassification, regionLibraryFilters, REGION_CATEGORIES } from './spatialRegionClassification';
 import { patchSpatialSession } from './spatialAuthoringSession';
+import { renderSpatialFilterDrawer } from './spatialFilterDrawer';
 import './spatialPlaceLibrary.css';
 
 /** 지역 라이브러리 컨트롤 — 장소 라이브러리 머리와 같은 두 줄 구조(제목줄 + 도구줄). */
-export function renderRegionLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void): HTMLElement {
+export function renderRegionLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void, extra: { readonly nodes: readonly HTMLElement[]; readonly activeCount: number } = { nodes: [], activeCount: 0 }): HTMLElement {
   const values = cards.map(classifyRegionCard), f = regionLibraryFilters;
   const update = () => { patchSpatialSession({ listView: true }); refresh(); };
   const select = (label: string, key: 'style' | 'category' | 'origin', options: readonly string[]) => {
@@ -23,14 +24,16 @@ export function renderRegionLibraryControls(cards: readonly SpatialGalleryCard[]
       el('div', { class: 'place-library-title', children: [
         el('strong', { text: '지역 라이브러리' }),
         el('span', { class: 'place-library-count', text: `${cards.filter(matchesRegionClassification).length}개`, dataset: { testid: 'region-library-count' } }),
-        el('small', { text: '참고 사례는 읽기 전용 · 내 설계는 「추가」로 만듭니다' }),
       ] }),
     ] }),
     el('div', { class: 'place-library-filters', children: [
       search,
-      select('그림체', 'style', values.map(v => v.style)),
-      select('출처', 'origin', ['참고 사례', '내 설계', '마을 설계서']),
       tabs,
+      renderSpatialFilterDrawer([f.style, f.origin].filter(Boolean).length + extra.activeCount, [
+        select('그림체', 'style', values.map(v => v.style)),
+        select('출처', 'origin', ['참고 사례', '내 설계', '마을 설계서']),
+        ...extra.nodes,
+      ]),
     ] }),
   ] });
 }

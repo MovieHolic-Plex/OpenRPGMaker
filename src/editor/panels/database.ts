@@ -1290,7 +1290,8 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
   const addLink = (target: DatabaseTab, back = false): void => {
     nav.append(el("button", {
       class: "btn small",
-      text: `${back ? "← " : ""}${databaseTabLabel(target)}${back ? " 돌아가기" : ""}`,
+      // 앞으로 가는 링크는 「→」로 어디론가 넘어간다는 걸 보인다 — 맨 칩은 무엇의 버튼인지 안 읽혔다.
+      text: back ? `← ${databaseTabLabel(target)} 돌아가기` : `${databaseTabLabel(target)} 열기 →`,
       attrs: {
         type: "button",
         ...(target === "terrain" ? { title: "타일별 지형 효과(통행·이동 판정)를 편집합니다" } : {}),
