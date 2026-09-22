@@ -314,6 +314,48 @@
         "role": "밭 관리집",
         "reason": "이미 있는 서쪽 밭(25,47)을 관리; 새 장식용 밭을 중복 생성하지 않음"
       }
+    },
+    "twin-falls-river-village": {
+      "14,6": {
+        "activity": "woodwork",
+        "role": "목공 작업집",
+        "reason": "윗단 서쪽 숲 가장자리 집에 목재 손질 마당을 둔다"
+      },
+      "58,8": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "윗단 동쪽 강가 집은 세탁·건조 마당만 둔다"
+      },
+      "12,31": {
+        "activity": "herbs",
+        "role": "약초 작업집",
+        "reason": "가운데 단 서쪽 숲길 집에서 약초를 손질한다"
+      },
+      "30,29": {
+        "activity": "storage",
+        "role": "물자 보관집",
+        "reason": "폭포 아래 서쪽 다리목 집을 물자 보관 거점으로 둔다"
+      },
+      "52,30": {
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "가운데 단 동쪽 강둑의 평지를 가족 텃밭으로 쓴다"
+      },
+      "70,30": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "가운데 단 동쪽 끝 집은 세탁 마당만 둔다"
+      },
+      "10,55": {
+        "activity": "field-tending",
+        "role": "밭집",
+        "reason": "아랫단 서쪽 집이 바로 옆 밭을 돌본다"
+      },
+      "58,56": {
+        "activity": "storage",
+        "role": "물자 보관집",
+        "reason": "아랫단 동쪽 다리목 집을 짐 보관 거점으로 둔다"
+      }
     }
   }
 }

@@ -4,6 +4,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
+    "tile": 1486,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1486,
+    "sourceX": 16,
+    "sourceY": 49,
+    "pixelX": 256,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1486",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1487,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -226,6 +259,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "road 연결 1496",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1497,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1497,
+    "sourceX": 27,
+    "sourceY": 49,
+    "pixelX": 432,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1497",
       "source": "user",
       "passage": "passable",
       "userLocked": true,
@@ -730,6 +796,72 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 1519,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1519,
+    "sourceX": 19,
+    "sourceY": 50,
+    "pixelX": 304,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "lake 연결 1519",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1525,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1525,
+    "sourceX": 25,
+    "sourceY": 50,
+    "pixelX": 400,
+    "pixelY": 800,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 50,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "lake 연결 1525",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1533,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -820,6 +952,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "lake 연결 1541",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1542,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1542,
+    "sourceX": 12,
+    "sourceY": 51,
+    "pixelX": 192,
+    "pixelY": 816,
+    "width": 16,
+    "height": 16,
+    "targetX": 12,
+    "targetY": 51,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "lake 연결 1542",
       "source": "user",
       "passage": "solid",
       "userLocked": true,
@@ -1051,6 +1216,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "lake 연결 1559",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
+    "tile": 1560,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1560,
+    "sourceX": 0,
+    "sourceY": 52,
+    "pixelX": 0,
+    "pixelY": 832,
+    "width": 16,
+    "height": 16,
+    "targetX": 0,
+    "targetY": 52,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "lake 연결 1560",
       "source": "user",
       "passage": "solid",
       "userLocked": true,
@@ -1522,6 +1720,39 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 2573,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2554,
+    "sourceX": 4,
+    "sourceY": 85,
+    "pixelX": 64,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 85,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2575,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
@@ -1731,237 +1962,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "width": 16,
     "height": 16,
     "targetX": 3,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2584,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2565,
-    "sourceX": 15,
-    "sourceY": 85,
-    "pixelX": 240,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 4,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2585,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2566,
-    "sourceX": 16,
-    "sourceY": 85,
-    "pixelX": 256,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2586,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2567,
-    "sourceX": 17,
-    "sourceY": 85,
-    "pixelX": 272,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 6,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2587,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2568,
-    "sourceX": 18,
-    "sourceY": 85,
-    "pixelX": 288,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2588,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2569,
-    "sourceX": 19,
-    "sourceY": 85,
-    "pixelX": 304,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 8,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2589,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2570,
-    "sourceX": 20,
-    "sourceY": 85,
-    "pixelX": 320,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 9,
-    "targetY": 86,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2590,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2571,
-    "sourceX": 21,
-    "sourceY": 85,
-    "pixelX": 336,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 10,
     "targetY": 86,
     "layers": [
       "upper"

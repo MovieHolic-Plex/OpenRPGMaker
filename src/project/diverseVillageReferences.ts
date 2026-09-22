@@ -5,7 +5,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "솔바람 흩어진 산촌",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 8,
+    "revision": 9,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -13,14 +13,14 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "projectDownload": "/assets/region-references/pine-hamlets.oprn.json",
     "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
     "sourceMapId": "pine-hamlets",
-    "snapshotProjectId": "oprn-region-pine-hamlets-v8",
+    "snapshotProjectId": "oprn-region-pine-hamlets-v9",
     "rules": [
       "숲에서 숲까지 이어진 절벽 위 윗단과 아랫마을, 계단 세 곳, 갈라지는 오솔길과 작은 샘.",
       "집 7채의 문 앞과 계단 3곳을 시작점에서 연결한다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (계단 대지 개정8)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (강과 폭포 개정9)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -29,7 +29,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "층바위 절벽마을",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 8,
+    "revision": 9,
     "width": 88,
     "height": 72,
     "tilesetId": "forest_harmony",
@@ -37,14 +37,38 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "projectDownload": "/assets/region-references/terrace-cliff-village.oprn.json",
     "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
     "sourceMapId": "terrace-cliff-village",
-    "snapshotProjectId": "oprn-region-terrace-cliff-village-v8",
+    "snapshotProjectId": "oprn-region-terrace-cliff-village-v9",
     "rules": [
       "세 높이의 대지, 네 계단과 절벽 아래 작업 마당.",
       "집 8채의 문 앞과 계단 4곳을 시작점에서 연결한다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (계단 대지 개정8)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (강과 폭포 개정9)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+    ],
+    "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
+  },
+  {
+    "id": "twin-falls-river-village-88x72",
+    "name": "두 폭포 강마을",
+    "kind": "completed-map",
+    "regionKind": "settlement",
+    "revision": 9,
+    "width": 88,
+    "height": 72,
+    "tilesetId": "forest_harmony",
+    "preview": "/assets/region-references/twin-falls-river-village.png",
+    "projectDownload": "/assets/region-references/twin-falls-river-village.oprn.json",
+    "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
+    "sourceMapId": "twin-falls-river-village",
+    "snapshotProjectId": "oprn-region-twin-falls-river-village-v9",
+    "rules": [
+      "북쪽 숲에서 나온 강이 마을 한가운데를 흐르며 두 줄 절벽에서 폭포로 떨어지고, 단마다 다리가 양쪽 강둑을 잇는다.",
+      "집 8채의 문 앞과 계단 4곳을 시작점에서 연결한다.",
+      "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
+      "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
+      "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (강과 폭포 개정9)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -53,7 +77,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "갈대물굽이 포구",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 8,
+    "revision": 9,
     "width": 88,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -61,14 +85,14 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "projectDownload": "/assets/region-references/reed-bay-village.oprn.json",
     "sourceProjectId": "44d88b94-58eb-4dee-a11a-88737da7001b",
     "sourceMapId": "reed-bay-village",
-    "snapshotProjectId": "oprn-region-reed-bay-village-v8",
+    "snapshotProjectId": "oprn-region-reed-bay-village-v9",
     "rules": [
       "물굽이를 따라 비껴 앉은 집, 좁은 골목과 긴 선착장.",
       "집 8채의 문 앞과 계단 2곳을 시작점에서 연결한다.",
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구 (계단 대지 개정8)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (강과 폭포 개정9)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   }

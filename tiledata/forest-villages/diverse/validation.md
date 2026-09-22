@@ -4,7 +4,7 @@
 node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-village
 ```
 
-3개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.
+4개 동결 표본과 같은 번호/배치를 비교하고, 잔디 사선의 방향·색 판본·바닥 받침을 검사하며 절벽 열 문법으로 사선 몸통·밑단·계단 끝을 별도 검사하는 읽기 전용 도구다. 임의 마을을 잘못된 마을이라고 판정하지 않는다. 성공 exit0, 오류 exit1. 최대128개와 전체 수를 반환한다. 엔진 타일 통행만 검사하며 NPC/실내/이벤트/미적 품질은 판정하지 않는다.
 ```json
 [
   {
@@ -18,6 +18,14 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   {
     "valid": true,
     "mapId": "terrace-cliff-village",
+    "totalErrors": 0,
+    "errors": [],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  },
+  {
+    "valid": true,
+    "mapId": "twin-falls-river-village",
     "totalErrors": 0,
     "errors": [],
     "truncated": false,
@@ -1026,6 +1034,48 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
 ```
 
 ![왼쪽 정상, 오른쪽 오류](images/terrace-without-stairs.png)
+
+## waterfall-gap
+```json
+{
+  "input": {
+    "code": "waterfall-gap",
+    "mapId": "twin-falls-river-village",
+    "x": 41,
+    "y": 22,
+    "layer": "lower",
+    "tile": 2700,
+    "replacement": 240
+  },
+  "result": {
+    "valid": false,
+    "mapId": "twin-falls-river-village",
+    "totalErrors": 2,
+    "errors": [
+      {
+        "code": "tile-mismatch",
+        "x": 41,
+        "y": 22,
+        "layer": "lower",
+        "expected": 2700,
+        "actual": 240
+      },
+      {
+        "code": "waterfall-gap",
+        "x": 41,
+        "y": 22,
+        "expectedLower": 2700,
+        "actualLower": 240,
+        "actualUpper": -1
+      }
+    ],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  }
+}
+```
+
+![왼쪽 정상, 오른쪽 오류](images/waterfall-gap.png)
 
 ## grass-edge-direction
 ```json

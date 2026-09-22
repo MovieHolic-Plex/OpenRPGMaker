@@ -20,11 +20,11 @@ try {
     const draw = () => document.getElementById("host").replaceChildren(mod.renderTilesetReferences(p2.tilesets.forest_harmony, draw));
     draw();
   }, p);
-  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-terrace-v8");
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-river-v9");
   await page.getByRole("button", { name: "층바위 절벽마을 · 지형과 배치", exact: true }).click();
   await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
   await page.screenshot({ path: "verify-shots/village-diversity/reference-panel.png" });
-  await page.getByRole("button", { name: "좌표 검증 · 정상/오류 19종", exact: true }).click();
+  await page.getByRole("button", { name: "좌표 검증 · 정상/오류 20종", exact: true }).click();
   await page.locator(".tileset-reference-markdown img").first().scrollIntoViewIfNeeded();
   await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
   await page.screenshot({ path: "verify-shots/village-diversity/reference-errors.png" });

@@ -134,6 +134,21 @@
     "sourceChipset": "tex_forest_harmony_grass_joins",
     "sourceTile": 9,
     "targetTile": 2694
+  },
+  {
+    "sourceChipset": "tex_easyrpg_chipset_world",
+    "sourceTile": 123,
+    "targetTile": 2700
+  },
+  {
+    "sourceChipset": "tex_easyrpg_chipset_world",
+    "sourceTile": 102,
+    "targetTile": 2701
+  },
+  {
+    "sourceChipset": "tex_easyrpg_chipset_world",
+    "sourceTile": 103,
+    "targetTile": 2702
   }
 ]
 ```
@@ -482,6 +497,126 @@
     [
       45,
       46,
+      6
+    ]
+  ]
+}
+```
+
+### 두 폭포 강마을
+```json
+{
+  "cliffs": [
+    {
+      "points": [
+        [
+          6,
+          21
+        ],
+        [
+          12,
+          21
+        ],
+        [
+          14,
+          20
+        ],
+        [
+          36,
+          20
+        ],
+        [
+          38,
+          19
+        ],
+        [
+          50,
+          19
+        ],
+        [
+          52,
+          20
+        ],
+        [
+          70,
+          20
+        ],
+        [
+          72,
+          21
+        ],
+        [
+          82,
+          21
+        ]
+      ],
+      "height": 6
+    },
+    {
+      "points": [
+        [
+          6,
+          45
+        ],
+        [
+          16,
+          45
+        ],
+        [
+          18,
+          44
+        ],
+        [
+          36,
+          44
+        ],
+        [
+          38,
+          43
+        ],
+        [
+          48,
+          43
+        ],
+        [
+          50,
+          44
+        ],
+        [
+          68,
+          44
+        ],
+        [
+          70,
+          45
+        ],
+        [
+          82,
+          45
+        ]
+      ],
+      "height": 6
+    }
+  ],
+  "stairs": [
+    [
+      26,
+      20,
+      6
+    ],
+    [
+      62,
+      20,
+      6
+    ],
+    [
+      22,
+      44,
+      6
+    ],
+    [
+      64,
+      44,
       6
     ]
   ]
