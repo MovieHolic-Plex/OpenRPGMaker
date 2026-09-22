@@ -292,6 +292,60 @@ describe("기기 로그인", () => {
 
     expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34031/oauth-callback?code=ok");
     expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
+    expect(findByTestId(root, "ai-oauth-device-step2")?.textContent ?? "").toContain("알아서");
+    dispose();
+  });
+
+  it("원격 로그인은 주소창을 붙여 넣으면 버튼 없이 연결한다", async () => {
+    startChatGptLogin.mockResolvedValue({
+      verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      userCode: "",
+      pasteCallback: true,
+    });
+    completeOAuthPaste.mockResolvedValue(undefined);
+    fetchChatGptAuthStatus
+      .mockResolvedValueOnce({ connected: false })
+      .mockResolvedValue({ connected: true, env: false });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const input = findByTestId(root, "ai-oauth-paste-url") as FakeElement;
+    const event = new Event("paste", { cancelable: true });
+    Object.defineProperty(event, "clipboardData", {
+      value: { getData: () => "http://localhost:34099/oauth-callback?code=from-bar" },
+    });
+    input.dispatchEvent(event);
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(completeOAuthPaste).toHaveBeenCalledWith("http://localhost:34099/oauth-callback?code=from-bar");
+    dispose();
+  });
+
+  it("이 화면으로 돌아오면 클립보드의 localhost 주소로 연결한다", async () => {
+    startChatGptLogin.mockResolvedValue({
+      verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      userCode: "",
+      pasteCallback: true,
+    });
+    completeOAuthPaste.mockResolvedValue(undefined);
+    fetchChatGptAuthStatus
+      .mockResolvedValueOnce({ connected: false })
+      .mockResolvedValue({ connected: true, env: false });
+    const readText = vi.fn(async () => "http://127.0.0.1:34099/oauth-callback?code=clip");
+    vi.stubGlobal("navigator", { clipboard: { readText } });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34099/oauth-callback?code=clip");
     dispose();
   });
 
