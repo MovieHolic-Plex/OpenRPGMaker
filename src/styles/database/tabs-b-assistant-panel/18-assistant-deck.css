@@ -573,3 +573,83 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+/* ── AI 미연결 잠금 막 ────────────────────────────────────────────────────────
+   연결이 없으면 채팅창을 덮는다. "읽어야 아는" 안내(placeholder·칩)만으로는 부족했다 —
+   사용자는 지시를 쓰고 보낸 뒤에야 막힌다는 걸 알았다. 이 앱에서 AI 는 핵심 시스템이므로,
+   없으면 그 자리가 비어 보여야 한다.
+
+   입력 자체를 disabled 로 만들지는 않는다: 로그인 후 이어 쓰는 흐름을 끊지 않고,
+   무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다. */
+.ai-deck > .ai-lock-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px;
+  background: color-mix(in srgb, var(--bg-raised) 88%, transparent);
+  backdrop-filter: blur(3px);
+}
+
+/* hidden 속성만으로는 위 display 규칙에 밀린다(특이도 함정) — 명시적으로 못박는다. */
+.ai-deck > .ai-lock-scrim[hidden] {
+  display: none;
+}
+
+.ai-lock-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  max-width: 300px;
+  padding: 22px 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m, 10px);
+  background: var(--surface);
+  box-shadow: 0 6px 24px #30271914;
+  text-align: center;
+}
+
+.ai-lock-icon {
+  font-size: 22px;
+  line-height: 1;
+  color: var(--accent);
+}
+
+.ai-lock-title {
+  margin: 0;
+  color: var(--text-1);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ai-lock-body {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.ai-lock-action {
+  margin-top: 4px;
+  padding: 9px 18px;
+  border: 0;
+  border-radius: var(--radius-s, 6px);
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ai-lock-action:hover {
+  filter: brightness(1.06);
+}
+
+.ai-lock-action:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: var(--stroke-2, 2px);
+}
