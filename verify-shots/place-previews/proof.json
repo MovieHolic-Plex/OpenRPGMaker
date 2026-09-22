@@ -1,0 +1,14 @@
+{
+  "sharedPlaceImages": 62,
+  "retained": true,
+  "reusedAfterReplacement": true,
+  "aiConversationCount": 0,
+  "houseStageStamps": 1,
+  "notified": [
+    "place_river_forest_village",
+    "place_tibo_complete_inn"
+  ],
+  "retry": true,
+  "aiRecordsDatabasePresent": true,
+  "errors": []
+}
