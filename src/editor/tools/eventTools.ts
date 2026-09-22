@@ -465,6 +465,46 @@ const NATIVE_PAGE_REPAIR_EXAMPLE = {
   },
 };
 
+/**
+ * 페이지가 있는 이벤트는 런타임이 page.commands/page.trigger 만 실행한다(playSceneInterpreter `page?.commands ?? event.commands`).
+ * pages 없이 최상위 commands/trigger 만 보낸 패치를 그대로 저장하면 OK 를 돌려주고 아무것도 실행되지 않는다
+ * (2026-09-23 추리 도그푸딩: 증거 3개가 전부 이렇게 사라졌다). 페이지가 하나면 그 페이지로 옮기고,
+ * 여럿이면 어느 페이지인지 추측하지 않고 거부한다.
+ */
+function routeRootCommandsIntoPage(
+  event: GameEvent,
+  patch: Partial<GameEvent>,
+  existing: GameEvent | undefined,
+  warnings: string[],
+): void {
+  const has = (key: keyof GameEvent) => Object.prototype.hasOwnProperty.call(patch, key);
+  const pages = event.pages ?? [];
+  if (has("pages") || pages.length === 0) return;
+  // 빈 배열은 옮기지 않는다 — 이름만 바꾸려는 패치가 흔히 commands:[] 를 같이 보내는데, 그걸 옮기면 페이지 대사가 지워진다.
+  const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
+  const movesTrigger = has("trigger") && patch.trigger !== undefined;
+  if (!movesCommands && !movesTrigger) return;
+  if (pages.length > 1) {
+    if (!movesCommands) {
+      warnings.push(`최상위 trigger 는 페이지가 있는 이벤트에서 실행되지 않습니다 — 페이지별 trigger 는 pages 로 보내세요 (페이지 ${pages.length}개)`);
+      return;
+    }
+    throw new ToolError(
+      `이벤트 '${event.id}'에는 페이지가 ${pages.length}개(${pages.map((page) => page.id).join(", ")}) 있어 최상위 commands 는 실행되지 않습니다. ` +
+      "바꿀 페이지의 commands 를 event.pages 에 담아 보내세요 — pages 는 배열 전체 교체이므로 유지할 페이지도 모두 포함하세요. get_event 로 현재 페이지를 먼저 읽으세요.",
+      { code: "invalid-args" },
+    );
+  }
+  const page = { ...pages[0]! };
+  if (movesCommands) page.commands = structuredClone(patch.commands!);
+  if (movesTrigger) page.trigger = structuredClone(patch.trigger!);
+  event.pages = [page];
+  event.commands = structuredClone(existing?.commands ?? []);
+  if (existing?.trigger) event.trigger = structuredClone(existing.trigger);
+  const moved = [movesCommands ? "commands" : "", movesTrigger ? "trigger" : ""].filter(Boolean).join("·");
+  warnings.push(`최상위 ${moved} → pages[0] 로 옮김 (페이지가 있는 이벤트는 페이지 명령만 실행된다)`);
+}
+
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
   description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.`,
@@ -567,6 +607,7 @@ const upsertEvent: ToolDefinition = {
         if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
       }
     }
+    routeRootCommandsIntoPage(event, patch, existing, warnings);
     assertEventShape(event, warnings, existing ? patch : event);
     const outcome = upsertEventIntoMap(map, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
@@ -2486,6 +2527,29 @@ const removeEvent: ToolDefinition = {
   },
 };
 
+/**
+ * 시간 시스템이 켜지면 시간표 칸이 NPC 좌표를 덮는다(npcSchedules.updateNpcSchedules).
+ * 옮긴 NPC 의 옛 자리 칸은 새 자리로 따라가게 하고, 다른 곳을 가리키는 칸은 경고로 남긴다 —
+ * 옮기라는 요청은 이 NPC 를 여기 두라는 뜻인데, 옛 칸이 남으면 조용히 옛 자리로 돌아간다.
+ */
+function followScheduleSlots(mapId: string, event: GameEvent, previous: Point): string[] {
+  if (!event.schedule?.length || (previous.x === event.x && previous.y === event.y)) return [];
+  let followed = 0;
+  event.schedule = event.schedule.map((entry) => {
+    if (entry.at.mapId !== mapId || entry.at.x !== previous.x || entry.at.y !== previous.y) return entry;
+    followed += 1;
+    return { ...entry, at: { ...entry.at, x: event.x, y: event.y } };
+  });
+  const elsewhere = event.schedule
+    .filter((entry) => entry.at.mapId !== mapId || entry.at.x !== event.x || entry.at.y !== event.y)
+    .map((entry) => `${JSON.stringify(entry.when)} → ${entry.at.mapId} (${entry.at.x}, ${entry.at.y})${entry.activity ? ` ${entry.activity}` : ""}`);
+  const notes = followed > 0 ? [`시간표 ${followed}칸을 새 자리 (${event.x}, ${event.y})로 옮겼다.`] : [];
+  if (elsewhere.length > 0) {
+    notes.push(`'${event.name ?? event.id}' 의 시간표가 시간 시스템에서 이 NPC 를 다른 곳으로 옮긴다: ${elsewhere.join("; ")} — 고정하려면 set_npc_schedule 로 비우거나 고쳐라.`);
+  }
+  return notes;
+}
+
 const moveEvent: ToolDefinition = {
   name: "move_event",
   description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요). 배치를 옮기라는 요청은 이벤트를 지우고 새로 만들지 말고 이 툴로 옮긴다.",
@@ -2521,12 +2585,17 @@ const moveEvent: ToolDefinition = {
       label: `이벤트 '${event.id}'`,
       code: "move-event-impassable",
     });
+    const previous = { x: event.x, y: event.y };
     event.x = placement.x;
     event.y = placement.y;
+    const warnings = [
+      ...(placement.adjusted ? [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] : []),
+      ...followScheduleSlots(map.id, event, previous),
+    ];
     return {
       summary: `이벤트 '${args.eventId}' → (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
       data: { eventId: event.id, x: placement.x, y: placement.y, adjusted: placement.adjusted },
-      ...(placement.adjusted ? { warnings: [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] } : {}),
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };

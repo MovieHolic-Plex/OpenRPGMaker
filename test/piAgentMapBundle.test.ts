@@ -184,7 +184,10 @@ describe("piAgent mapBundle", () => {
   it("묶음이 기존 타일셋에 덧댄 이식은 함께 옮긴다", () => {
     const base = seed();
     const tilesetId = base.maps.map_east!.tilesetId;
-    const graft = { targetTile: 443, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 443 };
+    // 기본 타일셋이 이미 443 에 이식을 싣고 온다 — 비어 있는 슬롯을 고른다.
+    const taken = new Set((base.tilesets[tilesetId]!.tileGrafts ?? []).map((entry) => entry.targetTile));
+    const free = [...Array(base.tilesets[tilesetId]!.count).keys()].reverse().find((tile) => !taken.has(tile))!;
+    const graft = { targetTile: free, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 443 };
     const a = clone(base);
     const tileset = a.tilesets[tilesetId]!;
     tileset.tileGrafts = [...(tileset.tileGrafts ?? []), graft];
@@ -194,6 +197,48 @@ describe("piAgent mapBundle", () => {
     expect(merged.project.tilesets[tilesetId]?.tileGrafts).toContainEqual(graft);
     expect(merged.spills).toEqual([]);
     expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  // 실측(2026-09-23 추리 도그푸딩): author_village 가 기존 타일셋 끝을 넘는 슬롯에 이식하며
+  // count·타일별 배열을 늘렸는데, 병합이 이식만 옮겨 게이트가 `targetTile out of range (count 확장 누락)` 로
+  // 에이전트 작업 전체를 거부했다.
+  it("이식이 기존 타일셋을 늘렸으면 늘린 꼬리까지 함께 옮긴다", () => {
+    const base = seed();
+    const tilesetId = base.maps.map_east!.tilesetId;
+    const a = clone(base);
+    const tileset = a.tilesets[tilesetId]!;
+    const oldCount = tileset.count;
+    const newCount = oldCount + tileset.tilesPerRow;
+    while (tileset.passability.length < newCount) tileset.passability.push({ up: false, down: false, left: false, right: false });
+    while (tileset.priority.length < newCount) tileset.priority.push("upper");
+    while (tileset.terrain.length < newCount) tileset.terrain.push(0);
+    if (tileset.tileMeta) while (tileset.tileMeta.length < newCount) tileset.tileMeta.push({ label: "이식", description: "", source: "unknown" });
+    tileset.count = newCount;
+    const graft = { targetTile: oldCount + 2, sourceChipset: "tex_easyrpg_chipset_retro_house", sourceTile: 12 };
+    tileset.tileGrafts = [...(tileset.tileGrafts ?? []), graft];
+
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: a }]);
+
+    expect(merged.project.tilesets[tilesetId]).toEqual(tileset);
+    expect(merged.spills).toEqual([]);
+    expect(commitChangeset(merged.project, base).ok).toBe(true);
+  });
+
+  it("묶음 안 맵으로 옮긴 시작 위치는 함께 옮기고, 묶음 밖 맵이면 버린다", () => {
+    const base = seed();
+    const inside = clone(base);
+    inside.startMapId = "map_east";
+    inside.startPos = { x: 3, y: 4 };
+    const kept = mergeMapBundles(base, [{ mapIds: ["map_east"], project: inside }]);
+    expect([kept.project.startMapId, kept.project.startPos]).toEqual(["map_east", { x: 3, y: 4 }]);
+    expect(kept.spills).toEqual([]);
+
+    const outside = clone(base);
+    outside.startMapId = "map_west";
+    outside.startPos = { x: 1, y: 1 };
+    const dropped = mergeMapBundles(base, [{ mapIds: ["map_east"], project: outside }]);
+    expect([dropped.project.startMapId, dropped.project.startPos]).toEqual([base.startMapId, base.startPos]);
+    expect(dropped.spills[0]?.keys).toEqual(expect.arrayContaining(["startMapId", "startPos"]));
   });
 
   // 경계 고정: 옮기는 것은 «덧댄 것» 뿐이다. 기존 이식을 갈아치우거나 타일셋의 다른 데이터를

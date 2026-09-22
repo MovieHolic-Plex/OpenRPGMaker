@@ -41,6 +41,25 @@ export interface MergeMapBundlesResult {
   readonly conflicts: readonly string[];
 }
 
+/**
+ * 키 순서와 무관한 같음. 도구 후처리·정규화가 손대지 않은 맵의 키 순서만 바꾸는 일이 있어
+ * (실측 2026-09-23: map_east 에 place_battle_blocker → map_west 키 순서만 바뀜) JSON.stringify
+ * 비교는 아무도 안 건드린 맵을 「범위 밖 변경 버림」 으로 보고했다.
+ */
+function same(a: unknown, b: unknown): boolean {
+  // 대부분은 순서까지 같다 — 프로젝트 전체를 정렬하는 비용은 어긋날 때만 낸다.
+  if (JSON.stringify(a) === JSON.stringify(b)) return true;
+  return JSON.stringify(sortedKeys(a)) === JSON.stringify(sortedKeys(b));
+}
+
+/** 키만 정렬한 사본. undefined 값·함수는 JSON.stringify 규칙 그대로 빠진다(clone 왕복과 같은 값). */
+function sortedKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortedKeys);
+  if (!value || typeof value !== "object") return value;
+  const record = value as Record<string, unknown>;
+  return Object.fromEntries(Object.keys(record).sort().map((key) => [key, sortedKeys(record[key])]));
+}
+
 function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
@@ -107,19 +126,19 @@ export function mapBundleSpill(base: Project, result: Project, mapIds: readonly 
       const ids = new Set([...Object.keys(base.maps ?? {}), ...Object.keys(result.maps ?? {})]);
       for (const id of ids) {
         if (bundle.has(id)) continue;
-        if (JSON.stringify(base.maps?.[id]) !== JSON.stringify(result.maps?.[id])) spill.push(`maps.${id}`);
+        if (!same(base.maps?.[id], result.maps?.[id])) spill.push(`maps.${id}`);
       }
       continue;
     }
     if (key === "mapTree") {
       const a = base.mapTree ? pruneSubtrees(base.mapTree, roots) : undefined;
       const b = result.mapTree ? pruneSubtrees(result.mapTree, roots) : undefined;
-      if (JSON.stringify(a) !== JSON.stringify(b)) spill.push("mapTree");
+      if (!same(a, b)) spill.push("mapTree");
       continue;
     }
     const a = (base as unknown as Record<string, unknown>)[key];
     const b = (result as unknown as Record<string, unknown>)[key];
-    if (JSON.stringify(a) !== JSON.stringify(b)) spill.push(key);
+    if (!same(a, b)) spill.push(key);
   }
   return spill.sort();
 }
@@ -200,8 +219,36 @@ function carryCreatedGrafts(merged: Project, started: Project, result: Project):
     const known = new Set([...(startedTileset.tileGrafts ?? []), ...(target.tileGrafts ?? [])].map((graft) => graft.targetTile));
     const added = (resultTileset.tileGrafts ?? []).filter((graft) => !known.has(graft.targetTile));
     if (added.length === 0) continue;
-    merged.tilesets[id] = { ...target, tileGrafts: [...(target.tileGrafts ?? []), ...clone(added)] };
+    const next = { ...target, tileGrafts: [...(target.tileGrafts ?? []), ...clone(added)] };
+    // 끝을 넘는 슬롯에 이식하면 addTileGraft 가 count 와 타일별 배열을 먼저 늘린다. 이식만 옮기면
+    // 병합본이 `targetTile out of range (count 확장 누락)` 로 게이트에서 거부된다(2026-09-23 실측).
+    // 늘린 꼬리(원래 count 뒤)만 옮긴다 — 기존 슬롯의 속성 변경은 여전히 범위 밖이다.
+    const needed = Math.max(...added.map((graft) => graft.targetTile + 1));
+    if (needed > target.count && resultTileset.count >= needed) {
+      const tail = <T>(rows: readonly T[] | undefined, own: readonly T[] | undefined): T[] | undefined =>
+        rows && own ? [...own, ...clone(rows.slice(own.length, resultTileset.count))] : own ? [...own] : undefined;
+      next.count = resultTileset.count;
+      next.passability = tail(resultTileset.passability, target.passability)!;
+      next.priority = tail(resultTileset.priority, target.priority)!;
+      next.terrain = tail(resultTileset.terrain, target.terrain)!;
+      if (target.tileMeta || resultTileset.tileMeta) {
+        next.tileMeta = tail(resultTileset.tileMeta, target.tileMeta ?? []);
+      }
+    }
+    merged.tilesets[id] = next;
   }
+}
+
+/**
+ * 시작 위치는 프로젝트 최상위 키지만, 묶음 안 맵을 가리키게 옮긴 것은 그 맵의 저작이다
+ * (set_start_position — 2026-09-23 실측: 마을을 지은 에이전트의 시작 위치가 spill 로 버려졌다).
+ * 묶음 밖 맵을 가리키면 여전히 범위 밖이라 버린다.
+ */
+function carryStartPosition(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
+  const moved = result.startMapId !== started.startMapId || !same(result.startPos, started.startPos);
+  if (!moved || !bundle.has(result.startMapId)) return;
+  merged.startMapId = result.startMapId;
+  merged.startPos = clone(result.startPos);
 }
 
 /** database 의 컬렉션은 전부 id 가진 레코드 배열이다 — 종류를 나열하지 않고 그대로 훑는다. */
@@ -265,10 +312,10 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project)
 function droppedFromMerge(merged: Project, result: Project, key: string): boolean {
   if (key.startsWith("maps.")) {
     const id = key.slice("maps.".length);
-    return JSON.stringify(merged.maps?.[id]) !== JSON.stringify(result.maps?.[id]);
+    return !same(merged.maps?.[id], result.maps?.[id]);
   }
   const read = (project: Project): unknown => (project as unknown as Record<string, unknown>)[key];
-  return JSON.stringify(read(merged)) !== JSON.stringify(read(result));
+  return !same(read(merged), read(result));
 }
 
 /** base 에 각 결과의 맵 묶음만 얹는다. 같은 맵을 두 결과가 주장하면 뒤의 것이 이긴다. */
@@ -293,6 +340,7 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
       if (row) merged.maps[id] = clone(row);
       else delete merged.maps[id];
     }
+    carryStartPosition(merged, started, result.project, bundle);
     if (merged.mapTree) {
       for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, result.project.mapTree, id);
     }
