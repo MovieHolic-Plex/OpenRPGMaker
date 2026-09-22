@@ -1,5 +1,6 @@
 import { DEFAULT_TILESET_ID } from "./constants";
 import saved from "@/assets/forestHarmonyTileset.json";
+import diverseReferences from "@/assets/sharedDiverseVillageReferences.json";
 import proseCorrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-prose-corrections.json";
 import corrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-corrections.json";
 import type { Project, TilesetDef } from "../types";
@@ -9,7 +10,9 @@ export const FOREST_HARMONY_ID = "forest_harmony";
 
 /** Independent copies preserve authored passability, autotiles and forest assemblies. */
 export function createForestHarmonyTileset(): TilesetDef {
-  return JSON.parse(JSON.stringify(saved)) as TilesetDef;
+  const tileset = JSON.parse(JSON.stringify(saved)) as TilesetDef;
+  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(diverseReferences)];
+  return tileset;
 }
 
 /** New outdoor authoring prefers the bundled forest atlas; old stripped projects remain usable. */
@@ -48,7 +51,7 @@ export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
     const graft = canonical.tileGrafts?.find(g => g.targetTile === 893);
     if (graft) { tileset.tileGrafts = [...(tileset.tileGrafts ?? []), structuredClone(graft)]; mouth.layerBacking = 652; changed = true; }
   }
-  const missing = saved.referenceDocuments.filter(category =>
+  const missing = [...saved.referenceDocuments, ...diverseReferences].filter(category =>
     !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));
   if (missing.length) { tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)]; changed = true; }
   // The previous shipped sentence was wrong for this atlas; replace only that exact text.

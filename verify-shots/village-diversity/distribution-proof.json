@@ -1,0 +1,12 @@
+{
+  "freshProject": true,
+  "existingProjectBackfill": true,
+  "authorDocumentsPreserved": true,
+  "idempotent": true,
+  "sharedPointerAndOtherAtlasPreserved": true,
+  "exportRoundtrip": [
+    "pine-hamlets",
+    "terrace-cliff-village",
+    "reed-bay-village"
+  ]
+}

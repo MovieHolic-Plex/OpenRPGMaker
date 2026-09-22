@@ -155,9 +155,10 @@
   display: none;
 }
 
-/* 장소 갤러리는 속성이 opt-in 이다 — 이 토글이 유일한 입구이므로 폭과 무관하게 보여야 한다.
+/* 장소·지역 갤러리는 속성이 opt-in 이다 — 이 토글이 유일한 입구이므로 폭과 무관하게 보여야 한다.
    (다른 탭은 넓은 폭에서 속성이 항상 떠 있어 토글이 필요 없다.) */
-.database-modal-body [data-testid="spatial-shell-places"] .spatial-inspector-toggle {
+.database-modal-body [data-testid="spatial-shell-places"] .spatial-inspector-toggle,
+.database-modal-body [data-testid="spatial-shell-regions"] .spatial-inspector-toggle {
   display: inline-flex;
   align-items: center;
 }

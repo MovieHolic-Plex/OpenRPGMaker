@@ -112,6 +112,18 @@
   .database-modal-body [data-testid="spatial-shell-regions"] .spatial-body.is-library-only > .spatial-stage {
     display: none;
   }
+  /* 읽기 전용 지역은 300px 속성 열 안에서 그림/설명을 세로로 쌓는다.
+     캔버스 + 280px 속성의 중첩 2열을 그대로 쓰면 그림이 20px로 줄어든다. */
+  .database-modal-body [data-testid="spatial-shell-regions"] .spatial-stage:has([data-testid="region-reference-inspector"]) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(180px, 40%) minmax(0, 1fr);
+  }
+  .database-modal-body [data-testid="spatial-shell-regions"] [data-testid="region-reference-inspector"] {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    padding: 12px;
+  }
   .database-modal-body [data-testid="spatial-shell-regions"] .spatial-stage:not(.is-inspector-open) {
     grid-template-columns: minmax(0, 1fr);
   }
