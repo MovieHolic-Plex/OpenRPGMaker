@@ -94,7 +94,7 @@ const runtimeTs = [
   "",
 ].join("\n");
 
-await writeFile(OUT_RUNTIME, runtimeTs);
+
 
 // moods 파일의 마커 사이만 교체 — 레포 분(수동 무드)과 파일 상단 라이선스·타입은 보존한다.
 const moodsSource = await readFile(OUT_MOODS, "utf8");
@@ -109,17 +109,20 @@ const moodBody = validated.map((still) => {
     "    name: " + q(still.name) + ",",
     "    tags: [" + still.tags.map((tag) => q(tag)).join(", ") + "],",
   ];
-  if (still.prompt) lines.push("    // prompt: " + still.prompt.slice(0, 140));
+  if (still.prompt) lines.push("    // prompt: " + still.prompt.replace(/[\r\n\u2028\u2029]/g, " ").slice(0, 140));
   lines.push("  },");
   return lines.join("\n");
 });
 
 const packSection = [
   MOODS_BEGIN,
+  "const PACK_STILL_MOODS: readonly OpeningStillMood[] = [",
   moodBody.join("\n"),
+  "];",
   MOODS_END,
 ].join("\n");
 
+await writeFile(OUT_RUNTIME, runtimeTs);
 await writeFile(OUT_MOODS, moodsSource.slice(0, begin) + packSection + moodsSource.slice(end + MOODS_END.length));
 
 console.log("카탈로그 갱신 완료: 팩 스틸 " + validated.length + "장");

@@ -36,6 +36,8 @@ jobs:
       - run: npm ci
 
       - name: 타입체크 (src 만)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run typecheck:app
 
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데

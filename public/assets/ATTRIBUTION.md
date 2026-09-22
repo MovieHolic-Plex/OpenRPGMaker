@@ -441,3 +441,15 @@ files.
 ## Shared river fortress place
 
 `region-references/river-fortress-atlas.png` and its portable map preserve Castle2 and the Hyptosis/Daniel Eddeland supplemental provenance. See `castle-surroundings/CREDITS.txt`. Atlas composites and restored entrance cells do not change those licences. No reference-screenshot pixels or removed stone bridge are included.
+
+## Opening still release pack v1 (2026-09-22)
+
+The `oprn-pack-still-*` catalog images are original text-to-image outputs from the
+project's tibo Imagen path (Google Antigravity, gemini-3.1-flash-image), with no
+third-party reference images. Authored prompts, labels, tags and dimensions are
+recorded in `assets/opening-stills-source-v1.json`; delivered file hashes are pinned
+in `assets/stills-release-v1.json`. Full-frame JPEG conversions preserve the native
+composition and resolution. Images are distributed separately in the `stills-v1`
+GitHub Release, installed at `assets/stills/pack/`, and included in game exports
+only when referenced. This provenance statement does not replace the licenses of
+other bundled assets documented above.

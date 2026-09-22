@@ -12,7 +12,6 @@ import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/ass
 import { repairInteriorTransparentPropLayers } from "./defaults/interiorTransparentPropLayerRepair";
 import { ensureScarloxyPokemonInteriors } from "./defaults/scarloxyPokemonInteriors";
 import { ensureDefaultDatabaseIconResources } from "./defaults/defaultDatabaseIconResources";
-import { ensureDefaultOpeningSequence } from "./defaults/defaultOpeningSequence";
 import { ensureBundledBattleAnimations } from "./defaults/defaultDatabase";
 import { isSaveSkippedLocation, loadDevProjectOverride, saveDevProjectOverride } from "./devProjectPersistence";
 import type { ProjectWriteAuthority } from "./spatial/saveRouting";
@@ -1469,9 +1468,6 @@ class ProjectStore {
       // 팩 이전 스냅샷은 anim_gen_* 이 없어 스타터 아이템·스킬 참조가 끊긴다 —
       // 그대로 두면 fail-closed 재생 게이트가 ▶테스트를 조용히 막는다.
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
-      // 오프닝은 «새 게임 제작자가 당연히 갖는 시작점»이 됐다(2026-09-21). 한 번도 저작하지
-      // 않은 기존 프로젝트에만 기본 시퀀스를 채택하고, 지운/끈 프로젝트는 존중한다.
-      ["defaultOpening", ensureDefaultOpeningSequence(this.current)],
     ];
     const appliedNormalizers = normalizers.filter(([, applied]) => applied).map(([name]) => name);
     const changed = before !== normalizationFingerprint(this.current);

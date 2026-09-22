@@ -84,6 +84,13 @@ Vite dev/preview는 설치 후 선택 창을 다시 열면 목록·재생이 갱
 환경 변수 이름은 2026-09 에 `RPG_ZZU_*` 에서 `OPRN_*` 로 바뀌었다. 옛 이름도 이번 릴리스까지는 경고 한 줄과 함께 그대로 읽힌다(`scripts/lib/oprnEnv.mjs` 가 새 이름으로 옮겨 준다).
 SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwiki/bgm-catalog.md`.
 
+## 1c. 오프닝 이미지 팩
+
+추가 스틸은 `npm run stills:install` + `npm run stills:verify`로 설치한다.
+Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 둔다.
+오프닝 편집과 AI `list_opening_media`가 같은 목록을 사용한다.
+제작·복구·CDN/내보내기 계약은 [opening-still-pack.md](opening-still-pack.md).
+
 ## 2. 검증 — 무엇이 진짜 게이트인가
 
 **워크트리·세션 에이전트는 이 표의 명령을 스스로 실행하지 마라.** `npm run gates` / `npm test` / vitest / 전체 typecheck /

@@ -1,6 +1,7 @@
 // player/titleLicenseNotice.ts
 // 타이틀 화면의 에셋 라이선스 표기. 정본 내용은 public/assets/ATTRIBUTION.md 이고,
 // 웹 내보내기 zip 이 이 파일을 항상 싣기 때문에 출하 플레이어에서도 같은 경로로 읽힌다.
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { el } from "@/util/dom";
 
 export const ATTRIBUTION_DOC_PATH = "/assets/ATTRIBUTION.md";
@@ -13,7 +14,7 @@ export function licenseNoticeText(): string {
 /** 편집기·출하 플레이어 공통. ATTRIBUTION.md 가 없으면 (사실상 없을) null 이다. */
 export async function fetchLicenseNotices(): Promise<string | null> {
   try {
-    const response = await fetch(ATTRIBUTION_DOC_PATH);
+    const response = await fetch(withInlineAsset(ATTRIBUTION_DOC_PATH));
     if (!response.ok) return null;
     return await response.text();
   } catch {
@@ -53,6 +54,8 @@ function showLicenseDialog(body: string | null): void {
   close.textContent = "닫기";
   close.className = "rm-license-dialog-close";
   close.addEventListener("click", () => dialog.close());
+  // A native dialog owns its keys; they must not reach the game's document handler.
+  dialog.addEventListener("keydown", (event) => event.stopPropagation());
   dialog.append(pre, close);
   dialog.addEventListener("close", () => dialog.remove());
   view.document.body.append(dialog);

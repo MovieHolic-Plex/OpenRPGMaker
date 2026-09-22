@@ -8,8 +8,14 @@ export type OpeningStillPackEntry = {
 };
 
 const OPENING_STILL_PACK_ENTRIES: readonly (readonly [string, OpeningStillPackEntry])[] = [
-  ["oprn-pack-still-test-a", { fileName: "test-a.jpg" }],
-  ["oprn-pack-still-test-b", { fileName: "test-b.jpg" }],
+  ["oprn-pack-still-ocean-01", { fileName: "ocean-01.jpg" }],
+  ["oprn-pack-still-ocean-02", { fileName: "ocean-02.jpg" }],
+  ["oprn-pack-still-ocean-03", { fileName: "ocean-03.jpg" }],
+  ["oprn-pack-still-ocean-04", { fileName: "ocean-04.jpg" }],
+  ["oprn-pack-still-winter-01", { fileName: "winter-01.jpg" }],
+  ["oprn-pack-still-winter-02", { fileName: "winter-02.jpg" }],
+  ["oprn-pack-still-winter-03", { fileName: "winter-03.jpg" }],
+  ["oprn-pack-still-winter-04", { fileName: "winter-04.jpg" }],
 ];
 
 export const OPENING_STILL_PACK_COUNT = OPENING_STILL_PACK_ENTRIES.length;

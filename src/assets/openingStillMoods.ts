@@ -109,9 +109,56 @@ export const OPENING_STILL_MOODS: readonly OpeningStillMood[] = [
 ];
 
 // BEGIN generated pack stills — 이 줄과 END 사이는 생성 영역이다.
-// (scripts/build-opening-still-catalog.mjs 가 Release 팩 스테이징 manifest 로 갱신한다.
-//  레포 커밋 분은 위 OPENING_STILL_MOODS 이고, 팩 분은 아래에 생성된다.)
-const PACK_STILL_MOODS: readonly OpeningStillMood[] = [];
+const PACK_STILL_MOODS: readonly OpeningStillMood[] = [
+  {
+    id: "oprn-pack-still-ocean-01",
+    name: "해저 · 시작의 풍경",
+    tags: ["해저", "ocean", "새벽", "sunlit coast and lighthouse overlooking the ocean"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-ocean-02",
+    name: "해저 · 세계 속으로",
+    tags: ["해저", "ocean", "탐험", "submerged gateway surrounded by reef fish"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-ocean-03",
+    name: "해저 · 숨겨진 비밀",
+    tags: ["해저", "ocean", "미스터리", "deep blue palace with a glowing pearl altar"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-ocean-04",
+    name: "해저 · 새로운 여정",
+    tags: ["해저", "ocean", "출발", "ocean surface at dawn seen from a sailing ship"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-winter-01",
+    name: "겨울 · 시작의 풍경",
+    tags: ["겨울", "winter", "새벽", "mountain pass at blue dawn"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-winter-02",
+    name: "겨울 · 세계 속으로",
+    tags: ["겨울", "winter", "탐험", "lantern village square at dusk"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-winter-03",
+    name: "겨울 · 숨겨진 비밀",
+    tags: ["겨울", "winter", "미스터리", "abandoned ice temple under aurora"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+  {
+    id: "oprn-pack-still-winter-04",
+    name: "겨울 · 새로운 여정",
+    tags: ["겨울", "winter", "출발", "morning sun over the thawing valley"],
+    // prompt: Use case: illustration-story. Asset: full-screen RPG opening cinematic still. Create ONE complete landscape illustration in 16:9, at least 1
+  },
+];
 // END generated pack stills
 
 /** 에디터·AI 검색 대상 전체 — 레포 번들 분 + 릴리스 팩 분. */
