@@ -2,6 +2,15 @@
 import { firefox } from 'playwright';
 import assert from 'node:assert/strict';
 import { writeFile } from 'node:fs/promises';
+// 승급 트리·스킬 트리는 레일 칸이 아니라 직업·스킬 탭의 보기다(2026-09-23) — 부모 탭을 연 뒤 보기 전환 줄을 누른다.
+const GROWTH_SUBVIEW = { 'db-tab-promotion-tree': ['db-tab-classes', 'db-subview-promotion-tree'], 'db-tab-skill-trees': ['db-tab-skills', 'db-subview-skill-trees'] };
+async function openGrowthSubview(page, id) {
+  const [parent, sub] = GROWTH_SUBVIEW[id] ?? [id, null];
+  if (!await page.getByTestId(parent).isVisible()) await page.getByTestId('db-tab-group-party').click();
+  await page.getByTestId(parent).click();
+  if (sub) await page.getByTestId(sub).click();
+}
+
 const browser=await firefox.launch();
 const page=await browser.newPage({viewport:{width:1600,height:1000}});
 page.setDefaultTimeout(120000);
@@ -15,8 +24,7 @@ try {
   store.update(p=>{p.growth={initialPoints:5,pointsPerLevel:1,classPositions:{},skillTrees:[{id:'layout-contract',name:'수호자의 길',description:'레이아웃 계약 테스트',classIds:[],allowReset:true,nodes:names.map((name,i)=>({id:'layout-'+i,name,description:'',cost:1,maxRank:3,level:1,x:56+[0,248,248,496,496,744][i],y:56+[0,0,152,0,152,0][i],prerequisites:[[],['layout-0'],['layout-0'],['layout-1'],['layout-2'],['layout-3','layout-4']][i],effect:{kind:'parameter',parameter:'defense',amount:5}}))}]};},{scope:'project',label:'레이아웃 계약 fixture'});
  });
  await page.getByTestId('toolbar-database').click();
- if (!await page.getByTestId('db-tab-skill-trees').isVisible()) await page.getByTestId('db-tab-group-party').click();
- await page.getByTestId('db-tab-skill-trees').click();
+ await openGrowthSubview(page, 'db-tab-skill-trees');
  await page.getByTestId('growth-node-layout-0').click();
  const measurements=[];
  for(const [width,height] of [[1600,1000],[1280,800],[1024,768]]) {

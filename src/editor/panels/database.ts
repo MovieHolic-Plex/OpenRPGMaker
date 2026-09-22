@@ -180,7 +180,10 @@ export type DatabaseTabGroup = {
 // 전투 그룹 끝). 한쪽만 고치면 조용히 다시 갈라지므로 파생으로 묶는다.
 export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   { label: "세계관", slug: "lore", tabs: ["worldCanon", "worldCodex"] },
-  { label: "파티", slug: "party", tabs: ["actors", "characterAppearances", "classes", "promotionTree", "skills", "skillTrees", "items"] },
+  // 공유 외형·승급 트리·스킬 트리는 레일 칸이 아니라 주인공·직업·스킬의 **보기**다
+  // (PARTY_SUBVIEW_PARENT). 레일에 일곱 칸이 나란히 있으면 초보는 「직업」과 「직업 승급
+  // 트리」, 「스킬」과 「스킬 트리」가 서로 다른 데이터인 줄 안다(2026-09-23 파티 UX 검토).
+  { label: "파티", slug: "party", tabs: ["actors", "classes", "skills", "items"] },
   { label: "몬스터", slug: "monster", tabs: ["enemies", "monsterSpecies", "troops", "factions"] },
   {
     label: "전투 규칙",
@@ -198,6 +201,31 @@ const MAP_PARENT_TAB: Partial<Record<DatabaseTab, DatabaseTab>> = {
   terrain: "spatialTiles",
   tilesetAutotile: "spatialTiles",
   tilesetUnlabeled: "spatialTiles",
+};
+
+/**
+ * 파티 레코드의 하위 보기. 탭 id 는 그대로 살아 있는 목적지(딥링크·조수 도구·검색)지만
+ * 레일에는 부모만 남고, 부모 본문 위의 보기 전환 줄(`db-party-subviews`)로 오간다.
+ */
+export const PARTY_SUBVIEW_PARENT: Partial<Record<DatabaseTab, DatabaseTab>> = {
+  characterAppearances: "actors",
+  promotionTree: "classes",
+  skillTrees: "skills",
+};
+
+const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: DatabaseTab; readonly label: string; readonly slug: string }[]>> = {
+  actors: [
+    { tab: "actors", label: "주인공", slug: "actors" },
+    { tab: "characterAppearances", label: "공유 외형", slug: "character-appearances" },
+  ],
+  classes: [
+    { tab: "classes", label: "직업 편집", slug: "classes" },
+    { tab: "promotionTree", label: "승급 트리", slug: "promotion-tree" },
+  ],
+  skills: [
+    { tab: "skills", label: "스킬 편집", slug: "skills" },
+    { tab: "skillTrees", label: "성장 트리", slug: "skill-trees" },
+  ],
 };
 
 export const LEGACY_SPATIAL_ROUTE: Partial<Record<DatabaseTab, DatabaseTab>> = {
@@ -238,7 +266,7 @@ export function databaseTabPath(tab: DatabaseTab): readonly DatabaseTab[] {
   const canonical = resolveCanonicalDatabaseTab(tab);
   if (tab === "tilesetAutotile" || tab === "tilesetUnlabeled") return ["spatialTiles"];
   if (canonical !== tab) return databaseTabPath(canonical);
-  const parent = MAP_PARENT_TAB[tab];
+  const parent = MAP_PARENT_TAB[tab] ?? PARTY_SUBVIEW_PARENT[tab];
   return parent ? [...databaseTabPath(parent), tab] : [tab];
 }
 
@@ -1014,6 +1042,8 @@ function renderActiveTabUnguarded(
     renderActiveTab(body, container, { forceFresh: true });
     refreshTabCounts(container);
   };
+  const subviews = partySubviewNav(tab, container);
+  if (subviews) body.append(subviews);
   if (tab === "enemies" || tab === "monsterSpecies" || tab === "troops") {
     const banner = collectionGateBanner(container);
     if (banner) body.append(banner);
@@ -1222,6 +1252,32 @@ function readStoredActiveTab(): DatabaseTab {
 
 function isDatabaseTab(value: string | null): value is DatabaseTab {
   return tabs.some((tab) => tab.id === value);
+}
+
+/** 파티 레코드의 보기 전환 줄 — 「직업 편집 | 승급 트리」처럼 같은 데이터의 두 얼굴. */
+function partySubviewNav(tab: DatabaseTab, container: HTMLElement): HTMLElement | null {
+  const owner = PARTY_SUBVIEW_PARENT[tab] ?? tab;
+  const views = PARTY_SUBVIEWS[owner];
+  if (!views) return null;
+  return el("nav", {
+    class: "db-party-subviews",
+    attrs: { "aria-label": `${databaseTabLabel(owner)} 보기` },
+    dataset: { testid: "db-party-subviews" },
+    children: views.map((view) => el("button", {
+      class: `db-party-subview${view.tab === tab ? " active" : ""}`,
+      text: view.label,
+      attrs: {
+        type: "button",
+        ...(view.tab === tab ? { "aria-current": "page" } : {}),
+      },
+      dataset: { testid: `db-subview-${view.slug}`, tab: view.tab },
+      on: {
+        click: () => {
+          if (view.tab !== activeTab) switchDatabaseActiveTab(view.tab, container);
+        },
+      },
+    })),
+  });
 }
 
 /** 맵 그룹의 관련 편집 링크 바. 걸 링크가 없으면 null — 빈 바를 그리지 않는다. */

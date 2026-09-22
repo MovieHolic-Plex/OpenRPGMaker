@@ -73,11 +73,14 @@ describe("character appearance editor", () => {
   it("exposes the appearance catalog through the existing database renderer", async () => {
     const { store } = await import("@/project/store");
     store.replace(createBlankProject());
-    const { renderDatabasePanel } = await import("@/editor/panels/database");
+    const { renderDatabasePanel, setDatabaseActiveTab } = await import("@/editor/panels/database");
+    // 공유 외형은 레일 칸이 아니라 주인공 탭의 보기다 — 주인공 본문 위 보기 전환 줄에서 연다.
+    setDatabaseActiveTab("actors");
     const host = document.createElement("div");
     renderDatabasePanel(host);
     if (!(host instanceof FakeElement)) throw new TypeError("Expected installed fake DOM");
-    expect(findByTestId(host, "db-tab-character-appearances")).not.toBeNull();
+    expect(findByTestId(host, "db-tab-character-appearances")).toBeNull();
+    expect(findByTestId(host, "db-subview-character-appearances")).not.toBeNull();
   }, 180_000);
 
   it("creates a valid partial record with no automatic graphics", async () => {

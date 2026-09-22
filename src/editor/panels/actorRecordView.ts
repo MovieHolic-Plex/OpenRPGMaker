@@ -21,8 +21,9 @@ import {
   type ActorBuildReferenceWarning,
 } from "@/editor/panels/databasePartyBuildSummary";
 import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
-import type { ActorParameterKey, ActorRecord } from "@/project/types";
+import type { ActorParameterKey, ActorRecord, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { getCharacterAppearance, resolveActorAppearance } from "@/project/characterAppearances";
 import { appearanceBindingControl } from "./appearanceBindingControl";
@@ -393,9 +394,75 @@ function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
 
 // 히어로 헤더 — 얼굴 + 이름 인라인 편집 + 직업/레벨 태그. 이름 편집은 identityPanel 에서
 // 여기로 승격됐다(아이템/장비 인스펙터 헤더와 같은 비주얼 언어, db-field-name 계약 유지).
+/** 시작 파티 칸 수 — 시스템 탭의 멤버 슬롯(START_PARTY_SLOTS)과 같다. */
+const START_PARTY_LIMIT = 4;
+
+/**
+ * 머리 한 문장 — 「이 주인공은 무엇인가」를 폼을 훑지 않고 읽게 한다. 값은 폼과 같은 저장값에서
+ * 바로 계산한다(따로 저장하지 않는다).
+ */
+export function actorSummarySentence(project: Project, actor: ActorRecord): string {
+  const className = project.database.classes.find((entry) => entry.id === actor.classId)?.name;
+  const start = className ? `${className} 직업으로 Lv ${actor.initialLevel}에 시작` : `직업 없이 Lv ${actor.initialLevel}에 시작`;
+  const party = project.system.startActorIds.includes(actor.id)
+    ? "처음부터 파티에 있습니다"
+    : "이벤트로 합류할 때까지 대기합니다";
+  return `${start}하고, ${party}.`;
+}
+
+function setStartParty(actorId: string, member: boolean): void {
+  const current = store.getCurrent().system.startActorIds;
+  if (member === current.includes(actorId)) return;
+  if (member && current.length >= START_PARTY_LIMIT) return;
+  recordProjectSnapshot();
+  store.update((draft) => {
+    const party = member
+      ? [...draft.system.startActorIds, actorId]
+      : draft.system.startActorIds.filter((id) => id !== actorId);
+    draft.system.startActorIds = party;
+    draft.session.partyActorIds = [...party];
+  }, { scope: "system", label: member ? "시작 파티에 넣기" : "시작 파티에서 빼기" });
+}
+
+function startPartySwitch(actor: ActorRecord, summary: HTMLElement): HTMLElement {
+  const project = store.getCurrent();
+  const member = project.system.startActorIds.includes(actor.id);
+  const full = !member && project.system.startActorIds.length >= START_PARTY_LIMIT;
+  // `field()` 래퍼를 쓰지 않는다 — 히어로 제목 영역은 `.db-field > span:first-child` 를 시각적으로
+  // 숨긴다(이름 칸의 「이름」 캡션용). 스위치 대신 체크 상자인 이유: 폼 공통 체크 상자 규칙이
+  // 스위치 치수·색을 덮어 켜짐이 안 보였다. 체크 상자는 그 공통 규칙 그대로 그려진다.
+  const input = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "db-actor-start-party" },
+  }) as HTMLInputElement;
+  input.checked = member;
+  input.addEventListener("change", () => {
+    setStartParty(actor.id, input.checked);
+    const latest = store.getCurrent();
+    const current = latest.database.actors.find((entry) => entry.id === actor.id) ?? actor;
+    input.checked = latest.system.startActorIds.includes(actor.id);
+    summary.textContent = actorSummarySentence(latest, current);
+  });
+  const control = el("label", {
+    class: "db-record-hero-party",
+    children: [input, el("span", { class: "db-record-hero-party-text", text: "시작 파티" })],
+  });
+  if (full) {
+    input.disabled = true;
+    // 잠금에는 이유를 같이 준다(databaseControls 의 disabledReason 규약).
+    control.title = `시작 파티는 최대 ${START_PARTY_LIMIT}명입니다. 시스템 탭에서 다른 멤버를 먼저 빼세요.`;
+  }
+  return control;
+}
+
 function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void): HTMLElement {
   const effective = resolveActorAppearance(store.getCurrent(), actor);
   const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;
+  const summary = el("p", {
+    class: "db-record-hero-summary",
+    text: actorSummarySentence(store.getCurrent(), actor),
+    dataset: { testid: "db-actor-summary" },
+  });
   const face = graphicPreview(
     "얼굴",
     effective.faceResourceId ?? effective.characterResourceId ?? "(없음)",
@@ -421,12 +488,10 @@ function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void):
             children: [
               ...(className ? [el("span", { class: "db-record-hero-tag", text: className })] : []),
               el("span", { class: "db-record-hero-tag muted", text: `Lv ${actor.initialLevel}–${actor.maxLevel}` }),
-              el("span", {
-                class: "db-record-hero-tag party",
-                text: store.getCurrent().system.startActorIds.includes(actor.id) ? "시작 파티" : "대기 멤버",
-              }),
+              startPartySwitch(actor, summary),
             ],
           }),
+          summary,
         ],
       }),
     ],
@@ -495,19 +560,21 @@ function baseStatsPanel(actor: ActorRecord): HTMLElement {
     mind: "마법력",
     agility: "민첩성",
   };
-  return actorPanel("현재 시작 능력치", "actor-basic-stats", [
+  // 읽기 전용 요약이다 — 고칠 수 있는 칸처럼 보이지 않게 라벨 옆에 숫자를 붙이고, 고치는 곳을 알려 준다.
+  return actorPanel(`Lv ${actor.initialLevel} 시작 능력치`, "actor-basic-stats", [
     el("div", {
       class: "actor-basic-stat-grid",
       children: ACTOR_PARAMETER_KEYS.map((key) =>
         el("div", {
           class: "actor-basic-stat-row",
           children: [
-            el("span", { text: `${labels[key]}:` }),
+            el("span", { text: labels[key] }),
             el("strong", { text: String(parameterValueAtLevel(actor.parameterCurves[key], actor.initialLevel)) }),
           ],
         })
       ),
     }),
+    el("p", { class: "actor-field-help", text: "레벨별 능력치 곡선에서 계산됩니다. 「성장」 탭에서 고칩니다." }),
   ]);
 }
 
@@ -563,6 +630,18 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
         panel.replaceWith(replacement);
         replacement.querySelector<HTMLSelectElement>("[data-testid='actor-appearance-select']")?.focus();
       }
+    }),
+    el("button", {
+      class: "actor-appearance-manage",
+      text: "공유 외형 관리 →",
+      attrs: { type: "button", title: "여러 주인공이 함께 쓰는 외형 세트를 만들고 고칩니다" },
+      dataset: { testid: "actor-appearance-manage" },
+      on: {
+        click: (event) => {
+          const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+          if (panelRoot) switchDatabaseActiveTab("characterAppearances", panelRoot);
+        },
+      },
     }),
     ...(linked ? [el("p", { class: "actor-field-help", dataset: { testid: "actor-appearance-linked" },
       text: `${linked.name}에서 그림을 공유합니다. 아래 직접 지정 값은 보관되며 연결을 해제하면 복원됩니다. 비어 있는 슬롯은 직접 지정 값을 사용합니다.` })] : []),
