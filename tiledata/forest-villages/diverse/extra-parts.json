@@ -1,0 +1,100 @@
+{
+  "note": "Whole props already in the forest_harmony sheet (no graft). Same shape as dewbank parts.json entries that civic programs read: name, size, targetUpper rows.",
+  "props": [
+    {
+      "name": "벤치",
+      "width": 2,
+      "height": 1,
+      "targetUpper": [
+        [
+          327,
+          328
+        ]
+      ]
+    },
+    {
+      "name": "술통",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          177
+        ]
+      ]
+    },
+    {
+      "name": "작은 오크통",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          207
+        ]
+      ]
+    },
+    {
+      "name": "모닥불",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          381
+        ]
+      ]
+    },
+    {
+      "name": "나무 이정표",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          596
+        ]
+      ]
+    },
+    {
+      "name": "장작 더미",
+      "width": 1,
+      "height": 1,
+      "targetUpper": [
+        [
+          349
+        ]
+      ]
+    },
+    {
+      "name": "과일 좌판",
+      "width": 2,
+      "height": 1,
+      "targetUpper": [
+        [
+          202,
+          203
+        ]
+      ]
+    },
+    {
+      "name": "장터 노점",
+      "width": 3,
+      "height": 2,
+      "targetUpper": [
+        [
+          468,
+          469,
+          470
+        ],
+        [
+          234,
+          235,
+          236
+        ]
+      ]
+    }
+  ],
+  "oversized": {
+    "note": "Drawn at a larger pixel scale than the 16px sheet (apples ~6px). Removed from the part list so a program naming it fails.",
+    "names": [
+      "과일 바구니"
+    ]
+  }
+}

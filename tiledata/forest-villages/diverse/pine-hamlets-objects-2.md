@@ -1,92 +1,6 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 채소밭
-```json
-{
-  "name": "채소밭",
-  "x": 67,
-  "y": 46,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2613,
-    2614,
-    2618,
-    2619
-  ],
-  "ownerId": "pine-hamlets-house-6",
-  "kit": "growing",
-  "purpose": "식재·수확할 작물",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2613,
-      2614
-    ],
-    [
-      2618,
-      2619
-    ]
-  ]
-}
-```
-
-## 허수아비
-```json
-{
-  "name": "허수아비",
-  "x": 67,
-  "y": 44,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2651,
-    2654
-  ],
-  "ownerId": "pine-hamlets-house-6",
-  "kit": "growing",
-  "purpose": "바로 옆 작물 보호",
-  "anchor": "채소밭",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2651
-    ],
-    [
-      2654
-    ]
-  ]
-}
-```
-
 ## 씨앗 자루
 ```json
 {
@@ -194,9 +108,9 @@
 {
   "id": "well-1",
   "name": "낮은 돌 우물",
-  "x": 34,
+  "x": 42,
   "y": 26,
-  "purpose": "두 둔덕과 중앙 주거지의 공동 급수",
+  "purpose": "윗단과 아랫마을 주민이 함께 쓰는 급수",
   "w": 2,
   "h": 2,
   "kind": "civic-prop",
@@ -209,7 +123,7 @@
     2642
   ],
   "useAt": {
-    "x": 33,
+    "x": 41,
     "y": 26
   },
   "width": 2,
@@ -242,7 +156,7 @@
 {
   "id": "well-2",
   "name": "항아리",
-  "x": 37,
+  "x": 44,
   "y": 27,
   "purpose": "길어 온 물을 담는 용기",
   "near": "낮은 돌 우물",
@@ -255,8 +169,8 @@
     352
   ],
   "useAt": {
-    "x": 37,
-    "y": 28
+    "x": 45,
+    "y": 27
   },
   "width": 1,
   "height": 1,
@@ -278,8 +192,8 @@
 {
   "id": "well-3",
   "name": "징검돌",
-  "x": 34,
-  "y": 29,
+  "x": 42,
+  "y": 28,
   "purpose": "우물 앞 물 튀는 땅의 발 디딤",
   "near": "낮은 돌 우물",
   "w": 2,
@@ -292,8 +206,8 @@
     2650
   ],
   "useAt": {
-    "x": 34,
-    "y": 30
+    "x": 42,
+    "y": 29
   },
   "width": 2,
   "height": 1,
@@ -317,8 +231,8 @@
 {
   "id": "well-4",
   "name": "게시판",
-  "x": 33,
-  "y": 23,
+  "x": 45,
+  "y": 25,
   "purpose": "우물에 모인 주민의 마을 공지",
   "w": 2,
   "h": 2,
@@ -332,8 +246,8 @@
     2634
   ],
   "useAt": {
-    "x": 32,
-    "y": 23
+    "x": 44,
+    "y": 25
   },
   "width": 2,
   "height": 2,
@@ -365,7 +279,7 @@
 {
   "id": "well-5",
   "name": "돌등",
-  "x": 32,
+  "x": 41,
   "y": 27,
   "purpose": "우물과 연결 길목 조명",
   "near": "낮은 돌 우물",
@@ -379,7 +293,7 @@
     2656
   ],
   "useAt": {
-    "x": 31,
+    "x": 40,
     "y": 27
   },
   "width": 1,
@@ -927,6 +841,402 @@
   "upperTiles": [
     [
       2645
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "overlook-1",
+  "name": "벤치",
+  "x": 44,
+  "y": 15,
+  "purpose": "절벽 끝에서 아랫마을을 내려다보며 쉬는 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "overlook",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 44,
+    "y": 16
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "overlook-2",
+  "name": "벤치",
+  "x": 33,
+  "y": 15,
+  "purpose": "계단을 오른 뒤 숨 돌리는 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "overlook",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 33,
+    "y": 16
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "overlook-3",
+  "name": "나무 이정표",
+  "x": 38,
+  "y": 14,
+  "purpose": "윗마을 동서 갈림길 방향 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "overlook",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 38,
+    "y": 15
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "stair-signs-1",
+  "name": "나무 이정표",
+  "x": 37,
+  "y": 25,
+  "purpose": "가운데 계단으로 오르는 길 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "stair-signs",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 37,
+    "y": 26
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "west-stair-sign-1",
+  "name": "나무 이정표",
+  "x": 19,
+  "y": 26,
+  "purpose": "서쪽 계단으로 오르는 길 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "west-stair-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 19,
+    "y": 27
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "east-stair-sign-1",
+  "name": "나무 이정표",
+  "x": 60,
+  "y": 28,
+  "purpose": "동쪽 계단으로 오르는 길 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "east-stair-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 60,
+    "y": 29
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 장작 더미
+```json
+{
+  "id": "woodyard-1",
+  "name": "장작 더미",
+  "x": 58,
+  "y": 16,
+  "purpose": "목공 작업에서 나온 장작을 쌓아 두는 자리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "woodyard",
+  "lower": "KEEP",
+  "upper": [
+    349
+  ],
+  "useAt": {
+    "x": 58,
+    "y": 17
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      349
+    ]
+  ]
+}
+```
+
+## 장작 더미
+```json
+{
+  "id": "woodyard-2",
+  "name": "장작 더미",
+  "x": 57,
+  "y": 19,
+  "purpose": "겨울용 땔감 두 번째 더미",
+  "near": "장작 더미",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "woodyard",
+  "lower": "KEEP",
+  "upper": [
+    349
+  ],
+  "useAt": {
+    "x": 57,
+    "y": 20
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      349
+    ]
+  ]
+}
+```
+
+## 술통
+```json
+{
+  "id": "woodyard-3",
+  "name": "술통",
+  "x": 70,
+  "y": 16,
+  "purpose": "작업용 물을 받아 두는 통",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "woodyard",
+  "lower": "KEEP",
+  "upper": [
+    177
+  ],
+  "useAt": {
+    "x": 70,
+    "y": 17
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      177
+    ]
+  ]
+}
+```
+
+## 모닥불
+```json
+{
+  "id": "campfire-1",
+  "name": "모닥불",
+  "x": 11,
+  "y": 38,
+  "purpose": "저녁에 샘가 주민이 모이는 불자리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "campfire",
+  "lower": "KEEP",
+  "upper": [
+    381
+  ],
+  "useAt": {
+    "x": 11,
+    "y": 39
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      381
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "campfire-2",
+  "name": "벤치",
+  "x": 11,
+  "y": 40,
+  "purpose": "불가 남쪽 앉을 자리",
+  "near": "모닥불",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "campfire",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 11,
+    "y": 41
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
     ]
   ]
 }

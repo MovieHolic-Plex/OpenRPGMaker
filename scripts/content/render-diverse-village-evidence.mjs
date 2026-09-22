@@ -44,7 +44,12 @@ try {
     }
     for (const f of faults) {
       const m = structuredClone(project2.maps[f.mapId]), i = f.y * m.width + f.x;
-      m[f.layer + "Tiles"][i] = f.replacement;
+      if (f.rects) for (const r of f.rects) for (let dy = 0; dy < r.h; dy++) for (let dx = 0; dx < r.w; dx++) {
+        const j = (r.y + dy) * m.width + r.x + dx;
+        m.lowerTiles[j] = 240;
+        m.upperTiles[j] = -1;
+      }
+      else m[f.layer + "Tiles"][i] = f.replacement;
       if (f.move) m[(f.layer === "upper" ? "lower" : "upper") + "Tiles"][i] = f.tile;
       const bad = render(m), c = document.createElement("canvas");
       c.width = 576;
@@ -57,12 +62,13 @@ try {
       ctx.fillStyle = "white";
       ctx.fillText("NORMAL", 12, 24);
       ctx.fillText("ERROR " + f.code, 300, 24);
-      const x = Math.max(0, Math.min(m.width - 9, f.x - 4)), y = Math.max(0, Math.min(m.height - 9, f.y - 4));
+      const fx = f.errorX ?? f.x, fy = f.errorY ?? f.y;
+      const x = Math.max(0, Math.min(m.width - 9, fx - 4)), y = Math.max(0, Math.min(m.height - 9, fy - 4));
       ctx.drawImage(canvases[m.id], x * 16, y * 16, 144, 144, 0, 38, 288, 288);
       ctx.drawImage(bad, x * 16, y * 16, 144, 144, 288, 38, 288, 288);
       ctx.strokeStyle = "#ff6b6b";
       ctx.lineWidth = 2;
-      ctx.strokeRect(288 + (f.x - x) * 32, 38 + (f.y - y) * 32, 32, 32);
+      ctx.strokeRect(288 + (fx - x) * 32, 38 + (fy - y) * 32, 32, 32);
       out[f.code] = c.toDataURL();
     }
     return out;

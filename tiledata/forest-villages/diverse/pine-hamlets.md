@@ -1,6 +1,6 @@
 # 솔바람 흩어진 산촌
 
-세 빈터에 흩어진 집, 두 둔덕, 갈라지는 오솔길과 작은 샘. 시작점 (40,60); 집 7채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
+숲에서 숲까지 이어진 절벽 위 윗단과 아랫마을, 계단 세 곳, 갈라지는 오솔길과 작은 샘. 시작점 (40,60); 집 7채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
 
 ![솔바람 흩어진 산촌 완성](images/pine-hamlets.png)
 
@@ -50,13 +50,24 @@
       "h": 3
     },
     {
+      "ownerId": "pine-hamlets-house-4",
+      "kit": "herbs",
+      "name": "약초 손질",
+      "reason": "서쪽 숲길 가까운 집의 야외 작업을 약초 손질로 지정",
+      "x": 22,
+      "y": 35,
+      "side": "right",
+      "w": 5,
+      "h": 3
+    },
+    {
       "ownerId": "pine-hamlets-house-5",
       "kit": "laundry",
       "name": "세탁·건조",
       "reason": "중앙 갈림길의 주거 집에는 세탁 기능만 지정",
-      "x": 39,
-      "y": 29,
-      "side": "left",
+      "x": 51,
+      "y": 33,
+      "side": "right",
       "w": 4,
       "h": 2
     },
@@ -87,25 +98,25 @@
   "civicPlaces": [
     {
       "id": "well",
-      "name": "두 둔덕 사이 공동 우물터",
+      "name": "가운데 계단 아래 공동 우물터",
       "anchor": {
         "type": "road",
-        "x": 30,
-        "y": 26,
+        "x": 40,
+        "y": 25,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "well-1",
           "name": "낮은 돌 우물",
-          "x": 34,
+          "x": 42,
           "y": 26,
-          "purpose": "두 둔덕과 중앙 주거지의 공동 급수"
+          "purpose": "윗단과 아랫마을 주민이 함께 쓰는 급수"
         },
         {
           "id": "well-2",
           "name": "항아리",
-          "x": 37,
+          "x": 44,
           "y": 27,
           "purpose": "길어 온 물을 담는 용기",
           "near": "낮은 돌 우물"
@@ -113,35 +124,35 @@
         {
           "id": "well-3",
           "name": "징검돌",
-          "x": 34,
-          "y": 29,
+          "x": 42,
+          "y": 28,
           "purpose": "우물 앞 물 튀는 땅의 발 디딤",
           "near": "낮은 돌 우물"
         },
         {
           "id": "well-4",
           "name": "게시판",
-          "x": 33,
-          "y": 23,
+          "x": 45,
+          "y": 25,
           "purpose": "우물에 모인 주민의 마을 공지"
         },
         {
           "id": "well-5",
           "name": "돌등",
-          "x": 32,
+          "x": 41,
           "y": 27,
           "purpose": "우물과 연결 길목 조명",
           "near": "낮은 돌 우물"
         }
       ],
       "site": {
-        "x": 30,
-        "y": 26,
+        "x": 40,
+        "y": 25,
         "w": 1,
         "h": 1,
         "layer": "lower",
         "tiles": [
-          1494
+          1512
         ]
       }
     },
@@ -238,7 +249,7 @@
           16,
           17,
           45,
-          359,
+          329,
           46,
           47,
           75,
@@ -336,7 +347,7 @@
           16,
           17,
           45,
-          359,
+          329,
           46,
           47,
           75,
@@ -405,7 +416,7 @@
           45,
           46,
           46,
-          359,
+          329,
           46,
           46,
           46,
@@ -471,7 +482,7 @@
           16,
           17,
           45,
-          359,
+          329,
           46,
           46,
           47,
@@ -480,6 +491,357 @@
           76,
           76,
           77
+        ]
+      }
+    },
+    {
+      "id": "overlook",
+      "name": "가운데 계단 위 전망 쉼터",
+      "anchor": {
+        "type": "road",
+        "x": 39,
+        "y": 17,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "overlook-1",
+          "name": "벤치",
+          "x": 44,
+          "y": 15,
+          "purpose": "절벽 끝에서 아랫마을을 내려다보며 쉬는 자리"
+        },
+        {
+          "id": "overlook-2",
+          "name": "벤치",
+          "x": 33,
+          "y": 15,
+          "purpose": "계단을 오른 뒤 숨 돌리는 자리"
+        },
+        {
+          "id": "overlook-3",
+          "name": "나무 이정표",
+          "x": 38,
+          "y": 14,
+          "purpose": "윗마을 동서 갈림길 방향 안내"
+        }
+      ],
+      "site": {
+        "x": 39,
+        "y": 17,
+        "w": 1,
+        "h": 1,
+        "layer": "lower",
+        "tiles": [
+          1508
+        ]
+      }
+    },
+    {
+      "id": "stair-signs",
+      "name": "계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 39,
+        "y": 24,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "stair-signs-1",
+          "name": "나무 이정표",
+          "x": 37,
+          "y": 25,
+          "purpose": "가운데 계단으로 오르는 길 안내"
+        }
+      ],
+      "site": {
+        "x": 39,
+        "y": 24,
+        "w": 1,
+        "h": 1,
+        "layer": "lower",
+        "tiles": [
+          1490
+        ]
+      }
+    },
+    {
+      "id": "west-stair-sign",
+      "name": "서쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 17,
+        "y": 27,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "west-stair-sign-1",
+          "name": "나무 이정표",
+          "x": 19,
+          "y": 26,
+          "purpose": "서쪽 계단으로 오르는 길 안내"
+        }
+      ],
+      "site": {
+        "x": 17,
+        "y": 27,
+        "w": 1,
+        "h": 1,
+        "layer": "lower",
+        "tiles": [
+          1515
+        ]
+      }
+    },
+    {
+      "id": "east-stair-sign",
+      "name": "동쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 63,
+        "y": 28,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "east-stair-sign-1",
+          "name": "나무 이정표",
+          "x": 60,
+          "y": 28,
+          "purpose": "동쪽 계단으로 오르는 길 안내"
+        }
+      ],
+      "site": {
+        "x": 63,
+        "y": 28,
+        "w": 1,
+        "h": 1,
+        "layer": "lower",
+        "tiles": [
+          1496
+        ]
+      }
+    },
+    {
+      "id": "woodyard",
+      "name": "목공 작업집 땔감 마당",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-3",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "woodyard-1",
+          "name": "장작 더미",
+          "x": 58,
+          "y": 16,
+          "purpose": "목공 작업에서 나온 장작을 쌓아 두는 자리"
+        },
+        {
+          "id": "woodyard-2",
+          "name": "장작 더미",
+          "x": 57,
+          "y": 19,
+          "purpose": "겨울용 땔감 두 번째 더미",
+          "near": "장작 더미"
+        },
+        {
+          "id": "woodyard-3",
+          "name": "술통",
+          "x": 70,
+          "y": 16,
+          "purpose": "작업용 물을 받아 두는 통"
+        }
+      ],
+      "site": {
+        "x": 61,
+        "y": 12,
+        "w": 8,
+        "h": 6,
+        "layer": "lower",
+        "tiles": [
+          240,
+          406,
+          406,
+          406,
+          406,
+          406,
+          406,
+          240,
+          406,
+          406,
+          406,
+          406,
+          406,
+          406,
+          406,
+          407,
+          467,
+          467,
+          467,
+          467,
+          467,
+          467,
+          467,
+          467,
+          15,
+          16,
+          16,
+          16,
+          16,
+          16,
+          16,
+          17,
+          45,
+          46,
+          46,
+          329,
+          46,
+          46,
+          46,
+          47,
+          75,
+          76,
+          76,
+          359,
+          76,
+          76,
+          76,
+          77
+        ]
+      }
+    },
+    {
+      "id": "campfire",
+      "name": "샘가 모닥불 쉼터",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-4",
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "campfire-1",
+          "name": "모닥불",
+          "x": 11,
+          "y": 38,
+          "purpose": "저녁에 샘가 주민이 모이는 불자리"
+        },
+        {
+          "id": "campfire-2",
+          "name": "벤치",
+          "x": 11,
+          "y": 40,
+          "purpose": "불가 남쪽 앉을 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "campfire-3",
+          "name": "벤치",
+          "x": 13,
+          "y": 36,
+          "purpose": "불가 북쪽 앉을 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "campfire-4",
+          "name": "장작 더미",
+          "x": 14,
+          "y": 38,
+          "purpose": "모닥불에 쓸 장작",
+          "near": "모닥불"
+        }
+      ],
+      "site": {
+        "x": 17,
+        "y": 31,
+        "w": 4,
+        "h": 7,
+        "layer": "lower",
+        "tiles": [
+          374,
+          374,
+          374,
+          374,
+          375,
+          375,
+          375,
+          375,
+          375,
+          375,
+          375,
+          375,
+          405,
+          405,
+          405,
+          405,
+          15,
+          16,
+          16,
+          17,
+          45,
+          329,
+          46,
+          47,
+          75,
+          359,
+          76,
+          77
+        ]
+      }
+    },
+    {
+      "id": "market",
+      "name": "우물 아래 작은 장터",
+      "anchor": {
+        "type": "road",
+        "x": 32,
+        "y": 33,
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "market-1",
+          "name": "장터 노점",
+          "x": 34,
+          "y": 36,
+          "purpose": "아랫마을 주민이 채소와 과일을 파는 좌판"
+        },
+        {
+          "id": "market-2",
+          "name": "과일 좌판",
+          "x": 38,
+          "y": 38,
+          "purpose": "산에서 딴 과일을 늘어놓은 상자",
+          "near": "장터 노점"
+        },
+        {
+          "id": "market-3",
+          "name": "술통",
+          "x": 33,
+          "y": 40,
+          "purpose": "장터 음료 통",
+          "near": "장터 노점"
+        },
+        {
+          "id": "market-4",
+          "name": "벤치",
+          "x": 35,
+          "y": 42,
+          "purpose": "장 보러 온 사람의 쉼 자리"
+        }
+      ],
+      "site": {
+        "x": 32,
+        "y": 33,
+        "w": 1,
+        "h": 1,
+        "layer": "lower",
+        "tiles": [
+          1512
         ]
       }
     }
@@ -530,73 +892,60 @@
     {
       "points": [
         [
-          8,
-          17
+          6,
+          21
         ],
         [
-          11,
+          10,
+          21
+        ],
+        [
+          12,
           20
         ],
         [
-          14,
+          22,
           20
-        ],
-        [
-          17,
-          23
-        ],
-        [
-          21,
-          23
         ],
         [
           24,
-          20
+          19
         ],
         [
-          26,
-          20
+          30,
+          19
         ],
         [
-          29,
-          17
-        ]
-      ],
-      "height": 5
-    },
-    {
-      "points": [
-        [
-          50,
+          32,
           18
         ],
         [
-          54,
+          46,
+          18
+        ],
+        [
+          48,
+          19
+        ],
+        [
+          52,
+          19
+        ],
+        [
+          55,
           22
         ],
         [
-          57,
+          70,
           22
-        ],
-        [
-          62,
-          27
-        ],
-        [
-          66,
-          27
-        ],
-        [
-          69,
-          24
         ],
         [
           72,
-          24
+          21
         ],
         [
           76,
-          20
+          21
         ]
       ],
       "height": 5
@@ -604,13 +953,18 @@
   ],
   "stairs": [
     [
-      19,
-      23,
+      16,
+      20,
       5
     ],
     [
-      64,
-      27,
+      39,
+      18,
+      5
+    ],
+    [
+      62,
+      22,
       5
     ]
   ],
@@ -639,20 +993,44 @@
       43
     ],
     [
-      29,
-      28
+      31,
+      33
     ],
     [
-      30,
-      21
+      19,
+      29
     ],
     [
-      42,
-      19
+      31,
+      33
     ],
     [
-      49,
-      24
+      39,
+      26
+    ],
+    [
+      39,
+      16
+    ],
+    [
+      24,
+      17
+    ],
+    [
+      39,
+      16
+    ],
+    [
+      52,
+      17
+    ],
+    [
+      62,
+      20
+    ],
+    [
+      62,
+      30
     ],
     [
       56,
@@ -666,23 +1044,33 @@
   "access": [
     {
       "role": "stairs-top",
-      "x": 19,
-      "y": 22
+      "x": 16,
+      "y": 19
     },
     {
       "role": "stairs-bottom",
-      "x": 19,
-      "y": 29
-    },
-    {
-      "role": "stairs-top",
-      "x": 64,
+      "x": 16,
       "y": 26
     },
     {
+      "role": "stairs-top",
+      "x": 39,
+      "y": 17
+    },
+    {
       "role": "stairs-bottom",
-      "x": 64,
-      "y": 33
+      "x": 39,
+      "y": 24
+    },
+    {
+      "role": "stairs-top",
+      "x": 62,
+      "y": 21
+    },
+    {
+      "role": "stairs-bottom",
+      "x": 62,
+      "y": 28
     },
     {
       "role": "door-front",
@@ -796,35 +1184,35 @@
     },
     {
       "role": "civic-use",
-      "x": 33,
+      "x": 41,
       "y": 26,
       "placeId": "well",
       "propId": "well-1"
     },
     {
       "role": "civic-use",
-      "x": 37,
-      "y": 28,
+      "x": 45,
+      "y": 27,
       "placeId": "well",
       "propId": "well-2"
     },
     {
       "role": "civic-use",
-      "x": 34,
-      "y": 30,
+      "x": 42,
+      "y": 29,
       "placeId": "well",
       "propId": "well-3"
     },
     {
       "role": "civic-use",
-      "x": 32,
-      "y": 23,
+      "x": 44,
+      "y": 25,
       "placeId": "well",
       "propId": "well-4"
     },
     {
       "role": "civic-use",
-      "x": 31,
+      "x": 40,
       "y": 27,
       "placeId": "well",
       "propId": "well-5"
@@ -905,6 +1293,125 @@
       "y": 14,
       "placeId": "front",
       "propId": "front-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 44,
+      "y": 16,
+      "placeId": "overlook",
+      "propId": "overlook-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 33,
+      "y": 16,
+      "placeId": "overlook",
+      "propId": "overlook-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 38,
+      "y": 15,
+      "placeId": "overlook",
+      "propId": "overlook-3"
+    },
+    {
+      "role": "civic-use",
+      "x": 37,
+      "y": 26,
+      "placeId": "stair-signs",
+      "propId": "stair-signs-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 19,
+      "y": 27,
+      "placeId": "west-stair-sign",
+      "propId": "west-stair-sign-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 60,
+      "y": 29,
+      "placeId": "east-stair-sign",
+      "propId": "east-stair-sign-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 58,
+      "y": 17,
+      "placeId": "woodyard",
+      "propId": "woodyard-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 57,
+      "y": 20,
+      "placeId": "woodyard",
+      "propId": "woodyard-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 70,
+      "y": 17,
+      "placeId": "woodyard",
+      "propId": "woodyard-3"
+    },
+    {
+      "role": "civic-use",
+      "x": 11,
+      "y": 39,
+      "placeId": "campfire",
+      "propId": "campfire-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 11,
+      "y": 41,
+      "placeId": "campfire",
+      "propId": "campfire-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 13,
+      "y": 37,
+      "placeId": "campfire",
+      "propId": "campfire-3"
+    },
+    {
+      "role": "civic-use",
+      "x": 14,
+      "y": 39,
+      "placeId": "campfire",
+      "propId": "campfire-4"
+    },
+    {
+      "role": "civic-use",
+      "x": 33,
+      "y": 36,
+      "placeId": "market",
+      "propId": "market-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 38,
+      "y": 39,
+      "placeId": "market",
+      "propId": "market-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 33,
+      "y": 41,
+      "placeId": "market",
+      "propId": "market-3"
+    },
+    {
+      "role": "civic-use",
+      "x": 35,
+      "y": 43,
+      "placeId": "market",
+      "propId": "market-4"
     }
   ]
 }
@@ -968,7 +1475,7 @@
     ],
     [
       45,
-      359,
+      329,
       46,
       47
     ],
@@ -1101,7 +1608,7 @@
     [
       240,
       45,
-      359,
+      329,
       46,
       47,
       240
@@ -1252,7 +1759,7 @@
       45,
       46,
       46,
-      359,
+      329,
       46,
       46,
       46,
@@ -1390,7 +1897,7 @@
     ],
     [
       45,
-      359,
+      329,
       46,
       47
     ],
@@ -1525,7 +2032,7 @@
       240,
       240,
       42,
-      359,
+      329,
       44
     ],
     [
@@ -1667,7 +2174,7 @@
     ],
     [
       45,
-      359,
+      329,
       46,
       46,
       47
@@ -1809,7 +2316,7 @@
     [
       240,
       45,
-      359,
+      329,
       46,
       47,
       240
