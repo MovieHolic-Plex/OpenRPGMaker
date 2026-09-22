@@ -1207,169 +1207,12 @@
 }
 ```
 
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 16,
-  "y": 10,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "home",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 빨랫줄
-```json
-{
-  "name": "빨랫줄",
-  "x": 16,
-  "y": 13,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "home",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2620,
-      2621
-    ],
-    [
-      2625,
-      2626
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 19,
-  "y": 13,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "home",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 허수아비
-```json
-{
-  "name": "허수아비",
-  "x": 28,
-  "y": 7,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2651,
-    2654
-  ],
-  "ownerId": "reed-bay-village-house-2",
-  "kit": "garden",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2651
-    ],
-    [
-      2654
-    ]
-  ]
-}
-```
-
 ## 채소밭
 ```json
 {
   "name": "채소밭",
-  "x": 28,
-  "y": 9,
+  "x": 16,
+  "y": 13,
   "w": 2,
   "h": 2,
   "kind": "prop",
@@ -1380,9 +1223,11 @@
     2618,
     2619
   ],
-  "ownerId": "reed-bay-village-house-2",
-  "kit": "garden",
-  "side": "left",
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "growing",
+  "purpose": "식재·수확할 작물",
+  "anchor": "house",
+  "side": "right",
   "width": 2,
   "height": 2,
   "lowerTiles": [
@@ -1408,12 +1253,88 @@
 }
 ```
 
+## 허수아비
+```json
+{
+  "name": "허수아비",
+  "x": 16,
+  "y": 11,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2651,
+    2654
+  ],
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "growing",
+  "purpose": "바로 옆 작물 보호",
+  "anchor": "채소밭",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2651
+    ],
+    [
+      2654
+    ]
+  ]
+}
+```
+
+## 씨앗 자루
+```json
+{
+  "name": "씨앗 자루",
+  "x": 19,
+  "y": 14,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2652,
+    2653
+  ],
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "growing",
+  "purpose": "이 밭에 파종할 씨앗 보관",
+  "anchor": "채소밭",
+  "side": "right",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2652,
+      2653
+    ]
+  ]
+}
+```
+
 ## 나무 상자
 ```json
 {
   "name": "나무 상자",
-  "x": 46,
-  "y": 15,
+  "x": 59,
+  "y": 19,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1422,8 +1343,10 @@
     237
   ],
   "ownerId": "reed-bay-village-house-3",
-  "kit": "work",
-  "side": "left",
+  "kit": "storage",
+  "purpose": "운반 물자 보관",
+  "anchor": "house",
+  "side": "right",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1443,8 +1366,8 @@
 ```json
 {
   "name": "나무통",
-  "x": 48,
-  "y": 15,
+  "x": 61,
+  "y": 19,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1453,8 +1376,10 @@
     2638
   ],
   "ownerId": "reed-bay-village-house-3",
-  "kit": "work",
-  "side": "left",
+  "kit": "storage",
+  "purpose": "같은 창고의 벌크 물자 보관",
+  "anchor": "나무 상자",
+  "side": "right",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1470,32 +1395,37 @@
 }
 ```
 
-## 장작
+## 약초 화분
 ```json
 {
-  "name": "장작",
-  "x": 50,
-  "y": 15,
-  "w": 1,
+  "name": "약초 화분",
+  "x": 39,
+  "y": 26,
+  "w": 2,
   "h": 1,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    349
+    2623,
+    2624
   ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "work",
-  "side": "left",
-  "width": 1,
+  "ownerId": "reed-bay-village-house-5",
+  "kit": "herbs",
+  "purpose": "손질할 약초 재배",
+  "anchor": "house",
+  "side": "right",
+  "width": 2,
   "height": 1,
   "lowerTiles": [
     [
+      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      349
+      2623,
+      2624
     ]
   ]
 }
@@ -1505,8 +1435,8 @@
 ```json
 {
   "name": "가로 탁자",
-  "x": 46,
-  "y": 17,
+  "x": 39,
+  "y": 28,
   "w": 3,
   "h": 1,
   "kind": "prop",
@@ -1516,9 +1446,11 @@
     235,
     236
   ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "work",
-  "side": "left",
+  "ownerId": "reed-bay-village-house-5",
+  "kit": "herbs",
+  "purpose": "약초 선별·건조 작업면",
+  "anchor": "약초 화분",
+  "side": "right",
   "width": 3,
   "height": 1,
   "lowerTiles": [
@@ -1538,123 +1470,133 @@
 }
 ```
 
-## 꽃 화단
+## 항아리
 ```json
 {
-  "name": "꽃 화단",
-  "x": 19,
-  "y": 31,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "reed-bay-village-house-4",
-  "kit": "herbs",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 약초 화분
-```json
-{
-  "name": "약초 화분",
-  "x": 19,
-  "y": 34,
-  "w": 2,
+  "name": "항아리",
+  "x": 43,
+  "y": 28,
+  "w": 1,
   "h": 1,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    2623,
-    2624
+    352
   ],
-  "ownerId": "reed-bay-village-house-4",
+  "ownerId": "reed-bay-village-house-5",
   "kit": "herbs",
+  "purpose": "손질한 약초 보관",
+  "anchor": "가로 탁자",
   "side": "right",
-  "width": 2,
+  "width": 1,
   "height": 1,
   "lowerTiles": [
     [
-      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      2623,
-      2624
+      352
     ]
   ]
 }
 ```
 
-## 꽃 화단
+## 낚시 바구니
 ```json
 {
-  "name": "꽃 화단",
-  "x": 39,
-  "y": 24,
-  "w": 2,
-  "h": 2,
+  "name": "낚시 바구니",
+  "x": 58,
+  "y": 35,
+  "w": 1,
+  "h": 1,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    2611,
-    2612,
-    2616,
-    2617
+    2646
   ],
-  "ownerId": "reed-bay-village-house-5",
-  "kit": "home",
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "부두에 가져갈 낚시 도구",
+  "anchor": "dock",
   "side": "right",
-  "width": 2,
-  "height": 2,
+  "width": 1,
+  "height": 1,
   "lowerTiles": [
     [
-      240,
-      240
-    ],
-    [
-      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      2611,
-      2612
-    ],
+      2646
+    ]
+  ]
+}
+```
+
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 60,
+  "y": 35,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "어획물을 담을 용기",
+  "anchor": "낚시 바구니",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
     [
-      2616,
-      2617
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 나무 상자
+```json
+{
+  "name": "나무 상자",
+  "x": 58,
+  "y": 37,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    237
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "어구 보관",
+  "anchor": "낚시 바구니",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      237
     ]
   ]
 }
@@ -1664,8 +1606,8 @@
 ```json
 {
   "name": "빨랫줄",
-  "x": 39,
-  "y": 27,
+  "x": 7,
+  "y": 48,
   "w": 2,
   "h": 2,
   "kind": "prop",
@@ -1676,9 +1618,11 @@
     2625,
     2626
   ],
-  "ownerId": "reed-bay-village-house-5",
-  "kit": "home",
-  "side": "right",
+  "ownerId": "reed-bay-village-house-7",
+  "kit": "laundry",
+  "purpose": "세탁물을 말리는 자리",
+  "anchor": "house",
+  "side": "left",
   "width": 2,
   "height": 2,
   "lowerTiles": [
@@ -1708,8 +1652,8 @@
 ```json
 {
   "name": "항아리",
-  "x": 42,
-  "y": 27,
+  "x": 10,
+  "y": 49,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1717,9 +1661,11 @@
   "upper": [
     352
   ],
-  "ownerId": "reed-bay-village-house-5",
-  "kit": "home",
-  "side": "right",
+  "ownerId": "reed-bay-village-house-7",
+  "kit": "laundry",
+  "purpose": "세탁에 쓸 물 보관",
+  "anchor": "빨랫줄",
+  "side": "left",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1739,8 +1685,8 @@
 ```json
 {
   "name": "허수아비",
-  "x": 58,
-  "y": 34,
+  "x": 31,
+  "y": 44,
   "w": 1,
   "h": 2,
   "kind": "prop",
@@ -1749,9 +1695,11 @@
     2651,
     2654
   ],
-  "ownerId": "reed-bay-village-house-6",
-  "kit": "garden",
-  "side": "right",
+  "ownerId": "reed-bay-village-house-8",
+  "kit": "field-tending",
+  "purpose": "기존 밭의 작물 보호",
+  "anchor": "farm",
+  "side": "left",
   "width": 1,
   "height": 2,
   "lowerTiles": [
@@ -1768,6 +1716,42 @@
     ],
     [
       2654
+    ]
+  ]
+}
+```
+
+## 씨앗 자루
+```json
+{
+  "name": "씨앗 자루",
+  "x": 31,
+  "y": 47,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2652,
+    2653
+  ],
+  "ownerId": "reed-bay-village-house-8",
+  "kit": "field-tending",
+  "purpose": "그 밭의 파종 준비",
+  "anchor": "farm",
+  "side": "left",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2652,
+      2653
     ]
   ]
 }

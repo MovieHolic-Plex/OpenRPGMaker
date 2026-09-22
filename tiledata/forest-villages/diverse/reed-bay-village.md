@@ -18,85 +18,85 @@
   "yards": [
     {
       "ownerId": "reed-bay-village-house-1",
-      "kit": "home",
-      "name": "주거 마당",
+      "kit": "growing",
+      "name": "텃밭 돌보기",
+      "reason": "북서 높은 마당을 자급 텃밭으로 지정",
       "x": 16,
-      "y": 10,
+      "y": 11,
       "side": "right",
-      "w": 4,
-      "h": 5
-    },
-    {
-      "ownerId": "reed-bay-village-house-2",
-      "kit": "garden",
-      "name": "텃밭 마당",
-      "x": 28,
-      "y": 7,
-      "side": "left",
-      "w": 2,
+      "w": 5,
       "h": 4
     },
     {
       "ownerId": "reed-bay-village-house-3",
-      "kit": "work",
-      "name": "작업 마당",
-      "x": 46,
-      "y": 15,
-      "side": "left",
-      "w": 5,
-      "h": 3
-    },
-    {
-      "ownerId": "reed-bay-village-house-4",
-      "kit": "herbs",
-      "name": "약초 마당",
-      "x": 19,
-      "y": 31,
+      "kit": "storage",
+      "name": "물자 보관",
+      "reason": "포구 북쪽 생활권의 물자 보관 거점",
+      "x": 59,
+      "y": 19,
       "side": "right",
-      "w": 2,
-      "h": 4
-    },
-    {
-      "ownerId": "reed-bay-village-house-5",
-      "kit": "home",
-      "name": "주거 마당",
-      "x": 39,
-      "y": 24,
-      "side": "right",
-      "w": 4,
-      "h": 5
-    },
-    {
-      "ownerId": "reed-bay-village-house-6",
-      "kit": "garden",
-      "name": "텃밭 마당",
-      "x": 58,
-      "y": 34,
-      "side": "right",
-      "w": 5,
-      "h": 4
-    },
-    {
-      "ownerId": "reed-bay-village-house-7",
-      "kit": "work",
-      "name": "작업 마당",
-      "x": 8,
-      "y": 49,
-      "side": "left",
       "w": 3,
       "h": 1
     },
     {
-      "ownerId": "reed-bay-village-house-8",
+      "ownerId": "reed-bay-village-house-5",
       "kit": "herbs",
-      "name": "약초 마당",
-      "x": 29,
-      "y": 43,
+      "name": "약초 손질",
+      "reason": "중앙 집의 야외 작업은 약초 재배·손질",
+      "x": 39,
+      "y": 26,
+      "side": "right",
+      "w": 5,
+      "h": 3
+    },
+    {
+      "ownerId": "reed-bay-village-house-6",
+      "kit": "fishing",
+      "name": "부두 작업 준비",
+      "reason": "선착장 진입로 가까운 집에서 어구와 어획 용기 준비; 실제 부두 근접 조건 필요",
+      "x": 58,
+      "y": 35,
+      "side": "right",
+      "w": 3,
+      "h": 3
+    },
+    {
+      "ownerId": "reed-bay-village-house-7",
+      "kit": "laundry",
+      "name": "세탁·건조",
+      "reason": "남서 물가 주거의 마당은 세탁·건조 공간",
+      "x": 7,
+      "y": 48,
       "side": "left",
       "w": 4,
+      "h": 2
+    },
+    {
+      "ownerId": "reed-bay-village-house-8",
+      "kit": "field-tending",
+      "name": "기존 밭 돌보기",
+      "reason": "이미 있는 서쪽 밭(25,47)을 관리; 새 장식용 밭을 중복 생성하지 않음",
+      "x": 31,
+      "y": 44,
+      "side": "left",
+      "w": 2,
       "h": 4
     }
   ],
+  "activitySites": {
+    "dock": {
+      "x": 56,
+      "y": 45,
+      "w": 21,
+      "h": 2
+    },
+    "farm": {
+      "x": 25,
+      "y": 47,
+      "w": 6,
+      "h": 4
+    }
+  },
   "entrance": {
     "x": 0,
     "y": 33
@@ -373,7 +373,7 @@
 ```json
 {
   "id": "reed-bay-village-house-1",
-  "role": "house",
+  "role": "텃밭집",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
   "x": 11,
   "y": 9,
@@ -388,6 +388,8 @@
     "x": 12,
     "y": 16
   },
+  "activity": "growing",
+  "reason": "북서 높은 마당을 자급 텃밭으로 지정",
   "width": 4,
   "height": 7,
   "lowerTiles": [
@@ -485,7 +487,7 @@
 ```json
 {
   "id": "reed-bay-village-house-2",
-  "role": "house",
+  "role": "주거",
   "label": "파랑 석벽 rect-wide 집",
   "x": 31,
   "y": 5,
@@ -500,6 +502,8 @@
     "x": 34,
     "y": 11
   },
+  "activity": "laundry",
+  "reason": "북쪽 주거 집에는 세탁·건조 기능 지정",
   "width": 8,
   "height": 6,
   "lowerTiles": [
@@ -633,7 +637,7 @@
 ```json
 {
   "id": "reed-bay-village-house-3",
-  "role": "house",
+  "role": "물자 보관집",
   "label": "왕궁 도시 · 파랑 박공 회벽집 6×8 ②",
   "x": 52,
   "y": 12,
@@ -648,6 +652,8 @@
     "x": 54,
     "y": 20
   },
+  "activity": "storage",
+  "reason": "포구 북쪽 생활권의 물자 보관 거점",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -789,7 +795,7 @@
 ```json
 {
   "id": "reed-bay-village-house-4",
-  "role": "house",
+  "role": "주거",
   "label": "오렌지 회벽 l-mirror 집",
   "x": 12,
   "y": 30,
@@ -804,6 +810,8 @@
     "x": 16,
     "y": 38
   },
+  "activity": "laundry",
+  "reason": "서쪽 입구 인근 주거 마당은 세탁·건조 공간",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -945,7 +953,7 @@
 ```json
 {
   "id": "reed-bay-village-house-5",
-  "role": "house",
+  "role": "약초 작업집",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
   "x": 34,
   "y": 22,
@@ -960,6 +968,8 @@
     "x": 35,
     "y": 29
   },
+  "activity": "herbs",
+  "reason": "중앙 집의 야외 작업은 약초 재배·손질",
   "width": 4,
   "height": 7,
   "lowerTiles": [
@@ -1057,7 +1067,7 @@
 ```json
 {
   "id": "reed-bay-village-house-6",
-  "role": "house",
+  "role": "어업 준비집",
   "label": "왕궁 도시 · 파랑 회벽집 5×7",
   "x": 52,
   "y": 31,
@@ -1072,6 +1082,8 @@
     "x": 53,
     "y": 38
   },
+  "activity": "fishing",
+  "reason": "선착장 진입로 가까운 집에서 어구와 어획 용기 준비; 실제 부두 근접 조건 필요",
   "width": 5,
   "height": 7,
   "lowerTiles": [
@@ -1183,7 +1195,7 @@
 ```json
 {
   "id": "reed-bay-village-house-7",
-  "role": "house",
+  "role": "주거",
   "label": "왕궁 도시 · 주황 박공 회벽집 6×8",
   "x": 12,
   "y": 42,
@@ -1198,6 +1210,8 @@
     "x": 14,
     "y": 50
   },
+  "activity": "laundry",
+  "reason": "남서 물가 주거의 마당은 세탁·건조 공간",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -1339,7 +1353,7 @@
 ```json
 {
   "id": "reed-bay-village-house-8",
-  "role": "house",
+  "role": "밭 관리집",
   "label": "오렌지 회벽 2층 rect-2f 집",
   "x": 34,
   "y": 39,
@@ -1354,6 +1368,8 @@
     "x": 37,
     "y": 48
   },
+  "activity": "field-tending",
+  "reason": "이미 있는 서쪽 밭(25,47)을 관리; 새 장식용 밭을 중복 생성하지 않음",
   "width": 7,
   "height": 9,
   "lowerTiles": [

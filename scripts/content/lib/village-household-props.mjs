@@ -1,11 +1,15 @@
 // Whole, purposeful yard assemblies. No random scatter or distant fallback.
-export const HOUSEHOLD_KITS = [
- {id:'home',name:'주거 마당',items:[['꽃 화단',0,0],['빨랫줄',0,3],['항아리',3,3]]},
- {id:'garden',name:'텃밭 마당',items:[['허수아비',0,0],['채소밭',0,2],['씨앗 자루',3,3]]},
- {id:'work',name:'작업 마당',items:[['나무 상자',0,0],['나무통',2,0],['장작',4,0],['가로 탁자',0,2]]},
- {id:'herbs',name:'약초 마당',items:[['꽃 화단',0,0],['약초 화분',0,3],['항아리',3,3]]},
-];
-export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,reachable,stamp}) {
+import fs from 'node:fs';
+export const PROP_PROGRAMS=JSON.parse(fs.readFileSync(new URL('../../../tiledata/forest-villages/diverse/prop-programs.json',import.meta.url)));
+export const HOUSEHOLD_KITS=PROP_PROGRAMS.activities;
+const distance=(a,b)=>Math.max(0,a.x-b.x-b.w+1,b.x-a.x-a.w+1)+Math.max(0,a.y-b.y-b.h+1,b.y-a.y-a.h+1);
+const present=(map,o)=>o.upper.every((t,i)=>map.upperTiles[(o.y+Math.floor(i/o.w))*map.width+o.x+i%o.w]===t);
+export function purposeAnchor(o,group,owner,sites){
+ if(o.anchor==='house')return owner;
+ if(o.anchor==='dock'||o.anchor==='farm')return sites[o.anchor];
+ return group.find(q=>q.ownerId===o.ownerId&&q.name===o.anchor);
+}
+export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,reachable,stamp,sites={}}) {
  const W=map.width, placed=[], yards=[];
  const at=(x,y)=>y*W+x;
  const nearRoad=(x,y)=>[[0,0],[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>roads.has(at(x+dx,y+dy)));
@@ -17,10 +21,11 @@ export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,re
      &&![[0,1],[0,-1],[1,0],[-1,0]].some(([dx,dy])=>cliffCells.has(at(cx+dx,cy+dy)));
  });
  const accessible=items=>items.every(o=>Array.from({length:o.w*o.h},(_,n)=>[o.x+n%o.w,o.y+Math.floor(n/o.w)]).some(([x,y])=>[[1,0],[-1,0],[0,1],[0,-1]].some(([dx,dy])=>reachable.has((x+dx)+','+(y+dy))&&!items.some(q=>x+dx>=q.x&&x+dx<q.x+q.w&&y+dy>=q.y&&y+dy<q.y+q.h))));
- for(const [n,h] of houses.entries()) {
-   const kit=HOUSEHOLD_KITS[n%HOUSEHOLD_KITS.length];
+ for(const h of houses) {
+   const kit=HOUSEHOLD_KITS[h.activity];
+   if(!kit)throw Error("House activity must be authored: "+h.id);
    // Compact alternatives keep the same purpose; a garden always retains its bed.
-   const variants=[kit.items,kit.items.slice(0,2)];
+   const variants=[kit.items,kit.compact.map(i=>kit.items[i])];
    let result;
    for(const items of variants) {
      const w=Math.max(...items.map(([name,x])=>x+parts.find(p=>p.name===name).width));
@@ -28,9 +33,9 @@ export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,re
      const origins=[];
      for(let y=h.y+h.h-height;y>=h.y+1;y--) for(const [side,x] of [['right',h.x+h.w+1],['left',h.x-w-1]]) origins.push({x,y,side});
      for(const origin of origins) {
-       const group=items.map(([name,dx,dy])=>{const p=parts.find(p=>p.name===name);return{name,x:origin.x+dx,y:origin.y+dy,w:p.width,h:p.height,upper:p.targetUpper.flat(),ownerId:h.id,kit:kit.id,side:origin.side};});
-       if(!group.every(o=>free(o.x,o.y,o.w,o.h))||!accessible(group))continue;
-       result=group;yards.push({ownerId:h.id,kit:kit.id,name:kit.name,...origin,w,h:height});break;
+       const group=items.map(([name,dx,dy,purpose,anchor])=>{const p=parts.find(p=>p.name===name);return{name,x:origin.x+dx,y:origin.y+dy,w:p.width,h:p.height,upper:p.targetUpper.flat(),ownerId:h.id,kit:h.activity,purpose,anchor,side:origin.side};});
+       if(!group.every(o=>{const a=purposeAnchor(o,group,h,sites);return a&&distance(o,a)<=(o.anchor==='dock'?12:o.anchor==='house'?6:3)&&free(o.x,o.y,o.w,o.h);})||!accessible(group))continue;
+       result=group;yards.push({ownerId:h.id,kit:h.activity,name:kit.name,reason:h.reason,...origin,w,h:height});break;
      }
      if(result)break;
    }
@@ -46,10 +51,12 @@ export function inspectHouseholdProps(map,plan) {
   const owner=plan.houses.find(h=>h.id===o.ownerId);
   if(!owner){errors.push({code:'prop-owner-missing',x:o.x,y:o.y});continue;}
   if(o.y<owner.y||o.y+o.h>owner.y+owner.h||!(o.x+o.w<=owner.x&&owner.x-o.x<=6||o.x>=owner.x+owner.w&&o.x+o.w-owner.x-owner.w<=6))errors.push({code:'prop-outside-yard',x:o.x,y:o.y});
-  if(o.name==='허수아비') {
-    const bed=props.find(q=>q.ownerId===o.ownerId&&q.name==='채소밭');
-    if(!bed||!bed.upper.every((t,i)=>map.upperTiles[(bed.y+Math.floor(i/bed.w))*map.width+bed.x+i%bed.w]===t))errors.push({code:'scarecrow-without-garden',x:o.x,y:o.y});
-  }
+  const rule=HOUSEHOLD_KITS[owner.activity]?.items.find(([name])=>name===o.name);
+  if(!rule||o.kit!==owner.activity||o.purpose!==rule[3]||o.anchor!==rule[4]) {errors.push({code:'prop-purpose-mismatch',x:o.x,y:o.y});continue;}
+  const anchor=purposeAnchor(o,props,owner,plan.activitySites??{});
+  const exists=anchor&&(o.anchor==='house'||o.anchor==='dock'&&Array.from({length:anchor.w*anchor.h},(_,i)=>map.upperTiles[(anchor.y+Math.floor(i/anchor.w))*map.width+anchor.x+i%anchor.w]).every(t=>t===199)||o.anchor==='farm'&&Array.from({length:anchor.w*anchor.h},(_,i)=>map.lowerTiles[(anchor.y+Math.floor(i/anchor.w))*map.width+anchor.x+i%anchor.w]).every(t=>t===188)||!['house','dock','farm'].includes(o.anchor)&&present(map,anchor));
+  if(!exists||distance(o,anchor)>(o.anchor==='dock'?12:o.anchor==='house'?6:3))errors.push({code:o.name==='허수아비'?'scarecrow-without-garden':'prop-purpose-anchor-missing',x:o.x,y:o.y});
+
  }
  return errors;
 }

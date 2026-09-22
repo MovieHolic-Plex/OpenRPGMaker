@@ -60,7 +60,7 @@ function studyFaults() {
     return { mapId: id, x: i % m.width, y: Math.floor(i / m.width), layer, tile };
   };
   const front = plan.houses[0].front;
-  return [{ code: "cut-root", ...find(1430, "lower"), replacement: 240 }, { code: "missing-trunk", ...find(1426, "lower"), replacement: 240 }, { code: "wrong-edge-direction", ...find(2577, "upper"), replacement: 2589 }, { code: "wrong-layer", ...find(2611, "upper"), replacement: -1, move: true }, { code: "blocked-entrance", mapId: id, ...front, layer: "upper", tile: m.upperTiles[front.y * m.width + front.x], replacement: 237 }];
+  return [{ code: "cut-root", ...find(1430, "lower"), replacement: 240 }, { code: "missing-trunk", ...find(1426, "lower"), replacement: 240 }, { code: "wrong-edge-direction", ...find(2577, "upper"), replacement: 2589 }, { code: "wrong-layer", ...find(plan.placements.find(o=>o.kind==="prop").upper[0], "upper"), replacement: -1, move: true }, { code: "blocked-entrance", mapId: id, ...front, layer: "upper", tile: m.upperTiles[front.y * m.width + front.x], replacement: 237 }];
 }
 function cliffFaults() {
   const mapId = "terrace-cliff-village", m = catalog.maps[mapId], p = catalog.plans.find((p2) => p2.id === mapId), b = catalog.cliffBindings;
@@ -91,10 +91,12 @@ function householdFaults() {
  const mapId='terrace-cliff-village',p=catalog.plans.find(p=>p.id===mapId),m=catalog.maps[mapId];
  const bed=p.placements.find(o=>o.name==='채소밭'),scare=p.placements.find(o=>o.name==='허수아비'&&o.ownerId===bed.ownerId);
  const barrel=p.placements.find(o=>o.name==='나무통');
+ const wood=p.placements.find(o=>o.name==='장작'),table=p.placements.find(o=>o.ownerId===wood.ownerId&&o.name==='가로 탁자');
  const i=m.upperTiles.findIndex((t,i)=>t===-1&&m.lowerTiles[i]===240&&i%m.width>20&&i%m.width<60&&Math.floor(i/m.width)>30&&Math.floor(i/m.width)<65&&!p.houses.some(h=>Math.abs(h.x-i%m.width)<10&&Math.abs(h.y-Math.floor(i/m.width))<10)&&!p.roadCells.includes(i));
  if(i<0)throw Error('No unowned-prop fault target');
  return [{code:'unowned-prop',mapId,x:i%m.width,y:Math.floor(i/m.width),layer:'upper',tile:-1,replacement:barrel.upper[0]},
- {code:'scarecrow-without-garden',mapId,x:bed.x,y:bed.y,layer:'upper',tile:bed.upper[0],replacement:-1,errorX:scare.x,errorY:scare.y}];
+ {code:'scarecrow-without-garden',mapId,x:bed.x,y:bed.y,layer:'upper',tile:bed.upper[0],replacement:-1,errorX:scare.x,errorY:scare.y},
+ {code:'prop-purpose-anchor-missing',mapId,x:table.x,y:table.y,layer:'upper',tile:table.upper[0],replacement:-1,errorX:wood.x,errorY:wood.y}];
 }
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [input, mapId] = process.argv.slice(2);

@@ -1,5 +1,5 @@
 // New exterior studies built from verified whole parts; never edits the source project.
-import { placeHouseholdProps } from "./lib/village-household-props.mjs";
+import { placeHouseholdProps, PROP_PROGRAMS } from "./lib/village-household-props.mjs";
 import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
 import fs from "node:fs";
 import assert from "node:assert/strict";
@@ -103,6 +103,9 @@ for (const spec of plans) {
       m.upperTiles[to] = original.upperTiles[from];
     }
     const house = { id: spec.id + "-house-" + (n + 1), role: "house", label: h.label, x, y, w: h.w, h: h.h, template, doorAt: { x: x + h.doorAt.x - h.x, y: y + h.doorAt.y - h.y }, front: { x: x + h.front.x - h.x, y: y + h.front.y - h.y } };
+    const program=PROP_PROGRAMS.houses[spec.id]?.[x+","+y];
+    assert(program,"Missing authored house purpose");
+    Object.assign(house,program);
     houses.push(house);
     reserve(x, y, h.w, h.h, 2);
     reserve(house.front.x, house.front.y, 1, 3, 2);
@@ -227,8 +230,9 @@ for (const spec of plans) {
     assert(freeRect(o.x,o.y,o.w,o.h),'Retained vegetation overlaps terrain');
     stamp(o.name,o.x,o.y,o.w,o.h,o.lower,o.upper,o.kind);
   }
-  const household=placeHouseholdProps({map:m,houses,parts,roads,access,cliffCells:cliffPlan.cliff,reachable:reach.computeReachableCells(project,m,spec.start.x,spec.start.y),stamp});
-  for(const o of household.placed) Object.assign(placements.find(p=>p.kind==='prop'&&p.x===o.x&&p.y===o.y),{ownerId:o.ownerId,kit:o.kit,side:o.side});
+  const activitySites={...(spec.dock?{dock:{x:spec.dock[0],y:spec.dock[1],w:spec.dock[2],h:spec.dock[3]}}:{}),...(()=>{const farm=placements.find(o=>o.kind==='farm');return farm?{farm:{x:farm.x,y:farm.y,w:farm.w,h:farm.h}}:{};})()};
+  const household=placeHouseholdProps({map:m,houses,parts,roads,access,cliffCells:cliffPlan.cliff,reachable:reach.computeReachableCells(project,m,spec.start.x,spec.start.y),stamp,sites:activitySites});
+  for(const o of household.placed) Object.assign(placements.find(p=>p.kind==='prop'&&p.x===o.x&&p.y===o.y),{ownerId:o.ownerId,kit:o.kit,purpose:o.purpose,anchor:o.anchor,side:o.side});
   let reachable = reach.computeReachableCells(project, m, spec.start.x, spec.start.y);
   const rejectedOwners=new Set(placements.filter(o=>o.kind==='prop'&&!Array.from({length:o.w*o.h},(_,i)=>[o.x+i%o.w,o.y+Math.floor(i/o.w)]).some(([x,y])=>reach.isAdjacentOrOn(reachable,x,y))).map(o=>o.ownerId));
   for(let n=placements.length-1;n>=0;n--) {const o=placements[n];if(o.kind==='prop'&&rejectedOwners.has(o.ownerId)){for(let dy=0;dy<o.h;dy++)for(let dx=0;dx<o.w;dx++)m.upperTiles[point(o.x+dx,o.y+dy)]=-1;placements.splice(n,1);}}
@@ -237,7 +241,7 @@ for (const spec of plans) {
   assert.equal(blocked.length, 0, "Blocked " + spec.id + ": " + JSON.stringify(blocked));
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance };
   result.maps[m.id] = m;
-  result.plans.push({ ...spec, houses, placements, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
+  result.plans.push({ ...spec, houses, placements, activitySites, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });
   console.log(spec.id, { houses: houses.length, objects: placements.length, forest: grove.canopyCells, reachable: reachable.size });
 }
 fs.writeFileSync(path.join(out, "authored.json"), JSON.stringify(result));

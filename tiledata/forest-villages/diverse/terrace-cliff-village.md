@@ -18,58 +18,64 @@
   "yards": [
     {
       "ownerId": "terrace-cliff-village-house-1",
-      "kit": "home",
-      "name": "주거 마당",
+      "kit": "laundry",
+      "name": "세탁·건조",
+      "reason": "상단 서쪽 주거 마당은 세탁·건조 공간",
       "x": 34,
-      "y": 12,
+      "y": 15,
       "side": "right",
       "w": 4,
-      "h": 5
+      "h": 2
     },
     {
       "ownerId": "terrace-cliff-village-house-2",
-      "kit": "garden",
-      "name": "텃밭 마당",
+      "kit": "herbs",
+      "name": "약초 손질",
+      "reason": "상단 동쪽 마당에 약초 재배·손질 작업을 지정",
       "x": 57,
-      "y": 15,
+      "y": 16,
       "side": "right",
-      "w": 5,
-      "h": 4
-    },
-    {
-      "ownerId": "terrace-cliff-village-house-3",
-      "kit": "work",
-      "name": "작업 마당",
-      "x": 7,
-      "y": 34,
-      "side": "left",
       "w": 5,
       "h": 3
     },
     {
+      "ownerId": "terrace-cliff-village-house-3",
+      "kit": "storage",
+      "name": "물자 보관",
+      "reason": "중단 서쪽 길가 집을 물자 보관 거점으로 지정",
+      "x": 9,
+      "y": 36,
+      "side": "left",
+      "w": 3,
+      "h": 1
+    },
+    {
       "ownerId": "terrace-cliff-village-house-4",
-      "kit": "herbs",
-      "name": "약초 마당",
+      "kit": "woodwork",
+      "name": "목재 가공",
+      "reason": "중단 작업 생활권에 가공 작업대를 지정",
       "x": 46,
-      "y": 34,
+      "y": 36,
       "side": "right",
-      "w": 4,
-      "h": 4
+      "w": 3,
+      "h": 3
     },
     {
       "ownerId": "terrace-cliff-village-house-5",
-      "kit": "home",
-      "name": "주거 마당",
+      "kit": "growing",
+      "name": "텃밭 돌보기",
+      "reason": "중단 동쪽 평탄한 마당을 자급 텃밭으로 지정",
       "x": 70,
-      "y": 38,
+      "y": 39,
       "side": "right",
-      "w": 4,
-      "h": 5
+      "w": 5,
+      "h": 4
     },
     {
       "ownerId": "terrace-cliff-village-house-7",
-      "kit": "work",
-      "name": "작업 마당",
+      "kit": "storage",
+      "name": "물자 보관",
+      "reason": "남쪽 입구와 연결되는 하단 집에 보관 기능 지정",
       "x": 53,
       "y": 65,
       "side": "right",
@@ -79,14 +85,16 @@
     {
       "ownerId": "terrace-cliff-village-house-8",
       "kit": "herbs",
-      "name": "약초 마당",
-      "x": 65,
-      "y": 59,
+      "name": "약초 손질",
+      "reason": "하단 동쪽 집에서 약초를 손질하는 공간 지정",
+      "x": 64,
+      "y": 60,
       "side": "left",
-      "w": 4,
-      "h": 4
+      "w": 5,
+      "h": 3
     }
   ],
+  "activitySites": {},
   "entrance": {
     "x": 42,
     "y": 71
@@ -562,7 +570,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-1",
-  "role": "house",
+  "role": "주거",
   "label": "왕궁 도시 · 파랑 박공 회벽집 6×8 ②",
   "x": 27,
   "y": 9,
@@ -577,6 +585,8 @@
     "x": 29,
     "y": 17
   },
+  "activity": "laundry",
+  "reason": "상단 서쪽 주거 마당은 세탁·건조 공간",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -718,7 +728,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-2",
-  "role": "house",
+  "role": "약초 작업집",
   "label": "오렌지 회벽 2층 rect-2f 집",
   "x": 49,
   "y": 11,
@@ -733,6 +743,8 @@
     "x": 52,
     "y": 20
   },
+  "activity": "herbs",
+  "reason": "상단 동쪽 마당에 약초 재배·손질 작업을 지정",
   "width": 7,
   "height": 9,
   "lowerTiles": [
@@ -908,7 +920,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-3",
-  "role": "house",
+  "role": "물자 보관집",
   "label": "오렌지 회벽 l-mirror 집",
   "x": 13,
   "y": 29,
@@ -923,6 +935,8 @@
     "x": 17,
     "y": 37
   },
+  "activity": "storage",
+  "reason": "중단 서쪽 길가 집을 물자 보관 거점으로 지정",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -1064,7 +1078,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-4",
-  "role": "house",
+  "role": "목공 작업집",
   "label": "파랑 석벽 rect-wide 집",
   "x": 37,
   "y": 33,
@@ -1079,6 +1093,8 @@
     "x": 40,
     "y": 39
   },
+  "activity": "woodwork",
+  "reason": "중단 작업 생활권에 가공 작업대를 지정",
   "width": 8,
   "height": 6,
   "lowerTiles": [
@@ -1212,7 +1228,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-5",
-  "role": "house",
+  "role": "텃밭집",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
   "x": 65,
   "y": 36,
@@ -1227,6 +1243,8 @@
     "x": 66,
     "y": 43
   },
+  "activity": "growing",
+  "reason": "중단 동쪽 평탄한 마당을 자급 텃밭으로 지정",
   "width": 4,
   "height": 7,
   "lowerTiles": [
@@ -1324,7 +1342,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-6",
-  "role": "house",
+  "role": "주거",
   "label": "왕궁 도시 · 주황 박공 회벽집 6×8",
   "x": 18,
   "y": 55,
@@ -1339,6 +1357,8 @@
     "x": 20,
     "y": 63
   },
+  "activity": "laundry",
+  "reason": "하단 서쪽 주거 마당은 세탁·건조 공간",
   "width": 6,
   "height": 8,
   "lowerTiles": [
@@ -1480,7 +1500,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-7",
-  "role": "house",
+  "role": "물자 보관집",
   "label": "왕궁 도시 · 파랑 회벽집 5×7",
   "x": 47,
   "y": 59,
@@ -1495,6 +1515,8 @@
     "x": 48,
     "y": 66
   },
+  "activity": "storage",
+  "reason": "남쪽 입구와 연결되는 하단 집에 보관 기능 지정",
   "width": 5,
   "height": 7,
   "lowerTiles": [
@@ -1606,7 +1628,7 @@
 ```json
 {
   "id": "terrace-cliff-village-house-8",
-  "role": "house",
+  "role": "약초 작업집",
   "label": "왕궁 도시 · 주황 박공 회벽집 4×7 ②",
   "x": 70,
   "y": 56,
@@ -1621,6 +1643,8 @@
     "x": 71,
     "y": 63
   },
+  "activity": "herbs",
+  "reason": "하단 동쪽 집에서 약초를 손질하는 공간 지정",
   "width": 4,
   "height": 7,
   "lowerTiles": [

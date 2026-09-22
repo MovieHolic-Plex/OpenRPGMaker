@@ -4,142 +4,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
-    "tile": 2619,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 11,
-    "sourceX": 5,
-    "sourceY": 1,
-    "pixelX": 80,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 9,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "채소밭",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2620,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 12,
-    "sourceX": 0,
-    "sourceY": 2,
-    "pixelX": 0,
-    "pixelY": 32,
-    "width": 16,
-    "height": 16,
-    "targetX": 10,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "빨랫줄",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2621,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 13,
-    "sourceX": 1,
-    "sourceY": 2,
-    "pixelX": 16,
-    "pixelY": 32,
-    "width": 16,
-    "height": 16,
-    "targetX": 11,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "빨랫줄",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2623,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 16,
-    "sourceX": 4,
-    "sourceY": 2,
-    "pixelX": 64,
-    "pixelY": 32,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "약초 화분 v2",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2624,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -304,6 +168,40 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "userLocked": true,
       "defaultLayer": "upper",
       "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2646,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 52,
+    "sourceX": 4,
+    "sourceY": 8,
+    "pixelX": 64,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낚시 바구니",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
       "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
       "layerBacking": "none"
     }

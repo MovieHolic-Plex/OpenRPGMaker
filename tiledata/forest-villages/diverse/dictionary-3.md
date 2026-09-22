@@ -1753,74 +1753,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 2611,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 2,
-    "sourceX": 2,
-    "sourceY": 0,
-    "pixelX": 32,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2612,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 3,
-    "sourceX": 3,
-    "sourceY": 0,
-    "pixelX": 48,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 2,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2613,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -1889,74 +1821,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 2616,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 8,
-    "sourceX": 2,
-    "sourceY": 1,
-    "pixelX": 32,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 6,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2617,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 9,
-    "sourceX": 3,
-    "sourceY": 1,
-    "pixelX": 48,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2618,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -1982,6 +1846,142 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "tileMeta": {
       "role": "prop",
       "label": "채소밭",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2619,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 11,
+    "sourceX": 5,
+    "sourceY": 1,
+    "pixelX": 80,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 9,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "채소밭",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2620,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 12,
+    "sourceX": 0,
+    "sourceY": 2,
+    "pixelX": 0,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 10,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "빨랫줄",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2621,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 13,
+    "sourceX": 1,
+    "sourceY": 2,
+    "pixelX": 16,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 11,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "빨랫줄",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2623,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 16,
+    "sourceX": 4,
+    "sourceY": 2,
+    "pixelX": 64,
+    "pixelY": 32,
+    "width": 16,
+    "height": 16,
+    "targetX": 13,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "약초 화분 v2",
       "source": "user",
       "userLocked": true,
       "defaultLayer": "upper",

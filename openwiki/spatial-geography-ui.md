@@ -327,7 +327,7 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 2열을 중첩하면 그림이 20px로 축소된다(`spatialPlaceLibrary.css`의 지역 참조 한정 규칙).
 실제 카드·속성·다운로드·AI 행 일치 근거: `verify-shots/village-diversity/`.
 
-공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (33 MD/21 이미지).
+공용 AI 자료는 forest_harmony가 소유하는 번들 `src/assets/sharedDiverseVillageReferences.json` (33 MD/22 이미지).
 정확한 원본 좌표·레이어·전체 배열·반복 조립·오류 좌표는 `tiledata/forest-villages/diverse/`에 있다.
 생성/배포 명령 및 정본 보존 계약은 그 디렉터리의 README를 따른다.
 
@@ -370,3 +370,13 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 완전한 묶음 접근 검증, 허수아비-채소밭 동반 조건, 마당 밖 소품 좌표 검사를 추가했다.
 숲·절벽·개별 나무·길·집 배열은 그대로다. 지역 revision5 / 참고문서 v5,
 33 MD·21 이미지·14종 오류. 정본 revision11 저장/재조회와 근거는 `verify-shots/household-props/`.
+
+### 사용 목적 개정6 (2026-09-23)
+
+‘집 옆’만으로 배치 목적을 대신하지 않는다. 집 순번 n%4의 묶음 교대를 제거했다.
+prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/compact를 저작한다.
+기존 밭 돌보기는 실제 밭, 어업 준비는 실제 부두, 목재/완제품 상자는 작업대에 연결한다.
+검사에서 실제 기준 대상의 전체 타일과 거리, 소유자의 활동, 접근 가능성을 확인한다.
+원형의 꽃 등 필요 없는 장식은 활동에 자동 동반하지 않는다. 활동을 바꾸는 fallback도 없다.
+지역 revision6, 공용 문서 v6(33 MD/22이미지), 정본 revision12 저장/재조회.
+좌표 검사15종과 활동/세탁/부두/기존 밭/작업대 변조5종의 근거: `verify-shots/prop-purpose/`.

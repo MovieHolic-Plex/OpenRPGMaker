@@ -6005,74 +6005,6 @@
     }
   },
   {
-    "tile": 2611,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 2,
-    "sourceX": 2,
-    "sourceY": 0,
-    "pixelX": 32,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2612,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 3,
-    "sourceX": 3,
-    "sourceY": 0,
-    "pixelX": 48,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 2,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2613,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -6132,74 +6064,6 @@
     "tileMeta": {
       "role": "prop",
       "label": "채소밭",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2616,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 8,
-    "sourceX": 2,
-    "sourceY": 1,
-    "pixelX": 32,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 6,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "기존 승인 소품의 16px 원본 칩 복사",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2617,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 9,
-    "sourceX": 3,
-    "sourceY": 1,
-    "pixelX": 48,
-    "pixelY": 16,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "꽃 화단",
       "source": "user",
       "userLocked": true,
       "defaultLayer": "upper",
@@ -6543,6 +6407,40 @@
       "userLocked": true,
       "defaultLayer": "upper",
       "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2646,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 52,
+    "sourceX": 4,
+    "sourceY": 8,
+    "pixelX": 64,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낚시 바구니",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
       "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
       "layerBacking": "none"
     }
