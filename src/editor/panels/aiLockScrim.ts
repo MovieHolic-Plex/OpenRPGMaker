@@ -8,8 +8,9 @@
 //
 // 입력 자체를 disabled 로 만들지는 않는다: 쓰다가 로그인하면 그대로 이어 쓸 수 있어야 하고,
 // 무엇보다 "왜 못 쓰는지" 를 읽는 동안 커서가 살아 있으면 다시 눌러 보게 된다.
-import { getAiConnectionStatus } from "./aiConnectionStatus";
+import { getAiConnectionStatus, refreshAiConnectionStatus } from "./aiConnectionStatus";
 import { isAiConfigReady } from "./aiChatPanelHelpers";
+import { AI_SETTINGS_CLOSED_EVENT } from "./aiSettingsModal";
 import { loadAiConfig } from "@/ai/llmClient";
 import { el } from "@/util/dom";
 
@@ -74,10 +75,27 @@ export function createAiLockScrim(options: {
     return locked;
   };
 
-  // 로그인했는데 막이 남아 있으면 그게 더 나쁘다. 설정 모달은 닫힘 이벤트를 주지 않으므로
-  // **막 자체가 다시 판정의 계기**가 된다 — 누르거나 포커스를 주면 그때 최신 상태를 본다.
-  // 폴링을 붙이지 않는 이유: 이 막이 떠 있는 동안 할 수 있는 일이 "설정 열기" 뿐이다.
-  const reevaluate = (): void => { sync(); };
+  /**
+   * 캐시를 새로 읽고 다시 칠한다.
+   *
+   * 왜 `sync()` 만으로는 부족한가 (2026-09-22 실측): `getAiConnectionStatus` 는 동반 서비스
+   * 조회의 **캐시**를 읽는다. 그 캐시는 `refreshAiConnectionStatus` 로만 갱신되므로, 막을
+   * 누르거나 설정 모달이 닫혀도 캐시가 낡아 있으면 여전히 "로그인 필요" 로 판정한다.
+   * 실측에서 이벤트가 2번 정상 발화했는데도 막이 걷히지 않았다 — 원인은 이벤트가 아니라 캐시였다.
+   *
+   * `checking`(캐시가 차가움)으로 판정되는 동안에는 막지 않는다: 조회 중에 가두면
+   * 멀쩡한 사용자가 갇힌다.
+   */
+  const revalidate = (): void => {
+    void refreshAiConnectionStatus(() => { sync(); }).then(() => { sync(); }).catch(() => { sync(); });
+  };
+
+  // 로그인했는데 막이 남아 있으면 그게 더 나쁘다. 설정 모달이 닫히는 순간 다시 판정한다 —
+  // 이게 주 경로다. 막을 누르는 것은 모달을 거치지 않고 상태가 바뀐 경우(다른 창에서 로그인,
+  // 토큰 만료 등)를 위한 보조 계기다. 폴링은 붙이지 않는다: 감시할 시점이 둘로 좁혀졌다.
+  const onSettingsClosed = (): void => { revalidate(); };
+  window.addEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
+  const reevaluate = (): void => { revalidate(); };
   element.addEventListener("click", reevaluate);
   element.addEventListener("focusin", reevaluate);
 
@@ -85,9 +103,9 @@ export function createAiLockScrim(options: {
     element,
     sync,
     dispose: () => {
+      window.removeEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
       element.removeEventListener("click", reevaluate);
       element.removeEventListener("focusin", reevaluate);
     },
   };
 }
-
