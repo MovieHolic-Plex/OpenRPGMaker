@@ -16,7 +16,7 @@ import { GENERATED_EFFECT_SHEET_ASSETS } from "@/assets/generatedEffectSheets";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
 import { listMonsterResources } from "@/assets/monsterResourceCatalog";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
-import { OPENING_STILL_MOODS } from "@/assets/openingStillMoods";
+import { listOpeningStillMoods } from "@/assets/openingStillMoods";
 import { OGA_BACKDROP_ASSETS } from "@/assets/ogaBackdropAssets";
 import {
   SCARLOXY_BACKDROP_ASSETS,
@@ -119,7 +119,7 @@ export function listDatabaseResourceOptions(
       break;
     case "still":
       // 전체화면 연출용 아트가 먼저다 — 아이템 아이콘이 첫 화면을 채우면 AI도 사람도 못 고른다.
-      for (const mood of OPENING_STILL_MOODS) add(mood.id, mood.name, mood.tags);
+      for (const mood of listOpeningStillMoods()) add(mood.id, mood.name, mood.tags);
       for (const asset of EASYRPG_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of SCARLOXY_BACKDROP_ASSETS) add(asset.id, asset.name);
       for (const asset of OGA_BACKDROP_ASSETS) add(asset.id, asset.name);

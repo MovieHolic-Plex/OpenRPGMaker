@@ -108,6 +108,19 @@ export const OPENING_STILL_MOODS: readonly OpeningStillMood[] = [
   },
 ];
 
+// BEGIN generated pack stills — 이 줄과 END 사이는 생성 영역이다.
+// (scripts/build-opening-still-catalog.mjs 가 Release 팩 스테이징 manifest 로 갱신한다.
+//  레포 커밋 분은 위 OPENING_STILL_MOODS 이고, 팩 분은 아래에 생성된다.)
+const PACK_STILL_MOODS: readonly OpeningStillMood[] = [];
+// END generated pack stills
+
+/** 에디터·AI 검색 대상 전체 — 레포 번들 분 + 릴리스 팩 분. */
+const ALL_STILL_MOODS: readonly OpeningStillMood[] = [...OPENING_STILL_MOODS, ...PACK_STILL_MOODS];
+
 export function findOpeningStillMood(id: string): OpeningStillMood | undefined {
-  return OPENING_STILL_MOODS.find((entry) => entry.id === id);
+  return ALL_STILL_MOODS.find((entry) => entry.id === id);
+}
+
+export function listOpeningStillMoods(): readonly OpeningStillMood[] {
+  return ALL_STILL_MOODS;
 }

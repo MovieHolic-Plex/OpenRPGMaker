@@ -2,6 +2,8 @@ import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
 import { resolveBgmCatalogAssetUrl } from "./bgmCatalogResolver";
+import { openingStillPackUrl } from "./openingStillPackCdn";
+import { findOpeningStillPackEntry } from "./openingStillPackRuntime";
 import { resolveSeCatalogAssetUrl } from "./seCatalogResolver";
 import { resolveFarmingAssetUrl } from "./farmingSprites";
 import { resolveGeneratedEffectAssetUrl } from "./generatedEffectSheets";
@@ -331,6 +333,8 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     resolveCc0AudioAssetUrl(resourceId) ??
     // 281곡 CC0 BGM 카탈로그. 파일이 레포에 없고 CDN 에서 오므로 절대 URL 이 나올 수 있다.
     resolveBgmCatalogAssetUrl(resourceId) ??
+    // 오프닝 스틸 릴리스 팩. 파일이 레포에 없고 CDN/설치 경로에서 온다.
+    resolveOpeningStillPackUrl(resourceId) ??
     // 456개 CC0 효과음 카탈로그. 파일이 레포에 있어(public/assets/se/) 항상 동일 출처 경로다.
     resolveSeCatalogAssetUrl(resourceId);
   if (packagedUrl !== null) return withInlineAsset(packagedUrl);
@@ -344,6 +348,12 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
 
 export function builtinGeneratedResourceIds(): string[] {
   return Object.keys(BUILTIN_GENERATED_RESOURCE_URLS);
+}
+
+/** 릴리스 팩 스틸 — 설치되지 않은 환경에서도 경로는 결정론적이다(그림이 404 나면 onerror 처리). */
+export function resolveOpeningStillPackUrl(resourceId: string): string | null {
+  const entry = findOpeningStillPackEntry(resourceId);
+  return entry ? openingStillPackUrl(entry.fileName) : null;
 }
 
 export function resolveGeneratedAssetResourceUrl(resourceId: string, manifest?: GeneratedAssetManifest): string | null {
