@@ -40,7 +40,7 @@ async function validateVillageStudy(project, mapId) {
     if(t.tileMeta[j.tile]?.layerBacking!==240) add('grass-backing',j.x,j.y,{expected:240,actual:t.tileMeta[j.tile]?.layerBacking});
   }
   const crest=plan.crest;
-  for(let dx=0;dx<crest.width;dx++) {
+  for(let dx=0;dx<(crest?.width??0);dx++) {
     const end=crest.width-1-dx,x=crest.x+dx,y=crest.y+Math.max(0,crest.shoulder-Math.min(dx,end));
     const source=dx<=crest.shoulder?504:end<=crest.shoulder?505:559;
     if(m.lowerTiles[y*m.width+x]!==catalog.grassBindings[source]) add('grass-crest-gap',x,y,{sourceTile:source});
@@ -89,7 +89,10 @@ function cliffFaults() {
     { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 },
     // Clearing the forest that closes the west end of pine-hamlets' cliff lets you walk round it onto the terrace.
     (() => { const q = catalog.plans.find((p2) => p2.id === "pine-hamlets"), [ex, ey] = q.cliffs[0].points[0];
-      return { code: "terrace-without-stairs", mapId: q.id, x: ex - 4, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + ex - 4], replacement: 240, rects: [{ x: ex - 4, y: ey - 3, w: 9, h: 3 }, { x: ex - 4, y: ey, w: 4, h: q.cliffs[0].height + 1 }, { x: ex - 4, y: ey + q.cliffs[0].height + 1, w: 6, h: 2 }], errorX: ex, errorY: ey }; })()
+      return { code: "terrace-without-stairs", mapId: q.id, x: ex - 4, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + ex - 4], replacement: 240, rects: [{ x: ex - 4, y: ey - 3, w: 9, h: 3 }, { x: ex - 4, y: ey, w: 4, h: q.cliffs[0].height + 1 }, { x: ex - 4, y: ey + q.cliffs[0].height + 1, w: 6, h: 2 }], errorX: ex, errorY: ey }; })(),
+    // A waterfall column painted back to grass mid-face.
+    (() => { const q = catalog.plans.find((p2) => p2.id === "twin-falls-river-village"), f = q.falls[0];
+      return { code: "waterfall-gap", mapId: q.id, x: f.x, y: f.y + 3, layer: "lower", tile: f.tile, replacement: 240 }; })()
   ];
 }
 function applyStudyFault(project, f) {

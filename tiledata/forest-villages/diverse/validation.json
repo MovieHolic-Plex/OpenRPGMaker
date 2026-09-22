@@ -18,6 +18,14 @@
     },
     {
       "valid": true,
+      "mapId": "twin-falls-river-village",
+      "totalErrors": 0,
+      "errors": [],
+      "truncated": false,
+      "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+    },
+    {
+      "valid": true,
       "mapId": "reed-bay-village",
       "totalErrors": 0,
       "errors": [],
@@ -959,6 +967,42 @@
               "x": 6,
               "y": 20
             }
+          }
+        ],
+        "truncated": false,
+        "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+      }
+    },
+    {
+      "input": {
+        "code": "waterfall-gap",
+        "mapId": "twin-falls-river-village",
+        "x": 41,
+        "y": 22,
+        "layer": "lower",
+        "tile": 2700,
+        "replacement": 240
+      },
+      "result": {
+        "valid": false,
+        "mapId": "twin-falls-river-village",
+        "totalErrors": 2,
+        "errors": [
+          {
+            "code": "tile-mismatch",
+            "x": 41,
+            "y": 22,
+            "layer": "lower",
+            "expected": 2700,
+            "actual": 240
+          },
+          {
+            "code": "waterfall-gap",
+            "x": 41,
+            "y": 22,
+            "expectedLower": 2700,
+            "actualLower": 240,
+            "actualUpper": -1
           }
         ],
         "truncated": false,

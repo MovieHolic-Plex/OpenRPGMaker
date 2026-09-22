@@ -221,7 +221,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-terrace-v8`, 문서42개/이미지26개/실제 타일 사전243개다.
+현재 용도 ID는 `diverse-villages-river-v9`, 문서51개/이미지28개다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -307,3 +307,15 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision16 재오픈 전체 일치.
   미편집 civic-v7 은 `previous-reference.json` 기록으로 교체, 저자 편집본은 보존. 근거 `verify-shots/village-terrace/`.
 - 후속 판정: 과일 바구니는 사과가 시트보다 큰 배율이라 제외(`extra-parts.json` oversized → 부품 목록에서 제거). 층바위 동굴 입구 삭제.
+
+### 강과 폭포 개정9 (2026-09-23)
+
+네 번째 지역 「두 폭포 강마을」(88×72). 북쪽 숲에서 나온 폭4 강이 한가운데를 흐르고, 숲에서 숲까지 이은 두 줄 절벽에서
+폭포로 떨어져 소를 이룬 뒤 남쪽으로 빠진다. 단마다 다리 하나(3개), 절벽마다 양 강둑 계단(4개).
+- 비취 대계곡(World 칩셋) 물·물가 = 숲마을 lake_47 과 같은 그림(RGB 비교; RGBA `getbbox` 는 알파만 봐서 거의 전부 「같음」으로 나온다 — 주의).
+  폭포 World123·다리 World102/103 만 `tex_easyrpg_chipset_world` 에서 이식(`riverTiles`), 기존 102/103(통나무 벽) 재사용 금지.
+- `author-diverse-villages.mjs`: `river{width,points,pools}` 가로 붓, 절벽 교차 열 → 윗선 물 + 면 폭포, 폭포 칸을 오토타일 이웃에 포함(둑 없음),
+  맵 밖으로 나가는 강은 가장자리 둑 없음. `bridges` 는 2행, 양 끝 뭍 단언, 끝을 길에 연결, 길 칠하기에서 제외.
+- 검증기 `waterfall-gap` 추가(20종). 폭포는 번들 칩셋에 애니메이션이 없어 정지 그림.
+- 같은 개정: 과일 바구니는 사과 배율이 커서 부품 목록에서 제거, 층바위 동굴 삭제.
+- 지역 revision9 / `diverse-villages-river-v9`(51 MD·28 이미지), 정본 revision18 재오픈 일치. 근거 `verify-shots/village-river/`.

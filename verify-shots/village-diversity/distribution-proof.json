@@ -1,7 +1,7 @@
 {
   "freshProject": true,
   "sharedGrassTilesAndGuidance": true,
-  "shippedPreV8Replaced": false,
+  "shippedPreV9Replaced": false,
   "existingProjectBackfill": true,
   "authorDocumentsPreserved": true,
   "idempotent": true,
@@ -9,6 +9,7 @@
   "exportRoundtrip": [
     "pine-hamlets",
     "terrace-cliff-village",
+    "twin-falls-river-village",
     "reed-bay-village"
   ]
 }

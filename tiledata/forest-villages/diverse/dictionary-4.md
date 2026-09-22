@@ -4,6 +4,237 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
+    "tile": 2584,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2565,
+    "sourceX": 15,
+    "sourceY": 85,
+    "pixelX": 240,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2585,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2566,
+    "sourceX": 16,
+    "sourceY": 85,
+    "pixelX": 256,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2586,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2567,
+    "sourceX": 17,
+    "sourceY": 85,
+    "pixelX": 272,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2587,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2568,
+    "sourceX": 18,
+    "sourceY": 85,
+    "pixelX": 288,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2588,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2569,
+    "sourceX": 19,
+    "sourceY": 85,
+    "pixelX": 304,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2589,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2570,
+    "sourceX": 20,
+    "sourceY": 85,
+    "pixelX": 320,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 9,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2590,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2571,
+    "sourceX": 21,
+    "sourceY": 85,
+    "pixelX": 336,
+    "pixelY": 1360,
+    "width": 16,
+    "height": 16,
+    "targetX": 10,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2592,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
@@ -1776,237 +2007,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "label": "절벽 · 숲마을 528",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2673,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 6,
-    "sourceX": 6,
-    "sourceY": 0,
-    "pixelX": 96,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 3,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 529",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2680,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 7,
-    "sourceX": 7,
-    "sourceY": 0,
-    "pixelX": 112,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 10,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 619",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2683,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 652,
-    "sourceX": 22,
-    "sourceY": 21,
-    "pixelX": 352,
-    "pixelY": 336,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 652",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2686,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 682,
-    "sourceX": 22,
-    "sourceY": 22,
-    "pixelX": 352,
-    "pixelY": 352,
-    "width": 16,
-    "height": 16,
-    "targetX": 16,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 682",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2688,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 711,
-    "sourceX": 21,
-    "sourceY": 23,
-    "pixelX": 336,
-    "pixelY": 368,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 711",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2689,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 854,
-    "sourceX": 14,
-    "sourceY": 28,
-    "pixelX": 224,
-    "pixelY": 448,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "돌계단",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "floor",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
-    }
-  },
-  {
-    "tile": 2691,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 8,
-    "sourceX": 8,
-    "sourceY": 0,
-    "pixelX": 128,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 21,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 712",
       "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
       "role": "cliff",
       "defaultLayer": "upper",
