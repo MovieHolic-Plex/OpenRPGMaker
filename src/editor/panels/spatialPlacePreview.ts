@@ -1,4 +1,4 @@
-import { reviewedPlaceMaps } from "@/project/defaults/spatial/reviewedPlaceCatalog";
+import type { reviewedPlaceMaps as loadReviewedPlaceMaps } from "@/project/defaults/spatial/reviewedPlaceCatalog";
 import { TILE_SIZE } from "@/assets/bundled";
 import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { conceptHouseFloorPlan } from "@/editor/interiorConceptPlan";
@@ -147,8 +147,8 @@ function facilityMaps(project: Project, card: SpatialGalleryCard): readonly Plac
  * 스테이지용 — 설계 레코드가 없는 카드(꾸러미 시설 등)도 읽기 전용 래스터를 그린다.
  * 편집용 previewPlaceRasters 와 달리 프로젝트를 바꾸지 않고, 실패를 error 문자열로 돌려준다.
  */
-export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, scale: number): PlaceRasterPreview {
-  if (card.reviewedPlaceId) return reviewedRasters(card.reviewedPlaceId, scale);
+export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, scale: number, whenReady?: () => void): PlaceRasterPreview {
+  if (card.reviewedPlaceId) return reviewedRasters(card.reviewedPlaceId, scale, whenReady);
   try {
     const maps = facilityMaps(project, card);
     const stamps = maps.map(({ map, x, y }) => {
@@ -174,7 +174,10 @@ export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, 
 }
 
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
-  if (card.reviewedPlaceId) return el("div", { class: "spatial-card-map", children: reviewedRasters(card.reviewedPlaceId, 0.35).stamps.map(s => { s.canvas.className = "spatial-card-map"; s.canvas.style.removeProperty("left"); s.canvas.style.width = "auto"; s.canvas.style.height = "112px"; return s.canvas; }) });
+  if (card.reviewedPlaceId) return el("img", {
+    class: "spatial-card-image",
+    attrs: { src: `/assets/reviewed-places/${card.reviewedPlaceId}.png`, alt: "", draggable: "false" },
+  });
   const project = visibleAuthoringProject();
   try {
     const target = placeDraftTarget(card);
@@ -203,9 +206,21 @@ export function childSourceLabel(project: Project, kind: "space" | "place", id: 
   }
 }
 
-function reviewedRasters(id: string, scale: number): PlaceRasterPreview {
+let reviewedMaps: typeof loadReviewedPlaceMaps | null = null;
+let reviewedMapsLoading: Promise<void> | null = null;
+
+function reviewedRasters(id: string, scale: number, whenReady?: () => void): PlaceRasterPreview {
+  if (!reviewedMaps) {
+    reviewedMapsLoading ??= import("@/project/defaults/spatial/reviewedPlaceCatalog").then(mod => {
+      reviewedMaps = mod.reviewedPlaceMaps;
+      whenReady?.();
+    }).catch(() => {
+      reviewedMapsLoading = null;
+    });
+    return { stamps: [], width: 0, height: 0, error: null };
+  }
   let offset = 0;
-  const maps = reviewedPlaceMaps(id);
+  const maps = reviewedMaps(id);
   const stamps = maps.map(({ map }) => {
     const canvas = document.createElement("canvas");
     const drawScale = Math.min(scale, 1024 / (Math.max(map.width, map.height) * 16));

@@ -21,7 +21,8 @@ try {
   if (await guest.isVisible()) await guest.click();
   await page.getByTestId('ai-input').waitFor({ timeout: 120000 });
   const proof = await page.evaluate(async ({ project, id }) => {
-    const { readRegionReference, REGION_REFERENCES } = await import('/src/project/regionReferences.ts');
+    const { REGION_REFERENCES } = await import('/src/project/regionReferences.ts');
+    const { readRegionReference } = await import('/src/project/regionReferenceSnapshots.ts');
     const { awaitGraftedTilesetImageUrl } = await import('/src/assets/tileGraftImageCache.ts');
     const { tilesetBaseImageUrl } = await import('/src/editor/tilesetImage.ts');
     const { store } = await import('/src/project/store.ts');
