@@ -23,7 +23,8 @@ on:
   pull_request:
 
 concurrency:
-  group: ci-fast-${{ github.ref }}
+  # The push and pull_request events for one branch must share the memory budget.
+  group: ci-fast-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
