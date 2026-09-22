@@ -631,8 +631,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     setSessionCheckpoint(this.session, snapshot);
   }
 
-  recoverFromDefeat(): boolean {
-    const recovered = createDefeatRecovery(store.getCurrent(), this.session);
+  recoverFromDefeat(settings?: import("@/project/cinematicSettings").GameOverSettings): boolean {
+    const recovered = createDefeatRecovery(store.getCurrent(), this.session, settings);
     if (!recovered) return false;
     const checkpoint = getSessionCheckpoint(this.session);
     this.applySession(recovered);
@@ -640,8 +640,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     return true;
   }
 
-  showGameOverScreen(message?: string): void {
-    showSceneGameOverScreen(this, message);
+  showGameOverScreen(message?: string, gameOverId?: string): void {
+    showSceneGameOverScreen(this, message, gameOverId);
   }
 
   showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation): void {

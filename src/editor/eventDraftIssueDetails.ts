@@ -45,6 +45,7 @@ export function withEventDraftIssueDetails(issue: EventDraftIssue) {
 export function commandReferenceField(kind: string, label: string): { readonly testId: string } {
   const key = `${kind}:${label}`;
   const fields: Readonly<Record<string, string>> = {
+    "gameOver:게임 오버": "event-command-game-over-id", "killPlayer:게임 오버": "event-command-game-over-id",
     "setSwitch:스위치": "event-command-switch-target", "setSwitch:스위치 값 변수": "event-command-switch-operand",
     "setVariable:변수": "event-command-variable-target", "setVariable:변수 피연산자": "event-command-variable-operand",
     "wait:대기 변수": "event-wait-variable", "inputWait:입력 대기 변수": "event-command-input-wait-variable",

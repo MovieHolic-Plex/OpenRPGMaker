@@ -939,3 +939,9 @@
   gap: 6px;
   grid-template-columns: minmax(90px, auto) minmax(0, 1fr);
 }
+
+/* Named terminal commands must keep long definition names readable. */
+.game-over-command-editor { display: flex; flex-direction: column; gap: 16px; align-items: stretch; }
+.game-over-command-editor .inline-field { display: flex; flex-direction: column; align-items: stretch; gap: 7px; }
+.game-over-command-editor select, .game-over-command-editor input { width: 100%; min-width: 0; }
+.game-over-command-editor .empty-hint { margin: 0; text-align: left; max-width: none; }

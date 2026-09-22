@@ -103,7 +103,7 @@
 
 /* First remove the field, then reveal the result, then accept a new input. */
 .terminal-scene { background: #080809; outline: none; }
-.terminal-scene[data-phase="fade-out"] { animation: terminal-darken 900ms ease-out both; }
+.terminal-scene[data-phase="fade-out"] { animation: terminal-darken var(--terminal-fade-ms, 900ms) ease-out both; }
 .terminal-scene[data-phase="exit"]::after {
   content: ""; position: absolute; inset: 0; z-index: 10;
   background: #080809; animation: terminal-reveal 380ms ease-in both;

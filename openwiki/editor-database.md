@@ -1,5 +1,25 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 게임 오버 라이브러리 저작 (2026-09-23)
+
+`시스템 → 게임 오버`는 `databaseGameOverLibrary.ts`가 소유하는 이름별 라이브러리다.
+공통 설정(`system.gameOver`)을 유지하고 최대 64개 `system.gameOvers[]`를 생성·복제·이름 변경·삭제한다.
+`defaultGameOverId`는 전투 전멸과 ID 없는 명령의 기본값이다. 기본값 또는 이벤트에서 참조하는 항목은 삭제할 수 없다.
+`gameOverReferenceCounts`는 맵 페이지·공통 이벤트·트룹·엔딩 내부의 중첩 명령을 센다.
+
+각 항목은 장면 시퀀스(텍스트/이미지/영상/음성/음악), 종료 화면 배경·음악·문구, 화면 연출과 패배 후 처리를 따로 갖는다.
+연출 `classic/horror/blackout`과 결과 `menu/recover/title`은 독립적이다. 회복 장소와 암전·정적·메뉴 대기·메시지 시간을 편집한다.
+`게임 오버`/`주인공 사망` 명령의 선택기는 `gameOverId`를 저장한다. 조건 분기의 각 가지에 다른 ID를 선택하여 멀티 게임 오버를 만든다.
+명시한 ID가 없는 경우 에디터/프로젝트 참조 검증에서 오류가 난다.
+
+전체 미리보기는 `createTerminalSurface` + `playGameOverPresentation`으로 출하 플레이어와 같은 연출을 사용한다.
+재시도·귀환·타이틀 콜백만 시뮬레이션하며 프로젝트/세션을 바꾸지 않는다. Esc·항목 변경·탭 닫기·프로젝트 교체 때 입력/음악/타이머를 해제한다.
+`CinematicTarget`은 기존 문자열 외에 `{gameOverId}`를 받아 항목별 변경/미디어 티켓을 격리한다. 복제는 깊은 복사다.
+
+실제 에디터 저작 → serialize/deserialize → 독립 player.html 재생 증거: `docs/reviews/2026-09-23-game-over-library/`.
+QA fixture는 메모리 전용이며 정본 프로젝트 저장 증거로 취급하지 않는다. `scripts/qa/runtime/game-over-library.probe.mjs`가 재현 스크립트다.
+
+
 ## 장소 탭 재설계 — 라이브러리 우선 배치 (2026-09-21)
 
 **문제: 목록이 아니라 나머지가 화면을 먹었다.** 데이터베이스 → 장소를 1600×1000 에서 재 보니

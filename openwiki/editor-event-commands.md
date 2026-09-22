@@ -1,5 +1,13 @@
 # Editor Event Commands & Tools
 
+## 게임 오버 선택 (2026-09-23)
+
+`gameOver`와 `killPlayer` 폼은 `gameOverCommandBody.ts`에서 이름별 항목을 고른다.
+ID 생략은 프로젝트 기본값이며, 목록/스키마 요약도 선택한 이름을 표시한다.
+항목 저작은 데이터베이스의 게임 오버 탭에서 하고, 여러 결말의 판정은 기존 조건 분기를 사용한다.
+`killPlayer.message` 편집은 선택한 ID를 보존한다. 없는 항목은 저장 참조 검증 및 이벤트 초안 검사에서 드러난다.
+
+
 > **Encoding note:** Some Korean descriptive text has EUC-KR→UTF-8 mojibake from the original source commit. English terms, file paths, and code references are intact. For accurate Korean, consult the referenced source files. Partial automated restoration applied; remaining garbled CJK is irreversibly corrupted.
 
 Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/make_villager, AI event tools, and 2026-07-15 hostile-review command fixes.

@@ -1,3 +1,4 @@
+import { gameOverName } from "@/project/gameOverLibrary";
 import { equipmentSlotLabel as catalogSlotLabel } from "@/project/equipmentSlots";
 import {
   compareAmountLabel,
@@ -384,9 +385,9 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
   },
   checkpointSave: (cmd) => commandLine("체크포인트 저장", valuePart(cmd.label || "세션")),
   runControl: (cmd) => commandLine("탐험", valuePart(runControlSummary(cmd))),
-  killPlayer: (cmd) => commandLine("즉사", valuePart(cmd.message || "게임 오버")),
+  killPlayer: (cmd) => commandLine("즉사", valuePart(gameOverName(store.getCurrent(), cmd.gameOverId)), valuePart(cmd.message || "")),
   triggerEnding: (cmd) => commandLine("엔딩", valuePart(endingName(cmd.endingId))),
-  gameOver: () => [commandPart("게임 오버")],
+  gameOver: (cmd) => commandLine("게임 오버", valuePart(gameOverName(store.getCurrent(), cmd.gameOverId))),
   ending: (cmd) => commandLine("엔딩", valuePart(cmd.title)),
   returnToTitle: () => [commandPart("타이틀 화면으로")],
   setFlag: (cmd) => commandLine("기억 설정", valuePart(humanizeAuthorId(cmd.flag)), plainPart(" "), onOffBadgePart(cmd.value)),

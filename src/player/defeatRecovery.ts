@@ -1,3 +1,4 @@
+import { resolveGameOverSettings, type GameOverSettings } from "@/project/cinematicSettings";
 import type { Project } from "@/project/types";
 import type { PlaySession } from "@/project/session";
 import { recoverAll } from "@/project/sessionActorCommands";
@@ -5,9 +6,9 @@ import { isPassableLanding } from "@/project/collision";
 import { getSessionCheckpoint } from "@/player/checkpoints";
 
 /** A blackout heals the current run. It must never load an older save's progress. */
-export function createDefeatRecovery(project: Project, session: PlaySession): PlaySession | null {
+export function createDefeatRecovery(project: Project, session: PlaySession, settings: GameOverSettings | undefined = resolveGameOverSettings(project.system)): PlaySession | null {
   const checkpoint = getSessionCheckpoint(session);
-  const destination = project.system.gameOver?.recovery
+  const destination = settings?.recovery
     ?? (checkpoint ? { mapId: checkpoint.session.currentMapId, x: checkpoint.session.x, y: checkpoint.session.y } : undefined)
     ?? { mapId: project.startMapId, ...project.startPos };
   const map = project.maps[destination.mapId];

@@ -1,3 +1,4 @@
+import { gameOverCommandBody } from "./gameOverCommandBody";
 import {
   listDatabaseResourceOptions,
   openDatabaseResourcePickerDialog,
@@ -133,7 +134,7 @@ export function renderAdvancedCommandBody(
     case "runControl":
       return runControlBody(context, cmd);
     case "killPlayer":
-      return optionalTextCommandBody(context, cmd, "kill-player-editor", "패배 메시지", "event-command-kill-player-message", "message");
+      return gameOverCommandBody(context, cmd);
     case "triggerEnding":
       return triggerEndingBody(context, cmd);
     case "addFollower":
@@ -188,7 +189,7 @@ export function renderAdvancedCommandBody(
           : "설정 없음. 현재 재생 중인 오디오를 정지합니다.",
       );
     case "gameOver":
-      return terminalHint("game-over-editor", "설정 없음. 게임 오버 화면을 엽니다.");
+      return gameOverCommandBody(context, cmd);
     case "ending":
       return endingBody(context, cmd);
     case "returnToTitle":

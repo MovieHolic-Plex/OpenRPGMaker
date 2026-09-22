@@ -29,7 +29,25 @@ export type EndingPresentation = {
   credits?: string;
 };
 
+export type GameOverOutcome = "menu" | "recover" | "title";
+export type GameOverTiming = { fadeOutMs?: number; silenceMs?: number; menuDelayMs?: number; messageHoldMs?: number };
+export const GAME_OVER_DEFINITION_LIMIT = 64;
+export type GameOverDefinition = { id: string; name: string; settings: GameOverSettings };
+export type GameOverSystem = { gameOver?: GameOverSettings; gameOvers?: GameOverDefinition[]; defaultGameOverId?: string };
+
+export function resolveGameOverSettings(system: GameOverSystem, id?: string): GameOverSettings | undefined {
+  const selected = id ?? system.defaultGameOverId;
+  // A broken explicit reference must never recover at some other definition's location.
+  return selected ? system.gameOvers?.find(row => row.id === selected)?.settings : system.gameOver;
+}
+export function gameOverOutcome(settings: GameOverSettings | undefined): GameOverOutcome {
+  return settings?.outcome ?? (settings?.presentation === "blackout" ? "recover" : "menu");
+}
+
 export type GameOverSettings = {
+  outcome?: GameOverOutcome;
+  timing?: GameOverTiming;
+  musicResourceId?: string;
   presentation?: DefeatPresentation;
   /** Blackout preserves progress; this is a destination, never a save rollback. */
   recovery?: RecoveryDestination;
@@ -62,10 +80,13 @@ export function normalizeCinematicSequence(sequence: CinematicSequence): Cinemat
 }
 
 export function normalizeGameOverSettings(settings: GameOverSettings): GameOverSettings {
-  const { sequence, backgroundResourceId, ...text } = settings;
+  const { sequence, backgroundResourceId, recovery, timing, musicResourceId, ...text } = settings;
   const backgroundId = backgroundResourceId?.trim();
   return {
     ...text,
+    ...(recovery ? { recovery: { ...recovery, mapId: recovery.mapId.trim() } } : {}),
+    ...(timing ? { timing: { ...timing } } : {}),
+    ...(musicResourceId?.trim() ? { musicResourceId: musicResourceId.trim() } : {}),
     ...(sequence !== undefined ? { sequence: normalizeCinematicSequence(sequence) } : {}),
     ...(backgroundId ? { backgroundResourceId: backgroundId } : {}),
   };

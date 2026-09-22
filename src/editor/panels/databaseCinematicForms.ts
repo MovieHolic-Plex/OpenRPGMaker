@@ -10,6 +10,8 @@ import { field } from "@/editor/panels/databaseControls";
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import {
   CINEMATIC_DURATION_MAX_MS,
+  gameOverOutcome,
+  type GameOverOutcome,
   type CinematicScene,
   type GameOverSettings,
 } from "@/project/cinematicSettings";
@@ -147,7 +149,7 @@ export function cinematicGameOverForm(options: FormContext & {
 }): HTMLElement {
   const { actions, usable, mediaField, settings } = options;
   const presentation = el("select", { dataset: { testid: "db-defeat-presentation" } });
-  for (const [value, label] of [["classic", "클래식 · 재시도 선택"], ["horror", "공포 · 암전과 정적"], ["blackout", "귀환 · 회복 후 계속"]]) {
+  for (const [value, label] of [["classic", "클래식 · 배경과 제목"], ["horror", "공포 · 암전과 정적"], ["blackout", "암전 · 메시지"]]) {
     presentation.append(el("option", { attrs: { value }, text: label }));
   }
   presentation.value = settings?.presentation ?? "classic";
@@ -156,17 +158,39 @@ export function cinematicGameOverForm(options: FormContext & {
     actions.setDefeatPresentation(presentation.value as "classic" | "horror" | "blackout");
     options.redraw();
   });
+  const outcome = el("select", { dataset: { testid: "db-defeat-outcome" } });
+  for (const [value, label] of [["menu", "재시도 · 타이틀 선택 메뉴"], ["recover", "파티 회복 후 장소로 귀환"], ["title", "메시지 뒤 타이틀로 자동 복귀"]]) outcome.append(el("option", { attrs: { value }, text: label }));
+  outcome.value = gameOverOutcome(settings);
+  outcome.addEventListener("change", () => {
+    if (!usable()) return;
+    actions.setOutcome(outcome.value as GameOverOutcome);
+    options.redraw();
+  });
+  const timingFields = ([
+    ["fadeOutMs", "암전 시간 (ms)"], ["silenceMs", "암전 뒤 정적 (ms)"],
+    ["menuDelayMs", "메뉴 등장 대기 (ms)"], ["messageHoldMs", "자동 진행 메시지 시간 (ms)"],
+  ] as const).map(([key, label]) => {
+    const input = el("input", { attrs: { type: "number", min: "0", max: "120000", step: "1", placeholder: "연출 기본값" }, dataset: { testid: `db-defeat-${key}` } });
+    input.value = settings?.timing?.[key] === undefined ? "" : String(settings.timing[key]);
+    input.disabled = (key === "menuDelayMs" && gameOverOutcome(settings) !== "menu") || (key === "messageHoldMs" && gameOverOutcome(settings) === "menu");
+    input.addEventListener("change", () => {
+      if (!usable()) return;
+      actions.setTiming(key, input.value === "" ? undefined : Number(input.value));
+      options.redraw();
+    });
+    return field(label, input);
+  });
   const recoveryFields: HTMLElement[] = [];
-  if (settings?.presentation === "blackout") {
+  if (gameOverOutcome(settings) === "recover") {
     const project = store.getCurrent();
     const mapSelect = el("select", { dataset: { testid: "db-defeat-recovery-map" } });
     mapSelect.append(el("option", { attrs: { value: "" }, text: "체크포인트 위치 · 없으면 시작 위치" }));
     for (const map of Object.values(project.maps)) mapSelect.append(el("option", { attrs: { value: map.id }, text: map.name }));
-    mapSelect.value = settings.recovery?.mapId ?? "";
+    mapSelect.value = settings?.recovery?.mapId ?? "";
     const x = el("input", { attrs: { type: "number", min: "0", step: "1", "aria-label": "귀환 X" } });
     const y = el("input", { attrs: { type: "number", min: "0", step: "1", "aria-label": "귀환 Y" } });
-    x.value = String(settings.recovery?.x ?? project.startPos.x);
-    y.value = String(settings.recovery?.y ?? project.startPos.y);
+    x.value = String(settings?.recovery?.x ?? project.startPos.x);
+    y.value = String(settings?.recovery?.y ?? project.startPos.y);
     const status = note("");
     status.setAttribute("role", "status");
     x.disabled = y.disabled = !mapSelect.value;
@@ -198,6 +222,7 @@ export function cinematicGameOverForm(options: FormContext & {
       : el("input", { attrs: { type: "text" } });
     input.value = settings?.[definition.key] ?? "";
     input.placeholder = definition.placeholder;
+    input.disabled = definition.key !== "message" && gameOverOutcome(settings) !== "menu";
     input.dataset.testid = `db-cinematic-game-over-${definition.key}`;
     input.addEventListener("input", () => {
       if (usable()) actions.setGameOverText(definition.key, input.value);
@@ -207,13 +232,17 @@ export function cinematicGameOverForm(options: FormContext & {
   });
   return sectionCard({
     title: "패배 이후의 흐름",
-    hint: "귀환형은 종료 메뉴 없이 게임을 계속합니다. 공포형은 정적 뒤에 재시도를 선택합니다.",
+    hint: "화면 분위기와 패배 후 처리를 독립적으로 조합합니다.",
     children: [
-      field("연출과 결과", presentation),
+      field("화면 연출", presentation),
+      field("패배 후 처리", outcome),
       ...recoveryFields,
       ...fields,
-      note("버튼 문구를 비우면 기본 문구를 사용합니다. 이벤트의 종료 메시지가 있으면 기본 메시지보다 우선합니다."),
-      mediaField("background", "종료 메뉴 배경", { kind: "background" }, settings?.backgroundResourceId),
+      ...timingFields,
+      note("시간을 비우면 연출 기본값을 사용합니다. 메뉴 대기는 선택 메뉴에, 메시지 시간은 자동 귀환·타이틀 복귀에 적용됩니다."),
+      note("제목·버튼은 선택 메뉴에서 사용합니다. 자동 귀환·복귀는 메시지를 표시합니다. 이벤트의 패배 메시지는 기본 메시지보다 우선합니다."),
+      mediaField("background", "종료 화면 배경", { kind: "background" }, settings?.backgroundResourceId),
+      mediaField("terminalMusic", "종료 화면 음악", { kind: "terminalMusic" }, settings?.musicResourceId),
     ],
   });
 }

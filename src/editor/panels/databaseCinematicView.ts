@@ -1,3 +1,5 @@
+import { renderDatabaseGameOverLibrary } from "@/editor/panels/databaseGameOverLibrary";
+import { readGameOverSettings } from "@/editor/panels/databaseCinematicActionModel";
 import {
   createDatabaseCinematicActions,
   type CinematicTarget,
@@ -36,7 +38,7 @@ const disposers = new WeakMap<HTMLElement, () => void>();
  */
 export function disposeDatabaseCinematicsIn(host: HTMLElement): void {
   disposers.get(host)?.();
-  for (const root of host.querySelectorAll<HTMLElement>(".db-cinematic-workspace")) {
+  for (const root of host.querySelectorAll<HTMLElement>(".db-cinematic-workspace, .db-game-over-library")) {
     disposers.get(root)?.();
   }
 }
@@ -51,6 +53,16 @@ export function renderDatabaseCinematicTab(
   isActive: () => boolean,
 ): () => void {
   disposeDatabaseCinematicsIn(host);
+  if (target === "gameOver") {
+    const library = renderDatabaseGameOverLibrary(host, isActive, renderCinematicDetail);
+    const dispose = (): void => { library.dispose(); disposers.delete(library.root); };
+    disposers.set(library.root, dispose);
+    return dispose;
+  }
+  return renderCinematicDetail(host, target, isActive);
+}
+
+function renderCinematicDetail(host: HTMLElement, target: CinematicTarget, isActive: () => boolean): () => void {
   const sceneForm = el("div", { class: "db-cinematic-scene-form" });
   const menuForm = el("div", { class: "db-cinematic-menu-form" });
   const status = el("p", {
@@ -82,7 +94,7 @@ export function renderDatabaseCinematicTab(
         title: target === "opening" ? "오프닝" : "게임 오버",
         subtitle: target === "opening"
           ? "새 게임이 시작될 때 보여 줄 장면을 순서대로 구성합니다."
-          : "게임 종료 장면과 마지막에 표시할 메뉴를 구성합니다.",
+          : "장면·음악·암전 시간과 패배 후 처리를 구성합니다.",
       }),
       body: [sceneForm, menuForm, status, previewPanel],
     }),
@@ -111,7 +123,7 @@ export function renderDatabaseCinematicTab(
     status.textContent = message;
   }
 
-  const startPreview = button("preview-start", "시퀀스 미리보기", () => {
+  const startPreview = button("preview-start", target === "opening" ? "시퀀스 미리보기" : "게임 오버 전체 미리보기", () => {
     if (!actions.isActive()) return;
     media.cancel();
     actions.endTyping();
@@ -123,7 +135,7 @@ export function renderDatabaseCinematicTab(
       isActive: active,
       onPlayingChange: playing => {
         previewPanel.hidden = !playing;
-        startPreview.disabled = playing || !actions.read()?.scenes.length;
+        startPreview.disabled = playing || (target === "opening" && !actions.read()?.scenes.length);
         if (playing) {
           // Reveal before the shared player captures keyboard input.
           previewPanel.scrollIntoView({ block: "start", inline: "nearest", behavior: "instant" });
@@ -131,7 +143,7 @@ export function renderDatabaseCinematicTab(
       },
     });
     try {
-      preview.start(actions.read());
+      preview.start(actions.read(), target === "opening" ? undefined : { settings: readGameOverSettings(store.getCurrent(), target), onOutcome: setStatus });
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error));
     }
@@ -140,12 +152,12 @@ export function renderDatabaseCinematicTab(
     el("div", {
       class: "db-cinematic-preview-toolbar",
       children: [
-        el("h4", { text: "장면 시퀀스 미리보기" }),
+        el("h4", { text: target === "opening" ? "장면 시퀀스 미리보기" : "게임 오버 전체 미리보기" }),
         button("preview-stop", "중지", () => preview?.stop()),
         button("preview-close", "닫기", () => preview?.stop()),
       ],
     }),
-    note("Esc로 언제든 중지합니다. 종료 메뉴의 문구와 배경은 실제 게임에서 확인하세요."),
+    note("Esc로 언제든 중지합니다. 게임 오버는 실제 플레이어와 같은 연출을 재생하며, 재시도·귀환·타이틀 이동은 시뮬레이션합니다."),
     previewHost,
   );
 
@@ -193,7 +205,7 @@ export function renderDatabaseCinematicTab(
     });
     list.replaceWith(next);
     list = next;
-    startPreview.disabled = !scenes.length || preview?.playing === true;
+    startPreview.disabled = (target === "opening" && !scenes.length) || preview?.playing === true;
   }
 
   function redraw(): void {
@@ -253,10 +265,10 @@ export function renderDatabaseCinematicTab(
       renderList,
     }) : note("왼쪽에서 장면을 추가하세요."));
     menuForm.replaceChildren();
-    if (target === "gameOver") {
+    if (target !== "opening") {
       menuForm.append(cinematicGameOverForm({
         ...formContext,
-        settings: store.getCurrent().system.gameOver,
+        settings: readGameOverSettings(store.getCurrent(), target),
         redraw,
       }));
     }

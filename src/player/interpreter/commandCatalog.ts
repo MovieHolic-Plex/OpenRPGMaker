@@ -714,11 +714,11 @@ export function executeCommand(
     }
     case "killPlayer":
       killParty(state);
-      return pause("gameOver", { kind: "gameOver", message: command.message });
+      return pause("gameOver", { kind: "gameOver", message: command.message, ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "triggerEnding":
       return triggerEnding(state, command.endingId);
     case "gameOver":
-      return pause("gameOver", { kind: "gameOver" });
+      return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending":
       return pause("returnToTitle", {
         kind: "returnToTitle",

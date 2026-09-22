@@ -569,3 +569,11 @@
   .database-modal-backdrop .database-modal-window .db-system-form .db-title-menu-option-row { grid-template-columns: minmax(0, 1fr); }
   .database-modal-backdrop .database-modal-window .db-system-form .db-title-menu-option-row > .db-field:last-child { justify-self: start; }
 }
+
+.db-game-over-library { display: flex; flex-direction: column; gap: 12px; min-height: 0; height: 100%; }
+.db-game-over-library-controls { flex: 0 0 auto; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 12px; padding: 12px; border-bottom: 1px solid var(--border, #d8d3c8); }
+.db-game-over-library-controls input, .db-game-over-library-controls select { min-width: 0; width: 100%; }
+.db-game-over-library-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.db-game-over-library-actions select { width: auto; max-width: 230px; }
+.db-game-over-library-controls > .db-cinematic-note { grid-column: 1 / -1; margin: 0; font-size: 12px; }
+.db-game-over-library-detail { flex: 1 1 auto; min-height: 0; overflow: auto; }

@@ -26,7 +26,7 @@ import {
   isSpatialOrientation,
 } from "@/project/spatialPlacements";
 import { GOLD_MAX } from "@/project/economyValues";
-import { CINEMATIC_DURATION_MAX_MS, CINEMATIC_SCENE_LIMIT } from "@/project/cinematicSettings";
+import { CINEMATIC_DURATION_MAX_MS, CINEMATIC_SCENE_LIMIT, GAME_OVER_DEFINITION_LIMIT } from "@/project/cinematicSettings";
 import { assert, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateFootprintPair } from "./shapeEventFields";
 import { validateCharacterAppearances } from "./characterAppearanceValidation";
@@ -90,6 +90,20 @@ export function validateSystem(value: unknown): void {
   if (system.fieldHud !== undefined) validateFieldHud(system.fieldHud);
   if (system.opening !== undefined) validateCinematicSequence("system.opening", system.opening);
   if (system.gameOver !== undefined) validateGameOverSettings(system.gameOver);
+  if (system.defaultGameOverId !== undefined) requireNonBlankString("system.defaultGameOverId", system.defaultGameOverId);
+  if (system.gameOvers !== undefined) {
+    const rows = requireArray("system.gameOvers", system.gameOvers);
+    assert(rows.length <= GAME_OVER_DEFINITION_LIMIT, "Too many game-over definitions.");
+    const ids = new Set<string>();
+    for (const [index, raw] of rows.entries()) {
+      const label = `system.gameOvers[${index}]`, row = requireRecord(label, raw);
+      requireOnlyFields(label, row, ["id", "name", "settings"]);
+      const id = requireNonBlankString(`${label}.id`, row.id).trim();
+      assert(!ids.has(id), `${label}.id is duplicated.`); ids.add(id);
+      requireNonBlankString(`${label}.name`, row.name);
+      validateGameOverSettings(row.settings, `${label}.settings`);
+    }
+  }
   if (system.battleCommandCss !== undefined) requireString("system.battleCommandCss", system.battleCommandCss);
   // 주인공 몸 크기는 이벤트 페이지와 **같은 경계**로 막는다(2차 §9). 한쪽만 검증하면
   // `playerFootprint: {width: -5}` 가 로드를 통과하고 런타임 정규화만이 마지막 방어선이 된다.
@@ -191,10 +205,16 @@ function validateCinematicSequence(label: string, value: unknown): void {
   }
 }
 
-export function validateGameOverSettings(value: unknown): void {
-  const label = "system.gameOver";
+export function validateGameOverSettings(value: unknown, label = "system.gameOver"): void {
   const settings = requireRecord(label, value);
-  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery"]);
+  requireOnlyFields(label, settings, ["sequence", "title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery", "outcome", "timing", "musicResourceId"]);
+  if (settings.outcome !== undefined) assert(settings.outcome === "menu" || settings.outcome === "recover" || settings.outcome === "title", `${label}.outcome is invalid.`);
+  if (settings.musicResourceId !== undefined) requireNonBlankString(`${label}.musicResourceId`, settings.musicResourceId);
+  if (settings.timing !== undefined) {
+    const timing = requireRecord(`${label}.timing`, settings.timing);
+    requireOnlyFields(`${label}.timing`, timing, ["fadeOutMs", "silenceMs", "menuDelayMs", "messageHoldMs"]);
+    for (const [key, value] of Object.entries(timing)) assert(Number.isSafeInteger(value) && Number(value) >= 0 && Number(value) <= 120000, `${label}.timing.${key} must be an integer in 0..120000.`);
+  }
   if (settings.presentation !== undefined) assert(typeof settings.presentation === "string" && ["classic", "horror", "blackout"].includes(settings.presentation), `${label}.presentation is invalid.`);
   if (settings.recovery !== undefined) {
     const recovery = requireRecord(`${label}.recovery`, settings.recovery);

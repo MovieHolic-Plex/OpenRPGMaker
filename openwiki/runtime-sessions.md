@@ -1,5 +1,23 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 여러 게임 오버의 실행과 미리보기 (2026-09-23)
+
+`showGameOverScreen(message?,gameOverId?)`는 `resolveGameOverSettings`로 선택한 설정을 고정하고,
+`playGameOverPresentation`에 재시도/회복/타이틀 콜백을 전달한다. 화면 연출과 결과는 별개다.
+`menu`는 체크포인트 재시도/타이틀, `recover`는 진행 유지·전원 회복·지점 귀환,
+`title`은 메시지 유지 시간 이후 타이틀 자동 복귀다. 각 정의의 시퀀스·배경·음악·시간을 사용한다.
+전경/병렬 인터프리터 모두 ID를 전달한다. 회복은 선택한 정의의 좌표를 사용한다.
+
+트룹 이벤트가 명시한 `gameOverId`는 `BattleEventStateSnapshot.gameOverRequest`로 필드 호스트에 전달한다.
+명시적 항목 실행은 canLose 전투에서도 해당 종단 흐름을 실행하고 호출자의 뒷 명령을 재개하지 않는다.
+ID 없는 기존 트룹 명령의 canLose 규칙은 유지한다. 일반 전멸은 프로젝트 기본 정의를 사용하며,
+기본 정의에 메시지가 있으면 일반 패배 문구로 덮어쓰지 않는다.
+
+`createTerminalSurface`는 DOM 입력·타이머·detach·부모 abort를 소유한다. 게임에서는
+`createTerminalScene`이 Phaser shutdown/destroy 및 기존 오디오 정리를 덧씌운다.
+에디터 미리보기는 DOM 소유자만 사용하며 게임 세션이나 전역 오디오를 종료하지 않는다.
+
+
 ## 장르별 패배와 엔딩 흐름 (2026-09-22)
 
 `system.gameOver.presentation`은 `classic`(생략 시 기본), `horror`, `blackout` 중 하나다.

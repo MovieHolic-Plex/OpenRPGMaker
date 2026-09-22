@@ -1,8 +1,9 @@
+import type { Project } from "@/project/types";
 import { getPlayerPreferences } from "@/player/playerPreferences";
 import { playCinematicSequence } from "@/player/cinematicSequence";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { store } from "@/project/store";
-import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
+import { gameOverOutcome, resolveGameOverSettings, type GameOverSettings, DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "@/project/cinematicSettings";
 import { createTerminalScene, type TerminalScene } from "@/player/terminalScene";
 import type { EndingPresentation } from "@/project/cinematicSettings";
 import { isCinematicAdvanceKey, normalizeKey } from "@/player/keyBindings";
@@ -54,9 +55,9 @@ function textNode(tag: string, className: string, text: string): HTMLElement {
   return node;
 }
 
-function addBackground(terminal: TerminalScene, resourceId: string | undefined, fallback?: HTMLElement): void {
+function addBackground(terminal: TerminalScene, resourceId: string | undefined, fallback?: HTMLElement, project = store.getCurrent()): void {
   if (!resourceId) return;
-  const url = resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+  const url = resolveAssetResourceUrl(resourceId, { project });
   if (!url) { if (fallback) fallback.hidden = false; return; }
   const image = document.createElement("img");
   image.className = "cinematic-background";
@@ -81,7 +82,7 @@ function terminalButton(testId: string, label: string, action: () => void): HTML
 async function exitTerminal(terminal: TerminalScene, action: () => void): Promise<void> {
   terminal.lock();
   terminal.phase("exit");
-  const music = terminal.root.querySelector<HTMLAudioElement>('[data-testid="ending-music"]');
+  const music = terminal.root.querySelector<HTMLAudioElement>('audio[data-terminal-music]');
   if (music) {
     const volume = music.volume, started = performance.now();
     const fade = window.setInterval(() => { music.volume = Math.max(0, volume * (1 - (performance.now() - started) / 380)); }, 30);
@@ -92,17 +93,37 @@ async function exitTerminal(terminal: TerminalScene, action: () => void): Promis
   action();
 }
 
-export function showGameOverScreen(scene: PlaySceneContext, message?: string): void {
+export function showGameOverScreen(scene: PlaySceneContext, message?: string, gameOverId?: string): void {
   const project = store.getCurrent();
-  const settings = project.system.gameOver;
-  const style = settings?.presentation ?? "classic";
-  const terminal = createTerminalScene(scene, "game-over", settings?.title || (style === "blackout" ? "패배 후 귀환" : "게임 오버"));
+  const settings = resolveGameOverSettings(project.system, gameOverId);
+  const terminal = createTerminalScene(scene, "game-over", settings?.title || "게임 오버");
   if (!terminal) return;
+  playGameOverPresentation(terminal, project, settings, {
+    hasCheckpoint: () => scene.hasCheckpoint(),
+    restoreCheckpoint: () => scene.restoreCheckpoint(),
+    returnToTitle: () => scene.returnToTitle(),
+    recoverFromDefeat: () => scene.recoverFromDefeat(settings),
+  }, message);
+}
+
+export type GameOverPresentationActions = {
+  hasCheckpoint(): boolean;
+  restoreCheckpoint(): void;
+  returnToTitle(): void;
+  recoverFromDefeat(): boolean;
+};
+
+/** Pure presentation seam: editor previews use the exact player flow with simulated outcomes. */
+export function playGameOverPresentation(terminal: TerminalScene, project: Project, settings: GameOverSettings | undefined, scene: GameOverPresentationActions, message?: string): void {
+  const style = settings?.presentation ?? "classic";
+  const outcome = gameOverOutcome(settings);
+  const timing = settings?.timing;
+  terminal.root.style.setProperty("--terminal-fade-ms", `${timing?.fadeOutMs ?? 900}ms`);
   terminal.root.dataset.presentation = style;
   const run = async (): Promise<void> => {
-    if (!await terminal.wait(terminal.reducedMotion ? 0 : 900)) return;
+    if (!await terminal.wait(terminal.reducedMotion ? 0 : (timing?.fadeOutMs ?? 900))) return;
     terminal.phase("silence");
-    if (!await terminal.wait(style === "horror" ? 750 : 180)) return;
+    if (!await terminal.wait(timing?.silenceMs ?? (style === "horror" ? 750 : 180))) return;
     if (settings?.sequence?.enabled && settings.sequence.scenes.length) {
       // The cinematic owns keys while active; the terminal resumes ownership on completion.
       terminal.menu(() => () => undefined);
@@ -110,43 +131,46 @@ export function showGameOverScreen(scene: PlaySceneContext, message?: string): v
       if (result === "aborted" || terminal.signal.aborted) return;
       terminal.lock();
     }
-    if (style === "blackout") {
+    playTerminalMusic(terminal, project, settings?.musicResourceId, "game-over-music");
+    if (outcome === "recover" || outcome === "title") {
       terminal.phase("blackout-message");
-      const body = textNode("div", "blackout-message", message ?? settings?.message ?? "더는 싸울 수 없었다.\n눈앞이 캄캄해졌다…");
+      addBackground(terminal, settings?.backgroundResourceId, undefined, project);
+      const body = textNode("div", "blackout-message", message ?? settings?.message ?? (outcome === "recover" ? "더는 싸울 수 없었다.\n눈앞이 캄캄해졌다…" : settings?.title ?? "이야기가 끝났습니다."));
       terminal.root.append(body);
       // Readable beat before automatic recovery; no GAME OVER or retry menu.
-      if (!await terminal.wait(2200)) return;
+      if (!await terminal.wait(timing?.messageHoldMs ?? 2200)) return;
       terminal.phase("silence");
       body.remove();
       if (!await terminal.wait(500)) return;
+      if (outcome === "title") { await exitTerminal(terminal, () => scene.returnToTitle()); return; }
+      terminal.root.querySelector<HTMLAudioElement>("audio[data-terminal-music]")?.pause();
       if (scene.recoverFromDefeat()) {
         terminal.phase("wake");
         if (await terminal.wait(terminal.reducedMotion ? 0 : 800)) terminal.cleanup();
         return;
       }
       // Deleted/blocked recovery locations must not leave an unplayable black screen.
-      renderDefeatMenu(terminal, scene, "귀환할 장소를 찾을 수 없습니다.");
+      renderDefeatMenu(terminal, scene, project, settings, "귀환할 장소를 찾을 수 없습니다.");
       return;
     }
-    renderDefeatMenu(terminal, scene, message);
+    renderDefeatMenu(terminal, scene, project, settings, message);
   };
   void run();
 }
 
-function renderDefeatMenu(terminal: TerminalScene, scene: PlaySceneContext, message?: string): void {
-  const settings = store.getCurrent().system.gameOver;
+function renderDefeatMenu(terminal: TerminalScene, scene: GameOverPresentationActions, project: Project, settings: GameOverSettings | undefined, message?: string): void {
   const style = settings?.presentation ?? "classic";
   terminal.phase("reveal");
   const overlay = textNode("div", "game-over-content", "");
   const title = textNode("h1", "runtime-overlay-title game-over-heading", settings?.title ?? (style === "horror" ? "돌아오지 못했다" : "게임 오버"));
   const backgroundId = settings?.backgroundResourceId ?? (style === "classic" ? DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID : undefined);
   title.hidden = backgroundId === DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID && settings?.title === undefined;
-  addBackground(terminal, backgroundId, title);
+  addBackground(terminal, backgroundId, title, project);
   overlay.append(title);
   const resolvedMessage = message ?? settings?.message;
   if (resolvedMessage) overlay.append(textNode("div", "runtime-overlay-message game-over-message", resolvedMessage));
   terminal.root.append(overlay);
-  void terminal.wait(style === "horror" ? 1500 : 650).then(alive => {
+  void terminal.wait(settings?.timing?.menuDelayMs ?? (style === "horror" ? 1500 : 650)).then(alive => {
     if (!alive) return;
     const actions = textNode("div", "game-over-actions", "");
     const buttons: HTMLButtonElement[] = [];
@@ -180,17 +204,7 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     terminal.phase("silence");
     if (!await terminal.wait(600)) return;
     addBackground(terminal, presentation?.backgroundResourceId);
-    if (presentation?.musicResourceId) {
-      const url = resolveAssetResourceUrl(presentation.musicResourceId, { project: store.getCurrent() });
-      if (url) {
-        const music = document.createElement("audio");
-        music.dataset.testid = "ending-music";
-        music.src = url; music.loop = true; music.volume = getPlayerPreferences().bgm;
-        terminal.root.append(music);
-        terminal.signal.addEventListener("abort", () => { music.pause(); music.removeAttribute("src"); music.load(); music.remove(); }, { once: true });
-        void music.play().catch(() => { /* An unavailable score never prevents completing an ending. */ });
-      }
-    }
+    playTerminalMusic(terminal, store.getCurrent(), presentation?.musicResourceId, "ending-music");
     const epilogue = textNode("div", "ending-epilogue", "");
     epilogue.append(textNode("div", "ending-kicker", presentation?.tone === "dark" ? "이야기의 끝" : "우리의 여정"));
     epilogue.append(textNode("h1", "ending-heading", title || "The End"));
@@ -246,4 +260,17 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     });
   };
   void run();
+}
+
+function playTerminalMusic(terminal: TerminalScene, project: Project, resourceId: string | undefined, testId: string): void {
+  if (!resourceId) return;
+  const url = resolveAssetResourceUrl(resourceId, { project });
+  if (!url) return;
+  const music = document.createElement("audio");
+  music.dataset.testid = testId;
+  music.dataset.terminalMusic = "true";
+  music.src = url; music.loop = true; music.volume = getPlayerPreferences().bgm;
+  terminal.root.append(music);
+  terminal.signal.addEventListener("abort", () => { music.pause(); music.removeAttribute("src"); music.load(); music.remove(); }, { once: true });
+  void music.play().catch(() => { /* Unavailable media must not prevent the terminal outcome. */ });
 }

@@ -1,5 +1,22 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 이름별 게임 오버 (2026-09-23)
+
+v4 선택 필드: `system.gameOvers?: {id,name,settings:GameOverSettings}[]`, `defaultGameOverId?:string`.
+기존 `system.gameOver`는 공통 설정으로 보존한다. 명시한 ID → 프로젝트 기본 ID → 공통 설정 순으로 **ID가 생략된 단계만** 내려간다.
+없는 명시적 ID를 다른 정의의 회복 지점으로 대체하지 않는다. `resolveGameOverSettings`가 이 계약의 단일 진입점이다.
+고유하고 비어 있지 않은 ID/이름, 최대 64개, 기본 ID/명령 ID의 존재, 각 정의의 모든 미디어 및 귀환 좌표를 검증한다.
+정규화·직렬화·웹 export 자원 수집이 이름별 설정도 보존한다. 스키마/앱 버전을 수동 변경하지 않았다.
+
+`GameOverSettings` 추가 필드:
+- `outcome?: "menu"|"recover"|"title"` (생략하면 기존 blackout만 recover, 나머지 menu).
+- `musicResourceId?:string` (시퀀스 종료 후 결과 화면의 음악).
+- `timing?: {fadeOutMs?,silenceMs?,menuDelayMs?,messageHoldMs?}` (정수 0..120000, 생략은 연출별 기본값).
+- `gameOver`/`killPlayer` 명령의 `gameOverId?:string`은 특정 정의를 실행하며 명령 스택을 종료한다.
+
+`test/gameOverLibrary.test.ts`에 호환성·저장 왕복·참조 오류·인터프리터 전달·귀환 계약을 추가했다. 이번 세션에서 Vitest/전체 typecheck/gates는 실행하지 않았다.
+
+
 ## 확정된 게임 기획 (2026-09-22)
 
 `Project.gameDesignBrief?: GameDesignBrief`는 새 프로젝트 인터뷰의 저작 메타데이터다.

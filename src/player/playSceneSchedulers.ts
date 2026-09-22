@@ -378,7 +378,7 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showRuntimeOverlay("inn-scene", commerceOverlayText(step));
       return true;
     case "gameOver":
-      scene.showGameOverScreen(step.message);
+      scene.showGameOverScreen(step.message, step.gameOverId);
       return true;
     case "returnToTitle":
       if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);

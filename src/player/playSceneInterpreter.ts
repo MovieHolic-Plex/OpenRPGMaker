@@ -625,7 +625,7 @@ async function consumeBlockingStep(
     case "inn":
       return resumeWithValue(scene, interpreter, await playInn(scene, step));
     case "gameOver":
-      scene.showGameOverScreen(step.message);
+      scene.showGameOverScreen(step.message, step.gameOverId);
       return resumeInterpreter(interpreter);
     case "returnToTitle":
       if (step.title !== undefined || step.message !== undefined || step.presentation) {

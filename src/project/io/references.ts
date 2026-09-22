@@ -191,6 +191,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     variableIds,
     commonEventIds,
     endingIds,
+    gameOverIds: new Set((project.system.gameOvers ?? []).map(row => row.id)),
     mapIds,
     troopIds,
     speciesIds,
@@ -231,8 +232,10 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     check(() => validateOptionalResource(`ending ${ending.id}.presentation.backgroundResourceId`, ending.presentation?.backgroundResourceId, resourceIds));
     check(() => validateOptionalResource(`ending ${ending.id}.presentation.musicResourceId`, ending.presentation?.musicResourceId, resourceIds));
   }
-  const recovery = project.system.gameOver?.recovery;
-  if (recovery) {
+  if (project.system.defaultGameOverId && !project.system.gameOvers?.some(row => row.id === project.system.defaultGameOverId)) issues.push("system.defaultGameOverId does not exist.");
+  for (const settings of [project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)]) {
+    const recovery = settings?.recovery;
+    if (!recovery) continue;
     const map = project.maps[recovery.mapId];
     if (!map || !inBounds(map, recovery.x, recovery.y)) issues.push("system.gameOver.recovery must point inside an existing map.");
   }

@@ -133,7 +133,7 @@ const USAGE_WALK_CATALOG_KEY = "resourceProfiles";
 
 function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
-  if (!project.system.gameOver?.backgroundResourceId) values.add(DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID);
+  if ([project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)].some(settings => !settings?.backgroundResourceId)) values.add(DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID);
   collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, values);
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);

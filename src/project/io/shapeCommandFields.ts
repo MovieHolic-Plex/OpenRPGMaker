@@ -3,7 +3,7 @@ import { isEquipmentSlotId } from "@/project/equipmentSlots";
 import { isEmoteKind } from "@/project/emotes";
 import { SHOP_MESSAGE_TYPES } from "@/project/shopMessages";
 import { ProjectFormatError } from "./errors";
-import { commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
+import { assert, commandKinds, requireArray, requireBoolean, requireNumber, requireRecord, requireString } from "./guards";
 import { validateLightSource } from "./shapeLightingFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
@@ -309,7 +309,9 @@ function validateCommandShape(label: string, value: unknown): void {
       }
       throw new ProjectFormatError(`${label}.action가 잘못되었습니다.`);
     }
+    case "gameOver":
     case "killPlayer":
+      if (command.gameOverId !== undefined) { requireString(`${label}.gameOverId`, command.gameOverId); assert((command.gameOverId as string).trim().length > 0, `${label}.gameOverId is blank.`); }
       if (command.message !== undefined) requireString(`${label}.message`, command.message);
       return;
     case "ending":

@@ -9,6 +9,20 @@ const owners = new WeakMap<HTMLElement, () => void>();
 export function createTerminalScene(scene: PlaySceneContext, kind: "game-over" | "ending", label: string) {
   const host = dialogueHost(scene);
   if (!host) return;
+  const terminal = createTerminalSurface(host, kind, label);
+  scene.events.once("shutdown", terminal.cleanup);
+  scene.events.once("destroy", terminal.cleanup);
+  terminal.signal.addEventListener("abort", () => {
+    scene.events.off("shutdown", terminal.cleanup);
+    scene.events.off("destroy", terminal.cleanup);
+  }, { once: true });
+  scene.input_.releaseAllKeys();
+  stopAllAudio();
+  return terminal;
+}
+
+/** DOM-only presentation owner, also used by the editor's full game-over preview. */
+export function createTerminalSurface(host: HTMLElement, kind: "game-over" | "ending", label: string, parentSignal?: AbortSignal) {
   owners.get(host)?.();
   const root = document.createElement("div");
   root.className = `cinematic-terminal terminal-scene ${kind}-screen`;
@@ -32,8 +46,7 @@ export function createTerminalScene(scene: PlaySceneContext, kind: "game-over" |
     controller.abort();
     disposeMenu();
     observer.disconnect();
-    scene.events.off("shutdown", cleanup);
-    scene.events.off("destroy", cleanup);
+    parentSignal?.removeEventListener("abort", cleanup);
     root.remove();
     if (owners.get(host) === cleanup) owners.delete(host);
   };
@@ -52,13 +65,11 @@ export function createTerminalScene(scene: PlaySceneContext, kind: "game-over" |
     if (!event.repeat && !event.isComposing) onKey?.(event);
   }, { capture: true, signal });
   owners.set(host, cleanup);
-  scene.events.once("shutdown", cleanup);
-  scene.events.once("destroy", cleanup);
+  parentSignal?.addEventListener("abort", cleanup, { once: true });
   host.append(root);
   root.focus({ preventScroll: true });
   observer.observe(host.ownerDocument, { childList: true, subtree: true });
-  scene.input_.releaseAllKeys();
-  stopAllAudio();
+  if (parentSignal?.aborted) cleanup();
   return {
     root, signal, reducedMotion, wait, cleanup,
     phase(name: string): void { root.dataset.phase = name; },
@@ -67,4 +78,4 @@ export function createTerminalScene(scene: PlaySceneContext, kind: "game-over" |
     lock(): void { interactive = false; onKey = undefined; disposeMenu(); },
   };
 }
-export type TerminalScene = NonNullable<ReturnType<typeof createTerminalScene>>;
+export type TerminalScene = ReturnType<typeof createTerminalSurface>;
