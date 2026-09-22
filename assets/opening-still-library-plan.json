@@ -1,0 +1,547 @@
+{
+  "schemaVersion": 1,
+  "status": "planned-not-generated",
+  "style": "정교한 손그림 애니메이션 배경화. 통일된 붓질과 선명한 중심 피사체, 분위기 있는 원근감",
+  "worlds": [
+    {
+      "id": "highland",
+      "name": "산악 왕국",
+      "materials": "석조 성벽, 초원, 산맥",
+      "places": {
+        "city": "성벽 도시",
+        "home": "강가 목조 집",
+        "market": "마차 시장",
+        "road": "산길",
+        "gate": "돌다리",
+        "ruin": "산중 사원"
+      }
+    },
+    {
+      "id": "winter",
+      "name": "북방 설원",
+      "materials": "눈, 침엽수, 목조 건축",
+      "places": {
+        "city": "얼음 항구",
+        "home": "통나무 오두막",
+        "market": "겨울 장터",
+        "road": "눈길",
+        "gate": "얼어붙은 강",
+        "ruin": "얼음 신전"
+      }
+    },
+    {
+      "id": "desert",
+      "name": "사막 왕조",
+      "materials": "모래, 청록 돔, 야자수",
+      "places": {
+        "city": "오아시스 도시",
+        "home": "흙벽 집",
+        "market": "향신료 시장",
+        "road": "모래언덕",
+        "gate": "협곡 관문",
+        "ruin": "사암 신전"
+      }
+    },
+    {
+      "id": "ocean",
+      "name": "해저 왕국",
+      "materials": "푸른 물, 산호, 돔형 석조",
+      "places": {
+        "city": "해저 도시",
+        "home": "산호 집",
+        "market": "진주 광장",
+        "road": "산호 수로",
+        "gate": "석조 아치",
+        "ruin": "침몰 왕궁"
+      }
+    },
+    {
+      "id": "sky",
+      "name": "하늘섬",
+      "materials": "구름바다, 풍차, 비행선",
+      "places": {
+        "city": "공중 항구",
+        "home": "정원 오두막",
+        "market": "비행선 장터",
+        "road": "공중 회랑",
+        "gate": "현수교",
+        "ruin": "떠 있는 탑"
+      }
+    },
+    {
+      "id": "forest",
+      "name": "정령의 숲",
+      "materials": "거목, 이끼, 발광 버섯",
+      "places": {
+        "city": "나무 위 마을",
+        "home": "뿌리 아래 집",
+        "market": "버섯 광장",
+        "road": "이끼 오솔길",
+        "gate": "거목의 빈 구멍",
+        "ruin": "나무 신전"
+      }
+    },
+    {
+      "id": "gothic",
+      "name": "고딕 저택",
+      "materials": "검은 철문, 촛대, 낡은 초상화",
+      "places": {
+        "city": "언덕 위 저택",
+        "home": "하인 숙소",
+        "market": "오래된 응접실",
+        "road": "초상화 회랑",
+        "gate": "철제 정문",
+        "ruin": "봉인된 예배당"
+      }
+    },
+    {
+      "id": "space",
+      "name": "우주 개척지",
+      "materials": "금속 패널, 유리 돔, 행성",
+      "places": {
+        "city": "궤도 정거장",
+        "home": "거주 모듈",
+        "market": "수경재배 광장",
+        "road": "정거장 통로",
+        "gate": "에어록",
+        "ruin": "폐쇄된 관측소"
+      }
+    },
+    {
+      "id": "modern",
+      "name": "현대 소도시",
+      "materials": "전봇대, 기와집, 강변",
+      "places": {
+        "city": "강가 소도시",
+        "home": "작은 다락방",
+        "market": "동네 상점가",
+        "road": "철길 옆 골목",
+        "gate": "작은 철교",
+        "ruin": "폐역"
+      }
+    },
+    {
+      "id": "cyber",
+      "name": "미래 도시",
+      "materials": "발광 회로, 고층빌딩, 공중차",
+      "places": {
+        "city": "수직 도시",
+        "home": "캡슐 주거실",
+        "market": "야간 노점가",
+        "road": "고가 통로",
+        "gate": "보안 관문",
+        "ruin": "폐쇄 서버실"
+      }
+    },
+    {
+      "id": "wasteland",
+      "name": "황무지 생존촌",
+      "materials": "녹슨 철판, 황토, 파손 콘크리트",
+      "places": {
+        "city": "방벽 정착촌",
+        "home": "철판 막사",
+        "market": "부품 교환소",
+        "road": "깨진 도로",
+        "gate": "검문소",
+        "ruin": "버려진 발전소"
+      }
+    },
+    {
+      "id": "steampunk",
+      "name": "증기 도시",
+      "materials": "황동, 배관, 벽돌, 증기",
+      "places": {
+        "city": "공장 도시",
+        "home": "시계공의 방",
+        "market": "기계 시장",
+        "road": "배관 골목",
+        "gate": "기차역 관문",
+        "ruin": "멈춘 시계탑"
+      }
+    },
+    {
+      "id": "eastern",
+      "name": "동양 산수 왕국",
+      "materials": "기와, 대나무, 석등, 산수",
+      "places": {
+        "city": "산중 궁성",
+        "home": "한옥 안채",
+        "market": "저잣거리",
+        "road": "대나무 숲길",
+        "gate": "홍예교",
+        "ruin": "벼랑의 사찰"
+      }
+    },
+    {
+      "id": "archipelago",
+      "name": "열대 군도",
+      "materials": "야자수, 화산석, 청록 바다",
+      "places": {
+        "city": "산호섬 항구",
+        "home": "바닷가 초가",
+        "market": "물고기 시장",
+        "road": "모래 해안",
+        "gate": "암초 수로",
+        "ruin": "해식 동굴"
+      }
+    },
+    {
+      "id": "volcano",
+      "name": "화산 제국",
+      "materials": "검은 현무암, 용암, 재",
+      "places": {
+        "city": "현무암 요새",
+        "home": "돌집",
+        "market": "대장장이 광장",
+        "road": "재 덮인 길",
+        "gate": "용암 다리",
+        "ruin": "화산 심장 사원"
+      }
+    },
+    {
+      "id": "swamp",
+      "name": "안개의 늪",
+      "materials": "늪물, 뿌리, 안개, 갈대",
+      "places": {
+        "city": "수상 마을",
+        "home": "말뚝 위 집",
+        "market": "수상 장터",
+        "road": "나무 데크 길",
+        "gate": "갈대 수로",
+        "ruin": "늪에 잠긴 사원"
+      }
+    },
+    {
+      "id": "underground",
+      "name": "지하 왕국",
+      "materials": "거대 동굴, 광맥, 수정",
+      "places": {
+        "city": "동굴 도시",
+        "home": "광부의 집",
+        "market": "수정 시장",
+        "road": "광산 갱도",
+        "gate": "깊은 수직갱 다리",
+        "ruin": "묻힌 석조 전당"
+      }
+    },
+    {
+      "id": "clockwork",
+      "name": "시계탑 세계",
+      "materials": "태엽, 톱니, 청동, 시계",
+      "places": {
+        "city": "거대한 시계 내부 도시",
+        "home": "태엽 작업실",
+        "market": "자동인형 광장",
+        "road": "톱니 회랑",
+        "gate": "회전 관문",
+        "ruin": "멈춘 중심 태엽실"
+      }
+    },
+    {
+      "id": "fairytale",
+      "name": "동화 나라",
+      "materials": "큰 꽃, 버섯집, 리본 다리",
+      "places": {
+        "city": "꽃잎 마을",
+        "home": "버섯 오두막",
+        "market": "열매 장터",
+        "road": "꽃잎 길",
+        "gate": "덩굴 다리",
+        "ruin": "잠든 나무 성"
+      }
+    },
+    {
+      "id": "noir",
+      "name": "흑백 탐정 도시",
+      "materials": "석조 건물, 가로등, 전차",
+      "places": {
+        "city": "항구 도시",
+        "home": "탐정 사무실",
+        "market": "역 앞 광장",
+        "road": "뒷골목",
+        "gate": "철도 교량",
+        "ruin": "폐극장"
+      }
+    },
+    {
+      "id": "frontier",
+      "name": "서부 개척지",
+      "materials": "목조 건물, 붉은 협곡, 풍차",
+      "places": {
+        "city": "개척 마을",
+        "home": "목장 오두막",
+        "market": "역마차 광장",
+        "road": "황야의 흙길",
+        "gate": "협곡 다리",
+        "ruin": "폐광"
+      }
+    },
+    {
+      "id": "polar",
+      "name": "극지 탐사 기지",
+      "materials": "빙하, 금속 모듈, 빙해",
+      "places": {
+        "city": "빙하 연구 기지",
+        "home": "탐사대 숙소",
+        "market": "보급 창고",
+        "road": "설상 탐사로",
+        "gate": "빙하 틈 다리",
+        "ruin": "얼음 속 관측소"
+      }
+    },
+    {
+      "id": "library",
+      "name": "무한 도서관",
+      "materials": "책장, 종이, 목조 계단, 잉크",
+      "places": {
+        "city": "거대한 원형 서고",
+        "home": "필사자의 방",
+        "market": "열람 광장",
+        "road": "책장 미로",
+        "gate": "문양 새긴 문",
+        "ruin": "봉인된 기록실"
+      }
+    },
+    {
+      "id": "garden",
+      "name": "거대 식물 정원",
+      "materials": "거대한 잎, 유리 온실, 씨앗",
+      "places": {
+        "city": "온실 도시",
+        "home": "잎 아래 오두막",
+        "market": "종자 교환소",
+        "road": "뿌리 길",
+        "gate": "덩굴 아치",
+        "ruin": "버려진 대온실"
+      }
+    }
+  ],
+  "shots": [
+    {
+      "id": "panorama",
+      "name": "세계의 전경",
+      "place": "city",
+      "composition": "넓은 시야의 원경",
+      "detail": "주변 지형과 건축의 규모가 한눈에 보인다",
+      "role": [
+        "세계 소개"
+      ],
+      "mood": [
+        "경이"
+      ]
+    },
+    {
+      "id": "home",
+      "name": "돌아갈 장소",
+      "place": "home",
+      "composition": "방 안을 바라보는 중경",
+      "detail": "식탁과 개인 소지품이 남아 있고 사람이 없는 조용한 공간이다",
+      "role": [
+        "평범한 일상",
+        "고향"
+      ],
+      "mood": [
+        "온기"
+      ]
+    },
+    {
+      "id": "market",
+      "name": "생활의 흔적",
+      "place": "market",
+      "composition": "길의 깊이가 보이는 중경",
+      "detail": "가게와 생활 도구가 길 양옆에 늘어서 있다. 사람은 그리지 않는다",
+      "role": [
+        "일상 소개"
+      ],
+      "mood": [
+        "친근함"
+      ]
+    },
+    {
+      "id": "road",
+      "name": "떠나는 길",
+      "place": "road",
+      "composition": "낮은 시점의 길 원근",
+      "detail": "길이 전경에서 먼 지평선으로 이어지고 가벼운 여행 가방이 전경에 놓인다",
+      "role": [
+        "여정의 시작"
+      ],
+      "mood": [
+        "기대"
+      ]
+    },
+    {
+      "id": "threshold",
+      "name": "경계의 문",
+      "place": "gate",
+      "composition": "문 너머를 바라보는 구도",
+      "detail": "닫혀 있던 경계가 열려 그 너머의 풍경이 일부 드러난다",
+      "role": [
+        "새 세계 진입"
+      ],
+      "mood": [
+        "긴장"
+      ]
+    },
+    {
+      "id": "ruin",
+      "name": "잊힌 역사",
+      "place": "ruin",
+      "composition": "깊은 원근의 넓은 전경",
+      "detail": "붕괴한 구조물과 먼지가 오랜 시간의 흔적을 드러낸다",
+      "role": [
+        "잊힌 역사",
+        "유적 발견"
+      ],
+      "mood": [
+        "적막"
+      ]
+    },
+    {
+      "id": "clue",
+      "name": "남겨진 단서",
+      "place": "ruin",
+      "composition": "사물 중심 근접 구도",
+      "detail": "금이 간 장식품 하나가 전경에 있고 주변 배경은 부드럽게 흐려진다",
+      "role": [
+        "단서 발견"
+      ],
+      "mood": [
+        "미스터리"
+      ]
+    },
+    {
+      "id": "secret",
+      "name": "감춰진 공간",
+      "place": "ruin",
+      "composition": "틈 사이를 들여다보는 중경",
+      "detail": "벽이나 구조물의 틈 뒤에 작은 빛을 품은 비밀 공간이 보인다",
+      "role": [
+        "비밀의 암시"
+      ],
+      "mood": [
+        "신비"
+      ]
+    },
+    {
+      "id": "threat",
+      "name": "불길한 징조",
+      "place": "city",
+      "composition": "건축을 올려다보는 낮은 구도",
+      "detail": "주요 구조물에 거대한 균열이 생기고 빛이 틈 사이로 새어 나온다",
+      "role": [
+        "재앙의 징조"
+      ],
+      "mood": [
+        "위협"
+      ]
+    },
+    {
+      "id": "loss",
+      "name": "사라진 일상",
+      "place": "home",
+      "composition": "정적인 실내 중경",
+      "detail": "의자 하나가 넘어지고 쓰던 물건들이 흩어져 갑작스러운 부재를 보여 준다",
+      "role": [
+        "상실",
+        "사건의 시작"
+      ],
+      "mood": [
+        "쓸쓸함"
+      ]
+    },
+    {
+      "id": "promise",
+      "name": "다시 만날 곳",
+      "place": "gate",
+      "composition": "전경 소품과 먼 풍경의 대비",
+      "detail": "빈 벤치 옆에 서로 다른 여행 가방 두 개가 놓여 약속을 암시한다",
+      "role": [
+        "재회의 약속"
+      ],
+      "mood": [
+        "그리움"
+      ]
+    },
+    {
+      "id": "renewal",
+      "name": "다시 시작되는 세계",
+      "place": "city",
+      "composition": "높은 곳에서 보는 넓은 전경",
+      "detail": "건물 사이에 새싹과 작은 꽃이 자라며 회복의 흔적이 보인다",
+      "role": [
+        "새로운 시작",
+        "회복"
+      ],
+      "mood": [
+        "희망"
+      ]
+    }
+  ],
+  "lighting": [
+    {
+      "id": "dawn",
+      "name": "새벽",
+      "description": "희미한 푸른 새벽빛과 지평선의 따뜻한 빛. 실내는 창이나 간접 조명으로 이를 표현한다",
+      "mood": [
+        "기대"
+      ]
+    },
+    {
+      "id": "day",
+      "name": "맑은 낮",
+      "description": "선명하고 부드러운 낮 조명. 실내와 해저, 우주는 창이나 인공 조명의 밝은 확산광으로 표현한다",
+      "mood": [
+        "평온"
+      ]
+    },
+    {
+      "id": "sunset",
+      "name": "황혼",
+      "description": "금빛과 주황빛의 낮은 조명, 길게 드리운 그림자. 밀폐 공간은 같은 색의 인공 조명으로 표현한다",
+      "mood": [
+        "향수"
+      ]
+    },
+    {
+      "id": "night",
+      "name": "깊은 밤",
+      "description": "짙은 푸른 어둠과 제한된 작은 광원. 실내와 수중은 잔잔한 푸른 간접 조명을 사용한다",
+      "mood": [
+        "고독"
+      ]
+    },
+    {
+      "id": "mist",
+      "name": "안개와 흐릿한 빛",
+      "description": "희미한 빛과 낮은 대비, 부드러운 공간의 깊이. 실내는 먼지, 수중은 부유물, 우주는 창 너머 성운으로 표현한다",
+      "mood": [
+        "미스터리"
+      ]
+    },
+    {
+      "id": "storm",
+      "name": "거친 기운",
+      "description": "강한 명암과 흔들리는 빛, 불길한 분위기. 내부 공간과 수중에서는 비가 아니라 불안정한 광원과 부유물로 표현한다",
+      "mood": [
+        "불안"
+      ]
+    },
+    {
+      "id": "moon",
+      "name": "은빛 달빛",
+      "description": "차갑고 은은한 은빛 역광과 짙은 그림자. 밀폐 공간은 같은 은빛 인공 조명으로 표현한다",
+      "mood": [
+        "몽환"
+      ]
+    },
+    {
+      "id": "afterglow",
+      "name": "분홍 잔광",
+      "description": "보랏빛 그림자와 부드러운 분홍빛 잔광. 밀폐 공간에서는 같은 색의 약한 간접 조명으로 표현한다",
+      "mood": [
+        "여운"
+      ]
+    }
+  ]
+}

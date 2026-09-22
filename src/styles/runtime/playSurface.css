@@ -263,8 +263,7 @@
   background: rgb(0 0 0 / 80%);
 }
 .cinematic-narration:empty { display: none; }
-.cinematic-status,
-.cinematic-hint {
+.cinematic-status {
   z-index: 1;
   font-size: 9px;
   line-height: 1.5;
@@ -272,7 +271,6 @@
   background: rgb(0 0 0 / 80%);
 }
 .cinematic-status:empty { display: none; }
-.cinematic-hint { flex-shrink: 0; }
 .cinematic-terminal > .game-over-panel { max-width: 90%; }
 .cinematic-image[data-motion="fade"] { animation: cinematic-fade var(--cinematic-motion-ms) linear both; }
 .cinematic-image[data-motion="pan"] { animation: cinematic-pan var(--cinematic-motion-ms) linear both; }

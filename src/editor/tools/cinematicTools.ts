@@ -12,6 +12,7 @@ import {
   type GameOverSettings,
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
+import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import type { Project } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -59,7 +60,8 @@ function stillGrouper(project: Project): (id: string) => string {
   const backdrops = new Set(listDatabaseResourceOptions("backdrop", project).map(entry => entry.id));
   const titles = new Set(listDatabaseResourceOptions("title", project).map(entry => entry.id));
   const icons = new Set(listDatabaseResourceOptions("image", project).map(entry => entry.id));
-  return id => backdrops.has(id) ? "배경화"
+  return id => findOpeningStillMood(id)?.suitableForOpening === false ? "참고 이미지(오프닝 부적합)"
+    : findOpeningStillMood(id) || backdrops.has(id) ? "배경화"
     : titles.has(id) ? "타이틀 아트"
       : icons.has(id) ? "아이콘(작음·전체화면 부적합)" : "그림";
 }
@@ -383,7 +385,9 @@ const listOpeningMedia: ToolDefinition = {
   description:
     "오프닝 장면에 쓸 미디어 후보를 DB 「오프닝」 탭과 같은 목록에서 반환한다. "
     + "kind image(그림)/movie(영상)/sound(내레이션 음성)/music(배경음악) — 결과에 없는 id 는 저장이 거부된다. "
-    + "그림은 group 으로 성격을 알려준다 — 전체화면은 배경화·타이틀 아트를 고르고(아이콘은 피함), 없으면 generate_opening_image.",
+    + "그림은 group 으로 성격을 알려준다 — 전체화면은 배경화·타이틀 아트를 고르고(아이콘은 피함), 없으면 generate_opening_image. "
+    + "스틸은 description(실제 그림), mood(분위기), useCases(서사 용도), series(같은 세계관), cautions(그림에 포함된 제약)를 반환한다. "
+    + "query는 공백으로 나눈 단어를 모두 검색한다. 같은 series의 그림을 조합하고 설명과 맞는 내레이션을 작성한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -414,18 +418,24 @@ const listOpeningMedia: ToolDefinition = {
       throw new ToolError(`limit은 1~${MEDIA_RESULT_LIMIT_MAX}의 정수여야 합니다.`, { code: "invalid-args" });
     }
 
-    const needle = (rawQuery ?? "").trim().toLocaleLowerCase();
-    const all = listDatabaseResourceOptions(kind as DatabaseResourcePickerKind, project)
-      .filter(entry => needle.length === 0
-        || entry.id.toLocaleLowerCase().includes(needle)
-        || entry.name.toLocaleLowerCase().includes(needle)
-        || (entry.searchTerms ?? []).some(term => term.toLocaleLowerCase().includes(needle)));
+    const needles = (rawQuery ?? "").trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const all = listDatabaseResourceOptions(PICKER_KIND[kind], project)
+      .filter(entry => {
+        const text = [entry.id, entry.name, ...(entry.searchTerms ?? [])].join(" ").toLocaleLowerCase();
+        return needles.every(needle => text.includes(needle));
+      });
     const group = kind === "image" ? stillGrouper(project) : undefined;
-    const matches = all.slice(offset, offset + limit).map(entry => ({
-      id: entry.id,
-      name: entry.name,
-      ...(group ? { group: group(entry.id) } : {}),
-    }));
+    const matches = all.slice(offset, offset + limit).map(entry => {
+      const still = kind === "image" ? findOpeningStillMood(entry.id) : undefined;
+      return {
+        id: entry.id,
+        name: entry.name,
+        ...(group ? { group: group(entry.id) } : {}),
+        ...(still ? { description: still.description, tags: still.tags, mood: still.mood,
+          useCases: still.useCases, series: still.series, cautions: still.cautions,
+          suitableForOpening: still.suitableForOpening } : {}),
+      };
+    });
     const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
     return {
       summary: `${MEDIA_KIND_LABEL[kind]} 후보 ${matches.length}개 조회(전체 ${all.length}개, kind=${kind}).`,
