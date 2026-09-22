@@ -73,7 +73,7 @@ import type { PassFlag, TileAiMetadata, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
 
 let selectedTile = 0;
-let standaloneTab: "references" | "settings" | null = "references";
+let standaloneTab: "references" | "settings" | null = null; // 타일 탭의 기본 화면은 팔레트(통행·지형)다 — AI 참고문서는 보조 탭(2026-09-22).
 let editMode: TilesetEditMode = "passage";
 /** 방향별 통행. 리렌더마다 접히면 연속으로 방향을 못 고친다. */
 let compassOpen = true;

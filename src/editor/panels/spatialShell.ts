@@ -87,7 +87,7 @@ export function renderSpatialAuthoringShell(
         // 있으므로(listView=true), 「이미 이 카드가 선택돼 있다」가 곧 재클릭이다.
         const reopening = spatialSession().galleryCardId === card.id;
         selectSpatialGalleryEntry(card);
-        patchSpatialSession({ galleryCardId: card.id, listView: !reopening });
+        patchSpatialSession({ galleryCardId: card.id, listView: !reopening, inspectorOpen: true });
         usageChromeState.openPopoverCardId = null;
         refresh();
         return;
@@ -95,6 +95,8 @@ export function renderSpatialAuthoringShell(
       selectSpatialGalleryEntry(card);
       if (!(placesGallery && card.canonicalSource)) patchSpatialSession({ listView: false });
       usageChromeState.openPopoverCardId = null;
+      // 목업: 목록-우선 탭에서 고르면 속성이 열린다. 첫 선택 경로(위 return)와 같은 규약.
+      if (placesGallery || regionGallery) patchSpatialSession({ inspectorOpen: true });
     }
     if (tab === "tiles") {
       const tilesetId = cards.find((card) => card.id === id)?.tilesetId;
@@ -158,7 +160,9 @@ export function renderSpatialAuthoringShell(
     const badges = regionGallery
       ? (() => { const value = classifyRegionCard(card); return [value.category, value.style, value.origin]; })()
       : (() => { const value = classifyPlaceCard(card); return [value.category, value.environment, ...value.purposes]; })();
-    button.append(el('div', { class: 'place-classification-badges', children: badges.map(text => el('span', { text })) }));
+    // 2026-09-22 목업: 배지는 유형(첫 배지) 하나만 — 카드마다 4~5개는 소음이었다. 나머지는 필터로 답한다.
+    const [primaryBadge] = badges;
+    if (primaryBadge) button.append(el('div', { class: 'place-classification-badges', children: [el('span', { text: primaryBadge })] }));
     if (!isSelected || !card.canonicalSource) return el("div", { class: "spatial-card-cell", children: [button] });
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
@@ -260,7 +264,6 @@ export function renderSpatialAuthoringShell(
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
     children: [chrome, placesGallery || regionGallery
       ? el("div", { class: "spatial-shell-main", children: [
-        placesPurposeBand(),
         regionGallery ? renderRegionLibraryControls(cards, refresh) : renderPlaceLibraryControls(cards, refresh),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })
@@ -292,32 +295,6 @@ let escapeLayerInstalled = false;
  * 이 탭이 뭔지 한 줄로 말한다. 3차 수리에서 들어왔다가 타일 화면 개편(2026-09-21) 때
  * 렌더 호출만 사라져 CSS(.spatial-purpose*)만 남아 있었다 — 화면에는 없었다.
  */
-function placesPurposeBand(): HTMLElement {
-  const step = (no: number, label: string, active = false): HTMLElement => el("span", {
-    class: `spatial-purpose-step${active ? " is-active" : ""}`,
-    children: [
-      el("span", { class: "spatial-purpose-step-no", text: String(no) }),
-      el("span", { text: label }),
-    ],
-  });
-  const arrow = (): HTMLElement => el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
-  return el("div", {
-    class: "spatial-purpose",
-    dataset: { testid: "spatial-purpose" },
-    children: [
-      el("span", { class: "spatial-purpose-lead", children: [
-        el("strong", { text: "여기서 만든 장소가 정본입니다" }),
-        el("small", { text: "AI는 여기서 골라 쓸 뿐입니다 · 만든 장소는 「맵에 놓기」로 실제 맵이 됩니다" }),
-      ] }),
-      el("span", { class: "spatial-purpose-steps", children: [
-        step(1, "장소 만들기", true), arrow(),
-        step(2, "맵에 놓기"), arrow(),
-        step(3, "미리보기 · 적용"),
-      ] }),
-    ],
-  });
-}
-
 /**
  * 포커스가 셸 밖(document/body)에 있어도, 오류 배너·미리보기 같은 전이 UI 가 떠 있으면
  * 첫 Escape 는 그것만 걷어야 한다. 모달의 닫기는 document 버블 단계라 캡처에서 앞선다.

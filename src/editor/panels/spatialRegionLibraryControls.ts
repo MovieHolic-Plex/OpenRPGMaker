@@ -23,7 +23,6 @@ export function renderRegionLibraryControls(cards: readonly SpatialGalleryCard[]
       el('div', { class: 'place-library-title', children: [
         el('strong', { text: '지역 라이브러리' }),
         el('span', { class: 'place-library-count', text: `${cards.filter(matchesRegionClassification).length}개`, dataset: { testid: 'region-library-count' } }),
-        el('small', { text: '참고 사례는 읽기 전용 · 내 설계는 「추가」로 만듭니다' }),
       ] }),
     ] }),
     el('div', { class: 'place-library-filters', children: [

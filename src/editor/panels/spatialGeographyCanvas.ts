@@ -14,6 +14,7 @@ import { openSelectedChild } from "@/editor/panels/spatialGeographyNavigate";
 import { geographyViewChildren } from "@/editor/panels/spatialGeographyQuery";
 import { GEOGRAPHY_TILE_PX, renderGeographyRaster } from "@/editor/panels/spatialGeographyRaster";
 import { renderGeographyMaterials, renderGeographyTools } from "@/editor/panels/spatialGeographyTools";
+import { buildSpatialCatalogLibrary } from "@/editor/content/spatial/catalogSeed";
 import { spatialId } from "@/project/spatial/domain";
 import type { RegionDesign, SpatialChildSlot, SpatialId, SpatialPoint } from "@/project/spatial/types";
 import { el } from "@/util/dom";
@@ -47,11 +48,12 @@ const pendingDrop: { run: (event: PointerEvent) => void } = { run() { return; } 
 /** One stable subscription: a rerender replaces pendingDrop.run, so the listener identity must not change. */
 const dropListener = (event: PointerEvent): void => pendingDrop.run(event);
 
-function childButton(child: SpatialChildSlot<"space" | "place" | "region">, board: HTMLElement, tilePx: number, readonly: boolean): HTMLElement {
+function childButton(child: SpatialChildSlot<"space" | "place" | "region">, board: HTMLElement, tilePx: number, readonly: boolean, childName: string | undefined): HTMLElement {
   const selected = geographyChromeState.selectedChildId === child.id;
   return el("button", {
     class: `spatial-geography-child${selected ? " is-selected" : ""}`,
-    text: child.source.kind === "region" ? "지역" : "장소",
+    // 2026-09-22 목업: 마커에 설계 이름을 붙인다 — "지역" 낱말 나열은 어느 지역인지 말하지 않는다.
+    text: childName ?? (child.source.kind === "region" ? "지역" : "장소"),
     attrs: { type: "button", style: `left:${child.x * tilePx}px;top:${child.y * tilePx}px` },
     dataset: {
       testid: `spatial-geography-child-${child.id}`,
@@ -155,7 +157,13 @@ export function renderSpatialGeographyCanvas(view: GeographyView, rerender: () =
     const raster = renderGeographyRaster(workingProject(), design, target?.occurrenceId);
     if (raster.error) geographyChromeState.previewError = `${raster.error.code}:${raster.error.path}`;
     board.append(raster.node, routeLayer(design, children, tilePx, rerender));
-    for (const child of children) board.append(childButton(child, board, tilePx, readonly));
+    // 자식 마커 라벨은 라이브러리 설계 이름을 따른다 — 목업(세계 지도 위 지역 라벨)과 같다.
+    const library = workingProject().spatialAuthoring?.library ?? buildSpatialCatalogLibrary();
+    const childNameOf = (child: SpatialChildSlot<"space" | "place" | "region">): string | undefined => {
+      const bucket = library?.[child.source.kind === "region" ? "regions" : child.source.kind === "place" ? "places" : "spaces"];
+      return bucket?.[child.source.id]?.name;
+    };
+    for (const child of children) board.append(childButton(child, board, tilePx, readonly, childNameOf(child)));
   }
   const finishMove = (event: PointerEvent) => {
     const gesture = geographyChromeState.gesture;

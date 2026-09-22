@@ -1,24 +1,24 @@
 /* Dedicated tile library. These selectors intentionally avoid the legacy spatial/record grids. */
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library { display:grid; grid-template-columns:196px minmax(0,1fr); height:100%; min-height:0; width:100%; overflow:hidden; color:var(--text-1); background:var(--surface-1,#fff); }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library { display:grid; grid-template-columns:minmax(236px,264px) minmax(0,1fr); height:100%; min-height:0; width:100%; overflow:hidden; color:var(--text-1); background:var(--surface-1,#fff); }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library * { box-sizing:border-box; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sidebar { display:flex; flex-direction:column; gap:12px; padding:18px 12px; min-height:0; border-right:1px solid var(--border-default); background:var(--surface-2,#f8fafc); }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sidebar { display:flex; flex-direction:column; gap:10px; padding:14px 12px; min-height:0; border-right:1px solid var(--border-default); background:var(--surface-2,#f8fafc); }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sidebar > header { display:flex; align-items:center; justify-content:space-between; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sidebar h2 { margin:0; font-size:18px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sidebar > header > span, .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-chip { border-radius:6px; background:var(--accent-muted); color:var(--accent); padding:4px 7px; font-size:11px; white-space:nowrap; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sidebar input { width:100%; min-width:0; padding:9px; border:1px solid var(--border-default); border-radius:7px; background:var(--surface-1,#fff); color:inherit; font-size:12px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-hint { color:var(--text-3); font-size:11px; line-height:1.5; margin:0; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-rows { overflow:auto; min-height:0; display:flex; flex-direction:column; gap:6px; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row { display:flex; align-items:center; gap:9px; flex-shrink:0; width:100%; padding:10px 7px; border:1px solid transparent; border-radius:8px; background:transparent; color:inherit; cursor:pointer; text-align:left; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row:hover { background:var(--accent-muted); }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row.active { border-color:var(--accent); background:var(--accent-muted); }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row > img { width:32px; height:40px; object-fit:cover; object-position:top left; image-rendering:pixelated; border-radius:4px; background:#dbe4de; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row > span { flex:1; min-width:0; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row strong { display:block; font-size:12px; font-weight:600; line-height:1.45; overflow-wrap:anywhere; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-row small { display:block; font-size:10px; color:var(--text-3); margin-top:5px; line-height:1.4; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-grid { display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:8px; overflow:auto; min-height:0; flex:1 1 auto; align-content:start; padding:2px; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card { display:flex; flex-direction:column; gap:0; flex-shrink:0; width:100%; height:auto; padding:0; overflow:visible; border:1.5px solid var(--border-default); border-radius:10px; background:var(--surface-1,#fff); color:inherit; cursor:pointer; text-align:left; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card:hover { border-color:var(--accent); }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card.active { border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent); }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card-thumb { display:block; height:64px; overflow:hidden; background:var(--surface-2,#f8fafc); contain: paint; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card-thumb img { width:100%; height:auto; min-height:100%; object-fit:cover; object-position:top left; image-rendering:pixelated; display:block; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card-cap { display:block; padding:6px 8px 7px; min-width:0; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card-cap strong { display:block; font-size:12px; font-weight:650; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-detail { display:flex; flex-direction:column; min-width:0; min-height:0; overflow:hidden; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-heading { display:flex; align-items:center; justify-content:space-between; flex:none; gap:12px; padding:17px 22px 12px; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-heading { display:flex; align-items:center; justify-content:space-between; flex:none; gap:12px; padding:14px 20px 10px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-heading small { color:var(--text-3); font-size:11px; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-heading h2 { margin:5px 0 0; font-size:20px; font-weight:650; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-heading h2 { margin:4px 0 0; font-size:20px; font-weight:700; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor { display:flex; flex-direction:column; flex:1; min-height:0; min-width:0; overflow:hidden; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs { display:flex; flex:none; flex-wrap:wrap; gap:4px; padding:0 18px; margin:0; border-bottom:1px solid var(--border-default); }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs > button { border:0; border-bottom:3px solid transparent; border-radius:0; background:transparent; color:var(--text-2); font-size:12px; font-weight:500; padding:12px 10px; height:auto; margin:0; }
@@ -100,3 +100,7 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs { padding:0 8px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs > button { padding:10px 8px; }
 }
+
+/* 목록을 2열 썸네일 카드로 — 한 화면에 전체 타일셋이 보이는 것이 이 화면의 목표(2026-09-22). */
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-card-cap small { display:block; font-size:10.5px; color:var(--text-3); margin-top:2px; line-height:1.35; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-heading-side { display:flex; align-items:center; gap:8px; flex:none; }

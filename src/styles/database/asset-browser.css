@@ -2,9 +2,10 @@
 .database-modal-body .spatial-asset-browser {
   background: var(--db-studio-surface);
 }
-.asset-browser-top { padding: 18px 20px 14px; border-bottom: 1px solid var(--db-studio-border-subtle); }
-.asset-browser-heading h2 { margin: 0 0 5px; font-size: 21px; line-height: 1.3; }
-.asset-browser-heading p { margin: 0 0 14px; color: var(--db-studio-text-3); font-size: 13px; }
+/* 2026-09-22 목업: 머리는 제목 한 줄 + 액션 — 두 줄짜리 안내 문단은 세로 손실이었다. */
+.asset-browser-top { padding: 12px 20px 10px; border-bottom: 1px solid var(--db-studio-border-subtle); }
+.asset-browser-heading h2 { margin: 0; font-size: 18px; line-height: 1.3; }
+.asset-browser-heading p { display: none; }
 /* 제목이 곧 이름이다 — 누르면 그 자리에서 고친다. 이전에는 "장소 편집" 고정 문구였고
    이름 입력칸은 오른쪽 패널의 접힌 details 안에 숨어 있었다. */
 .asset-browser-title { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; margin: 0 0 5px; padding: 2px 6px 2px 0; border: 0; border-bottom: 2px solid transparent; border-radius: 4px; background: none; color: var(--db-studio-text-1); font: inherit; font-size: 21px; font-weight: 700; line-height: 1.3; text-align: left; cursor: text; }
@@ -37,28 +38,32 @@
 .asset-browser-more { position: relative; font-size: 12px; }
 .asset-browser-more summary { cursor: pointer; padding: 8px; }
 .asset-browser-more-body { position: absolute; right: 0; top: 100%; width: 300px; max-height: 420px; overflow: auto; padding: 14px; border: 1px solid var(--db-studio-border-default); border-radius: 10px; background: var(--db-studio-surface); box-shadow: var(--db-studio-shadow-pop); z-index: 8; display: flex; flex-wrap: wrap; gap: 8px; }
-.asset-browser-body { display: grid; grid-template-columns: 164px minmax(220px, 1fr) 290px; min-height: 0; overflow: hidden; }
-.asset-browser-rail { overflow: auto; min-height: 0; padding: 14px 8px; border-right: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-inset); }
-.asset-browser-rail h3 { margin: 0 8px 12px; font-size: 12px; color: var(--db-studio-text-3); }
-.asset-browser-tileset { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 44px; margin-bottom: 4px; padding: 8px; text-align: left; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--db-studio-text-1); cursor: pointer; }
-.asset-browser-tileset img { width: 28px; height: 32px; object-fit: cover; object-position: top left; image-rendering: pixelated; border-radius: 3px; }
-.asset-browser-tileset span { min-width: 0; flex: 1; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
-.asset-browser-tileset small { color: var(--db-studio-text-3); font-size: 11px; }
-.asset-browser-tileset.is-selected { background: var(--db-studio-accent-soft); border-color: var(--db-studio-accent); }
+/* 2026-09-22 목업: 레일을 2열 썸네일 카드로 — 텍스트 나열 목록은 출처를 눈으로 못 찾는다. */
+.asset-browser-body { display: grid; grid-template-columns: minmax(240px, 268px) minmax(0, 1fr) 284px; min-height: 0; overflow: hidden; }
+.asset-browser-rail { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-content: start; overflow: auto; min-height: 0; padding: 12px 10px; border-right: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-inset); }
+.asset-browser-rail-head { display: flex; align-items: baseline; gap: 6px; margin: 0 2px 10px; }
+.asset-browser-rail h3 { margin: 0; font-size: 13.5px; color: var(--db-studio-text-1); font-weight: 800; }
+.asset-browser-rail-count { font-size: 11.5px; color: var(--db-studio-text-3); font-weight: 600; }
+.asset-browser-rail-head { grid-column: 1 / -1; }
+.asset-browser-tileset { display: flex; flex-direction: column; align-items: stretch; gap: 0; width: 100%; min-height: 0; margin: 0; padding: 0; text-align: left; border: 1.5px solid var(--db-studio-border-subtle); border-radius: 9px; background: var(--db-studio-surface); color: var(--db-studio-text-1); cursor: pointer; overflow: hidden; }
+.asset-browser-tileset img { width: 100%; height: 54px; object-fit: cover; object-position: top left; image-rendering: pixelated; border-radius: 0; background: var(--db-studio-well); }
+.asset-browser-tileset .asset-browser-tileset-name { min-width: 0; flex: none; padding: 5px 8px 1px; font-size: 11.5px; font-weight: 650; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-browser-tileset small { padding: 0 8px 6px; color: var(--db-studio-text-3); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-browser-tileset.is-selected { border-color: var(--db-studio-accent); box-shadow: 0 0 0 2px var(--db-studio-accent-soft); }
 .asset-browser-collection { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; }
-.asset-browser-filters { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--db-studio-border-subtle); }
+.asset-browser-filters { flex: none; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid var(--db-studio-border-subtle); }
 .asset-browser-search { flex: 1 1 100%; min-width: 0; width: 100%; box-sizing: border-box; padding: 10px 12px; border: 1px solid var(--db-studio-border-default); border-radius: 8px; background: var(--db-studio-surface); color: var(--db-studio-text-1); font: inherit; font-size: 13px; }
 .asset-browser-count { margin-left: auto; font-size: 12px; color: var(--db-studio-text-3); }
 .asset-browser-results { min-height: 0; overflow: auto; padding: 16px; }
-.asset-browser-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 12px; align-content: start; }
+.asset-browser-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)); gap: 10px; align-content: start; }
 .asset-browser-card { display: flex; flex-direction: column; align-items: stretch; padding: 0 0 11px; min-width: 0; border: 1px solid var(--db-studio-border-subtle); border-radius: 10px; overflow: hidden; text-align: left; background: var(--db-studio-surface); color: var(--db-studio-text-1); cursor: pointer; }
 .asset-browser-card:hover { border-color: var(--db-studio-accent); }
 .asset-browser-card.is-selected { border-color: var(--db-studio-accent); box-shadow: 0 0 0 2px var(--db-studio-accent-soft); }
-.asset-browser-card-art { height: 116px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; overflow: hidden; background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%, var(--spatial-checker-b) 0% 50%) 0 0 / 16px 16px; }
+.asset-browser-card-art { height: 64px; display: flex; align-items: center; justify-content: center; margin-bottom: 0; overflow: hidden; background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%, var(--spatial-checker-b) 0% 50%) 0 0 / 16px 16px; }
 .asset-browser-card-art canvas,
-.asset-browser-card-art img { max-width: 92%; max-height: 96px; object-fit: contain; image-rendering: pixelated; }
-.asset-browser-card strong { padding: 0 10px; font-size: 13px; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
-.asset-browser-card > span { padding: 4px 10px 0; font-size: 11px; color: var(--db-studio-text-3); }
+.asset-browser-card-art img { max-width: 88%; max-height: 56px; object-fit: contain; image-rendering: pixelated; }
+.asset-browser-card strong { padding: 5px 9px 1px; font-size: 11.5px; line-height: 1.35; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asset-browser-card > span { padding: 0 9px 7px; font-size: 10px; color: var(--db-studio-text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .asset-browser-empty { grid-column: 1 / -1; padding: 60px 20px; text-align: center; color: var(--db-studio-text-3); font-size: 13px; }
 .asset-browser-pagination { display: flex; justify-content: center; align-items: center; gap: 14px; padding: 20px 0 4px; font-size: 12px; }
 .asset-browser-detail { min-width: 0; min-height: 0; overflow: auto; border-left: 1px solid var(--db-studio-border-subtle); padding: 16px; background: var(--db-studio-surface); }

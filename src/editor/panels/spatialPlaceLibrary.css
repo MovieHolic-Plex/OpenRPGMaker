@@ -18,10 +18,12 @@
   }
 
   .place-library-title { display: inline-flex; align-items: baseline; gap: 8px; flex-wrap: wrap; min-width: 0; }
-  .place-library-heading strong { font-size: 13px; }
+  .place-library-heading strong { font-size: 15px; font-weight: 800; }
   /* 폴백 hex 를 쓰면 hexLiterals 래칫에 걸린다 — 토큰은 .database-modal-backdrop 에 정의돼 있다. */
   .place-library-count { font: 600 11.5px/1.4 inherit; color: var(--db-studio-text-3); }
   .place-library-filters { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 6px; }
+  /* 2026-09-22: 필터 한 줄 압축 - 셀렉트 최소폭을 낮춰 한 줄에 들어오게. */
+  .place-library-filters select { min-width: 88px; max-width: 150px; }
 
   .place-library-filters select,
   .place-library-filters input {

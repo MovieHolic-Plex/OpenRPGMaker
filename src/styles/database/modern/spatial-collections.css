@@ -652,3 +652,377 @@
   border: 1px solid var(--db-studio-border-subtle);
   border-radius: 8px;
 }
+
+/* 2026-09-22: 타일 목록을 2열 썸네일 카드 그리드로 — 세로 리스트는 한 화면에 8개만 보인다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-gallery-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr)) !important;
+  grid-auto-flow: row !important;
+  gap: 8px !important;
+  padding: 2px 4px 8px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card {
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-thumb {
+  display: block !important;
+  height: 56px !important;
+  flex: none !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-thumb img,
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-thumb .spatial-card-image {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  image-rendering: pixelated !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-caption {
+  display: block !important;
+  width: 100% !important;
+  padding: 5px 7px 6px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-name {
+  display: block !important;
+  font: 600 11.5px/1.35 inherit !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-sub {
+  display: block !important;
+  font: 400 10.5px/1.3 inherit !important;
+  color: var(--db-studio-text-3) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .spatial-card-badge.is-count {
+  display: none !important;
+}
+
+/* 2026-09-22(2): tileset-library-grid 를 2열 카드 그리드로. auto-fill 계산이 목록 좌우 여백 때문에
+   1열로 떨어지므로 최소 폭을 110px 로 낮춘다. */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-thumb {
+  display: block !important;
+  height: 54px !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  image-rendering: pixelated !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-cap {
+  display: block !important;
+  padding: 5px 7px 6px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-thumb {
+  display: block !important;
+  height: 54px !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  image-rendering: pixelated !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-cap {
+  display: block !important;
+  padding: 5px 7px 6px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-cap strong {
+  font: 600 11.5px/1.3 inherit !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-library-card-cap small {
+  font: 400 10.5px/1.3 inherit !important;
+}
+
+/* 2026-09-22(3): db-map-content 직접 경로도 함께 못박는다 - 타일 셸은 spatial-shell DOM 을 만들지 않는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 8px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card {
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 8px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card-thumb {
+  display: block !important;
+  height: 54px !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  image-rendering: pixelated !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card-cap {
+  display: block !important;
+  padding: 5px 7px 6px !important;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card-thumb {
+  display: block !important;
+  height: 54px !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  image-rendering: pixelated !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-library-card-cap {
+  display: block !important;
+  padding: 5px 7px 6px !important;
+}
+
+
+/* 2026-09-22(4): tileset-db-workspace 경로의 passage-paint 격자를 3행으로 못박는다 — 도구행(1) / 시트(2,1) / 검사기(2,2). */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(212px, 244px) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area > .tileset-db-tools {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area > .tileset-db-tools::before {
+  content: none !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area > .tileset-db-preview-wrap {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="spatial-shell-tiles"] .tileset-db-edit-area > .tileset-db-edit-sidebar {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-db-edit-area {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(212px, 244px) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-db-edit-area > .tileset-db-tools {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-db-edit-area > .tileset-db-tools::before {
+  content: none !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-db-edit-area > .tileset-db-preview-wrap {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-db-workspace .tileset-db-edit-area > .tileset-db-edit-sidebar {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+
+/* 2026-09-22(5): dom 구조상 workspace 안에 db-map-content 가 없다 - .db-map-content 가 조상인지 확인한 선택자. */
+.db-map-content > .tileset-db-workspace .tileset-db-edit-area {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(212px, 244px) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+.db-map-content > .tileset-db-workspace .tileset-db-edit-area > .tileset-db-tools {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+.db-map-content > .tileset-db-workspace .tileset-db-edit-area > .tileset-db-tools::before {
+  content: none !important;
+}
+.db-map-content > .tileset-db-workspace .tileset-db-edit-area > .tileset-db-preview-wrap {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+}
+.db-map-content > .tileset-db-workspace .tileset-db-edit-area > .tileset-db-edit-sidebar {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+
+/* 2026-09-22(6): DOM 상의 실제 경로는 .tileset-library 안이다 - 도구행(1) / 시트(2,1) / 검사기(2,2). */
+.tileset-library .tileset-db-edit-area {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) minmax(212px, 244px) !important;
+  grid-template-rows: auto minmax(0, 1fr) !important;
+  gap: 8px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-tools {
+  grid-column: 1 / -1 !important;
+  grid-row: 1 !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-tools::before {
+  content: none !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-preview-wrap {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-edit-sidebar {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  min-height: 0 !important;
+  overflow: auto !important;
+}
+
+
+/* 2026-09-22(7): 도구행 안의 통행 붓 fieldset 을 인라인 띠로 접는다 — 세로 블록은 도구행을 두 줄로 눌렀다. */
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-passage {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 0 4px 0 10px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-left: 1px solid var(--db-studio-border-default) !important;
+  background: transparent !important;
+  min-width: 0 !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-passage legend {
+  display: none !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-passage .tileset-passage-paint-hint {
+  display: none !important;
+}
+
+
+/* 2026-09-22(8): legend display:none 이 작동하지 않아(브라우저 기본) 시각적으로만 숨긴다. */
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-passage legend {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-buttons {
+  display: inline-flex !important;
+  gap: 4px !important;
+}
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-passage .tileset-passage-paint-hint {
+  display: none !important;
+}
+
+
+/* 2026-09-22(9): 통행 붓 버튼 3 개가 flex 1 로 늘어나 세로로 쌓였다 — 내용 폭으로 고정. */
+.tileset-library .tileset-db-edit-area > .tileset-db-tools .tileset-rule-buttons > .tileset-passage-choice {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 4px 12px !important;
+  white-space: nowrap !important;
+}
+
+
+/* 2026-09-22(10): 모드 탭 버튼(통행/지형)도 flex 1 으로 늘어나 두 줄을 먹었다 — 내용 폭으로. */
+.tileset-library .tileset-db-edit-area > .tileset-db-tools > button {
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  padding: 4px 12px !important;
+  white-space: nowrap !important;
+}
+
+
+/* 2026-09-22(11): .tileset-library 실제 DOM 경로에도 카드 높이를 못박는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library .tileset-library-card {
+  display: flex !important;
+  flex-direction: column !important;
+  height: auto !important;
+  padding: 0 !important;
+  overflow: visible !important;
+  border-radius: 8px !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library .tileset-library-card-thumb {
+  display: block !important;
+  height: 54px !important;
+  flex: none !important;
+  overflow: hidden !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library .tileset-library-card-thumb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: top left !important;
+  image-rendering: pixelated !important;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library .tileset-library-card-cap {
+  display: block !important;
+  padding: 5px 7px 6px !important;
+}

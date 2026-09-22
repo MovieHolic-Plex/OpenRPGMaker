@@ -62,7 +62,7 @@ import { renderWorldCanonTab } from "@/editor/panels/databaseWorldCanonView";
 import { renderWorldCodexTab } from "@/editor/panels/databaseWorldCodexView";
 import { renderWorldGenTab, resetWorldGenTabViewState } from "@/editor/panels/databaseWorldGenView";
 import { worldCanonHasContent } from "@/project/world/canon";
-import {} from "@/editor/uiCopy";
+import { uiLabel } from "@/editor/uiCopy";
 import { DEFAULT_ENEMY_FACTION_ID, PLAYER_FACTION_ID } from "@/project/factions";
 import { BUILTIN_WORLD_GEN_KEYWORD_RULES } from "@/project/worldGenRules";
 import { store } from "@/project/store";
@@ -490,6 +490,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
   resetWorldGenTabViewState();
   applyTilesetFolderFacet(activeTab);
   const header = el("div", { class: "db-tabs" });
+  header.append(renderDatabaseBreadcrumb(activeTab));
   const body = el("div", {
     class: "db-body db-shared-workspace",
     dataset: { testid: "db-shared-workspace" },
@@ -1222,6 +1223,23 @@ function readStoredActiveTab(): DatabaseTab {
 
 function isDatabaseTab(value: string | null): value is DatabaseTab {
   return tabs.some((tab) => tab.id === value);
+}
+
+/** head crumb 2026-09-22 */
+function renderDatabaseBreadcrumb(tab: DatabaseTab): HTMLElement {
+  const group = databaseTabGroupLabel(tab);
+  const parts = [uiLabel("database")];
+  if (group) parts.push(group);
+  if (group) parts.push(databaseTabLabel(tab));
+  return el("nav", {
+    class: "db-breadcrumb",
+    attrs: { "aria-label": "현재 위치" },
+    dataset: { testid: "db-breadcrumb" },
+    children: parts.map((part, index) => el("span", {
+      class: index === parts.length - 1 && group ? "db-breadcrumb-here" : "db-breadcrumb-step",
+      text: part,
+    })),
+  });
 }
 
 /** 맵 그룹의 관련 편집 링크 바. 걸 링크가 없으면 null — 빈 바를 그리지 않는다. */

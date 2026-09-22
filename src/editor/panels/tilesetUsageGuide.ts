@@ -40,7 +40,7 @@ export const TILESET_EDIT_MODES: readonly ModeGuide[] = [
 ] as const;
 
 export const TILESET_SECTION_TABS: readonly TabGuide[] = [
-  { id: "references", label: "AI 참고문서" },
+  { id: "references", label: "AI 학습 문서" },
   { id: "rules", label: "통행·레이어" },
   { id: "compose", label: "자동 연결" },
   { id: "knowledge", label: "타일 정보" },

@@ -57,7 +57,9 @@ describe("places gallery library-first layout", () => {
     setDatabaseActiveTab("spatialPlaces");
     paint();
     expect(host.querySelector("[data-testid='spatial-gallery']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-purpose']")).not.toBeNull();
+    // 2026-09-22 목업 개편: 목적 스트립(파이프라인 안내 띠)은 제거됐다 — 한 줄 머리가 그 역할을 대신한다.
+    expect(host.querySelector("[data-testid='spatial-purpose']")).toBeNull();
+    expect(host.querySelector("[data-testid='place-library-count']")).not.toBeNull();
     // 편집기는 목록에서 명시적으로 들어간다.
     expect(host.querySelector("[data-testid='composition-board']")).toBeNull();
   });
@@ -65,10 +67,20 @@ describe("places gallery library-first layout", () => {
   it("marks the body library-only until the inspector toggle opens the stage", () => {
     setDatabaseActiveTab("spatialPlaces");
     paint();
+    // 2026-09-22 목업 개편: 렌더 직후가 아니라 **카드를 고른 뒤** 속성이 열린다.
     expect(host.querySelector(".spatial-body")?.classList.contains("is-library-only")).toBe(true);
     // 스테이지는 DOM 에 남는다 — 접기만 하므로 토글이 죽은 버튼이 되지 않는다.
     expect(host.querySelector(".spatial-stage")).not.toBeNull();
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']")?.click();
+    expect(host.querySelector(".spatial-body")?.classList.contains("is-library-only")).toBe(false);
+  });
+
+  it("opens the inspector when a place card is selected", () => {
+    setDatabaseActiveTab("spatialPlaces");
+    paint();
+    const id = libraryPlaceCardId(village().id);
+    host.querySelector<HTMLButtonElement>(cardSelector(id))?.click();
+    expect(spatialSession().inspectorOpen).toBe(true);
     expect(host.querySelector(".spatial-body")?.classList.contains("is-library-only")).toBe(false);
   });
 

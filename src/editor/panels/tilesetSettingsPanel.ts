@@ -1,9 +1,13 @@
-import { editorState } from "@/editor/editorState";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
+import { editorState } from "@/editor/editorState";
+import { openResourceModal } from "@/editor/panels/resourceModal";
+import { setTilesetSectionTab } from "@/editor/panels/tilesetMetadataEditor";
+import { uiLabel } from "@/editor/uiCopy";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { referenceOwner } from "@/project/tilesetReferences";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
+import type { ResourceKind } from "@/project/types/base";
 import { el } from "@/util/dom";
 
 const TILESET_SELECTION_KEY = "oprn:database.selectedTilesetId";
@@ -15,41 +19,46 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
   const project = store.getCurrent();
   const tilesets = Object.values(project.tilesets);
   const selected = selectTileset(tilesets);
-  const rows = el("div", { class: "tileset-library-rows" });
+  const grid = el("div", { class: "tileset-library-grid" });
   const search = el("input", { value: listQuery, attrs: { type: "search", placeholder: "타일셋 검색", "aria-label": "타일셋 검색" }, dataset: { testid: "tileset-db-search" } });
-  const renderRows = () => {
-    rows.replaceChildren();
+  const renderGrid = () => {
+    grid.replaceChildren();
     for (const tileset of tilesets) {
       if (!`${tileset.name} ${tileset.id}`.toLocaleLowerCase().includes(listQuery.trim().toLocaleLowerCase())) continue;
       let docs = 0;
       try { docs = (referenceOwner(project, tileset).referenceDocuments ?? []).reduce((n, group) => n + group.documents.length, 0); } catch { /* Invalid ownership is explained in the reader. */ }
-      rows.append(el("button", {
-        class: `tileset-library-row${tileset.id === selected?.id ? " active" : ""}`,
+      grid.append(el("button", {
+        class: `tileset-library-card${tileset.id === selected?.id ? " active" : ""}`,
         attrs: { type: "button", "aria-label": tileset.name, "aria-current": String(tileset.id === selected?.id) },
         dataset: { testid: `tileset-db-row-${tileset.id}` },
         on: { click: () => { setSelectedTileset(tileset.id); rerender(); } },
         children: [
-          el("img", { attrs: { src: tilesetImageUrl(tileset), alt: "", loading: "lazy" } }),
-          el("span", { children: [el("strong", { text: tileset.name }), el("small", { text: `${tileset.tileSize}×${tileset.tileSize} · ${docs ? `참고문서 ${docs}` : "참고문서 없음"}` })] }),
+          el("span", { class: "tileset-library-card-thumb", children: [el("img", { attrs: { src: tilesetImageUrl(tileset), alt: "", loading: "lazy" } })] }),
+          el("span", { class: "tileset-library-card-cap", children: [el("strong", { text: tileset.name }), el("small", { text: `${docs ? `참고문서 ${docs}` : "참고문서 없음"}` })] }),
         ],
       }));
     }
-    if (!rows.childElementCount) rows.append(el("p", { class: "tileset-library-empty", text: "일치하는 타일셋이 없습니다." }));
+    if (!grid.childElementCount) grid.append(el("p", { class: "tileset-library-empty", text: "일치하는 타일셋이 없습니다." }));
   };
-  search.addEventListener("input", () => { listQuery = search.value; renderRows(); });
-  renderRows();
-  host.append(el("div", { class: "tileset-library", dataset: { testid: "db-tilesets-workspace" }, children: [
-    el("aside", { class: "tileset-library-sidebar", children: [
+  search.addEventListener("input", () => { listQuery = search.value; renderGrid(); });
+  renderGrid();
+  const detailHost = el("div", { class: "tileset-library", dataset: { testid: "db-tilesets-workspace" } });
+  const aside = el("aside", { class: "tileset-library-sidebar", children: [
       el("header", { children: [el("h2", { text: "타일" }), el("span", { text: String(tilesets.length) })] }),
-      search, el("p", { class: "tileset-library-hint", text: "타일셋별 참고문서와 편집 규칙" }), rows,
-    ] }),
-    selected ? el("section", { class: "tileset-library-detail", dataset: { testid: "db-detail-form" }, children: [
+      search, grid,
+  ] });
+    const detail = selected ? el("section", { class: "tileset-library-detail", dataset: { testid: "db-detail-form" }, children: [
       el("header", { class: "tileset-library-heading", children: [
         el("div", { children: [el("small", { text: "자료집 / 맵 / 타일" }), el("h2", { text: selected.name })] }),
-        el("span", { class: "tileset-library-chip", text: `${selected.tileSize}×${selected.tileSize}px · ${selected.count.toLocaleString()} 타일` }),
+        el("div", { class: "tileset-library-heading-side", children: [
+          el("span", { class: "tileset-library-chip", text: `${selected.tileSize}×${selected.tileSize}px · ${selected.count.toLocaleString()} 타일` }),
+          el("button", { class: "db-ws-btn", text: "소재 가져오기", attrs: { type: "button", title: "소재 관리자에서 타일셋 그림을 가져옵니다" }, dataset: { testid: "tileset-library-import" } }),
+        ] }),
       ] }), renderTilesetEditor(selected, rerender),
-    ] }) : el("div", { class: "tileset-library-empty", text: "소재 관리자에서 타일셋을 가져오세요." }),
-  ] }));
+    ] }) : el("div", { class: "tileset-library-empty", text: "소재 관리자에서 타일셋을 가져오세요." });
+  detailHost.append(aside, detail);
+  host.append(detailHost);
+  if (selected) detail.querySelector<HTMLButtonElement>("[data-testid=tileset-library-import]")?.addEventListener("click", () => { setTilesetSectionTab("rules", () => {}); openResourceModal("chipset" as ResourceKind); });
 }
 
 function selectTileset(tilesets: readonly TilesetDef[]): TilesetDef | undefined {

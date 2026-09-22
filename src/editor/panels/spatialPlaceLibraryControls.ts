@@ -26,12 +26,11 @@ export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[],
     close = openDialog('place-category-dialog', '장소 유형 추가', [form, el('p', { text: '이 유형으로 만든 장소를 저장하면 분류도 함께 저장됩니다.' })], [{ label: '취소', testid: 'place-category-cancel' }]);
   } } }));
   return el('section', { class: 'place-library-controls', children: [
-    // 두 줄로 접는다 — 제목줄과 도구줄. 69장짜리 목록에서 네 줄짜리 머리는 그냥 세로 손실이었다.
+    // 한 줄 머리(2026-09-22 목업): 제목+카운트 / 검색 / 새 장소. 필터는 둘째 줄 칩+셀렉트.
     el('div', { class: 'place-library-heading', children: [
       el('div', { class: 'place-library-title', children: [
         el('strong', { text: '장소 라이브러리' }),
         el('span', { class: 'place-library-count', text: `${cards.filter(matchesPlaceClassification).length}개`, dataset: { testid: 'place-library-count' } }),
-        el('small', { text: 'EasyRPG · Tibo는 호환 확장 소재입니다' }),
       ] }),
       el('button', { text: '＋ 장소 만들기', class: 'spatial-action is-primary', on: { click: () => openNewPlaceDialog(refresh) } }),
     ] }),

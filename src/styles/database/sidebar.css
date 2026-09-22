@@ -642,3 +642,37 @@
   text-transform: none;
   white-space: nowrap;
 }
+
+/* 2026-09-22: 펼친 그룹 안에서는 부제가 소음이다 - 활성 그룹의 peek 는 숨긴다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group[aria-expanded="true"] .db-tab-group-peek {
+  display: none;
+}
+
+/* 헤더 위 위치 안내(2026-09-22): 데이터베이스 - 그룹 - 탭. 접힌 레일에서도 현재 위치를 말한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-breadcrumb {
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  font: 700 13px/1.4 var(--font-ui);
+  gap: 6px 8px;
+  padding: 10px 14px 9px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-breadcrumb-step {
+  background: var(--surface-3, #f1ede3);
+  border-radius: 7px;
+  color: var(--text-2);
+  font-weight: 600;
+  padding: 3px 10px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-breadcrumb-step + .db-breadcrumb-step::before,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-breadcrumb-step + .db-breadcrumb-here::before {
+  color: var(--text-3);
+  content: "A";
+  margin-right: 8px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-breadcrumb-here {
+  color: var(--text-1);
+  font-weight: 800;
+}

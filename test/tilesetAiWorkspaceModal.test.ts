@@ -126,7 +126,7 @@ describe("AI tileset workspace entry", () => {
       return root;
     });
     expect(findByTestId(host, "tileset-ai-workspace-open")).toBeNull();
-    expect(findByTestId(host, "tileset-section-tab-references")?.textContent).toBe("AI 참고문서");
+    expect(findByTestId(host, "tileset-section-tab-references")?.textContent).toBe("AI 학습 문서");
   });
 });
 

@@ -77,7 +77,7 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
           // 바로 위 도구 상자의 안내문과 똑같은 문장이 40px 간격으로 두 번 보였다.
           ...(passageChrome ? [] : [el("div", {
             class: "tileset-db-preview-title",
-            text: "타일 그림판",
+            text: "타일 팔레트",
           })]),
           el("div", {
             class: "tileset-db-layer-filter",

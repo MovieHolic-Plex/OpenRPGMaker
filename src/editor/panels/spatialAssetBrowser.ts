@@ -36,7 +36,6 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const noun = "오브젝트";
   const title = el("div", { class: "asset-browser-heading", children: [
     el("h2", { text: `${noun} 라이브러리` }),
-    el("p", { text: "공용 오브젝트에서 가구와 소품을 골라 배치하거나, 복제해 내 오브젝트로 편집하세요." }),
   ] });
   const chrome = renderSpatialChrome(session, rerender, { browser: true, onAdd: () => addBlankObject(rerender, state.tilesetId ?? undefined) });
   const results = el("div", { class: "asset-browser-results", dataset: { testid: "spatial-browser-results" } });
@@ -57,11 +56,14 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
     renderRail(); renderResults();
   };
   function renderRail(): void {
-    rail.replaceChildren(el("h3", { text: "타일셋" }), el("button", {
+    rail.replaceChildren(el("div", { class: "asset-browser-rail-head", children: [
+      el("h3", { text: "타일셋" }),
+      el("span", { class: "asset-browser-rail-count", text: String(Object.values(project.tilesets).length) }),
+    ] }), el("button", {
       class: `asset-browser-tileset${state.tilesetId === null ? " is-selected" : ""}`,
       attrs: { type: "button", "aria-pressed": String(state.tilesetId === null) },
       dataset: { testid: "spatial-browser-tileset-all" },
-      children: [el("span", { text: "모든 타일셋" }), el("small", { text: String(cards.length) })],
+      children: [el("span", { class: "asset-browser-tileset-name", text: "모든 타일셋" }), el("small", { text: String(cards.length) })],
       on: { click: () => chooseTileset(null) },
     }), ...Object.values(project.tilesets).map(tileset => {
       const total = cards.filter(card => card.tilesetId === tileset.id).length;
@@ -70,7 +72,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
         attrs: { type: "button", "aria-pressed": String(state.tilesetId === tileset.id) },
         dataset: { tilesetId: tileset.id },
         children: [el("img", { attrs: { src: tilesetImageUrl(tileset), alt: "", loading: "lazy" } }),
-          el("span", { text: tileset.name || "이름 없는 타일셋" }), el("small", { text: String(total) })],
+          el("span", { class: "asset-browser-tileset-name", text: tileset.name || "이름 없는 타일셋" }), el("small", { text: String(total) })],
         on: { click: () => chooseTileset(tileset.id) },
       });
     }));
