@@ -22,13 +22,34 @@ export type ActorStudioList = {
 
 const NUMBER_FORMAT = new Intl.NumberFormat("ko-KR", { maximumFractionDigits: 0 });
 
+/** 레벨·HP·맵 표시 열. 캐릭터·직업 열은 항상 둔다. */
+type OptionalActorColumn = "level" | "hp" | "map";
+
+/**
+ * 모든 주인공이 같은 값을 가진 열은 숨긴다. 기본 프로젝트는 여섯 명 전부 `1 · 514 · 보임` 이라
+ * 목록 폭의 절반이 서로 구별해 주지 못하는 숫자였다(2026-09-23 파티 UX 검토). 판정은 검색
+ * 결과가 아니라 **전체** 주인공으로 한다 — 검색할 때마다 열이 생겼다 사라지면 안 된다.
+ */
+export function visibleActorColumns(actors: readonly ActorRecord[]): ReadonlySet<OptionalActorColumn> {
+  const varies = (value: (actor: ActorRecord) => string | number): boolean =>
+    new Set(actors.map(value)).size > 1;
+  const columns = new Set<OptionalActorColumn>();
+  if (varies((actor) => actor.initialLevel)) columns.add("level");
+  if (varies((actor) => parameterValueAtLevel(actor.parameterCurves.maxHp, actor.initialLevel))) columns.add("hp");
+  if (varies((actor) => String(actor.characterTransparent))) columns.add("map");
+  return columns;
+}
+
 export function renderActorStudioList(options: ActorStudioListOptions): ActorStudioList {
   const rows = new Map<string, HTMLElement>();
   const classNames = new Map(options.project.database.classes.map((record) => [record.id, record.name]));
+  const columns = visibleActorColumns(options.actors);
+  const startParty = new Set(options.project.system.startActorIds);
   const table = el("div", {
     class: "db-list db-actor-studio-table",
     // 행을 고를 수 있는 표라서 role=grid 다 — role=table 의 행은 aria-selected 를 갖지 못한다.
     attrs: { role: "grid", "aria-label": "주인공 데이터 표" },
+    dataset: { columnCount: String(2 + columns.size) },
     children: [
       el("div", {
         class: "db-actor-table-row db-actor-table-header",
@@ -37,16 +58,16 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
         children: [
           tableCell("캐릭터", "columnheader"),
           tableCell("직업", "columnheader"),
-          tableCell("레벨", "columnheader"),
-          tableCell("HP", "columnheader"),
-          tableCell("맵 표시", "columnheader"),
+          ...(columns.has("level") ? [tableCell("레벨", "columnheader")] : []),
+          ...(columns.has("hp") ? [tableCell("HP", "columnheader")] : []),
+          ...(columns.has("map") ? [tableCell("맵 표시", "columnheader")] : []),
         ],
       }),
     ],
   });
 
   for (const actor of options.filteredActors) {
-    const row = actorRow(actor, classNames.get(actor.classId) ?? "미지정", actor.id === options.selectedId, options.project);
+    const row = actorRow(actor, classNames.get(actor.classId) ?? "미지정", actor.id === options.selectedId, options.project, columns, startParty.has(actor.id));
     row.addEventListener("click", () => {
       if (actor.id === options.selectedId && row.classList.contains("active")) return;
       for (const candidate of rows.values()) candidate.classList.remove("active");
@@ -71,7 +92,7 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
           children: [
             el("div", {
               children: [
-                el("h3", { text: "플레이어 캐릭터" }),
+                el("h3", { text: "주인공" }),
               ],
             }),
             el("span", { class: "db-actor-studio-count", text: `${options.actors.length}명` }),
@@ -91,7 +112,14 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
   };
 }
 
-function actorRow(actor: ActorRecord, className: string, selected: boolean, project: Project): HTMLElement {
+function actorRow(
+  actor: ActorRecord,
+  className: string,
+  selected: boolean,
+  project: Project,
+  columns: ReadonlySet<OptionalActorColumn>,
+  inStartParty: boolean,
+): HTMLElement {
   const initialHp = parameterValueAtLevel(actor.parameterCurves.maxHp, actor.initialLevel);
   const thumbnail = recordListThumbnail("actors", actor, project, 36);
   return el("button", {
@@ -111,21 +139,30 @@ function actorRow(actor: ActorRecord, className: string, selected: boolean, proj
             class: "db-actor-name-stack",
             children: [
               el("strong", { class: "db-list-name", text: actor.name }),
-              el("small", { text: actorSubLabel(actor) }),
+              el("small", {
+                children: [
+                  actorSubLabel(actor),
+                  ...(inStartParty
+                    ? [el("span", { class: "db-actor-party-mark", text: "시작 파티", dataset: { testid: `db-actor-party-mark-${actor.id}` } })]
+                    : []),
+                ],
+              }),
             ],
           }),
         ],
       }),
       tableCell(className, "gridcell"),
-      tableCell(String(actor.initialLevel), "gridcell", "numeric"),
-      tableCell(NUMBER_FORMAT.format(initialHp), "gridcell", "numeric"),
+      ...(columns.has("level") ? [tableCell(String(actor.initialLevel), "gridcell", "numeric")] : []),
+      ...(columns.has("hp") ? [tableCell(NUMBER_FORMAT.format(initialHp), "gridcell", "numeric")] : []),
       // 맵 표시: 기본값(보임)까지 초록 알약으로 그리면 모든 행에 같은 뱃지가 도배돼
       // 정작 예외인 "투명"이 눈에 안 띈다 — 예외일 때만 뱃지를 세운다.
-      el("span", {
-        class: `db-actor-status${actor.characterTransparent ? " is-hidden" : " is-default"}`,
-        attrs: { role: "gridcell" },
-        text: actor.characterTransparent ? "투명" : "보임",
-      }),
+      ...(columns.has("map")
+        ? [el("span", {
+            class: `db-actor-status${actor.characterTransparent ? " is-hidden" : " is-default"}`,
+            attrs: { role: "gridcell" },
+            text: actor.characterTransparent ? "투명" : "보임",
+          })]
+        : []),
     ],
   });
 }

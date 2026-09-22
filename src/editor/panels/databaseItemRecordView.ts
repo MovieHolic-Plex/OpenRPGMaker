@@ -7,7 +7,6 @@ import {
   segmentedControl,
   selectField,
   selectLiteral,
-  sliderStepperField,
   textField,
   toggleSwitch,
   type AvatarChipActor,
@@ -171,13 +170,17 @@ export function renderItemRecordForm(form: HTMLElement, record: ItemRecord, rere
     attrs: { "aria-label": "아이템 효과 요약" },
     dataset: { testid: "db-item-effect-story" },
   });
-  const refreshStory = (): void => fillItemEffectStory(storyHost, store.getCurrent(), currentItem(record));
+  const summary = el("p", { class: "db-item-summary", dataset: { testid: "db-item-summary" } });
+  const refreshStory = (): void => {
+    fillItemEffectStory(storyHost, store.getCurrent(), currentItem(record));
+    summary.textContent = itemSummarySentence(store.getCurrent(), currentItem(record));
+  };
   refreshStory();
   // 공용 상세 창 골격: 히어로는 고정, 본문(.db-ws-detail-body)만 스크롤한다.
   // 카드는 db-ws-stack(auto-fit minmax) 이라 폭이 남으면 열이 늘고, 좁아지면 접힌다.
   form.classList.add("db-item-ws");
   form.append(
-    itemHeader(record, rerender),
+    itemHeader(record, rerender, isEquipmentItemType(record.type) ? null : summary),
     el("div", {
       class: "db-ws-detail-body",
       children: [
@@ -254,7 +257,11 @@ function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () =
         updateDatabaseRecord("items", record.id, { description })
       ),
       itemTypeField(record, rerender),
-      el("p", { class: "db-field-hint", text: "종류를 바꾸면 이전 효과는 보관되며 적용되지 않습니다. 착용할 물건은 목록 아래의 ‘+ 추가’로 만든 뒤 종류를 장비로 바꾸세요." }),
+      el("p", {
+        class: "db-field-hint",
+        text: "종류에 따라 아래 효과 칸이 바뀝니다. 이전 효과는 보관됩니다.",
+        attrs: { title: "종류를 바꾸면 이전 효과는 보관되며 적용되지 않습니다. 착용할 물건은 목록 아래의 ‘+ 장비’로 만드세요." },
+      }),
       itemPriceField(record.id),
       ...(!isEquipmentItemType(record.type) ? [consumptionLimitField(record, refreshStory)] : []),
       ...(record.type === "normalGoods" || record.farmTool ? [farmToolField(record, refreshStory)] : []),
@@ -547,7 +554,18 @@ function equipmentRedirect(form: HTMLElement): HTMLElement {
   });
 }
 
-function itemHeader(record: ItemRecord, rerender: () => void): HTMLElement {
+/**
+ * 머리 한 문장 — 「사용하면 무엇이 되나」. 예전에는 이 답이 접힌 카드 안에 있고 대신 전투
+ * 연출 카드가 펼쳐져 있었다(2026-09-23 파티 UX 검토). 자세한 사실은 아래 카드가 그대로 갖는다.
+ */
+export function itemSummarySentence(project: Project, record: ItemRecord): string {
+  const story = itemEffectStory(project, record);
+  if (story.occasion === "사용 불가") return `사용하는 물건이 아닙니다 · ${story.consumption}.`;
+  const target = story.target === "대상 없음" ? "" : `${story.target}에게 `;
+  return `사용하면 ${target}${story.effects.join(", ")} · ${story.occasion}에서 · ${story.consumption}.`;
+}
+
+function itemHeader(record: ItemRecord, rerender: () => void, summary: HTMLElement | null = null): HTMLElement {
   const project = store.getCurrent();
   const url = resolveAssetResourceUrl(record.iconResourceId ?? record.imageResourceId, { project });
   const icon = iconChangeButton({
@@ -583,6 +601,7 @@ function itemHeader(record: ItemRecord, rerender: () => void): HTMLElement {
             class: "db-ws-hero-tags",
             children: [el("span", { class: "db-ws-tag db-item-inspector-type-tag", text: ITEM_TYPE_LABELS[record.type] })],
           }),
+          ...(summary ? [summary] : []),
         ],
       }),
     ],
@@ -757,29 +776,60 @@ function statBonusField(
   }, bounds);
 }
 
+/**
+ * 회복량 한 줄 — 「[30] + 최대치의 [40]%」. 예전에는 % 하나에 슬라이더+숫자, 고정값에 ± 스테퍼가
+ * 붙어 한 값을 세 가지로 조작했다(2026-09-23 파티 UX 검토). 두 값은 합산되는 별개 저장값이라
+ * 입력은 둘 다 남기되, 문장처럼 한 줄에 놓는다.
+ */
 function recoveryFields(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string, refreshStory: () => void): HTMLElement[] {
   const value = record[key];
-  return [
-    percentRecoveryField(record, key, testIdPrefix, refreshStory),
-    numberField("고정값", `db-field-item-${testIdPrefix}-flat`, value.flat, (flat) => {
-      updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat } });
-      refreshStory();
-    }, { min: 0, max: 999 }),
-  ];
+  const flat = recoveryInput(`db-field-item-${testIdPrefix}-flat`, value.flat, { min: 0, max: 999, step: 1 }, "고정 회복량", (next) => {
+    updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], flat: next } });
+    refreshStory();
+  });
+  const percent = recoveryInput(`db-field-item-${testIdPrefix}-percent-stepper`, value.percentMax, { min: 0, max: 100, step: 5 }, "최대치 대비 %", (next) => {
+    updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax: next } });
+    refreshStory();
+  });
+  return [el("div", {
+    class: "db-item-recovery-line",
+    children: [
+      flat,
+      el("span", { class: "db-item-recovery-join", text: "+ 최대치의" }),
+      el("span", { class: "db-item-recovery-percent", dataset: { testid: `db-field-item-${testIdPrefix}-percent` }, children: [percent, el("span", { text: "%" })] }),
+    ],
+  })];
 }
 
-// 회복 % — 슬라이더+스테퍼 쌍(0-100, 스텝 5). base testid 는 필드 래퍼에도 남겨
-// 기존 testid 계약을 유지하고, 입력은 -slider/-stepper 로 식별한다.
-function percentRecoveryField(record: ItemRecord, key: "hpRecovery" | "mpRecovery", testIdPrefix: string, refreshStory: () => void): HTMLElement {
-  const testid = `db-field-item-${testIdPrefix}-percent`;
-  const fieldNode = sliderStepperField("%", testid, record[key].percentMax, (percentMax) => {
-    updateDatabaseRecord("items", record.id, { [key]: { ...currentItem(record)[key], percentMax } });
-    refreshStory();
-  },
-    { min: 0, max: 100, step: 5, unit: "%" }
-  );
-  fieldNode.dataset.testid = testid;
-  return fieldNode;
+function recoveryInput(
+  testid: string,
+  value: number,
+  bounds: { readonly min: number; readonly max: number; readonly step: number },
+  label: string,
+  onInput: (value: number) => void,
+): HTMLInputElement {
+  const input = el("input", {
+    class: "db-item-recovery-input",
+    attrs: { type: "number", min: String(bounds.min), max: String(bounds.max), step: String(bounds.step), "aria-label": label, inputmode: "numeric" },
+    value,
+    dataset: { testid },
+  }) as HTMLInputElement;
+  const normalize = (raw: number): number => {
+    const numeric = Number.isFinite(raw) ? raw : bounds.min;
+    const clamped = Math.min(bounds.max, Math.max(bounds.min, numeric));
+    return bounds.min + Math.round((clamped - bounds.min) / bounds.step) * bounds.step;
+  };
+  // 초기 표시는 저장값 그대로다 — 스텝 배수가 아닌 저장값(예: 33)을 렌더 시점에 35 로 바꿔 보이면
+  // 표시값과 저장값이 어긋난다. 정규화는 사용자가 실제로 입력할 때만 한다.
+  const commit = (): void => {
+    if (input.value === "") return;
+    const next = normalize(Number(input.value));
+    if (String(next) !== input.value) input.value = String(next);
+    onInput(next);
+  };
+  input.addEventListener("input", commit);
+  input.addEventListener("change", commit);
+  return input;
 }
 
 function actorClassChoices(record: ItemRecord, refreshStory: () => void): HTMLElement[] {

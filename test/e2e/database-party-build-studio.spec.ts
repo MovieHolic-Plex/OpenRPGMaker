@@ -176,15 +176,14 @@ test("Party Studio folds to one/two columns without overlap or horizontal overfl
   await expect(page.getByTestId("db-class-build-summary")).toBeVisible();
   const classLayout = await page.evaluate(() => {
     const modal = document.querySelector<HTMLElement>(".database-modal-window");
-    const metrics = document.querySelector<HTMLElement>(".db-class-build-metrics");
+    const metrics = document.querySelector<HTMLElement>(".db-class-build-sentence");
     const workbench = document.querySelector<HTMLElement>(".db-class-bm88-workbench");
     if (!modal || !metrics || !workbench) return null;
     return {
-      metricColumns: getComputedStyle(metrics).gridTemplateColumns.split(" ").filter(Boolean).length,
       workbenchColumns: getComputedStyle(workbench).gridTemplateColumns.split(" ").filter(Boolean).length,
       modalOverflow: modal.scrollWidth - modal.clientWidth,
       summaryOverflow: metrics.parentElement ? metrics.parentElement.scrollWidth - metrics.parentElement.clientWidth : 1,
     };
   });
-  expect(classLayout).toEqual({ metricColumns: 2, workbenchColumns: 1, modalOverflow: 0, summaryOverflow: 0 });
+  expect(classLayout).toEqual({ workbenchColumns: 1, modalOverflow: 0, summaryOverflow: 0 });
 });
