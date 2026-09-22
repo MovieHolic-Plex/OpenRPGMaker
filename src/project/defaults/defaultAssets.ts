@@ -152,6 +152,9 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
     }
 
     for (const key of Object.keys(value)) {
+      // Tile grids are number arrays. Walking every cell looking for a sprite id
+      // made heavy-project load scan millions of numbers for a match that cannot occur.
+      if (key === "lowerTiles" || key === "upperTiles" || key === "lowerTileStacks" || key === "upperTileStacks") continue;
       const item = value[key];
       if (isLegacySpriteReference(key)) {
         delete value[key];
