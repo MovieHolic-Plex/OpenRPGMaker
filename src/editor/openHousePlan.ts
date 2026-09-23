@@ -14,11 +14,13 @@ export function openHousePlan(plan: InteriorRoomPlan): InteriorRoomPlan {
     ]};
   }
   if(rooms.length===3){
-    const leftH=rooms[0]!.theme==="kitchen"?3:2,rightH=rooms[1]!.theme==="kitchen"?3:2;
-    const livingY=4+Math.max(leftH,rightH);
+    // Both nooks share the north wall line: a shorter nook would step the wall down
+    // one row with no side face to close the step.
+    const nookH=rooms[0]!.theme==="kitchen"||rooms[1]!.theme==="kitchen"?3:2;
+    const livingY=4+nookH;
     return {...plan,openPlan:true,width:11,height:livingY+6,innerDoors:[],door:{x:7,y:livingY+3},rooms:[
-      {...rooms[0]!,x:2,y:livingY-leftH,w:4,h:leftH},
-      {...rooms[1]!,x:6,y:livingY-rightH,w:3,h:rightH},
+      {...rooms[0]!,x:2,y:4,w:4,h:nookH},
+      {...rooms[1]!,x:6,y:4,w:3,h:nookH},
       {...rooms[2]!,x:2,y:livingY,w:7,h:4},
     ]};
   }
