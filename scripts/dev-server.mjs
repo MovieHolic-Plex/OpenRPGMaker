@@ -28,6 +28,7 @@ import {
   sourceRepoRoot,
   withoutPortArg,
 } from "./lib/worktreeDevPort.mjs";
+import { devViteCacheEnv } from "./lib/viteCacheDir.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const [mode, ...userArgs] = process.argv.slice(2);
@@ -65,7 +66,10 @@ function launchVite(viteArgs, env) {
   if (!existsSync(viteJs)) {
     fail(`node_modules 가 없다(${viteJs}). 워크트리면 'npm run wt -- adopt --path ${ROOT}' 로 node_modules 정션·env 를 채운 뒤 다시 실행.`);
   }
-  const child = spawn(process.execPath, [viteJs, ...viteArgs], { cwd: ROOT, stdio: "inherit", env: { ...process.env, ...env } });
+  // 공유 node_modules(`npm run wt` 심링크)면 vite 캐시를 체크아웃 안으로 뗀다 — lib/viteCacheDir.mjs 참고.
+  const cacheEnv = devViteCacheEnv(ROOT);
+  if (cacheEnv.VITE_CACHE_DIR) console.log(`[dev] vite 캐시 ${cacheEnv.VITE_CACHE_DIR} (node_modules 공유 — 다른 체크아웃의 .vite 를 덮지 않게)`);
+  const child = spawn(process.execPath, [viteJs, ...viteArgs], { cwd: ROOT, stdio: "inherit", env: { ...process.env, ...cacheEnv, ...env } });
   for (const signal of ["SIGINT", "SIGTERM", "SIGHUP"]) {
     process.on(signal, () => { if (!child.killed) child.kill(signal); });
   }

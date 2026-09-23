@@ -134,6 +134,8 @@ for t in task-a task-b task-c; do npm run wt create "$t" & done; wait
 
 - **node_modules 는 메인 것의 심링크 하나** — 어느 워크트리든 `npm install` 로 버전을 바꾸면
   전부에 적용된다. 의존성 변경은 직렬화하거나 메인에서 먼저 한다.
+  vite 캐시 `node_modules/.vite` 도 같이 공유되므로 dev 서버 런처가 `<워크트리>/.vite-cache/dev` 로 뗀다.
+  vite 를 직접 부르면 이 분리가 안 걸려 메인·다른 워크트리 서버의 캐시를 덮는다 — 런처를 쓰거나 `VITE_CACHE_DIR` 을 준다.
 - **브랜치 네임스페이스·`.git` 은 공유** — 에이전트의 main 체크아웃·병합·push 금지 규칙이
   그대로 적용된다.
 - **LegacyDb 프로젝트 행은 싱글턴** — 저작 콘텐츠 작업은 병렬화 금지(AGENTS.md hard rule).
