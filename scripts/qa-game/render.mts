@@ -141,6 +141,34 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: 
   return { png: PNG.sync.write(png), ...(note ? { note } : {}) };
 }
 
+/**
+ * show_map_region 의 도구 이미지 — 헤드리스 gen 은 캔버스가 없어 renderToolImage 를 넘기지 않았고,
+ * 런타임은 「맵 이미지 전달 경로가 없습니다」로 호출을 실패시켰다(r0735: 4회, 모델은 결과를 못 봄).
+ * 같은 타일 렌더러로 맵을 그린 뒤 도구가 돌려준 영역(data.x/y/w/h)만 잘라 base64 PNG 로 준다.
+ * 긴 변이 maxSide 를 넘으면 정수 배로 줄인다(브라우저도 전맵 요청은 축소 렌더한다).
+ */
+export function renderToolRegionPngBase64(project: Project, data: unknown, maxSide = 1024): string {
+  const region = (data && typeof data === "object" ? data : {}) as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
+  const map = typeof region.mapId === "string" ? project.maps[region.mapId] : undefined;
+  if (!map) throw new Error(`show_map_region 이미지: 맵을 찾을 수 없습니다(${String(region.mapId)})`);
+  const { png } = renderMapPng(project, map);
+  const full = PNG.sync.read(png);
+  const tile = Math.round(full.width / Math.max(1, map.width));
+  const num = (value: unknown, fallback: number): number => (typeof value === "number" && Number.isFinite(value) ? value : fallback);
+  const rx = Math.max(0, num(region.x, 0)) * tile;
+  const ry = Math.max(0, num(region.y, 0)) * tile;
+  const rw = Math.min(full.width - rx, num(region.w, map.width) * tile);
+  const rh = Math.min(full.height - ry, num(region.h, map.height) * tile);
+  const step = Math.max(1, Math.ceil(Math.max(rw, rh) / maxSide));
+  const out = new PNG({ width: Math.max(1, Math.floor(rw / step)), height: Math.max(1, Math.floor(rh / step)) });
+  for (let y = 0; y < out.height; y += 1) for (let x = 0; x < out.width; x += 1) {
+    const si = ((ry + y * step) * full.width + rx + x * step) * 4;
+    const di = (y * out.width + x) * 4;
+    for (let c = 0; c < 4; c += 1) out.data[di + c] = full.data[si + c]!;
+  }
+  return PNG.sync.write(out).toString("base64");
+}
+
 function esc(value: unknown): string {
   return String(value ?? "").replace(/[&<>"]/gu, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;" }[c]!));
 }
