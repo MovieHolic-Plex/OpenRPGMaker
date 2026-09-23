@@ -8,8 +8,16 @@ import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { addBlankObject } from "@/editor/panels/spatialObjectMutations";
 import { el } from "@/util/dom";
 
-type BrowserState = { query: string; tilesetId: string | null; page: number; selection?: string };
+type BrowserState = {
+  query: string;
+  tilesetId: string | null;
+  page: number;
+  selection?: string;
+  railScrollTop: number;
+  resultsScrollTop: number;
+};
 const states = new Map<string, BrowserState>();
+let browserScrollEpoch = 0;
 const PAGE_SIZE = 48;
 
 export function filterSpatialBrowserCards(cards: readonly SpatialGalleryCard[], query: string, tilesetId: string | null): readonly SpatialGalleryCard[] {
@@ -21,8 +29,12 @@ export function filterSpatialBrowserCards(cards: readonly SpatialGalleryCard[], 
 export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, selected: SpatialGalleryCard | undefined, rerender: () => void): HTMLElement {
   const key = `${spatialProjectKey()}:${session.tab}`;
   let saved = states.get(key);
-  if (!saved) { saved = { query: "", tilesetId: null, page: 0 }; states.set(key, saved); }
+  if (!saved) {
+    saved = { query: "", tilesetId: null, page: 0, railScrollTop: 0, resultsScrollTop: 0 };
+    states.set(key, saved);
+  }
   const state = saved;
+  const pageBeforeSelection = state.page;
   const project = visibleAuthoringProject();
   const cards = [...listSpatialGalleryCards(session)].sort((a, b) => Number(b.source === "own") - Number(a.source === "own"));
   if (selected && state.selection !== selected.id) {
@@ -33,6 +45,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
     const index = filterSpatialBrowserCards(cards, state.query, state.tilesetId).findIndex(card => card.id === selected.id);
     state.page = Math.max(0, Math.floor(index / PAGE_SIZE));
   }
+  if (state.page !== pageBeforeSelection) state.resultsScrollTop = 0;
   const noun = "오브젝트";
   const title = el("div", { class: "asset-browser-heading", children: [
     el("h2", { text: `${noun} 라이브러리` }),
@@ -99,6 +112,9 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
           text: card.source === "default" ? "공용 오브젝트" : card.compatibility ? "방 템플릿" : "내가 만든 항목",
         })],
         on: { click: () => {
+          state.railScrollTop = rail.scrollTop;
+          state.resultsScrollTop = results.scrollTop;
+          browserScrollEpoch += 1;
           selectSpatialDesign(card.id); patchSpatialSession({ inspectorOpen: true }); rerender();
         } },
       }));
@@ -114,7 +130,11 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const controls = el("div", { class: "asset-browser-filters", children: [
     search,
     renderSpatialSourceChips(session, source => {
-      state.page = 0; patchSpatialSession({ source }); rerender();
+      state.page = 0;
+      state.resultsScrollTop = 0;
+      browserScrollEpoch += 1;
+      patchSpatialSession({ source });
+      rerender();
     }), count,
   ] });
   const detail = el("section", { class: "asset-browser-detail", attrs: { "aria-label": `${noun} 편집` } });
@@ -122,12 +142,39 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const collection = el("section", { class: "asset-browser-collection", attrs: { "aria-label": `${noun} 목록` }, children: [
     controls, results,
   ] });
-  return el("div", {
+  const shell = el("div", {
     class: "spatial-shell spatial-asset-browser", dataset: { testid: `spatial-shell-${session.tab}` },
     attrs: { tabindex: "0" },
     children: [el("header", { class: "asset-browser-top", children: [title, chrome] }),
       el("div", { class: "asset-browser-body", children: [rail, collection, detail] })],
   });
+  restoreBrowserScroll(rail, results, state);
+  return shell;
+}
+
+function restoreBrowserScroll(rail: HTMLElement, results: HTMLElement, state: BrowserState): void {
+  const railTop = state.railScrollTop;
+  const resultsTop = state.resultsScrollTop;
+  const epoch = browserScrollEpoch;
+  const apply = (): void => {
+    if (railTop > 0 && rail.isConnected) rail.scrollTop = railTop;
+    if (resultsTop > 0 && results.isConnected) results.scrollTop = resultsTop;
+  };
+  // 셸은 이 함수가 돌아온 뒤에야 문서에 붙는다. 붙기 전 scrollTop 대입은 무시된다.
+  // 이전 목록이 사라지며 쏘는 scroll 0 은 세대가 달라 저장값을 덮지 못한다.
+  queueMicrotask(() => {
+    apply();
+    const remember = (node: HTMLElement, write: (top: number) => void): void => {
+      node.addEventListener("scroll", () => {
+        if (epoch !== browserScrollEpoch) return;
+        if (node.scrollHeight <= node.clientHeight) return;
+        write(node.scrollTop);
+      }, { passive: true });
+    };
+    remember(rail, (top) => { state.railScrollTop = top; });
+    remember(results, (top) => { state.resultsScrollTop = top; });
+  });
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(apply);
 }
 
 function pageButton(text: string, enabled: boolean, click: () => void): HTMLButtonElement {
