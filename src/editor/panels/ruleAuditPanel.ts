@@ -1,5 +1,7 @@
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
-import { projectLint, type LintIssue } from "@/project/lint/projectLint";
+import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
+import { clusterRuleLintIssues } from "@/project/lint/clusterRuleLint";
+import type { LintIssue } from "@/project/lint/projectLint";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
@@ -63,7 +65,8 @@ export function renderRuleAuditPanel(): HTMLElement {
     if (refreshTimer) return;
     refreshTimer = setTimeout(() => {
       refreshTimer = null;
-      refresh();
+      // 칠하는 도중에는 감사하지 않는다 — 뗄 때 한 번(pointerStrokeGate).
+      runWhenPointerReleased(refresh);
     }, 250);
   };
   root.addEventListener("toggle", () => {
@@ -108,9 +111,11 @@ export function ruleAuditViolationCountCached(): number {
   if (!deferredAuditQueued && typeof window !== "undefined") {
     deferredAuditQueued = true;
     window.setTimeout(() => {
-      deferredAuditQueued = false;
-      clusterRuleIssues();
-      window.dispatchEvent(new Event(RULE_AUDIT_UPDATED_EVENT));
+      runWhenPointerReleased(() => {
+        deferredAuditQueued = false;
+        clusterRuleIssues();
+        window.dispatchEvent(new Event(RULE_AUDIT_UPDATED_EVENT));
+      });
     }, 250);
   }
   return 0;
@@ -171,8 +176,10 @@ function clusterRuleIssues(): readonly RuleAuditIssue[] {
     && cachedRuleIssues.lineage === lineage && cachedRuleIssues.generation === generation) {
     return cachedRuleIssues.issues;
   }
+  // projectLint 전체가 아니라 cluster-rule 만 — 전체는 직렬화 왕복까지 돌아 칠하기 드래그 중
+  // 한 번에 ~800ms 로 메인 스레드를 세웠다(기본 100×100 마을, 2026-09-23).
   const issues: RuleAuditIssue[] = [];
-  for (const issue of projectLint(project)) {
+  for (const issue of clusterRuleLintIssues(project)) {
     if (issue.code.startsWith("cluster-rule")) issues.push(toRuleAuditIssue(issue));
   }
   cachedRuleIssues = { project, lineage, generation, issues };

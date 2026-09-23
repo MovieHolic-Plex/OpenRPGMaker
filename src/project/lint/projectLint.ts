@@ -53,7 +53,7 @@ import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../s
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
-import { validateClusterRules, validateClusterRulesForMaps, type ClusterRuleViolation } from "./clusterRuleValidators";
+import { clusterRuleLintIssues } from "./clusterRuleLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
@@ -645,30 +645,7 @@ function checkQuestGraphs(project: Project, issues: LintIssue[]): void {
 }
 
 function checkClusterRules(project: Project, issues: LintIssue[], mapIds?: readonly string[]): void {
-  const violations = mapIds ? validateClusterRulesForMaps(project, mapIds) : validateClusterRules(project);
-  for (const violation of violations) {
-    const message = clusterRuleMessage(violation);
-    if (violation.coords.length === 0) {
-      issues.push({ severity: violation.severity, code: violation.code, message });
-      continue;
-    }
-    for (const coord of violation.coords) {
-      issues.push({
-        severity: violation.severity,
-        code: violation.code,
-        mapId: coord.mapId,
-        x: coord.x,
-        y: coord.y,
-        message,
-      });
-    }
-  }
-}
-
-function clusterRuleMessage(violation: ClusterRuleViolation): string {
-  const custom = violation.rule.message?.trim();
-  if (custom) return custom;
-  return `클러스터 규칙 위반: ${violation.groupId} / ${violation.rule.kind} / ${violation.rule.strength}`;
+  for (const issue of clusterRuleLintIssues(project, mapIds)) issues.push(issue);
 }
 
 // (g) opts.reachability 지정 시 도달 불가 = error.

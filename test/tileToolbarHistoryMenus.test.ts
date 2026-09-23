@@ -30,7 +30,8 @@ import { store } from "@/project/store";
 import * as modal from "@/editor/ui/modal";
 
 const lintMock = vi.hoisted(() => ({ issues: [] as Array<{ code: string; message: string; severity: string }> }));
-vi.mock("@/project/lint/projectLint", () => ({ projectLint: vi.fn(() => lintMock.issues) }));
+vi.mock("@/project/lint/projectLint", () => ({ projectLint: vi.fn(() => []) }));
+vi.mock("@/project/lint/clusterRuleLint", () => ({ clusterRuleLintIssues: vi.fn(() => lintMock.issues) }));
 
 let host: HTMLElement;
 let confirmation: Promise<boolean> | null = null;
