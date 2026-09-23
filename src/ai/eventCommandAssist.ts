@@ -657,8 +657,8 @@ function validateSupplementalReferences(commands: readonly Command[], context: R
   for (const command of commands) {
     switch (command.kind) {
       case "changeItem":
-        if (!context.itemIds.has(command.itemId)) {
-          throw new Error(`changeItem: itemId가 존재하지 않습니다: ${command.itemId}`);
+        if (!context.itemIds.has(command.itemId) && !context.equipmentIds.has(command.itemId)) {
+          throw new Error(`changeItem: itemId가 아이템·장비 어디에도 없습니다: ${command.itemId}`);
         }
         break;
       case "changeParty":

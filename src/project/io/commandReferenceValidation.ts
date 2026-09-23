@@ -315,7 +315,8 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       }
       return;
     case "changeItem":
-      assert(context.itemIds.has(command.itemId), `changeItem: itemId가 존재하지 않습니다: ${command.itemId}`);
+      // 장비도 소지품(session.inventory[equipmentId])으로 들어간다 — 상점 구매·장착 메뉴와 같은 저장소.
+      assert(context.itemIds.has(command.itemId) || context.equipmentIds.has(command.itemId), `changeItem: itemId가 아이템·장비 어디에도 없습니다: ${command.itemId}`);
       if (typeof command.amount !== "number") {
         assert(context.variableIds.has(command.amount.id), `changeItem: amount variableId가 존재하지 않습니다: ${command.amount.id}`);
       }
