@@ -22,7 +22,7 @@ gen 한 번(모델, 약 6분) → check(1초) + render(2초) → 코드 고침 �
 ### replay 의 한계
 
 - 모델이 없으니 앞 호출 결과가 바뀌어도 뒤 호출 인자는 녹화 그대로다. 첫 차이 뒤의 차이는 연쇄 효과일 수 있다.
-- 코어가 인자 검증에서 거절한 호출과 런타임 전용 툴(`set_build_spec`·`consult_writer`·`web_search`·`finish_stage`)은 다시 돌리지 않는다.
+- 런타임 전용 툴(`set_build_spec`·`consult_writer`·`web_search`·`finish_stage`)은 다시 돌리지 않는다. 코어가 인자 검증에서 거절한 호출은 지금 스키마로도 거절될 때만 건너뛰고, 통과하면(계약을 고친 뒤) 다시 돌린다.
 - `read_tileset_reference` 는 읽는 즉시 「모델이 본 것」으로 친다.
 - 체크포인트 발행 한 번에 약 2초가 든다(25MB 프로젝트의 정체성 해시·정규 JSON·structuredClone). 13호출에 약 30초, 100호출이면 약 90초.
 
