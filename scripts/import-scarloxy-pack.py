@@ -32,6 +32,28 @@ CHARSET_FRAME_W = 24
 CHARSET_FRAME_H = 32
 
 
+def center_charset_frame(frame: Image.Image) -> Image.Image:
+    """Put the opaque body's horizontal center and feet on the cell."""
+    rgba = np.array(frame.convert("RGBA"))
+    alpha = rgba[:, :, 3]
+    ys, xs = np.where(alpha > 16)
+    if len(xs) == 0:
+        return frame
+    h, w = alpha.shape
+    shift_x = int(round((w - 1) / 2 - float(xs.mean())))
+    shift_y = int((h - 1) - int(ys.max()))
+    shift_x = max(int(-xs.min()), min(int(w - 1 - xs.max()), shift_x))
+    shift_y = max(int(-ys.min()), min(int(h - 1 - ys.max()), shift_y))
+    if shift_x == 0 and shift_y == 0:
+        return frame
+    out = np.zeros_like(rgba)
+    src_x0, src_y0 = max(0, -shift_x), max(0, -shift_y)
+    dst_x0, dst_y0 = max(0, shift_x), max(0, shift_y)
+    src_x1, src_y1 = w - max(0, shift_x), h - max(0, shift_y)
+    out[dst_y0:dst_y0 + (src_y1 - src_y0), dst_x0:dst_x0 + (src_x1 - src_x0)] = rgba[src_y0:src_y1, src_x0:src_x1]
+    return Image.fromarray(out, "RGBA")
+
+
 def load(rel: str) -> Image.Image:
     return Image.open(os.path.join(SRC, rel)).convert("RGBA")
 
@@ -303,6 +325,9 @@ def convert_charsets(manifest: dict) -> None:
                     )
                     # 32x32 -> 24x32 중앙 크롭 (내용물 폭은 최대 27px)
                     frame = frame.crop((4, 0, 28, 32))
+                    # 칸의 정중앙 크롭은 옆모습처럼 그림이 치우친 프레임을 가운데로
+                    # 끌어오지 않는다. 불투명 픽셀의 가로 중심과 발끝을 칸에 맞춘다.
+                    frame = center_charset_frame(frame)
                     x = (block_col + pattern) * CHARSET_FRAME_W
                     y = (block_row + row_offset) * CHARSET_FRAME_H
                     sheet.paste(frame, (x, y))
