@@ -98,7 +98,15 @@ export function actorBattlers(
   project: Project,
   overrides?: ActorBattlerOverrides
 ): MutableBattler[] {
-  const partyActorIds = overrides?.partyActorIds ?? startStateOf(project).partyActorIds;
+  const requested = overrides?.partyActorIds ?? startStateOf(project).partyActorIds;
+  // 저장본 파티에 배우가 아닌 칸(null·지워진 배우)이 있으면 그 칸만 빼고 싸운다 — 한 칸 때문에
+  // 전투 전체가 「Missing actor」로 멈췄다(2026-09-24 등대지기 3차, 동료 합류가 null 을 넣음).
+  // 남는 배우가 하나도 없을 때만 예전처럼 실패한다.
+  const partyActorIds = requested.filter((actorId) => project.database.actors.some((record) => record.id === actorId));
+  if (partyActorIds.length !== requested.length) {
+    console.warn(`[battle] 파티의 배우가 아닌 칸을 건너뜁니다: ${JSON.stringify(requested.filter((id) => !partyActorIds.includes(id)))}`);
+    if (partyActorIds.length === 0) throw new Error(`Missing actor: ${requested.map(String).join(", ")}`);
+  }
   return partyActorIds.map((actorId, index) => {
     const actor = project.database.actors.find((record) => record.id === actorId);
     if (!actor) throw new Error(`Missing actor: ${actorId}`);

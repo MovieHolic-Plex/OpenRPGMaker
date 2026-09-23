@@ -732,7 +732,9 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.partyActorIds ??= [];
         const list = options.state.partyActorIds;
         if (command.action === "add") {
-          if (!list.includes(command.actorId)) list.push(command.actorId);
+          // 빈 actorId 는 파티에 null 을 남겨 다음 전투를 멈춘다 — 건너뛴다(DB 에 없는 배우는 actorBattlers 가 뺀다).
+          const valid = typeof command.actorId === "string" && command.actorId.trim() !== "";
+          if (valid && !list.includes(command.actorId)) list.push(command.actorId);
         } else if (command.action === "remove") {
           options.state.partyActorIds = list.filter((id) => id !== command.actorId);
         }

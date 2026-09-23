@@ -36,6 +36,7 @@ import {
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
+import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
@@ -699,6 +700,7 @@ const upsertEvent: ToolDefinition = {
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
     assertEventShape(event, warnings, existing ? patch : event);
+    if (!existing || "pages" in patch || "commands" in patch) assertEventPartyActorReferences(draft, event);
     const outcome = upsertEventIntoMap(map, event);
     warnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
@@ -885,6 +887,7 @@ const placeNpc: ToolDefinition = {
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event, normalizationWarnings);
+    assertEventPartyActorReferences(draft, event);
     upsertEventIntoMap(map, event);
     normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const adjusted = finalX !== requestedX || finalY !== requestedY;
@@ -1185,6 +1188,7 @@ const makeVillager: ToolDefinition = {
     }
     ensureEventStoryFlags(draft, event, warnings);
     assertEventShape(event, warnings);
+    assertEventPartyActorReferences(draft, event);
     upsertEventIntoMap(map, event);
     const finalX = reusedEvent?.x ?? home.x;
     const finalY = reusedEvent?.y ?? home.y;
@@ -2895,6 +2899,7 @@ const scriptCutscene: ToolDefinition = {
       map.events.push(event);
     }
     assertEventShape(event);
+    assertEventPartyActorReferences(draft, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,

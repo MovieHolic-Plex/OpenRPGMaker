@@ -1,4 +1,4 @@
-import { defaultOutdoorTilesetId, createForestHarmonyTileset, FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
+import { defaultOutdoorTilesetId, createForestHarmonyTileset, FOREST_HARMONY_ID, isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 import { assertRiverVillage } from "./riverValidation";
 import { riverBandDepth } from "@/project/worldGenRules";
 // editor/tools/village/builder.ts
@@ -616,7 +616,9 @@ export function buildVillageDomain(
   placeVillageNpcs(draft, map, area, houses, plaza, overrides, seed, warnings, requestedNpcCount);
   const residentEventIds = map.events.filter(event => !beforeResidents.has(event.id)).map(event => event.id);
   assertSealed();
-  paintGroundThemeStrip(map, area, merged.groundTheme);
+  // 숲마을 칩셋의 눈 마을은 칸 번호가 같은 설원 칩셋으로 바꿔 칠한다(author_village applyVillageClimate) —
+  // 합본 마을용 눈 오토타일 번호를 숲마을 시트에 찍으면 다른 그림이 된다.
+  if (!isForestHarmonyTileset(draft.tilesets[map.tilesetId])) paintGroundThemeStrip(map, area, merged.groundTheme);
   assertSealed();
 
   // 시작 좌표가 집/울타리 아래로 가면 커밋이 거부된다 — 광장 길로 옮긴다.

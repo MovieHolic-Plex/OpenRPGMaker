@@ -1,6 +1,7 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { RIVER_VILLAGE_STYLE_GUIDANCE } from "@/project/defaults/riverVillageStyle";
 import { prepareVillageDefaultTileset } from "./village/defaultTileset";
+import { applyVillageClimate, borrowForestHarmonyForClimateSheet } from "./village/villageClimate";
 import { withVillageMorphologyDefault } from "./village/defaultMorphology";
 import { VILLAGE_MORPHOLOGIES } from "./village/morphologyTypes";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
@@ -158,7 +159,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           },
         },
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
-        groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
+        groundTheme: { type: "string", enum: ["grass", "snow"], description: "마을 전체 지면. 기획·세계관이 눈·겨울·눈보라·설원이면 snow — 숲마을 칩셋은 칸 번호가 같은 설원 칩셋(forest_harmony_snow)으로 바뀌고 맵 날씨가 눈이 되어 이 마을 아래 실내·던전의 전투 배경도 설원이 된다. theme 문장은 코드가 읽지 않으니 눈 마을이면 반드시 지정한다." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         morphology: {
           type: "string",
@@ -228,7 +229,9 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       // 파서보다 먼저 채워야 파서의 plannedMap 합성이 target 값을 볼 수 있다(2026-09-11).
       const sized = fillMissingVillageDimensions(designed, draft);
       const normalized = normalizeUnknownHouseTemplates(sized, knownTemplateIds(draft));
-      const request = parseAuthorVillageRequest(normalized.args);
+      // 기후 칩셋(설원 등) 맵은 칸 번호가 같은 숲마을 칩셋으로 지은 뒤 되돌린다 — 스코프 baseline 보다 먼저.
+      const borrowed = borrowForestHarmonyForClimateSheet(draft, parseAuthorVillageRequest(normalized.args));
+      const request = borrowed.request;
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
       // 기존 맵 타일셋이 숲마을·합본 마을 호환이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
       // 스코프 검사(baseline 스냅샷)가 확장을 "target 변경"으로 읽지 않게 성장은 baseline보다 먼저.
@@ -263,7 +266,8 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const renameWarnings = request.target.kind === "existing"
         ? renameVillageTargetMap(draft, request.target.mapId, requestedExistingName)
         : [];
-      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings];
+      const climateWarnings = applyVillageClimate(draft, request, borrowed.climate);
+      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...climateWarnings];
       return {
         summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`,
         data,
