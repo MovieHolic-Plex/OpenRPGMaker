@@ -43,6 +43,7 @@ import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
+import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
 const DATABASE_RECORD_COLLECTIONS = [
@@ -858,9 +859,13 @@ const upsertEnemy: ToolDefinition = {
   description:
     "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
     "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
-    "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다.",
+    "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. " +
+    "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩의 하한을 맞추고(주신 값보다 낮추지 않음) 모의전 결과를 경고로 돌려준다. " +
+    "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인).",
   mode: "write",
-  parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
+  parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
+    role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
+  }),
   run(draft, args): ToolExecResult {
     validateEnemyCombatPatch(args.enemy);
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
@@ -871,11 +876,13 @@ const upsertEnemy: ToolDefinition = {
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
+    const bossNote = isBossEnemy(record, args.role) ? scaleBossToStartParty(draft, record).note : undefined;
+    if (bossNote) warnings.push(bossNote);
     // 이 적이 든 첫 트룹 하나만 본다 — 경고 한 줄이면 고칠 방향이 선다.
     const firstTroop = draft.database.troops.find(troop => troop.enemyIds.includes(record.id));
     if (firstTroop) warnings.push(...troopBalanceWarnings(draft, firstTroop.id));
     return {
-      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${bossNote ? " — 보스 위협 하한 적용(경고 참고)" : ""}`,
       data: record,
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -914,7 +921,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? " — 밸런스 경고: 적이 시작 파티에게 피해를 주지 못함" : ""}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함" : ""}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };
