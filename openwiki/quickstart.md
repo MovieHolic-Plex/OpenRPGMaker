@@ -35,9 +35,11 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 - 다른 워크트리의 tsconfig 를 본 저장소 tsc 로 `-p` 로 겨누는 우회는 쓰지 마라. 실측: 그렇게 하면 모듈 해석이
   실패해 유령 오류 2,879건이 나온다(정상은 0건). 도구는 **그 워크트리 안에서** 돌린다.
 - 포트는 워크트리마다 다르다(본 저장소가 9999 `--strictPort` 를 점유). 개발 서버는 `npm run dev:worktree`.
-- 병렬 워크트리는 `node_modules/.vite` 최적화 캐시도 공유한다. 서버 시작 시 `VITE_CACHE_DIR`에
-  워크트리 전용 경로나 고유 임시 경로를 지정하라 (`vite.config.ts`가 지원). 공유 캐시의 재최적화가
-  겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다. QA용 임시 캐시는 서버 종료 후 정리한다.
+- 병렬 워크트리는 `node_modules/.vite` 최적화 캐시도 공유한다(`node_modules` 가 메인으로의 심링크). vite 캐시 해시에
+  root 가 들어가 체크아웃마다 서로 재최적화해 덮고, 겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다.
+  `npm run dev`·`dev:worktree`·`dev:keep`·playwright webServer 는 공유 `node_modules` 를 보면 `<체크아웃>/.vite-cache/dev`
+  를 **자동으로** 쓴다(`scripts/lib/viteCacheDir.mjs`, 배너에 `[dev] vite 캐시 …` 로 찍힌다). vite 를 직접 부를 때만
+  `VITE_CACHE_DIR` 에 그 체크아웃 안 경로나 고유 임시 경로를 직접 준다. QA용 임시 캐시는 서버 종료 후 정리한다.
 
 콘텐츠(맵·이벤트·데모) 작업은 프로젝트 폴더 또는 팀 호스트와 project id를 확인하고,
 SQLite 정본에 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
