@@ -874,7 +874,7 @@ const upsertEnemy: ToolDefinition = {
     const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
-    ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings);
+    ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
     const outcome = upsertById(draft.database.enemies, record);
     const bossNote = isBossEnemy(record, args.role) ? scaleBossToStartParty(draft, record).note : undefined;
     if (bossNote) warnings.push(bossNote);
@@ -969,7 +969,7 @@ const defineMonsterSpecies: ToolDefinition = {
       throw new ToolError(`존재하지 않는 진화 itemId: ${[...new Set(missingItems)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
     }
     const warnings: string[] = [];
-    ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings);
+    ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return {
       summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
