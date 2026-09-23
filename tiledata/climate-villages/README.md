@@ -38,5 +38,5 @@ node scripts/qa/capture-climate-villages.mjs
 - 사막 마을은 나무 도장을 모래로 되돌리고 발치에 야자(물 5칸 안)·선인장을 놓는다(`lib/climate-edits.mjs` `dressDesert`, 필드와 공용).
 - 못을 얼릴 때는 한 덩어리를 통째로 대응표로 바꾼다. 일부만 바꾸면 물과 얼음 사이에 물가 테두리가 없다.
 - 분류는 `climate-*-villages-v3`(나무 몸통 개정: v2 정확한 폭, v3 폭 2 조각 제거). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedClimateVillageReferences.json tiledata/climate-villages/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureClimateVillageReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
-- 원본 숲마을의 줄기를 다시 맞추면(`scripts/content/refit-forest-trunks.mjs`) 여기 `author-climate-villages.mjs` 부터 다시 돈다.
+- 원본 숲마을의 줄기를 다시 맞추면(`scripts/content/refit-forest-trunks.mjs`) 여기 `author-climate-villages.mjs` 부터 다시 돈다. 끝나면 `node scripts/content/check-forest-trunks.mjs` 로 줄기 규칙을 확인한다.
 - 시트를 다시 칠하면 `prepare-climate-tilesets.mjs`부터 다시 돌린다(얼음 칸 수가 바뀌면 타일셋 칸 수도 바뀐다).

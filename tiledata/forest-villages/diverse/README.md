@@ -151,4 +151,5 @@ prop-programs.json이 집별 용도/할 일/지정 이유 및 부품의 목적/�
 사용자 지적(개정11 뒤): 여전히 이상하다. 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히긴 하지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이었다.
 - 최소 폭 3(`FOREST_TRUNK_MIN_WIDTH`). 폭 1·2 밑변은 `fitBottomEdges` 가 이웃 열 밑변 높이로 올리거나 내려 합친다.
 - 같은 refit 으로 다시 맞췄다. 공용 용도 `diverse-villages-trunks-v12` + `concept-villages-v3`, 지역 revision 12.
+- 확인: `node scripts/content/check-forest-trunks.mjs` — 다양한 마을·기후 마을·필드 카탈로그와 지역 스냅샷 전부에서 폭 3 미만 밑변·밑변과 다른 줄기·밑변 밖 줄기를 센다(0 이어야 한다). 2026-09-24 「여전히 뿌리만 보인다」 신고의 그림은 이 개정 전(개정11) 비교 그림이었다.
 
