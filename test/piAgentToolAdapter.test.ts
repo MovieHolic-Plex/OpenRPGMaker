@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createPiToolset, harvestFindToolsNames, resolvePiToolShape, selectPiToolDefinitions } from "@/ai/piAgent/toolAdapter";
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { createBlankProject } from "@/project/defaults";
+import { piMapScopeGuard } from "@/ai/piAgent/protocol";
 
 describe("piAgent toolAdapter", () => {
   it("살아 있는 레지스트리 툴을 전부 Pi 툴 모양으로 감싼다", () => {
@@ -136,6 +137,50 @@ describe("piAgent toolAdapter", () => {
       const start = tools.find((tool) => tool.name === "set_start_position")!;
       await start.execute("s1", { mapId: "town", x: 5, y: 5 });
       expect(ctx.project.startMapId).toBe("town");
+    });
+
+    it("평문(scopeStrict=false)이라도 병합 실행이면 가드가 켜지고, 거부 문구는 DB·시스템은 된다고 말한다", async () => {
+      const guard = piMapScopeGuard({ mapIds: ["town"], scopeStrict: false, mapBundleMerge: true });
+      expect(guard).toEqual({ scopeMapIds: ["town"], scopeAllowsSystem: true });
+      const { ctx, create } = townProject();
+      await create.execute("c0", { id: "town", name: "마을", width: 48, height: 36 });
+      const startMapId = ctx.project.startMapId;
+      const before = ctx.project;
+      const tools = createPiToolset(ctx, guard);
+      const pair = tools.find((tool) => tool.name === "create_transfer_pair")!;
+      const error = await pair.execute("t1", { a: { mapId: startMapId, x: 10, y: 8 }, b: { mapId: "town", x: 24, y: 22 } }).catch((e: Error) => e);
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toMatch(/DB·시스템.*(편집|수정).*할 수 있/s);
+      expect((error as Error).message).toMatch(/다른 맵/);
+      expect(ctx.project).toBe(before);
+      // 묶음 안 맵·DB 쓰기는 통과한다.
+      const start = tools.find((tool) => tool.name === "set_start_position")!;
+      await start.execute("s1", { mapId: "town", x: 5, y: 5 });
+      const settings = tools.find((tool) => tool.name === "set_project_settings")!;
+      await settings.execute("p1", { title: "승격됨" });
+      expect(ctx.project.meta.title).toBe("승격됨");
+    });
+
+    it("단일 평문 턴(scopeStrict=false, 병합 없음)은 가드를 켜지 않는다", () => {
+      expect(piMapScopeGuard({ mapIds: ["town"], scopeStrict: false })).toEqual({});
+      expect(piMapScopeGuard({ mapIds: [], scopeStrict: true, mapBundleMerge: true })).toEqual({});
+      // 옛 호출자(CLI·팀원)는 scopeStrict 를 비워 보낸다 — 기존처럼 계약 가드.
+      expect(piMapScopeGuard({ mapIds: ["town"] })).toEqual({ scopeMapIds: ["town"], scopeAllowsSystem: false });
+    });
+
+    it("묶음 밖에 새로 만든 맵은 막지 않고 경고를 붙인다", async () => {
+      const { ctx, create } = townProject();
+      await create.execute("c0", { id: "town", name: "마을", width: 48, height: 36 });
+      const results: Array<{ ok: boolean; warnings?: readonly string[] }> = [];
+      const tools = createPiToolset(ctx, { scopeMapIds: ["town"], onCall: (record) => results.push(record.result) });
+      const createMap = tools.find((tool) => tool.name === "create_map")!;
+      const out = await createMap.execute("c1", { id: "house", name: "집", width: 12, height: 10 });
+      const body = JSON.parse(out.content[0]!.text) as { ok: boolean; warnings?: string[] };
+      expect(body.ok).toBe(true);
+      expect(ctx.project.maps.house).toBeTruthy();
+      const warning = body.warnings?.find((w) => w.includes("house"));
+      expect(warning).toMatch(/작업 범위.*밖.*버려.*manage_map_tree.*town/s);
+      expect(results[0]!.warnings).toContain(warning);
     });
   });
 });

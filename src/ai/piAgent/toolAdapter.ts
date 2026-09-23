@@ -67,6 +67,8 @@ export interface CreatePiToolsetOptions {
    * 다른 키(mapTree·database 등)의 정책은 병합(`mergeMapBundles`)이 정한다 — 여기선 맵만 본다.
    */
   readonly scopeMapIds?: readonly string[];
+  /** 평문 병합 실행(`piMapScopeGuard`) — 거부 문구가 「DB·시스템은 되고 다른 맵만 안 된다」고 말한다. */
+  readonly scopeAllowsSystem?: boolean;
 }
 
 const DEFAULT_MAX_DATA_CHARS = 12_000;
@@ -148,6 +150,7 @@ export interface ResolvePiToolOptions {
   readonly onCall?: (record: PiToolCallRecord) => void;
   readonly maxDataChars?: number;
   readonly scopeMapIds?: readonly string[];
+  readonly scopeAllowsSystem?: boolean;
 }
 
 /**
@@ -163,15 +166,16 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
     readOnly: options.readOnly,
     onCall: options.onCall,
     scopeMapIds: options.scopeMapIds,
+    scopeAllowsSystem: options.scopeAllowsSystem,
     ...(options.maxDataChars === undefined ? {} : { maxDataChars: options.maxDataChars }),
   }).find(tool => tool.name === name);
 }
 
 /**
  * 묶음 밖 기존 맵을 바꾼 호출이면 거부 결과를, 아니면 null. 묶음 밖에 **새로** 생긴 맵은 여기서 막지
- * 않는다 — 다음 호출에서 묶음 아래로 옮겨질 수 있고, 끝까지 밖에 남으면 병합이 정리한다.
+ * 않는다 — 다음 호출에서 묶음 아래로 옮겨질 수 있다. 대신 `scopeNewMapWarnings` 가 경고를 붙인다.
  */
-function scopeViolation(before: Project, after: Project, scopeMapIds: readonly string[], toolName: string): ToolResult | null {
+function scopeViolation(before: Project, after: Project, scopeMapIds: readonly string[], toolName: string, allowsSystem: boolean): ToolResult | null {
   const outside = mapBundleMapSpill(before, after, scopeMapIds)
     .map(key => key.slice("maps.".length))
     .filter(id => before.maps[id] !== undefined);
@@ -180,9 +184,19 @@ function scopeViolation(before: Project, after: Project, scopeMapIds: readonly s
   return {
     ok: false,
     summary: `${toolName} 호출을 되돌렸습니다: ${names} 은(는) 이번 작업 범위(${scopeMapIds.join(", ")}와 그 실내 맵) 밖이라 이 변경은 병합 때 버려집니다.`
+      + (allowsSystem ? " DB·시스템(데이터베이스·설정·스위치 등)은 이번 작업에서도 편집할 수 있지만, 다른 맵은 바꿀 수 없습니다." : "")
       + ` 범위 밖 맵에 문·이벤트·타일을 달지 마세요. 게임 시작 지점이 범위 밖 맵이면 set_start_position 으로 시작 위치를 범위 안 맵(${scopeMapIds[0]})으로 옮기고,`
       + " 맵 사이 연결은 범위 안 맵끼리(실내는 place_concept·start_interior_room_session 으로 범위 안에 만든다) 만드세요.",
   };
+}
+
+/** 이 호출로 묶음 밖에 새로 생긴 맵마다 경고 — 묶음 아래로 달지 않으면 끝날 때 병합이 버린다. */
+function scopeNewMapWarnings(before: Project, after: Project, scopeMapIds: readonly string[]): string[] {
+  return mapBundleMapSpill(before, after, scopeMapIds)
+    .map(key => key.slice("maps.".length))
+    .filter(id => before.maps[id] === undefined && after.maps[id] !== undefined)
+    .map(id => `맵 ${after.maps[id]!.name ?? id}(${id}) 는 작업 범위(묶음 ${scopeMapIds.join(", ")}) 밖에 생겼습니다.`
+      + ` 묶음 맵 아래로 달지 않으면 끝날 때 버려집니다 — manage_map_tree 로 ${scopeMapIds[0]} 아래에 다세요.`);
 }
 
 export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOptions = {}): PiToolShape[] {
@@ -205,10 +219,13 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
         : runTool(ctx, tool.name, args));
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
       if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
-        const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name);
+        const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name, options.scopeAllowsSystem === true);
         if (violation) {
           ctx.project = beforeProject;
           result = violation;
+        } else {
+          const warnings = scopeNewMapWarnings(beforeProject, ctx.project, options.scopeMapIds);
+          if (warnings.length > 0) result = { ...result, warnings: [...(result.warnings ?? []), ...warnings] };
         }
       }
       const after = captureActivityVisuals(ctx.project, tool.name, args, result, !result.ok ? "failed" : tool.mode === "write" ? "draft" : "read");
