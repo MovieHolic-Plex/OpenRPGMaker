@@ -1,0 +1,441 @@
+/* 포획·성장 종족 탭 (databaseMonsterSpeciesView.ts) — 2026-09 UX 개편.
+   구역 탭(기본·포획·성장·진화·연결) · 머리글 요약 · 타입 칩 · 포획 난이도 · 채울 순서 · 프로젝트 준비 알약.
+   모든 선택자는 종족 워크스페이스/머리 줄 아래로 가둔다. 제외가 필요하면 :not(:where(.x)) 로(특이도 유지). */
+
+/* ── 프로젝트 준비 알약 (프로젝트 전체 정보라 접어 둔다) ─────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-life-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-2);
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness-summary {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 6px;
+  list-style: none;
+  padding: 3px 10px;
+  user-select: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness-summary::-webkit-details-marker {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness-summary::before {
+  content: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness-summary::after {
+  content: "▾";
+  font-size: 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness[open] > .db-monster-species-readiness-summary::after {
+  content: "▴";
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness-summary strong {
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-readiness > .db-life-panel {
+  width: 100%;
+}
+
+/* ── 머리글: 이름 아래 타입 칩 + 한 줄 요약 ─────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] .db-ws-hero .db-ws-hero-text {
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] .db-ws-hero .db-ws-hero-title {
+  font-size: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-hero-line {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-hero-types {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-hero-summary {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+}
+
+/* 타입 알약/칩 색 — 잘 알려진 타입만, 나머지는 중립. */
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip) {
+  --species-type-bg: var(--db-studio-inset);
+  --species-type-fg: var(--db-studio-text-2);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip)[data-tone="fire"] { --species-type-bg: color-mix(in srgb, var(--danger) 12%, var(--bg-raised)); --species-type-fg: var(--danger); }
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip)[data-tone="water"] { --species-type-bg: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); --species-type-fg: var(--accent); }
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip)[data-tone="grass"] { --species-type-bg: color-mix(in srgb, var(--success) 12%, var(--bg-raised)); --species-type-fg: var(--success); }
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip)[data-tone="electric"] { --species-type-bg: color-mix(in srgb, var(--warning) 12%, var(--bg-raised)); --species-type-fg: var(--warning); }
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip)[data-tone="ice"] { --species-type-bg: color-mix(in srgb, color-mix(in srgb, var(--accent) 50%, var(--success)) 12%, var(--bg-raised)); --species-type-fg: color-mix(in srgb, var(--accent) 50%, var(--success)); }
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip):is([data-tone="poison"], [data-tone="ghost"], [data-tone="psychic"]) { --species-type-bg: color-mix(in srgb, color-mix(in srgb, var(--accent) 55%, var(--danger)) 12%, var(--bg-raised)); --species-type-fg: color-mix(in srgb, var(--accent) 55%, var(--danger)); }
+.database-modal-backdrop .database-modal-window .database-modal-body :is(.db-monster-species-type-pill, .db-monster-species-type-chip):is([data-tone="ground"], [data-tone="rock"], [data-tone="fighting"]) { --species-type-bg: color-mix(in srgb, var(--gold-deep) 12%, var(--bg-raised)); --species-type-fg: var(--gold-deep); }
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-type-pill {
+  background: var(--species-type-bg);
+  border-radius: 999px;
+  color: var(--species-type-fg);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 8px;
+}
+
+/* ── 구역 탭 (분절 버튼) ───────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-sections {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tabs {
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  display: inline-flex;
+  justify-self: start;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tab {
+  align-items: baseline;
+  background: var(--db-studio-surface);
+  border: 0;
+  border-radius: 0;
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13px;
+  font-weight: 600;
+  gap: 6px;
+  min-height: 0;
+  padding: 6px 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tab + .db-monster-species-section-tab {
+  border-left: 1px solid var(--db-studio-border-default);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tab:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tab[aria-selected="true"] {
+  background: var(--db-studio-text-1);
+  color: var(--db-studio-surface);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tab:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-summary {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-summary:empty {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-tab[aria-selected="true"] .db-monster-species-section-summary {
+  color: inherit;
+  opacity: 0.75;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-panel {
+  align-content: start;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-panel[hidden] {
+  display: none;
+}
+
+/* 기본 구역의 왼쪽 묶음(이름·타입 + 채울 순서)은 한 열 안에서 세로로 쌓는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-panel > .db-monster-species-basic-main {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* ── 이름과 타입: 체크박스를 칩처럼 ─────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-types {
+  align-items: center;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-types > :is(.db-monster-species-type-hint, .db-monster-species-type-warn) {
+  grid-column: 2;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-type-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-type-chips > .db-monster-species-type-chip {
+  align-items: center;
+  background: var(--db-studio-inset);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  gap: 4px;
+  margin: 0;
+  min-height: 0;
+  padding: 2px 10px 2px 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-type-chips > .db-monster-species-type-chip:has(input:checked) {
+  background: var(--species-type-bg);
+  border-color: var(--species-type-fg);
+  color: var(--species-type-fg);
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-type-chips > .db-monster-species-type-chip input {
+  accent-color: var(--species-type-fg);
+  height: 13px;
+  margin: 0;
+  width: 13px;
+}
+
+/* ── 그림: 앞모습·뒷모습 두 칸(큰 미리보기 + 고르기 + AI 입력) ─────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-pair {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side > .db-monster-species-stage {
+  height: 132px;
+  margin: 0;
+  max-width: none;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side > .db-monster-species-stage .db-enemy-empty-graphic {
+  color: var(--db-studio-text-3);
+  font-size: 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .db-resource-picker-control {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .db-resource-picker-control-label {
+  color: var(--db-studio-text-2);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .db-resource-picker-control-body {
+  display: block;
+  min-width: 0;
+}
+
+/* 큰 미리보기가 위에 있으므로 고르기 안의 작은 썸네일과 대기열 안내문은 되풀이다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side :is(.db-resource-picker-inline-thumb, .ai-image-queue-empty) {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .db-resource-picker-control-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .db-resource-picker-inline-name {
+  color: var(--db-studio-text-1);
+  flex: 1 1 auto;
+  font-size: 12px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .ai-image-queue {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .ai-image-queue-composer {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .ai-image-queue-composer > input {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-graphic-side .ai-image-queue-composer > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ── 포획: 난이도 말 + 단계 단추 + 읽히는 확률 줄 ───────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-head > span {
+  color: var(--db-studio-text-2);
+  font-size: 13px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-word {
+  color: var(--db-studio-text-1);
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-self: start;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-step {
+  background: var(--db-studio-inset);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font-size: 12px;
+  min-height: 0;
+  padding: 3px 12px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-step[aria-pressed="true"] {
+  background: var(--db-studio-accent-soft);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-accent);
+  font-weight: 700;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-capture-odds .db-capture-preview {
+  color: var(--db-studio-text-1);
+  font-size: 13px;
+  margin: 0;
+}
+
+/* ── 채울 순서 ───────────────────────────────────────────────── */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-checklist {
+  display: grid;
+  gap: 6px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-check-item {
+  align-items: center;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+  min-height: 0;
+  padding: 7px 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-check-item:hover {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-check-mark {
+  align-items: center;
+  border: 1.5px solid var(--db-studio-border-strong);
+  border-radius: 4px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 11px;
+  font-weight: 700;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-check-item[data-done="true"] .db-monster-species-check-mark {
+  background: var(--db-studio-success);
+  border-color: var(--db-studio-success);
+  color: var(--db-studio-on-accent);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-check-where {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+  margin-left: auto;
+}
+
+/* ── 모드별 숨김 보강 ─────────────────────────────────────────────
+   monster-ux.css 의 공용 규칙((0,2,1))은 `.db-ws-card { display: grid }` 같은 (0,4,0) 표시 규칙에 진다.
+   종족 워크스페이스 안에서는 같은 규칙을 더 높은 특이도로 되풀이한다. */
+body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] :is([data-db-ux="advanced"], [data-db-ux="expert"]),
+body.editor-ui-standard .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] [data-db-ux="expert"],
+body.editor-ui-expert .database-modal-backdrop .database-modal-window .database-modal-body [data-testid="db-monster-species-workspace"] [data-db-ux="guide"] {
+  display: none;
+}
+
+/* 포획 구역은 카드 하나뿐이라 전폭이면 숫자 칸이 1000px 넘게 늘어난다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-monster-species-section-panel > [data-testid="db-monster-species-capture-card"] {
+  max-width: 720px;
+}

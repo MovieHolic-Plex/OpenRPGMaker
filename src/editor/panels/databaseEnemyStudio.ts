@@ -114,7 +114,6 @@ export function renderEnemyStudio(record: EnemyRecord, sections: EnemyInspectorS
 function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: () => void } {
   const media = el("div", { class: "db-enemy-stage-media" });
   const status = el("span", { class: "db-enemy-stage-status" });
-  const stats = el("div", { class: "db-enemy-stage-stats", dataset: { testid: "db-enemy-stage-stats" } });
   let paused = recordPreviewPaused(record.id)
     ?? (typeof window !== "undefined" && Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches));
   media.classList.toggle("is-paused", paused);
@@ -154,10 +153,9 @@ function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: () =>
   }
   let graphicKey = "";
   const refresh = (): void => {
+    // 능력치 숫자는 여기서 다시 보여 주지 않는다 — 편집 가능한 「능력치」 카드와 같은 네 값이
+    // 두 번 떠 있었다(2026-09-23 UX 정리). 미리보기는 그림과 시험 전투만 갖는다.
     const live = currentEnemy(record);
-    stats.replaceChildren(...[
-      ["HP", live.stats.maxHp], ["MP", live.stats.maxMp], ["공격", live.stats.attack], ["방어", live.stats.defense],
-    ].map(([label, value]) => el("div", { children: [el("span", { text: String(label) }), el("strong", { text: String(value) })] })));
     const nextKey = JSON.stringify([live.monsterResourceId, live.graphicHue, live.transparent, live.flying, live.name]);
     if (graphicKey === nextKey) return;
     graphicKey = nextKey;
@@ -192,7 +190,6 @@ function enemyStage(record: EnemyRecord): { element: HTMLElement; refresh: () =>
       children: [
         el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "미리보기" }), status] }),
         viewport,
-        stats,
         el("div", { class: "db-enemy-stage-toolbar", children: [pause, test] }),
       ],
     }),

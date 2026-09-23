@@ -1044,7 +1044,8 @@ function renderActiveTabUnguarded(
   };
   const subviews = partySubviewNav(tab, container);
   if (subviews) body.append(subviews);
-  if (tab === "enemies" || tab === "monsterSpecies" || tab === "troops") {
+  // 포획 경고는 포획을 저작하는 종족 탭에만 띄운다 — 몬스터·적 그룹 탭마다 한 줄씩 먹던 띠였다.
+  if (tab === "monsterSpecies") {
     const banner = collectionGateBanner(container);
     if (banner) body.append(banner);
   }
@@ -1215,11 +1216,14 @@ function tabRenderCacheFor(container: HTMLElement): DatabaseTabRenderCache {
 
 /**
  * 몬스터 데이터를 저작했는데 시스템 탭에서 몬스터 수집이 꺼져 있으면 포획 명령이 전투에
- * 나오지 않는다 — 몬스터/종족/적 그룹 탭 상단에 경고와 시스템 탭 점프를 준다.
+ * 나오지 않는다 — 종족 탭 상단에 경고와 시스템 탭 점프를 준다(닫으면 다시 뜨지 않는다).
  */
+const COLLECTION_GATE_DISMISSED_KEY = "oprn:db-collection-gate-dismissed";
+
 function collectionGateBanner(container: HTMLElement): HTMLElement | null {
   const project = store.getCurrent();
   if (project.system.monsterCollection === true) return null;
+  if (readCollectionGateDismissed()) return null;
   const hasSpecies = (project.database.monsterSpecies?.length ?? 0) > 0;
   const hasCaptureItem = project.database.items.some((item) => item.captureProfile !== undefined);
   if (!hasSpecies && !hasCaptureItem) return null;
@@ -1235,8 +1239,32 @@ function collectionGateBanner(container: HTMLElement): HTMLElement | null {
         dataset: { testid: "db-collection-gate-open-system" },
         on: { click: () => switchDatabaseActiveTab("system", container) },
       }),
+      el("button", {
+        class: "btn small ghost",
+        attrs: { type: "button", "aria-label": "포획 경고 닫기" },
+        text: "닫기",
+        dataset: { testid: "db-collection-gate-dismiss" },
+        on: {
+          click: (event) => {
+            try {
+              window.localStorage.setItem(COLLECTION_GATE_DISMISSED_KEY, "1");
+            } catch {
+              /* private mode */
+            }
+            (event.currentTarget as HTMLElement).closest(".db-collection-gate-warn")?.remove();
+          },
+        },
+      }),
     ],
   });
+}
+
+function readCollectionGateDismissed(): boolean {
+  try {
+    return typeof window !== "undefined" && window.localStorage.getItem(COLLECTION_GATE_DISMISSED_KEY) === "1";
+  } catch {
+    return false;
+  }
 }
 
 function readStoredActiveTab(): DatabaseTab {
