@@ -8,6 +8,8 @@ export function advanceResume(
   pending: PendingStep | "none",
   value: ResumeValue
 ): ResumeAdvance {
+  // A terminal result ends the whole event, including callers of a common event.
+  if (pending === "gameOver" || pending === "returnToTitle") return "done";
   const frame = topFrame(state.stack);
   if (!frame) return "done";
 

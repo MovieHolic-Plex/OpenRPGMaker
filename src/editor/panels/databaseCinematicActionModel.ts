@@ -1,13 +1,23 @@
-import type { CinematicScene, CinematicSequence } from "@/project/cinematicSettings";
+import type { CinematicScene, CinematicSequence, GameOverSettings } from "@/project/cinematicSettings";
 import type { Project } from "@/project/types";
 
-export type CinematicTarget = "opening" | "gameOver";
+export type CinematicTarget = "opening" | "gameOver" | { readonly gameOverId: string };
+
+export function readGameOverSettings(project: Project, target: CinematicTarget): GameOverSettings | undefined {
+  return typeof target === "object" ? project.system.gameOvers?.find(row => row.id === target.gameOverId)?.settings : project.system.gameOver;
+}
+export function requireGameOverSettings(project: Project, target: CinematicTarget): GameOverSettings {
+  if (typeof target !== "object") return project.system.gameOver ??= {};
+  const settings = readGameOverSettings(project, target);
+  if (!settings) throw new TypeError("Game-over definition disappeared during an edit.");
+  return settings;
+}
 
 export function readCinematicSequence(
   project: Project,
   target: CinematicTarget,
 ): CinematicSequence | undefined {
-  return target === "opening" ? project.system.opening : project.system.gameOver?.sequence;
+  return target === "opening" ? project.system.opening : readGameOverSettings(project, target)?.sequence;
 }
 
 export function emptySequence(): CinematicSequence {
@@ -20,7 +30,7 @@ export function writeSequence(
   sequence: CinematicSequence,
 ): void {
   if (target === "opening") project.system.opening = sequence;
-  else (project.system.gameOver ??= {}).sequence = sequence;
+  else requireGameOverSettings(project, target).sequence = sequence;
 }
 
 /** Resolve the actual draft after synchronous history notifications, never an old snapshot. */

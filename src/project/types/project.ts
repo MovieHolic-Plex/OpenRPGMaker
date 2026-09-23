@@ -639,6 +639,7 @@ export interface EndingDef {
   conditions: EndingCondition[];
   priority: number;
   epilogue?: Record<string, unknown>[];
+  presentation?: import("../cinematicSettings").EndingPresentation;
 }
 
 export type StoryFlagKind = "switch" | "variable";

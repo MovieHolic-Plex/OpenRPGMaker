@@ -195,6 +195,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     classes: new Set(project.database.classes.map((entry) => entry.id)),
     commonEvents: new Set((project.commonEvents ?? []).map((entry) => entry.id)),
     endings: new Set((project.endings ?? []).map((entry) => entry.id)),
+    gameOvers: new Set((project.system.gameOvers ?? []).map(entry => entry.id)),
     equipment: new Set(project.database.equipment.map((entry) => entry.id)),
     factions: new Set([
       PLAYER_FACTION_ID,
@@ -947,6 +948,10 @@ function validateCommand(
   };
 
   switch (command.kind) {
+    case "gameOver":
+    case "killPlayer":
+      require("reference.gameOver.missing", "게임 오버", command.gameOverId, refs.gameOvers, true);
+      return;
     case "changeFace": require("reference.resource.missing", "얼굴 리소스", command.resourceId, refs.resources, true); return;
     case "fork": validateForkCondition(command.condition, pageId, refs, issues, path, [], mapId); return;
     case "wait": require("reference.variable.missing", "대기 변수", command.variableId, refs.variables, true); return;
@@ -1174,8 +1179,6 @@ function validateCommand(
     case "openSaveMenu":
     case "despawnFieldEnemy":
     case "runControl":
-    case "killPlayer":
-    case "gameOver":
     case "ending":
     case "returnToTitle":
     case "setFlag":

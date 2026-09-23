@@ -112,6 +112,12 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   validateCinematicResources("system.opening", system.opening, resourceIds);
   validateCinematicResources("system.gameOver.sequence", system.gameOver?.sequence, resourceIds);
   validateOptionalResource("system.gameOver.backgroundResourceId", system.gameOver?.backgroundResourceId, resourceIds);
+  validateOptionalResource("system.gameOver.musicResourceId", system.gameOver?.musicResourceId, resourceIds);
+  for (const row of system.gameOvers ?? []) {
+    validateCinematicResources(`gameOver ${row.id}.sequence`, row.settings.sequence, resourceIds);
+    validateOptionalResource(`gameOver ${row.id}.backgroundResourceId`, row.settings.backgroundResourceId, resourceIds);
+    validateOptionalResource(`gameOver ${row.id}.musicResourceId`, row.settings.musicResourceId, resourceIds);
+  }
 }
 
 function validateCinematicResources(label: string, sequence: CinematicSequence | undefined, resourceIds: ReadonlySet<string>): void {

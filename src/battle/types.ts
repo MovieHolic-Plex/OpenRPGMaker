@@ -415,6 +415,7 @@ export interface BattleRewardsSnapshot {
 }
 
 export interface BattleEventStateSnapshot {
+  readonly gameOverRequest?: { readonly gameOverId: string; readonly message?: string };
   /** Present only when this battle authored a settings change. */
   readonly messageWindowSettings?: MessageWindowSettings;
   readonly switches: Readonly<Record<string, boolean>>;

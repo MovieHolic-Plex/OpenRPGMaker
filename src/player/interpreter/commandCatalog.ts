@@ -396,12 +396,12 @@ function triggerEnding(
   }
 
   state.session.flags[`ending:${ending.id}`] = true;
-  const finalCommand: Command = { kind: "ending", title: ending.name, message: "" };
+  const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   const epilogueCommands = compileEndingEpilogue(state, ending);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "" });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) });
 }
 
 function selectEnding(
@@ -714,16 +714,17 @@ export function executeCommand(
     }
     case "killPlayer":
       killParty(state);
-      return pause("gameOver", { kind: "gameOver", message: command.message });
+      return pause("gameOver", { kind: "gameOver", message: command.message, ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "triggerEnding":
       return triggerEnding(state, command.endingId);
     case "gameOver":
-      return pause("gameOver", { kind: "gameOver" });
+      return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending":
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
+        ...(command.presentation ? { presentation: command.presentation } : {}),
       });
     case "returnToTitle":
       return pause("returnToTitle", { kind: "returnToTitle" });

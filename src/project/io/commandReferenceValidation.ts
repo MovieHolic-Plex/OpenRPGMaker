@@ -25,6 +25,7 @@ export type ReferenceContext = {
   variableIds: ReadonlySet<string>;
   commonEventIds: ReadonlySet<string>;
   endingIds: ReadonlySet<string>;
+  gameOverIds?: ReadonlySet<string>;
   mapIds: ReadonlySet<string>;
   troopIds: ReadonlySet<string>;
   speciesIds: ReadonlySet<string>;
@@ -157,14 +158,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
     case "cutsceneControl":
     case "checkpointSave":
     case "runControl":
-    case "killPlayer":
     case "removeFollower":
     case "setLighting":
     case "addLight":
     case "removeLight":
     case "setWeather":
-    case "gameOver":
-    case "ending":
     case "returnToTitle":
     case "displayTextSettings":
       return;
@@ -172,6 +170,14 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       if (!context.factionIds) return;
       assert(context.factionIds.has(command.a), `changeFactionStance: faction A가 존재하지 않습니다: ${command.a}`);
       assert(context.factionIds.has(command.b), `changeFactionStance: faction B가 존재하지 않습니다: ${command.b}`);
+      return;
+    case "gameOver":
+    case "killPlayer":
+      if (command.gameOverId) assert(context.gameOverIds?.has(command.gameOverId), `gameOver: missing definition ${command.gameOverId}`);
+      return;
+    case "ending":
+      validateOptionalCommandResource("ending.presentation.musicResourceId", command.presentation?.musicResourceId ?? "", context.resourceIds);
+      validateOptionalCommandResource("ending.presentation.backgroundResourceId", command.presentation?.backgroundResourceId ?? "", context.resourceIds);
       return;
     case "triggerEnding":
       if (command.endingId) assert(context.endingIds.has(command.endingId), `triggerEnding: endingId가 존재하지 않습니다: ${command.endingId}`);

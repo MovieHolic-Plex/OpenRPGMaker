@@ -15,6 +15,7 @@ import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, M
 import type { BattleEventCondition, BattleEventPageRecord, TroopRecord } from "@/project/types/database";
 
 export type BattleEventRuntimeState = {
+  gameOverRequest?: { gameOverId: string; message?: string };
   messageWindowSettings?: MessageWindowSettings;
   readonly switches: Record<string, boolean>;
   readonly variables: Record<string, number>;
@@ -303,6 +304,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
 
   function snapshot(): BattleEventStateSnapshot {
     return {
+      ...(options.state.gameOverRequest ? { gameOverRequest: { ...options.state.gameOverRequest } } : {}),
       messageWindowSettings: settingsChanged && options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
       switches: options.state.switches,
       variables: options.state.variables,
@@ -806,12 +808,14 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "gameOver":
         // RM2K3 Game Over: 전투를 패배로 즉시 종결. defeat 이후 처리(게임오버 vs 패배 복귀)는
         // canLose 의미론에 따라 호스트가 결정한다(battleRewardsToSession/playSceneBattle).
+        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.kind === "killPlayer" && command.message ? { message: command.message } : {}) };
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "gameOver→defeat" });
         return "defeat";
       case "killPlayer":
         // killPlayer: 파티 전멸과 동일 의미 — 액터 HP 0 + defeat 종결(자연 패배 경로와 정합).
         for (const actor of options.actors) actor.hp = 0;
+        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.kind === "killPlayer" && command.message ? { message: command.message } : {}) };
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: ["killPlayer→defeat", command.message].filter(Boolean).join(" ") });
         return "defeat";

@@ -1,3 +1,5 @@
+import { validateEndingPresentation } from "@/project/io/shapeDatabaseFields";
+import type { EndingPresentation } from "@/project/cinematicSettings";
 import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
 import { collectEndingWarnings } from "@/project/endings";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
@@ -25,6 +27,11 @@ const defineEnding: ToolDefinition = {
       name: { type: "string" },
       conditions: { type: "array", description: "switch/variable 조건", items: CONDITION_SCHEMA },
       priority: { type: "integer", description: "높을수록 우선. 기본 0" },
+      presentation: {
+        type: "object", additionalProperties: false,
+        description: "에필로그 뒤의 마지막 화면. credits는 줄바꿈을 유지하는 크레딧. tone은 warm 또는 dark.",
+        properties: { musicResourceId: { type: "string" }, tone: { type: "string", enum: ["warm", "dark"] }, credits: { type: "string", maxLength: 20000 }, backgroundResourceId: { type: "string" } },
+      },
       epilogue: { type: "array", description: "CutsceneBeat[]", items: CUTSCENE_BEAT_SCHEMA },
     },
     required: ["id", "name", "conditions"],
@@ -43,12 +50,20 @@ const defineEnding: ToolDefinition = {
     const conditions = parseEndingConditions(draft, args.conditions, flagWarnings);
     const priority = typeof args.priority === "number" ? Math.trunc(args.priority) : 0;
     const epilogue = parseEpilogue(draft, args.epilogue);
+    const prior = draft.endings?.find(entry => entry.id === id);
+    const presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
+    if (presentation !== undefined) {
+      try { validateEndingPresentation(presentation); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
+      if (presentation.musicResourceId && !collectResourceIds(draft).has(presentation.musicResourceId)) throw new ToolError("엔딩 음악 리소스를 찾을 수 없습니다.", { code: "invalid-args" });
+      if (presentation.backgroundResourceId && !collectResourceIds(draft).has(presentation.backgroundResourceId)) throw new ToolError("엔딩 배경 리소스를 찾을 수 없습니다.", { code: "invalid-args" });
+    }
     const ending: EndingDef = {
       id,
       name,
       conditions,
       priority,
       ...(epilogue ? { epilogue } : {}),
+      ...(presentation ? { presentation: structuredClone(presentation) } : {}),
     };
     draft.endings ??= [];
     const index = draft.endings.findIndex((entry) => entry.id === id);

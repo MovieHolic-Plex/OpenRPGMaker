@@ -1,3 +1,4 @@
+import { createDefeatRecovery } from "@/player/defeatRecovery";
 import { mapTileSize } from "@/project/tileGeometry";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { ACTION_STAMINA_MAX } from "@/player/actionCombatTypes";
@@ -630,12 +631,21 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     setSessionCheckpoint(this.session, snapshot);
   }
 
-  showGameOverScreen(message?: string): void {
-    showSceneGameOverScreen(this, message);
+  recoverFromDefeat(settings?: import("@/project/cinematicSettings").GameOverSettings): boolean {
+    const recovered = createDefeatRecovery(store.getCurrent(), this.session, settings);
+    if (!recovered) return false;
+    const checkpoint = getSessionCheckpoint(this.session);
+    this.applySession(recovered);
+    if (checkpoint) setSessionCheckpoint(this.session, checkpoint);
+    return true;
   }
 
-  showEndingScreen(title: string, message: string): void {
-    showSceneEndingScreen(this, title, message);
+  showGameOverScreen(message?: string, gameOverId?: string): void {
+    showSceneGameOverScreen(this, message, gameOverId);
+  }
+
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation): void {
+    showSceneEndingScreen(this, title, message, presentation);
   }
 
   returnToTitle(): void {

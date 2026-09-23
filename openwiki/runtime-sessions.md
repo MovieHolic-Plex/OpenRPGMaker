@@ -1,5 +1,56 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 여러 게임 오버의 실행과 미리보기 (2026-09-23)
+
+`showGameOverScreen(message?,gameOverId?)`는 `resolveGameOverSettings`로 선택한 설정을 고정하고,
+`playGameOverPresentation`에 재시도/회복/타이틀 콜백을 전달한다. 화면 연출과 결과는 별개다.
+`menu`는 체크포인트 재시도/타이틀, `recover`는 진행 유지·전원 회복·지점 귀환,
+`title`은 메시지 유지 시간 이후 타이틀 자동 복귀다. 각 정의의 시퀀스·배경·음악·시간을 사용한다.
+전경/병렬 인터프리터 모두 ID를 전달한다. 회복은 선택한 정의의 좌표를 사용한다.
+
+트룹 이벤트가 명시한 `gameOverId`는 `BattleEventStateSnapshot.gameOverRequest`로 필드 호스트에 전달한다.
+명시적 항목 실행은 canLose 전투에서도 해당 종단 흐름을 실행하고 호출자의 뒷 명령을 재개하지 않는다.
+ID 없는 기존 트룹 명령의 canLose 규칙은 유지한다. 일반 전멸은 프로젝트 기본 정의를 사용하며,
+기본 정의에 메시지가 있으면 일반 패배 문구로 덮어쓰지 않는다.
+
+`createTerminalSurface`는 DOM 입력·타이머·detach·부모 abort를 소유한다. 게임에서는
+`createTerminalScene`이 Phaser shutdown/destroy 및 기존 오디오 정리를 덧씌운다.
+에디터 미리보기는 DOM 소유자만 사용하며 게임 세션이나 전역 오디오를 종료하지 않는다.
+
+
+## 장르별 패배와 엔딩 흐름 (2026-09-22)
+
+`system.gameOver.presentation`은 `classic`(생략 시 기본), `horror`, `blackout` 중 하나다.
+장르 이름으로 추측하거나 전체 프로젝트를 자동 변경하지 않는다. DB → 게임 오버의
+「연출과 결과」 또는 `set_game_over`로 명시한다.
+
+- `classic`: 필드 암전 → 결과 그림 → 선택지. 기존 배경/문구/시퀀스를 보존한다.
+- `horror`: 900ms 암전 → 750ms 정적 → 글자 등장 → 1500ms 뒤 재시도/타이틀.
+  저작 배경이 없으면 검은 화면과 절제된 글자만 쓴다. 클래식 묘비 그림을 강제하지 않는다.
+- `blackout`: 암전 → 패배 문장(2200ms) → 회복 장소에서 800ms 밝아짐.
+  `gameOver.recovery?: {mapId,x,y}`를 지정하며, 생략 시 체크포인트 **좌표**, 그것도 없으면
+  시작 좌표를 쓴다. `defeatRecovery.ts`는 현재 세션을 복제해 파티 HP/MP·몬스터 HP/상태/PP를
+  회복하고 위치와 음악만 교체한다. 현재 변수·스위치·인벤토리·돈·경험치를 롤백하지 않는다.
+  체크포인트 재시도는 기존 스냅숏 복원이며 별개다. 존재하지 않거나 통행 불가능한 귀환 위치는
+  무한 암전 대신 재시도/타이틀 메뉴로 복구한다. 마지막 병원 기록이나 금전 패널티를 자동 추측하지 않는다.
+
+`terminalScene.ts`가 세 흐름과 엔딩의 입력·타이머·DOM 수명을 소유한다. 결과를 읽는 동안
+확정키를 차단하고, 선택지가 나타난 뒤 새 입력을 받는다. 교체·shutdown·destroy·DOM 분리 시
+타이머, 메뉴, 음악을 해제한다. `game-over-screen`/`ending-screen` 경계는 전환 중에도 유지해서
+맵 시뮬레이션이 먼저 재개되지 않게 한다. 모션 감소 설정은 이동/페이드를 없애되 읽는 시간을 보존한다.
+
+`EndingDef.presentation` 및 `ending` 명령의 `presentation`은 선택적
+`{tone?: "warm"|"dark", credits?: string, backgroundResourceId?: string, musicResourceId?: string}`이다.
+`triggerEnding`은 기존 조건/우선순위/에필로그를 그대로 실행하고 선택된 엔딩의 presentation을
+마지막 핸드오프로 넘긴다. 엔딩별 설정은 `define_ending`, 직접 명령의 분위기/크레딧은 이벤트
+편집기에서 저작한다. 엔딩은 암전 → 제목/본문(최소 1800ms, 확인으로 진행) → 저작 크레딧 →
+THE END → 타이틀 순서다. 크레딧은 자동 스크롤/완주 또는 새 확인 입력으로 끝나며,
+모션 감소에서는 PgUp/PgDn으로 읽는다. 전용 음악은 에필로그 화면부터 최종 화면까지 유지된다.
+크레딧이 없으면 해당 단계만 생략한다. 엔딩도 전체 인터프리터 스택과 병렬 후속 명령을 종료한다.
+
+실제 player.html 녹화/검증: `docs/reviews/2026-09-22-terminal-flows/README.md`.
+재현: `scripts/qa/runtime/terminal-flows.probe.mjs`. 메모리 fixture이며 프로젝트 콘텐츠 배포가 아니다.
+
 ## Opening and game-over cinematics (2026-09-06)
 
 - Persisted opt-in fields are `system.opening?: CinematicSequence` and
@@ -49,8 +100,21 @@
   per-host replacement plus scene shutdown/destroy detach playback, terminal
   cursor listeners and DOM. Authored labels/background apply; an event message
   takes precedence over the configured default, including explicit empty text.
-  Retry remains conditional on hasCheckpoint. Without a sequence/background the
-  legacy immediate panel and underlying-map presentation remain intact.
+  Retry remains conditional on hasCheckpoint. The default terminal is now an opaque
+  full-stage scene, not the field's window skin: bundled `easyrpg-game-over-game-over`
+  art, small text choices below its center, and keyboard hints (`runtime/gameOver.css`).
+  The art is an implicit web-export dependency even when no project setting/profile
+  references it. Authored backgrounds/text/labels still override defaults; the built-in
+  art's baked-in title is not duplicated, and image failure reveals the text fallback.
+  A black scene remains behind sequence teardown, so completing a cinematic cannot
+  expose the field/HUD. Entry stops shared field audio; checkpoint applySession owns
+  audio restoration. Long body copy scrolls with PgUp/PgDn independently of menu arrows.
+  `interpreter/resume.ts` terminates the whole stack on the gameOver handoff (including
+  killPlayer and nested common-event callers); it must never advance post-terminal commands.
+  Foreground completion callbacks are suppressed for this outcome. Parallel scheduling
+  stops when the terminal opens, including asynchronous continuations in the same session.
+  Actual player/GIF evidence: `docs/reviews/2026-09-22-game-over/README.md`;
+  reproducible probe: `scripts/qa/runtime/game-over-scene.probe.mjs`.
 - `runtime/playSurface.css` owns cinematic presentation in the shared `playerRuntime.css` closure
   (exported player and editor). Uploaded video MIME resolution uses the existing
   generatedAssetResourceResolver; no movie-command fallback behavior changed.

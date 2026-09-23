@@ -244,6 +244,7 @@ export async function runCommands(
       if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", "Esc Esc: 컷신 건너뛰기");
       const step = result;
       result = await consumeBlockingStep(scene, interpreter, step, currentEventId, skipController, current, () => { handledFailure = true; });
+      if (step.kind === "gameOver" || step.kind === "returnToTitle") normalCompletion = false;
       if (step.kind === "battleProcessing" && !step.canLose && activeSession.battleResult === "defeat") normalCompletion = false;
     }
     if (result.kind === "done" && base.isDone() && normalCompletion && current()) {
@@ -624,11 +625,11 @@ async function consumeBlockingStep(
     case "inn":
       return resumeWithValue(scene, interpreter, await playInn(scene, step));
     case "gameOver":
-      scene.showGameOverScreen(step.message);
+      scene.showGameOverScreen(step.message, step.gameOverId);
       return resumeInterpreter(interpreter);
     case "returnToTitle":
-      if (step.title || step.message) {
-        scene.showEndingScreen(step.title ?? "", step.message ?? "");
+      if (step.title !== undefined || step.message !== undefined || step.presentation) {
+        scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);
       } else {
         scene.returnToTitle();
       }

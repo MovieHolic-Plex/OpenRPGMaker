@@ -8,6 +8,7 @@ import {
   showPictureState,
 } from "@/project/session";
 import { store } from "@/project/store";
+import { dialogueHost } from "@/player/playSceneDom";
 import { setEventSpritePattern } from "@/player/eventSpriteResources";
 import { playAudioCommand, stopAudioChannel, stopAudioCommand } from "@/player/audio";
 import type { Command, CommonEvent, MoveCommand } from "@/project/types";
@@ -66,6 +67,8 @@ export function registerAutonomousMover(
 }
 
 export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): void {
+  const terminalOpen = () => Boolean(dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]'));
+  if (terminalOpen()) return;
   const activeEvents = scene.activeRuntimeEvents("parallel");
   const activeCommonEvents = activeParallelCommonEvents(scene);
   const activeKeys = new Set([
@@ -76,6 +79,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     if (!activeKeys.has(key)) scene.parallelProcesses.delete(key);
   }
   for (const event of activeEvents) {
+    if (terminalOpen()) return;
     const pageId = event.pageId ?? "legacy";
     const key = `${event.event.id}:${pageId}`;
     const process = scene.parallelProcesses.get(key) ?? createParallelProcess(scene, event, pageId);
@@ -90,6 +94,7 @@ export function updateParallelEvents(scene: PlaySceneContext, deltaMs: number): 
     consumeParallelSteps(scene, key, process, result);
   }
   for (const commonEvent of activeCommonEvents) {
+    if (terminalOpen()) return;
     const key = `common:${commonEvent.id}`;
     const process = scene.parallelProcesses.get(key) ?? createCommonParallelProcess(scene, commonEvent);
     if (process.stopped || process.pendingTimeTransition) continue;
@@ -161,6 +166,8 @@ function consumeParallelSteps(
   process: ParallelProcess,
   firstResult: StepResult
 ): void {
+  // Async parallel work may settle after another event has opened the terminal.
+  if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) return;
   let result = firstResult;
   let guard = 0;
   while (result.kind !== "done" && guard < 16) {
@@ -182,6 +189,10 @@ function consumeParallelSteps(
         void move.then((outcome) => {
           if (scene.parallelProcesses.get(key) !== process) return;
           process.pendingTimeTransition = undefined;
+          if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) {
+            process.stopped = true;
+            return;
+          }
           // 병렬 이벤트도 「실패하면 중단」을 지킨다. 안 그러면 전경 명령과 같은
           // 저작이 병렬에서만 조용히 계속 돌아 다른 결말이 된다(OPRN-OUT-013).
           if (step.onFailure === "stop" && outcome !== "arrived") {
@@ -240,6 +251,10 @@ function startParallelTimeTransition(
   void pending.then((ok) => {
     if (scene.parallelProcesses.get(key) !== process || process.pendingTimeTransition !== pending) return;
     process.pendingTimeTransition = undefined;
+    if (dialogueHost(scene)?.querySelector('[data-testid="game-over-screen"], [data-testid="ending-screen"]')) {
+      process.stopped = true;
+      return;
+    }
     if (!ok) {
       process.stopped = true;
       releaseCutsceneControlForOwner(scene.session, process.currentEventId);
@@ -363,10 +378,11 @@ export function applyNonBlockingStep(scene: PlaySceneContext, step: StepResult, 
       scene.showRuntimeOverlay("inn-scene", commerceOverlayText(step));
       return true;
     case "gameOver":
-      scene.showGameOverScreen(step.message);
+      scene.showGameOverScreen(step.message, step.gameOverId);
       return true;
     case "returnToTitle":
-      scene.returnToTitle();
+      if (step.title !== undefined || step.message !== undefined || step.presentation) scene.showEndingScreen(step.title ?? "", step.message ?? "", step.presentation);
+      else scene.returnToTitle();
       return true;
     case "done":
     case "text":

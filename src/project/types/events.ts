@@ -488,10 +488,10 @@ export type Command =
   | { kind: "runControl"; action: "end"; result: "completed" | "failed" | "abandoned" }
   | { kind: "runControl"; action: "setFlag"; flag: string; value: boolean }
   | { kind: "runControl"; action: "resetRoom"; roomId?: string }
-  | { kind: "killPlayer"; message?: string }
+  | { kind: "killPlayer"; message?: string; gameOverId?: string }
   | { kind: "triggerEnding"; endingId?: string }
-  | { kind: "gameOver" }
-  | { kind: "ending"; title: string; message: string }
+  | { kind: "gameOver"; gameOverId?: string }
+  | { kind: "ending"; title: string; message: string; presentation?: import("../cinematicSettings").EndingPresentation }
   | { kind: "returnToTitle" }
   | { kind: "setFlag"; flag: FlagName; value: boolean }
   | { kind: "setSelfSwitch"; key: SelfSwitchKey; value: boolean }

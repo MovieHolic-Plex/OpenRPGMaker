@@ -1,5 +1,22 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 이름별 게임 오버 (2026-09-23)
+
+v4 선택 필드: `system.gameOvers?: {id,name,settings:GameOverSettings}[]`, `defaultGameOverId?:string`.
+기존 `system.gameOver`는 공통 설정으로 보존한다. 명시한 ID → 프로젝트 기본 ID → 공통 설정 순으로 **ID가 생략된 단계만** 내려간다.
+없는 명시적 ID를 다른 정의의 회복 지점으로 대체하지 않는다. `resolveGameOverSettings`가 이 계약의 단일 진입점이다.
+고유하고 비어 있지 않은 ID/이름, 최대 64개, 기본 ID/명령 ID의 존재, 각 정의의 모든 미디어 및 귀환 좌표를 검증한다.
+정규화·직렬화·웹 export 자원 수집이 이름별 설정도 보존한다. 스키마/앱 버전을 수동 변경하지 않았다.
+
+`GameOverSettings` 추가 필드:
+- `outcome?: "menu"|"recover"|"title"` (생략하면 기존 blackout만 recover, 나머지 menu).
+- `musicResourceId?:string` (시퀀스 종료 후 결과 화면의 음악).
+- `timing?: {fadeOutMs?,silenceMs?,menuDelayMs?,messageHoldMs?}` (정수 0..120000, 생략은 연출별 기본값).
+- `gameOver`/`killPlayer` 명령의 `gameOverId?:string`은 특정 정의를 실행하며 명령 스택을 종료한다.
+
+`test/gameOverLibrary.test.ts`에 호환성·저장 왕복·참조 오류·인터프리터 전달·귀환 계약을 추가했다. 이번 세션에서 Vitest/전체 typecheck/gates는 실행하지 않았다.
+
+
 ## 확정된 게임 기획 (2026-09-22)
 
 `Project.gameDesignBrief?: GameDesignBrief`는 새 프로젝트 인터뷰의 저작 메타데이터다.
@@ -348,6 +365,20 @@ Sources: [store types and methods](../src/project/store.ts) and
 apply-commit correlation. [P1 evidence](../output/evidence/ai-harness/p1/README.md)
 records real editor and isolated LegacyDb proof. This adds no schema migration,
 durable receipt recovery, cross-device guarantee, or P2-P5 implementation.
+
+## 패배 흐름과 엔딩 프레젠테이션 (2026-09-22)
+
+기존 v4 문서에 선택 필드만 추가한다. `system.gameOver.presentation?: "classic"|"horror"|"blackout"`,
+`recovery?: {mapId:string,x:number,y:number}`. 좌표는 음이 아닌 안전한 정수이며 참조 검증에서
+기존 맵 범위를 확인한다. 미지정은 그대로 미지정으로 왕복한다. blackout은 새 저장 슬롯이나
+영구 진행 필드를 만들지 않고 현재 세션에서 회복한다. 체크포인트의 저장 수명은 바꾸지 않는다.
+
+`EndingDef.presentation` 및 `{kind:"ending"}`의 `presentation`은
+`{tone?:"warm"|"dark",credits?:string,backgroundResourceId?:string,musicResourceId?:string}`.
+미지 필드/잘못된 tone/20,000자 초과 credits를 거절한다. 배경·음악은 기존 리소스 참조 검증 및
+내보내기 문자열 수집을 따른다. 엔딩 정규화는 선택 필드를 보존하고 `triggerEnding`의 에필로그
+뒤에도 전달한다. 브라우저 편집기에서 recovery 설정의 serialize→deserialize 동등성을 확인했다.
+단위 계약은 `test/defeatRecovery.test.ts` (이번 세션에서 테스트 스위트 미실행).
 
 ## Opening and game-over cinematic settings (2026-09-06)
 
