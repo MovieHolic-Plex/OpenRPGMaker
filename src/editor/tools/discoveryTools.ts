@@ -38,6 +38,14 @@ export function matchScore(name: string, description: string, query: string): nu
   }, 0);
 }
 
+/** 정확한 이름 검색에서 이름처럼 보이지만(밑줄 포함) 없는 것 — 모델이 지어낸 이름을 알린다. */
+function unknownNames(exact: readonly ToolDefinition[], named: ReadonlySet<string>): string {
+  if (exact.length === 0) return "";
+  const found = new Set(exact.map((tool) => tool.name));
+  const missing = [...named].filter((word) => word.includes("_") && !found.has(word));
+  return missing.length > 0 ? `. 없는 툴 이름: ${missing.join(", ")}` : "";
+}
+
 export const FIND_TOOLS: ToolDefinition = {
   name: "find_tools",
   description: "현재 라운드에 노출되지 않은 전체 편집기 기능을 검색한다. 기능 키워드나 정확한 툴 이름을 보내면 다음 라운드에서 호출할 수 있는 툴 스키마를 찾는다. 검색 결과는 다음 라운드에 추가된다. 결과가 없으면 다른 기능어나 영문 툴 이름으로 다시 검색한다.",
@@ -56,16 +64,24 @@ export const FIND_TOOLS: ToolDefinition = {
     const query = args.query as string;
     const domain = parseDomain(args.domain);
     const limit = normalizedLimit(args.limit);
-    const candidates = activeTools()
+    const pool = activeTools()
       .filter((tool) => tool.name !== FIND_TOOLS.name)
-      .filter((tool) => domain === undefined || tool.domains?.includes(domain))
+      .filter((tool) => domain === undefined || tool.domains?.includes(domain));
+    // 정확한 툴 이름을 보냈으면 그 툴만 돌려준다. 예전엔 설명에 그 이름이 나오는 툴 5개가 스키마째 딸려 와
+    // 한 번에 약 45k자였고, 그 결과가 이후 모든 턴 입력에 되실렸다(2026-09-24 헤드리스 「등대지기의 겨울」:
+    // find_tools 6회 중 4회가 정확한 이름 검색).
+    const named = new Set(words(query));
+    const exact = pool.filter((tool) => named.has(tool.name));
+    const candidates = (exact.length > 0 ? exact : pool)
       .map((tool, index) => ({ tool, index, score: matchScore(tool.name, tool.description, query) }))
       .filter((candidate) => candidate.score > 0)
       .sort((left, right) => right.score - left.score || left.index - right.index)
       .slice(0, limit)
       .map(({ tool }) => ({ name: tool.name, mode: tool.mode, domains: tool.domains ?? [], description: tool.description, parameters: tool.parameters }));
     return {
-      summary: candidates.length > 0 ? `편집기 툴 ${candidates.length}개 발견: ${candidates.map((candidate) => candidate.name).join(", ")}` : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`,
+      summary: candidates.length > 0
+        ? `편집기 툴 ${candidates.length}개 발견: ${candidates.map((candidate) => candidate.name).join(", ")}${unknownNames(exact, named)}`
+        : `"${query}"에 맞는 활성 편집기 툴이 없습니다. 다른 기능어 또는 영문 툴 이름으로 다시 검색하세요.`,
       data: { matches: candidates },
     };
   },

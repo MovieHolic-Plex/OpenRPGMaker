@@ -463,7 +463,9 @@ const listResources: ToolDefinition = {
         .map(option => ({ id: option.id, label: option.name }));
     } else {
       // 타일 검색은 프로젝트에 기록된 사용자 메타데이터(맵 인터뷰 결과)를 겹쳐 검색한다.
-      all = searchResources(kind, args.query, {
+      // 빈 query 는 그림과 같이 전체 훑어보기다. 예전엔 0건을 돌려줘 모델이 「actor」「people」로 다시 검색했다
+      // (2026-09-24 헤드리스 「등대지기의 겨울」: charset·monster 빈 검색 2회가 헛돌았다).
+      all = searchResources(kind, args.query.trim() || "*", {
         tileset: project.tilesets[DEFAULT_TILESET_ID],
         charsetLabels: project.charsetLabels,
         audioProject: project,
