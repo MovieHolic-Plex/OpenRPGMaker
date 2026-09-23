@@ -13,10 +13,20 @@ gen 한 번(모델) → check(초) → 코드 고침 → replay + check(초) →
 
 | 명령 | 하는 일 |
 | --- | --- |
+| `npm run qa:game -- gen --brief scripts/qa-game/briefs/lighthouse-jrpg.json --out qa-runs/<id>` | 브라우저 「이 기획으로 시작」과 같은 함수(시드 `createNewProjectSeed`+직렬화 왕복+`prepareProjectInterviewStartup` 과 같은 오프닝 교체, 지시문 `buildWelcomeGenrePresetPrompt`, 턴 분류 `classifyPlainPiTurn`, Ultrabrain 계획 턴·실행 요청 `buildUltrabrainPlanRequest`/`buildPiRunRequest`, 역할 모델 `modelForRole`, 게시 `createPiPublication`)로 한 판을 만든다. `seed.json`·`instruction.txt`·`plan.txt`·`request.json`·`project.json`·`tools.jsonl`(호출마다 전체 인자·ok·요약·diff/경고·순서)·`events.ndjson`·`meta.json`(모델·단계별 시간·토큰·브라우저와 다른 점)을 쓰고 끝에 check 를 돌린다. 옵션 `--provider --model --brain-model --autonomy --apply --timeout-ms --no-check`. |
 | `npm run qa:game -- check qa-runs/<id>` | `<id>/project.json` 을 검사해 `check.json`·`check.txt` 를 쓴다. 막힘이 있으면 종료 코드 1. `--project x.json` 으로 임의 파일도 된다. |
 | `… check <id> --raw` | 로더를 거치지 않은 원본 JSON 을 검사한다. 기본(로더를 거친 모양 = 런타임이 보는 모양)은 로더가 조용히 고친 명령을 `load-normalized` 경고로만 남기므로, 생성기(조수·도구)가 쓴 결함 자체를 보려면 `--raw`. |
 
-(`gen`·`replay`·`render` 는 다음 단계에서 붙는다.)
+(`replay`·`render` 는 다음 단계에서 붙는다.)
+
+### gen 이 브라우저와 다른 점
+
+- 조화 검수(reviewMapHarmony)는 돌리지 않는다. 캔버스 캡처가 필요하고 기본 적용 모드에서는 지적만 남기기 때문이다.
+- 의도 선언은 같은 몸통을 워커 `completeProvider` 로 직접 보낸다(제공자 max_tokens 클램프는 생략).
+- 동반 서비스·워커 HTTP 없이 같은 프로세스에서 `runPiAgent` 를 부른다.
+- 맵 손실 확인 모달처럼 사람이 답해야 하는 확인은 헤드리스로 답할 수 없다.
+
+키는 동반 서비스 runAgent 와 같게 푼다: 주 제공자 키, 역할 모델(deep·writer) 제공자 키, 웹 검색용 openai-codex 키를 인증 저장소(`resolveRequestApiKey`)에서. 브라우저에서 연결해 둔 제공자는 그대로 쓴다.
 
 ## check 가 보는 것
 

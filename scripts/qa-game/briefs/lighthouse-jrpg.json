@@ -1,0 +1,42 @@
+{
+  "title": "등대지기의 겨울",
+  "presetId": "adventure-jrpg",
+  "screenSize": "standard",
+  "brief": {
+    "version": 1,
+    "presetId": "adventure-jrpg",
+    "summary": "모험의 동기: 눈보라가 그치지 않는 항구 마을에서, 겨울마다 불을 밝히던 등대지기 할아버지가 사라졌다. 손녀 주인공이 그 이유를 찾아 떠난다.\n중심 재미: 탐험과 발견\n진행 구조: 마을과 던전을 잇는 선형 여정\n남길 감정: 희망과 동료애 (추천안)\n첫 제작 범위: 작은 보스와 귀환까지\n추가 요청: 항구 마을(상점·여관·등대지기 집), 얼어붙은 해안 동굴 던전, 등대 꼭대기에서 눈보라 정령 보스전, 할아버지를 구해 등대 불을 다시 켜는 엔딩. 동료 1명(떠돌이 어부 소년).",
+    "answers": {
+      "experience": {
+        "question": "주인공은 왜 모험을 떠나나요?",
+        "label": "모험의 동기",
+        "text": "눈보라가 그치지 않는 항구 마을에서, 겨울마다 불을 밝히던 등대지기 할아버지가 사라졌다. 손녀 주인공이 그 이유를 찾아 떠난다.",
+        "source": "user"
+      },
+      "activity": {
+        "question": "무엇에 가장 많은 시간을 쓰고 싶나요?",
+        "label": "중심 재미",
+        "text": "탐험과 발견",
+        "source": "user"
+      },
+      "progression": {
+        "question": "모험의 길은 어떻게 이어지나요?",
+        "label": "진행 구조",
+        "text": "마을과 던전을 잇는 선형 여정",
+        "source": "user"
+      },
+      "detail": {
+        "question": "모험 끝에 어떤 감정이 남으면 좋을까요?",
+        "label": "남길 감정",
+        "text": "희망과 동료애",
+        "source": "recommended"
+      },
+      "scope": {
+        "question": "첫 초안은 어느 구간을 완주하게 할까요?",
+        "label": "첫 제작 범위",
+        "text": "작은 보스와 귀환까지",
+        "source": "user"
+      }
+    }
+  }
+}
