@@ -49,7 +49,7 @@ function adoptLegacyAuthFile(filePath, legacyPath, log) {
 }
 
 function emptyDoc() {
-  return { version: 1, providers: {}, declined: {} };
+  return { version: 1, providers: {}, declined: {}, envScan: "ask" };
 }
 
 function readDoc(path) {
@@ -58,7 +58,8 @@ function readDoc(path) {
     if (!raw || typeof raw !== "object") return emptyDoc();
     const providers = raw.providers && typeof raw.providers === "object" ? raw.providers : {};
     const declined = raw.declined && typeof raw.declined === "object" ? raw.declined : {};
-    return { version: 1, providers, declined };
+    const envScan = raw.envScan === "allow" || raw.envScan === "deny" ? raw.envScan : "ask";
+    return { version: 1, providers, declined, envScan };
   } catch {
     return emptyDoc();
   }
@@ -122,6 +123,18 @@ export function createOhMyPiAuthStore(filePath = defaultOhMyPiAuthPath(), option
     /** 사용자가 이 제공자의 연결을 끊었는가 — 디스크 자격 자동 채용을 막는 표시다. */
     adoptionDeclined(provider) {
       return Boolean(load().declined[provider]);
+    },
+    /** 환경 변수 키를 봐도 되는가. 기본은 ask — 동의 전에는 읽지 않는다. */
+    envScan() {
+      const value = load().envScan;
+      return value === "allow" || value === "deny" ? value : "ask";
+    },
+    setEnvScan(decision) {
+      if (decision !== "allow" && decision !== "deny") throw new Error("env scan decision");
+      const doc = load();
+      doc.envScan = decision;
+      save(doc);
+      return decision;
     },
     setOAuth(provider, creds, options = {}) {
       const doc = load();

@@ -7,7 +7,7 @@
 //  ③ 제공자 68종을 종류 구분 없이 나열하고 옵션 텍스트에 영어 enum(`· oauth`)이 샜다.
 //  ④ 안내문(companionHint)에 hidden 이 없어 열 때마다 번쩍이고, 성공 경로에서도 미로그인
 //     사용자에게 "서비스가 안 켜졌다"고 오진했다.
-//  ⑤ 감독 결정: env 자격은 무시한다 — 셸 환경 변수만 있는 상태를 "연결됨"이라 말하지 않는다.
+//  ⑤ 환경 변수 키는 동의한 뒤에만 연결로 센다. 연결 해제 버튼은 붙이지 않는다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 
@@ -199,16 +199,28 @@ describe("안내와 오류를 구분하고 오진하지 않는다", () => {
   });
 });
 
-describe("env 자격은 연결로 인정하지 않는다 (감독 결정)", () => {
-  it("환경 변수만 있으면 로그인 필요로 말한다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true });
+describe("환경 변수 키", () => {
+  it("동의한 환경 변수 키는 연결됨으로 말한다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true, envScan: "allow" });
     const { root, dispose } = await render();
     await Promise.resolve();
     await Promise.resolve();
 
     const text = findByTestId(root, "ai-oauth-status")?.textContent ?? "";
     expect(text).toContain("환경 변수");
-    expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("disconnected");
+    expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("connected");
+    expect(findByTestId(root, "ai-env-scan")?.hidden).toBe(true);
+    dispose();
+  });
+
+  it("동의 전에는 찾아볼지 묻는다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, envScan: "ask" });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(findByTestId(root, "ai-env-scan")?.hidden).toBe(false);
+    expect(findByTestId(root, "ai-env-scan-allow")?.textContent).toContain("찾아보기");
     dispose();
   });
 

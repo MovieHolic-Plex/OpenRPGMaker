@@ -17,6 +17,7 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(isCompanionPath("/auth/providers"), true);
     assert.equal(isCompanionPath("/auth/key"), true);
     assert.equal(isCompanionPath("/auth/logout"), true);
+    assert.equal(isCompanionPath("/auth/env-scan"), true);
     assert.equal(isCompanionPath("/v1/chat/completions"), true);
     assert.equal(isCompanionPath("/v1/images/generations"), true);
     assert.equal(isCompanionPath("/oauth/launch"), true);

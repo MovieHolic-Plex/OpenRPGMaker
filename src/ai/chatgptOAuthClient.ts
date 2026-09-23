@@ -15,6 +15,14 @@ function companionOrigin(): string {
 }
 
 
+/** Authentication only: streaming agent calls keep their own cancellation and timeout. */
+export function companionAuthHeaders(initial: HeadersInit = {}): Headers {
+  const headers = new Headers(initial);
+  const token = companionToken();
+  if (token) headers.set("x-oprn-companion-token", token);
+  return headers;
+}
+
 export function companionAuthUrl(path: string, providerId?: string): string {
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const query = new URLSearchParams({ provider });
@@ -37,24 +45,27 @@ export interface ChatGptAuthStatus {
   readonly expired?: boolean;
   /** 자격의 출처가 셸 환경 변수인가 — 에디터가 만들지도, 지우지도 못하는 자격이다. */
   readonly env?: boolean;
+  /** 환경 변수 스캔 동의. ask 이면 아직 고르지 않았다. */
+  readonly envScan?: "ask" | "allow" | "deny";
 }
 
 /**
- * **에디터가 "연결됨"으로 인정하는가** — 감독 결정(2026-08-21): env 자격은 무시한다.
- *
- * 동반 서비스는 셸 환경 변수(예: `ANTHROPIC_API_KEY`)만 있어도 `connected:true` 를 준다.
- * 그 자격은 에디터가 만들지도 못하고 지우지도 못하므로, 화면이 그것을 "연결됨"이라 말하면
- * 연결 해제 버튼이 거짓이 되고 감독은 자기가 제어할 수 없는 상태를 보게 된다.
- * 그래서 에디터는 `~/.oprn/oh-my-pi-auth.json` 에 실제로 저장된 자격만 인정한다.
+ * 요청에 쓸 수 있는 자격인가. 저장된 로그인과, 사용자가 동의한 뒤 찾은 환경 변수 키를 포함한다.
+ * 환경 변수는 에디터가 지우지 못하므로 연결 해제 버튼은 `hasStoredCompanionCredential` 만 본다.
  */
+export function hasUsableCompanionCredential(status: ChatGptAuthStatus): boolean {
+  return status.connected && status.expired !== true;
+}
+
+/** 에디터가 지울 수 있는 저장 자격. 환경 변수만 있으면 false. */
 export function hasStoredCompanionCredential(status: ChatGptAuthStatus): boolean {
-  return status.connected && status.env !== true && status.expired !== true;
+  return hasUsableCompanionCredential(status) && status.env !== true;
 }
 
 /** 동반 서비스가 미연결/만료를 말하면 로그인이 필요하다. 서비스에 닿지 못한 경우는 false — 전송 오류 경로가 담당한다. */
 export async function companionCredentialMissing(providerId?: string): Promise<boolean> {
   try {
-    return !hasStoredCompanionCredential(await fetchChatGptAuthStatus(providerId));
+    return !hasUsableCompanionCredential(await fetchChatGptAuthStatus(providerId));
   } catch {
     return false;
   }
@@ -171,7 +182,22 @@ function readAuthStatus(payload: Record<string, unknown> | null): ChatGptAuthSta
     authKind: authKind === "oauth" || authKind === "apiKey" || authKind === "local" ? authKind : undefined,
     expired: typeof payload?.expired === "boolean" ? payload.expired : undefined,
     env: typeof payload?.env === "boolean" ? payload.env : undefined,
+    envScan: payload?.envScan === "allow" || payload?.envScan === "deny" || payload?.envScan === "ask"
+      ? payload.envScan
+      : undefined,
   };
+}
+
+export async function setCompanionEnvScan(decision: "allow" | "deny", providerId?: string): Promise<ChatGptAuthStatus> {
+  const response = await companionFetch(companionAuthUrl("/auth/env-scan", providerId), {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ decision }),
+  });
+  if (!response.ok) {
+    throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
+  }
+  return readAuthStatus(await readJsonBody(response));
 }
 
 /** 실패 응답 본문의 `error` 필드를 읽는다. 본문이 없거나 JSON 이 아니면 undefined — 원인을 못 읽어도 (B) 는 (B) 다. */
