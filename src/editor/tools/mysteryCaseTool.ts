@@ -12,10 +12,10 @@
 // 갈아 끼울 지점은 compileEvidencePresentation / compileAccusationChoice 두 함수뿐이다.
 
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
-import { reachableMapIdsFromStart } from "@/project/mapInspection";
+import { collectCommands, reachableMapIdsFromStart } from "@/project/mapInspection";
 import type { Command, EventPage, EventPageCondition, GameEvent, GameMap, Project } from "@/project/types";
 import type { SceneStep, SceneTestInput } from "@/testing/sceneTestRunner";
 import { withJosa } from "@/util/josa";
@@ -415,21 +415,92 @@ function placements(spec: MysteryCase): Placement[] {
   ];
 }
 
+/** 첫 조건 없는 페이지(없으면 첫 페이지)가 플레이어를 막는가 — 런타임 runtimeEventView 의 기본값(priority same·overlapForbidden)과 같다. */
+function eventBlocksPlayer(event: GameEvent): boolean {
+  const page = event.pages?.find((entry) => !entry.conditions || Object.keys(entry.conditions).length === 0) ?? event.pages?.[0];
+  if (!page) return true;
+  return (page.priority ?? "same") === "same" && (page.overlapForbidden ?? true);
+}
+
+/** seeds 에서 걸어서 닿는 칸. blocked 칸(인물·막는 이벤트)은 지나갈 수 없다. */
+function walkableCells(project: Project, map: GameMap, seeds: readonly { x: number; y: number }[], blocked: ReadonlySet<string>): Set<string> {
+  const seen = new Set<string>();
+  const queue: Array<[number, number]> = [];
+  for (const seed of seeds) {
+    const key = `${seed.x},${seed.y}`;
+    if (!seen.has(key)) { seen.add(key); queue.push([seed.x, seed.y]); }
+  }
+  for (let head = 0; head < queue.length; head++) {
+    const [x, y] = queue[head];
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx;
+      const ny = y + dy;
+      const key = `${nx},${ny}`;
+      if (seen.has(key) || blocked.has(key) || !canMove(project, map, x, y, nx, ny)) continue;
+      seen.add(key);
+      queue.push([nx, ny]);
+    }
+  }
+  return seen;
+}
+
+/** 플레이어가 이 맵에 들어서는 칸: 시작 맵이면 시작 위치, 아니면 도달 가능한 맵에서 이 맵으로 오는 문의 도착 칸. 모르면 빈 배열. */
+function entryCells(project: Project, map: GameMap, reachableMaps: ReadonlySet<string>): { x: number; y: number }[] {
+  const out: { x: number; y: number }[] = [];
+  if (map.id === project.startMapId) out.push({ x: project.startPos.x, y: project.startPos.y });
+  for (const source of Object.values(project.maps)) {
+    if (!reachableMaps.has(source.id)) continue;
+    for (const command of collectCommands(source.events)) {
+      if (command.kind === "transfer" && command.mapId === map.id) out.push({ x: command.x, y: command.y });
+    }
+  }
+  return out;
+}
+
 function checkReachable(project: Project, spec: MysteryCase, problems: MysteryProblem[]): void {
   const push = (message: string) => problems.push({ code: "mystery-unreachable", message });
   const prefix = eventPrefix(spec.caseId);
   const seen = new Map<string, string>();
-  const reachableByMap = new Map<string, Set<string>>();
-  const startReachable = (map: GameMap): Set<string> | null => {
-    if (map.id !== project.startMapId) return null;
-    const cached = reachableByMap.get(map.id);
-    if (cached) return cached;
-    const cells = computeReachableCells(project, map, project.startPos.x, project.startPos.y);
+  const all = placements(spec);
+  const reachableMaps = reachableMapIdsFromStart(project);
+  const reused = new Set(all.flatMap((placement) => placement.reuseEventId ?? []));
+  // 인물(용의자·지목 NPC)과 사건 밖의 막는 이벤트는 플레이어가 지나갈 수 없다 — 한 칸 통로에 서면 그 너머 방이 통째로 막힌다
+  // (manor-mystery 실측: 지목 테이블이 서재 문간, 집사가 주방 복도에 서서 독약병·조카에게 못 갔는데 검사를 통과했다).
+  const blockersOn = (map: GameMap, without?: Placement): Map<string, string> => new Map([
+    ...map.events
+      .filter((event) => !event.id.startsWith(prefix) && !reused.has(event.id) && eventBlocksPlayer(event))
+      .map((event) => [`${event.x},${event.y}`, `이벤트 '${event.name ?? event.id}'`] as const),
+    ...all
+      .filter((other) => other.kind === "character" && other !== without && other.at.mapId === map.id)
+      .map((other) => [`${other.at.x},${other.at.y}`, other.label] as const),
+  ]);
+  const reachableByMap = new Map<string, Set<string> | null>();
+  const reachableOn = (map: GameMap): Set<string> | null => {
+    if (reachableByMap.has(map.id)) return reachableByMap.get(map.id)!;
+    const seeds = reachableMaps.has(map.id) ? entryCells(project, map, reachableMaps) : [];
+    const cells = seeds.length > 0 ? walkableCells(project, map, seeds, new Set(blockersOn(map).keys())) : null;
     reachableByMap.set(map.id, cells);
     return cells;
   };
-  const all = placements(spec);
-  const reachableMaps = reachableMapIdsFromStart(project);
+  /** 막힌 배치를 여는 인물: 그 인물 하나를 치우면 닿는다. */
+  const culpritBlocker = (map: GameMap, at: CaseAt): Placement | undefined => {
+    const seeds = entryCells(project, map, reachableMaps);
+    return all.find((other) => {
+      if (other.kind !== "character" || other.at.mapId !== map.id) return false;
+      if (other.at.x === at.x && other.at.y === at.y) return false;
+      const cells = walkableCells(project, map, seeds, new Set(blockersOn(map, other).keys()));
+      return isAdjacentOrOn(cells, at.x, at.y);
+    });
+  };
+  /** 인물을 (x,y) 에 세웠을 때 다른 배치 중 하나라도 걸어서 못 닿게 되면 참 — 후보 칸 고를 때 통로를 피한다. */
+  const chokepointTest = (map: GameMap, self: Placement) => (x: number, y: number): boolean => {
+    const seeds = entryCells(project, map, reachableMaps);
+    if (seeds.length === 0) return false;
+    const blocked = new Set(blockersOn(map, self).keys());
+    blocked.add(`${x},${y}`);
+    const cells = walkableCells(project, map, seeds, blocked);
+    return all.some((other) => other !== self && other.at.mapId === map.id && !isAdjacentOrOn(cells, other.at.x, other.at.y));
+  };
   const reportedMaps = new Set<string>();
   // 이 배치 말고 그 맵에 서 있을 것들: 사건 밖 이벤트 + 다른 사건 배치.
   const othersAt = (map: GameMap, self: Placement): Set<string> => new Set([
@@ -469,9 +540,9 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
     const blocker = map.events.find((event) =>
       event.x === at.x && event.y === at.y && !event.id.startsWith(prefix) && event.id !== placement.reuseEventId);
     if (blocker) push(`${label}: (${at.x}, ${at.y}) 에 다른 이벤트 '${blocker.name ?? blocker.id}' 가 이미 있습니다.`);
-    const reachable = startReachable(map);
+    const reachable = reachableOn(map);
     const hint = () => {
-      const near = nearestUsableCell(project, map, at, placement.kind, reachable);
+      const near = nearestUsableCell(project, map, at, placement.kind, reachable, placement.kind === "character" ? chokepointTest(map, placement) : undefined);
       return near ? ` 가까운 후보: (${near.x}, ${near.y}).` : "";
     };
     // 플레이어가 이 칸에 스폰된다 — 인물이 서면 겹쳐 나오고, 조사 지점은 밟고 선 채 시작한다(run5 실측).
@@ -493,7 +564,14 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
       continue;
     }
     if (reachable && !isAdjacentOrOn(reachable, at.x, at.y)) {
-      push(`${label}: 시작 위치 (${project.startPos.x}, ${project.startPos.y}) 에서 걸어서 닿을 수 없습니다 (${at.x}, ${at.y}).${hint()}`);
+      const blocker = culpritBlocker(map, at);
+      if (blocker) {
+        const near = nearestUsableCell(project, map, blocker.at, blocker.kind, reachable, chokepointTest(map, blocker));
+        push(`${blocker.label}: (${blocker.at.x}, ${blocker.at.y}) 에 서면 통로를 막아 ${label} (${at.x}, ${at.y}) 에 걸어서 닿을 수 없습니다. 인물은 문간·한 칸 복도가 아닌 방 안에 세우세요.${near ? ` 가까운 후보: (${near.x}, ${near.y}).` : ""}`);
+      } else {
+        const from = map.id === project.startMapId ? `시작 위치 (${project.startPos.x}, ${project.startPos.y})` : "이 맵의 입구";
+        push(`${label}: ${from} 에서 걸어서 닿을 수 없습니다 (${at.x}, ${at.y}) — 벽·물 또는 다른 인물·이벤트가 길을 막습니다.${hint()}`);
+      }
     }
   }
 }
@@ -532,6 +610,7 @@ function nearestUsableCell(
   at: CaseAt,
   kind: Placement["kind"],
   reachable: ReadonlySet<string> | null,
+  blocksOthers?: (x: number, y: number) => boolean,
 ): { x: number; y: number } | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
   for (let radius = 1; radius <= 4; radius += 1) {
@@ -544,6 +623,7 @@ function nearestUsableCell(
         const usable = kind === "character" ? isPassable(project, map, x, y) : interactionStandCell(project, map, x, y, occupied) !== null;
         if (!usable) continue;
         if (reachable && !isAdjacentOrOn(reachable, x, y)) continue;
+        if (blocksOthers?.(x, y)) continue;
         return { x, y };
       }
     }

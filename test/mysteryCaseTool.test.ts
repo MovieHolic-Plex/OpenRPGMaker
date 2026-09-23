@@ -205,6 +205,41 @@ describe("check_mystery_case — 사건 일관성 검사", () => {
     expect(problems.some((p) => p.code === "mystery-unreachable" && p.message.includes("사냥꾼 레오") && p.message.includes("닿을 수 없"))).toBe(true);
   });
 
+  // 실측(manor-mystery gen): 지목 테이블이 서재 문간 한 칸에 서서 그 너머 방의 증거·용의자에게 못 갔는데 검사를 통과했다.
+  it("한 칸 통로에 선 인물이 그 너머 배치를 막으면 막는 인물을 짚고 통로 밖 후보를 준다", () => {
+    const project = fixture();
+    const map = project.maps[project.startMapId];
+    const wall = (x: number, y: number) => { map.lowerTiles[y * map.width + x] = TILE.WALL; };
+    // y=6 가로 벽, 통로는 (10,6) 한 칸. 용의자 셋(y=3)은 벽 너머, 시작 (10,8) 은 아래.
+    for (let x = 0; x < map.width; x += 1) if (x !== 10) wall(x, 6);
+    const spec = caseSpec(map.id, (s) => { s.accuser.at = { mapId: map.id, x: 10, y: 6 }; });
+    const problems = (runTool({ project }, "check_mystery_case", spec).data as { problems: { code: string; message: string }[] }).problems;
+    const problem = problems.find((p) => p.code === "mystery-unreachable" && p.message.includes("경비대장 로버트") && p.message.includes("통로를 막아"));
+    assert(problem, JSON.stringify(problems));
+    const hint = /가까운 후보: \((\d+), (\d+)\)/.exec(problem.message);
+    assert(hint, problem.message);
+    expect(`${hint[1]},${hint[2]}`).not.toBe("10,6");
+    expect(runTool({ project }, "author_mystery_case", spec).ok).toBe(false);
+    // 후보 칸으로 옮기면 통과한다.
+    const moved = caseSpec(map.id, (s) => { s.accuser.at = { mapId: map.id, x: Number(hint[1]), y: Number(hint[2]) }; });
+    const recheck = runTool({ project }, "check_mystery_case", moved);
+    expect(recheck.data, JSON.stringify(recheck.data)).toMatchObject({ ok: true });
+  });
+
+  it("시작 맵이 아닌 사건 맵도 문으로 들어선 칸에서 걸어서 닿는지 본다", () => {
+    const project = fixture();
+    const ctx = { project };
+    expect(runTool(ctx, "create_map", { id: "map_inn", name: "주막", width: 20, height: 15 }).ok).toBe(true);
+    linkInn(ctx.project);
+    const inn = ctx.project.maps.map_inn;
+    // 주막 (15,11) 장부를 벽 고리로 가둔다 — 문 도착 칸 (1,1) 에서 닿지 않는다.
+    for (let x = 13; x <= 17; x += 1) { inn.lowerTiles[9 * inn.width + x] = TILE.WALL; inn.lowerTiles[13 * inn.width + x] = TILE.WALL; }
+    for (let y = 9; y <= 13; y += 1) { inn.lowerTiles[y * inn.width + 13] = TILE.WALL; inn.lowerTiles[y * inn.width + 17] = TILE.WALL; }
+    const spec = caseSpec(ctx.project.startMapId, (s) => { s.clues[2].at = { mapId: "map_inn", x: 15, y: 11 }; });
+    const problems = (runTool(ctx, "check_mystery_case", spec).data as { problems: { code: string; message: string }[] }).problems;
+    expect(problems.some((p) => p.code === "mystery-unreachable" && p.message.includes("주막 외상 장부") && p.message.includes("입구"))).toBe(true);
+  });
+
   // 실측(run5): 지목 NPC 가 project.startPos 에 놓여 플레이어가 NPC 와 겹쳐 스폰됐는데 검사를 통과했다.
   it("플레이어 시작 칸에 둔 인물·조사 지점을 거부하고 시작 칸이 아닌 후보를 제안한다", () => {
     const project = fixture();

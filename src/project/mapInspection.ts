@@ -247,7 +247,7 @@ function diagnose(input: {
 }
 
 /** 페이지가 있으면 모든 페이지, 없으면 event.commands — 분기 안까지 평탄화한다. */
-function collectCommands(events: readonly GameEvent[]): readonly Command[] {
+export function collectCommands(events: readonly GameEvent[]): readonly Command[] {
   const out: Command[] = [];
   for (const event of events) {
     if (event.pages?.length) {
