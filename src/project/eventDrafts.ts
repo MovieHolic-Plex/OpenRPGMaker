@@ -1,4 +1,5 @@
 import { commitEventDraftAuthoredWrites, eventDraftAuthoredDiff } from "./eventDraftAuthored";
+import { cloneProjectSharingReferenceDocuments } from "./projectClone";
 import type { GameEvent, GameMap, MapId, PersistedGameEvent, Project } from "@/project/types";
 
 export type EventDiffKind = "created" | "updated";
@@ -67,7 +68,7 @@ export function mapWithCommittedEvents(map: GameMap): GameMap {
 }
 
 export function projectWithoutEventDrafts(project: Project): Project {
-  const next = structuredClone(project);
+  const next = cloneProjectSharingReferenceDocuments(project);
   for (const map of Object.values(next.maps)) {
     map.events = committedEvents(map.events);
   }
