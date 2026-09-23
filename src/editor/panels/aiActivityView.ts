@@ -41,6 +41,16 @@ const briefActorLabel = (trace: ActivityTrace, actor: string): string => {
 };
 /** 그림 설명에 도구 결과 원문(`items 1건 / 1건`)이 섞이면 간단히 보기에서는 뺀다. */
 const briefCaption = (summary: string): string => (/[A-Za-z_]{3,}/u.test(summary.replace(/\(map_[\w-]+\)/gu, "")) ? "" : summary);
+/**
+ * 간단히 보기에서 행에 붙이는 그림 — 바꾼 모습(변경 전·초안·실패 시점)만, 마지막 한 쌍까지.
+ *
+ * 2026-09-23 도그푸딩: 생성 첫머리 「프로젝트 살펴보기」가 조회로 읽은 캐릭터 얼굴 6장을 큰 카드로
+ * 대화에 쌓아, 조수 창이 초상화 앨범이 됐다. 조회(「확인한 모습」)는 바뀐 것이 아니므로 간단히
+ * 보기에서 그리지 않는다. 자세히·전체 기록은 그대로 전부 보여 준다.
+ */
+export function briefActivityVisuals(visuals: ActivityEntry["visuals"]): NonNullable<ActivityEntry["visuals"]> {
+  return (visuals ?? []).filter(visual => visual.phase !== "read").slice(-2);
+}
 const searchText = new WeakMap<ActivityEntry, string>();
 function boundedSearchText(value: unknown, depth = 0): string {
   if (value == null || typeof value === "number" || typeof value === "boolean") return String(value ?? "");
@@ -138,9 +148,9 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const completed = grouped.filter(e => e.status !== "running");
       // 그림은 가장 최근 한 장만 — 좁은 패널에 변경 전/초안 쌍이 세 번 쌓이면 대화가 그림에 묻힌다.
       // 조회 도구(화면 이동·영역 읽기)의 「확인한 모습」보다 실제로 바꾼 그림을 먼저 고른다.
-      const pictured = completed.filter(e => e.visuals?.length);
-      const changedPicture = pictured.filter(e => e.kind !== "tool" || toolGroup(e.name) !== "inspect");
-      const illustrated = (changedPicture.length ? changedPicture : pictured).slice(-1);
+      // 조회 그림(「확인한 모습」)은 간단히 보기에서 그리지 않으므로 그림 후보에서도 뺀다.
+      const pictured = completed.filter(e => briefActivityVisuals(e.visuals).length);
+      const illustrated = pictured.filter(e => e.kind !== "tool" || toolGroup(e.name) !== "inspect").slice(-1);
       rows = illustrated.length ? [...illustrated, ...completed.filter(e => !e.visuals?.length).slice(-1), ...active.slice(-3)].sort((a, b) => a.at - b.at) : [...completed.slice(-Math.max(1, 4 - active.length)), ...active.slice(-3)];
     } else if (level === "trace") rows = rows.filter(e => (!selectedActor || actor || e.actor === selectedActor) && (severity === "all" || (severity === "tool" ? e.kind === "tool" : e.status === "error")) && (!query || entrySearchText(e).includes(query)));
     const soloActor = new Set(candidates.map(e => e.actor).filter(id => id !== "system")).size <= 1;
@@ -199,8 +209,9 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
           details.addEventListener("toggle", () => { if (!details.isConnected) return; if (details.open) { opened.add(entry.id); fillPayload(); } else opened.delete(entry.id); });
           next = details;
         }
-        if (entry.visuals?.length) {
-          const media = createActivityMedia(entry.visuals, level === "brief" ? briefCaption(entry.summary) : entry.summary);
+        const shownVisuals = level === "brief" ? briefActivityVisuals(entry.visuals) : entry.visuals ?? [];
+        if (shownVisuals.length) {
+          const media = createActivityMedia(shownVisuals, level === "brief" ? briefCaption(entry.summary) : entry.summary);
           // Visuals stay visible in detail/trace; raw receipts remain separately expandable.
           if (next instanceof HTMLDetailsElement) {
             const wrapper = el("div", { children: [next, media] });
