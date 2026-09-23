@@ -504,7 +504,10 @@ const SCENE_FIELD_EXPECTATIONS: Readonly<Record<string, string>> = {
 const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   set: { switch: "switches", switchIds: "switches", variable: "variables", items: "inventory", item: "inventory", position: "x/y", pos: "x/y", dir: "facing", direction: "facing" },
   present: { item: "itemId", items: "itemId", id: "itemId" },
-  interact: { id: "eventId", event: "eventId", target: "eventId" },
+  interact: {
+    id: "eventId", event: "eventId", target: "eventId",
+    to: "앞 스텝 {kind:\"walk\",to,adjacent:true}", adjacent: "앞 스텝 walk 의 adjacent", dir: "앞 스텝 {kind:\"face\",dir}(이벤트를 바라봐야 조사된다)",
+  },
   choose: { option: "index", choice: "index", value: "index" },
   wait: { ms: "ticks", frames: "ticks", duration: "ticks" },
   move: { direction: "dir", target: "to", position: "to" },

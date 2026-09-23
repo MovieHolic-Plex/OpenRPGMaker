@@ -70,8 +70,9 @@ export const FIND_TOOLS: ToolDefinition = {
     // 정확한 툴 이름을 보냈으면 그 툴만 돌려준다. 예전엔 설명에 그 이름이 나오는 툴 5개가 스키마째 딸려 와
     // 한 번에 약 45k자였고, 그 결과가 이후 모든 턴 입력에 되실렸다(2026-09-24 헤드리스 「등대지기의 겨울」:
     // find_tools 6회 중 4회가 정확한 이름 검색).
+    // 정확한 이름은 domain 필터보다 우선한다 — 모델은 domain 을 자주 틀리게 짚는다(evaluate_village_look 을 map 으로).
     const named = new Set(words(query));
-    const exact = pool.filter((tool) => named.has(tool.name));
+    const exact = activeTools().filter((tool) => tool.name !== FIND_TOOLS.name && named.has(tool.name));
     const candidates = (exact.length > 0 ? exact : pool)
       .map((tool, index) => ({ tool, index, score: matchScore(tool.name, tool.description, query) }))
       .filter((candidate) => candidate.score > 0)
