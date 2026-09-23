@@ -141,9 +141,10 @@ export const PLACE_CONCEPT_TOOL: ToolDefinition = {
     ensureConceptBundles(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
     const hasPlan = args.plan !== undefined && args.plan !== null;
-    if (tileset?.scratchConceptBundles?.length === 0) {
+    // plan 은 장소·물건을 스스로 들고 온다 — 꾸러미가 비어도 시공할 수 있다. 막는 것은 템플릿을 부르는 호출뿐이다.
+    if (tileset?.scratchConceptBundles?.length === 0 && !hasPlan) {
       throw new ToolError(
-        "이 타일셋의 개념 꾸러미가 비어 있다. 데이터베이스 「맵 → 타일셋 → 개념 꾸러미」에서 시설 템플릿을 만들거나 초안(여관·민가·상점…)을 넣은 뒤 그 장소·물건으로 설계하라.",
+        "이 타일셋의 개념 꾸러미가 비어 있어 부를 시설 템플릿이 없다. get_concept_facility(query)로 물건 어휘를 읽고 장소·물건을 직접 설계해 plan 으로 넘겨라.",
         { code: "concept-bundle-empty" },
       );
     }

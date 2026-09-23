@@ -118,17 +118,20 @@ export function bindInteriorConceptPlan(plan: InteriorRoomPlan, project: Project
     { code: "invalid-tileset" },
   );
   if (project.spatialAuthoring !== undefined && !plan.concept) return bindCanonicalInteriorPlan(plan, project);
-  const bundles = liveBundlesForTileset(project, tilesetId);
-  if (!bundles.length) throw new ToolError(
-    "개념 꾸러미가 비어 있습니다. 사용할 장소·물건을 개념 꾸러미에 등록한 뒤 실내를 설계하세요.",
-    { code: "concept-bundle-empty", mapId: plan.mapId },
-  );
+  // 설계(plan.concept)를 이미 가진 계획은 꾸러미를 다시 찾지 않는다 — place_concept(plan) 이 장소·물건을 스스로 넘긴다.
+  // 꾸러미 초안이 폐기된 새 프로젝트(2026-09-18)에서 이 순서가 거꾸로면 설계를 넘겨도 「꾸러미가 비어 있다」로 막혔다
+  // (2026-09-24 헤드리스 「등대지기의 겨울」 place_concept·run_interior_room_pipeline 연속 거부).
   if (plan.concept) {
     if (!plan.rooms?.length || plan.rooms.some(room => !plan.concept!.rooms[room.id])) {
       throw new ToolError("모든 방에 개념 장소·물건 구성이 필요합니다. get_concept_facility를 읽고 place_concept(plan)으로 설계하세요.", { code: "concept-plan-incomplete", mapId: plan.mapId });
     }
     return plan;
   }
+  const bundles = liveBundlesForTileset(project, tilesetId);
+  if (!bundles.length) throw new ToolError(
+    "이 프로젝트의 개념 꾸러미가 비어 있어 방 테마만으로는 실내를 시공할 수 없습니다. get_concept_facility(query)로 물건 어휘를 읽고 장소·물건을 직접 설계해 place_concept(plan)에 넘기세요.",
+    { code: "concept-bundle-empty", mapId: plan.mapId },
+  );
   const candidates = bundles.flatMap(bundle => bundle.places
     .filter(place => bundle.facilities.some(f => f.placeIds.includes(place.id)))
     .map(place => ({ bundle, place })));
