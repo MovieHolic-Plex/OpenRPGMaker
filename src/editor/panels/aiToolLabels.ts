@@ -294,6 +294,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_project_commits: inspect("변경 이력", "scroll"),
   present_doc: system("설명 문서 쓰기", "book"),
   list_ai_docs: inspect("AI 문서 목록", "book"),
+  read_ai_doc: inspect("AI 문서 읽기", "book"),
   generate_character_appearance: build("캐릭터 그림 만들기", "user"),
 };
 

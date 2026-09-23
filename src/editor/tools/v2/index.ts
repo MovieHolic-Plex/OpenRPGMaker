@@ -13,7 +13,7 @@ export const V1_TILE_SUPERSEDED: ReadonlyMap<string, string> = new Map([
   // set_tile_passability remains active: physical passage is not semantic vocabulary authoring.
   // 지식 쓰기: 승인 어휘
   ["set_tile_metadata", "propose_tile_vocabulary"],
-  ["set_tile_rules", "propose_tile_vocabulary"],
+  // set_tile_rules remains active: confirmed runtime layer/passage edits are not vocabulary proposals.
   ["upsert_tile_group", "propose_tile_vocabulary"],
   ["delete_tile_group", "propose_tile_vocabulary"],
   ["set_group_junction", "propose_tile_vocabulary"],

@@ -20,7 +20,7 @@ import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoa
 import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
 import { store } from "@/project/store";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
-import type { TilesetDef } from "@/project/types";
+import type { Project, TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
 import { animationKeyForTile, animationStripForTile } from "@/project/defaults/chipsetAnimation";
 import { registerUploadedTilesetFrames, uploadedTilesetAnimationName, uploadedTilesetTextureKey } from "@/assets/uploadedTilesets";
@@ -28,8 +28,10 @@ import { registerUploadedTilesetFrames, uploadedTilesetAnimationName, uploadedTi
 const DEFAULT_TILESET_IMAGE_URL = `/${ASSET_TILESET}`;
 
 /** Graft-free atlas URL (uploaded bytes or bundled path). Editor and evidence share this base. */
-export function tilesetBaseImageUrl(tileset: TilesetDef): string {
-  const uploaded = tileset.image.type === "uploaded" ? store.getCurrent().assets.uploaded[tileset.image.id] : undefined;
+export function tilesetBaseImageUrl(tileset: TilesetDef, project?: Project): string {
+  const uploaded = tileset.image.type === "uploaded" ? (project ?? store.getCurrent()).assets.uploaded[tileset.image.id] : undefined;
+  if (project && tileset.image.type === "uploaded" && !uploaded) throw new Error("map-rendering-unavailable: draft atlas missing");
+  if (project && uploaded && !uploadedAssetUrl(uploaded)) throw new Error("map-rendering-unavailable: draft atlas bytes unresolved");
   return withInlineAsset(
     tileset.image.type === "uploaded"
       ? (uploaded ? uploadedAssetUrl(uploaded) : "") || DEFAULT_TILESET_IMAGE_URL

@@ -117,8 +117,8 @@ function startWorker() {
 async function workerJson(pathname, body) {
   // An acknowledgement belongs to the worker already running this request.
   // A dev reload may mark it stale, but must not retire its pending decision.
-  if (pathname === "/agent/checkpoint" && !workerPortPromise) throw Object.assign(new Error("적용 대기 실행이 종료되었습니다."), { status: 409 });
-  const port = await (pathname === "/agent/checkpoint" ? workerPortPromise : startWorker());
+  if (["/agent/checkpoint", "/agent/render"].includes(pathname) && !workerPortPromise) throw Object.assign(new Error("적용 대기 실행이 종료되었습니다."), { status: 409 });
+  const port = await (["/agent/checkpoint", "/agent/render"].includes(pathname) ? workerPortPromise : startWorker());
   const response = await fetch(`http://127.0.0.1:${port}${pathname}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -172,6 +172,7 @@ export async function createOhMyPiAdapters() {
       return workerJson("/complete", { provider, body, apiKey });
     },
     /** Pi 에이전트 실행. 워커의 NDJSON 본문(web ReadableStream)을 그대로 넘긴다. */
+    async resolveRender(body) { return workerJson("/agent/render", body); },
     async resolveCheckpoint(body) {
       return workerJson("/agent/checkpoint", body);
     },

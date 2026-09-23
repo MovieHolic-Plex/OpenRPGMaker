@@ -57,6 +57,7 @@ export interface RunPiAgentOptions {
    * 제공자 키와 **별개로** 해결해 넘긴다(없으면 툴이 "Codex 로그인 필요" 로 정직하게 실패한다).
    */
   readonly codexApiKey?: string;
+  readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
@@ -154,6 +155,10 @@ function trimText(value: unknown, max: number): string {
 }
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
+  // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
+  const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
+  const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
+  installSharedSpatialReferences(readSharedTileReferences().spatial);
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
@@ -244,7 +249,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -255,6 +260,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         else if (tool.name !== "author_npc_cast" || !receipt) throw new Error("마을 계약: author_village로 시공하고 주민 대사만 보충하세요. 다른 쓰기는 별도 요청으로 진행합니다.");
       }
       const result = await tool.execute(id, params, signal);
+      if (tool.name === "show_map_region") {
+        if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
+        const data = (result.details as { data?: unknown } | undefined)?.data;
+        const png = await options.renderToolImage(structuredClone(ctx.project), tool.name, data, signal ?? options.signal);
+        result.content.push({ type: "image", mimeType: "image/png", data: png });
+        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length } });
+      }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
     },

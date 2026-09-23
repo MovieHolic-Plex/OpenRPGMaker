@@ -1,4 +1,5 @@
 import diverse0 from "./regionReferences/pine-hamlets.json";
+import { sharedRegionSnapshot } from './sharedSpatialReferences';
 import diverse1 from "./regionReferences/terrace-cliff-village.json";
 import diverse2 from "./regionReferences/reed-bay-village.json";
 import diverse3 from "./regionReferences/twin-falls-river-village.json";
@@ -102,6 +103,7 @@ const shipSource = ships as unknown as {
 };
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {
+  const shared = sharedRegionSnapshot(id); if (shared) return shared;
   if (castleSnapshots[id]) return castleSnapshots[id];
   if (forestSnapshots[id]) return forestSnapshots[id];
   if (regionSnapshots[id]) return regionSnapshots[id];

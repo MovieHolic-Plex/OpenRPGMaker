@@ -34,7 +34,7 @@ const ASK_KINDS = ["tile_info", "unclassified", "palette", "usage", "similar", "
 const tileQuery: ToolDefinition = {
   name: "tile_query",
   description:
-    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). similar/unclassified/labels/vocab/unapproved는 tilesetId 생략 시 mapId 또는 startMap 타일셋을 쓴다(place_props와 동일 타일셋). ask:\"labels\" 는 mapId 를 넣어 대상 맵 타일셋 라벨만 조회하라 — 기본값은 야외 타일셋이라 실내 맵에서 가로 탁자 등 다른 타일셋 라벨을 오조회한다.",
+    "타일 지식 통합 조회. ask: tile_info(tileIds 상세), unclassified(미분류 목록), palette(role/category/프리셋 필터로 타일 찾기), usage(맵 사용 현황: mapId), similar(비슷한 타일: tileId), unapproved(미승인 요약), vocab(재료 그룹 목록 — 참고용), labels(타일 라벨/설명 목록 — 시공 material 인자용, query 로 필터). similar/unclassified/labels/vocab/unapproved는 tilesetId 생략 시 mapId 또는 startMap 타일셋을 쓴다(place_props와 동일 타일셋). ask:\"labels\" 는 mapId 를 넣어 대상 맵 타일셋 라벨만 조회하라 — tilesetId 생략 시 mapId, 없으면 startMap 타일셋을 조회한다.",
   mode: "read",
   version: 3,
   domains: ["core", "tile"],
@@ -48,7 +48,7 @@ const tileQuery: ToolDefinition = {
       mapId: {
         type: "string",
         description:
-          "맵 id. ask=usage 필수. similar/unclassified/labels/vocab/unapproved에서 tilesetId 생략 시 이 맵(또는 startMap) 타일셋으로 조회 — place_props material과 맞추려면 mapId 권장.",
+          "맵 id. ask=usage 필수. tile_info/palette/similar/unclassified/labels/vocab/unapproved에서 tilesetId 생략 시 이 맵(또는 startMap) 타일셋으로 조회 — place_props material과 맞추려면 mapId 권장.",
       },
       role: { type: "string", description: "ask=palette: 팔레트 role 또는 타일 role" },
       category: { type: "string", description: "ask=palette" },
@@ -64,14 +64,14 @@ const tileQuery: ToolDefinition = {
       if (!Array.isArray(args.tileIds) || args.tileIds.length === 0) {
         failWithExample("ask=tile_info에는 tileIds 배열이 필요합니다", { ask, tileIds: [260, 290] });
       }
-      return v1GetTileInfo.run(draft, compactArgs({ tileIds: args.tileIds, tilesetId: args.tilesetId }));
+      return v1GetTileInfo.run(draft, compactArgs({ tileIds: args.tileIds, tilesetId: resolveQueryTilesetId(draft, args) }));
     }
     if (ask === "unclassified") {
       return v1ListUnclassified.run(draft, compactArgs({ tilesetId: resolveQueryTilesetId(draft, args), limit: args.limit }));
     }
     if (ask === "palette") {
       return v1QueryTiles.run(draft, compactArgs({
-        tilesetId: args.tilesetId, role: args.role, category: args.category, presetId: args.presetId, limit: args.limit,
+        tilesetId: resolveQueryTilesetId(draft, args), role: args.role, category: args.category, presetId: args.presetId, limit: args.limit,
       }));
     }
     if (ask === "usage") {

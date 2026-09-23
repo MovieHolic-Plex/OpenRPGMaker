@@ -1,6 +1,7 @@
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { readRegionReference } from "@/project/regionReferenceSnapshots";
+import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";
@@ -65,7 +66,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command.",
     parameters: { type: "object", properties: { id: { type: "string" }, row: { type: "integer", minimum: 0 }, rows: { type: "integer", minimum: 1, maximum: 16 } }, additionalProperties: false },
     run(_project, args) {
-      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES]) } };
+      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES]) } };
       try { return { summary: "완성 지역 사례 원본", data: readRegionReference(String(args.id), args.row === undefined ? 0 : Number(args.row), args.rows === undefined ? 8 : Number(args.rows)) }; }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
     },
