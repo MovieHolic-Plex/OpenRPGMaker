@@ -41,6 +41,7 @@
     "mcp:assistant": "node scripts/oprn-assistant-mcp.mjs",
     "ai:oauth": "node scripts/chatgpt-oauth-companion.mjs",
     "ai:log": "node scripts/list-ai-activity.mjs",
+    "qa:game": "bun scripts/qa-game/cli.mts",
     "edit:log": "node scripts/list-edit-activity.mjs",
     "commit:log": "node scripts/list-project-commits.mjs",
     "version:info": "node scripts/app-version.mjs",
