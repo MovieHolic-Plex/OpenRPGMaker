@@ -660,7 +660,6 @@ export class EditScene extends PhaserRuntime.Scene {
     // 청크 절전 — 화면 밖 청크 컨테이너를 통째로 숨겨 프레임당 자식 순회를 화면 근처로 묶는다.
     if (this.tileChunks.size > 0) {
       const tileSize = this.activeTileSize();
-      const view = view as { x: number; y: number; width: number; height: number };
       const firstCx = chunkCoord(Math.floor(view.x / tileSize) - 2);
       const lastCx = chunkCoord(Math.floor((view.x + view.width) / tileSize) + 2);
       const firstCy = chunkCoord(Math.floor(view.y / tileSize) - 2);
@@ -1958,7 +1957,7 @@ export class EditScene extends PhaserRuntime.Scene {
       tileIndex: this.tileIndex,
     }, cells);
     if (cells.some((cell) => cell.layer === "event")) {
-      refreshEditSceneOverlay({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid });
+      refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, overlayLayer, gridGraphics, mapId: mid });
     }
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
