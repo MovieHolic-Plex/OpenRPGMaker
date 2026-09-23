@@ -1936,7 +1936,7 @@ function placeAgainstWall(
       const candidate = cells.find(c => isWalkFloor(map, c.x, c.y)
         && houseShellWallMembers().has(getL(map, c.x, c.y - 1))
         && isUpperEmpty(map, c.x, c.y - 1) && isUpperEmpty(map, c.x, c.y));
-      if (candidate) paintJournaledObjectCells(map, objectCells("cabinet"), candidate.x, candidate.y - 1);
+      if (candidate) paintJournaledObjectCells(map, cabinetCellsOverFloor(objectCells("cabinet")), candidate.x, candidate.y - 1);
       continue;
     }
     while (
@@ -1949,6 +1949,15 @@ function placeAgainstWall(
     setU(map, cells[ci]!.x, cells[ci]!.y, tile);
     ci += gap;
   }
+}
+
+/**
+ * 캐비닛 받침(178)은 다리 몇 줄만 있고 나머지가 투명한 칩이다. 하위 레이어에 찍으면 바닥이
+ * 지워져 선반 밑에 짙은 사각 구멍이 남는다 — 받침은 바닥 위(상위)에 얹는다. 동결된 카탈로그
+ * 레코드는 그대로 두고(계약), 저작 킷 복구(repairLegacyInteriorCabinetKit)와 같은 레이어로 칠한다.
+ */
+function cabinetCellsOverFloor(cells: readonly InteriorObjectCell[]): readonly InteriorObjectCell[] {
+  return cells.map((cell) => (cell.tile === VR.CABINET_L && cell.layer === "lower" ? { ...cell, layer: "upper" } : cell));
 }
 
 /** 세로 침대(머리 324 북쪽 + 몸통 354) — 침대 방향 변주용. 벽면 아래 북측 바닥에 세운다. */
@@ -2622,7 +2631,7 @@ function attachPropInspectEvents(map: GameMap): void {
   const lowerTargets = new Set<number>([
     VR.BOOK_TL, VR.BOOK_TR, VR.BOOK_ML, VR.BOOK_MR, VR.BOOK_BL, VR.BOOK_BR, VR.CABINET_L,
   ]);
-  const upperTargets = new Set<number>([VR.BOX, VR.CRATE, VR.BARREL, VR.CABINET_U, VR.GRAIN, VR.DISPLAY_B, VR.DISPLAY_T]);
+  const upperTargets = new Set<number>([VR.BOX, VR.CRATE, VR.BARREL, VR.CABINET_U, VR.CABINET_L, VR.GRAIN, VR.DISPLAY_B, VR.DISPLAY_T]);
   const occupied = new Set((map.events ?? []).map((e) => `${e.x},${e.y}`));
   const out: GameEvent[] = [];
   let n = 0;
@@ -2667,7 +2676,7 @@ function attachPropInspectEvents(map: GameMap): void {
         const name =
           U === VR.BOX || U === VR.CRATE ? "상자" :
           U === VR.BARREL ? "통" :
-          U === VR.CABINET_U ? "수납장" :
+          U === VR.CABINET_U || U === VR.CABINET_L ? "수납장" :
           U === VR.GRAIN ? "자루" : "진열장";
         tryAdd(x, y, U, name);
       }
