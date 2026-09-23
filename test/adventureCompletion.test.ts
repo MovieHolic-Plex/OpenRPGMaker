@@ -114,9 +114,12 @@ describe("AI authoring retry boundaries", () => {
     expect(second.ok).toBe(true);expect(secondCtx.project.maps[mapId].events).toHaveLength(1);
     expect(secondCtx.project.maps[mapId].events[0].id).toBe(project.maps[mapId].events[0].id);
   });
-  it("rejects a new legacy weapon item instead of pretending it is equippable", () => {
-    const result = runTool({ project: createBlankProject() }, "upsert_item", { item: { id: "test_weapon", name: "검", type: "weapon" } });
-    expect(result.ok).toBe(false);expect(result.summary).toContain("upsert_equipment");
+  it("stores a new legacy weapon item as real equipment instead of a fake item", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_item", { item: { id: "test_weapon", name: "검", type: "weapon" } }, { dryRun: false });
+    expect(result.ok).toBe(true);expect(JSON.stringify(result.diff?.warnings ?? result.warnings ?? [])).toContain("upsert_equipment");
+    expect(ctx.project.database.items.some((item) => item.id === "test_weapon")).toBe(false);
+    expect(ctx.project.database.equipment.find((record) => record.id === "test_weapon")?.slot).toBe("weapon");
   });
 });
 

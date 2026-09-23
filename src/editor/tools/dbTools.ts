@@ -708,6 +708,31 @@ function mergeRecord<T extends { id: string; name: string }>(
   return mergeRecordPatch(existing, patch as Record<string, unknown>) as Partial<T> & Pick<T, "id" | "name">;
 }
 
+/** items 의 레거시 장비 종류 → 실제 착용 장비 슬롯. */
+const LEGACY_ITEM_EQUIPMENT_SLOT: Readonly<Record<string, string>> = {
+  weapon: "weapon", shield: "shield", body: "armor", head: "helmet", accessory: "accessory",
+};
+
+function upsertLegacyEquipmentItemAsEquipment(draft: Project, itemPatch: Record<string, unknown>): ToolExecResult {
+  const profile = itemPatch.equipmentProfile && typeof itemPatch.equipmentProfile === "object" && !Array.isArray(itemPatch.equipmentProfile)
+    ? itemPatch.equipmentProfile as Record<string, unknown>
+    : {};
+  const equipment: Record<string, unknown> = {};
+  for (const key of Object.keys(equipmentRecordSchema.properties ?? {})) {
+    if (profile[key] !== undefined) equipment[key] = profile[key];
+    if (itemPatch[key] !== undefined) equipment[key] = itemPatch[key];
+  }
+  equipment.slot = LEGACY_ITEM_EQUIPMENT_SLOT[String(itemPatch.type)];
+  const result = upsertEquipment.run(draft, { equipment }) as ToolExecResult;
+  return {
+    ...result,
+    warnings: [
+      ...(result.warnings ?? []),
+      `upsert_item 의 type:"${String(itemPatch.type)}" 는 착용 장비라 upsert_equipment(slot:"${String(equipment.slot)}") 로 옮겨 database.equipment 에 저장했습니다 — 이 id 는 상점 재고(itemIds/stock)·changeItem·initialEquipment 에 그대로 쓰세요.`,
+    ],
+  };
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -720,8 +745,10 @@ const upsertItem: ToolDefinition = {
     const existing = typeof itemPatch?.id === "string"
       ? draft.database.items.find((item) => item.id === itemPatch.id)
       : undefined;
-    if (!existing && ["weapon", "shield", "body", "head", "accessory"].includes(String(itemPatch?.type))) {
-      throw new ToolError("착용 장비는 upsert_equipment로 등록하세요. items의 레거시 장비 종류는 실제 착용 장비가 아닙니다. 기존 레거시 아이템 수정만 허용합니다.", { code: "legacy-equipment-item" });
+    if (!existing && itemPatch && String(itemPatch.type) in LEGACY_ITEM_EQUIPMENT_SLOT) {
+      // 거부 대신 upsert_equipment 로 옮겨 저장한다 — 2026-09-24 도그푸딩: 무기·방어구 7개를 upsert_item 으로
+      // 넣으려다 7번 연속 같은 거부를 받고 장비 상점이 「돈만 받고 아무것도 안 주는」 선택지로 끝났다.
+      return upsertLegacyEquipmentItemAsEquipment(draft, itemPatch);
     }
     const capturePatch = itemPatch?.captureProfile;
     const nestedPatch = existing?.captureProfile && capturePatch && typeof capturePatch === "object" && !Array.isArray(capturePatch)

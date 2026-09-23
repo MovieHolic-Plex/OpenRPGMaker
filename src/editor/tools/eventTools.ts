@@ -1207,7 +1207,7 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — 아이템 id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1316,7 +1316,7 @@ function parseShopStock(project: Project, raw: unknown, label: string): ShopStoc
       throw new ToolError(`${label}[${index}]는 객체여야 합니다.`, { code: "shop-stock" });
     }
     const record = value as Record<string, unknown>;
-    const itemId = itemIdArg(project, record.itemId, `${label}[${index}].itemId`);
+    const itemId = sellableIdArg(project, record.itemId, `${label}[${index}].itemId`);
     const seasons = record.seasons === undefined ? undefined : parseSeasonArray(record.seasons, `${label}[${index}].seasons`);
     const priceOverride = record.priceOverride === undefined ? undefined : priceArg(record.priceOverride, `${label}[${index}].priceOverride`);
     const priceBySeason = record.priceBySeason === undefined ? undefined : parsePriceBySeason(record.priceBySeason, `${label}[${index}].priceBySeason`);
@@ -1342,6 +1342,13 @@ function itemIdArg(project: Project, raw: unknown, label: string): string {
     throw new ToolError(`${label} 존재하지 않는 itemId: ${itemId} — 허용 예시: ${knownIds(project.database.items)}`, { code: "item-not-found" });
   }
   return itemId;
+}
+
+/** 상점 재고 id — 런타임 상점(goodsIndex)·참조 검증과 같이 아이템과 착용 장비를 모두 받는다. */
+function sellableIdArg(project: Project, raw: unknown, label: string): string {
+  const itemId = stringArg(raw, label);
+  if (project.database.items.some((item) => item.id === itemId) || project.database.equipment.some((record) => record.id === itemId)) return itemId;
+  throw new ToolError(`${label} 존재하지 않는 itemId: ${itemId} — 아이템(${knownIds(project.database.items)}) 또는 장비(${knownIds(project.database.equipment)}) id 를 쓰세요`, { code: "item-not-found" });
 }
 
 function parseSeasonArray(raw: unknown, label: string): Season[] {
@@ -2226,9 +2233,11 @@ const placeChest: ToolDefinition = {
     }
     const warnings: string[] = [];
     if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
-    const itemRecord = itemId ? draft.database.items.find((item) => item.id === itemId) : undefined;
+    const itemRecord = itemId
+      ? draft.database.items.find((item) => item.id === itemId) ?? draft.database.equipment.find((record) => record.id === itemId)
+      : undefined;
     if (itemId && !itemRecord) {
-      warnings.push(`아이템 '${itemId}'가 데이터베이스에 없습니다 — upsert_item으로 먼저 만들거나 기존 id를 쓰세요`);
+      warnings.push(`아이템 '${itemId}'가 데이터베이스(아이템·장비)에 없습니다 — upsert_item/upsert_equipment 로 먼저 만들거나 기존 id를 쓰세요`);
     }
     const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_chest");
