@@ -36,6 +36,7 @@ const MIME_BY_EXTENSION: Record<string, string> = {
   ".ico": "image/x-icon",
   ".woff2": "font/woff2",
   ".mp3": "audio/mpeg",
+  ".mid": "audio/midi",
   ".ogg": "audio/ogg",
   ".wav": "audio/wav",
   ".mp4": "video/mp4",
@@ -260,7 +261,12 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     return html.replace('</head>', `${config}<script src="${BRIDGE_SCRIPT_PATH}"></script></head>`);
   };
   const serveStatic = async (pathname: string, response: ServerResponse): Promise<void> => {
-    const relative = pathname === "/" || pathname === "" ? "index.html" : pathname.replace(/^\//, "");
+    // URL.pathname 은 퍼센트 인코딩 그대로다 — 번들 BGM 「Town 1.mid」는 `Town%201.mid` 로 와서
+    // 디코드 없이는 디스크에서 못 찾고 404 가 났다(2026-09-23 도그푸딩). 검사는 디코드한 뒤에 한다.
+    let decoded: string;
+    try { decoded = decodeURIComponent(pathname); } catch { response.writeHead(400).end("bad path"); return; }
+    if (decoded.includes("\0")) { response.writeHead(400).end("bad path"); return; }
+    const relative = decoded === "/" || decoded === "" ? "index.html" : decoded.replace(/^\//, "");
     const target = resolve(root, normalize(relative));
     if (relative.split("/").some(part => part.startsWith(".")) || (target !== root && !target.startsWith(root + sep))) {
       response.writeHead(403).end("forbidden");
