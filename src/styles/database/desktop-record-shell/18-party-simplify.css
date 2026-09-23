@@ -3,14 +3,6 @@
    index.css 에서 16·17 뒤에 읽는다 — 같은 선택자를 앞 시트들이 여러 번 덮고 있어 여기서
    최종값을 둔다. 색은 토큰만 쓴다(예산 래칫: hex·!important 증가 금지). */
 
-/* ── 레일: 펼친 그룹의 합계 배지는 숨긴다 ─────────────────────────────────
-   펼치면 탭마다 개수가 보이므로 그룹 합계(파티 365 = 아이템 314 포함)는 뜻이 없다.
-   display:none 이 아니라 visibility 다 — 배지가 셰브론을 오른쪽으로 미는 margin-left:auto 를
-   지고 있어서 빼면 셰브론이 라벨에 붙는다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group[aria-expanded="true"][data-tab-count]::before {
-  visibility: hidden;
-}
-
 /* ── 보기 전환 줄(주인공|공유 외형, 직업 편집|승급 트리, 스킬 편집|성장 트리) ── */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-party-subviews {
   align-items: center;

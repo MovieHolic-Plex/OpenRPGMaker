@@ -22,7 +22,7 @@ try {
   await page.getByTestId('ai-input').waitFor({ timeout: 120000 });
   const proof = await page.evaluate(async ({ project, id }) => {
     const { REGION_REFERENCES } = await import('/src/project/regionReferences.ts');
-    const { readRegionReference } = await import('/src/project/regionReferenceSnapshots.ts');
+    const { preloadAllRegionReferences, readRegionReference } = await import('/src/project/regionReferenceSnapshots.ts'); await preloadAllRegionReferences();
     const { awaitGraftedTilesetImageUrl } = await import('/src/assets/tileGraftImageCache.ts');
     const { tilesetBaseImageUrl } = await import('/src/editor/tilesetImage.ts');
     const { store } = await import('/src/project/store.ts');

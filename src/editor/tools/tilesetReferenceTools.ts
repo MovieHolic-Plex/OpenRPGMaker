@@ -14,11 +14,28 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
   "run_village_pipeline", "start_village_session", "advance_village_build", "run_village_session", "plant_tree_clusters",
 ]);
 
+/**
+ * 선행 읽기 게이트가 걸리는 쓰기 도구 — 모델이 **타일을 직접 고르는** 도구(타일 번호·재질 어휘·팔레트·조립법 ID).
+ * 참고문서는 그 선택을 추측하지 않게 하려고 있다. 나머지 WRITERS(빈 맵 생성·크기/복제/이동·결정론 파이프라인·세션 전진)는
+ * 코드가 타일을 고르므로 문서를 읽어도 결과가 바뀌지 않는다 — 그런데도 게이트가 걸려, 22×18 보스방 create_map 하나에
+ * 34건, 던전 파이프라인에 11건 읽기를 요구했고(2026-09-24 헤드리스 「등대지기의 겨울」: read_tileset_reference 14회, 거부 4회)
+ * 그 본문이 매 턴 입력 토큰으로 되실렸다.
+ */
+export const TILESET_REFERENCE_TILE_CHOOSERS: ReadonlySet<string> = new Set([
+  "paint_tiles", "fill_region", "build_wall", "place_door", "place_window", "build_roof", "lay_path", "place_props", "arrange_rows",
+  "paint_road", "stamp_structure", "build_house", "stamp_forest_recipe", "stamp_tile_recipe",
+]);
+
 /** Purpose is explicit structured author intent, never inferred from prompt keywords. */
 export function withTilesetReferencePurpose(tool: ToolDefinition): ToolDefinition {
   if (!TILESET_REFERENCE_WRITERS.has(tool.name)) return tool;
-  return { ...tool, description: `${tool.description} 타일셋 참고문서가 있으면 해당 용도를 먼저 조회한다.`, parameters: {
-    ...tool.parameters, properties: { ...tool.parameters.properties, referencePurpose: { type: "string", description: "list_tileset_references의 용도 ID. 용도가 하나면 생략 가능. 선택한 용도의 MD 모든 페이지와 이미지를 먼저 읽어야 한다." } },
+  const gated = TILESET_REFERENCE_TILE_CHOOSERS.has(tool.name);
+  const description = gated ? `${tool.description} 타일셋 참고문서가 있으면 해당 용도를 먼저 조회한다.` : tool.description;
+  const purpose = gated
+    ? "list_tileset_references의 용도 ID. 용도가 하나면 생략 가능. 선택한 용도의 MD 모든 페이지와 이미지를 먼저 읽어야 한다."
+    : "선택. 이 도구는 타일을 코드가 고르므로 타일셋 참고문서를 먼저 읽지 않아도 된다.";
+  return { ...tool, description, parameters: {
+    ...tool.parameters, properties: { ...tool.parameters.properties, referencePurpose: { type: "string", description: purpose } },
   }, run(project, args) { const { referencePurpose: _purpose, ...rest } = args; return tool.run(project, rest); } };
 }
 

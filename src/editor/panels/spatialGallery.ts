@@ -22,7 +22,9 @@ import {
   type GeographyDesign,
 } from "@/editor/panels/spatialGeographyDraft";
 import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
+import { catalogListImage } from "@/editor/panels/catalogListImage";
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
+import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
 import { spatialId } from "@/project/spatial/domain";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
@@ -238,6 +240,21 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
   });
 }
 
+/**
+ * 목록 카드. 장소·지역·세계·타일은 미리 줄인 그림이나 시트 한 귀퉁이만 붙인다.
+ * 맵 컴파일과 시트 전체는 상세를 열었을 때의 스테이지가 담당한다.
+ */
+export function renderSpatialListThumb(card: SpatialGalleryCard): HTMLElement {
+  if (card.kind === "objects" || card.kind === "spaces") return renderSpatialCardThumb(card);
+  if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
+  if (card.reviewedPlaceId) return catalogListImage(`/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
+  const tileset = tilesetOf(card);
+  if (!tileset) return el("div", { class: "spatial-card-fallback" });
+  const thumb = tilesetListThumb(tileset);
+  thumb.classList.add("spatial-card-image");
+  return thumb;
+}
+
 export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.regionMapId) return regionMapPreview(card.regionMapId, true);
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
@@ -269,8 +286,8 @@ export function renderSpatialGalleryCard(
   selected: boolean,
   onSelect: (id: string) => void,
 ): HTMLElement {
-  // 썸네일은 맵 컴파일이다 — 마운트에서 카드 전부를 구우면 탭이 멈춘다(spatialCardThumbs 참고).
-  const thumb = deferredSpatialCardThumb(card, () => renderSpatialCardThumb(card));
+  // 목록은 축소 그림만 굽는다. 맵 컴파일은 상세 스테이지로 미룬다.
+  const thumb = deferredSpatialCardThumb(card, () => renderSpatialListThumb(card));
   const badges: HTMLElement[] = [];
   if (card.source === "default") badges.push(el("span", { class: "spatial-card-badge", text: "기본" }));
   if (card.source === "own" && !card.compatibility) badges.push(el("span", { class: "spatial-card-badge", text: "내 것" }));

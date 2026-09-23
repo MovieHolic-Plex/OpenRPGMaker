@@ -272,30 +272,18 @@ export function renderSpatialAuthoringShell(
     ],
   });
 
-  // 목록만 보는 동안 선택 장소의 맵을 컴파일하지 않는다. 스테이지 요소는 남겨 토글 계약은 유지한다.
-  const deferPlacesStage = placesGallery && !regionGallery && !session.inspectorOpen;
-  // 세계 개요는 128×96 지형 컴파일이다. 셸을 먼저 그린 뒤 다음 턴에 붙인다.
-  const deferWorldStage = tab === "worlds";
-  const stage = deferPlacesStage
+  // 목록만 보는 동안 장소·지역·세계 맵을 컴파일하지 않는다. 상세를 열면 스테이지가 그린다.
+  const deferDetailStage = session.mode === "design" && !session.legacyOrigin && !session.inspectorOpen
+    && (tab === "places" || tab === "regions" || tab === "worlds");
+  const stage = deferDetailStage
     ? el("div", { class: "spatial-stage is-deferred", attrs: { "aria-hidden": "true" } })
     : el("div", {
       class: `spatial-stage${session.inspectorOpen ? " is-inspector-open" : ""}`,
-      children: deferWorldStage ? [] : [
+      children: [
         renderSpatialCanvas(session, selected, refresh),
         renderSpatialInspector(selected, session.inspectorOpen, refresh),
       ],
     });
-  if (deferWorldStage) {
-    const paintStage = () => {
-      if (!stage.isConnected) return;
-      stage.replaceChildren(
-        renderSpatialCanvas(session, selected, refresh),
-        renderSpatialInspector(selected, session.inspectorOpen, refresh),
-      );
-    };
-    if (typeof setTimeout === "function") setTimeout(paintStage, 0);
-    else paintStage();
-  }
 
   // 장소 목록이 기본이다. 스테이지(미리보기·속성)는 「속성」을 눌렀을 때만 오른쪽에 붙는다.
   // 카드 선택만으로 열지 않는다 — 그러면 71장짜리 목록이 5열로 줄어든다(실측 98% → 65%).
@@ -314,7 +302,7 @@ export function renderSpatialAuthoringShell(
         regionGallery ? renderRegionLibraryControls(cards, refresh, drawerExtra) : renderPlaceLibraryControls(cards, refresh, drawerExtra),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })
-      : el("div", { class: "spatial-body", children: [gallery, stage] })],
+      : el("div", { class: `spatial-body${deferDetailStage ? " is-library-only" : ""}`, children: [gallery, stage] })],
   });
   shell.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
   latestShellRefresh = refresh;

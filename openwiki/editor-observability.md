@@ -485,6 +485,14 @@ npx vitest run test/storeUndoSnapshotInventory.test.ts
 - 편집 행위: `EditActivityEntry.reason` — AI 적용은 툴 reason, 사람 편집은 라벨에서 만든다.
 - 저장: 같은 값이 localStorage + LegacyDb `payload_json` / `entries_json` / 커밋 첨부 슬라이스에 실립니다. 중간 업서트는 `aiTurnRunner` 의 매 `tool_call`.
 
+## 맵 화면이 버벅일 때 (2026-09-24)
+
+타일 그림은 Phaser Tilemap 이 아니다. 칸마다 GameObject 라서, **도구·선택 타일·레이어가 바뀔 때 `renderEditScene` 으로 전부 부수면** 큰 맵이 멈춘다. 그 입력은 `EditScene.viewChromeKey` 와 `applyEditTileLayerPresentation` 이 색·오버레이만 고친다. 타일 오브젝트를 다시 만드는 키(`renderStateKey`)는 맵 id 와 배경 미리보기뿐이다.
+
+맵 목록 썸네일도 같은 통지에 다시 그려지면 안 된다. `editorStateNeedsMapTreeRefresh` 는 현재 맵이 바뀔 때만 참이다. 타일·도구·레이어는 `schedulePaletteOnlyRefresh` 로 팔레트만 다시 그린다.
+
+플레이 쪽 화면 밖 정지는 `playSceneTileCulling` 이 16칸 버킷으로 하고, 창 밖에 나간 스프라이트 애니메이션은 `pause` 한다. `active = false` 로 끄지 마라. 그 플래그는 파괴된 객체를 뜻해서, 다음 창에서 타일이 되살아나지 않는다.
+
 ## 검증
 
 - 계측·라벨·병합 회귀: `npm test -- test/editActivityRecording.test.ts` (초크포인트 6메서드, 라벨 없는 집계, NPC 편집 세션 재현, 연속 병합, `EventDiff` 라벨).

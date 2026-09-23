@@ -37,33 +37,48 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("the rail fits without scrolling and groups collapse", async ({ page }) => {
-  // Break named: 29 tabs render as one flat 1200px column inside a 796px rail, so
-  // 시스템·용어·스위치·변수 are always below the fold.
+test("every group stays open and empty list tabs fold into one row per group", async ({ page }) => {
+  // Break named: the old accordion opened one group at a time — crossing groups took two clicks,
+  // and a collapsed header stacked label·peek·badge on three lines (66px). 개선안 C(2026-09-24):
+  // all groups stay open as sticky sections; only zero-record list tabs fold into 「빈 탭 N개」.
   await openDatabase(page);
   const facts = await readRailFacts(page);
 
   expect(facts.groupLabels, "group labels").toEqual([
+    "세계관",
     "파티",
     "몬스터",
     "전투 규칙",
     "생활",
-    "세계",
+    "맵",
     "시스템",
   ]);
-  expect(
-    facts.scrollHeight,
-    `rail must fit: scrollHeight ${facts.scrollHeight} vs clientHeight ${facts.clientHeight}`,
-  ).toBeLessThanOrEqual(facts.clientHeight + 1);
 
-  // 접힌 그룹은 헤더 클릭으로 펼친다 — 스크롤이 아니라 구조로 도달한다.
-  const systemGroup = page.getByTestId("db-tab-group-system");
-  await expect(systemGroup).toBeVisible();
-  await expect(page.getByTestId("db-tab-variables")).toBeHidden();
-  await systemGroup.click();
-  await expect(page.getByTestId("db-tab-variables")).toBeVisible();
+  const rail = await page.evaluate(() => {
+    const tabs = Array.from(document.querySelectorAll<HTMLElement>(".db-tabs > .db-tab"));
+    const groups = Array.from(document.querySelectorAll<HTMLElement>(".db-tabs > .db-tab-group"));
+    return {
+      hiddenWithCount: tabs.filter((tab) => tab.hidden && tab.dataset.count).map((tab) => tab.dataset.testid),
+      groupHeights: groups.map((group) => Math.round(group.getBoundingClientRect().height)),
+    };
+  });
+  expect(rail.hiddenWithCount, "a tab with records is never folded").toEqual([]);
+  for (const height of rail.groupHeights) expect(height, "group header is one line").toBeLessThanOrEqual(36);
 
-  await page.locator(".db-tabs").screenshot({ path: join(OUT, "01-rail-collapsed-groups.png") });
+  // 탭이 있는 다른 그룹으로 한 번에 간다 — 머리를 먼저 누를 필요가 없다.
+  await expect(page.getByTestId("db-tab-troops")).toBeVisible();
+  await page.getByTestId("db-tab-troops").click();
+  await expect(page.getByTestId("db-tab-troops")).toHaveClass(/active/);
+
+  // 빈 프로젝트의 생활 탭은 전부 0건이라 한 줄로 접힌다. 누르면 펼친다.
+  const lifeFold = page.getByTestId("db-tab-fold-life");
+  await expect(lifeFold).toBeVisible();
+  await expect(page.getByTestId("db-tab-crops")).toBeHidden();
+  await lifeFold.click();
+  await expect(page.getByTestId("db-tab-crops")).toBeVisible();
+  await expect(lifeFold).toBeHidden();
+
+  await page.locator(".db-tabs").screenshot({ path: join(OUT, "01-rail-open-sections.png") });
 });
 
 test("group headers read as left-aligned sticky sections", async ({ page }) => {
@@ -116,21 +131,23 @@ test("tabs keep an icon at desktop width", async ({ page }) => {
   expect(facts.activeIconColor, "active tab icon keeps a visible stroke").not.toBe("transparent");
 });
 
-test("search reaches tabs inside collapsed groups and restores after clearing", async ({ page }) => {
-  // Break named: collapsing groups can hide tabs from the existing label filter.
+test("search reaches folded empty tabs and restores after clearing", async ({ page }) => {
+  // Break named: folding empty tabs can hide them from the existing label filter.
   await openDatabase(page);
-  await expect(page.getByTestId("db-tab-variables")).toBeHidden();
+  await expect(page.getByTestId("db-tab-crops")).toBeHidden();
 
   const search = page.getByTestId("db-tab-search");
-  await search.fill("변수");
-  await expect(page.getByTestId("db-tab-variables")).toBeVisible();
-  await page.getByTestId("db-tab-variables").click();
-  await expect(page.getByTestId("db-tab-variables")).toHaveClass(/active/);
+  await search.fill("농사");
+  await expect(page.getByTestId("db-tab-crops")).toBeVisible();
+  await expect(page.getByTestId("db-tab-fold-life")).toBeHidden();
+  await expect(page.getByTestId("db-tab-actors")).toBeHidden();
+  await page.getByTestId("db-tab-crops").click();
+  await expect(page.getByTestId("db-tab-crops")).toHaveClass(/active/);
 
   await search.fill("");
-  // 활성 탭이 속한 그룹은 펼쳐진 상태로 남아야 한다 — 방금 고른 탭이 사라지면 안 된다.
-  await expect(page.getByTestId("db-tab-variables")).toBeVisible();
-  await expect(page.getByTestId("db-tab-actors")).toBeHidden();
+  // 활성 탭은 비어 있어도 접히지 않는다 — 방금 고른 탭이 사라지면 안 된다.
+  await expect(page.getByTestId("db-tab-crops")).toBeVisible();
+  await expect(page.getByTestId("db-tab-actors")).toBeVisible();
 
   await page.locator(".db-tabs").screenshot({ path: join(OUT, "02-rail-after-search.png") });
 });

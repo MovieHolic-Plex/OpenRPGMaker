@@ -72,6 +72,9 @@ Responses/Chat Completions/Anthropic/Gemini의 실제 tool result와 image 구�
 
 `TILESET_REFERENCE_WRITERS`는 맵 생성·변형/타일 배치/집·마을/공간 적용 계열의 명시적 목록이다.
 새 배치 도구를 추가하면 이 목록도 갱신한다. 목적은 키워드 추측 대신 도구의 `referencePurpose`로 선언한다.
+선행 읽기 **거부**는 그중 모델이 타일을 직접 고르는 `TILESET_REFERENCE_TILE_CHOOSERS`(타일 번호·재질 어휘·팔레트·조립법 ID)에만 걸린다(2026-09-24).
+빈 맵 생성·크기/복제/이동·결정론 파이프라인·세션 전진은 코드가 타일을 고르므로 문서를 읽어도 결과가 같다 —
+보스방 `create_map` 하나에 34건 읽기를 요구하던 비용을 없앴다. 이 도구들의 `referencePurpose`는 받기만 하고 무시한다.
 이 장치는 자료의 **전달**을 확인한다. 이해도·배치 품질을 자동 보장하지 않는다.
 저수준 `runTool`, 직접 JSON/SQL/파일 편집까지 모델 요청을 관찰할 수는 없다. 외부 코딩 에이전트는
 AGENTS의 동일 읽기 절차를 따르고, 프로젝트를 읽어 아래 exporter로 실제 그림을 열어야 한다.

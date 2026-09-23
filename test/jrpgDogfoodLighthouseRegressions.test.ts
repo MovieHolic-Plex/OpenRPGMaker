@@ -116,13 +116,9 @@ describe("defect 2 — scene test can see party membership", () => {
 });
 
 describe("defect 4 — dungeons are not renamed house interiors", () => {
-  it("a new-dungeon pipeline asks only for the dungeon chipset references, not every tileset", () => {
+  it("a new-dungeon pipeline picks its tiles in code, so it demands no tileset reference reading", () => {
     const { ctx } = blank();
-    const blocked = new TilesetReferenceEvidence().beforeWrite(ctx.project, "run_dungeon_room_pipeline", { mapId: "map_frozen_cave", theme: "ice" });
-    expect(blocked?.ok).toBe(false);
-    expect(blocked!.summary).toContain("easyrpg_chipset_dungeon");
-    expect(blocked!.summary).not.toContain("forest_harmony");
-    expect(blocked!.summary).not.toContain("shared_forest_village_objects");
+    expect(new TilesetReferenceEvidence().beforeWrite(ctx.project, "run_dungeon_room_pipeline", { mapId: "map_frozen_cave", theme: "ice" })).toBeNull();
   });
 
   it("set_map_properties refuses to give a map the name another map already has", () => {

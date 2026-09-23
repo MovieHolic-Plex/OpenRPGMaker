@@ -66,35 +66,45 @@ describe("database navigation by editor mode", () => {
     expect(findByTestId(host, "db-nav-all")).toBeNull();
   });
 
-  // 접힌 그룹은 라벨 한 낱말만 남는다. 「마을」이 「세계」 안에 있다는 걸 알 길이 탭 검색뿐이었고,
-  // 레코드가 0 인 탭은 배지도 없어서 그룹만 보고는 안에 뭐가 있는지 알 수 없었다.
-  it("그룹 헤더가 안에 든 탭 이름과 레코드 합계를 알려준다 — 라벨 텍스트는 그대로", () => {
+  // 그룹은 늘 펼쳐진 구획이다(2026-09-24 개선안 C). 숨는 것은 레코드 0 인 목록 탭뿐이고,
+  // 그 이름은 그룹 끝 「빈 탭 N개」 줄에 적힌다. 단위가 다른 것을 더한 그룹 합계 배지는 없앴다.
+  it("그룹 머리는 라벨만 남고, 빈 목록 탭은 그룹 끝 한 줄로 접힌다", () => {
     const host = renderPanel("expert");
     const world = findByTestId(host, "db-tab-group-world");
-    if (!world) throw new Error("missing world group header");
+    const life = findByTestId(host, "db-tab-group-life");
+    if (!world || !life) throw new Error("missing group header");
 
-    // 라벨 계약(db-desktop-matrix / 위 두 테스트)은 정확 일치를 요구한다 — 배지는 가상 요소로 뺀다.
-    // 라벨은 `.db-tab-group-label` 로 읽는다. 헤더에는 접힌 동에만 보이는 부제
-    // (`.db-tab-group-peek`)도 들어 있어서, 헤더 textContent 를 그대로 재면 라벨 계약이 아니라
-    // 헤더 전체를 재게 된다. 잡으려는 것은 "라벨이 그대로인가" 이므로 이게 맞다.
     expect(world.querySelector(".db-tab-group-label")?.textContent).toBe("맵");
-    expect(world.getAttribute("title")).toContain("타일");
-    expect(world.getAttribute("title")).toContain("장소");
+    expect(world.dataset.tabCount).toBeUndefined();
 
-    // 빈 프로젝트도 타일셋·공통 이벤트가 있으므로 세계 그룹은 합계를 들고 있다.
-    const worldCount = Number(world.dataset.tabCount ?? "0");
-    expect(worldCount).toBeGreaterThan(0);
-
-    // 합계는 안에 든 탭 배지의 합이어야 한다 — 따로 세면 조용히 갈라진다.
     const railChildren = (host.querySelector(".db-tabs") as FakeElement).children;
-    const start = railChildren.indexOf(world);
-    let sum = 0;
+    const start = railChildren.indexOf(life);
+    const lifeRows: FakeElement[] = [];
     for (const child of railChildren.slice(start + 1)) {
       if (child.classList.contains("db-tab-group")) break;
-      if (!child.classList.contains("db-tab")) continue;
-      sum += Number(child.dataset.count ?? "0");
+      lifeRows.push(child);
     }
-    expect(worldCount).toBe(sum);
+    const tabsInLife = lifeRows.filter((child) => child.classList.contains("db-tab"));
+    const fold = lifeRows.find((child) => child.classList.contains("db-tab-fold"));
+    if (!fold) throw new Error("missing life fold row");
+
+    // 빈 프로젝트의 생활 탭은 모두 0건이다 — 전부 접히고 접기 줄이 그 수를 말한다.
+    const folded = tabsInLife.filter((tab) => tab.hidden);
+    expect(folded.length).toBe(tabsInLife.length);
+    expect(fold.hidden).toBe(false);
+    expect(fold.textContent).toContain(`빈 탭 ${folded.length}개`);
+    expect(life.getAttribute("aria-expanded")).toBe("false");
+
+    // 레코드가 있는 탭은 절대 접히지 않는다.
+    for (const child of railChildren) {
+      if (child.classList.contains("db-tab") && child.dataset.count) expect(child.hidden).toBe(false);
+    }
+
+    // 접기 줄을 누르면 그 그룹의 빈 탭이 펼쳐진다.
+    fold.click();
+    expect(tabsInLife.every((tab) => !tab.hidden)).toBe(true);
+    expect(fold.hidden).toBe(true);
+    expect(life.getAttribute("aria-expanded")).toBe("true");
   });
 
   it("shows the full expert surface without an all-data disclosure", () => {

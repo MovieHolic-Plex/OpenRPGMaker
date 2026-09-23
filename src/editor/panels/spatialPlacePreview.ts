@@ -4,6 +4,7 @@ import { TILE_SIZE } from "@/assets/bundled";
 import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { conceptHouseFloorPlan } from "@/editor/interiorConceptPlan";
 import { applyInteriorRoomLayer, createEmptyRoomMap, interiorVocabFromTileset, INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
+import { catalogListImage } from "@/editor/panels/catalogListImage";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { placeDraftTarget, placeFromProject } from "@/editor/panels/spatialPlaceDraft";
@@ -182,10 +183,7 @@ export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, 
 }
 
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
-  if (card.reviewedPlaceId) return el("img", {
-    class: "spatial-card-image",
-    attrs: { src: sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, alt: "", draggable: "false" },
-  });
+  if (card.reviewedPlaceId) return catalogListImage(sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
   const project = visibleAuthoringProject();
   try {
     const target = placeDraftTarget(card);

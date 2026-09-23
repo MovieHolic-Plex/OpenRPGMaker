@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { REGION_REFERENCES, PLACE_REFERENCES, regionReferenceContext } from "@/project/regionReferences";
-import { readRegionReference } from "@/project/regionReferenceSnapshots";
+import { preloadAllRegionReferences, readRegionReference } from "@/project/regionReferenceSnapshots";
 import emeraldSnapshot from "@/project/regionReferences/emerald-basin.json";
 import hillSnapshot from "@/project/regionReferences/hill-forest-village.json";
 import { COMBINED_TOWN_RETRO_WORLD_TILESET_ID } from "@/project/defaults/constants";
@@ -17,6 +17,9 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { listSpatialGalleryCards } from "@/editor/panels/spatialCatalog";
 import { spatialSession } from "@/editor/panels/spatialAuthoringSession";
 import { renderSpatialRegionsCanvas, renderSpatialRegionsInspector, spatialRegionsChrome } from "@/editor/panels/spatialRegionsTab";
+
+// Snapshots are per-file lazy chunks; the synchronous reads below need them loaded.
+beforeAll(preloadAllRegionReferences);
 
 const id = REGION_REFERENCES[0].id;
 describe("completed region references", () => {

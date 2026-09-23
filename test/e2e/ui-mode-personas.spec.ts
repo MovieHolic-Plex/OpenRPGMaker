@@ -116,10 +116,8 @@ async function assertBeginnerContract(page: Page): Promise<void> {
   // 레일은 초보에서도 카테고리 그룹이다 — 평면으로 노출되는 직속 탭은 개요 하나뿐이다.
   expect(directTabIds).toEqual(["db-tab-overview"]);
 
-  const systemGroup = page.getByTestId("db-tab-group-system");
-  await expect(systemGroup).toBeVisible();
-  await expect(page.getByTestId("db-tab-switches")).toBeHidden();
-  await systemGroup.click();
+  // 그룹은 늘 펼쳐진 구획이다 — 머리를 누르지 않아도 레코드가 있는 탭이 보인다.
+  await expect(page.getByTestId("db-tab-group-system")).toBeVisible();
   await expect(page.getByTestId("db-tab-switches")).toBeVisible();
   await page.getByTestId("database-modal-close").click();
   await expect(modal).toBeHidden();
