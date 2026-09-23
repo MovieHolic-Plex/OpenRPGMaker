@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderFactionsTab } from "@/editor/panels/databaseFactionView";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -42,15 +43,15 @@ describe("database faction authoring view", () => {
     expect(findByTestId(host, "db-faction-search")?.getAttribute("type")).toBe("search");
 
     const relation = findByTestId(host, "db-faction-relation-enemy");
-    expect(relation?.textContent).toContain("-1 적");
-    expect(relation?.textContent).toContain("이쪽이 먼저 공격");
-    expect(relation?.textContent).toContain("상대가 먼저 공격");
+    // 관계는 말로 보이고(숫자 -1 은 전문가 모드 전용 칸), 결과는 한 줄로 합쳐 보인다.
+    expect(relation?.textContent).toContain("적대");
+    expect(relation?.textContent).toContain("서로 먼저 공격");
     expect(findByTestId(host, "db-faction-pick-enemy--1")?.getAttribute("aria-pressed")).toBe("true");
 
     const cell = findByTestId(host, "db-faction-stance-player-enemy");
     expect(cell?.tagName).toBe("BUTTON");
     expect(cell?.textContent).toContain("-1");
-    expect(cell?.textContent).toContain("적");
+    expect(cell?.textContent).toContain("적대");
     expect(cell?.textContent).toContain("기본");
     expect(cell?.getAttribute("aria-label")).toContain("기본");
   });
@@ -110,4 +111,33 @@ describe("database faction authoring view", () => {
     expect(findByTestId(host, `db-faction-use-enemy-${store.getCurrent().database.enemies[0]!.id}`)).toBeTruthy();
   });
 
+  it("keeps project-wide rules and the matrix out of the per-faction view until switched", () => {
+    resetEditorUiModeForTests("standard");
+    const host = renderView();
+    const paneOf = (testid: string): FakeElement | null | undefined => {
+      let node = findByTestId(host, testid) as FakeElement | null | undefined;
+      while (node && node.dataset?.factionView === undefined) node = node.parentElement as FakeElement | null | undefined;
+      return node;
+    };
+    expect(paneOf("db-faction-relations")?.getAttribute("hidden")).toBeNull();
+    expect(paneOf("db-faction-reputation")?.getAttribute("hidden")).not.toBeNull();
+    expect(paneOf("db-faction-matrix-card")?.getAttribute("hidden")).not.toBeNull();
+    // 예전 숫자 요약 띠 대신 제목줄에 소속·쓰는 곳 요약이 있다.
+    expect(findByTestId(host, "db-faction-usage-toggle")?.textContent).toContain("소속 몬스터");
+
+    findByTestId(host, "db-faction-view-rules")?.click();
+    expect(paneOf("db-faction-reputation")?.getAttribute("hidden")).toBeNull();
+    expect(paneOf("db-faction-relations")?.getAttribute("hidden")).not.toBeNull();
+    findByTestId(host, "db-faction-view-faction")?.click();
+    expect(paneOf("db-faction-relations")?.getAttribute("hidden")).toBeNull();
+    resetEditorUiModeForTests();
+  });
+
+  it("labels aggression options once, without repeating the label in the description", () => {
+    const host = renderView();
+    const options = findByTestId(host, "db-faction-aggression")?.querySelectorAll("option") ?? [];
+    const texts = Array.from(options, (option) => (option as FakeElement).textContent ?? "");
+    expect(texts).toHaveLength(4);
+    for (const text of texts) expect(text).not.toContain("—");
+  });
 });

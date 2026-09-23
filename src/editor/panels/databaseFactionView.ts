@@ -5,7 +5,8 @@
 // 대칭으로 편집하고 프로젝트에는 관계 한 항목만 쓴다. 런타임의 보수적 판정은 안내문으로
 // 드러내고, 가져온 비대칭 데이터도 authoredFactionStance 로 실제 저작 결과를 보여 준다.
 
-import { factionReputationPreview, factionUsageCard } from "@/editor/panels/databaseFactionPreview";
+import { factionReputationPreview, factionUsage, type FactionUsage } from "@/editor/panels/databaseFactionPreview";
+import { isDatabaseUxVisible, uxLevel } from "@/editor/panels/databaseUxLevel";
 import { field } from "@/editor/panels/databaseControls";
 import {
   detailHero,
@@ -18,11 +19,9 @@ import {
   noticeBar,
   restoreFocusAfterRerender,
   sectionCard,
-  statStrip,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
 import {
-  aggressionLabel,
   deleteFaction,
   duplicateFaction,
   factionMatrixCell,
@@ -52,19 +51,29 @@ import { toast } from "@/util/toast";
 
 const STANCES = [-2, -1, 0, 1, 2] as const satisfies readonly FactionStance[];
 const AGGRESSIONS = [0, 1, 2, 3] as const satisfies readonly FactionAggression[];
+// 값(-2~2)은 그대로 저장하고 화면에는 말로 보인다. 숫자는 전문가 모드에서만 곁들인다.
 const STANCE_LABEL: Readonly<Record<FactionStance, string>> = {
-  [-2]: "최악의 적",
-  [-1]: "적",
+  [-2]: "숙적",
+  [-1]: "적대",
   [0]: "중립",
   [1]: "우호",
   [2]: "동맹",
 };
-const AGGRESSION_DESC: Readonly<Record<FactionAggression, string>> = {
-  [0]: "먼저 싸움을 걸지 않음",
-  [1]: "적(-1 이하)에게만 먼저 공격",
-  [2]: "중립(0)까지 먼저 공격",
-  [3]: "아군까지 공격",
+/** 「먼저 공격」 선택지 글자 — 한 줄로 끝낸다(예전엔 라벨과 설명을 이어 붙여 같은 말이 두 번 나왔다). */
+const AGGRESSION_OPTION: Readonly<Record<FactionAggression, string>> = {
+  [0]: "먼저 공격하지 않음",
+  [1]: "적대하는 진영에게만",
+  [2]: "중립인 진영에게도",
+  [3]: "우호 진영까지 (광폭)",
 };
+const AGGRESSION_DESC: Readonly<Record<FactionAggression, string>> = {
+  [0]: "누구에게도 먼저 싸움을 걸지 않습니다",
+  [1]: "숙적·적대(-1 이하) 진영을 보면 먼저 공격합니다",
+  [2]: "중립(0) 진영까지 먼저 공격합니다",
+  [3]: "우호 진영까지 먼저 공격합니다",
+};
+
+type FactionView = "faction" | "matrix" | "rules";
 const RESERVED_NAME: Readonly<Record<string, string>> = {
   [PLAYER_FACTION_ID]: "플레이어",
   [DEFAULT_ENEMY_FACTION_ID]: "적",
@@ -72,6 +81,8 @@ const RESERVED_NAME: Readonly<Record<string, string>> = {
 
 let factionSearch = "";
 let selectedFactionId = PLAYER_FACTION_ID;
+let factionView: FactionView = "faction";
+let usageOpen = false;
 
 export function renderFactionsTab(host: HTMLElement, rerender: () => void): void {
   const factions = store.getCurrent().factions;
@@ -79,19 +90,21 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
   selectedFactionId = table.ids.includes(selectedFactionId) ? selectedFactionId : table.ids[0]!;
   const selectedId = selectedFactionId;
   const selected = factionDefFor(factions, selectedId);
+  // 초보 모드에서는 관계표·전체 규칙 전환 단추가 숨으므로, 다른 모드에서 고른 보기가 남아
+  // 있어도 진영별 보기로 돌아간다(저장된 선택은 그대로 둔다).
+  const view: FactionView = isDatabaseUxVisible("advanced") ? factionView : "faction";
   const query = factionSearch.trim().toLowerCase();
   const rows = table.ids.flatMap((id, index) => {
     const name = table.names[index] ?? id;
     if (query && !name.toLowerCase().includes(query) && !id.toLowerCase().includes(query)) return [];
     return [listRow({
       name,
-      sub: aggressionLabel(table.aggression[index] as FactionAggression),
       number: isReservedFactionId(id) ? "예약" : index + 1,
       active: id === selectedId,
       title: id,
       testid: `db-faction-row-${id}`,
       dataset: { factionId: id },
-      onSelect: () => { selectedFactionId = id; rerender(); },
+      onSelect: () => { selectedFactionId = id; factionView = "faction"; rerender(); },
     })];
   });
 
@@ -127,56 +140,72 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
     testid: "db-faction-list-pane",
   });
 
-  const detail = detailPane({
-    hero: detailHero({
-      eyebrow: "전투 진영",
-      title: factionDisplayName(factions, selectedId),
-      subtitle: isReservedFactionId(selectedId)
-        ? "항상 존재하는 예약 진영 · 이름과 전투 성향은 덮어쓸 수 있습니다"
-        : "NPC 소속과 선공 판정을 묶는 프로젝트 진영",
-      tags: [selectedId, `${aggressionLabel(selected.aggression ?? DEFAULT_AGGRESSION)}`],
-      media: factionSwatch(factionColor(table, selectedId), factionDisplayName(factions, selectedId)),
+  const usage = factionUsage(selectedId);
+  const name = factionDisplayName(factions, selectedId);
+  // 관계표·전체 규칙은 고른 진영 하나의 것이 아니다 — 제목줄도 진영 이름 대신 그 보기의 이름을 보인다.
+  const hero = view === "faction"
+    ? detailHero({ title: name, media: factionSwatch(factionColor(table, selectedId), name), testid: "db-faction-hero" })
+    : detailHero({
+      title: view === "matrix" ? "전체 관계표" : "진영 전체 규칙",
+      subtitle: view === "matrix"
+        ? `진영 ${table.size}개의 모든 쌍을 한 표로 봅니다 · 왼쪽 목록에서 진영을 누르면 그 진영으로 돌아갑니다`
+        : "특정 진영이 아니라 프로젝트의 모든 진영에 똑같이 적용됩니다",
       testid: "db-faction-hero",
-    }),
+    });
+  if (view === "faction") hero.querySelector(".db-ws-hero-text")?.append(heroMeta(selectedId, usage, rerender));
+  hero.append(viewSwitch(view, rerender));
+
+  // 세 보기는 모두 DOM 에 두고 `hidden` 으로만 가른다 — 칸의 testid·저장 경로는 보기와 무관하다.
+  // `hidden` 이 클래스의 display 에 지지 않도록 감싸개는 클래스 없는 div 다.
+  const pane = (key: FactionView, children: HTMLElement[]): HTMLElement => {
+    const wrap = el("div", { dataset: { factionView: key }, children });
+    if (key !== view) wrap.setAttribute("hidden", "");
+    return wrap;
+  };
+  const usageWrap = el("div", { children: [usage.card] });
+  if (!usageOpen || view !== "faction") usageWrap.setAttribute("hidden", "");
+  usageWrap.id = "db-faction-usage-panel";
+
+  const detail = detailPane({
+    hero,
     body: [
-      statStrip([
-        { label: "진영 수", value: String(table.size), hint: "플레이어·적 포함", tone: "good" },
-        { label: "바꾼 관계", value: String(factions?.relations.length ?? 0), hint: "기본과 다르게 정한 쌍" },
-        {
-          label: "이 진영의 관계",
-          value: String((factions?.relations ?? []).filter((relation) => relation.a === selectedId || relation.b === selectedId).length),
-          hint: "저장되는 설정 수",
-        },
-      ], { testid: "db-faction-stats" }),
       el("div", {
-        class: "db-ws-stack db-faction-inspector",
+        class: "db-faction-detail",
         children: [
-          sectionCard({
-            title: "기본 정보",
-            hint: isReservedFactionId(selectedId) ? "예약 ID는 바꿀 수 없습니다" : "ID 변경 시 관계·몬스터·필드 스폰 소속도 함께 바뀝니다",
-            children: factionFields(selected, rerender),
-            testid: "db-faction-basics",
-          }),
-          sectionCard({
-            title: `${factionDisplayName(factions, selectedId)}의 관계`,
-            hint: "상대를 고르고 어떻게 대할지 누르세요 — 바로 저장됩니다",
-            children: [relationList(factions, selectedId, rerender)],
-            testid: "db-faction-relations",
-          }),
-          sectionCard({
-            title: "행동 규칙",
-            hint: "누가 먼저 공격하는지 정합니다",
-            children: behaviorFields(selected, rerender),
-            testid: "db-faction-behavior",
-          }),
-          factionUsageCard(selectedId),
-          sectionCard({
-            title: "플레이어 처치 평판 · 전체 설정",
-            hint: "프로젝트 전체 규칙",
-            children: [...reputationFields(factions, rerender), factionReputationPreview()],
-            testid: "db-faction-reputation",
-          }),
-          span(matrixCard(factions, rerender)),
+          usageWrap,
+          pane("faction", [el("div", {
+            class: "db-faction-inspector",
+            children: [
+              sectionCard({
+                title: "다른 진영을 어떻게 대하나",
+                hint: "누르면 바로 저장 · 두 진영이 함께 바뀝니다",
+                children: [relationList(factions, selectedId, rerender)],
+                testid: "db-faction-relations",
+              }),
+              sectionCard({
+                title: "이 진영의 성격",
+                children: [...factionFields(selected, rerender), ...behaviorFields(selected, rerender)],
+                testid: "db-faction-basics",
+              }),
+            ],
+          })]),
+          pane("matrix", [matrixCard(factions, rerender)]),
+          pane("rules", [el("div", {
+            class: "db-faction-rules",
+            children: [
+              sectionCard({
+                title: "플레이어 처치 평판",
+                hint: "플레이어가 NPC를 쓰러뜨리면 진영 태도가 변합니다",
+                children: [el("div", { class: "db-faction-form", children: reputationFields(factions, rerender) })],
+                testid: "db-faction-reputation",
+              }),
+              sectionCard({
+                title: "미리보기",
+                children: [factionReputationPreview()],
+                testid: "db-faction-reputation-preview",
+              }),
+            ],
+          })]),
         ],
       }),
     ],
@@ -184,6 +213,59 @@ export function renderFactionsTab(host: HTMLElement, rerender: () => void): void
   });
 
   host.append(workspaceShell({ list, detail, legacyClass: "db-faction-workspace", testid: "db-faction-workspace" }));
+}
+
+/** 제목 아래 한 줄 — 예약 표시, 소속·쓰는 곳 요약(누르면 목록), 전문가에게만 ID. */
+function heroMeta(selectedId: string, usage: FactionUsage, rerender: () => void): HTMLElement {
+  const total = usage.enemyCount + usage.mapCount + usage.referenceCount;
+  const toggle = el("button", {
+    class: "db-faction-usage-toggle",
+    attrs: {
+      type: "button",
+      "aria-expanded": usageOpen ? "true" : "false",
+      "aria-controls": "db-faction-usage-panel",
+      ...(total === 0 ? { disabled: "true", title: "이 진영을 쓰는 몬스터·맵이 아직 없습니다" } : { title: "누르면 쓰는 곳 목록을 펼칩니다" }),
+    },
+    dataset: { testid: "db-faction-usage-toggle" },
+    text: `소속 몬스터 ${usage.enemyCount} · 쓰는 맵 ${usage.mapCount}${total > 0 ? (usageOpen ? " ▾" : " ▸") : ""}`,
+    on: { click: () => { usageOpen = !usageOpen; rerender(); } },
+  });
+  return el("div", {
+    class: "db-faction-hero-meta",
+    dataset: { testid: "db-faction-stats" },
+    children: [
+      ...(isReservedFactionId(selectedId)
+        ? [el("span", { class: "db-faction-badge", text: "예약 진영 · 지울 수 없음" })]
+        : []),
+      toggle,
+      uxLevel(el("code", { class: "db-faction-id-tag", text: selectedId }), "expert"),
+    ],
+  });
+}
+
+/** 목록/관계표 전환과 프로젝트 전체 규칙 — 표준·전문가 모드에서만 보인다. */
+function viewSwitch(view: FactionView, rerender: () => void): HTMLElement {
+  const pick = (key: FactionView, label: string, title: string): HTMLElement => el("button", {
+    class: `db-faction-view-pick${view === key ? " is-active" : ""}`,
+    attrs: { type: "button", "aria-pressed": view === key ? "true" : "false", title },
+    dataset: { testid: `db-faction-view-${key}` },
+    text: label,
+    on: { click: () => { factionView = key; rerender(); restoreFocusAfterRerender(`db-faction-view-${key}`); } },
+  });
+  return uxLevel(el("div", {
+    class: "db-ws-hero-actions db-faction-view-actions",
+    children: [
+      el("div", {
+        class: "db-faction-segmented",
+        attrs: { role: "group", "aria-label": "보기" },
+        children: [
+          pick("faction", "목록", "진영 하나씩 관계와 성격을 봅니다"),
+          pick("matrix", "관계표", "모든 진영 쌍을 한 표로 봅니다"),
+        ],
+      }),
+      pick("rules", "⚙ 진영 전체 규칙", "모든 진영에 공통으로 적용되는 규칙(처치 평판)"),
+    ],
+  }), "advanced");
 }
 
 function factionFields(def: FactionDef, rerender: () => void): HTMLElement[] {
@@ -198,8 +280,14 @@ function factionFields(def: FactionDef, rerender: () => void): HTMLElement[] {
   });
   nameInput.addEventListener("change", rerender);
 
+  const reserved = isReservedFactionId(def.id);
   const idInput = el("input", {
-    attrs: { type: "text", spellcheck: "false", ...(isReservedFactionId(def.id) ? { disabled: "true" } : {}) },
+    attrs: {
+      type: "text",
+      spellcheck: "false",
+      title: reserved ? "예약 ID는 바꿀 수 없습니다" : "ID 변경 시 관계·몬스터·필드 스폰 소속도 함께 바뀝니다",
+      ...(reserved ? { disabled: "true" } : {}),
+    },
     value: def.id,
     dataset: { testid: "db-faction-id" },
   }) as HTMLInputElement;
@@ -229,18 +317,20 @@ function factionFields(def: FactionDef, rerender: () => void): HTMLElement[] {
   });
   colorInput.addEventListener("change", rerender);
 
-  return [field("이름", nameInput), field("ID", idInput), field("식별 색", colorInput)];
+  return [field("이름", nameInput), uxLevel(field("ID", idInput), "expert"), field("색", colorInput)];
 }
 
 function behaviorFields(def: FactionDef, rerender: () => void): HTMLElement[] {
   const current = def.aggression ?? DEFAULT_AGGRESSION;
-  const aggression = el("select", { dataset: { testid: "db-faction-aggression" } }) as HTMLSelectElement;
+  const aggression = el("select", {
+    attrs: { title: AGGRESSION_DESC[current] },
+    dataset: { testid: "db-faction-aggression" },
+  }) as HTMLSelectElement;
   for (const value of AGGRESSIONS) aggression.append(el("option", {
-    attrs: { value: String(value) },
-    text: `${aggressionLabel(value)} — ${AGGRESSION_DESC[value]}`,
+    attrs: { value: String(value), title: AGGRESSION_DESC[value] },
+    text: AGGRESSION_OPTION[value],
   }));
   aggression.value = String(current);
-  const aggressionDesc = el("p", { class: "db-ws-usage", text: AGGRESSION_DESC[current] });
   aggression.addEventListener("change", () => {
     recordProjectSnapshot("진영 선공 성향 변경");
     patchFaction(def.id, { aggression: Number(aggression.value) as FactionAggression });
@@ -258,12 +348,11 @@ function behaviorFields(def: FactionDef, rerender: () => void): HTMLElement[] {
     rerender();
   });
   return [
-    field("먼저 공격하는 범위", aggression),
-    aggressionDesc,
-    field("쓰러지지 않게 보호", el("label", {
+    field("먼저 공격", aggression),
+    uxLevel(field("쓰러지지 않음", el("span", {
       class: "db-faction-check",
-      children: [protectedInput, el("span", { text: "HP 1에서 버팀 (플레이어 공격은 제외)" })],
-    })),
+      children: [protectedInput, el("span", { text: "NPC 공격에는 HP 1에서 버팀 (플레이어 공격은 제외)" })],
+    })), "advanced"),
   ];
 }
 
@@ -275,38 +364,32 @@ function relationList(
   const table = resolveFactionTable(factions);
   const aggressionOf = (id: string): FactionAggression =>
     (table.aggression[table.ids.indexOf(id)] ?? DEFAULT_AGGRESSION) as FactionAggression;
-  const rows = table.ids
-    .filter((id) => id !== selectedId)
-    .map((otherId) => {
-      const cell = factionMatrixCell(table, factions, selectedId, otherId);
-      const otherName = table.names[table.ids.indexOf(otherId)] ?? otherId;
-      const wraps = el("div", { class: "db-faction-relation", dataset: { testid: `db-faction-relation-${otherId}` } });
-      const head = el("div", {
-        class: "db-faction-relation-head",
-        children: [
-          el("strong", { text: otherName }),
-          el("span", {
-            class: `db-faction-chip${cell.authored ? " is-authored" : " is-default"}`,
-            text: `${cell.stance} ${STANCE_LABEL[cell.stance]} · ${cell.authored ? "바꿈" : "기본"}`,
-            dataset: { testid: `db-faction-relation-label-${otherId}` },
-          }),
-        ],
-      });
-      const outcomes: string[] = [];
-      if (willAttackOnSight(cell.stance, aggressionOf(selectedId))) outcomes.push("이쪽이 먼저 공격");
-      if (willAttackOnSight(cell.stance, aggressionOf(otherId))) outcomes.push("상대가 먼저 공격");
-      const outcome = el("p", {
-        class: "db-ws-usage",
-        text: outcomes.length > 0 ? `실제 전투: ${outcomes.join(" · ")}` : "실제 전투: 서로 먼저 공격하지 않음",
-      });
-      const buttons = el("div", {
-        class: "db-faction-stance-buttons",
-        attrs: { role: "group", "aria-label": `${otherName}과의 관계` },
-        children: STANCES.map((stance) => el("button", {
+  const others = table.ids.filter((id) => id !== selectedId);
+  const rows = others.map((otherId) => {
+    const cell = factionMatrixCell(table, factions, selectedId, otherId);
+    const otherName = table.names[table.ids.indexOf(otherId)] ?? otherId;
+    const mine = willAttackOnSight(cell.stance, aggressionOf(selectedId));
+    const theirs = willAttackOnSight(cell.stance, aggressionOf(otherId));
+    const outcome = mine && theirs ? "서로 먼저 공격"
+      : mine ? "이쪽이 먼저 공격"
+        : theirs ? "상대가 먼저 공격"
+          : "서로 먼저 공격 안 함";
+    const buttons = el("div", {
+      class: "db-faction-stance-buttons",
+      attrs: { role: "group", "aria-label": `${otherName}과의 관계` },
+      children: STANCES.map((stance) => {
+        const button = el("button", {
           class: `db-faction-stance-pick${stance === cell.stance ? " is-active" : ""}`,
-          attrs: { type: "button", "aria-pressed": stance === cell.stance ? "true" : "false", title: isHittableByFaction(stance) ? `${STANCE_LABEL[stance]} — 유탄·광역에 맞습니다` : `${STANCE_LABEL[stance]} — 아군 오사격에서 면제됩니다` },
+          attrs: {
+            type: "button",
+            "aria-pressed": stance === cell.stance ? "true" : "false",
+            title: `${STANCE_LABEL[stance]} (${stance}) — ${isHittableByFaction(stance) ? "유탄·광역에 맞습니다" : "아군 오사격에서 면제됩니다"}`,
+          },
           dataset: { testid: `db-faction-pick-${otherId}-${stance}` },
-          text: `${stance} ${STANCE_LABEL[stance]}`,
+          children: [
+            el("span", { text: STANCE_LABEL[stance] }),
+            uxLevel(el("small", { class: "db-faction-stance-num", text: String(stance) }), "expert"),
+          ],
           on: {
             click: () => {
               recordProjectSnapshot("진영 관계 변경");
@@ -315,23 +398,51 @@ function relationList(
               restoreFocusAfterRerender(`db-faction-pick-${otherId}-${stance}`);
             },
           },
-        })),
-      });
-      wraps.append(head, outcome, buttons);
-      wraps.style.setProperty("--db-faction-stance-color", cssColor(stanceBarColor(cell.stance)));
-      return wraps;
+        });
+        button.style.setProperty("--db-faction-stance-color", cssColor(stanceBarColor(stance)));
+        return button;
+      }),
     });
-  const matches = el("div", { class: "db-ws-stack", children: rows });
-  const search = listSearch({
-    value: "",
-    placeholder: "상대 진영 이름 또는 ID 검색",
-    testid: "db-faction-relation-search",
-    onInput: (value) => {
-      const query = value.trim().toLowerCase();
-      matches.replaceChildren(...rows.filter((row) => !query || `${row.textContent} ${row.dataset.testid}`.toLowerCase().includes(query)));
-    },
+    return el("div", {
+      class: "db-faction-relation",
+      dataset: { testid: `db-faction-relation-${otherId}` },
+      children: [
+        el("div", {
+          class: "db-faction-relation-name",
+          children: [
+            el("strong", { text: otherName, attrs: { title: `${otherName} (${otherId})` } }),
+            uxLevel(el("span", {
+              class: `db-faction-chip${cell.authored ? " is-authored" : " is-default"}`,
+              text: cell.authored ? "바꿈" : "기본",
+              attrs: { title: cell.authored ? "기본과 다르게 정한 관계입니다" : "기본 관계 그대로입니다" },
+              dataset: { testid: `db-faction-relation-label-${otherId}` },
+            }), "advanced"),
+          ],
+        }),
+        buttons,
+        el("span", { class: "db-faction-relation-outcome", text: outcome }),
+      ],
+    });
   });
-  return el("div", { class: "db-faction-relations", children: [search, matches] });
+  const matches = el("div", { class: "db-faction-relation-rows", children: rows });
+  const children: HTMLElement[] = [];
+  // 상대가 적을 때 검색창은 소음이다. 많아지면 그때 보인다.
+  if (others.length > 6) {
+    children.push(listSearch({
+      value: "",
+      placeholder: "상대 진영 이름 또는 ID 검색",
+      testid: "db-faction-relation-search",
+      onInput: (value) => {
+        const query = value.trim().toLowerCase();
+        matches.replaceChildren(...rows.filter((row) => !query || `${row.textContent} ${row.dataset.testid}`.toLowerCase().includes(query)));
+      },
+    }));
+  }
+  children.push(matches, uxLevel(el("p", {
+    class: "db-ws-usage",
+    text: "오른쪽 회색 글씨가 실제 전투에서 어떻게 되는지입니다. 먼저 공격하는 범위는 「이 진영의 성격」에서 정합니다.",
+  }), "guide"));
+  return el("div", { class: "db-faction-relations", children });
 }
 
 function reputationFields(factions: ProjectFactions | undefined, rerender: () => void): HTMLElement[] {
@@ -365,11 +476,11 @@ function reputationFields(factions: ProjectFactions | undefined, rerender: () =>
   });
 
   return [
-    field("싸우면 평판 자동 변화", el("label", {
+    field("처치하면 평판 변화", el("span", {
       class: "db-faction-check",
       children: [enabledInput, el("span", { text: "플레이어가 NPC를 처치하면 관련 진영 태도에 반영" })],
     })),
-    field("처치당 가중치", weightInput),
+    uxLevel(field("처치당 가중치", weightInput), "expert"),
     el("p", {
       class: "db-ws-usage",
       text: config
@@ -418,10 +529,8 @@ function matrixCard(factions: ProjectFactions | undefined, rerender: () => void)
   attachMatrixKeyboardNavigation(matrix, table.size);
 
   return sectionCard({
-    title: "전체 관계표 (고급)",
-    hint: "위 목록과 같은 값입니다 · 셀을 누르면 순서대로 바뀝니다",
-    collapsible: true,
-    collapsed: true,
+    title: "전체 관계표",
+    hint: "「목록」과 같은 값입니다 · 칸을 누르면 순서대로 바뀝니다",
     children: [
       noticeBar({
         text: "한 쌍은 양쪽이 같은 값으로 함께 바뀝니다. 서로 다르게 들어온 데이터는 전투처럼 더 적대적인 쪽이 적용됩니다.",
@@ -439,7 +548,7 @@ function matrixCard(factions: ProjectFactions | undefined, rerender: () => void)
       el("div", { class: "db-faction-matrix-scroll", children: [matrix] }),
       el("p", {
         class: "db-ws-usage",
-        text: "기본과 같은 칸은 저장하지 않습니다. 기본은 자기 자신 2(같은 편), 플레이어↔적 -1(적), 나머지 0(가만히 있음)입니다.",
+        text: "기본과 같은 칸은 저장하지 않습니다. 기본은 같은 진영끼리 동맹(2), 플레이어↔적 적대(-1), 나머지 중립(0)입니다.",
       }),
     ],
     testid: "db-faction-matrix-card",
@@ -661,9 +770,4 @@ function colorInputValue(id: string, authored: string | undefined): string {
 
 function cssColor(value: number): string {
   return `#${value.toString(16).padStart(6, "0")}`;
-}
-
-function span(node: HTMLElement): HTMLElement {
-  node.classList.add("db-ws-span");
-  return node;
 }

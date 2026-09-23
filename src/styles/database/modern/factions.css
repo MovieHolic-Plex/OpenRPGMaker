@@ -1,43 +1,183 @@
-/* 진영 탭. 공용 셸/카드/버튼은 workspace-modern.css 에 맡기고, 관계 목록과 행렬만 정의한다. */
+/* 진영 탭. 공용 셸/카드/버튼은 workspace-modern.css 에 맡기고, 제목줄·관계 목록·행렬만 정의한다. */
+
+/* 모드별 숨김(monster-ux.css)은 특이도가 낮아 이 탭의 display 규칙에 진다. 탭 안에서만 같은 규칙을
+   한 번 더 건다 — !important 없이 특이도로 이긴다. */
+body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="advanced"],
+body.editor-ui-beginner .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="expert"],
+body.editor-ui-standard .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="expert"],
+body.editor-ui-expert .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-workspace [data-db-ux="guide"] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-detail {
+  container: db-faction-detail / inline-size;
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* 사용처 — 제목줄 요약을 누르면 펼쳐진다. 몬스터가 수십 개여도 아래 관계 카드를 밀어내지 않게 높이를 묶는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-usage-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 168px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-usage-list > .db-ws-btn {
+  font-size: 12px;
+  min-height: 28px;
+  padding: 0 10px;
+  width: auto;
+}
+
+/* 제목줄 — 예약 표시 · 소속/쓰는 곳 요약 · (전문가) ID */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-hero-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-badge {
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 999px;
+  color: var(--db-studio-text-2);
+  font: 700 11px/1 var(--font-ui);
+  padding: 5px 9px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-usage-toggle {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 600 12px/1.4 var(--font-ui);
+  padding: 2px 4px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-usage-toggle:hover:not(:disabled) {
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-usage-toggle:disabled {
+  cursor: default;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-usage-toggle:focus-visible,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-view-pick:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-id-tag {
+  color: var(--db-studio-text-3);
+  font: 500 11px/1 var(--font-mono);
+}
+
+/* 보기 전환(목록/관계표) + 전체 규칙 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-view-actions {
+  align-items: center;
+  align-self: flex-start;
+  display: flex;
+  gap: 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-segmented {
+  border: 1px solid var(--db-studio-border-default, var(--db-studio-border-subtle));
+  border-radius: 8px;
+  display: inline-flex;
+  overflow: hidden;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-view-pick {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default, var(--db-studio-border-subtle));
+  border-radius: 8px;
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 700 12px/1 var(--font-ui);
+  min-height: 30px;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-segmented .db-faction-view-pick {
+  border: 0;
+  border-radius: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-segmented .db-faction-view-pick + .db-faction-view-pick {
+  border-left: 1px solid var(--db-studio-border-default, var(--db-studio-border-subtle));
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-view-pick.is-active {
+  background: var(--db-studio-text-1);
+  color: var(--db-studio-surface);
+}
+
+/* 진영별 보기: 관계 카드(넓게) + 성격 카드 */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-inspector {
+  align-items: start;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1.5fr) minmax(300px, 1fr);
+}
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relations {
   display: grid;
   gap: 10px;
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-rows {
+  display: grid;
+  gap: 8px;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation {
+  align-items: center;
   background: var(--db-studio-inset);
   border: 1px solid var(--db-studio-border-subtle);
-  border-left: 6px solid var(--db-faction-stance-color);
   border-radius: 10px;
-  display: grid;
-  gap: 6px;
-  padding: 10px 12px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-head {
-  align-items: center;
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  justify-content: space-between;
+  gap: 8px 12px;
+  min-width: 0;
+  padding: 8px 10px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-head strong {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-name {
+  align-items: center;
+  display: flex;
+  flex: 1 1 88px;
+  gap: 6px;
+  min-width: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-name strong {
   color: var(--db-studio-text-1);
   font: 700 13px/1.4 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-chip {
   border-radius: 999px;
-  font: 700 11px/1 var(--font-ui);
-  min-height: 24px;
-  padding: 6px 10px;
+  flex: 0 0 auto;
+  font: 600 10.5px/1 var(--font-ui);
+  padding: 3px 7px;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-chip.is-authored {
-  background: color-mix(in srgb, var(--db-faction-stance-color) 22%, var(--db-studio-surface));
-  border: 1px solid var(--db-faction-stance-color);
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-strong);
   color: var(--db-studio-text-1);
 }
 
@@ -47,41 +187,63 @@
   color: var(--db-studio-text-3);
 }
 
+/* 적대·경계…동맹 한 줄 세그먼트. 칸이 좁으면 줄 전체가 접히고 버튼은 쪼개지지 않는다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default, var(--db-studio-border-subtle));
+  border-radius: 8px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick {
-  background: var(--db-studio-surface);
-  border: 1px solid var(--db-studio-border-subtle);
-  border-radius: 999px;
+  align-items: baseline;
+  background: transparent;
+  border: 0;
   color: var(--db-studio-text-2);
   cursor: pointer;
-  font: 600 11px/1 var(--font-ui);
-  min-height: 28px;
-  padding: 0 10px;
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 3px;
+  min-height: 30px;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick + .db-faction-stance-pick {
+  border-left: 1px solid var(--db-studio-border-subtle);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick:hover {
-  border-color: var(--db-studio-border-strong);
+  background: var(--db-studio-inset);
   color: var(--db-studio-text-1);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick.is-active {
-  background: color-mix(in srgb, var(--db-faction-stance-color) 24%, var(--db-studio-surface));
-  border-color: var(--db-faction-stance-color);
+  background: color-mix(in srgb, var(--db-faction-stance-color) 22%, var(--db-studio-surface));
+  box-shadow: inset 0 -3px 0 var(--db-faction-stance-color);
   color: var(--db-studio-text-1);
+  font-weight: 800;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-pick:focus-visible {
   outline: 2px solid var(--db-studio-accent);
-  outline-offset: 1px;
+  outline-offset: -2px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-inspector {
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-stance-num {
+  color: var(--db-studio-text-3);
+  font: 500 10.5px/1 var(--font-mono);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-relation-outcome {
+  color: var(--db-studio-text-3);
+  flex: 0 0 auto;
+  font: 500 12px/1.4 var(--font-ui);
+  margin-left: auto;
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-hero-swatch {
@@ -264,6 +426,13 @@
   color: var(--db-studio-text-3);
 }
 
+/* 상세 폭이 좁으면(1280 창 등) 관계 카드를 한 줄 전체로 — 관계 행이 세 줄로 접히지 않게. */
+@container db-faction-detail (max-width: 860px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-inspector {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @container db-modal (max-width: 980px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-inspector {
     grid-template-columns: minmax(0, 1fr);
@@ -274,4 +443,18 @@
   .database-modal-backdrop .database-modal-window .database-modal-body .db-faction-inspector {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* 진영 전체 규칙 보기 — 폼 한 줄씩, 폭은 읽기 좋은 만큼만. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-rules {
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-form,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-faction-rules .db-ws-stack {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr);
 }

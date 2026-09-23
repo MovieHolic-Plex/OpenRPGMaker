@@ -148,23 +148,15 @@ test("RM2K3 Troops tab matches Korean classic troop editor layout", async ({ pag
   await expect(workbench).toContainText("지형");
   await expect(workbench).toContainText("전투 이벤트");
   await expect(page.getByTestId("db-troop-preview-stage")).toBeVisible();
-  await expect(page.getByTestId("db-troop-event-command-area")).toContainText("◆");
 
-  const metrics = await page.getByTestId("database-modal").evaluate((node) => {
-    const modal = node.getBoundingClientRect();
-    const preview = node.querySelector<HTMLElement>("[data-testid='db-troop-preview-stage']")?.getBoundingClientRect();
-    const events = node.querySelector<HTMLElement>("[data-testid='db-troop-event-command-area']")?.getBoundingClientRect();
-    return {
-      modalWidth: Math.round(modal.width),
-      previewWidth: Math.round(preview?.width ?? 0),
-      previewLeft: Math.round((preview?.left ?? 0) - modal.left),
-      eventsWidth: Math.round(events?.width ?? 0),
-      eventsLeft: Math.round((events?.left ?? 0) - modal.left),
-    };
-  });
-  expect(metrics.modalWidth).toBeGreaterThan(1300);
-  expect(metrics.previewWidth).toBeGreaterThan(400);
-  expect(metrics.previewLeft).toBeLessThan(metrics.eventsLeft);
-  expect(metrics.eventsWidth).toBeGreaterThan(520);
+  // 2026-09 구획 분할: 미리보기(배치)와 전투 이벤트는 더 이상 나란히 보이지 않는다 —
+  // 「배치」 구획에서 미리보기가 넓게 차지하고, 전투 이벤트는 자기 구획 탭에서 전폭으로 열린다.
+  const previewWidth = await page.getByTestId("db-troop-preview-stage").evaluate((node) => Math.round(node.getBoundingClientRect().width));
+  expect(previewWidth).toBeGreaterThan(400);
+  await page.getByTestId("db-troop-section-events-tab").click();
+  await expect(page.getByTestId("db-troop-preview-stage")).toBeHidden();
+  await expect(page.getByTestId("db-troop-event-command-area")).toContainText("◆");
+  const eventsWidth = await page.getByTestId("db-troop-event-command-area").evaluate((node) => Math.round(node.getBoundingClientRect().width));
+  expect(eventsWidth).toBeGreaterThan(520);
   await page.getByTestId("database-modal").screenshot({ path: testInfo.outputPath("troops-classic-layout.png") });
 });

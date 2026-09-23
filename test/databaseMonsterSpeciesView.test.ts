@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
+import { captureDifficulty } from "@/editor/panels/databaseCapturePreview";
+import { setMonsterSpeciesSection } from "@/editor/panels/databaseMonsterSpeciesSections";
 import { renderMonsterSpeciesTab } from "@/editor/panels/databaseMonsterSpeciesView";
+import { setEditorUiMode } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -17,6 +20,8 @@ function stubWindowTimers(): void {
         return 0;
       },
       clearTimeout,
+      // setEditorUiMode() announces the mode on window; the stub has no listeners to notify.
+      dispatchEvent: () => true,
     },
   });
 }
@@ -44,6 +49,8 @@ describe("database monster species view", () => {
     stubWindowTimers();
     store.replace(createBlankProject());
     resetMapEditHistory();
+    setMonsterSpeciesSection("basic");
+    setEditorUiMode("expert", null);
   });
 
   afterEach(() => {
@@ -264,4 +271,101 @@ describe("database monster species view", () => {
     expect(store.getCurrent().database.monsterSpecies!.find((row) => row.id === id)!.skillsByLevel[0]!.level).toBe(30);
   });
 
+
+  // Break caught: all nine cards were stacked at once (1372px) so beginners could not tell where to start.
+  it("splits the detail into five section tabs that keep every field mounted", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    const tabs = ["basic", "capture", "growth", "evolution", "links"].map((id) => findByTestId(host, `db-monster-species-section-tab-${id}`)!);
+    expect(tabs.map((tab) => tab.getAttribute("role"))).toEqual(["tab", "tab", "tab", "tab", "tab"]);
+    expect(tabs.map((tab) => tab.getAttribute("aria-selected"))).toEqual(["true", "false", "false", "false", "false"]);
+    expect(findByTestId(host, "db-monster-species-section-tab-links")?.dataset.dbUx).toBe("advanced");
+    // Hidden panels still own their fields — tests and saved paths reach them without a tab click.
+    for (const testid of ["db-monster-species-name", "db-monster-species-capture-rate", "db-monster-species-hp", "db-monster-species-evo-add", "db-monster-species-linked-enemies"]) {
+      expect(findByTestId(host, testid), testid).toBeTruthy();
+    }
+    expect(findByTestId(host, "db-monster-species-section-basic")?.hidden).toBe(false);
+    expect(findByTestId(host, "db-monster-species-section-growth")?.hidden).toBe(true);
+
+    tabs[2]!.click();
+    expect(findByTestId(host, "db-monster-species-section-growth")?.hidden).toBe(false);
+    expect(findByTestId(host, "db-monster-species-section-basic")?.hidden).toBe(true);
+    // The chosen section survives a rerender (edits that rebuild the tab must not jump back to 기본).
+    const rerendered = renderUtility(renderMonsterSpeciesTab);
+    expect(findByTestId(rerendered, "db-monster-species-section-tab-growth")?.getAttribute("aria-selected")).toBe("true");
+    expect(findByTestId(rerendered, "db-monster-species-section-growth")?.hidden).toBe(false);
+
+    const growthTab = findByTestId(rerendered, "db-monster-species-section-tab-growth")!;
+    growthTab.dispatchEvent(Object.assign(new Event("keydown"), { key: "ArrowRight" }));
+    expect(findByTestId(rerendered, "db-monster-species-section-tab-evolution")?.getAttribute("aria-selected")).toBe("true");
+  });
+
+  it("falls back to 기본 when the remembered section is hidden in beginner mode", () => {
+    setMonsterSpeciesSection("links");
+    setEditorUiMode("beginner", null);
+    const host = renderUtility(renderMonsterSpeciesTab);
+    expect(findByTestId(host, "db-monster-species-section-tab-basic")?.getAttribute("aria-selected")).toBe("true");
+    expect(findByTestId(host, "db-monster-species-section-links")?.hidden).toBe(true);
+  });
+
+  // Break caught: 「기본 포획 계수 0.45」 said nothing about how hard the monster is to catch.
+  it("names capture difficulty and lets a difficulty step set the representative rate", () => {
+    expect(captureDifficulty(1).label).toBe("매우 쉬움");
+    expect(captureDifficulty(0.7).label).toBe("쉬움");
+    expect(captureDifficulty(0.3).label).toBe("보통");
+    expect(captureDifficulty(0.45).label).toBe("보통");
+    expect(captureDifficulty(0.15).label).toBe("어려움");
+    expect(captureDifficulty(0.02).label).toBe("전설");
+
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")!.click();
+    const id = store.getCurrent().database.monsterSpecies!.at(-1)!.id;
+    expect(findByTestId(host, "db-monster-species-capture-difficulty")?.textContent).toBe("보통");
+    expect(findByTestId(host, "db-monster-species-capture-rate")?.closest("[data-db-ux]")?.dataset.dbUx).toBe("expert");
+    findByTestId(host, "db-monster-species-capture-step-hard")!.click();
+    expect(store.getCurrent().database.monsterSpecies!.find((row) => row.id === id)!.captureRate).toBe(0.15);
+    expect(findByTestId(host, "db-monster-species-capture-difficulty")?.textContent).toBe("어려움");
+    expect(findByTestId(host, "db-monster-species-capture-step-hard")?.getAttribute("aria-pressed")).toBe("true");
+    expect(findByTestId(host, "db-monster-species-section-tab-capture")?.textContent).toContain("어려움");
+    expect(findByTestId(host, "db-monster-species-summary")?.textContent).toContain("잡기 어려움");
+    expect(findByTestId(host, "db-monster-species-check-capture")?.dataset.done).toBe("true");
+  });
+
+  it("shows Korean type labels while storing raw type ids", () => {
+    store.update((project) => {
+      project.system.typeChart = {
+        types: ["fire", "water", "shadow"],
+        multipliers: { fire: {}, water: {}, shadow: {} },
+      } as never;
+    });
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")!.click();
+    const id = store.getCurrent().database.monsterSpecies!.at(-1)!.id;
+    const fire = findByTestId(host, "db-monster-species-type-fire")!;
+    expect(fire.closest("label")?.textContent).toContain("불");
+    expect(findByTestId(host, "db-monster-species-type-shadow")!.closest("label")?.textContent).toContain("shadow");
+    fire.checked = true;
+    fire.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().database.monsterSpecies!.find((row) => row.id === id)!.types).toEqual(["fire"]);
+    expect(findByTestId(host, "db-monster-species-hero-types")?.textContent).toBe("불");
+  });
+
+  it("keeps the project-wide readiness collapsed into a counted pill", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    const details = findByTestId(host, "db-monster-pipeline-details")!;
+    expect(details.tagName).toBe("DETAILS");
+    expect((details as unknown as { open?: boolean }).open).toBe(false);
+    expect(findByTestId(host, "db-monster-pipeline-toggle")?.textContent).toMatch(/프로젝트 준비\s*\d\/4/u);
+    expect(details.contains(findByTestId(host, "db-monster-pipeline"))).toBe(true);
+  });
+
+  it("marks the fill-order checklist from real data and jumps to the item's section", () => {
+    const host = renderUtility(renderMonsterSpeciesTab);
+    findByTestId(host, "db-monster-species-add")!.click();
+    expect(findByTestId(host, "db-monster-species-checklist")?.dataset.dbUx).toBe("guide");
+    expect(findByTestId(host, "db-monster-species-check-identity")?.dataset.done).toBe("false");
+    expect(findByTestId(host, "db-monster-species-check-graphic")?.dataset.done).toBe("false");
+    expect(findByTestId(host, "db-monster-species-check-capture")?.dataset.done).toBe("false");
+    findByTestId(host, "db-monster-species-check-evolution")!.click();
+    expect(findByTestId(host, "db-monster-species-section-evolution")?.hidden).toBe(false);
+  });
 });
