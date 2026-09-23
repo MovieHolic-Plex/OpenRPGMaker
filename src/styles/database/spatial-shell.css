@@ -1057,13 +1057,13 @@
 .spatial-place-hover {
   position: fixed;
   z-index: var(--z-tooltip);
-  width: min(360px, calc(100vw - 24px));
+  width: min(320px, calc(100vw - 24px));
   pointer-events: none;
-  border: 1px solid var(--db-studio-border-default);
+  border: 1px solid var(--border-default);
   border-radius: 14px;
-  background: var(--db-studio-surface);
-  color: var(--db-studio-text-1);
-  box-shadow: var(--db-studio-shadow-pop);
+  background: var(--bg-overlay);
+  color: var(--text-1);
+  box-shadow: var(--shadow-pop);
   overflow: hidden;
 }
 .spatial-place-hover-copy {
@@ -1075,15 +1075,17 @@
   font: 650 13px/1.3 inherit;
 }
 .spatial-place-hover-sub,
-.spatial-place-hover-hint,
 .spatial-place-detail-sub,
 .spatial-place-detail-note {
   font: 400 12px/1.4 inherit;
   color: var(--db-studio-text-3);
 }
+.spatial-place-hover-sub,
+.spatial-place-hover-hint {
+  color: var(--text-2);
+}
 .spatial-place-hover-hint {
   margin-top: 2px;
-  color: var(--db-studio-accent);
   font-weight: 600;
 }
 .spatial-place-zoom-stage {
@@ -1091,9 +1093,7 @@
   place-items: center;
   min-height: 148px;
   padding: 12px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--db-studio-surface) 86%, transparent), var(--db-studio-inset)),
-    repeating-conic-gradient(from 90deg, var(--spatial-checker-a, var(--db-studio-well)) 0% 25%, var(--spatial-checker-b, var(--db-studio-inset)) 0% 50%) 0 0 / 16px 16px;
+  background: var(--bg-well);
 }
 .spatial-place-zoom-stage.is-detail {
   min-height: 240px;
