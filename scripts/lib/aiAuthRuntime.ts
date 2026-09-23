@@ -312,7 +312,15 @@ export function cancelProviderLogin(provider: string): boolean {
   return true;
 }
 
-export async function startProviderLogin(provider: string, _body: { apiKey?: string } = {}) {
+/**
+ * `remote` = 편집기를 공개 주소로(다른 기기에서) 열었다. Codex 는 코드 입력 방식으로 바로 간다.
+ * Antigravity 는 루프백 redirect 만 허용돼 원격에서도 흐름이 같다(붙여넣기는 편집기가 안내).
+ */
+export async function startProviderLogin(
+  provider: string,
+  _body: { apiKey?: string } = {},
+  options: { remote?: boolean } = {},
+) {
   const id = requireKnown(provider);
   cancelProviderLogin(id);
   if (testStub()) {
@@ -329,6 +337,7 @@ export async function startProviderLogin(provider: string, _body: { apiKey?: str
     const started = await beginCodexLogin({
       openCallbackServer: (options) => startOAuthCallbackServer(options),
       startDeviceAuthorization: () => startCodexDeviceAuthorization({}),
+      remote: options.remote === true,
       signal: abort.signal,
     });
     if (started.mode === "browser") {

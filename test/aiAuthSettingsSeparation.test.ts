@@ -321,6 +321,7 @@ describe("기기 로그인", () => {
     expect(step2).toContain("주소 전체");
     expect(step3?.hidden).toBe(false);
     expect(step3?.textContent ?? "").toMatch(/^3\. /u);
+    expect(step3?.textContent ?? "").toContain("서버마다 한 번만");
     // 개발자 용어를 사용자 문구에 흘리지 않는다.
     const block = findByTestId(root, "ai-oauth-device-code")?.textContent ?? "";
     expect(block).not.toMatch(/OAuth|콜백|companion|동반 서비스/iu);

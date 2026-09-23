@@ -141,6 +141,23 @@ describe("로그인 경로 선택", () => {
     expect(started.instructions).toContain("1455");
   });
 
+  it("다른 기기에서 접속하면 콜백 서버를 열지 않고 바로 코드 입력 방식으로 간다", async () => {
+    // 원격 브라우저는 로그인 뒤 자기 기기의 localhost:1455 로 돌아가 「연결할 수 없음」이 된다.
+    // 코드 입력 방식이면 주소를 복사해 붙여 넣는 단계가 없다.
+    const started = await beginCodexLogin({
+      remote: true,
+      openCallbackServer: async () => {
+        throw new Error("원격이면 루프백 콜백 서버를 열면 안 된다");
+      },
+      startDeviceAuthorization: async () => deviceStart,
+    });
+
+    expect(started.mode).toBe("device");
+    expect(started.verificationUrl).toBe(CODEX_DEVICE_VERIFICATION_URL);
+    expect(started.userCode).toBe("WXYZ-1234");
+    expect(started.instructions).toContain("다른 기기");
+  });
+
   it("포트 점유가 아닌 실패는 조용히 디바이스로 숨기지 않는다", async () => {
     // 권한 오류·잘못된 호스트 같은 실패를 디바이스 흐름으로 가려 버리면 원인이 사라진다.
     await expect(

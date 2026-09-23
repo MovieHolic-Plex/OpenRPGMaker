@@ -158,8 +158,9 @@ export async function handleCompanionRequest(req, adapters) {
   }
 
   if (method === "POST" && path === "/auth/login") {
-    const payload = await adapters.login(provider, body);
-    return json(200, publishLoopbackLaunch(payload, companionPublicOrigin(req)));
+    const publicOrigin = companionPublicOrigin(req);
+    const payload = await adapters.login(provider, body, { remote: !!publicOrigin });
+    return json(200, publishLoopbackLaunch(payload, publicOrigin));
   }
 
   if (method === "GET" && path === "/oauth/launch") {
