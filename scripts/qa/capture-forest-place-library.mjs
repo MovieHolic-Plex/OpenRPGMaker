@@ -25,7 +25,7 @@ try{
   assert.match(await download.innerText(),/장소 맵 파일/);
   const received=page.waitForEvent('download');await download.click();const asset=await received;assert.equal(asset.suggestedFilename(),`${entry.name}.oprn.json`);
   const file=`${out}/download-${entry.slug}.json`;await asset.saveAs(file);const got=JSON.parse(fs.readFileSync(file)),expected=JSON.parse(fs.readFileSync(`public/assets/region-references/${entry.slug}.oprn.json`));assert.ok(same(got,expected),`Download differs ${entry.id}`);
-  const rows=await page.evaluate(id=>{const out=[];let row=0;do{const r=window.__oprnEditorTool('read_region_reference',{id,row,rows:16});if(!r.ok)throw Error(JSON.stringify(r));out.push(r.data);row=r.data.map.nextRow;}while(row!==null);return out;},entry.id);
+  const rows=await page.evaluate(async id=>{await (await import('/src/project/regionReferenceSnapshots.ts')).preloadRegionReference(id);const out=[];let row=0;do{const r=window.__oprnEditorTool('read_region_reference',{id,row,rows:16});if(!r.ok)throw Error(JSON.stringify(r));out.push(r.data);row=r.data.map.nextRow;}while(row!==null);return out;},entry.id);
   assert.deepEqual(rows.flatMap(r=>r.map.lowerTiles),before.maps[entry.mapId].lowerTiles);assert.deepEqual(rows.flatMap(r=>r.map.upperTiles),before.maps[entry.mapId].upperTiles);
   if(['cliff-forest-bridge','high-cliff-village','great-falls','rebuilt-forest-cave'].includes(entry.slug))await page.screenshot({path:`${out}/place-${entry.slug}.png`});
   results.push({id:entry.id,defaultPlace:true,preview:true,downloadExact:true,aiRowsExact:true,linkedMapCount:Object.keys(got.maps).length});console.log('Verified',entry.id);

@@ -8,6 +8,12 @@ import { getTool } from "./toolRegistry";
 import { normalizeToolArgs, runTool, runToolDefinition, type RunToolOptions } from "./toolRunner";
 import { ToolError, type ToolContext, type ToolResult } from "./types";
 
+/** Await the tool's lazy data so the synchronous run finds it. A failed load surfaces from run itself. */
+export async function prepareTool(name: string, args: Record<string, unknown>): Promise<void> {
+  const tool = getTool(name);
+  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args)).catch(() => undefined);
+}
+
 /** Generate first, then enter the same synchronous draft/lint/commit boundary as other tools. */
 export async function runToolAsync(
   ctx: ToolContext, name: string, args: Record<string, unknown>,
@@ -21,7 +27,11 @@ export async function runToolAsync(
   } = {},
 ): Promise<ToolResult> {
   options.signal?.throwIfAborted();
-  if (name !== EVENT_COMMAND_ASSIST_TOOL) return runTool(ctx, name, args, options);
+  if (name !== EVENT_COMMAND_ASSIST_TOOL) {
+    await prepareTool(name, args);
+    options.signal?.throwIfAborted();
+    return runTool(ctx, name, args, options);
+  }
   if (options.eventCommandScope) {
     const refusal = eventScopeRefusal(options.eventCommandScope, name, args);
     if (refusal) return refusal;

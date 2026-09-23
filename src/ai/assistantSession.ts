@@ -35,7 +35,7 @@ import { GAME_OVER_IMAGE_TOOL, OPENING_IMAGE_TOOL } from "@/editor/tools/cinemat
 import { IMAGE_ASSET_TOOL } from "@/editor/tools/imageAssetTools";
 import type { AppearanceGenerationHandoff } from "@/editor/characterAppearanceGeneration";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
-import { runToolAsync } from "@/editor/tools/asyncToolRunner";
+import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { getTool, normalizeToolArgs, runTool } from "@/editor/tools";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { viewportVillageBounds } from "@/editor/tools/authorVillageSupport";
@@ -5263,6 +5263,7 @@ export class AssistantSession {
                 ? this.specGate(name, args)
                 : { warnings: [] };
               if (isSpecGatePass(gate)) {
+                if (name !== EVENT_COMMAND_ASSIST_TOOL && tool?.prepare) await operation.wait(prepareTool(name, args));
                 const before = this.ctx.project;
                 toolResult = name === EVENT_COMMAND_ASSIST_TOOL
                   ? await operation.wait(runToolAsync(this.ctx, name, args, {

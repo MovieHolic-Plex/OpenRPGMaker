@@ -36,7 +36,7 @@ try {
     const id = `${plan.id}-${plan.width}x${plan.height}`;
     const expected = JSON.parse(fs.readFileSync(`public/assets/region-references/${plan.id}.oprn.json`));
     const actual = await page.evaluate(async (id2) => {
-      const { readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts");
+      const { preloadAllRegionReferences, readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts"); await preloadAllRegionReferences();
       const lower = [], upper = [];
       let row = 0;
       while (row !== null) {
@@ -73,7 +73,7 @@ try {
   for (const plan of plans.filter((p) => p.id === "twin-falls-river-village" || p.series === "concept")) {
     const id = `${plan.id}-place-${plan.width}x${plan.height}`;
     const rows = await page.evaluate(async (id2) => {
-      const { readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts");
+      const { preloadAllRegionReferences, readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts"); await preloadAllRegionReferences();
       const lower = [];
       for (let row = 0; row !== null;) { const r = readRegionReference(id2, row, 16); lower.push(...r.map.lowerTiles); row = r.map.nextRow; }
       return lower;

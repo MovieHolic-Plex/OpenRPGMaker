@@ -13,7 +13,7 @@ import { captureActivityVisuals, type ActivityVisual } from "@/ai/activityVisual
 import { TOOL_REGISTRY } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools";
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
-import { runToolAsync } from "@/editor/tools/asyncToolRunner";
+import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
@@ -214,6 +214,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       const before = tool.mode === "write" ? captureActivityVisuals(ctx.project, tool.name, args, undefined, "before") : [];
       const gate = tool.mode === "write" ? referenceGate.beforeWrite(ctx.project, tool.name, args) : null;
       const beforeProject = ctx.project;
+      if (!gate && tool.prepare) await prepareTool(tool.name, args);
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
         : runTool(ctx, tool.name, args));
