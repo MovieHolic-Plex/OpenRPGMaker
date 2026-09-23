@@ -8,6 +8,7 @@ import {
 import { RESOURCE_SLICING } from "@/assets/resourceSlicing";
 import { normalizeCharacterScale } from "@/project/footprint";
 import { characterRenderScale } from "@/project/characterScale";
+import { projectReferenceTileSize } from "@/project/mapViewScale";
 import type { AutonomousMovement, CharacterFootprint, EventPageGraphic } from "@/project/types";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { store } from "@/project/store";
@@ -217,7 +218,7 @@ export function renderFootprintPreview(input: {
 export function eventGraphicRenderScale(graphic: EventPageGraphic, tileSize: number): number {
   const resolved = resolveEventAppearanceGraphic(store.getCurrent(), graphic);
   return resolved.sprite && findCharsetAsset(resolved.sprite.id)
-    ? characterRenderScale(CELL_PX, tileSize, resolved)
+    ? characterRenderScale(CELL_PX, tileSize, resolved, projectReferenceTileSize(store.getCurrent()))
     : normalizeCharacterScale(resolved.scale);
 }
 

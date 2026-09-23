@@ -3,6 +3,7 @@ import type Phaser from "phaser";
 import type { PlaySceneContext } from "./playSceneTypes";
 import { ATMOSPHERE_PRESETS, normalizeAtmosphereEffects, type AtmosphereEffect, type AtmosphereKind } from "@/project/atmosphere";
 import { ensureFogTexture } from "./weather/fogTexture";
+import { runtimePixelDensity } from "./runtimeViewScale";
 
 type State = { layer: Phaser.GameObjects.Container; graphics: Phaser.GameObjects.Graphics;
   mist: Map<string, Phaser.GameObjects.TileSprite>; times: Map<string, number>; clock: number; mapId: string };
@@ -37,9 +38,13 @@ export function syncAtmosphere(scene: PlaySceneContext): void {
   graphics.clear();
   layer.setVisible(effects.length > 0);
   for (const sprite of mist.values()) sprite.setVisible(false);
-  const { width, height } = scene.cameras.main;
+  const { width: canvasWidth, height: canvasHeight } = scene.cameras.main;
   const zoom = scene.cameras.main.zoom || 1;
-  layer.setPosition(width / 2 * (1 - 1 / zoom), height / 2 * (1 - 1 / zoom)).setScale(1 / zoom);
+  // 논리 px 로 그린다 — 캔버스 픽셀 밀도가 올라가도 입자·안개 크기가 같다(playSceneWeather 와 같은 식).
+  const density = runtimePixelDensity(scene);
+  const width = canvasWidth / density;
+  const height = canvasHeight / density;
+  layer.setPosition(canvasWidth / 2 * (1 - 1 / zoom), canvasHeight / 2 * (1 - 1 / zoom)).setScale(density / zoom);
   for (const effect of effects) {
     const time = (times.get(effect.kind) ?? 0) + dt * effect.speed;
     times.set(effect.kind, time);

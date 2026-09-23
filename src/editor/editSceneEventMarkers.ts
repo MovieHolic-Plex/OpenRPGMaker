@@ -15,6 +15,7 @@ import {
   passageBounds,
 } from "@/project/footprint";
 import { store } from "@/project/store";
+import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { projectFontStack } from "@/project/fontRegistry";
 import type {
@@ -334,7 +335,7 @@ function createEditableEventSprite(
   );
   sprite.setOrigin(0.5, 1);
   sprite.setScale(isCharsetSpriteTexture(spriteTexture)
-    ? eventSpriteScale(spriteTexture, sprite, graphic?.scale, tileSize, graphic?.scaleMode)
+    ? eventSpriteScale(spriteTexture, sprite, graphic?.scale, tileSize, graphic?.scaleMode, projectReferenceTileSize(store.getCurrent()))
     : editorSpriteScale(graphic, sprite.width, sprite.height, tileSize));
   return sprite;
 }

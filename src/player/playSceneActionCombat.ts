@@ -1,5 +1,6 @@
 import { mapTileSize } from "@/project/tileGeometry";
-import { automaticCharacterScale } from "@/project/characterScale";
+import { playerCharacterScale } from "@/player/playerCharacterScale";
+import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { canPayActionSkill } from "@/battle/action/skillEffects";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { applyActionFieldStatus, canCastActionProfile, castActionFieldProfile, clearActionSkills, markActionCast, updateActionSkills } from "./playSceneActionSkills";
@@ -988,7 +989,7 @@ function flashSwingArc(scene: PlaySceneContext, facing: Dir, range: number): voi
 // 현재 맵의 자동 배율을 기준으로 눌렀다 펴고, 종료 시에도 그 배율로 복원한다.
 function pulsePlayerSwing(scene: PlaySceneContext): void {
   scene.tweens.killTweensOf(scene.player);
-  const baseScale = automaticCharacterScale(scene.player.width, mapTileSize(scene.map));
+  const baseScale = playerCharacterScale(scene);
   scene.player.setScale(baseScale, baseScale);
   scene.tweens.add({
     targets: scene.player,
@@ -1049,9 +1050,12 @@ function spawnDamageNumber(scene: PlaySceneContext, worldX: number, worldY: numb
   });
   label.setOrigin(0.5, 1);
   label.setDepth(COMBAT_DEPTH + 1);
+  // 기준과 칸 크기가 다른 맵에서도 같은 화면 크기로 — 글꼴 px 대신 배율로 키워 선명도를 지킨다.
+  const worldScale = runtimeMapWorldScale(scene);
+  label.setScale(worldScale);
   scene.tweens.add({
     targets: label,
-    y: worldY - DAMAGE_NUMBER_RISE_PX,
+    y: worldY - DAMAGE_NUMBER_RISE_PX * worldScale,
     alpha: 0,
     duration: 650,
     onComplete: () => label.destroy(),

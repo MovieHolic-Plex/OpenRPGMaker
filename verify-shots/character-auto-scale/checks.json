@@ -1,5 +1,5 @@
 {
-  "date": "2026-09-21T02:00:50.260Z",
+  "date": "2026-09-23T21:38:06.495Z",
   "runtime": [
     {
       "size": 32,
@@ -66,23 +66,23 @@
       "size": 48,
       "map": "geometry48",
       "player": {
-        "scaleX": 2,
-        "scaleY": 2,
+        "scaleX": 1.5,
+        "scaleY": 1.5,
         "width": 24,
         "height": 32,
-        "displayWidth": 48,
-        "displayHeight": 64,
+        "displayWidth": 36,
+        "displayHeight": 48,
         "x": 120,
         "y": 144
       },
       "npcs": {
         "auto": {
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1.5,
+          "scaleY": 1.5,
           "width": 24,
           "height": 32,
-          "displayWidth": 48,
-          "displayHeight": 64,
+          "displayWidth": 36,
+          "displayHeight": 48,
           "x": 216,
           "y": 240
         },
@@ -109,14 +109,14 @@
       },
       "followers": [
         {
-          "scaleX": 2,
-          "scaleY": 2,
+          "scaleX": 1.5,
+          "scaleY": 1.5,
           "width": 24,
           "height": 32,
-          "displayWidth": 48,
-          "displayHeight": 64,
-          "x": 112.5,
-          "y": 105.60093750000004
+          "displayWidth": 36,
+          "displayHeight": 48,
+          "x": 75.01500000000033,
+          "y": 143.18406562499993
         }
       ],
       "attackRestored": true,
@@ -127,23 +127,23 @@
       "size": 16,
       "map": "geometry16",
       "player": {
-        "scaleX": 1,
-        "scaleY": 1,
+        "scaleX": 0.5,
+        "scaleY": 0.5,
         "width": 24,
         "height": 32,
-        "displayWidth": 24,
-        "displayHeight": 32,
+        "displayWidth": 12,
+        "displayHeight": 16,
         "x": 40,
         "y": 48
       },
       "npcs": {
         "auto": {
-          "scaleX": 1,
-          "scaleY": 1,
+          "scaleX": 0.5,
+          "scaleY": 0.5,
           "width": 24,
           "height": 32,
-          "displayWidth": 24,
-          "displayHeight": 32,
+          "displayWidth": 12,
+          "displayHeight": 16,
           "x": 72,
           "y": 80
         },
@@ -170,14 +170,14 @@
       },
       "followers": [
         {
-          "scaleX": 1,
-          "scaleY": 1,
+          "scaleX": 0.5,
+          "scaleY": 0.5,
           "width": 24,
           "height": 32,
-          "displayWidth": 24,
-          "displayHeight": 32,
-          "x": 39.164999999999964,
-          "y": 33.62642343749998
+          "displayWidth": 12,
+          "displayHeight": 16,
+          "x": 25,
+          "y": 48
         }
       ],
       "attackRestored": true,

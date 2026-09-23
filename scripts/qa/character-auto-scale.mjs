@@ -21,7 +21,7 @@ for (const size of [16, 32, 48]) {
 }
 const report = { date: new Date().toISOString(), runtime: [], errors: [] };
 const server = await startPlayerQaServer();
-const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu'] });
+const browser = await chromium.launch({ headless: true, args: ['--no-sandbox', '--use-gl=swiftshader', '--disable-gpu', '--disable-background-networking', '--disable-features=NetworkChangeNotifier'] });
 const page = await browser.newPage({ viewport: { width: 640, height: 480 } });
 page.on('pageerror', error => report.errors.push(error.message));
 try {
@@ -48,7 +48,9 @@ try {
   }, graphic);
   for (const [size, next] of [[32, 48], [48, 16], [16, 32]]) {
     await position(size, 2, 2);
-    const expected = size === 48 ? 2 : 1;
+    // One map per size, start on 32 → the 32px cell is the reference (mapViewScale). Walking charsets keep
+    // their 32px on-screen size: world scale 1 on 32, 1.5 on 48, 0.5 on 16 (the camera zooms the other way).
+    const expected = { 16: 0.5, 32: 1, 48: 1.5 }[size];
     const observation = await page.evaluate(() => {
       const s = window.__oprnHooksScene;
       const read = p => ({ scaleX: p.scaleX, scaleY: p.scaleY, width: p.width, height: p.height, displayWidth: p.displayWidth, displayHeight: p.displayHeight, x: p.x, y: p.y });
@@ -104,7 +106,7 @@ try {
   throw error;
 } finally {
   await writeFile(`${out}/checks.json`, JSON.stringify(report, null, 2));
-  await writeFile(`${out}/SUMMARY.md`, `# Automatic character scaling QA\n\nStatus: ${report.status}\nDate: ${report.date}\n\nDedicated player.html / export store shim. Existing synthetic tile geometry contract fixture with automatic and manual NPCs and one follower; no authored content or remote writes.\n\n${report.runtime.map(r => `- ${r.size}px: player/NPC/follower automatic scale ${r.player.scaleX}; explicit manual 1 and legacy 1.5 preserved. Attack and jump restore the correct scale; action transfer to ${r.actionTransferTo}px succeeds.`).join('\n')}\n\nErrors: ${report.errors.length}\n즉시 확인: runtime-48.png\n${report.failure ?? ''}\n`);
+  await writeFile(`${out}/SUMMARY.md`, `# Automatic character scaling QA\n\nStatus: ${report.status}\nDate: ${report.date}\n\nDedicated player.html / export store shim. Existing synthetic tile geometry contract fixture with automatic and manual NPCs and one follower; no authored content or remote writes.\n\n${report.runtime.map(r => `- ${r.size}px: player/NPC/follower automatic world scale ${r.player.scaleX} (32px reference); explicit manual 1 and legacy 1.5 preserved. Attack and jump restore the correct scale; action transfer to ${r.actionTransferTo}px succeeds.`).join('\n')}\n\nErrors: ${report.errors.length}\n즉시 확인: runtime-16.png\n${report.failure ?? ''}\n`);
   await browser.close();
   await server.close();
 }

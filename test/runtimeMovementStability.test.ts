@@ -364,6 +364,9 @@ describe("카메라 재추적 멱등성", () => {
     setZoom(zoom: number): void {
       this.zoom = zoom;
     }
+    setBounds(): void {
+      return undefined;
+    }
     centerOn(): void {
       return undefined;
     }
