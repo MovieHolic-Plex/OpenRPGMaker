@@ -1,3 +1,4 @@
+import { sharedPlacePreview } from "@/project/sharedContent";
 import type { reviewedPlaceMaps as loadReviewedPlaceMaps } from "@/project/defaults/spatial/reviewedPlaceCatalog";
 import { TILE_SIZE } from "@/assets/bundled";
 import { cellsFromMapRect, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
@@ -183,7 +184,7 @@ export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, 
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.reviewedPlaceId) return el("img", {
     class: "spatial-card-image",
-    attrs: { src: `/assets/reviewed-places/${card.reviewedPlaceId}.png`, alt: "", draggable: "false" },
+    attrs: { src: sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, alt: "", draggable: "false" },
   });
   const project = visibleAuthoringProject();
   try {
@@ -246,7 +247,7 @@ function reviewedRasters(id: string, scale: number, whenReady?: () => void): Pla
     canvas.className = "spatial-place-raster";
     const img = new Image();
     img.onload = () => { const ctx = canvas.getContext("2d"); if(ctx) { ctx.imageSmoothingEnabled = false; ctx.drawImage(img,0,0,canvas.width,canvas.height); canvas.dataset.loaded="true"; } };
-    img.src = `/assets/reviewed-places/${map.id}.png`;
+    img.src = sharedPlacePreview(map.id) ?? `/assets/reviewed-places/${map.id}.png`;
     const stamp = { x: offset, y: 0, canvas }; offset += map.width + 2; return stamp;
   });
   return { stamps, width: offset, height: Math.max(...maps.map(m=>m.map.height)), error: null };

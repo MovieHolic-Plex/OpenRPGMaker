@@ -1,3 +1,4 @@
+import { sharedPlaceSummaries } from "../../sharedContent";
 // Card list for the Places gallery. Full rasters stay in reviewedPlaceCatalog
 // and load only when a place is copied or its map is compiled.
 export type ReviewedPlaceSummary = {
@@ -731,6 +732,12 @@ export const REVIEWED_PLACE_INDEX: readonly ReviewedPlaceSummary[] = [
   }
 ];
 
+export function reviewedPlaceIndex(): readonly ReviewedPlaceSummary[] {
+  const entries = new Map(REVIEWED_PLACE_INDEX.map(p => [p.id, p]));
+  for (const p of sharedPlaceSummaries()) entries.set(p.id, p);
+  return [...entries.values()];
+}
+
 export function reviewedPlaceSummary(id: string): ReviewedPlaceSummary | undefined {
-  return REVIEWED_PLACE_INDEX.find(place => place.id === id);
+  return reviewedPlaceIndex().find(place => place.id === id);
 }
