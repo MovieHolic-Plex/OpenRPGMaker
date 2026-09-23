@@ -29,21 +29,54 @@ function direction(value: unknown): "add" | "remove" | undefined {
   return undefined;
 }
 
+// 동료 합류를 몬스터 지급(giveMonster)처럼 `speciesId`+`level` 로 쓴 사례(2026-09-24 등대지기 3차:
+// `{kind:"changeParty",speciesId:"actor_scout",level:1,action:"add"}`) — actorId 가 비어 런타임 파티에
+// null 이 들어가고 보스전이 「Missing actor: undefined」로 멈췄다. changeParty 가 가리킬 수 있는 것은 배우뿐이라
+// actorId 가 없을 때 별칭 하나의 문자열을 actorId 로 옮긴다. 그 값이 실제 배우인지는 DB 를 아는 호출자
+// (도구의 assertPartyActorReferences, 런타임 changeParty)가 판정한다.
+const PARTY_ACTOR_ALIASES = ["speciesId", "actor", "characterId", "memberId", "partyMemberId"] as const;
+const PARTY_STRAY_FIELDS = ["level", "nickname"] as const;
+
+function canonicalizePartyActorAlias(command: RecordValue): string | undefined {
+  const fixes: string[] = [];
+  if (typeof command.actorId !== "string" || !command.actorId.trim()) {
+    const aliases = PARTY_ACTOR_ALIASES.filter(key => typeof command[key] === "string" && (command[key] as string).trim());
+    if (aliases.length === 1) {
+      const alias = aliases[0]!;
+      command.actorId = (command[alias] as string).trim();
+      delete command[alias];
+      fixes.push(`changeParty.${alias} 를 actorId:${JSON.stringify(command.actorId)} 로 옮겼습니다(파티 편성은 배우만 받는다).`);
+    }
+  }
+  const stray = PARTY_STRAY_FIELDS.filter(key => key in command);
+  if (stray.length > 0 && typeof command.actorId === "string") {
+    for (const key of stray) delete command[key];
+    fixes.push(`changeParty 에 쓰이지 않는 ${stray.join("·")} 를 지웠습니다.`);
+  }
+  return fixes.length > 0 ? fixes.join(" ") : undefined;
+}
+
+function joinFixes(...fixes: (string | undefined)[]): string | undefined {
+  const present = fixes.filter((fix): fix is string => Boolean(fix));
+  return present.length > 0 ? present.join(" ") : undefined;
+}
+
 /** 명령 하나(중첩 분기 제외)를 제자리에서 고친다. 무엇을 고쳤는지 문장으로 돌려준다. */
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
   const command = raw as RecordValue;
   if (command.kind === "changeParty") {
+    const actorFix = canonicalizePartyActorAlias(command);
     if (command.action === "add" || command.action === "remove") {
-      if ("op" in command) { delete command.op; return `changeParty.op 는 쓰이지 않아 지웠습니다(action:"${command.action}" 유지).`; }
-      return undefined;
+      if ("op" in command) { delete command.op; return joinFixes(actorFix, `changeParty.op 는 쓰이지 않아 지웠습니다(action:"${command.action}" 유지).`); }
+      return actorFix;
     }
     const resolved = direction(command.action) ?? direction(command.op) ?? direction(command.mode) ?? direction(command.type);
-    if (!resolved) return undefined;
+    if (!resolved) return actorFix;
     const from = command.action !== undefined ? `action:${JSON.stringify(command.action)}` : command.op !== undefined ? `op:${JSON.stringify(command.op)}` : "별칭";
     delete command.op; delete command.mode; delete command.type;
     command.action = resolved;
-    return `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`;
+    return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
   }
   if (command.kind === "choices" && Array.isArray(command.options)) {
     // 네이티브 선택지 분기는 `branch` 다. SimplePage 선택지(`commands`)나 fork(`then`) 표기가 섞이면

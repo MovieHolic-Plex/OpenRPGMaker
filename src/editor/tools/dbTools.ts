@@ -39,6 +39,7 @@ import type {
   TroopRecord,
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
+import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
@@ -1297,6 +1298,7 @@ const upsertCommonEvent: ToolDefinition = {
       : "none";
     const commands = normalizeLowLevelCommandArray(args.commands, `common_event.${args.id}.commands`, warnings);
     validateLowLevelCommandArray(`common_event.${args.id}.commands`, commands);
+    assertPartyActorReferences(draft, commands, `common_event.${args.id}.commands`);
     const record: CommonEvent = {
       id: args.id as string,
       name: args.name as string,
