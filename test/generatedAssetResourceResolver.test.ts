@@ -1,4 +1,5 @@
-import { describe, expect, it } from "vitest";
+import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   generatedAssetPromotedPathToUrl,
   resolveAssetResourceUrl,
@@ -203,5 +204,18 @@ describe("enemy_extra 번호 → enemy-art 파일명", () => {
     expect(resolveGeneratedAssetResourceUrl("enemy_extra_6")).toBe("/assets/generated/monsters/enemy-art-006.png");
     expect(resolveGeneratedAssetResourceUrl("generated-enemy-zombie-01-enemy_extra_016")).toBe("/assets/generated/monsters/enemy-art-016.png");
     expect(resolveGeneratedAssetResourceUrl("legacy-enemy_extra_105")).toBe("/assets/generated/monsters/enemy-art-105.png");
+  });
+});
+
+afterEach(() => setUploadedAssetResolver(null));
+describe("persisted uploaded resource references", () => {
+  it.each(["monster", "picture", "music"] as const)("resolves ref-only %s after SQLite reopen", kind => {
+    const project = createBlankProject();
+    const ref = { sha256: "a".repeat(64), mime: "image/png", bytes: 100, extension: "png" };
+    project.assets.uploaded.persisted = { id: "persisted", name: "persisted", kind, ref, meta: {} };
+    setUploadedAssetResolver({ url: () => "/__oprn/assets/persisted.png", bytes: async () => new Uint8Array() });
+    expect(resolveAssetResourceUrl("persisted", { project })).toBe("/__oprn/assets/persisted.png");
+    setUploadedAssetResolver(null);
+    expect(resolveAssetResourceUrl("persisted", { project })).toBeNull();
   });
 });

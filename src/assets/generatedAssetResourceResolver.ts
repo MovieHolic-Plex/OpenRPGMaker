@@ -1,3 +1,4 @@
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { withInlineAsset } from "./inlineAssetStore";
 import { resolveCc0IconAssetUrl } from "./cc0IconAssets";
 import { resolveCc0AudioAssetUrl } from "./cc0AudioAssets";
@@ -340,7 +341,9 @@ export function resolveAssetResourceUrl(resourceId: string | undefined, options:
     // 456개 CC0 효과음 카탈로그. 파일이 레포에 있어(public/assets/se/) 항상 동일 출처 경로다.
     resolveSeCatalogAssetUrl(resourceId);
   if (packagedUrl !== null) return withInlineAsset(packagedUrl);
-  const uploadedUrl = options.project?.assets.uploaded[resourceId]?.dataUrl;
+  const uploaded = options.project?.assets.uploaded[resourceId];
+  if (uploaded?.ref) return uploadedAssetUrl(uploaded) || null;
+  const uploadedUrl = uploaded?.dataUrl;
   if (uploadedUrl !== undefined) return safeUploadedResourceUrl(uploadedUrl);
   const generated = options.manifest !== undefined
     ? resolveGeneratedAssetResourceUrl(resourceId, options.manifest)

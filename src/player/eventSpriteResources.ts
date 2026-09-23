@@ -46,6 +46,7 @@ export function resolveEventSpriteTexture(
   if (spriteDef) return { texture: spriteId, frame };
 
   const uploadedKind = project.assets.uploaded[spriteId]?.kind;
+  if (uploadedKind === "monster") return { texture: spriteId, frame: "__BASE", fitSize: 32 };
   if (uploadedKind === "charset") return { texture: spriteId, frame, charset: true };
   if (isSpriteLikeUpload(uploadedKind)) return { texture: spriteId, frame };
   const charset = findCharsetAsset(spriteId);

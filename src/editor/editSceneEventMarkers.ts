@@ -2,7 +2,7 @@ import { mapTileSize } from "@/project/tileGeometry";
 import type Phaser from "phaser";
 import { TILE_SIZE } from "@/assets/bundled";
 import { editorState, type Layer } from "@/editor/editorState";
-import { eventSpriteScale, isCharsetSpriteTexture, resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
+import { eventSpriteFrameForDirection, eventSpriteScale, isCharsetSpriteTexture, resolveEventSpriteTexture, type EventSpriteTexture } from "@/player/eventSpriteResources";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { overlappingEventPairs } from "@/project/eventFootprintQuery";
@@ -96,7 +96,8 @@ export function editorEventMarkerTexture(project: Project, graphic: EventPageGra
   if (graphic?.transparent === true) return null;
   const effective = graphic ? resolveEventAppearanceGraphic(project, graphic) : undefined;
   const sprite = effective?.sprite;
-  return sprite ? resolveEventSpriteTexture(project, sprite.id, effective.pattern) : null;
+  const texture = sprite ? resolveEventSpriteTexture(project, sprite.id, effective.pattern) : null;
+  return texture ? { ...texture, frame: eventSpriteFrameForDirection(texture, effective?.direction) ?? texture.frame } : null;
 }
 
 /**
@@ -154,7 +155,15 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
         );
       }
     } else {
-      context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize));
+      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId, project, map);
+      const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
+      const texture = editorEventMarkerTexture(project, graphic);
+      if (texture) {
+        context.overlayLayer.add(createEditableEventSprite(context.scene, event,
+          normalizeCharacterFootprint(page?.footprint), graphic, texture, tileSize));
+      } else {
+        context.overlayLayer.add(createEventBadgeMarker(context.scene, cx, cy, tileSize));
+      }
     }
     if (event.id === selectedId) addSelectedEventRing(context, position, tileSize);
   }
