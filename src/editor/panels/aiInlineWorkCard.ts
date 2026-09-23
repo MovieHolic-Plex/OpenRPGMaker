@@ -111,7 +111,14 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
       // 무엇이 바뀌었는지 한 줄 — 버튼 셋만 있고 「연못 1 · 나무 8」 같은 요약이 어디에도 없었다.
       const chips = (preview.chips ?? []).filter(Boolean);
       root.querySelector(".ai-work-inline-changed")?.remove();
-      if (chips.length) root.insertBefore(el("p", { class: "ai-work-inline-changed", dataset: { testid: "ai-work-card-changed" }, text: chips.join(" · ") }), actions);
+      // 단, 이 줄은 변경 집계 원문(「타일 2536 · 이벤트 +157 · 맵 속성 2 · DB 11 · …」)이라 개발자용
+      // 영수증이다 — 간단히 보기(기본)에서는 숨기고 자세히·전체 기록에서만 보인다. 비개발자에게는
+      // 완료 말풍선의 「맵 16개 · 이벤트 157개를 만들었어요」가 같은 사실을 말한다(2026-09-23 도그푸딩).
+      if (chips.length) {
+        const changed = el("p", { class: "ai-work-inline-changed", dataset: { testid: "ai-work-card-changed" }, text: chips.join(" · ") });
+        bindActivityLevel(changed, level => { changed.hidden = level === "none" || level === "brief"; });
+        root.insertBefore(changed, actions);
+      }
       actions.replaceChildren(el("button", {
         text: "변경 보기", attrs: { type: "button" }, dataset: { testid: "ai-inline-change-view" },
         on: { click: () => openWideChangeViewer(preview) },

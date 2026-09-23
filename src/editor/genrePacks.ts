@@ -312,6 +312,9 @@ export function createNewProjectSeed(packId: GenrePackId | null, title?: string)
   if (title !== undefined) {
     project.meta.title = title;
     project.system.opening = defaultOpeningSequence(title);
+    // 게임 타이틀 화면 제목도 같이 옮긴다 — 안 하면 기본값 「새 프로젝트」가 그대로 떠서
+    // 마법사에서 이름을 지은 게임의 타이틀이 「새 프로젝트」였다(2026-09-23 도그푸딩).
+    if (project.system.titleScreen) project.system.titleScreen.title = title;
   }
   return project;
 }
