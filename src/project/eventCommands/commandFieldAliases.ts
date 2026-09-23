@@ -66,8 +66,66 @@ const BATTLE_TROOP_ALIASES = ["commandId", "troop", "troopRef", "battleId", "enc
 // 기본값(도망 가능·패배=게임 오버, eventCommandFactory)을 채우고 알린다.
 const BATTLE_FLAG_DEFAULTS = { canEscape: true, canLose: false } as const;
 
+// 보스전 결과 분기를 선택지 모양(`options:[{text:"승리",branch:[…]}]`)으로 쓴 사례(2026-09-24 헤드리스 r0735
+// 「등대지기의 겨울」) — 런타임은 battleProcessing.options 를 읽지 않아 승리 분기의 setSwitch·setSelfSwitch 가
+// 한 번도 실행되지 않았고 엔딩 페이지가 영영 열리지 않았다. 결과 분기의 정본은 branchOnResult:true +
+// victoryBranch/defeatBranch/escapeBranch 다. 선택지 문구로 결과를 알아볼 수 있으면 옮긴다.
+type BattleBranchKey = "victoryBranch" | "defeatBranch" | "escapeBranch";
+const BATTLE_OPTION_WORDS: readonly (readonly [BattleBranchKey, RegExp])[] = [
+  ["victoryBranch", /승리|이기|이겼|이김|격파|처치|win|victor|success/i],
+  ["defeatBranch", /패배|졌|지면|짐$|전멸|lose|lost|loss|defeat|fail|game\s*over/i],
+  ["escapeBranch", /도주|도망|탈출|후퇴|escape|flee|fled|run\s*away|retreat/i],
+];
+const BATTLE_BRANCH_LABEL: Record<BattleBranchKey, string> = { victoryBranch: "승리", defeatBranch: "패배", escapeBranch: "도주" };
+
+function battleOptionBranchKey(text: unknown): BattleBranchKey | undefined {
+  if (typeof text !== "string" || !text.trim()) return undefined;
+  const hits = BATTLE_OPTION_WORDS.filter(([, pattern]) => pattern.test(text)).map(([key]) => key);
+  return hits.length === 1 ? hits[0] : undefined;
+}
+
+function optionCommands(option: RecordValue): unknown[] | undefined {
+  for (const key of ["branch", ...CHOICE_BRANCH_ALIASES] as const) {
+    if (Array.isArray(option[key])) return option[key] as unknown[];
+  }
+  return undefined;
+}
+
+function canonicalizeBattleResultOptions(command: RecordValue): string | undefined {
+  if (!Array.isArray(command.options)) return undefined;
+  const options = command.options.filter((option): option is RecordValue => option !== null && typeof option === "object" && !Array.isArray(option));
+  if (options.length === 0) { delete command.options; return "battleProcessing.options 는 쓰이지 않아 지웠습니다(결과 분기는 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch)."; }
+  const plan: { key: BattleBranchKey; commands: unknown[]; text: string; guessed: boolean }[] = [];
+  for (const option of options) {
+    const key = battleOptionBranchKey(option.text) ?? (options.length === 1 ? "victoryBranch" : undefined);
+    const commands = optionCommands(option);
+    if (!key || !commands) {
+      return "battleProcessing 에 options 가 있지만 런타임은 이를 읽지 않습니다 — 선택지 문구로 승리/패배/도주를 알아볼 수 없어 옮기지 않았습니다. "
+        + "전투 결과 분기는 {kind:\"battleProcessing\",troopId,branchOnResult:true,victoryBranch:[…],defeatBranch:[…],escapeBranch:[…]} 로 쓰세요.";
+    }
+    if (plan.some(entry => entry.key === key) || (Array.isArray(command[key]) && (command[key] as unknown[]).length > 0)) {
+      return `battleProcessing 에 options 가 있지만 런타임은 이를 읽지 않습니다 — ${BATTLE_BRANCH_LABEL[key]} 분기가 겹쳐 옮기지 않았습니다. `
+        + "전투 결과 분기는 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch 로 쓰세요.";
+    }
+    plan.push({ key, commands, text: typeof option.text === "string" ? option.text : "", guessed: battleOptionBranchKey(option.text) === undefined });
+  }
+  const notes: string[] = [];
+  for (const entry of plan) {
+    command[entry.key] = entry.commands;
+    notes.push(`options「${entry.text}」→ ${entry.key}${entry.guessed ? "(문구로 결과를 알 수 없어 하나뿐인 분기를 승리로 봤습니다)" : ""}`);
+  }
+  delete command.options;
+  command.branchOnResult = true;
+  if (plan.some(entry => entry.key === "defeatBranch") && command.canLose !== true) { command.canLose = true; notes.push("패배 분기가 있어 canLose:true"); }
+  if (plan.some(entry => entry.key === "escapeBranch") && command.canEscape !== true) { command.canEscape = true; notes.push("도주 분기가 있어 canEscape:true"); }
+  return `battleProcessing 결과 분기를 선택지 모양(options)으로 받아 전투 결과 분기로 옮겼습니다: ${notes.join(", ")}, branchOnResult:true. `
+    + "런타임은 battleProcessing.options 를 읽지 않습니다 — 다음부터 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch 로 쓰세요.";
+}
+
 function canonicalizeBattleCommand(command: RecordValue): string | undefined {
   const fixes: string[] = [];
+  const optionFix = canonicalizeBattleResultOptions(command);
+  if (optionFix) fixes.push(optionFix);
   const hasTroop = typeof command.troopId === "string" && command.troopId.trim();
   if (!hasTroop && command.troopSource !== "variable") {
     const aliases = BATTLE_TROOP_ALIASES.filter(key => typeof command[key] === "string" && (command[key] as string).trim());

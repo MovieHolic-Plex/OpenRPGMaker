@@ -130,3 +130,24 @@ it("leaf-fox Korean identity never tags leafling or mantis assets", () => {
   expect(hits.map((hit) => hit.id)).toEqual(["generated-enemy-leaf-fox"]);
   expect(searchResources("monster", "풀잎").some((hit) => /leafling|mantis|cleaf/.test(hit.id))).toBe(false);
 });
+
+// 2026-09-24 헤드리스 r0735: 「서리 슬라임」+ appearanceTags ["슬라임","약함","젤리"] 가 「서리」 한 단어 때문에
+// 거부됐고 이어진 upsert_troop 도 없는 적으로 실패했다.
+describe("name + appearanceTags corroborated identity", () => {
+  it("resolves when the name and appearanceTags both name a specific identity, and warns", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_frost_slime", name: "서리 슬라임" }, appearanceTags: ["슬라임", "약함", "젤리"] });
+    expect(result.ok, result.summary).toBe(true);
+    const id = ctx.project.database.enemies.find((entry) => entry.id === "enemy_frost_slime")?.monsterResourceId ?? "";
+    expect(searchResources("monster", "*").find((hit) => hit.id === id)?.tags).toContain("슬라임");
+    expect(JSON.stringify(result)).toContain("서리");
+  });
+
+  it("still rejects when appearanceTags do not corroborate a word of the name", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_frost_slime", name: "서리 슬라임" }, appearanceTags: ["젤리"] });
+    expect(result.ok).toBe(false);
+    expect(result.issues?.[0]?.code).toBe("monster-graphic-required");
+    expect(result.issues?.[0]?.message).toMatch(/slime/);
+  });
+});

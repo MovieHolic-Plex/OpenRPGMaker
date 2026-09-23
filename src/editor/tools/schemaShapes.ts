@@ -104,7 +104,8 @@ export const COMMAND_SCHEMA: JsonSchema = {
       type: "array",
       description:
         "choices: {text,branch} 선택지. presentItem: {itemId,branch} — 그 아이템을 냈을 때 실행할 Command[]. " +
-        "증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 으로 만든다.",
+        "증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 으로 만든다. " +
+        "battleProcessing 은 options 를 받지 않는다 — 전투 결과 분기는 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch.",
       items: {
         type: "object",
         properties: {
@@ -120,6 +121,18 @@ export const COMMAND_SCHEMA: JsonSchema = {
     itemIds: { type: "array", items: { type: "string" }, description: "shop: 파는 아이템 ID 목록(필수). presentItem: 목록 후보 — 생략하면 소지품 전체, 소지한 것만 뜬다." },
     otherwiseBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
     consume: { type: "boolean", description: "presentItem: true 면 맞는 아이템을 1개 소모." },
+    troopId: { type: "string", description: "battleProcessing: 싸울 부대(troop) ID" },
+    canEscape: { type: "boolean", description: "battleProcessing: 도주 허용(기본 true)" },
+    canLose: { type: "boolean", description: "battleProcessing: 패배해도 게임 오버 없이 진행(기본 false). defeatBranch 를 쓰려면 true." },
+    branchOnResult: {
+      type: "boolean",
+      description:
+        "battleProcessing: true 면 전투 결과로 분기한다. 보스 처치 후 스위치·셀프 스위치를 켜는 명령은 victoryBranch 에 넣는다. " +
+        '예: {kind:"battleProcessing",troopId:"조회한 ID",canEscape:false,canLose:false,branchOnResult:true,victoryBranch:[{kind:"setSelfSwitch",key:"A",value:true}]}',
+    },
+    victoryBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true): 이겼을 때 실행할 Command[]" },
+    defeatBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true, canLose:true): 졌을 때 실행할 Command[]" },
+    escapeBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true, canEscape:true): 도망쳤을 때 실행할 Command[]" },
   },
 };
 

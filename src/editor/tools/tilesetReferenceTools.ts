@@ -39,6 +39,21 @@ export function withTilesetReferencePurpose(tool: ToolDefinition): ToolDefinitio
   }, run(project, args) { const { referencePurpose: _purpose, ...rest } = args; return tool.run(project, rest); } };
 }
 
+/**
+ * 없는 ID 를 받았을 때 고를 수 있는 ID 를 함께 돌려준다. r0735: 모델이 목록을 보기 전에
+ * documentId "climate-snow-villages-v3-guide" 를 지어내 「MD 문서를 찾을 수 없습니다」만 받았다
+ * (실제 안내 문서는 "snow-guide"). 이름 조각이 겹치는 후보를 앞에 둔다.
+ */
+function unknownIdMessage(label: string, requested: unknown, ids: readonly string[], limit = 20): string {
+  const wanted = String(requested ?? "");
+  const words = wanted.toLowerCase().split(/[^a-z0-9가-힣]+/u).filter(word => word.length >= 3);
+  const score = (id: string): number => words.filter(word => id.toLowerCase().includes(word)).length;
+  const ranked = [...ids].sort((a, b) => score(b) - score(a));
+  const shown = ranked.slice(0, limit).join(", ");
+  const more = ids.length > limit ? ` 외 ${ids.length - limit}개` : "";
+  return `${label} '${wanted}'를 찾을 수 없습니다. 이 용도의 ${label}: ${shown || "(없음)"}${more}.`;
+}
+
 export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
   {
     name: "list_tileset_references", mode: "read", domains: ["tile", "map", "database"],
@@ -76,15 +91,15 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
     }, required: ["tilesetId", "categoryId"], additionalProperties: false },
     run(project, args) {
       const tileset = project.tilesets[String(args.tilesetId)];
-      if (!tileset) throw new ToolError("타일셋을 찾을 수 없습니다.");
+      if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.`);
       const owner = referenceOwner(project, tileset);
       const group = owner.referenceDocuments?.find(g => g.id === args.categoryId);
-      if (!group) throw new ToolError("용도를 찾을 수 없습니다. list_tileset_references로 ID를 확인하세요.");
+      if (!group) throw new ToolError(unknownIdMessage("용도 categoryId", args.categoryId, (owner.referenceDocuments ?? []).map(g => g.id)).replace("이 용도의 ", `타일셋 ${tileset.id} 의 `));
       if ((args.documentId === undefined) === (args.imageId === undefined)) throw new ToolError("documentId/imageId 중 하나만 지정하세요.");
       const base = { tilesetId: tileset.id, ownerId: owner.id, categoryId: group.id, revision: referenceRevision(group) };
       if (args.documentId !== undefined) {
         const doc = group.documents.find(d => d.id === args.documentId);
-        if (!doc) throw new ToolError("MD 문서를 찾을 수 없습니다.");
+        if (!doc) throw new ToolError(`MD 문서를 찾을 수 없습니다 — ${unknownIdMessage("documentId", args.documentId, group.documents.map(d => d.id))} 전체 목록은 list_tileset_references({tilesetId,categoryId}).`);
         const offset = Number(args.offset ?? 0);
         if (!Number.isSafeInteger(offset) || offset < 0 || offset > doc.markdown.length || offset % REFERENCE_PAGE_SIZE !== 0) throw new ToolError(`offset은 ${REFERENCE_PAGE_SIZE} 단위의 페이지 시작점이어야 합니다.`);
         const end = Math.min(doc.markdown.length, offset + REFERENCE_PAGE_SIZE);
@@ -92,7 +107,7 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
       }
       if (args.offset !== undefined) throw new ToolError("이미지에는 offset을 사용하지 않습니다.");
       const img = group.images.find(i => i.id === args.imageId);
-      if (!img) throw new ToolError("첨부 이미지를 찾을 수 없습니다.");
+      if (!img) throw new ToolError(`첨부 이미지를 찾을 수 없습니다 — ${unknownIdMessage("imageId", args.imageId, group.images.map(i => i.id))}`);
       return { summary: `${group.name} / ${img.name} — 실제 이미지를 확인하세요.`, data: { ...base, image: { id: img.id, name: img.name, caption: img.caption } } };
     },
   },

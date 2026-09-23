@@ -2,7 +2,8 @@ import { randomUUID } from "node:crypto";
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
 import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
 import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
-import { normalizeBuildSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
+import { normalizeBuildSpec, plannedGrowthForSpec, validateBuildSpec, type BuildSpec } from "../../src/ai/buildSpec.ts";
+import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import { assertVillageContractArgs, validateVillageContract, villageDraftReceipt, type VillageDraftReceipt } from "../../src/ai/piAgent/villageContract.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
@@ -153,6 +154,18 @@ function createWebSearchTool(options: {
 
 /** Shared exact model resolution for Pi and completion requests. */
 export const resolvePiModel = resolveOhMyPiModel;
+
+/** pi-agent-core 가 실패한 도구 결과에 싣는 첫 텍스트(인자 검증 오류·throw 메시지). */
+function toolErrorText(result: unknown): string {
+  const content = (result as { content?: unknown } | undefined)?.content;
+  if (!Array.isArray(content)) return "";
+  const part = content.find((entry): entry is { type: "text"; text: string } => !!entry && typeof entry === "object" && (entry as { type?: unknown }).type === "text" && typeof (entry as { text?: unknown }).text === "string");
+  return part ? trimText(part.text.trim(), 300) : "";
+}
+
+function withErrorDetail(summary: string, detail: string): string {
+  return detail ? `${summary}: ${detail}` : summary;
+}
 
 function trimText(value: unknown, max: number): string {
   const text = typeof value === "string" ? value : JSON.stringify(value) ?? "";
@@ -312,12 +325,26 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     description: "시공 전에 맵 위에 영역과 순서를 표시하는 밑그림을 제출한다. 타일을 변경하거나 시공을 승인하지 않는다. 실제 배치는 별도 쓰기 도구로 실행한다.",
     parameters: SET_BUILD_SPEC_TOOL.function.parameters,
     async execute(_id, params) {
+      // Pi 의 밑그림은 표시용이다 — 타일을 바꾸지도, 시공을 승인·차단하지도 않는다. 그래서 형식이 깨진 명세
+      // (코드 없는 오류: mapId·assets·필드 타입)만 거부하고, 맵 경계·교차·기존 내용 판정(코드 있는 오류)은
+      // 표시한 뒤 경고로 돌려준다. r0735: 20×15 맵에 author_village 가 키울 64×40 마을을 그렸다가
+      // 「맵 크기 밖」으로 통째로 거부됐고, 거부는 아무것도 지키지 않았다(밑그림 없이 시공은 그대로 진행).
       const issues = validateBuildSpec(ctx.project, params);
       const errors = issues.filter(issue => issue.severity === "error");
-      if (errors.length) throw new Error(errors.map(issue => issue.message).join("\n"));
+      const malformed = errors.filter(issue => !issue.code);
+      if (malformed.length) throw new Error(`set_build_spec 형식 오류 — ${malformed.map(issue => issue.message).join(" / ")}`);
       const spec = normalizeBuildSpec(params as BuildSpec);
+      const map = ctx.project.maps[spec.mapId];
+      const growth = map && !spec.plannedMap && errors.some(issue => issue.code === "spec-asset-out-of-map") ? plannedGrowthForSpec(map, spec) : null;
+      const advisories = [
+        ...errors.map(issue => issue.message),
+        ...(growth ? [growthGuidanceLine(spec.mapId, growth)] : []),
+      ];
       emit({ type: "execution_status", name: "set_build_spec", ok: true, summary: "밑그림을 맵에 표시했습니다.", data: spec });
-      return { content: [{ type: "text", text: "밑그림을 표시했습니다. 이제 실제 시공 도구를 실행하세요." }] };
+      const text = advisories.length
+        ? `밑그림을 표시했습니다. 다만 지금 맵 기준으로 맞지 않는 곳이 있습니다(시공은 막지 않음):\n- ${advisories.join("\n- ")}\n시공 도구의 결과로 확인하세요.`
+        : "밑그림을 표시했습니다. 이제 실제 시공 도구를 실행하세요.";
+      return { content: [{ type: "text", text }] };
     },
   });
   for (const tool of tools) exposed.add(tool.name);
@@ -446,7 +473,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         id: String(event.toolCallId ?? ""),
         name,
         ok: !event.isError && (record?.ok ?? true),
-        summary: publicationFailed ? "변경 적용 실패 또는 실행 중단" : record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
+        // 실패 사유를 요약에 싣는다 — 일반 문구만 남기면 녹화(tools.jsonl)로 원인을 알 수 없었다
+        // (r0735: rename_switch·set_build_spec 의 인자 오류, show_map_region 의 이미지 경로 부재).
+        summary: withErrorDetail(
+          publicationFailed ? "변경 적용 실패 또는 실행 중단" : record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
+          event.isError && (publicationFailed || !record) ? toolErrorText(event.result) : "",
+        ),
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
