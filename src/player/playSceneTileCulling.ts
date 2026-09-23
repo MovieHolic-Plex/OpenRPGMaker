@@ -20,9 +20,15 @@ import { TILE_SIZE } from "@/assets/bundled";
 export interface CullableImage {
   visible?: boolean;
   /** Phaser GameObject 는 파괴되면 active=false 가 된다. 증분 재렌더 경로에서
-   *  파괴된 객체가 추적 목록에 남아 setVisible 을 부르면 런타임 에러가 나므로 건너뛴다. */
+   *  파괴된 객체가 추적 목록에 남아 setVisible 을 부르면 런타임 에러가 나므로 건너뛴다.
+   *  화면 밖 정지는 이 플래그를 쓰지 않는다 — 쓰면 다음 창에서 죽은 객체로 버려진다. */
   active?: boolean;
   setVisible?(value: boolean): unknown;
+  /** 물 오토타일 스프라이트. 화면 밖으로 나가면 애니메이션 틱을 멈춘다. */
+  anims?: {
+    pause(): void;
+    resume(): void;
+  };
 }
 
 /**
@@ -30,10 +36,14 @@ export interface CullableImage {
  * `{image, x, y}` 를 만들면 맵을 그릴 때마다 그만큼의 짧은 수명 객체가 생긴다
  * (실측 renderTiles +4.0ms/호출). 좌표는 숫자 배열에 그대로 담는다.
  */
+/** 컬링 버킷 한 변. 창이 한 칸 움직이면 경계에 걸친 버킷만 다시 본다. */
+const CULL_BUCKET_TILES = 16;
+
 interface CullableTiles {
   readonly images: CullableImage[];
   readonly xs: number[];
   readonly ys: number[];
+  readonly buckets: Map<string, number[]>;
 }
 
 interface TileWindow {
@@ -83,14 +93,16 @@ export function trackCullableTile(host: object, image: CullableImage, x: number,
   if (typeof image.setVisible !== "function") return;
   let tiles = lastTrackedHost === host ? lastTrackedTiles : null;
   if (!tiles) {
-    tiles = cullableTiles.get(host) ?? { images: [], xs: [], ys: [] };
+    tiles = cullableTiles.get(host) ?? { images: [], xs: [], ys: [], buckets: new Map() };
     cullableTiles.set(host, tiles);
     lastTrackedHost = host;
     lastTrackedTiles = tiles;
   }
+  const index = tiles.images.length;
   tiles.images.push(image);
   tiles.xs.push(x);
   tiles.ys.push(y);
+  pushCullBucket(tiles, index, x, y);
 }
 
 export interface CullViewport {
@@ -122,18 +134,10 @@ export function syncTileCulling(host: object, viewport: CullViewport | undefined
   const applied = appliedWindows.get(host);
   if (applied && sameWindow(applied, next)) return;
   appliedWindows.set(host, next);
-  const { images, xs, ys } = tiles;
-  let deadCount = 0;
-  for (let index = 0; index < images.length; index += 1) {
-    const x = xs[index];
-    const y = ys[index];
-    const visible = x >= next.minX && x <= next.maxX && y >= next.minY && y <= next.maxY;
-    const image = images[index];
-    if (image.active === false) { deadCount += 1; continue; }
-    if (image.visible === visible) continue;
-    image.setVisible?.(visible);
-  }
-  if (deadCount > 0 && deadCount * 2 >= images.length) compactCullableTiles(tiles);
+  const deadCount = applied
+    ? applyChangedCullBuckets(tiles, applied, next)
+    : applyCullIndices(tiles, null, next);
+  if (deadCount > 0 && deadCount * 2 >= tiles.images.length) compactCullableTiles(tiles);
 }
 
 /**
@@ -157,6 +161,76 @@ function compactCullableTiles(tiles: CullableTiles): void {
   images.push(...liveImages);
   xs.push(...liveXs);
   ys.push(...liveYs);
+  tiles.buckets.clear();
+  for (let index = 0; index < xs.length; index += 1) pushCullBucket(tiles, index, xs[index], ys[index]);
+}
+
+function pushCullBucket(tiles: CullableTiles, index: number, x: number, y: number): void {
+  const key = `${Math.floor(x / CULL_BUCKET_TILES)},${Math.floor(y / CULL_BUCKET_TILES)}`;
+  const bucket = tiles.buckets.get(key);
+  if (bucket) bucket.push(index);
+  else tiles.buckets.set(key, [index]);
+}
+
+/**
+ * 직전 창과 새 창에서 보임이 바뀔 수 있는 16×16 버킷만 순회한다.
+ * 창 한가운데 버킷은 통째로 안이거나 통째로 밖이라 타일마다 다시 볼 필요가 없다.
+ */
+function applyChangedCullBuckets(tiles: CullableTiles, applied: TileWindow, next: TileWindow): number {
+  let deadCount = 0;
+  for (const [key, indices] of tiles.buckets) {
+    const span = cullBucketSpan(key);
+    const before = windowCoverage(applied, span);
+    const after = windowCoverage(next, span);
+    if (before === after && before !== "edge") continue;
+    deadCount += applyCullIndices(tiles, indices, next);
+  }
+  return deadCount;
+}
+
+function cullBucketSpan(key: string): TileWindow {
+  const comma = key.indexOf(",");
+  const cx = Number(key.slice(0, comma));
+  const cy = Number(key.slice(comma + 1));
+  const minX = cx * CULL_BUCKET_TILES;
+  const minY = cy * CULL_BUCKET_TILES;
+  return {
+    minX,
+    minY,
+    maxX: minX + CULL_BUCKET_TILES - 1,
+    maxY: minY + CULL_BUCKET_TILES - 1,
+  };
+}
+
+function windowCoverage(window: TileWindow, span: TileWindow): "in" | "out" | "edge" {
+  if (span.maxX < window.minX || span.minX > window.maxX || span.maxY < window.minY || span.minY > window.maxY) {
+    return "out";
+  }
+  if (span.minX >= window.minX && span.maxX <= window.maxX && span.minY >= window.minY && span.maxY <= window.maxY) {
+    return "in";
+  }
+  return "edge";
+}
+
+/** indices 가 null 이면 추적 목록 전체. 반환값은 파괴된 객체 수. */
+function applyCullIndices(tiles: CullableTiles, indices: readonly number[] | null, next: TileWindow): number {
+  const { images, xs, ys } = tiles;
+  const count = indices ? indices.length : images.length;
+  let deadCount = 0;
+  for (let cursor = 0; cursor < count; cursor += 1) {
+    const index = indices ? indices[cursor] : cursor;
+    const image = images[index];
+    if (image.active === false) {
+      deadCount += 1;
+      continue;
+    }
+    const visible = xs[index] >= next.minX && xs[index] <= next.maxX && ys[index] >= next.minY && ys[index] <= next.maxY;
+    if (image.visible === visible) continue;
+    image.setVisible?.(visible);
+    if (visible) image.anims?.resume();
+    else image.anims?.pause();
+  }
+  return deadCount;
 }
 
 function sameWindow(left: TileWindow, right: TileWindow): boolean {

@@ -160,3 +160,32 @@ export function editorStateChangedOnlyCanvasOverlay(
   }
   return overlayChanged;
 }
+
+/**
+ * 맵 트리가 읽는 에디터 필드는 현재 맵뿐이다.
+ * 타일·도구·레이어 선택은 팔레트 일이라, 그때 맵 목록을 다시 만들면 마을마다 썸네일을 다시 그린다.
+ */
+export function editorStateNeedsMapTreeRefresh(previous: EditorState, next: EditorState): boolean {
+  return previous.currentMapId !== next.currentMapId;
+}
+
+const PALETTE_REFRESH_KEYS = [
+  "currentMapId",
+  "tool",
+  "layer",
+  "paintShape",
+  "selectedTile",
+  "autoConnectMode",
+  "clusterAssistMode",
+  "activePaletteStamp",
+  "brushSize",
+  "selectedEventId",
+  "selectedEventPageId",
+  "pendingEventCoordinate",
+] as const satisfies readonly (keyof EditorState)[];
+
+/** 좌측 타일 팔레트(이벤트 레이어일 때는 이벤트 목록)가 다시 그려져야 하는 통지인가. */
+export function editorStateNeedsPaletteRefresh(previous: EditorState, next: EditorState): boolean {
+  if (previous === next) return false;
+  return PALETTE_REFRESH_KEYS.some((key) => previous[key] !== next[key]);
+}

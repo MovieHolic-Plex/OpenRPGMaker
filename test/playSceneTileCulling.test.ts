@@ -65,6 +65,35 @@ describe("playSceneTileCulling", () => {
     expect(tile.writes).toBe(writesAfterFirst + 1);
   });
 
+  it("타일 창이 한 칸 움직여도 먼 타일은 다시 쓰지 않고, 경계 타일과 물 애니메이션만 갱신한다", () => {
+    const host = {};
+    const far = cullTile();
+    const edge = cullTile();
+    let paused = 0;
+    let resumed = 0;
+    edge.anims = {
+      pause() { paused += 1; },
+      resume() { resumed += 1; },
+    };
+    trackCullableTile(host, far, 80, 80);
+    // 320/16+여유 2 = x 22 까지 보인다. 23 은 창 바로 밖.
+    trackCullableTile(host, edge, 23, 2);
+
+    syncTileCulling(host, ORIGIN_VIEW);
+    expect(far.visible).toBe(false);
+    expect(edge.visible).toBe(false);
+    expect(paused).toBe(1);
+    const farWrites = far.writes;
+    const edgeWrites = edge.writes;
+
+    syncTileCulling(host, { ...ORIGIN_VIEW, x: TILE_SIZE });
+    expect(far.writes).toBe(farWrites);
+    expect(far.visible).toBe(false);
+    expect(edge.visible).toBe(true);
+    expect(edge.writes).toBe(edgeWrites + 1);
+    expect(resumed).toBe(1);
+  });
+
   it("카메라가 멀어지면 앞서 보였던 타일을 다시 숨긴다", () => {
     const host = {};
     const near = cullTile();
