@@ -56,6 +56,34 @@ function canonicalizePartyActorAlias(command: RecordValue): string | undefined {
   return fixes.length > 0 ? fixes.join(" ") : undefined;
 }
 
+// 보스전 명령에 부대 ID 를 `commandId` 로 쓴 사례(2026-09-24 헤드리스 「등대지기의 겨울」:
+// `{kind:"battleProcessing",commandId:"troop_blizzard_spirit"}`) — 「troopId가 문자열이 아닙니다」로 이벤트가
+// 통째로 거부됐고, 모델은 보스를 대사만 있는 NPC 로 다시 놓아 보스전이 사라졌다. battleProcessing 이 가리킬
+// 수 있는 것은 부대뿐이라 troopId 가 없을 때 별칭 하나의 문자열을 옮긴다. 부대 실재 판정은 호출자 몫이다.
+const BATTLE_TROOP_ALIASES = ["commandId", "troop", "troopRef", "battleId", "encounterId", "enemyGroupId"] as const;
+
+// 같은 호출은 canEscape·canLose 도 비어 있었다 — 별칭만 고치면 다음 거부가 그 둘이다. 편집기 새 명령과 같은
+// 기본값(도망 가능·패배=게임 오버, eventCommandFactory)을 채우고 알린다.
+const BATTLE_FLAG_DEFAULTS = { canEscape: true, canLose: false } as const;
+
+function canonicalizeBattleCommand(command: RecordValue): string | undefined {
+  const fixes: string[] = [];
+  const hasTroop = typeof command.troopId === "string" && command.troopId.trim();
+  if (!hasTroop && command.troopSource !== "variable") {
+    const aliases = BATTLE_TROOP_ALIASES.filter(key => typeof command[key] === "string" && (command[key] as string).trim());
+    if (aliases.length === 1) {
+      const alias = aliases[0]!;
+      command.troopId = (command[alias] as string).trim();
+      delete command[alias];
+      fixes.push(`battleProcessing.${alias} 를 troopId:${JSON.stringify(command.troopId)} 로 옮겼습니다(전투 명령은 부대 ID 를 troopId 로 받는다).`);
+    }
+  }
+  const filled = (Object.keys(BATTLE_FLAG_DEFAULTS) as (keyof typeof BATTLE_FLAG_DEFAULTS)[]).filter(key => command[key] === undefined);
+  for (const key of filled) command[key] = BATTLE_FLAG_DEFAULTS[key];
+  if (filled.length > 0) fixes.push(`battleProcessing 에 빠진 ${filled.map(key => `${key}:${BATTLE_FLAG_DEFAULTS[key]}`).join(", ")} 기본값을 채웠습니다.`);
+  return fixes.length > 0 ? fixes.join(" ") : undefined;
+}
+
 function joinFixes(...fixes: (string | undefined)[]): string | undefined {
   const present = fixes.filter((fix): fix is string => Boolean(fix));
   return present.length > 0 ? present.join(" ") : undefined;
@@ -78,6 +106,7 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     command.action = resolved;
     return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
   }
+  if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
   if (command.kind === "choices" && Array.isArray(command.options)) {
     // 네이티브 선택지 분기는 `branch` 다. SimplePage 선택지(`commands`)나 fork(`then`) 표기가 섞이면
     // 분기가 비거나 검증에서 거부됐다. branch 가 비어 있고 별칭 하나에만 명령이 있으면 옮긴다.
