@@ -1,6 +1,7 @@
 # Bake the diverse forest-village tileset (sheet + every graft) into one 30-column sheet and repaint it per climate.
 # Tile numbers stay identical to forest_harmony; only pixels change. Snow appends frozen copies of the water tiles.
 # Usage: python3 scripts/content/build-climate-chipsets.py   (writes public/assets/climate-villages/*.png + tiledata/climate-villages/sheets.json)
+# Climates: snow, volcano, desert (sand, sandstone cliffs, dry scrub, oasis water), autumn (gold grass, autumn leaves).
 import json, re, pathlib
 import numpy as np
 from PIL import Image
@@ -150,18 +151,87 @@ def volcano(sheet):
     out[..., :3][wood] = np.stack([48 + 96 * V, 46 + 92 * V, 50 + 96 * V], -1)[wood]
     return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
 
+# Desert and autumn repaint the forest itself as well as the ground, so they also need the canopy (grove grafts),
+# the forest trunk assemblies and the grass drawn underneath through layerBacking.
+GROVE = set(range(2550, 2597))
+# Forest trunk assemblies (forestTrunkTiles.ts): their shade is the forest's dark green.
+TRUNKS = {1350} | set(range(1422, 1434)) | set(range(1453, 1464))
+# 768 (flowering bush) and 289 (bush) are foliage too; the cactus 769 and palm 770 stay green on purpose.
+FOLIAGE = TREE | GROVE | TRUNKS | {768, 289}
+# Grass drawn under trunks and roads through layerBacking (1141, 1145, 240 …) is ground as well.
+BACKING = {int(m["layerBacking"]) for m in TS["tileMeta"] if str((m or {}).get("layerBacking", "")).isdigit()}
+STONES = {2649, 2650}  # stepping stones 징검돌 sit in grass
+CLIFF = {2670 + k for k in range(22)} | {18, 19, 48, 49, 78, 79, 80, 108, 110, 138, 139, 140, 171, 172, 173, 201, 202, 203, 231, 232}
+
+def ground_classes(a):
+    H, S, V, A, strict, greenish, tree, other, bright, shadow = classes(a)
+    # Grass under trunks/roads (layerBacking) and the grass tufts on cliff rims, lake shores and stepping stones are ground too.
+    backed = (tile_mask(A.shape, BACKING - TREE) | tile_mask(A.shape, CLIFF | set(WATER) | STONES)) & greenish
+    return H, S, V, A, strict, greenish, bright | (backed & (V > 0.5)), shadow | (backed & (V <= 0.5) & (V > 0.2))
+
+def desert(sheet):
+    a = np.array(sheet).astype(np.float32); out = a.copy()
+    H, S, V, A, strict, greenish, bright, shadow = ground_classes(a)
+    foliage = tile_mask(A.shape, FOLIAGE) & A
+    v = np.clip((V - 0.5) / 0.35, 0, 1)
+    sand = bright & (~foliage | strict)
+    out[..., :3][sand] = np.stack([214 + 32 * v, 186 + 32 * v, 124 + 34 * v], -1)[sand]
+    vs = np.clip((V - 0.2) / 0.3, 0, 1)
+    out[..., :3][shadow] = np.stack([150 + 58 * vs, 118 + 60 * vs, 74 + 48 * vs], -1)[shadow]
+    # Dry scrub: leaves turn khaki above and dark umber in the shade.
+    leaf = foliage & A & (H >= 60) & (H <= 175) & (S > 0.2) & ~sand
+    lv = np.clip(V / 0.62, 0, 1)
+    out[..., :3][leaf] = np.stack([52 + 118 * lv ** 1.2, 42 + 100 * lv ** 1.2, 24 + 42 * lv ** 1.4], -1)[leaf]
+    # Sandstone: brown earth of the cliffs warms to ochre.
+    earth = tile_mask(A.shape, CLIFF) & A & (H >= 5) & (H <= 50) & (S > 0.18)
+    out[..., :3][earth] = np.stack([20 + 400 * V, 10 + 290 * V, 8 + 150 * V], -1)[earth]
+    # Roofs: sun-baked clay.
+    roof = tile_mask(A.shape, ROOF) & A & ~greenish
+    clay = np.stack([70 + 180 * V, 40 + 120 * V, 26 + 70 * V], -1)
+    out[..., :3][roof] = (out[..., :3] * 0.35 + clay * 0.65)[roof]
+    # Oasis water: a shade greener.
+    water = tile_mask(A.shape, WATER) & A & (H >= 175) & (H <= 250) & (S > 0.3)
+    out[..., 1][water] = np.clip(out[..., 1] * 1.18 + 12, 0, 255)[water]
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+
+def autumn(sheet):
+    a = np.array(sheet).astype(np.float32); out = a.copy()
+    H, S, V, A, strict, greenish, bright, shadow = ground_classes(a)
+    foliage = tile_mask(A.shape, FOLIAGE) & A
+    v = np.clip((V - 0.5) / 0.35, 0, 1)
+    ground = bright & (~foliage | strict)
+    out[..., :3][ground] = np.stack([150 + 50 * v, 150 + 40 * v, 66 + 24 * v], -1)[ground]
+    vs = np.clip((V - 0.2) / 0.3, 0, 1)
+    out[..., :3][shadow] = np.stack([88 + 60 * vs, 84 + 58 * vs, 38 + 30 * vs], -1)[shadow]
+    # Foliage: shade → maroon, mid → orange, light → gold. Free-standing broadleaf trees go gold, bushes crimson.
+    leaf = foliage & A & (H >= 60) & (H <= 175) & (S > 0.2) & ~ground
+    lv = np.clip(V / 0.62, 0, 1)
+    fall = np.stack([34 + 216 * lv ** 1.4, 18 + 150 * lv ** 1.9, 14 + 36 * lv ** 2.5], -1)
+    gold = np.stack([90 + 160 * lv ** 0.8, 50 + 170 * lv ** 1.3, 10 + 50 * lv ** 2], -1)
+    red = np.stack([70 + 150 * lv ** 1.1, 24 + 66 * lv ** 1.6, 18 + 26 * lv ** 2], -1)
+    out[..., :3][leaf] = fall[leaf]
+    g = tile_mask(A.shape, {978, 979, 980, 1008, 1009, 1010}) & leaf
+    out[..., :3][g] = gold[g]
+    r = tile_mask(A.shape, {983, 984, 985, 1013, 1014, 1015, 1043, 1044, 1045, 1073, 1074, 1103, 1104}) & leaf
+    out[..., :3][r] = red[r]
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+
 baked = bake(N + len(WATER))
 out_dir = ROOT / "public/assets/climate-villages"; out_dir.mkdir(parents=True, exist_ok=True)
 snowy = freeze(snow(baked), WATER, N)
 snowy.save(out_dir / "snow-chipset.png", optimize=True)
 volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "volcano-chipset.png", optimize=True)
+desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "desert-chipset.png", optimize=True)
+autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "autumn-chipset.png", optimize=True)
 manifest = {
     "source": "tiledata/forest-villages/diverse/catalog.json",
     "baseCount": N,
     "snow": {"count": N + len(WATER), "ice": [[t, N + k] for k, t in enumerate(WATER)]},
     "volcano": {"count": N, "lava": WATER, "stoneBridges": BRIDGES},
+    "desert": {"count": N, "sandstone": sorted(CLIFF)},
+    "autumn": {"count": N},
     "roofTiles": sorted(ROOF),
 }
 pathlib.Path(ROOT / "tiledata/climate-villages").mkdir(parents=True, exist_ok=True)
 (ROOT / "tiledata/climate-villages/sheets.json").write_text(json.dumps(manifest, ensure_ascii=False) + "\n")
-print({"snow": manifest["snow"]["count"], "volcano": N, "water": len(WATER), "bridges": BRIDGES, "roofs": len(ROOF)})
+print({"snow": manifest["snow"]["count"], "volcano": N, "desert": N, "autumn": N, "water": len(WATER), "bridges": BRIDGES, "roofs": len(ROOF)})

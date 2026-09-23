@@ -21,10 +21,11 @@ const maps = catalog.maps as unknown as Record<string, GameMap>;
 const categories = shipped as unknown as Record<string, { id: string; documents: { id: string }[] }>;
 const pngHeight = (path: string) => readFileSync(path).readUInt32BE(20);
 
-describe("snow and volcano climate villages", () => {
+describe("snow, volcano, desert and autumn climate villages", () => {
   it("ships both climate sheets as bundled tilesets with forest-village numbering", () => {
     const project = createBlankProject();
-    for (const [kind, key] of [["snow", "tex_forest_harmony_snow"], ["volcano", "tex_forest_harmony_volcano"]] as const) {
+    for (const kind of ["snow", "volcano", "desert", "autumn"] as const) {
+      const key = `tex_forest_harmony_${kind}`;
       const tileset = project.tilesets[`forest_harmony_${kind}`]!;
       expect(tileset.image).toEqual({ type: "bundled", id: key });
       expect(tileset.tileGrafts ?? []).toEqual([]);
@@ -42,10 +43,26 @@ describe("snow and volcano climate villages", () => {
     expect(volcano.tileMeta![0]!.label).toMatch(/^용암/);
     expect(volcano.passability[0]).toEqual(village.tileset.passability[0]);
     expect(volcano.tileMeta![2701]!.label).toContain("현무암 다리");
+    const desert = project.tilesets.forest_harmony_desert!, autumn = project.tilesets.forest_harmony_autumn!;
+    for (const t of sheets.desert.sandstone) if (village.tileset.tileMeta[t]?.label) expect(desert.tileMeta![t]!.label).toMatch(/^사암/);
+    // Desert water stays water (oasis); the cactus and palm keep their own meaning.
+    expect(desert.tileMeta![0]!.label).toBe(village.tileset.tileMeta[0]!.label);
+    expect(desert.tileMeta![769]!.label).toContain("선인장");
+    expect(autumn.passability).toEqual(village.tileset.passability);
+  });
+
+  it("dresses the desert villages with palms and cacti instead of broadleaf trees", () => {
+    for (const plan of catalog.plans.filter((p) => p.climate === "desert")) {
+      const map = maps[plan.id]!, plants = plan.edits.filter((e) => e.kind === "desert-plant") as { x: number; y: number; tile: number }[];
+      expect(plants.length).toBeGreaterThan(10);
+      for (const p of plants) expect(map.upperTiles[p.y * map.width + p.x]).toBe(p.tile);
+      // No free-standing broadleaf canopy (978~980) is left on a desert map.
+      expect(map.upperTiles.some((t) => t >= 978 && t <= 980)).toBe(false);
+    }
   });
 
   it("keeps every door, and the frozen pond, reachable with the runtime move rule", () => {
-    const tilesets = { forest_harmony_snow: createClimateVillageTileset("snow"), forest_harmony_volcano: createClimateVillageTileset("volcano") };
+    const tilesets = Object.fromEntries((["snow", "volcano", "desert", "autumn"] as const).map((k) => [`forest_harmony_${k}`, createClimateVillageTileset(k)]));
     for (const plan of catalog.plans) {
       const map = maps[plan.id]!, project = { maps: { [map.id]: map }, tilesets } as unknown as Project;
       const seen = new Set([plan.entry[1]! * map.width + plan.entry[0]!]), queue = [plan.entry as [number, number]];
@@ -65,7 +82,7 @@ describe("snow and volcano climate villages", () => {
   it("reassembles every place raster through bounded AI reads and lists it under 장소", () => {
     const session = { ...spatialSession(), tab: "places" as const, mode: "design" as const, source: "defaults" as const };
     const cards = listSpatialGalleryCards(session);
-    expect(CLIMATE_VILLAGE_PLACE_REFERENCES).toHaveLength(6);
+    expect(CLIMATE_VILLAGE_PLACE_REFERENCES).toHaveLength(10);
     for (const entry of CLIMATE_VILLAGE_PLACE_REFERENCES) {
       const lower: number[] = [], upper: number[] = [];
       let row: number | null = 0;

@@ -10,6 +10,8 @@ const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y)
 const CATEGORY = {
   forest_harmony_snow: { id: "climate-snow-villages-v1", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (개정1)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 설원 마을 세 곳의 전체 배열과 통행 검사" },
   forest_harmony_volcano: { id: "climate-volcano-villages-v1", name: "화산 마을 · 재와 용암의 숲마을 (개정1)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 화산 봉우리 놓는 법과 화산 마을 세 곳의 전체 배열" },
+  forest_harmony_desert: { id: "climate-desert-villages-v1", name: "사막 마을 · 모래와 사암의 숲마을 (개정1)", description: "숲마을을 모래·사암·마른 덤불로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 나무 대신 야자·선인장 놓는 법과 사막 마을 두 곳의 전체 배열" },
+  forest_harmony_autumn: { id: "climate-autumn-villages-v1", name: "가을 마을 · 단풍 든 숲마을 (개정1)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
 const doc = (tilesetId, id, name, markdown) => {
@@ -83,6 +85,54 @@ ${check}
 ${reach("forest_harmony_volcano")}
 ## 실제 구분
 ${list("forest_harmony_volcano")}
+`);
+
+doc("forest_harmony_desert", "desert-guide", "사막 규칙 · 번호는 숲마을, 나무 자리엔 야자·선인장", `# 사막 마을 — 모래와 사암의 숲마을
+
+tilesetId=forest_harmony_desert, 시트 tex_forest_harmony_desert(30열·16px, ${sheets.desert.count}칸). 좌표는 0기준.
+
+${common}
+## 무엇이 바뀌었나
+- 땅: 잔디·풀 칸이 모래밭이 된다(밝은 풀 → 밝은 모래, 그늘 → 짙은 모래). 흙길은 그대로라 모래밭 위 자갈길로 보인다.
+- 숲: 수관과 숲 벽이 **마른 덤불숲**(밝은 잎 → 누런 잎, 그늘 → 짙은 흙빛)이 된다. 여전히 통행 불가인 경계다.
+- 절벽: 절벽 칸 ${sheets.desert.sandstone.length}종의 흙벽이 황토색 **사암**으로 칠해져 있다(라벨 앞말 「사암」). 계단·조립은 숲마을 절벽과 같다.
+- 지붕: 지붕 칸이 볕에 구운 흙빛으로 바랜다. 벽·창·문은 원래 색.
+- 물: 호수·강·바다 칸은 **물 그대로**(조금 더 푸른 오아시스 물빛). 통행 불가.
+- 선인장 769·야자 770·회백색 바위 537은 원래 시트에 있는 칸이라 초록 그대로 남아 있다(위층, 통행 불가).
+
+## 나무 대신 야자·선인장
+활엽수·덤불 덩이(960~1109의 나무 도장)는 모래밭에 어울리지 않는다. 사막 마을에서는 이렇게 바꿨다.
+- 나무 도장 하나를 모래(아래층 240, 위층 비움)로 되돌리고 **그 발치 한가운데 한 칸**에 식물 하나를 놓는다: 물이 5칸 안에 있으면 야자 770, 아니면 선인장 769. 3×4 활엽수 자리에는 바위 537도 하나 놓는다.
+- 물가(물에서 한 칸)에는 야자를 3칸 이상 띄워 늘어세운다.
+- 빈 모래밭(물에서 6칸 넘게)에는 선인장을 6칸 이상 띄워 흩어 놓는다.
+- 모든 식물은 둘레 한 칸이 빈 모래여야 하고, 길·문 앞·계단 끝·다리 끝에서 두 칸 넘게 떨어뜨린다. 놓은 뒤 통행 검사를 다시 한다.
+
+## 검사
+마을 입구에서 런타임 이동 규칙(canMove)으로 모든 집 문 앞에 닿는지 확인했다(식물을 놓은 뒤).
+${check}
+${reach("forest_harmony_desert")}
+## 실제 구분
+${list("forest_harmony_desert")}
+`);
+
+doc("forest_harmony_autumn", "autumn-guide", "가을 규칙 · 번호는 숲마을, 시트만 가을빛", `# 가을 마을 — 단풍 든 숲마을
+
+tilesetId=forest_harmony_autumn, 시트 tex_forest_harmony_autumn(30열·16px, ${sheets.autumn.count}칸). 좌표는 0기준.
+
+${common}
+## 무엇이 바뀌었나
+- 땅: 잔디·풀 칸이 금빛 가을 풀밭이 된다. 흙길·돌길·절벽은 그대로.
+- 숲: 숲 벽과 수관이 단풍(그늘 → 짙은 적갈색, 중간 → 주황, 밝은 잎 → 금빛)이 된다.
+- 나무: 3×4 활엽수(978~980·1008~1010 수관)는 **노란 잎**, 둥근 덤불·작은 덤불은 **붉은 잎**이다. 숲마을 나무 도장을 그대로 쓰면 된다.
+- 물·지붕·벽은 원래 색. 통행·오토타일은 숲마을과 같다.
+- 편집은 없다: 숲마을 맵의 tilesetId만 forest_harmony_autumn으로 바꾸면 가을판이 된다.
+
+## 검사
+마을 입구에서 런타임 이동 규칙(canMove)으로 모든 집 문 앞에 닿는지 확인했다.
+${check}
+${reach("forest_harmony_autumn")}
+## 실제 구분
+${list("forest_harmony_autumn")}
 `);
 
 for (const p of c.plans) {

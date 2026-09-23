@@ -9,6 +9,16 @@
       "tileset": "forest_harmony_volcano",
       "category": "climate-volcano-villages-v1",
       "present": true
+    },
+    {
+      "tileset": "forest_harmony_desert",
+      "category": "climate-desert-villages-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony_autumn",
+      "category": "climate-autumn-villages-v1",
+      "present": true
     }
   ],
   "places": [
@@ -59,6 +69,42 @@
     },
     {
       "id": "climate-volcano-lava-pond-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-desert-terrace-canyon-88x72",
+      "aiRowsExact": true,
+      "preview": [
+        1408,
+        1152
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-desert-reed-bay-88x64",
+      "aiRowsExact": true,
+      "preview": [
+        1408,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-autumn-twin-falls-88x72",
+      "aiRowsExact": true,
+      "preview": [
+        1408,
+        1152
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-autumn-chapel-hill-80x64",
       "aiRowsExact": true,
       "preview": [
         1280,

@@ -8,7 +8,7 @@ const project = JSON.parse(fs.readFileSync(input));
 const c = JSON.parse(fs.readFileSync("tiledata/climate-villages/catalog.json"));
 const proof = JSON.parse(fs.readFileSync("tiledata/climate-villages/storage-proof.json"));
 const references = JSON.parse(fs.readFileSync("src/assets/sharedClimateVillageReferences.json"));
-const SHEET = { forest_harmony_snow: "/assets/climate-villages/snow-chipset.png", forest_harmony_volcano: "/assets/climate-villages/volcano-chipset.png" };
+const SHEET = Object.fromEntries(["snow", "volcano", "desert", "autumn"].map((k) => [`forest_harmony_${k}`, `/assets/climate-villages/${k}-chipset.png`]));
 const entries = [], snapshotMaps = {}, snapshotTilesets = {};
 for (const plan of c.plans) {
   const map = project.maps[plan.id];
@@ -48,7 +48,7 @@ for (const plan of c.plans) {
     snapshotProjectId: `oprn-place-${plan.id}-v1`,
     rules: [
       plan.note + ".",
-      `숲마을 「${plan.from}」과 칸 번호가 같은 기후 시트(${map.tilesetId})에 그렸다. 기후 편집: ${plan.edits.map((e) => e.kind).join(", ")}.`,
+      `숲마을 「${plan.from}」과 칸 번호가 같은 기후 시트(${map.tilesetId})에 그렸다. 기후 편집: ${[...new Set(plan.edits.map((e) => e.kind).filter((k) => k !== "desert-plant"))].join(", ") || "없음(시트만)"}.`,
       `입구 (${plan.entry.join(",")})에서 집 문 앞 ${plan.houses.length}곳${plan.freeze ? "과 얼음판" : ""}까지 런타임 이동 규칙으로 닿는 것을 확인했다.`,
       `공용 AI 문서 「${category.name}」에 기후 규칙·전체 배열·사용 타일 사전이 있다.`,
     ],

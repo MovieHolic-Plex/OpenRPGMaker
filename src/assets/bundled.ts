@@ -117,6 +117,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   // 숲마을(이식 포함)을 한 장으로 구워 기후별로 다시 칠한 시트 — scripts/content/build-climate-chipsets.py, 정의는 defaults/climateVillages.ts.
   {textureKey:"tex_forest_harmony_snow",path:"assets/climate-villages/snow-chipset.png",name:"설원 마을 · 눈 덮인 숲마을"},
   {textureKey:"tex_forest_harmony_volcano",path:"assets/climate-villages/volcano-chipset.png",name:"화산 마을 · 재와 용암의 숲마을"},
+  {textureKey:"tex_forest_harmony_desert",path:"assets/climate-villages/desert-chipset.png",name:"사막 마을 · 모래와 사암의 숲마을"},
+  {textureKey:"tex_forest_harmony_autumn",path:"assets/climate-villages/autumn-chipset.png",name:"가을 마을 · 단풍 든 숲마을"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
@@ -149,6 +151,8 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_forest_harmony_grass_joins") return 10;
   if (key === "tex_forest_harmony_snow") return climateSheets.snow.count;
   if (key === "tex_forest_harmony_volcano") return climateSheets.volcano.count;
+  if (key === "tex_forest_harmony_desert") return climateSheets.desert.count;
+  if (key === "tex_forest_harmony_autumn") return climateSheets.autumn.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;

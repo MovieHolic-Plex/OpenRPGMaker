@@ -3,17 +3,15 @@ import saved from "@/assets/sharedClimateVillageReferences.json";
 import type { TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
-// Snow and volcano repaints of the diverse forest-village sheet (scripts/content/build-climate-chipsets.py).
+// Snow, volcano, desert and autumn repaints of the diverse forest-village sheet (scripts/content/build-climate-chipsets.py).
 // Tile numbers match forest_harmony (grafts baked in); the snow sheet appends frozen copies of the water tiles.
-export type ClimateVillageKind = "snow" | "volcano";
+export type ClimateVillageKind = "snow" | "volcano" | "desert" | "autumn";
 type Climate = (typeof data.climates)[ClimateVillageKind];
 const CLIMATES = data.climates as Record<ClimateVillageKind, Climate>;
 const CATEGORY_BY_TILESET = saved as unknown as Record<string, TilesetReferenceCategory>;
 
-export const CLIMATE_VILLAGE_TEXTURES: Readonly<Record<string, ClimateVillageKind>> = {
-  [CLIMATES.snow.textureKey]: "snow",
-  [CLIMATES.volcano.textureKey]: "volcano",
-};
+export const CLIMATE_VILLAGE_TEXTURES: Readonly<Record<string, ClimateVillageKind>> = Object.fromEntries(
+  (Object.keys(CLIMATES) as ClimateVillageKind[]).map(kind => [CLIMATES[kind].textureKey, kind]));
 
 export function climateVillageTilesetId(kind: ClimateVillageKind): string {
   return CLIMATES[kind].id;
