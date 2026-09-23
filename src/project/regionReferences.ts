@@ -1,4 +1,5 @@
 import { DIVERSE_VILLAGE_PLACES, DIVERSE_VILLAGE_REGIONS } from "./diverseVillageReferences";
+import { SHARED_REGION_REFERENCES } from './sharedSpatialReferences';
 import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
 import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
@@ -120,7 +121,7 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
 
 
 export function regionReference(id: string) {
-  return [...REGION_REFERENCES, ...PLACE_REFERENCES].find(entry => entry.id === id);
+  return [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].find(entry => entry.id === id);
 }
 
 /**
@@ -135,7 +136,7 @@ function referenceHouseFormNote(referenceId: string): string {
 }
 
 export function regionReferenceContext(): string {
-  return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
+  return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].map(r =>
     `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

@@ -155,6 +155,10 @@ function trimText(value: unknown, max: number): string {
 }
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
+  // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
+  const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
+  const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
+  installSharedSpatialReferences(readSharedTileReferences().spatial);
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };

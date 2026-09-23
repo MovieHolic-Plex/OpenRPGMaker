@@ -1,17 +1,20 @@
 import type { Project, TilesetDef } from './types';
 import { validateTilesetReferences } from './tilesetReferences';
 import { sha256HexTextSync } from '@/util/sha256';
+import { installSharedSpatialReferences, ensureSharedSpatialReferences, type SharedSpatialReferences } from './sharedSpatialReferences';
 export const SHARED_TILE_REFERENCES_ENDPOINT = '/__oprn/shared-tile-references';
 export interface SharedTileReferenceEntry {
   id: string; tileSize: number; tilesPerRow: number; count: number; assetId: string;
   imageSha256: string; dataUrlSha256: string;
   documents: NonNullable<TilesetDef['referenceDocuments']>;
+  kits?: NonNullable<TilesetDef['structureKits']>;
 }
-export interface SharedTileReferenceSnapshot { revision: string; entries: SharedTileReferenceEntry[] }
+export interface SharedTileReferenceSnapshot { revision: string; entries: SharedTileReferenceEntry[]; spatial?: SharedSpatialReferences }
 let snapshot: SharedTileReferenceSnapshot = { revision: '', entries: [] };
 /** Host-wide documents. No project ID, tile installation or map mutation. */
 export async function loadSharedTileReferences(): Promise<void> {
   snapshot = { revision: '', entries: [] };
+  installSharedSpatialReferences();
   if (typeof window === 'undefined') return;
   try {
     const response = await fetch(SHARED_TILE_REFERENCES_ENDPOINT, { cache: 'no-store', signal: AbortSignal.timeout(10000) });
@@ -26,10 +29,11 @@ export async function loadSharedTileReferences(): Promise<void> {
       validateTilesetReferences(entry.documents);
     }
     snapshot = value;
+    installSharedSpatialReferences(value.spatial);
   } catch (error) { console.warn('공용 타일 참고문서 갱신 실패 — 저장된 문서를 유지합니다.', error); }
 }
 export function ensureSharedTileReferences(project: Project, source = snapshot): boolean {
-  let changed = false;
+  let changed = ensureSharedSpatialReferences(project);
   for (const entry of source.entries) {
     const tile = project.tilesets[entry.id], asset = project.assets.uploaded[entry.assetId];
     if (!tile || !asset || tile.tileSize !== entry.tileSize || tile.tilesPerRow !== entry.tilesPerRow || tile.count !== entry.count
@@ -38,6 +42,11 @@ export function ensureSharedTileReferences(project: Project, source = snapshot):
       ? sha256HexTextSync(asset.dataUrl) === entry.dataUrlSha256
       : asset.ref?.sha256 === entry.imageSha256;
     if (!identityMatches) continue;
+    if (entry.kits) {
+      const ids = new Set(entry.kits.map(k => k.id));
+      const kits = [...entry.kits, ...(tile.structureKits ?? []).filter(k => !ids.has(k.id))];
+      if (JSON.stringify(kits) !== JSON.stringify(tile.structureKits)) { tile.structureKits = structuredClone(kits); changed = true; }
+    }
     const ids = new Set(entry.documents.map(d => d.id));
     const documents = [...entry.documents, ...(tile.referenceDocuments ?? []).filter(d => !ids.has(d.id))];
     if (JSON.stringify(tile.referenceDocuments) === JSON.stringify(documents)) continue;

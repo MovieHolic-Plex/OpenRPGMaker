@@ -2023,3 +2023,26 @@ PNG는 도구 결과의 image content에 붙어 다음 모델 호출로 전달�
 따른다. 이 두 분기만 기존 v1 기본값에 맡겨 실내 맵 ID를 줘도 combined-town 번호를 해석하던
 누락을 실제 Gemini 수정 호출에서 발견했다. `test/tileQueryBoundaries.test.ts`의 선택자 우선순위와
 없는 명시 맵 회귀가 이를 잠근다. LPC 138/139 조회의 직접 전후 재현으로 정정 확인.
+
+## 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
+
+호스트 `shared-content.sqlite`의 `lpc-modified-native-interior`에 실전 지침, 전체 부품 사전,
+하위/상위 예제 배열을 보관한다. 긴 제작 이력은 `interior-native-history`로 분리한다.
+공용 `structureKits` 20종(native32 가구18·러그2)과 `regionReferences` 2종(소형주택·민박),
+실제 원본 `maps`/`previews`를 함께 등록했다. 사례는 감독 보정이 포함된 정적 배치 참고이며
+독립 설계·미적 정답·출입 이벤트를 보증하지 않는다.
+
+`sharedTileReferencesSqlite`는 공용 문서와 함께 선택적으로 공간 카탈로그를 읽는다.
+`sharedSpatialReferences`는 프로젝트와 무관한 지역 목록/원본 배열을 보유하며 브라우저와
+Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조회 및 지역 UI가 같은 자료를
+쓴다. 신규 프로젝트에는 누락된 공유 타일/asset을 설치한다. 기존 프로젝트에는 atlas 신원 확인 뒤
+공용 예약 ID의 문서/킷만 갱신하며 tile priority/passability와 맵을 덮어쓰지 않는다.
+
+오브젝트 공용 카드의 복사는 일반 section-kit 복사를 사용하여 하위 받침과 상위 부품,
+32px 기하를 유지한다. 사용자 사본은 새 ID로 만들어 공용 갱신과 분리한다. 속성의
+「조립·배치 규칙」에서 설치 면·접근·반복/마감 계약을 읽는다.
+
+증거: `output/lpc-shared-organized-20260923/shared-proof.json`, 격리 작업트리의
+`output/shared-spatial-catalog/probe.mts`. 새 프로젝트 설치, 기존 규칙/맵 불변,
+두 지역의 전체 페이지 배열 일치, 가구 복사 레이어/크기 보존을 직접 확인했다.
+전체 테스트 게이트와 운영 배포 확인은 별도이며 이 기록으로 대체하지 않는다.
