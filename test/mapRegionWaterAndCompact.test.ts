@@ -48,6 +48,30 @@ describe("isMapWaterTile / waterBoundsInMap", () => {
     expect(result.summary).toContain("물");
   });
 
+  it("uses the active tileset rather than foreign water/tree numbers", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const tileset = structuredClone(project.tilesets[map.tilesetId]);
+    tileset.id = "custom-interior";
+    tileset.image = { type: "uploaded", id: "custom-atlas" };
+    tileset.tileMeta = [];
+    tileset.tileGroups = [];
+    tileset.palettePresets = [];
+    project.tilesets[tileset.id] = tileset;
+    map.tilesetId = tileset.id;
+    map.lowerTiles.fill(TILE.WATER);
+    map.upperTiles.fill(TILE.EMPTY);
+    map.upperTiles[0] = TILE.TREE;
+    const query = () => runTool({ project }, "get_map_region", { mapId: map.id, x: 0, y: 0, w: 2, h: 1 });
+    const unrelated = query().data as { water: { cellCount: number }; grid: string[] };
+    expect(unrelated.water.cellCount).toBe(0);
+    expect(unrelated.grid[0]).not.toMatch(/[~T]/);
+    tileset.tileMeta[TILE.WATER] = { label: "water", description: "", role: "water", source: "user" };
+    const explicit = query().data as { water: { cellCount: number }; grid: string[] };
+    expect(explicit.water.cellCount).toBe(2);
+    expect(explicit.grid[0]).toBe("~~");
+  });
+
   it("waterBoundsInMap matches painted water rectangle", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId]!;

@@ -8,6 +8,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
+import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
@@ -23,7 +24,7 @@ import {
   tileMetaLocked,
   tileMetaOrigin,
 } from "@/project/tilesetPalette";
-import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, Condition, EventPage, GameEvent, GameMap, Project, TilesetDef } from "@/project/types";
 import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan";
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
@@ -36,6 +37,14 @@ import { validateArgs } from "./jsonSchema";
 /** 호수/강 등 물 지형(레거시 WATER 상수 + 타일 그림판/오토타일). */
 export function isMapWaterTile(tile: number): boolean {
   return tile === TILE.WATER || isWaterChipsetTile(tile) || isLakeAutotileTile(tile);
+}
+
+/** Numeric chipset constants only describe the compatible bundled atlas. */
+function isWaterInTileset(map: GameMap, tileset: TilesetDef | undefined, tile: number): boolean {
+  if (tile < 0) return false;
+  if (!tileset) return (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID && isMapWaterTile(tile);
+  return tileCategoriesForTile(tileset, tile).includes("water")
+    || (isCombinedTownCompatibleTileset(tileset) && isMapWaterTile(tile));
 }
 
 // 커맨드 트리를 재귀 순회(fork/choices/loop 분기 포함).
@@ -104,9 +113,12 @@ function semanticChar(project: Project, map: GameMap, x: number, y: number, hasE
   const lower = map.lowerTiles[i] ?? TILE.EMPTY;
   const upper = map.upperTiles[i] ?? TILE.EMPTY;
   // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
-  if (isMapWaterTile(lower) || isMapWaterTile(upper)) return "~";
-  if (upper === TILE.TREE || lower === TILE.TREE) return "T";
-  if (lower === TILE.WALL) return "#";
+  const tileset = project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID];
+  if (isWaterInTileset(map, tileset, lower) || isWaterInTileset(map, tileset, upper)) return "~";
+  const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID;
+  if ((compatible && (upper === TILE.TREE || lower === TILE.TREE))
+    || (tileset && [lower, upper].some(tile => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
+  if (compatible && lower === TILE.WALL) return "#";
   return isPassable(project, map, x, y) ? "." : "#";
 }
 
@@ -117,6 +129,7 @@ export function waterBoundsInMap(
   y0: number,
   x1: number,
   y1: number,
+  tileset?: TilesetDef,
 ): { readonly cellCount: number; readonly x: number; readonly y: number; readonly w: number; readonly h: number } | null {
   let minX = Infinity;
   let minY = Infinity;
@@ -128,7 +141,7 @@ export function waterBoundsInMap(
       const i = y * map.width + x;
       const lower = map.lowerTiles[i] ?? TILE.EMPTY;
       const upper = map.upperTiles[i] ?? TILE.EMPTY;
-      if (!isMapWaterTile(lower) && !isMapWaterTile(upper)) continue;
+      if (!isWaterInTileset(map, tileset, lower) && !isWaterInTileset(map, tileset, upper)) continue;
       cellCount += 1;
       if (x < minX) minX = x;
       if (y < minY) minY = y;
@@ -188,7 +201,7 @@ const getMapRegion: ToolDefinition = {
           ...(catalog.characterId ? { characterId: catalog.characterId } : {}),
         };
       });
-    const water = waterBoundsInMap(map, x0, y0, x1, y1);
+    const water = waterBoundsInMap(map, x0, y0, x1, y1, project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID]);
     const area = Math.max(1, (x1 - x0) * (y1 - y0));
     const large = area > 24 * 24;
     const warnings: string[] = [];
