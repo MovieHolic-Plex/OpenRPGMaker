@@ -808,14 +808,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "gameOver":
         // RM2K3 Game Over: 전투를 패배로 즉시 종결. defeat 이후 처리(게임오버 vs 패배 복귀)는
         // canLose 의미론에 따라 호스트가 결정한다(battleRewardsToSession/playSceneBattle).
-        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.kind === "killPlayer" && command.message ? { message: command.message } : {}) };
+        // gameOver 에는 메시지 필드가 없다 — 문구는 선택한 게임 오버 정의가 정한다.
+        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId };
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "gameOver→defeat" });
         return "defeat";
       case "killPlayer":
         // killPlayer: 파티 전멸과 동일 의미 — 액터 HP 0 + defeat 종결(자연 패배 경로와 정합).
         for (const actor of options.actors) actor.hp = 0;
-        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.kind === "killPlayer" && command.message ? { message: command.message } : {}) };
+        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.message ? { message: command.message } : {}) };
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: ["killPlayer→defeat", command.message].filter(Boolean).join(" ") });
         return "defeat";

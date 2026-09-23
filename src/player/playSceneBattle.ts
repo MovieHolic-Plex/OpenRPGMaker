@@ -45,7 +45,7 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
 }
 
-type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController">
+type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController" | "showGameOverScreen">
   & Parameters<typeof dialogueHost>[0]
   & Partial<Pick<PlaySceneContext, "events" | "runtimeTimers">>
   & { readonly map: Pick<PlaySceneContext["map"], "height"> };
