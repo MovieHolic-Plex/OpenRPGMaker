@@ -7,8 +7,8 @@ import { openDialog } from './databaseEnemyRecordSupport';
 import { renderSpatialFilterDrawer } from './spatialFilterDrawer';
 import './spatialPlaceLibrary.css';
 const customCategories = new Set<string>();
-/** `extra` 는 셸이 가진 출처·쓰임 칩이다 — 같은 「필터」 서랍 안에 넣는다. */
-export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void, extra: { readonly nodes: readonly HTMLElement[]; readonly activeCount: number } = { nodes: [], activeCount: 0 }): HTMLElement {
+/** `extra` 는 셸이 가진 출처·쓰임 칩이다 — 같은 「필터」 서랍 안에 넣는다. `onSearch` 는 검색 칸을 남긴 채 목록만 다시 그린다. */
+export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void, extra: { readonly nodes: readonly HTMLElement[]; readonly activeCount: number; readonly onSearch?: () => void } = { nodes: [], activeCount: 0 }): HTMLElement {
   const values = cards.map(classifyPlaceCard), f = placeLibraryFilters;
   const update = () => { patchSpatialSession({ listView: true }); refresh(); };
   const select = (label: string, key: 'style' | 'environment' | 'purpose', options: readonly string[]) => {
@@ -16,7 +16,8 @@ export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[],
     input.value = f[key]; input.addEventListener('change', () => { f[key] = input.value; update(); }); return input;
   };
   const search = el('input', { value: f.search, attrs: { type: 'search', placeholder: '장소 이름·용도로 검색', 'aria-label': '장소 검색' }, dataset: { testid: 'place-filter-search' } });
-  search.addEventListener('input', () => { const pos = search.selectionStart; f.search = search.value; update(); const next = document.querySelector<HTMLInputElement>('[data-testid="place-filter-search"]'); next?.focus(); if (pos !== null) next?.setSelectionRange(pos, pos); });
+  // 셸 전체를 다시 그리면 입력 칸이 교체된다. 한글 IME 는 조합 중에 칸이 사라지면 글자를 잃는다.
+  search.addEventListener('input', () => { f.search = search.value; (extra.onSearch ?? update)(); });
   const tabs = el('div', { class: 'place-library-tabs', attrs: { role: 'tablist', 'aria-label': '장소 유형' } });
   for (const value of ['', ...new Set([...PLACE_CATEGORIES, ...customCategories, ...values.map(v => v.category)])]) {
     tabs.append(el('button', { text: value || '전체', class: value === f.category ? 'is-active' : '', attrs: { type: 'button', role: 'tab', 'aria-selected': String(value === f.category) }, on: { click: () => { f.category = value; update(); } } }));

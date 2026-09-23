@@ -1,7 +1,7 @@
 import { renderPlaceLibraryControls } from './spatialPlaceLibraryControls';
 import { renderRegionLibraryControls } from './spatialRegionLibraryControls';
 import { classifyPlaceCard, matchesPlaceClassification, resetPlaceLibraryFilters } from './spatialPlaceClassification';
-import { matchesRegionClassification } from './spatialRegionClassification';
+import { matchesRegionClassification, resetRegionLibraryFilters } from './spatialRegionClassification';
 import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
 import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
 import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
@@ -59,6 +59,9 @@ import {
 import type { SpatialGalleryCard as GalleryCard } from "@/editor/panels/spatialCatalog";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
+
+/** 세계 탭 이름 검색. 셸을 다시 그리지 않으므로 한글 조합 중에도 입력 칸이 유지된다. */
+let worldGalleryQuery = "";
 
 export function renderSpatialAuthoringShell(
   host: HTMLElement,
@@ -168,10 +171,16 @@ export function renderSpatialAuthoringShell(
   const project = visibleAuthoringProject();
   // 기본 카탈로그 카드의 localId 는 라이브러리 설계 id 와 겹치므로 canonical 만 쓰임을 갖는다.
   const designIdOf = (card: GalleryCard): string | undefined => card.canonicalSource?.id;
-  const galleryCards = placesGallery
-    ? cards.filter((card) => (regionGallery ? matchesRegionClassification(card) : matchesPlaceClassification(card)) && matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
-    : regionGallery ? cards.filter(matchesRegionClassification)
-    : cards;
+  const visibleGalleryCards = (): readonly GalleryCard[] => {
+    const base = placesGallery
+      ? cards.filter((card) => (regionGallery ? matchesRegionClassification(card) : matchesPlaceClassification(card)) && matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
+      : regionGallery ? cards.filter(matchesRegionClassification)
+      : cards;
+    if (tab !== "worlds") return base;
+    const query = worldGalleryQuery.trim().toLocaleLowerCase();
+    if (!query) return base;
+    return base.filter((card) => `${card.name} ${card.subtitle ?? ""}`.toLocaleLowerCase().includes(query));
+  };
   const aiPlacedCount = placesGallery
     ? cards.filter((card) => designUsage(project, designIdOf(card)).ai > 0).length
     : 0;
@@ -228,52 +237,109 @@ export function renderSpatialAuthoringShell(
   ] }) : null;
   // 장소·지역 라이브러리는 출처·쓰임 칩을 「필터」 서랍으로 옮긴다(라이브러리 컨트롤이 받는다).
   const libraryFilters = placesGallery || regionGallery;
+  const listing = el("div", { class: "spatial-gallery-listing" });
+  const worldSearch = tab === "worlds" ? el("input", {
+    class: "asset-browser-search",
+    value: worldGalleryQuery,
+    attrs: { type: "search", placeholder: "세계 이름으로 검색", "aria-label": "세계 검색" },
+    dataset: { testid: "world-gallery-search" },
+  }) : null;
+  function galleryListing(galleryCards: readonly GalleryCard[]): HTMLElement {
+    if (galleryCards.length === 0) {
+      if (cards.length > 0) {
+        const narrowed = tab === "worlds" && worldGalleryQuery.trim().length > 0;
+        return el("div", {
+          class: "spatial-gallery-empty",
+          dataset: { testid: "spatial-gallery-empty" },
+          children: [
+            el("p", { class: "spatial-gallery-empty-title", text: narrowed ? "검색 결과가 없습니다" : "조건에 맞는 설계가 없습니다" }),
+            el("p", { class: "spatial-gallery-empty-body", text: narrowed ? "다른 이름으로 찾아 보세요." : "그림체·유형·공간 형태·용도 또는 쓰임 필터를 바꿔 보세요." }),
+            // 0건에서 빠져나갈 길을 준다 — 문구만 있고 초기화가 없으면 사용자가 손으로 되돌려야 했다.
+            el("button", {
+              class: "spatial-action", text: "필터 초기화",
+              attrs: { type: "button" },
+              dataset: { testid: "spatial-filter-reset" },
+              on: { click: () => {
+                resetPlaceLibraryFilters();
+                resetRegionLibraryFilters();
+                worldGalleryQuery = "";
+                usageChromeState.filter = "all";
+                usageChromeState.galleryScrollTop = 0;
+                refresh();
+              } },
+            }),
+          ],
+        });
+      }
+      const copy = spatialGalleryEmptyCopy(session.mode, session.tab);
+      return el("div", {
+        class: "spatial-gallery-empty",
+        dataset: { testid: "spatial-gallery-empty" },
+        children: [
+          el("p", { class: "spatial-gallery-empty-title", text: copy.title }),
+          el("p", { class: "spatial-gallery-empty-body", text: copy.body }),
+        ],
+      });
+    }
+    return el("div", {
+      class: "spatial-gallery-grid",
+      children: placesGallery
+        ? galleryCards.map(renderCell)
+        : galleryCards.map((card) => renderSpatialGalleryCard(card, card.id === selected?.id, onSelect)),
+    });
+  }
+  function bindGalleryScroll(): void {
+    const grid = listing.querySelector<HTMLElement>(".spatial-gallery-grid");
+    if (!grid || !(placesGallery || regionGallery)) return;
+    grid.scrollTop = usageChromeState.galleryScrollTop;
+    grid.addEventListener("scroll", () => {
+      usageChromeState.galleryScrollTop = grid.scrollTop;
+      hidePlaceHover();
+    }, { passive: true });
+    if (usageChromeState.openPopoverCardId !== null) {
+      listing.querySelector<HTMLElement>('[data-testid="spatial-usage-popover"]')?.scrollIntoView({ block: "nearest" });
+    }
+  }
+  // libraryControls 는 아래에서 만든다. 검색 콜백은 그 뒤에만 호출된다.
+  let libraryControls: HTMLElement | null = null;
+  function paintListing(updateCount: boolean): void {
+    listing.replaceChildren(galleryListing(visibleGalleryCards()));
+    if (updateCount && libraryControls) {
+      const count = libraryControls.querySelector<HTMLElement>(`[data-testid='${regionGallery ? "region-library-count" : "place-library-count"}']`);
+      if (count) {
+        const total = cards.filter(regionGallery ? matchesRegionClassification : matchesPlaceClassification).length;
+        count.textContent = `${total}개`;
+      }
+    }
+    bindGalleryScroll();
+    if (updateCount && placesGallery && !regionGallery) retargetPlaceHover();
+  }
+  const repaintSearch = (): void => {
+    usageChromeState.galleryScrollTop = 0;
+    paintListing(true);
+  };
+  if (worldSearch) worldSearch.addEventListener("input", () => {
+    worldGalleryQuery = worldSearch.value;
+    usageChromeState.galleryScrollTop = 0;
+    paintListing(false);
+  });
   const drawerExtra = {
     nodes: [sourceChips, ...(usageChips ? [usageChips] : [])],
     activeCount: (session.source !== "all" ? 1 : 0) + (placesGallery && usageChromeState.filter !== "all" ? 1 : 0),
+    onSearch: repaintSearch,
   };
+  libraryControls = libraryFilters
+    ? (regionGallery ? renderRegionLibraryControls(cards, refresh, drawerExtra) : renderPlaceLibraryControls(cards, refresh, drawerExtra))
+    : null;
   const gallery = el("div", {
     class: "spatial-gallery",
     dataset: { testid: "spatial-gallery" },
     children: [
-      ...(libraryFilters ? [] : [el("div", { class: "spatial-gallery-filters", children: [sourceChips] })]),
-      galleryCards.length === 0
-        ? (() => {
-          if (cards.length > 0) {
-            return el("div", {
-              class: "spatial-gallery-empty",
-              dataset: { testid: "spatial-gallery-empty" },
-              children: [
-                el("p", { class: "spatial-gallery-empty-title", text: "조건에 맞는 설계가 없습니다" }),
-                el("p", { class: "spatial-gallery-empty-body", text: "그림체·유형·공간 형태·용도 또는 쓰임 필터를 바꿔 보세요." }),
-                // 0건에서 빠져나갈 길을 준다 — 문구만 있고 초기화가 없으면 사용자가 손으로 되돌려야 했다.
-                el("button", {
-                  class: "spatial-action", text: "필터 초기화",
-                  attrs: { type: "button" },
-                  dataset: { testid: "spatial-filter-reset" },
-                  on: { click: () => { resetPlaceLibraryFilters(); usageChromeState.filter = "all"; usageChromeState.galleryScrollTop = 0; refresh(); } },
-                }),
-              ],
-            });
-          }
-          const copy = spatialGalleryEmptyCopy(session.mode, session.tab);
-          return el("div", {
-            class: "spatial-gallery-empty",
-            dataset: { testid: "spatial-gallery-empty" },
-            children: [
-              el("p", { class: "spatial-gallery-empty-title", text: copy.title }),
-              el("p", { class: "spatial-gallery-empty-body", text: copy.body }),
-            ],
-          });
-        })()
-        : el("div", {
-          class: "spatial-gallery-grid",
-          children: placesGallery
-            ? galleryCards.map(renderCell)
-            : galleryCards.map((card) => renderSpatialGalleryCard(card, card.id === selected?.id, onSelect)),
-        }),
+      ...(libraryFilters ? [] : [el("div", { class: "spatial-gallery-filters", children: [...(worldSearch ? [worldSearch] : []), sourceChips] })]),
+      listing,
     ],
   });
+  paintListing(false);
 
   // 목록만 보는 동안 장소·지역·세계 맵을 컴파일하지 않는다. 상세를 열면 스테이지가 그린다.
   const deferDetailStage = session.mode === "design" && !session.legacyOrigin && !session.inspectorOpen
@@ -302,7 +368,7 @@ export function renderSpatialAuthoringShell(
     children: [chrome, placesGallery || regionGallery
       ? el("div", { class: "spatial-shell-main", children: [
         ...(getEditorUiMode() === "expert" ? [] : [purposeBand(regionGallery ? "regions" : "places")]),
-        regionGallery ? renderRegionLibraryControls(cards, refresh, drawerExtra) : renderPlaceLibraryControls(cards, refresh, drawerExtra),
+        ...(libraryControls ? [libraryControls] : []),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })
       : el("div", { class: `spatial-body${deferDetailStage ? " is-library-only" : ""}`, children: [gallery, stage] })],
@@ -312,22 +378,6 @@ export function renderSpatialAuthoringShell(
   installSpatialEscapeLayer();
   host.append(shell);
   if (placesGallery && !regionGallery) retargetPlaceHover();
-  // 셸은 리프레시마다 통째로 다시 만들어져 스크롤이 0 으로 돌아간다. 장소 갤러리에서는 그러면
-  // 카드 액션을 누른 사용자가 목록 맨 위로 튕기고, 카드 아래에 붙는 배치 팝오버는 화면 밖에 남는다.
-  // 다른 탭은 이 기억을 쓰지 않는다 — 탭을 오가며 남의 목록 위치가 복원되면 안 된다.
-  const grid = shell.querySelector<HTMLElement>(".spatial-gallery-grid");
-  if (grid) {
-    if (placesGallery || regionGallery) {
-      grid.scrollTop = usageChromeState.galleryScrollTop;
-      grid.addEventListener("scroll", () => {
-        usageChromeState.galleryScrollTop = grid.scrollTop;
-        hidePlaceHover();
-      }, { passive: true });
-      if (usageChromeState.openPopoverCardId !== null) {
-        shell.querySelector<HTMLElement>('[data-testid="spatial-usage-popover"]')?.scrollIntoView({ block: "nearest" });
-      }
-    }
-  }
 }
 
 let latestShellRefresh: (() => void) | null = null;
