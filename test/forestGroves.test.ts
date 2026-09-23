@@ -2,11 +2,14 @@ import { describe, expect, it } from "vitest";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import { paintForestGroves } from "@/editor/tools/village/forestGroves";
+import { paintContouredForest, refitForestTrunks } from "@/editor/tools/village/forestContour";
+import { forestTrunkCandidates } from "@/editor/tools/village/forestTrunkTiles";
 import { prepareVillageTreeKit } from "@/editor/tools/village/treeKit";
 import { createForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 import { ensureForestGroveTileset, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
 import { isPassable } from "@/project/collision";
 import { deserialize, serialize } from "@/project/io";
+import type { GameMap } from "@/project/types";
 
 it("appends reference canopy after user extensions without modifying original slots", () => {
   const tileset = createForestHarmonyTileset();
@@ -67,5 +70,62 @@ describe("reference forest grammar", () => {
     const result = paintForestGroves(map, { x: 5, y: 4, w: 2, h: 8 }, kit.grove!, () => true, 7, 1);
     expect(result.cells.size).toBe(0);
     expect(map).toEqual(before);
+  });
+});
+
+describe("whole trunks under every canopy edge", () => {
+  const ROW0 = new Set([1422, 1423, 1424, 1425, 1350, 1453, 1454, 1455]);
+  const LOWER_ROWS = new Set([1426, 1427, 1428, 1429, 1457, 1458, 1459, 1430, 1431, 1432, 1433, 1461, 1462, 1463]);
+
+  const blank = (width: number, height: number) => ({ id: "wood", name: "wood", width, height, tileSize: 16,
+    tilesetId: "forest_harmony", lowerTiles: Array(width * height).fill(240), upperTiles: Array(width * height).fill(-1), events: [] }) as unknown as GameMap;
+  const grove = () => {
+    const tileset = createForestHarmonyTileset();
+    ensureForestGroveTileset(tileset);
+    return tileset.autotileGroups!.find(group => group.id === FOREST_GROVE_GROUP)!;
+  };
+
+  it("fits roots exactly as wide as the edge from two cells, ending in whole trees", () => {
+    expect(forestTrunkCandidates(3, 1)).toEqual([]);
+    for (let width = 2; width <= 12; width++) {
+      const [candidate, ...rest] = forestTrunkCandidates(3, width);
+      expect(rest).toEqual([]);
+      expect(candidate!.x).toBe(3);
+      expect(candidate!.rows.map(row => row.length)).toEqual([width, width, width]);
+      expect(candidate!.rows.map(row => [row[0], row[width - 1]])).toEqual([[1422, 1455], [1426, 1459], [1430, 1463]]);
+    }
+  });
+
+  it("never leaves a root under a canopy tile or a half trunk at a run's end", () => {
+    const map = blank(72, 56), group = grove();
+    const canopy = new Set(Object.values(group.variantMap));
+    for (const seed of [3, 17, 91]) {
+      map.lowerTiles.fill(240); map.upperTiles.fill(-1);
+      const result = paintContouredForest(map, { x: 0, y: 0, w: 72, h: 56 }, group, () => true, seed, 0.55);
+      expect(result.trunkRuns).toBeGreaterThan(5);
+      map.lowerTiles.forEach((tile, index) => {
+        const x = index % map.width;
+        if (LOWER_ROWS.has(tile)) expect(canopy.has(map.upperTiles[index]!)).toBe(false);
+        if (!ROW0.has(tile)) return;
+        expect(canopy.has(map.upperTiles[index]!)).toBe(true);
+        if (!ROW0.has(map.lowerTiles[index - 1]!) || x === 0) expect(tile).toBe(1422);
+        if (!ROW0.has(map.lowerTiles[index + 1]!) || x === map.width - 1) expect(tile).toBe(1455);
+      });
+    }
+  });
+
+  it("re-fits old 4-wide caps in place, keeping the canopy", () => {
+    const map = blank(24, 16), group = grove(), ground = 240;
+    const at = (x: number, y: number) => y * map.width + x;
+    for (let y = 2; y <= 5; y++) for (let x = 6; x <= 10; x++) map.upperTiles[at(x, y)] = group.variantMap["255"]!;
+    // The old painter's 4-wide cap under a 5-wide edge: its last column is half a trunk.
+    [[1422, 1423, 1424, 1425], [1426, 1427, 1428, 1429], [1430, 1431, 1432, 1433]]
+      .forEach((row, dy) => row.forEach((tile, dx) => { map.lowerTiles[at(6 + dx, 5 + dy)] = tile; }));
+    const report = refitForestTrunks(map, { x: 0, y: 0, w: 24, h: 16 }, group, ground,
+      (x, y) => map.lowerTiles[at(x, y)] === ground && map.upperTiles[at(x, y)] === -1);
+    expect(report.canopyCells).toBe(20);
+    expect([5, 6, 7].map(y => map.lowerTiles.slice(at(6, y), at(11, y)))).toEqual([
+      [1422, 1423, 1424, 1454, 1455], [1426, 1427, 1428, 1458, 1459], [1430, 1431, 1432, 1462, 1463]]);
+    expect(map.upperTiles.filter(tile => tile !== -1)).toHaveLength(20);
   });
 });

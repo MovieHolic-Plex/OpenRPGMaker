@@ -1,7 +1,8 @@
 import data from "@/assets/climateVillageTilesets.json";
 import saved from "@/assets/sharedClimateVillageReferences.json";
 import type { TilesetDef } from "../types";
-import type { TilesetReferenceCategory } from "../tilesetReferences";
+import { referenceRevision, type TilesetReferenceCategory } from "../tilesetReferences";
+import previousReferences from "../../../tiledata/climate-villages/previous-reference.json";
 
 // Snow, volcano, desert and autumn repaints of the diverse forest-village sheet (scripts/content/build-climate-chipsets.py).
 // Tile numbers match forest_harmony (grafts baked in); the snow sheet appends frozen copies of the water tiles.
@@ -43,12 +44,19 @@ export function createClimateVillageTileset(kind: ClimateVillageKind): TilesetDe
   return tileset;
 }
 
-/** Add the shipped climate guidance once; authored or shared-from categories are left alone. */
+/** Add the shipped climate guidance once and retire unedited older revisions; authored or shared-from categories are left alone. */
 export function ensureClimateVillageReferences(tileset: TilesetDef): boolean {
   const category = CATEGORY_BY_TILESET[tileset.id];
   const kind = tileset.image.type === "bundled" ? CLIMATE_VILLAGE_TEXTURES[tileset.image.id] : undefined;
   if (!category || !kind || CLIMATES[kind].id !== tileset.id || tileset.referenceSourceTilesetId) return false;
-  if ((tileset.referenceDocuments ?? []).some(c => c.id === category.id)) return false;
-  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), structuredClone(category)];
+  // Retire exact shipped revisions only; keep any locally edited guidance.
+  const kept = (tileset.referenceDocuments ?? []).filter(c => {
+    const previous = previousReferences.find(p => p.id === c.id);
+    return !previous || previous.revision !== referenceRevision(c);
+  });
+  const retired = kept.length !== (tileset.referenceDocuments ?? []).length;
+  if (retired) tileset.referenceDocuments = kept;
+  if (kept.some(c => c.id === category.id)) return retired;
+  tileset.referenceDocuments = [...kept, structuredClone(category)];
   return true;
 }

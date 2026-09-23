@@ -72,8 +72,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "cut-root",
     "mapId": "terrace-cliff-village",
-    "x": 62,
-    "y": 12,
+    "x": 64,
+    "y": 5,
     "layer": "lower",
     "tile": 1430,
     "replacement": 240
@@ -85,8 +85,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "cut-root",
-        "x": 62,
-        "y": 12,
+        "x": 64,
+        "y": 5,
         "layer": "lower",
         "expected": 1430,
         "actual": 240
@@ -106,8 +106,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "missing-trunk",
     "mapId": "terrace-cliff-village",
-    "x": 62,
-    "y": 11,
+    "x": 23,
+    "y": 8,
     "layer": "lower",
     "tile": 1426,
     "replacement": 240
@@ -119,8 +119,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "missing-trunk",
-        "x": 62,
-        "y": 11,
+        "x": 23,
+        "y": 8,
         "layer": "lower",
         "expected": 1426,
         "actual": 240
@@ -140,8 +140,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "wrong-edge-direction",
     "mapId": "terrace-cliff-village",
-    "x": 62,
-    "y": 10,
+    "x": 66,
+    "y": 17,
     "layer": "upper",
     "tile": 2577,
     "replacement": 2589
@@ -153,8 +153,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "wrong-edge-direction",
-        "x": 62,
-        "y": 10,
+        "x": 66,
+        "y": 17,
         "layer": "upper",
         "expected": 2577,
         "actual": 2589
@@ -423,7 +423,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "result": {
     "valid": false,
     "mapId": "pine-hamlets",
-    "totalErrors": 78,
+    "totalErrors": 69,
     "errors": [
       {
         "code": "wrong-edge-direction",
@@ -434,14 +434,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "missing-trunk",
-        "x": 3,
-        "y": 18,
-        "layer": "lower",
-        "expected": 1422,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 3,
         "y": 18,
@@ -450,28 +442,12 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "missing-trunk",
-        "x": 4,
-        "y": 18,
-        "layer": "lower",
-        "expected": 1423,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 4,
         "y": 18,
         "layer": "upper",
         "expected": 2568,
         "actual": -1
-      },
-      {
-        "code": "missing-trunk",
-        "x": 5,
-        "y": 18,
-        "layer": "lower",
-        "expected": 1424,
-        "actual": 240
       },
       {
         "code": "wrong-edge-direction",
@@ -486,7 +462,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 6,
         "y": 18,
         "layer": "lower",
-        "expected": 1425,
+        "expected": 1422,
         "actual": 240
       },
       {
@@ -502,7 +478,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 7,
         "y": 18,
         "layer": "lower",
-        "expected": 1350,
+        "expected": 1423,
         "actual": 240
       },
       {
@@ -518,7 +494,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 8,
         "y": 18,
         "layer": "lower",
-        "expected": 1453,
+        "expected": 1424,
         "actual": 240
       },
       {
@@ -570,14 +546,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "missing-trunk",
-        "x": 3,
-        "y": 19,
-        "layer": "lower",
-        "expected": 1426,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 3,
         "y": 19,
@@ -586,28 +554,12 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "missing-trunk",
-        "x": 4,
-        "y": 19,
-        "layer": "lower",
-        "expected": 1427,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 4,
         "y": 19,
         "layer": "upper",
         "expected": 2568,
         "actual": -1
-      },
-      {
-        "code": "missing-trunk",
-        "x": 5,
-        "y": 19,
-        "layer": "lower",
-        "expected": 1428,
-        "actual": 240
       },
       {
         "code": "wrong-edge-direction",
@@ -622,7 +574,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 6,
         "y": 19,
         "layer": "lower",
-        "expected": 1429,
+        "expected": 1426,
         "actual": 240
       },
       {
@@ -630,7 +582,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 7,
         "y": 19,
         "layer": "lower",
-        "expected": 1428,
+        "expected": 1427,
         "actual": 240
       },
       {
@@ -638,7 +590,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 8,
         "y": 19,
         "layer": "lower",
-        "expected": 1457,
+        "expected": 1428,
         "actual": 240
       },
       {
@@ -666,14 +618,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "cut-root",
-        "x": 3,
-        "y": 20,
-        "layer": "lower",
-        "expected": 1430,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 3,
         "y": 20,
@@ -682,28 +626,12 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "cut-root",
-        "x": 4,
-        "y": 20,
-        "layer": "lower",
-        "expected": 1431,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 4,
         "y": 20,
         "layer": "upper",
         "expected": 2568,
         "actual": -1
-      },
-      {
-        "code": "cut-root",
-        "x": 5,
-        "y": 20,
-        "layer": "lower",
-        "expected": 1432,
-        "actual": 240
       },
       {
         "code": "wrong-edge-direction",
@@ -718,7 +646,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 6,
         "y": 20,
         "layer": "lower",
-        "expected": 1433,
+        "expected": 1430,
         "actual": 240
       },
       {
@@ -726,7 +654,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 7,
         "y": 20,
         "layer": "lower",
-        "expected": 1432,
+        "expected": 1431,
         "actual": 240
       },
       {
@@ -734,7 +662,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 8,
         "y": 20,
         "layer": "lower",
-        "expected": 1461,
+        "expected": 1432,
         "actual": 240
       },
       {

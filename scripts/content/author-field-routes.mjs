@@ -301,7 +301,11 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       }
       if (!open && comp.length < 40) comp.forEach((i) => sealed.add(i));
     }
-    for (const i of sealed) { m.upperTiles[i] = groveGroup.variantMap["255"]; m.lowerTiles[i] = GROUND; }
+    for (const i of sealed) {
+      m.upperTiles[i] = groveGroup.variantMap["255"]; m.lowerTiles[i] = GROUND;
+      // The root row under the canopy above belonged to the trunks just buried: take it too.
+      for (let j = i - W; j >= 0 && trunk(m.lowerTiles[j]) && canopy.has(m.upperTiles[j]); j -= W) m.lowerTiles[j] = GROUND;
+    }
     for (const i of sealed) for (const [dx, dy] of [[0, 0], ...neighbors]) {
       const x = i % W + dx, y = Math.floor(i / W) + dy;
       if (!isCanopy(x, y)) continue;

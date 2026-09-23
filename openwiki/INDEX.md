@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **85쪽 / 3335KB / 약 950,606 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **85쪽 / 3340KB / 약 952,236 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -1380,7 +1380,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 31KB · 437줄 · ~8,733 토큰
+### `openwiki/spatial-geography-ui.md` — 31KB · 437줄 · ~8,740 토큰
 
 - `L9` Public modules
 - `L27` Regions gallery contract (2026-09-22)
@@ -1621,7 +1621,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 16px 병행판 (2026-09-22)
   - `L325` 픽셀 크기 기록 계약 (2026-09-22)
 
-### `openwiki/tileset-reference-documents.md` — 32KB · 355줄 · ~9,746 토큰
+### `openwiki/tileset-reference-documents.md` — 37KB · 398줄 · ~11,369 토큰
 
 - `L5` 사용자 경로와 정본
 - `L22` 타일 화면 구성 (2026-09-21)
@@ -1648,6 +1648,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L312` 강과 폭포 개정9 (2026-09-23)
   - `L324` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
   - `L340` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+  - `L356` 기후 마을 · 설원·화산 (2026-09-23)
+  - `L369` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+  - `L382` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 

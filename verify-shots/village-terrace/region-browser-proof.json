@@ -39,6 +39,58 @@
       ],
       "downloadExact": true,
       "filename": "download"
+    },
+    {
+      "id": "chapel-hill-parish-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true,
+      "filename": "download"
+    },
+    {
+      "id": "ford-castle-town-100x92",
+      "aiRowsExact": true,
+      "preview": [
+        1600,
+        1472
+      ],
+      "downloadExact": true,
+      "filename": "download"
+    },
+    {
+      "id": "mistpond-hollow-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true,
+      "filename": "download"
+    }
+  ],
+  "places": [
+    {
+      "id": "twin-falls-river-village-place-88x72",
+      "aiRowsExact": true,
+      "card": true
+    },
+    {
+      "id": "chapel-hill-parish-place-80x64",
+      "aiRowsExact": true,
+      "card": true
+    },
+    {
+      "id": "ford-castle-town-place-100x92",
+      "aiRowsExact": true,
+      "card": true
+    },
+    {
+      "id": "mistpond-hollow-place-80x64",
+      "aiRowsExact": true,
+      "card": true
     }
   ],
   "activeProjectUnchanged": true,
