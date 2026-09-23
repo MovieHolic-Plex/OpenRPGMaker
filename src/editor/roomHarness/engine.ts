@@ -126,6 +126,18 @@ function measureMapAuthoring(map: { lowerTiles: number[]; upperTiles: number[]; 
 }
 
 /**
+ * 저작 흔적이 없는 맵: 방 하네스 플랜 없음(진행 중인 세션 맵이 아님), 이벤트 0,
+ * 아래층은 한 종류 타일(또는 비어 있음), 윗층은 비어 있음.
+ */
+function isPristineBlankMap(map: { lowerTiles: number[]; upperTiles: number[]; events: unknown[]; roomHarnessPlan?: unknown }): boolean {
+  if (map.roomHarnessPlan !== undefined) return false;
+  if (map.events.length > 0) return false;
+  if (map.upperTiles.some(tile => tile > 0)) return false;
+  const lower = new Set(map.lowerTiles.filter(tile => tile > 0));
+  return lower.size <= 1;
+}
+
+/**
  * **기존 맵 무음 교체 차단** (2026-08-29 modify 진단 근본원인 1).
  *
  * `project.maps[mapId] = kit.createEmptyMap(plan)` 은 존재 검사가 없었다. 실측: 타일 300칸 +
@@ -136,9 +148,23 @@ function measureMapAuthoring(map: { lowerTiles: number[]; upperTiles: number[]; 
  *
  * `replaceExisting:true` 를 명시하면 통과시키되 무엇을 버렸는지 실수치로 경고에 남긴다.
  */
+/** 이어받는 빈 맵의 이름 — name 인자를 생략하면 create_map 때 붙인 장소 이름을 킷 기본 이름으로 덮지 않는다. */
+function inheritedBlankMapName(project: Project, mapId: string, args: Record<string, unknown>): string | undefined {
+  const existing = project.maps[mapId];
+  if (!existing || args.replaceExisting === true || !isPristineBlankMap(existing)) return undefined;
+  if (typeof args.name === "string" && args.name.trim()) return undefined;
+  return existing.name?.trim() || undefined;
+}
+
 function guardExistingMap(project: Project, mapId: string, args: Record<string, unknown>): string[] {
   const existing = project.maps[mapId];
   if (!existing) return [];
+  if (args.replaceExisting !== true && isPristineBlankMap(existing)) {
+    // create_map 으로 자리만 잡아 둔 맵(이벤트 0, 한 가지 바닥 타일, 윗층 없음)은 잃을 저작물이 없다.
+    // 예전에는 여기서 map-exists 로 막아 모델이 다른 mapId 로 새 방을 만들었고, 같은 이름의 빈 맵이
+    // 고아로 남았다(2026-09-23 등대지기 재시험: 「서리불꽃 등대 꼭대기」 20×15 빈 맵 + 실제 20×16).
+    return [`create_map 으로 만든 빈 맵 ${mapId}(${existing.width}×${existing.height}, 이벤트 0)를 이어받아 방을 시공했습니다.`];
+  }
   if (args.replaceExisting !== true) {
     throw new ToolError(
       `이미 존재하는 맵입니다: ${mapId} — 기존 실내/방 맵을 고치려면 그 맵을 대상으로 `
@@ -183,9 +209,11 @@ export function startRoomSession(project: Project, kitId: string, args: Record<s
   const checklist: RoomSession["checklist"] = Object.fromEntries(
     kit.buildOrder.map((l) => [l, l === "plan" ? "done" : "open"]),
   );
+  const keptName = inheritedBlankMapName(project, mapId, args);
   const replaceWarnings = guardExistingMap(project, mapId, args);
   assertRoomPlanSize(mapId, plan);
   const map = kit.createEmptyMap(plan);
+  if (keptName) map.name = keptName;
   project.maps[mapId] = map;
   stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
   registerMapInTree(project, mapId);
@@ -427,9 +455,11 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   }
   plan = kit.preparePlan?.(plan, project) ?? plan;
   const mapId = kit.mapIdOf(plan);
+  const keptName = inheritedBlankMapName(project, mapId, args);
   const replaceWarnings = guardExistingMap(project, mapId, args);
   assertRoomPlanSize(mapId, plan);
   const result = kit.runPipeline(plan, project);
+  if (keptName) result.map.name = keptName;
   project.maps[mapId] = result.map;
   stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
   registerMapInTree(project, mapId);

@@ -4,12 +4,40 @@ import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/e
 import { collectEndingWarnings } from "@/project/endings";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
-import type { EndingCondition, EndingDef, Project } from "@/project/types";
+import type { Command, EndingCondition, EndingDef, Project } from "@/project/types";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { CONDITION_SCHEMA, CUTSCENE_BEAT_SCHEMA } from "./schemaShapes";
 
 const VARIABLE_OPS = new Set(["==", ">=", "<=", ">", "<", "!="]);
+
+function commandsTriggerEnding(commands: readonly Command[] | undefined): boolean {
+  for (const command of commands ?? []) {
+    if (!command || typeof command !== "object") continue;
+    if (command.kind === "triggerEnding") return true;
+    let nested: readonly (readonly Command[])[] = [];
+    try { nested = nestedCommandLists(command); } catch { nested = []; }
+    if (nested.some(list => commandsTriggerEnding(list))) return true;
+  }
+  return false;
+}
+
+/**
+ * 엔딩을 정의해도 이벤트의 triggerEnding 이 없으면 실행되지 않는다. 등대지기 재시험(2026-09-23)에서
+ * 구출 후 대사가 끝나도 게임이 끝나지 않았다 — 정의·호출 중 호출이 빠진 부류라 정의 시점에 알린다.
+ */
+function projectTriggersEnding(project: Project): boolean {
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      if (commandsTriggerEnding(event.commands)) return true;
+      if ((event.pages ?? []).some(page => commandsTriggerEnding(page.commands))) return true;
+    }
+  }
+  if ((project.commonEvents ?? []).some(common => commandsTriggerEnding(common.commands))) return true;
+  return (project.database?.troops ?? []).some(troop =>
+    (troop.battleEventPages ?? []).some(page => commandsTriggerEnding(page.commands)));
+}
 
 const defineEnding: ToolDefinition = {
   name: "define_ending",
@@ -69,7 +97,14 @@ const defineEnding: ToolDefinition = {
     const index = draft.endings.findIndex((entry) => entry.id === id);
     if (index >= 0) draft.endings[index] = ending;
     else draft.endings.push(ending);
-    const warnings = [...flagWarnings, ...collectEndingWarnings(draft.endings)];
+    const warnings = [
+      ...flagWarnings,
+      ...collectEndingWarnings(draft.endings),
+      ...(projectTriggersEnding(draft) ? [] : [
+        "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 "
+          + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`,
+      ]),
+    ];
     return {
       summary: `엔딩 '${name}' 정의 ${index >= 0 ? "수정" : "추가"} — 조건 ${conditions.length}개, priority ${priority}. 이벤트 commands의 triggerEnding 호출이 있어야 실행됩니다.`,
       data: { ending, warnings },
