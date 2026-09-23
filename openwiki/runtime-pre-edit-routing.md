@@ -314,6 +314,11 @@ Do not use matching map IDs or a canvas-export PNG alone as evidence for Phaser 
 - **프로젝트 기본 카메라 배율 system.cameraZoom(2026-09-22).** 줌은 원래 연출 상태(session.camera.zoom, 이벤트 명령 m2-201)로만 존재했다. 그래서 고해상도 배경을 1:1로 쓰려면 맵마다 auto 이벤트를 심어 줌을 걸어야 했고 새 맵에서는 1로 돌아갔다. 이제 기본값은 프로젝트가 정하고(생략=1, 1은 저장 안 함) 연출 명령은 그 위에 일시적으로 덮어쓴다.
 - 적용 지점: applyStoredCameraState 가 세션 상태가 없을 때 resolveCameraZoom(store.system) 을 쓴다(예전에는 centerRuntimeCamera가 1로 리셋한 값이 그대로 남았다). 배율 범위의 정본은 src/project/cameraZoom.ts(CAMERA_ZOOM_LIMITS 0.25~6)이고 런타임이 그것을 import 한다 — 둘이 달라지면 「저장은 됐는데 플레이에서는 다른 배율」이 된다.
 - AI: set_project_settings.cameraZoom(0.25~6). 해상도와 함께 서야 시야가 유지된다 — 1440x1080 + 4.5 → 20x15타일(320x240과 동일). 증거: verify-shots/layer-set-picker/SYSTEMZOOM-*.
+- **파노라마는 창 타일에서만 보인다 — RM2K 방식으로 바꿨다(2026-09-22).** 이전에는 하층 타일이 없는 칸이 전부 뚫린 창이 되어 배경이 다 보였다. RM2K 는 반대다: 배경은 레이어 뒤에 깔리고 **완전 투명 타일(파노라마 창)을 깐 칸에서만** 비치며 빈 칸은 가려진다.
+- 창 타일 정본: scripts/generateChipsetTransparency.mjs 가 알파가 모든 픽셀에서 0 인 칸을 따로 뽑는다 → COMBINED_TOWN_PANORAMA_WINDOW_TILES(합본 마을은 #233·#258 두 칸, 원래 "빈 슬롯"이던 자리). 판정은 isPanoramaWindowTile(chipsetMapping).
+- 가리기: playSceneMapRuntime 의 renderEmptyCellCover 가 하층이 비어 있고 창 타일도 없으면 카메라 배경색 사각형을 깐다(배경 -100k 위, 하층 타일 0 아래). 빈 칸이 있는 맵에서만 만들고 컬링 추적에 넣는다.
+- 인게임 실측(같은 행): 빈칸 (0,0,0) 검정 / 창233 (83,188,197) 하늘 / 잔디240 (84,176,67) 잔디. 증거 verify-shots/layer-set-picker/WINDOW-rm2k-panorama.gif.
+- 편집기 캔버스는 체커가 "바닥 없음" 신호라 이 계약을 그대로 그리지 않는다(미리보기 토글도 창 판정을 반영하지 않음) — 캔버스에서 창을 눈으로 확인하려면 별도 작업이 필요하다.
 - **아직 안 되는 것(알고 있어야 할 경계).**
   - 편집기 **캔버스**는 배경을 그리지 않는다. 빈 칸은 `editSceneRender.createEmptyTile` 의
     **불투명** 체커 사각형이고, 그 체커는 "여기 바닥이 없다" 를 보이게 하는 **의도된 신호**

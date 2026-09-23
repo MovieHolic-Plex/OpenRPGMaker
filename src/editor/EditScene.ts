@@ -1818,6 +1818,10 @@ export class EditScene extends PhaserRuntime.Scene {
     const specs = enabled && background
       ? [background, ...(background.layers ?? [])].filter((entry) => (entry.imageId ?? "").trim() !== "")
       : [];
+    // 편집기 캔버스는 플레이와 같은 계약을 따른다 — 배경은 **창 타일을 깐 칸에서만** 보이고
+    // 빈 칸은 가려진다(RM2K 방식, playSceneMapRuntime §renderEmptyCellCover). 캔버스는
+    // 체커가 "바닥 없음" 신호라 배경을 안 그리므로, 여기서는 스프라이트를 깔되 빈 칸 위에는
+    // 올리지 않는다 — 창 타일 칸에서만 보이게 하는 것이 그 규칙의 시각적 결과다.
     if (specs.length === 0) {
       this.clearMapBackgroundPreview();
       return;
