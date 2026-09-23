@@ -1,5 +1,5 @@
 import { DEFAULT_CHATGPT_BASE_URL } from "@/ai/llmClient";
-import { companionTokenHeaders } from "@/ai/companionToken";
+import { companionToken, companionTokenHeaders } from "@/ai/companionToken";
 import {
   DEFAULT_OH_MY_PI_PROVIDER,
   parseOhMyPiProvider,
