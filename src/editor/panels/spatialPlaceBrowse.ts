@@ -29,6 +29,7 @@ const cards = new Map<string, SpatialGalleryCard>();
 let lastActivation: { id: string; at: number } | null = null;
 let editorTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverTimer: ReturnType<typeof setTimeout> | null = null;
+let hoverHideTimer: ReturnType<typeof setTimeout> | null = null;
 let hoverEl: HTMLElement | null = null;
 let hoverAnchor: HTMLElement | null = null;
 let pointer = { x: 0, y: 0, known: false };
@@ -67,6 +68,12 @@ function trackPointer(): void {
   pointerTracked = true;
   document.addEventListener("pointermove", (event) => {
     pointer = { x: event.clientX, y: event.clientY, known: true };
+    if (!hoverEl || detailOpen) return;
+    if (pointerInsideHover(event.clientX, event.clientY) || pointerInsideAnchor(event.clientX, event.clientY)) {
+      cancelHoverHide();
+      return;
+    }
+    if (hoverHideTimer === null) scheduleHoverHide();
   }, { passive: true });
 }
 
@@ -76,28 +83,60 @@ export function bindPlaceCardBrowse(button: HTMLElement, card: SpatialGalleryCar
   button.classList.add("is-zoomable");
   button.dataset.placeZoom = card.id;
   button.removeAttribute("title");
-  button.addEventListener("pointerenter", () => scheduleHover(button, card));
+  button.addEventListener("pointerenter", (event) => {
+    if (event instanceof PointerEvent && pointerInsideHover(event.clientX, event.clientY)) return;
+    cancelHoverHide();
+    scheduleHover(button, card);
+  });
   button.addEventListener("pointerleave", () => {
     clearHoverTimer();
-    if (hoverAnchor === button) hidePlaceHover();
-  });
-  button.addEventListener("focus", () => showHover(button, card));
-  button.addEventListener("blur", () => {
-    if (hoverAnchor === button) hidePlaceHover();
+    scheduleHoverHide();
   });
 }
 
 export function hidePlaceHover(): void {
   clearHoverTimer();
+  cancelHoverHide();
+  hoverAnchor?.classList.remove("is-previewing");
   hoverAnchor?.removeAttribute("aria-describedby");
   hoverAnchor = null;
   hoverEl?.remove();
   hoverEl = null;
 }
 
+function pointerInsideHover(x: number, y: number): boolean {
+  return pointInElement(hoverEl, x, y);
+}
+
+function pointerInsideAnchor(x: number, y: number): boolean {
+  return pointInElement(hoverAnchor, x, y);
+}
+
+function pointInElement(node: HTMLElement | null, x: number, y: number): boolean {
+  if (!node?.isConnected) return false;
+  const rect = node.getBoundingClientRect();
+  return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+}
+
+function scheduleHoverHide(): void {
+  cancelHoverHide();
+  hoverHideTimer = setTimeout(() => {
+    hoverHideTimer = null;
+    if (pointerInsideHover(pointer.x, pointer.y)) return;
+    hidePlaceHover();
+  }, 140);
+}
+
+function cancelHoverHide(): void {
+  if (hoverHideTimer === null) return;
+  clearTimeout(hoverHideTimer);
+  hoverHideTimer = null;
+}
+
 /** 갤러리가 다시 그려진 뒤, 포인터 아래 카드면 확대 패널을 이어 붙인다. */
 export function retargetPlaceHover(): void {
   if (detailOpen || !pointer.known || typeof document === "undefined") return;
+  if (pointerInsideHover(pointer.x, pointer.y)) return;
   const hit = document.elementFromPoint(pointer.x, pointer.y);
   const button = hit instanceof Element ? hit.closest("[data-place-zoom]") : null;
   if (!(button instanceof HTMLElement)) {
@@ -170,10 +209,14 @@ function clearHoverTimer(): void {
 
 function showHover(button: HTMLElement, card: SpatialGalleryCard): void {
   if (detailOpen || !button.isConnected) return;
+  if (hoverAnchor === button && hoverEl?.isConnected) {
+    placeHover(hoverEl, button.getBoundingClientRect());
+    return;
+  }
   hidePlaceHover();
-  const host = overlayHost();
-  if (!host) return;
+  const host = document.body;
   hoverAnchor = button;
+  button.classList.add("is-previewing");
   const panel = el("div", {
     class: "spatial-place-hover",
     attrs: { id: "spatial-place-hover-tip", role: "tooltip" },

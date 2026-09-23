@@ -1045,30 +1045,18 @@
   box-sizing: border-box;
 }
 
-/* 장소 카드 — 호버는 칸 안에서 그림을 키우고, 옆에 잘리지 않은 확대 패널을 붙인다. */
-.database-modal-body .spatial-card.is-zoomable {
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-.database-modal-body .spatial-card.is-zoomable .spatial-card-thumb-slot {
-  transition: transform 180ms ease;
-  transform-origin: center;
-}
-.database-modal-body .spatial-card.is-zoomable:hover,
-.database-modal-body .spatial-card.is-zoomable:focus-visible {
+/* 장소 카드 — 칸 안을 확대해 자르지 않는다. 잘리지 않은 그림은 카드 밖 패널에만 둔다. */
+.database-modal-body .spatial-card.is-zoomable.is-previewing {
   border-color: var(--db-studio-accent-border);
   box-shadow: var(--db-studio-shadow-pop);
 }
-.database-modal-body .spatial-card.is-zoomable:hover .spatial-card-thumb-slot,
-.database-modal-body .spatial-card.is-zoomable:focus-visible .spatial-card-thumb-slot {
-  transform: scale(1.55);
-}
 
-.spatial-place-hover,
 .spatial-place-detail-backdrop {
   z-index: 40;
 }
 .spatial-place-hover {
   position: fixed;
+  z-index: var(--z-tooltip);
   width: min(360px, calc(100vw - 24px));
   pointer-events: none;
   border: 1px solid var(--db-studio-border-default);
@@ -1218,11 +1206,5 @@
   }
   .spatial-place-zoom-stage.is-detail {
     min-height: 180px;
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .database-modal-body .spatial-card.is-zoomable,
-  .database-modal-body .spatial-card.is-zoomable .spatial-card-thumb-slot {
-    transition: none;
   }
 }
