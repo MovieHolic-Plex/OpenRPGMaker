@@ -138,7 +138,10 @@ export function renderSpatialAuthoringShell(
     refresh();
   };
 
-  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && !session.listView && canUseCompositionWorkspace(selected.canonicalSource)) {
+  // 장소·지역 목록은 편집기를 열기 전에 설계를 컴파일하지 않는다. galleryCardId 가 없을 때
+  // canUseCompositionWorkspace 를 부르면 자식 없는 장소가 프로젝트 전체를 복제한다.
+  const libraryStillClosed = (tab === "places" || tab === "regions") && session.galleryCardId === null;
+  if (selected?.canonicalSource && !selected.regionMapId && tab !== "objects" && tab !== "tiles" && session.mode === "design" && !session.legacyOrigin && !session.listView && !libraryStillClosed && canUseCompositionWorkspace(selected.canonicalSource)) {
     const workspace = renderSpatialCompositionWorkspace(session, selected, refresh);
     workspace.addEventListener("keydown", event => handleShellKey(event, selected, refresh));
     latestShellRefresh = refresh; installSpatialEscapeLayer(); host.append(workspace); return;
@@ -166,7 +169,7 @@ export function renderSpatialAuthoringShell(
   // 기본 카탈로그 카드의 localId 는 라이브러리 설계 id 와 겹치므로 canonical 만 쓰임을 갖는다.
   const designIdOf = (card: GalleryCard): string | undefined => card.canonicalSource?.id;
   const galleryCards = placesGallery
-    ? cards.filter((card) => matchesPlaceClassification(card) && matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
+    ? cards.filter((card) => (regionGallery ? matchesRegionClassification(card) : matchesPlaceClassification(card)) && matchesUsageFilter(designUsage(project, designIdOf(card)), usageChromeState.filter))
     : regionGallery ? cards.filter(matchesRegionClassification)
     : cards;
   const aiPlacedCount = placesGallery
@@ -347,7 +350,7 @@ function purposeBand(tab: "places" | "regions"): HTMLElement {
   const arrow = (): HTMLElement => el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
   const copy = tab === "regions"
     ? { lead: "지역은 여러 장소를 이어 붙인 동네입니다", sub: "아래는 완성된 예시(읽기 전용)입니다", steps: ["예시 고르기", "상세 보기", "맵 파일 받기 · AI 참고"] }
-    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "올리면 그림이 커지고, 두 번 클릭하면 자세히 봅니다", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
+    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "올리면 크게 보고, 두 번 클릭하면 자세히 봅니다", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
   return el("div", {
     class: "spatial-purpose",
     dataset: { testid: "spatial-purpose" },
