@@ -352,3 +352,16 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
   `ensureRpgPlaceReferences`가 새 번들 타일셋 생성과 로드 보강 두 경로에서 한 번 넣는다.
 - 장소 항목 `FANTASY_PLACE_REFERENCES`(생성 파일), 스냅숏은 한 파일 `regionReferences/fantasy-places.json`(AI 읽기에 필요한 통행·우선순위만 담은 얇은 타일셋).
 - 순서: `author-rpg-places.mjs`(통행 검사 포함) → `render-rpg-places.mjs`(dev 서버) → `prepare-rpg-places-references.mjs` → `save-rpg-places.mjs` → `prepare-rpg-places-regions.mjs` → `scripts/qa/capture-rpg-places.mjs`. 근거 `verify-shots/rpg-places/`.
+
+### 기후 마을 · 설원·화산 (2026-09-23)
+
+번들 칩셋 둘 + 「장소」 완성 사례 6개(지형만). 정본 `tiledata/climate-villages/`(README에 재생성 순서), 로컬 정본 `.oprn-projects/climate-villages-20260923`.
+- 칩셋: 다양한 마을 타일셋(forest_harmony + 이식, 2730칸)을 한 장으로 구운 뒤 화소만 다시 칠했다(`build-climate-chipsets.py`). 칸 번호·통행·오토타일이 숲마을과 같아
+  숲마을 조립·문서를 그대로 쓰고, 숲마을 맵은 tilesetId만 바꾸면 기후판이 된다. 이식은 없다(구워져 있음).
+  - `forest_harmony_snow`(2868칸): 잔디→눈, 수관·지붕에 눈, 물은 그대로. 2730~는 물 138칸의 얼음 사본(걸을 수 있음, 폭포 사본만 불통), 오토타일 `forest_harmony_ice_47`.
+  - `forest_harmony_volcano`(2730칸): 잔디→재, 잎 그을림, 물 칸 전부 용암(통행 불가 그대로), 나무다리 2701·2702→현무암 다리.
+  - 물 판정은 색이 아니라 물 칸 번호 집합이다(색으로 하면 파란 지붕·청회색 성벽이 용암이 된다).
+- 타일셋 데이터 `src/assets/climateVillageTilesets.json`(공유 base + 기후별 라벨·얼음 patch), 생성자 `src/project/defaults/climateVillages.ts`.
+- 장소: 설원 솔바람 산촌·종탑 언덕 교구·얼어붙은 안개못(못 통째로 얼음 사본), 화산 두 폭포 용암 강마을·잿빛 여울성·용암못 폐촌(화산 봉우리 858/859/888/889 + 918/919/948/949 한 쌍).
+- 분류 `climate-snow-villages-v1`(18 MD·3 이미지)·`climate-volcano-villages-v1`(22·3), `ensureClimateVillageReferences`가 한 번만 넣는다(추가만).
+- 근거 `verify-shots/climate-villages/`(자료집 카드·AI 행 읽기·내려받기 일치, 편집기 캔버스 실제 로드).

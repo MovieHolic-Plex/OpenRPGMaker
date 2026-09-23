@@ -1,0 +1,72 @@
+{
+  "guidance": [
+    {
+      "tileset": "forest_harmony_snow",
+      "category": "climate-snow-villages-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony_volcano",
+      "category": "climate-volcano-villages-v1",
+      "present": true
+    }
+  ],
+  "places": [
+    {
+      "id": "climate-snow-pine-hamlets-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-snow-chapel-hill-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-snow-frozen-mistpond-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-volcano-twin-falls-88x72",
+      "aiRowsExact": true,
+      "preview": [
+        1408,
+        1152
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-volcano-ford-castle-100x92",
+      "aiRowsExact": true,
+      "preview": [
+        1600,
+        1472
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "climate-volcano-lava-pond-80x64",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1024
+      ],
+      "downloadExact": true
+    }
+  ],
+  "activeProjectUnchanged": true,
+  "errors": []
+}
