@@ -10,6 +10,8 @@ import fantasyPlaces from "./regionReferences/fantasy-places.json";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import climateVillages from "./regionReferences/climate-villages.json";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
+import fieldRoutes from "./regionReferences/field-routes.json";
+import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import type { GameMap, TilesetDef, UploadedAsset } from "./types";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 import courtyard from "./regionReferences/castle-courtyard.json";
@@ -118,6 +120,13 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
   if (climate) {
     const source = climateVillages as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
     const map = source.maps[climate.sourceMapId]!;
+    return { map, tileset: source.tilesets[map.tilesetId]! };
+  }
+  // Fields between villages likewise share one snapshot file.
+  const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (field) {
+    const source = fieldRoutes as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
+    const map = source.maps[field.sourceMapId]!;
     return { map, tileset: source.tilesets[map.tilesetId]! };
   }
   const ship = shipSource.maps[

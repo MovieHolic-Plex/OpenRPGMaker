@@ -1,6 +1,6 @@
 // Tileset data for the two climate sheets (build-climate-chipsets.py) → src/assets/climateVillageTilesets.json.
 // One shared base (the diverse forest-village tileset without grafts: they are baked into the sheets) plus a small
-// patch per climate: renamed labels, the snow sheet's appended ice tiles and its ice autotile.
+// patch per climate: renamed labels, the snow sheet's appended ice tiles and its ice autotile. Climates: snow, volcano, desert, autumn.
 // Usage: node scripts/content/prepare-climate-tilesets.mjs
 import fs from "node:fs";
 import assert from "node:assert/strict";
@@ -76,6 +76,16 @@ for (const t of sheets.volcano.stoneBridges) {
   volcanoMeta[t] = { ...TS.tileMeta[t], label: label(t).replace("나무다리", "현무암 다리"), description: "화산판에서는 용암 위를 건너는 검은 돌다리로 칠해져 있다. 통행은 원래 나무다리와 같다." };
 }
 
+// ── desert: sand ground, dry scrub for leaves, sandstone cliffs, clay roofs; water stays as oasis water ──
+const desertMeta = relabel({ tree: "마른", roof: "흙빛", ground: "모래 덮인" }, "사막판 색으로 칠해져 있다(칸 번호·통행은 숲마을과 같다).");
+for (const t of sheets.desert.sandstone) {
+  const meta = TS.tileMeta[t];
+  if (meta?.label && !meta.label.startsWith("사암")) desertMeta[t] = { ...meta, label: `사암 ${meta.label}`, description: [meta.description, "사막판에서는 황토색 사암 절벽으로 칠해져 있다(통행은 숲마을과 같다)."].filter(Boolean).join(" ") };
+}
+// ── autumn: gold grass, autumn leaves (forest orange-maroon, broadleaf gold, bushes crimson) ──
+const autumnMeta = relabel({ tree: "단풍 든", ground: "가을" }, "가을판 색으로 칠해져 있다(칸 번호·통행은 숲마을과 같다).");
+const none = { terrain: [], priority: [], passability: [], tileMeta: [] };
+
 const out = {
   base,
   climates: {
@@ -88,10 +98,19 @@ const out = {
       append: { terrain: [], priority: [], passability: [], tileMeta: [] }, metaPatch: volcanoMeta, extraAutotileGroups: [],
       autotileNames: { forest_harmony_lake_47: "용암 못 · 자연 가장자리(물 칸과 같은 번호, 통행 불가)" },
     },
+    desert: {
+      id: "forest_harmony_desert", textureKey: "tex_forest_harmony_desert", name: "사막 마을 · 모래와 사암의 숲마을", count: sheets.desert.count,
+      append: none, metaPatch: desertMeta, extraAutotileGroups: [], autotileNames: { forest_harmony_lake_47: "오아시스 못 · 자연 가장자리" },
+    },
+    autumn: {
+      id: "forest_harmony_autumn", textureKey: "tex_forest_harmony_autumn", name: "가을 마을 · 단풍 든 숲마을", count: sheets.autumn.count,
+      append: none, metaPatch: autumnMeta, extraAutotileGroups: [], autotileNames: {},
+    },
   },
 };
 fs.writeFileSync("src/assets/climateVillageTilesets.json", JSON.stringify(out) + "\n");
 console.log({
   bytes: fs.statSync("src/assets/climateVillageTilesets.json").size,
   snowRelabels: Object.keys(snowMeta).length, volcanoRelabels: Object.keys(volcanoMeta).length, ice: append.terrain.length,
+  desertRelabels: Object.keys(desertMeta).length, autumnRelabels: Object.keys(autumnMeta).length,
 });

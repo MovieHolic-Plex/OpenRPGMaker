@@ -1,5 +1,6 @@
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
+import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
 import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
@@ -117,6 +118,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
+      changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -221,6 +223,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   const tileset = bundledEasyRpgTilesetBase(asset);
   ensureRpgPlaceReferences(tileset);
+  ensureFieldRouteReferences(tileset);
   return tileset;
 }
 

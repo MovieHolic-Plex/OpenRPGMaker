@@ -15,7 +15,8 @@ try {
     const { awaitGraftedTilesetImageUrl } = await import("/src/assets/tileGraftImageCache.ts");
     const { tilesetBaseImageUrl } = await import("/src/editor/tilesetImage.ts");
     const { createClimateVillageTileset } = await import("/src/project/defaults/climateVillages.ts");
-    const tilesets = { forest_harmony_snow: createClimateVillageTileset("snow"), forest_harmony_volcano: createClimateVillageTileset("volcano"), forest_harmony: forest };
+    const tilesets = { forest_harmony: forest };
+    for (const kind of ["snow", "volcano", "desert", "autumn"]) { const t = createClimateVillageTileset(kind); tilesets[t.id] = t; }
     const sheets = {};
     const draw = async (m) => {
       const t = tilesets[m.tilesetId];

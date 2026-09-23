@@ -365,3 +365,16 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 장소: 설원 솔바람 산촌·종탑 언덕 교구·얼어붙은 안개못(못 통째로 얼음 사본), 화산 두 폭포 용암 강마을·잿빛 여울성·용암못 폐촌(화산 봉우리 858/859/888/889 + 918/919/948/949 한 쌍).
 - 분류 `climate-snow-villages-v1`(18 MD·3 이미지)·`climate-volcano-villages-v1`(22·3), `ensureClimateVillageReferences`가 한 번만 넣는다(추가만).
 - 근거 `verify-shots/climate-villages/`(자료집 카드·AI 행 읽기·내려받기 일치, 편집기 캔버스 실제 로드).
+
+### 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+
+- 기후 칩셋 둘 추가(`build-climate-chipsets.py`, 설원·화산 시트는 바이트 동일): `forest_harmony_desert`(모래·사암 절벽·마른 덤불·흙빛 지붕, 물은 오아시스 그대로),
+  `forest_harmony_autumn`(금빛 풀·단풍 숲·노란 활엽수·붉은 덤불). 둘 다 2730칸, 번호·통행은 숲마을과 같다.
+  사막·가을은 숲을 칠하므로 수관 이식(2550~2596)·숲 줄기 조립·layerBacking 잔디까지 칠한다.
+- 기후 마을 넷 추가: 사암 층바위 협곡마을·모래 물굽이 포구(나무 → 야자·선인장), 가을 두 폭포 강마을·가을 종탑 언덕 교구(시트만). 분류 `climate-desert-villages-v1`·`climate-autumn-villages-v1`.
+  기후 편집은 `scripts/content/lib/climate-edits.mjs`(얼리기·화산 봉우리·사막 식물)로 모았다.
+- 마을 사이 필드 7곳(「장소」, placeKind natural, 지형만): 숲 필드 셋(숲속 세 갈래길·여울 건너 벼랑길·두 단 고갯길)과 기후 필드 넷.
+  정본 `tiledata/field-routes/`(README에 순서), 로컬 정본 `.oprn-projects/field-routes-20260923`. 출구마다 맞닿는 마을 입구(`meets`)를 적었다.
+  분류 `field-routes-{forest,snow,volcano,desert,autumn}-v1`, `ensureFieldRouteReferences`가 번들 타일셋 다섯에 한 번만 넣는다.
+  숲 필드는 이식 포함 forest_harmony(2730칸)로 그렸으니 내려받기의 타일셋을 함께 쓴다.
+- 비용: 새 프로젝트 JSON 22.3MB → 25.4MB, 생성 시간 약 +55ms(기후 타일셋 둘 + 필드 문서).

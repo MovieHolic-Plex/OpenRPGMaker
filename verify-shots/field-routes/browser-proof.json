@@ -1,0 +1,96 @@
+{
+  "guidance": [
+    {
+      "tileset": "forest_harmony",
+      "category": "field-routes-forest-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony_snow",
+      "category": "field-routes-snow-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony_volcano",
+      "category": "field-routes-volcano-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony_desert",
+      "category": "field-routes-desert-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony_autumn",
+      "category": "field-routes-autumn-v1",
+      "present": true
+    }
+  ],
+  "places": [
+    {
+      "id": "field-forest-crossroads-96x64",
+      "aiRowsExact": true,
+      "preview": [
+        1536,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "field-ford-cliff-road-100x72",
+      "aiRowsExact": true,
+      "preview": [
+        1600,
+        1152
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "field-two-step-pass-80x80",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1280
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "field-snow-two-step-pass-80x80",
+      "aiRowsExact": true,
+      "preview": [
+        1280,
+        1280
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "field-volcano-ford-cliff-road-100x72",
+      "aiRowsExact": true,
+      "preview": [
+        1600,
+        1152
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "field-desert-crossroads-96x64",
+      "aiRowsExact": true,
+      "preview": [
+        1536,
+        1024
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "field-autumn-ford-cliff-road-100x72",
+      "aiRowsExact": true,
+      "preview": [
+        1600,
+        1152
+      ],
+      "downloadExact": true
+    }
+  ],
+  "activeProjectUnchanged": true,
+  "errors": []
+}

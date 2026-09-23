@@ -1,12 +1,16 @@
-// Author the climate villages on the snow / volcano sheets (scripts/content/build-climate-chipsets.py).
+// Author the climate villages on the snow / volcano / desert / autumn sheets (scripts/content/build-climate-chipsets.py).
 // Each map is a finished diverse forest village (tiledata/forest-villages/diverse) re-pointed at a climate tileset:
 // tile numbers are identical, so houses, cliffs, roads and forest assemblies stay exactly as authored. Climate edits:
 //  - snow: a pond can freeze — its water tiles are swapped for the appended ice copies (same shore shapes, walkable);
-//  - volcano: water is already lava on the sheet; clearings can get a pair of volcanic peaks (plain 858/859/888/889 + erupting 918/919/948/949).
+//  - volcano: water is already lava on the sheet; clearings can get a pair of volcanic peaks (plain 858/859/888/889 + erupting 918/919/948/949);
+//  - desert: free-standing trees give way to palms (near water) and cacti, palms line the shore, cacti stand on open sand;
+//  - autumn: the sheet alone (gold grass, autumn leaves).
+// The edits live in lib/climate-edits.mjs, shared with the climate fields (author-field-routes.mjs).
 // Usage: node scripts/content/author-climate-villages.mjs   (writes tiledata/climate-villages/catalog.json + validation.json)
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
+import { dressDesert, freezeCells, placePeaks, reachable } from "./lib/climate-edits.mjs";
 
 const OUT = "tiledata/climate-villages";
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -24,13 +28,19 @@ const PLANS = [
     note: "재로 덮인 벌판 위 성채 마을. 해자와 여울이 용암으로 바뀌고 숲은 그을린 검은 숲이 된다" },
   { id: "climate-volcano-lava-pond", climate: "volcano", from: "mistpond-hollow", name: "용암못 폐촌", peaks: 2,
     note: "울타리 친 못이 끓는 용암못이 된 폐촌. 빈 재밭 두 곳에 작은 화산 봉우리 한 쌍(잠든 봉우리·분화하는 봉우리)이 솟아 있다" },
+  { id: "climate-desert-terrace-canyon", climate: "desert", from: "terrace-cliff-village", name: "사암 층바위 협곡마을", desert: { palms: 0, cacti: 10 },
+    note: "세 높이의 사암 대지를 네 계단이 잇는 협곡 마을. 모래밭 곳곳에 선인장과 바위가 있고 마른 덤불숲이 협곡을 둘러싼다" },
+  { id: "climate-desert-reed-bay", climate: "desert", from: "reed-bay-village", name: "모래 물굽이 포구", desert: { palms: 12, cacti: 6 },
+    note: "모래 해안 물굽이를 따라 비껴 앉은 포구 마을. 물가에 야자수가 늘어서고 긴 선착장이 바다로 나간다" },
+  { id: "climate-autumn-twin-falls", climate: "autumn", from: "twin-falls-river-village", name: "가을 두 폭포 강마을",
+    note: "단풍 든 숲에서 나온 강이 두 줄 절벽을 폭포로 떨어지는 가을 강마을. 금빛 풀밭에 노란 활엽수와 붉은 덤불이 있다" },
+  { id: "climate-autumn-chapel-hill", climate: "autumn", from: "chapel-hill-parish", name: "가을 종탑 언덕 교구",
+    note: "단풍 숲으로 둘러싸인 언덕 위 종탑 교구. 금빛 풀밭의 계단 길과 묘지, 폭포 아래 소가 가을빛이다" },
 ];
-const PEAKS = [[858, 859, 918, 919], [888, 889, 948, 949]];
 const ice = new Map(sheets.snow.ice), water = new Set(sheets.volcano.lava);
-const GROUND = 240;
 
 await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-villages-entry.mjs", async (api) => {
-  const tilesets = { snow: api.createClimateVillageTileset("snow"), volcano: api.createClimateVillageTileset("volcano") };
+  const tilesets = Object.fromEntries(["snow", "volcano", "desert", "autumn"].map((k) => [k, api.createClimateVillageTileset(k)]));
   for (const t of Object.values(tilesets)) delete t.referenceDocuments;
   const maps = {}, plans = [], report = [];
   for (const spec of PLANS) {
@@ -43,43 +53,28 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
     const targets = plan.houses.map((h) => [h.front.x, h.front.y]);
     if (spec.freeze) {
       const box = plan.landmarks.find((l) => l.id === spec.freeze);
-      let frozen = 0;
-      for (let y = box.y; y < box.y + box.h; y++) for (let x = box.x; x < box.x + box.w; x++)
-        for (const layer of ["lowerTiles", "upperTiles"]) {
-          const t = map[layer][at(x, y)];
-          if (ice.has(t)) { map[layer][at(x, y)] = ice.get(t); frozen++; }
-        }
+      const cells = [];
+      for (let y = box.y; y < box.y + box.h; y++) for (let x = box.x; x < box.x + box.w; x++) cells.push(at(x, y));
+      const frozen = freezeCells(map, cells, ice);
       assert(frozen > 20, "pond did not freeze");
       // Walk onto the ice: the frozen cell nearest the fence gate.
-      const g = box.gate, cells = [];
+      const g = box.gate, iceCells = [];
       for (let y = box.y; y < box.y + box.h; y++) for (let x = box.x; x < box.x + box.w; x++)
-        if (map.lowerTiles[at(x, y)] >= sheets.baseCount && map.upperTiles[at(x, y)] < 0) cells.push([x, y]);
-      cells.sort((a, b) => Math.hypot(a[0] - g.x, a[1] - g.y) - Math.hypot(b[0] - g.x, b[1] - g.y));
+        if (map.lowerTiles[at(x, y)] >= sheets.baseCount && map.upperTiles[at(x, y)] < 0) iceCells.push([x, y]);
+      iceCells.sort((a, b) => Math.hypot(a[0] - g.x, a[1] - g.y) - Math.hypot(b[0] - g.x, b[1] - g.y));
       const centre = [box.x + (box.w >> 1), box.y + (box.h >> 1)];
-      const inner = cells.slice().sort((a, b) => Math.hypot(a[0] - centre[0], a[1] - centre[1]) - Math.hypot(b[0] - centre[0], b[1] - centre[1]))[0];
-      targets.push(cells[0], inner);
+      const inner = iceCells.slice().sort((a, b) => Math.hypot(a[0] - centre[0], a[1] - centre[1]) - Math.hypot(b[0] - centre[0], b[1] - centre[1]))[0];
+      targets.push(iceCells[0], inner);
       edits.push({ kind: "freeze", landmark: box.id, box: [box.x, box.y, box.w, box.h], swappedTiles: frozen, rule: "물 칸 t → 얼음 칸 ice[t] (sheets.json snow.ice)" });
     }
-    if (spec.peaks) {
-      // A 4×2 pair of peaks on bare ash only: the ring around it must be plain ground with nothing on top, away from doors.
-      const bare = (x, y) => x >= 0 && y >= 0 && x < W && y < map.height && map.lowerTiles[at(x, y)] === GROUND && map.upperTiles[at(x, y)] < 0;
-      const fronts = plan.houses.map((h) => [h.front.x, h.front.y]);
-      const picked = [];
-      const candidates = [];
-      for (let y = 2; y < map.height - 3; y++) for (let x = 2; x < W - 5; x++) {
-        let ok = true;
-        for (let dy = -1; dy <= 2 && ok; dy++) for (let dx = -1; dx <= 4 && ok; dx++) ok = bare(x + dx, y + dy);
-        if (ok && fronts.every(([fx, fy]) => Math.hypot(fx - x, fy - y) > 6)) candidates.push([x, y]);
-      }
-      while (picked.length < spec.peaks && candidates.length) {
-        const score = ([x, y]) => Math.min(...[...picked, ...fronts].map(([px, py]) => Math.hypot(px - x, py - y)));
-        candidates.sort((a, b) => score(b) - score(a) || a[1] - b[1] || a[0] - b[0]);
-        const [x, y] = candidates.shift();
-        PEAKS.forEach((r, dy) => r.forEach((t, dx) => { map.upperTiles[at(x + dx, y + dy)] = t; }));
-        picked.push([x, y]);
-        edits.push({ kind: "volcanic-peaks", x, y, w: 4, h: 2, upper: PEAKS });
-      }
-      assert.equal(picked.length, spec.peaks, "no room for peaks");
+    if (spec.peaks) edits.push(...placePeaks(map, spec.peaks, plan.houses.map((h) => [h.front.x, h.front.y])));
+    if (spec.desert) {
+      const wet = new Set();
+      map.lowerTiles.forEach((t, i) => { if (water.has(t)) wet.add(i); });
+      const keepClear = [...plan.access.map((a) => [a.x, a.y]), [plan.start.x, plan.start.y]];
+      const vegetation = plan.placements.filter((o) => o.kind === "vegetation");
+      const dressed = dressDesert(map, { vegetation, water: wet, keepClear, seed: plan.seed, ...spec.desert });
+      edits.push({ kind: "desert", replacedTrees: dressed.replaced, plants: dressed.edits.length, rule: "나무 덩이 → 발치에 야자(물 5칸 안)·선인장(큰 나무는 바위 하나 더), 물가 야자, 빈 모래밭 선인장" }, ...dressed.edits);
     }
     if (spec.climate === "volcano") {
       const lava = map.lowerTiles.filter((t) => water.has(t)).length + map.upperTiles.filter((t) => water.has(t)).length;
@@ -89,14 +84,7 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
     // Reachability with the runtime move rule, from the village entrance to every door front (+ the ice).
     const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };
     const entry = [plan.start.x, plan.start.y];
-    const seen = new Set([at(...entry)]), queue = [entry];
-    while (queue.length) {
-      const [x, y] = queue.shift();
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
-        const X = x + dx, Y = y + dy, k = at(X, Y);
-        if (X >= 0 && Y >= 0 && X < W && Y < map.height && !seen.has(k) && api.canMove(project, map, x, y, X, Y)) { seen.add(k); queue.push([X, Y]); }
-      }
-    }
+    const seen = reachable(api.canMove, project, map, entry);
     const blocked = targets.filter(([x, y]) => !seen.has(at(x, y)));
     report.push({ id: spec.id, entry, targets, reachable: seen.size, blocked });
     maps[spec.id] = map;
@@ -107,5 +95,5 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
   assert(!bad.length, "unreachable: " + JSON.stringify(bad));
   fs.writeFileSync(`${OUT}/catalog.json`, JSON.stringify({ source: "tiledata/forest-villages/diverse/catalog.json", plans, maps }) + "\n");
   fs.writeFileSync(`${OUT}/validation.json`, JSON.stringify(report, null, 2) + "\n");
-  console.log({ maps: Object.keys(maps), reach: report.map((r) => `${r.id}:${r.reachable}/${r.targets.length}`), edits: plans.map((p) => p.edits.map((e) => e.kind + (e.swappedTiles ?? e.lavaCells ?? `@${e.x},${e.y}`))) });
+  console.log({ maps: Object.keys(maps), reach: report.map((r) => `${r.id}:${r.reachable}/${r.targets.length}`), edits: plans.map((p) => p.edits.filter((e) => e.kind !== "desert-plant").map((e) => e.kind + (e.swappedTiles ?? e.lavaCells ?? e.plants ?? `@${e.x},${e.y}`))) });
 });

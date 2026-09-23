@@ -17,10 +17,10 @@ const project = await withTsModule("scripts/content/lib/rpg-places-entry.ts", "c
   p.startMapId = ids[0];
   const entry = c.plans[0].entry;
   p.startPos = { x: entry[0], y: entry[1] };
-  p.meta.title = "기후 마을 · 설원·화산 (정본)";
+  p.meta.title = "기후 마을 · 설원·화산·사막·가을 (정본)";
   return JSON.parse(JSON.stringify(p));
 });
-for (const ts of ["forest_harmony_snow", "forest_harmony_volcano"])
+for (const ts of ["forest_harmony_snow", "forest_harmony_volcano", "forest_harmony_desert", "forest_harmony_autumn"])
   assert(project.tilesets[ts]?.referenceDocuments?.some((k) => k.id.startsWith("climate-")), "guidance missing on " + ts);
 await withTsModule("electron/local-store/store.ts", "climate-villages-store.mjs", async (api) => {
   let s = await api.initLocalProjectStore({ projectDir: dir }), id;

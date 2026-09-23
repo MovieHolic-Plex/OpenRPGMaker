@@ -1,11 +1,14 @@
-// Publication evidence for the snow/volcano villages under 장소; read-only browser session, no project mutations.
+// Publication evidence for the climate villages (or, with the argument field-routes, the fields between villages) under 장소;
+// read-only browser session, no project mutations.
+// Usage: BASE=http://127.0.0.1:<port> node scripts/qa/capture-climate-villages.mjs [climate-villages|field-routes]
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { chromium } from "playwright";
-const out = "verify-shots/climate-villages";
+const set = process.argv[2] ?? "climate-villages";
+const out = `verify-shots/${set}`;
 fs.mkdirSync(out, { recursive: true });
-const plans = JSON.parse(fs.readFileSync("tiledata/climate-villages/catalog.json")).plans;
-const shipped = JSON.parse(fs.readFileSync("src/assets/sharedClimateVillageReferences.json"));
+const plans = JSON.parse(fs.readFileSync(`tiledata/${set}/catalog.json`)).plans;
+const shipped = JSON.parse(fs.readFileSync({ "climate-villages": "src/assets/sharedClimateVillageReferences.json", "field-routes": "src/assets/sharedFieldRouteReferences.json" }[set]));
 const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 }, acceptDownloads: true });
