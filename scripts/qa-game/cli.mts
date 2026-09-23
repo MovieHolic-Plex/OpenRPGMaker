@@ -6,6 +6,7 @@ const COMMANDS: Record<string, () => Promise<number> | number> = {
   gen: async () => (await import("./gen.mts")).genMain(rest),
   check: () => checkMain(rest),
   replay: async () => (await import("./replay.mts")).replayMain(rest),
+  render: async () => (await import("./render.mts")).renderMain(rest),
 };
 
 async function main(): Promise<number> {
