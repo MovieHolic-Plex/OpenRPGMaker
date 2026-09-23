@@ -12,6 +12,7 @@ import {
   catalogRegionDesign,
   catalogWorldDesign,
 } from "@/editor/content/spatial/catalogSeed";
+import { worldDefById } from "@/project/defaults/spatial/geographyCatalog";
 import { renderPlaceCardThumb } from "@/editor/panels/spatialPlacePreview";
 import { spaceCanvasLayout } from "@/editor/panels/spatialSpaceLayoutView";
 import {
@@ -186,6 +187,27 @@ function geographyThumbDesign(card: SpatialGalleryCard): GeographyDesign | undef
   return kind === "region" ? catalogRegionDesign(card.localId) : catalogWorldDesign(card.localId);
 }
 
+/** Catalog worlds are 128×96 terrain compiles. The card only needs the region dots. */
+function renderWorldCatalogThumb(card: SpatialGalleryCard): HTMLElement {
+  const spec = card.localId ? worldDefById(card.localId) : undefined;
+  const canvas = document.createElement("canvas");
+  canvas.className = "spatial-card-image";
+  canvas.width = 160;
+  canvas.height = 96;
+  const ctx = canvas.getContext("2d");
+  if (!ctx || !spec) return canvas;
+  ctx.imageSmoothingEnabled = false;
+  ctx.fillStyle = spec.floor === "snow" ? "#d7e6f2" : "#9cbe78";
+  ctx.fillRect(0, 0, 160, 96);
+  ctx.fillStyle = spec.floor === "snow" ? "#f4f7fb" : "#6ea35a";
+  ctx.fillRect(8, 8, 144, 80);
+  ctx.fillStyle = "#243044";
+  for (const region of spec.regions) {
+    ctx.fillRect(Math.round(region.x * 160 / 128) - 4, Math.round(region.y * 96 / 96) - 4, 8, 8);
+  }
+  return canvas;
+}
+
 function renderGeographyCardThumb(card: SpatialGalleryCard): HTMLElement {
   const design = geographyThumbDesign(card);
   if (!design) return el("div", { class: "spatial-card-fallback" });
@@ -221,6 +243,7 @@ export function renderSpatialCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
   // 지역·세계 참고 사례(완성 맵)는 장소 카드와 같은 실물 썸네일 경로를 쓴다.
   if (card.kind === "places" || card.regionReferenceId) return renderPlaceCardThumb(card);
+  if (card.kind === "worlds" && card.source === "default") return renderWorldCatalogThumb(card);
   if (card.kind === "regions" || card.kind === "worlds") return renderGeographyCardThumb(card);
   if (card.mapId) return renderMapThumb(card);
   if (card.kind === "tiles") {

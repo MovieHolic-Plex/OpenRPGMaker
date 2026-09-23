@@ -83,7 +83,8 @@ export function renderSpatialAuthoringShell(
     if (card) {
       // 장소 갤러리: 첫 클릭은 선택만 한다(액션 줄이 뜬다). 같은 카드를 다시 누르면 편집기로
       // 들어간다. 선택만으로 편집기가 열리면 「맵에 놓기」를 누를 기회가 사라진다.
-      if (placesGallery && card.canonicalSource && !regionGallery) {
+      const placePreset = Boolean(card.reviewedPlaceId || card.regionReferenceId);
+      if (placesGallery && (card.canonicalSource || placePreset) && !regionGallery) {
         // 같은 카드를 다시 누르면 편집기로 들어간다. 갤러리가 보이는 동안에만 카드를 누를 수
         // 있으므로(listView=true), 「이미 이 카드가 선택돼 있다」가 곧 재클릭이다.
         const reopening = spatialSession().galleryCardId === card.id;
@@ -160,7 +161,7 @@ export function renderSpatialAuthoringShell(
     // 지역 예시는 전부 같은 분류라 칩이 정보를 주지 않는다.
     const badges = regionGallery ? [] : [classifyPlaceCard(card).category];
     if (badges.length) button.append(el('div', { class: 'place-classification-badges', children: badges.map(text => el('span', { text })) }));
-    if (!isSelected || !card.canonicalSource) return el("div", { class: "spatial-card-cell", children: [button] });
+    if (!isSelected || !(card.canonicalSource || card.reviewedPlaceId || card.regionReferenceId)) return el("div", { class: "spatial-card-cell", children: [button] });
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
       : card.kind === "spaces" ? spatialSpacesChrome(card, refresh).build : undefined;
@@ -247,15 +248,28 @@ export function renderSpatialAuthoringShell(
 
   // 목록만 보는 동안 선택 장소의 맵을 컴파일하지 않는다. 스테이지 요소는 남겨 토글 계약은 유지한다.
   const deferPlacesStage = placesGallery && !regionGallery && !session.inspectorOpen;
+  // 세계 개요는 128×96 지형 컴파일이다. 셸을 먼저 그린 뒤 다음 턴에 붙인다.
+  const deferWorldStage = tab === "worlds";
   const stage = deferPlacesStage
     ? el("div", { class: "spatial-stage is-deferred", attrs: { "aria-hidden": "true" } })
     : el("div", {
       class: `spatial-stage${session.inspectorOpen ? " is-inspector-open" : ""}`,
-      children: [
+      children: deferWorldStage ? [] : [
         renderSpatialCanvas(session, selected, refresh),
         renderSpatialInspector(selected, session.inspectorOpen, refresh),
       ],
     });
+  if (deferWorldStage) {
+    const paintStage = () => {
+      if (!stage.isConnected) return;
+      stage.replaceChildren(
+        renderSpatialCanvas(session, selected, refresh),
+        renderSpatialInspector(selected, session.inspectorOpen, refresh),
+      );
+    };
+    if (typeof setTimeout === "function") setTimeout(paintStage, 0);
+    else paintStage();
+  }
 
   // 장소 목록이 기본이다. 스테이지(미리보기·속성)는 「속성」을 눌렀을 때만 오른쪽에 붙는다.
   // 카드 선택만으로 열지 않는다 — 그러면 71장짜리 목록이 5열로 줄어든다(실측 98% → 65%).

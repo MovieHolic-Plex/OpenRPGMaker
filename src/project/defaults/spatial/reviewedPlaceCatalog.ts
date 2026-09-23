@@ -27,6 +27,23 @@ export function reviewedPlaceMaps(id: string): { map: GameMap; tileset: TilesetD
 }
 export function reviewedPlaceAssets(): Project['assets']['uploaded'] { return catalog.assets; }
 
+export const BUNDLED_PLACE_NAMESPACE = "bundled";
+
+export function bundledReviewedPlaceId(id: string): SpatialId {
+  return `${BUNDLED_PLACE_NAMESPACE}:${id}` as SpatialId;
+}
+
+/** Install one shipped place design under a stable id. A second call keeps the existing preset. */
+export function installBundledReviewedPlace(project: Project, id: string): { project: Project; id: SpatialId } {
+  const installed = bundledReviewedPlaceId(id);
+  if (project.spatialAuthoring?.library.places[installed]) return { project, id: installed };
+  const copied = copyReviewedPlace(project, id, BUNDLED_PLACE_NAMESPACE);
+  const places = copied.project.spatialAuthoring!.library.places as Record<string, PlaceDesign>;
+  const place = places[copied.id]!;
+  places[copied.id] = { ...place, provenance: { origin: "builtin", sourceId: id } };
+  return { project: copied.project, id: copied.id };
+}
+
 /** Copy only the selected closure. Fresh namespace prevents overwriting user designs/assets. */
 export function copyReviewedPlace(project: Project, id: string, namespace: string): { project: Project; id: SpatialId } {
   if (!project.spatialAuthoring) throw new Error('Activate spatial authoring before copying a place');
