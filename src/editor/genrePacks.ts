@@ -1,3 +1,4 @@
+import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
 import { inBounds, isPassable } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
 import { applyGenrePreset } from "@/project/genrePresets";
@@ -278,6 +279,7 @@ export function materializeGenreBlankProjectSystemPreset(
 
   const project = createBlankProject();
   project.meta = { ...project.meta, title: canonical.title };
+  project.system.opening = defaultOpeningSequence(canonical.title);
   applyGenrePreset(project, canonical.packId);
   return {
     project,
@@ -303,11 +305,18 @@ export function createProjectFromGenreBlankProjectSystemPreset(
  * 팩이 있으면 그 팩의 기본 레시피로 시스템 프리셋을 적용한다.
  * 맵·이벤트·DB 레코드는 만들지 않는다 — 바뀌는 건 system.* 토글뿐이다.
  */
-export function createNewProjectSeed(packId: GenrePackId | null): Project {
-  if (packId === null) return createBlankProject();
-  return createProjectFromGenreBlankProjectSystemPreset(
+export function createNewProjectSeed(packId: GenrePackId | null, title?: string): Project {
+  const project = packId === null ? createBlankProject() : createProjectFromGenreBlankProjectSystemPreset(
     createGenreBlankProjectSystemPresetPlan(packId, genrePackById(packId).starter.defaultRecipeId),
   );
+  if (title !== undefined) {
+    project.meta.title = title;
+    project.system.opening = defaultOpeningSequence(title);
+    // 게임 타이틀 화면 제목도 같이 옮긴다 — 안 하면 기본값 「새 프로젝트」가 그대로 떠서
+    // 마법사에서 이름을 지은 게임의 타이틀이 「새 프로젝트」였다(2026-09-23 도그푸딩).
+    if (project.system.titleScreen) project.system.titleScreen.title = title;
+  }
+  return project;
 }
 
 export type GenrePackConfiguration = {

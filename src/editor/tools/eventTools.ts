@@ -4,6 +4,8 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
+import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { isPassable, tileAt } from "@/project/collision";
@@ -34,6 +36,7 @@ import {
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
+import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
@@ -202,8 +205,28 @@ function describeValue(value: unknown): string {
   return typeof value;
 }
 
+/** 실내 시공기가 가구마다 자동으로 단 「조사」 이벤트(ev_inspect_*) — 맛 대사 하나뿐인 자리표시다. */
+function isAutoInspectEvent(event: GameEvent): boolean {
+  return event.id.startsWith("ev_inspect_");
+}
+
+/**
+ * 저작한 이벤트가 자동 조사 이벤트와 같은 칸에 놓이면 조사 이벤트를 걷어낸다. 둘이 겹치면 런타임이
+ * 아래(below) 조사 이벤트를 먼저 집어 상자·NPC 가 영영 반응하지 않았다(2026-09-23 도그푸딩:
+ * 동굴 (3,6) chest_cave_potion 과 술통 조사 ev_inspect_…_9_5). 걷어낸 id 를 돌려준다.
+ */
+export function displaceAutoInspectEvents(map: GameMap, event: GameEvent): string[] {
+  if (isAutoInspectEvent(event)) return [];
+  const displaced = map.events.filter(entry => entry.id !== event.id && isAutoInspectEvent(entry) && entry.x === event.x && entry.y === event.y);
+  if (displaced.length === 0) return [];
+  const ids = new Set(displaced.map(entry => entry.id));
+  map.events = map.events.filter(entry => !ids.has(entry.id));
+  return [...ids];
+}
+
 // 맵의 이벤트를 id로 upsert(있으면 교체, 없으면 push).
 export function upsertEventIntoMap(map: GameMap, event: GameEvent): "added" | "modified" {
+  displaceAutoInspectEvents(map, event);
   const index = map.events.findIndex((entry) => entry.id === event.id);
   if (index >= 0) {
     map.events[index] = event;
@@ -286,6 +309,69 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   }
 }
 
+/**
+ * 모든 선택지의 분기가 비어 있는 choices 명령 — 무엇을 골라도 아무 일도 없다.
+ *
+ * 2026-09-23 등대지기 재시험: 동료 카일의 「동행을 제안한다」와 보스의 「정령과 맞선다!」가 둘 다
+ * `branch:[]` 로 저장돼 합류·전투·점화 스위치가 전부 빠졌는데 도구는 ok 만 돌려줬다. 선택지만 있는
+ * 분위기용 질문도 있으니 거부하지 않고 경고로 알린다.
+ */
+function emptyChoiceWarnings(event: GameEvent): string[] {
+  const warnings: string[] = [];
+  const walk = (commands: readonly Command[] | undefined, owner: string): void => {
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "choices" && Array.isArray(command.options) && command.options.length > 0
+        && command.options.every(option => !Array.isArray(option?.branch) || option.branch.length === 0)
+        && !(command.cancelBranch?.length)) {
+        const labels = command.options.map(option => `「${String(option?.text ?? "")}」`).join("/");
+        warnings.push(
+          `이벤트 '${event.id}' ${owner}: 선택지 ${labels}의 분기가 모두 비어 있어 무엇을 골라도 아무 일도 일어나지 않습니다. `
+          + "place_npc 는 choices[].commands, 네이티브 choices 명령은 options[].branch 에 합류(changeParty)·전투(battleProcessing)·스위치(setSwitch) 등을 넣고, "
+          + "run_scene_test 의 {kind:'choose',index} 스텝으로 결과를 확인하세요.",
+        );
+      }
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      for (const list of nested) walk(list, owner);
+    }
+  };
+  walk(event.commands, "commands");
+  for (const [index, page] of (event.pages ?? []).entries()) walk(page.commands, `페이지 ${index + 1}`);
+  return warnings;
+}
+
+/**
+ * 페이지를 여는 전역 스위치를 프로젝트 어디에서도 켜지 않으면 그 페이지는 영원히 닫혀 있다.
+ *
+ * 셀프 스위치는 `findUnwrittenSelfSwitchGates` 가 보지만 전역 스위치는 선언된 서사 플래그일 때만
+ * 린트가 봤다(story-flag:read-without-write). 등대지기 재시험에서 하몬 할아버지의 구출 후 페이지
+ * (조건 sw_catalog_lighthouse_lit)는 켜는 명령이 없어 도달 불가였다. 쓰는 쪽을 나중에 만들 수도
+ * 있으니 거부하지 않고, 지금 시점에 없다는 사실만 경고한다.
+ */
+function unwrittenSwitchGateWarnings(project: Project, event: GameEvent): string[] {
+  const gated = new Map<string, number>();
+  for (const [index, page] of (event.pages ?? []).entries()) {
+    for (const condition of page.conditions ?? []) {
+      if (condition.kind === "switch" && condition.value !== false && !gated.has(condition.switchId)) gated.set(condition.switchId, index + 1);
+    }
+  }
+  if (gated.size === 0) return [];
+  const usage = buildStoryFlagUsageIndex(project);
+  const startSwitches = project.session?.switches ?? {};
+  const warnings: string[] = [];
+  for (const [switchId, pageNumber] of gated) {
+    if (startSwitches[switchId] === true) continue;
+    if (usageBucketFor(usage, "switch", switchId).writes.length > 0) continue;
+    const name = project.switches.find(entry => entry.id === switchId)?.name;
+    warnings.push(
+      `이벤트 '${event.id}' 페이지 ${pageNumber}는 스위치 ${switchId}${name ? `(${name})` : ""} 가 켜져야 열리는데 프로젝트에 그것을 켜는 setSwitch 가 아직 없습니다 — `
+      + "보스 승리 분기(battleProcessing victoryBranch)나 선택지 분기에서 setSwitch 로 켜지 않으면 이 페이지는 열리지 않습니다.",
+    );
+  }
+  return warnings;
+}
+
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
 function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
   try {
@@ -295,6 +381,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
+    for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -335,6 +422,10 @@ function ensureCommandStoryFlags(project: Project, commands: readonly Command[],
       }
     } else if (command.kind === "choices") {
       for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
+    } else if (command.kind === "presentItem") {
+      for (const option of command.options) ensureCommandStoryFlags(project, option.branch, eventId, warnings);
+      if (command.otherwiseBranch) ensureCommandStoryFlags(project, command.otherwiseBranch, eventId, warnings);
       if (command.cancelBranch) ensureCommandStoryFlags(project, command.cancelBranch, eventId, warnings);
     } else if (command.kind === "fork") {
       ensureConditionStoryFlags(project, command.condition, eventId, warnings);
@@ -465,9 +556,49 @@ const NATIVE_PAGE_REPAIR_EXAMPLE = {
   },
 };
 
+/**
+ * 페이지가 있는 이벤트는 런타임이 page.commands/page.trigger 만 실행한다(playSceneInterpreter `page?.commands ?? event.commands`).
+ * pages 없이 최상위 commands/trigger 만 보낸 패치를 그대로 저장하면 OK 를 돌려주고 아무것도 실행되지 않는다
+ * (2026-09-23 추리 도그푸딩: 증거 3개가 전부 이렇게 사라졌다). 페이지가 하나면 그 페이지로 옮기고,
+ * 여럿이면 어느 페이지인지 추측하지 않고 거부한다.
+ */
+function routeRootCommandsIntoPage(
+  event: GameEvent,
+  patch: Partial<GameEvent>,
+  existing: GameEvent | undefined,
+  warnings: string[],
+): void {
+  const has = (key: keyof GameEvent) => Object.prototype.hasOwnProperty.call(patch, key);
+  const pages = event.pages ?? [];
+  if (has("pages") || pages.length === 0) return;
+  // 빈 배열은 옮기지 않는다 — 이름만 바꾸려는 패치가 흔히 commands:[] 를 같이 보내는데, 그걸 옮기면 페이지 대사가 지워진다.
+  const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
+  const movesTrigger = has("trigger") && patch.trigger !== undefined;
+  if (!movesCommands && !movesTrigger) return;
+  if (pages.length > 1) {
+    if (!movesCommands) {
+      warnings.push(`최상위 trigger 는 페이지가 있는 이벤트에서 실행되지 않습니다 — 페이지별 trigger 는 pages 로 보내세요 (페이지 ${pages.length}개)`);
+      return;
+    }
+    throw new ToolError(
+      `이벤트 '${event.id}'에는 페이지가 ${pages.length}개(${pages.map((page) => page.id).join(", ")}) 있어 최상위 commands 는 실행되지 않습니다. ` +
+      "바꿀 페이지의 commands 를 event.pages 에 담아 보내세요 — pages 는 배열 전체 교체이므로 유지할 페이지도 모두 포함하세요. get_event 로 현재 페이지를 먼저 읽으세요.",
+      { code: "invalid-args" },
+    );
+  }
+  const page = { ...pages[0]! };
+  if (movesCommands) page.commands = structuredClone(patch.commands!);
+  if (movesTrigger) page.trigger = structuredClone(patch.trigger!);
+  event.pages = [page];
+  event.commands = structuredClone(existing?.commands ?? []);
+  if (existing?.trigger) event.trigger = structuredClone(existing.trigger);
+  const moved = [movesCommands ? "commands" : "", movesTrigger ? "trigger" : ""].filter(Boolean).join("·");
+  warnings.push(`최상위 ${moved} → pages[0] 로 옮김 (페이지가 있는 이벤트는 페이지 명령만 실행된다)`);
+}
+
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라.`,
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -567,8 +698,11 @@ const upsertEvent: ToolDefinition = {
         if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
       }
     }
+    routeRootCommandsIntoPage(event, patch, existing, warnings);
     assertEventShape(event, warnings, existing ? patch : event);
+    if (!existing || "pages" in patch || "commands" in patch) assertEventPartyActorReferences(draft, event);
     const outcome = upsertEventIntoMap(map, event);
+    warnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
@@ -753,7 +887,9 @@ const placeNpc: ToolDefinition = {
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
     assertEventShape(event, normalizationWarnings);
+    assertEventPartyActorReferences(draft, event);
     upsertEventIntoMap(map, event);
+    normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const adjusted = finalX !== requestedX || finalY !== requestedY;
     const warnings = [
       ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${finalX}, ${finalY})`] : []),
@@ -1052,6 +1188,7 @@ const makeVillager: ToolDefinition = {
     }
     ensureEventStoryFlags(draft, event, warnings);
     assertEventShape(event, warnings);
+    assertEventPartyActorReferences(draft, event);
     upsertEventIntoMap(map, event);
     const finalX = reusedEvent?.x ?? home.x;
     const finalY = reusedEvent?.y ?? home.y;
@@ -2139,6 +2276,8 @@ const placeChest: ToolDefinition = {
       ],
     };
     assertEventShape(event, warnings);
+    const displaced = displaceAutoInspectEvents(map, event);
+    if (displaced.length) warnings.push(`같은 칸의 가구 조사 이벤트 ${displaced.join(", ")} 를 보물상자로 대체했습니다.`);
     upsertEventIntoMap(map, event);
     return {
       summary: `${map.name}에 보물상자 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""} — 보상 ${rewardText}`,
@@ -2486,6 +2625,29 @@ const removeEvent: ToolDefinition = {
   },
 };
 
+/**
+ * 시간 시스템이 켜지면 시간표 칸이 NPC 좌표를 덮는다(npcSchedules.updateNpcSchedules).
+ * 옮긴 NPC 의 옛 자리 칸은 새 자리로 따라가게 하고, 다른 곳을 가리키는 칸은 경고로 남긴다 —
+ * 옮기라는 요청은 이 NPC 를 여기 두라는 뜻인데, 옛 칸이 남으면 조용히 옛 자리로 돌아간다.
+ */
+function followScheduleSlots(mapId: string, event: GameEvent, previous: Point): string[] {
+  if (!event.schedule?.length || (previous.x === event.x && previous.y === event.y)) return [];
+  let followed = 0;
+  event.schedule = event.schedule.map((entry) => {
+    if (entry.at.mapId !== mapId || entry.at.x !== previous.x || entry.at.y !== previous.y) return entry;
+    followed += 1;
+    return { ...entry, at: { ...entry.at, x: event.x, y: event.y } };
+  });
+  const elsewhere = event.schedule
+    .filter((entry) => entry.at.mapId !== mapId || entry.at.x !== event.x || entry.at.y !== event.y)
+    .map((entry) => `${JSON.stringify(entry.when)} → ${entry.at.mapId} (${entry.at.x}, ${entry.at.y})${entry.activity ? ` ${entry.activity}` : ""}`);
+  const notes = followed > 0 ? [`시간표 ${followed}칸을 새 자리 (${event.x}, ${event.y})로 옮겼다.`] : [];
+  if (elsewhere.length > 0) {
+    notes.push(`'${event.name ?? event.id}' 의 시간표가 시간 시스템에서 이 NPC 를 다른 곳으로 옮긴다: ${elsewhere.join("; ")} — 고정하려면 set_npc_schedule 로 비우거나 고쳐라.`);
+  }
+  return notes;
+}
+
 const moveEvent: ToolDefinition = {
   name: "move_event",
   description: "이벤트를 같은 맵 내 다른 좌표로 옮긴다. 이벤트 자신의 트리거/우선순위 기준으로 통행 가능 칸에 착지한다(밟는 이벤트는 통행 가능 칸 강제, 그 외는 인접 통행 가능 칸 필요). 배치를 옮기라는 요청은 이벤트를 지우고 새로 만들지 말고 이 툴로 옮긴다.",
@@ -2521,12 +2683,17 @@ const moveEvent: ToolDefinition = {
       label: `이벤트 '${event.id}'`,
       code: "move-event-impassable",
     });
+    const previous = { x: event.x, y: event.y };
     event.x = placement.x;
     event.y = placement.y;
+    const warnings = [
+      ...(placement.adjusted ? [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] : []),
+      ...followScheduleSlots(map.id, event, previous),
+    ];
     return {
       summary: `이벤트 '${args.eventId}' → (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""}`,
       data: { eventId: event.id, x: placement.x, y: placement.y, adjusted: placement.adjusted },
-      ...(placement.adjusted ? { warnings: [placementAdjustedWarning(`이벤트 '${event.id}'`, { x: requestedX, y: requestedY }, placement)] } : {}),
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
@@ -2732,6 +2899,7 @@ const scriptCutscene: ToolDefinition = {
       map.events.push(event);
     }
     assertEventShape(event);
+    assertEventPartyActorReferences(draft, event);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 컷신 '${eventId}' ${outcome === "added" ? "생성" : "페이지 추가"} — beat ${beats.length}개, 명령 ${commands.length}개, 미지원 커맨드 ${unsupportedCommands}건`,

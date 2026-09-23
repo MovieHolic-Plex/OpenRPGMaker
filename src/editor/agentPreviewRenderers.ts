@@ -329,7 +329,6 @@ export class AgentGhostPreviewRenderer {
       }
       this.currentToolName = state.runningToolName;
       this.renderOrUpdatePhaseChip(0, {
-        cellStates: [],
         isScheduleComplete: false,
         revealedCount: 0,
       }, previews);

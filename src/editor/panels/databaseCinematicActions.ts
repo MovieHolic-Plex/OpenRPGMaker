@@ -1,6 +1,8 @@
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import {
   emptySequence,
+  readGameOverSettings,
+  requireGameOverSettings,
   readCinematicSequence,
   requireCinematicSequence,
   sameRecord,
@@ -11,6 +13,7 @@ import {
 import { createDatabaseCinematicMediaActions } from "@/editor/panels/databaseCinematicMediaActions";
 import {
   CINEMATIC_DURATION_MAX_MS,
+  gameOverOutcome,
   CINEMATIC_SCENE_LIMIT,
   type CinematicMotion,
   type CinematicScene,
@@ -206,16 +209,41 @@ export function createDatabaseCinematicActions(options: {
       return replaceScene(id, "텍스트 장면으로 변경", scene => sceneWithKind(scene, "text", ""));
     },
 
+    setDefeatPresentation(value: import("@/project/cinematicSettings").DefeatPresentation): boolean {
+      if (target === "opening") return false;
+      return commit("패배 연출 변경", project => { const settings = requireGameOverSettings(project, target); settings.outcome ??= gameOverOutcome(settings); settings.presentation = value; });
+    },
+
+    setOutcome(value: import("@/project/cinematicSettings").GameOverOutcome): boolean {
+      if (target === "opening") return false;
+      return commit("종료 후 처리 변경", project => { requireGameOverSettings(project, target).outcome = value; });
+    },
+    setTiming(key: keyof import("@/project/cinematicSettings").GameOverTiming, value: number | undefined): boolean {
+      if (target === "opening" || (value !== undefined && (!Number.isSafeInteger(value) || value < 0 || value > 120000))) return false;
+      return commit("게임 오버 시간 변경", project => {
+        const timing = requireGameOverSettings(project, target).timing ??= {};
+        if (value === undefined) delete timing[key]; else timing[key] = value;
+      }, `timing:${key}`);
+    },
+    setRecovery(value: import("@/project/cinematicSettings").RecoveryDestination | undefined): boolean {
+      if (target === "opening") return false;
+      return commit("패배 귀환 지점 변경", project => {
+        const settings = requireGameOverSettings(project, target);
+        if (value) settings.recovery = value;
+        else delete settings.recovery;
+      });
+    },
+
     setGameOverText(field: GameOverTextField, value: string): boolean {
-      if (target !== "gameOver") return false;
-      const settings = store.getCurrent().system.gameOver;
+      if (target === "opening") return false;
+      const settings = readGameOverSettings(store.getCurrent(), target);
       // Missing action labels use the player's canonical defaults. Do not
       // store empty labels or duplicate those defaults in another module.
       const next = (field === "retryLabel" || field === "titleLabel") && !value.trim()
         ? undefined : value;
       if (settings?.[field] === next) return false;
       return commit("종료 메뉴 편집", project => {
-        const gameOver: GameOverSettings = project.system.gameOver ??= {};
+        const gameOver: GameOverSettings = requireGameOverSettings(project, target);
         if (next === undefined) delete gameOver[field];
         else gameOver[field] = next;
       }, `gameOver:${field}`);

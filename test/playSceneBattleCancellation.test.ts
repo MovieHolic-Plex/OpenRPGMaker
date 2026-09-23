@@ -29,6 +29,8 @@ function setup(flow: "gauge" | "strict" = "strict") {
   const session = startSession(project);
   const battleAbortController = new AbortController(); aborters.push(battleAbortController);
   const scene = { session, tileY: 0, map: { height: 20 }, battleAbortController,
+    // An authored gameOver/killPlayer in the troop hands off to the host's game-over screen.
+    showGameOverScreen: vi.fn(),
     game: { registry: { get: (key: string) => key === "dialogueHost" ? host : key === "dialogue" ? dialogue : undefined } },
   };
   const step = { kind: "battleProcessing", troopId: TROOP, canEscape: false, canLose: true, battleFlow: flow } as const;

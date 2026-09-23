@@ -226,11 +226,26 @@ describe("opening cinematic AI tools", () => {
     expect(again.ok).toBe(false);
   });
 
+  it("finds full-screen art by its actual description and returns selection context", () => {
+    const listed = runTool(context(), "list_opening_media", { kind: "image", query: "겨울 신전" });
+    expect(listed.ok, failure(listed)).toBe(true);
+    expect(listed.data).toMatchObject({ matches: [expect.objectContaining({
+      id: "oprn-pack-still-winter-03", group: "배경화", series: "winter",
+      description: expect.stringContaining("오로라"), mood: expect.arrayContaining(["신비"]),
+      useCases: expect.arrayContaining(["비밀의 암시"]), suitableForOpening: true,
+    })] });
+    const reference = runTool(context(), "list_opening_media", { kind: "image", query: "oprn-still-quiet-room" });
+    expect(reference.data).toMatchObject({ matches: [expect.objectContaining({
+      suitableForOpening: false, group: "참고 이미지(오프닝 부적합)",
+      cautions: expect.arrayContaining(["분할 화면·게임 대화창·영문 텍스트 포함"]),
+    })] });
+  });
+
   it("lists exactly the media the database opening tab offers", () => {
     const ctx = context();
 
     for (const kind of ["image", "movie", "sound"] as const) {
-      const catalog = catalogIds(kind, ctx.project);
+      const catalog = catalogIds(kind === "image" ? "still" : kind, ctx.project);
       const listed = runTool(ctx, "list_opening_media", { kind });
       expect(listed.ok, failure(listed)).toBe(true);
       const ids = (listed.data as { matches: { id: string }[] }).matches.map((entry) => entry.id);

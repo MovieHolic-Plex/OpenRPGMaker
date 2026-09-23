@@ -5,12 +5,6 @@
 
 import type { MapId } from "@/project/types";
 import type { PaletteStamp } from "@/editor/tilePaletteStamp";
-import {
-  DEFAULT_ASSISTANT_TEMPERATURE,
-  type AssistantTemperature,
-} from "@/editor/assistantTemperature";
-
-export type { AssistantTemperature };
 
 export type Tool = "paint" | "fill" | "collision" | "event" | "erase" | "select" | "eyedropper" | "pan";
 export type PaintShape = "pen" | "rect" | "round";
@@ -26,7 +20,8 @@ export type AutoConnectMode = boolean;
  */
 export type ClusterAssistMode = boolean;
 export type ActivePaletteStamp = PaletteStamp | null;
-export const EDITOR_ZOOM_LEVELS = [1, 2, 3, 4, 6, 8] as const;
+/** 맵 캔버스 배율. 0.25·0.5 는 넓은 맵을 한눈에 보는 축소이고, 상한 8 은 픽셀 편집이다. */
+export const EDITOR_ZOOM_LEVELS = [0.25, 0.5, 1, 2, 3, 4, 6, 8] as const;
 export type EditorZoom = typeof EDITOR_ZOOM_LEVELS[number];
 export const EDITOR_BRUSH_SIZES = [1, 2, 3, 4] as const;
 export type EditorBrushSize = typeof EDITOR_BRUSH_SIZES[number];
@@ -77,7 +72,6 @@ export interface EditorState {
   // 붙여넣기 미리보기 모드 — 클립보드 고스트가 커서를 추종하고 클릭으로 확정.
   pastePreview: { x: number; y: number } | null;
   showGrid: boolean;
-  assistantTemperature: AssistantTemperature;
   showLayoutBboxes: boolean;
   // 배틀 애니메이션 에디터 — 현재 편집 중인 애니메이션의 선택 프레임/셀 인덱스.
   selectedAnimationFrameIndex: number;
@@ -109,7 +103,6 @@ class EditorStateStore {
     clipboard: null,
     pastePreview: null,
     showGrid: true,
-    assistantTemperature: DEFAULT_ASSISTANT_TEMPERATURE,
     showLayoutBboxes: false,
     selectedAnimationFrameIndex: 0,
     selectedAnimationCellIndex: 0,

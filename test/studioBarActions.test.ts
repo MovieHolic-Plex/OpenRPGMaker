@@ -9,7 +9,9 @@ import { editorState } from "@/editor/editorState";
 import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { createBlankProject } from "@/project/defaults";
 import { store, type AutoSaveState } from "@/project/store";
-import type { NewProjectChoiceId } from "@/editor/newProjectChoices";
+import type { NewProjectDialogResult } from "@/editor/ui/newProjectDialog";
+import type { Project } from "@/project/types";
+import { interviewBrief } from "./helpers/gameDesignBrief";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
@@ -19,11 +21,13 @@ const mocks = vi.hoisted(() => ({
   openAudioTestDialog: vi.fn(),
   openMapEventSearchModal: vi.fn(),
   openAiSettingsModal: vi.fn(),
-  saveProjectNow: vi.fn(async () => undefined),
+  saveProjectNow: vi.fn(async () => true),
+  createProjectFolderWithSeed: vi.fn(async (_title: string, _seed: Project) => true),
   showNewProjectDialog: vi.fn(
-    async (): Promise<{ readonly title: string; readonly choiceId: NewProjectChoiceId | null }> => ({
+    async (): Promise<NewProjectDialogResult | null> => ({
       title: "새 프로젝트",
       choiceId: null,
+      screenSize: "classic",
     }),
   ),
   sendAiBootIntent: vi.fn((_text: string): boolean => true),
@@ -31,6 +35,7 @@ const mocks = vi.hoisted(() => ({
   applyPendingAiBootIntent: vi.fn((): boolean => true),
 }));
 
+vi.mock("@/editor/projectFolderActions", () => ({ createProjectFolderWithSeed: mocks.createProjectFolderWithSeed }));
 vi.mock("@/editor/panels/databaseModal", () => ({ openDatabaseModal: mocks.openDatabaseModal }));
 vi.mock("@/editor/panels/resourceModal", () => ({ openResourceModal: mocks.openResourceModal }));
 vi.mock("@/editor/panels/worldEntries", () => ({ openWorldPanel: mocks.openWorldPanel }));
@@ -206,57 +211,40 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     expect(ids).not.toContain("menu-project-save");
   });
 
-  it("새 프로젝트 항목이 이름·장르를 묻고 새 원격 프로젝트를 만든다", async () => {
-    // Break: 클래식 툴바의 toolbar-new 와 함께 새 프로젝트 동작 자체가 사라진다.
-    // 장르를 고르면 genrePacks.ts 정본 씨앗이 loadNewRemoteProject 로 전달된다.
-    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect" as const });
+  it("새 프로젝트는 확정 기획과 선택한 시스템을 새 폴더 씨앗에 저장한다", async () => {
+    const brief = interviewBrief();
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect", screenSize: "wide", gameDesignBrief: brief });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
-    expect(loadNew.mock.calls[0]?.[1]).toMatchObject({ title: "달빛 항구" });
-    expect(loadNew.mock.calls[0]?.[0]?.system.genre).toBe("monster-collect");
-  });
-
-  it("프리셋으로 만들면 장르 프롬프트를 AI 조수에 바로 자동 전송한다", async () => {
-    // Break: 프리셋 선택이 씨앗 system.* 토글에서 끝나고 AI 전송이 빠져,
-    // 빈 맵만 남고 콘텐츠 저작이 시작되지 않는다.
-    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "monster-collect" });
-    const topbar = render("expert");
-    openMenu(topbar, "menu-project");
-    findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
-    await vi.waitFor(() => expect(mocks.sendAiBootIntent).toHaveBeenCalledTimes(1));
-    const prompt = String(mocks.sendAiBootIntent.mock.calls[0]?.[0] ?? "");
-    expect(prompt).toContain("몬스터 수집");
+    await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
+    expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledWith("달빛 항구", expect.objectContaining({
+      system: expect.objectContaining({ genre: "monster-collect", monsterCollection: true, playResolution: { width: 640, height: 360 } }),
+      gameDesignBrief: { ...brief, generationPending: true },
+    }));
+    // Reloaded new-project boot owns the handoff, never the project being left.
+    expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();
     expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
   });
 
-  it("AI 패널이 아직 없으면 보류 의도로 남기고 적용을 시도한다", async () => {
-    // Break: send 실패 시 조용히 끝나 웰컴 경로와 달리 프롬프트가 증발한다.
-    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "달빛 항구", choiceId: "farm-life" });
-    mocks.sendAiBootIntent.mockReturnValueOnce(false);
+  it("기획을 취소하면 새 폴더나 AI 요청을 만들지 않는다", async () => {
+    mocks.showNewProjectDialog.mockResolvedValueOnce(null);
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
-    await vi.waitFor(() => expect(mocks.setPendingAiBootIntent).toHaveBeenCalledTimes(1));
-    expect(mocks.setPendingAiBootIntent.mock.calls[0]?.[1]).toMatchObject({ autoSend: true });
-    expect(mocks.applyPendingAiBootIntent).toHaveBeenCalledTimes(1);
+    await new Promise<void>((resolve) => { globalThis.setTimeout(resolve, 0); });
+    expect(mocks.createProjectFolderWithSeed).not.toHaveBeenCalled();
+    expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();
+    expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
   });
 
-  it("빈 프로젝트는 AI 조수를 건드리지 않는다", async () => {
-    // Break: 빈 맵 시작에도 AI 전송이 붙어 원치 않는 초안이 생긴다.
-    const loadNew = vi.spyOn(store, "loadNewRemoteProject").mockResolvedValue({ projectId: "rpg-zzu-test" });
-    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null });
+  it("빈 프로젝트는 기획이나 AI 전달 표식을 만들지 않는다", async () => {
+    mocks.showNewProjectDialog.mockResolvedValueOnce({ title: "빈 맵", choiceId: null, screenSize: "classic" });
     const topbar = render("expert");
     openMenu(topbar, "menu-project");
     findByTestId(fake(document.body as unknown as HTMLElement), "menu-project-new")?.click();
-    await vi.waitFor(() => expect(loadNew).toHaveBeenCalledTimes(1));
-    await new Promise<void>((resolve) => { globalThis.setTimeout(resolve, 0); });
+    await vi.waitFor(() => expect(mocks.createProjectFolderWithSeed).toHaveBeenCalledOnce());
+    expect(mocks.createProjectFolderWithSeed.mock.calls[0]?.[1].gameDesignBrief).toBeUndefined();
     expect(mocks.sendAiBootIntent).not.toHaveBeenCalled();
     expect(mocks.setPendingAiBootIntent).not.toHaveBeenCalled();
   });

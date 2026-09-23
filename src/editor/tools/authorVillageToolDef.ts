@@ -1,6 +1,7 @@
 import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { RIVER_VILLAGE_STYLE_GUIDANCE } from "@/project/defaults/riverVillageStyle";
 import { prepareVillageDefaultTileset } from "./village/defaultTileset";
+import { applyVillageClimate, borrowForestHarmonyForClimateSheet } from "./village/villageClimate";
 import { withVillageMorphologyDefault } from "./village/defaultMorphology";
 import { VILLAGE_MORPHOLOGIES } from "./village/morphologyTypes";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
@@ -100,7 +101,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           properties: {
             kind: { type: "string", enum: ["existing", "new"] },
             mapId: { type: "string" },
-            name: { type: "string" },
+            name: { type: "string", description: "마을(맵) 이름. kind=new 는 필수. kind=existing 이면 시공 뒤 그 맵 이름을 이것으로 바꾼다 — 생략하면 '빈 맵' 같은 자리표시 이름만 '마을'로 바꾼다." },
             tilesetId: { type: "string", description: "kind=new 전용. 생략하면 숲마을 · 거리별 잔디. 사용자가 선택한 칩셋은 여기에 지정한다. 기존 맵은 원래 칩셋을 유지한다." },
             width: { type: "integer" },
             height: { type: "integer" },
@@ -158,7 +159,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           },
         },
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
-        groundTheme: { type: "string", enum: ["grass", "snow"], description: "Whole-settlement ground preset. theme remains descriptive." },
+        groundTheme: { type: "string", enum: ["grass", "snow"], description: "마을 전체 지면. 기획·세계관이 눈·겨울·눈보라·설원이면 snow — 숲마을 칩셋은 칸 번호가 같은 설원 칩셋(forest_harmony_snow)으로 바뀌고 맵 날씨가 눈이 되어 이 마을 아래 실내·던전의 전투 배경도 설원이 된다. theme 문장은 코드가 읽지 않으니 눈 마을이면 반드시 지정한다." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         morphology: {
           type: "string",
@@ -221,12 +222,16 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       interior: false,
     },
     run(draft, args): ToolExecResult {
+      // 파서는 existing 대상의 name 을 반대 변형 필드로 버린다 — 이름 바꾸기용으로 먼저 잡아 둔다.
+      const requestedExistingName = existingTargetName(args);
       const designed = withVillageMorphologyDefault(draft, resolveVillageDesignInput(draft, args, true));
       // 신규 맵 크기 생략 시 코드가 유일한 환산기(estimateVillageSize)로 채운다 — 모델 창작 아님.
       // 파서보다 먼저 채워야 파서의 plannedMap 합성이 target 값을 볼 수 있다(2026-09-11).
       const sized = fillMissingVillageDimensions(designed, draft);
       const normalized = normalizeUnknownHouseTemplates(sized, knownTemplateIds(draft));
-      const request = parseAuthorVillageRequest(normalized.args);
+      // 기후 칩셋(설원 등) 맵은 칸 번호가 같은 숲마을 칩셋으로 지은 뒤 되돌린다 — 스코프 baseline 보다 먼저.
+      const borrowed = borrowForestHarmonyForClimateSheet(draft, parseAuthorVillageRequest(normalized.args));
+      const request = borrowed.request;
       // 검증 후 변이: 맵 생성(createExactVillageMap)보다 먼저 타일셋·수용성을 검사한다.
       // 기존 맵 타일셋이 숲마을·합본 마을 호환이 아니면 시공 전에 거부 — 반쯤 지은 draft를 피한다.
       // 스코프 검사(baseline 스냅샷)가 확장을 "target 변경"으로 읽지 않게 성장은 baseline보다 먼저.
@@ -258,7 +263,11 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const state = { baseline, draft, request, inspection };
       const scopeWarnings = assertVillageMutationScope(state);
       const data = buildVillageFacadeData(state, result);
-      const warnings = [...data.construction.warnings, ...scopeWarnings];
+      const renameWarnings = request.target.kind === "existing"
+        ? renameVillageTargetMap(draft, request.target.mapId, requestedExistingName)
+        : [];
+      const climateWarnings = applyVillageClimate(draft, request, borrowed.climate);
+      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...climateWarnings];
       return {
         summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`,
         data,
@@ -269,6 +278,45 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
 }
 
 export const AUTHOR_VILLAGE_TOOL = createAuthorVillageTool();
+
+/** 새 프로젝트·새 맵이 붙이는 자리표시 이름. 마을을 지은 뒤에도 이 이름이면 장소 목록·세계관에 「빈 맵」으로 남는다. */
+const PLACEHOLDER_MAP_NAMES: ReadonlySet<string> = new Set(["", "빈 맵", "새 맵", "맵", "map", "new map", "untitled"]);
+const DEFAULT_VILLAGE_MAP_NAME = "마을";
+
+export function isPlaceholderMapName(name: string | undefined): boolean {
+  return PLACEHOLDER_MAP_NAMES.has((name ?? "").trim().toLowerCase());
+}
+
+function existingTargetName(args: Record<string, unknown>): string | undefined {
+  const target = args.target;
+  if (typeof target !== "object" || target === null || Array.isArray(target)) return undefined;
+  const record = target as Record<string, unknown>;
+  if (record.kind !== "existing" || typeof record.name !== "string") return undefined;
+  return record.name.trim() || undefined;
+}
+
+/**
+ * 기존 맵에 마을을 지은 뒤 이름을 맞춘다(2026-09-23 등대지기 재시험: 64×40 항구 마을이 끝까지 「빈 맵」).
+ * 요청 이름이 있으면 그 이름, 없으면 자리표시 이름일 때만 기본 이름. 다른 맵이 이미 쓰는 이름은 빼앗지 않는다.
+ */
+function renameVillageTargetMap(draft: Project, mapId: string, requested: string | undefined): string[] {
+  const map = draft.maps[mapId];
+  if (!map) return [];
+  const placeholder = isPlaceholderMapName(map.name);
+  const next = requested ?? (placeholder ? DEFAULT_VILLAGE_MAP_NAME : undefined);
+  if (!next || next === map.name.trim()) return [];
+  const namesake = Object.values(draft.maps).find(other => other.id !== map.id && other.name.trim() === next);
+  if (namesake) {
+    return [`맵 이름을 '${next}'(으)로 바꾸지 못했습니다 — 이미 ${namesake.id} 의 이름입니다. set_map_properties 로 고유 이름을 붙이세요.`];
+  }
+  const previous = map.name;
+  map.name = next;
+  return [
+    requested
+      ? `맵 이름: '${previous}' → '${next}'.`
+      : `맵 이름이 자리표시 '${previous}'라 '${next}'(으)로 바꿨습니다 — 고유 마을 이름은 target.name 또는 set_map_properties 로 지정하세요.`,
+  ];
+}
 
 /**
  * 변이 전 사전 검사 — 맵 생성·시공보다 먼저.

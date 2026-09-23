@@ -141,7 +141,11 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToS
         button('주인공 시작 직업 지정', 'growth-bundle-assign-actor', () => navigate('actors')),
       ] }));
     }
-    root.classList.toggle('has-preset-preview', !browsing);
+    // 예시(프리셋) 띠는 **아직 아무것도 없을 때만** 깐다. 트리가 있는데도 화면 아래 3분의 1을
+    // 「미적용」 노드가 차지하면 이미 적용된 것처럼 읽혔다(2026-09-23 파티 UX 검토). 채워진
+    // 뒤에는 머리의 「프리셋」 버튼이 같은 브라우저를 연다.
+    const empty = mode === 'promotion' ? edges.length === 0 : g.skillTrees.length === 0;
+    root.classList.toggle('has-preset-preview', !browsing && empty);
     if (browsing) {
       root.replaceChildren(header, presetBrowser(mode, closePresets, addedPreset, { state: state.preset }));
       return;
@@ -168,7 +172,7 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToS
     const issues = growthIssues(p);
     root.replaceChildren(header, el('div', { class: 'growth-body', children: [catalog(p, tree), el('main', { class: 'growth-workspace', children: [toolbar, canvas,
       el('div', { class: `growth-status${state.message || issues.length ? ' has-issue' : ''}`, attrs: { role: 'status' }, dataset: { testid: 'growth-status' }, text: state.message ?? (state.connecting ? '도착 노드를 선택하세요. 선행 조건으로 연결됩니다.' : issues[0] ?? '드래그로 배치 · Ctrl+휠 확대') }),
-    ] }), inspector] }), presetBrowser(mode, closePresets, addedPreset, { compact: true, state: state.preset, disabled: state.preview }));
+    ] }), inspector] }), ...(empty ? [presetBrowser(mode, closePresets, addedPreset, { compact: true, state: state.preset, disabled: state.preview })] : []));
     const nextScroll = root.querySelector<HTMLElement>('.growth-body .growth-viewport'); if (nextScroll) { nextScroll.scrollLeft = scrollPos.x; nextScroll.scrollTop = scrollPos.y; }
     nextScroll?.addEventListener('scroll', () => { state.canvasX = nextScroll.scrollLeft; state.canvasY = nextScroll.scrollTop; });
     const presetScroll = root.querySelector<HTMLElement>('[data-testid="growth-preset-viewport"]');
@@ -322,5 +326,5 @@ export function renderGrowthTreeTab(host: HTMLElement, mode: Mode, onNavigateToS
   root.addEventListener('keydown', event => { if (browsing && event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); closePresets(); } });
   draw();
 }
-function metric(label: string, value: number): HTMLElement { return el('div', { class: 'growth-metric', children: [el('strong', { class: 'growth-metric-value', text: String(value).padStart(2, '0') }), el('span', { text: label })] }); }
+function metric(label: string, value: number): HTMLElement { return el('div', { class: 'growth-metric', children: [el('strong', { class: 'growth-metric-value', text: String(value) }), el('span', { text: label })] }); }
 function inspectorTitle(label: string, name: string, resourceId?: string): HTMLElement { return el('div', { class: 'growth-inspector-title', children: [...(resourceId ? [growthArt(resolveAssetResourceUrl(resourceId), name.slice(0, 1), 'growth-inspector-art')] : []), el('small', { text: label }), el('h3', { text: name })] }); }

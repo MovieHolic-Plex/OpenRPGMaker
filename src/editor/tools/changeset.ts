@@ -269,7 +269,9 @@ export function summarizeChanges(before: Project, after: Project): ChangeSummary
   diffDatabase(before, after, summary);
   if (JSON.stringify(before.spatialAuthoring) !== JSON.stringify(after.spatialAuthoring)) summary.dbRecordsChanged += 1;
   for (const [id, afterTileset] of Object.entries(after.tilesets)) {
-    if (JSON.stringify(before.tilesets[id]) !== JSON.stringify(afterTileset)) summary.tilesetsChanged += 1;
+    // 타일셋은 참고 이미지까지 수 MB 다 — 같은 객체면 직렬화하지 않는다(체크포인트는 타일셋을 객체째 되붙인다).
+    const beforeTileset = before.tilesets[id];
+    if (beforeTileset !== afterTileset && JSON.stringify(beforeTileset) !== JSON.stringify(afterTileset)) summary.tilesetsChanged += 1;
   }
   summary.switchesAdded = countNamedDefChanges(before.switches, after.switches);
   summary.variablesAdded = countNamedDefChanges(before.variables, after.variables);

@@ -62,6 +62,13 @@ describe("web export runtime assets — 영웅 전투 시트 고해상도 짝", 
 });
 
 describe("web export runtime assets", () => {
+  it("includes default terminal art even when no resource profile or game-over settings reference it", () => {
+    const project = createBlankProject();
+    delete project.system.gameOver;
+    project.resourceProfiles = project.resourceProfiles.filter(row => row.kind !== "gameOver");
+    const paths = collectWebExportAssets(project).map(asset => asset.zipPath);
+    expect(paths).toContain("assets/easyrpg/game-over/Game Over.png");
+  });
   it("drops life-ledger art from a project that has no life-ledger data", () => {
     // Given
     const project = createBlankProject();

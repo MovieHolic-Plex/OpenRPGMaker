@@ -649,10 +649,19 @@ export function changeParty(
   project?: Project
 ): void {
   if (action === "add") {
+    // 배우가 아닌 값(빈 actorId·몬스터 speciesId)을 넣으면 파티에 null 이 남아 다음 전투가
+    // 「Missing actor」로 멈춘다(2026-09-24 등대지기 3차). 합류를 건너뛰고 알린다.
+    if (typeof actorId !== "string" || !actorId.trim()
+      || (project && !project.database.actors.some((actor) => actor.id === actorId))) {
+      console.warn(`[changeParty] 배우가 아닌 값이라 합류를 건너뜁니다: ${JSON.stringify(actorId)}`);
+      return;
+    }
     if (!session.partyActorIds.includes(actorId)) session.partyActorIds.push(actorId);
     if (project) syncActorVitals(project, session.actorVitals, actorId);
     return;
   }
+  // 정본이 아닌 값(예: 옛 op:"+=")을 「제외」로 읽으면 합류하라는 명령이 동료를 빼 버린다.
+  if (action !== "remove") return;
   session.partyActorIds = session.partyActorIds.filter((id) => id !== actorId);
 }
 

@@ -51,13 +51,20 @@ export function deserialize(raw: string): Project {
       cause instanceof Error ? `JSON 파싱 실패: ${cause.message}` : "JSON 파싱 실패"
     );
   }
+  return deserializeParsed(parsed);
+}
 
+/**
+ * Validate a value that JSON.parse (or a structuredClone of one) already owns.
+ * Current-schema loads adopt that tree instead of cloning it again.
+ */
+export function deserializeParsed(parsed: unknown): Project {
   const data = requireRecord("project", parsed);
   const version = requireNumber("version", data.version);
   if (version === 1) return migrateV1toV3(validateProjectV1(data));
   if (version === 2) return migrateV2toV3(validateProjectV2(data));
   // v3 는 얼굴 짝(시트 id + faceIndex)을 들고 있다 — 낱장 얼굴 id 로 바꾼 뒤 검사한다.
   if (version === 3) return migrateV3toV4(data);
-  if (version === SCHEMA_VERSION) return validateProjectV4(data);
+  if (version === SCHEMA_VERSION) return validateProjectV4(data, { adoptParsed: true });
   throw new ProjectFormatError(`지원하지 않는 스키마 버전입니다: ${version} (현재 ${SCHEMA_VERSION})`);
 }

@@ -42,6 +42,7 @@ import { restoreGeographyParent } from "@/editor/panels/spatialGeographyNavigate
 import { cardSubtitle, humanizeSpatialError, spatialSourceLabel } from "@/editor/panels/spatialFeedback";
 import { activateSpatialDocument, workingProject } from "@/editor/panels/spatialGeographyCommands";
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
+import { getMapEditHistoryState } from "@/editor/mapEditHistory";
 import { el } from "@/util/dom";
 
 const KIND_GUIDANCE: Partial<Record<SpatialAuthoringSession["tab"], string>> = {
@@ -66,11 +67,18 @@ const ACTION_HINT: Readonly<Record<string, string>> = {
   "spatial-delete": "선택한 설계·배치를 삭제합니다",
   "spatial-preview": "편집 초안을 프로젝트에 미리 적용해 봅니다",
   "spatial-apply": "미리보기 상태를 프로젝트에 확정합니다",
-  "spatial-refresh": "배치된 곳을 최신 설계로 다시 생성합니다",
-  "spatial-detach": "배치를 원본 설계에서 분리해 독립 사본으로 만듭니다",
+  "spatial-refresh": "맵에 놓인 것을 최신 설계로 다시 만듭니다",
+  "spatial-detach": "맵에 놓인 것을 원본 설계와 끊어 따로 고칠 수 있게 합니다",
   "spatial-undo": "마지막 편집을 되돌립니다",
   "spatial-redo": "되돌린 편집을 다시 실행합니다",
 };
+
+/**
+ * 변경이 생겨야 의미가 있는 버튼(미리보기·적용·되돌리기·다시 실행)은 누를 수 없을 때 숨긴다.
+ * 회색 버튼 네 개가 늘 떠 있으면 무엇을 누를 수 있는지가 안 보였다. 요소는 DOM 에 남긴다 —
+ * disabled 계약(테스트·syncSpatialBuildEnabled)은 그대로 읽힌다.
+ */
+const HIDE_WHEN_DISABLED = new Set(["spatial-preview", "spatial-apply", "spatial-undo", "spatial-redo"]);
 
 function actionButton(id: string, label: string, enabled: boolean, onClick?: () => void): HTMLElement {
   return el("button", {
@@ -79,11 +87,20 @@ function actionButton(id: string, label: string, enabled: boolean, onClick?: () 
     attrs: {
       type: "button",
       ...(ACTION_HINT[id] ? { title: ACTION_HINT[id] } : {}),
-      ...(enabled ? {} : { disabled: "" }),
+      ...(enabled ? {} : { disabled: "", ...(HIDE_WHEN_DISABLED.has(id) ? { hidden: "" } : {}) }),
     },
     dataset: { testid: id },
     on: enabled && onClick ? { click: onClick } : undefined,
   });
+}
+
+/** 컨트롤러의 되돌리기는 편집 기록 전체를 되감는다 — 기록이 비어 있으면 누를 게 없으므로 숨긴다. */
+function historyButtons(chrome: SpatialDomainChrome | undefined): HTMLElement[] {
+  const history = getMapEditHistoryState();
+  return [
+    actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo) && history.canUndo, chrome?.undo),
+    actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo) && history.canRedo, chrome?.redo),
+  ];
 }
 
 export function inspectorSourceLabel(card: SpatialGalleryCard): string {
@@ -92,7 +109,7 @@ export function inspectorSourceLabel(card: SpatialGalleryCard): string {
 
 function domainChrome(session: SpatialAuthoringSession, onChange: () => void): SpatialDomainChrome | undefined {
   const selected = visibleSpatialSelection(session);
-  let chrome = selected?.regionReferenceId ? { saveState: "완성 배치 사례 · 읽기 전용", previewError: null } : session.tab === "tiles" ? spatialTilesChrome()
+  let chrome = selected?.regionReferenceId ? { saveState: "예시 · 읽기 전용", previewError: null } : session.tab === "tiles" ? spatialTilesChrome()
     : session.tab === "objects" ? spatialObjectsChrome(selected, onChange)
     : session.tab === "spaces" ? spatialSpacesChrome(selected, onChange)
     : session.tab === "places" ? spatialPlacesChrome(visiblePlaceSelection(selected), onChange)
@@ -130,21 +147,22 @@ export function renderSpatialChrome(
         children: [
           el("button", {
             class: `spatial-mode${session.mode === "design" ? " is-active" : ""}`,
-            text: "설계",
-            attrs: { type: "button", "aria-pressed": String(session.mode === "design"), title: "설계 — 편집 가능한 설계 도서관" },
+            text: "목록",
+            attrs: { type: "button", "aria-pressed": String(session.mode === "design"), title: "목록 — 만들어 둔 설계와 기본 제공 설계" },
             dataset: { testid: "spatial-mode-design" },
           }),
           el("button", {
             class: `spatial-mode${session.mode === "instances" ? " is-active" : ""}`,
-            text: "배치된 곳",
-            attrs: { type: "button", "aria-pressed": String(session.mode === "instances"), title: "배치된 곳 — 실제 맵에 놓인 결과물" },
+            text: "맵에 놓인 것",
+            attrs: { type: "button", "aria-pressed": String(session.mode === "instances"), title: "맵에 놓인 것 — 실제 맵에 놓인 결과물" },
             dataset: { testid: "spatial-mode-instances" },
           }),
           el("button", {
             class: `spatial-inspector-toggle${session.inspectorOpen ? " is-active" : ""}`,
-            text: "속성",
+            text: "상세",
             attrs: {
               type: "button",
+              title: "고른 항목의 미리보기와 속성을 오른쪽에 엽니다",
               "aria-pressed": String(session.inspectorOpen),
               "aria-expanded": String(session.inspectorOpen),
               "aria-controls": "spatial-inspector",
@@ -188,8 +206,7 @@ export function renderSpatialChrome(
             actionButton("spatial-add", "추가", Boolean(chrome?.add), chrome?.add),
             actionButton("spatial-preview", "미리보기", Boolean(chrome?.preview), chrome?.preview),
             actionButton("spatial-apply", "적용", Boolean(chrome?.apply), chrome?.apply),
-            actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
-            actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+            ...historyButtons(chrome),
             el("details", {
               class: "spatial-more",
               // 삭제 확인이 떠 있으면 접힌 채로 두지 않는다 — 확인 버튼이 안에 있다.
@@ -200,7 +217,7 @@ export function renderSpatialChrome(
                 el("div", {
                   class: "spatial-more-body",
                   children: [
-                    actionButton("spatial-activate", "장소 설계 활성화", Boolean(chrome?.activate), chrome?.activate),
+                    actionButton("spatial-activate", "장소 편집 켜기", Boolean(chrome?.activate), chrome?.activate),
                     actionButton("spatial-duplicate", "복제", Boolean(chrome?.duplicate), chrome?.duplicate),
                     actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
                     el("button", {
@@ -211,17 +228,18 @@ export function renderSpatialChrome(
                       on: chrome?.onDeleteConfirm ? { click: chrome.onDeleteConfirm } : undefined,
                     }),
                     ...renderSpatialBuildChrome(session.tab, chrome),
-                    actionButton("spatial-refresh", "새로고침", Boolean(chrome?.refresh), chrome?.refresh),
-                    actionButton("spatial-detach", "분리", Boolean(chrome?.detach), chrome?.detach),
+                    actionButton("spatial-refresh", "최신으로 다시 만들기", Boolean(chrome?.refresh), chrome?.refresh),
+                    actionButton("spatial-detach", "원본과 끊기", Boolean(chrome?.detach), chrome?.detach),
                   ],
                 }),
               ],
             }),
           ]),
+          // 「읽기」는 아무 일도 없다는 뜻이라 말할 필요가 없다 — 초안·미리보기처럼 할 일이 생겼을 때만 보인다.
           el("span", {
             class: "spatial-save-state",
             text: chrome?.saveState ?? "읽기",
-            attrs: { title: "편집 상태 — 읽기 · 초안 · 미리보기 · 적용" },
+            attrs: { title: "편집 상태 — 읽기 · 초안 · 미리보기 · 적용", ...((chrome?.saveState ?? "읽기") === "읽기" ? { hidden: "" } : {}) },
             dataset: { testid: "spatial-save-state" },
           }),
           el("span", {
@@ -378,8 +396,8 @@ function renderBrowserChrome(session: SpatialAuthoringSession, onChange: () => v
   const more = el("details", { class: "asset-browser-more", attrs: chrome?.deleteOpen ? { open: "" } : {}, children: [
     el("summary", { text: "⋯ 더 보기" }),
     el("div", { class: "asset-browser-more-body", children: [
-      actionButton("spatial-mode-instances", "맵에 배치된 항목", true, () => { patchSpatialSession({ mode: "instances" }); onChange(); }),
-      ...(chrome?.activate && session.tab !== "spaces" ? [actionButton("spatial-activate", "장소 설계 활성화", true, chrome.activate)] : []),
+      actionButton("spatial-mode-instances", "맵에 놓인 것", true, () => { patchSpatialSession({ mode: "instances" }); onChange(); }),
+      ...(chrome?.activate && session.tab !== "spaces" ? [actionButton("spatial-activate", "장소 편집 켜기", true, chrome.activate)] : []),
       ...(chrome?.duplicate ? [actionButton("spatial-duplicate", "복제", true, chrome.duplicate)] : []),
       actionButton("spatial-delete", "삭제", Boolean(chrome?.delete), chrome?.delete),
       ...(chrome?.deleteOpen ? [actionButton("spatial-delete-confirm", "삭제 확인", true, chrome.onDeleteConfirm)] : []),
@@ -393,10 +411,9 @@ function renderBrowserChrome(session: SpatialAuthoringSession, onChange: () => v
     actionButton("spatial-add", `+ 새 ${TAB_LABEL[session.tab]}`, Boolean(onAdd ?? chrome?.add) && (session.tab !== "spaces" || Boolean(workingProject().spatialAuthoring)), onAdd ?? chrome?.add),
     actionButton("spatial-preview", "변경 미리보기", Boolean(chrome?.preview), chrome?.preview),
     actionButton("spatial-apply", "변경 적용", Boolean(chrome?.apply), chrome?.apply),
-    actionButton("spatial-undo", "되돌리기", Boolean(chrome?.undo), chrome?.undo),
-    actionButton("spatial-redo", "다시 실행", Boolean(chrome?.redo), chrome?.redo),
+    ...historyButtons(chrome),
     more,
-    el("span", { class: "asset-browser-status", text: chrome?.saveState === "초안" ? "적용하지 않은 변경이 있습니다" : chrome?.saveState ?? "", dataset: { testid: "spatial-save-state" } }),
+    el("span", { class: "asset-browser-status", text: chrome?.saveState === "초안" ? "적용하지 않은 변경이 있습니다" : chrome?.saveState === "읽기" ? "" : chrome?.saveState ?? "", dataset: { testid: "spatial-save-state" } }),
     el("p", { class: "asset-browser-error", text: humanizeSpatialError(chrome?.previewError ?? null) ?? "", attrs: { role: "status", ...(chrome?.previewError ? {} : { hidden: "" }) }, dataset: { testid: "spatial-preview-error" } }),
   ] });
 }

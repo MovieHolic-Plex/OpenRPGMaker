@@ -25,12 +25,12 @@ export function openLoginModalIfNeeded(onIdentityChanged?: () => void): void {
   if (browserLocalStorage()?.getItem(LAST_LOGIN_METHOD_KEY)) return;
   // AI 변경 카드가 떠 있으면 로그인 모달이 클릭을 가로채므로 게스트로 조용히 통과.
   if (document.querySelector("[data-testid='ai-change-card']")) {
-    completeMockLogin("게스트", "guest", onIdentityChanged);
+    completeMockLogin("게스트", "guest", onIdentityChanged, { silent: true });
     return;
   }
   // Shared/bookmarked ?project= deep-links: do not block the loaded canvas with a login wall.
   if (readProjectFromUrl().projectId) {
-    completeMockLogin("게스트", "guest", onIdentityChanged);
+    completeMockLogin("게스트", "guest", onIdentityChanged, { silent: true });
     return;
   }
   // 부팅 게이트에서는 더 이상 묻지 않는다 (2026-09-22).
@@ -46,7 +46,7 @@ export function openLoginModalIfNeeded(onIdentityChanged?: () => void): void {
   //
   // 게스트 신원은 어차피 자동으로 붙는다(`브라우저 4419` 같은 라벨). 이름은 상단 인물
   // 아이콘에서 언제든 바꿀 수 있고, 팀 협업을 시작할 때 묻는 것이 자연스럽다.
-  completeMockLogin("게스트", "guest", onIdentityChanged);
+  completeMockLogin("게스트", "guest", onIdentityChanged, { silent: true });
 }
 
 /** AI 제안 UI가 로그인 모달에 가리지 않도록 게스트 신원을 확보한다. */
@@ -56,7 +56,7 @@ export function ensureGuestIdentityForAiSurface(onIdentityChanged?: () => void):
     document.querySelector("[data-testid='login-modal']")?.remove();
     return;
   }
-  completeMockLogin("게스트", "guest", onIdentityChanged);
+  completeMockLogin("게스트", "guest", onIdentityChanged, { silent: true });
 }
 
 export function openMockLoginModal(onIdentityChanged?: () => void): void {
@@ -212,12 +212,13 @@ function oauthButton(method: "google" | "github", onIdentityChanged?: () => void
   });
 }
 
-function completeMockLogin(label: string, method: LoginMethod, onIdentityChanged?: () => void): void {
+/** `silent` — 사용자가 고르지 않은 자동 게스트 신원. 알릴 것이 없으니 토스트도 띄우지 않는다. */
+function completeMockLogin(label: string, method: LoginMethod, onIdentityChanged?: () => void, { silent = false } = {}): void {
   setOwnerLabel(label);
   browserLocalStorage()?.setItem(LAST_LOGIN_METHOD_KEY, method);
   document.querySelector("[data-testid='login-modal']")?.remove();
   onIdentityChanged?.();
-  toast("목업 로그인 신원을 설정했습니다", "ok");
+  if (!silent) toast("목업 로그인 신원을 설정했습니다", "ok");
 }
 
 function toggleIdentityMenu(anchor: HTMLElement, identity: EditorIdentity, onIdentityChanged: () => void): void {

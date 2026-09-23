@@ -41,7 +41,15 @@ export function factionReputationPreview(): HTMLElement {
   ] });
 }
 
-export function factionUsageCard(factionId: string): HTMLElement {
+export type FactionUsage = {
+  readonly enemyCount: number;
+  readonly mapCount: number;
+  readonly referenceCount: number;
+  readonly card: HTMLElement;
+};
+
+/** 사용처 목록(카드)과 제목줄 요약에 쓸 개수를 함께 만든다. */
+export function factionUsage(factionId: string): FactionUsage {
   const project = store.getCurrent();
   const rows: HTMLElement[] = project.database.enemies
     .filter((enemy) => (enemy.factionId ?? DEFAULT_ENEMY_FACTION_ID) === factionId)
@@ -55,6 +63,7 @@ export function factionUsageCard(factionId: string): HTMLElement {
         if (root) switchDatabaseActiveTab("enemies", root);
       } },
     }));
+  const enemyCount = rows.length;
   for (const map of Object.values(project.maps)) {
     const spawns = (map.fieldSpawns ?? []).filter((spawn) => {
       const troop = project.database.troops.find((entry) => entry.id === spawn.troopId);
@@ -69,11 +78,13 @@ export function factionUsageCard(factionId: string): HTMLElement {
       on: { click: () => { selectEditorMap(map.id); } },
     }));
   }
+  const mapCount = rows.length - enemyCount;
   const references = factionReferenceLabels(project, factionId);
-  return sectionCard({
+  const card = sectionCard({
     title: "사용처", hint: "몬스터나 맵을 눌러 이동합니다. 기본·상속 소속도 포함합니다.",
-    children: [el("div", { class: "db-ws-stack", children: rows }),
+    children: [el("div", { class: "db-faction-usage-list", children: rows }),
       el("p", { class: "db-ws-usage", text: references.length ? `명시적 참조: ${references.join(" · ")}` : "명시적으로 지정한 참조가 없습니다." })],
     testid: "db-faction-usage",
   });
+  return { enemyCount, mapCount, referenceCount: references.length, card };
 }

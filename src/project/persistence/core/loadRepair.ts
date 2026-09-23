@@ -1,4 +1,4 @@
-import { deserialize } from "../../io";
+import { deserialize, deserializeParsed } from "../../io";
 import { collectProjectItemReferenceIds } from "../../io/references";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "../../defaults/defaultAssets";
 import { ensureBundledBattleAnimations } from "../../defaults/defaultDatabase";
@@ -13,13 +13,12 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export function deserializeStoredProjectJson(value: unknown): Project {
   try {
-    // The stored value already came from JSON.parse in the local host. Re-encoding and
-    // parsing it just to obtain a mutable copy adds a full project-sized stringify/parse
-    // pair before validation. structuredClone preserves the same copy-before-repair
-    // contract without paying that serialization cost.
+    // The stored value already came from JSON.parse in the local host. Repair mutates
+    // a clone so a failed repair can still open the untouched row. Validation then
+    // adopts that clone instead of stringifying the whole project back to text.
     const repaired: unknown = structuredClone(value);
     repairStoredProjectJson(repaired);
-    return deserialize(JSON.stringify(repaired));
+    return deserializeParsed(repaired);
   } catch {
     // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
     // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
@@ -45,10 +44,11 @@ export function repairStoredLoadFoundation(value: unknown): void {
 }
 
 function repairStoredItemCatalog(value: unknown): void {
-  if (!isRecord(value)) return;
+  if (!isRecord(value) || !hasUntouchedLegacyItemStub(value)) return;
   // 참조 수집기는 정규화된 Project를 단일 권위자로 삼는다. 카탈로그를 건드리기 전의
   // 유효한 행을 먼저 해석하므로, 이벤트·시스템·시작 인벤토리의 기존 참조를 잃지 않는다.
-  const referencedItemIds = collectProjectItemReferenceIds(deserialize(JSON.stringify(value)));
+  // 옛 아이템 껍데기가 있을 때만 탄다. 정상 프로젝트는 이 전체 검증을 건너뛴다.
+  const referencedItemIds = collectProjectItemReferenceIds(deserializeParsed(structuredClone(value)));
 
   // DB current_json은 저작 데이터베이스 레코드의 기준 원본이다.
   // 일반 기본값 보충은 계속 금지한다. 이 제한적 이전만 2026-08 아이템 시드를 고친다.
@@ -198,6 +198,11 @@ function ensureLoadRepairBattleAnimations(project: Record<string, unknown>): voi
   ensureBundledBattleAnimations({
     database: { battleAnimations: project.database.battleAnimations as BattleAnimationRecord[] },
   });
+}
+
+function hasUntouchedLegacyItemStub(project: Record<string, unknown>): boolean {
+  if (!isRecord(project.database) || !Array.isArray(project.database.items)) return false;
+  return project.database.items.some((record) => isRecord(record) && isUntouchedLegacyItemStub(record));
 }
 
 function isUntouchedLegacyItemStub(record: Record<string, unknown>): boolean {

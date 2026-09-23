@@ -1,4 +1,5 @@
 import type { Command, GameEvent, MapId, Project } from "@/project/types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export type MapLinkStats = {
   readonly outgoingTransfers: number;
@@ -77,6 +78,7 @@ function walkCommands(commands: readonly Command[], out: Extract<Command, { kind
       for (const option of command.options) walkCommands(option.branch, out);
       if (command.cancelBranch) walkCommands(command.cancelBranch, out);
     }
+    if (command.kind === "presentItem") for (const branch of presentItemBranchLists(command)) walkCommands(branch, out);
     if (command.kind === "fork") {
       walkCommands(command.then, out);
       if (command.else) walkCommands(command.else, out);

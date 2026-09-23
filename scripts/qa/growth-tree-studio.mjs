@@ -4,6 +4,15 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
 const base = process.env.GROWTH_QA_BASE ?? 'http://127.0.0.1:54041';
 import { armDomState, finishDomState, inspectGrowthImages, inspectGrowthLayout, blockRemoteWrites, growthEvidenceRoot, growthViewports } from './growth-tree-evidence.mjs';
+// 승급 트리·스킬 트리는 레일 칸이 아니라 직업·스킬 탭의 보기다(2026-09-23) — 부모 탭을 연 뒤 보기 전환 줄을 누른다.
+const GROWTH_SUBVIEW = { 'db-tab-promotion-tree': ['db-tab-classes', 'db-subview-promotion-tree'], 'db-tab-skill-trees': ['db-tab-skills', 'db-subview-skill-trees'] };
+async function openGrowthSubview(page, id) {
+  const [parent, sub] = GROWTH_SUBVIEW[id] ?? [id, null];
+  if (!await page.getByTestId(parent).isVisible()) await page.getByTestId('db-tab-group-party').click();
+  await page.getByTestId(parent).click();
+  if (sub) await page.getByTestId(sub).click();
+}
+
 const out = `${growthEvidenceRoot}/editor`;
 await mkdir(out, { recursive: true });
 console.log('Launching browser');
@@ -25,11 +34,7 @@ try {
   await page.getByTestId('toolbar-database').waitFor({ timeout: 120000 });
   await page.getByTestId('toolbar-database').click();
   await page.getByTestId('database-modal').waitFor();
-  const switchTab = async id => {
-    const tab=page.getByTestId(id);
-    if (!await tab.isVisible()) await page.getByTestId('db-tab-group-party').click();
-    await tab.click();
-  };
+  const switchTab = async id => openGrowthSubview(page, id);
   await switchTab('db-tab-skill-trees');
   console.log('Creating tree through editor controls');
   await page.getByTestId('growth-add-tree').click(); console.log('Tree created');

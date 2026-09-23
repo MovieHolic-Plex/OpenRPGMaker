@@ -16,6 +16,7 @@ import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import type { PlaceDesign, SpatialId } from "@/project/spatial/types";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { el } from "@/util/dom";
+import { housePreviewMap } from "@/editor/panels/villageHousePreview";
 
 const FACILITY_LAYERS = ["plan", "floor", "walls", "furniture"] as const;
 type PlacePreviewInput = {
@@ -116,6 +117,12 @@ export function previewPlaceRasters(input: PlacePreviewInput & { readonly scale:
 
 /** Compatibility facilities still use their real authored concept plan and tileset vocabulary. */
 function facilityMaps(project: Project, card: SpatialGalleryCard): readonly PlacePreviewMap[] {
+  if (card.compatibility === "house-shape") {
+    const template = project.villageTemplates?.find(entry => entry.id === card.localId);
+    const preview = template ? housePreviewMap(template, project) : undefined;
+    if (!preview) throw new SpatialOperationError("missing", card.id);
+    return [{ map: preview.map, x: 0, y: 0, level: 0 }];
+  }
   const tilesetId = card.tilesetId ?? INTERIOR_ROOM_TILESET_ID;
   const tileset = own(project.tilesets, tilesetId);
   let bundle: ReturnType<typeof conceptFacilityTemplateById>;
@@ -208,14 +215,21 @@ export function childSourceLabel(project: Project, kind: "space" | "place", id: 
 
 let reviewedMaps: typeof loadReviewedPlaceMaps | null = null;
 let reviewedMapsLoading: Promise<void> | null = null;
+const reviewedReady = new Set<() => void>();
+let reviewedMapsError: string | null = null;
 
 function reviewedRasters(id: string, scale: number, whenReady?: () => void): PlaceRasterPreview {
+  if (reviewedMapsError) return { stamps: [], width: 0, height: 0, error: reviewedMapsError };
   if (!reviewedMaps) {
+    if (whenReady) reviewedReady.add(whenReady);
     reviewedMapsLoading ??= import("@/project/defaults/spatial/reviewedPlaceCatalog").then(mod => {
       reviewedMaps = mod.reviewedPlaceMaps;
-      whenReady?.();
     }).catch(() => {
-      reviewedMapsLoading = null;
+      reviewedMapsError = "장소 미리보기를 불러오지 못했습니다. 창을 새로 고쳐 다시 시도해 주세요.";
+    }).finally(() => {
+      const callbacks = [...reviewedReady];
+      reviewedReady.clear();
+      for (const ready of callbacks) queueMicrotask(ready);
     });
     return { stamps: [], width: 0, height: 0, error: null };
   }

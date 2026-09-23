@@ -44,6 +44,7 @@ export type AiSurface =
   | "event-command"
   | "structure-kit"
   | "world-canon-interview"
+  | "project-interview"
   | "world-canon-body"
   | "tileset-analysis";
 
@@ -91,6 +92,7 @@ const SURFACE_POLICIES: Readonly<Record<AiSurface, SurfacePolicy>> = {
   "structure-kit": { tier: "supervisor" },
   // 세계관 인터뷰: 사람과 문장을 주고받으며 설정을 함께 채우는 감독 판단이라 supervisor + 고정 예산.
   "world-canon-interview": { tier: "supervisor", maxTokens: 4096 },
+  "project-interview": { tier: "supervisor", maxTokens: 2048 },
   // 세계관 본문 초안/이어쓰기: 산출물이 장문 prose 라 인터뷰보다 예산을 크게 준다.
   "world-canon-body": { tier: "supervisor", maxTokens: 8192 },
   "tileset-analysis": { tier: "supervisor", maxTokens: TILESET_ANALYSIS_MAX_TOKENS },

@@ -34,6 +34,9 @@ function branchContainers(): Record<NestedBranchKind, Command> {
   const commands: Record<NestedBranchKind, Command> = {
     choiceOption: { kind: "choices", options: [{ text: "option", branch: [] }] },
     choiceCancel: { kind: "choices", options: [], cancelBranch: [] },
+    presentOption: { kind: "presentItem", options: [{ itemId: "item-1", branch: [] }] },
+    presentOtherwise: { kind: "presentItem", options: [], otherwiseBranch: [] },
+    presentCancel: { kind: "presentItem", options: [], cancelBranch: [] },
     forkThen: { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [] },
     forkElse: { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [], else: [] },
     loopBody: { kind: "loop", body: [] },

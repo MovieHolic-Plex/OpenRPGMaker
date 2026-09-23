@@ -7,7 +7,6 @@
 .ai-assistant-wide-title strong { font-size: 18px; letter-spacing: -.5px; }
 .ai-assistant-wide-title span { color: var(--text-3); font-size: 12px; }
 .ai-assistant-wide-head > .ai-activity-setting { width: auto; padding: 0; }
-.ai-assistant-wide-head .ai-activity-level-buttons button { padding: 0 5px; }
 .ai-assistant-wide-back { flex: 0 0 auto; border: 0; border-left: 1px solid var(--border-subtle); background: transparent; color: var(--text-2); padding: 8px 0 8px 20px; font: 12px var(--font-ui); cursor: pointer; }
 .ai-assistant-wide-content { display: grid; grid-template-columns: minmax(0, 1fr) 9px minmax(300px, var(--ai-wide-team-width, 30%)); flex: 1; min-height: 0; }
 .ai-assistant-wide-divider { cursor: col-resize; touch-action: none; background: var(--bg-inset); position: relative; outline-offset: -2px; }

@@ -45,7 +45,7 @@ export function applyWelcomeGenrePresetToOpenProject(presetId: WelcomeGenrePrese
   recordProjectSnapshot(`장르 프리셋 적용: ${packId}`);
   store.update((draft) => {
     applyGenrePreset(draft, packId);
-    if (!worldCanonHasContent(draft.worldCanon)) draft.worldCanon = welcomeCanonSeed(presetId);
+    if (!draft.gameDesignBrief && !worldCanonHasContent(draft.worldCanon)) draft.worldCanon = welcomeCanonSeed(presetId);
   }, { scope: "project", label: `장르 프리셋 적용: ${packId}`, origin: "system" });
   return packId;
 }

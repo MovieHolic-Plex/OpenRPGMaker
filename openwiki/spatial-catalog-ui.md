@@ -142,3 +142,23 @@ canonical spatial 프로젝트는 일반 projects upsert가 거부되므로 `pub
 
 검증: `npx tsc -p tsconfig.app.json --noEmit` 초록, `test/spatialCatalog.test.ts`(16)·
 `spatialLegacyEditing`·`spatialSpaceMemberUi`·`spatialNavigation.routes` 35건 통과.
+
+## 2026-09-22 — 장소 이미지 누락 복구
+
+- `spatialCardThumbs.ts`는 다른 화면에 붙어 있는 캐시 DOM을 옮기지 않는다. 장소 목록과
+  구성 요소 선택기가 같은 카드를 표시할 때 각각 그림을 유지한다. 분리된 정상 그림만
+  재사용하며, 로드에 실패한 이미지/캔버스는 다음 렌더에서 다시 만든다. 캔버스를
+  `cloneNode`하면 픽셀과 비동기 로드 핸들러가 사라지므로 복제로 우회하지 않는다.
+- `kitRender.ts`는 실패한 아틀라스를 이미지 캐시에서 제거하고 캔버스에
+  `data-preview-state`를 남긴다. 한 번 실패한 Image의 load 이벤트를 영원히 기다리지 않는다.
+- `house-shape` 호환 장소는 `housePreviewMap`의 실제 외형 시공 결과를 카드와 스테이지에
+  사용한다. 실내 시설 꾸러미 조회로 보내면 존재하지 않는 시설 오류가 난다.
+- 공용 장소 카탈로그의 지연 import를 기다리는 모든 화면에 완료를 알린다. 최초 요청의
+  콜백 하나만 보관하면 로딩 중 선택·화면 전환 뒤 새 화면이 빈 채로 남는다.
+  import 실패도 빈 캔버스 대신 오류를 표시한다.
+
+브라우저 확인: `node scripts/qa/place-preview-recovery.mjs <워크트리 URL>`.
+공용 장소 전부 스크롤·이미지 디코드, 동일 카드 두 화면, 외형 도안 카드/스테이지,
+동시 카탈로그 로딩과 이미지 실패 후 캐시 복구를 확인한다. 결과는
+`output/evidence/place-previews/proof.json`, 화면은 `all-places-scrolled.png`.
+저장 없는 최소 fixture를 사용하며 프로젝트 호스트/정본 콘텐츠를 수정하지 않는다.

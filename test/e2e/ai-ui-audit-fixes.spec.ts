@@ -238,19 +238,16 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       });
     }
 
-    test("F8 both settings entries expose temperature choices", async ({ page }) => {
+    test("F8 neither settings entry exposes the retired idle-screen choices", async ({ page }) => {
       for (const entry of ["topbar", "panel"]) {
         if (entry === "topbar") await page.getByTestId("topbar-ai-settings").click();
         else {
           await page.getByTestId("ai-command-menu-toggle").click();
           await page.getByTestId("ai-command-menu-settings").click();
         }
-        // 대기 화면 선택은 「대기 화면」추가 페인에 있다.
-        await page.getByTestId("ai-settings-tab-extra-temperature").click();
-        for (const value of ["map-first", "ink-only", "quiet-gold"]) {
-          await page.getByTestId(`ai-command-temperature-${value}`).click();
-          await expect(page.getByTestId("ai-panel")).toHaveAttribute("data-temperature", value);
-        }
+        await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
+        expect(await page.getByTestId("ai-settings-tab-extra-temperature").count()).toBe(0);
+        expect(await page.getByTestId("ai-command-temperature-quiet-gold").count()).toBe(0);
         await page.getByTestId("ai-settings-close").click();
       }
     });

@@ -1,5 +1,8 @@
+import { findOpeningStillPackEntry } from "@/assets/openingStillPackRuntime";
+import { openingStillPackUrl } from "@/assets/openingStillPackCdn";
 import { BUNDLED_IMAGE_ASSETS, TEX_DIALOGUE_FRAME, TEX_TILESET } from "@/assets/bundled";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID } from "./cinematicSettings";
 import { battlerIdleAnimation } from "@/assets/battlerIdleAnimations";
 import { findBgmRuntimeEntry } from "@/assets/bgmCatalogRuntime";
 import { bgmTrackUrl } from "@/assets/bgmCdn";
@@ -44,7 +47,9 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const url = resolveAssetResourceUrl(id, { project });
     // The editor may stream catalog music from a CDN; the shipped player uses its local path.
     const catalogTrack = findBgmRuntimeEntry(id);
-    const path = localPublicPath(catalogTrack ? bgmTrackUrl(catalogTrack.fileName, {}) : url);
+    const catalogStill = findOpeningStillPackEntry(id);
+    const path = localPublicPath(catalogTrack ? bgmTrackUrl(catalogTrack.fileName, {})
+      : catalogStill ? openingStillPackUrl(catalogStill.fileName, {}) : url);
     if (path && url) assets.set(path, { kind: "public", sourcePath: localPublicPath(url) ?? url, zipPath: path, resourceId: id });
   }
   for (const id of usedUploadedIds) {
@@ -69,6 +74,9 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const path = 'assets/castle-surroundings/CREDITS.txt';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
   }
+  // 저작자 표기 정본. CC BY 계열 기본 에셋(EasyRPG RTP 등)은 번들 여부와 무관하게 표기 의무가
+  // 따라오므로 조건부로 돌리지 않는다 — 타이틀 화면의 라이선스 표기도 이 파일을 연다.
+  assets.set("assets/ATTRIBUTION.md", { kind: "public", sourcePath: "assets/ATTRIBUTION.md", zipPath: "assets/ATTRIBUTION.md" });
   return [...assets.values()].sort((left, right) => left.zipPath.localeCompare(right.zipPath));
 }
 
@@ -125,6 +133,7 @@ const USAGE_WALK_CATALOG_KEY = "resourceProfiles";
 
 function collectProjectStrings(project: Project): Set<string> {
   const values = new Set<string>();
+  if ([project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)].some(settings => !settings?.backgroundResourceId)) values.add(DEFAULT_GAME_OVER_BACKGROUND_RESOURCE_ID);
   collectStrings({ ...project, audioDescriptions: undefined, monsterMetadata: undefined }, values);
   // 소스에 박힌 재생 — 프로젝트 문자열에는 없지만 플레이어가 반드시 읽는다.
   for (const id of PLAYER_RUNTIME_AUDIO_RESOURCE_IDS) values.add(id);

@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "paths": [
+    "assets/ATTRIBUTION.md",
     "assets/cc0/jetrel/icons/book-magic.png",
     "assets/cc0/jetrel/icons/book-sword.png",
     "assets/cc0/jetrel/icons/bronze-sword.png",

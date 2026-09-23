@@ -9,11 +9,15 @@ import {
   WELCOME_MORE_WORLDS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
+  welcomeFreeTextDisplayText,
+  welcomeGenrePresetDisplayText,
   type WelcomeGenrePresetId,
   type WelcomePosterCard,
   welcomeGenreSystemPresetPlanById,
 } from "@/editor/welcomeGenrePresets";
 import type { GenreBlankProjectSystemPresetPlan } from "@/editor/genrePacks";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import { showProjectInterview } from "@/editor/ui/projectInterviewDialog";
 import { showConfirm } from "@/editor/ui/modal";
 import { readProjectFromUrl } from "@/project/projectUrl";
 import { el } from "@/util/dom";
@@ -45,6 +49,8 @@ export type EditorWelcomeResult = {
   readonly intent: string | null;
   /** Full AI prompt sent to the 감독 console for the current map. */
   readonly prompt: string | null;
+  /** 조수 말풍선·입력창에 보일 사용자 쪽 문장. `prompt` 의 내부 지시문은 보이지 않는다. */
+  readonly displayText?: string;
   readonly autoSend: boolean;
   readonly presetId?: WelcomeGenrePresetId;
   readonly source?: "chip" | "free-text" | "manual-system-preset";
@@ -55,7 +61,7 @@ export type EditorWelcomeResult = {
 
 export type EditorWelcomeOptions = {
   /** Creates and verifies the preset project before either manual completion or AI handoff. */
-  readonly applySystemPreset?: (plan: GenreBlankProjectSystemPresetPlan) => Promise<unknown>;
+  readonly applySystemPreset?: (plan: GenreBlankProjectSystemPresetPlan, brief?: GameDesignBrief) => Promise<unknown>;
   /**
    * AI 로 초안을 만들 수 있는 상태인가. false 면 "만들기" 를 받지 않고 설정으로 안내한다.
    *
@@ -237,6 +243,7 @@ export function presentEditorWelcome(
       settle({
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
+        displayText: welcomeFreeTextDisplayText(trimmed),
         autoSend: true,
         source: "free-text",
         dismiss: true,
@@ -277,8 +284,8 @@ export function presentEditorWelcome(
       if (!autoSend) {
         const confirmed = await showConfirm({
           title: "빈 프로젝트에 시스템 프리셋 적용",
-          message: "현재 프로젝트를 먼저 저장한 뒤, 선택한 시스템 설정으로 별도 프로젝트를 만들고 재로드를 확인합니다.",
-          confirmLabel: "저장하고 새 프로젝트 만들기",
+          message: "열려 있는 프로젝트를 선택한 장르의 빈 맵과 시스템 설정으로 바꾸고 저장합니다.",
+          confirmLabel: "시스템 설정 적용하고 저장",
         });
         if (!confirmed || settled || applyingSystemPreset) return;
       }
@@ -295,12 +302,15 @@ export function presentEditorWelcome(
       const controls = Array.from(root.querySelectorAll<HTMLButtonElement | HTMLInputElement>("button, input"));
       controls.forEach((button) => { button.disabled = true; });
       try {
-        await options.applySystemPreset(systemPresetPlan);
+        const brief = autoSend ? await showProjectInterview(presetId) : undefined;
+        if (brief === null || settled) return;
+        await options.applySystemPreset(systemPresetPlan, brief);
         if (settled) return;
         settle({
           intent: label,
-          prompt: autoSend ? buildWelcomeGenrePresetPrompt(preset) : null,
-          autoSend,
+          prompt: autoSend ? buildWelcomeGenrePresetPrompt(preset, brief) : null,
+          ...(autoSend ? { displayText: welcomeGenrePresetDisplayText(preset, brief) } : {}),
+          autoSend: autoSend && (options.canGenerate?.() ?? true),
           presetId,
           source: autoSend ? "chip" : "manual-system-preset",
           ...(autoSend ? {} : { systemPresetPlan }),
@@ -309,7 +319,7 @@ export function presentEditorWelcome(
         });
       } catch {
         systemPresetError.hidden = false;
-        systemPresetError.textContent = "새 프로젝트 저장과 재확인을 완료하지 못했습니다. 현재 프로젝트는 그대로 유지됩니다.";
+        systemPresetError.textContent = "프로젝트 저장을 완료하지 못해 생성을 시작하지 않았습니다. 저장 연결을 확인한 뒤 다시 시도해 주세요.";
       } finally {
         applyingSystemPreset = false;
         if (!settled) controls.forEach((button) => { button.disabled = false; });
@@ -464,7 +474,7 @@ export function presentEditorWelcome(
         "aria-modal": "true",
       },
       children: [
-        el("p", { class: "editor-welcome-kicker", text: "감독" }),
+        el("p", { class: "editor-welcome-kicker", text: "새 게임" }),
         el("h1", {
           class: "editor-welcome-title",
           text: "어떤 게임을 만들까요?",
@@ -472,7 +482,7 @@ export function presentEditorWelcome(
         }),
         el("p", {
           class: "editor-welcome-sub",
-          text: "한 문장으로 지시하면 이 맵에 초안이 생깁니다. 도구 설명은 결과가 찍힌 뒤에 합니다.",
+          text: "만들고 싶은 게임을 한 문장으로 적어 주세요. AI가 맵과 인물, 이야기를 만들어 드려요.",
         }),
         el("div", {
           class: "editor-welcome-prompt-row",

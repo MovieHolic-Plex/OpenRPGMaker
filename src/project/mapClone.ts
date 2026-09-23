@@ -1,4 +1,5 @@
 import type { Command, GameEvent, GameMap, MapId } from "@/project/types";
+import { mapPresentItemBranches } from "@/project/eventCommands/presentItemBranches";
 
 export type CloneGameMapOptions = {
   readonly newId: MapId;
@@ -35,6 +36,9 @@ function rewriteCommands(commands: readonly Command[], sourceMapId: MapId, newMa
 function rewriteCommand(command: Command, sourceMapId: MapId, newMapId: MapId): Command {
   if (command.kind === "transfer" || command.kind === "changeTile") {
     return command.mapId === sourceMapId ? { ...command, mapId: newMapId } : { ...command };
+  }
+  if (command.kind === "presentItem") {
+    return mapPresentItemBranches(command, (branch) => rewriteCommands(branch, sourceMapId, newMapId));
   }
   if (command.kind === "choices") {
     return {

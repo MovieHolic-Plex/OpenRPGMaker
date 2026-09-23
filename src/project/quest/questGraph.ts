@@ -15,6 +15,7 @@ import {
   type QuestGraphNode,
   type QuestVariableOp,
 } from "./questDef";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 type ResolvedQuestCondition =
   | { readonly kind: "switch"; readonly targetId: string; readonly value: boolean; readonly flagId?: string }
@@ -566,6 +567,7 @@ function isBattleGatedWrite(project: Project, site: StoryFlagUsageSite): boolean
 function commandContainsBattle(command: Command): boolean {
   if (command.kind === "battleProcessing") return true;
   if (command.kind === "choices") return command.options.some((option) => option.branch.some(commandContainsBattle)) || (command.cancelBranch ?? []).some(commandContainsBattle);
+  if (command.kind === "presentItem") return presentItemBranchLists(command).some((branch) => branch.some(commandContainsBattle));
   if (command.kind === "fork") return command.then.some(commandContainsBattle) || (command.else ?? []).some(commandContainsBattle);
   if (command.kind === "loop") return command.body.some(commandContainsBattle);
   if (command.kind === "promoteActor") return (command.successBranch ?? []).some(commandContainsBattle) || (command.failureBranch ?? []).some(commandContainsBattle);

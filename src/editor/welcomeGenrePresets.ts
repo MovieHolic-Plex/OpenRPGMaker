@@ -7,6 +7,7 @@ import {
   type NarrativeHorrorGenre,
 } from "@/ai/narrativeHorrorWorkPlan";
 import type { GenrePackId } from "@/project/genrePackId";
+import { gameDesignBriefContext, type GameDesignBrief } from "@/project/gameDesignBrief";
 import { buildActionArenaAuthoringGuide } from "@/ai/actionArenaAuthoring";
 import {
   createGenreBlankProjectSystemPresetPlan,
@@ -130,7 +131,18 @@ function requiredTemplateBlock(genre: NarrativeHorrorGenre | undefined): string[
 }
 
 /** Build the auto-send user message for a genre chip. */
-export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset): string {
+export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
+  if (brief) {
+    if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
+    return [
+      `장르 프리셋: ${preset.label}`,
+      gameDesignBriefContext(brief),
+      "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
+      "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
+      "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
+      "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
+    ].join("\n\n");
+  }
   if (preset.packId === "action-rpg") {
     return [
       `장르 프리셋: ${preset.label}`,
@@ -150,6 +162,27 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset): strin
     "",
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");
+}
+
+/**
+ * 장르 칩 핸드오프의 «보이는 문장». 모델은 `buildWelcomeGenrePresetPrompt` 전체를 읽지만, 사용자 말풍선에는
+ * 자기가 고른 것만 짧게 남긴다(예: 「모험 JRPG · 누군가를 구하기 위해 · 시작 마을과 첫 의뢰」).
+ * 체크리스트·「한국어로 진행하고…」 같은 내부 지시가 사용자 말로 보이면 안 된다(2026-09-23 실측).
+ */
+export function welcomeGenrePresetDisplayText(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
+  const short = (text: string | undefined): string => {
+    const line = (text ?? "").split(/\r?\n/u)[0]!.replace(/\s+/gu, " ").trim();
+    return line.length > 24 ? `${line.slice(0, 23)}…` : line;
+  };
+  const parts = brief
+    ? [preset.label, short(brief.answers.experience?.text), short(brief.answers.scope?.text)]
+    : [preset.label, short(preset.blurb)];
+  return [...new Set(parts.filter(Boolean))].join(" · ");
+}
+
+/** 자유 입력 핸드오프의 «보이는 문장» — 사용자가 친 한 문장 그대로. */
+export function welcomeFreeTextDisplayText(userIntent: string): string {
+  return userIntent.trim();
 }
 
 /** Free text keeps the user's scope; structured intent selects a recipe later. */

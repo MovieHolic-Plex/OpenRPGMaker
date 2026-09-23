@@ -1,0 +1,61 @@
+@layer shell {
+  .project-interview-backdrop {
+    position: fixed; inset: 0; z-index: calc(var(--z-app-modal, 2600) + 1);
+    display: flex; align-items: center; justify-content: center; padding: 24px;
+    background: var(--bg-scrim); color: var(--text-1);
+  }
+  .project-interview-window {
+    width: min(100%, 960px); max-height: calc(100dvh - 48px); overflow: auto;
+    background: var(--bg-overlay); border: 1px solid var(--border-default);
+    border-radius: var(--radius-l); box-shadow: var(--shadow-modal);
+    /* 한국어 어절 경계에서만 줄바꿈 — 「바꿀 수 있어/요.」·「등대지/기」·「생성에 우/선」 방지(2026-09-23). */
+    word-break: keep-all;
+  }
+  .project-interview-header {
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    padding: 22px 28px; border-bottom: 1px solid var(--border-default);
+  }
+  .project-interview-header h2 { font-size: 23px; margin: 5px 0 0; color: var(--text-1); }
+  .project-interview-kicker, .project-interview-count { color: var(--text-2); font-size: 12px; }
+  .project-interview-content { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); }
+  .project-interview-main { padding: 25px 28px; min-width: 0; }
+  .project-interview-main h3 { font-size: 21px; line-height: 1.55; margin: 18px 0 10px; word-break: keep-all; }
+  .project-interview-main label { font-size: 12px; color: var(--text-2); display: block; margin-top: 19px; }
+  .project-interview-hint, .project-interview-status { font-size: 13px; line-height: 1.75; color: var(--text-2); }
+  .project-interview-options { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 20px 0; }
+  .project-interview-button {
+    border: 1px solid var(--border-default); background: var(--bg-raised); color: var(--text-1);
+    padding: 10px 13px; border-radius: var(--radius-s); font-size: 13px; line-height: 1.6;
+    cursor: pointer; min-height: 42px; white-space: normal;
+  }
+  .project-interview-options .project-interview-button { text-align: left; }
+  .project-interview-button:hover { background: var(--bg-hover); }
+  .project-interview-button[aria-pressed="true"] { background: var(--accent-muted); border-color: var(--accent); }
+  .project-interview-button.is-primary { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+  .project-interview-button:disabled { opacity: .45; cursor: default; }
+  .project-interview-button:focus-visible, .project-interview-input:focus-visible { outline: var(--focus-outline); outline-offset: 2px; }
+  .project-interview-input {
+    display: block; width: 100%; box-sizing: border-box; resize: vertical; padding: 12px;
+    margin: 8px 0; border: 1px solid var(--border-default); border-radius: var(--radius-s);
+    background: var(--bg-raised); color: var(--text-1); font: inherit; font-size: 14px; line-height: 1.7;
+  }
+  .project-interview-actions { display: flex; gap: 9px; align-items: center; justify-content: flex-end; flex-wrap: wrap; margin-top: 19px; }
+  .project-interview-actions > :first-child { margin-right: auto; }
+  .project-interview-edit-answers { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 12px; }
+  .project-interview-edit-answers .project-interview-button { font-size: 12px; padding: 6px 10px; }
+  .project-interview-aside { background: var(--bg-inset); min-width: 0; }
+  .project-interview-aside > img { width: 100%; aspect-ratio: 1.8; object-fit: cover; display: block; }
+  .project-interview-caption { padding: 3px 22px; font-size: 12px; line-height: 1.75; color: var(--text-2); }
+  .project-interview-answers { padding: 0 22px 12px; margin: 0; }
+  .project-interview-answers > div { padding: 12px 0; border-bottom: 1px solid var(--border-default); }
+  .project-interview-answers dt { font-size: 11px; color: var(--text-2); }
+  .project-interview-answers dd { margin: 5px 0 0; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; white-space: pre-wrap; }
+  @media (max-width: 700px) {
+    .project-interview-backdrop { padding: 12px; }
+    .project-interview-window { max-height: calc(100dvh - 24px); }
+    .project-interview-content { grid-template-columns: 1fr; }
+    .project-interview-main, .project-interview-header { padding: 20px; }
+    .project-interview-aside > img, .project-interview-caption { display: none; }
+    .project-interview-aside { border-top: 1px solid var(--border-default); }
+  }
+}

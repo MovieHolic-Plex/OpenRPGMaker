@@ -1,6 +1,9 @@
+import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
+import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeAiAuthoring } from "../aiAuthoring";
+import { normalizeGameDesignBrief } from "../gameDesignBrief";
 import { assertGrowthShape } from "@/project/growth/validation";
 import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateSpatialAuthoring } from "../spatial/guards";
@@ -77,11 +80,11 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
 }
 
 /** 현재(v4) 프로젝트 셰이프 검증. v3 저장본은 migrateV3toV4 가 얼굴 짝을 바꾼 뒤 여기로 들어온다. */
-export function validateProjectV4(data: JsonRecord): Project {
+export function validateProjectV4(data: JsonRecord, options?: { readonly adoptParsed?: boolean }): Project {
   const spatialAuthoring = data.spatialAuthoring === undefined ? undefined : validateSpatialAuthoring(data.spatialAuthoring);
   validateAudioDescriptions(data.audioDescriptions);
   validateMonsterMetadata(data.monsterMetadata);
-  const project = normalizeProjectV4(data);
+  const project = normalizeProjectV4(data, options?.adoptParsed === true);
   // Spatial authoring is validated against the normalized project before reference
   // repair, so a canonical overview pair cannot be pruned as an unknown reference.
   if (spatialAuthoring !== undefined) {
@@ -104,7 +107,11 @@ export function readProjectV4MapMergeSnapshot(data: JsonRecord): Pick<Project, "
   return { maps: project.maps, mapTree: project.mapTree };
 }
 
-function normalizeProjectV4(data: JsonRecord): Project {
+function ownedParsedProject(data: JsonRecord): Project {
+  return data as unknown as Project;
+}
+
+function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   assertGrowthShape(data.growth);
   validateMeta(data.meta);
   validateAssets(data.assets);
@@ -156,8 +163,11 @@ function normalizeProjectV4(data: JsonRecord): Project {
   requirePosition("startPos", data.startPos);
   requireRecord("flags", data.flags);
 
-  const project = cloneJson<Project>(data);
+  // A string from JSON.parse is already a detached tree. Copying it again with
+  // JSON.stringify just to satisfy the validator doubles the cost of a heavy load.
+  const project = adoptParsed ? ownedParsedProject(data) : cloneJson<Project>(data);
   if (data.aiAuthoring !== undefined) project.aiAuthoring = normalizeAiAuthoring(data.aiAuthoring);
+  if (data.gameDesignBrief !== undefined) project.gameDesignBrief = normalizeGameDesignBrief(data.gameDesignBrief);
   project.mapTree = mapTree;
   project.mapConnections ??= [];
   project.villageInfoDocuments ??= [];
@@ -195,7 +205,22 @@ function normalizeProjectV4(data: JsonRecord): Project {
   }
   stampCharacterIdsForSocialEvents(project);
   normalizeShopCommands(project);
+  canonicalizeProjectCommandFieldAliases(project);
   return project;
+}
+
+/** 저장본에 남은 op↔action 표기 흔들림(예: changeParty op:"+=")을 로드 때 정본으로 옮긴다. */
+function canonicalizeProjectCommandFieldAliases(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      canonicalizeCommandFieldAliases(event.commands);
+      for (const page of event.pages ?? []) canonicalizeCommandFieldAliases(page.commands);
+    }
+  }
+  for (const commonEvent of project.commonEvents ?? []) canonicalizeCommandFieldAliases(commonEvent.commands);
+  for (const troop of project.database?.troops ?? []) {
+    for (const page of troop.battleEventPages ?? []) canonicalizeCommandFieldAliases(page.commands);
+  }
 }
 
 function idSet(value: unknown): Set<string> {
@@ -293,6 +318,7 @@ function validateEndings(value: unknown): void {
       const kind = (condition as { kind?: unknown }).kind;
       assert(kind === "switch" || kind === "variable", `endings[${index}].conditions[${conditionIndex}]는 switch 또는 variable 조건이어야 합니다.`);
     }
+    if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
     if (ending.epilogue !== undefined) {
       for (const [beatIndex, beat] of requireArray(`endings[${index}].epilogue`, ending.epilogue).entries()) {

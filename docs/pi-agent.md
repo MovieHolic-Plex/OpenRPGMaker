@@ -162,6 +162,22 @@ switchId가 존재하지 않습니다: sw_ev_battle_<uuid>_clear` 로 **에이�
 시공 팀원이 `place_battle_blocker` 로 만든 스위치가 병합을 지나 커밋 게이트를 통과하는지
 (실패 메시지에 게이트 원문을 실어 회귀 원인이 한 줄로 보이게 했다).
 
+**프로젝트 설정·세계관·타일셋 부속 (2026-09-23).** 헤드리스 `--blank town:48x36 --maps town` 추리 게임 실행이
+`spills: [meta, system, tilesets, world, worldCanon]` 을 냈다. 같은 도구 순서를 오프라인으로 돌려 키마다 무엇이
+바뀌었는지 쟀고(다섯 키 모두 실제 변경 — 정규화·타임스탬프 거짓 보고는 없었다), 기준은 위와 같다: **맵이 기대는
+것을 새로 만든 것만** 옮기고, 기존 값의 수정·삭제와 맵이 기대지 않는 게임 전체 설정은 버리고 보고한다.
+
+| 키 | 바꾼 도구 · 실측 내용 | 처리 |
+| --- | --- | --- |
+| `system.timeSystem` | `configure_time_system` — 없던 키를 켬. 마을 룩 게이트가 시간표 주민을 요구해 `author_village` 로 마을을 지으면 켜게 된다. 병합본엔 꺼져 있고 맵 NPC 6명이 `schedule` 을 든 채였다 | **옮긴다** — 없던 키를 켠 것만(`CARRIED_SYSTEM_FEATURES`). 이미 켜진 것을 바꾸거나 끈 것은 버린다. 두 결과가 다르게 켜면 뒤의 것이 이기고 `conflicts: ["system.timeSystem"]` |
+| `tilesets` | `author_village` 나무 시공 — 굽이숲 이식 47칸·꼬리(이미 옮겨짐)와 오토타일 그룹 `forest_harmony_grove_47`(버려짐). 병합본 맵은 그 칸을 12곳 깔았다 | **옮긴다** — 기존 타일셋의 새 그룹 id 만. 그룹이 없으면 다음 나무 시공의 `ensureForestGroveTileset` 이 같은 수관을 또 이식한다 |
+| `world` | `author_npc_cast` — 맵 NPC 를 `character` 개체(refs → 맵 이벤트)와 `locatedIn` 관계로 등록 | **옮긴다** — 새 개체(id)·새 관계(a·b·kind). 기존 개체 수정은 버린다 |
+| `system.genre`·`playResolution`·`titleScreen.title`, `meta.title`·`author` | `set_project_genre`, `set_project_settings` | **버린다** — 게임 전체 설정이고 맵이 기대지 않는다. 비어 있던 걸 채워도 «정의» 가 아니다 |
+| `worldCanon` | `set_world_canon` — 없던 정본을 씀 | **버린다** — 프롬프트 맥락일 뿐 맵이 가리키지 않는다(추론: 단일 에이전트 실행이면 잃는 게 아깝지만, 범위 계약을 넓히는 건 제품 판단이다) |
+
+`system` 은 한 키라 게임 전체 설정이 같이 바뀌었으면 시간 시스템을 옮긴 뒤에도 `system` 이 spill 로 남는다(남은 차이가 실제로 버려졌으니 참이다).
+계약: `test/piAgentMapBundle.test.ts` 「새로 켠 시간 시스템」·「오토타일 그룹」·「세계관」·「게임 전체 설정」.
+
 ### 개발 중 워커 코드 갱신 (2026-09-14)
 
 워커(`scripts/oh-my-pi-worker.ts`)는 모듈 그래프를 **부팅 때 한 번** 로드하는 오래 사는 Bun

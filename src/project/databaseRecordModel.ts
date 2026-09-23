@@ -251,6 +251,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     titleScreen: normalizeTitleScreenSettings(system.titleScreen, titleResourceId),
     ...(system.opening !== undefined ? { opening: normalizeCinematicSequence(system.opening) } : {}),
     ...(system.gameOver !== undefined ? { gameOver: normalizeGameOverSettings(system.gameOver) } : {}),
+    ...(system.gameOvers !== undefined ? { gameOvers: system.gameOvers.map(row => ({ id: row.id.trim(), name: row.name, settings: normalizeGameOverSettings(row.settings) })) } : {}),
+    ...(system.defaultGameOverId !== undefined ? { defaultGameOverId: system.defaultGameOverId.trim() } : {}),
   };
 }
 

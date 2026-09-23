@@ -100,6 +100,23 @@ defineCommand({
 });
 
 defineCommand({
+  kind: "presentItem",
+  family: "dialogue",
+  label: "아이템 제시",
+  fields: {
+    prompt: f.text("안내 문구", { optional: true, placeholder: "무엇을 보여줄까?" }),
+    // 정답 아이템 목록. 각 항목의 분기와 「틀림·닫음」 분기는 캔버스에서 편집한다.
+    options: f.custom("정답 아이템", "presentOptions"),
+    consume: f.bool("맞으면 아이템 1개 소모", { optional: true }),
+  },
+  summary: (c) => {
+    const count = Array.isArray(c.options) ? c.options.length : 0;
+    const prompt = str(c.prompt);
+    return prompt ? `“${prompt}” · 정답 ${count}개` : `아이템 제시 · 정답 ${count}개`;
+  },
+});
+
+defineCommand({
   kind: "fork",
   family: "controlFlow",
   label: "분기",
@@ -735,8 +752,8 @@ defineCommand({
   kind: "gameOver",
   family: "system",
   label: "게임 오버",
-  fields: {},
-  summary: () => "게임 오버",
+  fields: { gameOverId: f.text("게임 오버 ID", { optional: true }) },
+  summary: (c, l) => `게임 오버 · ${c.gameOverId ? l.recordName(str(c.gameOverId)) : "프로젝트 기본값"}`,
 });
 
 defineCommand({
@@ -751,6 +768,6 @@ defineCommand({
   kind: "killPlayer",
   family: "system",
   label: "즉사",
-  fields: {},
-  summary: () => "파티 전멸",
+  fields: { gameOverId: f.text("게임 오버 ID", { optional: true }), message: f.text("패배 메시지", { optional: true }) },
+  summary: (c, l) => `파티 전멸 · ${c.gameOverId ? l.recordName(str(c.gameOverId)) : "프로젝트 기본값"}`,
 });

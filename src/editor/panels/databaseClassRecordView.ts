@@ -4,6 +4,7 @@ import { editableClassCommands, finalizeClassBattleCommands, moveEditableClassCo
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { charsetFrameSource, EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
+import { getEditorUiMode } from "@/editor/editorUiMode";
 import { store } from "@/project/store";
 import type { ActorRateGrade, ClassBattleCommand, ClassBattleCommandKind, ClassRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -93,26 +94,94 @@ export function renderClassRecordForm(form: HTMLElement, record: ClassRecord): v
   // 거짓 탭을 지우고 11 개 패널을 워크벤치의 **직계 자식**으로 되돌린다. 그러면 CSS
   // 자식 결합자가 다시 맞고, 순서도 databasePanelGridClasses.test.ts 가 고정한
   // 계약과 일치한다.
-  form.append(buildSummaryHost, el("div", {
+  const workbench = el("div", {
     class: "db-class-bm88-workbench",
     dataset: { testid: "db-classes-bm88-workbench" },
     children: [
-      panel("이름", [nameInput(record)], "db-class-panel-name"),
-      panel("애니메이션", [spritePreview(record), animationSelect(record)], "db-class-panel-animation"),
-      panel("능력치 곡선", [curveGrid], "db-class-panel-curves"),
-      panel("경험치 곡선", [expPanel], "db-class-panel-exp"),
-      panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands"),
-      panel("옵션", optionControls(record), "db-class-panel-options"),
-      panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills"),
+      panel("이름", [nameInput(record)], "db-class-panel-name", "overview"),
+      panel("애니메이션", [spritePreview(record), animationSelect(record)], "db-class-panel-animation", "overview"),
+      panel("능력치 곡선", [curveGrid], "db-class-panel-curves", "growth"),
+      panel("경험치 곡선", [expPanel], "db-class-panel-exp", "growth"),
+      panel("전투 명령", battleCommandControls(record, refreshBuildSummary), "db-class-panel-commands", "commands"),
+      panel("옵션", optionControls(record), "db-class-panel-options", "overview"),
+      panel("스킬", [skillTable(record, refreshBuildSummary)], "db-class-panel-skills", "skills"),
       panel("승급", [el("button", { text: "승급 트리에서 보기", attrs: { type: "button" }, dataset: { testid: "db-open-promotion-tree" }, on: { click: event => {
         const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
         if (panelRoot) switchDatabaseActiveTab("promotionTree", panelRoot);
-      } } }), ...promotionControls(record, refreshBuildSummary)], "db-class-panel-promotion"),
-      panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state"),
-      panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element"),
-      panel("장비", [equipmentSelect(record, refreshBuildSummary)], "db-class-panel-equipment"),
+      } } }), ...promotionControls(record, refreshBuildSummary)], "db-class-panel-promotion", "promotion"),
+      panel("상태 유효도", rateRows(record, "state"), "db-class-panel-state", "gear"),
+      panel("속성 유효도", rateRows(record, "element"), "db-class-panel-element", "gear"),
+      panel("장비", [equipmentSelect(record, refreshBuildSummary)], "db-class-panel-equipment", "gear"),
     ],
+  });
+  form.append(buildSummaryHost, classViewTabs(workbench), workbench);
+  applyClassView(workbench, currentClassView());
+}
+
+/**
+ * 직업 한 장을 **보기**로 나눈다. 예전에는 11개 패널(입력칸 143개)이 3단으로 한꺼번에 펼쳐져
+ * 무엇부터 봐야 할지 알 수 없었다(2026-09-23 파티 UX 검토). 패널은 여전히 워크벤치의 직계
+ * 자식이다 — `databasePanelGridClasses.test.ts` 의 순서 계약과 CSS 자식 결합자를 지키려고,
+ * 보기 전환은 DOM 을 옮기지 않고 `hidden` 만 토글한다. 「전체」는 예전 3단 배치 그대로다.
+ */
+const CLASS_VIEWS = [
+  { key: "overview", label: "개요" },
+  { key: "growth", label: "능력치 성장" },
+  { key: "skills", label: "스킬 습득" },
+  { key: "commands", label: "전투 명령" },
+  { key: "gear", label: "장비·내성" },
+  { key: "promotion", label: "승급" },
+  { key: "all", label: "전체" },
+] as const;
+
+export type ClassView = (typeof CLASS_VIEWS)[number]["key"];
+
+// 레코드를 바꿔도 보던 보기를 유지한다 — 전사의 스킬을 보다가 마도사로 넘어가면 마도사의 스킬을 본다.
+// 고르기 전에는 모드가 정한다: 전문가는 예전 3단 「전체」, 그 밖은 「개요」.
+let chosenClassView: ClassView | null = null;
+
+function currentClassView(): ClassView {
+  return chosenClassView ?? (getEditorUiMode() === "expert" ? "all" : "overview");
+}
+
+export function resetClassViewForTests(): void {
+  chosenClassView = null;
+}
+
+function applyClassView(workbench: HTMLElement, view: ClassView): void {
+  if (view === "all") delete workbench.dataset.classView;
+  else workbench.dataset.classView = view;
+  for (const child of Array.from(workbench.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+    child.hidden = view !== "all" && child.dataset.classPanelView !== view;
+  }
+}
+
+function classViewTabs(workbench: HTMLElement): HTMLElement {
+  const initial = currentClassView();
+  const buttons = CLASS_VIEWS.map((view) => el("button", {
+    class: `db-ws-section-tab${view.key === initial ? " active" : ""}`,
+    text: view.label,
+    attrs: { type: "button", "aria-pressed": String(view.key === initial) },
+    dataset: { testid: `db-class-view-${view.key}` },
+    on: {
+      click: () => {
+        chosenClassView = view.key;
+        for (const [index, button] of buttons.entries()) {
+          const on = CLASS_VIEWS[index]!.key === view.key;
+          button.classList.toggle("active", on);
+          button.setAttribute("aria-pressed", String(on));
+        }
+        applyClassView(workbench, view.key);
+      },
+    },
   }));
+  return el("nav", {
+    class: "db-class-view-tabs db-ws-section-tabs",
+    attrs: { "aria-label": "직업 편집 보기" },
+    dataset: { testid: "db-class-view-tabs" },
+    children: buttons,
+  });
 }
 
 const CLASS_ROLE_LABELS: Readonly<Record<ClassBuildRole, string>> = {
@@ -145,20 +214,15 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
         el("div", {
           children: [
             el("span", { class: "db-class-build-eyebrow", dataset: { testid: "db-class-build-eyebrow" }, text: "직업 설계" }),
-            el("h3", { text: "역할·빌드 요약" }),
-            el("p", { text: "Lv 20 성장과 이 직업이 착용할 수 있는 장비, 연결된 주인공을 요약합니다." }),
+            // 숫자 카드 네 장 대신 한 문장 — 카드는 무엇을 뜻하는지 설명이 없었고 아래 패널과 겹쳤다.
+            el("p", {
+              class: "db-class-build-sentence",
+              dataset: { testid: "db-class-build-sentence" },
+              text: classSummarySentence(summary),
+            }),
           ],
         }),
         el("strong", { class: `db-class-role db-class-role-${summary.role}`, text: CLASS_ROLE_LABELS[summary.role] }),
-      ],
-    }),
-    el("div", {
-      class: "db-class-build-metrics",
-      children: [
-        classBuildMetric("습득 스킬", summary.skillCount),
-        classBuildMetric("전투 명령", summary.commandCount),
-        classBuildMetric("착용 장비", summary.equipmentCount),
-        classBuildMetric("승급 경로", summary.promotionCount),
       ],
     }),
     el("div", {
@@ -191,11 +255,16 @@ function renderClassBuildSummary(host: HTMLElement, record: ClassRecord): void {
   );
 }
 
-function classBuildMetric(label: string, value: number): HTMLElement {
-  return el("div", {
-    class: "db-class-build-metric",
-    children: [el("strong", { text: String(value) }), el("span", { text: label })],
-  });
+export function classSummarySentence(summary: {
+  readonly role: ClassBuildRole;
+  readonly skillCount: number;
+  readonly commandCount: number;
+  readonly equipmentCount: number;
+  readonly promotionCount: number;
+}): string {
+  const role = CLASS_ROLE_LABELS[summary.role];
+  const promotion = summary.promotionCount > 0 ? `승급 경로 ${summary.promotionCount}개` : "승급 경로는 없습니다";
+  return `${role} 직업. 스킬 ${summary.skillCount}개를 배우고, 전투 명령 ${summary.commandCount}개 · 착용 장비 ${summary.equipmentCount}종을 씁니다. ${promotion}.`;
 }
 
 function databasePanelRootFrom(node: HTMLElement | null): HTMLElement | null {
@@ -700,8 +769,12 @@ function checkboxField(record: ClassRecord, key: keyof ClassRecord["options"], l
   return el("label", { class: "actor-check", children: [input, el("span", { text: label })] });
 }
 
-function panel(title: string, children: HTMLElement[], gridClass?: string): HTMLElement {
-  return el("fieldset", { class: gridClass ? `db-advanced-panel ${gridClass}` : "db-advanced-panel", children: [el("legend", { text: title }), ...children] });
+function panel(title: string, children: HTMLElement[], gridClass?: string, view?: Exclude<ClassView, "all">): HTMLElement {
+  return el("fieldset", {
+    class: gridClass ? `db-advanced-panel ${gridClass}` : "db-advanced-panel",
+    ...(view ? { dataset: { classPanelView: view } } : {}),
+    children: [el("legend", { text: title }), ...children],
+  });
 }
 
 function selectFromRecords(label: string, testid: string, value: string, records: readonly { readonly id: string; readonly name: string }[], onChange: (value: string) => void): HTMLElement {

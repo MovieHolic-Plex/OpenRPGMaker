@@ -1,4 +1,5 @@
 import { DEFAULT_CHATGPT_BASE_URL } from "@/ai/llmClient";
+import { companionTokenHeaders } from "@/ai/companionToken";
 import {
   DEFAULT_OH_MY_PI_PROVIDER,
   parseOhMyPiProvider,
@@ -13,15 +14,6 @@ function companionOrigin(): string {
   return DEFAULT_ORIGINLESS_COMPANION;
 }
 
-/**
- * 동반 서비스 실행별 토큰. 루프백은 같은 머신의 다른 프로세스에도 열려 있어 오리진 검사만으로는
- * 부족하다(curl 은 오리진을 안 보내고 DNS 리바인딩은 속일 수 있다). 없으면 헤더를 붙이지 않는다 —
- * 토큰을 걸지 않은 서버(vite dev)와 같은 코드로 돌아야 하기 때문이다.
- */
-function companionToken(): string | null {
-  if (typeof window !== "undefined" && window.oprn?.companionToken) return window.oprn.companionToken;
-  return null;
-}
 
 export function companionAuthUrl(path: string, providerId?: string): string {
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
@@ -140,9 +132,9 @@ async function companionFetch(url: string, init?: RequestInit): Promise<Response
   const timer = controller && typeof setTimeout === "function"
     ? setTimeout(() => controller.abort(), COMPANION_TIMEOUT_MS)
     : undefined;
-  const token = companionToken();
-  const withToken: RequestInit = token
-    ? { ...init, headers: { ...(init?.headers ?? {}), "x-oprn-companion-token": token } }
+  const token = companionTokenHeaders();
+  const withToken: RequestInit = Object.keys(token).length
+    ? { ...init, headers: { ...(init?.headers ?? {}), ...token } }
     : (init ?? {});
   try {
     return await fetch(url, controller ? { ...withToken, signal: controller.signal } : withToken);

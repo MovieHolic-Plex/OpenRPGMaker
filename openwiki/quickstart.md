@@ -35,9 +35,11 @@ npm run wt -- adopt <이름> --path <워크트리 절대경로>   # node_modules
 - 다른 워크트리의 tsconfig 를 본 저장소 tsc 로 `-p` 로 겨누는 우회는 쓰지 마라. 실측: 그렇게 하면 모듈 해석이
   실패해 유령 오류 2,879건이 나온다(정상은 0건). 도구는 **그 워크트리 안에서** 돌린다.
 - 포트는 워크트리마다 다르다(본 저장소가 9999 `--strictPort` 를 점유). 개발 서버는 `npm run dev:worktree`.
-- 병렬 워크트리는 `node_modules/.vite` 최적화 캐시도 공유한다. 서버 시작 시 `VITE_CACHE_DIR`에
-  워크트리 전용 경로나 고유 임시 경로를 지정하라 (`vite.config.ts`가 지원). 공유 캐시의 재최적화가
-  겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다. QA용 임시 캐시는 서버 종료 후 정리한다.
+- 병렬 워크트리는 `node_modules/.vite` 최적화 캐시도 공유한다(`node_modules` 가 메인으로의 심링크). vite 캐시 해시에
+  root 가 들어가 체크아웃마다 서로 재최적화해 덮고, 겹치면 동적 모듈 로딩이 실패해 빈 화면이 나올 수 있다.
+  `npm run dev`·`dev:worktree`·`dev:keep`·playwright webServer 는 공유 `node_modules` 를 보면 `<체크아웃>/.vite-cache/dev`
+  를 **자동으로** 쓴다(`scripts/lib/viteCacheDir.mjs`, 배너에 `[dev] vite 캐시 …` 로 찍힌다). vite 를 직접 부를 때만
+  `VITE_CACHE_DIR` 에 그 체크아웃 안 경로나 고유 임시 경로를 직접 준다. QA용 임시 캐시는 서버 종료 후 정리한다.
 
 콘텐츠(맵·이벤트·데모) 작업은 프로젝트 폴더 또는 팀 호스트와 project id를 확인하고,
 SQLite 정본에 저장+재로드까지 증명해야 끝이다 — 루트 `AGENTS.md` 의 하드 룰.
@@ -83,6 +85,13 @@ Vite dev/preview는 설치 후 선택 창을 다시 열면 목록·재생이 갱
 `OPRN_BGM_INSTALL_REMOTE=1` opt-in과 서버 재시작이 필요하다(기본은 루프백만 허용).
 환경 변수 이름은 2026-09 에 `RPG_ZZU_*` 에서 `OPRN_*` 로 바뀌었다. 옛 이름도 이번 릴리스까지는 경고 한 줄과 함께 그대로 읽힌다(`scripts/lib/oprnEnv.mjs` 가 새 이름으로 옮겨 준다).
 SHA-256 검증·손상 복구·잠금 복구·관리자 제작 명령은 `openwiki/bgm-catalog.md`.
+
+## 1c. 오프닝 이미지 팩
+
+추가 스틸은 `npm run stills:install` + `npm run stills:verify`로 설치한다.
+Git에는 카탈로그·검색어·해시만, 그림은 `stills-v1` Release에 둔다.
+오프닝 편집과 AI `list_opening_media`가 같은 목록을 사용한다.
+제작·복구·CDN/내보내기 계약은 [opening-still-pack.md](opening-still-pack.md).
 
 ## 2. 검증 — 무엇이 진짜 게이트인가
 

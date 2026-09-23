@@ -1,3 +1,4 @@
+import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
 // editor/tools/cinematicTools.ts
 // 오프닝 시네마틱(system.opening)의 AI 저작면. DB 「오프닝」 탭과 같은 레코드를 쓰므로
 // 런타임(새 게임 시작 전 재생)이 그대로 소비한다.
@@ -12,6 +13,7 @@ import {
   type GameOverSettings,
 } from "@/project/cinematicSettings";
 import { listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/resourceOptions";
+import { findOpeningStillMood } from "@/assets/openingStillMoods";
 import type { Project } from "@/project/types";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -59,7 +61,8 @@ function stillGrouper(project: Project): (id: string) => string {
   const backdrops = new Set(listDatabaseResourceOptions("backdrop", project).map(entry => entry.id));
   const titles = new Set(listDatabaseResourceOptions("title", project).map(entry => entry.id));
   const icons = new Set(listDatabaseResourceOptions("image", project).map(entry => entry.id));
-  return id => backdrops.has(id) ? "배경화"
+  return id => findOpeningStillMood(id)?.suitableForOpening === false ? "참고 이미지(오프닝 부적합)"
+    : findOpeningStillMood(id) || backdrops.has(id) ? "배경화"
     : titles.has(id) ? "타이틀 아트"
       : icons.has(id) ? "아이콘(작음·전체화면 부적합)" : "그림";
 }
@@ -383,7 +386,9 @@ const listOpeningMedia: ToolDefinition = {
   description:
     "오프닝 장면에 쓸 미디어 후보를 DB 「오프닝」 탭과 같은 목록에서 반환한다. "
     + "kind image(그림)/movie(영상)/sound(내레이션 음성)/music(배경음악) — 결과에 없는 id 는 저장이 거부된다. "
-    + "그림은 group 으로 성격을 알려준다 — 전체화면은 배경화·타이틀 아트를 고르고(아이콘은 피함), 없으면 generate_opening_image.",
+    + "그림은 group 으로 성격을 알려준다 — 전체화면은 배경화·타이틀 아트를 고르고(아이콘은 피함), 없으면 generate_opening_image. "
+    + "스틸은 description(실제 그림), mood(분위기), useCases(서사 용도), series(같은 세계관), cautions(그림에 포함된 제약)를 반환한다. "
+    + "query는 공백으로 나눈 단어를 모두 검색한다. 같은 series의 그림을 조합하고 설명과 맞는 내레이션을 작성한다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -414,18 +419,24 @@ const listOpeningMedia: ToolDefinition = {
       throw new ToolError(`limit은 1~${MEDIA_RESULT_LIMIT_MAX}의 정수여야 합니다.`, { code: "invalid-args" });
     }
 
-    const needle = (rawQuery ?? "").trim().toLocaleLowerCase();
-    const all = listDatabaseResourceOptions(kind as DatabaseResourcePickerKind, project)
-      .filter(entry => needle.length === 0
-        || entry.id.toLocaleLowerCase().includes(needle)
-        || entry.name.toLocaleLowerCase().includes(needle)
-        || (entry.searchTerms ?? []).some(term => term.toLocaleLowerCase().includes(needle)));
+    const needles = (rawQuery ?? "").trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+    const all = listDatabaseResourceOptions(PICKER_KIND[kind], project)
+      .filter(entry => {
+        const text = [entry.id, entry.name, ...(entry.searchTerms ?? [])].join(" ").toLocaleLowerCase();
+        return needles.every(needle => text.includes(needle));
+      });
     const group = kind === "image" ? stillGrouper(project) : undefined;
-    const matches = all.slice(offset, offset + limit).map(entry => ({
-      id: entry.id,
-      name: entry.name,
-      ...(group ? { group: group(entry.id) } : {}),
-    }));
+    const matches = all.slice(offset, offset + limit).map(entry => {
+      const still = kind === "image" ? findOpeningStillMood(entry.id) : undefined;
+      return {
+        id: entry.id,
+        name: entry.name,
+        ...(group ? { group: group(entry.id) } : {}),
+        ...(still ? { description: still.description, tags: still.tags, mood: still.mood,
+          useCases: still.useCases, series: still.series, cautions: still.cautions,
+          suitableForOpening: still.suitableForOpening } : {}),
+      };
+    });
     const nextOffset = offset + matches.length < all.length ? offset + matches.length : null;
     return {
       summary: `${MEDIA_KIND_LABEL[kind]} 후보 ${matches.length}개 조회(전체 ${all.length}개, kind=${kind}).`,
@@ -705,12 +716,14 @@ const getGameOver: ToolDefinition = {
 
 const setGameOver: ToolDefinition = {
   name: "set_game_over",
-  description: "게임오버 화면의 제목·본문·재시도/타이틀 버튼 문구와 배경 그림을 설정한다. 배경 id는 list_opening_media(kind:\"image\") 또는 list_resources 결과에서 고르고, 빈 문자열은 해당 값을 지운다.",
+  description: "패배 흐름(classic/horror/blackout), 귀환 좌표, 제목·본문·버튼·배경을 설정한다. blackout은 진행을 유지하고 파티를 회복해 귀환한다. 배경 id는 list_opening_media(kind:\"image\") 또는 list_resources 결과에서 고르고, 빈 문자열은 해당 값을 지운다.",
   mode: "write",
   parameters: {
     type: "object",
     additionalProperties: false,
     properties: {
+      presentation: { type: "string", enum: ["classic", "horror", "blackout"] },
+      recovery: { type: "object", additionalProperties: false, required: ["mapId", "x", "y"], properties: { mapId: { type: "string" }, x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 } } },
       title: { type: "string", description: "게임오버 제목. 빈 문자열은 지움" },
       message: { type: "string", description: "게임오버 본문. 빈 문자열은 지움" },
       retryLabel: { type: "string", description: "재시도 버튼 문구. 빈 문자열은 기본 문구 사용" },
@@ -719,7 +732,7 @@ const setGameOver: ToolDefinition = {
     },
   },
   run(draft, args): ToolExecResult {
-    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId"] as const;
+    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery"] as const;
     if (!allowed.some(key => Object.hasOwn(args, key))) {
       throw new ToolError("게임오버에서 바꿀 값을 하나 이상 지정하세요.", { code: "invalid-args" });
     }
@@ -740,6 +753,13 @@ const setGameOver: ToolDefinition = {
       }
       if (id) next.backgroundResourceId = id;
       else delete next.backgroundResourceId;
+    }
+    if (Object.hasOwn(args, "presentation")) next.presentation = args.presentation as GameOverSettings["presentation"];
+    if (Object.hasOwn(args, "recovery")) next.recovery = args.recovery as GameOverSettings["recovery"];
+    try { validateGameOverSettings(next); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
+    if (next.recovery) {
+      const map = draft.maps[next.recovery.mapId];
+      if (!map || next.recovery.x >= map.width || next.recovery.y >= map.height) throw new ToolError("귀환 좌표가 맵 범위 밖입니다.", { code: "invalid-args" });
     }
     const normalized = normalizeGameOverSettings(next);
     if (Object.keys(normalized).length === 0) delete draft.system.gameOver;

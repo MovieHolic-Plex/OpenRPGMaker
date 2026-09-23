@@ -1,3 +1,5 @@
+import { gameOverOutcome, resolveGameOverSettings } from "@/project/cinematicSettings";
+import { gameOverName } from "@/project/gameOverLibrary";
 import { el } from "@/util/dom";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { store } from "@/project/store";
@@ -160,9 +162,9 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
   setSelfSwitch: (cmd) => lampStage(`이 이벤트 기억 ${cmd.key}`, cmd.value),
   setFlag: (cmd, ctx) => lampStage(cmd.flag || "플래그", cmd.value, ctx?.simState ? getSimSwitch(ctx.simState, cmd.flag) : undefined),
   checkpointSave: (cmd) => screenMock(cmd.label ? `체크포인트: ${cmd.label}` : "체크포인트 저장", "title"),
-  killPlayer: () => screenMock("GAME OVER", "gameover"),
+  killPlayer: gameOverStage,
   triggerEnding: (cmd) => screenMock(cmd.endingId || "ENDING", "ending"),
-  gameOver: () => screenMock("GAME OVER", "gameover"),
+  gameOver: gameOverStage,
   returnToTitle: () => screenMock("타이틀 화면", "title"),
   ending: (cmd) => screenMock(cmd.title || "THE END", "ending"),
   openSaveMenu: () => screenMock("저장", "title"),
@@ -1133,6 +1135,23 @@ function resolveSwitchDisplay(cmd: Extract<Command, { kind: "setSwitch" }>, cont
   return cmd.value as boolean;
 }
 
+/** A configuration summary; full timed playback lives in the database editor. */
+function gameOverStage(cmd: Extract<Command, { kind: "gameOver" | "killPlayer" }>): HTMLElement {
+  const project = store.getCurrent(), settings = resolveGameOverSettings(project.system, cmd.gameOverId);
+  const outcome = gameOverOutcome(settings);
+  const result = { menu: "재시도 · 타이틀 선택", recover: "파티 회복 · 장소 귀환", title: "타이틀 자동 복귀" }[outcome];
+  const name = gameOverName(project, cmd.gameOverId ?? project.system.defaultGameOverId);
+  const message = (cmd.kind === "killPlayer" ? cmd.message : undefined) ?? settings?.message;
+  return el("div", { class: "ecp-game-over-summary", children: [
+    el("small", { text: "선택한 게임 오버" }),
+    el("strong", { text: name }),
+    el("p", { text: outcome === "menu" ? settings?.title ?? "게임 오버" : message ?? "패배 후 진행" }),
+    ...(outcome === "menu" && message ? [el("p", { text: message })] : []),
+    el("span", { text: result }),
+    el("small", { text: "전체 연출은 자료집의 게임 오버 탭에서 미리볼 수 있습니다." }),
+  ] });
+}
+
 function screenMock(text: string, variant: "gameover" | "title" | "ending"): HTMLElement {
   const stage = el("div", { class: "ecp-stage" });
   stage.append(el("div", { class: `ecp-result-screen ${variant}`, text }));
@@ -1764,9 +1783,9 @@ function describeRuntimeEffect(cmd: Command, simState: PreviewSimState, _hostEve
     case "despawnFieldEnemy":
       return `필드 몬스터 제거: ${cmd.spawnId}`;
     case "killPlayer":
-      return "주인공 사망";
+      return `주인공 사망: ${gameOverName(store.getCurrent(), cmd.gameOverId)}`;
     case "gameOver":
-      return "게임 오버";
+      return `게임 오버: ${gameOverName(store.getCurrent(), cmd.gameOverId)}`;
     case "returnToTitle":
       return "타이틀로 돌아가기";
     case "ending":

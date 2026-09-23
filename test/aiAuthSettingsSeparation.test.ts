@@ -256,7 +256,10 @@ describe("기기 로그인", () => {
     expect(link?.getAttribute("rel")).toBe("noopener noreferrer");
     expect(findByTestId(root, "ai-oauth-copy-code")).not.toBeNull();
     // 옛 구현은 5초 뒤 한 번만 확인하고 끝나서, 그보다 오래 걸리면 영구히 "대기 중"이었다.
-    expect(findByTestId(root, "ai-oauth-device-poll")?.textContent ?? "").toContain("/60");
+    // 지금은 계속 기다리되 「(5/60)」 같은 시도 횟수를 보여 주지 않는다.
+    const poll = findByTestId(root, "ai-oauth-device-poll")?.textContent ?? "";
+    expect(poll).toBe("로그인을 기다리는 중…");
+    expect(poll).not.toMatch(/\d+\s*\/\s*\d+/u);
     expect(findByTestId(root, "ai-oauth-device-cancel")).not.toBeNull();
     expect(findByTestId(root, "ai-oauth-paste-row")?.hidden).toBe(true);
     dispose();
@@ -292,7 +295,156 @@ describe("기기 로그인", () => {
 
     expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34031/oauth-callback?code=ok");
     expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
+    expect(findByTestId(root, "ai-oauth-device-step3")?.textContent ?? "").toContain("알아서");
     dispose();
+  });
+
+  it("원격 로그인 안내는 세 단계이고 ‘연결할 수 없음’ 페이지가 정상이라고 먼저 말한다", async () => {
+    startChatGptLogin.mockResolvedValue({
+      verificationUrl: "http://mdc-server:9888/oauth/launch?port=34031",
+      userCode: "",
+      pasteCallback: true,
+    });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const step1 = findByTestId(root, "ai-oauth-device-step1")?.textContent ?? "";
+    const step2 = findByTestId(root, "ai-oauth-device-step2")?.textContent ?? "";
+    const step3 = findByTestId(root, "ai-oauth-device-step3");
+    expect(step1).toMatch(/^1\. /u);
+    expect(step1).toContain("Google 계정으로 로그인");
+    expect(step2).toMatch(/^2\. /u);
+    expect(step2).toContain("‘연결할 수 없음’ 페이지가 뜨는 게 정상");
+    expect(step2).toContain("주소 전체");
+    expect(step3?.hidden).toBe(false);
+    expect(step3?.textContent ?? "").toMatch(/^3\. /u);
+    expect(step3?.textContent ?? "").toContain("서버마다 한 번만");
+    // 개발자 용어를 사용자 문구에 흘리지 않는다.
+    const block = findByTestId(root, "ai-oauth-device-code")?.textContent ?? "";
+    expect(block).not.toMatch(/OAuth|콜백|companion|동반 서비스/iu);
+    dispose();
+  });
+
+  it("원격 로그인은 주소창을 붙여 넣으면 버튼 없이 연결한다", async () => {
+    startChatGptLogin.mockResolvedValue({
+      verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      userCode: "",
+      pasteCallback: true,
+    });
+    completeOAuthPaste.mockResolvedValue(undefined);
+    fetchChatGptAuthStatus
+      .mockResolvedValueOnce({ connected: false })
+      .mockResolvedValue({ connected: true, env: false });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const input = findByTestId(root, "ai-oauth-paste-url") as FakeElement;
+    const event = new Event("paste", { cancelable: true });
+    Object.defineProperty(event, "clipboardData", {
+      value: { getData: () => "http://localhost:34099/oauth-callback?code=from-bar" },
+    });
+    input.dispatchEvent(event);
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(completeOAuthPaste).toHaveBeenCalledWith("http://localhost:34099/oauth-callback?code=from-bar");
+    dispose();
+  });
+
+  it("이 화면으로 돌아오면 클립보드의 localhost 주소로 연결한다", async () => {
+    startChatGptLogin.mockResolvedValue({
+      verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      userCode: "",
+      pasteCallback: true,
+    });
+    completeOAuthPaste.mockResolvedValue(undefined);
+    fetchChatGptAuthStatus
+      .mockResolvedValueOnce({ connected: false })
+      .mockResolvedValue({ connected: true, env: false });
+    const readText = vi.fn(async () => "http://127.0.0.1:34099/oauth-callback?code=clip");
+    vi.stubGlobal("navigator", { clipboard: { readText } });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34099/oauth-callback?code=clip");
+    dispose();
+  });
+
+  it("로그인 주소는 본문 글자로 보이지 않고 다시 열기 링크와 주소 복사만 남는다", async () => {
+    // 2026-09-23 실측: 600자 가까운 accounts.google.com 주소가 패널에 글자 그대로 찍혔다.
+    const longUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=abc&scope=${"x".repeat(500)}`;
+    startChatGptLogin.mockResolvedValue({ verificationUrl: longUrl, userCode: "" });
+    const writeText = vi.fn(async () => undefined);
+    vi.stubGlobal("navigator", { clipboard: { writeText } });
+    const { root, dispose } = await render();
+    await Promise.resolve();
+    findByTestId(root, "ai-oauth-login")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const block = findByTestId(root, "ai-oauth-device-code");
+    expect(block?.textContent ?? "").not.toContain("accounts.google.com");
+    expect(block?.textContent ?? "").not.toContain("https://");
+    expect(findByTestId(root, "ai-oauth-device-step1")?.textContent)
+      .toBe("Google 로그인 창을 열었어요. 창에서 로그인을 마치면 자동으로 연결됩니다.");
+    const link = findByTestId(root, "ai-oauth-device-url");
+    expect(link?.textContent).toBe("로그인 창 다시 열기");
+    expect(link?.getAttribute("href")).toBe(longUrl);
+
+    findByTestId(root, "ai-oauth-copy-url")?.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(writeText).toHaveBeenCalledWith(longUrl);
+    expect(findByTestId(root, "ai-oauth-device-poll")?.textContent ?? "").toContain("주소를 복사했어요");
+    dispose();
+  });
+
+  it("로그인은 10분 동안 기다리고, 시간이 지나면 이유와 다시 시도 버튼을 보여 준다", async () => {
+    const { DEVICE_LOGIN_WINDOW_MS, DEVICE_POLL_INTERVAL_MS } = await loadPanel();
+    expect(DEVICE_LOGIN_WINDOW_MS).toBe(10 * 60 * 1000);
+    vi.useFakeTimers();
+    try {
+      startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/d", userCode: "" });
+      fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+      const { root, dispose } = await render();
+      await vi.advanceTimersByTimeAsync(0);
+      findByTestId(root, "ai-oauth-login")?.click();
+      await vi.advanceTimersByTimeAsync(0);
+
+      // 옛 상한(3분)을 한참 넘긴 9분에도 여전히 기다린다.
+      await vi.advanceTimersByTimeAsync(9 * 60 * 1000);
+      expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(false);
+      expect(findByTestId(root, "ai-oauth-device-poll")?.textContent).toBe("로그인을 기다리는 중…");
+      expect(findByTestId(root, "ai-oauth-timeout")?.getAttribute("hidden")).not.toBeNull();
+
+      await vi.advanceTimersByTimeAsync(60 * 1000 + DEVICE_POLL_INTERVAL_MS);
+      expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
+      const notice = findByTestId(root, "ai-oauth-timeout");
+      expect(notice?.hidden).toBe(false);
+      expect(notice?.textContent ?? "").toContain("시간이 지나 로그인을 멈췄어요. 다시 시도해 주세요.");
+
+      // 다시 시도는 새 로그인을 시작하고 안내를 걷는다.
+      startChatGptLogin.mockClear();
+      findByTestId(root, "ai-oauth-timeout-retry")?.click();
+      await vi.advanceTimersByTimeAsync(0);
+      expect(startChatGptLogin).toHaveBeenCalledTimes(1);
+      expect(notice?.hidden).toBe(true);
+      expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(false);
+      dispose();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("취소하면 폴링을 멈추고 그렇게 말한다", async () => {
@@ -556,7 +708,7 @@ describe("OAuth 빠른 선택", () => {
     select.dispatchEvent(new Event("change"));
 
     expect(findByTestId(root, "ai-auth-quick-openai-codex")?.getAttribute("aria-checked")).toBe("true");
-    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("OpenAI Codex");
+    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("ChatGPT 계정으로 로그인합니다.");
     dispose();
   });
 
@@ -565,9 +717,33 @@ describe("OAuth 빠른 선택", () => {
     const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
     const text = gemini?.textContent ?? "";
     expect(text).toContain("Google 계정으로 로그인합니다.");
-    expect(text).toMatch(/Google Gemini/iu);
+    expect(text).toContain("Google 계정");
+    expect(text).toContain("Gemini · Antigravity");
     expect(text.toLowerCase()).not.toMatch(/subscription|구독|cli\b/);
     expect(text).not.toMatch(/Gemini\s+CLI/iu);
+    dispose();
+  });
+
+  it("한 제공자는 카드·패널·칩에서 같은 이름을 쓴다", async () => {
+    // 2026-09-23 실측: 카드 「Google Gemini」, 패널 「Google Antigravity 계정으로…」, 칩
+    // 「Google Antigravity 로그인 필요」 — 이름이 셋이었다. 계정 이름 하나로 묶는다.
+    const { providers } = await loadDeps();
+    const { root, dispose } = await render();
+    const google = providers.getOhMyPiProvider("google-antigravity")?.label;
+    const chatgpt = providers.getOhMyPiProvider("openai-codex")?.label;
+    expect(google).toBe("Google");
+    expect(chatgpt).toBe("ChatGPT");
+
+    const googleCard = findByTestId(root, "ai-auth-quick-google-antigravity")?.textContent ?? "";
+    const codexCard = findByTestId(root, "ai-auth-quick-openai-codex")?.textContent ?? "";
+    expect(googleCard).toContain("Google 계정");
+    expect(codexCard).toContain("ChatGPT 계정");
+    expect(findByTestId(root, "ai-auth-card-sub-openai-codex")?.textContent).toBe("Codex");
+    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("Google 계정으로 로그인합니다.");
+    // 옛 이름은 어디에도 제목으로 남지 않는다(보조 줄의 제품명만 허용).
+    for (const text of [googleCard, codexCard, findByTestId(root, "ai-auth-provider-help")?.textContent ?? ""]) {
+      expect(text).not.toMatch(/Google Gemini|Google Antigravity|OpenAI Codex/u);
+    }
     dispose();
   });
 

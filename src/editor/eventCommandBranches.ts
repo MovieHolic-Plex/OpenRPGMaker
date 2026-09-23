@@ -24,6 +24,7 @@ import {
   FORK_THEN_BRANCH_INDEX,
   INN_NOT_ENOUGH_BRANCH_INDEX,
   LOOP_BODY_BRANCH_INDEX,
+  PRESENT_OTHERWISE_BRANCH_INDEX,
   PROMOTE_FAILURE_BRANCH_INDEX,
   PROMOTE_SUCCESS_BRANCH_INDEX,
   SHOP_FAILED_TRANSACTION_BRANCH_INDEX,
@@ -31,7 +32,7 @@ import {
 } from "./eventCommandPaths";
 
 export type EventBranchKind =
-  | "choiceOption" | "choiceCancel" | "forkThen" | "forkElse" | "loopBody"
+  | "choiceOption" | "choiceCancel" | "presentOption" | "presentOtherwise" | "presentCancel" | "forkThen" | "forkElse" | "loopBody"
   | "shopTransaction" | "shopFailure" | "innNotEnough"
   | "promotionSuccess" | "promotionFailure" | "evolutionSuccess" | "evolutionFailure"
   | "battleVictory" | "battleDefeat" | "battleEscape";
@@ -81,6 +82,35 @@ export function eventCommandBranches(command: Command): readonly EventCommandBra
         branchIndex: CHOICE_CANCEL_BRANCH_INDEX,
         tone: "choices",
       }];
+    }
+    case "presentItem": {
+      // 새 명령(eventCommandFactory)은 틀림·닫음 배열을 빈 채로 만들어 두 분기가 늘 보인다.
+      const branches = command.options.map((option, index): EventCommandBranch => ({
+        kind: "presentOption",
+        label: `${option.itemId || `아이템 ${index + 1}`}을(를) 냈을 때`,
+        commands: option.branch,
+        branchIndex: index,
+        tone: "choices",
+      }));
+      if (include(undefined, command.otherwiseBranch)) {
+        branches.push({
+          kind: "presentOtherwise",
+          label: "다른 것을 냈을 때",
+          commands: command.otherwiseBranch ?? [],
+          branchIndex: PRESENT_OTHERWISE_BRANCH_INDEX,
+          tone: "choices",
+        });
+      }
+      if (include(undefined, command.cancelBranch)) {
+        branches.push({
+          kind: "presentCancel",
+          label: "아무것도 내지 않았을 때",
+          commands: command.cancelBranch ?? [],
+          branchIndex: CHOICE_CANCEL_BRANCH_INDEX,
+          tone: "choices",
+        });
+      }
+      return branches;
     }
     case "fork": {
       const branches: EventCommandBranch[] = [{

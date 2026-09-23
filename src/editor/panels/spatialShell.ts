@@ -1,7 +1,7 @@
 import { renderPlaceLibraryControls } from './spatialPlaceLibraryControls';
 import { renderRegionLibraryControls } from './spatialRegionLibraryControls';
 import { classifyPlaceCard, matchesPlaceClassification, resetPlaceLibraryFilters } from './spatialPlaceClassification';
-import { classifyRegionCard, matchesRegionClassification } from './spatialRegionClassification';
+import { matchesRegionClassification } from './spatialRegionClassification';
 import { canUseCompositionWorkspace } from "./spatialCompositionAccess";
 import { renderSpatialCompositionWorkspace } from "./spatialCompositionWorkspace";
 import { renderSpatialSpaceWorkspace } from "@/editor/panels/spatialSpaceWorkspace";
@@ -47,6 +47,7 @@ import {
 } from "@/editor/panels/spatialUsage";
 import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
 import type { SpatialGalleryCard as GalleryCard } from "@/editor/panels/spatialCatalog";
+import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
 export function renderSpatialAuthoringShell(
@@ -156,10 +157,10 @@ export function renderSpatialAuthoringShell(
   const renderCell = (card: GalleryCard): HTMLElement => {
     const isSelected = card.id === selected?.id;
     const button = renderSpatialGalleryCard(card, isSelected, onSelect);
-    const badges = regionGallery
-      ? (() => { const value = classifyRegionCard(card); return [value.category, value.style, value.origin]; })()
-      : (() => { const value = classifyPlaceCard(card); return [value.category, value.environment, ...value.purposes]; })();
-    button.append(el('div', { class: 'place-classification-badges', children: badges.map(text => el('span', { text })) }));
+    // 카드에는 분류 하나만 — 공간 형태·용도·그림체·출처는 필터와 상세에서 본다. 칩 4~5개가 이름보다 먼저 읽혔다.
+    // 지역 예시는 전부 같은 분류라 칩이 정보를 주지 않는다.
+    const badges = regionGallery ? [] : [classifyPlaceCard(card).category];
+    if (badges.length) button.append(el('div', { class: 'place-classification-badges', children: badges.map(text => el('span', { text })) }));
     if (!isSelected || !(card.canonicalSource || card.reviewedPlaceId || card.regionReferenceId)) return el("div", { class: "spatial-card-cell", children: [button] });
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
@@ -190,18 +191,23 @@ export function renderSpatialAuthoringShell(
       children: [button, actions, ...(popoverOpen ? [renderUsagePopover(card, usage)] : [])],
     });
   };
+  const sourceChips = renderSpatialSourceChips(session, onSource);
+  const usageChips = placesGallery ? el("div", { class: "spatial-usage-chips", dataset: { testid: "spatial-usage-chips" }, children: [
+    el("span", { class: "spatial-usage-chips-label", text: "쓰임" }),
+    usageChip("all", "전체"), usageChip("placed", "맵에 놓임"), usageChip("idle", "안 쓰임"),
+    usageChip("ai", aiPlacedCount > 0 ? `AI가 놓음 ${aiPlacedCount}` : "AI가 놓음"),
+  ] }) : null;
+  // 장소·지역 라이브러리는 출처·쓰임 칩을 「필터」 서랍으로 옮긴다(라이브러리 컨트롤이 받는다).
+  const libraryFilters = placesGallery || regionGallery;
+  const drawerExtra = {
+    nodes: [sourceChips, ...(usageChips ? [usageChips] : [])],
+    activeCount: (session.source !== "all" ? 1 : 0) + (placesGallery && usageChromeState.filter !== "all" ? 1 : 0),
+  };
   const gallery = el("div", {
     class: "spatial-gallery",
     dataset: { testid: "spatial-gallery" },
     children: [
-      el("div", { class: "spatial-gallery-filters", children: [
-        renderSpatialSourceChips(session, onSource),
-        ...(placesGallery ? [el("div", { class: "spatial-usage-chips", dataset: { testid: "spatial-usage-chips" }, children: [
-          el("span", { class: "spatial-usage-chips-label", text: "쓰임" }),
-          usageChip("all", "전체"), usageChip("placed", "배치됨"), usageChip("idle", "안 쓰임"),
-          usageChip("ai", aiPlacedCount > 0 ? `AI가 놓음 ${aiPlacedCount}` : "AI가 놓음"),
-        ] })] : []),
-      ] }),
+      ...(libraryFilters ? [] : [el("div", { class: "spatial-gallery-filters", children: [sourceChips] })]),
       galleryCards.length === 0
         ? (() => {
           if (cards.length > 0) {
@@ -278,8 +284,8 @@ export function renderSpatialAuthoringShell(
     // 본문이 암시 행으로 밀려 잘린다 — 둘을 한 래퍼로 묶어 둘째 행에 넣는다.
     children: [chrome, placesGallery || regionGallery
       ? el("div", { class: "spatial-shell-main", children: [
-        placesPurposeBand(),
-        regionGallery ? renderRegionLibraryControls(cards, refresh) : renderPlaceLibraryControls(cards, refresh),
+        ...(getEditorUiMode() === "expert" ? [] : [purposeBand(regionGallery ? "regions" : "places")]),
+        regionGallery ? renderRegionLibraryControls(cards, refresh, drawerExtra) : renderPlaceLibraryControls(cards, refresh, drawerExtra),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })
       : el("div", { class: "spatial-body", children: [gallery, stage] })],
@@ -309,8 +315,10 @@ let escapeLayerInstalled = false;
 /**
  * 이 탭이 뭔지 한 줄로 말한다. 3차 수리에서 들어왔다가 타일 화면 개편(2026-09-21) 때
  * 렌더 호출만 사라져 CSS(.spatial-purpose*)만 남아 있었다 — 화면에는 없었다.
+ * 「정본」 같은 내부 용어를 쓰지 않는다. 지역 탭은 장소 문구를 빌려 쓰지 않는다.
+ * 전문가 모드에서는 띄우지 않는다(호출부).
  */
-function placesPurposeBand(): HTMLElement {
+function purposeBand(tab: "places" | "regions"): HTMLElement {
   const step = (no: number, label: string, active = false): HTMLElement => el("span", {
     class: `spatial-purpose-step${active ? " is-active" : ""}`,
     children: [
@@ -319,18 +327,21 @@ function placesPurposeBand(): HTMLElement {
     ],
   });
   const arrow = (): HTMLElement => el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
+  const copy = tab === "regions"
+    ? { lead: "지역은 여러 장소를 이어 붙인 동네입니다", sub: "아래는 완성된 예시(읽기 전용)입니다", steps: ["예시 고르기", "상세 보기", "맵 파일 받기 · AI 참고"] }
+    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "마을·던전·집 안 — 고른 뒤 「맵에 놓기」", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
   return el("div", {
     class: "spatial-purpose",
     dataset: { testid: "spatial-purpose" },
     children: [
       el("span", { class: "spatial-purpose-lead", children: [
-        el("strong", { text: "여기서 만든 장소가 정본입니다" }),
-        el("small", { text: "AI는 여기서 골라 쓸 뿐입니다 · 만든 장소는 「맵에 놓기」로 실제 맵이 됩니다" }),
+        el("strong", { text: copy.lead }),
+        el("small", { text: copy.sub }),
       ] }),
       el("span", { class: "spatial-purpose-steps", children: [
-        step(1, "장소 만들기", true), arrow(),
-        step(2, "맵에 놓기"), arrow(),
-        step(3, "미리보기 · 적용"),
+        step(1, copy.steps[0]!, true), arrow(),
+        step(2, copy.steps[1]!), arrow(),
+        step(3, copy.steps[2]!),
       ] }),
     ],
   });

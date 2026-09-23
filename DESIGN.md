@@ -118,7 +118,7 @@
 - The float deck stands just inside those tracks (`--ai-deck-inset`), never over
   them, and stays within the edge-flush tolerance that makes the occlusion model
   read it as an edge column.
-- Ctrl+wheel over the canvas steps the existing 1/2/3/4/6/8 zoom marks about the
+- Ctrl+wheel over the canvas steps the existing 0.25/0.5/1/2/3/4/6/8 zoom marks about the
   pointer on Linux, Windows and macOS (including Ctrl-style trackpad pinch).
   Unmodified wheel remains pan; Command-only wheel is not editor zoom. Accepted
   Ctrl gestures suppress page zoom, including at limits. No animated zoom.
@@ -989,7 +989,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Work timeline** (`.ai-tool-activity`): a card with header `작업 N단계` (open while running) / `작업 N단계 · 라벨 → 라벨` (collapsed when the turn ends) / `조회 N건`. Rows are `map chip 46×32 · Korean label (aiToolLabels) / summary · ✓`. Map chips crop the touched region from the project (aiMapChip → renderRegionSnapshot). Function names are `title` only.
 - **Receipt card** (`.ai-change-card`): badge `적용됨`, title `우물 1 · 상인 2 · 바닥 9칸`, chips, `지금 → 적용 후` pair with tag labels on the shots, footer `넓게 보기` / `되돌리기`.
 - **Composer**: borderless textarea 14.5px + one 36px row: mode segment `지시 / 질문 / 계획` (ask/plan append one `[컨텍스트]` line), context pins (map · selection), undo pill, model chip (standard/expert only), 34px round send (indigo) that becomes a black round stop while running. Assistant preset/suggestion promotions are not mounted (including focus, empty chat, studio briefing and quick-reply chips). Explicit choices remain readable in the transcript. Live blueprint, ghost and work-plan chrome ends with its owner turn; independently pending region approvals keep their preview. No key-hint text (it is the textarea `title`).
-- **Menu** `⋯`: 248px, icon + label + right meta (context %, tool count, model), opens **upward** from the rail. The idle-screen choice (`ai-command-temperature-*`) lives in the settings modal section `대기 화면`, not in the menu.
+- **Menu** `⋯`: 248px, icon + label + right meta (context %, tool count, model), opens **upward** from the rail. The idle-screen choice is gone; the canvas suggestion button stays visible.
 - **Collapsed pill** (`.ai-collapsed-restore`, 44px): dot + `조수` + state sentence + pending-count badge; carries the same five states.
 - **Background opacity (2026-09-06)**: native labelled range `배경 농도` in the existing settings Display section beside font size, 78–100%, step 1, default 82%; larger numbers mean more opaque. A readable percent output follows the slider. `aiPanelLayout` owns `oprn:ai-background-opacity`; `--ai-background-opacity` on the panel feeds the existing `--ai-deck-glass` for both deck and collapsed pill. Input/change apply and persist immediately, including settings opened from the topbar; reload restores the same value. Never apply element opacity to foreground text. Slider uses existing `--accent`, `--focus-outline`, `--radius-s`, and 8px spacing tokens, with no new theme or row on the deck.
 - **Scroll and quiet chrome**: `.ai-chat-log` remains the single vertical conversation scroller and is keyboard focusable with a name. Its translucent `--border-strong` thumb strengthens to `--text-2` on hover/focus-within; focus uses the existing indigo outline. Wide code/tables retain their own horizontal scroll, composer stays outside the log. Remove redundant map decoration; remaining action glyphs use `deckIcon` SVGs with existing accessible names.
@@ -1012,7 +1012,7 @@ The float assistant is **one glass instrument**, `div.ai-deck` inside the transp
 - **Map editor**: Phaser canvas on a 16×16 logical grid; `image-rendering: pixelated`, nearest-neighbor.
 - **Grid**: grid lines are overlays (`--pixel-grid`), toggleable, default on in Edit mode.
 - **Overlays**: collision, event, start position, hover preview — tokenized, visually distinct.
-- **Zoom**: integer steps only: `1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top`. Standard/expert keep map-save/build behind the ⋯ gate.
+- **Zoom**: steps `0.25, 0.5, 1, 2, 3, 4, 6, 8` (`EDITOR_ZOOM_LEVELS`). One canvas stepper (`−` / current / `+`) plus a menu of `editor-zoom-*` marks. The classic toolbar no longer duplicates `1x 2x 4x 8x`. Beginner docks the stepper in `--editor-canvas-chrome-top` and shows `1x 2x 4x` until the current scale is outside that set. Standard/expert keep map-save/build behind the ⋯ gate.
 
 ### Database & resource modals
 

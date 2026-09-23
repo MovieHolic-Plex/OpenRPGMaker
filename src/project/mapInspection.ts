@@ -11,6 +11,7 @@
 import { collectMapLinkStats, type MapLinkStats } from "@/project/mapLinkStats";
 import { findParentMapId, findTreeNode, isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import type { Command, GameEvent, GameMap, MapId, Project } from "@/project/types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 /** 이벤트를 역할별로 나눈 수. 합은 `total` 이고 한 이벤트는 한 칸에만 들어간다. */
 export interface MapEventBreakdown {
@@ -265,6 +266,7 @@ function walkCommands(commands: readonly Command[], out: Command[]): void {
       for (const option of command.options) walkCommands(option.branch, out);
       if (command.cancelBranch) walkCommands(command.cancelBranch, out);
     }
+    if (command.kind === "presentItem") for (const branch of presentItemBranchLists(command)) walkCommands(branch, out);
     if (command.kind === "fork") {
       walkCommands(command.then, out);
       if (command.else) walkCommands(command.else, out);

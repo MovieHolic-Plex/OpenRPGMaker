@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>던전 생성 결과</title>
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=IBM+Plex+Sans+KR:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --void: #12100e;
+    --stone: #1c1916;
+    --line: #3c342c;
+    --text: #f3eadc;
+    --muted: #a89b8c;
+    --copper: #e3944a;
+    --mineral: #8fb8c4;
+    --ember: #c45c4a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--void); color: var(--text); font-family: "IBM Plex Sans KR", "Noto Sans CJK KR", sans-serif; line-height: 1.55; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 40px 20px 80px; }
+  h1, h2 { font-family: "Gowun Batang", serif; font-weight: 700; letter-spacing: -0.02em; }
+  h1 { font-size: 40px; margin: 0 0 12px; }
+  h2 { font-size: 28px; margin: 56px 0 8px; }
+  p { margin: 0 0 14px; }
+  .lede { font-size: 18px; max-width: 40em; color: var(--text); }
+  .muted { color: var(--muted); }
+  a { color: var(--copper); }
+  figure { margin: 0; }
+  figcaption { margin-top: 8px; color: var(--muted); font-size: 14px; }
+  img { display: block; width: 100%; height: auto; background: #100e0c; image-rendering: pixelated; }
+  .frame { border: 1px solid var(--line); background: var(--stone); }
+  .hero { margin-top: 28px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin: 14px 0 0; }
+  .swatch { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+  .box { width: 14px; height: 14px; border: 2px solid; }
+  .trio, .pair { display: grid; gap: 16px; margin-top: 18px; }
+  .trio { grid-template-columns: repeat(3, 1fr); }
+  .pair { grid-template-columns: 1fr 1.4fr; align-items: start; }
+  .card { background: var(--stone); border: 1px solid var(--line); padding: 12px; }
+  .card h3 { margin: 0 0 8px; font-size: 16px; font-weight: 500; }
+  .tag { display: inline-block; margin-bottom: 8px; padding: 2px 8px; border: 1px solid var(--line); color: var(--copper); font-size: 12px; letter-spacing: 0.04em; }
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+  .step { border-top: 2px solid var(--copper); padding-top: 10px; }
+  .step b { display: block; margin-bottom: 4px; }
+  .note { margin-top: 18px; padding: 14px 16px; border-left: 3px solid var(--mineral); background: #181614; color: var(--muted); }
+  @media (max-width: 800px) {
+    .trio, .pair, .steps { grid-template-columns: 1fr; }
+    h1 { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="muted">PR #1143 · 같은 생성기가 그린 맵</p>
+  <h1>던전은 요청의 장소가 되었다</h1>
+  <p class="lede">조수가 세계관과 이번 말로 길의 형태를 정한다. 코드는 그 계획대로 바깥으로 돌아가는 문, 먼 방의 표지, 순찰을 남긴다.</p>
+
+  <figure class="hero frame">
+    <img src="place.png" alt="곧은 석조 던전. 금색 칸은 출입구, 붉은 칸은 순찰, 청록 칸은 제단 표지">
+  </figure>
+  <div class="legend">
+    <span class="swatch"><i class="box" style="border-color:#e3944a"></i>출입구 (17, 38) · 바깥 맵과 왕복</span>
+    <span class="swatch"><i class="box" style="border-color:#8fb8c4"></i>표지 · 제단 (47, 9)</span>
+    <span class="swatch"><i class="box" style="border-color:#c45c4a"></i>순찰 · 박쥐 트룹, 추격</span>
+  </div>
+  <p class="muted" style="margin-top:10px">석조, 곧은 길, 64×48, 시드 3. 경고 없음. 바깥 맵에도 돌아오는 문이 있다.</p>
+
+  <div class="trio">
+    <figure class="card">
+      <img src="door.png" alt="바닥에 놓인 금색 출입구 칸">
+      <figcaption>문은 그림이 없다. 밟으면 바깥 맵으로 옮기는 칸이다. 상대 맵에도 같은 칸이 있다.</figcaption>
+    </figure>
+    <figure class="card">
+      <img src="altar.png" alt="벽 아래 석상. 청록 테두리가 계획된 표지">
+      <figcaption>표지는 입구에서 가장 먼 방의 석상이다. 이번 요청의 표지는 제단이었다.</figcaption>
+    </figure>
+    <figure class="card">
+      <img src="patrol.png" alt="붉은 아홉 칸. 그 안에서 트룹이 순찰한다">
+      <figcaption>순찰은 몬스터 그림이 아니라 스폰이다. 트룹 id가 있을 때만 놓는다.</figcaption>
+    </figure>
+  </div>
+
+  <h2>같은 다섯 방, 다른 길</h2>
+  <p>방의 좌표는 같다. 달라진 것은 조수가 고른 <b>path</b>뿐이다.</p>
+  <div class="trio">
+    <figure class="card">
+      <span class="tag">straight</span>
+      <h3>곧은 방, 좁은 통로</h3>
+      <img src="straight.png" alt="직사각형 방과 곧은 복도">
+      <figcaption>무덤, 신전, 석조. 방은 사각형이고 길은 방을 녹이지 않는다.</figcaption>
+    </figure>
+    <figure class="card">
+      <span class="tag">cave</span>
+      <h3>경계가 녹는 공동</h3>
+      <img src="cave.png" alt="모서리가 깎인 동굴형 실루엣">
+      <figcaption>자연 동굴. 방 가장자리가 둥글고 통로가 넓어 방이 이어져 보인다.</figcaption>
+    </figure>
+    <figure class="card">
+      <span class="tag">winding</span>
+      <h3>방은 남고 길만 꺾임</h3>
+      <img src="winding.png" alt="사각형 방을 잇는 꺾인 계단형 통로">
+      <figcaption>갱도, 수로. 방은 곧게 두고 사이만 꺾는다.</figcaption>
+    </figure>
+  </div>
+
+  <h2>맵이 커지면 방이 커지지 않는다</h2>
+  <p>같은 시드, 같은 용암, 같은 꺾인 길. 48×40은 방 6개, 160×112는 방 30개다.</p>
+  <div class="pair">
+    <figure class="card">
+      <span class="tag">48×40 · 방 6</span>
+      <img src="small.png" alt="방 여섯 개의 작은 용암 동굴">
+      <figcaption>방이 가까워 통로가 홀처럼 붙는다.</figcaption>
+    </figure>
+    <figure class="card">
+      <span class="tag">160×112 · 방 30</span>
+      <img src="wide.png" alt="방 서른 개의 큰 용암 동굴">
+      <figcaption>칸을 키우는 대신 방의 수를 늘렸다. 용암과 수정은 방 안에 남는다.</figcaption>
+    </figure>
+  </div>
+
+  <h2>조수가 칸을 칠하기 전에 적는 것</h2>
+  <div class="steps">
+    <div class="step"><b>원래 무엇이었나</b><span class="muted">신전, 광산, 동굴, 소굴</span></div>
+    <div class="step"><b>지금은 어떤가</b><span class="muted">무너짐, 점거, 범람</span></div>
+    <div class="step"><b>누가 있나</b><span class="muted">트룹이 있으면 순찰</span></div>
+    <div class="step"><b>왜 들어가나</b><span class="muted">표지가 먼 방에 선다</span></div>
+  </div>
+  <p style="margin-top:18px">그 답이 <b>path</b>, <b>linkMapId</b>, <b>landmark</b>, <b>pressure</b>가 된다. 코드는 형태를 대신 고르지 않는다. 생략하면 묘지만 곧은 실루엣이고, 나머지는 동굴이다.</p>
+
+  <div class="note">
+    밀물과 차오르는 물은 아직 물이 차오르는 타일이 아니다. 입구 옆에서 배회하는 투명한 사건이다. 잠긴 문, 열쇠, 들어갔다 나오면 현장이 바뀌는 규칙은 이번 머지에 없다.
+  </div>
+</div>
+</body>
+</html>

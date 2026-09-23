@@ -10,13 +10,16 @@ import { compileTerrain } from "./compileTerrain";
 import { containsPoint } from "./compileObjects";
 import { SpatialCompileError } from "./compilerTypes";
 
+/** The parametric interior shell is authored against one atlas only. */
+export const PARAMETRIC_INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
+
 /** The floor's explicit size is preserved; the shell backend needs 2 side / 4 north / 2 south padding. */
 export function spaceLayout(project: Project, space: SpaceDesign, identity: { readonly mapId: string; readonly seed: number }) {
   const tileset = own(project.tilesets, space.tilesetId);
   const localEntry: SpatialPoint = space.ports[0] ?? { x: Math.floor(space.width / 2), y: space.height - 1 };
   switch (space.environment) {
     case "interior": {
-      if (space.tilesetId !== "easyrpg_chipset_interior") throw new SpatialCompileError("atlas", space.tilesetId);
+      if (space.tilesetId !== PARAMETRIC_INTERIOR_TILESET_ID) throw new SpatialCompileError("atlas", space.tilesetId);
       if (!isConceptFloorMaterial(space.floor)) throw new SpatialCompileError("material", `${space.id}.floor:${space.floor}`);
       if (!isConceptWallMaterial(space.wall)) throw new SpatialCompileError("material", `${space.id}.wall:${space.wall}`);
       const room = { id: space.id, x: 2, y: 4, w: space.width, h: space.height, shape: space.shape, theme: space.id };

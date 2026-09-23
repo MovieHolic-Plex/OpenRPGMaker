@@ -12,8 +12,11 @@ import {
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
   officialGenrePackIdForWelcomePreset,
+  welcomeFreeTextDisplayText,
   welcomeGenrePresetById,
+  welcomeGenrePresetDisplayText,
 } from "@/editor/welcomeGenrePresets";
+import type { GameDesignBrief } from "@/project/gameDesignBrief";
 import { GENRE_PACK_IDS } from "@/project/genrePackId";
 
 describe("welcomeGenrePresets", () => {
@@ -79,6 +82,32 @@ describe("welcomeGenrePresets", () => {
     const prompt = buildWelcomeFreeTextPrompt("  고양이 카페 RPG  ");
     expect(prompt).toContain("고양이 카페 RPG");
     expect(prompt).toContain("지금 열려 있는 프로젝트에 이어서 작업한다");
+  });
+
+  it("말풍선용 보이는 문장에는 사용자가 고른 것만 담고 내부 지시는 싣지 않는다", () => {
+    // Break: 보이는 문장이 프롬프트 전문이면 첫 사용자가 체크리스트·「한국어로 진행하고…」를 자기 말로 본다.
+    expect(welcomeFreeTextDisplayText("  숲속 마을에서 고양이 찾기  ")).toBe("숲속 마을에서 고양이 찾기");
+    const preset = welcomeGenrePresetById("adventure-jrpg")!;
+    const brief: GameDesignBrief = {
+      version: 1,
+      presetId: "adventure-jrpg",
+      summary: "요약",
+      answers: {
+        experience: { question: "q", label: "경험", text: "누군가를 구하기 위해", source: "user" },
+        activity: { question: "q", label: "행동", text: "탐험", source: "user" },
+        progression: { question: "q", label: "진행", text: "레벨", source: "user" },
+        detail: { question: "q", label: "세부", text: "세부", source: "user" },
+        scope: { question: "q", label: "범위", text: "시작 마을과 첫 의뢰", source: "recommended" },
+      },
+    };
+    expect(welcomeGenrePresetDisplayText(preset, brief)).toBe(`${preset.label} · 누군가를 구하기 위해 · 시작 마을과 첫 의뢰`);
+    const withoutBrief = welcomeGenrePresetDisplayText(preset);
+    expect(withoutBrief.startsWith(preset.label)).toBe(true);
+    for (const shown of [withoutBrief, welcomeGenrePresetDisplayText(preset, brief)]) {
+      expect(shown).not.toContain("한국어로 진행하고");
+      expect(shown).not.toContain("체크리스트");
+      expect(shown).not.toContain("\n");
+    }
   });
 
   it("exposes smaller secondary inspiration strip entries", () => {

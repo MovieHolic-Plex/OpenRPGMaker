@@ -95,7 +95,7 @@ function regionCards(): SpatialGalleryCard[] {
   // 기본 설계가 목록을 채우면 무엇을 쓸 수 있는지가 오히려 안 보인다.
   const cards: SpatialGalleryCard[] = REGION_REFERENCES.map(entry => ({ id: `region-reference:${entry.id}`, localId: entry.id,
     regionReferenceId: entry.id, name: entry.name, source: "default" as const, kind: "regions" as const,
-    usage: 0, tilesetId: entry.tilesetId, regionKind: "regionKind" in entry ? entry.regionKind : "settlement" as const, subtitle: "완성 맵 사례" }));
+    usage: 0, tilesetId: entry.tilesetId, regionKind: "regionKind" in entry ? entry.regionKind : "settlement" as const, subtitle: "완성 예시" }));
   const known = new Set(cards.map((card) => card.id));
   for (const region of Object.values(visibleAuthoringProject().spatialAuthoring?.library.regions ?? {})) {
     const id = spatialPresentationId("library-region", "library", region.id);

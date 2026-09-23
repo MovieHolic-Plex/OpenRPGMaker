@@ -4,6 +4,7 @@ import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityT
 import { createPiPublication } from "./aiPiPublication";
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
+import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
@@ -41,12 +42,11 @@ import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, ty
 import { createPiGhostBridge } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
-import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { showConfirm } from "@/editor/ui/modal";
 import { adoptSpatialToolProof, authorMergedSpatialProposal, exportSpatialToolProof } from "@/editor/tools/spatialToolState";
 import { summarizeChanges } from "@/editor/tools/changeset";
-import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { changedAreaLabels } from "@/project/changeAreas";
@@ -80,6 +80,16 @@ function splitMapList(first: string, project: Project): string[] | null {
   if (candidates.length === 0 || !candidates.every((id) => Boolean(project.maps[id]))) return null;
   // 같은 맵을 두 번 적으면 에이전트 둘이 한 맵을 다투게 된다 — 파서에서 하나로 접는다.
   return [...new Set(candidates)];
+}
+
+/**
+ * 이 실행의 결과를 맵 묶음 병합으로 합치는가. 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다.
+ * 평문 턴도 현재 맵을 mapIds 에 채우기 때문에 예전 조건(`mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로
+ * 잘랐고, 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
+ * 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다. 팀은 팀 런타임이 합친다.
+ */
+export function mergesMapBundles(input: { team: boolean; mapIds: readonly string[]; scopedByUser: boolean; groupCount: number }): boolean {
+  return !input.team && input.mapIds.length > 0 && (input.scopedByUser || input.groupCount > 1);
 }
 
 /** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …`·`/team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
@@ -120,6 +130,14 @@ export function plainPiCommand(text: string, mode: PiAgentMode, currentMapId: st
  */
 const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝트를 바꾸지 않는다. 쓰기 도구가 제공되지 않는다. "
   + "요청을 실행 순서가 있는 항목 목록으로만 보고하라. 각 항목은 «무엇을 · 어디에 · 왜» 를 담고, 마지막에 예상 위험을 한 줄로 적어라. ";
+
+/**
+ * 계획 턴의 턴 상한. 계획은 말로만 남고 읽은 도구 결과는 실행 턴에 넘어가지 않는다 — 실행 턴이 어차피
+ * 다시 읽는다. 예전엔 실행과 같은 상한(최대 200턴)을 받아 계획 하나에 수십 번 읽기가 쌓였다.
+ */
+const PLAN_MAX_TURNS = 30;
+/** 계획 턴이 의도 목록과 상관없이 쥐는 읽기 도구. 나머지는 find_tools 로 찾는다. */
+const PLAN_READ_TOOLS = ["get_project_summary", "get_map_region", "tile_query", "find_tools"] as const;
 
 /** 이 실행 하나가 해도 되는 것. 패널이 자율성 다이얼에서 풀어 넘긴다(`resolvePiRunPlan`). */
 export interface PiRunOptions {
@@ -206,8 +224,7 @@ export async function runPiCommand(
     return false;
   }
   const base = store.getCurrent();
-  const proposalBase = captureProposalBase(base);
-  const baseline = new AuthoredProjectBaseline(base);
+  const { base: proposalBase, baseline } = captureApplyAuthority(base);
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
   const publication = createPiPublication(base, applyMode, surface, {
@@ -225,6 +242,9 @@ export async function runPiCommand(
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+  // 병합 여부 한 곳 — 체크포인트 발행·최종 병합·요청의 가드 신호(mapBundleMerge)가 같은 값을 쓴다.
+  // 가드가 꺼진 채 병합만 하면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
+  const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
   const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
@@ -308,6 +328,8 @@ export async function runPiCommand(
   // 질문(읽기 전용)·계획 턴의 결과는 «바뀐 것» 이 아니라 **말**이다. 보드는 마지막 한 줄만 남기므로
   // 답이 될 문장을 따로 붙잡아 둔다 — 이게 없으면 질문 모드가 220자로 잘린 한 줄이 된다.
   let lastAssistantText = "";
+  // 팀의 검수 팀원이 통과시킨 맵. 마지막 판정만 남긴다 — 수정 뒤 재검수가 떨어뜨리면 빠진다.
+  const teamApprovedMaps = new Set<string>();
   // 캔버스 시공 표시(밑그림). 워커의 `map_delta` 를 초안으로 복원해 고스트를 그린다 — 이게 없으면
   // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
   // 단일·병렬·팀이 다리 하나를 공유하며 검토 진입 시 실제 병합 결과로 보정한다.
@@ -352,7 +374,14 @@ export async function runPiCommand(
     // 팀 모드의 오류도 실행 요약에 실린다. 예전에는 여기서 곧장 return 해 streamErrors 가 늘 비었고,
     // 팀 런은 오류를 한 건도 안 낸 것처럼 기록됐다.
     if (event.type === "error" && streamErrors.length < 3) streamErrors.push(event.message);
-    if (team) { push(event); return; }
+    if (team) {
+      if (event.type === "review" && event.mapId) {
+        if (event.ok) teamApprovedMaps.add(event.mapId);
+        else teamApprovedMaps.delete(event.mapId);
+      }
+      push(event);
+      return;
+    }
     const agentId = mapIds.join(",") || `agent-${index + 1}`;
     if (event.type === "start") {
       push({ type: "agent_spawn", agentId, role: "builder", mapId: mapIds[0] ?? null, mapName: mapIds[0] ? base.maps[mapIds[0]]?.name ?? null : null, task: command.task });
@@ -383,7 +412,8 @@ export async function runPiCommand(
         mode: "single", provider: brain.providerId!, model: brain.model,
         task: `${PLAN_ONLY_PREFIX}${modelTask}`, mapIds: command.mapIds, ...here, project: base,
         scopeStrict: command.scopedByUser === true,
-        readOnly: true, maxTurns: options.maxTurns, thinkingLevel: brain.reasoningEffort,
+        readOnly: true, maxTurns: Math.min(options.maxTurns ?? PLAN_MAX_TURNS, PLAN_MAX_TURNS), thinkingLevel: brain.reasoningEffort,
+        ...(options.initialToolNames ? { initialToolNames: [...new Set([...options.initialToolNames, ...PLAN_READ_TOOLS])] } : {}),
       }, { signal: surface.signal, onEvent: raw => {
         if (raw.type === "heartbeat") {
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
@@ -420,6 +450,7 @@ export async function runPiCommand(
         project: base,
         // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
         scopeStrict: command.scopedByUser === true,
+        ...(mergedFromBundles ? { mapBundleMerge: true } : {}),
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
@@ -430,7 +461,7 @@ export async function runPiCommand(
       { signal: surface.signal, onEvent: wrap(mapIds, index),
         onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => {
           // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
-          if (!team && (command.scopedByUser || groups.length > 1) && mapIds.length) {
+          if (mergedFromBundles) {
             const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
             authorMergedSpatialProposal(next, publication.project);
             return publication.publish({ ...checkpoint, project: next, spatialProof: exportSpatialToolProof(next) });
@@ -481,12 +512,6 @@ export async function runPiCommand(
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
   //
-  // 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다. 평문 턴도 현재 맵을 mapIds 에
-  // 채우기 때문에 예전 조건(`command.mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로 잘랐고,
-  // 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
-  // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
-  const mergedFromBundles = !team && command.mapIds.length > 0
-    && (command.scopedByUser === true || groups.length > 1);
   const villageMapIds = new Set(results.flatMap(result => result.villageCompletion?.mapIds ?? []));
   villageIncomplete = !!options.villageContract && results.some(result => !result.villageCompletion || result.villageCompletion.issues.length > 0);
   let merged = mergedFromBundles
@@ -499,8 +524,8 @@ export async function runPiCommand(
   if (mergedFromBundles) authorMergedSpatialProposal(merged.project, base);
   else adoptSpatialToolProof(merged.project, results[0]!.spatialProof, base);
   if (merged.conflicts.length > 0) {
-    surface.appendBubble("system", "여러 팀원이 같은 맵을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
-    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
+    surface.appendBubble("system", "여러 팀원이 같은 맵이나 설정을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
+    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵·설정을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }
   spilledKeys.push(...merged.spills.flatMap((spill) => spill.keys));
   if (spilledKeys.length) surface.appendBubble("system", "선택한 작업 범위를 벗어난 변경은 제외했어요.");
@@ -576,9 +601,17 @@ export async function runPiCommand(
   // 예상보다 범위가 커졌으면 검토를 복원한다. 생략을 "검수 통과"로 기록하지 않는다.
   const needsHarmonyReview = !options.villageContract && applyMode !== "yolo" && (applyMode === "auto" || !routineEdit || changedKeys.some(key => key !== `maps.${command.mapIds[0]}`));
   let harmonyApproved = false;
+  // 끝난 뒤 사용자에게 보여 줄 «남은 문제» — 무엇이 문제인지 말하지 않는 경고는 아무것도 알려 주지 않는다.
+  let unresolvedFindings: string[] = [];
+  let harmonyIssue: string | null = null;
   if (needsHarmonyReview) {
     try {
+      // 팀 검수 팀원이 이미 통과시킨 맵은 다시 그려 묻지 않는다(팀 3중 검수의 마지막 겹).
+      const harmonyTargets = teamApprovedMaps.size
+        ? new Set(Object.keys(merged.project.maps).filter(id => !teamApprovedMaps.has(id)))
+        : undefined;
       let reviews = await reviewMapHarmony(base, merged.project, command.task, config, {
+        ...(harmonyTargets ? { mapIds: harmonyTargets } : {}),
         signal: surface.signal,
         onStatus: text => { surface.appendProcess?.(text); surface.setStatus("바뀐 내용이 잘 맞는지 확인하고 있어요."); },
         onReview: review => {
@@ -600,6 +633,8 @@ export async function runPiCommand(
           mapIds: command.mapIds, ...here, scopeStrict: command.scopedByUser === true,
           task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: deep.thinkingLevel,
+          // 수리 실행도 같은 의도 선별 목록에서 시작한다 — 없으면 새 Agent 가 전체 카탈로그(≈113k 토큰)를 매 호출 받는다.
+          ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
         }, { signal: surface.signal, onEvent: wrap(command.mapIds, 0), onCheckpoint: c => publication.publish(c) });
         const preRepair = merged.project;
         for (const id of repaired.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
@@ -624,6 +659,8 @@ export async function runPiCommand(
           break;
         }
       }
+      unresolvedFindings = reviews.filter(review => !review.harmonious)
+        .flatMap(review => review.findings.map(finding => `${merged.project.maps[review.mapId]?.name ?? review.mapId}: ${finding}`));
       changed = summarizeChanges(base, merged.project);
       changedKeys = changedProjectKeys(base, merged.project);
       changedCount = changedKeys.length;
@@ -639,6 +676,7 @@ export async function runPiCommand(
         return false;
       }
       const message = error instanceof Error ? error.message : String(error);
+      harmonyIssue = `검수를 하지 못했어요 — ${friendlyExecutionError(message)}`;
       surface.appendProcess?.(message);
       surface.appendBubble("system", publication.count ? "변경 내용을 끝까지 검수하지 못했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경 내용을 끝까지 확인하지 못했어요. 아직 적용하지 않았으니 직접 확인하고 적용해 주세요.");
       push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
@@ -778,12 +816,27 @@ export async function runPiCommand(
   }
   if (publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0) {
     // Live work is already real; do not present an imaginary pending draft.
-    if (applyMode === "default") {
-      await showConfirm({ title: "반영한 작업 확인", message: "이미 반영한 작업에 검수 문제 또는 미완료 항목이 있어요. 작업 기록을 확인해 주세요. 변경은 되돌리기로 복구할 수 있어요.", confirmLabel: "확인", cancelLabel: "닫기" });
-      surface.signal?.throwIfAborted();
+    // 이미 반영된 작업이다 — 모달로 막아 봐야 되돌릴 수 있다는 사실 말고는 할 말이 없다(2026-09-23 실측:
+    // 「검수 문제 또는 미완료 항목이 있어요」 모달이 무엇이 문제인지 한 줄도 말하지 않았다).
+    // 대신 남은 문제를 이름으로 적는다.
+    const issues = [
+      ...villageCompletion.issues,
+      ...(stoppedByLimit && streamErrors[0] ? [streamErrors[0]] : []),
+      ...(harmonyIssue ? [harmonyIssue] : []),
+      ...unresolvedFindings,
+    ];
+    // 첫 줄은 «무엇을 만들었나» 다(2026-09-23 실측: 「반영했지만 확인할 것이 남았어요」 + 검토 문장
+    // 여러 줄이 맵 14개를 만든 실행을 실패처럼 보이게 했다). 지적은 버리지 않고 접은 칸으로 옮긴다.
+    // 이름 붙은 지적이 하나도 없으면 «끝까지 확인하지 못했다» 는 사실을 머리말에 그대로 남긴다.
+    // 「만들었어요」 는 적용이 끝난 뒤에만 말한다 — 삭제 확인을 거절하거나 적용이 실패하면 apply() 가 따로 말한다.
+    const appliedOk = await apply();
+    if (!appliedOk) return false;
+    const bubble = surface.appendBubble("system", completionHeadline(plainMadeSummary(base, merged.project), { unverified: issues.length === 0 }));
+    if (issues.length) {
+      if (bubble && typeof (bubble as HTMLElement).append === "function") (bubble as HTMLElement).append(createRefineFindings(issues));
+      else surface.appendBubble("system", refineFindingsText(issues));
     }
-    surface.appendBubble("system", "반영한 변경에 확인할 문제가 남아 있어요. 작업 기록을 확인하거나 되돌릴 수 있어요.");
-    return apply();
+    return true;
   }
   surface.setStatus("변경 확인 대기");
   // 밀린 증분을 마저 그린다. 밑그림은 여기서 지우지 않는다 — 사용자가 「적용/버리기」를 고르는

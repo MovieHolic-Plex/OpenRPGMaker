@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 import {
   listOhMyPiProviders,
   logoutProvider,
+  providerStatus,
   publicProviderStatus,
   refreshProvider,
   resolveRequestApiKey,
@@ -143,10 +144,11 @@ export async function createOhMyPiAdapters() {
   return {
     listProviders: async () => listOhMyPiProviders(),
     async status(provider) {
-      return publicProviderStatus(provider);
+      // 만료됐지만 갱신 가능한 로그인은 여기서 되살린다(single-flight + 백오프, aiAuthRuntime.providerStatus).
+      return providerStatus(provider);
     },
-    async login(provider, body) {
-      return startProviderLogin(provider, body ?? {});
+    async login(provider, body, options) {
+      return startProviderLogin(provider, body ?? {}, options ?? {});
     },
     async saveKey(provider) {
       // 지원 제공자 둘 다 구독 로그인이다. API 키를 받는 생기면 사용자가

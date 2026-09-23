@@ -32,6 +32,13 @@ export type StepResult =
       settings: MessageWindowSettings;
       cancelBehavior?: ChoiceCancelBehavior;
     }
+  | {
+      kind: "presentItem";
+      prompt?: string;
+      /** 소지한 후보. 비어 있으면 UI 는 prompt 뒤 닫힘(취소)으로 재개한다. */
+      items: readonly { readonly itemId: string; readonly count: number }[];
+      settings: MessageWindowSettings;
+    }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "wait"; ms: number; allowParallelEvents?: boolean }
   | { kind: "eraseEvent"; eventId?: string }
@@ -183,8 +190,8 @@ export type StepResult =
       wakeDurationMs?: number;
       branchOnNotEnoughGold?: boolean;
     }
-  | { kind: "gameOver"; message?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string };
+  | { kind: "gameOver"; message?: string; gameOverId?: string }
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation };
 
 export type ResumeValue = number | boolean | string | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";

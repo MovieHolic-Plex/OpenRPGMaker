@@ -373,7 +373,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     inventory: { ...sessionState.inventory },
     itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
-    partyActorIds: [...(sessionState.partyActorIds ?? options.party?.partyActorIds ?? options.project.system.startActorIds)],
+    // null 칸(배우가 아닌 changeParty 가 남긴 것)은 보상·조건 판정에서도 뺀다.
+    partyActorIds: [...(sessionState.partyActorIds ?? options.party?.partyActorIds ?? options.project.system.startActorIds)]
+      .filter((id): id is string => typeof id === "string" && id !== ""),
     actorSkillIds: Object.fromEntries(
       Object.entries(sessionState.actorSkillIds ?? options.party?.skillIds ?? {}).map(([id, skills]) => [id, [...skills]])
     ),

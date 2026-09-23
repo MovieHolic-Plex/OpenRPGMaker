@@ -291,8 +291,9 @@ export interface PlaySceneContext extends Phaser.Scene {
   sleepUntilMorning(onFailurePresented?: () => void): Promise<boolean>;
   hasCheckpoint(): boolean;
   restoreCheckpoint(): void;
-  showGameOverScreen(message?: string): void;
-  showEndingScreen(title: string, message: string): void;
+  showGameOverScreen(message?: string, gameOverId?: string): void;
+  showEndingScreen(title: string, message: string, presentation?: import("@/project/cinematicSettings").EndingPresentation): void;
+  recoverFromDefeat(settings?: import("@/project/cinematicSettings").GameOverSettings): boolean;
   returnToTitle(): void;
 }
 

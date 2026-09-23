@@ -16,7 +16,7 @@ import { summarizeChanges } from "@/editor/tools/changeset";
 import { takeEditActivitySince, type EditActivityCommitAttachment } from "@/editor/editActivityLog";
 import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
-import { projectWithoutEventDrafts } from "./eventDrafts";
+import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
 import { serialize } from "./io";
 import type { CommitReviewStatus } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
@@ -78,7 +78,9 @@ export type CommitRow = {
  * 완료까지 기다려 row를 돌려준다(자동 적용 마일스톤의 결정적 커밋 증거, todo 5 의존).
  */
 export async function recordProjectCommit(input: CommitLogInput): Promise<CommitRow> {
-  const persistedProject = projectWithoutEventDrafts(input.project);
+  // 저장소 구현(electron·memory)은 이 객체를 붙잡거나 고치지 않고 직렬화 문자열만 쓴다 — 복제 없는 보기로
+  // 충분하다(2026-09-23 실측: 에이전트 체크포인트마다 프로젝트 전체 structuredClone 이 두 번 돌았다).
+  const persistedProject = projectViewWithoutEventDrafts(input.project);
   const editActivity = drainEditActivityForCommit();
   const serialized = serialize(persistedProject);
   const result = await projectRepository().commits.record({
@@ -174,7 +176,7 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
 }
 
 export function resetManualProjectCommitBaseline(project: Project): void {
-  lastManualSerialized = serialize(projectWithoutEventDrafts(project));
+  lastManualSerialized = serialize(projectViewWithoutEventDrafts(project));
   // 프로젝트 전환/재베이스라인 시 남아 있던 pending 엔트리를 버린다 — 안 버리면 이전
   // 프로젝트의 편집이 다음 프로젝트의 첫 커밋에 실려 엉뚱한 맵 id 로 읽힌다.
   // AI 적용 경로에서는 바로 앞의 커밋이 이미 드레인했으므로 no-op 이다.

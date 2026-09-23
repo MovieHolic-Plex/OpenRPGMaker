@@ -1,0 +1,163 @@
+/* A terminal scene owns the whole logical stage; do not apply the field window skin. */
+.game-over-screen {
+  background: #080809;
+  color: #e6e2d7;
+  font-family: var(--runtime-ui-font, sans-serif);
+}
+.game-over-screen > .cinematic-background {
+  opacity: 1;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+.game-over-content {
+  position: absolute;
+  inset: 0;
+  animation: game-over-reveal 280ms ease-out both;
+  /* Cursor-menu focus lives on this container; its selected row is the indicator. */
+  outline: none;
+}
+.game-over-heading {
+  position: absolute;
+  top: 9%;
+  left: 8%;
+  right: 8%;
+  max-height: 26%;
+  overflow: auto;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  text-shadow: 0 1px 3px #000;
+}
+.game-over-heading[hidden] { display: none; }
+.game-over-message {
+  position: absolute;
+  top: 57%;
+  left: 8%;
+  right: 8%;
+  max-width: none;
+  max-height: 13%;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+  font-size: 9px;
+  line-height: 1.5;
+  color: #b9b3aa;
+  text-shadow: 0 1px 3px #000;
+}
+.game-over-actions {
+  position: absolute;
+  top: 72%;
+  bottom: 10%;
+  left: 8%;
+  right: 8%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+.game-over-actions .game-over-choice {
+  flex-shrink: 0;
+  max-width: 100%;
+  min-height: 20px;
+  padding: 2px 10px 2px 22px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: #99938c;
+  font: 400 10px/1.5 var(--runtime-ui-font, sans-serif);
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.game-over-actions .game-over-choice.selected {
+  background: transparent;
+  box-shadow: none;
+  color: #f2e5c8;
+}
+.game-over-actions .game-over-choice.selected::before {
+  font-size: 8px;
+  color: #f2e5c8;
+  animation: none;
+  filter: none;
+}
+.game-over-hint {
+  position: absolute;
+  bottom: 3%;
+  left: 4%;
+  right: 4%;
+  text-align: center;
+  font-size: 7px;
+  line-height: 1.4;
+  color: #938c82;
+}
+@keyframes game-over-reveal {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-over-content { animation: none; }
+}
+
+/* First remove the field, then reveal the result, then accept a new input. */
+.terminal-scene { background: #080809; outline: none; }
+.terminal-scene[data-phase="fade-out"] { animation: terminal-darken var(--terminal-fade-ms, 900ms) ease-out both; }
+.terminal-scene[data-phase="exit"]::after {
+  content: ""; position: absolute; inset: 0; z-index: 10;
+  background: #080809; animation: terminal-reveal 380ms ease-in both;
+}
+.terminal-scene[data-phase="wake"] { animation: terminal-wake 800ms ease-in-out both; }
+.terminal-scene > .cinematic-background { animation: terminal-reveal 1100ms ease-out both; }
+.terminal-scene .game-over-actions { animation: terminal-reveal 600ms ease-out both; }
+.game-over-screen[data-presentation="horror"] .game-over-heading {
+  top: 36%; font-size: 17px; font-weight: 400; letter-spacing: 3px;
+  color: #b99b99; text-shadow: 0 0 14px #58292a70;
+}
+.game-over-screen[data-presentation="horror"] .game-over-message { top: 55%; color: #908989; }
+.game-over-screen[data-presentation="horror"] .game-over-choice.selected,
+.game-over-screen[data-presentation="horror"] .game-over-choice.selected::before { color: #d4bfbc; }
+.game-over-screen[data-presentation="horror"] .game-over-content { animation: terminal-reveal 1600ms ease-out both; }
+.blackout-message {
+  position: absolute; top: 42%; left: 10%; right: 10%;
+  font-size: 11px; line-height: 2; text-align: center; white-space: pre-wrap;
+  animation: terminal-reveal 650ms ease-out both;
+}
+.ending-screen { color: #dfd3b8; font-family: var(--runtime-ui-font, sans-serif); }
+.ending-screen > .cinematic-background { opacity: .28; object-fit: cover; animation-name: ending-art; }
+.ending-screen[data-tone="dark"] { color: #b9b4bd; }
+.ending-epilogue {
+  position: absolute; inset: 20% 10% 15%; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  animation: terminal-reveal 1600ms ease-out both;
+}
+.ending-kicker { font-size: 7px; letter-spacing: 3px; opacity: .6; }
+.ending-heading { margin: 0; font-size: 19px; font-weight: 400; line-height: 1.6; overflow-wrap: anywhere; max-height: 45%; overflow-y: auto; }
+.ending-heading::after { content: ""; display: block; margin: 14px auto 0; width: 24px; height: 1px; background: currentColor; opacity: .4; }
+.ending-message { font-size: 10px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; overflow-y: auto; max-height: 55%; }
+.ending-screen[data-phase="credits-transition"] .ending-epilogue { animation: terminal-wake 500ms ease-in both; }
+.ending-credits { position: absolute; inset: 10% 12% 14%; overflow: hidden; mask-image: linear-gradient(transparent, black 12%, black 88%, transparent); }
+.ending-credits-roll {
+  width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; text-align: center;
+  font-size: 10px; line-height: 2.4; padding: 16px 0;
+  animation: ending-roll var(--credits-duration, 30000ms) linear both;
+}
+.ending-final-title { position: absolute; top: 36%; left: 5%; right: 5%; text-align: center; font-size: 23px; letter-spacing: 6px; font-weight: 400; }
+.ending-final-caption { position: absolute; top: 55%; left: 10%; right: 10%; text-align: center; font-size: 9px; line-height: 1.6; opacity: .65; overflow-wrap: anywhere; }
+@keyframes terminal-darken { from { background: transparent; } to { background: #080809; } }
+@keyframes terminal-reveal { from { opacity: 0; } to { opacity: 1; } }
+@keyframes terminal-wake { from { opacity: 1; } to { opacity: 0; } }
+@keyframes ending-roll { from { transform: translateY(var(--credits-start, 185px)); } to { transform: translateY(var(--credits-end, -600px)); } }
+@media (prefers-reduced-motion: reduce) {
+  .terminal-scene, .terminal-scene::after, .terminal-scene *, .terminal-scene > .cinematic-background,
+  .game-over-screen[data-presentation="horror"] .game-over-content { animation: none !important; }
+  .ending-credits { overflow-y: auto; mask-image: none; }
+}
+
+@keyframes ending-art { from { opacity: 0; } to { opacity: .28; } }
+
+.terminal-scene[data-reduced-motion="true"],
+.terminal-scene[data-reduced-motion="true"]::after,
+.terminal-scene[data-reduced-motion="true"] * { animation: none !important; }
+.terminal-scene[data-reduced-motion="true"] .ending-credits { overflow-y: auto; mask-image: none; }

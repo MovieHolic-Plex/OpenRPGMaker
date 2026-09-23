@@ -2,6 +2,7 @@
 // place_npc 등이 받는 고수준 입력(SimplePage/graphic.query)을 EventPage/graphic으로 컴파일한다.
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
+import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFieldAliases";
 import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
@@ -10,7 +11,7 @@ import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import type { Command, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic } from "@/project/types";
 import { ToolError } from "./types";
-import type { SimplePage } from "./types";
+import type { SimplePage, SimplePageChoice } from "./types";
 
 const PASSIVE_MOVEMENT: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const CONDITION_KIND_SET: ReadonlySet<string> = new Set(CONDITION_KINDS);
@@ -337,6 +338,8 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     warnings?.push(`SimplePage 정규화: ${path}.kind "${requestedKind}" 를 "${kind}" 로 해석했습니다.`);
   }
   command.kind = kind;
+  const aliasFix = canonicalizeCommandFieldAlias(command);
+  if (aliasFix) warnings?.push(`SimplePage 정규화: ${path}: ${aliasFix}`);
   if (kind === "text" && command.body === undefined && typeof command.text === "string") {
     command.body = command.text;
     delete command.text;
@@ -508,7 +511,11 @@ export function compileSimplePage(
       kind: "choices",
       options: page.choices.map((choice, choiceIndex) => ({
         text: choice.text,
-        branch: normalizeCommands(choice.commands, `${path}.choices[${choiceIndex}].commands`, options.warnings),
+        branch: normalizeCommands(
+          simpleChoiceCommands(choice, `${path}.choices[${choiceIndex}]`, options.warnings),
+          `${path}.choices[${choiceIndex}].commands`,
+          options.warnings,
+        ),
       })),
       cancelBehavior: "choice2",
     });
@@ -527,6 +534,26 @@ export function compileSimplePage(
     movement: options.movement ?? PASSIVE_MOVEMENT,
     commands,
   };
+}
+
+/**
+ * SimplePage 선택지의 실행 명령. 정본 키는 `commands` 지만, 네이티브 choices 명령은 같은 자리를
+ * `branch` 라고 부른다(upsert_event 예시·COMMAND_SCHEMA). 모델이 두 계약을 섞어 `branch` 로 보내면
+ * 예전에는 경고 없이 버려져 선택지가 빈 분기가 됐다(2026-09-23 등대지기 재시험: 동료 합류·보스전
+ * 분기 둘 다 `branch:[]`). 뜻이 하나로 정해지는 별칭만 옮기고 무엇을 옮겼는지 경고로 남긴다.
+ */
+const SIMPLE_CHOICE_COMMAND_ALIASES = ["branch", "then", "actions"] as const;
+
+function simpleChoiceCommands(choice: SimplePageChoice, path: string, warnings: string[] | undefined): unknown {
+  const record = choice as unknown as Record<string, unknown>;
+  const aliased = SIMPLE_CHOICE_COMMAND_ALIASES.filter(key => record[key] !== undefined && record[key] !== null);
+  if (aliased.length === 0) return choice.commands;
+  const lists = [choice.commands, ...aliased.map(key => record[key])].filter(value => value !== undefined && value !== null);
+  const flattened = lists.flatMap(value => Array.isArray(value) ? value : [value]);
+  if (flattened.length > 0) {
+    warnings?.push(`SimplePage 정규화: ${path}.${aliased.join("/")}를 선택지 commands로 읽었습니다(SimplePage 선택지의 정본 키는 commands).`);
+  }
+  return flattened;
 }
 
 function resolvePageGraphic(page: SimplePage, fallback: EventPageGraphic): EventPageGraphic {

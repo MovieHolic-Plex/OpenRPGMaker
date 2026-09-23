@@ -425,6 +425,43 @@ of those uploaded atlases. This registration does not create new original artwor
 or change the attribution or licence status documented above. Preview PNGs are
 captures of the saved maps in the actual editor.
 
+## Opening mood stills (2026-09-22)
+
+generated/opening/*.png contains five cinematic opening stills (farm-golden,
+snow-village, desert-ruin, kingdom-day, dark-citadel) generated with the project
+god-tibo-imagen path (Google Antigravity, gemini-3.1-flash-image) from text prompts
+authored in this repository. No third-party reference images were used. They are
+project-original generated assets, registered as the oprn-still-* resource ids in
+src/assets/generatedAssetResourceResolver.ts with mood search terms in
+src/assets/openingStillMoods.ts. The remaining oprn-still-* ids point at existing
+bundled artwork (welcome poster slides and title art) whose provenance is
+documented in their sections above; this section registers no new claim for those
+files.
+
 ## Shared river fortress place
 
 `region-references/river-fortress-atlas.png` and its portable map preserve Castle2 and the Hyptosis/Daniel Eddeland supplemental provenance. See `castle-surroundings/CREDITS.txt`. Atlas composites and restored entrance cells do not change those licences. No reference-screenshot pixels or removed stone bridge are included.
+
+## Opening still release pack v1 (2026-09-22)
+
+The `oprn-pack-still-*` catalog images are original text-to-image outputs from the
+project's tibo Imagen path (Google Antigravity, gemini-3.1-flash-image), with no
+third-party reference images. Authored prompts, labels, tags and dimensions are
+recorded in `assets/opening-stills-source-v1.json`; delivered file hashes are pinned
+in `assets/stills-release-v1.json`. Full-frame JPEG conversions preserve the native
+composition and resolution. Images are distributed separately in the `stills-v1`
+GitHub Release, installed at `assets/stills/pack/`, and included in game exports
+only when referenced. This provenance statement does not replace the licenses of
+other bundled assets documented above.
+
+## Forest grass joins — palette adaptation (2026-09-23)
+
+`forest-harmony/grass-joins.png` (160×16, ten 16px cells) derives from the
+existing `forest-harmony/chipset.png` and inherited EasyRPG retro-world material
+attributed above. It keeps the 504/505 alpha silhouettes and adapts their grass
+pixels and the 559 horizontal repeat, plus the grass portions of 498/499/528/529/619, to the unchanged floor240.
+Cell2 is an exact floor240 copy; cell8 matches the right rock face712 palette to711.
+No tree/building artwork is altered. This is a modified derivative, not a new
+original-art or licence claim. Existing mixed-source notices still apply.
+Exact source hash, coordinates and transformations: `tiledata/forest-villages/diverse/grass-joins-source.json`
+and `scripts/content/prepare-forest-grass-joins.mjs`.

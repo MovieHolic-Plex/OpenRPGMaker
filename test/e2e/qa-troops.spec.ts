@@ -82,7 +82,8 @@ test.describe("QA — troops tab", () => {
     const topControls = page.locator(".db-troop-top-controls");
     await topControls.screenshot({ path: ".superpowers/sdd/qa-shots/troops-top-controls.png" });
 
-    // 이벤트 패널
+    // 이벤트 패널 — 2026-09: 「전투 이벤트」 구획 탭 안에 있다.
+    await page.getByTestId("db-troop-section-events-tab").click();
     const eventPanel = page.locator(".db-troop-event-panel");
     await expect(eventPanel).toBeVisible();
     await eventPanel.screenshot({ path: ".superpowers/sdd/qa-shots/troops-event-panel.png" });
@@ -211,6 +212,8 @@ test.describe("QA — troops tab", () => {
     const id = await addTroop(page);
     await page.getByTestId("db-field-name").fill("QA 이벤트 트룹");
     await page.getByTestId("db-troop-member-add").click();
+    // 2026-09: 전투 이벤트는 「전투 이벤트」 구획 탭 안에 있다.
+    await page.getByTestId("db-troop-section-events-tab").click();
 
     // no page yet → quality strip says missing payoff
     await expect(page.getByTestId("db-troop-event-quality")).toContainText("전투 후 보상/후속 연출 없음");

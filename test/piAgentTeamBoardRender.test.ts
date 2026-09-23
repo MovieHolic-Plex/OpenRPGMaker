@@ -30,10 +30,11 @@ let window: Window;
 
 beforeEach(() => {
   window = new Window();
-  const scope = globalThis as unknown as { document: unknown; window: unknown; localStorage: unknown; HTMLElement: unknown };
+  const scope = globalThis as unknown as { document: unknown; window: unknown; localStorage: unknown; HTMLElement: unknown; Node: unknown };
   scope.document = window.document;
   scope.window = window;
   scope.HTMLElement = window.HTMLElement;
+  scope.Node = window.Node;
   scope.localStorage = new MemoryStorage();
   __resetTeamSpecCache();
   publishTeamActivity(null);

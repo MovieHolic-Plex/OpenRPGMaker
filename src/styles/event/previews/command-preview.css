@@ -923,3 +923,9 @@
   color: var(--text-1);
   text-align: center;
 }
+
+.ecp-game-over-summary { display: flex; flex-direction: column; gap: 16px; min-height: 220px; padding: 24px; background: #101114; color: #e8dfd3; border-radius: 6px; overflow-wrap: anywhere; }
+.ecp-game-over-summary small { color: #a6aaaF; font-size: 11px; line-height: 1.7; }
+.ecp-game-over-summary strong { font-size: 17px; font-weight: 500; }
+.ecp-game-over-summary p { margin: 0; font-size: 13px; line-height: 1.7; white-space: pre-wrap; }
+.ecp-game-over-summary span { color: #c9b5ac; font-size: 12px; }

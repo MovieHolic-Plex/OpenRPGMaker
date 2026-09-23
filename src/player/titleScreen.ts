@@ -1,6 +1,7 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { applySystemWindowSkinVariable, applyTitleScreenBackground } from "@/player/systemGraphics";
 import { createTitleParticlesCanvas } from "@/player/titleParticles";
+import { createLicenseNotice } from "@/player/titleLicenseNotice";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import type { Project, TitleBackgroundLayer, TitleIntroSettings, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
@@ -129,6 +130,7 @@ export function renderTitleScreen(
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
   title.append(renderTitleEditorialCopy());
+  title.append(createLicenseNotice());
   if (showInputHint) {
     title.append(renderInputHint());
   }

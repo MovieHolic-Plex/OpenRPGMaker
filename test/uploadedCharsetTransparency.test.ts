@@ -4,6 +4,7 @@
 // 편집 맵과 인게임에서 스프라이트 주위에 배경 사각형이 그대로 남는다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  ensureBundledProjectTextures,
   ensureUploadedCharsetTextures,
   loadBundledAssets,
   rawCharsetTextureKey,
@@ -77,7 +78,12 @@ function fakeScene() {
     textures.set(key, texture);
     return texture;
   };
+  const anims = new Set<string>();
   const scene = {
+    anims: {
+      exists: (key: string): boolean => anims.has(key),
+      create: (config: { key: string }) => { anims.add(config.key); },
+    },
     load: {
       image(key: string, url: string) {
         queued.push({ key, url });
@@ -204,5 +210,42 @@ describe("uploaded charset transparency", () => {
 
     expect(harness.queued).toHaveLength(1);
     expect(harness.started).toHaveLength(1);
+  });
+
+  // 실측 2026-09-23: 조수가 새 프로젝트 맵을 숲마을 칩셋(tex_forest_harmony)으로 바꾸자 편집 캔버스가
+  // Phaser 의 "빠진 텍스처" 빗금(__MISSING)으로만 그려졌다. preload 는 부팅 때 쓰던 칩셋만 싣는다.
+  it("loads a bundled chipset the project starts using after scene boot and registers its frames", () => {
+    const harness = fakeScene();
+    const project = createBlankProject();
+    const tileset = Object.values(project.tilesets)[0]!;
+    (tileset as { textureKey: string }).textureKey = "tex_forest_harmony";
+    let redrawn = 0;
+
+    ensureBundledProjectTextures(harness.scene, project, () => { redrawn += 1; });
+
+    expect(harness.queued.map((entry) => entry.key)).toContain("tex_forest_harmony");
+    expect(harness.started).toHaveLength(1);
+
+    harness.addTexture("tex_forest_harmony", sourceImage(480, 608));
+    harness.completeLoad();
+
+    expect(harness.textures.get("tex_forest_harmony")!.frames.length).toBeGreaterThan(1140);
+    expect(redrawn).toBe(1);
+  });
+
+  it("does not queue bundled textures that are already loaded or in flight", () => {
+    const harness = fakeScene();
+    const project = createBlankProject();
+    const tileset = Object.values(project.tilesets)[0]!;
+    (tileset as { textureKey: string }).textureKey = "tex_forest_harmony";
+
+    ensureBundledProjectTextures(harness.scene, project);
+    ensureBundledProjectTextures(harness.scene, project);
+    expect(harness.queued.filter((entry) => entry.key === "tex_forest_harmony")).toHaveLength(1);
+
+    const loaded = fakeScene();
+    loaded.addTexture("tex_forest_harmony", sourceImage(480, 608));
+    ensureBundledProjectTextures(loaded.scene, project);
+    expect(loaded.queued.map((entry) => entry.key)).not.toContain("tex_forest_harmony");
   });
 });

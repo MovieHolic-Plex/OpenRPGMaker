@@ -16,6 +16,7 @@ import {
 } from "@/editor/ui/newProjectDialog";
 import { WELCOME_GENRE_PRESETS } from "@/editor/welcomeGenrePresets";
 import { createBlankProject } from "@/project/defaults";
+import { completeInterviewChoices } from "./helpers/gameDesignBrief";
 
 afterEach(() => {
   document.body.replaceChildren();
@@ -122,7 +123,8 @@ describe("새 프로젝트 다이얼로그", () => {
     );
     expect(blank?.checked).toBe(true);
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    await expect(pending).resolves.toEqual({ title: "달빛 항구", choiceId: null });
+    // 2026-09-21 인터뷰 다이얼로그 — 결과에 게임 화면 크기가 추가됐다(기본값 classic).
+    await expect(pending).resolves.toEqual({ title: "달빛 항구", choiceId: null, screenSize: "classic" });
   });
 
   it("선택지를 고르면 그 선택지 id 가 돌아온다", async () => {
@@ -134,7 +136,8 @@ describe("새 프로젝트 다이얼로그", () => {
     monster!.checked = true;
     monster!.dispatchEvent(new Event("change", { bubbles: true }));
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    await expect(pending).resolves.toEqual({ title: "달빛 항구", choiceId: "monster-collect" });
+    await completeInterviewChoices();
+    await expect(pending).resolves.toMatchObject({ title: "달빛 항구", choiceId: "monster-collect", screenSize: "classic", gameDesignBrief: { presetId: "monster-collect" } });
   });
 
   it("선택지는 첫 화면 포스터와 같은 그림을 실어 보여 준다", async () => {
@@ -159,6 +162,6 @@ describe("새 프로젝트 다이얼로그", () => {
     const input = document.querySelector<HTMLInputElement>("[data-testid='new-project-name-input']");
     input!.value = "   ";
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-confirm']")?.click();
-    await expect(pending).resolves.toEqual({ title: "새 프로젝트", choiceId: null });
+    await expect(pending).resolves.toEqual({ title: "새 프로젝트", choiceId: null, screenSize: "classic" });
   });
 });

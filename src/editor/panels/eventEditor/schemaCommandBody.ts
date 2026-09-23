@@ -42,8 +42,7 @@ const SCHEMA_CONTAINER_TESTID: Record<string, string> = {
  *
  * 명령 75종이 전부 스키마로 선언돼 있지만, 렌더 경로 전환은 kind 마다 아래 절차를
  * 밟아야 한다. 기존 폼들이 저마다 testid 계약을 테스트로 못박고 있기 때문이다
- * (예: scopedForms.test.ts 는 gameOver 가 [data-testid="game-over-editor"] 를 내고
- *  input/select/textarea 를 하나도 갖지 않을 것을 요구한다).
+ * 게임 오버는 이름별 라이브러리 선택기를 가진 전용 폼을 유지한다.
  *
  *   1. 해당 kind 의 기존 testid 를 스키마 필드의 testId 로 지정해 계약을 승계한다.
  *   2. 그 kind 를 참조하는 테스트를 돌려 DOM 형태 기대치를 맞춘다.
@@ -60,6 +59,8 @@ export const SCHEMA_RENDERED_KINDS: ReadonlySet<string> = new Set<string>([
   "changeItem",
   // Validation must reach the already-declared skill/operand fields, not an empty inspector.
   "changeLifeSkillExp",
+  // 새 명령이라 승계할 기존 testid 계약이 없다. 정답 목록은 presentOptions 위젯이 그린다.
+  "presentItem",
 ]);
 
 /** 프로젝트 상태에서 요약문 조회기를 만든다. */
@@ -68,7 +69,7 @@ export function summaryLookup(): SummaryLookup {
   const named = (id: string): string => {
     if (!id) return "(미지정)";
     const db = project.database;
-    const pools = [db.items, db.actors, db.skills, db.enemies, db.troops] as readonly { id: string; name?: string }[][];
+    const pools = [db.items, db.actors, db.skills, db.enemies, db.troops, project.system.gameOvers ?? []] as readonly { id: string; name?: string }[][];
     for (const pool of pools) {
       const hit = pool?.find((entry) => entry.id === id);
       if (hit?.name) return hit.name;
@@ -352,6 +353,7 @@ function renderField(
     }
 
     case "custom":
+      if (spec.widget === "presentOptions") return renderPresentOptions(testid, key, value, patch);
       // 전용 위젯 자리. 위젯이 아직 연결되지 않은 필드는 렌더를 건너뛰고
       // 기존 전용 다이얼로그가 계속 담당한다.
       return el("span", {
@@ -360,6 +362,47 @@ function renderField(
         dataset: { testid: `${testid}-custom`, widget: spec.widget },
       });
   }
+}
+
+type PresentOption = { itemId: string; branch: Command[] };
+
+/**
+ * presentItem 정답 목록: 아이템 선택 + 삭제 한 줄씩, 끝에 추가 버튼.
+ * 아이템을 바꿔도 그 줄의 분기는 그대로 둔다 — 분기 내용은 캔버스가 소유한다.
+ */
+function renderPresentOptions(
+  testid: string,
+  key: string,
+  value: unknown,
+  patch: (changes: Record<string, unknown>) => void
+): HTMLElement {
+  const options: PresentOption[] = Array.isArray(value) ? (value as PresentOption[]) : [];
+  const commit = (next: PresentOption[]): void => patch({ [key]: next });
+  const list = el("span", { class: "schema-present-options", dataset: { testid } });
+  options.forEach((option, index) => {
+    const picker = itemPicker({
+      selectedId: option.itemId,
+      testid: `${testid}-item-${index}`,
+      onChange: (itemId) => commit(options.map((entry, at) => (at === index ? { ...entry, itemId } : entry))),
+    });
+    const remove = el("button", {
+      class: "btn",
+      text: "삭제",
+      attrs: { type: "button" },
+      dataset: { testid: `${testid}-remove-${index}` },
+      on: { click: () => commit(options.filter((_, at) => at !== index)) },
+    });
+    list.append(el("span", { class: "rich-form-row", children: [picker.root, remove] }));
+  });
+  const add = el("button", {
+    class: "btn",
+    text: "정답 추가",
+    attrs: { type: "button" },
+    dataset: { testid: `${testid}-add` },
+    on: { click: () => commit([...options, { itemId: store.getCurrent().database.items[0]?.id ?? "", branch: [] }]) },
+  });
+  list.append(add);
+  return list;
 }
 
 function renderRecordField(

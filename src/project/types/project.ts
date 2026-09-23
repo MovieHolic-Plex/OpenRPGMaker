@@ -639,6 +639,7 @@ export interface EndingDef {
   conditions: EndingCondition[];
   priority: number;
   epilogue?: Record<string, unknown>[];
+  presentation?: import("../cinematicSettings").EndingPresentation;
 }
 
 export type StoryFlagKind = "switch" | "variable";
@@ -656,6 +657,8 @@ export interface StoryFlagDef {
 }
 
 export interface Project {
+  /** Confirmed new-project interview; travels with SQLite, export, and later AI turns. */
+  gameDesignBrief?: import("../gameDesignBrief").GameDesignBrief;
   /** Prompt library and dialogue review preferences, saved with this project. */
   aiAuthoring?: import("../aiAuthoring").AiAuthoring;
   /** Optional spatial authoring authority, separate from lore, worldGraph and runtime saves. */

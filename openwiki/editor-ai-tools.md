@@ -302,6 +302,13 @@ M2 명령의 `commandId`와 객체 `fields`는 공통 command shape 검증에서
 
 ## 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
 
+2026-09-22: `list_opening_media(kind:"image")`는 반드시 `still` 피커를 조회한다.
+일반 `image` 피커를 조회하던 누락을 수정했다. 검수된 스틸에는 실제 그림 설명
+`description`, 분위기 `mood`, 서사 용도 `useCases`, 같은 세계관 `series`, 제약
+`cautions`, 오프닝 적합 여부 `suitableForOpening`가 함께 반환된다. 공백으로 나눈
+검색어를 모두 일치시키므로 `겨울 신전`, `해저 비밀`로 찾을 수 있다. 생성 계획과
+미검수 이미지는 후보에 넣지 않는다. 상세: [opening-still-pack.md](opening-still-pack.md).
+
 사용자 요청: "사용자가 커스텀한 오프닝을 에디터 내에 있는 ai 를 통해 할 수 있게 만들고싶음".
 
 - 실측 공백: `system.opening` 은 DB 「오프닝」 탭(`db-tab-opening`, `databaseCinematic*`)으로만 저작됐고
@@ -1059,6 +1066,18 @@ Focused coverage: `test/audioDescriptionTools.test.ts`,
 `test/audioDescriptionToolExposure.test.ts`, `test/audioResourceToolPagination.test.ts`,
 `test/audioDescriptionPrompt.test.ts`, `test/audioDescriptionPromptTransport.test.ts`,
 `test/audioDescriptionSessionPrompt.test.ts`.
+
+## list_resources picture 검색 (2026-09-21)
+
+`list_resources`의 `kind`는 이제 `tile/charset/monster/backdrop/bgm/se/picture` 7종이다.
+`picture`는 시맨틱 카탈로그가 아니라 DB 피커와 같은 단일 정본
+`listDatabaseResourceOptions("picture", project)`(`src/editor/resourceOptions.ts`)에서
+name·id·searchTerms 부분 일치로 찾는다 — 업로드 그림과 promoted 생성 그림이 모두 잡힌다.
+`query="*"`(또는 `all`/`전체`)는 전체 훑어보기 관례를 따른다. 결과는 기존과 같은
+`data.matches`(id/label)+`total`+`nextOffset` 봉투다. 모델이 `kind:"image"`/`"icon"`으로
+부치면 여전히 enum 검증 실패다 — 시스템 프롬프트(`src/ai/contextBuilder.ts` RESOURCE_HINT)에
+허용 kind 7종과 '새 그림은 generate_image_asset' 안내를 심어 두었다. 회귀 지점:
+`src/editor/tools/queryTools.ts`의 listResources.
 
 ## P3 captured proposal base (2026-09-07)
 

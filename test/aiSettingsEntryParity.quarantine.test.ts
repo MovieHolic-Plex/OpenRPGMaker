@@ -48,7 +48,7 @@ beforeEach(async () => {
   setEditorUiMode("standard");
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   store.replace(createBlankProject());
-  editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null, assistantTemperature: "quiet-gold" });
+  editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
   await clearConversations();
 });
 
@@ -101,19 +101,6 @@ describe.each(["topbar", "panel"] as const)("%s settings entry", (entry) => {
     expect(document.querySelector("[data-testid='ai-composer-reasoning']")).toBeNull();
     expect(loadAiConfig().reasoningEffort).toBe(resolveAutonomy("max").reasoningEffort);
     expect(control("ai-composer-model").textContent).toContain("gemini-2.5-pro");
-  });
-
-  it("exposes all temperature choices and updates the mounted panel when selected", async () => {
-    // Given either entry opened against the same panel.
-    const panel = await boot();
-    open(entry);
-    // When each shipped choice is selected, then its panel and radio state agree.
-    for (const value of ["map-first", "ink-only", "quiet-gold"]) {
-      const choice = control(`ai-command-temperature-${value}`);
-      choice.click();
-      expect(panel.dataset.temperature).toBe(value);
-      expect(choice.getAttribute("aria-checked")).toBe("true");
-    }
   });
 });
 

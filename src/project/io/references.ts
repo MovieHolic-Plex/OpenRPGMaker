@@ -31,6 +31,7 @@ import { ensureItemSwitchDefs } from "../itemSwitchDefs";
 import { monsterEvolutionCycleSpeciesIds } from "../monsterCollection";
 import { inBounds, isPassable } from "../collision";
 import { footprintCells, isSpatialFootprint, isSpatialOrientation } from "../spatialPlacements";
+import { mapPresentItemBranches } from "@/project/eventCommands/presentItemBranches";
 
 export function validateProjectReferences(project: Project): void {
   const issues = collectProjectReferenceIssues(project);
@@ -191,6 +192,7 @@ export function collectProjectReferenceIssues(project: Project): string[] {
     variableIds,
     commonEventIds,
     endingIds,
+    gameOverIds: new Set((project.system.gameOvers ?? []).map(row => row.id)),
     mapIds,
     troopIds,
     speciesIds,
@@ -227,6 +229,17 @@ export function collectProjectReferenceIssues(project: Project): string[] {
   check(() => validateP0SystemReferences(project, itemIds, switchIds, issues));
   check(() => validateP2SystemReferences(project, itemIds, switchIds, mapIds, issues));
   check(() => validateSystemResources(project.system, resourceIds));
+  for (const ending of project.endings ?? []) {
+    check(() => validateOptionalResource(`ending ${ending.id}.presentation.backgroundResourceId`, ending.presentation?.backgroundResourceId, resourceIds));
+    check(() => validateOptionalResource(`ending ${ending.id}.presentation.musicResourceId`, ending.presentation?.musicResourceId, resourceIds));
+  }
+  if (project.system.defaultGameOverId && !project.system.gameOvers?.some(row => row.id === project.system.defaultGameOverId)) issues.push("system.defaultGameOverId does not exist.");
+  for (const settings of [project.system.gameOver, ...(project.system.gameOvers ?? []).map(row => row.settings)]) {
+    const recovery = settings?.recovery;
+    if (!recovery) continue;
+    const map = project.maps[recovery.mapId];
+    if (!map || !inBounds(map, recovery.x, recovery.y)) issues.push("system.gameOver.recovery must point inside an existing map.");
+  }
   check(() => collectExistingIdIssues("session.partyActorIds", project.session.partyActorIds, actorIds, issues));
   check(() => validateEndings(project, switchIds, variableIds, issues));
   check(() => validateMapConnections(project, mapIds, issues));
@@ -1484,6 +1497,10 @@ function pruneDanglingCommandRefs(
         options: command.options.map((option) => ({ ...option, branch: recurse(option.branch) })),
         cancelBranch: command.cancelBranch ? recurse(command.cancelBranch) : undefined,
       });
+      continue;
+    }
+    if (command.kind === "presentItem") {
+      pruned.push(mapPresentItemBranches(command, recurse));
       continue;
     }
     if (command.kind === "fork") {

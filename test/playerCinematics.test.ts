@@ -10,7 +10,7 @@ vi.mock("@/player/audio", async (importOriginal) => ({
   playAudioCommand: vi.fn(), stopAudioCommand: vi.fn(),
 }));
 import { EventEmitter } from "node:events";
-import { showGameOverScreen } from "@/player/playSceneOverlays";
+import { showGameOverScreen, showEndingScreen } from "@/player/playSceneOverlays";
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
 import { setExportedProject } from "@/player/exportProjectStoreShim";
 import { createBlankProject } from "@/project/defaults";
@@ -64,6 +64,7 @@ describe("opening at the real player shell seam", () => {
     renderPlayer(main, { autoStartRun: true, trackGlobalGame: false, onRunControlsReady: value => { controls = value; } });
     expect(mode.startPlayGame).not.toHaveBeenCalled();
     controls.restartRun();
+    await vi.advanceTimersByTimeAsync(1100);
     expect(main.querySelectorAll('[data-testid="cinematic-sequence"]')).toHaveLength(1);
     controls.returnToTitle();
     await Promise.resolve();
@@ -127,9 +128,11 @@ describe("game-over sequence lifecycle", () => {
     const { scene, restore } = terminal();
     showGameOverScreen(scene, "event-message");
     expect(main.querySelector('[data-testid="checkpoint-retry"]')).toBeNull();
+    await vi.advanceTimersByTimeAsync(1100);
     expect(main.querySelector('[data-testid="cinematic-sequence"]')).not.toBeNull();
     key("Enter");
     await Promise.resolve();
+    await vi.advanceTimersByTimeAsync(700);
     expect(restore).not.toHaveBeenCalled();
     expect(main.querySelector('.runtime-overlay-title')?.textContent).toBe(project.system.gameOver.title);
     expect(main.querySelector('.runtime-overlay-message')?.textContent).toBe("event-message");
@@ -139,13 +142,49 @@ describe("game-over sequence lifecycle", () => {
     key("Enter", true);
     expect(restore).not.toHaveBeenCalled();
     key("Enter");
+    await vi.advanceTimersByTimeAsync(400);
     expect(restore).toHaveBeenCalledTimes(1);
+  });
+  it("blocks early confirmation and cancels blackout recovery on shutdown", async () => {
+    project.system.gameOver = { presentation: "blackout" };
+    const { scene, events } = terminal();
+    scene.recoverFromDefeat = vi.fn(() => true);
+    showGameOverScreen(scene);
+    key("Enter");
+    await vi.advanceTimersByTimeAsync(1600);
+    expect(main.querySelector(".blackout-message")).not.toBeNull();
+    expect(main.querySelector('[data-testid="return-title"]')).toBeNull();
+    events.emit("shutdown");
+    await vi.advanceTimersByTimeAsync(10000);
+    expect(scene.recoverFromDefeat).not.toHaveBeenCalled();
+  });
+  it("holds the ending, advances through credits once, and tears down on title return", async () => {
+    const { scene, title } = terminal();
+    showEndingScreen(scene, "Dawn", "Home again", { credits: "Story\nTravellers" });
+    key("Enter");
+    expect(title).not.toHaveBeenCalled();
+    await vi.advanceTimersByTimeAsync(3400);
+    expect(main.querySelector(".ending-heading")?.textContent).toBe("Dawn");
+    key("Enter");
+    await vi.advanceTimersByTimeAsync(1400);
+    expect(main.querySelector(".ending-credits-roll")?.textContent).toBe("Story\nTravellers");
+    key("Enter");
+    expect(main.querySelector(".ending-final-title")?.textContent).toBe("THE END");
+    expect(title).not.toHaveBeenCalled();
+    key("Enter", true);
+    expect(title).not.toHaveBeenCalled();
+    key("Enter");
+    await vi.advanceTimersByTimeAsync(400);
+    expect(title).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(200000);
+    expect(main.querySelector('[data-testid="ending-screen"]')).toBeNull();
   });
   it("replaces old sequences and cancels them on shutdown without mounting a stale terminal", async () => {
     project.system.gameOver = { sequence };
     const { scene, events } = terminal();
     showGameOverScreen(scene);
     showGameOverScreen(scene);
+    await vi.advanceTimersByTimeAsync(1100);
     expect(main.querySelectorAll('[data-testid="cinematic-sequence"]')).toHaveLength(1);
     events.emit("shutdown");
     await Promise.resolve();
@@ -153,12 +192,21 @@ describe("game-over sequence lifecycle", () => {
     expect(events.listenerCount("shutdown")).toBe(0);
     expect(events.listenerCount("destroy")).toBe(0);
   });
-  it("keeps legacy game over synchronous and retry conditional", () => {
+  it("blocks the field immediately and reveals conditional choices after the result", async () => {
     project.system.gameOver = { message: "default-message" };
     const { scene, events } = terminal(false);
     showGameOverScreen(scene);
     expect(main.querySelector('[data-testid="checkpoint-retry"]')).toBeNull();
+    expect(main.querySelector('[data-testid="return-title"]')).toBeNull();
+    await vi.advanceTimersByTimeAsync(1800);
     expect(main.querySelector('.runtime-overlay-message')?.textContent).toBe(project.system.gameOver.message);
+    expect(main.querySelector('.game-over-panel')).toBeNull();
+    expect(main.querySelector('.game-over-screen')).not.toBeNull();
+    const art = main.querySelector<HTMLImageElement>('.cinematic-background');
+    expect(art?.src).toContain('Game%20Over.png');
+    expect(main.querySelector<HTMLElement>('.game-over-heading')?.hidden).toBe(true);
+    art?.dispatchEvent(new Event('error'));
+    expect(main.querySelector<HTMLElement>('.game-over-heading')?.hidden).toBe(false);
     events.emit("destroy");
     expect(main.querySelector('[data-testid="game-over-screen"]')).toBeNull();
   });

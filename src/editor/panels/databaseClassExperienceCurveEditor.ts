@@ -17,14 +17,27 @@ export type ExperienceCurvePanelOptions = Readonly<{
   refresh: () => void;
 }>;
 
+const EXP_FORMAT = new Intl.NumberFormat("ko-KR");
+
 export function renderExperienceCurvePanel(options: ExperienceCurvePanelOptions, host: HTMLElement): void {
   const curve = options.readCurve();
   const samples = previewSampleLevels().map((level) => Math.max(1, totalExpForLevel(curve, level)));
   host.replaceChildren(
+    // 사람이 읽는 말이 먼저, 수식 원문은 뒤에 작게 — 「기본=1; 추가=677; 가속=40」 만으로는
+    // 레벨업이 빠른지 느린지 알 수 없었다.
     el("div", {
       class: "db-class-exp-summary",
       dataset: { testid: `${options.testidPrefix}-summary` },
-      text: `기본=${curve.base}; 추가=${curve.extra}; 가속=${curve.acceleration}`,
+      children: [
+        el("span", {
+          class: "db-class-exp-readable",
+          text: `Lv 10까지 ${EXP_FORMAT.format(totalExpForLevel(curve, 10))} · Lv 50까지 ${EXP_FORMAT.format(totalExpForLevel(curve, 50))} 경험치`,
+        }),
+        el("small", {
+          class: "db-class-exp-formula",
+          text: `기본=${curve.base}; 추가=${curve.extra}; 가속=${curve.acceleration}`,
+        }),
+      ],
     }),
     el("button", {
       class: "db-class-exp-graph",

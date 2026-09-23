@@ -1,7 +1,11 @@
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
+import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
+import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
+import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
+import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
 import { createSlates32Tileset, SLATES_32_ID } from "./slates32";
@@ -85,16 +89,36 @@ export function defaultTilesets(): Record<string, TilesetDef> {
   return tilesets;
 }
 
-export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef> }): boolean {
+function villageObjectTilesetUsedByMaps(project: { maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
+  const maps = project.maps;
+  // 맵 목록이 없으면 사용 중인지 알 수 없다. 그 경우 시트를 지우지 않는다.
+  if (!maps) return true;
+  return Object.values(maps).some((map) => map?.tilesetId === SHARED_VILLAGE_OBJECT_ID);
+}
+
+export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
   let changed = false;
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     // 존재 확인이 **먼저**다. 생성자를 먼저 부르면 타일셋이 이미 있는 흔한 경우에도
     // 3~5MB 짜리 JSON 사본을 만들어 그대로 버린다 — 실측 2026-09-22: 프로젝트 로드마다
     // 164ms 였고 그 대부분이 버려지는 사본이었다(수정 후 26ms).
     const id = bundledTilesetIdForAsset(asset);
+    // 선별 소품 19종은 숲 시트 아래 행으로 붙인다. 이 시트를 타일셋으로 쓰는 맵이 없을 때만
+    // 목록에서 빼며, 맵이 있으면 칸 번호가 깨지지 않게 시트를 남긴다.
+    if (id === SHARED_VILLAGE_OBJECT_ID && !villageObjectTilesetUsedByMaps(project)) {
+      if (project.tilesets[id]) {
+        delete project.tilesets[id];
+        changed = true;
+      }
+      continue;
+    }
     if (project.tilesets[id]) {
+      if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
+      changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
+      changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
+      changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -152,6 +176,9 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
     }
 
     for (const key of Object.keys(value)) {
+      // Tile grids are number arrays. Walking every cell looking for a sprite id
+      // made heavy-project load scan millions of numbers for a match that cannot occur.
+      if (key === "lowerTiles" || key === "upperTiles" || key === "lowerTileStacks" || key === "upperTileStacks") continue;
       const item = value[key];
       if (isLegacySpriteReference(key)) {
         delete value[key];
@@ -194,14 +221,24 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
+  const tileset = bundledEasyRpgTilesetBase(asset);
+  ensureRpgPlaceReferences(tileset);
+  ensureFieldRouteReferences(tileset);
+  return tileset;
+}
+
+function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
+  if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return createLpcWoodenFurnitureTileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return createLpcWoodenFurniture16Tileset();
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
+  const climate = CLIMATE_VILLAGE_TEXTURES[asset.textureKey];
+  if (climate) return createClimateVillageTileset(climate);
   return bundledStandardChipsetTileset(asset);
 }
 

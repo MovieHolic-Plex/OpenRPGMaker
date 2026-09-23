@@ -20,15 +20,7 @@ import type { GenrePackId } from "@/project/genrePackId";
  * "사용자가 들어오는 제목" 이 둘로 갈리기 때문이다(갤러리/학교, 수집/육성).
  * 변형은 같은 packId·recipeId 를 가리키고 저장 시 하나의 팩으로 합쳐진다.
  */
-export type NewProjectChoiceId =
-  | "action-rpg"
-  | "monster-collect"
-  | "partner-raise"
-  | "farm-life"
-  | "adventure-jrpg"
-  | "horror-gallery"
-  | "school-horror"
-  | "story-cutscene";
+export type NewProjectChoiceId = import("@/project/gameDesignBrief").GamePresetId;
 
 export type NewProjectChoice = {
   readonly id: NewProjectChoiceId;

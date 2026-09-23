@@ -237,6 +237,13 @@ test.describe("QA — enemies tab", () => {
   });
 });
 
+// 종족 상세는 「기본·포획·성장·진화·연결」 구역 탭으로 나뉜다 — 칸은 모두 DOM 에 있지만 고른 구역만
+// 보이므로, fill()/check() 전에 그 칸의 구역을 연다(toHaveValue 는 숨은 칸에도 통한다).
+async function openSpeciesSection(page: Page, section: "basic" | "capture" | "growth" | "evolution" | "links"): Promise<void> {
+  await page.getByTestId(`db-monster-species-section-tab-${section}`).click();
+  await expect(page.getByTestId(`db-monster-species-section-tab-${section}`)).toHaveAttribute("aria-selected", "true");
+}
+
 test.describe("QA — Species tab", () => {
   test("CRUD round trip: add, fill fields, resource dialog, parse round trips, export, delete", async ({ page }) => {
     test.setTimeout(90_000); // 단계가 많아 기본 30s 예산을 초과한다
@@ -261,7 +268,9 @@ test.describe("QA — Species tab", () => {
     await page.getByTestId("db-monster-species-type-fire").check();
     await page.getByTestId("db-monster-species-type-water").check();
     await page.getByTestId("db-monster-species-hue").fill("120");
+    await openSpeciesSection(page, "capture");
     await page.getByTestId("db-monster-species-capture-rate").fill("0.5");
+    await openSpeciesSection(page, "growth");
     // wave2 fix: 능력치 6종을 rerender 없이 연달아 편집해도(HP→MP→공격→방어→정신→민첩)
     // 전부 저장된다(이전에는 스테일 클로저로 마지막 필드만 살아남았다 — 보고서 결함 참조).
     await page.getByTestId("db-monster-species-hp").fill("64");
@@ -279,6 +288,7 @@ test.describe("QA — Species tab", () => {
     await page.getByTestId("db-monster-species-skill-level-1").fill("7");
     await page.getByTestId("db-monster-species-skill-1").selectOption("skill_fire");
     // 진화: 대상 종족 드롭다운 + 조건(레벨/친밀도)
+    await openSpeciesSection(page, "evolution");
     await page.getByTestId("db-monster-species-evo-add").click();
     await page.getByTestId("db-monster-species-evo-target-0").selectOption("species_king_slime");
     await page.getByTestId("db-monster-species-evo-level-0").fill("7");
@@ -330,6 +340,7 @@ test.describe("QA — Species tab", () => {
     const duplicatedId = await selectedRecordId(page);
     expect(duplicatedId).not.toBe(id);
     await expect(page.getByTestId("db-monster-species-name")).toHaveValue("QA종 사본");
+    await openSpeciesSection(page, "basic");
 
     const deleteButton = page.getByTestId("db-monster-species-delete");
     await deleteButton.click();
@@ -353,9 +364,12 @@ test.describe("QA — Species tab", () => {
     await switchDatabaseTab(page, SPECIES_TAB);
     await page.getByTestId("db-monster-species-add").click();
 
+    await openSpeciesSection(page, "capture");
     await page.getByTestId("db-monster-species-capture-rate").fill("5");
-    await page.getByTestId("db-monster-species-hue").fill("999");
+    await openSpeciesSection(page, "growth");
     await page.getByTestId("db-monster-species-hp").fill("-10");
+    await openSpeciesSection(page, "basic");
+    await page.getByTestId("db-monster-species-hue").fill("999");
     await page.getByTestId("db-monster-species-type-fire").check();
     await page.getByTestId("db-monster-species-type-water").check();
     await page.getByTestId("db-monster-species-type-grass").click();

@@ -38,7 +38,7 @@ test("database reference guard blocks a skill used only by event command referen
   await page.screenshot({ path: `${EVIDENCE_DIR}/db-reference-blocking-toast.png`, fullPage: true });
 });
 
-test("database dirty prompt keeps editing and discards back to the modal-open snapshot", async ({ page }) => {
+test("database footer 닫기 keeps edits; Escape can still discard back to the open snapshot", async ({ page }) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 840 });
   await page.goto("/?freshProject=1");
@@ -46,19 +46,24 @@ test("database dirty prompt keeps editing and discards back to the modal-open sn
   await switchDatabaseTab(page, SKILLS_TAB);
 
   await page.getByTestId("db-field-name").fill("Task 10 Unsaved Skill");
-  await page.getByTestId("database-footer-ok").click();
+  await page.keyboard.press("Escape");
   await expect(page.getByTestId("database-dirty-prompt")).toContainText("이 세션에서 바뀐 내용");
   await page.getByTestId("database-dirty-prompt").screenshot({ path: `${EVIDENCE_DIR}/db-unsaved-prompt.png` });
   await page.getByTestId("database-dirty-keep-editing").click();
   await expect(page.getByTestId("database-dirty-prompt")).toHaveCount(0);
   await expect(page.getByTestId("db-field-name")).toHaveValue("Task 10 Unsaved Skill");
 
-  await page.getByTestId("database-footer-ok").click();
+  await page.keyboard.press("Escape");
   await page.getByTestId("database-dirty-discard").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await openDatabase(page);
   await switchDatabaseTab(page, SKILLS_TAB);
   expect((await exportedProject(page)).database.skills.some((skill) => skill.name === "Task 10 Unsaved Skill")).toBe(false);
+
+  await page.getByTestId("db-field-name").fill("Task 10 Kept Skill");
+  await page.getByTestId("database-footer-ok").click();
+  await expect(page.getByTestId("database-modal")).toBeHidden();
+  expect((await exportedProject(page)).database.skills.some((skill) => skill.name === "Task 10 Kept Skill")).toBe(true);
 });
 
 test("database common events use full command dialogs for nested command editing", async ({ page }) => {

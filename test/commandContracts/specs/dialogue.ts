@@ -14,6 +14,11 @@ export const DIALOGUE_SPECS = {
     options: [{ text: "Continue", branch: [] }],
     cancelBehavior: "disallow",
   }),
+  presentItem: nativeManifestEntry("dialogue", {
+    kind: "presentItem",
+    prompt: "Present",
+    options: [{ itemId: "item_contract", branch: [] }],
+  }),
   inputWait: nativeManifestEntry("dialogue", { kind: "inputWait", variableId: "variable_contract" }),
   inputNumber: nativeManifestEntry("dialogue", {
     kind: "inputNumber",

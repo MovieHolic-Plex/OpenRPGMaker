@@ -1,3 +1,17 @@
+import diverse0 from "./regionReferences/pine-hamlets.json";
+import diverse1 from "./regionReferences/terrace-cliff-village.json";
+import diverse2 from "./regionReferences/reed-bay-village.json";
+import diverse3 from "./regionReferences/twin-falls-river-village.json";
+import diverse4 from "./regionReferences/chapel-hill-parish.json";
+import diverse5 from "./regionReferences/ford-castle-town.json";
+import diverse6 from "./regionReferences/mistpond-hollow.json";
+import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
+import fantasyPlaces from "./regionReferences/fantasy-places.json";
+import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
+import climateVillages from "./regionReferences/climate-villages.json";
+import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
+import fieldRoutes from "./regionReferences/field-routes.json";
+import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import type { GameMap, TilesetDef, UploadedAsset } from "./types";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 import courtyard from "./regionReferences/castle-courtyard.json";
@@ -65,6 +79,14 @@ const forestSnapshots: Record<string, PlaceSnapshot> = {
 };
 
 const regionSnapshots: Record<string, PlaceSnapshot> = {
+  "pine-hamlets-80x64": diverse0 as unknown as PlaceSnapshot,
+  "terrace-cliff-village-88x72": diverse1 as unknown as PlaceSnapshot,
+  "reed-bay-village-88x64": diverse2 as unknown as PlaceSnapshot,
+  "twin-falls-river-village-88x72": diverse3 as unknown as PlaceSnapshot,
+  "chapel-hill-parish-80x64": diverse4 as unknown as PlaceSnapshot,
+  "ford-castle-town-100x92": diverse5 as unknown as PlaceSnapshot,
+  "mistpond-hollow-80x64": diverse6 as unknown as PlaceSnapshot,
+
   "river-forest-village-78x44": riverForestSnapshot as unknown as PlaceSnapshot,
   "emerald-basin-80x64": emeraldSnapshot as unknown as PlaceSnapshot,
   "hill-forest-village-64x64": hillForestSnapshot as unknown as PlaceSnapshot,
@@ -83,6 +105,30 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
   if (castleSnapshots[id]) return castleSnapshots[id];
   if (forestSnapshots[id]) return forestSnapshots[id];
   if (regionSnapshots[id]) return regionSnapshots[id];
+  // Place cards for the diverse villages reuse their region snapshot.
+  const place = DIVERSE_VILLAGE_PLACES.find(entry => entry.id === id);
+  if (place) return regionSnapshots[place.regionReferenceId];
+  // Fantasy shops/castle rooms share one snapshot file; the entry names its map.
+  const fantasy = FANTASY_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (fantasy) {
+    const source = fantasyPlaces as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
+    const map = source.maps[fantasy.sourceMapId]!;
+    return { map, tileset: source.tilesets[map.tilesetId]! };
+  }
+  // Snow/volcano villages likewise share one snapshot file.
+  const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (climate) {
+    const source = climateVillages as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
+    const map = source.maps[climate.sourceMapId]!;
+    return { map, tileset: source.tilesets[map.tilesetId]! };
+  }
+  // Fields between villages likewise share one snapshot file.
+  const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (field) {
+    const source = fieldRoutes as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
+    const map = source.maps[field.sourceMapId]!;
+    return { map, tileset: source.tilesets[map.tilesetId]! };
+  }
   const ship = shipSource.maps[
     id === "bluewave-ship" ? "map_bluewave_ship"
     : id === "giant-ship" ? "map_bluewave_giant"

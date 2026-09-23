@@ -59,6 +59,21 @@ describe("로컬 서버가 브라우저에 로컬 정본을 연다", () => {
     expect(await script.text()).toBe(BRIDGE_SOURCE);
   });
 
+  it("퍼센트 인코딩된 정적 경로를 디코드해 서빙한다 — 번들 BGM 「Town 1.mid」", async () => {
+    // 2026-09-23 도그푸딩: `/assets/easyrpg/music/Town%201.mid` 가 디코드 없이 디스크를 찾아 404 였다.
+    const { mkdir } = await import("node:fs/promises");
+    await mkdir(join(distDir, "music"));
+    await writeFile(join(distDir, "music", "Town 1.mid"), "MThd");
+    const response = await fetch(`${server.url}/music/Town%201.mid`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("audio/midi");
+    expect(await response.text()).toBe("MThd");
+    // 디코드 뒤에도 탈출·숨김 경로 방어는 그대로다.
+    expect((await fetch(`${server.url}/%2e%2e%2fetc%2fpasswd`)).status).toBeGreaterThanOrEqual(400);
+    expect((await fetch(`${server.url}/%2eenv`)).status).toBe(403);
+    expect((await fetch(`${server.url}/%E0%A4%A`)).status).toBe(400);
+  });
+
   it("토큰이 없으면 브리지 호출을 거절한다", async () => {
     const response = await bridge(OPRN_CHANNELS.projectStatus, undefined, null);
 

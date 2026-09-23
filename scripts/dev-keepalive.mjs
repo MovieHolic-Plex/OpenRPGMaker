@@ -23,6 +23,7 @@ import { fileURLToPath } from "node:url";
 import http from "node:http";
 import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 import { isLinkedWorktree, MAIN_DEV_PORT } from "./lib/worktreeDevPort.mjs";
+import { devViteCacheEnv } from "./lib/viteCacheDir.mjs";
 
 applyLegacyEnvAliases();
 
@@ -330,6 +331,8 @@ function startDev() {
     cwd: ROOT,
     env: {
       ...process.env,
+      // 공유 node_modules 면 vite 캐시를 체크아웃 안으로 뗀다(lib/viteCacheDir.mjs).
+      ...devViteCacheEnv(ROOT),
       FORCE_COLOR: "0",
       NO_COLOR: "1",
       CI: "1",

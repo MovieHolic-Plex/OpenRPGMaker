@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { planCameraFocus, type CameraFocusTarget, type VisibleTileRect } from "@/editor/editorCameraFocus";
+import { EDITOR_ZOOM_LEVELS } from "@/editor/editorState";
 
 const MAP = { width: 40, height: 30 };
 // 화면에 20×15 타일이 보인다: x 10..29, y 5..19.
@@ -136,7 +137,7 @@ describe("planCameraFocus — onlyIfOffscreen(조수 자동 이동)", () => {
 });
 
 describe("planCameraFocus — 줌 맞추기(fit)", () => {
-  const ZOOM_LEVELS = [1, 2, 3, 4, 6, 8];
+  const ZOOM_LEVELS = EDITOR_ZOOM_LEVELS;
 
   it("화면보다 큰 대상은 줌을 낮춰 제안한다", () => {
     const plan = planCameraFocus(
@@ -146,7 +147,7 @@ describe("planCameraFocus — 줌 맞추기(fit)", () => {
       1,
       { currentZoom: 2, zoomLevels: ZOOM_LEVELS }
     );
-    expect(plan).toEqual({ centerTileX: 20, centerTileY: 20, zoom: 1 });
+    expect(plan).toEqual({ centerTileX: 20, centerTileY: 20, zoom: 0.5 });
   });
 
   it("이미 들어오는 크기면 줌을 건드리지 않는다", () => {
@@ -188,7 +189,7 @@ describe("planCameraFocus — 줌 맞추기(fit)", () => {
       { width: 60, height: 60 },
       { x: 0, y: 0, width: 20, height: 12 },
       1,
-      { currentZoom: 1, zoomLevels: ZOOM_LEVELS }
+      { currentZoom: 0.25, zoomLevels: ZOOM_LEVELS }
     );
     expect(plan).toEqual({ centerTileX: 20, centerTileY: 20 });
   });

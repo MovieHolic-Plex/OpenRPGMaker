@@ -14,6 +14,7 @@
 import { deserialize, serialize } from "./io";
 import type { Command, EventPage, GameEvent, MapId, MapTreeNode, Project } from "./types";
 import { isQuestGraphDef, type AnyQuestDef } from "./quest/questDef";
+import { mapPresentItemBranches, presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export interface MapScheduleRowReference {
   readonly hostMapId: MapId;
@@ -316,6 +317,10 @@ export function stripMapCommands(commands: readonly Command[], mapId: MapId): Co
       });
       continue;
     }
+    if (command.kind === "presentItem") {
+      result.push(mapPresentItemBranches(command, (branch) => stripMapCommands(branch, mapId)));
+      continue;
+    }
     if (command.kind === "fork") {
       result.push({
         ...command,
@@ -346,6 +351,7 @@ function countIncomingCommands(project: Project, mapId: MapId): number {
         for (const option of command.options) countIn(option.branch);
         if (command.cancelBranch) countIn(command.cancelBranch);
       }
+      if (command.kind === "presentItem") presentItemBranchLists(command).forEach(countIn);
       if (command.kind === "fork") {
         countIn(command.then);
         if (command.else) countIn(command.else);

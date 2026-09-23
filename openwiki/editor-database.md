@@ -1,5 +1,25 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 게임 오버 라이브러리 저작 (2026-09-23)
+
+`시스템 → 게임 오버`는 `databaseGameOverLibrary.ts`가 소유하는 이름별 라이브러리다.
+공통 설정(`system.gameOver`)을 유지하고 최대 64개 `system.gameOvers[]`를 생성·복제·이름 변경·삭제한다.
+`defaultGameOverId`는 전투 전멸과 ID 없는 명령의 기본값이다. 기본값 또는 이벤트에서 참조하는 항목은 삭제할 수 없다.
+`gameOverReferenceCounts`는 맵 페이지·공통 이벤트·트룹·엔딩 내부의 중첩 명령을 센다.
+
+각 항목은 장면 시퀀스(텍스트/이미지/영상/음성/음악), 종료 화면 배경·음악·문구, 화면 연출과 패배 후 처리를 따로 갖는다.
+연출 `classic/horror/blackout`과 결과 `menu/recover/title`은 독립적이다. 회복 장소와 암전·정적·메뉴 대기·메시지 시간을 편집한다.
+`게임 오버`/`주인공 사망` 명령의 선택기는 `gameOverId`를 저장한다. 조건 분기의 각 가지에 다른 ID를 선택하여 멀티 게임 오버를 만든다.
+명시한 ID가 없는 경우 에디터/프로젝트 참조 검증에서 오류가 난다.
+
+전체 미리보기는 `createTerminalSurface` + `playGameOverPresentation`으로 출하 플레이어와 같은 연출을 사용한다.
+재시도·귀환·타이틀 콜백만 시뮬레이션하며 프로젝트/세션을 바꾸지 않는다. Esc·항목 변경·탭 닫기·프로젝트 교체 때 입력/음악/타이머를 해제한다.
+`CinematicTarget`은 기존 문자열 외에 `{gameOverId}`를 받아 항목별 변경/미디어 티켓을 격리한다. 복제는 깊은 복사다.
+
+실제 에디터 저작 → serialize/deserialize → 독립 player.html 재생 증거: `docs/reviews/2026-09-23-game-over-library/`.
+QA fixture는 메모리 전용이며 정본 프로젝트 저장 증거로 취급하지 않는다. `scripts/qa/runtime/game-over-library.probe.mjs`가 재현 스크립트다.
+
+
 ## 장소 탭 재설계 — 라이브러리 우선 배치 (2026-09-21)
 
 **문제: 목록이 아니라 나머지가 화면을 먹었다.** 데이터베이스 → 장소를 1600×1000 에서 재 보니
@@ -393,6 +413,18 @@ Validation and replay boundaries are in `reports/pr617-621-integration.md`.
 
 ## Opening still media, sequence music and AI generation (2026-09-14)
 
+### 새 프로젝트 기본 오프닝 (2026-09-21)
+
+새 프로젝트는 createBlankProject에서 «왕국의 서막»(kingdom-day, dark-citadel,
+hero-dawn과 스타터 타이틀 곡)을 받는다. createNewProjectSeed(packId, title)는
+인터뷰의 제목을 meta와 마지막 타이틀 카드에 함께 넣는다. **store 로드 정규화에서
+오프닝을 채우지 않는다.** undefined는 기존/삭제된 오프닝 없음이므로 저장·로드에 걸쳐
+유지해야 한다. enabled:false도 그대로 유지한다. 9/21의 자동 채택 정규화기는
+remove_opening 후 재로드 시 삭제를 되돌리는 결함으로 제거했다.
+
+이미지 팩 생성·설치·검색·내보내기 계약과 실제 분량은 [opening-still-pack.md](opening-still-pack.md).
+AI 컨텍스트는 intro 25번 줄에 이 사실을 명시한다.
+
 오프닝·게임오버 탭의 그림 슬롯은 picker kind `image`(아이템 아이콘 457개) 대신 신설 kind **`still`** 을 쓴다:
 배경화 → 타이틀 아트 → 생성·업로드 그림 순서가 앞에 오고, 기존 `image` 목록은 뒤에 통째로 남아 **아이콘으로
 저작해 둔 저장본이 그대로 유효하다**. 버튼 배선은 그대로고 `databaseCinematicMediaFields`(표시)와
@@ -581,7 +613,7 @@ Actor initial-equipment pickers, build previews, equipment gallery/filter labels
 - 신규 아이템 종류에는 장비형이 없다. 기존 장비형 행만 유지해 비착용 물품임을 안내한다. 실제 장비로 자동 연결·변환하지 않는다. 아이템의 발동/습득 스킬과 장비의 사용 시 스킬만 편집하며 중복 `skillId` 입력은 제거했다. 특수 아이템의 미지원 배우·직업 제한, 저장 전용 사용 메시지도 새 입력으로 제공하지 않는다.
 - 아이템 요약은 대상·포획·상태·소모·스킬 변경 때 동기 갱신한다. 사용 제한은 필드 대상/전투 사용자 차이, 비어 있으면 제한 없음, 배우와 직업은 AND라는 설명을 제공한다. 장비 허용은 OR 및 직업 쪽 권한을 포함한 최종 주인공 목록을 보여준다.
 - 장비 전투 효과 컨트롤은 doubleAttack/attackAll/fixedEquipment만 제공한다. 6개 미지원 플래그가 저장되어 있으면 이전 설정 안내에 이름을 보여주고 실제 효과 요약에서는 제외한다. 공격 속성은 단일 선택이며 기존 복수값은 첫 값만 적용됨을 안내한다. 상태 방어 `inflict`는 신규 선택에서 제외하고, 기존 값은 명시적 저항 전환 버튼으로 수리한다. 다른 장비의 저항을 전역으로 꺼서는 안 된다.
-- 요약·착용 비교·외형·권한·고급 효과는 공용 `sectionCard`의 접기 기능으로 공간을 줄인다. 장비 능력치를 기본 카드보다 먼저 배치한다. 농사 도구는 일반 물품 또는 기존 도구에, 포획은 특수 아이템에, 액션 스윙은 액션 전투가 켜진 프로젝트의 무기에만 노출한다. 외형의 적용 범위는 해당 카드에서 설명한다. 현재 인벤토리·장비 메뉴·상점은 iconResourceId → imageResourceId 우선순위로 표시하므로 지원 메타데이터도 runtime으로 표시한다. 성장 씨앗은 ‘능력치 성장’, 스위치 효과는 ‘장치 켜기 (ON)’으로 구분한다.
+- 요약·착용 비교·외형·권한·고급 효과는 공용 `sectionCard`의 접기 기능으로 공간을 줄인다. 장비 능력치를 기본 카드보다 먼저 배치한다. 농사 도구는 일반 물품 또는 기존 도구에, 포획은 특수 아이템에, 액션 스윙은 액션 전투가 켜진 프로젝트의 무기에만 노출한다. 외형의 적용 범위는 해당 카드에서 설명한다. 상세 헤더의 아이콘을 누르면 아이콘 피커가 열리고, 아이콘·이미지 피커는 선택한 이름을 보여 주며 그림을 격자로 고른다. 현재 인벤토리·장비 메뉴·상점은 iconResourceId → imageResourceId 우선순위로 표시하므로 지원 메타데이터도 runtime으로 표시한다. 성장 씨앗은 ‘능력치 성장’, 스위치 효과는 ‘장치 켜기 (ON)’으로 구분한다.
 - **로드 시 기본 레코드 재주입 금지:** `ensureDefaultDatabaseIconResources`는 기존 행의 레거시/누락 아이콘만 보정한다. 빠진 아이템·장비·스킬·상태를 추가하지 않는다. 전체 기본 카탈로그는 새 프로젝트 생성 때만 들어간다. 삭제한 항목이 로드 후 다시 살아나는 것을 막는 계약이며 아래 과거 backfill 기록보다 우선한다.
 - 검증: `test/itemEquipmentAuthoringTrust.test.ts` (UI→직렬화→메뉴 사용, 삭제 후 로드 정규화, 효과·스킬·소모·권한 표면), 기존 `itemRuntimeUsability`/`equipmentCatalogRuntimeAxes` (기본 카탈로그 실제 실행), `test/e2e/items-equipment-trust.spec.ts` (Firefox 1024/1280/1440 화면과 UI 변경 결과).
 
@@ -674,7 +706,7 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - The Database modal is a **neutral cool studio**, not the editor cream shell and not RM2k3. Tokens live in `src/styles/database/studio-theme.css` (`--db-studio-*`), scoped under `.database-modal-backdrop` and imported last among database CSS in `src/styles/index.css`. Do not put studio hex in `tokens.css`.
 - Nav is a **labeled 220px rail** (group headers visible) that collapses to 56px only below 800px. Tab `textContent` / `db-tab-*` testids stay. Each tab button's first child is an inline `svg.db-tab-icon` from `databaseTabIcons.ts`; CSS owns only its size and `color`.
 - Record lists are **name-first** with muted `#n` meta. Do not put `0001:` back in `databaseRecordViews.ts` / utility / common-event rows. Unused switch/variable reserve rows are not rendered.
-- Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Dirty 3-way Save/Discard/Keep is unchanged.
+- Footer: `지금 저장` (`database-footer-apply`) is the filled primary; `닫기` (`database-footer-ok`) is ghost. Record edits are already in the store, so footer 닫기 and the header X close immediately and keep them. A world-codex card draft is not in the store yet: the first 닫기/X shows Save / Discard / Keep, and a second press commits the draft and closes (a rejected commit stays open). Escape and the backdrop still ask before closing any session change. The prompt grows the footer instead of sharing the 52px button row.
 - Keep G006 in-modal `switchDatabaseActiveTab`, gallery+list toggles, and every `db-field-*` / `db-record-row-*` / `db-record-card-*` / `db-system-nav-*` / `db-type-chart-*` testid.
 - **Modal geometry has exactly one owner (2026-08-27):** `.database-modal-backdrop .database-modal-window:has(.db-shared-workspace)` in `src/styles/database/sidebar.css` declares the studio frame's `width` / `height` / `max-*` / `min-*`. No tab-content selector (`:has(.oprn-record-*)`, `:has(.db-elements-classic)`, `:has(:is(...workspace...))`) may declare window geometry again — that pattern is what made the modal jump 1628 → 1584 → 1530 px between sidebar tabs (98px width, 49px horizontal shift, measured at 1920x1200). `test/e2e/database-modal-size-invariant.spec.ts` walks every `DATABASE_TAB_SPECS` entry at 1920x1200 / 1280x800 / 1024x768 and fails on **any** non-zero delta in the window's `width` / `height` / `left` / `top`. `.maximized`, `.floating`, `.is-docked`, `.village-info-window`, and `.ai-settings-window` are separate modes and keep their own geometry.
 - **Floating/maximized는 앵커 두 겹을 인라인으로 이긴다 (2026-09-18 실측):** `ai-bar.css`의 `.database-modal-backdrop .database-modal-window { position: relative }`(0,2,0, `tabs-a.part-1.css`보다 나중에 import)가 `.floating { position: fixed }`(0,2,0)와 동점이라 소스 순서로 이겼고, `.maximized`(0,2,0)는 `sidebar.css`의 지오메트리 단일 소유자(`:has(.db-shared-workspace)`, (0,3,0))에 졌다. 증상: 드래그 후 `position: relative`로 남아 커서를 못 따라오고(left/top만 20px 이동), 최대화는 left/top만 8px로 가고 크기 그대로(2000×1200 실측: 1628×900 유지). 선택자 특이성 경쟁은 CSS 게이트 R2에 새 지문을 남기므로(기존 `.floating`/`.maximized`도 기준선 실패), `startModalDrag`·`toggleMaximizedDatabaseModal`·`applyDockMode`에서 인라인 스타일(`position/left/top/width/height`, 최대화는 `max-*` 포함)로 이기고 해제 시 비운다. 또한 헤더 버튼 안 SVG 아이콘에서 시작한 mousedown이 드래그를 유발했으므로 `startModalDrag`는 `closest("button")`으로 거른다.
@@ -828,7 +860,7 @@ Database tabs, record views, battle database records, utility records, reference
 - `src/editor/databaseFieldSupport.ts` is the source of truth for item/equipment field support disclosures shown by database record views. Keep each field's runtime/authoring-only status and help text aligned with the executing authority: finite-use item charges use `src/project/itemTransitions.ts`, while equipment changes use `src/project/equipmentRules.ts` atomically for fixed/cursed, dual-wield, and two-handed invariants. Fields with no runtime consumer remain authoring-only disclosure and must not be advertised as gameplay-active.
 - Visual resource picking is shared through `src/editor/panels/databaseResourcePickerDialog.ts` (searchable thumbnail grid + large preview). Items/equipment icons and images, enemy/species monsters, system title/system/system2 graphics, and actor faceset/charset/battleCharset all open this picker. List thumbnails live in `databaseRecordThumbnails.ts` (32px; actors/enemies/items/equipment/skills/animations/classes/troops/states). Actor `characterIndex` is an optional sheet cell (0..7, default 0) used by charset previews and thumbs; faces use standalone 48×48 face graphic resource ids directly without an index.
 - **In-modal Database navigation contract (G006 residual binding):** When the Database modal is already open, cross-tab jumps (e.g. Enemy ??linked Species) MUST keep the same modal instance: call `setSelectedMonsterSpeciesId(speciesId)` then `switchDatabaseActiveTab("monsterSpecies")` (or the shared tab switch that re-renders body only ??same path as sidebar tab clicks). **Forbid** `openDatabaseModal(...)` as an in-modal jump: reopening tears down/rebuilds the shell, resets dirty baseline/session selection, and can leak document keydown listeners if close is skipped. `openDatabaseModal(initialTab?)` remains the outside-entry path (menu/toolbar/world manager) and still uses `setDatabaseActiveTab` only on first open. Append G006 action buttons only on enemy/species views (`speciesFields` array extension point in `databaseEnemyRecordView.ts`); do not scatter jump controls across unrelated tabs.
-- `src/editor/panels/databaseModal.ts` owns the Database modal shell. Modal close attempts are guarded by `src/editor/panels/editorModalDirtyState.ts`: clean Cancel closes directly, while dirty Cancel/Escape/backdrop/X show Save / Discard / Keep Editing. Discard restores the modal-open project snapshot; Apply/Save persist and reset the dirty baseline.
+- `src/editor/panels/databaseModal.ts` owns the Database modal shell. Escape and the backdrop go through `src/editor/panels/editorModalDirtyState.ts`: a clean session closes, and a session that differs from open (store edits or a world-codex draft) shows Save / Discard / Keep Editing. Discard restores the modal-open project snapshot; Apply/Save persist and reset the dirty baseline. Footer 닫기 and the header X do not use that gate for store edits — those are already applied — and close while keeping them. They prompt only for an uncommitted world-codex draft.
 - Save-refresh reentry: `database.ts:renderActiveTab` commits the focused control under a render-depth guard before replacing tab DOM. Synchronous blur/change rerenders are queued and drained as fresh renders, avoiding nested `replaceChildren` without dropping the edit or a later save-refresh edit. Coverage: `test/databaseTabRenderReentry.test.ts`.
 - **Database tab chrome unify (2026-07-14):** Shared shell CSS `:has()` targets generic `.rm2k3-record-workspace` / `.db-record-workspace` (not only actors/classes/??list) so crops/characters/monster-species get the same modal size, header, and sidebar as core records. Empty list panes reserve min-height + inset frame; list toolbars use shared `db-toolbar-button` density; detail empty states use a card. CSS: `src/styles/database/desktop-record-shell/10-tab-chrome-unify.css` (imported last from `desktop-record-shell.css`). Evidence: `output/evidence/database-ui-unify/{before,after}/`.
 - Database write tools in `src/editor/tools/dbTools.ts` use read-modify-write semantics: existing records are merged with only the supplied fields before normalization, unknown fields are rejected with allowed-field guidance, and successful upserts return the full resulting record in `ToolResult.data`.

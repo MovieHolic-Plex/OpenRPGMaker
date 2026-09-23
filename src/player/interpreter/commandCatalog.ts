@@ -31,6 +31,7 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
+import { presentableItems } from "@/player/interpreter/presentItem";
 import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
@@ -396,12 +397,12 @@ function triggerEnding(
   }
 
   state.session.flags[`ending:${ending.id}`] = true;
-  const finalCommand: Command = { kind: "ending", title: ending.name, message: "" };
+  const finalCommand: Command = { kind: "ending", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) };
   const epilogueCommands = compileEndingEpilogue(state, ending);
   if (epilogueCommands.length > 0 && pushFrame(state, [...epilogueCommands, finalCommand])) {
     return { kind: "continue" };
   }
-  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "" });
+  return pause("returnToTitle", { kind: "returnToTitle", title: ending.name, message: "", ...(ending.presentation ? { presentation: ending.presentation } : {}) });
 }
 
 function selectEnding(
@@ -423,6 +424,7 @@ function compileEndingEpilogue(state: InterpreterState, ending: EndingDef): Comm
   }
   try {
     return compileCutscene(ending.epilogue as CutsceneBeat[], {
+      resetFace: true,
       context: { eventIds, resourceIds: collectResourceIds(state.project) },
     });
   } catch (cause) {
@@ -474,6 +476,13 @@ export function executeCommand(
         options: command.options.map((option) => ({ text: option.text })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
+      });
+    case "presentItem":
+      return pause("presentItem", {
+        kind: "presentItem",
+        prompt: command.prompt,
+        items: presentableItems(state.session, command),
+        settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "fork": {
       const branch = evalCondition(state.session, command.condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state)) ? command.then : command.else ?? [];
@@ -714,16 +723,17 @@ export function executeCommand(
     }
     case "killPlayer":
       killParty(state);
-      return pause("gameOver", { kind: "gameOver", message: command.message });
+      return pause("gameOver", { kind: "gameOver", message: command.message, ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "triggerEnding":
       return triggerEnding(state, command.endingId);
     case "gameOver":
-      return pause("gameOver", { kind: "gameOver" });
+      return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending":
       return pause("returnToTitle", {
         kind: "returnToTitle",
         title: command.title,
         message: command.message,
+        ...(command.presentation ? { presentation: command.presentation } : {}),
       });
     case "returnToTitle":
       return pause("returnToTitle", { kind: "returnToTitle" });

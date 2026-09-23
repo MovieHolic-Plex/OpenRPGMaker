@@ -41,10 +41,17 @@ export function isCompanionPath(url = "") {
 
 /**
  * Antigravity OAuth 는 Google 데스크톱 클라라 redirect_uri 가 127.0.0.1 만 통과한다.
- * 원격 preview(mdc-server:9888) 에서는 런치 URL 만 페이지 origin 으로 바꾸고,
+ * 원격 preview(mdc-server:9888) 에서는 /launch 만 페이지 origin 으로 바꾸고,
+ * Google·OpenAI 인가 URL 은 그대로 둔 채 편집기에 콜백 붙여넣기를 연다.
  * 돌아온 localhost 콜백 URL 은 서버가 대신 받아 완료한다.
  */
 const LOOPBACK_LAUNCH = new Map();
+
+/**
+ * 붙여넣기로 되돌려받을 수 있는 루프백 콜백 경로. Antigravity 는 /oauth-callback,
+ * Codex 브라우저 흐름은 OpenAI 허용목록 값인 /auth/callback 을 쓴다.
+ */
+const LOOPBACK_CALLBACK_PATHS = new Set(["/oauth-callback", "/auth/callback"]);
 
 export function companionPublicOrigin(req = {}, env = process.env) {
   const fromEnv = String(env.OPRN_PUBLIC_ORIGIN ?? "").trim().replace(/\/$/, "");
@@ -60,25 +67,48 @@ export function companionPublicOrigin(req = {}, env = process.env) {
   return "";
 }
 
+/** 인가 URL 의 redirect_uri 가 우리 루프백 콜백이면 그 주소. 아니면 빈 문자열. */
+function loopbackRedirectOf(authorizationUrl) {
+  let parsed;
+  try {
+    parsed = new URL(String(authorizationUrl ?? ""));
+  } catch {
+    return "";
+  }
+  const redirect = parsed.searchParams.get("redirect_uri");
+  if (!redirect) return "";
+  let target;
+  try {
+    target = new URL(redirect);
+  } catch {
+    return "";
+  }
+  if (target.protocol !== "http:") return "";
+  if (target.hostname !== "127.0.0.1" && target.hostname !== "localhost") return "";
+  if (!LOOPBACK_CALLBACK_PATHS.has(target.pathname)) return "";
+  return target.toString();
+}
+
 export function publishLoopbackLaunch(payload, publicOrigin) {
   const url = String(payload?.verificationUrl ?? "");
   const match = /^http:\/\/127\.0\.0\.1:(\d+)\/launch\/?$/u.exec(url);
-  if (!match || !publicOrigin) return payload;
-  const port = match[1];
-  LOOPBACK_LAUNCH.set(port, url);
-  return {
-    ...payload,
-    verificationUrl: `${publicOrigin}/oauth/launch?port=${port}`,
-    pasteCallback: true,
-  };
+  if (match && publicOrigin) {
+    const port = match[1];
+    LOOPBACK_LAUNCH.set(port, url);
+    return {
+      ...payload,
+      verificationUrl: `${publicOrigin}/oauth/launch?port=${port}`,
+      pasteCallback: true,
+    };
+  }
+  // Antigravity·Codex 브라우저 로그인은 Google/OpenAI 인가 URL 을 바로 연다.
+  // /launch 재작성은 없지만, 원격 브라우저는 redirect_uri 의 localhost 에 닿지 못한다.
+  // 편집기가 콜백 붙여넣기를 보여 주게 pasteCallback 만 켠다.
+  if (publicOrigin && loopbackRedirectOf(url)) {
+    return { ...payload, pasteCallback: true };
+  }
+  return payload;
 }
-
-/**
- * 붙여넣기로 되돌려받을 수 있는 루프백 콜백 경로. Antigravity 는 /oauth-callback,
- * Codex 브라우저 흐름은 OpenAI 허용목록 값인 /auth/callback 을 쓴다 — 후자를 빼면
- * 원격 preview 에서 Codex 브라우저 로그인을 완료할 방법이 없다.
- */
-const LOOPBACK_CALLBACK_PATHS = new Set(["/oauth-callback", "/auth/callback"]);
 
 function loopbackCallbackUrl(raw) {
   let parsed;
@@ -128,8 +158,9 @@ export async function handleCompanionRequest(req, adapters) {
   }
 
   if (method === "POST" && path === "/auth/login") {
-    const payload = await adapters.login(provider, body);
-    return json(200, publishLoopbackLaunch(payload, companionPublicOrigin(req)));
+    const publicOrigin = companionPublicOrigin(req);
+    const payload = await adapters.login(provider, body, { remote: !!publicOrigin });
+    return json(200, publishLoopbackLaunch(payload, publicOrigin));
   }
 
   if (method === "GET" && path === "/oauth/launch") {

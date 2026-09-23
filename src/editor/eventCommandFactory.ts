@@ -10,6 +10,8 @@ export function newCommand(kind: Command["kind"]): Command {
       return { kind: "changeFace", resourceId: "easyrpg-faceset-actor1-00", position: "left", flipHorizontally: false };
     case "choices":
       return { kind: "choices", prompt: "", options: [{ text: "예", branch: [] }, { text: "아니오", branch: [] }], cancelBehavior: "choice2" };
+    case "presentItem":
+      return { kind: "presentItem", prompt: "무엇을 보여줄까?", options: [], otherwiseBranch: [], cancelBranch: [] };
     case "fork":
       return { kind: "fork", condition: { kind: "switch", switchId: "", value: true }, then: [{ kind: "text", body: "" }] };
     case "wait":
