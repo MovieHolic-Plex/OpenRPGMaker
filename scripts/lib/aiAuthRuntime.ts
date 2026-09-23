@@ -386,15 +386,20 @@ export async function startProviderLogin(
   };
 }
 
-export async function refreshProvider(provider: string) {
-  const id = requireKnown(provider);
+/** 갱신 호출 본체. 호출자는 반드시 `refreshSingleFlight` 를 거친다. */
+async function refreshProviderNow(id: PortedOAuthProviderId) {
   adoptOmpCliCredentials(id);
   const credentials = credentialsOf(id);
   if (!credentials) return publicProviderStatus(id);
   if (testStub()) {
+    // 대기 한 번: 동시 호출이 실제로 겹치게 해서 single-flight 를 시험할 수 있게 한다.
+    await new Promise((resolve) => setTimeout(resolve, 10));
+    refreshStats.attempts += 1;
+    if (process.env.OPRN_OH_MY_PI_TEST_REFRESH_FAIL === "1") throw new Error("stub refresh failed");
     store.setOAuth(id, { ...credentials, access: "stub-refreshed", expires: Date.now() + 60_000 });
     return { ...publicProviderStatus(id), refreshed: true };
   }
+  refreshStats.attempts += 1;
   const refreshed = id === CODEX_PROVIDER_ID
     ? await refreshCodexToken({ refreshToken: credentials.refresh })
     : await refreshAntigravityToken({
@@ -406,6 +411,85 @@ export async function refreshProvider(provider: string) {
     ...(store.get(id)?.source === "omp" ? { source: "omp" } : {}),
   });
   return { ...publicProviderStatus(id), refreshed: true };
+}
+
+/**
+ * 제공자별 갱신은 한 번에 하나만 돈다. Codex 는 refresh_token 을 회전시키므로 상태 폴링·요청·
+ * 수동 갱신이 겹쳐 두 번 쏘면 뒤쪽이 소모된 토큰으로 invalid_grant 를 받아 멀쩡한 로그인을 깬다.
+ */
+const inflightRefresh = new Map<string, Promise<ReturnType<typeof publicProviderStatus> & { refreshed?: boolean }>>();
+/** 자동(상태 조회발) 갱신 실패 기록 — 다음 자동 시도는 retryAt 이후에만 한다. */
+const refreshFailures = new Map<string, { count: number; retryAt: number; error: string }>();
+const refreshStats = { attempts: 0 };
+export const AUTO_REFRESH_BACKOFF_BASE_MS = 30_000;
+export const AUTO_REFRESH_BACKOFF_MAX_MS = 10 * 60_000;
+/** 상태 응답이 기다리는 최대 시간. 브라우저 상태 요청 제한(COMPANION_TIMEOUT_MS 6초)보다 짧아야 한다. */
+const STATUS_REFRESH_WAIT_MS = 4_000;
+
+function refreshSingleFlight(id: PortedOAuthProviderId) {
+  const existing = inflightRefresh.get(id);
+  if (existing) return existing;
+  const work = refreshProviderNow(id)
+    .then((result) => {
+      refreshFailures.delete(id);
+      return result;
+    }, (error: unknown) => {
+      const count = (refreshFailures.get(id)?.count ?? 0) + 1;
+      const delay = Math.min(AUTO_REFRESH_BACKOFF_BASE_MS * 2 ** (count - 1), AUTO_REFRESH_BACKOFF_MAX_MS);
+      refreshFailures.set(id, { count, retryAt: Date.now() + delay, error: error instanceof Error ? error.message : String(error) });
+      throw error;
+    })
+    .finally(() => inflightRefresh.delete(id));
+  inflightRefresh.set(id, work);
+  return work;
+}
+
+/** 수동 갱신(`POST /auth/refresh`)과 요청 경로. 자동 갱신의 백오프는 무시하되 진행 중인 갱신에는 합류한다. */
+export async function refreshProvider(provider: string) {
+  return refreshSingleFlight(requireKnown(provider));
+}
+
+/** 만료됐지만 갱신 토큰이 있어 사용자 조작 없이 되살릴 수 있는 저장본인가. */
+function canAutoRefresh(id: PortedOAuthProviderId): boolean {
+  if (pendingLogins.has(id)) return false;
+  const credentials = credentialsOf(id);
+  return Boolean(
+    credentials?.refresh
+      && Date.now() >= credentials.expires
+      && (!PROJECT_SCOPED_PROVIDERS.has(id) || credentials.projectId),
+  );
+}
+
+/**
+ * `GET /auth/status`. 저장본이 만료됐어도 갱신 토큰이 있으면 먼저 갱신을 시도한다 —
+ * 예전엔 `expires` 가 지나면 곧바로 connected:false 라 에디터가 「로그인 필요」를 띄웠고,
+ * 누군가 `/auth/refresh` 를 누를 때까지 그 상태가 이어졌다(9888, 2026-09-23).
+ * 제공자를 두드리지 않도록 갱신은 single-flight, 실패하면 지수 백오프(30초→10분) 동안은 다시 시도하지 않는다.
+ */
+export async function providerStatus(provider: string) {
+  const id = requireKnown(provider);
+  const status = publicProviderStatus(id);
+  if (status.connected || !canAutoRefresh(id)) return status;
+  const failure = refreshFailures.get(id);
+  if (failure && Date.now() < failure.retryAt) {
+    return { ...status, refreshError: failure.error, refreshRetryAt: failure.retryAt };
+  }
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timedOut = new Promise<"pending">((resolve) => { timer = setTimeout(() => resolve("pending"), STATUS_REFRESH_WAIT_MS); });
+  try {
+    const outcome = await Promise.race([refreshSingleFlight(id), timedOut]);
+    // 늦는 갱신은 뒤에서 계속 돈다. 다음 폴링이 결과를 본다.
+    if (outcome === "pending") return { ...publicProviderStatus(id), refreshing: true };
+    return publicProviderStatus(id);
+  } catch (error) {
+    return { ...publicProviderStatus(id), refreshError: error instanceof Error ? error.message : String(error) };
+  } finally {
+    if (timer !== undefined) clearTimeout(timer);
+  }
+}
+
+export function authRefreshStatsForTests() {
+  return { attempts: refreshStats.attempts, inflight: inflightRefresh.size, failures: Object.fromEntries(refreshFailures) };
 }
 
 export function logoutProvider(provider: string) {
