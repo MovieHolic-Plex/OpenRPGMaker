@@ -210,20 +210,12 @@ export function renderEditSceneTileCells(
     if (limitToWindow && lazyWindow && isOutsideTileWindow(lazyWindow, cell.x, cell.y)) {
       // 화면 밖은 맵 배열이 정본이다. 객체를 만들면 팬으로 이미 줄어든 창이 다시 맵 전체가 된다.
       const previous = context.tileIndex.get(key) ?? [];
-      for (const object of previous) context.tileLayer.remove(object, true);
+      for (const object of previous) destroyTrackedTile(context, object, cell.x, cell.y);
       context.tileIndex.delete(key);
       continue;
     }
     const previous = context.tileIndex.get(key) ?? [];
-    for (const object of previous) {
-      const parent = cell.layer === "lower" ? context.tileLayer : context.upperTileLayer;
-      if (context.tileChunks) {
-        const chunk = context.tileChunks.get(chunkKey(chunkCoord(cell.x), chunkCoord(cell.y)));
-        if (chunk) chunk.remove(object, true);
-      } else {
-        parent.remove(object, true);
-      }
-    }
+    for (const object of previous) destroyTrackedTile(context, object, cell.x, cell.y);
     const next = renderTileCellLayer(context, map, activeLayer, cell.layer, cell.x, cell.y);
     if (next.length) context.tileIndex.set(key, next);
     else context.tileIndex.delete(key);
@@ -270,7 +262,7 @@ export function renderVisibleEditSceneTiles(
   for (const [key, objects] of context.tileIndex) {
     const parsed = parseTileIndexKey(key);
     if (!parsed || !isOutsideTileWindow(window, parsed.x, parsed.y)) continue;
-    for (const object of objects) context.tileLayer.remove(object, true);
+    for (const object of objects) destroyTrackedTile(context, object, parsed.x, parsed.y);
     context.tileIndex.delete(key);
   }
   let tileObjectsUpdated = 0;
@@ -339,6 +331,25 @@ function renderTileCellLayer(
   }
   context.tileIndex?.set(tileIndexKey(layer, x, y), objects);
   return objects;
+}
+
+/**
+ * 타일은 청크 컨테이너의 자식이다. `tileLayer.remove` 는 직계 자식만 파괴하므로
+ * 청크에 담긴 스프라이트는 남고 인덱스만 지워져, 다시 그 창에 들어오면 겹친다.
+ */
+function destroyTrackedTile(
+  context: EditSceneRenderContext,
+  object: Phaser.GameObjects.GameObject,
+  x: number,
+  y: number,
+): void {
+  const chunk = context.tileChunks?.get(chunkKey(chunkCoord(x), chunkCoord(y)));
+  if (chunk) {
+    chunk.remove(object, true);
+    return;
+  }
+  context.tileLayer.remove(object, true);
+  context.upperTileLayer.remove(object, true);
 }
 
 function addTileObject(

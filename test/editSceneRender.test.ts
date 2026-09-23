@@ -92,6 +92,7 @@ type MockObject = {
   setDepth(depth: number): MockObject;
   play(key: string): MockObject;
   add(child: MockObject): MockObject;
+  remove(child: MockObject, destroyChild?: boolean): MockObject;
   depth?: number;
 };
 
@@ -146,6 +147,11 @@ function mockObject(partial: Partial<MockObject>): MockObject {
     },
     add(child: MockObject): MockObject {
       object.children.push(child);
+      return object;
+    },
+    remove(child: MockObject): MockObject {
+      const index = object.children.indexOf(child);
+      if (index >= 0) object.children.splice(index, 1);
       return object;
     },
   };
@@ -591,6 +597,74 @@ describe("edit scene event rendering", () => {
     expect(tileObjects.some((object) => object.x === 0)).toBe(false);
     expect(tileObjects.some((object) => object.x === 26 * tileSize)).toBe(true);
     expect(tileObjects.length).toBeLessThan(23 * 18 + 200);
+  });
+
+  it("destroys chunk-parented tiles that leave the camera window", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 128;
+    map.height = 128;
+    map.lowerTiles = new Array<number>(128 * 128).fill(-1);
+    map.upperTiles = new Array<number>(128 * 128).fill(-1);
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+
+    const tileSize = map.tileSize;
+    const view = { x: 0, y: 0, width: tileSize * 20, height: tileSize * 15 };
+    const scene = mockScene();
+    Object.assign(scene, { cameras: { main: { worldView: view } } });
+    const chunks = new Map<string, Phaser.GameObjects.Container>();
+    const context = {
+      scene,
+      tileLayer: mockContainer(),
+      upperTileLayer: mockContainer(),
+      tileChunks: chunks,
+      overlayLayer: mockContainer(),
+      gridGraphics: mockGridGraphics(),
+      mapId: map.id,
+      tileIndex: new Map() as EditSceneTileIndex,
+    };
+    const chunkTiles = (): MockObject[] => {
+      const tiles: MockObject[] = [];
+      for (const chunk of chunks.values()) tiles.push(...(chunk as unknown as MockObject).children);
+      return tiles;
+    };
+
+    renderEditScene(context);
+    const originCount = chunkTiles().filter((tile) => tile.x === 0).length;
+    expect(originCount).toBeGreaterThan(0);
+
+    view.x = tileSize * 80;
+    renderVisibleEditSceneTiles(context);
+    expect(chunkTiles().some((tile) => tile.x === 0)).toBe(false);
+
+    view.x = 0;
+    renderVisibleEditSceneTiles(context);
+    expect(chunkTiles().filter((tile) => tile.x === 0)).toHaveLength(originCount);
+  });
+
+  it("paints translucent empty checkers when background preview is on", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.width = 2;
+    map.height = 2;
+    map.lowerTiles = [-1, -1, -1, -1];
+    map.upperTiles = [-1, -1, -1, -1];
+    map.events = [];
+    store.replace(project);
+    editorState.set({ currentMapId: map.id, layer: "lower", tool: "paint", showGrid: false });
+    const tiles: MockObject[] = [];
+    renderEditSceneTileCells({
+      scene: mockScene(),
+      backgroundPreview: true,
+      tileLayer: mockContainer(tiles),
+      upperTileLayer: mockContainer(),
+      overlayLayer: mockContainer(),
+      gridGraphics: mockGridGraphics(),
+      mapId: map.id,
+      tileIndex: new Map(),
+    }, [{ x: 0, y: 0, layer: "lower" }]);
+    expect(tiles.some((tile) => tile.alpha === 0.35)).toBe(true);
   });
 });
 
