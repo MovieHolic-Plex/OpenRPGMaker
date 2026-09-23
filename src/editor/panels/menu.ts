@@ -21,7 +21,7 @@ import {
   requestAiStudioToggle,
 } from "@/editor/aiStudioMode";
 import { openHelpModal } from "@/editor/panels/helpModal";
-import { openDatabaseModalLazy } from "@/editor/panels/databaseModalLazy";
+import { openDatabaseModalLazy, scheduleDatabaseModalPrefetch } from "@/editor/panels/databaseModalLazy";
 import { renderDbConnectionStatus } from "@/editor/panels/dbConnectionStatus";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
@@ -109,6 +109,8 @@ let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 let saveFailureEpisode = false;
 
 export function renderTopbar(topbar: HTMLElement): void {
+  // 메뉴 모듈이 잡히면 이미 읽기 시작한다. 톱바가 다시 그려져도 한 번만이다.
+  scheduleDatabaseModalPrefetch();
   const focusSnapshot = captureFocus(topbar);
   for (const dispose of disposeToolbarOverflows) dispose();
   disposeToolbarOverflows = [];
