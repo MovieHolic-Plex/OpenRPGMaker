@@ -468,7 +468,7 @@ export function presentEditorWelcome(
         "aria-modal": "true",
       },
       children: [
-        el("p", { class: "editor-welcome-kicker", text: "감독" }),
+        el("p", { class: "editor-welcome-kicker", text: "새 게임" }),
         el("h1", {
           class: "editor-welcome-title",
           text: "어떤 게임을 만들까요?",
@@ -476,7 +476,7 @@ export function presentEditorWelcome(
         }),
         el("p", {
           class: "editor-welcome-sub",
-          text: "한 문장으로 지시하면 이 맵에 초안이 생깁니다. 도구 설명은 결과가 찍힌 뒤에 합니다.",
+          text: "만들고 싶은 게임을 한 문장으로 적어 주세요. AI가 맵과 인물, 이야기를 만들어 드려요.",
         }),
         el("div", {
           class: "editor-welcome-prompt-row",

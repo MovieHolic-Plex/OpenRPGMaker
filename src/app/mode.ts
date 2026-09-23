@@ -30,6 +30,7 @@ import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, 
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
+import { dismissBootLoader } from "@/app/bootLoader";
 
 export type Mode = "edit" | "play";
 
@@ -193,6 +194,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   await renderTopbar();
   await enterMode("edit");
+  // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다(웰컴 브리핑은 그 위에 뜬다).
+  dismissBootLoader();
 
   if (sharedDemoOpen && !showBriefing) {
     const { presentSharedDemoIntro } = await import("@/editor/sharedDemoIntro");
@@ -279,6 +282,7 @@ export function isModeShellMounted(): boolean {
 }
 
 function renderDbRequiredScreen(_error: unknown): void {
+  dismissBootLoader();
   if (!elements) return;
   elements.topbar.textContent = PRODUCT_BRAND;
   while (elements.main.firstChild) {
@@ -350,6 +354,7 @@ function openRequiredDbSettings(): void {
 // 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
 function renderLoadFailureScreen(_error: unknown): void {
+  dismissBootLoader();
   if (!elements) return;
   elements.topbar.textContent = `${PRODUCT_BRAND} - 작업을 불러올 수 없음`;
   while (elements.main.firstChild) {
