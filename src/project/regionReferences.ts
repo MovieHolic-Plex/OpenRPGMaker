@@ -2,6 +2,7 @@ import { DIVERSE_VILLAGE_PLACES, DIVERSE_VILLAGE_REGIONS } from "./diverseVillag
 import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
 import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
+import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
@@ -84,7 +85,7 @@ export const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: "tileset_emerald_basin_20260914",

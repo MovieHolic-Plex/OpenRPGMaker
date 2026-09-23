@@ -336,3 +336,19 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
 - 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
 - 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.
+
+### 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+
+「장소」에만 나오는 완성 사례 11개(지형·배치만, 문 이동·NPC·상점 이벤트 없음). 정본은 `tiledata/rpg-places/`, 별도 로컬 정본 `.oprn-projects/rpg-places-20260923`.
+- 실내(tibo_interior_expanded): 무기점·방어구점·도구점(16×13)·대장간(18×14)·왕좌의 방(24×22)·성 복도(30×11)·마법사 탑 한 층(20×18).
+  벽·천장·문은 `interiorRoomPipeline`의 plan→floor→walls 단계 그대로(자동 가구 단계는 안 씀). Tibo 시트 0~479칸은 실내 칩셋과 같은 그림이라 번호를 공유하고,
+  소품은 Tibo `structureKits`를 id로 찍는다. 벽걸이는 벽면 윗줄, 키 큰 가구는 맨 윗행을 벽면 아랫줄에, 가게는 카운터 325·326…·327로 상인 쪽/손님 쪽을 가른다.
+- 던전(easyrpg_chipset_dungeon): 성 지하 감옥(28×18)·마왕성 왕좌의 방(30×26). 「무너진 납골당」 조립 — 공허 430 + abyss-gray 오토타일, 벽면 22/52 두 줄.
+  앱 렌더러는 맵 가장자리 바깥을 공허로 치지 않아 맵 둘레에도 테두리가 그려진다(파이썬 시험 렌더와 유일한 차이).
+- 외관(forest_harmony): 상점가(62×15, 여울성 나루 아랫단 집 셋 + 간판·대장간 마당)·폐성(50×38, 여울성의 성 조립을 그대로 두고 바닥·장식만).
+  대장간 마당의 화덕·모루 등은 Tibo 칸을 이 맵 타일셋 2730~에 이식. 폐성은 벽을 뚫지 않는다(뚫은 판은 오류 예시 그림).
+- 간판 라벨: 627 「청록 화살표 벽표지」→「무기점 간판 — 칼」, 628 방패(방어구점), 629 항아리(도구점). 기존 프로젝트는 옛 라벨 그대로일 때만 바꾼다(`tiledata/rpg-places/sign-labels.json`).
+- 분류 셋, 타일셋마다 하나: `fantasy-interiors-v1`(19 MD·7 이미지) → tibo, `fantasy-dungeon-rooms-v1`(8·2) → dungeon, `fantasy-exteriors-v1`(9·3) → forest_harmony.
+  `ensureRpgPlaceReferences`가 새 번들 타일셋 생성과 로드 보강 두 경로에서 한 번 넣는다.
+- 장소 항목 `FANTASY_PLACE_REFERENCES`(생성 파일), 스냅숏은 한 파일 `regionReferences/fantasy-places.json`(AI 읽기에 필요한 통행·우선순위만 담은 얇은 타일셋).
+- 순서: `author-rpg-places.mjs`(통행 검사 포함) → `render-rpg-places.mjs`(dev 서버) → `prepare-rpg-places-references.mjs` → `save-rpg-places.mjs` → `prepare-rpg-places-regions.mjs` → `scripts/qa/capture-rpg-places.mjs`. 근거 `verify-shots/rpg-places/`.
