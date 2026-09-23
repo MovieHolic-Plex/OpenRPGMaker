@@ -4,6 +4,7 @@ import { activityNote, activityPhase, recordActivityEvent } from "@/ai/activityT
 import { createPiPublication } from "./aiPiPublication";
 import { isLiveApplyMode, normalizePiApplyMode } from "@/ai/piAgent/applyMode";
 import { createPendingReviewPrompt } from "./aiPendingReview";
+import { completionHeadline, createRefineFindings, plainMadeSummary, refineFindingsText } from "./aiPiCompletionReport";
 import { friendlyExecutionError } from "@/ai/piAgent/userFacingCopy";
 import { configForUltrabrain } from "@/ai/ultrabrainConfig";
 import { modelForRole } from "@/ai/modelRoles";
@@ -816,12 +817,18 @@ export async function runPiCommand(
       ...(harmonyIssue ? [harmonyIssue] : []),
       ...unresolvedFindings,
     ];
-    const shown = issues.slice(0, 3).map(issue => `• ${issue}`).join("\n");
-    const more = issues.length > 3 ? `\n그 밖에 ${issues.length - 3}건은 작업 과정에 있어요.` : "";
-    surface.appendBubble("system", issues.length
-      ? `반영했지만 확인할 것이 남았어요.\n${shown}${more}\n마음에 들지 않으면 되돌릴 수 있어요.`
-      : "반영했지만 끝까지 확인하지 못했어요. 마음에 들지 않으면 되돌릴 수 있어요.");
-    return apply();
+    // 첫 줄은 «무엇을 만들었나» 다(2026-09-23 실측: 「반영했지만 확인할 것이 남았어요」 + 검토 문장
+    // 여러 줄이 맵 14개를 만든 실행을 실패처럼 보이게 했다). 지적은 버리지 않고 접은 칸으로 옮긴다.
+    // 이름 붙은 지적이 하나도 없으면 «끝까지 확인하지 못했다» 는 사실을 머리말에 그대로 남긴다.
+    // 「만들었어요」 는 적용이 끝난 뒤에만 말한다 — 삭제 확인을 거절하거나 적용이 실패하면 apply() 가 따로 말한다.
+    const appliedOk = await apply();
+    if (!appliedOk) return false;
+    const bubble = surface.appendBubble("system", completionHeadline(plainMadeSummary(base, merged.project), { unverified: issues.length === 0 }));
+    if (issues.length) {
+      if (bubble && typeof (bubble as HTMLElement).append === "function") (bubble as HTMLElement).append(createRefineFindings(issues));
+      else surface.appendBubble("system", refineFindingsText(issues));
+    }
+    return true;
   }
   surface.setStatus("변경 확인 대기");
   // 밀린 증분을 마저 그린다. 밑그림은 여기서 지우지 않는다 — 사용자가 「적용/버리기」를 고르는

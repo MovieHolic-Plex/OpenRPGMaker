@@ -6,6 +6,7 @@ import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 import type Phaser from "phaser";
 import { getLoadedPhaser } from "@/app/phaserRuntime";
 import {
+  ensureBundledProjectTextures,
   ensureUploadedCharsetTextures,
   loadBundledAssets,
   registerBundledFrames,
@@ -718,6 +719,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (change.scope !== "map") {
       ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
       ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw());
+      ensureBundledProjectTextures(this, store.getCurrent(), () => this.redraw());
     }
     const mapId = this.mapId();
     const nextFeedback = retainEventLayerClickFeedback({

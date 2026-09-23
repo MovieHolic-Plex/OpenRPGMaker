@@ -9,6 +9,8 @@ import {
   WELCOME_MORE_WORLDS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
+  welcomeFreeTextDisplayText,
+  welcomeGenrePresetDisplayText,
   type WelcomeGenrePresetId,
   type WelcomePosterCard,
   welcomeGenreSystemPresetPlanById,
@@ -47,6 +49,8 @@ export type EditorWelcomeResult = {
   readonly intent: string | null;
   /** Full AI prompt sent to the 감독 console for the current map. */
   readonly prompt: string | null;
+  /** 조수 말풍선·입력창에 보일 사용자 쪽 문장. `prompt` 의 내부 지시문은 보이지 않는다. */
+  readonly displayText?: string;
   readonly autoSend: boolean;
   readonly presetId?: WelcomeGenrePresetId;
   readonly source?: "chip" | "free-text" | "manual-system-preset";
@@ -239,6 +243,7 @@ export function presentEditorWelcome(
       settle({
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
+        displayText: welcomeFreeTextDisplayText(trimmed),
         autoSend: true,
         source: "free-text",
         dismiss: true,
@@ -304,6 +309,7 @@ export function presentEditorWelcome(
         settle({
           intent: label,
           prompt: autoSend ? buildWelcomeGenrePresetPrompt(preset, brief) : null,
+          ...(autoSend ? { displayText: welcomeGenrePresetDisplayText(preset, brief) } : {}),
           autoSend: autoSend && (options.canGenerate?.() ?? true),
           presetId,
           source: autoSend ? "chip" : "manual-system-preset",
@@ -468,7 +474,7 @@ export function presentEditorWelcome(
         "aria-modal": "true",
       },
       children: [
-        el("p", { class: "editor-welcome-kicker", text: "감독" }),
+        el("p", { class: "editor-welcome-kicker", text: "새 게임" }),
         el("h1", {
           class: "editor-welcome-title",
           text: "어떤 게임을 만들까요?",
@@ -476,7 +482,7 @@ export function presentEditorWelcome(
         }),
         el("p", {
           class: "editor-welcome-sub",
-          text: "한 문장으로 지시하면 이 맵에 초안이 생깁니다. 도구 설명은 결과가 찍힌 뒤에 합니다.",
+          text: "만들고 싶은 게임을 한 문장으로 적어 주세요. AI가 맵과 인물, 이야기를 만들어 드려요.",
         }),
         el("div", {
           class: "editor-welcome-prompt-row",

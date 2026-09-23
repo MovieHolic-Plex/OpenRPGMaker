@@ -326,3 +326,34 @@ export function toolLabelSummary(names: readonly string[]): string {
   if (names.length > TOOL_LABEL_SUMMARY_LIMIT) shown.push("…");
   return shown.join(" → ");
 }
+
+/**
+ * 「간단히 보기」(기본값)의 도구 한 줄 — 처음 온 비개발자에게 보여 줄 말.
+ *
+ * 2026-09-23 실측: 기본 표시에서 `consult writer · 실행 중`·`DB 읽기`·`타일셋 참고 읽기`·
+ * `도구 찾기 · 2건 확인·처리` 가 그대로 보였다. 영문 도구 이름은 풀어 쓰고, 읽기 도구는 하나로 묶고,
+ * 건수는 빼며, 사전 라벨에 영문이 섞이면 묶음 말로 바꾼다. 자세히 보기는 `toolLabel` 을 그대로 쓴다.
+ */
+const BRIEF_TOOL_PHRASES: Readonly<Record<string, readonly [doing: string, done: string]>> = {
+  consult_writer: ["대사 쓰는 중", "대사 쓰기 완료"],
+  find_tools: ["생각하는 중", "생각 정리 완료"],
+};
+const BRIEF_GROUP_PHRASES: Readonly<Record<ToolGroup, readonly [doing: string, done: string]>> = {
+  inspect: ["프로젝트 살펴보는 중", "프로젝트 살펴보기 완료"],
+  build: ["만드는 중", "만들기 완료"],
+  people: ["인물 만드는 중", "인물 만들기 완료"],
+  world: ["세계 꾸미는 중", "세계 꾸미기 완료"],
+  system: ["게임 설정 손보는 중", "게임 설정 완료"],
+};
+
+/** `running` 이면 하는 중, 아니면 끝난 말. 실패 표기는 부르는 쪽이 정한다(간단히 보기는 회복한 실패를 숨긴다). */
+export function toolBriefLabel(name: string, running: boolean): string {
+  const pick = (pair: readonly [string, string]): string => (running ? pair[0] : pair[1]);
+  const fixed = BRIEF_TOOL_PHRASES[name];
+  if (fixed) return pick(fixed);
+  const group = toolGroup(name);
+  const label = TOOL_LABELS[name]?.label;
+  // 읽기는 무엇을 읽든 사용자에게는 같은 일이다 — 「DB 읽기」·「타일셋 참고 읽기」를 따로 세우지 않는다.
+  if (group === "inspect" || !label || /[A-Za-z]/u.test(label)) return pick(BRIEF_GROUP_PHRASES[group]);
+  return `${label} · ${running ? "진행 중" : "완료"}`;
+}

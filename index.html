@@ -9,8 +9,71 @@
     <link rel="icon" href="/icons/pwa-192.png" />
     <link rel="apple-touch-icon" href="/icons/pwa-192.png" />
     <title>OPRN Studio</title>
+    <!--
+      첫 로드 로더: 편집기 번들이 평가·마운트되기까지(실측 ~5.6초) 빈 회색 화면만 보이던 자리.
+      JS·외부 자산 없이 이 파일만으로 그려지고, 편집기 셸이 뜨면 src/app/bootLoader.ts 가 지운다.
+      #app 안이 아니라 형제로 둔다 — bootApp 은 #app 을 비우지 않고 append 하므로.
+    -->
+    <style>
+      #oprn-boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
+        background: #f7f8f8;
+        color: #0f172a;
+        font-family: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+        transition: opacity 160ms ease-out;
+      }
+      #oprn-boot-loader[data-leaving] {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #oprn-boot-loader .oprn-boot-brand {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      #oprn-boot-loader .oprn-boot-spinner {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 3px solid #dbe1e6;
+        border-top-color: #2563eb;
+        animation: oprn-boot-spin 0.8s linear infinite;
+      }
+      #oprn-boot-loader .oprn-boot-text {
+        font-size: 13px;
+        color: #475569;
+      }
+      @keyframes oprn-boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      /* 움직임 줄이기: 회전 대신 정지한 고리, 페이드도 끈다. 문구가 상태를 전한다. */
+      @media (prefers-reduced-motion: reduce) {
+        #oprn-boot-loader {
+          transition: none;
+        }
+        #oprn-boot-loader .oprn-boot-spinner {
+          animation: none;
+          border-color: #2563eb;
+          opacity: 0.6;
+        }
+      }
+    </style>
   </head>
   <body>
+    <div id="oprn-boot-loader" data-testid="boot-loader" role="status" aria-live="polite">
+      <div class="oprn-boot-brand">OPRN Studio</div>
+      <div class="oprn-boot-spinner" aria-hidden="true"></div>
+      <div class="oprn-boot-text">불러오는 중…</div>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

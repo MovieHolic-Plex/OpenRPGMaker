@@ -14,6 +14,7 @@ import "@/storageBoot";
 import "@/editor/editorUiMode";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { bootApp } from "@/app/mode";
+import { dismissBootLoader } from "@/app/bootLoader";
 import { editorState } from "@/editor/editorState";
 import { addEvent } from "@/editor/eventActions";
 import { addEventPage, ensureEventPages } from "@/editor/eventPages";
@@ -85,7 +86,10 @@ if (import.meta.env.DEV && typeof window !== "undefined") {
 }
 
 void registerPwaIfEnabled();
-void bootEditorWithOpenedProject(app).then(openClassicEventEditorCaptureIfRequested);
+// 부팅이 어디서 터지든 첫 로드 로더가 오류 화면·빈 셸을 덮은 채 남지 않게 한다(정상 경로는 mode.ts 가 먼저 걷는다).
+void bootEditorWithOpenedProject(app)
+  .finally(dismissBootLoader)
+  .then(openClassicEventEditorCaptureIfRequested);
 
 /**
  * 시작 화면이 폴더를 열어둔 채 편집기 창으로 넘어오면, 렌더러의 저장소는 그 사실을 모른다 —

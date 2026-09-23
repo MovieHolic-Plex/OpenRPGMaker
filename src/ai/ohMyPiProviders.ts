@@ -31,6 +31,12 @@ export type OhMyPiProvider = {
 /**
  * 두 제공자. 순서가 곧 UI 순서이고 **첫 항목이 기본값**이다.
  *
+ * label 은 **사용자가 보는 유일한 이름**이다 — 제공자 카드·연결 패널·상단 칩(`${label} 연결됨`)이
+ * 모두 이 값을 쓴다. 2026-09-23 실측: 카드는 "Google Gemini", 패널은 "Google Antigravity",
+ * 사용자는 "agy" 라 불러 한 제공자에 이름이 셋이었다. 로그인하는 **계정**의 이름으로 통일한다
+ * (Google / ChatGPT). 제품명(Gemini·Antigravity·Codex)은 카드 보조 줄에만 남긴다.
+ * id 는 저장값이라 바꾸지 않는다.
+ *
  * defaultModel 은 modelCatalog 의 제공자별 첫 항목과 같아야 한다(계약은
  * test/modelCatalog.test.ts 가 고정한다). 카탈로그를 여기서 import 하지 않는 이유는
  * modelCatalog 가 이 모듈을 import 하기 때문 — 순환을 만들지 않고 테스트로 묶는다.
@@ -38,14 +44,14 @@ export type OhMyPiProvider = {
 export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
   {
     id: ANTIGRAVITY_PROVIDER_ID,
-    label: "Google Antigravity",
+    label: "Google",
     defaultModel: "gemini-3.7-flash",
     envVars: [],
     authKind: "oauth",
   },
   {
     id: CODEX_PROVIDER_ID,
-    label: "OpenAI Codex",
+    label: "ChatGPT",
     defaultModel: "gpt-5.6-sol",
     envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
     authKind: "oauth",

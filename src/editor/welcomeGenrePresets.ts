@@ -164,6 +164,27 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   ].join("\n");
 }
 
+/**
+ * 장르 칩 핸드오프의 «보이는 문장». 모델은 `buildWelcomeGenrePresetPrompt` 전체를 읽지만, 사용자 말풍선에는
+ * 자기가 고른 것만 짧게 남긴다(예: 「모험 JRPG · 누군가를 구하기 위해 · 시작 마을과 첫 의뢰」).
+ * 체크리스트·「한국어로 진행하고…」 같은 내부 지시가 사용자 말로 보이면 안 된다(2026-09-23 실측).
+ */
+export function welcomeGenrePresetDisplayText(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
+  const short = (text: string | undefined): string => {
+    const line = (text ?? "").split(/\r?\n/u)[0]!.replace(/\s+/gu, " ").trim();
+    return line.length > 24 ? `${line.slice(0, 23)}…` : line;
+  };
+  const parts = brief
+    ? [preset.label, short(brief.answers.experience?.text), short(brief.answers.scope?.text)]
+    : [preset.label, short(preset.blurb)];
+  return [...new Set(parts.filter(Boolean))].join(" · ");
+}
+
+/** 자유 입력 핸드오프의 «보이는 문장» — 사용자가 친 한 문장 그대로. */
+export function welcomeFreeTextDisplayText(userIntent: string): string {
+  return userIntent.trim();
+}
+
 /** Free text keeps the user's scope; structured intent selects a recipe later. */
 export function buildWelcomeFreeTextPrompt(userIntent: string): string {
   const intent = userIntent.trim();

@@ -98,6 +98,10 @@ const DECK_TABS: readonly { readonly id: StudioDeckTab; readonly label: string; 
   { id: "activity", label: "활동", icon: "clock" },
 ];
 
+// 사용자 본인의 스레드 제목. 코드 안에서는 여전히 "director"(감독 = 사람) 스레드지만
+// 화면에 「감독」 이라고 쓰면 첫 사용자는 AI 가 감독인지 자기인지 모른다 — 자기 요청이라고 부른다.
+export const DIRECTOR_THREAD_TITLE = "내 요청";
+
 const STUDIO_LAYOUT_KEY = "oprn:ai-studio-layout";
 // 덱 높이는 CSS 가 소유한다(1440 → 284px, 1280 → 268px). 사용자가 끌어 바꾸는 것은 좌·우 열만.
 const STUDIO_SPLITTER_MIN = { scenes: 180, chat: 280 } as const;
@@ -301,8 +305,8 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   const teamSlot = el("div", { class: "ai-studio-team-slot", dataset: { testid: "ai-studio-team-slot" } });
   const backToDirector = el("button", {
     class: "ai-studio-ghost-btn ai-studio-back-director",
-    text: "← 감독",
-    attrs: { type: "button", title: "감독 스레드로 돌아가기", hidden: "" },
+    text: "← 내 요청",
+    attrs: { type: "button", title: "내 요청 스레드로 돌아가기", hidden: "" },
     dataset: { testid: "ai-studio-back-director" },
     on: { click: () => selectThread("director") },
   });
@@ -313,7 +317,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     children: [renderEditorIcon("arrowRight")],
     on: { click: () => setChatCollapsed(!chatCollapsed) },
   });
-  const chatHeadTitle = el("h2", { class: "ai-studio-who-title", text: "감독", dataset: { testid: "ai-studio-thread-title" } });
+  const chatHeadTitle = el("h2", { class: "ai-studio-who-title", text: DIRECTOR_THREAD_TITLE, dataset: { testid: "ai-studio-thread-title" } });
   const chatPane = el("aside", {
     class: "ai-studio-chat",
     dataset: { testid: "ai-studio-chat" },
@@ -386,7 +390,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
   const delegateButton = el("button", {
     class: "ai-studio-ghost-btn",
     text: "팀장에게 맡기기",
-    attrs: { type: "button", title: "감독에게 한 문장으로 지시하면 에이전트를 배정합니다" },
+    attrs: { type: "button", title: "내 요청에 한 문장으로 적으면 에이전트를 배정합니다" },
     dataset: { testid: "ai-studio-delegate" },
     on: {
       click: () => {
@@ -838,7 +842,7 @@ export function createStudioShell(options: StudioShellOptions): StudioShell {
     if (!lane && !team && selectedThreadId !== "director") selectedThreadId = "director";
     chatPane.classList.toggle("is-lane-thread", lane !== null);
     chatPane.classList.toggle("is-team-thread", team);
-    chatHeadTitle.textContent = lane ? `${lane.spec.label} · ${lane.spec.agentLabel}` : team ? "팀 보드" : "감독";
+    chatHeadTitle.textContent = lane ? `${lane.spec.label} · ${lane.spec.agentLabel}` : team ? "팀 보드" : DIRECTOR_THREAD_TITLE;
     if (lane || team) backToDirector.removeAttribute("hidden"); else backToDirector.setAttribute("hidden", "");
     if (team) {
       laneThreadSlot.replaceChildren();

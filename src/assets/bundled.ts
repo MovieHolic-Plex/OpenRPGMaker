@@ -455,6 +455,67 @@ export function ensureUploadedCharsetTextures(
   scene.load.start();
 }
 
+/** 씬별 진행 중인 번들 텍스처 로드 키. 같은 칩셋을 매 store 변경마다 다시 싣지 않기 위한 것. */
+const bundledLoadsInFlight = new WeakMap<Phaser.Scene, Set<string>>();
+
+/**
+ * 실행 중인 씬에 **부팅 이후 쓰이기 시작한** 번들 칩셋·캐릭터셋·작물 그림을 뒤늦게 실어 준다.
+ *
+ * `loadBundledAssets` 는 preload 한 번뿐이고 그때 프로젝트가 쓰던 텍스처만 싣는다. 실측(2026-09-23):
+ * 조수가 새 프로젝트 맵을 숲마을 칩셋으로 바꾸자 편집 캔버스 전체가 Phaser 의 "빠진 텍스처" 빗금으로
+ * 그려졌다(`__MISSING tile_1141` 경고 수만 건). 새로고침해야 보이던 것이 이 함수로 그 자리에서 보인다.
+ */
+export function ensureBundledProjectTextures(
+  scene: Phaser.Scene,
+  project: Project,
+  onRegistered?: () => void
+): void {
+  const used = projectBundledTextureKeys(project);
+  const inFlight = bundledLoadsInFlight.get(scene) ?? new Set<string>();
+  bundledLoadsInFlight.set(scene, inFlight);
+  const chipsets: BundledImageAsset[] = [];
+  const charsetKeys = new Set<string>();
+  const cropIds = new Set<string>();
+  const queue = (loadKey: string, path: string): void => {
+    inFlight.add(loadKey);
+    scene.load.image(loadKey, withInlineAsset(path));
+  };
+  for (const asset of [...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS]) {
+    if (!used.has(asset.textureKey) || scene.textures.exists(asset.textureKey)) continue;
+    const loadKey = chipsetLoadTextureKey(asset.textureKey);
+    if (scene.textures.exists(loadKey) || inFlight.has(loadKey)) continue;
+    queue(loadKey, asset.path);
+    chipsets.push(asset);
+  }
+  for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
+    if (!used.has(asset.textureKey) || scene.textures.exists(asset.textureKey)) continue;
+    const loadKey = rawCharsetTextureKey(asset.textureKey);
+    if (scene.textures.exists(loadKey) || inFlight.has(loadKey)) continue;
+    queue(loadKey, asset.path);
+    charsetKeys.add(asset.textureKey);
+  }
+  for (const asset of FARMING_CROP_SPRITE_ASSETS) {
+    if (!used.has(asset.id) || scene.textures.exists(asset.id) || inFlight.has(asset.id)) continue;
+    queue(asset.id, asset.path);
+    cropIds.add(asset.id);
+  }
+  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0) return;
+  scene.load.once("complete", () => {
+    for (const asset of chipsets) {
+      inFlight.delete(chipsetLoadTextureKey(asset.textureKey));
+      if (isColorKeyedChipsetTextureKey(asset.textureKey)) registerTransparentChipsetTexture(scene, asset);
+      if (!scene.textures.exists(asset.textureKey)) continue;
+      registerTilesetTextureFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey));
+    }
+    for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
+    for (const id of cropIds) inFlight.delete(id);
+    if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);
+    if (cropIds.size > 0) registerFarmingCropFrames(scene, cropIds);
+    onRegistered?.();
+  });
+  scene.load.start();
+}
+
 function uploadedSourceWidth(source: HTMLImageElement | HTMLCanvasElement): number {
   return source instanceof HTMLImageElement ? source.naturalWidth || source.width : source.width;
 }

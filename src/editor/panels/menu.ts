@@ -468,20 +468,28 @@ function logAutoSaveTransition(state: AutoSaveState): void {
   autoSaveLog.debug(`자동 저장 상태 → ${state.kind}`, state.kind === "saved" ? { at: state.at } : undefined);
 }
 
+/** 「브라우저 e373」 식 세션 라벨이면 세션 id 를, 아니면 null. */
+function browserSessionIdOf(label: string): string | null {
+  return label.trim().match(/^브라우저\s+(.+)$/u)?.[1] ?? null;
+}
+
+// 첫 사용자에게 「게스트 세션 e373」 의 id 는 의미 없는 잡음이다 — 라벨은 「게스트」 만,
+// id 는 디버깅용으로 툴팁(title)에만 남긴다.
 export function readableTopbarIdentityLabel(label: string): string {
-  const browserSession = label.trim().match(/^브라우저\s+(.+)$/u)?.[1];
-  return browserSession ? `게스트 세션 ${browserSession}` : label.trim();
+  return browserSessionIdOf(label) ? "게스트" : label.trim();
 }
 
 function renderTopbarIdentityControl(topbar: HTMLElement): HTMLElement {
   const control = renderIdentityTopbarControl(() => renderTopbar(topbar));
   const label = control.querySelector<HTMLElement>("[data-testid='topbar-identity-label']");
   if (label) {
-    const readable = readableTopbarIdentityLabel(label.textContent ?? "");
+    const raw = label.textContent ?? "";
+    const readable = readableTopbarIdentityLabel(raw);
     label.textContent = readable;
-    const title = `편집 신원 — ${readable}`;
-    control.setAttribute("title", title);
-    control.setAttribute("aria-label", title);
+    const accessibleName = `편집 신원 — ${readable}`;
+    const sessionId = browserSessionIdOf(raw);
+    control.setAttribute("title", sessionId ? `${accessibleName} (세션 ${sessionId})` : accessibleName);
+    control.setAttribute("aria-label", accessibleName);
   }
   return control;
 }
@@ -885,9 +893,12 @@ async function editGameDesignBrief(): Promise<void> {
   store.update(project => { project.gameDesignBrief = brief; }, { scope: "project", label: "게임 기획 수정", origin: "human" });
   if (!(await saveProjectNow())) return;
   const { prefillAiAssistantInput } = await import("@/editor/aiBootIntent");
-  const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt } = await import("@/editor/welcomeGenrePresets");
+  const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } = await import("@/editor/welcomeGenrePresets");
   const preset = welcomeGenrePresetById(brief.presetId);
-  const prefilled = preset && prefillAiAssistantInput(buildWelcomeGenrePresetPrompt(preset, brief), { preserveDraft: true });
+  const prefilled = preset && prefillAiAssistantInput(buildWelcomeGenrePresetPrompt(preset, brief), {
+    preserveDraft: true,
+    displayText: welcomeGenrePresetDisplayText(preset, brief),
+  });
   toast(prefilled
     ? "기획을 저장했습니다. 조수 입력창에서 작업 범위를 확인한 뒤 보낼 수 있습니다."
     : "기획을 저장했습니다. 다음 AI 대화부터 이 기획을 참고합니다.", "ok");
