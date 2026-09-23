@@ -2,6 +2,7 @@
 // place_npc 등이 받는 고수준 입력(SimplePage/graphic.query)을 EventPage/graphic으로 컴파일한다.
 // graphic.query 해석은 charsetQuery의 별칭/자유 질의 매처에 위임한다.
 
+import { canonicalizeCommandFieldAlias } from "@/project/eventCommands/commandFieldAliases";
 import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { npcGraphicExampleLabels, pickNpcGraphic, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
@@ -337,6 +338,8 @@ function normalizeCommand(raw: unknown, path: string, warnings: string[] | undef
     warnings?.push(`SimplePage 정규화: ${path}.kind "${requestedKind}" 를 "${kind}" 로 해석했습니다.`);
   }
   command.kind = kind;
+  const aliasFix = canonicalizeCommandFieldAlias(command);
+  if (aliasFix) warnings?.push(`SimplePage 정규화: ${path}: ${aliasFix}`);
   if (kind === "text" && command.body === undefined && typeof command.text === "string") {
     command.body = command.text;
     delete command.text;

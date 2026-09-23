@@ -653,6 +653,8 @@ export function changeParty(
     if (project) syncActorVitals(project, session.actorVitals, actorId);
     return;
   }
+  // 정본이 아닌 값(예: 옛 op:"+=")을 「제외」로 읽으면 합류하라는 명령이 동료를 빼 버린다.
+  if (action !== "remove") return;
   session.partyActorIds = session.partyActorIds.filter((id) => id !== actorId);
 }
 
