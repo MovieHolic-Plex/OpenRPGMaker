@@ -2,15 +2,25 @@ import { editorState } from "@/editor/editorState";
 import { previewSpatialSourceBuild } from "@/editor/panels/spatialBuildActions";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { freshSpatialId } from "@/editor/panels/spatialSpaceDraft";
+import { serialize } from "@/project/io";
 import { regionReference } from "@/project/regionReferences";
 import { loadReferencePresetScene } from "@/project/referencePresetSnapshot";
+import { convertLegacySpatialSnapshot } from "@/project/spatial/legacyImport";
 import { store } from "@/project/store";
 import type { SpatialId } from "@/project/spatial/types";
-import type { GameMap, MapId, TilesetId } from "@/project/types";
+import type { GameMap, MapId, Project, TilesetId } from "@/project/types";
 
 function note(saveState: string, previewError: string | null = null): void {
   placeChromeState.saveState = saveState;
   placeChromeState.previewError = previewError;
+}
+
+/** 검토 장소를 넣을 도서관이 없으면, 따로 켜기 버튼을 요구하지 않고 그 자리에서 문서를 만든다. */
+function ensureSpatialAuthoringDocument(draft: Project): void {
+  if (draft.spatialAuthoring) return;
+  const document = convertLegacySpatialSnapshot(serialize(draft)).preview.spatialAuthoring;
+  if (document === undefined) throw new Error("장소 설계 문서를 만들지 못했습니다.");
+  draft.spatialAuthoring = document;
 }
 
 export function placeReviewedPreset(id: string, rerender: () => void): void {
@@ -19,17 +29,12 @@ export function placeReviewedPreset(id: string, rerender: () => void): void {
     rerender();
     return;
   }
-  const project = store.getCurrent();
-  if (!project.spatialAuthoring) {
-    note(placeChromeState.saveState, "장소 설계가 없는 프로젝트입니다. 장소 설계를 활성화한 뒤 다시 놓으세요.");
-    rerender();
-    return;
-  }
   note("기본 장소를 프로젝트에 넣는 중…");
   rerender();
   void import("@/project/defaults/spatial/reviewedPlaceCatalog").then(({ installBundledReviewedPlace }) => {
     let installedId: SpatialId | "" = "";
     store.update((draft) => {
+      ensureSpatialAuthoringDocument(draft);
       const installed = installBundledReviewedPlace(draft, id);
       installedId = installed.id;
       if (installed.project !== draft) {
