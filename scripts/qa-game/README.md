@@ -8,7 +8,7 @@
 ## 루프
 
 ```
-gen 한 번(모델) → check(초) → 코드 고침 → replay + check(초) → 그다음에야 브라우저
+gen 한 번(모델, 약 6분) → check(1초) + render(2초) → 코드 고침 → replay + check(1~2분) → 그다음에야 브라우저
 ```
 
 | 명령 | 하는 일 |
@@ -17,8 +17,7 @@ gen 한 번(모델) → check(초) → 코드 고침 → replay + check(초) →
 | `npm run qa:game -- check qa-runs/<id>` | `<id>/project.json` 을 검사해 `check.json`·`check.txt` 를 쓴다. 막힘이 있으면 종료 코드 1. `--project x.json` 으로 임의 파일도 된다. |
 | `… check <id> --raw` | 로더를 거치지 않은 원본 JSON 을 검사한다. 기본(로더를 거친 모양 = 런타임이 보는 모양)은 로더가 조용히 고친 명령을 `load-normalized` 경고로만 남기므로, 생성기(조수·도구)가 쓴 결함 자체를 보려면 `--raw`. |
 | `npm run qa:game -- replay qa-runs/<id>` | 모델 없이 `tools.jsonl` 을 `seed.json` 위에서 **지금의** 툴 코드로 다시 돌린다(레지스트리 셰이프 `resolvePiToolShape` = 참고 문서 게이트·맵 범위 가드, 쓰기마다 `createPiPublication` 체크포인트 = 스토어 커밋 게이트). `replay/project.json`·`tools.jsonl`·`diff.json`·`replay.txt` 를 쓰고 check 를 돌린다. 녹화와 ok·경고가 달라진 호출을 경고 차이(-녹화/+재생)와 함께 보고한다. `[vperf]` 같은 시간 계측 줄은 비교에서 뺀다. |
-
-(`render` 는 다음 단계에서 붙는다.)
+| `npm run qa:game -- render qa-runs/<id>` | 모든 맵을 헤드리스로 `render/<mapId>.png` 에 그리고(에디터와 같은 `drawMapTileLayer`, 캔버스 대신 pngjs 버퍼), 썸네일·검사 지적·자동 플레이 경로·재생 요약·meta 를 담은 자체완결 `report.html`(이미지는 data URI)을 쓴다. 표식: 초록=시작 위치, 파랑=문, 빨강=전투, 노랑=엔딩, 보라=기타 이벤트. check·replay 를 먼저 돌려 두면 그 결과도 들어간다. |
 
 ### replay 의 한계
 
