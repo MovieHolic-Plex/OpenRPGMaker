@@ -10,9 +10,9 @@ const block = (o) => "```json\n" + JSON.stringify(o) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const CLIMATE = { forest_harmony_snow: "설원", forest_harmony_volcano: "화산", forest_harmony_desert: "사막", forest_harmony_autumn: "가을" };
 const CATEGORY = {
-  forest_harmony: { id: "field-routes-forest-v1", name: "마을 사이 필드 · 숲길·벼랑길·고갯길 (개정1)", description: "집 없이 맵 가장자리에서 가장자리로 길이 이어지는 마을 사이 필드 세 곳. 출구 규칙(어느 마을 입구와 맞닿는지), 절벽·계단·여울·다리·숲 조립, 전체 배열과 통행 검사" },
+  forest_harmony: { id: "field-routes-forest-v2", name: "마을 사이 필드 · 숲길·벼랑길·고갯길 (나무 몸통 개정2)", description: "집 없이 맵 가장자리에서 가장자리로 길이 이어지는 마을 사이 필드 세 곳. 출구 규칙(어느 마을 입구와 맞닿는지), 절벽·계단·여울·다리·숲 조립, 전체 배열과 통행 검사" },
   ...Object.fromEntries(Object.entries(CLIMATE).map(([ts, name]) => [ts, {
-    id: `field-routes-${ts.replace("forest_harmony_", "")}-v1`, name: `${name} 마을 사이 필드 (개정1)`,
+    id: `field-routes-${ts.replace("forest_harmony_", "")}-v2`, name: `${name} 마을 사이 필드 (나무 몸통 개정2)`,
     description: `숲마을 필드를 ${name} 시트로 옮긴 필드. 칸 번호는 숲마을과 같고 기후 편집만 더했다. 출구가 맞닿는 ${name} 마을, 전체 배열과 통행 검사`,
   }])),
 };
@@ -37,7 +37,7 @@ const rules = `## 필드를 짜는 법 — 집 없는 숲마을
 - **여울·폭포**: 폭 4 붓으로 물(호수 오토타일)을 칠하고, 절벽을 넘는 열은 윗선 칸이 물·면 칸이 폭포 ${r.fall}. 폭포 아래 아랫단에 소(둥근 물)를 둔다. 맵 끝으로 나가는 물은 가장자리에 물가를 만들지 않는다.
 - **다리**: 강이 곧게 흐르는 두 줄에 나무다리 윗줄 ${r.bridgeTop}·아랫줄 ${r.bridgeBottom}(아래층)을 강폭만큼. 다리 두 끝은 마른 땅이어야 한다.
 - **동굴**: 절벽 면 한 칸에 동굴 입구 ${b[413]}(위층). 그 열 밑단 아래 칸까지 길을 낸다.
-- **숲**: 숲 윤곽(forest_harmony_grove_47 수관 + 줄기 조립). 가장자리 숲에 덧붙인 숲 덩이(patches)와 빈터(clearings), 풀밭 한가운데의 숲섬(groves). 줄기 수리가 얇은 숲 가장자리를 깎으면 절벽 끝이 뚫리므로, 검사가 실패하면 숲 무늬 씨앗(seed)만 하나 올려 다시 칠한다(검사표의 forestSeed).
+- **숲**: 숲 윤곽(forest_harmony_grove_47 수관 + 줄기 조립). 가장자리 숲에 덧붙인 숲 덩이(patches)와 빈터(clearings), 풀밭 한가운데의 숲섬(groves). 줄기 수리가 얇은 숲 가장자리를 깎으면 절벽 끝이 뚫리므로, 검사가 실패하면 숲 무늬 씨앗(seed)만 하나 올려 다시 칠한다(검사표의 forestSeed). 줄기는 수관 밑변과 **정확히 같은 폭**으로 놓는다(폭 2 이상 모든 폭에 조립이 있다; 규칙은 숲마을 문서 forest-assembly). 밑변보다 넓게 옆 수관 밑으로 밀어 넣거나 옛 4칸 마감을 쓰면 몸통이 반쯤 잘려 보인다. 폭 1 밑변은 이웃 열 높이로 한 칸 옮긴다.
 - **숲 안 구멍**: 수관 안에 갇힌 40칸 미만의 풀밭은 수관으로 메운다(같은 오토타일로 다시 칠함).
 - **나무·장식**: 숲마을 나무 도장 셋(활엽수 3×4, 둥근 덤불 3×3, 작은 덤불 2×2)을 풀밭에, 둘레 한 칸과 서로 다섯 칸을 띄워. 한 칸 장식(회백색 바위 537, 돌 무더기 29, 꽃 관목 768, 위층)은 둘레 한 칸을 비워.
 - **검사**: 첫 출구에서 런타임 이동 규칙(canMove)으로 모든 출구·계단 양 끝·다리 양 끝·동굴 앞에 닿아야 하고, 계단을 모두 막으면 아랫단에서 윗단으로 못 올라가야 한다.
@@ -63,7 +63,7 @@ for (const [ts, name] of Object.entries(CLIMATE)) {
 
 tilesetId=${ts}, 시트 ${climate.textureKey}(30열·16px, ${climate.count}칸). 좌표는 0기준.
 
-숲마을 필드(tilesetId=forest_harmony)의 두 레이어를 **그대로** 이 타일셋으로 옮긴 뒤 기후 편집만 더했다. 기후 시트는 숲마을 이식을 한 장에 구워 칸 번호가 같으므로, 숲 필드 문서(field-routes-forest-v1)의 부품 번호를 이식 없이 그대로 쓴다. 기후 시트 자체의 규칙(무엇이 칠해졌나, 얼음·용암·야자·선인장)은 같은 타일셋의 「${name} 마을」 분류 문서에 있다.
+숲마을 필드(tilesetId=forest_harmony)의 두 레이어를 **그대로** 이 타일셋으로 옮긴 뒤 기후 편집만 더했다. 기후 시트는 숲마을 이식을 한 장에 구워 칸 번호가 같으므로, 숲 필드 문서(field-routes-forest-v2)의 부품 번호를 이식 없이 그대로 쓴다. 기후 시트 자체의 규칙(무엇이 칠해졌나, 얼음·용암·야자·선인장)은 같은 타일셋의 「${name} 마을」 분류 문서에 있다.
 
 ${rules}
 ## 검사

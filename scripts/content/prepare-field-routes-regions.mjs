@@ -37,7 +37,7 @@ for (const plan of c.plans) {
     name: plan.name,
     kind: "completed-place",
     placeKind: "natural",
-    revision: 1,
+    revision: 2,
     x: 0,
     y: 0,
     width: map.width,

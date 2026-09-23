@@ -20,14 +20,14 @@
         24
       ]
     ],
-    "reachable": 2649,
+    "reachable": 2262,
     "blocked": [],
     "terraceLeaks": 0,
-    "sealedPocketCells": 27
+    "sealedPocketCells": 20
   },
   {
     "id": "field-ford-cliff-road",
-    "forestSeed": 1308,
+    "forestSeed": 1307,
     "entry": [
       48,
       67
@@ -62,7 +62,7 @@
         0
       ]
     ],
-    "reachable": 2420,
+    "reachable": 2258,
     "blocked": [],
     "terraceLeaks": 0,
     "sealedPocketCells": 0
@@ -104,7 +104,7 @@
         0
       ]
     ],
-    "reachable": 2017,
+    "reachable": 1939,
     "blocked": [],
     "terraceLeaks": 0,
     "sealedPocketCells": 0
@@ -153,7 +153,7 @@
         45
       ]
     ],
-    "reachable": 2066,
+    "reachable": 1988,
     "blocked": []
   },
   {
@@ -192,7 +192,7 @@
         0
       ]
     ],
-    "reachable": 2420,
+    "reachable": 2258,
     "blocked": []
   },
   {
@@ -215,7 +215,7 @@
         24
       ]
     ],
-    "reachable": 2717,
+    "reachable": 2318,
     "blocked": []
   },
   {
@@ -254,7 +254,7 @@
         0
       ]
     ],
-    "reachable": 2420,
+    "reachable": 2258,
     "blocked": []
   }
 ]

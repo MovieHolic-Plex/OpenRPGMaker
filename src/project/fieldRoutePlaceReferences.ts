@@ -6,7 +6,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "숲속 세 갈래길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 96,
@@ -23,7 +23,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 서쪽 출구 (0,40) → 갈대물굽이 포구 서쪽 입구(0,33), 북쪽 출구 (40,0) → 솔바람 흩어진 산촌 남쪽 입구(40,63), 동쪽 출구 (95,24) → 다음 필드.",
       "숲마을 「다양한 마을」 타일셋(이식 2550~2729 포함)에 그렸다. 내려받기의 tileGrafts와 통행 정보를 함께 쓴다.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「마을 사이 필드 · 숲길·벼랑길·고갯길 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「마을 사이 필드 · 숲길·벼랑길·고갯길 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -32,7 +32,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "여울 건너 벼랑길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 100,
@@ -49,7 +49,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 남쪽 출구 (48,71) → 여울성 나루 남쪽 입구(48,91), 동쪽 출구 (99,54) → 다음 필드, 북쪽 출구 (40,0) → 종탑 언덕 교구마을 남쪽 입구(40,63).",
       "숲마을 「다양한 마을」 타일셋(이식 2550~2729 포함)에 그렸다. 내려받기의 tileGrafts와 통행 정보를 함께 쓴다.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「마을 사이 필드 · 숲길·벼랑길·고갯길 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「마을 사이 필드 · 숲길·벼랑길·고갯길 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -58,7 +58,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "두 단 고갯길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -75,7 +75,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 남쪽 출구 (40,79) → 필드 남쪽, 북쪽 출구 (40,0) → 안개못 폐촌 남쪽 입구(40,63).",
       "숲마을 「다양한 마을」 타일셋(이식 2550~2729 포함)에 그렸다. 내려받기의 tileGrafts와 통행 정보를 함께 쓴다.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝·동굴 앞까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「마을 사이 필드 · 숲길·벼랑길·고갯길 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「마을 사이 필드 · 숲길·벼랑길·고갯길 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -84,7 +84,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "눈 덮인 두 단 고갯길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -101,7 +101,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 남쪽 출구 (40,79) → 필드 남쪽, 북쪽 출구 (40,0) → 얼어붙은 안개못 남쪽 입구(40,63).",
       "숲마을 필드 「field-two-step-pass」과 칸 번호가 같은 기후 시트(forest_harmony_snow)로 옮겼다. 기후 편집: freeze.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝·동굴 앞·얼음판까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「설원 마을 사이 필드 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「설원 마을 사이 필드 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -110,7 +110,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "용암 강 벼랑길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 100,
@@ -127,7 +127,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 남쪽 출구 (48,71) → 잿빛 여울성 남쪽 입구(48,91), 동쪽 출구 (99,54) → 다음 필드, 북쪽 출구 (40,0) → 용암못 폐촌 남쪽 입구(40,63).",
       "숲마을 필드 「field-ford-cliff-road」과 칸 번호가 같은 기후 시트(forest_harmony_volcano)로 옮겼다. 기후 편집: volcanic-peaks, sheet.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「화산 마을 사이 필드 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「화산 마을 사이 필드 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -136,7 +136,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "오아시스 세 갈래길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 96,
@@ -153,7 +153,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 서쪽 출구 (0,40) → 모래 물굽이 포구 서쪽 입구(0,33), 북쪽 출구 (40,0) → 사암 층바위 협곡마을 남쪽 입구(42,71), 동쪽 출구 (95,24) → 다음 필드.",
       "숲마을 필드 「field-forest-crossroads」과 칸 번호가 같은 기후 시트(forest_harmony_desert)로 옮겼다. 기후 편집: desert.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「사막 마을 사이 필드 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「사막 마을 사이 필드 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -162,7 +162,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "name": "단풍 여울 벼랑길",
     "kind": "completed-place",
     "placeKind": "natural",
-    "revision": 1,
+    "revision": 2,
     "x": 0,
     "y": 0,
     "width": 100,
@@ -179,7 +179,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "마을 사이 필드: 남쪽 출구 (48,71) → 가을 두 폭포 강마을 남쪽 입구(24,71), 동쪽 출구 (99,54) → 다음 필드, 북쪽 출구 (40,0) → 가을 종탑 언덕 교구 남쪽 입구(40,63).",
       "숲마을 필드 「field-ford-cliff-road」과 칸 번호가 같은 기후 시트(forest_harmony_autumn)로 옮겼다. 기후 편집: 없음(시트만).",
       "첫 출구에서 모든 출구·계단 끝·다리 끝까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「가을 마을 사이 필드 (개정1)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「가을 마을 사이 필드 (나무 몸통 개정2)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   }

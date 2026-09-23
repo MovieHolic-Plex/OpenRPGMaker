@@ -27,7 +27,9 @@ try {
   const world = page.getByTestId("db-tab-group-world");
   if (await world.getAttribute("aria-expanded") === "false") await world.click();
   await page.getByTestId("db-tab-spatial-regions").click();
-  await page.getByTestId("spatial-source-defaults").click();
+  // Since the simplified map tabs (#1172) the source chips may be hidden; the default cards are listed either way.
+  const defaults = page.getByTestId("spatial-source-defaults");
+  if (await defaults.isVisible()) await defaults.click();
   await page.screenshot({ path: `${out}/region-library.png` });
   const proof = [];
   for (const plan of plans) {
@@ -66,7 +68,7 @@ try {
   }
   // The river villages are also listed under 장소, reading the same snapshot.
   await page.getByTestId("db-tab-spatial-places").click();
-  await page.getByTestId("spatial-source-defaults").click();
+  if (await defaults.isVisible()) await defaults.click();
   const places = [];
   for (const plan of plans.filter((p) => p.id === "twin-falls-river-village" || p.series === "concept")) {
     const id = `${plan.id}-place-${plan.width}x${plan.height}`;
