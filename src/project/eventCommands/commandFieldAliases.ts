@@ -19,6 +19,8 @@ const AMOUNT_OP_KINDS = new Set([
   "changeGold", "changeItem", "changeExp", "changeLevel", "changeActorHp", "changeActorMp", "changeLifeSkillExp",
 ]);
 
+const CHOICE_BRANCH_ALIASES = ["commands", "then", "actions"] as const;
+
 function direction(value: unknown): "add" | "remove" | undefined {
   if (typeof value !== "string") return undefined;
   const word = value.trim().toLowerCase();
@@ -42,6 +44,23 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     delete command.op; delete command.mode; delete command.type;
     command.action = resolved;
     return `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`;
+  }
+  if (command.kind === "choices" && Array.isArray(command.options)) {
+    // 네이티브 선택지 분기는 `branch` 다. SimplePage 선택지(`commands`)나 fork(`then`) 표기가 섞이면
+    // 분기가 비거나 검증에서 거부됐다. branch 가 비어 있고 별칭 하나에만 명령이 있으면 옮긴다.
+    const moved: string[] = [];
+    for (const [index, rawOption] of command.options.entries()) {
+      if (rawOption === null || typeof rawOption !== "object" || Array.isArray(rawOption)) continue;
+      const option = rawOption as RecordValue;
+      if (Array.isArray(option.branch) && option.branch.length > 0) continue;
+      const aliases = CHOICE_BRANCH_ALIASES.filter(key => Array.isArray(option[key]) && (option[key] as unknown[]).length > 0);
+      if (aliases.length !== 1) continue;
+      const alias = aliases[0]!;
+      option.branch = option[alias];
+      delete option[alias];
+      moved.push(`options[${index}].${alias}`);
+    }
+    return moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined;
   }
   if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind) && typeof command.op !== "string") {
     const resolved = direction(command.action);
