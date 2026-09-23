@@ -6,6 +6,7 @@ import { compileSpatialOccurrence } from '@/editor/spatial/compileSpatialOccurre
 import { deserialize, serialize } from '@/project/io';
 import { inspectSpatialDesignReferences } from '@/project/spatial/ownership';
 import { paintComposition } from '@/project/spatial/composition';
+import { previewPlaceMaps } from '@/editor/panels/spatialPlacePreview';
 
 it('roundtrips direct tiles and all lower kinds without rewriting legacy records', () => {
   const project = mixedFixture();
@@ -76,4 +77,22 @@ it('keeps a world overview separate from a directly composed child region', () =
   expect(compiled.maps[root.bindings[0].mapId].tilesetId).toBe('easyrpg_chipset_world');
   expect(compiled.maps[child.bindings[0].mapId]).toMatchObject({ width: 80, height: 60 });
   expect(compileSpatialOccurrence(deserialize(serialize(compiled)), { occurrenceId: root.id }).maps).toEqual(compiled.maps);
+}, 60_000);
+it('previews a room captured from a painted map on a non-shell atlas', () => {
+  const project = mixedFixture();
+  const doc = project.spatialAuthoring!;
+  const room = doc.library.spaces['room-design'];
+  project.tilesets['painted_atlas'] = { ...structuredClone(project.tilesets[room.tilesetId]), id: 'painted_atlas' };
+  const width = 6, height = 5;
+  doc.library.spaces['painted-room'] = { ...room, id: spatialId('painted-room'), tilesetId: 'painted_atlas', environment: 'interior', width, height, objectSlots: [],
+    ports: [{ id: spatialId('painted-entry'), name: '입구', x: 2, y: 4 }],
+    composition: { tilesetId: 'painted_atlas', width, height, members: [],
+      tiles: Array.from({ length: width * height }, (_, i) => ({ x: i % width, y: Math.floor(i / width), layer: 'lower' as const, tile: 240 })) } };
+  const place = { ...doc.library.places.inn, id: spatialId('painted-house'), kind: 'facility' as const, composition: undefined,
+    children: [{ id: spatialId('painted-floor'), source: { kind: 'space' as const, id: spatialId('painted-room') }, x: 0, y: 0, level: 1 }] };
+  doc.library.places['painted-house'] = place;
+  const { maps } = previewPlaceMaps({ project, place, floor: null });
+  expect(maps).toHaveLength(1);
+  expect(maps[0].map).toMatchObject({ tilesetId: 'painted_atlas', width, height });
+  expect(maps[0].map.lowerTiles.every(tile => tile === 240)).toBe(true);
 }, 60_000);
