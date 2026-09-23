@@ -112,28 +112,6 @@
       }
     },
     {
-      "id": "hero-02-charset",
-      "target": "actorCharset",
-      "resourceKind": "charset",
-      "expectedDimensions": {
-        "width": 288,
-        "height": 256
-      },
-      "prompt": "Original wandering herbalist walking character sheet with four directions and distinct step frames",
-      "negativePrompt": "copied franchise characters, logos, readable text, watermarks, photorealism, blurry edges, anti-aliased outlines",
-      "status": "promoted",
-      "rawPath": ".omo/evidence/oprn-generated-assets-execution/raw/hero-02-charset-fallback.png",
-      "promotedPath": "public/assets/generated/starter/hero-02-charset.png",
-      "resourceId": "generated-actor-hero-02-charset",
-      "sha256": "d8a680706e68f66ce053bece406f73156426e0799a1bec429f184d8dc2d45b14",
-      "provenance": {
-        "generator": "agy",
-        "mode": "fake",
-        "promptVersion": "oprn-generated-assets-wave1-v1",
-        "createdAt": "2026-06-22T21:30:00.000+09:00"
-      }
-    },
-    {
       "id": "hero-02-battle",
       "target": "actorBattleCharset",
       "resourceKind": "battleCharset",

@@ -64,7 +64,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string> = {
   "generated-actor-hero-01-charset": "/assets/generated/starter/hero-01-charset.png",
   "generated-actor-hero-01-face": "/assets/generated/starter/hero-01-face.png",
   "generated-actor-hero-02-battle": "/assets/generated/starter/hero-02-battle.png",
-  "generated-actor-hero-02-charset": "/assets/generated/starter/hero-02-charset.png",
   "generated-actor-hero-02-face": "/assets/generated/starter/hero-02-face.png",
   "generated-face-actor1-bust": "/assets/generated/faces/actor1-bust.png",
   "generated-face-actor1-full": "/assets/generated/faces/actor1-bust.png",

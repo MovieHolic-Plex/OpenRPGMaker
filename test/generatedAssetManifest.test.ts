@@ -9,7 +9,8 @@ describe("generatedAssetManifest", () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.manifest.assets.filter((entry) => entry.target === "actorFace")).toHaveLength(2);
-      expect(result.manifest.assets.filter((entry) => entry.target === "actorCharset")).toHaveLength(2);
+      // hero-02-charset 는 나무 타일 무늬가 들어간 fake 승격본이라 뺐다. 남은 걷기 시트는 hero-01 하나.
+      expect(result.manifest.assets.filter((entry) => entry.target === "actorCharset")).toHaveLength(1);
       // 4 → 6 (2026-08-29): 성직자·궁수 배틀러 추가. DB 액터 actor_cleric / actor_ranger 가
       // 여태 hero-02 / hero-01 시트를 돌려 써서 파티에 넣으면 같은 그림이 두 번 섰다.
       expect(result.manifest.assets.filter((entry) => entry.target === "actorBattleCharset")).toHaveLength(6);
