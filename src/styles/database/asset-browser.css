@@ -41,7 +41,8 @@
 .asset-browser-rail { overflow: auto; min-height: 0; padding: 14px 8px; border-right: 1px solid var(--db-studio-border-subtle); background: var(--db-studio-inset); }
 .asset-browser-rail h3 { margin: 0 8px 12px; font-size: 12px; color: var(--db-studio-text-3); }
 .asset-browser-tileset { display: flex; align-items: center; gap: 7px; width: 100%; min-height: 44px; margin-bottom: 4px; padding: 8px; text-align: left; border: 1px solid transparent; border-radius: 7px; background: transparent; color: var(--db-studio-text-1); cursor: pointer; }
-.asset-browser-tileset img { width: 28px; height: 32px; object-fit: cover; object-position: top left; image-rendering: pixelated; border-radius: 3px; }
+.asset-browser-tileset img,
+.asset-browser-tileset canvas.tileset-list-thumb { width: 28px; height: 32px; object-fit: cover; object-position: top left; image-rendering: pixelated; border-radius: 3px; }
 .asset-browser-tileset span { min-width: 0; flex: 1; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
 .asset-browser-tileset small { color: var(--db-studio-text-3); font-size: 11px; }
 .asset-browser-tileset.is-selected { background: var(--db-studio-accent-soft); border-color: var(--db-studio-accent); }

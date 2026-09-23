@@ -11,7 +11,9 @@ import { conceptFacilityTemplateById } from "@/project/defaults/conceptFacilityT
 import type { GameMap, Project } from "@/project/types";
 import { fixtureDocument, replaceOccurrence, spaceDesign } from "./support/spatialSpaceCompilerFixture";
 import { exteriorPlaceFixture } from "./support/spatialPlaceGeometryFixture";
-import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
+import { catalogListImageUrl } from "@/editor/panels/catalogListImage";
+import { flushSpatialCardThumbs, resetSpatialCardThumbs } from "@/editor/panels/spatialCardThumbs";
+import { renderSpatialCardThumb, renderSpatialGalleryCard } from "@/editor/panels/spatialGallery";
 import { renderSpatialPlacesCanvas } from "@/editor/panels/spatialPlacesTab";
 import {
   resetSpatialAuthoringSessions,
@@ -116,6 +118,21 @@ describe("spatial place rasters", () => {
     const preview = previewPlaceMaps({ project, place, floor: null });
     // Then: only the canonical square remains and compilation made no project writes.
     expect({ maps: preview.maps.map(entry => tileData(entry.map)), project: JSON.stringify(project) }).toEqual({ maps: expected, project: before });
+  });
+
+  it("paints a place list card without compiling its map", () => {
+    resetSpatialCardThumbs();
+    const render = vi.spyOn(kitRender, "renderTileCellsToCanvas");
+    const host = document.createElement("div");
+    host.append(renderSpatialGalleryCard({
+      id: "inn", localId: "inn", name: "Inn", source: "default", kind: "places", usage: 0,
+    }, false, () => undefined));
+    flushSpatialCardThumbs();
+    expect(catalogListImageUrl("/assets/reviewed-places/a.png")).toBe("/assets/catalog-thumbs/reviewed-places/a.png");
+    expect(catalogListImageUrl("/assets/region-references/b.png")).toBe("/assets/catalog-thumbs/region-references/b.png");
+    expect(render).not.toHaveBeenCalled();
+    expect(host.querySelector("[data-thumb='pending'], .spatial-card-fallback, .tileset-list-thumb")).not.toBeNull();
+    resetSpatialCardThumbs();
   });
 
   it("preserves actual owned map edits when a compiled placed card opens", () => {

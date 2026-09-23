@@ -2,6 +2,14 @@
 
 # Object, space and place catalog UI
 
+## 목록은 축소 그림만 그린다 (2026-09-24)
+
+자료집의 장소·지역·타일·오브젝트·세계 목록은 맵을 컴파일하거나 칩셋 시트를 통째로 붙이지 않는다.
+
+- 검토된 장소와 지역 사례는 `public/assets/catalog-thumbs/` 의 긴 변 256px 그림을 쓴다. 원본은 상세에서만 연다.
+- 칩셋 목록 줄은 `catalog-thumbs/sheets/` 의 32×40 크롭이다. 다시 만들 때는 `scripts/content/build-catalog-thumbs.py`.
+- 장소·지역·세계 스테이지(맵 컴파일, 칸 격자)는 「상세」를 열었을 때만 붙는다. 오브젝트 카드는 그 물건의 칸만 나중에 굽는다.
+
 ## Concept and selection contract (2026-09-12)
 
 `spatialStage.ts` shows a short, persistent explanation above the object, space

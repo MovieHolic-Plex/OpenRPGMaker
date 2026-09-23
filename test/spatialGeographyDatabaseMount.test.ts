@@ -31,6 +31,10 @@ function paint(): void {
   renderDatabasePanel(host);
 }
 
+function openDetail(): void {
+  host.querySelector<HTMLButtonElement>("[data-testid='spatial-inspector-toggle']")?.click();
+}
+
 beforeEach(() => {
   bindSpatialAuthoringControllerFactory(createSpatialAuthoringController);
   resetSpatialAuthoringSessions();
@@ -60,6 +64,7 @@ describe("spatial Database geography mount", () => {
     setSpatialTab("regions");
     selectSpatialDesign(libraryRegionCardId(spatialId("lake-country")));
     paint();
+    openDetail();
     const canvas = host.querySelector("[data-testid='spatial-canvas']");
     expect(canvas).not.toBeNull();
     expect(canvas?.classList.contains("spatial-geography-canvas")).toBe(true);
@@ -80,6 +85,7 @@ describe("spatial Database geography mount", () => {
     setSpatialTab("worlds");
     selectSpatialDesign(libraryWorldCardId(spatialId("lake-kingdom")));
     paint();
+    openDetail();
     expect(host.querySelector("[data-testid='spatial-canvas']")?.classList.contains("spatial-geography-canvas")).toBe(true);
     expect(host.querySelector("[data-testid='spatial-geography-raster']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-geography-board']")?.getAttribute("data-kind")).toBe("world");
@@ -112,6 +118,7 @@ describe("spatial Database geography mount", () => {
     setSpatialTab("regions");
     selectSpatialDesign(libraryRegionCardId(spatialId("lake-country")));
     paint();
+    openDetail();
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-geography-child-lake-village']")
       ?.dispatchEvent(new Event("pointerdown", { bubbles: true }));
     const board = host.querySelector<HTMLElement>("[data-testid='spatial-geography-board']");

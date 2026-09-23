@@ -1,5 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
+import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { TILESET_ART_STYLES, tilesetArtStyle, type TilesetArtStyleId } from "@/project/tilesetArtStyle";
 import { store } from "@/project/store";
@@ -54,7 +55,7 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
               rerender();
             } },
             children: [
-              el("img", { attrs: { src: tilesetImageUrl(tileset), alt: "", loading: "lazy", style: `object-position:${thumbAnchor(tileset.id)}` } }),
+              tilesetListThumb(tileset),
               el("span", { children: [el("strong", { text: shortTilesetLabel(tileset.name) }), el("small", { text: `${tileset.tileSize}×${tileset.tileSize} · ${tileset.count.toLocaleString()}칸` })] }),
             ],
           }));
@@ -158,17 +159,6 @@ function shortTilesetLabel(name: string): string {
     .replace(/\s*·\s*Ivan Voirol\s*\([^)]*\)/u, "")
     .replace(/\s*ChipSet$/u, "")
     .trim();
-}
-
-function thumbAnchor(id: string): string {
-  if (id === "forest_harmony") return "0% 42%";
-  if (id === "tibo_interior_expanded" || id.startsWith("tileset_") || id.startsWith("interior_")) return "0% 46%";
-  if (id.includes("dungeon")) return "40% 25%";
-  if (id.includes("castle")) return "15% 35%";
-  if (id.includes("scarloxy")) return "45% 0%";
-  if (id.includes("modern")) return "12% 25%";
-  if (id.includes("lpc")) return "0% 8%";
-  return "0% 0%";
 }
 
 /**
