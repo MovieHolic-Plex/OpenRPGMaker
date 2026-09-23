@@ -154,6 +154,18 @@ function createWebSearchTool(options: {
 /** Shared exact model resolution for Pi and completion requests. */
 export const resolvePiModel = resolveOhMyPiModel;
 
+/** pi-agent-core 가 실패한 도구 결과에 싣는 첫 텍스트(인자 검증 오류·throw 메시지). */
+function toolErrorText(result: unknown): string {
+  const content = (result as { content?: unknown } | undefined)?.content;
+  if (!Array.isArray(content)) return "";
+  const part = content.find((entry): entry is { type: "text"; text: string } => !!entry && typeof entry === "object" && (entry as { type?: unknown }).type === "text" && typeof (entry as { text?: unknown }).text === "string");
+  return part ? trimText(part.text.trim(), 300) : "";
+}
+
+function withErrorDetail(summary: string, detail: string): string {
+  return detail ? `${summary}: ${detail}` : summary;
+}
+
 function trimText(value: unknown, max: number): string {
   const text = typeof value === "string" ? value : JSON.stringify(value) ?? "";
   return text.length > max ? `${text.slice(0, max)}…` : text;
@@ -446,7 +458,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         id: String(event.toolCallId ?? ""),
         name,
         ok: !event.isError && (record?.ok ?? true),
-        summary: publicationFailed ? "변경 적용 실패 또는 실행 중단" : record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
+        // 실패 사유를 요약에 싣는다 — 일반 문구만 남기면 녹화(tools.jsonl)로 원인을 알 수 없었다
+        // (r0735: rename_switch·set_build_spec 의 인자 오류, show_map_region 의 이미지 경로 부재).
+        summary: withErrorDetail(
+          publicationFailed ? "변경 적용 실패 또는 실행 중단" : record?.summary ?? (event.isError ? "실행 실패(인자 검증 또는 예외)" : ""),
+          event.isError && (publicationFailed || !record) ? toolErrorText(event.result) : "",
+        ),
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
