@@ -104,7 +104,7 @@ export function createPiRunRecorder(dir: string): PiRunRecorder {
           summary: result ? result.summary : event.summary,
           registry: Boolean(record),
           warnings: resultWarnings(result),
-          issues: result?.issues ?? [],
+          issues: (result?.issues ?? []).slice(0, 30),
           ...(result?.diff ? { diff: result.diff } : {}),
           ...(result?.data !== undefined ? { data: clip(result.data) } : {}),
           startedAt: start?.at ?? Date.now(),
