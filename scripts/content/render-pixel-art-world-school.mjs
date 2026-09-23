@@ -46,15 +46,28 @@ for (const pack of packs) {
   const source = PNG.sync.read(bytes);
   if (source.width !== pack.width || source.height !== pack.height) throw Error(`Dimension mismatch: ${pack.filename}`);
   for (const scene of pack.scenes) {
+    // Lower cells have no backing layer: reject transparent fragments before rendering.
+    for (const tile of new Set(scene.lowerTiles)) {
+      if (tile < 0) throw Error(`Missing floor in ${scene.id}`);
+      for (let py = 0; py < 32; py++) for (let px = 0; px < 32; px++) {
+        const alpha = source.data[((Math.floor(tile / 8) * 32 + py) * source.width + tile % 8 * 32 + px) * 4 + 3];
+        if (alpha !== 255) throw Error(`Transparent lower tile ${tile} in ${scene.id}; keep its floor and move fragment to upper`);
+      }
+    }
     const good = render(source, scene);
     await writeFile(join(output, `${scene.id}.png`), PNG.sync.write(good));
     const bad = structuredClone(scene);
-    // Real faults: remove one blackboard bottom tile; put a desk at the door approach;
-    // move another desk fragment to lower, visibly erasing its floor.
-    bad.upperTiles[2 * scene.width + 7] = -1;
-    bad.upperTiles[18 * scene.width + 8] = 256;
-    bad.upperTiles[7 * scene.width + 3] = -1;
-    bad.lowerTiles[7 * scene.width + 3] = 256;
+    // Use real occupied cells and the scene's own entrance, irrespective of room size.
+    const missing = scene.upperTiles.findIndex(tile => tile >= 0);
+    const moved = scene.upperTiles.findIndex((tile, index) => tile >= 0 && scene.passableTiles.includes(scene.lowerTiles[index]));
+    const entry = scene.approachCells[0];
+    const obstruction = scene.upperTiles[missing];
+    bad.upperTiles[missing] = -1;
+    bad.upperTiles[entry.y * scene.width + entry.x] = obstruction;
+    if (moved >= 0) {
+      bad.lowerTiles[moved] = scene.upperTiles[moved];
+      bad.upperTiles[moved] = -1;
+    }
     const errors = differences(scene, bad);
     const incorrect = render(source, bad);
     const comparison = new PNG({ width: good.width * 2 + 8, height: good.height });
@@ -62,7 +75,7 @@ for (const pack of packs) {
     PNG.bitblt(incorrect, comparison, 0, 0, incorrect.width, incorrect.height, good.width + 8, 0);
     await writeFile(join(output, `${scene.id}-comparison.png`), PNG.sync.write(comparison));
     await writeFile(join(output, `${scene.id}-arrays.json`), JSON.stringify({ expected: scene, incorrect: bad, errors }, null, 2) + '\n');
-    report.push({ pack: pack.id, sourcePath, sha256: pack.sha256, scene: scene.id, dimensions: [good.width, good.height], errors, limitation: 'Source-pixel fixture only; no live project write, runtime event execution or AI success-rate claim.' });
+    report.push({ pack: pack.id, sourcePath, sha256: pack.sha256, scene: scene.id, dimensions: [good.width, good.height], entry: scene.approachCells[0], spawn: { ...scene.approachCells[1], facing: 'north' }, errors, limitation: 'Source-pixel fixture only; no live project write, runtime event execution or AI success-rate claim.' });
   }
   // Inspect every complete rectangle on real floor; no index diagrams or synthetic blocks.
   const tilesAcross = 20, gutter = 1;

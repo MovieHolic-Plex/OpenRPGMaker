@@ -151,29 +151,29 @@
     "scenePlans": [
       {
         "id": "school-classroom-north",
-        "name": "12석 교실 · 북쪽 칠판",
-        "width": 17,
-        "height": 20,
+        "name": "12석 교실 · 조밀한 6열 배치",
+        "width": 14,
+        "height": 13,
         "baseTile": 6,
         "lowerRects": [
           {
             "x": 0,
             "y": 0,
-            "width": 17,
+            "width": 14,
             "height": 1,
             "tile": 41
           },
           {
             "x": 0,
             "y": 1,
-            "width": 17,
+            "width": 14,
             "height": 1,
             "tile": 49
           },
           {
             "x": 0,
             "y": 2,
-            "width": 17,
+            "width": 14,
             "height": 1,
             "tile": 57
           },
@@ -181,26 +181,26 @@
             "x": 0,
             "y": 3,
             "width": 1,
-            "height": 17,
+            "height": 10,
             "tile": 2
           },
           {
-            "x": 16,
+            "x": 13,
             "y": 3,
             "width": 1,
-            "height": 17,
+            "height": 10,
             "tile": 2
           },
           {
             "x": 1,
-            "y": 19,
-            "width": 7,
+            "y": 12,
+            "width": 5,
             "height": 1,
             "tile": 1
           },
           {
-            "x": 10,
-            "y": 19,
+            "x": 7,
+            "y": 12,
             "width": 6,
             "height": 1,
             "tile": 1
@@ -209,8 +209,8 @@
         "placements": [
           {
             "recipeId": "school-blackboard",
-            "x": 7,
-            "y": 1
+            "x": 5,
+            "y": 0
           },
           {
             "recipeId": "school-window",
@@ -219,28 +219,33 @@
           },
           {
             "recipeId": "school-window",
-            "x": 13,
+            "x": 10,
             "y": 0
           },
           {
-            "recipeId": "school-notice",
-            "x": 11,
+            "recipeId": "school-clock",
+            "x": 9,
             "y": 1
           },
           {
-            "recipeId": "school-clock",
-            "x": 5,
+            "recipeId": "school-notice",
+            "x": 4,
             "y": 1
           },
           {
             "recipeId": "school-lectern",
-            "x": 8,
+            "x": 6,
             "y": 3
           },
           {
-            "recipeId": "school-plant",
-            "x": 15,
-            "y": 17
+            "recipeId": "school-student-desk",
+            "x": 1,
+            "y": 6
+          },
+          {
+            "recipeId": "school-chair-back",
+            "x": 1,
+            "y": 8
           },
           {
             "recipeId": "school-student-desk",
@@ -254,12 +259,22 @@
           },
           {
             "recipeId": "school-student-desk",
-            "x": 6,
+            "x": 5,
             "y": 6
           },
           {
             "recipeId": "school-chair-back",
-            "x": 6,
+            "x": 5,
+            "y": 8
+          },
+          {
+            "recipeId": "school-student-desk",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "school-chair-back",
+            "x": 7,
             "y": 8
           },
           {
@@ -274,114 +289,102 @@
           },
           {
             "recipeId": "school-student-desk",
-            "x": 12,
+            "x": 11,
             "y": 6
           },
           {
             "recipeId": "school-chair-back",
-            "x": 12,
+            "x": 11,
             "y": 8
           },
           {
             "recipeId": "school-student-desk",
-            "x": 3,
-            "y": 10
+            "x": 1,
+            "y": 9
           },
           {
             "recipeId": "school-chair-back",
-            "x": 3,
-            "y": 12
-          },
-          {
-            "recipeId": "school-student-desk",
-            "x": 6,
-            "y": 10
-          },
-          {
-            "recipeId": "school-chair-back",
-            "x": 6,
-            "y": 12
-          },
-          {
-            "recipeId": "school-student-desk",
-            "x": 9,
-            "y": 10
-          },
-          {
-            "recipeId": "school-chair-back",
-            "x": 9,
-            "y": 12
-          },
-          {
-            "recipeId": "school-student-desk",
-            "x": 12,
-            "y": 10
-          },
-          {
-            "recipeId": "school-chair-back",
-            "x": 12,
-            "y": 12
+            "x": 1,
+            "y": 11
           },
           {
             "recipeId": "school-student-desk",
             "x": 3,
-            "y": 14
+            "y": 9
           },
           {
             "recipeId": "school-chair-back",
             "x": 3,
-            "y": 16
+            "y": 11
           },
           {
             "recipeId": "school-student-desk",
-            "x": 6,
-            "y": 14
+            "x": 5,
+            "y": 9
           },
           {
             "recipeId": "school-chair-back",
-            "x": 6,
-            "y": 16
+            "x": 5,
+            "y": 11
+          },
+          {
+            "recipeId": "school-student-desk",
+            "x": 7,
+            "y": 9
+          },
+          {
+            "recipeId": "school-chair-back",
+            "x": 7,
+            "y": 11
           },
           {
             "recipeId": "school-student-desk",
             "x": 9,
-            "y": 14
+            "y": 9
           },
           {
             "recipeId": "school-chair-back",
             "x": 9,
-            "y": 16
+            "y": 11
           },
           {
             "recipeId": "school-student-desk",
-            "x": 12,
-            "y": 14
+            "x": 11,
+            "y": 9
           },
           {
             "recipeId": "school-chair-back",
-            "x": 12,
-            "y": 16
+            "x": 11,
+            "y": 11
           }
         ],
         "approachCells": [
           {
-            "x": 8,
-            "y": 19
+            "x": 6,
+            "y": 12
           },
           {
-            "x": 8,
-            "y": 18
+            "x": 6,
+            "y": 11
           },
           {
-            "x": 8,
+            "x": 6,
             "y": 5
           },
           {
+            "x": 2,
+            "y": 7
+          },
+          {
             "x": 4,
             "y": 7
           },
           {
-            "x": 7,
+            "x": 6,
+            "y": 7
+          },
+          {
+            "x": 8,
             "y": 7
           },
           {
@@ -389,40 +392,32 @@
             "y": 7
           },
           {
-            "x": 13,
+            "x": 12,
             "y": 7
           },
           {
-            "x": 4,
-            "y": 11
-          },
-          {
-            "x": 7,
-            "y": 11
-          },
-          {
-            "x": 10,
-            "y": 11
-          },
-          {
-            "x": 13,
-            "y": 11
+            "x": 2,
+            "y": 10
           },
           {
             "x": 4,
-            "y": 15
+            "y": 10
           },
           {
-            "x": 7,
-            "y": 15
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 8,
+            "y": 10
           },
           {
             "x": 10,
-            "y": 15
+            "y": 10
           },
           {
-            "x": 13,
-            "y": 15
+            "x": 12,
+            "y": 10
           }
         ],
         "passableTiles": [
@@ -436,7 +431,7 @@
           49,
           57
         ],
-        "notes": "북쪽 벽 3행 → 나무 테두리 → 칠판·창·시계 → 교탁 → 학생 책상 → 의자 순서. 학생 책상 원점 x=3+3c(c=0..3), y=6+4r(r=0..2); 의자는 (x,y+2). 책상/의자 사이에 같은 상위 칸 겹침 없음. 접근은 책상 오른쪽 (x+1,y+1). 남쪽 (8,19),(9,19)는 출입구, 내부 (8,18)는 접근칸. 아래/상위 배열은 행 우선이며 -1은 투명 공백이다. 벽은 하위이면서 차단, 바닥 6만 통과, 모든 상위 부품은 차단한다. 의자 앉기·문 열기·맵 전이는 자동 생성하지 않는다. 왼쪽과 오른쪽 테두리는 일반 목재 타일이며 오토타일 천장으로 주장하지 않는다."
+        "notes": "14×13칸, 북쪽 3행 벽. 기존17×20보다46.5% 작다. 책상 원점 (1+2*c,6+3*r), c=0..5,r=0..1; 의자 (x,y+2), 접근칸 (x+1,y+1). 책상2칸과 의자1칸을 자르거나 겹치지 않는다. 세로 통로 x=2,4,6,8,10,12와 앞 가로 통로 y=5를 모두 비운다. 교탁 (6,3) 앞 (6,5). 남쪽 출입구(6,12), 권장 스폰(6,11), 북쪽을 바라본다. 벽·나무 테두리는 하위차단, 6만 통과, 상위 부품은 차단. 문/앉기/이동 이벤트는 별도 저작한다."
       }
     ]
   },
@@ -543,6 +538,550 @@
           "height": 2
         },
         "facing": "south"
+      }
+    ]
+  },
+  {
+    "id": "paw-school-special",
+    "name": "Pixel Art World · 학교 특별교실",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-school02.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-I02.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Schl-I02.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "aafbf9b4292d7c5d34587e4e25dfc4c5cd9818d01a6ce3b05b1c3571735f16da",
+    "checkedAt": "2026-09-24",
+    "floorTile": 6,
+    "notes": "공식 특별교실 원본에서 보건실·과학실 2개의 완성 배열을 검토했다. 음악실·미술실·체육관 전체는 미검토다. 학교 기본 시트와 같은 타일번호라도 창·벽·의료도구 위치가 다르므로 반드시 이 시트의 ID만 쓴다. 문·벽 오토타일은 별도 파일. 과학실 붙박이 카운터만 검증한 불투명 일반 타일을 하위차단으로 놓고 실험도구를 상위에 놓는다. 반투명 독립 실험대를 하위에 옮기지 않는다.",
+    "recipes": [
+      {
+        "id": "special-window",
+        "name": "특별교실 3칸 창과 창 아래 벽",
+        "sourceRect": {
+          "x": 0,
+          "y": 5,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-medical-cabinet",
+        "name": "의약품 수납장과 위 화분",
+        "sourceRect": {
+          "x": 6,
+          "y": 8,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-scale",
+        "name": "보건실 체중계",
+        "sourceRect": {
+          "x": 3,
+          "y": 9,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-bed",
+        "name": "가로 진찰 침대",
+        "sourceRect": {
+          "x": 5,
+          "y": 14,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-screen",
+        "name": "진찰실 가림막",
+        "sourceRect": {
+          "x": 3,
+          "y": 16,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-eye-chart",
+        "name": "시력표",
+        "sourceRect": {
+          "x": 4,
+          "y": 27,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-worktable",
+        "name": "흰색 독립 실험대",
+        "sourceRect": {
+          "x": 0,
+          "y": 42,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-stool",
+        "name": "파란 실험용 의자",
+        "sourceRect": {
+          "x": 5,
+          "y": 33,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-skeleton",
+        "name": "전신 골격 표본",
+        "sourceRect": {
+          "x": 1,
+          "y": 14,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-bookcase",
+        "name": "과학 자료 책장",
+        "sourceRect": {
+          "x": 2,
+          "y": 18,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-microscope",
+        "name": "현미경",
+        "sourceRect": {
+          "x": 2,
+          "y": 44,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-specimen",
+        "name": "원통 표본병",
+        "sourceRect": {
+          "x": 0,
+          "y": 44,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-test-tubes",
+        "name": "시험관대",
+        "sourceRect": {
+          "x": 0,
+          "y": 46,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-plant",
+        "name": "실내 화분",
+        "sourceRect": {
+          "x": 7,
+          "y": 34,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "special-counter-front",
+        "name": "붙박이 실험대 4칸 전면",
+        "sourceRect": {
+          "x": 4,
+          "y": 43,
+          "width": 4,
+          "height": 1
+        },
+        "facing": "south"
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "school-nurse-compact",
+        "name": "2병상 보건실",
+        "width": 11,
+        "height": 11,
+        "baseTile": 6,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 11,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 11,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 2
+          },
+          {
+            "x": 10,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 2
+          },
+          {
+            "x": 1,
+            "y": 10,
+            "width": 4,
+            "height": 1,
+            "tile": 1
+          },
+          {
+            "x": 6,
+            "y": 10,
+            "width": 4,
+            "height": 1,
+            "tile": 1
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "special-window",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "special-medical-cabinet",
+            "x": 8,
+            "y": 0
+          },
+          {
+            "recipeId": "special-eye-chart",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "recipeId": "special-scale",
+            "x": 6,
+            "y": 1
+          },
+          {
+            "recipeId": "special-bed",
+            "x": 1,
+            "y": 4
+          },
+          {
+            "recipeId": "special-bed",
+            "x": 1,
+            "y": 7
+          },
+          {
+            "recipeId": "special-screen",
+            "x": 4,
+            "y": 4
+          },
+          {
+            "recipeId": "special-worktable",
+            "x": 7,
+            "y": 5
+          },
+          {
+            "recipeId": "special-stool",
+            "x": 8,
+            "y": 7
+          },
+          {
+            "recipeId": "special-plant",
+            "x": 9,
+            "y": 8
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 5,
+            "y": 10
+          },
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 8
+          },
+          {
+            "x": 6,
+            "y": 3
+          },
+          {
+            "x": 8,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 7
+          }
+        ],
+        "passableTiles": [
+          6
+        ],
+        "lowerTileIds": [
+          1,
+          2,
+          6,
+          17,
+          25,
+          33
+        ],
+        "notes": "11×11칸. 남쪽 출입구(5,10), 스폰(5,9), 북쪽을 바라본다. 왼쪽 가로 침대 원점(1,4),(1,7), 진찰 접근은(3,5),(3,8). 가림막은(4,4)2×2로 침대 오른쪽 시야를 가리되 x=3의 병상 접근 통로와 y=6의 가로 통로를 막지 않는다. 오른쪽 상담 실험대(7,5), 의자(8,7), 상담 접근(7,7). 체중계 접근(6,3). 원본의 전신 침대2×2 전체 사용. 시력표·침대·체중계는 그림만 제공하며 회복/검사 이벤트는 별도다."
+      },
+      {
+        "id": "school-lab-compact",
+        "name": "실험대 2조 과학실",
+        "width": 13,
+        "height": 11,
+        "baseTile": 6,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 13,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 13,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 13,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 2
+          },
+          {
+            "x": 12,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 2
+          },
+          {
+            "x": 1,
+            "y": 10,
+            "width": 5,
+            "height": 1,
+            "tile": 1
+          },
+          {
+            "x": 7,
+            "y": 10,
+            "width": 5,
+            "height": 1,
+            "tile": 1
+          },
+          {
+            "x": 5,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 340
+          },
+          {
+            "x": 6,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 341
+          },
+          {
+            "x": 7,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 342
+          },
+          {
+            "x": 8,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 343
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "special-window",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "recipeId": "special-bookcase",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "special-skeleton",
+            "x": 11,
+            "y": 1
+          },
+          {
+            "recipeId": "special-worktable",
+            "x": 2,
+            "y": 6
+          },
+          {
+            "recipeId": "special-worktable",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "special-stool",
+            "x": 3,
+            "y": 5
+          },
+          {
+            "recipeId": "special-stool",
+            "x": 3,
+            "y": 8
+          },
+          {
+            "recipeId": "special-stool",
+            "x": 8,
+            "y": 5
+          },
+          {
+            "recipeId": "special-stool",
+            "x": 8,
+            "y": 8
+          },
+          {
+            "recipeId": "special-microscope",
+            "x": 5,
+            "y": 3
+          },
+          {
+            "recipeId": "special-specimen",
+            "x": 6,
+            "y": 3
+          },
+          {
+            "recipeId": "special-test-tubes",
+            "x": 8,
+            "y": 3
+          },
+          {
+            "recipeId": "special-counter-front",
+            "x": 5,
+            "y": 4
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 6,
+            "y": 9
+          },
+          {
+            "x": 4,
+            "y": 8
+          },
+          {
+            "x": 9,
+            "y": 8
+          },
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          },
+          {
+            "x": 9,
+            "y": 5
+          },
+          {
+            "x": 10,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "passableTiles": [
+          6
+        ],
+        "lowerTileIds": [
+          1,
+          2,
+          6,
+          17,
+          25,
+          33,
+          340,
+          341,
+          342,
+          343
+        ],
+        "notes": "13×11칸. 남쪽 출입구(6,10), 스폰(6,9), 북쪽을 바라본다. 독립 실험대3×2는(2,6),(7,6)에 상위전체 배열. 파란 의자는(3,5),(3,8),(8,5),(8,8)이고 통로는 y=9 및 x=1,5,6,10이다. 북쪽 붙박이 카운터의 불투명 상판340,341,342,343은 y=3,x=5..8의 하위차단이다. 투명 전면348,349,350,351은 같은x,y=4의 상위에 두어 하위 바닥6을 보존한다. 뒤에 벽이 붙는 카운터이므로 독립 테이블 상단의 투명 조각332..335는 사용하지 않는다. 현미경(5,3),표본병(6,3),시험관(8,3)은 불투명 상판 위의 상위차단이다. 투명 독립 실험대336..338/344..346 및 전면348..351은 절대로 하위로 옮기지 않는다. 실험 상호작용·수업 이벤트는 별도다."
       }
     ]
   }
