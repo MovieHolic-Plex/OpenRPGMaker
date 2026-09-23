@@ -356,6 +356,378 @@ export const REVIEWED_PLACE_INDEX: readonly ReviewedPlaceSummary[] = [
       "공용 장소"
     ],
     "tilesetId": "purpose_ten:easyrpg_chipset_combined_town"
+  },
+  {
+    "id": "shared_authored-map_five_more_1_20260921",
+    "name": "골목 목욕탕",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_five_more_2_20260921",
+    "name": "마을 서고",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_five_more_3_20260921",
+    "name": "직조·재봉 공방",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_five_more_4_20260921",
+    "name": "철물 대장간",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_five_more_5_20260921",
+    "name": "골목 주점",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_homes_inn_1_20260921",
+    "name": "어부의 집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주거"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_homes_inn_2_20260921",
+    "name": "목공의 집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주거"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_homes_inn_3_20260921",
+    "name": "노부부의 단칸집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주거"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_homes_inn_4_20260921",
+    "name": "버드나무 여관",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:숙박"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_1_20260921",
+    "name": "항구 지도제작소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_2_20260921",
+    "name": "골목 목공소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_3_20260921",
+    "name": "색실 직물 상회",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_4_20260921",
+    "name": "음악가의 연습소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_5_20260921",
+    "name": "어린아이가 있는 집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_6_20260921",
+    "name": "여행자 길드",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_7_20260921",
+    "name": "약초 치료원",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_8_20260921",
+    "name": "강변 양조장",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_9_20260921",
+    "name": "마구와 여행장비점",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_places_five_1_20260921",
+    "name": "골목 빵집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_trade_rooms_20260921"
+  },
+  {
+    "id": "shared_authored-map_places_five_2_20260921",
+    "name": "동네 세탁소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_places_five_3_20260921",
+    "name": "작은 약방",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_trade_rooms_20260921"
+  },
+  {
+    "id": "shared_authored-map_places_five_4_20260921",
+    "name": "야간 경비 초소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_places_five_5_20260921",
+    "name": "작은 예배당",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_10_20260921",
+    "name": "야간 경비대 숙소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_11_20260921",
+    "name": "마을 문서보관소",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_dozen_rooms_12_20260921",
+    "name": "여행자의 작은 예배당",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:시설"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_variety_house_1_20260921",
+    "name": "텃밭지기의 작은 집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_variety_house_2_20260921",
+    "name": "실 잣는 부부의 집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_variety_house_3_20260921",
+    "name": "약초꾼의 작업 겸 살림집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_variety_house_4_20260921",
+    "name": "떠돌이 악사의 집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_potter_cohesive_20260921"
+  },
+  {
+    "id": "shared_authored-map_variety_house_5_20260921",
+    "name": "곡물 상인의 가족집",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_interior_materials_20260921"
   }
 ];
 

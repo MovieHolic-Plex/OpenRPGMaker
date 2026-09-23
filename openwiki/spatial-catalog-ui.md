@@ -162,3 +162,8 @@ canonical spatial 프로젝트는 일반 projects upsert가 거부되므로 `pub
 동시 카탈로그 로딩과 이미지 실패 후 캐시 복구를 확인한다. 결과는
 `output/evidence/place-previews/proof.json`, 화면은 `all-places-scrolled.png`.
 저장 없는 최소 fixture를 사용하며 프로젝트 호스트/정본 콘텐츠를 수정하지 않는다.
+
+
+### 2026-09-24 — bundled fallback for all 31 interiors
+
+The same 31 shared root IDs and their 33 floor rasters are also included in `reviewedPlaces/catalog.json` and `reviewedPlaceIndex.ts`, with real map previews under `public/assets/reviewed-places/shared_*.png`. This makes the reviewed set available in new projects even on the released catalog path that does not load the host-wide SQLite extension. Dynamic shared enumeration deduplicates by these same IDs. The three-floor inn is one root with three floor children; all original lower/upper tile arrays are retained.
