@@ -1,4 +1,5 @@
 import sharedVillageObjects from "./sharedVillageObjects.json";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import forestHarmony from "./forestHarmonyTileset.json";
 import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
@@ -207,7 +208,8 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   }
   for (const asset of Object.values(project?.assets.uploaded ?? {})) {
     // 번들 캐릭셋과 같은 규약 — 원본은 raw 키로 싣고, asset.id 는 색상 키를 뺀 캔버스가 가진다.
-    if (asset.kind === "charset") scene.load.image(rawCharsetTextureKey(asset.id), asset.dataUrl);
+    if (asset.kind === "charset") scene.load.image(rawCharsetTextureKey(asset.id), uploadedAssetUrl(asset));
+    else if (asset.kind === "monster") scene.load.image(asset.id, uploadedAssetUrl(asset));
   }
   for (const asset of FARMING_CROP_SPRITE_ASSETS) {
     if (usedTextures && !usedTextures.has(asset.id)) continue;
@@ -454,7 +456,7 @@ export function ensureUploadedCharsetTextures(
     if (scene.textures.exists(rawKey) || inFlight.has(rawKey)) continue;
     inFlight.add(rawKey);
     queued.push(rawKey);
-    scene.load.image(rawKey, asset.dataUrl);
+    scene.load.image(rawKey, uploadedAssetUrl(asset));
   }
   if (queued.length === 0) return;
   scene.load.once("complete", () => {

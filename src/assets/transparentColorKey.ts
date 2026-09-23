@@ -39,6 +39,8 @@ export function normalizeRgbHexColor(value: string): string | null {
 
 export function applyTransparentColorKey(pixels: Uint8ClampedArray): RgbaColor {
   const key = readTopLeftPixel(pixels);
+  // An already transparent corner has no background color to infer.
+  if (key.a === 0) return key;
   applyTransparentColorKeys(pixels, [key]);
   return key;
 }

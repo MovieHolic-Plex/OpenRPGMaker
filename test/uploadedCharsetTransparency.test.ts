@@ -1,3 +1,5 @@
+import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { setUploadedAssetResolver } from "@/project/persistence/assetAccessors";
 /** @vitest-environment happy-dom */
 // 업로드한 캐릭터셋(charset)도 번들 캐릭터셋과 **같은 투명색 파이프라인**을 타야 한다.
 // 원본 RM2000 캐릭셋은 배경이 단색(청록/마젠타)이고 알파가 없다 — 색상 키를 안 빼면
@@ -133,10 +135,29 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  setUploadedAssetResolver(null);
   vi.restoreAllMocks();
 });
 
 describe("uploaded charset transparency", () => {
+  it("loads persisted monster art and uses the full image for field events", () => {
+    const asset = uploadedCharset({ kind: "monster" });
+    const project = projectWithUploadedCharset(asset);
+    const { scene, queued } = fakeScene();
+    loadBundledAssets(scene, project);
+    expect(queued).toContainEqual({ key: asset.id, url: CHARSET_DATA_URL });
+    expect(resolveEventSpriteTexture(project, asset.id, 0)).toEqual({ texture: asset.id, frame: "__BASE", fitSize: 32 });
+  });
+  it.each(["preload", "late"])("loads file-backed charsets after SQLite reopen (%s)", (phase) => {
+    const ref = { sha256: "a".repeat(64), mime: "image/png", bytes: 100, extension: "png" };
+    const url = "/__oprn/assets/" + ref.sha256 + ".png";
+    setUploadedAssetResolver({ url: () => url, bytes: async () => new Uint8Array() });
+    const project = projectWithUploadedCharset(uploadedCharset({ dataUrl: undefined, ref }));
+    const { scene, queued } = fakeScene();
+    if (phase === "preload") loadBundledAssets(scene, project);
+    else ensureUploadedCharsetTextures(scene, project);
+    expect(queued).toContainEqual({ key: rawCharsetTextureKey(CHARSET_ID), url });
+  });
   it("queues an uploaded charset under the raw key so the color key can be applied before use", () => {
     const { scene, queued } = fakeScene();
 

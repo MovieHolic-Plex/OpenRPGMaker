@@ -78,6 +78,6 @@ function referencedTroopIds(project: Project): Set<string> {
     }
   };
   walk(project.maps);
-  walk(project.database.commonEvents);
+  walk(project.commonEvents);
   return ids;
 }

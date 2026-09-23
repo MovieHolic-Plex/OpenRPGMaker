@@ -226,6 +226,7 @@
   isolation: isolate;
 }
 .cinematic-sequence {
+  box-sizing: border-box;
   background: #000;
   font-family: var(--runtime-ui-font, system-ui, sans-serif);
   display: flex;

@@ -314,9 +314,6 @@ describe("edit scene event rendering", () => {
 
     expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0x000000, alpha: 0.45 });
     expect(marker?.stroke).toMatchObject({ lineWidth: 2, color: 0xffffff, alpha: 0.95 });
-    // 2026-09-21 자동 배율(cc3a2fc72) — 캐릭터셋 NPC는 발밑(rect.bottom+1)=48 에 세워진다.
-    // 이 기대값은 그 이전(타일 중앙 40) 시절의 것이다. 같은 스펙이 본 변경 없이도
-    // 동일하게 실패함을 stash A/B 로 확인했다(기준선 실패).
     expect(sprite).toMatchObject({ x: 40, y: 48, texture: "tex_easyrpg_charset_people1", frame: 0 });
     expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
   });
@@ -377,7 +374,7 @@ describe("edit scene event rendering", () => {
   });
 
   it.each<Layer>(["lower", "upper"])(
-    "renders events as compact E badges on the %s tile layer",
+    "keeps NPC sprites visible on the %s tile layer",
     (layer) => {
       const result = renderSelectedNpcEvent(layer);
       const objects = flattenObjects(result.overlayObjects);
@@ -396,11 +393,11 @@ describe("edit scene event rendering", () => {
       );
 
       expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0xffffff, alpha: 0.08 });
-      // 2026-09-21 레이어 분리 — 타일 레이어에서 배지는 절반 밝기(0.86 × 0.45)로 내려간다.
-      expect(badge).toMatchObject({ alpha: 0.387 });
-      expect(badgeBack?.stroke).toMatchObject({ lineWidth: 1, color: 0xcbd5e1, alpha: 0.72 });
-      expect(badgeText).toMatchObject({ origin: [0.5, 0.5] });
-      expect(sprite).toBeUndefined();
+      // Character artwork stays visible while painting tiles.
+      expect(badge).toBeUndefined();
+      expect(badgeBack).toBeUndefined();
+      expect(badgeText).toBeUndefined();
+      expect(sprite).toBeDefined();
       expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });
     }
   );
