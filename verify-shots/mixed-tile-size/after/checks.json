@@ -1,0 +1,68 @@
+{
+  "label": "after",
+  "date": "2026-09-23T21:04:52.749Z",
+  "observations": {
+    "village16": {
+      "map": "village16",
+      "tileSize": 16,
+      "canvas": {
+        "width": 640,
+        "height": 480
+      },
+      "zoom": 2,
+      "visibleTiles": {
+        "x": 20,
+        "y": 15
+      },
+      "player": {
+        "scale": 1,
+        "frame": [
+          24,
+          32
+        ],
+        "screenPx": [
+          24,
+          32
+        ]
+      },
+      "npcs": [
+        1,
+        1,
+        1
+      ]
+    },
+    "meadow32": {
+      "map": "meadow32",
+      "tileSize": 32,
+      "canvas": {
+        "width": 640,
+        "height": 480
+      },
+      "zoom": 1,
+      "visibleTiles": {
+        "x": 20,
+        "y": 15
+      },
+      "player": {
+        "scale": 2,
+        "frame": [
+          24,
+          32
+        ],
+        "screenPx": [
+          24,
+          32
+        ]
+      },
+      "npcs": [
+        2
+      ]
+    }
+  },
+  "errors": [],
+  "segment": {
+    "start": 10.241,
+    "end": 17.345
+  },
+  "status": "passed"
+}

@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
@@ -542,7 +543,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
       frame
     );
     placeCharacterSprite(marker, view.priority);
-    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode));
+    marker.setScale(eventSpriteScale(spriteTexture, marker, view.page?.graphic.scale, mapTileSize(scene.map), view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
     scene.eventSprites.set(event.id, marker);
   }
   syncForageWarnings(scene);

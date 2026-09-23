@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   applyCameraControl,
   applyStoredCameraState,
@@ -9,6 +9,7 @@ import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { createSaveSnapshot, applySaveSnapshot } from "@/player/saveSlots";
 import { rebindEventFollowCamera } from "@/player/playSceneMapRuntime";
+import { store } from "@/project/store";
 
 type CameraListener = () => void;
 
@@ -225,5 +226,54 @@ describe("이벤트 추적 카메라는 스프라이트 재생성 뒤 다시 걸
 
     expect(scene.camera.followTarget).toBeNull();
     expect(scene.camera.centerCalls).toEqual([]);
+  });
+});
+
+describe("타일 크기가 섞인 프로젝트의 카메라", () => {
+  class BoundsCameraStub extends CameraStub {
+    bounds: readonly number[] = [];
+    override setBounds(...args: number[]): void {
+      this.bounds = args;
+    }
+  }
+
+  function mixedScene(tileSize: number, density: number) {
+    const project = createBlankProject();
+    const start = project.maps[project.startMapId]!;
+    const other = { ...structuredClone(start), id: "map_32", tileSize: 32, width: 12, height: 8 };
+    project.maps = { ...project.maps, map_16b: { ...structuredClone(start), id: "map_16b" }, map_32: other };
+    vi.spyOn(store, "getCurrent").mockReturnValue(project);
+    const camera = new BoundsCameraStub();
+    camera.width = 320 * density;
+    camera.height = 240 * density;
+    const scene = cameraScene(camera);
+    Object.assign(scene, {
+      map: tileSize === 32 ? other : start,
+      game: { registry: { get: (key: string) => (key === "playPixelDensity" ? density : undefined) } },
+    });
+    return { scene, camera };
+  }
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it("모든 맵이 기준(16px) 칸 수를 보여준다 — 저작 배율은 그 위에 곱해진다", () => {
+    const village = mixedScene(16, 2);
+    applyStoredCameraState(village.scene);
+    expect(village.camera.zoom).toBe(2);
+
+    const dungeon = mixedScene(32, 2);
+    applyStoredCameraState(dungeon.scene);
+    expect(dungeon.camera.zoom).toBe(1);
+
+    dungeon.scene.session.camera = { mode: "follow", target: { kind: "player" }, zoom: 1.5 };
+    applyStoredCameraState(dungeon.scene);
+    expect(dungeon.camera.zoom).toBe(1.5);
+  });
+
+  it("경계는 보이는 세계 크기 기준이다 — 작은 맵은 가운데, 여백은 배율로 나눈 값", () => {
+    const { scene, camera } = mixedScene(32, 2);
+    applyStoredCameraState(scene);
+    // 640x480 캔버스, 배율 1 → 세계 640x480 이 보인다. 맵은 384x256 이라 양옆 128, 위아래 112 여백.
+    expect(camera.bounds).toEqual([-128, -112, 640, 480]);
   });
 });

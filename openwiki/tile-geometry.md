@@ -18,7 +18,8 @@
 - 캐릭터 발밑은 `(x + 0.5) * size, (y + 1) * size`. 다중 칸 몸체는
   `footprintSpriteX(x, footprint, size)`로 중앙을 구한다. 충돌 판정은 여전히 칸 좌표다.
 - 캐릭터 원본 픽셀 크기와 저작된 배율, px 단위 점프 연출은 별개다. 32px 맵이라고
-  모든 캐릭터와 이펙트를 무조건 두 배 확대하지 않는다.
+  모든 캐릭터와 이펙트를 무조건 두 배 확대하지 않는다. 크기가 섞인 프로젝트의 보정은 아래
+  「타일 크기가 섞인 프로젝트」 절이 정한다.
 
 ## 캐릭터 자동 배율 (2026-09-21)
 
@@ -43,6 +44,31 @@
 `TILE_EDITOR_URL=http://127.0.0.1:<port> node scripts/qa/character-auto-scale-editor.mjs`.
 근거는 `verify-shots/character-auto-scale/SUMMARY.md` 및 `editor-checks.json`.
 최소 엔진 계약 fixture만 사용하며 게임 콘텐츠를 저작하지 않는다.
+
+## 타일 크기가 섞인 프로젝트 (2026-09-24)
+
+`src/project/mapViewScale.ts`가 규칙을 소유한다. 제작자는 맵이 몇 px 칸인지 몰라도 문을 지날 때 화면이 튀지 않아야 한다.
+
+- **기준 칸** `projectReferenceTileSize`: 가장 많은 맵이 쓰는 타일 크기(동률이면 시작 맵, 그다음 작은 쪽).
+  맵 하나를 다른 크기로 들여와도 프로젝트 전체의 보이는 크기가 바뀌지 않는다. `project.maps` 객체로 캐시한다.
+- **카메라**: 저작 배율(프로젝트 기본값·연출 명령) × `밀도 × 기준 / 맵 칸`(`runtimeMapViewZoom`). 모든 맵이
+  기준 맵과 같은 칸 수를 보여준다. 범위 클램프는 저작값에만 건다. 경계는 보이는 세계 크기(canvas / zoom)로 잡는다.
+- **캐릭터**: 자동 배율은 기준 칸에서 정하고(`automaticCharacterScale(frame, 기준)`) 세계에서 `맵 칸 / 기준`배로 그린다
+  (`mapCharacterScale`, `characterRenderScale(..., referenceTileSize)`). 화면 크기가 맵마다 같다. 수동·예전 명시 배율은
+  그 맵 세계 px 의 절대값으로 남는다. 말풍선·데미지 숫자도 같은 세계 배율을 곱한다.
+- **픽셀 밀도** `playPixelDensity`: 기준보다 큰 칸의 맵이 있으면 캔버스를 정수배로 촘촘하게 만든다(최대 3840×2160).
+  16px 기준에 32px 맵이 있으면 캔버스 640×480, 16px 맵은 배율 2·32px 맵은 배율 1 → 양쪽 다 도트 손실 없음.
+  캔버스 CSS 는 논리 해상도라 DOM·레이아웃은 그대로다. registry `playPixelDensity`, 읽기는 `runtimePixelDensity`.
+  화면 고정 레이어(날씨·분위기)는 `canvas / 밀도` 논리 px 로 그리고 `밀도 / zoom` 으로 스케일한다. 캔버스 px 를 DOM 에 옮기는
+  곳(손 칩)은 `worldView` 원점에서 재고 밀도로 나눈다.
+- **한 크기뿐인 프로젝트는 모든 배율이 1** — 32px 프로젝트의 캐릭터 1배, 48px 프로젝트의 2배 결정이 그대로다.
+
+한계: 점프 높이(px)·액션 전투 궤적·지면 표시 반지름 같은 세계 px 상수는 아직 세계 배율을 곱하지 않는다.
+native fit 배경은 세계 px 기준이라 기준보다 큰 칸의 맵에서 상대적으로 작게 보인다.
+
+재현: `MIXED_QA_LABEL=after node scripts/qa/mixed-tile-size-transition.mjs` (16px 공용 마을 → 문 → 32px Slates 초원,
+전용 player.html, 녹화 `verify-shots/mixed-tile-size/<label>/run.webm`, 수치 `checks.json`). 기준선은 같은 스크립트를 변경 전
+체크아웃에서 돌린다. `node scripts/qa/character-auto-scale.mjs` 는 16/32/48 각 1장(시작 32)이라 기준 32 로 0.5/1/1.5 를 본다.
 
 ## 원본 아틀라스와 표시 크기의 구분
 

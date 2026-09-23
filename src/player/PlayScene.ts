@@ -69,6 +69,7 @@ import {
 } from "@/player/playSceneOverlays";
 import { installPlaySceneTestHooks } from "@/player/playSceneTestHooks";
 import { applyStoredCameraState, centerRuntimeCamera, panRuntimeCamera } from "@/player/playSceneCamera";
+import { runtimeMapViewZoom, runtimePixelDensity } from "@/player/runtimeViewScale";
 import { hasSessionCheckpoint, restoreSessionCheckpoint, setSessionCheckpoint, getSessionCheckpoint } from "@/player/checkpoints";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
@@ -404,8 +405,10 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.handSlotChip?.update(store.getCurrent(), this.session, {
       stamina: this.actionCombatState?.config.staminaEnabled ? this.actionCombatState.stamina : undefined,
       staminaMax: ACTION_STAMINA_MAX,
-      playerX: this.player ? (this.player.x - this.cameras.main.scrollX) * this.cameras.main.zoom : undefined,
-      playerY: this.player ? (this.player.y - this.cameras.main.scrollY) * this.cameras.main.zoom : undefined,
+      // 칩은 DOM(논리 px)에 놓인다. Phaser 는 화면 중심 기준으로 확대하므로 scroll 이 아니라
+      // worldView 원점에서 재고, 캔버스 px 를 픽셀 밀도로 나눠 논리 px 로 되돌린다.
+      playerX: this.player ? (this.player.x - this.cameras.main.worldView.x) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
+      playerY: this.player ? (this.player.y - this.cameras.main.worldView.y) * this.cameras.main.zoom / runtimePixelDensity(this) : undefined,
     });
   }
 
@@ -465,7 +468,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   centerCamera(): void {
-    centerRuntimeCamera(this.cameras.main, this.map, this.player);
+    centerRuntimeCamera(this.cameras.main, this.map, this.player, runtimeMapViewZoom(this));
     applyStoredCameraState(this);
     syncWeatherLayer(this);
     installTimeTintLayer(this);

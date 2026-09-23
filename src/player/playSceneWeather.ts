@@ -4,6 +4,7 @@ import { getAudioEngine } from "@/player/audio";
 import type Phaser from "phaser";
 import { ensureFogTexture } from "@/player/weather/fogTexture";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
+import { runtimePixelDensity } from "@/player/runtimeViewScale";
 import type { StepResult } from "@/player/interpreter";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -147,12 +148,16 @@ function renderWeather(scene: PlaySceneContext, params: WeatherParams): void {
   layer.setVisible(plan.active);
   for (const mist of scene.weatherMistLayers ?? []) mist.setVisible(plan.active && plan.kind === "fog");
   if (!plan.active) return;
-  const width = scene.cameras.main.width || PLAY_RESOLUTION.width;
-  const height = scene.cameras.main.height || PLAY_RESOLUTION.height;
-  // Cancel camera zoom for this screen-space effect, including zoom-out edges.
+  const canvasWidth = scene.cameras.main.width || PLAY_RESOLUTION.width;
+  const canvasHeight = scene.cameras.main.height || PLAY_RESOLUTION.height;
+  // Cancel camera zoom for this screen-space effect, including zoom-out edges, and draw in
+  // logical pixels so drops keep their size when the canvas runs at a higher pixel density.
   const zoom = scene.cameras.main.zoom || 1;
-  layer.setPosition(width / 2 * (1 - 1 / zoom), height / 2 * (1 - 1 / zoom));
-  layer.setScale(1 / zoom);
+  const density = runtimePixelDensity(scene);
+  const width = canvasWidth / density;
+  const height = canvasHeight / density;
+  layer.setPosition(canvasWidth / 2 * (1 - 1 / zoom), canvasHeight / 2 * (1 - 1 / zoom));
+  layer.setScale(density / zoom);
   if (plan.kind === "fog") {
     renderFog(scene, params, width, height, scene.weatherClockMs ?? 0);
     return;

@@ -9,6 +9,7 @@ import { runtimeEventViewsForMap } from "@/project/runtimeEventState"
 import { store } from "@/project/store";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom } from "@/project/cameraZoom";
 import { bumpPerfCounter } from "@/player/runtimePerfCounters";
+import { runtimeMapViewZoom } from "@/player/runtimeViewScale";
 
 export type ScrollMapDirection = "down" | "left" | "right" | "up";
 
@@ -25,23 +26,40 @@ export type ScrollMapPanTarget = {
   readonly y: number;
 };
 
+/**
+ * 저작 배율(프로젝트 기본값·연출 명령)을 카메라별로 기억한다. 실제 camera.zoom 은 여기에
+ * 맵 보기 배율(runtimeViewScale)을 곱한 값이라, 맵을 옮기면 저작값을 그대로 두고 곱만 바꾼다.
+ */
+const authoredZooms = new WeakMap<Phaser.Cameras.Scene2D.Camera, number>();
+
+/** `viewZoom` 은 이 맵의 보기 배율이다. 저작 배율은 뒤이은 applyStoredCameraState 가 얹는다. */
 export function centerRuntimeCamera(
   camera: Phaser.Cameras.Scene2D.Camera,
   map: GameMap,
-  player: Phaser.GameObjects.Sprite
+  player: Phaser.GameObjects.Sprite,
+  viewZoom = 1,
 ): void {
-  const mapWidth = Math.max(mapTileSize(map), map.width * mapTileSize(map));
-  const mapHeight = Math.max(mapTileSize(map), map.height * mapTileSize(map));
-  const paddingX = Math.max(0, (camera.width - mapWidth) / 2);
-  const paddingY = Math.max(0, (camera.height - mapHeight) / 2);
-  camera.setZoom(1);
-  camera.setBounds(
-    -paddingX,
-    -paddingY,
-    Math.max(camera.width, mapWidth),
-    Math.max(camera.height, mapHeight)
-  );
+  authoredZooms.set(camera, 1);
+  camera.setZoom(viewZoom);
+  syncRuntimeCameraBounds(camera, map);
   camera.centerOn(player.x, player.y);
+}
+
+/**
+ * 카메라 경계는 **보이는 세계 크기**(canvas / zoom) 기준이다. 맵이 화면보다 작으면 가운데
+ * 놓이게 여백을 두고, 크면 맵 가장자리에서 멈춘다. canvas 폭 그대로 쓰면 배율 ≠ 1 에서 여백이
+ * 틀려 작은 맵이 한쪽으로 쏠리거나 큰 맵 밖의 검은 곳까지 스크롤된다.
+ */
+function syncRuntimeCameraBounds(camera: Phaser.Cameras.Scene2D.Camera, map: GameMap): void {
+  const tile = mapTileSize(map);
+  const zoom = Number.isFinite(camera.zoom) && camera.zoom > 0 ? camera.zoom : 1;
+  const viewWidth = camera.width / zoom;
+  const viewHeight = camera.height / zoom;
+  const mapWidth = Math.max(tile, map.width * tile);
+  const mapHeight = Math.max(tile, map.height * tile);
+  const paddingX = Math.max(0, (viewWidth - mapWidth) / 2);
+  const paddingY = Math.max(0, (viewHeight - mapHeight) / 2);
+  camera.setBounds(-paddingX, -paddingY, Math.max(viewWidth, mapWidth), Math.max(viewHeight, mapHeight));
 }
 
 export function calculateScrollMapPanTarget(input: ScrollMapPanInput): ScrollMapPanTarget {
@@ -109,11 +127,11 @@ export function applyStoredCameraState(scene: PlaySceneContext): void {
     // 연출 상태가 없을 때의 배율은 **프로젝트 기본값**이다. 예전에는
     // centerRuntimeCamera 가 1 로 리셋한 값이 그대로 남았다 — 그래서 고해상도
     // 배경을 쓰려면 맵마다 auto 이벤트로 줌을 걸어야 했고 새 맵에서는 1 로 돌아갔다.
-    applyCameraZoom(scene.cameras.main, resolveCameraZoom(store.getCurrent().system));
+    applyCameraZoom(scene, resolveCameraZoom(store.getCurrent().system));
     followCameraTarget(scene, { kind: "player" });
     return;
   }
-  applyCameraZoom(scene.cameras.main, state.zoom);
+  applyCameraZoom(scene, state.zoom);
   if (state.mode === "follow") {
     followCameraTarget(scene, state.target);
     return;
@@ -124,7 +142,7 @@ export function applyStoredCameraState(scene: PlaySceneContext): void {
 }
 
 export function applyCameraControl(scene: PlaySceneContext, step: CameraControlStep): Promise<void> {
-  applyCameraZoom(scene.cameras.main, step.zoom);
+  applyCameraZoom(scene, step.zoom);
   const run = async (): Promise<void> => {
     if (step.mode === "follow") {
       followCameraTarget(scene, step.target);
@@ -234,10 +252,17 @@ function resolveCameraTarget(
 }
 
 /** 카메라 배율 범위의 정본은 @/project/cameraZoom 에 있다 — 저작 정규화와 같은 값을 봐야
- * 「저장은 됐는데 플레이에서는 다른 배율」이 안 생긴다. */
-function applyCameraZoom(camera: Phaser.Cameras.Scene2D.Camera, zoom: number | undefined): void {
-  if (zoom === undefined || !Number.isFinite(zoom) || zoom <= 0) return;
-  camera.setZoom(Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
+ * 「저장은 됐는데 플레이에서는 다른 배율」이 안 생긴다. 범위는 **저작값**에만 건다. 맵 보기
+ * 배율은 그 위에 곱해지는 보정이라 16px 맵의 3배처럼 상한을 넘을 수 있다.
+ * `zoom` 이 없으면 저작값을 바꾸지 않고 현재 맵의 보기 배율만 다시 맞춘다. */
+function applyCameraZoom(scene: PlaySceneContext, zoom: number | undefined): void {
+  const camera = scene.cameras.main;
+  if (zoom !== undefined && Number.isFinite(zoom) && zoom > 0) {
+    authoredZooms.set(camera, Math.min(CAMERA_ZOOM_LIMITS.max, Math.max(CAMERA_ZOOM_LIMITS.min, zoom)));
+  }
+  const next = (authoredZooms.get(camera) ?? 1) * runtimeMapViewZoom(scene);
+  if (camera.zoom !== next) camera.setZoom(next);
+  syncRuntimeCameraBounds(camera, scene.map);
 }
 
 export function panCamera(camera: Phaser.Cameras.Scene2D.Camera, x: number, y: number, durationMs: number): Promise<void> {

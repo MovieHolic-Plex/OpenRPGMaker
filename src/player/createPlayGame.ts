@@ -1,10 +1,13 @@
 import type Phaser from "phaser";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import type { PlaySession } from "@/project/session";
+import { resolveCameraZoom } from "@/project/cameraZoom";
+import { playPixelDensity } from "@/project/mapViewScale";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { store } from "@/project/store";
 import { importWithRetry } from "@/util/dynamicImport";
 import { installRuntimeQaFrames } from "@/player/runtimeQaFrames";
+import { PLAY_PIXEL_DENSITY_KEY } from "@/player/runtimeViewScale";
 
 export type PlayGameBootOptions = {
   /** Enables export-player QA locators and mutation hooks. Never enabled by normal export boot. */
@@ -27,7 +30,11 @@ export async function createPlayGame(
 ): Promise<Phaser.Game> {
   const PhaserRuntime = await ensurePhaser();
   const { PlayScene } = await importWithRetry(() => import("@/player/PlayScene"));
-  const resolution = resolvePlayResolution(store.getCurrent().system);
+  const project = store.getCurrent();
+  const resolution = resolvePlayResolution(project.system);
+  // 타일 크기가 섞인 프로젝트는 큰 칸의 맵을 도트 손실 없이 그리도록 캔버스만 촘촘하게 만든다.
+  // 캔버스 CSS 는 논리 해상도에 맞춰지므로(playSurface.css) 레이아웃·DOM 좌표는 그대로다.
+  const density = playPixelDensity(project, resolution, resolveCameraZoom(project.system));
   return new PhaserRuntime.Game({
     type: PhaserRuntime.AUTO,
     parent,
@@ -40,13 +47,14 @@ export async function createPlayGame(
       : { mouse: false, touch: false },
     scale: {
       mode: PhaserRuntime.Scale.NONE,
-      width: resolution.width,
-      height: resolution.height,
+      width: resolution.width * density,
+      height: resolution.height * density,
       parent,
     },
     scene: [PlayScene],
     callbacks: {
       preBoot: (game) => {
+        game.registry.set(PLAY_PIXEL_DENSITY_KEY, density);
         if (options.qaInstrumentation === true) {
           game.registry.set("qaInstrumentation", true);
           installRuntimeQaFrames(game);

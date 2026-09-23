@@ -1,4 +1,5 @@
 import { eventSpriteScale, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import type {
   AutonomousNpcSceneContext,
@@ -29,7 +30,7 @@ export function applyMoveRouteGraphicChange(
   const texture = resolveEventSpriteTexture(store.getCurrent(), normalized, view.page?.graphic.pattern);
   if (texture) {
     sprite.setTexture(texture.texture, texture.frame);
-    sprite.setScale?.(eventSpriteScale(texture, sprite, view.page?.graphic.scale, tileSize, view.page?.graphic.scaleMode));
+    sprite.setScale?.(eventSpriteScale(texture, sprite, view.page?.graphic.scale, tileSize, view.page?.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
   }
 }
 
