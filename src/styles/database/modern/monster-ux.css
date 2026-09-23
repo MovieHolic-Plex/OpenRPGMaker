@@ -1,0 +1,9 @@
+/* 자료집 모드별 칸 숨김 — databaseUxLevel.ts 의 uxLevel() 이 붙이는 data-db-ux 를 본다.
+   가시성 유틸리티라 !important 다: 탭마다 4-클래스 스코프 `display:grid|flex` 규칙이 있어서
+   특이도로는 이기지 못한다(적 그룹 탭 .db-field 실측 — 초보 모드에서도 칸이 그대로 보였다). */
+body.editor-ui-beginner [data-db-ux="advanced"],
+body.editor-ui-beginner [data-db-ux="expert"],
+body.editor-ui-standard [data-db-ux="expert"],
+body.editor-ui-expert [data-db-ux="guide"] {
+  display: none !important;
+}

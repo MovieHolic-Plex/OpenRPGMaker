@@ -63,6 +63,11 @@ test("enemy studio editing remains reachable across desktop sizes", async ({ pag
     ]) {
       console.info(`[enemy studio] ${viewport.width} ${section}: ${field}`);
       await page.getByTestId(`db-enemy-section-${section}-tab`).click();
+      // 등급 표는 「약점·저항」 카드의 접힌 「전체 표 보기」 안에 있다(기본과 다른 것만 칩으로).
+      if (field.startsWith("db-picker-enemy-element-rate-")) {
+        const table = page.getByTestId("db-enemy-resist-table");
+        if (!(await table.evaluate((node) => (node as HTMLDetailsElement).open))) await page.getByTestId("db-enemy-resist-table-toggle").click();
+      }
       await expectReachable(page.getByTestId(field));
       expect(await page.locator(".database-modal-window").boundingBox()).toEqual(frame);
     }
@@ -79,7 +84,9 @@ test("enemy studio keeps selection, updates previews and opens a disposable batt
   await page.setViewportSize({ width: 1680, height: 1050 });
   await openEnemies(page);
   await page.getByTestId("db-field-enemy-max-hp").fill("321");
-  await expect(page.getByTestId("db-enemy-stage-stats")).toContainText("321");
+  // 미리보기 아래 HP/MP/공격/방어 줄은 「능력치」 카드와 같은 값의 중복이라 뺐다(2026-09-23).
+  // 값의 권위는 편집 칸 하나다.
+  await expect(page.getByTestId("db-field-enemy-max-hp")).toHaveValue("321");
   await page.getByTestId("db-field-name").fill("작업실 슬라임");
   await expect(page.locator(".oprn-record-enemies .db-list-row.active")).toContainText("작업실 슬라임");
   await expect(page.getByTestId("db-enemy-hero")).toContainText("작업실 슬라임");

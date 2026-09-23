@@ -1,3 +1,5 @@
+import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
+import { validateEndingPresentation } from "./shapeDatabaseFields";
 import { referenceOwner } from "../tilesetReferences";
 import { normalizeMapClimate } from "../mapClimate";
 import { normalizeAiAuthoring } from "../aiAuthoring";
@@ -203,7 +205,22 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   }
   stampCharacterIdsForSocialEvents(project);
   normalizeShopCommands(project);
+  canonicalizeProjectCommandFieldAliases(project);
   return project;
+}
+
+/** 저장본에 남은 op↔action 표기 흔들림(예: changeParty op:"+=")을 로드 때 정본으로 옮긴다. */
+function canonicalizeProjectCommandFieldAliases(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      canonicalizeCommandFieldAliases(event.commands);
+      for (const page of event.pages ?? []) canonicalizeCommandFieldAliases(page.commands);
+    }
+  }
+  for (const commonEvent of project.commonEvents ?? []) canonicalizeCommandFieldAliases(commonEvent.commands);
+  for (const troop of project.database?.troops ?? []) {
+    for (const page of troop.battleEventPages ?? []) canonicalizeCommandFieldAliases(page.commands);
+  }
 }
 
 function idSet(value: unknown): Set<string> {
@@ -301,6 +318,7 @@ function validateEndings(value: unknown): void {
       const kind = (condition as { kind?: unknown }).kind;
       assert(kind === "switch" || kind === "variable", `endings[${index}].conditions[${conditionIndex}]는 switch 또는 variable 조건이어야 합니다.`);
     }
+    if (ending.presentation !== undefined) validateEndingPresentation(ending.presentation, `endings[${index}].presentation`);
     if (ending.priority !== undefined) requireNumber(`endings[${index}].priority`, ending.priority);
     if (ending.epilogue !== undefined) {
       for (const [beatIndex, beat] of requireArray(`endings[${index}].epilogue`, ending.epilogue).entries()) {

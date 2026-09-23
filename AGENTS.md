@@ -122,6 +122,10 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
    절차·함정은 `openwiki/agent-worktrees.md` 참조. 다른 도구가 만든 워크트리(`.herdr/`, `.claude/worktrees/`)는
    `node_modules`·`.env.local` 이 없으므로 `npm run wt -- adopt <이름> --path <경로>` 로 먼저 보정한다(dev 포트는 `npm run dev:worktree` 가 스스로 고정 배정한다; `npm run dev` 는 워크트리에서 거절된다) —
    보정 없이 실행하면 전역 tsc 가 잡혀 **저장소 설정이 깨진 것처럼 보이는 가짜 오류**가 난다 (`openwiki/quickstart.md` 1절).
+   **dev 서버는 `npm run dev:worktree` / `npm run dev -- --port N` 으로만 띄운다 — `node_modules/vite/bin/vite.js`·`npx vite` 직접 호출 금지.**
+   워크트리의 `node_modules` 는 메인으로의 심링크라 vite 캐시(`node_modules/.vite`)까지 공유되고, vite 는 캐시 해시에 root 를 넣으므로
+   다른 체크아웃의 서버끼리 서로의 캐시를 재최적화해 덮는다(동시에 떠 있으면 상대 페이지 강제 리로드·서버 사망). 런처(`scripts/dev-server.mjs`)는
+   공유 `node_modules` 를 보면 `<체크아웃>/.vite-cache/dev` 로 스스로 뗀다. 직접 부를 수밖에 없으면(`/tmp` 기준선 사본 등) `VITE_CACHE_DIR=<그 사본 안 경로>` 를 반드시 준다.
 2. **저작 콘텐츠(맵·이벤트·데모) 작업은 워크트리로 병렬화하지 않는다.** 프로젝트 정본이
    워크트리 밖에서 공유되어 git 이 충돌을 못 본다 — 직렬화하거나 별도의 프로젝트 폴더/호스트 프로젝트로 분리한다.
 3. 검증은 **감독자가 직접** `npm run gates` 로 한다. 에이전트는 아래 hard rule 을 따른다.

@@ -195,6 +195,7 @@ function referenceSets(project: Project, mapId: MapId, host: GameEvent) {
     classes: new Set(project.database.classes.map((entry) => entry.id)),
     commonEvents: new Set((project.commonEvents ?? []).map((entry) => entry.id)),
     endings: new Set((project.endings ?? []).map((entry) => entry.id)),
+    gameOvers: new Set((project.system.gameOvers ?? []).map(entry => entry.id)),
     equipment: new Set(project.database.equipment.map((entry) => entry.id)),
     factions: new Set([
       PLAYER_FACTION_ID,
@@ -947,6 +948,10 @@ function validateCommand(
   };
 
   switch (command.kind) {
+    case "gameOver":
+    case "killPlayer":
+      require("reference.gameOver.missing", "게임 오버", command.gameOverId, refs.gameOvers, true);
+      return;
     case "changeFace": require("reference.resource.missing", "얼굴 리소스", command.resourceId, refs.resources, true); return;
     case "fork": validateForkCondition(command.condition, pageId, refs, issues, path, [], mapId); return;
     case "wait": require("reference.variable.missing", "대기 변수", command.variableId, refs.variables, true); return;
@@ -1009,8 +1014,15 @@ function validateCommand(
     case "changeExp": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); variableOperand(command.amount, "경험치 변수"); return;
     case "changeLevel":
     case "changeActorHp":
-    case "changeActorMp":
-    case "changeParty": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
+    case "changeActorMp": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
+    case "changeParty":
+      require("reference.actor.missing", "배우", command.actorId, refs.actors);
+      if (command.action !== "add" && command.action !== "remove") issues.push({
+        severity: "error", code: "changeParty.action.invalid",
+        message: `파티 편성의 동작이 합류(add)·이탈(remove) 중 하나가 아닙니다: ${JSON.stringify(command.action)}`,
+        pageId, commandPath: path, field: { testId: "change-party-action-select" },
+      });
+      return;
     case "changeLifeSkillExp": require("reference.life-skill.missing", "생활 스킬", command.skillId, refs.lifeSkills); variableOperand(command.amount, "생활 스킬 경험치 변수"); return;
     case "promoteActor": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.class.missing", "전직 직업", command.toClassId, refs.classes, true); return;
     case "changeEquipment": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.equipment.missing", "장비", command.equipmentId, refs.equipment, true); return;
@@ -1178,8 +1190,6 @@ function validateCommand(
     case "openSaveMenu":
     case "despawnFieldEnemy":
     case "runControl":
-    case "killPlayer":
-    case "gameOver":
     case "ending":
     case "returnToTitle":
     case "setFlag":

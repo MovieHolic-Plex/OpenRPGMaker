@@ -27,7 +27,9 @@ try {
   const world = page.getByTestId("db-tab-group-world");
   if (await world.getAttribute("aria-expanded") === "false") await world.click();
   await page.getByTestId("db-tab-spatial-regions").click();
-  await page.getByTestId("spatial-source-defaults").click();
+  // Since the simplified map tabs (#1172) the source chips may be hidden; the default cards are listed either way.
+  const defaults = page.getByTestId("spatial-source-defaults");
+  if (await defaults.isVisible()) await defaults.click();
   await page.screenshot({ path: `${out}/region-library.png` });
   const proof = [];
   for (const plan of plans) {
@@ -64,9 +66,26 @@ try {
     await page.screenshot({ path: `${out}/${plan.id}-region.png` });
     proof.push({ id, aiRowsExact: true, preview: dimensions, downloadExact: true, filename: download.suggestedFilename() });
   }
+  // The river villages are also listed under 장소, reading the same snapshot.
+  await page.getByTestId("db-tab-spatial-places").click();
+  if (await defaults.isVisible()) await defaults.click();
+  const places = [];
+  for (const plan of plans.filter((p) => p.id === "twin-falls-river-village" || p.series === "concept")) {
+    const id = `${plan.id}-place-${plan.width}x${plan.height}`;
+    const rows = await page.evaluate(async (id2) => {
+      const { readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts");
+      const lower = [];
+      for (let row = 0; row !== null;) { const r = readRegionReference(id2, row, 16); lower.push(...r.map.lowerTiles); row = r.map.nextRow; }
+      return lower;
+    }, id);
+    assert.deepEqual(rows, JSON.parse(fs.readFileSync(`public/assets/region-references/${plan.id}.oprn.json`)).maps[plan.id].lowerTiles);
+    await page.getByTestId(`spatial-card-region-reference:${id}`).click();
+    await page.screenshot({ path: `${out}/${plan.id}-place.png` });
+    places.push({ id, aiRowsExact: true, card: true });
+  }
   assert.equal(await page.evaluate(async () => JSON.stringify((await import("/src/project/store.ts")).store.getCurrent())), baseline);
   assert.deepEqual(errors, []);
-  fs.writeFileSync(`${out}/region-browser-proof.json`, JSON.stringify({ regions: proof, activeProjectUnchanged: true, errors }, null, 2));
+  fs.writeFileSync(`${out}/region-browser-proof.json`, JSON.stringify({ regions: proof, places, activeProjectUnchanged: true, errors }, null, 2));
   console.log(proof);
 } finally {
   await browser.close();

@@ -20,15 +20,24 @@ try {
     const draw = () => document.getElementById("host").replaceChildren(mod.renderTilesetReferences(p2.tilesets.forest_harmony, draw));
     draw();
   }, p);
-  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-civic-v7");
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-trunks-v11");
   await page.getByRole("button", { name: "층바위 절벽마을 · 지형과 배치", exact: true }).click();
   await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
   await page.screenshot({ path: "verify-shots/village-diversity/reference-panel.png" });
-  await page.getByRole("button", { name: "좌표 검증 · 정상/오류 18종", exact: true }).click();
+  const faultKinds = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/validation.json")).examples.length;
+  await page.getByRole("button", { name: `좌표 검증 · 정상/오류 ${faultKinds}종`, exact: true }).click();
   await page.locator(".tileset-reference-markdown img").first().scrollIntoViewIfNeeded();
   await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
   await page.screenshot({ path: "verify-shots/village-diversity/reference-errors.png" });
-  const result = { source: "SQLite reopened project", realComponent: "renderTilesetReferences", readOnlyHarness: true, category: await page.getByLabel("참고문서 용도", { exact: true }).inputValue(), images: await page.locator(".tileset-reference-markdown img").count(), missing: await page.locator(".tileset-reference-missing").count(), errors };
+  const baseCategory = await page.getByLabel("참고문서 용도", { exact: true }).inputValue(), baseImages = await page.locator(".tileset-reference-markdown img").count();
+  // The concept villages ship as their own category (64 documents per category).
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("concept-villages-v2");
+  await page.getByRole("button", { name: "교회·작은 성·묘지·울타리 못 · 통째 조립", exact: true }).click();
+  await page.screenshot({ path: "verify-shots/village-diversity/reference-concept.png" });
+  await page.getByRole("button", { name: "여울성 나루 · 지형과 배치", exact: true }).click();
+  await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
+  await page.screenshot({ path: "verify-shots/village-diversity/reference-concept-map.png" });
+  const result = { source: "SQLite reopened project", baseCategory, baseImages, conceptImages: await page.locator(".tileset-reference-markdown img").count(), realComponent: "renderTilesetReferences", readOnlyHarness: true, category: await page.getByLabel("참고문서 용도", { exact: true }).inputValue(), images: await page.locator(".tileset-reference-markdown img").count(), missing: await page.locator(".tileset-reference-missing").count(), errors };
   assert.equal(result.missing, 0);
   assert.deepEqual(errors, []);
   fs.writeFileSync("verify-shots/village-diversity/browser.json", JSON.stringify(result, null, 2));

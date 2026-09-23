@@ -181,8 +181,8 @@ export function renderSpatialBuildChrome(
   const seed = el("input", {
     class: "spatial-build-seed",
     attrs: {
-      type: "number", step: "1", "aria-label": "시공 시드",
-      title: "시공 난수 씨앗 — 같은 시드는 항상 같은 결과를 냅니다 (기본값 7)",
+      type: "number", step: "1", "aria-label": "맵에 놓기 시드",
+      title: "무작위 씨앗 — 같은 시드는 항상 같은 결과를 냅니다 (기본값 7)",
     },
     value: chrome?.buildSeedText ?? (chrome?.buildSeed === null ? "" : String(chrome?.buildSeed ?? DEFAULT_SPATIAL_BUILD_SEED)),
     dataset: { testid: "spatial-build-seed" },
@@ -198,14 +198,14 @@ export function renderSpatialBuildChrome(
   return [
     el("button", {
       class: "spatial-action",
-      text: "시공",
-      attrs: { type: "button", title: "선택한 설계를 실제 맵으로 생성합니다", ...(enabled ? {} : { disabled: "" }) },
+      text: "맵에 놓기",
+      attrs: { type: "button", title: "선택한 설계로 실제 맵을 만듭니다 — 미리보기 뒤 적용해야 확정", ...(enabled ? {} : { disabled: "" }) },
       dataset: { testid: "spatial-build", buildEligible: chrome?.build ? "1" : "0" },
       on: chrome?.build ? { click: chrome.build } : undefined,
     }),
     el("label", {
       class: "spatial-build-seed-field",
-      children: [el("span", { text: "시드", attrs: { title: "시공 난수 씨앗 — 같은 시드는 같은 결과" } }), seed],
+      children: [el("span", { text: "시드", attrs: { title: "무작위 씨앗 — 같은 시드는 같은 결과" } }), seed],
     }),
   ];
 }
@@ -259,7 +259,7 @@ export function renderObjectBuildFields(): HTMLElement {
   details.className = "spatial-object-build";
   details.dataset.testid = "spatial-build-target";
   const summary = document.createElement("summary");
-  summary.textContent = "시공 대상 — 어느 맵의 어느 영역에 지을지";
+  summary.textContent = "놓을 자리 — 어느 맵의 어느 영역에 놓을지";
   details.append(
     summary,
     el("label", { class: "spatial-object-field", children: [el("span", { text: "맵" }), map] }),

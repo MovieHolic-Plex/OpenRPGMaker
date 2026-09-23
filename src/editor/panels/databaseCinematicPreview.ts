@@ -3,7 +3,9 @@ import {
   type CinematicPlayback,
 } from "@/player/cinematicSequence";
 import { store } from "@/project/store";
-import type { CinematicSequence } from "@/project/cinematicSettings";
+import { createTerminalSurface } from "@/player/terminalScene";
+import { playGameOverPresentation } from "@/player/playSceneOverlays";
+import type { GameOverSettings, CinematicSequence } from "@/project/cinematicSettings";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { createPlaySurface, type PlaySurface } from "@/player/playSurface";
 
@@ -87,15 +89,15 @@ export function createDatabaseCinematicPreview(options: {
       return run !== undefined;
     },
 
-    start(sequence: CinematicSequence | undefined): boolean {
+    start(sequence: CinematicSequence | undefined, gameOver?: { settings: GameOverSettings | undefined; onOutcome: (message: string) => void }): boolean {
       stop();
-      if (disposed || signal.aborted || !options.isActive() || !sequence?.scenes.length) return false;
+      if (disposed || signal.aborted || !options.isActive() || (!gameOver && !sequence?.scenes.length)) return false;
       const currentRun = new AbortController();
       run = currentRun;
       returnFocus = host.ownerDocument.activeElement;
       // Preview may audition retained disabled content without enabling it in
       // the project. All other authored values, including skippable, are kept.
-      const previewSequence = structuredClone({ ...sequence, enabled: true });
+      const previewSequence = sequence ? structuredClone({ ...sequence, enabled: true }) : undefined;
       const project = store.getCurrent();
       view.addEventListener("keydown", onEscape, true);
       unsubscribe = store.subscribe((next, change) => {
@@ -119,6 +121,18 @@ export function createDatabaseCinematicPreview(options: {
         surface = createPlaySurface(resolvePlayResolution(project.system), "fit");
         host.append(surface.viewport);
         surface.sync();
+        if (gameOver) {
+          const terminal = createTerminalSurface(surface.stage, "game-over", "게임 오버 미리보기", currentRun.signal);
+          terminal.signal.addEventListener("abort", () => queueMicrotask(() => { if (run === currentRun) stop(); }), { once: true });
+          const report = (message: string): void => { if (run === currentRun) gameOver.onOutcome(message); };
+          playGameOverPresentation(terminal, project, structuredClone(gameOver.settings), {
+            hasCheckpoint: () => true,
+            restoreCheckpoint: () => { report("미리보기: 체크포인트 재시도를 선택했습니다. 실제 게임 상태는 변경하지 않습니다."); stop(); },
+            returnToTitle: () => { report("미리보기: 타이틀 복귀를 선택했습니다. 실제 게임 상태는 변경하지 않습니다."); stop(); },
+            recoverFromDefeat: () => { report("미리보기: 파티 회복·귀환 흐름을 재생했습니다. 실제 위치와 파티는 변경하지 않습니다."); return true; },
+          });
+          return true;
+        }
         playback = playCinematicSequence({
           host: surface.stage,
           project,

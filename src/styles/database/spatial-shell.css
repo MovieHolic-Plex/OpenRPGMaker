@@ -280,6 +280,47 @@
   color: var(--db-studio-text-3);
 }
 
+/* 「필터」 서랍 — 도구줄 오른쪽 끝의 버튼 하나. 펼치면 도구줄 아래로 떠서 카드를 밀지 않는다. */
+.database-modal-body .spatial-filter-drawer {
+  position: relative;
+  margin-left: auto;
+}
+.database-modal-body .spatial-filter-drawer > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 5px 12px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--db-studio-surface);
+  font: 500 12px/1.4 inherit;
+  color: var(--db-studio-text-2);
+  white-space: nowrap;
+}
+.database-modal-body .spatial-filter-drawer > summary::-webkit-details-marker { display: none; }
+.database-modal-body .spatial-filter-drawer > summary.is-active {
+  border-color: var(--db-studio-accent-border);
+  background: var(--db-studio-accent-soft);
+  color: var(--db-studio-accent);
+}
+.database-modal-body .spatial-filter-drawer-body {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  width: max-content;
+  max-width: min(420px, 80vw);
+  padding: 12px;
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: var(--radius-m);
+  background: var(--db-studio-surface);
+  box-shadow: 0 10px 28px rgb(15 23 42 / 0.16);
+}
+.database-modal-body .spatial-filter-drawer-body select { min-width: 200px; }
+
 .database-modal-body .spatial-gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(164px, 1fr));

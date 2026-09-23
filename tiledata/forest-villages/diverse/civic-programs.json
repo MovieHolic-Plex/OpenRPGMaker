@@ -2,25 +2,25 @@
   "pine-hamlets": [
     {
       "id": "well",
-      "name": "두 둔덕 사이 공동 우물터",
+      "name": "가운데 계단 아래 공동 우물터",
       "anchor": {
         "type": "road",
-        "x": 30,
-        "y": 26,
+        "x": 40,
+        "y": 25,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "well-1",
           "name": "낮은 돌 우물",
-          "x": 34,
+          "x": 42,
           "y": 26,
-          "purpose": "두 둔덕과 중앙 주거지의 공동 급수"
+          "purpose": "윗단과 아랫마을 주민이 함께 쓰는 급수"
         },
         {
           "id": "well-2",
           "name": "항아리",
-          "x": 37,
+          "x": 44,
           "y": 27,
           "purpose": "길어 온 물을 담는 용기",
           "near": "낮은 돌 우물"
@@ -28,22 +28,22 @@
         {
           "id": "well-3",
           "name": "징검돌",
-          "x": 34,
-          "y": 29,
+          "x": 42,
+          "y": 28,
           "purpose": "우물 앞 물 튀는 땅의 발 디딤",
           "near": "낮은 돌 우물"
         },
         {
           "id": "well-4",
           "name": "게시판",
-          "x": 33,
-          "y": 23,
+          "x": 45,
+          "y": 25,
           "purpose": "우물에 모인 주민의 마을 공지"
         },
         {
           "id": "well-5",
           "name": "돌등",
-          "x": 32,
+          "x": 41,
           "y": 27,
           "purpose": "우물과 연결 길목 조명",
           "near": "낮은 돌 우물"
@@ -202,6 +202,213 @@
           "purpose": "현관 옆 벽면 조명"
         }
       ]
+    },
+    {
+      "id": "overlook",
+      "name": "가운데 계단 위 전망 쉼터",
+      "anchor": {
+        "type": "road",
+        "x": 39,
+        "y": 17,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "overlook-1",
+          "name": "벤치",
+          "x": 44,
+          "y": 15,
+          "purpose": "절벽 끝에서 아랫마을을 내려다보며 쉬는 자리"
+        },
+        {
+          "id": "overlook-2",
+          "name": "벤치",
+          "x": 33,
+          "y": 15,
+          "purpose": "계단을 오른 뒤 숨 돌리는 자리"
+        },
+        {
+          "id": "overlook-3",
+          "name": "나무 이정표",
+          "x": 38,
+          "y": 14,
+          "purpose": "윗마을 동서 갈림길 방향 안내"
+        }
+      ]
+    },
+    {
+      "id": "stair-signs",
+      "name": "계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 39,
+        "y": 24,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "stair-signs-1",
+          "name": "나무 이정표",
+          "x": 37,
+          "y": 25,
+          "purpose": "가운데 계단으로 오르는 길 안내"
+        }
+      ]
+    },
+    {
+      "id": "west-stair-sign",
+      "name": "서쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 17,
+        "y": 27,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "west-stair-sign-1",
+          "name": "나무 이정표",
+          "x": 19,
+          "y": 26,
+          "purpose": "서쪽 계단으로 오르는 길 안내"
+        }
+      ]
+    },
+    {
+      "id": "east-stair-sign",
+      "name": "동쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 63,
+        "y": 28,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "east-stair-sign-1",
+          "name": "나무 이정표",
+          "x": 60,
+          "y": 28,
+          "purpose": "동쪽 계단으로 오르는 길 안내"
+        }
+      ]
+    },
+    {
+      "id": "woodyard",
+      "name": "목공 작업집 땔감 마당",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-3",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "woodyard-1",
+          "name": "장작 더미",
+          "x": 58,
+          "y": 16,
+          "purpose": "목공 작업에서 나온 장작을 쌓아 두는 자리"
+        },
+        {
+          "id": "woodyard-2",
+          "name": "장작 더미",
+          "x": 57,
+          "y": 19,
+          "purpose": "겨울용 땔감 두 번째 더미",
+          "near": "장작 더미"
+        },
+        {
+          "id": "woodyard-3",
+          "name": "술통",
+          "x": 70,
+          "y": 16,
+          "purpose": "작업용 물을 받아 두는 통"
+        }
+      ]
+    },
+    {
+      "id": "campfire",
+      "name": "샘가 모닥불 쉼터",
+      "anchor": {
+        "type": "house",
+        "id": "pine-hamlets-house-4",
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "campfire-1",
+          "name": "모닥불",
+          "x": 11,
+          "y": 38,
+          "purpose": "저녁에 샘가 주민이 모이는 불자리"
+        },
+        {
+          "id": "campfire-2",
+          "name": "벤치",
+          "x": 11,
+          "y": 40,
+          "purpose": "불가 남쪽 앉을 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "campfire-3",
+          "name": "벤치",
+          "x": 13,
+          "y": 36,
+          "purpose": "불가 북쪽 앉을 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "campfire-4",
+          "name": "장작 더미",
+          "x": 14,
+          "y": 38,
+          "purpose": "모닥불에 쓸 장작",
+          "near": "모닥불"
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "name": "우물 아래 작은 장터",
+      "anchor": {
+        "type": "road",
+        "x": 32,
+        "y": 33,
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "market-1",
+          "name": "장터 노점",
+          "x": 34,
+          "y": 36,
+          "purpose": "아랫마을 주민이 채소와 과일을 파는 좌판"
+        },
+        {
+          "id": "market-2",
+          "name": "과일 좌판",
+          "x": 38,
+          "y": 38,
+          "purpose": "산에서 딴 과일을 늘어놓은 상자",
+          "near": "장터 노점"
+        },
+        {
+          "id": "market-3",
+          "name": "술통",
+          "x": 33,
+          "y": 40,
+          "purpose": "장터 음료 통",
+          "near": "장터 노점"
+        },
+        {
+          "id": "market-4",
+          "name": "벤치",
+          "x": 35,
+          "y": 42,
+          "purpose": "장 보러 온 사람의 쉼 자리"
+        }
+      ]
     }
   ],
   "terrace-cliff-village": [
@@ -210,22 +417,22 @@
       "name": "상단 두 집의 공동 우물터",
       "anchor": {
         "type": "road",
-        "x": 43,
-        "y": 19,
+        "x": 44,
+        "y": 20,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "well-1",
           "name": "낮은 돌 우물",
-          "x": 44,
+          "x": 39,
           "y": 16,
           "purpose": "상단 주택에서 계단을 내려가지 않고 물 긷기"
         },
         {
           "id": "well-2",
           "name": "항아리",
-          "x": 47,
+          "x": 41,
           "y": 17,
           "purpose": "물을 담아 집으로 옮기는 용기",
           "near": "낮은 돌 우물"
@@ -233,7 +440,7 @@
         {
           "id": "well-3",
           "name": "징검돌",
-          "x": 44,
+          "x": 39,
           "y": 18,
           "purpose": "급수 작업 발 디딤",
           "near": "낮은 돌 우물"
@@ -241,8 +448,8 @@
         {
           "id": "well-4",
           "name": "꽃 화단",
-          "x": 44,
-          "y": 13,
+          "x": 38,
+          "y": 14,
           "purpose": "주민이 가꾸는 우물터 화단",
           "near": "낮은 돌 우물"
         }
@@ -261,8 +468,8 @@
         {
           "id": "stairs-1",
           "name": "게시판",
-          "x": 30,
-          "y": 31,
+          "x": 31,
+          "y": 29,
           "purpose": "층별 생활권과 공동 작업 공지"
         },
         {
@@ -275,8 +482,8 @@
         {
           "id": "stairs-3",
           "name": "돌등",
-          "x": 32,
-          "y": 31,
+          "x": 33,
+          "y": 30,
           "purpose": "계단 하단 야간 조명"
         }
       ]
@@ -417,6 +624,204 @@
           "purpose": "현관 옆 벽면 조명"
         }
       ]
+    },
+    {
+      "id": "overlook",
+      "name": "윗단 절벽 끝 전망 쉼터",
+      "anchor": {
+        "type": "road",
+        "x": 50,
+        "y": 20,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "overlook-1",
+          "name": "벤치",
+          "x": 47,
+          "y": 17,
+          "purpose": "가운데 단과 아랫단을 내려다보는 자리"
+        },
+        {
+          "id": "overlook-2",
+          "name": "나무 이정표",
+          "x": 42,
+          "y": 19,
+          "purpose": "서쪽 계단으로 내려가는 길 안내"
+        },
+        {
+          "id": "overlook-3",
+          "name": "나무 이정표",
+          "x": 59,
+          "y": 19,
+          "purpose": "동쪽 계단으로 내려가는 길 안내"
+        }
+      ]
+    },
+    {
+      "id": "mid-east-sign",
+      "name": "동쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 62,
+        "y": 29,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "mid-east-sign-1",
+          "name": "나무 이정표",
+          "x": 64,
+          "y": 29,
+          "purpose": "윗단으로 오르는 동쪽 계단 안내"
+        }
+      ]
+    },
+    {
+      "id": "lower-signs",
+      "name": "아랫단 계단 발치 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 27,
+        "y": 53,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lower-signs-1",
+          "name": "나무 이정표",
+          "x": 24,
+          "y": 53,
+          "purpose": "가운데 단으로 오르는 서쪽 계단 안내"
+        }
+      ]
+    },
+    {
+      "id": "lower-east-sign",
+      "name": "아랫단 동쪽 계단 발치",
+      "anchor": {
+        "type": "road",
+        "x": 46,
+        "y": 53,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "lower-east-sign-1",
+          "name": "나무 이정표",
+          "x": 48,
+          "y": 53,
+          "purpose": "가운데 단으로 오르는 동쪽 계단 안내"
+        }
+      ]
+    },
+    {
+      "id": "cave-camp",
+      "name": "동쪽 아랫단 불자리",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-8",
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "cave-camp-1",
+          "name": "모닥불",
+          "x": 74,
+          "y": 53,
+          "purpose": "저녁에 동쪽 집 주민이 모이는 불"
+        },
+        {
+          "id": "cave-camp-2",
+          "name": "벤치",
+          "x": 73,
+          "y": 55,
+          "purpose": "불가에 앉는 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "cave-camp-3",
+          "name": "나무 상자",
+          "x": 67,
+          "y": 53,
+          "purpose": "땔감과 불쏘시개를 담는 상자"
+        },
+        {
+          "id": "cave-camp-4",
+          "name": "술통",
+          "x": 65,
+          "y": 54,
+          "purpose": "불 곁에 두는 물통",
+          "near": "나무 상자"
+        }
+      ]
+    },
+    {
+      "id": "mid-market",
+      "name": "가운데 단 장터",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-4",
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "mid-market-1",
+          "name": "장터 노점",
+          "x": 29,
+          "y": 39,
+          "purpose": "세 단 주민이 모두 들르는 가운데 단 좌판"
+        },
+        {
+          "id": "mid-market-2",
+          "name": "과일 좌판",
+          "x": 29,
+          "y": 42,
+          "purpose": "윗단 과수에서 딴 과일",
+          "near": "장터 노점"
+        },
+        {
+          "id": "mid-market-3",
+          "name": "작은 오크통",
+          "x": 32,
+          "y": 37,
+          "purpose": "노점 음료를 담는 통",
+          "near": "장터 노점"
+        },
+        {
+          "id": "mid-market-4",
+          "name": "벤치",
+          "x": 32,
+          "y": 42,
+          "purpose": "장 보러 온 사람의 쉼 자리"
+        }
+      ]
+    },
+    {
+      "id": "mid-woodpile",
+      "name": "가운데 단 서쪽 집 땔감",
+      "anchor": {
+        "type": "house",
+        "id": "terrace-cliff-village-house-3",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "mid-woodpile-1",
+          "name": "장작 더미",
+          "x": 20,
+          "y": 34,
+          "purpose": "서쪽 집의 겨울 땔감"
+        },
+        {
+          "id": "mid-woodpile-2",
+          "name": "장작 더미",
+          "x": 21,
+          "y": 36,
+          "purpose": "땔감 두 번째 더미",
+          "near": "장작 더미"
+        }
+      ]
     }
   ],
   "reed-bay-village": [
@@ -436,14 +841,6 @@
           "x": 25,
           "y": 40,
           "purpose": "수확물을 선별하고 판매하는 작업면"
-        },
-        {
-          "id": "market-2",
-          "name": "과일 바구니",
-          "x": 25,
-          "y": 38,
-          "purpose": "소량 판매용 과일 진열",
-          "near": "가로 탁자"
         },
         {
           "id": "market-3",
@@ -490,14 +887,14 @@
         {
           "id": "well-1",
           "name": "낮은 돌 우물",
-          "x": 42,
+          "x": 52,
           "y": 24,
           "purpose": "주택과 선착장 이용자의 급수"
         },
         {
           "id": "well-2",
           "name": "항아리",
-          "x": 44,
+          "x": 54,
           "y": 26,
           "purpose": "우물물을 담는 용기",
           "near": "낮은 돌 우물"
@@ -505,15 +902,15 @@
         {
           "id": "well-3",
           "name": "징검돌",
-          "x": 42,
-          "y": 27,
+          "x": 52,
+          "y": 26,
           "purpose": "우물 앞 보행 자리",
           "near": "낮은 돌 우물"
         },
         {
           "id": "well-4",
           "name": "게시판",
-          "x": 41,
+          "x": 55,
           "y": 22,
           "purpose": "골목 주민의 공동 공지"
         }
@@ -531,30 +928,30 @@
         {
           "id": "garden-1",
           "name": "덩굴 아치",
-          "x": 43,
+          "x": 38,
           "y": 12,
           "purpose": "집 옆 정원 입구"
         },
         {
           "id": "garden-2",
           "name": "꽃 화단",
-          "x": 40,
-          "y": 12,
+          "x": 36,
+          "y": 11,
           "purpose": "정원 입구 화단",
           "near": "덩굴 아치"
         },
         {
           "id": "garden-3",
           "name": "꽃 화단",
-          "x": 46,
-          "y": 12,
+          "x": 40,
+          "y": 11,
           "purpose": "정원 입구 화단",
           "near": "덩굴 아치"
         },
         {
           "id": "garden-4",
           "name": "징검돌",
-          "x": 43,
+          "x": 38,
           "y": 14,
           "purpose": "정원 안 보행 자리",
           "near": "덩굴 아치"
@@ -562,24 +959,24 @@
         {
           "id": "garden-5",
           "name": "새집",
-          "x": 49,
-          "y": 13,
+          "x": 40,
+          "y": 9,
           "purpose": "정원의 조용한 가장자리",
           "near": "꽃 화단"
         },
         {
           "id": "garden-6",
           "name": "나무 울타리",
-          "x": 40,
-          "y": 16,
+          "x": 36,
+          "y": 14,
           "purpose": "정원 남쪽 경계",
           "near": "꽃 화단"
         },
         {
           "id": "garden-7",
           "name": "나무 울타리",
-          "x": 46,
-          "y": 16,
+          "x": 40,
+          "y": 14,
           "purpose": "열린 보행 틈을 남긴 정원 경계",
           "near": "꽃 화단"
         }
@@ -687,6 +1084,1046 @@
           "x": 39,
           "y": 46,
           "purpose": "현관 옆 벽면 조명"
+        }
+      ]
+    },
+    {
+      "id": "dock-store",
+      "name": "선착장 짐 부리는 곳",
+      "anchor": {
+        "type": "dock",
+        "x": 56,
+        "y": 45,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "dock-store-1",
+          "name": "술통",
+          "x": 55,
+          "y": 42,
+          "purpose": "배에서 내린 물통"
+        },
+        {
+          "id": "dock-store-2",
+          "name": "술통",
+          "x": 57,
+          "y": 42,
+          "purpose": "절인 생선을 담은 통",
+          "near": "술통"
+        },
+        {
+          "id": "dock-store-3",
+          "name": "나무 상자",
+          "x": 52,
+          "y": 44,
+          "purpose": "배로 들여온 짐 상자"
+        },
+        {
+          "id": "dock-store-4",
+          "name": "낚시 바구니",
+          "x": 58,
+          "y": 48,
+          "purpose": "선착장 끝에서 쓰는 낚시 바구니"
+        }
+      ]
+    },
+    {
+      "id": "market-stall",
+      "name": "밭 옆 판매 자리 노점",
+      "anchor": {
+        "type": "farm",
+        "x": 25,
+        "y": 47,
+        "maxDistance": 11
+      },
+      "items": [
+        {
+          "id": "market-stall-1",
+          "name": "장터 노점",
+          "x": 30,
+          "y": 40,
+          "purpose": "밭에서 거둔 채소를 파는 좌판"
+        },
+        {
+          "id": "market-stall-2",
+          "name": "작은 오크통",
+          "x": 29,
+          "y": 43,
+          "purpose": "노점 음료 통",
+          "near": "장터 노점"
+        }
+      ]
+    },
+    {
+      "id": "west-stair-sign",
+      "name": "서쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 18,
+        "y": 24,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "west-stair-sign-1",
+          "name": "나무 이정표",
+          "x": 16,
+          "y": 24,
+          "purpose": "윗단 서쪽 집으로 오르는 계단 안내"
+        }
+      ]
+    },
+    {
+      "id": "east-stair-sign",
+      "name": "동쪽 계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 31,
+        "y": 21,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "east-stair-sign-1",
+          "name": "나무 이정표",
+          "x": 29,
+          "y": 22,
+          "purpose": "윗단 파랑 지붕 집으로 오르는 계단 안내"
+        }
+      ]
+    },
+    {
+      "id": "entry-sign",
+      "name": "서쪽 입구 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 4,
+        "y": 33,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "entry-sign-1",
+          "name": "나무 이정표",
+          "x": 4,
+          "y": 31,
+          "purpose": "마을 서쪽 입구 방향 안내"
+        }
+      ]
+    },
+    {
+      "id": "beach-fire",
+      "name": "남쪽 물가 모닥불",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-7",
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "beach-fire-1",
+          "name": "모닥불",
+          "x": 20,
+          "y": 51,
+          "purpose": "물가에서 저녁에 불을 피우는 자리"
+        },
+        {
+          "id": "beach-fire-2",
+          "name": "벤치",
+          "x": 17,
+          "y": 52,
+          "purpose": "물가를 보고 앉는 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "beach-fire-3",
+          "name": "장작 더미",
+          "x": 23,
+          "y": 50,
+          "purpose": "모닥불 장작",
+          "near": "모닥불"
+        }
+      ]
+    },
+    {
+      "id": "overlook",
+      "name": "윗단 절벽 끝 쉼터",
+      "anchor": {
+        "type": "house",
+        "id": "reed-bay-village-house-1",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "overlook-1",
+          "name": "벤치",
+          "x": 22,
+          "y": 16,
+          "purpose": "절벽 끝에서 포구를 내려다보는 자리"
+        }
+      ]
+    }
+  ],
+  "twin-falls-river-village": [
+    {
+      "id": "falls-overlook",
+      "name": "윗 폭포 전망 쉼터",
+      "anchor": {
+        "type": "road",
+        "x": 38,
+        "y": 10,
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "falls-overlook-1",
+          "name": "벤치",
+          "x": 37,
+          "y": 17,
+          "purpose": "윗 폭포가 떨어지는 소리를 들으며 쉬는 자리"
+        },
+        {
+          "id": "falls-overlook-2",
+          "name": "벤치",
+          "x": 45,
+          "y": 15,
+          "purpose": "강 건너편에서 폭포를 보는 자리"
+        },
+        {
+          "id": "falls-overlook-3",
+          "name": "돌등",
+          "x": 39,
+          "y": 12,
+          "purpose": "다리 서쪽 목 밝히기"
+        }
+      ]
+    },
+    {
+      "id": "top-bridge-sign",
+      "name": "윗다리 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 48,
+        "y": 10,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "top-bridge-sign-1",
+          "name": "나무 이정표",
+          "x": 49,
+          "y": 8,
+          "purpose": "윗단 동쪽 집으로 가는 길 안내"
+        }
+      ]
+    },
+    {
+      "id": "well",
+      "name": "가운데 단 공동 우물",
+      "anchor": {
+        "type": "road",
+        "x": 30,
+        "y": 38,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "well-1",
+          "name": "낮은 돌 우물",
+          "x": 24,
+          "y": 33,
+          "purpose": "가운데 단 서쪽 주민의 급수"
+        },
+        {
+          "id": "well-2",
+          "name": "항아리",
+          "x": 28,
+          "y": 34,
+          "purpose": "길어 온 물을 담는 용기",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-3",
+          "name": "게시판",
+          "x": 22,
+          "y": 36,
+          "purpose": "우물에 모인 주민의 마을 공지"
+        }
+      ]
+    },
+    {
+      "id": "bridge-market",
+      "name": "가운데 다리목 장터",
+      "anchor": {
+        "type": "road",
+        "x": 46,
+        "y": 37,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "bridge-market-1",
+          "name": "장터 노점",
+          "x": 46,
+          "y": 40,
+          "purpose": "강 양쪽 주민이 만나는 다리목 좌판"
+        },
+        {
+          "id": "bridge-market-2",
+          "name": "과일 좌판",
+          "x": 50,
+          "y": 41,
+          "purpose": "가운데 단 텃밭에서 거둔 과일",
+          "near": "장터 노점"
+        },
+        {
+          "id": "bridge-market-3",
+          "name": "술통",
+          "x": 44,
+          "y": 41,
+          "purpose": "장터 음료 통",
+          "near": "장터 노점"
+        }
+      ]
+    },
+    {
+      "id": "lower-pool-fishing",
+      "name": "아랫 소 낚시터",
+      "anchor": {
+        "type": "road",
+        "x": 36,
+        "y": 63,
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "lower-pool-fishing-1",
+          "name": "낚시 바구니",
+          "x": 34,
+          "y": 53,
+          "purpose": "폭포 아래 소에서 쓰는 낚시 바구니"
+        },
+        {
+          "id": "lower-pool-fishing-2",
+          "name": "나무통",
+          "x": 33,
+          "y": 55,
+          "purpose": "잡은 물고기를 담는 통",
+          "near": "낚시 바구니"
+        },
+        {
+          "id": "lower-pool-fishing-3",
+          "name": "벤치",
+          "x": 35,
+          "y": 57,
+          "purpose": "소를 바라보며 낚싯대를 드리우는 자리"
+        }
+      ]
+    },
+    {
+      "id": "pool-fire",
+      "name": "아랫 소 동쪽 모닥불",
+      "anchor": {
+        "type": "house",
+        "id": "twin-falls-river-village-house-8",
+        "maxDistance": 14
+      },
+      "items": [
+        {
+          "id": "pool-fire-1",
+          "name": "모닥불",
+          "x": 52,
+          "y": 52,
+          "purpose": "폭포 아래에서 저녁에 불을 피우는 자리"
+        },
+        {
+          "id": "pool-fire-2",
+          "name": "벤치",
+          "x": 54,
+          "y": 54,
+          "purpose": "불가에 앉는 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "pool-fire-3",
+          "name": "장작 더미",
+          "x": 55,
+          "y": 52,
+          "purpose": "모닥불 장작",
+          "near": "모닥불"
+        }
+      ]
+    },
+    {
+      "id": "woodyard",
+      "name": "윗단 목공집 땔감",
+      "anchor": {
+        "type": "house",
+        "id": "twin-falls-river-village-house-1",
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "woodyard-1",
+          "name": "장작 더미",
+          "x": 12,
+          "y": 15,
+          "purpose": "목공 작업에서 나온 장작"
+        },
+        {
+          "id": "woodyard-2",
+          "name": "장작 더미",
+          "x": 14,
+          "y": 16,
+          "purpose": "겨울 땔감 두 번째 더미",
+          "near": "장작 더미"
+        }
+      ]
+    },
+    {
+      "id": "entry-sign",
+      "name": "남쪽 입구 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 24,
+        "y": 68,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "entry-sign-1",
+          "name": "나무 이정표",
+          "x": 22,
+          "y": 68,
+          "purpose": "마을 남쪽 입구 방향 안내"
+        },
+        {
+          "id": "entry-sign-2",
+          "name": "돌등",
+          "x": 26,
+          "y": 65,
+          "purpose": "입구 길 밝히기"
+        }
+      ]
+    },
+    {
+      "id": "stair-signs-w",
+      "name": "서쪽 계단 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 22,
+        "y": 52,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "stair-signs-w-1",
+          "name": "나무 이정표",
+          "x": 20,
+          "y": 53,
+          "purpose": "가운데 단으로 오르는 서쪽 계단 안내"
+        }
+      ]
+    },
+    {
+      "id": "stair-signs-e",
+      "name": "동쪽 계단 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 64,
+        "y": 52,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "stair-signs-e-1",
+          "name": "나무 이정표",
+          "x": 66,
+          "y": 53,
+          "purpose": "가운데 단으로 오르는 동쪽 계단 안내"
+        }
+      ]
+    }
+  ],
+  "chapel-hill-parish": [
+    {
+      "id": "churchyard",
+      "name": "교회 앞마당",
+      "anchor": {
+        "type": "landmark",
+        "id": "chapel-hill-parish-church",
+        "maxDistance": 6
+      },
+      "items": [
+        {
+          "id": "churchyard-1",
+          "name": "벤치",
+          "x": 29,
+          "y": 16,
+          "purpose": "예배 전후 앉아 기다리는 자리"
+        },
+        {
+          "id": "churchyard-2",
+          "name": "벤치",
+          "x": 36,
+          "y": 15,
+          "purpose": "교회 앞 동쪽 쉼 자리"
+        },
+        {
+          "id": "churchyard-3",
+          "name": "돌등",
+          "x": 32,
+          "y": 14,
+          "purpose": "교회 문 서쪽을 밝히는 등"
+        },
+        {
+          "id": "churchyard-4",
+          "name": "돌등",
+          "x": 35,
+          "y": 19,
+          "purpose": "교회 문 동쪽을 밝히는 등",
+          "near": "돌등"
+        },
+        {
+          "id": "churchyard-5",
+          "name": "꽃 화단",
+          "x": 38,
+          "y": 9,
+          "purpose": "교회 벽 옆 제단용 꽃밭"
+        }
+      ]
+    },
+    {
+      "id": "graveyard-gate",
+      "name": "묘지 들머리",
+      "anchor": {
+        "type": "landmark",
+        "id": "chapel-hill-parish-graveyard",
+        "maxDistance": 6
+      },
+      "items": [
+        {
+          "id": "graveyard-gate-1",
+          "name": "돌등",
+          "x": 12,
+          "y": 15,
+          "purpose": "묘지 입구를 밝히는 등"
+        },
+        {
+          "id": "graveyard-gate-2",
+          "name": "마른 묘목",
+          "x": 20,
+          "y": 14,
+          "purpose": "묘지 울타리 곁 마른 나무"
+        }
+      ]
+    },
+    {
+      "id": "falls-pool",
+      "name": "폭포 아래 소",
+      "anchor": {
+        "type": "road",
+        "x": 53,
+        "y": 31,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "falls-pool-1",
+          "name": "벤치",
+          "x": 52,
+          "y": 33,
+          "purpose": "폭포를 바라보며 쉬는 자리"
+        },
+        {
+          "id": "falls-pool-2",
+          "name": "낚시 바구니",
+          "x": 54,
+          "y": 35,
+          "purpose": "폭포 아래 소에서 쓰는 낚시 바구니"
+        }
+      ]
+    },
+    {
+      "id": "village-well",
+      "name": "아랫마을 공동 우물",
+      "anchor": {
+        "type": "road",
+        "x": 40,
+        "y": 44,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "village-well-1",
+          "name": "낮은 돌 우물",
+          "x": 37,
+          "y": 41,
+          "purpose": "아랫마을 주민의 급수"
+        },
+        {
+          "id": "village-well-2",
+          "name": "항아리",
+          "x": 35,
+          "y": 41,
+          "purpose": "길어 온 물을 담는 용기",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "village-well-3",
+          "name": "게시판",
+          "x": 43,
+          "y": 41,
+          "purpose": "교회 소식과 마을 공지를 붙이는 판"
+        }
+      ]
+    },
+    {
+      "id": "entry-sign",
+      "name": "남쪽 입구 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 40,
+        "y": 60,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "entry-sign-1",
+          "name": "나무 이정표",
+          "x": 38,
+          "y": 58,
+          "purpose": "교회로 오르는 길 안내"
+        }
+      ]
+    },
+    {
+      "id": "stair-sign",
+      "name": "계단 아래 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 40,
+        "y": 28,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "stair-sign-1",
+          "name": "나무 이정표",
+          "x": 38,
+          "y": 29,
+          "purpose": "언덕 위 교회로 오르는 계단 안내"
+        }
+      ]
+    }
+  ],
+  "ford-castle-town": [
+    {
+      "id": "castle-drill",
+      "name": "성 앞 훈련 마당",
+      "anchor": {
+        "type": "landmark",
+        "id": "ford-castle-town-castle",
+        "maxDistance": 6
+      },
+      "items": [
+        {
+          "id": "castle-drill-1",
+          "name": "무기 거치대",
+          "x": 40,
+          "y": 38,
+          "purpose": "성 병사들이 창과 칼을 거는 자리"
+        },
+        {
+          "id": "castle-drill-2",
+          "name": "무기 거치대",
+          "x": 42,
+          "y": 38,
+          "purpose": "두 번째 무기 거치대",
+          "near": "무기 거치대"
+        },
+        {
+          "id": "castle-drill-3",
+          "name": "나무통",
+          "x": 38,
+          "y": 39,
+          "purpose": "훈련 뒤 마실 물통",
+          "near": "무기 거치대"
+        },
+        {
+          "id": "castle-drill-4",
+          "name": "돌등",
+          "x": 47,
+          "y": 38,
+          "purpose": "성문 서쪽을 밝히는 등"
+        },
+        {
+          "id": "castle-drill-5",
+          "name": "돌등",
+          "x": 52,
+          "y": 38,
+          "purpose": "성문 동쪽을 밝히는 등",
+          "near": "돌등"
+        }
+      ]
+    },
+    {
+      "id": "castle-stores",
+      "name": "성 동쪽 보급터",
+      "anchor": {
+        "type": "landmark",
+        "id": "ford-castle-town-castle",
+        "maxDistance": 6
+      },
+      "items": [
+        {
+          "id": "castle-stores-1",
+          "name": "나무 상자",
+          "x": 60,
+          "y": 38,
+          "purpose": "성으로 들일 보급 상자"
+        },
+        {
+          "id": "castle-stores-2",
+          "name": "술통",
+          "x": 62,
+          "y": 38,
+          "purpose": "성 창고에 들일 술통",
+          "near": "나무 상자"
+        },
+        {
+          "id": "castle-stores-3",
+          "name": "장작 더미",
+          "x": 64,
+          "y": 38,
+          "purpose": "성 부엌에 들일 땔감",
+          "near": "나무 상자"
+        }
+      ]
+    },
+    {
+      "id": "top-bridge-watch",
+      "name": "윗다리 망보는 자리",
+      "anchor": {
+        "type": "road",
+        "x": 80,
+        "y": 27,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "top-bridge-watch-1",
+          "name": "돌등",
+          "x": 79,
+          "y": 24,
+          "purpose": "윗다리 서쪽 목 밝히기"
+        },
+        {
+          "id": "top-bridge-watch-2",
+          "name": "나무 이정표",
+          "x": 77,
+          "y": 29,
+          "purpose": "강 건너 망루지기 집 안내"
+        }
+      ]
+    },
+    {
+      "id": "mid-market",
+      "name": "가운데 단 장터",
+      "anchor": {
+        "type": "road",
+        "x": 48,
+        "y": 63,
+        "maxDistance": 9
+      },
+      "items": [
+        {
+          "id": "mid-market-1",
+          "name": "장터 노점",
+          "x": 42,
+          "y": 60,
+          "purpose": "성 아랫마을 좌판"
+        },
+        {
+          "id": "mid-market-2",
+          "name": "과일 좌판",
+          "x": 46,
+          "y": 60,
+          "purpose": "아랫단 텃밭에서 거둔 과일",
+          "near": "장터 노점"
+        },
+        {
+          "id": "mid-market-3",
+          "name": "낮은 돌 우물",
+          "x": 52,
+          "y": 59,
+          "purpose": "가운데 단 공동 우물"
+        },
+        {
+          "id": "mid-market-4",
+          "name": "게시판",
+          "x": 50,
+          "y": 56,
+          "purpose": "성의 포고문을 붙이는 판"
+        }
+      ]
+    },
+    {
+      "id": "pool-rest",
+      "name": "가운데 단 폭포 소",
+      "anchor": {
+        "type": "road",
+        "x": 81,
+        "y": 63,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "pool-rest-1",
+          "name": "벤치",
+          "x": 76,
+          "y": 58,
+          "purpose": "폭포 아래 소를 보며 쉬는 자리"
+        },
+        {
+          "id": "pool-rest-2",
+          "name": "낚시 바구니",
+          "x": 78,
+          "y": 60,
+          "purpose": "소에서 쓰는 낚시 바구니"
+        }
+      ]
+    },
+    {
+      "id": "lower-fire",
+      "name": "나루 모닥불",
+      "anchor": {
+        "type": "house",
+        "id": "ford-castle-town-house-10",
+        "maxDistance": 12
+      },
+      "items": [
+        {
+          "id": "lower-fire-1",
+          "name": "모닥불",
+          "x": 71,
+          "y": 82,
+          "purpose": "나루 일꾼들이 저녁에 불을 피우는 자리"
+        },
+        {
+          "id": "lower-fire-2",
+          "name": "벤치",
+          "x": 70,
+          "y": 84,
+          "purpose": "불가에 앉는 자리",
+          "near": "모닥불"
+        },
+        {
+          "id": "lower-fire-3",
+          "name": "장작 더미",
+          "x": 74,
+          "y": 82,
+          "purpose": "모닥불 장작",
+          "near": "모닥불"
+        }
+      ]
+    },
+    {
+      "id": "entry-sign",
+      "name": "남쪽 입구 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 48,
+        "y": 88,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "entry-sign-1",
+          "name": "나무 이정표",
+          "x": 46,
+          "y": 90,
+          "purpose": "성으로 오르는 길 안내"
+        },
+        {
+          "id": "entry-sign-2",
+          "name": "돌등",
+          "x": 50,
+          "y": 85,
+          "purpose": "입구 길 밝히기"
+        }
+      ]
+    }
+  ],
+  "mistpond-hollow": [
+    {
+      "id": "pond-gate",
+      "name": "못 울타리 들머리",
+      "anchor": {
+        "type": "landmark",
+        "id": "mistpond-hollow-shrine-pond",
+        "maxDistance": 4
+      },
+      "items": [
+        {
+          "id": "pond-gate-1",
+          "name": "흰 돌기둥",
+          "x": 37,
+          "y": 41,
+          "purpose": "못 울타리 입구 서쪽 돌기둥"
+        },
+        {
+          "id": "pond-gate-2",
+          "name": "흰 돌기둥",
+          "x": 43,
+          "y": 41,
+          "purpose": "못 울타리 입구 동쪽 돌기둥",
+          "near": "흰 돌기둥"
+        },
+        {
+          "id": "pond-gate-3",
+          "name": "돌등",
+          "x": 35,
+          "y": 42,
+          "purpose": "꺼진 채 남은 입구 등"
+        }
+      ]
+    },
+    {
+      "id": "pond-offering",
+      "name": "못가 제물 자리",
+      "anchor": {
+        "type": "landmark",
+        "id": "mistpond-hollow-shrine-pond",
+        "maxDistance": 6
+      },
+      "items": [
+        {
+          "id": "pond-offering-1",
+          "name": "벤치",
+          "x": 49,
+          "y": 36,
+          "purpose": "못지기가 석상을 바라보며 앉는 자리"
+        },
+        {
+          "id": "pond-offering-2",
+          "name": "꽃 화단",
+          "x": 48,
+          "y": 33,
+          "purpose": "석상에 바칠 꽃을 기르는 화단"
+        }
+      ]
+    },
+    {
+      "id": "grave-edge",
+      "name": "잊힌 묘지 가장자리",
+      "anchor": {
+        "type": "landmark",
+        "id": "mistpond-hollow-graveyard-small",
+        "maxDistance": 5
+      },
+      "items": [
+        {
+          "id": "grave-edge-1",
+          "name": "마른 묘목",
+          "x": 65,
+          "y": 31,
+          "purpose": "묘지 울타리 곁 말라 죽은 나무"
+        },
+        {
+          "id": "grave-edge-2",
+          "name": "해골",
+          "x": 73,
+          "y": 36,
+          "purpose": "묘지 밖에 굴러 나온 해골"
+        },
+        {
+          "id": "grave-edge-3",
+          "name": "돌 오벨리스크",
+          "x": 64,
+          "y": 36,
+          "purpose": "마을이 비기 전 세운 위령비"
+        }
+      ]
+    },
+    {
+      "id": "dead-well",
+      "name": "말라 버린 우물",
+      "anchor": {
+        "type": "road",
+        "x": 40,
+        "y": 44,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "dead-well-1",
+          "name": "낮은 돌 우물",
+          "x": 36,
+          "y": 46,
+          "purpose": "물이 끊긴 옛 공동 우물"
+        },
+        {
+          "id": "dead-well-2",
+          "name": "부서진 울타리",
+          "x": 34,
+          "y": 46,
+          "purpose": "무너진 우물가 울타리",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "dead-well-3",
+          "name": "통나무 더미",
+          "x": 38,
+          "y": 49,
+          "purpose": "썩어 가는 옛 땔감",
+          "near": "낮은 돌 우물"
+        }
+      ]
+    },
+    {
+      "id": "falls-lookout",
+      "name": "폭포 아래 옛 빨래터",
+      "anchor": {
+        "type": "road",
+        "x": 22,
+        "y": 36,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "falls-lookout-1",
+          "name": "항아리",
+          "x": 19,
+          "y": 31,
+          "purpose": "빨래터에 버려진 물항아리"
+        },
+        {
+          "id": "falls-lookout-2",
+          "name": "마른 묘목",
+          "x": 20,
+          "y": 40,
+          "purpose": "물가에 선 마른 나무"
+        }
+      ]
+    },
+    {
+      "id": "entry-sign",
+      "name": "남쪽 입구 길잡이",
+      "anchor": {
+        "type": "road",
+        "x": 40,
+        "y": 60,
+        "maxDistance": 10
+      },
+      "items": [
+        {
+          "id": "entry-sign-1",
+          "name": "나무 이정표",
+          "x": 38,
+          "y": 58,
+          "purpose": "글씨가 바랜 마을 이정표"
         }
       ]
     }

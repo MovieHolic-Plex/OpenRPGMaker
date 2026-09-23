@@ -13,8 +13,8 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import { canonicalJsonString } from "@/project/persistence/core/canonicalJson";
-import type { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
+import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
+import { AuthoredProjectBaseline, composeProjectIdentity, projectIdentityParts, type ProjectIdentityParts, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
@@ -219,14 +219,72 @@ function proposalContent(project: Project): string {
   // World documents are merged from the live store, not replaced by ordinary proposals.
   // Reuse the JSONB comparator without schema normalization: only key order is
   // ignored, while the existing JSON projection, authored values and arrays stay intact.
-  return canonicalJsonString(JSON.parse(JSON.stringify({ ...project, world: undefined })));
+  return composeProjectIdentity(identityPartsOf(project), "proposal");
+}
+
+function worldContent(project: Project): string {
+  return canonicalJsonOf(project.world ?? null)!;
+}
+
+/**
+ * 한 동기 구간 안에서만 같은 객체의 정체성 문자열을 한 번만 만든다.
+ *
+ * 왜(2026-09-23 실측, 34.9 MB 프로젝트): 체크포인트 하나가 같은 객체를 두고 proposalContent·
+ * authoredIdentity·contentIdentity 를 겹쳐 계산했다 — 한 번에 0.5 s 씩 메인 스레드가 멈췄다.
+ *
+ * 구간을 넘겨 기억하지 않는다: 사람은 세대를 올리지 않고 객체를 제자리에서 고칠 수 있고
+ * (aiMutationApplyAccounting «live content changes without a generation increment»), 그걸
+ * 잡는 게 바로 stale-base 검사다. 기억을 세대에 묶었더니 그 편집 위로 옛 제안이 적용됐다.
+ */
+interface IdentityMemo { parts?: ProjectIdentityParts; content?: string; authored?: string; complete?: string }
+let identityScope: WeakMap<Project, IdentityMemo> | null = null;
+function withIdentityScope<T>(run: () => T): T {
+  if (identityScope) return run();
+  identityScope = new WeakMap();
+  try { return run(); } finally { identityScope = null; }
+}
+function memoOf(project: Project): IdentityMemo | null {
+  if (!identityScope) return null;
+  let memo = identityScope.get(project);
+  if (!memo) identityScope.set(project, memo = {});
+  return memo;
+}
+/** 세 정체성이 나눠 쓰는 최상위 조각. 구간 밖에서는 매번 새로 만든다. */
+function identityPartsOf(project: Project): ProjectIdentityParts {
+  const memo = memoOf(project);
+  return memo ? (memo.parts ??= projectIdentityParts(project)) : projectIdentityParts(project);
+}
+function proposalContentOf(project: Project): string {
+  const memo = memoOf(project);
+  return memo ? (memo.content ??= proposalContent(project)) : proposalContent(project);
+}
+const storeIdentities: ProjectIdentitySource = {
+  authored: project => {
+    const memo = memoOf(project);
+    return memo ? (memo.authored ??= composeProjectIdentity(identityPartsOf(project), "authored"))
+      : composeProjectIdentity(identityPartsOf(project), "authored");
+  },
+  complete: project => {
+    const memo = memoOf(project);
+    return memo ? (memo.complete ??= composeProjectIdentity(identityPartsOf(project), "complete"))
+      : composeProjectIdentity(identityPartsOf(project), "complete");
+  },
+};
+
+export function captureAuthoredBaseline(project: Project): AuthoredProjectBaseline {
+  return new AuthoredProjectBaseline(project, storeIdentities);
 }
 
 export function captureProposalBase(project: Project): ProposalBase {
   return Object.freeze({
     version: store.getVersionToken(), identity: JSON.stringify(store.getProjectIdentity()),
-    content: proposalContent(project), world: canonicalJsonString(JSON.parse(JSON.stringify(project.world ?? null))),
+    content: proposalContentOf(project), world: worldContent(project),
   });
+}
+
+/** 적용 권위(기준 + 초안 기준선)를 한 번에 잡는다. 둘을 따로 잡으면 같은 직렬화를 두 번 한다. */
+export function captureApplyAuthority(project: Project): { base: ProposalBase; baseline: AuthoredProjectBaseline } {
+  return withIdentityScope(() => ({ base: captureProposalBase(project), baseline: captureAuthoredBaseline(project) }));
 }
 
 function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boolean {
@@ -236,8 +294,8 @@ function isProposalBaseCurrent(base: ProposalBase, resetProject: boolean): boole
   // Compare authored values even for unchanged counters: save reconciliation and
   // detached callers do not necessarily share the current object. No-op updates
   // and our own saves remain valid; unrelated human edits never refresh the base.
-  return proposalContent(current) === base.content
-    && (!resetProject || canonicalJsonString(JSON.parse(JSON.stringify(current.world ?? null))) === base.world);
+  return proposalContentOf(current) === base.content
+    && (!resetProject || worldContent(current) === base.world);
 }
 
 export interface ApplyProposedProjectOptions {
@@ -296,93 +354,109 @@ export type ApplyProposedProjectResult =
  * 보장된다(마일스톤 단위 결정성). 커밋 기록 네트워크 실패는 적용을 막지 않는다
  * (기존 fire-and-forget의 console.warn 정책과 동일) — row는 persisted:false 로 반환.
  */
+interface PreparedApply {
+  readonly appliedProject: Project;
+  readonly diff: ChangeSummary;
+  readonly change: ReturnType<typeof applyAnnotation>;
+}
+
 export async function applyProposedProject(
   proposed: Project,
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
-  if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
-    return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
-  }
   const before = store.getCurrent();
-  if (!options.baseline.matches(before, options.resetProject === true)) {
-    const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
-    return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
-  }
-  // 맵 규모 파괴는 사람이 봐야 적용된다. 권위(위)와 불변식(아래) 검사를 통과한 배치라도,
-  // "무엇이 사라졌는지 화면에서 봤다"는 전제 없이는 되돌리기가 유일한 복구라는 정책이 성립하지 않는다.
-  //
-  // 소실은 **이름이 아니라 결과**로 잡는다 — 이름 목록은 실행 경로가 늘 때마다 빈다(2026-09-17
-  // 실측: `/pi` 한 줄이 맵 12개를 지우고 이벤트 20개를 날렸는데 toolNames 가 ["pi_agent"] 라
-  // 게이트가 울리지 않았다). resetProject 는 예외다: 프로젝트 전체 교체는 맵 소실이 곧 의도이고
-  // 그 경로는 자기 확인을 따로 받는다.
-  const losesMaps = options.resetProject === true
-    ? false
-    : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0;
-  if (options.mapDestructionApproved !== true
-    && (losesMaps || options.toolNames.some((name) => isMapDestruction(name)))) {
-    const issue = losesMaps
-      ? "맵·이벤트가 사라지는 변경은 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요."
-      : "맵 전체 청소는 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요.";
-    return { ok: false, reason: "map-destruction-unapproved", issue, issues: [issue] };
-  }
-  // Wiki checkpoints and human codex edits own world documents independently of
-  // detached authoring previews. A title/map proposal must not restore an old wiki.
-  const appliedProject = { ...proposed };
-  transferDetachedDraftMemory(proposed, appliedProject);
-  try { assertSpatialToolAcceptance(appliedProject, before); }
-  catch (error) {
-    if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
-    return { ok: false, reason: "commit-rejected", issue: error.message, issues: [error.message] };
-  }
-  if (!options.resetProject) {
-    // R2: blanket live-world replacement erases approved author_npc_cast
-    // registrations. Merge instead — reviewed authored graph wins, live wiki
-    // documents survive. The R1 baseline gate above already rejected concurrent
-    // authored drift, so the reviewed partition applies cleanly by construction.
-    const merged = reconcileReviewedWorldForApply(proposed.world, before.world);
-    if (merged) appliedProject.world = merged;
-    else delete appliedProject.world;
-  }
-  // A detached preview may predate human edits or newly accepted houses.
-  // Capture the live baseline at application, before any history or store writes.
-  try {
-    assertHouseProtection(captureHouseProtection(before), appliedProject, []);
-  } catch (error) {
-    if (!(error instanceof ToolError)) throw error;
-    const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
-    return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
-  }
-  const commit = commitChangeset(appliedProject, before);
-  if (!commit.ok) {
-    const blocking = commit.blocking.map((entry) =>
-      entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
-    return {
-      ok: false,
-      reason: "commit-rejected",
-      issue: blocking[0] ?? "무결성 오류",
-      issues: blocking,
-    };
-  }
-  if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
-  finishSpatialToolAcceptance(appliedProject);
-  // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
-  // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
-  const diff = options.diff ?? summarizeChanges(before, appliedProject);
-  const change = applyAnnotation(
-    "ai",
-    `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
-    diff,
-    options.toolNames,
-    options.reason ?? `AI 적용: ${options.summary}`,
-  );
-  // The client-owned write critical section is synchronous: no await or external
-  // callback between the last authority check, undo snapshot, and replacement.
-  // All async commit/wiki work below follows the actual local mutation.
-  if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
-  if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
-    return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
-  }
+  // 첫 권위 검사부터 마지막 권위 검사까지는 await 도 외부 콜백도 없는 한 동기 구간이다. 그 안에서만 같은 객체
+  // (before = 스토어의 현재 프로젝트)의 정체성 문자열을 한 번 만들어 두 검사가 나눠 쓴다 — 예전에는 마지막 검사가
+  // 구간 밖이라 수 MB 직렬화를 한 번 더 돌렸다(2026-09-23 실측, 체크포인트마다 0.5 s). 구간은 교체 전에 닫힌다.
+  const prepared = withIdentityScope((): ApplyProposedProjectResult | PreparedApply => {
+    const authority = withIdentityScope(() => !isProposalBaseCurrent(options.base, options.resetProject === true) ? "stale-base"
+      : !options.baseline.matches(before, options.resetProject === true, storeIdentities) ? "stale-baseline" : null);
+    if (authority === "stale-base") {
+      return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
+    }
+    if (authority === "stale-baseline") {
+      const issue = "초안을 만든 뒤 프로젝트가 수정되었습니다. 최신 프로젝트에서 다시 생성하고 독립 검수를 받아주세요.";
+      return { ok: false, reason: "stale-baseline", issue, issues: [issue] };
+    }
+    // 맵 규모 파괴는 사람이 봐야 적용된다. 권위(위)와 불변식(아래) 검사를 통과한 배치라도,
+    // "무엇이 사라졌는지 화면에서 봤다"는 전제 없이는 되돌리기가 유일한 복구라는 정책이 성립하지 않는다.
+    //
+    // 소실은 **이름이 아니라 결과**로 잡는다 — 이름 목록은 실행 경로가 늘 때마다 빈다(2026-09-17
+    // 실측: `/pi` 한 줄이 맵 12개를 지우고 이벤트 20개를 날렸는데 toolNames 가 ["pi_agent"] 라
+    // 게이트가 울리지 않았다). resetProject 는 예외다: 프로젝트 전체 교체는 맵 소실이 곧 의도이고
+    // 그 경로는 자기 확인을 따로 받는다.
+    const losesMaps = options.resetProject === true
+      ? false
+      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0;
+    if (options.mapDestructionApproved !== true
+      && (losesMaps || options.toolNames.some((name) => isMapDestruction(name)))) {
+      const issue = losesMaps
+        ? "맵·이벤트가 사라지는 변경은 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요."
+        : "맵 전체 청소는 사용자 허가가 필요합니다 — 채팅에서 확인 후 적용하세요.";
+      return { ok: false, reason: "map-destruction-unapproved", issue, issues: [issue] };
+    }
+    // Wiki checkpoints and human codex edits own world documents independently of
+    // detached authoring previews. A title/map proposal must not restore an old wiki.
+    const appliedProject = { ...proposed };
+    transferDetachedDraftMemory(proposed, appliedProject);
+    try { assertSpatialToolAcceptance(appliedProject, before); }
+    catch (error) {
+      if (!(error instanceof ToolError || error instanceof ProjectFormatError || error instanceof SpatialOperationError)) throw error;
+      return { ok: false, reason: "commit-rejected", issue: error.message, issues: [error.message] };
+    }
+    if (!options.resetProject) {
+      // R2: blanket live-world replacement erases approved author_npc_cast
+      // registrations. Merge instead — reviewed authored graph wins, live wiki
+      // documents survive. The R1 baseline gate above already rejected concurrent
+      // authored drift, so the reviewed partition applies cleanly by construction.
+      const merged = reconcileReviewedWorldForApply(proposed.world, before.world);
+      if (merged) appliedProject.world = merged;
+      else delete appliedProject.world;
+    }
+    // A detached preview may predate human edits or newly accepted houses.
+    // Capture the live baseline at application, before any history or store writes.
+    try {
+      assertHouseProtection(captureHouseProtection(before), appliedProject, []);
+    } catch (error) {
+      if (!(error instanceof ToolError)) throw error;
+      const issue = error.mapId ? `[${error.mapId}] ${error.message}` : error.message;
+      return { ok: false, reason: "commit-rejected", issue, issues: [issue] };
+    }
+    const commit = commitChangeset(appliedProject, before);
+    if (!commit.ok) {
+      const blocking = commit.blocking.map((entry) =>
+        entry.mapId ? `[${entry.mapId}] ${entry.message}` : entry.message);
+      return {
+        ok: false,
+        reason: "commit-rejected",
+        issue: blocking[0] ?? "무결성 오류",
+        issues: blocking,
+      };
+    }
+    if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
+    finishSpatialToolAcceptance(appliedProject);
+    // diff 를 replace **전에** 계산한다 — 행위 로그 라벨이 이 시점에 확정돼야 하고,
+    // summarizeChanges 는 before(교체 전 스토어)를 필요로 한다.
+    const diff = options.diff ?? summarizeChanges(before, appliedProject);
+    const change = applyAnnotation(
+      "ai",
+      `${options.source === "agent-milestone" ? "AI 마일스톤" : "AI 제안"} 적용: ${options.summary}`,
+      diff,
+      options.toolNames,
+      options.reason ?? `AI 적용: ${options.summary}`,
+    );
+    // The client-owned write critical section is synchronous: no await or external
+    // callback between the last authority check, undo snapshot, and replacement.
+    // All async commit/wiki work below follows the actual local mutation.
+    if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
+    if (!isProposalBaseCurrent(options.base, options.resetProject === true)) {
+      return { ok: false, reason: "stale-base", issue: "기준 프로젝트가 변경되었습니다. 최신 편집을 기준으로 다시 요청해주세요." };
+    }
+    return { appliedProject, diff, change };
+  });
+  if ("ok" in prepared) return prepared;
+  const { appliedProject, diff, change } = prepared;
   if (!options.skipSnapshot) recordProjectSnapshot(options.snapshotLabel, options.snapshotMapId);
   // Correlate at the mutation boundary: synchronous subscribers and the awaited
   // commit can both leave a later edit in the live store before this apply returns.

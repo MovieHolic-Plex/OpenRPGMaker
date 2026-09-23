@@ -1,3 +1,4 @@
+import { applyBattleDefeat } from "@/player/playSceneDefeat";
 import { appendBattleReport } from "@/project/battleReports";
 import type { BattleResult, BattleRuntime } from "@/battle/runtime";
 import { BattleAdmissionError } from "@/project/battleAdmission";
@@ -44,7 +45,7 @@ export function showBattleScene(scene: PlaySceneContext, troopId: string): void 
   scene.showRuntimeOverlay("battle-scene", troopId || "battle");
 }
 
-type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController">
+type BattleHostScene = Pick<PlaySceneContext, "session" | "tileY" | "battleAbortController" | "showGameOverScreen">
   & Parameters<typeof dialogueHost>[0]
   & Partial<Pick<PlaySceneContext, "events" | "runtimeTimers">>
   & { readonly map: Pick<PlaySceneContext["map"], "height"> };
@@ -249,7 +250,8 @@ export async function playBattle(
                 // 밝은 필드에 파티가 서 있는 장면이 300ms 드러난 뒤 게임오버 상자가 무전환으로 튀었다
                 // (2026-09-14 실측). 커버는 게임오버 화면이 그 아래에 마운트된 뒤 스스로 페이드아웃한다 —
                 // cleanup 이 오버레이를 즉시 지우지 않도록 소유권을 놓는다.
-                const terminalDefeat = result === "defeat" && !snapshot.canLose;
+                const authoredGameOver = result === "defeat" ? snapshot.eventState.gameOverRequest : undefined;
+                const terminalDefeat = result === "defeat" && (!snapshot.canLose || !!authoredGameOver);
                 if (terminalDefeat) {
                   exitTransition = undefined;
                   void transition.reveal();
@@ -276,7 +278,12 @@ export async function playBattle(
                 if (result === "victory") maybeAutosave(project, session, "battleVictory");
                 settled = true;
                 cleanup();
-                resolve(result);
+                if (authoredGameOver) {
+                  session.battleResult = result;
+                  applyBattleDefeat(scene, authoredGameOver.message, authoredGameOver.gameOverId);
+                  // The selected terminal flow owns continuation, including canLose battles.
+                  resolve(null);
+                } else resolve(result);
               }).catch(fail);
             } catch (error) {
               fail(error);

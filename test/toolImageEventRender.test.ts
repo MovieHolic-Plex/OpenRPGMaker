@@ -92,7 +92,7 @@ describe("show_map_region event depiction", () => {
     expect(pixelDiffRatio(withGraphic.raster, empty.raster)).toBeGreaterThan(0.001);
   });
 
-  it("fails closed when page2-only graphic change creates distinct page visuals", async () => {
+  it("draws the page active at game start when pages have distinct visuals", async () => {
     restoreDom = installToolImageRasterDom();
     const project = seededProject();
     const map = requireMap(project);
@@ -103,12 +103,33 @@ describe("show_map_region event depiction", () => {
     ]));
 
     const before = await renderRegion(project, map.id);
-    expect(before.dataUrl.length).toBeGreaterThan(100);
+    // 조건 없는 두 페이지면 런타임은 마지막 페이지(p1)를 켠다 — 그 그림이 바뀌면 화면도 바뀐다.
+    requirePage(requireEvent(map, "ev_pages"), 1).graphic = charsetGraphic("tex_easyrpg_charset_people1", 6);
+    const after = await renderRegion(project, map.id);
+    expect(after.dataUrl).not.toBe(before.dataUrl);
+    expect(pixelDiffRatio(before.raster, after.raster)).toBeGreaterThan(0.001);
+  });
 
-    const page1 = requirePage(requireEvent(map, "ev_pages"), 1);
-    page1.graphic = charsetGraphic("tex_easyrpg_charset_people1", 6);
-    await expect(renderToolImages(project, "show_map_region", regionPayload(map.id)))
-      .rejects.toThrow("map-event-rendering-unavailable");
+  // 2026-09-23 도그푸딩: 프로젝트 전체 검수가 닫힘/열림 2페이지 보물상자 하나로 「검수 불가」가 됐다.
+  it("renders a standard two-page chest (closed/opened self switch) as its closed start page", async () => {
+    restoreDom = installToolImageRasterDom();
+    const project = seededProject();
+    const map = requireMap(project);
+    // place_chest 와 같은 모양: 닫힘(A=false) / 열림(A=true), 페이지마다 다른 프레임.
+    const closed = { ...pageGraphic("closed", charsetGraphic("tex_easyrpg_charset_people1", 0)), conditions: [{ kind: "selfSwitch" as const, key: "A" as const, value: false }] };
+    const opened = { ...pageGraphic("opened", charsetGraphic("tex_easyrpg_charset_people1", 3)), conditions: [{ kind: "selfSwitch" as const, key: "A" as const, value: true }] };
+    const chest = multiPageEvent("chest_cave_potion", 4, 3, [closed, opened]);
+    placeNpc(map, chest);
+
+    const withChest = await renderRegion(project, map.id);
+    const empty = await renderRegion(seededProject(), map.id);
+    expect(pixelDiffRatio(withChest.raster, empty.raster)).toBeGreaterThan(0.001);
+    await expect(renderHarmonyMapImages(project, map)).resolves.toHaveLength(1);
+
+    // 열림 페이지 그림만 바꾸면 시작 화면은 그대로다 — 닫힘(시작) 페이지를 그린다는 증거.
+    requirePage(chest, 1).graphic = charsetGraphic("tex_easyrpg_charset_people1", 6);
+    const openedChanged = await renderRegion(project, map.id);
+    expect(openedChanged.dataUrl).toBe(withChest.dataUrl);
   });
 
   it("fails closed instead of tile-only proof when a claimed graphic is unsupported", async () => {

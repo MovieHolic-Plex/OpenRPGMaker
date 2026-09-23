@@ -1,0 +1,122 @@
+{
+  "guidance": [
+    {
+      "tileset": "tibo_interior_expanded",
+      "category": "fantasy-interiors-v1",
+      "present": true
+    },
+    {
+      "tileset": "easyrpg_chipset_dungeon",
+      "category": "fantasy-dungeon-rooms-v1",
+      "present": true
+    },
+    {
+      "tileset": "forest_harmony",
+      "category": "fantasy-exteriors-v1",
+      "present": true
+    }
+  ],
+  "places": [
+    {
+      "id": "fantasy-weapon-shop-16x13",
+      "aiRowsExact": true,
+      "preview": [
+        256,
+        208
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-armor-shop-16x13",
+      "aiRowsExact": true,
+      "preview": [
+        256,
+        208
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-item-shop-16x13",
+      "aiRowsExact": true,
+      "preview": [
+        256,
+        208
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-smithy-18x14",
+      "aiRowsExact": true,
+      "preview": [
+        288,
+        224
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-throne-room-24x22",
+      "aiRowsExact": true,
+      "preview": [
+        384,
+        352
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-castle-corridor-30x11",
+      "aiRowsExact": true,
+      "preview": [
+        480,
+        176
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-castle-jail-28x18",
+      "aiRowsExact": true,
+      "preview": [
+        448,
+        288
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-demon-throne-30x26",
+      "aiRowsExact": true,
+      "preview": [
+        480,
+        416
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-wizard-tower-floor-20x18",
+      "aiRowsExact": true,
+      "preview": [
+        320,
+        288
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-shop-street-62x15",
+      "aiRowsExact": true,
+      "preview": [
+        992,
+        240
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "fantasy-ruined-castle-50x38",
+      "aiRowsExact": true,
+      "preview": [
+        800,
+        608
+      ],
+      "downloadExact": true
+    }
+  ],
+  "activeProjectUnchanged": true,
+  "errors": []
+}

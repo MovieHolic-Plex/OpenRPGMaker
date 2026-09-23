@@ -53,7 +53,7 @@ import { storyFlagForTarget, storyFlagListLabel, storyFlagTargetKey } from "../s
 import { buildStoryFlagUsageIndex, declaredStoryFlagTargets, usageBucketFor } from "../storyFlagUsage";
 import type { Command, GameEvent, GameMap, LintSeverity, Project, Trigger } from "../types";
 import { lintWorldGraph } from "../worldGraph";
-import { validateClusterRules, validateClusterRulesForMaps, type ClusterRuleViolation } from "./clusterRuleValidators";
+import { clusterRuleLintIssues } from "./clusterRuleLint";
 import { checkReachability, isAdjacentOrOn, type ReachabilitySpec } from "./reachability";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { collectMapLocationReferenceIssues } from "../mapLocationReferences";
@@ -646,30 +646,7 @@ function checkQuestGraphs(project: Project, issues: LintIssue[]): void {
 }
 
 function checkClusterRules(project: Project, issues: LintIssue[], mapIds?: readonly string[]): void {
-  const violations = mapIds ? validateClusterRulesForMaps(project, mapIds) : validateClusterRules(project);
-  for (const violation of violations) {
-    const message = clusterRuleMessage(violation);
-    if (violation.coords.length === 0) {
-      issues.push({ severity: violation.severity, code: violation.code, message });
-      continue;
-    }
-    for (const coord of violation.coords) {
-      issues.push({
-        severity: violation.severity,
-        code: violation.code,
-        mapId: coord.mapId,
-        x: coord.x,
-        y: coord.y,
-        message,
-      });
-    }
-  }
-}
-
-function clusterRuleMessage(violation: ClusterRuleViolation): string {
-  const custom = violation.rule.message?.trim();
-  if (custom) return custom;
-  return `클러스터 규칙 위반: ${violation.groupId} / ${violation.rule.kind} / ${violation.rule.strength}`;
+  for (const issue of clusterRuleLintIssues(project, mapIds)) issues.push(issue);
 }
 
 // (g) opts.reachability 지정 시 도달 불가 = error.
@@ -1018,7 +995,7 @@ function checkSystemOptInConsistency(project: Project, issues: LintIssue[]): voi
   }
   // 수집 게이트 OFF + 종족 데이터 조합은 여기서 경고하지 않는다: 출하 기본 프로젝트가 이미
   // 종족 120개·포획 아이템 3개를 수집 OFF 상태로 싣고 있어 모든 프로젝트에서 발화한다(노이즈).
-  // 대신 수집 3개 탭 상단 배너(db-collection-gate-warn)가 맥락 안에서 알린다.
+  // 대신 포획·성장 종족 탭 상단 배너(db-collection-gate-warn)가 맥락 안에서 알린다.
   // 상성표에 없는 타입도 같은 이유로 여기서 경고하지 않는다(종족 탭 db-monster-species-type-warn 칩이 담당).
   // 2. monsterBattleParty && no species
   if (system.monsterBattleParty === true && monsterSpecies.length === 0) {

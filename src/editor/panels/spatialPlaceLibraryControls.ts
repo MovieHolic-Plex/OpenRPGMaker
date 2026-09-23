@@ -4,9 +4,11 @@ import { classifyPlaceCard, matchesPlaceClassification, PLACE_CATEGORIES, PLACE_
 import { openNewPlaceDialog } from './spatialNewPlaceDialog';
 import { patchSpatialSession } from './spatialAuthoringSession';
 import { openDialog } from './databaseEnemyRecordSupport';
+import { renderSpatialFilterDrawer } from './spatialFilterDrawer';
 import './spatialPlaceLibrary.css';
 const customCategories = new Set<string>();
-export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void): HTMLElement {
+/** `extra` 는 셸이 가진 출처·쓰임 칩이다 — 같은 「필터」 서랍 안에 넣는다. */
+export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[], refresh: () => void, extra: { readonly nodes: readonly HTMLElement[]; readonly activeCount: number } = { nodes: [], activeCount: 0 }): HTMLElement {
   const values = cards.map(classifyPlaceCard), f = placeLibraryFilters;
   const update = () => { patchSpatialSession({ listView: true }); refresh(); };
   const select = (label: string, key: 'style' | 'environment' | 'purpose', options: readonly string[]) => {
@@ -31,16 +33,19 @@ export function renderPlaceLibraryControls(cards: readonly SpatialGalleryCard[],
       el('div', { class: 'place-library-title', children: [
         el('strong', { text: '장소 라이브러리' }),
         el('span', { class: 'place-library-count', text: `${cards.filter(matchesPlaceClassification).length}개`, dataset: { testid: 'place-library-count' } }),
-        el('small', { text: 'EasyRPG · Tibo는 호환 확장 소재입니다' }),
       ] }),
       el('button', { text: '＋ 장소 만들기', class: 'spatial-action is-primary', on: { click: () => openNewPlaceDialog(refresh) } }),
     ] }),
+    // 검색과 분류 탭만 늘 보인다. 나머지 좁히기는 「필터」 서랍 안 — 켜진 개수는 서랍 머리에 뜬다.
     el('div', { class: 'place-library-filters', children: [
       search,
-      select('그림체', 'style', values.map(v => v.style)),
-      select('공간 형태', 'environment', PLACE_ENVIRONMENTS),
-      select('용도', 'purpose', values.flatMap(v => v.purposes)),
       tabs,
+      renderSpatialFilterDrawer([f.style, f.environment, f.purpose].filter(Boolean).length + extra.activeCount, [
+        select('그림체', 'style', values.map(v => v.style)),
+        select('공간 형태', 'environment', PLACE_ENVIRONMENTS),
+        select('용도', 'purpose', values.flatMap(v => v.purposes)),
+        ...extra.nodes,
+      ]),
     ] }),
   ] });
 }

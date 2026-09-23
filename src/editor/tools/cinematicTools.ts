@@ -1,3 +1,4 @@
+import { validateGameOverSettings } from "@/project/io/shapeDatabaseFields";
 // editor/tools/cinematicTools.ts
 // 오프닝 시네마틱(system.opening)의 AI 저작면. DB 「오프닝」 탭과 같은 레코드를 쓰므로
 // 런타임(새 게임 시작 전 재생)이 그대로 소비한다.
@@ -715,12 +716,14 @@ const getGameOver: ToolDefinition = {
 
 const setGameOver: ToolDefinition = {
   name: "set_game_over",
-  description: "게임오버 화면의 제목·본문·재시도/타이틀 버튼 문구와 배경 그림을 설정한다. 배경 id는 list_opening_media(kind:\"image\") 또는 list_resources 결과에서 고르고, 빈 문자열은 해당 값을 지운다.",
+  description: "패배 흐름(classic/horror/blackout), 귀환 좌표, 제목·본문·버튼·배경을 설정한다. blackout은 진행을 유지하고 파티를 회복해 귀환한다. 배경 id는 list_opening_media(kind:\"image\") 또는 list_resources 결과에서 고르고, 빈 문자열은 해당 값을 지운다.",
   mode: "write",
   parameters: {
     type: "object",
     additionalProperties: false,
     properties: {
+      presentation: { type: "string", enum: ["classic", "horror", "blackout"] },
+      recovery: { type: "object", additionalProperties: false, required: ["mapId", "x", "y"], properties: { mapId: { type: "string" }, x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 } } },
       title: { type: "string", description: "게임오버 제목. 빈 문자열은 지움" },
       message: { type: "string", description: "게임오버 본문. 빈 문자열은 지움" },
       retryLabel: { type: "string", description: "재시도 버튼 문구. 빈 문자열은 기본 문구 사용" },
@@ -729,7 +732,7 @@ const setGameOver: ToolDefinition = {
     },
   },
   run(draft, args): ToolExecResult {
-    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId"] as const;
+    const allowed = ["title", "message", "retryLabel", "titleLabel", "backgroundResourceId", "presentation", "recovery"] as const;
     if (!allowed.some(key => Object.hasOwn(args, key))) {
       throw new ToolError("게임오버에서 바꿀 값을 하나 이상 지정하세요.", { code: "invalid-args" });
     }
@@ -750,6 +753,13 @@ const setGameOver: ToolDefinition = {
       }
       if (id) next.backgroundResourceId = id;
       else delete next.backgroundResourceId;
+    }
+    if (Object.hasOwn(args, "presentation")) next.presentation = args.presentation as GameOverSettings["presentation"];
+    if (Object.hasOwn(args, "recovery")) next.recovery = args.recovery as GameOverSettings["recovery"];
+    try { validateGameOverSettings(next); } catch (error) { throw new ToolError(String(error), { code: "invalid-args" }); }
+    if (next.recovery) {
+      const map = draft.maps[next.recovery.mapId];
+      if (!map || next.recovery.x >= map.width || next.recovery.y >= map.height) throw new ToolError("귀환 좌표가 맵 범위 밖입니다.", { code: "invalid-args" });
     }
     const normalized = normalizeGameOverSettings(next);
     if (Object.keys(normalized).length === 0) delete draft.system.gameOver;

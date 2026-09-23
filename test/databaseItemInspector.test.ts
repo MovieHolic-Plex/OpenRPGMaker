@@ -156,33 +156,24 @@ describe("database item inspector form", () => {
     expect(currentItem().name).toBe("고급 회복약");
   });
 
-  it("HP/MP recovery % slider/stepper writes clamped step-5 values to the store", () => {
+  it("HP/MP recovery % input writes clamped step-5 values to the store", () => {
     const form = renderForm();
     const hpStepper = byTestId(form, "db-field-item-hp-percent-stepper");
-    const hpSlider = byTestId(form, "db-field-item-hp-percent-slider");
     expect(hpStepper.attrs.min).toBe("0");
     expect(hpStepper.attrs.max).toBe("100");
     expect(hpStepper.attrs.step).toBe("5");
     expect(hpStepper.value).toBe("40");
-    expect(hpSlider.value).toBe("40");
 
     // % 101 → 100 클램프(adversarial: malformed input).
     hpStepper.value = "101";
     hpStepper.dispatchEvent(new Event("input"));
     expect(currentItem().hpRecovery.percentMax).toBe(100);
     expect(hpStepper.value).toBe("100");
-    expect(hpSlider.value).toBe("100");
 
     // 스텝 5 정규화: 37 → 35.
     hpStepper.value = "37";
     hpStepper.dispatchEvent(new Event("input"));
     expect(currentItem().hpRecovery.percentMax).toBe(35);
-
-    // 슬라이더 이동도 동일 경로(updateDatabaseRecord)로 저장된다.
-    hpSlider.value = "65";
-    hpSlider.dispatchEvent(new Event("input"));
-    expect(currentItem().hpRecovery.percentMax).toBe(65);
-    expect(byTestId(form, "db-field-item-hp-percent-stepper").value).toBe("65");
 
     // MP 쪽도 같은 계약.
     const mpStepper = byTestId(form, "db-field-item-mp-percent-stepper");
@@ -191,14 +182,19 @@ describe("database item inspector form", () => {
     expect(currentItem().mpRecovery.percentMax).toBe(95);
   });
 
-  it("keeps the base percent testid on the field wrapper while inputs use -slider/-stepper", () => {
+  // Break caught: 회복량 하나를 슬라이더+숫자+± 로 세 번 조작하게 되돌리면 한 줄 문장 배치가 깨진다.
+  it("renders each recovery as one line — flat + percent inputs, no slider", () => {
     const form = renderForm();
     const base = form.querySelector("[data-testid='db-field-item-hp-percent']");
     expect(base).toBeTruthy();
-    expect(byTestId(form, "db-field-item-hp-percent-slider")).toBeTruthy();
+    expect(findByTestId(form, "db-field-item-hp-percent-slider")).toBeNull();
     expect(byTestId(form, "db-field-item-hp-percent-stepper")).toBeTruthy();
     expect(byTestId(form, "db-field-item-hp-flat")).toBeTruthy();
     expect(byTestId(form, "db-field-item-mp-flat")).toBeTruthy();
+    const flat = byTestId(form, "db-field-item-hp-flat");
+    flat.value = "1200";
+    flat.dispatchEvent(new Event("input"));
+    expect(currentItem().hpRecovery.flat).toBe(999);
   });
 
   it("segmented scope radio rewrites the stored ItemScope enum", () => {

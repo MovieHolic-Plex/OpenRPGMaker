@@ -30,8 +30,6 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-band > header { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:8px 10px; border-bottom:1px solid var(--border-default); background:var(--surface-2,#f8fafc); }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-band > header strong { font-size:12px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-band > header span { color:var(--text-3); font-size:11px; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sheet { height:168px; background:#111; overflow:hidden; }
-.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-sheet img { width:100%; height:168px; object-fit:cover; image-rendering:pixelated; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-prop-row { display:flex; gap:10px; padding:10px; align-items:flex-start; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-prop-crop { width:96px; height:140px; flex:none; image-rendering:pixelated; background-repeat:no-repeat; background-size:480px auto; background-position:0 -1360px; background-color:#111; border-radius:4px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-prop-names { display:flex; flex-wrap:wrap; gap:4px; align-content:flex-start; }
@@ -118,3 +116,9 @@
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs { padding:0 8px; }
 .database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-editor > .tileset-section-tabs > button { padding:10px 8px; }
 }
+/* 통행 칠하기 도구 열(140px)은 레거시 2열 그리드를 물려받아 붓 묶음이 66px 칸에 갇혔고,
+   「시트에서 클릭·드래그로 칠합니다」가 한 글자씩 세로로 쪼개졌다. 한 열로 세운다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools { display:flex; flex-direction:column; align-items:stretch; align-self:start; gap:6px; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools > button { height:auto; min-height:30px; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-rule-passage { min-width:0; margin:4px 0 0; }
+.database-modal-backdrop .database-modal-window .database-modal-body .tileset-library-workbench .tileset-db-edit-area.passage-paint > .tileset-db-tools .tileset-passage-paint-hint { display:block; white-space:normal; word-break:keep-all; font-size:11px; line-height:1.4; color:var(--text-3); }

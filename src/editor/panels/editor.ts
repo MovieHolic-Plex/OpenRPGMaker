@@ -52,6 +52,7 @@ import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPa
 import type { PanelId } from "@/editor/workspace/panelRegistry";
 import { getWorkspaceLayout, subscribeWorkspace } from "@/editor/workspace/workspaceStore";
 import { ProjectExportMirror } from "@/editor/projectExportMirror";
+import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { isSaveSkippedLocation } from "@/project/devProjectPersistence";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -1043,11 +1044,17 @@ function updateProjectExport(delayOverride?: number): void {
   const delay = delayOverride ?? (projectExportNode?.textContent ? 150 : 500);
   projectExportTimer = setTimeout(() => {
     projectExportTimer = null;
-    if (!projectExportNode) return;
-    projectExportNode.textContent = projectExportMirror.serialize(
-      store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
-    );
+    // 천천히 끄는 스트로크는 칸 사이가 500ms 를 넘기도 한다 — 칠하는 도중 프로젝트 전체를
+    // 직렬화하지 않고 뗄 때 한 번 한다(pointerStrokeGate).
+    runWhenPointerReleased(writeProjectExport);
   }, delay);
+}
+
+function writeProjectExport(): void {
+  if (!projectExportNode) return;
+  projectExportNode.textContent = projectExportMirror.serialize(
+    store.getCurrent(), store.getVersionToken(), editorState.get(), getMapEditHistoryState(),
+  );
 }
 
 function bindLeftResizer(): void {

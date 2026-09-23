@@ -7,6 +7,7 @@ import type { GameMap } from "@/project/types";
 import { compileSpaces } from "./compileSpaces";
 import { frozenObject, objectPorts, placedObject } from "./compileObjects";
 import { geographyTerrain, settlementTerrain } from "./geographyTerrain";
+import { PARAMETRIC_INTERIOR_TILESET_ID } from "./spaceLayout";
 import { SpatialCompileError, type CompiledObject, type SpatialCompileContext, type SpatialRasterProposal } from "./compilerTypes";
 
 export function hasMixedComposition(library: SpatialLibrary): boolean {
@@ -35,6 +36,7 @@ export function mixedCompositionRaster(context: SpatialCompileContext): MixedRas
   let objects: CompiledObject[] = [];
   const omitted: SpatialId[] = [];
   let projections: MixedProjection[] = [];
+  let shellPadded = false;
   if (node.kind === "object") {
     const object = placedObject(occurrence, { x: 0, y: 0 }, false);
     const frozen = frozenObject(occurrence).raster;
@@ -43,8 +45,13 @@ export function mixedCompositionRaster(context: SpatialCompileContext): MixedRas
       lowerTiles: Array(frozen.width * frozen.height).fill(-1), upperTiles: Array(frozen.width * frozen.height).fill(-1), events: [] };
     for (const cell of frozen.cells) (cell.layer === "lower" ? base.lowerTiles : base.upperTiles)[cell.y * base.width + cell.x] = cell.tile;
     objects = [object];
+  } else if (node.kind === "space" && composition && node.design.environment === "interior" && node.design.tilesetId !== PARAMETRIC_INTERIOR_TILESET_ID) {
+    // A room captured from a painted map on another atlas: its canvas already holds every cell,
+    // so there is no parametric shell to generate (spaceLayout only speaks the default atlas).
+    if (node.design.objectSlots.length) throw new SpatialCompileError("atlas", `${occurrence.id}: object slots need ${PARAMETRIC_INTERIOR_TILESET_ID}`);
   } else if (node.kind === "space") {
     const raster = compileSpaces(context);
+    shellPadded = node.design.environment === "interior";
     base = raster.map; entry = raster.entry; objects = [...raster.objects]; omitted.push(...raster.omitted);
     projections = objects.map(object => ({ occurrence: object.occurrence, rect: object.rect, ports: objectPorts(object) }));
   } else if (node.kind === "region" || node.kind === "world") {
@@ -101,8 +108,8 @@ export function mixedCompositionRaster(context: SpatialCompileContext): MixedRas
       ports: projection.ports.map(port => ({ ...port, x: port.x + child.x, y: port.y + child.y })) })));
   }
   const ports = occurrence.snapshot.ports.map(port => ({ portId: port.id, x: port.x, y: port.y }));
-  // Interior authored ports are floor-local; direct composition members use canvas-local positions.
-  if (node.kind === "space" && node.design.environment === "interior") for (const port of ports) { port.x += 2; port.y += 4; }
+  // Ports on a generated interior shell are floor-local; painted canvases and direct members use canvas-local positions.
+  if (shellPadded) for (const port of ports) { port.x += 2; port.y += 4; }
   const rect = { x: 0, y: 0, width, height };
   projections.unshift({ occurrence, rect, ports });
   if (projections.some(({ rect }) => rect.x < 0 || rect.y < 0 || rect.x + rect.width > width || rect.y + rect.height > height)) {

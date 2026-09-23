@@ -31,6 +31,11 @@ async function validateVillageStudy(project, mapId) {
     }
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }
+  // One window kind per house (84 stained glass is for the church only; 88 broken marks an abandoned house).
+  for (const h of plan.houses) if (h.window) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) {
+    const tile = m.upperTiles[y * m.width + x];
+    if ([84, 85, 86, 87, 88].includes(tile) && tile !== h.window) add("mixed-windows", x, y, { house: h.id, expected: h.window, actual: tile });
+  }
   for(const e of inspectCivicProps(m,plan)) add(e.code,e.x,e.y);
   for(const e of inspectHouseholdProps(m,plan)) add(e.code,e.x,e.y);
   for (const { code, x, y, ...extra } of inspectVillageCliffs(m, plan, catalog.cliffBindings)) add(code, x, y, extra);
@@ -40,7 +45,7 @@ async function validateVillageStudy(project, mapId) {
     if(t.tileMeta[j.tile]?.layerBacking!==240) add('grass-backing',j.x,j.y,{expected:240,actual:t.tileMeta[j.tile]?.layerBacking});
   }
   const crest=plan.crest;
-  for(let dx=0;dx<crest.width;dx++) {
+  for(let dx=0;dx<(crest?.width??0);dx++) {
     const end=crest.width-1-dx,x=crest.x+dx,y=crest.y+Math.max(0,crest.shoulder-Math.min(dx,end));
     const source=dx<=crest.shoulder?504:end<=crest.shoulder?505:559;
     if(m.lowerTiles[y*m.width+x]!==catalog.grassBindings[source]) add('grass-crest-gap',x,y,{sourceTile:source});
@@ -49,8 +54,21 @@ async function validateVillageStudy(project, mapId) {
   await withTsModule("src/project/lint/reachability.ts", "study-reach.mjs", (api) => {
     const seen = api.computeReachableCells(project, m, plan.start.x, plan.start.y);
     for(const a of plan.access.filter(a=>a.role==='map-entrance')) if(!seen.has(a.x+','+a.y)) add('map-entrance-blocked',a.x,a.y);
-    for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add("blocked-entrance", a.x, a.y, { role: a.role });
+    for (const a of plan.access) if (!seen.has(a.x + "," + a.y)) add(a.landmarkId ? "landmark-sealed" : "blocked-entrance", a.x, a.y, { role: a.role, ...a.landmarkId ? { landmark: a.landmarkId } : {} });
     for(const o of plan.placements.filter(o=>o.kind==='civic-prop'&&o.useAt))if(!seen.has(o.useAt.x+','+o.useAt.y))add('civic-use-blocked',o.useAt.x,o.useAt.y,{name:o.name});
+    // Height: with every stair shut, no terrace cell above a cliff may be reachable. Reported at the open cliff end.
+    const shut = structuredClone(m), W = m.width, face = catalog.cliffBindings[172];
+    for (const [x, y, h] of plan.stairs) for (let yy = y; yy <= y + h; yy++) for (let xx = x; xx < x + 2; xx++) shut.lowerTiles[yy * W + xx] = face;
+    const below = api.computeReachableCells({ ...project, maps: { ...project.maps, [m.id]: shut } }, shut, plan.start.x, plan.start.y);
+    for (const c of plan.cliffs) {
+      const [x0] = c.points[0], [x1] = c.points.at(-1);
+      const tops = new Map(plan.cliffColumns.filter((k) => k.x >= x0 && k.x <= x1).map((k) => [k.x, k.y]));
+      const leak = [...below].map((k) => k.split(",").map(Number)).find(([x, y]) => tops.has(x) && y >= (c.north ?? 5) && y < tops.get(x));
+      if (leak) {
+        const [ex, ey] = Math.abs(leak[0] - x0) <= Math.abs(leak[0] - x1) ? c.points[0] : c.points.at(-1);
+        add("terrace-without-stairs", ex, ey, { reached: { x: leak[0], y: leak[1] } });
+      }
+    }
     for (const o of plan.placements.filter((o2) => o2.kind === "prop")) if (!Array.from({ length: o.w * o.h }, (_, i) => [o.x + i % o.w, o.y + Math.floor(i / o.w)]).some(([x, y]) => api.isAdjacentOrOn(seen, x, y))) add("inaccessible-object", o.x, o.y, { name: o.name });
   });
   return { valid: totalErrors === 0, mapId, totalErrors, errors, truncated: totalErrors > errors.length, scope: "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring." };
@@ -73,11 +91,25 @@ function cliffFaults() {
   return [
     { code: "cliff-face-direction", mapId, x: side.x, y: side.y + 2, layer: "upper", tile: b[232], replacement: b[231] },
     { code: "cliff-toe-gap", mapId, x: flat.x, y: flat.y + flat.height, layer: "upper", tile: b[202], replacement: -1 },
-    { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 }
+    { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 },
+    // Clearing the forest that closes the west end of pine-hamlets' cliff lets you walk round it onto the terrace.
+    (() => { const q = catalog.plans.find((p2) => p2.id === "pine-hamlets"), [ex, ey] = q.cliffs[0].points[0];
+      return { code: "terrace-without-stairs", mapId: q.id, x: ex - 4, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + ex - 4], replacement: 240, rects: [{ x: ex - 4, y: ey - 3, w: 9, h: 3 }, { x: ex - 4, y: ey, w: 4, h: q.cliffs[0].height + 1 }, { x: ex - 4, y: ey + q.cliffs[0].height + 1, w: 6, h: 2 }], errorX: ex, errorY: ey }; })(),
+    // A waterfall column painted back to grass mid-face.
+    (() => { const q = catalog.plans.find((p2) => p2.id === "twin-falls-river-village"), f = q.falls[0];
+      return { code: "waterfall-gap", mapId: q.id, x: f.x, y: f.y + 3, layer: "lower", tile: f.tile, replacement: 240 }; })()
   ];
 }
 function applyStudyFault(project, f) {
   const m = project.maps[f.mapId], i = f.y * m.width + f.x;
+  if (f.rects) {
+    for (const r of f.rects) for (let dy = 0; dy < r.h; dy++) for (let dx = 0; dx < r.w; dx++) {
+      const j = (r.y + dy) * m.width + r.x + dx;
+      m.lowerTiles[j] = 240;
+      m.upperTiles[j] = -1;
+    }
+    return;
+  }
   m[f.layer + "Tiles"][i] = f.replacement;
   if (f.move) m[(f.layer === "upper" ? "lower" : "upper") + "Tiles"][i] = f.tile;
 }
@@ -112,6 +144,15 @@ function civicFaults() {
   {code:'wall-light-backing',mapId,x:lamp.x,y:lamp.y,layer:'lower',tile:m.lowerTiles[lamp.y*m.width+lamp.x],replacement:240}
  ];
 }
+function landmarkFaults() {
+ const castle=catalog.plans.find(p=>p.id==='ford-castle-town'),cm=catalog.maps[castle.id];
+ const h=castle.houses.find(h=>h.window===87),i=Array.from({length:h.w*h.h},(_,k)=>(h.y+Math.floor(k/h.w))*cm.width+h.x+k%h.w).find(i=>cm.upperTiles[i]===87);
+ const chapel=catalog.plans.find(p=>p.id==='chapel-hill-parish'),yard=chapel.landmarks.find(l=>l.kind==='graveyard');
+ return [
+  {code:'mixed-windows',mapId:castle.id,x:i%cm.width,y:Math.floor(i/cm.width),layer:'upper',tile:87,replacement:85},
+  {code:'landmark-sealed',mapId:chapel.id,x:yard.gate.x,y:yard.gate.y,layer:'upper',tile:-1,replacement:439,errorX:yard.gate.x,errorY:yard.gate.y-1}
+ ];
+}
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const [input, mapId] = process.argv.slice(2);
   if (!input || !mapId) throw Error("Usage: validate-diverse-villages.mjs project.json mapId");
@@ -121,6 +162,7 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
 }
 export {
   civicFaults,
+  landmarkFaults,
   applyStudyFault,
   catalog,
   cliffFaults,

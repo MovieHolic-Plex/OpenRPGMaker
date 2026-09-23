@@ -1,0 +1,21 @@
+{
+  "projectId": "6a531af0-80c4-443f-8138-013f8cfb2203",
+  "projectDir": ".oprn-projects/rpg-places-20260923",
+  "revision": 1,
+  "sha256": "6ba45903abbf56ad5852a4895d4318033b96abbea98bb94f75d331a6150056c0",
+  "saved": true,
+  "reopened": true,
+  "maps": [
+    "fantasy-weapon-shop",
+    "fantasy-armor-shop",
+    "fantasy-item-shop",
+    "fantasy-smithy",
+    "fantasy-throne-room",
+    "fantasy-castle-corridor",
+    "fantasy-castle-jail",
+    "fantasy-demon-throne",
+    "fantasy-wizard-tower-floor",
+    "fantasy-shop-street",
+    "fantasy-ruined-castle"
+  ]
+}

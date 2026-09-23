@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
 import { installRuleAuditPanelAutoMount, renderRuleAuditPanel, ruleAuditViolationCount } from "@/editor/panels/ruleAuditPanel";
+import { clusterRuleLintIssues } from "@/project/lint/clusterRuleLint";
 import { projectLint } from "@/project/lint/projectLint";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
@@ -20,8 +21,13 @@ const lintMock = vi.hoisted(() => ({
   }[],
 }));
 
+// 규칙 감사는 cluster-rule 만 보는 clusterRuleLintIssues 를 쓴다. projectLint 는 전체 왕복 lint 라
+// 호출되면 안 된다 — 빈 목록 대역으로 두고 호출 여부만 본다.
 vi.mock("@/project/lint/projectLint", () => ({
-  projectLint: vi.fn(() => lintMock.issues),
+  projectLint: vi.fn(() => []),
+}));
+vi.mock("@/project/lint/clusterRuleLint", () => ({
+  clusterRuleLintIssues: vi.fn(() => lintMock.issues),
 }));
 
 let restoreDom: (() => void) | null = null;
@@ -61,15 +67,28 @@ describe("규칙 감사 패널", () => {
   it("reuses project diagnostics for navigation and refreshes them after edits", () => {
     lintMock.issues = [{ code: "cluster-rule-count", message: "위반", severity: "info" }];
     expect(ruleAuditViolationCount()).toBe(1);
-    const calls = vi.mocked(projectLint).mock.calls.length;
+    const calls = vi.mocked(clusterRuleLintIssues).mock.calls.length;
     editorState.set({ currentMapId: "other-map" });
     expect(ruleAuditViolationCount()).toBe(1);
     renderRuleAuditPanel();
-    expect(vi.mocked(projectLint).mock.calls.length).toBe(calls);
+    expect(vi.mocked(clusterRuleLintIssues).mock.calls.length).toBe(calls);
     lintMock.issues = [];
     store.update(project => { project.meta.title = "changed"; });
     expect(ruleAuditViolationCount()).toBe(0);
-    expect(vi.mocked(projectLint).mock.calls.length).toBe(calls + 1);
+    expect(vi.mocked(clusterRuleLintIssues).mock.calls.length).toBe(calls + 1);
+  });
+
+  // 칠하기 드래그 렉(2026-09-23): 배지·패널이 cluster-rule 몇 건을 세려고 projectLint 전체를 돌렸다.
+  // 그 안의 직렬화 왕복이 100×100 마을에서 ~800ms 라, 드래그 중 250ms 마다 메인 스레드가 섰다.
+  it("전체 projectLint(직렬화 왕복)를 돌리지 않고 cluster-rule 진단만 계산한다", () => {
+    lintMock.issues = [{ code: "cluster-rule-count", message: "위반", severity: "info" }];
+    vi.mocked(projectLint).mockClear();
+    store.update(project => { project.meta.title = "paint burst"; });
+
+    expect(ruleAuditViolationCount()).toBe(1);
+    renderRuleAuditPanel();
+
+    expect(vi.mocked(projectLint)).not.toHaveBeenCalled();
   });
 
   it("cluster-rule issue를 강도별 문구와 색상 클래스로 렌더한다", () => {

@@ -1,5 +1,6 @@
 import sharedVillageObjects from "./sharedVillageObjects.json";
 import forestHarmony from "./forestHarmonyTileset.json";
+import climateSheets from "../../tiledata/climate-villages/sheets.json";
 import tiboRecovered from "./tiboRecoveredTileset.json";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { loadUploadedTilesets, registerUploadedTilesets } from "./uploadedTilesets";
@@ -113,6 +114,11 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_shared_forest_village_objects",path:"assets/shared-village/objects.png",name:"숲마을 · 선별 소품 19종"},
   {textureKey:"tex_forest_harmony",path:"assets/forest-harmony/chipset.png",name:"숲마을 · 거리별 잔디"},
   {textureKey:"tex_forest_harmony_grass_joins",path:"assets/forest-harmony/grass-joins.png",name:"숲마을 · 잔디 사선 경계"},
+  // 숲마을(이식 포함)을 한 장으로 구워 기후별로 다시 칠한 시트 — scripts/content/build-climate-chipsets.py, 정의는 defaults/climateVillages.ts.
+  {textureKey:"tex_forest_harmony_snow",path:"assets/climate-villages/snow-chipset.png",name:"설원 마을 · 눈 덮인 숲마을"},
+  {textureKey:"tex_forest_harmony_volcano",path:"assets/climate-villages/volcano-chipset.png",name:"화산 마을 · 재와 용암의 숲마을"},
+  {textureKey:"tex_forest_harmony_desert",path:"assets/climate-villages/desert-chipset.png",name:"사막 마을 · 모래와 사암의 숲마을"},
+  {textureKey:"tex_forest_harmony_autumn",path:"assets/climate-villages/autumn-chipset.png",name:"가을 마을 · 단풍 든 숲마을"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
@@ -143,6 +149,10 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === "tex_shared_forest_village_objects") return sharedVillageObjects.count;
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_forest_harmony_grass_joins") return 10;
+  if (key === "tex_forest_harmony_snow") return climateSheets.snow.count;
+  if (key === "tex_forest_harmony_volcano") return climateSheets.volcano.count;
+  if (key === "tex_forest_harmony_desert") return climateSheets.desert.count;
+  if (key === "tex_forest_harmony_autumn") return climateSheets.autumn.count;
   if (key === "tex_tibo_interior_expanded") return tiboRecovered.count;
   if (key === SLATES_32_TEXTURE_KEY) return SLATES_32_FRAME_COUNT;
   if (key === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return COMBINED_TOWN_RETRO_WORLD_TILE_COUNT;
@@ -450,6 +460,67 @@ export function ensureUploadedCharsetTextures(
   scene.load.once("complete", () => {
     for (const rawKey of queued) inFlight.delete(rawKey);
     registerUploadedCharsetTextures(scene, project);
+    onRegistered?.();
+  });
+  scene.load.start();
+}
+
+/** 씬별 진행 중인 번들 텍스처 로드 키. 같은 칩셋을 매 store 변경마다 다시 싣지 않기 위한 것. */
+const bundledLoadsInFlight = new WeakMap<Phaser.Scene, Set<string>>();
+
+/**
+ * 실행 중인 씬에 **부팅 이후 쓰이기 시작한** 번들 칩셋·캐릭터셋·작물 그림을 뒤늦게 실어 준다.
+ *
+ * `loadBundledAssets` 는 preload 한 번뿐이고 그때 프로젝트가 쓰던 텍스처만 싣는다. 실측(2026-09-23):
+ * 조수가 새 프로젝트 맵을 숲마을 칩셋으로 바꾸자 편집 캔버스 전체가 Phaser 의 "빠진 텍스처" 빗금으로
+ * 그려졌다(`__MISSING tile_1141` 경고 수만 건). 새로고침해야 보이던 것이 이 함수로 그 자리에서 보인다.
+ */
+export function ensureBundledProjectTextures(
+  scene: Phaser.Scene,
+  project: Project,
+  onRegistered?: () => void
+): void {
+  const used = projectBundledTextureKeys(project);
+  const inFlight = bundledLoadsInFlight.get(scene) ?? new Set<string>();
+  bundledLoadsInFlight.set(scene, inFlight);
+  const chipsets: BundledImageAsset[] = [];
+  const charsetKeys = new Set<string>();
+  const cropIds = new Set<string>();
+  const queue = (loadKey: string, path: string): void => {
+    inFlight.add(loadKey);
+    scene.load.image(loadKey, withInlineAsset(path));
+  };
+  for (const asset of [...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS]) {
+    if (!used.has(asset.textureKey) || scene.textures.exists(asset.textureKey)) continue;
+    const loadKey = chipsetLoadTextureKey(asset.textureKey);
+    if (scene.textures.exists(loadKey) || inFlight.has(loadKey)) continue;
+    queue(loadKey, asset.path);
+    chipsets.push(asset);
+  }
+  for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
+    if (!used.has(asset.textureKey) || scene.textures.exists(asset.textureKey)) continue;
+    const loadKey = rawCharsetTextureKey(asset.textureKey);
+    if (scene.textures.exists(loadKey) || inFlight.has(loadKey)) continue;
+    queue(loadKey, asset.path);
+    charsetKeys.add(asset.textureKey);
+  }
+  for (const asset of FARMING_CROP_SPRITE_ASSETS) {
+    if (!used.has(asset.id) || scene.textures.exists(asset.id) || inFlight.has(asset.id)) continue;
+    queue(asset.id, asset.path);
+    cropIds.add(asset.id);
+  }
+  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0) return;
+  scene.load.once("complete", () => {
+    for (const asset of chipsets) {
+      inFlight.delete(chipsetLoadTextureKey(asset.textureKey));
+      if (isColorKeyedChipsetTextureKey(asset.textureKey)) registerTransparentChipsetTexture(scene, asset);
+      if (!scene.textures.exists(asset.textureKey)) continue;
+      registerTilesetTextureFrames(scene, asset.textureKey, bundledChipsetFrameCount(asset.textureKey));
+    }
+    for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
+    for (const id of cropIds) inFlight.delete(id);
+    if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);
+    if (cropIds.size > 0) registerFarmingCropFrames(scene, cropIds);
     onRegistered?.();
   });
   scene.load.start();

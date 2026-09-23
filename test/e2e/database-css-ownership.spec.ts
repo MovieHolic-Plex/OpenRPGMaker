@@ -711,6 +711,8 @@ for (const mode of ['list', 'gallery']) {
       return window.__dbSearchReady;
     });
     await navigate(page, 'monsterSpecies');
+    // 역참조 버튼은 종족 상세의 「연결」 구역 탭 안에 있다(표준·전문가 모드).
+    await page.getByTestId('db-monster-species-section-tab-links').click();
     expect(await page.getByTestId('db-monster-species-open-enemy-css-target').count()).toBe(1);
     await page.getByTestId('db-monster-species-open-enemy-css-target').click();
     const target = page.getByTestId(`db-record-${mode === 'list' ? 'row' : 'card'}-css-target`);

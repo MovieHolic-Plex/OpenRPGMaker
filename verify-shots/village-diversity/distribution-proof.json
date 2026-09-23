@@ -1,15 +1,20 @@
 {
   "freshProject": true,
   "sharedGrassTilesAndGuidance": true,
-  "shippedPreV7Replaced": true,
+  "blankLabelsFilled": true,
+  "shippedPreviousReplaced": true,
   "existingProjectBackfill": true,
   "authorDocumentsPreserved": true,
   "idempotent": true,
-  "editedPreviousPreservedAndV7Added": true,
+  "editedPreviousPreservedAndCurrentAdded": true,
   "sharedPointerAndOtherAtlasPreserved": true,
   "exportRoundtrip": [
     "pine-hamlets",
     "terrace-cliff-village",
-    "reed-bay-village"
+    "twin-falls-river-village",
+    "reed-bay-village",
+    "chapel-hill-parish",
+    "ford-castle-town",
+    "mistpond-hollow"
   ]
 }

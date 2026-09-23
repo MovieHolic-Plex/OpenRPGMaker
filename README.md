@@ -6,7 +6,7 @@
 
 에디터로 맵을 그리고 이벤트를 배치한 뒤, Play 모드에서 바로 플레이할 수 있습니다.
 
-[Quickstart](openwiki/quickstart.md) · [스펙](docs/specs/2026-06-18-rpg-maker-mvp-design.md) · [에셋 라이선스](public/assets/ATTRIBUTION.md)
+[처음 시작하기](#처음-시작하기) · [개발자·에이전트용 Quickstart](openwiki/quickstart.md) · [스펙](docs/specs/2026-06-18-rpg-maker-mvp-design.md) · [에셋 라이선스](public/assets/ATTRIBUTION.md)
 
 </div>
 
@@ -15,9 +15,51 @@
 </p>
 <p align="center"><i>OPRN Studio 웰컴 화면 — 템플릿에서 새 게임을 시작하거나 AI 어시스턴트와 함께 기획할 수 있습니다.</i></p>
 
-> **필요 환경:** Node.js 24 LTS, npm. 프로젝트 저장은 SQLite 폴더를 사용합니다. 브라우저 호스팅은 [`openwiki/team-project-host.md`](openwiki/team-project-host.md)를 따르세요. 다른 사람의 `.env.local`을 복사하거나 커밋하지 마세요.
+## 처음 시작하기
 
-## Quick Start
+내 컴퓨터에서 혼자 쓰는 경우입니다. 팀 서버로 여럿이 쓰는 방법은 [`openwiki/team-project-host.md`](openwiki/team-project-host.md)를 보세요.
+아래 내용은 macOS·Linux 기준이며, Windows에서는 아직 확인하지 않았습니다.
+
+1. **Node.js 24 LTS를 설치합니다.** [nodejs.org](https://nodejs.org)에서 24 LTS를 받아 설치한 뒤 터미널을 새로 엽니다.
+   다른 버전이면 실행기가 `NODE_VERSION` 오류를 내고 멈춥니다.
+2. **실행합니다.** macOS에서는 저장소 폴더의 `Start RPG Maker.command`를 더블클릭합니다.
+   터미널에서는 저장소 폴더에서 `npm run mac:launch`를 입력합니다. 처음 한 번은 필요한 패키지(`npm ci`)부터 설치합니다.
+3. **저장할 폴더를 정합니다.** 처음에만 `기존 프로젝트 폴더 또는 새로 만들 폴더 경로:`를 묻습니다.
+   **아직 없는 새 폴더의 전체 경로**를 입력하세요(예: `/Users/이름/Documents/my-rpg`). 이 폴더에 프로젝트가 만들어집니다.
+   - `~/Documents/...`처럼 `~`로 쓰면 홈 폴더로 풀리지 않고, 저장소 안에 `~`라는 폴더가 생깁니다.
+   - 이미 있는 일반 폴더는 덮어쓰지 않고 거절합니다(`PROJECT_MISSING`).
+   - 정한 폴더는 `.oprn-local.json`에 기록되어 다음부터는 묻지 않습니다.
+4. **기다립니다.** 실행할 때마다 앱을 다시 빌드하므로 1분 이상 걸릴 수 있습니다. 끝나면 브라우저에 `http://127.0.0.1:9999`가 열립니다.
+   처음 화면은 몇 초간 비어 있을 수 있습니다. 잠시 기다리세요.
+5. **터미널 창은 열어 두세요.** 닫으면 앱도 꺼집니다. 끝낼 때는 터미널에서 `Ctrl-C`를 누릅니다.
+
+### AI와 함께 만들기
+
+처음 열면 오른쪽 위 칩이 `… 로그인 필요`로 보입니다. 칩(또는 왼쪽 「AI 연결하기」)을 눌러 AI 설정을 열고,
+가진 구독 계정(Google Gemini·Antigravity 또는 ChatGPT의 Codex)으로 로그인합니다. API 키는 필요 없습니다.
+
+### AI 없이 시작하기
+
+첫 화면 「어떤 게임을 만들까요?」에서 **AI 없이 결과가 생기는 것은 장르 포스터 오른쪽 위의 작은 ⚙뿐**입니다.
+⚙를 누르면 빈 맵과 그 장르의 기본 설정(데이터베이스·시스템)이 적용됩니다.
+
+- 입력칸의 「만들기」와 포스터 본문(질문 5개)은 AI가 있어야 결과가 나옵니다. AI 없이 질문에 답하면 ⚙와 같은 결과(장르 기본 설정 + 빈 맵)만 남고, 답한 기획은 맵에 반영되지 않습니다.
+- 「빈 맵으로 시작」을 누른 뒤 왼쪽 **타일** 탭에서 타일을 골라 캔버스에 그리고, 위의 **▶ 테스트**로 바로 플레이해 볼 수 있습니다.
+
+### 막혔을 때
+
+| 증상 | 원인과 해결 |
+|---|---|
+| `호스트님이 편집 중입니다`가 뜨고 그려지지 않음 | 같은 프로젝트를 다른 탭(또는 다른 브라우저)에서 열어 두었습니다. 한쪽만 편집할 수 있어요. 이 탭에서 편집하려면 배너의 **편집 권한 가져오기 → 가져오기**를 누르세요. 다른 탭의 저장 안 된 변경은 합쳐지지 않습니다. |
+| `AI 서버에서 꺼짐` | 팀 서버(`npm start`, 팀 호스트)에 접속한 경우입니다. 서버를 실행한 사람이 `OPRN_HOST_OWNER_AI=1`을 붙여 다시 실행해야 합니다. 개인 실행기에서는 나오지 않습니다. |
+| `NODE_VERSION` | Node.js 24가 아닙니다. 24 LTS를 설치한 뒤 터미널을 새로 여세요. |
+| `PORT_BUSY` | 9999 포트를 이미 쓰는 프로그램이 있습니다. 전에 실행한 터미널이 아직 열려 있는지 확인하세요. |
+| `PROJECT_MISSING` | 이미 있는 폴더인데 OPRN 프로젝트가 아닙니다. 아직 없는 새 폴더 경로를 입력하세요. |
+| 다른 프로젝트 폴더를 쓰고 싶음 | `npm run mac:launch -- --project-dir <폴더 경로>`로 실행하거나, `.oprn-local.json`을 지운 뒤 다시 실행하세요. |
+
+## 개발자용 명령
+
+> Node.js 24 LTS, npm. 프로젝트 저장은 SQLite 폴더를 사용합니다. 다른 사람의 `.env.local`을 복사하거나 커밋하지 마세요.
 
 ```bash
 npm ci
@@ -30,8 +72,7 @@ npm test                 # 단위 테스트
 npm run typecheck:app    # 앱 타입 검사
 ```
 
-개인 실행은 `npm run mac:launch` 또는 `Start RPG Maker.command`를 사용합니다. 처음 선택한
-프로젝트 폴더를 `.oprn-local.json`에 보관하며, 외부 DB 설정은 필요하지 않습니다.
+개인 실행(`npm run mac:launch`, `Start RPG Maker.command`)은 위 [처음 시작하기](#처음-시작하기)를 보세요. 외부 DB 설정은 필요하지 않습니다.
 
 ## 주요 기능
 
@@ -180,6 +221,7 @@ CDN 스트리밍을 계속 쓰거나 새 팩을 제작하는 관리자는 [`open
 <summary>AI 어시스턴트 연결</summary>
 
 기본 연결은 API 키 과금 대신 로컬 Codex의 ChatGPT OAuth 로그인을 사용합니다. `npm run dev`만 띄우면 Codex 로그인 상태를 dev 서버와 **같은 포트**(same-origin)로 자동 브릿지합니다 — 별도 터미널이 필요 없습니다.
+`npm start`와 팀 호스트는 공유 호스트라 AI가 기본으로 꺼져 있습니다. 소유자가 쓰려면 `OPRN_HOST_OWNER_AI=1`을 붙여 실행합니다. 개인 실행기(`npm run mac:launch`)는 루프백 전용이라 따로 켤 필요가 없습니다.
 
 ```bash
 npm run dev

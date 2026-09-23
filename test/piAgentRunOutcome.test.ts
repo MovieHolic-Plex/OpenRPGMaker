@@ -31,6 +31,8 @@ const h = vi.hoisted(() => ({
   piApply: "default" as "yolo" | "auto" | "default" | "review" | "step",
   /** showConfirm 의 대답. 맵 소실 확인 모달을 사람 없이 굴린다. */
   confirmAnswer: true,
+  /** true 면 시공 실행이 도구마다 체크포인트를 올린다 — 실시간 반영(publication.count > 0) 경로. */
+  checkpoint: false,
 }));
 
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: () => ({ root: { remove() {} }, setBusy() {} }) }));
@@ -47,7 +49,7 @@ vi.mock("@/ai/ultrabrainReview", async importOriginal => ({
   },
 }));
 vi.mock("@/ai/piAgent/client", () => ({
-  runPiAgentViaCompanion: async (request: Record<string, unknown>, options?: { onEvent?: (event: unknown) => void }) => {
+  runPiAgentViaCompanion: async (request: Record<string, unknown>, options?: { onEvent?: (event: unknown) => void; onCheckpoint?: (event: unknown) => Promise<unknown> }) => {
     h.requests.push(request);
     if (request.readOnly && String(request.task).startsWith("[계획 턴]")) {
       if (h.planError) options?.onEvent?.({ type: "error", message: "plan failed" });
@@ -60,6 +62,7 @@ vi.mock("@/ai/piAgent/client", () => ({
     if ((next.toolCalls ?? 1) > 0) {
       options?.onEvent?.({ type: "tool_end", id: "t1", name: "paint", ok: (next.toolErrors ?? 0) === 0, summary: (next.toolErrors ?? 0) > 0 ? "OAuth token expired before request — please retry; AuthStorage will refresh on the next attempt." : "칠함" });
     }
+    if (h.checkpoint) await options?.onCheckpoint?.({ type: "checkpoint", checkpointId: `c${h.requests.length}`, label: "칠함", toolName: "paint", project: next.project });
     for (const text of h.assistantTexts.splice(0)) options?.onEvent?.({ type: "assistant", text });
     const done = {
       type: "done", project: next.project, villageCompletion: next.villageCompletion,
@@ -102,7 +105,11 @@ vi.mock("@/ai/llmClient", () => ({ loadAiConfig: () => ({ providerId: "google-an
 vi.mock("@/editor/tools/changeset", () => ({ summarizeChanges: () => ({}) }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: () => ({}),
-  applyProposedProject: async () => { h.applyCalls += 1; return { ok: true }; },
+  captureApplyAuthority: () => ({ base: {}, baseline: {} }),
+  // 실시간 반영(publication)은 onApplied 로 적용 시점을 받는다 — 없으면 publication.count 가 영영 0 이다.
+  applyProposedProject: async (next: unknown, options?: { onApplied?: (applied: { applied: unknown }) => void }) => {
+    h.applyCalls += 1; options?.onApplied?.({ applied: next }); return { ok: true };
+  },
 }));
 
 vi.mock("@/ai/piAgent/villageCompletion", () => ({
@@ -138,7 +145,7 @@ beforeEach(() => {
   h.piApply = "default"; h.harmony = true; h.harmonyError = false;
   // 예전에는 mergeMapBundles 목이 매 턴 splice 로 비워 줘서 눈에 안 띄었다. 평문 턴이 더 이상
   // 병합을 타지 않으므로(2026-09-17) 여기서 직접 비우지 않으면 다음 케이스로 샌다.
-  h.spills.length = 0; h.errorEvents.length = 0; h.confirmAnswer = true;
+  h.spills.length = 0; h.errorEvents.length = 0; h.confirmAnswer = true; h.checkpoint = false;
 });
 
 describe("Pi 경로 실행 결과 4축", () => {
@@ -486,6 +493,21 @@ describe("five application modes", () => {
     expect(h.applyCalls, "안 풀린 초안을 조용히 적용하지 않는다").toBe(0);
     expect(h.boardStates.at(-1)?.phase).toBe("실패");
     expect(h.process.join("\n")).toContain("수리 뒤에도 그대로라 반복을 멈췄어요");
+  });
+  // 2026-09-23 실측: 맵 14개를 실시간으로 반영한 실행의 마지막 말이 「반영했지만 확인할 것이 남았어요.」 +
+  // 검토 문장 여러 줄이었다. 첫 줄은 만든 것·플레이 안내, 지적은 「더 다듬을 곳 (N)」 아래로 — 버리지 않는다.
+  it("실시간 반영 뒤 남은 지적은 만든 것 다음에, 「더 다듬을 곳」 으로 따로 남는다", async () => {
+    h.piApply = "auto"; h.harmony = false; h.checkpoint = true;
+    h.results.push({ project: projectWith("first") }, { project: projectWith("second") });
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "수정" }, harness().surface(), { routineEdit: true });
+    const system = h.bubbles.filter(line => line.startsWith("system:"));
+    expect(system.join("\n")).not.toContain("반영했지만 확인할 것이 남았어요");
+    const headline = system.findIndex(line => line.includes("▶ 테스트로 플레이해 보세요."));
+    expect(headline, "플레이 안내가 있는 머리말").toBeGreaterThanOrEqual(0);
+    expect(system[headline]!.startsWith("system:변경 내용을 반영했어요.")).toBe(true);
+    // 텍스트만 받는 표면은 접은 칸 대신 같은 내용을 다음 말풍선으로 받는다 — 지적은 사라지지 않는다.
+    expect(system[headline + 1]).toContain("더 다듬을 곳 (1)");
+    expect(system[headline + 1]).toContain("second: density");
   });
   it("read-only refuses returned mutations even under YOLO", async () => {
     h.piApply = "yolo"; h.results.push({ project: projectWith("forbidden") });

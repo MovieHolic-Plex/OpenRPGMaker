@@ -42,8 +42,7 @@ const SCHEMA_CONTAINER_TESTID: Record<string, string> = {
  *
  * 명령 75종이 전부 스키마로 선언돼 있지만, 렌더 경로 전환은 kind 마다 아래 절차를
  * 밟아야 한다. 기존 폼들이 저마다 testid 계약을 테스트로 못박고 있기 때문이다
- * (예: scopedForms.test.ts 는 gameOver 가 [data-testid="game-over-editor"] 를 내고
- *  input/select/textarea 를 하나도 갖지 않을 것을 요구한다).
+ * 게임 오버는 이름별 라이브러리 선택기를 가진 전용 폼을 유지한다.
  *
  *   1. 해당 kind 의 기존 testid 를 스키마 필드의 testId 로 지정해 계약을 승계한다.
  *   2. 그 kind 를 참조하는 테스트를 돌려 DOM 형태 기대치를 맞춘다.
@@ -70,7 +69,7 @@ export function summaryLookup(): SummaryLookup {
   const named = (id: string): string => {
     if (!id) return "(미지정)";
     const db = project.database;
-    const pools = [db.items, db.actors, db.skills, db.enemies, db.troops] as readonly { id: string; name?: string }[][];
+    const pools = [db.items, db.actors, db.skills, db.enemies, db.troops, project.system.gameOvers ?? []] as readonly { id: string; name?: string }[][];
     for (const pool of pools) {
       const hit = pool?.find((entry) => entry.id === id);
       if (hit?.name) return hit.name;

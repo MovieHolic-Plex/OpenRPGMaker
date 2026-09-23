@@ -4,6 +4,15 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { firefox } from 'playwright';
 import { armDomState, finishDomState, blockRemoteWrites } from './growth-tree-evidence.mjs';
+// 승급 트리·스킬 트리는 레일 칸이 아니라 직업·스킬 탭의 보기다(2026-09-23) — 부모 탭을 연 뒤 보기 전환 줄을 누른다.
+const GROWTH_SUBVIEW = { 'db-tab-promotion-tree': ['db-tab-classes', 'db-subview-promotion-tree'], 'db-tab-skill-trees': ['db-tab-skills', 'db-subview-skill-trees'] };
+async function openGrowthSubview(page, id) {
+  const [parent, sub] = GROWTH_SUBVIEW[id] ?? [id, null];
+  if (!await page.getByTestId(parent).isVisible()) await page.getByTestId('db-tab-group-party').click();
+  await page.getByTestId(parent).click();
+  if (sub) await page.getByTestId(sub).click();
+}
+
 
 const cwd = fileURLToPath(new URL('../../', import.meta.url));
 const out = `${cwd}/.omo/evidence/growth-integrated/production-editor`;
@@ -29,10 +38,7 @@ try {
   await page.addInitScript(() => localStorage.setItem('oprn:editor-ui-mode', 'expert'));
   await page.goto('http://127.0.0.1:9898/?freshProject=1', { waitUntil: 'domcontentloaded', timeout: 120000 });
   await page.getByTestId('toolbar-database').click();
-  const tab = async id => {
-    if (!await page.getByTestId(id).isVisible()) await page.getByTestId('db-tab-group-party').click();
-    await page.getByTestId(id).click();
-  };
+  const tab = async id => openGrowthSubview(page, id);
   await tab('db-tab-promotion-tree');
   await page.getByTestId('growth-preset-apply').click();
   const rootId = 'bundle-vanguard-class-0';

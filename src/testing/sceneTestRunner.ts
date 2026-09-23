@@ -211,6 +211,9 @@ export type SceneExpectStep = {
   eventOnMap?: { eventId: string; mapId: string };
   eventDistanceToPlayerLessThan?: { eventId: string; distance: number; mapId?: string };
   followerCount?: number;
+  /** 전투 파티(session.partyActorIds)에 있어야 할 배우. 동료 추종(followers)과는 다르다. */
+  partyIncludes?: string | readonly string[];
+  partyExcludes?: string | readonly string[];
   followerAt?: { name: string; x: number; y: number };
   cameraAt?: { cx: number; cy: number; tolerance?: number };
   lightingAmbient?: number | { value: number; tolerance?: number };
@@ -282,6 +285,8 @@ export interface SceneTestResult {
     readonly fieldSpawnCount: number;
     readonly spawnedCount: number;
     readonly followerCount: number;
+    /** 전투 파티 편성. addFollower(시각 추종)는 여기 들어가지 않는다 — changeParty action:"add" 만. */
+    readonly partyActorIds: readonly string[];
     readonly followers: readonly { readonly name: string; readonly x: number; readonly y: number }[];
     readonly picturesVisible: readonly string[];
     readonly messages: readonly string[];
@@ -411,6 +416,7 @@ const sceneExpectFields: Readonly<Record<keyof Omit<SceneExpectStep, "kind">, Sc
   eventOnMap: value => sceneShape(value, { eventId: sceneText, mapId: sceneText }, ["eventId", "mapId"]),
   eventDistanceToPlayerLessThan: value => sceneShape(value, { eventId: sceneText, distance: sceneNumber, mapId: sceneText }, ["eventId", "distance"]),
   followerCount: sceneCount,
+  partyIncludes: sceneStringOrList, partyExcludes: sceneStringOrList,
   followerAt: value => sceneShape(value, { name: sceneText, x: sceneCount, y: sceneCount }, ["name", "x", "y"]),
   cameraAt: value => sceneShape(value, { cx: sceneNumber, cy: sceneNumber, tolerance: sceneNumber }, ["cx", "cy"]),
   lightingAmbient: value => sceneNumber(value) || sceneShape(value, { value: sceneNumber, tolerance: sceneNumber }, ["value"]),
@@ -1865,6 +1871,14 @@ function runExpectStep(state: RunnerState, step: SceneExpectStep): string | null
   if (step.followerCount !== undefined && (state.session.followers?.length ?? 0) !== step.followerCount) {
     return `동료 수: 기대 ${step.followerCount}, 실제 ${state.session.followers?.length ?? 0}`;
   }
+  for (const actorId of typeof step.partyIncludes === "string" ? [step.partyIncludes] : step.partyIncludes ?? []) {
+    if (!state.session.partyActorIds.includes(actorId)) {
+      return `전투 파티에 ${actorId} 없음: 실제 파티 [${state.session.partyActorIds.join(", ")}] — 동료 추종(addFollower)은 파티 합류가 아니다. changeParty {actorId,action:"add"} 가 실행돼야 한다`;
+    }
+  }
+  for (const actorId of typeof step.partyExcludes === "string" ? [step.partyExcludes] : step.partyExcludes ?? []) {
+    if (state.session.partyActorIds.includes(actorId)) return `전투 파티에 ${actorId} 가 남아 있음: 실제 파티 [${state.session.partyActorIds.join(", ")}]`;
+  }
   if (step.followerAt) {
     const actual = followerPositions(state.session, state.project.system.companions, followerWorld(state)).find((entry) => entry.follower.name === step.followerAt?.name);
     if (!actual) return `동료 없음: ${step.followerAt.name}`;
@@ -2517,6 +2531,7 @@ function result(
       fieldSpawnCount: fieldSpawnAliveCount(fieldSpawnState),
       spawnedCount: spawnedCount(session),
       followerCount: session.followers?.length ?? 0,
+      partyActorIds: [...session.partyActorIds],
       followers: followerPositions(session, project.system.companions).map((entry) => ({ name: entry.follower.name, x: entry.x, y: entry.y })),
       picturesVisible: Object.keys(session.pictures),
       messages,

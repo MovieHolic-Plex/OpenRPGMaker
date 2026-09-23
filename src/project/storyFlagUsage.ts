@@ -249,6 +249,16 @@ function scanCommand(
       break;
     case "shop":
       if (command.transactionBranch) scanCommands(command.transactionBranch, add, owner, `${commandPath}.transactionBranch`);
+      if (command.failedTransactionBranch) scanCommands(command.failedTransactionBranch, add, owner, `${commandPath}.failedTransactionBranch`);
+      break;
+    case "battleProcessing":
+      // 보스 승리 분기의 setSwitch 가 가장 흔한 진행 쓰기다 — 빠지면 그 스위치를 읽는 페이지가 「쓰는 곳 없음」으로 보인다.
+      if (command.victoryBranch) scanCommands(command.victoryBranch, add, owner, `${commandPath}.victoryBranch`);
+      if (command.defeatBranch) scanCommands(command.defeatBranch, add, owner, `${commandPath}.defeatBranch`);
+      if (command.escapeBranch) scanCommands(command.escapeBranch, add, owner, `${commandPath}.escapeBranch`);
+      break;
+    case "inn":
+      if (command.notEnoughBranch) scanCommands(command.notEnoughBranch, add, owner, `${commandPath}.notEnoughBranch`);
       break;
     case "promoteActor":
       if (command.successBranch) scanCommands(command.successBranch, add, owner, `${commandPath}.successBranch`);

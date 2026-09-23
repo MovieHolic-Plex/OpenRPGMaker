@@ -298,12 +298,12 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
     face: FACE_SCHEMA,
     choices: {
       type: "array",
-      description: "선택지",
+      description: "선택지. 선택 결과(합류 changeParty·전투 battleProcessing·setSwitch 등)는 각 선택지의 commands에 넣는다 — 비우면 골라도 아무 일도 없다.",
       items: {
         type: "object",
         properties: {
           text: { type: "string" },
-          commands: { type: "array", items: COMMAND_SCHEMA },
+          commands: { type: "array", description: "이 선택지를 고르면 실행할 Command[] (branch로 보내도 commands로 읽는다)", items: COMMAND_SCHEMA },
         },
         required: ["text"],
       },

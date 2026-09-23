@@ -93,7 +93,7 @@ export function presetBrowser(mode: GrowthStudioMode, close: () => void, added: 
     }, true);
     apply.disabled = Boolean(options.disabled);
     const toolbar = el('div', { class: 'growth-preset-toolbar', children: [
-      el('strong', { text: '프리셋 미리보기 · 미적용' }),
+      el('strong', { text: options.compact ? '예시로 시작하기 · 아직 추가 안 됨' : '프리셋 미리보기 · 미적용' }),
       ...(options.compact ? [selectInput('프리셋', 'growth-preset-select', selected.id, presets, selectPreset)] : []),
       ...(mode === 'skill' ? [selectInput('묶음 안의 트리', 'growth-preset-tree', tree?.id ?? '', trees, id => showTree(id))] : []),
       ...(options.compact ? [apply] : []),
@@ -109,8 +109,12 @@ export function presetBrowser(mode: GrowthStudioMode, close: () => void, added: 
       ...nodes.map(n => note(`${n.name} — ${n.subtitle} · 선행: ${edges.filter(e => e.to === n.id).map(e => nodes.find(a => a.id === e.from)?.name).join(' + ') || '시작'}`)),
       note('주인공의 시작 직업은 추가 후 직접 지정하세요. 다시 추가하면 독립 사본이 생깁니다.'),
     ])];
+    // 작은 띠에서는 조건 원문 줄을 뺀다 — 띠 맨 아래에 「견습 기사 · 돌격 기사: Lv.5 + …」 가 원문
+    // 그대로 흘러 무엇인지 알 수 없었다(2026-09-23). 다른 트리로 건너가는 **버튼**만 남긴다.
+    if (options.compact) for (const line of Array.from(inspect.querySelectorAll('.growth-note'))) line.remove();
+    const showInspect = !options.compact || inspect.childElementCount > 0;
     root.replaceChildren(toolbar,
-      ...(!options.compact ? [el('div', { class: 'growth-preset-collection', children: cards })] : []), graph, inspect,
+      ...(!options.compact ? [el('div', { class: 'growth-preset-collection', children: cards })] : []), graph, ...(showInspect ? [inspect] : []),
       ...(options.compact ? [status] : [el('div', { class: 'growth-preset-details', children: details }),
         el('footer', { class: 'growth-preset-footer', children: [status, button('취소 · 편집으로', 'growth-presets-cancel', close), apply] })]));
     viewport.scrollLeft = state.x ?? 0; viewport.scrollTop = state.y ?? 0;

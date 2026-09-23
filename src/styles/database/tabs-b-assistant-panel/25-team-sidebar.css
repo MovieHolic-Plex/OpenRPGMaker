@@ -24,6 +24,10 @@
 .ai-team-sidebar .ai-team-member-name { font-size: 12px; line-height: 1.4; max-width: 100%; overflow-wrap: anywhere; }
 .ai-team-member-state { color: var(--text-3); font-size: 11px; line-height: 1.3; }
 .ai-team-sidebar-empty { padding: 16px 8px; margin: 0; text-align: center; font-size: 11px; color: var(--text-3); white-space: pre-line; }
+.ai-team-sidebar.is-idle { flex-basis: 44px; width: 44px; }
+.ai-team-sidebar.is-idle .ai-team-rail-tabs, .ai-team-sidebar.is-idle .ai-team-sidebar-empty, .ai-team-sidebar.is-idle .ai-team-avatar-list { display: none; }
+.ai-team-sidebar.is-idle .ai-team-settings-button { margin-top: auto; padding: 12px 0; border-top: 0; }
+.ai-team-sidebar.is-idle .ai-team-settings-button > span { display: none; }
 .ai-team-settings-button { display: flex; align-items: center; flex-direction: column; gap: 6px; padding: 14px 4px; border: 0; border-top: 1px solid var(--border-subtle); background: transparent; color: var(--text-2); margin-top: auto; }
 .ai-team-sidebar .ai-team-member-detail {
   position: absolute; right: 100%; top: 0; bottom: 0; width: min(350px, calc(100vw - 100px));

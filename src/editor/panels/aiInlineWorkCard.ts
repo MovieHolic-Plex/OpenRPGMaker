@@ -22,9 +22,21 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
   let writes = 0;
   let hasContent = false;
   const spinner = deckIcon("clock", { size: 15 });
-  const title = el("strong", { text: input.title, attrs: { title: input.title } });
-  const status = el("span", { class: "ai-work-inline-status", text: "진행 중" });
+  // 제목에 사용자 문장을 다시 쓰지 않는다 — 바로 위 말풍선과 같은 줄이 두 번 보였다. 원문은 툴팁에 둔다.
+  const title = el("strong", { text: "작업 중", attrs: { title: input.title } });
+  const status = el("span", { class: "ai-work-inline-status", text: "0:00" });
+  const startedAt = Date.now();
+  let progress = "";
+  const elapsed = (): string => {
+    const seconds = Math.max(0, Math.round((Date.now() - startedAt) / 1000));
+    return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  };
+  const renderStatus = (): void => { status.textContent = progress ? `${progress} · ${elapsed()}` : elapsed(); };
+  // 무엇이 도는지 모를 때도 시계는 간다 — 멈춘 화면과 기다리는 화면을 구별하게 한다.
+  const ticker = input.ownerless ? null : setInterval(() => { if (root.isConnected) renderStatus(); }, 1000);
   const live = el("div", { class: "ai-work-inline-live" });
+  const now = el("p", { class: "ai-work-inline-now", dataset: { testid: "ai-work-card-now" }, attrs: { "aria-live": "polite" } });
+  now.hidden = true;
   const steps = el("div", { class: "ai-work-inline-steps" });
   const summary = el("summary", { text: "작업 과정" });
   const details = el("details", { dataset: { testid: "ai-work-process" }, children: [summary, live, steps] });
@@ -44,7 +56,7 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
   });
   const root = el("article", {
     class: "ai-work-inline has-activity", dataset: { testid: "ai-work-card", state: "running" },
-    children: [head, activity.root, actions, details],
+    children: [head, now, activity.root, actions, details],
   });
   bindActivityLevel(root, level => {
     details.hidden = (hasBoard && !hasExtraProcess) || level === "none" || level === "brief";
@@ -55,10 +67,13 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
     trace = activityPhase(trace, result.ok ? "완료" : /중단|중지/.test(result.message ?? "") ? "중단" : "실패", Date.now());
     if (!hasBoard) activity.update(trace);
     root.dataset.state = result.ok ? "done" : "failed";
+    if (ticker !== null) clearInterval(ticker);
     title.textContent = "작업 결과";
     head.querySelector(".ai-work-inline-spinner")?.remove();
-    status.textContent = result.message || (result.ok ? "완료" : "중단 / 오류");
+    const took = input.ownerless ? "" : ` · ${elapsed()}`;
+    status.textContent = `${result.message || (result.ok ? "완료" : "중단 / 오류")}${took}`;
     stop.remove(); live.replaceChildren();
+    now.hidden = true; now.textContent = "";
     if (result.message) steps.append(el("p", { text: result.message }));
     if (!result.ok) hasContent = true;
   };
@@ -70,7 +85,15 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
       trace = recordActivityEvent(trace, event); activity.update(trace);
     },
     setTitle: (text) => { title.setAttribute("title", text); },
-    setProgress: (done, total) => { status.textContent = total ? `진행 중 · ${done}/${total}` : "진행 중"; },
+    setStatusLine: (text) => {
+      if (root.dataset.state !== "running") return;
+      const line = text.trim();
+      // 머리 줄이 이미 말하는 「작업 중」 류는 되풀이하지 않는다.
+      const generic = !line || /^(대기|작업 중…?|실행 중…?|준비 중…?)$/.test(line);
+      now.hidden = generic;
+      now.textContent = generic ? "" : line;
+    },
+    setProgress: (done, total) => { progress = total ? `${done}/${total}` : ""; renderStatus(); },
     noteReadOnly: () => {},
     appendStep: (entry) => { writes += 1; hasExtraProcess = true; steps.append(entry); root.dispatchEvent(new Event("ai-activity-level")); },
     attachElement: (element) => {
@@ -85,6 +108,17 @@ export function createInlineWorkCard(input: { title: string; onStop: () => void;
     },
     attachChange: (preview) => {
       hasContent = true;
+      // 무엇이 바뀌었는지 한 줄 — 버튼 셋만 있고 「연못 1 · 나무 8」 같은 요약이 어디에도 없었다.
+      const chips = (preview.chips ?? []).filter(Boolean);
+      root.querySelector(".ai-work-inline-changed")?.remove();
+      // 단, 이 줄은 변경 집계 원문(「타일 2536 · 이벤트 +157 · 맵 속성 2 · DB 11 · …」)이라 개발자용
+      // 영수증이다 — 간단히 보기(기본)에서는 숨기고 자세히·전체 기록에서만 보인다. 비개발자에게는
+      // 완료 말풍선의 「맵 16개 · 이벤트 157개를 만들었어요」가 같은 사실을 말한다(2026-09-23 도그푸딩).
+      if (chips.length) {
+        const changed = el("p", { class: "ai-work-inline-changed", dataset: { testid: "ai-work-card-changed" }, text: chips.join(" · ") });
+        bindActivityLevel(changed, level => { changed.hidden = level === "none" || level === "brief"; });
+        root.insertBefore(changed, actions);
+      }
       actions.replaceChildren(el("button", {
         text: "변경 보기", attrs: { type: "button" }, dataset: { testid: "ai-inline-change-view" },
         on: { click: () => openWideChangeViewer(preview) },

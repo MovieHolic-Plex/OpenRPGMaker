@@ -66,6 +66,20 @@ for (const flow of ["gauge", "strict"] as const) {
       });
     }
 
+    it("preserves a selected game-over definition and its message across the battle handoff", () => {
+      const { runtime } = battleCase({ flow, commands: [{ kind: "killPlayer", gameOverId: "caught", message: "Caught in battle" }, mark("after")] });
+      runtime.performActorCommand({ kind: "defend" });
+      expect(runtime.snapshot().eventState.gameOverRequest).toEqual({ gameOverId: "caught", message: "Caught in battle" });
+      expect(variables(runtime).after).toBe(0);
+    });
+
+    it("a gameOver command requests only its selected definition (no message field)", () => {
+      const { runtime } = battleCase({ flow, commands: [{ kind: "gameOver", gameOverId: "caught" }, mark("after")] });
+      runtime.performActorCommand({ kind: "defend" });
+      expect(runtime.snapshot().eventState.gameOverRequest).toEqual({ gameOverId: "caught" });
+      expect(variables(runtime).after ?? 0).toBe(0);
+    });
+
     it("the first terminal wins over a conflicting terminal later in the page", () => {
       const { runtime } = battleCase({ flow, commands: [{ kind: "gameOver" }, m2("m2-107-force-escape")] });
       runtime.performActorCommand({ kind: "defend" });

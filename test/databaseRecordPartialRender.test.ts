@@ -73,11 +73,11 @@ describe("Database record tab partial rendering", () => {
     const host = renderRecordHost("actors");
 
     expect(findByTestId(host, "db-actor-studio")).not.toBeNull();
-    expect(findByTestId(host, "db-actor-studio")?.textContent).toContain("플레이어 캐릭터");
+    expect(findByTestId(host, "db-actor-studio")?.textContent).toContain("주인공");
     expect(findByTestId(host, "db-actor-studio-summary")).toBeNull();
     expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("캐릭터");
-    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("HP");
-    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("맵 표시");
+    expect(findByTestId(host, "db-actor-table-header")?.textContent).toContain("직업");
+    // 레벨·HP·맵 표시 열은 주인공마다 값이 다를 때만 선다(visibleActorColumns — databasePartySimplify.test.ts).
     expect(host.querySelector(".db-studio-table-pane")).not.toBeNull();
     expect(host.querySelector(".db-studio-inspector-pane")).not.toBeNull();
 

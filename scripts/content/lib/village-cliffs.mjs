@@ -41,6 +41,12 @@ function inspectVillageCliffs(map, plan, bindings) {
       const x = c.x, y = c.y + d, i = y * map.width + x;
       const stair = plan.stairs.some(([sx, sy, h]) => x >= sx && x < sx + 2 && y >= sy && y <= sy + h);
       const mouth = plan.cave?.[0] === x && plan.cave?.[1] === y;
+      // A river crossing: the rim cell is water and every cell below it is waterfall.
+      const fall = plan.falls?.find((f) => f.x === x && f.y === c.y);
+      if (fall) {
+        if (d > 0 && (map.lowerTiles[i] !== fall.tile || map.upperTiles[i] !== -1)) errors.push({ code: "waterfall-gap", x, y, expectedLower: fall.tile, actualLower: map.lowerTiles[i], actualUpper: map.upperTiles[i] });
+        continue;
+      }
       const lower = stair ? bindings[374] : null;
       const upper = stair ? -1 : mouth ? bindings[413] : bindings[c.source[d === 0 ? 0 : d === c.height ? 2 : 1]];
       if (map.upperTiles[i] !== upper || lower !== null && map.lowerTiles[i] !== lower) {

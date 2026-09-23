@@ -1,3 +1,4 @@
+import { randomUUID } from "node:crypto";
 import { PiTilesetReferenceGate } from "../../src/ai/piAgent/tilesetReferenceGate.ts";
 import { TILESET_REFERENCE_READ_TOOLS } from "../../src/editor/tools/tilesetReferenceTools.ts";
 import { SET_BUILD_SPEC_TOOL } from "../../src/ai/session/sessionTools.ts";
@@ -34,7 +35,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
-import { changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
@@ -203,13 +204,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (villageMapId) villageMapIds.add(villageMapId);
     if (contract) receipt = villageDraftReceipt(record, ctx.project) ?? receipt;
     // find_tools 수확 — 발견된 이름을 다음 턴 요청부터 실제로 선언한다(세션의 에스컬레이션 이식).
+    // 빈 검색은 아무것도 얹지 않는다. 예전엔 전체 카탈로그(248개·≈113k 토큰)를 복원해 그 뒤 모든 호출이
+    // 그만큼 무거워졌다. 이름을 아는 툴은 미노출이어도 직접 호출이 폴백으로 구제되고, 모르는 툴은 다른
+    // 말로 다시 찾으면 된다 — 결과 요약이 그렇게 안내한다.
     if (record.name === "find_tools") {
-      const found = harvestFindToolsNames(record.result);
-      const matches = (record.result.data as { matches?: unknown } | undefined)?.matches;
-      // A successful empty search restores the complete permitted catalog. Domains and
-      // initialToolNames are routing hints; readOnly and role toolNames remain hard limits.
-      const names = record.result.ok && Array.isArray(matches) && matches.length === 0
-        ? allowedDefinitions.map(tool => tool.name) : found;
+      const names = harvestFindToolsNames(record.result);
       for (const name of names) {
         if (exposed.has(name)) continue;
         const shape = shapeFor(name);
@@ -226,9 +225,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
     if (scoped) authorMergedSpatialProposal(project, accepted);
     if (changedProjectKeys(accepted, project).length === 0) return;
-    const unchangedKeys: PiCheckpointHeavyKey[] = [];
-    if (project.tilesets === accepted.tilesets) unchangedKeys.push("tilesets");
-    if (project.database === accepted.database) unchangedKeys.push("database");
+    // 쓰기 도구는 매번 createDraft 로 전체를 복제하므로 정체성은 늘 다르다 — 내용으로 판정한다.
+    // 안 그러면 타일셋 이미지(수십 MB)가 쓰기마다 체크포인트 한 줄에 실려 오간다.
+    const unchangedKeys: PiCheckpointHeavyKey[] = unchangedHeavyKeys(accepted, project);
     try {
       const published = await options.onCheckpoint!({
         project: structuredClone(slimCheckpointProject(project, unchangedKeys)) as Project,
@@ -335,6 +334,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     },
     ...(apiKey ? { getApiKey: () => apiKey as never } : {}),
     ...(options.streamFn ? { streamFn: options.streamFn } : {}),
+    // 실행 하나 = 캐시 세션 하나. 제공자 프롬프트 캐시(prompt_cache_key 등)가 이 id 로 같은 접두부를 묶는다 —
+    // 없으면 매 호출 도구 스키마·시스템 프롬프트 전체가 새로 과금됐다.
+    sessionId: `oprn-${randomUUID()}`,
     onPayload: ((payload: unknown) => {
       const outgoing = request.provider === "google-antigravity"
         ? antigravityToolEnumPayload(String((model as { id?: string }).id ?? ""), tools)(payload)
@@ -361,7 +363,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   let turns = 0;
   let toolCalls = 0;
   let toolErrors = 0;
-  let usage: unknown;
+  let usage: PiAgentUsage | undefined;
   let fatal: string | undefined;
   const started = Date.now();
   emit({ type: "start", provider: request.provider, model: String((model as { id?: string }).id ?? ""), toolCount: tools.length });
@@ -442,7 +444,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         .map((part) => part.text)
         .join("");
       if (text.trim()) emit({ type: "assistant", text });
-      if (message.usage) usage = message.usage;
+      usage = addPiAgentUsage(usage, message.usage);
       if (message.stopReason === "error" || message.errorMessage) {
         // 우리가 먼저 정한 사유(턴·시간 상한, 클라이언트 끊김)가 있으면 그것이 이긴다 — 코어가 합성한
         // aborted 메시지의 문구로 덮어쓰지 않는다.
@@ -505,6 +507,6 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     // 정본 증거는 이 프로세스 안에만 살아 있다 — 브라우저 수용 게이트가 쓸 수 있게 다이제스트로 내보낸다.
     spatialProof: exportSpatialToolProof(ctx.project),
   };
-  emit(done);
+  emit(slimDoneEvent(done, base));
   return done;
 }

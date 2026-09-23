@@ -5,6 +5,7 @@ import {
   clearPendingAiBootIntent,
   clearWelcomeIntentBootFlags,
   peekPendingAiBootAutoSend,
+  peekPendingAiBootDisplayText,
   peekPendingAiBootIntent,
   prefillAiAssistantInput,
   registerAiBootIntentTarget,
@@ -59,6 +60,30 @@ describe("aiBootIntent", () => {
     expect(applyPendingAiBootIntent()).toBe(true);
     expect(send).toHaveBeenCalledWith("장르 프리셋: 모험 JRPG");
     expect(prefill).not.toHaveBeenCalled();
+  });
+
+  it("carries the visible user sentence separately from the prompt sent to the model", () => {
+    // Break: 보이는 문장이 핸드오프에서 빠지면 조수 말풍선이 「사용자 의도: …」 내부 지시문으로 뜬다.
+    const open = vi.fn();
+    const prefill = vi.fn();
+    const send = vi.fn();
+    registerAiBootIntentTarget({ open, prefill, send });
+    setPendingWelcomePipeline({ prompt: "사용자 의도: 고양이 찾기\n\n한국어로 진행하고…", displayText: "고양이 찾기", autoSend: true, source: "free-text" });
+    expect(peekPendingAiBootDisplayText()).toBe("고양이 찾기");
+    expect(applyPendingAiBootIntent()).toBe(true);
+    expect(send).toHaveBeenCalledWith("사용자 의도: 고양이 찾기\n\n한국어로 진행하고…", "고양이 찾기");
+    expect(peekPendingAiBootDisplayText()).toBeNull();
+
+    // AI 연결 전: 입력창에 담기는 쪽도 같은 두 문장을 받는다.
+    setPendingAiBootIntent("장르 프리셋: 모험 JRPG\n체크리스트", { displayText: "모험 JRPG · 시작 마을" });
+    expect(applyPendingAiBootIntent()).toBe(true);
+    expect(prefill).toHaveBeenCalledWith("장르 프리셋: 모험 JRPG\n체크리스트", "모험 JRPG · 시작 마을");
+
+    // 쓰던 초안은 두 문장 모두의 앞에 그대로 남는다.
+    const draftPrefill = vi.fn();
+    registerAiBootIntentTarget({ open, prefill: draftPrefill, getDraft: () => "내 메모" });
+    expect(prefillAiAssistantInput("전체 지시", { preserveDraft: true, displayText: "요약" })).toBe(true);
+    expect(draftPrefill).toHaveBeenCalledWith("내 메모\n\n전체 지시", "내 메모\n\n요약");
   });
 
   it("prefillAiAssistantInput never sends and requires target", () => {

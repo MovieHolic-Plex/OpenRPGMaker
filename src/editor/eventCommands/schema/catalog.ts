@@ -752,8 +752,8 @@ defineCommand({
   kind: "gameOver",
   family: "system",
   label: "게임 오버",
-  fields: {},
-  summary: () => "게임 오버",
+  fields: { gameOverId: f.text("게임 오버 ID", { optional: true }) },
+  summary: (c, l) => `게임 오버 · ${c.gameOverId ? l.recordName(str(c.gameOverId)) : "프로젝트 기본값"}`,
 });
 
 defineCommand({
@@ -768,6 +768,6 @@ defineCommand({
   kind: "killPlayer",
   family: "system",
   label: "즉사",
-  fields: {},
-  summary: () => "파티 전멸",
+  fields: { gameOverId: f.text("게임 오버 ID", { optional: true }), message: f.text("패배 메시지", { optional: true }) },
+  summary: (c, l) => `파티 전멸 · ${c.gameOverId ? l.recordName(str(c.gameOverId)) : "프로젝트 기본값"}`,
 });

@@ -35,6 +35,11 @@ export interface AiWorkCard {
   /** 완료된 도구 행 목록(펼친 카드에서 보인다). */
   readonly steps: HTMLElement;
   setTitle(title: string): void;
+  /**
+   * 지금 하는 일 한 문장(패널 상태 문장과 같은 것). 머리 줄의 상태 칸은 90px 라 「작업 중…」 으로
+   * 잘려 「검수하는 중」 같은 문장이 어디에도 보이지 않았다 — 카드가 전문을 보여 준다.
+   */
+  setStatusLine?(text: string): void;
   /** 진행률. total 이 없으면 무한 진행 막대. */
   setProgress(done: number, total?: number | null): void;
   /** 조회성 성공 도구는 행을 남기지 않고 개수만 센다. */

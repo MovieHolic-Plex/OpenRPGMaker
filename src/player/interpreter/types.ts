@@ -190,8 +190,8 @@ export type StepResult =
       wakeDurationMs?: number;
       branchOnNotEnoughGold?: boolean;
     }
-  | { kind: "gameOver"; message?: string }
-  | { kind: "returnToTitle"; title?: string; message?: string };
+  | { kind: "gameOver"; message?: string; gameOverId?: string }
+  | { kind: "returnToTitle"; title?: string; message?: string; presentation?: import("@/project/cinematicSettings").EndingPresentation };
 
 export type ResumeValue = number | boolean | string | undefined | void | "failed";
 export type PendingStep = Exclude<StepResult["kind"], "done"> | "waitUntil";

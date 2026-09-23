@@ -47,6 +47,8 @@ export type AiActivityResult = {
    * 활동 로그를 통째로 건너뛰어서 존재 자체가 안 남았다(aiChatPanel 의 ownsTurn 조기 반환).
    */
   readonly orphaned?: boolean;
+  /** Pi 실행의 토큰 합계 — 모든 에이전트(팀장·팀원·계획·수리)의 모델 호출을 더한 값. 검수·의도 LLM 은 빠진다. */
+  readonly usage?: import("./piAgent/protocol").PiAgentUsage;
   /** 이 턴이 만든 프로젝트 커밋. 예전에는 audit 텍스트의 `commit=` 를 정규식으로 긁어야 했다. */
   readonly commitIds?: readonly string[];
   /** 이 목표가 태운 토큰·경과·과정. 있으면 로그 요약에 그대로 싣는다. */
