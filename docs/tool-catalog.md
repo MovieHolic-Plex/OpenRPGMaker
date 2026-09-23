@@ -184,7 +184,7 @@
 | `author_boss_phases` | `troopId: string`, `enemyId?: string`, `phases: array` | 보스 페이즈를 선언적으로 깐다. 각 페이즈는 'HP x% 이하' 진입 조건 + 대사·애니메이션·상태부여(광폭화)·HP회복·숨은 적 등장·스위치를 전투 이벤트 페이지로 컴파일한다(1회성). 같은 트룹에 다시 호출하면 이전에 이 툴이 만든 페이즈 페이지만 교체하고 수동 페이지는 보존한다. 저작 후 simulate_battle 로 phaseCoverage(발동 여부)를 확인하라. |
 | `upsert_troop_battle_page` | `troopId: string`, `page: object` | 트룹의 전투 이벤트 페이지(보스 페이즈/전투 스크립트)를 페이지 단위로 등록·수정한다. 조건·커맨드·무한반복을 검증하며, 저작 후 simulate_battle 의 phaseCoverage 로 실제 발동을 확인해야 한다. 여러 페이즈를 한 번에 깔려면 author_boss_phases 를 먼저 보라. |
 | `delete_troop_battle_page` | `troopId: string`, `pageId: string` | 트룹의 전투 이벤트 페이지 하나를 삭제한다. |
-| `rename_switch` | `fromId?: string`, `fromName?: string`, `to: string` | 스위치 id를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). fromId 또는 fromName으로 대상 지정. |
+| `rename_switch` | `fromId?: string`, `switchId?: string`, `fromName?: string`, `to?: string`, `name?: string` | 스위치의 표시 이름(name)을 바꾸거나 id(to)를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). 대상은 fromId(별칭 switchId) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다. |
 | `rename_variable` | `fromId?: string`, `fromName?: string`, `to: string` | 변수 id를 전 맵/커먼이벤트/트룹에서 일괄 치환한다(정의·세션·setVariable·조건·숫자입력 참조 포함). fromId 또는 fromName으로 대상 지정. |
 | `prune_unused` | `apply?: boolean` | 미참조 스위치/변수(명명된 것)와 아이템/트룹을 보고한다. apply=true면 제거까지 수행. |
 | `revert_last_edit` | `steps?: integer` | 최근 편집 히스토리의 이전 상태로 되돌린다. 사용자가 '되돌려/취소/이전으로/undo'라고 하면 이 툴을 호출하라. 절대 clear_region 등으로 직접 지우지 말 것. |
