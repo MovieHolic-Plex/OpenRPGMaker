@@ -18,7 +18,7 @@ export function gameOverCommandBody(context: CommandEditContext, cmd: Extract<Co
     current = { ...rest, ...(select.value ? { gameOverId: select.value } : {}) };
     context.actions.replaceCommand(context.path, current);
   });
-  const children = [el("label", { class: "inline-field", children: [el("span", { text: "실행할 게임 오버" }), select] })];
+  const children: HTMLElement[] = [el("label", { class: "inline-field", children: [el("span", { text: "실행할 게임 오버" }), select] })];
   if (cmd.kind === "killPlayer") {
     const input = el("input", { attrs: { type: "text" }, value: cmd.message ?? "", dataset: { testid: "event-command-kill-player-message" } });
     input.addEventListener("change", () => {
