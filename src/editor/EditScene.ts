@@ -1441,7 +1441,11 @@ export class EditScene extends PhaserRuntime.Scene {
       toast(mapEditLockNotice(mid), "error");
       return true;
     }
-    return handleHistoryHotkey(event);
+    const applied = handleHistoryHotkey(event);
+    // 드래그 중에 되돌리면 브러시가 살아 있어 다음 pointermove 가 복원된 칸을
+    // 스냅샷 없이 다시 칠한다. 적용된 뒤에만 제스처를 버린다.
+    if (applied) this.abandonOpenPaintGesture();
+    return applied;
   }
 
   /**
@@ -1949,6 +1953,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!mid || !tileLayer || !upperTileLayer || !overlayLayer || !gridGraphics) return { tileObjectsUpdated: 0 };
     const stats = renderEditSceneTileCells({
       scene: this,
+      backgroundPreview: mapBackgroundPreviewEnabled(),
       tileLayer,
       upperTileLayer,
       tileChunks: this.tileChunks,
@@ -2328,6 +2333,14 @@ export class EditScene extends PhaserRuntime.Scene {
    * 조수 초점이 영구히 갇힌다 — 슬롯을 비우는 다른 지점은 맵 전환과 씬 정리뿐이고 둘 다 요청을 버린다.
    * 도형·선택 드래그는 캔버스 경계를 넘겨 끝나는 일이 흔하다(2026-08-30 리뷰 실측).
    */
+  /** 되돌리기·다시실행이 적용된 스트로크는 커밋하지 않고 끝낸다. */
+  private abandonOpenPaintGesture(): void {
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.dragOperationHandler?.clear();
+    this.clearHoverPreview();
+  }
+
   private endPointerGesture(ptr: Phaser.Input.Pointer): "right-region" | "gesture" {
     if (this.rightRegionGesture) {
       this.finishRightRegionGesture(ptr);
