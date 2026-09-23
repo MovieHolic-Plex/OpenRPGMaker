@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { regionReferenceContext } from "@/project/regionReferences";
-import { readRegionReference } from "@/project/regionReferenceSnapshots";
+import { preloadAllRegionReferences, readRegionReference } from "@/project/regionReferenceSnapshots";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "@/project/climateVillagePlaceReferences";
 import catalog from "../tiledata/climate-villages/catalog.json";
 import sheets from "../tiledata/climate-villages/sheets.json";
@@ -16,6 +16,9 @@ import { canMove } from "@/project/collision";
 import { listSpatialGalleryCards } from "@/editor/panels/spatialCatalog";
 import { spatialSession } from "@/editor/panels/spatialAuthoringSession";
 import type { GameMap, Project } from "@/project/types";
+
+// Snapshots are per-file lazy chunks; the synchronous reads below need them loaded.
+beforeAll(preloadAllRegionReferences);
 
 const maps = catalog.maps as unknown as Record<string, GameMap>;
 const categories = shipped as unknown as Record<string, { id: string; documents: { id: string }[] }>;

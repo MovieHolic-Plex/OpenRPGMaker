@@ -43,7 +43,7 @@ try {
     const expected = JSON.parse(fs.readFileSync(`public/assets/region-references/${plan.id}.oprn.json`)), map = expected.maps[plan.id];
     const id = `${plan.id}-${map.width}x${map.height}`;
     const actual = await page.evaluate(async (id2) => {
-      const { readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts");
+      const { preloadAllRegionReferences, readRegionReference } = await import("/src/project/regionReferenceSnapshots.ts"); await preloadAllRegionReferences();
       const lower = [], upper = [];
       for (let row = 0; row !== null;) { const r = readRegionReference(id2, row, 16); lower.push(...r.map.lowerTiles); upper.push(...r.map.upperTiles); row = r.map.nextRow; }
       return { lower, upper };

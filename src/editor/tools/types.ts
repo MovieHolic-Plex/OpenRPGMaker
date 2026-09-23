@@ -80,6 +80,8 @@ export interface ToolDefinition {
   readonly supersededBy?: string;
   // 이 툴이 노출되는 컨텍스트 모드(§2.2). 레지스트리가 패밀리 단위로 일괄 태깅한다.
   readonly domains?: readonly ToolDomain[];
+  // run 앞에서 기다릴 지연 데이터(청크를 따로 받는 참고 자료 등). 비동기 실행 경로(prepareTool)만 부른다.
+  readonly prepare?: (args: Record<string, unknown>) => Promise<void>;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
   run(draft: Project, args: Record<string, unknown>): ToolExecResult;
 }

@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
-import { describe, expect, it } from "vitest";
+import { beforeAll, describe, expect, it } from "vitest";
 import { existsSync } from "node:fs";
 import { regionReferenceContext } from "@/project/regionReferences";
-import { readRegionReference } from "@/project/regionReferenceSnapshots";
+import { preloadAllRegionReferences, readRegionReference } from "@/project/regionReferenceSnapshots";
 import { FANTASY_PLACE_REFERENCES } from "@/project/fantasyPlaceReferences";
 import catalog from "../tiledata/rpg-places/catalog.json";
 import shipped from "@/assets/sharedRpgPlaceReferences.json";
@@ -11,6 +11,9 @@ import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { ensureForestHarmonyReferences } from "@/project/defaults/forestHarmony";
 import { listSpatialGalleryCards } from "@/editor/panels/spatialCatalog";
 import { spatialSession } from "@/editor/panels/spatialAuthoringSession";
+
+// Snapshots are per-file lazy chunks; the synchronous reads below need them loaded.
+beforeAll(preloadAllRegionReferences);
 
 const maps = catalog.maps as unknown as Record<string, { lowerTiles: number[]; upperTiles: number[] }>;
 const categories = shipped as unknown as Record<string, { id: string; documents: { id: string }[] }>;

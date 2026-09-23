@@ -1,145 +1,137 @@
-import diverse0 from "./regionReferences/pine-hamlets.json";
 import { sharedRegionSnapshot } from './sharedSpatialReferences';
-import diverse1 from "./regionReferences/terrace-cliff-village.json";
-import diverse2 from "./regionReferences/reed-bay-village.json";
-import diverse3 from "./regionReferences/twin-falls-river-village.json";
-import diverse4 from "./regionReferences/chapel-hill-parish.json";
-import diverse5 from "./regionReferences/ford-castle-town.json";
-import diverse6 from "./regionReferences/mistpond-hollow.json";
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
-import fantasyPlaces from "./regionReferences/fantasy-places.json";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
-import climateVillages from "./regionReferences/climate-villages.json";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
-import fieldRoutes from "./regionReferences/field-routes.json";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
-import type { GameMap, TilesetDef, UploadedAsset } from "./types";
+import type { GameMap, TilesetDef } from "./types";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
-import courtyard from "./regionReferences/castle-courtyard.json";
-import harbor from "./regionReferences/castle-small-harbor.json";
-import lodge from "./regionReferences/castle-stone-lodge.json";
-import fortress from "./regionReferences/river-fortress.json";
-import emeraldSnapshot from "./regionReferences/emerald-basin.json";
-import hillForestSnapshot from "./regionReferences/hill-forest-village.json";
-import walledSnapshot from "./regionReferences/walled-settlement.json";
-import lakeSnapshot from "./regionReferences/lake-village.json";
-import riverForestSnapshot from "./regionReferences/river-forest-village.json";
-import castleSnapshot from "./regionReferences/castle-town.json";
-import ships from "./regionReferences/ships.json";
-import organic0 from "./regionReferences/organic-crescent-lake.json";
-import organic1 from "./regionReferences/organic-fork-stream.json";
-import organic2 from "./regionReferences/organic-terrace-gardens.json";
-import organic3 from "./regionReferences/organic-woodland-lane.json";
-import organic4 from "./regionReferences/organic-orchard-court.json";
-import organic5 from "./regionReferences/organic-fishing-cove.json";
-import organic6 from "./regionReferences/organic-five-groves.json";
-import forest0 from "./regionReferences/forest-cabin.json";
-import forest1 from "./regionReferences/forest-star.json";
-import forest2 from "./regionReferences/gubisup.json";
-import forest3 from "./regionReferences/small-forest-village.json";
-import forest4 from "./regionReferences/forest-cliff-village.json";
-import forest5 from "./regionReferences/high-cliff-village.json";
-import forest6 from "./regionReferences/cliff-forest-bridge.json";
-import forest7 from "./regionReferences/peaceful-forest.json";
-import forest8 from "./regionReferences/great-falls.json";
-import forest9 from "./regionReferences/rebuilt-forest-village.json";
-import forest10 from "./regionReferences/harmony-hill-village.json";
-import forest11 from "./regionReferences/hill-forest-cave.json";
-import forest12 from "./regionReferences/rebuilt-forest-cave.json";
 
 type PlaceSnapshot = { map: GameMap; tileset: TilesetDef };
+type SnapshotFile = () => Promise<{ default: unknown }>;
+type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
 
-const castleSnapshots: Record<string, PlaceSnapshot> = {
-  "river-fortress-160x144": fortress as unknown as PlaceSnapshot,
-  "castle-courtyard": courtyard as unknown as PlaceSnapshot,
-  "castle-small-harbor": harbor as unknown as PlaceSnapshot,
-  "castle-stone-lodge": lodge as unknown as PlaceSnapshot,
+// 스냅샷 JSON 은 시트 PNG 를 base64 로 품어 합치면 50MB 가 넘는다. 정적 import 하면 편집기 main 청크에
+// 통째로 실려 새로고침마다 받고 파싱했다(2026-09-24 실측 main.js 74MB). 파일마다 따로 청크로 두고
+// 조수가 그 장소를 읽을 때만 받는다 — 읽기 전에 preloadRegionReference 를 기다린다.
+const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
+  "river-fortress-160x144": () => import("./regionReferences/river-fortress.json"),
+  "castle-courtyard": () => import("./regionReferences/castle-courtyard.json"),
+  "castle-small-harbor": () => import("./regionReferences/castle-small-harbor.json"),
+  "castle-stone-lodge": () => import("./regionReferences/castle-stone-lodge.json"),
+  "forest-cabin-40x30": () => import("./regionReferences/forest-cabin.json"),
+  "forest-star-64x56": () => import("./regionReferences/forest-star.json"),
+  "gubisup-80x72": () => import("./regionReferences/gubisup.json"),
+  "small-forest-village-80x72": () => import("./regionReferences/small-forest-village.json"),
+  "forest-cliff-village-80x72": () => import("./regionReferences/forest-cliff-village.json"),
+  "high-cliff-village-80x88": () => import("./regionReferences/high-cliff-village.json"),
+  "cliff-forest-bridge-80x72": () => import("./regionReferences/cliff-forest-bridge.json"),
+  "peaceful-forest-100x100": () => import("./regionReferences/peaceful-forest.json"),
+  "great-falls-100x100": () => import("./regionReferences/great-falls.json"),
+  "rebuilt-forest-village-64x64": () => import("./regionReferences/rebuilt-forest-village.json"),
+  "harmony-hill-village-64x64": () => import("./regionReferences/harmony-hill-village.json"),
+  "hill-forest-cave-20x16": () => import("./regionReferences/hill-forest-cave.json"),
+  "rebuilt-forest-cave-20x16": () => import("./regionReferences/rebuilt-forest-cave.json"),
+  "organic-crescent-lake-80x72": () => import("./regionReferences/organic-crescent-lake.json"),
+  "organic-fork-stream-80x72": () => import("./regionReferences/organic-fork-stream.json"),
+  "organic-terrace-gardens-80x72": () => import("./regionReferences/organic-terrace-gardens.json"),
+  "organic-woodland-lane-80x72": () => import("./regionReferences/organic-woodland-lane.json"),
+  "organic-orchard-court-80x72": () => import("./regionReferences/organic-orchard-court.json"),
+  "organic-fishing-cove-80x72": () => import("./regionReferences/organic-fishing-cove.json"),
+  "organic-five-groves-80x72": () => import("./regionReferences/organic-five-groves.json"),
+  "pine-hamlets-80x64": () => import("./regionReferences/pine-hamlets.json"),
+  "terrace-cliff-village-88x72": () => import("./regionReferences/terrace-cliff-village.json"),
+  "reed-bay-village-88x64": () => import("./regionReferences/reed-bay-village.json"),
+  "twin-falls-river-village-88x72": () => import("./regionReferences/twin-falls-river-village.json"),
+  "chapel-hill-parish-80x64": () => import("./regionReferences/chapel-hill-parish.json"),
+  "ford-castle-town-100x92": () => import("./regionReferences/ford-castle-town.json"),
+  "mistpond-hollow-80x64": () => import("./regionReferences/mistpond-hollow.json"),
+  "river-forest-village-78x44": () => import("./regionReferences/river-forest-village.json"),
+  "emerald-basin-80x64": () => import("./regionReferences/emerald-basin.json"),
+  "hill-forest-village-64x64": () => import("./regionReferences/hill-forest-village.json"),
+  "castle-town-100x100": () => import("./regionReferences/castle-town.json"),
+  "walled-settlement-43x45": () => import("./regionReferences/walled-settlement.json"),
+  "lake-village-60x60": () => import("./regionReferences/lake-village.json"),
+};
+const FANTASY_FILE: SnapshotFile = () => import("./regionReferences/fantasy-places.json");
+const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
+const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
+const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
+const SHIP_MAP_IDS: Record<string, string> = {
+  "bluewave-ship": "map_bluewave_ship",
+  "giant-ship": "map_bluewave_giant",
+  "wide-ship": "map_bluewave_vertical",
+  "bluewave-harbor": "map_bluewave_harbor",
 };
 
-const forestSnapshots: Record<string, PlaceSnapshot> = {
-  "forest-cabin-40x30": forest0 as unknown as PlaceSnapshot,
-  "forest-star-64x56": forest1 as unknown as PlaceSnapshot,
-  "gubisup-80x72": forest2 as unknown as PlaceSnapshot,
-  "small-forest-village-80x72": forest3 as unknown as PlaceSnapshot,
-  "forest-cliff-village-80x72": forest4 as unknown as PlaceSnapshot,
-  "high-cliff-village-80x88": forest5 as unknown as PlaceSnapshot,
-  "cliff-forest-bridge-80x72": forest6 as unknown as PlaceSnapshot,
-  "peaceful-forest-100x100": forest7 as unknown as PlaceSnapshot,
-  "great-falls-100x100": forest8 as unknown as PlaceSnapshot,
-  "rebuilt-forest-village-64x64": forest9 as unknown as PlaceSnapshot,
-  "harmony-hill-village-64x64": forest10 as unknown as PlaceSnapshot,
-  "hill-forest-cave-20x16": forest11 as unknown as PlaceSnapshot,
-  "rebuilt-forest-cave-20x16": forest12 as unknown as PlaceSnapshot,
-  "organic-crescent-lake-80x72": organic0 as unknown as PlaceSnapshot,
-  "organic-fork-stream-80x72": organic1 as unknown as PlaceSnapshot,
-  "organic-terrace-gardens-80x72": organic2 as unknown as PlaceSnapshot,
-  "organic-woodland-lane-80x72": organic3 as unknown as PlaceSnapshot,
-  "organic-orchard-court-80x72": organic4 as unknown as PlaceSnapshot,
-  "organic-fishing-cove-80x72": organic5 as unknown as PlaceSnapshot,
-  "organic-five-groves-80x72": organic6 as unknown as PlaceSnapshot,
-};
+type SnapshotSource = { file: SnapshotFile; pick(data: unknown): PlaceSnapshot | undefined };
 
-const regionSnapshots: Record<string, PlaceSnapshot> = {
-  "pine-hamlets-80x64": diverse0 as unknown as PlaceSnapshot,
-  "terrace-cliff-village-88x72": diverse1 as unknown as PlaceSnapshot,
-  "reed-bay-village-88x64": diverse2 as unknown as PlaceSnapshot,
-  "twin-falls-river-village-88x72": diverse3 as unknown as PlaceSnapshot,
-  "chapel-hill-parish-80x64": diverse4 as unknown as PlaceSnapshot,
-  "ford-castle-town-100x92": diverse5 as unknown as PlaceSnapshot,
-  "mistpond-hollow-80x64": diverse6 as unknown as PlaceSnapshot,
+const whole = (file: SnapshotFile): SnapshotSource => ({ file, pick: data => data as PlaceSnapshot });
+/** Fantasy/climate/field/ship snapshots share one file per family; the entry names its map. */
+const fromMaps = (file: SnapshotFile, mapId: string): SnapshotSource => ({ file, pick: (data) => {
+  const source = data as MultiMapFile;
+  const map = source.maps[mapId];
+  return map ? { map, tileset: source.tilesets[map.tilesetId]! } : undefined;
+} });
 
-  "river-forest-village-78x44": riverForestSnapshot as unknown as PlaceSnapshot,
-  "emerald-basin-80x64": emeraldSnapshot as unknown as PlaceSnapshot,
-  "hill-forest-village-64x64": hillForestSnapshot as unknown as PlaceSnapshot,
-  "castle-town-100x100": castleSnapshot as unknown as PlaceSnapshot,
-  "walled-settlement-43x45": walledSnapshot as unknown as PlaceSnapshot,
-  "lake-village-60x60": lakeSnapshot as unknown as PlaceSnapshot,
-};
+function snapshotSource(id: string): SnapshotSource | undefined {
+  if (SNAPSHOT_FILES[id]) return whole(SNAPSHOT_FILES[id]);
+  // Place cards for the diverse villages reuse their region snapshot.
+  const place = DIVERSE_VILLAGE_PLACES.find(entry => entry.id === id);
+  if (place && SNAPSHOT_FILES[place.regionReferenceId]) return whole(SNAPSHOT_FILES[place.regionReferenceId]);
+  const fantasy = FANTASY_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (fantasy) return fromMaps(FANTASY_FILE, fantasy.sourceMapId);
+  const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (climate) return fromMaps(CLIMATE_FILE, climate.sourceMapId);
+  const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (field) return fromMaps(FIELD_FILE, field.sourceMapId);
+  const shipMapId = SHIP_MAP_IDS[id];
+  return shipMapId ? fromMaps(SHIPS_FILE, shipMapId) : undefined;
+}
 
-const shipSource = ships as unknown as {
-  maps: Record<string, GameMap>;
-  tilesets: Record<string, TilesetDef>;
-  assets: Record<string, UploadedAsset>;
-};
+const loaded = new Map<SnapshotFile, unknown>();
+const pending = new Map<SnapshotFile, Promise<void>>();
+const failed = new Map<SnapshotFile, unknown>();
+
+function load(file: SnapshotFile): Promise<void> {
+  if (loaded.has(file)) return Promise.resolve();
+  let promise = pending.get(file);
+  if (!promise) {
+    failed.delete(file);
+    promise = file()
+      .then(module => { loaded.set(file, module.default); })
+      .catch((error: unknown) => { failed.set(file, error); throw error; })
+      .finally(() => pending.delete(file));
+    pending.set(file, promise);
+  }
+  return promise;
+}
+
+const snapshotId = (id: string): string => LAKE_PLACE_REFERENCES.some(entry => entry.id === id) ? "lake-village-60x60" : id;
+
+/** Fetch the snapshot chunk behind one reference id. Unknown ids resolve quietly; readRegionReference reports them. */
+export async function preloadRegionReference(id: string): Promise<void> {
+  const source = sharedRegionSnapshot(id) ? undefined : snapshotSource(snapshotId(id));
+  if (source) await load(source.file);
+}
+
+/** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
+export async function preloadAllRegionReferences(): Promise<void> {
+  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
+}
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {
   const shared = sharedRegionSnapshot(id); if (shared) return shared;
-  if (castleSnapshots[id]) return castleSnapshots[id];
-  if (forestSnapshots[id]) return forestSnapshots[id];
-  if (regionSnapshots[id]) return regionSnapshots[id];
-  // Place cards for the diverse villages reuse their region snapshot.
-  const place = DIVERSE_VILLAGE_PLACES.find(entry => entry.id === id);
-  if (place) return regionSnapshots[place.regionReferenceId];
-  // Fantasy shops/castle rooms share one snapshot file; the entry names its map.
-  const fantasy = FANTASY_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (fantasy) {
-    const source = fantasyPlaces as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
-    const map = source.maps[fantasy.sourceMapId]!;
-    return { map, tileset: source.tilesets[map.tilesetId]! };
+  const source = snapshotSource(id);
+  if (!source) return undefined;
+  if (!loaded.has(source.file)) {
+    const error = failed.get(source.file);
+    // A synchronous caller that skipped preload starts the fetch so the same call succeeds on retry.
+    void load(source.file).catch(() => undefined);
+    throw new Error(error
+      ? `${id}: 참고 원본을 불러오지 못했습니다 (${error instanceof Error ? error.message : String(error)}) — 같은 호출을 다시 하면 재시도합니다.`
+      : `${id}: 참고 원본을 불러오는 중입니다 — 잠시 뒤 같은 호출을 다시 하세요.`);
   }
-  // Snow/volcano villages likewise share one snapshot file.
-  const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (climate) {
-    const source = climateVillages as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
-    const map = source.maps[climate.sourceMapId]!;
-    return { map, tileset: source.tilesets[map.tilesetId]! };
-  }
-  // Fields between villages likewise share one snapshot file.
-  const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
-  if (field) {
-    const source = fieldRoutes as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
-    const map = source.maps[field.sourceMapId]!;
-    return { map, tileset: source.tilesets[map.tilesetId]! };
-  }
-  const ship = shipSource.maps[
-    id === "bluewave-ship" ? "map_bluewave_ship"
-    : id === "giant-ship" ? "map_bluewave_giant"
-    : id === "wide-ship" ? "map_bluewave_vertical"
-    : id === "bluewave-harbor" ? "map_bluewave_harbor"
-    : ""
-  ];
-  if (!ship) return undefined;
-  return { map: ship, tileset: shipSource.tilesets[ship.tilesetId]! };
+  return source.pick(loaded.get(source.file));
 }
 
 /** Bounded rows let AI recover the complete raster without truncating a single large response. */
@@ -150,7 +142,7 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
   const place = LAKE_PLACE_REFERENCES.find(entry => entry.id === id);
-  const source = snapshotFor(place ? "lake-village-60x60" : id);
+  const source = snapshotFor(snapshotId(id));
   if (!source) throw new Error(`Unknown region reference: ${id}`);
   const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
   const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;

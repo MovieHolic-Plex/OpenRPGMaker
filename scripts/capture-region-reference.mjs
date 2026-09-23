@@ -16,7 +16,7 @@ try{
  await p.getByTestId('region-reference-preview').waitFor({state:'visible'});
  await p.getByTestId('region-reference-preview').locator('img').evaluate(img=>img.decode());
  if(await p.getByTestId('spatial-activate').isVisible().catch(()=>false))throw Error('Reference wrongly requires activation');
- const proof=await p.evaluate(async()=>{const {store}=await import('/src/project/store.ts');const {runTool}=await import('/src/editor/tools/toolRunner.ts');const project=store.getCurrent();const before=JSON.stringify(project);const list=runTool({project},'read_region_reference',{});const read=runTool({project},'read_region_reference',{id:'walled-settlement-43x45',row:0,rows:8});return {listOk:list.ok,readOk:read.ok,data:read.data,unchanged:JSON.stringify(project)===before};});
+ const proof=await p.evaluate(async()=>{const {store}=await import('/src/project/store.ts');const {runTool}=await import('/src/editor/tools/toolRunner.ts');await (await import('/src/project/regionReferenceSnapshots.ts')).preloadRegionReference('walled-settlement-43x45');const project=store.getCurrent();const before=JSON.stringify(project);const list=runTool({project},'read_region_reference',{});const read=runTool({project},'read_region_reference',{id:'walled-settlement-43x45',row:0,rows:8});return {listOk:list.ok,readOk:read.ok,data:read.data,unchanged:JSON.stringify(project)===before};});
  if(!proof.listOk||!proof.readOk||!proof.unchanged)throw Error('AI lookup failed');
  fs.writeFileSync('output/evidence/region-reference/browser-proof.json',JSON.stringify(proof,null,2));
  await p.screenshot({path:'output/evidence/region-reference/regions-desktop.png'});
