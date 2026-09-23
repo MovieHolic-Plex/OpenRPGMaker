@@ -41,6 +41,8 @@ export type ResourceWorkbenchOptions = {
   readonly recentAssetId?: string;
   readonly onDropFile?: (file: File) => void;
   readonly onImportUrl?: (url: string) => void;
+  /** 칩셋 탭에서 제작자 페이지를 연다. 파일은 그 페이지에서 사용자가 직접 받는다. */
+  readonly onBrowseCreatorPage?: () => void;
 };
 export type ResourceItem =
   | { readonly type: "profile"; readonly profile: ResourceProfile }
@@ -722,26 +724,37 @@ function resourceCommandPanel(
     input.focus();
   };
 
+  const quickActions = [
+    el("button", {
+      class: "rm-command-button primary rm-modern-import-btn",
+      children: [el("span", { text: "➕" }), el("span", { text: "가져오기..." })],
+      attrs: { type: "button" },
+      dataset: { testid: "resource-import-button" },
+      on: { click: options.onImport },
+    }),
+    el("button", {
+      class: "rm-command-button rm-action-compact rm-url-btn",
+      children: [el("span", { text: "🔗 URL" })],
+      attrs: { type: "button", title: "웹 링크로 가져오기" },
+      on: { click: openUrlModal },
+    }),
+  ];
+  if (options.selectedKind === "chipset" && options.onBrowseCreatorPage) {
+    quickActions.push(el("button", {
+      class: "rm-command-button",
+      text: "제작자 페이지",
+      attrs: { type: "button", title: "제작자 페이지에서 직접 받아 이 프로젝트에만 넣습니다" },
+      dataset: { testid: "resource-creator-page" },
+      on: { click: options.onBrowseCreatorPage },
+    }));
+  }
+  quickActions.push(el("button", { class: "rm-command-button rm-action-compact", text: "삭제", attrs: { type: "button", disabled: "true" } }));
+
   return el("aside", {
     class: "rm-command-panel rm-modern-side-panel",
     dataset: { testid: "resource-command-panel" },
     children: [
-      el("div", { class: "rm-quick-actions-bar", children: [
-        el("button", {
-          class: "rm-command-button primary rm-modern-import-btn",
-          children: [el("span", { text: "➕" }), el("span", { text: "가져오기..." })],
-          attrs: { type: "button" },
-          dataset: { testid: "resource-import-button" },
-          on: { click: options.onImport },
-        }),
-        el("button", {
-          class: "rm-command-button rm-action-compact rm-url-btn",
-          children: [el("span", { text: "🔗 URL" })],
-          attrs: { type: "button", title: "웹 링크로 가져오기" },
-          on: { click: openUrlModal },
-        }),
-        el("button", { class: "rm-command-button rm-action-compact", text: "삭제", attrs: { type: "button", disabled: "true" } }),
-      ]}),
+      el("div", { class: "rm-quick-actions-bar", children: quickActions }),
       previewWell,
       importFormatNote(),
     ],

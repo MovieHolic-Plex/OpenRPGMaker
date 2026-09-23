@@ -60,6 +60,13 @@ export type OprnBridgeStart = {
   readonly createProject: (input: { readonly title?: string; readonly seed?: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
 };
 
+export type OprnAssetBrowser = {
+  open(payload: { readonly url: string; readonly x: number; readonly y: number; readonly width: number; readonly height: number }): Promise<{ readonly title: string; readonly url: string }>;
+  setBounds(payload: { readonly x: number; readonly y: number; readonly width: number; readonly height: number }): Promise<boolean>;
+  close(): Promise<boolean>;
+  onDownload(callback: (payload: unknown) => void): () => void;
+};
+
 export type OprnBridge = {
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
@@ -77,6 +84,8 @@ export type OprnBridge = {
   readonly assets: OprnBridgeAssets;
   /** 시작 화면이 쓰는 새 프로젝트/폴더 열기. 편집기도 같은 경로로 폴더를 만든다. */
   readonly start: OprnBridgeStart;
+  /** 데스크톱 앱에서만 있다. 제작자 페이지를 창 안에 열고, 받은 파일은 이 프로젝트로만 넘긴다. */
+  readonly assetBrowser?: OprnAssetBrowser;
 };
 
 declare global {

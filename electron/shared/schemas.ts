@@ -108,6 +108,20 @@ export const assetPutSchema = z.object({
   bytes: z.instanceof(Uint8Array),
 });
 
+const assetBrowserBox = {
+  x: z.number().int().min(0).max(10000),
+  y: z.number().int().min(0).max(10000),
+  width: z.number().int().min(0).max(10000),
+  height: z.number().int().min(0).max(10000),
+};
+
+export const assetBrowserOpenSchema = z.object({
+  url: z.string().min(1).max(2000),
+  ...assetBrowserBox,
+});
+
+export const assetBrowserBoundsSchema = z.object(assetBrowserBox);
+
 export const assetReadSchema = z.object({ projectDir, sha256: z.string().min(1) });
 
 export const assetPruneSchema = z.object({ projectDir, referenced: z.array(z.string()) });

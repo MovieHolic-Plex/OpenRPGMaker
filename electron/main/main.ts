@@ -5,6 +5,7 @@ import { join } from "node:path";
 import { BrowserWindow, Menu, app, clipboard, dialog, ipcMain, protocol, shell, type IpcMainInvokeEvent } from "electron";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { registerIpcHandlers } from "./ipc";
+import { registerAssetBrowser } from "./assetBrowser";
 import { registerAppProtocol, registerAssetProtocol } from "./protocols";
 import { createProjectSessionRegistry } from "./sessions";
 import { startCompanionServer, type CompanionServer } from "./companion";
@@ -272,6 +273,7 @@ app.whenReady().then(async () => {
     return { projectDir: null, imported: false };
   });
   registerIpcHandlers(sessions);
+  registerAssetBrowser();
   createWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
