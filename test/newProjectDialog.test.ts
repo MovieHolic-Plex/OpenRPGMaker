@@ -74,20 +74,19 @@ describe("새 프로젝트 선택 정본", () => {
     }
   });
 
-  it("선택지 id 는 팩 id 가 아니다 — 한 팩에 이름이 둘인 경우를 되돌릴 수 있어야 한다", () => {
+  it("시작 UI 밖 장르는 정본에만 남고 다이얼로그 행에는 없다", () => {
     const horrorChoices = NEW_PROJECT_CHOICES.filter((choice) => choice.packId === "horror-chase");
     expect(horrorChoices.map((choice) => choice.id).sort()).toEqual(["horror-gallery", "school-horror"]);
     expect(new Set(horrorChoices.map((choice) => choice.label)).size).toBe(2);
     const rows = NEW_PROJECT_GENRE_OPTIONS.filter((option) =>
       option.id !== null && newProjectChoiceById(option.id)?.packId === "horror-chase");
-    expect(rows).toHaveLength(2);
+    expect(rows).toHaveLength(0);
   });
 
-  it("다이얼로그 순서는 첫 화면 featured 3장을 먼저 둔다", () => {
+  it("다이얼로그는 첫 화면의 세 장르만 같은 순서로 보여 준다", () => {
     const featured = NEW_PROJECT_CHOICES.filter((choice) => choice.featured).map((choice) => choice.id);
-    expect(NEW_PROJECT_DIALOG_CHOICE_ORDER.slice(0, featured.length)).toEqual(featured);
-    expect([...NEW_PROJECT_DIALOG_CHOICE_ORDER].sort()).toEqual(
-      [...NEW_PROJECT_CHOICES.map((choice) => choice.id)].sort());
+    expect(featured).toEqual(["monster-collect", "story-cutscene", "adventure-jrpg"]);
+    expect(NEW_PROJECT_DIALOG_CHOICE_ORDER).toEqual(featured);
   });
 
   it("같은 그림을 두 행이 나눠 갖지 않는다", () => {
@@ -101,7 +100,7 @@ describe("새 프로젝트 선택 정본", () => {
 });
 
 describe("새 프로젝트 다이얼로그", () => {
-  it("빈 프로젝트와 모든 선택지가 보인다", async () => {
+  it("빈 프로젝트와 지원하는 세 장르가 보인다", async () => {
     const pending = showNewProjectDialog({ defaultValue: "달빛 항구" });
     const host = document.querySelector("[data-testid='new-project-dialog']");
     expect(host).not.toBeNull();
@@ -109,9 +108,10 @@ describe("새 프로젝트 다이얼로그", () => {
     const radios = Array.from(
       document.querySelectorAll(`[data-testid^='new-project-genre-option-']`),
     );
-    expect(radios).toHaveLength(NEW_PROJECT_CHOICES.length + 1);
+    expect(radios).toHaveLength(NEW_PROJECT_DIALOG_CHOICE_ORDER.length + 1);
     expect(newProjectGenreOptionTestId(null)).toBe("new-project-genre-option-blank");
-    expect(newProjectGenreOptionTestId("horror-gallery")).toBe("new-project-genre-option-horror-gallery");
+    expect(document.querySelector("[data-testid='new-project-genre-option-horror-gallery']")).toBeNull();
+    expect(document.querySelector("[data-testid='new-project-genre-option-action-rpg']")).toBeNull();
     document.querySelector<HTMLButtonElement>("[data-testid='new-project-cancel']")?.click();
     await expect(pending).resolves.toBeNull();
   });
