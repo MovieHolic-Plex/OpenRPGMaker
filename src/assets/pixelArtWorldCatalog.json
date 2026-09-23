@@ -1,0 +1,286 @@
+[
+  {
+    "id": "paw-library",
+    "name": "Pixel Art World · 도서관",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-library01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Libry-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Libry-I01.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "9165bc9e9db4c24369ce511cd5d93fe1ba2f7a32cfaa491f9d933ad9b52183e3",
+    "checkedAt": "2026-09-24",
+    "floorTile": 6,
+    "notes": "문·벽 오토타일·매트는 별도 파일이다. 이번 시트에 포함된 것으로 추정하지 않는다. 서가 끝판/옆면·세로 소파는 이번 조립 사전 범위 밖이다.",
+    "recipes": [
+      {
+        "id": "bookcase",
+        "name": "정면 3열 책장",
+        "sourceRect": {
+          "x": 1,
+          "y": 40,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            321,
+            322,
+            323
+          ],
+          [
+            329,
+            330,
+            331
+          ],
+          [
+            337,
+            338,
+            339
+          ]
+        ]
+      },
+      {
+        "id": "low-books",
+        "name": "낮은 3열 책장",
+        "sourceRect": {
+          "x": 3,
+          "y": 48,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            387,
+            388,
+            389
+          ],
+          [
+            395,
+            396,
+            397
+          ]
+        ]
+      },
+      {
+        "id": "magazines",
+        "name": "잡지 진열대",
+        "sourceRect": {
+          "x": 3,
+          "y": 45,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            363,
+            364,
+            365
+          ],
+          [
+            371,
+            372,
+            373
+          ],
+          [
+            379,
+            380,
+            381
+          ]
+        ]
+      },
+      {
+        "id": "sofa-front",
+        "name": "가로 소파 · 정면",
+        "sourceRect": {
+          "x": 2,
+          "y": 33,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            266,
+            267,
+            268
+          ],
+          [
+            274,
+            275,
+            276
+          ]
+        ]
+      },
+      {
+        "id": "sofa-back",
+        "name": "가로 소파 · 뒷면",
+        "sourceRect": {
+          "x": 2,
+          "y": 36,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "north",
+        "tiles": [
+          [
+            290,
+            291,
+            292
+          ],
+          [
+            298,
+            299,
+            300
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-office",
+    "name": "Pixel Art World · 사무실",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-office01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Office-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Office-I01.png",
+    "width": 256,
+    "height": 1856,
+    "tileSize": 32,
+    "sha256": "800110f7768bfea83614cb7431f9048af0204b84db30d0e2482345a3fdbc85e0",
+    "checkedAt": "2026-09-24",
+    "floorTile": 10,
+    "notes": "컴퓨터·책상·의자를 같은 상위 칸에 겹치면 앞 그림을 덮어쓴다. 컴퓨터는 이번 책상 예제에 포함하지 않는다. 필요하면 별도 이벤트 그래픽 또는 사용자 로컬 합성 타일을 만들고 검증한다. 유리 테이블 보완 이미지는 별도 파일이다.",
+    "recipes": [
+      {
+        "id": "desk-white",
+        "name": "흰색 사무용 책상",
+        "sourceRect": {
+          "x": 1,
+          "y": 17,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            137,
+            138,
+            139
+          ],
+          [
+            145,
+            146,
+            147
+          ],
+          [
+            153,
+            154,
+            155
+          ]
+        ]
+      },
+      {
+        "id": "desk-wood",
+        "name": "목재 사무용 책상",
+        "sourceRect": {
+          "x": 5,
+          "y": 17,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            141,
+            142,
+            143
+          ],
+          [
+            149,
+            150,
+            151
+          ],
+          [
+            157,
+            158,
+            159
+          ]
+        ]
+      },
+      {
+        "id": "bookcase",
+        "name": "자료실 책장",
+        "sourceRect": {
+          "x": 3,
+          "y": 49,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            395,
+            396,
+            397
+          ],
+          [
+            403,
+            404,
+            405
+          ],
+          [
+            411,
+            412,
+            413
+          ]
+        ]
+      },
+      {
+        "id": "chair-blue",
+        "name": "파란 사무용 의자 · 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 24,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            195
+          ]
+        ]
+      },
+      {
+        "id": "desk-executive",
+        "name": "임원용 목재 책상",
+        "sourceRect": {
+          "x": 3,
+          "y": 33,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "tiles": [
+          [
+            267,
+            268,
+            269
+          ],
+          [
+            275,
+            276,
+            277
+          ]
+        ]
+      }
+    ]
+  }
+]

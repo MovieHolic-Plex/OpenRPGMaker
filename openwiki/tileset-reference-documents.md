@@ -2,6 +2,28 @@
 
 # 타일셋 참고문서 — 프로젝트 데이터
 
+## 사용자 다운로드형 타일셋 지원 (2026-09-24)
+
+자료집 → 맵 → 타일 → **외부 타일셋 다운로드**에서 Pixel Art World 도서관·사무실
+가구 각 5종을 시범 지원한다. 다운로드는 제작자 페이지를 열고, 사용자가 받은 PNG를
+가져올 때 SHA-256 + 디코딩 치수를 확인한다. 원본/샘플 그림은 앱에 번들하지 않는다.
+공용 메타데이터는 `tiledata/pixel-art-world/catalog.json` →
+`scripts/content/prepare-pixel-art-world-references.mjs` → `src/assets/pixelArtWorldCatalog.json`.
+기존·새 프로젝트 모두 같은 카탈로그를 사용하지만, 원본을 가져오기 전에는 타일셋을 만들지 않는다.
+
+`src/editor/externalTilesetImport.ts`가 사용자 PNG에서 조립/오류 비교 그림을 만들고
+6 MD / 6 PNG를 `referenceDocuments`에 넣는다. 따라서 조수의 기존 문서·이미지
+선행 읽기 계약을 그대로 사용한다. 타일 번호·칸/픽셀 좌표·lower/upper 전체 배열,
+통행/접근칸·크레딧을 포함한다. 이 그림은 사용자 프로젝트에서만 생성·보관한다.
+등록은 한 번의 snapshot + store.update로 undo/dirty/저장 경로를 공유한다.
+비동기 준비 중 프로젝트 lineage/저장 대상 변경 또는 대화상자 닫기는 등록을 취소한다.
+단, 이미 asset 저장이 시작된 경우 참조되지 않는 파일은 저장소의 자산 정리 대상이 될 수 있다.
+
+시트 전체의 의미 분석이나 완성 방 지원이 아니다. 검토된 가구는 upper·차단,
+바닥은 lower·통과, 나머지는 미검토·차단이다. `externalRecipeExample`과
+`validateExternalRecipeExample`은 고정 가구 예제의 구조와 접근칸만 다룬다.
+범위·원본 판본·자료 생성 절차: [pixel-art-world](../tiledata/pixel-art-world/README.md).
+
 ## 사용자 경로와 정본
 
 **자료집(데이터베이스) → 맵 → 타일 → 타일셋 선택 → AI 참고문서 탭 → 용도(마을 등) → MD / 이미지**.
