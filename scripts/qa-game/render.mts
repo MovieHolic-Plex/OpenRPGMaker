@@ -17,6 +17,7 @@ import { store } from "../../src/project/store.ts";
 import { whereText, type GameCheckReport } from "../../src/qa/gameCheck/index.ts";
 import type { GameMap, Project, TilesetDef } from "../../src/project/types.ts";
 import { loadProjectFile } from "./check.mts";
+import { readRecordedCalls } from "./lib/recorder.ts";
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -150,6 +151,8 @@ export function buildReportHtml(input: {
   readonly maps: readonly { map: GameMap; png: Buffer; note?: string }[];
   readonly meta?: Record<string, unknown> | null;
   readonly replay?: string | null;
+  /** gen 녹화(tools.jsonl)에서 실패한 호출 — 모델이 무엇을 포기하고 우회했는지의 단서. */
+  readonly toolFailures?: readonly { order: number; phase: string; name: string; summary: string }[];
 }): string {
   const { project, report } = input;
   const summaryByMap = new Map((report?.maps ?? []).map((m) => [m.id, m]));
@@ -193,6 +196,7 @@ table{border-collapse:collapse;width:100%}td{border-bottom:1px solid #2a2d38;pad
 <p class=legend>표식: <span style="border-color:rgb(60,230,110)"></span>시작 위치 <span style="border-color:rgb(70,150,255)"></span>문 <span style="border-color:rgb(235,60,60)"></span>전투 <span style="border-color:rgb(255,200,40)"></span>엔딩 <span style="border-color:rgb(230,70,230)"></span>기타 이벤트</p>
 <h2>자동 플레이</h2>${autoHtml}
 <h2>검사 지적 ${report?.findings.length ?? 0}건</h2><table>${rows || "<tr><td>지적 없음</td></tr>"}</table>
+${input.toolFailures?.length ? `<h2>생성 중 실패한 툴 호출 ${input.toolFailures.length}건</h2><table>${input.toolFailures.map((f) => `<tr><td>#${f.order}</td><td><code>${esc(f.name)}</code></td><td>${esc(f.summary.replace(/\s+/gu, " ").slice(0, 400))}</td></tr>`).join("")}</table>` : ""}
 ${input.replay ? `<h2>재생</h2><pre>${esc(input.replay)}</pre>` : ""}
 <h2>맵</h2><div class=grid>${cards}</div>
 ${metaHtml}
@@ -226,6 +230,9 @@ export async function renderMain(argv: readonly string[] = process.argv.slice(2)
     maps,
     meta: metaText ? JSON.parse(metaText) as Record<string, unknown> : null,
     replay: read(path.join(out, "replay", "replay.txt")),
+    toolFailures: fs.existsSync(path.join(out, "tools.jsonl"))
+      ? readRecordedCalls(path.join(out, "tools.jsonl")).filter((call) => !call.ok).map((call) => ({ order: call.order, phase: call.phase, name: call.name, summary: call.summary }))
+      : [],
   });
   fs.writeFileSync(path.join(out, "report.html"), html);
   console.log(`[qa-game] 맵 ${maps.length}장 → ${path.join(out, "render")} · report.html ${(html.length / 1024).toFixed(0)}KB · ${Date.now() - started}ms`);
