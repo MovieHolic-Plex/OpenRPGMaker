@@ -395,6 +395,7 @@ const listNpcGraphics: ToolDefinition = {
       gender: match.entry.gender,
       age: match.entry.age,
       tags: match.entry.tags,
+      ...(match.entry.appearance ? { appearance: match.entry.appearance } : {}),
       nativeGraphic: {
         sprite: { type: "bundled", id: match.entry.textureKey },
         direction: "down",
