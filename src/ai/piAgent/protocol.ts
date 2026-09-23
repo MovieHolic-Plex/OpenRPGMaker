@@ -138,6 +138,7 @@ type PiAgentEventPayload =
   | { readonly type: "prompt_inspection"; readonly snapshot: import("../authoring/promptInspection").PromptInspection }
   | { readonly type: "execution_status"; readonly name: string; readonly summary: string; readonly ok?: boolean; readonly data?: unknown }
   | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
+  | { readonly type: "render_request"; readonly renderId: string; readonly project: Project; readonly unchangedKeys?: readonly PiCheckpointHeavyKey[]; readonly toolName: string; readonly data: unknown }
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
   | { readonly type: "team_start"; readonly task: string; readonly roles: readonly { id: PiTeamRoleId; label: string }[] }
