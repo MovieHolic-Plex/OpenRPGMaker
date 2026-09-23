@@ -6,6 +6,8 @@ import diverse4 from "./regionReferences/chapel-hill-parish.json";
 import diverse5 from "./regionReferences/ford-castle-town.json";
 import diverse6 from "./regionReferences/mistpond-hollow.json";
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
+import fantasyPlaces from "./regionReferences/fantasy-places.json";
+import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import type { GameMap, TilesetDef, UploadedAsset } from "./types";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 import courtyard from "./regionReferences/castle-courtyard.json";
@@ -102,6 +104,13 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
   // Place cards for the diverse villages reuse their region snapshot.
   const place = DIVERSE_VILLAGE_PLACES.find(entry => entry.id === id);
   if (place) return regionSnapshots[place.regionReferenceId];
+  // Fantasy shops/castle rooms share one snapshot file; the entry names its map.
+  const fantasy = FANTASY_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (fantasy) {
+    const source = fantasyPlaces as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
+    const map = source.maps[fantasy.sourceMapId]!;
+    return { map, tileset: source.tilesets[map.tilesetId]! };
+  }
   const ship = shipSource.maps[
     id === "bluewave-ship" ? "map_bluewave_ship"
     : id === "giant-ship" ? "map_bluewave_giant"

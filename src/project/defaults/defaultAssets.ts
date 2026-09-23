@@ -1,4 +1,5 @@
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
+import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -113,6 +114,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
+      changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -215,6 +217,12 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 }
 
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
+  const tileset = bundledEasyRpgTilesetBase(asset);
+  ensureRpgPlaceReferences(tileset);
+  return tileset;
+}
+
+function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
   if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();

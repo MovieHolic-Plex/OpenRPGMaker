@@ -1,0 +1,231 @@
+[
+  {
+    "id": "fantasy-weapon-shop",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        6
+      ]
+    ],
+    "reachable": 45,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-armor-shop",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        8,
+        6
+      ]
+    ],
+    "reachable": 46,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-item-shop",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        6
+      ]
+    ],
+    "reachable": 37,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-smithy",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        9,
+        7
+      ]
+    ],
+    "reachable": 52,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-throne-room",
+    "entry": [
+      12,
+      19
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        12,
+        9
+      ]
+    ],
+    "reachable": 255,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-castle-corridor",
+    "entry": [
+      15,
+      8
+    ],
+    "targets": [
+      [
+        2,
+        6
+      ],
+      [
+        27,
+        6
+      ]
+    ],
+    "reachable": 74,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-castle-jail",
+    "entry": [
+      14,
+      16
+    ],
+    "targets": [
+      [
+        4,
+        9
+      ],
+      [
+        11,
+        9
+      ],
+      [
+        17,
+        9
+      ],
+      [
+        23,
+        9
+      ]
+    ],
+    "reachable": 105,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-demon-throne",
+    "entry": [
+      14,
+      24
+    ],
+    "targets": [
+      [
+        14,
+        6
+      ],
+      [
+        8,
+        21
+      ],
+      [
+        21,
+        21
+      ]
+    ],
+    "reachable": 356,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-wizard-tower-floor",
+    "entry": [
+      16,
+      6
+    ],
+    "targets": [
+      [
+        5,
+        12
+      ],
+      [
+        10,
+        11
+      ],
+      [
+        13,
+        7
+      ]
+    ],
+    "reachable": 123,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-shop-street",
+    "entry": [
+      30,
+      14
+    ],
+    "targets": [
+      [
+        6,
+        12
+      ],
+      [
+        22,
+        13
+      ],
+      [
+        53,
+        12
+      ],
+      [
+        48,
+        11
+      ]
+    ],
+    "reachable": 615,
+    "blocked": []
+  },
+  {
+    "id": "fantasy-ruined-castle",
+    "entry": [
+      25,
+      37
+    ],
+    "targets": [
+      [
+        25,
+        33
+      ]
+    ],
+    "reachable": 563,
+    "blocked": []
+  }
+]
