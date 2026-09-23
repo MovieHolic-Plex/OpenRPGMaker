@@ -9,6 +9,7 @@ import { OPRN_CHANNELS } from "../shared/channels";
 import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import { createCompanionMiddleware } from "../../scripts/lib/companion/middleware.mjs";
 import { createActivityMirrorMiddleware } from "../../scripts/lib/activityMirrorMiddleware.mjs";
+import { isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
 import { sharedCharacterGraphicsMiddleware } from "../../scripts/lib/sharedCharacterGraphics";
 import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
 
@@ -328,7 +329,14 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
         sharedCharacterGraphicsMiddleware(request, response, () => {});
         return;
       }
-      if (!shared) {
+      // 활동 미러(조수·편집 로그)는 호스트 디스크(projectDir/output/)에 쓴다. 공유 호스트에서도
+      // 소유자는 이 로그로 조수를 진단하므로 붙이되, 팀원은 호스트 디스크에 쓰거나 남의 로그를
+      // 읽지 못하게 403 으로 막는다. 예전엔 공유 모드에서 통째로 빠져 405 로 떨어졌고, 클라이언트는
+      // 첫 실패에 미러를 끄므로 소유자 로그까지 조용히 0줄이 됐다(2026-09-23 도그푸딩).
+      if (isActivityMirrorPath(url.pathname)) {
+        if ((shared || team.accessCodeRequired()) && signedIn?.role !== 'owner') {
+          await sendJson(response, 403, { error: '활동 로그는 팀 소유자만 호스트에 남길 수 있습니다.' }); return;
+        }
         let passedThrough = false;
         activityMirror(request, response, () => { passedThrough = true; });
         if (!passedThrough) return;
