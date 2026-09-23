@@ -29,6 +29,22 @@ function validateCommandShape(label: string, value: unknown): void {
       if (command.cancelBehavior !== undefined) requireChoiceCancelBehavior(`${label}.cancelBehavior`, command.cancelBehavior);
       if (command.cancelBranch !== undefined) validateCommandArray(`${label}.cancelBranch`, command.cancelBranch);
       return;
+    case "presentItem":
+      if (command.prompt !== undefined) requireString(`${label}.prompt`, command.prompt);
+      if (command.itemIds !== undefined) {
+        for (const [index, itemId] of requireArray(`${label}.itemIds`, command.itemIds).entries()) {
+          requireString(`${label}.itemIds[${index}]`, itemId);
+        }
+      }
+      for (const [index, option] of requireArray(`${label}.options`, command.options).entries()) {
+        const record = requireRecord(`${label}.options[${index}]`, option);
+        requireString(`${label}.options[${index}].itemId`, record.itemId);
+        validateCommandArray(`${label}.options[${index}].branch`, record.branch);
+      }
+      if (command.otherwiseBranch !== undefined) validateCommandArray(`${label}.otherwiseBranch`, command.otherwiseBranch);
+      if (command.cancelBranch !== undefined) validateCommandArray(`${label}.cancelBranch`, command.cancelBranch);
+      if (command.consume !== undefined) requireBoolean(`${label}.consume`, command.consume);
+      return;
     case "changeFace":
       requireString(`${label}.resourceId`, command.resourceId);
       if (command.appearanceId !== undefined && !requireString(`${label}.appearanceId`, command.appearanceId).trim()) {

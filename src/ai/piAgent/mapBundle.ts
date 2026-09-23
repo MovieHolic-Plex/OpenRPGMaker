@@ -15,6 +15,7 @@
 // 옮기는 것은 «만든 것»뿐이다 — 기존 항목의 수정·삭제는 여전히 범위 밖 편집이라 버리고 보고한다.
 
 import type { MapTreeNode, Project } from "@/project/types";
+import type { WorldRelation } from "@/project/world/types";
 
 export interface MapBundleResult {
   readonly mapIds: readonly string[];
@@ -37,8 +38,30 @@ export interface MapBundleSpill {
 export interface MergeMapBundlesResult {
   readonly project: Project;
   readonly spills: readonly MapBundleSpill[];
-  /** 둘 이상의 결과가 같은 맵을 묶음에 넣었다. 뒤의 결과가 이겼으니 호출자가 알려야 한다. */
+  /**
+   * 둘 이상의 결과가 같은 맵을 묶음에 넣었거나(맵 id), 같은 프로젝트 설정을 서로 다르게 새로
+   * 켰다(`system.<key>`). 어느 쪽이든 뒤의 결과가 이겼으니 호출자가 알려야 한다.
+   */
   readonly conflicts: readonly string[];
+}
+
+/**
+ * 키 순서와 무관한 같음. 도구 후처리·정규화가 손대지 않은 맵의 키 순서만 바꾸는 일이 있어
+ * (실측 2026-09-23: map_east 에 place_battle_blocker → map_west 키 순서만 바뀜) JSON.stringify
+ * 비교는 아무도 안 건드린 맵을 「범위 밖 변경 버림」 으로 보고했다.
+ */
+function same(a: unknown, b: unknown): boolean {
+  // 대부분은 순서까지 같다 — 프로젝트 전체를 정렬하는 비용은 어긋날 때만 낸다.
+  if (JSON.stringify(a) === JSON.stringify(b)) return true;
+  return JSON.stringify(sortedKeys(a)) === JSON.stringify(sortedKeys(b));
+}
+
+/** 키만 정렬한 사본. undefined 값·함수는 JSON.stringify 규칙 그대로 빠진다(clone 왕복과 같은 값). */
+function sortedKeys(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(sortedKeys);
+  if (!value || typeof value !== "object") return value;
+  const record = value as Record<string, unknown>;
+  return Object.fromEntries(Object.keys(record).sort().map((key) => [key, sortedKeys(record[key])]));
 }
 
 function clone<T>(value: T): T {
@@ -92,34 +115,46 @@ function pruneSubtrees(node: MapTreeNode, roots: ReadonlySet<string>): MapTreeNo
   };
 }
 
-/** 묶음 밖에서 달라진 키. 범위를 벗어난 에이전트를 잡아내는 감사용. */
-export function mapBundleSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
-  const roots = new Set(mapIds);
+function bundleMapIdSet(base: Project, result: Project, mapIds: readonly string[]): Set<string> {
   const bundle = new Set<string>();
   for (const id of mapIds) {
     for (const bid of mapBundleIds(result, id)) bundle.add(bid);
     for (const bid of mapBundleIds(base, id)) bundle.add(bid);
   }
+  return bundle;
+}
+
+/** 묶음 밖에서 달라진 맵만(`maps.<id>`). 호출 시점 범위 가드(toolAdapter)와 `mapBundleSpill` 이 같은 판정을 쓴다. */
+export function mapBundleMapSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
+  const bundle = bundleMapIdSet(base, result, mapIds);
+  const spill: string[] = [];
+  const ids = new Set([...Object.keys(base.maps ?? {}), ...Object.keys(result.maps ?? {})]);
+  for (const id of ids) {
+    if (bundle.has(id)) continue;
+    if (!same(base.maps?.[id], result.maps?.[id])) spill.push(`maps.${id}`);
+  }
+  return spill;
+}
+
+/** 묶음 밖에서 달라진 키. 범위를 벗어난 에이전트를 잡아내는 감사용. */
+export function mapBundleSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
+  const roots = new Set(mapIds);
   const spill: string[] = [];
   const keys = new Set([...Object.keys(base), ...Object.keys(result)]);
   for (const key of keys) {
     if (key === "maps") {
-      const ids = new Set([...Object.keys(base.maps ?? {}), ...Object.keys(result.maps ?? {})]);
-      for (const id of ids) {
-        if (bundle.has(id)) continue;
-        if (JSON.stringify(base.maps?.[id]) !== JSON.stringify(result.maps?.[id])) spill.push(`maps.${id}`);
-      }
+      spill.push(...mapBundleMapSpill(base, result, mapIds));
       continue;
     }
     if (key === "mapTree") {
       const a = base.mapTree ? pruneSubtrees(base.mapTree, roots) : undefined;
       const b = result.mapTree ? pruneSubtrees(result.mapTree, roots) : undefined;
-      if (JSON.stringify(a) !== JSON.stringify(b)) spill.push("mapTree");
+      if (!same(a, b)) spill.push("mapTree");
       continue;
     }
     const a = (base as unknown as Record<string, unknown>)[key];
     const b = (result as unknown as Record<string, unknown>)[key];
-    if (JSON.stringify(a) !== JSON.stringify(b)) spill.push(key);
+    if (!same(a, b)) spill.push(key);
   }
   return spill.sort();
 }
@@ -197,11 +232,82 @@ function carryCreatedGrafts(merged: Project, started: Project, result: Project):
     const startedTileset = started.tilesets[id];
     // 새 타일셋은 createdByKey 가 통째로 옮긴다. 여기는 «양쪽에 있는» 타일셋만 본다.
     if (!target || !startedTileset) continue;
+    // 이식과 함께 온 오토타일 그룹(굽이숲 `forest_harmony_grove_47` — ensureForestGroveTileset). 그룹이
+    // 빠지면 이식 칸이 이어지지 않고, 다음 나무 시공이 그룹이 없다며 같은 수관을 끝에 또 이식한다
+    // (2026-09-23 실측: 병합본에 이식 47칸·꼬리는 왔는데 그룹만 없었다). 새 id 만 옮긴다.
+    const targetGroups = target.autotileGroups ?? [];
+    const groups = createdById(startedTileset.autotileGroups ?? [], resultTileset.autotileGroups ?? [], targetGroups);
     const known = new Set([...(startedTileset.tileGrafts ?? []), ...(target.tileGrafts ?? [])].map((graft) => graft.targetTile));
     const added = (resultTileset.tileGrafts ?? []).filter((graft) => !known.has(graft.targetTile));
-    if (added.length === 0) continue;
-    merged.tilesets[id] = { ...target, tileGrafts: [...(target.tileGrafts ?? []), ...clone(added)] };
+    if (added.length === 0 && groups === targetGroups) continue;
+    const next = added.length === 0 ? { ...target } : { ...target, tileGrafts: [...(target.tileGrafts ?? []), ...clone(added)] };
+    if (groups !== targetGroups) next.autotileGroups = [...groups];
+    // 끝을 넘는 슬롯에 이식하면 addTileGraft 가 count 와 타일별 배열을 먼저 늘린다. 이식만 옮기면
+    // 병합본이 `targetTile out of range (count 확장 누락)` 로 게이트에서 거부된다(2026-09-23 실측).
+    // 늘린 꼬리(원래 count 뒤)만 옮긴다 — 기존 슬롯의 속성 변경은 여전히 범위 밖이다.
+    const needed = Math.max(-1, ...added.map((graft) => graft.targetTile + 1));
+    if (needed > target.count && resultTileset.count >= needed) {
+      const tail = <T>(rows: readonly T[] | undefined, own: readonly T[] | undefined): T[] | undefined =>
+        rows && own ? [...own, ...clone(rows.slice(own.length, resultTileset.count))] : own ? [...own] : undefined;
+      next.count = resultTileset.count;
+      next.passability = tail(resultTileset.passability, target.passability)!;
+      next.priority = tail(resultTileset.priority, target.priority)!;
+      next.terrain = tail(resultTileset.terrain, target.terrain)!;
+      if (target.tileMeta || resultTileset.tileMeta) {
+        next.tileMeta = tail(resultTileset.tileMeta, target.tileMeta ?? []);
+      }
+    }
+    merged.tilesets[id] = next;
   }
+}
+
+/**
+ * 시작 위치는 프로젝트 최상위 키지만, 묶음 안 맵을 가리키게 옮긴 것은 그 맵의 저작이다
+ * (set_start_position — 2026-09-23 실측: 마을을 지은 에이전트의 시작 위치가 spill 로 버려졌다).
+ * 묶음 밖 맵을 가리키면 여전히 범위 밖이라 버린다.
+ */
+function carryStartPosition(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
+  const moved = result.startMapId !== started.startMapId || !same(result.startPos, started.startPos);
+  if (!moved || !bundle.has(result.startMapId)) return;
+  merged.startMapId = result.startMapId;
+  merged.startPos = clone(result.startPos);
+}
+
+/**
+ * 묶음 저작이 기대는 system 기능. 키가 없으면 꺼진 것이라 «없던 키를 켠 것» 이 곧 만든 것이다.
+ * `timeSystem` — 마을 룩 게이트가 시간표 주민을 요구해 author_village 로 마을을 짓는 에이전트는
+ * configure_time_system 을 켠다. 병합이 그걸 버리면 맵 NPC 의 시간표가 죽은 데이터가 되는데 에이전트는
+ * 켰다고 믿는다(2026-09-23 추리 도그푸딩 `--maps town` 실측). 이미 켜진 설정을 바꾸거나 끈 것은 기존
+ * 설정의 수정·삭제라 옮기지 않는다. 제목·장르·해상도처럼 맵이 기대지 않는 게임 전체 설정은 여기에 넣지 않는다.
+ */
+const CARRIED_SYSTEM_FEATURES = ["timeSystem"] as const;
+
+function carryEnabledSystemFeatures(merged: Project, started: Project, result: Project, conflicts: Set<string>): void {
+  for (const key of CARRIED_SYSTEM_FEATURES) {
+    const enabled = result.system[key];
+    if (enabled === undefined || started.system[key] !== undefined) continue;
+    const current = merged.system[key];
+    if (current !== undefined && same(current, enabled)) continue;
+    // 앞선 결과가 다르게 켰다 — 같은 맵을 두 결과가 주장할 때처럼 뒤의 것이 이기고 알린다.
+    if (current !== undefined) conflicts.add(`system.${key}`);
+    merged.system = { ...merged.system, [key]: clone(enabled) };
+  }
+}
+
+/**
+ * 세계관(world) 에 새로 등록한 개체·관계. author_npc_cast 가 맵 NPC 를 character 개체(refs 로 그 맵
+ * 이벤트를 가리킨다)와 locatedIn 관계로 등록한다 — 병합이 world 를 버리면 캐스트가 반만 남는다
+ * (2026-09-23 같은 실행 실측). 관계는 id 가 없어 (a, b, kind) 를 키로 쓴다.
+ */
+function carryCreatedWorld(merged: Project, started: Project, result: Project): void {
+  if (!result.world) return;
+  const relationKey = (relation: WorldRelation): string => `${relation.a}\u0000${relation.b}\u0000${relation.kind}`;
+  const target = merged.world ?? { entities: [], relations: [] };
+  const entities = createdById(started.world?.entities ?? [], result.world.entities, target.entities);
+  const known = new Set([...(started.world?.relations ?? []), ...target.relations].map(relationKey));
+  const relations = result.world.relations.filter((relation) => !known.has(relationKey(relation)));
+  if (entities === target.entities && relations.length === 0) return;
+  merged.world = { ...target, entities, relations: [...target.relations, ...clone(relations)] };
 }
 
 /** database 의 컬렉션은 전부 id 가진 레코드 배열이다 — 종류를 나열하지 않고 그대로 훑는다. */
@@ -230,7 +336,7 @@ function createdDatabaseEntries(
  * 묶음이 **만든** 정의를 병합본에 얹는다. 맵이 가리키는 정의가 묶음과 함께 오게 하려는 것이고,
  * 기존 정의의 수정·삭제는 옮기지 않는다(그건 범위 밖 편집이라 spill 보고 대상이다).
  */
-function carryCreatedEntries(merged: Project, started: Project, result: Project): void {
+function carryCreatedEntries(merged: Project, started: Project, result: Project, conflicts: Set<string>): void {
   merged.switches = createdById(started.switches, result.switches, merged.switches) as Project["switches"];
   merged.variables = createdById(started.variables, result.variables, merged.variables) as Project["variables"];
   merged.commonEvents = createdById(started.commonEvents, result.commonEvents, merged.commonEvents) as Project["commonEvents"];
@@ -252,6 +358,8 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project)
     variables: createdByKey(started.session.variables, result.session.variables, merged.session.variables),
   };
   merged.database = createdDatabaseEntries(started.database, result.database, merged.database);
+  carryEnabledSystemFeatures(merged, started, result, conflicts);
+  carryCreatedWorld(merged, started, result);
 }
 
 /**
@@ -265,10 +373,10 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project)
 function droppedFromMerge(merged: Project, result: Project, key: string): boolean {
   if (key.startsWith("maps.")) {
     const id = key.slice("maps.".length);
-    return JSON.stringify(merged.maps?.[id]) !== JSON.stringify(result.maps?.[id]);
+    return !same(merged.maps?.[id], result.maps?.[id]);
   }
   const read = (project: Project): unknown => (project as unknown as Record<string, unknown>)[key];
-  return JSON.stringify(read(merged)) !== JSON.stringify(read(result));
+  return !same(read(merged), read(result));
 }
 
 /** base 에 각 결과의 맵 묶음만 얹는다. 같은 맵을 두 결과가 주장하면 뒤의 것이 이긴다. */
@@ -280,7 +388,7 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
   for (const result of results) {
     const started = result.base ?? base;
     const rawKeys = mapBundleSpill(started, result.project, result.mapIds);
-    carryCreatedEntries(merged, started, result.project);
+    carryCreatedEntries(merged, started, result.project, conflicts);
     const bundle = new Set<string>();
     for (const id of result.mapIds) {
       for (const bid of mapBundleIds(result.project, id)) bundle.add(bid);
@@ -293,6 +401,7 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
       if (row) merged.maps[id] = clone(row);
       else delete merged.maps[id];
     }
+    carryStartPosition(merged, started, result.project, bundle);
     if (merged.mapTree) {
       for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, result.project.mapTree, id);
     }

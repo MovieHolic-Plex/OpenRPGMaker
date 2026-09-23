@@ -101,6 +101,7 @@ export const COMMAND_GUARANTEES = {
   text: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
   changeFace: guarantee("dialogue", { support: troopFull }),
   choices: guarantee("dialogue", { ...playerPause, quick: true, support: troopFull }),
+  presentItem: guarantee("dialogue", playerPause),
   fork: guarantee("controlFlow", { quick: true, support: troopFull }),
   wait: guarantee("controlFlow", { ...playerPause, support: troopFull }),
   inputWait: guarantee("dialogue", { ...playerPause, support: troopFull }),

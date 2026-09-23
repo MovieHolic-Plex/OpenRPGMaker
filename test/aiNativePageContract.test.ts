@@ -81,13 +81,62 @@ describe("native upsert page contract", () => {
       .toEqual({ ...before, x: 4 });
   });
 
+  // 2026-09-23 추리 도그푸딩: 증거 핫스팟(페이지 1장)에 최상위 commands 만 보냈고 도구는 OK 를
+  // 돌려줬지만, 런타임은 page.commands 를 실행해 가구 자리표시 문구만 나왔다.
+  it("moves top-level commands and trigger into the only page instead of storing them inert", () => {
+    const { ctx, mapId, existing } = fixture();
+    const result = runTool(ctx, "upsert_event", { mapId, event: {
+      id: existing.id, trigger: { kind: "playerTouch" },
+      commands: [{ kind: "text", body: "EVIDENCE" }, { kind: "setSwitch", switchId: "sw_0001", value: true }],
+    } });
+    assert(result.ok, result.summary);
+    expect(result.diff?.warnings.join("\n")).toMatch(/pages\[0\]/);
+    const project = deserialize(serialize(ctx.project));
+    const event = project.maps[mapId]?.events.find(entry => entry.id === existing.id);
+    assert(event);
+    expect(event.commands).toEqual(existing.commands);
+    expect(event.pages).toHaveLength(1);
+    expect(event.pages?.[0]?.trigger).toEqual({ kind: "playerTouch" });
+    const session = startSession(project);
+    const page = resolveEventPage(event, session);
+    assert(page);
+    const interpreter = createInterpreter(page.commands, session, project, { currentEventId: event.id });
+    expect(interpreter.start()).toMatchObject({ kind: "text", body: "EVIDENCE" });
+    interpreter.resume();
+    expect(session.switches.sw_0001).toBe(true);
+  });
+
+  it("keeps page commands when a rename patch carries an empty top-level commands list", () => {
+    const { ctx, mapId, existing } = fixture();
+    const result = runTool(ctx, "upsert_event", { mapId, event: { id: existing.id, name: "RENAMED", commands: [] } });
+    assert(result.ok, result.summary);
+    const event = ctx.project.maps[mapId]?.events.find(entry => entry.id === existing.id);
+    expect(event?.pages?.[0]?.commands).toEqual(existing.pages?.[0]?.commands);
+  });
+
+  it("rejects top-level commands atomically when the event has several pages", () => {
+    const { ctx, mapId, existing } = fixture();
+    const page = existing.pages?.[0];
+    assert(page);
+    existing.pages = [page, { ...structuredClone(page), id: "second", conditions: [{ kind: "switch", switchId: "sw_0001", value: true }] }];
+    const before = serialize(ctx.project);
+    const result = runTool(ctx, "upsert_event", { mapId, event: { id: existing.id, commands: [{ kind: "text", body: "LOST" }] } });
+    expect(result.ok).toBe(false);
+    expect(result.issues).toContainEqual(expect.objectContaining({ code: "invalid-args" }));
+    expect(result.summary).toMatch(/pages/);
+    expect(serialize(ctx.project)).toBe(before);
+  });
+
   it("advertises native graphics, triggers and executable option branches", () => {
     const pages = getTool("upsert_event")?.parameters.properties?.event?.properties?.pages?.items;
     expect(pages?.properties?.choices).toBeUndefined();
     expect(pages?.properties?.lines).toBeUndefined();
     expect(pages?.properties?.graphic?.properties?.sprite?.properties?.id?.type).toBe("string");
     expect(pages?.properties?.trigger?.properties?.kind?.enum).toContain("action");
-    expect(COMMAND_SCHEMA.properties?.options?.items?.required).toEqual(["text", "branch"]);
+    // options 는 choices({text,branch})와 presentItem({itemId,branch})이 함께 쓴다 — 공통 필수는 branch.
+    expect(COMMAND_SCHEMA.properties?.options?.items?.required).toEqual(["branch"]);
+    expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.text?.type).toBe("string");
+    expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.itemId?.type).toBe("string");
     expect(COMMAND_SCHEMA.properties?.options?.items?.properties?.branch?.items?.properties?.kind?.enum)
       .toContain("triggerEnding");
     expect(() => JSON.stringify(getTool("upsert_event")?.parameters)).not.toThrow();

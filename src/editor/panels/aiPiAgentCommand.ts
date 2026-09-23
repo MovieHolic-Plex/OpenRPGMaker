@@ -82,6 +82,16 @@ function splitMapList(first: string, project: Project): string[] | null {
   return [...new Set(candidates)];
 }
 
+/**
+ * 이 실행의 결과를 맵 묶음 병합으로 합치는가. 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다.
+ * 평문 턴도 현재 맵을 mapIds 에 채우기 때문에 예전 조건(`mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로
+ * 잘랐고, 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
+ * 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다. 팀은 팀 런타임이 합친다.
+ */
+export function mergesMapBundles(input: { team: boolean; mapIds: readonly string[]; scopedByUser: boolean; groupCount: number }): boolean {
+  return !input.team && input.mapIds.length > 0 && (input.scopedByUser || input.groupCount > 1);
+}
+
 /** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …`·`/team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
 export function parsePiCommand(text: string, project: Project, currentMapId: string | null): ParsedPiCommand | null {
   const trimmed = text.trim();
@@ -232,6 +242,9 @@ export async function runPiCommand(
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+  // 병합 여부 한 곳 — 체크포인트 발행·최종 병합·요청의 가드 신호(mapBundleMerge)가 같은 값을 쓴다.
+  // 가드가 꺼진 채 병합만 하면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
+  const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
   const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
@@ -437,6 +450,7 @@ export async function runPiCommand(
         project: base,
         // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
         scopeStrict: command.scopedByUser === true,
+        ...(mergedFromBundles ? { mapBundleMerge: true } : {}),
         ...(readOnly ? { readOnly: true } : {}),
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
@@ -447,7 +461,7 @@ export async function runPiCommand(
       { signal: surface.signal, onEvent: wrap(mapIds, index),
         onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => {
           // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
-          if (!team && (command.scopedByUser || groups.length > 1) && mapIds.length) {
+          if (mergedFromBundles) {
             const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
             authorMergedSpatialProposal(next, publication.project);
             return publication.publish({ ...checkpoint, project: next, spatialProof: exportSpatialToolProof(next) });
@@ -498,12 +512,6 @@ export async function runPiCommand(
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
   //
-  // 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다. 평문 턴도 현재 맵을 mapIds 에
-  // 채우기 때문에 예전 조건(`command.mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로 잘랐고,
-  // 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
-  // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
-  const mergedFromBundles = !team && command.mapIds.length > 0
-    && (command.scopedByUser === true || groups.length > 1);
   const villageMapIds = new Set(results.flatMap(result => result.villageCompletion?.mapIds ?? []));
   villageIncomplete = !!options.villageContract && results.some(result => !result.villageCompletion || result.villageCompletion.issues.length > 0);
   let merged = mergedFromBundles
@@ -516,8 +524,8 @@ export async function runPiCommand(
   if (mergedFromBundles) authorMergedSpatialProposal(merged.project, base);
   else adoptSpatialToolProof(merged.project, results[0]!.spatialProof, base);
   if (merged.conflicts.length > 0) {
-    surface.appendBubble("system", "여러 팀원이 같은 맵을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
-    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
+    surface.appendBubble("system", "여러 팀원이 같은 맵이나 설정을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
+    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵·설정을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }
   spilledKeys.push(...merged.spills.flatMap((spill) => spill.keys));
   if (spilledKeys.length) surface.appendBubble("system", "선택한 작업 범위를 벗어난 변경은 제외했어요.");

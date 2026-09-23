@@ -2,6 +2,7 @@ import { projectLint } from "@/project/lint/projectLint";
 import type { Command, EventPage, Project } from "@/project/types";
 import { runSceneTest, type SceneTestInput } from "@/testing/sceneTestRunner";
 import { resolveAudioSource } from "@/player/audio/audioResources";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export type HorrorQaScenarioRole =
   | "locked-gate-feedback"
@@ -107,6 +108,8 @@ function visitCommands(commands: readonly Command[], visit: (command: Command) =
     if (command.kind === "choices") {
       for (const option of command.options) visitCommands(option.branch, visit);
       if (command.cancelBranch) visitCommands(command.cancelBranch, visit);
+    } else if (command.kind === "presentItem") {
+      for (const branch of presentItemBranchLists(command)) visitCommands(branch, visit);
     } else if (command.kind === "fork") {
       visitCommands(command.then, visit);
       if (command.else) visitCommands(command.else, visit);
@@ -187,6 +190,8 @@ function transferTargetsOf(commands: readonly Command[], into: Set<string>): voi
     if (command.kind === "choices") {
       for (const option of command.options) transferTargetsOf(option.branch, into);
       if (command.cancelBranch) transferTargetsOf(command.cancelBranch, into);
+    } else if (command.kind === "presentItem") {
+      for (const branch of presentItemBranchLists(command)) transferTargetsOf(branch, into);
     } else if (command.kind === "fork") {
       transferTargetsOf(command.then, into);
       if (command.else) transferTargetsOf(command.else, into);

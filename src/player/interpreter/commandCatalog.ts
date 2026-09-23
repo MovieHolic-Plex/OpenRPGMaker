@@ -31,6 +31,7 @@ import { resolveEventPage } from "@/project/io";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import type { CommandExecution, Frame, InterpreterState, PendingStep, StepResult } from "@/player/interpreter/types";
 import { breakLoop, gotoLabel, pushFrame, pushLoopFrame } from "@/player/interpreter/stack";
+import { presentableItems } from "@/player/interpreter/presentItem";
 import { executeM2RuntimeCommand, relocateM2Events } from "@/player/interpreter/m2Runtime";
 import { fieldBoolean, fieldNumber, fieldString } from "@/player/interpreter/m2RuntimeFields";
 import { recordSoundLayer, waitConditionMet } from "@/player/interpreter/m2ModernRuntime";
@@ -475,6 +476,13 @@ export function executeCommand(
         options: command.options.map((option) => ({ text: option.text })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
+      });
+    case "presentItem":
+      return pause("presentItem", {
+        kind: "presentItem",
+        prompt: command.prompt,
+        items: presentableItems(state.session, command),
+        settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "fork": {
       const branch = evalCondition(state.session, command.condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state)) ? command.then : command.else ?? [];

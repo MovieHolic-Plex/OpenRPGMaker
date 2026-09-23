@@ -35,7 +35,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
@@ -170,6 +170,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const villageMapIds = new Set<string>();
   const contract = request.readOnly || options.readOnlyTools ? undefined : request.villageContract;
   let receipt: VillageDraftReceipt | undefined;
+  // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
+  // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
+  const scopeGuard = piMapScopeGuard(request);
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
@@ -185,6 +188,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       toolNames: options.toolNames,
       onCall: recordCall,
       referenceGate,
+      ...scopeGuard,
     });
     return shape ? wrapTool(shape) : undefined;
   };
@@ -263,6 +267,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : options.toolNames,
     onCall: recordCall,
     referenceGate,
+    ...scopeGuard,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
   // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.

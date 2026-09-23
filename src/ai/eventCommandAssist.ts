@@ -48,6 +48,7 @@ import {
 import { chatCompletion, type AiConfig, type ChatMessage } from "./llmClient";
 import { composeSystemPrompt } from "./systemPromptEnvelope";
 import { findWorldCanonAbsenceHits, worldCanonPromptSection } from "./worldCanonContext";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export interface EventAssistContext {
   readonly project: Project;
@@ -322,6 +323,7 @@ export function buildEventAssistPrompt(context: EventAssistContext): string {
       '- runControl action variants: start, advance, end, setFlag, resetRoom. 필드: start(seed?,runId?,startFloor?), advance(amount?), end(result), setFlag(flag,value), resetRoom(roomId?).',
       '- run condition queries: active, floor, flag, result. 필드: active(value?), floor(op,value), flag(flag,value), result(result).',
       "- choices: options[].branch, cancelBranch에 커맨드 배열 중첩 가능.",
+      "- presentItem(증거 제시·아이템 보여주기): options[{itemId,branch}] 정답 분기, otherwiseBranch 틀린 것, cancelBranch 안 냄. itemIds 로 후보 제한, consume:true 면 정답 1개 소모.",
       "- loop: body에 커맨드 배열 중첩 가능. breakLoop로 탈출.",
       "- 셀프 스위치 분기는 fork의 selfSwitch 조건을 사용한다(페이지 분리는 이번 범위 밖).",
     ].join("\n")
@@ -492,7 +494,7 @@ function collectCanonAbsenceHits(commands: readonly Command[], canon: Project["w
       } else if (command.kind === "choices") {
         check(command.prompt);
         for (const option of command.options) check(option.text);
-      } else if (command.kind === "inputNumber") check(command.prompt);
+      } else if (command.kind === "inputNumber" || command.kind === "presentItem") check(command.prompt);
       else if (command.kind === "inn") {
         check(command.note);
         check(command.question);
@@ -671,6 +673,9 @@ function validateSupplementalReferences(commands: readonly Command[], context: R
       case "choices":
         for (const option of command.options) validateSupplementalReferences(option.branch, context);
         validateSupplementalReferences(command.cancelBranch ?? [], context);
+        break;
+      case "presentItem":
+        for (const branch of presentItemBranchLists(command)) validateSupplementalReferences(branch, context);
         break;
       case "loop":
         validateSupplementalReferences(command.body, context);

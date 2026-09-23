@@ -1,6 +1,7 @@
 import type { CommandKind } from "@/project/commandKindRegistry";
 import type { CommandContext } from "@/project/commandGuaranteeRegistry";
 import type { Command, GameEvent, Project } from "@/project/types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export type AuthoredCommandIndex = Readonly<Record<CommandContext, ReadonlySet<CommandKind>>>;
 
@@ -47,6 +48,8 @@ export function nestedCommandLists(command: Command): readonly (readonly Command
         ...command.options.map((option) => option.branch),
         ...(command.cancelBranch ? [command.cancelBranch] : []),
       ];
+    case "presentItem":
+      return presentItemBranchLists(command);
     case "fork":
       return [command.then, ...(command.else ? [command.else] : [])];
     case "loop":

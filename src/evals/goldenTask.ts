@@ -6,6 +6,7 @@ import { projectLint } from "@/project/lint/projectLint";
 import type { ReachabilitySpec } from "@/project/lint/reachability";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { questDefId } from "@/project/quest/questDef";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 // 최종 프로젝트가 만족해야 할 사양 하나.
 export interface SpecMatcher {
@@ -119,6 +120,8 @@ function eventHasCommand(event: GameEvent, kind: Command["kind"]): boolean {
       if (command.kind === "choices") {
         for (const option of command.options) walk(option.branch);
         if (command.cancelBranch) walk(command.cancelBranch);
+      } else if (command.kind === "presentItem") {
+        presentItemBranchLists(command).forEach(walk);
       } else if (command.kind === "fork") {
         walk(command.then);
         if (command.else) walk(command.else);

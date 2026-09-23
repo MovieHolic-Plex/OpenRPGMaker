@@ -90,7 +90,7 @@ function renderAgent(agent: TeamBoardAgent, startedAt: number, hideTask: boolean
       class: "ai-team-warn",
       text: [
         agent.spills.length > 0 ? `범위 밖 변경 버림: ${agent.spills.join(", ")}` : null,
-        agent.conflicts.length > 0 ? `같은 맵 충돌: ${agent.conflicts.join(", ")}` : null,
+        agent.conflicts.length > 0 ? `같은 맵·설정 충돌: ${agent.conflicts.join(", ")}` : null,
       ].filter(Boolean).join(" · "),
     }));
   }

@@ -8,6 +8,7 @@ const EXPECTED_COMMAND_KINDS = [
   "displayTextSettings",
   "changeFace",
   "choices",
+  "presentItem",
   "fork",
   "setSwitch",
   "setVariable",

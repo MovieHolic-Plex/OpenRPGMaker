@@ -128,7 +128,7 @@ export function commandRuntimeSupportDescriptor(
       case "m2Command":
       case "transfer": case "moveEvent": case "setEventGraphicPattern": case "changeTile":
       case "changeFactionStance": case "battleProcessing": case "showPicture": case "erasePicture":
-      case "shop": case "inn": case "ending": case "returnToTitle": case "inputNumber":
+      case "shop": case "inn": case "ending": case "returnToTitle": case "inputNumber": case "presentItem":
       case "enterHeroName": case "callMapEvent": case "cutsceneControl": case "checkpointSave":
       case "triggerEnding": case "setLighting": case "addLight": case "removeLight":
       case "showEmote": case "setWeather": case "addFollower": case "removeFollower":

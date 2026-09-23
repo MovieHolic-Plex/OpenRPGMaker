@@ -7,6 +7,7 @@ import type { Command, Condition, GameEvent, Project } from "@/project/types";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { collectProjectItemReferenceIds } from "@/project/io/references";
 import { projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "@/editor/databaseRecordReferences";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 // --- 공통 순회 ---
 
@@ -23,6 +24,8 @@ function walkCommands(commands: readonly Command[], visit: (command: Command) =>
     if (command.kind === "choices") {
       for (const option of command.options) walkCommands(option.branch, visit);
       if (command.cancelBranch) walkCommands(command.cancelBranch, visit);
+    } else if (command.kind === "presentItem") {
+      for (const branch of presentItemBranchLists(command)) walkCommands(branch, visit);
     } else if (command.kind === "fork") {
       walkCommands(command.then, visit);
       if (command.else) walkCommands(command.else, visit);
@@ -117,6 +120,10 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "craftRecipe":
     case "applyItemUpgrade":
       if (command.resultVariableId) refs.variables.add(command.resultVariableId);
+      break;
+    case "presentItem":
+      for (const itemId of command.itemIds ?? []) refs.items.add(itemId);
+      for (const option of command.options) refs.items.add(option.itemId);
       break;
     case "shop":
       for (const itemId of command.itemIds) refs.items.add(itemId);

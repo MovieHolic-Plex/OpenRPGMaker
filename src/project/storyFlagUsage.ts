@@ -233,6 +233,14 @@ function scanCommand(
       }
       if (command.cancelBranch) scanCommands(command.cancelBranch, add, owner, `${commandPath}.cancelBranch`);
       break;
+    case "presentItem":
+      if (!Array.isArray(command.options)) break;
+      for (const [optionIndex, option] of command.options.entries()) {
+        scanCommands(option.branch, add, owner, `${commandPath}.options[${optionIndex}].branch`);
+      }
+      if (command.otherwiseBranch) scanCommands(command.otherwiseBranch, add, owner, `${commandPath}.otherwiseBranch`);
+      if (command.cancelBranch) scanCommands(command.cancelBranch, add, owner, `${commandPath}.cancelBranch`);
+      break;
     case "loop":
       scanCommands(command.body, add, owner, `${commandPath}.body`);
       break;

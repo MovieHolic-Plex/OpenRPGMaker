@@ -1030,6 +1030,10 @@ function validateCommand(
     case "enterHeroName": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); return;
     case "changeGold": variableOperand(command.amount, "골드 변수"); return;
     case "changeItem": require("reference.item.missing", "아이템", command.itemId, refs.items); variableOperand(command.amount, "아이템 수량 변수"); return;
+    case "presentItem":
+      command.itemIds?.forEach((id) => require("reference.item.missing", "제시 후보 아이템", id, refs.items));
+      command.options.forEach((option) => require("reference.item.missing", "제시 정답 아이템", option.itemId, refs.items));
+      return;
     case "craftRecipe":
       require("reference.recipe.missing", "제작법", command.recipeId, refs.recipes);
       if (command.resultVariableId !== undefined) require("reference.variable.missing", "결과 변수", command.resultVariableId, refs.variables);

@@ -121,6 +121,17 @@ const commandSummaryPartHandlers: CommandSummaryPartHandlers = {
     ...(cmd.allowEventMovementDuringWait ? [plainPart(" / "), valuePart("이동 허용")] : [])
   ),
   choices: (cmd) => choicesSummaryParts(cmd),
+  presentItem: (cmd) => commandLine(
+    "아이템 제시",
+    ...(cmd.prompt ? [valuePart(oneLine(cmd.prompt)), plainPart("  ")] : []),
+    ...(cmd.options.length === 0
+      ? [valuePart("(정답 없음)")]
+      : cmd.options.flatMap((option, index) => [
+        ...(index > 0 ? [plainPart(" ")] : []),
+        choiceOptionPart(itemName(option.itemId)),
+      ])),
+    ...(cmd.consume ? [plainPart(" · "), valuePart("소모")] : [])
+  ),
   fork: (cmd) => commandLine("조건 분기", valuePart(conditionSummary(cmd.condition))),
   wait: (cmd) => {
     if (cmd.variableId?.trim()) {

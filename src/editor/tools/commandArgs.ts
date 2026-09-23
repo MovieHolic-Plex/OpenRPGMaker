@@ -112,6 +112,11 @@ function nestedKindShapeFailures(path: string, command: RecordValue): string[] {
   switch (command.kind) {
     case "choices":
       return choicesFailures(path, command);
+    case "presentItem":
+      return [
+        ...choicesFailures(path, command),
+        ...(command.otherwiseBranch === undefined ? [] : collectKindShapeFailures(`${path}.otherwiseBranch`, command.otherwiseBranch)),
+      ];
     case "fork":
       return [
         ...collectKindShapeFailures(`${path}.then`, command.then),

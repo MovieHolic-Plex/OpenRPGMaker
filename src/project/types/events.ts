@@ -281,6 +281,24 @@ export type Command =
       cancelBehavior?: ChoiceCancelBehavior;
       cancelBranch?: Command[];
     }
+  | {
+      /**
+       * 아이템 제시(증거 들이밀기·물건 보여주기). 소지품에서 하나를 고르게 하고,
+       * 고른 아이템이 options 의 itemId 와 맞으면 그 branch, 아니면 otherwiseBranch,
+       * 닫거나 보여줄 것이 없으면 cancelBranch 를 실행한다.
+       */
+      kind: "presentItem";
+      prompt?: string;
+      /** 목록에 올릴 후보. 생략하면 소지품 전체. 소지하지 않은 후보는 목록에 뜨지 않는다. */
+      itemIds?: ItemId[];
+      options: { itemId: ItemId; branch: Command[] }[];
+      /** 후보이지만 options 에 없는 아이템을 냈을 때. */
+      otherwiseBranch?: Command[];
+      /** 아무것도 내지 않고 닫았거나 보여줄 후보가 하나도 없을 때. */
+      cancelBranch?: Command[];
+      /** true 면 맞는 아이템을 냈을 때 1개 소모한다. */
+      consume?: boolean;
+    }
   | { kind: "fork"; condition: Condition; then: Command[]; else?: Command[] }
   | { kind: "wait"; ms: number; /** 설정 시 이 변수 값(ms)만큼 대기. */ variableId?: string }
   | { kind: "inputWait"; variableId?: string }
