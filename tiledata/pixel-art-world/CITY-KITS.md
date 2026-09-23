@@ -1,0 +1,77 @@
+# 도시 외관 조립 사전 — 실제 원본 32px
+
+2026-09-24. `city-kits.json`은 원본 그림을 포함하지 않는 공용 조립 메타데이터다.
+사용자 다운로드 원본에만 적용하며, SHA-256이 다른 판본에 좌표를 재사용하지 않는다.
+
+## 출처와 확인
+
+- [학교 기본 세트](https://yms.main.jp/dotartworld/page2/tile-school01.html):
+  ST-Schl-E01, 학교 전체 샘플 smp-shol01.jpg. 학교의 창/문/외벽 및 층 경계.
+- [현대 주택](https://yms.main.jp/dotartworld/page2/tile-townE01.html):
+  ST-Town-E01, smp-town15.JPG와 smp-town18.JPG. 기와 지붕·붉은 경사지붕·목조/황색 벽·문.
+- [공원](https://yms.main.jp/dotartworld/page2/tile-park01.html):
+  ST-Park-E01, smp-park01/02/03/06.JPG. 그네와 미끄럼틀, 벤치, 가로등, 모래놀이터, 화단 나무.
+- [실외 자동타일](https://yms.main.jp/dotartworld/page3/autotiles01.html): SA-Roof01.
+- [이용 조건](https://yms.main.jp/dotartworld/page1/rule.html):
+  소재/가공 소재 재배포 금지. 공개 게임에 Pixel Art World / ドット絵世界 크레딧.
+
+원본은 제작자 페이지에서 사용자가 받는다. 저장소에는 PNG/샘플 그림/dataURL을 넣지 않는다.
+생성기는 네 원본의 SHA를 고정해 판본 변경을 차단한다. 아래 미리보기는 실제 원본 픽셀의
+합성이며, 게임 내 표시/충돌/정본 저장 완료 증거와는 다르다.
+
+## 좌표 계약
+
+- 모든 일반 시트는 32px·8열. `tile = floor(py/32)*8 + floor(px/32)`.
+- 키트 배열은 행 우선이며 정확히 `width*height`개다. 원점은 좌상단.
+- `{source,tile}`은 해당 원본 전용 ID다. 통합 아틀라스에 넣으면 부모가 source별 오프셋으로 변환한다.
+- `null`은 기존 지면을 보존하는 칸이다. 타일 0 또는 투명 타일로 지면을 지우라는 뜻이 아니다.
+- `xp-roof01`만 `format:xp-autotile`이다. 원본 치수96×128, `tile`은 `variantMasks`의
+  0~46 인덱스다. `xpAutotileQuarters(variantMasks[tile])`를 합성한32px를 사용한다.
+  raw96px 시트를 일반8열로 자르지 않는다. 로컬 베이크의 배열 폭은8열이다.
+- 건물의 lower는 실제 불투명 벽·평지붕과 경사지붕 안쪽 박공 받침을 포함한다.
+  upper는 창/문/경사지붕 조각이다. alpha·레이어·통행을 같은 개념으로 취급하지 않는다.
+- 부모가 건물 막힘, 정문 이벤트, 내부 맵 연결, 주변 보도와 접근 경로를 저작한다.
+  이 사전 자체는 이벤트를 만들거나 문 그림을 통과 가능으로 바꾸지 않는다.
+
+## 완성 키트
+
+| ID | 크기 | 입구 | 접근칸 | 구성 |
+|---|---|---|---|---|
+| school-main | 13×10 | 6,9 | 6,10 | 평지붕·시계·두 층 푸른 교실 창·중앙 검은 정문 |
+| clinic-small | 9×7 | 4,6 | 4,7 | 낮은 공공건물. 학교 외벽/창을 의원 외관으로 재구성 |
+| home-red-gable | 6×9 | 2,8 | 2,9 | 붉은 경사지붕·박공 벽 받침·목조 외벽·갈색 문 |
+| apartment-dark-roof | 10×9 | 5,8 | 5,9 | 기와 지붕·황색 두 층 외벽·다른 층 창·회색 문 |
+| park-swings | 3×3 | 없음 | 1,3 | 파란 그네 전체, 의자/사슬/양 기둥 포함 |
+| park-slide | 5×3 | 없음 | 2,3 | 미끄럼판·플랫폼·오른쪽 계단 전체 |
+| park-bench-front | 2×2 | 없음 | 1,2 | 정면 벤치 전체 |
+| park-bench-back | 2×2 | 없음 | 1,2 | 뒷면 벤치 전체 |
+| park-lamp | 1×4 | 없음 | 0,4 | 두 등·기둥·받침 전체 |
+| park-sandpit | 4×3 | 없음 | 2,3 | 사각 둥근 모서리 모래놀이터, 가운데 반복 |
+| park-tree-planter | 4×6 | 없음 | 2,6 | 큰 나무 전체와 원형 화단 |
+| ground-park-grass | 1×1 | 없음 | 해당 없음 | park 0 반복 잔디 |
+| ground-park-soil | 1×1 | 없음 | 해당 없음 | park 2 반복 흙 |
+
+의원에는 원본에 없는 의료 간판을 만들어 넣지 않았다. 부모가 시설명/안내 이벤트를 추가한다.
+학교의 넓은 문은 (6,9),(7,9), 의원은 (4,6),(5,6) 두 칸이다. 주 진입점은 표의 좌표다.
+공원 소품은 `kind:prop`, 지면은 `kind:ground`, 둘 다 `entrance:null`이다.
+소품 approach는 관찰/상호작용 방향 참고이고, 지면의 approach는 사용하지 않는다.
+
+## 재생성
+
+Pillow가 있는 Python에서 사용자가 받은 네 원본이 들어 있는 폴더를 지정한다.
+폴더를 여러 번 지정해도 된다. 네 파일: ST-Town-E01.png, ST-Schl-E01.png,
+ST-Park-E01.png, SA-Roof01.png.
+
+```sh
+python scripts/content/prepare-pixel-art-world-city-kits.py \
+  --source-dir /path/to/user-downloads \
+  --output output/paw-city-kits
+```
+
+원본 해시 확인 → 키트 전체 배열 생성 → 치수/배열 길이/범위 확인 → 실제 그림 합성.
+실행하면 `city-kits.json`을 재생성하고 각 키트 미리보기를 지정한 로컬 출력에 쓴다.
+미리보기의 바닥 잔디 및 아래 한 행은 관찰용 배경이며 건물 키트 배열에는 없다.
+이 세션에서 각 키트 그림을 직접 확인했고, 창/문/미끄럼틀의 상하 조각 누락을 정정했다.
+
+테스트·게이트·typecheck·DB 쓰기는 실행하지 않았다. 부모가 통합 아틀라스로 재매핑하고
+실제 프로젝트에 저장·재로드한 뒤에만 도시 콘텐츠 설치 완료로 보고한다.
