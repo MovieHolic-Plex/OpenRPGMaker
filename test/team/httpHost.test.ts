@@ -1,4 +1,5 @@
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, expect, it } from 'vitest';
@@ -127,4 +128,35 @@ it('opens internal hosting by default and persists an explicit access-code opt-i
     body: JSON.stringify({ channel: 'oprn:host.access', payload: { required: false } }) });
   expect(disabled.status).toBe(200);
   expect(await (await fetch(server.url)).text()).toContain('window.__OPRN_BRIDGE__');
+});
+
+it('mirrors assistant/edit activity to the host disk for the owner on a shared host, and refuses members', async () => {
+  // 2026-09-23 도그푸딩: 공유 호스트(9888, --public-origin)에서 미러가 빠져 POST 가 405 로 떨어졌고,
+  // 클라이언트는 첫 실패에 미러를 끄므로 소유자의 조수 로그가 output/ai-activity 에 0줄이었다.
+  root = await mkdtemp(join(tmpdir(), 'oprn-shared-mirror-'));
+  await writeFile(join(root, 'index.html'), '<html><head></head></html>');
+  const projectDir = join(root, 'project');
+  server = await startLocalProjectServer({ projectDir, distDir: root, browserBridgeSource: '', publicOrigin: 'http://127.0.0.1:0' });
+  const base = server.url;
+  const post = (path: string, body: unknown, cookie?: string) => fetch(base + path, { method: 'POST',
+    headers: { 'content-type': 'application/json', origin: base, ...(cookie ? { cookie } : {}) }, body: JSON.stringify(body) });
+  // 접속 코드가 꺼진 공유 호스트는 방문자를 소유자로 본다.
+  expect((await post('/__oprn/ai-activity', { id: 'run-1', at: '2026-09-23T00:00:00.000Z', toolCalls: [] })).status).toBe(204);
+  expect((await post('/__oprn/edit-activity', { entries: [{ seq: 1, label: '타일', origin: 'human' }] })).status).toBe(204);
+  expect(existsSync(join(projectDir, 'output', 'ai-activity', 'run-1.json'))).toBe(true);
+  expect(existsSync(join(projectDir, 'output', 'edit-activity', 'edits.jsonl'))).toBe(true);
+
+  await enableAccessCode(server);
+  const login = async (token: string) => (await fetch(base + '/__oprn/login', { method: 'POST', redirect: 'manual',
+    headers: { 'content-type': 'application/x-www-form-urlencoded', origin: base }, body: new URLSearchParams({ token }) }))
+    .headers.get('set-cookie')!.split(';')[0]!;
+  const owner = await login(server.ownerAccessCode!);
+  const invitation = await (await fetch(base + '/__oprn/bridge', { method: 'POST',
+    headers: { cookie: owner, origin: base, 'content-type': 'application/json', 'x-oprn-bridge-token': server.token, 'x-oprn-session': 'tab' },
+    body: JSON.stringify({ channel: 'oprn:team.invite', payload: { label: 'writer', role: 'editor' } }) })).json();
+  const member = await login(invitation.token);
+  expect((await post('/__oprn/ai-activity', { id: 'run-2', toolCalls: [] }, member)).status).toBe(403);
+  expect((await fetch(base + '/__oprn/ai-activity', { headers: { cookie: member } })).status).toBe(403);
+  expect(existsSync(join(projectDir, 'output', 'ai-activity', 'run-2.json'))).toBe(false);
+  expect((await post('/__oprn/ai-activity', { id: 'run-3', toolCalls: [] }, owner)).status).toBe(204);
 });

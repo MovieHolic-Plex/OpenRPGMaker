@@ -10,6 +10,10 @@ import { el } from "@/util/dom";
 const TILESET_SELECTION_KEY = "oprn:database.selectedTilesetId";
 let selectedTilesetId: string | null = null;
 let listQuery = "";
+// 행을 고르면 자료집 본문이 통째로 다시 그려지고 사이드바 노드도 새것이 된다.
+// 기억해 두지 않으면 스크롤이 0으로 돌아가 방금 누른 줄이 화면 밖으로 나간다.
+let tilesetLibraryScrollTop = 0;
+let tilesetLibraryScrollEpoch = 0;
 const collapsedArtStyles = new Set<TilesetArtStyleId>(TILESET_ART_STYLES.map((style) => style.id).filter((id) => id !== "easyrpg"));
 
 /** Dedicated tile library: spatial placement controls do not apply to tilesets. */
@@ -44,7 +48,12 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
             class: `tileset-library-row${tileset.id === selected?.id ? " active" : ""}`,
             attrs: { type: "button", "aria-label": tileset.name, "aria-current": String(tileset.id === selected?.id) },
             dataset: { testid: `tileset-db-row-${tileset.id}` },
-            on: { click: () => { setSelectedTileset(tileset.id); rerender(); } },
+            on: { click: () => {
+              tilesetLibraryScrollTop = rows.scrollTop;
+              tilesetLibraryScrollEpoch += 1;
+              setSelectedTileset(tileset.id);
+              rerender();
+            } },
             children: [
               tilesetListThumb(tileset),
               el("span", { children: [el("strong", { text: shortTilesetLabel(tileset.name) }), el("small", { text: `${tileset.tileSize}×${tileset.tileSize} · ${tileset.count.toLocaleString()}칸` })] }),
@@ -70,6 +79,29 @@ export function renderTilesetsTab(host: HTMLElement, rerender: () => void): void
       ] }), ...renderAtlasPreview(selected), renderTilesetEditor(selected, rerender),
     ] }) : el("div", { class: "tileset-library-empty", text: "소재 관리자에서 타일셋을 가져오세요." }),
   ] }));
+  restoreTilesetLibraryScroll(rows);
+}
+
+function restoreTilesetLibraryScroll(rows: HTMLElement): void {
+  const top = tilesetLibraryScrollTop;
+  const epoch = tilesetLibraryScrollEpoch;
+  const apply = (): void => {
+    if (top > 0 && rows.isConnected) rows.scrollTop = top;
+  };
+  // 붙기 전에는 scrollHeight 가 0이라 대입이 무시된다. 레이아웃 뒤 한 번 더 넣는다.
+  // 이전 목록이 사라지며 scroll 0 을 쏘면, 그 세대의 리스너는 저장값을 덮지 않는다.
+  apply();
+  queueMicrotask(() => {
+    apply();
+    rows.addEventListener("scroll", () => {
+      if (epoch !== tilesetLibraryScrollEpoch) return;
+      if (rows.scrollHeight <= rows.clientHeight) return;
+      tilesetLibraryScrollTop = rows.scrollTop;
+    }, { passive: true });
+    if (top > 0 && rows.isConnected && rows.scrollTop + 1 < top && typeof requestAnimationFrame === "function") {
+      requestAnimationFrame(apply);
+    }
+  });
 }
 
 function selectTileset(tilesets: readonly TilesetDef[]): TilesetDef | undefined {

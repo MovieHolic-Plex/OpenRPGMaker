@@ -101,3 +101,21 @@ describe("tile_query labels filters", () => {
     expect(result.data).toMatchObject({ labels: [{ kind: "tile", tileId: 0, description: "fixture-detail" }] });
   });
 });
+
+// Detail/palette used to bypass the shared selector resolver and silently read DEFAULT.
+describe.each(["tile_info", "palette"])("tile_query %s selector parity", ask => {
+  it.each([
+    [{}, "tiles_start"],
+    [{ mapId: "map_target" }, "tiles_target"],
+    [{ mapId: "map_target", tilesetId: "tiles_explicit" }, "tiles_explicit"],
+  ])("honors selector %j", (selector, expected) => {
+    const ctx = context(), before = structuredClone(ctx.project);
+    const result = runTool(ctx, "tile_query", { ask, tileIds: [0], ...selector });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.data).toMatchObject({ tilesetId: expected });
+    expect(ctx.project).toEqual(before);
+  });
+  it("does not fall back when an explicit map is missing", () => {
+    expect(runTool(context(), "tile_query", { ask, mapId: "missing", tileIds: [0] }).ok).toBe(false);
+  });
+});

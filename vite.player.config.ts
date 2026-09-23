@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
+import { playerEditorOnlyAssetsVitePlugin } from "./scripts/lib/playerEditorOnlyAssets.mjs";
 
 const src = (path: string): string => fileURLToPath(new URL(`./src/${path}`, import.meta.url));
 
@@ -10,13 +11,12 @@ export default defineConfig({
   publicDir: false,
   // 내보낸 게임도 자기가 어느 도구 버전으로 만들어졌는지 알아야 한다 —
   // 버그 리포트가 "게임이 이상해요" 로 시작할 때 도구 버전이 유일한 단서다.
-  plugins: [appVersionPlugin()],
+  // 타일셋 AI 참고문서(에디터 전용, 약 14MB)는 빈 값으로 싣는다 — scripts/lib/playerEditorOnlyAssets.mjs.
+  plugins: [playerEditorOnlyAssetsVitePlugin(), appVersionPlugin()],
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
       { find: /^@\/project\/store$/, replacement: src("player/exportProjectStoreShim.ts") },
-      // 성 서재 참고문서는 에디터 시드용 15MB JSON 이다. 내보낸 플레이어에는 넣지 않는다.
-      { find: "@/assets/sharedCastleReferences.json", replacement: src("player/emptySharedCastleReferences.json") },
       { find: "@", replacement: src("") },
     ],
     extensions: [".ts", ".js"],

@@ -94,6 +94,15 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
       for (const option of command.options) collectCommandItemReferenceIds(option.branch, ids);
       collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
       return;
+    case "presentItem":
+      for (const itemId of command.itemIds ?? []) ids.add(itemId);
+      for (const option of command.options) {
+        ids.add(option.itemId);
+        collectCommandItemReferenceIds(option.branch, ids);
+      }
+      collectCommandItemReferenceIds(command.otherwiseBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.cancelBranch ?? [], ids);
+      return;
     case "fork":
       collectConditionItemReferenceIds(command.condition, ids);
       collectCommandItemReferenceIds(command.then, ids);
@@ -173,7 +182,9 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "gameOver":
     case "killPlayer":
-      if (command.gameOverId) assert(context.gameOverIds?.has(command.gameOverId), `gameOver: missing definition ${command.gameOverId}`);
+      // factionIds 와 같은 규약: 목록을 넘기지 않은 호출자(조수 명령 보조 등)는 참조 검사를 생략한다.
+      // 예전엔 undefined 가 assert 를 실패시켜 정의된 게임 오버까지 「missing definition」 으로 거부했다.
+      if (command.gameOverId && context.gameOverIds) assert(context.gameOverIds.has(command.gameOverId), `gameOver: missing definition ${command.gameOverId}`);
       return;
     case "ending":
       validateOptionalCommandResource("ending.presentation.musicResourceId", command.presentation?.musicResourceId ?? "", context.resourceIds);
@@ -192,6 +203,13 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "choices":
       for (const option of command.options) validateCommands(option.branch, context);
+      validateCommands(command.cancelBranch ?? [], context);
+      return;
+    case "presentItem":
+      requireExistingIds("presentItem: itemIds", command.itemIds ?? [], context.itemIds);
+      requireExistingIds("presentItem: option itemId", command.options.map((option) => option.itemId), context.itemIds);
+      for (const option of command.options) validateCommands(option.branch, context);
+      validateCommands(command.otherwiseBranch ?? [], context);
       validateCommands(command.cancelBranch ?? [], context);
       return;
     case "loop":

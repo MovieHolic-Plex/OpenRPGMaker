@@ -98,6 +98,12 @@ export interface BeginCodexLoginDeps {
     signal?: AbortSignal;
   }) => Promise<CallbackServerHandle>;
   startDeviceAuthorization: () => Promise<CodexDeviceAuthorization>;
+  /**
+   * 편집기를 다른 기기에서 열었다(공개 주소로 접속). 브라우저 흐름은 로그인 뒤 **그 기기의**
+   * localhost:1455 로 돌아가 「연결할 수 없음」이 되고 주소 붙여넣기가 필요하다. 코드 입력
+   * 방식은 어느 기기에서나 끝나므로 처음부터 그쪽으로 간다.
+   */
+  remote?: boolean;
   state?: string;
   originator?: string;
   signal?: AbortSignal;
@@ -135,6 +141,10 @@ const PORT_BUSY_INSTRUCTIONS =
   + `OpenAI 는 http://localhost:1455/auth/callback 만 허용하므로 다른 포트로 옮길 수 없어 `
   + `코드 입력 방식으로 진행합니다.`;
 
+const REMOTE_INSTRUCTIONS =
+  `다른 기기에서 접속 중이라 코드 입력 방식으로 로그인합니다. `
+  + `열린 창에 코드를 넣고 로그인을 마치면 자동으로 연결됩니다.`;
+
 async function startDeviceMode(
   startDeviceAuthorization: BeginCodexLoginDeps["startDeviceAuthorization"],
   instructions: string,
@@ -150,6 +160,8 @@ async function startDeviceMode(
 }
 
 export async function beginCodexLogin(deps: BeginCodexLoginDeps): Promise<CodexLoginStart> {
+  if (deps.remote) return startDeviceMode(deps.startDeviceAuthorization, REMOTE_INSTRUCTIONS);
+
   const state = deps.state ?? crypto.randomUUID();
   const pkce = await generatePkcePair();
 

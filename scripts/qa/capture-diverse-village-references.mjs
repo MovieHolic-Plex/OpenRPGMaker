@@ -20,7 +20,7 @@ try {
     const draw = () => document.getElementById("host").replaceChildren(mod.renderTilesetReferences(p2.tilesets.forest_harmony, draw));
     draw();
   }, p);
-  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-windows-v10");
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-trunks-v12");
   await page.getByRole("button", { name: "층바위 절벽마을 · 지형과 배치", exact: true }).click();
   await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
   await page.screenshot({ path: "verify-shots/village-diversity/reference-panel.png" });
@@ -31,7 +31,7 @@ try {
   await page.screenshot({ path: "verify-shots/village-diversity/reference-errors.png" });
   const baseCategory = await page.getByLabel("참고문서 용도", { exact: true }).inputValue(), baseImages = await page.locator(".tileset-reference-markdown img").count();
   // The concept villages ship as their own category (64 documents per category).
-  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("concept-villages-v1");
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("concept-villages-v3");
   await page.getByRole("button", { name: "교회·작은 성·묘지·울타리 못 · 통째 조립", exact: true }).click();
   await page.screenshot({ path: "verify-shots/village-diversity/reference-concept.png" });
   await page.getByRole("button", { name: "여울성 나루 · 지형과 배치", exact: true }).click();

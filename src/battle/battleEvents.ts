@@ -732,8 +732,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         options.state.partyActorIds ??= [];
         const list = options.state.partyActorIds;
         if (command.action === "add") {
-          if (!list.includes(command.actorId)) list.push(command.actorId);
-        } else {
+          // 빈 actorId 는 파티에 null 을 남겨 다음 전투를 멈춘다 — 건너뛴다(DB 에 없는 배우는 actorBattlers 가 뺀다).
+          const valid = typeof command.actorId === "string" && command.actorId.trim() !== "";
+          if (valid && !list.includes(command.actorId)) list.push(command.actorId);
+        } else if (command.action === "remove") {
           options.state.partyActorIds = list.filter((id) => id !== command.actorId);
         }
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeParty ${command.action} ${command.actorId}` });
@@ -808,14 +810,15 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "gameOver":
         // RM2K3 Game Over: 전투를 패배로 즉시 종결. defeat 이후 처리(게임오버 vs 패배 복귀)는
         // canLose 의미론에 따라 호스트가 결정한다(battleRewardsToSession/playSceneBattle).
-        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.kind === "killPlayer" && command.message ? { message: command.message } : {}) };
+        // gameOver 에는 메시지 필드가 없다 — 문구는 선택한 게임 오버 정의가 정한다.
+        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId };
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: "gameOver→defeat" });
         return "defeat";
       case "killPlayer":
         // killPlayer: 파티 전멸과 동일 의미 — 액터 HP 0 + defeat 종결(자연 패배 경로와 정합).
         for (const actor of options.actors) actor.hp = 0;
-        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.kind === "killPlayer" && command.message ? { message: command.message } : {}) };
+        if (command.gameOverId) options.state.gameOverRequest = { gameOverId: command.gameOverId, ...(command.message ? { message: command.message } : {}) };
         options.endBattleAsDefeat?.();
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: ["killPlayer→defeat", command.message].filter(Boolean).join(" ") });
         return "defeat";
@@ -876,6 +879,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "ending":
       case "returnToTitle":
       case "inputNumber":
+      case "presentItem":
       case "enterHeroName":
       case "callMapEvent":
       case "cutsceneControl":

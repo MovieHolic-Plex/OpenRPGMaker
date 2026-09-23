@@ -87,6 +87,8 @@ if (width !== TILES_PER_ROW * CELL_SIZE) {
 }
 const rows = Math.floor(height / CELL_SIZE);
 const transparentTiles = [];
+// 완전 통명 타일 = 파노라마 창(특수 타일). 이 칸에서만 맵 배경이 보인다.
+const fullyTransparentTiles = [];
 for (let tile = 0; tile < TILES_PER_ROW * rows; tile += 1) {
   const originX = (tile % TILES_PER_ROW) * CELL_SIZE;
   const originY = Math.floor(tile / TILES_PER_ROW) * CELL_SIZE;
@@ -97,6 +99,7 @@ for (let tile = 0; tile < TILES_PER_ROW * rows; tile += 1) {
     }
   }
   if (transparent > 0) transparentTiles.push({ tile, transparent });
+  if (transparent === CELL_SIZE * CELL_SIZE) fullyTransparentTiles.push(tile);
 }
 
 // 회귀 가드: 알려진 스프라이트형 칩은 반드시 포함, 지면 칩은 반드시 제외.
@@ -119,5 +122,11 @@ for (let i = 0; i < transparentTiles.length; i += 12) {
 }
 lines.push("];");
 lines.push("");
+lines.push("// 완전 통명 타일(알파가 모든 픽셀에서 0) = 파노라마 창. 이 칸에서만 맵 배경이 보인다.");
+lines.push("// RM2K 방식: 배경은 레이어 뒤에 있고, 창을 낸 칸에서만 비친다.");
+lines.push("export const COMBINED_TOWN_PANORAMA_WINDOW_TILES: readonly number[] = [");
+lines.push("  " + fullyTransparentTiles.join(", ") + ",");
+lines.push("];");
+lines.push("");
 writeFileSync(OUTPUT_TS, lines.join("\n"));
-console.log(`generated ${OUTPUT_TS} — ${transparentTiles.length} transparent tiles`);
+console.log(`generated ${OUTPUT_TS} — ${transparentTiles.length} transparent tiles, ${fullyTransparentTiles.length} panorama windows`);

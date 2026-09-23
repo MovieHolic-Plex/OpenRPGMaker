@@ -5,7 +5,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "솔바람 흩어진 산촌",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -20,7 +20,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (창문 개정10)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -29,7 +29,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "층바위 절벽마을",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 88,
     "height": 72,
     "tilesetId": "forest_harmony",
@@ -44,7 +44,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (창문 개정10)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -53,7 +53,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "두 폭포 강마을",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 88,
     "height": 72,
     "tilesetId": "forest_harmony",
@@ -68,7 +68,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (창문 개정10)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -77,7 +77,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "갈대물굽이 포구",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 88,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -92,7 +92,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (창문 개정10)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -101,7 +101,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "종탑 언덕 교구마을",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -117,7 +117,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -126,7 +126,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "여울성 나루",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 100,
     "height": 92,
     "tilesetId": "forest_harmony",
@@ -142,7 +142,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -151,7 +151,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
     "name": "안개못 폐촌",
     "kind": "completed-map",
     "regionKind": "settlement",
-    "revision": 10,
+    "revision": 12,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -167,7 +167,7 @@ export const DIVERSE_VILLAGE_REGIONS = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   }
@@ -179,7 +179,7 @@ export const DIVERSE_VILLAGE_PLACES = [
     "id": "twin-falls-river-village-place-88x72",
     "name": "두 폭포 강마을",
     "kind": "completed-place",
-    "revision": 10,
+    "revision": 12,
     "width": 88,
     "height": 72,
     "tilesetId": "forest_harmony",
@@ -194,7 +194,7 @@ export const DIVERSE_VILLAGE_PLACES = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (창문 개정10)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다.",
     "regionReferenceId": "twin-falls-river-village-88x72",
@@ -206,7 +206,7 @@ export const DIVERSE_VILLAGE_PLACES = [
     "id": "chapel-hill-parish-place-80x64",
     "name": "종탑 언덕 교구마을",
     "kind": "completed-place",
-    "revision": 10,
+    "revision": 12,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -222,7 +222,7 @@ export const DIVERSE_VILLAGE_PLACES = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다.",
     "regionReferenceId": "chapel-hill-parish-80x64",
@@ -234,7 +234,7 @@ export const DIVERSE_VILLAGE_PLACES = [
     "id": "ford-castle-town-place-100x92",
     "name": "여울성 나루",
     "kind": "completed-place",
-    "revision": 10,
+    "revision": 12,
     "width": 100,
     "height": 92,
     "tilesetId": "forest_harmony",
@@ -250,7 +250,7 @@ export const DIVERSE_VILLAGE_PLACES = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다.",
     "regionReferenceId": "ford-castle-town-100x92",
@@ -262,7 +262,7 @@ export const DIVERSE_VILLAGE_PLACES = [
     "id": "mistpond-hollow-place-80x64",
     "name": "안개못 폐촌",
     "kind": "completed-place",
-    "revision": 10,
+    "revision": 12,
     "width": 80,
     "height": 64,
     "tilesetId": "forest_harmony",
@@ -278,7 +278,7 @@ export const DIVERSE_VILLAGE_PLACES = [
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
-      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (개정1)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
+      "공용 AI 문서 「컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다."
     ],
     "limitations": "새로 저작한 외관·타일 통행 참고 사례. 실내·NPC·문 전이 이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다.",
     "regionReferenceId": "mistpond-hollow-80x64",

@@ -1,4 +1,3 @@
-import { resolveVillageContract } from "@/ai/piAgent/villageContract";
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
@@ -49,7 +48,7 @@ import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/tool
 import { runRegionTask, type RegionTaskOptions, type RegionTaskResult } from "@/editor/regionTask/runRegionTask";
 import { getPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
-import { buildIntentFacts, createLlmIntentDeclarer, declareIntentCached, type IntentDeclarer } from "@/ai/intentDeclarationClient";
+import { createLlmIntentDeclarer, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { SessionTurnScope } from "@/ai/assistantSession";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel, type AutonomyResolution } from "@/ai/autonomyLevels";
 import { isAutonomyLevel, loadAiConfig, saveAiConfig, type AiConfig } from "@/ai/llmClient";
@@ -60,10 +59,9 @@ import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createCreationChoice, creationSubject } from "./aiCreationChoice";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
-import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
-import { buildPiIntentNote, DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
-import { isLivedMap } from "@/editor/tools/authorVillageScope";
+import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
+import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
 import { combineDiffs } from "@/project/projectCommitLog";
 import { el } from "@/util/dom";
 import { genId } from "@/util/id";
@@ -2126,54 +2124,25 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   /** 평문 한 줄 → Pi 명령 + 실행 계획. 팀 비트는 설정에서, 읽기 전용·계획은 자율성 다이얼에서 온다. */
   type PlainPiTurn = { readonly command: ParsedPiCommand; readonly plan: PiRunPlan; readonly questionPromoted: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null };
   const plainPiTurn = async (text: string): Promise<PlainPiTurn> => {
-    let plan = resolvePiRunPlan(currentAutonomy());
-    let questionPromoted = false;
-    let initialToolNames: readonly string[] | undefined;
-    let intentNote: string | null = null;
-    if (!plan.readOnly) {
-      piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 });
-      setStatus("의도 읽는 중…");
-      const project = store.getCurrent();
-      const currentMapId = editorState.get().currentMapId ?? null;
-      const selection = mapContext().selection;
-      const declared = await declareIntentCached(piIntentDeclarer, buildIntentFacts({
-        project,
-        userText: text,
-        currentMapId,
-        selection,
-        hasActivePlan: workPlanSurfaceState?.active === true,
-      }));
-      if (declared.intent.source === "fallback") throw new Error(declared.error ?? "요청 범위를 확정하지 못했습니다. 다시 시도해 주세요.");
-      // 선언이 확정한 것을 본문도 읽게 한다 — 세션 경로의 pushOrchestrationMessage(intentNote) 와 같은 자리.
-      // Pi 이관(2026-09-11)에서 빠져 author_village·권장 크기·선택 사각형 지시가 모델에 닿지 않았다(2026-09-17 실측).
-      const noteTargetMapId = declared.intent.targetMapId ?? currentMapId;
-      const noteTargetMap = noteTargetMapId ? project.maps[noteTargetMapId] : undefined;
-      intentNote = buildPiIntentNote({
-        project,
-        intent: declared.intent,
-        targetMap: noteTargetMap
-          ? { id: noteTargetMap.id, width: noteTargetMap.width, height: noteTargetMap.height, lived: isLivedMap(noteTargetMap) }
-          : null,
-        selection: selection ?? null,
-      });
-      // 계획 필요 여부가 규모 기준이다. 단순 생성도 수정과 같은 경로를 쓰며 실패·모호함은 제외한다.
-      plan = { ...plan, routineEdit: !declared.error && declared.intent.source === "llm"
-        && (declared.intent.mode === "create" || declared.intent.mode === "modify")
-        && declared.intent.needsPlan === false
-        && declared.intent.clarify === null };
-      plan = { ...plan, villageContract: resolveVillageContract(project, declared.intent, currentMapId, selection ?? null) };
-      if (declared.intent.mode === "question") {
-        plan = { ...plan, readOnly: true };
-        questionPromoted = true;
-      } else {
-        // Send exact intent/adventure candidates through the real Pi request path.
-        // This is exposure only: discovery can expand it, including full fallback.
-        initialToolNames = buildSessionRegistryTools({ requestText: text, intent: declared.intent })
-          .map(tool => tool.function.name);
-      }
-    }
-    const team = (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM) && !plan.readOnly;
-    return { command: plainPiCommand(text, team ? "team" : "single", editorState.get().currentMapId ?? null), plan, questionPromoted, initialToolNames, intentNote };
+    // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
+    const classified = await classifyPlainPiTurn({
+      project: store.getCurrent(),
+      text,
+      currentMapId: editorState.get().currentMapId ?? null,
+      selection: mapContext().selection ?? null,
+      hasActivePlan: workPlanSurfaceState?.active === true,
+      autonomy: currentAutonomy(),
+      declarer: () => (piIntentDeclarer ??= createLlmIntentDeclarer({ timeoutMs: 30_000 })),
+      piTeam: loadAiConfig().piTeam ?? DEFAULT_PI_TEAM,
+      onDeclaring: () => setStatus("의도 읽는 중…"),
+    });
+    return {
+      command: plainPiCommand(text, classified.mode, editorState.get().currentMapId ?? null),
+      plan: classified.plan,
+      questionPromoted: classified.questionPromoted,
+      ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}),
+      intentNote: classified.intentNote,
+    };
   };
   const send = async (): Promise<void> => {
     const typed = input.value.trim();

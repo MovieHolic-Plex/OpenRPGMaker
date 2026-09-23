@@ -42,6 +42,7 @@ import { changeChipsWithAreas, openWideChangeViewer, renderChangePreviewCard, ty
 import { createPiGhostBridge } from "./aiPiGhostBridge";
 import { loadAiConfig } from "@/ai/llmClient";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
+import { buildPiRunRequest, buildUltrabrainPlanRequest, needsUltrabrainPlanTurn, withUltrabrainPlan } from "@/ai/piAgent/plainTurn";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { showConfirm } from "@/editor/ui/modal";
@@ -82,6 +83,16 @@ function splitMapList(first: string, project: Project): string[] | null {
   return [...new Set(candidates)];
 }
 
+/**
+ * 이 실행의 결과를 맵 묶음 병합으로 합치는가. 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다.
+ * 평문 턴도 현재 맵을 mapIds 에 채우기 때문에 예전 조건(`mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로
+ * 잘랐고, 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
+ * 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다. 팀은 팀 런타임이 합친다.
+ */
+export function mergesMapBundles(input: { team: boolean; mapIds: readonly string[]; scopedByUser: boolean; groupCount: number }): boolean {
+  return !input.team && input.mapIds.length > 0 && (input.scopedByUser || input.groupCount > 1);
+}
+
 /** `/pi 지시` → 현재 맵. `/pi a,b 지시` → 맵 a, b. `/pi team …`·`/team …` → 팀 모드. 맵 토큰은 프로젝트에 있는 id 일 때만 인정한다. */
 export function parsePiCommand(text: string, project: Project, currentMapId: string | null): ParsedPiCommand | null {
   const trimmed = text.trim();
@@ -114,20 +125,7 @@ export function plainPiCommand(text: string, mode: PiAgentMode, currentMapId: st
   return { mode, mapIds: mode === "team" ? [] : currentMapId ? [currentMapId] : [], currentMapId, task: text.trim() };
 }
 
-/**
- * 계획 턴의 지시문 머리. Pi 에는 세션 플래너가 없으므로 «실행하지 말고 계획만» 을 말로 만든다 —
- * 강제는 툴 목록이 한다(request.readOnly). 계획은 도구 결과가 아니라 말로 남으므로 항목 목록을 요구한다.
- */
-const PLAN_ONLY_PREFIX = "[계획 턴] 이번 실행에서는 프로젝트를 바꾸지 않는다. 쓰기 도구가 제공되지 않는다. "
-  + "요청을 실행 순서가 있는 항목 목록으로만 보고하라. 각 항목은 «무엇을 · 어디에 · 왜» 를 담고, 마지막에 예상 위험을 한 줄로 적어라. ";
-
-/**
- * 계획 턴의 턴 상한. 계획은 말로만 남고 읽은 도구 결과는 실행 턴에 넘어가지 않는다 — 실행 턴이 어차피
- * 다시 읽는다. 예전엔 실행과 같은 상한(최대 200턴)을 받아 계획 하나에 수십 번 읽기가 쌓였다.
- */
-const PLAN_MAX_TURNS = 30;
-/** 계획 턴이 의도 목록과 상관없이 쥐는 읽기 도구. 나머지는 find_tools 로 찾는다. */
-const PLAN_READ_TOOLS = ["get_project_summary", "get_map_region", "tile_query", "find_tools"] as const;
+// 계획 턴 문장·상한·요청 조립은 `@/ai/piAgent/plainTurn` 이 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수를 쓴다.
 
 /** 이 실행 하나가 해도 되는 것. 패널이 자율성 다이얼에서 풀어 넘긴다(`resolvePiRunPlan`). */
 export interface PiRunOptions {
@@ -232,6 +230,9 @@ export async function runPiCommand(
   const routineEdit = options.routineEdit === true && !readOnly && !team
     && command.mapIds.length === 1 && Boolean(base.maps[command.mapIds[0]!]);
   const groups = team || options.planOnly ? [command.mapIds] : command.mapIds.length > 0 ? command.mapIds.map((id) => [id]) : [[] as string[]];
+  // 병합 여부 한 곳 — 체크포인트 발행·최종 병합·요청의 가드 신호(mapBundleMerge)가 같은 값을 쓴다.
+  // 가드가 꺼진 채 병합만 하면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
+  const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
   const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
@@ -390,18 +391,17 @@ export async function runPiCommand(
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
     const modelTask = composePiTask(command.task, options.intentNote);
     let executionTask = modelTask;
-    if (!options.villageContract && !readOnly && !team && !routineEdit && applyMode !== "yolo") {
+    if (needsUltrabrainPlanTurn({ villageContract: options.villageContract, readOnly, team, routineEdit, applyMode })) {
       surface.setStatus("어떻게 바꿀지 정리하고 있어요.");
       let plan = "";
       let planError = "";
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "Ultrabrain · 계획" });
-      const planned = await runPiAgentViaCompanion({
-        mode: "single", provider: brain.providerId!, model: brain.model,
-        task: `${PLAN_ONLY_PREFIX}${modelTask}`, mapIds: command.mapIds, ...here, project: base,
-        scopeStrict: command.scopedByUser === true,
-        readOnly: true, maxTurns: Math.min(options.maxTurns ?? PLAN_MAX_TURNS, PLAN_MAX_TURNS), thinkingLevel: brain.reasoningEffort,
-        ...(options.initialToolNames ? { initialToolNames: [...new Set([...options.initialToolNames, ...PLAN_READ_TOOLS])] } : {}),
-      }, { signal: surface.signal, onEvent: raw => {
+      const planned = await runPiAgentViaCompanion(buildUltrabrainPlanRequest({
+        brain, modelTask, mapIds: command.mapIds, ...here, project: base,
+        scopedByUser: command.scopedByUser === true,
+        ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
+        ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
+      }), { signal: surface.signal, onEvent: raw => {
         if (raw.type === "heartbeat") {
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
           return;
@@ -421,33 +421,23 @@ export async function runPiCommand(
       push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
         stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
       (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
-      executionTask = `${modelTask}\n\nUltrabrain 실행 계획:\n${plan}`;
+      executionTask = withUltrabrainPlan(modelTask, plan);
     }
     results = await Promise.all(groups.map((mapIds, index) => runPiAgentViaCompanion(
-      {
-        mode: team ? "team" : "single",
-        applyMode,
-        villageContract: options.villageContract,
-        provider: options.planOnly || team ? brain.providerId! : deep.provider,
-        model: options.planOnly || team ? brain.model : deep.model,
-        ...(!options.planOnly ? { roleModels: { deep, writer: modelForRole(config, "writer") } } : {}),
-        task: options.planOnly ? `${PLAN_ONLY_PREFIX}${modelTask}` : executionTask,
-        mapIds,
-        ...here,
-        project: base,
-        // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
-        scopeStrict: command.scopedByUser === true,
-        ...(readOnly ? { readOnly: true } : {}),
+      buildPiRunRequest({
+        team, planOnly: options.planOnly, readOnly, applyMode, villageContract: options.villageContract,
+        brain, deep, writer: modelForRole(config, "writer"),
+        modelTask, executionTask, mapIds, ...here, project: base,
+        scopedByUser: command.scopedByUser === true, mapBundleMerge: mergedFromBundles,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
-        thinkingLevel: options.planOnly || team ? brain.reasoningEffort : deep.thinkingLevel,
-        ...(options.toolDomains && options.toolDomains.length > 0 ? { toolDomains: options.toolDomains } : {}),
+        ...(options.toolDomains ? { toolDomains: options.toolDomains } : {}),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
-        ...(teamSpec ? { team: teamSpec } : {}),
-      },
+        ...(teamSpec ? { teamSpec } : {}),
+      }),
       { signal: surface.signal, onEvent: wrap(mapIds, index),
         onCheckpoint: options.villageContract || readOnly || applyMode === "review" ? undefined : async checkpoint => {
           // Parallel explicit map requests publish only their owned bundle on the latest accepted base.
-          if (!team && (command.scopedByUser || groups.length > 1) && mapIds.length) {
+          if (mergedFromBundles) {
             const next = mergeMapBundles(publication.project, [{ mapIds, project: checkpoint.project }]).project;
             authorMergedSpatialProposal(next, publication.project);
             return publication.publish({ ...checkpoint, project: next, spatialProof: exportSpatialToolProof(next) });
@@ -498,12 +488,6 @@ export async function runPiCommand(
   }
   // 팀 모드는 런타임이 이미 맵 묶음으로 병합해 돌려준다. 단일 범위 지정은 여기서 병합한다.
   //
-  // 「범위 지정」은 사용자가 `/pi 맵id …` 로 직접 적었을 때뿐이다. 평문 턴도 현재 맵을 mapIds 에
-  // 채우기 때문에 예전 조건(`command.mapIds.length > 0`)은 **모든 평문 턴**을 맵 묶음으로 잘랐고,
-  // 그 밖(데이터베이스·시스템·퀘스트)의 변경을 전부 버렸다 — 사용자가 시킨 그 일을(2026-09-17 실측).
-  // 에이전트가 둘 이상이면 결과가 여럿이라 병합이 여전히 유일한 합치는 길이다.
-  const mergedFromBundles = !team && command.mapIds.length > 0
-    && (command.scopedByUser === true || groups.length > 1);
   const villageMapIds = new Set(results.flatMap(result => result.villageCompletion?.mapIds ?? []));
   villageIncomplete = !!options.villageContract && results.some(result => !result.villageCompletion || result.villageCompletion.issues.length > 0);
   let merged = mergedFromBundles
@@ -516,8 +500,8 @@ export async function runPiCommand(
   if (mergedFromBundles) authorMergedSpatialProposal(merged.project, base);
   else adoptSpatialToolProof(merged.project, results[0]!.spatialProof, base);
   if (merged.conflicts.length > 0) {
-    surface.appendBubble("system", "여러 팀원이 같은 맵을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
-    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
+    surface.appendBubble("system", "여러 팀원이 같은 맵이나 설정을 바꿔 마지막 변경을 선택했어요. 적용할 내용을 확인해 주세요.");
+    surface.appendProcess?.(`에이전트 둘 이상이 같은 맵·설정을 바꿨습니다(뒤의 결과 채택): ${merged.conflicts.map((id) => `\`${id}\``).join(", ")}`);
   }
   spilledKeys.push(...merged.spills.flatMap((spill) => spill.keys));
   if (spilledKeys.length) surface.appendBubble("system", "선택한 작업 범위를 벗어난 변경은 제외했어요.");

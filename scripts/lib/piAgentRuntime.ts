@@ -35,7 +35,7 @@ import { exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.
 import { createDeltaRelay } from "../../src/ai/piAgent/deltaRelay.ts";
 import { applyMapDeltas, diffMapsForDelta } from "../../src/ai/piAgent/mapDelta.ts";
 import { buildPiAgentSystemPrompt } from "../../src/ai/piAgent/systemPrompt.ts";
-import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, PI_AGENT_DEFAULT_TIMEOUT_MS, piMapScopeGuard, restoreCheckpointProject, slimCheckpointProject, snapshotProjectKeepingHeavy, slimDoneEvent, unchangedHeavyKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiAgentUsage, type PiCheckpointHeavyKey } from "../../src/ai/piAgent/protocol.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
@@ -47,6 +47,11 @@ export interface RunPiAgentOptions {
   readonly apiKey?: string;
   readonly providerApiKeys?: Record<string, string | undefined>;
   readonly onEvent?: (event: PiAgentEvent) => void;
+  /**
+   * 레지스트리 툴 호출 하나의 전체 기록(인자·결과 원본). `tool_end` 이벤트의 결과는 활동 로그용으로 잘려 있다 —
+   * 헤드리스 녹화(scripts/qa-game)가 재생에 쓸 원본은 여기서만 나온다. 관찰 전용: 실행을 바꾸지 않는다.
+   */
+  readonly onToolCall?: (record: PiToolCallRecord) => void;
   readonly signal?: AbortSignal;
   /** 전체 실행 상한(ms). 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). */
   readonly timeoutMs?: number;
@@ -57,6 +62,7 @@ export interface RunPiAgentOptions {
    * 제공자 키와 **별개로** 해결해 넘긴다(없으면 툴이 "Codex 로그인 필요" 로 정직하게 실패한다).
    */
   readonly codexApiKey?: string;
+  readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
   readonly toolNames?: readonly string[];
   readonly extraTools?: readonly PiToolShape[];
   /** 모델 스트림 대체 — 테스트가 네트워크 없이 진짜 Agent 루프를 돌릴 때 쓰는 시임. */
@@ -154,6 +160,10 @@ function trimText(value: unknown, max: number): string {
 }
 
 export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
+  // Workers do not run browser boot; load the same host-wide region catalog for AI tools.
+  const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
+  const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
+  installSharedSpatialReferences(readSharedTileReferences().spatial);
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };
@@ -170,6 +180,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const villageMapIds = new Set<string>();
   const contract = request.readOnly || options.readOnlyTools ? undefined : request.villageContract;
   let receipt: VillageDraftReceipt | undefined;
+  // 묶음 실행이면 호출 시점에 묶음 밖 맵 변경을 거부한다(병합의 「범위 밖 변경 버림」은 최후 안전망으로 남는다).
+  // 계약 범위거나 호출자가 병합한다고 알린 실행(mapBundleMerge)이면 켠다 — 판정은 piMapScopeGuard 한 곳.
+  const scopeGuard = piMapScopeGuard(request);
   const allowedDefinitions = selectPiToolDefinitions(undefined, {
     readOnly: request.readOnly || options.readOnlyTools, toolNames: options.toolNames,
   });
@@ -185,6 +198,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       toolNames: options.toolNames,
       onCall: recordCall,
       referenceGate,
+      ...scopeGuard,
     });
     return shape ? wrapTool(shape) : undefined;
   };
@@ -195,6 +209,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     exposed.add(shape.name);
   };
   const recordCall = (record: PiToolCallRecord): void => {
+    try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
     const villageMapId = authoredVillageMapId(record);
     if (villageMapId) villageMapIds.add(villageMapId);
@@ -240,7 +255,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       throw error;
     }
   };
-  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract ? tool : ({ ...tool,
+  const wrapTool = (tool: PiToolShape): PiToolShape => !incremental && !contract && tool.name !== "show_map_region" ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -251,6 +266,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         else if (tool.name !== "author_npc_cast" || !receipt) throw new Error("마을 계약: author_village로 시공하고 주민 대사만 보충하세요. 다른 쓰기는 별도 요청으로 진행합니다.");
       }
       const result = await tool.execute(id, params, signal);
+      if (tool.name === "show_map_region") {
+        if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
+        const data = (result.details as { data?: unknown } | undefined)?.data;
+        const png = await options.renderToolImage(structuredClone(ctx.project), tool.name, data, signal ?? options.signal);
+        result.content.push({ type: "image", mimeType: "image/png", data: png });
+        options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ok: true, summary: "현재 초안 이미지를 모델 도구 응답에 포함했습니다.", data: { toolCallId: id, base64Length: png.length } });
+      }
       if (tool.concurrency === "exclusive" && request.applyMode !== "step") await checkpoint(tool.name, tool.name, signal);
       return result;
     },
@@ -263,6 +285,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       : options.toolNames,
     onCall: recordCall,
     referenceGate,
+    ...scopeGuard,
   });
   // 레지스트리 쪽 web_search 는 순수 핸드오프라 네트워크가 없다 — 아래 실제 실행 셰이프가 대신한다.
   // 둘을 함께 선언하면 같은 이름이 두 번 나가고 어느 쪽이 도는지가 순서에 달린다.

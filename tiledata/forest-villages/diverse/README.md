@@ -135,3 +135,20 @@ prop-programs.json이 집별 용도/할 일/지정 이유 및 부품의 목적/�
 - 검사: `waterfall-gap`(폭포 열 중간이 다른 타일), 기존 `terrace-without-stairs`로 다리·계단 외 경로 없음 확인.
 - 한계: 번들 칩셋은 타일 애니메이션이 없다(uploadedTilesets 전용) → 폭포는 첫 프레임 정지 그림.
 - 공용 AI 용도 `diverse-villages-river-v9`(51 MD·28 이미지·20종 오류), 지역 revision 9, 정본 revision 18.
+
+## 나무 몸통 개정11 — 잘린 줄기
+
+사용자 지적: 나무 몸통이 이상하다, 잘린 곳이 있다.
+- 원인: 옛 4칸 마감은 끝 열이 몸통 반쪽이고, 폭이 4·짝수8+가 아닌 밑변은 span 8 조각이 옆 수관 밑으로 들어가 그 외곽 칸의 투명한 가장자리로 반만 보였다. 마을당 30~50칸.
+- 고침: 줄기를 밑변과 정확히 같은 폭으로(폭 2~5 좁은 조립 포함, 규칙은 `forest-assembly.md`), 폭 1 밑변만 이웃 열 높이로 한 칸 옮긴다.
+- 맵은 다시 저작하지 않고 `node scripts/content/refit-forest-trunks.mjs tiledata/forest-villages/diverse/catalog.json` 로 제자리에서 맞췄다. 수관·집·길·소품은 그대로이고
+  바뀐 밑변만 한 칸씩 움직였다. 검증기 7곳 통과(정상 0 오류, 오류 예시 22종은 좌표만 이동).
+- 공용 AI 용도 `diverse-villages-trunks-v11`(52 MD·30 이미지) + `concept-villages-v2`(27 MD·3 이미지), 지역 revision 11, 정본 revision 21.
+  `previous-reference.json` 에 windows-v10·concept-v1 을 기록해 미편집 사본만 교체한다. 기후 마을(`tiledata/climate-villages/`)은 이 카탈로그에서 다시 만든다.
+
+## 나무 몸통 개정12 — 폭 2 조각 제거
+
+사용자 지적(개정11 뒤): 여전히 이상하다. 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히긴 하지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이었다.
+- 최소 폭 3(`FOREST_TRUNK_MIN_WIDTH`). 폭 1·2 밑변은 `fitBottomEdges` 가 이웃 열 밑변 높이로 올리거나 내려 합친다.
+- 같은 refit 으로 다시 맞췄다. 공용 용도 `diverse-villages-trunks-v12` + `concept-villages-v3`, 지역 revision 12.
+

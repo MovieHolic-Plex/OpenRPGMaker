@@ -16,6 +16,11 @@ export interface OhMyPiAuthStatus {
   planType?: string;
   env?: boolean;
   refreshed?: boolean;
+  /** `/auth/status` 가 만료 토큰 갱신을 시작했지만 응답 전에 끝나지 않았다 — 다음 조회가 결과를 본다. */
+  refreshing?: boolean;
+  /** 자동 갱신이 실패한 이유. `refreshRetryAt`(epoch ms) 전에는 자동으로 다시 시도하지 않는다. */
+  refreshError?: string;
+  refreshRetryAt?: number;
   /** `/auth/logout` 이 지울 항이 실제로 있었는가. */
   removed?: boolean;
 }

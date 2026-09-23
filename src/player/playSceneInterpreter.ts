@@ -53,6 +53,7 @@ import { claimForeground, foregroundOwner } from "./foregroundControl";
 import { applyAdvanceTimeStep, applySetTimeStep } from "@/player/playSceneTime";
 import { formatFriendshipFeedback, isGiftableEvent, isGiftSystemEnabled, isTalkFriendshipEnabled, trySocialTalk } from "@/project/friendship";
 import { playGiftSelection } from "@/player/playSceneGift";
+import { playPresentItem } from "@/player/playScenePresentItem";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
@@ -370,6 +371,12 @@ async function consumeBlockingStep(
         if (skipped) return skipped;
         return resumeWithChoice(scene, interpreter, choice);
       }
+    case "presentItem": {
+      const itemId = await playPresentItem(scene, step);
+      const skipped = skipController.takeResult();
+      if (skipped) return skipped;
+      return itemId === undefined ? resumeAfterSurface(scene, interpreter) : resumeWithValue(scene, interpreter, itemId);
+    }
     case "wait":
       if (step.allowParallelEvents) conditionWaitScenes.add(scene);
       try { await waitWithCutsceneSkip(step.ms, skipController); }

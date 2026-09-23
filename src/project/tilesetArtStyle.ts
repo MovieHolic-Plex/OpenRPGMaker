@@ -17,8 +17,6 @@ const EASYRPG_PROJECT_IDS = new Set([
   "forest_harmony",
   "tibo_interior_expanded",
   "interior_wall_ceiling_wood_floor",
-  "tileset_potter_cohesive_20260921",
-  "tileset_trade_rooms_20260921",
 ]);
 
 function imageId(tileset: TilesetDef): string {

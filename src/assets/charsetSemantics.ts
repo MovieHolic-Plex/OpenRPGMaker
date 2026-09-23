@@ -3,6 +3,9 @@
 // monster1~3은 핸드오프 0.4에서 헤드리스 플레이테스트로 검증된 인덱스.
 // people1~5/actor1~4/animal/object1~2/vehicles는 각 시트를 characterIndex 셀 단위로 잘라
 // (scripts로 4열×2행 그리드 PNG 생성 후 Read 도구로 육안 확인) 라벨링했다.
+// appearance 는 아래 방향 정지 프레임을 보고 적은 문장이다 (charsetAppearances.ts).
+
+import { CHARSET_APPEARANCE } from "@/assets/charsetAppearances";
 
 export type CharsetGender = "male" | "female" | "none";
 export type CharsetAge = "child" | "youth" | "middle" | "elder";
@@ -14,6 +17,7 @@ export interface CharsetSemanticEntry {
   readonly gender?: CharsetGender;
   readonly age?: CharsetAge;
   readonly tags: readonly string[];
+  readonly appearance?: string;
 }
 
 type CharsetSemanticMeta = Pick<CharsetSemanticEntry, "gender" | "age">;
@@ -23,7 +27,7 @@ function sheet(textureKey: string, rows: readonly RawEntry[]): CharsetSemanticEn
   return rows.map(([characterIndex, label, tags, meta]) => ({ textureKey, characterIndex, label, ...meta, tags: [label, ...tags] }));
 }
 
-export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
+const CHARSET_SEMANTICS_RAW: readonly CharsetSemanticEntry[] = [
   // tex_easyrpg_charset_monster1 — 2026-07-27 사용자 확정: 8칸 전부 채움.
   // 이전에는 0·2·3·4·5 만 있었고 **idx 2 를 "벌"이라 잘못 라벨**했다(실물은 오크).
   // 1·6·7 은 라벨이 없어 "검증되지 않은 칸"이었다 — 그래서 저작이 그 칸을 피하거나
@@ -231,6 +235,16 @@ export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = [
     [1, "풀 도장 보스", ["보스", "풀", "트레이너", "scarloxy"], { gender: "male" }],
   ]),
 ];
+
+function withAppearance(entry: CharsetSemanticEntry): CharsetSemanticEntry {
+  const appearance = CHARSET_APPEARANCE[`${entry.textureKey}#${entry.characterIndex}`];
+  if (!appearance) {
+    throw new Error(`charset appearance missing: ${entry.textureKey}#${entry.characterIndex}`);
+  }
+  return { ...entry, appearance };
+}
+
+export const CHARSET_SEMANTICS: readonly CharsetSemanticEntry[] = CHARSET_SEMANTICS_RAW.map(withAppearance);
 
 export function findCharsetSemantic(textureKey: string, characterIndex: number): CharsetSemanticEntry | undefined {
   return CHARSET_SEMANTICS.find((entry) => entry.textureKey === textureKey && entry.characterIndex === characterIndex);

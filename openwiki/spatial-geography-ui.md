@@ -347,7 +347,7 @@ implemented by these snapshots. Keep snapshot revisions immutable.
 사용자 확정은 기존 바닥240 유지다. 504/505의 사선 및498/499/528/529/619의 잔디 픽셀만
 그 바닥에 맞춘다. 기존 아틀라스를 덮어쓰지 않고 공용 `forest_harmony_grass_joins`
 (16px·9열·9칸)을 추가했다. 생성기는 `prepare-forest-grass-joins.mjs`, 실제 치수는 bundled
-기하와 defaultAssets 생성자가 공유한다. 새 프로젝트/기존 프로젝트에 등록하며 AI 문서는 forest_harmony를 공유한다.
+기하와 defaultAssets 생성자가 공유한다. 그림 파일은 이식을 위해 번들에 남긴다. 이 시트를 타일셋으로 쓰는 맵이 없으면 타일 목록에는 올리지 않는다. AI 문서는 forest_harmony를 공유한다.
 사선은 lower+받침240, 모서리/암벽은 upper다. 상위 소품과 바닥 그림은 유지한다.
 미편집 v1/v2 문서만 내용 revision 일치로 교체하고 편집본은 보존하면서 개정3을 추가한다.
 세 지역 revision3, 10종 오류 예제 및 grass-backing 검사. 근거 `verify-shots/village-grass-joins/`.
@@ -431,6 +431,6 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
 - 칩셋 라벨: 84·86·88과 성 조각(윗면21·보행로412·테두리18~20/78/80/108~110·벽면51/81·탑138~143/24/25/54/55·궁 지붕49·정문448/478·안뜰248/276~338·화살 구멍28), 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
   `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
-- 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 분류는 둘: `diverse-villages-trunks-v12`(52 MD·30 이미지) + `concept-villages-v3`(27 MD·3 이미지, 나무 몸통 개정). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
 - 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
 - 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.

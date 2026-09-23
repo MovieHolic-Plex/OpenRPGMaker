@@ -19,6 +19,7 @@ import type {
   TroopRecord,
 } from "@/project/types";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
+import { assertPartyActorReferences } from "./partyActorReferences";
 import { ensureNamedSwitch } from "./flagHelpers";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -230,6 +231,7 @@ function normalizePage(project: Project, troop: TroopRecord, raw: unknown, warni
     );
   }
   validateLowLevelCommandArray(`${label}.commands`, commands);
+  assertPartyActorReferences(project, commands, `${label}.commands`);
   const page: BattleEventPageRecord = {
     id,
     name: typeof record.name === "string" && record.name.trim() ? record.name.trim() : id,

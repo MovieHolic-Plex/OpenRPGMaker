@@ -22,7 +22,7 @@ function setup() {
   store.replaceProject(project);
   const session = startSession(project);
   const host = document.createElement("div"); document.body.append(host);
-  const scene = { session, map: { height: 20 }, tileY: 0,
+  const scene = { session, map: { height: 20 }, tileY: 0, showGameOverScreen: vi.fn(),
     game: { registry: { get: (key: string) => key === "dialogueHost" ? host : undefined } } };
   const step = { kind: "battleProcessing", troopId: troop.id, canEscape: false, canLose: false } as const;
   return { project, troop, session, host, scene, step };

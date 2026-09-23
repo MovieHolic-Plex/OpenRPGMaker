@@ -876,7 +876,7 @@ export function renderAiAuthSettings(
           // redirect_uri 는 데스크톱 클라이언트 제약상 localhost 여야 하므로 흐름 자체는 바꾸지 않는다.
           deviceStep1.textContent = `1. 새로 열린 탭에서 ${name} 계정으로 로그인하세요.`;
           deviceStep2.textContent = "2. 로그인 후 ‘연결할 수 없음’ 페이지가 뜨는 게 정상이에요. 그 탭의 주소창에 있는 주소 전체(http://localhost 로 시작)를 복사하세요.";
-          deviceStep3.textContent = "3. 이 화면으로 돌아오면 알아서 연결해요. 안 되면 아래 칸에 붙여 넣고 ‘연결하기’를 누르세요.";
+          deviceStep3.textContent = "3. 이 화면으로 돌아오면 알아서 연결해요. 안 되면 아래 칸에 붙여 넣고 ‘연결하기’를 누르세요. 로그인은 이 서버에 남으니 서버마다 한 번만 하면 돼요.";
           deviceStep3.hidden = false;
           devicePoll.textContent = WAITING_COPY;
           watchPastedLogin();

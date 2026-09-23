@@ -1,7 +1,7 @@
 import type { PassFlag } from "../types";
 import { DEFAULT_TILES_PER_ROW, TILE } from "./constants";
 import { CHIPSET_ANIMATION_FRAME_TILES } from "./chipsetAnimation";
-import { COMBINED_TOWN_TRANSPARENT_TILES } from "./generatedChipsetTransparency";
+import { COMBINED_TOWN_TRANSPARENT_TILES, COMBINED_TOWN_PANORAMA_WINDOW_TILES } from "./generatedChipsetTransparency";
 
 // allow: SIZE_OK - central descriptor table for the 480-cell EasyRPG exterior atlas.
 
@@ -462,6 +462,20 @@ export function isPropOverlayChipsetTile(index: number): boolean {
 // 투명 픽셀을 가진 스프라이트형 칩(벤치·사선 지붕·나무 등). 하위 레이어에 깔리면
 // 투명 부분 아래에 지형이 없어 검게 보이므로 상위 레이어 전용으로 취급한다.
 const TRANSPARENT_CHIPSET_TILES = new Set<number>(COMBINED_TOWN_TRANSPARENT_TILES);
+
+/**
+ * 파노라마 창(특수 타일)인가 — 알파가 모든 픽셀에서 0인 칸.
+ *
+ * RM2K 방식: 맵 배경은 레이어 뒤에 깔리고, **이 타일을 깔 칸에서만** 비친다.
+ * 빈 칸은 가린다(playSceneMapRuntime §renderEmptyCellCover) — 그래야 저작자가
+ * 「어디에 하늘을 내는가」를 직접 결정한다.
+ *
+ * 이 타일은 본래 「빈 슬롯」이다(아틀라스에서 그림이 없는 칸). 그러나
+ * 투명하다는 사실 자체가 「뒤가 보이는 창」이므로 파노라마 창으로 쓴다.
+ */
+export function isPanoramaWindowTile(index: number): boolean {
+  return COMBINED_TOWN_PANORAMA_WINDOW_TILES.includes(index);
+}
 
 export function isTransparentChipsetTile(index: number): boolean {
   return TRANSPARENT_CHIPSET_TILES.has(index);

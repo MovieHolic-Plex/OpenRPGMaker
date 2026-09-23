@@ -1,5 +1,7 @@
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
+import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
+import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
@@ -80,6 +82,8 @@ export function defaultTilesets(): Record<string, TilesetDef> {
     [DEFAULT_TILESET_ID]: defaultTileset(),
   };
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    // 잔디 사선 10칸은 숲 이식용 그림이다. 맵이 이 타일셋을 직접 쓰지 않으면 목록에 올리지 않는다.
+    if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) continue;
     const tileset = bundledEasyRpgTileset(asset);
     if (tileset.id === DEFAULT_TILESET_ID) continue;
     tilesets[tileset.id] = tileset;
@@ -92,6 +96,12 @@ function villageObjectTilesetUsedByMaps(project: { maps?: Readonly<Record<string
   // 맵 목록이 없으면 사용 중인지 알 수 없다. 그 경우 시트를 지우지 않는다.
   if (!maps) return true;
   return Object.values(maps).some((map) => map?.tilesetId === SHARED_VILLAGE_OBJECT_ID);
+}
+
+function grassJoinsTilesetUsedByMaps(project: { maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
+  const maps = project.maps;
+  if (!maps) return true;
+  return Object.values(maps).some((map) => map?.tilesetId === "forest_harmony_grass_joins");
 }
 
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
@@ -110,11 +120,22 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       }
       continue;
     }
+    // 잔디 사선 경계는 숲 아틀라스를 덮지 않으려고 둔 10칸 그림이다. 맵이 그 타일셋 id를
+    // 쓰지 않으면 목록에서 빼도 이식(sourceChipset)은 텍스처 키로 계속 읽는다.
+    if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE && !grassJoinsTilesetUsedByMaps(project)) {
+      if (project.tilesets[id]) {
+        delete project.tilesets[id];
+        changed = true;
+      }
+      continue;
+    }
     if (project.tilesets[id]) {
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
+      changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
+      changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -219,6 +240,7 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   const tileset = bundledEasyRpgTilesetBase(asset);
   ensureRpgPlaceReferences(tileset);
+  ensureFieldRouteReferences(tileset);
   return tileset;
 }
 
@@ -232,6 +254,8 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === LPC_WOODEN_FURNITURE_TILESET_TEXTURE_KEY) return createLpcWoodenFurnitureTileset();
   if (asset.textureKey === LPC_WOODEN_FURNITURE_16_TEXTURE_KEY) return createLpcWoodenFurniture16Tileset();
   if (asset.textureKey === COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY) return createCombinedTownRetroWorldTileset();
+  const climate = CLIMATE_VILLAGE_TEXTURES[asset.textureKey];
+  if (climate) return createClimateVillageTileset(climate);
   return bundledStandardChipsetTileset(asset);
 }
 

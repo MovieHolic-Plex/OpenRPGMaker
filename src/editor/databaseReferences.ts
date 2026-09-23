@@ -3,6 +3,7 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { store } from "@/project/store";
 import { namedReferenceMessage, commandLocationMessage, projectDatabaseReferenceMessage, projectSwitchVariableReferenceMessage } from "./databaseRecordReferences";
 import type { Command, ItemRecord, SkillRecord } from "@/project/types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 export function databaseReferenceMessage(collection: DatabaseCollection, id: string): string | null {
   return projectDatabaseReferenceMessage(store.getCurrent(), collection, id);
@@ -100,6 +101,8 @@ function commandReferencesCommonEvent(command: Command, id: string): boolean {
       return command.commonEventId === id;
     case "choices":
       return command.options.some((option) => commandListReferencesCommonEvent(option.branch, id)) || commandListReferencesCommonEvent(command.cancelBranch ?? [], id);
+    case "presentItem":
+      return presentItemBranchLists(command).some((branch) => commandListReferencesCommonEvent(branch, id));
     case "fork":
       return commandListReferencesCommonEvent(command.then, id) || commandListReferencesCommonEvent(command.else ?? [], id);
     case "loop":

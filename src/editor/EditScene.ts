@@ -75,10 +75,12 @@ import {
   renderVisibleEditSceneTiles,
   applyCameraView,
   shouldLazilyRenderEditMap,
+  chunkCoord,
   type EditSceneRenderStats,
   type EditSceneTileIndex,
   syncSelectionOverlay,
 } from "@/editor/editSceneRender";
+import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
@@ -209,6 +211,8 @@ export function regionTaskBadgeText(phase: "running" | "pending"): string | null
 
 export class EditScene extends PhaserRuntime.Scene {
   private tileLayer: Phaser.GameObjects.Container | null = null;
+  /** 상위(덧그림) 타일 컨테이너 — tileLayer 뒤에 와서 upper가 항상 lower 위에 그려진다. */
+  private upperTileLayer: Phaser.GameObjects.Container | null = null;
   private hoverPreviewLayer: Phaser.GameObjects.Container | null = null;
   private selectionLayer: Phaser.GameObjects.Container | null = null;
   private overlayLayer: Phaser.GameObjects.Container | null = null;
@@ -244,9 +248,13 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastRenderedMapId: MapId | null = null;
   private lastMaterializedTileWindowKey = "";
   private lastRenderStateKey = "";
+  /** 레이어 색·충돌 오버레이·이벤트 마커·격자. 타일 메시 재생성 키와 분리한다. */
+  private lastViewChromeKey = "";
   private lastCameraViewKey = "";
   private lastAppliedZoom = 0;
   private readonly tileIndex: EditSceneTileIndex = new Map();
+  /** large-map lazy 경로의 타일 청크 컨테이너 저장소(비-lazy 맵은 사용하지 않는다). */
+  private readonly tileChunks: Map<string, Phaser.GameObjects.Container> = new Map();
   private cameraPanController: CameraPanController | null = null;
   private cameraScrollbars: CameraScrollbars | null = null;
   private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
@@ -308,6 +316,12 @@ export class EditScene extends PhaserRuntime.Scene {
    * 펼친다) 그 또한 게시를 부를 지점이 없었다. 그래서 이젠 "변하면 게시한다"로 바꾼다.
    */
   private lastPublishedViewportSignature = "";
+  /**
+   * 내비게이션 기하(스크롤바 투영·카메라 바운드)의 무변화 프레임 조기 종료 키.
+   * 카메라 scroll/zoom·캔버스 크기·맵 크기가 모두 같으면 setBounds+preRender+투영을
+   * 통째로 건너뛴다 — update() 는 매 프레임 불린다.
+   */
+  private lastNavGeometryKey = "";
   /** 캔버스·오버레이 rect 캐시 — 프레임마다 getBoundingClientRect 를 부르면 레이아웃이 흔들린다. */
   private cachedCanvasRect: CanvasRect | null = null;
   private cachedUnoccludedRect: CanvasRect | null = null;
@@ -399,6 +413,10 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cameras.main.roundPixels = false;
 
     this.tileLayer = this.add.container(0, 0);
+    this.upperTileLayer = this.add.container(0, 0);
+    // tileLayer(기본 depth 0)와 upperTileLayer(기본 depth 0)는 add 순서대로 그려진다 —
+    // 같은 depth면 display list 등록 순서가 드로 순서다. 명시 depth는 붙이지 않는다:
+    // hover(8)·selection(8.5)·overlay(9)·grid(10)이 타일 두 컨테이너보다 위에 온다.
     this.hoverPreviewLayer = this.add.container(0, 0);
     this.hoverPreviewLayer.setDepth(8);
     this.selectionLayer = this.add.container(0, 0);
@@ -532,6 +550,7 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cameraScrollbars?.destroy();
     this.cameraScrollbars = null;
     this.navigationGeometry = null;
+    this.lastNavGeometryKey = "";
     this.scale.off("resize", this.handleResize, this);
     this.unbindBrowserContextMenuGuards();
     this.rightRegionGesture = null;
@@ -595,6 +614,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private handleResize(): void {
     // 다음 기하 읽기를 강제한다 — 캔버스 사각형이 바뀌었으므로 캐시는 낡았다.
     this.overlayGeometryReadAtMs = 0;
+    this.lastNavGeometryKey = "";
     this.syncNavigationGeometry();
     this.redraw();
   }
@@ -623,12 +643,14 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapId = this.mapId();
     if (!mapId) return;
     const map = store.getCurrent().maps[mapId];
-    if (map && shouldLazilyRenderEditMap(map) && this.tileLayer && this.overlayLayer && this.gridGraphics) {
+    if (map && shouldLazilyRenderEditMap(map) && this.tileLayer && this.upperTileLayer && this.overlayLayer && this.gridGraphics) {
       const nextWindowKey = editSceneTileWindowKey(this, map);
       if (nextWindowKey !== this.lastMaterializedTileWindowKey) {
         renderVisibleEditSceneTiles({
           scene: this,
           tileLayer: this.tileLayer,
+          upperTileLayer: this.upperTileLayer,
+          tileChunks: this.tileChunks,
           overlayLayer: this.overlayLayer,
           gridGraphics: this.gridGraphics,
           mapId,
@@ -636,6 +658,19 @@ export class EditScene extends PhaserRuntime.Scene {
           backgroundPreview: mapBackgroundPreviewEnabled(),
         });
         this.lastMaterializedTileWindowKey = nextWindowKey;
+      }
+    }
+    // 청크 절전 — 화면 밖 청크 컨테이너를 통째로 숨겨 프레임당 자식 순회를 화면 근처로 묶는다.
+    if (this.tileChunks.size > 0) {
+      const tileSize = this.activeTileSize();
+      const firstCx = chunkCoord(Math.floor(view.x / tileSize) - 2);
+      const lastCx = chunkCoord(Math.floor((view.x + view.width) / tileSize) + 2);
+      const firstCy = chunkCoord(Math.floor(view.y / tileSize) - 2);
+      const lastCy = chunkCoord(Math.floor((view.y + view.height) / tileSize) + 2);
+      for (const [key, chunk] of this.tileChunks) {
+        const [cx, cy] = key.split(",").map(Number);
+        const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
+        if (chunk.visible !== visible) chunk.setVisible(visible);
       }
     }
     syncTileCulling(this, view, this.activeTileSize());
@@ -659,11 +694,22 @@ export class EditScene extends PhaserRuntime.Scene {
     if (!map) return;
     const area = this.cameraVisibleArea({ cachedGeometry: true });
     if (!area) return;
+    // 무변화 프레임 조기 종료 — 카메라·캔버스·맵 크기가 모두 같으면 기하가 같다는 뜻이다.
+    // 게이트 지점(맵 전환·applyCameraZoomOnly)에서 lastNavGeometryKey 를 비워 재동기화를 강제한다.
+    const navKey = [
+      Math.round(camera.scrollX), Math.round(camera.scrollY), camera.zoom,
+      Math.round(area.canvas.x), Math.round(area.canvas.y), Math.round(area.canvas.width), Math.round(area.canvas.height),
+      Math.round(area.unoccluded.x - area.canvas.x), Math.round(area.unoccluded.y - area.canvas.y),
+      Math.round(area.unoccluded.width), Math.round(area.unoccluded.height),
+      map.width, map.height,
+    ].join("|");
+    if (navKey === this.lastNavGeometryKey) return;
     const previous = this.navigationGeometry;
     if (previous && shouldDeferCameraFocus(this.pointerGestureState())) {
       camera.preRender();
       const origin = camera.getWorldPoint(0, 0);
       this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize());
+      this.lastNavGeometryKey = navKey;
       return;
     }
     const offset = (geometry: { canvas: CanvasRect; unoccluded: CanvasRect }) => ({
@@ -687,6 +733,7 @@ export class EditScene extends PhaserRuntime.Scene {
     camera.preRender();
     const origin = camera.getWorldPoint(0, 0);
     this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize());
+    this.lastNavGeometryKey = navKey;
   }
 
   private syncPublishedViewport(): void {
@@ -1396,7 +1443,11 @@ export class EditScene extends PhaserRuntime.Scene {
       toast(mapEditLockNotice(mid), "error");
       return true;
     }
-    return handleHistoryHotkey(event);
+    const applied = handleHistoryHotkey(event);
+    // 드래그 중에 되돌리면 브러시가 살아 있어 다음 pointermove 가 복원된 칸을
+    // 스냅샷 없이 다시 칠한다. 적용된 뒤에만 제스처를 버린다.
+    if (applied) this.abandonOpenPaintGesture();
+    return applied;
   }
 
   /**
@@ -1739,6 +1790,7 @@ export class EditScene extends PhaserRuntime.Scene {
     const mapChanged = this.lastRenderedMapId !== mid;
     if (mapChanged) {
       this.navigationGeometry = null;
+      this.lastNavGeometryKey = "";
       this.lastPointerTile = null;
       // 맵이 바뀌면 미뤄 둔 초점은 버린다 — 다른 맵의 요청이라 panCameraToTile 이 어차피 mapId 에서 버린다.
       this.deferredCameraFocus = null;
@@ -1751,20 +1803,24 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
+    this.lastViewChromeKey = this.viewChromeKey();
     this.lastAppliedZoom = editorState.get().zoom;
     const cameraViewKey = this.cameraViewKey(mid);
     const resetCamera = cameraViewKey !== this.lastCameraViewKey;
     if (mapChanged || resetCamera) this.cancelCameraFocus(false);
     this.lastCameraViewKey = cameraViewKey;
     const tileLayer = this.tileLayer;
+    const upperTileLayer = this.upperTileLayer;
     const hoverPreviewLayer = this.hoverPreviewLayer;
     const overlayLayer = this.overlayLayer;
     const gridGraphics = this.gridGraphics;
-    if (!tileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
+    if (!tileLayer || !upperTileLayer || !hoverPreviewLayer || !overlayLayer || !gridGraphics) return;
     renderEditScene({
       scene: this,
       backgroundPreview: mapBackgroundPreviewEnabled(),
       tileLayer,
+      upperTileLayer,
+      tileChunks: this.tileChunks,
       overlayLayer,
       gridGraphics,
       mapId: mid,
@@ -1793,7 +1849,7 @@ export class EditScene extends PhaserRuntime.Scene {
 
   private canIncrementallyRenderCells(mapId: MapId): boolean {
     if (this.lastRenderedMapId !== mapId) return false;
-    if (!this.tileLayer || !this.overlayLayer || !this.gridGraphics) return false;
+    if (!this.tileLayer || !this.upperTileLayer || !this.overlayLayer || !this.gridGraphics) return false;
     return this.lastRenderStateKey === this.renderStateKey(mapId);
   }
 
@@ -1818,6 +1874,10 @@ export class EditScene extends PhaserRuntime.Scene {
     const specs = enabled && background
       ? [background, ...(background.layers ?? [])].filter((entry) => (entry.imageId ?? "").trim() !== "")
       : [];
+    // 편집기 캔버스는 플레이와 같은 계약을 따른다 — 배경은 **창 타일을 깐 칸에서만** 보이고
+    // 빈 칸은 가려진다(RM2K 방식, playSceneMapRuntime §renderEmptyCellCover). 캔버스는
+    // 체커가 "바닥 없음" 신호라 배경을 안 그리므로, 여기서는 스프라이트를 깔되 빈 칸 위에는
+    // 올리지 않는다 — 창 타일 칸에서만 보이게 하는 것이 그 규칙의 시각적 결과다.
     if (specs.length === 0) {
       this.clearMapBackgroundPreview();
       return;
@@ -1890,19 +1950,23 @@ export class EditScene extends PhaserRuntime.Scene {
   private redrawCells(cells: readonly ProjectChangeCell[]): EditSceneRenderStats {
     const mid = this.mapId();
     const tileLayer = this.tileLayer;
+    const upperTileLayer = this.upperTileLayer;
     const overlayLayer = this.overlayLayer;
     const gridGraphics = this.gridGraphics;
-    if (!mid || !tileLayer || !overlayLayer || !gridGraphics) return { tileObjectsUpdated: 0 };
+    if (!mid || !tileLayer || !upperTileLayer || !overlayLayer || !gridGraphics) return { tileObjectsUpdated: 0 };
     const stats = renderEditSceneTileCells({
       scene: this,
+      backgroundPreview: mapBackgroundPreviewEnabled(),
       tileLayer,
+      upperTileLayer,
+      tileChunks: this.tileChunks,
       overlayLayer,
       gridGraphics,
       mapId: mid,
       tileIndex: this.tileIndex,
     }, cells);
     if (cells.some((cell) => cell.layer === "event")) {
-      refreshEditSceneOverlay({ scene: this, tileLayer, overlayLayer, gridGraphics, mapId: mid });
+      refreshEditSceneOverlay({ scene: this, tileLayer, upperTileLayer, tileChunks: this.tileChunks, overlayLayer, gridGraphics, mapId: mid });
     }
     if (this.lastPointerTile && this.shouldRenderPaintHover()) this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
     this.syncSelectionOverlay();
@@ -1921,18 +1985,52 @@ export class EditScene extends PhaserRuntime.Scene {
       this.applyCameraZoomOnly(mid);
     }
     const nextKey = this.renderStateKey(mid);
-    if (nextKey === this.lastRenderStateKey) {
-      // 붙여넣기 미리보기 고스트 — editorState 변화(위치 이동 등)마다 갱신.
-      if (state.pastePreview) {
-        this.renderPastePreviewGhost();
-      } else {
-        this.clearPastePreviewGhost();
-      }
-      this.syncSelectionOverlay();
-      this.renderBuildPaletteOverlay();
+    if (nextKey !== this.lastRenderStateKey) {
+      this.redraw();
       return;
     }
-    this.redraw();
+    const chromeKey = this.viewChromeKey();
+    if (chromeKey !== this.lastViewChromeKey) {
+      this.lastViewChromeKey = chromeKey;
+      this.syncViewChrome(mid);
+    }
+    // 붙여넣기 미리보기 고스트 — editorState 변화(위치 이동 등)마다 갱신.
+    if (state.pastePreview) {
+      this.renderPastePreviewGhost();
+    } else {
+      this.clearPastePreviewGhost();
+    }
+    this.syncSelectionOverlay();
+    this.renderBuildPaletteOverlay();
+    if (this.lastPointerTile && this.shouldRenderPaintHover()) {
+      this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    }
+  }
+
+  /**
+   * 레이어 흐림·충돌 칠·이벤트 고리·격자. 타일 그림 자체는 이미 만들어져 있다.
+   */
+  private syncViewChrome(mapId: MapId): void {
+    const tileLayer = this.tileLayer;
+    const upperTileLayer = this.upperTileLayer;
+    const overlayLayer = this.overlayLayer;
+    const gridGraphics = this.gridGraphics;
+    if (!tileLayer || !upperTileLayer || !overlayLayer || !gridGraphics) return;
+    const map = store.getCurrent().maps[mapId];
+    if (!map) return;
+    const state = editorState.get();
+    applyEditTileLayerPresentation(this.tileIndex, state.layer);
+    refreshEditSceneOverlay({
+      scene: this,
+      tileLayer,
+      upperTileLayer,
+      tileChunks: this.tileChunks,
+      overlayLayer,
+      gridGraphics,
+      mapId,
+      tileIndex: this.tileIndex,
+    });
+    repaintEditGrid(gridGraphics, map, state.layer, state.showGrid);
   }
 
   private applyCameraZoomOnly(mid: MapId): void {
@@ -1941,27 +2039,33 @@ export class EditScene extends PhaserRuntime.Scene {
     this.lastAppliedZoom = editorState.get().zoom;
     applyCameraView(this, map, true);
     this.lastCameraViewKey = this.cameraViewKey(mid);
+    this.lastNavGeometryKey = "";
     this.syncNavigationGeometry();
     this.layoutMapBackgroundPreview();
     this.publishMapViewport();
   }
 
+  /**
+   * 타일 GameObject 를 다시 만들어야 하는 입력만 담는다.
+   * 도구·레이어·선택 타일·붓·스탬프는 그림 내용이 아니다 — viewChromeKey 와 호버가 맡는다.
+   * selection / pastePreview 도 넣지 마라. 우클릭 드래그·Ctrl+V 고스트가 타일 전체를 다시 만들게 된다.
+   */
   private renderStateKey(mapId: MapId): string {
-    const state = editorState.get();
+    // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
     return [
       mapId,
-      state.tool,
-      state.paintShape,
-      state.layer,
-      state.selectedTile,
-      state.autoConnectMode,
-      state.activePaletteStamp ? `${state.activePaletteStamp.source.startTile}:${state.activePaletteStamp.source.endTile}` : "none",
-      state.brushSize,
-      // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
       mapBackgroundPreviewEnabled() ? "bg-preview" : "bg-hidden",
+    ].join("|");
+  }
+
+  private viewChromeKey(): string {
+    const state = editorState.get();
+    return [
+      state.tool,
+      state.layer,
       state.selectedEventId ?? "none",
-      // selection / pastePreview 는 여기 넣지 마라. 우클릭 드래그·Ctrl+V 고스트가
-      // 타일 전체를 다시 만들게 된다. 전용 오버레이가 따로 따라간다.
+      state.selectedEventPageId ?? "none",
+      state.showGrid ? "grid" : "nogrid",
     ].join("|");
   }
 
@@ -2271,6 +2375,14 @@ export class EditScene extends PhaserRuntime.Scene {
    * 조수 초점이 영구히 갇힌다 — 슬롯을 비우는 다른 지점은 맵 전환과 씬 정리뿐이고 둘 다 요청을 버린다.
    * 도형·선택 드래그는 캔버스 경계를 넘겨 끝나는 일이 흔하다(2026-08-30 리뷰 실측).
    */
+  /** 되돌리기·다시실행이 적용된 스트로크는 커밋하지 않고 끝낸다. */
+  private abandonOpenPaintGesture(): void {
+    this.isPainting = false;
+    this.lastPaintKey = "";
+    this.dragOperationHandler?.clear();
+    this.clearHoverPreview();
+  }
+
   private endPointerGesture(ptr: Phaser.Input.Pointer): "right-region" | "gesture" {
     if (this.rightRegionGesture) {
       this.finishRightRegionGesture(ptr);

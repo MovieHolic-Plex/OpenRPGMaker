@@ -211,6 +211,9 @@ const createMap: ToolDefinition = {
     const id = (args.id as string | undefined) ?? genId("map");
     assertMapIdAvailable(draft, id);
     const name = args.name as string;
+    // 같은 이름의 빈 맵이 이미 있으면 새 맵은 고아가 되기 쉽다(2026-09-23 등대지기 재시험: 「서리불꽃 등대 꼭대기」 두 장).
+    const blankNamesake = Object.values(draft.maps).find(other =>
+      other.name.trim() === String(name ?? "").trim() && other.events.length === 0 && !other.roomHarnessPlan);
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
     const tileset = draft.tilesets[tilesetId];
@@ -244,9 +247,14 @@ const createMap: ToolDefinition = {
       draft.mapTree.children.push({ mapId: id, children: [] });
     }
     adoptStartIfNeeded(draft, map);
+    const warnings = blankNamesake
+      ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
+        + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(run_dungeon_room_pipeline 등 방 파이프라인은 빈 맵을 그대로 이어받습니다).`]
+      : [];
     return {
       summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}`,
       data: { mapId: id, bgmResourceId },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
@@ -1686,7 +1694,19 @@ const setMapProperties: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const changed: string[] = [];
     if (typeof args.name === "string" && args.name.trim()) {
-      map.name = args.name.trim();
+      const nextName = args.name.trim();
+      // 같은 장소를 두 맵으로 만들지 않는다. 2026-09-23 도그푸딩에서 조수는 빈 던전 맵(map_frozen_cave)을
+      // 두고 마을 집 실내 두 곳의 이름을 「얼어붙은 해안 동굴」「등대 꼭대기 전망대」로 바꿔 던전·보스방으로 썼다
+      // — 침대·나무 바닥 그대로, 입구는 마을 집 문, 진짜 던전 맵은 빈 채 미연결로 남았다.
+      const namesake = Object.values(draft.maps).find(other => other.id !== map.id && other.name.trim() === nextName);
+      if (namesake && map.name.trim() !== nextName) {
+        const empty = namesake.events.length === 0 ? " 그 맵은 아직 이벤트가 없습니다 — 그 맵을 시공·연결하세요(던전은 run_dungeon_room_pipeline mapId:" + JSON.stringify(namesake.id) + ")." : "";
+        throw new ToolError(
+          `'${nextName}' 은 이미 맵 ${namesake.id}(${namesake.width}×${namesake.height})의 이름입니다. 다른 맵(${map.id} '${map.name}')의 이름을 바꿔 같은 장소로 쓰지 마세요.${empty}`,
+          { code: "map-name-taken", mapId: map.id },
+        );
+      }
+      map.name = nextName;
       changed.push(`이름='${map.name}'`);
     }
     if (typeof args.tilesetId === "string") {

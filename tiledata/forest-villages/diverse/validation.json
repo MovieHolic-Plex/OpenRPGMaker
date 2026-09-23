@@ -63,7 +63,7 @@
         "code": "cut-root",
         "mapId": "terrace-cliff-village",
         "x": 62,
-        "y": 12,
+        "y": 16,
         "layer": "lower",
         "tile": 1430,
         "replacement": 240
@@ -76,7 +76,7 @@
           {
             "code": "cut-root",
             "x": 62,
-            "y": 12,
+            "y": 16,
             "layer": "lower",
             "expected": 1430,
             "actual": 240
@@ -91,7 +91,7 @@
         "code": "missing-trunk",
         "mapId": "terrace-cliff-village",
         "x": 62,
-        "y": 11,
+        "y": 15,
         "layer": "lower",
         "tile": 1426,
         "replacement": 240
@@ -104,7 +104,7 @@
           {
             "code": "missing-trunk",
             "x": 62,
-            "y": 11,
+            "y": 15,
             "layer": "lower",
             "expected": 1426,
             "actual": 240
@@ -118,8 +118,8 @@
       "input": {
         "code": "wrong-edge-direction",
         "mapId": "terrace-cliff-village",
-        "x": 62,
-        "y": 10,
+        "x": 66,
+        "y": 17,
         "layer": "upper",
         "tile": 2577,
         "replacement": 2589
@@ -131,8 +131,8 @@
         "errors": [
           {
             "code": "wrong-edge-direction",
-            "x": 62,
-            "y": 10,
+            "x": 66,
+            "y": 17,
             "layer": "upper",
             "expected": 2577,
             "actual": 2589
@@ -365,7 +365,7 @@
       "result": {
         "valid": false,
         "mapId": "pine-hamlets",
-        "totalErrors": 78,
+        "totalErrors": 69,
         "errors": [
           {
             "code": "wrong-edge-direction",
@@ -376,14 +376,6 @@
             "actual": -1
           },
           {
-            "code": "missing-trunk",
-            "x": 3,
-            "y": 18,
-            "layer": "lower",
-            "expected": 1422,
-            "actual": 240
-          },
-          {
             "code": "wrong-edge-direction",
             "x": 3,
             "y": 18,
@@ -392,28 +384,12 @@
             "actual": -1
           },
           {
-            "code": "missing-trunk",
-            "x": 4,
-            "y": 18,
-            "layer": "lower",
-            "expected": 1423,
-            "actual": 240
-          },
-          {
             "code": "wrong-edge-direction",
             "x": 4,
             "y": 18,
             "layer": "upper",
             "expected": 2568,
             "actual": -1
-          },
-          {
-            "code": "missing-trunk",
-            "x": 5,
-            "y": 18,
-            "layer": "lower",
-            "expected": 1424,
-            "actual": 240
           },
           {
             "code": "wrong-edge-direction",
@@ -428,7 +404,7 @@
             "x": 6,
             "y": 18,
             "layer": "lower",
-            "expected": 1425,
+            "expected": 1422,
             "actual": 240
           },
           {
@@ -444,7 +420,7 @@
             "x": 7,
             "y": 18,
             "layer": "lower",
-            "expected": 1350,
+            "expected": 1423,
             "actual": 240
           },
           {
@@ -460,7 +436,7 @@
             "x": 8,
             "y": 18,
             "layer": "lower",
-            "expected": 1453,
+            "expected": 1424,
             "actual": 240
           },
           {
@@ -512,14 +488,6 @@
             "actual": -1
           },
           {
-            "code": "missing-trunk",
-            "x": 3,
-            "y": 19,
-            "layer": "lower",
-            "expected": 1426,
-            "actual": 240
-          },
-          {
             "code": "wrong-edge-direction",
             "x": 3,
             "y": 19,
@@ -528,28 +496,12 @@
             "actual": -1
           },
           {
-            "code": "missing-trunk",
-            "x": 4,
-            "y": 19,
-            "layer": "lower",
-            "expected": 1427,
-            "actual": 240
-          },
-          {
             "code": "wrong-edge-direction",
             "x": 4,
             "y": 19,
             "layer": "upper",
             "expected": 2568,
             "actual": -1
-          },
-          {
-            "code": "missing-trunk",
-            "x": 5,
-            "y": 19,
-            "layer": "lower",
-            "expected": 1428,
-            "actual": 240
           },
           {
             "code": "wrong-edge-direction",
@@ -564,7 +516,7 @@
             "x": 6,
             "y": 19,
             "layer": "lower",
-            "expected": 1429,
+            "expected": 1426,
             "actual": 240
           },
           {
@@ -572,7 +524,7 @@
             "x": 7,
             "y": 19,
             "layer": "lower",
-            "expected": 1428,
+            "expected": 1427,
             "actual": 240
           },
           {
@@ -580,7 +532,7 @@
             "x": 8,
             "y": 19,
             "layer": "lower",
-            "expected": 1457,
+            "expected": 1428,
             "actual": 240
           },
           {
@@ -608,14 +560,6 @@
             "actual": -1
           },
           {
-            "code": "cut-root",
-            "x": 3,
-            "y": 20,
-            "layer": "lower",
-            "expected": 1430,
-            "actual": 240
-          },
-          {
             "code": "wrong-edge-direction",
             "x": 3,
             "y": 20,
@@ -624,28 +568,12 @@
             "actual": -1
           },
           {
-            "code": "cut-root",
-            "x": 4,
-            "y": 20,
-            "layer": "lower",
-            "expected": 1431,
-            "actual": 240
-          },
-          {
             "code": "wrong-edge-direction",
             "x": 4,
             "y": 20,
             "layer": "upper",
             "expected": 2568,
             "actual": -1
-          },
-          {
-            "code": "cut-root",
-            "x": 5,
-            "y": 20,
-            "layer": "lower",
-            "expected": 1432,
-            "actual": 240
           },
           {
             "code": "wrong-edge-direction",
@@ -660,7 +588,7 @@
             "x": 6,
             "y": 20,
             "layer": "lower",
-            "expected": 1433,
+            "expected": 1430,
             "actual": 240
           },
           {
@@ -668,7 +596,7 @@
             "x": 7,
             "y": 20,
             "layer": "lower",
-            "expected": 1432,
+            "expected": 1431,
             "actual": 240
           },
           {
@@ -676,7 +604,7 @@
             "x": 8,
             "y": 20,
             "layer": "lower",
-            "expected": 1461,
+            "expected": 1432,
             "actual": 240
           },
           {

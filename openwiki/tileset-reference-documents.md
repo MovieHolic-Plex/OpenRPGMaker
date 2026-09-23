@@ -222,7 +222,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-windows-v10`(문서52개/이미지30개)과 `concept-villages-v1`(문서26개/이미지3개)이다.
+현재 용도 ID는 `diverse-villages-trunks-v12`(문서52개/이미지30개)과 `concept-villages-v3`(문서27개/이미지3개)이다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -249,7 +249,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 사용자 확정은 기존 바닥240 유지다. 504/505의 사선 및498/499/528/529/619의 잔디 픽셀만
 그 바닥에 맞춘다. 기존 아틀라스를 덮어쓰지 않고 공용 `forest_harmony_grass_joins`
 (16px·9열·9칸)을 추가했다. 생성기는 `prepare-forest-grass-joins.mjs`, 실제 치수는 bundled
-기하와 defaultAssets 생성자가 공유한다. 새 프로젝트/기존 프로젝트에 등록하며 AI 문서는 forest_harmony를 공유한다.
+기하와 defaultAssets 생성자가 공유한다. 그림 파일은 이식을 위해 번들에 남긴다. 이 시트를 타일셋으로 쓰는 맵이 없으면 타일 목록에는 올리지 않는다. AI 문서는 forest_harmony를 공유한다.
 사선은 lower+받침240, 모서리/암벽은 upper다. 상위 소품과 바닥 그림은 유지한다.
 미편집 v1/v2 문서만 내용 revision 일치로 교체하고 편집본은 보존하면서 개정3을 추가한다.
 세 지역 revision3, 10종 오류 예제 및 grass-backing 검사. 근거 `verify-shots/village-grass-joins/`.
@@ -333,7 +333,7 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
 - 칩셋 라벨: 84·86·88과 성 조각(윗면21·보행로412·테두리18~20/78/80/108~110·벽면51/81·탑138~143/24/25/54/55·궁 지붕49·정문448/478·안뜰248/276~338·화살 구멍28), 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
   `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
-- 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다. (나무 몸통 개정으로 v11·v2, 아래)
 - 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
 - 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.
 
@@ -352,3 +352,48 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
   `ensureRpgPlaceReferences`가 새 번들 타일셋 생성과 로드 보강 두 경로에서 한 번 넣는다.
 - 장소 항목 `FANTASY_PLACE_REFERENCES`(생성 파일), 스냅숏은 한 파일 `regionReferences/fantasy-places.json`(AI 읽기에 필요한 통행·우선순위만 담은 얇은 타일셋).
 - 순서: `author-rpg-places.mjs`(통행 검사 포함) → `render-rpg-places.mjs`(dev 서버) → `prepare-rpg-places-references.mjs` → `save-rpg-places.mjs` → `prepare-rpg-places-regions.mjs` → `scripts/qa/capture-rpg-places.mjs`. 근거 `verify-shots/rpg-places/`.
+
+### 기후 마을 · 설원·화산 (2026-09-23)
+
+번들 칩셋 둘 + 「장소」 완성 사례 6개(지형만). 정본 `tiledata/climate-villages/`(README에 재생성 순서), 로컬 정본 `.oprn-projects/climate-villages-20260923`.
+- 칩셋: 다양한 마을 타일셋(forest_harmony + 이식, 2730칸)을 한 장으로 구운 뒤 화소만 다시 칠했다(`build-climate-chipsets.py`). 칸 번호·통행·오토타일이 숲마을과 같아
+  숲마을 조립·문서를 그대로 쓰고, 숲마을 맵은 tilesetId만 바꾸면 기후판이 된다. 이식은 없다(구워져 있음).
+  - `forest_harmony_snow`(2868칸): 잔디→눈, 수관·지붕에 눈, 물은 그대로. 2730~는 물 138칸의 얼음 사본(걸을 수 있음, 폭포 사본만 불통), 오토타일 `forest_harmony_ice_47`.
+  - `forest_harmony_volcano`(2730칸): 잔디→재, 잎 그을림, 물 칸 전부 용암(통행 불가 그대로), 나무다리 2701·2702→현무암 다리.
+  - 물 판정은 색이 아니라 물 칸 번호 집합이다(색으로 하면 파란 지붕·청회색 성벽이 용암이 된다).
+- 타일셋 데이터 `src/assets/climateVillageTilesets.json`(공유 base + 기후별 라벨·얼음 patch), 생성자 `src/project/defaults/climateVillages.ts`.
+- 장소: 설원 솔바람 산촌·종탑 언덕 교구·얼어붙은 안개못(못 통째로 얼음 사본), 화산 두 폭포 용암 강마을·잿빛 여울성·용암못 폐촌(화산 봉우리 858/859/888/889 + 918/919/948/949 한 쌍).
+- 분류 `climate-snow-villages-v1`(18 MD·3 이미지)·`climate-volcano-villages-v1`(22·3), `ensureClimateVillageReferences`가 한 번만 넣는다(나무 몸통 개정으로 v2, 아래).
+- 근거 `verify-shots/climate-villages/`(자료집 카드·AI 행 읽기·내려받기 일치, 편집기 캔버스 실제 로드).
+
+### 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+
+- 기후 칩셋 둘 추가(`build-climate-chipsets.py`, 설원·화산 시트는 바이트 동일): `forest_harmony_desert`(모래·사암 절벽·마른 덤불·흙빛 지붕, 물은 오아시스 그대로),
+  `forest_harmony_autumn`(금빛 풀·단풍 숲·노란 활엽수·붉은 덤불). 둘 다 2730칸, 번호·통행은 숲마을과 같다.
+  사막·가을은 숲을 칠하므로 수관 이식(2550~2596)·숲 줄기 조립·layerBacking 잔디까지 칠한다.
+- 기후 마을 넷 추가: 사암 층바위 협곡마을·모래 물굽이 포구(나무 → 야자·선인장), 가을 두 폭포 강마을·가을 종탑 언덕 교구(시트만). 분류 `climate-desert-villages-v1`·`climate-autumn-villages-v1`.
+  기후 편집은 `scripts/content/lib/climate-edits.mjs`(얼리기·화산 봉우리·사막 식물)로 모았다.
+- 마을 사이 필드 7곳(「장소」, placeKind natural, 지형만): 숲 필드 셋(숲속 세 갈래길·여울 건너 벼랑길·두 단 고갯길)과 기후 필드 넷.
+  정본 `tiledata/field-routes/`(README에 순서), 로컬 정본 `.oprn-projects/field-routes-20260923`. 출구마다 맞닿는 마을 입구(`meets`)를 적었다.
+  분류 `field-routes-{forest,snow,volcano,desert,autumn}-v1`, `ensureFieldRouteReferences`가 번들 타일셋 다섯에 한 번만 넣는다(나무 몸통 개정으로 v2, 아래).
+  숲 필드는 이식 포함 forest_harmony(2730칸)로 그렸으니 내려받기의 타일셋을 함께 쓴다.
+- 비용: 새 프로젝트 JSON 22.3MB → 25.4MB, 생성 시간 약 +55ms(기후 타일셋 둘 + 필드 문서).
+
+### 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
+
+숲 윤곽 붓(`forestContour.paintContouredForest`)이 깐 줄기가 반쯤 잘려 보였다. 원인 둘:
+- 옛 4칸 마감(LEFT+BODY첫열, BODY둘째열+RIGHT)은 끝 열이 몸통 반쪽이다. 승인된 절벽마을은 그 반쪽을 옆 칸 1617 등으로 덮었는데 붓은 덮개 없이 썼다.
+- 밑변 폭이 4·짝수8+가 아니면 span 8 조각이 옆 수관(아래로 이어지는 열) 밑으로 밀려 들어가, 그 수관 외곽 칸의 투명한 가장자리로 몸통이 반만 보였다.
+
+고침(`forestTrunkTiles.ts`): 줄기는 **밑변과 정확히 같은 폭**. w≥6은 LEFT 3열 + BODY 교대 w-6열 + RIGHT 3열(w=6은 LEFT+RIGHT),
+w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEFT 첫+RIGHT 끝(시트를 눈으로 확인). 폭 1만 조립이 없어
+`fitBottomEdges`가 그 열 밑변을 이웃 열 높이로 한 칸 올리거나 내린다(바꾸는 칸이 적은 쪽, 같으면 올림). 레거시 격자 숲(`forestGroves`)도 같은 후보를 쓴다.
+- 이미 그린 맵은 `scripts/content/refit-forest-trunks.mjs <catalog>`(`refitForestTrunks`)로 제자리 재맞춤 — 수관은 그대로, 바뀌는 밑변만 한 칸. 문앞·입구·이벤트 칸은 보호.
+- 다시 맞춘 것: 다양한 마을 7(개정11, 정본 revision21), 기후 마을 10, 필드 7. 옛 결함 필드당 잘린 칸 75~90 + 반쪽 끝 26~34, 마을당 30~50 → 0.
+  손으로 마감한 옛 참고 맵(절벽마을·마을 10종·폭포 등)은 건드리지 않았다.
+- 분류: `diverse-villages-trunks-v11`·`concept-villages-v2`, `climate-*-villages-v2`, `field-routes-*-v2`. 옛 id 는 정확히 배포본 그대로일 때만 은퇴
+  (`tiledata/{forest-villages/diverse,climate-villages,field-routes}/previous-reference.json`, 기록은 `scripts/content/record-previous-references.mjs`). 고친 사본은 남는다.
+- 지역 revision: 다양한 마을 11, 기후·필드 2.
+- 2026-09-24 후속(사용자: 「여전히 이상함」): 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이라 뺐다.
+  최소 폭 3, 폭 1·2 밑변은 이웃 열 높이로 합친다. 분류 `diverse-villages-trunks-v12`·`concept-villages-v3`·`climate-*-villages-v3`·`field-routes-*-v3`, 지역 revision 다양한 마을 12·기후/필드 3.
+

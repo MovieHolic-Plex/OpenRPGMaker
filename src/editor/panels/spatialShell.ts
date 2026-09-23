@@ -46,6 +46,16 @@ import {
   type SpatialUsageFilter,
 } from "@/editor/panels/spatialUsage";
 import { selectSpatialGalleryEntry } from "./spatialGalleryNavigation";
+import {
+  armPlaceEditorEntry,
+  bindPlaceCardBrowse,
+  cancelPlaceEditorEntry,
+  consumePlaceActivation,
+  hidePlaceHover,
+  openPlaceDetail,
+  retargetPlaceHover,
+  type PlaceBrowseActions,
+} from "./spatialPlaceBrowse";
 import type { SpatialGalleryCard as GalleryCard } from "@/editor/panels/spatialCatalog";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
@@ -76,21 +86,37 @@ export function renderSpatialAuthoringShell(
   const regionGallery = tab === "regions" && session.mode === "design" && !session.legacyOrigin;
   if (regionGallery && selected && !matchesRegionClassification(selected)) selected = cards.find(matchesRegionClassification);
 
-  const refresh = (): void => rerender();
+  const refresh = (): void => {
+    cancelPlaceEditorEntry();
+    rerender();
+  };
 
   const onSelect = (id: string): void => {
     const card = cards.find(card => card.id === id);
     if (card) {
-      // 장소 갤러리: 첫 클릭은 선택만 한다(액션 줄이 뜬다). 같은 카드를 다시 누르면 편집기로
-      // 들어간다. 선택만으로 편집기가 열리면 「맵에 놓기」를 누를 기회가 사라진다.
-      if (placesGallery && card.canonicalSource && !regionGallery) {
-        // 같은 카드를 다시 누르면 편집기로 들어간다. 갤러리가 보이는 동안에만 카드를 누를 수
-        // 있으므로(listView=true), 「이미 이 카드가 선택돼 있다」가 곧 재클릭이다.
-        const reopening = spatialSession().galleryCardId === card.id;
+      // 장소 갤러리: 첫 클릭은 선택만 한다(액션 줄이 뜬다). 같은 카드를 조금 뒤 다시 누르면
+      // 편집기로 들어간다. 그 전에 한 번 더 누르면 상세 모달이 이긴다 — 셸이 클릭마다
+      // 카드를 다시 그려 dblclick 이 끊기기 때문이다.
+      if (placesGallery && !regionGallery && card.kind === "places") {
+        cancelPlaceEditorEntry();
+        const placePreset = Boolean(card.reviewedPlaceId || card.regionReferenceId);
+        const actionable = Boolean(card.canonicalSource || placePreset);
+        if (consumePlaceActivation(card.id) === "detail") {
+          if (spatialSession().galleryCardId !== card.id || spatialSession().listView === false) {
+            selectSpatialGalleryEntry(card);
+            patchSpatialSession({ galleryCardId: card.id, listView: true });
+            usageChromeState.openPopoverCardId = null;
+            refresh();
+          }
+          openPlaceDetail(card, placeBrowseActions(card, refresh));
+          return;
+        }
+        const reopening = spatialSession().galleryCardId === card.id && spatialSession().listView !== false;
         selectSpatialGalleryEntry(card);
-        patchSpatialSession({ galleryCardId: card.id, listView: !reopening });
+        patchSpatialSession({ galleryCardId: card.id, listView: true });
         usageChromeState.openPopoverCardId = null;
         refresh();
+        if (reopening && actionable) armPlaceEditorEntry(() => enterPlaceEditor(card, refresh));
         return;
       }
       selectSpatialGalleryEntry(card);
@@ -156,11 +182,12 @@ export function renderSpatialAuthoringShell(
   const renderCell = (card: GalleryCard): HTMLElement => {
     const isSelected = card.id === selected?.id;
     const button = renderSpatialGalleryCard(card, isSelected, onSelect);
+    if (!regionGallery && card.kind === "places") bindPlaceCardBrowse(button, card);
     // 카드에는 분류 하나만 — 공간 형태·용도·그림체·출처는 필터와 상세에서 본다. 칩 4~5개가 이름보다 먼저 읽혔다.
     // 지역 예시는 전부 같은 분류라 칩이 정보를 주지 않는다.
     const badges = regionGallery ? [] : [classifyPlaceCard(card).category];
     if (badges.length) button.append(el('div', { class: 'place-classification-badges', children: badges.map(text => el('span', { text })) }));
-    if (!isSelected || !card.canonicalSource) return el("div", { class: "spatial-card-cell", children: [button] });
+    if (!isSelected || !(card.canonicalSource || card.reviewedPlaceId || card.regionReferenceId)) return el("div", { class: "spatial-card-cell", children: [button] });
     const usage = designUsage(project, designIdOf(card));
     const build = card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build
       : card.kind === "spaces" ? spatialSpacesChrome(card, refresh).build : undefined;
@@ -281,6 +308,7 @@ export function renderSpatialAuthoringShell(
   latestShellRefresh = refresh;
   installSpatialEscapeLayer();
   host.append(shell);
+  if (placesGallery && !regionGallery) retargetPlaceHover();
   // 셸은 리프레시마다 통째로 다시 만들어져 스크롤이 0 으로 돌아간다. 장소 갤러리에서는 그러면
   // 카드 액션을 누른 사용자가 목록 맨 위로 튕기고, 카드 아래에 붙는 배치 팝오버는 화면 밖에 남는다.
   // 다른 탭은 이 기억을 쓰지 않는다 — 탭을 오가며 남의 목록 위치가 복원되면 안 된다.
@@ -288,7 +316,10 @@ export function renderSpatialAuthoringShell(
   if (grid) {
     if (placesGallery || regionGallery) {
       grid.scrollTop = usageChromeState.galleryScrollTop;
-      grid.addEventListener("scroll", () => { usageChromeState.galleryScrollTop = grid.scrollTop; }, { passive: true });
+      grid.addEventListener("scroll", () => {
+        usageChromeState.galleryScrollTop = grid.scrollTop;
+        hidePlaceHover();
+      }, { passive: true });
       if (usageChromeState.openPopoverCardId !== null) {
         shell.querySelector<HTMLElement>('[data-testid="spatial-usage-popover"]')?.scrollIntoView({ block: "nearest" });
       }
@@ -316,7 +347,7 @@ function purposeBand(tab: "places" | "regions"): HTMLElement {
   const arrow = (): HTMLElement => el("span", { class: "spatial-purpose-arrow", text: "→", attrs: { "aria-hidden": "true" } });
   const copy = tab === "regions"
     ? { lead: "지역은 여러 장소를 이어 붙인 동네입니다", sub: "아래는 완성된 예시(읽기 전용)입니다", steps: ["예시 고르기", "상세 보기", "맵 파일 받기 · AI 참고"] }
-    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "마을·던전·집 안 — 고른 뒤 「맵에 놓기」", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
+    : { lead: "장소는 맵 한 장이 되는 공간입니다", sub: "올리면 그림이 커지고, 두 번 클릭하면 자세히 봅니다", steps: ["장소 고르기", "맵에 놓기", "미리보기 · 적용"] };
   return el("div", {
     class: "spatial-purpose",
     dataset: { testid: "spatial-purpose" },
@@ -344,6 +375,7 @@ function installSpatialEscapeLayer(): void {
   escapeLayerInstalled = true;
   document.addEventListener("keydown", (event) => {
     if (event.key !== "Escape" || event.defaultPrevented) return;
+    if (document.querySelector('[data-testid="spatial-place-detail"]')) return;
     if (!document.querySelector(".database-modal-body .spatial-shell")) return;
     const target = event.target;
     if (target instanceof HTMLElement) {
@@ -379,6 +411,21 @@ function renderUsagePopover(card: GalleryCard, usage: ReturnType<typeof designUs
       ] })),
     ],
   });
+}
+
+function placeBrowseActions(card: GalleryCard, refresh: () => void): PlaceBrowseActions {
+  const canEdit = Boolean(card.canonicalSource || card.reviewedPlaceId || card.regionReferenceId);
+  return {
+    ...(canEdit ? { onEdit: () => enterPlaceEditor(card, refresh) } : {}),
+    resolveBuild: () => card.kind === "places" ? spatialPlacesChrome(visiblePlaceSelection(card), refresh).build : undefined,
+  };
+}
+
+function enterPlaceEditor(card: GalleryCard, refresh: () => void): void {
+  selectSpatialGalleryEntry(card);
+  patchSpatialSession({ listView: false, galleryCardId: card.id });
+  usageChromeState.openPopoverCardId = null;
+  refresh();
 }
 
 function wireMode(chrome: HTMLElement, testid: string, onClick: () => void): void {

@@ -91,18 +91,24 @@ export const COMMAND_SCHEMA: JsonSchema = {
     prompt: { type: "string" },
     options: {
       type: "array",
-      description: "choices 실행 선택지. 각 branch는 선택 시 실행할 Command[].",
+      description:
+        "choices: {text,branch} 선택지. presentItem: {itemId,branch} — 그 아이템을 냈을 때 실행할 Command[]. " +
+        "증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 으로 만든다.",
       items: {
         type: "object",
         properties: {
-          text: { type: "string" },
+          text: { type: "string", description: "choices 전용 선택지 문구" },
+          itemId: { type: "string", description: "presentItem 전용: 정답으로 받을 아이템 ID" },
           branch: { type: "array", items: COMMAND_LEAF_SCHEMA },
         },
-        required: ["text", "branch"],
+        required: ["branch"],
       },
     },
     cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"] },
-    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA },
+    cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "choices: 취소 분기. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때." },
+    itemIds: { type: "array", items: { type: "string" }, description: "presentItem 목록 후보. 생략하면 소지품 전체. 소지한 것만 뜬다." },
+    otherwiseBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
+    consume: { type: "boolean", description: "presentItem: true 면 맞는 아이템을 1개 소모." },
   },
 };
 
@@ -292,12 +298,12 @@ export const SIMPLE_PAGE_SCHEMA: JsonSchema = {
     face: FACE_SCHEMA,
     choices: {
       type: "array",
-      description: "선택지",
+      description: "선택지. 선택 결과(합류 changeParty·전투 battleProcessing·setSwitch 등)는 각 선택지의 commands에 넣는다 — 비우면 골라도 아무 일도 없다.",
       items: {
         type: "object",
         properties: {
           text: { type: "string" },
-          commands: { type: "array", items: COMMAND_SCHEMA },
+          commands: { type: "array", description: "이 선택지를 고르면 실행할 Command[] (branch로 보내도 commands로 읽는다)", items: COMMAND_SCHEMA },
         },
         required: ["text"],
       },

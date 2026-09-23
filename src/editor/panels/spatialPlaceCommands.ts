@@ -13,6 +13,7 @@ import {
 } from "@/editor/panels/spatialAuthoringAccess";
 import { selectSpatialDesign, selectSpatialOccurrence, spatialSession } from "@/editor/panels/spatialAuthoringSession";
 import { assertNever } from "@/project/spatial/domain";
+import { placeReferenceMapPreset, placeReviewedPreset } from "@/editor/panels/placePresetActions";
 import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import {
   BUILD_SEED_INTEGER_REQUIRED,
@@ -117,7 +118,9 @@ export function spatialPlacesChrome(card: SpatialGalleryCard | undefined, rerend
     delete: controller && target && !builtinLocked ? () => { placeChromeState.deleteOpen = true; rerender(); } : undefined,
     onDeleteConfirm: controller && target && placeChromeState.deleteOpen ? () => confirmDelete(target, rerender) : undefined,
     preview: controller && hasAuthoringDraft() ? () => previewPlace(rerender) : undefined,
-    build: controller && !spatialBuildDisabledReason(card) ? () => {
+    build: card?.reviewedPlaceId ? () => placeReviewedPreset(card.reviewedPlaceId!, rerender)
+      : card?.regionReferenceId ? () => placeReferenceMapPreset(card.regionReferenceId!, rerender)
+      : controller && !spatialBuildDisabledReason(card) ? () => {
       const seed = placeChromeState.buildSeed;
       if (seed === null) {
         note(BUILD_SEED_INTEGER_REQUIRED);

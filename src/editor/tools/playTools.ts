@@ -1,7 +1,7 @@
 // editor/tools/playTools.ts
 // Play validation tools. They create their own runtime sessions and never mutate the project.
 
-import { isSceneTestInput, runSceneTest } from "@/testing/sceneTestRunner";
+import { isSceneTestInput, runSceneTest, sceneTestInputProblem } from "@/testing/sceneTestRunner";
 import { runWalkthrough } from "@/testing/walkthroughRunner";
 import type { ToolDefinition, ToolExecResult } from "./types";
 import { ToolError } from "./types";
@@ -30,6 +30,7 @@ const playWalkthrough: ToolDefinition = {
             mapId: { type: "string" },
             x: { type: "integer" },
             y: { type: "integer" },
+            facing: { type: "string", enum: ["up", "down", "left", "right"], description: "set 전용: 순간이동 뒤 바라볼 방향" },
             eventId: { type: "string" },
             index: { type: "integer", minimum: 0 },
             switchId: { type: "string" },
@@ -82,10 +83,12 @@ const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
     "브라우저 없이 장면을 고정 tick으로 실행해 컷신/카메라/스폰/픽처/오디오 상태를 검증한다. 입력: " +
-    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
-    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, goldDelta, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
+    "{mapId,start:{x,y},steps:[{kind:'wait',ticks}|{kind:'face',dir}|{kind:'set',switches?,variables?,inventory?,mapId?,x?,y?,facing?}|{kind:'move',dir|to}|{kind:'interact',eventId?}|{kind:'snapshotRewards'}|{kind:'gift',eventId?,itemId}|{kind:'choose',index}|{kind:'present',itemId?}|{kind:'retryCheckpoint'}|{kind:'advanceDays',days}|{kind:'expect',...}]}." +
+    " present 는 대기 중인 presentItem(아이템 제시)에 itemId 를 내고, itemId 를 빼면 닫는다(cancelBranch)." +
+    " expect는 playerAt, switchOn/Off, variableEquals, variableAtLeast, eventAt, eventOnMap, eventDistanceToPlayerLessThan, followerCount, followerAt, partyIncludes, partyExcludes, cameraAt, lightingAmbient, lightAt, lightCount, weatherKind, animationPlaying, fieldSpawnCount, spawnedCount, pictureVisible, bgmPlaying, gameOver, endingReached, cutsceneLocked, mapId, gameTimeAt, timePhase, cropStageAt, inventoryCount, goldDelta, inventoryDelta, ownedMonsterDelta, interactionComplete, friendshipAtLeast, shopStock를 지원한다. " +
     "Purchase proof: walk to/interact with the intended seller, then purchase {eventId,itemId,count,unitPrice}; assert goldDelta and inventoryDelta. Opens a real pending shop; no transaction means interactionComplete:false. Ordinary player-buy stock only, not haggle/shopkeeper/services. lastTransfer:{fromMapId,eventId,toMapId} asserts the last actual interpreter transfer. " +
-    "NPC reward proof: snapshotRewards immediately before interacting; expect goldDelta:20 for currency, inventoryDelta:{itemId:count} / ownedMonsterDelta:{speciesId:count} (or {atLeast:1}) and interactionComplete:true. inventoryDelta.gold is an inventory item ID, never currency. For one-time rewards, snapshot again and interact twice in the SAME steps array, then expect zero gold/item/monster deltas. eventId checks the physically selected NPC, never directly executes its commands. finalState includes gold, ownedMonsterCounts across party+box, monsterParty and monsterBox." +
+    "NPC reward proof: snapshotRewards immediately before interacting; expect goldDelta:20 for currency, inventoryDelta:{itemId:count} / ownedMonsterDelta:{speciesId:count} (or {atLeast:1}) and interactionComplete:true. inventoryDelta.gold is an inventory item ID, never currency. For one-time rewards, snapshot again and interact twice in the SAME steps array, then expect zero gold/item/monster deltas. eventId checks the physically selected NPC, never directly executes its commands. finalState includes gold, partyActorIds (actor battle party), ownedMonsterCounts across party+box, monsterParty and monsterBox." +
+    " Party-join proof: expect partyIncludes:\"actor_id\" after the join interaction. followerCount/followerAt only prove a walking follower (addFollower), not a battle-party member; only changeParty {actorId,action:\"add\"} changes partyActorIds." +
     " 필드 액션 전투는 실행하지 않으며, wait/스폰 성공은 전투 증거가 아니다. 액션 전투는 run_action_combat_test로 검증한다.",
   mode: "read",
   parameters: {
@@ -134,7 +137,8 @@ const runSceneTestTool: ToolDefinition = {
     required: ["mapId", "start", "steps"],
   },
   run(project, args): ToolExecResult {
-    if (!isSceneTestInput(args)) throw new ToolError("Malformed scene test input: use supported step fields, integer coordinates, and exactly one move dir or to.", { code: "invalid-scene-test" });
+    const problem = sceneTestInputProblem(args);
+    if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
       summary: result.ok

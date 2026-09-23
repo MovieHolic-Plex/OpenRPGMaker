@@ -1,3 +1,4 @@
+import { requestPiRender, resolvePiRender } from "./lib/piRenderBroker.ts";
 import { requestPiCheckpoint, resolvePiCheckpoint } from "./lib/piCheckpointBroker.ts";
 // Bun 전용 완성 워커. `@oh-my-pi/pi-ai` 가 bun:sqlite · type:text import 를 쓰므로
 // Node/tsx 에선 로드되지 않아, 모델 호출만 이 루프백 프로세스에 남긴다.
@@ -46,6 +47,10 @@ const server = Bun.serve({
         const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
         return json(await completeProvider(provider, payload, { apiKey }));
       }
+      if (request.method === "POST" && url.pathname === "/agent/render") {
+        const body = await request.json();
+        return resolvePiRender(body) ? json({ ok: true }) : json({ error: "이미지 요청이 만료되었거나 응답이 잘못됐습니다." }, 409);
+      }
       if (request.method === "POST" && url.pathname === "/agent/checkpoint") {
         const body = await request.json() as { checkpointId?: string; ok?: boolean; issue?: string; project?: PiAgentRequest["project"] };
         const found = typeof body.checkpointId === "string" && resolvePiCheckpoint(body.checkpointId, { ok: body.ok === true, issue: body.issue, project: body.project });
@@ -66,6 +71,7 @@ const server = Bun.serve({
           codexApiKey: body.codexApiKey,
           signal: request.signal,
           onEvent,
+          renderToolImage: (project, toolName, data, signal) => requestPiRender(project, agentRequest.project, toolName, data, onEvent, signal ?? request.signal),
           onCheckpoint: (checkpoint, signal) => requestPiCheckpoint(checkpoint, onEvent, signal ?? request.signal),
           ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
           ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),

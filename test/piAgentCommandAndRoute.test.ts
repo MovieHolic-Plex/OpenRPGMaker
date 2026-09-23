@@ -1,9 +1,19 @@
 import { describe, expect, it } from "vitest";
-import { parsePiCommand } from "@/editor/panels/aiPiAgentCommand";
+import { mergesMapBundles, parsePiCommand } from "@/editor/panels/aiPiAgentCommand";
 import { createBlankProject } from "@/project/defaults";
 import { runTool } from "@/editor/tools";
 // @ts-expect-error plain ESM JS module
 import { handleCompanionRequest, isCompanionPath } from "../scripts/lib/ohMyPiHttp.mjs";
+
+describe("맵 묶음 병합 여부 = 가드 신호", () => {
+  it("평문이라도 에이전트가 둘 이상이면 병합한다(팀 제외)", () => {
+    expect(mergesMapBundles({ team: false, mapIds: ["a", "b"], scopedByUser: false, groupCount: 2 })).toBe(true);
+    expect(mergesMapBundles({ team: false, mapIds: ["a"], scopedByUser: true, groupCount: 1 })).toBe(true);
+    expect(mergesMapBundles({ team: false, mapIds: ["a"], scopedByUser: false, groupCount: 1 })).toBe(false);
+    expect(mergesMapBundles({ team: true, mapIds: ["a", "b"], scopedByUser: true, groupCount: 1 })).toBe(false);
+    expect(mergesMapBundles({ team: false, mapIds: [], scopedByUser: false, groupCount: 1 })).toBe(false);
+  });
+});
 
 describe("/pi 명령 파서", () => {
   const ctx = { project: createBlankProject() };

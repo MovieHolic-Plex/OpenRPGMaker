@@ -13,6 +13,7 @@ import {
   normalizeCharacterScale,
   UNIT_FOOTPRINT,
 } from "@/project/footprint";
+import { resolveEventPage } from "@/project/io/pageResolution";
 import type {
   CharacterFootprint,
   EventPage,
@@ -52,8 +53,8 @@ type ClaimedPageVisual = {
 const PRIORITY_ORDER: Record<EventPriority, number> = { below: 0, same: 1, above: 2 };
 /**
  * Map events inside a show_map_region clip, using only canonical charset/uploaded graphics.
- * Every page graphic is a claimed visual (same contract as mapVisualContent). Unsupported or
- * multi-variant page states fail closed — never silently pick page[0] as full coverage.
+ * Every page graphic is a claimed visual (same contract as mapVisualContent). Unsupported graphics
+ * fail closed. Multi-variant page states draw the page active at game start (runtime page rule).
  */
 export function resolveRegionEventSprites(
   project: Project,
@@ -110,13 +111,10 @@ function resolveEventSprite(
   const claimed = claimedPageVisuals(project, event);
   if (!claimed.ok) return claimed;
   if (claimed.visuals.length === 0) return { ok: true, sprite: null };
-  if (claimed.visuals.length > 1) {
-    return {
-      ok: false,
-      reason: `map-event-rendering-unavailable: event ${event.id} has ${claimed.visuals.length} distinct page graphics/priorities/footprints; show_map_region cannot represent conditional page states in one frame; no approval`,
-    };
-  }
-  const visual = claimed.visuals[0];
+  // 페이지마다 모습이 다르면(닫힌 상자/열린 상자 같은 표준 2페이지) 한 장에 다 그릴 수 없다.
+  // 예전에는 여기서 실패해 프로젝트 전체 검수가 보통 상자 하나로 멈췄다(2026-09-23 도그푸딩).
+  // 런타임과 같은 규칙으로 **게임 시작 시점에 켜지는 페이지**(조건이 맞는 마지막 페이지)를 그린다.
+  const visual = claimed.visuals.length === 1 ? claimed.visuals[0] : startPageVisual(project, event);
   if (!visual) return { ok: true, sprite: null };
   const worldScale = pixelsPerTile / tileSize;
   const destW = visual.frame.width * worldScale * visual.scale;
@@ -135,6 +133,34 @@ function resolveEventSprite(
       destW,
       destH,
     },
+  };
+}
+
+function startPageVisual(project: Project, event: GameEvent): ClaimedPageVisual | undefined {
+  const start = project.session;
+  const page = resolveEventPage(event, {
+    switches: start.switches ?? {},
+    variables: start.variables ?? {},
+    selfSwitches: {},
+    inventory: start.inventory ?? {},
+    partyActorIds: start.partyActorIds ?? [],
+    gold: start.gold ?? 0,
+    timers: start.timers ?? {},
+  });
+  return page ? pageVisual(project, page) ?? undefined : undefined;
+}
+
+function pageVisual(project: Project, page: EventPage): ClaimedPageVisual | null {
+  const graphic = page.graphic;
+  if (!graphic || graphic.transparent === true || !graphic.sprite) return null;
+  const imageUrl = charsetImageUrl(project, graphic.sprite.id);
+  if (!imageUrl) return null;
+  return {
+    imageUrl,
+    frame: frameSourceForGraphic(graphic),
+    scale: normalizeCharacterScale(graphic.scale),
+    footprint: normalizeCharacterFootprint(page.footprint ?? UNIT_FOOTPRINT),
+    priority: page.priority,
   };
 }
 

@@ -38,6 +38,12 @@ export interface PiAgentRequest {
    */
   readonly scopeStrict?: boolean;
   /**
+   * 이 실행의 결과가 호출자 쪽 맵 묶음 병합(`mergeMapBundles`)을 거치는가 — 호출 시점 범위 가드 전용 신호.
+   * `scopeStrict` 는 프롬프트(DB·시스템 편집 허용)에도 쓰여 바꾸지 않는다. 평문 턴이라도 에이전트가 둘 이상이면
+   * 브라우저가 병합하므로, 가드 없이 두면 범위 밖 맵 변경이 도구에선 성공하고 병합에서 버려진다.
+   */
+  readonly mapBundleMerge?: boolean;
+  /**
    * 사용자가 지금 보고 있는 맵. 팀장이 「여기」「이 맵」을 해석하는 기준이자, 다른 맵을 지목하지 않은 지시의 기본 대상이다.
    * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
    */
@@ -138,6 +144,7 @@ type PiAgentEventPayload =
   | { readonly type: "prompt_inspection"; readonly snapshot: import("../authoring/promptInspection").PromptInspection }
   | { readonly type: "execution_status"; readonly name: string; readonly summary: string; readonly ok?: boolean; readonly data?: unknown }
   | ({ readonly type: "checkpoint"; readonly checkpointId: string } & PiProjectCheckpoint)
+  | { readonly type: "render_request"; readonly renderId: string; readonly project: Project; readonly unchangedKeys?: readonly PiCheckpointHeavyKey[]; readonly toolName: string; readonly data: unknown }
   | { readonly type: "start"; readonly provider: string; readonly model: string; readonly toolCount: number }
   // ── 팀 이벤트. 하위 에이전트의 진행은 agent_event 로 감싸서 흘린다(보드가 행 단위로 그린다). ──
   | { readonly type: "team_start"; readonly task: string; readonly roles: readonly { id: PiTeamRoleId; label: string }[] }
@@ -306,4 +313,18 @@ export function restoreCheckpointProject(current: Project, incoming: Project, un
 export function snapshotProjectKeepingHeavy(project: Project): Project {
   const { tilesets, database, ...light } = project;
   return { ...structuredClone(light), tilesets, database };
+}
+
+/**
+ * 호출 시점 맵 범위 가드 옵션(`createPiToolset`·`resolvePiToolShape` 에 그대로 펼친다).
+ * 계약 범위(`scopeStrict` 기본 true)거나 병합 실행(`mapBundleMerge`)이면 켠다 — 병합이 버릴 변경만 막는다.
+ * `scopeAllowsSystem` 은 평문 병합 실행 표시: DB·시스템 편집은 허용이고 다른 맵만 안 된다고 말하게 한다.
+ */
+export function piMapScopeGuard(
+  request: Pick<PiAgentRequest, "mapIds" | "scopeStrict" | "mapBundleMerge">,
+): { scopeMapIds?: readonly string[]; scopeAllowsSystem?: boolean } {
+  if (request.mapIds.length === 0) return {};
+  const strict = request.scopeStrict !== false;
+  if (!strict && request.mapBundleMerge !== true) return {};
+  return { scopeMapIds: request.mapIds, scopeAllowsSystem: !strict };
 }

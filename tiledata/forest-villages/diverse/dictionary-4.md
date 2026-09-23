@@ -1753,39 +1753,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 2551,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1565,
-    "sourceX": 5,
-    "sourceY": 52,
-    "pixelX": 80,
-    "pixelY": 832,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
     "tile": 2552,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
@@ -1951,17 +1918,50 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 2560,
+    "tile": 2563,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 1582,
-    "sourceX": 22,
+    "sourceTile": 1585,
+    "sourceX": 25,
     "sourceY": 52,
-    "pixelX": 352,
+    "pixelX": 400,
     "pixelY": 832,
     "width": 16,
     "height": 16,
-    "targetX": 10,
+    "targetX": 13,
+    "targetY": 85,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2568,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 1617,
+    "sourceX": 27,
+    "sourceY": 53,
+    "pixelX": 432,
+    "pixelY": 848,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
     "targetY": 85,
     "layers": [
       "upper"

@@ -1,5 +1,5 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
-import { forestTrunkCandidates } from "./forestTrunkTiles";
+import { FOREST_TRUNK_MIN_WIDTH, FOREST_TRUNK_TILES, forestTrunkCandidates } from "./forestTrunkTiles";
 import type { ForestGroveReport } from "./forestGroves";
 
 const NEIGHBORS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]] as const;
@@ -74,6 +74,40 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
     }
     if (component.length < 8) component.forEach(index => forest.delete(index));
   }
+  return fitForest(map, area, group, forest, open, desired);
+}
+
+/** Re-fits the trunks of a canopy already on the map, for maps painted before the trunk assemblies
+ * matched their edges exactly. The canopy mask is kept except where an edge must move, old trunks
+ * become `ground`, and `free` says which other cells may take canopy or trunks. */
+export function refitForestTrunks(map: GameMap, area: Rect, group: AutotileGroup, ground: number,
+  free: (x: number, y: number) => boolean): ForestGroveReport {
+  const W = map.width, canopy = new Set(Object.values(group.variantMap)), before = new Set<number>();
+  for (let y = Math.max(0, area.y); y < Math.min(map.height, area.y + area.h); y++)
+    for (let x = Math.max(0, area.x); x < Math.min(W, area.x + area.w); x++) {
+      const index = y * W + x;
+      if (FOREST_TRUNK_TILES.has(map.lowerTiles[index]!)) map.lowerTiles[index] = ground;
+      if (canopy.has(map.upperTiles[index]!)) before.add(index);
+    }
+  const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
+    && x < Math.min(W, area.x + area.w) && y < Math.min(map.height, area.y + area.h);
+  const open = (x: number, y: number): boolean => inside(x, y) && (before.has(y * W + x) || free(x, y))
+    && !map.lowerTileStacks?.[y * W + x]?.length && !map.upperTileStacks?.[y * W + x]?.length;
+  const forest = new Set(before), report = fitForest(map, area, group, forest, open);
+  for (const index of before) if (!forest.has(index)) map.upperTiles[index] = -1;
+  return report;
+}
+
+/** Shapes the edges of a canopy mask, fits whole trunks under every bottom edge and paints both. */
+function fitForest(map: GameMap, area: Rect, group: AutotileGroup, forest: Set<number>,
+  open: (x: number, y: number) => boolean, desired?: (x: number, y: number) => boolean): ForestGroveReport {
+  const W = map.width;
+  const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
+    && x < Math.min(W, area.x + area.w) && y < Math.min(map.height, area.y + area.h);
+  const f = (x: number, y: number): boolean => inside(x, y) && forest.has(y * W + x);
+  fitBottomEdges(forest, W, map.height, area, (x, y) => open(x, y)
+    && (y + 1 >= map.height || open(x, y + 1)) && (y + 2 >= map.height || open(x, y + 2))
+    && (!desired || desired(x, y)));
   let trunks = new Map<number, number>(), trunkRuns = 0;
   // Fit complete roots, never substitute a different tree or crop a trunk. A
   // failed placement retracts only the exposed row, retaining one-cell bends.
@@ -94,7 +128,9 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
         const candidates = forestTrunkCandidates(start, width);
         const candidate = candidates.find(c => c.rows.every((row, dy) => row.every((tile, dx) => {
           const cx = c.x + dx, cy = y + dy, index = cy * W + cx;
-          return open(cx, cy) && f(cx, y)
+          // Below the canopy row a root must stand in the open: under a neighbouring canopy it shows
+          // through that tile's transparent edge as a trunk cut in half.
+          return open(cx, cy) && f(cx, y) && (dy === 0 || !f(cx, cy))
             && (!trunks.has(index) || trunks.get(index) === tile);
         })));
         if (!candidate) { invalid = { x: start, y, width }; break outer; }
@@ -113,4 +149,62 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
   }
   for (const [index, tile] of trunks) map.lowerTiles[index] = tile;
   return { cells: new Set([...forest, ...trunks.keys()]), canopyCells: forest.size, trunkRuns };
+}
+
+/** Trunks fit any bottom edge FOREST_TRUNK_MIN_WIDTH or more cells wide (forestTrunkCandidates); the
+ * trunk repair would otherwise retract a narrower step row by row. First close one-row gaps under an
+ * edge, so the lower root stands in the open, and run edges near the map's bottom off the map. Then
+ * move each narrow step onto the edge of a neighbouring column, up or down, whichever changes fewer
+ * cells (up on a tie, keeping the meadow). A move touches no run but the one it joins, so every move
+ * merges two runs and the sweep ends. `hold` says whether a cell may carry canopy (it and the two root
+ * rows below it are free). */
+function fitBottomEdges(forest: Set<number>, W: number, H: number, area: Rect,
+  hold: (x: number, y: number) => boolean): void {
+  const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
+    && x < Math.min(W, area.x + area.w) && y < Math.min(H, area.y + area.h);
+  const f = (x: number, y: number): boolean => inside(x, y) && forest.has(y * W + x);
+  const bottom = (x: number, y: number): boolean => f(x, y) && !f(x, y + 1);
+  for (let changed = true; changed;) {
+    changed = false;
+    for (let y = area.y; y < area.y + area.h - 1; y++) for (let x = area.x; x < area.x + area.w; x++) {
+      if (!bottom(x, y)) continue;
+      if (y + 2 >= H) {
+        for (let yy = y + 1; yy < H; yy++) if (hold(x, yy)) { forest.add(yy * W + x); changed = true; }
+      } else if (f(x, y + 2) && hold(x, y + 1)) { forest.add((y + 1) * W + x); changed = true; }
+    }
+  }
+  const run = (a: number, b: number, test: (c: number) => boolean): boolean => {
+    for (let c = a; c <= b; c++) if (!test(c)) return false;
+    return true;
+  };
+  for (let changed = true; changed;) {
+    changed = false;
+    for (let y = area.y; y < area.y + area.h - 1; y++) for (let x = area.x; x < area.x + area.w; x++) {
+      if (!bottom(x, y) || bottom(x - 1, y)) continue;
+      const a = x;
+      while (bottom(x + 1, y)) x++;
+      const b = x;
+      if (b - a + 1 >= FOREST_TRUNK_MIN_WIDTH || y + 2 >= H) continue;
+      let best: { from: number; to: number; add: boolean } | undefined;
+      for (const n of [a - 1, b + 1]) {
+        // Up: the step is canopy up to where the neighbour's edge is.
+        for (let r = y - 1; run(a, b, c => f(c, r)); r--) if (f(n, r)) {
+          if (bottom(n, r) && (!best || y - r < best.to - best.from + 1)) best = { from: r + 1, to: y, add: false };
+          break;
+        }
+        // Down: open ground the canopy may take, to the neighbour's deeper edge.
+        if (!f(n, y + 1)) continue;
+        for (let r = y + 1; r < H - 2 && run(a, b, c => hold(c, r) && !f(c, r)) && f(n, r); r++) if (bottom(n, r)) {
+          if (run(a, b, c => !f(c, r + 1) && !f(c, r + 2)) && (!best || r - y < best.to - best.from + 1))
+            best = { from: y + 1, to: r, add: true };
+          break;
+        }
+      }
+      if (!best) continue;
+      for (let r = best.from; r <= best.to; r++) for (let c = a; c <= b; c++) {
+        if (best.add) forest.add(r * W + c); else forest.delete(r * W + c);
+      }
+      changed = true;
+    }
+  }
 }

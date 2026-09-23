@@ -9,6 +9,7 @@ import type { TileToolId } from "@/editor/panels/tileToolbarActions";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { makeTileToolsMenu } from "@/editor/panels/tileToolOptions";
 import { makeInspectionControls, RULE_AUDIT_UPDATED_EVENT, type TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
+import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { store } from "@/project/store";
 
 export {
@@ -151,25 +152,32 @@ function installToolbarBadgeRefresh(rerender: () => void): void {
   latestToolbarRerender = rerender;
   if (toolbarBadgeRefreshInstalled) return;
   toolbarBadgeRefreshInstalled = true;
+  // 도구막대 재구축 = 좌측 타일 팔레트 전체 재구축이다(100×100 마을에서 한 번 100~200ms).
+  // 스트로크 도중에는 팔레트에 바뀔 것이 없으므로(배지·되돌리기 단추는 끝난 뒤 맞으면 된다)
+  // 누르고 있는 동안은 미루고 손을 뗄 때 한 번 짓는다 — pointerStrokeGate 참고.
+  installPointerStrokeGate();
   if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
-    window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => latestToolbarRerender?.());
-    window.addEventListener(RULE_AUDIT_UPDATED_EVENT, () => latestToolbarRerender?.());
+    window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => runWhenPointerReleased(rerenderLatestToolbar));
+    window.addEventListener(RULE_AUDIT_UPDATED_EVENT, () => runWhenPointerReleased(rerenderLatestToolbar));
   }
-  // 편집 1회마다 도구막대를 통째로 다시 그리면 규칙 감사 배지가 projectLint 를 전체로 다시
-  // 돌린다(실측 141ms~1,206ms/칸). 페인트 드래그는 칸마다 store emit 을 내므로 트레일링
-  // 디바운스로 묶는다 — 배지·선택 타일 표시가 최대 0.12초 늦는 것 말고는 같다.
-  // 되돌리기(MAP_EDIT_HISTORY_EVENT)는 빈도가 낮아 그대로 즉시 그린다.
+  // 페인트 드래그는 칸마다 store emit 을 내므로 **후행** 디바운스로 묶는다. 예전 선행 잠금
+  // (`if (timer) return`)은 드래그 내내 120ms 마다 팔레트를 다시 지어 칠하기를 끊기게 했다
+  // (2026-09-23). 되돌리기(MAP_EDIT_HISTORY_EVENT)는 빈도가 낮아 디바운스 없이 그린다.
   store.subscribe(() => {
     if (typeof document === "undefined") return;
-    if (toolbarStoreRerenderTimer !== null) return;
+    if (toolbarStoreRerenderTimer !== null) clearTimeout(toolbarStoreRerenderTimer);
     toolbarStoreRerenderTimer = setTimeout(() => {
       toolbarStoreRerenderTimer = null;
-      // 타이머는 구독 시점보다 오래 산다 — 문서가 사라진 뒤(테스트 환경 해체, 창 종료)
-      // 그리면 renderCurrentPalette 가 document 를 만지다 터진다.
-      if (typeof document === "undefined") return;
-      latestToolbarRerender?.();
+      runWhenPointerReleased(rerenderLatestToolbar);
     }, TOOLBAR_STORE_RERENDER_DEBOUNCE_MS);
   });
+}
+
+function rerenderLatestToolbar(): void {
+  // 타이머·미룬 작업은 구독 시점보다 오래 산다 — 문서가 사라진 뒤(테스트 환경 해체, 창 종료)
+  // 그리면 renderCurrentPalette 가 document 를 만지다 터진다.
+  if (typeof document === "undefined") return;
+  latestToolbarRerender?.();
 }
 
 const TOOLBAR_STORE_RERENDER_DEBOUNCE_MS = 120;

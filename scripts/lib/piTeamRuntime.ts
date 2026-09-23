@@ -132,6 +132,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     providerApiKeys: options.providerApiKeys,
     // 웹 검색은 Codex 백엔드가 하므로 조수 제공자와 별개로 내려보낸다 — 팀원이 검색을 못 하면 팀장만 최신 사실을 보고 팀원은 추정하게 된다.
     codexApiKey: options.codexApiKey,
+    renderToolImage: options.renderToolImage,
     signal: options.signal,
     extraTools: mailbox.tools(agentId),
     subscribeTeamMessages: notify => {

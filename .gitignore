@@ -304,3 +304,4 @@ dist-packages/
 /public/assets/stills/.install.lock/
 
 /public/assets/stills/.stills-stage-*/
+qa-runs/

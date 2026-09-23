@@ -5,6 +5,112 @@
 
 <!-- releases -->
 
+## 0.8.0 — 2026-09-23
+
+### 기능
+
+- simplify DB monster tabs by editor mode and section tabs (`f4b875f`)
+- 맵 자료집 다섯 탭의 정보량을 줄인다 (`2d4de44`)
+- 컨셉 마을 3종 — 교회 언덕·여울성·안개못 폐촌 (창문 개정10) (#1169) (`0391adb`)
+- trim the party database tabs for beginners (`21b02bd`)
+- add a two-waterfall river village to the shared forest villages (#1166) (`43a35bc`)
+- 숲마을 세 곳 — 절벽 높이·검은 문·목적 있는 소품 (개정8) (#1165) (`ccba01c`)
+- furnish village commons gardens and market with purposeful props (#1162) (`91e2d51`)
+- add winding village cliffs, clustered forests and connected entrances (#1159) (`c75cafa`)
+- add diverse village regions and bundled assembly references (#1155) (`5ecd410`)
+- publish executable Dewbank village assembly references (#1154) (`3cf251c`)
+- **opening** — resume finite still production after provider quota reset (#1152) (`dcdea32`)
+- add preset-specific new project interviews and saved game briefs (`147f10b`)
+- **editor** — group database tiles by art style (`cb7d1f4`)
+- **opening** — 새 프로젝트 인터뷰와 검증된 오프닝 이미지 팩 (#1126) (`10d8917`)
+- **editor** — 던전을 요청의 장소로 짓고 출입구·표지·순찰을 남긴다 (`32cdcc0`)
+- let the AI draft and continue the world canon body (`e042861`)
+- **editor** — AI 미연결이면 채팅 영역을 잠금 막으로 덮는다 (#1132) (`4d4c7a0`)
+- remove the world canon spread head (`d0ca66a`)
+- replace the world settings form with an AI interview surface (`dcebd79`)
+- **editor** — AI 연결 상태를 톱바에 상시 보여 준다 (#1127) (`5d1eb68`)
+- compact world canon head into a help icon and flatten settings into a plain form (`83e873d`)
+- open world canon on the body canvas with settings and AI-delivery tabs (`789d81e`)
+- **ai** — stage sound and animation before impact lines (`d57bd98`)
+- split world canon one-pager into document and AI-delivery tabs (`1a9ad62`)
+- record atlas pixel size on kits, snapshots, terrain and kit files (#1105) (`165bfaa`)
+- **editor** — 프로젝트 기본 카메라 배율(system.cameraZoom) (#1100) (`3dff6f6`)
+- add LPC Wooden Furniture tilesets and 39 shared furniture objects (`f4571e2`)
+- make public tile references executable and validate assembly errors [skip ci] (#1097) (`e5d34ca`)
+- make public tile references executable and validate assembly errors [skip ci] (#1098) (`d343f16`)
+- rebuild world canon tab as a document-first spread view (`2d71b84`)
+- add executable tile assembly guides and coordinate validation (`294e481`)
+- **editor** — 다층 맵 배경과 고해상도 배경 맞추기 (#1089) (`567eb79`)
+
+### 수정
+
+- render place thumbnails for rooms captured from painted maps (`0a5b751`)
+- 타일 탭 위쪽의 중복 시트 띠를 뺀다 (`06f7c22`)
+- send the companion token on assistant, agent and image requests (`9449e9a`)
+- host-disabled AI is a server response, not unreachable (`a7dba6f`)
+- unblock first run on the personal launcher (`274aecd`)
+- keep autosave under the 64MB host body limit (#1163) (`0b9219e`)
+- place village props by authored activities and real anchors (#1161) (`05d918f`)
+- organize village props into owned household yards (#1160) (`ef701e3`)
+- match village grass edges to the existing floor (#1158) (`b0e4e2c`)
+- **ai** — 조수 대기 화면 설정을 걷는다 (#1157) (`0d244d8`)
+- rebuild village cliffs using the great-falls assembly (#1156) (`b48186a`)
+- **opening** — remove key footer and expose reviewed scene descriptions (#1151) (`8b5586c`)
+- retain interview step label and complete browser image captures (`2eccb1b`)
+- **ai** — support picture resource searches (`1425397`)
+- **editor** — 잘린 아이템 아이콘을 다시 맞추고 헤더에서 바로 고르게 한다 (`c9c4781`)
+- restore place previews across gallery and picker renders (`884fb65`)
+- **ai** — 원격 Google 로그인 콜백을 편집기가 받는다 (`1a4bcb1`)
+- **editor** — 자료집 닫기와 X는 편집을 남기고 창을 닫는다 (`86dbc25`)
+- **editor** — 맵 확대 하한을 0.25배까지 내린다 (`c9797b6`)
+- **editor** — 로그인 후 잠금 막이 스스로 걷힌다 — 남은 한 단계 제거 (#1137) (`8d9c856`)
+- **editor** — 장소 탭을 열 때 맵 원본을 읽지 않는다 (`031cc75`)
+- **ai** — 맵 BGM을 곡 설명을 보고 고른다 (`c2f7f7b`)
+- **ai** — 조수 작업 중 맵 전체 재렌더와 체크포인트 대기를 줄인다 (#1130) (`6376a79`)
+- **editor** — 첫 실행의 로그인 벽을 없애고 AI 연결 안내를 먼저 보여 준다 (#1129) (`c192bbe`)
+- mount the law dialog inside the DB modal and drop the world canon kicker (`e5e4fee`)
+- **editor** — 첫 방문 브리핑이 AI 없이 '만들기' 를 받고 조용히 멈추던 것을 고친다 (#1124) (`130d0b4`)
+- **editor** — stop seeding builtin room-kind cards into the places gallery (`8f353f7`)
+- **player** — skip catalog monster sprites when opening test play (`786a24c`)
+- replay host, test-play, and tile-paint fixes onto current main (`a725eb9`)
+- **host** — keep internal access codes opt-in on 0.0.0.0 (`bca9db3`)
+- **editor** — size incremental ghost tiles with the map tile size (`3ea092f`)
+- **ai** — keep tile painting off the full-project lint path (#1109) (`dd83bfb`)
+- **editor** — clear ghost sweep when discarding overlay (`b1119e9`)
+- **ai** — keep tile painting off the full-project lint path (`f8950c3`)
+- **player** — open test play without preloading the whole asset catalog (`27217ba`)
+- close host and draft holes after the SQLite cutover (#1102) (`9ca7254`)
+- **ai** — load searched material previews from the file id (`9157043`)
+- **editor** — 맵 설정 BGM 피커 CSS 지연 로드 회귀를 고치고 중요 섹션을 상단으로 (`b3d1f4a`)
+- reveal lazy guide images before capture and record live proof (`e243c29`)
+- **build** — declare VITE_BGM_CDN_BASE on ImportMetaEnv (#1090) (`dcf1bb4`)
+
+### 성능
+
+- cut assistant write/decode cost and tighten assistant UI (`bd31fe0`)
+- 무거운 프로젝트 로드에서 JSON을 반복 복사하지 않는다 (`7579b92`)
+- **editor** — 쓰지 않는 16px 타일 창 헬퍼를 빼 둔다 (`ecfcde0`)
+- **editor** — 큰 맵은 보이는 타일만 만들고 AI 스트리밍이 레이아웃을 매 프레임 재지 않게 한다 (`ed5fcb5`)
+- **boot** — 타일셋 존재 확인을 생성자보다 먼저 해 프로젝트 로드에서 164ms→26ms (#1103) (`8829a0d`)
+- shrink shipped castle study images and record the bundle-owned rule (`cc33c52`)
+
+### 문서
+
+- first-run guide reflects the launcher and lock fixes (`5dce6db`)
+- add a first-run guide for non-developers and drop stray Qoder installer (`1155281`)
+- 던전 생성 결과 보고서를 남긴다 (`0f8f73f`)
+- picture-card questions before a broad or empty game request (`263323e`)
+- **release** — 윈도우 zip 을 리눅스에서 빌드·검증하는 절차를 기록한다 (#1094) (`5624500`)
+
+### 되돌림
+
+- return main to the tree after #1104 (`fc9c6dc`)
+
+### 기타
+
+- 지역 탭 더미 카탈로그 제거 · 장소형 목록 UI (#1091) (`1336c95`)
+- Codex worktree snapshot: startup-cleanup (`f1c0d01`)
+
 ## 0.7.0 — 2026-09-22
 
 ### 기능

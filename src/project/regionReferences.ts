@@ -1,8 +1,11 @@
 import { DIVERSE_VILLAGE_PLACES, DIVERSE_VILLAGE_REGIONS } from "./diverseVillageReferences";
+import { SHARED_REGION_REFERENCES } from './sharedSpatialReferences';
 import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
 import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
+import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
+import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
@@ -85,7 +88,7 @@ export const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, ...CLIMATE_VILLAGE_PLACE_REFERENCES, ...FIELD_ROUTE_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: "tileset_emerald_basin_20260914",
@@ -120,7 +123,7 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
 
 
 export function regionReference(id: string) {
-  return [...REGION_REFERENCES, ...PLACE_REFERENCES].find(entry => entry.id === id);
+  return [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].find(entry => entry.id === id);
 }
 
 /**
@@ -135,7 +138,7 @@ function referenceHouseFormNote(referenceId: string): string {
 }
 
 export function regionReferenceContext(): string {
-  return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES].map(r =>
+  return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].map(r =>
     `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

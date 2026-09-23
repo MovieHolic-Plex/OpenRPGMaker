@@ -1,0 +1,20 @@
+{
+  "projectId": "3f3ba272-90b0-4738-866b-f71bf475b51e",
+  "projectDir": ".oprn-projects/climate-villages-20260923",
+  "revision": 7,
+  "sha256": "a9a067475d362f8bff84ffe6dbd1604c533b5c846be35e6db27918d86086d6e7",
+  "saved": true,
+  "reopened": true,
+  "maps": [
+    "climate-snow-pine-hamlets",
+    "climate-snow-chapel-hill",
+    "climate-snow-frozen-mistpond",
+    "climate-volcano-twin-falls",
+    "climate-volcano-ford-castle",
+    "climate-volcano-lava-pond",
+    "climate-desert-terrace-canyon",
+    "climate-desert-reed-bay",
+    "climate-autumn-twin-falls",
+    "climate-autumn-chapel-hill"
+  ]
+}

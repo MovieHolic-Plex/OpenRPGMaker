@@ -47,6 +47,7 @@ export function renderSpatialObjectInspector(input: {
   const tilesets = Object.values(project.tilesets);
   const tileset = project.tilesets[target.tilesetId];
   const kits = tileset?.structureKits ?? [];
+  const guidance = kits.find(kit => kit.id === target.kitId)?.ai;
   const thumb = renderSpatialCardThumb(card);
   thumb.classList.add("spatial-object-hero-art");
   const chips = new Set(design?.chips ?? []);
@@ -59,6 +60,11 @@ export function renderSpatialObjectInspector(input: {
     children: [
       el("h3", { class: "spatial-inspector-name", text: card.name }),
       el("p", { class: "spatial-inspector-sub", text: sourceLabel(card) }),
+      ...(guidance ? [el('details', { children: [
+        el('summary', { text: '조립·배치 규칙' }),
+        el('p', { text: guidance.description }),
+        el('p', { text: guidance.placementRules }),
+      ] })] : []),
       el("div", {
         class: "spatial-object-hero",
         dataset: { testid: "spatial-object-preview" },

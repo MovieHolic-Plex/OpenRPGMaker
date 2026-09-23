@@ -1,0 +1,17 @@
+{
+  "projectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
+  "projectDir": ".oprn-projects/field-routes-20260923",
+  "revision": 5,
+  "sha256": "b661730a532529f50f16845ef440924a30b6cee44d337562d5c2e60271c3fe9b",
+  "saved": true,
+  "reopened": true,
+  "maps": [
+    "field-forest-crossroads",
+    "field-ford-cliff-road",
+    "field-two-step-pass",
+    "field-snow-two-step-pass",
+    "field-volcano-ford-cliff-road",
+    "field-desert-crossroads",
+    "field-autumn-ford-cliff-road"
+  ]
+}

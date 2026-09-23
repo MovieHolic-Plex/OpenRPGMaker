@@ -32,6 +32,13 @@ export type StepResult =
       settings: MessageWindowSettings;
       cancelBehavior?: ChoiceCancelBehavior;
     }
+  | {
+      kind: "presentItem";
+      prompt?: string;
+      /** 소지한 후보. 비어 있으면 UI 는 prompt 뒤 닫힘(취소)으로 재개한다. */
+      items: readonly { readonly itemId: string; readonly count: number }[];
+      settings: MessageWindowSettings;
+    }
   | { kind: "transfer"; mapId: MapId; x: number; y: number; direction?: TransferDirection; fade?: TransferFade; transition?: TransferTransition }
   | { kind: "wait"; ms: number; allowParallelEvents?: boolean }
   | { kind: "eraseEvent"; eventId?: string }

@@ -1,6 +1,6 @@
 {
   "name": "oprn",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "\uc6f9 \uae30\ubc18 \ud0d1\ubdf0 \ud0c0\uc77c JRPG \uba54\uc774\ucee4 (MVP)",
   "private": true,
   "type": "module",
@@ -41,6 +41,7 @@
     "mcp:assistant": "node scripts/oprn-assistant-mcp.mjs",
     "ai:oauth": "node scripts/chatgpt-oauth-companion.mjs",
     "ai:log": "node scripts/list-ai-activity.mjs",
+    "qa:game": "bun scripts/qa-game/cli.mts",
     "edit:log": "node scripts/list-edit-activity.mjs",
     "commit:log": "node scripts/list-project-commits.mjs",
     "version:info": "node scripts/app-version.mjs",

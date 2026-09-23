@@ -7,6 +7,7 @@
 // 옵션: --provider google-antigravity|openai-codex  --model <id>  --report report.json  --max-turns N  --serial
 //       --team  팀장 에이전트가 맵을 나눠 시공·검수 에이전트를 띄운다(--maps 는 후보 맵)  --team-spec team.json  팀원 명세
 //       --current <mapId>  사용자가 보고 있는 맵(브라우저의 현재 맵과 같은 뜻). 팀장의 「여기」 기준
+//       --log-args  툴 호출 인자(tool_start)를 4000자까지 로그에 남긴다 — 모델이 무엇을 넣었는지 사후 분석용
 
 import fs from "node:fs";
 import path from "node:path";
@@ -51,6 +52,7 @@ function logEvent(label: string, event: PiAgentEvent) {
   if (event.type === "review") { console.log(`${prefix}review ${event.mapId} ok=${event.ok} ${event.findings.join(" | ")}`); return; }
   if (event.type === "team_report") { console.log(`${prefix}REPORT ${event.text}`); return; }
   if (event.type === "start") console.log(`${prefix}start ${event.provider}/${event.model} tools=${event.toolCount}`);
+  else if (event.type === "tool_start" && flag("log-args")) console.log(`${prefix}  ARGS ${event.name} ${JSON.stringify(event.args).slice(0, 4000)}`);
   else if (event.type === "tool_end") console.log(`${prefix}  ${event.ok ? "OK  " : "FAIL"} ${event.name} — ${event.summary}`);
   else if (event.type === "assistant") console.log(`${prefix}assistant: ${event.text.replace(/\n/g, " ").slice(0, 300)}`);
   else if (event.type === "error") console.log(`${prefix}ERROR ${event.message.slice(0, 400)}`);

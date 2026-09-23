@@ -56,7 +56,7 @@ const evaluateGameQuality: ToolDefinition = {
     const paletteIssues = lintTilesetPalettes(project);
     const commandOwners: Record<CommandOwnerKind, number> = { legacyEvent: 0, eventPage: 0, commonEvent: 0, troopPage: 0 };
     const nestedBranches: Record<NestedBranchKind, number> = {
-      choiceOption: 0, choiceCancel: 0, forkThen: 0, forkElse: 0, loopBody: 0,
+      choiceOption: 0, choiceCancel: 0, presentOption: 0, presentOtherwise: 0, presentCancel: 0, forkThen: 0, forkElse: 0, loopBody: 0,
       shopTransaction: 0, shopFailure: 0, innNotEnough: 0,
       promotionSuccess: 0, promotionFailure: 0, evolutionSuccess: 0, evolutionFailure: 0,
       battleVictory: 0, battleDefeat: 0, battleEscape: 0,

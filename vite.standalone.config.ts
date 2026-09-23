@@ -4,6 +4,7 @@ import { resolve } from "node:path";
 import { writePlayerArtifactManifest } from "./scripts/lib/playerArtifactContract.mjs";
 import { writeReleaseCollector } from "./scripts/lib/releaseCollectorBuild.mjs";
 import { appVersionPlugin } from "./scripts/lib/appVersion.mjs";
+import { playerEditorOnlyAssetsVitePlugin } from "./scripts/lib/playerEditorOnlyAssets.mjs";
 
 /**
  * 스탠드얼론(단일 HTML) 플레이어 빌드.
@@ -31,13 +32,12 @@ export default defineConfig({
       await writeReleaseCollector(thisRoot, outputDirectory);
       await writePlayerArtifactManifest({ artifactRoot: outputDirectory, repoRoot: thisRoot });
     },
-  }, appVersionPlugin()],
+  }, playerEditorOnlyAssetsVitePlugin(), appVersionPlugin()],
   resolve: {
     alias: [
       { find: /^@\/app\/mode$/, replacement: src("player/exportAppModeShim.ts") },
       { find: /^@\/project\/store$/, replacement: src("player/exportProjectStoreShim.ts") },
       { find: /^@\/app\/phaserRuntime$/, replacement: src("app/phaserRuntimeBundled.ts") },
-      { find: "@/assets/sharedCastleReferences.json", replacement: src("player/emptySharedCastleReferences.json") },
       { find: "@", replacement: src("") },
     ],
     extensions: [".ts", ".js"],

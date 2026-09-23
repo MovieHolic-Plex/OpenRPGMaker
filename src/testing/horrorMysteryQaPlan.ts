@@ -7,6 +7,7 @@ import {
 } from "@/project/examples/horrorMysteryPrototype";
 import type { Command, Project } from "@/project/types";
 import type { HorrorQaScenario } from "@/testing/horrorExperienceQa";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 function invariant(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -19,6 +20,7 @@ function hasTransferTo(commands: readonly Command[], mapId: string): boolean {
       return command.options.some((option) => hasTransferTo(option.branch, mapId))
         || Boolean(command.cancelBranch && hasTransferTo(command.cancelBranch, mapId));
     }
+    if (command.kind === "presentItem") return presentItemBranchLists(command).some((branch) => hasTransferTo(branch, mapId));
     if (command.kind === "fork") {
       return hasTransferTo(command.then, mapId)
         || Boolean(command.else && hasTransferTo(command.else, mapId));

@@ -231,6 +231,27 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(login.body.pasteCallback, true);
   });
 
+  it("원격 Origin 로그인은 어댑터에 remote 를 알리고, 로컬이면 알리지 않는다", async () => {
+    const seen = [];
+    const adapters = {
+      login: async (_provider, _body, options) => {
+        seen.push(options?.remote);
+        return { verificationUrl: "https://auth.openai.com/codex/device", userCode: "WXYZ-1234" };
+      },
+    };
+    const remote = await handleCompanionRequest(
+      { method: "POST", url: "/auth/login", headers: { origin: "http://mdc-server:9888" }, body: { provider: "openai-codex" } },
+      adapters,
+    );
+    await handleCompanionRequest(
+      { method: "POST", url: "/auth/login", headers: { origin: "http://127.0.0.1:9999", host: "127.0.0.1:9999" }, body: { provider: "openai-codex" } },
+      adapters,
+    );
+    assert.deepEqual(seen, [true, false]);
+    // 기기 코드 주소는 루프백 redirect 가 없으니 붙여넣기 칸을 켜지 않는다.
+    assert.notEqual(remote.body.pasteCallback, true);
+  });
+
   it("GET /oauth/launch 는 루프백 launch 의 Location 으로 302 한다", async () => {
     publishLoopbackLaunch(
       { verificationUrl: "http://127.0.0.1:51121/launch" },

@@ -14,6 +14,7 @@ export const COMMAND_KINDS = [
   "text",
   "changeFace",
   "choices",
+  "presentItem",
   "fork",
   "wait",
   "inputWait",

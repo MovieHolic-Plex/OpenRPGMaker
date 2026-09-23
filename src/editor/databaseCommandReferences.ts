@@ -1,6 +1,7 @@
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import type { BattleEventCondition, Command, Condition, GiftPrefs, MoveCommand, Project } from "@/project/types";
+import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
 
 type CommandReferenceCollection = DatabaseCollection | "monsterSpecies" | "lifeSkills" | "craftRecipes" | "itemUpgrades";
 
@@ -151,6 +152,9 @@ function commandListReferences(commands: readonly Command[], collection: Command
 
 function commandReferences(command: Command, collection: CommandReferenceCollection, id: string): boolean {
   switch (command.kind) {
+    case "presentItem":
+      return (collection === "items" && ((command.itemIds ?? []).includes(id) || command.options.some((option) => option.itemId === id)))
+        || presentItemBranchLists(command).some((branch) => commandListReferences(branch, collection, id));
     case "choices":
       return command.options.some((option) => commandListReferences(option.branch, collection, id)) || commandListReferences(command.cancelBranch ?? [], collection, id);
     case "fork":
@@ -265,6 +269,8 @@ function commandResourceReferences(command: Command, resourceId: string): boolea
       return command.resourceId === resourceId;
     case "choices":
       return command.options.some((option) => commandListResourceReferences(option.branch, resourceId)) || commandListResourceReferences(command.cancelBranch ?? [], resourceId);
+    case "presentItem":
+      return presentItemBranchLists(command).some((branch) => commandListResourceReferences(branch, resourceId));
     case "fork":
       return commandListResourceReferences(command.then, resourceId) || commandListResourceReferences(command.else ?? [], resourceId);
     case "loop":
@@ -299,6 +305,8 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
   switch (command.kind) {
     case "choices":
       return command.options.some((option) => commandListReferencesSwitchVariable(option.branch, kind, id)) || commandListReferencesSwitchVariable(command.cancelBranch ?? [], kind, id);
+    case "presentItem":
+      return presentItemBranchLists(command).some((branch) => commandListReferencesSwitchVariable(branch, kind, id));
     case "fork":
       return conditionReferencesSwitchVariable(command.condition, kind, id) || commandListReferencesSwitchVariable(command.then, kind, id) || commandListReferencesSwitchVariable(command.else ?? [], kind, id);
     case "loop":
