@@ -94,6 +94,10 @@ function parseCharsetSearchId(input: string): CharsetGraphicSelection | null {
   return { textureKey, characterIndex };
 }
 
+function charsetKeyShape(key: string): string {
+  return key.toLowerCase().replace(/[^a-z0-9]/g, "").replace(/^tex/, "");
+}
+
 function resolveCharsetTextureKeyCandidate(input: string): string | null {
   const trimmed = input.trim();
   const exact = KNOWN_CHARSET_TEXTURE_KEYS.find((textureKey) => textureKey === trimmed);
@@ -101,6 +105,11 @@ function resolveCharsetTextureKeyCandidate(input: string): string | null {
   const lower = trimmed.toLowerCase();
   const folded = KNOWN_CHARSET_TEXTURE_KEYS.find((textureKey) => textureKey.toLowerCase() === lower);
   if (folded) return folded;
+  // 리소스 id 표기(`easyrpg-charset-people1`)와 텍스처 키(`tex_easyrpg_charset_people1`)는 접두사·구분자만 다르다
+  // (2026-09-24 헤드리스 「등대지기의 겨울」 place_npc 거부). 그 둘을 걷어 낸 모양이 키 하나에만 맞으면 그 키다.
+  const shape = charsetKeyShape(trimmed);
+  const shaped = KNOWN_CHARSET_TEXTURE_KEYS.filter((textureKey) => charsetKeyShape(textureKey) === shape);
+  if (shape && shaped.length === 1) return shaped[0]!;
   const top = searchResources("charset", trimmed)[0];
   if (!top) return null;
   return parseCharsetSearchId(top.id)?.textureKey ?? null;
