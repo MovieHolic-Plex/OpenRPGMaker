@@ -130,6 +130,12 @@ export type CutsceneValidationContext = {
 
 export type CutsceneCompileOptions = {
   readonly skippable?: boolean;
+  /**
+   * 컷신 앞에서 이미 떠 있던 얼굴(부른 이벤트의 changeFace·페이지 외형)을 지우고 시작한다.
+   * 엔딩 에필로그처럼 «다른 장면»으로 이어지는 컷신에 쓴다 — 안 지우면 에필로그 전 줄이
+   * 엔딩을 부른 NPC 얼굴로 나왔다(2026-09-23 도그푸딩: 내레이션·루미아·카일 모두 할아버지 얼굴).
+   */
+  readonly resetFace?: boolean;
   readonly context?: CutsceneValidationContext;
 };
 
@@ -163,8 +169,14 @@ type FinalTintState = {
   readonly value?: string;
 };
 
+type ShownFace = { readonly key: string; readonly speaker?: string };
+
 type CompileState = {
   readonly pictures: Map<string, FinalPictureState>;
+  /** 화자별로 이 컷신에서 지정된 얼굴. */
+  readonly faces: Map<string, Partial<FaceGraphic>>;
+  /** 이 컷신이 마지막으로 띄운 얼굴. undefined 면 컷신 밖에서 물려받은 상태(모름). */
+  shownFace?: ShownFace;
   camera?: FinalCameraState;
   tint?: FinalTintState;
 };
@@ -172,10 +184,11 @@ type CompileState = {
 export function compileCutscene(beats: readonly CutsceneBeat[], options: CutsceneCompileOptions = {}): Command[] {
   const validation = validateCutscene(beats, options.context);
   if (!validation.ok) throw new CutsceneValidationError(validation.errors);
-  const state: CompileState = { pictures: new Map() };
+  const state: CompileState = { pictures: new Map(), faces: new Map(), ...(options.resetFace ? { shownFace: { key: "" } } : {}) };
   const body = compileBeats(beats, state, { forceNonBlocking: false });
   return [
     { kind: "cutsceneControl", mode: "begin", skippable: options.skippable === true },
+    ...(options.resetFace ? [clearFaceCommand()] : []),
     ...body,
     { kind: "label", name: CUTSCENE_END_LABEL },
     ...cleanupCommands(state),
@@ -216,7 +229,7 @@ function compileBeat(
 ): Command[] {
   switch (beat.kind) {
     case "say":
-      return compileSayBeat(beat);
+      return compileSayBeat(beat, state);
     case "moveActor":
       return [compileMoveActorBeat(beat, options.forceNonBlocking)];
     case "camera":
@@ -244,15 +257,46 @@ function compileBeat(
   }
 }
 
-function compileSayBeat(beat: CutsceneSayBeat): Command[] {
+function faceCommand(face: Partial<FaceGraphic> & { resourceId: string }): Command {
+  return {
+    kind: "changeFace",
+    resourceId: face.resourceId,
+    position: face.position ?? "left",
+    flipHorizontally: face.flipHorizontally ?? false,
+  };
+}
+
+function clearFaceCommand(): Command {
+  return { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false };
+}
+
+function faceKey(face: Partial<FaceGraphic>): string {
+  return `${face.resourceId ?? ""}:${face.position ?? "left"}:${face.flipHorizontally === true}`;
+}
+
+/**
+ * 얼굴은 화자를 따라간다. 얼굴 없는 say 가 **다른 화자**면 앞 사람 얼굴을 지우고, 같은 컷신에서
+ * 그 화자에게 준 얼굴이 있으면 다시 띄운다. 컷신이 스스로 띄운 적 없는 물려받은 얼굴은 건드리지 않는다
+ * (페이지 외형 얼굴로 말하는 NPC 컷신) — 그건 resetFace 가 맡는다.
+ */
+function compileSayBeat(beat: CutsceneSayBeat, state: CompileState): Command[] {
   const commands: Command[] = [];
+  const speaker = beat.speaker?.trim() || undefined;
   if (beat.face?.resourceId) {
-    commands.push({
-      kind: "changeFace",
-      resourceId: beat.face.resourceId,
-      position: beat.face.position ?? "left",
-      flipHorizontally: beat.face.flipHorizontally ?? false,
-    });
+    commands.push(faceCommand(beat.face as Partial<FaceGraphic> & { resourceId: string }));
+    if (speaker) state.faces.set(speaker, beat.face);
+    state.shownFace = { key: faceKey(beat.face), ...(speaker ? { speaker } : {}) };
+  } else {
+    const known = speaker ? state.faces.get(speaker) : undefined;
+    if (known?.resourceId) {
+      if (state.shownFace?.key !== faceKey(known)) {
+        commands.push(faceCommand(known as Partial<FaceGraphic> & { resourceId: string }));
+        state.shownFace = { key: faceKey(known), ...(speaker ? { speaker } : {}) };
+      }
+    } else if (state.shownFace && state.shownFace.key !== "" && state.shownFace.speaker !== speaker) {
+      commands.push(clearFaceCommand());
+      state.shownFace = { key: "" };
+    }
   }
   const lines = beat.lines?.length ? beat.lines : beat.text ? [beat.text] : [];
   for (const body of lines) {
