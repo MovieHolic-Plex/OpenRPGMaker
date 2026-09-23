@@ -20,6 +20,7 @@ import type { SaveResult } from "./persistence/types";
 import type { RemoteProjectTarget } from "./persistence/target";
 import { isSharedDemoProjectId, SHARED_DEMO_PROJECT_ID } from "./sharedDemoProject";
 import { projectWithoutEventDrafts } from "./eventDrafts";
+import { cloneProjectSharingReferenceDocuments } from "./projectClone";
 import { assertCanonicalReplacement, ProjectRoutingError } from "./spatial/saveRouting";
 import { SpatialPersistenceError, type MirrorStatus } from "./spatial/persistenceTypes";
 import { applyAudioDescriptionDelta } from "./audioDescriptions";
@@ -791,7 +792,7 @@ class ProjectStore {
 
   update(mutator: (draft: Project) => void, change: ProjectChangeDescriptor = { scope: "project" }): void {
     if (!canWriteTeamProject()) return;
-    const draft: Project = structuredClone(this.current);
+    const draft: Project = cloneProjectSharingReferenceDocuments(this.current);
     mutator(draft);
     assertCanonicalReplacement(draft, this.writeAuthority);
     ensureProjectMapConnections(draft);
