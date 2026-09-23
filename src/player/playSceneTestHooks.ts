@@ -6,6 +6,7 @@ import type { Dir, Input } from "@/player/input";
 import { reseedSessionRng, type PlaySession } from "@/project/session";
 import { applyDebugOp, applyStatePreset, type DebugOp, type StatePreset } from "@/testing/debugSession";
 import { startPlayerRoute } from "@/player/playerRouteState";
+import { placePlayerOnCurrentMap } from "@/player/playSceneMapCommands";
 import type { MoveCommand } from "@/project/types";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { cloneRngState, normalizeRngState, type RngState } from "@/util/rng";
@@ -283,20 +284,28 @@ export function installPlaySceneTestHooks(
     teleport: (mapId, x, y) => {
       const context = scene as unknown as {
         getMapId?: () => string;
-        loadMap?: (id: string) => void;
+        transferTo?: PlaySceneContext["transferTo"];
+        player?: unknown;
+        centerCamera?: () => void;
         tileX: number;
         tileY: number;
       };
-      // 맵 비교는 세션을 쓰기 **전에** 해야 한다. applyAndSync 가 session.currentMapId 를 먼저
-      // 갈아치우면 getMapId() === mapId 가 항상 참이 되어 loadMap 이 한 번도 불리지 않고,
-      // 세션만 새 맵을 가리킨 채 화면은 옛 맵을 계속 그린다(실측 2026-08-28: 런타임 QA 의
-      // 맵 전환 비트가 세션 값만 보고 통과하고 있었다).
+      // 다른 맵으로 가는 순간이동은 실제 문과 **같은 경로**(transferTo)를 탄다. 예전에는 세션을 쓰고
+      // loadMap 만 불러 주인공 스프라이트·카메라·조명이 옛 맵 좌표에 남았다 — 화면이 검게 그려지고
+      // 행동이 먹지 않았다(도그푸딩 2026-09-23). 맵 비교는 세션을 쓰기 **전에** 한다.
       const previousMapId = context.getMapId?.();
+      if (previousMapId !== mapId && typeof context.transferTo === "function") {
+        // fade:"none" 이면 transferTo 는 await 없이 끝까지 동기로 돈다 — 호출 직후 readState 가 도착 맵을 본다.
+        void context.transferTo({ mapId, x, y, fade: "none", direction: "retain" }).then(syncRuntimeState);
+        syncRuntimeState();
+        return;
+      }
       applyAndSync({ kind: "teleport", mapId, x, y });
-      // Exactly one load per changed map. A merge of two independent fixes left this branch
-      // duplicated, which loaded the destination twice and weakened QA evidence.
-      if (typeof context.loadMap === "function" && previousMapId !== mapId) {
-        context.loadMap(mapId);
+      if (context.player && typeof context.centerCamera === "function") {
+        // 같은 맵: 스프라이트·카메라도 옮긴다(좌표만 쓰면 화면은 옛 자리를 그리고 걸음 판정만 새 칸에서 돈다).
+        placePlayerOnCurrentMap(scene as unknown as PlaySceneContext, x, y);
+        syncRuntimeState();
+        return;
       }
       context.tileX = x;
       context.tileY = y;

@@ -133,6 +133,26 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   void fireAutoTriggers(scene);
 }
 
+/**
+ * 같은 맵 안에서 주인공을 한 칸으로 옮긴다(디버그 순간이동). transferTo 의 착지 뒤 화면 동기화와
+ * 같은 몫 — 세션·칸 좌표만 쓰면 스프라이트와 카메라가 옛 자리에 남아 화면과 판정이 어긋난다.
+ * 맵을 다시 싣지 않으므로 NPC 위치·지운 이벤트는 그대로다.
+ */
+export function placePlayerOnCurrentMap(scene: PlaySceneContext, x: number, y: number): void {
+  const project = store.getCurrent();
+  const body = resolvePlayerBody(project, scene.session);
+  scene.tileX = x;
+  scene.tileY = y;
+  scene.session.x = x;
+  scene.session.y = y;
+  resetFollowerTrailNearPlayer(scene.session, runtimeMap(scene.map, scene.session), project.system.companions);
+  scene.player.setPosition(footprintSpriteX(x, body.footprint, mapTileSize(scene.map)), characterSpriteY(y, mapTileSize(scene.map)));
+  updateCharacterDepth(scene.player, "same");
+  syncFollowerSprites(scene);
+  scene.moving = false;
+  scene.centerCamera();
+}
+
 function transferFadeColor(fade: TransferFade): FadeColor | null {
   switch (fade) {
     case "black":

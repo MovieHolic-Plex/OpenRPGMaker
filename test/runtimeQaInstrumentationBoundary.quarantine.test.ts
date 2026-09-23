@@ -170,7 +170,7 @@ describe("QA instrumentation boundary", () => {
     }
   });
 
-  it("cross-map teleport loads the destination exactly once and same-map teleport never loads", () => {
+  it("cross-map teleport transfers to the destination exactly once and same-map teleport never transfers", () => {
     const previousWindow = globalThis.window;
     const testWindow = { location: { search: "" } } as Window & { __oprnDebug?: RuntimeDebugHook };
     const loads: string[] = [];
@@ -188,7 +188,13 @@ describe("QA instrumentation boundary", () => {
     const scene = {
       events: { once: vi.fn() },
       getMapId: () => session.currentMapId,
-      loadMap: (mapId: string) => loads.push(mapId),
+      transferTo: (request: { mapId: string; x: number; y: number }) => {
+        loads.push(request.mapId);
+        session.currentMapId = request.mapId;
+        scene.tileX = request.x;
+        scene.tileY = request.y;
+        return Promise.resolve();
+      },
       tileX: 0,
       tileY: 0,
     };
