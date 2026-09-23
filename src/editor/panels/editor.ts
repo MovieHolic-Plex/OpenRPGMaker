@@ -2,7 +2,12 @@ import { destroyGame, getGame, startEditGame } from "@/app/mode";
 import { clearTileGraftImageCache } from "@/assets/tileGraftImageCache";
 import { scheduleEditorAssetWarmup } from "@/assets/editorAssetWarmup";
 import { collectProjectReferenceIssues } from "@/project/io/references";
-import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
+import {
+  editorState,
+  editorStateChangedOnlyCanvasOverlay,
+  editorStateNeedsMapTreeRefresh,
+  editorStateNeedsPaletteRefresh,
+} from "@/editor/editorState";
 import { registerAiBootIntentTarget, clearPendingAiBootIntent } from "@/editor/aiBootIntent";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { installSelectionChipHint } from "@/editor/selectionChipHint";
@@ -270,7 +275,16 @@ export function renderEditor(main: HTMLElement): void {
     const previous = lastEditorPanelState;
     lastEditorPanelState = state;
     if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
-    scheduleFullPanelRefresh(state.currentMapId === previous.currentMapId);
+    // 맵을 바꿀 때만 맵 트리를 다시 짓는다. 타일·도구·레이어는 썸네일을 다시 그릴 이유가 없다.
+    if (editorStateNeedsMapTreeRefresh(previous, state)) {
+      scheduleFullPanelRefresh(false);
+      return;
+    }
+    if (editorStateNeedsPaletteRefresh(previous, state)) {
+      schedulePaletteOnlyRefresh();
+      return;
+    }
+    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
   });
   // 미리보기 토글도 눌린 상태(aria-pressed/색)를 그대로 보여야 한다 — 툴바만 다시 그린다.
   unsubMapBackgroundPreview = subscribeMapBackgroundPreview(() => {
@@ -814,6 +828,23 @@ function verticalMargin(node: HTMLElement): number {
 // 반영하면 되므로 정합성 손실은 없다 — mapHistoryPanel 의 scheduleMapHistoryPanelMount 와 같은 모양.
 let fullPanelRefreshQueued = false;
 let fullPanelRefreshNeedsProject = false;
+let paletteRefreshQueued = false;
+
+/** 타일 팔레트와 툴바만. 맵 트리 썸네일은 그대로 둔다. */
+function schedulePaletteOnlyRefresh(): void {
+  if (fullPanelRefreshQueued || paletteRefreshQueued) return;
+  paletteRefreshQueued = true;
+  const run = (): void => {
+    paletteRefreshQueued = false;
+    if (fullPanelRefreshQueued) return;
+    if (leftDock) renderDockPanels(leftDock, ["tiles"]);
+    if (canvasToolbarRoot) renderCanvasToolbar(canvasToolbarRoot);
+    if (mapLockBannerRoot) renderMapEditLockBanner(mapLockBannerRoot);
+  };
+  if (typeof queueMicrotask === "function") queueMicrotask(run);
+  else setTimeout(run, 0);
+}
+
 function scheduleFullPanelRefresh(editorStateOnly = false): void {
   fullPanelRefreshNeedsProject ||= !editorStateOnly;
   if (fullPanelRefreshQueued) return;

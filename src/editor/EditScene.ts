@@ -80,6 +80,7 @@ import {
   type EditSceneTileIndex,
   syncSelectionOverlay,
 } from "@/editor/editSceneRender";
+import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
@@ -247,6 +248,8 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastRenderedMapId: MapId | null = null;
   private lastMaterializedTileWindowKey = "";
   private lastRenderStateKey = "";
+  /** 레이어 색·충돌 오버레이·이벤트 마커·격자. 타일 메시 재생성 키와 분리한다. */
+  private lastViewChromeKey = "";
   private lastCameraViewKey = "";
   private lastAppliedZoom = 0;
   private readonly tileIndex: EditSceneTileIndex = new Map();
@@ -1800,6 +1803,7 @@ export class EditScene extends PhaserRuntime.Scene {
     }
     this.lastRenderedMapId = mid;
     this.lastRenderStateKey = this.renderStateKey(mid);
+    this.lastViewChromeKey = this.viewChromeKey();
     this.lastAppliedZoom = editorState.get().zoom;
     const cameraViewKey = this.cameraViewKey(mid);
     const resetCamera = cameraViewKey !== this.lastCameraViewKey;
@@ -1981,18 +1985,52 @@ export class EditScene extends PhaserRuntime.Scene {
       this.applyCameraZoomOnly(mid);
     }
     const nextKey = this.renderStateKey(mid);
-    if (nextKey === this.lastRenderStateKey) {
-      // 붙여넣기 미리보기 고스트 — editorState 변화(위치 이동 등)마다 갱신.
-      if (state.pastePreview) {
-        this.renderPastePreviewGhost();
-      } else {
-        this.clearPastePreviewGhost();
-      }
-      this.syncSelectionOverlay();
-      this.renderBuildPaletteOverlay();
+    if (nextKey !== this.lastRenderStateKey) {
+      this.redraw();
       return;
     }
-    this.redraw();
+    const chromeKey = this.viewChromeKey();
+    if (chromeKey !== this.lastViewChromeKey) {
+      this.lastViewChromeKey = chromeKey;
+      this.syncViewChrome(mid);
+    }
+    // 붙여넣기 미리보기 고스트 — editorState 변화(위치 이동 등)마다 갱신.
+    if (state.pastePreview) {
+      this.renderPastePreviewGhost();
+    } else {
+      this.clearPastePreviewGhost();
+    }
+    this.syncSelectionOverlay();
+    this.renderBuildPaletteOverlay();
+    if (this.lastPointerTile && this.shouldRenderPaintHover()) {
+      this.renderHoverPreview(this.lastPointerTile.x, this.lastPointerTile.y);
+    }
+  }
+
+  /**
+   * 레이어 흐림·충돌 칠·이벤트 고리·격자. 타일 그림 자체는 이미 만들어져 있다.
+   */
+  private syncViewChrome(mapId: MapId): void {
+    const tileLayer = this.tileLayer;
+    const upperTileLayer = this.upperTileLayer;
+    const overlayLayer = this.overlayLayer;
+    const gridGraphics = this.gridGraphics;
+    if (!tileLayer || !upperTileLayer || !overlayLayer || !gridGraphics) return;
+    const map = store.getCurrent().maps[mapId];
+    if (!map) return;
+    const state = editorState.get();
+    applyEditTileLayerPresentation(this.tileIndex, state.layer);
+    refreshEditSceneOverlay({
+      scene: this,
+      tileLayer,
+      upperTileLayer,
+      tileChunks: this.tileChunks,
+      overlayLayer,
+      gridGraphics,
+      mapId,
+      tileIndex: this.tileIndex,
+    });
+    repaintEditGrid(gridGraphics, map, state.layer, state.showGrid);
   }
 
   private applyCameraZoomOnly(mid: MapId): void {
@@ -2007,22 +2045,27 @@ export class EditScene extends PhaserRuntime.Scene {
     this.publishMapViewport();
   }
 
+  /**
+   * 타일 GameObject 를 다시 만들어야 하는 입력만 담는다.
+   * 도구·레이어·선택 타일·붓·스탬프는 그림 내용이 아니다 — viewChromeKey 와 호버가 맡는다.
+   * selection / pastePreview 도 넣지 마라. 우클릭 드래그·Ctrl+V 고스트가 타일 전체를 다시 만들게 된다.
+   */
   private renderStateKey(mapId: MapId): string {
-    const state = editorState.get();
+    // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
     return [
       mapId,
-      state.tool,
-      state.paintShape,
-      state.layer,
-      state.selectedTile,
-      state.autoConnectMode,
-      state.activePaletteStamp ? `${state.activePaletteStamp.source.startTile}:${state.activePaletteStamp.source.endTile}` : "none",
-      state.brushSize,
-      // 미리보기 토글은 빈 칸 체커의 알파를 바꾼다 — 상태 키에 없으면 증분 렌더가 그 사실을 놓친다.
       mapBackgroundPreviewEnabled() ? "bg-preview" : "bg-hidden",
+    ].join("|");
+  }
+
+  private viewChromeKey(): string {
+    const state = editorState.get();
+    return [
+      state.tool,
+      state.layer,
       state.selectedEventId ?? "none",
-      // selection / pastePreview 는 여기 넣지 마라. 우클릭 드래그·Ctrl+V 고스트가
-      // 타일 전체를 다시 만들게 된다. 전용 오버레이가 따로 따라간다.
+      state.selectedEventPageId ?? "none",
+      state.showGrid ? "grid" : "nogrid",
     ].join("|");
   }
 
