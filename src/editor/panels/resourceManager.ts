@@ -29,6 +29,7 @@ import { resourceKindFromUpload } from "./resourceManagerUtils";
 import { importMediaResource, mediaImportRuleFor } from "./resourceManagerMediaImport";
 import { AudioDescriptionEditor } from "./audioDescriptionEditor";
 import { deleteManagedAudioAsset } from "./resourceManagerAudioDelete";
+import { openAssetSourceBrowser } from "./assetSourceBrowser";
 
 type TilesetEnsureResult = {
   readonly id: TilesetDef["id"];
@@ -207,13 +208,21 @@ export function renderResourceManager(
     ...(recentAssetId === undefined ? {} : { recentAssetId }),
     onDropFile,
     onImportUrl,
+    onBrowseCreatorPage: () => openAssetSourceBrowser((request) => {
+      importImageResource(request.file, "chipset", container, request);
+    }),
   });
   if (focused instanceof HTMLElement && container.contains(focused)) {
     focused.focus({ preventScroll: true });
   }
 }
 
-function importImageResource(file: File, kind: ResourceKind, container: HTMLElement): void {
+function importImageResource(
+  file: File,
+  kind: ResourceKind,
+  container: HTMLElement,
+  choice?: { readonly tileSize: number | null; readonly rememberTileSize: (tileSize: 16 | 32 | 48) => void },
+): void {
   const decision = decideImageImport({ fileName: file.name, mimeType: file.type, sizeBytes: file.size });
   if (!decision.ok) {
     toast(decision.message, "error");
@@ -236,8 +245,14 @@ function importImageResource(file: File, kind: ResourceKind, container: HTMLElem
           void importFacesetSheetAsFaces(dataUrl, file.name, facesetPlan, container);
           return;
         }
-        const selectedTileSize = kind === "chipset" ? await chooseChipsetTileSize(width, height) : undefined;
+        const preset = kind === "chipset" && choice?.tileSize != null && width % choice.tileSize === 0 && height % choice.tileSize === 0
+          ? choice.tileSize
+          : null;
+        const selectedTileSize = kind === "chipset" ? (preset ?? await chooseChipsetTileSize(width, height)) : undefined;
         if (selectedTileSize === null) return;
+        if (kind === "chipset" && (selectedTileSize === 16 || selectedTileSize === 32 || selectedTileSize === 48)) {
+          choice?.rememberTileSize(selectedTileSize);
+        }
         const result = selectedTileSize
           ? { ok: true as const, tileCount: (width / selectedTileSize) * (height / selectedTileSize) }
           : validateResourceDimensions(kind, width, height);

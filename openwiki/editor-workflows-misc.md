@@ -471,3 +471,15 @@ The preparation command checks source hashes before center-sampling each cell to
 explicit cell bounds exclude gutters in three older supplied sheets.
 Preserve the masters, manifest, runtime sheets, generated singles and both TS catalogs together in Git:
 registration in a temporary worktree alone does not preserve the import after that worktree is removed.
+
+### 제작자 페이지에서 타일셋 받기 (2026-09-24)
+
+칩셋 탭의 **제작자 페이지**는 데스크톱 앱 안에 itch.io 페이지만 연다. 사용자는 그 페이지에서
+직접 Download를 누르고, 받은 zip·그림은 현재 프로젝트의 업로드 타일셋으로만 들어간다.
+zip SHA-256이 `BUNDLED_PACK_CATALOG` 또는 이 브라우저에 기억된 기록과 같으면 시트 이름과
+칸 크기를 그대로 적용한다. 처음 보는 zip은 한 번 고른 뒤 그 해시에 붙여 다음부터 묻지 않는다.
+앱이 팩을 대신 받아 두거나 다른 프로젝트에 나눠 주지 않는다. 허용 호스트는 `itch.io`와
+`itch.zone`이다. 웹 편집기에는 같은 가져오기 칸만 있고, 이미 받은 zip을 올릴 수 있다.
+진입은 `src/editor/panels/assetSourceBrowser.ts`, 창은 `electron/main/assetBrowser.ts`,
+해시 표는 `src/editor/assetBrowser/packCatalog.ts`.
+
