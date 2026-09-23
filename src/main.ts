@@ -14,6 +14,7 @@ import "@/storageBoot";
 import "@/editor/editorUiMode";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
 import { loadSharedTileReferences } from "@/project/sharedTileReferences";
+import { loadSharedContent } from "@/project/sharedContent";
 import { bootApp } from "@/app/mode";
 import { dismissBootLoader } from "@/app/bootLoader";
 import { editorState } from "@/editor/editorState";
@@ -99,7 +100,7 @@ void bootEditorWithOpenedProject(app)
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   await adoptElectronOpenProject();
   await initializeTeamAccess();
-  await loadSharedTileReferences();
+  await Promise.all([loadSharedTileReferences(), loadSharedContent()]);
   await bootApp(host);
   startTeamSession();
 }

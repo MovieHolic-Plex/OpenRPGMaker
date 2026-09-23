@@ -170,3 +170,14 @@ canonical spatial 프로젝트는 일반 projects upsert가 거부되므로 `pub
 동시 카탈로그 로딩과 이미지 실패 후 캐시 복구를 확인한다. 결과는
 `output/evidence/place-previews/proof.json`, 화면은 `all-places-scrolled.png`.
 저장 없는 최소 fixture를 사용하며 프로젝트 호스트/정본 콘텐츠를 수정하지 않는다.
+
+
+### 2026-09-24 — bundled fallback for all 31 interiors
+
+The same 31 shared root IDs and their 33 floor rasters are also included in `reviewedPlaces/catalog.json` and `reviewedPlaceIndex.ts`, with real map previews under `public/assets/reviewed-places/shared_*.png`. This makes the reviewed set available in new projects even on the released catalog path that does not load the host-wide SQLite extension. Dynamic shared enumeration deduplicates by these same IDs. The three-floor inn is one root with three floor children; all original lower/upper tile arrays are retained.
+
+## 공용 장소 웹 배포 계약 (2026-09-24)
+
+검수된 Tibo 실내 31종은 기본 카탈로그에 포함한다. 추가 공용 장소는 `loadSharedContent()`가 호스트의 `/__oprn/shared-content`에서 프로젝트 ID 없이 읽어 `installSharedReviewedPlaces()`에 설치한다. 웹 호스트와 Vite가 같은 SQLite 읽기 경로를 제공하며, 갤러리는 정적 상수 대신 `reviewedPlaceIndex()`를 사용한다. 썸네일도 호스트 공용 미리보기를 우선 사용한다. 프로젝트 소유 복사본은 변경하지 않는다.
+
+등록 완료는 DB 저장만으로 판정하지 않는다. 해당 변경을 main에 병합하고, main의 커밋으로 빌드한 배포 파일에서 공용 로더와 장소 31종을 확인한 뒤 실제 hostProject URL의 자료집 → 맵 → 장소에서 재확인한다. 미커밋 파일로 빌드한 결과는 다음 배포에서 사라질 수 있다.

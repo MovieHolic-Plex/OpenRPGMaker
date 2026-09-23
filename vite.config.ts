@@ -1,3 +1,4 @@
+import { sharedContentMiddleware } from './scripts/lib/sharedContentSqlite';
 import { defineConfig, loadEnv, type Plugin, type PreviewServer, type ProxyOptions, type ViteDevServer } from "vite";
 import { fileURLToPath, URL } from "node:url";
 import {
@@ -232,7 +233,7 @@ export default defineConfig(({ mode }) => {
   // (npm run dev · dev:worktree · playwright webServer)는 공유 node_modules 를 보면 스스로
   // `<체크아웃>/.vite-cache/dev` 를 넣는다(scripts/lib/viteCacheDir.mjs). vite 를 직접 부르면 안 걸린다.
   cacheDir: process.env.VITE_CACHE_DIR,
-  plugins: [{ name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin()],
+  plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을
   // 역추적할 수 없다. !important 1,051개와 "재배열 금지" 순서 계약 40여 개가 걸린 시트에서

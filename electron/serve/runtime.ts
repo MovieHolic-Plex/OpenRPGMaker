@@ -1,3 +1,5 @@
+import { sharedContentMiddleware } from "../../scripts/lib/sharedContentSqlite";
+import { SHARED_CONTENT_ENDPOINT } from "../../src/project/sharedContentSchema";
 import { readSharedTileReferences } from "../../scripts/lib/sharedTileReferencesSqlite";
 import { SHARED_TILE_REFERENCES_ENDPOINT } from "../../src/project/sharedTileReferences";
 import { createHash, randomUUID } from "node:crypto";
@@ -330,6 +332,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       if (url.pathname === '/__oprn/team' && request.method === 'GET') {
         sendHtml(response, inject(teamPage.replaceAll('href="/"', `href="${returnUrl}"`))); return;
       }
+      if (url.pathname === SHARED_CONTENT_ENDPOINT) { sharedContentMiddleware(request, response, () => {}); return; }
       if (url.pathname === SHARED_TILE_REFERENCES_ENDPOINT) {
         if (request.method !== 'GET') { await sendJson(response, 405, { error: 'Read only' }); return; }
         response.setHeader('cache-control', 'no-store');
