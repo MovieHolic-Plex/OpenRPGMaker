@@ -53,7 +53,31 @@ export function checkBriefConformance(project: Project, briefText: string, graph
     }
   }
   if (BOSS.test(briefText) && (commandKinds.get("battleProcessing") ?? []).length === 0) {
-    findings.push({ severity: "warning", code: "brief-no-boss", message: "기획에 보스가 있는데 전투(battleProcessing) 명령이 하나도 없습니다." });
+    // 적 그룹은 만들어 두고 부르지 않은 경우가 흔하다(전투 명령이 거절된 뒤 선택지로 대신 채움) — 그 이름을 함께 준다.
+    const referenced = referencedTroopIds(project);
+    // 장르 팩의 기본 적 그룹도 대개 안 쓰이므로, 맵 이벤트 이름과 같은 이름(= 그 이벤트가 이 전투였어야 함)만 짚는다.
+    const eventNames = new Set(Object.values(project.maps).flatMap((map) => (map.events ?? []).map((event) => event.name?.trim()).filter(Boolean)));
+    const unused = project.database.troops.filter((troop) => !referenced.has(troop.id) && eventNames.has(troop.name?.trim()));
+    findings.push({
+      severity: "warning", code: "brief-no-boss",
+      message: `기획에 보스가 있는데 전투(battleProcessing) 명령이 하나도 없습니다.${unused.length ? ` 같은 이름의 이벤트가 있는데 전투로 부르지 않는 적 그룹: ${unused.map((troop) => `${troop.name}(${troop.id})`).join(", ")}.` : ""}`,
+    });
   }
   return findings;
+}
+
+/** 맵·공통 이벤트 어디든 `troopId` 로 가리키는 적 그룹(전투 명령·조우표). */
+function referencedTroopIds(project: Project): Set<string> {
+  const ids = new Set<string>();
+  const walk = (value: unknown): void => {
+    if (Array.isArray(value)) { for (const item of value) walk(item); return; }
+    if (!value || typeof value !== "object") return;
+    for (const [key, child] of Object.entries(value)) {
+      if (key === "troopId" && typeof child === "string") ids.add(child);
+      else if (typeof child === "object") walk(child);
+    }
+  };
+  walk(project.maps);
+  walk(project.database.commonEvents);
+  return ids;
 }

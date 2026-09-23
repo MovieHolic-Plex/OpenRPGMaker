@@ -81,6 +81,18 @@ describe("qa gameCheck (모델 없는 게임 검사기)", () => {
     expect(codes(runGameCheck(project, { skipAutoPlay: true }))).toContain("no-ending-trigger");
   });
 
+  it("보스전이 선택지로 바뀌어 전투가 없으면, 같은 이름의 안 쓰인 적 그룹을 짚는다(실제 gen 런 lighthouse-1)", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    const boss = project.maps.map_cave!.events.find((e) => e.id === "ev_boss")!;
+    const battle = boss.pages[0]!.commands[0] as { victoryBranch: unknown[] };
+    boss.pages[0]!.commands = [{ kind: "choices", options: [{ text: "맞서 싸운다", branch: battle.victoryBranch }, { text: "물러선다", branch: [{ kind: "text", body: "..." }] }] }] as never;
+    project.database.troops.push({ ...project.database.troops.find((t) => t.id === "troop_slime")!, id: "troop_blizzard_spirit", name: "눈보라 정령" });
+    const report = runGameCheck(project, { skipAutoPlay: true, briefText: "등대를 얼린 보스 눈보라 정령을 물리친다" });
+    const finding = report.findings.find((f) => f.code === "brief-no-boss");
+    expect(finding?.message).toContain("눈보라 정령(troop_blizzard_spirit)");
+    expect(finding?.message).not.toContain("troop_slime");
+  });
+
   // 3차 재시험 워크스페이스의 읽기 전용 내보내기(node scripts/oprn-store.mjs export-json …). 없으면 건너뛴다.
   const RETEST3 = "/tmp/qa-retest3.json";
   it.skipIf(!fs.existsSync(RETEST3))("3차 재시험 내보내기에서 speciesId/null 파티 막힘을 잡는다", () => {
