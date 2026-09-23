@@ -47,6 +47,11 @@ export interface RunPiAgentOptions {
   readonly apiKey?: string;
   readonly providerApiKeys?: Record<string, string | undefined>;
   readonly onEvent?: (event: PiAgentEvent) => void;
+  /**
+   * 레지스트리 툴 호출 하나의 전체 기록(인자·결과 원본). `tool_end` 이벤트의 결과는 활동 로그용으로 잘려 있다 —
+   * 헤드리스 녹화(scripts/qa-game)가 재생에 쓸 원본은 여기서만 나온다. 관찰 전용: 실행을 바꾸지 않는다.
+   */
+  readonly onToolCall?: (record: PiToolCallRecord) => void;
   readonly signal?: AbortSignal;
   /** 전체 실행 상한(ms). 기본 PI_AGENT_DEFAULT_TIMEOUT_MS(3000초). */
   readonly timeoutMs?: number;
@@ -204,6 +209,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     exposed.add(shape.name);
   };
   const recordCall = (record: PiToolCallRecord): void => {
+    try { options.onToolCall?.(record); } catch { /* recording must never change the run */ }
     if (record.toolCallId) pendingSummaries.set(record.toolCallId, { ok: record.result.ok, summary: trimText(record.result.summary, 400), result: activityPayload(record.result), visuals: record.visuals });
     const villageMapId = authoredVillageMapId(record);
     if (villageMapId) villageMapIds.add(villageMapId);
