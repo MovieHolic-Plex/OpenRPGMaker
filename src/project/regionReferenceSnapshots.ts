@@ -8,6 +8,8 @@ import diverse6 from "./regionReferences/mistpond-hollow.json";
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
 import fantasyPlaces from "./regionReferences/fantasy-places.json";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
+import climateVillages from "./regionReferences/climate-villages.json";
+import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import type { GameMap, TilesetDef, UploadedAsset } from "./types";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 import courtyard from "./regionReferences/castle-courtyard.json";
@@ -109,6 +111,13 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
   if (fantasy) {
     const source = fantasyPlaces as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
     const map = source.maps[fantasy.sourceMapId]!;
+    return { map, tileset: source.tilesets[map.tilesetId]! };
+  }
+  // Snow/volcano villages likewise share one snapshot file.
+  const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (climate) {
+    const source = climateVillages as unknown as { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
+    const map = source.maps[climate.sourceMapId]!;
     return { map, tileset: source.tilesets[map.tilesetId]! };
   }
   const ship = shipSource.maps[

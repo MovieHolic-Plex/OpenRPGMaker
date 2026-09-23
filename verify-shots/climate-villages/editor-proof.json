@@ -1,0 +1,19 @@
+{
+  "maps": [
+    {
+      "id": "climate-snow-frozen-mistpond",
+      "tilesetId": "forest_harmony_snow",
+      "white": 0.5462112641124169,
+      "lava": 0.000040770148097562965,
+      "magenta": 0
+    },
+    {
+      "id": "climate-volcano-twin-falls",
+      "tilesetId": "forest_harmony_volcano",
+      "white": 0.04863199165570969,
+      "lava": 0.10074303594907809,
+      "magenta": 0
+    }
+  ],
+  "errors": []
+}
