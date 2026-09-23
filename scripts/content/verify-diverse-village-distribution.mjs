@@ -10,8 +10,7 @@ await withTsModule("src/project/defaults/blankProject.ts", "fresh.mjs", (m) => b
 assert.equal(blank.tilesets.forest_harmony.referenceDocuments.filter((c) => c.id === category).length, 1);
 assert.equal(blank.tilesets.forest_harmony.referenceDocuments.filter((c) => c.id === concept).length, 1);
 assert.equal(blank.tilesets.forest_harmony.tileMeta[84].label, "스테인드글라스 창");
-assert.equal(blank.tilesets.forest_harmony_grass_joins.count,10);
-assert.equal(blank.tilesets.forest_harmony_grass_joins.referenceSourceTilesetId,"forest_harmony");
+assert.equal(blank.tilesets.forest_harmony_grass_joins, undefined);
 proof.freshProject = true;
 proof.sharedGrassTilesAndGuidance = true;
 await withTsModule("src/project/defaults/defaultAssets.ts", "backfill.mjs", (m) => {
@@ -32,9 +31,14 @@ await withTsModule("src/project/defaults/defaultAssets.ts", "backfill.mjs", (m) 
   const once = JSON.stringify(old);
   m.ensureBundledTilesets(old);
   assert.equal(JSON.stringify(old), once);
-  assert.equal(old.tilesets.forest_harmony_grass_joins.count,10);
-  assert.equal(old.tilesets.forest_harmony_grass_joins.tilesPerRow,10);
-  assert.equal(old.tilesets.forest_harmony_grass_joins.tileMeta[9].defaultLayer,'lower');
+  const grassUsed = Object.values(old.maps ?? {}).some((map) => map?.tilesetId === "forest_harmony_grass_joins");
+  if (grassUsed) {
+    assert.equal(old.tilesets.forest_harmony_grass_joins.count,10);
+    assert.equal(old.tilesets.forest_harmony_grass_joins.tilesPerRow,10);
+    assert.equal(old.tilesets.forest_harmony_grass_joins.tileMeta[9].defaultLayer,'lower');
+  } else {
+    assert.equal(old.tilesets.forest_harmony_grass_joins, undefined);
+  }
   proof.existingProjectBackfill = true;
   proof.authorDocumentsPreserved = true;
   proof.idempotent = true;

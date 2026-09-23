@@ -82,6 +82,8 @@ export function defaultTilesets(): Record<string, TilesetDef> {
     [DEFAULT_TILESET_ID]: defaultTileset(),
   };
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
+    // 잔디 사선 10칸은 숲 이식용 그림이다. 맵이 이 타일셋을 직접 쓰지 않으면 목록에 올리지 않는다.
+    if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) continue;
     const tileset = bundledEasyRpgTileset(asset);
     if (tileset.id === DEFAULT_TILESET_ID) continue;
     tilesets[tileset.id] = tileset;
@@ -96,6 +98,12 @@ function villageObjectTilesetUsedByMaps(project: { maps?: Readonly<Record<string
   return Object.values(maps).some((map) => map?.tilesetId === SHARED_VILLAGE_OBJECT_ID);
 }
 
+function grassJoinsTilesetUsedByMaps(project: { maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
+  const maps = project.maps;
+  if (!maps) return true;
+  return Object.values(maps).some((map) => map?.tilesetId === "forest_harmony_grass_joins");
+}
+
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
   let changed = false;
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
@@ -106,6 +114,15 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     // 선별 소품 19종은 숲 시트 아래 행으로 붙인다. 이 시트를 타일셋으로 쓰는 맵이 없을 때만
     // 목록에서 빼며, 맵이 있으면 칸 번호가 깨지지 않게 시트를 남긴다.
     if (id === SHARED_VILLAGE_OBJECT_ID && !villageObjectTilesetUsedByMaps(project)) {
+      if (project.tilesets[id]) {
+        delete project.tilesets[id];
+        changed = true;
+      }
+      continue;
+    }
+    // 잔디 사선 경계는 숲 아틀라스를 덮지 않으려고 둔 10칸 그림이다. 맵이 그 타일셋 id를
+    // 쓰지 않으면 목록에서 빼도 이식(sourceChipset)은 텍스처 키로 계속 읽는다.
+    if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE && !grassJoinsTilesetUsedByMaps(project)) {
       if (project.tilesets[id]) {
         delete project.tilesets[id];
         changed = true;
