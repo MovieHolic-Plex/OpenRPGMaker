@@ -159,9 +159,9 @@ describe("Assistant After UX contracts", () => {
     expect(findByTestId(fold!, "ai-more-export")).not.toBeNull();
     // 「도크 전환」 항목은 도크 축과 함께 삭제됐다.
     expect(findByTestId(fold!, "ai-more-dock")).toBeNull();
-    // 대기 화면 라디오는 접기 밖 — 펼치지 않아도 바로 보인다.
+    // 대기 화면 라디오는 빈 대화 화면과 함께 걷었다.
     expect(findByTestId(fold!, "ai-temperature-quiet-gold")).toBeNull();
-    expect(findByTestId(menu, "ai-temperature-quiet-gold")).not.toBeNull();
+    expect(findByTestId(menu, "ai-temperature-quiet-gold")).toBeNull();
   });
 
   it("folds lint and quality verification dumps into details labeled 작업 기록", async () => {

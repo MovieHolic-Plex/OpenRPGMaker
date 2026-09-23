@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, toolLabelSummary } from "@/editor/panels/aiToolLabels";
 import { DECK_ICON_NAMES } from "@/editor/panels/aiDeckIcons";
+import { activeTools } from "@/editor/tools/toolRegistry";
 
 describe("aiToolLabels — 툴 이름을 사람 말로", () => {
   it("아는 툴은 한국어 라벨로 부른다", () => {
@@ -49,5 +50,11 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     expect(toolLabelSummary(["get_map_region", "find_layout_regions", "stamp_structure", "place_npc", "set_shop_stock"]))
       .toBe("영역 읽기 → 빈 자리 찾기 → 건물 찍기 → NPC 배치 → …");
     expect(toolLabelSummary([])).toBe("");
+  });
+
+  it("모델에 노출되는 모든 툴은 사전에 있다 — 없으면 작업 과정에 영문 함수명이 보인다", () => {
+    // Break(2026-09-23 실측): 248개 중 160개가 사전에 없어 「read tileset reference」 가 그대로 보였다.
+    const missing = activeTools().map(tool => tool.name).filter(name => !TOOL_LABELS[name]);
+    expect(missing).toEqual([]);
   });
 });

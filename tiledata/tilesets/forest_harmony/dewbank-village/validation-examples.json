@@ -1,0 +1,172 @@
+{
+  "normal": {
+    "valid": true,
+    "reference": "dewbank-village-v1",
+    "mapId": "dewbank_village",
+    "totalErrors": 0,
+    "truncated": false,
+    "errors": [],
+    "scope": "Exact approved arrays and source bindings; engine tile reachability from (36,30). Events and aesthetic quality are not evaluated."
+  },
+  "examples": [
+    {
+      "input": {
+        "id": "cut-root",
+        "x": 71,
+        "y": 10,
+        "layer": "lower",
+        "tile": 1430,
+        "replacement": 240
+      },
+      "result": {
+        "valid": false,
+        "reference": "dewbank-village-v1",
+        "mapId": "dewbank_village",
+        "totalErrors": 1,
+        "truncated": false,
+        "errors": [
+          {
+            "code": "cut-root",
+            "x": 71,
+            "y": 10,
+            "layer": "lower",
+            "expected": 1430,
+            "actual": 240
+          }
+        ],
+        "scope": "Exact approved arrays and source bindings; engine tile reachability from (36,30). Events and aesthetic quality are not evaluated."
+      }
+    },
+    {
+      "input": {
+        "id": "missing-trunk",
+        "x": 71,
+        "y": 9,
+        "layer": "lower",
+        "tile": 1426,
+        "replacement": 240
+      },
+      "result": {
+        "valid": false,
+        "reference": "dewbank-village-v1",
+        "mapId": "dewbank_village",
+        "totalErrors": 1,
+        "truncated": false,
+        "errors": [
+          {
+            "code": "missing-trunk",
+            "x": 71,
+            "y": 9,
+            "layer": "lower",
+            "expected": 1426,
+            "actual": 240
+          }
+        ],
+        "scope": "Exact approved arrays and source bindings; engine tile reachability from (36,30). Events and aesthetic quality are not evaluated."
+      }
+    },
+    {
+      "input": {
+        "id": "wrong-edge-direction",
+        "x": 13,
+        "y": 27,
+        "layer": "upper",
+        "tile": 2555,
+        "replacement": 2552
+      },
+      "result": {
+        "valid": false,
+        "reference": "dewbank-village-v1",
+        "mapId": "dewbank_village",
+        "totalErrors": 1,
+        "truncated": false,
+        "errors": [
+          {
+            "code": "wrong-edge-direction",
+            "x": 13,
+            "y": 27,
+            "layer": "upper",
+            "expected": 2555,
+            "actual": 2552
+          }
+        ],
+        "scope": "Exact approved arrays and source bindings; engine tile reachability from (36,30). Events and aesthetic quality are not evaluated."
+      }
+    },
+    {
+      "input": {
+        "id": "wrong-layer",
+        "x": 27,
+        "y": 31,
+        "layer": "upper",
+        "tile": 2639,
+        "replacement": -1,
+        "moveToOtherLayer": true
+      },
+      "result": {
+        "valid": false,
+        "reference": "dewbank-village-v1",
+        "mapId": "dewbank_village",
+        "totalErrors": 2,
+        "truncated": false,
+        "errors": [
+          {
+            "code": "tile-mismatch",
+            "x": 27,
+            "y": 31,
+            "layer": "lower",
+            "expected": 240,
+            "actual": 2639
+          },
+          {
+            "code": "wrong-layer",
+            "x": 27,
+            "y": 31,
+            "layer": "upper",
+            "expected": 2639,
+            "actual": -1
+          }
+        ],
+        "scope": "Exact approved arrays and source bindings; engine tile reachability from (36,30). Events and aesthetic quality are not evaluated."
+      }
+    },
+    {
+      "input": {
+        "id": "blocked-entrance",
+        "x": 35,
+        "y": 11,
+        "layer": "upper",
+        "tile": -1,
+        "replacement": 237
+      },
+      "result": {
+        "valid": false,
+        "reference": "dewbank-village-v1",
+        "mapId": "dewbank_village",
+        "totalErrors": 2,
+        "truncated": false,
+        "errors": [
+          {
+            "code": "tile-mismatch",
+            "x": 35,
+            "y": 11,
+            "layer": "upper",
+            "expected": -1,
+            "actual": 237
+          },
+          {
+            "code": "blocked-entrance",
+            "x": 35,
+            "y": 11,
+            "houseId": "village_house_1",
+            "door": {
+              "x": 35,
+              "y": 10
+            }
+          }
+        ],
+        "scope": "Exact approved arrays and source bindings; engine tile reachability from (36,30). Events and aesthetic quality are not evaluated."
+      }
+    }
+  ]
+}

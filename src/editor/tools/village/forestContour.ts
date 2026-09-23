@@ -41,7 +41,8 @@ export function forestContourScore(x: number, y: number, area: Rect, seed: numbe
  * Root pixels, full three-row height and end caps are shared with legacy groves. */
 export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGroup,
   free: (x: number, y: number) => boolean, seed: number, coverage: number,
-  desired?: (x: number, y: number) => boolean): ForestGroveReport {
+  desired?: (x: number, y: number) => boolean,
+  scoreAt?: (x: number, y: number) => number): ForestGroveReport {
   const W = map.width;
   const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
     && x < Math.min(W, area.x + area.w) && y < Math.min(map.height, area.y + area.h);
@@ -53,7 +54,7 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
     // rows there created an artificial straight treeline across the whole map.
     if (!open(x, y) || (y + 1 < map.height && !open(x, y + 1))
       || (y + 2 < map.height && !open(x, y + 2)) || (desired && !desired(x, y))) continue;
-    const score = forestContourScore(x + 0.5, y + 0.5, area, seed, coverage);
+    const score = scoreAt ? scoreAt(x + 0.5, y + 0.5) : forestContourScore(x + 0.5, y + 0.5, area, seed, coverage);
     if (score > 0) candidates.push({ index: y * W + x, score });
   }
   candidates.sort((a, b) => b.score - a.score || a.index - b.index);

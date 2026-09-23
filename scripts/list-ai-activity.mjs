@@ -72,6 +72,7 @@ function summarize(record) {
     instruction: record.instruction ?? "",
     ...(record.result?.error ? { error: record.result.error } : {}),
     ...(record.result?.stoppedReason ? { stoppedReason: record.result.stoppedReason } : {}),
+    ...(record.result?.usage ? { usage: record.result.usage } : {}),
     ...(record.result?.recap
       ? {
           elapsedMs: record.result.recap.elapsedMs,

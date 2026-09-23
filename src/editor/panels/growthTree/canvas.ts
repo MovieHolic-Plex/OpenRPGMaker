@@ -89,7 +89,7 @@ export function renderGrowthCanvas(o: GraphOptions): HTMLElement {
     plane.append(card);
   }
   viewport.append(spacer);
-  if (!o.nodes.length) viewport.append(el('div', { class: 'growth-canvas-empty', children: [el('span', { class: 'growth-empty-mark', text: '✧' }), el('h3', { text: '첫 번째 가능성을 놓아보세요' }), el('p', { text: '스킬 또는 능력치 노드를 추가하고 성장 경로를 연결하세요.' })] }));
+  if (!o.nodes.length) viewport.append(el('div', { class: 'growth-canvas-empty', children: [el('span', { class: 'growth-empty-mark', text: '✧' }), el('h3', { text: '아직 노드가 없습니다' }), el('p', { text: '위의 「스킬 추가」·「패시브 추가」로 첫 노드를 놓거나, 「프리셋」에서 예시를 골라 시작하세요.' })] }));
   const zoom = (delta: number): void => o.onZoom(Math.max(.4, Math.min(1.6, Math.round((o.zoom + delta) * 10) / 10)));
   viewport.addEventListener('wheel', e => { if (e.ctrlKey || e.metaKey) { e.preventDefault(); zoom(e.deltaY > 0 ? -.1 : .1); } }, { passive: false });
   const controls = el('div', { class: 'growth-canvas-controls', children: [button('−', testid('zoom-out'), () => zoom(-.1)), el('output', { text: `${Math.round(o.zoom * 100)}%`, attrs: { 'aria-label': '확대 비율' } }), button('+', testid('zoom-in'), () => zoom(.1)), button('자동 배치', testid('arrange'), o.onArrange)] });

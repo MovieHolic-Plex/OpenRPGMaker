@@ -564,7 +564,7 @@ describe("하단 레인 보드", () => {
 
     findByTestId(root, "ai-studio-back-director")?.click();
     expect(chat?.className).not.toContain("is-lane-thread");
-    expect(findByTestId(root, "ai-studio-thread-title")?.textContent).toBe("감독");
+    expect(findByTestId(root, "ai-studio-thread-title")?.textContent).toBe("내 요청");
     manager.dispose();
   });
 

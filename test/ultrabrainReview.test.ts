@@ -35,13 +35,10 @@ describe("Ultrabrain whole-map review", () => {
     map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
     await reviewMapHarmony(before, after, "나무 수정", defaultAiConfig());
     expect(mocks.render).toHaveBeenCalledWith(after, map);
-    expect(mocks.chat).toHaveBeenCalledTimes(2);
-    expect(mocks.chat.mock.calls[0]![0].maxTokens).toBe(4096);
-    expect(mocks.chat.mock.calls[0]![1].messages[0].content).toContain("You are Vision");
-    expect(mocks.chat.mock.calls[0]![1].messages[1].content[1])
-      .toEqual(mocks.chat.mock.calls[1]![1].messages[1].content[1]);
-    expect(mocks.chat.mock.calls[1]![1].messages[2].content).toContain("Vision 관찰 자료");
-    const [config, request] = mocks.chat.mock.calls[1]!;
+    // 맵당 한 번 — 같은 이미지를 Vision 으로 먼저 한 번 더 보내지 않는다.
+    expect(mocks.chat).toHaveBeenCalledTimes(1);
+    const [config, request] = mocks.chat.mock.calls[0]!;
+    expect(request.messages[0].content).toContain("You are Ultrabrain");
     expect(config).toMatchObject({ model: "gemini-3.8-flash", reasoningEffort: "high" });
     expect(request.messages[1].content.filter((p: { type: string }) => p.type === "image_url")).toHaveLength(1);
     expect(JSON.stringify(before)).not.toBe(JSON.stringify(after));
@@ -60,11 +57,11 @@ describe("Ultrabrain whole-map review", () => {
     await reviewMapHarmony(before, after, "마을 만들어줘", defaultAiConfig());
     for (const [, request] of mocks.chat.mock.calls) {
       const system = request.messages[0].content as string;
-      expect(system, "범위 지적 금지를 두 역할 모두에 건다").toMatch(/never report that the (map|image) is the wrong scene/i);
+      expect(system, "범위 지적 금지를 건다").toMatch(/never report that the (map|image) is the wrong scene/i);
     }
-    const brainSystem = mocks.chat.mock.calls[1]![1].messages[0].content as string;
+    const brainSystem = mocks.chat.mock.calls[0]![1].messages[0].content as string;
     expect(brainSystem, "요청 부합 판정을 조화 기준에서 뺀다").not.toContain("fit to the user's request");
-    const payload = JSON.parse(mocks.chat.mock.calls[1]![1].messages[1].content[0].text as string) as Record<string, unknown>;
+    const payload = JSON.parse(mocks.chat.mock.calls[0]![1].messages[1].content[0].text as string) as Record<string, unknown>;
     expect(payload.mapScope, "이 맵이 요청의 한 부분임을 알려 준다").toContain("요청 전체를 혼자 담지 않는다");
   });
 
@@ -101,6 +98,32 @@ describe("Ultrabrain whole-map review", () => {
     expect(mocks.render.mock.calls[0]![1].id).toBe("map_second");
   });
 
+  it("맵 여러 장은 동시에 검수하되 결과 순서는 맵 순서다", async () => {
+    const before = createBlankProject();
+    const after = structuredClone(before);
+    const first = Object.values(after.maps)[0]!;
+    first.lowerTiles[0] = (first.lowerTiles[0] ?? 0) + 1;
+    for (const id of ["map_b", "map_c", "map_d"]) {
+      const copy = structuredClone(first);
+      copy.id = id;
+      after.maps[id] = copy;
+    }
+    let inFlight = 0;
+    let peak = 0;
+    const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
+    mocks.chat.mockImplementation(async () => {
+      inFlight += 1;
+      peak = Math.max(peak, inFlight);
+      await new Promise(resolve => setTimeout(resolve, 5));
+      inFlight -= 1;
+      return ok;
+    });
+    const reviews = await reviewMapHarmony(before, after, "…", defaultAiConfig());
+    expect(reviews.map(review => review.mapId)).toEqual(Object.keys(after.maps));
+    expect(peak).toBeGreaterThan(1);
+    expect(peak).toBeLessThanOrEqual(3);
+  });
+
   it("unresolvedReviewSignature 는 통과한 맵을 빼고 순서에 흔들리지 않는다", () => {
     const ok = { mapId: "a", harmonious: true, summary: "좋다", findings: [] };
     const bad = { mapId: "b", harmonious: false, summary: "나쁘다", findings: ["x", "y"] };
@@ -119,14 +142,13 @@ describe("Ultrabrain whole-map review", () => {
     const map = Object.values(after.maps)[0]!;
     map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
     const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
-    // Vision 은 한 번에 성공, Ultrabrain 은 첫 호출이 length 로 끊긴다.
-    mocks.chat.mockResolvedValueOnce(ok)
-      .mockResolvedValueOnce({ finishReason: "length", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+    // 첫 호출이 length 로 끊긴다.
+    mocks.chat.mockResolvedValueOnce({ finishReason: "length", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
       .mockResolvedValue(ok);
     await reviewMapHarmony(before, after, "…", defaultAiConfig());
     const budgets = mocks.chat.mock.calls.map(([config]) => (config as { maxTokens: number }).maxTokens);
-    expect(budgets[1], "첫 검수 예산은 상수 그대로").toBe(ULTRABRAIN_REVIEW_MAX_TOKENS);
-    expect(budgets[2], "끊긴 뒤 재시도는 예산을 넓힌다").toBeGreaterThan(budgets[1]!);
+    expect(budgets[0], "첫 검수 예산은 상수 그대로").toBe(ULTRABRAIN_REVIEW_MAX_TOKENS);
+    expect(budgets[1], "끊긴 뒤 재시도는 예산을 넓힌다").toBeGreaterThan(budgets[0]!);
   });
 
   it("끊김이 아닌 실패는 같은 예산으로 다시 묻는다 — 일시 오류이기 때문", async () => {
@@ -134,12 +156,11 @@ describe("Ultrabrain whole-map review", () => {
     const map = Object.values(after.maps)[0]!;
     map.lowerTiles[0] = (map.lowerTiles[0] ?? 0) + 1;
     const ok = { finishReason: "stop", message: { content: JSON.stringify({ harmonious: true, summary: "어울립니다.", findings: [] }) }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] };
-    mocks.chat.mockResolvedValueOnce(ok)
-      .mockResolvedValueOnce({ finishReason: "stop", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
+    mocks.chat.mockResolvedValueOnce({ finishReason: "stop", message: { content: "" }, imageDelivery: [{ messageIndex: 1, partIndex: 1 }] })
       .mockResolvedValue(ok);
     await reviewMapHarmony(before, after, "…", defaultAiConfig());
     const budgets = mocks.chat.mock.calls.map(([config]) => (config as { maxTokens: number }).maxTokens);
-    expect(budgets[2]).toBe(budgets[1]);
+    expect(budgets[1]).toBe(budgets[0]);
   });
 
   it("refuses missing image delivery, truncated output, inconsistent verdicts, and cancellation", async () => {
@@ -172,7 +193,7 @@ describe("Ultrabrain whole-map review", () => {
     const reviews = await reviewMapHarmony(before, after, "검수", defaultAiConfig());
     expect(reviews).toHaveLength(1);
     expect(reviews[0]).toMatchObject({ harmonious: true });
-    expect(mocks.chat).toHaveBeenCalledTimes(3);
+    expect(mocks.chat).toHaveBeenCalledTimes(2);
   });
 
   it("does not retry after cancellation", async () => {

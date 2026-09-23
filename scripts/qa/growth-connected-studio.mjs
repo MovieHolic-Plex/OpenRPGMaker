@@ -96,8 +96,10 @@ try {
   await finishDomState(page);
   await clickState('toolbar-database', () => Boolean(document.querySelector('[data-testid="database-modal"]')));
   const tab = async mode => {
-    const id = mode === 'promotion' ? 'db-tab-promotion-tree' : 'db-tab-skill-trees';
-    if (!await page.getByTestId(id).isVisible()) await page.getByTestId('db-tab-group-party').click();
+    const id = mode === 'promotion' ? 'db-subview-promotion-tree' : 'db-subview-skill-trees';
+    const parent = mode === 'promotion' ? 'db-tab-classes' : 'db-tab-skills';
+    if (!await page.getByTestId(parent).isVisible()) await page.getByTestId('db-tab-group-party').click();
+    await page.getByTestId(parent).click();
     await clickState(id, mode => Boolean(document.querySelector(`[data-testid="growth-studio-${mode}"] [data-testid="growth-preset-preview"] .growth-node`)), mode);
   };
   await tab('promotion');

@@ -109,16 +109,18 @@ test("테스트 플레이는 창을 채우고, 타이틀 없이 시작하고, �
     .poll(async () => JSON.parse((await runtimeState.textContent()) ?? "{}").player?.y)
     .not.toBe(before.player?.y);
 
-  // D5: 저작자가 읽을 수 있는 라이브 리드아웃이 화면에 보인다.
+  // 패널은 기본으로 🛠 아이콘 하나로 접혀 있고 펼침 상태를 기억한다 — 무조건 토글하면 오히려 접힌다.
+  // 안 보일 때만 연다.
+  const panelToggle = page.getByTestId("runtime-debug-toggle");
+  const switchSelect = page.getByTestId("runtime-debug-switch-select");
+  if (!(await switchSelect.isVisible())) await panelToggle.click();
+
+  // D5: 저작자가 읽을 수 있는 라이브 리드아웃이 (펼친) 화면에 보인다.
   const liveState = page.getByTestId("runtime-debug-live-state");
   await expect(liveState).toBeVisible();
   await expect(liveState).toContainText(before.mapId);
 
   // D4: 스위치 컨트롤이 살아 있고 ON 이 런타임 상태를 바꾼다.
-  const panelToggle = page.getByTestId("runtime-debug-toggle");
-  const switchSelect = page.getByTestId("runtime-debug-switch-select");
-  // 패널은 펼침 상태를 기억한다 — 무조건 토글하면 오히려 접힌다. 안 보일 때만 여는다.
-  if (!(await switchSelect.isVisible())) await panelToggle.click();
   await expect(switchSelect).toBeVisible();
   const optionCount = await switchSelect.locator("option").count();
   expect(optionCount).toBeGreaterThan(0);

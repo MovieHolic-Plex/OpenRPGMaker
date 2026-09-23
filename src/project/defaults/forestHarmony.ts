@@ -1,7 +1,11 @@
 import { DEFAULT_TILESET_ID } from "./constants";
 import saved from "@/assets/forestHarmonyTileset.json";
+import { referenceRevision } from "../tilesetReferences";
+import previousDiverseReference from "../../../tiledata/forest-villages/diverse/previous-reference.json";
+import diverseReferences from "@/assets/sharedDiverseVillageReferences.json";
 import proseCorrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-prose-corrections.json";
 import corrections from "../../../tiledata/tilesets/forest_harmony/recipes/layer-corrections.json";
+import signLabels from "../../../tiledata/rpg-places/sign-labels.json";
 import type { Project, TilesetDef } from "../types";
 
 export const FOREST_HARMONY_TEXTURE = "tex_forest_harmony";
@@ -9,7 +13,9 @@ export const FOREST_HARMONY_ID = "forest_harmony";
 
 /** Independent copies preserve authored passability, autotiles and forest assemblies. */
 export function createForestHarmonyTileset(): TilesetDef {
-  return JSON.parse(JSON.stringify(saved)) as TilesetDef;
+  const tileset = JSON.parse(JSON.stringify(saved)) as TilesetDef;
+  tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(diverseReferences)];
+  return tileset;
 }
 
 /** New outdoor authoring prefers the bundled forest atlas; old stripped projects remain usable. */
@@ -48,7 +54,29 @@ export function ensureForestHarmonyReferences(tileset: TilesetDef): boolean {
     const graft = canonical.tileGrafts?.find(g => g.targetTile === 893);
     if (graft) { tileset.tileGrafts = [...(tileset.tileGrafts ?? []), structuredClone(graft)]; mouth.layerBacking = 652; changed = true; }
   }
-  const missing = saved.referenceDocuments.filter(category =>
+  // Labels that shipped blank (or as the bare "창문" on 85/87) take the canonical wording; edited labels stay.
+  canonical.tileMeta?.forEach((meta, tile) => {
+    const own = tileset.tileMeta?.[tile];
+    if (!meta?.label || !own || own.label === meta.label) return;
+    const blank = !own.label && !own.description, bareWindow = (tile === 85 || tile === 87) && own.label === "창문" && !own.description;
+    if (blank || bareWindow) { tileset.tileMeta![tile] = { ...own, label: meta.label, description: meta.description ?? "" }; changed = true; }
+  });
+  // The three hanging shop signs shipped with colour names; rename them only while the shipped wording is untouched.
+  for (const [tile, fix] of Object.entries(signLabels)) {
+    const own = tileset.tileMeta?.[Number(tile)];
+    if (own?.label !== fix.before) continue;
+    tileset.tileMeta![Number(tile)] = { ...own, label: fix.label, tags: [...fix.tags], description: fix.description };
+    changed = true;
+  }
+  // Retire exact shipped revisions only; keep any locally edited guidance.
+  for (const revision of previousDiverseReference) {
+    const previous = tileset.referenceDocuments?.find(c => c.id === revision.id);
+    if (previous && referenceRevision(previous) === revision.revision) {
+      tileset.referenceDocuments = tileset.referenceDocuments!.filter(c => c !== previous);
+      changed = true;
+    }
+  }
+  const missing = [...saved.referenceDocuments, ...diverseReferences].filter(category =>
     !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));
   if (missing.length) { tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)]; changed = true; }
   // The previous shipped sentence was wrong for this atlas; replace only that exact text.

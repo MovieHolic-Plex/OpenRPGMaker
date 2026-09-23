@@ -148,16 +148,17 @@ describe("piAgent 툴 에스컬레이션", () => {
     expect(done.stats.toolErrors).toBe(0);
   });
 
-  test("empty search restores all permitted schemas on the next real Agent turn", async () => {
+  // 2026-09-23: 빈 검색이 전체 카탈로그(248개·≈113k 토큰)를 복원해, 그 뒤 모든 호출이 그만큼 무거워졌다.
+  // 이제 빈 검색은 아무것도 얹지 않는다 — 이름을 아는 툴은 직접 호출 폴백이 구제한다(아래 테스트).
+  test("empty search keeps the exposure narrow on the next real Agent turn", async () => {
     const calls: ScriptedCall[] = [];
     await runPiAgent(request({ initialToolNames: ["find_tools"] }), {
       streamFn: scriptedStream(calls, [{ name: "find_tools", args: { query: "쀍쀍쀍쀍쀍" } }]) as never,
     });
-    expect(new Set(calls[0]!.toolNames)).toEqual(new Set([
-      "find_tools", "list_tileset_references", "read_tileset_reference", "web_search", "set_build_spec",
-    ]));
-    expect(new Set(calls[1]!.toolNames)).toEqual(new Set([...selectPiToolDefinitions().map(tool => tool.name), "set_build_spec"]));
-    expect(calls[1]!.toolNames.length).toBe(new Set(calls[1]!.toolNames).size);
+    const initial = new Set(["find_tools", "list_tileset_references", "read_tileset_reference", "web_search", "set_build_spec"]);
+    expect(new Set(calls[0]!.toolNames)).toEqual(initial);
+    expect(new Set(calls[1]!.toolNames)).toEqual(initial);
+    expect(calls[1]!.toolNames.length).toBeLessThan(selectPiToolDefinitions().length);
   });
 
   test("empty search and direct calls cannot escape read-only or role allowlists", async () => {
@@ -171,8 +172,8 @@ describe("piAgent 툴 에스컬레이션", () => {
         ]) as never,
       });
       expect(calls[0]!.toolNames).toEqual(readOnly ? ["find_tools"] : ["find_tools", "set_build_spec"]);
-      expect(new Set(calls[1]!.toolNames)).toEqual(new Set(readOnly
-        ? ["find_tools", "get_project_summary"] : ["find_tools", "get_project_summary", "set_project_settings", "set_build_spec"]));
+      // 빈 검색은 노출을 넓히지 않는다 — 경계 안 툴도 이름으로 불러야 폴백이 구제한다.
+      expect(calls[1]!.toolNames).toEqual(calls[0]!.toolNames);
       expect(done.changedKeys).toEqual([]);
       expect(done.stats.toolErrors).toBe(1);
     }

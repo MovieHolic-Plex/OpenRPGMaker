@@ -32,6 +32,9 @@ import { el } from "@/util/dom";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { detailHero, emptyState, listToolbar, noticeBar, restoreFocusAfterRerender, sectionCard } from "@/editor/panels/databaseWorkspace";
+import { uxLevel } from "@/editor/panels/databaseUxLevel";
+import { enemyResistCard } from "@/editor/panels/databaseEnemyResistSummary";
+import { clearEnemyDifficultyCache, enemyDifficultyBadge } from "@/editor/panels/databaseEnemyDifficulty";
 // 이 뷰의 CSS(database/modern/enemies.css)는 database/index.css 진입 시트가 database 레이어 끝에서 읽는다(2026-09-11 Task 7).
 // studio-theme.css 뒤에 오므로 그 잔재(`grid-area: combat !important` 등)를 !important 남발 없이 이긴다.
 import {
@@ -83,7 +86,16 @@ function enemyCard(
   return card;
 }
 
+/** 「N번에 1번 (x%)」 — 저장값은 N(oneIn) 그대로다. */
+function criticalHint(record: EnemyRecord): string {
+  if (!record.criticalHit.enabled) return "치명타 사용 안 함";
+  const oneIn = Math.max(1, record.criticalHit.oneIn);
+  return `${oneIn}번에 1번 (${Number((100 / oneIn).toFixed(2))}%)`;
+}
+
 export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, rerender: () => void = () => undefined, onRename?: (name: string) => void): void {
+  // 전체 다시 그리기 — 다른 탭(직업·스킬)을 고친 뒤일 수 있으니 강도 추정을 새로 한다.
+  clearEnemyDifficultyCache();
   const hero = enemyHero(record);
   let skillField = actionSkillField(record, rerender);
   const refreshSkillField = (): void => {
@@ -96,17 +108,18 @@ export function renderEnemyRecordForm(form: HTMLElement, record: EnemyRecord, re
     { id: "basic", label: "기본", cards: [
       enemyCard("기본 정보", "name", identityFields(record, hero.setTitle, rerender)),
       enemyCard("능력치", "stats", [el("div", { class: "db-enemy-stat-grid", children: statFields(record) })], { hint: "전투에 그대로 쓰는 고정값입니다. 종족 성장값과 별개입니다." }),
-      enemyCard("포획·성장 종족", "species", speciesFields(record, rerender), { hint: "포획·성장 정보를 연결합니다. 능력치·외형은 자동 상속되지 않습니다." }),
+      // 포획·성장 종족 연결은 수집 시스템을 쓸 때의 일이다 — 초보 화면에서는 뺀다.
+      uxLevel(enemyCard("포획·성장 종족", "species", speciesFields(record, rerender), { hint: "포획·성장 정보를 연결합니다. 능력치·외형은 자동 상속되지 않습니다." }), "advanced"),
     ] },
     { id: "appearance", label: "외형", cards: [
       enemyCard("그래픽", "graphic", graphicFields(record, rerender), { hint: "100%는 기본 크기입니다. 큰 값은 전투 화면 안에 맞춰 표시됩니다. 실제 크기는 시험 전투에서 확인하세요. 맵 외형은 바뀌지 않습니다." }),
     ] },
     { id: "combat", label: "전투", cards: [
-      enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: record.criticalHit.enabled ? `1/${record.criticalHit.oneIn} = ${(100 / record.criticalHit.oneIn).toFixed(2)}%` : "치명타 사용 안 함" }),
-      enemyCard("옵션", "options", optionFields(record)),
-      enemyCard("상태 유효도", "state", rateRows(record, "state")),
-      enemyCard("속성 유효도", "element", rateRows(record, "element")),
-      enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }),
+      // 약점·저항은 기본과 다른 것만 칩으로 — 전체 등급 표(상태/속성 유효도 카드)는 그 안에 접혀 있다.
+      enemyResistCard(record, enemyCard("상태 유효도", "state", rateRows(record, "state")), enemyCard("속성 유효도", "element", rateRows(record, "element"))),
+      uxLevel(enemyCard("치명타 확률", "critical", [el("div", { class: "db-enemy-critical-row", children: criticalFields(record, rerender) })], { hint: criticalHint(record) }), "advanced"),
+      uxLevel(enemyCard("명중", "options", optionFields(record)), "advanced"),
+      uxLevel(enemyCard("액션 전투", "action-combat", actionCombatFields(record), { hint: "필드에서 직접 싸우는 액션 전투용" }), "advanced"),
     ] },
     { id: "rewards", label: "보상", cards: [
       enemyCard("보상", "rewards", [el("div", { class: "db-enemy-reward-grid", children: rewardFields(record) })]),
@@ -150,6 +163,11 @@ function enemyHero(record: EnemyRecord): { readonly node: HTMLElement; readonly 
     tags,
     testid: "db-enemy-hero",
   });
+  // 종족 태그(인덱스 1)는 포획·성장 카드와 같은 층위 — 초보에게는 숨긴다.
+  const speciesTag = node.querySelectorAll(".db-ws-tag")[1];
+  if (speciesTag instanceof HTMLElement) uxLevel(speciesTag, "advanced");
+  const difficulty = enemyDifficultyBadge(live, store.getCurrent());
+  if (difficulty) node.append(difficulty);
   const titleNode = node.querySelector(".db-ws-hero-title");
   return {
     node,
@@ -179,7 +197,10 @@ function identityFields(
     { min: 1, max: 99 }
   );
   level.title = "경험치 레벨갭 보정과 포획 몬스터의 시작 레벨에 쓰입니다.";
-  const [factionSelect, ...factionDetails] = factionFields(record, rerender);
+  const [factionSelect, ...factionRest] = factionFields(record, rerender);
+  // 존재하지 않는 진영 경고는 접지 않는다 — 고칠 일이므로 모든 모드에서 보인다.
+  const factionMissing = factionRest.filter((node) => node.dataset.testid === "db-enemy-faction-missing");
+  const factionDetails = factionRest.filter((node) => !factionMissing.includes(node));
   return [
     textField("이름", "db-field-name", record.name, (name) => {
       updateDatabaseRecord("enemies", record.id, { name });
@@ -187,9 +208,10 @@ function identityFields(
     }),
     level,
     factionSelect,
-    el("details", { class: "db-enemy-faction-details", children: [
+    ...factionMissing,
+    uxLevel(el("details", { class: "db-enemy-faction-details", children: [
       el("summary", { text: "진영 관계와 설정" }), ...factionDetails,
-    ] }),
+    ] }), "advanced"),
   ];
 }
 
@@ -682,7 +704,7 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         }),
       ],
     }),
-    el("div", {
+    uxLevel(el("div", {
       class: "db-enemy-graphic-flags",
       children: [
         // 두 필드는 런타임이 읽지 않는다(databaseFieldSupport: authoringOnly). 라벨 글자를
@@ -703,10 +725,11 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
           databaseFieldSupport("flying").help,
         ),
       ],
-    }),
-    textField("리소스", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
+    }), "advanced"),
+    // 리소스 ID 직접 입력은 내부 식별자 — 전문가만. 나머지 모드는 [설정] 대화상자로 고른다.
+    uxLevel(textField("리소스 ID", "db-field-enemy-monster-resource", record.monsterResourceId ?? "", (monsterResourceId) =>
       updateDatabaseRecord("enemies", record.id, { monsterResourceId: emptyToUndefined(monsterResourceId) })
-    ),
+    ), "expert"),
     aiImageGenerateField({
       kind: "monster",
       testidPrefix: "db-enemy-graphic-ai",
@@ -716,8 +739,16 @@ function graphicFields(record: EnemyRecord, rerender: () => void): HTMLElement[]
         rerender();
       },
     }),
-    databaseFieldSupportNotice("transparent", "flying", "graphicHue"),
+    uxLevel(enemyGraphicSupportNotice(), "advanced"),
   ];
+}
+
+/** 공용 안내(databaseFieldSupport)의 요약 줄만 쉬운 말로 바꾼다. 펼친 행의 뜻은 그대로다. */
+function enemyGraphicSupportNotice(): HTMLElement {
+  const notice = databaseFieldSupportNotice("transparent", "flying", "graphicHue");
+  const summary = notice.querySelector("summary");
+  if (summary) summary.textContent = `투명·비행·색조는 게임에는 아직 반영되지 않는 칸입니다 (${notice.dataset.inertFields ?? "3"}개) — 자세히`;
+  return notice;
 }
 
 function updateGraphicPreviewState(transparent: boolean, flying: boolean): void {
@@ -760,9 +791,9 @@ function criticalFields(record: EnemyRecord, rerender: () => void): HTMLElement[
       rerender();
       restoreFocusAfterRerender("db-field-enemy-critical-enabled");
     }),
-    // 라벨은 "1/N" 까지만 — 좁은 치명타 행에서 "확률 1/N" 은 30px 넘쳐 잘렸다(게이트 실측).
-    // 뜻은 카드 힌트가 문장으로 말한다. 원래 라벨 "1 /" 은 끊긴 조각처럼 읽혔다.
-    numberField("1/N", "db-field-enemy-critical-one-in", record.criticalHit.oneIn, (oneIn) =>
+    // "1/N" 은 수식 표기라 읽히지 않았다. 입력값은 그대로 N 이고 라벨은 「몇 번에 1번」,
+    // 카드 힌트가 「N번에 1번 (x%)」 으로 읽어 준다. 라벨 열은 CSS 가 내용 폭으로 연다.
+    numberField("몇 번에 1번", "db-field-enemy-critical-one-in", record.criticalHit.oneIn, (oneIn) =>
       updateDatabaseRecord("enemies", record.id, { criticalHit: { ...currentEnemy(record).criticalHit, oneIn } }),
       { min: 1, max: 999 },
       {
@@ -1093,7 +1124,7 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
     mutate(draft);
     updateDatabaseRecord("enemies", record.id, { actionProfile: draft });
   };
-  const knockback = sliderStepperField("넉백 저항", "db-field-enemy-knockback-resist", profile?.knockbackResist ?? 0, (value) =>
+  const knockback = sliderStepperField("밀려남 저항", "db-field-enemy-knockback-resist", profile?.knockbackResist ?? 0, (value) =>
     patchProfile((draft) => {
       draft.knockbackResist = value;
     }),
@@ -1101,6 +1132,7 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
   );
   // 슬라이더+스테퍼는 2열 수치 그리드 한 칸(≈130px)에 안 들어간다 — 한 줄을 다 쓴다.
   knockback.classList.add("db-enemy-wide-field");
+  knockback.title = "맞았을 때 밀려나지 않는 정도. 0 = 그대로 밀림, 1 = 전혀 안 밀림";
   const attackKindOptions = [
     { id: "", name: "없음(접촉만)" },
     { id: "melee", name: "근접" },
@@ -1114,12 +1146,12 @@ function actionCombatFields(record: EnemyRecord): HTMLElement[] {
       }),
       { min: 0, max: 9999 }
     ),
-    numberField("어그로 거리", "db-field-enemy-aggro-range", profile?.aggroRange ?? 5, (value) =>
+    withTitle(numberField("알아채는 거리", "db-field-enemy-aggro-range", profile?.aggroRange ?? 5, (value) =>
       patchProfile((draft) => {
         draft.aggroRange = value;
       }),
       { min: 1, max: 30 }
-    ),
+    ), "플레이어가 몇 칸 안에 들어오면 알아채고 쫓아오는지(칸)"),
     numberField("이동 간격(ms)", "db-field-enemy-move-interval-ms", profile?.moveIntervalMs ?? 500, (value) =>
       patchProfile((draft) => {
         draft.moveIntervalMs = value;

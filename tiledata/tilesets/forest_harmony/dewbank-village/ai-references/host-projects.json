@@ -1,0 +1,255 @@
+{
+  "category": "dewbank-village-v1",
+  "documents": 24,
+  "images": 9,
+  "downloads": [],
+  "projects": [
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": null,
+      "sqliteProjectId": "c779e278-8cec-4da4-9c2f-df423460b60d",
+      "storage": "SQLite host API",
+      "saved": false,
+      "reopened": true,
+      "revision": 297,
+      "tilesetIds": [],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "0022773a-188b-4813-9644-6afd3a398504",
+      "sqliteProjectId": "bdfdacc2-4fee-4661-83d5-d8c478e55bcd",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 28,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "151bc7de-5fcb-44de-ac25-68a5c42292ad",
+      "sqliteProjectId": "d23164cc-def8-4c8d-8d68-1c5f03a5a2df",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 36,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "1907d62f-82c7-40ce-be24-5e8dcc0cfa78",
+      "sqliteProjectId": "c2a891bd-95c0-411d-add3-dd62cb3d1646",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 5,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "52e4177c-e82c-4d21-9ec4-88b1c97d0d8e",
+      "sqliteProjectId": "27cd78dc-0c1c-4069-9d33-628c16de98a8",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 3,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "6c4fd48b-4674-40e5-97a5-8cb5f1f7b0cf",
+      "sqliteProjectId": "86ec8c2b-37ed-4c11-95e1-2754fd764a70",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 2,
+      "tilesetIds": [
+        "shared_forest_village_objects",
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "75080e8e-9c00-449f-be22-63ec8cc18ce5",
+      "sqliteProjectId": "610aabf2-8c3f-4909-8a9b-76dbea0c81fc",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 5,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "9a638041-06a5-4ab6-88bf-a74f3b1036dc",
+      "sqliteProjectId": "d5f118d5-1ccc-4095-bc94-0493a10879c7",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 3,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "9f816420-b2b0-4b45-9f29-f1e859824213",
+      "sqliteProjectId": "2e21bfcb-d8f1-4f21-84a7-a28cf8b2615e",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 6,
+      "tilesetIds": [
+        "forest_harmony",
+        "shared_forest_village_objects"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "a0319c8d-5cce-497e-97b8-16c210c2c510",
+      "sqliteProjectId": "725ba1d8-82e3-4d13-a570-88606327460f",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 5,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "ae0eaf72-235f-4a11-8a76-67b224fed63e",
+      "sqliteProjectId": "c5be78ed-8fac-4324-80fb-ecc33db2e19a",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 59,
+      "tilesetIds": [
+        "forest_harmony",
+        "shared_forest_village_objects"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "af797655-f1d9-4f24-a0f7-2f3d46921510",
+      "sqliteProjectId": "6d4b573d-0632-4e0a-8333-fb2bcbc05b8d",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 27,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "c75f98d1-8b22-43b5-a048-680c3453ff43",
+      "sqliteProjectId": "7b8dd4fe-ef2c-44a6-b110-40b652fe1715",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 4,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "castle-fortress-city-20260921",
+      "sqliteProjectId": "b4706a77-9a38-4dcc-a89d-36244da53967",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 24,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "f51563b4-3b5a-4ce1-ab5a-4c96c8c579dc",
+      "sqliteProjectId": "a2056b5c-853c-4307-bbfe-5dd68349dd68",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 34,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "fe848bbb-3714-4170-936f-56711b0be60c",
+      "sqliteProjectId": "add8b738-cf81-426b-ae02-bb68b9812d5b",
+      "storage": "SQLite host API",
+      "saved": false,
+      "reopened": true,
+      "revision": 3,
+      "tilesetIds": [],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "oprn-hill-forest-harmony-20260918-a4e1",
+      "sqliteProjectId": "57430245-7e4d-41f3-9572-54d315c12a2d",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 27,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "public-cave-library-check-20260921",
+      "sqliteProjectId": "b6217a25-8332-496b-8311-db2ed2c39fe2",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 3,
+      "tilesetIds": [
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    },
+    {
+      "host": "http://mdc-server:9888",
+      "projectId": "shared-tile-ai-manual-20260922",
+      "sqliteProjectId": "beb5f916-c50f-4f92-b660-bab954719e43",
+      "storage": "SQLite host API",
+      "saved": true,
+      "reopened": true,
+      "revision": 3,
+      "tilesetIds": [
+        "shared_forest_village_objects",
+        "forest_harmony"
+      ],
+      "mapsUnchanged": true
+    }
+  ]
+}

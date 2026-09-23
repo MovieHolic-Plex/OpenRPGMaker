@@ -48,11 +48,12 @@ function base64ToBytes(value: string): Uint8Array {
   return bytes;
 }
 
-async function call(channel: string, payload: unknown): Promise<unknown> {
+async function call(channel: string, payload: unknown, keepalive = false): Promise<unknown> {
   const config = window.__OPRN_BRIDGE__;
   if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
   const response = await fetch(config.endpoint, {
     method: "POST",
+    keepalive,
     headers: { "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject },
     body: JSON.stringify({ channel, payload }),
   });
@@ -61,6 +62,26 @@ async function call(channel: string, payload: unknown): Promise<unknown> {
 }
 
 const invoke = (channel: string) => (payload?: unknown) => call(channel, payload);
+
+// tabId 는 페이지마다 새로 만들어지므로, 새로고침한 페이지는 자기 이전 임대(90초)를 남의 것으로 본다
+// — 혼자 쓰는 프로젝트에서도 F5 한 번에 「호스트님이 편집 중입니다」로 편집이 막혔다.
+// 그래서 이 탭이 쥔 잠금을 기억해 두었다가 떠날 때 같은 tabId 로 놓는다.
+const heldLocks = new Set<string>();
+
+async function lock(payload: unknown): Promise<unknown> {
+  const result = await call(OPRN_CHANNELS.teamLock, payload) as { kind?: unknown } | null;
+  const resource = (payload as { resource?: unknown } | null)?.resource;
+  if (typeof resource === "string") {
+    if (result?.kind === "held") heldLocks.add(resource);
+    else heldLocks.delete(resource);
+  }
+  return result;
+}
+
+addEventListener("pagehide", () => {
+  for (const resource of heldLocks) void call(OPRN_CHANNELS.teamLock, { resource, release: true }, true).catch(() => {});
+  heldLocks.clear();
+});
 
 async function putAsset(payload: Record<string, unknown>): Promise<unknown> {
   const { bytes, ...rest } = payload;
@@ -73,7 +94,7 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
 
 (window as unknown as { oprn?: unknown }).oprn = {
   closeIsHostDriven: false,
-  team: { status: invoke(OPRN_CHANNELS.teamStatus), lock: invoke(OPRN_CHANNELS.teamLock) },
+  team: { status: invoke(OPRN_CHANNELS.teamStatus), lock },
   assetBaseUrl: () => `/__oprn/asset/${selectedProject ? encodeURIComponent(selectedProject) + "/" : ""}`,
   project: {
     status: invoke(OPRN_CHANNELS.projectStatus),

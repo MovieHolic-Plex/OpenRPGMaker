@@ -30,6 +30,7 @@ import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, 
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
+import { dismissBootLoader } from "@/app/bootLoader";
 
 export type Mode = "edit" | "play";
 
@@ -193,6 +194,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
 
   await renderTopbar();
   await enterMode("edit");
+  // 편집기 셸이 그려졌다 — index.html 의 첫 로드 로더를 걷는다(웰컴 브리핑은 그 위에 뜬다).
+  dismissBootLoader();
 
   if (sharedDemoOpen && !showBriefing) {
     const { presentSharedDemoIntro } = await import("@/editor/sharedDemoIntro");
@@ -241,9 +244,17 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
       }
       setPendingWelcomePipeline({
         prompt: result.prompt,
+        // 말풍선에는 사용자 쪽 문장만 — 모델은 prompt 전체를 받는다.
+        ...(result.displayText ? { displayText: result.displayText } : {}),
         autoSend: result.autoSend,
         source: result.source === "chip" ? "chip" : "free-text",
       });
+      // AI 없이 인터뷰를 끝내면 기획 프롬프트가 조수 입력창에 담기기만 한다. 설명이 없으면 빈 맵과
+      // 낯선 지시문만 남아 「아무 일도 안 일어났다」로 보인다 — 메뉴의 새 프로젝트 경로와 같은 안내를 준다.
+      if (!result.autoSend) {
+        const { toast } = await import("@/util/toast");
+        toast("게임 기획을 저장하고 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
+      }
     } else {
       clearWelcomeIntentBootFlags();
     }
@@ -273,6 +284,7 @@ export function isModeShellMounted(): boolean {
 }
 
 function renderDbRequiredScreen(_error: unknown): void {
+  dismissBootLoader();
   if (!elements) return;
   elements.topbar.textContent = PRODUCT_BRAND;
   while (elements.main.firstChild) {
@@ -344,6 +356,7 @@ function openRequiredDbSettings(): void {
 // 프로젝트 로드 실패(데이터 무결성 오류) 화면 — 빈 패널 대신 db-required-hero 레이아웃을 쓴다.
 // 사용자가 지적한 "허접한 첫 장면"(https://127.0.0.1:9888 의 텅 빈 패널)을 히어로로 승격.
 function renderLoadFailureScreen(_error: unknown): void {
+  dismissBootLoader();
   if (!elements) return;
   elements.topbar.textContent = `${PRODUCT_BRAND} - 작업을 불러올 수 없음`;
   while (elements.main.firstChild) {

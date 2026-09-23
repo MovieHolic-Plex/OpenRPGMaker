@@ -19,7 +19,7 @@ import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
 
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
-import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
+import { addPiAgentUsage, changedProjectKeys, slimDoneEvent, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import {
   claimAssignment,
@@ -85,6 +85,11 @@ function idList(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string" && !!item.trim()).map((item) => item.trim()) : [];
 }
 
+/** 팀장 대기의 안전 상한. 이벤트가 끊겨도 팀장이 영영 잠들지 않게만 한다. */
+const TEAM_WAIT_SAFETY_MS = 5 * 60_000;
+/** 검수 팀원이 의도 목록과 상관없이 쥐는 확인 도구. */
+const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", "find_tools"] as const;
+
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
@@ -95,6 +100,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let toolCalls = 0;
   let toolErrors = 0;
   let subTurns = 0;
+  let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
 
   const team = request.team ? normalizeTeamSpec(request.team) : defaultTeamSpec();
@@ -150,6 +156,44 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     },
   });
 
+  /**
+   * 팀원 첫 노출. 도메인을 안 정한 팀원은 예전엔 전체 카탈로그(248개·≈113k 토큰)를 매 호출 받았다.
+   * 요청의 의도 선별 목록에서 시작하고 find_tools·직접 호출 폴백으로 넓힌다. 검수는 확인 도구를 늘 쥔다.
+   * 목록이 없는 호출자(CLI)는 예전 그대로 전체를 받는다.
+   */
+  const exposureFor = (member: { readonly toolDomains: readonly string[] }, reviewing: boolean): Pick<PiAgentRequest, "initialToolNames"> => {
+    if (member.toolDomains.length > 0 || !request.initialToolNames) return { initialToolNames: undefined };
+    return { initialToolNames: [...new Set([...request.initialToolNames, ...(reviewing ? REVIEW_READ_TOOLS : [])])] };
+  };
+
+  /**
+   * 팀장 대기. 예전엔 10초마다 돌아와 팀장이 전체 문맥을 다시 읽는 한 턴을 썼다 — 10분 시공이면 대기만으로
+   * 60턴이 쌓이고 턴마다 문맥이 커졌다. 이제 배정이 끝나거나 팀장 앞 메시지가 올 때만 돌아온다.
+   * 팀원 목록 변화(team_changed)는 깨우지 않는다. 안전 상한만 길게 둔다.
+   */
+  const waitForTeam = async (pending: readonly Promise<unknown>[], signal: AbortSignal): Promise<string> => {
+    if (pending.length === 0) return "completed";
+    let settled = 0;
+    const tracked = pending.map(promise => promise.then(() => { settled += 1; }, () => { settled += 1; }));
+    const messages = (async () => {
+      for (;;) {
+        const reason = await mailbox.wait("orchestrator-1", 30000, signal);
+        if (reason === "messages" || reason === "aborted" || signal.aborted) return signal.aborted ? "aborted" : reason;
+      }
+    })();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const safety = new Promise<string>(resolve => { timer = setTimeout(() => resolve("timeout"), TEAM_WAIT_SAFETY_MS); });
+    try {
+      const reason = await Promise.race([Promise.race(tracked).then(() => "agent_finished"), messages, safety]);
+      if (reason === "agent_finished" || reason === "timeout") {
+        // 같은 틱에 끝난 배정을 한데 모은다 — 동시에 끝난 둘을 두 번의 팀장 턴으로 나누지 않는다.
+        await new Promise(resolve => setTimeout(resolve, 0));
+        if (settled === pending.length) return "completed";
+      }
+      return reason;
+    } finally { clearTimeout(timer); }
+  };
+
   emit({ type: "team_start", task: request.task, roles: teamRoleSummaries() });
 
   /** 배정 하나의 결과를 작업 사본에 얹는다. 도착 순서대로 동기 실행되므로 서로 끼어들지 않는다. */
@@ -203,7 +247,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       try {
         const done = await runAgent(
           {
-            ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+            ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -215,7 +259,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         const complete = !done.villageCompletion?.issues.length;
         ledger = settleAssignment(ledger, agentId, complete);
-        toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
+        toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         const summary = complete ? summaryOf(done) : `마을 미완료: ${done.villageCompletion!.issues.join("; ")}`;
         const outcome: AgentOutcome = { agentId, mapId, member: member.id, phase, ok: complete, summary, changedKeys: done.changedKeys, spills, conflicts };
         outcomes.set(agentId, outcome);
@@ -267,7 +311,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const promise = (async (): Promise<AgentOutcome> => {
       try {
         const done = await runAgent({
-          ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", project: snapshot,
+          ...request, ...exposureFor(member, mode === "read"), ...request.roleModels?.deep, mode: "single", project: snapshot,
           mapIds: mode === "project" ? [] : request.mapIds, task, readOnly: mode === "read", maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length ? { toolDomains: member.toolDomains } : {}),
@@ -279,7 +323,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             teamCommunicationPrompt(agentId),
           ],
         }, { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: mode === "read", ...(mode === "project" && options.onCheckpoint ? { onCheckpoint: checkpointFor(null, snapshot) } : {}), extraTools: [...mailbox.tools(agentId), reportTool] });
-        toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
+        toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
         if (!report) throw new Error("report_task 결과가 없어 작업을 완료 처리하지 않았습니다.");
         const changes = changedProjectKeys(snapshot, done.project);
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
@@ -350,7 +394,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     try {
       done = await runAgent(
         {
-          ...request, initialToolNames: undefined, ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+          ...request, ...exposureFor(member, true), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
           systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
           ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
           ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -358,7 +402,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider), readOnlyTools: true, extraTools: [...mailbox.tools(agentId), reportTool] },
       );
     } finally { mailbox.close(agentId); }
-    toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns;
+    toolCalls += done.stats.toolCalls; toolErrors += done.stats.toolErrors; subTurns += done.stats.turns; subUsage = addPiAgentUsage(subUsage, done.stats.usage);
     const result = verdict ?? { ok: false, findings: ["검수 에이전트가 report_review 를 호출하지 않았습니다: " + summaryOf(done)] };
     ledger = recordTeamReview(ledger, { mapId, agentId, ok: result.ok });
     emit({ type: "review", agentId, mapId, ok: result.ok, findings: result.findings });
@@ -401,7 +445,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     {
       name: "wait_agents",
       label: "wait_agents",
-      description: "배정 결과를 최대 10초 기다린다. 팀장에게 메시지가 오면 일찍 돌아오므로 read_team_messages로 답한다. reason=completed가 아니면 실행 상태를 확인한다. agentIds 를 비우면 진행 중인 배정 전부. 검수를 붙이거나 같은 맵에 다음 팀원을 배정하기 전에 부른다.",
+      description: "배정 결과를 기다린다. 고른 배정이 하나라도 끝나거나(reason=agent_finished, 전부 끝나면 completed) 팀장에게 메시지가 오면(reason=messages) 돌아온다 — 그땐 read_team_messages로 답한다. 시간 초과로는 거의 돌아오지 않으니 반복해서 부르지 말고 돌아온 결과로 다음 배정을 한다. agentIds 를 비우면 진행 중인 배정 전부. 검수를 붙이거나 같은 맵에 다음 팀원을 배정하기 전에 부른다.",
       parameters: { type: "object", properties: { agentIds: { type: "array", items: { type: "string" } } }, required: [], additionalProperties: false },
       async execute(_id, params, signal) {
         const ids = selectAgents((params as Record<string, unknown>)?.agentIds);
@@ -411,10 +455,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         parentSignal?.addEventListener("abort", abort, { once: true });
         if (parentSignal?.aborted) controller.abort();
         try {
-          const reason = await Promise.race([
-            Promise.all(inflight.filter(entry => ids.includes(entry.agentId)).map(entry => entry.promise)).then(() => "completed"),
-            mailbox.wait("orchestrator-1", 10000, controller.signal),
-          ]);
+          const reason = await waitForTeam(inflight.filter(entry => ids.includes(entry.agentId)).map(entry => entry.promise), controller.signal);
           return text({ reason, agents: ids.map(reportFor), unreadMessages: mailbox.unread("orchestrator-1") });
         } finally { controller.abort(); parentSignal?.removeEventListener("abort", abort); }
       },
@@ -493,11 +534,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
     project: working,
-    stats: { ms: Date.now() - started, turns: orchDone.stats.turns + subTurns, toolCalls: toolCalls + orchDone.stats.toolCalls, toolErrors: toolErrors + orchDone.stats.toolErrors, usage: orchDone.stats.usage },
+    stats: { ms: Date.now() - started, turns: orchDone.stats.turns + subTurns, toolCalls: toolCalls + orchDone.stats.toolCalls, toolErrors: toolErrors + orchDone.stats.toolErrors, usage: addPiAgentUsage(subUsage, orchDone.stats.usage) },
     changedKeys: changedProjectKeys(base, working),
     spatialProof: exportSpatialToolProof(working),
   };
-  emit(done);
+  emit(slimDoneEvent(done, base));
   return done;
 }
 

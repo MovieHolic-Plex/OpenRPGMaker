@@ -46,11 +46,15 @@ export function renderTroopBattleEventPanel(record: TroopRecord, rerender: () =>
       // `display:flex`(modern/troops.css:682,718)에 지고, 빈 5px 구분선과 16px 빈 알약이
       // 남는다(headless Chromium 실측). 이 저장소에 같은 함정 기록이 네 곳 있다.
       ...(page ? [pageTabs(record, page, rerender), conditionStrip(record, page, rerender)] : []),
-      el("div", {
-        class: "db-troop-event-details",
-        dataset: { testid: "db-troop-event-details" },
-        children: page ? pageControls(record, page, rerender) : emptyPageControls(record, rerender),
-      }),
+      // 페이지가 0 개면 세부 칸을 만들지 않는다 — 예전에는 여기 빈 상태 카드 하나, 바로 아래
+      // 명령 영역에 회색 빈 상자 하나로 같은 사실을 두 번 말했다. 빈 상태는 명령 영역 하나에만 둔다.
+      ...(page
+        ? [el("div", {
+          class: "db-troop-event-details",
+          dataset: { testid: "db-troop-event-details" },
+          children: pageControls(record, page, rerender),
+        })]
+        : []),
       commandArea(record, page, rerender),
     ],
   });
@@ -69,24 +73,23 @@ function selectedBattleEventPage(record: TroopRecord): BattleEventPageRecord | u
   return first;
 }
 
-function emptyPageControls(record: TroopRecord, rerender: () => void): HTMLElement[] {
-  return [
-    emptyState({
-      icon: "◈",
-      title: "전투 이벤트 페이지가 없습니다",
-      body: "페이지는 조건이 맞을 때 전투 중에 실행되는 명령 묶음입니다. 승리 대사·중간 등장·강제 도주 같은 연출을 여기에 넣습니다.",
-      compact: true,
-      testid: "db-troop-event-empty",
-      action: {
-        label: "첫 페이지 만들기",
-        kind: "primary",
-        testid: "db-troop-event-empty-add-page",
-        onClick: () => addPage(record, rerender),
-      },
-      // 두 번째 액션은 두지 않는다 — 바로 위 툴바에 같은 「보상 흐름 템플릿」 버튼이 있어서
-      // 페이지 0 개일 때 같은 버튼이 화면에 두 번 떴다(접근명 중복 2 건으로 실측).
-    }),
-  ];
+function emptyPageState(record: TroopRecord, rerender: () => void): HTMLElement {
+  return emptyState({
+    // ◆ 는 명령 목록의 행 표식이자 e2e 계약(oprn-database-battle-records.spec.ts)이다.
+    icon: "◆",
+    title: "전투 이벤트 페이지가 없습니다",
+    body: "조건이 맞을 때 전투 중에 실행되는 명령 묶음입니다. 승리 대사·중간 등장·강제 도주 같은 연출을 여기에 넣습니다.",
+    compact: true,
+    testid: "db-troop-event-empty",
+    action: {
+      label: "첫 페이지 만들기",
+      kind: "primary",
+      testid: "db-troop-event-empty-add-page",
+      onClick: () => addPage(record, rerender),
+    },
+    // 두 번째 액션은 두지 않는다 — 바로 위 툴바에 같은 「보상 흐름 템플릿」 버튼이 있어서
+    // 페이지 0 개일 때 같은 버튼이 화면에 두 번 떴다(접근명 중복 2 건으로 실측).
+  });
 }
 
 const EVENT_SPAN_OPTIONS = [
@@ -240,21 +243,9 @@ function conditionStrip(record: TroopRecord, page: BattleEventPageRecord | undef
 function commandArea(record: TroopRecord, page: BattleEventPageRecord | undefined, rerender: () => void): HTMLElement {
   if (!page) {
     return el("div", {
-      class: "db-troop-event-command-area",
+      class: "db-troop-event-command-area is-empty",
       dataset: { testid: "db-troop-event-command-area" },
-      children: [
-        el("div", {
-          class: "db-troop-command-empty",
-          children: [
-            // ◆ 는 명령 목록의 행 표식이자 e2e 계약이라 남기고, 옆에 왜 비어 있는지를 적는다.
-            el("div", { class: "db-troop-command-line", text: "◆" }),
-            el("p", {
-              class: "db-troop-command-empty-text",
-              text: "페이지를 만들면 여기에 전투 중 실행할 명령이 ◆ 줄로 쌓입니다.",
-            }),
-          ],
-        }),
-      ],
+      children: [emptyPageState(record, rerender)],
     });
   }
   const host = el("div", { class: "cmd-list", dataset: { testid: "db-troop-event-command-list" } });

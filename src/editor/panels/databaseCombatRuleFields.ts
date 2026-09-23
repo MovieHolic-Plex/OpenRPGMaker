@@ -7,7 +7,7 @@ import { store } from '@/project/store';
 import type { EnemyRecord, SkillRecord } from '@/project/types';
 import { el } from '@/util/dom';
 
-export function skillCombatRuleCard(record: SkillRecord): HTMLElement {
+export function skillCombatRuleCard(record: SkillRecord, options: { readonly collapsed?: boolean } = {}): HTMLElement {
   const preview = el('p', { class: 'db-skill-card-note', dataset: { testid: 'feature16-formula-preview' }, attrs: { 'aria-live': 'polite' } });
   const context: Record<string, number> = { ...FORMULA_PREVIEW_CONTEXT, power: record.power };
   let formula = record.damageFormula ?? '';
@@ -32,7 +32,7 @@ export function skillCombatRuleCard(record: SkillRecord): HTMLElement {
     if (valid) updateDatabaseRecord('skills', record.id, { hitSequence: values });
   });
   refresh();
-  return sectionCard({ title: '전투 규칙 · 피해 수식', testid: 'feature16-combat-studio', hint: '수식은 방어를 포함한 기본 피해입니다. 빈칸은 기존 공식. 비용은 행동당 한 번 소비합니다.', children: [
+  return sectionCard({ title: '전투 규칙 · 피해 수식', testid: 'feature16-combat-studio', hint: options.collapsed ? '기본 전투 공식 사용 중' : '수식은 방어를 포함한 기본 피해입니다. 빈칸은 기존 공식. 비용은 행동당 한 번 소비합니다.', collapsible: true, collapsed: options.collapsed === true, children: [
     formulaField, preview,
     el('p', { class: 'db-skill-card-note', text: `허용: + − * / % ( ). ${DAMAGE_FORMULA_VARIABLES.join(', ')}. a=시전자, b=대상. 잘못된 입력은 저장하지 않습니다.` }),
     numberField('예시 위력', 'feature16-preview-power', context.power, value => { context.power = value; refresh(); }, { min: -9999, max: 9999 }),

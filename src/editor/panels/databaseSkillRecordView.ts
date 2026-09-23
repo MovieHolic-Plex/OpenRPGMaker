@@ -26,6 +26,7 @@ import {
   deriveSkillComposerModel,
   type SkillBacklink,
   type SkillBacklinkCollection,
+  type SkillComposerChipKind,
   type SkillComposerEffectKind,
 } from "@/editor/panels/databaseSkillComposerModel";
 import { renderSkillAnimationStage, type SkillAnimationStage } from "@/editor/panels/databaseSkillAnimationStage";
@@ -33,7 +34,8 @@ import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { storyFlagOptionLabel } from "@/project/storyFlags";
 import { store } from "@/project/store";
-import type { DatabaseStateEffect, SkillEffect, SkillRecord } from "@/project/types";
+import type { DatabaseStateEffect, Project, SkillEffect, SkillRecord } from "@/project/types";
+import { getEditorUiMode } from "@/editor/editorUiMode";
 import { el } from "@/util/dom";
 
 const SKILL_EFFECT_KINDS = ["damage", "healing", "support", "switch"] as const satisfies readonly SkillEffect["kind"][];
@@ -110,7 +112,6 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({
         title: "위력과 소모",
-        hint: "저장할 때 이 범위를 벗어난 값은 범위 안으로 맞춰집니다",
         testid: "db-skill-card-cost",
         children: [
           ...(powerNode ? [powerNode] : []),
@@ -118,6 +119,17 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
           numberField("MP", "db-field-skill-mp-flat", record.mpCost.flat, (flat) =>
             updateDatabaseRecord("skills", record.id, { mpCost: { ...currentSkill(record).mpCost, flat } }), { min: 0, max: 9999 }
           ),
+        ],
+      }),
+      // 성공률·명중률·분산·우선도는 초보가 만질 일이 드물다 — 기본값이면 접어 두고, 몇 개가
+      // 들어 있는지와 「기본값 그대로」를 머리에 적는다(2026-09-23 파티 UX 검토).
+      sectionCard({
+        title: "명중 · 분산 · 우선도",
+        hint: hasTunedAccuracy(record) ? "기본값에서 바뀜" : "5개 · 기본값 그대로",
+        testid: "db-skill-card-accuracy",
+        collapsible: true,
+        collapsed: !advancedOpen(hasTunedAccuracy(record)),
+        children: [
           numberField("MP %", "db-field-skill-mp-percent", record.mpCost.percentMax, (percentMax) =>
             updateDatabaseRecord("skills", record.id, { mpCost: { ...currentSkill(record).mpCost, percentMax } }), { min: 0, max: 100 }
           ),
@@ -145,8 +157,10 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({
         title: "Gen1 기술",
-        hint: "포켓몬풍 전투 전용",
+        hint: gen1BattleModel() ? "포켓몬풍 전투 전용" : "포켓몬풍 전투 전용 · 이 게임은 사용 안 함",
         testid: "db-skill-card-gen1",
+        collapsible: true,
+        collapsed: !advancedOpen(gen1BattleModel() || (record.maxPp ?? 0) > 0 || record.gen1CriticalRate === "high"),
         children: [
           numberField("최대 PP", "db-field-skill-max-pp", record.maxPp ?? 0, (maxPp) =>
             updateDatabaseRecord("skills", record.id, { maxPp: maxPp > 0 ? maxPp : undefined }), { min: 0, max: 99 }
@@ -159,14 +173,18 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
       }),
       sectionCard({
         title: "액션 스킬",
-        hint: "필드에서 근접·돌진·함정·투사체 사용",
+        hint: record.actionSkill ? "필드에서 근접·돌진·함정·투사체 사용" : "필드 액션 · 사용 안 함",
         testid: "db-skill-card-action",
+        collapsible: true,
+        collapsed: !advancedOpen(Boolean(record.actionSkill)),
         children: [actionBody],
       }),
     ],
   });
 
-  stack.append(skillCombatRuleCard(currentSkill(record)));
+  stack.append(skillCombatRuleCard(currentSkill(record), {
+    collapsed: !advancedOpen(Boolean(record.damageFormula) || (record.hitSequence ?? [1]).join(",") !== "1"),
+  }));
   stack.append(usedByCard(form, currentSkill(record)));
 
   form.replaceChildren(composer, stack);
@@ -187,28 +205,87 @@ export function renderSkillRecordForm(form: HTMLElement, record: SkillRecord): v
  * 지금은 칩 한 줄 + 효과 블록 4-up 만 남겨 상세 창 상단 ~130px 만 쓴다.
  */
 function skillComposer(record: SkillRecord): HTMLElement {
-  const model = deriveSkillComposerModel(store.getCurrent(), record);
+  // 예전에는 칩 줄 + 「01 주 효과 / 02 속성 / 03 상태 변화 / 04 애니메이션」 카드 네 장이 아래
+  // 폼과 같은 내용을 한 번 더 보여 줬다. 지금은 **한 문장**이다 — 칩과 효과 조각은 같은 요소
+  // (testid·data-effect-kind 계약 유지)지만 문장 안에 흘러 읽힌다.
+  const project = store.getCurrent();
+  const model = deriveSkillComposerModel(project, record);
+  const chip = (kind: SkillComposerChipKind): HTMLElement => {
+    const found = model.chips.find((entry) => entry.kind === kind);
+    return composerChip(kind, found?.label ?? "");
+  };
+  const fragments = skillSentenceFragments(project, record);
   return el("section", {
     class: "db-skill-composer",
     dataset: { testid: "db-skill-composer" },
-    attrs: { "aria-label": "스킬 구성 요약" },
+    attrs: { "aria-label": "스킬 요약" },
     children: [
-      el("div", {
-        class: "db-skill-composer-bar",
+      el("p", {
+        class: "db-skill-sentence",
+        dataset: { testid: "db-skill-sentence" },
         children: [
-          el("strong", { class: "db-skill-composer-label", text: "스킬 구성" }),
-          el("div", {
-            class: "db-skill-composer-chips",
-            children: model.chips.map((chip) => composerChip(chip.kind, chip.label)),
-          }),
+          chip("activation"), " · ",
+          chip("target"), "에게 ",
+          composerEffectBlock("primary", fragments.primary), ". ",
+          composerEffectBlock("element", fragments.element),
+          composerEffectBlock("states", fragments.states),
+          chip("cost"), " · ",
+          composerEffectBlock("animation", fragments.animation),
         ],
-      }),
-      el("div", {
-        class: "db-skill-effect-blocks",
-        children: model.effectBlocks.map((block) => composerEffectBlock(block.kind, block.title, block.summary)),
       }),
     ],
   });
+}
+
+/** 문장 조각. 기본값(무속성·상태 변화 없음·명중 100%)은 말하지 않는다 — 다른 점만 읽힌다. */
+export function skillSentenceFragments(project: Project, record: SkillRecord): {
+  readonly primary: string;
+  readonly element: string;
+  readonly states: string;
+  readonly animation: string;
+} {
+  const accuracy = record.successRate < 100 || record.hitRate < 100
+    ? ` (성공 ${record.successRate}% · 명중 ${record.hitRate}%)`
+    : "";
+  const primary = (() => {
+    switch (record.effect.kind) {
+      case "damage":
+        return `${record.effect.statistic === "attack" ? "공격력" : "마력"} 기반 ${record.effect.affects === "hp" ? "HP" : "MP"} 피해 · 위력 ${record.power}${accuracy}`;
+      case "healing":
+        return `${record.effect.affects === "hp" ? "HP" : "MP"} 회복 · 위력 ${record.power}${accuracy}`;
+      case "support":
+        return `지원 효과${accuracy}`;
+      case "switch":
+        return "스위치를 켭니다";
+    }
+  })();
+  const element = record.elementId
+    ? `${project.database.elements?.find((entry) => entry.id === record.elementId)?.name || record.elementId} 속성. `
+    : "";
+  const states = (record.stateEffects ?? []).length > 0
+    ? `${(record.stateEffects ?? []).map((effect) => {
+        const state = project.database.states.find((entry) => entry.id === effect.stateId);
+        const name = state?.name || effect.stateId;
+        return `${name} ${effect.operation === "add" ? "부여" : "해제"}${effect.chance < 100 ? ` ${effect.chance}%` : ""}`;
+      }).join(" · ")}. `
+    : "";
+  const animation = record.animationId
+    ? `연출: ${project.database.battleAnimations.find((entry) => entry.id === record.animationId)?.name || record.animationId}`
+    : "연출 없음";
+  return { primary, element, states, animation };
+}
+
+function hasTunedAccuracy(record: SkillRecord): boolean {
+  return record.successRate !== 100 || record.hitRate !== 100 || (record.movePriority ?? 0) !== 0 || record.mpCost.percentMax !== 0;
+}
+
+function gen1BattleModel(): boolean {
+  return store.getCurrent().system.battleModel === "gen1";
+}
+
+/** 고급 카드를 펼칠지. 전문가 모드는 모두 펼치고, 그 밖에는 값이 들어 있을 때만 편다. */
+function advancedOpen(inUse: boolean): boolean {
+  return inUse || getEditorUiMode() === "expert";
 }
 
 function composerChip(kind: "activation" | "target" | "cost", label: string): HTMLElement {
@@ -219,27 +296,12 @@ function composerChip(kind: "activation" | "target" | "cost", label: string): HT
   });
 }
 
-function composerEffectBlock(kind: SkillComposerEffectKind, title: string, summary: string): HTMLElement {
-  return el("article", {
+function composerEffectBlock(kind: SkillComposerEffectKind, text: string): HTMLElement {
+  return el("span", {
     class: "db-skill-effect-block",
     dataset: { effectKind: kind },
-    children: [
-      el("span", { class: "db-skill-effect-icon", attrs: { "aria-hidden": "true" }, text: effectBlockIcon(kind) }),
-      el("div", {
-        class: "db-skill-effect-copy",
-        children: [el("strong", { text: title }), el("span", { text: summary })],
-      }),
-    ],
+    text,
   });
-}
-
-function effectBlockIcon(kind: SkillComposerEffectKind): string {
-  switch (kind) {
-    case "primary": return "01";
-    case "element": return "02";
-    case "states": return "03";
-    case "animation": return "04";
-  }
 }
 
 /**

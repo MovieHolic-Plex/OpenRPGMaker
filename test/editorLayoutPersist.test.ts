@@ -132,12 +132,9 @@ function mockEditorDependencies(): void {
   }));
   vi.doMock("@/editor/panels/aiChatPanel", () => ({
     // 도크 축이 삭제돼 `onChatDockToggle` 콜백과 `chat-dock-toggle` 픽스처도 함께 빠졌다.
-    renderAiChatPanel: (options?: {
-      readonly getAssistantTemperature?: () => string;
-    }) => {
+    renderAiChatPanel: () => {
       const panel = document.createElement("aside");
       panel.dataset.testid = "ai-panel";
-      panel.dataset.temperature = options?.getAssistantTemperature?.() ?? "";
       panel.className = "ai-chat-panel";
       const log = document.createElement("div");
       log.dataset.testid = "ai-chat-log";
@@ -343,7 +340,7 @@ describe("에디터 레이아웃 크기 저장", () => {
     expect(resaveLayout(fakeElement(againMain))).toMatchObject({ mapTreeAuto: true });
   }, 120_000);
 
-  it("저장된 조수 대기 화면을 복원한다", async () => {
+  it("저장된 조수 대기 화면 키는 무시하고 다음 저장에서 뺀다", async () => {
     storage.setItem(LAYOUT_VERSION_KEY, LAYOUT_VERSION);
     storage.setItem(EDITOR_LAYOUT_KEY, JSON.stringify({
       leftWidth: 526,
@@ -353,13 +350,13 @@ describe("에디터 레이아웃 크기 저장", () => {
     vi.resetModules();
     mockEditorDependencies();
     const { renderEditor } = await import("@/editor/panels/editor");
-    const { editorState } = await import("@/editor/editorState");
     const main = document.createElement("main");
 
     renderEditor(main);
 
-    expect(editorState.get().assistantTemperature).toBe("ink-only");
-    expect(findByTestId(fakeElement(main), "ai-panel")?.dataset.temperature).toBe("ink-only");
+    const root = fakeElement(main);
+    expect(findByTestId(root, "ai-panel")?.dataset.temperature).toBeUndefined();
+    expect(resaveLayout(root).assistantTemperature).toBeUndefined();
   }, 120_000);
 });
 

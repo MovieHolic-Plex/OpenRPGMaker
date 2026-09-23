@@ -8,6 +8,8 @@ test("Troops battle event editor offers desktop encounter template and quality w
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   await page.getByTestId("db-tab-troops").click();
+  // 2026-09: 전투 이벤트는 「전투 이벤트」 구획 탭 안에 있다.
+  await page.getByTestId("db-troop-section-events-tab").click();
 
   await expect(page.getByTestId("db-troop-event-quality")).toContainText("전투 후 보상/후속 연출 없음");
   await page.getByTestId("db-troop-event-apply-payoff-template").click();

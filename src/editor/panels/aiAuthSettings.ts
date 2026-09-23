@@ -1,5 +1,9 @@
 // editor/panels/aiAuthSettings.ts
-// AI 연결 방식 패널 — **Google Antigravity** 와 **OpenAI Codex** 구독 로그인을 고른다.
+// AI 연결 방식 패널 — **Google 계정**(Antigravity) 과 **ChatGPT 계정**(Codex) 로그인을 고른다.
+//
+// 사용자가 보는 이름은 로그인하는 계정 이름 하나다(Google / ChatGPT, 레지스트리 label).
+// 제품명(Gemini·Antigravity·Codex)은 카드 보조 줄에만 쓴다 — 카드·패널·칩이 제각각 다른 이름을
+// 쓰던 것(2026-09-23 실측)을 막는다.
 //
 // 둘의 공통 계약:
 //  - 전송은 로컬 동반 서비스(oh-my-pi)다.
@@ -34,6 +38,7 @@ import {
   parseOhMyPiProvider,
 } from "@/ai/ohMyPiProviders";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import {
   refreshAiConnectionStatus,
   resetAiConnectionStatusCache,
@@ -54,9 +59,18 @@ export interface AiAuthSettingsView {
   readonly dispose: () => void;
 }
 
-/** 기기 로그인 폴링 간격·최대 시도. 3초 × 60 = 3분 — 기기 코드 로그인의 현실적 상한이다. */
-const DEVICE_POLL_INTERVAL_MS = 3000;
-const DEVICE_POLL_MAX_ATTEMPTS = 60;
+/**
+ * 로그인 대기 폴링 간격과 전체 대기 시간. 3초마다 확인하고 10분 뒤 멈춘다.
+ * 옛 상한 3분(3초 × 60)은 처음 로그인하는 사용자에게 짧았다 — 2단계 인증·비밀번호 찾기·
+ * 원격 접속의 주소 복사까지 하면 3분을 넘기기 쉽다. 시도 횟수는 화면에 보이지 않는다.
+ */
+export const DEVICE_POLL_INTERVAL_MS = 3000;
+export const DEVICE_LOGIN_WINDOW_MS = 10 * 60 * 1000;
+const DEVICE_POLL_MAX_ATTEMPTS = Math.ceil(DEVICE_LOGIN_WINDOW_MS / DEVICE_POLL_INTERVAL_MS);
+
+/** 로그인 대기 중 문구 — 남은 횟수 같은 숫자를 보여 주지 않는다. */
+const WAITING_COPY = "로그인을 기다리는 중…";
+const TIMEOUT_COPY = "시간이 지나 로그인을 멈췄어요. 다시 시도해 주세요.";
 
 type Tone = "connected" | "disconnected" | "offline" | "checking";
 
@@ -72,14 +86,30 @@ const KIND_COPY: Record<AiConnectionKindId, { label: string; hint: string }> = {
 };
 
 /**
- * OAuth 제공자 두 개의 빠른 선택 카드. Codex 는 OpenAI 구독 계정으로 로그인하고,
- * Gemini 는 **구독을 암시하지 않고** Google 계정으로 로그인한다(CLI 장르 용어도 쓰지 않는다).
- * 이 카드는 보기 좋은 경로일 뿐 — 동일 providerId 는 아래 select 와 공유한다.
+ * OAuth 제공자 두 개의 빠른 선택 카드. 제목은 로그인하는 계정(「Google 계정」·「ChatGPT 계정」),
+ * 보조 줄은 사용자가 따로 들어 봤을 제품명이다(「Gemini · Antigravity」·「Codex」) — 사용자가
+ * "agy" 로 부르는 것을 카드에서 찾을 수 있게 한다. Google 쪽은 **구독을 암시하지 않는다**(CLI
+ * 장르 용어도 쓰지 않는다). 이 카드는 보기 좋은 경로일 뿐 — 동일 providerId 는 아래 select 와 공유한다.
  */
-const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; hint: string }>[] = [
-  { id: ANTIGRAVITY_PROVIDER_ID, label: "Google Gemini", hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다." },
-  { id: CODEX_PROVIDER_ID, label: "OpenAI Codex", hint: "ChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다." },
+const QUICK_PROVIDERS: readonly Readonly<{ id: string; label: string; sub: string; hint: string }>[] = [
+  {
+    id: ANTIGRAVITY_PROVIDER_ID,
+    label: "Google 계정",
+    sub: "Gemini · Antigravity",
+    hint: "Google 계정으로 로그인합니다. 빠른 Gemini를 기본으로 사용합니다.",
+  },
+  {
+    id: CODEX_PROVIDER_ID,
+    label: "ChatGPT 계정",
+    sub: "Codex",
+    hint: "ChatGPT 구독 계정으로 로그인합니다. Codex 모델을 사용합니다.",
+  },
 ];
+
+/** 사용자에게 보이는 계정 이름(Google / ChatGPT). 레지스트리 label 이 단일 출처다. */
+function accountName(id: string): string {
+  return getOhMyPiProvider(id)?.label ?? id;
+}
 
 export function renderAiAuthSettings(
   config: AiConfig,
@@ -135,7 +165,7 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-auth-quick" },
     children: providersForKind(kind).map((row) => {
       const copy = QUICK_PROVIDERS.find((quick) => quick.id === row.id);
-      const label = copy?.label ?? row.label;
+      const label = copy?.label ?? `${row.label} 계정`;
       const hint = copy?.hint ?? `${row.label} 계정으로 로그인합니다.`;
       const pill = el("span", {
         class: "ai-auth-card-pill",
@@ -153,7 +183,16 @@ export function renderAiAuthSettings(
               class: "ai-auth-card-brand",
               children: [aiProviderIcon(row.id, 18) ?? deckIcon("spark", { size: 15 })],
             }),
-            el("strong", { text: label }),
+            el("span", { class: "ai-auth-card-name", children: [
+              el("strong", { text: label }),
+              ...(copy?.sub
+                ? [el("span", {
+                  class: "ai-auth-card-sub",
+                  text: copy.sub,
+                  dataset: { testid: `ai-auth-card-sub-${row.id}` },
+                })]
+                : []),
+            ] }),
             el("span", {
               class: "ai-auth-card-check",
               attrs: { "aria-hidden": "true" },
@@ -268,11 +307,27 @@ export function renderAiAuthSettings(
   }) as HTMLButtonElement;
 
   // ── 기기 로그인 블록 ───────────────────────────────────────────────────────
+  // 로그인 주소는 **본문 글자로 보여 주지 않는다.** Google 인가 주소는 600자에 가까워 패널을
+  // 주소 벽으로 덮었다(2026-09-23 실측). 창은 자동으로 열리므로 짧은 「다시 열기」 링크와
+  // 팝업이 막혔을 때의 「주소 복사」만 남긴다. 주소 자체는 href 에만 있다.
+  let loginUrl = "";
   const deviceUrl = el("a", {
     class: "ai-oauth-device-url",
+    text: "로그인 창 다시 열기",
     attrs: { target: "_blank", rel: "noopener noreferrer" },
     dataset: { testid: "ai-oauth-device-url" },
   }) as HTMLAnchorElement;
+  const copyUrlButton = el("button", {
+    class: "ai-assistant-action ai-oauth-copy-url",
+    text: "주소 복사",
+    attrs: { type: "button", title: "창이 안 열리면 주소를 복사해 새 탭 주소창에 붙여 넣으세요." },
+    dataset: { testid: "ai-oauth-copy-url" },
+  }) as HTMLButtonElement;
+  const deviceLinkRow = el("div", {
+    class: "ai-oauth-device-link-row",
+    dataset: { testid: "ai-oauth-device-link-row" },
+    children: [deviceUrl, copyUrlButton],
+  });
   const deviceUserCode = el("code", {
     class: "ai-oauth-device-usercode",
     dataset: { testid: "ai-oauth-device-usercode" },
@@ -288,20 +343,22 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-device-code-row" },
     children: [deviceUserCode, copyCodeButton],
   });
-  const deviceStep1 = el("span", { text: "1. 아래 주소를 열고", dataset: { testid: "ai-oauth-device-step1" } });
-  const deviceStep2 = el("span", { text: "2. 이 코드를 입력하세요", dataset: { testid: "ai-oauth-device-step2" } });
+  const deviceStep1 = el("span", { dataset: { testid: "ai-oauth-device-step1" } });
+  const deviceStep2 = el("span", { dataset: { testid: "ai-oauth-device-step2" } });
+  // 셋째 단계는 원격 접속(주소 붙여넣기) 안내에서만 쓴다.
+  const deviceStep3 = el("span", { attrs: { hidden: "" }, dataset: { testid: "ai-oauth-device-step3" } });
   const pasteInput = el("input", {
     class: "ai-config-input ai-oauth-paste-url",
     attrs: {
       type: "url",
-      placeholder: "http://localhost:…/oauth-callback?code=…",
-      "aria-label": "OAuth 콜백 주소",
+      placeholder: "여기에 주소 붙여 넣기 (http://localhost:… 로 시작)",
+      "aria-label": "로그인 탭의 주소",
     },
     dataset: { testid: "ai-oauth-paste-url" },
   }) as HTMLInputElement;
   const pasteButton = el("button", {
     class: "ai-assistant-action",
-    text: "콜백 전달",
+    text: "연결하기",
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-paste-submit" },
   }) as HTMLButtonElement;
@@ -329,13 +386,30 @@ export function renderAiAuthSettings(
     children: [
       el("div", { class: "ai-oauth-device-steps", children: [
         deviceStep1,
-        deviceUrl,
-        deviceStep2,
         deviceCodeRow,
+        deviceStep2,
+        deviceStep3,
         pasteRow,
+        deviceLinkRow,
       ] }),
       el("div", { class: "ai-oauth-device-foot", children: [devicePoll, cancelButton] }),
     ],
+  });
+
+  // ── 시간 초과 ─────────────────────────────────────────────────────────────
+  // 옛 구현은 상한에 닿으면 기기 블록을 조용히 접고 상태 줄만 바꿨다 — 사용자는 무엇이 끝났는지,
+  // 다음에 무엇을 누를지 몰랐다. 멈춘 이유와 재시도 버튼을 한자리에 보여 준다.
+  const retryButton = el("button", {
+    class: "ai-assistant-action",
+    text: "다시 시도",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-oauth-timeout-retry" },
+  }) as HTMLButtonElement;
+  const timeoutNotice = el("div", {
+    class: "ai-oauth-timeout",
+    attrs: { hidden: "", role: "alert" },
+    dataset: { testid: "ai-oauth-timeout" },
+    children: [el("span", { text: TIMEOUT_COPY }), retryButton],
   });
 
   // ── 안내(A) / 오류(B) ─────────────────────────────────────────────────────
@@ -431,6 +505,7 @@ export function renderAiAuthSettings(
     // (결함 B). (A) 안내와 (B) 서버 오류 둘 다 숨기지 않으면 옛 제공자 문구가 새 제공자 곁에 남는다.
     hint.hidden = true;
     serverError.hidden = true;
+    timeoutNotice.hidden = true;
     // 이전 연산이 버튼을 비활성화한 채로 남았어도(대기 중 로그인/연결 해제) 새 선택에서
     // 되살린다 — 오래된 finally 는 세대 가드 때문에 이걸 덮지 못한다.
     loginButton.disabled = false;
@@ -467,6 +542,13 @@ export function renderAiAuthSettings(
     // 같은 지점에서 똑같이 죽는다. 안내를 따르면 시간만 버린다.
     hint.hidden = true;
     serverError.hidden = false;
+    if (isHostAiDisabledMessage(detail)) {
+      setStatus("서버에서 AI가 꺼져 있음", "offline");
+      serverError.textContent = HOST_AI_DISABLED_GUIDANCE;
+      cardAuth.set(providerId, "error");
+      renderCardPill(providerId);
+      return;
+    }
     const guidance = /codex/iu.test(detail)
       ? "codex 프로그램 쪽 문제일 수 있어요. 개발 서버를 껐다 켜 보세요."
       : "개발 서버를 껐다 켜 보세요. 그래도 안 되면 이 화면을 복사해 개발자에게 알려주세요.";
@@ -642,19 +724,18 @@ export function renderAiAuthSettings(
             return;
           }
           if (pollAttempt >= DEVICE_POLL_MAX_ATTEMPTS) {
-            stopPolling();
-            setStatus("로그인이 확인되지 않았습니다", "disconnected");
+            showLoginTimeout();
             return;
           }
-          devicePoll.textContent = `로그인 확인 중… (${pollAttempt}/${DEVICE_POLL_MAX_ATTEMPTS})`;
+          // 대기 문구는 시작할 때 한 번만 쓴다 — 매 틱 덮어쓰면 「주소를 복사했어요」 같은
+          // 방금 한 조작의 응답이 3초 만에 지워진다.
           pollForLogin();
         })
         .catch(() => {
           // 폴링 중 일시적 실패는 흐름을 끊지 않는다 — 다음 시도에서 회복될 수 있다.
           if (disposed || gen !== opGeneration || provider !== providerId) return;
           if (pollAttempt >= DEVICE_POLL_MAX_ATTEMPTS) {
-            stopPolling();
-            setStatus("로그인이 확인되지 않았습니다", "disconnected");
+            showLoginTimeout();
             return;
           }
           pollForLogin();
@@ -662,10 +743,35 @@ export function renderAiAuthSettings(
     }, DEVICE_POLL_INTERVAL_MS);
   }
 
+  /** 대기 시간이 다 됐다 — 폴링을 멈추고, 멈춘 이유와 재시도 버튼을 보여 준다. */
+  function showLoginTimeout(): void {
+    stopPolling();
+    setStatus("로그인 시간 초과", "disconnected");
+    timeoutNotice.hidden = false;
+  }
+
+  retryButton.addEventListener("click", () => {
+    timeoutNotice.hidden = true;
+    loginButton.click();
+  });
+
   cancelButton.addEventListener("click", () => {
     opGeneration += 1;
     stopPolling();
     setStatus("로그인을 취소했습니다", "disconnected");
+  });
+
+  copyUrlButton.addEventListener("click", () => {
+    if (!loginUrl) return;
+    const clipboard = typeof navigator !== "undefined" ? navigator.clipboard : undefined;
+    const failed = "복사하지 못했어요. ‘로그인 창 다시 열기’를 눌러 주세요.";
+    if (!clipboard?.writeText) {
+      devicePoll.textContent = failed;
+      return;
+    }
+    void clipboard.writeText(loginUrl)
+      .then(() => { devicePoll.textContent = "주소를 복사했어요. 새 탭 주소창에 붙여 넣으세요."; })
+      .catch(() => { devicePoll.textContent = failed; });
   });
 
   pasteButton.addEventListener("click", () => {
@@ -689,6 +795,7 @@ export function renderAiAuthSettings(
     // 실 브라우저는 비활성 버튼의 click 을 발화하지 않는다 — fakeDom 이 발화할 수 있으므로
     // 핸들러가 자체 비활성을 다시 확인해 생성 경계를 세우기 전에 이중 연산을 배제한다.
     if (loginButton.disabled) return;
+    timeoutNotice.hidden = true;
     // 새 로그인/재확인은 진행 중이던 기기 흐름(폴링 + 보이는 기기 블록 + 그 취소)을 즉시
     // 멈추고 숨긴다 — 그렇지 않으면 옛 취소가 세대를 올려 재시도를 무효화하고 버튼을 영구히
     // 잠글 수 있다. 세대 전진 전에 동기로 호출해 옛 폴링 결과가 새 경계를 건드리지 못하게 한다.
@@ -748,9 +855,12 @@ export function renderAiAuthSettings(
           return;
         }
         deviceBlock.hidden = false;
-        deviceUrl.textContent = login.verificationUrl || "(주소를 받지 못했습니다)";
+        loginUrl = login.verificationUrl || "";
+        // 주소는 href 에만 둔다(본문 글자 금지 — 위 기기 로그인 블록 주석).
         // setAttribute 로 쓴다 — 속성으로 남아야 테스트·접근성 도구가 같은 값을 읽는다.
-        if (login.verificationUrl) deviceUrl.setAttribute("href", login.verificationUrl);
+        if (loginUrl) deviceUrl.setAttribute("href", loginUrl);
+        else deviceUrl.removeAttribute("href");
+        deviceLinkRow.hidden = !loginUrl;
         deviceUserCode.textContent = login.userCode || "";
         copyCodeButton.hidden = !login.userCode;
         // 코드가 없는 로그인(브라우저 루프백 완료: Antigravity, 1455 를 잡은 Codex)에서는
@@ -758,18 +868,28 @@ export function renderAiAuthSettings(
         deviceCodeRow.hidden = !login.userCode;
         pasteRow.hidden = login.pasteCallback !== true;
         pasteInput.value = "";
-        pasteButton.textContent = login.pasteCallback ? "연결하기" : "콜백 전달";
+        const name = accountName(provider);
         if (login.pasteCallback) {
-          deviceStep1.textContent = "1. 열린 탭에서 로그인을 마치세요. 주소가 localhost 로 바뀌고 페이지가 안 열려도 됩니다.";
-          deviceStep2.textContent = "2. 그 탭의 주소창을 복사하고 이 화면으로 돌아오세요. 연결은 알아서 합니다.";
-          devicePoll.textContent = "주소창을 복사하면 이 화면이 연결합니다.";
+          // 원격 접속(다른 PC 의 서버를 여는 중): Google 은 로그인 뒤 **이 PC 의** localhost 로
+          // 돌려보내므로 그 탭은 브라우저의 「연결할 수 없음」 오류 페이지가 된다. 초보자는 그걸
+          // 실패로 읽는다 — 그 페이지가 정상이라는 것과, 무엇을(주소창 전체) 복사할지 먼저 말한다.
+          // redirect_uri 는 데스크톱 클라이언트 제약상 localhost 여야 하므로 흐름 자체는 바꾸지 않는다.
+          deviceStep1.textContent = `1. 새로 열린 탭에서 ${name} 계정으로 로그인하세요.`;
+          deviceStep2.textContent = "2. 로그인 후 ‘연결할 수 없음’ 페이지가 뜨는 게 정상이에요. 그 탭의 주소창에 있는 주소 전체(http://localhost 로 시작)를 복사하세요.";
+          deviceStep3.textContent = "3. 이 화면으로 돌아오면 알아서 연결해요. 안 되면 아래 칸에 붙여 넣고 ‘연결하기’를 누르세요.";
+          deviceStep3.hidden = false;
+          devicePoll.textContent = WAITING_COPY;
           watchPastedLogin();
         } else {
-          deviceStep1.textContent = "1. 아래 주소를 열고";
+          deviceStep1.textContent = login.userCode
+            ? `${name} 로그인 창을 열었어요. 창에 아래 코드를 입력하세요.`
+            : `${name} 로그인 창을 열었어요. 창에서 로그인을 마치면 자동으로 연결됩니다.`;
           deviceStep2.textContent = login.userCode
-            ? "2. 이 코드를 입력하세요"
-            : "2. 로그인을 마치면 자동으로 연결됩니다";
-          devicePoll.textContent = `로그인 확인 중… (0/${DEVICE_POLL_MAX_ATTEMPTS})`;
+            ? "코드를 넣고 로그인을 마치면 자동으로 연결됩니다. 창이 안 보이면 ‘로그인 창 다시 열기’를 누르세요."
+            : "창이 안 보이면 ‘로그인 창 다시 열기’를 누르세요.";
+          deviceStep3.textContent = "";
+          deviceStep3.hidden = true;
+          devicePoll.textContent = WAITING_COPY;
         }
         setStatus("브라우저에서 로그인 대기 중", "checking");
         // 링크를 눌러 열 수도 있게 남겨 둔 채 자동 실행도 시도한다(팝업 차단 시 링크가 대안).
@@ -853,6 +973,7 @@ export function renderAiAuthSettings(
           el("div", { class: "ai-auth-state", children: [status, kindBadge] }),
           el("div", { class: "ai-auth-actions", children: [loginButton, disconnectButton] }),
           deviceBlock,
+          timeoutNotice,
           hint,
           serverError,
         ] }),

@@ -1,0 +1,12 @@
+{
+  "source": "SQLite reopened project",
+  "baseCategory": "diverse-villages-windows-v10",
+  "baseImages": 22,
+  "conceptImages": 1,
+  "realComponent": "renderTilesetReferences",
+  "readOnlyHarness": true,
+  "category": "concept-villages-v1",
+  "images": 1,
+  "missing": 0,
+  "errors": []
+}

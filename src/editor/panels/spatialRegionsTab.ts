@@ -57,7 +57,7 @@ export function renderSpatialRegionsStage(
 
 export function spatialRegionsTabChrome(card: SpatialGalleryCard | undefined, rerender: () => void) {
   if (card?.regionMapId) return { saveState: "완성 맵 · 연결됨", previewError: null };
-  if (card?.regionReferenceId) return { saveState: "완성 맵 사례 · 읽기 전용", previewError: null };
+  if (card?.regionReferenceId) return { saveState: "예시 · 읽기 전용", previewError: null };
   return spatialGeographyChrome(card, "region", rerender);
 }
 

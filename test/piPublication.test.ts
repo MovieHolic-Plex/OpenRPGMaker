@@ -7,6 +7,7 @@ const h = vi.hoisted(() => ({
 }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: (project: unknown) => ({ project }),
+  captureApplyAuthority: (project: unknown) => ({ base: { project }, baseline: {} }),
   applyProposedProject: async (project: unknown, options: any) => {
     if (options.base.project !== h.current) return { ok: false, reason: "stale-base" };
     h.calls.push(options); h.current = project;

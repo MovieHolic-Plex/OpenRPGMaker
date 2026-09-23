@@ -35,7 +35,6 @@ const CALL_SITES: Readonly<Record<LiveAction, string>> = {
   newConversation: PANEL,
   turnAbort: PANEL,
   turnRetry: TURN_RUNNER,
-  temperatureSwitch: PANEL,
 };
 
 describe("ai ui event 계측 계약", () => {

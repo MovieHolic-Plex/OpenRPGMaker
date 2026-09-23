@@ -1,6 +1,8 @@
+import { DIVERSE_VILLAGE_PLACES, DIVERSE_VILLAGE_REGIONS } from "./diverseVillageReferences";
 import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
 import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
+import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
 
 /** Fixed authored examples, independent of procedural RegionDesign and the active project. */
@@ -68,7 +70,7 @@ export const REGION_REFERENCES = [
     "사용자가 승인한 저장본을 보존한다. 내려받는 문서에는 연결된 실내 9개와 기존 출입·주민 이벤트를 포함한다.",
   ],
   limitations: "완성 마을 참고 사례. 자동 생성 프리셋이 아니다. 집 앞길 8곳의 연결을 확인했으며 게임 전체 플레이 검증은 별도다.",
-}] as const;
+}, ...DIVERSE_VILLAGE_REGIONS] as const;
 
 export const LAKE_PLACE_REFERENCES = [
   { id: "lake-pier-workyard", name: "호숫가 선착장 작업터", x: 29, y: 33, width: 14, height: 13,
@@ -83,7 +85,7 @@ export const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: "tileset_emerald_basin_20260914",
@@ -114,7 +116,7 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
     "밭·과수원·풀밭과 산울타리 덤불(289)은 필지 바깥에 두고, 과수원 나무는 합본 마을 2×2 활엽수 그대로다.",
   ],
   limitations: "시공기 출력 그대로의 참고 사례(씨앗 7). 실내 맵과 집 문 이벤트는 포함하지 않는다. 주민 12명은 배치만 있고 대사는 없다.",
-}];
+}, ...DIVERSE_VILLAGE_PLACES];
 
 
 export function regionReference(id: string) {

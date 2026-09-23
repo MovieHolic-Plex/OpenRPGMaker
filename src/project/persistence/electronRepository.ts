@@ -1,4 +1,5 @@
 import { deserialize, serialize } from "../io";
+import { diffProjectDocuments, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
@@ -16,7 +17,14 @@ export type OprnBridgeProject = {
   open(payload: { readonly projectDir: string }): Promise<{ readonly projectId: string; readonly projectDir: string }>;
   load(payload: { readonly projectDir: string }): Promise<{ readonly serialized: string; readonly sha256: string; readonly revision: number } | null>;
   save(payload: { readonly projectDir: string; readonly serialized: string; readonly expectedSha: string | null }): Promise<SaveResult & { readonly serialized?: string }>;
-  saveMapPatch(payload: { readonly projectDir: string; readonly baseSerialized: string; readonly serialized: string; readonly changedMapIds?: readonly string[] }): Promise<SaveResult & { readonly serialized?: string }>;
+  saveMapPatch(payload: {
+    readonly projectDir: string;
+    readonly baseSerialized?: string;
+    readonly serialized?: string;
+    readonly baseSha?: string | null;
+    readonly patch?: ProjectDocumentPatch;
+    readonly changedMapIds?: readonly string[];
+  }): Promise<(SaveResult & { readonly serialized?: string }) | { readonly kind: "stale-base" }>;
   dataVersion(payload: { readonly projectDir: string }): Promise<number>;
   separateMedia(payload: { readonly projectDir: string }): Promise<{ readonly changed: boolean; readonly migratedAssetIds: readonly string[]; readonly revision: number }>;
   backup(payload: { readonly projectDir: string }): Promise<string>;
@@ -197,12 +205,18 @@ export function createElectronRepository(): ElectronRepository {
       const resolved = requireOpened(target);
       const baseProject = projectWithoutEventDrafts(input.baseProject);
       const persisted = projectWithoutEventDrafts(input.project);
-      const result = await electronBridge().project.saveMapPatch({
+      const patch = diffProjectDocuments(JSON.parse(serialize(baseProject)) as unknown, JSON.parse(serialize(persisted)) as unknown);
+      const send = (includeBase: boolean) => electronBridge().project.saveMapPatch({
         projectDir: resolved.projectDir,
-        baseSerialized: serialize(baseProject),
-        serialized: serialize(persisted),
+        baseSha: loadedSha,
+        patch,
+        ...(includeBase ? { baseSerialized: serialize(baseProject) } : {}),
         ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
       });
+      // 해시가 맞으면 변경분만 보낸다. 다른 저장이 끼면 기준 문서를 한 번 더 보낸다.
+      let result = await send(false);
+      if (result.kind === "stale-base") result = await send(true);
+      if (result.kind === "stale-base") throw new Error("저장 기준 문서가 서버와 달라 맵 패치를 적용하지 못했습니다");
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
       return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
     },

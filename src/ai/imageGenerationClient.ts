@@ -1,5 +1,6 @@
 import { companionCompletionsBaseUrl, loadAiConfig, type AiConfig } from "@/ai/llmClient";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
+import { companionTokenHeaders } from "@/ai/companionToken";
 import { parseImageReferences, type ImageReference } from "@/ai/imageReferences";
 
 /** Legacy exports name the defaults, not the current user selection. */
@@ -84,6 +85,7 @@ export async function generateAiImage(
       headers: {
         "Content-Type": "application/json",
         "X-Oprn-Provider": providerId,
+        ...companionTokenHeaders(),
       },
       body: JSON.stringify({
         prompt,

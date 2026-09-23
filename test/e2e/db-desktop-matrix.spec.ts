@@ -101,7 +101,7 @@ for (const { width, height } of VIEWPORTS) {
     const hpStepper = page.getByTestId("db-field-item-hp-percent-stepper");
     await expect(hpStepper).toBeVisible();
     await hpStepper.fill("35");
-    await expect(page.getByTestId("db-field-item-hp-percent-slider")).toHaveValue("35");
+    await expect(hpStepper).toHaveValue("35");
     await shot("05-item-edit");
 
     // ── 6. 시스템 타입칩 매트릭스 ──

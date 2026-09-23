@@ -3,9 +3,8 @@ import type { PiApplyMode } from "@/ai/piAgent/applyMode";
 import type { PiProjectCheckpoint } from "@/ai/piAgent/protocol";
 import { changedProjectKeys, restoreCheckpointProject } from "@/ai/piAgent/protocol";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
-import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
+import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { adoptSpatialToolProof } from "@/editor/tools/spatialToolState";
-import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import type { Project } from "@/project/types";
 import { showConfirm } from "@/editor/ui/modal";
 import { createPendingReviewPrompt } from "./aiPendingReview";
@@ -18,8 +17,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
   afterApply(project: Project): void;
 }) {
   let project = base;
-  let authority = captureProposalBase(base);
-  let baseline = new AuthoredProjectBaseline(base);
+  let { base: authority, baseline } = captureApplyAuthority(base);
   let count = 0;
   let queue: Promise<unknown> = Promise.resolve();
   const approveStage = (next: Project, title: string): Promise<void> => new Promise((resolve, reject) => {
@@ -63,8 +61,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
       onApplied: applied => {
         project = applied.commitProject ?? applied.applied;
         // Invoked at the actual mutation boundary, before subscribers can edit the store.
-        authority = captureProposalBase(project);
-        baseline = new AuthoredProjectBaseline(project);
+        ({ base: authority, baseline } = captureApplyAuthority(project));
         count++;
       },
     });

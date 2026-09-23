@@ -4,7 +4,8 @@
 
 ## 사용자 경로와 정본
 
-**자료집(데이터베이스) → 맵 → 타일 → 타일셋 선택 → AI 참고문서(첫 화면) → 용도(마을 등) → MD / 이미지**.
+**자료집(데이터베이스) → 맵 → 타일 → 타일셋 선택 → AI 참고문서 탭 → 용도(마을 등) → MD / 이미지**.
+(2026-09-23 부터 타일셋의 첫 화면은 「통행·레이어」다. AI 참고문서는 네 번째 탭.)
 저장소의 `openwiki/slates-*.md`는 연구 출처다. 현재 프로젝트의 저작 지침 정본은
 `project.tilesets[id].referenceDocuments`이며, 문서 본문과 PNG/JPEG/WebP 바이트를 프로젝트에 보관한다.
 로컬 HTML 서버·옛 대화·외부 이미지 URL이 없어도 읽힌다. 모든 AI 모델이 같은 자료를 쓴다.
@@ -192,3 +193,162 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 접근칸은 카탈로그에 내장되고 외부 맵 입출구는 entryPoints로 명시한다.
 동굴893은 retro_world 413의 투명 이식 및 하위 받침652를 사용한다.
 기존 플레이 그래픽의 레이어 priority는 유지하며 어긋난 설명99개를 정정한다.
+
+## 이슬여울 마을 장식 표본 (2026-09-22)
+
+`dewbank-village-v1` / **이슬여울 · 25종 장식 조립**은 승인된 88×60 마을을
+`forest_harmony`와 `shared_forest_village_objects`의 공용 참고문서에 제공한다.
+정본은 `tiledata/tilesets/forest_harmony/dewbank-village/`: 24 MD, 실제 타일 이미지 9장,
+25종 부품·85개 배치·225개 사용 타일 결합 사전, 하위/상위 전체 배열, 8개 문/접근칸.
+다른 칩셋에서 2610번을 고정 소품 번호로 쓰면 안 된다. 원본 그림+칸으로 이식하고
+빈 행부터 배정한다. 3행 굽이숲 몸통과 기존 6행 forest-repeat 레이어 규칙을 구분한다.
+
+- `scripts/content/build-dewbank-references.mjs`: 커밋된 표본/MD/그림에서 번들 자료집 재생성.
+- `scripts/content/render-dewbank-evidence.mjs`: 표본의 정상 및 5가지 실제 변조를 렌더링;
+  `DEWBANK_DEV_URL`로 현재 워크트리 Vite 주소 지정. 저장소/원본 프로젝트는 변경하지 않는다.
+- `scripts/content/validate-dewbank-village.mjs <project.json> [mapId]`: 읽기 전용 표본 비교.
+  정확한 88×60 배열/이식 결합과 엔진 타일 도달성만 확인하고 오류 좌표를 반환한다.
+  임의 마을 미학/이벤트 실행을 판정하는 도구가 아니다. 결과는 최대128개+전체 오류 수.
+- `scripts/content/register-dewbank-references.mjs`: 관련 공용 다운로드에 보충.
+  `--project-dir <offline-folder>` 또는 `--host <url> --project-id <id>`로 SQLite 저장·재로드.
+  `--host <url> --all-host-projects`는 기본 프로젝트와 호스트 목록의 관련 프로젝트 모두에
+  추가한다. 기존 같은 ID의 사용자 문서는 보존하고 맵 불변 및 SHA CAS를 확인한다.
+
+새 프로젝트는 두 번들 팩토리에서 즉시 제공한다. 기존 프로젝트는 번들 타일셋 보충 경로가
+빠진 카테고리만 추가한다. 사용자 업로드/공유 원본 포인터/편집 문서는 덮어쓰지 않는다.
+등록 및 SQLite 재로드 영수증과 실제 참고문서 컴포넌트 화면은 해당 폴더의 `ai-references/`에 있다.
+
+## 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+
+`tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
+`src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
+현재 용도 ID는 `diverse-villages-windows-v10`(문서52개/이미지30개)과 `concept-villages-v1`(문서26개/이미지3개)이다.
+완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
+잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
+자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
+
+이미지는 원본을 source에 보존하고 번들용만 긴 변 820px/128색으로 줄인다. 새 프로젝트 생성 시
+바로 가지며, `ensureBundledTilesets` → `ensureForestHarmonyReferences`로 기존 프로젝트의 빠진
+용도만 채운다. 기존 저자 문서/공유 포인터/다른 이미지의 동명 칩셋은 건드리지 않는다.
+지역 다운로드에도 새 용도가 포함된다. 원격 행 등록만으로 배포 완료를 주장하지 않는다.
+새/기존 프로젝트 배포, 다운로드 직렬화 왕복, 실제 문서 화면 근거는 `verify-shots/village-diversity/`.
+
+
+### 절벽 조립 교정 (2026-09-23)
+
+‘큰 폭포 아래 마을’의 실제 상위 배열을 기준으로 세 마을을 revision2로 교정했다.
+얇은 둘레 띠 대신 굽은 윗선·반복 면·같은 윤곽의 밑단을 사용하고 좌우 사선 원본231/232를 구분한다.
+암벽은 upper, 계단은 lower+upper 비움이다. 높이에 맞춘 계단 양끝과 문앞 연결을 확인한다.
+`src/project/defaults/forestHarmony.ts`는 `previous-reference.json`의 revision과 정확히 같은
+미편집 v1만 교체한다. 사용자 수정본/공유 포인터는 보존하고 새 용도를 제공한다.
+정확한 원본 배열과 픽셀 일치·8종 오류·SQLite 재로드 근거는
+`tiledata/forest-villages/diverse/cliff-source.json`, `verify-shots/village-cliff-repair/`에 있다.
+
+### 잔디 경계 개정3 (2026-09-23)
+
+사용자 확정은 기존 바닥240 유지다. 504/505의 사선 및498/499/528/529/619의 잔디 픽셀만
+그 바닥에 맞춘다. 기존 아틀라스를 덮어쓰지 않고 공용 `forest_harmony_grass_joins`
+(16px·9열·9칸)을 추가했다. 생성기는 `prepare-forest-grass-joins.mjs`, 실제 치수는 bundled
+기하와 defaultAssets 생성자가 공유한다. 새 프로젝트/기존 프로젝트에 등록하며 AI 문서는 forest_harmony를 공유한다.
+사선은 lower+받침240, 모서리/암벽은 upper다. 상위 소품과 바닥 그림은 유지한다.
+미편집 v1/v2 문서만 내용 revision 일치로 교체하고 편집본은 보존하면서 개정3을 추가한다.
+세 지역 revision3, 10종 오류 예제 및 grass-backing 검사. 근거 `verify-shots/village-grass-joins/`.
+
+### 굽은 지형·입구 개정4 (2026-09-23)
+
+3개 공용 지역 revision4. 504–559–505를 완전한 /—\ 조립으로 만들고, 중간 충돌을 건너뛰지 않는다.
+바닥240을 유지한 파생 시트는10열10칸으로 늘고, 기존9칸 정의는 저자 메타데이터를 보존하며9번559만 추가한다.
+절벽의 골·돌출부와 계단 평탄부를 분리하고, 숲은 plateau 전체 제외를 없애 군집/빈터 밀도장을 적용한다.
+맵 가장자리 폭3·깊이5 출입구를 도로에 연결해 모두 검사한다. 12종 오류에 마감 누락·막힌 맵 출입구가 포함된다.
+공용 AI 자료는 v1/v2/v3 중 미편집 배포본만 교체하며 저자 편집본·공유 포인터는 보존한다.
+연구의 적용 범위와 재현 수식은 `tiledata/forest-villages/diverse/research-layout.md`,
+정본 revision10 저장/재로드 및 화면 증거는 `verify-shots/winding-villages/`.
+
+### 생활 마당 개정5 (2026-09-23)
+
+무작위 중앙 소품과 집 주변 산개를 제거했다. `village-household-props.mjs`는 집별 ownerId와
+주거/텃밭/작업·보관/약초 묶음을 좌우 벽에서1칸 떨어진 마당에2–4개씩 배치한다.
+큰 묶음→같은 용도의 좁은 묶음→배치 생략 순서이며 중앙으로 밀어내지 않는다.
+완전한 묶음 접근 검증, 허수아비-채소밭 동반 조건, 마당 밖 소품 좌표 검사를 추가했다.
+숲·절벽·개별 나무·길·집 배열은 그대로다. 지역 revision5 / 참고문서 v5,
+33 MD·21 이미지·14종 오류. 정본 revision11 저장/재조회와 근거는 `verify-shots/household-props/`.
+
+### 사용 목적 개정6 (2026-09-23)
+
+‘집 옆’만으로 배치 목적을 대신하지 않는다. 집 순번 n%4의 묶음 교대를 제거했다.
+prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/compact를 저작한다.
+기존 밭 돌보기는 실제 밭, 어업 준비는 실제 부두, 목재/완제품 상자는 작업대에 연결한다.
+검사에서 실제 기준 대상의 전체 타일과 거리, 소유자의 활동, 접근 가능성을 확인한다.
+원형의 꽃 등 필요 없는 장식은 활동에 자동 동반하지 않는다. 활동을 바꾸는 fallback도 없다.
+지역 revision6, 공용 문서 v6(33 MD/22이미지), 정본 revision12 저장/재조회.
+좌표 검사15종과 활동/세탁/부두/기존 밭/작업대 변조5종의 근거: `verify-shots/prop-purpose/`.
+
+### 공동 공간·정원 개정7 (2026-09-23)
+
+집의 작업 소품 이외에 공동 급수·공지·길 안내·정원·환대·영역 구분을 명시한다.
+`civic-programs.json`의 장소별 anchor/purpose/near를 `village-civic-props.mjs`가 완전한 부품으로 배치한다.
+우물·실제 밭·부두·길·집과의 관계, 부품 사이 거리, 실제 기준 대상의 배열, 사용칸을 검사한다.
+벽등만 빈 상위+하위 벽42..47을 허용하고 문 열 ±1을 피한다. 일반 소품 하위240은 유지한다.
+산촌18·절벽18·포구24개 추가, 세 마을 전체25종 사용. 하위와 기존 상위 타일을 보존했다.
+지역 revision7 / 공용 AI 용도 civic-v7(38 MD·25이미지·18종 오류), 정본 revision13 재오픈 전체 일치.
+새/기존 프로젝트 공급과 저자 편집 보존·브라우저 근거는 `verify-shots/village-civic/` 및 `verify-shots/village-diversity/`.
+이는 외관 저작이며 상점·우편·NPC 생활 이벤트·동적 조명은 추가하지 않았다.
+
+### 계단 대지 개정8 (2026-09-23)
+
+사용자 판정: 절벽에 높이가 없다. 원인은 모양이 아니라 **닫힘**이었다 — V자·톱니 끝을 돌아 윗단으로 걸어갈 수 있어
+절벽이 둔덕이 아니라 들판의 홈으로 보였다. 참고(큰 폭포 아래 마을)는 절벽이 숲에서 숲까지 이어져 계단으로만 오른다.
+- `author-diverse-villages.mjs`: 절벽 각 끝 바깥 4열을 숲 강제 칸 + 길 경로 차단(`cliffs[i].left/right:"open"`로 해제,
+  `leftFrom/rightFrom`로 시작 행). 끝에서 「모든 계단을 막으면 윗단 칸에 닿지 않는다」를 단언한다.
+- 검증기 `terrace-without-stairs`: 같은 판정을 열린 절벽 끝 좌표로 보고. 고장 예시는 솔바람 서쪽 끝 숲 제거(19종째).
+- 윤곽: 솔바람 V자 둘→한 줄+계단3, 층바위 톱니→수평 굽이, 갈대물굽이 오른쪽 끝을 북쪽 숲까지 봉쇄+계단2.
+- 문: 1×2 문 위 칸 359→329(같은 시트 바로 위 완전 검정). 문 이벤트 없이 출입구로 읽힌다. 23채.
+- 소품: 기본 시트의 온전한 소품 8종을 `extra-parts.json`으로 civic 부품에 추가(벤치·술통·오크통·모닥불·이정표·장작·과일 좌판·3×2 노점).
+  전망 쉼터·계단 길잡이·장터·불자리·선착장 짐터·땔감 21곳 46개. 지형이 옮겨 겹친 보존 나무는 자르지 않고 뺀다.
+- 지역 revision8 / 공용 AI 용도 `diverse-villages-terrace-v8`(42 MD·26이미지·19종 오류), 정본 revision16 재오픈 전체 일치.
+  미편집 civic-v7 은 `previous-reference.json` 기록으로 교체, 저자 편집본은 보존. 근거 `verify-shots/village-terrace/`.
+- 후속 판정: 과일 바구니는 사과가 시트보다 큰 배율이라 제외(`extra-parts.json` oversized → 부품 목록에서 제거). 층바위 동굴 입구 삭제.
+
+### 강과 폭포 개정9 (2026-09-23)
+
+네 번째 지역 「두 폭포 강마을」(88×72). 북쪽 숲에서 나온 폭4 강이 한가운데를 흐르고, 숲에서 숲까지 이은 두 줄 절벽에서
+폭포로 떨어져 소를 이룬 뒤 남쪽으로 빠진다. 단마다 다리 하나(3개), 절벽마다 양 강둑 계단(4개).
+- 비취 대계곡(World 칩셋) 물·물가 = 숲마을 lake_47 과 같은 그림(RGB 비교; RGBA `getbbox` 는 알파만 봐서 거의 전부 「같음」으로 나온다 — 주의).
+  폭포 World123·다리 World102/103 만 `tex_easyrpg_chipset_world` 에서 이식(`riverTiles`), 기존 102/103(통나무 벽) 재사용 금지.
+- `author-diverse-villages.mjs`: `river{width,points,pools}` 가로 붓, 절벽 교차 열 → 윗선 물 + 면 폭포, 폭포 칸을 오토타일 이웃에 포함(둑 없음),
+  맵 밖으로 나가는 강은 가장자리 둑 없음. `bridges` 는 2행, 양 끝 뭍 단언, 끝을 길에 연결, 길 칠하기에서 제외.
+- 검증기 `waterfall-gap` 추가(20종). 폭포는 번들 칩셋에 애니메이션이 없어 정지 그림.
+- 같은 개정: 과일 바구니는 사과 배율이 커서 부품 목록에서 제거, 층바위 동굴 삭제.
+- 지역 revision9 / `diverse-villages-river-v9`(51 MD·28 이미지), 정본 revision18 재오픈 일치. 근거 `verify-shots/village-river/`.
+
+### 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+
+비취 대계곡 방식의 강·폭포 위에 마을마다 다른 랜드마크를 통째로 세운 지역 3개. 「지역」과 「장소」 두 곳에 모두 나온다(두 폭포 강마을도 장소에 추가).
+- 종탑 언덕 교구마을(80×64): 윗단에 스테인드글라스 교회, 외곽에 울타리 친 묘지, 폭포 하나와 소.
+- 여울성 나루(100×92): 맨 윗단에 작은 성(42×33) — 「왕궁이 있는 이중 성벽 도시」 내성을 x=49.5 축으로 대칭화하고 같은 열·행만 빼서 줄인 것.
+  두 겹 성벽·보행로412·테두리18~20/78/80/108~110·벽면51/81·둥근 탑138~143·층층 궁. 첫 판(성벽 조각을 정면도처럼 쌓은 것)은 사용자 판정으로 폐기. 동쪽 강 폭포 둘, 다리 둘.
+- 안개못 폐촌(80×64): 울타리 친 못과 섬 위 석상, 폐가 여섯(깨진 창88·벽 덩굴), 못지기 집 하나(덧문86), 외곽의 잊힌 묘지.
+- 랜드마크: `tiledata/forest-villages/diverse/landmarks.json`. 건물(교회 7×9, 성 42×33)은 두 레이어 배열 통째, 마당(묘지·울타리 못)은 울타리 고리
+  378/379/380·양옆408·438/439…409/410(호수마을 울타리 마당 조립) + 입구 공백 + 내용물. 영역이 하나라도 겹치면 저작 중단. 문앞·마당 입구는 길 뼈대에 연결되고 접근칸으로 검사.
+- 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
+- 칩셋 라벨: 84·86·88과 성 조각(윗면21·보행로412·테두리18~20/78/80/108~110·벽면51/81·탑138~143/24/25/54/55·궁 지붕49·정문448/478·안뜰248/276~338·화살 구멍28), 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
+  `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
+- 분류는 둘: `diverse-villages-windows-v10`(52 MD·30 이미지) + `concept-villages-v1`(26 MD·3 이미지). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
+- 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.
+
+### 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+
+「장소」에만 나오는 완성 사례 11개(지형·배치만, 문 이동·NPC·상점 이벤트 없음). 정본은 `tiledata/rpg-places/`, 별도 로컬 정본 `.oprn-projects/rpg-places-20260923`.
+- 실내(tibo_interior_expanded): 무기점·방어구점·도구점(16×13)·대장간(18×14)·왕좌의 방(24×22)·성 복도(30×11)·마법사 탑 한 층(20×18).
+  벽·천장·문은 `interiorRoomPipeline`의 plan→floor→walls 단계 그대로(자동 가구 단계는 안 씀). Tibo 시트 0~479칸은 실내 칩셋과 같은 그림이라 번호를 공유하고,
+  소품은 Tibo `structureKits`를 id로 찍는다. 벽걸이는 벽면 윗줄, 키 큰 가구는 맨 윗행을 벽면 아랫줄에, 가게는 카운터 325·326…·327로 상인 쪽/손님 쪽을 가른다.
+- 던전(easyrpg_chipset_dungeon): 성 지하 감옥(28×18)·마왕성 왕좌의 방(30×26). 「무너진 납골당」 조립 — 공허 430 + abyss-gray 오토타일, 벽면 22/52 두 줄.
+  앱 렌더러는 맵 가장자리 바깥을 공허로 치지 않아 맵 둘레에도 테두리가 그려진다(파이썬 시험 렌더와 유일한 차이).
+- 외관(forest_harmony): 상점가(62×15, 여울성 나루 아랫단 집 셋 + 간판·대장간 마당)·폐성(50×38, 여울성의 성 조립을 그대로 두고 바닥·장식만).
+  대장간 마당의 화덕·모루 등은 Tibo 칸을 이 맵 타일셋 2730~에 이식. 폐성은 벽을 뚫지 않는다(뚫은 판은 오류 예시 그림).
+- 간판 라벨: 627 「청록 화살표 벽표지」→「무기점 간판 — 칼」, 628 방패(방어구점), 629 항아리(도구점). 기존 프로젝트는 옛 라벨 그대로일 때만 바꾼다(`tiledata/rpg-places/sign-labels.json`).
+- 분류 셋, 타일셋마다 하나: `fantasy-interiors-v1`(19 MD·7 이미지) → tibo, `fantasy-dungeon-rooms-v1`(8·2) → dungeon, `fantasy-exteriors-v1`(9·3) → forest_harmony.
+  `ensureRpgPlaceReferences`가 새 번들 타일셋 생성과 로드 보강 두 경로에서 한 번 넣는다.
+- 장소 항목 `FANTASY_PLACE_REFERENCES`(생성 파일), 스냅숏은 한 파일 `regionReferences/fantasy-places.json`(AI 읽기에 필요한 통행·우선순위만 담은 얇은 타일셋).
+- 순서: `author-rpg-places.mjs`(통행 검사 포함) → `render-rpg-places.mjs`(dev 서버) → `prepare-rpg-places-references.mjs` → `save-rpg-places.mjs` → `prepare-rpg-places-regions.mjs` → `scripts/qa/capture-rpg-places.mjs`. 근거 `verify-shots/rpg-places/`.
