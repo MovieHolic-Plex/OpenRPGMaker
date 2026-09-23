@@ -18,6 +18,7 @@ import { interiorRoomRects, type InteriorRoomShape } from "@/project/interiorRoo
  */
 import {
   CEILING_MEMBER_TILES,
+  isCeilingTile,
   paintInteriorHouseWalls,
   planInteriorHouseWalls,
   shapeInteriorCeiling,
@@ -1047,7 +1048,7 @@ function paintRoomSpace(
       conceptWarnings = [];
     }
   } else {
-    paintThemeFurniture(map, mask, theme, plan.door, room, luxury);
+    paintThemeFurniture(map, mask, theme, plan.door, room, luxury, floor);
     if (isBuiltinInteriorTheme(theme)) {
       applyThemeModifiers(map, mask, modifiers, plan.door);
       placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
@@ -1659,6 +1660,7 @@ function paintThemeFurniture(
   door: DoorSpec,
   room?: RoomSpec,
   luxury = false,
+  houseFloor: readonly boolean[] = floor,
 ): void {
   const inRoom = (c: { x: number; y: number }): boolean => {
     if (!room) return true;
@@ -1671,6 +1673,12 @@ function paintThemeFurniture(
   const corners = listCorners(floor, map, door).filter(inRoom);
   const open = listOpenFloor(floor, map, door).filter(inRoom);
   const wallSnap = listWallSnapFloor(floor, map, door).filter(inRoom);
+  // 창은 바깥을 향한 벽에만 — 벽면 윗줄 너머(같은 열 북쪽)가 맵 끝까지 천장뿐이어야 바깥벽이다.
+  // 그 사이에 다른 방 바닥이나 벽면(칸막이·북쪽 방의 벽)이 있으면 실내 칸막이다.
+  const interiorBacked = new Set(wallFace
+    .filter((c) => Array.from({ length: c.y }, (_, y) => y * map.width + c.x)
+      .some((i) => houseFloor[i] || !isCeilingTile(getL(map, i % map.width, Math.floor(i / map.width)))))
+    .map((c) => c.y * map.width + c.x));
   const area = floor.filter(Boolean).length;
   // 장식 로테이션 — 방 위치 + 시드 RNG로 세트를 바꾼다(같은 테마 방 복붙 방지 + 재생성 다양성).
   const variant = (((room?.x ?? door.x) + (room?.y ?? door.y)) + Math.floor(RNG() * 3)) % 3;
@@ -1685,7 +1693,7 @@ function paintThemeFurniture(
 
   if (plan.theme === "corridor") {
     // 복도: 통행이 주인 — 바닥 점유물 금지, 벽 장식과 벽에 붙는 전시물(흉상/갑옷)만.
-    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW]);
+    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     else placePicturePair(map, wallFace);
     if (area >= 24) {
       const [top, bottom] = variant === 2 ? [VR.ARMOR_T, VR.ARMOR_B] : [VR.BUST_T, VR.BUST_B];
@@ -1704,14 +1712,14 @@ function paintThemeFurniture(
     placeTallPairU(map, northFloor, plan.door, VR.MIRROR_T, VR.MIRROR_B);
     // 벽 장식 이중화: 창 + 그림/시계 — 북벽이 텅 비는 소형 침실 방지.
     if (variant === 0) {
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
       placePicturePair(map, wallFace);
     } else if (variant === 1) {
       placePicturePair(map, wallFace);
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     } else {
       placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     }
     // 2026-07-20 사용자 교정: "모든 방마다 탁자" 강제 해제 — 침실에는 탁자 세트를 놓지 않는다.
     // 침대·협탁·거울·러그·벽 장식이 침실의 본문이다.
@@ -1739,10 +1747,10 @@ function paintThemeFurniture(
     // 수정구: 넓을 때만 — 좁은 서재는 책상·서가 밀도가 우선.
     if (variant === 0 && area >= 28) placeOpen(map, open, [VR.CRYSTAL_BALL]);
     placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
-    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW, VR.RELIGIOUS]);
+    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW, VR.RELIGIOUS], interiorBacked);
     else {
       placePicturePair(map, wallFace);
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     }
     placeCorner(map, corners, [VR.BOX]);
     // 서재: 책장·책상이 본문 — 구석 잡동사니/캐비닛 과적 금지.
@@ -1768,7 +1776,7 @@ function paintThemeFurniture(
       (c) => !stove || Math.max(Math.abs(c.x - stove.x), Math.abs(c.y - stove.y)) > 1,
     );
     placeTableChairSet(map, awayFromStove, plan.door);
-    placeWallMount(map, wallFace, [VR.WINDOW, VR.FRUIT_SHELF]);
+    placeWallMount(map, wallFace, [VR.WINDOW, VR.FRUIT_SHELF], interiorBacked);
     placeCorner(map, corners, [VR.BUCKET, VR.JARS]);
     // 주방: 화덕·작업대가 본체 — 벽 스냅 통/병 과적 금지.
     const kitchenLoads = Math.max(1, Math.min(2, Math.floor(area / 20)));
@@ -1782,7 +1790,8 @@ function paintThemeFurniture(
   }
   if (plan.theme === "storage") {
     // 창고: 적재물은 벽 스냅이 기본(중앙 부유 금지) — 물량 상향(3차 리뷰: "가장 채우기 쉬운데 가장 비었다").
-    placeWallMount(map, wallFace, [VR.LADDER, VR.WINDOW]);
+    // 사다리는 오를 곳(다락·개구부)이 있을 때만 뜻이 있다 — 벽에 홀로 걸린 사다리 대신 선반.
+    placeWallMount(map, wallFace, [VR.SHELF_JARS, VR.WINDOW], interiorBacked);
     placeCorner(map, corners, [VR.CRATE, VR.BARREL, VR.BOX]);
     // 창고도 가득 채우지 않음 — 벽 따라 여백 유지.
     const loads = Math.max(2, Math.min(4, Math.floor(area / 12)));
@@ -1803,7 +1812,7 @@ function paintThemeFurniture(
     if (!placedTable) placeTableChairSet(map, open, plan.door);
     if (variant === 1) placePianoTriple(map, northFloor, plan.door);
     else placeTallPairU(map, northFloor, plan.door, VR.DISPLAY_T, VR.DISPLAY_B);
-    placeWallMount(map, wallFace, variant === 2 ? [VR.TAVERN_SIGN, VR.WINDOW, VR.SWORD_RACK] : [VR.TAVERN_SIGN, VR.WINDOW]);
+    placeWallMount(map, wallFace, variant === 2 ? [VR.TAVERN_SIGN, VR.WINDOW, VR.SWORD_RACK] : [VR.TAVERN_SIGN, VR.WINDOW], interiorBacked);
     placeCorner(map, corners, [VR.BARREL, VR.CRATE]);
     placeAgainstWall(map, wallSnap, repeatTiles([VR.BARREL, VR.CRATE], Math.max(1, Math.min(2, Math.floor(area / 28)))), 2);
     return;
@@ -1826,11 +1835,11 @@ function paintThemeFurniture(
   else placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
   // 벽 이중 장식 + 사이드보드(캐비닛) + 코너 적재(통·상자 — 레퍼런스 남서 코너).
   if (variant === 0) {
-    placeWallMount(map, wallFace, [VR.WINDOW]);
+    placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     placePicturePair(map, wallFace);
   } else {
     placePicturePair(map, wallFace);
-    placeWallMount(map, wallFace, [VR.WINDOW]);
+    placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
   }
   placeCorner(map, corners, [VR.BARREL, VR.BOX, VR.JARS]);
   placeAgainstWall(map, wallSnap, [VR.CABINET_U], 2);
@@ -2508,19 +2517,27 @@ function placeWallMount(
   map: GameMap,
   wallFace: Array<{ x: number; y: number }>,
   tiles: readonly number[],
+  interiorBacked: ReadonlySet<number> = new Set(),
 ): void {
   // skip picture tiles — handled as pair
   const singles = tiles.filter((t) => t !== VR.PICTURE_L && t !== VR.PICTURE_R);
   let wi = 0;
   for (const tile of singles) {
     if (PROP_SURFACE[tile] !== "wallFace") continue;
+    // 창이 건너뛴 칸막이 벽면은 다음 벽걸이(그림·선반)가 쓸 수 있게 남긴다.
+    let skipped: number | undefined;
     while (wi < wallFace.length) {
       const cell = wallFace[wi]!;
       wi += 1;
       if (!isUpperEmpty(map, cell.x, cell.y)) continue;
+      if (tile === VR.WINDOW && interiorBacked.has(cell.y * map.width + cell.x)) {
+        skipped ??= wi - 1;
+        continue;
+      }
       setU(map, cell.x, cell.y, tile);
       break;
     }
+    if (skipped !== undefined) wi = skipped;
   }
 }
 

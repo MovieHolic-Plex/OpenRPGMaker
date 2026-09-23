@@ -17,7 +17,7 @@ import {
   type InteriorWallMaterial,
   type RoomSpec,
 } from "@/editor/interiorRoomPipeline";
-import { southDoorOpening } from "@/editor/interiorHouseWallGrammar";
+import { CEILING_TILE, shapeInteriorCeiling, southDoorOpening } from "@/editor/interiorHouseWallGrammar";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import type { HouseKitId } from "./houseKit";
@@ -454,7 +454,8 @@ export function createHouseInteriorMap(options: {
   let lowerMap = ground;
   let lowerMapId = options.id;
   // 계단은 복도 끝(2026-07-20 사용자 교정) — 복도가 있으면 문에서 먼 쪽 복도 끝, 없으면 기존 휴리스틱.
-  let stairCell = listConceptConnections(ground)[0] ?? corridorStairCell(groundPlan) ?? pickStairCell(ground, entry, door);
+  let stairCell = listConceptConnections(ground)[0] ?? corridorStairCell(groundPlan)
+    ?? wallBackedStairCell(ground, groundPlan, [entry, exitAt, door]) ?? pickStairCell(ground, entry, door);
 
   for (let floor = 2; floor <= stories; floor += 1) {
     const floorMapId = (
@@ -537,6 +538,7 @@ export function createHouseInteriorMap(options: {
     if (authoredDescent) {
       convertEntranceToDescent(floorMap, { mapId: lowerMapId, ...lowerLanding });
     } else {
+      sealUpperFloorDoorway(floorMap, floorPlan);
       stampStairsDown(floorMap, stairDown);
       // 위층에는 바깥 문이 없다 — 파이프라인이 매 층 두는 정문 이벤트는 return 대상 없이
       // 자기 맵 (door.x, door.y+1) 을 가리킨다. 개념 층에선 그 칸이 남벽이라
@@ -567,7 +569,8 @@ export function createHouseInteriorMap(options: {
     floors.push({ floor, mapId: floorMapId, map: floorMap });
     lowerMap = floorMap;
     lowerMapId = floorMapId;
-    stairCell = listConceptConnections(floorMap)[0] ?? corridorStairCell(floorPlan) ?? pickStairCell(floorMap, floorEntry, stairDown);
+    stairCell = listConceptConnections(floorMap)[0] ?? corridorStairCell(floorPlan)
+      ?? wallBackedStairCell(floorMap, floorPlan, [floorEntry, stairDown]) ?? pickStairCell(floorMap, floorEntry, stairDown);
   }
 
   const f2 = floors.find((f) => f.floor === 2);
@@ -1101,6 +1104,78 @@ function pickStairCell(
 }
 
 /**
+ * 복도 없는 집의 오르막 자리 — 북벽에 등을 대고(위 칸이 벽면), 오르는 쪽(동쪽)에 착지 바닥,
+ * 남쪽에서 다가설 바닥이 있는 칸. 방 한가운데 떠 있는 계단·벽으로 오르는 계단을 만들지 않는다.
+ * 가구를 부수지 않도록 계단·착지·접근 칸이 비어 있는 자리만 쓴다(없으면 undefined → 옛 휴리스틱).
+ * 서쪽이 벽인 구석을 먼저, 침실보다 공용 방을 먼저, 입구에서 가까운 자리를 먼저 고른다.
+ */
+function wallBackedStairCell(
+  map: GameMap,
+  plan: InteriorRoomPlan,
+  avoid: readonly { readonly x: number; readonly y: number }[],
+): { x: number; y: number } | undefined {
+  const floor = floorMaskFromPlan(plan);
+  const W = map.width;
+  const isFloor = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < map.height && floor[y * W + x] === true;
+  const free = (x: number, y: number) => isFloor(x, y)
+    && PASSABLE_LOWER_TILES.has(map.lowerTiles[y * W + x] ?? -1)
+    && (map.upperTiles[y * W + x] ?? -1) < 0
+    && !(map.events ?? []).some((event) => event.x === x && event.y === y)
+    && !avoid.some((cell) => cell.x === x && cell.y === y);
+  const roomAt = (x: number, y: number) => (plan.rooms ?? []).find((room) => x >= room.x && x < room.x + room.w && y >= room.y && y < room.y + room.h);
+  const entry = avoid[0] ?? plan.door;
+  const candidates: { x: number; y: number; score: number }[] = [];
+  for (let y = 1; y < map.height - 1; y += 1) {
+    for (let x = 1; x < W - 1; x += 1) {
+      const room = roomAt(x, y);
+      if (!room || isFloor(x, y - 1)) continue;
+      if (!free(x, y) || !free(x + 1, y) || !free(x, y + 1)) continue;
+      const score = (isFloor(x - 1, y) ? 0 : 100) + (room.theme === "bedroom" ? 0 : 50)
+        - (Math.abs(x - entry.x) + Math.abs(y - entry.y));
+      candidates.push({ x, y, score });
+    }
+  }
+  candidates.sort((a, b) => b.score - a.score || a.y - b.y || a.x - b.x);
+  // 계단 칸은 밟으면 층을 옮긴다 — 그 칸을 막아도 나머지 바닥이 입구에서 다 이어져야 한다.
+  const open = (x: number, y: number) => isFloor(x, y) && (map.upperTiles[y * W + x] ?? -1) < 0;
+  const reach = (blocked?: { x: number; y: number }): number => {
+    const seen = new Set<number>([entry.y * W + entry.x]);
+    const queue = [entry];
+    while (queue.length) {
+      const cell = queue.pop()!;
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const x = cell.x + dx;
+        const y = cell.y + dy;
+        if (!open(x, y) || seen.has(y * W + x) || (blocked && blocked.x === x && blocked.y === y)) continue;
+        seen.add(y * W + x);
+        queue.push({ x, y });
+      }
+    }
+    return seen.size;
+  };
+  const all = reach();
+  const best = candidates.find((cell) => reach(cell) === all - 1);
+  return best ? { x: best.x, y: best.y } : undefined;
+}
+
+/**
+ * 위층에는 바깥 문이 없다 — 벽 문법은 모든 층의 문 칸 아래 천장 띠를 바닥으로 뚫는데, 위층에서
+ * 그 돌출부가 하강 계단 바로 남쪽에 입구처럼 남는다. 남벽을 다시 닫는다.
+ */
+function sealUpperFloorDoorway(map: GameMap, plan: InteriorRoomPlan): void {
+  const floor = floorMaskFromPlan(plan);
+  const x = plan.door.x;
+  for (let y = plan.door.y + 1; y < map.height; y += 1) {
+    const index = y * map.width + x;
+    if (floor[index] || !PASSABLE_LOWER_TILES.has(map.lowerTiles[index] ?? -1)) break;
+    map.lowerTiles[index] = CEILING_TILE;
+    map.upperTiles[index] = TILE.EMPTY;
+    map.events = (map.events ?? []).filter((event) => !(event.x === x && event.y === y));
+  }
+  shapeInteriorCeiling(map);
+}
+
+/**
  * 밟기 계단 칸 옆의 하강 착지 — 계단 칸 위에 내리면 playerTouch 전이가 즉시 재발동한다.
  * 남쪽(y+1)을 우선한다 — 계단은 보통 복도 북단이라 플레이어는 남쪽에서 다가선다.
  */
@@ -1117,11 +1192,15 @@ function stairFootCell(map: GameMap, stair: { readonly x: number; readonly y: nu
   return { x: stair.x, y: stair.y + 1 };
 }
 
-/** 계단 셀 정본(2026-07-20): 복도가 있으면 그 층 문(착지)에서 먼 쪽 복도 끝 중앙. */
+/**
+ * 계단 셀 정본(2026-07-20): 복도가 있으면 그 층 문(착지)에서 먼 쪽 복도 끝.
+ * 오르막 444 는 오른쪽 위로 오른다 — 2칸 복도에서 가운데(=동쪽 칸)에 두면 칸막이 벽으로 올라간다.
+ * 서쪽 칸에 두고 동쪽 칸을 계단 머리의 착지로 남긴다.
+ */
 function corridorStairCell(plan: InteriorRoomPlan): { x: number; y: number } | null {
   const corridor = (plan.rooms ?? []).find((room) => room.theme === "corridor");
   if (!corridor) return null;
-  const x = corridor.x + Math.floor(corridor.w / 2);
+  const x = corridor.w >= 3 ? corridor.x + Math.floor(corridor.w / 2) : corridor.x;
   const northEnd = { x, y: corridor.y };
   const southEnd = { x, y: corridor.y + corridor.h - 1 };
   return Math.abs(plan.door.y - northEnd.y) >= Math.abs(plan.door.y - southEnd.y) ? northEnd : southEnd;
@@ -1159,6 +1238,8 @@ function clearStairLanding(map: GameMap, center: { x: number; y: number }): void
     const x = center.x + dx;
     if (x < 0 || x >= map.width || center.y < 0 || center.y >= map.height) continue;
     const i = center.y * map.width + x;
+    // 옆 칸이 벽이면 그대로 둔다 — 착지 정리가 칸막이·외벽에 바닥 구멍을 뚫지 않게.
+    if (dx !== 0 && !PASSABLE_LOWER_TILES.has(map.lowerTiles[i] ?? -1)) continue;
     // 카펫/바닥 재질 보존 — 계단은 상위 타일이라 하부를 갈 필요가 없다(비통행 하부만 바닥으로).
     if (!PASSABLE_LOWER_TILES.has(map.lowerTiles[i] ?? -1)) map.lowerTiles[i] = 72;
     map.upperTiles[i] = -1;
