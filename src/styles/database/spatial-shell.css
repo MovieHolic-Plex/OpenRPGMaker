@@ -1044,3 +1044,185 @@
   min-width: 0;
   box-sizing: border-box;
 }
+
+/* 장소 카드 — 호버는 칸 안에서 그림을 키우고, 옆에 잘리지 않은 확대 패널을 붙인다. */
+.database-modal-body .spatial-card.is-zoomable {
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+.database-modal-body .spatial-card.is-zoomable .spatial-card-thumb-slot {
+  transition: transform 180ms ease;
+  transform-origin: center;
+}
+.database-modal-body .spatial-card.is-zoomable:hover,
+.database-modal-body .spatial-card.is-zoomable:focus-visible {
+  border-color: var(--db-studio-accent-border);
+  box-shadow: var(--db-studio-shadow-pop);
+}
+.database-modal-body .spatial-card.is-zoomable:hover .spatial-card-thumb-slot,
+.database-modal-body .spatial-card.is-zoomable:focus-visible .spatial-card-thumb-slot {
+  transform: scale(1.55);
+}
+
+.spatial-place-hover,
+.spatial-place-detail-backdrop {
+  z-index: 40;
+}
+.spatial-place-hover {
+  position: fixed;
+  width: min(360px, calc(100vw - 24px));
+  pointer-events: none;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 14px;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  box-shadow: var(--db-studio-shadow-pop);
+  overflow: hidden;
+}
+.spatial-place-hover-copy {
+  display: grid;
+  gap: 2px;
+  padding: 8px 12px 10px;
+}
+.spatial-place-hover-name {
+  font: 650 13px/1.3 inherit;
+}
+.spatial-place-hover-sub,
+.spatial-place-hover-hint,
+.spatial-place-detail-sub,
+.spatial-place-detail-note {
+  font: 400 12px/1.4 inherit;
+  color: var(--db-studio-text-3);
+}
+.spatial-place-hover-hint {
+  margin-top: 2px;
+  color: var(--db-studio-accent);
+  font-weight: 600;
+}
+.spatial-place-zoom-stage {
+  display: grid;
+  place-items: center;
+  min-height: 148px;
+  padding: 12px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--db-studio-surface) 86%, transparent), var(--db-studio-inset)),
+    repeating-conic-gradient(from 90deg, var(--spatial-checker-a, var(--db-studio-well)) 0% 25%, var(--spatial-checker-b, var(--db-studio-inset)) 0% 50%) 0 0 / 16px 16px;
+}
+.spatial-place-zoom-stage.is-detail {
+  min-height: 240px;
+}
+.spatial-place-zoom-art {
+  display: block;
+  image-rendering: pixelated;
+}
+.spatial-place-zoom-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.spatial-place-zoom-empty {
+  margin: 0;
+  color: var(--db-studio-text-3);
+  font: 500 12px/1.4 inherit;
+  text-align: center;
+}
+
+.spatial-place-detail-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--db-studio-text-1) 38%, transparent);
+}
+.spatial-place-detail {
+  display: grid;
+  grid-template-columns: minmax(280px, 1.2fr) minmax(260px, 0.8fr);
+  width: min(920px, 100%);
+  max-height: min(680px, calc(100vh - 48px));
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 16px;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  box-shadow: var(--db-studio-shadow-pop);
+  overflow: hidden;
+}
+.spatial-place-detail-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  min-height: 0;
+  padding: 16px 16px 14px;
+  overflow: auto;
+}
+.spatial-place-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.spatial-place-detail-title {
+  margin: 0;
+  font: 650 18px/1.3 inherit;
+}
+.spatial-place-detail-close {
+  flex: none;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-2);
+  font: 600 12px/1 inherit;
+  cursor: pointer;
+}
+.spatial-place-detail-close:focus-visible,
+.spatial-place-detail-actions .spatial-action:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 2px;
+}
+.spatial-place-detail-note {
+  margin: 0;
+}
+.spatial-place-detail-facts {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 7px 12px;
+  margin: 0;
+  font: 500 13px/1.35 inherit;
+}
+.spatial-place-detail-facts dt {
+  color: var(--db-studio-text-3);
+}
+.spatial-place-detail-facts dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.spatial-place-detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.spatial-place-detail-actions .spatial-action.is-primary {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-on-accent);
+}
+@media (max-width: 760px) {
+  .spatial-place-detail {
+    grid-template-columns: 1fr;
+    overflow: auto;
+  }
+  .spatial-place-zoom-stage.is-detail {
+    min-height: 180px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .database-modal-body .spatial-card.is-zoomable,
+  .database-modal-body .spatial-card.is-zoomable .spatial-card-thumb-slot {
+    transition: none;
+  }
+}

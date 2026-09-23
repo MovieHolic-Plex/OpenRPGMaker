@@ -72,8 +72,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "cut-root",
     "mapId": "terrace-cliff-village",
-    "x": 64,
-    "y": 5,
+    "x": 62,
+    "y": 16,
     "layer": "lower",
     "tile": 1430,
     "replacement": 240
@@ -85,8 +85,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "cut-root",
-        "x": 64,
-        "y": 5,
+        "x": 62,
+        "y": 16,
         "layer": "lower",
         "expected": 1430,
         "actual": 240
@@ -106,8 +106,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "missing-trunk",
     "mapId": "terrace-cliff-village",
-    "x": 23,
-    "y": 8,
+    "x": 62,
+    "y": 15,
     "layer": "lower",
     "tile": 1426,
     "replacement": 240
@@ -119,8 +119,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "missing-trunk",
-        "x": 23,
-        "y": 8,
+        "x": 62,
+        "y": 15,
         "layer": "lower",
         "expected": 1426,
         "actual": 240

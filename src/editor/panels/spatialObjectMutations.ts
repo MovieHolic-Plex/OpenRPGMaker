@@ -1,4 +1,5 @@
 import { sharedVillageObjectById } from "@/project/defaults/sharedVillageObjects";
+import { sharedObjectKit } from '@/project/sharedSpatialReferences';
 import { tiboInteriorObjectById } from "@/project/defaults/tiboInterior";
 import { lpcFurnitureObjectById } from "@/project/defaults/lpcWoodenFurnitureObjects";
 import { bakeInteriorObject } from "@/editor/harnessSuggestion/structureKitRasterModel";
@@ -92,6 +93,7 @@ export function openDetachedKitPainter(tilesetId: string, kitId: string, rerende
 }
 
 export function copyBuiltin(target: ObjectDraftTarget, rerender: () => void): void {
+  if (sharedObjectKit(target.tilesetId, target.kitId)) { duplicateObject(target, rerender); return; }
   const builtin = interiorObjectById(target.kitId)
     ?? tiboInteriorObjectById(target.kitId)
     ?? sharedVillageObjectById(target.kitId)

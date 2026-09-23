@@ -54,11 +54,32 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     }
     return event.type === "agent_event" && receiveInspection(event.event);
   };
+  const receiveRender = (event: PiAgentEvent): boolean => {
+    if (event.type === "agent_event") return receiveRender(event.event);
+    if (event.type !== "render_request") return false;
+    checkpoints = checkpoints.then(async () => {
+      let png: string | undefined, issue: string | undefined;
+      try {
+        options.signal?.throwIfAborted();
+        const { renderPiMapImage } = await import("../toolImageRenderer");
+        const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys);
+        const url = await renderPiMapImage(draft, event.data);
+        png = url.replace(/^data:image\/png;base64,/, "");
+      } catch (error) { issue = error instanceof Error ? error.message : String(error); }
+      const ack = await doFetch(companionAuthUrl("/v1/agent/render", request.provider), {
+        method: "POST", headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
+        body: JSON.stringify({ renderId: event.renderId, png, issue }),
+        ...(options.signal ? { signal: options.signal } : {}),
+      });
+      if (!ack.ok) throw new PiAgentClientError("맵 이미지 응답을 전달하지 못했습니다.", ack.status);
+    }).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
+    return true;
+  };
   const decoder = createPiAgentLineDecoder((raw) => {
     // 워커는 요청 그대로인 무거운 키(타일셋 이미지·DB)를 빼고 done 을 보낸다 — 요청 프로젝트의 것을 다시 붙인다.
     const event = raw.type === "done" && raw.unchangedKeys?.length ? restoreDone(raw, request.project) : raw;
     // Never persist request contents into conversation/audit event logs.
-    if (receiveInspection(event)) return;
+    if (receiveInspection(event) || receiveRender(event)) return;
     if (event.type === "checkpoint") {
       options.onEvent?.(event);
       checkpoints = checkpoints.then(async () => {

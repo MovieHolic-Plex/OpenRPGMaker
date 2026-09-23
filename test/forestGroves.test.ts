@@ -85,9 +85,11 @@ describe("whole trunks under every canopy edge", () => {
     return tileset.autotileGroups!.find(group => group.id === FOREST_GROVE_GROUP)!;
   };
 
-  it("fits roots exactly as wide as the edge from two cells, ending in whole trees", () => {
+  it("fits roots exactly as wide as the edge from three cells, ending in whole trees", () => {
+    // Two columns close too, but read as one thin root dangling from the canopy.
     expect(forestTrunkCandidates(3, 1)).toEqual([]);
-    for (let width = 2; width <= 12; width++) {
+    expect(forestTrunkCandidates(3, 2)).toEqual([]);
+    for (let width = 3; width <= 12; width++) {
       const [candidate, ...rest] = forestTrunkCandidates(3, width);
       expect(rest).toEqual([]);
       expect(candidate!.x).toBe(3);
@@ -108,7 +110,10 @@ describe("whole trunks under every canopy edge", () => {
         if (LOWER_ROWS.has(tile)) expect(canopy.has(map.upperTiles[index]!)).toBe(false);
         if (!ROW0.has(tile)) return;
         expect(canopy.has(map.upperTiles[index]!)).toBe(true);
-        if (!ROW0.has(map.lowerTiles[index - 1]!) || x === 0) expect(tile).toBe(1422);
+        if (!ROW0.has(map.lowerTiles[index - 1]!) || x === 0) {
+          expect(tile).toBe(1422);
+          expect(ROW0.has(map.lowerTiles[index + 1]!) && ROW0.has(map.lowerTiles[index + 2]!)).toBe(true);
+        }
         if (!ROW0.has(map.lowerTiles[index + 1]!) || x === map.width - 1) expect(tile).toBe(1455);
       });
     }

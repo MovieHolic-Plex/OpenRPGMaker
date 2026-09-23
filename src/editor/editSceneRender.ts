@@ -31,7 +31,19 @@ type RenderableTileCell = ProjectChangeCell & { readonly layer: "lower" | "upper
 
 export interface EditSceneRenderContext {
   readonly scene: Phaser.Scene;
+  /**
+   * 하위(바닥) 타일 컨테이너. 상위 컨테이너보다 **반드시 먼저** 화면 순서에 와야 한다 —
+   * 두 컨테이너 분리가 전체 sort("depth") 없이 lower→upper 드로 순서를 보장하는 방법이다.
+   */
   readonly tileLayer: Phaser.GameObjects.Container;
+  /** 상위(덧그림) 타일 컨테이너. tileLayer 뒤에 붙는다. */
+  readonly upperTileLayer: Phaser.GameObjects.Container;
+  /**
+   * 청크 컨테이너 저장소(large-map lazy 경로 전용). 있으면 하위·상위 타일 객체를
+   * 16×16칸 청크 컨테이너 아래에 붙여 화면 밖 청크를 통째로 숨긴다.
+   * 없으면(작은 맵·테스트) 기존처럼 레이어 컨테이너에 곧장 붙인다.
+   */
+  readonly tileChunks?: Map<string, Phaser.GameObjects.Container>;
   readonly overlayLayer: Phaser.GameObjects.Container;
   readonly gridGraphics: Phaser.GameObjects.Graphics;
   readonly mapId: MapId;
@@ -47,6 +59,49 @@ export interface EditSceneRenderContext {
 }
 
 export type EditSceneTileIndex = Map<string, Phaser.GameObjects.GameObject[]>;
+
+/**
+ * 큰 맵의 타일을 청크 컨테이너(16×16칸)로 묶는다. 프레임마다 Phaser가 컨테이너 자식을
+ * 순회하므로(visibility·transform) 화면 밖 청크를 visible=false 로 두면 그 자식 전체가
+ * 렌더 큐에서 빠진다 — 개별 타일 visible 컬링보다 한 단계 위의 절약이다.
+ * 청크 컨테이너는 지연 맵(lazy) 경로에서만 쓴다 — 작은 맵은 컨테이너 오버헤드가 이득보다 크다.
+ */
+export const EDIT_TILE_CHUNK_TILES = 16;
+
+/**
+ * 청크 컨테이너 관리. tileLayer/upperTileLayer 의 자식은 청크 컨테이너가 된다.
+ * lazy 경로에서만 활성화되고, 비-lazy 경로는 기존처럼 평평한 리스트를 유지한다.
+ */
+export type EditTileChunkHost = {
+  readonly chunks: Map<string, Phaser.GameObjects.Container>;
+};
+
+function chunkKey(cx: number, cy: number): string {
+  return `${cx},${cy}`;
+}
+
+/** 칸 좌표 → 청크 좌표. */
+export function chunkCoord(tile: number): number {
+  return Math.floor(tile / EDIT_TILE_CHUNK_TILES);
+}
+
+/** 큰 맵에서 청크 컨테이너를 얻거나 만든다. 자식 위치는 월드 좌표 그대로(청크는 0,0). */
+function getOrCreateChunk(
+  scene: Phaser.Scene,
+  parent: Phaser.GameObjects.Container,
+  chunks: Map<string, Phaser.GameObjects.Container>,
+  cx: number,
+  cy: number,
+): Phaser.GameObjects.Container {
+  const key = chunkKey(cx, cy);
+  let chunk = chunks.get(key);
+  if (!chunk) {
+    chunk = scene.add.container(0, 0);
+    parent.add(chunk);
+    chunks.set(key, chunk);
+  }
+  return chunk;
+}
 
 /**
  * Large maps should not pay the cost of creating every tile before the first frame.
@@ -102,6 +157,8 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   // removeAll(true) 이후 새로 만드는 객체는 renderTileCellLayer 에서 다시 추적된다.
   resetCullableTiles(context.scene);
   context.tileLayer.removeAll(true);
+  context.upperTileLayer.removeAll(true);
+  context.tileChunks?.clear();
   context.tileIndex?.clear();
   context.overlayLayer.removeAll(true);
   context.gridGraphics.clear();
@@ -139,6 +196,8 @@ export function renderEditSceneTileCells(
   const mapOnlyCapture = isMapOnlyCaptureMode();
   const activeLayer = mapOnlyCapture ? "event" : editorState.get().layer;
   // lower 재추가가 upper 위에 올라가지 않도록 항상 lower → upper 순으로 그린다.
+  // (컨테이너 분리 후에도 유지 — 같은 컨테이너 안 순서 보장은 아니지만 이웃 셀 간
+  // 쿼터 합성 프레임이 낡은 조각 위에 그려지는 순서는 이 정렬이 읽기 쉽게 지켜준다.)
   const uniqueCells = uniqueRenderableTileCells(cells)
     .slice()
     .sort((a, b) => (a.layer === b.layer ? 0 : a.layer === "lower" ? -1 : 1));
@@ -151,23 +210,20 @@ export function renderEditSceneTileCells(
     if (limitToWindow && lazyWindow && isOutsideTileWindow(lazyWindow, cell.x, cell.y)) {
       // 화면 밖은 맵 배열이 정본이다. 객체를 만들면 팬으로 이미 줄어든 창이 다시 맵 전체가 된다.
       const previous = context.tileIndex.get(key) ?? [];
-      for (const object of previous) context.tileLayer.remove(object, true);
+      for (const object of previous) destroyTrackedTile(context, object, cell.x, cell.y);
       context.tileIndex.delete(key);
       continue;
     }
     const previous = context.tileIndex.get(key) ?? [];
-    for (const object of previous) {
-      context.tileLayer.remove(object, true);
-    }
+    for (const object of previous) destroyTrackedTile(context, object, cell.x, cell.y);
     const next = renderTileCellLayer(context, map, activeLayer, cell.layer, cell.x, cell.y);
     if (next.length) context.tileIndex.set(key, next);
     else context.tileIndex.delete(key);
     tileObjectsUpdated += next.length;
   }
-  // Container 자식 depth 정렬 — 증분 lower 재추가로 한 프레임 upper가 가려지는 깜빡임 방지.
-  if ("sort" in context.tileLayer && typeof context.tileLayer.sort === "function") {
-    context.tileLayer.sort("depth");
-  }
+  // Container 전체 sort("depth") 는 제거됐다 — lower/upper 컨테이너 분리로 컨테이너 간
+  // 순서가 고정됐고, 셀 내부 순서는 remove + add(끝 삽입)가 지켜준다. 매 스토어 변경의
+  // 전체 StableSort(자식 수 O(N log N), 순간 편차 O(N))가 페인트 경로에서 사라진다.
   // 새 타일이 visible=true 로 만들어졌다. 카메라가 안 움직였으면 sameWindow early-out 으로
   // 컬링이 안 걸리므로, 적용 창을 무효화해 다음 update() 가 강제 재계산하게 한다.
   // 새 타일이 없으면 무효화할 필요가 없다 — 파괴된 타일은 active===false 가드가 처리한다.
@@ -206,7 +262,7 @@ export function renderVisibleEditSceneTiles(
   for (const [key, objects] of context.tileIndex) {
     const parsed = parseTileIndexKey(key);
     if (!parsed || !isOutsideTileWindow(window, parsed.x, parsed.y)) continue;
-    for (const object of objects) context.tileLayer.remove(object, true);
+    for (const object of objects) destroyTrackedTile(context, object, parsed.x, parsed.y);
     context.tileIndex.delete(key);
   }
   let tileObjectsUpdated = 0;
@@ -222,9 +278,7 @@ export function renderVisibleEditSceneTiles(
       }
     }
   }
-  if (tileObjectsUpdated > 0 && "sort" in context.tileLayer && typeof context.tileLayer.sort === "function") {
-    context.tileLayer.sort("depth");
-  }
+  // (renderVisibleEditSceneTiles 도 같은 계약 — 컨테이너 분리로 sort 호출이 없다.)
   return { tileObjectsUpdated };
 }
 
@@ -250,15 +304,15 @@ function renderTileCellLayer(
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
       lowerTile.setAlpha(lowerAlpha);
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
-      addTileObject(context, objects, lowerTile, 0, x, y);
+      addTileObject(context, objects, lowerTile, 0, "lower", x, y);
     } else {
-      addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, x, y);
+      addTileObject(context, objects, createEmptyTile(context.scene, x, y, tileSize, context.backgroundPreview === true), 0, "lower", x, y);
     }
     for (const stackedLower of tileStackAt(map, "lower", i)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedLower);
       lowerTile.setAlpha(lowerAlpha);
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
-      addTileObject(context, objects, lowerTile, 1, x, y);
+      addTileObject(context, objects, lowerTile, 1, "lower", x, y);
     }
   } else {
     const dimUpper = activeLayer === "lower";
@@ -267,16 +321,35 @@ function renderTileCellLayer(
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, upper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
       // depth 2 was too close to lower(0); keep upper clearly above lower stacks for canopy preview
-      addTileObject(context, objects, upperTile, 20, x, y);
+      addTileObject(context, objects, upperTile, 20, "upper", x, y);
     }
     for (const stackedUpper of tileStackAt(map, "upper", i)) {
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
-      addTileObject(context, objects, upperTile, 21, x, y);
+      addTileObject(context, objects, upperTile, 21, "upper", x, y);
     }
   }
   context.tileIndex?.set(tileIndexKey(layer, x, y), objects);
   return objects;
+}
+
+/**
+ * 타일은 청크 컨테이너의 자식이다. `tileLayer.remove` 는 직계 자식만 파괴하므로
+ * 청크에 담긴 스프라이트는 남고 인덱스만 지워져, 다시 그 창에 들어오면 겹친다.
+ */
+function destroyTrackedTile(
+  context: EditSceneRenderContext,
+  object: Phaser.GameObjects.GameObject,
+  x: number,
+  y: number,
+): void {
+  const chunk = context.tileChunks?.get(chunkKey(chunkCoord(x), chunkCoord(y)));
+  if (chunk) {
+    chunk.remove(object, true);
+    return;
+  }
+  context.tileLayer.remove(object, true);
+  context.upperTileLayer.remove(object, true);
 }
 
 function addTileObject(
@@ -284,11 +357,20 @@ function addTileObject(
   objects: Phaser.GameObjects.GameObject[],
   object: Phaser.GameObjects.GameObject,
   depth: number,
+  layer: "lower" | "upper",
   x: number,
   y: number
 ): void {
   if ("setDepth" in object && typeof object.setDepth === "function") object.setDepth(depth);
-  context.tileLayer.add(object);
+  const parent = layer === "lower" ? context.tileLayer : context.upperTileLayer;
+  // 레이어별 컨테이너로 간다 — 부모 list 순서(lower 컨테이너 → upper 컨테이너)가 곧
+  // 드로 순서다. 셀 재렌더는 remove + add(끝 삽입)로 같은 컨테이너 안 상대 순서를 유지한다.
+  // 청크 저장소가 있으면(large-map lazy) 레이어와 객체 사이에 16×16칸 청크를 둔다 —
+  // 프레임 순회 대상을 화면 근처 청크로 몰아 화면 밖 청크는 visible 한 번으로 통째로 쉰다.
+  const target = context.tileChunks
+    ? getOrCreateChunk(context.scene, parent, context.tileChunks, chunkCoord(x), chunkCoord(y))
+    : parent;
+  target.add(object);
   // 컬링 추적 — update() 의 syncTileCulling 이 화면 밖 타일의 visible 을 끈다.
   // setVisible 이 없는 객체(예: 테스트 mock)는 trackCullableTile 가 자동으로 건너뛴다.
   trackCullableTile(context.scene, object, x, y);

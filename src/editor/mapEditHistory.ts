@@ -1,8 +1,10 @@
 import type { GameMap, MapId, Project } from "@/project/types";
 import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
+import { canWriteTeamProject } from "@/project/teamAccess";
 
 const MAX_HISTORY = 50;
+const LARGE_HISTORY_LIMIT = 25;
 export const MAP_EDIT_HISTORY_EVENT = "oprn:map-edit-history-change";
 
 type ProjectSnapshot = {
@@ -145,6 +147,14 @@ function replaceWithSnapshot(snapshot: HistorySnapshot): void {
   store.replace(applySnapshotToProject(store.getCurrent(), snapshot));
 }
 
+/** replace 가 쓰기 거부로 현재 프로젝트를 그대로 두면 false. 호출자가 스택을 되돌린다. */
+function restoreSnapshot(snapshot: HistorySnapshot): boolean {
+  if (!canWriteTeamProject()) return false;
+  const before = store.getCurrent();
+  replaceWithSnapshot(snapshot);
+  return store.getCurrent() !== before;
+}
+
 // 프로젝트를 교체하면 이전 프로젝트의 스냅샷은 어떤 새 프로젝트에도 유효하지 않다.
 // store.replace() 자신은 undo 적용 경로기도 하므로, 교체 마커(projectSwitch)가 붙은
 // 변경에서만 혀스토리를 날린다.
@@ -181,17 +191,30 @@ function pushSnapshot(snapshot: HistorySnapshot, label?: string, mapId?: string 
   if (undoStack.length > 0 && signature === topSignature) return;
   undoStack.push(makeEntry(snapshot, label, mapId));
   topSignature = signature;
-  const effectiveMax = isLargeHistorySnapshot(snapshot) ? Math.min(MAX_HISTORY, 25) : MAX_HISTORY;
-  while (undoStack.length > effectiveMax) undoStack.shift();
+  trimUndoStack(snapshot);
   redoStack = [];
   emitHistoryChange();
 }
 
+// redo 시에는 현재 상태를 undo 스택으로 되돌려야 하며, dedup 으로 삼켜지면
+// 다시 undo 할 대상이 사라지므로 무조건 push 한다.
 function pushSnapshotForRedo(entry: HistoryEntry): void {
   undoStack.push(entry);
   topSignature = snapshotSignature(entry.snapshot);
-  const effectiveMax = isLargeHistorySnapshot(entry.snapshot) ? Math.min(MAX_HISTORY, 25) : MAX_HISTORY;
-  while (undoStack.length > effectiveMax) undoStack.shift();
+  trimUndoStack(entry.snapshot);
+}
+
+/**
+ * 큰 맵 스냅샷은 상한이 25다. 한 번의 push 가 50칸 스택을 25로 깎으면
+ * 그 전에 쌓인 작은 편집이 통째로 사라지므로, 한계를 넘은 만큼이 아니라
+ * 한 번에 최대 두 단계만 버린다. 이어서 큰 맵을 고치면 25까지 줄어든다.
+ */
+function trimUndoStack(snapshot: HistorySnapshot): void {
+  const limit = isLargeHistorySnapshot(snapshot) ? LARGE_HISTORY_LIMIT : MAX_HISTORY;
+  if (undoStack.length <= limit) return;
+  undoStack.shift();
+  if (undoStack.length > limit && limit < MAX_HISTORY) undoStack.shift();
+  while (undoStack.length > MAX_HISTORY) undoStack.shift();
 }
 
 /** 이산적(단발) 편집 직전에 호출: 현재 상태를 즉시 스냅샷한다. */
@@ -258,6 +281,7 @@ export function recordCoalescedSnapshot(
 }
 
 export function undoMapEdit(): boolean {
+  if (!canWriteTeamProject()) return false;
   const previous = undoStack.pop();
   if (!previous) return false;
   const currentSnapshot = makeCurrentSnapshotForEntry(previous);
@@ -268,12 +292,19 @@ export function undoMapEdit(): boolean {
   redoStack.push(makeEntry(currentSnapshot, previous.label, previous.mapId));
   topSignature = historyTopSignature();
   lastCoalesceKey = null;
-  replaceWithSnapshot(previous.snapshot);
+  if (!restoreSnapshot(previous.snapshot)) {
+    redoStack.pop();
+    undoStack.push(previous);
+    topSignature = historyTopSignature();
+    emitHistoryChange();
+    return false;
+  }
   emitHistoryChange();
   return true;
 }
 
 export function redoMapEdit(): boolean {
+  if (!canWriteTeamProject()) return false;
   const next = redoStack.pop();
   if (!next) return false;
   const currentSnapshot = makeCurrentSnapshotForEntry(next);
@@ -281,15 +312,22 @@ export function redoMapEdit(): boolean {
     redoStack.push(next);
     return false;
   }
+  const undoBackup = undoStack.slice();
+  const signatureBackup = topSignature;
   pushSnapshotForRedo(makeEntry(currentSnapshot, next.label, next.mapId));
   lastCoalesceKey = null;
-  replaceWithSnapshot(next.snapshot);
+  if (!restoreSnapshot(next.snapshot)) {
+    undoStack.length = 0;
+    undoStack.push(...undoBackup);
+    topSignature = signatureBackup;
+    redoStack.push(next);
+    emitHistoryChange();
+    return false;
+  }
   emitHistoryChange();
   return true;
 }
 
-// redo 시에는 현재 상태를 undo 스택으로 되돌려야 하며, dedup 으로 삼켜지면
-// 다시 undo 할 대상이 사라지므로 무조건 push 한다.
 /**
  * 현재 시점의 히스토리 마커 — 세션 시작 시점 기록용(databaseModalDirtySession).
  * 이후 makeEntry 로 생성되는 모든 엔트리는 이 값 이상의 `at` 시퀀스를 받는다.

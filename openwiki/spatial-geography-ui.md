@@ -431,6 +431,6 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
 - 칩셋 라벨: 84·86·88과 성 조각(윗면21·보행로412·테두리18~20/78/80/108~110·벽면51/81·탑138~143/24/25/54/55·궁 지붕49·정문448/478·안뜰248/276~338·화살 구멍28), 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
   `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
-- 분류는 둘: `diverse-villages-trunks-v11`(52 MD·30 이미지) + `concept-villages-v2`(27 MD·3 이미지, 나무 몸통 개정). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 분류는 둘: `diverse-villages-trunks-v12`(52 MD·30 이미지) + `concept-villages-v3`(27 MD·3 이미지, 나무 몸통 개정). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
 - 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
 - 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.

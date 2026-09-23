@@ -1,4 +1,5 @@
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
+import { sharedObjectKit } from '@/project/sharedSpatialReferences';
 import { LPC_WOODEN_FURNITURE_16_ID, LPC_WOODEN_FURNITURE_TILESET_ID } from "@/project/defaults/constants";
 import { SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "@/project/defaults/sharedVillageObjects";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
@@ -98,7 +99,7 @@ function objectCards(): SpatialGalleryCard[] {
         // 번들 시트에서 온 가구 팩은 공용 오브젝트다 — Tibo 실내 확장, LPC 나무 가구,
         // 공유 숲마을 오브젝트가 그렇다. 나머지 킷은 저작자가 이 프로젝트에서 만든 것이므로
         // 내 오브젝트로 남는다.
-        source: isBundledFurniturePackKit(tileset, kit.id) ? "default" : "own",
+        source: sharedObjectKit(tileset.id, kit.id) || isBundledFurniturePackKit(tileset, kit.id) ? "default" : "own",
         kind: "objects",
         usage: 0,
         tilesetId: tileset.id,

@@ -47,7 +47,10 @@ export type NewProjectChoice = {
   readonly reference?: string;
   /** 포스터 자막. 참조가 없으면 label 과 같다. */
   readonly posterTitle?: string;
-  /** 첫 화면 격자에 노출하는가. 나머지는 「이런 세계도 있어요」 접힘 단에 남는다. */
+  /**
+   * 시작 화면과 「새 프로젝트」 다이얼로그에 보이는가.
+   * 꺼진 선택지는 정본·도구 계약에만 남고, 새 프로젝트를 고르는 UI에는 나오지 않는다.
+   */
   readonly featured?: boolean;
 };
 
@@ -182,18 +185,12 @@ export function newProjectChoicePackAnchors(): Readonly<Record<NewProjectChoiceI
 /**
  * 「새 프로젝트」 다이얼로그의 행 순서.
  *
- * 첫 화면의 featured 3장을 먼저 두고 나머지를 정본 순서로 잇는다. 다이얼로그는 한 화면에
- * 전부를 깔아 보이므로, 사용자가 첫 화면에서 고른 이름이 같은 자리에서 다시 읽혀야 한다.
- * 공식 팩 형제(horror-chase 2장, monster-collect 2장)는 라벨이 달라도 같은 팩으로 저장된다는
- * 사실이 설명줄에 이미 들어 있다.
+ * 시작 UI가 지원하는 세 가지 — 몬스터 수집, 회상 스토리, 모험 JRPG — 만 둔다.
+ * 첫 화면 포스터와 같은 이름·같은 순서로 다시 읽힌다. 나머지 정본 선택지는
+ * 기존 프로젝트·도구 계약용으로 남아 있고 이 목록에는 없다.
  */
 export const NEW_PROJECT_DIALOG_CHOICE_ORDER: readonly NewProjectChoiceId[] = [
   "monster-collect",
   "story-cutscene",
   "adventure-jrpg",
-  "horror-gallery",
-  "school-horror",
-  "farm-life",
-  "partner-raise",
-  "action-rpg",
 ] as const;

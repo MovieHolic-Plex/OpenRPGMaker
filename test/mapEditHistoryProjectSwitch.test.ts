@@ -1,7 +1,9 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
+  getMapEditHistoryEntries,
   getMapEditHistoryState,
+  recordMapEditIfChanged,
   recordProjectSnapshot,
   resetMapEditHistory,
   undoMapEdit,
@@ -9,6 +11,7 @@ import {
 import { createBlankProject } from "@/project/defaults";
 import { serialize } from "@/project/io";
 import { store } from "@/project/store";
+import { setTeamRole } from "@/project/teamAccess";
 import type { Project } from "@/project/types";
 
 function firstMapId(project: Project): string {
@@ -48,6 +51,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  setTeamRole(null);
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
   vi.restoreAllMocks();
   vi.unstubAllGlobals();
@@ -116,5 +120,56 @@ describe("project switch invalidates map edit history", () => {
     await expect(store.reconnectRemotePersistence()).resolves.toEqual({ kind: "connected", source: "remote" });
 
     expect(getMapEditHistoryState().canUndo).toBe(false);
+  });
+});
+
+describe("tile undo history bounds", () => {
+  it("sheds two steps when the first large-map edit arrives, not the whole stack down to 25", () => {
+    const mapId = firstMapId(store.getCurrent());
+    for (let step = 0; step < 30; step += 1) {
+      const recorded = recordMapEditIfChanged(mapId, () => {
+        store.update((draft) => {
+          const map = draft.maps[mapId];
+          if (map) map.name = `history-${step}`;
+        });
+      });
+      expect(recorded).toBe(true);
+    }
+    expect(getMapEditHistoryEntries()).toHaveLength(30);
+
+    store.update((draft) => {
+      const map = draft.maps[mapId];
+      if (!map) return;
+      map.width = 100;
+      map.height = 100;
+      map.lowerTiles = new Array<number>(10_000).fill(0);
+      map.upperTiles = new Array<number>(10_000).fill(-1);
+    });
+    const recorded = recordMapEditIfChanged(mapId, () => {
+      store.update((draft) => {
+        const tiles = draft.maps[mapId]?.lowerTiles;
+        if (tiles) tiles[0] = 3;
+      });
+    });
+
+    expect(recorded).toBe(true);
+    expect(getMapEditHistoryEntries()).toHaveLength(29);
+  });
+
+  it("keeps the undo step when the team role cannot write", () => {
+    recordProjectSnapshot("뷰어 이전");
+    store.update((draft) => {
+      draft.meta.title = "남길 제목";
+    });
+    const previousBridge = window.oprn;
+    window.oprn = { team: { projectId: "team-project" } } as typeof window.oprn;
+    setTeamRole("viewer");
+
+    expect(undoMapEdit()).toBe(false);
+    expect(store.getCurrent().meta.title).toBe("남길 제목");
+    expect(getMapEditHistoryState().canUndo).toBe(true);
+
+    window.oprn = previousBridge;
+    setTeamRole(null);
   });
 });

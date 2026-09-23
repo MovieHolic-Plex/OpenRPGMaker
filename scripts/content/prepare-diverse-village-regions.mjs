@@ -32,7 +32,7 @@ for (const plan of catalog.plans) {
     name: plan.name,
     kind: "completed-map",
     regionKind: "settlement",
-    revision: 11,
+    revision: 12,
     width: map.width,
     height: map.height,
     tilesetId: map.tilesetId,

@@ -1,4 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
+import { COMBINED_TOWN_PANORAMA_WINDOW_TILES } from "@/project/defaults/generatedChipsetTransparency";
+import { isPanoramaWindowTile } from "@/project/defaults/chipsetMapping";
 import { CAMERA_ZOOM_LIMITS, normalizeCameraZoom, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
 import { MAP_BACKGROUND_LAYER_DEPTH, MAP_LOWER_LAYER_DEPTH } from "@/player/characterDepth";
 import {
@@ -439,5 +441,34 @@ describe("프로젝트 기본 카메라 배율", () => {
     expect(system.cameraZoom).toBe(4.5);
     storeCameraZoom(system as never, 1);
     expect("cameraZoom" in system).toBe(false);
+  });
+});
+
+/**
+ * RM2K 파노라마 창 계약(2026-09-22).
+ *
+ * 왜: 이전에는 하층 타일이 없는 칸이 전부 뚫린 창이 되어 배경이 다 보였다. RM2K 방식은
+ * 반대다 — 배경은 레이어 뒤에 있고, 완전 투명 타일(파노라마 창)을 깐 칸에서만 비친다.
+ * 빈 칸은 가려진다(playSceneMapRuntime 의 renderEmptyCellCover).
+ */
+describe("RM2K 파노라마 창", () => {
+  it("창 타일은 완전 투명이며 소수다", () => {
+    expect(COMBINED_TOWN_PANORAMA_WINDOW_TILES.length).toBeGreaterThan(0);
+    expect(COMBINED_TOWN_PANORAMA_WINDOW_TILES.length).toBeLessThan(20);
+  });
+
+  it("창 타일은 지형(잔디·밑동)과 겹치지 않는다 — 실수로 지형을 창으로 만들지 않았다", () => {
+    const windows = new Set(COMBINED_TOWN_PANORAMA_WINDOW_TILES);
+    for (const ground of [240, 241, 290, 291, 292, 293, 0, 16]) {
+      expect(windows.has(ground), '지형 ' + String(ground) + ' 이 창 목록에 있다').toBe(false);
+    }
+  });
+
+  it("isPanoramaWindowTile 이 목록과 일치한다", () => {
+    for (const tile of COMBINED_TOWN_PANORAMA_WINDOW_TILES) {
+      expect(isPanoramaWindowTile(tile)).toBe(true);
+    }
+    expect(isPanoramaWindowTile(240)).toBe(false);
+    expect(isPanoramaWindowTile(-1)).toBe(false);
   });
 });

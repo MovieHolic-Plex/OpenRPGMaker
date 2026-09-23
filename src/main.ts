@@ -13,6 +13,7 @@ import "./styles/index.css";
 import "@/storageBoot";
 import "@/editor/editorUiMode";
 import { initializeTeamAccess, startTeamSession } from "@/editor/teamSession";
+import { loadSharedTileReferences } from "@/project/sharedTileReferences";
 import { bootApp } from "@/app/mode";
 import { dismissBootLoader } from "@/app/bootLoader";
 import { editorState } from "@/editor/editorState";
@@ -98,6 +99,7 @@ void bootEditorWithOpenedProject(app)
 async function bootEditorWithOpenedProject(host: HTMLElement): Promise<void> {
   await adoptElectronOpenProject();
   await initializeTeamAccess();
+  await loadSharedTileReferences();
   await bootApp(host);
   startTeamSession();
 }

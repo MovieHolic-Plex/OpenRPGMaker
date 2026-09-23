@@ -1,0 +1,55 @@
+# qa-game — 「AI 가 게임을 만든다 → 검사한다」 싸고 결정적인 루프
+
+브라우저에서 새 프로젝트 마법사를 누르고(생성 약 11분, 매번 결과가 다름), 고칠 때마다 `npm run build` + 서버 재시작(5분),
+사람처럼 순간이동·Enter 연타·스크린샷으로 플레이(30분 이상)하던 루프를 줄인다.
+도그푸딩에서 찾은 막힘 네 가지(빈 선택지 분기, changeParty 의 speciesId, 엔딩 스위치 미설정, 못 가는·빈 던전 맵)는
+전부 **프로젝트 데이터만으로** 찾을 수 있었다.
+
+## 루프
+
+```
+gen 한 번(모델) → check(초) → 코드 고침 → replay + check(초) → 그다음에야 브라우저
+```
+
+| 명령 | 하는 일 |
+| --- | --- |
+| `npm run qa:game -- gen --brief scripts/qa-game/briefs/lighthouse-jrpg.json --out qa-runs/<id>` | 브라우저 「이 기획으로 시작」과 같은 함수(시드 `createNewProjectSeed`+직렬화 왕복+`prepareProjectInterviewStartup` 과 같은 오프닝 교체, 지시문 `buildWelcomeGenrePresetPrompt`, 턴 분류 `classifyPlainPiTurn`, Ultrabrain 계획 턴·실행 요청 `buildUltrabrainPlanRequest`/`buildPiRunRequest`, 역할 모델 `modelForRole`, 게시 `createPiPublication`)로 한 판을 만든다. `seed.json`·`instruction.txt`·`plan.txt`·`request.json`·`project.json`·`tools.jsonl`(호출마다 전체 인자·ok·요약·diff/경고·순서)·`events.ndjson`·`meta.json`(모델·단계별 시간·토큰·브라우저와 다른 점)을 쓰고 끝에 check 를 돌린다. 옵션 `--provider --model --brain-model --autonomy --apply --timeout-ms --no-check`. |
+| `npm run qa:game -- check qa-runs/<id>` | `<id>/project.json` 을 검사해 `check.json`·`check.txt` 를 쓴다. 막힘이 있으면 종료 코드 1. `--project x.json` 으로 임의 파일도 된다. |
+| `… check <id> --raw` | 로더를 거치지 않은 원본 JSON 을 검사한다. 기본(로더를 거친 모양 = 런타임이 보는 모양)은 로더가 조용히 고친 명령을 `load-normalized` 경고로만 남기므로, 생성기(조수·도구)가 쓴 결함 자체를 보려면 `--raw`. |
+| `npm run qa:game -- replay qa-runs/<id>` | 모델 없이 `tools.jsonl` 을 `seed.json` 위에서 **지금의** 툴 코드로 다시 돌린다(레지스트리 셰이프 `resolvePiToolShape` = 참고 문서 게이트·맵 범위 가드, 쓰기마다 `createPiPublication` 체크포인트 = 스토어 커밋 게이트). `replay/project.json`·`tools.jsonl`·`diff.json`·`replay.txt` 를 쓰고 check 를 돌린다. 녹화와 ok·경고가 달라진 호출을 경고 차이(-녹화/+재생)와 함께 보고한다. `[vperf]` 같은 시간 계측 줄은 비교에서 뺀다. |
+
+(`render` 는 다음 단계에서 붙는다.)
+
+### replay 의 한계
+
+- 모델이 없으니 앞 호출 결과가 바뀌어도 뒤 호출 인자는 녹화 그대로다. 첫 차이 뒤의 차이는 연쇄 효과일 수 있다.
+- 코어가 인자 검증에서 거절한 호출과 런타임 전용 툴(`set_build_spec`·`consult_writer`·`web_search`·`finish_stage`)은 다시 돌리지 않는다.
+- `read_tileset_reference` 는 읽는 즉시 「모델이 본 것」으로 친다.
+- 체크포인트 발행 한 번에 약 2초가 든다(25MB 프로젝트의 정체성 해시·정규 JSON·structuredClone). 13호출에 약 30초, 100호출이면 약 90초.
+
+### gen 이 브라우저와 다른 점
+
+- 조화 검수(reviewMapHarmony)는 돌리지 않는다. 캔버스 캡처가 필요하고 기본 적용 모드에서는 지적만 남기기 때문이다.
+- 의도 선언은 같은 몸통을 워커 `completeProvider` 로 직접 보낸다(제공자 max_tokens 클램프는 생략).
+- 동반 서비스·워커 HTTP 없이 같은 프로세스에서 `runPiAgent` 를 부른다.
+- 맵 손실 확인 모달처럼 사람이 답해야 하는 확인은 헤드리스로 답할 수 없다.
+
+키는 동반 서비스 runAgent 와 같게 푼다: 주 제공자 키, 역할 모델(deep·writer) 제공자 키, 웹 검색용 openai-codex 키를 인증 저장소(`resolveRequestApiKey`)에서. 브라우저에서 연결해 둔 제공자는 그대로 쓴다.
+
+## check 가 보는 것
+
+- **맵 그래프** — 시작 맵에서 문(transfer)·맵 연결로 못 가는 맵, 이벤트도 들어오는 문도 없는 빈 껍데기 맵,
+  없는 맵·맵 밖·통행 불가 칸으로 가는 문, 막힌 시작 위치.
+- **명령 스키마** — 에디터 명령 카탈로그(`src/editor/eventCommands/schema`)와 재귀 대조. 모르는 필드(`speciesId` on changeParty),
+  비어 있는 필수 참조(actorId·troopId·mapId), 없는 배우·아이템·적 그룹·맵 참조, 허용값 밖 열거값,
+  전부 빈 선택지 분기, `branch` 없는 보기, 런타임이 실행하지 않는 키에 든 명령 배열. 에디터 저장 검증기의 참조 이슈도 경고로 싣는다.
+- **진행** — 페이지 조건이 기다리는데 어디서도 켜지 않는 스위치·셀프 스위치(엔딩 페이지면 막힘), 엔딩 정의 대비 triggerEnding 호출,
+  없는 엔딩 id, 시작 파티, 동료 추종만 있고 파티 합류가 없는 배우.
+- **전투** — 적 그룹의 적 존재, 피해를 주는 행동이 없는 적(공격 안 하는 보스).
+- **기획 부합(경고)** — 눈·겨울 기획인데 눈 기후가 없음, 동료 기획인데 올바른 합류가 없음, 던전·보스 흔적 없음.
+- **자동 플레이** — 엔딩에서 거꾸로 사슬(엔딩 ← 그 페이지를 여는 스위치 ← 그 스위치를 켜는 이벤트 ← …)을 만들고
+  헤드리스 런타임(`src/testing/sceneTestRunner.ts`, `run_scene_test` 도구와 같은 엔진)으로 실제로 걷고·조사하고·고르고·싸운다.
+  문 위를 밟아 엉뚱한 맵으로 튀지 않게 다른 이벤트 칸을 피해 한 칸씩 걷는다. 전투는 러너가 결정적으로 푼다(seed 1).
+  동료가 있으면 합류 뒤 같은 경로를 한 번 더 돈다 — 합류가 파티에 null 을 넣으면 거기서, 이어서 전투의 `Missing actor` 까지 보고한다.
+
+막힘(blocker)은 끝까지 못 가는 결함, 경고는 확인할 거리다. 이 검사기는 **오프라인 QA 도구**이지 조수 실행 경로의 게이트가 아니다.

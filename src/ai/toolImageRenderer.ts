@@ -1,4 +1,5 @@
 import type { GameMap, Project, TilesetDef } from "@/project/types";
+import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import {
   canvasDataUrl,
@@ -48,6 +49,21 @@ export async function renderMapRegionImages(
     if (cause instanceof Error && cause.message.includes("rendering-unavailable")) throw cause;
     return [];
   }
+}
+
+export async function renderPiMapImage(project: Project, data: unknown): Promise<string> {
+  const raw = toolPayload(data), map = raw ? mapField(project, raw) : undefined;
+  if (!map) throw new Error("map-rendering-unavailable: map missing");
+  const unavailable = mapVisualEvidenceUnavailable(map);
+  if (unavailable) throw new Error(unavailable);
+  if (Object.keys(map.lowerTileStacks ?? {}).length || Object.keys(map.upperTileStacks ?? {}).length) throw new Error("map-rendering-unavailable: layered stacks need renderer support");
+  const tileset = project.tilesets[map.tilesetId];
+  for (let y=0;y<map.height;y++) for(let x=0;x<map.width;x++) if(chipsetQuarterComposition(map, tileset, x, y)) throw new Error("map-rendering-unavailable: quarter composition needs renderer support");
+  const payload = tileGridPayload(project, data);
+  if (!payload) throw new Error("map-rendering-unavailable: invalid region");
+  const images = await renderTileGridPayload(payload, "현재 초안", project);
+  if (!images[0]) throw new Error("map-rendering-unavailable: no PNG");
+  return images[0].dataUrl;
 }
 
 export async function renderToolImages(project: Project, toolName: string, data: unknown): Promise<RenderedToolImage[]> {
@@ -125,8 +141,8 @@ async function renderTileGrid(project: Project, data: unknown, label = "영역")
   return renderTileGridPayload(payload, `${label} (${payload.x},${payload.y}) ${payload.w}×${payload.h}`);
 }
 
-async function renderTileGridPayload(payload: TileGridPayload, label: string): Promise<RenderedToolImage[]> {
-  const image = await loadTilesetImage(payload.tileset);
+async function renderTileGridPayload(payload: TileGridPayload, label: string, draft?: Project): Promise<RenderedToolImage[]> {
+  const image = await loadTilesetImage(payload.tileset, draft);
   // Whole-map coverage renders reach here, so the canvas is sized to the delivered
   // image rather than drawn huge and shrunk. Small regions keep the native scale.
   const drawSize = tileDrawSize(payload.w, payload.h, payload.tileset.tileSize);

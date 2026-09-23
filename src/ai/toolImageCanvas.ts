@@ -1,7 +1,7 @@
 import { awaitGraftedTilesetImageUrl, peekGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
-import type { TilesetDef } from "@/project/types";
+import type { Project, TilesetDef } from "@/project/types";
 import {
   applyTransparentColorKey,
   applyTransparentColorKeys,
@@ -82,8 +82,9 @@ export const GRAFT_EVIDENCE_WAIT_MS = 5_000;
  * Load the exact composite atlas, including on the first review after a graft edit.
  * Bound the wait so held source I/O cannot indefinitely block the assistant turn.
  */
-export async function loadTilesetImage(tileset: TilesetDef): Promise<HTMLImageElement> {
-  const baseUrl = tilesetBaseImageUrl(tileset);
+export async function loadTilesetImage(tileset: TilesetDef, project?: Project): Promise<HTMLImageElement> {
+  const baseUrl = tilesetBaseImageUrl(tileset, project);
+  if (project && activeTileGrafts(tileset).length) throw new Error("map-rendering-unavailable: draft graft sources require explicit snapshot rendering");
   if (activeTileGrafts(tileset).length === 0) return loadImageUrl(baseUrl);
   const ready = peekGraftedTilesetImageUrl(tileset, baseUrl);
   if (ready) return loadImageUrl(ready);

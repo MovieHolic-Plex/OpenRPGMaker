@@ -1739,6 +1739,10 @@ author_village와 buildVillageDomain이 DB 설계서의 고정값·집 수 범�
 카탈로그 라벨은 바꾸지 않는다. `test/nativeGraphicDiscovery.test.ts`는 두 조회 → 네이티브 업서트 →
 직렬화/재로드 → 실제 `renderTiles`의 sprite 생성 인자를 독립 프레임 표와 대조한다(8슬롯·두 행·네 방향).
 
+2026-09-22: 라벨이 있는 차셋 칸마다 `src/assets/charsetAppearances.ts` 의 아래 방향 정지 프레임 문장이 붙는다.
+`list_npc_graphics` 는 `appearance`, `list_resources(kind:"charset")` 는 `description` 으로 그대로 돌려준다.
+문장에 있는 두 글자 이상 낱말은 라벨·태그보다 낮은 점수로 검색에도 걸린다. 라벨 문자열 자체는 바꾸지 않는다.
+
 ## 보물상자는 노출된 수면을 거부한다 (2026-09-05)
 
 `place_chest`는 요청 좌표와 자동 착지 결과를 모두 검사한다. 물 판정은 현재 타일셋의
@@ -1964,3 +1968,85 @@ Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
 빈 시작 맵 전체 시공에서 예전 좌표가 고립되면 `restoreExistingTargetStart`가 검증된 새
 시작점을 유지한다. 기존 콘텐츠 또는 bounds 요청은 이 예외가 아니다.
+
+
+### 저장된 AI 계획 본문 조회 (2026-09-23)
+
+present_doc로 저장한 aiDocuments를 list_ai_docs로 찾는다. 목록은 본문을 반환하지 않는다. read_ai_doc(documentId, blockIndex=0, offset=0)로 블록당 최대6000자를 읽고 nextOffset 및 blockCount까지 순회한다. markdown 원문/나머지 블록 JSON을 반환하며 실행하지 않는다. 조회는 프로젝트 불변이며 없는 ID와 잘못된 정수·범위는 오류다. 공용 타일 참고문서는 계속 read_tileset_reference를 쓴다.
+
+### 호스트 공용 DB 참고문서 갱신 (2026-09-23)
+
+브라우저 편집기 부팅 시 팀 인증 후 `/__oprn/shared-tile-references`를 조회한다. 서버는
+호스트의 `OPRN_SHARED_CONTENT_SQLITE`(기본 XDG data/oprn/shared-content.sqlite)를 읽기 전용으로 열며
+프로젝트 ID로 필터하지 않는다. GET 전용이며 팀 인증/동일 출처 검사를 기존 호스트와 공유한다.
+`store.normalizeCurrentProject`의 `sharedTileReferences` 단계는 설치된 `shared_` 타일셋의
+ID·타일 크기·열 수·개수·업로드 이미지 ID와 SHA256이 모두 맞을 때 참고문서 카테고리만 갱신한다.
+맵·타일 픽셀·충돌·미설치 타일셋은 변경하지 않고 프로젝트 전용 카테고리는 유지한다.
+외부 asset ref의 byte SHA와 인라인 dataURL의 SHA 경로를 각각 지원한다. 기하/그림이 다르면 건너뛴다.
+갱신은 기존 정규화의 변경 계측·저장 경로를 따른다. 공용 DB 변경 후 프로젝트를 다시 열어야 반영되며,
+진행 중인 조수 실행의 문서 판독 증거를 무효화하는 실시간 변경은 하지 않는다.
+HTTP 경로가 없는 환경(현재 Electron 직접 실행 등)은 저장된 문서를 유지한다. 공유문서 자동 갱신은
+현재 로컬/팀 웹 호스트 경로에서 제공하며 다른 실행 경로까지 지원했다고 보고하지 않는다.
+
+
+## 실제 타일 규칙 수정 도구 노출 (2026-09-23)
+
+`set_tile_rules`는 활성 도구다. `propose_tile_vocabulary`는 어휘 승인 제안이며 기존 타일의 priority·통행·지면 규칙을 즉시 수정하는 대체재가 아니다. V1_TILE_SUPERSEDED에 넣으면 getTool에는 존재해도 LLM 스키마에서 사라져 공용 문서의 조립 절차를 실행할 수 없다. 레이어 수정의 confirmedByUser 검사와 잠긴 항목 보호는 유지한다. 실제 요청이 레이어 정정을 승인한 경우에만 사용한다. 수정 후 홈 레이어와 실제 lower/upper 배열을 재조회하고, 적용·저장 표시만으로 성공 판정하지 않는다.
+
+
+### 타일셋별 맵 의미 조회 (2026-09-23)
+
+`get_map_region`의 물·나무·벽 상수는 합본 마을과 호환된 번들 그림에만 적용한다. 커스텀 그림에서는 실제 타일셋의 category/role/팔레트/그룹 정보를 사용하고, 물 role이 없으면 타일 번호만으로 물이라고 추측하지 않는다. ASCII 격자와 water.bounds는 동일한 판별을 쓴다. LPC 실내의 침대·가구를 기본 칩셋 번호와 겹친다는 이유로 물로 반환하던 오류를 교정했다. `isMapWaterTile(number)`는 기존 합본 마을 저작기용 숫자 함수이며 새 커스텀 타일 조회에 단독 사용하지 않는다.
+
+## Pi 완성 맵 이미지 반환 경로 (2026-09-23)
+
+기존 `show_map_region`의 활동 썸네일은 사용자 UI용이었다. Pi 어댑터는 배열 텍스트만 반환하여
+조수가 새 맵을 봤다는 근거가 되지 않았다. `read_tileset_reference` 이미지 전달과 별개다.
+
+`piAgentRuntime`은 이제 현재 초안 사본을 `piRenderBroker` → `render_request`로 보내고,
+브라우저 `piAgent/client`가 `renderPiMapImage`로 그린 PNG를 인증된 `/v1/agent/render`로 돌려준다.
+PNG는 도구 결과의 image content에 붙어 다음 모델 호출로 전달된다. 검토/읽기 전용 실행도 같은 경로다.
+적용·저장 승인과 무관하며 store의 현재 맵을 바꾸지 않는다. 변하지 않은 무거운 키는 최초 요청
+프로젝트를 기준으로 생략·복원한다. 초안 atlas는 명시적인 프로젝트에서 읽으며, 읽을 수 없으면
+기본 칩셋으로 대신하지 않는다. 일회성 요청 ID는 완료·취소·45초 시간 초과 후 폐기된다.
+
+현재 PNG 경로는 기존 렌더러가 정확히 지원하는 타일/이벤트에 한정한다. 다중 타일 스택,
+쿼터 합성, 초안 graft는 정확한 렌더링을 보장할 때까지 명시적으로 오류를 반환한다.
+일반 네이티브 LPC 오토타일 변형은 완성 타일로 그린다. 오류를 시각 검토 완료로 보고하지 않는다.
+`map.image.delivered`는 도구 응답에 PNG를 포함한 증거이며 모델의 미적 판단이 옳다는 증거는 아니다.
+
+회귀: `test/piAgentMapImages.bun.test.ts`는 실제 Agent 루프의 다음 모델 호출에서 image content를
+검사한다(스크립트 모델, 외부 LLM 아님). 실제 Gemini 호출과 브라우저 전달은 별도 확인한다.
+
+실호출 증거(작업 전용 호스트): Gemini 3.8 Flash/high가 주택08을 조회한 응답에 PNG base64
+49,472자가 포함됐고 이어 색·위치·가구 관계를 설명했다. 기존 맵 배열은 불변이었다.
+단, 칸막이 끝의 정상 2행 벽면을 잘못 깔린 바닥으로 오인했다. 이미지 전달 성공은
+설계 이해나 비평 정확도의 보장이 아니며, 단면 배열·통행 증거와 대조해야 한다.
+
+`tile_query`의 `tile_info`와 `palette`도 동일 선택자 규약(명시 tilesetId → 명시 mapId → startMap)을
+따른다. 이 두 분기만 기존 v1 기본값에 맡겨 실내 맵 ID를 줘도 combined-town 번호를 해석하던
+누락을 실제 Gemini 수정 호출에서 발견했다. `test/tileQueryBoundaries.test.ts`의 선택자 우선순위와
+없는 명시 맵 회귀가 이를 잠근다. LPC 138/139 조회의 직접 전후 재현으로 정정 확인.
+
+## 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
+
+호스트 `shared-content.sqlite`의 `lpc-modified-native-interior`에 실전 지침, 전체 부품 사전,
+하위/상위 예제 배열을 보관한다. 긴 제작 이력은 `interior-native-history`로 분리한다.
+공용 `structureKits` 20종(native32 가구18·러그2)과 `regionReferences` 2종(소형주택·민박),
+실제 원본 `maps`/`previews`를 함께 등록했다. 사례는 감독 보정이 포함된 정적 배치 참고이며
+독립 설계·미적 정답·출입 이벤트를 보증하지 않는다.
+
+`sharedTileReferencesSqlite`는 공용 문서와 함께 선택적으로 공간 카탈로그를 읽는다.
+`sharedSpatialReferences`는 프로젝트와 무관한 지역 목록/원본 배열을 보유하며 브라우저와
+Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조회 및 지역 UI가 같은 자료를
+쓴다. 신규 프로젝트에는 누락된 공유 타일/asset을 설치한다. 기존 프로젝트에는 atlas 신원 확인 뒤
+공용 예약 ID의 문서/킷만 갱신하며 tile priority/passability와 맵을 덮어쓰지 않는다.
+
+오브젝트 공용 카드의 복사는 일반 section-kit 복사를 사용하여 하위 받침과 상위 부품,
+32px 기하를 유지한다. 사용자 사본은 새 ID로 만들어 공용 갱신과 분리한다. 속성의
+「조립·배치 규칙」에서 설치 면·접근·반복/마감 계약을 읽는다.
+
+증거: `output/lpc-shared-organized-20260923/shared-proof.json`, 격리 작업트리의
+`output/shared-spatial-catalog/probe.mts`. 새 프로젝트 설치, 기존 규칙/맵 불변,
+두 지역의 전체 페이지 배열 일치, 가구 복사 레이어/크기 보존을 직접 확인했다.
+전체 테스트 게이트와 운영 배포 확인은 별도이며 이 기록으로 대체하지 않는다.
