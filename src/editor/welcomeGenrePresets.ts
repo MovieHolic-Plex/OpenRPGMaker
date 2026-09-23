@@ -267,7 +267,7 @@ export type WelcomePosterCard = {
   /** Small line above the title, present only when the world quotes a reference. */
   readonly reference?: string;
   readonly title: string;
-  /** True when the poster sits in the first-screen grid. Hidden posters stay in the collapsed tier. */
+  /** True when the poster is mounted on the start surfaces. Other catalog posters are not shown there. */
   readonly featured: boolean;
   /**
    * Anchor poster for its official pack, or null for a sibling variant of a pack already anchored.

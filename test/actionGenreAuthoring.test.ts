@@ -10,12 +10,12 @@ import { welcomeGenrePresetById, welcomeGenreSystemPresetPlanById } from "@/edit
 import { NEW_PROJECT_GENRE_OPTIONS } from "@/editor/ui/newProjectDialog";
 
 describe("supported action genre", () => {
-  it("registers the action genre in existing entry points", () => {
+  it("keeps the action genre in the registry and off the new-project start surface", () => {
     expect(isGenrePackId("action-rpg")).toBe(true);
     expect(genrePackById("action-rpg").starter.defaultRecipeId).toBe("action-system");
     expect(welcomeGenrePresetById("action-rpg")?.packId).toBe("action-rpg");
     expect(welcomeGenreSystemPresetPlanById("action-rpg").recipeId).toBe("action-system");
-    expect(NEW_PROJECT_GENRE_OPTIONS.some((entry) => entry.id === "action-rpg")).toBe(true);
+    expect(NEW_PROJECT_GENRE_OPTIONS.some((entry) => entry.id === "action-rpg")).toBe(false);
   });
 
   it("roundtrips action settings without turning on every map", () => {

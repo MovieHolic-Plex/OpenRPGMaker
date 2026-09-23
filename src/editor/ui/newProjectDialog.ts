@@ -79,9 +79,8 @@ function orderedChoices(): readonly NewProjectChoice[] {
 }
 
 /**
- * 다이얼로그 행 목록 — 빈 프로젝트가 먼저, 그다음 정본 선택지가 첫 화면과 같은 순서로 온다.
- * 행 id 는 packId 가 아니라 선택지 id 다: horror-chase 처럼 한 팩에 이름이 둘인 경우
- * 팩 id 로는 어느 포스터를 골랐는지 되돌릴 수 없다.
+ * 다이얼로그 행 목록 — 빈 프로젝트가 먼저, 그다음 시작 UI가 지원하는 세 장르가 첫 화면과 같은 순서로 온다.
+ * 행 id 는 packId 가 아니라 선택지 id 다.
  */
 export const NEW_PROJECT_GENRE_OPTIONS: readonly NewProjectGenreOption[] = [
   { id: null, label: "빈 프로젝트", blurb: "장르 설정 없이 빈 맵으로 시작합니다" },

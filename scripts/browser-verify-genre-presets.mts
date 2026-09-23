@@ -1,22 +1,26 @@
 /**
- * Browser gate for the exact five official Phase 4 pack cards.
+ * Browser gate for the three genres offered when a project starts:
+ * monster collection, recollection story, and adventure JRPG.
  * Screenshot quantity is diagnostic only; pack identity and an actual card click drive the verdict.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { chromium, type Page } from "playwright";
-import {
-  OFFICIAL_GENRE_PACK_IDS,
-  verifyExactOfficialGenrePackIds,
-  type OfficialGenrePackId,
-} from "../src/project/officialGenrePackIds";
+import { newProjectChoiceById, NEW_PROJECT_DIALOG_CHOICE_ORDER } from "../src/editor/newProjectChoices";
+import type { GenrePackId } from "../src/project/genrePackId";
 
 const BASE_URL = (process.env.BASE_URL ?? "http://127.0.0.1:9999").replace(/\/$/, "");
 const APP_URL = `${BASE_URL}/?forceWelcome=1`;
 const ROOT = join(process.cwd(), "output", "evidence", "genre-presets");
 
+const START_PACK_IDS: readonly GenrePackId[] = NEW_PROJECT_DIALOG_CHOICE_ORDER.map((id) => {
+  const choice = newProjectChoiceById(id);
+  if (!choice) throw new Error(`missing start choice: ${id}`);
+  return choice.packId;
+});
+
 type PackResult = Readonly<{
-  packId: OfficialGenrePackId;
+  packId: GenrePackId;
   selected: boolean;
   screenshots: readonly string[];
   error?: string;
@@ -29,37 +33,29 @@ async function openWelcome(page: Page): Promise<void> {
   await page.getByTestId("editor-welcome").waitFor({ state: "visible", timeout: 45_000 });
 }
 
-async function inspectOfficialPackDom(page: Page): Promise<ReturnType<typeof verifyExactOfficialGenrePackIds>> {
+async function inspectStartPackDom(page: Page): Promise<{ ok: true } | { ok: false; observed: readonly string[] }> {
   const observed = await page.locator("[data-pack-id]").evaluateAll((nodes) => nodes.map((node) => (
     (node as HTMLElement).dataset.packId ?? ""
   )));
-  const setResult = verifyExactOfficialGenrePackIds(observed);
-  if (!setResult.ok) return setResult;
-  for (const packId of OFFICIAL_GENRE_PACK_IDS) {
-    if (await page.locator(`[data-pack-id="${packId}"]`).count() !== 1) {
-      return { ok: false, missing: [`selector:${packId}`], extra: [], duplicate: [] };
-    }
-  }
-  return setResult;
+  const ok = observed.length === START_PACK_IDS.length
+    && START_PACK_IDS.every((packId, index) => observed[index] === packId);
+  return ok ? { ok: true } : { ok: false, observed };
 }
 
-async function runPack(page: Page, packId: OfficialGenrePackId): Promise<PackResult> {
+async function runPack(page: Page, packId: GenrePackId): Promise<PackResult> {
   const folder = join(ROOT, packId);
   mkdirSync(folder, { recursive: true });
   const screenshots: string[] = [];
   try {
     await openWelcome(page);
-    const dom = await inspectOfficialPackDom(page);
-    if (!dom.ok) throw new Error(`official-pack-dom-mismatch:${JSON.stringify(dom)}`);
+    const dom = await inspectStartPackDom(page);
+    if (!dom.ok) throw new Error(`start-pack-dom-mismatch:${JSON.stringify(dom)}`);
     const welcomeShot = join(folder, "01-welcome.png");
     await page.screenshot({ path: welcomeShot });
     screenshots.push(welcomeShot);
 
     const packCard = page.locator(`[data-pack-id="${packId}"]`);
-    if (!(await packCard.isVisible())) {
-      await page.getByTestId("editor-welcome-more-toggle").click();
-      await packCard.waitFor({ state: "visible", timeout: 5_000 });
-    }
+    await packCard.waitFor({ state: "visible", timeout: 5_000 });
     await packCard.click();
     await page.getByTestId("editor-welcome").waitFor({ state: "detached", timeout: 20_000 });
     const selectedShot = join(folder, "02-selected.png");
@@ -86,17 +82,17 @@ async function main(): Promise<void> {
   const page = await context.newPage();
   const packs: PackResult[] = [];
   try {
-    for (const packId of OFFICIAL_GENRE_PACK_IDS) packs.push(await runPack(page, packId));
+    for (const packId of START_PACK_IDS) packs.push(await runPack(page, packId));
   } finally {
     await browser.close();
   }
 
-  const ok = packs.length === OFFICIAL_GENRE_PACK_IDS.length && packs.every((pack) => pack.selected);
+  const ok = packs.length === START_PACK_IDS.length && packs.every((pack) => pack.selected);
   const manifest = {
     schemaVersion: 1,
-    flow: "official-genre-packs",
+    flow: "start-genre-packs",
     createdAt: new Date().toISOString(),
-    officialPackIds: OFFICIAL_GENRE_PACK_IDS,
+    officialPackIds: START_PACK_IDS,
     ok,
     packs,
   };
