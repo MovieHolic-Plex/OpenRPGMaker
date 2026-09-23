@@ -25,6 +25,14 @@ describe("eventCompile graphic resolution", () => {
     expect(expectKnownBundledSprite(graphic, knownIds)).toBe("tex_easyrpg_charset_people1");
   });
 
+  // 2026-09-24 헤드리스 「등대지기의 겨울」: 리소스 id 표기를 textureKey 로 보낸 place_npc 가 거부됐다.
+  it("resolves resource-id spelling (prefix/separators differ) to the one matching texture key", () => {
+    const knownIds = collectResourceIds(createBlankProject());
+    for (const textureKey of ["easyrpg-charset-people1", "EasyRPG_Charset_People1", "tex-easyrpg-charset-people1"]) {
+      expect(expectKnownBundledSprite(resolveGraphic({ textureKey, characterIndex: 0 }), knownIds)).toBe("tex_easyrpg_charset_people1");
+    }
+  });
+
   it("resolves full charset search ids passed as textureKey and adopts their index when caller index is zero", () => {
     const knownIds = collectResourceIds(createBlankProject());
 
