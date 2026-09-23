@@ -222,7 +222,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-trunks-v11`(문서52개/이미지30개)과 `concept-villages-v2`(문서27개/이미지3개)이다.
+현재 용도 ID는 `diverse-villages-trunks-v12`(문서52개/이미지30개)과 `concept-villages-v3`(문서27개/이미지3개)이다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -394,4 +394,6 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 - 분류: `diverse-villages-trunks-v11`·`concept-villages-v2`, `climate-*-villages-v2`, `field-routes-*-v2`. 옛 id 는 정확히 배포본 그대로일 때만 은퇴
   (`tiledata/{forest-villages/diverse,climate-villages,field-routes}/previous-reference.json`, 기록은 `scripts/content/record-previous-references.mjs`). 고친 사본은 남는다.
 - 지역 revision: 다양한 마을 11, 기후·필드 2.
+- 2026-09-24 후속(사용자: 「여전히 이상함」): 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이라 뺐다.
+  최소 폭 3, 폭 1·2 밑변은 이웃 열 높이로 합친다. 분류 `diverse-villages-trunks-v12`·`concept-villages-v3`·`climate-*-villages-v3`·`field-routes-*-v3`, 지역 revision 다양한 마을 12·기후/필드 3.
 

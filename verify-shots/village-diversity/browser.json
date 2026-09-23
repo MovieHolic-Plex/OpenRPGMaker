@@ -1,11 +1,11 @@
 {
   "source": "SQLite reopened project",
-  "baseCategory": "diverse-villages-trunks-v11",
+  "baseCategory": "diverse-villages-trunks-v12",
   "baseImages": 22,
   "conceptImages": 1,
   "realComponent": "renderTilesetReferences",
   "readOnlyHarness": true,
-  "category": "concept-villages-v2",
+  "category": "concept-villages-v3",
   "images": 1,
   "missing": 0,
   "errors": []

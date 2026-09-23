@@ -145,3 +145,10 @@ prop-programs.json이 집별 용도/할 일/지정 이유 및 부품의 목적/�
   바뀐 밑변만 한 칸씩 움직였다. 검증기 7곳 통과(정상 0 오류, 오류 예시 22종은 좌표만 이동).
 - 공용 AI 용도 `diverse-villages-trunks-v11`(52 MD·30 이미지) + `concept-villages-v2`(27 MD·3 이미지), 지역 revision 11, 정본 revision 21.
   `previous-reference.json` 에 windows-v10·concept-v1 을 기록해 미편집 사본만 교체한다. 기후 마을(`tiledata/climate-villages/`)은 이 카탈로그에서 다시 만든다.
+
+## 나무 몸통 개정12 — 폭 2 조각 제거
+
+사용자 지적(개정11 뒤): 여전히 이상하다. 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히긴 하지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이었다.
+- 최소 폭 3(`FOREST_TRUNK_MIN_WIDTH`). 폭 1·2 밑변은 `fitBottomEdges` 가 이웃 열 밑변 높이로 올리거나 내려 합친다.
+- 같은 refit 으로 다시 맞췄다. 공용 용도 `diverse-villages-trunks-v12` + `concept-villages-v3`, 지역 revision 12.
+

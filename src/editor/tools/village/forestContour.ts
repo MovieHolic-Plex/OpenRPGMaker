@@ -1,5 +1,5 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
-import { FOREST_TRUNK_TILES, forestTrunkCandidates } from "./forestTrunkTiles";
+import { FOREST_TRUNK_MIN_WIDTH, FOREST_TRUNK_TILES, forestTrunkCandidates } from "./forestTrunkTiles";
 import type { ForestGroveReport } from "./forestGroves";
 
 const NEIGHBORS = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]] as const;
@@ -151,13 +151,13 @@ function fitForest(map: GameMap, area: Rect, group: AutotileGroup, forest: Set<n
   return { cells: new Set([...forest, ...trunks.keys()]), canopyCells: forest.size, trunkRuns };
 }
 
-/** Trunks fit any bottom edge two or more cells wide (forestTrunkCandidates); the
- * trunk repair would otherwise retract a lone one-cell step row by row. First close one-row gaps under
- * an edge, so the lower root stands in the open, and run edges near the map's bottom off the map. Then
- * move each one-cell step onto the edge of a neighbouring column, up or down, whichever changes fewer
- * cells (up on a tie, keeping the meadow). Neither move touches another run except the one it joins,
- * so one sweep settles. `hold` says whether a cell may carry canopy (it and the two root rows below
- * it are free). */
+/** Trunks fit any bottom edge FOREST_TRUNK_MIN_WIDTH or more cells wide (forestTrunkCandidates); the
+ * trunk repair would otherwise retract a narrower step row by row. First close one-row gaps under an
+ * edge, so the lower root stands in the open, and run edges near the map's bottom off the map. Then
+ * move each narrow step onto the edge of a neighbouring column, up or down, whichever changes fewer
+ * cells (up on a tie, keeping the meadow). A move touches no run but the one it joins, so every move
+ * merges two runs and the sweep ends. `hold` says whether a cell may carry canopy (it and the two root
+ * rows below it are free). */
 function fitBottomEdges(forest: Set<number>, W: number, H: number, area: Rect,
   hold: (x: number, y: number) => boolean): void {
   const inside = (x: number, y: number): boolean => x >= Math.max(0, area.x) && y >= Math.max(0, area.y)
@@ -173,25 +173,38 @@ function fitBottomEdges(forest: Set<number>, W: number, H: number, area: Rect,
       } else if (f(x, y + 2) && hold(x, y + 1)) { forest.add((y + 1) * W + x); changed = true; }
     }
   }
-  for (let y = area.y; y < area.y + area.h - 1; y++) for (let x = area.x; x < area.x + area.w; x++) {
-    if (!bottom(x, y) || bottom(x - 1, y) || bottom(x + 1, y) || y + 2 >= H) continue;
-    let best: { from: number; to: number; add: boolean } | undefined;
-    for (const side of [-1, 1]) {
-      // Up: the column is canopy up to where the neighbour's edge is.
-      for (let r = y - 1; f(x, r); r--) if (f(x + side, r)) {
-        if (bottom(x + side, r) && (!best || y - r < best.to - best.from + 1)) best = { from: r + 1, to: y, add: false };
-        break;
+  const run = (a: number, b: number, test: (c: number) => boolean): boolean => {
+    for (let c = a; c <= b; c++) if (!test(c)) return false;
+    return true;
+  };
+  for (let changed = true; changed;) {
+    changed = false;
+    for (let y = area.y; y < area.y + area.h - 1; y++) for (let x = area.x; x < area.x + area.w; x++) {
+      if (!bottom(x, y) || bottom(x - 1, y)) continue;
+      const a = x;
+      while (bottom(x + 1, y)) x++;
+      const b = x;
+      if (b - a + 1 >= FOREST_TRUNK_MIN_WIDTH || y + 2 >= H) continue;
+      let best: { from: number; to: number; add: boolean } | undefined;
+      for (const n of [a - 1, b + 1]) {
+        // Up: the step is canopy up to where the neighbour's edge is.
+        for (let r = y - 1; run(a, b, c => f(c, r)); r--) if (f(n, r)) {
+          if (bottom(n, r) && (!best || y - r < best.to - best.from + 1)) best = { from: r + 1, to: y, add: false };
+          break;
+        }
+        // Down: open ground the canopy may take, to the neighbour's deeper edge.
+        if (!f(n, y + 1)) continue;
+        for (let r = y + 1; r < H - 2 && run(a, b, c => hold(c, r) && !f(c, r)) && f(n, r); r++) if (bottom(n, r)) {
+          if (run(a, b, c => !f(c, r + 1) && !f(c, r + 2)) && (!best || r - y < best.to - best.from + 1))
+            best = { from: y + 1, to: r, add: true };
+          break;
+        }
       }
-      // Down: open ground the canopy may take, to the neighbour's deeper edge.
-      if (!f(x + side, y + 1)) continue;
-      for (let r = y + 1; r < H - 2 && hold(x, r) && !f(x, r) && f(x + side, r); r++) if (bottom(x + side, r)) {
-        if (!f(x, r + 1) && !f(x, r + 2) && (!best || r - y < best.to - best.from + 1)) best = { from: y + 1, to: r, add: true };
-        break;
+      if (!best) continue;
+      for (let r = best.from; r <= best.to; r++) for (let c = a; c <= b; c++) {
+        if (best.add) forest.add(r * W + c); else forest.delete(r * W + c);
       }
-    }
-    if (!best) continue;
-    for (let r = best.from; r <= best.to; r++) {
-      if (best.add) forest.add(r * W + x); else forest.delete(r * W + x);
+      changed = true;
     }
   }
 }
