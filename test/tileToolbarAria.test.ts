@@ -9,8 +9,13 @@ const lintMock = vi.hoisted(() => ({
   issues: [] as Array<{ code: string; message: string; severity: string }>,
 }));
 
+// 규칙 감사는 cluster-rule 만 보는 clusterRuleLintIssues 를 쓴다. projectLint 는 전체 왕복 lint 라
+// 호출되면 안 된다 — 빈 목록 대역으로 두고 호출 여부만 본다.
 vi.mock("@/project/lint/projectLint", () => ({
-  projectLint: vi.fn(() => lintMock.issues),
+  projectLint: vi.fn(() => []),
+}));
+vi.mock("@/project/lint/clusterRuleLint", () => ({
+  clusterRuleLintIssues: vi.fn(() => lintMock.issues),
 }));
 
 import { makeLeftLayerSwitcher } from "@/editor/panels/leftLayerSwitcher";
