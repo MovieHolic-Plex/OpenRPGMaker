@@ -202,8 +202,28 @@ function describeValue(value: unknown): string {
   return typeof value;
 }
 
+/** 실내 시공기가 가구마다 자동으로 단 「조사」 이벤트(ev_inspect_*) — 맛 대사 하나뿐인 자리표시다. */
+function isAutoInspectEvent(event: GameEvent): boolean {
+  return event.id.startsWith("ev_inspect_");
+}
+
+/**
+ * 저작한 이벤트가 자동 조사 이벤트와 같은 칸에 놓이면 조사 이벤트를 걷어낸다. 둘이 겹치면 런타임이
+ * 아래(below) 조사 이벤트를 먼저 집어 상자·NPC 가 영영 반응하지 않았다(2026-09-23 도그푸딩:
+ * 동굴 (3,6) chest_cave_potion 과 술통 조사 ev_inspect_…_9_5). 걷어낸 id 를 돌려준다.
+ */
+export function displaceAutoInspectEvents(map: GameMap, event: GameEvent): string[] {
+  if (isAutoInspectEvent(event)) return [];
+  const displaced = map.events.filter(entry => entry.id !== event.id && isAutoInspectEvent(entry) && entry.x === event.x && entry.y === event.y);
+  if (displaced.length === 0) return [];
+  const ids = new Set(displaced.map(entry => entry.id));
+  map.events = map.events.filter(entry => !ids.has(entry.id));
+  return [...ids];
+}
+
 // 맵의 이벤트를 id로 upsert(있으면 교체, 없으면 push).
 export function upsertEventIntoMap(map: GameMap, event: GameEvent): "added" | "modified" {
+  displaceAutoInspectEvents(map, event);
   const index = map.events.findIndex((entry) => entry.id === event.id);
   if (index >= 0) {
     map.events[index] = event;
@@ -2139,6 +2159,8 @@ const placeChest: ToolDefinition = {
       ],
     };
     assertEventShape(event, warnings);
+    const displaced = displaceAutoInspectEvents(map, event);
+    if (displaced.length) warnings.push(`같은 칸의 가구 조사 이벤트 ${displaced.join(", ")} 를 보물상자로 대체했습니다.`);
     upsertEventIntoMap(map, event);
     return {
       summary: `${map.name}에 보물상자 '${name}' 배치 (${x}, ${y})${adjusted ? ` — 요청 좌표 (${requestedX}, ${requestedY})에서 자동 조정` : ""} — 보상 ${rewardText}`,
