@@ -5,6 +5,7 @@ const [command, ...rest] = process.argv.slice(2);
 const COMMANDS: Record<string, () => Promise<number> | number> = {
   gen: async () => (await import("./gen.mts")).genMain(rest),
   check: () => checkMain(rest),
+  replay: async () => (await import("./replay.mts")).replayMain(rest),
 };
 
 async function main(): Promise<number> {

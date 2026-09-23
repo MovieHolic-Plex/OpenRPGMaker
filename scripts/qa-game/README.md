@@ -16,8 +16,16 @@ gen 한 번(모델) → check(초) → 코드 고침 → replay + check(초) →
 | `npm run qa:game -- gen --brief scripts/qa-game/briefs/lighthouse-jrpg.json --out qa-runs/<id>` | 브라우저 「이 기획으로 시작」과 같은 함수(시드 `createNewProjectSeed`+직렬화 왕복+`prepareProjectInterviewStartup` 과 같은 오프닝 교체, 지시문 `buildWelcomeGenrePresetPrompt`, 턴 분류 `classifyPlainPiTurn`, Ultrabrain 계획 턴·실행 요청 `buildUltrabrainPlanRequest`/`buildPiRunRequest`, 역할 모델 `modelForRole`, 게시 `createPiPublication`)로 한 판을 만든다. `seed.json`·`instruction.txt`·`plan.txt`·`request.json`·`project.json`·`tools.jsonl`(호출마다 전체 인자·ok·요약·diff/경고·순서)·`events.ndjson`·`meta.json`(모델·단계별 시간·토큰·브라우저와 다른 점)을 쓰고 끝에 check 를 돌린다. 옵션 `--provider --model --brain-model --autonomy --apply --timeout-ms --no-check`. |
 | `npm run qa:game -- check qa-runs/<id>` | `<id>/project.json` 을 검사해 `check.json`·`check.txt` 를 쓴다. 막힘이 있으면 종료 코드 1. `--project x.json` 으로 임의 파일도 된다. |
 | `… check <id> --raw` | 로더를 거치지 않은 원본 JSON 을 검사한다. 기본(로더를 거친 모양 = 런타임이 보는 모양)은 로더가 조용히 고친 명령을 `load-normalized` 경고로만 남기므로, 생성기(조수·도구)가 쓴 결함 자체를 보려면 `--raw`. |
+| `npm run qa:game -- replay qa-runs/<id>` | 모델 없이 `tools.jsonl` 을 `seed.json` 위에서 **지금의** 툴 코드로 다시 돌린다(레지스트리 셰이프 `resolvePiToolShape` = 참고 문서 게이트·맵 범위 가드, 쓰기마다 `createPiPublication` 체크포인트 = 스토어 커밋 게이트). `replay/project.json`·`tools.jsonl`·`diff.json`·`replay.txt` 를 쓰고 check 를 돌린다. 녹화와 ok·경고가 달라진 호출을 경고 차이(-녹화/+재생)와 함께 보고한다. `[vperf]` 같은 시간 계측 줄은 비교에서 뺀다. |
 
-(`replay`·`render` 는 다음 단계에서 붙는다.)
+(`render` 는 다음 단계에서 붙는다.)
+
+### replay 의 한계
+
+- 모델이 없으니 앞 호출 결과가 바뀌어도 뒤 호출 인자는 녹화 그대로다. 첫 차이 뒤의 차이는 연쇄 효과일 수 있다.
+- 코어가 인자 검증에서 거절한 호출과 런타임 전용 툴(`set_build_spec`·`consult_writer`·`web_search`·`finish_stage`)은 다시 돌리지 않는다.
+- `read_tileset_reference` 는 읽는 즉시 「모델이 본 것」으로 친다.
+- 체크포인트 발행 한 번에 약 2초가 든다(25MB 프로젝트의 정체성 해시·정규 JSON·structuredClone). 13호출에 약 30초, 100호출이면 약 90초.
 
 ### gen 이 브라우저와 다른 점
 
