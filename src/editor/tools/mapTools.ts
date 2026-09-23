@@ -211,6 +211,9 @@ const createMap: ToolDefinition = {
     const id = (args.id as string | undefined) ?? genId("map");
     assertMapIdAvailable(draft, id);
     const name = args.name as string;
+    // 같은 이름의 빈 맵이 이미 있으면 새 맵은 고아가 되기 쉽다(2026-09-23 등대지기 재시험: 「서리불꽃 등대 꼭대기」 두 장).
+    const blankNamesake = Object.values(draft.maps).find(other =>
+      other.name.trim() === String(name ?? "").trim() && other.events.length === 0 && !other.roomHarnessPlan);
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
     const tileset = draft.tilesets[tilesetId];
@@ -244,9 +247,14 @@ const createMap: ToolDefinition = {
       draft.mapTree.children.push({ mapId: id, children: [] });
     }
     adoptStartIfNeeded(draft, map);
+    const warnings = blankNamesake
+      ? [`같은 이름 '${name}' 의 빈 맵 ${blankNamesake.id}(${blankNamesake.width}×${blankNamesake.height}, 이벤트 0)가 이미 있습니다 — `
+        + `같은 장소라면 새 맵 대신 그 mapId 를 쓰세요(run_dungeon_room_pipeline 등 방 파이프라인은 빈 맵을 그대로 이어받습니다).`]
+      : [];
     return {
       summary: `맵 '${map.name}' (${width}x${height}) 생성 — id ${id}, BGM ${bgmResourceId}`,
       data: { mapId: id, bgmResourceId },
+      ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
 };
