@@ -733,7 +733,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const list = options.state.partyActorIds;
         if (command.action === "add") {
           if (!list.includes(command.actorId)) list.push(command.actorId);
-        } else {
+        } else if (command.action === "remove") {
           options.state.partyActorIds = list.filter((id) => id !== command.actorId);
         }
         logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `changeParty ${command.action} ${command.actorId}` });

@@ -423,6 +423,7 @@ function compileEndingEpilogue(state: InterpreterState, ending: EndingDef): Comm
   }
   try {
     return compileCutscene(ending.epilogue as CutsceneBeat[], {
+      resetFace: true,
       context: { eventIds, resourceIds: collectResourceIds(state.project) },
     });
   } catch (cause) {

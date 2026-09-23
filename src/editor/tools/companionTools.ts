@@ -9,6 +9,7 @@
 // 그래픽은 반드시 charsetFollowerGraphic 을 거친다 — addFollower.graphic.pattern 은
 // "0~3 패턴"이 아니라 시트 프레임 인덱스이고, 원시 숫자를 넣으면 캐릭터가 0번으로 고정된다.
 
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { pickNpcGraphic } from "@/assets/charsetQuery";
 import {
   charsetFollowerGraphic,
@@ -133,10 +134,24 @@ function commandSink(event: GameEvent): Command[] {
   return event.commands;
 }
 
+/**
+ * addFollower 는 걸어서 따라오는 모습뿐이다 — 전투 파티(partyActorIds)는 changeParty 만 바꾼다.
+ * 「파티에 합류시켜 줘」 수정 턴에서 조수가 추종만 붙이고 「검증 완료」라 보고했다(2026-09-23 도그푸딩).
+ */
+function partyJoinWarning(event: GameEvent, who: CompanionWho | undefined): string[] {
+  const actorId = who && "actorId" in who ? (who as { actorId?: string }).actorId : undefined;
+  if (!actorId) return [];
+  const joins = (commands: readonly Command[] | undefined): boolean => (commands ?? []).some(command =>
+    (command.kind === "changeParty" && command.actorId === actorId && command.action === "add")
+    || nestedCommandLists(command).some(branch => joins(branch)));
+  if (joins(event.commands) || (event.pages ?? []).some(page => joins(page.commands))) return [];
+  return [`${event.id}: 동료 추종(addFollower)만 붙었습니다 — 전투 파티에는 들어가지 않습니다. 파티 합류가 목적이면 같은 페이지에 {kind:"changeParty",actorId:"${actorId}",action:"add"} 를 넣고 run_scene_test expect partyIncludes:"${actorId}" 로 확인하세요.`];
+}
+
 const addCompanion: ToolDefinition = {
   name: "add_companion",
   description:
-    "플레이어를 따라오는 동료를 저작한다. target.eventId 면 그 이벤트 커맨드 끝에 붙이고, target.mapId/x/y 면 새 이벤트를 만든다(trigger:\"talk\"=말 걸면 합류하고 사라짐, \"autorun\"=맵 진입 시 1회 자동 합류). who 는 {actorId} 또는 {query:\"고양이\"} 또는 {textureKey, characterIndex}. action:\"remove\" 면 동료를 해제하는 커맨드를 넣는다. 간격·인원 상한 같은 전역 규칙은 configure_companion_rules 가 담당한다.",
+    "플레이어를 따라오는 동료를 저작한다. target.eventId 면 그 이벤트 커맨드 끝에 붙이고, target.mapId/x/y 면 새 이벤트를 만든다(trigger:\"talk\"=말 걸면 합류하고 사라짐, \"autorun\"=맵 진입 시 1회 자동 합류). who 는 {actorId} 또는 {query:\"고양이\"} 또는 {textureKey, characterIndex}. action:\"remove\" 면 동료를 해제하는 커맨드를 넣는다. 간격·인원 상한 같은 전역 규칙은 configure_companion_rules 가 담당한다. 이 도구는 걸어서 따라오는 모습(addFollower)만 만든다 — 전투 파티 합류는 changeParty {actorId,action:\"add\"} 이고, run_scene_test expect partyIncludes 로 확인한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -202,10 +217,12 @@ const addCompanion: ToolDefinition = {
     if (typeof targetRecord.eventId === "string" && targetRecord.eventId.trim().length > 0) {
       const { map, event } = findEvent(draft, targetRecord.eventId.trim(), targetRecord.mapId);
       commandSink(event).push(command);
+      const warnings = action === "add" ? partyJoinWarning(event, who) : [];
       return {
         summary: action === "add"
-          ? `${map.name} '${event.id}' 이벤트에 동료 '${name}' 합류 커맨드 추가`
+          ? `${map.name} '${event.id}' 이벤트에 동료 '${name}' 추종 커맨드 추가`
           : `${map.name} '${event.id}' 이벤트에 동료 해제 커맨드 추가`,
+        ...(warnings.length ? { warnings } : {}),
         data: { eventId: event.id, mapId: map.id, action, name },
       };
     }

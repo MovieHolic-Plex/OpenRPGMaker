@@ -1014,8 +1014,15 @@ function validateCommand(
     case "changeExp": require("reference.actor.missing", "배우", command.actorId, refs.actors, true); variableOperand(command.amount, "경험치 변수"); return;
     case "changeLevel":
     case "changeActorHp":
-    case "changeActorMp":
-    case "changeParty": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
+    case "changeActorMp": require("reference.actor.missing", "배우", command.actorId, refs.actors); return;
+    case "changeParty":
+      require("reference.actor.missing", "배우", command.actorId, refs.actors);
+      if (command.action !== "add" && command.action !== "remove") issues.push({
+        severity: "error", code: "changeParty.action.invalid",
+        message: `파티 편성의 동작이 합류(add)·이탈(remove) 중 하나가 아닙니다: ${JSON.stringify(command.action)}`,
+        pageId, commandPath: path, field: { testId: "change-party-action-select" },
+      });
+      return;
     case "changeLifeSkillExp": require("reference.life-skill.missing", "생활 스킬", command.skillId, refs.lifeSkills); variableOperand(command.amount, "생활 스킬 경험치 변수"); return;
     case "promoteActor": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.class.missing", "전직 직업", command.toClassId, refs.classes, true); return;
     case "changeEquipment": require("reference.actor.missing", "배우", command.actorId, refs.actors); require("reference.equipment.missing", "장비", command.equipmentId, refs.equipment, true); return;
