@@ -41,6 +41,7 @@ import type {
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
+import { troopBalanceWarnings } from "./troopBalanceCheck";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
 const DATABASE_RECORD_COLLECTIONS = [
@@ -869,6 +870,9 @@ const upsertEnemy: ToolDefinition = {
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
+    for (const troop of draft.database.troops) {
+      if (troop.enemyIds.includes(record.id)) warnings.push(...troopBalanceWarnings(draft, troop.id));
+    }
     return {
       summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
       data: record,
@@ -907,7 +911,12 @@ const upsertTroop: ToolDefinition = {
       throw new ToolError(`존재하지 않는 enemyId: ${missing.join(", ")} — 허용 예시: ${knownIds(draft.database.enemies)}`, { code: "enemy-not-found" });
     }
     const outcome = upsertById(draft.database.troops, record);
-    return { summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    const warnings = troopBalanceWarnings(draft, record.id);
+    return {
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? " — 밸런스 경고: 적이 시작 파티에게 피해를 주지 못함" : ""}`,
+      data: record,
+      ...(warnings.length ? { warnings } : {}),
+    };
   },
 };
 
