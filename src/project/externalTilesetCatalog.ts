@@ -1,4 +1,6 @@
 import catalog from '@/assets/pixelArtWorldCatalog.json';
+import urbanCatalog from '@/assets/pixelArtWorldUrbanCatalog.json';
+import schoolCatalog from '@/assets/pixelArtWorldSchoolCatalog.json';
 import type { TilesetDef } from './types';
 
 export interface ExternalTileRecipe {
@@ -24,8 +26,43 @@ export interface ExternalTilesetPack {
   floorTile: number;
   notes: string;
   recipes: ExternalTileRecipe[];
+  scenes?: ExternalTileScene[];
 }
-export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = catalog;
+/** Metadata-only authored example; every tile belongs to this pack's source PNG. */
+export interface ExternalTileScene {
+  id: string;
+  name: string;
+  width: number;
+  height: number;
+  lowerTiles: number[];
+  upperTiles: number[];
+  approachCells: { x: number; y: number }[];
+  placements: { recipeId: string; x: number; y: number }[];
+  notes: string;
+  passableTiles?: number[];
+  lowerTileIds?: number[];
+}
+export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog];
+
+export function validateExternalTileScenes(pack: ExternalTilesetPack): void {
+  const count = pack.width * pack.height / (pack.tileSize ** 2);
+  const ids = new Set<string>();
+  for (const scene of pack.scenes ?? []) {
+    if (!/^[\w.-]{1,90}$/.test(scene.id) || ids.has(scene.id)) throw new Error('장면 ID가 잘못되었거나 중복됩니다.');
+    ids.add(scene.id);
+    if (!Number.isInteger(scene.width) || !Number.isInteger(scene.height) || scene.width < 1 || scene.height < 1 || scene.width * scene.height > 4096) throw new Error('장면 크기가 잘못되었습니다.');
+    const length = scene.width * scene.height;
+    if (scene.lowerTiles.length !== length || scene.upperTiles.length !== length) throw new Error('장면 타일 배열 길이가 다릅니다.');
+    for (const tile of [...scene.lowerTiles, ...scene.upperTiles]) if (!Number.isInteger(tile) || tile < -1 || tile >= count) throw new Error('장면 타일 번호가 원본 범위 밖입니다.');
+    for (const tile of [...(scene.lowerTileIds ?? []), ...(scene.passableTiles ?? [])]) if (!Number.isInteger(tile) || tile < 0 || tile >= count) throw new Error('장면 통행/레이어 타일 번호 오류');
+    for (const { x, y } of scene.approachCells) {
+      if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= scene.width || y >= scene.height || scene.upperTiles[y * scene.width + x] !== -1) throw new Error('장면 접근칸이 잘못되었거나 막혀 있습니다.');
+      if (!(scene.passableTiles ?? [pack.floorTile]).includes(scene.lowerTiles[y * scene.width + x])) throw new Error('장면 접근칸의 바닥이 통행 불가입니다.');
+    }
+    const upperIds = new Set(scene.upperTiles.filter(tile => tile >= 0));
+    if ((scene.lowerTileIds ?? []).some(tile => upperIds.has(tile))) throw new Error('같은 타일 번호를 하위와 상위의 홈 레이어로 중복 지정할 수 없습니다.');
+  }
+}
 
 /** Full example: one-cell floor border, complete upper object, free approach. */
 export function externalRecipeExample(pack: ExternalTilesetPack, recipe: ExternalTileRecipe) {
@@ -56,6 +93,7 @@ export function validateExternalRecipeExample(pack: ExternalTilesetPack, recipe:
 
 /** Called only after exact bytes + decoded dimensions have been verified. No default project seeding. */
 export function createExternalTileset(pack: ExternalTilesetPack, assetId: string, tilesetId: string): TilesetDef {
+  validateExternalTileScenes(pack);
   const count = pack.width * pack.height / (pack.tileSize ** 2);
   const tileset: TilesetDef = {
     id: tilesetId, name: pack.name, kind: 'custom', image: { type: 'uploaded', id: assetId },
@@ -80,6 +118,20 @@ export function createExternalTileset(pack: ExternalTilesetPack, assetId: string
       placementRules: '상위 레이어에 원본 순서로 전체 배치. 하위 바닥 보존. 좌우반전·중간 반복 금지. 앞쪽 한 칸 비움. 문/이벤트 자동 생성 없음.',
       previewMap,
     });
+  }
+  for (const scene of pack.scenes ?? []) {
+    for (const tile of scene.lowerTileIds ?? []) {
+      tileset.priority[tile] = 'lower';
+      if (tileset.tileMeta![tile].source === 'unknown') tileset.tileMeta![tile] = { label: '장면 구조 타일', description: `${scene.name}의 전체 배열 참조.`, defaultLayer: 'lower', source: 'imported' };
+    }
+    for (const tile of scene.passableTiles ?? []) {
+      tileset.passability[tile] = { up: true, down: true, left: true, right: true };
+      tileset.tileMeta![tile] = { ...tileset.tileMeta![tile], passage: 'passable' };
+    }
+    for (const tile of new Set(scene.upperTiles.filter(tile => tile >= 0))) {
+      tileset.priority[tile] = 'upper';
+      if (tileset.tileMeta![tile].source === 'unknown') tileset.tileMeta![tile] = { label: '장면 상위 조각', description: `${scene.name}의 전체 배열·설명 참조.`, defaultLayer: 'upper', source: 'imported' };
+    }
   }
   return tileset;
 }

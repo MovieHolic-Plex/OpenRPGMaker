@@ -19,6 +19,20 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
   const assetId = genId('chipset_img');
   const tileset = createExternalTileset(pack, assetId, genId('ts'));
   tileset.referenceDocuments = [createReferences(pack, image, dataUrl, tileset.id)];
+  for (const scene of pack.scenes ?? []) {
+    const picture = renderExample(image, scene);
+    tileset.referenceDocuments.push({
+      id: `scene-${scene.id}`, name: scene.name, description: '실제 원본 타일의 장면 조립 예제. 전체 하위/상위 배열과 접근칸.',
+      documents: [{ id: 'layout', name: `${scene.name}.md`, markdown: [
+        `# ${scene.name}`, `tilesetId: ${tileset.id} · ${pack.filename} · SHA-256: ${pack.sha256}`,
+        scene.notes, `원본 32px, 8열. 0기준 tile=y*8+x. lowerTiles/upperTiles는 행 우선. -1은 빈 칸.`,
+        '배치 전 해당 영역을 비우고 전체 하위 배열 → 전체 상위 배열 순서로 적용한다. 접근칸은 통로로 유지한다. 그림 속 문은 전이 이벤트가 아니다.',
+        `\`\`\`json\n${JSON.stringify(scene, null, 2)}\n\`\`\``,
+        '![실제 타일 장면](image:assembled-scene)', `[원작·사용 안내](${pack.sourcePage}) · ${pack.credit}`,
+      ].join('\n\n') }],
+      images: [{ id: 'assembled-scene', name: `${scene.id}.png`, caption: `${scene.name} · 사용자 원본에서 32px 그대로 조립.`, dataUrl: picture.toDataURL('image/png') }],
+    });
+  }
   validateTilesetReferences(tileset.referenceDocuments);
   return { dataUrl, assetId, tileset };
 }
@@ -60,21 +74,21 @@ function readPng(file: File): Promise<string> {
 
 function createReferences(pack: ExternalTilesetPack, image: HTMLImageElement, dataUrl: string, tilesetId: string): TilesetReferenceCategory {
   const category: TilesetReferenceCategory = {
-    id: 'paw-furniture-pilot', name: '가구 조립 · 시범 지원',
-    description: '원본 식별을 통과한 가구만 지원. 시트 전체/완성 방/문 이벤트는 미검토. 이미지는 사용자가 가져온 원본으로 이 프로젝트에서 생성.',
+    id: 'paw-furniture-pilot', name: '구조·소품 조립 · 시범 지원',
+    description: '원본 식별을 통과한 구조·소품과 별도 장면 예제만 지원. 시트 전체/문 이벤트는 미검토. 이미지는 사용자가 가져온 원본으로 이 프로젝트에서 생성.',
     images: [{ id: 'source-sheet', name: pack.filename, caption: `사용자가 가져온 ${pack.width}×${pack.height}px 원본. 32px, 8열, 타일 ID=y×8+x. ${pack.credit}`, dataUrl }],
     documents: [{ id: 'read-first', name: '먼저 읽기.md', markdown: [
-      `# ${pack.name} — 가구 조립 시범`,
+      `# ${pack.name} — 구조·소품 조립 시범`,
       `tilesetId: ${tilesetId}\n\n원본: ${pack.filename}\n\nSHA-256: ${pack.sha256}\n\n확인일: ${pack.checkedAt}`,
       `[제작자 페이지](${pack.sourcePage}) · [이용 조건](${pack.termsUrl})\n\n크레딧: ${pack.credit}`,
       '원본/가공 소재 재배포 금지. 이 자료의 그림은 사용자 원본에서 프로젝트 안에 생성했다. 소재 배포용으로 추출하지 않는다. 공개 게임의 크레딧에는 제작자를 표시한다.',
       '## 범위와 좌표',
       '모든 좌표는 0기준 원본 칸. 1칸=32px, 8열. tile=y*8+x, source_rect의 픽셀 좌표는 각 값을 32배. 원본을 리사이즈하거나 다른 시트 번호를 섞지 않는다.',
-      `검토된 바닥: ${pack.floorTile} (하위·통행 허용). 검토된 가구: 아래 ${pack.recipes.length}종. 나머지는 미검토·통행 차단으로 시작한다.`,
+      `검토된 바닥: ${pack.floorTile} (하위·통행 허용). 검토된 구조·소품: 아래 ${pack.recipes.length}종. 나머지는 미검토·통행 차단으로 시작한다.`,
       '## 배치 순서',
       '1. 이 용도의 모든 문서와 그림을 읽는다.\n2. 바닥을 하위에 반복한다.\n3. 가구의 원점을 정하고 배열 전체를 상위에 배치한다. 한 칸씩 추측하지 않는다.\n4. 가구 사각 영역 전체는 막힘, 접근칸과 통로는 비워 둔다.\n5. validateExternalRecipeExample은 아래 고정 예제의 구조/접근칸만 검사한다. AI 도구의 실제 배치 후에도 배열과 통행을 확인한다.',
       '가구는 고정 조각이다. 잘라서 반복·좌우 반전하거나 한 칸에 다른 상위 가구를 겹치지 않는다. 바닥(하위) + 가구(상위)의 두 배열을 그대로 사용한다. 상위 레이어와 ★ 통행은 다르다: 가구는 상위지만 사각 점유 범위 전체 solid다. 투명 여백도 이번 시범에서는 보수적으로 막는다.',
-      '출입구/문/상호작용은 그림만으로 생기지 않는다. approach는 가구 접근을 위해 비워 둘 좌표이며 이벤트가 아니다. 건물·숲·울타리·동굴·자동 연결·벽 모서리는 이번 사전에 없다. 다른 번호로 대체하지 않는다.',
+      '출입구/문/상호작용은 그림만으로 생기지 않는다. approach는 접근을 위해 비워 둘 좌표이며 이벤트가 아니다. 별도 장면 용도가 있으면 그 전체 배열과 지침을 읽는다. 이 묶음에 없는 구조·자동 연결은 다른 번호로 대체하지 않는다.',
       pack.notes,
       '## 확인의 한계',
       '실제 원본 픽셀의 가구 사각 영역을 검토했다. 이벤트 실행, 앉기, 장면 미학, AI 모델의 배치 성공률은 검증하지 않았다. 미검토 타일은 따로 학습한 뒤 사용한다.',
@@ -114,7 +128,7 @@ function createReferences(pack: ExternalTilesetPack, image: HTMLImageElement, da
   return category;
 }
 
-function renderExample(image: HTMLImageElement, example: ReturnType<typeof externalRecipeExample>): HTMLCanvasElement {
+function renderExample(image: HTMLImageElement, example: { width: number; height: number; lowerTiles: number[]; upperTiles: number[] }): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = example.width * 32; canvas.height = example.height * 32;
   const context = canvas.getContext('2d')!;

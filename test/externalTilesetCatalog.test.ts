@@ -16,8 +16,9 @@ describe('user-download tileset furniture metadata', () => {
       const t = createExternalTileset(pack, 'local-asset', 'local-tiles');
       expect(t.image).toEqual({ type: 'uploaded', id: 'local-asset' });
       expect(t.passability[pack.floorTile]?.down).toBe(true);
-      expect(t.tileMeta?.[0]?.source).toBe('unknown');
-      expect(t.passability[0]?.down).toBe(false);
+      const unknown = t.tileMeta!.findIndex(meta => meta.source === 'unknown');
+      expect(unknown).toBeGreaterThanOrEqual(0);
+      expect(t.passability[unknown]?.down).toBe(false);
       for (const recipe of pack.recipes) for (const tile of recipe.tiles.flat()) {
         expect(tile).toBeLessThan(t.count);
         expect(t.priority[tile]).toBe('upper');

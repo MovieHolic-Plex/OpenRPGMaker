@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **85쪽 / 3360KB / 약 958,324 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3363KB / 약 959,342 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -100,7 +100,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/testing.md` | 37 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `legacyDb-proof-first-save.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/qa/acceptance-live.mjs`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/tile-geometry.md` | 2 | `output/slates-reference/source-row.json`, `scripts/content/save-slates-reference.mjs` |
 | `openwiki/tile-layer-policy.md` | 2 | `Castle2_5.png`, `clean_furniture.png` |
-| `openwiki/tileset-reference-documents.md` | 3 | `scripts/content/save-tileset-references.mjs`, `tilesetAiQuestionEditor.ts`, `tilesetCheckerSummary.ts` |
+| `openwiki/tileset-reference-documents.md` | 4 | `prepare-pixel-art-world-urban.mjs`, `scripts/content/save-tileset-references.mjs`, `tilesetAiQuestionEditor.ts`, `tilesetCheckerSummary.ts` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
@@ -201,7 +201,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/autotiles.md` — 20KB · 179줄 · ~5,606 토큰
+### `openwiki/autotiles.md` — 21KB · 193줄 · ~5,914 토큰
 
 - `L5` World 지형과 공통 구조물
 - `L25` 1. RM2K식 3×4 템플릿 블록 문법
@@ -214,6 +214,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L151` 5. 검증
 - `L159` Tibo recovery (2026-09-17)
 - `L172` 실내 천장 기본 등록과 쿼터 합성 (2026-09-18)
+- `L180` Pixel Art World XP 사용자 원본 (2026-09-24)
 
 ### `openwiki/battler-idle-playbook.md` — 11KB · 176줄 · ~3,490 토큰
 
@@ -938,6 +939,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L114` Runtime and authoring contracts
 - `L133` Verification and examples
 
+### `openwiki/pixel-art-world-school.md` — 2KB · 23줄 · ~545 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 
 - `L3` Scope and ownership
@@ -1632,37 +1637,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 16px 병행판 (2026-09-22)
   - `L325` 픽셀 크기 기록 계약 (2026-09-22)
 
-### `openwiki/tileset-reference-documents.md` — 40KB · 425줄 · ~12,232 토큰
+### `openwiki/tileset-reference-documents.md` — 41KB · 429줄 · ~12,397 토큰
 
 - `L5` 사용자 다운로드형 타일셋 지원 (2026-09-24)
-- `L27` 사용자 경로와 정본
-- `L44` 타일 화면 구성 (2026-09-21)
-- `L65` 저장 계약
-- `L77` AI 선행 읽기 계약
-- `L104` Slates 이관
-- `L117` 확인 자료와 범위
-- `L123` Castle2 성채 학습 이관
-- `L135` 숲마을 공용 자료 (2026-09-21)
-- `L151` 공용 forest_harmony 참고문서 보충 (2026-09-22)
-  - `L166` Castle2 공용 기본 제공 수정
-- `L175` 실행형 부품·조립·검증 자료
-- `L193` 공용 숲 실행 조립법 (2026-09-22)
-  - `L210` 상세 공용 조립 계약 (public-assembly-v2)
-- `L222` 이슬여울 마을 장식 표본 (2026-09-22)
-- `L246` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
-  - `L262` 절벽 조립 교정 (2026-09-23)
-  - `L272` 잔디 경계 개정3 (2026-09-23)
-  - `L282` 굽은 지형·입구 개정4 (2026-09-23)
-  - `L292` 생활 마당 개정5 (2026-09-23)
-  - `L301` 사용 목적 개정6 (2026-09-23)
-  - `L311` 공동 공간·정원 개정7 (2026-09-23)
-  - `L322` 계단 대지 개정8 (2026-09-23)
-  - `L337` 강과 폭포 개정9 (2026-09-23)
-  - `L349` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
-  - `L365` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
-  - `L381` 기후 마을 · 설원·화산 (2026-09-23)
-  - `L394` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
-  - `L407` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
+- `L31` 사용자 경로와 정본
+- `L48` 타일 화면 구성 (2026-09-21)
+- `L69` 저장 계약
+- `L81` AI 선행 읽기 계약
+- `L108` Slates 이관
+- `L121` 확인 자료와 범위
+- `L127` Castle2 성채 학습 이관
+- `L139` 숲마을 공용 자료 (2026-09-21)
+- `L155` 공용 forest_harmony 참고문서 보충 (2026-09-22)
+  - `L170` Castle2 공용 기본 제공 수정
+- `L179` 실행형 부품·조립·검증 자료
+- `L197` 공용 숲 실행 조립법 (2026-09-22)
+  - `L214` 상세 공용 조립 계약 (public-assembly-v2)
+- `L226` 이슬여울 마을 장식 표본 (2026-09-22)
+- `L250` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+  - `L266` 절벽 조립 교정 (2026-09-23)
+  - `L276` 잔디 경계 개정3 (2026-09-23)
+  - `L286` 굽은 지형·입구 개정4 (2026-09-23)
+  - `L296` 생활 마당 개정5 (2026-09-23)
+  - `L305` 사용 목적 개정6 (2026-09-23)
+  - `L315` 공동 공간·정원 개정7 (2026-09-23)
+  - `L326` 계단 대지 개정8 (2026-09-23)
+  - `L341` 강과 폭포 개정9 (2026-09-23)
+  - `L353` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+  - `L369` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+  - `L385` 기후 마을 · 설원·화산 (2026-09-23)
+  - `L398` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+  - `L411` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 

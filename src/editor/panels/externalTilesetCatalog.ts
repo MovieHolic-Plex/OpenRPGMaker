@@ -42,7 +42,7 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
     });
     content.append(el('article', { class: 'external-tileset-card', children: [
       el('h3', { text: pack.name }),
-      el('p', { text: `32px · ${pack.width}×${pack.height}px · ${pack.recipes.length}종 조립 자료` }),
+      el('p', { text: `32px · ${pack.width}×${pack.height}px · ${pack.recipes.length}종 조립 자료${pack.scenes?.length ? ` · 완성 장면 ${pack.scenes.length}개` : ''}` }),
       el('p', { text: pack.recipes.map(recipe => recipe.name).join(' · ') }),
       el('div', { class: 'external-tileset-actions', children: [
         el('a', { class: 'btn', text: '다운로드 ↗', attrs: { href: pack.sourcePage, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `${pack.name} 제작자 다운로드 페이지` } }),
