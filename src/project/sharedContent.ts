@@ -6,6 +6,7 @@ let snapshot: SharedContentSnapshot = {revision:'bundled',libraries:bundledLibra
 export const sharedContentSnapshot = () => snapshot;
 export function sharedContentTileset(id: string): TilesetDef | undefined {
   for(const lib of Object.values(snapshot.libraries)) if(Object.hasOwn(lib.tilesets,id)) return lib.tilesets[id];
+  return undefined;
 }
 /** Host-wide catalog read before the project is normalized. No project id is sent. */
 export async function loadSharedContent(): Promise<void> {
@@ -49,6 +50,7 @@ export function sharedRegionSnapshot(id: string) {
     const tileset = map && lib.tilesets[map.tilesetId];
     if (map && tileset) return { map, tileset };
   }
+  return undefined;
 }
 export function sharedPlaceSummaries() {
   return Object.values(snapshot.libraries).flatMap(lib => lib.roots.flatMap(id => {
@@ -59,4 +61,5 @@ export function sharedPlaceSummaries() {
 
 export function sharedPlacePreview(id: string): string | undefined {
   for (const lib of Object.values(snapshot.libraries)) if (Object.hasOwn(lib.previews, id)) return lib.previews[id];
+  return undefined;
 }
