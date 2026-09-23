@@ -1,0 +1,1206 @@
+[
+  {
+    "id": "paw-clinic-interior",
+    "name": "Pixel Art World · 동네의원 내장",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-hospital01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Hospital-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Hospital-I01.png",
+    "width": 256,
+    "height": 1856,
+    "tileSize": 32,
+    "sha256": "1174a42296b5738d0f2cd7a844d743509194da89c62d3d634150a527c8275d89",
+    "checkedAt": "2026-09-24",
+    "floorTile": 1,
+    "notes": "공식 단일 원본의 검토한 부품과 14×12 실내만 지원. 0기준 32px·8열. 바깥 테두리는 빈 공간이며 별도 천장 테두리를 외부에 추가할 수 있다. 남쪽 (6,11)/(7,11)은 열린 출입칸이다. 문·상호작용·전이 이벤트는 포함하지 않는다. 원본/샘플 그림 재배포 없음.",
+    "recipes": [
+      {
+        "id": "clinic-window",
+        "name": "2칸 병원 창문",
+        "sourceRect": {
+          "x": 0,
+          "y": 8,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-reception",
+        "name": "접수대 3칸",
+        "sourceRect": {
+          "x": 0,
+          "y": 14,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-waiting-bench",
+        "name": "대기 의자 2석",
+        "sourceRect": {
+          "x": 5,
+          "y": 17,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-exam-couch",
+        "name": "진찰 침상",
+        "sourceRect": {
+          "x": 1,
+          "y": 39,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-monitor",
+        "name": "진찰 모니터",
+        "sourceRect": {
+          "x": 0,
+          "y": 35,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-medicine",
+        "name": "약품 보관장",
+        "sourceRect": {
+          "x": 3,
+          "y": 45,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-stool",
+        "name": "진찰 회전 의자",
+        "sourceRect": {
+          "x": 4,
+          "y": 28,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-sink",
+        "name": "이동 검사대와 부속 장치",
+        "sourceRect": {
+          "x": 2,
+          "y": 31,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-poster",
+        "name": "건강 안내판",
+        "sourceRect": {
+          "x": 3,
+          "y": 28,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-clock",
+        "name": "작은 벽시계",
+        "sourceRect": {
+          "x": 6,
+          "y": 10,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-plant",
+        "name": "병원 화분",
+        "sourceRect": {
+          "x": 7,
+          "y": 6,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-tv",
+        "name": "대기실 TV와 받침장",
+        "sourceRect": {
+          "x": 0,
+          "y": 16,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "clinic-privacy",
+        "name": "진찰실 이동 가림막",
+        "sourceRect": {
+          "x": 1,
+          "y": 24,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "clinic-waiting-exam",
+        "name": "동네의원 · 접수와 진찰",
+        "width": 14,
+        "height": 12,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 1,
+            "y": 1,
+            "width": 12,
+            "height": 10,
+            "tile": 1
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "width": 12,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 1,
+            "y": 2,
+            "width": 12,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 6,
+            "y": 11,
+            "width": 2,
+            "height": 1,
+            "tile": 1
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "clinic-reception",
+            "x": 1,
+            "y": 3
+          },
+          {
+            "recipeId": "clinic-tv",
+            "x": 4,
+            "y": 2
+          },
+          {
+            "recipeId": "clinic-poster",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "recipeId": "clinic-clock",
+            "x": 7,
+            "y": 1
+          },
+          {
+            "recipeId": "clinic-window",
+            "x": 9,
+            "y": 1
+          },
+          {
+            "recipeId": "clinic-privacy",
+            "x": 7,
+            "y": 3
+          },
+          {
+            "recipeId": "clinic-exam-couch",
+            "x": 9,
+            "y": 3
+          },
+          {
+            "recipeId": "clinic-monitor",
+            "x": 11,
+            "y": 3
+          },
+          {
+            "recipeId": "clinic-stool",
+            "x": 9,
+            "y": 6
+          },
+          {
+            "recipeId": "clinic-medicine",
+            "x": 11,
+            "y": 7
+          },
+          {
+            "recipeId": "clinic-sink",
+            "x": 8,
+            "y": 8
+          },
+          {
+            "recipeId": "clinic-waiting-bench",
+            "x": 1,
+            "y": 7
+          },
+          {
+            "recipeId": "clinic-waiting-bench",
+            "x": 4,
+            "y": 7
+          },
+          {
+            "recipeId": "clinic-waiting-bench",
+            "x": 4,
+            "y": 9
+          },
+          {
+            "recipeId": "clinic-plant",
+            "x": 1,
+            "y": 9
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 7,
+            "y": 11
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 6
+          },
+          {
+            "x": 5,
+            "y": 6
+          },
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 11,
+            "y": 5
+          },
+          {
+            "x": 10,
+            "y": 7
+          },
+          {
+            "x": 10,
+            "y": 9
+          },
+          {
+            "x": 6,
+            "y": 9
+          }
+        ],
+        "notes": "남쪽 입구에서 주요 가구 앞까지 한 칸 이상의 연결 통로. 전체 사각 영역 상위 부품은 차단. 검사는 배열/좌표/통행 연결만 확인하며 이벤트 실행이나 미학을 증명하지 않는다.",
+        "passableTiles": [
+          1
+        ],
+        "lowerTileIds": [
+          0,
+          1,
+          17,
+          25
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-conveni-interior",
+    "name": "Pixel Art World · 편의점 내장",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-conveni01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Convi-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Convi-I01.png",
+    "width": 256,
+    "height": 1280,
+    "tileSize": 32,
+    "sha256": "6725e647d6007ab7bca5f4a9f2f784c7433bac672fdd01e649bf6cb544773d77",
+    "checkedAt": "2026-09-24",
+    "floorTile": 1,
+    "notes": "공식 단일 원본의 검토한 부품과 14×12 실내만 지원. 0기준 32px·8열. 바깥 테두리는 빈 공간이며 별도 천장 테두리를 외부에 추가할 수 있다. 남쪽 (6,11)/(7,11)은 열린 출입칸이다. 문·상호작용·전이 이벤트는 포함하지 않는다. 원본/샘플 그림 재배포 없음.",
+    "recipes": [
+      {
+        "id": "conveni-rice-meals",
+        "name": "도시락과 삼각김밥 냉장 진열",
+        "sourceRect": {
+          "x": 2,
+          "y": 24,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-desserts",
+        "name": "샌드위치와 디저트 냉장 진열",
+        "sourceRect": {
+          "x": 4,
+          "y": 24,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-drinks",
+        "name": "음료 냉장 진열",
+        "sourceRect": {
+          "x": 6,
+          "y": 24,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-fridge",
+        "name": "유리문 냉장고",
+        "sourceRect": {
+          "x": 0,
+          "y": 24,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-register",
+        "name": "계산대 POS",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-warm-food",
+        "name": "따뜻한 음식 진열",
+        "sourceRect": {
+          "x": 4,
+          "y": 14,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-bread",
+        "name": "빵 보온 진열",
+        "sourceRect": {
+          "x": 6,
+          "y": 14,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-wine",
+        "name": "와인과 병음료 선반",
+        "sourceRect": {
+          "x": 4,
+          "y": 26,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-dry-goods",
+        "name": "생활식품 선반",
+        "sourceRect": {
+          "x": 2,
+          "y": 26,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-snacks",
+        "name": "과자와 가공식품 선반",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-cosmetics",
+        "name": "잡화와 세정용품 선반",
+        "sourceRect": {
+          "x": 2,
+          "y": 28,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-magazines",
+        "name": "3칸 잡지 진열대",
+        "sourceRect": {
+          "x": 5,
+          "y": 33,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-basket",
+        "name": "장바구니",
+        "sourceRect": {
+          "x": 5,
+          "y": 18,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "conveni-clock",
+        "name": "편의점 벽시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 19,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "conveni-compact-shop",
+        "name": "골목 편의점 · 냉장·잡지·생필품",
+        "width": 14,
+        "height": 12,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 1,
+            "y": 1,
+            "width": 12,
+            "height": 10,
+            "tile": 1
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "width": 12,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 1,
+            "y": 2,
+            "width": 12,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 6,
+            "y": 11,
+            "width": 2,
+            "height": 1,
+            "tile": 1
+          },
+          {
+            "x": 1,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 88
+          },
+          {
+            "x": 2,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 89
+          },
+          {
+            "x": 3,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 90
+          },
+          {
+            "x": 1,
+            "y": 6,
+            "width": 1,
+            "height": 1,
+            "tile": 96
+          },
+          {
+            "x": 2,
+            "y": 6,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 3,
+            "y": 6,
+            "width": 1,
+            "height": 1,
+            "tile": 98
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "conveni-rice-meals",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "recipeId": "conveni-desserts",
+            "x": 3,
+            "y": 2
+          },
+          {
+            "recipeId": "conveni-drinks",
+            "x": 5,
+            "y": 2
+          },
+          {
+            "recipeId": "conveni-fridge",
+            "x": 9,
+            "y": 2
+          },
+          {
+            "recipeId": "conveni-fridge",
+            "x": 11,
+            "y": 2
+          },
+          {
+            "recipeId": "conveni-clock",
+            "x": 7,
+            "y": 1
+          },
+          {
+            "recipeId": "conveni-register",
+            "x": 1,
+            "y": 5
+          },
+          {
+            "recipeId": "conveni-warm-food",
+            "x": 2,
+            "y": 5
+          },
+          {
+            "recipeId": "conveni-wine",
+            "x": 5,
+            "y": 6
+          },
+          {
+            "recipeId": "conveni-dry-goods",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "conveni-magazines",
+            "x": 10,
+            "y": 5
+          },
+          {
+            "recipeId": "conveni-snacks",
+            "x": 2,
+            "y": 9
+          },
+          {
+            "recipeId": "conveni-cosmetics",
+            "x": 10,
+            "y": 9
+          },
+          {
+            "recipeId": "conveni-basket",
+            "x": 2,
+            "y": 7
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 7,
+            "y": 11
+          },
+          {
+            "x": 1,
+            "y": 7
+          },
+          {
+            "x": 3,
+            "y": 8
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 10,
+            "y": 4
+          },
+          {
+            "x": 12,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 5
+          },
+          {
+            "x": 8,
+            "y": 8
+          },
+          {
+            "x": 11,
+            "y": 8
+          },
+          {
+            "x": 3,
+            "y": 8
+          },
+          {
+            "x": 10,
+            "y": 8
+          }
+        ],
+        "notes": "남쪽 입구에서 주요 가구 앞까지 한 칸 이상의 연결 통로. 전체 사각 영역 상위 부품은 차단. 검사는 배열/좌표/통행 연결만 확인하며 이벤트 실행이나 미학을 증명하지 않는다.",
+        "passableTiles": [
+          1
+        ],
+        "lowerTileIds": [
+          0,
+          1,
+          17,
+          25,
+          88,
+          89,
+          90,
+          96,
+          97,
+          98
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-fastfood-interior",
+    "name": "Pixel Art World · 패스트푸드 내장",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Fdshop-I01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Fdshop-I01.png",
+    "width": 256,
+    "height": 1440,
+    "tileSize": 32,
+    "sha256": "70672a4e173856dce360986370b55970933bdb4ce449198e98af5a09b3efd342",
+    "checkedAt": "2026-09-24",
+    "floorTile": 0,
+    "notes": "공식 단일 원본의 검토한 부품과 14×12 실내만 지원. 0기준 32px·8열. 바깥 테두리는 빈 공간이며 별도 천장 테두리를 외부에 추가할 수 있다. 남쪽 (6,11)/(7,11)은 열린 출입칸이다. 문·상호작용·전이 이벤트는 포함하지 않는다. 원본/샘플 그림 재배포 없음.",
+    "recipes": [
+      {
+        "id": "diner-menu-burger",
+        "name": "버거 메뉴판",
+        "sourceRect": {
+          "x": 5,
+          "y": 14,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-menu-sandwich",
+        "name": "샌드위치 메뉴판",
+        "sourceRect": {
+          "x": 6,
+          "y": 14,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-menu-drink",
+        "name": "음료 메뉴판",
+        "sourceRect": {
+          "x": 7,
+          "y": 14,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-register",
+        "name": "계산대 POS",
+        "sourceRect": {
+          "x": 3,
+          "y": 15,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-till",
+        "name": "두 번째 계산대",
+        "sourceRect": {
+          "x": 3,
+          "y": 17,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-sink",
+        "name": "주방 2칸 싱크",
+        "sourceRect": {
+          "x": 6,
+          "y": 42,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-table",
+        "name": "2인용 좁은 식탁",
+        "sourceRect": {
+          "x": 3,
+          "y": 22,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-chair-east",
+        "name": "오른쪽을 향한 의자",
+        "sourceRect": {
+          "x": 5,
+          "y": 22,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "east"
+      },
+      {
+        "id": "diner-chair-west",
+        "name": "왼쪽을 향한 의자",
+        "sourceRect": {
+          "x": 5,
+          "y": 23,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "west"
+      },
+      {
+        "id": "diner-waste",
+        "name": "분리수거함",
+        "sourceRect": {
+          "x": 6,
+          "y": 21,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-plant",
+        "name": "식당 큰 화분",
+        "sourceRect": {
+          "x": 7,
+          "y": 8,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-poster",
+        "name": "버거 포스터",
+        "sourceRect": {
+          "x": 4,
+          "y": 27,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-window",
+        "name": "식당 3칸 창문",
+        "sourceRect": {
+          "x": 0,
+          "y": 8,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-counter-front-left",
+        "name": "주문대 앞면 왼쪽 마감",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-counter-front-middle",
+        "name": "주문대 앞면 반복 중간",
+        "sourceRect": {
+          "x": 1,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      },
+      {
+        "id": "diner-counter-front-right",
+        "name": "주문대 앞면 오른쪽 마감",
+        "sourceRect": {
+          "x": 2,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south"
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "fastfood-compact-diner",
+        "name": "햄버거 가게 · 주문대와 4석",
+        "width": 14,
+        "height": 12,
+        "baseTile": 8,
+        "lowerRects": [
+          {
+            "x": 1,
+            "y": 1,
+            "width": 12,
+            "height": 10,
+            "tile": 0
+          },
+          {
+            "x": 1,
+            "y": 1,
+            "width": 12,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 1,
+            "y": 2,
+            "width": 12,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 6,
+            "y": 11,
+            "width": 2,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 1,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 96
+          },
+          {
+            "x": 2,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 3,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 4,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 5,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 6,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 7,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 97
+          },
+          {
+            "x": 8,
+            "y": 5,
+            "width": 1,
+            "height": 1,
+            "tile": 98
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "diner-menu-burger",
+            "x": 2,
+            "y": 1
+          },
+          {
+            "recipeId": "diner-menu-sandwich",
+            "x": 4,
+            "y": 1
+          },
+          {
+            "recipeId": "diner-menu-drink",
+            "x": 6,
+            "y": 1
+          },
+          {
+            "recipeId": "diner-register",
+            "x": 2,
+            "y": 4
+          },
+          {
+            "recipeId": "diner-till",
+            "x": 5,
+            "y": 4
+          },
+          {
+            "recipeId": "diner-sink",
+            "x": 10,
+            "y": 2
+          },
+          {
+            "recipeId": "diner-waste",
+            "x": 11,
+            "y": 5
+          },
+          {
+            "recipeId": "diner-table",
+            "x": 3,
+            "y": 8
+          },
+          {
+            "recipeId": "diner-chair-east",
+            "x": 2,
+            "y": 9
+          },
+          {
+            "recipeId": "diner-chair-west",
+            "x": 4,
+            "y": 9
+          },
+          {
+            "recipeId": "diner-table",
+            "x": 8,
+            "y": 8
+          },
+          {
+            "recipeId": "diner-chair-east",
+            "x": 7,
+            "y": 9
+          },
+          {
+            "recipeId": "diner-chair-west",
+            "x": 9,
+            "y": 9
+          },
+          {
+            "recipeId": "diner-plant",
+            "x": 12,
+            "y": 8
+          },
+          {
+            "recipeId": "diner-counter-front-left",
+            "x": 1,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-middle",
+            "x": 2,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-middle",
+            "x": 3,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-middle",
+            "x": 4,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-middle",
+            "x": 5,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-middle",
+            "x": 6,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-middle",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "diner-counter-front-right",
+            "x": 8,
+            "y": 6
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 7,
+            "y": 11
+          },
+          {
+            "x": 2,
+            "y": 7
+          },
+          {
+            "x": 5,
+            "y": 7
+          },
+          {
+            "x": 9,
+            "y": 5
+          },
+          {
+            "x": 10,
+            "y": 4
+          },
+          {
+            "x": 10,
+            "y": 6
+          },
+          {
+            "x": 3,
+            "y": 7
+          },
+          {
+            "x": 8,
+            "y": 7
+          },
+          {
+            "x": 2,
+            "y": 10
+          },
+          {
+            "x": 4,
+            "y": 10
+          },
+          {
+            "x": 7,
+            "y": 10
+          },
+          {
+            "x": 9,
+            "y": 10
+          },
+          {
+            "x": 6,
+            "y": 10
+          }
+        ],
+        "notes": "남쪽 입구에서 주요 가구 앞까지 한 칸 이상의 연결 통로. 전체 사각 영역 상위 부품은 차단. 검사는 배열/좌표/통행 연결만 확인하며 이벤트 실행이나 미학을 증명하지 않는다.",
+        "passableTiles": [
+          0
+        ],
+        "lowerTileIds": [
+          8,
+          0,
+          17,
+          33,
+          96,
+          97,
+          98
+        ]
+      }
+    ]
+  }
+]
