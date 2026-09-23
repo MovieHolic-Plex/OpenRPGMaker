@@ -1,3 +1,4 @@
+import { sharedPlacePreview } from "@/project/sharedContent";
 import { regionMapPreview } from "./regionMapView";
 import { regionReferenceImage } from "./regionReferenceView";
 import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
@@ -247,7 +248,7 @@ function renderMapThumb(card: SpatialGalleryCard): HTMLElement {
 export function renderSpatialListThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.kind === "objects" || card.kind === "spaces") return renderSpatialCardThumb(card);
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
-  if (card.reviewedPlaceId) return catalogListImage(`/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
+  if (card.reviewedPlaceId) return catalogListImage(sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
   const tileset = tilesetOf(card);
   if (!tileset) return el("div", { class: "spatial-card-fallback" });
   const thumb = tilesetListThumb(tileset);

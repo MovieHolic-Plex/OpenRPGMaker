@@ -181,3 +181,7 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 검수된 Tibo 실내 31종은 기본 카탈로그에 포함한다. 추가 공용 장소는 `loadSharedContent()`가 호스트의 `/__oprn/shared-content`에서 프로젝트 ID 없이 읽어 `installSharedReviewedPlaces()`에 설치한다. 웹 호스트와 Vite가 같은 SQLite 읽기 경로를 제공하며, 갤러리는 정적 상수 대신 `reviewedPlaceIndex()`를 사용한다. 썸네일도 호스트 공용 미리보기를 우선 사용한다. 프로젝트 소유 복사본은 변경하지 않는다.
 
 등록 완료는 DB 저장만으로 판정하지 않는다. 해당 변경을 main에 병합하고, main의 커밋으로 빌드한 배포 파일에서 공용 로더와 장소 31종을 확인한 뒤 실제 hostProject URL의 자료집 → 맵 → 장소에서 재확인한다. 미커밋 파일로 빌드한 결과는 다음 배포에서 사라질 수 있다.
+
+## 호스트 전용 장소의 목록 썸네일 (2026-09-24)
+
+`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.

@@ -729,6 +729,66 @@ export const REVIEWED_PLACE_INDEX: readonly ReviewedPlaceSummary[] = [
       "용도:주택"
     ],
     "tilesetId": "shared_tileset_interior_materials_20260921"
+  },
+  {
+    "id": "shared_authored-map_daily_life_fisher_20260924",
+    "name": "어부의 집 · 밧줄과 작은 창고",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_daily_life_20260924"
+  },
+  {
+    "id": "shared_authored-map_daily_life_tailor_20260924",
+    "name": "재봉사의 집 · 창가 재단방",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_daily_life_20260924"
+  },
+  {
+    "id": "shared_authored-map_daily_life_lodging_20260924",
+    "name": "공동 임대주택 · 꺾인 복도 네 방",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:주택"
+    ],
+    "tilesetId": "shared_tileset_daily_life_20260924"
+  },
+  {
+    "id": "shared_authored-map_daily_life_pawn_20260924",
+    "name": "전당포 · 카운터 뒤 보관실",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:상점"
+    ],
+    "tilesetId": "shared_tileset_daily_life_20260924"
+  },
+  {
+    "id": "shared_authored-map_daily_life_guild_20260924",
+    "name": "상인 조합 회관 · 회의와 기록",
+    "kind": "facility",
+    "tags": [
+      "그림체:Tibo",
+      "장소유형:건물·시설",
+      "공간형태:건물 내부",
+      "용도:조합 회관"
+    ],
+    "tilesetId": "shared_tileset_daily_life_20260924"
   }
 ];
 

@@ -444,3 +444,7 @@ The user rejected repeated north-rooms/south-hall structures after furnishing cl
 This is a deterministic tile-constrained search inspired by topology-before-geometry and explicit diversity evaluation, not an implementation of a trained diffusion/GNN model. Sources: [GFLAN](https://arxiv.org/abs/2512.16275), [Boundary-Constrained Diffusion Models: realism and diversity](https://arxiv.org/abs/2602.01949). `houseTopology.test.ts` treats rotation/reflection as duplicates and checks same-program diversity across eight seeds, reproducibility, compact area and furnishing validity. The 24 reviewed program/scale combinations have 24 distinct union-floor silhouettes under that equivalence (previously 12); this does not claim all possible seeds are unique. Candidate search retains the original compact seed when no alternative passes.
 
 Cauldron interaction belongs to the stove's accessible base when its graphic is supported on the wall-overlapping stove top. The generated event access mask selects this position without moving either graphic; fixed canonical events keep their own contract.
+
+#### 생활 방식별 신규 실내 5종 (2026-09-24)
+
+어부·재봉사·공동 임대주택·전당포·상인 조합 회관, 총 5맵/14방을 추가했다. 원격 보관본 `oprn-shared-daily-life-five-20260924`, 루트 SQLite 라이브러리 `tibo-daily-life-five-20260924`, 기본 장소 카탈로그에 같은 ID로 등록한다. 기존 사용자 맵을 덮어쓰지 않는다. 정확한 조립·좌표·엔진 도달 좌표·저장 영수증은 `docs/interior-daily-life-five-20260924/`에 있다. 작은 침대, 하위 북벽4행/연결 천장, 의자 동쪽 방향, 용도별 바닥1~2종, 마을 미연결 1칸 출구를 적용했다.
