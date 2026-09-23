@@ -34,7 +34,7 @@ node scripts/content/author-climate-villages.mjs     # 맵 + 통행 검사(실�
 ```
 
 ```json
-[{"id":"climate-snow-pine-hamlets","entry":[40,60],"targets":[[13,16],[35,14],[64,18],[18,38],[48,36],[62,50],[31,55]],"reachable":2219,"blocked":[]},{"id":"climate-snow-chapel-hill","entry":[40,60],"targets":[[47,14],[68,14],[14,40],[27,44],[48,41],[14,58],[49,56]],"reachable":2071,"blocked":[]},{"id":"climate-snow-frozen-mistpond","entry":[40,60],"targets":[[7,12],[53,12],[22,34],[58,35],[24,55],[61,55],[45,55],[39,37],[40,36]],"reachable":2155,"blocked":[]}]
+[{"id":"climate-snow-pine-hamlets","entry":[40,60],"targets":[[13,16],[35,14],[64,18],[18,38],[48,36],[62,50],[31,55]],"reachable":2225,"blocked":[]},{"id":"climate-snow-chapel-hill","entry":[40,60],"targets":[[47,14],[68,14],[14,40],[27,44],[48,41],[14,58],[49,56]],"reachable":2073,"blocked":[]},{"id":"climate-snow-frozen-mistpond","entry":[40,60],"targets":[[7,12],[53,12],[22,34],[58,35],[24,55],[61,55],[45,55],[39,37],[40,36]],"reachable":2153,"blocked":[]}]
 ```
 
 ## 실제 구분

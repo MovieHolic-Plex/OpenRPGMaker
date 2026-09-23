@@ -6,7 +6,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "솔바람 산촌 · 설원",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -22,7 +22,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "눈 덮인 산기슭에 흩어진 산촌. 솔숲 수관에 눈이 얹히고 지붕이 하얗게 덮였다. 개울은 얼지 않고 흐른다.",
       "숲마을 「pine-hamlets」과 칸 번호가 같은 기후 시트(forest_harmony_snow)에 그렸다. 기후 편집: 없음(시트만).",
       "입구 (40,60)에서 집 문 앞 7곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -31,7 +31,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "종탑 언덕 교구 · 설원",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -47,7 +47,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "눈 쌓인 언덕 위 종탑 교구. 계단 길과 묘지, 교구 마당이 모두 눈밭이 된다.",
       "숲마을 「chapel-hill-parish」과 칸 번호가 같은 기후 시트(forest_harmony_snow)에 그렸다. 기후 편집: 없음(시트만).",
       "입구 (40,60)에서 집 문 앞 7곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -56,7 +56,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "얼어붙은 안개못",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -72,7 +72,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "울타리 친 못이 통째로 얼어 석상 섬까지 걸어 들어갈 수 있는 설원 폐촌. 서쪽 강과 폭포는 얼지 않았다.",
       "숲마을 「mistpond-hollow」과 칸 번호가 같은 기후 시트(forest_harmony_snow)에 그렸다. 기후 편집: freeze.",
       "입구 (40,60)에서 집 문 앞 7곳과 얼음판까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -81,7 +81,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "두 폭포 · 용암 강마을",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 88,
@@ -97,7 +97,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "용암 강이 마을 한가운데를 흐르다 두 줄 절벽에서 용암 폭포로 떨어진다. 단마다 현무암 다리가 두 강둑을 잇는다.",
       "숲마을 「twin-falls-river-village」과 칸 번호가 같은 기후 시트(forest_harmony_volcano)에 그렸다. 기후 편집: sheet.",
       "입구 (24,68)에서 집 문 앞 8곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「화산 마을 · 재와 용암의 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「화산 마을 · 재와 용암의 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -106,7 +106,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "잿빛 여울성",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 100,
@@ -122,7 +122,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "재로 덮인 벌판 위 성채 마을. 해자와 여울이 용암으로 바뀌고 숲은 그을린 검은 숲이 된다.",
       "숲마을 「ford-castle-town」과 칸 번호가 같은 기후 시트(forest_harmony_volcano)에 그렸다. 기후 편집: sheet.",
       "입구 (48,88)에서 집 문 앞 10곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「화산 마을 · 재와 용암의 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「화산 마을 · 재와 용암의 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -131,7 +131,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "용암못 폐촌",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -147,7 +147,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "울타리 친 못이 끓는 용암못이 된 폐촌. 빈 재밭 두 곳에 작은 화산 봉우리 한 쌍(잠든 봉우리·분화하는 봉우리)이 솟아 있다.",
       "숲마을 「mistpond-hollow」과 칸 번호가 같은 기후 시트(forest_harmony_volcano)에 그렸다. 기후 편집: volcanic-peaks, sheet.",
       "입구 (40,60)에서 집 문 앞 7곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「화산 마을 · 재와 용암의 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「화산 마을 · 재와 용암의 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -156,7 +156,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "사암 층바위 협곡마을",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 88,
@@ -172,7 +172,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "세 높이의 사암 대지를 네 계단이 잇는 협곡 마을. 모래밭 곳곳에 선인장과 바위가 있고 마른 덤불숲이 협곡을 둘러싼다.",
       "숲마을 「terrace-cliff-village」과 칸 번호가 같은 기후 시트(forest_harmony_desert)에 그렸다. 기후 편집: desert.",
       "입구 (42,68)에서 집 문 앞 8곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「사막 마을 · 모래와 사암의 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「사막 마을 · 모래와 사암의 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -181,7 +181,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "모래 물굽이 포구",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 88,
@@ -197,7 +197,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "모래 해안 물굽이를 따라 비껴 앉은 포구 마을. 물가에 야자수가 늘어서고 긴 선착장이 바다로 나간다.",
       "숲마을 「reed-bay-village」과 칸 번호가 같은 기후 시트(forest_harmony_desert)에 그렸다. 기후 편집: desert.",
       "입구 (6,33)에서 집 문 앞 8곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「사막 마을 · 모래와 사암의 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「사막 마을 · 모래와 사암의 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -206,7 +206,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "가을 두 폭포 강마을",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 88,
@@ -222,7 +222,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "단풍 든 숲에서 나온 강이 두 줄 절벽을 폭포로 떨어지는 가을 강마을. 금빛 풀밭에 노란 활엽수와 붉은 덤불이 있다.",
       "숲마을 「twin-falls-river-village」과 칸 번호가 같은 기후 시트(forest_harmony_autumn)에 그렸다. 기후 편집: 없음(시트만).",
       "입구 (24,68)에서 집 문 앞 8곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「가을 마을 · 단풍 든 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「가을 마을 · 단풍 든 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -231,7 +231,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
     "name": "가을 종탑 언덕 교구",
     "kind": "completed-place",
     "placeKind": "settlement",
-    "revision": 2,
+    "revision": 3,
     "x": 0,
     "y": 0,
     "width": 80,
@@ -247,7 +247,7 @@ export const CLIMATE_VILLAGE_PLACE_REFERENCES = [
       "단풍 숲으로 둘러싸인 언덕 위 종탑 교구. 금빛 풀밭의 계단 길과 묘지, 폭포 아래 소가 가을빛이다.",
       "숲마을 「chapel-hill-parish」과 칸 번호가 같은 기후 시트(forest_harmony_autumn)에 그렸다. 기후 편집: 없음(시트만).",
       "입구 (40,60)에서 집 문 앞 7곳까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
-      "공용 AI 문서 「가을 마을 · 단풍 든 숲마을 (나무 몸통 개정2)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「가을 마을 · 단풍 든 숲마을 (나무 몸통 개정3)」에 기후 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   }

@@ -148,7 +148,7 @@ doc("forest-assembly", "숲·가구·울타리 · 전체 조각 규칙", `# 3행
 
 상위 수관은 forest_harmony_grove_47, 원본 tex_forest_cliff_reference. lower 몸통 첫 행은 남쪽 수관 마지막 행과 같은 y. 왼쪽3열→2열 반복→오른쪽3열, 높이3을 수관 밑변 폭과 **정확히 같은 폭**으로 통째로 놓는다. 기존 6행 forest-repeat 조립법과 시작 행을 혼동하지 않는다.
 ${block({ left: [[1422, 1423, 1424], [1426, 1427, 1428], [1430, 1431, 1432]], body: [[1425, 1350], [1429, 1428], [1433, 1432]], right: [[1453, 1454, 1455], [1457, 1458, 1459], [1461, 1462, 1463]] })}
-폭 w≥6은 LEFT 3열, BODY 첫열·둘째열을 번갈아 w-6열, RIGHT 3열(w=6은 LEFT+RIGHT). w=5는 LEFT 3열+RIGHT 오른쪽 2열, w=4는 LEFT 앞 2열+RIGHT 오른쪽 2열, w=3은 LEFT 앞 2열+RIGHT 마지막 열, w=2는 LEFT 첫 열+RIGHT 마지막 열. 폭 1은 조립이 없어 밑변을 이웃 열의 밑변 높이로 한 칸 올리거나 내린다. 수관 밑변보다 넓게(옆 수관 밑으로) 놓지 않는다: 옆 수관 외곽 칸의 투명한 가장자리로 몸통이 반쯤 잘려 보인다. 옛 4×3 마감(LEFT+BODY첫열, BODY둘째열+RIGHT)도 끝 열이 몸통 반쪽이라 쓰지 않는다. 3행 전부가 자유칸이고 첫행 전체에 수관이 있으며 둘째·셋째 행 위에는 수관이 없어야 한다. 안 맞으면 노출 수관 행을 줄여 맞춘다. 뿌리를 자르지 않는다. 개정4는 plateau라는 이유만으로 숲을 금지하지 않는다. 바닥·상위·예약 칸과 완전한 3행 조립 가능 여부로 판단한다. 군집과 빈터의 연속 밀도장은 연구 적용 문서에 있다. 나무 몸통 그림·높이·배열은 유지한다.
+폭 w≥6은 LEFT 3열, BODY 첫열·둘째열을 번갈아 w-6열, RIGHT 3열(w=6은 LEFT+RIGHT). w=5는 LEFT 3열+RIGHT 오른쪽 2열, w=4는 LEFT 앞 2열+RIGHT 오른쪽 2열, w=3은 LEFT 앞 2열+RIGHT 마지막 열. w=2(LEFT 첫 열+RIGHT 마지막 열)는 닫히긴 하지만 수관에서 가는 뿌리 하나가 매달린 것처럼 보여 쓰지 않는다. 폭 1·2 밑변은 이웃 열의 밑변 높이로 올리거나 내려 합친다(바뀌는 칸이 적은 쪽). 수관 밑변보다 넓게(옆 수관 밑으로) 놓지 않는다: 옆 수관 외곽 칸의 투명한 가장자리로 몸통이 반쯤 잘려 보인다. 옛 4×3 마감(LEFT+BODY첫열, BODY둘째열+RIGHT)도 끝 열이 몸통 반쪽이라 쓰지 않는다. 3행 전부가 자유칸이고 첫행 전체에 수관이 있으며 둘째·셋째 행 위에는 수관이 없어야 한다. 안 맞으면 노출 수관 행을 줄여 맞춘다. 뿌리를 자르지 않는다. 개정4는 plateau라는 이유만으로 숲을 금지하지 않는다. 바닥·상위·예약 칸과 완전한 3행 조립 가능 여부로 판단한다. 군집과 빈터의 연속 밀도장은 연구 적용 문서에 있다. 나무 몸통 그림·높이·배열은 유지한다.
 
 이웃 bit 순서 N,E,S,W,NE,SE,SW,NW. 이웃 수관일 때 bit=1. 아래 variantMap으로 외곽/안쪽 모서리를 선택한다.
 ${block(t.autotileGroups.find((g) => g.id === "forest_harmony_grove_47").variantMap)}
@@ -203,8 +203,8 @@ const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png"))
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
 const conceptImages = new Set(conceptPlans.map((p) => p.id));
-const category = { id: "diverse-villages-trunks-v11", name: "다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정11)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
-const concept = { id: "concept-villages-v2", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정2)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
+const category = { id: "diverse-villages-trunks-v12", name: "다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
+const concept = { id: "concept-villages-v3", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
 for (const k of [category, concept]) if (k.documents.length > 64 || k.documents.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit " + k.id);
 fs.writeFileSync(target, JSON.stringify([category, concept]) + "\n");
 console.log({ documents: docs.length, conceptDocuments: conceptDocs.length, images: category.images.length, conceptImages: concept.images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });
