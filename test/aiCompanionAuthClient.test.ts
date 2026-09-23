@@ -15,6 +15,7 @@ import {
   fetchChatGptAuthStatus,
   fetchCompanionProviders,
   hasStoredCompanionCredential,
+  hasUsableCompanionCredential,
 } from "@/ai/chatgptOAuthClient";
 
 function jsonResponse(body: unknown, status = 200): Response {
@@ -56,14 +57,14 @@ describe("상태 응답을 버리지 않는다", () => {
   });
 });
 
-describe("hasStoredCompanionCredential — env 자격은 무시한다 (감독 결정)", () => {
+describe("hasStoredCompanionCredential — 환경 변수는 쓸 수 있지만 지우지는 못한다", () => {
   it("저장된 자격만 연결로 인정한다", () => {
     expect(hasStoredCompanionCredential({ connected: true, env: false })).toBe(true);
     expect(hasStoredCompanionCredential({ connected: true })).toBe(true);
   });
 
-  it("셸 환경 변수로 얻은 연결은 인정하지 않는다", () => {
-    // 에디터가 만들지도 지우지도 못하는 자격이다 — 연결됨이라 말하면 연결 해제 버튼이 거짓이 된다.
+  it("환경 변수 키는 쓸 수 있지만 저장 자격은 아니다", () => {
+    expect(hasUsableCompanionCredential({ connected: true, env: true })).toBe(true);
     expect(hasStoredCompanionCredential({ connected: true, env: true })).toBe(false);
   });
 

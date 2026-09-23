@@ -15,6 +15,8 @@ export interface OhMyPiAuthStatus {
   provider: string;
   planType?: string;
   env?: boolean;
+  /** 환경 변수 키를 봐도 되는지. ask 이면 아직 묻지 않았다. */
+  envScan?: "ask" | "allow" | "deny";
   refreshed?: boolean;
   /** `/auth/status` 가 만료 토큰 갱신을 시작했지만 응답 전에 끝나지 않았다 — 다음 조회가 결과를 본다. */
   refreshing?: boolean;

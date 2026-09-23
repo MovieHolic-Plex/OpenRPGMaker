@@ -56,7 +56,8 @@ describe("연결 해제", () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true });
     const { root, dispose } = await render();
     await vi.waitFor(() => {
-      expect(findByTestId(root, "ai-oauth-status")?.textContent).toContain("환경 변수만");
+      expect(findByTestId(root, "ai-oauth-status")?.textContent).toContain("환경 변수");
+      expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("connected");
     });
 
     expect(findByTestId(root, "ai-auth-disconnect")?.hidden).toBe(true);

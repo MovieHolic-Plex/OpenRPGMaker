@@ -19,6 +19,8 @@ import {
   disconnectCompanionAuth,
   fetchChatGptAuthStatus,
   hasStoredCompanionCredential,
+  hasUsableCompanionCredential,
+  setCompanionEnvScan,
   isChatGptCompanionResponseError,
   refreshCompanionAuth,
   startChatGptLogin,
@@ -221,14 +223,13 @@ export function renderAiAuthSettings(
       text = "확인 실패";
       tone = "offline";
     } else if (auth && auth !== "checking") {
-      if (hasStoredCompanionCredential(auth)) {
-        text = `연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`;
+      if (hasUsableCompanionCredential(auth)) {
+        text = auth.env === true
+          ? "연결됨 · 환경 변수"
+          : `연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`;
         tone = "connected";
       } else if (auth.expired === true) {
         text = "자격 만료";
-        tone = "offline";
-      } else if (auth.env === true) {
-        text = "환경 변수만 있음";
         tone = "offline";
       } else {
         text = "로그인 필요";
@@ -299,6 +300,37 @@ export function renderAiAuthSettings(
 
   // 저장된 자격이 있을 때만 보인다 — 지울 것이 없을 때 뜨는 해제 버튼은 거짓말이다.
   // env 자격은 에디터가 지울 수 없으므로 stored 가 false 고, 따라서 이 버튼도 뜨지 않는다.
+  const envScanAllow = el("button", {
+    class: "ai-assistant-action",
+    text: "찾아보기",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-env-scan-allow" },
+  }) as HTMLButtonElement;
+  const envScanDeny = el("button", {
+    class: "ai-assistant-action",
+    text: "안 볼게요",
+    attrs: { type: "button" },
+    dataset: { testid: "ai-env-scan-deny" },
+  }) as HTMLButtonElement;
+  const envScanBox = el("div", {
+    class: "ai-auth-env-scan",
+    attrs: { hidden: "" },
+    dataset: { testid: "ai-env-scan" },
+    children: [
+      el("p", {
+        class: "ai-auth-env-scan-copy",
+        text: "이 서버의 환경 변수에서 AI 키를 찾아볼까요? 키 값은 화면에 나오지 않습니다.",
+      }),
+      el("div", { class: "ai-auth-actions", children: [envScanAllow, envScanDeny] }),
+    ],
+  });
+  const envScanAgain = el("button", {
+    class: "ai-assistant-action",
+    text: "환경 변수에서 키 찾기",
+    attrs: { type: "button", hidden: "" },
+    dataset: { testid: "ai-env-scan-again" },
+  }) as HTMLButtonElement;
+
   const disconnectButton = el("button", {
     class: "ai-assistant-action ai-auth-disconnect",
     text: "연결 해제",
@@ -564,13 +596,14 @@ export function renderAiAuthSettings(
     // 재귀 루프가 없고, aiConnectionStatus 자체가 같은 제공자의 동시 조회를 de-dup 한다.
     resetAiConnectionStatusCache();
     void refreshAiConnectionStatus();
-    // 감독 결정: env 자격은 무시한다. 셸 환경 변수로 얻은 연결은 에디터가 만들지도 지우지도
-    // 못하므로 "연결됨"이라 말하지 않는다(hasStoredCompanionCredential 에 근거가 있다).
     stored = hasStoredCompanionCredential(auth);
-    if (stored) {
+    const usable = hasUsableCompanionCredential(auth);
+    envScanBox.hidden = auth.envScan !== "ask" || usable;
+    envScanAgain.hidden = auth.envScan !== "deny" || usable;
+    if (usable && auth.env === true) {
+      setStatus("연결됨 · 환경 변수", "connected");
+    } else if (stored) {
       setStatus(`연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`, "connected");
-    } else if (auth.env === true) {
-      setStatus("환경 변수만 있음 — 로그인 필요", "disconnected");
     } else if (auth.expired === true) {
       setStatus("자격 만료 — 다시 로그인하세요", "disconnected");
     } else {
@@ -908,6 +941,24 @@ export function renderAiAuthSettings(
       .finally(restore);
   });
 
+  const chooseEnvScan = (decision: "allow" | "deny"): void => {
+    const gen = opGeneration;
+    const provider = providerId;
+    void setCompanionEnvScan(decision, provider)
+      .then((auth) => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        applyStatus(auth);
+      })
+      .catch((error: unknown) => {
+        if (disposed || gen !== opGeneration || provider !== providerId) return;
+        if (isChatGptCompanionResponseError(error)) showServerError(error);
+        else showUnreachable(error);
+      });
+  };
+  envScanAllow.addEventListener("click", () => chooseEnvScan("allow"));
+  envScanDeny.addEventListener("click", () => chooseEnvScan("deny"));
+  envScanAgain.addEventListener("click", () => chooseEnvScan("allow"));
+
   disconnectButton.addEventListener("click", () => {
     // 실 브라우저는 비활성 버튼의 click 을 발화하지 않는다 — fakeDom 이 발화할 수 있으므로
     // 핸들러가 자체 비활성을 확인해 이중 연산(재확인 중 끼어드는 해제)을 배제한다.
@@ -971,6 +1022,8 @@ export function renderAiAuthSettings(
         el("div", { class: "ai-auth-panel", dataset: { testid: "ai-auth-connection" }, children: [
           providerHelp,
           el("div", { class: "ai-auth-state", children: [status, kindBadge] }),
+          envScanBox,
+          envScanAgain,
           el("div", { class: "ai-auth-actions", children: [loginButton, disconnectButton] }),
           deviceBlock,
           timeoutNotice,

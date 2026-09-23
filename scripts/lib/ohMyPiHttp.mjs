@@ -25,6 +25,7 @@ export function isCompanionPath(url = "") {
   const path = companionPathname(url);
   return (
     path === "/auth/status"
+    || path === "/auth/env-scan"
     || path === "/auth/login"
     || path === "/auth/providers"
     || path === "/auth/key"
@@ -155,6 +156,14 @@ export async function handleCompanionRequest(req, adapters) {
   }
 
   if (method === "GET" && path === "/auth/status") {
+    return json(200, await adapters.status(provider));
+  }
+
+  if (method === "POST" && path === "/auth/env-scan") {
+    const decision = body.decision;
+    if (decision !== "allow" && decision !== "deny") return json(400, { error: "decision must be allow or deny" });
+    if (typeof adapters.setEnvScan !== "function") return json(501, { error: "env scan consent is unavailable" });
+    await adapters.setEnvScan(decision);
     return json(200, await adapters.status(provider));
   }
 

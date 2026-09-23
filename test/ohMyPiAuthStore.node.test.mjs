@@ -92,6 +92,14 @@ describe("oh-my-pi auth store", () => {
     assert.equal("apiKey" in publicStatus, false);
     assert.equal(JSON.stringify(publicStatus).includes("sk-secret"), false);
   });
+
+  it("환경 변수 스캔은 묻기 전에는 ask 이고, 동의·거절만 저장한다", () => {
+    assert.equal(store.envScan(), "ask");
+    assert.equal(store.setEnvScan("allow"), "allow");
+    assert.equal(store.envScan(), "allow");
+    assert.equal(store.setEnvScan("deny"), "deny");
+    assert.throws(() => store.setEnvScan("ask"), /env scan decision/);
+  });
 });
 
 // 2026-09 제품명 스윕: 자격 파일이 ~/.rpg-zzu 에서 ~/.oprn 으로 옮겨졌다. 로그인한 사용자를

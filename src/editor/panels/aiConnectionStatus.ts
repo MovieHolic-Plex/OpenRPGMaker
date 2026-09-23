@@ -11,9 +11,8 @@
 // - apiKey 모드: **주입 설정 전용**이다(노드 스크립트·evals·벤치마크). 에디터 UI 는 이 모드를
 //   만들지 않는다 — loadAiConfig() 기반 동기 판정만 남겨 둔다.
 //
-// env 자격은 연결로 세지 않는다(감독 결정 2026-08-21): 동반 서비스는 셸 환경 변수만 있어도
-// connected:true 를 주지만, 에디터가 만들지도 지우지도 못하는 자격이라 "연결됨"이라 말하면
-// 화면이 제어할 수 없는 상태를 진실처럼 보여 준다.
+// 환경 변수 키는 사용자가 동의한 뒤에만 서버가 env:true 로 알린다. 그때는 연결로 센다.
+// 연결 해제는 저장 로그인만 지울 수 있어서, env 자격에는 해제 버튼을 붙이지 않는다.
 import { HOST_AI_DISABLED_GUIDANCE, isHostAiDisabledMessage } from "@/ai/hostAiDisabled";
 import { fetchChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
 // 값 임포트는 피한다 — 테스트가 이 모듈을 vi.mock 으로 통째 교체하므로(값이 사라짐)
@@ -55,14 +54,9 @@ interface CachedOAuthStatus {
   readonly serverMessage?: string;
 }
 
-/**
- * 에디터가 "연결됨"으로 인정하는가 — 감독 결정(2026-08-21): env 자격은 무시한다.
- * 정본은 chatgptOAuthClient.hasStoredCompanionCredential 이지만, 이 파일은 그 모듈을
- * **값으로 import 하지 않는다**(테스트가 vi.mock 으로 통째 교체하면 값이 사라진다 — 위 주석 참고).
- * 한 줄 술어라 여기서 계산한다.
- */
-function isStoredCredential(status: CachedOAuthStatus): boolean {
-  return status.connected && status.env !== true && status.expired !== true;
+/** 저장된 로그인 또는 동의한 환경 변수 키. 만료는 제외한다. */
+function isUsableCredential(status: CachedOAuthStatus): boolean {
+  return status.connected && status.expired !== true;
 }
 
 let aiOAuthCachedStatus: CachedOAuthStatus | null = null;
@@ -176,7 +170,7 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
       title: `${provider.providerLabel} 로그인을 도와줄 보조 프로그램이 응답하지 않아요. 명령어 창(터미널)에서 'npm run ai:oauth'를 실행하거나 개발 서버를 껐다 켜 보세요. 이 칩을 누르면 설정이 열려요.`,
     });
   }
-  if (isStoredCredential(aiOAuthCachedStatus)) {
+  if (isUsableCredential(aiOAuthCachedStatus)) {
     const failure = transportFailureStatus(config);
     if (failure) return failure;
     // 연결은 됐는데 요청한 모델이 아닌 것이 답하고 있으면 그 사실을 라벨에 올린다 — 예전에는
@@ -190,21 +184,16 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
         title: `요청한 모델 '${demotion.requested}' 대신 '${demotion.served}' 이(가) 답했습니다. 제공자가 모르는 모델 ID 를 조용히 바꿔치기한 것입니다 — 이 칩을 눌러 목록에서 모델을 고르세요.`,
       });
     }
+    const viaEnv = aiOAuthCachedStatus.env === true;
     return statusFor(config, {
       kind: "ready",
       authMode: "chatgpt",
-      label: `${provider.providerLabel} 연결됨${aiOAuthCachedStatus.planType ? ` · ${aiOAuthCachedStatus.planType.toUpperCase()}` : ""}`,
-      title: `${provider.providerLabel} 구독 로그인으로 연결됨 · 로그인 정보는 이 PC 의 보조 프로그램이 보관·갱신해요.`,
-    });
-  }
-  // env 자격만 있는 상태를 "연결됨"이라 말하지 않는다(감독 결정) — 에디터가 지울 수 없는
-  // 자격이라, 연결로 세면 연결 해제 버튼이 거짓이 되고 감독은 제어 못 하는 상태를 보게 된다.
-  if (aiOAuthCachedStatus.env === true) {
-    return statusFor(config, {
-      kind: "disconnected",
-      authMode: "chatgpt",
-      label: `${provider.providerLabel} 로그인 필요`,
-      title: "환경 변수로 들어온 자격만 있어요. 에디터가 관리하는 로그인이 아니라서 연결로 세지 않습니다. 이 칩을 눌러 로그인하세요.",
+      label: viaEnv
+        ? `${provider.providerLabel} 연결됨 · 환경 변수`
+        : `${provider.providerLabel} 연결됨${aiOAuthCachedStatus.planType ? ` · ${aiOAuthCachedStatus.planType.toUpperCase()}` : ""}`,
+      title: viaEnv
+        ? `${provider.providerLabel} 환경 변수 키로 연결됨. 이 화면에서는 그 키를 지우지 못합니다.`
+        : `${provider.providerLabel} 구독 로그인으로 연결됨 · 로그인 정보는 이 PC 의 보조 프로그램이 보관·갱신해요.`,
     });
   }
   if (aiOAuthCachedStatus.expired === true) {

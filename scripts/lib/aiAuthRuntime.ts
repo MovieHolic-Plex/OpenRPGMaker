@@ -254,11 +254,22 @@ export function listOhMyPiProviders() {
   }));
 }
 
+function envScanDecision(): "ask" | "allow" | "deny" {
+  const value = store.envScan();
+  return value === "allow" || value === "deny" ? value : "ask";
+}
+
+export function setEnvScanDecision(decision: "allow" | "deny"): "allow" | "deny" {
+  return store.setEnvScan(decision);
+}
+
 export function publicProviderStatus(provider: string) {
   // HTTP 경계에서 들어온 이름이므로 여기서 막는다. 모를 제공자를 `connected:false` 로
   // 답하면 사용자는 "여기 로그인하면 된다"고 오해하게 된다 — 지원하지 않는 것이다.
   requireKnown(provider);
-  const envVars = getOhMyPiProvider(provider)?.envVars ?? [];
+  const envScan = envScanDecision();
+  // 동의(allow) 전에는 process.env 를 보지 않는다. deny 도 마찬가지다.
+  const envVars = envScan === "allow" ? (getOhMyPiProvider(provider)?.envVars ?? []) : [];
   const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
   adoptOmpCliCredentials(provider);
   if (!store.has(provider)) adoptCodexCliCredentials(provider);
@@ -270,12 +281,12 @@ export function publicProviderStatus(provider: string) {
   const pending = pendingLogins.get(provider);
   const extra = pending?.error ? { lastLoginError: pending.error } : {};
   if (disk.connected && !hasRequiredMetadata) {
-    return { ...disk, ...extra, connected: false, provider, env: false };
+    return { ...disk, ...extra, connected: false, provider, env: false, envScan };
   }
   if (disk.connected || envHit) {
-    return { ...disk, ...extra, connected: true, provider, env: envHit };
+    return { ...disk, ...extra, connected: true, provider, env: envHit, envScan };
   }
-  return { connected: false, provider, ...extra };
+  return { connected: false, provider, ...extra, envScan };
 }
 
 /**
@@ -512,10 +523,12 @@ export function seedOAuthForTests(
  */
 export async function resolveRequestApiKey(provider: string): Promise<string | undefined> {
   const id = requireKnown(provider);
-  const envVars = getOhMyPiProvider(id)?.envVars ?? [];
-  for (const name of envVars) {
-    const value = process.env[name]?.trim();
-    if (value) return value;
+  if (envScanDecision() === "allow") {
+    const envVars = getOhMyPiProvider(id)?.envVars ?? [];
+    for (const name of envVars) {
+      const value = process.env[name]?.trim();
+      if (value) return value;
+    }
   }
   adoptOmpCliCredentials(id);
   let credentials = credentialsOf(id);

@@ -15,6 +15,7 @@ import {
   refreshProvider,
   resolveRequestApiKey,
   seedOAuthForTests,
+  setEnvScanDecision,
   startProviderLogin,
 } from "./aiAuthRuntime.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
@@ -146,6 +147,9 @@ export async function createOhMyPiAdapters() {
     async status(provider) {
       // 만료됐지만 갱신 가능한 로그인은 여기서 되살린다(single-flight + 백오프, aiAuthRuntime.providerStatus).
       return providerStatus(provider);
+    },
+    async setEnvScan(decision) {
+      setEnvScanDecision(decision);
     },
     async login(provider, body, options) {
       return startProviderLogin(provider, body ?? {}, options ?? {});

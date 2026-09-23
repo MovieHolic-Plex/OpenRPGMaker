@@ -7,7 +7,7 @@ import { configForUltrabrain, DEFAULT_ULTRABRAIN_MODEL } from "@/ai/ultrabrainCo
 import { DEFAULT_PI_APPLY, DEFAULT_PI_TEAM } from "@/ai/piAgent/executionRoute";
 import {
   fetchChatGptAuthStatus,
-  hasStoredCompanionCredential,
+  hasUsableCompanionCredential,
   isChatGptCompanionResponseError,
   type ChatGptCompanionUnreachableError,
 } from "@/ai/chatgptOAuthClient";
@@ -615,10 +615,11 @@ export function renderAiSettingsForm(options: {
     try {
       const auth = await fetchChatGptAuthStatus(checkedProvider);
       if (disposed || generation !== connectionCheckGeneration || checkedProvider !== providerId) return;
-      if (hasStoredCompanionCredential(auth)) {
-        setConnectionSummary(`연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`, "ready");
-      } else if (auth.env === true) {
-        setConnectionSummary("환경 변수만 있어 에디터 로그인이 필요합니다.", "warning");
+      if (hasUsableCompanionCredential(auth)) {
+        setConnectionSummary(
+          auth.env === true ? "연결됨 · 환경 변수" : `연결됨${auth.planType ? ` · ${auth.planType.toUpperCase()}` : ""}`,
+          "ready",
+        );
       } else if (auth.expired === true) {
         setConnectionSummary("로그인이 만료되었습니다. 다시 로그인하세요.", "warning");
       } else {
