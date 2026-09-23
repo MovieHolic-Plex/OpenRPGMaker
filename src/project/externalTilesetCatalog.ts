@@ -1,6 +1,8 @@
 import catalog from '@/assets/pixelArtWorldCatalog.json';
 import urbanCatalog from '@/assets/pixelArtWorldUrbanCatalog.json';
 import schoolCatalog from '@/assets/pixelArtWorldSchoolCatalog.json';
+import facilityCatalog from '@/assets/pixelArtWorldFacilitiesCatalog.json';
+import homeCatalog from '@/assets/pixelArtWorldHomeCatalog.json';
 import type { TilesetDef } from './types';
 
 export interface ExternalTileRecipe {
@@ -42,7 +44,7 @@ export interface ExternalTileScene {
   passableTiles?: number[];
   lowerTileIds?: number[];
 }
-export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog];
+export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog];
 
 export function validateExternalTileScenes(pack: ExternalTilesetPack): void {
   const count = pack.width * pack.height / (pack.tileSize ** 2);

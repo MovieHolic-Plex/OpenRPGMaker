@@ -1,5 +1,6 @@
 // Metadata only. Never fetch or bundle the author's artwork.
 import { readFile, writeFile } from 'node:fs/promises';
+import { addPawCivicScenes } from './lib/paw-civic-scenes.mjs';
 const source = new URL('../../tiledata/pixel-art-world/catalog.json', import.meta.url);
 const packs = JSON.parse(await readFile(source, 'utf8'));
 for (const pack of packs) {
@@ -14,5 +15,6 @@ for (const pack of packs) {
     if (recipe.tiles.flat().some(tile => tile >= count || tile === pack.floorTile)) throw Error(`Invalid tile: ${recipe.id}`);
   }
 }
+addPawCivicScenes(packs);
 await writeFile(new URL('../../src/assets/pixelArtWorldCatalog.json', import.meta.url), JSON.stringify(packs, null, 2) + '\n');
 console.log(`Prepared ${packs.length} metadata-only packs / ${packs.reduce((n, p) => n + p.recipes.length, 0)} furniture recipes`);

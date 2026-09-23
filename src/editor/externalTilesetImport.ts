@@ -6,6 +6,7 @@ import { recordProjectSnapshot } from '@/editor/mapEditHistory';
 import { uploadedAssetForImport } from '@/editor/uploadedAssetStorage';
 import { genId } from '@/util/id';
 import { sha256HexBytes } from '@/util/sha256';
+import { pixelArtWorldCityGuide } from '@/project/pixelArtWorldCity';
 
 export async function prepareExternalTileset(file: File, pack: ExternalTilesetPack) {
   if (file.size > 4_000_000) throw new Error('원본 PNG를 선택하세요. 파일이 너무 큽니다.');
@@ -19,6 +20,8 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
   const assetId = genId('chipset_img');
   const tileset = createExternalTileset(pack, assetId, genId('ts'));
   tileset.referenceDocuments = [createReferences(pack, image, dataUrl, tileset.id)];
+  const cityGuide = pixelArtWorldCityGuide(pack.filename, dataUrl);
+  if (cityGuide) tileset.referenceDocuments.push(cityGuide);
   for (const scene of pack.scenes ?? []) {
     const picture = renderExample(image, scene);
     tileset.referenceDocuments.push({
