@@ -1964,3 +1964,27 @@ Tests: `feature16AiToolIntegration.test.ts`; schemas: `combatAuthoringSchemas.ts
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
 빈 시작 맵 전체 시공에서 예전 좌표가 고립되면 `restoreExistingTargetStart`가 검증된 새
 시작점을 유지한다. 기존 콘텐츠 또는 bounds 요청은 이 예외가 아니다.
+
+
+### 저장된 AI 계획 본문 조회 (2026-09-23)
+
+present_doc로 저장한 aiDocuments를 list_ai_docs로 찾는다. 목록은 본문을 반환하지 않는다. read_ai_doc(documentId, blockIndex=0, offset=0)로 블록당 최대6000자를 읽고 nextOffset 및 blockCount까지 순회한다. markdown 원문/나머지 블록 JSON을 반환하며 실행하지 않는다. 조회는 프로젝트 불변이며 없는 ID와 잘못된 정수·범위는 오류다. 공용 타일 참고문서는 계속 read_tileset_reference를 쓴다.
+
+### 호스트 공용 DB 참고문서 갱신 (2026-09-23)
+
+브라우저 편집기 부팅 시 팀 인증 후 `/__oprn/shared-tile-references`를 조회한다. 서버는
+호스트의 `OPRN_SHARED_CONTENT_SQLITE`(기본 XDG data/oprn/shared-content.sqlite)를 읽기 전용으로 열며
+프로젝트 ID로 필터하지 않는다. GET 전용이며 팀 인증/동일 출처 검사를 기존 호스트와 공유한다.
+`store.normalizeCurrentProject`의 `sharedTileReferences` 단계는 설치된 `shared_` 타일셋의
+ID·타일 크기·열 수·개수·업로드 이미지 ID와 SHA256이 모두 맞을 때 참고문서 카테고리만 갱신한다.
+맵·타일 픽셀·충돌·미설치 타일셋은 변경하지 않고 프로젝트 전용 카테고리는 유지한다.
+외부 asset ref의 byte SHA와 인라인 dataURL의 SHA 경로를 각각 지원한다. 기하/그림이 다르면 건너뛴다.
+갱신은 기존 정규화의 변경 계측·저장 경로를 따른다. 공용 DB 변경 후 프로젝트를 다시 열어야 반영되며,
+진행 중인 조수 실행의 문서 판독 증거를 무효화하는 실시간 변경은 하지 않는다.
+HTTP 경로가 없는 환경(현재 Electron 직접 실행 등)은 저장된 문서를 유지한다. 공유문서 자동 갱신은
+현재 로컬/팀 웹 호스트 경로에서 제공하며 다른 실행 경로까지 지원했다고 보고하지 않는다.
+
+
+## 실제 타일 규칙 수정 도구 노출 (2026-09-23)
+
+`set_tile_rules`는 활성 도구다. `propose_tile_vocabulary`는 어휘 승인 제안이며 기존 타일의 priority·통행·지면 규칙을 즉시 수정하는 대체재가 아니다. V1_TILE_SUPERSEDED에 넣으면 getTool에는 존재해도 LLM 스키마에서 사라져 공용 문서의 조립 절차를 실행할 수 없다. 레이어 수정의 confirmedByUser 검사와 잠긴 항목 보호는 유지한다. 실제 요청이 레이어 정정을 승인한 경우에만 사용한다. 수정 후 홈 레이어와 실제 lower/upper 배열을 재조회하고, 적용·저장 표시만으로 성공 판정하지 않는다.

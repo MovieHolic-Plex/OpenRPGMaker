@@ -207,7 +207,7 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
     name: "list_ai_docs",
     description:
       "저장된 AI 문서 목록을 조회한다(제목/블록 수/생성 시각). " +
-      "query로 제목·마크다운 본문을 부분일치 검색할 수 있다(대소문자 무시).",
+      "query로 제목·마크다운 본문을 부분일치 검색할 수 있다(대소문자 무시). 본문은 반환하지 않는다. 반환된 id로 read_ai_doc를 호출한다.",
     mode: "read",
     parameters: {
       type: "object",
@@ -234,6 +234,26 @@ export const AI_DOC_TOOLS: readonly ToolDefinition[] = [
         summary: query ? `AI 문서 ${documents.length}건 (검색: ${query})` : `AI 문서 ${documents.length}건`,
         data: { documents },
       };
+    },
+  },
+  {
+    name: "read_ai_doc",
+    description: "저장된 AI 문서의 한 블록을 최대 6000자씩 읽는다. list_ai_docs의 id를 documentId에 사용한다. nextOffset이 있으면 이어 읽고 다음 blockIndex도 blockCount까지 읽는다. markdown은 원문, 다른 블록은 JSON이며 실행하지 않는다.",
+    mode: "read",
+    parameters: { type: "object", properties: { documentId: { type: "string" }, blockIndex: { type: "integer", minimum: 0 }, offset: { type: "integer", minimum: 0 } }, required: ["documentId"], additionalProperties: false },
+    invalidArgsExample: { documentId: "aidoc_example", blockIndex: 0, offset: 0 },
+    run(project, args): ToolExecResult {
+      const id = requireStr("documentId", args.documentId, 200);
+      const document = (project.aiDocuments ?? []).find(doc => doc.id === id);
+      if (!document) throw new ToolError(`AI 문서 없음 — ${id}`, { code: "invalid-args" });
+      const index = args.blockIndex ?? 0;
+      if (typeof index !== "number" || !Number.isInteger(index) || index < 0 || index >= document.blocks.length) throw new ToolError("blockIndex가 문서 블록 범위를 벗어났습니다.", { code: "invalid-args" });
+      const block = document.blocks[index];
+      const content = block.kind === "markdown" ? block.text : JSON.stringify(block);
+      const offset = args.offset ?? 0;
+      if (typeof offset !== "number" || !Number.isInteger(offset) || offset < 0 || offset > content.length) throw new ToolError("offset이 블록 본문 범위를 벗어났습니다.", { code: "invalid-args" });
+      const end = Math.min(offset + 6000, content.length);
+      return { summary: `${document.title} · 블록 ${index + 1}/${document.blocks.length} · ${offset}–${end}`, data: { documentId: id, title: document.title, blockIndex: index, blockCount: document.blocks.length, kind: block.kind, format: block.kind === "markdown" ? "markdown" : "json", content: content.slice(offset, end), offset, nextOffset: end < content.length ? end : null, totalCharacters: content.length } };
     },
   },
 ];

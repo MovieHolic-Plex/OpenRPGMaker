@@ -18,7 +18,7 @@ const CONFIG = {
   maxToolCalls: 4, maxTokens: 512,
 };
 const SEMANTIC_TOOLS = [
-  "set_tile_metadata", "set_tile_rules", "upsert_tile_group", "delete_tile_group",
+  "set_tile_metadata", "upsert_tile_group", "delete_tile_group",
   "set_group_junction", "set_group_overlay", "set_cluster_rule", "upsert_palette_preset",
   "set_group_layout", "suggest_group_from_range", "propose_tile_vocabulary",
 ];
@@ -100,6 +100,23 @@ describe("public technical tile passage capability", () => {
     expect(result.data).toMatchObject({ matches: expect.arrayContaining([
       expect.objectContaining({ name: SETTER, mode: "write", parameters: getTool(SETTER)!.parameters }),
     ]) });
+  });
+
+  it("exposes runtime layer rules without substituting a vocabulary proposal", () => {
+    const name = "set_tile_rules";
+    expect(toOpenAiTools().some(tool => tool.function.name === name)).toBe(true);
+    const context = { project: fixture() };
+    const discovery = runTool(context, "find_tools", { query: name });
+    expect(discovery.data).toMatchObject({ matches: expect.arrayContaining([
+      expect.objectContaining({ name, parameters: getTool(name)!.parameters }),
+    ]) });
+    const args = { tilesetId: TILESET, entries: [{ tile: 1, layer: "upper" }] };
+    const before = structuredClone(context.project);
+    expect(runTool(context, name, args).ok).toBe(false);
+    expect(context.project).toEqual(before);
+    expect(runTool(context, name, { ...args, confirmedByUser: true }).ok).toBe(true);
+    expect(context.project.tilesets[TILESET].priority[1]).toBe("upper");
+    expect(context.project.maps).toEqual(before.maps);
   });
 
   it("keeps semantic teaching and superseded painting hidden", () => {
