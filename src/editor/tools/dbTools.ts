@@ -870,9 +870,9 @@ const upsertEnemy: ToolDefinition = {
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings);
     const outcome = upsertById(draft.database.enemies, record);
-    for (const troop of draft.database.troops) {
-      if (troop.enemyIds.includes(record.id)) warnings.push(...troopBalanceWarnings(draft, troop.id));
-    }
+    // 이 적이 든 첫 트룹 하나만 본다 — 경고 한 줄이면 고칠 방향이 선다.
+    const firstTroop = draft.database.troops.find(troop => troop.enemyIds.includes(record.id));
+    if (firstTroop) warnings.push(...troopBalanceWarnings(draft, firstTroop.id));
     return {
       summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
       data: record,
