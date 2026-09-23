@@ -176,3 +176,17 @@ native PNGs. Tests: `tiboRecovery.test.ts`; runtime `tibo-recovery.scenario.mjs`
 - 타 칩셋·이식된 소스·수정된 그룹 문법에는 고정 천장 쿼터를 적용하지 않는다. 기본 등록은 기존 ID/겹치는 사용자 그룹·사용자 메타/잠금·이식을 덮어쓰지 않는다.
 - 편집기·런타임·캔버스 미리보기·보고서 PNG는 공통 쿼터 진입점을 사용한다. `renderInteriorMapPng`도 천장을 무조건 통짜 픽셀로 기대해서는 안 된다.
 - 진단과 수정 전 증거: `reports/ceiling-audit-2026-09-18/`. 수정 후 브라우저 증거: `reports/ceiling-fix-2026-09-18/`. 회귀 계약: `test/interiorCeilingAutotile.test.ts`, `test/placeConceptRender.test.ts`. 이 세션에서는 vitest/전체 게이트를 실행하지 않았다.
+
+## Pixel Art World XP 사용자 원본 (2026-09-24)
+
+`pixelArtWorldAutotiles.ts`는 확인된 96×128 정적 XP 원본을 16px 쿼터로 해석한다.
+8방향 256마스크를 유효 대각 조건으로 정규화하여 47개 실제 32px 변형을 만든다.
+외딴 칸은 원본 좌상단, 오목 코너는 우상단, 외곽/얇은 선은 아래 3×3의 쿼터다.
+기존 11칸 통짜 근사를 쓰지 않는다. `pixelArtWorldAutotileImport.ts`는 기존 업로드
+32px 타일셋 끝에 합성 픽셀을 붙이며 이전 번호를 보존한다. `neighborhood:8`과
+256키 `variantMap`이 기존 lower 자동 성형 경로를 사용한다. 런타임은 보통 32px
+업로드 프레임만 렌더한다. upper 자동 성형은 지원 범위가 아니다.
+
+공용은 원본 판본·규칙 메타데이터만 배포한다. 사용자 PNG에서 실제 참고 그림과
+전체 예제 배열을 생성한다. 출처·좌표·가져오기/보존 계약:
+[pixel-art-world/autotiles](../tiledata/pixel-art-world/autotiles.md).
