@@ -244,6 +244,8 @@ async function finishEditorBoot(startedAt: number): Promise<void> {
       }
       setPendingWelcomePipeline({
         prompt: result.prompt,
+        // 말풍선에는 사용자 쪽 문장만 — 모델은 prompt 전체를 받는다.
+        ...(result.displayText ? { displayText: result.displayText } : {}),
         autoSend: result.autoSend,
         source: result.source === "chip" ? "chip" : "free-text",
       });

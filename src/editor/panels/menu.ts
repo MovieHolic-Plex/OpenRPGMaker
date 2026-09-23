@@ -893,9 +893,12 @@ async function editGameDesignBrief(): Promise<void> {
   store.update(project => { project.gameDesignBrief = brief; }, { scope: "project", label: "게임 기획 수정", origin: "human" });
   if (!(await saveProjectNow())) return;
   const { prefillAiAssistantInput } = await import("@/editor/aiBootIntent");
-  const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt } = await import("@/editor/welcomeGenrePresets");
+  const { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } = await import("@/editor/welcomeGenrePresets");
   const preset = welcomeGenrePresetById(brief.presetId);
-  const prefilled = preset && prefillAiAssistantInput(buildWelcomeGenrePresetPrompt(preset, brief), { preserveDraft: true });
+  const prefilled = preset && prefillAiAssistantInput(buildWelcomeGenrePresetPrompt(preset, brief), {
+    preserveDraft: true,
+    displayText: welcomeGenrePresetDisplayText(preset, brief),
+  });
   toast(prefilled
     ? "기획을 저장했습니다. 조수 입력창에서 작업 범위를 확인한 뒤 보낼 수 있습니다."
     : "기획을 저장했습니다. 다음 AI 대화부터 이 기획을 참고합니다.", "ok");

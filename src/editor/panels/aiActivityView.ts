@@ -3,12 +3,44 @@ import { el } from "@/util/dom";
 import { activityText, type ActivityEntry, type ActivityTrace } from "@/ai/activityTrace";
 import { activityArchiveFailed, readActivityArchive, retainActivityTrace } from "@/ai/activityTraceArchive";
 import { bindActivityLevel, createActivityLevelControl, getActivityLevel } from "./aiActivityPreference";
-import { toolGroup, toolLabel } from "./aiToolLabels";
+import { toolBriefLabel, toolGroup, toolLabel } from "./aiToolLabels";
 
 export interface ActivityView { root: HTMLElement; update(trace: ActivityTrace | undefined, actor?: string): void }
 const clock = (ms: number): string => `${Math.floor(Math.max(0, ms) / 60000).toString().padStart(2, "0")}:${Math.floor(Math.max(0, ms) / 1000 % 60).toString().padStart(2, "0")}`;
 const label = (entry: ActivityEntry): string => entry.kind === "tool" ? toolLabel(entry.name) : entry.summary;
 const actorLabel = (trace: ActivityTrace, actor: string): string => trace.actors[actor] ?? (actor === "system" ? "실행" : actor === "agent" ? "조수" : actor);
+/**
+ * 「간단히 보기」(기본값)의 한 줄. 자세히·전체 기록은 `label` 을 그대로 쓴다.
+ *
+ * 2026-09-23 실측(첫 사용자 한 문장 → 16분 실행): 기본 표시에 `Ultrabrain · 계획`·`consult writer · 실행 중`·
+ * `시공 · 8.7초`·`모델 응답 대기 · 6번째 단계`·`스위치 번호 바꾸기 · 실패` 가 떴다. 간단히 보기는
+ * 무엇을 하고 있는지만 말한다 — 영문 이름·단계 번호·소요 시간은 자세히 보기로 넘긴다.
+ * 도구 실패는 조수가 이어서 다른 방법을 찾는 게 보통이라 여기서는 「실패」 로 적지 않는다(아래 필터 참고).
+ */
+function briefEntryText(entry: ActivityEntry): string {
+  const role = (entry.output as { role?: string } | undefined)?.role;
+  const planner = entry.actor.startsWith("ultrabrain-plan");
+  switch (entry.kind) {
+    case "tool":
+      if (entry.status === "error") return "다른 방법을 찾는 중";
+      return toolBriefLabel(entry.name, entry.status === "running");
+    case "agent_spawn":
+      return planner || role === "orchestrator" ? "계획 세우는 중" : role === "reviewer" ? "잘 어울리는지 확인하는 중" : "작업 시작";
+    case "agent_done":
+      return entry.status === "error" ? "작업 실패" : planner ? "계획 완료" : "맡은 작업 완료";
+    case "review":
+      return entry.status === "ok" ? "확인 완료" : "더 다듬을 곳 발견";
+    default:
+      return activityText(entry.summary, 140);
+  }
+}
+/** 간단히 보기에서 담당 이름 — 기본 담당(계획 모델·시공)은 개발 용어라 적지 않는다. 팀원 이름만 남긴다. */
+const briefActorLabel = (trace: ActivityTrace, actor: string): string => {
+  const name = actorLabel(trace, actor);
+  return /ultrabrain|^(?:시공|조수|실행)$/iu.test(name) ? "" : name;
+};
+/** 그림 설명에 도구 결과 원문(`items 1건 / 1건`)이 섞이면 간단히 보기에서는 뺀다. */
+const briefCaption = (summary: string): string => (/[A-Za-z_]{3,}/u.test(summary.replace(/\(map_[\w-]+\)/gu, "")) ? "" : summary);
 const searchText = new WeakMap<ActivityEntry, string>();
 function boundedSearchText(value: unknown, depth = 0): string {
   if (value == null || typeof value === "number" || typeof value === "boolean") return String(value ?? "");
@@ -86,8 +118,12 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const latestPhase = rows.filter(e => e.name === "run.phase").at(-1)?.id;
       const latestSave = rows.filter(e => e.name.startsWith("save.")).at(-1)?.id;
       // 체크포인트 반영 성공은 쓰기마다 한 줄씩 쌓이는 배관 소식이다 — 실패만 남긴다.
+      // 도구 실패 뒤에 기록이 더 이어졌으면 조수가 회복한 것이다 — 간단히 보기에서는 지운다.
+      // 실행 자체가 실패로 끝나면 마지막 run.phase 「실패」 줄이 그 사실을 말한다. 자세히 보기는 그대로 둔다.
+      const latestEntry = candidates.at(-1)?.id;
       rows = rows.filter(e => (e.name !== "run.phase" || e.id === latestPhase) && (!e.name.startsWith("save.") || e.id === latestSave)
-        && !(e.name === "checkpoint.apply" && e.status !== "error"));
+        && !(e.name === "checkpoint.apply" && e.status !== "error")
+        && !(e.kind === "tool" && e.status === "error" && e.id !== latestEntry));
       // Merge adjacent successful repetitions; keep failures and active calls individually visible.
       const grouped: ActivityEntry[] = [];
       const counts = new Map<string, number>();
@@ -118,12 +154,15 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
       const signature = `${level}:${soloActor}:${entry.status}:${entry.endedAt}:${entry.summary}:${entry.at}:${entry.visuals?.map(v => v.id).join(",")}`;
       let row = existing.get(entry.id);
       if (!row || row.dataset.signature !== signature) {
-        const mark = entry.status === "running" ? "◌" : entry.status === "ok" ? "✓" : entry.status === "error" ? "!" : "·";
-        const text = level === "trace" ? `${entry.name} · ${entry.summary}` : `${entry.kind === "agent_done" && level === "brief" ? (entry.status === "error" ? "작업 실패" : "맡은 작업 완료") : activityText(label(entry), level === "brief" ? 140 : 1000)}${entry.kind === "tool" ? ` · ${entry.status === "running" ? "실행 중" : entry.status === "error" ? "실패" : entry.status === "info" ? "종료 응답 없음" : /^\d+건/.test(entry.summary) ? entry.summary : "완료"}` : ""}`;
+        // 간단히 보기의 도구 실패는 「다른 방법을 찾는 중」 으로 적는다 — 빨간 느낌표를 달지 않는다.
+        const shownStatus = level === "brief" && entry.kind === "tool" && entry.status === "error" ? "info" : entry.status;
+        const mark = shownStatus === "running" ? "◌" : shownStatus === "ok" ? "✓" : shownStatus === "error" ? "!" : "·";
+        const text = level === "trace" ? `${entry.name} · ${entry.summary}` : level === "brief" ? briefEntryText(entry) : `${activityText(label(entry), 1000)}${entry.kind === "tool" ? ` · ${entry.status === "running" ? "실행 중" : entry.status === "error" ? "실패" : entry.status === "info" ? "종료 응답 없음" : /^\d+건/.test(entry.summary) ? entry.summary : "완료"}` : ""}`;
         const heading = el("div", { class: "ai-activity-entry-title", children: [el("span", { class: "ai-activity-mark", text: mark, attrs: { "aria-hidden": "true" } }), el("span", { text })] });
         // 담당이 하나뿐이면 행마다 같은 이름(「시공」)을 되풀이하지 않는다. 0.1초 미만은 시간을 적지 않는다(「0.00초」).
-        const who = level === "brief" && soloActor ? "" : actorLabel(current, entry.actor);
-        const took = entry.durationMs === undefined || (level === "brief" && entry.durationMs < 100) ? "" : `${(entry.durationMs / 1000).toFixed(level === "brief" ? 1 : 2)}초`;
+        // 간단히 보기는 소요 시간(「시공 · 8.7초」)을 적지 않는다 — 머리 줄의 시계가 이미 간다.
+        const who = level === "brief" ? (soloActor ? "" : briefActorLabel(current, entry.actor)) : actorLabel(current, entry.actor);
+        const took = entry.durationMs === undefined || level === "brief" ? "" : `${(entry.durationMs / 1000).toFixed(2)}초`;
         const detail = [who, took].filter(Boolean).join(" · ");
         let next: HTMLElement;
         if (level === "brief") next = el("div", { children: detail ? [heading, el("small", { text: detail })] : [heading] });
@@ -161,14 +200,14 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
           next = details;
         }
         if (entry.visuals?.length) {
-          const media = createActivityMedia(entry.visuals, entry.summary);
+          const media = createActivityMedia(entry.visuals, level === "brief" ? briefCaption(entry.summary) : entry.summary);
           // Visuals stay visible in detail/trace; raw receipts remain separately expandable.
           if (next instanceof HTMLDetailsElement) {
             const wrapper = el("div", { children: [next, media] });
             next = wrapper;
           } else next.append(media);
         }
-        next.className = `ai-activity-entry is-${entry.status}`;
+        next.className = `ai-activity-entry is-${shownStatus}`;
         next.dataset.entryId = entry.id; next.dataset.signature = signature;
         if (row) row.replaceWith(next);
         row = next;
@@ -183,7 +222,7 @@ export function createActivityView(options: { archive?: boolean; historical?: bo
     if (!rows.length) list.replaceChildren(el("p", { class: "ai-activity-meta", text: query || severity !== "all" ? "일치하는 기록이 없어요." : `${current.phase} · 다음 실행 신호를 기다리고 있어요.` }));
     const recent = candidates[candidates.length - 1];
     const warnings = [options.historical ? `이전 실행 기록 · 마지막 기록 상태: ${current.phase}` : "", current.dropped ? `보존 상한으로 이전 ${current.dropped}건이 제외됐어요.` : "", activityArchiveFailed(current.id) ? "기기에 기록을 저장하지 못했어요. 현재 화면에서 내려받을 수 있어요." : ""];
-    if (level === "brief" && recent && ["turn", "delta", "heartbeat"].includes(recent.kind) && !["완료", "적용됨", "검토 대기", "실패", "중단", "버림"].includes(current.phase)) warnings.unshift(recent.summary);
+    if (level === "brief" && recent && ["turn", "delta", "heartbeat"].includes(recent.kind) && !["완료", "적용됨", "검토 대기", "실패", "중단", "버림"].includes(current.phase)) warnings.unshift("생각하는 중…");
     notice.textContent = warnings.filter(Boolean).join(" "); notice.hidden = !notice.textContent;
   }
   search.addEventListener("input", () => { query = search.value.toLowerCase(); render(); });

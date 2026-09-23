@@ -9,6 +9,8 @@ import {
   WELCOME_MORE_WORLDS,
   buildWelcomeFreeTextPrompt,
   buildWelcomeGenrePresetPrompt,
+  welcomeFreeTextDisplayText,
+  welcomeGenrePresetDisplayText,
   type WelcomeGenrePresetId,
   type WelcomePosterCard,
   welcomeGenreSystemPresetPlanById,
@@ -47,6 +49,8 @@ export type EditorWelcomeResult = {
   readonly intent: string | null;
   /** Full AI prompt sent to the 감독 console for the current map. */
   readonly prompt: string | null;
+  /** 조수 말풍선·입력창에 보일 사용자 쪽 문장. `prompt` 의 내부 지시문은 보이지 않는다. */
+  readonly displayText?: string;
   readonly autoSend: boolean;
   readonly presetId?: WelcomeGenrePresetId;
   readonly source?: "chip" | "free-text" | "manual-system-preset";
@@ -239,6 +243,7 @@ export function presentEditorWelcome(
       settle({
         intent: trimmed,
         prompt: buildWelcomeFreeTextPrompt(trimmed),
+        displayText: welcomeFreeTextDisplayText(trimmed),
         autoSend: true,
         source: "free-text",
         dismiss: true,
@@ -304,6 +309,7 @@ export function presentEditorWelcome(
         settle({
           intent: label,
           prompt: autoSend ? buildWelcomeGenrePresetPrompt(preset, brief) : null,
+          ...(autoSend ? { displayText: welcomeGenrePresetDisplayText(preset, brief) } : {}),
           autoSend: autoSend && (options.canGenerate?.() ?? true),
           presetId,
           source: autoSend ? "chip" : "manual-system-preset",

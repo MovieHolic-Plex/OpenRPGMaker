@@ -1,6 +1,6 @@
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
-import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt } from "./welcomeGenrePresets";
+import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } from "./welcomeGenrePresets";
 import { setPendingAiBootIntent } from "./aiBootIntent";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { getAiConnectionStatus } from "./panels/aiConnectionStatus";
@@ -30,7 +30,7 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
     if (!stillCurrent()) return;
     const config = resolveSurfaceAiConfig("chat");
     const autoSend = isAssistantEndpointReady(config, getAiConnectionStatus(config));
-    setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, brief), { autoSend });
+    setPendingAiBootIntent(buildWelcomeGenrePresetPrompt(preset, brief), { autoSend, displayText: welcomeGenrePresetDisplayText(preset, brief) });
     if (!autoSend) toast("게임 기획을 저장하고 조수 입력창에 담았습니다. AI 연결 후 보낼 수 있습니다.", "info");
   } catch {
     if (stillCurrent()) {
