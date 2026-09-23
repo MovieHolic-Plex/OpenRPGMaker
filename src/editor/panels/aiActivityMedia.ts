@@ -86,16 +86,35 @@ function prepare(id: string, visual?: ActivityVisual): Promise<Blob | undefined>
 }
 // Capture even when the user hides the feed. Saved history never resolves from live project state.
 setActivityMediaPreparer((id, visual) => { void prepare(id, visual); });
-const imageUrls = new Map<HTMLImageElement, string>();
+type MountedImageUrl = { readonly url: string; readonly createdAt: number; mounted: boolean };
+const imageUrls = new Map<HTMLImageElement, MountedImageUrl>();
 let imageObserver: MutationObserver | undefined;
-function releaseDetachedImages(): void {
-  for (const [image, url] of imageUrls) if (!image.isConnected) { URL.revokeObjectURL(url); imageUrls.delete(image); }
+/** 한 번도 붙지 않은 그림을 기다려 주는 시간. 그 뒤에도 안 붙으면 버려진 것으로 보고 푼다. */
+const UNMOUNTED_IMAGE_GRACE_MS = 30_000;
+/**
+ * 떨어진 그림의 Blob URL 을 푼다 — 단, 아직 읽는 중이거나 한 번도 문서에 붙지 않은 그림은 두고 본다.
+ *
+ * 2026-09-23 도그푸딩: 생성 중 콘솔에 `blob:… net::ERR_FILE_NOT_FOUND` 가 ~200건 찍혔다. 활동 보기는
+ * 기록이 들어올 때마다 행을 갈아 끼우는데(상태·요약이 바뀌면 새 행), 옛 행의 그림이 아직 읽는 중일 때
+ * 관찰자가 URL 을 풀어 읽기가 실패했다. 카드를 로그에 붙이기 전에 그림이 먼저 준비된 경우도
+ * 「안 붙음 = 떨어짐」으로 보고 풀어, 붙고 나서 빈 칸이 됐다.
+ */
+export function releaseDetachedActivityImages(now = Date.now()): void {
+  for (const [image, entry] of imageUrls) {
+    if (image.isConnected) { entry.mounted = true; continue; }
+    if (!image.complete) continue;
+    if (!entry.mounted && now - entry.createdAt < UNMOUNTED_IMAGE_GRACE_MS) continue;
+    URL.revokeObjectURL(entry.url); imageUrls.delete(image);
+  }
 }
-function attachImage(surface: HTMLElement, blob: Blob, title: string): void {
+/** 테스트용 — 아직 풀지 않은 그림 URL 수. */
+export function retainedActivityImageUrlCount(): number { return imageUrls.size; }
+const releaseDetachedImages = (): void => releaseDetachedActivityImages();
+export function attachImage(surface: HTMLElement, blob: Blob, title: string): void {
   const url = URL.createObjectURL(blob);
   const image = document.createElement("img"); image.alt = title; image.decoding = "async";
-  imageUrls.set(image, url);
-  image.addEventListener("load", () => { surface.dataset.ready = "true"; }, { once: true });
+  imageUrls.set(image, { url, createdAt: Date.now(), mounted: false });
+  image.addEventListener("load", () => { surface.dataset.ready = "true"; queueMicrotask(releaseDetachedImages); }, { once: true });
   image.addEventListener("error", () => { surface.textContent = "이미지를 불러오지 못했어요"; URL.revokeObjectURL(url); imageUrls.delete(image); }, { once: true });
   image.src = url;
   surface.replaceChildren(image);
