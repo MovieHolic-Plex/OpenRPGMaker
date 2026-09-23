@@ -282,49 +282,34 @@ function groupForTab(id: DatabaseTab): DatabaseTabGroup | undefined {
   return TAB_GROUPS.find((group) => group.tabs.includes(primaryTab(id)));
 }
 
-// 접힘 상태는 첫 렌더에서 읽는다 — 모듈 로드 시점에는 window 가 아직 없을 수 있다.
-let collapsedGroups: Set<string> | null = null;
+// 레일은 모든 그룹을 펼친 채로 둔다(2026-09-24, 사이드바 개선안 C). 예전 아코디언은
+// 한 그룹만 열어서 그룹을 건널 때마다 두 번 눌러야 했고, 접힌 머리 하나가 66px(이름·부제·
+// 배지+셰브론 세 줄)라 접힌 여섯 개가 낱말 여섯 개에 ~400px 를 썼다.
+// 대신 **레코드가 0 인 목록 탭**만 그룹마다 「빈 탭 N개」 한 줄로 접는다. 카운트가 null 인
+// 탭(시스템·용어·속성처럼 목록이 아닌 설정 화면)은 비어 있다고 판정할 수 없으므로 접지 않는다.
+// 활성 탭은 비어 있어도 늘 보인다 — 딥링크·조수 점프가 숨은 행에 떨어지면 안 된다.
+// 사용자가 펼친 그룹은 기억한다. 옛 접힘 키(`collapsedTabGroups`)는 더 읽지 않는다.
+let revealedEmptyGroups: Set<string> | null = null;
 
-function collapsedGroupSlugs(): Set<string> {
-  if (collapsedGroups) return collapsedGroups;
-  const stored = readStoredCollapsedGroups();
-  collapsedGroups = stored ?? defaultCollapsedGroups();
-  return collapsedGroups;
-}
-
-/** 저장된 접힘 상태. 그룹 구성이 바뀌면(`전투·몬스터` 분할, `map`→`world` 개명) 예전 배열은
- *  더 이상 아코디언 불변식을 만족하지 않는다 — 새 slug 가 집합에 없으니 펼쳐진 채로 렌더되어
- *  두 그룹이 동시에 열리고 레일이 다시 스크롤된다. 그래서 죽은 slug 를 버리고, 남은 상태가
- *  "한 그룹만 열림" 을 깨면 저장값을 폐기해 기본값으로 떨어진다. 테스트는 빈 스토리지에서
- *  시작하므로 이 경로는 오래된 사용자만 밟는다. */
-function readStoredCollapsedGroups(): Set<string> | null {
+function revealedEmptyGroupSlugs(): Set<string> {
+  if (revealedEmptyGroups) return revealedEmptyGroups;
+  revealedEmptyGroups = new Set();
   try {
-    const raw = window.localStorage.getItem(DATABASE_COLLAPSED_GROUPS_KEY);
-    if (!raw) return null;
-    const parsed: unknown = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return null;
+    const raw = window.localStorage.getItem(DATABASE_REVEALED_EMPTY_GROUPS_KEY);
+    const parsed: unknown = raw ? JSON.parse(raw) : [];
     const known = new Set(TAB_GROUPS.map((group) => group.slug));
-    const collapsed = new Set(
-      parsed.filter((slug): slug is string => typeof slug === "string" && known.has(slug)),
-    );
-    // `> 1` 이다 — 전부 접힌 상태는 사용자가 실제로 만들 수 있는 정당한 상태이므로 보존한다.
-    if (TAB_GROUPS.length - collapsed.size > 1) return null;
-    return collapsed;
+    if (Array.isArray(parsed)) {
+      for (const slug of parsed) if (typeof slug === "string" && known.has(slug)) revealedEmptyGroups.add(slug);
+    }
   } catch {
-    return null;
+    // 읽기 실패는 「아무 그룹도 안 펼침」 으로 둔다.
   }
-}
-
-/** 처음 열 때는 한 그룹만 펼친다 — 29개를 한 줄로 쏟지 않는다. 개요처럼 그룹에
- *  속하지 않은 탭이 활성이면 첫 그룹을 연다(전부 접으면 레일이 헤더만 남는다). */
-function defaultCollapsedGroups(): Set<string> {
-  const openSlug = groupForTab(activeTab)?.slug ?? TAB_GROUPS[0]?.slug;
-  return new Set(TAB_GROUPS.filter((group) => group.slug !== openSlug).map((group) => group.slug));
+  return revealedEmptyGroups;
 }
 
 /**
  * 활성 탭 저장. setItem 은 던질 수 있다(프라이빗 모드·할당량) — 같은 파일의
- * persistCollapsedGroups 는 이미 try/catch 로 막아 두었는데 여기만 무방비라
+ * persistRevealedEmptyGroups 는 이미 try/catch 로 막아 두었는데 여기만 무방비라
  * 저장 실패가 **탭 전환 자체를 중단**시켰다.
  */
 function persistActiveTab(): void {
@@ -336,11 +321,11 @@ function persistActiveTab(): void {
   }
 }
 
-function persistCollapsedGroups(): void {
+function persistRevealedEmptyGroups(): void {
   try {
-    window.localStorage.setItem(DATABASE_COLLAPSED_GROUPS_KEY, JSON.stringify([...collapsedGroupSlugs()]));
+    window.localStorage.setItem(DATABASE_REVEALED_EMPTY_GROUPS_KEY, JSON.stringify([...revealedEmptyGroupSlugs()]));
   } catch {
-    // 저장 실패해도 이번 세션의 접힘 상태는 메모리에 남는다.
+    // 저장 실패해도 이번 세션의 펼침 상태는 메모리에 남는다.
   }
 }
 
@@ -348,65 +333,63 @@ function railChildren(header: HTMLElement): HTMLElement[] {
   return Array.from(header.children) as HTMLElement[];
 }
 
-function applyGroupCollapse(header: HTMLElement): void {
-  const collapsed = collapsedGroupSlugs();
-  let hidden = false;
+/** 목록 탭인데 레코드가 0 개인 탭만 「빈 탭」 이다. null(목록 아님)은 빈 것이 아니다. */
+function isEmptyListTab(id: DatabaseTab): boolean {
+  return databaseTabCount(id) === 0;
+}
+
+function foldedEmptyTabs(group: DatabaseTabGroup): DatabaseTab[] {
+  if (revealedEmptyGroupSlugs().has(group.slug)) return [];
+  const active = primaryTab(activeTab);
+  return group.tabs.filter((id) => id !== active && isEmptyListTab(id));
+}
+
+/** 그룹마다 빈 탭을 숨기고 「빈 탭 N개」 줄을 맞춘다. 데이터·활성 탭이 바뀔 때마다 다시 부른다.
+ *  레일 직계 자식을 순서대로 걷는다 — 머리 → 탭들 → 접기 줄. (복합 선택자를 쓰지 않는 것은
+ *  fake DOM 테스트가 단순 선택자만 알기 때문이다.) */
+function applyEmptyTabFold(header: HTMLElement): void {
+  let group: DatabaseTabGroup | undefined;
+  let folded = new Set<DatabaseTab>();
   for (const child of railChildren(header)) {
     const classes = child.classList;
     if (!classes) continue;
     if (classes.contains("db-tab-group")) {
-      hidden = collapsed.has(child.dataset.groupSlug ?? "");
-      child.setAttribute("aria-expanded", String(!hidden));
-      // 접힌 그룹은 자식 탭 버튼을 전부 가리므로, 핸드리지 이름만 남으면 안에 무엇이 들었는지
-      // 알 수가 없다. 상태 전이가 37개인데 한 그룹만 열리므로 보이는 것은 6개라 — 쓰는 사람은
-      // «구조물» 같은 탭이 사라진 줄 알게 된다(사용자 실제 보고, 2026-08-30).
-      // 그래서 접힌 동안에만 속한 탭 이름을 부제로 보여 어디를 눌러야 하는지 답해 준다.
-      const slug = child.dataset.groupSlug ?? "";
-      const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
-      const hint = child.querySelector<HTMLElement>(".db-tab-group-peek");
-      if (group) {
-        const names = groupPeekNames(group).join("·");
-        if (hint) {
-          hint.textContent = hidden ? names : "";
-          hint.hidden = !hidden;
-        }
-        child.setAttribute(
-          "title",
-          hidden ? `${group.label} 그룹 펼치기 — ${names}` : `${group.label} 그룹 접기`,
-        );
-      }
+      group = TAB_GROUPS.find((candidate) => candidate.slug === child.dataset.groupSlug);
+      folded = new Set(group ? foldedEmptyTabs(group) : []);
+      if (!group) continue;
+      // aria-expanded 는 「이 그룹에 숨은 탭이 있는가」 다 — 머리를 누르면 그걸 펼친다.
+      child.setAttribute("aria-expanded", String(folded.size === 0));
+      const names = [...folded].map((id) => tabFor(id).label);
+      child.setAttribute(
+        "title",
+        folded.size > 0 ? `${group.label} — 빈 탭 펼치기: ${names.join(", ")}` : group.label,
+      );
       continue;
     }
-    if (!classes.contains("db-tab")) continue;
-    child.hidden = hidden;
+    if (!group) continue;
+    if (classes.contains("db-tab")) {
+      if (child.dataset.searchSecondary) continue;
+      child.hidden = folded.has(child.dataset.tab as DatabaseTab);
+      continue;
+    }
+    if (!classes.contains("db-tab-fold")) continue;
+    const names = [...folded].map((id) => tabFor(id).label);
+    child.hidden = folded.size === 0;
+    const [count, text] = Array.from(child.children) as HTMLElement[];
+    if (count) count.textContent = `빈 탭 ${folded.size}개`;
+    if (text) text.textContent = names.join("·");
+    child.setAttribute("title", `비어 있는 탭 펼치기 — ${names.join(", ")}`);
+    child.setAttribute("aria-label", `${group.label}: 빈 탭 ${folded.size}개 펼치기`);
   }
 }
 
-/** 아코디언: 한 그룹만 펼친다. 두세 그룹이 동시에 열리면 레일이 다시 스크롤된다. */
-function openOnlyGroup(slug: string): void {
-  const collapsed = collapsedGroupSlugs();
-  collapsed.clear();
-  for (const group of TAB_GROUPS) if (group.slug !== slug) collapsed.add(group.slug);
-}
-
-/** 그룹 헤더의 펼침/접힘 — 클릭과 키보드(Enter/Space)가 같은 경로를 쓴다. */
-function toggleGroupCollapse(slug: string, header: HTMLElement): void {
-  const collapsed = collapsedGroupSlugs();
-  if (collapsed.has(slug)) openOnlyGroup(slug);
-  else collapsed.add(slug);
-  persistCollapsedGroups();
-  applyGroupCollapse(header);
-}
-
-function expandGroupFor(header: HTMLElement, id: DatabaseTab): void {
-  const slug = groupForTab(id)?.slug;
-  if (!slug) return;
-  const collapsed = collapsedGroupSlugs();
-  const alreadyOpenAlone = !collapsed.has(slug) && collapsed.size === TAB_GROUPS.length - 1;
-  if (alreadyOpenAlone) return;
-  openOnlyGroup(slug);
-  persistCollapsedGroups();
-  applyGroupCollapse(header);
+/** 그룹 머리·「빈 탭」 줄 — 숨은 빈 탭을 펼친다. 이미 다 보이면 아무것도 하지 않는다(접지 않는다). */
+function revealGroupEmptyTabs(slug: string, header: HTMLElement): void {
+  const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
+  if (!group || foldedEmptyTabs(group).length === 0) return;
+  revealedEmptyGroupSlugs().add(slug);
+  persistRevealedEmptyGroups();
+  applyEmptyTabFold(header);
 }
 
 function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: string; readonly testid: string } {
@@ -416,7 +399,7 @@ function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: st
 }
 
 const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
-const DATABASE_COLLAPSED_GROUPS_KEY = "oprn:database.collapsedTabGroups";
+const DATABASE_REVEALED_EMPTY_GROUPS_KEY = "oprn:database.revealedEmptyTabGroups";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
 let databaseHeaderResizeObserver: ResizeObserver | null = null;
@@ -528,54 +511,44 @@ export function renderDatabasePanel(container: HTMLElement): void {
     appendTabSearch(header, body, container);
     appendTabButton(header, body, container, tabFor("overview"));
     for (const group of TAB_GROUPS) {
-      const groupCount = groupRecordCount(group);
       header.append(el("div", {
         class: "db-tab-group",
-        // 접힌 그룹은 라벨 한 낱말만 남는다 — 「마을」이 「세계」 안에 있다는 걸 알 길이
-        // 탭 검색뿐이었다(사용자 실제 보고: 구조물이 사라진 줄 알았다). 세 갈래로 답한다.
-        //  1) 눈에 보이는 부제(.db-tab-group-peek) — hover 없이 읽힌다.
-        //  2) 툴팁 — 마우스로도 닿는다.
-        //  3) 탭 수 배지 — 안에 몇 개가 접혀 있는지 센다.
-        // div+onclick 이라 키보드로는 그룹을 펼칠 수 없었고, role 없는 요소의
-        // aria-expanded 는 효력이 없었다. 접힘 상태가 localStorage 에 남으므로 키보드
-        // 사용자는 이전 세션에 접어 둔 그룹의 탭에 **영구히** 도달하지 못했다.
-        // <button> 으로 바꾸면 기본 스타일이 달라 레일 모양이 흔들린다 — role/tabindex 로
-        // 같은 의미만 부여하고 Enter/Space 를 직접 받는다.
-        attrs: {
-          title: `${group.label} 그룹 펼치기/접기 — ${groupTabLabels(group)}`,
-          role: "button",
-          tabindex: "0",
-        },
-        dataset: {
-          testid: `db-tab-group-${group.slug}`,
-          groupSlug: group.slug,
-          // 배지는 탭과 같은 규칙(0 은 표시하지 않음).
-          ...(groupCount > 0 ? { tabCount: String(groupCount) } : {}),
-        },
-        children: [
-          // 라벨을 **별도 span 으로** 둔다. 헤더 textContent 를 그대로 비교하는 계약이 있어
-          // (databaseNavMode·db-desktop-matrix) 부제를 헤더에 직접 넣으면 그 계약이 깨진다 —
-          // 실제로 깼다(02afd56f). 계약은 .db-tab-group-label 을 보도록 함께 고쳤다.
-          el("span", { class: "db-tab-group-label", text: group.label }),
-          // 접혀 있을 때 applyGroupCollapse 가 여기에 속한 탭 이름을 쓴다.
-          el("span", { class: "db-tab-group-peek", attrs: { hidden: "" } }),
-        ],
+        // 그룹 머리는 이제 구획 제목이다 — 모든 그룹이 늘 펼쳐져 있다. 누르면 그 그룹의 빈 탭을
+        // 펼친다(「빈 탭 N개」 줄과 같은 동작). div+onclick 이라 role/tabindex 를 주고
+        // Enter/Space 를 직접 받는다 — <button> 은 기본 스타일이 달라 레일 모양이 흔들린다.
+        attrs: { title: group.label, role: "button", tabindex: "0" },
+        dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
+        // 라벨을 **별도 span 으로** 둔다. 라벨 계약(databaseNavMode·db-desktop-matrix)은
+        // .db-tab-group-label 의 textContent 를 본다.
+        children: [el("span", { class: "db-tab-group-label", text: group.label })],
         on: {
-          click: () => toggleGroupCollapse(group.slug, header),
+          click: () => revealGroupEmptyTabs(group.slug, header),
           keydown: (event: Event) => {
             if (!("key" in event)) return;
             const key = (event as KeyboardEvent).key;
             if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
             event.preventDefault(); // Space 가 레일을 스크롤하지 않게.
-            toggleGroupCollapse(group.slug, header);
+            revealGroupEmptyTabs(group.slug, header);
           },
         },
       }));
       for (const id of group.tabs) {
         appendTabButton(header, body, container, tabFor(id));
       }
+      // 빈 탭 접기 줄. `.db-tab` 이 아니다 — 탭 버튼 계약(라벨·testid·포커스 순서 검사)은
+      // `.db-tab` 만 센다. 문구·숨김은 applyEmptyTabFold 가 채운다.
+      header.append(el("button", {
+        class: "db-tab-fold",
+        attrs: { type: "button", hidden: "" },
+        dataset: { testid: `db-tab-fold-${group.slug}`, groupSlug: group.slug },
+        children: [
+          el("span", { class: "db-tab-fold-count" }),
+          el("span", { class: "db-tab-fold-names" }),
+        ],
+        on: { click: () => revealGroupEmptyTabs(group.slug, header) },
+      }));
     }
-    applyGroupCollapse(header);
+    applyEmptyTabFold(header);
   } else {
     appendTabSearch(header, body, container);
     for (const tab of orderedTabs) appendTabButton(header, body, container, tab);
@@ -722,20 +695,6 @@ function databaseTabCount(tab: DatabaseTab): number | null {
   }
 }
 
-/** 그룹 헤더에 실을 합계. 컬렉션이 아닌 탭(개요/시스템 등)은 null 이므로 0 으로 센다. */
-function groupRecordCount(group: DatabaseTabGroup): number {
-  return group.tabs.reduce((sum, id) => sum + (databaseTabCount(id) ?? 0), 0);
-}
-
-/** Only primary destinations belong in the collapsed group's summary. */
-function groupPeekNames(group: DatabaseTabGroup): string[] {
-  return group.tabs.map((id) => tabFor(id).label);
-}
-
-function groupTabLabels(group: DatabaseTabGroup): string {
-  return groupPeekNames(group).join(", ");
-}
-
 function refreshTabCounts(container: HTMLElement): void {
   const header = container.querySelector(".db-tabs");
   if (!(header instanceof HTMLElement)) return;
@@ -747,15 +706,8 @@ function refreshTabCounts(container: HTMLElement): void {
     if (count === null || count === 0) delete button.dataset.count;
     else button.dataset.count = String(count);
   }
-  // 그룹 배지도 같이 갱신한다 — 안 하면 접힌 그룹이 undo/redo 뒤에도 옛 합계를 들고 있다.
-  for (const node of Array.from(header.querySelectorAll(".db-tab-group"))) {
-    if (!(node instanceof HTMLElement)) continue;
-    const group = TAB_GROUPS.find((entry) => entry.slug === node.dataset.groupSlug);
-    if (!group) continue;
-    const count = groupRecordCount(group);
-    if (count === 0) delete node.dataset.tabCount;
-    else node.dataset.tabCount = String(count);
-  }
+  // 카운트가 0 이 되거나 0 을 벗어나면 빈 탭 접기도 달라진다.
+  applyEmptyTabFold(header);
 }
 
 // 사이드바 상단 탭 검색 — 라벨 부분 일치로 탭을 거르고, 매치가 없는 그룹 라벨은
@@ -815,13 +767,14 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   const query = rawQuery.trim().toLowerCase();
   if (query === "") {
     for (const child of railChildren(header)) child.hidden = false;
-    applyGroupCollapse(header);
+    applyEmptyTabFold(header);
     syncTabSearchEmptyNotice(header, rawQuery);
     return;
   }
   for (const child of Array.from(header.children)) {
     if (!(child instanceof HTMLElement)) continue;
-    if (child.classList.contains("db-tab-group")) {
+    // 검색 중에는 구획 머리와 「빈 탭」 줄을 숨기고, 빈 탭도 이름이 맞으면 보인다.
+    if (child.classList.contains("db-tab-group") || child.classList.contains("db-tab-fold")) {
       child.hidden = true;
       continue;
     }
@@ -893,7 +846,6 @@ function appendTabButton(
           const already = activeTab === tab.id;
           if (tab.id === "worldGen" && !already) resetWorldGenTabViewState();
           setDatabaseActiveTab(tab.id);
-          expandGroupFor(header, tab.id);
           // 탭 헤더/스캐폴드는 유지하고 본문만 다시 그린다(전체 재빌드 회피).
           updateTabButtons(header);
           renderActiveTab(body, container, { forceFresh: tab.id === "worldGen" && !already });
@@ -910,8 +862,9 @@ function updateTabButtons(header: HTMLElement): void {
     for (const node of Array.from(header.querySelectorAll("[data-search-secondary]"))) node.remove();
     applyTabFilter(header, "");
   }
-  // G006 프로그램 점프가 접힌 그룹으로 들어오면 활성 행이 숨은 채로 남는다 — 항상 펼쳐 준다.
-  expandGroupFor(header, activeTab);
+  // G006 프로그램 점프가 접힌 빈 탭으로 들어오면 활성 행이 숨은 채로 남는다 — 활성 탭은
+  // 늘 보이게 접기를 다시 맞춘다.
+  applyEmptyTabFold(header);
   const activeTestId = tabFor(primaryTab(activeTab)).testid;
   for (const button of Array.from(header.querySelectorAll(".db-tab"))) {
     if (!(button instanceof HTMLElement)) continue;
