@@ -85,6 +85,18 @@ export const SET_BUILD_SPEC_TOOL: OpenAiToolSchema = {
           items: { type: "string" },
           description: "건설 순서(kind 목록, 예: [\"clear\",\"terrain\",\"road\",\"prop\"]). clear와 후속 kind를 모두 넣고 clear를 먼저 두면 후속 배치가 clear 영역을 덮을 수 있다. 같은 층 terrain-road 겹침도 두 kind를 모두 넣고 terrain을 먼저 둘 때만 허용한다. road-road 교차에는 순서가 필요 없다. 어떤 순서도 terrain-terrain 겹침·중복을 허용하지 않는다. 선언한 순서대로 시공하라.",
         },
+        // 검증기(checkPlannedMap)와 거부 안내(growthGuidanceLine)가 이 필드를 요구하는데 선언이 없어 모델이
+        // 낼 수 없었다 — 계약은 properties 다(위 assets 주석과 같은 벽).
+        plannedMap: {
+          type: "object",
+          description: "맵을 키운 뒤(또는 새 맵)의 크기. 에셋이 지금 맵보다 크면 이 크기로 경계를 잰다. 기존 맵은 현재 크기 이상만.",
+          properties: {
+            mapId: { type: "string", description: "BuildSpec.mapId 와 같아야 한다" },
+            width: { type: "integer" },
+            height: { type: "integer" },
+          },
+          required: ["mapId", "width", "height"],
+        },
         pathWidth: { type: "integer", description: "통로 너비(칸)" },
         density: { type: "string", enum: ["spacious", "normal", "dense"], description: "에셋 분배(넓찍/보통/다닥)" },
         layoutStyle: { type: "string", enum: ["straight", "curved", "random"], description: "배치 스타일" },
