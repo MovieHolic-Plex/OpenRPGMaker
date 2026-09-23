@@ -17,6 +17,7 @@ describe('opening delivery across authoring, persistence and export',()=>{
       const p=createNewProjectSeed(pack,'달빛 모험');
       expect(p.meta.title).toBe('달빛 모험');
       expect(p.system.opening?.scenes.at(-1)?.narration).toBe('— 달빛 모험 —');
+      expect(p.system.titleScreen?.title).toBe('달빛 모험');
     }
   });
   it('keeps deleted and disabled openings through real store normalization',async()=>{
