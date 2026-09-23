@@ -245,9 +245,10 @@ export function renderSpatialAuthoringShell(
     ],
   });
 
-  // 목록만 보는 동안 선택 장소의 맵을 컴파일하지 않는다. 스테이지 요소는 남겨 토글 계약은 유지한다.
-  const deferPlacesStage = placesGallery && !regionGallery && !session.inspectorOpen;
-  const stage = deferPlacesStage
+  // 목록만 보는 동안 장소·지역·세계 맵을 컴파일하지 않는다. 상세를 열면 스테이지가 그린다.
+  const deferDetailStage = session.mode === "design" && !session.legacyOrigin && !session.inspectorOpen
+    && (tab === "places" || tab === "regions" || tab === "worlds");
+  const stage = deferDetailStage
     ? el("div", { class: "spatial-stage is-deferred", attrs: { "aria-hidden": "true" } })
     : el("div", {
       class: `spatial-stage${session.inspectorOpen ? " is-inspector-open" : ""}`,
@@ -274,7 +275,7 @@ export function renderSpatialAuthoringShell(
         regionGallery ? renderRegionLibraryControls(cards, refresh, drawerExtra) : renderPlaceLibraryControls(cards, refresh, drawerExtra),
         el("div", { class: `spatial-body${libraryOnly ? " is-library-only" : ""}`, children: [gallery, stage] }),
       ] })
-      : el("div", { class: "spatial-body", children: [gallery, stage] })],
+      : el("div", { class: `spatial-body${deferDetailStage ? " is-library-only" : ""}`, children: [gallery, stage] })],
   });
   shell.addEventListener("keydown", (event) => handleShellKey(event, selected, refresh));
   latestShellRefresh = refresh;

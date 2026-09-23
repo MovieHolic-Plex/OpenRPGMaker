@@ -4,7 +4,7 @@ import { listSpatialGalleryCards, type SpatialGalleryCard } from "@/editor/panel
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
 import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
 import { renderSpatialInspector, renderSpatialChrome, renderSpatialSourceChips } from "@/editor/panels/spatialStage";
-import { tilesetImageUrl } from "@/editor/tilesetImage";
+import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { addBlankObject } from "@/editor/panels/spatialObjectMutations";
 import { el } from "@/util/dom";
 
@@ -69,7 +69,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
         class: `asset-browser-tileset${state.tilesetId === tileset.id ? " is-selected" : ""}`,
         attrs: { type: "button", "aria-pressed": String(state.tilesetId === tileset.id) },
         dataset: { tilesetId: tileset.id },
-        children: [el("img", { attrs: { src: tilesetImageUrl(tileset), alt: "", loading: "lazy" } }),
+        children: [tilesetListThumb(tileset),
           el("span", { text: tileset.name || "이름 없는 타일셋" }), el("small", { text: String(total) })],
         on: { click: () => chooseTileset(tileset.id) },
       });
