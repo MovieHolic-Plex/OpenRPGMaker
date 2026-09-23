@@ -241,6 +241,21 @@ export function planInteriorHouseWalls(input: InteriorHouseWallInput): readonly 
       }
     }
   }
+  // 1열 칸막이(좌우가 방 바닥인 세로 구조 열)의 머리: 양옆 벽면이 같은 행이면 벽면을 칸막이 위로
+  // 잇는다. 끊어 두면 칸막이 천장 열이 북쪽 바깥 어둠과 한 덩어리가 되어 두 방 사이로 공허가
+  // 파고든 것처럼 보인다 — 북벽은 한 장, 칸막이 천장은 바닥 행부터.
+  const faceBottomKeys = new Set(faceBottom.map((c) => key(c.x, c.y)));
+  for (const c of [...faceBottom]) {
+    const x = c.x + 1;
+    const y = c.y;
+    if (F(x, y) || faceBottomKeys.has(key(x, y)) || !faceBottomKeys.has(key(x + 1, y))) continue;
+    if (F(x, y + 1) || !F(x - 1, y + 1) || !F(x + 1, y + 1)) continue;
+    // 칸막이 머리 바로 아래 내부 문이 있으면 그 문 위 벽면 쌍이 이 행 밑에 붙는다 — 벽면이 네 줄로
+    // 쌓이지 않게 칸막이 천장이 한 행 이상 남을 때만 잇는다.
+    if (F(x, y + 2) || F(x, y + 3)) continue;
+    faceBottom.push({ x, y });
+    faceBottomKeys.add(key(x, y));
+  }
   // 벽면 위(=천장)와 좌우 이음 천장까지 구조에 편입 — "벽 위에는 반드시 천장" 불변식.
   for (const c of faceBottom) {
     addShell(c.x - 1, c.y);
