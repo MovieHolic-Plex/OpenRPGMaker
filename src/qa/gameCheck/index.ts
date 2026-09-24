@@ -14,6 +14,7 @@ import { checkHorror } from "./horror";
 import { checkMystery } from "./mystery";
 import { checkMonster } from "./monster";
 import { checkGallery } from "./gallery";
+import { checkDream } from "./dream";
 import { whereText, type Finding, type FindingSeverity, type GameCheckOptions, type GameCheckReport } from "./types";
 
 export * from "./types";
@@ -43,6 +44,7 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     ...checkMystery(project, options.briefText ?? briefTextOf(project)),
     ...checkMonster(project, options.briefText ?? briefTextOf(project)),
     ...checkGallery(project, options.briefText ?? briefTextOf(project)),
+    ...checkDream(project, options.briefText ?? briefTextOf(project)),
     ...(options.rawProject !== undefined ? diffLoadNormalization(options.rawProject, project) : []),
   ];
   let autoPlay: GameCheckReport["autoPlay"];
