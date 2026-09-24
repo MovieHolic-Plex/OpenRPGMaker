@@ -223,7 +223,7 @@ await fs.writeFile(out+'/library.json',JSON.stringify(lib));
 // Preserve every reference pixel while avoiding the host's 64 MiB request cap.
 const compressed=await promisify(execFile)('python3',['scripts/content/compress-pixel-art-world-reference-images.py',out+'/library.json']);
 Object.assign(lib,await read(out+'/library.json'));
-const summary={source:proof,libraryId:'pixel-art-world-local',places:Object.keys(lib.places).length,roots:lib.roots.length,regions:Object.keys(lib.regions).length,tilesets:Object.keys(lib.tilesets).length,objects:Object.values(lib.tilesets).reduce((n,t)=>n+t.structureKits.filter(k=>!k.id.endsWith('_raster')).length,0),maps:Object.keys(lib.maps).length,pixelDistribution:'user-local-only',scope:'Existing authored examples; full catalog expansion remains in progress'};
+const summary={source:proof,libraryId:'pixel-art-world-local',places:Object.keys(lib.places).length,roots:lib.roots.length,regions:Object.keys(lib.regions).length,tilesets:Object.keys(lib.tilesets).length,objects:Object.values(lib.tilesets).reduce((n,t)=>n+t.structureKits.filter(k=>!k.id.endsWith('_raster')).length,0),maps:Object.keys(lib.maps).length,pixelDistribution:'user-local-only',scope:'Existing authored examples within the user-selected380source scope; placement quality is reviewed separately'};
 summary.referenceCompression=JSON.parse(compressed.stdout);
 await withTsModule('scripts/lib/sharedContentSqlite.ts','paw-shared-publish.mjs',async api=>{
   const old=api.readSharedContent();

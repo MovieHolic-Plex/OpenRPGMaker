@@ -118,7 +118,7 @@
       },
       {
         "id": "msion-b-writing-desk",
-        "name": "3열 목재 책상 전체",
+        "name": "3열 목재 상판·전면 패널 가구",
         "sourceRect": {
           "x": 0,
           "y": 16,
@@ -691,7 +691,7 @@
       },
       {
         "id": "msion-p-writing-desk",
-        "name": "3열 목재 책상 전체",
+        "name": "3열 목재 상판·전면 패널 가구",
         "sourceRect": {
           "x": 0,
           "y": 16,
@@ -1264,7 +1264,7 @@
       },
       {
         "id": "msion-y-writing-desk",
-        "name": "3열 목재 책상 전체",
+        "name": "3열 목재 상판·전면 패널 가구",
         "sourceRect": {
           "x": 0,
           "y": 16,
@@ -1837,7 +1837,7 @@
       },
       {
         "id": "msion-w-writing-desk",
-        "name": "3열 목재 책상 전체",
+        "name": "3열 목재 상판·전면 패널 가구",
         "sourceRect": {
           "x": 0,
           "y": 16,
@@ -2410,7 +2410,7 @@
       },
       {
         "id": "msion-r-writing-desk",
-        "name": "3열 목재 책상 전체",
+        "name": "3열 목재 상판·전면 패널 가구",
         "sourceRect": {
           "x": 0,
           "y": 16,
