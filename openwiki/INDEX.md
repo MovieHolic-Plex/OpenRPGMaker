@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3396KB / 약 969,131 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3401KB / 약 970,676 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,12 +16,12 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 505KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3005 | ~145,757 |
-| `openwiki/editor-ai-tools.md` | 246KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2068 | ~69,791 |
+| `openwiki/editor-ai-tools.md` | 250KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2113 | ~71,191 |
 | `openwiki/editor-database.md` | 355KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2143 | ~103,420 |
 | `openwiki/editor-event-authoring.md` | 155KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 872 | ~45,047 |
 | `openwiki/editor-event-commands.md` | 62KB | 32KB | 258 | ~17,025 |
 | `openwiki/editor-interior-room-harness.md` | 93KB | 6KB | 451 | ~27,026 |
-| `openwiki/editor-pre-edit-routing.md` | 135KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 798 | ~39,146 |
+| `openwiki/editor-pre-edit-routing.md` | 135KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 802 | ~39,291 |
 | `openwiki/editor-workflows-misc.md` | 68KB | 30KB | 486 | ~18,555 |
 | `openwiki/runtime-battle.md` | 166KB | 31KB | 794 | ~47,579 |
 | `openwiki/runtime-pre-edit-routing.md` | 54KB | 34KB | 366 | ~15,889 |
@@ -36,13 +36,13 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | 페이지 | 깨진 줄 수 | 예시 줄 번호 |
 |---|---|---|
 | `openwiki/editor-ai-panel.md` | 25 | 2309, 2310, 2311, 2312, 2313, 2314, 2328, 2338 |
-| `openwiki/editor-ai-tools.md` | 6 | 1463, 1464, 1468, 1470, 1472, 1660 |
+| `openwiki/editor-ai-tools.md` | 6 | 1492, 1493, 1497, 1499, 1501, 1689 |
 | `openwiki/editor-database.md` | 7 | 877, 881, 882, 883, 892, 918, 921 |
 | `openwiki/editor-event-authoring.md` | 16 | 386, 387, 390, 395, 396, 397, 398, 399 |
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 117, 130, 131, 133, 136, 137 |
 | `openwiki/editor-observability.md` | 1 | 335 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 602, 611, 619, 623, 647 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 606, 615, 623, 627, 651 |
 | `openwiki/state-system.md` | 2 | 5, 86 |
 
 ## 없는 파일을 가리키는 참조
@@ -391,85 +391,87 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2987` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 - `L2995` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
 
-### `openwiki/editor-ai-tools.md` — 246KB · 2068줄 · ~69,791 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 250KB · 2113줄 · ~71,191 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
-- `L3` 충격 연출 (2026-09-22)
-- `L9` 단독 조수의 병렬 도구 실행 (2026-09-21)
-  - `L32` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
-- `L33` AI 새 야외·마을의 기본 칩셋 (2026-09-21)
-- `L57` 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
-- `L99` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
-  - `L112` 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
-  - `L120` 검증
-- `L128` 조수 웹 검색 도구 (2026-09-21)
-- `L152` 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
-- `L160` 전투 저작 입력 수정 (2026-09-20)
-- `L162` 이벤트 명령 AI 공용 도구 (2026-09-20)
-- `L212` 전투 저작 입력 수정 (2026-09-20)
-- `L223` NPC 공용 얼굴 매핑 연결 (2026-09-18)
-- `L236` 이식 타일 최초 검수 준비 대기 (2026-09-18)
-- `L248` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
-- `L267` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
-- `L304` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
-- `L339` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
-  - `L364` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
-  - `L381` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
-- `L401` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
-- `L433` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
-- `L460` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
-- `L480` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
-- `L545` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
-- `L584` Exact project values and sourced declarations (2026-09-08)
-- `L612` Measured zero-prop rejection diagnostics (2026-09-07)
-- `L709` Logical walkthrough versus real player traversal (2026-09-07)
-- `L717` Tile-query selector and filter boundaries (2026-09-07)
-- `L726` Action enemy profile edits (2026-09-07)
-- `L744` Explicit field-spawn mutations (2026-09-07)
-- `L770` Monster resource discovery and AI appearance evidence (2026-09-07)
-- `L847` House-site tree clearance before ownership (2026-09-07)
-- `L858` Flower-yard material in house lots (2026-09-07)
-- `L871` Pre-write original grounding (2026-09-06)
-- `L946` Hybrid native tool exposure (2026-09-19)
-- `L985` Review approval lifetime (R3, 2026-09-06)
-- `L1003` Audio description tools and event candidates
-  - `L1023` Search pages and full detail
-  - `L1037` Event prompt projection is not ID authority
-- `L1071` list_resources picture 검색 (2026-09-21)
-- `L1083` P3 captured proposal base (2026-09-07)
-- `L1155` Project wiki application ownership (2026-09-07)
-- `L1168` Character appearance image candidates v1 (2026-09-06)
-- `L1226` Completed-house transaction protection - Phase 1 (2026-09-05)
-- `L1300` Completed-house construction protection - Phase 2 (2026-09-06)
-- `L1339` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
-- `L1349` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
-- `L1490` P2 requirement and exact-verdict inputs (2026-09-06)
-- `L1565` Project-wide quality evaluation
-- `L1579` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
-- `L1615` Action controls guide (2026-09-07)
-- `L1658` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
-- `L1689` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
-- `L1704` 마을 설계서 (2026-09-05)
-- `L1708` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
-- `L1747` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
-- `L1754` 모험 저작 완료와 재시도 (2026-09-05)
-- `L1784` 실제 이미지 입력 보존 (2026-09-07)
-- `L1798` Physical tile passage exposure (2026-09-08)
-- `L1822` NPC 자율 이동 아키타입 추론 (2026-09-17)
-- `L1852` Full RPG first-turn foundation (2026-09-19)
-- `L1870` Party, actor appearance, and event-linked inventory tools (2026-09-19)
-- `L1890` Opening, game-over, and audio discovery tools (2026-09-19)
-- `L1923` 범용 이미지 에셋 생성 (2026-09-19)
-- `L1935` Feature16 combat and climate authoring tools (2026-09-21)
-- `L1945` 마을 시공 후 완료 계약 (2026-09-21)
-- `L1967` 타일 참고문서 선행 조회 (2026-09-21)
-  - `L1974` 저장된 AI 계획 본문 조회 (2026-09-23)
-  - `L1978` 호스트 공용 DB 참고문서 갱신 (2026-09-23)
-- `L1993` 실제 타일 규칙 수정 도구 노출 (2026-09-23)
-  - `L1998` 타일셋별 맵 의미 조회 (2026-09-23)
-- `L2002` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
-- `L2032` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
-- `L2055` Isaiah 물 태그 판정 보완 (2026-09-24)
-- `L2059` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+- `L3` 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
+- `L32` 충격 연출 (2026-09-22)
+- `L38` 단독 조수의 병렬 도구 실행 (2026-09-21)
+  - `L61` 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
+- `L62` AI 새 야외·마을의 기본 칩셋 (2026-09-21)
+- `L86` 마을 군락 — 굽이숲 절벽마을 조립 (2026-09-21)
+- `L128` 참조 작품 비유 → 자율 웹 검색 (2026-09-21)
+  - `L141` 죽은 Codex 자격이 검색·완성을 영구히 막던 문제
+  - `L149` 검증
+- `L157` 조수 웹 검색 도구 (2026-09-21)
+- `L181` 감사 후속: 부분 갱신과 미사용 삭제 (2026-09-20)
+- `L189` 전투 저작 입력 수정 (2026-09-20)
+- `L191` 이벤트 명령 AI 공용 도구 (2026-09-20)
+- `L241` 전투 저작 입력 수정 (2026-09-20)
+- `L252` NPC 공용 얼굴 매핑 연결 (2026-09-18)
+- `L265` 이식 타일 최초 검수 준비 대기 (2026-09-18)
+- `L277` paint_tiles 타일 인덱스 검증 — 유일하게 빠져 있던 가드 (2026-09-16)
+- `L296` 오프닝 미디어 배선 — 스틸 카탈로그·배경음악·부분 편집 (2026-09-14)
+- `L333` 오프닝 시네마틱 AI 저작 — system.opening (2026-09-14)
+- `L368` 도면 문법에 wing(세로 복도) 추가 — 실루엣 변주와 물건 대체군 (2026-09-11)
+  - `L393` 후속: 석조 화로는 복도 끝 알코브에 (2026-09-11)
+  - `L410` 팔레트 확장 — 안 쓰던 칩셋 그림 16종을 물건으로 (2026-09-11)
+- `L430` 실내는 찍어내지 않는다 — place_concept 은 설계를 요구하고, author_house 는 interiorPlan 을 받는다 (2026-09-11)
+- `L462` 초안은 씨앗이고 저작본만 도면 정본이다 — 절차 도면 되살리기 + 실내 다양성 리포트 (2026-09-12)
+- `L489` 맵 생성 테두리 옵션은 모델에게 주지 않는다 (2026-09-11)
+- `L509` 맵 전체 청소 `clear_map` — 파괴적 한 콜 + 사용자 허가 모달 (2026-09-11)
+- `L574` 명명 로케이션 툴 7종 (OPRN-OUT-020 + LOC-ADOPT, 2026-09-10)
+- `L613` Exact project values and sourced declarations (2026-09-08)
+- `L641` Measured zero-prop rejection diagnostics (2026-09-07)
+- `L738` Logical walkthrough versus real player traversal (2026-09-07)
+- `L746` Tile-query selector and filter boundaries (2026-09-07)
+- `L755` Action enemy profile edits (2026-09-07)
+- `L773` Explicit field-spawn mutations (2026-09-07)
+- `L799` Monster resource discovery and AI appearance evidence (2026-09-07)
+- `L876` House-site tree clearance before ownership (2026-09-07)
+- `L887` Flower-yard material in house lots (2026-09-07)
+- `L900` Pre-write original grounding (2026-09-06)
+- `L975` Hybrid native tool exposure (2026-09-19)
+- `L1014` Review approval lifetime (R3, 2026-09-06)
+- `L1032` Audio description tools and event candidates
+  - `L1052` Search pages and full detail
+  - `L1066` Event prompt projection is not ID authority
+- `L1100` list_resources picture 검색 (2026-09-21)
+- `L1112` P3 captured proposal base (2026-09-07)
+- `L1184` Project wiki application ownership (2026-09-07)
+- `L1197` Character appearance image candidates v1 (2026-09-06)
+- `L1255` Completed-house transaction protection - Phase 1 (2026-09-05)
+- `L1329` Completed-house construction protection - Phase 2 (2026-09-06)
+- `L1368` 퀘스트 입력과 완주 증거 계약 (2026-09-05)
+- `L1378` DB 조회 페이지와 마을 전체 범위 (2026-09-05)
+- `L1519` P2 requirement and exact-verdict inputs (2026-09-06)
+- `L1594` Project-wide quality evaluation
+- `L1608` prune_unused 의 참조 수집은 variableId 를 가진 명령 전부를 세야 한다 (2026-08-29 실측 결함 수정)
+- `L1644` Action controls guide (2026-09-07)
+- `L1687` NPC 대사는 코드가 지어내지 않는다 — 캐스트 라이터 계약 (2026-09-03)
+- `L1718` 「이 세계」 캐논은 문장 3채널에 강제된다 (2026-09-04)
+- `L1733` 마을 설계서 (2026-09-05)
+- `L1737` 저수준 이벤트 입력은 명령 위치를 검증한다 (2026-09-05)
+- `L1776` 보물상자는 노출된 수면을 거부한다 (2026-09-05)
+- `L1783` 모험 저작 완료와 재시도 (2026-09-05)
+- `L1813` 실제 이미지 입력 보존 (2026-09-07)
+- `L1827` Physical tile passage exposure (2026-09-08)
+- `L1851` NPC 자율 이동 아키타입 추론 (2026-09-17)
+- `L1881` Full RPG first-turn foundation (2026-09-19)
+- `L1899` Party, actor appearance, and event-linked inventory tools (2026-09-19)
+- `L1919` Opening, game-over, and audio discovery tools (2026-09-19)
+- `L1952` 범용 이미지 에셋 생성 (2026-09-19)
+- `L1964` Feature16 combat and climate authoring tools (2026-09-21)
+- `L1974` 마을 시공 후 완료 계약 (2026-09-21)
+- `L1996` 타일 참고문서 선행 조회 (2026-09-21)
+  - `L2003` 저장된 AI 계획 본문 조회 (2026-09-23)
+  - `L2007` 호스트 공용 DB 참고문서 갱신 (2026-09-23)
+- `L2022` 실제 타일 규칙 수정 도구 노출 (2026-09-23)
+  - `L2027` 타일셋별 맵 의미 조회 (2026-09-23)
+- `L2031` Pi 완성 맵 이미지 반환 경로 (2026-09-23)
+- `L2061` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
+- `L2084` Isaiah 물 태그 판정 보완 (2026-09-24)
+- `L2088` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+- `L2098` Monster follower graphic authoring (2026-09-25)
 
 ### `openwiki/editor-database.md` — 355KB · 2143줄 · ~103,420 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -734,37 +736,37 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L496` 검증
 - `L503` Feature16 저작 보조 관측 경계 (2026-09-21)
 
-### `openwiki/editor-pre-edit-routing.md` — 135KB · 798줄 · ~39,146 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 135KB · 802줄 · ~39,291 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L5` 맵별 16/32/48px 좌표
 - `L13` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
-- `L39` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
-- `L92` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
-- `L105` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
-- `L123` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
-  - `L173` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
-- `L190` Exterior door backing
-- `L200` Tile brush reliability (2026-09-06)
-- `L238` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L243` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L255` 소유 경계
-  - `L267` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L278` 검토 책임
-  - `L290` 경계와 진단
-  - `L300` 회귀 이음줌
-- `L312` Pre-edit routing
-  - `L314` 명명 로케이션 레이어 (2026-09-10)
-  - `L396` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L434` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L436` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L489` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L549` Automatic usage guides disabled (2026-09-06)
-  - `L559` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L666` Agent cautions
-- `L676` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L712` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L744` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L773` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L43` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
+- `L96` database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
+- `L109` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
+- `L127` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
+  - `L177` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
+- `L194` Exterior door backing
+- `L204` Tile brush reliability (2026-09-06)
+- `L242` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L247` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L259` 소유 경계
+  - `L271` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L282` 검토 책임
+  - `L294` 경계와 진단
+  - `L304` 회귀 이음줌
+- `L316` Pre-edit routing
+  - `L318` 명명 로케이션 레이어 (2026-09-10)
+  - `L400` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L438` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L440` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L493` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L553` Automatic usage guides disabled (2026-09-06)
+  - `L563` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L670` Agent cautions
+- `L680` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L716` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L748` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L777` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 

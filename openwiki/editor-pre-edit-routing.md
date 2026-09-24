@@ -33,8 +33,12 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   에디터 Phaser(`renderTileCellLayer`) 순서는 1 → 1층 스택 → 2 → 그림자 → 3 → 3층 스택 → 4.
   **알려진 차이:** 캔버스·에디터는 순서대로 겹쳐 4층이 언제나 3층 위지만, 게임은 깊이 규칙이라 3층 ★ + 4층 ×/○ 칸에서
   3층 ★ 가 위다([runtime-pre-edit-routing.md](runtime-pre-edit-routing.md) 같은 날 절).
-- 아직 1·3층만 보는 곳(PR ②·③ 몫): 붙여넣기 미리보기(`EditScene.ts`), `houseInteriors.ts`, `clear_map`/`mirror_region`,
-  `eventTools` 의 빈 칸 판정, `changeset.tileBuffersDiffer`.
+- 아직 1·3층만 보는 곳(PR ②·③ 몫): 붙여넣기 미리보기(`EditScene.ts`), `houseInteriors.ts`,
+  `eventTools` 의 빈 칸 판정, `changeset.tileBuffersDiffer`. 조수 쓰기 도구(`paint_tiles`·`fill_region`·`tile_erase`·
+  `clear_region`·`clear_map`·`mirror_region`·`copy_map_region`·`stamp_layer_block`·`paint_shadow`)는 네 층을 안다 —
+  계약은 [editor-ai-tools.md](editor-ai-tools.md) 「조수 쓰기 도구의 네 층」 절(2026-09-25).
+- `mapHelpers.setLower` 는 그 칸의 2·3·4층·그림자를 함께 비운다. 선택 칸이 모두 빈 맵의 키 정리는
+  `toolRunner.runToolDefinition` 이 쓰기 도구 실행 직후 한 번 한다(선택 칸이 있는 맵만 훑는다).
 
 ## 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
 

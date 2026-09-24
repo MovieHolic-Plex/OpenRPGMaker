@@ -138,10 +138,11 @@ function alreadySatisfiedPaintCoverage(mapId: string, asset: SpecAsset, calls: r
     const tile = numberValue(call.args.tile);
     const requestedLayer = call.args.layer;
     if (!call.result.ok || data?.skippedClusterCells !== 0 || tile === null || !Number.isInteger(tile) || tile < 0
-      || (requestedLayer !== "lower" && requestedLayer !== "upper")) continue;
+      || paintLayerGroup(requestedLayer) === null) continue;
     // Historical execution evidence, not requested layer or mutable tileset metadata.
-    const layer = data.effectiveLayer;
-    if ((layer !== "lower" && layer !== "upper") || layer !== asset.layer) continue;
+    // 영수증은 "1".."4"(MZ 4층) 또는 옛 "lower"/"upper". 명세 에셋 층은 lower/upper 라 1·3층만 비교된다.
+    const layer = paintLayerGroup(data.effectiveLayer);
+    if (layer === null || layer !== asset.layer) continue;
     const cells = (call.args.cells as unknown[]).map(pointValue);
     if (cells.some(cell => cell === null || !Number.isInteger(cell.x) || !Number.isInteger(cell.y))) continue;
     const uniqueCells = new Set(cells.flatMap(cell => cell ? [`${cell.x},${cell.y}`] : []));
@@ -160,6 +161,13 @@ function alreadySatisfiedPaintCoverage(mapId: string, asset: SpecAsset, calls: r
     }
   }
   return true;
+}
+
+/** paint_tiles 층 인자·영수증 → 명세 층(lower/upper). 2·4층(겹침 층)은 명세 층이 아니라 null. */
+function paintLayerGroup(value: unknown): "lower" | "upper" | null {
+  if (value === "lower" || value === "1") return "lower";
+  if (value === "upper" || value === "3") return "upper";
+  return null;
 }
 
 function heuristicCompletenessWarnings(

@@ -1,5 +1,34 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
+
+조수가 2층(바닥 장식)·4층(물체 위 물체)·그림자를 쓴다. 층 번호와 맵 칸 이름의 대응은 `src/project/mapLayers.ts` 가 정본이고,
+층을 받는 도구 설명은 모두 `mapHelpers.FOUR_LAYER_GUIDANCE` 한 문장을 쓴다(같은 낱말로 가르친다).
+계획: `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 2·3.
+
+| 도구 | 층 인자 | 계약 |
+|---|---|---|
+| `paint_tiles` | `layer: "lower"\|"upper"\|"1"\|"2"\|"3"\|"4"` (lower=1, upper=3) | 홈 레이어 라우팅은 1/3층 요청에만 — 2·4층은 명시 선택 그대로. 2·4층은 클러스터 동반 규칙 없이 칸 그대로. `fill` 은 1·2층만(그 층 배열에서 번진다). 1층 칠하기는 `setLower` 라 그 칸 2·3·4층·그림자를 비운다. 결과 `data.effectiveLayer` 는 `"1".."4"`(옛 영수증 `"lower"/"upper"` 는 `proposalCompleteness` 가 계속 읽는다). |
+| `fill_region` | 같은 enum, 기본 1 | 2층에 채우면 1층은 그대로. 1층 채우기는 그 칸 2층을 비우고, `clearUpper` 는 3·4층을 함께 비운다. |
+| `stamp_layer_block` (새) | `layers: {"1"?,"2"?,"3"?,"4"?,shadow?}` 행 배열 | -1 = 건드리지 않음, -2 = 그 층에서 비움. 범위 밖 번호·맵 밖 쓰기 칸이 하나라도 있으면 **아무것도 쓰지 않는다**(맵 밖 -1 칸은 괜찮다). 1층 칸은 그 칸 2층을 비우되 같은 블록의 2층 값이 이긴다. 3·4층은 준 칸만. 요약·`data.cells` 에 층별 칸 수. |
+| `paint_shadow` (새) | `cells[{x,y,quarters?,bits?}]`, `mode: set\|add\|clear` | bit0 좌상·bit1 우상·bit2 좌하·bit3 우하. 맵 밖 칸이 섞이면 아무것도 쓰지 않는다. `clear` 에서 quarters/bits 를 빼면 그 칸 그림자 전부. |
+| `tile_erase` | `both\|all\|lower\|upper\|2\|4\|shadow` | both=all=칸 전체(1층 바닥 복원 + 2·3·4층·그림자). lower=1층 복원 + 2층, upper=3·4층, 2/4/shadow=그 층만. `kind:"market"` 은 both/lower/upper 만. |
+| `clear_region` / `clear_map` | (그대로) | lower 쪽은 2층·그림자, upper 쪽은 4층까지 비운다. |
+| `mirror_region` | (그대로) | 선택 층도 옮기고 그림자 사분면을 축에 맞춰 뒤집는다(좌우 tl↔tr·bl↔br). |
+| `copy_map_region` | `layers: all\|lower\|upper` | all = 1~4층·그림자, lower = 1·2층, upper = 3·4층. 보호 칸 되돌리기도 다섯 값을 되돌린다. |
+
+- **오토타일 재성형은 칠한 층 배열에서, 바닥 층(1·2층)에서만** 한다(`autotileEngine.autotileLayerView(map, layer)`).
+  2층 풀 장식은 2층 이웃 기준으로 가장자리가 잡히고 1층은 안 바뀐다. 1층을 칠한 칸은 2층도 비웠으므로 둘레 2층 장식도 다시 잡는다.
+  3·4층은 적은 번호 그대로 둔다 — 옛 `upper` 칠하기와 같다(수관 같은 상위 그룹을 모델이 고른 칸째 보존).
+- **옛 맵(선택 칸 없음)은 어떤 도구를 거쳐도 새 키가 생기지 않는다.** 쓰기는 `setLayerTileAt`/`setShadowAt`(빈 값이면 배열을 만들지 않음),
+  비운 뒤엔 도구마다 `compactMapLayers`, 그리고 공유 헬퍼(`setLower`)를 쓰는 다른 도구를 위해 `toolRunner.runToolDefinition` 이
+  쓰기 실행 직후 선택 칸이 있는 맵만 한 번 정리한다.
+- 두 새 도구는 참고문서 게이트 목록(`TILESET_REFERENCE_TILE_CHOOSERS`)에 있다. `stamp_layer_block` 은 1·3층을 덮으므로
+  기존 내용 보호(`buildSpec.TILE_WRITE_TOOLS`, 영향 상자는 가장 큰 배열)를 받고, 그림자만 쓰는 `paint_shadow` 는 받지 않는다.
+- 아직 1·3층만 보는 조수 경로(Task 4 몫): Pi 고스트 증분 층 유니온(`mapDelta.ts`)·`agentGhostPreview`·`changeset.tileBuffersDiffer`.
+
+회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출), `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
+
 ## 충격 연출 (2026-09-22)
 
 이벤트 명령 조수(`buildEventAssistPrompt`)와 스튜디오 조수(시스템 프롬프트 고정 블록)는 같은 순서를 본다. 함정·피격·마법·폭발·사망은 대사로 시작하지 않는다. `playAudio`(효과음, `loop:false`)와 `showAnimation`(`wait:true`)이 먼저고, 그 다음 HP·스위치·이동·`killPlayer`, 마지막이 설명 대사다. 마법학교처럼 화면을 덮는 컨셉이면 단발 타격이 아니라 화면을 덮는 애니메이션 id(목록에 «화면을 덮음»)를 쓴다. 게임오버 그림·제목은 `get_game_over` / `set_game_over` / `generate_game_over_image` 다. `killPlayer.message` 는 그 순간의 한 줄이다.

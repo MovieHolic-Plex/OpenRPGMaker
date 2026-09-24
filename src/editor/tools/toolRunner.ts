@@ -11,6 +11,7 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
+import { compactMapLayers, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
 import { commitChangeset, createDraft, summarizeChanges, tileChangedMapIds } from "./changeset";
@@ -146,6 +147,9 @@ export function runToolDefinition(
     protectedHouses = captureHouseProtection(before);
     beginSpatialToolProposal(draft, before);
     exec = tool.run(draft, normalizedArgs);
+    // 2·4층·그림자가 모두 비면 키를 뺀다(옛 맵 모양으로). setLower 처럼 여러 도구가 공유하는 헬퍼가 칸을 비우므로
+    // 도구마다가 아니라 여기서 한 번 정리한다. 선택 칸이 있는 맵만 훑는다 — 옛 맵은 비용 없음.
+    for (const map of Object.values(draft.maps)) if (hasExtraLayers(map)) compactMapLayers(map);
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
     return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };
