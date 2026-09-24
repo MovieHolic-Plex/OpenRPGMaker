@@ -29,6 +29,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - **타일을 저작하는 모든 에이전트:** 먼저 현재 프로젝트의 `타일 → 참고문서 → 해당 용도`를 읽어라. `list_tileset_references`로 용도/자료 목록을 조회하고 `read_tileset_reference`로 MD 전 페이지와 실제 이미지를 확인한 뒤 배치한다. 코딩 에이전트는 정본(SQLite 호스트) 프로젝트를 읽어 `scripts/content/export-tileset-references.mjs`로 추출하고 이미지를 직접 연다. 이전 대화나 저장소의 옛 학습 문서만으로 대체하지 않는다. 구현·도구 계약은 `openwiki/tileset-reference-documents.md`.
    - **새 타일·타일 학습은 공용에 넣는다 (hard rule):** 특정 프로젝트에만 추가하고 끝내지 마라. 타일 그림은 `src/assets/bundled.ts` 번들로, 학습 자료는 `tiledata/<칩셋>/` 에 출처를 커밋하고 `scripts/content/prepare-*-references.mjs` 로 `src/assets/*References.json` 번들을 만들어 타일셋 정의와 `ensureBundledTilesets` 에 배선한다. 아래 「새 타일·타일 학습은 공용에 추가한다」 절을 따른다.
    - **Slates 32px로 마을을 만들 때 먼저 읽을 그림 포함 조립 지침:** `openwiki/slates-agent-entry.md` → `openwiki/slates-dense-town.md` → `openwiki/slates-assembly-playbook.md` → 구조 학습·표본·구역 도감·저작 지침 (성곽·돌출층·깊은 지붕·46개 구역·검토 보류 항목).
+   - **조수에게 타일셋 까는 법 가르치기** (조수가 실제로 보는 것·업로드 타일셋에서 비는 것·참고문서/이름표/조립법 순서·재배포 금지 팩): `openwiki/teaching-assistant-tilesets.md`
    - 타일 레이어·배경 정책 (투명 여부와 홈 레이어·받침·다중 조각 제약의 분리, 커스텀 칩셋 검토 흐름): `openwiki/tile-layer-policy.md`
    - 공통 지연 툴팁 (아이콘 컨트롤 툴팁 동작 계약·명시 롤아웃 목록·문구 규칙): `openwiki/delayed-tooltip.md`
    - Interior room harness: `openwiki/editor-interior-room-harness.md`
@@ -59,6 +60,7 @@ This repo has multiple agent tooling directories. Here is what each is and wheth
 | Directory / File | Purpose | Tracked? | Canonical? |
 |---|---|---|---|
 | `AGENTS.md` | **Canonical agent entry point** — read this first. All agents start here. | Yes | **Yes — source of truth** |
+| `CLAUDE.md` | Claude Code 자동 로드 진입점. `@AGENTS.md` 한 줄로 이 문서를 가져온다(Claude Code 는 `AGENTS.md` 를 스스로 읽지 않는다). 내용을 여기에 쓰지 말 것. | Yes | No — `AGENTS.md` 를 가리킨다 |
 | `.mcp.json` | MCP server config (oprn-assistant bridge). Currently gitignored (session-local). | No (gitignored) | Yes for MCP config |
 | `.kiro/` | Kiro CLI workspace config. `agents/` holds tracked custom agent profiles; `settings/cli.json` holds tracked model defaults. Invoke with an explicit model/effort when the task requires a fixed profile. | Yes | Kiro-specific |
 | `openwiki/` | Project-local AI wiki (focused pages agents read before editing). | Yes | **Yes — source of truth for codebase knowledge** |

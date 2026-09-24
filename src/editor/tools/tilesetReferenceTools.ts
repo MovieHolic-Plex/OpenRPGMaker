@@ -15,6 +15,9 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
 ]);
 
 /**
+ * 조수가 타일셋을 배우는 경로 전체와 새 도구·타일셋 점검표: openwiki/teaching-assistant-tilesets.md
+ * 이 목록에서 빠진 칠하기 도구는 test/tilesetTeachingGuards.test.ts 가 잡는다.
+ *
  * 선행 읽기 게이트가 걸리는 쓰기 도구 — 모델이 **타일을 직접 고르는** 도구(타일 번호·재질 어휘·팔레트·조립법 ID).
  * 참고문서는 그 선택을 추측하지 않게 하려고 있다. 나머지 WRITERS(빈 맵 생성·크기/복제/이동·결정론 파이프라인·세션 전진)는
  * 코드가 타일을 고르므로 문서를 읽어도 결과가 바뀌지 않는다 — 그런데도 게이트가 걸려, 22×18 보스방 create_map 하나에
