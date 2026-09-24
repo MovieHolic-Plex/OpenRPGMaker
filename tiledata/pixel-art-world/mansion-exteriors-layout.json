@@ -1,0 +1,2370 @@
+[
+  {
+    "packId": "paw-mansion-exterior-b",
+    "sourceFilename": "ST-MsionB-E01.png",
+    "sourceSha256": "1a48151aa07d6b2c7d59b7a8674bf143060841d25ad2d5dd20bc4e5d214d246b",
+    "composites": [
+      {
+        "id": "msex-b-whole-house",
+        "name": "B 저택 · 곡면지붕과 전체 2층 현관",
+        "canvas": {
+          "width": 224,
+          "height": 320
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 0,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 32,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 96,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 128,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "complete-central-window-door-front",
+            "sourceRect": {
+              "x": 160,
+              "y": 1152,
+              "width": 96,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "complete-west-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-east-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          }
+        ],
+        "notes": "원본전체5×5지붕의중앙x2열만반복해7열, 곡면양끝/처마그대로. 외벽은33행cornice→34행3줄→35행기단. 원본(5,36)3×5창+현관전면을중앙에덮고작은아치창2개를벽위에올린다. 건물전체7×10, 남쪽중앙(3,10)이문앞접근이다. 발코니가없는지상출입표본. 장식포르티코/3층보행발코니를억지로겹치지않는다. 픽셀리사이즈/반전없음."
+      },
+      {
+        "id": "msex-b-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "canvas": {
+          "width": 96,
+          "height": 160
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-left-column-and-rail-cap",
+            "sourceRect": {
+              "x": 160,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "middle-front-rail-without-unrelated-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1024,
+              "width": 32,
+              "height": 128
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "whole-right-column-and-rail-cap",
+            "sourceRect": {
+              "x": 224,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(5,31)3×5사각에는중앙윗칸이위쪽아치창하단과공유되어혼입된다. 좌우기둥/난간끝전체1×5와중앙난간1×4(원본32행시작)를그대로합쳐순수장식포르티코전체를만든다. 창조각을포함하거나난간머리를자르지않는다. 단독지상출입건물아님,캐릭터를올려놓는발판아님. 공식보행발코니3레이어는별도미지원."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "mansion-exterior-b-court",
+        "name": "B 저택과 작은 정원",
+        "width": 9,
+        "height": 13,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 10,
+            "width": 9,
+            "height": 3,
+            "tile": 4
+          },
+          {
+            "x": 8,
+            "y": 9,
+            "width": 1,
+            "height": 2,
+            "tile": 4
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msex-b-whole-house",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-b-bench-front",
+            "x": 1,
+            "y": 10
+          },
+          {
+            "recipeId": "msex-b-flower-pedestal",
+            "x": 8,
+            "y": 8
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 4,
+            "y": 12
+          },
+          {
+            "x": 4,
+            "y": 11
+          },
+          {
+            "x": 4,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 12
+          },
+          {
+            "x": 8,
+            "y": 10
+          }
+        ],
+        "passableTiles": [
+          0,
+          4
+        ],
+        "lowerTileIds": [
+          0,
+          4
+        ],
+        "wallTileIds": [],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "house",
+            "name": "지상출입저택전체",
+            "x": 1,
+            "y": 0,
+            "width": 7,
+            "height": 10
+          },
+          {
+            "id": "court",
+            "name": "짧은현관접근과정원",
+            "x": 0,
+            "y": 10,
+            "width": 9,
+            "height": 3
+          }
+        ],
+        "doorways": [
+          {
+            "from": "court",
+            "to": "house",
+            "x": 4,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "9×13. 건물7×10을북서에두고남쪽2칸현관접근/서쪽벤치/동쪽꽃화분을분리한다. 남문4,12→현관4,10. 벤치앞2,12와화분앞8,10은같은짧은포장보도로연결된다. 건물사각전체solid이며문앞바닥까지접근한다. 현관검은그림은자동전이/개폐이벤트가아니다. 지붕/벽/문위에캐릭터를걷게하지않는다. 그림속정원수밑동은하위잔디/보도에닿는다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-exterior-p",
+    "sourceFilename": "ST-MsionP-E01.png",
+    "sourceSha256": "3723b044833d5a95680298df805d7b6ae321f6be89d6ddf375c2f5c8122d8775",
+    "composites": [
+      {
+        "id": "msex-p-whole-house",
+        "name": "P 저택 · 곡면지붕과 전체 2층 현관",
+        "canvas": {
+          "width": 224,
+          "height": 320
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 0,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 32,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 96,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 128,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "complete-central-window-door-front",
+            "sourceRect": {
+              "x": 160,
+              "y": 1152,
+              "width": 96,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "complete-west-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-east-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          }
+        ],
+        "notes": "원본전체5×5지붕의중앙x2열만반복해7열, 곡면양끝/처마그대로. 외벽은33행cornice→34행3줄→35행기단. 원본(5,36)3×5창+현관전면을중앙에덮고작은아치창2개를벽위에올린다. 건물전체7×10, 남쪽중앙(3,10)이문앞접근이다. 발코니가없는지상출입표본. 장식포르티코/3층보행발코니를억지로겹치지않는다. 픽셀리사이즈/반전없음."
+      },
+      {
+        "id": "msex-p-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "canvas": {
+          "width": 96,
+          "height": 160
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-left-column-and-rail-cap",
+            "sourceRect": {
+              "x": 160,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "middle-front-rail-without-unrelated-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1024,
+              "width": 32,
+              "height": 128
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "whole-right-column-and-rail-cap",
+            "sourceRect": {
+              "x": 224,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(5,31)3×5사각에는중앙윗칸이위쪽아치창하단과공유되어혼입된다. 좌우기둥/난간끝전체1×5와중앙난간1×4(원본32행시작)를그대로합쳐순수장식포르티코전체를만든다. 창조각을포함하거나난간머리를자르지않는다. 단독지상출입건물아님,캐릭터를올려놓는발판아님. 공식보행발코니3레이어는별도미지원."
+      },
+      {
+        "id": "msex-p-tea-table-cups",
+        "name": "전체 정원탁자와 찻잔2개",
+        "canvas": {
+          "width": 64,
+          "height": 96
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-round-table",
+            "sourceRect": {
+              "x": 128,
+              "y": 288,
+              "width": 64,
+              "height": 96
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-teacup-left",
+            "sourceRect": {
+              "x": 192,
+              "y": 320,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 6,
+              "y": 25
+            }
+          },
+          {
+            "role": "whole-teacup-right",
+            "sourceRect": {
+              "x": 192,
+              "y": 320,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 30,
+              "y": 25
+            }
+          }
+        ],
+        "notes": "원형탁자전체(4,9)2×3을보존하고완전찻잔(6,10)1×1 두개를상판에놓는다. 소품최하단픽셀은실제탁자불투명상판안에있어야한다. 원본바이트/408칸보존, 파생추가만한다. 별도식사/착석이벤트없음."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "mansion-exterior-p-court",
+        "name": "P 저택과 작은 정원",
+        "width": 11,
+        "height": 12,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 2,
+            "tile": 4
+          },
+          {
+            "x": 7,
+            "y": 5,
+            "width": 4,
+            "height": 6,
+            "tile": 4
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msex-p-whole-house",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-p-tea-table-cups",
+            "x": 8,
+            "y": 5
+          },
+          {
+            "recipeId": "msex-p-tea-stool",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "msex-p-tea-stool",
+            "x": 10,
+            "y": 6
+          },
+          {
+            "recipeId": "msex-p-topiary-tall",
+            "x": 8,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-p-bench-back",
+            "x": 8,
+            "y": 9
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 3,
+            "y": 11
+          },
+          {
+            "x": 3,
+            "y": 10
+          },
+          {
+            "x": 7,
+            "y": 10
+          },
+          {
+            "x": 7,
+            "y": 7
+          },
+          {
+            "x": 10,
+            "y": 7
+          },
+          {
+            "x": 9,
+            "y": 8
+          }
+        ],
+        "passableTiles": [
+          0,
+          4
+        ],
+        "lowerTileIds": [
+          0,
+          4
+        ],
+        "wallTileIds": [],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "house",
+            "name": "지상출입저택전체",
+            "x": 0,
+            "y": 0,
+            "width": 7,
+            "height": 10
+          },
+          {
+            "id": "court",
+            "name": "짧은현관접근과정원",
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 2
+          }
+        ],
+        "doorways": [
+          {
+            "from": "court",
+            "to": "house",
+            "x": 3,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "11×12. 좌측건물/우측작은차정원으로서로다른외부역할을준다. 남문3,11→현관3,10. 우측테이블에두잔을두고양측스툴앞7,7/10,7을연결한다. 남쪽벤치는북향원본이며정원쪽9,8접근. 원형스툴은등받이가없어별도동서향변형을만들지않고같은전체원본을좌우에둔다. 건물사각전체solid이며문앞바닥까지접근한다. 현관검은그림은자동전이/개폐이벤트가아니다. 지붕/벽/문위에캐릭터를걷게하지않는다. 그림속정원수밑동은하위잔디/보도에닿는다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-exterior-y",
+    "sourceFilename": "ST-MsionY-E01.png",
+    "sourceSha256": "4769c99df2461d753265d01b3a526e25ec06e88b6df351856c201bb715f94b80",
+    "composites": [
+      {
+        "id": "msex-y-whole-house",
+        "name": "Y 저택 · 곡면지붕과 전체 2층 현관",
+        "canvas": {
+          "width": 224,
+          "height": 320
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 0,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 32,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 96,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 64,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 128,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 96,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 160,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-roof-column",
+            "sourceRect": {
+              "x": 128,
+              "y": 896,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 192,
+              "y": 0
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1056,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 160
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 192
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 224
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1088,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 256
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 0,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 32,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 64,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 96,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 64,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 128,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 96,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 160,
+              "y": 288
+            }
+          },
+          {
+            "role": "wall-with-cornice-and-stone-foot",
+            "sourceRect": {
+              "x": 128,
+              "y": 1120,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 192,
+              "y": 288
+            }
+          },
+          {
+            "role": "complete-central-window-door-front",
+            "sourceRect": {
+              "x": 160,
+              "y": 1152,
+              "width": 96,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 160
+            }
+          },
+          {
+            "role": "complete-west-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 32,
+              "y": 192
+            }
+          },
+          {
+            "role": "complete-east-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 736,
+              "width": 32,
+              "height": 64
+            },
+            "offset": {
+              "x": 160,
+              "y": 192
+            }
+          }
+        ],
+        "notes": "원본전체5×5지붕의중앙x2열만반복해7열, 곡면양끝/처마그대로. 외벽은33행cornice→34행3줄→35행기단. 원본(5,36)3×5창+현관전면을중앙에덮고작은아치창2개를벽위에올린다. 건물전체7×10, 남쪽중앙(3,10)이문앞접근이다. 발코니가없는지상출입표본. 장식포르티코/3층보행발코니를억지로겹치지않는다. 픽셀리사이즈/반전없음."
+      },
+      {
+        "id": "msex-y-balcony-portico",
+        "name": "장식발코니 · 앞난간과 양쪽기둥 완전체",
+        "canvas": {
+          "width": 96,
+          "height": 160
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-left-column-and-rail-cap",
+            "sourceRect": {
+              "x": 160,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "middle-front-rail-without-unrelated-window",
+            "sourceRect": {
+              "x": 192,
+              "y": 1024,
+              "width": 32,
+              "height": 128
+            },
+            "offset": {
+              "x": 32,
+              "y": 32
+            }
+          },
+          {
+            "role": "whole-right-column-and-rail-cap",
+            "sourceRect": {
+              "x": 224,
+              "y": 992,
+              "width": 32,
+              "height": 160
+            },
+            "offset": {
+              "x": 64,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(5,31)3×5사각에는중앙윗칸이위쪽아치창하단과공유되어혼입된다. 좌우기둥/난간끝전체1×5와중앙난간1×4(원본32행시작)를그대로합쳐순수장식포르티코전체를만든다. 창조각을포함하거나난간머리를자르지않는다. 단독지상출입건물아님,캐릭터를올려놓는발판아님. 공식보행발코니3레이어는별도미지원."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "mansion-exterior-y-court",
+        "name": "Y 저택과 작은 정원",
+        "width": 11,
+        "height": 13,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 3,
+            "tile": 4
+          },
+          {
+            "x": 2,
+            "y": 1,
+            "width": 1,
+            "height": 10,
+            "tile": 4
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msex-y-whole-house",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "recipeId": "msex-y-topiary-tall",
+            "x": 0,
+            "y": 2
+          },
+          {
+            "recipeId": "msex-y-topiary-round",
+            "x": 0,
+            "y": 7
+          },
+          {
+            "recipeId": "msex-y-rose-red",
+            "x": 3,
+            "y": 10
+          },
+          {
+            "recipeId": "msex-y-bench-front",
+            "x": 8,
+            "y": 10
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 12
+          },
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 6
+          },
+          {
+            "x": 9,
+            "y": 12
+          }
+        ],
+        "passableTiles": [
+          0,
+          4
+        ],
+        "lowerTileIds": [
+          0,
+          4
+        ],
+        "wallTileIds": [],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "house",
+            "name": "지상출입저택전체",
+            "x": 3,
+            "y": 0,
+            "width": 7,
+            "height": 10
+          },
+          {
+            "id": "court",
+            "name": "짧은현관접근과정원",
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 3
+          }
+        ],
+        "doorways": [
+          {
+            "from": "court",
+            "to": "house",
+            "x": 6,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "11×13. 건물은동쪽,키큰정원수와둥근정원수는서쪽좁은정원띠다. x2한칸관리로를남쪽현관보도와연결한다. 남문6,12→현관6,10. 붉은장미와동쪽벤치가좌우접근을막지않는다. 건물사각전체solid이며문앞바닥까지접근한다. 현관검은그림은자동전이/개폐이벤트가아니다. 지붕/벽/문위에캐릭터를걷게하지않는다. 그림속정원수밑동은하위잔디/보도에닿는다."
+      }
+    ]
+  }
+]
