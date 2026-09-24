@@ -1,8 +1,9 @@
 /* Map settings: fixed navigation, a single reading column, and one scroller. */
 
 .map-props-dialog {
+  position: relative;
   display: grid;
-  grid-template-columns: 160px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto;
   height: 100%;
   min-height: 0;
@@ -14,24 +15,67 @@
 .map-props-tabs {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 20px 12px;
-  border-right: 1px solid var(--border-default);
-  background: var(--bg-inset);
+  gap: 2px;
+  padding: 12px;
+  background: var(--bg-panel);
   overflow-y: auto;
 }
 
+.map-props-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .map-props-tab {
-  padding: 10px 12px;
-  min-height: 42px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  min-height: 48px;
   text-align: left;
-  font: 500 14px/1.5 var(--font-ui);
+  font: 500 14px/1.4 var(--font-ui);
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 8px;
   background: transparent;
-  color: var(--text-2);
+  color: var(--text-1);
   cursor: pointer;
 }
+
+.map-props-row-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.map-props-row-sum {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-2);
+}
+
+.map-props-previews:empty { display: none; }
+.map-props-previews { display: flex; gap: 4px; flex: none; }
+.map-props-thumb {
+  width: 44px;
+  height: 28px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--bg-inset);
+}
+.map-props-play { flex: none; }
+
+.map-props-body.is-single-view[hidden] { display: none; }
+.map-props-body.is-single-view:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--bg-panel);
+}
+.map-props-sheet-close { align-self: flex-start; }
 
 .map-props-tab:hover {
   background: var(--bg-hover);
@@ -100,7 +144,6 @@
 }
 
 @media (max-width: 760px) {
-  .map-props-dialog { grid-template-columns: 130px minmax(0, 1fr); }
   .map-props-body.is-single-view { padding: 12px; }
   .map-props-section-block { padding: 14px; }
   .map-props-tabs { padding: 12px 6px; }

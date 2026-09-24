@@ -7,6 +7,8 @@ import {
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { audioPlayback } from "@/editor/panels/audioResourcePresentation";
+import { AudioPreviewSession } from "@/editor/panels/audioPreviewSession";
 import { MAP_BACKGROUND_SCROLL_LIMIT, MAP_BACKGROUND_EXTRA_LAYER_LIMIT, normalizeMapBackgroundScroll } from "@/project/mapBackground";
 import { OGA_CRAFTPIX_BACKDROP_SETS, craftpixDefaultLayers } from "@/assets/ogaCraftpixBackgrounds";
 import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type DatabaseResourcePickerKind } from "@/editor/panels/databaseResourcePickerDialog";
@@ -89,6 +91,117 @@ export function resetMapPropsSectionForOpen(): void {
   currentSection = null;
 }
 
+let bgmPreview: AudioPreviewSession | null = null;
+
+function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap): string {
+  const project = store.getCurrent();
+  const resourceName = (id: string | undefined): string =>
+    listDatabaseResourceOptions(id ? "backdrop" : "backdrop", project).find((item) => item.id === id)?.name ?? "";
+  if (tab === "general") {
+    return `${map.name} · ${project.tilesets[map.tilesetId]?.name ?? "그림판"} · ${map.width}×${map.height}`;
+  }
+  if (tab === "bgm") {
+    if (map.bgm?.mode === "none") return "무음";
+    if (map.bgm?.mode === "custom") {
+      return listDatabaseResourceOptions("music", project).find((item) => item.id === map.bgm?.resourceId)?.name ?? "곡 없음";
+    }
+    return "상위 맵/기본 BGM";
+  }
+  if (tab === "encounter") {
+    const table = map.encounterTable ?? [];
+    if ((map.encounterRate ?? 0) === 0 && table.length === 0) return "출현 없음";
+    const names = table.map((entry) => project.database.troops.find((troop) => troop.id === entry.troopId)?.name ?? entry.troopId);
+    return `빈도 ${map.encounterRate ?? 0}${names.length ? ` · ${names.join(", ")}` : ""}`;
+  }
+  if (tab === "spawns") return (map.fieldSpawns?.length ?? 0) > 0 ? `스폰 ${map.fieldSpawns?.length}` : "배치된 적 없음";
+  if (tab === "battle") return resourceName(map.battleBackground) || "타일셋 기본";
+  if (tab === "restrictions") {
+    const limits = [
+      map.disableSave ? "저장 금지" : "",
+      map.disableTeleport ? "순간 이동 금지" : "",
+      map.disableEscape ? "도주 금지" : "",
+    ].filter(Boolean);
+    return `${limits.length ? limits.join(", ") : "제한 없음"} · ${mapLoopLabel(map.loop)}`;
+  }
+  if (tab === "background") return map.background ? (resourceName(map.background.imageId) || "그림 없음") : "사용 안 함";
+  if (tab === "minimap") return map.minimap?.enabled ? "사용" : "사용 안 함";
+  if (tab === "climate") {
+    if (map.climate?.mode === "indoor") return "실내 · 날씨 차단";
+    if (map.climate?.mode === "fixed") return "이 맵의 날씨 고정";
+    return "전역 날씨 따르기";
+  }
+  if (tab === "clouds") return map.cloudShadows?.enabled ? `구름량 ${map.cloudShadows.amount ?? 3}` : "꺼짐";
+  const effects = map.atmosphereEffects ?? [];
+  return effects.length ? `효과 ${effects.length}` : "없음";
+}
+
+function previewNodes(tab: MapPropsTab, map: import("@/project/types").GameMap): HTMLElement[] {
+  const project = store.getCurrent();
+  const shot = (id: string | undefined, alt: string): HTMLElement | null => {
+    const url = resolveAssetResourceUrl(id, { project });
+    return url ? el("img", { class: "map-props-thumb", attrs: { src: url, alt } }) : null;
+  };
+  if (tab === "background") {
+    const image = shot(map.background?.imageId, "맵 배경");
+    return image ? [image] : [];
+  }
+  if (tab === "battle") {
+    const image = shot(map.battleBackground, "전투 배경");
+    return image ? [image] : [];
+  }
+  if (tab !== "encounter") return [];
+  const thumbs: HTMLElement[] = [];
+  for (const entry of map.encounterTable ?? []) {
+    if (thumbs.length >= 3) break;
+    const troop = project.database.troops.find((item) => item.id === entry.troopId);
+    const enemyId = troop?.members?.[0]?.enemyId ?? troop?.enemyIds[0];
+    const enemy = project.database.enemies.find((item) => item.id === enemyId);
+    const image = shot(enemy?.monsterResourceId, troop?.name ?? "출현 그룹");
+    if (image) thumbs.push(image);
+  }
+  return thumbs;
+}
+
+function paintIndex(dialog: HTMLElement, map: import("@/project/types").GameMap): void {
+  for (const tab of SECTION_ORDER) {
+    const summary = dialog.querySelector<HTMLElement>(`[data-sum="${tab}"]`);
+    if (summary) summary.textContent = sectionSummary(tab, map);
+    const slot = dialog.querySelector<HTMLElement>(`[data-preview="${tab}"]`);
+    if (!slot) continue;
+    slot.replaceChildren(...previewNodes(tab, map));
+  }
+}
+
+function attachBgmPlay(row: HTMLElement, map: import("@/project/types").GameMap): void {
+  bgmPreview?.dispose();
+  bgmPreview = null;
+  const resourceId = map.bgm?.mode === "custom" ? map.bgm.resourceId : undefined;
+  if (!resourceId) return;
+  const playback = audioPlayback(resourceId, store.getCurrent());
+  if (!playback.playable || !playback.url) return;
+  const host = el("span", { attrs: { hidden: "" } });
+  const session = new AudioPreviewSession(host);
+  session.select(playback.url, "", true);
+  bgmPreview = session;
+  let playing = false;
+  const play = el("button", {
+    class: "btn map-props-play",
+    text: "재생",
+    attrs: { type: "button", "aria-label": "배경 음악 재생" },
+    dataset: { testid: "map-bgm-preview-play" },
+    on: { click: (event: Event) => {
+      event.stopPropagation();
+      if (playing) session.pause();
+      else void session.play();
+    } },
+  });
+  session.subscribe((state) => {
+    playing = state.phase === "playing";
+    play.textContent = playing ? "멈춤" : "재생";
+  });
+  row.append(play, host);
+}
+
 export function renderMapProps(container: HTMLElement): void {
   clearChildren(container);
   const state = editorState.get();
@@ -100,50 +213,68 @@ export function renderMapProps(container: HTMLElement): void {
   }
 
   const wrapper = el("div", { class: "map-props-dialog" });
-
-  // 섹션 바로가기 줄 — 구 탭 버튼과 같은 testid 를 유지하므로 기존 테스트·e2e 가 그대로 통한다.
-  // 클릭은 다시 그리지 않고 해당 섹션으로 스크롤만 한다(입력 포커스·스크롤 위치 보존).
-  // 내비는 독립 열이라 스크롤해도 자리에 남는다(본문 스크롤러는 .map-props-body).
   const nav = el("nav", {
     class: "map-props-tabs",
-    attrs: { "aria-label": "맵 설정 섹션 바로가기" },
+    attrs: { "aria-label": "맵 설정 항목" },
     dataset: { testid: "map-props-tabs" },
   });
   const navButtons = new Map<MapPropsTab, HTMLElement>();
+  const body = el("div", { class: "map-props-body is-single-view", attrs: { hidden: "" } });
+
+  const showSection = (tab: MapPropsTab): void => {
+    currentSection = tab;
+    body.hidden = false;
+    for (const [key, other] of navButtons) {
+      if (key === tab) other.setAttribute("aria-current", "location");
+      else other.removeAttribute("aria-current");
+    }
+    for (const section of Array.from(body.querySelectorAll<HTMLElement>(".map-props-section-block"))) {
+      section.hidden = section.dataset.section !== tab;
+    }
+    const target = body.querySelector<HTMLElement>(`[data-testid="map-props-section-${tab}"]`);
+    target?.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
+  };
+
   for (const tab of SECTION_ORDER) {
     const sectionId = `map-props-section-${tab}`;
+    const row = el("div", { class: "map-props-row" });
     const btn = el("button", {
       class: "map-props-tab",
-      text: TAB_LABELS[tab],
-      attrs: currentSection === tab
-        ? { type: "button", "aria-controls": sectionId, "aria-current": "location" }
-        : { type: "button", "aria-controls": sectionId },
+      attrs: { type: "button", "aria-controls": sectionId },
       dataset: { testid: `map-props-tab-${tab}` },
-      on: {
-        click: () => {
-          currentSection = tab;
-          for (const [key, other] of navButtons) {
-            if (key === tab) other.setAttribute("aria-current", "location");
-            else other.removeAttribute("aria-current");
-          }
-          const target = wrapper.querySelector<HTMLElement>(`[data-testid="${sectionId}"]`);
-          if (!target) return;
-          body.scrollTop += target.getBoundingClientRect().top - body.getBoundingClientRect().top - 20;
-          target.querySelector<HTMLElement>("h2")?.focus({ preventScroll: true });
-        },
-      },
+      on: { click: () => showSection(tab) },
     });
+    const copy = el("span", { class: "map-props-row-copy" });
+    copy.append(
+      el("span", { class: "map-props-row-name", text: TAB_LABELS[tab] }),
+      el("span", { class: "map-props-row-sum", text: sectionSummary(tab, map), dataset: { sum: tab } }),
+    );
+    const previews = el("span", { class: "map-props-previews", dataset: { preview: tab } });
+    previews.append(...previewNodes(tab, map));
+    btn.append(previews, copy);
+    row.append(btn);
+    if (tab === "bgm") attachBgmPlay(row, map);
     navButtons.set(tab, btn);
-    nav.append(btn);
+    nav.append(row);
   }
   wrapper.append(nav);
 
-  // One scroll surface; navigation remains reachable at every section.
-  const body = el("div", { class: "map-props-body is-single-view" });
+  body.append(el("button", {
+    class: "btn map-props-sheet-close",
+    text: "목록으로",
+    attrs: { type: "button" },
+    dataset: { testid: "map-props-sheet-close" },
+    on: { click: () => {
+      body.hidden = true;
+      currentSection = null;
+      for (const other of navButtons.values()) other.removeAttribute("aria-current");
+      navButtons.get("general")?.focus();
+    } },
+  }));
   for (const tab of SECTION_ORDER) {
     const block = el("section", {
       class: "map-props-section-block",
-      attrs: { id: `map-props-section-${tab}`, "aria-labelledby": `map-props-heading-${tab}` },
+      attrs: { id: `map-props-section-${tab}`, "aria-labelledby": `map-props-heading-${tab}`, hidden: "" },
       dataset: { testid: `map-props-section-${tab}`, section: tab, mapId },
     });
     block.addEventListener("change", (event) => {
@@ -153,28 +284,14 @@ export function renderMapProps(container: HTMLElement): void {
     renderSection(block, tab, map);
     body.append(block);
   }
-  body.addEventListener("scroll", () => {
-    const top = body.getBoundingClientRect().top + 24;
-    let active: MapPropsTab = "general";
-    for (const tab of SECTION_ORDER) {
-      const section = body.querySelector<HTMLElement>(`#map-props-section-${tab}`);
-      if (section && section.getBoundingClientRect().top <= top) active = tab;
-    }
-    if (body.scrollTop + body.clientHeight >= body.scrollHeight - 2) active = "minimap";
-    currentSection = active;
-    for (const [key, button] of navButtons) {
-      if (key === active) button.setAttribute("aria-current", "location");
-      else button.removeAttribute("aria-current");
-    }
-  });
-  if (currentSection === null) navButtons.get("general")?.setAttribute("aria-current", "location");
   wrapper.append(body);
   const footer = el("p", {
     class: "map-props-save-hint",
-    text: "설정은 변경 즉시 반영됩니다. 크기와 JSON 편집은 적용 버튼을 눌러 주세요.",
+    text: "항목을 누르면 그 설정만 열립니다. 바꾼 값은 바로 반영됩니다.",
   });
   wrapper.append(footer);
   container.append(wrapper);
+  if (currentSection) showSection(currentSection);
 }
 
 function renderSection(host: HTMLElement, tab: MapPropsTab, map: import("@/project/types").GameMap): void {
@@ -746,6 +863,7 @@ function rerender(host: HTMLElement, preferredFocusId?: string): void {
     if (draft) input.value = draft.value;
   }
   scroller.scrollTop = scrollTop;
+  if (dialog) paintIndex(dialog, map);
   // Custom selects are enhanced by the subdialog's MutationObserver after rendering.
   queueMicrotask(() => {
     if (!host.isConnected) return;
