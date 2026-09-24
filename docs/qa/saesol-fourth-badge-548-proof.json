@@ -1,0 +1,225 @@
+{
+  "scope": "Dedicated player resumed actual temple-clear checkpoint, then won both trainers and the leader in this run. Real walking and authored portals; no added levels, rewards or flags. Separate runtime RNG; not uninterrupted play or duration proof.",
+  "steps": [
+    {
+      "id": "ev_sr4_gym_trainer1",
+      "stage": 3,
+      "seal": true
+    },
+    {
+      "id": "ev_sr4_gym_trainer2",
+      "stage": 3,
+      "seal": true
+    },
+    {
+      "id": "ev_sr4_gym_leader",
+      "stage": 3,
+      "seal": true
+    }
+  ],
+  "checkpointMatches": true,
+  "walkedSteps": 237,
+  "walkedPortals": [
+    {
+      "from": "map_sr4_pass",
+      "event": "ev_gate_7490c58c-4599-4672-b5d5-1e82b9f64acc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_29a48b7a-d759-42bc-b5d0-d1bf78abe351",
+      "to": "map_sr4_gym"
+    },
+    {
+      "from": "map_sr4_gym",
+      "event": "ev_gate_beae648f-8610-4d47-930e-26e5be9479fc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_e7bdbcc8-daf0-4d4c-81d1-6efa8c393229",
+      "to": "map_sr4_pass"
+    },
+    {
+      "from": "map_sr4_pass",
+      "event": "ev_gate_7490c58c-4599-4672-b5d5-1e82b9f64acc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_29a48b7a-d759-42bc-b5d0-d1bf78abe351",
+      "to": "map_sr4_gym"
+    },
+    {
+      "from": "map_sr4_gym",
+      "event": "ev_gate_beae648f-8610-4d47-930e-26e5be9479fc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_e7bdbcc8-daf0-4d4c-81d1-6efa8c393229",
+      "to": "map_sr4_pass"
+    },
+    {
+      "from": "map_sr4_pass",
+      "event": "ev_gate_7490c58c-4599-4672-b5d5-1e82b9f64acc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_29a48b7a-d759-42bc-b5d0-d1bf78abe351",
+      "to": "map_sr4_gym"
+    }
+  ],
+  "heals": [
+    {
+      "id": "monster_1",
+      "hp": 42,
+      "max": 75
+    },
+    {
+      "id": "monster_1",
+      "hp": 49,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 50,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 50,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 25,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 49,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 50,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 48,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 49,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 26,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 45,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 48,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 45,
+      "max": 77
+    }
+  ],
+  "trainerRewards": [
+    {
+      "n": 1,
+      "before": {
+        "item_isaiah_potion": 19,
+        "item_isaiah_super_potion": 10,
+        "item_super_potion": 10,
+        "item_potion": 2,
+        "item_capture_orb": 2,
+        "item_isaiah_ball": 11,
+        "item_hi_potion": 3,
+        "item_panacea": 2,
+        "item_sr4_dawn_crest": 1
+      },
+      "after": {
+        "item_isaiah_potion": 19,
+        "item_isaiah_super_potion": 10,
+        "item_super_potion": 10,
+        "item_potion": 2,
+        "item_capture_orb": 2,
+        "item_isaiah_ball": 11,
+        "item_hi_potion": 3,
+        "item_panacea": 2,
+        "item_sr4_dawn_crest": 1
+      },
+      "goldDelta": 750
+    },
+    {
+      "n": 2,
+      "before": {
+        "item_isaiah_potion": 19,
+        "item_isaiah_super_potion": 10,
+        "item_super_potion": 10,
+        "item_potion": 2,
+        "item_capture_orb": 2,
+        "item_isaiah_ball": 11,
+        "item_hi_potion": 3,
+        "item_panacea": 2,
+        "item_sr4_dawn_crest": 1
+      },
+      "after": {
+        "item_isaiah_potion": 19,
+        "item_isaiah_super_potion": 11,
+        "item_super_potion": 10,
+        "item_potion": 2,
+        "item_capture_orb": 2,
+        "item_isaiah_ball": 11,
+        "item_hi_potion": 3,
+        "item_panacea": 2,
+        "item_sr4_dawn_crest": 1
+      },
+      "goldDelta": 780
+    }
+  ],
+  "rewards": {
+    "goldDelta": 1600,
+    "before": {
+      "item_isaiah_potion": 19,
+      "item_isaiah_super_potion": 11,
+      "item_super_potion": 10,
+      "item_potion": 2,
+      "item_capture_orb": 2,
+      "item_isaiah_ball": 11,
+      "item_hi_potion": 3,
+      "item_panacea": 2,
+      "item_sr4_dawn_crest": 1
+    },
+    "after": {
+      "item_isaiah_potion": 19,
+      "item_super_potion": 12,
+      "item_potion": 2,
+      "item_capture_orb": 2,
+      "item_isaiah_ball": 11,
+      "item_hi_potion": 3,
+      "item_panacea": 2,
+      "item_sr4_dawn_crest": 1
+    }
+  },
+  "badgeOnce": true,
+  "passed": true,
+  "pageErrors": [],
+  "resultsSha256": "35fab554f89a48bd69dc76e4d28f3f2866ee1992991d8d6f5f95a5dd1fafa666",
+  "sourceSnapshotRevision": 548,
+  "sourceSnapshotSha256": "02ffa73af9034b906c2bf6148f488fa5b4c902f15d7d5adf8434d4d0e996aa28"
+}
