@@ -179,9 +179,12 @@ npm run qa:runtime:gate     # 게이트: 두 시나리오
 
 1. **출처 사본을 저장소에 커밋한다.** 선례: `tiledata/castle-tiles-rpgs/`, `tiledata/forest-villages/`.
 2. **배포용 번들 JSON을 만든다.** 선례: `src/assets/sharedCastleReferences.json`(용도 4 · MD 41 · 이미지 20).
-   그림은 `public/assets/castle-references/` 의 축소 사본을 dataURL 로 싣는다. 학습·비교용 그림은 게임 소재로 잘라 쓰지 않으므로
+   그림은 `public/assets/castle-references/` 의 축소 사본을 쓴다. 학습·비교용 그림은 게임 소재로 잘라 쓰지 않으므로
    긴 변 820px · 128색 수준으로 줄인다 — 실측: 원본 그대로면 14.25MB, 축소하면 3.08MB다.
    생성·축소는 `scripts/content/prepare-castle-references.mjs`(`--dry` 로 대상만 확인).
+   **번들 JSON 에는 이미지 바이트를 넣지 않는다.** 생성 스크립트가 dataURL 을 넣었으면 이어서
+   `node scripts/content/externalize-reference-images.mjs` 를 돌려 `/assets/...` 경로로 바꾼다
+   (`test/bundledReferenceImages.test.ts` 가 막는다). 실측(2026-09-25): 번들 JSON 25.9MB → 6.3MB.
 3. **타일셋 정의가 그 자료를 들고 태어나게 한다.** 선례: `castleTileset.ts` 의 `referenceDocuments: createSharedCastleReferences()`.
 4. **이미 있는 프로젝트에도 심는다.** 선례: `defaultAssets.ts` 의 `ensureBundledTilesets` 안 `ensureSharedCastleReferences(...)` —
    빠진 용도만 덧붙이고, 저자가 직접 쓴 문서나 공유 포인터는 건드리지 않는다.

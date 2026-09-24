@@ -15,8 +15,11 @@ for(const group of owner.referenceDocuments??[]){
  const images=[];
  for(const image of group.images){
   if(!/^[\w.-]{1,100}$/.test(image.id)||image.id==='.'||image.id==='..')throw Error('Unsafe image ID');
-  const match=image.dataUrl.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+=*)$/);if(!match)throw Error('Unsupported image');
-  const file=`images/${image.id}.${match[1]}`;await writeFile(join(folder,file),Buffer.from(match[2],'base64'));
+  // Shipped images are static paths under public/ (scripts/content/externalize-reference-images.mjs).
+  const bundled=image.dataUrl.match(/^\/assets\/(?:[\w-]+\/)*[\w.-]+\.(png|jpe?g|webp)$/);
+  const match=bundled?null:image.dataUrl.match(/^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+=*)$/);if(!bundled&&!match)throw Error('Unsupported image');
+  const ext=bundled?bundled[1].replace('jpg','jpeg'):match[1];
+  const file=`images/${image.id}.${ext}`;await writeFile(join(folder,file),bundled?await readFile(join('public',image.dataUrl)):Buffer.from(match[2],'base64'));
   images.push({id:image.id,name:image.name,caption:image.caption,file});
  }
  const documents=[];

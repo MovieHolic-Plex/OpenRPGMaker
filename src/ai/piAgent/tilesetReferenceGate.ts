@@ -21,7 +21,7 @@ export class PiTilesetReferenceGate {
   beforeWrite(project: Project, name: string, args: Record<string, unknown>): ToolResult | null {
     return this.evidence.beforeWrite(project, name, args);
   }
-  read(project: Project, result: ToolResult): { label: string; dataUrl: string }[] {
+  async read(project: Project, result: ToolResult): Promise<{ label: string; dataUrl: string }[]> {
     if (!result.ok) return [];
     this.pending.set(JSON.stringify(result.data), structuredClone(result));
     return this.evidence.imagesForRead(project, result);

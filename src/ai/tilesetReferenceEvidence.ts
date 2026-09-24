@@ -1,4 +1,5 @@
 import { referenceOwner, referenceRevision, REFERENCE_PAGE_SIZE } from "@/project/tilesetReferences";
+import { resolveReferenceImageDataUrl } from "@/project/bundledReferenceImages";
 import type { Project } from "@/project/types";
 import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReferenceTools";
 import type { ToolResult } from "@/editor/tools/types";
@@ -23,14 +24,15 @@ export class TilesetReferenceEvidence {
     if (data.document) this.pages.add(`${key(data)}:doc:${data.document.id}:${data.document.offset}`);
     if (data.image) this.imageMetadata.add(`${key(data)}:image:${data.image.id}`);
   }
-  imagesForRead(project: Project, result: ToolResult): { label: string; dataUrl: string }[] {
+  async imagesForRead(project: Project, result: ToolResult): Promise<{ label: string; dataUrl: string }[]> {
     if (!result.ok || !result.data) return [];
     const data = result.data as Packet;
     const category = project.tilesets[data.ownerId]?.referenceDocuments?.find(g => g.id === data.categoryId);
     const image = category?.images.find(i => i.id === data.image?.id);
     if (!category || !image || referenceRevision(category) !== data.revision) return [];
-    this.pendingImages.set(`${key(data)}:image:${image.id}`, image.dataUrl);
-    return [{ label: `타일셋 참고 이미지 (${category.name}): ${image.name}\n${image.caption}`, dataUrl: image.dataUrl }];
+    const dataUrl = await resolveReferenceImageDataUrl(image.dataUrl);
+    this.pendingImages.set(`${key(data)}:image:${image.id}`, dataUrl);
+    return [{ label: `타일셋 참고 이미지 (${category.name}): ${image.name}\n${image.caption}`, dataUrl }];
   }
   observeImages(messages: readonly ChatMessage[], delivered: readonly ImageDelivery[] | undefined): void {
     const urls = new Set((delivered ?? []).flatMap(({ messageIndex, partIndex }) => {
