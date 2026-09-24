@@ -70,6 +70,10 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
     const path = "assets/opengameart-lpc-wooden-furniture-CREDITS.txt";
     assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   }
+  if (ids.has('tex_harbor_kit')) {
+    const path = 'assets/harbor-kit/CREDITS.txt';
+    assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
+  }
   if (ids.has('castle_courtyard_harbor_atlas')) {
     const path = 'assets/castle-surroundings/CREDITS.txt';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });

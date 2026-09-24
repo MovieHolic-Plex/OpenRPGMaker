@@ -23,6 +23,7 @@ import { cliffColumns, inspectVillageCliffs } from "./lib/village-cliffs.mjs";
 import { placePlaza, placeTreeClumps, fillNaturalGaps, emptiness, rng, cellsOf } from "./lib/village-fullness.mjs";
 import { pruneUnowned } from "./lib/village-ownership.mjs";
 import { reshapePools } from "./lib/village-pools.mjs";
+import { ensureHarborGrafts, loadHarborKit, placeHarbor } from "./lib/village-harbor.mjs";
 
 const args = process.argv.slice(2), only = args.find((a) => a.startsWith("--only="))?.slice(7);
 const [input, output] = args.filter((a) => !a.startsWith("--"));
@@ -51,6 +52,8 @@ const WET = new Set([...LAKE, catalog.riverTiles.fall, catalog.riverTiles.bridge
 const CLIFF_TILES = new Set(Object.values(catalog.cliffBindings));
 const passable = (t) => t < 0 || Object.values(ts.passability[t] ?? { up: false }).every(Boolean);
 const rect = (o) => cellsOf({ x: o.x, y: o.y, w: o.w, h: o.h });
+// Harbor pieces (rowboats, mooring posts, gear) grafted into free slots of the village tileset.
+const harborKit = loadHarborKit(), harborIds = ensureHarborGrafts(ts, harborKit);
 
 // Seams first run loose (a corridor or a one-cell wall may be cut); if any access, terrace or catalog check then
 // fails, the village is redone from its input with the corridor/wall rules on (strict).
@@ -247,6 +250,13 @@ function fillVillage(plan, strict) {
   const roadsForOwners = roadNow();
   for (const [x, y, h] of plan.stairs) for (let d = -1; d <= h + 1; d++) for (const dx of [0, 1]) roadsForOwners.add(at(x + dx, y + d));
   const pruned = pruneUnowned({ map: m, plan, roads: roadsForOwners, water, inspect: () => [...inspectCivicProps(m, plan), ...inspectHouseholdProps(m, plan)] });
+  // A pier ends in boats, posts and gear (lib/village-harbor.mjs).
+  const harbor = plan.dock ? placeHarbor({ map: m, dock: plan.dock, ids: harborIds, kit: harborKit,
+    isWater: (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && LAKE.has(m.lowerTiles[at(x, y)]) && m.upperTiles[at(x, y)] === -1,
+    isLand: (x, y) => x >= 1 && y >= 1 && x < W2 - 1 && y < m.height - 1 && m.lowerTiles[at(x, y)] === 240 && m.upperTiles[at(x, y)] === -1
+      && !plan.placements.some((o) => x >= o.x && x < o.x + o.w && y >= o.y && y < o.y + o.h) && !plan.houses.some((o) => x >= o.x && x < o.x + o.w && y >= o.y && y < o.y + o.h) && !plan.access.some((a) => a.x === x && a.y === y) && !roadsForOwners.has(at(x, y)),
+    accept: () => reachOk(seenNow()) }) : [];
+  plan.placements.push(...harbor);
 
   // 5. Ground: 2–3 tree clumps in front of straight forest edges, then natural scenes (tree + bush, thickets,
   // flowering shrubs, rocks with a bush) until the gate passes. No tall grass: the old 243–335 art is banned until
@@ -301,11 +311,11 @@ function fillVillage(plan, strict) {
     revision: 14, before: { width: W0, height: H0 }, after: { width: m.width, height: m.height }, removed: carved.removed,
     yards: plan.yards.length, yardProps: plan.placements.filter((o) => o.kind === "prop" && o.kit !== "doorway").length,
     doorFlanks: flanks.length, plaza: plaza.map((o) => o.name), treeClumps: clumps.length, crestCellsRemoved: crestCells,
-    pools, unownedRemoved: pruned,
+    pools, unownedRemoved: pruned, harbor: harbor.map((o) => ({ name: o.name, x: o.x, y: o.y })),
     scenes: gaps.pieces.map((p) => ({ name: p.name, at: p.stamps[0] ? [p.stamps[0].x, p.stamps[0].y] : p.flowers[0].slice(0, 2), flowers: p.flowers.length })),
     emptiness: { beforeGapFill: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
   };
   m.layoutPlan = { ...m.layoutPlan, regions: plan.houses, entrance: plan.entrance, civicPlaces: plan.civicPlaces, landmarks: plan.landmarks ?? [] };
-  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
+  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, harbor: harbor.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
 }
 fs.writeFileSync(output, JSON.stringify(catalog));

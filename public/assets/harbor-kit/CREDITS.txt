@@ -1,0 +1,16 @@
+Harbor kit (forest-village harbors): harbor-kit.png
+
+Rowboat: Daniel Eddeland (Daneeklu), LPC farming/fishing tiles.
+Used under CC-BY-SA 3.0 from the dual-licensed LPC submission.
+https://opengameart.org/content/farming-tilesets-magic-animations-and-ui-elements
+https://creativecommons.org/licenses/by-sa/3.0/
+Source file in this repository: assets/castle-surroundings/sources/farming_fishing.png, rectangle (224,448,128,64).
+
+Mooring post, coiled rope, anchor, barrels, crate: EasyRPG ship chipset (CC0),
+assets/easyrpg-chipset-ship-transparent.png, tiles 329, 263, 259, 385, 379, 415.
+The chipset's colour key #ff678b is turned into transparency; no other pixel changes.
+
+Adaptation: exact 16px cells packed onto one sheet. No scaling, recolouring or AI-generated art.
+Exact rectangles and source hashes: parts.json (built by scripts/content/build-harbor-kit.py).
+The combined sheet is distributed under CC-BY-SA 3.0 (because of the LPC rowboat).
+This asset notice does not change the software code's license.
