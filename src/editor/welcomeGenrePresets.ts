@@ -1,6 +1,7 @@
 // editor/welcomeGenrePresets.ts
 // Welcome genre chips → fixed AI prompt templates (map + monster/item DB seed checklist).
 
+import { GENRE_PRESET_BRIEF_PREFIX } from "@/ai/genrePresetBrief";
 import {
   detectNarrativeHorrorGenre,
   templateToolInstruction,
@@ -183,7 +184,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
     return [
-      `장르 프리셋: ${preset.label}`,
+      `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
       gameDesignBriefContext(brief),
       "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
@@ -199,7 +200,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   }
   if (preset.packId === "action-rpg") {
     return [
-      `장르 프리셋: ${preset.label}`,
+      `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
       `톤: ${preset.tone}`,
       buildActionArenaAuthoringGuide(),
       "한국어로 진행하고, 도구로 실제 2D 액션 전투 공간을 저작하세요.",
@@ -207,7 +208,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   }
   const checklist = WELCOME_GENRE_CHECKLIST_LINES.map((line, index) => `${index + 1}. ${line}`).join("\n");
   return [
-    `장르 프리셋: ${preset.label}`,
+    `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
     `톤: ${preset.tone}`,
     "",
     "다음 체크리스트를 모두 만족하도록 실제 편집 툴을 호출해 작업하세요. 설명만 하고 끝내지 마세요.",

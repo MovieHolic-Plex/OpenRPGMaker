@@ -88,7 +88,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    plan = { ...plan, villageContract: resolveVillageContract(project, declared.intent, currentMapId, selection ?? null) };
+    plan = { ...plan, villageContract: resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
