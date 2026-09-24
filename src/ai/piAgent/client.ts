@@ -47,6 +47,17 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   let lastError: string | null = null;
   let checkpoints = Promise.resolve();
   let checkpointError: unknown;
+  // 워커가 «우리» 적용·그림 응답을 기다리는 동안의 침묵은 워커 사망이 아니다. 25MB 체크포인트 적용이
+  // 페이지 주 스레드를 30초 넘게 잡으면(부하 걸린 머신) 이미 도착한 heartbeat 를 읽지 못한 채 워치독이 먼저
+  // 울려 실행 전체를 끊었고, 뒤따른 ACK 가 409 로 돌아와 「적용 응답을 전달하지 못했습니다」만 남았다
+  // (2026-09-24 몬스터 수집 도그푸딩, 22턴/89툴콜에서 사망). 응답 중에는 워치독을 다시 건다.
+  let acksInFlight = 0;
+  let stale = false;
+  let lastLineAt = Date.now();
+  const trackAck = (work: () => Promise<void>) => async () => {
+    acksInFlight += 1;
+    try { await work(); } finally { acksInFlight -= 1; lastLineAt = Date.now(); }
+  };
   const receiveInspection = (event: PiAgentEvent): boolean => {
     if (event.type === "prompt_inspection") {
       if (!options.signal?.aborted) publishPromptInspection(event.snapshot, captureEpoch);
@@ -57,7 +68,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   const receiveRender = (event: PiAgentEvent): boolean => {
     if (event.type === "agent_event") return receiveRender(event.event);
     if (event.type !== "render_request") return false;
-    checkpoints = checkpoints.then(async () => {
+    checkpoints = checkpoints.then(trackAck(async () => {
       let png: string | undefined, issue: string | undefined;
       try {
         options.signal?.throwIfAborted();
@@ -72,7 +83,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         ...(options.signal ? { signal: options.signal } : {}),
       });
       if (!ack.ok) throw new PiAgentClientError("맵 이미지 응답을 전달하지 못했습니다.", ack.status);
-    }).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
+    })).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
     return true;
   };
   const decoder = createPiAgentLineDecoder((raw) => {
@@ -82,7 +93,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     if (receiveInspection(event) || receiveRender(event)) return;
     if (event.type === "checkpoint") {
       options.onEvent?.(event);
-      checkpoints = checkpoints.then(async () => {
+      checkpoints = checkpoints.then(trackAck(async () => {
         let issue: string | undefined;
         let project: Project | void = undefined;
         try {
@@ -102,8 +113,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           body: JSON.stringify({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project: ackProject }),
           ...(options.signal ? { signal: options.signal } : {}),
         });
-        if (!ack.ok) throw new PiAgentClientError("적용 응답을 전달하지 못했습니다.", ack.status);
-      }).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
+        if (!ack.ok) throw new PiAgentClientError(stale ? "적용 응답을 전달하지 못했습니다 — 워커 연결이 먼저 끊겼습니다." : "적용 응답을 전달하지 못했습니다.", ack.status);
+      })).catch(error => { checkpointError = error; void reader.cancel().catch(() => undefined); });
       return;
     }
     if (event.type === "done") done = event;
@@ -114,9 +125,12 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   const text = new TextDecoder();
   // 워치독: 침묵은 모델이 생각하는 것이 아니라(그건 heartbeat 가 묻는다) 워커가 죽은 것이다. 끊지 않으면 실행 상한(PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)까지 「실행 중」이 떠 있는다.
   const staleMs = options.staleMs ?? PI_AGENT_STALE_MS;
-  let stale = false;
-  let lastLineAt = Date.now();
-  const onStale = () => { stale = true; void reader.cancel().catch(() => undefined); };
+  const onStale = () => {
+    // 우리가 응답 중이거나, 타이머가 늦게 울렸을 뿐 마지막 줄 이후 staleMs 가 안 지났으면 다시 건다.
+    if (acksInFlight > 0 || Date.now() - lastLineAt < staleMs) { watchdog = setTimeout(onStale, staleMs); return; }
+    stale = true;
+    void reader.cancel().catch(() => undefined);
+  };
   let watchdog = setTimeout(onStale, staleMs);
   try {
     for (;;) {
@@ -135,7 +149,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
   decoder.push(text.decode());
   decoder.flush();
   await checkpoints;
-  if (checkpointError) throw checkpointError;
+  // 워치독이 먼저 끊었으면 그 뒤 ACK 실패(워커가 이미 대기를 거둔 409)는 결과일 뿐 — 원인을 보고한다.
+  if (checkpointError && !stale) throw checkpointError;
   if (done) return done;
   if (stale) {
     throw new PiAgentClientError(`워커에서 ${Math.round((Date.now() - lastLineAt) / 1000)}초 동안 신호가 없어 연결을 끊었습니다. 워커가 응답하지 않습니다 — 다시 시도하고, 반복되면 개발 서버 콘솔의 [oh-my-pi-worker] 줄을 봐 주세요.`);
