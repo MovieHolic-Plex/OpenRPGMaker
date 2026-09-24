@@ -2,58 +2,62 @@
   {
     "id": "interior-inn-tavern-1f",
     "entry": [
-      11,
+      13,
       13
     ],
     "targets": [
       [
-        4,
+        9,
         6
       ],
       [
-        9,
-        7
-      ],
-      [
-        16,
+        17,
         5
       ],
       [
         19,
-        5
+        8
+      ],
+      [
+        4,
+        7
+      ],
+      [
+        14,
+        11
       ]
     ],
-    "reachable": 95,
-    "walkable": 85,
+    "reachable": 87,
+    "walkable": 80,
     "blocked": [],
     "pockets": []
   },
   {
     "id": "interior-inn-rooms-2f",
     "entry": [
-      3,
-      12
+      18,
+      7
     ],
     "targets": [
       [
-        5,
-        6
-      ],
-      [
-        11,
-        6
-      ],
-      [
-        17,
-        7
-      ],
-      [
-        19,
+        4,
         12
+      ],
+      [
+        10,
+        12
+      ],
+      [
+        15,
+        12
+      ],
+      [
+        3,
+        6
       ]
     ],
-    "reachable": 91,
-    "walkable": 87,
+    "reachable": 87,
+    "walkable": 83,
     "blocked": [],
     "pockets": []
   },
@@ -77,8 +81,8 @@
         14
       ]
     ],
-    "reachable": 94,
-    "walkable": 87,
+    "reachable": 99,
+    "walkable": 94,
     "blocked": [],
     "pockets": []
   },
@@ -102,41 +106,45 @@
         7
       ]
     ],
-    "reachable": 28,
-    "walkable": 24,
+    "reachable": 34,
+    "walkable": 25,
     "blocked": [],
     "pockets": []
   },
   {
     "id": "interior-home-two-story-1f",
     "entry": [
-      8,
+      9,
       10
     ],
     "targets": [
       [
-        7,
+        8,
         8
       ],
       [
-        14,
-        5
+        16,
+        8
       ],
       [
-        11,
+        3,
+        7
+      ],
+      [
+        13,
         9
       ]
     ],
-    "reachable": 41,
-    "walkable": 34,
+    "reachable": 44,
+    "walkable": 40,
     "blocked": [],
     "pockets": []
   },
   {
     "id": "interior-home-two-story-2f",
     "entry": [
-      10,
-      9
+      16,
+      7
     ],
     "targets": [
       [
@@ -144,12 +152,16 @@
         7
       ],
       [
-        14,
+        10,
+        8
+      ],
+      [
+        15,
         8
       ]
     ],
-    "reachable": 42,
-    "walkable": 40,
+    "reachable": 45,
+    "walkable": 41,
     "blocked": [],
     "pockets": []
   },
@@ -173,8 +185,8 @@
         8
       ]
     ],
-    "reachable": 104,
-    "walkable": 89,
+    "reachable": 108,
+    "walkable": 99,
     "blocked": [],
     "pockets": []
   },
@@ -194,12 +206,12 @@
         7
       ],
       [
-        11,
-        6
+        10,
+        9
       ]
     ],
-    "reachable": 40,
-    "walkable": 36,
+    "reachable": 42,
+    "walkable": 41,
     "blocked": [],
     "pockets": []
   },
@@ -207,24 +219,24 @@
     "id": "interior-adventurers-guild",
     "entry": [
       11,
-      13
+      12
     ],
     "targets": [
       [
         16,
-        8
+        7
       ],
       [
-        8,
-        5
+        5,
+        6
       ],
       [
-        10,
+        11,
         7
       ]
     ],
-    "reachable": 98,
-    "walkable": 89,
+    "reachable": 90,
+    "walkable": 82,
     "blocked": [],
     "pockets": []
   },
@@ -236,20 +248,20 @@
     ],
     "targets": [
       [
-        7,
-        8
+        8,
+        7
       ],
       [
-        7,
-        6
+        8,
+        5
       ],
       [
         11,
-        8
+        9
       ]
     ],
-    "reachable": 37,
-    "walkable": 36,
+    "reachable": 45,
+    "walkable": 44,
     "blocked": [],
     "pockets": []
   },
@@ -265,16 +277,16 @@
         6
       ],
       [
-        12,
+        13,
         7
       ],
       [
-        6,
-        10
+        4,
+        7
       ]
     ],
     "reachable": 54,
-    "walkable": 50,
+    "walkable": 49,
     "blocked": [],
     "pockets": []
   },
@@ -306,8 +318,8 @@
         10
       ]
     ],
-    "reachable": 88,
-    "walkable": 84,
+    "reachable": 91,
+    "walkable": 87,
     "blocked": [],
     "pockets": []
   },
@@ -335,8 +347,8 @@
         7
       ]
     ],
-    "reachable": 88,
-    "walkable": 79,
+    "reachable": 91,
+    "walkable": 82,
     "blocked": [],
     "pockets": []
   },
@@ -364,16 +376,16 @@
         7
       ]
     ],
-    "reachable": 77,
-    "walkable": 62,
+    "reachable": 78,
+    "walkable": 66,
     "blocked": [],
     "pockets": []
   },
   {
     "id": "interior-castle-bedchamber",
     "entry": [
-      9,
-      10
+      14,
+      7
     ],
     "targets": [
       [
@@ -385,12 +397,12 @@
         7
       ],
       [
-        14,
-        8
+        13,
+        9
       ]
     ],
     "reachable": 48,
-    "walkable": 41,
+    "walkable": 40,
     "blocked": [],
     "pockets": []
   },
@@ -418,16 +430,16 @@
         10
       ]
     ],
-    "reachable": 68,
-    "walkable": 60,
+    "reachable": 69,
+    "walkable": 61,
     "blocked": [],
     "pockets": []
   },
   {
     "id": "interior-castle-treasury",
     "entry": [
-      8,
-      10
+      13,
+      8
     ],
     "targets": [
       [
@@ -439,12 +451,81 @@
         6
       ],
       [
-        12,
-        6
+        11,
+        8
       ]
     ],
-    "reachable": 42,
-    "walkable": 40,
+    "reachable": 45,
+    "walkable": 45,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-castle-1f",
+    "entry": [
+      24,
+      37
+    ],
+    "targets": [
+      [
+        24,
+        7
+      ],
+      [
+        24,
+        27
+      ],
+      [
+        8,
+        6
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        6,
+        26
+      ],
+      [
+        3,
+        32
+      ],
+      [
+        42,
+        7
+      ],
+      [
+        42,
+        25
+      ],
+      [
+        42,
+        31
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        36,
+        5
+      ],
+      [
+        14,
+        20
+      ],
+      [
+        35,
+        30
+      ]
+    ],
+    "reachable": 799,
+    "walkable": 701,
     "blocked": [],
     "pockets": []
   },
@@ -456,20 +537,24 @@
     ],
     "targets": [
       [
-        10,
-        5
+        17,
+        8
       ],
       [
-        4,
-        9
+        6,
+        8
       ],
       [
-        15,
-        9
+        14,
+        8
+      ],
+      [
+        8,
+        6
       ]
     ],
-    "reachable": 64,
-    "walkable": 57,
+    "reachable": 69,
+    "walkable": 59,
     "blocked": [],
     "pockets": []
   },
@@ -482,18 +567,18 @@
     "targets": [
       [
         16,
-        8
+        7
       ],
       [
         10,
-        8
+        9
       ],
       [
         3,
         6
       ]
     ],
-    "reachable": 101,
+    "reachable": 97,
     "walkable": 89,
     "blocked": [],
     "pockets": []
@@ -515,11 +600,11 @@
       ],
       [
         17,
-        11
+        10
       ]
     ],
-    "reachable": 80,
-    "walkable": 73,
+    "reachable": 82,
+    "walkable": 76,
     "blocked": [],
     "pockets": []
   },
@@ -527,16 +612,16 @@
     "id": "interior-ship-cabin",
     "entry": [
       17,
-      5
+      7
     ],
     "targets": [
       [
         6,
-        6
+        8
       ],
       [
         9,
-        8
+        7
       ],
       [
         12,
@@ -547,7 +632,7 @@
         8
       ]
     ],
-    "reachable": 62,
+    "reachable": 61,
     "walkable": 61,
     "blocked": [],
     "pockets": []
@@ -556,7 +641,7 @@
     "id": "interior-ship-hold",
     "entry": [
       10,
-      5
+      7
     ],
     "targets": [
       [
@@ -572,8 +657,8 @@
         8
       ]
     ],
-    "reachable": 70,
-    "walkable": 67,
+    "reachable": 69,
+    "walkable": 66,
     "blocked": [],
     "pockets": []
   }
