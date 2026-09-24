@@ -2065,3 +2065,19 @@ Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조�
 `questGraph.commandAtNestedPath`도 같은 세 경로를 해석한다. 전투 결과 분기 안의 위치는
 `isBattleGatedWrite`가 수동 검증으로 분류한다. write site 발견은 실제 승리·탈출·패배 증거가 아니다.
 정본532 사례와 수정 전후 위치 비교는 `docs/qa/saesol-three-hour-ai-authoring.md` 요청64 이후 기록 참조.
+
+## Monster follower graphic authoring (2026-09-25)
+
+`define_monster_species` accepts `graphic.fieldGraphic` (the persisted
+`EventPageGraphic` shape) and the legacy `fieldCharsetId`. A partial
+`{species:{id,graphic:{fieldGraphic:{scale:0.5}}}}` merges recursively, preserving
+sprite ID/type, direction, pattern and other species data. Scale uses the shared
+character scale bounds (0.25–8); `scaleMode` accepts auto/manual. These are field
+settings, not front/back battle image settings. A new field graphic needs a sprite
+ID to survive species normalization; a scale-only patch requires an existing
+field graphic. Field sprite IDs come from registered resources, not texture keys.
+
+Saesol authoring request75 exposed the missing tool schema: stored species and
+runtime followers supported the setting, but the AI tool rejected `fieldGraphic`
+and returned a prose draft with no project change. This schema change closes that
+input gap; publishing it does not itself change any canonical game data.

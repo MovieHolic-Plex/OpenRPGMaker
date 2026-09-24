@@ -4,6 +4,27 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 
 describe("DB write tools", () => {
+  it("patches follower scale without replacing its sprite or battle species data", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const species = ctx.project.database.monsterSpecies[0];
+    species.graphic.fieldGraphic = {
+      sprite: { type: "bundled", id: "easyrpg-charset-actor1" },
+      direction: "left", pattern: 4,
+    };
+    const before = structuredClone(species);
+    const result = runTool(ctx, "define_monster_species", {
+      species: { id: species.id, graphic: { fieldGraphic: { scale: 0.5 } } },
+    }, { dryRun: false });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const after = ctx.project.database.monsterSpecies.find((entry) => entry.id === species.id)!;
+    expect(after.graphic.fieldGraphic).toEqual({ ...before.graphic.fieldGraphic, scale: 0.5 });
+    expect(after.graphic.monsterResourceId).toBe(before.graphic.monsterResourceId);
+    expect(after.graphic.backResourceId).toBe(before.graphic.backResourceId);
+    expect(after.baseStats).toEqual(before.baseStats);
+    expect(after.skillsByLevel).toEqual(before.skillsByLevel);
+    expect(after.captureRate).toBe(before.captureRate);
+  });
+
   it("replaces inherited members on an enemyIds-only troop patch and preserves unrelated fields", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const troop = ctx.project.database.troops[0];
