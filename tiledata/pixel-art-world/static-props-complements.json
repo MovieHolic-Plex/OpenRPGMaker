@@ -1,0 +1,3674 @@
+{
+  "schemaVersion": 1,
+  "packs": [
+    {
+      "id": "paw-static-props-easels",
+      "name": "벽걸이 칠판과 바닥 이젤",
+      "sources": [
+        {
+          "id": "main",
+          "filename": "Eu-Easel01.png",
+          "width": 96,
+          "height": 96,
+          "sha256": "80655d7b7337ce729c9dbb4d55404f801404784f34d851d7b6c6a3921b816b1c",
+          "sourcePage": "https://yms.main.jp/dotartworld/",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chips/Eu-Easel01.png"
+        },
+        {
+          "id": "room",
+          "filename": "ST-Icecream-I01.png",
+          "width": 256,
+          "height": 640,
+          "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+          "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Icecream-I01.png"
+        }
+      ],
+      "palette": [
+        {
+          "tile": 0,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 0,
+              "y": 0,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                0,
+                0
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": true
+        },
+        {
+          "tile": 1,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 96,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                96
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        },
+        {
+          "tile": 2,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 64,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                64
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        }
+      ],
+      "recipes": [
+        {
+          "id": "board-0",
+          "name": "빈 칠판 · 벽걸이",
+          "width": 32,
+          "height": 32,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 24
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "wall-mounted",
+          "wallRowsForExample": 2,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ]
+          ],
+          "blockingCells": [],
+          "supportCells": [
+            [
+              0,
+              0
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 1
+          },
+          "notes": "원본 상단의 독립 액자 전체. 바닥 자립 다리가 없는 벽걸이 판이며 뒤쪽 전체 벽을 요구한다. 손으로 글씨를 생성하거나 이젤 상태와 혼합하지 않는다.",
+          "errorCell": [
+            0,
+            0
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              4,
+              32,
+              32
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "board-1",
+          "name": "메뉴 칠판 A · 벽걸이",
+          "width": 32,
+          "height": 32,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 24
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "wall-mounted",
+          "wallRowsForExample": 2,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ]
+          ],
+          "blockingCells": [],
+          "supportCells": [
+            [
+              0,
+              0
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 1
+          },
+          "notes": "원본 상단의 독립 액자 전체. 바닥 자립 다리가 없는 벽걸이 판이며 뒤쪽 전체 벽을 요구한다. 손으로 글씨를 생성하거나 이젤 상태와 혼합하지 않는다.",
+          "errorCell": [
+            0,
+            0
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              4,
+              32,
+              32
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "board-2",
+          "name": "메뉴 칠판 B · 벽걸이",
+          "width": 32,
+          "height": 32,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 24
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "wall-mounted",
+          "wallRowsForExample": 2,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ]
+          ],
+          "blockingCells": [],
+          "supportCells": [
+            [
+              0,
+              0
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 1
+          },
+          "notes": "원본 상단의 독립 액자 전체. 바닥 자립 다리가 없는 벽걸이 판이며 뒤쪽 전체 벽을 요구한다. 손으로 글씨를 생성하거나 이젤 상태와 혼합하지 않는다.",
+          "errorCell": [
+            0,
+            0
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              4,
+              32,
+              32
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "easel-0",
+          "name": "메뉴와 꽃이 있는 이젤",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 32,
+                "width": 32,
+                "height": 64
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  32
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 32,
+                "width": 32,
+                "height": 56
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  32
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본 아래64px 전체. 세로 기둥·가로 받침·양다리를 함께 보존한다. 세 번째는 판이 없는 거치대이며 캔버스 후면이라고 단정하지 않는다. 정면 보기의 남쪽 접근, 마지막 다리 행은 바닥 지지.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              13,
+              31,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "easel-1",
+          "name": "빈 칠판 이젤",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 32,
+                "width": 32,
+                "height": 64
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  32
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 32,
+                "width": 32,
+                "height": 56
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  32
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본 아래64px 전체. 세로 기둥·가로 받침·양다리를 함께 보존한다. 세 번째는 판이 없는 거치대이며 캔버스 후면이라고 단정하지 않는다. 정면 보기의 남쪽 접근, 마지막 다리 행은 바닥 지지.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              13,
+              31,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "easel-2",
+          "name": "빈 거치대 이젤",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 64
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  32
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 56
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  32
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본 아래64px 전체. 세로 기둥·가로 받침·양다리를 함께 보존한다. 세 번째는 판이 없는 거치대이며 캔버스 후면이라고 단정하지 않는다. 정면 보기의 남쪽 접근, 마지막 다리 행은 바닥 지지.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              13,
+              31,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        }
+      ],
+      "scenePlan": {
+        "id": "paw-static-props-easels-sample",
+        "name": "벽걸이 칠판과 바닥 이젤 · 방향·지지 조립 표본",
+        "width": 7,
+        "height": 5,
+        "mode": "wall-strip",
+        "wallRows": 2,
+        "placements": [
+          {
+            "recipeId": "board-0",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "board-1",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "recipeId": "board-2",
+            "x": 5,
+            "y": 1
+          },
+          {
+            "recipeId": "easel-0",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "recipeId": "easel-1",
+            "x": 3,
+            "y": 2
+          },
+          {
+            "recipeId": "easel-2",
+            "x": 5,
+            "y": 2
+          }
+        ],
+        "entry": {
+          "x": 3,
+          "y": 4
+        },
+        "approachCells": [
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 4
+          }
+        ],
+        "notes": "원본의 완전 객체와 명시한 바닥/벽 받침을 보여 주는 작은 정적 조립 표본. 완성 시설이나 실행 플레이 공간이 아니다. 남쪽 접근을 연결하고 객체 사이 투명 여백을 보존한다. events가 비어 있으며 물리 시뮬레이션/음악/파괴/상호작용은 없다.",
+        "events": [],
+        "kind": "static-place-assembly"
+      },
+      "coverage": {
+        "resolved": [
+          "빈 칠판 · 벽걸이",
+          "메뉴 칠판 A · 벽걸이",
+          "메뉴 칠판 B · 벽걸이",
+          "메뉴와 꽃이 있는 이젤",
+          "빈 칠판 이젤",
+          "빈 거치대 이젤"
+        ],
+        "remaining": [
+          "실행 이벤트, 애니메이션, 다른 MV 확대 판본은 지원 범위 밖"
+        ]
+      },
+      "sourcePage": "https://yms.main.jp/dotartworld/",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "credit": "Pixel Art World / ドット絵世界 (yms)",
+      "checkedAt": "2026-09-25"
+    },
+    {
+      "id": "paw-static-props-pillars",
+      "name": "온전한 기둥과 부러진 기둥",
+      "sources": [
+        {
+          "id": "main",
+          "filename": "Eu-Pillar01.png",
+          "width": 192,
+          "height": 96,
+          "sha256": "d2745dbef0610f9f0afa165fb6bfb0a84a15b8edda7205dc62a182145f89f8be",
+          "sourcePage": "https://yms.main.jp/dotartworld/",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chips/Eu-Pillar01.png"
+        },
+        {
+          "id": "room",
+          "filename": "ST-Icecream-I01.png",
+          "width": 256,
+          "height": 640,
+          "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+          "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Icecream-I01.png"
+        }
+      ],
+      "palette": [
+        {
+          "tile": 0,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 0,
+              "y": 0,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                0,
+                0
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": true
+        },
+        {
+          "tile": 1,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 96,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                96
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        },
+        {
+          "tile": 2,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 64,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                64
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        }
+      ],
+      "recipes": [
+        {
+          "id": "pillar-0",
+          "name": "목재 각기둥",
+          "width": 32,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 96
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "symmetric-front",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본32×96 세로 전체. 기둥 머리·몸통·주초를 분리 반복하지 않는다. 마지막은 부러진 기둥 상태이며 파괴 전환 이벤트가 아니다. 원형 주초 전체 마지막 행 차단, 머리 그림은 상위 겹침. 방향은 대칭 장식으로 남쪽 접근을 선택한다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              0,
+              0,
+              32,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "pillar-1",
+          "name": "녹회색 몸통·회색 머리 기둥",
+          "width": 32,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 96
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "symmetric-front",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본32×96 세로 전체. 기둥 머리·몸통·주초를 분리 반복하지 않는다. 마지막은 부러진 기둥 상태이며 파괴 전환 이벤트가 아니다. 원형 주초 전체 마지막 행 차단, 머리 그림은 상위 겹침. 방향은 대칭 장식으로 남쪽 접근을 선택한다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              0,
+              32,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "pillar-2",
+          "name": "금색 몸통·회색 머리 기둥",
+          "width": 32,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 96
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "symmetric-front",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본32×96 세로 전체. 기둥 머리·몸통·주초를 분리 반복하지 않는다. 마지막은 부러진 기둥 상태이며 파괴 전환 이벤트가 아니다. 원형 주초 전체 마지막 행 차단, 머리 그림은 상위 겹침. 방향은 대칭 장식으로 남쪽 접근을 선택한다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              0,
+              32,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "pillar-3",
+          "name": "금색 기둥",
+          "width": 32,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 96,
+                "y": 0,
+                "width": 32,
+                "height": 96
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  96,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 96,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  96,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "symmetric-front",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본32×96 세로 전체. 기둥 머리·몸통·주초를 분리 반복하지 않는다. 마지막은 부러진 기둥 상태이며 파괴 전환 이벤트가 아니다. 원형 주초 전체 마지막 행 차단, 머리 그림은 상위 겹침. 방향은 대칭 장식으로 남쪽 접근을 선택한다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              0,
+              32,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "pillar-4",
+          "name": "백색 기둥",
+          "width": 32,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 128,
+                "y": 0,
+                "width": 32,
+                "height": 96
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  128,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 128,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  128,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "symmetric-front",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본32×96 세로 전체. 기둥 머리·몸통·주초를 분리 반복하지 않는다. 마지막은 부러진 기둥 상태이며 파괴 전환 이벤트가 아니다. 원형 주초 전체 마지막 행 차단, 머리 그림은 상위 겹침. 방향은 대칭 장식으로 남쪽 접근을 선택한다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              0,
+              32,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "pillar-5",
+          "name": "부러진 백색 기둥",
+          "width": 32,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 160,
+                "y": 0,
+                "width": 32,
+                "height": 96
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  160,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 160,
+                "y": 0,
+                "width": 32,
+                "height": 88
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  160,
+                  0
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "symmetric-front",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              1
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본32×96 세로 전체. 기둥 머리·몸통·주초를 분리 반복하지 않는다. 마지막은 부러진 기둥 상태이며 파괴 전환 이벤트가 아니다. 원형 주초 전체 마지막 행 차단, 머리 그림은 상위 겹침. 방향은 대칭 장식으로 남쪽 접근을 선택한다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              1,
+              38,
+              32,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        }
+      ],
+      "scenePlan": {
+        "id": "paw-static-props-pillars-sample",
+        "name": "온전한 기둥과 부러진 기둥 · 방향·지지 조립 표본",
+        "width": 13,
+        "height": 5,
+        "mode": "wall-strip",
+        "wallRows": 2,
+        "placements": [
+          {
+            "recipeId": "pillar-0",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "pillar-1",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "recipeId": "pillar-2",
+            "x": 5,
+            "y": 1
+          },
+          {
+            "recipeId": "pillar-3",
+            "x": 7,
+            "y": 1
+          },
+          {
+            "recipeId": "pillar-4",
+            "x": 9,
+            "y": 1
+          },
+          {
+            "recipeId": "pillar-5",
+            "x": 11,
+            "y": 1
+          }
+        ],
+        "entry": {
+          "x": 6,
+          "y": 4
+        },
+        "approachCells": [
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 4
+          },
+          {
+            "x": 9,
+            "y": 4
+          },
+          {
+            "x": 11,
+            "y": 4
+          }
+        ],
+        "notes": "원본의 완전 객체와 명시한 바닥/벽 받침을 보여 주는 작은 정적 조립 표본. 완성 시설이나 실행 플레이 공간이 아니다. 남쪽 접근을 연결하고 객체 사이 투명 여백을 보존한다. events가 비어 있으며 물리 시뮬레이션/음악/파괴/상호작용은 없다.",
+        "events": [],
+        "kind": "static-place-assembly"
+      },
+      "coverage": {
+        "resolved": [
+          "목재 각기둥",
+          "녹회색 몸통·회색 머리 기둥",
+          "금색 몸통·회색 머리 기둥",
+          "금색 기둥",
+          "백색 기둥",
+          "부러진 백색 기둥"
+        ],
+        "remaining": [
+          "실행 이벤트, 애니메이션, 다른 MV 확대 판본은 지원 범위 밖"
+        ]
+      },
+      "sourcePage": "https://yms.main.jp/dotartworld/",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "credit": "Pixel Art World / ドット絵世界 (yms)",
+      "checkedAt": "2026-09-25"
+    },
+    {
+      "id": "paw-static-props-statues",
+      "name": "큰 석상과 사각 받침",
+      "sources": [
+        {
+          "id": "main",
+          "filename": "Eu-Statue01.png",
+          "width": 192,
+          "height": 128,
+          "sha256": "1951012847f2161cd4b43805f92d7697c0a1c30dd1bf48fee9461ef42c4846b8",
+          "sourcePage": "https://yms.main.jp/dotartworld/",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chips/Eu-Statue01.png"
+        },
+        {
+          "id": "room",
+          "filename": "ST-Icecream-I01.png",
+          "width": 256,
+          "height": 640,
+          "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+          "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Icecream-I01.png"
+        }
+      ],
+      "palette": [
+        {
+          "tile": 0,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 0,
+              "y": 0,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                0,
+                0
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": true
+        },
+        {
+          "tile": 1,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 96,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                96
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        },
+        {
+          "tile": 2,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 64,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                64
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        }
+      ],
+      "recipes": [
+        {
+          "id": "statue-ring",
+          "name": "고리 든 석상과 받침",
+          "width": 64,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 4,
+                "y": 43,
+                "width": 44,
+                "height": 82
+              },
+              "target": {
+                "x": 10,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  4,
+                  43
+                ],
+                "target": [
+                  10,
+                  14
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 4,
+                "y": 43,
+                "width": 44,
+                "height": 74
+              },
+              "target": {
+                "x": 10,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  4,
+                  43
+                ],
+                "target": [
+                  10,
+                  14
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본 연결 객체 bbox(4,43)-(48,125) 전체.48px 판본을32px 칸으로 자르지 않고64×96 캔버스에 여백만 추가. 바닥 주초2칸 차단.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              10,
+              14,
+              54,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "statue-hand",
+          "name": "손 든 석상과 받침",
+          "width": 64,
+          "height": 96,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 52,
+                "y": 43,
+                "width": 41,
+                "height": 6
+              },
+              "target": {
+                "x": 10,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  52,
+                  43
+                ],
+                "target": [
+                  10,
+                  14
+                ]
+              }
+            },
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 52,
+                "y": 49,
+                "width": 44,
+                "height": 76
+              },
+              "target": {
+                "x": 10,
+                "y": 20
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  52,
+                  49
+                ],
+                "target": [
+                  10,
+                  20
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 52,
+                "y": 43,
+                "width": 41,
+                "height": 6
+              },
+              "target": {
+                "x": 10,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  52,
+                  43
+                ],
+                "target": [
+                  10,
+                  14
+                ]
+              }
+            },
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 52,
+                "y": 49,
+                "width": 44,
+                "height": 68
+              },
+              "target": {
+                "x": 10,
+                "y": 20
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  52,
+                  49
+                ],
+                "target": [
+                  10,
+                  20
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 3
+          },
+          "notes": "원본 bbox(52,43)-(96,125). 인접 팻말이 x93..95,y28..48을 차지하므로 y49에서 사각 파트를 나눠 이 석상과 그림자만 보존한다. 두 파트는 하나의 완전 객체이며 따로 놓지 않는다.",
+          "errorCell": [
+            0,
+            2
+          ],
+          "sourceBounds": {
+            "alpha": [
+              10,
+              14,
+              54,
+              96
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "statue-sign",
+          "name": "팻말 든 석상과 받침",
+          "width": 64,
+          "height": 128,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 93,
+                "y": 26,
+                "width": 51,
+                "height": 23
+              },
+              "target": {
+                "x": 6,
+                "y": 29
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  93,
+                  26
+                ],
+                "target": [
+                  6,
+                  29
+                ]
+              }
+            },
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 96,
+                "y": 49,
+                "width": 48,
+                "height": 76
+              },
+              "target": {
+                "x": 9,
+                "y": 52
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  96,
+                  49
+                ],
+                "target": [
+                  9,
+                  52
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 96,
+                "y": 26,
+                "width": 48,
+                "height": 23
+              },
+              "target": {
+                "x": 9,
+                "y": 29
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  96,
+                  26
+                ],
+                "target": [
+                  9,
+                  29
+                ]
+              }
+            },
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 96,
+                "y": 49,
+                "width": 48,
+                "height": 76
+              },
+              "target": {
+                "x": 9,
+                "y": 52
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  96,
+                  49
+                ],
+                "target": [
+                  9,
+                  52
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ],
+            [
+              0,
+              2
+            ],
+            [
+              1,
+              2
+            ],
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              3
+            ],
+            [
+              1,
+              3
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 4
+          },
+          "notes": "팻말은 x93부터 시작하여48px 구획 밖으로3px 돌출한다. 상단51×23 + 하단48×76을 원본 상대위치로 합성해 팻말과 팔·주초를 모두 보존한다. y49 아래 x93..95는 이웃 석상 그림자이므로 복사하지 않는다.",
+          "errorCell": [
+            0,
+            3
+          ],
+          "sourceBounds": {
+            "alpha": [
+              6,
+              29,
+              57,
+              128
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "statue-base",
+          "name": "석상 없는 사각 받침",
+          "width": 64,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 148,
+                "y": 87,
+                "width": 44,
+                "height": 38
+              },
+              "target": {
+                "x": 10,
+                "y": 26
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  148,
+                  87
+                ],
+                "target": [
+                  10,
+                  26
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 148,
+                "y": 87,
+                "width": 44,
+                "height": 30
+              },
+              "target": {
+                "x": 10,
+                "y": 26
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  148,
+                  87
+                ],
+                "target": [
+                  10,
+                  26
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ],
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ],
+            [
+              1,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본 오른쪽 빈 받침 전체. 윗판에 새 객체를 올리려면 픽셀 고정점을 별도로 검토하고 먼저 합성해야 한다. 이번에는 빈 받침 자체만 지원한다.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              10,
+              26,
+              54,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        }
+      ],
+      "scenePlan": {
+        "id": "paw-static-props-statues-sample",
+        "name": "큰 석상과 사각 받침 · 방향·지지 조립 표본",
+        "width": 10,
+        "height": 6,
+        "mode": "wall-strip",
+        "wallRows": 2,
+        "placements": [
+          {
+            "recipeId": "statue-ring",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "recipeId": "statue-hand",
+            "x": 3,
+            "y": 2
+          },
+          {
+            "recipeId": "statue-sign",
+            "x": 5,
+            "y": 1
+          },
+          {
+            "recipeId": "statue-base",
+            "x": 7,
+            "y": 3
+          }
+        ],
+        "entry": {
+          "x": 5,
+          "y": 5
+        },
+        "approachCells": [
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          }
+        ],
+        "notes": "원본의 완전 객체와 명시한 바닥/벽 받침을 보여 주는 작은 정적 조립 표본. 완성 시설이나 실행 플레이 공간이 아니다. 남쪽 접근을 연결하고 객체 사이 투명 여백을 보존한다. events가 비어 있으며 물리 시뮬레이션/음악/파괴/상호작용은 없다.",
+        "events": [],
+        "kind": "static-place-assembly"
+      },
+      "coverage": {
+        "resolved": [
+          "고리 든 석상과 받침",
+          "손 든 석상과 받침",
+          "팻말 든 석상과 받침",
+          "석상 없는 사각 받침"
+        ],
+        "remaining": [
+          "실행 이벤트, 애니메이션, 다른 MV 확대 판본은 지원 범위 밖"
+        ]
+      },
+      "sourcePage": "https://yms.main.jp/dotartworld/",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "credit": "Pixel Art World / ドット絵世界 (yms)",
+      "checkedAt": "2026-09-25"
+    },
+    {
+      "id": "paw-static-props-jukeboxes",
+      "name": "주크박스 두 색",
+      "sources": [
+        {
+          "id": "main",
+          "filename": "Jukebox01.png",
+          "width": 64,
+          "height": 64,
+          "sha256": "331a425a5b1c7b0a9e53f9cd1579e93da289efebb3aeb8cf4be212153cbbcaf8",
+          "sourcePage": "https://yms.main.jp/dotartworld/",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chips/Jukebox01.png"
+        },
+        {
+          "id": "room",
+          "filename": "ST-Icecream-I01.png",
+          "width": 256,
+          "height": 640,
+          "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+          "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Icecream-I01.png"
+        }
+      ],
+      "palette": [
+        {
+          "tile": 0,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 0,
+              "y": 0,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                0,
+                0
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": true
+        },
+        {
+          "tile": 1,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 96,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                96
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        },
+        {
+          "tile": 2,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 64,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                64
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        }
+      ],
+      "recipes": [
+        {
+          "id": "jukebox-0",
+          "name": "청색·자주색 주크박스",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 50
+              },
+              "target": {
+                "x": 0,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  14
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 42
+              },
+              "target": {
+                "x": 0,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  14
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본32×50 실그림 전체를64px높이 캔버스의 y14에 놓아 밑동을 바닥에 맞춘다. 원본 아래14px는 투명 여백. 전면 남쪽 접근, 밑동1칸 차단. 음악 재생/동전/조작 이벤트 없음.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              0,
+              14,
+              32,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "jukebox-1",
+          "name": "갈색·녹색 주크박스",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 50
+              },
+              "target": {
+                "x": 0,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  14
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 42
+              },
+              "target": {
+                "x": 0,
+                "y": 14
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  14
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본32×50 실그림 전체를64px높이 캔버스의 y14에 놓아 밑동을 바닥에 맞춘다. 원본 아래14px는 투명 여백. 전면 남쪽 접근, 밑동1칸 차단. 음악 재생/동전/조작 이벤트 없음.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              0,
+              14,
+              32,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        }
+      ],
+      "scenePlan": {
+        "id": "paw-static-props-jukeboxes-sample",
+        "name": "주크박스 두 색 · 방향·지지 조립 표본",
+        "width": 5,
+        "height": 4,
+        "mode": "wall-strip",
+        "wallRows": 2,
+        "placements": [
+          {
+            "recipeId": "jukebox-0",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "jukebox-1",
+            "x": 3,
+            "y": 1
+          }
+        ],
+        "entry": {
+          "x": 2,
+          "y": 3
+        },
+        "approachCells": [
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 3
+          }
+        ],
+        "notes": "원본의 완전 객체와 명시한 바닥/벽 받침을 보여 주는 작은 정적 조립 표본. 완성 시설이나 실행 플레이 공간이 아니다. 남쪽 접근을 연결하고 객체 사이 투명 여백을 보존한다. events가 비어 있으며 물리 시뮬레이션/음악/파괴/상호작용은 없다.",
+        "events": [],
+        "kind": "static-place-assembly"
+      },
+      "coverage": {
+        "resolved": [
+          "청색·자주색 주크박스",
+          "갈색·녹색 주크박스"
+        ],
+        "remaining": [
+          "실행 이벤트, 애니메이션, 다른 MV 확대 판본은 지원 범위 밖"
+        ]
+      },
+      "sourcePage": "https://yms.main.jp/dotartworld/",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "credit": "Pixel Art World / ドット絵世界 (yms)",
+      "checkedAt": "2026-09-25"
+    },
+    {
+      "id": "paw-static-props-busts",
+      "name": "흉상·받침·파편",
+      "sources": [
+        {
+          "id": "main",
+          "filename": "Statue02.png",
+          "width": 96,
+          "height": 96,
+          "sha256": "3dca7c0f44c3a764998c64c7bdac045e6a28aae132393de2764dd2f26f50c18d",
+          "sourcePage": "https://yms.main.jp/dotartworld/",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chips/Statue02.png"
+        },
+        {
+          "id": "room",
+          "filename": "ST-Icecream-I01.png",
+          "width": 256,
+          "height": 640,
+          "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+          "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-fastfood01.html",
+          "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Icecream-I01.png"
+        }
+      ],
+      "palette": [
+        {
+          "tile": 0,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 0,
+              "y": 0,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                0,
+                0
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": true
+        },
+        {
+          "tile": 1,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 96,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                96
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        },
+        {
+          "tile": 2,
+          "part": {
+            "sourceId": "room",
+            "sourceRect": {
+              "x": 32,
+              "y": 64,
+              "width": 32,
+              "height": 32
+            },
+            "target": {
+              "x": 0,
+              "y": 0
+            },
+            "role": "verified-underlay",
+            "mode": "over",
+            "anchor": {
+              "kind": "pixel-exact-no-rescale",
+              "source": [
+                32,
+                64
+              ],
+              "target": [
+                0,
+                0
+              ]
+            }
+          },
+          "passable": false
+        }
+      ],
+      "recipes": [
+        {
+          "id": "bust-original",
+          "name": "원본 완성 흉상·기둥",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 59
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 51
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  0
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본 왼쪽의 완성 흉상과 기둥·주초 전체. 투명 여백5px를 위로 옮겨 발끝 정렬. 얼굴 상태를 아래 별도 흉상과 같은 것으로 가정하지 않는다.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              5,
+              9,
+              32,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "bust-base",
+          "name": "흉상 없는 원형 기둥",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 59
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "pedestal-back",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 51
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "pedestal-back",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "원본 가운데 빈 기둥 전체. 상단 원형 받침의 픽셀 위치를 유지. 위에 놓을 그림은 원본 고정점 검토 후 로컬 합성이 필요하다.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              6,
+              26,
+              32,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "bust-mounted-0",
+          "name": "분리 흉상 A · 원형 기둥 고정 조합",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 59
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "pedestal-back",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            },
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 8
+              },
+              "role": "bust-front",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  0
+                ],
+                "target": [
+                  0,
+                  8
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 8
+              },
+              "role": "bust-front",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  0
+                ],
+                "target": [
+                  0,
+                  8
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "제작자 시트 오른쪽의 분리 흉상과 가운데 빈 기둥을 픽셀 단위로 합성한 고정 조합. 기존 완성 흉상의 얼굴·목·기둥 접합을 참고하여 A는원본 y3, B는y0에 놓고 전체 y5패딩을 더한다. 공식 애니메이션 상태나 파괴 순서라고 주장하지 않는다. 원본 두 분리 흉상의 바닥 단독 배치는 제외한다.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              5,
+              9,
+              32,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "bust-mounted-1",
+          "name": "분리 흉상 B · 원형 기둥 고정 조합",
+          "width": 32,
+          "height": 64,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 59
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "pedestal-back",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  32,
+                  0
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            },
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "bust-front",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  32
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 5
+              },
+              "role": "bust-front",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  64,
+                  32
+                ],
+                "target": [
+                  0,
+                  5
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              1
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 2
+          },
+          "notes": "제작자 시트 오른쪽의 분리 흉상과 가운데 빈 기둥을 픽셀 단위로 합성한 고정 조합. 기존 완성 흉상의 얼굴·목·기둥 접합을 참고하여 A는원본 y3, B는y0에 놓고 전체 y5패딩을 더한다. 공식 애니메이션 상태나 파괴 순서라고 주장하지 않는다. 원본 두 분리 흉상의 바닥 단독 배치는 제외한다.",
+          "errorCell": [
+            0,
+            1
+          ],
+          "sourceBounds": {
+            "alpha": [
+              5,
+              9,
+              32,
+              64
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        },
+        {
+          "id": "bust-fragments",
+          "name": "흉상 파편군 전체",
+          "width": 64,
+          "height": 32,
+          "parts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 64,
+                "width": 64,
+                "height": 32
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  64
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "counterexampleParts": [
+            {
+              "sourceId": "main",
+              "sourceRect": {
+                "x": 0,
+                "y": 64,
+                "width": 64,
+                "height": 24
+              },
+              "target": {
+                "x": 0,
+                "y": 0
+              },
+              "role": "whole-object",
+              "mode": "over",
+              "anchor": {
+                "kind": "pixel-exact-no-rescale",
+                "source": [
+                  0,
+                  64
+                ],
+                "target": [
+                  0,
+                  0
+                ]
+              }
+            }
+          ],
+          "facing": "south",
+          "layer": "upper",
+          "placementKind": "standing",
+          "wallRowsForExample": 0,
+          "occupiedCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "blockingCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "supportCells": [
+            [
+              0,
+              0
+            ],
+            [
+              1,
+              0
+            ]
+          ],
+          "approach": {
+            "x": 0,
+            "y": 1
+          },
+          "notes": "원본 아래 흉상 조각과 떨어진 작은 돌 전체64×32. 낱알파 덩어리로 자동분해하지 않는다. 바닥의 돌더미이며 보수적으로2칸 차단. 파괴 이벤트/전후 대응을 추정하지 않는다.",
+          "errorCell": [
+            0,
+            0
+          ],
+          "sourceBounds": {
+            "alpha": [
+              22,
+              0,
+              64,
+              31
+            ],
+            "padding": "No rescale. Manually chosen whole geometry, bottom-aligned feet; source pixel anchors explicit."
+          }
+        }
+      ],
+      "scenePlan": {
+        "id": "paw-static-props-busts-sample",
+        "name": "흉상·받침·파편 · 방향·지지 조립 표본",
+        "width": 12,
+        "height": 4,
+        "mode": "wall-strip",
+        "wallRows": 2,
+        "placements": [
+          {
+            "recipeId": "bust-original",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "bust-base",
+            "x": 3,
+            "y": 1
+          },
+          {
+            "recipeId": "bust-mounted-0",
+            "x": 5,
+            "y": 1
+          },
+          {
+            "recipeId": "bust-mounted-1",
+            "x": 7,
+            "y": 1
+          },
+          {
+            "recipeId": "bust-fragments",
+            "x": 9,
+            "y": 2
+          }
+        ],
+        "entry": {
+          "x": 6,
+          "y": 3
+        },
+        "approachCells": [
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 3
+          },
+          {
+            "x": 5,
+            "y": 3
+          },
+          {
+            "x": 7,
+            "y": 3
+          },
+          {
+            "x": 9,
+            "y": 3
+          }
+        ],
+        "notes": "원본의 완전 객체와 명시한 바닥/벽 받침을 보여 주는 작은 정적 조립 표본. 완성 시설이나 실행 플레이 공간이 아니다. 남쪽 접근을 연결하고 객체 사이 투명 여백을 보존한다. events가 비어 있으며 물리 시뮬레이션/음악/파괴/상호작용은 없다.",
+        "events": [],
+        "kind": "static-place-assembly"
+      },
+      "coverage": {
+        "resolved": [
+          "원본 완성 흉상·기둥",
+          "흉상 없는 원형 기둥",
+          "분리 흉상 A · 원형 기둥 고정 조합",
+          "분리 흉상 B · 원형 기둥 고정 조합",
+          "흉상 파편군 전체"
+        ],
+        "remaining": [
+          "분리 흉상 A/B의 공식 상태명·파괴 전후 대응은 명시되지 않음. 고정 받침 합성만 지원",
+          "실행 이벤트, 애니메이션, 다른 MV 확대 판본은 지원 범위 밖"
+        ]
+      },
+      "sourcePage": "https://yms.main.jp/dotartworld/",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "credit": "Pixel Art World / ドット絵世界 (yms)",
+      "checkedAt": "2026-09-25"
+    }
+  ],
+  "scope": "Five independent source-preserving static prop atlases. Whole geometry and private assembly samples only; no original catalog mutation.",
+  "referenceEvidence": {
+    "projectId": "6ae74f7a-23a2-449b-8171-5afb5dff532b",
+    "revision": 58,
+    "portableSha256": "fe23ab3a9c82f324dff6ee735e48fd7e02912e0331b0b9899760492255bf1e6d",
+    "readPurposes": [
+      "paw-mansion-p/read-first",
+      "paw-icecream-shop/read-first",
+      "shared_paw_loose_079_objects/read-first",
+      "shared_paw_loose_079_objects/shared_paw_loose_079_17",
+      "shared_paw_loose_079_objects/shared_paw_loose_079_19",
+      "shared_paw_loose_079_objects/shared_paw_loose_079_20"
+    ],
+    "officialPages": [
+      "https://yms.main.jp/dotartworld/",
+      "https://yms.main.jp/dotartworld/page1/rule.html"
+    ],
+    "checkedAt": "2026-09-25"
+  }
+}
