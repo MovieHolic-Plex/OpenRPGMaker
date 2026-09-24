@@ -1,3 +1,4 @@
+import { isDungeonSheetTilesetId } from "@/project/defaults/dungeonSheetTilesets";
 import { referenceManifest, referenceOwner, referenceRevision, REFERENCE_PAGE_SIZE } from "@/project/tilesetReferences";
 import { ToolError, type ToolDefinition } from "./types";
 
@@ -94,7 +95,7 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
     }, required: ["tilesetId", "categoryId"], additionalProperties: false },
     run(project, args) {
       const tileset = project.tilesets[String(args.tilesetId)];
-      if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.`);
+      if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.${isDungeonSheetTilesetId(String(args.tilesetId)) ? " 던전 재칠 시트의 문서는 easyrpg_chipset_dungeon 에 있다(같은 칸 번호) — 그 tilesetId 로 읽고, 맵은 create_map({tilesetId:'" + String(args.tilesetId) + "'}) 로 만들면 타일셋이 자동으로 생긴다." : ""}`);
       const owner = referenceOwner(project, tileset);
       const group = owner.referenceDocuments?.find(g => g.id === args.categoryId);
       if (!group) throw new ToolError(unknownIdMessage("용도 categoryId", args.categoryId, (owner.referenceDocuments ?? []).map(g => g.id)).replace("이 용도의 ", `타일셋 ${tileset.id} 의 `));

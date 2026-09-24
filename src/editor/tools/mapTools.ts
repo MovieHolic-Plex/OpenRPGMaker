@@ -1,4 +1,5 @@
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
+import { ensureDocumentedTileset } from "@/project/defaults/dungeonSheetTilesets";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { validateMapClimateInput } from "./combatAuthoringValidation";
@@ -220,6 +221,8 @@ const createMap: ToolDefinition = {
       other.name.trim() === String(name ?? "").trim() && other.events.length === 0 && !other.roomHarnessPlan);
     const size = width * height;
     const tilesetId = typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0 ? args.tilesetId.trim() : defaultOutdoorTilesetId(draft);
+    // Tilesets the place documents name (oprn_dungeon_*) are made on first use.
+    ensureDocumentedTileset(draft, tilesetId);
     const tileset = draft.tilesets[tilesetId];
     if (!tileset) throw new ToolError(`타일셋을 찾을 수 없습니다: ${tilesetId}`, { code: "tileset-not-found" });
     const map: GameMap = {
@@ -1737,6 +1740,7 @@ const setMapProperties: ToolDefinition = {
       changed.push(`이름='${map.name}'`);
     }
     if (typeof args.tilesetId === "string") {
+      ensureDocumentedTileset(draft, args.tilesetId);
       const tileset = draft.tilesets[args.tilesetId];
       if (!tileset) throw new ToolError(`존재하지 않는 타일셋 id: ${args.tilesetId}`, { code: "tileset-not-found", mapId: map.id });
       map.tilesetId = tileset.id;

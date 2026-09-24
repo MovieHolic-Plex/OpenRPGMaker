@@ -22,9 +22,15 @@ const fail = (code: string, message: string, x?: number, y?: number): never => {
 
 /** Read whole authored patterns. Fail closed if the source atlas or recipe has changed. */
 export function compileForestRecipe(t: TilesetDef, input: ForestRecipeInput): ForestRecipePlan {
+  // The recipes draw only from the shipped sheet (0..saved.count-1). Slots grafted past it (grove canopy 2550~,
+  // village parts 2610~ — the bundled tileset itself carries them since 2026-09-25) do not change those cells, so only
+  // grafts inside the original range must match. The old exact-count check rejected the bundled original as a
+  // "derived sheet" as soon as any tool had grown it (2026-09-25 assistant trial).
+  const baseGrafts = (grafts: readonly { targetTile: number; sourceChipset: string; sourceTile: number }[] | undefined) =>
+    (grafts ?? []).filter(g => g.targetTile < saved.count).map(g => `${g.targetTile}:${g.sourceChipset}:${g.sourceTile}`).sort().join(',');
   if (t.id !== 'forest_harmony' || t.image.type !== 'bundled' || t.image.id !== 'tex_forest_harmony'
-      || t.tileSize !== 16 || t.tilesPerRow !== 30 || t.count !== saved.count || JSON.stringify(t.tileGrafts) !== JSON.stringify(saved.tileGrafts))
-    fail('wrong-tileset', '공용 forest_harmony 16px/30열 원본에서만 사용하세요. 파생판/이식본은 지원하지 않습니다.');
+      || t.tileSize !== 16 || t.tilesPerRow !== 30 || t.count < saved.count || baseGrafts(t.tileGrafts) !== baseGrafts(saved.tileGrafts))
+    fail('wrong-tileset', '공용 forest_harmony 16px/30열 원본에서만 사용하세요. 원본 칸(0~2549)에 다른 이식이 있는 파생판은 지원하지 않습니다.');
   if (![input.x, input.y].every(v => Number.isInteger(v) && v >= 0)) fail('invalid-origin', 'x/y는 0 이상의 정수입니다.');
   const part = (id: string): Pattern => {
     const original = saved.tileGroups.find(g => g.id === id)?.previewMap;
