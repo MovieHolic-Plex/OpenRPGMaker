@@ -264,6 +264,24 @@ describe("refreshAiConnectionStatus — chatgpt OAuth 비동기 조회", () => {
   });
 });
 
+describe("연결 중 일시적 지연", () => {
+  it("연결돼 있던 칩은 시간 초과 두 번까지 꺼짐으로 바꾸지 않고, 세 번째에 바꾼다", async () => {
+    const store = installLocalStorage();
+    saveConfig(store, { authMode: "chatgpt", model: "gpt-5.6-sol", maxTokens: 32768 });
+    const { refreshAiConnectionStatus, getAiConnectionStatus } = await loadModule();
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: true });
+    await refreshAiConnectionStatus(() => undefined);
+    const connected = getAiConnectionStatus().kind;
+    const timeout = Object.assign(new Error("OAuth companion is unreachable"), { name: "ChatGptCompanionUnreachableError", reason: "timeout" });
+    fetchChatGptAuthStatus.mockRejectedValue(timeout);
+    await refreshAiConnectionStatus(() => undefined);
+    await refreshAiConnectionStatus(() => undefined);
+    expect(getAiConnectionStatus().kind).toBe(connected);
+    await refreshAiConnectionStatus(() => undefined);
+    expect(getAiConnectionStatus().kind).toBe("offline");
+  });
+});
+
 describe("다섯 상태를 서로 다르게 말한다", () => {
   it("도달 불가(A)와 응답 오류(B)와 로그아웃이 각각 다른 kind·라벨·이모지다", async () => {
     const store = installLocalStorage();

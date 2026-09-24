@@ -217,6 +217,10 @@ export function getAiConnectionStatus(config: AiConfig = loadAiConfig()): AiConn
  * apiKey 모드는 동기 평가만으로 충분하므로 조회하지 않는다.
  * onChange 는 캐시가 바뀐 뒤(상태바 재렌더링 용) 호출된다.
  */
+/** 연결돼 있던 칩을 「꺼짐」 으로 바꾸기 전에 참는 연속 시간 초과 횟수. */
+const TIMEOUTS_BEFORE_OFFLINE = 3;
+let consecutiveTimeouts = 0;
+
 export async function refreshAiConnectionStatus(onChange?: () => void): Promise<void> {
   const config = loadAiConfig();
   if (config.authMode !== "chatgpt") {
@@ -254,6 +258,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
       aiOAuthCachedStatus.unreachable === true ||
       aiOAuthCachedStatus.serverMessage !== undefined;
     aiOAuthCachedStatus = next;
+    consecutiveTimeouts = 0;
     if (changed) onChange?.();
   } catch (error) {
     if (generation !== refreshGeneration || parseOhMyPiProvider(loadAiConfig().providerId) !== providerId) return;
@@ -264,6 +269,14 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
       error instanceof Error && error.name === "ChatGptCompanionResponseError"
         ? (error as ChatGptCompanionResponseError).serverMessage
         : undefined;
+    // 연결돼 있던 상태에서 한두 번 늦는 것은 꺼짐이 아니다. 조수가 체크포인트(수십 MB)를 적용하는 동안 같은 호스트의
+    // /auth/status 가 5~6초씩 걸려(2026-09-24 연애 도그푸딩 실측 5.4 s) 칩이 빨간 「보조 프로그램 꺼짐」 이 되고
+    // 입력칸이 「AI 연결 후 지시할 수 있어요」 로 바뀌었다 — 조수는 그 순간에도 일하고 있었다.
+    const timedOut = serverMessage === undefined && error instanceof Error
+      && (error as { reason?: string }).reason === "timeout";
+    if (timedOut && aiOAuthCachedStatus?.providerId === providerId && aiOAuthCachedStatus.connected
+      && ++consecutiveTimeouts < TIMEOUTS_BEFORE_OFFLINE) return;
+    consecutiveTimeouts = 0;
     const next: CachedOAuthStatus = {
       providerId,
       connected: false,
@@ -291,6 +304,7 @@ export async function refreshAiConnectionStatus(onChange?: () => void): Promise<
 /** 캐시를 초기화(로그아웃·설정 변경 직후 재평가 유도). */
 export function resetAiConnectionStatusCache(): void {
   aiOAuthCachedStatus = null;
+  consecutiveTimeouts = 0;
   // 같은 제공자에서 진행 중인 부팅 조회도 인증 변경 전 상태를 담고 있다. 세대를 올려 그 응답을
   // 폐기하고 슬롯을 비워야 applyStatus 직후의 재조회가 실제로 시작된다.
   refreshGeneration += 1;
