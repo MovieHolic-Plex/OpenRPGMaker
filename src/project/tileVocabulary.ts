@@ -300,6 +300,26 @@ function isAutotileGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean
   return roleCapabilities(tileset, group.role).autotile;
 }
 
+/**
+ * 문법 없는 통행 바닥 그룹(실내 나무 바닥·돌바닥·카펫·돗자리·나무 데크)도 면으로 깔 수 있다.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 실내 칩셋 방 3개를 만들며 fill_region 「실내 나무 바닥」·「실내 돌바닥」·
+ * 「붉은 카펫」이 전부 「면 채우기 재료가 아닙니다」로 거부됐다(7호출). 도구 설명은 「바닥 면은 이 툴」인데
+ * 실내 하네스 바닥 그룹은 오토타일 문법이 없어 물/잔디만 통과했다. 역할이 자연 바닥(terrain·ground·path)
+ * 이고 구조물이 아니며 윗층 재료가 아닌 그룹만 받는다 — 벽·지붕·소품은 그대로 거부한다.
+ */
+export function isFlatFillGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  if (group.patternGrammar || group.tileIds.length === 0) return false;
+  if (group.defaultLayer === "upper" || group.layerHome === "upper") return false;
+  const caps = roleCapabilities(tileset, group.role);
+  return caps.naturalGround && !caps.structure;
+}
+
+/** fill_region 이 받는 그룹 — 오토타일 지형·수역, 또는 문법 없는 통행 바닥. */
+export function isFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata): boolean {
+  return isAutotileGroup(tileset, group) || isFlatFillGroup(tileset, group);
+}
+
 function findExactGroupByName(tileset: TilesetDef, query: string): TileGroupMetadata | undefined {
   const needle = normalizeMaterialQuery(query);
   if (!needle) return undefined;
@@ -328,7 +348,7 @@ export function fillableMaterialSuggestions(tileset: TilesetDef, limit = 8): Mat
   const seen = new Set<string>();
   for (const group of tileset.tileGroups ?? []) {
     // fill_region 이 받아 주는 조건과 같다(assertFillRegionGroup) — 여기서 더 좁히면 힌트가 툴과 어긋난다.
-    if (!isAutotileGroup(tileset, group)) continue;
+    if (!isFillRegionGroup(tileset, group)) continue;
     const label = group.name.trim();
     if (!label || seen.has(label)) continue;
     seen.add(label);
@@ -366,7 +386,7 @@ export function resolveMaterialByLabel(
   // 그룹 display name 완전 일치 우선(라벨 동의어 오염 방지 — "키큰 풀" ≠ "잔디").
   const exactGroup = findExactGroupByName(tileset, raw);
   if (exactGroup) {
-    if (options.requireAutotileGroup && !isAutotileGroup(tileset, exactGroup)) {
+    if (options.requireAutotileGroup && !isFillRegionGroup(tileset, exactGroup)) {
       // fall through to tile scoring
     } else {
       const seedTile = exactGroup.tileIds[0] ?? 0;
@@ -434,7 +454,7 @@ export function resolveMaterialByLabel(
   for (const hit of strong.slice(0, 24)) {
     const group = groupContainingTile(tileset, hit.tileId);
     if (options.requireAutotileGroup) {
-      if (!group || !isAutotileGroup(tileset, group)) continue;
+      if (!group || !isFillRegionGroup(tileset, group)) continue;
       return materialAccessForGroup(tileset, group, hit);
     }
     // 구체 라벨이 잡소품 가방에만 속한 타일(예: "팻말" 440)을 가리키면 가방으로 승격하지 않고 그 타일로 시공한다.

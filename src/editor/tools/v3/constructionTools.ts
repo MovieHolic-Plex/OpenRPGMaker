@@ -12,6 +12,7 @@ import { tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { TILE } from "@/project/defaults/constants";
 import {
+  isFlatFillGroup,
   resolveMaterialByLabel,
   suggestMaterialsByLabel,
   VOCAB_SOFT_CONFIRM_WARNING_PREFIX,
@@ -826,12 +827,38 @@ function coercePacking(value: unknown): ScatterPacking {
 
 function fillBodyTile(group: TileGroupMetadata, autotile: AutotileGroup | null): number | null {
   const center = group.patternGrammar?.parts.find((part) => part.role === "center")?.tileIds[0];
-  return center ?? (autotile ? autotile.variantMap[String(255)] : undefined) ?? group.tileIds[0] ?? null;
+  return center ?? (autotile ? autotile.variantMap[String(255)] : undefined) ?? flatFillBodyTile(group) ?? group.tileIds[0] ?? null;
 }
 
-function assertFillRegionGroup(group: TileGroupMetadata, autotile: AutotileGroup | null): void {
+/** 문법 없는 바닥 그룹의 몸통 — 설명의 「몸통 N」「대표 바디 N」이 이기고, 3×3 테두리 세트면 가운데. */
+function flatFillBodyTile(group: TileGroupMetadata): number | undefined {
+  if (group.patternGrammar) return undefined;
+  const named = /(?:몸통|대표\s*바디)\s*(\d+)/u.exec(group.description ?? "");
+  if (named && group.tileIds.includes(Number(named[1]))) return Number(named[1]);
+  return flatNineSlice(group)?.[1]?.[1];
+}
+
+/**
+ * 문법 없는 3×3 테두리 바닥(카펫·돗자리·단상)의 9칸 — tileIds 끝 9개가 시트에서 3×3 블록일 때만.
+ * [행][열] = [위·가운데·아래][왼·가운데·오른].
+ */
+function flatNineSlice(group: TileGroupMetadata): number[][] | undefined {
+  if (group.patternGrammar) return undefined;
+  const text = `${group.name} ${group.description ?? ""}`;
+  if (group.tileIds.length !== 9 && !/3×3|3x3|9-?슬라이스|테두리/u.test(text)) return undefined;
+  if (group.tileIds.length < 9) return undefined;
+  const t = group.tileIds.slice(-9);
+  const stride = t[3]! - t[0]!;
+  if (stride <= 2) return undefined;
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
+    if (t[row * 3 + col] !== t[0]! + row * stride + col) return undefined;
+  }
+  return [t.slice(0, 3), t.slice(3, 6), t.slice(6, 9)];
+}
+
+function assertFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata, autotile: AutotileGroup | null): void {
   const kind = group.patternGrammar?.kind;
-  if (autotile || kind === "autotile_3x3" || kind === "animated_terrain") return;
+  if (autotile || kind === "autotile_3x3" || kind === "animated_terrain" || isFlatFillGroup(tileset, group)) return;
   throw new ToolError(
     `fill_region은 autotile_3x3/animated_terrain 지형 그룹만 채울 수 있습니다: ${group.name}(${group.id})`,
     { code: "fill-needs-autotile-group" }
@@ -841,7 +868,7 @@ function assertFillRegionGroup(group: TileGroupMetadata, autotile: AutotileGroup
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용. 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,
@@ -879,7 +906,7 @@ const fillRegion: ToolDefinition = {
     if (layer !== "lower" && layer !== "upper") failWithExample("layer는 lower/upper 중 하나여야 합니다", shapeExample);
     const { group, softConfirm } = requireMaterialGroup(tileset, args.material, shapeExample, { preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     const autotile = autotileGroupForVocab(tileset, group);
-    assertFillRegionGroup(group, autotile);
+    assertFillRegionGroup(tileset, group, autotile);
     const body = fillBodyTile(group, autotile);
     if (body === null) {
       throw new ToolError(`채울 타일을 찾을 수 없습니다: ${group.name}(${group.id})`, { code: "fill-empty-group", mapId: map.id });
@@ -929,6 +956,20 @@ const fillRegion: ToolDefinition = {
     }
     const reshaped = layer === "lower" && autotile
       ? resolveAutotile(autotile, exit.cells, map, (x, y) => protectedReason({ x, y }) === null) : 0;
+    // 3×3 테두리 바닥은 채운 면의 가장자리에 테두리를, 안쪽에 몸통을 둔다(1칸 폭 줄은 몸통 그대로).
+    const nine = !autotile ? flatNineSlice(group) : undefined;
+    if (nine) {
+      const inFill = new Set(exit.cells.map(pointKey));
+      const has = (x: number, y: number) => inFill.has(pointKey({ x, y }));
+      for (const cell of exit.cells) {
+        const up = has(cell.x, cell.y - 1), down = has(cell.x, cell.y + 1), west = has(cell.x - 1, cell.y), east = has(cell.x + 1, cell.y);
+        const row = up === down ? 1 : up ? 2 : 0;
+        const col = west === east ? 1 : west ? 2 : 0;
+        const tile = nine[row]![col]!;
+        if (layer === "upper") map.upperTiles[cell.y * map.width + cell.x] = tile;
+        else map.lowerTiles[cell.y * map.width + cell.x] = tile;
+      }
+    }
     const mutatedCells = lowerBefore.reduce((count, lower, index) => count + Number(
       lower !== map.lowerTiles[index] || upperBefore[index] !== map.upperTiles[index],
     ), 0);
