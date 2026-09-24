@@ -469,7 +469,24 @@ const buildWall: ToolDefinition = {
     requireRectInMap(map, rect, "rect", WALL_EXAMPLE);
     const { group, softConfirm } = requireMaterialGroup(tileset, args.material, WALL_EXAMPLE, { preferRoles: ["wall"] });
     const profile = tilesetGrammarProfile(tileset);
-    const expansion = expandWall(tileset, group, rect, profile, WALL_EXAMPLE);
+    let expansion: ReturnType<typeof expandWall>;
+    try {
+      expansion = expandWall(tileset, group, rect, profile, WALL_EXAMPLE);
+    } catch (error) {
+      if (!(error instanceof ToolError) || error.code !== "pattern-undefined") throw error;
+      // 「T1b 위저드에서 패턴을 정의하라」 는 모델이 할 수 없는 일이다 — 같은 호출이 8번 반복됐다(2026-09-24
+      // 추격 호러: 실내 칩셋 '크림 회벽' 으로 방 벽을 세우려다 방 5개가 벽 없는 맨바닥으로 남았다).
+      // 쓸 수 있는 재료와, 실내라면 방을 통째로 짓는 경로를 짚는다.
+      const buildable = wallRoleGroups(tileset).filter((entry) => (entry.patternGrammar?.parts.length ?? 0) > 0).map((entry) => `"${entry.name}"`);
+      const interior = map.climate?.mode === "indoor" || /interior|inside|실내/iu.test(`${tileset.id} ${tileset.name ?? ""}`);
+      throw new ToolError(
+        `'${group.name}' 은(는) 벽 전개 패턴이 없어 build_wall 로 세울 수 없습니다. ` +
+          (buildable.length ? `이 타일셋에서 build_wall 로 세울 수 있는 벽: ${buildable.slice(0, 8).join(", ")}. ` : "이 타일셋에는 build_wall 로 세울 수 있는 벽 재료가 없습니다. ") +
+          (interior ? "실내 방(벽·문·가구)은 place_concept(get_concept_facility → plan) 으로 방들을 한 번에 지으세요 — 방마다 새 mapId 로 짓고 create_transfer_pair 로 잇습니다. " : "") +
+          "같은 재료로 다시 부르지 마세요.",
+        { code: "pattern-undefined", mapId: map.id },
+      );
+    }
     const applied = applyEdits(map, expansion.edits);
     return withSoftConfirm({
       summary: `${map.name}에 '${group.name}' 벽 ${rect.w}×${rect.h}(${applied}칸) 시공 — 다음 공정: place_door/place_window → build_roof.`,
