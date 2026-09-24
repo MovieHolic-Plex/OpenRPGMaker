@@ -19,9 +19,10 @@
 
 | 들어가는 것 | 위치 |
 |---|---|
-| 대상 맵의 id·이름·크기 (타일셋 id·칸 크기는 **없음**) | `systemPrompt.ts:14`, `:30` |
-| 새 야외·마을의 기본 칩셋 이름, 「기존 맵 칩셋은 유지」 | `systemPrompt.ts:41` |
-| 「타일 배치 전 참고문서를 조회·정독하라」 한 줄 | `systemPrompt.ts:45` |
+| 대상 맵의 id·이름·크기 (타일셋 id·칸 크기는 **없음**) | `systemPrompt.ts:16`, `:32` |
+| 새 야외·마을의 기본 칩셋 이름, 「기존 맵 칩셋은 유지」 | `systemPrompt.ts:43` |
+| 「타일 배치 전 참고문서를 조회·정독하라」 한 줄 | `systemPrompt.ts:47` |
+| 대상 타일셋이 네 층 타일셋일 때만 「MZ 네 층 + 그림자 … stamp_layer_block」 한 줄 | `systemPrompt.ts` `fourLayerTilesetLines` (아래 「네 층 타일셋 가르치기」) |
 
 칸 번호의 뜻, tileMeta, tileGroups, 팔레트, 참고문서 본문, 아틀라스 그림, 맵 스크린숏은 **처음부터 주지 않는다.**
 옛 세션 경로의 `src/ai/contextBuilder.ts`(프리셋·승인 묶음·사용자 설명 요약)는 Pi 경로에서 쓰이지 않는다.
@@ -34,7 +35,8 @@
 | 재료 이름 도구 `build_wall`·`build_roof`·`fill_region`·`lay_path`·`place_props` 등 | 「흰 집 벽」 같은 **이름표 문자열**로 묶음을 찾아 전개 | `resolveMaterialByLabel`(`src/project/tileVocabulary.ts:361`) — 이름표가 없으면 재료를 못 찾는다 |
 | `paint_tiles`, `paint_road`, `stamp_structure` | **번호 직접 입력** | 뜻을 모르면 추측 번호가 된다 |
 | `stamp_tile_recipe`, `inspect_tile_recipe` | 조립법(두 레이어 배열·접근칸) 원형 배치 | **forest_harmony 전용** — `publicRecipe` 가 `compileForestRecipe` 로 숲마을 아틀라스를 강제(`publicTileRecipes.ts:11`) |
-| `show_map_region` | 이미 칠한 **맵** 그림 | Pi 에서 모델이 보는 유일한 렌더 그림. 타일셋 자체 그림은 아니다 |
+| `show_map_region` | 이미 칠한 **맵** 그림 (+ 맵에 있으면 2층·4층·그림자 배열) | Pi 에서 모델이 보는 유일한 렌더 그림. 타일셋 자체 그림은 아니다 |
+| `stamp_layer_block`, `paint_shadow` | 네 층 배열 찍기·그림자 | 칠하기 게이트 안(`TILESET_REFERENCE_TILE_CHOOSERS`) |
 | `show_tiles`, `show_tile_grid` | 모델에겐 **JSON 텍스트만** | 그림은 채팅 창의 사람에게만 그려진다 |
 | `find_similar_tiles` | 시트 위치·메타 점수 | 그림 비교가 아니다 |
 
@@ -101,8 +103,57 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 - RPG Maker MV/MZ 48px 팩은 에디터가 A1~A4 오토타일 규격을 해석하지 못한다(`TilesetKind` 는 rpg2k|custom).
   굽는 단계에서 오토타일 형태를 전부 평타일로 펼쳐야 한다. 2026-09-24 실측: rpg_core 쿼터 표로 펼친 아틀라스로
   제작자 프리뷰 5장을 칸 단위로 역재구성해 픽셀 일치 98.0~99.98% 를 냈다(작업물은 저장소 밖).
-- 한 칸 세 겹 이상(바닥+그림자+소품)은 지금 두 레이어뿐이라 합성 칸이 따로 필요하다
-  (`tileStackAt` 는 비활성 — `src/project/mapOverlayTiles.ts`).
+- 한 칸 세 겹 이상(바닥+장식+소품+그림자)은 이제 MZ식 네 층 + 그림자로 싣는다(PR ① #1447, 설계
+  `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`). 합성 칸을 따로 굽지 않는다. 조수에게 가르치는 법은
+  아래 「네 층 타일셋 가르치기」. (옛 `tileStackAt` 스택 경로는 여전히 비활성 — `src/project/mapOverlayTiles.ts`.)
+
+## 네 층 타일셋 가르치기
+
+> 2026-09-25, 계획 `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md`. RPG Maker MZ 식 팩(Rasak Fantasy 48px)처럼
+> 한 칸에 바닥·바닥 장식·물체·물체 위 물체·그림자가 겹치는 타일셋. 층 번호와 맵 칸의 대응은 [tile-layer-policy.md](tile-layer-policy.md)
+> 「층 번호 ↔ 맵 칸 ↔ 도구 인자」 표.
+
+### 조수가 지금 받는 것
+
+| 무엇 | 어디 | 내용 |
+|---|---|---|
+| 층 인자 | `paint_tiles`·`fill_region` `layer`, `tile_erase` `layer` | 문자열 enum `"lower"\|"upper"\|"1"\|"2"\|"3"\|"4"`(lower=1, upper=3). `tile_erase` 는 `both`·`all`·`shadow` 도. Gemini 때문에 정수 enum 은 쓰지 않는다 |
+| 한 번에 여러 층 찍기 | `stamp_layer_block {mapId,x,y,layers:{"1"?,"2"?,"3"?,"4"?,shadow?}, reshape?}` | 층별 2차원 배열. -1 건드리지 않음, -2 비움. 번호가 범위 밖이거나 맵 밖 칸이면 호출 전체 거부(부분 쓰기 없음). 1·2층 자동타일 멤버는 찍은 뒤 이웃에 맞춰 다시 모양을 잡는다(`reshape:false` 면 그대로) |
+| 그림자 | `paint_shadow {mapId,cells:[{x,y,quarters?,bits?}],mode?}` | 사분면 tl=1 tr=2 bl=4 br=8 |
+| 층 뜻 한 문장 | `FOUR_LAYER_GUIDANCE`(`src/editor/tools/mapHelpers.ts`) — 층 인자를 받는 도구 설명이 모두 같은 문장을 쓴다 | 1층 바닥 자동타일 / 2층 바닥 장식(캐릭터 아래) / 3층 물체(★ 은 캐릭터 위) / 4층 물체 위 물체 / 그림자 |
+| 보기 | `show_map_region` | 맵에 그 칸이 있을 때만 `layer2`·`layer4`·`shadow` 배열이 붙고, 그림은 1 → 2 → 그림자 → 캐릭터 아래 이벤트 → 3 → 4 순으로 그린다(`src/ai/toolImageRenderer.ts`). 헤드리스 `scripts/pi-agent.mts` 도 그림을 받는다. 턴 시작 뷰포트 그림(`mapRegionImagePayload`)도 같은 층을 싣는다 |
+| 시스템 프롬프트 한 줄 | `buildPiAgentSystemPrompt`(`src/ai/piAgent/systemPrompt.ts` `fourLayerTilesetLines`) | 대상 맵의 타일셋이 **네 층 타일셋**일 때만: 「MZ 네 층 + 그림자 … 참고문서 용도를 먼저 읽고 예제 배열을 stamp_layer_block 로 그대로 찍어라, 바닥 종류는 대표 타일로 칠하면 가장자리가 저절로 잡힌다」. 판정은 ① 같은 tilesetId 맵 중 하나라도 2층·4층·그림자가 있다, 또는 ② 그 타일셋(참고문서 원본) 용도의 **첫 문서 첫 줄이 `layer-model: mz4`**. 둘 다 아니면 줄이 없다 — 옛 프로젝트 프롬프트는 글자까지 같다(`test/piAgentSystemPromptFourLayer.test.ts`) |
+| 고스트·변경 집계 | `mapDelta.ts`(layer2/layer4/shadow, 사라지면 `absent`), `changeset.ts` `countTileChanges`·`tileBuffersDiffer` | 2층만 바꾼 쓰기도 `tilesChanged > 0`·재검사 대상. 고스트는 선택 층 변화 칸을 테두리로만 표시(그 층 그림은 PR ②) |
+
+빈 맵에서도 한 줄이 붙게 하려면 표지 ②를 쓴다 — 맵에 아직 2층이 없으면 ①로는 알 수 없다.
+
+### 네 층 팩을 가르치는 순서
+
+1. **칸 이름표(`tileMeta`).** 자동타일 종류(kind)마다 사람 말 이름·역할(물·바닥·벽·지붕·바닥 장식)·권장 층(1 또는 2),
+   물체는 이름·크기·권장 층(3/4)·통행. `A2 kind 8 shape 0` 같은 기술 이름만 두면 조수는 뜻 모를 번호를 칠한다(r0 실측).
+2. **이어지는 바닥은 `autotileGroups`(8이웃).** MZ 바닥 모양 0~47·벽 0~15·폭포 0~3 을 `AUTOTILE_DIR` 비트
+   (N1 E2 S4 W8 NE16 SE32 SW64 NW128, `src/project/defaults/autotileEngine.ts`) 마스크 → 칸 번호 `variantMap` 으로 싣는다.
+   모양 표는 `scripts/content/rasak/mz_autotile.py` 의 사분면 표(rmmz_core.js 와 같은 순서)에서 유도한다.
+   이게 있어야 조수가 대표 번호 하나로 칠해도 도구(`paint_tiles`·`fill_region`·`stamp_layer_block`)가 1·2층 가장자리를 맞춘다.
+   3·4층은 다시 모양을 잡지 않는다 — B~E 물체는 찍은 번호 그대로다.
+3. **참고문서 용도 = 작업 단위**(예: 늪지 / 일본 정원·성 / 절벽·폭포 숲 / 얼음 동굴 / 용암 동굴). 용도마다
+   [AI-REFERENCE-CONTRACT](../tiledata/AI-REFERENCE-CONTRACT.md) 항목을 채우되 네 층용으로:
+   - 첫 문서 첫 줄 `layer-model: mz4`(위 프롬프트 표지) + 네 층 규칙 + 그 팩의 층별 실측 분포
+   - 번호 사전: 자동타일 종류 → 칠할 대표 번호, 물체 → 칸 배열·층
+   - 조립 순서: 1층 바탕 → 2층 장식 → 3층 물체 → 4층 겹침 → 그림자
+   - **완성 예제는 `stamp_layer_block` 인자 그대로의 층별 배열**(10×8 안팎 창) + 원본 해상도 그림 + 층별 분해 그림.
+     조수는 예시를 베낄 때 가장 잘 깐다(조각 조립 실험 13/13 vs 3/13).
+   - 정상/오류 나란한 그림: 물체를 1층에(바닥이 사라짐), 장식을 3층에(캐릭터 위로 뜸), 2층 없이 자동타일(가장자리 끊김)
+4. **용도 하나는 MD ≤5페이지(페이지 6000자, `REFERENCE_PAGE_SIZE`)·그림 ≤8장.** 게이트가 칠하기 전에 용도 전부를
+   읽게 하므로(위 「참고문서 읽기 게이트」) 용도가 크면 첫 턴이 그만큼 무거워진다. 크면 용도를 쪼갠다.
+
+### Rasak Fantasy 파이프라인 (저장소 밖 그림)
+
+그림·아틀라스·맵은 저장소에 넣지 않는다(재배포 금지). 저장소에는 스크립트와 텍스트만:
+`scripts/content/rasak/bake_atlas.py`(사용자 원본 → 굽기 아틀라스, `mz_autotile.py` 표로 오토타일 펼침) →
+`stack_to_layers.py`·`fold_layers.py`(프리뷰 → 4층·그림자) → 조수 지식 묶음 `build_assistant_pack.py` + `apply-assistant-pack.mts`
+(이름표·묶음·autotileGroups·참고문서를 로컬 연구 프로젝트에 저장; 계획 Task 6·7 — 작업 중). 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
+이름·번호 같은 텍스트만 `tiledata/rasak-fantasy/` 에 둔다. 작업물은 `~/third-party-assets/rasak/`.
 
 ## 알려진 함정
 
