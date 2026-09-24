@@ -157,6 +157,26 @@ function inheritedBlankMapName(project: Project, mapId: string, args: Record<str
   return existing.name?.trim() || undefined;
 }
 
+/**
+ * 이어받는 빈 맵의 **맵 설정** — 타일·이벤트가 아니라 create_map / set_map_properties 가 정한 배경음·기후·조명·
+ * 전투 설정 같은 것. 방 파이프라인은 새 맵 객체를 만들어 통째로 갈아 끼우므로 이걸 옮기지 않으면
+ * 「create_map(bgm) → place_concept」 가 배경음을 말없이 버렸다(2026-09-24 회상 스토리 도그푸딩: 기억마다 다른 BGM 이
+ * 실내 기억 두 곳에서 사라짐). 파이프라인이 직접 정한 값은 덮지 않는다.
+ */
+const INHERITED_MAP_SETTING_KEYS = [
+  "bgm", "climate", "defaultLighting", "atmosphereEffects", "cloudShadows", "background", "minimap",
+  "battleBackground", "encounterRate", "troopIds", "encounterTable", "disableSave", "disableTeleport", "disableEscape",
+] as const satisfies readonly (keyof GameMap)[];
+
+function inheritBlankMapSettings(previous: GameMap | undefined, next: GameMap, args: Record<string, unknown>): void {
+  if (!previous || args.replaceExisting === true || !isPristineBlankMap(previous)) return;
+  const target = next as unknown as Record<string, unknown>;
+  const source = previous as unknown as Record<string, unknown>;
+  for (const key of INHERITED_MAP_SETTING_KEYS) {
+    if (source[key] !== undefined && target[key] === undefined) target[key] = structuredClone(source[key]);
+  }
+}
+
 function guardExistingMap(project: Project, mapId: string, args: Record<string, unknown>): string[] {
   const existing = project.maps[mapId];
   if (!existing) return [];
@@ -459,10 +479,12 @@ export function runRoomPipeline(project: Project, kitId: string, args: Record<st
   plan = kit.preparePlan?.(plan, project) ?? plan;
   const mapId = kit.mapIdOf(plan);
   const keptName = inheritedBlankMapName(project, mapId, args);
+  const previousMap = project.maps[mapId];
   const replaceWarnings = guardExistingMap(project, mapId, args);
   assertRoomPlanSize(mapId, plan);
   const result = kit.runPipeline(plan, project);
   if (keptName) result.map.name = keptName;
+  inheritBlankMapSettings(previousMap, result.map, args);
   project.maps[mapId] = result.map;
   stampRoomHarnessPlan(project, mapId, kit.kitId, plan);
   registerMapInTree(project, mapId);
