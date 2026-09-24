@@ -1,0 +1,31 @@
+{
+  "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+  "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+  "revision": 551,
+  "sha256": "4f61cdaa7db1cb850afe3d35902377e7ea22070880335130e8e13931515bd180",
+  "repeatReadMatches": true,
+  "maps": 20,
+  "events": 192,
+  "inlined": 452,
+  "scope": "Reopened canonical store read twice; media hashes verified and inlined for read-only player QA copy. No project content written.",
+  "beforeRevision": 550,
+  "exactlyThreeTextBodiesChanged": true,
+  "changed": [
+    {
+      "path": "/maps/map_variety_ridge/events/5/pages/0/commands/0/then/0/else/2/victoryBranch/3/victoryBranch/3/body",
+      "before": "작은 마을을 떠나, 새로운 친구를 만나고, 동굴의 비밀을 풀었다. 오늘의 첫 모험 완료!",
+      "after": "새솔 배지를 얻었다! 다음 목적지는 2번 길과 바위턱마을이다. 1번 길을 지나 푸른울림 동굴로 돌아가 북쪽 출구로 나아가자."
+    },
+    {
+      "path": "/maps/map_variety_ridge/events/5/pages/0/commands/0/then/0/then/0/body",
+      "before": "첫 배지를 얻은 너의 모험은 이제 시작이야. 박사님께도 자랑해 봐!",
+      "after": "다음 배지는 바위턱마을의 돌빛체육관에서 도전할 수 있어. 1번 길 → 푸른울림 동굴 북쪽 출구 → 2번 길 순서로 가 보렴. 길에서 만나는 조사원의 부탁도 들어 봐."
+    },
+    {
+      "path": "/maps/map_variety_cavern/events/7/pages/0/commands/0/else/0/body",
+      "before": "새솔 배지를 획득한 트레이너만 2번 길로 나아갈 수 있습니다.",
+      "after": "2번 길로 나아가려면 새솔 배지가 필요합니다. 동굴 수호자의 인정을 받은 뒤 새솔마을 북쪽의 도윤에게 배지 도전을 신청하세요. 배지를 얻으면 이 북쪽 출구로 돌아오세요."
+    }
+  ],
+  "authoring": "Editor AI request85, review/apply UI, canonical SQLite reopened."
+}
