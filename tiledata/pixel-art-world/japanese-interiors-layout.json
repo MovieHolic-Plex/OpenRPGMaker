@@ -1,0 +1,659 @@
+[
+  {
+    "packId": "paw-izakaya",
+    "sourceFilename": "ST-Izakaya-I01.png",
+    "sourceSha256": "6c5488583371c4efbbb47c53f2f40402780b834ebee80385eeae7e3340b0f18a",
+    "composites": [
+      {
+        "id": "izakaya-booth-complete",
+        "name": "부스석 · 테이블과 앞뒤 칸막이 완성",
+        "canvas": {
+          "width": 96,
+          "height": 192
+        },
+        "facing": "east",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "far-bench-and-backing",
+            "sourceRect": {
+              "x": 0,
+              "y": 1312,
+              "width": 96,
+              "height": 64
+            },
+            "offset": {
+              "x": 0,
+              "y": 32
+            }
+          },
+          {
+            "role": "complete-table",
+            "sourceRect": {
+              "x": 0,
+              "y": 352,
+              "width": 96,
+              "height": 96
+            },
+            "offset": {
+              "x": 0,
+              "y": 64
+            }
+          },
+          {
+            "role": "far-partition-top-repair",
+            "sourceRect": {
+              "x": 0,
+              "y": 1568,
+              "width": 96,
+              "height": 32
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "near-complete-partition",
+            "sourceRect": {
+              "x": 128,
+              "y": 480,
+              "width": 96,
+              "height": 64
+            },
+            "offset": {
+              "x": 0,
+              "y": 128
+            }
+          }
+        ],
+        "notes": "공식 3층 부스 조립의 좌석→테이블→칸막이 상부 복구 순서를 원본 픽셀로 고정 합성. 아래 원본행49 복구 조각과 위쪽(4,15)3×2 칸막이를 혼동하지 않는다. 3×6 고정 부스는 동쪽 옆에서 접근한다. 사각형 전체solid, 내부에 플레이어를 넣거나 자동 착석한다고 주장하지 않는다. 공식 https://yms.main.jp/dotartworld/sozai/tileset/smp_shop01/smp-shop05.jpg 및 smp-shop13.jpg 실제 예시와 원본을 대조했다. 북쪽 격자창/목재등판/벤치 높이는 부스 등칸막이 전체이며 키큰가구 혼입이 아니다. 낮추기 위해 자르지 않는다."
+      },
+      {
+        "id": "izakaya-zashiki-table",
+        "name": "좌식 탁자와 앞뒤 방석6개",
+        "canvas": {
+          "width": 128,
+          "height": 128
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "far-cushion",
+            "sourceRect": {
+              "x": 64,
+              "y": 1280,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 16,
+              "y": 24
+            }
+          },
+          {
+            "role": "far-cushion",
+            "sourceRect": {
+              "x": 64,
+              "y": 1280,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 48,
+              "y": 24
+            }
+          },
+          {
+            "role": "far-cushion",
+            "sourceRect": {
+              "x": 64,
+              "y": 1280,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 80,
+              "y": 24
+            }
+          },
+          {
+            "role": "near-cushion",
+            "sourceRect": {
+              "x": 64,
+              "y": 1280,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 16,
+              "y": 96
+            }
+          },
+          {
+            "role": "near-cushion",
+            "sourceRect": {
+              "x": 64,
+              "y": 1280,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 48,
+              "y": 96
+            }
+          },
+          {
+            "role": "near-cushion",
+            "sourceRect": {
+              "x": 64,
+              "y": 1280,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 80,
+              "y": 96
+            }
+          },
+          {
+            "role": "complete-table-before-source-cushions",
+            "sourceRect": {
+              "x": 160,
+              "y": 1120,
+              "width": 96,
+              "height": 79
+            },
+            "offset": {
+              "x": 16,
+              "y": 32
+            }
+          }
+        ],
+        "notes": "원본x160..255,y1120..1198의 전체 탁자·다리·그림자만 취한다. y1199부터 다른 파란 방석, y1216부터 반복 전면 보정 조각이므로 제외한다. 방석6개를 먼저 그리고 탁자를 뒤에 그린다. 공유32px셀을 upper 두 번 덮지 않도록 픽셀 합성했다. 다다미는 장면 lower에 보존한다. 원본 상판은 음식 없는 상태다."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "izakaya-booth-and-zashiki",
+        "name": "작은 일식당 · 부스와 좌식석",
+        "width": 11,
+        "height": 14,
+        "baseTile": 4,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 11,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 1,
+            "height": 11,
+            "tile": 16
+          },
+          {
+            "x": 10,
+            "y": 2,
+            "width": 1,
+            "height": 11,
+            "tile": 18
+          },
+          {
+            "x": 0,
+            "y": 13,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 5,
+            "y": 13,
+            "width": 1,
+            "height": 1,
+            "tile": 4
+          },
+          {
+            "x": 6,
+            "y": 3,
+            "width": 4,
+            "height": 2,
+            "tile": 6
+          }
+        ],
+        "lowerStamps": [
+          {
+            "x": 6,
+            "y": 9,
+            "sourceRect": {
+              "x": 0,
+              "y": 37,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "x": 8,
+            "y": 9,
+            "sourceRect": {
+              "x": 0,
+              "y": 37,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "x": 6,
+            "y": 11,
+            "sourceRect": {
+              "x": 0,
+              "y": 38,
+              "width": 2,
+              "height": 2
+            }
+          },
+          {
+            "x": 8,
+            "y": 11,
+            "sourceRect": {
+              "x": 0,
+              "y": 38,
+              "width": 2,
+              "height": 2
+            }
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "izakaya-booth-complete",
+            "x": 1,
+            "y": 5
+          },
+          {
+            "recipeId": "izakaya-zashiki-table",
+            "x": 6,
+            "y": 9
+          },
+          {
+            "recipeId": "izakaya-kitchen",
+            "x": 6,
+            "y": 1
+          },
+          {
+            "recipeId": "izakaya-stove",
+            "x": 9,
+            "y": 2
+          },
+          {
+            "recipeId": "izakaya-counter",
+            "x": 6,
+            "y": 5
+          },
+          {
+            "recipeId": "izakaya-tea",
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 5,
+            "y": 13
+          },
+          {
+            "x": 5,
+            "y": 12
+          },
+          {
+            "x": 4,
+            "y": 7
+          },
+          {
+            "x": 4,
+            "y": 9
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 4
+          },
+          {
+            "x": 9,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 7
+          },
+          {
+            "x": 7,
+            "y": 8
+          },
+          {
+            "x": 5,
+            "y": 10
+          },
+          {
+            "x": 5,
+            "y": 11
+          },
+          {
+            "x": 5,
+            "y": 9
+          }
+        ],
+        "passableTiles": [
+          4,
+          6,
+          296,
+          297,
+          304,
+          305,
+          312,
+          313
+        ],
+        "lowerTileIds": [
+          4,
+          6,
+          17,
+          25,
+          16,
+          18,
+          296,
+          297,
+          304,
+          305,
+          312,
+          313
+        ],
+        "wallTileIds": [
+          17,
+          25,
+          16,
+          18
+        ],
+        "requiredClearRects": [
+          {
+            "x": 5,
+            "y": 3,
+            "width": 1,
+            "height": 11
+          }
+        ],
+        "rooms": [
+          {
+            "id": "dining",
+            "name": "부스·좌식 객석과 서비스 통로",
+            "x": 1,
+            "y": 5,
+            "width": 9,
+            "height": 8
+          },
+          {
+            "id": "kitchen",
+            "name": "북쪽 급차기·조리와 직원 접근",
+            "x": 1,
+            "y": 2,
+            "width": 9,
+            "height": 3
+          }
+        ],
+        "doorways": [
+          {
+            "to": "dining",
+            "x": 5,
+            "y": 13,
+            "width": 1,
+            "height": 1,
+            "from": "outside"
+          },
+          {
+            "to": "kitchen",
+            "x": 5,
+            "y": 4,
+            "width": 1,
+            "height": 1,
+            "from": "dining"
+          }
+        ],
+        "notes": "11×14. 남쪽(5,13)에서 x5 한 줄로 북쪽 직원/급차 구역에 접근한다. 부스1,5는 동쪽x4,y7/9에서, 좌식석6,9는 서쪽x5와 북쪽y8에서 접근한다. 북동 조리대/레인지 밑동y3은 타일6 바닥, 직원행y4는 카운터6,5 뒤에 남는다. 카운터 고객은y7이다. POS를 키패드 방향 검토 없이 추가하지 않았다. 모든 합성 사각은solid며 내부 착석/직원전용제한/주문 이벤트는 별도. 외벽은 원본 벽면 컷어웨이, 자동 천장/문은 별도다. 북서 급차기 앞(1,4)은 고객 셀프 서비스면이고 부스 북쪽 여유는 급차 접근을 위해 남긴다. 북쪽 벽은 같은 흰벽/목재판 원본2행만 연결한다. 남북 칸막이를 높이 줄이기 위해 자르지 않는다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-washitu",
+    "sourceFilename": "ST-Washitu-I01.png",
+    "sourceSha256": "8667246423284808bf5047c2bd0b1f4750a5d555da0ce09b243c24f4e399751b",
+    "composites": [],
+    "scenePlans": [
+      {
+        "id": "washitu-sleep-and-kotatsu",
+        "name": "작은 일본식방 · 코타츠와 취침",
+        "width": 8,
+        "height": 10,
+        "baseTile": 1,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 8,
+            "height": 1,
+            "tile": 41
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 8,
+            "height": 1,
+            "tile": 49
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 8,
+            "height": 1,
+            "tile": 57
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 6,
+            "tile": 40
+          },
+          {
+            "x": 7,
+            "y": 3,
+            "width": 1,
+            "height": 6,
+            "tile": 42
+          },
+          {
+            "x": 0,
+            "y": 9,
+            "width": 8,
+            "height": 1,
+            "tile": 57
+          },
+          {
+            "x": 5,
+            "y": 9,
+            "width": 1,
+            "height": 1,
+            "tile": 1
+          }
+        ],
+        "lowerStamps": [
+          {
+            "x": 1,
+            "y": 3,
+            "sourceRect": {
+              "x": 0,
+              "y": 20,
+              "width": 4,
+              "height": 2
+            }
+          },
+          {
+            "x": 1,
+            "y": 5,
+            "sourceRect": {
+              "x": 0,
+              "y": 20,
+              "width": 4,
+              "height": 2
+            }
+          },
+          {
+            "x": 1,
+            "y": 7,
+            "sourceRect": {
+              "x": 0,
+              "y": 20,
+              "width": 4,
+              "height": 2
+            }
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "washitu-shoji-front",
+            "x": 3,
+            "y": 0
+          },
+          {
+            "recipeId": "washitu-clock",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "washitu-chest",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "washitu-kotatsu",
+            "x": 1,
+            "y": 5
+          },
+          {
+            "recipeId": "washitu-futon-red",
+            "x": 6,
+            "y": 5
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 5,
+            "y": 8
+          },
+          {
+            "x": 5,
+            "y": 6
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 8
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 4
+          }
+        ],
+        "passableTiles": [
+          1,
+          160,
+          161,
+          162,
+          163,
+          168,
+          169,
+          170,
+          171
+        ],
+        "lowerTileIds": [
+          1,
+          41,
+          49,
+          57,
+          40,
+          42,
+          160,
+          161,
+          162,
+          163,
+          168,
+          169,
+          170,
+          171
+        ],
+        "wallTileIds": [
+          41,
+          49,
+          57,
+          40,
+          42
+        ],
+        "requiredClearRects": [
+          {
+            "x": 5,
+            "y": 4,
+            "width": 1,
+            "height": 6
+          }
+        ],
+        "rooms": [
+          {
+            "id": "washitu",
+            "name": "다다미 거실과 동쪽 취침",
+            "x": 1,
+            "y": 3,
+            "width": 6,
+            "height": 6
+          }
+        ],
+        "doorways": [
+          {
+            "to": "washitu",
+            "x": 5,
+            "y": 9,
+            "width": 1,
+            "height": 1,
+            "from": "outside"
+          }
+        ],
+        "notes": "8×10. 완성 다다미4×2 원본을 x1,y3/5/7에 세로3줄 배치하고 동쪽 두칸은 원본 목재바닥으로 둔다. 코타츠1,5의 북쪽y4와 동쪽x5가 접근면이며 남서 여백을 제거했다. 북서 서랍장1,1은 밑동y3, 정면1,4가 다다미에 닿는다. 동쪽 침구6,5는 북쪽베개/남쪽발끝까지 전체1×3이며 옆x5와 발치6,8에서 접근한다. 쇼지 앞면3,0은 북벽에 붙는다. 남문5,9부터x5 한줄로 모든가구접근을 잇는다. 수면/착석/쇼지개폐/천장/실제문은 별도 이벤트다."
+      }
+    ]
+  }
+]

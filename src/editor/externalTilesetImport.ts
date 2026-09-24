@@ -11,6 +11,7 @@ import { inspectExternalTileGrounding } from '@/project/externalTileGrounding';
 import { pixelArtWorldSchoolBuildingGuide } from '@/project/pixelArtWorldSchoolBuilding';
 import layoutGuidance from '@/assets/pixelArtWorldLayoutGuidance.json';
 import { attachPixelArtWorldBathGymObjects } from '@/project/pixelArtWorldBathGym';
+import { appendPixelArtWorldJapaneseInteriors } from './pixelArtWorldJapaneseInteriors';
 import { appendPixelArtWorldComposites } from './pixelArtWorldComposites';
 
 export async function prepareExternalTileset(file: File, pack: ExternalTilesetPack) {
@@ -54,7 +55,7 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
   }
   validateTilesetReferences(tileset.referenceDocuments);
   attachPixelArtWorldBathGymObjects(pack, tileset);
-  const composed = appendPixelArtWorldComposites(pack, image, tileset, image);
+  const composed = appendPixelArtWorldJapaneseInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldComposites(pack, image, tileset, image);
   return { dataUrl: composed?.dataUrl ?? dataUrl, sourceDataUrl: dataUrl, assetId, tileset: composed?.tileset ?? tileset,
     imageWidth: composed?.imageWidth ?? pack.width, imageHeight: composed?.imageHeight ?? pack.height };
 }
@@ -94,7 +95,7 @@ function readPng(file: File): Promise<string> {
   });
 }
 
-function createReferences(pack: ExternalTilesetPack, image: HTMLImageElement, dataUrl: string, tilesetId: string): TilesetReferenceCategory {
+function createReferences(pack: ExternalTilesetPack, image: CanvasImageSource, dataUrl: string, tilesetId: string): TilesetReferenceCategory {
   const category: TilesetReferenceCategory = {
     id: 'paw-furniture-pilot', name: '구조·소품 조립 · 시범 지원',
     description: '원본 식별을 통과한 구조·소품과 별도 장면 예제만 지원. 시트 전체/문 이벤트는 미검토. 이미지는 사용자가 가져온 원본으로 이 프로젝트에서 생성.',
@@ -152,7 +153,7 @@ function createReferences(pack: ExternalTilesetPack, image: HTMLImageElement, da
   return category;
 }
 
-function renderExample(image: HTMLImageElement, example: { width: number; height: number; lowerTiles: number[]; upperTiles: number[] }): HTMLCanvasElement {
+function renderExample(image: CanvasImageSource, example: { width: number; height: number; lowerTiles: number[]; upperTiles: number[] }): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.width = example.width * 32; canvas.height = example.height * 32;
   const context = canvas.getContext('2d')!;
