@@ -1090,3 +1090,13 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 
 - 관찰기1875194가 편집 권한을 인수한 뒤 요청21f2를 실제 입력창으로 제출했고 도구 조회가 진행됐다. stream-timing-before-paint.json 시점의 스트림 최대 간격은 약6.8초였다. 아직 타일 적용 중30초 단절의 원인을 입증한 것은 아니다. 표본 마지막80개 longtask는 장기 누적 최대가 아니므로 긴 작업 부재를 단정하지 않는다.
 - 정본493은 기존3칸 타일66 외 숲 배열 변화가 없었으며, 재접속 후 shared_paw 계열 공용 타일셋13개가 새로 보였다. 기존 타일셋 내용은 동일하다. `reconnect-catalog-diff.json`으로 기록하고 모델의 숲 미술 변경으로 세지 않는다. baseline QA 사본은 asset.ref를 dataUrl로 바꾼 것이므로 원본 SQLite와 assets 전체 JSON 불일치만으로 손상이라고 판단하지 않는다.
+
+### 숲 타일 적용의 지연 관측과 저장/불러오기 QA 보정
+
+- 요청21f2는 revision496까지 나무 윗부분66의106칸과 뿌리130의102칸을 저장했고 몸통 배치 중이었다. 미완성 중간 레이어를 완성 그림으로 평가하지 않는다.
+- `stream-timing-first-paint.json`: 적용 구간에 브라우저 longtask 15,891ms/14,402ms, 스트림 최대 도착 간격35,207ms를 관측했다. 이후 최대39,854ms에도 실행이 이어졌다. 이는 적용 중 주 스레드 지연의 근거지만 워커 정지나 이전 모든 timeout의 단일 원인 증거는 아니다. 일반 setInterval heartbeat가 모든 상황에서5초를 보장한다는 코드 주석은 실제 간격과 구분한다.
+- 실제 게임 메뉴 저장 QA에서 첫 시도는 focus가 메뉴 선택 상태를 옮기지 않아 실패했고, 두 번째는 타이틀의 save-slot-1을 인게임 load-slot-1과 혼동했다. 각각 `ecology-save-load-focus-failure/`, `ecology-save-load-title-selector-failure/`로 보존했다. 이는 QA 선택기 오류다.
+- 세 번째는 저장19,29→브라우저 재로드→실제 타이틀 슬롯 복원까지 진행됐지만 monsterInstances의 선택 필드 pendingSkillIds가 없음/undefined인 표현 차이에 deepEqual이 실패했다. `ecology-save-load-undefined-comparison/` 보존. JSON 저장값 기준으로 비교를 보정해 재실행한다. 다른 실제 값 차이는 허용하지 않는다.
+- 메뉴/저장 화면에는 몬스터 중심 게임인데 청동 검·방패·여행자 장비와 Lv1 배우 정보가 노출된다. 현재 QA 체크포인트가 가진 기존 기사 배우/장비에서 온 표현이며, 새 게임 트레이너 수정만으로 메뉴 정보가 몬스터 중심으로 바뀌었다고 주장하지 않는다. 포켓몬풍 메뉴/저장 요약을 다듬을 대상이다.
+- 최종 `ecology-save-load-player/SUMMARY.md`: passed/saveLoadMatches=true,pageErrors0. 실제 조사 완료 상태에서1칸 이동해19,29를 게임 메뉴1번 칸에 저장하고 브라우저 reload→타이틀 불러오기→1번 칸으로 복원했다. currentMapId/x/y/gold/inventory/switches/variables/monsterParty/monsterInstances의 JSON 저장값이 일치했다. `loaded.png` 직접 열람. 초기 checkpoint 위치와 다른 저장 위치로 실제 복원을 확인했다. 전체180분 완주 증거는 아니다.
+- 요청21f2는 몸통 배치까지 정본497에 부분 저장한 뒤30초 heartbeat 실패로 종료됐다. 실패 시점의 `stream-timing-failed-paint.json`, `request21f2-heartbeat-failure.txt` 보존. 에디터 작업 설정에서 검토 후 적용(review)을 선택하고 요청21f3으로 미완성 숲을 이어 작성하도록 제출했다. 도구마다 전체 프로젝트 checkpoint를 왕복하는 횟수를 줄이는 기존 UI 경로이며, 최종 초안 확인/실제 적용/SQLite 재로드는 여전히 필요하다.
