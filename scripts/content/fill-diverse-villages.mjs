@@ -250,7 +250,8 @@ function fillVillage(plan, strict) {
   const objects = new Set(), accessCells = new Set(plan.access.map((a) => at(a.x, a.y)));
   for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, objects, 0);
   const before = emptiness(m, isPlain);
-  const gaps = fillPlainGaps({ map: m, isPlain, canTake: (x, y) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)), group: tallGrass, random });
+  const gaps = fillPlainGaps({ map: m, isPlain, canTake: (x, y) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)), group: tallGrass, random,
+    flowerGroups: wild.map((g) => [Math.min(...g.cells.map((c) => c.x)) + 1, Math.min(...g.cells.map((c) => c.y)) + 1]) });
 
   // Final checks, then the plan's derived fields.
   const seen = seenNow();

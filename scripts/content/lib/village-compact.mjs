@@ -50,14 +50,7 @@ export function compactVillage(map, { hard, cliff, near, soft: classOf, walk, ta
     }
     let x = 0;
     for (let k = 1; k < W; k++) if (D[H - 1][k] < D[H - 1][x]) x = k;
-    if (D[H - 1][x] >= INF) {
-      if (process.env.VILLAGE_COMPACT_DEBUG) {
-        const y = D.findIndex((row) => row.every((d) => d >= INF));
-        const orig = (c) => vertical ? `${c.i % W0},${Math.floor(c.i / W0)}` : `${c.i % W0},${Math.floor(c.i / W0)}`;
-        console.error("seam blocked", vertical ? "vertical" : "horizontal", "at", y, A[y].map((c, k) => (D[y - 1]?.[k] < INF ? "." : "#") + c.k[0] + (C[y][k][0] >= INF ? "!" : "")).join(""), orig(A[y][0]));
-      }
-      return null;
-    }
+    if (D[H - 1][x] >= INF) return null;
     const s = Array(H);
     for (let y = H - 1; y >= 0; y--) { s[y] = x; x = P[y][x]; }
     return { path: s, cost: D[H - 1][s[H - 1]] };

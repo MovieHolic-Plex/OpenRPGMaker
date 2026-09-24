@@ -54,48 +54,108 @@ const PLAZA_PURPOSE = {
   "부서진 울타리": "무너진 채 남은 우물가 울타리",
 };
 
-/** Tall-grass clumps (builtin_tall_grass, lower, walkable) beside the forest: each a union of 2×2 blocks grown
- * from a seed two cells off the canopy, autotiled on its own. */
+/** A ragged patch: grown one cell at a time from `seed`, each step taking a frontier cell weighted by how many of its
+ * four sides already touch the patch (so it stays one piece) times a random factor (so the outline wanders). */
+export function growBlob({ W, H, seed, size, ok, random }) {
+  const at = (x, y) => y * W + x;
+  if (!ok(seed[0], seed[1])) return null;
+  const blob = new Set([at(seed[0], seed[1])]);
+  while (blob.size < size) {
+    const front = new Map();
+    for (const i of blob) {
+      const x = i % W, y = Math.floor(i / W);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const X = x + dx, Y = y + dy, k = at(X, Y);
+        if (X < 0 || Y < 0 || X >= W || Y >= H || blob.has(k) || !ok(X, Y)) continue;
+        front.set(k, (front.get(k) ?? 0) + 1);
+      }
+    }
+    if (!front.size) break;
+    // Round on the whole (cells far from the seed are less likely), ragged at the rim (the random factor).
+    let best = -1, pick = null;
+    for (const [k, n] of [...front].sort((a, b) => a[0] - b[0])) {
+      const d2 = (k % W - seed[0]) ** 2 + (Math.floor(k / W) - seed[1]) ** 2;
+      const w = n * n * (0.25 + random()) / (1 + 0.12 * d2);
+      if (w > best) { best = w; pick = k; }
+    }
+    blob.add(pick);
+  }
+  // No one-cell spurs: a cell touching the patch on one side only is dropped (twice, for two-cell spurs).
+  for (let pass = 0; pass < 2 && blob.size > 4; pass++) for (const i of [...blob]) {
+    const x = i % W, y = Math.floor(i / W);
+    if ([[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => blob.has(at(x + dx, y + dy))).length <= 1) blob.delete(i);
+  }
+  return blob;
+}
+
+/** Fray a patch's outline: now and then a lone tuft (the group's single piece) just off a convex corner, touching the
+ * patch only at the corner, so the silhouette is not a stack of rectangles. Returns the tuft cells. */
+export function frayGrass(map, group, blob, ok, random, p = 0.3) {
+  const W = map.width, at = (x, y) => y * W + x, members = new Set(Object.values(group.variantMap)), tufts = [];
+  for (const i of [...blob].sort((a, b) => a - b)) {
+    const x = i % W, y = Math.floor(i / W);
+    for (const [dx, dy] of [[1, 1], [-1, 1], [1, -1], [-1, -1]]) {
+      const X = x + dx, Y = y + dy, k = at(X, Y);
+      if (blob.has(k) || !ok(X, Y) || members.has(map.lowerTiles[k])) continue;
+      if ([[1, 0], [-1, 0], [0, 1], [0, -1]].some(([ex, ey]) => members.has(map.lowerTiles[at(X + ex, Y + ey)]))) continue;
+      if (random() < p) { map.lowerTiles[k] = group.variantMap["0"]; tufts.push(k); }
+    }
+  }
+  return tufts;
+}
+
+/** Autotile every tall-grass cell in and around `cells` against its eight neighbours. */
+export function retileGrass(map, group, cells) {
+  const W = map.width, H = map.height, at = (x, y) => y * W + x, members = new Set(Object.values(group.variantMap));
+  const around = new Set();
+  for (const i of cells) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+    const x = i % W + dx, y = Math.floor(i / W) + dy;
+    if (x >= 0 && y >= 0 && x < W && y < H && members.has(map.lowerTiles[at(x, y)])) around.add(at(x, y));
+  }
+  for (const i of around) {
+    const x = i % W, y = Math.floor(i / W);
+    let mask = 0;
+    [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]].forEach(([dx, dy], b) => {
+      const X = x + dx, Y = y + dy;
+      if (X >= 0 && Y >= 0 && X < W && Y < H && members.has(map.lowerTiles[at(X, Y)])) mask |= 1 << b;
+    });
+    map.lowerTiles[i] = group.variantMap[String(mask)];
+  }
+}
+
+/** Tall-grass patches (builtin_tall_grass, lower, walkable) beside the forest: ragged blobs of 7–16 cells grown from
+ * a seed within two cells of the canopy, one bare cell apart from any other tall grass. */
 export function placeTallGrass({ map, bare, nearForest, group, count, random, accept }) {
   const W = map.width, H = map.height, at = (x, y) => y * W + x, members = new Set(Object.values(group.variantMap));
   const seeds = [];
   for (let y = 2; y < H - 3; y++) for (let x = 2; x < W - 3; x++) if (nearForest(x, y)) seeds.push([x, y]);
   const clumps = [];
+  const apart = (x, y) => [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => !members.has(map.lowerTiles[at(x + dx, y + dy)])));
   for (let tries = 0; clumps.length < count && tries < count * 40 && seeds.length; tries++) {
-    const [sx, sy] = seeds[Math.floor(random() * seeds.length)];
-    const blob = new Set();
-    const block = (x, y) => [[0, 0], [1, 0], [0, 1], [1, 1]].map(([dx, dy]) => [x + dx, y + dy]);
-    const fits = (cells) => cells.every(([x, y]) => bare(x, y) && [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => !members.has(map.lowerTiles[at(x + dx, y + dy)]) || blob.has(at(x + dx, y + dy)))));
-    if (!fits(block(sx, sy))) continue;
-    block(sx, sy).forEach(([x, y]) => blob.add(at(x, y)));
-    const grow = 2 + Math.floor(random() * 3);
-    for (let g = 0; g < grow * 4 && blob.size < 4 * (grow + 1) - 2; g++) {
-      const cells = [...blob], i = cells[Math.floor(random() * cells.length)], x = i % W + Math.floor(random() * 3) - 1, y = Math.floor(i / W) + Math.floor(random() * 3) - 1;
-      const b = block(x, y);
-      if (fits(b)) b.forEach(([cx, cy]) => blob.add(at(cx, cy)));
-    }
+    const seed = seeds[Math.floor(random() * seeds.length)];
+    const blob = growBlob({ W, H, seed, size: 7 + Math.floor(random() * 10), ok: (x, y) => bare(x, y) && apart(x, y), random });
+    if (!blob || blob.size < 5) continue;
     const before = [...blob].map((i) => map.lowerTiles[i]);
-    for (const i of blob) {
-      const x = i % W, y = Math.floor(i / W);
-      let mask = 0;
-      [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]].forEach(([dx, dy], b) => { if (blob.has(at(x + dx, y + dy))) mask |= 1 << b; });
-      map.lowerTiles[i] = group.variantMap[String(mask)];
-    }
+    for (const i of blob) map.lowerTiles[i] = group.variantMap["255"];
+    const tufts = frayGrass(map, group, blob, bare, random);
+    tufts.forEach((i) => { before.push(240); blob.add(i); });
+    retileGrass(map, group, blob);
     if (!accept([...blob])) { [...blob].forEach((i, k) => { map.lowerTiles[i] = before[k]; }); continue; }
     clumps.push([...blob].map((i) => ({ x: i % W, y: Math.floor(i / W), layer: "lower", tile: map.lowerTiles[i] })));
   }
   return clumps;
 }
 
-// Three pieces, never in a line: every pattern is a small triangle.
-const TRIANGLES = [[[0, 0], [2, 0], [1, 1]], [[0, 0], [1, 1], [0, 2]], [[1, 0], [0, 1], [2, 2]], [[0, 0], [2, 1], [0, 2]], [[1, 0], [0, 2], [2, 1]], [[0, 1], [2, 0], [1, 2]]];
+// Three pieces, never in a line: every pattern is a tight clump (an L, or a chevron touching at the corners), so the
+// three read as one group rather than as dots sprinkled apart.
+const TRIANGLES = [[[0, 0], [1, 0], [0, 1]], [[0, 0], [1, 0], [1, 1]], [[0, 0], [0, 1], [1, 1]], [[1, 0], [0, 1], [1, 1]], [[0, 0], [1, 1], [2, 0]], [[0, 1], [1, 0], [2, 1]]];
 export const WILD = [
-  { name: "들꽃", tiles: [348, 348, 348], layer: "upper", weight: 40 },
-  { name: "꽃덤불", tiles: [288, 348, 288], layer: "upper", weight: 25 },
+  { name: "들꽃", tiles: [348, 348, 348], layer: "upper", weight: 50 },
+  { name: "꽃덤불", tiles: [288, 348, 288], layer: "upper", weight: 35 },
   { name: "덤불", tiles: [289, 289, 348], layer: "upper", weight: 15 },
-  { name: "풀포기", tiles: [243, 243, 243], layer: "lower", weight: 20 },
 ];
-/** Wildflowers, flower bushes, bushes and grass tufts in threes on open ground, groups five cells apart. */
+/** Wildflowers, flower bushes and bushes in threes on open ground, groups six cells apart: a few groups, not a
+ * carpet (the gap fill keeps the same distance from them). */
 export function placeWildGroups({ map, bare, count, random, accept }) {
   const W = map.width, H = map.height, at = (x, y) => y * W + x, groups = [], centres = [];
   const open = [];
@@ -103,7 +163,7 @@ export function placeWildGroups({ map, bare, count, random, accept }) {
   const total = WILD.reduce((s, k) => s + k.weight, 0);
   for (let tries = 0; groups.length < count && tries < count * 30 && open.length; tries++) {
     const [x, y] = open[Math.floor(random() * open.length)];
-    if (centres.some(([cx, cy]) => Math.max(Math.abs(cx - x), Math.abs(cy - y)) < 4)) continue;
+    if (centres.some(([cx, cy]) => Math.max(Math.abs(cx - x), Math.abs(cy - y)) < 6)) continue;
     let r = random() * total, kind = WILD[0];
     for (const k of WILD) { if ((r -= k.weight) < 0) { kind = k; break; } }
     const shape = TRIANGLES[Math.floor(random() * TRIANGLES.length)];
@@ -139,34 +199,31 @@ export function emptiness(map, isPlain) {
   return { maxSq, sqAt, screen, screenAt, P };
 }
 
-/** Natural fill until the gate passes: the largest plain square (or, once squares are small, the emptiest screen's
- * largest plain square) gets a tall-grass patch or a group of three flowers. Both are walkable, so paths and
- * reachability are untouched; access cells are never covered. */
-export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 400 }) {
-  const W = map.width, H = map.height, at = (x, y) => y * W + x, members = new Set(Object.values(group.variantMap));
-  const pieces = [];
-  const retile = (cells) => {
-    const around = new Set();
-    for (const i of cells) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
-      const x = i % W + dx, y = Math.floor(i / W) + dy;
-      if (x >= 0 && y >= 0 && x < W && y < H && members.has(map.lowerTiles[at(x, y)])) around.add(at(x, y));
+/** Natural fill until the gate passes. The target is the largest plain square (or, once squares are small, the
+ * emptiest screen's largest plain square). Most pieces are a ragged tall-grass patch seeded somewhere inside it
+ * (sometimes with three flowers tucked against its edge); the rest are one group of three flowers, never within
+ * five cells of another flower group, so the ground never turns into an even dotted carpet. Both are walkable, so
+ * paths and reachability are untouched; access cells are never covered. */
+export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 400, flowerGroups = [] }) {
+  const W = map.width, H = map.height, at = (x, y) => y * W + x;
+  const pieces = [], tried = new Set(), flowers = [...flowerGroups];
+  const ok = (x, y) => x >= 1 && y >= 1 && x < W - 1 && y < H - 1 && isPlain(x, y) && canTake(x, y) && map.lowerTiles[at(x, y)] === 240;
+  const flowerFar = (x, y) => flowers.every(([fx, fy]) => Math.max(Math.abs(fx - x), Math.abs(fy - y)) >= 6);
+  const putFlowers = (x0, y0, avoid) => {
+    const order = TRIANGLES.map((s, k) => [s, random() + k * 0]).sort((a, b) => a[1] - b[1]).map(([s]) => s);
+    for (const shape of order) {
+      const kind = random() < 0.6 ? [348, 348, 348] : [288, 348, 288];
+      const put = shape.map(([dx, dy], k) => [x0 + dx, y0 + dy, kind[k]]);
+      if (!put.every(([x, y]) => ok(x, y) && !avoid.has(at(x, y)))) continue;
+      for (const [x, y, t] of put) map.upperTiles[at(x, y)] = t;
+      flowers.push([x0 + 1, y0 + 1]);
+      return { name: kind[0] === 288 ? "꽃덤불" : "들꽃", cells: put.map(([x, y]) => [x, y]) };
     }
-    for (const i of around) {
-      const x = i % W, y = Math.floor(i / W);
-      let mask = 0;
-      [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]].forEach(([dx, dy], b) => {
-        const X = x + dx, Y = y + dy;
-        if (X >= 0 && Y >= 0 && X < W && Y < H && members.has(map.lowerTiles[at(X, Y)])) mask |= 1 << b;
-      });
-      map.lowerTiles[i] = group.variantMap[String(mask)];
-    }
+    return null;
   };
-  const tried = new Set();
   for (let step = 0; step < maxSteps; step++) {
     const e = emptiness(map, isPlain);
     if (e.maxSq <= limits.maxSq && e.screen <= limits.screen) break;
-    // Target: the largest plain square overall, or inside the emptiest screen.
-    // Largest square of fillable plain cells inside a region (the whole map, or the emptiest screen).
     const square = (x0, y0, sw, sh) => {
       let best = 0, found = null;
       const dp = Array.from({ length: sh + 1 }, () => Array(sw + 1).fill(0));
@@ -179,37 +236,39 @@ export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = {
     let box = e.maxSq > limits.maxSq ? square(0, 0, W, H) : null;
     if (!box || box.w <= limits.maxSq) box = e.screen > limits.screen ? square(e.screenAt[0], e.screenAt[1], Math.min(17, W), Math.min(13, H)) : box;
     if (!box) break;
-    const cx = box.x + (box.w >> 1), cy = box.y + (box.h >> 1);
-    const ok = (x, y) => x >= 1 && y >= 1 && x < W - 1 && y < H - 1 && isPlain(x, y) && canTake(x, y) && map.lowerTiles[at(x, y)] === 240;
-    let cells = [];
-    const roll = random();
-    if (roll < 0.4) {
-      // Tall grass: two or three 2×2 blocks stepped off each other, so a patch is never a plain rectangle.
-      const blocks = [[0, 0]], n = 2 + Math.floor(random() * 2);
-      while (blocks.length < n) { const [bx, by] = blocks[blocks.length - 1]; blocks.push([bx + (random() < 0.5 ? 1 : -1) * (1 + Math.floor(random() * 2)), by + (random() < 0.5 ? 1 : -1)]); }
-      const set = new Set();
-      for (const [bx, by] of blocks) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) if (ok(cx - 1 + bx + dx, cy - 1 + by + dy)) set.add(at(cx - 1 + bx + dx, cy - 1 + by + dy));
-      cells = [...set];
-      if (cells.length) {
-        for (const i of cells) map.lowerTiles[i] = group.variantMap["255"];
-        retile(cells);
-        pieces.push({ name: "키큰 풀", cells: cells.map((i) => [i % W, Math.floor(i / W)]) });
+    // A seed anywhere in the box, not always its centre, so pieces do not fall on a grid.
+    const sx = box.x + Math.floor(random() * box.w), sy = box.y + Math.floor(random() * box.h);
+    let placed = 0;
+    if (random() < 0.78 || !flowerFar(sx, sy)) {
+      const blob = growBlob({ W, H, seed: [sx, sy], size: 7 + Math.floor(random() * 10), ok, random });
+      if (blob && blob.size >= 4) {
+        for (const i of blob) map.lowerTiles[i] = group.variantMap["255"];
+        for (const i of frayGrass(map, group, blob, ok, random)) blob.add(i);
+        retileGrass(map, group, blob);
+        const piece = { name: "키큰 풀", cells: [...blob].map((i) => [i % W, Math.floor(i / W)]) };
+        pieces.push(piece);
+        placed = blob.size;
+        // Three flowers against the patch's edge now and then.
+        if (random() < 0.35) {
+          const edge = [];
+          for (const i of blob) for (const [dx, dy] of [[2, 0], [-3, 0], [0, 2], [0, -3], [2, 2], [-3, -3]]) {
+            const x = i % W + dx, y = Math.floor(i / W) + dy;
+            if (flowerFar(x + 1, y + 1)) edge.push([x, y]);
+          }
+          if (edge.length) {
+            const [fx, fy] = edge[Math.floor(random() * edge.length)];
+            const f = putFlowers(fx, fy, blob);
+            if (f) { pieces.push(f); placed += 3; }
+          }
+        }
       }
-    } else if (roll < 0.62) {
-      // Three grass tufts (the tall-grass group's single piece), diagonal to each other so they stay separate.
-      const shape = TRIANGLES[Math.floor(random() * TRIANGLES.length)];
-      const put = shape.map(([dx, dy]) => [cx - 1 + dx, cy - 1 + dy]).filter(([x, y]) => ok(x, y));
-      for (const [x, y] of put) map.lowerTiles[at(x, y)] = group.variantMap["0"];
-      cells = put.map(([x, y]) => at(x, y));
-      if (cells.length) { retile(cells); pieces.push({ name: "풀포기", cells: put }); }
     } else {
-      const shape = TRIANGLES[Math.floor(random() * TRIANGLES.length)], kind = random() < 0.65 ? [348, 348, 348] : [288, 348, 288];
-      const put = shape.map(([dx, dy], k) => [cx - 1 + dx, cy - 1 + dy, kind[k]]).filter(([x, y]) => ok(x, y));
-      for (const [x, y, t] of put) map.upperTiles[at(x, y)] = t;
-      cells = put.map(([x, y]) => at(x, y));
-      if (put.length) pieces.push({ name: kind[0] === 288 ? "꽃덤불" : "들꽃", cells: put.map(([x, y]) => [x, y]) });
+      const f = putFlowers(sx - 1, sy - 1, new Set());
+      if (f) { pieces.push(f); placed = 3; }
     }
-    if (!cells.length) for (let dy = 0; dy < box.h; dy++) for (let dx = 0; dx < box.w; dx++) tried.add(at(box.x + dx, box.y + dy));
+    if (!placed) tried.add(at(sx, sy));
+    if (!placed && [...Array(box.w * box.h).keys()].every((k) => tried.has(at(box.x + k % box.w, box.y + Math.floor(k / box.w))) || !ok(box.x + k % box.w, box.y + Math.floor(k / box.w))))
+      for (let dy = 0; dy < box.h; dy++) for (let dx = 0; dx < box.w; dx++) tried.add(at(box.x + dx, box.y + dy));
   }
   return { pieces, ...emptiness(map, isPlain) };
 }
@@ -252,8 +311,7 @@ export function placeTreeClumps({ map, bare, isForest, rootRow, templates, count
     while (side(e + 1)) e++;
     if (e - y + 1 >= 5) spots.push({ kind: dir < 0 ? "west" : "east", x, y0: y, y1: e });
   }
-  const placed = [], why = { cells: 0, ring: 0, fit: 0 };
-  if (process.env.VILLAGE_FULLNESS_DEBUG) process.on("exit", () => console.error("tree spots", spots.length, why));
+  const placed = [];
   const order = spots.map((s) => [random(), s]).sort((a, b) => a[0] - b[0]).map(([, s]) => s);
   const shuffle = (a) => a.map((v) => [random(), v]).sort((p, q) => p[0] - q[0]).map(([, v]) => v);
   for (const s of order) {
@@ -277,7 +335,6 @@ export function placeTreeClumps({ map, bare, isForest, rootRow, templates, count
         const x = i % W, y = Math.floor(i / W);
         return [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => own.has(at(x + dx, y + dy)) || bare(x + dx, y + dy)));
       });
-      if (process.env.VILLAGE_FULLNESS_DEBUG) (why[ok ? "fit" : stamps.every((st) => cellsOf(st).every((c) => bare(c.x, c.y))) ? "ring" : "cells"] += 1);
       if (!ok || placed.some((q) => q.some((st) => stamps.some((a) => distance(a, st) < 4)))) continue;
       const saved = [...own].map((i) => [i, map.lowerTiles[i], map.upperTiles[i]]);
       for (const st of stamps) cellsOf(st).forEach((c, k) => { map.lowerTiles[at(c.x, c.y)] = st.lower[k]; map.upperTiles[at(c.x, c.y)] = st.upper[k]; });

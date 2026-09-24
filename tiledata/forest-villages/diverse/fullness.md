@@ -41,8 +41,8 @@
       "화분"
     ],
     "treeClumps": 0,
-    "tallGrass": 9,
-    "wildGroups": 10
+    "tallGrass": 8,
+    "wildGroups": 7
   },
   {
     "id": "terrace-cliff-village",
@@ -69,7 +69,7 @@
     ],
     "treeClumps": 1,
     "tallGrass": 8,
-    "wildGroups": 12
+    "wildGroups": 7
   },
   {
     "id": "twin-falls-river-village",
@@ -93,8 +93,8 @@
       "돌등"
     ],
     "treeClumps": 0,
-    "tallGrass": 10,
-    "wildGroups": 9
+    "tallGrass": 8,
+    "wildGroups": 7
   },
   {
     "id": "reed-bay-village",
@@ -119,8 +119,8 @@
       "돌등"
     ],
     "treeClumps": 0,
-    "tallGrass": 9,
-    "wildGroups": 15
+    "tallGrass": 8,
+    "wildGroups": 6
   },
   {
     "id": "chapel-hill-parish",
@@ -145,7 +145,7 @@
       "꽃 화단"
     ],
     "treeClumps": 0,
-    "tallGrass": 4,
+    "tallGrass": 7,
     "wildGroups": 6
   },
   {
@@ -172,8 +172,8 @@
       "벤치"
     ],
     "treeClumps": 2,
-    "tallGrass": 6,
-    "wildGroups": 31
+    "tallGrass": 8,
+    "wildGroups": 12
   },
   {
     "id": "mistpond-hollow",
@@ -198,8 +198,8 @@
       "마른 묘목"
     ],
     "treeClumps": 0,
-    "tallGrass": 9,
-    "wildGroups": 7
+    "tallGrass": 8,
+    "wildGroups": 5
   }
 ]
 ```
@@ -207,7 +207,7 @@
 ## 입력
 ```json
 {
-  "note": "개정14 · 마을 채우기(B = 압축 + 소품). 사용자가 승인한 시안 claude-viz/village-fullness.html 의 B 를 실제 맵에 적용한다. targets 는 빈 띠를 걷어 낼 목표 크기(폭, 높이)로, 걷을 수 있는 띠가 없으면 그 전에 멈춘다. plaza 는 우물(center)을 둘러쌀 공동 소품, ground 는 풀숲 덩이·세 개 묶음 들꽃·나무 덩이 수.",
+  "note": "개정14 · 마을 채우기(B = 압축 + 소품). 사용자가 승인한 시안 claude-viz/village-fullness.html 의 B 를 실제 맵에 적용한다. targets 는 빈 띠를 걷어 낼 목표 크기(폭, 높이)로, 걷을 수 있는 띠가 없으면 그 전에 멈춘다. plaza 는 우물(center)을 둘러쌀 공동 소품, ground 는 숲 가 풀숲 덩이(삐죽한 7~16칸)·세 개 묶음 들꽃(서로 6칸 이상 떨어짐)·나무 덩이 수. 남는 빈 땅은 빈칸 게이트(한 변 5칸 정사각형 없음, 17×13 화면 빈 땅 40% 이하)를 통과할 때까지 삐죽한 풀숲 덩이로 채운다.",
   "villages": {
     "pine-hamlets": {
       "target": [
@@ -224,8 +224,8 @@
           "화분"
         ]
       },
-      "grass": 9,
-      "wild": 18,
+      "grass": 8,
+      "wild": 7,
       "trees": 4
     },
     "terrace-cliff-village": {
@@ -242,8 +242,8 @@
           "화분"
         ]
       },
-      "grass": 10,
-      "wild": 20,
+      "grass": 8,
+      "wild": 7,
       "trees": 4
     },
     "twin-falls-river-village": {
@@ -261,8 +261,8 @@
           "벤치"
         ]
       },
-      "grass": 10,
-      "wild": 20,
+      "grass": 8,
+      "wild": 7,
       "trees": 4
     },
     "reed-bay-village": {
@@ -279,8 +279,8 @@
           "돌등"
         ]
       },
-      "grass": 9,
-      "wild": 18,
+      "grass": 8,
+      "wild": 6,
       "trees": 3
     },
     "chapel-hill-parish": {
@@ -299,8 +299,8 @@
           "화분"
         ]
       },
-      "grass": 9,
-      "wild": 18,
+      "grass": 8,
+      "wild": 6,
       "trees": 4
     },
     "ford-castle-town": {
@@ -318,8 +318,8 @@
           "벤치"
         ]
       },
-      "grass": 16,
-      "wild": 40,
+      "grass": 14,
+      "wild": 12,
       "trees": 5
     },
     "mistpond-hollow": {
@@ -336,8 +336,8 @@
           "통나무 더미"
         ]
       },
-      "grass": 11,
-      "wild": 12,
+      "grass": 10,
+      "wild": 5,
       "trees": 3
     }
   }
