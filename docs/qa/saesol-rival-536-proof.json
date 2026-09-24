@@ -1,0 +1,202 @@
+{
+  "store": {
+    "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+    "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+    "revision": 536,
+    "sha256": "40c79071e3e7a2bdc36c3f6828c2fbfe55179049b14b420716c47444aa93864e",
+    "repeatReadMatches": true,
+    "maps": 20,
+    "events": 184,
+    "inlined": 80,
+    "scope": "Reopened canonical store read twice; media hashes verified and inlined for read-only player QA copy. No project content written."
+  },
+  "scope": {
+    "exactRequestedChangesOnly": true,
+    "graphicsPages": 9,
+    "events": [
+      "ev_sr_serin_route1",
+      "ev_sr_serin_town2",
+      "ev_sr_serin_port",
+      "ev_sr_serin_gate"
+    ],
+    "finalBackdrop": "isaiah658-backdrop-plains",
+    "commandsAndConditionsPreservedExceptRequestedDialogue": true
+  },
+  "first": {
+    "scope": "Real earned fourth-badge party, walk to four rival encounters in order. Checks sequence, four battles and one-time reward. Early fights use a late party, so this does NOT establish early-game difficulty or human duration.",
+    "error": "Expected values to be strictly equal:\n\n11692 !== 11472\n",
+    "steps": [],
+    "outOfOrderBlocked": true,
+    "walkedSteps": 431,
+    "walkedPortals": [
+      {
+        "from": "map_sr4_gym",
+        "event": "ev_gate_6f17c55a-3dbd-48ef-bb34-aee51fd97cb9",
+        "to": "map_sr4_gate"
+      },
+      {
+        "from": "map_sr4_gate",
+        "event": "ev_gate_cb415f7c-bbc4-476f-a893-44d1bf9a48a2",
+        "to": "map_sr4_gym"
+      },
+      {
+        "from": "map_sr4_gym",
+        "event": "ev_gate_beae648f-8610-4d47-930e-26e5be9479fc",
+        "to": "map_sr4_temple"
+      },
+      {
+        "from": "map_sr4_temple",
+        "event": "ev_gate_e7bdbcc8-daf0-4d4c-81d1-6efa8c393229",
+        "to": "map_sr4_pass"
+      },
+      {
+        "from": "map_sr4_pass",
+        "event": "ev_sr4_pass_to_port",
+        "to": "map_sr3_port"
+      },
+      {
+        "from": "map_sr3_port",
+        "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+        "to": "map_sr3_mine"
+      },
+      {
+        "from": "map_sr3_mine",
+        "event": "ev_gate_f3c86abf-7a75-4a4e-8d12-4d70b08c2b65",
+        "to": "map_sr3_coast"
+      },
+      {
+        "from": "map_sr3_coast",
+        "event": "ev_gate_4e7c574f-79e9-4923-8f0c-37f21302a804",
+        "to": "map_saesol_town2"
+      },
+      {
+        "from": "map_saesol_town2",
+        "event": "sr_warp_town2_to_forest",
+        "to": "map_saesol_forest"
+      },
+      {
+        "from": "map_saesol_forest",
+        "event": "sr_warp_forest_to_route2",
+        "to": "map_saesol_route2"
+      },
+      {
+        "from": "map_saesol_route2",
+        "event": "sr_warp_route2_to_cavern",
+        "to": "map_variety_cavern"
+      },
+      {
+        "from": "map_variety_cavern",
+        "event": "sr_map_variety_cavern_0",
+        "to": "map_saesol_route"
+      }
+    ],
+    "shownEnemies": [
+      "enemy_serin_howler_1",
+      "enemy_serin_fuzall_1"
+    ],
+    "benchmark": {
+      "snapshotRevision": 536,
+      "playerSeconds": 131.118,
+      "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+    }
+  },
+  "resumed": {
+    "scope": "Real earned fourth-badge party, walk to four rival encounters in order. Checks sequence, four battles and one-time reward. Early fights use a late party, so this does NOT establish early-game difficulty or human duration.",
+    "passed": true,
+    "steps": [
+      {
+        "won": 1,
+        "source": "actual previous victory"
+      },
+      {
+        "won": 2,
+        "event": "ev_sr_serin_town2"
+      },
+      {
+        "won": 3,
+        "event": "ev_sr_serin_port"
+      },
+      {
+        "won": 4,
+        "event": "ev_sr_serin_gate"
+      }
+    ],
+    "firstRepeatNoReward": true,
+    "oneTimeFinalReward": true,
+    "repeatNoReward": true,
+    "walkedSteps": 409,
+    "walkedPortals": [
+      {
+        "from": "map_saesol_route",
+        "event": "sr_map_saesol_route_2",
+        "to": "map_variety_cavern"
+      },
+      {
+        "from": "map_variety_cavern",
+        "event": "sr_warp_cavern_to_route2",
+        "to": "map_saesol_route2"
+      },
+      {
+        "from": "map_saesol_route2",
+        "event": "sr_warp_route2_to_forest",
+        "to": "map_saesol_forest"
+      },
+      {
+        "from": "map_saesol_forest",
+        "event": "sr_warp_forest_to_town2",
+        "to": "map_saesol_town2"
+      },
+      {
+        "from": "map_saesol_town2",
+        "event": "ev_gate_558ed082-4b10-453b-9f29-0402a9fe7472",
+        "to": "map_sr3_coast"
+      },
+      {
+        "from": "map_sr3_coast",
+        "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+        "to": "map_sr3_mine"
+      },
+      {
+        "from": "map_sr3_mine",
+        "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+        "to": "map_sr3_port"
+      },
+      {
+        "from": "map_sr3_port",
+        "event": "ev_sr3_port_to_pass",
+        "to": "map_sr4_pass"
+      },
+      {
+        "from": "map_sr4_pass",
+        "event": "ev_gate_7490c58c-4599-4672-b5d5-1e82b9f64acc",
+        "to": "map_sr4_temple"
+      },
+      {
+        "from": "map_sr4_temple",
+        "event": "ev_gate_29a48b7a-d759-42bc-b5d0-d1bf78abe351",
+        "to": "map_sr4_gym"
+      },
+      {
+        "from": "map_sr4_gym",
+        "event": "ev_gate_6f17c55a-3dbd-48ef-bb34-aee51fd97cb9",
+        "to": "map_sr4_gate"
+      }
+    ],
+    "shownEnemies": [
+      "enemy_serin_kackaburr_2",
+      "enemy_serin_maluga_2",
+      "enemy_serin_burrlock_3",
+      "enemy_serin_scallapod_3",
+      "enemy_serin_spaero_3",
+      "enemy_serin_grimlit_4",
+      "enemy_serin_spaero_4",
+      "enemy_serin_ruffalo_4"
+    ],
+    "pageErrors": [],
+    "benchmark": {
+      "snapshotRevision": 536,
+      "playerSeconds": 219.741,
+      "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+    }
+  }
+}
