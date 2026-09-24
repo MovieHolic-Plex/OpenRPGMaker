@@ -2,6 +2,8 @@ import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import { runGameCheck } from "@/qa/gameCheck";
 import { deserialize, serialize } from "@/project/io";
+import { runSceneTest } from "@/testing/sceneTestRunner";
+import type { Project } from "@/project/types";
 import { buildQaFixture, type QaFixtureName } from "./fixtures/qaGame/qaGameFixtures";
 
 // 픽스처는 저장·다시 읽기를 거친다 — 검사기는 로더가 돌려준 모양(런타임이 보는 모양)을 본다.
@@ -101,6 +103,43 @@ describe("qa gameCheck (모델 없는 게임 검사기)", () => {
     const companion = report.autoPlay!.runs.find((run) => run.label === "동료 합류 후")!;
     expect(companion.failure?.detail).toMatch(/없는 배우|파티가 늘지/u);
   }, 60_000);
+});
+
+// 동굴에 걸음마다 늑대가 나온다 — 한 판은 이기지만 회복 없이 두 판째에 쓰러지는 세기(결정적 시드).
+function attritionProject(attack: number): Project {
+  const project = buildQaFixture("clean");
+  const wolf = structuredClone(project.database.enemies.find((enemy) => enemy.id === "enemy_slime")!);
+  wolf.id = "enemy_wolf";
+  wolf.name = "굶주린 늑대";
+  wolf.stats = { ...wolf.stats, attack, maxHp: 200, agility: 30 };
+  project.database.enemies.push(wolf);
+  const troop = structuredClone(project.database.troops[0]!);
+  project.database.troops.push({ ...troop, id: "troop_wolf", name: "늑대", enemyIds: ["enemy_wolf"], members: [{ enemyId: "enemy_wolf", x: 100, y: 100, hidden: false }] });
+  const cave = project.maps.map_cave!;
+  cave.encounterRate = 1000;
+  cave.encounterTable = [{ troopId: "troop_wolf", weight: 1 }];
+  return deserialize(serialize(project));
+}
+
+describe("qa gameCheck — 무작위 인카운터 소모전", () => {
+  it("회복 없이 연달아 맞아 진 것은 막힘이 아니라 경고 — 인카운터 직전마다 회복하면 엔딩까지 간다", () => {
+    const report = runGameCheck(attritionProject(120), { autoPlayBudgetMs: 20_000 });
+    expect(codes(report as ReturnType<typeof check>)).toEqual([]);
+    expect(codes(report as ReturnType<typeof check>, "warning")).toContain("autoplay-encounter-attrition");
+    expect(report.autoPlay!.runs.map((run) => [run.label, run.ok])).toEqual([
+      ["기본 경로(전투마다 회복)", true],
+      ["동료 합류 후(전투마다 회복)", true],
+    ]);
+  });
+
+  it("run_scene_test 기본값은 소모를 그대로 본다 — 회복은 러너 설정으로만 켠다", () => {
+    const project = attritionProject(120);
+    const steps = [1, 2, 3, 4, 5].map(() => ({ kind: "move" as const, dir: "right" as const }));
+    const input = { mapId: "map_cave", start: { x: 3, y: 7 }, steps };
+    expect(runSceneTest(project, input).log.some((line) => /random encounter troop_wolf: defeat/u.test(line))).toBe(true);
+    const recovered = runSceneTest(project, input, undefined, { recoverBeforeRandomEncounters: true });
+    expect(recovered.log.some((line) => /: defeat/u.test(line))).toBe(false);
+  });
 });
 
 describe("qa gameCheck — 턴제 JRPG 장르 검사", () => {

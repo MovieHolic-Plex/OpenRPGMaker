@@ -336,12 +336,18 @@ interface Driver {
   readonly deadline: number;
 }
 
+/** runAutoPlay({ recoverBeforeRandomEncounters }) 로 도는 프로젝트 — 인카운터 직전마다 파티를 회복한다. */
+const MAX_COMPANION_JOINS = 3;
+
+const RECOVERING_PROJECTS = new WeakSet<Project>();
+
 /** 러너는 같은 단계를 몇 번이고 다시 돈다 — 런타임 경고(console.warn)가 매번 쏟아지지 않게 모아 둔다. */
 function quietScene(project: Project, steps: SceneStep[]): SceneTestResult {
   const warn = console.warn;
   console.warn = () => undefined;
   try {
-    return runSceneTest(project, { mapId: project.startMapId, start: project.startPos, steps });
+    return runSceneTest(project, { mapId: project.startMapId, start: project.startPos, steps }, undefined,
+      { recoverBeforeRandomEncounters: RECOVERING_PROJECTS.has(project) });
   } finally {
     console.warn = warn;
   }
@@ -646,7 +652,12 @@ function endingKey(visit: CommandVisit): string {
     : typeof visit.command.title === "string" ? visit.command.title : `${visit.where.mapId}/${visit.where.eventId}`;
 }
 
-export function runAutoPlay(project: Project, options: { readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[] } = {}): AutoPlayReport {
+export function runAutoPlay(
+  project: Project,
+  options: { readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[]; readonly recoverBeforeRandomEncounters?: boolean } = {},
+): AutoPlayReport {
+  if (options.recoverBeforeRandomEncounters) RECOVERING_PROJECTS.add(project);
+  else RECOVERING_PROJECTS.delete(project);
   const deadline = Date.now() + (options.budgetMs ?? 60_000);
   const targets: CommandVisit[] = [];
   for (const page of allPages(project)) {
@@ -672,11 +683,22 @@ export function runAutoPlay(project: Project, options: { readonly budgetMs?: num
   const runs: AutoPlayRun[] = [starter
     ? runPlan(project, "기본 경로(파트너 받고)", [...starter.goals, ...plan.goals], deadline, [...starter.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`), ...preamble])
     : runPlan(project, "기본 경로", plan.goals, deadline, preamble)];
-  const join = options.companionJoins?.[0];
-  if (join && join.page.map && join.page.event) {
-    const joinPlan = planCriticalPath(project, join, joinGoal(project, join));
-    const goals = [...joinPlan.goals, ...plan.goals];
-    runs.push(runPlan(project, "동료 합류 후", goals, deadline, [...joinPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`), ...preamble]));
+  // 합류하는 동료를 모두(배우별 첫 합류, 최대 MAX_COMPANION_JOINS 명) 차례로 데려간다 — JRPG 는 3인 파티를 전제로
+  // 층마다 적을 세운다. 첫 동료만 데려가면 3층 순찰대에 둘이서 쓰러지는 거짓 막힘이 났다(2026-09-24 도그푸딩).
+  const joins: CommandVisit[] = [];
+  const joinedActors = new Set<string>();
+  for (const join of options.companionJoins ?? []) {
+    if (!join.page.map || !join.page.event || joins.length >= MAX_COMPANION_JOINS) continue;
+    const actorKey = typeof join.command.actorId === "string" ? join.command.actorId : JSON.stringify(join.command);
+    if (joinedActors.has(actorKey)) continue;
+    joinedActors.add(actorKey);
+    joins.push(join);
+  }
+  if (joins.length > 0) {
+    const joinPlans = joins.map((join) => planCriticalPath(project, join, joinGoal(project, join)));
+    const goals = [...joinPlans.flatMap((joinPlan) => joinPlan.goals), ...plan.goals];
+    const unresolved = joinPlans.flatMap((joinPlan) => joinPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`));
+    runs.push(runPlan(project, "동료 합류 후", goals, deadline, [...unresolved, ...preamble]));
   }
   // 나머지 엔딩도 하나씩 걸어 본다 — 추리의 오답 엔딩처럼 「다른 결말」이 소프트락인지는 첫 엔딩만 봐서는 모른다.
   const seenEndings = new Set([endingKey(target)]);

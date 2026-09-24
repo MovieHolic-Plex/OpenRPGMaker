@@ -1,3 +1,4 @@
+import { recoverAll } from "@/project/sessionActorCommands";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
@@ -255,6 +256,16 @@ export interface SceneTestInput {
   readonly steps: readonly SceneStep[];
 }
 
+/** 모델 입력(SceneTestInput)과 따로 두는 러너 설정 — run_scene_test 도구에는 드러나지 않는다. */
+export interface SceneRunnerOptions {
+  /**
+   * 무작위 인카운터 직전마다 파티를 전부 회복한다(QA 자동 플레이 전용 — 플레이어가 여관·포션으로 버티는 것을 흉내).
+   * 스크립트 전투(보스)는 회복하지 않고 들어간다 — 보스 앞에서 체력을 관리하는 것은 설계의 몫이다.
+   * 기본은 꺼짐: 실제 소모를 그대로 본다.
+   */
+  readonly recoverBeforeRandomEncounters?: boolean;
+}
+
 export interface SceneInteractionReceipt {
   readonly stepIndex: number;
   readonly mapId: string;
@@ -365,6 +376,7 @@ interface RunnerState {
   readonly autoStartedKeys: Set<string>;
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
+  readonly recoverBeforeRandomEncounters: boolean;
   facing: Dir;
   /** Runner-observable transcript of message text bodies shown so far. */
   readonly messages: string[];
@@ -603,7 +615,7 @@ export function isSceneTestInput(value: unknown): value is SceneTestInput {
   return sceneTestInputProblem(value) === null;
 }
 
-export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof): SceneTestResult {
+export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof, runnerOptions: SceneRunnerOptions = {}): SceneTestResult {
   const session = startSession(project, 1);
   const inputProblem = sceneTestInputProblem(input);
   if (inputProblem) {
@@ -642,6 +654,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     autoStartedKeys: new Set(),
     chasers: new Map(),
     encounterAccumulator: 0,
+    recoverBeforeRandomEncounters: runnerOptions.recoverBeforeRandomEncounters === true,
     facing: "down",
     messages: [],
     gameOver: false,
@@ -2359,6 +2372,7 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
   state.encounterAccumulator = 0;
   const troopId = pickEncounterTroopForMap(map, state.session, position);
   if (!troopId) return null;
+  if (state.recoverBeforeRandomEncounters) recoverAll(state.session, undefined, state.project);
   const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false });
   state.session.battleResult = outcome;
   state.log.push(`random encounter ${troopId}: ${outcome}`);
