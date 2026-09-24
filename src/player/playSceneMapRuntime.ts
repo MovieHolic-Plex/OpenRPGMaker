@@ -29,7 +29,7 @@ import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
-import type { MapId, TilesetDef, Trigger } from "@/project/types";
+import type { Command, MapId, TilesetDef, Trigger } from "@/project/types";
 import { drainPendingLocationTransitions } from "@/player/playSceneLocationTransitions";
 import { applyStoredCameraState } from "@/player/playSceneCamera";
 import {
@@ -773,9 +773,15 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
       continue;
     }
     if (scene.autoStartedKeys.has(key) || scene.running) continue;
+    // 본문이 비었거나 빈 문장뿐인 자동 공용 이벤트는 빈 대사 창만 열고 입력을 잠근다. 건너뛴다.
+    if (!commonEventHasContent(commonEvent.commands)) continue;
     scene.autoStartedKeys.add(key);
     await runCommands(scene, commonEvent.commands);
   }
+}
+
+function commonEventHasContent(commands: readonly Command[]): boolean {
+  return commands.some((command) => command.kind !== "text" || command.body.trim() !== "");
 }
 
 export function applyMapOverrides(scene: PlaySceneContext): void {

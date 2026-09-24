@@ -733,6 +733,8 @@ function tabMatchesQuery(tab: typeof tabs[number], query: string): boolean {
   if (exact) return tab.id === exact.id || tab.id === resolveCanonicalDatabaseTab(exact.id);
   if (tab.id.toLowerCase().startsWith(query)) return true;
   if (tab.label.toLowerCase().includes(query)) return true;
+  // 레일 그룹 이름(「파티」「세계관」「전투 규칙」)으로 찾으면 그 그룹의 탭이 모두 걸린다.
+  if (TAB_GROUPS.some((group) => group.tabs.includes(tab.id) && group.label.toLowerCase().includes(query))) return true;
   const aliases = (LEGACY_TAB_SEARCH[tab.id] ?? "").toLowerCase().split(/\s+/);
   return aliases.some((token) => token === query || token.includes(query));
 }

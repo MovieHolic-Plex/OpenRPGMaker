@@ -492,7 +492,9 @@ function validateMakers(value: unknown): void {
     seen.add(id);
     if (maker.name !== undefined) requireString(`${label}.name`, maker.name);
     validateItemAmounts(`${label}.inputs`, maker.inputs, false);
-    validateItemAmounts(`${label}.outputs`, maker.outputs, true);
+    // 「새 가공 설비」는 산출이 빈 채로 만들어진다. 여기서 거절하면 추가 한 번에 저장·다음 열기가
+    // 통째로 실패했다. 산출 없는 설비는 런타임(makers.ts)이 이미 쓸 수 없는 설비로 건너뛴다.
+    validateItemAmounts(`${label}.outputs`, maker.outputs, false);
     assertPositiveNumber(`${label}.durationMinutes`, maker.durationMinutes);
   }
 }

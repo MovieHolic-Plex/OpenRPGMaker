@@ -27,6 +27,7 @@ import {
   normalizeTroopRecord,
 } from "@/project/databaseRecordModel";
 import { store } from "@/project/store";
+import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
 import { genId } from "@/util/id";
 import type {
   ActorRecord,
@@ -383,6 +384,7 @@ export function duplicateDatabaseRecord(collection: DatabaseCollection, id: stri
 }
 
 export function deleteDatabaseRecord(collection: DatabaseCollection, id: string): DeleteResult {
+  if (!canWriteTeamProject()) return { ok: false, message: TEAM_READ_ONLY_WRITE_MESSAGE };
   const message = databaseReferenceMessage(collection, id);
   if (message) return { ok: false, message };
   recordProjectSnapshot();

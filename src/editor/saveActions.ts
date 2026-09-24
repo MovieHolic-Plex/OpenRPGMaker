@@ -33,6 +33,12 @@ export async function saveProjectNow(): Promise<boolean> {
         return true;
       }
       case "saved-local":
+        if (result.written === false) {
+          // fresh/blank 같은 임시 세션은 기록을 건너뛴다. 「저장 완료」라고 하면 거짓이다.
+          // 호출자(새 프로젝트 만들기 등)는 막지 않는다 — 임시 세션은 원래 저장할 곳이 없다.
+          toast("이 세션은 저장되지 않는 임시 세션입니다 — 아무것도 기록하지 않았습니다.", "info");
+          return true;
+        }
         toast("저장 완료 (브라우저)", "ok");
         return true;
       case "not-loaded":

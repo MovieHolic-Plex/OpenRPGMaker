@@ -563,6 +563,13 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
                 },
                 rerender,
               }),
+              // 플레이어는 이 그림을 CSS 변수로만 심고, 전투 스타일시트는 아직 그 변수를 읽지 않는다
+              // (게이지 색은 System2 기본 상수). 고르면 바뀐다고 믿지 않게 사실대로 적는다.
+              el("p", {
+                class: "db-ws-usage",
+                dataset: { testid: "db-battle-system-resource-note" },
+                text: "저장은 되지만 지금 전투 화면은 이 그림을 그리지 않습니다 — 게이지 색은 기본값입니다.",
+              }),
               selectLiteral(
                 "전투 흐름",
                 "db-field-battle-screen-flow",
@@ -616,8 +623,8 @@ function battleScreenDetailPane(troop: TroopRecord | undefined, rerender: () => 
               el("p", {
                 class: "db-ws-usage",
                 text: project.system.initialTroopId
-                  ? "게임을 테스트로 시작하면 이 적 그룹과 먼저 싸웁니다."
-                  : "초기 적 그룹이 비어 있습니다 — 테스트 시작 시 전투가 열리지 않습니다.",
+                  ? "이벤트 초보 전투 템플릿의 기본 적 그룹입니다. 게임 시작 때 자동으로 싸우지는 않습니다."
+                  : "초기 적 그룹이 비어 있습니다 — 초보 전투 템플릿이 고를 기본 그룹이 없습니다.",
               }),
               el("p", {
                 class: "db-ws-usage",

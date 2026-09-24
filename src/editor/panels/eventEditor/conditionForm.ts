@@ -381,7 +381,8 @@ function labeledFriendship(
     onChange({
       kind: "friendshipAtLeast",
       npcKey: npcKey.value.trim() || undefined,
-      value: parseInt(value.value, 10) || 0,
+      // 런타임은 호감을 0..1000 으로 자른다. 1500 을 그대로 저장하면 문장은 1500, 비교는 1000 이 된다.
+      value: Math.max(0, Math.min(1000, parseInt(value.value, 10) || 0)),
     });
   };
   npcKey.addEventListener("change", apply);
@@ -1145,7 +1146,8 @@ export function renderFriendshipAtLeastCondition(
     onChange({
       kind: "friendshipAtLeast",
       npcKey: npcKey.value.trim() || undefined,
-      value: parseInt(value.value, 10) || 0,
+      // 런타임은 호감을 0..1000 으로 자른다. 1500 을 그대로 저장하면 문장은 1500, 비교는 1000 이 된다.
+      value: Math.max(0, Math.min(1000, parseInt(value.value, 10) || 0)),
     });
   };
   npcKey.addEventListener("change", apply);

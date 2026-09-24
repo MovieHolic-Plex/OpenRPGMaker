@@ -13,6 +13,7 @@ import type { BattlePresentationLedger } from "@/player/battlePresentation";
 import { store } from "@/project/store";
 import type { ItemId, SkillId } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
+import { isCaptureTool } from "@/project/itemUsage";
 import { activeActor } from "@/battle/battlePredict";
 import { battleCommandsForActor, type RuntimeBattleCommand } from "@/battle/battleCommands";
 import { battleSkillMpCost, battleSkillUseFailure, battleSkillUseFailureLabel } from "@/battle/battleSkillUse";
@@ -432,9 +433,27 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
   return actor.skillIds.filter((id) => {
     const skill = project.database.skills.find((record) => record.id === id);
     if (!skill) return true;
-    if (command?.skillSubsetName) return skill.type === command.skillSubsetName;
+    if (command?.skillSubsetName) return skill.type === skillTypeForSubsetName(command.skillSubsetName);
     return true;
   });
+}
+
+// 자료집의 스킬 종류는 「일반」「스위치」처럼 한국어로 보이지만 저장값은 normal · switch 다.
+// 스킬 그룹 칸에 화면 단어를 적어도 같은 종류로 읽는다.
+const SKILL_SUBSET_ALIASES: Readonly<Record<string, string>> = {
+  "일반": "normal",
+  "일반 스킬": "normal",
+  "스위치": "switch",
+  "순간 이동": "teleport",
+  "순간이동": "teleport",
+  "장소 이동": "teleport",
+  "도주": "escape",
+  "탈출": "escape",
+};
+
+function skillTypeForSubsetName(name: string): string {
+  const trimmed = name.trim();
+  return SKILL_SUBSET_ALIASES[trimmed] ?? trimmed;
 }
 
 // 전투 아이템 목록은 전투 런타임의 이벤트 상태(현재 플레이 세션에서 시드됨)를 기준으로 한다.
@@ -461,7 +480,7 @@ function isBattleUsableItem(item: {
   readonly healStateIds: readonly string[];
   readonly stateEffects: readonly unknown[];
 }): boolean {
-  if (item.captureProfile) return false;
+  if (isCaptureTool(item)) return false;
   if (item.occasion === "never" || item.occasion === "field") return false;
   if (item.occasionBattle === false && item.occasion !== "battle" && item.occasion !== "always") return false;
   if (item.type === "book") return false;
@@ -481,7 +500,7 @@ function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string;
   const project = store.getCurrent();
   const inventory = snapshot.eventState.inventory;
   return project.database.items
-    .filter((item) => item.captureProfile && (inventory[item.id] ?? 0) > 0)
+    .filter((item) => isCaptureTool(item) && (inventory[item.id] ?? 0) > 0)
     .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0, multiplier: item.captureProfile?.multiplier ?? 1 }));
 }
 
