@@ -57,6 +57,7 @@ describe("제공자 스트림 끊김", () => {
   test("끊김 문구를 일시 오류로 알아보고, 인자 오류는 아니다", () => {
     expect(isTransientProviderStreamError(DROP)).toBe(true);
     expect(isTransientProviderStreamError("Google API stream ended without a finish reason")).toBe(true);
+    expect(isTransientProviderStreamError("Cloud Code Assist API returned a thought-only response without final output")).toBe(true);
     expect(isTransientProviderStreamError("Invalid argument: tools[3].parameters")).toBe(false);
     expect(isTransientProviderStreamError(undefined)).toBe(false);
   });
