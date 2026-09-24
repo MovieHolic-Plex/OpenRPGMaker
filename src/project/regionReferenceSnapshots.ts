@@ -9,7 +9,10 @@ import type { GameMap, TilesetDef } from "./types";
 import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 
-type PlaceSnapshot = { map: GameMap; tileset: TilesetDef };
+/** 건물 목록·킷 요약(생성 건물 장소). 조수가 「3층 대저택」처럼 이름으로 고르고 출처(생성형 이미지/손 도트)를 본다. */
+type PlaceBuilding = { id: string; role: string; name: string; kit: string; image: string; x: number; y: number; width: number; height: number; doors: { x: number; y: number }[] };
+type PlaceKitSummary = { kit: string; name: string; image: string; blueprint: string; width: number; height: number; stories?: number | null; usedHere: string[] };
+type PlaceSnapshot = { map: GameMap; tileset: TilesetDef; buildings?: PlaceBuilding[]; kits?: PlaceKitSummary[] };
 type SnapshotFile = () => Promise<{ default: unknown }>;
 type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
 
@@ -164,7 +167,9 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   const lowerTiles = map.lowerTiles.slice(row * map.width, endRow * map.width);
   const upperTiles = map.upperTiles.slice(row * map.width, endRow * map.width);
   const used = [...new Set([...lowerTiles, ...upperTiles])].filter(tile => tile >= 0);
-  return structuredClone({ ...reference, map: {
+  // 건물 목록·킷 요약은 첫 쪽(row 0)에만 싣는다 — 이어 읽기마다 되풀이하지 않게.
+  const catalog = row === 0 && source.buildings ? { buildings: source.buildings, kits: source.kits ?? [] } : {};
+  return structuredClone({ ...reference, ...catalog, map: {
     id: map.id, width: map.width, height: map.height, tileSize: map.tileSize,
     tilesetId: map.tilesetId, row, rows: endRow - row, nextRow: endRow < map.height ? endRow : null,
     lowerTiles, upperTiles, events: map.events,
