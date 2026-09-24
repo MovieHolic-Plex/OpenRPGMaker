@@ -964,3 +964,10 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 
 - `fresh-league-last-wrong-skill-owner/SUMMARY.md`: 세 번째 사천왕 중 ember 버튼을 찾다가 실패했다. `failure.png`와 실제 monsterInstances를 확인하니 파티에 그림릿이 두 마리였고 첫 개체는 불꽃세례를 pendingSkillIds에만 가지고 있었다. 실제로 해당 기술을 배운 다른 개체가 있음에도 QA가 종족만으로 첫 개체를 골랐다. 게임의 기술 버튼 누락으로 분류하지 않는다.
 - QA 동료 선택을 speciesId와 실제 skillIds 포함 여부로 좁혔다. 실패 결과는 보존하고 앞선 실제 두 사천왕 완료 상태에서 재검사를 시작했다. 정본 파티/기술은 수정하지 않았다.
+
+
+### 사천왕 후반 도보 재검사 통과와 시작 배우 리소스 확인
+
+- `fresh-league-last-walking/SUMMARY.md`: passed=true,96칸/포털6회, 회복약2회, pageErrors0. 실제 전반 승리 상태에서 도현·지안을 이겼고 순서 제한·각 보상·반복 대화의 골드/아이템 보존을 확인했다. `league-last-complete.png`를 직접 확인했다. 수정 전 QA 실패는 별도 디렉터리에 유지한다.
+- `player-snapshot-leader470-proof.json`: SQLite를 재오픈해 revision470 반복 읽기 일치와 미디어80개 해시를 확인했다. `player-leader470-audit.json`은 실제 `resolvePlayerSpriteResource`가 isaiah658-charset-01/charset/4프레임을 반환함을 보여준다. 이전 QA 사본 화면에는 기사 선두가 그대로 남으므로 최신 데이터의 화면 검증과 혼동하지 않는다.
+- 요청21b는 새 도구 실행이 진행되는 동안 하단에 이전 `진행 막힘 · 목표 미평가 · 적용됨` 문구가 남았다. 스크린샷/실행 기록을 함께 보지 않으면 현재 실행도 중단된 것으로 오해하기 쉽다. 이것만으로 두 번째 실행의 실패를 판정하지 않는다.
