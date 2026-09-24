@@ -213,3 +213,13 @@ GroundBase는 편집 템플릿이라 오브젝트에서 제외한다. Carpet08ST
 `publish-pixel-art-world-xp-library.mjs`는 별도 `pixel-art-world-xp-local` 공용 라이브러리에 CAS 저장하고 재로드한다.
 정본 호스트에는 `install-pixel-art-world-shared-host.mjs`로 설치한다. 원본·파생 그림은 사용자 로컬에만 있다.
 이 자료는 완성된 장소/지역을 대신하지 않는다. 8시트 전체 조립 그림을 적대적으로 검토했다.
+
+### Pixel Art World ZIP 판본 확장 (2026-09-25)
+
+별도 `autotiles-archive.json`/`pixelArtWorldArchiveAutotiles.json`이 감사67SHA를 기록한다.
+65새family+기존2byte-alias이며 기존140 JSON/ID/배치와8atlas를 보존한다. typed registry만
+합쳐205family를 보여 준다. exact alternate SHA는 원래family ID를 재사용하되 실제출처로 MD를 만든다.
+`referenceExample`이 있는 새family는5×4(난간6×5) 전체배열/실물/오류를 생성한다.
+`archiveSources`는 ZIP URL·archive SHA·member경로다. 카드는 사용자가ZIP에서 추출할 경로를 보여 준다.
+그림은 공개 번들에 싣지 않는다. 별도4atlas/65kit library와 기존2owner용 alias전체배열을
+준비하는 흐름·원본회색바탕/지도축척 제한은 [autotiles-archive.md](../tiledata/pixel-art-world/autotiles-archive.md).
