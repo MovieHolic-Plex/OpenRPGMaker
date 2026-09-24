@@ -10,7 +10,7 @@
 
 | 팩 | 파일 | 크기 | SHA-256 | 검토 범위 |
 |---|---|---|---|---|
-| `paw-school-interior` | `ST-Schl-I01.png` | 256×1600 | `b414d79c27779cfa4903f87595cb6406f874deef2c8f324cd0cc99c4f9b630c1` | 완성 12석 교실 1개, 고정 부품 12개 |
+| `paw-school-interior` | `ST-Schl-I01.png` | 256×1600 | `b414d79c27779cfa4903f87595cb6406f874deef2c8f324cd0cc99c4f9b630c1` | 12석 교실·현관 복도, 고정 부품 13개 |
 | `paw-school-exterior` | `ST-Schl-E01.png` | 256×1824 | `39b7b14027c50019479c609e44427163a52f38eef89af4c68ce6e4593a7b616f` | 교정 조경·외벽 부품 8개 |
 
 | `paw-school-special` | `ST-Schl-I02.png` | 256×1600 | `aafbf9b4292d7c5d34587e4e25dfc4c5cd9818d01a6ce3b05b1c3571735f16da` | 보건실·과학실 2개, 부품 15개 |
@@ -44,6 +44,7 @@
 | school-cleaning-locker | 5,21,1,2 | 173 / 181; 열린 청소도구함 |
 | school-clock | 7,17,1,1 | 143; 원형 벽시계 |
 | school-plant | 7,34,1,2 | 279 / 287; 화분 밑동까지 포함 |
+| school-classroom-door | 6,8,1,3 | 70 / 78 / 86; 창 상부·문패·문 하부 전체 |
 
 | 외관 ID | 원본 (x,y,w,h) | 용도 |
 |---|---|---|
@@ -78,7 +79,7 @@
 | special-plant | 7,34,1,2 | 화분 279 / 287 |
 | special-counter-front | 4,43,4,1 | 붙박이 카운터 전면 348..351. 아래 바닥을 보존할 상위 조각 |
 
-## 완성 방 3개와 출입 계약
+## 완성 실내 4개와 출입 계약
 
 입력은 `school.json`의 `scenePlans`. 컴파일된 전체 lower/upper 행 우선 배열은
 `src/assets/pixelArtWorldSchoolCatalog.json`의 `scenes`에 있다. `-1`은 상위 공백이다.
@@ -87,6 +88,7 @@
 
 | scene id | 크기(칸) | 원본 그림(px) | 남쪽 문 | 권장 스폰 |
 |---|---|---|---|---|
+| school-hallway | 19×9 | 608×288 | (9,8) | (9,7) |
 | school-classroom-north | 14×13 | 448×416 | (6,12) | (6,11) |
 | school-nurse-compact | 11×11 | 352×352 | (5,10) | (5,9) |
 | school-lab-compact | 13×11 | 416×352 | (6,10) | (6,9) |
@@ -95,6 +97,44 @@
 원본 목재 바닥 1/2를 차단 벽처럼 사용한 띠는 제거했다. 실제 외벽은 저작기가 배열 바깥에
 천장/벽으로 둘러싸야 한다. 문/스폰 좌표는 유지한다. 북쪽 벽만 하위 차단이고 모든 상위 부품은 차단이다.
 투명 여백이 있는 부품을 하위로 옮기지 않는다.
+
+### 학교 현관·복도 — `school-hallway`
+
+공간 용도는 학교 공용 동선과 실내화 전환이다. `거리 ↔ 복도 ↔ {교실, 보건실, 과학실}`의 연결을
+먼저 정의하고 가구를 배치했다. 남쪽 출입(9,8), 북향 스폰(9,7). 입구 앞 중앙 x=9는 열린 바닥이다.
+
+1. 북쪽 y=0,1,2는 기존 방과 같은 41/49/57 벽이다. 세 문 모두 높이 3칸으로 맞춘다.
+2. 문 원점 (4,0),(9,0),(14,0)에 70/78/86 전체를 둔다. 단일 문은 원본 (6,8,1,3)이다.
+   70은 위 유리, 78은 작은 유리/명패와 손잡이 부분, 86은 아래 문짝이다. 조각을 생략하지 않는다.
+3. y=3..5의 전 폭 19칸은 완전히 비워 **3칸 폭의 연속 복도**를 확보한다.
+4. 신발장은 (2,6),(13,6)에 3×2 전체를 놓는다. 접근 (3,8),(14,8)을 비우고 중앙 출입을 막지 않는다.
+5. 게시판 (1,1), 시계 (17,1)만 추가한다. 북쪽은 방 사이 내부 벽이므로 외부 창을 놓지 않는다.
+
+실행 번들에 `doors`를 생성한다. 아래 x,y는 scene 원점 기준 **문 그림의 맨 아래 칸**이며,
+문 원점이나 스폰이 아니다. 실제 문 그림과 벽은 차단 상태다.
+
+| 목적지 sceneId | door x,y | 접근/돌아올 위치 |
+|---|---|---|
+| school-classroom-north | (4,2) | (4,3) |
+| school-nurse-compact | (9,2) | (9,3) |
+| school-lab-compact | (14,2) | (14,3) |
+
+저작기는 접근칸에서 북쪽 문 조사/접촉으로 대상 방에 전이하도록 연결한다. 각 방의 남쪽 출구는
+해당 복도 접근칸으로 돌아와야 한다. 거리에서 곧장 3개 방 중 하나로 보내는 방식으로 대체하지 않는다.
+문 애니메이션은 별도 SC-Door-Schl02.png이며 이 정적 시트로 제공한다고 주장하지 않는다.
+천장 테두리 한 칸을 추가하면 모든 좌표에 (1,1)을 더한다.
+
+생성기는 `requiredClearRects`의 모든 칸이 출입에서 연결되는지, `requiredDoorTargets`의 세 목적지가
+모두 있는지, 문의 86번 하단과 바로 남쪽 접근이 정확한지 확인한다. 오류는 `CORRIDOR_BLOCKED`,
+`DOOR_FRAGMENT`, `DOOR_APPROACH_BLOCKED`, `MISSING_ROOM_CONNECTION`이다.
+이는 논리 전이 그래프와 개별 맵 배열의 검사이며, 단일 축척으로 합친 건축 평면의 겹침 검사가 아니다.
+
+설계 참고(2026-09-24 직접 조회): [DPLAN, 2026](https://arxiv.org/abs/2606.21159)은 필요한 문 연결과
+금지 인접 관계를 입력 제약으로 삼는다. 여기서는 그 구분을 참고해 세 방이 공용 복도에서 독립적으로
+접근되도록 명시했다. 논문의 삼각분할·평면 변환 알고리즘이나 모델은 구현하지 않았다.
+[RPG Maker 공식 실내 가이드](https://www.rpgmakerweb.com/blog/tutorial-mapping-interior)는 공간 용도,
+벽 높이의 일관성, 가구를 벽 위에 세우는 오류와 불필요하게 큰 공간을 다룬다. 복도는 출입/신발장 용도,
+같은 3행 벽 높이, 바닥 접지, 비워야 할 통로를 각각 고정했다.
 
 ### 12석 교실 — `school-classroom-north`
 
@@ -170,7 +210,7 @@ node scripts/content/render-pixel-art-world-school.mjs /absolute/path/to/user-pn
 두 번째 명령에는 위 원본 PNG 3개가 필요하다. 네트워크 요청은 없다. 원본 SHA/크기를 다시 확인한다.
 출력은 gitignored `output/paw-school/`에만 둔다:
 
-- `school-classroom-north.png`, `school-nurse-compact.png`, `school-lab-compact.png`: 실제 원본 픽셀의 완성 방, 원본 해상도.
+- `school-hallway.png`, `school-classroom-north.png`, `school-nurse-compact.png`, `school-lab-compact.png`: 실제 원본 픽셀의 실내 배열, 원본 해상도.
 - 각 `*-comparison.png`: 왼쪽 정상, 오른쪽 실제 변조.
 - 각 `*-arrays.json`: 정상/오류 전체 배열, 코드와 맵 좌표.
 - `paw-school-*-parts.png`: 번호 모형이 아닌 실제 부품 그림.

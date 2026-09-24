@@ -2,6 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 const packs = JSON.parse(await readFile(new URL('../../tiledata/pixel-art-world/school.json', import.meta.url), 'utf8'));
 const fail = message => { throw new Error(message); };
+const sceneIds = new Set(packs.flatMap(pack => (pack.scenePlans ?? []).map(scene => scene.id)));
 for (const pack of packs) {
   const columns = pack.width / pack.tileSize;
   const rows = pack.height / pack.tileSize;
@@ -64,7 +65,22 @@ for (const pack of packs) {
       }
     }
     for (const cell of approachCells) if (!reachable.has(indexAt(cell.x, cell.y))) fail(`Unreachable approach ${id}: ${cell.x},${cell.y}`);
-    return { id, name, width, height, lowerTiles, upperTiles, placements, approachCells, notes, passableTiles, lowerTileIds };
+    for (const rect of plan.requiredClearRects ?? []) {
+      for (let y = rect.y; y < rect.y + rect.height; y++) for (let x = rect.x; x < rect.x + rect.width; x++) {
+        if (!reachable.has(indexAt(x, y))) fail(`CORRIDOR_BLOCKED ${id}: ${x},${y}`);
+      }
+    }
+    const doorTargets = new Set();
+    for (const door of plan.doors ?? []) {
+      if (!sceneIds.has(door.sceneId) || door.sceneId === id || doorTargets.has(door.sceneId)) fail(`Invalid door target ${id}: ${door.sceneId}`);
+      doorTargets.add(door.sceneId);
+      const placement = placements.find(p => p.recipeId === 'school-classroom-door' && p.x === door.x && p.y + 2 === door.y);
+      if (!placement || upperTiles[indexAt(door.x, door.y)] !== 86) fail(`DOOR_FRAGMENT ${id}: ${door.x},${door.y}`);
+      if (door.approach.x !== door.x || door.approach.y !== door.y + 1 || !reachable.has(indexAt(door.approach.x, door.approach.y))) fail(`DOOR_APPROACH_BLOCKED ${id}: ${door.x},${door.y}`);
+      if (!approachCells.some(c => c.x === door.approach.x && c.y === door.approach.y)) fail(`Missing documented door approach ${id}`);
+    }
+    for (const target of plan.requiredDoorTargets ?? []) if (!doorTargets.has(target)) fail(`MISSING_ROOM_CONNECTION ${id}: ${target}`);
+    return { id, name, width, height, lowerTiles, upperTiles, placements, approachCells, notes, passableTiles, lowerTileIds, ...(plan.doors ? { doors: plan.doors } : {}) };
   });
   delete pack.scenePlans;
 }
