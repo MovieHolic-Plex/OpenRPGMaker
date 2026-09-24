@@ -885,7 +885,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       }
       case "capture": {
         const item = options.project.database.items.find((record) => record.id === command.captureItemId);
-        return Boolean(item?.captureProfile && item.type === "special" && itemAllowsBattle(item)
+        // 포획 여부는 captureProfile 이 정한다. 종류(type)까지 special 로 묶으면 조수가 몬스터볼을
+        // normalGoods 로 저장한 게임에서 전투 메뉴엔 공이 뜨는데 던지면 missingItem 으로 실패했다(2026-09-24).
+        return Boolean(item?.captureProfile && itemAllowsBattle(item)
           && (battleEventState.inventory[command.captureItemId] ?? 0) > 0);
       }
     }
@@ -1820,7 +1822,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const item = options.project.database.items.find((record) => record.id === captureItemId);
     const count = battleEventState.inventory[captureItemId] ?? 0;
-    if (!item?.captureProfile || item.type !== "special" || !itemAllowsBattle(item) || count <= 0) {
+    if (!item?.captureProfile || !itemAllowsBattle(item) || count <= 0) {
       finish({ targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingItem" });
       return;
     }
