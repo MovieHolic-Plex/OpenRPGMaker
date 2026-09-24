@@ -111,7 +111,7 @@ addFamily(ACTIONS.erase, "tile_erase clear_region");
 addFamily(ACTIONS.wipeMap, "clear_map");
 addFamily(ACTIONS.resetProject, "reset_project");
 addFamily(ACTIONS.scatter, "scatter_object plant_tree_clusters place_props");
-addFamily(ACTIONS.structure, "stamp_structure build_wall build_roof place_door place_window build_castle register_structure_kit");
+addFamily(ACTIONS.structure, "stamp_structure stamp_object build_wall build_roof place_door place_window build_castle register_structure_kit");
 addFamily(ACTIONS.house, "author_house build_house preview_house furnish_interior_space make_gallery_room place_concept apply_spatial_build upsert_spatial_design edit_spatial_occurrence");
 addFamily(ACTIONS.village, "author_village build_village plan_village materialize_village_spec revise_village_plan run_village_pipeline start_village_session advance_village_build run_village_session");
 addFamily(ACTIONS.person, "place_npc make_villager author_npc_cast upsert_actor upsert_character_profile add_companion set_npc_schedule configure_companion_rules");

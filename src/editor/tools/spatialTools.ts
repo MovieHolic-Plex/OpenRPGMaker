@@ -1,7 +1,9 @@
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { preloadRegionReference, readRegionReference } from "@/project/regionReferenceSnapshots";
-import { importReferenceScene, preloadRegionReferenceScene, regionReferenceScene } from "@/project/regionReferenceImport";
+import { importReferenceScene, preloadRegionReferenceScene, preloadReviewedPlaceScenes, regionReferenceScene, reviewedPlaceScenes } from "@/project/regionReferenceImport";
+import { isSharedDesignId, matchesQuery, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
+import { prepareSharedObject, sharedDesignDetail } from "./sharedObjectTools";
 import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
@@ -62,6 +64,29 @@ function connectionCompileRoot(document: SpatialAuthoringDocument, link: Pick<Sp
   }
   return fromRoot.id;
 }
+/** import_region_reference for reviewed:<id> places (the editor 장소 tab): every map of the place becomes a new map. */
+function importReviewedPlace(project: Project, args: Record<string, unknown>) {
+  const placeId = String(args.id).slice("reviewed:".length);
+  let scenes;
+  try { scenes = reviewedPlaceScenes(placeId); }
+  catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
+  if (scenes.length === 0) throw new ToolError(`${placeId}: 이 장소에는 맵 원본이 없습니다`, { code: "invalid-args" });
+  if (args.mapId !== undefined && scenes.length > 1) {
+    throw new ToolError(`${placeId} 는 맵 ${scenes.length}장(층·방)으로 된 장소라 한 맵에 붙일 수 없다 — mapId 를 빼고 새 맵으로 가져오세요`, { code: "invalid-args" });
+  }
+  const results = scenes.map((scene, index) => {
+    try {
+      return importReferenceScene(project, scene, args.mapId !== undefined
+        ? { mapId: String(args.mapId), x: Number(args.x ?? 0), y: Number(args.y ?? 0) }
+        : { ...(args.newMapId !== undefined ? { newMapId: scenes.length === 1 ? String(args.newMapId) : `${String(args.newMapId)}_${index + 1}` } : {}),
+            name: scenes.length === 1 ? String(args.name ?? scene.name) : `${String(args.name ?? scenes[0]!.name)} · ${scene.name}` });
+    } catch (error) {
+      throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" });
+    }
+  });
+  return { summary: `검토 장소 ${placeId} → 맵 ${results.map(result => result.mapId).join(", ")}`,
+    data: { referenceId: `reviewed:${placeId}`, source: "reviewed", maps: results } };
+}
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
   { name: "read_region_reference", mode: "read", domains: ["world", "map", "database"],
     description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command. To put the place itself into the project (new map or pasted into a map), call import_region_reference instead of repainting these rows.",
@@ -74,7 +99,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "import_region_reference", mode: "write", domains: ["map", "world"],
-    description: "Import a registered place (read_region_reference ids: forest/concept/climate villages, fields and outdoor places, fantasy places, interiors, dungeons, ships) into the project in one call — its tiles, all layers, and the tileset it needs (tile grafts, per-tile rules, groups and reference documents come along; a missing tileset such as oprn_dungeon_* is installed, a bundled one like forest_harmony only grows its missing tail slots 2550~). Omit mapId to create a new map (default; optional newMapId/name, includeEvents copies events whose transfers stay inside known maps). Give mapId (+x,y top-left, default 0,0) to paste into an existing map on the same tileset; overflow is clipped. Use this instead of re-painting read_region_reference rows. If the project's tileset already shows other pictures in those slots, a separate copy tileset is installed and data.tileset.mode is 'copied'.",
+    description: "Import a registered place (read_region_reference ids, or a list_spatial_designs kind:place row — reviewed:<id> places bring every floor/room map as new maps; ids: forest/concept/climate villages, fields and outdoor places, fantasy places, interiors, dungeons, ships) into the project in one call — its tiles, all layers, and the tileset it needs (tile grafts, per-tile rules, groups and reference documents come along; a missing tileset such as oprn_dungeon_* is installed, a bundled one like forest_harmony only grows its missing tail slots 2550~). Omit mapId to create a new map (default; optional newMapId/name, includeEvents copies events whose transfers stay inside known maps). Give mapId (+x,y top-left, default 0,0) to paste into an existing map on the same tileset; overflow is clipped. Use this instead of re-painting read_region_reference rows. If the project's tileset already shows other pictures in those slots, a separate copy tileset is installed and data.tileset.mode is 'copied'.",
     parameters: { type: "object", properties: {
       id: { type: "string", description: "등록 장소 id (read_region_reference 를 id 없이 불러 목록)" },
       mapId: { type: "string", description: "붙일 기존 맵. 생략하면 새 맵" },
@@ -82,9 +107,12 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       newMapId: { type: "string" }, name: { type: "string" },
       includeEvents: { type: "boolean", description: "새 맵에 장소의 이벤트도 복사(없는 맵으로 가는 이동 이벤트는 뺀다). 기본 false" },
     }, required: ["id"], additionalProperties: false },
-    prepare: args => typeof args.id === "string" ? preloadRegionReferenceScene(args.id).then(() => undefined) : Promise.resolve(),
+    prepare: args => typeof args.id !== "string" ? Promise.resolve()
+      : args.id.startsWith("reviewed:") ? preloadReviewedPlaceScenes(args.id.slice("reviewed:".length)).then(() => undefined)
+      : preloadRegionReferenceScene(args.id).then(() => undefined),
     preservesAuthoredRaster: true,
     run(project, args) {
+      if (String(args.id).startsWith("reviewed:")) return importReviewedPlace(project, args);
       let scene;
       try { scene = regionReferenceScene(String(args.id)); }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
@@ -115,17 +143,28 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool.",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are reusable exteriors and props — tileset kits, tile-group pieces such as bare-trees:*, place kits such as generated building exteriors and the gatehouse, harbor rowboat/pier parts, volcano peaks, authored house forms (use stamp_object with the row id). Page with limit/offset (default 40, data.shared.nextOffset).",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
-      if (project.spatialAuthoring === undefined) {
-        return { summary: "장소 저작 비활성 — canonical 문서가 없는 레거시 프로젝트(0 spatial designs)", data: { active: false, designs: [] } };
-      }
       const kind = args.kind === undefined ? undefined : parseKind(args.kind, "kind");
-      const query = typeof args.query === "string" ? args.query.toLocaleLowerCase() : "";
+      const query = typeof args.query === "string" ? args.query : "";
+      const limit = args.limit === undefined ? 40 : Math.max(1, Math.min(200, Number(args.limit)));
+      const offset = args.offset === undefined ? 0 : Math.max(0, Number(args.offset));
+      // Shared places/objects are read-only rows every project sees, with or without spatialAuthoring.
+      const shared = [...(!kind || kind === "place" ? sharedPlaces() : []), ...(!kind || kind === "object" ? sharedObjects(project) : [])]
+        .filter(entry => matchesQuery(entry, query))
+        // Rows whose id/name match come before rows that only share a tag (e.g. every tile group of the volcano sheet).
+        .map((entry, index) => ({ entry, index, rank: !query || matchesQuery({ ...entry, tags: [] }, query) ? 0 : 1 }))
+        .sort((a, b) => a.rank - b.rank || a.index - b.index).map(({ entry }) => entry);
+      const sharedPage = { total: shared.length, offset, rows: shared.slice(offset, offset + limit),
+        ...(offset + limit < shared.length ? { nextOffset: offset + limit } : {}) };
+      const sharedNote = `공용 ${shared.length}건`;
+      if (project.spatialAuthoring === undefined) {
+        return { summary: `장소 저작 비활성(프로젝트 설계 0) · ${sharedNote}`, data: { active: false, designs: [], shared: sharedPage } };
+      }
       const designs = spatialToolDesigns(project).filter(design => (!kind || design.kind === kind || (kind === "place" && design.kind === "space"))
-        && [design.id, design.name, ...design.tags].some(value => value.toLocaleLowerCase().includes(query)));
-      return { summary: `${designs.length} spatial designs`, data: { active: true, designs: publicSpatialValue(designs) } };
+        && [design.id, design.name, ...design.tags].some(value => value.toLocaleLowerCase().includes(query.toLocaleLowerCase())));
+      return { summary: `${designs.length} spatial designs · ${sharedNote}`, data: { active: true, designs: publicSpatialValue(designs), shared: sharedPage } };
     },
   },
   { name: "get_geography_vocabulary", mode: "read", domains: ["world", "map"],
@@ -157,9 +196,11 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "get_spatial_design", mode: "read", domains: ["world", "map", "database"],
-    description: "Read a canonical design and its resolved transitive source revisions, object selections and frozen kit cells. Use data.design as the starting point for upsert_spatial_design. Reuse an exterior object in an outdoor yard place's objectSlots to supply ground and an approach. Alternatively copy design.graphic {tilesetId,kitId} into place.exterior when the graphic supports painted passable port cells; this copy is not an objectDesignId link and does not inherit object anchors/chips or future object changes. A complete house is a place with authored rooms, ports and connections; facade height/labels do not establish usable floor count. Large designs can exceed the tool payload limit — when truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
+    description: "Read a canonical design and its resolved transitive source revisions (or a data.shared row from list_spatial_designs — works without spatial activation and returns the row, its size and cells when they are already loaded), object selections and frozen kit cells. Use data.design as the starting point for upsert_spatial_design. Reuse an exterior object in an outdoor yard place's objectSlots to supply ground and an approach. Alternatively copy design.graphic {tilesetId,kitId} into place.exterior when the graphic supports painted passable port cells; this copy is not an objectDesignId link and does not inherit object anchors/chips or future object changes. A complete house is a place with authored rooms, ports and connections; facade height/labels do not establish usable floor count. Large designs can exceed the tool payload limit — when truncated re-read with resolved:false; the design body alone is enough for a revision round-trip.",
     parameters: SPATIAL_GET_SCHEMA,
+    prepare: args => prepareSharedObject(args.id),
     run(project, args) {
+      if (typeof args.id === "string" && isSharedDesignId(args.id)) return sharedDesignDetail(project, args.id);
       const ref = storageSpatialSource(project, args);
       const document = requireSpatialDocument(project);
       return { summary: `Spatial ${publicSpatialKind(ref.kind)}: ${ref.id}`, data: publicSpatialValue({

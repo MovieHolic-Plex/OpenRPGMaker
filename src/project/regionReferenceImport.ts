@@ -21,7 +21,7 @@ export interface RegionReferenceScene {
   readonly tileset: TilesetDef;
   /** Uploaded images the tileset (or its grafts) draws from, keyed by asset id. */
   readonly assets: Project["assets"]["uploaded"];
-  readonly source: "download" | "snapshot";
+  readonly source: "download" | "snapshot" | "reviewed";
 }
 
 type DownloadProject = {
@@ -110,6 +110,51 @@ export function regionReferenceScene(id: string): RegionReferenceScene {
   throw new Error(failure
     ? `${id}: 장소 원본을 불러오지 못했습니다 (${failure}) — 같은 호출을 다시 하면 재시도합니다.`
     : `${id}: 장소 원본을 불러오는 중입니다 — 잠시 뒤 같은 호출을 다시 하세요.`);
+}
+
+// ── 검토 장소(reviewedPlaceIndex, 편집기 「장소」 탭) ──────────────────────
+// 검토 장소는 층·방마다 맵이 하나씩이라 장면이 여러 개다. 원본(reviewedPlaces/catalog.json, 11MB)은 쓸 때만 불러온다.
+const reviewedScenes = new Map<string, RegionReferenceScene[]>();
+const reviewedPending = new Map<string, Promise<RegionReferenceScene[]>>();
+const reviewedFailures = new Map<string, string>();
+
+async function loadReviewedScenes(placeId: string): Promise<RegionReferenceScene[]> {
+  const catalog = await import("./defaults/spatial/reviewedPlaceCatalog");
+  const uploaded = catalog.reviewedPlaceAssets();
+  return catalog.reviewedPlaceMaps(placeId).map(({ map, tileset }) => {
+    const assetIds = new Set<string>();
+    if (tileset.image.type === "uploaded") assetIds.add(tileset.image.id);
+    for (const graft of tileset.tileGrafts ?? []) if (uploaded[graft.sourceChipset]) assetIds.add(graft.sourceChipset);
+    const assets = Object.fromEntries([...assetIds].filter(assetId => uploaded[assetId]).map(assetId => [assetId, uploaded[assetId]!]));
+    return { referenceId: placeId, name: map.name, map, tileset, assets, source: "reviewed" as const };
+  });
+}
+
+/** Load every map of one reviewed place (floors, rooms). Cached per id. */
+export function preloadReviewedPlaceScenes(placeId: string): Promise<RegionReferenceScene[]> {
+  const ready = reviewedScenes.get(placeId);
+  if (ready) return Promise.resolve(ready);
+  let promise = reviewedPending.get(placeId);
+  if (!promise) {
+    reviewedFailures.delete(placeId);
+    promise = loadReviewedScenes(placeId)
+      .then(found => { reviewedScenes.set(placeId, found); return found; })
+      .catch((error: unknown) => { reviewedFailures.set(placeId, error instanceof Error ? error.message : String(error)); throw error; })
+      .finally(() => reviewedPending.delete(placeId));
+    reviewedPending.set(placeId, promise);
+  }
+  return promise;
+}
+
+/** Synchronous read for tools, like regionReferenceScene. */
+export function reviewedPlaceScenes(placeId: string): RegionReferenceScene[] {
+  const ready = reviewedScenes.get(placeId);
+  if (ready) return ready;
+  const failure = reviewedFailures.get(placeId);
+  void preloadReviewedPlaceScenes(placeId).catch(() => undefined);
+  throw new Error(failure
+    ? `${placeId}: 검토 장소를 불러오지 못했습니다 (${failure})`
+    : `${placeId}: 검토 장소 원본을 불러오는 중입니다 — 잠시 뒤 같은 호출을 다시 하세요.`);
 }
 
 // ── 타일셋 설치 ─────────────────────────────────────────────────────────────
