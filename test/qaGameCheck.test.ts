@@ -204,6 +204,49 @@ describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고
   });
 });
 
+describe("qa gameCheck — changeItem 은 장비 id 도 소지품이다(r4 보물상자)", () => {
+  function chestWith(itemId: string): Project {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    project.maps[project.startMapId]!.events.push({
+      id: "ev_chest_equipment", name: "낡은 보물상자", x: 7, y: 7,
+      pages: [{
+        id: "p1", name: "p1", conditions: [], graphic: { transparent: true },
+        trigger: { kind: "action" }, priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "changeItem", itemId, op: "+=", amount: 1 },
+          { kind: "changeGold", op: "+=", amount: 100 },
+          { kind: "text", body: "보물상자를 열었다!" },
+          { kind: "setSelfSwitch", key: "A", value: true },
+        ] as Command[],
+      }],
+    } as never);
+    return project;
+  }
+
+  it("장비 id 를 가리키는 changeItem 은 커밋·런타임 계약(items∪equipment)과 같게 막힘이 아니다", () => {
+    const equipmentId = chestWith("item_not_here").database.equipment[0]!.id;
+    const report = runGameCheck(chestWith(equipmentId), { skipAutoPlay: true });
+    expect(report.findings.filter((f) => f.code === "command-missing-reference" && f.where?.eventId === "ev_chest_equipment")).toEqual([]);
+    expect(codes(report as ReturnType<typeof check>)).toEqual([]);
+  });
+
+  it("아이템·장비 어디에도 없는 itemId 는 여전히 막힘이다", () => {
+    const report = runGameCheck(chestWith("item_definitely_missing"), { skipAutoPlay: true });
+    const finding = report.findings.find((f) => f.code === "command-missing-reference" && f.where?.eventId === "ev_chest_equipment");
+    expect(finding?.severity).toBe("blocker");
+    expect(finding?.message).toContain("item_definitely_missing");
+  });
+
+  // 실제 gen 런 산출물(.readString 그대로) — 「기사의 철검」 보물상자가 유효 장비 참조였다.
+  const R4 = "qa-runs/jrpg-r4/project.json";
+  it.skipIf(!fs.existsSync(R4))("r4 생성물 전체에서 changeItem 장비 참조 막힘이 없다", () => {
+    const report = runGameCheck(JSON.parse(fs.readFileSync(R4, "utf8")), { autoPlayBudgetMs: 30_000 });
+    expect(report.findings.filter((f) => f.code === "command-missing-reference")).toEqual([]);
+    expect(report.counts.blocker).toBe(0);
+  }, 60_000);
+});
+
 describe("qa gameCheck — 턴제 JRPG 장르 검사", () => {
   function jrpgFixture() {
     const project = deserialize(serialize(buildQaFixture("clean")));
