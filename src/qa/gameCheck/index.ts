@@ -11,6 +11,7 @@ import { buildMapGraph, checkMapGraph, summarizeMaps } from "./mapGraph";
 import { checkProgression, companionJoins } from "./progression";
 import { checkJrpg } from "./jrpg";
 import { checkMystery } from "./mystery";
+import { checkMonster } from "./monster";
 import { whereText, type Finding, type FindingSeverity, type GameCheckOptions, type GameCheckReport } from "./types";
 
 export * from "./types";
@@ -37,6 +38,7 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     ...checkBriefConformance(project, options.briefText ?? briefTextOf(project), graph),
     ...checkJrpg(project),
     ...checkMystery(project, options.briefText ?? briefTextOf(project)),
+    ...checkMonster(project, options.briefText ?? briefTextOf(project)),
     ...(options.rawProject !== undefined ? diffLoadNormalization(options.rawProject, project) : []),
   ];
   let autoPlay: GameCheckReport["autoPlay"];
