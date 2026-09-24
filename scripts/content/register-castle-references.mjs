@@ -7,12 +7,12 @@ import {loadEnv} from 'vite';
 import {withTsModule} from '../ontology-ts-loader.mjs';
 const out='output/castle-ai-references';fs.mkdirSync(out,{recursive:true});
 const root='tiledata/castle-tiles-rpgs',env=loadEnv('development',process.cwd(),'');
-assert(env.VITE_SUPABASE_URL&&env.VITE_SUPABASE_ANON_KEY);
-const headers={apikey:env.VITE_SUPABASE_ANON_KEY,Authorization:'Bearer '+env.VITE_SUPABASE_ANON_KEY,'Accept-Profile':'rpg_zzu','Content-Profile':'rpg_zzu','Content-Type':'application/json',Prefer:'return=representation'};
-const endpoint=env.VITE_SUPABASE_URL+'/rest/v1/';
-async function request(route,method='GET',body){const r=await fetch(endpoint+route,{method,headers,...(body?{body:JSON.stringify(body)}:{})});assert(r.ok,`Database ${r.status}`);return r.json();}
+const remoteWrite=process.argv.includes('--remote');
+const headers=remoteWrite?{apikey:env.VITE_SUPABASE_ANON_KEY,Authorization:'Bearer '+env.VITE_SUPABASE_ANON_KEY,'Accept-Profile':'rpg_zzu','Content-Profile':'rpg_zzu','Content-Type':'application/json',Prefer:'return=representation'}:null;
+const endpoint=remoteWrite?env.VITE_SUPABASE_URL+'/rest/v1/':'';
+async function request(route,method='GET',body){assert(remoteWrite&&headers,'Remote project write requires --remote');const r=await fetch(endpoint+route,{method,headers,...(body?{body:JSON.stringify(body)}:{})});assert(r.ok,`Database ${r.status}`);return r.json();}
 const projectId='castle-fortress-city-20260921';
-assert((await request('projects?project_id=eq.'+projectId+'&select=project_id')).length===1);
+if(remoteWrite){assert(env.VITE_SUPABASE_URL&&env.VITE_SUPABASE_ANON_KEY);assert((await request('projects?project_id=eq.'+projectId+'&select=project_id')).length===1);}
 const groups=[];
 function category(id,name,description,docs,images){
  const g={id,name,description,documents:[],images:[]};
@@ -38,7 +38,7 @@ await withTsModule(path.resolve('src/project/tilesetReferences.ts'),'castle-refe
 function attach(p){const owner=p.tilesets.opengameart_castle??p.tilesets.castle_courtyard_harbor;assert(owner);const ids=new Set(groups.map(g=>g.id));owner.referenceDocuments=[...(owner.referenceDocuments??[]).filter(g=>!ids.has(g.id)),...structuredClone(groups)];
  const derived=p.tilesets.castle_courtyard_harbor;if(derived&&derived!==owner){assert(!derived.referenceDocuments?.length,'Do not discard existing derived references');derived.referenceSourceTilesetId=owner.id;}return owner.id;}
 const proof={projects:[],sqlite:null,categories:groups.map(g=>({id:g.id,documents:g.documents.length,images:g.images.length}))};
-for(const id of [projectId,'oprn-place-river-fortress-v1','oprn-place-castle-courtyard-v1','oprn-place-castle-small-harbor-v1','oprn-place-castle-stone-lodge-v1']){
+if(remoteWrite)for(const id of [projectId,'oprn-place-river-fortress-v1','oprn-place-castle-courtyard-v1','oprn-place-castle-small-harbor-v1','oprn-place-castle-stone-lodge-v1']){
  const [row]=await request('projects?project_id=eq.'+id+'&select=current_json,current_sha256');assert(row);const p=structuredClone(row.current_json);attach(p);assert.deepEqual(p.maps,row.current_json.maps);
  const rows=await request('projects?project_id=eq.'+id+'&current_sha256=eq.'+row.current_sha256,'PATCH',{current_json:p,current_sha256:createHash('sha256').update(JSON.stringify(p)).digest('hex')});assert.equal(rows.length,1,'Concurrent remote write');
  const [after]=await request('projects?project_id=eq.'+id+'&select=current_json');assert.deepEqual(after.current_json,p);

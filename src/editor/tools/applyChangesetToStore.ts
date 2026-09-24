@@ -27,7 +27,7 @@ import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivit
 import type { ProjectChangeAnnotation } from "@/project/store";
 import { mapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
-import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "@/ai/approvalPolicy";
+import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
 /**
  * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
@@ -395,7 +395,7 @@ export async function applyProposedProject(
     // 그 경로는 자기 확인을 따로 받는다.
     const losesMaps = options.resetProject === true
       ? false
-      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0;
+      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0 || wipedTileMapIds(before, proposed).length > 0;
     if (options.mapDestructionApproved !== true
       && (losesMaps || options.toolNames.some((name) => isMapDestruction(name)))) {
       const issue = losesMaps

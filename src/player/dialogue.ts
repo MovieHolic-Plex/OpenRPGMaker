@@ -977,7 +977,7 @@ export function createDialogueUI(
       request.options.forEach((opt, idx) => {
         const btn = el("button", {
           class: "choice-btn",
-          attrs: { role: "option", type: "button" },
+          attrs: { role: "option", type: "button", "data-play-input-owner": "play-ui" },
           dataset: { testid: `runtime-choice-${idx}` },
         });
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
@@ -1407,6 +1407,7 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
   const box = el("div", {
     class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
     dataset: { testid: testId },
+    attrs: { "data-play-input-owner": "play-ui" },
   });
   // 대화/이름상자/선택지 창도 자료집 System 윈도스킨 파이프를 통한다.
   // 하드코드 hex 유리 토큰만 쓰던 시절엔 윈도스킨을 바꿔도 메시지 창은 그대로여시

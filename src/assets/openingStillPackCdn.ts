@@ -12,7 +12,7 @@ export type StillCdnEnv = {
 
 function ambientEnv(): StillCdnEnv {
   try {
-    return (import.meta.env ?? {}) as StillCdnEnv;
+    return { VITE_STILL_CDN_BASE: import.meta.env.VITE_STILL_CDN_BASE };
   } catch {
     return {};
   }
