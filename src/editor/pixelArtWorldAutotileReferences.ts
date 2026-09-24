@@ -1,73 +1,91 @@
-import { XP_AUTOTILE_MASKS, xpAutotileQuarters, xpAutotileExample, validateXpAutotileExample, xpAutotileGroup, type PixelArtWorldAutotilePack } from '@/project/pixelArtWorldAutotiles';
+import { XP_AUTOTILE_MASKS, xpFullAutotileQuarters, xpAutotilePlacementExample, validateXpAutotilePlacementExample, xpAutotileGroup, type PixelArtWorldAutotilePack } from '@/project/pixelArtWorldAutotiles';
 import type { TilesetReferenceCategory } from '@/project/tilesetReferences';
+import type { TilesetDef } from '@/project/types';
 
-export function drawXpAutotile(context: CanvasRenderingContext2D, source: CanvasImageSource, mask: number, x: number, y: number): void {
-  for (const quarter of xpAutotileQuarters(mask)) {
-    context.drawImage(source, quarter.sx, quarter.sy, 16, 16, x + quarter.dx, y + quarter.dy, 16, 16);
+export function drawXpAutotile(context: CanvasRenderingContext2D, source: CanvasImageSource, mask: number, x: number, y: number, frame = 0): void {
+  for (const quarter of xpFullAutotileQuarters(mask)) {
+    context.drawImage(source, frame * 96 + quarter.sx, quarter.sy, 16, 16, x + quarter.dx, y + quarter.dy, 16, 16);
   }
 }
 
-export function createPixelArtWorldAutotileReferences(pack: PixelArtWorldAutotilePack, image: HTMLImageElement, sourceDataUrl: string, offset: number, tilesetId: string): TilesetReferenceCategory {
-  const atlas = document.createElement('canvas');
-  atlas.width = 256; atlas.height = 192;
-  const context = atlas.getContext('2d')!;
-  context.imageSmoothingEnabled = false;
-  XP_AUTOTILE_MASKS.forEach((mask, index) => drawXpAutotile(context, image, mask, index % 8 * 32, Math.floor(index / 8) * 32));
-  const example = xpAutotileExample(offset);
+/** The sample backing is an actual opaque target tile, never invented source pixels. */
+function sampleBacking(base?: { image: HTMLImageElement; tileset: TilesetDef }): number | null {
+  if (!base) return null;
+  const canvas = document.createElement('canvas'); canvas.width = canvas.height = 32;
+  const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+  for (let tile = 0; tile < base.tileset.count; tile++) {
+    if (base.tileset.priority[tile] !== 'lower') continue;
+    ctx.clearRect(0, 0, 32, 32);
+    ctx.drawImage(base.image, tile % base.tileset.tilesPerRow * 32, Math.floor(tile / base.tileset.tilesPerRow) * 32, 32, 32, 0, 0, 32, 32);
+    const rgba = ctx.getImageData(0, 0, 32, 32).data;
+    if (rgba.every((value, i) => i % 4 !== 3 || value === 255)) return tile;
+  }
+  return null;
+}
+
+export function createPixelArtWorldAutotileReferences(pack: PixelArtWorldAutotilePack, image: HTMLImageElement, sourceDataUrl: string, offset: number, tilesetId: string,
+  tileIds = XP_AUTOTILE_MASKS.map((_, i) => offset + i), base?: { image: HTMLImageElement; tileset: TilesetDef }): TilesetReferenceCategory {
+  const atlas = document.createElement('canvas'); atlas.width = 256 * pack.frames; atlas.height = 192;
+  const ctx = atlas.getContext('2d')!; ctx.imageSmoothingEnabled = false;
+  for (let frame = 0; frame < pack.frames; frame++) XP_AUTOTILE_MASKS.forEach((mask, i) => drawXpAutotile(ctx, image, mask, frame * 256 + i % 8 * 32, Math.floor(i / 8) * 32, frame));
+  const example = xpAutotilePlacementExample(pack, tileIds);
+  const backingTile = sampleBacking(base);
+  // Backing is part of the complete sample arrays, including around the footprint.
+  if (backingTile !== null) example.lowerTiles = example.lowerTiles.map(tile => tile < 0 ? backingTile : tile);
+  const layer = pack.defaultLayer === 'lower' ? 'lowerTiles' : 'upperTiles';
+  const other = pack.defaultLayer === 'lower' ? 'upperTiles' : 'lowerTiles';
   const bad = { ...example, lowerTiles: [...example.lowerTiles], upperTiles: [...example.upperTiles] };
-  // Replace top-left convex corner with center; remove one actual thin-run cell.
-  bad.lowerTiles[example.width + 1] = offset + XP_AUTOTILE_MASKS.indexOf(255);
-  bad.lowerTiles[3 * example.width + 8] = -1;
-  // Misroute one edge into upper: transparent alpha and render layer are independent.
-  bad.upperTiles[example.width + 2] = bad.lowerTiles[example.width + 2];
-  bad.lowerTiles[example.width + 2] = -1;
-  const comparison = document.createElement('canvas');
-  comparison.width = example.width * 32 * 2 + 8; comparison.height = example.height * 32;
-  const compareContext = comparison.getContext('2d')!;
-  compareContext.imageSmoothingEnabled = false;
+  const occupied = example[layer].flatMap((tile, i) => tileIds.includes(tile) ? [i] : []);
+  const [corner, moved, removed] = occupied;
+  bad[layer][corner] = tileIds[XP_AUTOTILE_MASKS.indexOf(255)];
+  bad[other][moved] = bad[layer][moved]; bad[layer][moved] = layer === 'lowerTiles' ? (backingTile ?? -1) : -1;
+  bad[layer][removed] = layer === 'lowerTiles' ? (backingTile ?? -1) : -1;
+  const errors = validateXpAutotilePlacementExample(pack, tileIds, bad, backingTile);
+  const comparison = document.createElement('canvas'); comparison.width = example.width * 64 + 8; comparison.height = example.height * 32;
+  const compare = comparison.getContext('2d')!; compare.imageSmoothingEnabled = false;
   const draw = (map: typeof example, ox: number) => {
-    compareContext.fillStyle = '#72838a';
-    compareContext.fillRect(ox, 0, example.width * 32, example.height * 32);
-    for (const layer of [map.lowerTiles, map.upperTiles]) layer.forEach((tile, i) => {
+    for (const values of [map.lowerTiles, map.upperTiles]) values.forEach((tile, i) => {
       if (tile < 0) return;
-      drawXpAutotile(compareContext, image, XP_AUTOTILE_MASKS[tile - offset], ox + i % map.width * 32, Math.floor(i / map.width) * 32);
+      const x = ox + i % map.width * 32, y = Math.floor(i / map.width) * 32;
+      const variant = tileIds.indexOf(tile);
+      if (variant >= 0) drawXpAutotile(compare, image, XP_AUTOTILE_MASKS[variant], x, y);
+      else if (base) compare.drawImage(base.image, tile % base.tileset.tilesPerRow * 32, Math.floor(tile / base.tileset.tilesPerRow) * 32, 32, 32, x, y, 32, 32);
     });
   };
   draw(example, 0); draw(bad, example.width * 32 + 8);
-  const dictionary = XP_AUTOTILE_MASKS.map((mask, index) => ({ tile: offset + index, mask, quarters: xpAutotileQuarters(mask) }));
+  const dictionary = XP_AUTOTILE_MASKS.map((mask, i) => ({ tile: tileIds[i], mask, frames: Array.from({ length: pack.frames }, (_, frame) => ({ tile: tileIds[i] + frame, quarters: xpFullAutotileQuarters(mask).map(q => ({ ...q, sx: q.sx + frame * 96, width: 16, height: 16 })) })) }));
+  const json = (value: unknown) => `\`\`\`json\n${JSON.stringify(value, null, 2)}\n\`\`\``;
   return {
-    id: pack.id, name: `${pack.name} · 자동 연결`,
-    description: '확인된 사용자 원본에서 생성. 8방향·16px 쿼터를 47종 32px 타일로 합성. 문/정면 벽/이벤트 저작은 별도.',
+    id: pack.id, name: `${pack.name} · ${pack.placement === 'lower-autoshape' ? '자동 연결' : '수동 조립'}`,
+    description: `${pack.sourceWidth}×128 XP, ${pack.frames}프레임, 47마스크. ${pack.defaultLayer}/${pack.passage}. ${pack.shapePolicy}.`,
     images: [
-      { id: 'source', name: pack.filename, caption: '사용자가 가져온 실제 96×128 원본. 16px 쿼터; 원본 12칸을 완성 타일로 나누지 않는다.', dataUrl: sourceDataUrl },
-      { id: 'variants', name: 'variants.png', caption: `실제 합성 47종. 그림은 8열, 왼쪽 위부터 사전 순서. 프로젝트 타일 ID는 ${offset}부터. 마지막 공백은 변형이 아니다.`, dataUrl: atlas.toDataURL('image/png') },
-      { id: 'comparison', name: 'connections-comparison.png', caption: '왼쪽 정상 / 오른쪽 오류. 배경 청회색은 비교용 캔버스 색이며 타일이 아니다. 실타일 원래 32px. 오류: 외곽 모서리, 얇은 선 누락, upper 이동.', dataUrl: comparison.toDataURL('image/png') },
+      { id: 'source', name: pack.filename, caption: `사용자가 가져온 실제 ${pack.sourceWidth}×128 원본. ${pack.frames}개의 가로 96×128 프레임.`, dataUrl: sourceDataUrl },
+      { id: 'variants', name: 'variants.png', caption: `프레임별 8열×6행 실제 합성 47종, 마지막 공백 제외. ${pack.frames} 패널은 시간 순서. 타일 ID는 사전을 따른다.`, dataUrl: atlas.toDataURL('image/png') },
+      { id: 'comparison', name: 'connections-comparison.png', caption: `왼쪽 정상 배열 / 오른쪽 오류 배열. 32px 실물. 받침 타일 ${backingTile ?? '없음: 투명은 미완성 바탕'}은 대상 시트의 실제 픽셀이다.`, dataUrl: comparison.toDataURL('image/png') },
     ],
     documents: [
       { id: 'read-first', name: '먼저 읽기.md', markdown: [
         `# ${pack.name}\n\ntilesetId: ${tilesetId}\n\n${pack.description}`,
-        `원본: ${pack.filename}, 96×128px, 정적 XP 형식. SHA-256: ${pack.sha256}. 확인일: ${pack.checkedAt}.`,
-        `[제작자](${pack.sourcePage}) · [이용 조건](${pack.termsUrl})\n\n${pack.credit}`,
-        '원본/가공 소재를 재배포하지 않는다. 공개 게임에 제작자 크레딧을 남긴다. 여기 그림은 사용자가 가져온 원본에서 프로젝트 안에 생성했다.',
-        `## 레이어와 통행\n\n이 그룹은 lower, ${pack.passage}. 기존 타일 번호/그림/통행은 보존하고 새 변형만 추가했다. 투명색 추가 제거·리사이즈·좌우 반전을 하지 않는다. 원본의 불투명 몸통을 투명색으로 지우지 않는다. upper의 가구와 겹치기 전 벽 영역/통행을 확인한다.`,
-        '## 저작 순서\n\n1. 이 용도의 MD와 이미지를 전부 읽는다.\n2. 막힌 벽/천장 또는 바닥 영역을 먼저 정한다.\n3. lower에 같은 그룹의 아무 변형으로 영역을 칠한다. 편집기 자동 연결이 주변 8방향을 재계산한다. 서로 다른 재료 그룹은 연결하지 않는다.\n4. 외곽은 볼록, 양 직교가 연결되고 대각만 비면 오목 조각을 쓴다. 단독 칸은 원본 좌상단 전용 그림이다. 얇은 가로/세로 선은 양쪽 반쪽을 합성한다. 최소 크기 1×1.\n5. 원본 96×128의 12칸을 9슬라이스로 복사하지 않는다.\n6. 방의 정면 벽/문/바닥은 별도 원본의 검토된 사전을 사용한다. 문앞 접근칸·이벤트·전이는 이 그룹으로 생기지 않는다.',
-        '자동 성형을 거치지 않는 직접 배열 저작은 사전의 256개 variantMap과 엔진의 N=1,E=2,S=4,W=8,NE=16,SE=32,SW=64,NW=128을 사용한다. 맵 밖은 비연결이다. 방향에 대응하는 양 직교 중 하나라도 없으면 그 대각 비트는 무시한다.',
-        '![실제 원본](image:source)\n\n![실제 변형](image:variants)',
+        `원본: ${pack.filename}, ${pack.sourceWidth}×128px XP. SHA-256: ${pack.sha256}. 확인일 ${pack.checkedAt}.`,
+        `[제작자](${pack.sourcePage}) · [이용 조건](${pack.termsUrl})\n\n${pack.credit}\n\n원본/가공 소재를 재배포하지 않는다. 첨부 그림은 사용자 원본에서 로컬 생성했다.`,
+        `## 레이어·통행·지형\n\n홈=${pack.defaultLayer}, 통행=${pack.passage}, 용도=${pack.surface}, 지형 태그=0(중립; 물 피해·수영 등 효과 없음). 받침=${pack.underlay}. 투명 여부와 홈 레이어는 별개다. ${pack.restrictions.join(' ')}`,
+        `## 저작 순서\n\n1. 모든 MD/실물 그림을 읽는다.\n2. 용도와 통행 영역, 받침을 정한다.\n3. ${pack.placement === 'lower-autoshape' ? 'lower에 같은 그룹을 칠하면 8방향 자동 성형한다.' : '전체 배열의 마스크 사전으로 수동 배치한다. 자동 성형 그룹은 등록하지 않는다.'}\n4. ${pack.shapePolicy === 'rectangle' ? '최소 2×2 직사각형만 사용한다. 띠/구멍/분기는 금지한다.' : '외딴 점·얇은 선·볼록/오목 모서리의 모든 쿼터를 사용한다. 최소 1×1.'}\n5. upper 배치는 기존 lower 받침을 보존한다. 필요한 바탕이 없으면 저작을 중단하고 먼저 바닥/벽/지붕을 확보한다.\n6. 문/전면 벽/접근칸/이벤트는 별도로 저작한다. 원본 12칸을 완성 타일처럼 복사하지 않는다.`,
+        '마스크: N=1,E=2,S=4,W=8,NE=16,SE=32,SW=64,NW=128. 대각은 양쪽 직교가 연결된 경우만 유효. 맵 밖은 비연결. 서로 다른 재료를 자동 연결하지 않는다.',
+        `## 애니메이션\n\n${pack.frames === 4 ? `각 마스크의 baseTile부터 4개 가로 연속 프레임. 원본 순서 0→1→2→3 반복, ${pack.fps}fps는 편집기 기본 선택이며 제작자 지정 속도가 아니다. 반복된 원본 프레임도 제거하지 않는다. animationStrips를 보존해야 런타임에서 움직인다.` : '정적 원본. 애니메이션 스트립을 만들지 않는다.'}`,
+        '![원본](image:source)\n\n![모든 프레임/변형](image:variants)',
       ].join('\n\n') },
-      { id: 'dictionary', name: '쿼터와 변형 사전.md', markdown: [
-        '# 정확한 좌표 사전',
-        '모든 sx,sy는 원본 PNG의 0기준 픽셀 좌표, dx,dy는 목적 32px 타일 안의 픽셀 좌표. 각 조각은 16×16px. 인덱스 순서는 NW,NE,SW,SE. source_rect는 (sx,sy,16,16). 확대/회전 없음. 타일 ID는 현재 타일셋 전용이며 다른 시트에 옮겨 쓸 수 없다.',
-        `\`\`\`json\n${JSON.stringify(dictionary, null, 2)}\n\`\`\``,
-        `## 모든 8방향 입력 → 목적 타일\n\n\`\`\`json\n${JSON.stringify(xpAutotileGroup(pack, offset).variantMap)}\n\`\`\``,
+      { id: 'dictionary', name: '쿼터와 변형 사전.md', markdown: ['# 현재 아틀라스의 정확한 사전',
+        '좌표는 원본 PNG의 0기준 픽셀. NW/NE/SW/SE 각각 16×16. 확대·회전·반전 없음. frame별 sx에 96px 간격이 포함돼 있다. 행 정렬 공백은 소재가 아니다. 이 ID를 다른 타일셋에 적용하지 않는다.', `\`\`\`json\n${JSON.stringify(dictionary)}\n\`\`\``,
+        '## 256입력 → 배치할 baseTile', json(xpAutotileGroup(pack, offset, tileIds).variantMap),
+        '수동 그룹에도 위 매핑으로 전체 배열을 만들 수 있으나 upper 붓 자동 성형 기능을 의미하지 않는다.',
+        '## 판본 별칭(같은 SHA만 허용)', json(pack.aliases),
       ].join('\n\n') },
       { id: 'examples', name: '완성 배열과 오류.md', markdown: [
-        '# 직사각형·구멍·외딴 점·얇은 선·L/T/십자',
-        '원점=(0,0). 아래 width×height 전체 배열을 사용한다. -1은 이 부품이 점유하지 않는 칸이며, 다른 방에 적용할 때 기존 바닥을 지우라는 뜻이 아니다. lower에만 배치. 가로 선 양끝/세로 선 양끝과 구멍의 오목 코너를 모두 확인한다.',
-        `\`\`\`json\n${JSON.stringify(example, null, 2)}\n\`\`\``,
-        '![정상/오류 실타일](image:comparison)',
-        `오류 비교 전체 배열:\n\n\`\`\`json\n${JSON.stringify(bad, null, 2)}\n\`\`\``,
-        `검출 코드와 좌표:\n\n\`\`\`json\n${JSON.stringify(validateXpAutotileExample(offset, bad))}\n\`\`\``,
-        'validateXpAutotileExample은 이 고정 specimen의 크기, 정확한 47종 연결 타일, lower/upper 배치를 대조한다. 잘못된 외곽/오목 코너, 누락/연결 단절=XP_CONNECTION, upper 오배치=XP_WRONG_LAYER. 통행은 그룹 전체가 위 문서의 passage를 따르며 방 전체 경로 탐색·실행 이벤트·미학·AI 배치 성공률은 이 검사 범위가 아니다.',
+        `# ${pack.shapePolicy === 'rectangle' ? '직사각형 조립' : '직사각형·구멍·외딴 점·얇은 선·분기'} 전체 배열`,
+        `원점=(0,0). ${pack.defaultLayer}에 소재를 배치한다. -1은 이 예제가 점유하지 않는 칸. 기존 바닥을 지우라는 뜻이 아니다. 받침 tile=${backingTile ?? '미확보'}. 받침은 대상 시트의 첫 불투명 lower 타일로 그림 확인용이며, ${pack.underlay} 용도·통행 적합성은 장면별로 다시 선택해야 한다. 받침 미확보 상태는 완성 장면으로 사용하지 않는다.`,
+        json(example), '![정상/오류](image:comparison)', '## 의도적으로 잘못 놓은 전체 배열', json(bad),
+        '## 정확한 배열 대조로 확인한 오류 좌표', json(errors),
+        '이 자료는 지정 마스크/레이어 배열과 실제 쿼터 그림을 연결한다. 방/건물의 미학, 다른 소재와의 접합, 통행 경로, 문 이벤트 실행, AI 성공률을 검증하지 않는다. 직사각형 제한 소재는 47종 전부가 보기 좋은 구조임을 주장하지 않는다.',
       ].join('\n\n') },
     ],
   };

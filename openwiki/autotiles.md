@@ -179,14 +179,20 @@ native PNGs. Tests: `tiboRecovery.test.ts`; runtime `tibo-recovery.scenario.mjs`
 
 ## Pixel Art World XP 사용자 원본 (2026-09-24)
 
-`pixelArtWorldAutotiles.ts`는 확인된 96×128 정적 XP 원본을 16px 쿼터로 해석한다.
-8방향 256마스크를 유효 대각 조건으로 정규화하여 47개 실제 32px 변형을 만든다.
-외딴 칸은 원본 좌상단, 오목 코너는 우상단, 외곽/얇은 선은 아래 3×3의 쿼터다.
-기존 11칸 통짜 근사를 쓰지 않는다. `pixelArtWorldAutotileImport.ts`는 기존 업로드
-32px 타일셋 끝에 합성 픽셀을 붙이며 이전 번호를 보존한다. `neighborhood:8`과
-256키 `variantMap`이 기존 lower 자동 성형 경로를 사용한다. 런타임은 보통 32px
-업로드 프레임만 렌더한다. upper 자동 성형은 지원 범위가 아니다.
+`pixelArtWorldAutotiles.ts`의 공용 카탈로그는 SHA별 정적 XP 136종(96×128),
+Ditch 애니메이션 4종(384×128)을 제공한다. VX/MV·혼합 규격 12종은 포함하지 않는다.
+`xpFullAutotileQuarters`는 32px 외곽의 양쪽 16px 쿼터를 보존한다. 예전 half-edge 공식은
+난간 남변의 절반을 누락했다. 기존 도시/학교 저작기의 `xpAutotileQuarters`는 호환용으로
+유지하며 저장된 그림/번호는 재작성하지 않는다. 새 가져오기는 full-edge 공식을 사용한다.
 
-공용은 원본 판본·규칙 메타데이터만 배포한다. 사용자 PNG에서 실제 참고 그림과
-전체 예제 배열을 생성한다. 출처·좌표·가져오기/보존 계약:
+100종은 lower 8방 자동 성형, 40종은 명시된 홈 레이어에 마스크 배열 수동 조립이다.
+upper 자동 성형은 없다. 커튼·창·출입구 배경·코타츠·난간·교단은 직사각형 제한이며
+받침 종류/통행/지형 의미를 각 메타데이터에 기록한다. 투명하다고 통행 가능하다는 뜻은 아니다.
+
+Ditch는 47변형마다 가로 4프레임을 행 경계 안에 붙이고 `animationStrips`를 등록한다.
+3fps는 편집기 기본값이며 원작 지정 속도가 아니다. 기존 uploaded-atlas 편집기/플레이어
+등록 경로가 재생한다. 기존 6종 ID/해시/47변형 번호와 정적 배치 간격은 유지한다.
+
+공용에는 원본 판본·별칭·규칙 메타데이터만 배포한다. 사용자 PNG를 가져올 때 실제
+원본/변형/정상·오류 그림과 전체 배열 자료를 생성한다. 출처·쿼터 좌표·제약·관찰 근거:
 [pixel-art-world/autotiles](../tiledata/pixel-art-world/autotiles.md).

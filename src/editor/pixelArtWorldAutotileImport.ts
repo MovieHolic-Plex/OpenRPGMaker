@@ -1,4 +1,4 @@
-import { canAppendPixelArtWorldAutotile, XP_AUTOTILE_MASKS, xpAutotileGroup, type PixelArtWorldAutotilePack } from '@/project/pixelArtWorldAutotiles';
+import { canAppendPixelArtWorldAutotile, XP_AUTOTILE_MASKS, xpAutotileAtlasLayout, xpAutotileGroup, type PixelArtWorldAutotilePack } from '@/project/pixelArtWorldAutotiles';
 import { validateTileset } from '@/project/io/shapeResourceFields';
 import { validateTilesetReferences } from '@/project/tilesetReferences';
 import type { TilesetDef } from '@/project/types';
@@ -21,11 +21,11 @@ export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWor
   const url = URL.createObjectURL(file);
   let source: HTMLImageElement;
   try { source = await decodeImage(url); } finally { URL.revokeObjectURL(url); }
-  if (source.naturalWidth !== 96 || source.naturalHeight !== 128) throw new Error('96×128px 정적 XP 원본만 지원합니다.');
+  if (source.naturalWidth !== pack.sourceWidth || source.naturalHeight !== pack.sourceHeight) throw new Error(`${pack.sourceWidth}×${pack.sourceHeight}px 확인된 XP 원본이 필요합니다.`);
   const columns = target.tilesPerRow;
   const offset = Math.ceil(target.count / columns) * columns;
   if (base.naturalWidth !== columns * 32 || base.naturalHeight !== offset / columns * 32) throw new Error('대상 타일셋의 실제 이미지와 등록된 칸 수가 다릅니다. 설정을 확인하세요.');
-  const count = Math.ceil((offset + XP_AUTOTILE_MASKS.length) / columns) * columns;
+  const { tileIds, count } = xpAutotileAtlasLayout(offset, columns, pack.frames);
   if (count / columns * 32 > 16384) throw new Error('대상 타일셋이 너무 큽니다. 다른 타일셋을 선택하세요.');
   const canvas = document.createElement('canvas');
   canvas.width = columns * 32; canvas.height = count / columns * 32;
@@ -34,35 +34,44 @@ export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWor
   context.imageSmoothingEnabled = false;
   context.drawImage(base, 0, 0);
   XP_AUTOTILE_MASKS.forEach((mask, index) => {
-    const tile = offset + index;
-    drawXpAutotile(context, source, mask, tile % columns * 32, Math.floor(tile / columns) * 32);
+    for (let frame = 0; frame < pack.frames; frame++) {
+      const tile = tileIds[index] + frame;
+      drawXpAutotile(context, source, mask, tile % columns * 32, Math.floor(tile / columns) * 32, frame);
+    }
   });
   const assetId = genId('chipset_img');
   const tileset = structuredClone(target);
   tileset.image = { type: 'uploaded', id: assetId };
   tileset.count = count;
   const pass = pack.passage === 'passable';
+  const variants = new Map(tileIds.flatMap((baseTile, index) => Array.from({ length: pack.frames }, (_, frame) => [baseTile + frame, { index, frame }] as const)));
   for (let tile = target.count; tile < count; tile++) {
-    const variant = tile >= offset && tile < offset + XP_AUTOTILE_MASKS.length;
-    tileset.passability[tile] = { up: variant && pass, down: variant && pass, left: variant && pass, right: variant && pass };
-    tileset.priority[tile] = 'lower'; tileset.terrain[tile] = 0;
+    const variant = variants.get(tile);
+    tileset.passability[tile] = { up: !!variant && pass, down: !!variant && pass, left: !!variant && pass, right: !!variant && pass };
+    tileset.priority[tile] = variant ? pack.defaultLayer : 'lower'; tileset.terrain[tile] = pack.terrainTag;
     (tileset.tileMeta ??= [])[tile] = variant ? {
-      label: pack.name, description: `${pack.description} 8방향 mask=${XP_AUTOTILE_MASKS[tile - offset]}. ${pack.id} 자동 연결.`,
-      defaultLayer: 'lower', passage: pack.passage, repeatability: 'auto', source: 'imported',
+      label: pack.name, description: `${pack.description} 8방향 mask=${XP_AUTOTILE_MASKS[variant.index]}, frame=${variant.frame}/${pack.frames}. ${pack.placement}.`,
+      defaultLayer: pack.defaultLayer, passage: pack.passage, repeatability: pack.placement === 'lower-autoshape' ? 'auto' : 'fixed', source: 'imported',
+      role: pack.role, terrainTag: pack.terrainTag, tags: [pack.surface, pack.id, `underlay:${pack.underlay}`],
     } : { label: '빈 칸', description: '아틀라스 행 정렬용 공백. 배치하지 않는다.', source: 'unknown' };
   }
-  (tileset.autotileGroups ??= []).push(xpAutotileGroup(pack, offset));
+  if (pack.placement === 'lower-autoshape') {
+    const group = xpAutotileGroup(pack, offset, tileIds);
+    group.memberTileIds = [...variants.keys()];
+    (tileset.autotileGroups ??= []).push(group);
+  }
+  if (pack.frames > 1) (tileset.animationStrips ??= []).push(...tileIds.map(baseTile => ({ baseTile, frames: pack.frames, fps: pack.fps! })));
   (tileset.tileGroups ??= []).push({
-    id: pack.id, name: pack.name, role: pack.role, defaultLayer: 'lower',
-    tileIds: XP_AUTOTILE_MASKS.map((_, index) => offset + index), source: 'imported', confidence: 'high',
-    description: pack.description, placementRules: '같은 그룹을 lower에 칠해 8방향 자동 성형. 원본을 12칸으로 잘라 배치하지 않는다. 다른 재료와 자동 연결하지 않는다.',
+    id: pack.id, name: pack.name, role: pack.role, defaultLayer: pack.defaultLayer,
+    tileIds, source: 'imported', confidence: 'high',
+    description: pack.description, placementRules: `${pack.placement === 'lower-autoshape' ? '같은 그룹을 lower에 칠해 8방향 자동 성형.' : '참고문서의 전체 마스크 배열로 수동 배치. upper 자동 성형 없음.'} 받침: ${pack.underlay}. ${pack.restrictions.join(' ')} 원본을 12칸으로 잘라 배치하지 않는다.`,
   });
-  const raw = document.createElement('canvas'); raw.width = 96; raw.height = 128;
+  const raw = document.createElement('canvas'); raw.width = pack.sourceWidth; raw.height = pack.sourceHeight;
   raw.getContext('2d')!.drawImage(source, 0, 0);
-  (tileset.referenceDocuments ??= []).push(createPixelArtWorldAutotileReferences(pack, source, raw.toDataURL('image/png'), offset, tileset.id));
+  (tileset.referenceDocuments ??= []).push(createPixelArtWorldAutotileReferences(pack, source, raw.toDataURL('image/png'), offset, tileset.id, tileIds, { image: base, tileset: target }));
   validateTilesetReferences(tileset.referenceDocuments);
   validateTileset(tileset.id, tileset);
-  return { tileset, assetId, dataUrl: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height, offset };
+  return { tileset, assetId, dataUrl: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height, offset, tileIds };
 }
 
 /** Append once, without changing previous tile IDs or overwriting concurrent target edits. */
