@@ -23,8 +23,10 @@ import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
 import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
+  canonicalizeSayBeatAliases,
   compileCutscene,
   CutsceneValidationError,
+  SAY_BEAT_ALIAS_WARNING,
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
@@ -3313,7 +3315,9 @@ const scriptCutscene: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
     const warnings: string[] = [];
-    const beats = resolveCutsceneMusicResources(draft, args.beats as CutsceneBeat[], warnings);
+    const aliased = canonicalizeSayBeatAliases(args.beats);
+    if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
+    const beats = resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);
