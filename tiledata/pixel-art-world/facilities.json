@@ -276,6 +276,24 @@
             "y": 3
           }
         ]
+      },
+      {
+        "id": "clinic-waiting-chair-back",
+        "name": "대기 의자 · 북향 뒷면",
+        "sourceRect": {
+          "x": 6,
+          "y": 31,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       }
     ],
     "scenePlans": [

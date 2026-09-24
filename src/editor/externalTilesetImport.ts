@@ -10,6 +10,7 @@ import { pixelArtWorldCityGuide } from '@/project/pixelArtWorldCity';
 import { inspectExternalTileGrounding } from '@/project/externalTileGrounding';
 import { pixelArtWorldSchoolBuildingGuide } from '@/project/pixelArtWorldSchoolBuilding';
 import layoutGuidance from '@/assets/pixelArtWorldLayoutGuidance.json';
+import { appendPixelArtWorldComposites } from './pixelArtWorldComposites';
 
 export async function prepareExternalTileset(file: File, pack: ExternalTilesetPack) {
   if (file.size > 4_000_000) throw new Error('원본 PNG를 선택하세요. 파일이 너무 큽니다.');
@@ -51,7 +52,9 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
     });
   }
   validateTilesetReferences(tileset.referenceDocuments);
-  return { dataUrl, assetId, tileset };
+  const composed = appendPixelArtWorldComposites(pack, image, tileset, image);
+  return { dataUrl: composed?.dataUrl ?? dataUrl, sourceDataUrl: dataUrl, assetId, tileset: composed?.tileset ?? tileset,
+    imageWidth: composed?.imageWidth ?? pack.width, imageHeight: composed?.imageHeight ?? pack.height };
 }
 
 /** Prepare first, then one undoable project mutation. No network fetches of source art. */
@@ -68,14 +71,14 @@ export async function importExternalTileset(file: File, pack: ExternalTilesetPac
   ensureCurrent();
   const asset = await uploadedAssetForImport({
     repository, id: prepared.assetId, name: pack.filename, kind: 'chipset', dataUrl: prepared.dataUrl,
-    meta: { tileSize: 32, frameWidth: 32, frameHeight: 32, width: pack.width, height: pack.height, frames: prepared.tileset.count },
+    meta: { tileSize: 32, frameWidth: 32, frameHeight: 32, width: prepared.imageWidth, height: prepared.imageHeight, frames: prepared.tileset.count },
   });
   ensureCurrent();
   recordProjectSnapshot();
   store.update(project => {
     project.assets.uploaded[asset.id] = asset;
     project.tilesets[prepared.tileset.id] = prepared.tileset;
-    project.resourceProfiles.push({ kind: 'chipset', name: pack.name, tileWidth: 32, tileHeight: 32, imageWidth: pack.width, imageHeight: pack.height, assetId: asset.id });
+    project.resourceProfiles.push({ kind: 'chipset', name: pack.name, tileWidth: 32, tileHeight: 32, imageWidth: prepared.imageWidth, imageHeight: prepared.imageHeight, assetId: asset.id });
   });
   return prepared.tileset.id;
 }

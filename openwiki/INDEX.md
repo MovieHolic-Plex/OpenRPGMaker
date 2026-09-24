@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **91쪽 / 3399KB / 약 970,541 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **92쪽 / 3403KB / 약 971,728 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -77,7 +77,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
-| `openwiki/pixel-art-world-home.md` | 3 | `ST-Town-I01.png`, `compact-homes.json`, `revise-pixel-art-world-homes.mjs` |
+| `openwiki/pixel-art-world-home.md` | 1 | `ST-Town-I01.png` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
@@ -941,7 +941,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L114` Runtime and authoring contracts
 - `L133` Verification and examples
 
-### `openwiki/pixel-art-world-doors.md` — 3KB · 37줄 · ~1,009 토큰
+### `openwiki/pixel-art-world-civic.md` — 3KB · 33줄 · ~917 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-doors.md` — 4KB · 45줄 · ~1,279 토큰
 
 절 제목 없음 (평면 목록 페이지).
 

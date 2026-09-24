@@ -16,6 +16,8 @@ const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','Faci
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
+const civicPlans = (await read('tiledata/pixel-art-world/compact-civic.json')).maps;
+const tabletopRecipes = await read('tiledata/pixel-art-world/tabletop-composites.json');
 const { PNG } = pngjs, pngs = new Map();
 const key = id => { const normalized=id.replaceAll('-', '_'); return `shared_${normalized.startsWith('paw_')?normalized:'paw_'+normalized}`; };
 const lib = { version:1, projectDefaults:true, roots:[], places:{}, regions:{}, tilesets:{}, assets:{}, maps:{}, sourceProjectId:proof.projectId, previews:{} };
@@ -42,7 +44,7 @@ for (const pack of doors) {
   if(!asset&&!categories.length)continue;
   if(!asset||!categories.length)throw Error('Incomplete door dependency '+pack.id);
   const meta=asset.meta;
-  if(asset.kind!=='sprite'||meta.frames!==16||['width','height','frameWidth','frameHeight'].some(k=>meta[k]!==pack[k]))throw Error('Door geometry differs '+id);
+  if(asset.kind!=='sprite'||!meta||meta.frames!==pack.frames.length||['width','height','frameWidth','frameHeight'].some(k=>meta[k]!==pack[k]))throw Error('Door geometry differs '+id);
   if(!asset.dataUrl?.startsWith('data:image/png;base64,'))throw Error('Resolve door asset through host first: '+id);
   const png=PNG.sync.read(Buffer.from(asset.dataUrl.split(',')[1],'base64'));
   if(png.width!==pack.width||png.height!==pack.height)throw Error('Door PNG dimensions differ '+id);
@@ -98,6 +100,16 @@ for(const pack of packs.filter(pack=>project.tilesets[pack.id])) for(const recip
   addObject(tileId,key(pack.id+'_'+recipe.id),recipe.name,width,height,Array(width*height).fill(-1),recipe.tiles.flat(),
     `고정 ${width}×${height} 전체를 상위에 놓고 기존 하위 바닥을 보존한다. 자르기·반전·늘이기 금지. 설치 종류 ${recipe.placementKind??'원본 문서 참조'}, 지지칸 ${JSON.stringify(recipe.supportCells??[])}. ${recipe.facing} 방향 접근칸을 비운다. 문/계단 그림만으로 이벤트가 생성되지 않는다. 원본 ${pack.filename}, SHA256 ${pack.sha256}, sourceRect ${JSON.stringify(recipe.sourceRect)}.`,source);
 }
+for(const recipe of tabletopRecipes){
+  const source=project.tilesets[recipe.packId];
+  const kit=source?.structureKits?.find(k=>k.id===recipe.id);
+  if(!kit)continue;
+  const lower=kit.rows.flatMap(r=>r.tiles),upper=kit.rows.flatMap(r=>r.upperTiles);
+  const docs=source.referenceDocuments.filter(c=>c.id==='paw-tabletop-composites').map(c=>({...c,documents:c.documents.filter(d=>d.id===recipe.id),images:c.images.filter(i=>i.id===recipe.id)}));
+  if(docs.length!==1||docs[0].documents.length!==1||docs[0].images.length!==1)throw Error('Composite source documents missing '+recipe.id);
+  addObject(key(recipe.packId),key(recipe.id),recipe.name,kit.width,kit.height,lower,upper,
+    `${recipe.notes} 상판 소품은 완전 가구와 이미 합성했다. 전체 상위 배열을 찍고 하위 바닥을 보존한다. 조작면 ${recipe.facing}, 가구 전체 사각형 차단. 원본 ${recipe.sourceFilename}, SHA256 ${recipe.sourceSha256}.`,docs);
+}
 for(const recipe of extras.recipes){
   const tileId=key('paw-school-four-composed'), width=recipe.tiles[0].length,height=recipe.tiles.length;
   const upper=recipe.tiles.flatMap((row,y)=>row.map((tile,x)=>{
@@ -150,14 +162,17 @@ for(const source of Object.values(project.maps)){
   const floor=school.floors.find(f=>f.id===source.id), schoolGuide=floor?school.guide:'';
   const candidate=homePlans[source.id];
   const home=candidate&&candidate.width===map.width&&candidate.height===map.height&&JSON.stringify(candidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(candidate.upperTiles)===JSON.stringify(map.upperTiles)?candidate:null;
+  const civicCandidate=civicPlans[source.id];
+  const civic=civicCandidate&&civicCandidate.width===map.width&&civicCandidate.height===map.height&&JSON.stringify(civicCandidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(civicCandidate.upperTiles)===JSON.stringify(map.upperTiles)?civicCandidate:null;
   const guide=`# ${map.name}\n\n정본 ${proof.projectId}, revision ${proof.revision}, 원본 mapId ${source.id}.\n공용 mapId \`${id}\`, tilesetId \`${tileId}\`.\n${schoolGuide}\n\n원본 사건을 보관한 전체 맵은 library.maps에 있다. 장소 그림 킷 자체에는 이벤트가 없다. 계단/출입구는 ports/connections와 원본 events를 함께 읽고 목적 mapId를 다시 연결한다.\n이 사례 하나는 소재 전체 또는 미검토 타일의 지원 완료를 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({width:map.width,height:map.height,lowerTiles:map.lowerTiles,upperTiles:map.upperTiles,events:map.events,...(floor?{rooms:floor.rooms,stairs:floor.stairs,spawn:floor.spawn}:{}),...(home?{rooms:home.rooms,doorways:home.doorways,placements:home.placements,approachCells:home.approachCells,spawn:home.spawn,exitTrigger:home.exitTrigger,designNotes:home.designNotes}:{})})}\n\`\`\``;
   const docs=[category('place-layout',map.name,guide,image)];
-  if(pendingReview[source.id]&&!home) docs.unshift({id:'review-pending',name:'수정 전 사례 · 그대로 재사용 금지',description:pendingReview[source.id],documents:[{id:'findings',name:'적대적 시각 검토.md',markdown:`# 수정 대기\n\n${pendingReview[source.id]}\n\n좌표는 이 실제 저장 맵의 0기준 타일 좌표다. 아래 전체 배열/그림은 수정할 원본을 식별하는 자료이며 정상 배치의 정답이 아니다. 공용 장소의 검토 완료 목록에서는 제외한다.`}],images:[]});
+  if(civic)docs.push(category('civic-placement',map.name+' · 가구와 동선',`${civic.designNotes.join('\n\n')}\n\n상위 소품을 같은 칸에 겹쳐 지우지 않고 완전 조립 타일을 사용한다. 각 가구 방향·밑동과 직원/손님 접근칸, 문턱을 유지한다. 결제·앉기·진료 이벤트는 별도다.\n\n\`\`\`json\n${JSON.stringify({placements:civic.placements,approachCells:civic.approachCells,spawn:civic.spawn,exitTrigger:civic.exitTrigger,ceilingCells:civic.ceilingCells})}\n\`\`\``,image));
+  if(pendingReview[source.id]&&!home&&!civic) docs.unshift({id:'review-pending',name:'수정 전 사례 · 그대로 재사용 금지',description:pendingReview[source.id],documents:[{id:'findings',name:'적대적 시각 검토.md',markdown:`# 수정 대기\n\n${pendingReview[source.id]}\n\n좌표는 이 실제 저장 맵의 0기준 타일 좌표다. 아래 전체 배열/그림은 수정할 원본을 식별하는 자료이며 정상 배치의 정답이 아니다. 공용 장소의 검토 완료 목록에서는 제외한다.`}],images:[]});
   const kitId=id+'_raster';
   lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:map.name,width:map.width,height:map.height,tileSize:32,rows:rows(map.width,map.height,map.lowerTiles,map.upperTiles),learnedFrom:'db-authored',ai:{description:map.name+' 전체 평면',placementRules:'전체 배열과 한 칸 출입구, 좌석 접근칸, 바닥에 닿는 가구 밑동을 보존한다. 이벤트는 별도로 연결한다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'},referenceDocuments:docs});
   lib.places[id]={id,name:map.name,revision:1,tags:['Pixel Art World',floor?'학교':'현대도시','다운로드 소재'],provenance:{origin:'ai',sourceId:source.id},kind:source.id==='paw_city'?'settlement':'facility',layout:'manual',children:[],ports:(floor?.stairs??[]).map(s=>({id:`${id}_${s.direction}_${s.x<30?'west':'east'}`,name:s.destinationLevel+'층',x:s.x,y:s.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
   // New maps need an explicit visual review before joining the approved roots.
-  if(['paw_city','library-compact-1'].includes(source.id)||home)lib.roots.push(id);
+  if(['paw_city','library-compact-1'].includes(source.id)||home||civic)lib.roots.push(id);
   if(source.id==='paw_city')lib.regions[id]={id,name:map.name,kind:'completed-map',regionKind:'settlement',revision:1,width:map.width,height:map.height,tilesetId:tileId,preview:image,sourceProjectId:proof.projectId,sourceMapId:id,snapshotProjectId:proof.projectId,rules:['50×50 실제 저장 평면. 도로·건물 입구와 시설 목적맵의 연결을 보존한다.','완성도는 별도 시각 검토 대상이며 자동 구조 검사는 미적 승인이 아니다.'],limitations:'현재 도시 배치 참고. 전체 카탈로그 지원 완료가 아니다. 사용자 로컬 다운로드 원본만 포함.',referenceDocuments:docs};
 }
 const buildingId='shared_paw_school_building';
