@@ -87,6 +87,19 @@
   height: min(var(--runtime-dialogue-panel-height, 27%), var(--play-visible-height));
   top: auto;
 }
+/* 말풍선은 무대 좌표(카메라 화면 좌표)로 붙는다 — 크롭 여백 없이 무대 전체를 덮는다. */
+.player-layout .play-stage > .dialogue-overlay.balloon-active,
+.player-layout .play-stage > .dialogue-overlay.balloon-active.position-top,
+.player-layout .play-stage > .dialogue-overlay.balloon-active.position-center,
+.player-layout .play-stage > .dialogue-overlay.balloon-active.position-bottom {
+  bottom: 0;
+  height: auto;
+  left: 0;
+  max-height: none;
+  min-height: 0;
+  right: 0;
+  top: 0;
+}
 .player-layout .play-stage > .dialogue-overlay.choices-active.position-bottom {
   height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));
   min-height: min(var(--runtime-choice-panel-height, 26%), var(--play-visible-height));

@@ -202,6 +202,8 @@ export interface CharacterProfile {
   readonly giftPrefs?: GiftPrefs;
   /** Default gift responses; event.giftResponses fully overrides when present. */
   readonly giftResponses?: GiftResponses;
+  /** 이 인물이 말할 때의 대화창 스타일·이름색·목소리·빠르기·글꼴 (project/dialogueStyles.ts). */
+  readonly dialogue?: import("@/project/dialogueStyles").SpeakerDialogueProfile;
 }
 
 /** Merchant-event shop price bridge. Applied via resolveSocialKey when bond >= minFriendship. */
@@ -272,6 +274,12 @@ export type Command =
       emotion?: string;
       /** true 면 키 입력 없이 다음 단계로 진행. */
       autoAdvance?: boolean;
+      /** 이 한 줄만 쓰는 대화창 스타일(DialogueStyleId). 비우면 화자 프로필 → 프로젝트 기본. */
+      style?: string;
+      /** 대사 종류(DialogueContextId): narration·thought·whisper·shout·radio·sign·letter·system. 비우면 일반 대사. */
+      context?: string;
+      /** 대사 그릇(DialogueContainerId): box·balloon·bark·corner. 비우면 화자 프로필 → 상자. */
+      container?: string;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {

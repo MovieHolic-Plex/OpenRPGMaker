@@ -228,6 +228,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
       "타이틀 화면과 오프닝은 새 프로젝트 자리표시입니다(오프닝은 제목 카드뿐일 수 있습니다). 기획에 맞게 set_title_screen 으로 타이틀을, edit_opening/set_opening 으로 게임 안 목소리의 도입을 바꾸세요. 기획 요약을 그대로 옮기지 말고, 범인·반전 같은 정답은 도입에 쓰지 마세요.",
+      WELCOME_DIALOGUE_LOOK_LINE,
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
       `게임 제목이 아직 「${UNNAMED_GAME_TITLE}」 같은 기본값이면 기획에 맞는 제목을 지어 set_project_settings({title}) 로 저장하세요(타이틀 화면에도 반영됩니다).`,
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
@@ -243,6 +244,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       `${GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
       `톤: ${preset.tone}`,
       buildActionArenaAuthoringGuide(),
+      WELCOME_DIALOGUE_LOOK_LINE,
       "한국어로 진행하고, 도구로 실제 2D 액션 전투 공간을 저작하세요.",
     ].join("\n\n");
   }
@@ -257,6 +259,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ...(preset.id === "school-horror" ? ["", HORROR_CHASE_AUTHORING_GUIDE] : []),
     "",
+    WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");
 }
@@ -282,6 +285,17 @@ export function welcomeFreeTextDisplayText(userIntent: string): string {
   return userIntent.trim();
 }
 
+/**
+ * 첫 제작 때 대화창·화자 목소리를 고르게 하는 지시. 장르 추천 스타일은 코드가 이미 깔아 두므로
+ * (projectInterviewStartup·reset_project) 여기서는 톤이 다를 때만 바꾸고, 인물별 차이를 만들게 한다.
+ */
+export const WELCOME_DIALOGUE_LOOK_LINE =
+  "대화창: 기획 톤에 맞는 대화창 스타일을 set_project_settings 의 dialogue.style 로 고르세요(장르 추천값이 이미 깔려 있으니 톤이 다를 때만 바꾸기). "
+  + "주요 인물은 upsert_character_profile 의 dialogue 로 이름 색·목소리·음 높이·말 빠르기를 서로 다르게 정하고, "
+  + "내레이션·속마음·표지판·편지·안내 문구는 대사의 context(narration/thought/sign/letter/system)로 구별하세요. "
+  + "지나가는 마을 사람 잡담은 container:\"bark\"(게임을 안 멈춤), 짧은 대꾸는 balloon, 무전은 corner 로 두고, "
+  + "감정이 튀는 대목은 본문 태그 [흔들]…[/]·[크게]…[/]·[쉼:0.5]·[표정:놀람] 을 아껴 쓰세요.";
+
 /** Free text keeps the user's scope; structured intent selects a recipe later. */
 export function buildWelcomeFreeTextPrompt(userIntent: string): string {
   const intent = userIntent.trim();
@@ -293,6 +307,7 @@ export function buildWelcomeFreeTextPrompt(userIntent: string): string {
     "사용자가 요청한 범위만 실제 편집 툴로 작성하세요. 구조화된 의도에 맞는 저작 순서를 따르고, 요청하지 않은 NPC·아이템·퀘스트·상점·보스·보상·페이지 수를 할당하지 마세요.",
     ...requiredTemplateBlock(genre ?? undefined),
     "",
+    WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");
 }

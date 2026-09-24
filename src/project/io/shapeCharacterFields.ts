@@ -18,6 +18,8 @@ function validateCharacterProfile(label: string, value: unknown): void {
   if (profile.birthday !== undefined) validateBirthday(`${label}.birthday`, profile.birthday);
   if (profile.giftPrefs !== undefined) validateGiftPrefs(`${label}.giftPrefs`, profile.giftPrefs);
   if (profile.giftResponses !== undefined) validateGiftResponses(`${label}.giftResponses`, profile.giftResponses);
+  // 대화 설정은 모르는 값을 런타임이 기본으로 되돌리므로(normalizeSpeakerDialogueProfile) 모양만 본다.
+  if (profile.dialogue !== undefined) requireRecord(`${label}.dialogue`, profile.dialogue);
 }
 
 function validateBirthday(label: string, value: unknown): void {

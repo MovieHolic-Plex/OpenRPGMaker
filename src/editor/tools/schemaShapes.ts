@@ -10,6 +10,7 @@
 import { RELATIONSHIP_STATES } from "@/project/relationshipState";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { CONCEPT_PLAN_ENUMS } from "@/editor/conceptPlan";
+import { DIALOGUE_CONTAINER_IDS, DIALOGUE_CONTEXT_IDS, DIALOGUE_STYLE_IDS, dialogueContainerGuideLines, dialogueInlineTagGuideLines } from "@/project/dialogueStyles";
 import type { JsonSchema } from "./types";
 
 /** `{x,y}` 좌표. 두 필드 모두 필수. */
@@ -182,10 +183,17 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
     fade: { type: "string", enum: ["black", "white", "none"], description: "transfer 비트: 전환 페이드(기본 black)" },
     endingId: { type: "string", description: "ending 비트: define_ending 으로 정의한 엔딩 id" },
     speaker: { type: "string" },
-    text: { type: "string" },
+    text: { type: "string", description: `say 본문. 인라인 태그를 쓸 수 있다(여는 태그는 [/] 로 닫음):\n${dialogueInlineTagGuideLines().join("\n")}` },
     lines: { type: "array", items: { type: "string" } },
     emotion: { type: "string" },
     autoAdvance: { type: "boolean" },
+    context: {
+      type: "string",
+      enum: [...DIALOGUE_CONTEXT_IDS],
+      description: "say 전용 대사 종류. narration(내레이션)·thought(속마음)·whisper·shout·radio·sign(표지판)·letter(편지)·system(안내). 일반 대사는 생략.",
+    },
+    style: { type: "string", enum: [...DIALOGUE_STYLE_IDS], description: "say 전용. 이 대사만 다른 대화창. 보통 생략." },
+    container: { type: "string", enum: [...DIALOGUE_CONTAINER_IDS], description: `say 전용 대사 그릇:\n${dialogueContainerGuideLines().join("\n")}\n마을 사람 잡담은 bark, 무전·동료 한마디는 corner.` },
     face: FACE_SCHEMA,
     direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },

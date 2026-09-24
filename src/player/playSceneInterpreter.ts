@@ -57,6 +57,8 @@ import { playPresentItem } from "@/player/playScenePresentItem";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
+import { resolveDialogueLook } from "@/project/dialogueStyles";
+import { dialogueSceneHooks } from "@/player/playSceneDialogueHooks";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -339,8 +341,18 @@ async function consumeBlockingStep(
       const event = step.speaker === undefined && currentEventId
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
+      const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
       await dialogue.showText({
-        speaker: step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName,
+        speaker,
+        look: resolveDialogueLook(project, {
+          speaker,
+          characterId: event?.characterId,
+          style: step.style,
+          context: step.context,
+          container: step.container,
+          emotion: step.emotion,
+        }),
+        ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
         face: step.face,
         settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,

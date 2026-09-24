@@ -27,6 +27,7 @@ import {
   UPSERT_VILLAGE_DOCUMENT_SCHEMA,
 } from "./authoringMiscSchemas";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
+import { normalizeSpeakerDialogueProfile } from "@/project/dialogueStyles";
 
 const DIRECTIONS = ["down", "left", "right", "up"] as const satisfies readonly Dir[];
 const RESOURCE_KINDS = [
@@ -304,23 +305,28 @@ function parseCharacterProfile(project: Project, value: unknown): CharacterProfi
       if (text) giftResponses = { ...giftResponses, [key]: text };
     }
   }
+  const dialogue = record.dialogue === undefined ? undefined : normalizeSpeakerDialogueProfile(recordArg(record.dialogue, "profile.dialogue"));
   return {
     ...(optionalString(record.displayName) ? { displayName: optionalString(record.displayName) } : {}),
     ...(birthday ? { birthday } : {}),
     ...(giftPrefs ? { giftPrefs } : {}),
     ...(giftResponses ? { giftResponses } : {}),
+    ...(dialogue ? { dialogue } : {}),
   };
 }
 
 const upsertCharacterProfile: ToolDefinition = {
   name: "upsert_character_profile",
-  description: "characterId별 인물 프로필의 표시 이름·생일·선물 선호·반응 문구를 등록하거나 수정한다.",
+  description: "characterId별 인물 프로필의 표시 이름·생일·선물 선호·반응 문구·대화(이름 색·목소리·말 빠르기)를 등록하거나 수정한다.",
   mode: "write",
   domains: ["database"],
   parameters: UPSERT_CHARACTER_PROFILE_SCHEMA,
   run(draft, args): ToolExecResult {
     const characterId = requiredString(args.characterId, "characterId");
-    const profile = parseCharacterProfile(draft, args.profile);
+    const parsed = parseCharacterProfile(draft, args.profile);
+    // 대화 설정은 다른 칸을 고치는 호출이 조용히 지우지 않게 생략 시 유지한다(선물만 고치다 목소리가 사라지는 일).
+    const keptDialogue = recordArg(args.profile, "profile").dialogue === undefined ? draft.characters?.[characterId]?.dialogue : undefined;
+    const profile = keptDialogue ? { ...parsed, dialogue: keptDialogue } : parsed;
     draft.characters = { ...(draft.characters ?? {}), [characterId]: profile };
     return { summary: `인물 프로필 ${characterId} 저장`, data: { characterId, profile } };
   },
