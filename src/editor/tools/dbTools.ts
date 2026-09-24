@@ -14,7 +14,7 @@ import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
-import { monsterBattleStatsForSpecies, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
@@ -965,6 +965,11 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
   }
 }
 
+function skillDamagesFoe(project: Project, skillId: string): boolean {
+  const skill = project.database.skills.find((entry) => entry.id === skillId);
+  return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
@@ -973,7 +978,8 @@ const upsertEnemy: ToolDefinition = {
     "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. " +
     "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩의 하한을 맞추고(주신 값보다 낮추지 않음) 모의전 결과를 경고로 돌려준다. " +
     "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인). " +
-    "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위).",
+    "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위). " +
+    "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다.",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
@@ -1002,6 +1008,31 @@ const upsertEnemy: ToolDefinition = {
         warnings.push(`몬스터 파티 게임이라 종 ${species.name} Lv${level} 공식 능력치로 맞췄습니다(${changed.map((key) => `${key} ${formula[key]}`).join(", ")}). 강하게 하려면 stats 대신 level 을 올리세요.`);
       }
       if (record.level === undefined) warnings.push(`level 이 없어 Lv1 로 계산했습니다 — 야생·트레이너 몬스터는 level 을 주세요.`);
+      // 행동이 비면 gen1 은 Struggle(반동)만 쓰고, 포획은 skillIds 빈 배열을 복사해 파티 몬스터가 기술을 잃는다.
+      const learned = monsterSkillIdsAtLevel(species, level).filter((skillId) => draft.database.skills.some((skill) => skill.id === skillId));
+      const hasDamage = (record.actions ?? []).some((action) => skillDamagesFoe(draft, action.skillId));
+      if (!hasDamage && learned.length > 0) {
+        const have = new Set((record.actions ?? []).map((action) => action.skillId));
+        const added = learned.filter((skillId) => !have.has(skillId));
+        if (added.length > 0) {
+          const filled = normalizeEnemyRecord({
+            ...record,
+            actions: [
+              ...(record.actions ?? []),
+              ...added.map((skillId) => ({
+                skillId,
+                priority: 5,
+                condition: { kind: "always" as const },
+                switchOnAfterAction: { enabled: false },
+                switchOffAfterAction: { enabled: false },
+              })),
+            ],
+          });
+          record.actions = filled.actions;
+          record.skillIds = filled.skillIds;
+          warnings.push(`피해 행동이 없어 종 ${species.name} Lv${level} 습득 기술을 넣었습니다(${added.join(", ")}). 다른 기술을 쓰려면 actions 에 피해 기술을 지정하세요.`);
+        }
+      }
     }
     const outcome = upsertById(draft.database.enemies, record);
     // 보스 하한은 액터 파티 척도라 몬스터 파티 게임에서는 쓰지 않는다 — 관장 강도는 level 로 정한다.
