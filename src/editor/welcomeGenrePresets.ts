@@ -144,6 +144,18 @@ export const MONSTER_COLLECT_AUTHORING_GUIDE = [
   "- 체육관·연구소·회복 센터·상점은 실내 맵이다. 마을 집 실내를 쓰면 그 맵 이름을 시설 이름으로 바꾸고(set_map_properties) 마을 문 앞에 표지판을 둔다.",
 ].join("\n");
 
+/** 마법사로 시작한 게임의 임시 제목 — 조수가 기획에 맞는 제목으로 바꾼다(레시피 이름이 게임 제목이 되던 결함). */
+export const UNNAMED_GAME_TITLE = "새 게임";
+
+export const ADVENTURE_JRPG_AUTHORING_GUIDE = [
+  "턴제 JRPG 저작 요령:",
+  "- 전투 능력치는 배우 parameterCurves 가 정본이다(직업 곡선은 직업 변경 뒤에만). 파티원마다 역할이 보이게 upsert_actor parameterCurves 에 [Lv1값, Lv99값] 을 준다 — 예: 검사 maxHp:[120,2400], 마법사 maxMp:[40,800]·mind:[30,300].",
+  "- 무기·방어구는 upsert_equipment(slot, statBonuses, price)로 만들고, 상점은 make_villager({shop:{stock:[{itemId}]}}) 또는 set_shop_stock 으로 장비 id 와 아이템 id 를 진열한다. 골드만 깎고 대사로 「샀다」 하는 선택지는 만들지 않는다.",
+  "- 던전 층마다 set_encounter_table(mapId, entries, encounterRate) 로 무작위 전투를 넣고, 깊을수록 강한 적 그룹을 쓴다.",
+  "- 적 수치는 위에서 정한 파티 능력치 척도로 새로 정한다(기본 DB 적은 다른 척도일 수 있다). 잡몹은 simulate_battle 로 이기되 피해를 입고, 보스는 합류가 끝난 파티로 몇 레벨 올린 뒤 회복·MP 를 써야 이기는지 확인하고 tune_enemy 로 맞춘다.",
+  "- 턴제 JRPG 에는 시간 시스템(configure_time_system)·주민 시간표·선물 선호가 필요 없다. 기획이 요구하지 않으면 만들지 않는다.",
+].join("\n");
+
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
@@ -155,7 +167,9 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
       "타이틀 화면과 오프닝은 새 프로젝트 자리표시입니다(오프닝은 제목 카드뿐일 수 있습니다). 기획에 맞게 set_title_screen 으로 타이틀을, edit_opening/set_opening 으로 게임 안 목소리의 도입을 바꾸세요. 기획 요약을 그대로 옮기지 말고, 범인·반전 같은 정답은 도입에 쓰지 마세요.",
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
+      `게임 제목이 아직 「${UNNAMED_GAME_TITLE}」 같은 기본값이면 기획에 맞는 제목을 지어 set_project_settings({title}) 로 저장하세요(타이틀 화면에도 반영됩니다).`,
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
+      ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
     ].join("\n\n");
   }
   if (preset.packId === "action-rpg") {
