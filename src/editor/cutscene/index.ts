@@ -230,6 +230,37 @@ function shakeFields(beat: CutsceneShakeBeat): Record<string, string | number> {
   return { value: step, intensity: String(step), durationMs: durationMs(beat.durationMs, 400) };
 }
 
+/**
+ * 이벤트 명령 모양으로 쓴 대사 비트를 say 로 옮긴다 — `{kind:"text",body:"…"}`(문장 표시 명령의 모양).
+ * 2026-09-24 갤러리 호러 r5: define_ending 세 번이 에필로그 전부를 이 모양으로 보내 스키마 enum 에서 통째로 튕겼고,
+ * 패배 엔딩이 없어 set_life_flower 까지 연쇄로 실패했다. 문장 비트는 say 하나라 뜻이 겹치지 않는다.
+ */
+const SAY_KIND_ALIASES: ReadonlySet<string> = new Set(["text", "narrate", "narration", "dialogue", "message"]);
+const SAY_TEXT_ALIASES = ["body", "message", "content", "line"] as const;
+export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; moved: number } {
+  let moved = 0;
+  const visit = (list: unknown): unknown => {
+    if (!Array.isArray(list)) return list;
+    return list.map((entry) => {
+      if (!isRecord(entry)) return entry;
+      if (entry.kind === "parallel" && Array.isArray(entry.beats)) return { ...entry, beats: visit(entry.beats) };
+      if (typeof entry.kind !== "string" || !SAY_KIND_ALIASES.has(entry.kind)) return entry;
+      const next: Record<string, unknown> = { ...entry, kind: "say" };
+      if (typeof next.text !== "string" && !Array.isArray(next.lines)) {
+        const alias = SAY_TEXT_ALIASES.find((key) => typeof next[key] === "string");
+        if (alias) { next.text = next[alias]; delete next[alias]; }
+      }
+      moved += 1;
+      return next;
+    });
+  };
+  const out = visit(beats);
+  return { beats: out, moved };
+}
+
+export const SAY_BEAT_ALIAS_WARNING = (moved: number): string =>
+  `대사 비트 ${moved}개를 say 로 옮겼습니다 — 컷신·에필로그의 대사는 {kind:"say",speaker?,text} 입니다({kind:"text",body} 는 이벤트 명령 모양).`;
+
 export function withoutEndingBeats(beats: readonly CutsceneBeat[]): { beats: CutsceneBeat[]; removed: number } {
   let removed = 0;
   const strip = (list: readonly CutsceneBeat[]): CutsceneBeat[] => list.flatMap((beat): CutsceneBeat[] => {

@@ -170,7 +170,8 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   properties: {
     kind: {
       type: "string",
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending"],
+      // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
     },
     // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
     switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
