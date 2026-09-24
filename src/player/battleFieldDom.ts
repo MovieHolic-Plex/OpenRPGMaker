@@ -176,6 +176,8 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
 
 export interface BattleFieldPresentation {
   readonly ledger?: BattlePresentationLedger;
+  /** Keep outgoing targets available until queued hit/capture beats finish. */
+  readonly retainDepartedEnemies?: boolean;
   /** 시퀀스가 돌지 않는 화면(명령/타깃 선택)에서 지난 액션의 attack/hit pose 잔류를 걷는다. */
   readonly calm?: boolean;
   /** 지금 impact 비트로 맞고 있는 배틀러 — 이 배틀러만 hit pose 를 보여준다. */
@@ -333,6 +335,12 @@ export function syncSceneBackdropVar(field: HTMLElement): void {
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-enemy-group");
   if (!group) return;
+  if (!presentation?.retainDepartedEnemies) {
+    const currentIds = new Set(snapshot.enemies.map((enemy) => enemy.id));
+    for (const node of group.querySelectorAll<HTMLElement>(":scope > .battle-enemy")) {
+      if (!currentIds.has(node.dataset.testid ?? "")) node.remove();
+    }
+  }
   const positions = resolveEnemyRowPositions(snapshot, snapshot.enemies);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);

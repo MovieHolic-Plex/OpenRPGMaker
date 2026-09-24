@@ -774,3 +774,13 @@ Completed runtime timelines persist into bounded session reports accessible from
 - Skill prediction clones vitals, state counters and MP/PP/cooldown maps, consumes one cast cost on the clone, and recomputes every hit against evolving state/vitals. Self targets share the cloned caster. Gen1 enemy unlimited PP is preserved. Ordinary-hit previews apply **guaranteed** state transitions between hits (including RM hit recovery, Gen1 immunity/major-status exclusivity and fire defrost); probabilistic procs remain excluded, just like variance, misses and criticals. No runtime RNG or snapshot data is mutated.
 - HP versus MP is retained for both damage and healing in Gen1/RM timeline → sequencer feedback → popup/director text. The HP presentation ledger ignores **all** MP feedback, so MP damage cannot animate HP loss/death. MP gauges continue using authoritative snapshots, as before.
 - Parent-only command: `npm test -- test/feature16CombatHardening.test.ts`. Coverage: actual strict extra-cast rejection; gauge cooldown cycles; strict/gauge state/turn drops; cost-aware evolving formula and ordinary-formula predictions; sequencer-to-ledger MP damage; exact Gen1 MP timeline. Implementation agent did not run tests, typecheck, server or browser.
+
+## Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+
+`runtime.visibleEnemies()`는 Gen1의 현재 적 한 마리만 반환한다. 필드 갱신은 새 노드를
+추가하면서 이전 노드를 제거하지 않아, 첫 상대를 쓰러뜨린 뒤 다음 명령 화면에 이전
+몬스터와 HP 띠가 남았다. `syncEnemyGroup`과 별도 HP 목록의 `syncEnemyListPanel`은 전달받은 snapshot의 배틀러 ID에 없는
+노드를 정리한다. `battleDom.syncView`의 `retainDepartedEnemies: sequenceBusy`로
+진행 중 타격·포획 연출의 대상은 유지하고, 시퀀스 종료 후 정리한다. 생존 여부만으로
+삭제하면 RM 전투의 쓰러짐 연출과 현재 snapshot의 사망 적까지 지우므로 그렇게 하지 않는다.
+회귀 계약은 `test/battleEnemyRosterDom.test.ts`이며 이번 세션에서는 vitest를 실행하지 않았다.

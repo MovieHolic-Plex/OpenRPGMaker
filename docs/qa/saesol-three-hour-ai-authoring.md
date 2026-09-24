@@ -752,3 +752,13 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 요청16에서 첫 사천왕 이벤트는 저장됐으나 둘째 이벤트 `ev_sr4_league_e2`는 `setSwitch: switchId가 존재하지 않습니다: sw_sr4_league_e2_won` 직렬화 왕복 오류로 거부됐다. 누락 상태를 가진 이벤트를 정본에 남기는 대신 도구가 커밋을 막았다.
 - 같은 요청의 복구 후 SQLite revision406을 읽기 전용으로 재조회해 `sw_sr4_league_e2_won` 정의와 `ev_sr4_league_e2` 이벤트 존재를 확인했다. 오류를 스위치 검사 자체의 버그로 분류하지 않고 저작 순서 실패로 기록한다.
 - 전반 사천왕 런타임 검사는 `gen1 one active enemy: 2 !== 1` assertion에서 멈췄다(`region4-league-first-player/SUMMARY.md`). 저장 복구와 전투 검증 완료를 구분한다. 실제 중복 표시인지 DOM 선택자 문제인지는 미확정이며 사천왕전 통과로 보고하지 않는다.
+
+### BATTLE-036 — Gen1 상대 교체 뒤 이전 몬스터와 HP 띠 잔류
+
+- 첫 사천왕의 첫 몬스터를 쓰러뜨린 뒤에도 이전 스프라이트/HP 띠가 둘째 몬스터와 함께 남았다. `region4-league-first-stale-dom/failure.png`를 직접 확인했다. DOM assertion 오진이 아니라 실제 화면 결함이다.
+- 엔진의 `visibleEnemies()`는 현재 상대 하나만 반환하지만 `syncEnemyGroup`은 새 노드를 추가하고 이전 노드를 삭제하지 않았다. snapshot에 없는 배틀러 노드를 정리하도록 수정하되, 진행 중인 타격·포획 연출에서는 유지하고 시퀀스 종료 후 제거한다.
+- `test/battleEnemyRosterDom.test.ts`에 연출 중 유지→종료 후 교체→빈 상대 목록 정리 계약을 추가했다. 세션 규칙에 따라 vitest/gates는 실행하지 않았다. 첫 수정 후 전반 사천왕 둘 모두 승리·각900G·재보상 차단은 통과했지만 스크린샷에 별도 HP 목록 잔류가 보였다. `syncEnemyListPanel`에도 같은 정리를 적용하고, 브라우저 검사에 활성 적 이미지와 HP 행 각각1개 assertion을 추가해 재검증 중이다.
+
+- 최종 `region4-league-first-player/SUMMARY.md`: passed=true, pageErrors0, 실제 회복약2회. 매 명령 화면에서 활성 적 스프라이트1개·HP 행1개를 검사했고, 교체 후 PNG를 직접 확인했다. 전반 사천왕 각각900G, 선행 승리 없는 둘째 도전 차단, 재대화 골드·아이템 무변화가 통과했다. 마지막 관문 회복 뒤 실제 진행 상태는6372G와 두 승리 플래그다.
+- 비교 증거: `region4-league-first-stale-dom/failure.png`(기존), `region4-league-first-stale-hud/enemy_sr4_league_e2_2.png`(첫 수정의 HP 잔류), `region4-league-first-player/enemy_sr4_league_e2_2.png`(최종). 전기 동료를 고집해 회복약을 소진한 중간 시도와 쓰러진 동료 선택 timeout은 별도 `region4-league-first-electric-strategy`에 보존했다. 바위 기술을 가진 방어형 동료로 공략을 바꿨으며 정본 능력치/아이템을 낮추거나 보충하지 않았다.
+- 최종 Vite build 성공(66초). 9897 정적 번들을 갱신하고 기존 해시 자산을 유지했다. 서비스 재시작/정본 DB 재작성은 하지 않았다. 기존 열린 탭은 새로고침 후 수정 번들을 읽는다.
