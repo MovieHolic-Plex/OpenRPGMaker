@@ -217,6 +217,7 @@ const makeHorrorLoop: ToolDefinition = {
       includeChase: { type: "boolean" },
       chaserAt: { ...COORD_SCHEMA, description: "{x,y} 추격자 시작" },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
+      hidingSpots: { type: "array", items: COORD_SCHEMA, description: "{x,y}[] 추격을 피해 숨을 옷장 등(includeChase 일 때)" },
       mood: { type: "boolean", description: "true면 어두운 set_scene_mood 적용" },
       activateSwitch: { type: "string" },
     },
@@ -272,10 +273,11 @@ const makeHorrorLoop: ToolDefinition = {
         chaser: {
           at: { x: cx, y: cy },
           graphic: { query: "monster" },
-          speed: 5,
+          speed: 6,
           sightRange: 7,
         },
         killOnTouch: true,
+        ...(Array.isArray(args.hidingSpots) ? { hidingSpots: args.hidingSpots } : {}),
         ...(isRecord(args.safeZone) ? { safeZone: args.safeZone } : {}),
         ...(typeof args.activateSwitch === "string" && args.activateSwitch.trim()
           ? { activateSwitch: args.activateSwitch.trim() }

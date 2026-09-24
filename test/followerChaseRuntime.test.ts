@@ -204,4 +204,36 @@ describe("make_chase_scene tool", () => {
     expect(chaser?.pages?.[0]?.movement).toMatchObject({ type: "chase", speed: 6, sightRange: 7, pathfind: true });
     expect(chaser?.pages?.[0]?.commands).toContainEqual({ kind: "killPlayer", message: "붙잡혔다." });
   });
+
+  it("은신처 칸을 진짜 은신 이벤트로 만들고, 느린 추격자와 추적 정책을 알린다", () => {
+    const project = createBlankProject();
+    const mapId = project.startMapId;
+    const ctx = { project };
+    const seeded = runTool(ctx, "upsert_event", {
+      mapId,
+      event: { id: "ev_wardrobe", x: 2, y: 2, trigger: { kind: "action" },
+        pages: [{ conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, commands: [{ kind: "text", body: "낡은 옷장" }] }] },
+    });
+    expect(seeded.ok, seeded.summary).toBe(true);
+    const result = runTool(ctx, "make_chase_scene", {
+      mapId,
+      chaser: { at: { x: 6, y: 6 }, graphic: { query: "monster" }, speed: 3 },
+      pursuit: { scope: "map", doorDelayMs: 1000, searchMs: 4000, onLost: "return", tracking: "persistent" },
+      killOnTouch: true,
+      hidingSpots: [{ x: 2, y: 2 }, { x: 8, y: 3 }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const map = ctx.project.maps[mapId]!;
+    const hidingIds = (result.data as { hidingEventIds: string[] }).hidingEventIds;
+    expect(hidingIds).toHaveLength(2);
+    expect(hidingIds[0]).toBe("ev_wardrobe");
+    for (const id of hidingIds) {
+      const page = map.events.find((event) => event.id === id)?.pages?.[0];
+      expect(page?.interaction).toEqual({ kind: "hiding" });
+      expect(page?.trigger.kind).toBe("action");
+    }
+    const chaser = map.events.find((event) => event.pages?.some((page) => page.movement.type === "chase"));
+    expect(chaser?.pages?.[0]?.movement).toMatchObject({ speed: 3, frequency: 8, pursuit: { tracking: "persistent" } });
+    expect((result.diff?.warnings ?? []).join(" ")).toMatch(/주인공 걷기\(160ms\/칸\)의 \d+%/);
+  });
 });
