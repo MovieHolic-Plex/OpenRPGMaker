@@ -27,7 +27,9 @@ export function propOwnership({ map, plan, roads, water }) {
     if (o.name === "벽걸이 등불") return houses.some((h) => distance(o, h) === 0) && "집 벽";
     if (o.name === "허수아비") return within(o, farms, 1) && "밭";
     if (ROADSIDE.has(o.name)) return near(o, roads, 1) && "길가";
-    if (SEATS.has(o.name)) return (near(o, roads, 1) && "길가") || (within(o, props.filter((q) => CENTRES.has(q.name)), 2) && "쉼터");
+    // A bench by a road alone is still a bench alone on the lawn (review 2026-09-24): it needs a place to sit at — a
+    // well, campfire, stall or arch, the water's edge, or a landmark.
+    if (SEATS.has(o.name)) return (within(o, props.filter((q) => CENTRES.has(q.name) && q.name !== "가로 탁자"), 2) && "쉼터") || (near(o, water, 1) && "물가") || (within(o, landmarks, 2) && "랜드마크");
     if (LIGHTS.has(o.name)) return (near(o, roads, 1) && "길가") || (within(o, props.filter((q) => q.name === "낮은 돌 우물"), 2) && "우물");
     if (WATERSIDE.has(o.name)) return (near(o, water, 2) && "물가") || (within(o, dock, 2) && "부두");
     if (CENTRES.has(o.name)) return (near(o, roads, 3) || within(o, houses, 3)) && "마을 안";

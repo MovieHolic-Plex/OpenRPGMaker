@@ -24,6 +24,7 @@ import { placePlaza, placeTreeClumps, fillNaturalGaps, emptiness, rng, cellsOf }
 import { pruneUnowned } from "./lib/village-ownership.mjs";
 import { reshapePools } from "./lib/village-pools.mjs";
 import { ensureHarborGrafts, loadHarborKit, placeHarbor } from "./lib/village-harbor.mjs";
+import { arrangeTallGrass, ALL_TALL_GRASS, TALL_GRASS_TILES } from "./lib/tall-grass.mjs";
 
 const args = process.argv.slice(2), only = args.find((a) => a.startsWith("--only="))?.slice(7);
 const [input, output] = args.filter((a) => !a.startsWith("--"));
@@ -56,6 +57,9 @@ const { forestCanopyTiles } = await withTsModule("src/project/defaults/forestGro
 const { FOREST_TRUNK_TILES } = await withTsModule("src/editor/tools/village/forestTrunkTiles.ts", "fill-trunks.mjs", (m) => m);
 const forest = await withTsModule("src/editor/tools/village/forestContour.ts", "fill-forest.mjs", (m) => m);
 const reach = await withTsModule("src/project/lint/reachability.ts", "fill-reach.mjs", (m) => m);
+// Tall grass F/G groups and cell meta (passable, lower) on the village tileset (PR #1421; idempotent).
+const { ensureForestTallGrass } = await withTsModule("src/project/defaults/forestTallGrass.ts", "fill-tall-grass.mjs", (m) => m);
+ensureForestTallGrass(ts);
 const CAN = forestCanopyTiles(grove), TRUNK = FOREST_TRUNK_TILES, ROOTS = new Set([1430, 1431, 1432, 1433, 1461, 1462, 1463]);
 const ROAD = new Set(Object.values(roadGroup.variantMap)), LAKE = new Set(Object.values(lakeGroup.variantMap));
 const WET = new Set([...LAKE, catalog.riverTiles.fall, catalog.riverTiles.bridgeTop, catalog.riverTiles.bridgeBottom]);
@@ -269,9 +273,18 @@ function fillVillage(plan, strict) {
   plan.placements.push(...harbor);
 
   // 5. Ground: 2–3 tree clumps in front of straight forest edges, then natural scenes (tree + bush, thickets,
-  // flowering shrubs, rocks with a bush) until the gate passes. No tall grass: the old 243–335 art is banned until
-  // the E/F/G redraw lands (placeGrassPatch is ready for it).
+  // flowering shrubs, rocks with a bush, tall-grass patches E/F/G) until the gate passes. Tall grass is laid by
+  // lib/tall-grass.mjs (PR #1421): whole 2×2 blocks, trimmed corners, one kind per patch chosen by what it touches.
   // A ground piece may not cut off any walkable ground: the count of walkable cells the start cannot reach never grows.
+  // Lone bushes of the authored map (a single round/small bush with no other plant within two cells) read as an even
+  // sprinkle (review 2026-09-24): they go back to lawn and the gap fill below puts grouped scenes in their place.
+  const gap = (a, b) => Math.max(0, a.x - b.x - b.w + 1, b.x - a.x - a.w + 1) + Math.max(0, a.y - b.y - b.h + 1, b.y - a.y - a.h + 1);
+  const plants = plan.placements.filter((o) => o.kind === "vegetation");
+  const loneBushes = plants.filter((o) => !o.scene && !o.clump && /덤불/.test(o.name) && !plants.some((q) => q !== o && gap(o, q) <= 2));
+  for (const o of loneBushes) {
+    for (const c of rect(o)) { m.lowerTiles[at(c.x, c.y)] = 240; m.upperTiles[at(c.x, c.y)] = -1; }
+    plan.placements.splice(plan.placements.indexOf(o), 1);
+  }
   const orphans = () => { const s = seenNow(); let w = 0; for (let i = 0; i < m.lowerTiles.length; i++) if (walk(i)) w++; return { ok: reachOk(s), orphans: w - s.size }; };
   let orphanCount = orphans().orphans;
   const noSealing = () => { const r = orphans(); if (!r.ok || r.orphans > orphanCount) return false; orphanCount = r.orphans; return true; };
@@ -293,9 +306,10 @@ function fillVillage(plan, strict) {
   const objects = new Set(), accessCells = new Set(plan.access.map((a) => at(a.x, a.y)));
   for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, objects, 0);
   const before = emptiness(m, isPlain);
-  const gaps = fillNaturalGaps({ map: m, isPlain, templates, random, accept: noSealing,
+  const gaps = fillNaturalGaps({ map: m, isPlain, templates, random, accept: noSealing, limits: { maxSq: 4, screen: 0.39 },
     // Solid pieces keep a ring off roads, water, cliffs, doors and objects; flowers only avoid access cells and objects.
-    take: (x, y, solid) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)) && (!solid || bare(x, y)) });
+    take: (x, y, solid) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)) && (!solid || bare(x, y)),
+    grass: { members: ALL_TALL_GRASS, arrange: (map) => { map.lowerTiles = arrangeTallGrass(map, { tileset: ts, houses: plan.houses, seed: plan.seed }).lowerTiles; } } });
   gaps.pieces.forEach((p, k) => { for (const s of p.stamps) plan.placements.push({ name: s.name, x: s.x, y: s.y, w: s.w, h: s.h, kind: "vegetation", scene: k + 1, lower: s.lower ?? "KEEP", upper: s.upper }); });
 
   // Final checks, then the plan's derived fields.
@@ -321,11 +335,19 @@ function fillVillage(plan, strict) {
     revision: 14, before: { width: W0, height: H0 }, after: { width: m.width, height: m.height }, removed: carved.removed,
     yards: plan.yards.length, yardProps: plan.placements.filter((o) => o.kind === "prop" && o.kit !== "doorway").length,
     doorFlanks: flanks.length, plaza: plaza.map((o) => o.name), treeClumps: clumps.length, crestCellsRemoved: crestCells,
-    pools, unownedRemoved: pruned, harbor: harbor.map((o) => ({ name: o.name, x: o.x, y: o.y })),
-    scenes: gaps.pieces.map((p) => ({ name: p.name, at: p.stamps[0] ? [p.stamps[0].x, p.stamps[0].y] : p.flowers[0].slice(0, 2), flowers: p.flowers.length })),
+    pools, unownedRemoved: pruned, loneBushesRemoved: loneBushes.map((o) => ({ name: o.name, x: o.x, y: o.y })), harbor: harbor.map((o) => ({ name: o.name, x: o.x, y: o.y })),
+    scenes: gaps.pieces.map((p) => ({ name: p.name, at: p.stamps[0] ? [p.stamps[0].x, p.stamps[0].y] : (p.grass?.[0] ?? p.flowers[0].slice(0, 2)), flowers: p.flowers.length, ...p.grass ? { grassCells: p.grass.length } : {} })),
+    tallGrass: tallGrassStats(m),
     emptiness: { beforeGapFill: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
   };
   m.layoutPlan = { ...m.layoutPlan, regions: plan.houses, entrance: plan.entrance, civicPlaces: plan.civicPlaces, landmarks: plan.landmarks ?? [] };
-  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, harbor: harbor.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
+  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, loneBushes: loneBushes.length, harbor: harbor.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
+}
+// Tall-grass cells by kind (E dark by the canopy, F light meadow, G short by houses and roads).
+function tallGrassStats(m) {
+  const kind = new Map(Object.entries(TALL_GRASS_TILES).flatMap(([k, r]) => Object.values(r).map((t) => [t, k])));
+  const out = { E: 0, F: 0, G: 0 };
+  for (const t of m.lowerTiles) if (kind.has(t)) out[kind.get(t)]++;
+  return out;
 }
 fs.writeFileSync(output, JSON.stringify(catalog));

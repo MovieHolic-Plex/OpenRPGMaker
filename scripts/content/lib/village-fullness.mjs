@@ -360,6 +360,9 @@ const SCENES = [
   { name: "꽃 핀 덤불숲", weight: 14, parts: [["둥근 덤불", 0, 0], ["작은 덤불", 3, 1]], flowers: [4, 5] },
   { name: "작은 덤불숲", weight: 8, parts: [["작은 덤불", 0, 0], ["작은 덤불", 2, 1], ["덤불", 0, 2]] },
   { name: "바위와 덤불", weight: 4, parts: [["바위", 0, 0], ["작은 덤불", 1, 0], ["바위", 0, 1]], rocks: true },
+  // Tall grass E/F/G (PR #1421): one ragged patch of 10–20 cells, only when the caller passes `grass` (the patch is
+  // laid by lib/tall-grass.mjs arrangeTallGrass — whole 2×2 blocks, corners trimmed, one kind per patch).
+  { name: "풀숲", weight: 26, parts: [], grass: true },
   // Narrow ground (between a road and a house) only takes smaller pieces: a round bush with flowers at its foot, two
   // small bushes, or a bed of four or five wildflowers — still one clump each.
   { name: "꽃 핀 둥근 덤불", weight: 10, tier: 2, parts: [["둥근 덤불", 0, 0]], flowers: [3, 5] },
@@ -375,9 +378,26 @@ export const NATURAL_SCENES = SCENES;
  * the caller's reachability check (a scene is rolled back if it seals ground). `allow` filters scenes (a climate
  * without broadleaf trees or flowers narrows it). Returns { pieces, maxSq, screen }.
  */
-export function fillNaturalGaps({ map, isPlain, take, templates, random, accept, allow = () => true, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 600, flowerTiles = [348, 288], singles = SINGLE, small = false }) {
+export function fillNaturalGaps({ map, isPlain, take, templates, random, accept, allow = () => true, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 600, flowerTiles = [348, 288], singles = SINGLE, small = false, grass = null }) {
   const W = map.width, H = map.height, at = (x, y) => y * W + x, pieces = [], tried = new Set();
-  const scenes = SCENES.filter((s) => allow(s) && (!s.small || small) && (!s.flowers || flowerTiles.length));
+  const scenes = SCENES.filter((s) => allow(s) && (!s.small || small) && (!s.flowers || flowerTiles.length) && (!s.grass || grass));
+  // grass = { members: Set of tall-grass tiles, arrange(map) }: a patch is grown, cut to whole 2×2 blocks, and the whole
+  // map's tall grass re-laid by `arrange` (idempotent). Patches stay one cell apart from each other.
+  const grassPatch = (sx, sy) => {
+    const free = (x, y) => x >= 0 && y >= 0 && x < W && y < H && isPlain(x, y) && take(x, y, false)
+      && [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => !grass.members.has(map.lowerTiles[at(x + dx, y + dy)])));
+    const blob = growBlob({ W, H, seed: [sx, sy], size: 10 + Math.floor(random() * 11), ok: free, random });
+    if (!blob) return null;
+    const inBlock = (i) => { const x = i % W, y = Math.floor(i / W); return [[0, 0], [-1, 0], [0, -1], [-1, -1]].some(([dx, dy]) => [[0, 0], [1, 0], [0, 1], [1, 1]].every(([ex, ey]) => blob.has(at(x + dx + ex, y + dy + ey)))); };
+    for (let again = true; again;) { again = false; for (const i of [...blob]) if (!inBlock(i)) { blob.delete(i); again = true; } }
+    if (blob.size < 8) return null;
+    const saved = map.lowerTiles.slice();
+    for (const i of blob) map.lowerTiles[i] = 304;
+    grass.arrange(map);
+    const laid = [...blob].filter((i) => grass.members.has(map.lowerTiles[i]));
+    if (laid.length < 8 || !accept(laid.map((i) => ({ x: i % W, y: Math.floor(i / W) })))) { map.lowerTiles = saved; return null; }
+    return { name: "풀숲", stamps: [], flowers: [], grass: laid.map((i) => [i % W, Math.floor(i / W)]) };
+  };
   const pieceOf = (name) => singles[name] ?? templates[name];
   for (let step = 0; step < maxSteps && scenes.length; step++) {
     const e = emptiness(map, isPlain);
@@ -400,6 +420,7 @@ export function fillNaturalGaps({ map, isPlain, take, templates, random, accept,
     const order = scenes.map((s) => [(s.tier ?? 1) * 100 - Math.log(random() + 1e-9) / s.weight, s]).sort((a, b) => a[0] - b[0]).map(([, s]) => s);
     let placed = null;
     for (const scene of order) {
+      if (scene.grass) { placed = grassPatch(sx, sy); if (placed) break; continue; }
       for (let attempt = 0; attempt < 4 && !placed; attempt++) {
         const mirror = random() < 0.5;
         const parts = scene.parts.map(([name, dx, dy]) => ({ t: pieceOf(name), dx, dy }));

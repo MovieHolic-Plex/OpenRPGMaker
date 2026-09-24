@@ -31,36 +31,51 @@ export function reshapePools({ map, pools, lakeGroup, wet, canWet, canDry, rando
     const rows = new Map();
     for (const i of comp) { const x = i % W, y = Math.floor(i / W); rows.set(y, [...(rows.get(y) ?? []), x]); }
     const widths = [...rows.values()].map((xs) => xs.length), narrow = Math.min(...widths);
-    const chan = [...rows.entries()].filter(([, xs]) => xs.length <= narrow + 1).flatMap(([, xs]) => xs);
-    const c0 = Math.min(...chan), c1 = Math.max(...chan);
-    const keep = new Set([...comp].filter((i) => i % W >= c0 && i % W <= c1));
-    // Rows that touch a fall, a bridge or the box edge stay as they are.
+    // Channel rows are kept whole. In the pool rows only the columns joining the fall above to the channel rows just
+    // above and below the pool are kept (a river that bends further down must not pin the whole pool).
+    const isChan = (y) => rows.get(y).length <= narrow + 1;
+    const poolRows = [...rows.keys()].filter((y) => !isChan(y)).sort((a, b) => a - b);
+    const keep = new Set([...comp].filter((i) => isChan(Math.floor(i / W))));
+    if (poolRows.length) {
+      const top = poolRows[0], bottom = poolRows.at(-1), join = [];
+      for (const y of [top - 1, bottom + 1]) if (rows.has(y)) join.push(...rows.get(y));
+      for (const i of comp) { const x = i % W, y = Math.floor(i / W); if (inside(x, y - 1) && wet.has(map.lowerTiles[at(x, y - 1)]) && !LAKE.has(map.lowerTiles[at(x, y - 1)])) join.push(x); }
+      const c0 = Math.min(...join), c1 = Math.max(...join);
+      for (const i of comp) if (!isChan(Math.floor(i / W)) && i % W >= c0 && i % W <= c1) keep.add(i);
+    }
+    // Cells that touch a fall or a bridge (and their row neighbours) stay as they are; the rest of that row may move,
+    // so the pool's rim under the fall is not a straight bar the width of the pool.
     const locked = new Set();
     for (const i of comp) {
       const x = i % W, y = Math.floor(i / W);
-      if ([[0, -1], [0, 1], [1, 0], [-1, 0]].some(([dx, dy]) => inside(x + dx, y + dy) && wet.has(map.lowerTiles[at(x + dx, y + dy)]) && !LAKE.has(map.lowerTiles[at(x + dx, y + dy)]))) for (let xx = bx0; xx <= bx1; xx++) locked.add(at(xx, y));
+      if ([[0, -1], [0, 1], [1, 0], [-1, 0]].some(([dx, dy]) => inside(x + dx, y + dy) && wet.has(map.lowerTiles[at(x + dx, y + dy)]) && !LAKE.has(map.lowerTiles[at(x + dx, y + dy)]))) for (let xx = x - 1; xx <= x + 1; xx++) locked.add(at(xx, y));
     }
     // New shore: a lopsided blob round a centre shifted off the channel.
-    const sx = cx + (random() < 0.5 ? -1 : 1) * (0.5 + random()), sy = cy + (random() - 0.5);
+    const sx = cx + (random() < 0.5 ? -1 : 1) * (1 + random()), sy = cy + (random() - 0.5);
     const rx = rx0 * (1.05 + random() * 0.25), ry = ry0 * (1.0 + random() * 0.3);
     const p1 = random() * 6.28, p2 = random() * 6.28, p3 = random() * 6.28;
     const target = new Set(keep);
     for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) {
       const dx = (x + 0.5 - sx - 0.5) / rx, dy = (y + 0.5 - sy - 0.5) / ry, th = Math.atan2(dy, dx);
-      const r = 1 + 0.2 * Math.sin(2 * th + p1) + 0.14 * Math.sin(3 * th + p2) + 0.08 * Math.sin(5 * th + p3);
+      const r = 1 + 0.26 * Math.sin(2 * th + p1) + 0.18 * Math.sin(3 * th + p2) + 0.1 * Math.sin(5 * th + p3);
       if (Math.hypot(dx, dy) <= r) target.add(at(x, y));
     }
     const want = (i) => target.has(i);
     const state = new Map();
     for (let y = by0; y <= by1; y++) for (let x = bx0; x <= bx1; x++) if (inside(x, y)) state.set(at(x, y), isWater(x, y));
-    const can = (i, v) => !locked.has(i) && (v ? canWet(i % W, Math.floor(i / W)) : comp.has(i) && !keep.has(i) && canDry(i % W, Math.floor(i / W)));
+    // Drying: the pool's own water, or a cell this pass just wetted (a spur the blob made); never other water.
+    const can = (i, v) => !locked.has(i) && (v ? canWet(i % W, Math.floor(i / W))
+      : !keep.has(i) && (comp.has(i) ? canDry(i % W, Math.floor(i / W)) : !isWater(i % W, Math.floor(i / W))));
     for (const [i, v] of state) if (want(i) !== v && can(i, want(i))) state.set(i, want(i));
-    // Smooth twice: fill notches (three or four water sides), drop spurs (one water side or none).
+    // Smooth: fill notches (three or four water sides), drop spurs (one water side or none, or one cell thick).
     for (let pass = 0; pass < 3; pass++) for (const [i, v] of [...state]) {
       const x = i % W, y = Math.floor(i / W);
-      const n = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => state.get(at(x + dx, y + dy)) ?? isWater(x + dx, y + dy)).length;
+      const w = ([dx, dy]) => state.get(at(x + dx, y + dy)) ?? isWater(x + dx, y + dy);
+      const n = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(w).length;
+      // A one-cell-thick arm (water on neither side across it) is a spur too.
+      const thin = !(w([1, 0]) || w([-1, 0])) || !(w([0, 1]) || w([0, -1]));
       if (!v && n >= 3 && can(i, true)) state.set(i, true);
-      else if (v && n <= 1 && can(i, false)) state.set(i, false);
+      else if (v && (n <= 1 || thin) && can(i, false)) state.set(i, false);
     }
     let added = 0, dried = 0;
     for (const [i, v] of state) {
