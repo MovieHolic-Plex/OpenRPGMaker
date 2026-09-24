@@ -15,6 +15,7 @@ import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, re
 import { store } from "@/project/store";
 import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
 import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
+import { sha256HexTextSync } from "@/util/sha256";
 import { AuthoredProjectBaseline, composeProjectIdentity, projectIdentityParts, type ProjectIdentityParts, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
@@ -220,11 +221,11 @@ function proposalContent(project: Project): string {
   // World documents are merged from the live store, not replaced by ordinary proposals.
   // Reuse the JSONB comparator without schema normalization: only key order is
   // ignored, while the existing JSON projection, authored values and arrays stay intact.
-  return composeProjectIdentity(identityPartsOf(project), "proposal");
+  return sha256HexTextSync(composeProjectIdentity(identityPartsOf(project), "proposal"));
 }
 
 function worldContent(project: Project): string {
-  return canonicalJsonOf(project.world ?? null)!;
+  return sha256HexTextSync(canonicalJsonOf(project.world ?? null)!);
 }
 
 /**

@@ -1412,3 +1412,10 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 단일 main 로드 확인 후 요청46은 실제 AI로4이벤트 수정 초안을 끝까지 받았다. `request46-draft-ready.txt`/`request46-review.txt`에 검토 대기와4이벤트 수정·현장 조사원Y13→11을 보존했다. 응답 검토는 미완료 표시였으므로 자동 검증 성공으로 세지 않는다.
 - UI 적용 클릭 뒤 다시 페이지 OOM이 발생했다. 정본은522이고517과 맵이 동일하다. 저장 완료 아님. `editor-heap-sampling-apply-oom.json`에는 적용 matches/직렬화/identity join 등 각238MB가량의 문자열 할당이 여럿 남아 있다. 디코더 개선으로 최종 응답 수신은 진전했으나 적용 메모리 문제는 남았다.
 - 최신 main에는 captureApplyAuthority/identity 공유 범위 등 적용 경로 개선이 더 있으므로 최신 main 편집기를 별도 dist에 빌드한다. 기존dist와 정본은 보존하고 빌드 성공 확인 후 전용9897에만 반영한다. 전체 테스트/게이트 실행과는 구분한다.
+
+### 요청48 — 최신 main에서도 전송 전 OOM, 기준선 보관량 축소
+
+- 최신 main 빌드는 성공(exit0,52.62초), main-BkmzBKHy.js 단일 로드와 자동저장523을 확인했다. 그러나 같은 요청48을 전송하는 중19:24:57에 V8 OOM으로 종료했다. 새 콘텐츠 저장 성공이 아니다.
+- 정본 크기를 읽기 전용 집계하니 tilesets가약125.8MB(JSON 공백 포함)로 가장 컸다. forest_harmony 참고문서약10.8MB,shared_lpc_interior_castle 참고문서약7.3MB 등 공용 참고자료가 포함돼 있다. 자료를 삭제하거나 특정 프로젝트에서만 접근하도록 바꾸지 않았다.
+- 장기 보관하는 AuthoredProjectBaseline authored/complete와 ProposalBase content/world를 SHA-256으로 축소했다. 비교 입력의 canonical JSON 의미, 객체 제자리 변경 검사, wiki 예외, lineage 및 적용 게이트를 그대로 둔다. 기존 JSON identity API와 동기 구간 메모는 유지하고, 기준선 보관용 문자열만 다이제스트로 바꾼다.
+- 큰 Unicode 문서의 끝부분 변경 감지와 보관 크기 회귀 사례를 추가했다. 사용자 규칙에 따라 테스트/게이트는 실행하지 않았으며 빌드와 실제 편집기 동작을 별도로 확인한다. SHA 계산·직렬화 순간 할당까지 제거한 것은 아니다.

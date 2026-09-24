@@ -56,6 +56,21 @@ it("captures immutable values rather than trusting a mutable baseline Project", 
   expect(Object.isFrozen(baseline)).toBe(true);
 });
 
+it("keeps draft authority bounded for large documents while detecting a tail edit", () => {
+  const project = createBlankProject();
+  project.meta.title = "숲🌲".repeat(100_000);
+  store.replace(project);
+  const baseline = new AuthoredProjectBaseline(project);
+  const base = captureProposalBase(project);
+  // Retained authority must not contain copies of the large authored document.
+  expect(JSON.stringify(baseline).length).toBeLessThan(256);
+  expect(base.content.length).toBe(64);
+  expect(base.world.length).toBe(64);
+  expect(baseline.matches(structuredClone(project))).toBe(true);
+  project.meta.title += "changed";
+  expect(baseline.matches(project)).toBe(false);
+});
+
 it.each([false, true])("keeps the wiki exception explicit and does not let reset discard newer documents (reset=%s)", async resetProject => {
   const original = createBlankProject();
   store.replace(original);

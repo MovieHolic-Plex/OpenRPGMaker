@@ -1,5 +1,6 @@
 import type { Project } from "./types";
 import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
+import { sha256HexTextSync } from "@/util/sha256";
 
 // Same JSON value semantics as proposal bases and remote JSONB: object key order
 // is not authored drift. Array order and every authored value remain significant.
@@ -86,12 +87,15 @@ export class AuthoredProjectBaseline {
   private readonly complete: string;
 
   constructor(project: Project, identities: ProjectIdentitySource = direct) {
-    this.authored = identities.authored(project);
-    this.complete = identities.complete(project);
+    // Keep immutable authority, not two full project JSON strings, for the
+    // lifetime of a detached draft. Canonicalization still runs on every check.
+    this.authored = sha256HexTextSync(identities.authored(project));
+    this.complete = sha256HexTextSync(identities.complete(project));
     Object.freeze(this);
   }
 
   matches(project: Project, includeWiki = false, identities: ProjectIdentitySource = direct): boolean {
-    return includeWiki ? this.complete === identities.complete(project) : this.authored === identities.authored(project);
+    return includeWiki ? this.complete === sha256HexTextSync(identities.complete(project))
+      : this.authored === sha256HexTextSync(identities.authored(project));
   }
 }
