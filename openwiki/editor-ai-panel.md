@@ -2089,7 +2089,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 ## 패널 셸 · 도크 · 접기 · 컴포저
 
 - **데크 위치 이동 — 레일 드래그로 아무 데나 놓는다 (2026-09-12):** 데크 상단 레일(`.ai-deck-rail`)의 비상호작용 표면(who·state·spacer·레일 자체)을 잡아 끌면 데크가 포인터를 따라오고, 놓으면 `oprn:ai-deck-pos`(`aiPanelLayout.ts` 의 `loadDeckPosition`/`saveDeckPosition`/`clearDeckPosition`)에 `{ right, bottom }`(호스트 우·하 변 → 데크 우·하 변, px)으로 저장된다. 소유자는 `aiDeckMoveChrome.ts` — `aiChatResizeChrome` 과 같은 이유로 대화·런 상태를 읽지 않고 표면 셋(패널·데크·레일)과 "지금 움직여도 되는가" 게터 하나만 받는다. 계약:
-  - **right/bottom 앵커**다 — 데크 기본이 우하단(`--ai-deck-inset`)이라 사용자 위치도 같은 축으로 저장한다. left/top 이면 내용이 자랄 때 아래로 잘린다. 변수 `--ai-deck-right`/`--ai-deck-bottom` 은 **패널**에 심고, 데크(`18-assistant-deck.css`)와 접힘 알약(`02-chat-dock.css` 의 `is-collapsed` inset)이 같이 읽는다 — 접으면 알약이 데크의 우하 모서리 자리에 선다.
+  - **right/bottom 앵커**다 — 저장한 사용자 위치만 이 축이다. 저장값이 없으면 데크와 접힘 알약은 왼쪽 아래(`left` + `bottom` = `--ai-deck-inset`)다. 끌어 두면 패널에 `has-custom-deck-pos` 와 `--ai-deck-right`/`--ai-deck-bottom` 을 심고, 더블클릭은 그 클래스를 지워 왼쪽 아래로 되돌린다. left/top 이면 내용이 자랄 때 아래로 잘리므로 세로 축은 항상 bottom 이다.
   - **클램프 기준은 호스트(`.ai-chat-float-host`, 항상 `inset:0`)다 — 패널이 아니다.** 접히면 패널 자신이 알약 상자(약 72×44)로 줄어, 그 사각형으로 자르면 저장 위치가 가장자리 여백(4px)으로 뭉개져 알약이 우하단으로 도망간다(2026-09-12 실측 회귀, `test/aiDeckMove.test.ts` 「접혀서 패널이 알약 크기로 줄어도」). 접힌 동안 호스트가 줄어도 패널(알약) 크기는 그대로라 ResizeObserver 가 안 울린다 — 창 `resize` 를 따로 듣는다. 선호값(`position`)은 자르지 않고 심는 값만 자른다 — 창이 다시 커지면 원래 자리로 돌아간다(리사이즈의 barSize 와 같은 계약).
   - **클릭과 드래그를 가른다 (2026-09-14 보강)** — 시작점이 `button a input select textarea summary [contenteditable]`·`.ai-deck-rail-actions`·`.ai-composer-popover` 안이면 시작하지 않고, 축별 최대 이동이 `DRAG_START_THRESHOLD_PX`(3px)를 넘어야 드래그다. 실측 결함: 1px 만 흔든 클릭이 `{"right":15,"bottom":15}` 를 저장해 데크를 그 자리에 굳혔다(`is-dragging`·grabbing 커서도 그때 번쩍였다). 더블클릭은 저장 위치를 지워 기본 우하단으로 되돌린다 — 되돌리는 유일한 출구다. `title` 힌트는 who/state/spacer 표면에만 달고 **지금 끌 수 있을 때만** 문구를 넣는다(빈 title = 툴팁 없음) — 레일 자체에 달면 아래 붙은 팝오버 항목 위에서도 떠서 열린 메뉴를 훼방한다. 상태는 hover(`pointerenter`) 시점에 다시 읽는다.
   - **릴리스 하나로 끝난다 (2026-09-14 보강)** — `pointerup`·`pointercancel`·`blur`·버튼이 풀린(`buttons === 0`) `pointermove` 가 같은 몸(`onUp`)을 쓴다. 창 밖에서 버튼을 놓으면(Alt-Tab·창 밖 릴리스) `pointerup` 이 오지 않아 `is-dragging`(폭 transition 해제·텍스트 선택 차단)과 grabbing 커서가 남고 **눈에 보이던 이동이 저장되지 않아** 새로고침에서 되돌아갔다(2026-09-14 실측: blur 뒤 `is-dragging true`·`body cursor grabbing`·저장값은 이전 그대로). 같은 부류의 선례가 캔버스 `pointerupoutside`(`EditScene.endPointerGesture`, 2026-08-30)다.
@@ -2976,7 +2976,9 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일, 청사진, 카메라 따라가기, 공개가 끝날 때까지의 대기)은 그와 별개로 끌 수 있다.
 
-- 스위치는 작업 표시 버튼 옆의 맵 아이콘이다(`data-testid=ai-live-canvas`). 켜짐이 기본이고 `localStorage["oprn:ai-live-canvas"]` 가 `off` 이면 헤드리스다.
+- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 꺼짐이 기본이다. `localStorage["oprn:ai-live-canvas"]` 가 `on` 일 때만 맵 위 실시간 시공을 그린다.
+- 화면 무게는 AI 설정 「표시」의 `ai-render-weight`다. 기본 `light`는 조수 창·접힘 알약·작업 띠·맵 칩의 `backdrop-filter`를 끈다. `heavy`만 20px 유리 블러를 쓴다. `off`는 블러를 끄고 판을 불투명하게 한다. 저장 키는 `oprn:ai-render-weight`, 적용은 `documentElement.dataset.aiRender`.
+- 입력줄 모델명 옆에 이 대화의 사용량이 `N턴 · N토큰`으로 붙는다(`ai-composer-spend`). Pi 실행의 `done.stats`(계획 턴 포함)를 대화가 바뀔 때까지 더한다. 토큰은 `usage.totalTokens`(입력·출력·캐시)다. 0이면 숨긴다.
 - 헤드리스에서도 도구 실행, 증분으로 복원한 초안, 검토, 적용은 그대로다. `replaceAgentGhostPreviewFromProjectDiff` 를 쓰는 경로(Pi, 레인, 세션, 영역 작업)는 꺼져 있는 동안 맵 비교를 하지 않고, 켜기 직전에 쌓인 프리뷰는 비운다. Pi 는 다시 켜는 순간 현재 초안을 한 번 그린다. 그 외 경로는 다음 변경에서 그린다. 공개 애니메이션만큼 체크포인트를 기다리지 않는다.
 - 켜 둔 상태의 렉: 손대지 않은 맵은 객체 동일성으로 비교를 건너뛴다. 라이브 프리뷰 id 에 셀 전체를 문자열로 넣지 않는다. 스프라이트는 카메라 주변만 만들고, 이미 내려앉은 칸은 프레임마다 다시 움직이지 않는다. 상태 칩은 문구가 바뀔 때만 배치를 다시 잰다.
 

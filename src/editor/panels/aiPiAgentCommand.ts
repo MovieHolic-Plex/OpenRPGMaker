@@ -26,7 +26,7 @@ import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
 import type { AuditEntry } from "@/ai/session/types";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
-import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
+import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentStats, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
   createTeamBoardState,
   markTeamBoardAborted,
@@ -214,6 +214,8 @@ export interface PiCommandSurface {
    * QA 스펙들이 툴 호출을 0으로 봤다(2026-09-16 실측). 행을 만드는 자리는 활동 로그 하나다.
    */
   readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
+  /** 이번 실행이 쓴 턴·토큰. 패널이 대화 합계로 쌓아 입력줄에 짧게 보여 준다. */
+  readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number }) => void;
 }
 
 export async function runPiCommand(
@@ -400,6 +402,16 @@ export async function runPiCommand(
   };
 
   let results: PiAgentDoneEvent[];
+  const spendStats: PiAgentStats[] = [];
+  const reportSpend = (): void => {
+    let turns = 0;
+    let tokens = 0;
+    for (const stats of spendStats) {
+      turns += stats.turns;
+      tokens += stats.usage?.totalTokens ?? 0;
+    }
+    if (turns > 0 || tokens > 0) surface.onSpend?.({ turns, tokens });
+  };
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
@@ -432,6 +444,7 @@ export async function runPiCommand(
       } });
       surface.signal?.throwIfAborted();
       if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
+      spendStats.push(planned.stats);
       push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
         stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
       (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
@@ -459,7 +472,10 @@ export async function runPiCommand(
         },
       },
     )));
+    spendStats.push(...results.map((done) => done.stats));
+    reportSpend();
   } catch (error) {
+    reportSpend();
     if (surface.signal?.aborted) {
       // fetch 는 abort 에서 AbortError 를 던진다 — 실패가 아니라 중단이므로 중단 경로로 돌린다(실측 2026-09-11).
       ghost.dispose();

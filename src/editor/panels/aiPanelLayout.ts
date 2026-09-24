@@ -200,6 +200,26 @@ export function applyAiFontSize(target: HTMLElement, size: AiFontSize): void {
   target.style.setProperty("--ai-font-scale", AI_FONT_SIZE_SCALE[size]);
 }
 
+/** 조수 창이 맵 캔버스 위를 어떻게 합성하는지. 기본은 가벼움 — 내장 GPU에서 20px 블러가 매 프레임 캔버스를 다시 읽는다. */
+export const AI_RENDER_WEIGHT_KEY = "oprn:ai-render-weight";
+export type AiRenderWeight = "light" | "heavy" | "off";
+
+export function loadAiRenderWeight(): AiRenderWeight {
+  if (typeof localStorage === "undefined") return "light";
+  const raw = localStorage.getItem(AI_RENDER_WEIGHT_KEY);
+  return raw === "heavy" || raw === "off" ? raw : "light";
+}
+
+export function saveAiRenderWeight(weight: AiRenderWeight): void {
+  if (typeof localStorage === "undefined") return;
+  localStorage.setItem(AI_RENDER_WEIGHT_KEY, weight);
+}
+
+export function applyAiRenderWeight(weight: AiRenderWeight): void {
+  if (typeof document === "undefined") return;
+  document.documentElement.dataset.aiRender = weight;
+}
+
 export function stepAiFontSize(current: AiFontSize, delta: number): AiFontSize {
   const index = AI_FONT_SIZE_ORDER.indexOf(current);
   const next = Math.max(0, Math.min(AI_FONT_SIZE_ORDER.length - 1, (index < 0 ? 1 : index) + delta));

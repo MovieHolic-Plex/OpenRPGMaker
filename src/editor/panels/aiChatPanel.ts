@@ -88,7 +88,7 @@ import type { AuditEntry } from "@/ai/assistantSession";
 import { serializeAuditTranscript } from "@/ai/conversationReplay";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { RunOperation } from "@/ai/runOperation";
-import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
+import { EMPTY_SESSION_USAGE, formatTokenCount } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
 import { closeAiConversationHistoryModal, openAiConversationHistoryModal } from "./aiConversationHistoryModal";
 import { openAiInstructionsModal } from "./aiInstructionsModal";
@@ -135,7 +135,9 @@ import {
   applyAiBackgroundOpacity,
   loadAiBackgroundOpacity,
   applyAiFontSize,
+  applyAiRenderWeight,
   loadAiFontSize,
+  loadAiRenderWeight,
   saveAiFontSize,
   savePanelCollapsed,
   stepAiFontSize,
@@ -1023,6 +1025,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 안내(toast)를 하지 않는다: 사용자가 누른 새 대화와 프로젝트 전환은 같은 정리를 하지만
    * 사용자에게 할 말이 다르다.
    */
+  let conversationSpend = { turns: 0, tokens: 0 };
+  let paintConversationSpend = (): void => {};
+
   const resetConversationState = (
     reason: "manual" | "project-switch",
     /**
@@ -1084,6 +1089,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.setWorkPlan(null, false);
     // 이어받는 전환은 시작 화면을 깔지 않는다 — 곧 복원된 대화가 그 자리를 채운다(깜빡임 제거).
     if (!resumeTarget) ensureStartScreen();
+    conversationSpend = { turns: 0, tokens: 0 };
+    paintConversationSpend();
     setStatus(resumeTarget ? "이전 대화" : reason === "project-switch" ? "새 프로젝트 — 새 대화" : "새 대화");
     refreshExportButton();
     syncGlassIdle();
@@ -2091,6 +2098,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // Pi 경로는 세션도 없고 auditHistory 를 채우는 곳도 없어서, 브리지 audit() 이 늘 빈 배열이었다
         // (2026-09-16 실측). 세션 항목과 같은 자리에 누적해 bridge·내보내기가 같은 원천을 본다.
         onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
+        onSpend: (spend) => {
+          conversationSpend = {
+            turns: conversationSpend.turns + spend.turns,
+            tokens: conversationSpend.tokens + spend.tokens,
+          };
+          paintConversationSpend();
+        },
       }, plan ? {
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
@@ -2882,7 +2896,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
     modelLabel: modelChipLabel(),
+    onModelClick: () => openAiSettings("first"),
   });
+  paintConversationSpend = (): void => {
+    const quiet = conversationSpend.turns === 0 && conversationSpend.tokens === 0;
+    composerShell.setSpend(quiet ? null : `${formatTokenCount(conversationSpend.turns)}턴 · ${formatTokenCount(conversationSpend.tokens)}토큰`);
+  };
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;
   openComposerPopover = composerShell.openPopover;
@@ -3046,6 +3065,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   applyAiBackgroundOpacity(panel, loadAiBackgroundOpacity());
+  applyAiRenderWeight(loadAiRenderWeight());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
   const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {
