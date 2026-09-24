@@ -161,16 +161,25 @@ function tryPlay(soundResourceId: string): boolean {
 }
 
 /**
- * 무대 플래시(+흔들림). `intensity` 가 heavy/crushing 이면 급소가 아니어도 흔든다 — 진폭은
- * `hitIntensityStageVariables` 가 `--battle-shake-x/y` 로 정한다(battleHitIntensity.ts). 급소는
- * 예전처럼 항상 흔들되 세기 변수가 있으면 그 진폭을 따른다.
+ * 무대 플래시(+흔들림). 명중한 타격은 세기와 무관하게 흔든다 — 진폭·주기는 세기가 정한다
+ * (`HIT_INTENSITY_STYLE.shakePx`, battleHitIntensity.ts). 잽은 2px 를 짧게 두 번, 막타는 11px 를 네 번.
+ * 세기 변수가 없는 급소는 CSS 폴백 진폭으로 흔든다.
+ *
+ * 흔들림은 **자기 클래스·변수**(`battle-hit-shake`, `--battle-hit-shake-*`)를 쓴다. 스킬 애니메이션 층
+ * (battleAnimationDom.applyTimingEffects)이 `battle-screen-shake` 와 `--battle-shake-*` 를 프레임마다
+ * 다시 쓰고 지워서, 같은 이름을 쓰면 타격 흔들림이 착탄 직후 한 프레임 만에 사라졌다(2026-09-25 실측:
+ * 11px 가 설정된 뒤 184ms 시점에 변수·클래스 모두 비어 있었다). CSS: 22-hit-feel.css.
+ *
+ * `hurt` 는 **아군이 맞은** 타격이다. 흰 번쩍임 대신 붉은 테두리가 조여 든다(22-hit-feel.css) —
+ * 정면 스킨은 아군을 그리지 않아서, 흰 막만으로는 누가 맞았는지 화면에서 읽을 수 없었다.
  */
 export function flashBattleField(
   root: HTMLElement,
   kind: "hit" | "critical" | "victory" | "defeat",
-  intensity?: BattleHitIntensity
+  intensity?: BattleHitIntensity,
+  options: { readonly hurt?: boolean } = {}
 ): void {
-  root.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-flash-victory", "battle-flash-defeat", "battle-screen-shake");
+  root.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-flash-victory", "battle-flash-defeat", "battle-flash-hurt", "battle-hit-shake");
   const className =
     kind === "critical"
       ? "battle-flash-critical"
@@ -179,25 +188,36 @@ export function flashBattleField(
         : kind === "defeat"
           ? "battle-flash-defeat"
           : "battle-flash-hit";
-  const shake = kind === "critical" || intensity === "heavy" || intensity === "crushing";
   const shakeVariables = intensity && HIT_INTENSITY_STYLE[intensity].shakePx > 0 ? hitIntensityStageVariables(intensity) : undefined;
-  for (const name of ["--battle-shake-x", "--battle-shake-y", "--battle-shake-period", "--battle-shake-iterations"]) {
-    root.style.removeProperty(name);
+  const shake = kind === "critical" || Boolean(shakeVariables);
+  for (const name of HIT_SHAKE_VARIABLES) root.style.removeProperty(name);
+  if (shake && shakeVariables && intensity) {
+    const { period, iterations } = SHAKE_RHYTHM[intensity];
+    root.style.setProperty("--battle-hit-shake-x", shakeVariables["--battle-shake-x"]!);
+    root.style.setProperty("--battle-hit-shake-y", shakeVariables["--battle-shake-y"]!);
+    root.style.setProperty("--battle-hit-shake-period", period);
+    root.style.setProperty("--battle-hit-shake-iterations", iterations);
   }
-  if (shake && shakeVariables) {
-    root.style.setProperty("--battle-shake-x", shakeVariables["--battle-shake-x"]!);
-    root.style.setProperty("--battle-shake-y", shakeVariables["--battle-shake-y"]!);
-    root.style.setProperty("--battle-shake-period", intensity === "crushing" ? "90ms" : "110ms");
-    root.style.setProperty("--battle-shake-iterations", intensity === "crushing" ? "4" : "3");
-  }
+  const hurt = options.hurt === true && (kind === "hit" || kind === "critical");
   window.requestAnimationFrame(() => {
     root.classList.add(className);
+    if (hurt) root.classList.add("battle-flash-hurt");
     if (shake) {
-      root.classList.add("battle-screen-shake");
+      root.classList.add("battle-hit-shake");
     }
     // 전투 스코프 타이머 — teardown 이 남은 것을 끊는다(실측: 이 700ms 가 씬 파괴 뒤에 발화했다).
     scheduleBattleTimer(() => {
-      root.classList.remove(className, "battle-screen-shake");
+      root.classList.remove(className, "battle-flash-hurt", "battle-hit-shake");
     }, kind === "victory" || kind === "defeat" ? 700 : kind === "critical" || intensity === "crushing" ? 400 : 280);
   });
 }
+
+const HIT_SHAKE_VARIABLES = ["--battle-hit-shake-x", "--battle-hit-shake-y", "--battle-hit-shake-period", "--battle-hit-shake-iterations"] as const;
+
+/** 세기별 흔들림 리듬. 약할수록 짧고 빠르게 — 잽이 무대를 오래 흔들면 흔들림이 소음이 된다. */
+const SHAKE_RHYTHM: Readonly<Record<BattleHitIntensity, { readonly period: string; readonly iterations: string }>> = {
+  graze: { period: "60ms", iterations: "2" },
+  normal: { period: "60ms", iterations: "2" },
+  heavy: { period: "90ms", iterations: "3" },
+  crushing: { period: "80ms", iterations: "4" },
+};

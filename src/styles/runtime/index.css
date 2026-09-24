@@ -37,6 +37,7 @@
 @import "./battle-skins/_battlers.css" layer(runtime);
 @import "./battle-skins/_vxace.css" layer(runtime);
 @import "./battle-skins/_windowskin.css" layer(runtime);
+@import "./battle/22-hit-feel.css" layer(runtime);
 @import "./commerce.css" layer(runtime);
 @import "./shop.css" layer(runtime);
 @import "./title.css" layer(runtime);

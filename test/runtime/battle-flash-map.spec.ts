@@ -78,7 +78,7 @@ test("critical flash keeps the battle scene opaque and still renders the flash",
   await withRealBattle(page, async () => {
     await installFlashProbe(page);
 
-    // 크리티컬은 RNG 라 직접 붙인다. battleJuice 는 크리티컬에 battle-screen-shake 를
+    // 크리티컬은 RNG 라 직접 붙인다. battleJuice 는 크리티컬에 battle-hit-shake 를
     // 함께 붙이므로(battleJuice.ts:94) 같은 조합으로 셰이크 경로까지 덮는다.
     await applyFlashClasses(page, "battle-flash-critical");
     expect(await flashStarted(page, 30_000), "크리티컬 플래시 샘플링이 시작되지 않았다").toBe(true);
@@ -173,7 +173,7 @@ async function applyFlashClasses(
     const scene = document.querySelector<HTMLElement>(".battle-scene");
     if (!scene) throw new Error("battle scene is missing");
     scene.classList.add(flashClass);
-    if (flashClass === "battle-flash-critical") scene.classList.add("battle-screen-shake");
+    if (flashClass === "battle-flash-critical") scene.classList.add("battle-hit-shake");
   }, className);
 }
 
@@ -271,7 +271,7 @@ async function completedSamples(page: Page): Promise<FlashSample[]> {
   await page.evaluate(() => {
     document
       .querySelector<HTMLElement>(".battle-scene")
-      ?.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-screen-shake");
+      ?.classList.remove("battle-flash-hit", "battle-flash-critical", "battle-hit-shake");
   });
   return samples;
 }

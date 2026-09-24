@@ -22,11 +22,16 @@ export interface BattleHitIntensityStyle {
   readonly shakePx: number;
 }
 
+/*
+ * 2026-09-25: 잽·통상도 흔든다(2·3px). 30% 미만 피해가 0px 이던 때는 초반 전투의 거의 모든 타격이
+ * 무대를 전혀 움직이지 않아 "타격감이 없다" 로 읽혔다. 정보는 **진폭의 차이**(2 → 3 → 7 → 11)가
+ * 계속 들고 있다 — 잽과 필살기는 여전히 한눈에 구분된다.
+ */
 export const HIT_INTENSITY_STYLE: Readonly<Record<BattleHitIntensity, BattleHitIntensityStyle>> = {
-  graze: { knockbackPx: 10, squash: 0.02, punchScale: 1, shakePx: 0 },
-  normal: { knockbackPx: 26, squash: 0.06, punchScale: 1, shakePx: 0 },
-  heavy: { knockbackPx: 40, squash: 0.1, punchScale: 1.03, shakePx: 6 },
-  crushing: { knockbackPx: 54, squash: 0.15, punchScale: 1.05, shakePx: 10 },
+  graze: { knockbackPx: 10, squash: 0.02, punchScale: 1, shakePx: 2 },
+  normal: { knockbackPx: 26, squash: 0.06, punchScale: 1.015, shakePx: 3 },
+  heavy: { knockbackPx: 40, squash: 0.1, punchScale: 1.03, shakePx: 7 },
+  crushing: { knockbackPx: 54, squash: 0.15, punchScale: 1.05, shakePx: 11 },
 };
 
 /** 최대 HP 대비 피해 비율의 경계. */

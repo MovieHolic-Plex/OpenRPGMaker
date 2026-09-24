@@ -10,6 +10,42 @@
 
 # Runtime Battle Behavior
 
+## 타격감 층 (2026-09-25)
+
+사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
+히트스톱은 무대 1.2% 맥동뿐 아무것도 멈추지 않았고, 30% 미만 피해는 흔들림 0px, 필드 플래시는
+34% 흰 막 320ms ease-out(안개), 피해 숫자는 크기 고정 0.9초 부유, 아군 전진은 130ms 에 도착해
+340ms 서 있다가 맞혔다. 부품은 있었고 **수치와 시간 구조**가 문제였다.
+
+- CSS 소유: `src/styles/runtime/battle/22-hit-feel.css`. `runtime/index.css` 에서 **스킨 시트 뒤**(`_windowskin.css` 다음)
+  에 로드된다 — 같은 특정도의 스킨 규칙을 이긴다. 순서는 `test/playerRuntimeCss.test.ts` 가 고정한다.
+- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·팝업·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
+  흔들림(`.battle-field` 애니메이션)과 필드 플래시는 계속 돈다. 맞은 쪽 이미지는 흰 실루엣(`!important` —
+  분해·기절 키프레임과 스킨 filter transition 을 이겨야 한다). 파일 **맨 끝**에 둔다: 이 파일의 다른 `animation` 단축
+  속성이 play-state 를 running 으로 되돌린다. 정지 길이는 기존 시퀀서 비트(110ms × weight) 그대로다.
+- **점멸:** 정지가 풀리는 순간(`battleDom.onHitFeel(false)`) `blinkBattlerNode` 가 `battle-hit-blink-off` 를 55ms 간격 3회 토글.
+  visibility 라 idle·숨쉬기 애니메이션 슬롯을 건드리지 않는다. 격파 대상·reduced-motion 은 건너뛴다.
+- **흔들림은 자기 클래스:** `battleJuice.flashBattleField` 는 `battle-hit-shake` + `--battle-hit-shake-*` 를 쓴다.
+  스킬 애니메이션 층(`battleAnimationDom.applyTimingEffects`)이 `battle-screen-shake`·`--battle-shake-*` 를 프레임마다
+  다시 쓰고 지워서, 같은 이름이면 타격 흔들림이 착탄 직후 사라졌다(실측). 세기표 `HIT_INTENSITY_STYLE.shakePx` 는
+  2/3/7/11(graze→crushing), 리듬 `SHAKE_RHYTHM` 은 60ms×2 … 80ms×4. 포켓몬은 흔들지 않는다.
+- **하드 플래시:** `battle-flash-snap`(45% 유지 후 끊김, 130/190ms). 아군 피격은 `flashBattleField(..., { hurt: true })` →
+  `battle-flash-hurt` 붉은 비네트. 포켓몬은 필드 플래시를 끈다(적 공격 때 회색 막의 원인).
+- **숫자:** `battle-damage-bounce`(튀어 올라 떨어져 한 번 튕김). 크기는 `--pop-scale` = 노드의 `data-hit-intensity`
+  (0.85/1/1.3/1.6, `showDamageFeedback`), 급소 ×1.2. 파티 카드 팝업·빗나감·회복·방어는 옛 연출.
+- **명중 파편:** `spawnHitSparks(node, intensity)` 5~12개, 막타는 격파 조각이 대신한다. 포켓몬·reduced-motion 숨김.
+- **예비동작:** `applyActionMotion` 이 사용자 노드에 `data-motion-phase`(= 비트 kind)와 `--motion-beat-ms` 를 심고,
+  approach 의 lunge 는 `delay = 비트 − 240ms`, back-in 곡선으로 비트 끝에 도착한다. impact 의 lunge(적 내리찍기)는 60ms.
+- **공격자 표시(정면):** 아군을 그리지 않는 스킨은 행동 아군의 파티 행에 `is-acting`(앞으로 나옴·강조).
+- **HP 잔상(유리 창):** `.battle-stat-bar-hp::after` 가 같은 `--battle-stat` 폭으로 360ms 뒤 440ms 따라 빠진다. 채움은 90ms.
+  포켓몬 HP 바는 `::after` 가 「체력」 라벨이라 잔상 대신 620ms 로 눈에 보이게 줄어든다.
+- **포켓몬 기절:** 흐려지는 대신 `pkmn-battler-sink`(translate 100% + 아래쪽 clip)로 발판 아래로 꺼진다.
+- 함정: 헤드리스·고부하에서는 rAF 가 수백 ms 늦어 juice·플래시 클래스가 정지가 끝난 뒤 붙는다(실측 272ms).
+  정지 중 상태를 잴 때는 스크린샷이 아니라 동기 `getComputedStyle`·MutationObserver 로 잰다. transition 이 걸린 속성은
+  동기 계산값이 **시작값**으로 읽힌다.
+- 남은 것: 소리 층(찰칵+쿵 시차·음높이 흔들기), 막타 슬로, 몬스터 대치 초반 피해량(Lv11→Lv3 가 2/25)은 따로 확인.
+  회귀: `test/battleHitIntensity.test.ts`.
+
 ## 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
 
 - `battleDom`은 우상단에 `F 자동 꺼짐/켜짐 · Shift 1×/1.8×/3×` 상태를 표시한다.
