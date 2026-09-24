@@ -61,6 +61,7 @@ type ActionEventSceneContext = Pick<
   | "lastActionTargetKey"
   | "map"
   | "runEvent"
+  | "running"
   | "session"
   | "tileX"
   | "tileY"
@@ -573,6 +574,9 @@ function performAction(
     // 가리키므로, 타일 키로는 매번 새 대상으로 보였다. 1x1 에서는 대상 이벤트와 정면 칸이
     // 1:1 이라 동작이 같다(이동을 시작하면 어느 쪽이든 키가 비워진다).
     if (event.event.id === scene.lastActionTargetKey) return true;
+    // 다른 이벤트가 도는 중이면 runEvent 는 조용히 돌아간다. 그때 키를 먼저 박으면 걸음을 떼기 전까지
+    // 같은 NPC 에게 영영 말을 못 건다(2026-09-24 몬스터 수집 도그푸딩: 관장이 사방에서 무응답).
+    if (scene.running) return true;
     scene.lastActionTargetKey = event.event.id;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
@@ -587,6 +591,7 @@ function performAction(
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
   if (underfoot) {
     if (underfoot.event.id === scene.lastActionTargetKey) return true;
+    if (scene.running) return true;
     scene.lastActionTargetKey = underfoot.event.id;
     void scene.runEvent(underfoot.event.id);
     return true;

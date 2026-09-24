@@ -3435,6 +3435,40 @@ const DIR_DELTA: Readonly<Record<string, { readonly dx: number; readonly dy: num
  * moveActor 경로를 맵 위에서 따라가 막히는 칸을 짚는다. 런타임은 막힌 이동에서 최대 30초를 기다린 뒤 넘어가므로
  * 벽으로 걷는 컷신은 「멈춘 것처럼」 보인다. 이벤트 대상만 본다(주인공의 컷신 시작 칸은 진입 경로마다 달라 모른다).
  */
+/**
+ * moveActor 대상은 이벤트 id 여야 하는데, NPC id 는 `ev_npc_<uuid>` 처럼 불투명하고 say 비트는 이름을 쓴다.
+ * 모델이 이름(노을)으로 적으면 검증이 거절하고, 모델은 이동 비트를 빼 버렸다 — 컷신 속 두 사람이 걷지 않았다
+ * (2026-09-24 회상 스토리 도그푸딩). 같은 맵에서 이름·characterId 가 하나로 맞으면 id 로 바꾼다.
+ */
+function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[], warnings: string[]): CutsceneBeat[] {
+  const ids = new Set(map.events.map((event) => event.id));
+  const resolve = (items: readonly CutsceneBeat[]): CutsceneBeat[] => items.map((beat): CutsceneBeat => {
+    if (beat.kind === "parallel") return { ...beat, beats: resolve(beat.beats) };
+    if (beat.kind !== "moveActor") return beat;
+    const raw = (beat.target ?? beat.eventId ?? beat.actor ?? "player").trim();
+    if (raw === "player" || raw === "this-event" || ids.has(raw)) return beat;
+    const matches = map.events.filter((event) => event.name?.trim() === raw || event.characterId === raw);
+    if (matches.length !== 1) return beat;
+    const id = matches[0]!.id;
+    warnings.push(`컷신 moveActor 대상 '${raw}' 를 같은 맵의 이벤트 id '${id}' 로 바꿨습니다(대상 칸은 이벤트 id).`);
+    return { ...beat, target: id, eventId: undefined, actor: undefined };
+  });
+  const resolved = resolve(beats);
+  const speakers = new Set<string>();
+  let moves = 0;
+  const scan = (items: readonly CutsceneBeat[]): void => items.forEach((beat) => {
+    if (beat.kind === "parallel") scan(beat.beats);
+    else if (beat.kind === "moveActor") moves += 1;
+    else if (beat.kind === "say" && typeof beat.speaker === "string") speakers.add(beat.speaker.trim());
+  });
+  scan(resolved);
+  const onMap = [...speakers].filter((name) => name && map.events.some((event) => event.name?.trim() === name));
+  if (moves === 0 && onMap.length >= 2) {
+    warnings.push(`컷신에 맵 위 인물 ${onMap.join("·")} 이 말하지만 moveActor 비트가 하나도 없어 아무도 움직이지 않습니다 — 다가가기·돌아서기 같은 동작이 필요하면 moveActor{target:이름 또는 이벤트 id} 를 넣으세요.`);
+  }
+  return resolved;
+}
+
 function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly CutsceneBeat[]): string[] {
   const warnings: string[] = [];
   const positions = new Map<string, { x: number; y: number }>();
@@ -3517,7 +3551,7 @@ const scriptCutscene: ToolDefinition = {
     const warnings: string[] = [];
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
-    const beats = resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings);
+    const beats = resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);

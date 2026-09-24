@@ -132,10 +132,28 @@ export function checkProgression(project: Project): Finding[] {
       findings.push({ severity: "blocker", code: "ending-none-defined", message: "엔딩 id 없이 triggerEnding 을 부르지만 정의된 엔딩이 없습니다.", where: trigger.where });
     }
   }
+  // 엔딩별로 부르는 곳이 있는가. 전체에서 하나라도 부르면 위 no-ending-trigger 는 조용해서, 정의만 있고
+  // 아무도 부르지 않는 배드 엔딩이 남았다(2026-09-24 연애 도그푸딩). id 없는 호출은 조건으로 고르므로 제외한다.
+  const namedCalls = new Set<string>();
+  let autoSelects = false;
+  for (const trigger of triggers) {
+    const endingId = trigger.command.kind === "triggerEnding" && typeof trigger.command.endingId === "string" ? trigger.command.endingId : undefined;
+    if (endingId) namedCalls.add(endingId);
+    else autoSelects = true;
+  }
+  if (triggers.length > 0 && !autoSelects) {
+    for (const ending of endings) {
+      if (namedCalls.has(ending.id)) continue;
+      findings.push({
+        severity: "warning", code: "ending-uninvoked",
+        message: `엔딩 「${ending.name || ending.id}」 은 정의만 있고 부르는 곳(triggerEnding endingId:${ending.id})이 없어 볼 수 없습니다.`,
+      });
+    }
+  }
   for (const ending of endings) {
     for (const condition of ending.conditions ?? []) {
       if (condition.kind === "switch" && condition.value === true && !settable.has(condition.switchId) && !initiallyOn(project, condition.switchId)) {
-        // endingId 를 지정해 부르면 조건은 보지 않는다 — 그래도 조건 없이 자동 선택되는 호출이 있으면 막힌다.
+        // 조건 없이 자동 선택되는 호출(endingId 없음)이 있으면 이 조건 스위치가 곧 도달 조건이라 막힌다.
         const autoSelected = triggers.some((t) => t.command.kind === "triggerEnding" && !t.command.endingId);
         findings.push({
           severity: autoSelected ? "blocker" : "warning", code: "ending-switch-never-set",

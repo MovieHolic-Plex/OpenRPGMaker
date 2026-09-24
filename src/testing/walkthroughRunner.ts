@@ -11,6 +11,7 @@
 // 쓰기 툴이 아니라 "플레이어" 관점이므로 store를 건드리지 않는다(순수).
 
 import { headlessBattleSnapshot, createBattleRuntime } from "@/battle/runtime";
+import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import type { BattleRuntimeOptions } from "@/battle/types";
 import { checkReachability } from "@/project/lint/reachability";
 import { eventAtPoint } from "@/project/eventFootprintQuery";
@@ -311,8 +312,10 @@ function pump(state: RunnerState, interp: ReturnType<typeof createInterpreter>, 
         state.reachedEnding = true;
         return { stop: "ended", success: true };
       case "inputWait":
-      case "inputNumber":
         step = interp.resume(0);
+        break;
+      case "inputNumber":
+        step = interp.resume(numberInputAnswer(state.project, step.variableId));
         break;
       case "enterHeroName":
         step = interp.resume("");
