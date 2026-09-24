@@ -28,6 +28,10 @@
 //                     grows a tall grass patch (whole 2×2 blocks) from the grove's foot, marked with `tile`; lay the
 //                     map's tall grass afterwards with arrangeTallGrass (it picks E/F/G and the edge pieces). On snow and
 //                     ash use clearance 3 so the patch never turns into the short G grass by houses and roads.
+//   options.rowLimit  { count: 3, span: 10, rows: 1 } — at most `count` trunk feet within `rows` rows of each other
+//                     and `span` cells (no hedge of trees along the map edge); edge grove feet move 0–3 rows inward at
+//                     random (from the first row the tree fits on), companions stand a row off the lead's foot first.
+//                     No trunk on the map's outermost row or column.
 //   Trees never share a cell (whole boxes stay apart: one upper tile per cell); a tree's -1 cells are left untouched.
 import { ALL_TALL_GRASS } from "./tall-grass.mjs";
 import { emptiness } from "./village-fullness.mjs";
@@ -119,8 +123,23 @@ export function arrangeBareGroves(map, options = {}) {
   };
   const byKind = (k) => stamps.filter((s) => s.kind === k);
   const pick = (k) => { const l = byKind(k); return l[Math.floor(random() * l.length)]; };
+  // No fence of trees: at most `rowLimit.count` trunk feet on one row (±`rowLimit.rows`) within `rowLimit.span` cells
+  // (review 2026-09-25: edge groves stood on one foot row like a hedge). A trunk never stands on the map's outermost
+  // row or column.
+  const rowLimit = { count: 3, span: 10, rows: 1, ...(options.rowLimit ?? {}) }, feet = [];
+  const footOf = (st, x0, y0) => ({ x: x0 + (st.w - 1) / 2, y: y0 + st.h - 1 });
+  const rowFull = (st, x0, y0) => {
+    if (st.kind === "shrub") return false;
+    const f = footOf(st, x0, y0);
+    // Every `span`-cell window of the rows round this foot keeps at most `count` feet.
+    const xs = feet.filter((g) => Math.abs(g.y - f.y) <= rowLimit.rows).map((g) => g.x);
+    for (let s = f.x - rowLimit.span + 1; s <= f.x; s++) if (xs.filter((x) => x >= s && x < s + rowLimit.span).length + 1 > rowLimit.count) return true;
+    return false;
+  };
   const fits = (st, x0, y0) => {
     for (let dy = 0; dy < st.h; dy++) for (let dx = 0; dx < st.w; dx++) if (!inside(x0 + dx, y0 + dy) || taken[at(x0 + dx, y0 + dy)]) return false;
+    if (st.cells.some((c) => c.layer === "lower" && (y0 + c.dy >= H - 1 || x0 + c.dx <= 0 || x0 + c.dx >= W - 1))) return false;
+    if (rowFull(st, x0, y0)) return false;
     return st.cells.every((c) => free(x0 + c.dx, y0 + c.dy, c.layer === "lower"));
   };
   let undo = [];
@@ -133,6 +152,7 @@ export function arrangeBareGroves(map, options = {}) {
       if (c.layer === "lower") { write("lowerTiles", i, c.tile); } else write("upperTiles", i, c.tile);
     }
     trees.push({ id: st.id, x: x0, y: y0, w: st.w, h: st.h });
+    feet.push(footOf(st, x0, y0)); undo.push(["foot"]);
     return true;
   };
   const putTile = (tile, x, y, props) => {
@@ -143,7 +163,7 @@ export function arrangeBareGroves(map, options = {}) {
     return true;
   };
   const rollback = () => {
-    for (const u of undo.reverse()) if (u[0] === "taken") taken[u[1]] = 0; else map[u[0]][u[1]] = u[2];
+    for (const u of undo.reverse()) if (u[0] === "taken") taken[u[1]] = 0; else if (u[0] === "foot") feet.pop(); else map[u[0]][u[1]] = u[2];
     undo = [];
   };
   const edge = (x, y) => Math.min(x, y, W - 1 - x, H - 1 - y);
@@ -157,12 +177,16 @@ export function arrangeBareGroves(map, options = {}) {
     if (centres.some(([cx, cy, cb]) => (x - cx) ** 2 + (y - cy) ** 2 < (cb && inBand ? d : Math.max(d, spacing.inner)) ** 2)) continue;
     undo = [];
     const trees = [], props = [];
-    // Lead tree, trunk foot on the centre (a cell either side if the box does not fit).
+    // Lead tree, trunk foot on the centre moved 0–3 rows inward (edge groves: from the first row the tree fits on, so
+    // a tall tree by the top edge is not pushed back onto the same foot row as its neighbours) or ±1 (inland); a cell
+    // either side if the box does not fit.
+    const jitter = Math.floor(random() * 4), inward = y <= band ? 1 : H - 1 - y <= band ? -1 : random() < 0.5 ? 1 : -1;
+    const footRow = (st) => !inBand ? y + (jitter % 3) - 1 : y <= band ? Math.max(y, st.h) + jitter : H - 1 - y <= band ? Math.min(y, H - 2) - jitter : y + inward * jitter;
     let lead = null;
     for (const kind of inBand || random() < 0.4 ? ["big", "mid", "small"] : ["mid", "big", "small"]) {
-      const st = pick(kind);
-      for (const ox of [0, -1, 1]) {
-        const x0 = x - Math.floor(st.w / 2) + ox, y0 = y - st.h + 1;
+      const st = pick(kind), fy = footRow(st);
+      for (const [ox, oy] of [[0, 0], [-1, 0], [1, 0], [0, inward], [0, -inward]]) {
+        const x0 = x - Math.floor(st.w / 2) + ox, y0 = fy + oy - st.h + 1;
         if (put(st, x0, y0, trees)) { lead = { st, x0, y0 }; break; }
       }
       if (lead) break;
@@ -173,7 +197,7 @@ export function arrangeBareGroves(map, options = {}) {
     for (let m = 0; m < mates; m++) {
       const st = pick(random() < 0.5 ? "small" : "mid"), side = random() < 0.5 ? -1 : 1;
       const foot = lead.y0 + lead.st.h - st.h;
-      done: for (const s of [side, -side]) for (const dy of [0, 1, -1, 2]) {
+      done: for (const s of [side, -side]) for (const dy of [1, -1, 2, 0]) {
         const bx = s > 0 ? Math.max(lead.x0 + lead.st.w, ...trees.map((t) => t.x + t.w)) : Math.min(lead.x0, ...trees.map((t) => t.x)) - st.w;
         if (put(st, bx, foot + dy, trees)) break done;
       }
