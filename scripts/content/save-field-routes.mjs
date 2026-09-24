@@ -31,7 +31,8 @@ const project = await withTsModule("scripts/content/lib/field-routes-entry.ts", 
 });
 for (const ts of ["forest_harmony", "forest_harmony_snow", "forest_harmony_volcano", "forest_harmony_desert", "forest_harmony_autumn", "easyrpg_chipset_world", "oprn_world_keyed"])
   assert(project.tilesets[ts]?.referenceDocuments?.some((k) => /^(field-routes|rpg-outdoors-world)-/.test(k.id)), "field guidance missing on " + ts);
-assert.equal(project.tilesets.forest_harmony.count, village.tileset.count, "forest fields need the grafted tileset");
+// (ensureBundledTilesets may append the shared forest_harmony tail past the grafts — forestHarmonyExtension.ts, 2026-09-25)
+assert(project.tilesets.forest_harmony.count >= village.tileset.count, "forest fields need the grafted tileset");
 await withTsModule("electron/local-store/store.ts", "field-routes-store.mjs", async (api) => {
   let s = await api.initLocalProjectStore({ projectDir: dir }), id;
   try {

@@ -25,8 +25,8 @@ node scripts/content/author-field-routes.mjs   # 숲 필드 + 기후 필드, 통
 ```
 
 ```json
-[{"id":"field-volcano-ford-cliff-road","entry":[48,67],"targets":[[30,28],[30,36],[58,53],[63,53],[48,71],[99,54],[40,0]],"reachable":2265,"blocked":[]}]
+[{"id":"field-volcano-ford-cliff-road","entry":[48,67],"targets":[[30,28],[30,36],[58,53],[63,53],[48,71],[99,54],[40,0]],"reachable":2318,"blocked":[]}]
 ```
 
 ## 실제 구분
-- 용암 강 벼랑길 (field-volcano-ford-cliff-road, 100×72, 원본 숲마을 필드 field-ford-cliff-road): 재 덮인 절벽 위아래로 난 길. 북쪽에서 흘러온 용암 강이 절벽을 용암 폭포로 넘고, 아랫단 길은 현무암 다리로 건넌다. 빈 재밭에 화산 봉우리 한 쌍이 있다. 출구0 south (48,71) → 잿빛 여울성 남쪽 입구(48,91); 출구1 east (99,54) → 다음 필드; 출구2 north (40,0) → 용암못 폐촌 남쪽 입구(40,63).
+- 용암 강 벼랑길 (field-volcano-ford-cliff-road, 100×72, 원본 숲마을 필드 field-ford-cliff-road): 재 덮인 절벽 위아래로 난 길. 북쪽에서 흘러온 용암 강이 절벽을 용암 폭포로 넘고, 아랫단 길은 현무암 다리로 건넌다. 빈 재밭은 식은 용암 판과 가지 친 용암 균열로 덮이고, 분기공이 김을 뿜는 작은 용암 웅덩이와 화산 봉우리 한 쌍이 있다. 출구0 south (48,71) → 잿빛 여울성 남쪽 입구(48,91); 출구1 east (99,54) → 다음 필드; 출구2 north (40,0) → 용암못 폐촌 남쪽 입구(40,63).

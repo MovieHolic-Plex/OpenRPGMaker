@@ -9,6 +9,7 @@ import { harborParts } from "./harbor-kit.mjs";
 import { arrangeTallGrass } from "./tall-grass.mjs";
 import { arrangeBareGroves, bareTreeStamps } from "./bare-trees.mjs";
 import { cliffColumns, paintVillageCliffs } from "./village-cliffs.mjs";
+import { dressDesertGround, dressVolcanoGround, terrainKit } from "./climate-terrain.mjs";
 
 export const GROUND = 240;
 export const N8 = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]];
@@ -1423,7 +1424,7 @@ export class OutdoorMap {
   // (standsAsSpots): the spots are released and their lower cells offered as grove sites (trunk foot). Groves keep two
   // cells off roads, doors, stairs and bridges and one off water, cliffs and objects; no undergrowth; a grove that cuts
   // the way to a door or exit is rolled back. Afterwards no foot row carries more than three trees (no fence line).
-  bareGroves({ seed = this.seed, cactus = null, rock = 537, spacing } = {}) {
+  bareGroves({ seed = this.seed, cactus = null, rock = 537, spacing, rockChance } = {}) {
     const spots = this.bareSpots ?? [];
     if (!spots.length) return null;
     for (const i of this.spotCells ?? []) this.keep.delete(i);
@@ -1432,7 +1433,7 @@ export class OutdoorMap {
     const accept = () => { const seen = this.walk(this.map, entry); return this.access.every((a) => seen.has(this.at(a.x, a.y))); };
     const keep = [...this.access.map((a) => [a.x, a.y]), ...this.exitList.flatMap((e) => [[e.x, e.y], e.inner])];
     const out = arrangeBareGroves(this.map, { tileset: this.spec.tileset, houses: this.houses, keep, reserved: new Set(this.keep),
-      sites: spots.map(([x, y]) => this.at(x, y + 1)).filter((i) => i < this.W * this.H), seed, rock, cactus, accept, ...(spacing ? { spacing } : {}) });
+      sites: spots.map(([x, y]) => this.at(x, y + 1)).filter((i) => i < this.W * this.H), seed, rock, cactus, accept, ...(spacing ? { spacing } : {}), ...(rockChance != null ? { rockChance } : {}) });
     // Fence check: trees whose foot shares a row, counted per row in runs along x (gap ≤ 3 cells).
     const stamps = new Map(bareTreeStamps(this.spec.tileset).map((s) => [s.id, s]));
     const feet = out.groves.flatMap((g) => g.trees.map((t) => ({ x: t.x, foot: t.y + stamps.get(t.id).h - 1, w: stamps.get(t.id).w })));
@@ -1445,6 +1446,46 @@ export class OutdoorMap {
     const g = this.emptiness();
     this.fillReport = { ...(this.fillReport ?? {}), ...g, groves: this.groveReport };
     return this.groveReport;
+  }
+  // Desert and ash (user 2026-09-25: 「돌·선인장·풀이 너무 많다」, 「화산은 균열·용암, 모래는 사구」): close the emptiness
+  // gate with the ground itself (lib/climate-terrain.mjs) — lava plates, crack networks, a small lava pool with its
+  // fumarole and a basalt cluster on ash; dunes, ripple sand, cracked earth, a mesa or two, one remote bones spot and a
+  // few cactus clumps on sand. Walkable ground only on open sand / ash (never roads, pavings, doors, yards or the cell
+  // round a house); solid pieces also keep a cell off water, cliffs, roads and other solids, and roll back if they cut
+  // the way from the first exit to a door or exit.
+  climateGround({ climate, maxSq = 4, screen = 0.38, seed = this.seed, ...extra } = {}) {
+    const map = this.map, W = this.W, body = this.plainBodies();
+    const isPlain = (x, y) => { const i = y * W + x, l = map.lowerTiles[i]; return map.upperTiles[i] === -1 && !this.spotCells?.has(i) && (l === this.ground || (l >= 1140 && l <= 1147) || body.has(l)); };
+    const nearAccess = new Set();
+    for (const a of this.access) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) nearAccess.add(this.at(a.x + dx, a.y + dy));
+    for (const e of this.exitList) for (const [x, y] of [[e.x, e.y], e.inner]) nearAccess.add(this.at(x, y));
+    const near = (x, y, r, test) => { for (let yy = y - r; yy <= y + r; yy++) for (let xx = x - r; xx <= x + r; xx++) if (this.inside(xx, yy) && test(this.at(xx, yy))) return true; return false; };
+    // (keep cells stay walkable and occupied open cells are left-over reservations — bare-tree spots no grove used — so
+    // walkable ground may cover them; solid pieces may not)
+    const busy = (i, solid) => (solid && (this.keep.has(i) || this.occupied.has(i))) || this.roads.has(i) || this.paved.has(i) || nearAccess.has(i) || this.plazaCells.has(i);
+    const take = (x, y, solid) => {
+      const i = this.at(x, y);
+      if (map.lowerTiles[i] !== this.ground || map.upperTiles[i] !== -1 || busy(i, solid)) return false;
+      if (this.houses.some((h) => x >= h.x - 1 && x <= h.x + h.w && y >= h.y - 1 && y <= h.y + h.h)) return false;
+      return !solid || !near(x, y, 1, (j) => this.solid.has(j) || this.water.has(j) || this.cliffCells.has(j) || this.roads.has(j) || this.paved.has(j) || nearAccess.has(j) || this.bridgeCells.has(j));
+    };
+    const entry = this.exitList[0].inner, targets = [...this.access.map((a) => [a.x, a.y]), ...this.exitList.map((e) => e.inner)];
+    // every prop that could be walked up to keeps a reachable cell beside it (OutdoorMap.check)
+    const reachAll = () => { const seen = this.walk(map, entry); return (X, Y) => this.inside(X, Y) && seen.has(this.at(X, Y)); };
+    const beside = (o, hit) => { for (let dy = -1; dy <= o.h; dy++) for (let dx = -1; dx <= o.w; dx++) if (hit(o.x + dx, o.y + dy)) return true; return false; };
+    const hit0 = reachAll(), props = this.placements.filter((p) => p.kind === "prop" && beside(p, hit0));
+    const accept = () => { const hit = reachAll(); return targets.every(([x, y]) => hit(x, y)) && props.every((o) => beside(o, hit)); };
+    const before = map.upperTiles.slice();
+    const opts = { kit: terrainKit(this.spec.tileset), isPlain, take, accept, seed, limits: { maxSq, screen }, water: this.water, ...extra };
+    const out = climate === "volcano" ? dressVolcanoGround(map, opts) : dressDesertGround(map, opts);
+    // (the dressing may swap the layer arrays when it rolls a piece back)
+    this.lower = map.lowerTiles; this.upper = map.upperTiles;
+    for (let i = 0; i < this.upper.length; i++) if (this.upper[i] !== before[i]) { this.occupied.add(i); if (this.upper[i] >= 0) this.solid.add(i); }
+    const kinds = {}; for (const p of out.pieces) kinds[p.kind] = (kinds[p.kind] ?? 0) + 1;
+    this.groundReport = { pieces: kinds, cells: out.counts };
+    const g = this.emptiness();
+    this.fillReport = { ...(this.fillReport ?? {}), ...g, ground: this.groundReport };
+    return g;
   }
   walk(map = this.map, from) {
     const project = { tilesets: { [this.spec.tileset.id]: this.spec.tileset }, maps: { [map.id]: map } };
