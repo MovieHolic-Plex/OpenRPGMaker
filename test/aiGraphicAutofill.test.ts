@@ -204,6 +204,22 @@ describe("upsert_event NPC 외형 자동 부여", () => {
     expect(pageOf("ev_shadow")?.graphic?.sprite?.id).not.toBe("tex_easyrpg_charset_object1");
   });
 
+  it("이름 없는 이벤트는 id 로 사물을 알아본다(dream-6: ev_forest_candle_altar 가 주민 그림)", () => {
+    const ctx = context();
+    const upsert = (id: string, x: number) => runTool(ctx, "upsert_event", {
+      mapId: ctx.project.startMapId,
+      event: { id, x, y: 5, trigger: { kind: "action" }, pages: [{ conditions: [], commands: [{ kind: "text", body: "…" }] }] },
+    });
+    const pageOf = (id: string) => ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === id)?.pages?.[0];
+    upsert("ev_forest_candle_altar", 2);
+    expect(pageOf("ev_forest_candle_altar")?.graphic).toEqual({ transparent: true });
+    upsert("ev_hub_door_sea", 4);
+    expect(pageOf("ev_hub_door_sea")?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object1");
+    upsert("ev_sea_shadow_1", 6);
+    expect(pageOf("ev_sea_shadow_1")?.graphic?.sprite?.id).not.toBe("tex_easyrpg_charset_object1");
+    expect(pageOf("ev_sea_shadow_1")?.graphic?.transparent).not.toBe(true);
+  });
+
   it("place_npc 의 최상위 commands 는 인사 한 줄로 덮이지 않는다", () => {
     const ctx = context();
     const result = runTool(ctx, "place_npc", {

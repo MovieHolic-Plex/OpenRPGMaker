@@ -320,7 +320,8 @@ function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graph
   if (event.characterId) return null;
   if ((page.commands ?? []).some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim())) return null;
   const name = (event.name ?? "").trim();
-  if (!name || SPEAKING_BEING_WORDS.test(name)) return null;
+  if (!name) return objectGraphicFromId(event.id);
+  if (SPEAKING_BEING_WORDS.test(name)) return null;
   // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
   // 산 고양이를 고르면 안 된다.
   const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
@@ -329,6 +330,20 @@ function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graph
     if (!labelWords.includes(head!)) continue;
     const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
     if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+  }
+  return { graphic: { transparent: true }, label: "" };
+}
+
+/** 영문 id 가 가리키는 사물 — 문은 문 그림, 나머지 사물은 투명. id 에 인물 낱말이 있거나 뜻을 모르면 null(주민 그림). */
+const OBJECT_ID_WORDS = /(?:^|_)(door|gate|mirror|candle|altar|diary|book|drawer|desk|bed|window|statue|clock|eye|photo|picture|frame|umbrella|chest|box|sign|shelf|lamp|stair|stairs|well|grave|painting|vase|table|chair|closet|wardrobe|safe|note|letter|item|prop|object|obj|hotspot|examine)(?:_|$|\d)/iu;
+const BEING_ID_WORDS = /(?:^|_)(npc|person|people|man|woman|girl|boy|kid|child|villager|guard|shadow|ghost|dancer|resident|merchant|keeper|old|lady|spirit|fairy|monster|cat|dog|bird|character|chara)(?:_|$|\d)/iu;
+
+function objectGraphicFromId(id: string): { graphic: EventPage["graphic"]; label: string } | null {
+  if (BEING_ID_WORDS.test(id) || !OBJECT_ID_WORDS.test(id)) return null;
+  if (/(?:^|_)(door|gate)(?:_|$|\d)/iu.test(id)) {
+    const hit = searchResources("charset", "문").find((entry) => /문/u.test(entry.label));
+    const parsed = hit ? /^charset:(.+):(\d+)$/u.exec(hit.id) : null;
+    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit!.label };
   }
   return { graphic: { transparent: true }, label: "" };
 }
