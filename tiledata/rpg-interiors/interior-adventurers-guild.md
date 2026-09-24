@@ -2,7 +2,7 @@
 
 모험가가 의뢰를 받고 보고하는 곳. 뒷벽 게시판에서 의뢰서를 고르고, 오른쪽 접수 카운터에서 접수원에게 등록·보상 수령, 왼쪽 식탁에서 동료를 모은다.
 
-크림 벽 18×8칸. 뒷벽에 메모 게시판 둘(의뢰판)·강 지도 액자·사슴뿔 벽판·방패 벽 장식·횃불, 오른쪽 접수 카운터 325·326·327과 뒤편 문서 분류장 둘·열쇠판·편지 쟁반·금고함(접수원 자리 (16,6)), 왼쪽 뒤 술통 선반·맥주통, 긴 식탁과 벤치 두 벌, 문 앞 청록 러그, 앞 모서리 무기 거치대·배낭·밧줄·지도통. 22×15, tilesetId=tibo_interior_expanded. 입구 (11,13), 주인·담당 자리 (16,6). 통행 검사 목표 [[16,8],[8,5],[10,7]].
+크림 벽 18×8칸. 뒷벽에 메모 게시판 둘(의뢰판)·강 지도 액자·사슴뿔 벽판·방패 벽 장식·횃불과 의뢰 장부 독서대, 오른쪽 접수 카운터 325·326·327과 뒤편 문서 분류장 둘·열쇠판·편지 쟁반·금고함(접수원 자리 (16,6)), 왼쪽 뒤 술통 선반·맥주통, 긴 식탁과 벤치 두 벌, 문 앞 청록 러그, 앞 모서리 무기 거치대·배낭·밧줄·지도통. 앞쪽 붉은 러그·정사각 상자·물주머니·신발 받침대, 오른쪽 원형 식탁과 걸상·야자 화분, 맥주통 둘. 22×15, tilesetId=tibo_interior_expanded. 입구 (11,13), 주인·담당 자리 (16,6). 통행 검사 목표 [[16,8],[8,5],[10,7]].
 
 ![모험가 길드](images/interior-adventurers-guild.png)
 
@@ -194,14 +194,14 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "group": "harness-interior-house-v1-terrain-teal-carpet",
     "x": 10,
     "y": 8,
-    "w": 3,
-    "h": 4
+    "w": 2,
+    "h": 5
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-library-025",
     "name": "원형 식탁",
-    "x": 15,
+    "x": 14,
     "y": 10,
     "w": 1,
     "h": 2
@@ -210,7 +210,7 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-030",
     "name": "낮은 걸상",
-    "x": 14,
+    "x": 13,
     "y": 11,
     "w": 1,
     "h": 1
@@ -219,8 +219,70 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-030",
     "name": "낮은 걸상",
-    "x": 16,
+    "x": 15,
     "y": 11,
+    "w": 1,
+    "h": 1
+  },
+  {
+    "kind": "rug",
+    "group": "harness-interior-house-v1-terrain-red-carpet",
+    "x": 3,
+    "y": 11,
+    "w": 7,
+    "h": 1
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-133",
+    "name": "받침대 맥주통",
+    "x": 6,
+    "y": 4,
+    "w": 1,
+    "h": 2
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-lectern",
+    "name": "독서대",
+    "x": 12,
+    "y": 5,
+    "w": 1,
+    "h": 2
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-209",
+    "name": "키 큰 실내 야자",
+    "x": 16,
+    "y": 9,
+    "w": 2,
+    "h": 2
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-boot-rack",
+    "name": "신발 받침대",
+    "x": 7,
+    "y": 12,
+    "w": 2,
+    "h": 1
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-230",
+    "name": "정사각 보관 상자",
+    "x": 4,
+    "y": 12,
+    "w": 1,
+    "h": 1
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-199",
+    "name": "가죽 물주머니",
+    "x": 5,
+    "y": 12,
     "w": 1,
     "h": 1
   },

@@ -4,6 +4,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
+    "tile": 941,
+    "label": "독서등",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 960,
+    "label": "펼친 지도책 받침",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 961,
     "label": "펼친 지도책 받침",
     "passability": {
@@ -499,6 +521,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 1249,
+    "label": "지도통",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1250,
+    "label": "가죽 물주머니",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 1279,
     "label": "지도통",
     "passability": {
@@ -506,6 +550,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": false,
       "left": false,
       "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1293,
+    "label": "키 큰 실내 야자",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1294,
+    "label": "키 큰 실내 야자",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
     },
     "priority": "upper"
   },
@@ -528,6 +594,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1323,
+    "label": "키 큰 실내 야자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1324,
+    "label": "키 큰 실내 야자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "upper"
   },
@@ -561,6 +649,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1353,
+    "label": "정사각 보관 상자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "upper"
   },
@@ -1216,50 +1315,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1864,
     "label": "무기 거치대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1894,
-    "label": "필경사 책상",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1895,
-    "label": "필경사 책상",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1924,
-    "label": "필경사 책상",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1925,
-    "label": "필경사 책상",
     "passability": {
       "up": false,
       "down": false,

@@ -4,6 +4,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
+    "tile": 1364,
+    "label": "자물쇠 금고함",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1539,
+    "label": "갑옷 거치대",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 1540,
     "label": "갑옷 거치대",
     "passability": {

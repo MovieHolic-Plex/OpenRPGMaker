@@ -117,6 +117,11 @@ easyrpg_chipset_ship(30열·16px). 공용 장소 「푸른물결호 · 가로 �
     "sourceChipset": "tex_tibo_interior_expanded",
     "sourceTile": 1088,
     "targetTile": 500
+  },
+  {
+    "sourceChipset": "tex_tibo_interior_expanded",
+    "sourceTile": 1247,
+    "targetTile": 501
   }
 ]
 ```
@@ -177,8 +182,8 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
         8
       ]
     ],
-    "reachable": 75,
-    "walkable": 73,
+    "reachable": 70,
+    "walkable": 67,
     "blocked": []
   }
 ]

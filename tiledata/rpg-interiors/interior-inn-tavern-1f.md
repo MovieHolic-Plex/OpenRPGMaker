@@ -2,7 +2,7 @@
 
 여관 주인이 운영하는 1층. 손님은 문으로 들어와 오른쪽 접수대에서 방을 잡고, 바에서 술을 받아 긴 식탁에서 먹는다. 계단으로 2층 객실에 오른다.
 
-크림 벽 18×8칸 홀. 왼쪽 뒤 술통 선반·맥주통·포도주 선반, 그 앞 바 카운터와 높은 걸상 둘(주인 자리 (4,6)), 벽에 술집 간판·메뉴 칠판, 가운데 뒤 장작 벽난로, 벽 다트판, 긴 식탁과 벤치 두 벌, 앞 왼쪽 솥 걸이와 원형 식탁. 오른쪽 뒤 여관 간판 57·열쇠판·접수 계산대·편지 쟁반, 벽에 뚫은 오르막 계단 111/141/171(x=19). 22×15, tilesetId=tibo_interior_expanded. 입구 (11,13), 주인·담당 자리 (4,6). 통행 검사 목표 [[4,6],[9,7],[16,5],[19,5]].
+크림 벽 18×8칸 홀. 왼쪽 뒤 술통 선반·맥주통·포도주 선반, 그 앞 바 카운터와 높은 걸상 둘(주인 자리 (4,6)), 벽에 술집 간판·메뉴 칠판, 가운데 뒤 장작 벽난로, 벽 다트판, 긴 식탁과 벤치 두 벌, 앞 왼쪽 솥 걸이와 원형 식탁. 오른쪽 뒤 여관 간판 57·열쇠판·접수 계산대·편지 쟁반, 벽에 뚫은 오르막 계단 111/141/171(x=19). 빈 바닥을 끊는 붉은 러그 둘(벽난로 앞, 식탁 앞 통로), 오른쪽 원형 식탁과 걸상 둘. 22×15, tilesetId=tibo_interior_expanded. 입구 (11,13), 주인·담당 자리 (4,6). 통행 검사 목표 [[4,6],[9,7],[16,5],[19,5]].
 
 ![여관 1층 · 주점과 접수대](images/interior-inn-tavern-1f.png)
 
@@ -235,8 +235,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-025",
     "name": "원형 식탁",
-    "x": 15,
-    "y": 10,
+    "x": 17,
+    "y": 8,
     "w": 1,
     "h": 2
   },
@@ -244,8 +244,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-030",
     "name": "낮은 걸상",
-    "x": 14,
-    "y": 11,
+    "x": 16,
+    "y": 9,
     "w": 1,
     "h": 1
   },
@@ -253,9 +253,25 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-030",
     "name": "낮은 걸상",
-    "x": 16,
-    "y": 11,
+    "x": 18,
+    "y": 9,
     "w": 1,
+    "h": 1
+  },
+  {
+    "kind": "rug",
+    "group": "harness-interior-house-v1-terrain-red-carpet",
+    "x": 9,
+    "y": 7,
+    "w": 5,
+    "h": 1
+  },
+  {
+    "kind": "rug",
+    "group": "harness-interior-house-v1-terrain-red-carpet",
+    "x": 9,
+    "y": 11,
+    "w": 6,
     "h": 1
   },
   {

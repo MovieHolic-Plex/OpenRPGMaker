@@ -50,8 +50,8 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
         5
       ]
     ],
-    "reachable": 96,
-    "walkable": 86,
+    "reachable": 95,
+    "walkable": 85,
     "blocked": []
   },
   {
@@ -78,8 +78,8 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
         12
       ]
     ],
-    "reachable": 97,
-    "walkable": 93,
+    "reachable": 96,
+    "walkable": 92,
     "blocked": []
   },
   {
@@ -195,7 +195,7 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
       ]
     ],
     "reachable": 40,
-    "walkable": 35,
+    "walkable": 36,
     "blocked": []
   }
 ]

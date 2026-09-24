@@ -433,6 +433,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 288,
+    "label": "화분",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 298,
     "label": "의자(좌향)",
     "passability": {
@@ -1159,6 +1170,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 690,
+    "label": "신발 받침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 691,
+    "label": "신발 받침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 754,
     "label": "절구와 공이",
     "passability": {
@@ -1282,39 +1315,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 936,
     "label": "편지 쟁반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 941,
-    "label": "독서등",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 942,
-    "label": "도서관 발판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 960,
-    "label": "펼친 지도책 받침",
     "passability": {
       "up": false,
       "down": false,

@@ -800,6 +800,22 @@ easyrpg_chipset_ship에서 이 분류의 맵이 쓰는 번호·라벨·통행. g
       "sourceTile": 1088,
       "targetTile": 500
     }
+  },
+  {
+    "tile": 501,
+    "label": "밧줄 뭉치 · Tibo 1247",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "graft": {
+      "sourceChipset": "tex_tibo_interior_expanded",
+      "sourceTile": 1247,
+      "targetTile": 501
+    }
   }
 ]
 ```
