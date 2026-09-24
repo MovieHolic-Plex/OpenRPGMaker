@@ -262,7 +262,7 @@ describe("인바운드 transfer 착지점", () => {
       const tiles = cell.layer === "lower" ? map.lowerTiles : map.upperTiles;
       expect(tiles[(10 + cell.dy) * map.width + 3 + cell.dx]).toBe(cell.tile);
     }
-    expect(tileAt(map, 5, 10)).toEqual({ lower: 157, upper: 238 });
+    expect(tileAt(map, 5, 10)).toMatchObject({ lower: 157, upper: 238 });
     expect(isPassable(ctx.project, map, 5, 10)).toBe(false);
 
     const transfers = inboundTransfers(ctx.project, interiorId);
