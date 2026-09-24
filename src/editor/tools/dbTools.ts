@@ -749,6 +749,34 @@ function dropUnknownAnimationId(project: Project, record: { animationId?: string
   warnings.push(`${label}.animationId "${id}" 는 전투 애니메이션에 없어 비웠습니다(기본 연출). 쓸 수 있는 id: ${hints.join(", ")}`);
 }
 
+/**
+ * 없는 iconResourceId 하나로 아이템·장비 커밋 전체가 거부되지 않게 한다.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 모델이 그림 id 대신 비슷한 기본 아이템 id(item_candle·item_quill·item_bell)를
+ * iconResourceId 로 보내 upsert_item/upsert_equipment 6건이 연속 「참조 검증 실패」로 거부됐다.
+ * 같은 id 의 기존 아이템·장비가 있으면 그 레코드의 그림을 쓰고, 아니면 그림만 비우고 저장한다.
+ */
+function resolveIconResourceId(project: Project, record: { iconResourceId?: string }, label: string, warnings: string[]): void {
+  const requested = record.iconResourceId;
+  if (!requested) return;
+  const resourceIds = collectResourceIds(project);
+  if (resourceIds.has(requested)) return;
+  const sibling = [...project.database.items, ...project.database.equipment]
+    .find((entry) => entry.id === requested && entry.iconResourceId && resourceIds.has(entry.iconResourceId));
+  if (sibling?.iconResourceId) {
+    record.iconResourceId = sibling.iconResourceId;
+    warnings.push(`${label}.iconResourceId "${requested}" 는 그림 id 가 아니라 레코드 id 라 그 레코드의 그림 "${sibling.iconResourceId}" 로 바꿨습니다.`);
+    return;
+  }
+  delete record.iconResourceId;
+  const word = requested.replace(/^(item|equip|icon)_/u, "").split(/[_-]/u)[0] ?? "";
+  const close = word ? [...resourceIds].filter((id) => id.includes(word)).slice(0, 6) : [];
+  warnings.push(
+    `${label}.iconResourceId "${requested}" 는 없는 그림이라 비우고 저장했습니다. ` +
+      (close.length ? `비슷한 그림 id: ${close.join(", ")}` : "list_resources 로 그림 id 를 찾아 다시 지정하세요."),
+  );
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -774,6 +802,7 @@ const upsertItem: ToolDefinition = {
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const warnings: string[] = [];
     dropUnknownAnimationId(draft, record, "item", warnings);
+    resolveIconResourceId(draft, record, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
     return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
@@ -1259,8 +1288,10 @@ const upsertEquipment: ToolDefinition = {
     const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon" });
     const record = normalizeEquipmentRecord(merged as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
     if (!hasEquipmentSlot(draft, record.slot)) throw new Error(`Unknown equipment slot: ${record.slot}`);
+    const warnings: string[] = [];
+    resolveIconResourceId(draft, record, "equipment", warnings);
     const outcome = upsertById(draft.database.equipment, record);
-    return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 
