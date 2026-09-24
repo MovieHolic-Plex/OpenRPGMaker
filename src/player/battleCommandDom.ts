@@ -344,9 +344,16 @@ export function syncEnemyListPanel(
   panel: HTMLElement,
   enemies: readonly BattleBattlerSnapshot[],
   ledger?: BattlePresentationLedger,
+  retainDepartedEnemies = false,
 ): void {
   const list = panel.querySelector<HTMLElement>(".battle-enemy-list");
   if (!list) return;
+  if (!retainDepartedEnemies) {
+    const currentIds = new Set(enemies.map((enemy) => enemy.id));
+    for (const row of list.querySelectorAll<HTMLElement>(":scope > .battle-enemy-list-row")) {
+      if (!currentIds.has(row.dataset.enemyId ?? "")) row.remove();
+    }
+  }
   for (const enemy of enemies) {
     let row = list.querySelector<HTMLElement>(`.battle-enemy-list-row[data-enemy-id="${enemy.id}"]`);
     if (!row) {
