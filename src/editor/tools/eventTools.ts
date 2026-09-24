@@ -730,6 +730,24 @@ function routeRootCommandsIntoPage(
 ): void {
   const has = (key: keyof GameEvent) => Object.prototype.hasOwnProperty.call(patch, key);
   const pages = event.pages ?? [];
+  if (has("pages") && pages.length > 0 && Array.isArray(patch.commands) && patch.commands.length > 0) {
+    // pages 와 최상위 commands 를 같이 보내고 페이지에는 명령을 안 넣은 경우 — 회상 스토리 도그푸딩에서 「메멘토 3개를
+    // 모으면 열리는 문」이 이렇게 저장돼 조건 페이지는 비고 다음 기억으로 가는 transfer 는 최상위에 묻혔다(도달 불가).
+    const empty = pages.filter((page) => !Array.isArray(page.commands) || page.commands.length === 0);
+    if (empty.length === 1) {
+      const index = pages.indexOf(empty[0]!);
+      event.pages = pages.map((page, i) => i === index ? { ...page, commands: structuredClone(patch.commands!) } : page);
+      event.commands = structuredClone(existing?.commands ?? []);
+      warnings.push(`최상위 commands → 명령이 비어 있던 pages[${index}] 로 옮김 (페이지가 있는 이벤트는 페이지 명령만 실행된다)`);
+      return;
+    }
+    throw new ToolError(
+      `이벤트 '${event.id}'에 pages 와 최상위 commands 를 함께 보냈습니다 — 페이지가 있으면 최상위 commands 는 실행되지 않습니다. ` +
+      (empty.length === 0 ? "모든 페이지에 이미 명령이 있어 어디에 둘지 모릅니다. " : `명령이 빈 페이지가 ${empty.length}개라 어디에 둘지 모릅니다. `) +
+      "명령을 해당 pages[].commands 에 넣으세요.",
+      { code: "invalid-args" },
+    );
+  }
   if (has("pages") || pages.length === 0) return;
   // 빈 배열은 옮기지 않는다 — 이름만 바꾸려는 패치가 흔히 commands:[] 를 같이 보내는데, 그걸 옮기면 페이지 대사가 지워진다.
   const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
