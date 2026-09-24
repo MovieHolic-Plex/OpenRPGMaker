@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **103쪽 / 3467KB / 약 991,560 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **103쪽 / 3468KB / 약 991,890 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -979,9 +979,9 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/pixel-art-world-japanese-interiors.md` — 5KB · 53줄 · ~1,487 토큰
+### `openwiki/pixel-art-world-japanese-interiors.md` — 5KB · 60줄 · ~1,698 토큰
 
-- `L31` 로컬 공용 게시와 정본 확인 (2026-09-24)
+- `L38` 로컬 공용 게시와 정본 확인 (2026-09-24)
 
 ### `openwiki/pixel-art-world-loose-supplements.md` — 7KB · 93줄 · ~2,123 토큰
 
@@ -1727,7 +1727,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 16px 병행판 (2026-09-22)
   - `L325` 픽셀 크기 기록 계약 (2026-09-22)
 
-### `openwiki/tileset-reference-documents.md` — 46KB · 488줄 · ~14,093 토큰
+### `openwiki/tileset-reference-documents.md` — 46KB · 492줄 · ~14,212 토큰
 
 - `L5` 공용 SQLite 지역 참고문서 조회 (2026-09-24)
 - `L16` 사용자 다운로드형 타일셋 지원 (2026-09-24)

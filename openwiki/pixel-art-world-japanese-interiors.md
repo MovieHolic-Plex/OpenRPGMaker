@@ -1,17 +1,24 @@
 # Pixel Art World 이자카야·일본식 방
 
-현재 이자카야는 **천장 포함10×16**이다. 아래10×15는 천장이 누락되어 반려된 중간판이다.
-`scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs`가 사용자 SA-WallA01을 실제 가져오기
-경로로480칸 뒤에 추가한다. 천장480..526(47변형),count528,그룹paw-wall-a01 lower/solid/8방.
-원본480칸과 내부 바닥·가구·통로는 보존하고 북천장 한 행만 추가한다. 문(4,15)을 제외한
-외곽47칸을 연결한다. 정본 `tiledata/pixel-art-world/izakaya-ceiling-compiled.json` 및
-공용 장소/저장 맵 두 경로를 함께 갱신한다. 천장 미설치 상태로 공용 재게시하면 거절한다.
+현재 이자카야는 **분리 조리실을 갖춘12×18**이다.10×16은 외곽 천장만 있던 이전판이다.
+`tiledata/pixel-art-world/izakaya-kitchen-layout.json`이 방·벽·문·가구 청사진이며,
+`scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs`가 전체 배열과 실제 그림을 만든다.
+북동 조리실은 세로벽x6과 가로벽y6으로 객석과 나뉜다. 직원 출입은(6,4),(6,5)의 두 칸,
+주통로는x4..5 두 칸이다. 조리대 밑동y3, 카운터 밑동y9는 바닥에 닿는다.
+부스2·방석6·바3 유지, 바 뒤y11·좌식 남쪽y16·출입(5,17)을 비운다.
+천장480..526(47변형),count528,paw-wall-a01 lower/solid/8방은 그대로다. 외곽·내벽63칸을
+같은 그룹으로 연결한다. 원본·파생 그림을 추가 다운로드하거나 재배포하지 않는다.
+43개 접근/문턱 목표가 실제 충돌 엔진으로 연결된다. 직원 문을 닫으면 조리실만 고립되고
+객석 접근은 보존된다. 편집기 자동 성형 결과와 배열도 일치한다.
+`izakaya-ceiling-compiled.json` 및 공용 정적 장소/저장 맵 두 경로를 함께 갱신한다.
+정본 저장→같은SQLite 재로드→공용CAS 게시/재로드 순서다. 증거는 `output/paw-izakaya-kitchen/`.
+이번 확인은 저작 표본과 통행 검증이며 새 LLM 재현 실험은 아니다.
 
 2026-09-25 밀도 재검토: 이전11×14 표본은 부스 하나와 빈 카운터 때문에 반려되었다.
 10×15에 부스2개·좌식 방석6개·북향 바 의자3개를 넣고 x4 주통로1칸과 직원행y4,
 의자 뒤y8, 좌식 남쪽y13을 보존한다. 정적 장소 `izakaya-booth-and-zashiki`를 갱신하고
 같은 배열을 독립 저장 맵 `paw-izakaya-dense`로 추가했다. 원본/파생 atlas 바이트는 그대로다.
-현재 엔진 통행으로17개 접근/문턱 목표를 확인했다. 아래 revision46/47 관찰은 수정 이전 기록이다.
+당시 엔진 통행으로17개 접근/문턱 목표를 확인했다. 아래 revision46/47 관찰은 수정 이전 기록이다.
 새 맵에는 도시 전이·착석·주문 이벤트가 없다.
 
 [원본·3층 합성·장소·준비 계약](../tiledata/pixel-art-world/JAPANESE-INTERIORS.md).

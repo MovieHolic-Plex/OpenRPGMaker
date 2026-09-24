@@ -477,7 +477,7 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 `pixel-art-world-school-rooms.mjs`로28실을 추출한다. 각 장소가 원본 원점·전체 배열·부품·접근칸·실제 그림을 소유한다.
 공용 SQLite와 새/기존 프로젝트가 같은 자료를 사용한다. 원본/파생 그림은 사용자 로컬에만 둔다.
 `build_shared_scene`는 이벤트까지 보관한 library.maps를 우선하고 정적 kit는 events=[]로 구별한다.
-후속 수정: 이자카야 천장 포함10×16(부스2·방석6·바3), 독립 침실2 주택15×15.
+후속 수정: 이자카야 분리 조리실·천장 포함12×18(부스2·방석6·바3), 독립 침실2 주택15×15.
 `tiledata/pixel-art-world/house-variants.json`과 `scripts/content/prepare-pixel-art-world-dense-interiors.mjs`가 메타데이터·전체 배열·
 프로젝트 소유 그림을 생성하고 엔진 통행으로 접근점을 검사한다. `scripts/content/save-pixel-art-world-host-patch.mjs`는
 host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체 문서를 다시 읽어 비교한다.
@@ -485,3 +485,7 @@ host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체
 이자카야의 천장 없는10×15는 중간 도안이다. `scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs`로
 기존 사용자 WallA01을 같은 타일셋에 추가하고 `tiledata/pixel-art-world/izakaya-ceiling-compiled.json`을
 정적 장소와 저장 맵 양쪽에 적용한다. 원본480칸은 보존하며 천장47변형과 연결 그룹은480번부터다.
+
+이자카야 확대 청사진은 `tiledata/pixel-art-world/izakaya-kitchen-layout.json`이다.
+내벽x6/y6·직원 문(6,4)/(6,5)·주통로 두 칸·43접근점·천장63칸을 실제 충돌/자동 성형으로 검사한다.
+직원 문을 봉쇄하는 반례에서 주방만 고립되어야 한다. 카운터 상부 벽 겹침과 밑동 바닥 지지를 구별한다.
