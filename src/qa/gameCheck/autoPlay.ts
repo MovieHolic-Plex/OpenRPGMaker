@@ -18,7 +18,8 @@ import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } fro
 type Requirement =
   | { readonly kind: "switch"; readonly id: string }
   | { readonly kind: "selfSwitch"; readonly mapId: string; readonly eventId: string; readonly key: string }
-  | { readonly kind: "variable"; readonly id: string }
+  /** op/value 가 있으면 «그 값에 이르기» — 호감도 ≥ 6 처럼 한 번에 안 되는 문턱이다. */
+  | { readonly kind: "variable"; readonly id: string; readonly op?: string; readonly value?: number }
   | { readonly kind: "item"; readonly id: string }
   | { readonly kind: "actor"; readonly id: string }
   /** 이 맵에 들어가기 — 들어가는 문이 전부 조건부일 때만 생긴다(기억을 차례로 여는 회상 스토리의 문). */
@@ -32,13 +33,18 @@ interface Goal {
   readonly verify?: (session: PlaySession, result: SceneTestResult) => string | null;
   /** 검증이 실패해도 기록만 하고 다음 목표로 간다 — 뒤에서 무엇이 터지는지까지 보여 준다. */
   readonly soft?: boolean;
+  /**
+   * 한 번으로 done 이 안 되면 되풀이한다(하루 한 번 만나 호감 +2, 자고 다음 날 또). resets 는 세터 페이지를 다시 여는
+   * 목표들(「오늘 만남 끝」 스위치를 끄는 침대) — 차례로 돌린 뒤 세터를 다시 부른다.
+   */
+  readonly repeat?: { readonly resets: readonly Goal[]; readonly max: number };
 }
 
 function requirementLabel(project: Project, req: Requirement): string {
   switch (req.kind) {
     case "switch": return `스위치 ${project.switches.find((s) => s.id === req.id)?.name || req.id}`;
     case "selfSwitch": return `셀프 스위치 ${req.eventId}.${req.key}`;
-    case "variable": return `변수 ${req.id}`;
+    case "variable": return `변수 ${project.variables.find((v) => v.id === req.id)?.name || req.id}${req.op && req.value !== undefined ? ` ${req.op} ${req.value}` : ""}`;
     case "item": return `아이템 ${req.id}`;
     case "actor": return `배우 ${req.id} 합류`;
     case "map": return `맵 ${project.maps[req.id]?.name ?? req.id} 진입`;
@@ -53,7 +59,11 @@ function leafRequirements(condition: unknown, page: PageRef): Requirement[] {
   for (const leaf of leaves) {
     if (leaf.kind === "switch" && leaf.value === true && typeof leaf.switchId === "string") out.push({ kind: "switch", id: leaf.switchId });
     if (leaf.kind === "selfSwitch" && leaf.value === true && page.map && page.event) out.push({ kind: "selfSwitch", mapId: page.map.id, eventId: page.event.id, key: String(leaf.key) });
-    if (leaf.kind === "variable" && typeof leaf.variableId === "string") out.push({ kind: "variable", id: leaf.variableId });
+    if (leaf.kind === "variable" && typeof leaf.variableId === "string") {
+      out.push(typeof leaf.op === "string" && typeof leaf.value === "number"
+        ? { kind: "variable", id: leaf.variableId, op: leaf.op, value: leaf.value }
+        : { kind: "variable", id: leaf.variableId });
+    }
     if (leaf.kind === "item" && leaf.present === true && typeof leaf.itemId === "string") out.push({ kind: "item", id: leaf.itemId });
     if (leaf.kind === "actor" && leaf.present === true && typeof leaf.actorId === "string") out.push({ kind: "actor", id: leaf.actorId });
   }
@@ -102,7 +112,8 @@ function mapGated(project: Project, mapId: string, visiting = new Set<string>())
 function requirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs = baseRequirementsOf(project, visit);
   const mapId = visit.page.map?.id;
-  if (mapId && mapGated(project, mapId)) reqs.unshift({ kind: "map", id: mapId });
+  // 문은 페이지 조건 뒤에 연다 — 날이 지나야 열리는 축제 광장에 먼저 들어가면(하루 넘기기 5번) 호감을 쌓을 날이 남지 않는다.
+  if (mapId && mapGated(project, mapId)) reqs.push({ kind: "map", id: mapId });
   return reqs;
 }
 
@@ -124,7 +135,34 @@ function satisfiedAtStart(project: Project, req: Requirement): boolean {
   if (req.kind === "actor") return (project.session?.partyActorIds ?? []).includes(req.id);
   if (req.kind === "item") return (project.session?.inventory?.[req.id] ?? 0) > 0;
   if (req.kind === "map") return !mapGated(project, req.id);
+  if (req.kind === "variable" && req.op && req.value !== undefined) return compare(project.session?.variables?.[req.id] ?? 0, req.op, req.value);
   return false;
+}
+
+function compare(actual: number, op: string, value: number): boolean {
+  switch (op) {
+    case ">=": return actual >= value;
+    case ">": return actual > value;
+    case "<=": return actual <= value;
+    case "<": return actual < value;
+    case "==": return actual === value;
+    case "!=": return actual !== value;
+    default: return false;
+  }
+}
+
+/** 문턱 쪽으로 움직이는 세터인가 — 호감 ≥ 6 을 바라는데 「무심한 답 -1」 을 고르지 않게. */
+function movesToward(req: Extract<Requirement, { kind: "variable" }>, command: RawCommand): boolean {
+  if (!req.op || req.value === undefined) return true;
+  const amount = typeof command.value === "number" ? command.value : undefined;
+  if (amount === undefined) return true;
+  const op = command.op;
+  if (op === "=") return compare(amount, req.op, req.value);
+  const up = (op === "+=" && amount > 0) || (op === "-=" && amount < 0);
+  const down = (op === "-=" && amount > 0) || (op === "+=" && amount < 0);
+  if (req.op === ">=" || req.op === ">") return up;
+  if (req.op === "<=" || req.op === "<") return down;
+  return up || down;
 }
 
 function setterMatches(req: Requirement, visit: CommandVisit): boolean {
@@ -132,7 +170,7 @@ function setterMatches(req: Requirement, visit: CommandVisit): boolean {
   switch (req.kind) {
     case "switch": return c.kind === "setSwitch" && c.switchId === req.id && (c.value === true || c.value === "toggle" || (typeof c.value === "object" && c.value !== null));
     case "selfSwitch": return c.kind === "setSelfSwitch" && c.key === req.key && c.value === true && visit.page.event?.id === req.eventId && visit.page.map?.id === req.mapId;
-    case "variable": return c.kind === "setVariable" && c.variableId === req.id;
+    case "variable": return c.kind === "setVariable" && c.variableId === req.id && movesToward(req, c);
     case "item": return c.kind === "changeItem" && c.itemId === req.id && c.op !== "-=";
     case "actor": return c.kind === "changeParty" && c.actorId === req.id && c.action === "add";
     case "map": return c.kind === "transfer" && c.mapId === req.id && visit.page.map?.id !== req.id;
@@ -140,12 +178,29 @@ function setterMatches(req: Requirement, visit: CommandVisit): boolean {
 }
 
 function reqKey(req: Requirement): string {
+  if (req.kind === "variable" && req.op) return `variable:${req.id}${req.op}${req.value}`;
   return req.kind === "selfSwitch" ? `self:${req.mapId}:${req.eventId}:${req.key}` : `${req.kind}:${req.id}`;
 }
 
 export interface CriticalPlan {
   readonly goals: readonly Goal[];
   readonly unresolved: readonly { readonly req: string; readonly for: CommandWhere }[];
+}
+
+/**
+ * 세터 페이지가 「꺼져 있어야」 열리는 스위치(오늘 만남 끝=false)를 다시 끄는 목표들. 하루를 넘기는 침대처럼
+ * 선행 조건 없는 세터만 쓴다 — 되풀이 한 바퀴가 또 긴 사슬이 되면 자동 플레이가 무엇을 재는지 흐려진다.
+ */
+function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly CommandVisit[]): Goal[] {
+  const resets: Goal[] = [];
+  for (const condition of setter.page.conditions as readonly RawCommand[]) {
+    if (condition.kind !== "switch" || condition.value !== false || typeof condition.switchId !== "string") continue;
+    const id = condition.switchId;
+    const reset = visits.find((visit) => visit.command.kind === "setSwitch" && visit.command.switchId === id && visit.command.value === false
+      && visit.page.event !== setter.page.event && requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req)));
+    if (reset) resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id} 끄기`, visit: reset, done: (session) => session.switches[id] !== true });
+  }
+  return resets;
 }
 
 /** 목표 명령 하나에 이르는 선행 목표 목록(선행 먼저). */
@@ -195,11 +250,6 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
   };
   const planVisit = (visit: CommandVisit, depth: number): boolean => {
     if (depth > 12) return false;
-    const onMap = visit.page.map?.id;
-    if (onMap && !planMapEntry(onMap, depth)) {
-      unresolved.push({ req: `${project.maps[onMap]?.name ?? onMap} 로 들어가는 문`, for: visit.where });
-      return false;
-    }
     for (const req of requirementsOf(project, visit)) {
       const key = reqKey(req);
       if (planned.has(key) || satisfiedAtStart(project, req)) continue;
@@ -212,13 +262,16 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
       for (const candidate of candidates) {
         const snapshot = goals.length;
         if (planVisit(candidate, depth + 1)) {
+          const threshold = req.kind === "variable" && req.op && req.value !== undefined ? req : undefined;
           goals.push({
-            label: req.kind === "map" ? requirementLabel(project, req) : `${requirementLabel(project, req)} 켜기`, visit: candidate,
+            label: req.kind === "map" ? requirementLabel(project, req) : threshold ? `${requirementLabel(project, req)} 만들기` : `${requirementLabel(project, req)} 켜기`, visit: candidate,
             done: (session) => req.kind === "switch" ? session.switches[req.id] === true
               : req.kind === "selfSwitch" ? session.selfSwitches?.[req.eventId]?.[req.key] === true
               : req.kind === "actor" ? session.partyActorIds.includes(req.id)
               : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0
-              : req.kind === "map" ? session.currentMapId === req.id : false,
+              : req.kind === "map" ? session.currentMapId === req.id
+              : threshold ? compare(session.variables[req.id] ?? 0, threshold.op!, threshold.value!) : false,
+            ...(threshold ? { repeat: { resets: pageResetGoals(project, candidate, visits), max: 20 } } : {}),
           });
           ok = true;
           break;
@@ -228,6 +281,12 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
       inProgress.delete(key);
       if (!ok) { unresolved.push({ req: requirementLabel(project, req), for: visit.where }); return false; }
       planned.add(key);
+    }
+    // 문은 페이지 조건 다음에 연다 — 닷새가 지나야 열리는 축제 광장에 먼저 들어가면 호감을 쌓을 날이 남지 않는다.
+    const onMap = visit.page.map?.id;
+    if (onMap && !planMapEntry(onMap, depth)) {
+      unresolved.push({ req: `${project.maps[onMap]?.name ?? onMap} 로 들어가는 문`, for: visit.where });
+      return false;
     }
     return true;
   };
@@ -475,6 +534,11 @@ function trace(goal: string, ok: boolean, detail: string, driver: Driver, where?
   return { goal, ok, detail, ...(where ? { where } : {}), mapId: s.currentMapId, x: s.x, y: s.y };
 }
 
+function describeProgress(driver: Driver, goal: Goal): string {
+  const c = goal.visit.command;
+  return typeof c.variableId === "string" ? `${c.variableId}=${driver.last.session.variables[c.variableId] ?? 0}` : "";
+}
+
 function executeGoal(driver: Driver, goal: Goal): AutoPlayStepTrace {
   const { project } = driver;
   const visit = goal.visit;
@@ -497,7 +561,18 @@ function executeGoal(driver: Driver, goal: Goal): AutoPlayStepTrace {
   if (failure) return trace(goal.label, false, failure, driver, visit.where);
   const verdict = goal.verify?.(driver.last.session, driver.last);
   if (verdict) return { ...trace(goal.label, false, verdict, driver, visit.where), ...(goal.soft ? { soft: true } : {}) };
+  for (let round = 1; goal.repeat && goal.done && !goal.done(driver.last.session, driver.last) && round < goal.repeat.max; round += 1) {
+    for (const reset of goal.repeat.resets) {
+      const step = executeGoal(driver, reset);
+      if (!step.ok) return trace(goal.label, false, `${round}번째 뒤 되풀이 준비(${reset.label})에 실패했습니다: ${step.detail}`, driver, reset.visit.where);
+    }
+    const again = executeGoal(driver, { ...goal, repeat: undefined, done: undefined });
+    if (!again.ok) {
+      return trace(goal.label, false, `${round}번 되풀이한 뒤 더 할 수 없습니다(지금 ${describeProgress(driver, goal)}): ${again.detail}`, driver, goal.visit.where);
+    }
+  }
   if (goal.done && !goal.done(driver.last.session, driver.last)) {
+    if (goal.repeat) return trace(goal.label, false, `되풀이해도 문턱에 닿지 않습니다(지금 ${describeProgress(driver, goal)}).`, driver, visit.where);
     return trace(goal.label, false, `이벤트는 돌았지만 목표가 충족되지 않았습니다 (페이지 ${visit.page.pageIndex + 1} 대신 다른 페이지가 실행됐거나 선택지·조건 분기가 목표 명령을 건너뜀).`, driver, visit.where);
   }
   return trace(goal.label, true, "완료", driver, visit.where);
