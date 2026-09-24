@@ -1220,3 +1220,12 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `colored-npcs-partial-player/SUMMARY.md`: 세 맵 플레이어 캡처 완료,pageErrors0. 도윤/캠퍼/준혁 세 PNG를 각각 직접 열어 검은 실루엣 대신 청색/녹색/주황색 유색 칩이 렌더되는 것을 확인했다. QA 사본의 시작 위치를 NPC 앞에 지정한 시각 검사이며 도보·전투 회귀 통과를 뜻하지 않는다.
 
 - 요청26c도 MALFORMED_FUNCTION_CALL 뒤 상인/하린2건의 검토 초안을 남겼다. 검토 보기 후 적용을 눌렀으나 관찰 Chromium이 `Page crashed`로 종료됐고 PID2679413이 사라졌다. SQLite는505여서 두 건 저장 성공으로 보고하지 않는다. 서버2321722/워커126360은 살아 있었으므로 재시작하지 않고 새 관찰 브라우저만 연결했다. `author-24-recovery2-observer.log` 말미와 `request26c-review-details.txt`가 근거다.8GB 힙 설정 상태에서도 크래시가 재발했으며 원인은 확정하지 않았다.
+
+
+### SAVE047 — 자동 저장 전체 문서 중복 전송과 실행 번들 불일치
+
+- 복구 관찰 브라우저의 `window.__oprnLogs({ns:'autosave'})`에서 `oprn:project.saveMapPatch: 400 {"error":"request exceeds 134217728 bytes"}`를 반복 확인했다. 단순 SQLite 잠금이나 외부 이미지 접속 실패가 아니다. `output/saesol-three-hour/save-error-log.json`이 실제 오류 근거다.
+- 정본505의 `current_json`은57,113,076자다. 배포된 `main-DRsovAOw.js`는 `baseSerialized`와 `serialized` 전체를 동시에 보내며, JSON 문자열을 다시 JSON 본문에 넣을 때의 escaping까지 포함해128MiB 제한을 넘겼다. 호스트는 이미 `patch`/`baseSha` 입력을 지원한다. 서버 지원과 renderer 사용 여부를 각각 확인해야 한다.
+- main의 기존 수정 `0b9219e2e`(#1163)를 실행용 소스 브랜치에 반영했다(`4fa7e5b7a`). 변경분만 보내고 stale-base일 때만 기준 문서를 추가하는 기존 계약을 사용한다. 요청 한도를 늘려 우회하지 않았다.
+- `npx vite build --outDir output/saesol-native/editor-dist-compact` 성공. 새 정적 파일을 복사한 뒤 index를 원자 교체했으며 이전 assets는 유지했다. 호스트/AI 워커는 재시작하지 않았다. `compact-deploy-proof.json`에 소스 커밋·index 해시·시각 기록. 이 단계만으로 기존 탭의 번들 교체나 정본 저장 성공을 주장하지 않는다.
+- 전체 gates/vitest/typecheck는 실행하지 않았다. 저장 복구와 에디터 AI 후속 변경의 재로드 검증은 별도로 필요하다.
