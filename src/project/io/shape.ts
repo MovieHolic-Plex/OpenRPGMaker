@@ -11,6 +11,7 @@ import { validateAudioDescriptions } from "../audioDescriptions";
 import { validateMonsterMetadata } from "../monsterMetadata";
 import { validateCharacterGraphicsProject } from "../characterGraphics";
 import { villageDesignIssue } from "../villageDesign";
+import { EVENT_ANIMATION_TYPES } from "../types";
 import type { Project, ProjectV1, ProjectV2 } from "../types";
 import { normalizeDatabaseRecords, normalizeSystemRecords } from "../databaseRecordModel";
 import { STORY_FLAG_ID_PATTERN } from "../storyFlags";
@@ -206,7 +207,24 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   stampCharacterIdsForSocialEvents(project);
   normalizeShopCommands(project);
   canonicalizeProjectCommandFieldAliases(project);
+  normalizeEventPageAnimationTypes(project);
   return project;
+}
+
+/** 저장본 페이지의 알 수 없는 animationType(예: 2026-09-24 갤러리 "none")은 지워 기본값으로 되돌린다 —
+ * 유니온 밖 값이 런타임 canActionTurn 의 exhaustiveness 트립와이어를 때리면 첫 조작에서 씬이 죽고
+ * 입력이 전부 죽어 게임이 완주 불능이 된다. 툴 경계(upsert_event)에서 막고, 여기서 기존 저장본을 건진다. */
+function normalizeEventPageAnimationTypes(project: Project): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        // 저장본 JSON 은 유니온을 어길 수 있다 — includes 로 실제 값을 가르고, 기본값은 필드 부재다.
+        if (page.animationType !== undefined && !EVENT_ANIMATION_TYPES.includes(page.animationType)) {
+          delete page.animationType;
+        }
+      }
+    }
+  }
 }
 
 /** 저장본에 남은 op↔action 표기 흔들림(예: changeParty op:"+=")을 로드 때 정본으로 옮긴다. */
