@@ -426,7 +426,8 @@ function cameraFields(beat: CutsceneCameraBeat, forceNonBlocking: boolean): M2Co
   const x = beat.x ?? objectTarget?.x;
   const y = beat.y ?? objectTarget?.y;
   const targetText = typeof target === "string" ? target : eventId ? eventId : x !== undefined || y !== undefined ? "screen" : "player";
-  const mode = beat.mode === "return" ? "return" : beat.mode === "pan" ? "panTo" : beat.mode;
+  // 카탈로그 선택지 값으로 옮긴다(panTo·follow·lock·return) — 「fixed」는 카탈로그에서 lock 이다.
+  const mode = beat.mode === "return" ? "return" : beat.mode === "pan" ? "panTo" : beat.mode === "fixed" ? "lock" : beat.mode;
   return m2Fields({
     mode,
     target: targetText,
@@ -569,7 +570,12 @@ function parallelWaitMs(beat: CutsceneBeat): number {
 function cleanupCommands(state: CompileState): Command[] {
   const commands: Command[] = [];
   if (state.camera) {
-    commands.push(m2Command("Camera Control", { ...state.camera.fields, durationMs: 0, wait: true }));
+    // pan 으로 끝난 카메라는 화면 좌표에 고정된 채 남는다(런타임은 stopFollow). 컷신이 끝나 조작이 돌아왔는데
+    // 카메라가 따라오지 않아 주인공이 화면 밖으로 걸어 나갔다(2026-09-24 회상 스토리: 기억 진입 컷신 넷이 전부
+    // 마지막에 pan 만 하고 return 을 안 했다). pan 이면 주인공에게 되돌리고, 명시적 fixed·follow 는 그대로 둔다.
+    commands.push(state.camera.fields.mode === "panTo"
+      ? m2Command("Camera Control", { mode: "return", target: "player", durationMs: 300, wait: true })
+      : m2Command("Camera Control", { ...state.camera.fields, durationMs: 0, wait: true }));
   }
   if (state.tint) {
     commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));

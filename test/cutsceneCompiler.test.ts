@@ -125,12 +125,10 @@ describe("compileCutscene", () => {
         {
           "commandId": "m2-201-camera-control",
           "fields": {
-            "durationMs": 0,
-            "mode": "panTo",
-            "target": "screen",
+            "durationMs": 300,
+            "mode": "return",
+            "target": "player",
             "wait": true,
-            "x": 5,
-            "y": 6,
           },
           "kind": "m2Command",
         },
