@@ -1031,3 +1031,10 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 -486→487의 변경은 maps.map_saesol_route2.events뿐이며 기존 이벤트 배열 항목과 모든 타일은 보존됐다. sw_sr_starter와 sw_sr_badge를 확인한 후 started만 설정하고, 거절/재대화에 재화 지급이 없다.
 - 실제 첫 배지 획득·두 번째 관장 직전 체크포인트로77칸/포털3회 걸어갔다. 첫 QA는 거절 무변화까지 확인하고 수락 후 비교에서 정상적으로 true가 된 started를 이전 false와 같아야 한다고 잘못 검사했다. `ecology-researcher-asserted-started-unchanged/`에 실패를 보존하고, 수락 전후 비교에서 의도된 started만 제외해 재실행 중이다.
 - 후속 `/pi` 요청21d2는 발자국·깃털·잎 세 관찰점의 단서/정답/오답 이유를 구체화해 제출했다. 실제 종족 타입(부르록 grass/poison, 치카디 normal/flying, 카카버 grass)을 읽어 확인했다. 현재는 관찰점만 저작하며 보고 보상과 체육관 연결은 다음 단계다.
+
+
+### 조사원 수락·재대화 실제 도보 통과
+
+- `ecology-researcher-player/SUMMARY.md`: passed=true,77칸/포털3회,declineUnchanged/acceptedOnlyNewFlag/repeatUnchanged=true,pageErrors0. 실제 첫 배지 체크포인트로 걸어가 거절 무변화→수락 시 started만 변경→수현 보고 안내와 재대화 무보상을 확인했다. `reminder.png`를 직접 확인했다.
+- 두 번째 중간 QA는 타이핑 중인 문자열을350ms만에 비교해서 실패했다. `ecology-researcher-typing-assertion/`을 보존하고 대사에 수현까지 실제 출력되는 것을 기다린 후 재검사했다. 최종 통과 결과로 실패 기록을 덮어쓰지 않았다.
+- 이번 검사에는 미자격 차단/조사 완료 페이지/세 관찰점/180분 분량은 포함되지 않는다. 화면의 기사 배우는 기존 진행 체크포인트가 가진 partyActorIds에서 왔으며, 정본 새 게임의 트레이너 수정 결과와 구분한다.
