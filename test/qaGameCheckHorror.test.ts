@@ -124,6 +124,33 @@ describe("체크포인트 재시작과 추격자", () => {
   });
 });
 
+describe("암호 선택지와 가짜 은신", () => {
+  it("암호 숫자를 선택지로 내거나 추격 스위치를 끄면 짚고, choice4 취소는 허용한다", async () => {
+    const { runGameCheck } = await import("@/qa/gameCheck");
+    const ctx = horrorProject();
+    const mapId = ctx.project.startMapId;
+    const made = runTool(ctx, "make_chase_scene", {
+      mapId, chaser: { at: { x: 8, y: 5 }, graphic: { query: "monster" }, speed: 6 },
+      activateSwitch: "sw_chase", killOnTouch: true, mood: false,
+    });
+    expect(made.ok, made.summary).toBe(true);
+    const vault = runTool(ctx, "upsert_event", { mapId, event: { id: "ev_vault", x: 3, y: 3, pages: [{
+      conditions: [], trigger: { kind: "action" }, commands: [
+        { kind: "choices", cancelBehavior: "choice4", options: [
+          { text: "4729", branch: [{ kind: "setSwitch", switchId: "sw_chase", value: false }] },
+          { text: "그만둔다", branch: [{ kind: "text", body: "물러선다." }] },
+        ] },
+      ],
+    }] } });
+    expect(vault.ok, vault.summary).toBe(true);
+    const codes = checkHorror(ctx.project, BRIEF).map((finding) => finding.code);
+    expect(codes).toContain("code-choice-is-answer");
+    expect(codes).toContain("chase-switch-cleared");
+    const report = runGameCheck(ctx.project, { skipAutoPlay: true, briefText: BRIEF });
+    expect(report.findings.map((finding) => finding.code)).not.toContain("command-invalid-enum");
+  });
+});
+
 describe("공포 추격 맵 조명", () => {
   it("공포 장르 추격 맵은 조명이 없으면 어두워지고, mood:false 면 그대로다", () => {
     const ctx = horrorProject();

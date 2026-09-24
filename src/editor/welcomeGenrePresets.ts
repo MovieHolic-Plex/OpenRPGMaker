@@ -180,6 +180,22 @@ export const HORROR_GALLERY_AUTHORING_GUIDE = [
   "- 열쇠·레버·순서 퍼즐은 compile_puzzle(item-gate·switch-sequence·password)로 만들고, 조건 분기는 {kind:\"fork\",condition:{kind:\"switch\",switchId,value:true},then:[…]} 모양이다.",
 ].join("\n");
 
+/**
+ * 추격 호러 저작 요령. 도구 이름을 지시문에 적어야 첫 요청에 그 스키마가 노출된다(mentionedToolSchemas).
+ * 2026-09-24 도그푸딩 r6 「잿빛 저택의 술래」: 방이 벽 없는 벽돌 바닥, 금고 암호가 선택지 「4729」,
+ * 옷장은 사람 그림이고 추격 스위치를 꺼서 숨는 척을 했다. 진짜 은신처는 옆 칸의 투명 이벤트였다.
+ */
+export const HORROR_CHASE_AUTHORING_GUIDE = [
+  "추격 호러 저작 요령:",
+  "- 방(현관·복도·서재·침실·창고)은 place_concept(query, plan, 새 mapId)로 벽이 있는 실내를 만든다. fill_region·paint_tiles 로 벽돌 바닥만 깔아 빈 판을 만들지 말 것.",
+  "- 방 사이 문은 create_transfer_pair 를 벽·가장자리 통행 칸에 두고, 그 칸에 place_door 로 문 그림을 붙인다. 방 한가운데 투명 칸으로 두지 말 것.",
+  "- 추격자는 make_chase_scene. speed 6, killOnTouch true, checkpointOnEntry true. 여러 방이면 pursuit 에 scope:\"connected\" 만 주고 tracking 은 생략한다(스위치를 켜 깨우면 persistent 가 기본. lastSeen 을 직접 넣으면 벽 너머에서 안 움직인다). activateSwitch 를 켜는 트리거를 같은 흐름에 만든다.",
+  "- 옷장 은신은 hidingSpots:[{x,y,mapId}] 를 옷장과 같은 칸에 준다(다른 방이면 mapId). 옆 칸의 투명 은신처는 플레이어가 못 찾는다. 추격 스위치를 setSwitch value:false 로 끄지 말 것 — 추격자가 사라질 뿐 수색하지 않는다.",
+  "- 금고·자물쇠의 숫자 암호는 compile_puzzle({kind:\"password\", answer:\"4자리 숫자\", at:{x,y}, prompt:\"암호를 입력한다.\", onSolve:{setSwitch, message}}) 로 만든다. 1~6자리 숫자는 inputNumber 가 된다. 선택지 보기에 정답 숫자를 적지 말 것. 쪽지는 조사 대사 본문에만 숫자를 적는다.",
+  "- 옷장·쪽지·문·금고에 사람 charset 을 붙이지 말 것. 서 있는 인물만 place_npc.",
+  "- 붙잡히면 killPlayer 로 게임 오버하고 진입 체크포인트에서 재개한다. 꽃잎 체력은 만들지 말 것.",
+].join("\n");
+
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
@@ -196,6 +212,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
       ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
+      ...(preset.id === "school-horror" ? [HORROR_CHASE_AUTHORING_GUIDE] : []),
     ].join("\n\n");
   }
   if (preset.packId === "action-rpg") {
@@ -215,6 +232,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     checklist,
     ...requiredTemplateBlock(preset.narrativeHorrorGenre),
     ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
+    ...(preset.id === "school-horror" ? ["", HORROR_CHASE_AUTHORING_GUIDE] : []),
     "",
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");

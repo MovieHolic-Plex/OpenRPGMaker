@@ -222,7 +222,8 @@ const makeHorrorLoop: ToolDefinition = {
   name: "make_horror_loop",
   description:
     "마녀의집식 트랩·체크포인트·(선택)추격 루프를 한 번에 배치한다.  마녀의집·저택 호러 슬라이스(트랩+체크포인트+추격)를 원큐로. 분위기는 set_scene_mood 와 함께." +
-    "trapCells 또는 trapCount+origin으로 트랩을 깔고 respawnCheckpoint를 강제하며, includeChase면 make_chase_scene을 붙인다.",
+    "trapCells 또는 trapCount+origin으로 트랩을 깔고 respawnCheckpoint를 강제하며, includeChase면 make_chase_scene을 붙인다. " +
+    "옷장이 다른 방이면 hidingSpots[].mapId. 숫자 암호·열쇠는 이 툴이 아니라 compile_puzzle kind:password(inputNumber).",
   mode: "write",
   domains: ["event"],
   parameters: {
@@ -236,7 +237,19 @@ const makeHorrorLoop: ToolDefinition = {
       includeChase: { type: "boolean" },
       chaserAt: { ...COORD_SCHEMA, description: "{x,y} 추격자 시작" },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
-      hidingSpots: { type: "array", items: COORD_SCHEMA, description: "{x,y}[] 추격을 피해 숨을 옷장 등(includeChase 일 때)" },
+      hidingSpots: {
+        type: "array",
+        description: "{x,y,mapId?}[] 추격을 피해 숨을 옷장 칸. 다른 방이면 mapId. 옷장과 같은 칸에 둔다.",
+        items: {
+          type: "object",
+          properties: {
+            x: { type: "integer" },
+            y: { type: "integer" },
+            mapId: { type: "string", description: "옷장이 추격자 맵이 아니면 그 mapId" },
+          },
+          required: ["x", "y"],
+        },
+      },
       mood: { type: "boolean", description: "true면 어두운 set_scene_mood 적용" },
       activateSwitch: { type: "string" },
     },

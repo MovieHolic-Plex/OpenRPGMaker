@@ -2512,7 +2512,15 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
     }
     // 가구·조사 이벤트가 없는 맨바닥이면 플레이어가 찾을 수 없는 투명 은신처다.
     if (isPassable(draft, map, x, y) && tileAt(map, x, y).upper < 0) {
-      warnings.push(`은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다 — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요.`);
+      const near = map.events
+        .filter((event) => event.id !== chaserId && Math.abs(event.x - x) + Math.abs(event.y - y) === 1)
+        .map((event) => `${event.id}(${event.x},${event.y})`);
+      warnings.push(
+        `은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다`
+        + (near.length > 0
+          ? ` — 바로 옆 ${near.join(", ")} 가 옷장이면 hidingSpots 를 그 칸으로 다시 주세요.`
+          : " — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요."),
+      );
     }
     const id = genId("ev_hiding");
     const page: EventPage = {
@@ -2533,7 +2541,8 @@ const makeChaseScene: ToolDefinition = {
   description:
     "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
     "speed 는 이 엔진 기준이다(RPG Maker 의 4=보통과 다르다): 6=주인공 걷기의 2/3(기본·긴장감 있는 추격), 7=걷기와 같음, 5=절반쯤, 4 이하=걷기의 절반도 안 돼 추격이 되지 않는다. " +
-    "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것.",
+    "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것. " +
+    "activateSwitch 를 setSwitch value:false 로 끄면 추격자가 사라질 뿐 은신이 아니다. 숫자 암호·금고·열쇠는 compile_puzzle kind:password — answer 가 1~6자리 숫자면 inputNumber. 선택지 보기에 정답 숫자를 적지 말 것.",
   mode: "write",
   parameters: {
     type: "object",

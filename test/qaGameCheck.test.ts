@@ -184,6 +184,10 @@ describe("qa gameCheck — 꽃잎 체력 검사는 전투 게임에 쓰지 않�
   it("보스전이 있는 게임은 전투 HP 가 체력이다 — gallery-no-life-damage 없음", () => {
     expect(checkGallery(buildQaFixture("clean"), brief).map((f) => f.code)).not.toContain("gallery-no-life-damage");
   });
+  it("추격의 「게임 오버」 문장만으로는 꽃잎 체력을 요구하지 않는다", () => {
+    expect(checkGallery(buildQaFixture("clean"), "닿으면 붙잡혀 게임 오버. 옷장에 숨는다.")).toEqual([]);
+  });
+
   it("전투가 없는 게임은 여전히 짚는다", () => {
     const project = buildQaFixture("clean");
     const boss = project.maps.map_cave!.events.find((event) => event.id === "ev_boss")!;

@@ -784,7 +784,8 @@ const compilePuzzle: ToolDefinition = {
   name: "compile_puzzle",
   description:
     "선언형 퍼즐을 이벤트로 컴파일한다. 공통 {mapId,puzzleId,kind,onSolve:{setSwitch?,beats?,message?},reset?}. " +
-    "kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다.",
+    "kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다. " +
+    "password 의 answer 가 1~6자리 숫자면 inputNumber 로 받는다. 선택지 보기에 정답 숫자를 적지 말 것.",
   mode: "write",
   parameters: {
     type: "object",
