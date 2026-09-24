@@ -4,6 +4,7 @@
 // localStorage 플래그로 1회만 노출하고, 건너뛰기/완주/전문가 전환 모두 '본 것'으로 처리한다.
 import { shouldSuppressCoachMarksForWelcomeIntent } from "@/editor/aiBootIntent";
 import { getEditorChrome } from "@/editor/editorUiMode";
+import { TOOL_LABEL } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
 
 export const COACH_MARKS_SEEN_KEY = "oprn:coachmarks-basic-v1";
@@ -24,7 +25,7 @@ export const BASIC_COACH_MARKS: readonly CoachMarkStep[] = [
   {
     id: "rail",
     title: "도구 레일",
-    text: "브러시로 칠하고 지우개로 지워요. 아이콘에 마우스를 올리면 이름이 보입니다.",
+    text: `${TOOL_LABEL.paint}와 ${TOOL_LABEL.erase}를 써요. 아이콘에 마우스를 올리면 같은 이름이 보입니다.`,
     anchorTestId: "basic-left-rail",
     side: "right",
   },
