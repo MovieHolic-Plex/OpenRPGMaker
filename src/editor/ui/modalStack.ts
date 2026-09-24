@@ -1,3 +1,5 @@
+import { closeTransientLayers } from "@/editor/ui/transientLayer";
+
 /**
  * Layered modal ESC handling.
  * Newest registered modal wins: one Escape closes only the top layer.
@@ -65,6 +67,8 @@ function isElementAttached(element: Element): boolean {
  */
 export function registerModal(element: Element, closeUi: () => void): () => void {
   ensureListening();
+  // 모달이 뜨면 떠 있던 메뉴·팝오버는 치운다 — 남겨 두면 모달 위·아래에서 입력을 가린다.
+  closeTransientLayers();
   const id = nextId++;
   const entry: ModalEntry = {
     id,

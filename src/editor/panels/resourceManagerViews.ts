@@ -7,6 +7,8 @@ import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import type { Project, ResourceProfile, UploadedAsset } from "@/project/types";
 import { el } from "@/util/dom";
+import { makeSvgIcon, type SvgIconName } from "@/editor/panels/tileToolbarIcons";
+import { deckIcon } from "./aiDeckIcons";
 import { monsterResourceStatus } from "./monsterResourcePresentation";
 import { dedupeListedProfiles, makeResourcePreviewGrid, resourceKindFromUpload, uploadedResourceKindLabel } from "./resourceManagerUtils";
 
@@ -237,20 +239,25 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
     dataset: { testid: "resource-category-list" },
   });
 
-  const getCategoryIcon = (kind: ResourceProfile["kind"]): string => {
+  // 이모지 대신 에디터 공용 SVG 아이콘 — 이모지는 OS 마다 모양이 다르고 📦 가 그림·시스템·시스템 2 에
+  // 겹쳐 분류를 구분하지 못했다(2026-09-24 visual QA).
+  const getCategoryIcon = (kind: ResourceProfile["kind"]): SvgIconName => {
     switch (kind) {
-      case "charset": case "battleCharset": return "👤";
-      case "faceset": return "🎭";
-      case "chipset": return "🗺️";
-      case "backdrop": return "🌄";
-      case "monster": return "👹";
-      case "battle": return "💥";
-      case "battleWeapon": return "🗡️";
-      case "music": return "🎵";
-      case "sound": return "🔊";
-      case "title": case "gameOver": return "🖼️";
-      case "movie": return "🎬";
-      default: return "📦";
+      case "charset": return "user";
+      case "battleCharset": return "combat";
+      case "faceset": return "npc";
+      case "chipset": return "tile";
+      case "backdrop": return "terrain";
+      case "monster": return "combat";
+      case "battle": return "polish";
+      case "battleWeapon": return "combat";
+      case "music": return "music";
+      case "sound": return "music";
+      case "title": case "gameOver": return "image";
+      case "picture": return "image";
+      case "movie": return "play";
+      case "system": case "system2": return "gear";
+      default: return "layers";
     }
   };
 
@@ -261,7 +268,7 @@ function resourceCategoryList(options: ResourceWorkbenchOptions, monsterTotal: n
     const countUploaded = options.uploaded.filter(u => resourceKindFromUpload(u.kind) === category.kind).length;
     const totalCount = category.kind === "monster" ? monsterTotal : countProfiles + countUploaded;
 
-    const icon = el("span", { class: "rm-category-icon", text: getCategoryIcon(category.kind) });
+    const icon = el("span", { class: "rm-category-icon", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon(getCategoryIcon(category.kind))] });
     const labelSpan = el("span", { class: "rm-category-label", text: category.label });
     const badge = el("span", { class: "rm-category-badge", text: String(totalCount) });
 
@@ -313,7 +320,7 @@ function resourceEntryList(
   const searchWrapper = el("div", { class: "rm-modern-search-wrapper" });
   const searchInput = el("input", {
     class: "rm-search-input rm-modern-search",
-    attrs: { type: "search", placeholder: "🔍 리소스 검색 (이름, ID)...", "aria-label": "리소스 검색" },
+    attrs: { type: "search", placeholder: "리소스 검색 (이름, ID)", "aria-label": "리소스 검색" },
   }) as HTMLInputElement;
   searchWrapper.append(searchInput);
 
@@ -405,12 +412,12 @@ function resourceEntryList(
         el("div", {
           class: "rm-gallery-empty",
           children: [
-            el("div", { class: "rm-empty-illustration", text: "📂" }),
+            el("div", { class: "rm-empty-illustration", attrs: { "aria-hidden": "true" }, children: [makeSvgIcon("image")] }),
             el("div", { class: "rm-empty-title", text: query ? "검색 결과가 없습니다" : "등록된 리소스가 없습니다" }),
             el("div", { class: "rm-empty-desc", text: "파일을 창에 드래그하거나 [가져오기] 버튼으로 추가하세요." }),
             el("button", {
               class: "btn primary rm-empty-cta",
-              text: "➕ 새 파일 가져오기",
+              text: "새 파일 가져오기",
               attrs: { type: "button" },
               on: { click: onImport }
             })
@@ -680,7 +687,7 @@ function resourceCommandPanel(
                 el("h2", { text: "웹 URL로 리소스 가져오기" }),
                 el("button", {
                   class: "database-modal-close",
-                  text: "x",
+                  text: "×",
                   attrs: { type: "button", title: "닫기" },
                   on: { click: () => backdrop.remove() },
                 }),
@@ -700,7 +707,7 @@ function resourceCommandPanel(
                   }),
                   el("button", {
                     class: "btn primary",
-                    text: "🔗 가져오기",
+                    text: "가져오기",
                     attrs: { type: "button" },
                     on: {
                       click: () => {
@@ -727,14 +734,14 @@ function resourceCommandPanel(
   const quickActions = [
     el("button", {
       class: "rm-command-button primary rm-modern-import-btn",
-      children: [el("span", { text: "➕" }), el("span", { text: "가져오기..." })],
+      children: [deckIcon("plus", { size: 15 }), el("span", { text: "가져오기..." })],
       attrs: { type: "button" },
       dataset: { testid: "resource-import-button" },
       on: { click: options.onImport },
     }),
     el("button", {
       class: "rm-command-button rm-action-compact rm-url-btn",
-      children: [el("span", { text: "🔗 URL" })],
+      children: [deckIcon("link", { size: 15 }), el("span", { text: "URL" })],
       attrs: { type: "button", title: "웹 링크로 가져오기" },
       on: { click: openUrlModal },
     }),
@@ -776,7 +783,7 @@ function importFormatNote(): HTMLElement {
         el("span", { class: "rm-tag", text: "MP3" }),
         el("span", { class: "rm-tag", text: "WAV" }),
       ]}),
-      el("div", { class: "rm-drop-tip", text: "💡 탐색기에서 파일 또는 폴더를 창으로 바로 끌어다 놓으세요." }),
+      el("div", { class: "rm-drop-tip", text: "탐색기에서 파일이나 폴더를 창으로 바로 끌어다 놓아도 됩니다." }),
     ],
   });
 }
@@ -963,7 +970,7 @@ function renderInspector(
         }),
         el("button", {
           class: "btn rm-action-btn",
-          text: "➕ 타일셋 등록",
+          text: "타일셋 등록",
           attrs: { type: "button" },
           on: { click: () => actions.addTileset(item.asset) }
         })

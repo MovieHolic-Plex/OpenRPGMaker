@@ -58,6 +58,7 @@ import { installToolbarOverflow } from "@/editor/panels/toolbarOverflow";
 import { renderWorkspaceBar } from "@/editor/panels/workspaceBar";
 import { toolbarButton } from "./menuToolbar";
 import { renderCommitHistoryButton, renderIdentityTopbarControl } from "@/editor/teamWorkflowUi";
+import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
 
 // ── 스튜디오 바 (2026-09-03) ──────────────────────────────────────────────────────────────
 // 표준·전문가 셸의 톱바는 **한 줄**이다. 그 전에는 메뉴 4개 + 작업 칩 4개 + 보기 + Ctrl K +
@@ -246,12 +247,18 @@ function renderSaveButton(): HTMLElement {
     on: { click: () => void saveProjectNow() },
   });
   const paint = (state: AutoSaveState): void => {
-    button.dataset.autosaveKind = state.kind;
+    // 저장하지 않는 세션은 빨간 오류 점이 아니라 회색 「저장 안 함」 점이다(배너가 이유를 말한다).
+    button.dataset.autosaveKind = isSessionNotPersisted(state) ? "unsaved-session" : state.kind;
     status.textContent = autosaveStatusText(state);
   };
   paint(store.getAutoSaveState());
   paintSaveDot = paint;
   return button;
+}
+
+/** 임시·예제 세션처럼 애초에 저장하지 않는 자리. 실패가 아니므로 오류 표시를 띄우지 않는다. */
+function isSessionNotPersisted(state: AutoSaveState): boolean {
+  return state.kind === "error" && state.code === "session-not-persisted";
 }
 
 export function autosaveStatusText(state: AutoSaveState): string {
@@ -266,7 +273,7 @@ export function autosaveStatusText(state: AutoSaveState): string {
     case "saving":
       return "저장 중";
     case "error":
-      return "자동 저장 실패";
+      return state.code === "session-not-persisted" ? "이 세션은 저장 안 됨" : "자동 저장 실패";
     default:
       return "변경 없음";
   }
@@ -436,9 +443,14 @@ function paintSaveStatus(host: HTMLElement, topbar: HTMLElement): void {
   //
   // 단, **실패 에피소드가 시작된 뒤**의 pending·saving 은 계속 보여 준다. 그러지 않으면
   // `다시 저장`을 누른 직후 칩이 사라졌다가 빨간 채로 다시 나타나 사용자가 결과를 오해한다.
-  if (state.kind === "error" || recovery.kind === "blocked") saveFailureEpisode = true;
-  else if (state.kind === "saved" || state.kind === "idle") saveFailureEpisode = false;
-  const quiet = state.kind !== "error" && !saveFailureEpisode && !persistenceSurfaceVisible(recovery);
+  //
+  // 저장하지 않는 세션(임시·예제)은 실패가 아니다. 빨간 칩 + 「다시 저장」을 띄우면 눌러도 소용없는
+  // 버튼을 권하게 되고, 톱바 폭이 좁을 땐 「온. 이.」처럼 잘려 읽을 수도 없다(2026-09-24 visual QA).
+  // 이유와 내보내기는 임시 세션 배너가 이미 말하므로 톱바는 조용히 두고 저장 점만 회색으로 칠한다.
+  const notPersisted = isSessionNotPersisted(state);
+  if ((state.kind === "error" && !notPersisted) || recovery.kind === "blocked") saveFailureEpisode = true;
+  else if (state.kind === "saved" || state.kind === "idle" || notPersisted) saveFailureEpisode = false;
+  const quiet = (state.kind !== "error" || notPersisted) && !saveFailureEpisode && !persistenceSurfaceVisible(recovery);
   clearChildren(host);
   host.dataset.autosaveKind = state.kind;
   host.hidden = quiet;
@@ -460,7 +472,7 @@ function paintSaveStatus(host: HTMLElement, topbar: HTMLElement): void {
 function logAutoSaveTransition(state: AutoSaveState): void {
   if (state.kind === lastLoggedAutoSaveKind && state.kind !== "error") return;
   lastLoggedAutoSaveKind = state.kind;
-  if (state.kind === "error") {
+  if (state.kind === "error" && !isSessionNotPersisted(state)) {
     autoSaveLog.error("자동 저장 실패 — 톱바 저장 상태 칩에 노출한다", {
       message: state.message,
       retryCount: state.retryCount ?? 0,
@@ -582,11 +594,14 @@ async function toggleFullscreen(): Promise<void> {
   }
 }
 
+const MENU_LAYER_OWNER = {};
+
 function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuCommand[]): void {
   const alreadyOpen = activeMenuPopup?.dataset.testid === `menu-popup-${id}`;
   closeMenuPopup();
   if (alreadyOpen) return;
   button.setAttribute("aria-expanded", "true");
+  claimTransientLayer(MENU_LAYER_OWNER, () => closeMenuPopup());
   const popup = el("div", { class: "oprn-menu-popup open", attrs: { role: "menu" }, dataset: { testid: `menu-popup-${id}` } });
   for (const command of commands) {
     if (command.kind === "separator") {
@@ -678,6 +693,7 @@ function openMenuPopup(id: string, button: HTMLElement, commands: readonly MenuC
 }
 
 function closeMenuPopup(options: { readonly restoreFocus?: boolean } = {}): void {
+  releaseTransientLayer(MENU_LAYER_OWNER);
   popupOutsideListener?.();
   popupOutsideListener = null;
   popupPositionCleanup?.();

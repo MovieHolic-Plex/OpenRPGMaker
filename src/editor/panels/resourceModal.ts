@@ -25,7 +25,7 @@ export function openResourceModal(initialKind?: ResourceKind): void {
   const body = el("div", { class: "database-modal-body" });
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "x",
+    text: "×",
     attrs: { type: "button", title: "닫기", "aria-label": "리소스 관리자 닫기" },
     dataset: { testid: "resource-modal-close" },
   });

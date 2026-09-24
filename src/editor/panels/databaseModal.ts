@@ -524,7 +524,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       : databaseFooterStatus(store.getAutoSaveState());
     footerStatus.textContent = status.text;
     footerStatus.dataset.statusKind = status.kind;
+    // 저장하지 않는 세션에서 파란 「지금 저장」 은 옆의 「저장되지 않습니다」 와 모순이다(2026-09-24 visual QA).
+    // 버튼은 남기되(편집 확정은 여전히 한다) 주 버튼 무게를 내린다.
+    applyButton?.classList.toggle("primary", status.kind !== "info");
   };
+  let applyButton: HTMLElement | null = null;
   paintFooterStatus();
   // 설정집 초안이 움직이면 사용자가 이미 다음 작업으로 넘어간 것 — 붙잡아 둔 문구를 놓는다.
   const unsubscribeCodex = codexSession.subscribe(() => {
@@ -592,7 +596,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
         on: { click: () => dismissKeepingEdits("cancel") },
       }),
-      el("button", {
+      applyButton = el("button", {
         class: "database-footer-button primary",
         text: "지금 저장",
         attrs: { type: "button", title: DATABASE_APPLY_BUTTON_HINT },
@@ -625,6 +629,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     });
   }
   windowEl?.append(footer);
+  paintFooterStatus(); // 주 버튼 무게는 버튼이 생긴 뒤에야 칠할 수 있다.
   // ── 사이드 도킹(M8): 백드롭 투명·포인터 통과 + 창 우측 고정. 맵 캔버스는 그대로 조작 가능. ──
   const applyDockMode = (next: boolean): void => {
     if (!(windowEl instanceof HTMLElement)) return;

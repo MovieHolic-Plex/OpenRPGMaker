@@ -272,6 +272,16 @@
   overflow: hidden;
 }
 
+/* 톱바 칩은 「무슨 일이 났나」 한 마디만 — 연결 라벨까지 붙이면 110px 에 두 문장이 들어가
+   「온라… 이 …」 처럼 둘 다 잘렸다(2026-09-24 visual QA). 연결 상태는 칩 title 이 말한다. */
+.studio-bar .topbar-save-status .db-connection-label {
+  display: none;
+}
+
+.studio-bar .topbar-save-status .db-autosave-state {
+  white-space: nowrap;
+}
+
 .studio-bar .topbar-save-status .db-autosave-retry-button {
   flex: 0 0 auto;
   white-space: nowrap;
@@ -503,6 +513,20 @@
 .studio-bar .topbar-ai-studio:focus-visible {
   background: var(--control-bg-hover);
   border-color: var(--border-strong);
+}
+
+/* 위 두 규칙(0,2,0)이 01-shell-topbar-team.css 의 .is-on 배경을 덮어 켜진 상태가 연회색 바탕에
+   흰 글씨(--on-accent)가 되어 읽을 수 없었다(2026-09-24 visual QA). 켜짐은 여기서 다시 말한다. */
+.studio-bar .topbar-ai-studio.is-on {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--on-accent);
+}
+
+.studio-bar .topbar-ai-studio.is-on:hover,
+.studio-bar .topbar-ai-studio.is-on:focus-visible {
+  background: var(--accent-hover);
+  border-color: transparent;
 }
 
 /* ── 7. 「보기 ▾」 버튼 ────────────────────────────────────────────────────────────────── */
@@ -882,4 +906,40 @@ body.editor-ui-expert .studio-bar .editor-topbar-trailing {
     flex-basis: 145px;
     max-width: 145px;
   }
+}
+
+/* ── 13. 태블릿 폭(<960) — 세 묶음이 한 줄에 들어가야 한다 ────────────────────────────────
+   왼쪽 401px + 오른쪽 441px 이 900px 아래로 내려가면 그리드의 minmax(0,1fr) 왼쪽 칸이 내용을
+   못 담아 도구·저장·검색·테스트·이벤트 버튼이 한 자리에 포개졌다(2026-09-24 visual QA, 768px).
+   이름표를 먼저 걷는다 — AI 연결 칩은 점만(title 이 이름), 간격은 2px, 전체화면은
+   브라우저가 이미 제공하므로 숨긴다. */
+@media (max-width: 959px) {
+  .studio-bar .ai-connection-chip {
+    justify-content: center;
+    padding: 0;
+    width: 32px;
+  }
+
+  .studio-bar .ai-connection-chip .ai-connection-label {
+    display: none;
+  }
+
+  .studio-bar-lead,
+  .studio-bar .editor-topbar-trailing {
+    gap: 2px;
+  }
+
+  .studio-bar .oprn-window-control {
+    display: none;
+  }
+}
+
+/* 키보드 포커스 링 — 01-shell-topbar-team.css 가 이 버튼들의 :focus-visible 에서 outline 을 지우고
+   대신할 표시를 안 줘서 Tab 으로 어디 있는지 보이지 않았다(2026-09-24 visual QA). 다른 톱바 버튼과 같은 링. */
+.studio-bar .topbar-ai-studio:focus-visible,
+.studio-bar .team-history-button:focus-visible,
+.studio-bar .team-identity-button:focus-visible,
+.studio-bar .ai-connection-chip:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
 }

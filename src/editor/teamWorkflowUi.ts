@@ -392,6 +392,18 @@ function renderCommitPanelRows(panel: HTMLElement, commits: readonly CommitListI
 }
 
 function renderCommitPanelError(panel: HTMLElement, error: unknown): void {
+  // 저장 대상이 없는 세션(임시·예제)은 기록이 원래 없다 — 빨간 오류 원문 대신 이유를 말한다.
+  if (projectRepository().currentTarget() === null) {
+    panel.replaceChildren(
+      el("div", { class: "team-commit-head", children: [el("h2", { text: "커밋 히스토리" })] }),
+      el("div", {
+        class: "team-commit-empty",
+        text: "이 세션은 저장하지 않아 기록이 쌓이지 않습니다. 프로젝트를 폴더에 저장해 열면 여기에 커밋이 보입니다.",
+        dataset: { testid: "commit-history-unavailable" },
+      }),
+    );
+    return;
+  }
   panel.replaceChildren(
     commitPanelHeader(panel),
     el("div", {

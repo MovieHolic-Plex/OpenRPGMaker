@@ -98,7 +98,7 @@ export function renderHeader(state: WorldPanelState, refresh: () => void, option
     controls.push(
       el("button", {
         class: "database-modal-close world-panel-close",
-        text: "x",
+        text: "×",
         attrs: { type: "button", title: "닫기", "aria-label": "설정집 닫기" },
         on: { click: options.onClose },
       }),

@@ -106,6 +106,10 @@
 }
 
 .rm-url-btn {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
   font-weight: 600;
   color: var(--accent);
   border-color: var(--border-default);

@@ -118,7 +118,7 @@ function openClassParameterDialog(record: ClassRecord, initialKey: ActorParamete
       class: "db-class-dialog db-class-parameter-dialog",
       attrs: { role: "dialog", "aria-label": "능력치 곡선 설정" },
       children: [
-        el("header", { children: [el("strong", { text: "능력치 곡선" }), el("button", { text: "x", attrs: { type: "button" }, on: { click: close } })] }),
+        el("header", { children: [el("strong", { text: "능력치 곡선" }), el("button", { text: "×", attrs: { type: "button", "aria-label": "닫기", title: "닫기" }, on: { click: close } })] }),
         tabs,
         el("div", { class: "db-class-dialog-body", children: [
           graph,

@@ -121,6 +121,13 @@
   position: relative;
   width: 100%;
 }
+/* 모달 창 안에서는 창 높이를 채운다. 셸이 600px 로 고정돼 창(820px) 아래 120px 이 빈 띠로 남고
+   카드 목록은 그 위에서 잘렸다(2026-09-24 visual QA). */
+.resource-modal-window .rm-classic-shell {
+  align-self: stretch;
+  height: auto;
+}
+
 .rm-category-list,
 .rm-entry-list,
 .rm-preview-well {
@@ -406,12 +413,14 @@
   min-height: 24px;
 }
 
+/* 가로 여백이 0 이라 왼쪽 안내문과 오른쪽 「도움말」 버튼이 창 테두리에 붙어 있었다(2026-09-24 visual QA).
+   본문과 같은 여백을 쓴다. */
 .resource-modal-footer {
   align-items: center;
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  padding: 10px 0 0;
+  padding: 10px var(--rm-resource-body-pad) var(--rm-resource-body-pad);
 }
 
 .resource-footer-status {
