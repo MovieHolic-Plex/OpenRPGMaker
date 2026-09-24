@@ -984,3 +984,57 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `fresh-champion-walking/SUMMARY.md`: passed=true,449칸/포털14회, 회복약1회 소비,pageErrors0. 실제 네 사천왕 승리 상태를 이어 챔피언3마리와 싸웠다. 대결 거절 무변화, 승리/엔딩 스위치,2950G와 회복약3개 지급, 새솔마을(13,26) 복귀, 오프닝 미반복을 확인했다. 복귀 시14322G였다.
 - 다시 실제 출입구를 따라 챔피언에게 걸어가 재대결/재보상 차단을 확인했다. 재방문 비교는 골드/아이템/스위치를 대상으로 하며 정상 걷기 성장까지 금지하지 않는다. `ending.png`와 `champion-complete.png`를 직접 확인했다.
 - 이로써 revision425 기반(리그 미술469)의 단일 스타터 진행 상태를 구간마다 이어 정상 도보로 엔딩까지 연결했다. 구간 재개 시 런타임 난수는 새로 시작하고 일반 플레이 세이브로드는 검사하지 않았으므로 무중단 완주/다른 파티 균형/후속 숲 퀘스트/180분 분량으로 확대 해석하지 않는다.
+
+
+### 숲 확장 중간 범위 검사 (revision476~479)
+
+- 읽기 전용 `audit-ecology-scope.py`를 준비했다. revision470 기준 기존 맵/DB/상태 정의와 세션 보존, 새 전투그룹의 strict/1활성/트레이너/포획불가를 검사하고 중간 상태를 `ecology-scope-current.json`에 남긴다. 완료 전 자료이므로 최종 실패/성공으로 집계하지 않는다.
+- revision476은 새 적4개/팀2개가 저장됐으며 기존 maps/database 레코드와 session/system은 보존됐다. 두 팀 battleFlow는 gauge여서 요청한 strict와 다르다. 최종 종료 시 재확인 후 남아 있으면 수정 대상이다.
+- revision479에서 기존 sw_sr_quest_accept의 이름이 빈 문자열에서 생태조사 수락 설명으로 바뀌었다. ID/세션값은 유지됐고 신규 sw_sr2_ecology_started는 별도로 만들어졌다. 기존 자료 변경 금지 범위를 어긴 이름 변경으로 기록하며 전체 스위치 rename/진행 파손으로 과장하지 않는다. 완료 후 원래 이름 복원이 필요하다.
+- `walking-chain-audit.json`은 기존 도보 증거13구간의4270칸/포털95회를 합산했다. 각 원본의 서로 다른 결과 필드(firstBadge/thirdBadge/passed)를 보존하며, 광산 구출의 옛 보상ID assertion 실패와 실제 failureState 재개를 명시했다. 자동화 이동량을180분 플레이시간으로 환산하지 않는다.
+
+
+- 후속 중간 revision480에서 session의 차이는 신규 ecology 스위치2개의 false 초기값 추가였다. 기존 진행 값 훼손과 구분하도록 범위 보고서를 세분화했다. 이벤트 도구가 sw_sr2_ecology_started 없음으로 커밋을 거부한 기록도 `forest-upsert-integrity-refusal.txt`에 보존했다. 그 시점의 저장소에는 해당 정의가 있어 워커 초안/호출 순서 문제를 추가 확인해야 하며, SQLite 저장 누락이라고 단정하지 않는다. AI는 이후 상태 정의 도구로 보완 중이다.
+
+
+### 요청21b 종료와 지시 해석 timeout 분리
+
+- 요청21b는 UI가31초 heartbeat 없음으로 실패 종료했고 revision481까지만 저장됐다. 조사 이벤트는0개, 신규 초기 false 스위치3개이며 기존 진행 값은 보존됐다. `request21b-heartbeat-failure.txt`에 종료 표시를 남겼다. 프로세스가 살아 있는 사실과 요청 종료를 구분했다.
+- 작은 보완 요청21c도 처음 평문 제출에서는 `지시를 해석하지 못했습니다: 시간 초과(30000ms)`가 발생했다. 이는 워커 실행의 heartbeat 오류와 다른 선행 분류 단계 실패다. 관찰기 screenshot에서 실제 문구와 유휴 보내기 버튼을 확인했다.
+- `aiChatPanel.ts`의 명시 명령 분기를 확인한 뒤 에디터 입력창으로 `/pi`를 붙인 동일 보완 요청을 제출했다. plainPiTurn 분류를 건너뛰는 기존 지원 경로이며 직접 DB 쓰기를 하지 않는다. 프로젝트 읽기/이벤트 조회가 새 실행에서 시작된 것을 확인했다. 현재 범위는 두 ecology 팀의 strict 정정과 기존 sw_sr_quest_accept 이름 복원뿐이다. 결과 저장은 아직 미확인이다.
+
+
+### 요청21c의 턴제 설정 보완 저장
+
+- 읽기 전용 중간 재조회에서 revision483은 첫 팀만,484는 두 ecology 팀 모두 battleFlow=strict로 바뀌었다. activeSlots1/trainerBattle/uncapturable 계약도 만족했다. 기존 DB 레코드와 맵, 기존 세션 값은 보존됐다. 실제 새 트레이너 이벤트/전투 검증은 아직 남는다.
+- 스위치 이름 복원 도중 manage_flag_slot 오류가 보였다. 소스 계약상 이 도구는 슬롯 add/delete이며 단순 이름 수정 기능이 아니다. 참조 ID 삭제/재생성으로 우회하면 기존 관계를 훼손할 수 있으므로 완료 결과를 별도 확인한다. 현재 이름 복원 완료로 세지 않는다.
+- 다음 요청21d는 의뢰 수락 NPC와 자유 순서 관찰3개만 먼저 만들도록 준비했다. 실제 첫 배지/스타터 조건ID와 기존 수현 안내를 사전 확인해 지시에 넣었다. 현재 실행 종료 전에는 제출하지 않았다.
+
+
+### 요청21c 종료·정본486 재로드·관찰 이벤트 저작 착수
+
+- 요청21c는 저장 완료 응답/응답 종료·목표 미평가·적용됨으로 끝났다. `request21c-final.txt`를 보존했다. `player-snapshot-forest-base486-proof.json`은 정본을 재오픈해 revision486 반복 읽기 일치·미디어80개 해시·20맵/150이벤트를 확인한다.
+- 두 새 전투팀은 strict 계약을 만족한다. 기존 이름은 복원되지 않았다. 잘못 배정된 서사 플래그는 `sw-sr2-ecology-started-legacy`/target sw_sr_quest_accept/retired=true로 남았고, 활성 서사 플래그는 신규 sw_sr2_ecology_started를 가리킨다. 이 조치를 기존 스위치 이름 복원 완료라고 표현하지 않는다.
+- 에디터 입력창에서 `/pi` 요청21d를 제출했고 새 프로젝트/이벤트 조회 실행을 확인했다. 이번 범위는 2번길 조사원과 숲 관찰점3개다. 완료 보상·체육관 조건·선택 트레이너 이벤트는 그다음 단계이며 현재150이벤트 상태에는 아직 없다.
+
+
+### 요청21d의 반복 사고 종료와 단일 이벤트 재개
+
+- 요청21d는 planning에서 여러 숲 영역을 읽은 뒤 `Thinking loop detected: ... 8 low-information segments recycling recent wording`로 종료됐다. UI는 변경 없음/적용하지 않음으로 표시했고 정본도486 그대로였다. `request21d-thinking-loop-failure.txt`에 실제 종료 표시를 보존했다. 이 실패를 heartbeat/SQLite 오류와 합치지 않는다.
+- 기존 지원 버튼 `ai-new-chat`으로 새 대화를 시작했다. UI가 이전 대화를 기록에 저장했다고 표시한 뒤 `/pi` 요청21d1을 제출했다. 목표는 조사원 이벤트1개이며 수락/거절/조건/재대화만 작성한다. 기존 상태정의와 타일은 변경 금지다.
+- 새 실행에서 기존 이벤트/조건/수현 대사를 조회하는 도구 실행을 확인했다. 대화 길이가 반복 사고의 원인이라는 증거는 없으며 새 대화 사용 자체를 문제 해결로 세지 않는다. 실제 이벤트 저장·플레이 확인이 다음 근거다.
+
+
+### 조사원 이벤트 저장 (revision487)
+
+- 요청21d1은 저장 완료 응답으로 종료됐다. `player-snapshot-researcher487-proof.json`: SQLite 재오픈·반복읽기 일치,20맵/151이벤트, 미디어80개 해시 확인. 새 ev_sr2_ecology_researcher는2번길(18,6), 유색06칩, 미수락/진행/완료3페이지다.
+-486→487의 변경은 maps.map_saesol_route2.events뿐이며 기존 이벤트 배열 항목과 모든 타일은 보존됐다. sw_sr_starter와 sw_sr_badge를 확인한 후 started만 설정하고, 거절/재대화에 재화 지급이 없다.
+- 실제 첫 배지 획득·두 번째 관장 직전 체크포인트로77칸/포털3회 걸어갔다. 첫 QA는 거절 무변화까지 확인하고 수락 후 비교에서 정상적으로 true가 된 started를 이전 false와 같아야 한다고 잘못 검사했다. `ecology-researcher-asserted-started-unchanged/`에 실패를 보존하고, 수락 전후 비교에서 의도된 started만 제외해 재실행 중이다.
+- 후속 `/pi` 요청21d2는 발자국·깃털·잎 세 관찰점의 단서/정답/오답 이유를 구체화해 제출했다. 실제 종족 타입(부르록 grass/poison, 치카디 normal/flying, 카카버 grass)을 읽어 확인했다. 현재는 관찰점만 저작하며 보고 보상과 체육관 연결은 다음 단계다.
+
+
+### 조사원 수락·재대화 실제 도보 통과
+
+- `ecology-researcher-player/SUMMARY.md`: passed=true,77칸/포털3회,declineUnchanged/acceptedOnlyNewFlag/repeatUnchanged=true,pageErrors0. 실제 첫 배지 체크포인트로 걸어가 거절 무변화→수락 시 started만 변경→수현 보고 안내와 재대화 무보상을 확인했다. `reminder.png`를 직접 확인했다.
+- 두 번째 중간 QA는 타이핑 중인 문자열을350ms만에 비교해서 실패했다. `ecology-researcher-typing-assertion/`을 보존하고 대사에 수현까지 실제 출력되는 것을 기다린 후 재검사했다. 최종 통과 결과로 실패 기록을 덮어쓰지 않았다.
+- 이번 검사에는 미자격 차단/조사 완료 페이지/세 관찰점/180분 분량은 포함되지 않는다. 화면의 기사 배우는 기존 진행 체크포인트가 가진 partyActorIds에서 왔으며, 정본 새 게임의 트레이너 수정 결과와 구분한다.
