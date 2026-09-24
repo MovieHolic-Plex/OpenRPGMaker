@@ -63,3 +63,18 @@ describe("setVariable amount alias", () => {
   });
 });
 
+
+describe("inputNumber digits alias", () => {
+  it("moves amount into digits so a code lock is not rejected", () => {
+    const ctx: { project: Project } = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_event", { mapId: ctx.project.startMapId, event: { id: "ev_safe", x: 3, y: 3, pages: [{
+      conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, commands: [
+        { kind: "inputNumber", variableId: "var_safe_input", amount: 4 },
+        { kind: "fork", condition: { kind: "variable", variableId: "var_safe_input", op: "==", value: 4815 }, then: [{ kind: "text", body: "열렸다" }], else: [] },
+      ] }] } });
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues)}`).toBe(true);
+    const command = ctx.project.maps[ctx.project.startMapId]!.events.find(e => e.id === "ev_safe")!.pages![0]!.commands[0] as Record<string, unknown>;
+    expect(command.digits).toBe(4);
+    expect(command).not.toHaveProperty("amount");
+  });
+});
