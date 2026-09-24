@@ -165,6 +165,18 @@ export const ADVENTURE_JRPG_AUTHORING_GUIDE = [
   "- 턴제 JRPG 에는 시간 시스템(configure_time_system)·주민 시간표·선물 선호가 필요 없다. 기획이 요구하지 않으면 만들지 않는다.",
 ].join("\n");
 
+/**
+ * 미술관 퍼즐 호러 저작 요령. 2026-09-24 도그푸딩: 기획의 「꽃잎 5장이 체력, 0장이면 게임오버」를 함정마다
+ * setVariable -= 1 로 흩뿌려 시작값 0·게임 오버 없음·꽃잎 HUD 없음이 됐다. 도구 이름을 지시문에 적어야
+ * 첫 요청에 그 도구가 노출된다(mentionedToolSchemas).
+ */
+export const HORROR_GALLERY_AUTHORING_GUIDE = [
+  "미술관 퍼즐 호러 저작 요령:",
+  "- 꽃잎·장미처럼 부서지는 생명(체력)은 set_life_flower({name,max,showAfterSwitchId,defeatEndingId?}) 한 번으로 만든다 — 체력 변수·꽃잎 HUD·피해/회복 공용 이벤트·0장 게임 오버가 함께 생긴다.",
+  "- 튀어나오는 그림·검은 손·가시 바닥 이벤트에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_damage\"}, 꽃병에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_restore\"} 를 넣는다. 체력 변수를 setVariable 로 직접 깎지 않는다.",
+  "- 열쇠·레버·순서 퍼즐은 compile_puzzle(item-gate·switch-sequence·password)로 만들고, 조건 분기는 {kind:\"fork\",condition:{kind:\"switch\",switchId,value:true},then:[…]} 모양이다.",
+].join("\n");
+
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
@@ -180,6 +192,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
       ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
       ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
+      ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ].join("\n\n");
   }
   if (preset.packId === "action-rpg") {
@@ -198,6 +211,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     "다음 체크리스트를 모두 만족하도록 실제 편집 툴을 호출해 작업하세요. 설명만 하고 끝내지 마세요.",
     checklist,
     ...requiredTemplateBlock(preset.narrativeHorrorGenre),
+    ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
     "",
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
   ].join("\n");

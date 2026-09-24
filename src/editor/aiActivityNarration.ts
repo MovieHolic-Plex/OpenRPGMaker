@@ -121,7 +121,7 @@ addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluat
 addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_document generate_walkthrough");
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");
 addFamily(ACTIONS.quest, "create_quest create_quest_flags define_quest declare_story_flag define_ending");
-addFamily(ACTIONS.story, "author_story_arc make_horror_loop script_cutscene script_cutscene_preset");
+addFamily(ACTIONS.story, "author_story_arc make_horror_loop set_life_flower script_cutscene script_cutscene_preset");
 addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simulate_battle tune_enemy author_boss_phases");
 addFamily(ACTIONS.world, "build_world link_maps author_world_bridge author_world_mountain");
 addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_profile delete_resource_profile create_tileset set_tileset_properties upsert_autotile_group delete_autotile_group upsert_palette_preset upsert_tile_group delete_tile_group set_audio_description");
