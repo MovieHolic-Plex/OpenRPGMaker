@@ -451,7 +451,7 @@ function renderPartyCharacter(project: PlayerStatusMenuOptions["project"], sessi
   });
   const requested = override ?? effective?.characterResourceId;
   const requestedId = requested ? findCharsetAsset(requested)?.id ?? requested : undefined;
-  const characterIndex = override === undefined && requestedId === sprite.resourceId ? effective?.characterIndex ?? 0 : 0;
+  const characterIndex = override !== undefined ? sprite.characterIndex : requestedId === sprite.resourceId ? effective?.characterIndex ?? 0 : 0;
   applyCharsetFrameCrop(node, url, { characterIndex, direction: "down", pattern: 1 }, 1);
   return node;
 }

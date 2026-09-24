@@ -446,7 +446,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   refreshRuntimeSurfaces(): void {
     const project = store.getCurrent();
     const nextPlayerSprite = resolvePlayerSpriteResource(project, this.session);
-    if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId) {
+    if (!this.playerSprite || this.playerSprite.resourceId !== nextPlayerSprite.resourceId || this.playerSprite.characterIndex !== nextPlayerSprite.characterIndex) {
       this.playerSprite = nextPlayerSprite;
       this.player.setTexture(this.playerSprite.texture);
       this.player.setFrame(this.playerSprite.idleFrameFor(this.facing));

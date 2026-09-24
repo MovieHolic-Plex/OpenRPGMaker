@@ -1,3 +1,4 @@
+import { formatActorGraphicOverride, parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import type { M2CommandCatalogEntry } from "@/project/eventCommands/m2Catalog";
 import { tintDurationMs } from "@/project/eventCommands/tintDuration";
 import { showPictureState } from "@/project/session";
@@ -382,7 +383,9 @@ function mutateActorState(
     return;
   }
   if (title === "Change Actor Graphic") {
-    const resourceId = fieldString(fields, "value", "");
+    const parsed = parseActorGraphicOverride(fieldString(fields, "value", ""));
+    const index = typeof fields.characterIndex === "number" ? fields.characterIndex : Number(fields.characterIndex ?? parsed.characterIndex);
+    const resourceId = formatActorGraphicOverride(parsed.resourceId, Number.isFinite(index) ? index : parsed.characterIndex);
     actor.characterGraphic = resourceId;
     for (const targetActorId of resolveActorTargets(session, actorId)) {
       session.actorCharacterResourceIds ??= {};
