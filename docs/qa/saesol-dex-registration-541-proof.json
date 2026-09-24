@@ -1,0 +1,32 @@
+{
+  "scope": "Actual earned capture checkpoint on canonical541 copy. Walk to assistant, reject registration before acceptance, register only owned species, repeat for no extra rewards. Not all-six completion or 3-hour proof.",
+  "errors": [],
+  "walkedSteps": 62,
+  "walkedPortals": [
+    {
+      "from": "map_saesol_route",
+      "event": "sr_map_saesol_route_0",
+      "to": "map_variety_ridge"
+    },
+    {
+      "from": "map_variety_ridge",
+      "event": "sr_map_variety_ridge_1",
+      "to": "map_variety_lab"
+    }
+  ],
+  "approach": {
+    "x": 8,
+    "y": 6,
+    "direction": "up"
+  },
+  "blockedBeforeAccept": true,
+  "registered": [
+    "chickadee",
+    "fuzall"
+  ],
+  "registrationBalls": 2,
+  "repeatNoReward": true,
+  "questText": "조수의 생태 도감 과제\n연구소 조수의 요청에 따라 새솔 지방의 6종 몬스터(치카디, 퍼즐, 하울러, 말루가, 스칼라포드, 그림릿)를 파티 또는 박스에 보유해 생태를 관찰·등록한다.\n임무 요약",
+  "passed": true,
+  "automaticSeconds": 23.401
+}
