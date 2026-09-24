@@ -170,8 +170,16 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   properties: {
     kind: {
       type: "string",
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump"],
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending"],
     },
+    // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
+    switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
+    key: { type: "string", enum: ["A", "B", "C", "D"], description: "switch 비트: 이 이벤트의 셀프 스위치(switchId 대신)" },
+    value: { type: "boolean", description: "switch 비트: 기본 true" },
+    mapId: { type: "string", description: "transfer 비트: 옮길 맵 id" },
+    facing: { type: "string", enum: ["up", "down", "left", "right", "retain"], description: "transfer 비트: 도착 후 방향" },
+    fade: { type: "string", enum: ["black", "white", "none"], description: "transfer 비트: 전환 페이드(기본 black)" },
+    endingId: { type: "string", description: "ending 비트: define_ending 으로 정의한 엔딩 id" },
     speaker: { type: "string" },
     text: { type: "string" },
     lines: { type: "array", items: { type: "string" } },

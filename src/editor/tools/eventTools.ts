@@ -8,7 +8,7 @@ import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
-import { isPassable, tileAt } from "@/project/collision";
+import { canMove, isPassable, tileAt } from "@/project/collision";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -2978,6 +2978,46 @@ function resolveCutsceneMusicResources(project: Project, beats: readonly Cutscen
   return visit(beats, "beats");
 }
 
+const DIR_DELTA: Readonly<Record<string, { readonly dx: number; readonly dy: number }>> = {
+  up: { dx: 0, dy: -1 }, down: { dx: 0, dy: 1 }, left: { dx: -1, dy: 0 }, right: { dx: 1, dy: 0 },
+};
+
+/**
+ * moveActor 경로를 맵 위에서 따라가 막히는 칸을 짚는다. 런타임은 막힌 이동에서 최대 30초를 기다린 뒤 넘어가므로
+ * 벽으로 걷는 컷신은 「멈춘 것처럼」 보인다. 이벤트 대상만 본다(주인공의 컷신 시작 칸은 진입 경로마다 달라 모른다).
+ */
+function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly CutsceneBeat[]): string[] {
+  const warnings: string[] = [];
+  const positions = new Map<string, { x: number; y: number }>();
+  const walk = (items: readonly CutsceneBeat[], path: string): void => items.forEach((beat, index) => {
+    const beatPath = `${path}[${index}]`;
+    if (beat.kind === "parallel") { walk(beat.beats, `${beatPath}.beats`); return; }
+    if (beat.kind !== "moveActor") return;
+    const target = beat.target ?? beat.eventId ?? beat.actor ?? "player";
+    if (target === "player" || target === "this-event") return;
+    const event = map.events.find((entry) => entry.id === target);
+    if (!event) return;
+    const at = positions.get(target) ?? { x: event.x, y: event.y };
+    let through = false;
+    for (const move of beat.route?.moves ?? beat.moves ?? []) {
+      if (move.kind === "setThrough") through = move.enabled;
+      if (move.kind !== "move") continue;
+      const delta = DIR_DELTA[move.dir];
+      if (!delta) continue;
+      const next = { x: at.x + delta.dx, y: at.y + delta.dy };
+      if (!through && !canMove(project, map, at.x, at.y, next.x, next.y)) {
+        warnings.push(`컷신 이동 막힘: ${beatPath} '${target}' 이 (${at.x},${at.y})→(${next.x},${next.y}) 로 못 간다(벽·물·맵 밖) — 런타임은 최대 30초 멈춘다. 경로를 통행 가능한 칸으로 고치세요.`);
+        break;
+      }
+      at.x = next.x;
+      at.y = next.y;
+    }
+    positions.set(target, at);
+  });
+  walk(beats, "beats");
+  return warnings;
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
@@ -2985,8 +3025,10 @@ const scriptCutscene: ToolDefinition = {
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
-    "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves,wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. " +
+    "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump, " +
+    "진행 비트 switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId} — 기억/장면 진입·다음 장면으로 넘어가는 문·엔딩 컷신도 이 툴 하나로 쓴다(Esc 건너뛰기로도 스위치·이동·엔딩은 빠지지 않는다). " +
+    "맵에 들어오면 한 번 재생: trigger:'auto', once:true. 조건이 모이면 재생(메멘토 3개 등): trigger:'auto', requiresSwitches:[…], once:true. " +
     "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",
   mode: "write",
   parameters: {
@@ -3001,6 +3043,11 @@ const scriptCutscene: ToolDefinition = {
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
       mode: { type: "string", enum: ["replace", "append"], description: "기본 replace. 같은 이벤트에서 이름 컷신 페이지를 교체한다. append는 페이지를 쌓는다." },
       once: { type: "boolean", description: "true면 셀프스위치 A가 꺼져 있을 때만 재생하고 끝나면 A를 켠다." },
+      requiresSwitches: {
+        type: "array",
+        items: { type: "string" },
+        description: "이 전역 스위치가 모두 켜졌을 때만 페이지가 선다(예: 메멘토 3개를 다 모으면 자동 재생되는 문 열림 컷신). 없는 스위치 id 는 거부.",
+      },
     },
     required: ["mapId", "beats"],
   },
@@ -3023,11 +3070,28 @@ const scriptCutscene: ToolDefinition = {
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);
+    const switchIds = new Set(draft.switches.map((entry) => entry.id));
+    const requiresSwitches = Array.isArray(args.requiresSwitches)
+      ? [...new Set(args.requiresSwitches.filter((id): id is string => typeof id === "string" && id.trim().length > 0).map((id) => id.trim()))]
+      : [];
+    const missingRequired = requiresSwitches.filter((id) => !switchIds.has(id));
+    if (missingRequired.length > 0) {
+      throw new ToolError(
+        `requiresSwitches 에 없는 스위치: ${missingRequired.join(", ")} — get_database_records(collection:"switches") 로 실제 id 를 조회하세요.`,
+        { code: "cutscene-validation", mapId: map.id },
+      );
+    }
     let commands: Command[];
     try {
       commands = compileCutscene(beats, {
         skippable: args.skippable === true,
-        context: { eventIds, resourceIds: collectResourceIds(draft) },
+        context: {
+          eventIds,
+          resourceIds: collectResourceIds(draft),
+          mapIds: new Set(Object.keys(draft.maps)),
+          switchIds,
+          endingIds: new Set((draft.endings ?? []).map((ending) => ending.id)),
+        },
       });
     } catch (cause) {
       if (cause instanceof CutsceneValidationError) {
@@ -3035,18 +3099,25 @@ const scriptCutscene: ToolDefinition = {
       }
       throw cause;
     }
+    warnings.push(...cutsceneMoveWarnings(draft, map, beats));
     const existing = map.events.find((event) => event.id === eventId);
     const mode = args.mode === "append" ? "append" : "replace";
     const once = args.once === true;
     if (once) {
-      commands = [...commands, { kind: "setSelfSwitch", key: "A", value: true }];
+      // 끝이 아니라 잠금 직후에 켠다 — 컷신이 다른 맵으로 옮기거나 엔딩으로 끝나면 끝줄까지 오지 않아 자동 재생이 되풀이된다.
+      const beginIndex = commands.findIndex((command) => command.kind === "cutsceneControl");
+      commands = [...commands.slice(0, beginIndex + 1), { kind: "setSelfSwitch", key: "A", value: true }, ...commands.slice(beginIndex + 1)];
     }
+    const conditions: EventPageCondition[] = [
+      ...requiresSwitches.map((switchId): EventPageCondition => ({ kind: "switch", switchId, value: true })),
+      ...(once ? [{ kind: "selfSwitch", key: "A", value: false } satisfies EventPageCondition] : []),
+    ];
     const page = cutscenePage(
       `${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`,
       "컷신",
       trigger,
       commands,
-      once ? [{ kind: "selfSwitch", key: "A", value: false }] : []
+      conditions
     );
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;

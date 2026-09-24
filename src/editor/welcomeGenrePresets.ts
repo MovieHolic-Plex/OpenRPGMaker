@@ -130,6 +130,15 @@ function requiredTemplateBlock(genre: NarrativeHorrorGenre | undefined): string[
   ];
 }
 
+/**
+ * 회상 스토리 기획 경로의 연출 지시. 없던 때 조수는 script_cutscene 을 노출받고도 기억 진입·문 열림·엔딩을
+ * upsert_event 대사 나열 + transfer 로만 만들어 기획의 「페이드·두 주인공 이동·카메라」를 전부 말없이 뺐다(2026-09-24).
+ */
+export const MOON_CUTSCENE_STAGING_LINE =
+  "연출은 script_cutscene 한 번으로 한 장면씩 쓰세요: 장면 진입은 trigger:'auto'·once:true 로 fade in → 인물 moveActor(이벤트 id·player) → camera pan/return → say, "
+  + "조건이 모이면 열리는 장면(메멘토 다 모음 등)은 requiresSwitches, 다음 장면·기억으로 넘어갈 때는 switch·transfer 비트, 마지막은 ending 비트. "
+  + "대사만 늘어놓은 upsert_event 로 컷신을 대신하지 말고, 기획에 적힌 연출을 못 넣었다면 미확인으로 보고하세요.";
+
 /** Build the auto-send user message for a genre chip. */
 /**
  * 몬스터 수집 장르 전용 저작 요령 — 도구 이름을 적어 두면 그 스키마가 첫 턴부터 노출된다(mentionedToolSchemas).
@@ -170,6 +179,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       `게임 제목이 아직 「${UNNAMED_GAME_TITLE}」 같은 기본값이면 기획에 맞는 제목을 지어 set_project_settings({title}) 로 저장하세요(타이틀 화면에도 반영됩니다).`,
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
       ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
+      ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
     ].join("\n\n");
   }
   if (preset.packId === "action-rpg") {
