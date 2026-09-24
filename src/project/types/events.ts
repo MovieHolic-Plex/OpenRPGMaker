@@ -525,13 +525,18 @@ export type Command =
 
 export type EventPriority = "below" | "same" | "above";
 export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
-export type EventAnimationType =
-  | "normal"
-  | "step"
-  | "fixedDirection"
-  | "fixedDirectionStep"
-  | "fixedGraphic"
-  | "fourFrame";
+/** 페이지 애니메이션 유형의 단일 진실 소스 — 툴 스키마 enum 과 로더 정규화도 여기서 가져간다.
+ * 2026-09-24 갤러리 도그푸딩: 유니온에 없는 "none" 이 32페이지에 저장돼 런타임 canActionTurn 의
+ * exhaustiveness 트립와이어가 첫 조작에서 씬을 통째로 죽였다(브라우저 완주 막힘). */
+export const EVENT_ANIMATION_TYPES = [
+  "normal",
+  "step",
+  "fixedDirection",
+  "fixedDirectionStep",
+  "fixedGraphic",
+  "fourFrame",
+] as const;
+export type EventAnimationType = (typeof EVENT_ANIMATION_TYPES)[number];
 
 export interface EventPageGraphic {
   appearanceId?: string;

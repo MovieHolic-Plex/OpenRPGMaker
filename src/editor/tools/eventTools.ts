@@ -5,6 +5,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
@@ -1011,6 +1012,17 @@ const upsertEvent: ToolDefinition = {
           `event.pages[${index}]: ${unsupported.join(", ")}는 SimplePage 전용이며 upsert_event에서 실행되지 않습니다. ` +
           "기존 페이지/명령을 보존하면서 대사는 commands의 text, 선택은 choices.options[].branch, 얼굴은 changeFace, 그림은 graphic.sprite로 바꾸세요. " +
           "pages는 배열 전체 교체이므로 유지할 페이지도 모두 포함하세요. 고수준 페이지는 place_npc/make_villager를 사용하세요. 네이티브 부분 수정 예시: " + JSON.stringify(NATIVE_PAGE_REPAIR_EXAMPLE),
+          { code: "invalid-args" },
+        );
+      }
+      // 유니온 밖 값은 저장됐다가 플레이어가 처음 조사하는 순간 런타임 exhaustiveness trips 를
+      // 때려 씬이 죽는다(2026-09-24 갤러리 도그푸딩: 모델이 32페이지에 "none" 을 넣어 브라우저 완주가 막힘).
+      // args 는 위에서 Partial<GameEvent> 로 캐스팅된 입력이라 런타임 값이 유니온을 어길 수 있다 — includes 로 실제 값을 본다.
+      const animationType = page.animationType;
+      if (animationType !== undefined && !EVENT_ANIMATION_TYPES.includes(animationType)) {
+        throw new ToolError(
+          `event.pages[${index}].animationType ${JSON.stringify(animationType)} 는 알 수 없는 값이다 — 유효값: ${EVENT_ANIMATION_TYPES.join(", ")}. ` +
+          "멈춰 있는 대상은 fixedGraphic, 걸어 다니는 기본은 normal.",
           { code: "invalid-args" },
         );
       }

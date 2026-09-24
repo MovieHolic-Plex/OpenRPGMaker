@@ -8,6 +8,7 @@
 // 유니온 shape 은 `oneOf`/`anyOf` 를 쓰지 않는다 — Gemini 계열 게이트웨이가 요청 전체를 400 으로
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
 import { RELATIONSHIP_STATES } from "@/project/relationshipState";
+import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { CONCEPT_PLAN_ENUMS } from "@/editor/conceptPlan";
 import { DIALOGUE_CONTAINER_IDS, DIALOGUE_CONTEXT_IDS, DIALOGUE_STYLE_IDS, dialogueContainerGuideLines, dialogueInlineTagGuideLines } from "@/project/dialogueStyles";
@@ -294,7 +295,11 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
     },
     priority: { type: "string", enum: ["below", "same", "above"] },
     overlapForbidden: { type: "boolean" },
-    animationType: { type: "string" },
+    animationType: {
+      type: "string",
+      enum: [...EVENT_ANIMATION_TYPES],
+      description: "페이지 애니메이션 유형. 멈춰 있는 대상은 fixedGraphic(방향·프레임 고정), 걸어 다니는 캐릭터 기본은 normal. none 같은 값 금지 — 런타임이 조사 조작을 죽인다.",
+    },
     footprint: {
       type: "object",
       properties: { width: { type: "integer" }, height: { type: "integer" } },
