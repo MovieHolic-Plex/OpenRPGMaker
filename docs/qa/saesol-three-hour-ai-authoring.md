@@ -1680,3 +1680,32 @@ SQLite 게임 콘텐츠는 revision 537 그대로이며 3시간 분량 완료를
 증거: `docs/qa/saesol-monster-condition-proof.json`. 게임 정본은 여전히 revision537이다.
 운영 배포와 에디터 AI를 통한 포획 퀘스트 저작은 후속 작업이다. QA용 동료 증정 이벤트를
 게임 콘텐츠나 플레이타임 추가로 계산하지 않는다.
+
+
+## 2026-09-25 — PR1440 병합·9897 배포와 재접속
+
+PR #1440은 merge `34aa80ba76c96dc19aa1e5f8a6c4289f04ef0b1f`로 main에 병합됐다.
+9897의 editor-dist, 저장 호스트 번들, 브리지를 함께 갱신했고 AI 워커 진입점은
+`/tmp/saesol-authoring-followup/scripts/oh-my-pi-worker.ts`로 맞췄다. 구형 루트 워커에
+새 파일 일부만 복사하지 않았다. main JS `main-px6d5-ZN.js`와 CSS의 실제 HTTP 바이트가
+빌드와 일치했다. 재시작 전 SQLite backup을 만들고 완료된69번 관찰 브라우저를 닫았다.
+
+새 브라우저 부팅의 자동 공용 자료 동기화로 revision537→539가 됐다. 재오픈 export를
+대조하니 top-level 차이는 tilesets 하나, 그중 미사용 `shared_lpc_city_outside` 하나였다.
+맵 전체, database 전체, session과 uploaded assets는 같았다. 이것을 새 콘텐츠로 세지 않는다.
+최초 접속에서 다수 이미지 요청에 `ERR_NETWORK_CHANGED`와 asset load failure가 나고
+캔버스가 비어 보였다. 호스트 프로세스는 살아 있었고 이후 bridge는200으로 회복했다.
+설정 클릭 관측도 만료됐다. 아직 AI 요청을 보내지 않은 상태에서 관찰 브라우저에 정상
+종료를 요청하고 종료 확인 후 다시 열었다. 관측 만료만으로 작업이 실패했다고 판단하지 않았다.
+
+다음 저작 요청70은 기존 연구소 조수1명+새 스위치8개+도감 퀘스트1개를 목표로 준비했다.
+1번길·동굴·해안·사원의 기존 야생 여섯 종을 실제 보유할 때 등록하고, 완료 보상은1회만
+지급하도록 요청한다. 이 문단 작성 시 아직 모델에 전송되지 않았으며 저장 완료로 보고하지 않는다.
+
+
+재접속 후 검토 모드로 전환해 요청70을 실제 전송했다. 이번에도 클릭 관측이30초에
+만료됐지만, 이후 대화에 요청이 나타나고 프로젝트 조회 도구가 완료됐다. 워커 PID2494604의
+명령행이 새 `/tmp/saesol-authoring-followup/scripts/oh-my-pi-worker.ts`임을 확인했다.
+이를 중복 전송하지 않았다. 첫 접속 종료는 action close로 정상 처리됐고, 뒤늦은 종료 신호는
+이미 PID가 없어 실제 프로세스를 종료하지 않았다. 재접속에서 asset load failure는 사라졌으나
+캔버스가 비어 보이는 장면이 남아 있어, 이 현상을 해결 완료로 보고하지 않는다.
