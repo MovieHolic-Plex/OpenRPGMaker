@@ -5,6 +5,7 @@ import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import type { Project } from "@/project/types";
+import { deserialize, serialize } from "@/project/io";
 
 function setup(extra: Record<string, unknown> = {}): { project: Project } {
   const ctx: { project: Project } = { project: createBlankProject() };
@@ -25,7 +26,8 @@ function setup(extra: Record<string, unknown> = {}): { project: Project } {
 describe("set_life_flower", () => {
   it("starts full, shows petals instead of the default HUD, loses and restores petals, and ends at zero", () => {
     const ctx = setup();
-    const project = ctx.project;
+    // 조수 경로의 적용 검증은 직렬화 왕복이다 — 여기서 거부되면 도구 변경 전체가 되돌려진다.
+    const project = deserialize(serialize(ctx.project));
     expect(project.session.variables.var_life_petals).toBe(3);
     const hud = project.system.fieldHud!;
     expect(hud.theme).toBe("horror");

@@ -98,8 +98,10 @@ const setLifeFlower: ToolDefinition = {
       defeat,
     ];
     const damage: Command[] = [
-      effect("m2-047-flash-screen", { color: "#a01830", durationMs: 250 }),
-      effect("m2-048-shake-screen", { intensity: 3, value: 3, durationMs: 300 }),
+      // 필드 값은 카탈로그 선택지여야 한다 — 「#a01830」·숫자 3 은 직렬화 왕복 검증에서 거부돼 도구 변경 전체가 되돌려졌다
+      // (2026-09-24 r3: 도구는 OK 를 냈지만 공용 이벤트·변수·HUD 가 하나도 남지 않았다).
+      effect("m2-047-flash-screen", { color: "red", value: "flash", durationMs: 250 }),
+      effect("m2-048-shake-screen", { intensity: "3", value: 3, durationMs: 300 }),
       { kind: "setVariable", variableId, op: "-=", value: 1 } as Command,
       ...lines(args.damageLines).map((body) => ({ kind: "text", body }) as Command),
       { kind: "fork", condition: { kind: "variable", variableId, op: "<=", value: 0 }, then: defeatBranch } as Command,
