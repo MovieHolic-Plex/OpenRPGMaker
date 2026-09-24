@@ -1,0 +1,1697 @@
+[
+  {
+    "id": "paw-wood-school-interior",
+    "name": "Pixel Art World · 목조학교 · 기본 내부",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-schoolw01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-WI01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Schl-WI01.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "3375238abee35db986b562fdd06f0f75dba6d61949218212d9d8e3a0bf1fb37d",
+    "checkedAt": "2026-09-24",
+    "floorTile": 6,
+    "notes": "목조학교 전용 32px·8열 원본. 0기준 tile=y*8+x. 제작자는 현대 학교 내부와 같은 배치를 명시하지만 원본 SHA는 별도이며 외관 좌표는 재사용하지 않는다. RGBA alpha76 그림자를 보존한다. 이 팩의 고정 부품과 전체 장면 배열만 검토했다. 계단/음악실/미술실 및 사전 밖 타일은 미검토. 공식 목조 복도 예시의 XP RTP 벽은 포함하지 않는다. 목조 문 스프라이트 SC-Door-SchlW01/02와 어두운 창 변형은 별도 원본이다. 이 고정 문 그림은 개폐 애니메이션/전이 이벤트가 아니다. 사용자 파일에서 AI 원본·정상/오류·장면 그림을 생성하며 Git/public 배포 번들에는 원본 픽셀을 넣지 않는다. 부품별 정상/오류 그림은 조각·배열 비교용이다. 벽 부착물과 상판 소품의 실제 설치 받침은 별도 완성 장면의 lowerTiles와 supportCells/supportTileIds를 따른다.",
+    "recipes": [
+      {
+        "id": "wood-school-blackboard",
+        "name": "목조 · 정면 3칸 칠판",
+        "sourceRect": {
+          "x": 0,
+          "y": 25,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-grid-board",
+        "name": "목조 · 정면 격자 칠판",
+        "sourceRect": {
+          "x": 3,
+          "y": 25,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-notice",
+        "name": "목조 · 학급 게시판",
+        "sourceRect": {
+          "x": 3,
+          "y": 28,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "wood-school-window",
+        "name": "목조 · 교실 3칸 창문과 창 아래 벽",
+        "sourceRect": {
+          "x": 0,
+          "y": 8,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "wood-school-student-desk",
+        "name": "목조 · 학생용 책상",
+        "sourceRect": {
+          "x": 0,
+          "y": 31,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-chair-back",
+        "name": "목조 · 학생 의자 · 등받이 뒷면",
+        "sourceRect": {
+          "x": 5,
+          "y": 31,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "wood-school-chair-front",
+        "name": "목조 · 학생 의자 · 정면",
+        "sourceRect": {
+          "x": 4,
+          "y": 31,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "wood-school-lectern",
+        "name": "목조 · 교사용 교탁",
+        "sourceRect": {
+          "x": 4,
+          "y": 27,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-shoe-locker",
+        "name": "목조 · 신발장 3칸",
+        "sourceRect": {
+          "x": 2,
+          "y": 18,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-cleaning-locker",
+        "name": "목조 · 청소도구함",
+        "sourceRect": {
+          "x": 5,
+          "y": 21,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-clock",
+        "name": "목조 · 벽시계",
+        "sourceRect": {
+          "x": 7,
+          "y": 17,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "wood-school-plant",
+        "name": "목조 · 화분",
+        "sourceRect": {
+          "x": 7,
+          "y": 34,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-school-classroom-door",
+        "name": "목조 · 학교 실내문 · 정면 고정문",
+        "sourceRect": {
+          "x": 6,
+          "y": 8,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "wood-school-classroom-north",
+        "name": "목조 · 12석 교실 · 조밀한 6열 배치",
+        "width": 14,
+        "height": 13,
+        "baseTile": 6,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 14,
+            "height": 1,
+            "tile": 41
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 14,
+            "height": 1,
+            "tile": 49
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 14,
+            "height": 1,
+            "tile": 57
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "wood-school-blackboard",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-school-window",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-school-window",
+            "x": 10,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-school-clock",
+            "x": 9,
+            "y": 1
+          },
+          {
+            "recipeId": "wood-school-notice",
+            "x": 4,
+            "y": 1
+          },
+          {
+            "recipeId": "wood-school-lectern",
+            "x": 6,
+            "y": 3
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 1,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 1,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 3,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 3,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 5,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 5,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 7,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 9,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 9,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 11,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 11,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 1,
+            "y": 9
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 1,
+            "y": 11
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 3,
+            "y": 9
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 3,
+            "y": 11
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 5,
+            "y": 9
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 5,
+            "y": 11
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 7,
+            "y": 9
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 7,
+            "y": 11
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 9,
+            "y": 9
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 9,
+            "y": 11
+          },
+          {
+            "recipeId": "wood-school-student-desk",
+            "x": 11,
+            "y": 9
+          },
+          {
+            "recipeId": "wood-school-chair-back",
+            "x": 11,
+            "y": 11
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 12
+          },
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 6,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 7
+          },
+          {
+            "x": 4,
+            "y": 7
+          },
+          {
+            "x": 6,
+            "y": 7
+          },
+          {
+            "x": 8,
+            "y": 7
+          },
+          {
+            "x": 10,
+            "y": 7
+          },
+          {
+            "x": 12,
+            "y": 7
+          },
+          {
+            "x": 2,
+            "y": 10
+          },
+          {
+            "x": 4,
+            "y": 10
+          },
+          {
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 8,
+            "y": 10
+          },
+          {
+            "x": 10,
+            "y": 10
+          },
+          {
+            "x": 12,
+            "y": 10
+          }
+        ],
+        "passableTiles": [
+          6
+        ],
+        "lowerTileIds": [
+          6,
+          41,
+          49,
+          57
+        ],
+        "notes": "목조 원본만 사용하는 정적 조립 예제. 현대판 번호와 위치가 같아도 이 원본 SHA를 확인한다. 별도 RTP 벽이나 문 애니메이션은 사용하지 않는다. 14×13칸, 북쪽3행 벽41/49/57. 책상 원점(1+2*c,6+3*r), c=0..5,r=0..1; 의자(x,y+2), 접근(x+1,y+1). 세로 통로 x=2,4,6,8,10,12와 앞 y=5를 비운다. 교탁(6,3), 접근(6,5). 남쪽 출입구(6,12), 북향 스폰(6,11)을 유지한다. 칠판·창·시계·게시판은 벽 부착물이다. 교탁·책상·의자의 supportCells 밑동은 통과 바닥6에 둔다. 좌우·남쪽의 목재 바닥1/2 차단 띠를 제거하고 통과 바닥6으로 바꿨다. 실제 외벽은 배열 밖에 저작기가 천장/벽으로 둘러싼다. 상위 부품은 차단이며 문/앉기/이동 이벤트는 별도다.",
+        "wallTileIds": [
+          41,
+          49,
+          57
+        ]
+      },
+      {
+        "id": "wood-school-hallway",
+        "name": "목조 · 학교 현관·복도",
+        "width": 19,
+        "height": 9,
+        "baseTile": 6,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 19,
+            "height": 1,
+            "tile": 41
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 19,
+            "height": 1,
+            "tile": 49
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 19,
+            "height": 1,
+            "tile": 57
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "wood-school-classroom-door",
+            "x": 4,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-school-classroom-door",
+            "x": 9,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-school-classroom-door",
+            "x": 14,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-school-notice",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "wood-school-clock",
+            "x": 17,
+            "y": 1
+          },
+          {
+            "recipeId": "wood-school-shoe-locker",
+            "x": 2,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-school-shoe-locker",
+            "x": 13,
+            "y": 6
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 9,
+            "y": 8
+          },
+          {
+            "x": 9,
+            "y": 7
+          },
+          {
+            "x": 4,
+            "y": 3
+          },
+          {
+            "x": 9,
+            "y": 3
+          },
+          {
+            "x": 14,
+            "y": 3
+          },
+          {
+            "x": 3,
+            "y": 8
+          },
+          {
+            "x": 14,
+            "y": 8
+          }
+        ],
+        "passableTiles": [
+          6
+        ],
+        "lowerTileIds": [
+          6,
+          41,
+          49,
+          57
+        ],
+        "wallTileIds": [
+          41,
+          49,
+          57
+        ],
+        "requiredClearRects": [
+          {
+            "x": 0,
+            "y": 3,
+            "width": 19,
+            "height": 3
+          }
+        ],
+        "doors": [
+          {
+            "sceneId": "wood-school-classroom-north",
+            "x": 4,
+            "y": 2,
+            "approach": {
+              "x": 4,
+              "y": 3
+            }
+          },
+          {
+            "sceneId": "wood-school-nurse-compact",
+            "x": 9,
+            "y": 2,
+            "approach": {
+              "x": 9,
+              "y": 3
+            }
+          },
+          {
+            "sceneId": "wood-school-lab-compact",
+            "x": 14,
+            "y": 2,
+            "approach": {
+              "x": 14,
+              "y": 3
+            }
+          }
+        ],
+        "notes": "목조 원본만 사용하는 정적 조립 예제. 현대판 번호와 위치가 같아도 이 원본 SHA를 확인한다. 별도 RTP 벽이나 문 애니메이션은 사용하지 않는다. 19×9칸 학교 현관·복도. 남쪽 출입(9,8), 북향 스폰(9,7). 북쪽 벽은 기존 방과 같은 3행 41/49/57이다.\n정면 고정문은 원본(6,8)1×3 전체[70,78,86]를 (4,0),(9,0),(14,0)에 배치한다. doors의 x,y는 그림 맨아래 문칸 (4,2),(9,2),(14,2), approach는 바로 남쪽 통과 바닥 (4,3),(9,3),(14,3)이다. 왼쪽부터 교실·보건실·과학실.\n닫힌 문 그림/뒤 벽은 차단이므로 문 앞에서 조사/접촉으로 전이하는 이벤트를 저작기가 연결한다. 문 앞 접근에서 대상 방의 스폰으로 이동하고, 각 방의 남쪽 출구는 이 복도의 해당 approach로 돌아오게 한다.\ny=3..5는 폭 3칸의 연속 동선이며 물건을 놓지 않는다. 신발장 (2,6),(13,6)은 동선 밖이고 접근 (3,8),(14,8)을 비운다. 게시판(1,1)과 시계(17,1)는 벽 부착물이다. 북쪽 벽 뒤에 방이 있으므로 이 벽에 외부 창을 그리지 않는다. 실제 외벽/천장은 저작기가 바깥에 추가한다.\n논리 연결 그래프는 거리→복도→세 방이며 방에서 다른 방을 통과하는 경로를 요구하지 않는다. 개별 맵은 전이로 연결하므로 이 자료는 단일 축척의 건축 평면/방 겹침 증명이 아니다. 연결 메타데이터만 제공하며 이벤트 실행과 정본 저장은 별도다.",
+        "requiredDoorTargets": [
+          "wood-school-classroom-north",
+          "wood-school-nurse-compact",
+          "wood-school-lab-compact"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-wood-school-special",
+    "name": "Pixel Art World · 목조학교 · 특별교실",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-schoolw01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Schl-WI02.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "filename": "ST-Schl-WI02.png",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "sha256": "488bc886b47f74d32df66383c049a30c8d38151d3fefa12571010ae0c8c22418",
+    "checkedAt": "2026-09-24",
+    "floorTile": 6,
+    "notes": "목조학교 전용 32px·8열 원본. 0기준 tile=y*8+x. 제작자는 현대 학교 내부와 같은 배치를 명시하지만 원본 SHA는 별도이며 외관 좌표는 재사용하지 않는다. 팔레트 tRNS index0 투명을 보존하고 청록색을 바닥으로 칠하지 않는다. 이 팩의 고정 부품과 전체 장면 배열만 검토했다. 계단/음악실/미술실 및 사전 밖 타일은 미검토. 공식 목조 복도 예시의 XP RTP 벽은 포함하지 않는다. 목조 문 스프라이트 SC-Door-SchlW01/02와 어두운 창 변형은 별도 원본이다. 이 고정 문 그림은 개폐 애니메이션/전이 이벤트가 아니다. 사용자 파일에서 AI 원본·정상/오류·장면 그림을 생성하며 Git/public 배포 번들에는 원본 픽셀을 넣지 않는다. 부품별 정상/오류 그림은 조각·배열 비교용이다. 벽 부착물과 상판 소품의 실제 설치 받침은 별도 완성 장면의 lowerTiles와 supportCells/supportTileIds를 따른다.",
+    "recipes": [
+      {
+        "id": "wood-special-window",
+        "name": "목조 · 특별교실 3칸 창과 창 아래 벽",
+        "sourceRect": {
+          "x": 0,
+          "y": 5,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "wood-special-medical-cabinet",
+        "name": "목조 · 의약품 수납장과 위 화분",
+        "sourceRect": {
+          "x": 6,
+          "y": 8,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "wood-special-scale",
+        "name": "목조 · 보건실 체중계",
+        "sourceRect": {
+          "x": 3,
+          "y": 9,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-bed",
+        "name": "목조 · 가로 진찰 침대",
+        "sourceRect": {
+          "x": 5,
+          "y": 14,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-screen",
+        "name": "목조 · 진찰실 가림막",
+        "sourceRect": {
+          "x": 3,
+          "y": 16,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-eye-chart",
+        "name": "목조 · 시력표",
+        "sourceRect": {
+          "x": 4,
+          "y": 27,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-worktable",
+        "name": "목조 · 갈색 독립 실험대",
+        "sourceRect": {
+          "x": 0,
+          "y": 42,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-stool",
+        "name": "목조 · 갈색 실험용 의자",
+        "sourceRect": {
+          "x": 5,
+          "y": 33,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "wood-special-skeleton",
+        "name": "목조 · 전신 골격 표본",
+        "sourceRect": {
+          "x": 1,
+          "y": 14,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "wood-special-bookcase",
+        "name": "목조 · 과학 자료 책장",
+        "sourceRect": {
+          "x": 2,
+          "y": 18,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-microscope",
+        "name": "목조 · 현미경",
+        "sourceRect": {
+          "x": 2,
+          "y": 44,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "supportTileIds": [
+          340,
+          341,
+          342,
+          343
+        ]
+      },
+      {
+        "id": "wood-special-specimen",
+        "name": "목조 · 원통 표본병",
+        "sourceRect": {
+          "x": 0,
+          "y": 44,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "supportTileIds": [
+          340,
+          341,
+          342,
+          343
+        ]
+      },
+      {
+        "id": "wood-special-test-tubes",
+        "name": "목조 · 시험관대",
+        "sourceRect": {
+          "x": 0,
+          "y": 46,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "supportTileIds": [
+          340,
+          341,
+          342,
+          343
+        ]
+      },
+      {
+        "id": "wood-special-plant",
+        "name": "목조 · 실내 화분",
+        "sourceRect": {
+          "x": 7,
+          "y": 34,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "wood-special-counter-front",
+        "name": "목조 · 붙박이 실험대 4칸 전면",
+        "sourceRect": {
+          "x": 4,
+          "y": 43,
+          "width": 4,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          },
+          {
+            "x": 3,
+            "y": 0
+          }
+        ]
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "wood-school-nurse-compact",
+        "name": "목조 · 2병상 보건실",
+        "width": 11,
+        "height": 11,
+        "baseTile": 6,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 11,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 11,
+            "height": 1,
+            "tile": 33
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "wood-special-window",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-special-medical-cabinet",
+            "x": 8,
+            "y": 1
+          },
+          {
+            "recipeId": "wood-special-eye-chart",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-special-scale",
+            "x": 6,
+            "y": 2
+          },
+          {
+            "recipeId": "wood-special-bed",
+            "x": 1,
+            "y": 4
+          },
+          {
+            "recipeId": "wood-special-bed",
+            "x": 1,
+            "y": 7
+          },
+          {
+            "recipeId": "wood-special-screen",
+            "x": 4,
+            "y": 4
+          },
+          {
+            "recipeId": "wood-special-worktable",
+            "x": 7,
+            "y": 5
+          },
+          {
+            "recipeId": "wood-special-stool",
+            "x": 8,
+            "y": 7
+          },
+          {
+            "recipeId": "wood-special-plant",
+            "x": 9,
+            "y": 8
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 5,
+            "y": 10
+          },
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 8
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 8,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 7
+          }
+        ],
+        "passableTiles": [
+          6
+        ],
+        "lowerTileIds": [
+          6,
+          17,
+          25,
+          33
+        ],
+        "notes": "목조 원본만 사용하는 정적 조립 예제. 현대판 번호와 위치가 같아도 이 원본 SHA를 확인한다. 별도 RTP 벽이나 문 애니메이션은 사용하지 않는다. 11×11칸. 남쪽 출입구(5,10), 스폰(5,9), 북쪽을 바라본다. 왼쪽 침대 원점(1,4),(1,7), 접근(3,5),(3,8). 가림막(4,4)2×2와 상담 테이블(7,5), 의자(8,7), 화분(9,8). 상담 접근(7,7), 테이블 뒤(8,4). 의약품 수납장 원점은(8,1)이며 밑동 y=3은 하위 바닥6에 닿아야 한다. 체중계 원점(6,2), 발판 y=3, 접근(6,4). 창(1,0)과 시력표(5,0)만 벽 부착물이다. 벽17/25/33은 북쪽3행만 쓴다. 좌우·남쪽은 평범한 통과 바닥6이며 원본 목재 바닥1/2를 차단벽처럼 쓰지 않는다. 실제 외벽은 이 배열 밖에 저작기가 천장/벽으로 둘러싼다. 문/회복/진찰 이벤트는 별도다.",
+        "wallTileIds": [
+          17,
+          25,
+          33
+        ]
+      },
+      {
+        "id": "wood-school-lab-compact",
+        "name": "목조 · 실험대 2조 과학실",
+        "width": 13,
+        "height": 11,
+        "baseTile": 6,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 13,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 1,
+            "width": 13,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 13,
+            "height": 1,
+            "tile": 33
+          },
+          {
+            "x": 5,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 340
+          },
+          {
+            "x": 6,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 341
+          },
+          {
+            "x": 7,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 342
+          },
+          {
+            "x": 8,
+            "y": 3,
+            "width": 1,
+            "height": 1,
+            "tile": 343
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "wood-special-window",
+            "x": 5,
+            "y": 0
+          },
+          {
+            "recipeId": "wood-special-bookcase",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "recipeId": "wood-special-skeleton",
+            "x": 11,
+            "y": 1
+          },
+          {
+            "recipeId": "wood-special-worktable",
+            "x": 2,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-special-worktable",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "wood-special-stool",
+            "x": 3,
+            "y": 5
+          },
+          {
+            "recipeId": "wood-special-stool",
+            "x": 3,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-special-stool",
+            "x": 8,
+            "y": 5
+          },
+          {
+            "recipeId": "wood-special-stool",
+            "x": 8,
+            "y": 8
+          },
+          {
+            "recipeId": "wood-special-microscope",
+            "x": 5,
+            "y": 3
+          },
+          {
+            "recipeId": "wood-special-specimen",
+            "x": 6,
+            "y": 3
+          },
+          {
+            "recipeId": "wood-special-test-tubes",
+            "x": 8,
+            "y": 3
+          },
+          {
+            "recipeId": "wood-special-counter-front",
+            "x": 5,
+            "y": 4
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 6,
+            "y": 9
+          },
+          {
+            "x": 4,
+            "y": 8
+          },
+          {
+            "x": 9,
+            "y": 8
+          },
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 5
+          },
+          {
+            "x": 9,
+            "y": 5
+          },
+          {
+            "x": 10,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "passableTiles": [
+          6
+        ],
+        "lowerTileIds": [
+          6,
+          17,
+          25,
+          33,
+          340,
+          341,
+          342,
+          343
+        ],
+        "notes": "목조 원본만 사용하는 정적 조립 예제. 현대판 번호와 위치가 같아도 이 원본 SHA를 확인한다. 별도 RTP 벽이나 문 애니메이션은 사용하지 않는다. 13×11칸. 남쪽 출입구(6,10), 스폰(6,9), 북쪽을 바라본다. 책장은(1,2)3×2로 두어 밑동 y=3이 바닥6에 닿는다. 앞 접근(2,4). 창(5,0)은 벽 부착물, 골격 표본(11,1)은 발 y=3이 바닥에 닿는 입식 물체다. 불투명 카운터 상판340..343은 하위(5,3)..(8,3), 투명 전면348..351은 상위(5,4)..(8,4)로 두고 바닥6을 보존한다. 현미경(5,3),표본병(6,3),시험관(8,3)은 상판이 받치는 물체다. 독립 실험대(2,6),(7,6)는 3×2, 의자(3,5),(3,8),(8,5),(8,8). 접근(4,8),(9,8),(5,5),(7,5),(9,5),(10,3),(2,4)을 비운다. 북쪽 벽17/25/33 외 좌우·남쪽은 통과 바닥6이다. 목재 바닥1/2를 차단벽처럼 쓰지 않는다. 실제 외벽은 배열 밖에 천장/벽으로 둘러싼다. 실험 이벤트는 별도다.",
+        "wallTileIds": [
+          17,
+          25,
+          33
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-park",
+    "name": "Pixel Art World · 공원",
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-park01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Park-E01.png",
+    "filename": "ST-Park-E01.png",
+    "sha256": "4becd0ccc997e22003dc8a0f6fb8a6cc12379d14c004d9f744d9b4d0b07ad62e",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "checkedAt": "2026-09-24",
+    "width": 256,
+    "height": 1600,
+    "tileSize": 32,
+    "floorTile": 0,
+    "notes": "32px·8열 공원 원본. 기존 city-kits와 같은 원본에서 그네·미끄럼틀·벤치·등·나무 화단을 확인했다. 작은 모래놀이터는 여기서는 원본 3×3 고정 조립이며 city-kits의 가운데 반복 4×3 변형과 다르다. 잔디0/흙2는 하위 반복 지면이며 자동 경계를 만들지 않는다. 고정 부품은 상위 전체 사각 점유를 막는다. 나무 수관 아래 통과, 그네/미끄럼틀 애니메이션, 정자·등나무 시렁·공중화장실은 이 사전 범위 밖이다. 별도 오토타일이 필요한 시렁 받침/화단/화장실 지붕을 이 시트에 포함했다고 간주하지 않는다. 정자 지붕의 가변 폭은 지원하지 않는다. alpha76 그림자를 보존한다. 원본 소재 재배포 금지. 부품별 정상/오류 그림은 조각·배열 비교용이다. 벽 부착물과 상판 소품의 실제 설치 받침은 별도 완성 장면의 lowerTiles와 supportCells/supportTileIds를 따른다.",
+    "recipes": [
+      {
+        "id": "park-swings",
+        "name": "그네",
+        "sourceRect": {
+          "x": 0,
+          "y": 43,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "park-slide",
+        "name": "미끄럼틀",
+        "sourceRect": {
+          "x": 3,
+          "y": 43,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "park-bench-front",
+        "name": "벤치 · 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 39,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "park-bench-back",
+        "name": "벤치 · 뒷면",
+        "sourceRect": {
+          "x": 3,
+          "y": 41,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "park-lamp",
+        "name": "가로등",
+        "sourceRect": {
+          "x": 7,
+          "y": 39,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ]
+      },
+      {
+        "id": "park-sandpit-compact",
+        "name": "작은 모래놀이터 · 원본 3칸",
+        "sourceRect": {
+          "x": 0,
+          "y": 39,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "park-tree-planter",
+        "name": "원형 화단과 나무",
+        "sourceRect": {
+          "x": 4,
+          "y": 21,
+          "width": 4,
+          "height": 6
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          }
+        ]
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "park-play-and-rest",
+        "name": "동네 공원 · 놀이 마당과 휴식",
+        "width": 24,
+        "height": 20,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 2,
+            "y": 2,
+            "width": 18,
+            "height": 6,
+            "tile": 2
+          },
+          {
+            "x": 10,
+            "y": 0,
+            "width": 4,
+            "height": 20,
+            "tile": 2
+          },
+          {
+            "x": 10,
+            "y": 14,
+            "width": 10,
+            "height": 3,
+            "tile": 2
+          },
+          {
+            "x": 15,
+            "y": 9,
+            "width": 5,
+            "height": 5,
+            "tile": 2
+          }
+        ],
+        "placements": [
+          {
+            "recipeId": "park-tree-planter",
+            "x": 0,
+            "y": 0
+          },
+          {
+            "recipeId": "park-tree-planter",
+            "x": 20,
+            "y": 0
+          },
+          {
+            "recipeId": "park-tree-planter",
+            "x": 0,
+            "y": 13
+          },
+          {
+            "recipeId": "park-tree-planter",
+            "x": 20,
+            "y": 13
+          },
+          {
+            "recipeId": "park-swings",
+            "x": 5,
+            "y": 3
+          },
+          {
+            "recipeId": "park-slide",
+            "x": 15,
+            "y": 3
+          },
+          {
+            "recipeId": "park-sandpit-compact",
+            "x": 16,
+            "y": 10
+          },
+          {
+            "recipeId": "park-bench-front",
+            "x": 6,
+            "y": 11
+          },
+          {
+            "recipeId": "park-bench-back",
+            "x": 16,
+            "y": 16
+          },
+          {
+            "recipeId": "park-lamp",
+            "x": 9,
+            "y": 9
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 11,
+            "y": 19
+          },
+          {
+            "x": 12,
+            "y": 18
+          },
+          {
+            "x": 6,
+            "y": 6
+          },
+          {
+            "x": 17,
+            "y": 6
+          },
+          {
+            "x": 17,
+            "y": 13
+          },
+          {
+            "x": 7,
+            "y": 13
+          },
+          {
+            "x": 17,
+            "y": 15
+          }
+        ],
+        "passableTiles": [
+          0,
+          2
+        ],
+        "lowerTileIds": [
+          0,
+          2
+        ],
+        "wallTileIds": [],
+        "requiredClearRects": [
+          {
+            "x": 10,
+            "y": 0,
+            "width": 4,
+            "height": 20
+          }
+        ],
+        "notes": "북쪽 놀이 마당, 동쪽 모래놀이터, 남쪽 쉼터를 남북 4칸 통로로 연결한다. 하위 잔디/흙 전체 배열 뒤에 상위 부품 배열을 적용한다. 남쪽(11,19)/(12,19)은 진입 통로; 실제 맵 전이 이벤트는 별도로 만든다. 잔디와 흙 경계는 원본의 단순 반복칸이며 XP 오토타일 곡선 경계가 아니다. 벤치 앞쪽 한 줄과 놀이기구 남쪽 접근칸을 비우고 나무 4×6 사각형은 보수적으로 통행 차단한다."
+      }
+    ]
+  }
+]
