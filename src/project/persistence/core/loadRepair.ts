@@ -11,18 +11,18 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-export function deserializeStoredProjectJson(value: unknown): Project {
+export function deserializeStoredProjectJson(value: unknown, sourceText?: string): Project {
   try {
-    // The stored value already came from JSON.parse in the local host. Repair mutates
-    // a clone so a failed repair can still open the untouched row. Validation then
-    // adopts that clone instead of stringifying the whole project back to text.
-    const repaired: unknown = structuredClone(value);
+    // Repair mutates. Callers that still need the pre-repair tree pass no source text, and
+    // this clones first. A save that already holds the original JSON string can repair the
+    // parsed tree in place and re-read that string only if repair fails.
+    const repaired: unknown = sourceText === undefined ? structuredClone(value) : value;
     repairStoredProjectJson(repaired);
     return deserializeParsed(repaired);
   } catch {
     // 세 차례의 검토에서 장식용 로드 복구가 정상 프로젝트를 불러오지 못하게 만들었다.
     // 복구본 전체를 검증한 뒤 실패하면 손대지 않은 원본 행을 여는 것을 구조적으로 보장한다.
-    return deserialize(JSON.stringify(value));
+    return deserialize(sourceText ?? JSON.stringify(value));
   }
 }
 

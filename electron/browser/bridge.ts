@@ -49,10 +49,10 @@ function base64ToBytes(value: string): Uint8Array {
   return bytes;
 }
 
-async function call(channel: string, payload: unknown, keepalive = false): Promise<unknown> {
+async function call(channel: string, payload: unknown, keepalive = false, compress = true): Promise<unknown> {
   const config = window.__OPRN_BRIDGE__;
   if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
-  const encoded = await encodeBridgeRequest({ channel, payload }, keepalive);
+  const encoded = await encodeBridgeRequest({ channel, payload }, keepalive, compress);
   const response = await fetch(config.endpoint, {
     method: "POST",
     keepalive,
@@ -146,7 +146,8 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     },
     openRecent: async () => null,
     createProject: async (input: unknown) => {
-      const created = await call(OPRN_CHANNELS.startCreateProject, input) as { projectDir: string; projectId: string };
+      // The seed is already one JSON string. Gzipping that body costs more than sending it on a LAN.
+      const created = await call(OPRN_CHANNELS.startCreateProject, input, false, false) as { projectDir: string; projectId: string };
       const url = new URL(location.href);
       url.search = '';
       url.hash = '';

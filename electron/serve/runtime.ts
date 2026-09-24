@@ -26,6 +26,14 @@ const BRIDGE_SCRIPT_PATH = "/__oprn/bridge.js";
 const ASSET_PATH_PREFIX = "/__oprn/asset/";
 const LOOPBACK = "127.0.0.1";
 
+/** Stamp the request title onto a canonical project seed without parsing the rest of the document. */
+function projectSeedWithTitle(serialized: string, title: string): string {
+  const match = /^\{"version":\d+,"meta":\{"title":"(?:\\.|[^"\\])*"/.exec(serialized);
+  if (!match) throw new Error("invalid project seed");
+  const prefix = match[0].slice(0, match[0].lastIndexOf('"title":') + '"title":'.length);
+  return `${prefix}${JSON.stringify(title)}${serialized.slice(match[0].length)}`;
+}
+
 const MIME_BY_EXTENSION: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -187,9 +195,8 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       if (typeof input?.title !== 'string' || !input.title.trim() || input.title.length > 200 || typeof input.seed !== 'string') {
         throw new Error('프로젝트 이름과 시작 데이터가 필요합니다.');
       }
-      const seed = JSON.parse(input.seed);
-      if (!seed || typeof seed !== 'object' || !seed.meta || typeof seed.meta !== 'object') throw new Error('invalid project seed');
-      seed.meta.title = input.title.trim();
+      const title = input.title.trim();
+      const seedText = projectSeedWithTitle(input.seed, title);
       const id = randomUUID();
       await mkdir(projectsRoot, { recursive: true });
       if (await realpath(projectsRoot) !== projectsRoot) throw new Error('invalid projects directory');
@@ -198,9 +205,8 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
       const temporaryKey = `create:${id}`;
       try {
         const created = await sessions.open(temporaryKey, dir, team);
-        await created.store.saveSerialized(JSON.stringify(seed), null);
-        const snapshot = created.store.loadSnapshot();
-        if (!snapshot || snapshot.project.meta.title !== seed.meta.title) throw new Error('새 프로젝트 저장을 확인하지 못했습니다.');
+        const saved = await created.store.saveSerialized(seedText, null);
+        if (saved.kind !== 'saved' || created.store.info().title !== title) throw new Error('새 프로젝트 저장을 확인하지 못했습니다.');
         return { projectDir: id, projectId: created.store.projectId };
       } catch (error) {
         sessions.close(temporaryKey);
