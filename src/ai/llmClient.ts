@@ -94,6 +94,13 @@ export const DEFAULT_BASE_URL = "";
 export function companionCompletionsBaseUrl(_env?: { readonly DEV?: boolean }): string {
   return "/v1";
 }
+
+/** 일렉트론 페이지는 app:// 라 상대 /v1 이 파일 프로토콜로 가서 404 가 된다. 브리지가 루프백을 주면 그 출처를 쓴다. */
+export function companionRequestBaseUrl(): string {
+  const origin = typeof window !== "undefined" ? window.oprn?.companionOrigin : null;
+  if (origin) return `${origin.replace(/\/$/, "")}/v1`;
+  return DEFAULT_CHATGPT_BASE_URL;
+}
 export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // 공장 기본은 Antigravity Gemini 3.7 Flash — 에디터 툴콜이 Codex 보다 안정적이다.
 // 제공자는 Antigravity·Codex 둘 중 하나이고, 저장된 선택은 존중된다. providerId 가 없는
@@ -419,7 +426,7 @@ export function usesOhMyPiCompanion(config: AiConfig): boolean {
 }
 
 function endpoint(config: AiConfig): string {
-  const baseUrl = usesOhMyPiCompanion(config) ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
+  const baseUrl = usesOhMyPiCompanion(config) ? companionRequestBaseUrl() : config.baseUrl;
   return `${baseUrl.replace(/\/$/, "")}/chat/completions`;
 }
 
@@ -957,7 +964,7 @@ async function chatCompletionOnce(config: AiConfig, req: ChatRequest, captureEpo
       throw new LlmError(`요청 시간 초과(${LLM_REQUEST_TIMEOUT_MS / 1000}s): 공급자가 응답하지 않았습니다.`, 504);
     }
     if (req.signal?.aborted || isLlmAbortError(cause)) throw new LlmAbortError();
-    const target = usesOhMyPiCompanion(config) ? DEFAULT_CHATGPT_BASE_URL : config.baseUrl;
+    const target = usesOhMyPiCompanion(config) ? companionRequestBaseUrl() : config.baseUrl;
     const hint = usesOhMyPiCompanion(config) ? " npm run ai:oauth로 로컬 동반 서비스를 실행하세요." : "";
     reportTransportHealth(false, 0, `네트워크 오류(${target})`);
     throw new LlmError(`네트워크 오류: LLM 엔드포인트에 연결할 수 없습니다(${target}).${hint} ${cause instanceof Error ? cause.message : ""}`, 0);

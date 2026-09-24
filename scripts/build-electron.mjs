@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { spawnSync } from "node:child_process";
+import { chmodSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -49,4 +51,17 @@ for (const { entry, outfile, format, platform, target, external } of ENTRIES) {
     external,
   });
   process.stdout.write(`built ${outfile.replace(`${REPO_ROOT}/`, "")}\n`);
+}
+
+// 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.
+const workerEntry = resolve(REPO_ROOT, "scripts/oh-my-pi-worker.ts");
+for (const [target, name] of [["bun-linux-x64", "oh-my-pi-worker"], ["bun-windows-x64", "oh-my-pi-worker.exe"]]) {
+  const outfile = resolve(OUT_DIR, name);
+  const result = spawnSync("bun", ["build", workerEntry, "--compile", `--target=${target}`, `--outfile=${outfile}`], {
+    cwd: REPO_ROOT,
+    stdio: "inherit",
+  });
+  if (result.status !== 0) throw new Error(`AI 워커 컴파일 실패: ${target}`);
+  if (!name.endsWith(".exe")) chmodSync(outfile, 0o755);
+  process.stdout.write(`built dist-electron/${name}\n`);
 }
