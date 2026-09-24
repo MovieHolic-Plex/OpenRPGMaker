@@ -62,3 +62,4 @@ describe("setVariable amount alias", () => {
     expect(command).not.toHaveProperty("amount");
   });
 });
+
