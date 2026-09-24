@@ -67,7 +67,9 @@ function resumeNext(frame: Frame): CommandExecution {
 }
 
 function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: string): CommandExecution {
-  const commonEvent = state.session.commonEvents?.find((entry) => entry.id === commonEventId);
+  // 플레이 씬은 세션에 공용 이벤트를 실어 두지만(playSceneInterpreter), 헤드리스 경로(run_scene_test·qa:game 자동 플레이)는
+  // 세션만 만들고 싣지 않아 모든 callCommonEvent 가 「공통 이벤트 없음」으로 조용히 건너뛰어졌다 — 프로젝트 정의로 폴백한다.
+  const commonEvent = (state.session.commonEvents ?? state.project?.commonEvents)?.find((entry) => entry.id === commonEventId);
   if (commonEvent?.commands.length) {
     if (pushFrame(state, commonEvent.commands)) return { kind: "continue" };
     console.warn("[interpreter] common event recursion limit");

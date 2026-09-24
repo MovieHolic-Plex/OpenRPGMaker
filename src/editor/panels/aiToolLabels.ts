@@ -198,6 +198,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   place_examine_hotspots: people("조사 지점 놓기", "search"),
   compile_puzzle: people("퍼즐 만들기", "spark"),
   make_horror_loop: people("호러 루프 만들기", "flag"),
+  set_life_flower: people("꽃잎 체력 만들기", "flag"),
   make_gallery_room: people("조사 방 만들기", "search"),
   set_lighting_volume: world("조명 설정", "spark"),
   set_scene_mood: world("분위기 설정", "spark"),
