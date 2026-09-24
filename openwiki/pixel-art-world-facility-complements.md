@@ -41,3 +41,60 @@ render 스크립트는 빈 private HTML에서 실제 browser prepare 모듈과 U
 UUID tileset/asset 및 kit/MD 참조를 함께 stable ID로 치환해야 한다. 표본을 등록한다면
 지역 미연결 조립 후보임을 표시하고 region/실행map을 꾸며 만들지 않는다.
 순수 browser prepare 성공은 공용 게시나 정본 저장의 근거가 아니다.
+
+## 재현 가능한 로컬 공용 publisher
+
+`publish-pixel-art-world-facility-complements-library.mjs`는 별도
+`pixel-art-world-facility-complements-local`만 소유한다. 기존 loose/loose-supplements
+라이브러리와 준비물은 읽거나 바꾸는 대상이 아니다. 검토된5prepared는 입력으로만
+읽고 importer/render를 다시 실행하여 덮어쓰지 않는다.
+
+입력 bundle은 `version:1`, `preparedFiles:[{id,path,sha256}]` 정확히5개와
+`catalogSha256`, `metadataSha256`, `canonicalReceiptSha256`, `sharedSnapshotSha256`을
+갖는다. 각 SHA는 파일 바이트를 해시하고 prepared path는 절대경로다. 정본 영수증은
+`projectId/projectDir/revision/sha256/portableSha256`이 필요하며 `portablePath`가
+없으면 영수증 옆 `current-portable.json`을 검증한다. 정본의 serialized SHA는
+영수증 provenance이며 이 스크립트가 DB에 접속해 다시 읽었다는 뜻은 아니다.
+영수증 자체와 portable 파일을 모두 봉인·재검사한다. snapshot은 미리 읽어둔 공식
+`{revision,libraries}` JSON을 사용한다.
+
+```bash
+node scripts/content/publish-pixel-art-world-facility-complements-library.mjs \
+  --prepare /private/output/bundle.json /private/download-root \
+  /private/output/canonical/source-proof.json /private/output/shared-before.json \
+  /private/output/facility-library
+
+node scripts/content/publish-pixel-art-world-facility-complements-library.mjs \
+  --publish-local /private/output/facility-library /private/output/publish-receipt
+```
+
+`--prepare`는 DB 모듈을 로드하지 않고 private output 파일만 만든다. 개발 서버도
+필요하지 않다. Playwright 빈 페이지의 네트워크를 차단하고 원본10개 SHA/규격,
+sourceParts 재합성 atlas, 파트 정상/반례, 전체 배열 정상/오류, 각 kit 소유 원본
+그림과 MD의 전체 recipe/expected/incorrect를 검증한다. 오류는 검토된 `errorCell`을
+사용한다. 그림자 최하단을 자동 선택해 신호등 밑동 오류를 바꾸지 않는다.
+실제 모델 factory와 전체 kit/타일 그룹/통행 배열을 비교하고 스키마는 실제
+`validateTileset`/`validateSpatialAuthoring`으로 검사한다. 지지/상부장 벽 및
+입구→접근칸 연결도 다시 계산한다. 원본 metadata/전체 배열/그림은 변경하지 않는다.
+
+출력은 `library.json`, `preparation-proof.json`, `preparation-seal.json`과
+`artifacts/`의 atlas5 PNG + 조립 표본 preview5 PNG다. JSON 바이트/객체 해시,
+출력PNG10개의 바이트 해시, 입력 파일 및 구현 계약 파일의 SHA를 기록한다.
+봉인은 검토 후 드리프트 검사용이며 전자서명이 아니다. `readPreparedLibrary(dir)`는
+DB 없이 모든 봉인을 검사하고 원본에서 다시 재구성하여 라이브러리 전체 일치를
+확인한다. 출력PNG도 라이브러리 안의 asset/preview 바이트와 일치해야 한다.
+검토 뒤 코드/카탈로그/입력이 바뀌면 재준비한다. 파일 경로도 봉인하므로 다른
+워크트리에 통합한 감독자는 그 체크아웃에서 새 private output으로 준비해야 한다.
+
+타일셋은 `shared_paw_facility_complement_*`, asset은 같은 ID의 `_image`,
+객체 kit는 타일셋ID+원본recipeID, 표본 kit는 placeID+`_raster`로 고정한다.
+중첩 MD JSON·그룹·이미지ID·참조도 함께 치환하고 입력 UUID 잔여를 거부한다.
+숫자 타일 배열과 이미지 데이터는 그대로다. 객체12와 표본 raster5를 구분하며,
+place5/preview5는 모두 지역 미연결 **방향·지지 조립 표본**이다. 완료 시설은0개다.
+region과 게임map은0개이고 새 실행 이벤트도 만들지 않는다.
+
+DB 쓰기는 명시적 `--publish-local`에서만 공식 `sharedContentSqlite` API로 수행한다.
+준비 snapshot의 대상 라이브러리 payload 해시로 CAS하고 전체 snapshot revision을
+잠그지 않는다. 다른 라이브러리에 속한 tileset/asset/place/preview/kit ID 충돌은
+거부한다. 게시 후 공식 API로 다시 읽어 대상 전체 일치 및 기존 타 라이브러리
+보존을 확인하고 영수증을 남긴다. 정본 프로젝트에는 쓰지 않는다.
