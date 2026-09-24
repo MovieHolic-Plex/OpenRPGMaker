@@ -1064,6 +1064,7 @@ function paintRoomSpace(
 function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan, sink?: ConceptPlacement[]): string[] {
   const warnings: string[] = [];
   RNG = mulberry32((plan.seed ?? 1) * 0x9e3779b1 + 1);
+  paintedBedrooms = [];
   // 복도 카펫 먼저 — 복도 테마 방은 붉은 카펫 러너로 잇는다(2026-07-20 사용자 교정).
   // 개념 꾸러미가 정본이면 파이프가 가구를 보태지 않는다.
   placementJournals.delete(map);
@@ -1166,6 +1167,7 @@ export function furnishInteriorSpace(
   }
   // 방별 결정적 시드(플랜 시드 + 방 인덱스 성분) — 같은 인자로 재호출하면 같은 배치.
   RNG = mulberry32(((seed ?? nextPlan.seed ?? 1) + idx * 977) * 0x9e3779b1 + 1);
+  paintedBedrooms = [];
   placementJournals.delete(map);
   if (!nextPlan.concept) placementJournals.set(map, []);
   const placements: ConceptPlacement[] = [];
@@ -1702,23 +1704,52 @@ function paintThemeFurniture(
     return;
   }
   if (plan.theme === "bedroom") {
+    // 같은 집의 두 번째 침실은 앞 침실의 거울상 + 다른 변주 — 나란한 두 침실이 복사본으로 찍히지
+    // 않게 한다(검수: 「좌우 침실의 침대·협탁·거울·액자가 완전히 동일」). 침대는 앞 방 침대의
+    // 좌우 반대 자리부터 찾고, 벽 장식 변주를 한 칸 돌린다.
+    const twin = room ? paintedBedrooms.at(-1) : undefined;
+    const bedVariant = twin ? (twin.variant + 1) % 3 : variant;
+    // 침대 방향도 앞 침실과 반대로(가로↔세로), 키 큰 가구도 바꾼다(거울↔괘종시계).
+    const vertical = twin ? !twin.vertical : bedVariant === 1;
+    const bedOrder = twin && room
+      ? [...northFloor].sort((a, b) => {
+        const target = room.x + room.w - twin.offset - twin.width;
+        return Math.abs(a.x - target) - Math.abs(b.x - target) || b.x - a.x;
+      })
+      : northFloor;
     // 침대 방향 변주(3차 리뷰: 20장 전원 가로·머리 서쪽 단일 방향) — variant 1은 세로 침대.
-    const bed = (variant === 1 ? placeBedVertical(map, northFloor, plan.door) : null)
-      ?? placeBedPair(map, northFloor, plan.door);
+    const bed = (vertical ? placeBedVertical(map, bedOrder, plan.door, Boolean(twin)) : null)
+      ?? placeBedPair(map, bedOrder, plan.door, Boolean(twin));
+    const horizontalBed = Boolean(bed?.cells[1] && bed.cells[1].x !== bed.cells[0]!.x);
     // 소품 적재적소: 협탁은 침대 머리맡 옆 1칸 — 성공하면 코너 폴백은 생략.
     const bedside = bed ? placeBedsideProp(map, bed.cells, plan.door) : false;
     // 러그: 소형 침실(4×4=16)도 침대 발치 1칸 앵커로 허용 — 빈 나무바닥 방지.
     if (bed && area >= 16) placeRugUnder(map, bed.x, bed.y + 1, RUG_TEAL);
-    placeTallPairU(map, northFloor, plan.door, VR.MIRROR_T, VR.MIRROR_B);
+    const mirror = twin?.tall !== "mirror";
+    const tallOrder = twin ? [...northFloor].sort((p, q) => q.x - p.x) : northFloor;
+    const tall = mirror
+      ? placeTallPairU(map, tallOrder, plan.door, VR.MIRROR_T, VR.MIRROR_B, Boolean(twin))
+      : placeTallPairU(map, tallOrder, plan.door, VR.CLOCK_T, VR.CLOCK_B, Boolean(twin));
+    if (room) {
+      paintedBedrooms.push({
+        variant: bedVariant,
+        offset: bed ? bed.x - room.x : 0,
+        width: horizontalBed ? 2 : 1,
+        vertical: Boolean(bed) && !horizontalBed,
+        tall: tall ? (mirror ? "mirror" : "clock") : "none",
+      });
+    }
     // 벽 장식 이중화: 창 + 그림/시계 — 북벽이 텅 비는 소형 침실 방지.
-    if (variant === 0) {
+    if (bedVariant === 0) {
       placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
       placePicturePair(map, wallFace);
-    } else if (variant === 1) {
+    } else if (bedVariant === 1) {
       placePicturePair(map, wallFace);
       placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     } else {
-      placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
+      // 시계를 이미 키 큰 가구로 세웠으면 두 번째 시계를 나란히 세우지 않는다.
+      if (mirror || !tall) placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
+      else placePicturePair(map, wallFace);
       placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     }
     // 2026-07-20 사용자 교정: "모든 방마다 탁자" 강제 해제 — 침실에는 탁자 세트를 놓지 않는다.
@@ -1863,6 +1894,14 @@ function mulberry32(seed: number): () => number {
   };
 }
 let RNG: () => number = mulberry32(1);
+/** 한 번의 가구 시공(맵 하나)에서 이미 꾸민 침실 — 두 번째 침실이 거울상·다른 변주를 고른다. */
+let paintedBedrooms: Array<{
+  readonly variant: number;
+  readonly offset: number;
+  readonly width: number;
+  readonly vertical: boolean;
+  readonly tall: "mirror" | "clock" | "none";
+}> = [];
 
 /**
  * 카탈로그 정의(형태 정본: interiorObjectCatalog)의 셀 id를 가져온다.
@@ -1974,8 +2013,9 @@ function placeBedVertical(
   map: GameMap,
   northFloor: Array<{ x: number; y: number }>,
   door: DoorSpec,
+  ordered = false,
 ): { x: number; y: number; cells: Array<{ x: number; y: number }> } | null {
-  for (const c of rotated(northFloor)) {
+  for (const c of ordered ? northFloor : rotated(northFloor)) {
     if (c.x === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x, c.y + 1)) continue;
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y + 1)) continue;
@@ -2208,9 +2248,10 @@ function placeTallPairU(
   door: DoorSpec,
   top: number,
   bottom: number,
+  ordered = false,
 ): boolean {
   const wall = houseShellWallMembers();
-  for (const c of rotated(northFloor)) {
+  for (const c of ordered ? northFloor : rotated(northFloor)) {
     if (c.x === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y)) continue;
     if (!wall.has(getL(map, c.x, c.y - 1))) continue;
@@ -2460,8 +2501,9 @@ function placeBedPair(
   map: GameMap,
   northFloor: Array<{ x: number; y: number }>,
   door: DoorSpec,
+  ordered = false,
 ): { x: number; y: number; cells: Array<{ x: number; y: number }> } | null {
-  for (const c of rotated(northFloor)) {
+  for (const c of ordered ? northFloor : rotated(northFloor)) {
     if (c.x === door.x || c.x + 1 === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x + 1, c.y)) continue;
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x + 1, c.y)) continue;

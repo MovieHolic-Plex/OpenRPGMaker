@@ -6,7 +6,7 @@ import { riverBandDepth } from "@/project/worldGenRules";
 // 3층: plan_village(계층 계획) → build_village(제약 시공) → critique_village(비평 루프).
 
 import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
-import type { HouseInteriorProgram } from "@/editor/houseInteriors";
+import { houseProgramForOwner, type HouseInteriorProgram } from "@/editor/houseInteriors";
 import { setMapLayoutPlan } from "@/project/mapLayoutPlan";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { DEFAULT_SNOW_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -1534,6 +1534,12 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
  * 부여한다(이미 프로그램이 있으면 건너뜀). 간판(472/473)은 decor가 이 프로그램을 보고 건다.
  */
 function assignShopPrograms(houses: BuiltHouse[], plaza: Plaza, warnings: string[]): void {
+  // 집주인 직업이 용도를 말하면(어부·등대지기·여관 주인…) 그 용도가 정본이다 — 광장 근접순
+  // 상점가 배정이 등대지기의 집을 상점으로 덮어쓰지 않게 먼저 못박는다.
+  for (const [index, house] of houses.entries()) {
+    const role = house.program === undefined ? houseProgramForOwner(house.ownerName) : undefined;
+    if (role) houses[index] = { ...house, program: role };
+  }
   if (houses.length < 3) return;
   const gate = { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h };
   const order = houses
@@ -1541,7 +1547,10 @@ function assignShopPrograms(houses: BuiltHouse[], plaza: Plaza, warnings: string
     .sort((a, b) => a.dist - b.dist)
     .filter(({ index }) => houses[index]!.program === undefined)
     .map(({ index }) => index);
-  const roles: HouseInteriorProgram[] = ["shop", "shop", "inn"];
+  // 이름으로 이미 선 가게·여관만큼 자동 배정을 줄인다.
+  const named = houses.map((house) => house.program);
+  const roles = (["shop", "shop", "inn"] as HouseInteriorProgram[]).filter((role, i, list) =>
+    named.filter((program) => program === role).length <= list.slice(0, i).filter((r) => r === role).length);
   const assigned: string[] = [];
   for (let i = 0; i < roles.length && i < order.length; i += 1) {
     const index = order[i]!;
