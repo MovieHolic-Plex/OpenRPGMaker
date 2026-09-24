@@ -24,6 +24,16 @@ describe("choices 보기 목록 별칭", () => {
     expect(kept.prompt).toBe("이미 있음");
   });
 
+  it("choices.body 질문을 prompt 로 옮긴다(2026-09-24 갤러리 r3)", () => {
+    const command: Record<string, unknown> = { kind: "choices", body: "벽에 낡은 레버가 달려 있다. 당겨보겠습니까?", options: [{ text: "당긴다", branch: [] }] };
+    expect(canonicalizeCommandFieldAlias(command)).toContain("choices.body 를 prompt");
+    expect(command.prompt).toBe("벽에 낡은 레버가 달려 있다. 당겨보겠습니까?");
+    expect(command.body).toBeUndefined();
+    const kept: Record<string, unknown> = { kind: "choices", prompt: "이미 있음", body: "버림", options: [] };
+    expect(canonicalizeCommandFieldAlias(kept)).toBeUndefined();
+    expect(kept.prompt).toBe("이미 있음");
+  });
+
   it("place_npc 여관 선택지가 TypeError 없이 배치된다", () => {
     const ctx = { project: createBlankProject() };
     const result = runTool(ctx, "place_npc", {

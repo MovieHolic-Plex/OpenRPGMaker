@@ -199,6 +199,7 @@ export const HORROR_GALLERY_AUTHORING_GUIDE = [
   "- 튀어나오는 그림·검은 손·가시 바닥 이벤트에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_damage\"}, 꽃병에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_restore\"} 를 넣는다. 체력 변수를 setVariable 로 직접 깎지 않는다.",
   "- 열쇠·레버·순서 퍼즐은 compile_puzzle(item-gate·switch-sequence·password)로 만들고, 조건 분기는 {kind:\"fork\",condition:{kind:\"switch\",switchId,value:true},then:[…]} 모양이다.",
   "- 맵마다 set_scene_mood({mapId, applyMode:\"map\", lighting:{ambient:0.35, color:\"#1a1024\"}}) 로 어둡게 둔다. 기본 조명(ambient 1)은 전시실이 낮처럼 밝다.",
+  "- 전시실·화실 같은 실내는 place_concept({query, mapId, plan}) 로 벽까지 지은 다음 fill_region 로 바닥을 마감한다. 먼저 get_concept_facility 로 물건 어휘(vocabulary)를 읽고 장소·물건을 설계해 plan 으로 넘겨라(시설 템플릿은 비어 있다). fill_region·paint_tiles 로 바닥만 깔아 빈 판으로 끝내지 말 것 — 벽 재질은 거부되고 run_interior_room_pipeline 은 plan 없는 호출을 거부한다.",
   "- 문간·한 칸 통로에 인물을 세우지 마라. 대화를 마친 페이지는 priority:\"below\" 와 overlapForbidden:false 로 비켜 준다.",
 ].join("\n");
 

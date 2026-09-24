@@ -272,6 +272,14 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     delete command.text;
     promptFix = "choices.text 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
   }
+  if (command.kind === "choices" && command.prompt === undefined && typeof command.body === "string" && command.body.trim()) {
+    // 선택지 질문을 text 명령의 본문 칸인 body 로 쓴 사례(2026-09-24 갤러리 호러 r3: 레버·초상화 3점·엔딩 등
+    // 선택지 6건이 `{kind:"choices",body:"당겨보겠습니까?",options}` — upsert_event 는 받았지만 런타임이 body 를
+    // 버려 플레이어는 물음 없는 선택지만 보았다). 질문 칸은 prompt 라 옮긴다.
+    command.prompt = command.body.trim();
+    delete command.body;
+    promptFix = "choices.body 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
+  }
   if (command.kind === "choices" && !Array.isArray(command.options)) {
     // 보기 목록을 `choices` 로 쓴 사례(2026-09-24 JRPG 도그푸딩: 여관 주인 `{kind:"choices",choices:[{text,branch}]}`)
     // — place_npc 가 「command.options is not iterable」 TypeError 로 죽었다. 보기 목록 칸은 options 하나라 옮긴다.
