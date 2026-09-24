@@ -37,10 +37,10 @@
       "downloadExact": true
     },
     {
-      "id": "interior-inn-rooms-2f-23x16",
+      "id": "interior-inn-rooms-2f-22x16",
       "aiRowsExact": true,
       "preview": [
-        368,
+        352,
         256
       ],
       "downloadExact": true
@@ -64,10 +64,10 @@
       "downloadExact": true
     },
     {
-      "id": "interior-home-two-story-1f-17x13",
+      "id": "interior-home-two-story-1f-19x13",
       "aiRowsExact": true,
       "preview": [
-        272,
+        304,
         208
       ],
       "downloadExact": true
@@ -100,11 +100,11 @@
       "downloadExact": true
     },
     {
-      "id": "interior-adventurers-guild-22x15",
+      "id": "interior-adventurers-guild-22x14",
       "aiRowsExact": true,
       "preview": [
         352,
-        240
+        224
       ],
       "downloadExact": true
     },
@@ -177,6 +177,15 @@
       "preview": [
         256,
         208
+      ],
+      "downloadExact": true
+    },
+    {
+      "id": "interior-castle-1f-50x40",
+      "aiRowsExact": true,
+      "preview": [
+        800,
+        640
       ],
       "downloadExact": true
     },
