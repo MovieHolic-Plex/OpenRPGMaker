@@ -209,6 +209,7 @@ const placeExamineHotspots: ToolDefinition = {
     const warnings: string[] = [];
     const eventIds: string[] = [];
     let skipped = 0;
+    const invisible: string[] = [];
 
     hotspots.forEach((raw, index) => {
       try {
@@ -270,6 +271,11 @@ const placeExamineHotspots: ToolDefinition = {
         map.events.push(event);
         occupied.add(placementKey);
         eventIds.push(eventId);
+        // 그림도 없고 그 칸 윗층에 물건 타일도 없으면 플레이어 눈에는 빈 바닥이다 — 회상 스토리 도그푸딩에서
+        // 메멘토 9개가 전부 이랬다(무엇을 조사할지 보이지 않아 모든 칸에서 버튼을 눌러야 한다).
+        const visibleGraphic = graphic.transparent !== true && (graphic.sprite !== undefined || graphic.appearanceId !== undefined);
+        const propUnder = (map.upperTiles[landing.y * map.width + landing.x] ?? -1) > 0;
+        if (!visibleGraphic && !propUnder) invisible.push(name);
       } catch (cause) {
         skipped += 1;
         const message = cause instanceof Error ? cause.message : String(cause);
@@ -277,8 +283,14 @@ const placeExamineHotspots: ToolDefinition = {
       }
     });
 
+    if (invisible.length > 0) {
+      warnings.push(
+        `보이지 않는 조사 지점 ${invisible.length}개(${invisible.join(", ")}): 그림이 없고 그 칸에 물건 타일도 없어 플레이어에게는 빈 바닥이다 — `
+          + "place_props·paint_tiles 로 그 칸에 물건을 놓거나 hotspots[].graphic({query:\"…\"} 또는 charset)을 주세요.",
+      );
+    }
     return {
-      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성, ${skipped}개 스킵`,
+      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성, ${skipped}개 스킵${invisible.length ? ` — 그중 ${invisible.length}개는 빈 바닥 위 투명(보이지 않음)` : ""}`,
       data: { created: eventIds.length, skipped, eventIds },
       ...(warnings.length > 0 ? { warnings } : {}),
     };

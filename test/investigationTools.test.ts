@@ -69,7 +69,9 @@ describe("place_examine_hotspots", () => {
     assertTool(result);
     expect(result.summary).toContain("조사 핫스팟 1개 생성, 3개 스킵");
     expect(result.data).toMatchObject({ created: 1, skipped: 3 });
-    expect(result.diff?.warnings).toHaveLength(3);
+    // 스킵 3건 + 빈 바닥 위 투명 「책상」 1건(보이지 않는 조사 지점 경고).
+    expect(result.diff?.warnings?.filter((warning) => warning.includes("skip"))).toHaveLength(3);
+    expect(result.diff?.warnings?.some((warning) => warning.startsWith("보이지 않는 조사 지점 1개(책상)"))).toBe(true);
     expect(startMap(ctx.project).events.map((event) => event.id)).toContain("ev_examine_1");
   });
 
