@@ -686,6 +686,10 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
         if (rewardProof.report.phase !== "prelude" && state.session.currentMapId !== rewardProof.target.mapId) unverified("Protected target map changed");
       }
       reason = runStep(state, step) ?? state.runtimeFailure;
+      // 런타임은 매 프레임 자동 실행 페이지를 다시 본다 — 조사로 켠 스위치가 같은 맵의 자동 컷신(메멘토를 다 모으면
+      // 열리는 문 등)을 세우면 바로 돈다. 러너는 맵 진입 때만 돌려서 그 컷신이 영영 안 돌았다(2026-09-24 회상 스토리).
+      // 이미 돈 페이지는 autoStartedKeys 가 걸러 한 번만 돈다. 선택을 기다리는 중에는 건드리지 않는다.
+      if (reason === null && !state.held && step.kind !== "expect") reason = runAutoTriggers(state) ?? state.runtimeFailure;
       reason ??= checkEarlyReward(state);
     } catch (cause) {
       state.setupFailure = { kind: "execution-failure", stepIndex: i, mapId: state.session.currentMapId };
