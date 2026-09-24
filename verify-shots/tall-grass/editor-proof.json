@@ -1,0 +1,75 @@
+{
+  "maps": [
+    {
+      "tilesetId": "forest_harmony",
+      "groups": [
+        "builtin_tall_grass",
+        "builtin_tall_grass_light",
+        "builtin_tall_grass_short"
+      ],
+      "pass": [
+        true,
+        true,
+        true
+      ],
+      "file": "verify-shots/tall-grass/editor-forest_harmony.png"
+    },
+    {
+      "tilesetId": "forest_harmony_snow",
+      "groups": [
+        "builtin_tall_grass",
+        "builtin_tall_grass_light",
+        "builtin_tall_grass_short"
+      ],
+      "pass": [
+        true,
+        true,
+        true
+      ],
+      "file": "verify-shots/tall-grass/editor-forest_harmony_snow.png"
+    },
+    {
+      "tilesetId": "forest_harmony_desert",
+      "groups": [
+        "builtin_tall_grass",
+        "builtin_tall_grass_light",
+        "builtin_tall_grass_short"
+      ],
+      "pass": [
+        true,
+        true,
+        true
+      ],
+      "file": "verify-shots/tall-grass/editor-forest_harmony_desert.png"
+    },
+    {
+      "tilesetId": "forest_harmony_volcano",
+      "groups": [
+        "builtin_tall_grass",
+        "builtin_tall_grass_light",
+        "builtin_tall_grass_short"
+      ],
+      "pass": [
+        true,
+        true,
+        true
+      ],
+      "file": "verify-shots/tall-grass/editor-forest_harmony_volcano.png"
+    },
+    {
+      "tilesetId": "forest_harmony_autumn",
+      "groups": [
+        "builtin_tall_grass",
+        "builtin_tall_grass_light",
+        "builtin_tall_grass_short"
+      ],
+      "pass": [
+        true,
+        true,
+        true
+      ],
+      "file": "verify-shots/tall-grass/editor-forest_harmony_autumn.png"
+    }
+  ],
+  "errors": []
+}
