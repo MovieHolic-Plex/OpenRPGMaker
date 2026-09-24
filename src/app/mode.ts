@@ -31,6 +31,8 @@ import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
 import { dismissBootLoader } from "@/app/bootLoader";
+import { rememberBootBrief } from "@/app/bootBrief";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 
 export type Mode = "edit" | "play";
 
@@ -115,6 +117,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     await attachElectronFolderAtBoot();
     // P6: 온라인 저장이 없다 — 첫 방문에 열 원격 데모 행도, 발급할 행도 없다. 항상 기존 로드 경로다.
     await store.load();
+    rememberBootBrief(store.getCurrent(), getAiConnectionStatus().kind === "ready");
   } catch (error) {
     // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
     // 프로젝트 데이터가 무결성 검증에 실패한 경우(벽돌)를 구분해 다른 화면을 보여준다.
