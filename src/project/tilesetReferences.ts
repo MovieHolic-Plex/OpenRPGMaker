@@ -36,6 +36,15 @@ export function referenceManifest(category: TilesetReferenceCategory) {
     images: category.images.map(({ id, name, caption }) => ({ id, name, caption })) };
 }
 
+/** Text tool listings never repeat inline pixels or full reference document bodies. */
+export function referenceOwnerManifest<T extends object>(value: T) {
+  const { referenceDocuments, preview, ...metadata } = value as T & { referenceDocuments?: TilesetReferenceCategory[]; preview?: string };
+  return { ...metadata,
+    ...(preview === undefined ? {} : preview.startsWith('data:image/') ? { previewImageAvailable: true } : { preview }),
+    ...(referenceDocuments ? { referenceDocuments: referenceDocuments.map(referenceManifest) } : {}),
+  };
+}
+
 export function validateTilesetReferences(value: unknown): asserts value is TilesetReferenceCategory[] {
   const fail = (message: string): never => { throw new Error(`타일 참고문서: ${message}`); };
   const list = (v: unknown, max: number): Record<string, unknown>[] => {

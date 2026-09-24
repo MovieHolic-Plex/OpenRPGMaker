@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **87쪽 / 3366KB / 약 960,141 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **87쪽 / 3377KB / 약 963,661 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -77,7 +77,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
-| `openwiki/pixel-art-world-home.md` | 2 | `ST-Town-I01.png`, `output/paw-home/report.json` |
+| `openwiki/pixel-art-world-home.md` | 1 | `ST-Town-I01.png` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
@@ -91,6 +91,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/slates-structure-learning.md` | 1 | `read-slates-project.mjs` |
 | `openwiki/slates-study.md` | 3 | `output/slates-study/source-project.json`, `scripts/content/save-slates-study.mjs`, `source-row.json` |
 | `openwiki/slates-village-authoring.md` | 1 | `save-slates-village-50.mjs` |
+| `openwiki/spatial-ai-tools.md` | 2 | `publish-pixel-art-world-local-library.mjs`, `read-pixel-art-world-host.mjs` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-catalog-ui.md` | 2 | `output/evidence/interior-removal-executed/host-proof.json`, `output/evidence/place-previews/proof.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
@@ -101,7 +102,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/testing.md` | 37 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `legacyDb-proof-first-save.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/qa/acceptance-live.mjs`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/tile-geometry.md` | 2 | `output/slates-reference/source-row.json`, `scripts/content/save-slates-reference.mjs` |
 | `openwiki/tile-layer-policy.md` | 2 | `Castle2_5.png`, `clean_furniture.png` |
-| `openwiki/tileset-reference-documents.md` | 7 | `author-pixel-art-world-city.mjs`, `pixelArtWorldCity.json`, `prepare-pixel-art-world-city.mjs`, `save-pixel-art-world-city.mjs`, `scripts/content/save-tileset-references.mjs`, `tilesetAiQuestionEditor.ts`, `tilesetCheckerSummary.ts` |
+| `openwiki/tileset-reference-documents.md` | 3 | `scripts/content/save-tileset-references.mjs`, `tilesetAiQuestionEditor.ts`, `tilesetCheckerSummary.ts` |
 | `openwiki/town-tile-benchmark.md` | 1 | `combined-town-chipset-report.html` |
 | `openwiki/ui-discovery-pilot.md` | 3 | `direct/RESULTS.json`, `output/evidence/ui-discovery-v2/report.html`, `trace.json` |
 | `openwiki/village-design.md` | 7 | `20260907000000_spatial_authoring_cas.sql`, `depth-review.json`, `output/evidence/house-heights/REVIEW.md`, `output/village-direction/index.html`, `scripts/build-house-study-gallery.mts`, `scripts/publish-compact-village.mts`, `scripts/publish-object-village.mts` |
@@ -940,13 +941,15 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L114` Runtime and authoring contracts
 - `L133` Verification and examples
 
-### `openwiki/pixel-art-world-home.md` — 1KB · 16줄 · ~369 토큰
+### `openwiki/pixel-art-world-home.md` — 2KB · 20줄 · ~483 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/pixel-art-world-school.md` — 2KB · 26줄 · ~676 토큰
+### `openwiki/pixel-art-world-school.md` — 8KB · 88줄 · ~2,343 토큰
 
-절 제목 없음 (평면 목록 페이지).
+- `L42` 4층 학교 / 실제 방 구조 (2026-09-24)
+  - `L69` 반려 후 축소·벽 연속성 수정
+  - `L79` 2차 반려 후 밀도 재설계
 
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 
@@ -1354,7 +1357,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 17KB · 216줄 · ~4,714 토큰
+### `openwiki/spatial-ai-tools.md` — 21KB · 257줄 · ~5,777 토큰
 
 - `L3` 장소 단일 계약 (2026-09-14)
 - `L19` Ownership
@@ -1364,6 +1367,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L142` Legacy adapters and context
 - `L184` Evidence and integration boundary
 - `L201` Completed region references (2026-09-13)
+- `L217` 2026-09-24 — 장소·지역·오브젝트의 자체 AI 참고문서
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
@@ -1376,7 +1380,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L179` Exact connection cleanup
 - `L248` Verification and remaining integration
 
-### `openwiki/spatial-catalog-ui.md` — 17KB · 188줄 · ~4,808 토큰
+### `openwiki/spatial-catalog-ui.md` — 18KB · 200줄 · ~5,127 토큰
 
 - `L5` 목록은 축소 그림만 그린다 (2026-09-24)
 - `L13` Concept and selection contract (2026-09-12)
@@ -1392,6 +1396,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L175` 2026-09-24 — bundled fallback for all 31 interiors
 - `L179` 공용 장소 웹 배포 계약 (2026-09-24)
 - `L185` 호스트 전용 장소의 목록 썸네일 (2026-09-24)
+- `L189` 2026-09-24 — 공간 소유자의 참고문서 표시
 
 ### `openwiki/spatial-geography-compiler.md` — 9KB · 158줄 · ~2,420 토큰
 
@@ -1642,37 +1647,38 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 16px 병행판 (2026-09-22)
   - `L325` 픽셀 크기 기록 계약 (2026-09-22)
 
-### `openwiki/tileset-reference-documents.md` — 41KB · 438줄 · ~12,696 토큰
+### `openwiki/tileset-reference-documents.md` — 43KB · 454줄 · ~13,053 토큰
 
 - `L5` 사용자 다운로드형 타일셋 지원 (2026-09-24)
-- `L40` 사용자 경로와 정본
-- `L57` 타일 화면 구성 (2026-09-21)
-- `L78` 저장 계약
-- `L90` AI 선행 읽기 계약
-- `L117` Slates 이관
-- `L130` 확인 자료와 범위
-- `L136` Castle2 성채 학습 이관
-- `L148` 숲마을 공용 자료 (2026-09-21)
-- `L164` 공용 forest_harmony 참고문서 보충 (2026-09-22)
-  - `L179` Castle2 공용 기본 제공 수정
-- `L188` 실행형 부품·조립·검증 자료
-- `L206` 공용 숲 실행 조립법 (2026-09-22)
-  - `L223` 상세 공용 조립 계약 (public-assembly-v2)
-- `L235` 이슬여울 마을 장식 표본 (2026-09-22)
-- `L259` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
-  - `L275` 절벽 조립 교정 (2026-09-23)
-  - `L285` 잔디 경계 개정3 (2026-09-23)
-  - `L295` 굽은 지형·입구 개정4 (2026-09-23)
-  - `L305` 생활 마당 개정5 (2026-09-23)
-  - `L314` 사용 목적 개정6 (2026-09-23)
-  - `L324` 공동 공간·정원 개정7 (2026-09-23)
-  - `L335` 계단 대지 개정8 (2026-09-23)
-  - `L350` 강과 폭포 개정9 (2026-09-23)
-  - `L362` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
-  - `L378` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
-  - `L394` 기후 마을 · 설원·화산 (2026-09-23)
-  - `L407` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
-  - `L420` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
+  - `L40` 공간 설계·실제 발판 검사
+- `L56` 사용자 경로와 정본
+- `L73` 타일 화면 구성 (2026-09-21)
+- `L94` 저장 계약
+- `L106` AI 선행 읽기 계약
+- `L133` Slates 이관
+- `L146` 확인 자료와 범위
+- `L152` Castle2 성채 학습 이관
+- `L164` 숲마을 공용 자료 (2026-09-21)
+- `L180` 공용 forest_harmony 참고문서 보충 (2026-09-22)
+  - `L195` Castle2 공용 기본 제공 수정
+- `L204` 실행형 부품·조립·검증 자료
+- `L222` 공용 숲 실행 조립법 (2026-09-22)
+  - `L239` 상세 공용 조립 계약 (public-assembly-v2)
+- `L251` 이슬여울 마을 장식 표본 (2026-09-22)
+- `L275` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+  - `L291` 절벽 조립 교정 (2026-09-23)
+  - `L301` 잔디 경계 개정3 (2026-09-23)
+  - `L311` 굽은 지형·입구 개정4 (2026-09-23)
+  - `L321` 생활 마당 개정5 (2026-09-23)
+  - `L330` 사용 목적 개정6 (2026-09-23)
+  - `L340` 공동 공간·정원 개정7 (2026-09-23)
+  - `L351` 계단 대지 개정8 (2026-09-23)
+  - `L366` 강과 폭포 개정9 (2026-09-23)
+  - `L378` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+  - `L394` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+  - `L410` 기후 마을 · 설원·화산 (2026-09-23)
+  - `L423` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+  - `L436` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 

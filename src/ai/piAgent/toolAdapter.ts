@@ -1,4 +1,5 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
@@ -238,6 +239,9 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
         }
+      }
+      if (tool.name === 'read_spatial_reference') for (const image of spatialReferenceImages(ctx.project,args,result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       return { content, details: result };
     },

@@ -1,4 +1,5 @@
 import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
+import { spatialReferenceDocuments } from './spatialReferenceDocuments';
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import type { ObjectDeletePreview, ObjectDraftTarget } from "@/editor/panels/spatialObjectDraft";
 import type { ObjectDesign, SpatialPort } from "@/project/spatial/types";
@@ -60,6 +61,7 @@ export function renderSpatialObjectInspector(input: {
     children: [
       el("h3", { class: "spatial-inspector-name", text: card.name }),
       el("p", { class: "spatial-inspector-sub", text: sourceLabel(card) }),
+      ...spatialReferenceDocuments(design?.referenceDocuments ?? kits.find(kit => kit.id === target.kitId)?.referenceDocuments),
       ...(guidance ? [el('details', { children: [
         el('summary', { text: '조립·배치 규칙' }),
         el('p', { text: guidance.description }),

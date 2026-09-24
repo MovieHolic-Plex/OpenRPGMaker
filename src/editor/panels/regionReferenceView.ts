@@ -1,6 +1,8 @@
 import { catalogListImage } from "@/editor/panels/catalogListImage";
 import { el } from "@/util/dom";
 import { regionReference } from "@/project/regionReferences";
+import { spatialReferenceDocuments } from './spatialReferenceDocuments';
+import type { TilesetReferenceCategory } from '@/project/tilesetReferences';
 
 export function regionReferenceImage(id: string, thumbnail = false): HTMLElement {
   const entry = regionReference(id);
@@ -38,5 +40,6 @@ export function regionReferenceInspector(id: string): HTMLElement {
     })] })] : []),
     el("a", { text: "원본 이미지 크게 보기", attrs: { href: entry.preview, target: "_blank", rel: "noopener" } }),
     rules,
+    ...spatialReferenceDocuments('referenceDocuments' in entry ? entry.referenceDocuments as TilesetReferenceCategory[] : undefined),
   ] });
 }

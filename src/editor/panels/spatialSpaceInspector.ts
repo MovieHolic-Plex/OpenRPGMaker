@@ -22,6 +22,8 @@ import { issuePlacedSpaceEdit } from "@/editor/panels/spatialSpacePlacedActions"
 import { setSlotChips, setSlotRequired, spaceDraftTarget, type SpaceDraftTarget } from "@/editor/panels/spatialSpaceDraft";
 import { el } from "@/util/dom";
 
+import { spatialReferenceDocuments } from './spatialReferenceDocuments';
+
 export function renderSpatialSpacesInspector(
   card: SpatialGalleryCard | undefined,
   open: boolean,
@@ -30,6 +32,7 @@ export function renderSpatialSpacesInspector(
   const space = workingSpace(card);
   const target = card ? spaceDraftTarget(card) : undefined;
   const body: HTMLElement[] = [];
+  body.push(...spatialReferenceDocuments(space?.referenceDocuments));
   if (card) {
     body.push(el("h3", { class: "spatial-inspector-name", text: card.name }));
     const subtitle = cardSubtitle(card);

@@ -14,6 +14,7 @@ export const REVIEWED_PLACES = catalog.roots.map(id => ({ id, name: catalog.plac
 const sharedIds = new Set<string>();
 const sharedPreviews: Record<string,string> = {};
 export const reviewedPlacePreviewUrl = (id:string) => sharedPreviews[id] ?? `/assets/reviewed-places/${id}.png`;
+export const reviewedPlaceReferences = (id: string) => catalog.places[id]?.referenceDocuments;
 export function installSharedReviewedPlaces(snapshot: SharedContentSnapshot): void {
   for(const id of sharedIds) { delete catalog.places[id]; const index=catalog.roots.indexOf(id); if(index>=0)catalog.roots.splice(index,1); }
   sharedIds.clear();

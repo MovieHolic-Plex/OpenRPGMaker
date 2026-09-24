@@ -26,11 +26,14 @@ export function publishSharedContent(id: string, value: SharedContentLibrary, ex
   if (!/^[\w.-]{1,100}$/.test(id) || value.version !== 1) throw new Error('Invalid shared library');
   for (const t of Object.values(value.tilesets)) {
     if(t.referenceDocuments) validateTilesetReferences(t.referenceDocuments);
+    for (const kit of t.structureKits ?? []) if (kit.referenceDocuments) validateTilesetReferences(kit.referenceDocuments);
     if(t.referenceSourceTilesetId && !value.tilesets[t.referenceSourceTilesetId]) throw new Error('Missing reference owner');
   }
   for(const root of value.roots) if(!value.places[root]) throw new Error('Missing place root');
+  for (const place of Object.values(value.places)) if (place.referenceDocuments) validateTilesetReferences(place.referenceDocuments);
   for(const place of Object.values(value.places)) if(place.exterior && !value.tilesets[place.exterior.tilesetId]?.structureKits?.some(k=>k.id===place.exterior!.kitId)) throw new Error('Missing place raster');
   for (const [id, region] of Object.entries(value.regions ?? {})) {
+    if (region.referenceDocuments) validateTilesetReferences(region.referenceDocuments);
     const map = value.maps[id];
     if (!id.startsWith('shared_') || region.id !== id || region.kind !== 'completed-map' || !map
       || map.width !== region.width || map.height !== region.height || map.tilesetId !== region.tilesetId

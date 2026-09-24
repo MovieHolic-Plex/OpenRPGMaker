@@ -240,6 +240,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   set_tile_grafts: system("타일 이식"),
   list_tileset_references: inspect("타일셋 참고 목록", "book"),
   read_tileset_reference: inspect("타일셋 참고 읽기", "book"),
+  read_spatial_reference: inspect("공간 참고 읽기", "book"),
   get_tile_assembly_part: inspect("조립 부품 읽기", "grid"),
   preview_forest_strip: inspect("숲 띠 미리보기", "tree"),
   validate_tile_assembly: inspect("조립 검사", "shield"),

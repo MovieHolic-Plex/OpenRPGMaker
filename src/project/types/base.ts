@@ -1,5 +1,6 @@
 import type { ConceptBundleRecord } from "./conceptBundle";
 import type { InteriorFurnitureSnap, InteriorRoomKindRecord } from "./interior";
+import type { TilesetReferenceCategory } from "../tilesetReferences";
 
 export type MapId = string;
 export type TilesetId = string;
@@ -424,6 +425,7 @@ export interface StructureKitAiMeta {
 
 export interface SectionStructureKitDef {
   id: string;
+  referenceDocuments?: TilesetReferenceCategory[];
   kind: "section";
   name?: string;
   // 반복 단위 크기 — rows.length === height, rows[*].tiles.length === width.

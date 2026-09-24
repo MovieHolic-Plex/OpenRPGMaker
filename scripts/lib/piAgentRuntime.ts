@@ -164,6 +164,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const { readSharedTileReferences } = await import('./sharedTileReferencesSqlite');
   const { installSharedSpatialReferences } = await import('../../src/project/sharedSpatialReferences');
   installSharedSpatialReferences(readSharedTileReferences().spatial);
+  const { readSharedContent } = await import('./sharedContentSqlite');
+  const { installSharedContent } = await import('../../src/project/sharedContent');
+  await installSharedContent(readSharedContent());
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
   const ctx = { project: structuredClone(base) as Project };

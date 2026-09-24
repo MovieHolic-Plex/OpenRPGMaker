@@ -1,4 +1,5 @@
 import type { GameMap, InteriorRoomKindRecord, TilesetDef } from "../types";
+import type { TilesetReferenceCategory } from "../tilesetReferences";
 
 declare const spatialId: unique symbol;
 /** Opaque identity; labels and legacy qualified names are never identity parsers. */
@@ -26,6 +27,8 @@ export type SpatialComposable = { readonly composition?: SpatialComposition };
 export type SpatialDesignBase = {
   readonly id: SpatialId; readonly name: string; readonly revision: number;
   readonly tags: readonly string[]; readonly provenance: SpatialProvenance;
+  /** Portable authoring evidence owned by this object/place/region, not by one project session. */
+  readonly referenceDocuments?: TilesetReferenceCategory[];
 };
 export type SpatialGraphic = { readonly tilesetId: string; readonly kitId: string };
 export type ObjectDesign = SpatialDesignBase & {

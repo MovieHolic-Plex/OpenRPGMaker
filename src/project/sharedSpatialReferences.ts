@@ -1,9 +1,12 @@
 import type { GameMap, Project, TilesetDef } from './types';
+import { sharedContentTileset } from './sharedContent';
+import type { TilesetReferenceCategory } from './tilesetReferences';
 
 export interface SharedRegionReference {
-  id: string; name: string; kind: 'completed-map'; regionKind: 'terrain'; revision: number;
+  id: string; name: string; kind: 'completed-map'; regionKind: 'terrain' | 'settlement'; revision: number;
   width: number; height: number; tilesetId: string; preview: string;
   sourceProjectId: string; sourceMapId: string; rules: string[]; limitations: string;
+  referenceDocuments?: TilesetReferenceCategory[];
 }
 export interface SharedSpatialReferences {
   regions: SharedRegionReference[];
@@ -24,7 +27,7 @@ export function sharedRegionSnapshot(id: string) {
   return map && tileset ? { map, tileset } : undefined;
 }
 export function sharedObjectKit(tilesetId: string, kitId: string) {
-  return catalog.tilesets[tilesetId]?.structureKits?.find(k => k.id === kitId);
+  return (sharedContentTileset(tilesetId) ?? catalog.tilesets[tilesetId])?.structureKits?.find(k => k.id === kitId);
 }
 /** Install missing dependencies and reserved shared kits; never overwrite map arrays or tile rules. */
 export function ensureSharedSpatialReferences(project: Project): boolean {
