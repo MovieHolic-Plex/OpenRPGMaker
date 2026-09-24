@@ -9,7 +9,7 @@ const out = `verify-shots/${set}`;
 fs.mkdirSync(out, { recursive: true });
 const plans = JSON.parse(fs.readFileSync(`tiledata/${set}/catalog.json`)).plans;
 const shipped = JSON.parse(fs.readFileSync({ "climate-villages": "src/assets/sharedClimateVillageReferences.json", "field-routes": "src/assets/sharedFieldRouteReferences.json" }[set]));
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 }, acceptDownloads: true });
   const errors = [];

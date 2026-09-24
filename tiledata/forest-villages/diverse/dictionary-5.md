@@ -730,6 +730,369 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 2597,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2524,
+    "sourceX": 4,
+    "sourceY": 84,
+    "pixelX": 64,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 2",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2598,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2525,
+    "sourceX": 5,
+    "sourceY": 84,
+    "pixelX": 80,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 3",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2599,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2526,
+    "sourceX": 6,
+    "sourceY": 84,
+    "pixelX": 96,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 4",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2600,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2527,
+    "sourceX": 7,
+    "sourceY": 84,
+    "pixelX": 112,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 5",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2601,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2528,
+    "sourceX": 8,
+    "sourceY": 84,
+    "pixelX": 128,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 6",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2602,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2529,
+    "sourceX": 9,
+    "sourceY": 84,
+    "pixelX": 144,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 1",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2603,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2530,
+    "sourceX": 10,
+    "sourceY": 84,
+    "pixelX": 160,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 2",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2604,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2531,
+    "sourceX": 11,
+    "sourceY": 84,
+    "pixelX": 176,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 3",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2605,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2532,
+    "sourceX": 12,
+    "sourceY": 84,
+    "pixelX": 192,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 4",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2606,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2533,
+    "sourceX": 13,
+    "sourceY": 84,
+    "pixelX": 208,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 5",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2607,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2534,
+    "sourceX": 14,
+    "sourceY": 84,
+    "pixelX": 224,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 6",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2610,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -1635,376 +1998,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "userLocked": true,
       "defaultLayer": "upper",
       "passage": "solid",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2639,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 40,
-    "sourceX": 4,
-    "sourceY": 6,
-    "pixelX": 64,
-    "pixelY": 96,
-    "width": 16,
-    "height": 16,
-    "targetX": 29,
-    "targetY": 87,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "낮은 돌 우물",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2640,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 41,
-    "sourceX": 5,
-    "sourceY": 6,
-    "pixelX": 80,
-    "pixelY": 96,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "낮은 돌 우물",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2641,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 46,
-    "sourceX": 4,
-    "sourceY": 7,
-    "pixelX": 64,
-    "pixelY": 112,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "낮은 돌 우물",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2642,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 47,
-    "sourceX": 5,
-    "sourceY": 7,
-    "pixelX": 80,
-    "pixelY": 112,
-    "width": 16,
-    "height": 16,
-    "targetX": 2,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "낮은 돌 우물",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2643,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 48,
-    "sourceX": 0,
-    "sourceY": 8,
-    "pixelX": 0,
-    "pixelY": 128,
-    "width": 16,
-    "height": 16,
-    "targetX": 3,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "덩굴 아치",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "passable",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2644,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 49,
-    "sourceX": 1,
-    "sourceY": 8,
-    "pixelX": 16,
-    "pixelY": 128,
-    "width": 16,
-    "height": 16,
-    "targetX": 4,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "덩굴 아치",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "passable",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2645,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 50,
-    "sourceX": 2,
-    "sourceY": 8,
-    "pixelX": 32,
-    "pixelY": 128,
-    "width": 16,
-    "height": 16,
-    "targetX": 5,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "벽걸이 등불",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "passable",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2646,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 52,
-    "sourceX": 4,
-    "sourceY": 8,
-    "pixelX": 64,
-    "pixelY": 128,
-    "width": 16,
-    "height": 16,
-    "targetX": 6,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "낚시 바구니",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "solid",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2647,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 54,
-    "sourceX": 0,
-    "sourceY": 9,
-    "pixelX": 0,
-    "pixelY": 144,
-    "width": 16,
-    "height": 16,
-    "targetX": 7,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "덩굴 아치",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "passable",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2648,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 55,
-    "sourceX": 1,
-    "sourceY": 9,
-    "pixelX": 16,
-    "pixelY": 144,
-    "width": 16,
-    "height": 16,
-    "targetX": 8,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "덩굴 아치",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "passable",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2649,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_shared_forest_village_objects",
-    "sourceTile": 60,
-    "sourceX": 0,
-    "sourceY": 10,
-    "pixelX": 0,
-    "pixelY": 160,
-    "width": 16,
-    "height": 16,
-    "targetX": 9,
-    "targetY": 88,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "징검돌",
-      "source": "user",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "passage": "passable",
-      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
       "layerBacking": "none"
     }
   }

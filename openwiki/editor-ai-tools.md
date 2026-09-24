@@ -72,6 +72,7 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
   참조 칩셋의 47개 연결 조각은 기존 `tileGrafts` 경로로 현재 마지막 타일 뒤에 추가한다.
   `forest_harmony_grove_47`은 독립 그룹이다. 옛 1617·수관 그룹·잠긴 메타데이터·기존 graft는
   덮지 않으며, 사용자 확장 슬롯이 있어도 그 뒤에 추가한다. 조회/그래픽 미리보기는 변이하지 않는다.
+  47칸 뒤 11칸은 수관 속의 깊이 변형(`interiorVariants`, 잎 채움)이다. 페인터가 끝에 `shadeForestCanopy` 로 고른다.
 - 승인 원본은 `forest-cliff-village-atlas.png`; 새 그림 생성이나 참조 맵 수정은 없다.
   Phaser preload·공통 graft bake·내보내기가 같은 번들 소스를 사용한다.
   `authorVillageScope`는 이 결정론적 추가 결과만 허용하며 다른 칩셋 변경은 계속 거부한다.

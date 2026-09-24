@@ -6,7 +6,8 @@ import { paintContouredForest, refitForestTrunks } from "@/editor/tools/village/
 import { forestTrunkCandidates } from "@/editor/tools/village/forestTrunkTiles";
 import { prepareVillageTreeKit } from "@/editor/tools/village/treeKit";
 import { createForestHarmonyTileset } from "@/project/defaults/forestHarmony";
-import { ensureForestGroveTileset, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
+import { ensureForestGroveInterior, ensureForestGroveTileset, forestCanopyTiles, FOREST_GROVE_GROUP } from "@/project/defaults/forestGrove";
+import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { isPassable } from "@/project/collision";
 import { deserialize, serialize } from "@/project/io";
 import type { GameMap } from "@/project/types";
@@ -100,7 +101,7 @@ describe("whole trunks under every canopy edge", () => {
 
   it("never leaves a root under a canopy tile or a half trunk at a run's end", () => {
     const map = blank(72, 56), group = grove();
-    const canopy = new Set(Object.values(group.variantMap));
+    const canopy = forestCanopyTiles(group);
     for (const seed of [3, 17, 91]) {
       map.lowerTiles.fill(240); map.upperTiles.fill(-1);
       const result = paintContouredForest(map, { x: 0, y: 0, w: 72, h: 56 }, group, () => true, seed, 0.55);
@@ -132,5 +133,67 @@ describe("whole trunks under every canopy edge", () => {
     expect([5, 6, 7].map(y => map.lowerTiles.slice(at(6, y), at(11, y)))).toEqual([
       [1422, 1423, 1424, 1454, 1455], [1426, 1427, 1428, 1458, 1459], [1430, 1431, 1432, 1462, 1463]]);
     expect(map.upperTiles.filter(tile => tile !== -1)).toHaveLength(20);
+  });
+});
+
+describe("leaf interior of the canopy by depth", () => {
+  const blank = (width: number, height: number) => ({ id: "wood", name: "wood", width, height, tileSize: 16,
+    tilesetId: "forest_harmony", lowerTiles: Array(width * height).fill(240), upperTiles: Array(width * height).fill(-1), events: [] }) as unknown as GameMap;
+  const grove = () => {
+    const tileset = createForestHarmonyTileset();
+    ensureForestGroveTileset(tileset);
+    return { tileset, group: tileset.autotileGroups!.find(group => group.id === FOREST_GROVE_GROUP)! };
+  };
+
+  it("keeps the 47 canopy slots and puts the depth variants in the canopy's padding row", () => {
+    const { tileset, group } = grove();
+    expect(group.variantMap["255"]).toBe(2568);
+    expect(group.interiorVariants).toEqual([[2568, 2597, 2598, 2599, 2600, 2601], [2602, 2603, 2604, 2605, 2606, 2607]]);
+    expect(group.memberTileIds).toEqual(Array.from({ length: 58 }, (_, i) => 2550 + i));
+    expect(tileset.count).toBe(2610);
+    for (let tile = 2597; tile <= 2607; tile++) expect(tileset.priority[tile]).toBe("upper");
+  });
+
+  it("upgrades a grove made before the interior exactly like a fresh one", () => {
+    const fresh = grove().tileset, old = structuredClone(fresh);
+    const group = old.autotileGroups!.find(g => g.id === FOREST_GROVE_GROUP)!;
+    group.memberTileIds = group.memberTileIds.slice(0, 47);
+    group.connectTileIds = group.connectTileIds!.slice(0, 47);
+    delete group.interiorVariants;
+    old.tileGrafts = old.tileGrafts!.filter(graft => graft.targetTile < 2597);
+    for (let tile = 2597; tile < 2610; tile++) old.tileMeta![tile] = structuredClone(old.tileMeta![2550]!);
+    expect(ensureForestGroveInterior(old)).toBe(true);
+    expect(old).toEqual(fresh);
+    expect(ensureForestGroveInterior(old)).toBe(false);
+  });
+
+  it("shades full cells by depth, stably, and the engine and refit keep them", () => {
+    const { group } = grove(), W = 72, H = 56;
+    const map = blank(W, H), again = blank(W, H);
+    paintContouredForest(map, { x: 0, y: 0, w: W, h: H }, group, () => true, 17, 0.55);
+    paintContouredForest(again, { x: 0, y: 0, w: W, h: H }, group, () => true, 17, 0.55);
+    expect(again).toEqual(map);
+    const canopy = forestCanopyTiles(group), [shallow, deep] = group.interiorVariants!;
+    const on = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && canopy.has(map.upperTiles[y * W + x]!);
+    const all = (x: number, y: number, r: number) => {
+      for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (!on(x + dx, y + dy)) return false;
+      return true;
+    };
+    let deepCells = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+      const tile = map.upperTiles[y * W + x]!;
+      if (!canopy.has(tile)) continue;
+      if (!all(x, y, 1)) expect([...shallow!, ...deep!]).not.toContain(tile);
+      else if (all(x, y, 2)) { expect(deep).toContain(tile); deepCells++; }
+      else expect(shallow).toContain(tile);
+    }
+    expect(deepCells).toBeGreaterThan(50);
+    const refit = structuredClone(map);
+    refitForestTrunks(refit, { x: 0, y: 0, w: W, h: H }, group, 240,
+      (x, y) => refit.lowerTiles[y * W + x] === 240 && refit.upperTiles[y * W + x] === -1);
+    expect(refit).toEqual(map);
+    const view = { width: W, height: H, lowerTiles: [...map.upperTiles] };
+    shapeAutotileGroupAround(view, group, Array.from({ length: 300 }, (_, i) => ({ x: (i * 7) % W, y: (i * 13) % H })));
+    expect(view.lowerTiles).toEqual(map.upperTiles);
   });
 });

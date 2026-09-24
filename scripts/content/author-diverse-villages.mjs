@@ -404,6 +404,8 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
     const leaks = [...below].map((k) => k.split(",").map(Number)).filter(([x, y]) => cliffPlan.cells[point(x, y)] === "plateau");
     assert.equal(leaks.length, 0, "Terrace reachable without stairs " + spec.id + " " + JSON.stringify(leaks.slice(0, 6)));
   }
+  // Leaf interior by depth over the finished canopy (forestGrove.ts); a pure function of the canopy mask.
+  forest.shadeForestCanopy(m, group("forest_harmony_grove_47"));
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance, civicPlaces:civic.zones, landmarks };
   result.maps[m.id] = m;
   result.plans.push({ ...spec, falls, houses, landmarks, placements, activitySites, civicPlaces:civic.zones, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });

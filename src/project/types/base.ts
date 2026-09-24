@@ -548,6 +548,10 @@ export interface AutotileGroup {
   triggerTileIds?: number[];
   // 이웃 비트마스크(10진수 문자열) → 배치할 타일 인덱스 매핑.
   variantMap: Record<string, number>;
+  // 8방향 이웃이 모두 이어진 속 칸의 깊이별 대체 타일(모두 memberTileIds 에도 든다).
+  // [0] 2칸 안에 이어지지 않은 칸이 있는 속, [1] 그보다 깊은 속. 칠하는 도구가 칸 위치 해시로 고른다
+  // (autotileEngine.shadeAutotileInterior). 굽이숲 수관의 잎 채움(forestGrove.ts)이 쓴다.
+  interiorVariants?: number[][];
 }
 
 export interface SpriteDef {

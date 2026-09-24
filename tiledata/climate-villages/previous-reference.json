@@ -30,5 +30,21 @@
   {
     "id": "climate-autumn-villages-v2",
     "revision": "290825-f2917d54-10b95ad2"
+  },
+  {
+    "id": "climate-snow-villages-v3",
+    "revision": "401749-e7e4e750-3f925d38"
+  },
+  {
+    "id": "climate-volcano-villages-v3",
+    "revision": "443273-b9094b04-15d6f998"
+  },
+  {
+    "id": "climate-desert-villages-v3",
+    "revision": "263313-5c9c7fd5-4360943f"
+  },
+  {
+    "id": "climate-autumn-villages-v3",
+    "revision": "290621-a185f447-97f8e4d1"
   }
 ]

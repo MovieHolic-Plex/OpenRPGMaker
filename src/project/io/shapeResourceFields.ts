@@ -301,6 +301,13 @@ export function validateTileset(id: string, value: unknown): void {
       for (const [mask, variant] of Object.entries(variantMap)) {
         requireNumber(`tileset ${id}.autotileGroups[${index}].variantMap[${mask}]`, variant);
       }
+      if (record.interiorVariants !== undefined) {
+        for (const [depth, tier] of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants`, record.interiorVariants).entries()) {
+          for (const tileId of requireArray(`tileset ${id}.autotileGroups[${index}].interiorVariants[${depth}]`, tier)) {
+            requireNumber(`tileset ${id}.autotileGroups[${index}].interiorVariants[${depth}][]`, tileId);
+          }
+        }
+      }
     }
   }
   if (tileset.interiorRoomKinds !== undefined) {

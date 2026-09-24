@@ -225,7 +225,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-trunks-v12`(문서52개/이미지30개)과 `concept-villages-v3`(문서27개/이미지3개)이다.
+현재 용도 ID는 `diverse-villages-canopy-v13`(문서52개/이미지30개)과 `concept-villages-v4`(문서27개/이미지3개)이다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -400,3 +400,13 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 - 2026-09-24 후속(사용자: 「여전히 이상함」): 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이라 뺐다.
   최소 폭 3, 폭 1·2 밑변은 이웃 열 높이로 합친다. 분류 `diverse-villages-trunks-v12`·`concept-villages-v3`·`climate-*-villages-v3`·`field-routes-*-v3`, 지역 revision 다양한 마을 12·기후/필드 3.
 
+### 수관 잎 채움 (2026-09-24)
+
+굽이숲 수관 속이 검은 판이라 딱딱해 보였다(사용자). 승인 시안 K: 평평한 속 색만 테두리 자신의 잎 띠로 채우고, 깊이로 어둡게 한다
+(가장자리 칸의 속 ×0.78, 얕은 속 ×0.60, 깊은 속 ×0.46). 규칙·칸 번호·재현 명령은 `tiledata/forest-villages/canopy-leaves/README.md`.
+- 오토타일 그룹에 `interiorVariants`(깊이 순, `types/base.ts`)를 더했다: 얕은 속 `[2568, 2597..2601]`, 깊은 속 `[2602..2607]`(수관 시작 2550 기준, 모든 시트 공통).
+  모두 `memberTileIds`/`connectTileIds` 에 들어 있어 이웃·줄기·지우기 판정은 수관으로 본다. 엔진(`shapeAutotileGroupAround`)은 속 칸의 깊이 변형을 되돌리지 않는다.
+- 칠하는 쪽: `paintContouredForest`·`paintForestGroves`·`refitForestTrunks` 가 끝에 `shadeForestCanopy`(→ `shadeAutotileInterior`)로 속 칸을 칸 위치 해시로 고른다. 결정적이라 다시 칠해도 같다.
+- 옛 그룹(속 변형 없음)은 불러올 때 `ensureForestGroveInterior`(`ensureBundledTilesets`)가 채움 칸에 더한다. 기후 시트는 그림이 구워져 있어 이식 없이 번호만 더한다.
+- 분류 `diverse-villages-canopy-v13`·`concept-villages-v4`·`climate-*-villages-v4`·`field-routes-*-v4`, 지역 revision 다양한 마을 13·기후/필드 4. 옛 v12/v3 는 은퇴 목록에 기록.
+- 그림이 바뀐 것은 아틀라스 원본 칸이라, 다시 저작하지 않은 옛 참고 맵(절벽마을·판타지 장소 등)도 가장자리와 기본 속(2568, 얕은 속 한 무늬)은 새 모양으로 보인다. 깊이 변형은 새로 칠한 24곳에만 있다.

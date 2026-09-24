@@ -2,9 +2,11 @@
 # Tile numbers stay identical to forest_harmony; only pixels change. Snow appends frozen copies of the water tiles.
 # Usage: python3 scripts/content/build-climate-chipsets.py   (writes public/assets/climate-villages/*.png + tiledata/climate-villages/sheets.json)
 # Climates: snow, volcano, desert (sand, sandstone cliffs, dry scrub, oasis water), autumn (gold grass, autumn leaves).
-import json, re, pathlib
+import json, re, pathlib, sys
 import numpy as np
 from PIL import Image
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "lib"))
+import canopy_leaves
 
 ROOT = pathlib.Path.cwd()
 cat = json.load(open(ROOT / "tiledata/forest-villages/diverse/catalog.json"))
@@ -17,7 +19,11 @@ def sheet(key):
     if key not in _sheets: _sheets[key] = Image.open(ROOT / "public" / TEX[key]).convert("RGBA")
     return _sheets[key]
 
+# The canopy is repainted flat (as drawn before the leaf fill) and gets this sheet's own leaf fill afterwards.
+FLAT_CANOPY = dict(zip(range(2550, 2597), canopy_leaves.flat_tiles()))
+
 def tile_img(t):
+    if t in FLAT_CANOPY: return FLAT_CANOPY[t]
     g = GRAFT.get(t)
     key, src = (g["sourceChipset"], g["sourceTile"]) if g else (TS["image"]["id"], t)
     sh = sheet(key); per = sh.width // 16
@@ -216,13 +222,22 @@ def autumn(sheet):
     out[..., :3][r] = red[r]
     return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
 
+# Leaf interior (lib/canopy_leaves.py), last step per sheet: the 47 canopy slots in place plus the 11 depth variants
+# of the full cell, in the slots the catalog grove lists (2597..2607, its padding row: ensureForestGroveInterior).
+_grove = next(g for g in TS["autotileGroups"] if g["id"] == "forest_harmony_grove_47")
+_tiers = canopy_leaves.CANOPY["interior"]["tiers"]
+_slot = dict(zip(_tiers[0] + _tiers[1], _grove["interiorVariants"][0] + _grove["interiorVariants"][1]))
+INTERIOR = [_slot[47 + k] for k in range(len(canopy_leaves.INTERIOR))]
+MASKS = canopy_leaves.flat_masks()
+def leaves(sheet): return canopy_leaves.bake(sheet, list(range(2550, 2597)), INTERIOR, masks=MASKS)
+
 baked = bake(N + len(WATER))
 out_dir = ROOT / "public/assets/climate-villages"; out_dir.mkdir(parents=True, exist_ok=True)
-snowy = freeze(snow(baked), WATER, N)
+snowy = leaves(freeze(snow(baked), WATER, N))
 snowy.save(out_dir / "snow-chipset.png", optimize=True)
-volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "volcano-chipset.png", optimize=True)
-desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "desert-chipset.png", optimize=True)
-autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "autumn-chipset.png", optimize=True)
+leaves(volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16))).save(out_dir / "volcano-chipset.png", optimize=True)
+leaves(desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16))).save(out_dir / "desert-chipset.png", optimize=True)
+leaves(autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16))).save(out_dir / "autumn-chipset.png", optimize=True)
 manifest = {
     "source": "tiledata/forest-villages/diverse/catalog.json",
     "baseCount": N,

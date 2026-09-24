@@ -205,6 +205,9 @@ export function shapeAutotileGroupAround(
   const isConnected = (tile: number): boolean => connect.has(tile);
   const neighborhood = group.neighborhood ?? 4;
   const offsets = neighborhood === 8 ? RECHECK_OFFSETS_8 : RECHECK_OFFSETS;
+  // A depth variant of the full cell is already right for a full mask; only shadeAutotileInterior re-picks it.
+  const interior = new Set((group.interiorVariants ?? []).flat());
+  const full = group.variantMap[String(neighborhood === 8 ? 255 : 15)];
   const visited = new Set<string>();
   for (const point of points) {
     for (const offset of offsets) {
@@ -218,7 +221,60 @@ export function shapeAutotileGroupAround(
       if (typeof current !== "number" || !members.has(current)) continue;
       const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood);
       const variant = autotileVariantForMask(group, mask);
+      if (variant === full && interior.has(current)) continue;
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }
   }
+}
+
+export interface AutotileArea {
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+}
+
+/** Position hash for variant choice: stable across repaints, no per-call randomness. */
+function cellHash(x: number, y: number): number {
+  let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ 0x2f6b1d;
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return (n ^ (n >>> 16)) >>> 0;
+}
+
+/**
+ * Depth-shaded interior (AutotileGroup.interiorVariants): every full cell (all 8 neighbours connected) in the
+ * area gets a depth variant — tier 0 when an unconnected cell or the map edge lies within Chebyshev distance 2,
+ * tier 1 when deeper — chosen by a hash of its position, so painting the same mask twice gives the same tiles.
+ * Only cells holding the full variant or one of its depth variants are touched; edges stay as painted.
+ * Returns the number of cells written.
+ */
+export function shadeAutotileInterior(map: AutotileMapView, group: AutotileGroup, area?: AutotileArea): number {
+  const tiers = group.interiorVariants?.filter((tier) => tier.length > 0) ?? [];
+  const full = group.variantMap["255"];
+  if (tiers.length === 0 || typeof full !== "number" || (group.neighborhood ?? 4) !== 8) return 0;
+  const connect = connectSet(group);
+  const own = new Set<number>([full, ...tiers.flat()]);
+  const on = (x: number, y: number): boolean => {
+    const tile = tileAt(map, x, y);
+    return typeof tile === "number" && connect.has(tile);
+  };
+  const x0 = Math.max(0, area?.x ?? 0), y0 = Math.max(0, area?.y ?? 0);
+  const x1 = Math.min(map.width, area ? area.x + area.w : map.width), y1 = Math.min(map.height, area ? area.y + area.h : map.height);
+  let written = 0;
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const index = y * map.width + x;
+    if (!own.has(map.lowerTiles[index]!)) continue;
+    let depth = 2;
+    for (let dy = -2; dy <= 2 && depth > 0; dy++) for (let dx = -2; dx <= 2; dx++) {
+      if (on(x + dx, y + dy)) continue;
+      depth = Math.min(depth, Math.max(Math.abs(dx), Math.abs(dy)) - 1);
+      if (depth === 0) break;
+    }
+    // A cell with an open neighbour is an edge, not an interior cell: leave it to the variant map.
+    if (depth === 0) continue;
+    const tier = tiers[Math.min(depth - 1, tiers.length - 1)]!;
+    const tile = tier[cellHash(x, y) % tier.length]!;
+    if (map.lowerTiles[index] !== tile) { map.lowerTiles[index] = tile; written++; }
+  }
+  return written;
 }

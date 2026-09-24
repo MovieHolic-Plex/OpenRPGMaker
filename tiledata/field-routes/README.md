@@ -36,5 +36,6 @@ BASE=http://127.0.0.1:<port> node scripts/qa/capture-climate-villages.mjs field-
 - 절벽 끝은 반드시 숲에 묻는다. 숲 줄기 수리가 얇은 숲 가장자리를 깎아 절벽 끝이 뚫리면(계단 없이 윗단에 닿으면) 검사가 실패하고, 저작기는 숲 무늬 씨앗만 하나 올려 다시 칠한다. 쓴 씨앗은 `validation.json`의 `forestSeed`.
 - 수관 안에 갇힌 40칸 미만 풀밭은 수관으로 메운다(`sealedPocketCells`).
 - 기후 편집(얼리기·화산 봉우리·사막 식물)은 기후 마을과 같은 `scripts/content/lib/climate-edits.mjs`.
-- 분류는 `field-routes-*-v3`(나무 몸통 개정: v2 정확한 폭, v3 폭 2 조각 제거). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedFieldRouteReferences.json tiledata/field-routes/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureFieldRouteReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
+- 분류는 `field-routes-*-v4`(v2 정확한 폭, v3 폭 2 조각 제거, v4 수관 잎 채움). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedFieldRouteReferences.json tiledata/field-routes/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureFieldRouteReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
 - 줄기는 수관 밑변과 정확히 같은 폭(`forestTrunkTiles.ts`). 밑변보다 넓게 옆 수관 밑으로 넣거나 옛 4칸 마감을 쓰면 몸통이 반쯤 잘려 보이고, 폭 2 조각은 가는 뿌리가 매달린 것처럼 보인다(최소 폭 3). 숲 수관에 갇힌 빈터를 메울 때는 그 위 수관 밑의 줄기 첫 행도 함께 지운다. 다시 그린 뒤 `node scripts/content/check-forest-trunks.mjs` 가 0 을 내야 한다.
+- 수관 속은 잎으로 채운 깊이 변형이다(얕은 속 2568·2597~2601, 깊은 속 2602~2607 — [수관 잎 채움](../forest-villages/canopy-leaves/README.md)). 숲 윤곽 붓이 칠할 때 고르고, 빈터를 메운 뒤에는 저작기가 `shadeForestCanopy` 로 다시 고른다.

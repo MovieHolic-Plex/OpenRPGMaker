@@ -32,7 +32,7 @@ for (const plan of catalog.plans) {
     name: plan.name,
     kind: "completed-map",
     regionKind: "settlement",
-    revision: 12,
+    revision: 13,
     width: map.width,
     height: map.height,
     tilesetId: map.tilesetId,
@@ -47,6 +47,7 @@ for (const plan of catalog.plans) {
       ...concept ? ["집마다 창문은 한 종류(85 격자·86 덧문·87 아치)이고, 84 스테인드글라스는 교회, 88 깨진 창은 폐가에만 쓴다."] : [],
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
+      "숲 수관 속은 잎으로 채운 깊이 변형을 쓴다: 8방향이 모두 수관인 칸은 2칸 안에 빈 땅이 있으면 얕은 속(2568·2597~2601), 없으면 깊은 속(2602~2607).",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
       `공용 AI 문서 「${categoryName}」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다.`
     ],

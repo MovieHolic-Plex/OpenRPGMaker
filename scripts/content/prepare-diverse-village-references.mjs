@@ -26,7 +26,7 @@ doc("guide", "네 마을을 다르게 만드는 기준", `# 산촌·절벽·포�
 1. 지형과 생활권부터 고른다. 산촌은 한 줄 절벽 위 윗단과 아랫마을, 절벽마을은 중첩 대지와 높이별 생활권, 포구는 남·동쪽 물굽이와 선착장이다.
 2. 같은 직선 길 양쪽에 집을 대칭 배치하지 않는다. 집마다 x,y를 지정하고 문앞을 길의 가지로 연결한다. 각 마을 문서에 좌표와 폭·높이를 고정 기록했다.
 3. 절벽의 내부·외부와 계단 착지칸을 먼저 확정한다. 윗단은 계단으로만 오른다: 절벽 양 끝을 숲에 묻고 계단을 막은 채 윗단에 닿는지 검사한다(개정8). 다음 물→건물 전체 조립→길→숲 전체 조립→생활 소품→독립 나무 순서. 소품은 집 소유자와 생활 마당을 지정하고 묶음 전체의 접근을 검사한다. 실패한 묶음은 전체 철회한다.
-4. 집의 용도와 할 일을 명시하고 필요한 물건을 실제 기준 대상 가까이에 놓는다. 집 순서로 활동을 교대하지 않는다. 목재는 작업대, 어구는 실제 부두, 허수아비는 실제 밭에 연결한다. 중앙 무작위 배치는 금지한다. 구체적인 상대좌표와 충돌 조건은 생활 마당 문서에 있다. 큰 숲 내부는 검은 생략 수관, 열린 구역은 잔디·길·생활 소품이다.
+4. 집의 용도와 할 일을 명시하고 필요한 물건을 실제 기준 대상 가까이에 놓는다. 집 순서로 활동을 교대하지 않는다. 목재는 작업대, 어구는 실제 부두, 허수아비는 실제 밭에 연결한다. 중앙 무작위 배치는 금지한다. 구체적인 상대좌표와 충돌 조건은 생활 마당 문서에 있다. 큰 숲 내부는 잎으로 채운 수관 속(가장자리에서 멀수록 어두운 두 단, 숲·가구 문서), 열린 구역은 잔디·길·생활 소품이다.
 5. 우물터·공지·길 안내·정원·환대도 목적이다. 공동 공간 문서와 civic 입력에 지정한 장소에만 완전한 소품을 더하고 실제 사용칸과 출입구 통행을 재검사한다.
 6. 입력/정답: 각 마을의 cliffs, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
 7. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
@@ -153,6 +153,9 @@ ${block({ left: [[1422, 1423, 1424], [1426, 1427, 1428], [1430, 1431, 1432]], bo
 이웃 bit 순서 N,E,S,W,NE,SE,SW,NW. 이웃 수관일 때 bit=1. 아래 variantMap으로 외곽/안쪽 모서리를 선택한다.
 ${block(t.autotileGroups.find((g) => g.id === "forest_harmony_grove_47").variantMap)}
 
+수관 속 잎 채움(개정13): 수관 안쪽은 검은 판이 아니라 가장자리와 같은 잎으로 채워져 있다. 가장자리 47칸은 번호 그대로이고 평평했던 속 부분만 잎(밝기 ×0.78)이 되었다. 8방향이 모두 수관인 속 칸(mask 255)은 깊이로 두 단을 쓴다: 2칸 안(체비쇼프 거리 2)에 수관이 아닌 칸이나 맵 밖이 있으면 **얕은 속**(×0.60), 없으면 **깊은 속**(×0.46). 각 단의 여섯 칸 중 하나를 칸 위치 해시로 고른다(오토타일 그룹의 interiorVariants, 첫 칸 2568이 variantMap[255]). 모든 변형은 상위·통행 불가 수관이고 이웃 판정·줄기 맞춤에서 수관으로 친다. 손으로 칠할 때는 2568만 놓아도 된다 — paintContouredForest·refitForestTrunks와 \`node scripts/content/shade-forest-canopy.mjs <catalog>\`가 같은 규칙으로 바꾼다. 가장자리 칸(mask 255 아닌 칸)에는 속 변형을 놓지 않는다.
+${block({ interiorVariants: t.autotileGroups.find((g) => g.id === "forest_harmony_grove_47").interiorVariants, shallow: "open ground within 2 cells", deep: "no open ground within 2 cells" })}
+
 입력 산촌 숲 영역 rect=(2,48,16,14). 아래 upper의 수관 번호가 마스크 true이고 lower는 뿌리/바닥 정답이다. 전체 산촌 그림의 왼쪽 아래와 대조한다.
 ${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
 
@@ -203,8 +206,8 @@ const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png"))
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
 const conceptImages = new Set(conceptPlans.map((p) => p.id));
-const category = { id: "diverse-villages-trunks-v12", name: "다양한 마을 · 산촌·절벽·포구·강마을 (나무 몸통 개정12)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
-const concept = { id: "concept-villages-v3", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (나무 몸통 개정3)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
+const category = { id: "diverse-villages-canopy-v13", name: "다양한 마을 · 산촌·절벽·포구·강마을 (수관 잎 채움 개정13)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
+const concept = { id: "concept-villages-v4", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (수관 잎 채움 개정4)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
 for (const k of [category, concept]) if (k.documents.length > 64 || k.documents.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit " + k.id);
 fs.writeFileSync(target, JSON.stringify([category, concept]) + "\n");
 console.log({ documents: docs.length, conceptDocuments: conceptDocs.length, images: category.images.length, conceptImages: concept.images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });
