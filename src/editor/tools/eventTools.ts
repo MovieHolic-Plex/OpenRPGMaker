@@ -944,8 +944,9 @@ const placeNpc: ToolDefinition = {
     // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 타일 그림판 몰림을 줄인다.
     const normalizationWarnings: string[] = [];
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
-    const recurring = "query" in graphicSpec ? recurringCharacterLook(draft, map.id, name) : undefined;
-    if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${graphicSpec.query}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
+    const specQuery = "query" in graphicSpec ? graphicSpec.query : undefined;
+    const recurring = specQuery !== undefined ? recurringCharacterLook(draft, map.id, name) : undefined;
+    if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
     const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
@@ -2178,7 +2179,7 @@ function chaseStepMs(speed: number, frequency: number): number {
  * 은신처 칸들을 실제 은신 이벤트로 만든다(configure_object_behavior 의 hiding 과 같은 페이지 모양).
  * 칸에 조사 이벤트가 있으면 그 페이지들을 은신처로 바꾸고, 없으면 투명 이벤트를 새로 둔다.
  */
-function placeHidingSpots(draft: Project, map: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
+function placeHidingSpots(_draft: Project, map: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
   const eventIds: string[] = [];
   const warnings: string[] = [];
   if (!Array.isArray(raw)) return { eventIds, warnings };
