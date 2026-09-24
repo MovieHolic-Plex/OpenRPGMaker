@@ -90,6 +90,8 @@ export interface TurnResult {
   proposedCalls: ProposedCall[]; // 성공한 쓰기 툴콜(수락 시 store에 적용할 시퀀스).
   stoppedReason: "final" | "max-tool-calls" | "token-budget" | "error" | "aborted";
   error?: string;
+  /** Copyable stack dump. Set only when the failure still had the thrown value. */
+  errorDetail?: string;
   /** Independent approval of this exact draft, never a persistence receipt. */
   review?: ResultReview;
   /** 어려운 요청의 다층 To-do 진행 상태(있으면 UI/브리지에 노출). */
