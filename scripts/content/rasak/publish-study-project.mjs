@@ -74,6 +74,7 @@ try {
   project.tilesets = {};
   project.assets.uploaded = {};
   const maps = {};
+  const manifests = {};
   const scores = [];
   for (const b of bundles.bundles) {
     const dir = path.join(bakedDir, b.id);
@@ -93,6 +94,7 @@ try {
       });
     }
     const { asset, tileset } = tilesetFor(manifest, atlasBytes, coverage);
+    manifests[tileset.id] = manifest;
     project.assets.uploaded[asset.id] = asset;
     project.tilesets[tileset.id] = tileset;
   }
@@ -105,6 +107,21 @@ try {
     if (fs.existsSync(score)) scores.push(JSON.parse(fs.readFileSync(score, 'utf8')));
   }
   if (!Object.keys(maps).length) throw Error('No reconstructed maps found');
+  // 4층 통행은 위에서부터 ★ 를 건너뛰고 처음 만난 타일이 정한다. A 시트 장식(휴리스틱상 통과)이 2층에 있으면
+  // 막힌 1층(물·벽) 칸을 열어 버린다 — 합성 판은 「구성 중 하나라도 막히면 막힘」이었다. 그래서 2층에 쓰인
+  // 통과 A 타일은 ★(우선순위 upper)로 둬 아래층이 칸을 정하게 한다. 1·2층 그리기는 우선순위를 보지 않는다.
+  if (variant === 'layers') {
+    for (const m of Object.values(maps)) {
+      const tileset = project.tilesets[m.tilesetId];
+      const entries = manifests[m.tilesetId].entries;
+      for (const t of m.lowerOverlayTiles ?? []) {
+        if (t < 0 || !/^A[1-5]$/.test(entries[t]?.slot ?? '') || tileset.tileMeta[t].passage !== 'passable') continue;
+        if (tileset.priority[t] === 'upper') continue;
+        tileset.priority[t] = 'upper';
+        tileset.tileMeta[t].description += ' · 2층 장식은 ★ — 아래층이 통행을 정한다';
+      }
+    }
+  }
   const ids = Object.keys(maps);
   project.maps = maps;
   project.startMapId = ids[0];

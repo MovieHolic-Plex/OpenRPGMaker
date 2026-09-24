@@ -59,6 +59,8 @@ node scripts/content/rasak/publish-study-project.mjs --layers --baked ~/third-pa
 
 A1(물)·A3·A4(벽) 막힘, A2·A5·그림자 통과, B~E·추가 시트는 칸의 불투명 비율이 50% 넘으면 막힘,
 합성 칸은 구성 중 하나라도 막히면 막힘. 우선순위는 B~E·추가 시트·upper 합성이 upper.
+4층 판(`--layers`)은 2층에 쓰인 통과 A 타일을 ★(우선순위 upper)로 둔다 — 통행은 위에서부터 ★ 를 건너뛰므로
+그래야 막힌 1층(물·벽)이 칸을 정해 합성 판과 통행 격자가 같다(5맵 `canMove` 비교: 60칸 차이 → 0칸).
 
 ## 남은 일
 
