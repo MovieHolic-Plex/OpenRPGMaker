@@ -13,6 +13,10 @@ import type { Finding } from "./types";
 import { visitAllCommands, type RawCommand } from "./walk";
 import { companionJoins } from "./progression";
 
+/** 보스를 만날 즈음의 넉넉한 레벨(3층 던전을 한 번 돌고 온 파티). */
+const BOSS_CHECK_LEVEL = 10;
+/** 잡몹 전멸 검사 레벨 — 첫 던전 중반. */
+const WIPE_CHECK_LEVEL = 5;
 const DUNGEON_NAME = /던전|동굴|광산|갱도|층|탑|유적|지하|dungeon|cave|mine|floor/iu;
 /** 선택지 분기에서 「대가(골드)」 를 받고 돌려주는 것으로 인정하는 명령. */
 const GRANTS = new Set(["changeItem", "changeEquipment", "shop", "inn", "recoverAll", "changeParty", "changeActorParameter", "changeParameter", "learnSkill", "changeSkill", "transfer", "setSwitch", "setSelfSwitch", "changeVariable", "setVariable", "battleProcessing", "giveMonster", "changeExp", "changeLevel"]);
@@ -114,8 +118,8 @@ export function checkJrpg(project: Project): Finding[] {
     if (command.kind === "battleProcessing" && typeof command.troopId === "string" && !encounterTroops.has(command.troopId)) bossTroops.add(command.troopId);
   });
   if (roster.length > 0) {
-    const simulate = (troopId: string) => {
-      try { return simulateBattle({ project, troopId, heroLevel: 1, partyActorIds: roster, n: 3, seed: 1 }); } catch { return undefined; }
+    const simulate = (troopId: string, heroLevel = 1) => {
+      try { return simulateBattle({ project, troopId, heroLevel, partyActorIds: roster, n: 3, seed: 1 }); } catch { return undefined; }
     };
     const partyHp = battlers.reduce((sum, battler) => sum + battler.maxHp, 0);
     const harmless: string[] = [];
@@ -123,12 +127,28 @@ export function checkJrpg(project: Project): Finding[] {
       const result = simulate(troopId);
       if (result && result.winRate === 1 && partyHp > 0 && result.avgHpRemaining >= partyHp) harmless.push(troops.get(troopId)?.name ?? troopId);
     }
+    // 반대쪽 — 합류가 끝난 파티가 Lv5 에도 잡몹 한 무리에 전멸한다면 층을 지나갈 수 없다(기본 DB 적을 그대로 끌어다 쓴 경우).
+    const wipes: string[] = [];
+    for (const troopId of encounterTroops) {
+      const result = simulate(troopId, WIPE_CHECK_LEVEL);
+      if (result && result.winRate === 0) wipes.push(troops.get(troopId)?.name ?? troopId);
+    }
+    if (wipes.length > 0) {
+      findings.push({ severity: "warning", code: "jrpg-encounters-wipe-party", message: `인카운터 적 그룹 ${wipes.length}/${encounterTroops.size}개에 Lv${WIPE_CHECK_LEVEL} 파티(${roster.length}명, 합류 전원)가 모의전 3판 모두 전멸합니다: ${wipes.slice(0, 6).join(", ")} — 기본 DB 적(다른 척도)을 그대로 쓰지 않았는지, 적 능력치를 파티 척도에 맞췄는지 확인하세요.` });
+    }
     if (harmless.length > 0) {
       findings.push({ severity: "warning", code: "jrpg-encounters-harmless", message: `인카운터 적 그룹 ${harmless.length}/${encounterTroops.size}개가 Lv1 파티(${roster.length}명)에게 피해를 한 번도 주지 못합니다: ${harmless.slice(0, 6).join(", ")} — 회복·아이템을 쓸 이유가 없습니다.` });
     }
     for (const troopId of bossTroops) {
       const result = simulate(troopId);
       if (!result || partyHp <= 0) continue;
+      const strong = simulate(troopId, BOSS_CHECK_LEVEL);
+      if (strong && strong.winRate === 0) {
+        findings.push({
+          severity: "warning", code: "jrpg-boss-unwinnable",
+          message: `보스 적 그룹 ${troops.get(troopId)?.name ?? troopId}(${troopId}) 은 Lv${BOSS_CHECK_LEVEL} 파티 ${roster.length}명(합류 전원)이 모의전 3판 모두 평균 ${strong.avgTurns.toFixed(1)}타 만에 전멸합니다 — 레벨을 올려도 이길 수 없는 보스입니다.`,
+        });
+      }
       const lost = 1 - result.avgHpRemaining / partyHp;
       if (result.winRate === 1 && lost < 0.25) {
         findings.push({
