@@ -47,7 +47,7 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
-import { reachableGateCandidates, walkableFromAnchors } from "./transferReachability";
+import { reachableGateCandidates, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -1898,6 +1898,7 @@ function transferEndpoint(
   requestedX: number,
   requestedY: number,
   maxRadius = 3,
+  notes?: string[],
 ): { gate: Point; landing: Point } | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
   // 벽에서 1칸 안쪽·벽 칸 위 요청은 벽과 맞닿은 통행 칸으로 먼저 당긴다.
@@ -1915,6 +1916,7 @@ function transferEndpoint(
     if (occupied.has(`${landing.x},${landing.y}`)) return null;
     return landing;
   };
+  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean }> = [];
   for (let radius = snapBlocked ? 1 : 0; radius <= maxRadius; radius += 1) {
     const flushGates: Point[] = [];
     const innerGates: Point[] = [];
@@ -1930,10 +1932,36 @@ function transferEndpoint(
     for (const gate of [...flushGates, ...innerGates]) {
       const landing = landingFree(gate);
       if (!landing) continue;
-      return { gate, landing };
+      choices.push({
+        gate,
+        landing,
+        radius,
+        flush: isFlushGate(gate.x, gate.y),
+        severs: transferTileSeversWalk(project, map, gate.x, gate.y),
+      });
     }
   }
-  return null;
+  if (choices.length === 0) return null;
+  // 유일한 통로(문간 한 칸)보다, 같은 반경 안의 막지 않는 칸을 먼저 고른다.
+  // 유일한 통로보다 막지 않는 칸을 먼저. 그 안에서는 예전처럼 가까운 칸, 그다음 벽에 붙은 칸.
+  choices.sort((a, b) =>
+    Number(a.severs) - Number(b.severs)
+    || a.radius - b.radius
+    || Number(b.flush) - Number(a.flush)
+    || a.gate.y - b.gate.y
+    || a.gate.x - b.gate.x);
+  const picked = choices[0]!;
+  if (notes && !picked.severs) {
+    const blocked = choices.find((choice) => choice.severs && (
+      choice.radius < picked.radius || (choice.radius === picked.radius && choice.flush && !picked.flush)
+    ));
+    if (blocked) {
+      notes.push(
+        `출입구 (${blocked.gate.x},${blocked.gate.y}) 는 같은 맵의 두 구역을 잇는 유일한 통로라 문을 놓으면 한쪽이 막힙니다. (${picked.gate.x},${picked.gate.y}) 에 두었습니다.`,
+      );
+    }
+  }
+  return { gate: picked.gate, landing: picked.landing };
 }
 
 /**
@@ -1956,19 +1984,29 @@ function reachableTransferEndpoint(
   label: "A" | "B",
   notes: string[],
 ): { gate: Point; landing: Point } | null {
-  const endpoint = transferEndpoint(project, map, requested.x, requested.y);
+  const localNotes: string[] = [];
+  const endpoint = transferEndpoint(project, map, requested.x, requested.y, 3, localNotes);
   const reach = walkableFromAnchors(project, map);
-  if (!reach) return endpoint;
+  if (!reach) {
+    notes.push(...localNotes);
+    return endpoint;
+  }
   const reached = (point: Point): boolean => reach.has(point.y * map.width + point.x);
   const usable = (point: { gate: Point; landing: Point }): boolean => reached(point.gate) && reached(point.landing);
-  if (endpoint && usable(endpoint)) return endpoint;
+  if (endpoint && usable(endpoint)) {
+    notes.push(...localNotes);
+    return endpoint;
+  }
   for (const candidate of reachableGateCandidates(map, reach, requested).slice(0, 60)) {
     const alt = transferEndpoint(project, map, candidate.x, candidate.y, 0);
     if (!alt || !usable(alt)) continue;
     notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
     return alt;
   }
-  if (endpoint) notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+  if (endpoint) {
+    notes.push(...localNotes);
+    notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+  }
   return endpoint;
 }
 

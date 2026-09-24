@@ -1,6 +1,9 @@
 import fs from "node:fs";
 import { describe, expect, it } from "vitest";
 import { runGameCheck } from "@/qa/gameCheck";
+import { endingGoal, planCriticalPath } from "@/qa/gameCheck/autoPlay";
+import { allPages, visitPageCommands, type CommandVisit } from "@/qa/gameCheck/walk";
+import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import type { Project } from "@/project/types";
@@ -193,5 +196,34 @@ describe("qa gameCheck — 꽃잎 체력 검사는 전투 게임에 쓰지 않�
     const boss = project.maps.map_cave!.events.find((event) => event.id === "ev_boss")!;
     boss.pages[0]!.commands = [{ kind: "text", body: "정령이 사라졌다." }];
     expect(checkGallery(project, brief).map((f) => f.code)).toContain("gallery-no-life-damage");
+  });
+});
+
+describe("qa gameCheck — 이름 있는 엔딩의 호감 조건", () => {
+  it("triggerEnding(endingId)의 엔딩 조건을 선행 목표로 넣는다", () => {
+    const project = createBlankProject();
+    const variableId = project.variables[0]!.id;
+    project.variables[0]!.name = "나래호감";
+    project.endings = [{ id: "ending_love", name: "고백", priority: 10, conditions: [{ kind: "variable", variableId, op: ">=", value: 6 }] }];
+    const map = project.maps[project.startMapId]!;
+    const page = {
+      conditions: [], trigger: { kind: "action" }, priority: "same", graphic: {}, movement: { type: "fixed", speed: 3, frequency: 3 },
+    };
+    map.events.push({
+      id: "ev_talk", name: "대화", x: project.startPos.x + 1, y: project.startPos.y,
+      trigger: { kind: "action" }, commands: [],
+      pages: [{ ...page, id: "talk", commands: [{ kind: "setVariable", variableId, op: "+=", value: 2 }] }],
+    } as never);
+    map.events.push({
+      id: "ev_confess", name: "고백", x: project.startPos.x, y: project.startPos.y + 1,
+      trigger: { kind: "action" }, commands: [],
+      pages: [{ ...page, id: "confess", commands: [{ kind: "triggerEnding", endingId: "ending_love" }] }],
+    } as never);
+    const hits: CommandVisit[] = [];
+    for (const ref of allPages(project)) visitPageCommands(ref, (hit) => { if (hit.command.kind === "triggerEnding") hits.push(hit); });
+    const visit = hits[0]!;
+    const plan = planCriticalPath(project, visit, endingGoal(visit));
+    expect(plan.goals.map((goal) => goal.label).join("\n")).toContain("나래호감 >= 6 만들기");
+    expect(plan.unresolved).toEqual([]);
   });
 });

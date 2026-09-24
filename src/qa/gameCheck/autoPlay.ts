@@ -135,8 +135,13 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
     // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
     if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
   }
-  if (visit.command.kind === "triggerEnding" && !visit.command.endingId) {
-    const ending = [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+  if (visit.command.kind === "triggerEnding") {
+    const namedId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
+    const ending = namedId
+      ? (project.endings ?? []).find((entry) => entry.id === namedId)
+      : [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+    // 이름 있는 triggerEnding 도 엔딩 conditions 를 선행으로 본다. 런타임이 조건 미달이면
+    // 엔딩을 열지 않으므로, 호감 ≥ 6 없이 고백 선택지만 누르면 도달로 세면 안 된다.
     for (const condition of ending?.conditions ?? []) reqs.push(...leafRequirements(condition, visit.page));
   }
   return reqs;
