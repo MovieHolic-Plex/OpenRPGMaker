@@ -5,6 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { createBlankProject } from "@/project/defaults";
+import { deserialize, serialize } from "@/project/io/serialize";
 
 function eventWithBarePage(mapId: string, conditions: unknown[], trigger = "auto"): Record<string, unknown> {
   return {
@@ -50,9 +51,27 @@ describe("upsert_event 페이지 필수 필드 보완", () => {
     );
 
     expect(result.summary).not.toContain("Cannot read properties");
-    // 없는 스위치를 참조하므로 거부되는 것이 맞다 — 단, 사유가 이슈로 실려야 한다.
-    expect(result.ok).toBe(false);
-    expect((result.issues ?? []).map((issue) => issue.message).join(" ")).toMatch(/sw_missing_a|switch/i);
+    // place_npc 와 같은 규칙(2026-09-24): 없는 스위치는 거부 대신 등록하고 경고로 알린다.
+    expect(result.ok).toBe(true);
+    expect((result.diff?.warnings ?? []).join(" ")).toMatch(/미등록 switchId 자동 생성: sw_missing_a/);
+    expect(ctx.project.switches.map((entry) => entry.id)).toEqual(expect.arrayContaining(["sw_missing_a", "sw_missing_b"]));
+  });
+
+  it("속도·빈도가 빠진 movement 부분 객체를 채워 직렬화 왕복이 깨지지 않는다", () => {
+    const ctx = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_event", {
+      mapId: ctx.project.startMapId,
+      event: {
+        id: "ev_partial_move", x: 1, y: 1,
+        pages: [{ trigger: { kind: "action" }, movement: { type: "fixed" }, graphic: { transparent: true }, conditions: [],
+          commands: [{ kind: "setSwitch", switchId: "sw_intro_done", value: true }] }],
+      },
+    });
+    expect(result.ok).toBe(true);
+    const page = ctx.project.maps[ctx.project.startMapId]?.events.find((e) => e.id === "ev_partial_move")?.pages?.[0];
+    expect(page?.movement).toMatchObject({ type: "fixed", speed: 3, frequency: 3 });
+    expect(ctx.project.switches.some((entry) => entry.id === "sw_intro_done")).toBe(true);
+    expect(() => deserialize(serialize(ctx.project))).not.toThrow();
   });
 
   it("발명한 trigger 값에는 허용 목록을 실어 준다", () => {
