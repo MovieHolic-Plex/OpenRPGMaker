@@ -2332,7 +2332,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     const started = performance.now();
-    const result = applyToolToStore("place_props", { ...plan.args });
+    const result = applyToolToStore(plan.tool, { ...plan.args });
     const ms = Math.max(1, Math.round(performance.now() - started));
     const detail = result.summary || result.issues?.map(issue => issue.message).join(" ") || "바로 깔기에 실패했습니다.";
     appendBubble("system", result.ok ? `${plan.label} · ${ms}ms. ${detail}` : detail);
@@ -2340,7 +2340,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   const refreshComposerPlaceholder = (): void => {
     if (stampPlaceOn) {
-      input.setAttribute("placeholder", "바로 깔기 — 숲, 침엽수, 나무 상자. 비우면 숲.");
+      input.setAttribute("placeholder", "바로 깔기 — 숲, 길, 물, 집, 지워. 비우면 숲.");
       syncConversationState();
       return;
     }
