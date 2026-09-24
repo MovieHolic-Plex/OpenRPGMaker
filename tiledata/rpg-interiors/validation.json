@@ -23,8 +23,8 @@
         5
       ]
     ],
-    "reachable": 96,
-    "walkable": 86,
+    "reachable": 95,
+    "walkable": 85,
     "blocked": [],
     "pockets": []
   },
@@ -52,8 +52,8 @@
         12
       ]
     ],
-    "reachable": 97,
-    "walkable": 93,
+    "reachable": 96,
+    "walkable": 92,
     "blocked": [],
     "pockets": []
   },
@@ -77,8 +77,8 @@
         14
       ]
     ],
-    "reachable": 96,
-    "walkable": 93,
+    "reachable": 94,
+    "walkable": 87,
     "blocked": [],
     "pockets": []
   },
@@ -199,7 +199,7 @@
       ]
     ],
     "reachable": 40,
-    "walkable": 35,
+    "walkable": 36,
     "blocked": [],
     "pockets": []
   },
@@ -223,8 +223,8 @@
         7
       ]
     ],
-    "reachable": 106,
-    "walkable": 101,
+    "reachable": 98,
+    "walkable": 89,
     "blocked": [],
     "pockets": []
   },
@@ -306,8 +306,8 @@
         10
       ]
     ],
-    "reachable": 89,
-    "walkable": 85,
+    "reachable": 88,
+    "walkable": 84,
     "blocked": [],
     "pockets": []
   },
@@ -335,8 +335,8 @@
         7
       ]
     ],
-    "reachable": 91,
-    "walkable": 82,
+    "reachable": 88,
+    "walkable": 79,
     "blocked": [],
     "pockets": []
   },
@@ -572,8 +572,8 @@
         8
       ]
     ],
-    "reachable": 75,
-    "walkable": 73,
+    "reachable": 70,
+    "walkable": 67,
     "blocked": [],
     "pockets": []
   }

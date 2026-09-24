@@ -143,12 +143,13 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   one(m, 18, 3, 57); stamp(m, "tibo-v8-1-0", 16, 3); stamp(m, "tibo-library-125", 16, 6); stamp(m, "tibo-library-079", 17, 5);
   stairsUp(m, 19, 5);
   stamp(m, "tibo-library-209", 18, 11); stamp(m, "tibo-library-229", 17, 11);
-  stamp(m, "tibo-library-025", 15, 10); stamp(m, "tibo-library-030", 14, 11); stamp(m, "tibo-library-030", 16, 11);
+  stamp(m, "tibo-library-025", 17, 8); stamp(m, "tibo-library-030", 16, 9); stamp(m, "tibo-library-030", 18, 9);
+  redRug(m, 9, 7, 13, 7); redRug(m, 9, 11, 14, 11);
   for (const x of [7, 13]) one(m, x, 3, 24);
   add("interior-inn-tavern-1f", "여관 1층 · 주점과 접수대", T, m, {
     group: "inn-homes", entry: [11, 13], keeper: [4, 6], targets: [[4, 6], [9, 7], [16, 5], [19, 5]],
     use: "여관 주인이 운영하는 1층. 손님은 문으로 들어와 오른쪽 접수대에서 방을 잡고, 바에서 술을 받아 긴 식탁에서 먹는다. 계단으로 2층 객실에 오른다",
-    note: "크림 벽 18×8칸 홀. 왼쪽 뒤 술통 선반·맥주통·포도주 선반, 그 앞 바 카운터와 높은 걸상 둘(주인 자리 (4,6)), 벽에 술집 간판·메뉴 칠판, 가운데 뒤 장작 벽난로, 벽 다트판, 긴 식탁과 벤치 두 벌, 앞 왼쪽 솥 걸이와 원형 식탁. 오른쪽 뒤 여관 간판 57·열쇠판·접수 계산대·편지 쟁반, 벽에 뚫은 오르막 계단 111/141/171(x=19)",
+    note: "크림 벽 18×8칸 홀. 왼쪽 뒤 술통 선반·맥주통·포도주 선반, 그 앞 바 카운터와 높은 걸상 둘(주인 자리 (4,6)), 벽에 술집 간판·메뉴 칠판, 가운데 뒤 장작 벽난로, 벽 다트판, 긴 식탁과 벤치 두 벌, 앞 왼쪽 솥 걸이와 원형 식탁. 오른쪽 뒤 여관 간판 57·열쇠판·접수 계산대·편지 쟁반, 벽에 뚫은 오르막 계단 111/141/171(x=19). 빈 바닥을 끊는 붉은 러그 둘(벽난로 앞, 식탁 앞 통로), 오른쪽 원형 식탁과 걸상 둘",
   });
   // 2층 — 객실 셋(1인실·2인실·특실)과 복도. 문 없이 계단으로만 오간다.
   m = shell(23, 16, {
@@ -163,12 +164,13 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-fantasy-bed", 15, 3); stamp(m, "tibo-library-039", 18, 4); stamp(m, "tibo-library-040", 19, 4);
   stamp(m, "tibo-warm-bench", 19, 6); one(m, 18, 2, 56); redRug(m, 15, 6, 16, 7);
   stairsDown(m, 3, 12); redRug(m, 5, 12, 18, 12); stamp(m, "tibo-library-027", 16, 11);
+  tealRug(m, 4, 6, 6, 6); tealRug(m, 10, 6, 11, 7); stamp(m, "tibo-v7-1-2", 13, 7);
   stamp(m, "tibo-library-059", 7, 10); stamp(m, "tibo-library-037", 8, 11); one(m, 14, 9, 84); one(m, 20, 11, 288);
   one(m, 9, 9, 206); one(m, 15, 9, 206); stamp(m, "tibo-library-061", 20, 12); stamp(m, "tibo-library-215", 13, 11);
   add("interior-inn-rooms-2f", "여관 2층 · 객실", T, m, {
     group: "inn-homes", entry: [3, 12], targets: [[5, 6], [11, 6], [17, 7], [19, 12]],
     use: "여관 손님이 묵는 2층. 1층 계단을 오르면 복도 왼쪽 끝으로 나오고, 복도에서 1인실·2인실·특실로 들어간다",
-    note: "방 넷(1인실 5×4·2인실 5×4·특실 6×4·복도 18×3)을 파이프라인 칸막이로 나눴다. 1인실 침대 324/354·협탁·대야 받침·의자·궤짝, 2인실 침대 둘·협탁·서랍장, 특실 목제 침대 3×3·협탁·화장대·쿠션 의자·붉은 러그·커튼 창 56, 복도에 린넨 장·이불 더미·그림·랜턴·빗자루·화분. 내려가는 계단 474는 복도 왼쪽 끝 (3,12)",
+    note: "방 넷(1인실 5×4·2인실 5×4·특실 6×4·복도 18×3)을 파이프라인 칸막이로 나눴다. 1인실 침대 324/354·협탁·대야 받침·의자·궤짝, 2인실 침대 둘·협탁·서랍장, 특실 목제 침대 3×3·협탁·화장대·쿠션 의자·붉은 러그·커튼 창 56, 복도에 린넨 장·이불 더미·그림·랜턴·빗자루·화분. 내려가는 계단 474는 복도 왼쪽 끝 (3,12). 1인실·2인실에 청록 러그, 2인실 의자, 복도에 붉은 러너와 짧은 벤치",
   });
 
   // ═════════ 교회 ═════════
@@ -182,11 +184,13 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-library-169", 15, 4); stamp(m, "tibo-library-168", 3, 5);
   for (const y of [9, 11, 13]) { stamp(m, "tibo-fantasy-pew", 4, y); stamp(m, "tibo-fantasy-pew", 11, y); }
   for (const y of [9, 13]) { block(m, 2, y - 1, [[89], [119]]); block(m, 16, y - 1, [[89], [119]]); }
+  for (const y of [11, 15]) { one(m, 2, y, 204); one(m, 16, y, 204); }
+  redRug(m, 5, 7, 13, 7); one(m, 4, 6, 288); one(m, 14, 6, 288);
   stamp(m, "tibo-library-238", 7, 15); one(m, 11, 15, 204);
   add("interior-church-nave", "교회 · 예배당", T, m, {
     group: "civic", entry: [9, 16], keeper: [9, 7], targets: [[9, 7], [3, 9], [15, 14]],
     use: "사제가 예배를 올리고 마을 사람이 앉아 기도하는 곳. 교구마을 「교회 언덕」의 석벽 교회(스테인드글라스 두 장, 가운데 문)와 짝을 이룬다",
-    note: "석벽·회색 돌바닥 42. 앞쪽(북쪽) 제단부를 아이보리 대리석 오토타일로 깔고 제단 3×2 뒤 벽에 성녀 석상 88/118, 벽에 스테인드글라스 144 넷, 양옆 촛대 탁자·향로·독서대(설교대)·작은 오르간(업라이트 피아노)·의식 초. 문에서 제단까지 폭3 붉은 카펫, 좌우로 긴 의자 4×2 세 줄씩, 옆 통로에 기둥 89/119, 문 옆 헌금함(자물쇠 금고함)과 촛대",
+    note: "석벽·회색 돌바닥 42. 앞쪽(북쪽) 제단부를 아이보리 대리석 오토타일로 깔고 제단 3×2 뒤 벽에 성녀 석상 88/118, 벽에 스테인드글라스 144 넷, 양옆 촛대 탁자·향로·독서대(설교대)·작은 오르간(업라이트 피아노)·의식 초. 문에서 제단까지 폭3 붉은 카펫, 좌우로 긴 의자 4×2 세 줄씩, 옆 통로에 기둥 89/119, 문 옆 헌금함(자물쇠 금고함)과 촛대. 제단부 앞 한 줄 붉은 카펫(무릎 꿇는 자리)과 화분 둘, 옆 통로 기둥 사이 촛대 넷",
   });
 
   // ═════════ 민가 ═════════
@@ -258,13 +262,13 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     put(m, x, y, r < 0.12 ? 73 : r < 0.24 ? 102 : r < 0.3 ? 222 : r < 0.34 ? 223 : 72, "lowerTiles");
   }
   block(m, 2, 5, [[324], [354]]); one(m, 4, 5, 386); one(m, 4, 6, 387); one(m, 10, 7, 417); one(m, 3, 3, 388); one(m, 3, 4, 418); one(m, 10, 3, 388); one(m, 10, 4, 418);
-  stamp(m, "tibo-medieval-stone-fireplace", 6, 4); one(m, 9, 5, 416); one(m, 12, 5, 415); one(m, 11, 8, 414);
+  stamp(m, "tibo-fantasy-cupboard", 6, 4); one(m, 8, 5, 387); one(m, 9, 5, 416); one(m, 12, 5, 415); one(m, 11, 8, 414);
   stamp(m, "tibo-library-237", 11, 4); stamp(m, "tibo-library-214", 12, 7); stamp(m, "tibo-v6-2-3", 3, 9); stamp(m, "tibo-library-071", 9, 9);
   one(m, 12, 9, 55); stamp(m, "tibo-library-230", 4, 8);
   add("interior-home-abandoned", "민가 · 폐가", T, m, {
     group: "inn-homes", entry: [7, 10], targets: [[7, 7], [3, 7], [11, 6]],
     use: "오래 비어 있던 집. 한 칸 집과 같은 틀에 가구는 부서지고 바닥은 썩었다 — 조사·귀신 이야기·숨은 물건 자리",
-    note: "한 칸 집 껍데기를 그대로 두고 벽 조립은 건드리지 않았다(폐성과 같은 규칙). 바닥 72에 구멍 73·널 102·새싹 222/223을 흩되 문에서 벽난로까지 길은 멀쩡하게, 벽에 균열 388/418 둘, 낡은 침대, 세운 판자 386·판자 더미 387, 부서진 벽돌 416·바위 더미 415·광석 414, 빈 벽장·말린 꽃병·꺼진 등불·재 양동이·나무 궤짝·빈 상자",
+    note: "한 칸 집 껍데기를 그대로 두고 벽 조립은 건드리지 않았다(폐성과 같은 규칙). 바닥 72에 구멍 73·널 102·새싹 222/223을 흩되 문에서 안쪽 찬장까지 길은 멀쩡하게, 벽에 균열 388/418 둘, 낡은 침대·먼지 앉은 찬장(불 꺼진 집이라 벽난로는 두지 않음), 세운 판자 386·판자 더미 387, 부서진 벽돌 416·바위 더미 415·광석 414, 빈 벽장·말린 꽃병·꺼진 등불·재 양동이·나무 궤짝·빈 상자",
   });
 
   // ═════════ 모험가 길드 ═════════
@@ -275,12 +279,13 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-v8-1-0", 16, 3); stamp(m, "tibo-library-238", 18, 5); stamp(m, "tibo-library-079", 17, 5); stamp(m, "tibo-library-221", 19, 3);
   stamp(m, "tibo-fantasy-dining-set", 3, 8); stamp(m, "tibo-fantasy-dining-set", 7, 8);
   stamp(m, "tibo-fantasy-weapon-rack", 18, 10); stamp(m, "tibo-library-194", 2, 12); stamp(m, "tibo-library-196", 3, 12); stamp(m, "tibo-library-198", 16, 11);
-  tealRug(m, 10, 8, 12, 11); stamp(m, "tibo-library-025", 15, 10); stamp(m, "tibo-library-030", 14, 11); stamp(m, "tibo-library-030", 16, 11);
+  tealRug(m, 10, 8, 11, 12); stamp(m, "tibo-library-025", 14, 10); stamp(m, "tibo-library-030", 13, 11); stamp(m, "tibo-library-030", 15, 11);
+  redRug(m, 3, 11, 9, 11); stamp(m, "tibo-library-133", 6, 4); stamp(m, "tibo-lectern", 12, 5); stamp(m, "tibo-library-209", 16, 9); stamp(m, "tibo-boot-rack", 7, 12); stamp(m, "tibo-library-230", 4, 12); stamp(m, "tibo-library-199", 5, 12);
   for (const x of [6, 13]) one(m, x, 3, 24);
   add("interior-adventurers-guild", "모험가 길드", T, m, {
     group: "civic", entry: [11, 13], keeper: [16, 6], targets: [[16, 8], [8, 5], [10, 7]],
     use: "모험가가 의뢰를 받고 보고하는 곳. 뒷벽 게시판에서 의뢰서를 고르고, 오른쪽 접수 카운터에서 접수원에게 등록·보상 수령, 왼쪽 식탁에서 동료를 모은다",
-    note: "크림 벽 18×8칸. 뒷벽에 메모 게시판 둘(의뢰판)·강 지도 액자·사슴뿔 벽판·방패 벽 장식·횃불, 오른쪽 접수 카운터 325·326·327과 뒤편 문서 분류장 둘·열쇠판·편지 쟁반·금고함(접수원 자리 (16,6)), 왼쪽 뒤 술통 선반·맥주통, 긴 식탁과 벤치 두 벌, 문 앞 청록 러그, 앞 모서리 무기 거치대·배낭·밧줄·지도통",
+    note: "크림 벽 18×8칸. 뒷벽에 메모 게시판 둘(의뢰판)·강 지도 액자·사슴뿔 벽판·방패 벽 장식·횃불과 의뢰 장부 독서대, 오른쪽 접수 카운터 325·326·327과 뒤편 문서 분류장 둘·열쇠판·편지 쟁반·금고함(접수원 자리 (16,6)), 왼쪽 뒤 술통 선반·맥주통, 긴 식탁과 벤치 두 벌, 문 앞 청록 러그, 앞 모서리 무기 거치대·배낭·밧줄·지도통. 앞쪽 붉은 러그·정사각 상자·물주머니·신발 받침대, 오른쪽 원형 식탁과 걸상·야자 화분, 맥주통 둘",
   });
 
   // ═════════ 마법 상점 · 연금술 공방 ═════════
@@ -320,12 +325,12 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   for (const x of [3, 4, 5, 6, 17, 18]) block(m, x, 11, [[147], [177]]);
   block(m, 9, 9, [[325, 326, 327]]); one(m, 9, 8, 267); one(m, 11, 8, 267);
   block(m, 9, 11, [[325, 326, 327]]); one(m, 9, 12, 268); one(m, 11, 12, 268);
-  stamp(m, "tibo-library-083", 12, 8); stamp(m, "tibo-library-240", 7, 8); stamp(m, "tibo-library-073", 7, 12); stamp(m, "tibo-library-073", 12, 12);
-  stamp(m, "tibo-warm-scribe-desk", 14, 11); stamp(m, "tibo-library-079", 16, 12); stamp(m, "tibo-library-084", 19, 10);
+  tealRug(m, 8, 7, 12, 13); stamp(m, "tibo-library-083", 12, 8); one(m, 2, 7, 288); one(m, 19, 7, 288); stamp(m, "tibo-library-240", 7, 8); stamp(m, "tibo-library-073", 7, 12); stamp(m, "tibo-library-073", 12, 12);
+  stamp(m, "tibo-warm-scribe-desk", 14, 11); stamp(m, "tibo-library-079", 16, 12); 
   add("interior-library", "도서관", T, m, {
     group: "civic", entry: [11, 14], keeper: [14, 10], targets: [[10, 6], [8, 10], [14, 10], [19, 12], [2, 10]],
     use: "책을 빌려 읽는 도서관. 문에서 곧장 가운데 열람 탁자로, 양옆 서가 두 줄 사이 통로로 책을 찾고, 문 오른쪽 사서 책상에서 대출을 받는다",
-    note: "크림 벽·널 바닥 102, 18×9칸. 뒷벽에 큰 책장 18~80(3×3, 아래층) 넷과 독서대·펼친 지도책 받침·지구본, 양옆에 1×2 서가 147/177를 줄지어 세운 두 줄(y=8, 11)로 통로를 만들고, 가운데 긴 열람 탁자 325·326·327 둘(위 탁자는 탁자를 보는 의자 267, 아래 탁자는 등을 보인 의자 268, 두 탁자 사이 한 줄은 통로)·독서등, 서가 옆 접이 사다리·책 더미·발판, 오른쪽 앞 서가 두 칸을 비운 자리에 사서의 필경사 책상과 편지 쟁반(사서 자리 (14,10))",
+    note: "크림 벽·널 바닥 102, 18×9칸. 뒷벽에 큰 책장 18~80(3×3, 아래층) 넷과 독서대·펼친 지도책 받침·지구본, 양옆에 1×2 서가 147/177를 줄지어 세운 두 줄(y=8, 11)로 통로를 만들고, 가운데 긴 열람 탁자 325·326·327 둘(위 탁자는 탁자를 보는 의자 267, 아래 탁자는 등을 보인 의자 268, 두 탁자 사이 한 줄은 통로)·독서등, 서가 옆 접이 사다리·책 더미·발판, 오른쪽 앞 서가 두 칸을 비운 자리에 사서의 필경사 책상과 편지 쟁반(사서 자리 (14,10)). 열람 구역 전체에 청록 러그, 양쪽 서가 끝 화분",
   });
   m = shell(20, 15, { wings: [{ x: 2, y: 5, w: 16, h: 8 }], door: { x: 10, y: 12 }, wall: "stone-brick" });
   floorTo(m, 102);
@@ -333,11 +338,11 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-lectern", 9, 4); stamp(m, "tibo-warm-scribe-desk", 13, 5); stamp(m, "tibo-v11-1-0", 12, 6); one(m, 15, 5, 298);
   block(m, 8, 6, [[381, 382, 383], [411, 412, 413], [441, 442, 443]]);
   for (const y of [9, 11]) for (const x of [3, 5, 7, 12, 14, 16]) { stamp(m, "tibo-v4-4-2", x, y); one(m, x, y + 1, 268); }
-  stamp(m, "tibo-fantasy-bookcase", 2, 4); stamp(m, "tibo-fantasy-crystal-stand", 17, 4); stamp(m, "tibo-v12-1-2", 16, 4); stamp(m, "tibo-library-157", 4, 5);
+  redRug(m, 9, 9, 10, 12); stamp(m, "tibo-library-165", 3, 7); stamp(m, "tibo-library-073", 17, 7); stamp(m, "tibo-fantasy-bookcase", 2, 4); stamp(m, "tibo-fantasy-crystal-stand", 17, 4); stamp(m, "tibo-v12-1-2", 16, 4); stamp(m, "tibo-library-157", 4, 5);
   add("interior-academy-classroom", "마법 학원 · 교실", T, m, {
     group: "civic", entry: [10, 13], keeper: [9, 6], targets: [[9, 6], [4, 12], [15, 12], [14, 7]],
     use: "마법 학원의 강의실. 선생은 앞(북쪽) 독서대와 칠판 앞에서 가르치고 바닥 마법진에서 시범을 보이며, 학생은 책상 열두 개에 앉아 북쪽을 본다",
-    note: "석벽·널 바닥 102, 16×8칸. 앞벽에 별자리 판·달 위상 벽판·칠판(메뉴 칠판 1×2) 둘, 교탁(독서대)·교사 책상과 모래시계, 그 앞 마법진 381~443(3×3), 학생 독서 탁자와 등을 보인 의자 268 여섯 쌍×두 줄(가운데 통로 x=8~11, 모두 북쪽 교탁을 본다), 옆벽 쪽 두꺼운 책장·수정구 받침 둘·지구본",
+    note: "석벽·널 바닥 102, 16×8칸. 앞벽에 별자리 판·달 위상 벽판·칠판(메뉴 칠판 1×2) 둘, 교탁(독서대)·교사 책상과 모래시계, 그 앞 마법진 381~443(3×3), 학생 독서 탁자와 등을 보인 의자 268 여섯 쌍×두 줄(가운데 통로 x=8~11, 모두 북쪽 교탁을 본다), 옆벽 쪽 두꺼운 책장·수정구 받침 둘·지구본. 가운데 통로 붉은 러너, 교탁 옆 수정 표본 쟁반·책 더미",
   });
 
   // ═════════ 성 ═════════
@@ -427,14 +432,14 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   redRug(m, 4, 5, 15, 6);
   block(m, 2, 3, [[142, 143], [172, 173], [202, 203]]); block(m, 16, 3, [[142, 143], [172, 173], [202, 203]]);
   stamp(m, "tibo-lectern", 10, 5); stamp(m, "tibo-bell", 11, 5); stamp(m, "tibo-medieval-armor-stand", 5, 4); stamp(m, "tibo-easel", 8, 5);
-  stamp(m, "tibo-fantasy-crystal-stand", 13, 5); stamp(m, "tibo-library-214", 14, 5); one(m, 7, 3, 84); one(m, 12, 3, 85);
+  redRug(m, 9, 7, 10, 12); stamp(m, "tibo-fantasy-crystal-stand", 13, 5); stamp(m, "tibo-library-214", 14, 5); one(m, 7, 3, 84); one(m, 12, 3, 85);
   for (const y of [8, 10]) { stamp(m, "tibo-fantasy-pew", 4, y); stamp(m, "tibo-fantasy-pew", 12, y); }
   stamp(m, "tibo-library-125", 15, 12); stamp(m, "tibo-library-238", 17, 12); stamp(m, "tibo-library-076", 16, 11);
   stamp(m, "tibo-library-215", 2, 12); stamp(m, "tibo-library-215", 3, 12);
   add("interior-auction-house", "경매장", T, m, {
     group: "leisure", entry: [10, 13], keeper: [10, 7], targets: [[10, 7], [3, 9], [17, 11]],
     use: "귀한 물건을 경매로 파는 홀. 앞쪽 붉은 카펫 무대에 오늘의 물건(갑옷·그림·수정구)이 놓이고 경매인은 독서대와 종 앞에서 호가를 부르며, 손님은 긴 의자에 앉아 값을 부른다. 낙찰되면 문 옆 계산대에서 치른다",
-    note: "크림 벽 16×8칸. 뒷벽 양 끝 커튼 142/143·172/173·202/203, 앞쪽 붉은 카펫 무대 12×2에 갑옷 거치대·그림 이젤·수정구 받침·말린 꽃병, 벽에 그림 84·85, 경매인 독서대와 탁상 종(경매인 자리 (10,7)), 가운데 통로를 두고 긴 의자 4×2 두 줄씩, 문 옆 상점 계산대·금고함·잉크와 깃펜, 둥근 관목 화분",
+    note: "크림 벽 16×8칸. 뒷벽 양 끝 커튼 142/143·172/173·202/203, 앞쪽 붉은 카펫 무대 12×2에 갑옷 거치대·그림 이젤·수정구 받침·말린 꽃병, 벽에 그림 84·85, 경매인 독서대와 탁상 종(경매인 자리 (10,7)), 가운데 통로를 두고 긴 의자 4×2 두 줄씩, 문 옆 상점 계산대·금고함·잉크와 깃펜, 둥근 관목 화분. 무대에서 문까지 가운데 통로에 붉은 러너",
   });
 
   // ═════════ 배 (easyrpg_chipset_ship, 갑판 맵과 같은 시트) ═════════
@@ -460,12 +465,12 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-library-232", 6, 4); stamp(m, "tibo-library-232", 7, 4); stamp(m, "tibo-library-230", 8, 5); stamp(m, "tibo-library-230", 13, 5);
   stamp(m, "tibo-fantasy-grain-sacks", 13, 8); stamp(m, "tibo-library-013", 16, 9); stamp(m, "tibo-library-014", 17, 9); stamp(m, "tibo-library-229", 14, 4);
   block(m, 2, 9, [[324, 325]]); block(m, 5, 9, [[324, 325]]); one(m, 8, 9, 263); one(m, 8, 10, 259); one(m, 2, 8, 386); one(m, 3, 8, 386);
-  stamp(m, "tibo-library-123", 18, 9); one(m, 12, 3, 202); one(m, 7, 3, 202);
+  stamp(m, "tibo-library-123", 18, 9); one(m, 6, 6, 385); one(m, 7, 6, 385); stamp(m, "tibo-library-196", 9, 7); stamp(m, "tibo-library-232", 13, 6); one(m, 16, 7, 386); one(m, 12, 3, 202); one(m, 7, 3, 202);
   block(m, 11, 7, [[72, 73], [102, 103]], "lowerTiles");
   add("interior-ship-hold", "배 · 화물칸", "easyrpg_chipset_ship", m, {
     group: "ship", entry: [10, 5], targets: [[11, 9], [3, 7], [18, 8]],
     use: "배 밑바닥 화물칸. 갑판에서 사다리로 내려오면 양옆으로 짐이 쌓여 있다 — 왼쪽 물·술 오크통과 예비 대포, 가운데 급수 펌프, 오른쪽 식량 자루·상자·소포",
-    note: "선실과 같은 배 칩셋 껍데기(18×6칸). 오크통 385 열 개를 양 끝 벽에 쌓고, Tibo 쌓인 나무 상자·정사각 상자·뚜껑 둥근 통·식재료 자루·밀가루/쌀 포대·소포 더미를 이 시트 뒤쪽 칸에 이식해 놓았다. 앞 왼쪽 예비 대포 324/325 둘·감긴 밧줄 263·닻 259·항아리 386, 가운데 급수 펌프 72/73/102/103(아래층), 벽에 환기 격자창 202, 사다리 22|23(x=10~11)",
+    note: "선실과 같은 배 칩셋 껍데기(18×6칸). 오크통 385 열 개를 양 끝 벽에 쌓고, Tibo 쌓인 나무 상자·정사각 상자·뚜껑 둥근 통·식재료 자루·밀가루/쌀 포대·소포 더미를 이 시트 뒤쪽 칸에 이식해 놓았다. 앞 왼쪽 예비 대포 324/325 둘·감긴 밧줄 263·닻 259·항아리 386, 가운데 급수 펌프 72/73/102/103(아래층), 벽에 환기 격자창 202, 사다리 22|23(x=10~11). 사다리 아래 오크통 둘·쌓인 상자·밧줄·항아리를 더 쌓아 가운데 빈 바닥을 끊음",
   });
   tileMap = (t) => t;
 
