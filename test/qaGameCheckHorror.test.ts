@@ -99,3 +99,27 @@ describe("안전지대·깨우는 스위치", () => {
     expect(codes).toEqual(expect.arrayContaining(["safe-zone-too-large", "chaser-never-wakes"]));
   });
 });
+
+describe("체크포인트 재시작과 추격자", () => {
+  it("붙잡힌 뒤 재시작하면 추격자가 제자리로 돌아가 바로 다시 잡히지 않는다", async () => {
+    const { runSceneTest } = await import("@/testing/sceneTestRunner");
+    const ctx = horrorProject();
+    const mapId = ctx.project.startMapId;
+    const made = runTool(ctx, "make_chase_scene", {
+      mapId, chaser: { at: { x: 14, y: 5 }, graphic: { query: "monster" }, speed: 6, sightRange: 30 },
+      pursuit: { scope: "map", doorDelayMs: 0, searchMs: 2000, onLost: "return", tracking: "persistent" },
+      activateSwitch: "sw_awake", killOnTouch: true,
+    });
+    expect(made.ok, made.summary).toBe(true);
+    ctx.project.session.switches = { ...(ctx.project.session.switches ?? {}), sw_awake: true };
+    const result = runSceneTest(ctx.project, { mapId, start: { x: 3, y: 5 }, steps: [
+      { kind: "wait", ticks: 30 },
+      { kind: "wait", ticks: 400 },
+      { kind: "expect", gameOver: true },
+      { kind: "retryCheckpoint" },
+      { kind: "wait", ticks: 60 },
+      { kind: "expect", gameOver: false },
+    ] });
+    expect(result.ok, result.failureReason).toBe(true);
+  });
+});
