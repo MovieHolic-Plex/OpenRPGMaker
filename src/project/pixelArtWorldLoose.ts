@@ -20,6 +20,7 @@ export interface LooseRecipe {
     notes: string;
     supportStatus: string;
     collision: string;
+    blockingCells?: number[][];
     outputRect?: PixelRect;
     pixelOffset?: {
         x: number;

@@ -17,6 +17,7 @@ for(const pack of data.packs){
   const width=surface?3:Math.ceil(r.width/32),height=surface?3:Math.ceil(r.height/32);
   if(width>8)throw Error(`Atlas too narrow ${recipe.id}`);
   recipe.outputRect={x:0,y:row,width,height};
+  if(recipe.blockingCells?.some(([x,y])=>!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=width||y>=height))throw Error(`Footprint bounds ${recipe.id}`);
   recipe.pixelOffset=surface?{x:48-Math.floor(b.width/2),y:56-b.height}:{x:Math.floor((width*32-r.width)/2),y:height*32-r.height};
   row+=height;
  }
