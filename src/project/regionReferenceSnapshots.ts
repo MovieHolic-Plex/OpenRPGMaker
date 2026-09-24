@@ -48,6 +48,7 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "river-forest-village-78x44": () => import("./regionReferences/river-forest-village.json"),
   "emerald-basin-80x64": () => import("./regionReferences/emerald-basin.json"),
   "hill-forest-village-64x64": () => import("./regionReferences/hill-forest-village.json"),
+  "forest-fantasy-town-104x96": () => import("./regionReferences/forest-fantasy-town.json"),
   "castle-town-100x100": () => import("./regionReferences/castle-town.json"),
   "walled-settlement-43x45": () => import("./regionReferences/walled-settlement.json"),
   "lake-village-60x60": () => import("./regionReferences/lake-village.json"),

@@ -195,8 +195,16 @@ async function bakeGraftedTilesetImage(
   }
 }
 
+// 번들이 아닌 이식 소스(프로젝트 업로드 그림판 — 생성 건물 시트 등) → URL. 프로젝트를 아는 쪽(tilesetImage.ts)이 등록한다.
+let uploadedGraftSourceUrl: (textureKey: string) => string | null = () => null;
+export function setUploadedGraftSourceUrlResolver(resolve: (textureKey: string) => string | null): void {
+  uploadedGraftSourceUrl = resolve;
+}
+
 // 소스 타일 그림판 textureKey → 이미지. 색상키 타일 그림판(interior 등)은 투명색 처리를 적용한다.
 async function loadChipsetSourceImage(textureKey: string): Promise<HTMLImageElement | HTMLCanvasElement | null> {
+  const uploadedUrl = uploadedGraftSourceUrl(textureKey);
+  if (uploadedUrl) return loadImage(uploadedUrl);
   const path = bundledChipsetPath(textureKey);
   if (!path) {
     console.warn(`[tileGrafts] 알 수 없는 소스 타일 그림판 textureKey: ${textureKey}`);
