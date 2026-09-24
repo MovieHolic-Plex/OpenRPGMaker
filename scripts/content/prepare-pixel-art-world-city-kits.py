@@ -60,8 +60,8 @@ for x in [1,6]:block(k,'upper',x,3,'school',[[266,267],[274,275]])
 block(k,'upper',4,5,'school',[[280,281],[288,289]])
 kits.append(k)
 
-k=new('home-red-gable','붉은 지붕 목조 주택',6,9,entrance={'x':2,'y':8},notes='town 붉은 경사지붕을 실제 대각 마감 방향대로 확장. 투명 삼각 지붕 아래에 beige 박공 벽을 lower로 포함했다. 입구=(2,8), approach=(2,9). 한 칸 문 전체는259/267의 두 행.');
-for y in range(3,6):rect(k,'lower',5-y,y,2*(y-2),1,'town',237)
+k=new('home-red-gable','붉은 지붕 목조 주택',6,9,entrance={'x':2,'y':8},notes='town 붉은 경사지붕을 실제 대각 마감 방향대로 확장. 투명 삼각 지붕 아래에 테두리 없는 목재 벽225를 lower로 포함했다. 몰딩237을 반복하지 않는다. 입구=(2,8), approach=(2,9). 한 칸 문 전체는259/267의 두 행.');
+for y in range(3,6):rect(k,'lower',5-y,y,2*(y-2),1,'town',225)
 block(k,'upper',0,0,'town',[[None,None,312,313,None,None],[None,312,320,321,313,None],[312,320,320,321,321,313],[320,320,328,329,321,321],[320,328,None,None,329,321],[328,None,None,None,None,329]])
 for y,row in [(6,[216,217,217,217,217,218]),(7,[224,225,225,225,225,226]),(8,[232,233,233,233,233,234])]:block(k,'lower',0,y,'town',[row])
 block(k,'upper',4,6,'town',[[262,263],[270,271]])
@@ -69,8 +69,8 @@ block(k,'upper',2,7,'town',[[259],[267]])
 put(k,'upper',2,5,'town',304)
 kits.append(k)
 
-k=new('apartment-dark-roof','기와 지붕 이층 주택',10,9,entrance={'x':5,'y':8},notes='town 기와 지붕의 양쪽 마감과 중앙 반복을 사용한 이층 주택. 지붕 투명 아래 lower 외벽 받침 포함. 문=(5,8), approach=(5,9). 아래층과 위층 창은 서로 다른 원본 방향을 유지한다.');
-block(k,'upper',0,0,'town',[[273]+[274]*8+[275],[281]+[282]*8+[283],[289]+[290]*8+[291],[297]+[298]*8+[299]])
+k=new('apartment-dark-roof','기와 지붕 이층 주택',10,9,entrance={'x':5,'y':8},notes='town 넓은 기와 지붕면284/292/300과 하단 그림자308를 사용한 이층 주택. 좁은 박공 능선274를 넓혀 사용하지 않는다. 지붕 투명 아래 lower 외벽 받침 포함. 문=(5,8), approach=(5,9). 아래층과 위층 창은 서로 다른 원본 방향을 유지한다.');
+block(k,'upper',0,0,'town',[[284]*10,[292]*10,[300]*10,[308]*10])
 rect(k,'lower',0,3,10,6,'town',57)
 for x in range(10):put(k,'lower',x,5,'town',65);put(k,'lower',x,8,'town',65)
 # Upper-floor windows are closed horizontal frames, not door fragments.
