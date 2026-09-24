@@ -181,6 +181,17 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
   위층에서 이웃을 센다(`autotileLayerView`). `fill_region` 은 재료가 upper 면 layer 를 안 줘도 위층에 깐다.
 - **`fill_region` 은 칠한 재료 칸의 모양을 구조물 보호보다 먼저 맞춘다** — 벽·지붕 재료는 칠한 순간 「구조물」이라 전엔 가장자리를 영영 못 맞췄다.
 - `TilesetDef.mvPack` 이 있으면 16px 하네스(`applyCustomChipsetMinimalHarness`)에서 빠진다.
+- **MV 팩에서만 켜는 동작 (2026-09-25 적대적 화면 검수 후).** 내장 타일셋 결과는 그대로 두려고 `tileset.mvPack` 으로 갈랐다.
+  - `fill_region`·`tile_erase` 는 칠하거나 지운 칸 둘레의 **다른 재료까지** 다시 맞춘다(`shapeAllAutotileGroupsAround`).
+    MV 는 맞닿은 두 재료가 저마다 가장자리를 그린다. 보도 끝의 **연석**도 보도 재료가 차도 쪽 가장자리에 그리는 것이라,
+    보도를 먼저 깔고 차도를 나중에 깔면 전엔 연석이 없었고, 흙 공터 안 잔디는 경계가 칼로 자른 직선이었다.
+  - `fill_region` 의 「벽과 1칸 틈 메우기」(`expandCellsAgainstWalls`)를 끈다 — 울타리·물체도 막힌 칸이라 7×3 옥상이 울타리 쪽으로 혹처럼 자라 30칸이 됐다.
+  - `AutotileGroup.outsideConnects:true` — 맵 밖을 같은 재료로 센다(RPG Maker 규칙). 맵 끝까지 깐 보도·물에 테두리가 그려지지 않는다.
+  - `mvPack.plainWalls` — 창 난 벽돌 외벽 → 같은 모양의 민짜 벽돌. `stamp_tileset_object` 가 문·창·간판·차양 밑 벽을 바꾼다
+    (물체 그림의 투명한 틈으로 밑 창이 비쳐 두 겹으로 보였다). 문은 차양 그늘 칸을 덮어써도 된다.
+  - `stamp_tileset_object` 경고: 차선 화살표가 반대 차로(우측통행)면, 중앙선이 짝수 폭 차도·가운데가 아닌 줄이면(중앙선은 칸 한가운데에 선이 있다).
+- **물체 좌표는 시트에서 이웃과 붙은 것을 조심.** 차양은 1칸짜리(1,0)와 3칸짜리(2,0)가 붙어 있어 4칸으로 묶으면 가운데 이음매가 보였다.
+  칸 좌표를 새로 붙이면 한 칸 여백을 두고 잘라 본 그림으로 확인한다.
 - 헤드리스 `scripts/pi-agent.mts` 는 이제 `show_map_region` 그림을 `scripts/qa-game/render.mts` 로 그려 모델에게 준다(전엔 「맵 이미지 전달 경로가 없습니다」로 실패).
 
 헤드리스 실측(gemini-3.7-flash, 40×30, 한 번에 3~5분·도구 80~90회): 교차로 블록·강변 상점가를 요청대로 깔았다.

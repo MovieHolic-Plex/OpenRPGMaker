@@ -156,10 +156,14 @@ export function autotileNeighborMask(
   x: number,
   y: number,
   isConnected: (tile: number) => boolean,
-  neighborhood: AutotileNeighborhood = 4
+  neighborhood: AutotileNeighborhood = 4,
+  outsideConnects = false,
 ): number {
   const connectedAt = (dx: number, dy: number): boolean => {
-    const tile = tileAt(map, x + dx, y + dy);
+    const nx = x + dx;
+    const ny = y + dy;
+    if (outsideConnects && (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height)) return true;
+    const tile = tileAt(map, nx, ny);
     return typeof tile === "number" && isConnected(tile);
   };
   let mask = 0;
@@ -213,7 +217,7 @@ export function autotileVariantForCell(map: AutotileMapView, group: AutotileGrou
   const members = new Set<number>(group.memberTileIds);
   if (!members.has(current)) return undefined;
   const connect = connectSet(group);
-  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4);
+  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.outsideConnects === true);
   return autotileVariantForMask(group, mask);
 }
 
@@ -251,12 +255,33 @@ export function shapeAutotileGroupAround(
       if (canWrite && !canWrite(cx, cy)) continue;
       const current = tileAt(map, cx, cy);
       if (typeof current !== "number" || !members.has(current)) continue;
-      const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood);
+      const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood, group.outsideConnects === true);
       const variant = autotileVariantForMask(group, mask);
       if (variant === full && interior.has(current)) continue;
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }
   }
+}
+
+/**
+ * 편집 칸 둘레의 **모든** 오토타일 그룹을 제 레이어에서 다시 맞춘다. 흙 공터 안에 잔디를 채우면
+ * 잔디만이 아니라 둘레 흙 칸도 가장자리 모양으로 바뀌어야 한다 — 칠한 재료만 맞추면 경계가 칼로 자른 직선이 된다
+ * (2026-09-25 MV 팩 헤드리스 실측). 바뀐 칸 수를 돌려준다.
+ */
+export function shapeAllAutotileGroupsAround(
+  map: { readonly width: number; readonly height: number; readonly lowerTiles: number[]; readonly upperTiles: number[] },
+  groups: readonly AutotileGroup[],
+  points: readonly AutotilePoint[],
+): number {
+  if (points.length === 0) return 0;
+  const lowerBefore = map.lowerTiles.slice();
+  const upperBefore = map.upperTiles.slice();
+  for (const group of groups) shapeAutotileGroupAround(autotileGroupLayerView(map, group), group, points);
+  let changed = 0;
+  for (let index = 0; index < lowerBefore.length; index += 1) {
+    if (lowerBefore[index] !== map.lowerTiles[index] || upperBefore[index] !== map.upperTiles[index]) changed += 1;
+  }
+  return changed;
 }
 
 export interface AutotileArea {

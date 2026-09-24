@@ -12,7 +12,7 @@ import type {
   AutotileGroup, PassFlag, SectionStructureKitDef, TileAiMetadata, TileGroupMetadata, TileGroupRole, TilesetDef,
 } from "../types";
 import type { TilesetReferenceCategory, TilesetReferenceImage } from "../tilesetReferences";
-import { autotileNeighborMask } from "../defaults/autotileEngine";
+import { autotileNeighborMask, shapeAllAutotileGroupsAround } from "../defaults/autotileEngine";
 import { autotileVariantMap, quarterTable } from "./autotile";
 import { bakeMvAtlas, tileOpacity, type RgbaImage } from "./bake";
 import { drawNumber } from "./digitFont";
@@ -156,6 +156,8 @@ export function buildMvPackTileset(input: MvPackBuildInput): MvPackBuildResult {
       id: groupId,
       name: entry.name,
       neighborhood: shapeKind === "floor" ? 8 : 4,
+      // MV 는 맵 밖을 같은 재료로 본다 — 맵 가장자리까지 깐 보도·물에 테두리가 생기지 않는다.
+      outsideConnects: true,
       memberTileIds: shapes,
       variantMap: autotileVariantMap(shapeKind, shapes),
       ...(rule.home === "upper" ? { layer: "upper" as const } : {}),
@@ -245,11 +247,26 @@ export function buildMvPackTileset(input: MvPackBuildInput): MvPackBuildResult {
     tileGroups,
     autotileGroups,
     structureKits,
-    mvPack: { presetId: preset.id, version: preset.version },
+    mvPack: { presetId: preset.id, version: preset.version, ...plainWallMap(preset, index) },
   };
   const example = buildExampleBlock(tilesetBase, preset);
   const referenceDocuments = buildReferences(input, tilesetBase, atlas, materialIndex, objectIndex, example);
   return { tileset: { ...tilesetBase, referenceDocuments }, atlas, layout, example };
+}
+
+/** 창 난 외벽의 모양별 칸 → 창 없는 짝의 같은 모양 칸. */
+function plainWallMap(preset: MvPackPreset, index: ReturnType<typeof mvTileIndex>): { plainWalls?: Record<string, number> } {
+  const plainWalls: Record<string, number> = {};
+  for (const pair of preset.plainWalls ?? []) {
+    const shapeKind = mvAutotileShapeKind(mvSheetPart(pair.sheet), pair.kind);
+    if (!shapeKind || mvAutotileShapeKind(mvSheetPart(pair.sheet), pair.plainKind) !== shapeKind) continue;
+    for (let shape = 0; shape < quarterTable(shapeKind).length; shape += 1) {
+      const from = index(pair.sheet, pair.kind, shape);
+      const to = index(pair.sheet, pair.plainKind, shape);
+      if (from !== undefined && to !== undefined) plainWalls[String(from)] = to;
+    }
+  }
+  return Object.keys(plainWalls).length > 0 ? { plainWalls } : {};
 }
 
 // ───────────────────────── 예시 블록 ─────────────────────────
@@ -261,23 +278,23 @@ function paintAuto(tileset: TilesetDef, map: MvPackExampleMap, name: string, x: 
   const layer = group.layer === "upper" ? map.upperTiles : map.lowerTiles;
   const body = group.memberTileIds[0]!;
   for (let yy = y; yy < y + h; yy += 1) for (let xx = x; xx < x + w; xx += 1) layer[yy * map.width + xx] = body;
-  const view = { width: map.width, height: map.height, lowerTiles: layer };
-  const members = new Set(group.memberTileIds);
-  for (let yy = Math.max(0, y - 1); yy < Math.min(map.height, y + h + 1); yy += 1) {
-    for (let xx = Math.max(0, x - 1); xx < Math.min(map.width, x + w + 1); xx += 1) {
-      if (!members.has(layer[yy * map.width + xx]!)) continue;
-      const mask = autotileNeighborMask(view, xx, yy, (tile) => members.has(tile), group.neighborhood ?? 4);
-      const variant = group.variantMap[String(mask)];
-      if (variant !== undefined) layer[yy * map.width + xx] = variant;
-    }
-  }
+  // fill_region 과 같게 둘레의 다른 재료도 맞춘다(보도 끝 연석·흙 가장자리가 여기서 생긴다).
+  const points: { x: number; y: number }[] = [];
+  for (let yy = y; yy < y + h; yy += 1) for (let xx = x; xx < x + w; xx += 1) points.push({ x: xx, y: yy });
+  shapeAllAutotileGroupsAround(map, tileset.autotileGroups ?? [], points);
 }
 
 function stampKit(tileset: TilesetDef, map: MvPackExampleMap, id: string, x: number, y: number): void {
   const kit = tileset.structureKits?.find((entry) => entry.id === id);
   if (!kit) return;
+  const onWall = kit.ai?.tags?.some((tag) => tag === "door" || tag === "wallmount" || tag === "overhead") === true;
   kit.rows.forEach((row, dy) => row.upperTiles?.forEach((tile, dx) => {
-    if (tile >= 0 && x + dx < map.width && y + dy < map.height) map.upperTiles[(y + dy) * map.width + x + dx] = tile;
+    if (tile < 0 || x + dx >= map.width || y + dy >= map.height) return;
+    const index = (y + dy) * map.width + x + dx;
+    // stamp_tileset_object 와 같게: 벽 물체 밑의 창 난 벽돌은 창 없는 짝으로.
+    const plain = onWall ? tileset.mvPack?.plainWalls?.[String(map.lowerTiles[index])] : undefined;
+    if (plain !== undefined) map.lowerTiles[index] = plain;
+    map.upperTiles[index] = tile;
   }));
 }
 
@@ -297,17 +314,18 @@ function buildExampleBlock(tileset: TilesetDef, preset: MvPackPreset): MvPackExa
   // 차도 5줄 + 중앙선.
   paintAuto(tileset, map, "아스팔트 차도", 0, 8, width, 5);
   paintAuto(tileset, map, "잔디", 0, 13, 7, 2);
-  stampKit(tileset, map, "glass_door_bright", 4, 4);
   stampKit(tileset, map, "awning_red", 3, 3);
+  stampKit(tileset, map, "glass_door_bright", 4, 4);
   stampKit(tileset, map, "metal_door", 15, 4);
   stampKit(tileset, map, "satellite_dish", 16, 0);
   for (let x = 0; x < width; x += 2) stampKit(tileset, map, "lane_line_horizontal", x, 10);
   for (let y = 8; y < 13; y += 1) stampKit(tileset, map, "crosswalk_for_horizontal_road", 9, y);
   for (let y = 8; y < 13; y += 1) stampKit(tileset, map, "crosswalk_for_horizontal_road", 10, y);
-  stampKit(tileset, map, "street_lamp_left", 2, 5);
-  stampKit(tileset, map, "street_lamp_left", 12, 5);
+  // 보도가 2줄이라 1×3 가로등은 건물 사이 틈(9~10열)·끝(21열)에 세운다 — 건물 앞에 세우면 머리가 외벽 창을 가린다.
+  stampKit(tileset, map, "street_lamp_left", 9, 5);
+  stampKit(tileset, map, "street_lamp_left", 21, 5);
   stampKit(tileset, map, "trash_can", 7, 6);
-  stampKit(tileset, map, "vending_soda", 20, 5);
+  stampKit(tileset, map, "vending_soda", 20, 6);
   stampKit(tileset, map, "fire_hydrant", 18, 7);
   stampKit(tileset, map, "park_bench", 3, 13);
   stampKit(tileset, map, "cone_tree", 1, 13);

@@ -480,7 +480,12 @@ export interface TilesetDef {
    * 사용자가 올린 RPG Maker MV/MZ 팩 원본을 프리셋(src/project/rpgmakerMv/packs)대로 구운 타일셋(2026-09-24).
    * 통행·레이어·이름표를 프리셋이 정하므로 16px RM2k3 자동 보정(ensureTilesetHarnesses)에서 뺀다.
    */
-  mvPack?: { presetId: string; version: number };
+  mvPack?: {
+    presetId: string;
+    version: number;
+    /** 창 난 외벽 칸 → 같은 모양의 창 없는 외벽 칸. 문·간판·차양을 찍을 때 밑 창이 비쳐 보이지 않게 바꾼다. */
+    plainWalls?: Record<string, number>;
+  };
   id: TilesetId;
   name: string;
   image: AssetRef;
@@ -561,6 +566,8 @@ export interface AutotileGroup {
   // 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. "upper" 는 바닥 위에 겹치는 투명 오토타일
   // (RPG Maker MV A2 오른쪽 절반의 울타리·주차선·균열처럼)이다 — 아래층 지면을 지우지 않는다.
   layer?: "lower" | "upper";
+  // true 면 맵 밖을 같은 재료로 센다(RPG Maker 규칙) — 맵 가장자리에 테두리가 그려지지 않는다. 생략 = false.
+  outsideConnects?: boolean;
 }
 
 export interface SpriteDef {

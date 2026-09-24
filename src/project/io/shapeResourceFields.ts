@@ -300,6 +300,9 @@ export function validateTileset(id: string, value: unknown): void {
       if (record.layer !== undefined) {
         assert(record.layer === "lower" || record.layer === "upper", `tileset ${id}: autotileGroups[${index}] layer invalid`);
       }
+      if (record.outsideConnects !== undefined) {
+        assert(typeof record.outsideConnects === "boolean", `tileset ${id}: autotileGroups[${index}] outsideConnects invalid`);
+      }
       const variantMap = requireRecord(`tileset ${id}.autotileGroups[${index}].variantMap`, record.variantMap);
       for (const [mask, variant] of Object.entries(variantMap)) {
         requireNumber(`tileset ${id}.autotileGroups[${index}].variantMap[${mask}]`, variant);

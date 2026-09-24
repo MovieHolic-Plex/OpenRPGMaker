@@ -82,6 +82,11 @@ export interface MvPackPreset {
   readonly autotiles: readonly MvPackAutotile[];
   readonly flats: readonly MvPackFlat[];
   readonly objects: readonly MvPackObject[];
+  /**
+   * 창이 그려진 외벽 → 같은 시트의 창 없는 외벽 종류. 문·창·간판·차양은 그림에 투명한 틈이 있어
+   * 창 난 벽 위에 찍으면 밑 창이 비친다 — 찍는 칸의 벽을 창 없는 짝으로 바꾼다(작가 예시의 1층 상가처럼).
+   */
+  readonly plainWalls?: readonly { readonly sheet: string; readonly kind: number; readonly plainKind: number }[];
   /** 참고문서 첫 쪽에 들어갈 조립 지침(MD). 칸 번호는 굽는 시점에 채운다 — `{{object:id}}`, `{{auto:name}}`. */
   readonly guide: string;
 }
