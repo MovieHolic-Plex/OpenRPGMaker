@@ -1,4 +1,5 @@
 import { ensureSharedTileReferences } from "./sharedTileReferences";
+import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
@@ -1492,6 +1493,7 @@ class ProjectStore {
       ["switchVariableSlots", ensureSwitchVariableSlots(this.current)],
       ["bundledTilesets", ensureBundledTilesets(this.current)],
       ["sharedTileReferences", ensureSharedTileReferences(this.current)],
+      ["bundledReferenceImages", externalizeBundledReferenceImages(this.current)],
       ["interiorPropLayers", repairInteriorTransparentPropLayers(this.current)],
       ["legacyRmTileset", removeLegacyRmTileset(this.current)],
       ["legacySpriteRefs", removeLegacySpriteReferences(this.current)],

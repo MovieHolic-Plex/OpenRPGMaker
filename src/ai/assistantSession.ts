@@ -5424,7 +5424,7 @@ export class AssistantSession {
           }
 
           if (name === "read_tileset_reference" && toolResult.ok) {
-            roundImages.push(...this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult));
+            roundImages.push(...await operation.wait(this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult)));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).

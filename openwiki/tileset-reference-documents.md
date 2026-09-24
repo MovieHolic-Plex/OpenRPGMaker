@@ -412,3 +412,20 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 - 옛 그룹(속 변형 없음)은 불러올 때 `ensureForestGroveInterior`(`ensureBundledTilesets`)가 채움 칸에 더한다. 기후 시트는 그림이 구워져 있어 이식 없이 번호만 더한다.
 - 분류 `diverse-villages-canopy-v13`·`concept-villages-v4`·`climate-*-villages-v4`·`field-routes-*-v4`, 지역 revision 다양한 마을 13·기후/필드 4. 옛 v12/v3 는 은퇴 목록에 기록.
 - 그림이 바뀐 것은 아틀라스 원본 칸이라, 다시 저작하지 않은 옛 참고 맵(절벽마을·판타지 장소 등)도 가장자리와 기본 속(2568, 얕은 속 한 무늬)은 새 모양으로 보인다. 깊이 변형은 새로 칠한 24곳에만 있다.
+
+## 번들 참고 이미지는 정적 경로다 (2026-09-25)
+
+`TilesetReferenceImage.dataUrl` 은 두 형태다. 사용자가 올린 그림은 `data:image/...;base64,` 로 프로젝트와 함께 이동한다.
+번들이 준 그림은 같은 출처 정적 경로(`/assets/...png|jpg|webp`, `isBundledReferenceImage`)다.
+
+- 왜: 번들 JSON 에 dataURL 이 약 15MB(중복 제외) 있었고, 그것이 모든 프로젝트 문서에 복사됐다. 부팅 때마다 파싱하고
+  저장할 때마다 직렬화·전송했다 — 웹(HTTP 브리지)에서 편집 중 멈춤의 주원인이었다. 번들 JSON 25.9MB → 6.3MB.
+- 생성: `scripts/content/externalize-reference-images.mjs`. `public/assets/` 에 같은 바이트가 이미 있으면 그 파일을 쓰고
+  (182장 중 154장), 없으면 `public/assets/reference-images/<sha256 앞 20자>.<ext>` 로 쓴다.
+  `src/assets/bundledReferenceImageManifest.json` 에 원래 dataURL 의 FNV 요약 → 경로를 남긴다.
+- 기존 프로젝트: 부팅 정규화기 `bundledReferenceImages` (`externalizeBundledReferenceImages`) 가 목록에 있는 인라인 사본만
+  경로로 바꾸고 저장한다. 올린 그림과 목록에 없는 옛 번들 그림은 그대로다.
+- 화면(`tilesetReferencePanel`)은 `<img src>` 라 두 형태를 그대로 쓴다. 모델 입력은 제공자가 이 호스트 경로를 못 읽으므로
+  `resolveReferenceImageDataUrl` 로 보낼 때만 바이트로 바꾼다(`TilesetReferenceEvidence.imagesForRead` 는 async).
+  Node(헤드리스·테스트)에서는 체크아웃의 `public/` 을 읽는다. `export-tileset-references.mjs` 도 경로를 `public/` 에서 읽는다.
+- 플레이어 빌드는 `publicDir: false` 이고 내보내기는 참고문서를 지우므로 이 파일들은 게임 산출물에 들어가지 않는다.
