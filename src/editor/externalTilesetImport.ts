@@ -10,6 +10,7 @@ import { pixelArtWorldCityGuide } from '@/project/pixelArtWorldCity';
 import { inspectExternalTileGrounding } from '@/project/externalTileGrounding';
 import { pixelArtWorldSchoolBuildingGuide } from '@/project/pixelArtWorldSchoolBuilding';
 import layoutGuidance from '@/assets/pixelArtWorldLayoutGuidance.json';
+import { attachPixelArtWorldBathGymObjects } from '@/project/pixelArtWorldBathGym';
 import { appendPixelArtWorldComposites } from './pixelArtWorldComposites';
 
 export async function prepareExternalTileset(file: File, pack: ExternalTilesetPack) {
@@ -52,6 +53,7 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
     });
   }
   validateTilesetReferences(tileset.referenceDocuments);
+  attachPixelArtWorldBathGymObjects(pack, tileset);
   const composed = appendPixelArtWorldComposites(pack, image, tileset, image);
   return { dataUrl: composed?.dataUrl ?? dataUrl, sourceDataUrl: dataUrl, assetId, tileset: composed?.tileset ?? tileset,
     imageWidth: composed?.imageWidth ?? pack.width, imageHeight: composed?.imageHeight ?? pack.height };

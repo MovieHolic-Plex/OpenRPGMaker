@@ -6,6 +6,7 @@ import homeCatalog from '@/assets/pixelArtWorldHomeCatalog.json';
 import staticExpansionCatalog from '@/assets/pixelArtWorldStaticExpansionCatalog.json';
 import nativeComplementsCatalog from '@/assets/pixelArtWorldNativeComplementsCatalog.json';
 import hospitalityComplementsCatalog from '@/assets/pixelArtWorldHospitalityComplementsCatalog.json';
+import bathGymCatalog from '@/assets/pixelArtWorldBathGymCatalog.json';
 import type { TilesetDef } from './types';
 
 export interface ExternalTileRecipe {
@@ -17,6 +18,8 @@ export interface ExternalTileRecipe {
   placementKind?: string;
   supportCells?: { x: number; y: number }[];
   supportTileIds?: number[];
+  /** Optional wall rows behind a wall fixture in its standalone teaching example. */
+  exampleWallRows?: number[];
 }
 export interface ExternalTilesetPack {
   id: string;
@@ -55,7 +58,7 @@ export interface ExternalTileScene {
   doors?: { sceneId: string; x: number; y: number; approach: { x: number; y: number } }[];
   doorways?: { from: string; to: string; x: number; y: number; width: number; height: number }[];
 }
-export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog, ...staticExpansionCatalog, ...nativeComplementsCatalog, ...hospitalityComplementsCatalog];
+export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog, ...staticExpansionCatalog, ...nativeComplementsCatalog, ...hospitalityComplementsCatalog, ...bathGymCatalog];
 
 export function validateExternalTileScenes(pack: ExternalTilesetPack): void {
   const count = pack.width * pack.height / (pack.tileSize ** 2);
@@ -83,6 +86,12 @@ export function externalRecipeExample(pack: ExternalTilesetPack, recipe: Externa
   const height = recipe.sourceRect.height + 2;
   const lowerTiles = Array<number>(width * height).fill(pack.floorTile);
   const upperTiles = Array<number>(width * height).fill(-1);
+  if (recipe.placementKind === 'wall-mounted' && recipe.exampleWallRows?.length) {
+    if (recipe.exampleWallRows.length !== recipe.sourceRect.height || recipe.exampleWallRows.some(tile => !Number.isInteger(tile) || tile < 0 || tile >= pack.width * pack.height / (pack.tileSize ** 2))) throw new Error('벽 부착 예제의 받침 행이 원본 규격과 다릅니다.');
+    for (let y = 0; y <= recipe.sourceRect.height; y++) {
+      lowerTiles.fill(recipe.exampleWallRows[Math.max(0, y - 1)]!, y * width, (y + 1) * width);
+    }
+  }
   recipe.tiles.forEach((row, y) => row.forEach((tile, x) => { upperTiles[(y + 1) * width + x + 1] = tile; }));
   const approach = recipe.facing === 'west' ? { x: 0, y: Math.floor(height / 2) }
     : recipe.facing === 'east' ? { x: width - 1, y: Math.floor(height / 2) }
