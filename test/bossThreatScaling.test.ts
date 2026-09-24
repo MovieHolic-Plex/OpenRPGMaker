@@ -72,3 +72,30 @@ describe("troop balance warning also flags a near-harmless troop", () => {
     expect(JSON.stringify(result)).toContain("밸런스");
   });
 });
+
+describe("troop balance warning flags the other side — a troop the party cannot beat", () => {
+  const BRUTE = {
+    id: "enemy_brute", name: "광산 거인", monsterResourceId: "generated-enemy-golem-01",
+    stats: { maxHp: 9000, maxMp: 10, attack: 400, defense: 300, mind: 50, agility: 90 },
+    rewards: { exp: 10, gold: 10 },
+  };
+
+  it("warns with the joined party and a raised level when every run is a wipe", () => {
+    const ctx = { project: createBlankProject() };
+    runTool(ctx, "upsert_enemy", { enemy: BRUTE, role: "normal" });
+    const result = runTool(ctx, "upsert_troop", { troop: { id: "troop_brute", name: "거인 무리", enemyIds: ["enemy_brute"] } });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("전멸");
+    const text = JSON.stringify(result.diff?.warnings ?? []);
+    expect(text).toContain("Lv5");
+    expect(text).toContain("partyActorIds");
+  });
+
+  it("does not warn for an ordinary troop the party beats with some damage", () => {
+    const ctx = { project: createBlankProject() };
+    const fair = { ...BRUTE, id: "enemy_fair", name: "코볼트", stats: { maxHp: 300, maxMp: 10, attack: 90, defense: 40, mind: 20, agility: 45 } };
+    runTool(ctx, "upsert_enemy", { enemy: fair, role: "normal" });
+    const result = runTool(ctx, "upsert_troop", { troop: { id: "troop_fair", name: "코볼트", enemyIds: ["enemy_fair"] } });
+    expect(JSON.stringify(result.diff?.warnings ?? [])).not.toContain("전멸");
+  });
+});

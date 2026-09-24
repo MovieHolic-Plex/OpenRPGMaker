@@ -949,7 +949,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함" : ""}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? (warnings.some(w => w.includes("전멸")) ? " — 밸런스 경고: 파티가 레벨을 올려도 전멸함" : " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함") : ""}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };

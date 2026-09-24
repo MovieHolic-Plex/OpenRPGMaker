@@ -8,10 +8,43 @@
 import { actorBattlers } from "@/battle/battleBattlers";
 import { simulateBattle } from "@/battle/simulate";
 import type { Project } from "@/project/types";
+import { visitProjectCommands } from "./commandTraversal";
 
 const SAMPLES = 3;
 /** 모의전에서 파티가 이 비율보다 적게 잃으면 「위협이 없다」로 본다. */
 const TRIVIAL_PARTY_LOSS = 0.1;
+/** 반대쪽 검사 — 시작 레벨보다 이만큼 올린 파티도 전멸하면 「이길 수 없다」로 본다(잡몹 / 보스). */
+const WIPE_LEVEL_SLACK = 4;
+const BOSS_WIPE_LEVEL_SLACK = 9;
+
+/** 시작 파티 + 이미 저작된 changeParty(add) 로 들어오는 배우. */
+function eventualPartyActorIds(project: Project, start: readonly string[]): string[] {
+  const ids = new Set(start);
+  visitProjectCommands(project, ({ command }) => {
+    if (command.kind === "changeParty" && command.action === "add" && typeof command.actorId === "string") ids.add(command.actorId);
+  });
+  return [...ids].filter(id => project.database.actors.some(actor => actor.id === id));
+}
+
+/**
+ * 「이길 수 없다」 쪽 경고. 2026-09-24 JRPG 도그푸딩 ember-2: 모델이 파티를 HP 60~90 척도로 지은 뒤 2층에
+ * 기본 DB 적(코볼트 HP 322·공 49)을 그대로 넣고 보스를 HP 950·광역기로 지었다 — 합류가 끝난 3명 Lv8 도
+ * 승률 0% 였는데 「너무 쉬움」 한쪽만 보는 경고는 아무 말도 하지 않았다.
+ */
+function unwinnableWarnings(project: Project, troopId: string, troopName: string, start: readonly string[], heroLevel: number): string[] {
+  const party = eventualPartyActorIds(project, start);
+  const troop = project.database.troops.find(entry => entry.id === troopId);
+  const boss = (troop?.enemyIds ?? []).some(id => /boss|보스/iu.test(id)) || /boss|보스/iu.test(`${troopId} ${troopName}`);
+  const level = heroLevel + (boss ? BOSS_WIPE_LEVEL_SLACK : WIPE_LEVEL_SLACK);
+  const result = simulateBattle({ project, troopId, heroLevel: level, partyActorIds: party, n: SAMPLES, seed: 1 });
+  if (result.winRate > 0) return [];
+  const joined = party.length - start.length;
+  return [
+    `밸런스: ${troopName}(${troopId}) 에 Lv${level} 파티 ${party.length}명(${joined > 0 ? `시작 ${start.length} + 합류 ${joined}` : "시작 파티"})이 모의전 ${SAMPLES}판 모두 평균 ${result.avgTurns.toFixed(1)}타 만에 전멸합니다 — ` +
+    `${boss ? "레벨을 올려도 이길 수 없는 보스" : "이 적 그룹이 나오는 곳을 지나갈 수 없는 잡몹"}입니다. 적 수치를 파티 척도(get_database_records actors 의 parameterCurves)에 맞춰 낮추거나 tune_enemy 로 맞추고, ` +
+    `동료가 아직 합류 이벤트 없이 나중에 들어온다면 simulate_battle {troopId, heroLevel, partyActorIds:[합류 뒤 파티]} 로 다시 재세요.`,
+  ];
+}
 
 export function troopBalanceWarnings(project: Project, troopId: string): string[] {
   const troop = project.database.troops.find(entry => entry.id === troopId);
@@ -28,7 +61,8 @@ export function troopBalanceWarnings(project: Project, troopId: string): string[
     const result = simulateBattle({ project, troopId, heroLevel, n: SAMPLES, seed: 1 });
     // 「0 피해」만 보면 514 HP 중 4 를 깎는 보스(3차 재시험)가 빠진다 — 파티 HP 의 10% 미만이면 같은 부류다.
     const lossShare = 1 - result.avgHpRemaining / partyHp;
-    if (result.winRate < 1 || lossShare >= TRIVIAL_PARTY_LOSS) return [];
+    if (result.winRate < 1) return unwinnableWarnings(project, troopId, troop.name, partyActorIds, heroLevel);
+    if (lossShare >= TRIVIAL_PARTY_LOSS) return [];
     const damageText = lossShare <= 0
       ? "파티 피해 0 — 한 번도 피해를 주지 못합니다"
       : `파티 HP 손실 평균 ${(lossShare * 100).toFixed(1)}% — 거의 위협이 되지 못합니다`;
