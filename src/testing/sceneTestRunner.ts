@@ -23,6 +23,8 @@ import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/c
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
+import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
+import type { AutonomousMover } from "@/player/playSceneTypes";
 import { followerPositions, recordFollowerPlayerStep, removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules, type FollowerWorld } from "@/project/followers";
 import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
@@ -710,8 +712,10 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "set":
       return runSetStep(state, step);
     case "move":
+      if (state.session.horror?.hiding) return "숨어 있는 동안에는 움직일 수 없습니다 — interact 로 은신처에서 나오세요.";
       return runMoveStep(state, step);
     case "walk":
+      if (state.session.horror?.hiding) return "숨어 있는 동안에는 움직일 수 없습니다 — interact 로 은신처에서 나오세요.";
       return runWalkStep(state, step);
     case "interact":
       return runInteractStep(state, step.eventId);
@@ -974,6 +978,15 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
   if (state.gameOver) return "게임 오버 중에는 이벤트를 조사할 수 없습니다.";
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  // 런타임(playSceneMovement handleAction)과 같다: 숨어 있으면 조사 키는 나오기, 은신처 조사는 숨기.
+  const world = { project: state.project, map, session: state.session, positions: state.eventPositions };
+  if (state.session.horror?.hiding) {
+    const from = state.session.horror.hiding.eventId;
+    toggleHiding(world);
+    delete state.failedSelection;
+    state.log.push(`hide exit ${from}`);
+    return null;
+  }
   const delta = directionDelta(state.facing);
   for (const target of [
     { mapId: map.id, x: state.session.x + delta.x, y: state.session.y + delta.y },
@@ -983,6 +996,12 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
     if (event) {
       if (expectedEventId !== undefined && event.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${event.event.id}`;
       delete state.failedSelection;
+      if (event.page?.interaction?.kind === "hiding") {
+        toggleHiding(world, event);
+        const witnessed = state.session.horror?.hiding?.witnessedBy ?? [];
+        state.log.push(`hide in ${event.event.id}${witnessed.length ? ` (seen by ${witnessed.join(",")})` : ""}`);
+        return null;
+      }
       return runEventView(state, event);
     }
     const chest = findChestAt(state.session, map.id, target.x, target.y);
@@ -2505,17 +2524,30 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
     const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)
       .find((entry) => entry.event.id === eventId);
     if (!view) continue;
-    const decision = nextChaseDecision({
+    // 런타임(playSceneAutonomous updateChaseNpc)과 같은 추적 정책: 시야·수색·복귀, 숨은 주인공은 표적이 아니다.
+    const world = { project: state.project, map, session: state.session, positions: state.eventPositions };
+    isPlayerHiding(world);
+    const tracked = pursuitTarget(world, view, mover as unknown as AutonomousMover, deltaMs);
+    if (tracked === null) continue;
+    const player = { x: state.session.x, y: state.session.y };
+    const target = tracked ?? player;
+    let decision = nextChaseDecision({
       project: state.project,
       map,
       from: { x: view.x, y: view.y },
-      player: { x: state.session.x, y: state.session.y },
+      player: target,
       deltaMs,
       mover,
-      sightRange: view.movement.sightRange,
-      giveUpRange: view.movement.giveUpRange,
+      sightRange: tracked ? undefined : view.movement.sightRange,
+      giveUpRange: tracked ? undefined : view.movement.giveUpRange,
       pathfind: view.movement.pathfind,
     });
+    if (tracked?.searching && decision.kind === "touch" && (target.x !== player.x || target.y !== player.y)) {
+      decision = { kind: "move", x: target.x, y: target.y, dir: decision.dir };
+    }
+    if (decision.kind === "touch" && tracked?.searching) continue;
+    // 수색 중 목적지가 주인공 칸이면(숨은 옷장 앞) 밟지 않고 선다 — 런타임 isPlayerOccupyingTile 과 같다.
+    if (decision.kind === "move" && decision.x === player.x && decision.y === player.y) continue;
     if (decision.kind === "move") {
       const position = { x: decision.x, y: decision.y, direction: decision.dir };
       const location = state.session.eventLocations[eventId];

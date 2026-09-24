@@ -10,7 +10,10 @@ export type PursuitWorld = { project: Project; map: GameMap; session: PlaySessio
 
 export function pursuitState(world: PursuitWorld, view: RuntimeEventView): PursuitState {
   const states = (world.session.horror ??= { pursuits: {} }).pursuits;
-  return states[view.event.id] ??= { home: { mapId: world.map.id, x: view.x, y: view.y }, active: false, searchMs: 0, doors: [] };
+  // 스위치가 여는 persistent 추격 페이지는 그 스위치가 곧 「깨어남」이다(「금고를 열자 달려온다」) — 처음부터
+  // 쫓는 상태로 시작한다. 안 그러면 벽 너머에서 깨운 추격자는 주인공을 한 번 볼 때까지 서 있었다(2026-09-24).
+  const awake = view.movement.pursuit?.tracking === 'persistent' && (view.page?.conditions ?? []).some(c => c.kind === 'switch');
+  return states[view.event.id] ??= { home: { mapId: world.map.id, x: view.x, y: view.y }, active: awake, searchMs: 0, doors: [] };
 }
 
 /** All pursuit paths use the same feet/body policy as autonomous movement. */
