@@ -13,3 +13,9 @@ ST-Sento-E01 / ST-RTown-E01 두 native32 원본(256×1600)을 사용자 PNG에�
 - 목욕탕 내부 ST-Sento-I02는 연결후보다. 문그림/approachCells를 실제 실내전이로 해석하지 않는다.
 
 픽셀 설치·공용등록·정본저장/재로드는 root sole writer. private prepare만으로 저장완료라고 하지 않는다.
+
+2026-09-25 root 설치: 정본 revision58의 원본2개 이후 공용 라이브러리의 외관2개를
+시설 보완5개와 함께 revision59에 투영했다. 41타일셋/84자산 전체 재로드 일치, 기존12맵
+불변. 외관 접근점10개 실제 왕복과 AI 문서 페이지/이미지 조회를 확인했다. 공용 지역은
+저택 외관과 일본식 외관 후보를 별도 그룹으로 제공하며 실내전이 완료로 표시하지 않는다.
+그림·영수증은 ignored `output/paw-retrotown-install/`에 있다.

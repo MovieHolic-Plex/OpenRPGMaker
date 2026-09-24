@@ -125,6 +125,17 @@ UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip�
 격리 HTTP sink 관찰은 실제 브리지/본문 해제기의 바이트 보존과 거절 동작만 확인하며,
 정본 저장·재로드 증거를 대신하지 않는다.
 
+### 헤드리스 대용량 콘텐츠 설치 (2026-09-25)
+
+`scripts/lib/hostBridgeClient.mjs`는 작은 `/__oprn/team` 페이지에서 실제 브리지 설정과
+회원 쿠키를 메모리로 얻은 뒤 Chromium을 닫는다. 같은 origin의 공식 HTTP dispatcher를
+Node에서 호출하며 토큰/쿠키를 로그나 파일에 기록하지 않는다. 협상된 gzip/채널별 한도와
+`expectedSha` CAS를 유지하고 실패한 저장을 자동 재시도하지 않는다. DB 직접 쓰기는 없다.
+`install-pixel-art-world-shared-host.mjs`는 설치 전 backup, 저장 후 실제 재로드,
+맵/spatial 해시 보존과 모든 대상 자산 바이트 비교를 완료해야 영수증을 작성한다.
+PAW의 기존 Chromium 설치는 `Target crashed` 후 저장되지 않았고 이 경로로 revision59에
+저장·재로드했다. 렌더러 충돌 원인은 확정하지 않았으며 편집기 UI의 메모리 문제 해결을 뜻하지 않는다.
+
 ## 백업과 이전
 
 `store.backup()`은 `backups/<시간-uuid>/project.sqlite`와 `assets/`를 함께 만든다.
