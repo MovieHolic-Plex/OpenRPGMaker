@@ -372,6 +372,15 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
   }, { scope: "map", mapId });
 }
 
+export function setMapLoop(mapId: MapId, loop: import("@/project/mapLoop").MapLoop | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (loop) map.loop = loop; else delete map.loop;
+  }, { scope: "map", mapId });
+}
+
 export function setMapMinimap(mapId: MapId, patch: Partial<MapMinimapSetting> | null): void {
   if (!allowMapMutation(mapId)) return;
   store.update((p) => {
