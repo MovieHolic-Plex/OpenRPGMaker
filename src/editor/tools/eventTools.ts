@@ -288,6 +288,17 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   }
   if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
   if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
+  else if (typeof page.movement === "object" && page.movement !== null) {
+    // `movement:{type:"fixed"}` 처럼 속도·빈도를 뺀 부분 객체는 도구 검사를 통과하고 적용 단계의
+    // 직렬화 왕복에서야 `movement.speed가 숫자가 아닙니다` 로 죽었다 — 조수 실행 전체가 중단됐다
+    // (2026-09-24 추격 호러 도그푸딩, 38번째 호출). 빠진 숫자만 기본값으로 채운다.
+    const movement = page.movement as Partial<EventPage["movement"]>;
+    const missing: string[] = [];
+    if (typeof movement.type !== "string") { movement.type = PASSIVE.type; missing.push("type"); }
+    if (typeof movement.speed !== "number" || !Number.isFinite(movement.speed)) { movement.speed = PASSIVE.speed; missing.push("speed"); }
+    if (typeof movement.frequency !== "number" || !Number.isFinite(movement.frequency)) { movement.frequency = PASSIVE.frequency; missing.push("frequency"); }
+    if (missing.length > 0) filled.push(`movement.${missing.join("/")}`);
+  }
   if (isInvisibleTalkablePage(page)) {
     const siblingGraphic = event.pages?.find(
       (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
@@ -700,6 +711,9 @@ const upsertEvent: ToolDefinition = {
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
     assertEventShape(event, warnings, existing ? patch : event);
+    // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
+    // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
+    if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);
     if (!existing || "pages" in patch || "commands" in patch) assertEventPartyActorReferences(draft, event);
     const outcome = upsertEventIntoMap(map, event);
     warnings.push(...unwrittenSwitchGateWarnings(draft, event));

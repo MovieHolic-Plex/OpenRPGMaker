@@ -262,8 +262,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       accepted = snapshotProjectKeepingHeavy(merged);
       finishSpatialToolAcceptance(ctx.project);
     } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      // 내용 무결성 거부(commit-rejected)는 방금 그 도구의 변경 탓이다 — 체크포인트는 쓰기마다 돈다.
+      // 실행 전체를 죽이지 말고 그 변경만 되돌린 뒤 도구 실패로 모델에게 돌려준다(2026-09-24:
+      // upsert_event 하나의 movement.speed 누락이 38호출짜리 실행을 통째로 버렸다).
+      // 권위·기준선·파괴 승인·중단은 실행 단위 문제라 그대로 중단한다.
+      if (/^적용 실패\(commit-rejected\)/u.test(message) && !options.signal?.aborted) {
+        ctx.project = snapshotProjectKeepingHeavy(accepted);
+        throw new Error(`${message} — 이 도구의 변경은 적용 검증에서 거부돼 되돌렸습니다. 인자를 고쳐 다시 호출하세요.`);
+      }
       rejected = true;
-      fatal = error instanceof Error ? error.message : String(error);
+      fatal = message;
       agent.abort(fatal);
       throw error;
     }
@@ -542,7 +551,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   if (rejected) throw new Error(fatal || "적용이 중단되었습니다.");
   // 마지막 한 방울 — 툴 경계 밖에서 바뀐 것까지 캔버스에 닿게 한다. 이미 보낸 것은 diff 가 걸러낸다.
-  if (!fatal && !rejected) await checkpoint("마지막 단계", "finish_stage");
+  if (!fatal && !rejected) {
+    // 마지막 체크포인트의 내용 거부는 되돌린 상태(마지막 수용본)로 마무리한다.
+    try { await checkpoint("마지막 단계", "finish_stage"); }
+    catch (error) {
+      if (rejected) throw error;
+      emit({ type: "error", message: error instanceof Error ? error.message : String(error) });
+    }
+  }
   emitMapDelta();
   if (fatal && toolCalls === 0) throw Object.assign(new Error(fatal), { status: 502 });
   const villageCompletion = contract ? validateVillageContract(ctx.project, base, contract, receipt)

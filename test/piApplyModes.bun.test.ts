@@ -144,3 +144,22 @@ test("checkpoint wait is retired when the core aborts the active tool", async ()
   });
   await expect(task).rejects.toThrow("중단");
 });
+
+test("a content rejection reverts only that write and the run continues", async () => {
+  const calls: ScriptedCall[] = [];
+  const events: PiAgentEvent[] = [];
+  const done = await runPiAgent(request({ applyMode: "default" }), {
+    onEvent: event => events.push(event),
+    streamFn: scriptedStream(calls, [
+      { name: "set_project_settings", args: { title: "rejected" } },
+      { name: "set_project_settings", args: { title: "accepted" } },
+    ]) as never,
+    onCheckpoint: async checkpoint => {
+      if (checkpoint.project.meta.title === "rejected") throw new Error("적용 실패(commit-rejected): 직렬화 왕복 실패: movement.speed가 숫자가 아닙니다.");
+    },
+  });
+  expect(calls.length).toBe(3);
+  expect(done.project.meta.title).toBe("accepted");
+  const failed = events.find(event => event.type === "tool_end" && !(event as { ok?: boolean }).ok) as { summary?: string } | undefined;
+  expect(failed?.summary).toContain("되돌렸습니다");
+});
