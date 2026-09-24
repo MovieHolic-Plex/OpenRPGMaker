@@ -33,6 +33,7 @@ import {
 } from "@/project/mapTree";
 import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
+import { remapExtraLayers } from "@/project/mapLayers";
 export {
   eraseTile,
   eraseTilesBulk,
@@ -233,6 +234,11 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
         newUpper[y * width + x] = oldUpper[y * oldW + x];
       }
     }
+    remapExtraLayers(m, width, height, (target) => {
+      const tx = target % width;
+      const ty = Math.floor(target / width);
+      return tx < minW && ty < minH ? ty * oldW + tx : -1;
+    });
     m.width = width;
     m.height = height;
     m.lowerTiles = newLower;

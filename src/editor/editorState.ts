@@ -43,6 +43,8 @@ export interface TileSelection {
 export interface TileClipboardLayer {
   tiles: number[];
   stacks: number[][];
+  /** 2층(lower 묶음) 또는 4층(upper 묶음). 없으면 빈칸. */
+  overlay?: number[];
 }
 
 // 복사는 항상 하위+상위 레이어를 통째로 담는다(RM2K3 영역 복사 관례).
@@ -51,6 +53,8 @@ export interface TileClipboard {
   height: number;
   lower: TileClipboardLayer;
   upper: TileClipboardLayer;
+  /** 그림자 비트. 없으면 0. */
+  shadow?: number[];
 }
 
 export interface EditorState {
