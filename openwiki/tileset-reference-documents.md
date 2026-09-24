@@ -472,8 +472,13 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 ### 공용 PAW 장면 실행 경로 (2026-09-25)
 
 [AI-SCENE-AUTHORING](../tiledata/pixel-art-world/AI-SCENE-AUTHORING.md):
-계단뿐 아니라 학교·교실·특별실·실내·도시74장소를 검색/문서·그림 조회/실제 구현한다.
+계단뿐 아니라 학교·교실·특별실·실내·도시76장소를 검색/문서·그림 조회/실제 구현한다.
 `publish-pixel-art-world-local-library.mjs`는 저장된 학교 층과 번호 청사진의 일치를 확인한 뒤
 `pixel-art-world-school-rooms.mjs`로28실을 추출한다. 각 장소가 원본 원점·전체 배열·부품·접근칸·실제 그림을 소유한다.
 공용 SQLite와 새/기존 프로젝트가 같은 자료를 사용한다. 원본/파생 그림은 사용자 로컬에만 둔다.
 `build_shared_scene`는 이벤트까지 보관한 library.maps를 우선하고 정적 kit는 events=[]로 구별한다.
+후속 밀도 수정: 이자카야10×15(부스2·방석6·바3), 독립 침실2 주택15×15.
+`tiledata/pixel-art-world/house-variants.json`과 `scripts/content/prepare-pixel-art-world-dense-interiors.mjs`가 메타데이터·전체 배열·
+프로젝트 소유 그림을 생성하고 엔진 통행으로 접근점을 검사한다. `scripts/content/save-pixel-art-world-host-patch.mjs`는
+host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체 문서를 다시 읽어 비교한다.
+두 신규 맵은 도시 외부 전이 없는 독립 표본이다. 이전74장소 AI 재현 실험과 신규 저작분 확인을 구별한다.

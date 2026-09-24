@@ -1,5 +1,12 @@
 # Pixel Art World 이자카야·일본식 방
 
+2026-09-25 밀도 재검토: 이전11×14 표본은 부스 하나와 빈 카운터 때문에 반려되었다.
+10×15에 부스2개·좌식 방석6개·북향 바 의자3개를 넣고 x4 주통로1칸과 직원행y4,
+의자 뒤y8, 좌식 남쪽y13을 보존한다. 정적 장소 `izakaya-booth-and-zashiki`를 갱신하고
+같은 배열을 독립 저장 맵 `paw-izakaya-dense`로 추가했다. 원본/파생 atlas 바이트는 그대로다.
+현재 엔진 통행으로17개 접근/문턱 목표를 확인했다. 아래 revision46/47 관찰은 수정 이전 기록이다.
+새 맵에는 도시 전이·착석·주문 이벤트가 없다.
+
 [원본·3층 합성·장소·준비 계약](../tiledata/pixel-art-world/JAPANESE-INTERIORS.md).
 `japanese-interiors.json`은 원본400칸/23레시피, `japanese-interiors-layout.json`은
 픽셀 합성2개와 실제 장소2개의 메타데이터 정본이다. prepare 스크립트가 Catalog/Layout JSON을 만든다.

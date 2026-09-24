@@ -19,6 +19,7 @@ const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','Faci
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
+const densePlans = (await read('tiledata/pixel-art-world/dense-interiors-compiled.json')).maps;
 const civicPlans = (await read('tiledata/pixel-art-world/compact-civic.json')).maps;
 const tabletopRecipes = await read('tiledata/pixel-art-world/tabletop-composites.json');
 const nativeLayouts = (await Promise.all(['JapaneseInteriors','MansionInteriors','MansionExteriors','RetrotownExteriors'].map(kind => read(`src/assets/pixelArtWorld${kind}Layout.json`)))).flat();
@@ -180,7 +181,7 @@ for(const source of Object.values(project.maps)){
   const image=render(tileId,map.width,map.height,map.lowerTiles,map.upperTiles);lib.previews[id]=image;
   await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
   const floor=school.floors.find(f=>f.id===source.id), schoolGuide=floor?school.guide:'';
-  const candidate=homePlans[source.id];
+  const candidate=homePlans[source.id]??densePlans[source.id];
   const home=candidate&&candidate.width===map.width&&candidate.height===map.height&&JSON.stringify(candidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(candidate.upperTiles)===JSON.stringify(map.upperTiles)?candidate:null;
   const civicCandidate=civicPlans[source.id];
   const civic=civicCandidate&&civicCandidate.width===map.width&&civicCandidate.height===map.height&&JSON.stringify(civicCandidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(civicCandidate.upperTiles)===JSON.stringify(map.upperTiles)?civicCandidate:null;

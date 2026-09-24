@@ -1,5 +1,12 @@
 # Pixel Art World 현대 주택 사용자 PNG 지원
 
+2026-09-25: 도시의 두 집에 더해 독립 예제 `paw-home-two-bedroom`(15×15)을 추가했다.
+각 침실은 거실에서 직접 진입하고, 주방·식탁은 북서쪽, TV·소파는 남서쪽에 모았다.
+정본은 `tiledata/pixel-art-world/house-variants.json` → `tiledata/pixel-art-world/dense-interiors-compiled.json`; 생성/지지·겹침·엔진 통행 확인은
+`scripts/content/prepare-pixel-art-world-dense-interiors.mjs`다.16개 접근/문턱 목표를 확인했다.
+옷장 앞 y12와 주방 앞 y6을 막으면 방이 단절된다. [현재 세 유형](../tiledata/pixel-art-world/HOME.md)을 읽는다.
+새 맵은 도시 전이 없는 독립 예제이며 아래 두 집의 player 전이 관찰에 포함되지 않는다.
+
 ## 도시의 서로 다른 두 주택 (2026-09-24 후속)
 
 도시 정본의 중복된 16×18 주택 두 채는 `compact-homes.json`의 13×16/13×15 평면으로 다시 저작했다.
