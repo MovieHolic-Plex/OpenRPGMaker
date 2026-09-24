@@ -3,6 +3,7 @@
 // stay on the user's machine. Nothing here writes into the repository.
 //   node scripts/content/rasak/publish-study-project.mjs --baked ~/third-party-assets/rasak/baked \
 //     --maps ~/third-party-assets/rasak/maps --project-dir ~/third-party-assets/rasak/study-project
+// --layers loads stack_to_layers.py output instead (four layers + shadow, *.layers.map.json).
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -13,6 +14,10 @@ const arg = (n) => { const i = process.argv.indexOf(n); return i >= 0 ? process.
 const home = (p) => p && p.replace(/^~(?=\/)/, os.homedir());
 const bakedDir = home(arg('--baked')), mapsDir = home(arg('--maps')), projectDir = home(arg('--project-dir'));
 if (!bakedDir || !mapsDir || !projectDir) throw Error('--baked, --maps and --project-dir are required');
+// Folded (fold_layers.py): two layers of scene composites. Layers (stack_to_layers.py): the MZ stack
+// split over layers 1-4 + shadowBits, composites only for cells that overflow those slots.
+const variant = process.argv.includes('--layers') ? 'layers' : 'folded';
+const EXTRA_LAYER_KEYS = ['lowerOverlayTiles', 'upperOverlayTiles', 'shadowBits'];
 if (fs.existsSync(path.join(projectDir, 'project.sqlite'))) throw Error('Study store already exists; refuse to overwrite it');
 
 const bundles = JSON.parse(fs.readFileSync('tiledata/rasak-fantasy/bundles.json', 'utf8'));
@@ -72,10 +77,10 @@ try {
   const scores = [];
   for (const b of bundles.bundles) {
     const dir = path.join(bakedDir, b.id);
-    // Folded atlases (fold_layers.py) carry the two-layer scene composites the maps need.
-    if (!fs.existsSync(path.join(dir, 'manifest.folded.json'))) continue;
-    const manifest = JSON.parse(fs.readFileSync(path.join(dir, 'manifest.folded.json'), 'utf8'));
-    const atlasBytes = fs.readFileSync(path.join(dir, 'atlas.folded.png'));
+    // The atlas variant carries the composites its maps reference.
+    if (!fs.existsSync(path.join(dir, `manifest.${variant}.json`))) continue;
+    const manifest = JSON.parse(fs.readFileSync(path.join(dir, `manifest.${variant}.json`), 'utf8'));
+    const atlasBytes = fs.readFileSync(path.join(dir, `atlas.${variant}.png`));
     let coverage = manifest.entries.map(() => 0);
     if (PNG) {
       const png = PNG.sync.read(atlasBytes);
@@ -91,12 +96,12 @@ try {
     project.assets.uploaded[asset.id] = asset;
     project.tilesets[tileset.id] = tileset;
   }
-  for (const file of fs.readdirSync(mapsDir).filter((f) => f.endsWith('.folded.map.json')).sort()) {
+  for (const file of fs.readdirSync(mapsDir).filter((f) => f.endsWith(`.${variant}.map.json`)).sort()) {
     const m = JSON.parse(fs.readFileSync(path.join(mapsDir, file), 'utf8'));
     if (!project.tilesets[m.tilesetId]) continue;
-    if (m.lowerTileStacks || m.upperTileStacks) throw Error(`${m.id}: tile stacks are not drawn by OPRN; run fold_layers.py`);
+    if (m.lowerTileStacks || m.upperTileStacks) throw Error(`${m.id}: tile stacks are not drawn by OPRN; run fold_layers.py or stack_to_layers.py`);
     maps[m.id] = m;
-    const score = path.join(mapsDir, file.replace('.folded.map.json', '.score.json'));
+    const score = path.join(mapsDir, file.replace(`.${variant}.map.json`, '.score.json'));
     if (fs.existsSync(score)) scores.push(JSON.parse(fs.readFileSync(score, 'utf8')));
   }
   if (!Object.keys(maps).length) throw Error('No reconstructed maps found');
@@ -115,11 +120,12 @@ try {
   if (!reload) throw Error('Study reload failed');
   for (const [id, m] of Object.entries(maps)) {
     const r = reload.project.maps[id];
-    for (const k of ['lowerTiles', 'upperTiles'])
+    for (const k of ['lowerTiles', 'upperTiles', ...EXTRA_LAYER_KEYS])
       if (JSON.stringify(r[k] ?? {}) !== JSON.stringify(m[k] ?? {})) throw Error(`Map ${id} ${k} reload mismatch`);
   }
   reopened.close();
-  console.log(JSON.stringify({ projectDir, projectId: store.projectId, sha256: saved.sha256, tilesets: Object.keys(project.tilesets), maps: ids, scores }, null, 1));
+  console.log(JSON.stringify({ projectDir, projectId: store.projectId, variant,
+    layers: Object.fromEntries(Object.entries(maps).map(([id, m]) => [id, EXTRA_LAYER_KEYS.filter((k) => m[k])])), sha256: saved.sha256, tilesets: Object.keys(project.tilesets), maps: ids, scores }, null, 1));
 } finally {
   fs.rmSync(temp, { recursive: true, force: true });
 }

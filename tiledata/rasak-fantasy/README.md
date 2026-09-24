@@ -37,6 +37,12 @@ python3 scripts/content/rasak/verify_folded.py --baked ~/third-party-assets/rasa
 node scripts/content/rasak/publish-study-project.mjs --baked ~/third-party-assets/rasak/baked \
   --maps ~/third-party-assets/rasak/maps --project-dir ~/third-party-assets/rasak/study-project
 node scripts/oprn-serve.mjs --project-dir ~/third-party-assets/rasak/study-project --port 9837
+# 3'. (합성 대신) 스택을 1·2층·그림자·3·4층에 그대로 싣기 — 칸에 다 안 들어가는 스택만 그 무리를 합성으로 되돌린다.
+#     *.layers.map.json + atlas.layers.png 를 만들고, publish 에 --layers 를 주면 그것을 싣는다.
+python3 scripts/content/rasak/stack_to_layers.py --baked ~/third-party-assets/rasak/baked/rasak_field \
+  --maps ~/third-party-assets/rasak/maps
+node scripts/content/rasak/publish-study-project.mjs --layers --baked ~/third-party-assets/rasak/baked \
+  --maps ~/third-party-assets/rasak/maps --project-dir ~/third-party-assets/rasak/study-project-layers
 ```
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
