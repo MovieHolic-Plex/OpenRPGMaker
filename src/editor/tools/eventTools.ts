@@ -815,8 +815,14 @@ export function resolveEventPlacement(
     );
   }
   const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
-  if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
-  if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
+  // 같은 칸의 기존 이벤트도 "점유"다 — 조기 반환에서 통행만 보고 넘어가면 새 이벤트가 그 위에
+  // 겹쳐 생겨 앞 이벤트가 그림자진다(2026-09-24 몬스터 수집 r2: NPC 위에 ev_starters 가 겹쳐
+  // autoplay 의 「첫 파트너 받기」 조사가 NPC 를 집고 실패했다). 조정 경로의 nearestPassableCell 은
+  // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
+  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y);
+  const keepRequested = !requestedReserved && !occupiedRequested;
+  if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
+  if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
   const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
   if (!landing) {
     throw new ToolError(
@@ -1865,6 +1871,11 @@ function uniqueStockItemIds(stock: readonly ShopStockEntry[]): string[] {
 }
 
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
+//
+// 후보가 여러 통행 컴포넌트에 갈라지면 **가장 큰 컴포넌트**의 첫 칸(링 순서)을 고른다.
+// 봉인된 주머니가 방보다 링에서 먼저 나오면 자동 조정이 그 안에 놓이고 플레이어는 끝까지
+// 걸어가지 못한다(2026-09-24 몬스터 수집 r2: NPC 뒤 주머니 (3,4)에 ev_starters 가 앉아
+// 「첫 파트너 받기」 조사가 도달 불가로 막혔다). 단일 컴포넌트 맵에서는 기존과 같은 칸을 고른다.
 function nearestPassableCell(
   project: Project,
   map: GameMap,
@@ -1880,7 +1891,42 @@ function nearestPassableCell(
       .map((event) => `${event.x},${event.y}`),
     ...(reserved ?? []),
   ]);
+  // 컴포넌트 경계: 통행 불가 타일 + 같은 칸을 몸으로 막는 이벤트(EventPlacementAnalysis 와 같은 blocker 정의).
+  const blockerCells = new Set(
+    map.events
+      .filter((event) => {
+        if (event.id === ignoreEventId) return false;
+        const page = event.pages?.[0];
+        return (page?.priority ?? "same") === "same" && page?.overlapForbidden !== false;
+      })
+      .map((event) => `${event.x},${event.y}`),
+  );
+  const componentCache = new Map<string, number>(); // 셀 키 → 같은 컴포넌트의 칸 수
+  const componentSize = (sx: number, sy: number): number => {
+    const cached = componentCache.get(`${sx},${sy}`);
+    if (cached !== undefined) return cached;
+    const cells: string[] = [];
+    const seen = new Set<string>([`${sx},${sy}`]);
+    const queue: Array<[number, number]> = [[sx, sy]];
+    for (let head = 0; head < queue.length; head += 1) {
+      const [cx, cy] = queue[head]!;
+      cells.push(`${cx},${cy}`);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = cx + dx;
+        const ny = cy + dy;
+        const key = `${nx},${ny}`;
+        if (seen.has(key) || !inMapBounds(map, nx, ny)) continue;
+        if (!isPassable(project, map, nx, ny) || blockerCells.has(key)) continue;
+        seen.add(key);
+        queue.push([nx, ny]);
+      }
+    }
+    for (const key of cells) componentCache.set(key, cells.length);
+    return cells.length;
+  };
+  const candidates: Point[] = [];
   for (let radius = 0; radius <= maxRadius; radius += 1) {
+    candidates.length = 0;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
@@ -1888,8 +1934,15 @@ function nearestPassableCell(
         const cy = y + dy;
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
-        if (isPassable(project, map, cx, cy)) return { x: cx, y: cy };
+        if (!isPassable(project, map, cx, cy)) continue;
+        candidates.push({ x: cx, y: cy });
       }
+    }
+    // 가까운 반경이 이긴다 — 그 안에서만 큰 컴포넌트를 고른다(요청 칸 자체 후보는 항상 유지).
+    if (candidates.length > 0) {
+      const sizes = candidates.map((cell) => componentSize(cell.x, cell.y));
+      const maxSize = Math.max(...sizes);
+      return candidates[sizes.indexOf(maxSize)] ?? null;
     }
   }
   return null;
