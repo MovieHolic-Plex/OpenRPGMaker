@@ -13,8 +13,8 @@ import type { Finding } from "./types";
 import { visitAllCommands, type RawCommand } from "./walk";
 import { companionJoins } from "./progression";
 
-/** 보스를 만날 즈음의 넉넉한 레벨(3층 던전을 한 번 돌고 온 파티). */
-const BOSS_CHECK_LEVEL = 10;
+/** 보스를 만날 즈음의 넉넉한 레벨(3층 던전을 한 번 돌고 온 파티). 자동 플레이의 보스 패배 오판 검사도 이 레벨로 재다. */
+export const BOSS_CHECK_LEVEL = 10;
 /** 잡몹 전멸 검사 레벨 — 첫 던전 중반. */
 const WIPE_CHECK_LEVEL = 5;
 const DUNGEON_NAME = /던전|동굴|광산|갱도|층|탑|유적|지하|dungeon|cave|mine|floor/iu;
@@ -26,7 +26,7 @@ function commandsIn(list: unknown): RawCommand[] {
 }
 
 /** 파티에 들어오는 모든 배우(시작 + 합류). */
-function partyRoster(project: Project): string[] {
+export function partyRoster(project: Project): string[] {
   const ids = new Set(project.session?.partyActorIds ?? []);
   for (const join of companionJoins(project)) if (typeof join.command.actorId === "string") ids.add(join.command.actorId);
   return [...ids].filter((id) => project.database.actors.some((actor) => actor.id === id));
