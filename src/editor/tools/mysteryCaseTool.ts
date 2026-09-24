@@ -1284,7 +1284,8 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const suspectEvents = placeSuspects(draft, spec, warnings);
   const accuserEvent = placeAccuser(draft, spec, warnings);
   assertEndingsGated(draft, spec, [...clueEvents, ...suspectEvents, accuserEvent]);
-  warnings.push(...barrenStageWarnings(draft, spec));
+  const barren = barrenStageWarnings(draft, spec);
+  warnings.push(...barren);
   const culprit = spec.suspects.find((suspect) => suspect.id === spec.culprit)!;
   // 시나리오는 검증 보조물이다 — 못 만들어도 저작은 성공시키고 사유를 경고로 남긴다(run6: 여기서 던져 저작 전체가 실패했다).
   let verificationScene: SceneTestInput | null = null;
@@ -1295,7 +1296,10 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
     warnings.push(`${error.message} — data.verificationScene 없이 저작했습니다. run_scene_test 입력을 직접 짜라.`);
   }
   return {
-    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${verificationScene
+    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${barren.length > 0
+      // 5회차: 맨땅 경고를 warnings 에만 두자 모델은 요약의 「다음 = run_scene_test」 만 따라 풀밭 저택으로 끝냈다.
+      ? `다음 할 일 1순위: 사건 무대 ${barren.length}곳이 맨땅(벽·가구 없음)이다 — 먼저 place_concept(plan, 새 mapId) 나 author_house(interior:"linked-interior") 로 방을 짓고, 그 좌표로 author_mystery_case 를 다시 불러라(같은 caseId 면 갈아 끼운다). 그다음에 run_scene_test. `
+      : ""}${verificationScene
       ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
       : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라."}`,
     data: {
