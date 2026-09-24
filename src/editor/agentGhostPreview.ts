@@ -334,7 +334,7 @@ export function summarizeAgentGhostPreviewForToolCall(
       pushArea(rectArea(project, mapId, rectValue(args.area), "scatter_object", "오브젝트 배치"));
       break;
     case "place_npc":
-      pushArea(pointArea(project, mapId, pointFromXY(args), "place_npc", "NPC 배치"));
+      pushArea(pointArea(project, mapId, pointFromXY(args) ?? pointValue(args.home), "place_npc", "NPC 배치"));
       break;
     case "place_battle_blocker":
       pushArea(pointArea(project, mapId, pointFromXY(args), "place_battle_blocker", "전투 이벤트 배치"));

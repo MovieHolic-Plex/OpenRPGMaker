@@ -986,8 +986,12 @@ const placeNpc: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      x: { type: "integer" },
-      y: { type: "integer" },
+      x: { type: "integer", description: "배치 칸 x. x,y 대신 home:{x,y} 도 받는다." },
+      y: { type: "integer", description: "배치 칸 y." },
+      home: {
+        type: "object", description: "make_villager 와 같은 모양의 배치 칸 {x,y} — x,y 를 줬으면 생략.",
+        properties: { x: { type: "integer" }, y: { type: "integer" } },
+      },
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
@@ -1002,7 +1006,9 @@ const placeNpc: ToolDefinition = {
       guide: { type: "string", enum: ["action-controls"], description: "키 바인딩 정본의 조작 안내 한 페이지. pages 대신 사용하며 맵별 고정 ID로 재사용한다." },
       characterId: { type: "string", description: "공유 호감/선물 키. 호감 페이지를 쓰면 필수. 생략 시 호감 조건/커맨드가 있으면 이름에서 할당" },
     },
-    required: ["mapId", "x", "y", "name"],
+    // x,y 또는 home 중 하나 — 스키마 required 로 두면 make_villager 모양(home)으로 부른 호출이 Pi 검증에서
+    // 통째로 거부됐다(2026-09-24 JRPG ember-4: 상점 NPC 넷이 전부 「x,y is required」). run 에서 둘 중 하나를 요구한다.
+    required: ["mapId", "name"],
   },
   invalidArgsHint: "대화 NPC는 pages:[{lines:[원래 대사]}]가 필수입니다. dialogue.text는 pages의 lines로 옮기세요. 오브젝트 기믹을 만들려는 경우에만 place_chest/place_storage_chest/place_savepoint를 사용하세요.",
   invalidArgsRepair(args) {
@@ -1014,8 +1020,14 @@ const placeNpc: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const requestedX = args.x as number;
-    const requestedY = args.y as number;
+    const home = args.home && typeof args.home === "object" && !Array.isArray(args.home) ? args.home as { x?: unknown; y?: unknown } : undefined;
+    const rawX = args.x ?? home?.x;
+    const rawY = args.y ?? home?.y;
+    if (!Number.isInteger(rawX) || !Number.isInteger(rawY)) {
+      throw new ToolError(`place_npc 에는 배치 칸 x,y(정수) 또는 home:{x,y} 가 필요합니다 — 받은 x=${JSON.stringify(args.x)}, y=${JSON.stringify(args.y)}, home=${JSON.stringify(args.home)}.`, { code: "invalid-args" });
+    }
+    const requestedX = rawX as number;
+    const requestedY = rawY as number;
     const name = args.name as string;
     const actionGuide = args.guide === "action-controls";
     // 2026-09-18 거부 대신 기본값. pages 없는 NPC 를 invalid-args 로 막던 규칙이 한 런에서 4번 나왔다 —

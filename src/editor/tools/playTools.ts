@@ -99,6 +99,26 @@ export function flattenNestedExpectSteps(args: unknown): { input: unknown; flatt
   return flattened.length > 0 ? { input: { ...(args as object), steps }, flattened } : { input: args, flattened };
 }
 
+/**
+ * `{kind:"interact", to:{x,y}, adjacent:true}` 처럼 걷기와 조사를 한 스텝에 쓴 것을 walk + interact 두 스텝으로 나눈다.
+ * JRPG 도그푸딩 ember-4 에서 합류·엔딩 검증 세 번이 모두 이 모양으로 거부됐다. walk(adjacent) 는 도착하면 대상 쪽을
+ * 바라보므로 뜻이 하나다. to 가 {x,y} 가 아니거나 dir 처럼 다른 틀린 필드가 섞이면 그대로 두고 원래 오류를 낸다.
+ */
+export function splitInteractWalkSteps(args: unknown): { input: unknown; split: number[] } {
+  if (!args || typeof args !== "object" || !Array.isArray((args as { steps?: unknown }).steps)) return { input: args, split: [] };
+  const split: number[] = [];
+  const steps = ((args as { steps: unknown[] }).steps).flatMap((step, index) => {
+    if (!step || typeof step !== "object") return [step];
+    const { to, adjacent, ...rest } = step as Record<string, unknown>;
+    if (rest.kind !== "interact" || !to || typeof to !== "object") return [step];
+    const { x, y } = to as { x?: unknown; y?: unknown };
+    if (!Number.isInteger(x) || !Number.isInteger(y) || (adjacent !== undefined && typeof adjacent !== "boolean")) return [step];
+    split.push(index);
+    return [{ kind: "walk", to: { x, y }, adjacent: adjacent ?? true }, rest];
+  });
+  return split.length > 0 ? { input: { ...(args as object), steps }, split } : { input: args, split };
+}
+
 const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
@@ -157,12 +177,16 @@ const runSceneTestTool: ToolDefinition = {
     required: ["mapId", "start", "steps"],
   },
   run(project, rawArgs): ToolExecResult {
-    const { input: args, flattened } = flattenNestedExpectSteps(rawArgs);
+    const { input: flatArgs, flattened } = flattenNestedExpectSteps(rawArgs);
+    const { input: args, split } = splitInteractWalkSteps(flatArgs);
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
-      ...(flattened.length > 0 ? { warnings: [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] } : {}),
+      ...(flattened.length + split.length > 0 ? { warnings: [
+        ...(flattened.length > 0 ? [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] : []),
+        ...(split.length > 0 ? [`interact 스텝 ${split.join(", ")} 의 to/adjacent 를 앞 스텝 {kind:"walk",to,adjacent:true} 로 나눠 실행했다 — 걷기와 조사는 두 스텝이다(스텝 번호가 하나씩 밀린다).`] : []),
+      ] } : {}),
       summary: result.ok
         ? `scene test 성공 (${result.stepsRun}/${result.totalSteps} 스텝)`
         : `scene test 실패: 스텝 ${result.failedStepIndex} — ${result.failureReason}`,
