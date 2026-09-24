@@ -2,7 +2,7 @@ import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
+import { renderBasicLeftRail, syncBasicRailBrushStatus } from "@/editor/panels/basicLeftRail";
 import { basicTileLabel } from "@/editor/panels/basicTilePalette";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
@@ -562,6 +562,23 @@ export function syncMountedPaletteSelection(): boolean {
   return true;
 }
 
+/**
+ * 타일을 고르며 레이어도 바뀐 클릭(상위 전용 타일). 커스텀 아틀라스는 두 레이어에 같은 칸을
+ * 보이므로 활성 칸·선택 글·붓 상태만 옮기면 된다. 기본 칩셋은 레이어마다 보이는 칸이 다르고,
+ * 필터가 걸린 팔레트는 빈 칸 안내가 레이어를 말한다 — 둘 다 false 를 돌려 호출부가 전체를 다시 그린다.
+ */
+export function syncMountedPaletteLayerSelection(): boolean {
+  if (typeof document === "undefined") return false;
+  const tileset = currentTilesetForPalette();
+  if (!tileset || !isCustomTileset(tileset)) return false;
+  if (!syncMountedPaletteSelection()) return false;
+  if (getEditorChrome().paletteRail) return syncBasicRailBrushStatus();
+  const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
+  if (!controls) return false;
+  controls.replaceWith(makeTileBrushControls(editorState.get(), renderPalettePreservingViewport));
+  return true;
+}
+
 function movePaletteActiveCell(sheet: HTMLElement, displayTile: number): boolean {
   const nextActive = sheet.querySelector<HTMLElement>(`[data-tile-index="${displayTile}"]`);
   if (!nextActive) return false;
@@ -660,6 +677,9 @@ function preservePaletteViewport(action: () => void): void {
   const restore = (): void => {
     const nextContainer = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
     const nextPalette = nextContainer ? paletteViewportElement(nextContainer) : null;
+    // 다시 그려지지 않았으면(선택만 제자리에서 옮긴 클릭) 스크롤도 그대로다. 여기서 scrollTop 을
+    // 쓰면 방금 바뀐 활성 칸 때문에 레이아웃을 강제로 네 번 더 돈다.
+    if (nextContainer === container && nextPalette === palette) return;
     if (scroll && nextContainer && nextPalette) applyPaletteScroll(nextContainer, nextPalette, scroll);
     if (palette && container && scroll) applyPaletteScroll(container, palette, scroll);
     window.scrollTo(windowScroll.x, windowScroll.y);

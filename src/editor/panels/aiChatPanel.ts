@@ -33,7 +33,7 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
   clearAgentGhostPreview,
@@ -2374,7 +2374,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   refreshContextChips();
   refreshComposerPlaceholder();
-  const unsubscribeContextEditor = editorState.subscribe(() => {
+  let lastContextEditorState = editorState.get();
+  const unsubscribeContextEditor = editorState.subscribe((state) => {
+    const previous = lastContextEditorState;
+    lastContextEditorState = state;
+    // 타일·붓만 고른 클릭은 안내문 한 줄만 바뀐다 — 칩·레일·패널 크기는 그대로다.
+    if (editorStateChangedOnlyPaintPick(previous, state)) {
+      refreshComposerPlaceholder();
+      return;
+    }
     // 맵을 바꾸면 재사용 선택은 그 맵의 것이 아니다 — 칩보다 먼저 범위를 갈아끈는다.
     planningReuseControl?.refresh();
     refreshContextChips();
