@@ -40,14 +40,24 @@ export interface StateBehavior {
   readonly recoverNaturallyChance: number;
 }
 
-// hpTurn 문자열/숫자에서 매 턴 지속 피해 비율을 추출.
-// "매 턴 최대 HP의 -6%" → 6, 양수/무변화 → 0, record.hpReleaseTurn 숫자 → 절댓값.
-function hpDamagePercentFrom(hpTurn: string): number {
-  const percentMatch = /(-?)\s*(\d+)\s*%/.exec(hpTurn);
-  if (percentMatch) return percentMatch[1] === "-" ? Number(percentMatch[2]) : 0;
-  const bareMatch = /^\s*(-?\d+)\s*$/.exec(hpTurn);
-  if (bareMatch) return Math.abs(Number(bareMatch[1]));
+// hpTurn 문자열/숫자에서 매 턴 HP 변화 비율(부호 포함)을 추출.
+// "매 턴 최대 HP의 -6%" → -6, "+8%" → 8, record.hpReleaseTurn 숫자 → 그대로.
+// 자료집 칸(「전투 중(턴당%)」, -100~100)도 음수 = 피해, 양수 = 회복이다. 예전에는 맨 숫자를
+// 절댓값으로 읽어 「+8% 재생」을 칸에 다시 저장하면 8% 피해가 됐다.
+function hpTurnSignedPercent(hpTurn: string): number {
+  const percentMatch = /([+-]?)\s*(\d+)\s*%/.exec(hpTurn);
+  if (percentMatch) return percentMatch[1] === "-" ? -Number(percentMatch[2]) : Number(percentMatch[2]);
+  const bareMatch = /^\s*([+-]?\d+)\s*$/.exec(hpTurn);
+  if (bareMatch) return Number(bareMatch[1]);
   return 0;
+}
+
+function hpDamagePercentFrom(hpTurn: string): number {
+  return Math.max(0, -hpTurnSignedPercent(hpTurn));
+}
+
+function hpHealPercentFrom(hpTurn: string): number {
+  return Math.max(0, hpTurnSignedPercent(hpTurn));
 }
 
 export function hpDamagePercentForStateExplicit(project: Project, stateId: string): number {
@@ -65,7 +75,7 @@ export function stateBehavior(record: StateRecord): StateBehavior {
     restrictsAction: runtime?.restrictsAction ?? restrictsActionFrom(record.id, resolved.restriction),
     blocksSkillUse: runtime?.blocksSkillUse ?? blocksSkillUseFrom(record.id, resolved.restriction),
     hpDamagePercentPerTurn: runtime?.hpDamagePercentPerTurn ?? hpDamagePercentFrom(resolved.hpTurn),
-    hpHealPercentPerTurn: runtime?.hpHealPercentPerTurn ?? 0,
+    hpHealPercentPerTurn: runtime?.hpHealPercentPerTurn ?? hpHealPercentFrom(resolved.hpTurn),
     attackMultiplier: runtime?.attackMultiplier ?? attackMultiplierFrom(record.id, resolved.actorStatus),
     defenseMultiplier: runtime?.defenseMultiplier ?? defenseMultiplierFrom(record.id, resolved.actorStatus),
     agilityMultiplier: runtime?.agilityMultiplier ?? 1,
@@ -78,7 +88,8 @@ export function stateBehavior(record: StateRecord): StateBehavior {
 
 function restrictsActionFrom(stateId: string, value: string): boolean {
   if (stateId === "state_sleep") return true;
-  return /\b(cannot act|stun|sleep|paraly[sz]ed|immobilized)\b/i.test(value);
+  // 자료집 「제한」 드롭다운의 한국어 값도 읽는다.
+  return /행동 불가/.test(value) || /\b(cannot act|stun|sleep|paraly[sz]ed|immobilized)\b/i.test(value);
 }
 
 function blocksSkillUseFrom(stateId: string, value: string): boolean {
@@ -101,7 +112,8 @@ function defenseMultiplierFrom(stateId: string, value: string): number {
 
 function removeOnBattleEndFrom(stateId: string, value: string): boolean {
   if (stateId === "state_poison") return false;
-  return !/\b(persist|keep|remain)\b/i.test(value);
+  // 「해제 조건」 드롭다운의 「전투 종료 후 유지」.
+  return !(/유지/.test(value) || /\b(persist|keep|remain)\b/i.test(value));
 }
 
 export function stateRecordsById(project: Project): Map<string, StateRecord> {

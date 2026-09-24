@@ -298,7 +298,11 @@ export function presentEditorWelcome(
       const controls = Array.from(root.querySelectorAll<HTMLButtonElement | HTMLInputElement>("button, input"));
       controls.forEach((button) => { button.disabled = true; });
       try {
-        const brief = autoSend ? await showProjectInterview(presetId) : undefined;
+        // 포스터 경로는 별도 확인 창 없이 인터뷰가 곧 확인이다. 확정 단추가 열린 프로젝트를 이 장르의
+        // 빈 시작점으로 바꾸고 저장한다는 사실을 말해야 한다(⚙ 경로의 확인 문구와 같은 뜻).
+        const brief = autoSend
+          ? await showProjectInterview(presetId, { confirmLabel: "열린 프로젝트를 바꾸고 이 기획으로 시작" })
+          : undefined;
         if (brief === null || settled) return;
         await options.applySystemPreset(systemPresetPlan, brief);
         if (settled) return;

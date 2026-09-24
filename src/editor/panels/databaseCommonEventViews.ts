@@ -126,7 +126,8 @@ function addCommonEvent(rerender: () => void): void {
     id: genId("ce"),
     name: "새 공통 이벤트",
     trigger: "none",
-    commands: [{ kind: "text", body: "" }],
+    // 빈 문장 한 줄로 시작하면 트리거만 자동으로 바꿨을 때 맵마다 빈 대사 창이 뜨고 입력이 잠긴다.
+    commands: [],
   };
   recordProjectSnapshot();
   store.update((project) => {

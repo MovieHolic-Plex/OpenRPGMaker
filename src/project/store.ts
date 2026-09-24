@@ -135,7 +135,8 @@ export type ProjectFlushResult =
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
   // A clean flush after load may have no accepted-save receipt. Never invent proof from it.
   | { readonly kind: "saved"; readonly sha256?: string; readonly receipt?: ProjectPersistenceReceipt }
-  | { readonly kind: "saved-local" };
+  /** written:false = 이 세션(fresh/blank 등)은 기록을 건너뛰었다. 성공 토스트를 띄우면 안 된다. */
+  | { readonly kind: "saved-local"; readonly written?: boolean };
 
 export type ProjectDbReconnectResult =
   | { readonly kind: "connected"; readonly source: "remote" }
@@ -1286,8 +1287,9 @@ class ProjectStore {
         if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
           this.dirtySinceLastPersist = false;
           if (diagnosticObserved("authoring")) publishDiagnostic({ category: "authoring", phase: "saved", generation: this.mutationGeneration, storage: "local" });
+          return { kind: "saved-local", written: true };
         }
-        return { kind: "saved-local" };
+        return { kind: "saved-local", written: false };
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }

@@ -184,6 +184,17 @@ export function showNameEntry(host: HTMLElement, request: NameEntryRequest): Pro
           }
           return;
         }
+        case "Escape": {
+          // 그리드에서 방향키를 쓴 뒤에는 Enter 가 글자 입력이라, 마우스가 막힌 키보드 전용 플레이에서
+          // 확정할 길이 「글자 입력 → 지우기 → Enter」뿐이었다. Esc 로 그리드를 나오면 Enter 가 확정이다.
+          if (!overlay.classList.contains("grid-active")) return;
+          event.preventDefault();
+          event.stopPropagation();
+          overlay.classList.remove("grid-active");
+          highlight();
+          focusInput();
+          return;
+        }
         case "Tab": {
           event.preventDefault();
           const nextIndex = (NAME_ENTRY_PAGES.findIndex((page) => page.id === pageId) + 1) % NAME_ENTRY_PAGES.length;

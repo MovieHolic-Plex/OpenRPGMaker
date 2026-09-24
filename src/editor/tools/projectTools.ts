@@ -7,7 +7,7 @@ import type { BattleUiStyle, Terms } from "@/project/types";
 import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
 
-const TERM_KEYS = ["attack", "skill", "item", "capture", "back", "target", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
+const TERM_KEYS = ["attack", "skill", "item", "defend", "escape", "capture", "back", "target", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
 const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, { type: "string" as const }])) as Record<(typeof TERM_KEYS)[number], { readonly type: "string" }>;
 
 const MAX_PROMPT_LENGTH = 2000;

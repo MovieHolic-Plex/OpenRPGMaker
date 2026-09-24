@@ -12,6 +12,7 @@ import { switchVariableReferenceMessage } from "@/editor/databaseReferences";
 import { editorState } from "@/editor/editorState";
 import type { DeleteResult } from "@/editor/databaseActions";
 import { store } from "@/project/store";
+import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
 import { createBlankMap, TILE } from "@/project/defaults";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
@@ -518,11 +519,17 @@ export function renameSwitch(id: string, name: string): void {
   }, { scope: "database", collection: "switches" });
 }
 export function deleteSwitch(id: string): DeleteResult {
+  if (!canWriteTeamProject()) return { ok: false, message: TEAM_READ_ONLY_WRITE_MESSAGE };
   const message = switchVariableReferenceMessage("switch", id);
   if (message) return { ok: false, message };
   recordProjectSnapshot();
+  // 칸을 빼면 뒤 번호가 한 칸씩 당겨지고, 정규화(ensureSwitchVariableSlots)가 남은 세션 값을 보고
+  // 같은 id 를 이름 없이 맨 끝에 다시 붙였다. 번호는 그대로 두고 이름과 값만 비운 빈 칸으로 만든다
+  // — addSwitch 가 이름 없는 칸을 먼저 재사용한다.
   store.update((p) => {
-    p.switches = p.switches.filter((s) => s.id !== id);
+    const record = p.switches.find((s) => s.id === id);
+    if (record) record.name = "";
+    p.session.switches[id] = false;
   }, { scope: "database", collection: "switches" });
   return { ok: true };
 }
@@ -553,11 +560,15 @@ export function renameVariable(id: string, name: string): void {
   }, { scope: "database", collection: "variables" });
 }
 export function deleteVariable(id: string): DeleteResult {
+  if (!canWriteTeamProject()) return { ok: false, message: TEAM_READ_ONLY_WRITE_MESSAGE };
   const message = switchVariableReferenceMessage("variable", id);
   if (message) return { ok: false, message };
   recordProjectSnapshot();
+  // deleteSwitch 와 같은 이유로 칸을 빼지 않고 비운다.
   store.update((p) => {
-    p.variables = p.variables.filter((v) => v.id !== id);
+    const record = p.variables.find((v) => v.id === id);
+    if (record) record.name = "";
+    p.session.variables[id] = 0;
   }, { scope: "database", collection: "variables" });
   return { ok: true };
 }

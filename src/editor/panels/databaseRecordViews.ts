@@ -363,6 +363,7 @@ function disarmDelete(collection: DatabaseCollection): void {
   ARMED_DELETE.delete(collection);
   armed.button.textContent = DELETE_IDLE_LABEL;
   armed.button.classList.remove("confirming");
+  armed.button.setAttribute("aria-label", `선택한 ${COLLECTION_LABELS[collection]} 삭제`);
 }
 
 export function deleteButton(collection: DatabaseCollection, rerender: () => void): HTMLElement {
@@ -411,6 +412,8 @@ export function deleteButton(collection: DatabaseCollection, rerender: () => voi
           disarmDelete(collection);
           button.textContent = DELETE_CONFIRM_LABEL;
           button.classList.add("confirming");
+          // 글자만 바뀌면 화면 낭독기는 여전히 「선택한 … 삭제」로 읽는다. 확인 단계임을 접근명에도 싣는다.
+          button.setAttribute("aria-label", `${DELETE_CONFIRM_LABEL} 한 번 더 누르면 선택한 ${COLLECTION_LABELS[collection]}을(를) 삭제합니다`);
           const timer = window.setTimeout(() => {
             const current = ARMED_DELETE.get(collection);
             if (current && current.button === button && Date.now() >= current.until) disarmDelete(collection);

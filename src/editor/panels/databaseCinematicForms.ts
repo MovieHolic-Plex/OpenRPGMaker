@@ -213,8 +213,8 @@ export function cinematicGameOverForm(options: FormContext & {
   const definitions = [
     { key: "title", label: "제목", placeholder: "게임 오버" },
     { key: "message", label: "기본 메시지", placeholder: "기본 종료 메시지" },
-    { key: "retryLabel", label: "다시 시도 버튼", placeholder: "다시 시도" },
-    { key: "titleLabel", label: "타이틀 버튼", placeholder: "타이틀로" },
+    { key: "retryLabel", label: "다시 시도 버튼", placeholder: "체크포인트에서 다시 시작" },
+    { key: "titleLabel", label: "타이틀 버튼", placeholder: "타이틀로 돌아가기" },
   ] as const;
   const fields = definitions.map(definition => {
     const input = definition.key === "message"

@@ -785,7 +785,7 @@ function cameraZoomField(rerender: SystemRefresh): HTMLElement {
   return rm2k3Fieldset("기본 카메라 배율", [
     el("p", {
       class: "db-system-resolution-help",
-      text: "프로젝트 모든 맵에 적용되는 기본 배율입니다. 해상도를 올릴 때 함께 올려야 보이는 범위가 유지됩니다(1440x1080 이면 4.5). 이벤트 명령은 이 값을 일시적으로 덮어쓸 다.",
+      text: "프로젝트 모든 맵에 적용되는 기본 배율입니다. 해상도를 올릴 때 함께 올려야 보이는 범위가 유지됩니다(1440x1080 이면 4.5). 이벤트 명령은 이 값을 일시적으로 덮어씁니다.",
       dataset: { testid: "db-system-camera-zoom-help" },
     }),
     numberField("배율", "db-field-system-camera-zoom", () => resolveCameraZoom(store.getCurrent().system), (next) => {

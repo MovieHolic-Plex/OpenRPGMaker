@@ -512,10 +512,19 @@ function buildingEditor(
           "맵",
           record.mapId,
           Object.values(project.maps).map((entry) => ({ value: entry.id, label: entry.name })),
-          (value) => patchBuildingAndRerender(index, { mapId: value }, rerender),
+          (value) => {
+            // 더 작은 맵으로 옮기면 좌표가 밖으로 나간다. 로드 복구는 범위 밖 축사를 말없이 빼고
+            // 개체 배정도 끊으므로, 여기서 새 맵 안으로 당겨 둔다.
+            const next = project.maps[value];
+            patchBuildingAndRerender(index, next
+              ? { mapId: value, x: clampCoordinate(record.x, next.width), y: clampCoordinate(record.y, next.height) }
+              : { mapId: value }, rerender);
+          },
         ),
-        numberRow("X", record.x, 0, 9999, (value) => patchBuildingAndRerender(index, { x: value }, rerender)),
-        numberRow("Y", record.y, 0, 9999, (value) => patchBuildingAndRerender(index, { y: value }, rerender)),
+        numberRow("X", record.x, 0, map ? Math.max(0, map.width - 1) : 9999, (value) =>
+          patchBuildingAndRerender(index, { x: map ? clampCoordinate(value, map.width) : value }, rerender)),
+        numberRow("Y", record.y, 0, map ? Math.max(0, map.height - 1) : 9999, (value) =>
+          patchBuildingAndRerender(index, { y: map ? clampCoordinate(value, map.height) : value }, rerender)),
         mapPreview(record, map ? { width: map.width, height: map.height } : null),
       ],
     }),
@@ -1143,3 +1152,7 @@ function clampInt(value: string, min: number, max: number): number {
 }
 
 function uniqueId(base: string, used: ReadonlySet<string>): string { let id = base; let suffix = 2; while (used.has(id)) id = `${base}_${suffix++}`; return id; }
+
+function clampCoordinate(value: number, size: number): number {
+  return Math.max(0, Math.min(Math.max(0, size - 1), Math.floor(value)));
+}

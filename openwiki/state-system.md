@@ -105,6 +105,9 @@ The built-in `STATE_ONTOLOGY` covers the twelve default states:
 1. **“상태” ambiguity** — could mean the authored definition, the ontology template, or the runtime applied state. Always disambiguate by layer when explaining.
 2. **Record vs ontology** — a sparse `StateRecord` with only `{id, name, priority}` is valid; everything else comes from `stateOntologyFor`. Do not treat missing fields as zero/empty.
 3. **`hpReleaseTurn` (number) vs `hpTurn` (string)** — different schemas; `resolvedStateValues` maps. Editors writing raw record values must use the numeric form.
+   부호가 뜻이다: 음수 = 턴당 피해 %, 양수 = 턴당 회복 %(자료집 칸 「전투 중(턴당%)」과 같다). 2026-09-24 전에는 맨 숫자를
+   절댓값으로 읽어 「+8% 재생」을 칸에 다시 저장하면 8% 피해가 됐다. `runtimeEffects` 가 있으면 그쪽이 이긴다.
+   드롭다운의 한국어 값 「행동 불가」(restriction)와 「전투 종료 후 유지」(removalCondition)도 파서가 읽는다.
 4. 기본 상태 중 `state_defense_up`, 공격/민첩 변화, 마비, 맹독, 재생, 침묵은 명시적 `runtimeEffects`를 가진다. 독·수면·공격 상승·방어 하락은 검증된 온톨로지/id 폴백도 지원한다.
 5. **출하 기본 상태 무효과 금지** — 기본 DB의 모든 상태가 런타임에서 최소 하나의 효과를 갖는지 계약 테스트가 검사한다.
 6. **DB-is-truth** — editing `StateRecord` fields in a running project must round-trip through LegacyDb save; local JSON is cache-only.

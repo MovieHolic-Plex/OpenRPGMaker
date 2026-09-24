@@ -878,15 +878,22 @@ function repairFarmAnimalReferences(project: Project): void {
   }
   const speciesIds = new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id));
   if (project.system.farmAnimalBuildings !== undefined) {
+    // 맵이 줄어 좌표만 밖으로 나간 축사는 지우지 않고 맵 안으로 당긴다 — 지우면 배정된 개체까지
+    // 말없이 풀린다. 맵 자체가 없어진 축사만 뺀다.
     project.system.farmAnimalBuildings = project.system.farmAnimalBuildings
-      .filter((building) => {
-        const map = project.maps[building.mapId];
-        return Boolean(map && isMapPositionInBounds(building.x, building.y, map.width, map.height));
-      })
-      .map((building) => ({
-        ...building,
-        allowedSpeciesIds: building.allowedSpeciesIds.filter((speciesId) => speciesIds.has(speciesId)),
-      }));
+      .filter((building) => Boolean(project.maps[building.mapId]))
+      .map((building) => {
+        const map = project.maps[building.mapId]!;
+        const inBounds = isMapPositionInBounds(building.x, building.y, map.width, map.height);
+        return {
+          ...building,
+          ...(inBounds ? {} : {
+            x: Math.max(0, Math.min(map.width - 1, Number.isFinite(building.x) ? Math.floor(building.x) : 0)),
+            y: Math.max(0, Math.min(map.height - 1, Number.isFinite(building.y) ? Math.floor(building.y) : 0)),
+          }),
+          allowedSpeciesIds: building.allowedSpeciesIds.filter((speciesId) => speciesIds.has(speciesId)),
+        };
+      });
   }
   if (project.session.farmAnimals === undefined) return;
   const buildingById = new Map(

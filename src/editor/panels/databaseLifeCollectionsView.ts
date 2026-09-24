@@ -911,11 +911,18 @@ function patchEntry(areaId: string, index: number, patch: Partial<ForageEntryDef
       ...draft.system.seasonalForage,
       areas: draft.system.seasonalForage.areas.map((area) => area.id !== areaId ? area : {
         ...area,
-        entries: area.entries.map((entry, current) => current === index ? sanitize({ ...entry, ...patch }) : entry),
+        entries: area.entries.map((entry, current) => current === index ? forageEntryWithDrop(entry, sanitize({ ...entry, ...patch })) : entry),
       }),
     };
   });
   rerender?.();
+}
+
+// 아이템도 계절 드롭도 없는 채집물은 로드 검증이 프로젝트를 거절한다. 그런 편집은 되돌린다.
+function forageEntryWithDrop(previous: ForageEntryDefinition, next: ForageEntryDefinition): ForageEntryDefinition {
+  if (next.itemId !== undefined || next.seasonalDrops !== undefined) return next;
+  toast("채집물은 아이템이나 계절별 드롭 중 하나가 필요합니다 — 계절별 드롭을 먼저 넣으세요.", "error");
+  return previous;
 }
 
 function addEntry(areaId: string, rerender: () => void): void {
@@ -951,10 +958,18 @@ function patchReward(id: string, patch: Partial<MuseumRewardDefinition>, rerende
     if (!draft.system.museum) return;
     draft.system.museum = {
       ...draft.system.museum,
-      rewards: draft.system.museum.rewards.map((row) => row.id === id ? sanitize({ ...row, ...patch }) : row),
+      rewards: draft.system.museum.rewards.map((row) => row.id === id ? museumRewardWithCondition(sanitize({ ...row, ...patch })) : row),
     };
   });
   rerender?.();
+}
+
+// 기부 개수와 지정 아이템을 둘 다 비우면 로드 검증(validateMuseum)이 프로젝트를 거절한다.
+// 편집 중에 그 상태를 만들지 않도록 최소 기부 개수 1로 되돌린다.
+function museumRewardWithCondition(row: MuseumRewardDefinition): MuseumRewardDefinition {
+  if (row.minDonations !== undefined || row.requiredItemIds !== undefined) return row;
+  toast("해금 조건이 하나는 있어야 해서 최소 기부 개수를 1로 두었습니다.", "info");
+  return { ...row, minDonations: 1 };
 }
 
 function patchRewardPayload(id: string, patch: Partial<BundleRewardDefinition>, rerender?: () => void): void {

@@ -37,6 +37,10 @@ const ACTIONS = {
   paint: forms("타일을 칠하는 중", "타일을 칠했어요", "타일 칠하기를 실패했어요"),
   fill: forms("영역을 채우는 중", "영역을 채웠어요", "영역 채우기를 실패했어요"),
   erase: forms("영역을 지우는 중", "영역을 지웠어요", "영역 지우기를 실패했어요"),
+  // 파괴 규모가 큰 툴은 「영역」「정리」「조정」 같은 부드러운 말로 숨기지 않는다.
+  wipeMap: forms("맵 전체를 지우는 중", "맵 전체를 지웠어요", "맵 전체 지우기를 실패했어요"),
+  resetProject: forms("프로젝트를 초기화하는 중", "프로젝트를 초기화했어요", "프로젝트 초기화를 실패했어요"),
+  deleteResource: forms("리소스를 지우는 중", "리소스를 지웠어요", "리소스 지우기를 실패했어요"),
   scatter: forms("오브젝트를 흩어 놓는 중", "오브젝트를 흩어 놓았어요", "오브젝트 배치를 실패했어요"),
   structure: forms("구조물을 만드는 중", "구조물을 만들었어요", "구조물 만들기를 실패했어요"),
   house: forms("집을 만드는 중", "집을 만들었어요", "집 만들기를 실패했어요"),
@@ -103,7 +107,9 @@ function addFamily(action: ActionForms, names: string): void {
 addFamily(ACTIONS.road, "paint_road lay_path");
 addFamily(ACTIONS.paint, "paint_tiles set_tile_grafts set_tile_metadata set_tile_rules set_group_overlay set_group_junction set_animation_strips");
 addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region");
-addFamily(ACTIONS.erase, "tile_erase clear_region clear_map");
+addFamily(ACTIONS.erase, "tile_erase clear_region");
+addFamily(ACTIONS.wipeMap, "clear_map");
+addFamily(ACTIONS.resetProject, "reset_project");
 addFamily(ACTIONS.scatter, "scatter_object plant_tree_clusters place_props");
 addFamily(ACTIONS.structure, "stamp_structure build_wall build_roof place_door place_window build_castle register_structure_kit");
 addFamily(ACTIONS.house, "author_house build_house preview_house furnish_interior_space make_gallery_room place_concept apply_spatial_build upsert_spatial_design edit_spatial_occurrence");
@@ -124,7 +130,8 @@ addFamily(ACTIONS.quest, "create_quest create_quest_flags define_quest declare_s
 addFamily(ACTIONS.story, "author_story_arc make_horror_loop set_life_flower script_cutscene script_cutscene_preset");
 addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simulate_battle tune_enemy author_boss_phases");
 addFamily(ACTIONS.world, "build_world link_maps author_world_bridge author_world_mountain");
-addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_profile delete_resource_profile create_tileset set_tileset_properties upsert_autotile_group delete_autotile_group upsert_palette_preset upsert_tile_group delete_tile_group set_audio_description");
+addFamily(ACTIONS.deleteResource, "delete_resource delete_resource_profile delete_autotile_group delete_tile_group");
+addFamily(ACTIONS.resource, "upsert_resource upsert_resource_profile create_tileset set_tileset_properties upsert_autotile_group upsert_palette_preset upsert_tile_group set_audio_description");
 addFamily(ACTIONS.appearance, "generate_character_appearance");
 addFamily(ACTIONS.export, "export_game check_export_readiness");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
