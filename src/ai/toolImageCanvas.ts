@@ -1,3 +1,4 @@
+import { createTransparentColorKeyCanvas, isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 import { awaitGraftedTilesetImageUrl, peekGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { activeTileGrafts } from "@/assets/tileGrafts";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
@@ -5,6 +6,7 @@ import type { Project, TilesetDef } from "@/project/types";
 import {
   applyTransparentColorKey,
   applyTransparentColorKeys,
+  normalizeRgbHexColor,
   STANDARD_COLOR_KEYS,
 } from "@/assets/transparentColorKey";
 
@@ -44,7 +46,16 @@ export function drawCheckerBackground(context: CanvasRenderingContext2D, width: 
   }
 }
 
-export function drawTile(context: CanvasRenderingContext2D, image: HTMLImageElement, tile: number, tileset: TilesetDef, targetX: number, targetY: number, targetSize: number): void {
+/** Same key policy as the editor capture (`mapTileDraw`). A missing key stays untouched — the atlas corner is not a background. */
+export function keyedTilesetImage(tileset: TilesetDef, image: HTMLImageElement): HTMLImageElement | HTMLCanvasElement {
+  const color = normalizeRgbHexColor(tileset.transparentColor ?? "");
+  const knownKey = tileset.image.type === "bundled" && isColorKeyedChipsetTextureKey(tileset.image.id) ? tileset.image.id : null;
+  const sourceKey = color ? { image: tileset.image, transparentColor: color } : knownKey;
+  if (!sourceKey) return image;
+  return createTransparentColorKeyCanvas(sourceKey, image) ?? image;
+}
+
+export function drawTile(context: CanvasRenderingContext2D, image: CanvasImageSource, tile: number, tileset: TilesetDef, targetX: number, targetY: number, targetSize: number): void {
   const sourceX = (tile % tileset.tilesPerRow) * tileset.tileSize;
   const sourceY = Math.floor(tile / tileset.tilesPerRow) * tileset.tileSize;
   context.drawImage(image, sourceX, sourceY, tileset.tileSize, tileset.tileSize, targetX, targetY, targetSize, targetSize);

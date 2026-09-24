@@ -31,9 +31,11 @@ import { renderTilesetsTab, setSelectedTileset } from "@/editor/panels/tilesetSe
 import { geographyChromeState } from "@/editor/panels/spatialGeographyChromeState";
 import {
   dismissSpatialFeedback,
+  humanizeSpatialError,
   spatialGalleryEmptyCopy,
   syncSpatialFeedbackSelection,
 } from "@/editor/panels/spatialFeedback";
+import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { dismissAuthoringPreview, hasAuthoringPreview, visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { spatialPlacesChrome, visiblePlaceSelection } from "@/editor/panels/spatialPlaceCommands";
 import { spatialSpacesChrome } from "@/editor/panels/spatialSpacesTab";
@@ -207,7 +209,7 @@ export function renderSpatialAuthoringShell(
     const actions = el("div", { class: "spatial-cell-actions", dataset: { testid: "spatial-cell-actions" }, children: [
       el("button", {
         class: "spatial-action is-primary", text: "맵에 놓기",
-        attrs: { type: "button", title: "이 설계로 새 맵을 생성해 미리보기를 만듭니다 — 적용을 누르면 확정", ...(build ? {} : { disabled: "" }) },
+        attrs: { type: "button", title: "이 설계로 새 맵을 만들어 편집 맵으로 엽니다", ...(build ? {} : { disabled: "" }) },
         dataset: { testid: "spatial-cell-build" },
         on: build ? { click: () => { build(); refresh(); } } : undefined,
       }),
@@ -335,6 +337,11 @@ export function renderSpatialAuthoringShell(
     class: "spatial-gallery",
     dataset: { testid: "spatial-gallery" },
     children: [
+      ...(placeChromeState.previewError ? [el("p", {
+        class: "spatial-gallery-empty-body",
+        dataset: { testid: "spatial-place-build-error" },
+        text: humanizeSpatialError(placeChromeState.previewError) ?? placeChromeState.previewError,
+      })] : []),
       ...(libraryFilters ? [] : [el("div", { class: "spatial-gallery-filters", children: [...(worldSearch ? [worldSearch] : []), sourceChips] })]),
       listing,
     ],

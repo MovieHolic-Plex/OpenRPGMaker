@@ -27,7 +27,7 @@ import {
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
-import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
+import { applyActionMotion, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
@@ -140,6 +140,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let sequenceBusy = false;
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
+  /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
+  let hitStopFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   // 프레젠테이션 HP 원장 — 시퀀스가 도는 동안 화면은 이 원장을 본다.
   // 런타임 스냅샷(즉시 최종 상태)이 연출을 앞지르는 결함의 단일 수정 지점.
@@ -374,10 +376,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
             playBattleCue("faint");
           }, 260);
         }
-        if (!feedback.healing && !feedback.miss) flashBattleField(root, feedback.critical ? "critical" : "hit", intensity);
+        if (!feedback.healing && !feedback.miss) {
+          const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
+          flashBattleField(root, feedback.critical ? "critical" : "hit", intensity, { hurt });
+          // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
+          if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
+        }
       }
     },
     onHitFeel(active, feedback) {
+      // 정지(히트스톱)가 풀리는 순간 맞은 쪽이 세 번 깜빡인다. 정지 중에는 22-hit-feel.css 가
+      // 대상을 흰 실루엣으로 붙잡고 있으므로, 점멸은 그 뒤의 "반응" 이다.
+      if (active) hitStopFeedback = feedback;
+      else if (hitStopFeedback) {
+        const struck = hitStopFeedback;
+        hitStopFeedback = undefined;
+        const node = findBattlerNode(field, struck.targetId);
+        if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
+      }
       root.dataset.battleHitFeel = active ? "true" : "false";
       root.classList.toggle("battle-hit-stop", active);
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
@@ -1234,4 +1250,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.runAfterEnemyAdvance(initialSnapshot, initialSnapshot);
   }
   return controller;
+}
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

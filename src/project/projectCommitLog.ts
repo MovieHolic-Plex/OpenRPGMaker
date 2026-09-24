@@ -17,7 +17,8 @@ import { takeEditActivitySince, type EditActivityCommitAttachment } from "@/edit
 import { createLogger } from "@/util/logger";
 import { currentHumanEditorIdentity, type EditorIdentity } from "./editorIdentity";
 import { projectViewWithoutEventDrafts, projectWithoutEventDrafts } from "./eventDrafts";
-import { serialize } from "./io";
+import { projectWireView } from "./io/serialize";
+import { jsonContentDigest } from "./persistence/core/contentDigest";
 import type { CommitReviewStatus } from "./persistence/types";
 import { projectRepository } from "./persistence/repository";
 import type { ChangeSummary } from "@/project/types";
@@ -34,7 +35,15 @@ export type CommitLogInput = {
   readonly toolNames?: readonly string[];
 };
 
-let lastManualSerialized: string | null = null;
+/**
+ * 직전 커밋 문서의 요약(저장 형식 = serialize 가 쓰는 보기). 문자열 전체를 들고 비교하면 큰 프로젝트에서
+ * AI 체크포인트마다 문서 전체를 한 번 더 직렬화했다(2026-09-25 실측, 26 MB 에 체크포인트당 약 0.4 s).
+ */
+let lastManualDigest: string | null = null;
+
+function manualCommitDigest(project: Project): string {
+  return jsonContentDigest(projectWireView(projectViewWithoutEventDrafts(project)))!;
+}
 /** 직전 커밋에서 어디까지 실었는지. 커밋 경로 전체가 이 한 축을 공유한다. */
 let editActivityCursor = 0;
 
@@ -47,7 +56,7 @@ let editActivityCursor = 0;
  *
  * 원격 기록이 실패해도 커서는 전진시킨다: 재시도하면 같은 엔트리가 두 커밋에 실린다.
  * 감사 기록에서 중복은 누락보다 나쁘다 — 같은 행위가 두 번 있었던 것으로 읽힌다.
- * (dedup baseline 인 `lastManualSerialized` 와 정반대 판단인데, 그쪽은 커밋 자체가
+ * (dedup baseline 인 `lastManualDigest` 와 정반대 판단인데, 그쪽은 커밋 자체가
  * 영구히 사라지는 문제라 보수적으로 잡는 게 맞다.)
  *
  * 동기 실행 계약: `recordProjectCommit` 의 첫 `await` **이전에** 불러야 한다.
@@ -78,11 +87,12 @@ export type CommitRow = {
  * 완료까지 기다려 row를 돌려준다(자동 적용 마일스톤의 결정적 커밋 증거, todo 5 의존).
  */
 export async function recordProjectCommit(input: CommitLogInput): Promise<CommitRow> {
-  // 저장소 구현(electron·memory)은 이 객체를 붙잡거나 고치지 않고 직렬화 문자열만 쓴다 — 복제 없는 보기로
-  // 충분하다(2026-09-23 실측: 에이전트 체크포인트마다 프로젝트 전체 structuredClone 이 두 번 돌았다).
+  // 저장소 구현(electron·memory)은 이 객체를 붙잡거나 고치지 않는다 — 복제 없는 보기로 충분하다
+  // (2026-09-23 실측: 에이전트 체크포인트마다 프로젝트 전체 structuredClone 이 두 번 돌았다).
+  // 직렬화 문자열도 미리 만들지 않는다: electron 저장소는 쓰지 않고, 메모리 저장소는 없으면 스스로 만든다
+  // (2026-09-25 실측: 26 MB 프로젝트에서 체크포인트마다 약 1 s).
   const persistedProject = projectViewWithoutEventDrafts(input.project);
   const editActivity = drainEditActivityForCommit();
-  const serialized = serialize(persistedProject);
   const result = await projectRepository().commits.record({
     project: persistedProject,
     identity: input.identity ?? currentHumanEditorIdentity(),
@@ -90,7 +100,6 @@ export async function recordProjectCommit(input: CommitLogInput): Promise<Commit
     summary: input.summary,
     diff: input.diff,
     toolNames: input.toolNames ?? [],
-    serialized,
     ...(editActivity ? { editActivity } : {}),
   });
   return {
@@ -119,8 +128,8 @@ export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
  * (`summarizeChanges`)는 AI 경로만 쓰고 있었다.
  *
  * 성능: diff 는 dedup 통과 **후에만** 계산한다. 변경 없는 저장(가장 흔한 경우)은
- * 기존과 동일하게 `serialize` 한 번으로 끝난다. 실제로 바뀐 저장에서는 이미 돌고 있는
- * `serialize`(전체 JSON 직렬화)와 같은 자릿수의 비용이 한 번 더 드는 셈이다.
+ * 문서 요약 한 번(바뀌지 않은 가지는 기억한 값을 쓴다)으로 끝나고 복제도 하지 않는다. 실제로 바뀐 저장에서만
+ * 복제와 diff 가 돈다.
  *
  * 알려진 경계: baseline 은 "서버가 마지막으로 받은 것" 이지 "마지막으로 커밋 로그에 남은 것"
  * 이 아니다. AI 적용(커밋 row 를 따로 남기고 `resetManualProjectCommitBaseline` 만 부른다)
@@ -128,9 +137,9 @@ export function recordProjectCommitFireAndForget(input: CommitLogInput): void {
  * 과대 집계이긴 하지만 "시스템" 한 단어보다는 감사에 쓸 수 있다.
  */
 export function recordManualProjectCommitAfterSave(project: Project, baseline?: Project | null): void {
+  const digest = manualCommitDigest(project);
+  if (digest === lastManualDigest) return;
   const persistedProject = projectWithoutEventDrafts(project);
-  const serialized = serialize(persistedProject);
-  if (serialized === lastManualSerialized) return;
   // 첫 저장/프로젝트 전환 직후에는 비교 대상이 없다. 기존 동작(systemChanged)으로 떨어뜨리되
   // summary 가 왜 "시스템" 인지 로그에 남긴다 — 안 남기면 예전 버그와 구분이 안 된다.
   const diff = baseline ? manualDiffFromBaseline(baseline, persistedProject) : manualDiffSummary();
@@ -150,7 +159,6 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
     summary,
     diff,
     toolNames: [],
-    serialized,
     ...(editActivity ? { editActivity } : {}),
   })
     // 커밋 기록 요청이 실패하면(네트워크 오류 등) baseline을 전진시키지 않는다 —
@@ -162,7 +170,7 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
     // 나중에 설정이 붙은 뒤 동일 내용 재저장이 dedup 에 걸려 그 커밋이 영구히 사라졌다.
     .then((result) => {
       if (result.kind === "saved") {
-        lastManualSerialized = serialized;
+        lastManualDigest = digest;
         return;
       }
       log.warn("수동 저장 커밋이 기록되지 않았다 — dedup baseline 을 전진시키지 않는다", {
@@ -176,7 +184,7 @@ export function recordManualProjectCommitAfterSave(project: Project, baseline?: 
 }
 
 export function resetManualProjectCommitBaseline(project: Project): void {
-  lastManualSerialized = serialize(projectViewWithoutEventDrafts(project));
+  lastManualDigest = manualCommitDigest(project);
   // 프로젝트 전환/재베이스라인 시 남아 있던 pending 엔트리를 버린다 — 안 버리면 이전
   // 프로젝트의 편집이 다음 프로젝트의 첫 커밋에 실려 엉뚱한 맵 id 로 읽힌다.
   // AI 적용 경로에서는 바로 앞의 커밋이 이미 드레인했으므로 no-op 이다.

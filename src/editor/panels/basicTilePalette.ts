@@ -42,14 +42,16 @@ export function makeBasicTilePalette(options: BasicTilePaletteOptions, cache?: B
   const { tileset, selectedTile, layer, query } = options;
   const imageUrl = tilesetImageUrl(tileset);
   const previous = cache?.current;
-  // Custom atlases keep every source coordinate on either tile layer. Keep the
-  // section attached; detaching/reinserting 2,580 existing cells also forces layout.
-  if (isCustomTileset(tileset) && previous?.tileset === tileset
-    && previous.imageUrl === imageUrl && previous.query === query
+  // The sheet is a static crop of the atlas. Keep the same buttons when the
+  // visible set is unchanged. Custom atlases show the same cells on both layers;
+  // a standard chipset's visible set follows the layer, so that change rebuilds.
+  const sameLayer = isCustomTileset(tileset) || previous?.options.layer === layer;
+  if (previous?.tileset === tileset
+    && previous.imageUrl === imageUrl && previous.query === query && sameLayer
     && (!query.trim() || previous.options.selectedTile === selectedTile)) {
     previous.options = options;
     const status = previous.section.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
-    if (status) status.textContent = `${layer === "lower" ? "바닥" : "덧그림"} · ${basicTileLabel(tileset, selectedTile)}`;
+    if (status) status.textContent = `${layer === "lower" ? "바닥" : "상위"} · ${basicTileLabel(tileset, selectedTile)}`;
     const oldActive = previous.sheet.querySelector<HTMLElement>('.chipset-tile.active');
     const nextActive = previous.sheet.querySelector<HTMLElement>(`[data-tile-index="${selectedTile}"]`);
     if (oldActive !== nextActive) {

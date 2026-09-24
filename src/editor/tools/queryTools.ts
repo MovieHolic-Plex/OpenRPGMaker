@@ -8,6 +8,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
+import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -114,15 +115,14 @@ const getProjectSummary: ToolDefinition = {
 function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
   if (hasEvent) return "E";
   const i = y * map.width + x;
-  const lower = map.lowerTiles[i] ?? TILE.EMPTY;
-  const upper = map.upperTiles[i] ?? TILE.EMPTY;
+  const layers = cellLayerTiles(map, i);
   // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
   const tileset = project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID];
-  if (isWaterInTileset(map, tileset, lower) || isWaterInTileset(map, tileset, upper)) return "~";
+  if (layers.some((tile) => isWaterInTileset(map, tileset, tile))) return "~";
   const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID;
-  if ((compatible && (upper === TILE.TREE || lower === TILE.TREE))
-    || (tileset && [lower, upper].some(tile => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
-  if (compatible && lower === TILE.WALL) return "#";
+  if ((compatible && layers.some((tile) => tile === TILE.TREE))
+    || (tileset && layers.some((tile) => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
+  if (compatible && layers[0] === TILE.WALL) return "#";
   return isPassable(project, map, x, y) ? "." : "#";
 }
 
@@ -142,10 +142,8 @@ export function waterBoundsInMap(
   let cellCount = 0;
   for (let y = y0; y < y1; y += 1) {
     for (let x = x0; x < x1; x += 1) {
-      const i = y * map.width + x;
-      const lower = map.lowerTiles[i] ?? TILE.EMPTY;
-      const upper = map.upperTiles[i] ?? TILE.EMPTY;
-      if (!isWaterInTileset(map, tileset, lower) && !isWaterInTileset(map, tileset, upper)) continue;
+      const layers = cellLayerTiles(map, y * map.width + x);
+      if (!layers.some((tile) => isWaterInTileset(map, tileset, tile))) continue;
       cellCount += 1;
       if (x < minX) minX = x;
       if (y < minY) minY = y;

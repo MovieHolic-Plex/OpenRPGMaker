@@ -190,16 +190,35 @@
 /* 모델 칩 */
 .ai-composer-model {
   align-items: center;
+  background: transparent;
+  border: 0;
   border-radius: 7px;
   color: var(--ai-deck-secondary, var(--text-2));
+  cursor: pointer;
   display: inline-flex;
+  font: inherit;
   font-size: 12px;
   height: 28px;
   padding: 0 6px;
   white-space: nowrap;
 }
+.ai-composer-model:hover,
+.ai-composer-model:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
 
 .ai-composer-model[hidden] {
+  display: none;
+}
+
+.ai-composer-spend {
+  color: var(--ai-deck-secondary, var(--text-2));
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ai-composer-spend[hidden] {
   display: none;
 }
 

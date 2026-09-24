@@ -102,6 +102,17 @@ describe("aiComposer — 데크 컴포저", () => {
     expect(findByTestId(actions, "ai-composer-model")).toBeNull();
   });
 
+  it("턴·토큰 줄은 비어 있으면 숨고, 값이 있으면 입력줄에 보인다", () => {
+    const { shell } = render();
+    const chip = findByTestId(shell.actions as unknown as FakeElement, "ai-composer-spend");
+    expect(chip?.hidden).toBe(true);
+    shell.setSpend("3턴 · 12,400토큰");
+    expect(chip?.hidden).toBe(false);
+    expect(chip?.textContent).toBe("3턴 · 12,400토큰");
+    shell.setSpend(null);
+    expect(chip?.hidden).toBe(true);
+  });
+
   it("바깥 클릭 판정은 isInside 가 정한다 — 데크 안(레일)의 클릭은 메뉴를 닫지 않는다", () => {
     // Break: containment 가 commandBar 로 고정돼 레일의 ⋯ 를 두 번 누르면 닫히고 곧 다시 열린다.
     const outside = document.createElement("div");

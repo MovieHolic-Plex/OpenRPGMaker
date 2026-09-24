@@ -71,11 +71,14 @@ test("settings changes preserve drafts, focus, expanded conditions, and independ
   test.setTimeout(180_000);
   await page.setViewportSize({ width: 1280, height: 800 });
   await openSettings(page);
+  await page.getByTestId("map-props-tab-general").click();
   await page.getByLabel("가로 (칸)", { exact: true }).fill("96");
   await page.getByTestId("map-props-tab-background").click();
   await page.getByLabel("맵 배경 사용", { exact: true }).check();
   await expect(page.getByTestId("map-bg-enable")).toBeFocused();
+  await page.getByTestId("map-props-tab-general").click();
   await expect(page.getByLabel("가로 (칸)", { exact: true })).toHaveValue("96");
+  await page.getByTestId("map-props-tab-background").click();
   await page.getByLabel("가로 스크롤 속도", { exact: true }).fill("2");
   await page.getByLabel("세로 스크롤 속도", { exact: true }).fill("3");
   await page.getByTestId("map-props-tab-spawns").click();
@@ -88,6 +91,7 @@ test("settings changes preserve drafts, focus, expanded conditions, and independ
   const preview = page.getByTestId("map-minimap-preview-canvas");
   await expect(preview).toHaveCSS("height", "180px", { timeout: 15_000 });
   await page.screenshot({ path: join(OUT, "after-minimap.png") });
+  await page.getByTestId("map-props-tab-spawns").click();
   await expect(page.getByTestId("map-field-spawns-input")).toHaveValue('[\n  { "unfinished":');
   await expect(spawns.locator("details")).toHaveAttribute("open", "");
   await page.getByTestId("map-props-tab-restrictions").click();

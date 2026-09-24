@@ -33,6 +33,7 @@ import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSheets";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
+import { scheduleBattleTimer } from "@/player/battleTimerScope";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
  *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
@@ -504,6 +505,8 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   }
 }
 
+const POP_SCALE: Readonly<Record<string, number>> = { graze: 0.85, normal: 1, heavy: 1.3, crushing: 1.6 };
+
 function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void {
   const layer = field.querySelector<HTMLElement>(".battle-effects-layer")
     ?? appendEffectsLayer(field);
@@ -542,6 +545,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
     // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).
     if (anchor.classList.contains("defeated")) popup.classList.add("battle-damage-popup-final");
+    // 숫자 크기가 위력을 말한다 — 7 과 700 이 같은 28px 이던 때는 숫자를 읽어야만 셌다.
+    // 세기는 battleDom 이 이 동기화 직전에 노드에 심는다(applyHitIntensity).
+    const popScale = POP_SCALE[anchor.dataset.hitIntensity ?? ""];
+    if (popScale && !feedback.healing && !feedback.miss) popup.style.setProperty("--pop-scale", String(popScale));
     layer.append(popup);
   } else if (!showPartyRowDamage(field, feedback, popup)) {
     layer.append(popup);
@@ -914,6 +921,53 @@ export function spawnDeathShards(node: HTMLElement): void {
   window.setTimeout(() => container.remove(), 900);
 }
 
+const HIT_SPARK_COUNT: Readonly<Record<string, number>> = { graze: 5, normal: 7, heavy: 10, crushing: 12 };
+
+/**
+ * 명중 파편 — 맞은 순간 몸통 한가운데서 작은 불꽃이 튄다(CSS: 22-hit-feel.css `.battle-hit-spark`).
+ * 격파 조각(spawnDeathShards)과 같은 결정적 배치를 쓰되 짧고 가깝다. 수는 세기가 정한다.
+ * 히트스톱 동안에는 CSS 가 멈춰 두었다가 정지가 풀리는 순간 터진다.
+ */
+export function spawnHitSparks(node: HTMLElement, intensity: string): void {
+  node.querySelector(".battle-hit-sparks")?.remove();
+  const count = HIT_SPARK_COUNT[intensity] ?? 7;
+  const container = document.createElement("span");
+  container.className = "battle-hit-sparks";
+  container.dataset.testid = "battle-hit-sparks";
+  container.setAttribute("aria-hidden", "true");
+  const sprite = battlerSpriteNode(node);
+  const spriteHeight = sprite.offsetHeight > 0 ? sprite.offsetHeight : 120;
+  container.style.setProperty("--shard-rise", `${Math.round(spriteHeight * 0.5)}px`);
+  const reach = intensity === "crushing" ? 1.5 : intensity === "heavy" ? 1.25 : 1;
+  for (let index = 0; index < count; index += 1) {
+    const spark = document.createElement("i");
+    spark.className = "battle-hit-spark";
+    const angle = (index / count) * Math.PI * 2 + ((index * 5) % 3) * 0.3;
+    const distance = (26 + ((index * 11) % 5) * 7) * reach;
+    spark.style.setProperty("--sx", `${Math.round(Math.cos(angle) * distance)}px`);
+    spark.style.setProperty("--sy", `${Math.round(Math.sin(angle) * distance * 0.8)}px`);
+    spark.style.setProperty("--ss", `${4 + ((index * 3) % 3) * 2}px`);
+    container.append(spark);
+  }
+  node.append(container);
+  scheduleBattleTimer(() => container.remove(), 700);
+}
+
+/** 피격 점멸 한 번의 길이. 세 번 꺼졌다 켜진다(드퀘·포켓몬 공통 문법). */
+export const HIT_BLINK_STEP_MS = 55;
+
+/**
+ * 맞은 배틀러를 세 번 깜빡인다. `visibility` 를 클래스로 토글한다 — 스프라이트의 animation 슬롯은
+ * idle·숨쉬기·기절이 쓰고 있어서 거기에 점멸을 얹으면 그 연출이 처음부터 다시 돈다.
+ */
+export function blinkBattlerNode(node: HTMLElement): void {
+  node.classList.remove("battle-hit-blink-off");
+  for (let step = 0; step < 6; step += 1) {
+    scheduleBattleTimer(() => node.classList.toggle("battle-hit-blink-off", step % 2 === 0), step * HIT_BLINK_STEP_MS);
+  }
+  scheduleBattleTimer(() => node.classList.remove("battle-hit-blink-off"), 6 * HIT_BLINK_STEP_MS);
+}
+
 /** Side-view approach / knockback classes for the current resolve beat. */
 export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined): void {
   for (const node of field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")) {
@@ -926,6 +980,8 @@ export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       "battle-motion-target",
     );
   }
+  const party = field.parentElement?.querySelector<HTMLElement>(".battle-party");
+  for (const row of party?.querySelectorAll<HTMLElement>(".battle-actor-status.is-acting") ?? []) row.classList.remove("is-acting");
   if (!beat) return;
   const user = beat.userId ? findBattlerNode(field, beat.userId) : null;
   if (user) {
@@ -933,6 +989,13 @@ export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     if (beat.userMotion === "windup") user.classList.add("battle-motion-windup");
     else if (beat.userMotion === "lunge") user.classList.add("battle-motion-lunge");
     else if (beat.userMotion === "return") user.classList.add("battle-motion-return");
+    // 예비동작 → 순간 타격(22-hit-feel.css): approach 비트의 전진은 비트 끝에 **도착**하도록
+    // 늦게 출발한다. 예전엔 130ms 에 도착해 340ms 를 서 있다가 맞혔다 — 가장 느린 순간이 타격이었다.
+    user.dataset.motionPhase = beat.kind;
+    user.style.setProperty("--motion-beat-ms", `${Math.max(0, Math.round(beat.durationMs))}ms`);
+  } else if (beat.userId && beat.userMotion !== "idle") {
+    // 아군을 그리지 않는 정면 스킨: 누가 때리는지 파티 카드의 그 행이 앞으로 나와 말한다.
+    party?.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${beat.userId}"]`)?.classList.add("is-acting");
   }
   if (beat.targetId) {
     const target = findBattlerNode(field, beat.targetId);

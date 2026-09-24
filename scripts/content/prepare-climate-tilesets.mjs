@@ -1,6 +1,7 @@
 // Tileset data for the two climate sheets (build-climate-chipsets.py) → src/assets/climateVillageTilesets.json.
 // One shared base (the diverse forest-village tileset without grafts: they are baked into the sheets) plus a small
-// patch per climate: renamed labels, the snow sheet's appended ice tiles and its ice autotile. Climates: snow, volcano, desert, autumn.
+// patch per climate: renamed labels, the snow sheet's appended ice tiles and its ice autotile, and (snow, volcano,
+// desert) the leafless trees from 2880 with their bare-trees:* tile groups. Climates: snow, volcano, desert, autumn.
 // Usage: node scripts/content/prepare-climate-tilesets.mjs
 import fs from "node:fs";
 import assert from "node:assert/strict";
@@ -84,27 +85,96 @@ for (const t of sheets.desert.sandstone) {
 }
 // ── autumn: gold grass, autumn leaves (forest orange-maroon, broadleaf gold, bushes crimson) ──
 const autumnMeta = relabel({ tree: "단풍 든", ground: "가을" }, "가을판 색으로 칠해져 있다(칸 번호·통행은 숲마을과 같다).");
+
 const none = { terrain: [], priority: [], passability: [], tileMeta: [] };
+// ── leafless trees (build-climate-chipsets.py → bare-trees.py): same slots from 2880 on snow, volcano and desert ──
+// Crown rows: upper, walkable (drawn over the walker). Bottom row: the trunk base, lower on ground 240, solid.
+// Shrubs 1×1: upper, solid. Cells a tree does not draw on are unused and stay -1 in every stamp.
+const BARE = sheets.bareTrees;
+const BARE_NAMES = {
+  desert: { tree: "바랜 고목", shrub: "마른 덤불", tag: "사막", note: "햇볕에 바랜 잎 없는 고목" },
+  volcano: { tree: "그을린 고목", shrub: "그을린 덤불", tag: "화산", note: "불씨가 박힌 그을린 잎 없는 고목" },
+  snow: { tree: "눈 얹힌 고목", shrub: "눈 얹힌 마른 덤불", tag: "설원", note: "가지에 눈이 얹힌 잎 없는 고목" },
+};
+const SIZE = { big: "큰", mid: "중간", small: "작은", shrub: "" };
+const PLACE_RULE = "잎 없는 나무: 한 덩이로 찍는다(수관 칸은 상위·통과, 밑동 줄은 하위·통행 불가, 도장의 -1 칸은 비운다). 빈 땅(240)에만, 집·길·문 앞·계단 끝·다리 끝·울타리에서 2칸 밖에. 낱개로 흩뿌리지 말고 큰/중간 한 그루 + 곁나무 1~2 + 밑동 옆 바위·마른 덤불로 덩이를 짓고, 맵 가장자리 띠는 8칸·안쪽은 13칸 간격. 밑동을 일렬로 늘어세우지 않는다(위아래 한 줄·가로 10칸 안 3그루까지, 가장자리 덩이는 0~3줄 들쭉날쭉, 맵 끝 줄·끝 칸 밑동 금지). 다른 나무와 칸을 겹치지 않는다(한 칸에 위층 하나).";
+const unused = () => ({ label: "미사용", source: "unknown" });
+function bareTrees(climate, from) {
+  const names = BARE_NAMES[climate], rows = { terrain: [], priority: [], passability: [], tileMeta: [] };
+  const cell = new Map();
+  for (const st of BARE.stamps) st.tiles.forEach((t, k) => { if (t >= 0) cell.set(t, { st, dx: k % st.w, dy: Math.floor(k / st.w) }); });
+  const shut = { up: false, down: false, left: false, right: false }, open = { up: true, down: true, left: true, right: true };
+  for (let t = from; t < sheets[climate].count; t++) {
+    const c = cell.get(t);
+    rows.terrain.push(0);
+    if (!c) { rows.priority.push("lower"); rows.passability.push({ ...shut }); rows.tileMeta.push(unused()); continue; }
+    const { st, dx, dy } = c, n = st.id.split("-")[1];
+    const shrub = st.kind === "shrub", base = !shrub && dy === st.h - 1;
+    const name = shrub ? `${names.shrub} · ${n}` : `${names.tree} · ${SIZE[st.kind]} ${n}`;
+    rows.priority.push(base ? "lower" : "upper");
+    rows.passability.push(shrub || base ? { ...shut } : { ...open });
+    rows.tileMeta.push({
+      role: shrub ? "plant" : "prop",
+      tags: ["나무", "잎 없는 나무", "고목", "투명", names.tag, shrub ? "덤불" : base ? "밑동" : "수관"],
+      label: shrub ? name : `${name} (${dx + 1},${dy + 1})`,
+      // Locked like the forest-wall tiles: the renderers only honour defaultLayer / layerBacking on confirmed metadata.
+      source: "user", origin: "user", locked: true, userLocked: true,
+      passage: shrub || base ? "solid" : "star",
+      defaultLayer: base ? "lower" : "upper",
+      layerBacking: base ? 240 : "none",
+      confidence: "high",
+      description: shrub
+        ? `${names.tag}판 마른 덤불 1칸(위층, 통행 불가). 잎 없는 나무 덩이의 밑동 옆에만 붙인다 — 낱개로 흩뿌리지 않는다.`
+        : `${names.note}(${st.w}×${st.h} 칸 bare-trees:${st.id})의 (${dx + 1},${dy + 1}). ${base ? "밑동 줄: 하위 레이어에 땅(240) 받침과 함께, 지나갈 수 없다." : "수관·줄기: 상위 레이어로 사람 위에 그려지고 지나갈 수 있다."}`,
+    });
+  }
+  const groups = BARE.stamps.map((st) => {
+    const shrub = st.kind === "shrub", n = st.id.split("-")[1];
+    const tileIds = [], cellLayers = [], lower = [], upper = [];
+    st.tiles.forEach((t, k) => {
+      const base = !shrub && Math.floor(k / st.w) === st.h - 1;
+      if (t >= 0) { tileIds.push(t); cellLayers.push(base ? "lower" : "upper"); }
+      lower.push(t < 0 ? -1 : base ? t : shrub ? -1 : 240);
+      upper.push(t < 0 || base ? -1 : t);
+    });
+    return {
+      id: `bare-trees:${st.id}`,
+      name: shrub ? `잎 없는 나무 · ${names.shrub} ${n}` : `잎 없는 나무 · ${names.tree} ${SIZE[st.kind]} ${n}`,
+      role: shrub ? "plant" : "prop", source: "bundled-default", tileIds, layerHome: "perCell", cellLayers, confidence: "high",
+      previewMap: { width: st.w, height: st.h, lowerTiles: lower, upperTiles: upper },
+      sourceRect: { x: st.col * 16, y: (BARE.first / 30 + st.row) * 16, width: st.w * 16, height: st.h * 16 },
+      description: shrub
+        ? `${names.tag}판 마른 덤불 1×1(위층, 통행 불가). 고목 밑동 옆에 붙여 덩이의 일부로만 쓴다.`
+        : `${names.note} ${st.w}×${st.h} 칸. 수관·줄기는 상위(지나갈 수 있음), 밑동 줄은 하위+땅 받침(통행 불가). 그림이 없는 칸은 -1(도장에 넣지 않는다).`,
+      defaultLayer: shrub ? "upper" : "mixed",
+      patternGrammar: { kind: "source_rect", parts: [], repeat: "source_order", preserveCaps: false },
+      placementRules: PLACE_RULE,
+    };
+  });
+  return { rows, groups };
+}
+const bare = Object.fromEntries(BARE.climates.map((k) => [k, bareTrees(k, k === "snow" ? TS.count + append.terrain.length : TS.count)]));
+const withBare = (k, a) => ({ terrain: [...a.terrain, ...bare[k].rows.terrain], priority: [...a.priority, ...bare[k].rows.priority], passability: [...a.passability, ...bare[k].rows.passability], tileMeta: [...a.tileMeta, ...bare[k].rows.tileMeta] });
 
 const out = {
   base,
   climates: {
     snow: {
       id: "forest_harmony_snow", textureKey: "tex_forest_harmony_snow", name: "설원 마을 · 눈 덮인 숲마을", count: sheets.snow.count,
-      append, metaPatch: snowMeta, extraAutotileGroups: [iceGroup], autotileNames: {},
+      append: withBare("snow", append), metaPatch: snowMeta, extraAutotileGroups: [iceGroup], extraTileGroups: bare.snow.groups, autotileNames: {},
     },
     volcano: {
       id: "forest_harmony_volcano", textureKey: "tex_forest_harmony_volcano", name: "화산 마을 · 재와 용암의 숲마을", count: sheets.volcano.count,
-      append: { terrain: [], priority: [], passability: [], tileMeta: [] }, metaPatch: volcanoMeta, extraAutotileGroups: [],
+      append: withBare("volcano", none), metaPatch: volcanoMeta, extraAutotileGroups: [], extraTileGroups: bare.volcano.groups,
       autotileNames: { forest_harmony_lake_47: "용암 못 · 자연 가장자리(물 칸과 같은 번호, 통행 불가)" },
     },
     desert: {
       id: "forest_harmony_desert", textureKey: "tex_forest_harmony_desert", name: "사막 마을 · 모래와 사암의 숲마을", count: sheets.desert.count,
-      append: none, metaPatch: desertMeta, extraAutotileGroups: [], autotileNames: { forest_harmony_lake_47: "오아시스 못 · 자연 가장자리" },
+      append: withBare("desert", none), metaPatch: desertMeta, extraAutotileGroups: [], extraTileGroups: bare.desert.groups, autotileNames: { forest_harmony_lake_47: "오아시스 못 · 자연 가장자리" },
     },
     autumn: {
       id: "forest_harmony_autumn", textureKey: "tex_forest_harmony_autumn", name: "가을 마을 · 단풍 든 숲마을", count: sheets.autumn.count,
-      append: none, metaPatch: autumnMeta, extraAutotileGroups: [], autotileNames: {},
+      append: none, metaPatch: autumnMeta, extraAutotileGroups: [], extraTileGroups: [], autotileNames: {},
     },
   },
 };
@@ -113,4 +183,6 @@ console.log({
   bytes: fs.statSync("src/assets/climateVillageTilesets.json").size,
   snowRelabels: Object.keys(snowMeta).length, volcanoRelabels: Object.keys(volcanoMeta).length, ice: append.terrain.length,
   desertRelabels: Object.keys(desertMeta).length, autumnRelabels: Object.keys(autumnMeta).length,
+  bareTreeGroups: BARE.stamps.length, counts: Object.fromEntries(Object.entries(out.climates).map(([k, c]) => [k, [c.count, TS.count + c.append.terrain.length]])),
 });
+for (const c of Object.values(out.climates)) assert.equal(TS.count + c.append.terrain.length, c.count, c.id);

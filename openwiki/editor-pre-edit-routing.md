@@ -183,7 +183,9 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 초보 레일은 동일 칩셋·이미지·검색 조건에서 팔레트 DOM을 재사용한다. 선택 시 2,000개 이상의
 셀을 다시 만들면 지연 생성 중인 뒷부분이 사라지거나 키보드/드래그 상태가 끊긴다.
 표준 팔레트도 같다. `selectedTile` 만 바뀐 에디터 통지는 `syncMountedPaletteSelection` 이
-활성 칸과 선택 칩만 옮긴다. 레이어·도구·스탬프·필터·열린 보조 창이 같이 바뀌면 시트를 다시 그린다.
+활성 칸과 선택 칩만 옮긴다. 도구·붓·스탬프만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
+같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
+선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
 같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
 
@@ -649,7 +651,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 - Team workflow visualization, mock editor login, topbar identity/history **icon** buttons (trailing cluster), commit-history panel (outside-click dismiss), and map-lock badges: start in `src/editor/teamWorkflowUi.ts`, `src/editor/panels/menu.ts`, `src/editor/panels/mapList.ts`, `src/editor/panels/editor.ts`, `src/project/editorIdentity.ts`, and `src/project/legacyDbProjectSync.ts`. Locked maps use the canvas-top badge with last activity plus a guarded edit-rights takeover action; there is no duplicate statusbar state. Login remains mock-only until Phase 8 auth switchover; do not add LegacyDb Auth calls here.
 
 - **맵 URL 동기화 + 뒤로가기 (2026-07-24):** `src/editor/mapUrlSync.ts` owns `?map=<mapId>` URL parameter sync. 맵 전환 시 `pushState`로 히스토리 기록, `popstate`으로 뒤로가기/앞으로가기 시 맵 복원. 부팅 시 `restoreMapFromUrl()` → `installMapUrlSync()` in `src/app/mode.ts`. `projectUrl.ts`의 `?project=` 파라미터와 공존.
-- **RM2003 맵 속성 탭 (2026-07-24):** `src/editor/panels/mapProps.ts` rewritten as tabbed dialog (일반/배경/BGM/전투/제한/인카운터/필드스폰). New `GameMap` fields: `background?: MapBackground`, `bgm?: MapBgmSetting`, `battleBackground?: string`, `disableSave?`, `disableTeleport?`, `disableEscape?`. Actions: `setMapBackground`, `setMapBgm`, `setMapBattleBackground`, `setMapFlags` in `src/editor/actions.ts`. Types: `MapBackground`, `MapBgmSetting` in `src/project/types/project.ts`. CSS: `src/styles/editor/map-props.css`.
+- **RM2003 맵 속성 (2026-09-25):** `src/editor/panels/mapProps.ts` 는 항목 목록이다. 항목을 누르면 그 섹션만 같은 창 안에 열린다. 목록 줄에 현재 값 요약, 배경·전투 그림, 지정 곡 재생이 있다. 섹션 DOM 은 숨긴 채로 유지해서 다른 항목으로 갔다 와도 입력 초안이 남는다. 이전(2026-07-24)에는 한 스크롤에 일반/배경/BGM/전투/제한/인카운터/필드스폰을 쌓았다. New `GameMap` fields: `background?: MapBackground`, `bgm?: MapBgmSetting`, `battleBackground?: string`, `disableSave?`, `disableTeleport?`, `disableEscape?`. Actions: `setMapBackground`, `setMapBgm`, `setMapBattleBackground`, `setMapFlags` in `src/editor/actions.ts`. Types: `MapBackground`, `MapBgmSetting` in `src/project/types/project.ts`. CSS: `src/styles/editor/map-props.css`.
 - **맵 배경 탭 미리보기 (2026-09-14):** 「맵 배경」 탭에서 고른 그림을 `map-bg-preview` 로 보여준다
   (`mapProps.renderBackgroundTab`, `.map-bg-preview` 는 `src/styles/editor/map-props.css`).
   캔버스가 배경을 그리지 않기 때문이다 — 빈 칸 체커(2026-08-27 의도된 신호)를 약화시키지 않고는

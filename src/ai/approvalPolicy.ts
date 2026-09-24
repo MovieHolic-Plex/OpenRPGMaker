@@ -61,7 +61,10 @@ const DESTRUCTIVE_TOOLS: ReadonlySet<string> = new Set([
  * 적용 직전 사용자 허가 모달(`mapDestructionConfirm`)과 자율 런 자동 적용 거부
  * (`AssistantSession.maybeAutoApplyMilestone`)가 이 집합 하나를 본다.
  */
-export const MAP_DESTRUCTION_TOOLS: ReadonlySet<string> = new Set(["clear_map"]);
+export const MAP_DESTRUCTION_TOOLS: ReadonlySet<string> = new Set([
+  "clear_map",
+  "assemble_mage_city",
+]);
 
 /** 이름 기반 맵 규모 파괴 판정. diff 를 모르는 자리(자동 적용 차단·모달)에서 쓴다. */
 export function isMapDestruction(name: string): boolean {
@@ -87,6 +90,24 @@ export function removedMapIds(before: Project, proposed: Project): string[] {
  * (같은 실측에서 마을 맵은 남고 이벤트 20개가 전부 사라졌다 — 20이벤트 → 0이벤트).
  * 「전부」라는 조건이라 임의의 문턱이 아니다: 이벤트가 있던 맵이 하나도 안 남기는 경우만 센다.
  */
+function tileLayerHasPaint(tiles: readonly number[] | undefined): boolean {
+  return (tiles ?? []).some((tile) => tile !== 0);
+}
+
+/** 타일이 있던 맵이 같은 크기 그대로 전 칸 0이 된 경우. Pi 포장 clear_map 이 이름 게이트를 비낀다. */
+export function wipedTileMapIds(before: Project, proposed: Project): string[] {
+  return Object.entries(before.maps ?? {})
+    .filter(([id, map]) => {
+      const after = proposed.maps?.[id];
+      if (!map || !after || after.width !== map.width || after.height !== map.height) return false;
+      const hadPaint = tileLayerHasPaint(map.lowerTiles) || tileLayerHasPaint(map.upperTiles);
+      const hasPaint = tileLayerHasPaint(after.lowerTiles) || tileLayerHasPaint(after.upperTiles);
+      return hadPaint && !hasPaint;
+    })
+    .map(([id]) => id)
+    .sort();
+}
+
 export function emptiedEventMapIds(before: Project, proposed: Project): string[] {
   return Object.entries(before.maps ?? {})
     .filter(([id, map]) => {

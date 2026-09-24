@@ -4,7 +4,7 @@ import { referenceRevision, type TilesetReferenceCategory } from "../tilesetRefe
 import previousReferences from "../../../tiledata/field-routes/previous-reference.json";
 
 // Fields between villages (tiledata/field-routes): one category per bundled tileset the fields are drawn on —
-// the forest village sheet and the four climate sheets.
+// the forest village sheet and the four climate sheets — plus the outdoor places of tiledata/rpg-outdoors (revision 5).
 const CATEGORY_BY_TILESET = saved as unknown as Record<string, TilesetReferenceCategory>;
 const TEXTURE_BY_TILESET: Readonly<Record<string, string>> = {
   forest_harmony: "tex_forest_harmony",
@@ -12,6 +12,8 @@ const TEXTURE_BY_TILESET: Readonly<Record<string, string>> = {
   forest_harmony_volcano: "tex_forest_harmony_volcano",
   forest_harmony_desert: "tex_forest_harmony_desert",
   forest_harmony_autumn: "tex_forest_harmony_autumn",
+  // The outdoor world map (tiledata/rpg-outdoors) is drawn on the bundled EasyRPG world sheet.
+  easyrpg_chipset_world: "tex_easyrpg_chipset_world",
 };
 
 /** Add the shipped category once to the bundled tileset copy and retire unedited older revisions; authored or

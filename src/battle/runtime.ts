@@ -731,6 +731,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
+    if (turn >= STRICT_MAX_ROUNDS) {
+      recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
+      escaped = true;
+      result = "escape";
+      phase = "resolved";
+      return;
+    }
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number => agilityMultiplierForStates(options.project, battler);
@@ -772,7 +779,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const forcedActor = forcedSwitchActor();
     if (forcedActor) {
       if (command.kind !== "switch") return;
-      if (!switchActiveActor(forcedActor.recordId, command.targetActorId)) return;
+      if (!switchActiveActor(forcedActor.recordId, command.targetActorId)) {
+        if (switchCandidateActors().length === 0) {
+          activeActorId = undefined;
+          phase = battleFlow === "strict" ? "roundResolve" : "charging";
+        }
+        return;
+      }
       activeActorId = undefined;
       currentActorCommandKind = undefined;
       if (battleFlow === "strict") {

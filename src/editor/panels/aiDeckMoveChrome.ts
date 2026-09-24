@@ -11,7 +11,7 @@
 // 의 is-collapsed inset)이 같은 값을 읽어, 접어도 조수가 그 자리에 남는다.
 //
 // 손잡이는 데크 상단 레일(.ai-deck-rail)이다. 버튼·팝오버·링크 같은 상호작용 자식은
-// 제외하고, 더블클릭은 저장 위치를 지워 기본 자리(우하단)로 되돌린다.
+// 제외하고, 더블클릭은 저장 위치를 지워 기본 자리(왼쪽 아래)로 되돌린다.
 //
 // 제스처 계약 (2026-09-14 보강, 셋 다 실측 결함):
 //   · `DRAG_START_THRESHOLD_PX` 를 넘어야 드래그다 — 1px 지터 클릭이 위치를 저장하던 것을 막는다.
@@ -105,10 +105,12 @@ export function createDeckMoveChrome(deps: DeckMoveChromeDeps): DeckMoveChrome {
 
   const writeVars = (pos: DeckPosition | null): void => {
     if (!pos) {
+      panel.classList.remove("has-custom-deck-pos");
       panel.style.removeProperty("--ai-deck-right");
       panel.style.removeProperty("--ai-deck-bottom");
       return;
     }
+    panel.classList.add("has-custom-deck-pos");
     panel.style.setProperty("--ai-deck-right", `${pos.right}px`);
     panel.style.setProperty("--ai-deck-bottom", `${pos.bottom}px`);
   };

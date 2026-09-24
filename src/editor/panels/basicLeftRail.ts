@@ -58,10 +58,18 @@ const tilePaletteCache: BasicTilePaletteCache = {};
 function installDocumentListeners(): void {
   if (documentListenersInstalled || typeof window === "undefined" || typeof window.addEventListener !== "function") return;
   documentListenersInstalled = true;
-  // 되돌리기 단추의 켜짐은 맵 편집 기록이 정한다 — 기록이 바뀌면 레일을 다시 그린다.
+  // 되돌리기 단추의 켜짐만 기록이 정한다. 레일을 다시 그리면 타일 칸이 따라 죽는다.
   window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => {
-    if (getEditorChrome().paletteRail && lastContainer?.isConnected) renderBasicLeftRail(lastContainer);
+    if (getEditorChrome().paletteRail && lastContainer?.isConnected) syncBasicRailUndo();
   });
+}
+
+function syncBasicRailUndo(): void {
+  const undo = lastContainer?.querySelector<HTMLButtonElement>('[data-testid="oprn-tool-undo"]');
+  if (!undo) return;
+  const disabled = !getMapEditHistoryState().canUndo;
+  undo.disabled = disabled;
+  undo.setAttribute("aria-disabled", String(disabled));
 }
 
 export function resetBasicLeftRailForTests(): void {
@@ -163,6 +171,21 @@ function makeToolsColumn(activeTool: Tool, layer: Layer): HTMLElement {
   return list;
 }
 
+/**
+ * 붓 상태 줄만 지금 상태로 바꾼다. 타일을 고르며 레이어가 바뀐 클릭은 이 줄의 「바닥/상위」 말고는
+ * 레일에 달라지는 것이 없다 — 레일 전체를 다시 지으면 도구 줄 재조립·스크롤 읽기가 매 클릭 레이아웃을 강제한다.
+ */
+export function syncBasicRailBrushStatus(): boolean {
+  const container = lastContainer;
+  if (!container?.isConnected) return false;
+  const row = container.querySelector<HTMLElement>('[data-testid="basic-rail-status"]');
+  if (!row) return false;
+  const next = makeStatusRow(makeTileBrushControls(editorState.get(), () => renderBasicLeftRail(container)));
+  row.replaceWith(next);
+  applyRovingTabindex(next);
+  return true;
+}
+
 /** 붓 상태(무엇으로 · 어느 레이어) 한 줄 + 되돌리기. 크기 단추는 크기가 뜻 있는 도구일 때만 붓 줄에 나온다. */
 function makeStatusRow(brushControls: HTMLElement): HTMLElement {
   const undo = el("button", {
@@ -226,9 +249,12 @@ function makeTilesBody(selectedTile: number, layer: "lower" | "upper", tileset: 
     onSelect: (index) => {
       const home = tileLayerHome(tileset, index);
       dismissLocationDrawModeForTool("paint");
+      // 레이어만 바뀐 클릭은 레일을 다시 짓지 않으므로(syncBasicRailBrushStatus) 그린 때의
+      // `layer` 는 낡았을 수 있다 — 지금 레이어를 읽는다.
+      const current = editorState.get().layer;
       editorState.set({
         selectedTile: index, tool: "paint", paintShape: "pen", activePaletteStamp: null,
-        layer: home === "both" ? layer : home,
+        layer: home === "both" ? (current === "event" ? layer : current) : home,
       });
     },
   }, tilePaletteCache);

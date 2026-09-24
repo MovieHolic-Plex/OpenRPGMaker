@@ -2,8 +2,14 @@ import { validateArgs } from "@/editor/tools/jsonSchema";
 import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
 import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
+import { normalizeToolArgs, runToolDefinition } from "@/editor/tools/toolRunner";
 import { ToolError, type ChangeSummary, type JsonSchema, type ToolMode, type ToolResult } from "@/editor/tools/types";
-import { deserialize } from "@/project/io";
+import { deserialize, serialize } from "@/project/io";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset } from "@/project/defaults/defaultAssets";
+import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
+import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
+import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
 import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
 import { readStoredZipEntry } from "@/project/packageZip";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
@@ -55,6 +61,48 @@ export function listHeadlessMcpTools(): readonly HeadlessMcpToolInfo[] {
     description: tool.mode === "write" ? `${tool.description} [dry-run only]` : tool.description,
     inputSchema: tool.parameters,
   }));
+}
+
+/**
+ * The load-time repairs the editor store runs on open (bundled tilesets, reference documents, slots). Without them a
+ * headless project lacks what the same project shows in the editor — the assistant would test a different project.
+ */
+export function normalizeHeadlessProject(project: Project): Project {
+  ensureSwitchVariableSlots(project);
+  ensureBundledTilesets(project);
+  ensureSharedTileReferences(project);
+  removeLegacyRmTileset(project);
+  ensureBundledResourceProfiles(project);
+  ensureDefaultDatabaseIconResources(project);
+  ensureBundledBattleAnimations(project);
+  return project;
+}
+
+/** A new empty project exactly as the editor opens it (blank start map + normalization). */
+export function createHeadlessBlankProject(): Project {
+  return normalizeHeadlessProject(deserialize(serialize(createBlankProject())));
+}
+
+export function serializeHeadlessProject(project: Project): string {
+  return serialize(project);
+}
+
+/** Await the tool's lazy data (reference snapshots etc.) — the browser does this in runToolAsync before run. */
+export async function prepareHeadlessTool(name: string, args: Record<string, unknown>): Promise<void> {
+  const tool = getTool(name);
+  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args)).catch(() => undefined);
+}
+
+/**
+ * Run a tool through the same runner as the editor (argument normalization, draft, tree repair, commit gate) and
+ * return the resulting project. A rejected or read call returns the input project unchanged.
+ */
+export function runHeadlessToolWithProject(project: Project, name: string, args: Record<string, unknown>): { result: ToolResult; project: Project } {
+  const tool = getTool(name);
+  if (!tool) return { result: runHeadlessTool(project, name, args), project };
+  const ctx = { project };
+  const result = runToolDefinition(ctx, tool, args);
+  return { result, project: ctx.project };
 }
 
 export function runHeadlessTool(project: Project, name: string, args: Record<string, unknown>): ToolResult {

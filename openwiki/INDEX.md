@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3396KB / 약 969,131 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3402KB / 약 970,879 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -16,14 +16,14 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
 | `openwiki/editor-ai-panel.md` | 505KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3005 | ~145,757 |
-| `openwiki/editor-ai-tools.md` | 246KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2068 | ~69,791 |
+| `openwiki/editor-ai-tools.md` | 247KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2096 | ~70,327 |
 | `openwiki/editor-database.md` | 355KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2143 | ~103,420 |
 | `openwiki/editor-event-authoring.md` | 155KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 872 | ~45,047 |
 | `openwiki/editor-event-commands.md` | 62KB | 32KB | 258 | ~17,025 |
 | `openwiki/editor-interior-room-harness.md` | 93KB | 6KB | 451 | ~27,026 |
 | `openwiki/editor-pre-edit-routing.md` | 135KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 798 | ~39,146 |
 | `openwiki/editor-workflows-misc.md` | 68KB | 30KB | 486 | ~18,555 |
-| `openwiki/runtime-battle.md` | 166KB | 31KB | 794 | ~47,579 |
+| `openwiki/runtime-battle.md` | 170KB | 31KB | 830 | ~48,791 |
 | `openwiki/runtime-pre-edit-routing.md` | 54KB | 34KB | 366 | ~15,889 |
 | `openwiki/runtime-project-schema.md` | 170KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1252 | ~46,765 |
 | `openwiki/runtime-sessions.md` | 104KB | 48KB | 486 | ~27,757 |
@@ -83,7 +83,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
-| `openwiki/runtime-project-schema.md` | 26 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
+| `openwiki/runtime-project-schema.md` | 27 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `dist-electron/main.cjs`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
 | `openwiki/runtime-sessions.md` | 4 | `output/evidence/stardew/stardew-legacyDb.json`, `verify-shots/runtime-qa/feature16-player/SUMMARY.md`, `verify-shots/runtime-qa/menu-design/SUMMARY.md`, `verify-shots/runtime-qa/weather-after/SUMMARY.md` |
 | `openwiki/se-catalog.md` | 8 | `.mjs`, `audio-features.json`, `audition.html`, `cross-check.json`, `dist/se-staging/audition.html`, `labels.json`, `placed.json`, `test/audioDescriptionCommandSurfaces.test.ts` |
 | `openwiki/slates-assembly-playbook.md` | 1 | `ville_0.png` |
@@ -391,7 +391,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2987` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
 - `L2995` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
 
-### `openwiki/editor-ai-tools.md` — 246KB · 2068줄 · ~69,791 토큰 · 통째읽기 잘림 · 깨진 줄 6
+### `openwiki/editor-ai-tools.md` — 247KB · 2096줄 · ~70,327 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
 - `L3` 충격 연출 (2026-09-22)
 - `L9` 단독 조수의 병렬 도구 실행 (2026-09-21)
@@ -470,6 +470,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2032` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
 - `L2055` Isaiah 물 태그 판정 보완 (2026-09-24)
 - `L2059` 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+- `L2069` Monster follower graphic authoring (2026-09-25)
+- `L2085` 기존 서사 플래그의 설명 수정 (2026-09-25)
 
 ### `openwiki/editor-database.md` — 355KB · 2143줄 · ~103,420 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
@@ -1019,44 +1021,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 166KB · 794줄 · ~47,579 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 170KB · 830줄 · ~48,791 토큰 · 통째읽기 잘림
 
 - `L3` 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
-- `L13` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
-- `L39` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
-- `L64` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
-- `L86` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
-- `L157` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
-- `L168` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
-- `L213` Native event battle admission (2026-09-08)
-- `L259` Supported action authoring (2026-09-07)
-- `L271` 적별 전투 표시 크기 (2026-09-06)
-- `L281` Capture-only victory (2026-09-08)
-- `L292` Event friendship and live level changes (2026-09-06)
-- `L311` Sequential battle event completion (2026-09-08)
-- `L346` Battle-event continuation and cancellation (2026-09-06)
-- `L389` 전투 명령 custom CSS (2026-09-05)
-- `L393` 빈 페이지와 실행 빈도 계약 (2026-09-05)
-  - `L410` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L428` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L441` Roguelike run boundary (2026-08-24)
-- `L446` Battle rules & runtime
-  - `L461` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L486` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L502` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L506` Gen 1(포켓몬식) 규칙 모델
-  - `L514` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L533` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L572` Starter hero battle sheets (2026-08-29)
-- `L593` Per-actor back battlers (2026-08-29)
-- `L611` Battle input and visibility P0 contract (2026-07-30)
-- `L622` 배틀러 idle 애니메이션 (2026-08-30)
-- `L748` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L752` Authored combat rules (feature16, 2026-09-21)
-- `L766` Battle reports and physical formation (2026-09-21)
-- `L770` Combat correctness hardening (2026-09-21)
-- `L778` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L788` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L13` 타격감 층 (2026-09-25)
+- `L49` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
+- `L75` 전투 적대적 리뷰의 무결성 수정 (2026-09-20)
+- `L100` 공격 효과음 지연 — 샘플 SE 디코드 캐시 (2026-09-15)
+- `L122` 전투 UI/UX·모션 적대적 리뷰 5축 후속 (2026-09-14)
+- `L193` 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+- `L204` 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
+- `L249` Native event battle admission (2026-09-08)
+- `L295` Supported action authoring (2026-09-07)
+- `L307` 적별 전투 표시 크기 (2026-09-06)
+- `L317` Capture-only victory (2026-09-08)
+- `L328` Event friendship and live level changes (2026-09-06)
+- `L347` Sequential battle event completion (2026-09-08)
+- `L382` Battle-event continuation and cancellation (2026-09-06)
+- `L425` 전투 명령 custom CSS (2026-09-05)
+- `L429` 빈 페이지와 실행 빈도 계약 (2026-09-05)
+  - `L446` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
+- `L464` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+- `L477` Roguelike run boundary (2026-08-24)
+- `L482` Battle rules & runtime
+  - `L497` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L522` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L538` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L542` Gen 1(포켓몬식) 규칙 모델
+  - `L550` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L569` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L608` Starter hero battle sheets (2026-08-29)
+- `L629` Per-actor back battlers (2026-08-29)
+- `L647` Battle input and visibility P0 contract (2026-07-30)
+- `L658` 배틀러 idle 애니메이션 (2026-08-30)
+- `L784` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L788` Authored combat rules (feature16, 2026-09-21)
+- `L802` Battle reports and physical formation (2026-09-21)
+- `L806` Combat correctness hardening (2026-09-21)
+- `L814` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L824` 트레이너 전투의 도입 문구 (2026-09-24)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 38KB · 285줄 · ~10,597 토큰
 

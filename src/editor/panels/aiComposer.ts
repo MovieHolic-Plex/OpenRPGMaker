@@ -84,6 +84,8 @@ export interface ComposerElements {
   readonly syncApplyMode: () => void;
   readonly syncEffort: (autonomy: AutonomyLevel) => void;
   readonly setModelLabel: (label: string | null) => void;
+  /** 이 대화의 턴·토큰 한 줄. null 이면 숨긴다. */
+  readonly setSpend: (label: string | null) => void;
   readonly openPopover: (kind: ComposerPopover | null) => void;
   readonly openKind: () => ComposerPopover | null;
   /** 바 + 열려 있는 팝오버를 합친 최상단 y — clearance 계산의 단일 소스. */
@@ -145,6 +147,8 @@ export interface ComposerOptions {
   };
   /** 모델 칩 초기 라벨. null/미지정이면 숨긴 채 만든다(표준 이상 모드에서 패널이 채운다). */
   readonly modelLabel?: string | null;
+  /** 모델명을 누르면 AI 설정으로 간다. 없으면 칩은 글자만 남는다. */
+  readonly onModelClick?: () => void;
   /** Pi 팀 토글 — 팀은 경로가 아니라 Pi 루프의 실행 모드다(executionRoute.ts 머리말). 저장은 호출자가 맡는다. */
   readonly teamToggleOptions?: {
     readonly onOpenSettings?: () => void;
@@ -392,12 +396,31 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
   settingsPopover.hidden = true;
 
   // ── 모델 칩 ──
-  const modelChip = el("span", { class: "ai-composer-model", dataset: { testid: "ai-composer-model" } });
+  const modelChip = el("button", {
+    class: "ai-composer-model",
+    attrs: {
+      type: "button",
+      title: "AI 설정",
+      "aria-label": "모델 설정 열기",
+    },
+    dataset: { testid: "ai-composer-model" },
+    on: { click: () => options.onModelClick?.() },
+  });
   const setModelLabel = (label: string | null): void => {
     modelChip.textContent = label ?? "";
     modelChip.hidden = label === null || label === "";
   };
   setModelLabel(options.modelLabel ?? null);
+  const spendChip = el("span", {
+    class: "ai-composer-spend",
+    attrs: { title: "이 대화에서 조수가 쓴 턴과 토큰" },
+    dataset: { testid: "ai-composer-spend" },
+  });
+  spendChip.hidden = true;
+  const setSpend = (label: string | null): void => {
+    spendChip.textContent = label ?? "";
+    spendChip.hidden = label === null || label === "";
+  };
 
   // 액션 행: 항상 존재하는 고정 높이 한 줄. 좌측은 nowrap + 가로 스크롤이라 내용이 길어져도
   // 줄이 늘지 않는다(줄바꿈이 곧 바 높이 변화였다).
@@ -433,7 +456,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       }),
       el("div", {
         class: "ai-composer-actions-trail",
-        children: [options.statusGroup, options.sendButton, options.abortButton],
+        children: [options.statusGroup, spendChip, options.sendButton, options.abortButton],
       }),
     ],
   });
@@ -595,6 +618,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     syncEffort,
     syncApplyMode,
     setModelLabel,
+    setSpend,
     openPopover,
     openKind: () => openState,
     measuredTop,

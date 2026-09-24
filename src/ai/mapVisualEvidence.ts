@@ -4,6 +4,7 @@ import type { GameMap, Project, TilesetDef } from "@/project/types";
 export function mapVisualContent(map: GameMap) {
   return { width: map.width, height: map.height, tileSize: map.tileSize, tilesetId: map.tilesetId,
     lowerTiles: map.lowerTiles, upperTiles: map.upperTiles,
+    lowerOverlayTiles: map.lowerOverlayTiles, upperOverlayTiles: map.upperOverlayTiles, shadowBits: map.shadowBits,
     lowerTileStacks: map.lowerTileStacks, upperTileStacks: map.upperTileStacks,
     background: map.background,
     events: map.events.map(event => ({ id: event.id, x: event.x, y: event.y, sprite: event.sprite,

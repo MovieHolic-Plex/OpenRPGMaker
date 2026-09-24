@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { networkInterfaces } from "node:os";
 import { startLocalProjectServer, type LocalProjectServer } from "../serve/runtime";
@@ -222,6 +223,19 @@ function buildMenu(): void {
 }
 
 app.whenReady().then(async () => {
+  const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
+  const workerBin = [
+    process.env.OPRN_OH_MY_PI_WORKER_BIN,
+    join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", workerBinName),
+    join(app.getAppPath(), "dist-electron", workerBinName),
+  ].find((candidate) => candidate && existsSync(candidate));
+  if (workerBin) process.env.OPRN_OH_MY_PI_WORKER_BIN = workerBin;
+  const workerScript = [
+    process.env.OPRN_OH_MY_PI_WORKER_SCRIPT,
+    join(process.resourcesPath ?? "", "app.asar.unpacked", "scripts", "oh-my-pi-worker.ts"),
+    join(app.getAppPath(), "scripts", "oh-my-pi-worker.ts"),
+  ].find((candidate) => candidate && existsSync(candidate));
+  if (!workerBin && workerScript) process.env.OPRN_OH_MY_PI_WORKER_SCRIPT = workerScript;
   companionServer = await startCompanionServer();
   ipcMain.on(OPRN_CHANNELS.companionOrigin, (event) => {
     event.returnValue = companionServer?.origin ?? null;
@@ -230,7 +244,7 @@ app.whenReady().then(async () => {
     event.returnValue = companionServer?.token ?? null;
   });
   buildMenu();
-  registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd());
+  registerAppProtocol(rendererDir, () => sessions.firstProjectDir() ?? process.cwd(), () => companionServer?.origin ?? null);
   registerAssetProtocol(sessions);
   ipcMain.handle(OPRN_CHANNELS.lifecycleFlushDone, (event) => {
     const window = BrowserWindow.fromWebContents(event.sender);
