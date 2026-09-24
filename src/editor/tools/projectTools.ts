@@ -4,6 +4,8 @@ import { applyGenrePreset, type GenrePresetId } from "@/project/genrePresets";
 import { replaceProjectContents } from "./historyTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import type { BattleUiStyle, Terms } from "@/project/types";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
+import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
 
 const TERM_KEYS = ["attack", "skill", "item", "capture", "back", "target", "shopGreeting", "shopBuy", "shopSell", "shopCancel", "shopSellPrompt", "innTitle", "yes", "no", "notEnoughGold", "gold", "goldPrefix", "level", "hp", "mp"] as const;
 const termSchema = Object.fromEntries(TERM_KEYS.map((key) => [key, { type: "string" as const }])) as Record<(typeof TERM_KEYS)[number], { readonly type: "string" }>;
@@ -55,7 +57,12 @@ const resetProject: ToolDefinition = {
     const seed = createBlankProject();
     seed.meta = { ...seed.meta, title };
     if (seed.system.titleScreen) seed.system.titleScreen.title = title;
-    if (genrePreset) applyGenrePreset(seed, genrePreset);
+    if (genrePreset) {
+      applyGenrePreset(seed, genrePreset);
+      // 장르에 어울리는 대화창을 먼저 깐다. 톤이 다르면 AI 가 set_project_settings 로 바꾼다.
+      const dialogueStyle = recommendedDialogueStyleForPreset(genrePreset);
+      if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) seed.system.dialogueStyle = dialogueStyle;
+    }
     replaceProjectContents(draft, seed);
     return {
       summary: `현재 프로젝트를 '${title}' 빈 프로젝트로 교체합니다${genrePreset ? ` · 장르 ${genrePreset}` : ""}`,
@@ -67,7 +74,7 @@ const resetProject: ToolDefinition = {
 
 const setProjectSettings: ToolDefinition = {
   name: "set_project_settings",
-  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값을 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
+  description: "프로젝트 설정(project settings): 제목(title)·저자(author)·용어(terms)·화면 해상도(playResolution)·기본 음악/시스템 리소스·초기 파티·전투 기본값·대화창 스타일(dialogue.style)을 한 번에 설정한다. 해상도는 픽셀 밀도이고 시야는 카메라 배율이 정한다 — 둘을 같이 맞춰야 한다.",
   mode: "write",
   domains: ["system", "database"],
   parameters: {
@@ -118,6 +125,21 @@ const setProjectSettings: ToolDefinition = {
         additionalProperties: false,
       },
       startActorIds: { type: "array", items: { type: "string" } },
+      dialogue: {
+        type: "object",
+        description: "게임 전체 NPC 대사창의 기본 모양·글꼴·글자 소리. 인물별 이름 색·목소리는 upsert_character_profile 의 dialogue 로 덮는다.",
+        properties: {
+          style: {
+            type: "string",
+            enum: [...DIALOGUE_STYLE_IDS],
+            description: `게임 톤에 맞춰 하나 고른다:\n${dialogueStyleGuideLines().join("\n")}`,
+          },
+          font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
+          speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
+          punctuationPause: { type: "boolean", description: "쉼표·마침표에서 잠깐 쉬기(기본 true). 기계·로봇 톤이면 false." },
+        },
+        additionalProperties: false,
+      },
     },
     additionalProperties: false,
   },
@@ -163,6 +185,34 @@ const setProjectSettings: ToolDefinition = {
         draft.system.initialTroopId = battle.initialTroopId;
       }
       changed.push("전투");
+    }
+    if (args.dialogue && typeof args.dialogue === "object" && !Array.isArray(args.dialogue)) {
+      const style = (args.dialogue as Record<string, unknown>).style;
+      if (style !== undefined) {
+        if (!isDialogueStyleId(style)) throw new ToolError(`알 수 없는 대화창 스타일입니다: ${String(style)}. 가능: ${DIALOGUE_STYLE_IDS.join(", ")}`, { code: "invalid-args" });
+        // 기본값은 저장하지 않는다 — normalizeSystemRecords 와 같은 계약.
+        if (style === DEFAULT_DIALOGUE_STYLE_ID) delete draft.system.dialogueStyle;
+        else draft.system.dialogueStyle = style;
+        changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
+      }
+      const { font, speed, punctuationPause } = args.dialogue as Record<string, unknown>;
+      if (font !== undefined) {
+        if (font === null || font === "") delete draft.system.dialogueFont;
+        else if (!isFontFamilyId(font)) throw new ToolError(`알 수 없는 글꼴입니다: ${String(font)}`, { code: "invalid-args" });
+        else draft.system.dialogueFont = font;
+        changed.push("대화창 글꼴");
+      }
+      if (typeof speed === "number" && Number.isFinite(speed)) {
+        const next = Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, speed)) * 100) / 100;
+        if (next === 1) delete draft.system.dialogueSpeed;
+        else draft.system.dialogueSpeed = next;
+        changed.push(`말 빠르기=${next}`);
+      }
+      if (typeof punctuationPause === "boolean") {
+        if (punctuationPause) delete draft.system.dialoguePunctuationPause;
+        else draft.system.dialoguePunctuationPause = false;
+        changed.push(`구두점 쉼=${punctuationPause ? "켬" : "끔"}`);
+      }
     }
     if (Array.isArray(args.startActorIds)) {
       const ids = args.startActorIds.map(String);

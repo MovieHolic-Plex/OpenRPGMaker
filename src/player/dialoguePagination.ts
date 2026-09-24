@@ -6,13 +6,45 @@ export type DialogueTextControl =
   | { readonly kind: "fastOn" }
   | { readonly kind: "fastOff" }
   | { readonly kind: "halfSpace" }
-  | { readonly kind: "autoClose" };
+  | { readonly kind: "autoClose" }
+  // ── 본문 태그(project/dialogueStyles.ts DIALOGUE_INLINE_TAGS) ──
+  /** 기본 글자 간격 배율. [빠르게]=0.5, [느리게]=2, 닫으면 앞 배율로 되돌린다. */
+  | { readonly kind: "rate"; readonly factor: number }
+  /** [표정:…] — 얼굴 칸·목소리 높이·이모트를 이 자리부터 바꾼다. */
+  | { readonly kind: "expression"; readonly emotion: string }
+  /** [소리:id] — 이 자리에서 효과음 한 번. */
+  | { readonly kind: "sound"; readonly soundId: string }
+  /** [화면흔들] — 이 자리에서 화면을 한 번 흔든다. */
+  | { readonly kind: "screenShake" }
+  /** [넘기기금지]…[/] — 켜진 동안은 키를 눌러도 남은 글자를 한 번에 채우지 않는다. */
+  | { readonly kind: "lock"; readonly on: boolean };
+
+/** 글자 모양 효과. 페이지 나누기는 크기(big/small)만 폭 계산에 쓴다. */
+export type DialogueTextFx = {
+  readonly shake?: true;
+  readonly wave?: true;
+  readonly size?: "big" | "small";
+  /** CSS 색(rgb()/#hex). \C[n] 색보다 이긴다. */
+  readonly color?: string;
+};
 
 export type DialogueTextSegment = {
   readonly text: string;
   readonly colorIndex: number;
   readonly controlsBefore?: readonly DialogueTextControl[];
+  readonly fx?: DialogueTextFx;
 };
+
+/** 같은 효과인지 비교하는 열쇠. 세그먼트를 합칠지 정할 때 쓴다. */
+export function dialogueFxKey(fx: DialogueTextFx | undefined): string {
+  if (!fx) return "";
+  return `${fx.shake ? "s" : ""}${fx.wave ? "w" : ""}${fx.size ?? ""}|${fx.color ?? ""}`;
+}
+
+/** 폭 계산용 크기 배율. dialogueStyles.css 의 .dialogue-fx-big / -small 과 같은 값이다. */
+export function dialogueFxScale(fx: DialogueTextFx | undefined): number {
+  return fx?.size === "big" ? 1.3 : fx?.size === "small" ? 0.8 : 1;
+}
 
 export type DialogueTextMeasure = (text: string) => number;
 
@@ -40,6 +72,7 @@ type StyledChar = {
   readonly char: string;
   readonly colorIndex: number;
   readonly controlsBefore?: readonly DialogueTextControl[];
+  readonly fx?: DialogueTextFx;
 };
 
 export function paginateDialogueSegments(
@@ -68,7 +101,7 @@ export function paginateDialogueSegments(
     });
   };
   const wrapCurrentLine = (): void => {
-    while (currentLine.length > 0 && measure(styledCharsText(currentLine)) > maxWidth) {
+    while (currentLine.length > 0 && measureStyled(currentLine, measure) > maxWidth) {
       const split = splitOverflowLine(currentLine, measure, maxWidth);
       addLine(split.line);
       currentLine = trimLeadingSoftBreaks(split.remainder);
@@ -91,6 +124,7 @@ export function paginateDialogueSegments(
         char,
         colorIndex: segment.colorIndex,
         ...(pendingControls.length > 0 ? { controlsBefore: [...pendingControls] } : {}),
+        ...(segment.fx ? { fx: segment.fx } : {}),
       });
       pendingControls = [];
       wrapCurrentLine();
@@ -129,7 +163,7 @@ function splitOverflowLine(
 ): { readonly line: readonly StyledChar[]; readonly remainder: StyledChar[] } {
   const withoutTrailingBreak = trimTrailingSoftBreaks(line);
   if (withoutTrailingBreak.length > 0 && withoutTrailingBreak.length < line.length) {
-    if (measure(styledCharsText(withoutTrailingBreak)) <= maxWidth) {
+    if (measureStyled(withoutTrailingBreak, measure) <= maxWidth) {
       return { line: withoutTrailingBreak, remainder: [] };
     }
   }
@@ -139,7 +173,7 @@ function splitOverflowLine(
 
   for (let end = line.length - 1; end > 0; end -= 1) {
     const candidate = line.slice(0, end);
-    if (measure(styledCharsText(candidate)) <= maxWidth) {
+    if (measureStyled(candidate, measure) <= maxWidth) {
       return { line: candidate, remainder: line.slice(end) };
     }
   }
@@ -157,7 +191,7 @@ function findWordBoundarySplit(
     const head = trimTrailingSoftBreaks(line.slice(0, index));
     const tail = trimLeadingSoftBreaks(line.slice(index + 1));
     if (head.length === 0 || tail.length === 0) continue;
-    if (measure(styledCharsText(head)) <= maxWidth) return { line: head, remainder: tail };
+    if (measureStyled(head, measure) <= maxWidth) return { line: head, remainder: tail };
   }
   return null;
 }
@@ -166,7 +200,7 @@ function styledCharsToSegments(chars: readonly StyledChar[]): DialogueTextSegmen
   const segments: DialogueTextSegment[] = [];
   for (const char of chars) {
     const last = segments[segments.length - 1];
-    if (last && last.colorIndex === char.colorIndex && !char.controlsBefore?.length) {
+    if (last && last.colorIndex === char.colorIndex && dialogueFxKey(last.fx) === dialogueFxKey(char.fx) && !char.controlsBefore?.length) {
       segments[segments.length - 1] = { ...last, text: `${last.text}${char.char}` };
       continue;
     }
@@ -174,6 +208,7 @@ function styledCharsToSegments(chars: readonly StyledChar[]): DialogueTextSegmen
       text: char.char,
       colorIndex: char.colorIndex,
       ...(char.controlsBefore?.length ? { controlsBefore: [...char.controlsBefore] } : {}),
+      ...(char.fx ? { fx: char.fx } : {}),
     });
   }
   return segments;
@@ -198,15 +233,29 @@ function flattenPageLines(lines: readonly DialoguePageLine[]): DialogueTextSegme
 function appendSegment(segments: DialogueTextSegment[], next: DialogueTextSegment): void {
   if (!next.text && !next.controlsBefore?.length) return;
   const last = segments[segments.length - 1];
-  if (last && last.colorIndex === next.colorIndex && next.text && !next.controlsBefore?.length) {
+  if (last && last.colorIndex === next.colorIndex && dialogueFxKey(last.fx) === dialogueFxKey(next.fx) && next.text && !next.controlsBefore?.length) {
     segments[segments.length - 1] = { ...last, text: `${last.text}${next.text}` };
     return;
   }
   segments.push(next);
 }
 
-function styledCharsText(chars: readonly StyledChar[]): string {
-  return chars.map((char) => char.char).join("");
+/** 크기 효과가 섞인 줄의 폭. 같은 배율끼리 묶어 재고 배율을 곱한다(자간은 근사). */
+function measureStyled(chars: readonly StyledChar[], measure: DialogueTextMeasure): number {
+  let total = 0;
+  let runText = "";
+  let runScale = 1;
+  for (const char of chars) {
+    const scale = dialogueFxScale(char.fx);
+    if (scale !== runScale && runText) {
+      total += measure(runText) * runScale;
+      runText = "";
+    }
+    runScale = scale;
+    runText += char.char;
+  }
+  if (runText) total += measure(runText) * runScale;
+  return total;
 }
 
 function trimLeadingSoftBreaks(chars: readonly StyledChar[]): StyledChar[] {

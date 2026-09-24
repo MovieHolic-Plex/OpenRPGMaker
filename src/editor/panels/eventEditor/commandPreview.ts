@@ -11,10 +11,13 @@ import { shopCatalogRecords } from "./shopEditorModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { DEFAULT_BATTLE_FIELD_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import { parseDialogueText } from "@/player/dialogue";
+import { resolveDialogueLook, type DialogueLook } from "@/project/dialogueStyles";
+import { resolveFontStack } from "@/project/fontRegistry";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { dialoguePresentationCssVars, dialoguePresentationProfile } from "@/player/dialoguePresentation";
 import { prefersReducedMotion } from "@/player/characterLanding";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
+import { applyDialogueFx } from "@/player/dialogueTextRenderer";
 import { faceDisplayModeOf, renderFacesetCrop } from "./facesetPreview";
 import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
 import {
@@ -120,6 +123,7 @@ const visualPreviewHandlers: VisualPreviewHandlers = {
       emotion: cmd.emotion,
       replay: context?.replayPresentation === true,
       simState: context?.simState,
+      look: resolveDialogueLook(store.getCurrent(), { speaker: cmd.speaker, style: cmd.style, context: cmd.context, container: cmd.container, emotion: cmd.emotion }),
     }),
   changeFace: faceStage,
   displayTextSettings: settingsMessageMock,
@@ -243,14 +247,23 @@ function messageWindowMock(
   speaker: string | undefined,
   body: string,
   face?: CommandPreviewContext["face"],
-  presentation?: { readonly emotion?: string; readonly replay: boolean; readonly simState?: PreviewSimState }
+  presentation?: {
+    readonly emotion?: string;
+    readonly replay: boolean;
+    readonly simState?: PreviewSimState;
+    /** 대화창 스타일·대사 종류·화자 프로필을 합친 결과. 게임과 같은 data-* 를 심는다. */
+    readonly look?: DialogueLook;
+  }
 ): HTMLElement {
   const { frame, overlay } = runtimeStage("position-bottom");
+  const look = presentation?.look;
+  if (look?.hideFace) face = undefined;
   // 말하기 무대: 빈 본문이어도 게임 창에 샘플 대사가 보인다. "..." 만 남기지 않는다.
   // 얼굴은 빌려 오지 않는다 — 이 명령엔 얼굴이 없으므로 게임에서도 얼굴 없이 뜬다.
   const authored = body.trim().length > 0;
   const shownBody = authored ? body : SPEAK_SAMPLE_BODY;
-  const speakerName = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
+  const rawSpeaker = (speaker?.trim() ?? "") || (authored ? "" : SPEAK_SAMPLE_SPEAKER);
+  const speakerName = look?.hideName || !rawSpeaker ? "" : rawSpeaker + (look?.nameSuffix ?? "");
   const faceRight = face?.position === "right";
   const win = el("div", {
     class: [
@@ -266,6 +279,7 @@ function messageWindowMock(
     dataset: { testid: "ecp-message-window", ...(authored ? {} : { sample: "true" }) },
   });
   applySystemWindowSkinVariable(win);
+  if (look) applyPreviewDialogueLook(overlay, win, look);
   if (presentation) applyPreviewPresentation(win, presentation.emotion, presentation.replay);
   // 런타임과 같은 골격: .dialogue-content > [.dialogue-face] + .dialogue-text-column > .body
   const content = el("div", { class: "dialogue-content ecp-message-content" + (faceRight ? " face-right" : "") });
@@ -280,16 +294,17 @@ function messageWindowMock(
   win.append(content);
   // 화자 네임플레이트는 창 밖(상단 가장자리)에 올려 본문과 시각적으로 분리한다.
   if (speakerName) {
-    win.append(
-      el("div", {
-        class: "speaker speaker-nameplate ecp-message-speaker ecp-message-speaker-nameplate",
-        text: speakerName,
-        dataset: { testid: "ecp-message-speaker" },
-      })
-    );
+    const nameplate = el("div", {
+      class: "speaker speaker-nameplate ecp-message-speaker ecp-message-speaker-nameplate",
+      text: speakerName,
+      dataset: { testid: "ecp-message-speaker" },
+    });
+    if (look?.nameColor) nameplate.style.setProperty("--dialogue-speaker-color", look.nameColor);
+    win.append(nameplate);
   }
   win.append(el("div", { class: "dialogue-page-cursor", text: "▼", attrs: { "aria-hidden": "true" } }));
   overlay.append(win);
+  if (look && look.container !== "box") stageDialogueContainer(overlay, win, look, speakerName, shownBody, presentation?.simState);
   if (!authored) {
     frame.append(
       el("div", {
@@ -302,6 +317,74 @@ function messageWindowMock(
   return frame;
 }
 
+/**
+ * 대화창 그릇 견본 — 말풍선은 무대 위 인물 머리 위에, 흘림·코너는 게임과 같은 비차단 층에 그린다.
+ * 인물은 칸 크기 자리표시로만 둔다(견본이 맵을 그리지는 않는다).
+ */
+function stageDialogueContainer(
+  overlay: HTMLElement,
+  win: HTMLElement,
+  look: DialogueLook,
+  speakerName: string,
+  body: string,
+  simState?: PreviewSimState,
+): void {
+  const viewport = overlay.parentElement;
+  if (!viewport) return;
+  overlay.dataset.container = look.container;
+  const actor = el("div", { class: "ecp-container-actor", attrs: { "aria-hidden": "true" } });
+  if (look.container === "balloon") {
+    overlay.classList.add("balloon-active");
+    win.classList.add("dialogue-balloon");
+    // 인물 머리(top 206) 위 꼬리 7px — 높이를 모르니 아래 변으로 붙인다. 자료집 견본은 무대 아래 띠만
+    // 보여 주므로(320×92) 말풍선·흘림도 그 안에 들게 화면 아래쪽 인물에 붙인다.
+    win.style.left = "92px";
+    win.style.bottom = "41px";
+    win.style.setProperty("--balloon-tail-x", "58px");
+    viewport.append(actor);
+    return;
+  }
+  win.remove();
+  const layer = el("div", { class: "dialogue-ambient-layer" });
+  const text = renderPreviewDialogueBody(body, simState);
+  if (look.container === "bark") {
+    const bark = el("div", { class: "dialogue-bark", dataset: { dialogueStyle: look.style }, children: [text] });
+    bark.style.left = "104px";
+    bark.style.bottom = "41px";
+    bark.style.setProperty("--balloon-tail-x", "46px");
+    layer.append(bark);
+    viewport.append(actor);
+  } else {
+    const column = el("div", { class: "dialogue-corner-text" });
+    if (speakerName) {
+      const name = el("strong", { class: "dialogue-corner-name", text: speakerName });
+      if (look.nameColor) name.style.color = look.nameColor;
+      column.append(name);
+    }
+    column.append(text);
+    layer.append(el("div", {
+      class: "dialogue-corner-stack",
+      children: [el("div", { class: "dialogue-corner-item", dataset: { dialogueStyle: look.style }, children: [column] })],
+    }));
+  }
+  viewport.append(layer);
+}
+
+/** 런타임 applyDialogueLook(player/dialogue.ts) 과 같은 자리에 같은 값을 심는다. */
+function applyPreviewDialogueLook(overlay: HTMLElement, win: HTMLElement, look: DialogueLook): void {
+  overlay.dataset.dialogueStyle = look.style;
+  win.dataset.dialogueStyle = look.style;
+  if (look.context !== "speech") win.dataset.dialogueContext = look.context;
+  if (look.font) win.style.setProperty("--runtime-dialogue-font", resolveFontStack(look.font));
+}
+
+/**
+ * 자료집(시스템 「대화창」·캐릭터 「대화」)이 쓰는 견본 창. 명령 프리뷰와 같은 무대·같은 규칙이라
+ * 여기서 보이는 모양이 곧 게임 모양이다.
+ */
+export function renderDialogueLookSample(speaker: string, body: string, look: DialogueLook): HTMLElement {
+  return messageWindowMock(speaker, body, undefined, { replay: false, look });
+}
 
 /** Resolve RM control codes the same way play-mode dialogue does (editor preview). */
 function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HTMLElement {
@@ -330,6 +413,20 @@ function renderPreviewDialogueBody(body: string, simState?: PreviewSimState): HT
     }
     if (!segment.text) continue;
     wrote = true;
+    if (segment.fx) {
+      // 본문 태그 — 게임과 같은 클래스. 흔들·물결은 글자마다 쪼개야 transform 이 먹는다.
+      const perChar = segment.fx.shake || segment.fx.wave;
+      const pieces = perChar ? Array.from(segment.text) : [segment.text];
+      pieces.forEach((piece, index) => {
+        const span = el("span", {
+          class: segment.colorIndex ? "dialogue-color dialogue-color-" + String(segment.colorIndex) : "",
+          text: piece,
+        });
+        applyDialogueFx(span, segment.fx, index);
+        bodyEl.append(span);
+      });
+      continue;
+    }
     if (segment.colorIndex === 0) {
       bodyEl.append(document.createTextNode(segment.text));
       continue;
@@ -392,6 +489,26 @@ function renderPreviewControlBadge(control: DialogueTextControl): HTMLElement {
       key = "speed";
       label = `표시 속도 ${control.value}`;
       glyph = "s";
+      break;
+    case "rate":
+      key = "rate";
+      label = control.factor < 1 ? "빠르게" : "느리게";
+      break;
+    case "expression":
+      key = "expression";
+      label = `표정 ${control.emotion}`;
+      break;
+    case "sound":
+      key = "sound";
+      label = `소리 ${control.soundId}`;
+      break;
+    case "screenShake":
+      key = "screen-shake";
+      label = "화면흔들";
+      break;
+    case "lock":
+      key = control.on ? "lock-on" : "lock-off";
+      label = control.on ? "넘기기금지" : "넘기기 허용";
       break;
   }
   return el("span", {

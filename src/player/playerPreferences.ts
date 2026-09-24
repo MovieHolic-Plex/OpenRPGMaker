@@ -3,11 +3,13 @@ export const PLAYER_PREFERENCES_KEY = 'oprn:player-preferences:v1';
 export type PlayerPreferences = {
   bgm: number;
   se: number;
+  /** 대사 글자 소리(목소리) 음량. 효과음과 따로 줄일 수 있게 분리했다. */
+  voice: number;
   textSpeed: 'slow' | 'normal' | 'fast';
   reduceMenuMotion: boolean;
 };
 export const DEFAULT_PLAYER_PREFERENCES: Readonly<PlayerPreferences> = {
-  bgm: 0.7, se: 0.8, textSpeed: 'normal', reduceMenuMotion: false,
+  bgm: 0.7, se: 0.8, voice: 0.8, textSpeed: 'normal', reduceMenuMotion: false,
 };
 type PreferenceStorage = Pick<Storage, 'getItem' | 'setItem'>;
 export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
@@ -15,7 +17,7 @@ export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
   const volume = (v: unknown, fallback: number) => typeof v === 'number' && Number.isFinite(v)
     ? Math.max(0, Math.min(1, v)) : fallback;
   return {
-    bgm: volume(input.bgm, 0.7), se: volume(input.se, 0.8),
+    bgm: volume(input.bgm, 0.7), se: volume(input.se, 0.8), voice: volume(input.voice, 0.8),
     textSpeed: input.textSpeed === 'slow' || input.textSpeed === 'fast' ? input.textSpeed : 'normal',
     reduceMenuMotion: input.reduceMenuMotion === true,
   };

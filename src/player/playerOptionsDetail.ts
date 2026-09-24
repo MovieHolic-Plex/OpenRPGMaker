@@ -12,9 +12,10 @@ export function createPlayerOptionsDetail(onChanged?: (message?: string) => void
     audio.setVolume('se', next.se);
     onChanged?.(saved ? '이 기기에 설정을 저장했습니다.' : '현재 실행에 적용했습니다. 기기 저장소에 저장하지 못했습니다.');
   };
-  const entries: StatusMenuDetailEntry[] = (['bgm', 'se'] as const).flatMap(group =>
+  const groupLabel = { bgm: '배경 음악', se: '효과음', voice: '대사 목소리' } as const;
+  const entries: StatusMenuDetailEntry[] = (['bgm', 'se', 'voice'] as const).flatMap(group =>
     ([-1, 1] as const).map(delta => ({
-      label: `${group === 'bgm' ? '배경 음악' : '효과음'} ${delta < 0 ? '줄이기' : '늘리기'}`,
+      label: `${groupLabel[group]} ${delta < 0 ? '줄이기' : '늘리기'}`,
       value: `${Math.round(prefs[group] * 100)}%`,
       description: '10%씩 조절합니다. 0%는 음소거입니다.',
       testId: `player-option-${group}-${delta < 0 ? 'down' : 'up'}`,

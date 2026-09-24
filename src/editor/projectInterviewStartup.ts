@@ -1,6 +1,7 @@
 import { store } from "@/project/store";
 import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
 import { toast } from "@/util/toast";
+import { DEFAULT_DIALOGUE_STYLE_ID, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } from "./welcomeGenrePresets";
 import { setPendingAiBootIntent } from "./aiBootIntent";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
@@ -26,6 +27,12 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
       const opening = project.system.opening;
       if (opening && isUntouchedDefaultOpening(opening, project.meta.title)) {
         project.system.opening = briefOpeningSequence(opening, briefOpeningMotive(brief), project.meta.title);
+      }
+      // 장르에 어울리는 대화창을 코드가 먼저 깐다 — AI 가 기획 톤을 보고 바꿀 수 있지만,
+      // 조수가 연결되지 않았거나 잊어도 첫 플레이부터 장르 대화창이 뜬다. 사용자가 이미 고른 값은 그대로 둔다.
+      if (project.system.dialogueStyle === undefined) {
+        const dialogueStyle = recommendedDialogueStyleForPreset(brief.presetId);
+        if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) project.system.dialogueStyle = dialogueStyle;
       }
     }, { scope: "project", label: "새 프로젝트 기획 전달 준비", origin: "system" });
     if (!stillCurrent() || store.getCurrent().gameDesignBrief?.generationPending) {

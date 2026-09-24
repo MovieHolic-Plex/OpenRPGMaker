@@ -15,6 +15,7 @@ import { resourcePickerControl as baseResourcePickerControl, listDatabaseResourc
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
+import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
 import {
   DEFAULT_DODGE_IFRAMES_MS,
   DEFAULT_DODGE_STAMINA_COST,
@@ -103,6 +104,7 @@ export type SystemSectionSlug =
   | "display"
   | "hud"
   | "menu"
+  | "dialogue"
   | "font"
   | "resources"
   | "startup"
@@ -138,6 +140,7 @@ const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonl
   { slug: "party", label: "초기 파티" },
   { slug: "display", label: "화면" },
   { slug: "menu", label: "게임 메뉴" },
+  { slug: "dialogue", label: "대화창" },
   { slug: "hud", label: "인게임 HUD" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
@@ -282,6 +285,7 @@ function systemSectionNodes(
     ]),
     display: section("display", [playResolutionFieldset(project, rerender)]),
     menu: section("menu", [menuSkinFieldset(project)]),
+    dialogue: section("dialogue", dialogueStyleSection(project, { updateSystem, fieldset: rm2k3Fieldset, help: systemHelp })),
     hud: section("hud", [fieldHudEditor(project, config => updateSystem(draft => { draft.system.fieldHud = config; }))]),
     font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
@@ -2346,6 +2350,7 @@ const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string
   display: "게임 화면의 크기와 맵에 미치는 영향을 확인합니다.",
   hud: "게임 화면에 표시할 정보와 디자인을 구성합니다.",
   menu: "플레이 중 ESC 또는 X로 여는 메뉴의 디자인을 선택하고 미리 확인합니다.",
+  dialogue: "NPC 대사창의 모양·글꼴·글자 소리를 고르고, 대사 종류별 모양을 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
   startup: "전투 방식, 기본 소리와 보상 규칙을 정합니다.",

@@ -9,7 +9,7 @@ describe('device player preferences', () => {
   it('sanitizes malformed storage and finite volume bounds', () => {
     expect(readPlayerPreferences({ getItem: () => '{', setItem() {} })).toEqual(DEFAULT_PLAYER_PREFERENCES);
     expect(normalizePlayerPreferences({ bgm: -1, se: 5, textSpeed: 'instant', reduceMenuMotion: 'yes' }))
-      .toEqual({ bgm: 0, se: 1, textSpeed: 'normal', reduceMenuMotion: false });
+      .toEqual({ bgm: 0, se: 1, voice: 0.8, textSpeed: 'normal', reduceMenuMotion: false });
     expect(normalizePlayerPreferences({ bgm: NaN, se: Infinity })).toEqual(DEFAULT_PLAYER_PREFERENCES);
   });
   it('roundtrips only preferences under a dedicated key', () => {

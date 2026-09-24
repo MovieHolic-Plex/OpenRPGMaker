@@ -29,6 +29,12 @@ export type CutsceneSayBeat = {
   readonly lines?: readonly string[];
   readonly emotion?: string;
   readonly autoAdvance?: boolean;
+  /** 대사 종류(narration·thought·sign…) — src/project/dialogueStyles.ts DIALOGUE_CONTEXTS. */
+  readonly context?: string;
+  /** 이 대사만 다른 대화창 스타일. 보통은 비워 두고 화자 프로필·프로젝트 기본을 따른다. */
+  readonly style?: string;
+  /** 대사 그릇(box·balloon·bark·corner). 흘림·코너는 게임을 멈추지 않는다. */
+  readonly container?: string;
 };
 
 export type CutsceneMoveActorBeat = {
@@ -434,6 +440,9 @@ function compileSayBeat(beat: CutsceneSayBeat, state: CompileState): Command[] {
       body,
       ...(beat.emotion !== undefined ? { emotion: beat.emotion } : {}),
       ...(beat.autoAdvance !== undefined ? { autoAdvance: beat.autoAdvance } : {}),
+      ...(beat.context ? { context: beat.context } : {}),
+      ...(beat.style ? { style: beat.style } : {}),
+      ...(beat.container ? { container: beat.container } : {}),
     });
   }
   return commands;

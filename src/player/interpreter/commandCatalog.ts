@@ -489,6 +489,9 @@ export function executeCommand(
         settings: state.session.messageWindowSettings,
         autoAdvance: command.autoAdvance === true,
         emotion: command.emotion,
+        ...(command.style ? { style: command.style } : {}),
+        ...(command.context ? { context: command.context } : {}),
+        ...(command.container ? { container: command.container } : {}),
       });
     case "choices":
       return pause("choices", {

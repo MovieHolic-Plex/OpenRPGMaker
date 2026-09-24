@@ -27,6 +27,18 @@ import type { Command, Condition, MessageWindowFormat, MessageWindowPosition, Sw
 import { factionName, resolveFactionTable } from "@/project/factions";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { store } from "@/project/store";
+import {
+  DIALOGUE_CONTAINER_IDS,
+  DIALOGUE_CONTAINER_LABELS,
+  DIALOGUE_CONTEXT_IDS,
+  DIALOGUE_CONTEXTS,
+  DIALOGUE_INLINE_TAGS,
+  isDialogueContainerId,
+  DIALOGUE_STYLE_IDS,
+  DIALOGUE_STYLES,
+  isDialogueContextId,
+  isDialogueStyleId,
+} from "@/project/dialogueStyles";
 import { editorState } from "@/editor/editorState";
 import { hasCharacterId } from "@/project/socialKey";
 import type { CommandEditContext } from "./types";
@@ -152,6 +164,30 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     dataset: { testid: "event-command-text-auto-advance" },
   }) as HTMLInputElement;
   autoAdvance.checked = cmd.autoAdvance === true;
+  // 대사 종류: 이름·얼굴 숨김·즉시 표시·소리를 한 번에 바꾼다(src/project/dialogueStyles.ts).
+  const lineContext = segmentedSelect({
+    options: DIALOGUE_CONTEXT_IDS.map((id) => ({ value: id, key: id, label: DIALOGUE_CONTEXTS[id].label })),
+    value: isDialogueContextId(cmd.context) ? cmd.context : "speech",
+    testid: "event-command-text-context",
+    ariaLabel: "대사 종류",
+  });
+  // 대사 그릇: 상자·말풍선·흘림·코너. 흘림·코너는 게임을 멈추지 않는다.
+  const lineContainer = segmentedSelect({
+    options: [
+      { value: "", key: "inherit", label: "화자 기본" },
+      ...DIALOGUE_CONTAINER_IDS.map((id) => ({ value: id, key: id, label: DIALOGUE_CONTAINER_LABELS[id] })),
+    ],
+    value: isDialogueContainerId(cmd.container) ? cmd.container : "",
+    testid: "event-command-text-container",
+    ariaLabel: "대화창 그릇",
+  });
+  const lineStyle = el("select", {
+    dataset: { testid: "event-command-text-style" },
+    attrs: { "aria-label": "이 줄의 대화창" },
+  }) as HTMLSelectElement;
+  lineStyle.append(el("option", { text: "화자·프로젝트 기본", attrs: { value: "" } }));
+  for (const id of DIALOGUE_STYLE_IDS) lineStyle.append(el("option", { text: DIALOGUE_STYLES[id].label, attrs: { value: id } }));
+  lineStyle.value = isDialogueStyleId(cmd.style) ? cmd.style : "";
 
   const limitHint = el("div", {
     class: "event-command-text-limit-hint",
@@ -164,12 +200,16 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   });
   const readDraft = (): Extract<Command, { kind: "text" }> => {
     const nextEmotion = emotion.select.value;
+    const nextContext = lineContext.select.value;
     return {
       kind: "text",
       speaker: speaker.value.trim() || undefined,
       body: body.value,
       ...(nextEmotion && nextEmotion !== "neutral" ? { emotion: nextEmotion } : {}),
       ...(autoAdvance.checked ? { autoAdvance: true } : {}),
+      ...(nextContext && nextContext !== "speech" ? { context: nextContext } : {}),
+      ...(lineStyle.value ? { style: lineStyle.value } : {}),
+      ...(lineContainer.select.value ? { container: lineContainer.select.value } : {}),
     };
   };
   // 연출은 **바뀐 순간에만** 프리뷰에서 재생한다. 프리뷰는 본문을 한 글자 칠 때마다 다시
@@ -210,6 +250,9 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
   body.addEventListener("input", apply);
   emotion.select.addEventListener("change", apply);
   autoAdvance.addEventListener("change", apply);
+  lineContext.select.addEventListener("change", apply);
+  lineStyle.addEventListener("change", apply);
+  lineContainer.select.addEventListener("change", apply);
 
   refreshLimitHint();
   // 「말투·연출」은 고급 옵션이 아니다. 이 값이 창 등장 곡선·글자 속도·화면 연출을 고르므로
@@ -226,17 +269,33 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
         ],
       }),
       emotion.root,
+      el("div", {
+        class: "event-command-text-presentation-heading",
+        children: [
+          el("span", { class: "event-command-text-body-label", text: "대사 종류" }),
+          el("span", { text: "내레이션·표지판·편지는 이름과 얼굴을 숨기고 바로 보입니다." }),
+        ],
+      }),
+      lineContext.root,
+      el("div", {
+        class: "event-command-text-presentation-heading",
+        children: [
+          el("span", { class: "event-command-text-body-label", text: "대화창 그릇" }),
+          el("span", { text: "말풍선은 머리 위에, 흘림·코너는 게임을 멈추지 않고 잠깐 떴다 사라집니다." }),
+        ],
+      }),
+      lineContainer.root,
     ],
   });
   const advanced = el("details", {
     class: "event-command-text-advanced",
     dataset: { testid: "event-command-text-advanced" },
   }) as HTMLDetailsElement;
-  advanced.open = cmd.autoAdvance === true;
+  advanced.open = cmd.autoAdvance === true || isDialogueStyleId(cmd.style);
   advanced.append(
     el("summary", {
       class: "event-command-text-advanced-summary",
-      text: "고급 옵션 (자동 넘김)",
+      text: "고급 옵션 (자동 넘김 · 이 줄만 다른 대화창)",
     }),
     el("p", {
       class: "event-command-text-speaker-hint",
@@ -245,6 +304,10 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     el("label", {
       class: "event-command-text-auto-advance-label",
       children: [autoAdvance, el("span", { text: " 자동 넘김 (키 입력 없이 다음)" })],
+    }),
+    el("label", {
+      class: "event-command-text-style-label",
+      children: [el("span", { text: "이 줄의 대화창 " }), lineStyle],
     })
   );
 
@@ -340,6 +403,25 @@ function textEasyTools(body: HTMLTextAreaElement, apply: () => void): HTMLElemen
     { key: "emphasis", glyph: "A", label: "강조", hint: "선택한 문장을 강조 색으로 표시합니다.", run: (target, commit) => { wrapSelection(target, "\\c[2]", "\\c[0]"); commit(); } },
     { key: "pause", glyph: "Ⅱ", label: "잠시 멈춤", hint: "이 위치에서 플레이어 입력을 기다립니다.", run: (target, commit) => { insertAtCursor(target, "\\!"); commit(); } },
   ];
+  // 본문 태그 — 닫는 태그가 있는 것은 선택 구간을 감싸고, 없는 것은 커서에 넣는다.
+  const tagButtons = DIALOGUE_INLINE_TAGS.map((tag) => {
+    const open = /^\[[^\]]+\]/.exec(tag.sample)?.[0] ?? `[${tag.label}]`;
+    const wraps = tag.sample.includes("[/]");
+    return el("button", {
+      class: "event-command-text-tool event-command-text-tag",
+      attrs: { type: "button", title: `${tag.sample} — ${tag.description}`, "aria-label": `${tag.label} 태그` },
+      dataset: { testid: `event-command-text-tag-${tag.id}` },
+      on: {
+        click: () => {
+          if (wraps) wrapSelection(body, open, "[/]");
+          else insertAtCursor(body, open);
+          apply();
+          body.focus();
+        },
+      },
+      children: [el("span", { class: "event-command-text-tool-label", text: open })],
+    });
+  });
   return el("div", {
     class: "event-command-text-easy-tools",
     dataset: { testid: "event-command-text-easy-tools" },
@@ -368,6 +450,11 @@ function textEasyTools(body: HTMLTextAreaElement, apply: () => void): HTMLElemen
             el("span", { class: "event-command-text-tool-label", text: tool.label }),
           ],
         })),
+      }),
+      el("div", {
+        class: "event-command-text-tools-row event-command-text-tag-row",
+        dataset: { testid: "event-command-text-tag-row" },
+        children: tagButtons,
       }),
     ],
   });
