@@ -77,7 +77,10 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     get baseline() { return baseline; },
     publish(checkpoint: PiProjectCheckpoint): Promise<Project> {
       const next = queue.then(() => publish(checkpoint));
-      queue = next;
+      // 거부된 발행 하나가 줄을 막지 않게 한다. `queue = next` 였을 때는 한 번 거부되면 뒤의 모든 발행이
+      // 같은 거부로 끝났다(2026-09-24 갤러리 호러 r4: set_life_flower 의 적용 검증 거부 뒤 set_title_screen·
+      // set_opening·rename_switch… 전부가 그 도구의 「commonEvents[0]… color」 오류로 거부됐다 — 런타임은 되돌렸는데도).
+      queue = next.catch(() => undefined);
       return next;
     },
   };
