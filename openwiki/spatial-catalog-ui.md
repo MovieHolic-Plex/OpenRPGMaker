@@ -8,6 +8,7 @@
 
 - 검토된 장소와 지역 사례는 `public/assets/catalog-thumbs/` 의 긴 변 256px 그림을 쓴다. 원본은 상세에서만 연다.
 - 칩셋 목록 줄은 `catalog-thumbs/sheets/` 의 32×40 크롭이다. 다시 만들 때는 `scripts/content/build-catalog-thumbs.py`.
+  이 스크립트는 `public/assets/reviewed-places` 파일과 호스트 공용 SQLite `previews` 의 data URL을 같은 256px 썸네일로 넣는다. 새솔마을처럼 원본 PNG 파일이 없는 장소도 목록은 그 썸네일을 연다.
 - 장소·지역·세계 스테이지(맵 컴파일, 칸 격자)는 「상세」를 열었을 때만 붙는다. 오브젝트 카드는 그 물건의 칸만 나중에 굽는다.
 
 ## Concept and selection contract (2026-09-12)
