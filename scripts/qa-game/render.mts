@@ -13,6 +13,8 @@ import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
 import { isColorKeyedChipsetTextureKey, resolveTransparentColorKeys } from "../../src/assets/chipsetTransparency.ts";
 import { applyTransparentColorKey, applyTransparentColorKeys } from "../../src/assets/transparentColorKey.ts";
+import { activeTileGrafts, tileCountWithGrafts } from "../../src/assets/tileGrafts.ts";
+import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "../../src/assets/bundledChipsetGeometry.ts";
 import { store } from "../../src/project/store.ts";
 import { whereText, type GameCheckReport } from "../../src/qa/gameCheck/index.ts";
 import type { GameMap, Project, TilesetDef } from "../../src/project/types.ts";
@@ -52,7 +54,38 @@ class PngContext {
 
 const imageCache = new Map<string, Raster | null>();
 
+/** 에디터 createGraftedTilesetCanvas 와 같은 합성 — 이식 타일(숲마을 수관·절벽 등)을 아틀라스에 붙인다.
+ * 빠뜨리면 숲이 줄기만 남은 그림이 되어 「나무가 잘렸다」는 거짓 결함을 낳는다. */
 function loadTilesetRaster(tileset: TilesetDef): Raster | null {
+  const base = loadBaseTilesetRaster(tileset);
+  const grafts = activeTileGrafts(tileset);
+  if (!base || grafts.length === 0) return base;
+  const key = `grafts|${tileset.id}|${grafts.map(g => `${g.targetTile}:${g.sourceChipset}:${g.sourceTile}`).join(",")}`;
+  if (imageCache.has(key)) return imageCache.get(key)!;
+  const size = tileset.tileSize, columns = Math.max(1, tileset.tilesPerRow);
+  const rows = Math.ceil(tileCountWithGrafts(tileset) / columns);
+  const width = Math.max(base.width, columns * size), height = Math.max(base.height, rows * size);
+  const out: Raster = { width, height, data: new Uint8Array(width * height * 4) };
+  for (let y = 0; y < base.height; y += 1) out.data.set(base.data.subarray(y * base.width * 4, (y + 1) * base.width * 4), y * width * 4);
+  for (const graft of grafts) {
+    const source = loadBaseTilesetRaster({ id: graft.sourceChipset, image: { type: "bundled", id: graft.sourceChipset } } as TilesetDef);
+    if (!source) continue;
+    const ss = bundledChipsetTileSize(graft.sourceChipset), sc = bundledChipsetTilesPerRow(graft.sourceChipset);
+    const sx = (graft.sourceTile % sc) * ss, sy = Math.floor(graft.sourceTile / sc) * ss;
+    const dx = (graft.targetTile % columns) * size, dy = Math.floor(graft.targetTile / columns) * size;
+    for (let y = 0; y < size; y += 1) for (let x = 0; x < size; x += 1) {
+      const px = sx + Math.floor((x * ss) / size), py = sy + Math.floor((y * ss) / size);
+      const di = ((dy + y) * width + dx + x) * 4;
+      if (px >= source.width || py >= source.height) { out.data.fill(0, di, di + 4); continue; }
+      const si = (py * source.width + px) * 4;
+      for (let c = 0; c < 4; c += 1) out.data[di + c] = source.data[si + c]!;
+    }
+  }
+  imageCache.set(key, out);
+  return out;
+}
+
+function loadBaseTilesetRaster(tileset: TilesetDef): Raster | null {
   const url = tilesetBaseImageUrl(tileset);
   const key = `${url}|${tileset.transparentColor ?? ""}`;
   if (imageCache.has(key)) return imageCache.get(key)!;
