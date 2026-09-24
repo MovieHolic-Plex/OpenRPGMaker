@@ -793,6 +793,24 @@ function dropUnknownAnimationId(project: Project, record: { animationId?: string
  * iconResourceId 로 보내 upsert_item/upsert_equipment 6건이 연속 「참조 검증 실패」로 거부됐다.
  * 같은 id 의 기존 아이템·장비가 있으면 그 레코드의 그림을 쓰고, 아니면 그림만 비우고 저장한다.
  */
+/**
+ * switchId 가 있는데 종류가 switch 가 아니면 메뉴에서 스위치가 켜지지 않는다.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 볼 꼬집기를 type:"special" + switchId 로 저장했다.
+ * 사용해도 스위치가 안 켜져, 출구 없는 꿈 맵에서 깨어나지 못했다.
+ * 포획·돌봄·스킬이 있는 특수 아이템은 종류를 바꾸지 않고 경고만 남긴다.
+ */
+function coerceSwitchItem(record: { type?: string; switchId?: string; captureProfile?: unknown; careProfile?: unknown; skillId?: string; activateSkillId?: string }, warnings: string[]): void {
+  const switchId = record.switchId?.trim();
+  if (!switchId || record.type === "switch") return;
+  if (record.captureProfile || record.careProfile || record.skillId || record.activateSkillId) {
+    warnings.push(`switchId "${switchId}" 는 종류가 ${record.type} 이라 사용해도 켜지지 않습니다. 스위치만 켜는 아이템은 type:"switch" 로 두세요.`);
+    return;
+  }
+  record.type = "switch";
+  warnings.push(`종류를 switch 로 바꿨습니다 — switchId "${switchId}" 는 type:"switch" 일 때만 메뉴에서 켜집니다.`);
+}
+
 function resolveIconResourceId(project: Project, record: { iconResourceId?: string }, label: string, warnings: string[]): void {
   const requested = record.iconResourceId;
   if (!requested) return;
@@ -838,6 +856,7 @@ const upsertItem: ToolDefinition = {
     const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
     const warnings: string[] = [];
+    coerceSwitchItem(record, warnings);
     dropUnknownAnimationId(draft, record, "item", warnings);
     resolveIconResourceId(draft, record, "item", warnings);
     const outcome = upsertById(draft.database.items, record);

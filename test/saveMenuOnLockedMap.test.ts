@@ -36,5 +36,8 @@ describe("장르 기믹 안내(꿈 세계)", () => {
     const dream = buildPiAgentSystemPrompt(project, []).join("\n");
     expect(dream).toContain("set_map_properties loop");
     expect(dream).toContain("m2-024-change-actor-graphic");
+    expect(dream).toContain("place_props");
+    (project as { gameDesignBrief?: unknown }).gameDesignBrief = { version: 1, presetId: "story-cutscene", summary: "볼을 꼬집어 깨어난다", answers: {} };
+    expect(buildPiAgentSystemPrompt(project, []).join("\n")).toContain("type:\"switch\"");
   });
 });

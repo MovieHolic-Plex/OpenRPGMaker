@@ -62,9 +62,13 @@ function genreMechanicLines(project: Project): string[] {
   const lines: string[] = [];
   if (/반대편으로\s*이어|반복\s*맵|끝없는|무한\s*(?:숲|복도|순환)|루프/u.test(text)) {
     lines.push("가장자리가 반대편으로 이어지는 맵(끝없는 숲·반복 복도)은 set_map_properties loop:\"both\"(또는 horizontal/vertical)로 만든다 — 가장자리 이동 이벤트로 흉내 내지 않는다. create_map 이 두른 테두리 벽은 통행 가능한 바닥으로 다시 칠한다.");
+    lines.push("그 맵을 포함한 각 세계는 fill_region 한 장으로 끝내지 않는다. 맵마다 place_props(material:그 장소의 사물 타일 라벨) 또는 paint_tiles 로 나무·촛대·계단·시계를 깔고, 조사 이벤트는 그 타일 위에 둔다. 빈 판 경고가 나오면 장식을 깔기 전에는 완료하지 않는다.");
   }
   if (/외형|모습|변신|옷을?\s*갈아|effect|이펙트/iu.test(text)) {
     lines.push("주인공 외형 바꾸기(변신·효과·옷)는 m2Command commandId:\"m2-024-change-actor-graphic\" fields:{target:actorId, value:\"charset:<텍스처>:<칸>\"} 로 실제 스프라이트를 바꾼다(대사로만 알리지 않는다). 그림은 list_resources kind:\"charset\" 로 고른다.");
+  }
+  if (/꼬집|깨어/u.test(text)) {
+    lines.push("꿈에서 깨는 행동(볼 꼬집기)은 type:\"switch\" 인 아이템의 switchId 로 스위치를 켜고, trigger:\"auto\" 공통 이벤트가 그 스위치일 때 시작 방으로 transfer 하게 만든다. type:\"special\" 에 switchId 만 넣으면 사용해도 스위치가 켜지지 않는다. 세계 맵에 돌아가는 문이 없으면 이 아이템이 유일한 출구다.");
   }
   // 2026-09-24 추리 도그푸딩: 계획은 증거 스위치, 시공은 빈 맵 나무 바닥이었다. 낱말이 있을 때만.
   if (/추리|탐정|용의자|지목|독살|살인사건/u.test(text)) {
