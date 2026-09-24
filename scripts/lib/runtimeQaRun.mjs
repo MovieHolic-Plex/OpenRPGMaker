@@ -6,6 +6,7 @@ import { runAudioAction } from "./runtimeQaAudio.mjs";
 import { createServer as createNetServer } from "node:net";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
+import { homedir, tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { createServer } from "vite";
 import { PNG } from "pngjs";
@@ -727,6 +728,11 @@ export async function runRuntimeQa(page, rawScenario, opts = {}) {
   await page.goto(playerUrl, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("[data-testid='title-screen']", { timeout: 120_000 });
 
+  // --out 이 절대 경로면 저장소 밖도 된다. 통째로 지우므로 루트·홈·임시 폴더 자체는 거절한다.
+  const outAbs = resolve(outDir);
+  if (outAbs === resolve("/") || outAbs === resolve(homedir()) || outAbs === resolve(tmpdir())) {
+    throw new Error(`runtime QA --out 이 너무 넓다(통째로 지운다): ${outAbs}`);
+  }
   await rm(outDir, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 

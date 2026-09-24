@@ -1,6 +1,7 @@
 import { supportsChipsetQuarterComposition } from "@/editor/tilesetImage";
-import { loadTilesetImage, type TilesetCanvasImage } from "@/editor/mapTileDraw";
+import { drawShadowQuarters, loadTilesetImage, type TilesetCanvasImage } from "@/editor/mapTileDraw";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import type { GameMap, TilesetDef } from "@/project/types";
 
@@ -49,6 +50,16 @@ function drawStackLayer(
 ): void {
   for (let index = 0; index < map.width * map.height; index += 1) {
     for (const tile of tileStackAt(map, layer, index)) drawTile(context, image, tile, index, map, tileset);
+  }
+  // 2층(lower)·4층(upper)은 칩 그대로, 그림자는 2층 위 — mapTileDraw 와 같은 순서.
+  for (let index = 0; index < map.width * map.height; index += 1) {
+    const overlay = layerTileAt(map, layer === "lower" ? 2 : 4, index);
+    if (overlay >= 0) drawTile(context, image, overlay, index, map, tileset);
+  }
+  if (layer !== "lower" || !map.shadowBits) return;
+  const drawSize = tileset.tileSize * PREVIEW_SCALE;
+  for (let index = 0; index < map.width * map.height; index += 1) {
+    drawShadowQuarters(context, index % map.width, Math.floor(index / map.width), drawSize, shadowAt(map, index));
   }
 }
 

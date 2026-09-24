@@ -49,6 +49,12 @@ export interface GameMap {
   tileSize: number;
   lowerTiles: number[];
   upperTiles: number[];
+  /** 2층(바닥 장식). 선택 — 없으면 빈칸. 길이 width*height, -1 = 빈칸. `src/project/mapLayers.ts` 로만 읽고 쓴다. */
+  lowerOverlayTiles?: number[];
+  /** 4층(물체 하나 더). 선택 — 없으면 빈칸. */
+  upperOverlayTiles?: number[];
+  /** 그림자 비트 0..15(bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래, MZ 와 같음). 선택 — 없으면 0. */
+  shadowBits?: number[];
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];

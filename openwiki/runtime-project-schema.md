@@ -1,5 +1,38 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
+
+설계: `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`. `GameMap` 에 선택 필드 셋이 붙었다.
+스키마 버전은 올리지 않았다(없는 맵 = 빈칸이라 이관이 없다).
+
+| 필드 | 층 | 빈값 | 길이 |
+|---|---|---|---|
+| `lowerOverlayTiles?: number[]` | 2층(1층 위, 늘 캐릭터 밑) | `-1` | `width*height` |
+| `upperOverlayTiles?: number[]` | 4층(3층 위, 3층과 같은 ★/○/× 규칙) | `-1` | `width*height` |
+| `shadowBits?: number[]` | 그림자(2층 위·3층 밑) | `0` | `width*height`, 값 0..15 (bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래) |
+
+- `lowerTiles`=1층, `upperTiles`=3층은 그대로다. 층 번호↔필드 이름은 `src/project/mapLayers.ts` 에만 둔다
+  (`layerTileAt`/`setLayerTileAt`/`shadowAt`/`setShadowAt`/`cellLayerTiles`/`cloneExtraLayers`/
+  `remapExtraLayers`/`cropExtraLayers`/`compactMapLayers`/`malformedExtraLayerKeys`/`EXTRA_LAYER_KEYS`).
+- **쓰는 맵에만 생긴다.** `setLayerTileAt`/`setShadowAt` 은 빈값을 쓸 때 배열을 만들지 않는다.
+  **모두 빈값이 되면 키를 뺀다** — 옛 맵과 새 맵의 JSON 이 같다. 정리 지점은 저장 경로가 아니라 칸을 비우는
+  변형기 끝이다: `remapExtraLayers`/`cropExtraLayers`(크기 바꾸기·밀기·잘라내기·Pi 증분)는 스스로 정리하고,
+  붙여넣기·영역 지우기(`editor/mapClipboard.ts`)는 끝에서 `compactMapLayers` 를 부른다. 목록은 `mapLayers.ts` 머리말.
+- **검증:** `validateMaps`(`io/shapeEventFields.ts`) 는 1층·3층 길이를 엄격히 본다(틀리면 던진다).
+  선택 필드는 배열이어야 하고, **길이가 틀리면 `console.warn`(맵 id + 필드) 후 그 필드만 버리고 불러온다** —
+  선택 층 하나 때문에 프로젝트 전체가 안 열리지 않게. 저장 쪽은 `projectLint` 의 왕복 검사(`serialize-roundtrip`)가
+  같은 경우를 **오류**로 보고한다(왕복 자체는 더 이상 던지지 않으므로 따로 센다).
+- 저장 경로(`store.update`/`updateMap`/`updateMapTiles`/undo/`duplicateMap`/serialize·deserialize/웹 내보내기/
+  `exportProjectStoreShim`)는 필드를 보존한다. `updateMapTiles` 는 `cloneExtraLayers` 로 깊은 복사한다.
+- 통행: `collision.ts` — 맨 위(4층)부터 내려가며 빈칸·★ 를 건너뛰고 처음 만난 타일이 칸을 정한다. 1층은 ★ 여도
+  그 자체로 정한다. 뜨거운 경로는 배열을 만들지 않는 `passabilityOf(ts,l1,l2,l3,l4)`/`cellPassability(ts,map,i)` 이고
+  `layeredPassability(ts, tiles[])` 는 외부·테스트용 같은 규칙이다. 그림자는 통행에 관여하지 않는다.
+- 옛 맵 불변 실측(2026-09-24): 번들 장소 참고 67 + `src/project/regionReferences` 41 + 픽스처 프로젝트 파일,
+  맵 238개에서 기준 커밋(22121b817)과 HEAD 의 `drawMapTileLayers` 호출 기록·`canMove` 4방향 격자·게임
+  `renderTiles` 깊이 기록이 모두 같았다(차이 0).
+- 회귀: `test/mapLayers.test.ts`, `test/mapLayersPersistence.test.ts`(저장 왕복·undo·불러오기 버림·lint),
+  `test/mapLayersEditing.test.ts`, `test/mapLayersOldMap.test.ts`(옛 맵에 키가 생기지 않는다).
+
 ## 이름별 게임 오버 (2026-09-23)
 
 v4 선택 필드: `system.gameOvers?: {id,name,settings:GameOverSettings}[]`, `defaultGameOverId?:string`.

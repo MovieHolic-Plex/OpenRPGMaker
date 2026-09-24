@@ -41,6 +41,7 @@ import { isLocalTarget, isRemoteTarget, sameProjectTarget, type ProjectTarget } 
 import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
+import { cloneExtraLayers } from "@/project/mapLayers";
 import { sha256HexText } from "@/util/sha256";
 import { normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
@@ -837,8 +838,9 @@ class ProjectStore {
   }
 
   /**
-   * Fast path for tile painting. Tile edits only mutate the two dense tile
-   * arrays (and the legacy stack maps), so cloning the whole GameMap on every
+   * Fast path for tile painting. Tile edits only mutate the tile layers — the
+   * dense 1층/3층 arrays, the optional 2층/4층/shadow arrays (copied with
+   * cloneExtraLayers) and the legacy stack maps — so cloning the whole GameMap on every
    * pointer sample needlessly copies events and every optional map setting.
    * Keep the general updateMap contract for arbitrary map edits and use this
    * path for the hot paint/erase/fill loop.
@@ -855,6 +857,7 @@ class ProjectStore {
       ...currentMap,
       lowerTiles: currentMap.lowerTiles.slice(),
       upperTiles: currentMap.upperTiles.slice(),
+      ...cloneExtraLayers(currentMap),
       ...(currentMap.lowerTileStacks ? { lowerTileStacks: cloneTileStacks(currentMap.lowerTileStacks) } : {}),
       ...(currentMap.upperTileStacks ? { upperTileStacks: cloneTileStacks(currentMap.upperTileStacks) } : {}),
     };

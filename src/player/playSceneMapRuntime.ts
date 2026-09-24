@@ -12,7 +12,11 @@ import {
   tilesetTextureKey,
 } from "@/editor/tilesetImage";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
-import { MAP_BACKGROUND_LAYER_DEPTH } from "@/player/characterDepth";
+import {
+  MAP_BACKGROUND_LAYER_DEPTH,
+  OVERLAY_LAYER_DEPTH_OFFSET,
+  SHADOW_LAYER_DEPTH_OFFSET,
+} from "@/player/characterDepth";
 import { isPanoramaWindowTile } from "@/project/defaults/chipsetMapping";
 import { animationKeyForTile } from "@/project/defaults/chipsetAnimation";
 import {
@@ -27,6 +31,7 @@ import {
 import { mapWithCommittedEvents } from "@/project/eventDrafts";
 import { applyRuntimeMapOverrides } from "@/project/runtimeMap";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { invalidateTilePassabilityComponents } from "@/project/tilePassabilityComponents";
 import { store } from "@/project/store";
 import type { Command, MapId, TilesetDef, Trigger } from "@/project/types";
@@ -214,8 +219,11 @@ export function renderTiles<
       renderEmptyCellCover(scene, x, y, index);
       renderTile(scene, tileset, x, y, map.lowerTiles[index], "lower");
       for (const tile of tileStackAt(map, "lower", index)) renderTile(scene, tileset, x, y, tile, "lower");
+      renderRawTile(scene, tileset, x, y, layerTileAt(map, 2, index), "lower", OVERLAY_LAYER_DEPTH_OFFSET);
+      renderShadow(scene, x, y, shadowAt(map, index));
       renderTile(scene, tileset, x, y, map.upperTiles[index], "upper");
       for (const tile of tileStackAt(map, "upper", index)) renderTile(scene, tileset, x, y, tile, "upper");
+      renderRawTile(scene, tileset, x, y, layerTileAt(map, 4, index), "upper", OVERLAY_LAYER_DEPTH_OFFSET);
     }
   }
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
@@ -234,7 +242,15 @@ function tileLayerSignature<TImage extends RenderedTileImage, TSprite extends Re
     map,
     tileset,
     textureKey: tileset ? scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset) : "",
-    tilesHash: hashTiles(map.width, map.height, map.lowerTiles, map.upperTiles),
+    tilesHash: hashTiles(
+      map.width,
+      map.height,
+      map.lowerTiles,
+      map.upperTiles,
+      map.lowerOverlayTiles ?? [],
+      map.upperOverlayTiles ?? [],
+      map.shadowBits ?? [],
+    ),
     overlays: JSON.stringify([
       session.farmPlots?.[map.id] ?? null,
       session.placeables ?? null,
@@ -324,13 +340,14 @@ function applyTileDepth(
   tile: number,
   y: number,
   layer: "lower" | "upper",
+  depthOffset = 0,
 ): void {
   if (layer !== "upper") {
     // lower 컨테이너 안 정렬: 같은 셀 스택 순서를 안정화.
-    image.setDepth(y * 2);
+    image.setDepth(y * 2 + depthOffset);
     return;
   }
-  image.setDepth(mapUpperTileDepth(tileset, tile, y, tileSize));
+  image.setDepth(mapUpperTileDepth(tileset, tile, y, tileSize) + depthOffset);
 }
 
 function rootYSortHost<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
@@ -367,11 +384,12 @@ function placeMapTileImage<TImage extends RenderedTileImage, TSprite extends Ren
   x: number,
   y: number,
   layer: "lower" | "upper",
+  depthOffset = 0,
 ): void {
   const alwaysAbove = layer === "upper" && isAlwaysAboveCharacterUpperTile(tileset, tile);
   bumpPerfCounter(scene, "tileObjectsCreated");
   image.setOrigin(0, 0);
-  applyTileDepth(mapTileSize(scene.map), image, tileset, tile, y, layer);
+  applyTileDepth(mapTileSize(scene.map), image, tileset, tile, y, layer, depthOffset);
   // 화면 밖 타일은 카메라가 타일 경계를 넘을 때 숨긴다(playSceneTileCulling 주석 참고).
   trackCullableTile(rootYSortHost(scene), image, x, y);
   if (layer === "upper" && !alwaysAbove) {
@@ -448,12 +466,54 @@ function renderTile<TImage extends RenderedTileImage, TSprite extends RenderedEv
     const backing = scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${backingTile}`);
     placeMapTileImage(scene, backing, tileset, backingTile, x, y, layer);
   }
+  renderRawTile(scene, tileset, x, y, tile, layer, 0);
+}
+
+/**
+ * 타일 한 칸을 원래 모양 그대로 그린다 — 지형 쿼터 합성·호수 자동타일·받침 없이.
+ * 2층·4층이 이 경로를 쓴다(설계: 위 층은 저자가 고른 칩 그대로). 애니메이션 칩은 그대로 움직인다.
+ */
+function renderRawTile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  tileset: TilesetDef,
+  x: number,
+  y: number,
+  tile: number,
+  layer: "lower" | "upper",
+  depthOffset: number,
+): void {
+  if (tile < 0) return;
+  const textureKey = scene.resolveTilesetTexture?.(tileset) ?? tilesetTextureKey(tileset);
   const baseAnimationKey = tilesetAnimationKeyForTile(tileset, tile);
   const animationKey = baseAnimationKey ? chipsetAnimationKey(textureKey, baseAnimationKey) : null;
+  const size = mapTileSize(scene.map);
   const image = animationKey
-    ? scene.add.sprite(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${tile}`).play(animationKey)
-    : scene.add.image(x * mapTileSize(scene.map), y * mapTileSize(scene.map), textureKey, `tile_${tile}`);
-  placeMapTileImage(scene, image, tileset, tile, x, y, layer);
+    ? scene.add.sprite(x * size, y * size, textureKey, `tile_${tile}`).play(animationKey)
+    : scene.add.image(x * size, y * size, textureKey, `tile_${tile}`);
+  placeMapTileImage(scene, image, tileset, tile, x, y, layer, depthOffset);
+}
+
+/**
+ * 그림자 — 칸을 네 쿼터로 나눠 켜진 쿼터마다 반투명 검은 사각형을 깐다
+ * (bit0 좌상, bit1 우상, bit2 좌하, bit3 우하). lower 컨테이너 안, 2층 위·3층 밑.
+ */
+function renderShadow<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(
+  scene: RenderTilesSceneContext<TImage, TSprite>,
+  x: number,
+  y: number,
+  bits: number,
+): void {
+  if (bits === 0 || typeof scene.add.rectangle !== "function") return;
+  const size = mapTileSize(scene.map);
+  const half = size / 2;
+  for (let quarter = 0; quarter < 4; quarter += 1) {
+    if (!(bits & (1 << quarter))) continue;
+    const rect = scene.add.rectangle(x * size + (quarter % 2) * half, y * size + Math.floor(quarter / 2) * half, half, half, 0x000000, 0.5);
+    rect.setOrigin(0, 0);
+    rect.setDepth(y * 2 + SHADOW_LAYER_DEPTH_OFFSET);
+    scene.tileLayer.add(rect);
+    trackCullableTile(rootYSortHost(scene), rect, x, y);
+  }
 }
 
 function renderLakeAutotile<TImage extends RenderedTileImage, TSprite extends RenderedEventSprite>(

@@ -1,4 +1,5 @@
 import { TILE } from "@/project/defaults";
+import { remapExtraLayers } from "@/project/mapLayers";
 import { shiftMapLocations } from "@/project/mapNamedLocations";
 import { store } from "@/project/store";
 import type { GameMap, MapId, Project } from "@/project/types";
@@ -25,6 +26,11 @@ export function applyMapShift(project: Project, mapId: MapId, offset: MapShiftOf
   map.lowerTiles = shiftedTiles(map.lowerTiles, spec, TILE.GRASS);
   map.upperTiles = shiftedTiles(map.upperTiles, spec, TILE.EMPTY);
   replaceShiftedStacks(map, spec);
+  remapExtraLayers(map, spec.width, spec.height, (target) => {
+    const x = (target % spec.width) - spec.dx;
+    const y = Math.floor(target / spec.width) - spec.dy;
+    return isInside(x, y, spec) ? y * spec.width + x : -1;
+  });
   for (const event of map.events) {
     event.x = clamp(event.x + dx, 0, map.width - 1);
     event.y = clamp(event.y + dy, 0, map.height - 1);

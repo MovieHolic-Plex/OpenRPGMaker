@@ -9,7 +9,7 @@ import {
 } from "@/project/aiPreviewContracts";
 import { generateAiPreviewThemeMap } from "@/project/aiPreviewThemeGrammar";
 import { resolveAiPreviewTheme } from "@/project/aiPreviewThemeResolver";
-import { canMove, tilePassability } from "@/project/collision";
+import { canMove, cellPassability } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
 import { eventBodyRect, eventCoversPoint } from "@/project/eventFootprintQuery";
 import { rectCells } from "@/project/footprint";
@@ -183,8 +183,7 @@ function normalizedPreviewDimension(value: number | undefined, fallback: number)
 
 function isMapTilePassable(map: GameMap, tileset: TilesetDef, x: number, y: number): boolean {
   if (!inBounds(map, x, y)) return false;
-  const index = y * map.width + x;
-  const passability = tilePassability(tileset, map.lowerTiles[index] ?? TILE.EMPTY, map.upperTiles[index] ?? TILE.EMPTY);
+  const passability = cellPassability(tileset, map, y * map.width + x);
   return passability.up || passability.down || passability.left || passability.right;
 }
 

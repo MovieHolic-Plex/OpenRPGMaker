@@ -50,6 +50,9 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   tileSize: "타일 크기",
   lowerTiles: "아래층 타일",
   upperTiles: "위층 타일",
+  lowerOverlayTiles: "2층 타일",
+  upperOverlayTiles: "4층 타일",
+  shadowBits: "그림자",
   lowerTileStacks: "아래층 겹침",
   upperTileStacks: "위층 겹침",
   tilesetId: "타일셋",
@@ -270,14 +273,18 @@ function diffValue(area: string, label: string, before: unknown, after: unknown,
   });
 }
 
-/** 타일 배열 두 개에서 실제로 달라진 칸 수 — 명세에 만 칸 배열을 쏟지 않기 위한 요약. */
-function countTileCells(before: unknown, after: unknown): number {
-  const beforeCells = Array.isArray(before) ? before : [];
-  const afterCells = Array.isArray(after) ? after : [];
+/**
+ * 타일 배열 두 개에서 실제로 달라진 칸 수 — 명세에 만 칸 배열을 쏟지 않기 위한 요약.
+ * `empty` 는 선택 층(2·4층·그림자)의 빈 값이다 — 한쪽 칸이 없으면(옛 맵·정리된 층) 그 값으로 읽어,
+ * 층이 처음 생기거나 지워질 때 전 칸이 바뀐 것처럼 세지 않는다.
+ */
+function countTileCells(before: unknown, after: unknown, empty?: number): number {
+  const beforeCells: readonly unknown[] = Array.isArray(before) ? before : [];
+  const afterCells: readonly unknown[] = Array.isArray(after) ? after : [];
   const size = Math.max(beforeCells.length, afterCells.length);
   let changed = 0;
   for (let index = 0; index < size; index += 1) {
-    if (beforeCells[index] !== afterCells[index]) changed += 1;
+    if ((beforeCells[index] ?? empty) !== (afterCells[index] ?? empty)) changed += 1;
   }
   return changed;
 }
@@ -308,6 +315,11 @@ function mapEntries(before: Project, after: Project, out: ChangeLedgerEntry[]): 
         if (key === "lowerTiles" || key === "upperTiles") {
           const changed = countTileCells(beforeValue, afterValue);
           return changed > 0 ? `${changed}칸 바뀜` : undefined;
+        }
+        if (key === "lowerOverlayTiles" || key === "upperOverlayTiles" || key === "shadowBits") {
+          const changed = countTileCells(beforeValue, afterValue, key === "shadowBits" ? 0 : -1);
+          // 0칸이면 빈 층이 생기거나 지워진 것뿐 — 만 칸 배열 요약(이전 → 이후) 대신 조용히 적는다.
+          return changed > 0 ? `${changed}칸 바뀜` : "빈 칸 정리";
         }
         if (key === "lowerTileStacks" || key === "upperTileStacks") {
           return `${Object.keys(asRecord(afterValue) ?? {}).length}자리`;

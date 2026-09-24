@@ -9,6 +9,7 @@ import { validateCommandArray, validateConditionShape, validateMoveRoute } from 
 import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
+import { EXTRA_LAYER_KEYS, malformedExtraLayerKeys } from "@/project/mapLayers";
 import {
   isMapPlanningItemOrigin,
   isMapPlanningItemStatus,
@@ -38,6 +39,15 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     const expected = width * height;
     assert(requireArray(`map ${id}.lowerTiles`, map.lowerTiles).length === expected, `map ${id}: lowerTiles 길이 불일치.`);
     assert(requireArray(`map ${id}.upperTiles`, map.upperTiles).length === expected, `map ${id}: upperTiles 길이 불일치.`);
+    // 1층·3층은 엄격하다. 2층·4층·그림자는 선택 칸이라, 길이가 틀린 배열 하나 때문에 프로젝트 전체가
+    // 안 열리지 않도록 경고하고 버린다(저장 쪽은 projectLint 왕복 검사가 오류로 잡는다).
+    for (const key of EXTRA_LAYER_KEYS) {
+      if (map[key] !== undefined) requireArray(`map ${id}.${key}`, map[key]);
+    }
+    for (const key of malformedExtraLayerKeys(map, expected)) {
+      console.warn(`[맵 층] map ${id}: ${key} 길이 ${(map[key] as unknown[]).length} ≠ ${expected} — 선택 칸이라 버리고 불러온다.`);
+      delete map[key];
+    }
     if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
     if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
     if (map.encounterRate !== undefined) requireNumber(`map ${id}.encounterRate`, map.encounterRate);

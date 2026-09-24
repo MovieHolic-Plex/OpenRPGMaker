@@ -46,6 +46,7 @@ import { rectCells } from "../footprint";
 import { createEventPlacementAnalysis, eventIsMovable, eventRequiresPassableTile, type EventRelocation } from "../eventPlacementRecovery";
 import { playerPassageRect, resolvePlayerBody } from "../playerFootprint";
 import { deserialize, serialize } from "../io";
+import { malformedExtraLayerKeys } from "../mapLayers";
 import { collectProjectReferenceIssues } from "../io/references";
 import { isQuestGraphDef } from "../quest/questDef";
 import { lintQuestGraph } from "../quest/questGraph";
@@ -176,6 +177,17 @@ function bundledAudioPath(resourceId: string): string | null {
 
 // (a) 직렬화 왕복: serialize→deserialize가 throw하면 error로 수집.
 function checkRoundtrip(project: Project, issues: LintIssue[]): void {
+  // 선택 층(2층·4층·그림자)은 불러올 때 길이가 틀리면 경고만 하고 버려지므로 왕복이 던지지 않는다.
+  // 저장 쪽에서는 여전히 오류로 잡는다.
+  for (const map of Object.values(project.maps)) {
+    for (const key of malformedExtraLayerKeys(map as unknown as Record<string, unknown>, map.width * map.height)) {
+      issues.push({
+        severity: "error",
+        code: "serialize-roundtrip",
+        message: `직렬화 왕복 실패: map ${map.id}: ${key} 길이 불일치 — 불러올 때 이 층이 버려진다.`,
+      });
+    }
+  }
   try {
     deserialize(serialize(project));
   } catch (cause) {

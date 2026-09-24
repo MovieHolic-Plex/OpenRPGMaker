@@ -15,6 +15,7 @@ import type { GameMap, Project } from "@/project/types";
 import { createDraft } from "./changeset";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
+import { cropExtraLayers } from "@/project/mapLayers";
 import { assertVillageMutationScope, restoreExistingTargetStart } from "./authorVillageScope";
 import {
   assertInnerVillageSuccess,
@@ -413,6 +414,7 @@ function growExistingVillageMap(map: GameMap, width: number, height: number): vo
   }
   const nextLowerStacks = resizedTileStacks(map.lowerTileStacks, oldW, oldH, width, height);
   const nextUpperStacks = resizedTileStacks(map.upperTileStacks, oldW, oldH, width, height);
+  cropExtraLayers(map, oldW, oldH, 0, 0, width, height);
   map.width = width;
   map.height = height;
   map.lowerTiles = nextLower;

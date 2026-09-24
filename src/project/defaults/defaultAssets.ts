@@ -24,6 +24,7 @@ import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses, RETRO_WORLD_TEXTURE_KEY } from "@/project/tilesetHarness";
 import { bundledAssetRef, CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TILESET_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
+import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -204,6 +205,7 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
       // Tile grids are number arrays. Walking every cell looking for a sprite id
       // made heavy-project load scan millions of numbers for a match that cannot occur.
       if (key === "lowerTiles" || key === "upperTiles" || key === "lowerTileStacks" || key === "upperTileStacks") continue;
+      if ((EXTRA_LAYER_KEYS as readonly string[]).includes(key)) continue;
       const item = value[key];
       if (isLegacySpriteReference(key)) {
         delete value[key];

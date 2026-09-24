@@ -25,6 +25,10 @@ export const MAP_LOWER_LAYER_DEPTH = 0;
  * 책상·탁자 등은 캐릭터와 y-sort 되어야 하므로 {@link mapUpperTileDepth} 를 쓴다.
  */
 export const MAP_UPPER_LAYER_DEPTH = 250_000;
+/** 같은 묶음 안에서 위 층을 조금 위로(설계 §3). 가구 × 가 같은 줄 캐릭터 앞으로 튀지 않게 아주 작게 둔다. */
+export const OVERLAY_LAYER_DEPTH_OFFSET = 0.01;
+/** 그림자는 2층 위, 3층 밑(lower 컨테이너 안). */
+export const SHADOW_LAYER_DEPTH_OFFSET = 0.02;
 
 export type CharacterSprite = {
   readonly y: number;

@@ -1,5 +1,6 @@
 import { editorState, type TileSelection } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
+import { compactMapLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import { replaceTileStack, tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
@@ -53,15 +54,19 @@ export function copySelection(mapId: MapId): boolean {
     showClipboardToast("선택 영역이 맵 밖입니다.", "error");
     return false;
   }
-  const lower = { tiles: [] as number[], stacks: [] as number[][] };
-  const upper = { tiles: [] as number[], stacks: [] as number[][] };
+  const lower = { tiles: [] as number[], stacks: [] as number[][], overlay: [] as number[] };
+  const upper = { tiles: [] as number[], stacks: [] as number[][], overlay: [] as number[] };
+  const shadow: number[] = [];
   for (let y = 0; y < selection.height; y++) {
     for (let x = 0; x < selection.width; x++) {
       const index = (selection.y + y) * map.width + selection.x + x;
       lower.tiles.push(map.lowerTiles[index]);
       lower.stacks.push([...tileStackAt(map, "lower", index)]);
+      lower.overlay.push(layerTileAt(map, 2, index));
       upper.tiles.push(map.upperTiles[index]);
       upper.stacks.push([...tileStackAt(map, "upper", index)]);
+      upper.overlay.push(layerTileAt(map, 4, index));
+      shadow.push(shadowAt(map, index));
     }
   }
   editorState.set({
@@ -70,6 +75,7 @@ export function copySelection(mapId: MapId): boolean {
       height: selection.height,
       lower,
       upper,
+      shadow,
     },
   });
   showClipboardToast(`${selection.width}×${selection.height} 복사됨`, "ok");
@@ -151,8 +157,13 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
           tilesForLayer(targetMap, layer)[targetIndex] = source.tiles[sourceIndex];
           replaceTileStack(targetMap, layer, targetIndex, source.stacks[sourceIndex] ?? []);
         }
+        setLayerTileAt(targetMap, 2, targetIndex, clipboard.lower.overlay?.[sourceIndex] ?? -1);
+        setLayerTileAt(targetMap, 4, targetIndex, clipboard.upper.overlay?.[sourceIndex] ?? -1);
+        setShadowAt(targetMap, targetIndex, clipboard.shadow?.[sourceIndex] ?? 0);
       }
     }
+    // 빈 칸을 붙여 마지막 2·4층·그림자 칸이 비면 선택 칸을 뺀다 — 옛 맵 모양으로 돌아간다.
+    compactMapLayers(targetMap);
   }, { scope: "map", mapId, cells });
   showClipboardToast(`${clipboard.width}×${clipboard.height} 붙여넣기 완료`, "ok");
   return true;
@@ -179,8 +190,12 @@ export function clearSelectionRegion(mapId: MapId): boolean {
         targetMap.upperTiles[idx] = -1;
         replaceTileStack(targetMap, "lower", idx, []);
         replaceTileStack(targetMap, "upper", idx, []);
+        setLayerTileAt(targetMap, 2, idx, -1);
+        setLayerTileAt(targetMap, 4, idx, -1);
+        setShadowAt(targetMap, idx, 0);
       }
     }
+    compactMapLayers(targetMap);
   }, { scope: "map", mapId, cells });
   showClipboardToast("영역 지우기 완료", "ok");
   return true;

@@ -5,6 +5,7 @@ import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
+import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 
 type PlaceSnapshot = { map: GameMap; tileset: TilesetDef };
@@ -151,7 +152,9 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   const source = snapshotFor(snapshotId(id));
   if (!source) throw new Error(`Unknown region reference: ${id}`);
   const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
-  const selected = place ? { ...source, map: { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } } : source;
+  const croppedMap: GameMap | null = place ? { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } : null;
+  if (croppedMap && place) cropExtraLayers(croppedMap, source.map.width, source.map.height, place.x, place.y, place.width, place.height);
+  const selected = croppedMap ? { ...source, map: croppedMap } : source;
   const endRow = Math.min(reference.height, row + rows);
   const { map, tileset } = selected;
   const lowerTiles = map.lowerTiles.slice(row * map.width, endRow * map.width);
