@@ -25,6 +25,21 @@
           "height": 3
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
         "tiles": [
           [
             321,
@@ -53,6 +68,21 @@
           "height": 2
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
         "tiles": [
           [
             387,
@@ -76,6 +106,21 @@
           "height": 3
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
         "tiles": [
           [
             363,
@@ -104,6 +149,21 @@
           "height": 2
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
         "tiles": [
           [
             266,
@@ -127,6 +187,21 @@
           "height": 2
         },
         "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
         "tiles": [
           [
             290,
@@ -270,6 +345,18 @@
           6
         ],
         "upperTiles": [
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
+          -1,
           321,
           322,
           323,
@@ -361,9 +448,9 @@
           -1,
           -1,
           -1,
-          266,
-          267,
-          268,
+          290,
+          291,
+          292,
           -1,
           -1,
           -1,
@@ -373,21 +460,9 @@
           -1,
           -1,
           -1,
-          274,
-          275,
-          276,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
-          -1,
+          298,
+          299,
+          300,
           -1,
           -1
         ],
@@ -395,32 +470,32 @@
           {
             "recipeId": "bookcase",
             "x": 0,
-            "y": 0
+            "y": 1
           },
           {
             "recipeId": "bookcase",
             "x": 4,
-            "y": 0
+            "y": 1
           },
           {
             "recipeId": "bookcase",
             "x": 8,
-            "y": 0
+            "y": 1
           },
           {
             "recipeId": "magazines",
             "x": 1,
-            "y": 4
+            "y": 5
           },
           {
             "recipeId": "low-books",
             "x": 7,
-            "y": 4
+            "y": 5
           },
           {
-            "recipeId": "sofa-front",
+            "recipeId": "sofa-back",
             "x": 7,
-            "y": 7
+            "y": 8
           }
         ],
         "approachCells": [
@@ -430,27 +505,27 @@
           },
           {
             "x": 1,
-            "y": 3
+            "y": 4
           },
           {
             "x": 5,
-            "y": 3
+            "y": 4
           },
           {
             "x": 9,
-            "y": 3
+            "y": 4
           },
           {
             "x": 2,
+            "y": 8
+          },
+          {
+            "x": 8,
             "y": 7
           },
           {
             "x": 8,
-            "y": 6
-          },
-          {
-            "x": 8,
-            "y": 9
+            "y": 7
           }
         ],
         "lowerTileIds": [
@@ -492,6 +567,21 @@
           "height": 3
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
         "tiles": [
           [
             137,
@@ -520,6 +610,21 @@
           "height": 3
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
         "tiles": [
           [
             141,
@@ -548,6 +653,21 @@
           "height": 3
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
         "tiles": [
           [
             395,
@@ -576,6 +696,13 @@
           "height": 1
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
         "tiles": [
           [
             195
@@ -592,6 +719,21 @@
           "height": 2
         },
         "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
         "tiles": [
           [
             267,

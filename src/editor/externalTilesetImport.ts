@@ -7,6 +7,8 @@ import { uploadedAssetForImport } from '@/editor/uploadedAssetStorage';
 import { genId } from '@/util/id';
 import { sha256HexBytes } from '@/util/sha256';
 import { pixelArtWorldCityGuide } from '@/project/pixelArtWorldCity';
+import { inspectExternalTileGrounding } from '@/project/externalTileGrounding';
+import layoutGuidance from '@/assets/pixelArtWorldLayoutGuidance.json';
 
 export async function prepareExternalTileset(file: File, pack: ExternalTilesetPack) {
   if (file.size > 4_000_000) throw new Error('원본 PNG를 선택하세요. 파일이 너무 큽니다.');
@@ -17,6 +19,15 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
   image.src = dataUrl;
   await image.decode();
   if (image.naturalWidth !== pack.width || image.naturalHeight !== pack.height) throw new Error('원본 이미지 규격이 일치하지 않습니다.');
+  const sourceCanvas = document.createElement('canvas');
+  sourceCanvas.width = pack.width; sourceCanvas.height = pack.height;
+  const sourceContext = sourceCanvas.getContext('2d')!;
+  sourceContext.drawImage(image, 0, 0);
+  const sourcePixels = sourceContext.getImageData(0, 0, pack.width, pack.height).data;
+  for (const scene of pack.scenes ?? []) {
+    const issue = inspectExternalTileGrounding(pack, scene, sourcePixels)[0];
+    if (issue) throw new Error(`${scene.name}: ${issue.recipeId} 밑동 (${issue.x},${issue.y})이 바닥에 닿지 않습니다.`);
+  }
   const assetId = genId('chipset_img');
   const tileset = createExternalTileset(pack, assetId, genId('ts'));
   tileset.referenceDocuments = [createReferences(pack, image, dataUrl, tileset.id)];
@@ -98,6 +109,7 @@ function createReferences(pack: ExternalTilesetPack, image: HTMLImageElement, da
       '![원본](image:source-sheet)',
     ].join('\n\n') }],
   };
+  category.documents.push({ id: 'spatial-layout', name: '공간 설계와 배치 근거.md', markdown: layoutGuidance.markdown });
   for (const recipe of pack.recipes) {
     const example = externalRecipeExample(pack, recipe);
     const bad = { ...example, lowerTiles: [...example.lowerTiles], upperTiles: [...example.upperTiles] };
@@ -119,6 +131,7 @@ function createReferences(pack: ExternalTilesetPack, image: HTMLImageElement, da
     category.documents.push({ id: recipe.id, name: `${recipe.name}.md`, markdown: [
       `# ${recipe.name}`,
       `방향: ${recipe.facing}. 가구 원점: 예제 (1,1). 기준점: 좌상단. 접근칸: (${approach.x},${approach.y}).`,
+      `설치 종류: ${recipe.placementKind ?? '미분류'}. 바닥 가구(standing)는 윗부분이 벽에 겹쳐도 되지만 실제 불투명 밑동은 바닥에 닿아야 한다. 벽 부착물(wall-mounted)과 상판 소품(countertop)을 이 규칙으로 내리지 않는다. 지지칸: ${JSON.stringify(recipe.supportCells ?? [])}. 지정 받침 타일: ${JSON.stringify(recipe.supportTileIds ?? [])}.`,
       `원본 source_rect(칸): ${JSON.stringify(recipe.sourceRect)}\n\n원본 source_rect(px): ${JSON.stringify(Object.fromEntries(Object.entries(recipe.sourceRect).map(([k, v]) => [k, v * 32])))}`,
       `원본 타일 배열:\n\n\`\`\`json\n${JSON.stringify(recipe.tiles)}\n\`\`\``,
       '최소 크기와 완성 배열(행 우선): 아래 width×height. -1은 상위 공백. 위치 (ox,oy)에 놓을 때 원본 (x,y)의 조각은 (ox+x,oy+y). 반복 없이 사각 배열 전체를 사용한다.',

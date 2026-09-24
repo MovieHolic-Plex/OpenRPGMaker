@@ -8,9 +8,9 @@ export function addPawCivicScenes(packs){
   function place(recipeId,x,y){
    const recipe=pack.recipes.find(r=>r.id===recipeId);if(!recipe)throw Error(recipeId);
    recipe.tiles.forEach((row,dy)=>row.forEach((tile,dx)=>{const i=(y+dy)*width+x+dx;if(x+dx>=width||y+dy>=height||upperTiles[i]!==-1)throw Error('Civic scene overlap');upperTiles[i]=tile;}));
-   placements.push({recipeId,x,y});approachCells.push({x:x+Math.floor(recipe.sourceRect.width/2),y:y+recipe.sourceRect.height});
+   placements.push({recipeId,x,y});approachCells.push({x:x+Math.floor(recipe.sourceRect.width/2),y:recipe.facing==='north'?y-1:y+recipe.sourceRect.height});
   }
-  if(library){place('bookcase',0,0);place('bookcase',4,0);place('bookcase',8,0);place('magazines',1,4);place('low-books',7,4);place('sofa-front',7,7);}
+  if(library){place('bookcase',0,1);place('bookcase',4,1);place('bookcase',8,1);place('magazines',1,5);place('low-books',7,5);place('sofa-back',7,8);}
   else{place('bookcase',6,0);place('desk-white',1,3);place('desk-wood',6,4);approachCells.splice(2,2);place('chair-blue',2,6);place('chair-blue',7,7);}
   const walk=i=>upperTiles[i]===-1&&lowerTiles[i]===pack.floorTile;
   const start=(height-1)*width+(library?5:4),queue=[start],seen=new Set(queue);

@@ -35,7 +35,7 @@ try{
   const p=createBlankProject();p.tilesets={};p.maps={};p.assets.uploaded={};p.mapConnections=[];
   p.meta.title='Pixel Art World · 도시 50×50';p.meta.author='Pixel Art World / ドット絵世界 · 조립: OPRN';
   const sprites={},roomSpecs={},rendered={},roomAssets={};
-  const entries={'school-classroom-north':[6,12],'school-nurse-compact':[5,10],'school-lab-compact':[6,10],'clinic-waiting-exam':[6,11],'conveni-compact-shop':[6,11],'fastfood-compact-diner':[6,11],'library-compact':[5,9],'office-compact':[4,8],'home-compact':[6,10]};
+  const entries={'school-hallway':[9,8],'school-classroom-north':[6,12],'school-nurse-compact':[5,10],'school-lab-compact':[6,10],'clinic-waiting-exam':[6,11],'conveni-compact-shop':[6,11],'fastfood-compact-diner':[6,11],'library-compact':[5,9],'office-compact':[4,8],'home-compact':[6,15]};
   for(const pack of EXTERNAL_TILESET_PACKS){
    let prepared=await prepareExternalTileset(file(pack.filename),pack);let t=prepared.tileset;
    const previousId=t.id;t.id=pack.id;for(const c of t.referenceDocuments)for(const d of c.documents)d.markdown=d.markdown.replaceAll(previousId,t.id);
@@ -54,10 +54,12 @@ try{
     const ceiling=(x,y)=>{
      if(x<0||y<0||x>=w||y>=h)return false;
      if(y>=entry.y&&x>=entry.x&&x<=entry.x+1)return false;
+     if(scene.ceilingCells?.some(cell=>cell.x+1===x&&cell.y+1===y))return true;
      if(y===h-1)return x<entry.x||x>entry.x+1;
      if(x===0||y===0||x===w-1)return true;
      const old=(y-1)*scene.width+x-1;
-     return (x===1||x===w-2||y===1||y===h-2)&&scene.lowerTiles[old]===0&&!(scene.passableTiles??[]).includes(0)&&scene.upperTiles[old]===-1;
+     const blank=pack.id==='paw-fastfood-interior'?8:0;
+     return (x===1||x===w-2||y===1||y===h-2)&&scene.lowerTiles[old]===blank&&!(scene.passableTiles??[]).includes(blank)&&scene.upperTiles[old]===-1;
     };
     for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(ceiling(x,y)){
      let mask=0;for(const[dx,dy,bit]of[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8],[1,-1,16],[1,1,32],[-1,1,64],[-1,-1,128]])if(ceiling(x+dx,y+dy))mask|=bit;
@@ -85,23 +87,30 @@ try{
   p.tilesets[cityTs.id]=cityTs;p.assets.uploaded['paw-city-atlas']={id:'paw-city-atlas',name:'paw-city-local-atlas.png',kind:'chipset',dataUrl:atlas.toDataURL(),meta:{tileSize:32,width:atlas.width,height:atlas.height,frames:count,frameWidth:32,frameHeight:32}};
   sprites[cityTs.id]=await load(atlas.toDataURL());p.maps[city.id]=city;p.startMapId=city.id;p.startPos=plan.start;
   function event(id,name,x,y,commands,touch=false){return {id,name,x,y,trigger:{kind:touch?'touch':'action'},commands,pages:[{id:id+'-page',name,conditions:[],graphic:{},trigger:{kind:touch?'touch':'action'},priority:touch?'below':'same',movement:{type:'fixed',speed:3,frequency:3},commands}]};}
-  const links=[];
-  for(const [index,building]of plan.entrances.entries()){
-   const scenes=building.room==='school-classroom-north'?['school-classroom-north','school-nurse-compact','school-lab-compact']:[building.room];
-   const options=[];
-   for(const sceneId of scenes){
-    const spec=roomSpecs[sceneId];if(!spec)throw Error('Missing facility '+sceneId);
-    const map=structuredClone(spec.map);map.id=`${sceneId}-${index}`;map.name=sceneId==='home-compact'?`${building.name} · 주거 공간`:spec.scene.name;
-    const returnCommand={kind:'transfer',mapId:city.id,...building.approach,direction:'down',fade:'black'};
-    for(let dx=0;dx<2;dx++)map.events.push(event(`${map.id}-exit-${dx}`,'거리로 나가기',spec.entry.x+dx,spec.entry.y,[returnCommand],true));
-    const transfer={kind:'transfer',mapId:map.id,...spec.spawn,direction:'up',fade:'black'};
-    options.push({text:map.name,branch:[transfer]});p.maps[map.id]=map;
-    links.push({building:building.name,from:city.id,entrance:building.entrance,approach:building.approach,to:map.id,spawn:spec.spawn,exit:spec.entry,sceneId,entranceWidth:building.entranceWidth});
-   }
-   const commands=options.length===1?options[0].branch:[{kind:'choices',prompt:building.name,options,cancelBehavior:'branch',cancelBranch:[]}];
-   for(let leaf=0;leaf<building.entranceWidth;leaf++)city.events.push(event(`door-${index}-${leaf}`,building.name,building.entrance.x+leaf,building.entrance.y,commands));
+  const links=[],tree=[];
+  function connect(from,spec,id,name,entrance,approach,width=1){
+   const map=structuredClone(spec.map);map.id=id;map.name=name;
+   const returnCommand={kind:'transfer',mapId:from.id,...approach,direction:'down',fade:'black'};
+   for(let dx=0;dx<2;dx++)map.events.push(event(`${id}-exit-${dx}`,'돌아가기',spec.entry.x+dx,spec.entry.y,[returnCommand],true));
+   const transfer={kind:'transfer',mapId:id,...spec.spawn,direction:'up',fade:'black'};
+   for(let leaf=0;leaf<width;leaf++)from.events.push(event(`door-${id}-${leaf}`,name,entrance.x+leaf,entrance.y,[transfer]));
+   p.maps[id]=map;
+   links.push({building:name,from:from.id,entrance,approach,to:id,spawn:spec.spawn,exit:spec.entry,sceneId:spec.scene.id,entranceWidth:width});
+   return map;
   }
-  p.mapTree={mapId:city.id,children:Object.keys(p.maps).filter(id=>id!==city.id).map(mapId=>({mapId,children:[]}))};
+  for(const [index,building]of plan.entrances.entries()){
+   const school=building.room==='school-classroom-north'||building.room==='school-hallway';
+   const sceneId=school?'school-hallway':building.room,spec=roomSpecs[sceneId];
+   if(!spec)throw Error('Missing facility '+sceneId);
+   const map=connect(city,spec,`${sceneId}-${index}`,sceneId==='home-compact'?`${building.name} · 주거 공간`:spec.scene.name,building.entrance,building.approach,building.entranceWidth);
+   const node={mapId:map.id,children:[]};tree.push(node);
+   if(school)for(const door of spec.scene.doors){
+    const room=roomSpecs[door.sceneId];
+    const child=connect(map,room,`${door.sceneId}-${index}`,room.scene.name,{x:door.x+1,y:door.y+1},{x:door.approach.x+1,y:door.approach.y+1});
+    node.children.push({mapId:child.id,children:[]});
+   }
+  }
+  p.mapTree={mapId:city.id,children:tree};
   const render=map=>{const c=document.createElement('canvas');c.width=map.width*32;c.height=map.height*32;const cctx=c.getContext('2d'),ts=p.tilesets[map.tilesetId],im=sprites[ts.id];cctx.imageSmoothingEnabled=false;for(const layer of [map.lowerTiles,map.upperTiles])layer.forEach((tile,i)=>{if(tile>=0)cctx.drawImage(im,tile%ts.tilesPerRow*32,Math.floor(tile/ts.tilesPerRow)*32,32,32,i%map.width*32,Math.floor(i/map.width)*32,32,32);});return c.toDataURL();};
   for(const map of Object.values(p.maps)){
    rendered[map.id]=render(map);
@@ -114,7 +123,7 @@ try{
    const seed=map.id===city.id?plan.start:links.find(l=>l.to===map.id).spawn,queue=[seed],seen=new Set([seed.y*map.width+seed.x]);
    for(let q=0;q<queue.length;q++)for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){const a=queue[q],x=a.x+dx,y=a.y+dy,index=y*map.width+x;if(!seen.has(index)&&canMove(p,map,a.x,a.y,x,y)){seen.add(index);queue.push({x,y});}}
    const link=links.find(l=>l.to===map.id);
-   const targets=map.id===city.id?links.flatMap(l=>Array.from({length:l.entranceWidth},(_,dx)=>({x:l.approach.x+dx,y:l.approach.y}))):[link.exit,{x:link.exit.x+1,y:link.exit.y},...roomSpecs[link.sceneId].scene.approachCells.map(a=>({x:a.x+1,y:a.y+1}))];
+   const targets=map.id===city.id?links.filter(l=>l.from===city.id).flatMap(l=>Array.from({length:l.entranceWidth},(_,dx)=>({x:l.approach.x+dx,y:l.approach.y}))):[link.exit,{x:link.exit.x+1,y:link.exit.y},...roomSpecs[link.sceneId].scene.approachCells.map(a=>({x:a.x+1,y:a.y+1})),...links.filter(l=>l.from===map.id).map(l=>l.approach)];
    for(const target of targets)if(!seen.has(target.y*map.width+target.x))throw Error(`Engine collision blocks ${map.id} at ${target.x},${target.y}`);
    movement.push({mapId:map.id,reachable:seen.size,targets:targets.length});
   }

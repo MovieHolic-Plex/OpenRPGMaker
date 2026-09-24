@@ -24,7 +24,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "low-books",
@@ -35,7 +50,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "magazines",
@@ -46,7 +76,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "sofa-front",
@@ -57,7 +102,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "sofa-back",
@@ -68,7 +128,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "north"
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       }
     ]
   },
@@ -97,7 +172,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "desk-wood",
@@ -108,7 +198,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "bookcase",
@@ -119,7 +224,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "chair-blue",
@@ -130,7 +250,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "desk-executive",
@@ -141,7 +268,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       }
     ]
   }

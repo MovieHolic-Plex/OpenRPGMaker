@@ -50,7 +50,12 @@ for (const pack of packs) {
       }
     }
     for (const cell of approachCells) if (!reachable.has(indexAt(cell.x, cell.y))) fail(`Unreachable approach ${id}: ${cell.x},${cell.y}`);
-    return { id, name, width, height, lowerTiles, upperTiles, placements, approachCells, notes, passableTiles, lowerTileIds };
+    for (const cell of plan.ceilingCells ?? []) {
+      const index = indexAt(cell.x, cell.y);
+      if (upperTiles[index] !== -1 || passableTiles.includes(lowerTiles[index])) fail(`Occupied wall cap ${id}`);
+    }
+    return { id, name, width, height, lowerTiles, upperTiles, placements, approachCells, notes, passableTiles, lowerTileIds,
+      ceilingCells: plan.ceilingCells, rooms: plan.rooms, doorways: plan.doorways };
   });
   delete pack.scenePlans;
 }

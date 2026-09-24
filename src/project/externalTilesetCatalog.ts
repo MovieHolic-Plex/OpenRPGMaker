@@ -11,6 +11,9 @@ export interface ExternalTileRecipe {
   sourceRect: { x: number; y: number; width: number; height: number };
   facing: string;
   tiles: number[][];
+  placementKind?: string;
+  supportCells?: { x: number; y: number }[];
+  supportTileIds?: number[];
 }
 export interface ExternalTilesetPack {
   id: string;
@@ -43,6 +46,11 @@ export interface ExternalTileScene {
   notes: string;
   passableTiles?: number[];
   lowerTileIds?: number[];
+  /** Wall-cap footprint, resolved with the user's separately imported XP WallA01. */
+  ceilingCells?: { x: number; y: number }[];
+  rooms?: { id: string; name: string; x: number; y: number; width: number; height: number }[];
+  doors?: { sceneId: string; x: number; y: number; approach: { x: number; y: number } }[];
+  doorways?: { from: string; to: string; x: number; y: number; width: number; height: number }[];
 }
 export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog];
 

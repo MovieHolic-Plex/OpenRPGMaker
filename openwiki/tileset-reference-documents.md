@@ -13,7 +13,7 @@
 
 `src/editor/externalTilesetImport.ts`가 사용자 PNG에서 조립/오류 비교 그림을 만들고
 원본 1 MD/PNG + 부품당 1 MD/PNG를 `referenceDocuments`에 넣는다.
-도시 사거리(28×27), 작은 교실(14×13), 도서관·사무실·시설 내부 등 10개 scene은
+도시 사거리(28×27), 작은 교실(14×13), 현관·복도(19×9), 도서관·사무실·시설 내부 등 scene은
 별도 용도마다 전체 배열 1 MD + 실제 합성 1 PNG를 추가한다. 따라서 조수의 기존 문서·이미지
 선행 읽기 계약을 그대로 사용한다. 타일 번호·칸/픽셀 좌표·lower/upper 전체 배열,
 통행/접근칸·크레딧을 포함한다. 이 그림은 사용자 프로젝트에서만 생성·보관한다.
@@ -21,7 +21,7 @@
 비동기 준비 중 프로젝트 lineage/저장 대상 변경 또는 대화상자 닫기는 등록을 취소한다.
 단, 이미 asset 저장이 시작된 경우 참조되지 않는 파일은 저장소의 자산 정리 대상이 될 수 있다.
 
-시트 전체의 의미 분석은 아니다. 명시된 완성 장면과 부품 109개에 조립 배열을 제공한다. 검토된 가구는 upper·차단,
+시트 전체의 의미 분석은 아니다. 명시된 완성 장면과 검토 부품에 조립 배열을 제공한다. 검토된 가구는 upper·차단,
 바닥은 lower·통과, 나머지는 미검토·차단이다. `externalRecipeExample`과
 `validateExternalRecipeExample`은 고정 가구 예제의 구조와 접근칸만 다룬다.
 범위·원본 판본·자료 생성 절차: [pixel-art-world](../tiledata/pixel-art-world/README.md),
@@ -30,12 +30,28 @@
 `ExternalTileScene`은 전체 배열·접근칸·통행/홈 레이어를 명시하며 가져오기 전에 검증한다.
 
 [도시 50×50](../tiledata/pixel-art-world/CITY-50.md)은 여러 사용자 원본을 조합하는 별도 청사진이다.
-`prepare-pixel-art-world-city.mjs` → `pixelArtWorldCity.json`에는 픽셀 없이 원본 해시·166개 합성 번호 사전·전체 배열·출입구를 싣는다.
-관련 도시 팩을 가져오면 `pixelArtWorldCityGuide`가 4 MD와 현재 사용자 원본 이미지를 추가한다.
+`prepare-pixel-art-world-city.mjs` → `pixelArtWorldCity.json`에는 픽셀 없이 원본 해시·합성 번호 사전·전체 배열·출입구를 싣는다.
+관련 도시 팩을 가져오면 `pixelArtWorldCityGuide`가 5 MD와 현재 사용자 원본 이미지를 추가한다.
 번호는 현재 시트가 아닌 합성 atlas 전용이다. 다른 원본이나 시설 이벤트를 자동 설치하지 않는다.
-`author-pixel-art-world-city.mjs`는 로컬 원본으로 11맵을 만들고,
+`author-pixel-art-world-city.mjs`는 로컬 원본으로 12맵을 만들고,
 `save-pixel-art-world-city.mjs`는 새 사용자 SQLite 프로젝트에 저장·재오픈한다.
 저작 결과 그림은 사용자 프로젝트에만 존재한다. 자료집의 다운로드 방식이나 소재 번들 정책은 바뀌지 않는다.
+
+### 공간 설계·실제 발판 검사
+
+공유 설계 근거는 `tiledata/pixel-art-world/MAPPING-RESEARCH.md`이며
+`prepare-pixel-art-world-layout-guidance.mjs` → `pixelArtWorldLayoutGuidance.json`으로 번들한다.
+모든 해당 PNG 가져오기에서 공통 설계 MD를 추가한다. Tiled 2026 청사진 분리,
+DPLAN의 문 연결 관계, COHO의 도시 계층과 RPG Maker의 실무 지침을 구별해 기록한다.
+논문 모델을 구현하거나 미학을 자동 검증했다는 의미는 아니다.
+
+`ExternalTileRecipe.placementKind`는 standing/wall-mounted/countertop을 구분하고
+`supportCells`는 조각 내부의 지지 위치다. 가져오기 준비 중 `externalTileGrounding.ts`가
+standing의 실제 불투명 최하단 픽셀과 scene 바닥을 대조해 벽 위 가구를 거절한다.
+완전한 조각인지, 용도에 맞는 공간인지는 PNG 검토가 따로 필요하다.
+`ExternalTileScene.rooms/doorways/ceilingCells`는 주택 방/문/천장 경계를,
+`doors`는 학교 복도와 각 실의 문/접근 좌표를 보존한다.
+학교는 거리→현관·복도→각 실→복도로 전이하며 입구 선택 메뉴를 사용하지 않는다.
 
 ## 사용자 경로와 정본
 
