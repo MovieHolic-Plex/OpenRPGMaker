@@ -312,7 +312,7 @@ describe("edit scene event rendering", () => {
         object.fillAlpha === 0
     );
 
-    expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0x000000, alpha: 0.45 });
+    expect(result.gridLineStyles[0]).toMatchObject({ lineWidth: 1, color: 0x000000, alpha: 0.22 });
     expect(marker?.stroke).toMatchObject({ lineWidth: 2, color: 0xffffff, alpha: 0.95 });
     expect(sprite).toMatchObject({ x: 40, y: 48, texture: "tex_easyrpg_charset_people1", frame: 0 });
     expect(ring?.stroke).toMatchObject({ lineWidth: 2, color: 0x69db7c });

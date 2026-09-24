@@ -14,3 +14,19 @@
   background: var(--db-studio-accent-hover);
   border-color: var(--db-studio-accent-hover);
 }
+
+/* 저장하지 않는 세션에서는 databaseModal 이 .primary 를 뗀다 — 옆 안내 「저장되지 않습니다」 와
+   파란 주 버튼이 모순이었다(2026-09-24 visual QA). 그때만 보조 버튼 무게로 내린다. */
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"]:not(.primary),
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-footer-button[data-testid="database-footer-apply"]:not(.primary) {
+  background: var(--db-studio-surface);
+  border-color: var(--db-studio-border-default);
+  color: var(--db-studio-text-2);
+  font-weight: 500;
+}
+
+.database-modal-backdrop .database-modal-window .database-footer-button[data-testid="database-footer-apply"]:not(.primary):hover,
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-footer-button[data-testid="database-footer-apply"]:not(.primary):hover {
+  background: var(--db-studio-inset);
+  border-color: var(--db-studio-border-default);
+}

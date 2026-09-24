@@ -636,12 +636,16 @@
   content: "+ ";
 }
 
+/* 이름은 줄바꿈한다 — 한 줄 말줄임이면 「세계 개요·설정…」 처럼 두 개뿐인 이름도 잘려 무엇이
+   숨었는지 읽을 수 없었다(2026-09-24 visual QA). 생활 7탭처럼 길면 두 줄로 끊는다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-names {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
   flex: 1 1 auto;
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  word-break: keep-all;
 }
 
 @container db-modal (max-width: 799px) {

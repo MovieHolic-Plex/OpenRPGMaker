@@ -337,3 +337,46 @@
   margin-bottom: 1px;
   padding-bottom: 1px;
 }
+
+/* 시연 창 툴바를 에디터 톱바와 같은 말투로 (2026-09-24 visual QA) — 굵은 회색 상자 버튼·OS 기본 체크박스·
+   고정폭 대문자 X 가 에디터와 따로 놀았다. 고스트 버튼 + 인디고 체크 + 일반 × 로 맞춘다. 높이는 30px 띠 그대로. */
+.test-play-close {
+  align-items: center;
+  background: transparent;
+  border-color: transparent;
+  color: var(--text-2);
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 6px;
+  min-height: 22px;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.test-play-close:hover,
+.test-play-close:focus-visible {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.test-play-close:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
+.test-play-close[data-testid="mode-edit"] {
+  border-color: var(--border-default);
+  color: var(--text-1);
+}
+
+.test-play-skip-title input[type="checkbox"] {
+  accent-color: var(--accent);
+  height: 13px;
+  margin: 0;
+  width: 13px;
+}
+
+.test-play-close.icon {
+  font: 400 16px/1 var(--font-ui);
+  justify-content: center;
+  text-transform: none;
+}

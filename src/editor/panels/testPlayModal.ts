@@ -427,8 +427,8 @@ function openTestPlayShell(
     maximizeButton,
     el("button", {
       class: "test-play-close icon",
-      text: "x",
-      attrs: { title: "닫기" },
+      text: "×",
+      attrs: { title: "닫기", "aria-label": "시연 실행 닫기" },
       dataset: { testid: "test-play-window-close" },
       on: { click: () => closeTestPlayModal() },
     })

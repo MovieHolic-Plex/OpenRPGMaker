@@ -16,7 +16,8 @@ export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFe
 const DEFAULT_GRID_COLOR = 0xffffff;
 const DEFAULT_GRID_ALPHA = 0.08;
 const EVENT_GRID_COLOR = 0x000000;
-const EVENT_GRID_ALPHA = 0.45;
+// 0.45 는 칸마다 검은 테를 둘러 타일이 어둡게 죽었다(2026-09-24 visual QA). 칸 경계만 읽히면 된다.
+const EVENT_GRID_ALPHA = 0.22;
 
 type CameraFocus = {
   readonly x: number;

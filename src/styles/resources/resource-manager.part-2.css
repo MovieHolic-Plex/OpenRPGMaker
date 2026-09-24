@@ -44,8 +44,22 @@
 }
 
 .rm-category-icon {
-  font-size: 14px;
+  align-items: center;
+  color: var(--text-3);
+  display: inline-flex;
   flex-shrink: 0;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.rm-category-icon svg {
+  height: 16px;
+  width: 16px;
+}
+
+.rm-category-row.active .rm-category-icon {
+  color: var(--accent);
 }
 
 .rm-category-label {
