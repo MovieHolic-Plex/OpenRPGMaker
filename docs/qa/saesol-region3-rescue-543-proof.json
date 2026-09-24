@@ -1,0 +1,136 @@
+{
+  "scope": "Dedicated player, resume exact earned two-badge, five-species dex and completed cave quest state from prior successful UI run in a QA-only project copy. No new rewards/levels granted. Real walking and authored portals from the fresh first-two-badge checkpoint. No teleport. Resumed QA session, not uninterrupted or three-hour proof.",
+  "steps": [
+    {
+      "id": "ev_sr3_trainer1",
+      "flag": "sr3_trainer1_won",
+      "value": true
+    },
+    {
+      "id": "ev_sr3_trainer2",
+      "flag": "sr3_trainer2_won",
+      "value": true
+    }
+  ],
+  "checkpointMatches": true,
+  "walkedSteps": 1138,
+  "walkedPortals": [
+    {
+      "from": "map_variety_lab",
+      "event": "sr_map_variety_lab_0",
+      "to": "map_variety_ridge"
+    },
+    {
+      "from": "map_variety_ridge",
+      "event": "sr_map_variety_ridge_2",
+      "to": "map_saesol_route"
+    },
+    {
+      "from": "map_saesol_route",
+      "event": "sr_map_saesol_route_2",
+      "to": "map_variety_cavern"
+    },
+    {
+      "from": "map_variety_cavern",
+      "event": "sr_warp_cavern_to_route2",
+      "to": "map_saesol_route2"
+    },
+    {
+      "from": "map_saesol_route2",
+      "event": "sr_warp_route2_to_forest",
+      "to": "map_saesol_forest"
+    },
+    {
+      "from": "map_saesol_forest",
+      "event": "sr_warp_forest_to_town2",
+      "to": "map_saesol_town2"
+    },
+    {
+      "from": "map_saesol_town2",
+      "event": "ev_gate_558ed082-4b10-453b-9f29-0402a9fe7472",
+      "to": "map_sr3_coast"
+    },
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f3c86abf-7a75-4a4e-8d12-4d70b08c2b65",
+      "to": "map_sr3_coast"
+    },
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f3c86abf-7a75-4a4e-8d12-4d70b08c2b65",
+      "to": "map_sr3_coast"
+    },
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    }
+  ],
+  "rescueEarlyGuards": true,
+  "rescueComplete": true,
+  "rewardOnce": {
+    "gold": 500,
+    "superPotions": 2
+  },
+  "pageErrors": [],
+  "benchmark": {
+    "snapshotRevision": 543,
+    "playerSeconds": 348.012,
+    "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+  }
+}

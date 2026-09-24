@@ -18,6 +18,7 @@ import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesByI
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
+import { CHARACTER_SCALE_MIN, CHARACTER_SCALE_MAX } from "@/project/footprint";
 import type {
   ActorRecord,
   BattleAnimationRecord,
@@ -504,6 +505,19 @@ const troopRecordSchema = objectSchema({
 const monsterSpeciesGraphicSchema = objectSchema({
   monsterResourceId: stringSchema(),
   backResourceId: stringSchema("후면 전투용 몬스터 리소스. 생략하면 정면 그림을 사용합니다."),
+  fieldCharsetId: stringSchema("동행 캐릭터셋 리소스. fieldGraphic이 있으면 그 설정을 우선합니다."),
+  fieldGraphic: objectSchema({
+    appearanceId: stringSchema(),
+    sprite: objectSchema({
+      type: { type: "string", enum: ["bundled", "uploaded"] },
+      id: stringSchema("등록된 필드 그림 리소스 ID"),
+    }),
+    direction: { type: "string", enum: ["down", "left", "right", "up"] },
+    pattern: integerSchema(),
+    transparent: booleanSchema(),
+    scale: { type: "number", minimum: CHARACTER_SCALE_MIN, maximum: CHARACTER_SCALE_MAX },
+    scaleMode: { type: "string", enum: ["auto", "manual"] },
+  }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
   flying: booleanSchema(),
