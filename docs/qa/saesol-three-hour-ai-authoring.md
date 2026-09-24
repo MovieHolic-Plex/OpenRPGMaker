@@ -930,3 +930,17 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `fresh-grimlit-walking/SUMMARY.md`: passed=true,pageErrors0,98칸/포털3회. 실제 마비→스칼라포드 교체→거품 후 포획구11개(14→3), 회복약3개를 사용해 그림릿 레벨30/exp806을 포획했다. `captured.png`를 직접 확인했다. 앞선 구간 검사에서6회 포획했던 난수 결과를 그대로 기대하지 않았다.
 - `fresh-gate-support-walking/SUMMARY.md`: passed/fullPartyHeal=true,pageErrors0,61칸/포털2회. 부상·마비·PP 소모를 보존해 관문에 걸어간 후 네 동료 완전회복, 무료 소지품/골드 보존, 재치료 무변화를 확인했다. 실제3600G로 상급약8개와 포획구6개를 샀으며 `gate-ready.png`와 `supply-shop.png`를 직접 확인했다.
 - 회복 기대치는 도보로 간호사 앞에 도착한 실제 동료 레벨·기술로 계산한다. 이전 체크포인트의 고정 수치를 쓰지 않아 정상 걷기 성장과 혼동하지 않는다. 각 검사 종료의 실제 진행 상태를 다음 단계로 넘겼으며 정본 세션을 진행 완료 상태로 덮어쓰지 않았다.
+
+
+### 리그 재장식 저장과 독립 도보 확인 (revision469)
+
+- 요청20b는 저장 후 최종 검수에서 `OAuth token expired before request`로 종료됐다. UI는 적용됨/목표 미평가와 검수 지적2건을 표시했다. 이 결과를 AI 검수 통과로 기록하지 않는다.
+- `player-snapshot-league-rework-proof.json`: 정본 폴더 `output/projects/saesol-red`, projectId `6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a`, revision469. 스토어를 다시 열어 두 번 읽은 내용 일치, 참조 미디어80개 해시 검증,20맵/150이벤트 확인.
+- `league-rework-scope-proof.json`: revision425와469의 변경 최상위 키는 maps뿐이며, 변경 맵은 `map_sr4_league`뿐이다. 해당 맵의 기존 이벤트 배열도 동일하다.
+- `league-rework-walking-player/SUMMARY.md`: 실제 사천왕 승리 체크포인트에서 도보50칸/포털2회로 네 NPC 접근과 관문 복귀 통과, pageErrors0. `league-4.png`를 직접 확인했다. 네 구역의 패턴 바닥·선반·화분이 보이나 검은 실루엣 NPC는 남아 있다. 이것은 완주 시간이나 신규 전투 균형의 검증이 아니다.
+
+### 숲 생태조사 요청21 착수
+
+- 이전 AI 응답이 종료된 것을 확인한 뒤 관찰 브라우저만 정상 종료하고 새 세션으로 연결했다. 호스트와 정본은 재시작/초기화하지 않았다. 새 관찰기는 대형 checkpoint 요청 본문 수집을 기본 비활성화한다.
+- 에디터 AI 입력창으로 `prompt-21-forest-expedition.txt`를 제출했고 의도 읽는 중 상태를 확인했다. 지역2 네 맵 안에서 수락/거절, 순서 자유인 세 관찰·추론, 선택적2팀 전투, 단회300G/기존 포획구3개 보고 보상을 연결하도록 요청했다. 기존 배지 보유자는 새 관장 조건으로 막지 않도록 명시했다.
+- 시작 선두가 기사인 VISUAL-040은 두 시작 배우 배열을 actor_hero만으로 바꾸도록 좁게 요청했다. 그 외 정본 진행 세션과 기존 레코드 변경은 금지했다. 아직 저장 결과/퀘스트 동작이 확인되지 않았으므로 완료로 세지 않는다.
