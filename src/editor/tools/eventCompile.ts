@@ -151,6 +151,11 @@ export function charsetGraphic(textureKey: string, characterIndex: number | unde
   };
 }
 
+/** 그림 없는 조사 사물의 보석 표식 — place_examine_hotspots(#1370) 와 upsert_event 맨바닥 기본이 공유하는 정본. */
+export function examineMarkGraphic(): EventPageGraphic {
+  return charsetGraphic("tex_easyrpg_charset_object2", 6);
+}
+
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
 export type GraphicQueryResolveOptions = NpcGraphicPickOptions & {
   /** 검색어가 카탈로그에 없어 기본 주민 그래픽으로 대체했을 때 호출된다(경고 전달용). */
