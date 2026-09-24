@@ -3,7 +3,7 @@ import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
 import { ensureRpgDungeonReferences } from "./sharedRpgDungeonReferences";
 import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
-import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
+import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { ensureForestGroveInterior } from "./forestGrove";
@@ -142,6 +142,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
       changed = ensureRpgDungeonReferences(project.tilesets[id]) || changed;
       changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
+      // Leafless trees appended to the snow, volcano and desert sheets (2880~): older saves grow to the new count.
+      changed = ensureClimateBareTrees(project.tilesets[id]) || changed;
       // Groves made before the leaf interior gain its depth variants (forest_harmony and the climate sheets).
       changed = ensureForestGroveInterior(project.tilesets[id]) || changed;
       // Tall grass E/F/G: F and G groups, the fixed E grammar (forest_harmony and the climate sheets).

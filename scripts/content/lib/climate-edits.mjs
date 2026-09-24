@@ -98,6 +98,59 @@ export function dressDesert(map, { vegetation, water, keepClear, palms, cacti, s
   return { edits, replaced };
 }
 
+/**
+ * A cliff that ended in forest at the map edge would end in open ground once the forest is cleared (walk round the
+ * end instead of taking the stairs). Each cliff row whose end cell is separated from the map edge only by `cleared`
+ * cells (or, with `open(cell)`, open ground, some of it cleared) is run on to the edge with that row's body tile (the tile one cell inside the end cap), in both layers as
+ * authored (cliff tiles are upper). `cliff` is the set of cliff tiles. Returns the extended cells.
+ */
+export function extendClearedCliffEnds(map, { cliff, cleared, maxGap = 16, open = null }) {
+  const W = map.width, H = map.height, at = (x, y) => y * W + x, extended = [];
+  const isCliff = (x, y) => x >= 0 && x < W && cliff.has(map.upperTiles[at(x, y)]);
+  for (let y = 0; y < H; y++) {
+    for (const dir of [-1, 1]) {
+      // the outermost cliff cell of this row on this side
+      let end = -1;
+      if (dir < 0) { for (let x = 0; x < W; x++) if (isCliff(x, y)) { end = x; break; } }
+      else for (let x = W - 1; x >= 0; x--) if (isCliff(x, y)) { end = x; break; }
+      if (end < 0 || !isCliff(end - dir, y)) continue;
+      const gap = [];
+      for (let x = end + dir; x >= 0 && x < W; x += dir) gap.push(x);
+      // Every gap cell cleared forest — or, with `open`, open ground as long as the clearing is what opened the row.
+      const ok = (x) => map.upperTiles[at(x, y)] < 0 && (cleared.has(at(x, y)) || !!open?.(at(x, y)));
+      if (!gap.length || gap.length > maxGap || !gap.every(ok) || !gap.some((x) => cleared.has(at(x, y)))) continue;
+      const body = map.upperTiles[at(end - dir, y)];
+      for (const x of [end, ...gap]) { map.upperTiles[at(x, y)] = body; extended.push(at(x, y)); }
+    }
+  }
+  return extended;
+}
+
+/**
+ * A cliff end that opened into ground the cliff cannot run across (a house, road or yard on the way): the upper level
+ * gets a side ledge instead — plateau tiles with their side rim (2678 on the east side, 2677 on the west), from the
+ * cliff's top row up to the map edge or the first thing in the way. `cells` is the cliff (one connected piece),
+ * `open(cell)` says a cell may take the ledge. Returns the ledge cells, or null when it cannot reach anything.
+ */
+export const LEDGE = { east: 2678, west: 2677 };
+export function cliffEndLedge(map, { cells, side, open }) {
+  const W = map.width, at = (x, y) => y * W + x, set = new Set(cells);
+  const top = cells.filter((i) => !set.has(i - W));
+  const y0 = Math.min(...top.map((i) => Math.floor(i / W)));
+  const row = top.filter((i) => Math.floor(i / W) <= y0 + 1);
+  const end = side === "east" ? Math.max(...row.map((i) => i % W)) : Math.min(...row.map((i) => i % W));
+  const endCell = row.find((i) => i % W === end), x = end + (side === "east" ? 1 : -1);
+  if (x < 0 || x >= W) return null;
+  const ledge = [];
+  for (let y = Math.floor(endCell / W); y >= 0; y--) {
+    if (!open(at(x, y))) break;
+    ledge.push(at(x, y));
+  }
+  if (!ledge.length) return null;
+  for (const i of ledge) map.upperTiles[i] = LEDGE[side];
+  return ledge;
+}
+
 /** Cells reachable from `entry` under the runtime move rule. */
 export function reachable(canMove, project, map, entry) {
   const W = map.width, at = (x, y) => y * W + x;

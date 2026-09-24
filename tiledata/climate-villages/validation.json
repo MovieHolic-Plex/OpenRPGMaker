@@ -164,8 +164,9 @@
         56
       ]
     ],
-    "reachable": 1450,
-    "blocked": []
+    "reachable": 2418,
+    "blocked": [],
+    "joinedLevels": []
   },
   {
     "id": "climate-volcano-ford-castle",
@@ -215,8 +216,9 @@
         83
       ]
     ],
-    "reachable": 2616,
-    "blocked": []
+    "reachable": 3498,
+    "blocked": [],
+    "joinedLevels": []
   },
   {
     "id": "climate-volcano-lava-pond",
@@ -254,8 +256,9 @@
         50
       ]
     ],
-    "reachable": 1354,
-    "blocked": []
+    "reachable": 2333,
+    "blocked": [],
+    "joinedLevels": []
   },
   {
     "id": "climate-desert-terrace-canyon",
@@ -297,8 +300,9 @@
         52
       ]
     ],
-    "reachable": 1496,
-    "blocked": []
+    "reachable": 2354,
+    "blocked": [],
+    "joinedLevels": []
   },
   {
     "id": "climate-desert-reed-bay",
@@ -340,8 +344,9 @@
         41
       ]
     ],
-    "reachable": 1513,
-    "blocked": []
+    "reachable": 2080,
+    "blocked": [],
+    "joinedLevels": []
   },
   {
     "id": "climate-autumn-twin-falls",
