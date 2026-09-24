@@ -123,3 +123,17 @@ describe("체크포인트 재시작과 추격자", () => {
     expect(result.ok, result.failureReason).toBe(true);
   });
 });
+
+describe("공포 추격 맵 조명", () => {
+  it("공포 장르 추격 맵은 조명이 없으면 어두워지고, mood:false 면 그대로다", () => {
+    const ctx = horrorProject();
+    const mapId = ctx.project.startMapId;
+    const made = runTool(ctx, "make_chase_scene", { mapId, chaser: { at: { x: 5, y: 5 }, graphic: { query: "monster" } }, killOnTouch: true });
+    expect(made.ok, made.summary).toBe(true);
+    expect(ctx.project.maps[mapId]!.defaultLighting?.ambient).toBe(0.5);
+    expect(checkHorror(ctx.project, BRIEF).map((f) => f.code)).not.toContain("horror-not-dark");
+    const other = horrorProject();
+    runTool(other, "make_chase_scene", { mapId: other.project.startMapId, chaser: { at: { x: 5, y: 5 }, graphic: { query: "monster" } }, mood: false });
+    expect(other.project.maps[other.project.startMapId]!.defaultLighting).toBeUndefined();
+  });
+});

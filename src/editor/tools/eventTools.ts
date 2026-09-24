@@ -11,6 +11,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
 import { canMove, isPassable, tileAt } from "@/project/collision";
+import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
@@ -2481,6 +2482,7 @@ const makeChaseScene: ToolDefinition = {
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
+      mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
     },
     required: ["mapId", "chaser"],
@@ -2562,6 +2564,10 @@ const makeChaseScene: ToolDefinition = {
     // (2026-09-24 r3: 첫 추격에 잡히자 버튼이 「타이틀로 돌아가기」 하나). false 를 명시하면 끈다.
     const wantsCheckpoint = args.checkpointOnEntry === true || (args.checkpointOnEntry === undefined && args.killOnTouch === true);
     const checkpointEventId = wantsCheckpoint ? ensureMapCheckpointEvent(draft, map) : undefined;
+    // 공포 장르의 추격 맵이 기본 밝기면 어둡게 한다 — r2~r5 네 번 모두 「어둡고 긴장감 있게」 기획에서 조명을
+    // 한 번도 만지지 않았다. 이미 조명을 정했거나 mood:false 면 두고, 무엇을 했는지 요약에 싣는다.
+    const darkened = args.mood !== false && draft.system?.genre === "horror-chase" && !map.defaultLighting;
+    if (darkened) map.defaultLighting = normalizeLightingState({ ambient: 0.5, color: "#1a1020", sources: [] });
     const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
@@ -2577,7 +2583,7 @@ const makeChaseScene: ToolDefinition = {
       ...hiding.warnings,
     ];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
       data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
