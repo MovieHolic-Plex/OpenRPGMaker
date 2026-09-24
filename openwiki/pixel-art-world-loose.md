@@ -22,3 +22,14 @@
 revision7에서 원본 참고/완전객체2타일셋·2자산을 새 페이지로 다시 읽었다. 완전객체의 마지막행
 충돌은[0,1,1,0], 다른행은 통과로 보존된다. 공용 전체 게시와 이 개별 사용자 가져오기는 구분한다.
 근거 Git 제외 `output/paw-loose-independent-review/`, `output/paw-loose-install/`.
+## 검토 판본의 사용자 로컬 공용 게시 준비
+
+`prepare-pixel-art-world-loose-library.mjs --prepare <review-bundle.json> <원본폴더> <source-proof.json> <shared-before.json> <output/개인폴더>`는 파일만 읽어 `pixel-art-world-loose-local` 라이브러리와 준비 근거를 만든다. 독립 검토 report의 미해결 발견0, 최종 metadata SHA 및106prepared 전체를 묶은 review-bundle의 모든 artifact SHA가 현재 파일과 같아야 한다. 입력이 바뀌면 과거 시각 승인을 재사용하지 않고 거절한다. 준비 스크립트가 새 시각 승인을 발급하지 않는다.
+
+원본 SHA/실제크기, prepared source-inventory의 전체 pack, 각 kit 소유 MD의 recipe, 전체 stamp 배열을 현재 metadata와 대조한다. 원본106종은16px 참고용(객체kit0), 파생103종은32px 조립용(539kit)이다. tile/asset/kit와 중첩 MD/이미지 참조까지 reserved `shared_paw_loose_*`로 치환하고 실제 schema와 owned image 링크를 확인한다. 방/지역/이벤트는 만들지 않는다.
+
+원본 asset은 사용자 PNG의 바이트를 그대로 보존한다. 브라우저 Canvas의 반투명 RGB 재정규화 때문에 준비용 source PNG에 **raw RGBA exact**를 주장하지 않는다. 원본 대비 알파·premultiplied 채널이 정확히 같은지 확인한다. 상판 합성 이외의 source→atlas 복사는 정규화된 원본의 실제 보이는 RGBA와 대조한다. 상판 합성은 이미 독립 검토된 atlas SHA/전체 metadata/배열을 보존한다.
+
+문서 이미지만 기존 lossless WEBP 도구로 압축하고 디코딩 후 픽셀 동일을 확인한다. 실제 게임 asset 바이트는 바꾸지 않는다. preparation-proof에 전체 JSON bytes, 중복 포함 reference image bytes, MD 크기와 고유 이미지 압축량을 남긴다.11 source-only 영역 및19파일의 미배정 픽셀은 여전히 완성 조립 미지원이다.
+
+`publish-pixel-art-world-loose-library.mjs --publish-local <준비폴더> <개인결과폴더>`만 로컬 SQLite 게시 API를 연다. 준비 산출물의 preparation-seal.json이 proof/library/reviewBundle SHA를 묶으며 canonical receipt/shared snapshot 파일 SHA도 보존한다. 게시 직전 이 seal과 입력 영수증·검토 bundle·현재 metadata·원본·library SHA를 다시 검사하며, 준비시 shared snapshot에서 고정한 해당 library revision으로 CAS한다. 다른 library/정본 프로젝트는 수정하지 않는다. 새ID가 다른library에서 사용되면 거절한다. 같은 대상을 다시 읽어 payload 일치를 기록한다. 부모 담당자가 실제 게시와 정본 save/reload/UI 검토를 수행한다.
