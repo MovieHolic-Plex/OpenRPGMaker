@@ -47,7 +47,7 @@ const setLifeFlower: ToolDefinition = {
     "피해 공용 이벤트(붉은 번쩍임·흔들림 → 1장 감소 → 0장이면 게임 오버 또는 배드 엔딩)와 회복 공용 이벤트(꽃병에 꽂기 → 최댓값). " +
     "함정·튀어나오는 그림·가시 바닥 이벤트에는 {kind:'callCommonEvent',commonEventId:'ce_life_damage'}, 꽃병에는 " +
     "{kind:'callCommonEvent',commonEventId:'ce_life_restore'} 를 넣는다. 체력·HP·꽃잎·장미·생명·게임오버·꽃병 회복을 setVariable 로 직접 흩뿌리지 말 것. " +
-    "같은 인자로 다시 부르면 덮어쓴다.",
+    "같은 인자로 다시 부르면 덮어쓴다. 만든 공용 이벤트를 upsert_common_event 로 다시 쓰지 말 것 — 대사는 damageLines·restoreLines·defeatLines 로 바꾼다.",
   mode: "write",
   domains: ["event", "system"],
   parameters: {

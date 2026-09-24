@@ -49,3 +49,16 @@ describe("upsert_event text alias and new flags", () => {
     expect(result.summary).toContain("body");
   });
 });
+
+describe("setVariable amount alias", () => {
+  it("moves a numeric amount into value for common events", () => {
+    const ctx: { project: Project } = { project: createBlankProject() };
+    const result = runTool(ctx, "upsert_common_event", { id: "ce_restore", name: "회복", trigger: "none", commands: [
+      { kind: "setVariable", variableId: "var_0001", op: "=", amount: 5 },
+    ] });
+    expect(result.ok, `${result.summary} ${JSON.stringify(result.issues)}`).toBe(true);
+    const command = ctx.project.commonEvents.find(entry => entry.id === "ce_restore")!.commands[0] as Record<string, unknown>;
+    expect(command.value).toBe(5);
+    expect(command).not.toHaveProperty("amount");
+  });
+});
