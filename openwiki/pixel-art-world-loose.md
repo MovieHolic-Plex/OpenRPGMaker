@@ -33,3 +33,13 @@ revision7에서 원본 참고/완전객체2타일셋·2자산을 새 페이지�
 문서 이미지만 기존 lossless WEBP 도구로 압축하고 디코딩 후 픽셀 동일을 확인한다. 실제 게임 asset 바이트는 바꾸지 않는다. preparation-proof에 전체 JSON bytes, 중복 포함 reference image bytes, MD 크기와 고유 이미지 압축량을 남긴다.11 source-only 영역 및19파일의 미배정 픽셀은 여전히 완성 조립 미지원이다.
 
 `publish-pixel-art-world-loose-library.mjs --publish-local <준비폴더> <개인결과폴더>`만 로컬 SQLite 게시 API를 연다. 준비 산출물의 preparation-seal.json이 proof/library/reviewBundle SHA를 묶으며 canonical receipt/shared snapshot 파일 SHA도 보존한다. 게시 직전 이 seal과 입력 영수증·검토 bundle·현재 metadata·원본·library SHA를 다시 검사하며, 준비시 shared snapshot에서 고정한 해당 library revision으로 CAS한다. 다른 library/정본 프로젝트는 수정하지 않는다. 새ID가 다른library에서 사용되면 거절한다. 같은 대상을 다시 읽어 payload 일치를 기록한다. 부모 담당자가 실제 게시와 정본 save/reload/UI 검토를 수행한다.
+
+## 공용·기존 정본·새 SQLite 확인 (2026-09-24)
+
+검토 판본을 별도 `pixel-art-world-loose-local`에 게시하고 재로드 일치를 확인했다.
+원본 참고106개/배치용103개/객체539개이며, 기본 자료와 합쳐 게임용155타일셋·원본참고106·문서소유3개다.
+정본 revision45에서209타일셋·209자산 실제 바이트를 재로드하고 기존12맵을 보존했다.
+AI 도구1932MD/1979페이지/2262이미지 전달을 확인했다(동일 출처의 객체별 재조회 포함).
+실제 새 SQLite 프로젝트도 공용264타일셋·346자산이 자동 설치되고 revision2에서 일치했다.
+이는 조립 객체 및 참고자료의 설치 증거이며11보류영역/19잔여파일이나 소품의 새 실행 맵을 완성한 것은 아니다.
+증거는 Git 제외 `output/paw-loose-install/{shared,saved,document-observations.json,automatic-project-proof.json}`.

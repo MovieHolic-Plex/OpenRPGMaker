@@ -12,12 +12,13 @@ const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const project = await read(input), proof = await read(proofFile);
 if (!proof.projectId || !proof.projectDir || !proof.sha256) throw Error('Canonical host source proof required');
 if (!proof.portableSha256 || createHash('sha256').update(await fs.readFile(input)).digest('hex') !== proof.portableSha256) throw Error('Portable source does not match canonical read receipt');
-const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog','BathGymCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
+const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog','BathGymCatalog','JapaneseInteriorsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
 const civicPlans = (await read('tiledata/pixel-art-world/compact-civic.json')).maps;
 const tabletopRecipes = await read('tiledata/pixel-art-world/tabletop-composites.json');
+const japaneseLayouts = await read('src/assets/pixelArtWorldJapaneseInteriorsLayout.json');
 const { PNG } = pngjs, pngs = new Map();
 const key = id => { const normalized=id.replaceAll('-', '_'); return `shared_${normalized.startsWith('paw_')?normalized:'paw_'+normalized}`; };
 const lib = { version:1, projectDefaults:true, roots:[], places:{}, regions:{}, tilesets:{}, assets:{}, maps:{}, sourceProjectId:proof.projectId, previews:{} };
@@ -94,8 +95,17 @@ function addObject(tileId,id,name,width,height,lower,upper,instructions,sourceDo
   const doc=category('assembly',name,`${instructions}\n\n공용 tilesetId: \`${tileId}\`; 32px, 0기준 행 우선. -1은 덮지 않는 칸.\n\n\`\`\`json\n${JSON.stringify({width,height,lowerTiles:lower,upperTiles:upper})}\n\`\`\``,image);
   lib.tilesets[tileId].structureKits.push({id,kind:'section',name,width,height,tileSize:32,rows:rows(width,height,lower,upper),learnedFrom:'db-authored',referenceDocuments:[doc,...sourceDocs],ai:{description:name,placementRules:instructions,repeatability:'fixed',layerHome:lower.every(t=>t===-1)?'upper':'perCell',origin:'ai',tags:['Pixel Art World','사용자 다운로드','원본32px']}});
 }
-for(const pack of packs.filter(pack=>project.tilesets[pack.id])) for(const recipe of pack.recipes){
+for(const pack of packs.filter(pack=>project.tilesets[pack.id])) for(const recipe of (japaneseLayouts.find(layout=>layout.packId===pack.id)?.recipes??pack.recipes)){
   const tileId=key(pack.id),width=recipe.tiles[0].length,height=recipe.tiles.length;
+  const japanese=japaneseLayouts.find(layout=>layout.packId===pack.id);
+  if(japanese){
+    const sourceKit=project.tilesets[pack.id].structureKits?.find(kit=>kit.id===recipe.id);
+    if(!sourceKit?.referenceDocuments?.length||JSON.stringify(sourceKit.rows.map(row=>row.upperTiles))!==JSON.stringify(recipe.tiles)||sourceKit.rows.some(row=>row.tiles.some(tile=>tile!==-1)))throw Error('Japanese whole-object source changed '+recipe.id);
+    const docs=JSON.parse(JSON.stringify(sourceKit.referenceDocuments).replaceAll(pack.id,tileId));
+    addObject(tileId,key(pack.id+'_'+recipe.id),recipe.name,width,height,Array(width*height).fill(-1),recipe.tiles.flat(),
+      `${sourceKit.ai.placementRules} 원본 ${pack.filename}, SHA256 ${pack.sha256}. 합성 객체의 parts는 원본 픽셀 좌표, sourceRect/tiles는 파생 아틀라스 칸이다. 원본400칸 이후 번호를 원본 PNG에서 자르지 않는다.`,docs);
+    continue;
+  }
   const source=project.tilesets[pack.id].referenceDocuments?.flatMap(c=>c.documents.some(d=>d.id===recipe.id)?[{...c,id:'source-evidence',documents:c.documents.filter(d=>d.id===recipe.id),images:c.images.filter(i=>i.id===recipe.id)}]:[])??[];
   addObject(tileId,key(pack.id+'_'+recipe.id),recipe.name,width,height,Array(width*height).fill(-1),recipe.tiles.flat(),
     `고정 ${width}×${height} 전체를 상위에 놓고 기존 하위 바닥을 보존한다. 자르기·반전·늘이기 금지. 설치 종류 ${recipe.placementKind??'원본 문서 참조'}, 지지칸 ${JSON.stringify(recipe.supportCells??[])}. ${recipe.facing} 방향 접근칸을 비운다. 문/계단 그림만으로 이벤트가 생성되지 않는다. 원본 ${pack.filename}, SHA256 ${pack.sha256}, sourceRect ${JSON.stringify(recipe.sourceRect)}.`,source);
@@ -126,11 +136,17 @@ for(const recipe of extras.recipes){
 // Importer scene references are reusable place assemblies, separate from saved
 // game maps. Keep the full geometry and source pixels available to AI readers.
 const complements = (await Promise.all(['NativeComplements','HospitalityComplements','BathGym'].map(kind => read(`src/assets/pixelArtWorld${kind}Catalog.json`)))).flat();
+for(const layout of japaneseLayouts){const pack=packs.find(pack=>pack.id===layout.packId);if(!pack)throw Error('Japanese source catalog missing '+layout.packId);complements.push({...pack,scenes:layout.scenes});}
 for (const pack of complements.filter(pack => project.tilesets[pack.id])) for (const scene of pack.scenes) {
   const tileId=key(pack.id), id=key(scene.id), kitId=id+'_raster';
   const image=render(tileId,scene.width,scene.height,scene.lowerTiles,scene.upperTiles);
   const guide=`# ${scene.name}\n\n원본 ${pack.filename}, SHA256 ${pack.sha256}. 공용 tilesetId: \`${tileId}\`.\n이 자료는 고정 타일 조립 장소다. 실행 맵·출입/문 개폐 이벤트는 포함하지 않는다. 실제 게임에 배치할 때 외부 출입구와 목적 맵을 연결하고 문 상태·통행을 별도로 저작한다.\n${scene.notes}\n\n전체 배열, 가구 원점, 지지/접근칸, 방 구획과 출입구:\n\n\`\`\`json\n${JSON.stringify(scene)}\n\`\`\`\n\n부품별 지지칸·방향은 같은 타일셋의 오브젝트 문서를 함께 읽는다. 벽걸이 장식과 바닥형 가구의 지지 조건을 바꾸지 않는다.`;
   const docs=[category('place-assembly',scene.name,guide,image)];
+  if(japaneseLayouts.some(layout=>layout.packId===pack.id)){
+    const category=project.tilesets[pack.id].referenceDocuments?.find(category=>category.id==='scene-'+scene.id);
+    if(!category?.documents.some(document=>document.markdown.includes(JSON.stringify(scene,null,2))))throw Error('Japanese scene source differs '+scene.id);
+    docs.push(JSON.parse(JSON.stringify(category).replaceAll(pack.id,tileId)));
+  }
   lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:scene.name,width:scene.width,height:scene.height,tileSize:32,rows:rows(scene.width,scene.height,scene.lowerTiles,scene.upperTiles),learnedFrom:'db-authored',referenceDocuments:docs,ai:{description:scene.name+' 고정 조립',placementRules:'전체 배열·가구 방향·접근칸과 문턱을 보존한다. 출입과 문 상태 이벤트는 별도다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'}});
   lib.places[id]={id,name:scene.name,revision:1,tags:['Pixel Art World','실내','고정 조립','이벤트 별도'],provenance:{origin:'ai',sourceId:scene.id},kind:'facility',layout:'manual',children:[],ports:(scene.doorways??[]).filter(d=>d.from==='outside'||d.to==='outside').map((d,i)=>({id:id+'_entry_'+i,name:'출입구',x:d.x,y:d.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
   lib.previews[id]=image;
@@ -179,6 +195,18 @@ const buildingId='shared_paw_school_building';
 lib.places[buildingId]={id:buildingId,name:'햇살학교 · 4층 / 28실',revision:1,tags:['Pixel Art World','학교','4층','복도2칸'],provenance:{origin:'ai',sourceId:'paw-school-building-design'},kind:'facility',layout:'manual',children:school.floors.map(f=>({id:key(f.id)+'_slot',source:{kind:'place',id:key(f.id)},level:f.level,x:0,y:0})),ports:[],connections:[],referenceDocuments:[{id:'building-plan',name:'4층 연결과 배치 지침',description:'교실16·특별관리실8·화장실4. 원본 판본과 실제 공간 규칙.',documents:[{id:'guide',name:'조립 지침.md',markdown:school.guide}],images:[]}]};
 for(const floor of school.floors.filter(f=>f.level<4))for(const side of ['west','east'])lib.places[buildingId].connections.push({id:`${buildingId}_${floor.level}_${side}`,from:{childId:key(floor.id)+'_slot',portId:`${key(floor.id)}_up_${side}`},to:{childId:key(`paw-school-floor-${floor.level+1}`)+'_slot',portId:`${key(`paw-school-floor-${floor.level+1}`)}_down_${side}`},bidirectional:true});
 lib.roots.push(buildingId);lib.previews[buildingId]=lib.previews[key(school.floors[0].id)];
+// Keep regional reuse instructions alongside the actual city snapshot. These are
+// explicit expansion candidates, not claims that new entrances already exist.
+const cityRegion=lib.regions.shared_paw_city;
+if(cityRegion){
+  const candidates=complements.flatMap(pack=>(pack.scenes??[]).map(scene=>({pack,scene})))
+    .filter(({pack})=>['paw-home-bath','paw-school-gym','paw-izakaya','paw-washitu'].includes(pack.id)&&project.tilesets[pack.id]);
+  if(candidates.length)cityRegion.referenceDocuments.push({
+    id:'facility-expansion',name:'시설 확장 후보 · 도시에는 아직 미배치',description:'저장된 도시와 정적 실내 표본을 구분하고 전체 배열·출입구·접근칸을 보존한다.',
+    documents:candidates.map(({pack,scene})=>({id:scene.id,name:scene.name+' · 지역 연결.md',markdown:`# ${scene.name} — 추가 후보\n\n현재 50×50 도시의 실행 맵/출입 이벤트에는 이 실내가 없다. 공용 장소 \`${key(scene.id)}\`, 타일셋 \`${key(pack.id)}\`의 정적 표본이다. 실내 전체를 도시의 건물 외관 위에 찍지 않는다.\n\n새 실내 맵에 아래 전체 하위/상위 배열을 배치한다. 문턱(doorways)의 바깥 연결과 실내 approachCells를 보존하고, 기존 도시의 건물 입구 이벤트를 먼저 읽어 목적 맵과 복귀 출현칸을 명시적으로 연결한다. 기존 목적 맵/주택 방/학교 계단 연결을 덮지 않는다. 지도가 연결되어도 입욕·식사·수면·스포츠 상호작용이 자동으로 생기지는 않는다.\n\n원본 ${pack.filename}, SHA256 ${pack.sha256}. 좁은 출입구를 가구로 막지 않으며 활동 공간과 통로를 장식으로 채우지 않는다.\n\n\`\`\`json\n${JSON.stringify({placeId:key(scene.id),tilesetId:key(pack.id),...scene},null,2)}\n\`\`\`\n\n배치 후 해당 장소의 객체 문서에서 밑동·벽 받침·방향을 확인하고 출입구→모든 접근점→복귀를 실제 플레이어로 확인한다. 아래 그림은 공용 실내 표본이며 도시 연결 완료 그림이 아니다.\n\n![실내 전체](image:${scene.id})`})),
+    images:candidates.map(({scene})=>({id:scene.id,name:scene.id+'.png',caption:scene.name+' · 도시 연결 전 정적 장소',dataUrl:lib.previews[key(scene.id)]})),
+  });
+}
 await fs.writeFile(out+'/library.json',JSON.stringify(lib));
 // Preserve every reference pixel while avoiding the host's 64 MiB request cap.
 const compressed=await promisify(execFile)('python3',['scripts/content/compress-pixel-art-world-reference-images.py',out+'/library.json']);
