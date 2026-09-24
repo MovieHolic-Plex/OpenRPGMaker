@@ -35,7 +35,7 @@ import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
-import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
+import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { terrainRecordAt } from "@/project/terrainAt";
@@ -788,6 +788,10 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
     ? eligibleEncounterEntries(map, scene.session, position).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return;
+  // 몬스터 파티 전투인데 아직 파트너가 없으면 야생이 나오지 않는다 — 전투를 열 수 없어 매 걸음 오류 창이 떴다
+  // (2026-09-24 몬스터 수집 도그푸딩: 스타터 없이 도로로 나갈 수 있는 생성 게임).
+  const monsterBattle = monsterBattlePartyOf(store.getCurrent(), scene.session);
+  if (monsterBattle.requested && monsterBattle.party.length === 0) return;
   encounterStepCounter += 1;
   encounterAccumulator += rate;
   // 누적 가중치가 임계(1000)를 넘으면 인카운트 발생. 매 스텝마다 rate가 쌓여

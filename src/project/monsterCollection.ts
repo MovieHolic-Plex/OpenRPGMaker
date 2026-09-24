@@ -180,6 +180,21 @@ export function monsterSpeciesForEnemy(project: Project, enemy: EnemyRecord | un
   return species.find((record) => record.id === enemy.id);
 }
 
+/**
+ * 몬스터 파티 전투 설정과 지금 파티 몬스터 — 실제 전투(playSceneBattle)·헤드리스 러너·랜덤 조우가 같은 판정을 쓴다.
+ * requested 인데 party 가 비면(스타터를 아직 안 받음) 전투를 열 수 없다.
+ */
+export function monsterBattlePartyOf(project: Project, session: Pick<PlaySession, "monsterParty" | "monsterInstances">): { requested: boolean; party: MonsterInstance[] } {
+  const requested = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+  const party = requested
+    ? (session.monsterParty ?? []).flatMap((instanceId) => {
+        const instance = session.monsterInstances?.[instanceId];
+        return instance ? [instance] : [];
+      })
+    : [];
+  return { requested, party };
+}
+
 export function monsterSpeciesById(project: Project, speciesId: MonsterSpeciesId): MonsterSpeciesRecord | undefined {
   return (project.database.monsterSpecies ?? []).find((record) => record.id === speciesId);
 }

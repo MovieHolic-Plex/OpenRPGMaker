@@ -46,6 +46,7 @@ import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { monsterBattlePartyOf } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import {
   advanceFieldSpawns,
@@ -2326,6 +2327,9 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
     ? eligibleEncounterEntries(map, state.session, position).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return null;
+  // 실제 플레이(playSceneMovement)와 같이: 몬스터 파티 전투인데 파트너가 없으면 야생이 나오지 않는다.
+  const monsterBattle = monsterBattlePartyOf(state.project, state.session);
+  if (monsterBattle.requested && monsterBattle.party.length === 0) return null;
   state.encounterAccumulator += rate;
   if (state.encounterAccumulator < 1000 && nextSessionRandom(state.session, "encounter") * 1000 >= state.encounterAccumulator) return null;
   state.encounterAccumulator = 0;
@@ -2346,6 +2350,10 @@ function runHeadlessBattle(
   step: Extract<StepResult, { kind: "battleProcessing" }>
 ): BattleResult {
   if (state.rewardProof) unverified("Unsupported battle");
+  // 몬스터 수집 게임은 파티 몬스터가 싸운다(playSceneBattle 과 같은 입력). 빠뜨리면 헤드리스 전투가 Lv1 영웅으로
+  // 치러져 거짓 게임 오버가 나고, run_scene_test 로 관장전을 검증할 수 없었다.
+  const monsterBattle = monsterBattlePartyOf(state.project, state.session);
+  const partyMonsters = monsterBattle.party.length > 0 ? monsterBattle.party : undefined;
   const runtime = createBattleRuntime({
     project: state.project,
     troopId: step.troopId,
@@ -2366,7 +2374,9 @@ function runHeadlessBattle(
       classOverrides: state.session.classOverrides,
       stateIds: state.session.actorStateIds,
       partyActorIds: state.session.partyActorIds,
+      ...(partyMonsters ? { monsterParty: partyMonsters } : {}),
     },
+    ...(partyMonsters ? { partyMonsters } : {}),
     sessionState: {
       switches: state.session.switches,
       variables: state.session.variables,
@@ -2398,6 +2408,7 @@ function runHeadlessBattle(
     actors: [...final.actors, ...final.reserveActors],
     eventState: final.eventState,
     participatingActorIds: final.participatingActorIds,
+    ...(partyMonsters ? { monsterPartyMode: true } : {}),
   }, state.project);
   return result;
 }
