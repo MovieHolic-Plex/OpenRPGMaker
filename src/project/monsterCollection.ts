@@ -204,12 +204,15 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
   const species = monsterSpeciesById(project, input.speciesId);
   if (!species) return { ok: false, reason: "missingSpecies" };
   const instanceId = nextMonsterInstanceId(session);
+  const level = clampInteger(input.level, 1, 99);
   const instance: MonsterInstance = {
     instanceId,
     speciesId: species.id,
     nickname: cleanOptionalText(input.nickname),
-    level: clampInteger(input.level, 1, 99),
-    exp: Math.max(0, Math.trunc(input.exp ?? 0)),
+    level,
+    // Experience is cumulative. Captures/gifts without an explicit value start
+    // at their level's floor; explicit values (including zero) remain authored.
+    exp: Math.max(0, Math.trunc(input.exp ?? totalExpForLevel(species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, level))),
     ivs: input.ivs ?? deterministicMonsterIvs(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
     friendship: clampInteger(input.friendship ?? 70, 0, 255),
     caughtAt: input.caughtAt ?? { mapId: session.currentMapId, x: session.x, y: session.y },
