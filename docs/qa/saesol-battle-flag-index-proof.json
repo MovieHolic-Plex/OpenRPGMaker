@@ -1,0 +1,116 @@
+{
+  "scope": "Read-only original/fixed index comparison against revision532 export. Temporary graph metadata is lint/walkthrough QA only, never saved.",
+  "sites": [
+    {
+      "id": "sr_league_school_type_won",
+      "before": 0,
+      "after": [
+        {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sr_league_school_type_won",
+          "source": "map-event",
+          "mapId": "map_sr4_gate",
+          "eventId": "ev_sr_league_school_type",
+          "pageId": "ev_sr_league_school_type_p1",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0]",
+          "label": "map:map_sr4_gate event:ev_sr_league_school_type/page1 pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0]",
+          "detail": "setSwitch"
+        }
+      ]
+    },
+    {
+      "id": "sr_league_school_resource_won",
+      "before": 0,
+      "after": [
+        {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sr_league_school_resource_won",
+          "source": "map-event",
+          "mapId": "map_sr4_gate",
+          "eventId": "ev_sr_league_school_resource",
+          "pageId": "ev_sr_league_school_resource_p1",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0]",
+          "label": "map:map_sr4_gate event:ev_sr_league_school_resource/page1 pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0]",
+          "detail": "setSwitch"
+        }
+      ]
+    },
+    {
+      "id": "sr_league_school_role_won",
+      "before": 0,
+      "after": [
+        {
+          "access": "write",
+          "kind": "switch",
+          "targetId": "sr_league_school_role_won",
+          "source": "map-event",
+          "mapId": "map_sr4_gate",
+          "eventId": "ev_sr_league_school_role",
+          "pageId": "ev_sr_league_school_role_p1",
+          "pageNumber": 1,
+          "commandPath": "pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0]",
+          "label": "map:map_sr4_gate event:ev_sr_league_school_role/page1 pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0]",
+          "detail": "setSwitch"
+        }
+      ]
+    }
+  ],
+  "graphs": [
+    {
+      "id": "q_sr_journey",
+      "issues": []
+    },
+    {
+      "id": "q_sr_medicine",
+      "issues": []
+    },
+    {
+      "id": "q_sr_school",
+      "issues": []
+    },
+    {
+      "id": "q_sr_mine",
+      "issues": [
+        {
+          "severity": "warning",
+          "code": "quest-graph:unreachable-node",
+          "message": "시작 노드 1에서 도달 불가한 노드: q_sr_mine/2"
+        },
+        {
+          "severity": "warning",
+          "code": "quest-graph:unreachable-node",
+          "message": "시작 노드 1에서 도달 불가한 노드: q_sr_mine/3"
+        }
+      ]
+    },
+    {
+      "id": "q_sr_temple",
+      "issues": []
+    }
+  ],
+  "battleNodes": [
+    {
+      "nodeId": "2",
+      "description": "상성교사 태오의 문제와 실전 시험을 통과한다.",
+      "automatic": false,
+      "manualHint": "manualHint: map:map_sr4_gate event:ev_sr_league_school_type/page1 pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0] 전투 결과가 필요해 디버그 set으로 대체합니다."
+    },
+    {
+      "nodeId": "3",
+      "description": "자원교사 보람의 문제와 실전 시험을 통과한다.",
+      "automatic": false,
+      "manualHint": "manualHint: map:map_sr4_gate event:ev_sr_league_school_resource/page1 pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0] 전투 결과가 필요해 디버그 set으로 대체합니다."
+    },
+    {
+      "nodeId": "4",
+      "description": "역할교사 소율의 문제와 실전 시험을 통과한다.",
+      "automatic": false,
+      "manualHint": "manualHint: map:map_sr4_gate event:ev_sr_league_school_role/page1 pages[0].commands[0].then[2].options[1].branch[1].options[0].branch[1].victoryBranch[0] 전투 결과가 필요해 디버그 set으로 대체합니다."
+    }
+  ],
+  "passed": true
+}
