@@ -4,6 +4,7 @@ import schoolCatalog from '@/assets/pixelArtWorldSchoolCatalog.json';
 import facilityCatalog from '@/assets/pixelArtWorldFacilitiesCatalog.json';
 import homeCatalog from '@/assets/pixelArtWorldHomeCatalog.json';
 import staticExpansionCatalog from '@/assets/pixelArtWorldStaticExpansionCatalog.json';
+import nativeComplementsCatalog from '@/assets/pixelArtWorldNativeComplementsCatalog.json';
 import type { TilesetDef } from './types';
 
 export interface ExternalTileRecipe {
@@ -53,7 +54,7 @@ export interface ExternalTileScene {
   doors?: { sceneId: string; x: number; y: number; approach: { x: number; y: number } }[];
   doorways?: { from: string; to: string; x: number; y: number; width: number; height: number }[];
 }
-export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog, ...staticExpansionCatalog];
+export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog, ...staticExpansionCatalog, ...nativeComplementsCatalog];
 
 export function validateExternalTileScenes(pack: ExternalTilesetPack): void {
   const count = pack.width * pack.height / (pack.tileSize ** 2);
@@ -82,7 +83,9 @@ export function externalRecipeExample(pack: ExternalTilesetPack, recipe: Externa
   const lowerTiles = Array<number>(width * height).fill(pack.floorTile);
   const upperTiles = Array<number>(width * height).fill(-1);
   recipe.tiles.forEach((row, y) => row.forEach((tile, x) => { upperTiles[(y + 1) * width + x + 1] = tile; }));
-  const approach = { x: Math.floor(width / 2), y: recipe.facing === 'north' ? 0 : height - 1 };
+  const approach = recipe.facing === 'west' ? { x: 0, y: Math.floor(height / 2) }
+    : recipe.facing === 'east' ? { x: width - 1, y: Math.floor(height / 2) }
+    : { x: Math.floor(width / 2), y: recipe.facing === 'north' ? 0 : height - 1 };
   return { width, height, lowerTiles, upperTiles, approach };
 }
 
