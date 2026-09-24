@@ -1,7 +1,7 @@
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project, TileAiMetadata, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { layerTileAt, shadowAt } from "@/project/mapLayers";
-import { FOUR_LAYER_GUIDANCE, requireMap } from "./mapHelpers";
+import { FOUR_LAYER_GUIDANCE_SHORT, requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
 type SimilarTileScore = {
@@ -21,7 +21,7 @@ const showMapRegion: ToolDefinition = {
   description:
     "맵 영역을 하위/상위 타일 2D 배열로 반환하고 실제 타일 이미지로 보여준다. 맵에 뭔가 깐 뒤 말로 단정하지 말고 이 툴로 결과를 눈으로 확인하라. " +
     "맵에 2층·4층·그림자가 있으면 layer2·layer4·shadow(사분면 비트 0~15: 1 왼위·2 오른위·4 왼아래·8 오른아래) 배열도 함께 오고, " +
-    "이미지는 1→2→그림자→캐릭터 아래 이벤트→3→4층 순서로 겹쳐 그린다. " + FOUR_LAYER_GUIDANCE + " " +
+    "이미지는 1→2→그림자→캐릭터 아래 이벤트→3→4층 순서로 겹쳐 그린다. " + FOUR_LAYER_GUIDANCE_SHORT + " " +
     `부분 영역은 한 변 최대 ${SHOW_MAP_REGION_MAX_SPAN}타일(초과분은 중심 기준으로 잘림). ` +
     "맵 전체가 필요하면 x:0,y:0,w:맵너비,h:맵높이로 한 번에 요청하라 — 전체 요청은 잘리지 않고 한 장으로 축소 렌더된다. " +
     "호수 위치는 get_map_region의 water.bounds를 쓰고, 큰 맵을 조각내어 반복 스캔하지 마라.",

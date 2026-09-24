@@ -5,7 +5,7 @@ import { mapVisualContent, requiresVisualReview } from "@/ai/mapVisualEvidence";
 import { renderPiMapImage } from "@/ai/toolImageRenderer";
 import { clearTilesetImageCache } from "@/ai/toolImageCanvas";
 import { runTool } from "@/editor/tools/toolRunner";
-import { FOUR_LAYER_GUIDANCE } from "@/editor/tools/mapHelpers";
+import { FOUR_LAYER_GUIDANCE, FOUR_LAYER_GUIDANCE_SHORT } from "@/editor/tools/mapHelpers";
 import { VISION_QUERY_TOOLS } from "@/editor/tools/visionQueryTools";
 import { createBlankProject } from "@/project/defaults";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
@@ -98,9 +98,10 @@ describe("show_map_region 네 층 배열", () => {
     expect(withFour.layer4).toEqual([[-1, -1], [-1, 3]]);
   });
 
-  it("도구 설명이 네 층 뜻과 배열 이름을 알린다", () => {
+  it("도구 설명이 네 층 뜻(짧은 안내)과 배열 이름을 알린다", () => {
     const description = VISION_QUERY_TOOLS.find((tool) => tool.name === "show_map_region")!.description;
-    expect(description).toContain(FOUR_LAYER_GUIDANCE);
+    expect(description).toContain(FOUR_LAYER_GUIDANCE_SHORT);
+    expect(description).not.toContain(FOUR_LAYER_GUIDANCE);
     expect(description).toContain("layer2·layer4·shadow");
   });
 });

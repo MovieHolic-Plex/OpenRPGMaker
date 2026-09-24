@@ -118,6 +118,8 @@ type EditorToolHookWindow = Window & {
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
   "paint_tiles",
+  "stamp_layer_block",
+  "paint_shadow",
   "paint_road",
   "stamp_structure",
   "build_house",

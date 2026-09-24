@@ -3,6 +3,8 @@
 import { describe, expect, it } from "vitest";
 import { affectedRegions, TILE_WRITE_TOOLS } from "@/ai/buildSpec";
 import { runTool, type ToolContext } from "@/editor/tools";
+import { toolUndoScope } from "@/editor/tools/applyChangesetToStore";
+import { firstMapWithTileDiff, MAP_TILE_TOOLS } from "@/editor/panels/aiChatPanelHelpers";
 import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReferenceTools";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";
@@ -365,8 +367,10 @@ describe("고침 1차(리뷰)", () => {
 
   it("「1층 칠하기」 규칙을 안내 한 문장이 말하고, 보조 도구는 짧은 안내를 쓴다", () => {
     expect(FOUR_LAYER_GUIDANCE).toContain("1층을 칠하면 그 칸 2층이 지워진다");
-    for (const name of ["paint_tiles", "fill_region", "stamp_layer_block"]) expect(getTool(name)!.description, name).toContain(FOUR_LAYER_GUIDANCE);
-    for (const name of ["tile_erase", "paint_shadow"]) {
+    for (const name of ["paint_tiles", "stamp_layer_block"]) expect(getTool(name)!.description, name).toContain(FOUR_LAYER_GUIDANCE);
+    // 설명은 모든 프로젝트에 실린다 — 곁가지 도구는 짧은 안내만(최종 리뷰 Minor 7). fill_region 은 1층 규칙을 따로 말한다.
+    expect(getTool("fill_region")!.description).toContain("1층을 칠하면 그 칸의 2층 장식을 비운다");
+    for (const name of ["tile_erase", "paint_shadow", "fill_region", "show_map_region"]) {
       expect(getTool(name)!.description, name).toContain(FOUR_LAYER_GUIDANCE_SHORT);
       expect(getTool(name)!.description, name).not.toContain(FOUR_LAYER_GUIDANCE);
     }
@@ -384,5 +388,49 @@ describe("고침 1차(리뷰)", () => {
     paintTownPathNetwork(map, [{ x: 5, y: 3, width: 1, height: 1 }]);
     expect(layerTileAt(map, 2, idx(map, 5, 1))).toBe(TILE.EMPTY);
     expect(layerTileAt(map, 2, idx(map, 5, 3))).toBe(TILE.EMPTY);
+  });
+});
+
+describe("고침 2차(최종 리뷰)", () => {
+  it("실행기 정리는 이 도구가 건드린 맵만 — 손대지 않은 맵의 빈 선택 칸 배열은 남긴다", () => {
+    const ctx = context();
+    const start = mapOf(ctx);
+    const other: GameMap = { ...structuredClone(start), id: "map_other", name: "옆 맵" };
+    other.lowerOverlayTiles = new Array<number>(other.width * other.height).fill(-1);
+    ctx.project.maps[other.id] = other;
+    ctx.project.mapTree.children.push({ mapId: other.id, children: [] });
+    // 칠한 맵은 정리 대상이다 — 그 맵에 원래 있던 빈 배열도 키를 뺀다.
+    start.upperOverlayTiles = new Array<number>(start.width * start.height).fill(-1);
+    ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "1", mode: "cells", tile: TILE.GRASS, cells: [{ x: 2, y: 2 }] });
+    expect(ctx.project.maps[other.id]!.lowerOverlayTiles).toEqual(other.lowerOverlayTiles);
+    expect(mapOf(ctx).upperOverlayTiles).toBeUndefined();
+  });
+
+  it("stamp_layer_block 보호 판정은 그림자 격자를 세지 않는다", () => {
+    expect(affectedRegions("stamp_layer_block", { mapId: "m", x: 1, y: 1, layers: { shadow: [[5, 5]] } })).toEqual([]);
+    expect(affectedRegions("stamp_layer_block", { mapId: "m", x: 1, y: 1, layers: { "2": [[7, -1]], shadow: [[5, 5], [5, 5]] } }))
+      .toEqual([{ mapId: "m", x: 1, y: 1, w: 1, h: 1 }]);
+  });
+
+  it("두 도구는 맵 단위 되돌리기·맵 타일 도구 목록에 들고, 2·4층·그림자만 바뀐 제안도 미리보기 맵을 갖는다", () => {
+    for (const name of ["stamp_layer_block", "paint_shadow"]) {
+      expect(toolUndoScope(name, { mapId: MAP_ID }), name).toEqual({ kind: "map", mapId: MAP_ID });
+      expect(MAP_TILE_TOOLS.has(name), name).toBe(true);
+    }
+    const before = createBlankProject();
+    expect(firstMapWithTileDiff(before, structuredClone(before))).toBeNull();
+    for (const edit of [
+      (map: GameMap) => setLayerTileAt(map, 2, 5, 20),
+      (map: GameMap) => setLayerTileAt(map, 4, 5, 21),
+      (map: GameMap) => setShadowAt(map, 5, 3),
+    ]) {
+      const after = structuredClone(before);
+      edit(after.maps[MAP_ID]!);
+      expect(firstMapWithTileDiff(before, after)).toBe(MAP_ID);
+    }
+    // 빈 배열만 생긴 것은 변경이 아니다(없는 칸 = 빈칸).
+    const emptyOnly = structuredClone(before);
+    emptyOnly.maps[MAP_ID]!.shadowBits = new Array<number>(emptyOnly.maps[MAP_ID]!.lowerTiles.length).fill(0);
+    expect(firstMapWithTileDiff(before, emptyOnly)).toBeNull();
   });
 });

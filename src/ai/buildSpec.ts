@@ -731,13 +731,17 @@ function rectFromObject(mapId: string, value: unknown): AffectedRegion | null {
   return { mapId, x: value.x, y: value.y, w: value.w, h: value.h };
 }
 
-/** 층 블록이 실제로 쓰는 칸(어느 층이든 값 ≠ -1)을 행마다 이어진 가로 줄로 묶는다. 쓰는 칸이 없으면 null. */
+/**
+ * 층 블록이 실제로 쓰는 칸(1~4층 어느 층이든 값 ≠ -1)을 행마다 이어진 가로 줄로 묶는다. 인자 모양이 틀리면 null.
+ * 그림자(shadow) 격자는 세지 않는다 — 그림자는 칸 내용을 덮지 않으므로 paint_shadow 처럼 보호 판정 밖이다.
+ * 그림자만 찍는 블록은 빈 배열(보호할 칸 없음)이다.
+ */
 function layerBlockRegions(mapId: string, args: Record<string, unknown>): AffectedRegion[] | null {
   const x0 = args.x, y0 = args.y;
   if (!isFiniteNumber(x0) || !isFiniteNumber(y0) || typeof args.layers !== "object" || args.layers === null) return null;
   const rows = new Map<number, Set<number>>();
-  for (const grid of Object.values(args.layers as Record<string, unknown>)) {
-    if (!Array.isArray(grid)) continue;
+  for (const [key, grid] of Object.entries(args.layers as Record<string, unknown>)) {
+    if (key === "shadow" || !Array.isArray(grid)) continue;
     grid.forEach((row, dy) => {
       if (!Array.isArray(row)) return;
       row.forEach((value, dx) => {
@@ -760,7 +764,7 @@ function layerBlockRegions(mapId: string, args: Record<string, unknown>): Affect
       prev = dx;
     }
   }
-  return regions.length > 0 ? regions : null;
+  return regions;
 }
 
 function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegion | null {

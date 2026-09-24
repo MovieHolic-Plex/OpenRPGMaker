@@ -30,7 +30,6 @@ import {
   treeFootprintCells,
 } from "../forestDensity";
 import {
-  FOUR_LAYER_GUIDANCE,
   FOUR_LAYER_GUIDANCE_SHORT,
   TOOL_LAYER_ENUM,
   inMapBounds,
@@ -951,7 +950,7 @@ function assertFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata, au
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE_SHORT + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,

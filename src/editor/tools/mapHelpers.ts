@@ -79,7 +79,10 @@ export const FOUR_LAYER_GUIDANCE =
   + "3층 물체(나무·바위·건물, ★ 은 캐릭터 위), 4층 물체 위 물체(3층 위에 겹쳐 쌓기), 그림자(벽 아래 사분면). "
   + "lower=1층, upper=3층. 1층을 칠하면 그 칸 2층이 지워진다(paint_tiles 1층은 기존처럼 3·4층·그림자까지 비운다).";
 
-/** 짧은 층 안내 — 층을 고르기만 하는 보조 도구(tile_erase·paint_shadow)용. 뜻은 FOUR_LAYER_GUIDANCE 와 같다. */
+/**
+ * 짧은 층 안내 — 층을 고르기만 하거나 층 설명이 곁가지인 도구(tile_erase·paint_shadow·fill_region·show_map_region)용.
+ * 뜻은 FOUR_LAYER_GUIDANCE 와 같다. 설명은 모든 프로젝트에 실리므로 긴 안내는 칠하기 본 도구(paint_tiles·stamp_layer_block)에만 둔다.
+ */
 export const FOUR_LAYER_GUIDANCE_SHORT =
   "층: 1 바닥·2 바닥 장식·3 물체·4 물체 위 물체·그림자(벽 아래 사분면). lower=1층, upper=3층.";
 

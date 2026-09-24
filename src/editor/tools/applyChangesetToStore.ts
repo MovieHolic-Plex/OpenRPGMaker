@@ -61,6 +61,9 @@ function applyAnnotation(
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
   "paint_tiles",
+  // MZ 4층 블록·그림자 — mapId 한 맵의 칸만 쓴다(맵 스냅샷이 2·4층·그림자까지 담는다).
+  "stamp_layer_block",
+  "paint_shadow",
   "paint_road",
   "stamp_structure",
   "build_house",

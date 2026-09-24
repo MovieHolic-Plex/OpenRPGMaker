@@ -8,9 +8,14 @@
 //   node /tmp/mzai/apply.mjs verify --project <dir> --pack /tmp/mzai/pack/pack.json   (실제 엔진으로 프리뷰 모양 재현율)
 //   node /tmp/mzai/apply.mjs apply  --project <dir> --pack /tmp/mzai/pack/pack.json   (저장 → 다시 열어 왕복 확인)
 //   node /tmp/mzai/apply.mjs export --project <dir> --original /tmp/mzai/pack/original-tilesets.json --out-dir /tmp/mzai
-// 앞서 프로젝트 폴더를 통째로 백업하고(cp -a), 그 DB 를 연 프로세스가 없는지(fuser) 확인한다.
-import { readFileSync, writeFileSync } from "node:fs";
+// 앞서 프로젝트 폴더를 통째로 백업한다(cp -a). apply 는 저장 직전에 fuser 로 그 DB 를 연 다른 프로세스(호스트·편집기)를
+// 찾아 있으면 거부한다 — 실행 중인 호스트의 DB 를 별도 프로세스에서 고치지 않는다(AGENTS.md 프로젝트 정본 규칙).
+// apply 는 팩이 소유한 것만 바꾼다: 참고문서는 팩의 용도 id 만 갈아 끼우고, tileGroups·autotileGroups 는 팩 접두어(rasak_)
+// id 만 갈아 끼운다. 저자가 직접 쓴 용도·그룹은 그대로 둔다.
+import { spawnSync } from "node:child_process";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+import { PROJECT_STORE_FILE } from "../../../electron/local-store/schema";
 import { openLocalProjectStore } from "../../../electron/local-store/store";
 import { serialize } from "../../../src/project/io";
 import { autotileLayerView, shapeAutotileGroupAround } from "../../../src/project/defaults/autotileEngine";
@@ -77,6 +82,32 @@ function engineAgreement(maps: readonly GameMap[], groupsFor: (tilesetId: string
   }
   for (const r of Object.values(out)) r.pct = Math.round((1000 * r.ok) / r.n) / 10;
   return Object.fromEntries(Object.entries(out).sort(([a], [b]) => a.localeCompare(b)));
+}
+
+/** 팩이 만드는 tileGroups·autotileGroups id 접두어(build_assistant_pack.py: rasak_<slot>_k<kind>, rasak_a5_<kind>). */
+const PACK_GROUP_PREFIX = "rasak_";
+
+/** 이 DB(와 -wal/-shm)를 연 다른 프로세스가 있으면 던진다. fuser 가 없으면 확인할 수 없으므로 역시 거부한다. */
+function assertNoOtherHolder(dir: string): void {
+  const files = [PROJECT_STORE_FILE, `${PROJECT_STORE_FILE}-wal`, `${PROJECT_STORE_FILE}-shm`]
+    .map((name) => join(dir, name)).filter((file) => existsSync(file));
+  const result = spawnSync("fuser", files, { encoding: "utf8" });
+  if (result.error) throw new Error(`fuser 를 실행할 수 없어 DB 점유를 확인하지 못했습니다 — 저장하지 않습니다: ${result.error.message}`);
+  // fuser 는 PID 를 stdout 에(접근 모드 글자가 붙을 수 있다), 파일 이름을 stderr 에 쓴다. 이 프로세스(열어 둔 store)는 뺀다.
+  const holders = [...new Set((result.stdout.match(/\d+/g) ?? []).map(Number))].filter((pid) => pid !== process.pid);
+  if (holders.length > 0) {
+    throw new Error(`${join(dir, PROJECT_STORE_FILE)} 을 다른 프로세스(PID ${holders.join(", ")})가 열고 있습니다 — 호스트·편집기를 닫고 다시 실행하세요. 저장하지 않았습니다.`);
+  }
+}
+
+/** 팩이 소유한 항목만 갈아 끼운다: owns(항목) 인 기존 항목을 빼고 팩 항목을 뒤에 붙인다. 나머지 순서는 그대로. */
+function mergeOwned<T extends { id: string }>(existing: readonly T[] | undefined, incoming: readonly T[] | undefined, owns: (item: T) => boolean): T[] {
+  return [...(existing ?? []).filter((item) => !owns(item)), ...(incoming ?? [])];
+}
+
+function assertPackGroupIds(tilesetId: string, groups: readonly { id: string }[] | undefined): void {
+  const stray = (groups ?? []).filter((g) => !g.id.startsWith(PACK_GROUP_PREFIX)).map((g) => g.id);
+  if (stray.length > 0) throw new Error(`${tilesetId}: 팩 그룹 id 가 ${PACK_GROUP_PREFIX} 로 시작하지 않습니다 — ${stray.slice(0, 5).join(", ")}`);
 }
 
 function sameKind(groups: readonly AutotileGroup[]): AutotileGroup[] {
@@ -154,10 +185,15 @@ async function main() {
       ts.tileMeta = p.tileMeta;
       ts.priority = p.priority;
       ts.passability = p.passability;
-      ts.tileGroups = p.tileGroups;
-      ts.autotileGroups = p.autotileGroups;
-      ts.referenceDocuments = p.referenceDocuments;
+      assertPackGroupIds(id, p.tileGroups);
+      assertPackGroupIds(id, p.autotileGroups);
+      const packPurposes = new Set((p.referenceDocuments ?? []).map((c) => c.id));
+      const ownsGroup = (g: { id: string }) => g.id.startsWith(PACK_GROUP_PREFIX);
+      ts.tileGroups = mergeOwned(ts.tileGroups, p.tileGroups, ownsGroup);
+      ts.autotileGroups = mergeOwned(ts.autotileGroups, p.autotileGroups, ownsGroup);
+      ts.referenceDocuments = mergeOwned(ts.referenceDocuments, p.referenceDocuments, (c) => packPurposes.has(c.id));
     }
+    assertNoOtherHolder(dir);
     const saved = await store.saveProject(project);
     store.close();
     const reopened = await openLocalProjectStore({ projectDir: dir });

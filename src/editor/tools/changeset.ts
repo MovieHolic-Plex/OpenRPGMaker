@@ -68,7 +68,7 @@ export function tileChangedMapIds(before: Project, after: Project): readonly str
   return ids;
 }
 
-function tileBuffersDiffer(before: GameMap, after: GameMap): boolean {
+export function tileBuffersDiffer(before: GameMap, after: GameMap): boolean {
   if (before.width !== after.width || before.height !== after.height) return true;
   if (!sameNumbers(before.lowerTiles, after.lowerTiles)) return true;
   if (!sameNumbers(before.upperTiles, after.upperTiles)) return true;

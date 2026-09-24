@@ -37,6 +37,8 @@ const resetProject: ToolDefinition = {
   description: "프로젝트 전체를 버리고 빈 프로젝트로 교체한다 — 지금까지 만든 모든 맵·이벤트·데이터베이스가 사라지며 되돌릴 수 없다. 지금까지 만든 것을 전부 버리고 완전히 새로 시작하겠다고 사용자가 분명히 요청한 경우에만 호출한다. 일부만 비우거나 되돌리는 요청에는 절대 쓰지 않는다. 원시 Project JSON은 받지 않는다.",
   mode: "write",
   domains: ["system"],
+  // 프로젝트 전체를 빈 프로젝트로 갈아 끼운다 — 같은 맵 id(map_blank_start)가 기본 칩셋으로 돌아가는 것이 정상이다.
+  allowsTilesetChange: true,
   parameters: {
     type: "object",
     properties: {
