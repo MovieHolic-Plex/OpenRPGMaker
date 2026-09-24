@@ -609,8 +609,67 @@ function unwrittenSwitchGateWarnings(project: Project, event: GameEvent): string
   return warnings;
 }
 
+function hasPlayerTouchEventAt(map: GameMap, x: number, y: number): boolean {
+  for (const event of map.events) {
+    if (event.x !== x || event.y !== y) continue;
+    if (event.trigger?.kind === "playerTouch") return true;
+    if ((event.pages ?? []).some((page) => page.trigger?.kind === "playerTouch")) return true;
+  }
+  return false;
+}
+
+/** 통행 불가(또는 맵 바로 밖) 착지를 반경 3 안의 통행 칸으로 옮긴다. playerTouch 칸은 즉시 재전이되므로 피한다. */
+function nearestTransferLanding(project: Project, map: GameMap, x: number, y: number, maxRadius: number): Point | null {
+  let any: Point | null = null;
+  for (let radius = 0; radius <= maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const cx = x + dx;
+        const cy = y + dy;
+        if (!inMapBounds(map, cx, cy) || !isPassable(project, map, cx, cy)) continue;
+        const point = { x: cx, y: cy };
+        if (!any) any = point;
+        if (!hasPlayerTouchEventAt(map, cx, cy)) return point;
+      }
+    }
+  }
+  return any;
+}
+
+/**
+ * 전이 한 칸이 벽이면 커밋 게이트가 이벤트 전체를 거부한다.
+ * 2026-09-24 JRPG 도그푸딩: 귀환 포탈의 transfer 가 마을 문에서 한 칸 어긋나
+ * place_npc 가 「transfer 목적지가 통행 불가」로 통째로 버려졌다.
+ */
+function relocateImpassableTransfers(project: Project, event: GameEvent, warnings?: string[]): void {
+  const seen = new Set<Command>();
+  const walk = (commands: readonly Command[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (!command || seen.has(command)) continue;
+      seen.add(command);
+      if (command.kind === "transfer") {
+        const target = project.maps[command.mapId];
+        if (target && !isPassable(project, target, command.x, command.y)) {
+          const landing = nearestTransferLanding(project, target, command.x, command.y, 3);
+          if (landing && (landing.x !== command.x || landing.y !== command.y)) {
+            warnings?.push(
+              `transfer 목적지가 통행 불가 타일이라 옮겼습니다: ${command.mapId} (${command.x}, ${command.y}) → (${landing.x}, ${landing.y}). 착지 칸은 get_map_region 으로 확인하세요.`,
+            );
+            command.x = landing.x;
+            command.y = landing.y;
+          }
+        }
+      }
+      for (const list of nestedCommandLists(command)) walk(list);
+    }
+  };
+  walk(event.commands);
+  for (const page of event.pages ?? []) walk(page.commands);
+}
+
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
+function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
   try {
     // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
     // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
@@ -629,6 +688,9 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
     for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
     for (const warning of unguardedItemSpendWarnings(event)) warnings?.push(warning);
+    if (project && (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "pages") || Object.prototype.hasOwnProperty.call(supplied, "commands"))) {
+      relocateImpassableTransfers(project, event, warnings);
+    }
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -972,7 +1034,7 @@ const upsertEvent: ToolDefinition = {
     if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
     const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
     if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
-    assertEventShape(event, warnings, existing ? patch : event);
+    assertEventShape(event, warnings, existing ? patch : event, draft);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
     if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);
@@ -1207,7 +1269,7 @@ const placeNpc: ToolDefinition = {
       normalizationWarnings.push(`호감 페이지/커맨드 → characterId '${event.characterId}' 자동 할당`);
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
-    assertEventShape(event, normalizationWarnings);
+    assertEventShape(event, normalizationWarnings, event, draft);
     assertEventPartyActorReferences(draft, event);
     upsertEventIntoMap(map, event);
     normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
