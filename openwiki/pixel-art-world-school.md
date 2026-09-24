@@ -38,3 +38,30 @@ scene 바닥 y=3에 놓았다. 체중계 접근(6,4), 책장 접근(2,4). 이전
 `requiredClearRects`로 y3..5의3칸복도, `requiredDoorTargets`로 세 목적지를 확인한다.
 논리 그래프 원칙과 벽 높이/용도 근거는 SCHOOL.md의 DPLAN/공식 가이드 링크를 따른다.
 연구 알고리즘 구현이나 단일 축척 학교 평면의 비겹침 증명으로 보고하지 않는다.
+
+## 4층 학교 / 실제 방 구조 (2026-09-24)
+
+새 연속 평면 정본은 `tiledata/pixel-art-world/school-building-layout.json`과
+`school-building-parts.json`, 지침은 `SCHOOL-BUILDING.md`다.
+`prepare-pixel-art-world-school-building.mjs`가 `pixelArtWorldSchoolBuilding.json`에
+65×39 네 층, 닫힌 방 경계 28개, 16교실·192석, 특별/관리실8개, 화장실4개와
+전체 하위/상위 배열을 생성한다. 문을 막았을 때 복도로 새는 경로가 없어야 한다.
+북쪽 세 방과 남쪽 세 방 사이에 4칸 복도를 두고 방 출입은 같은 맵의 보행이다.
+동서 계단은 1↔2↔3↔4층 12방향 전이이며 4층에는 상행 계단이 없다.
+하행 뒤는 벽으로 막고 세면대는 칸막이 벽 앞에 설치한다.
+
+`pixelArtWorldSchoolBuildingGuide`를 외부 PNG importer에 연결해 학교 원본을 가져오는
+모든 프로젝트에 공용 지침·원본 사전·네 층 전체 배열을 제공한다. 합성 번호는 해당
+atlas 전용이며, 현재 원본 한 장의 tile 번호로 사용하면 안 된다. 의존 원본을 모두
+확보한 뒤 사용자 로컬에서 완성 층 이미지를 조립한다. 그림은 배포하지 않는다.
+
+`author-pixel-art-world-school-building.mjs <정본에서 읽은 portable.json> <개인 원본 폴더>`는
+기존 네 개 학교 맵을 네 층으로 교체하고 도시 출입문을 연결한다. 기존 다른 시설은 보존한다.
+공간 설계 library의 4개 space에 `interiorLayout.rooms/doorways`를 기록하며 시설 place에는
+층 번호와 6개 양방향 계단 연결을 기록한다. `save-pixel-art-world-school-building.mjs`는
+작업 시작 시 SHA가 같은 정본만 백업 후 저장·재로드한다. 실행 중 호스트에 직접 쓰지 않는다.
+직접 플레이어 관찰은 `scripts/qa/pixel-art-world-school-building-capture.mjs`.
+
+다운로드 카탈로그 정본: `tiledata/pixel-art-world/download-catalog/`. 32항목 조사 결과,
+직접 파일512개, CSV874행(아카이브 내부 이미지 포함). 실패·배포 종료·샘플 게임을 분리했다.
+CSV와 해시만 공유하고 원본/ZIP은 사용자 개인 다운로드 폴더에만 둔다.

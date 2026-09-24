@@ -1,0 +1,638 @@
+{
+  "sourcePages": [
+    "https://yms.main.jp/dotartworld/page2/tile-school01.html",
+    "https://yms.main.jp/dotartworld/page2/tile-schlxp01.html",
+    "https://yms.main.jp/dotartworld/page2/tile-school02.html",
+    "https://yms.main.jp/dotartworld/page2/tile-toilet01.html"
+  ],
+  "sources": [
+    {
+      "filename": "ST-Toilet-I01.png",
+      "width": 256,
+      "height": 1376,
+      "sha256": "a5deca7b104a16b86e8a27ea80f890497fba84fc99c04b22f0b744c19a5813be",
+      "format": "tileset",
+      "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-toilet01.html",
+      "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-Toilet-I01.png"
+    }
+  ],
+  "recipes": [
+    {
+      "id": "stairs-up",
+      "name": "학교 올라가는 계단",
+      "width": 3,
+      "height": 4,
+      "tiles": [
+        [
+          112,
+          -1,
+          114
+        ],
+        [
+          120,
+          121,
+          122
+        ],
+        [
+          120,
+          121,
+          122
+        ],
+        [
+          128,
+          129,
+          130
+        ]
+      ],
+      "role": "stairs",
+      "placementKind": "standing",
+      "layer": "upper",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 3
+        },
+        {
+          "x": 1,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "passableCells": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 3
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 1,
+          "y": 4
+        }
+      ],
+      "transferCell": {
+        "x": 1,
+        "y": 0
+      },
+      "notes": "Official sample repeats middle stair row twice. Only central column is passable; side columns contain rails. Fill all cells below with floor tile 6, including -1. Use explicit transfer event at top center and destination at opposite staircase approach to prevent immediate return.",
+      "sourceRects": [
+        {
+          "tile": 112,
+          "x": 0,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 114,
+          "x": 2,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 120,
+          "x": 0,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 121,
+          "x": 1,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 122,
+          "x": 2,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 128,
+          "x": 0,
+          "y": 16,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 129,
+          "x": 1,
+          "y": 16,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 130,
+          "x": 2,
+          "y": 16,
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "lowerTiles": [
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          6,
+          6,
+          6
+        ]
+      ],
+      "blockedCells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 2
+        },
+        {
+          "x": 0,
+          "y": 3
+        },
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "sourceRect": {
+        "x": 0,
+        "y": 14,
+        "width": 3,
+        "height": 3
+      },
+      "sourceRectPixels": {
+        "x": 0,
+        "y": 448,
+        "width": 96,
+        "height": 96
+      },
+      "sourceTiles": [
+        [
+          112,
+          113,
+          114
+        ],
+        [
+          120,
+          121,
+          122
+        ],
+        [
+          128,
+          129,
+          130
+        ]
+      ],
+      "assemblyOperation": "repeat source middle row once; source tile113 is fully transparent and represented by -1 in assembled tiles",
+      "sourceRectIsAssembledFootprint": false,
+      "source": "ST-Schl-I01.png",
+      "walkCells": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 3
+        }
+      ]
+    },
+    {
+      "id": "stairs-down",
+      "name": "학교 내려가는 계단",
+      "width": 3,
+      "height": 2,
+      "tiles": [
+        [
+          115,
+          116,
+          117
+        ],
+        [
+          123,
+          124,
+          125
+        ]
+      ],
+      "role": "stairs",
+      "placementKind": "standing",
+      "layer": "upper",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "passableCells": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 1,
+          "y": 2
+        }
+      ],
+      "transferCell": {
+        "x": 1,
+        "y": 0
+      },
+      "notes": "Whole dark recess top and dense stair bottom. Independent rail endings 123/125. Keep center passable and side rails blocked. Back with wall/recess structure; never place these as floating furniture. Tiles 115/116/117 include black alpha=76 shading, not an opaque dark backdrop; the official sample shows the same tinted floor.",
+      "sourceRects": [
+        {
+          "tile": 115,
+          "x": 3,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 116,
+          "x": 4,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 117,
+          "x": 5,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 123,
+          "x": 3,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 124,
+          "x": 4,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 125,
+          "x": 5,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "lowerTiles": [
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          6,
+          6,
+          6
+        ]
+      ],
+      "blockedCells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "sourceRect": {
+        "x": 3,
+        "y": 14,
+        "width": 3,
+        "height": 2
+      },
+      "sourceRectPixels": {
+        "x": 96,
+        "y": 448,
+        "width": 96,
+        "height": 64
+      },
+      "sourceRectIsAssembledFootprint": true,
+      "source": "ST-Schl-I01.png",
+      "walkCells": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "id": "music-piano",
+      "name": "그랜드피아노",
+      "sourceRect": {
+        "x": 0,
+        "y": 29,
+        "width": 3,
+        "height": 4
+      },
+      "sourceRectPixels": {
+        "x": 0,
+        "y": 928,
+        "width": 96,
+        "height": 128
+      },
+      "width": 3,
+      "height": 4,
+      "tiles": [
+        [
+          232,
+          233,
+          234
+        ],
+        [
+          240,
+          241,
+          242
+        ],
+        [
+          248,
+          249,
+          250
+        ],
+        [
+          256,
+          257,
+          258
+        ]
+      ],
+      "role": "furniture",
+      "placementKind": "standing",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 3
+        }
+      ],
+      "passableCells": [],
+      "layer": "upper",
+      "collision": "block full rectangle",
+      "notes": "Keep 3×4 whole. This includes diagonal raised lid and all legs; never slice into arbitrary desk-sized pieces.",
+      "source": "ST-Schl-I02.png",
+      "walkCells": []
+    },
+    {
+      "id": "music-cello",
+      "name": "첼로",
+      "sourceRect": {
+        "x": 3,
+        "y": 30,
+        "width": 1,
+        "height": 3
+      },
+      "sourceRectPixels": {
+        "x": 96,
+        "y": 960,
+        "width": 32,
+        "height": 96
+      },
+      "width": 1,
+      "height": 3,
+      "tiles": [
+        [
+          243
+        ],
+        [
+          251
+        ],
+        [
+          259
+        ]
+      ],
+      "role": "furniture",
+      "placementKind": "standing",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 2
+        }
+      ],
+      "passableCells": [],
+      "layer": "upper",
+      "collision": "block full rectangle",
+      "notes": "",
+      "source": "ST-Schl-I02.png",
+      "walkCells": []
+    },
+    {
+      "id": "art-easel",
+      "name": "미술 이젤 정면",
+      "sourceRect": {
+        "x": 1,
+        "y": 48,
+        "width": 1,
+        "height": 2
+      },
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 1536,
+        "width": 32,
+        "height": 64
+      },
+      "width": 1,
+      "height": 2,
+      "tiles": [
+        [
+          385
+        ],
+        [
+          393
+        ]
+      ],
+      "role": "furniture",
+      "placementKind": "standing",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "passableCells": [],
+      "layer": "upper",
+      "collision": "block full rectangle",
+      "notes": "",
+      "source": "ST-Schl-I02.png",
+      "walkCells": []
+    },
+    {
+      "id": "toilet",
+      "name": "양변기 뚜껑 열림",
+      "sourceRect": {
+        "x": 3,
+        "y": 8,
+        "width": 1,
+        "height": 2
+      },
+      "sourceRectPixels": {
+        "x": 96,
+        "y": 256,
+        "width": 32,
+        "height": 64
+      },
+      "width": 1,
+      "height": 2,
+      "tiles": [
+        [
+          67
+        ],
+        [
+          75
+        ]
+      ],
+      "role": "furniture",
+      "placementKind": "standing",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "passableCells": [],
+      "layer": "upper",
+      "collision": "block full rectangle",
+      "notes": "",
+      "source": "ST-Toilet-I01.png",
+      "walkCells": []
+    },
+    {
+      "id": "sink",
+      "name": "학교 벽 세면대",
+      "sourceRect": {
+        "x": 5,
+        "y": 14,
+        "width": 1,
+        "height": 2
+      },
+      "sourceRectPixels": {
+        "x": 160,
+        "y": 448,
+        "width": 32,
+        "height": 64
+      },
+      "width": 1,
+      "height": 2,
+      "tiles": [
+        [
+          117
+        ],
+        [
+          125
+        ]
+      ],
+      "role": "furniture",
+      "placementKind": "standing",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 1
+        }
+      ],
+      "passableCells": [],
+      "layer": "upper",
+      "collision": "block full rectangle",
+      "notes": "Full basin with faucet and drain below. Place against wall with bottom support on floor.",
+      "source": "ST-Toilet-I01.png",
+      "walkCells": []
+    }
+  ]
+}

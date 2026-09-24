@@ -8,6 +8,7 @@ import { genId } from '@/util/id';
 import { sha256HexBytes } from '@/util/sha256';
 import { pixelArtWorldCityGuide } from '@/project/pixelArtWorldCity';
 import { inspectExternalTileGrounding } from '@/project/externalTileGrounding';
+import { pixelArtWorldSchoolBuildingGuide } from '@/project/pixelArtWorldSchoolBuilding';
 import layoutGuidance from '@/assets/pixelArtWorldLayoutGuidance.json';
 
 export async function prepareExternalTileset(file: File, pack: ExternalTilesetPack) {
@@ -33,6 +34,8 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
   tileset.referenceDocuments = [createReferences(pack, image, dataUrl, tileset.id)];
   const cityGuide = pixelArtWorldCityGuide(pack.filename, dataUrl);
   if (cityGuide) tileset.referenceDocuments.push(cityGuide);
+  const schoolGuide = pixelArtWorldSchoolBuildingGuide(pack.filename, dataUrl);
+  if (schoolGuide) tileset.referenceDocuments.push(schoolGuide);
   for (const scene of pack.scenes ?? []) {
     const picture = renderExample(image, scene);
     tileset.referenceDocuments.push({
