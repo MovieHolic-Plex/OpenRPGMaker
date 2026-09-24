@@ -12,6 +12,8 @@
 |---|---|
 | `bundles.json` | 팩 정보, 시트별 sha256(팩 버전 확인용), MZ 슬롯(A1~E + 추가 시트) 묶음 3개: `rasak_field` · `rasak_swamp` · `rasak_cave` |
 | `substitutions.json` | 제작자 프리뷰(2022 스크린샷) 이후 다시 그려진 그림 자리에 현재 시트의 같은 물체를 통째로 놓는 수동 대체 |
+| `names.json` | 묶음별 이름표(글만): 자동타일 kind(이름·역할·층·통행·대표 번호·모양별 칸 번호)·물체(이름·칸 배열·층·통행)·그림자 비트. 번호는 굽기 아틀라스(96칸 폭) 기준 |
+| `mz-autotile-masks.json` | OPRN 이웃 마스크 → MZ 모양 표(바닥 256·벽 16·폭포 4), 관찰된 연결 규칙, 프리뷰 검증 수치 |
 
 ## 파이프라인 (사용자가 직접 받은 팩 기준)
 
@@ -43,7 +45,26 @@ python3 scripts/content/rasak/stack_to_layers.py --baked ~/third-party-assets/ra
   --maps ~/third-party-assets/rasak/maps
 node scripts/content/rasak/publish-study-project.mjs --layers --baked ~/third-party-assets/rasak/baked \
   --maps ~/third-party-assets/rasak/maps --project-dir ~/third-party-assets/rasak/study-project-layers
+# 6. 조수 지식 묶음: 칸 이름표(tileMeta)·재료 묶음(tileGroups)·자동타일 그룹(autotileGroups, 8이웃 variantMap + 연결 규칙)·
+#    용도별 참고문서(field_garden·field_cliff·swamp·cave_ice·cave_lava — MD + 층 분해·완성 예제·바닥 견본·물체 도감·정상/오류 그림)
+#    그림이 든 결과는 저장소 밖(/tmp/mzai)에만 쓴다. 저장 전에 프로젝트 폴더를 cp -a 로 백업하고 fuser 로 DB 를 연 프로세스가 없는지 본다.
+bun build scripts/content/rasak/apply-assistant-pack.mts --target=node --outfile /tmp/mzai/apply.mjs
+node /tmp/mzai/apply.mjs dump --project ~/third-party-assets/rasak/study-project-layers --out /tmp/mzai/pack/original-tilesets.json
+python3 scripts/content/rasak/build_assistant_pack.py --assets ~/third-party-assets/rasak \
+  --original /tmp/mzai/pack/original-tilesets.json --out /tmp/mzai/pack --preview-dir /tmp/mzai/pack-preview
+node /tmp/mzai/apply.mjs verify --project ~/third-party-assets/rasak/study-project-layers --pack /tmp/mzai/pack/pack.json  # 실제 엔진 재현율
+node /tmp/mzai/apply.mjs apply  --project ~/third-party-assets/rasak/study-project-layers --pack /tmp/mzai/pack/pack.json  # 저장 → 다시 열어 왕복 확인
+# 7. Pi 시험용 JSON(그림 인라인): trial.json(지식 포함) · trial-nodocs.json(참고문서·묶음·자동타일 그룹 없음, 원래 이름표) + 빈 30×20 시험 맵 3장
+node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-project-layers --original /tmp/mzai/pack/original-tilesets.json --out-dir /tmp/mzai
 ```
+
+## 조수 지식 묶음 (2026-09-25)
+
+- 용도(작업 단위) 5개, 용도마다 MD ≤5쪽(각 문서 6000자 이하 = 한 페이지)·그림 ≤8장. 첫 문서 첫 줄 `layer-model: mz4`.
+- 자동타일 연결 규칙은 분류별 후보(같은 종류만 / 물끼리 / 땅→벽·윗면·A5·1층 물체 / 윗면끼리 / 벽→A4)를 프리뷰에 대 보고 가장 잘 맞는 것을
+  `connectTileIds` 로 싣는다. 실제 엔진(`autotileEngine.ts`) 재현율(테두리 칸 제외, p27b 옛 암반 제외, 장식=2층으로 옮긴 프리뷰):
+  1층 75.7%(같은 종류만 49.5%) · 2층 81.7%. 남은 차이는 제작자가 모양을 고정해 칠한 칸과, 엔진이 방향을 가리지 않는 벽 규칙.
+- 예제 창에는 합성 칸이 없어야 하고(스크립트가 막는다), p27b 둘레 암반은 엔진 모양으로 바꿔 싣는다.
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
