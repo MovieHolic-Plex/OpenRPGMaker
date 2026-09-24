@@ -15,6 +15,7 @@ import { checkMystery } from "./mystery";
 import { checkMonster } from "./monster";
 import { checkGallery } from "./gallery";
 import { checkDream } from "./dream";
+import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { whereText, type Finding, type FindingSeverity, type GameCheckOptions, type GameCheckReport } from "./types";
 
 export * from "./types";
@@ -45,6 +46,10 @@ export function runGameCheck(project: Project, options: GameCheckOptions = {}): 
     ...checkMonster(project, options.briefText ?? briefTextOf(project)),
     ...checkGallery(project, options.briefText ?? briefTextOf(project)),
     ...checkDream(project, options.briefText ?? briefTextOf(project)),
+    ...[...projectSetterShadowedPages(project).values()].map((hit): Finding => ({
+      severity: "warning", code: "page-setter-shadowed", message: hit.message,
+      where: { mapId: hit.mapId, mapName: project.maps[hit.mapId]?.name, eventId: hit.eventId },
+    })),
     ...(options.rawProject !== undefined ? diffLoadNormalization(options.rawProject, project) : []),
   ];
   let autoPlay: GameCheckReport["autoPlay"];
