@@ -465,3 +465,16 @@ No tree/building artwork is altered. This is a modified derivative, not a new
 original-art or licence claim. Existing mixed-source notices still apply.
 Exact source hash, coordinates and transformations: `tiledata/forest-villages/diverse/grass-joins-source.json`
 and `scripts/content/prepare-forest-grass-joins.mjs`.
+
+## Forest fantasy town — generated buildings and hand-pixelled props (2026-09-24)
+
+`forest-harmony/fantasy-town-buildings.png` (480×1168, 16px cells) backs the shared place
+「개울 건너 숲성 마을」. Buildings were generated with god-tibo-imagen (codex image
+backend) against fixed cell blueprints and the `forest-harmony/chipset.png` house style
+guide, then accepted only if they passed the blueprint checker, palette-locked to the
+reference house colours and sliced into cells. Props missing from the chipset (hay cart,
+straw bales, mushrooms, reeds, two wildflower re-arrangements of chipset cell 348) were
+hand-pixelled using only colours already present in `forest-harmony/chipset.png`.
+Blueprints, style kit and scripts: `tiledata/forest-harmony-buildings/` and
+`scripts/asset-gen/forest-harmony-buildings/`. This is provenance, not a new licence
+claim; existing forest-harmony component notices still apply.

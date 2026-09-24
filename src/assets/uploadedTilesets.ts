@@ -19,6 +19,20 @@ export function uploadedTilesetAnimationName(tileset: TilesetDef, tile: number):
   return strip ? animationName(strip) : null;
 }
 
+/**
+ * 타일 이식이 업로드 그림판에서 칸을 가져올 수 있다(생성 건물 시트 등). 그 그림판의 자산 id 가 곧 텍스처 키다.
+ * 자산 id 는 내용 해시로 짓는다 — 같은 id 의 그림이 바뀌면 이식 베이크 캐시가 낡는다.
+ */
+export function uploadedGraftSourceIds(project?: Project): string[] {
+  const ids = new Set<string>();
+  for (const tileset of Object.values(project?.tilesets ?? {})) {
+    for (const graft of tileset.tileGrafts ?? []) {
+      if (project?.assets.uploaded[graft.sourceChipset]) ids.add(graft.sourceChipset);
+    }
+  }
+  return [...ids];
+}
+
 export function loadUploadedTilesets(
   scene: { readonly load: Pick<Phaser.Loader.LoaderPlugin, "image"> },
   project?: Project,
@@ -33,6 +47,10 @@ export function loadUploadedTilesets(
     if (queued.has(key)) continue;
     queued.add(key);
     scene.load.image(key, withInlineAsset(imageUrl));
+  }
+  for (const id of uploadedGraftSourceIds(project)) {
+    const imageUrl = uploadedAssetUrl(project!.assets.uploaded[id]!);
+    if (imageUrl && !queued.has(id)) { queued.add(id); scene.load.image(id, withInlineAsset(imageUrl)); }
   }
 }
 
@@ -85,6 +103,17 @@ export function ensureUploadedTilesetTextures(scene: Phaser.Scene, project: Proj
       if (!loaded || !scene.sys.isActive()) return;
       registerUploadedTilesetFrames(scene, tileset, loaded);
       onReady();
+    });
+  }
+  // 이식 소스 그림판: 실리기 전에는 ensureTilesetTexture 가 베이크를 미루므로(낡은 캐시 방지) 실린 뒤 다시 그리면 된다.
+  for (const id of uploadedGraftSourceIds(project)) {
+    if (scene.textures.exists(id) || pending.has(id)) continue;
+    const url = uploadedAssetUrl(project.assets.uploaded[id]!);
+    if (!url) continue;
+    pending.add(id);
+    void ensureSceneImageTexture(scene, id, withInlineAsset(url)).then(loaded => {
+      pending.delete(id);
+      if (loaded && scene.sys.isActive()) onReady();
     });
   }
 }
