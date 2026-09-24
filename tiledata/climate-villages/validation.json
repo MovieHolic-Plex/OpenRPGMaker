@@ -2,40 +2,40 @@
   {
     "id": "climate-snow-pine-hamlets",
     "entry": [
-      34,
-      50
+      30,
+      49
     ],
     "targets": [
       [
         7,
-        14
-      ],
-      [
-        28,
         12
       ],
       [
-        53,
-        16
+        24,
+        10
+      ],
+      [
+        49,
+        14
       ],
       [
         12,
-        35
+        33
       ],
       [
-        41,
-        34
+        37,
+        32
       ],
       [
-        51,
-        42
+        47,
+        40
       ],
       [
-        25,
-        47
+        23,
+        45
       ]
     ],
-    "reachable": 1444,
+    "reachable": 1336,
     "blocked": []
   },
   {
@@ -74,7 +74,7 @@
         48
       ]
     ],
-    "reachable": 1149,
+    "reachable": 1337,
     "blocked": []
   },
   {
@@ -121,7 +121,7 @@
         31
       ]
     ],
-    "reachable": 1416,
+    "reachable": 1419,
     "blocked": []
   },
   {
@@ -164,7 +164,7 @@
         56
       ]
     ],
-    "reachable": 1528,
+    "reachable": 1437,
     "blocked": []
   },
   {
@@ -215,7 +215,7 @@
         83
       ]
     ],
-    "reachable": 2591,
+    "reachable": 2619,
     "blocked": []
   },
   {
@@ -254,50 +254,50 @@
         50
       ]
     ],
-    "reachable": 1335,
+    "reachable": 1348,
     "blocked": []
   },
   {
     "id": "climate-desert-terrace-canyon",
     "entry": [
       31,
-      59
+      56
     ],
     "targets": [
       [
         18,
+        12
+      ],
+      [
+        39,
         15
       ],
       [
-        41,
-        18
-      ],
-      [
         12,
-        33
+        30
       ],
       [
         29,
-        35
+        32
       ],
       [
-        53,
-        36
+        50,
+        33
       ],
       [
         13,
-        56
+        53
       ],
       [
-        37,
-        58
-      ],
-      [
-        57,
+        36,
         55
+      ],
+      [
+        54,
+        52
       ]
     ],
-    "reachable": 1805,
+    "reachable": 1527,
     "blocked": []
   },
   {
@@ -340,7 +340,7 @@
         41
       ]
     ],
-    "reachable": 1599,
+    "reachable": 1503,
     "blocked": []
   },
   {
@@ -383,7 +383,7 @@
         56
       ]
     ],
-    "reachable": 1528,
+    "reachable": 1564,
     "blocked": []
   },
   {
@@ -422,7 +422,7 @@
         48
       ]
     ],
-    "reachable": 1149,
+    "reachable": 1166,
     "blocked": []
   }
 ]

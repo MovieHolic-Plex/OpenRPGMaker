@@ -380,7 +380,7 @@ export const NATURAL_SCENES = SCENES;
  */
 export function fillNaturalGaps({ map, isPlain, take, templates, random, accept, allow = () => true, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 600, flowerTiles = [348, 288], singles = SINGLE, small = false, grass = null }) {
   const W = map.width, H = map.height, at = (x, y) => y * W + x, pieces = [], tried = new Set();
-  const scenes = SCENES.filter((s) => allow(s) && (!s.small || small) && (!s.flowers || flowerTiles.length) && (!s.grass || grass));
+  const scenes = SCENES.filter((s) => allow(s) && (!s.small || small) && (!s.flowers || flowerTiles.length || s.parts.length >= 2) && (!s.grass || grass));
   // grass = { members: Set of tall-grass tiles, arrange(map) }: a patch is grown, cut to whole 2×2 blocks, and the whole
   // map's tall grass re-laid by `arrange` (idempotent). Patches stay one cell apart from each other.
   const grassPatch = (sx, sy) => {
@@ -431,7 +431,7 @@ export function fillNaturalGaps({ map, isPlain, take, templates, random, accept,
         if (!cells.every((c) => c.x >= 1 && c.y >= 1 && c.x < W - 1 && c.y < H - 1 && isPlain(c.x, c.y) && take(c.x, c.y, true))) continue;
         // Flowers hug the scene: a tight run of free cells round it (never a scatter).
         const flowers = [];
-        if (scene.flowers) {
+        if (scene.flowers && flowerTiles.length) {
           const own = new Set(cells.map((c) => at(c.x, c.y)));
           const [lo, hi] = scene.flowers, want = lo + Math.floor(random() * (hi - lo + 1));
           const ring = parts.length ? [] : [at(sx, sy)].filter((k) => isPlain(sx, sy) && take(sx, sy, false));

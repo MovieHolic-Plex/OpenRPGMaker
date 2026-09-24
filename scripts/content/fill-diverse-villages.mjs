@@ -285,6 +285,16 @@ function fillVillage(plan, strict) {
     for (const c of rect(o)) { m.lowerTiles[at(c.x, c.y)] = 240; m.upperTiles[at(c.x, c.y)] = -1; }
     plan.placements.splice(plan.placements.indexOf(o), 1);
   }
+  // Loose wildflowers of the authored map with no plant beside them are the same dotted carpet: they go too.
+  const FLOWER = new Set([348, 288]);
+  const plantAt = (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && m.upperTiles[at(x, y)] >= 0 && !FLOWER.has(m.upperTiles[at(x, y)])
+    && plan.placements.some((o) => o.kind === "vegetation" && x >= o.x && x < o.x + o.w && y >= o.y && y < o.y + o.h);
+  const looseFlowers = [];
+  for (let y = 0; y < m.height; y++) for (let x = 0; x < W2; x++) {
+    if (!FLOWER.has(m.upperTiles[at(x, y)]) || plan.placements.some((o) => o.kind !== "vegetation" && x >= o.x && x < o.x + o.w && y >= o.y && y < o.y + o.h)) continue;
+    if (![-1, 0, 1].some((dy) => [-1, 0, 1].some((dx) => (dx || dy) && plantAt(x + dx, y + dy)))) looseFlowers.push(at(x, y));
+  }
+  for (const i of looseFlowers) m.upperTiles[i] = -1;
   const orphans = () => { const s = seenNow(); let w = 0; for (let i = 0; i < m.lowerTiles.length; i++) if (walk(i)) w++; return { ok: reachOk(s), orphans: w - s.size }; };
   let orphanCount = orphans().orphans;
   const noSealing = () => { const r = orphans(); if (!r.ok || r.orphans > orphanCount) return false; orphanCount = r.orphans; return true; };
@@ -335,13 +345,13 @@ function fillVillage(plan, strict) {
     revision: 14, before: { width: W0, height: H0 }, after: { width: m.width, height: m.height }, removed: carved.removed,
     yards: plan.yards.length, yardProps: plan.placements.filter((o) => o.kind === "prop" && o.kit !== "doorway").length,
     doorFlanks: flanks.length, plaza: plaza.map((o) => o.name), treeClumps: clumps.length, crestCellsRemoved: crestCells,
-    pools, unownedRemoved: pruned, loneBushesRemoved: loneBushes.map((o) => ({ name: o.name, x: o.x, y: o.y })), harbor: harbor.map((o) => ({ name: o.name, x: o.x, y: o.y })),
+    pools, unownedRemoved: pruned, loneBushesRemoved: loneBushes.map((o) => ({ name: o.name, x: o.x, y: o.y })), looseFlowersRemoved: looseFlowers.length, harbor: harbor.map((o) => ({ name: o.name, x: o.x, y: o.y })),
     scenes: gaps.pieces.map((p) => ({ name: p.name, at: p.stamps[0] ? [p.stamps[0].x, p.stamps[0].y] : (p.grass?.[0] ?? p.flowers[0].slice(0, 2)), flowers: p.flowers.length, ...p.grass ? { grassCells: p.grass.length } : {} })),
     tallGrass: tallGrassStats(m),
     emptiness: { beforeGapFill: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
   };
   m.layoutPlan = { ...m.layoutPlan, regions: plan.houses, entrance: plan.entrance, civicPlaces: plan.civicPlaces, landmarks: plan.landmarks ?? [] };
-  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, loneBushes: loneBushes.length, harbor: harbor.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
+  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, loneBushes: loneBushes.length, looseFlowers: looseFlowers.length, harbor: harbor.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
 }
 // Tall-grass cells by kind (E dark by the canopy, F light meadow, G short by houses and roads).
 function tallGrassStats(m) {

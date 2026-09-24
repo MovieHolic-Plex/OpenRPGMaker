@@ -1,12 +1,12 @@
 # 종탑 언덕 교구 · 설원
 
-눈 쌓인 언덕 위 종탑 교구. 계단 길과 묘지, 교구 마당이 모두 눈밭이 된다. 57×54, tilesetId=forest_harmony_snow, 원본 숲마을 chapel-hill-parish(tiledata/forest-villages/diverse). 입구 (25,50). 통행 검사 목표 [[31,11],[51,11],[6,35],[17,39],[32,36],[6,50],[33,48]].
+눈 쌓인 언덕 위 종탑 교구. 계단 길과 묘지, 교구 마당이 모두 눈밭이 되고 강과 폭포 아래 소가 얼어붙었다(폭포만 흐른다). 57×54, tilesetId=forest_harmony_snow, 원본 숲마을 chapel-hill-parish(tiledata/forest-villages/diverse). 입구 (25,50). 통행 검사 목표 [[31,11],[51,11],[6,35],[17,39],[32,36],[6,50],[33,48]].
 
 ![종탑 언덕 교구 · 설원](images/climate-snow-chapel-hill.png)
 
 ## 기후 편집 (원본 숲마을 위에 한 것)
 ```json
-[{"kind":"unflowered","cells":19,"tiles":[348,288],"rule":"빈 땅의 들꽃·꽃덤불 → 이 시트의 키큰 풀 한 포기(눈 덮인·잿빛·마른 풀), 이웃과 다시 이음"},{"kind":"fill","pieces":0,"cells":0,"emptiness":{"before":{"maxSq":3,"screen":0.398},"after":{"maxSq":3,"screen":0.398}},"rule":"빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 삐죽한 풀숲 덩이·세 송이 들꽃"}]
+[{"kind":"unflowered","cells":0,"bushes":0,"tiles":[348,288],"rule":"눈·재·모래에는 꽃이 피지 않는다: 덤불에 붙은 꽃은 같은 덤불(289)로, 나머지 꽃은 걷는다"},{"kind":"snow-bushes","trees":4,"rule":"활엽수 3×4 → 눈 덮인 둥근 덤불 3×3(아래 세 줄), 맨 윗줄은 눈밭"},{"kind":"freeze-river","swappedTiles":223,"rule":"강·소의 물 칸 t → 얼음 칸 ice[t]; 폭포(2700)와 다리는 그대로"},{"kind":"buried-grass","cells":126,"rule":"집·길 곁 키큰 풀 G(짧음) → 바닥; 숲 가 E(짙음)·트인 풀밭 F(밝음)만 남기고 새 덩이도 E·F 만"},{"kind":"fill","pieces":18,"scenes":["덤불 한 쌍","바위와 덤불","바위와 덤불","바위와 덤불","바위와 덤불","작은 덤불숲","바위와 덤불","바위와 덤불","덤불 한 쌍","바위와 덤불","바위와 덤불","바위와 덤불","덤불 한 쌍","바위와 덤불","풀숲","바위와 덤불","풀숲","풀숲"],"emptiness":{"before":{"maxSq":5,"screen":0.584},"after":{"maxSq":4,"screen":0.394}},"rule":"빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 덩이 장면(덤불숲·바위와 덤불·키큰 풀 덩이, 가을은 나무·꽃 포함)"}]
 ```
 
 ## 집 (원본 그대로)

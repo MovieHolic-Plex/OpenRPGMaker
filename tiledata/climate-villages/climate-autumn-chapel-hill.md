@@ -6,7 +6,7 @@
 
 ## 기후 편집 (원본 숲마을 위에 한 것)
 ```json
-[{"kind":"fill","pieces":0,"cells":0,"emptiness":{"before":{"maxSq":3,"screen":0.398},"after":{"maxSq":3,"screen":0.398}},"rule":"빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 삐죽한 풀숲 덩이·세 송이 들꽃"}]
+[{"kind":"fill","pieces":0,"scenes":[],"emptiness":{"before":{"maxSq":4,"screen":0.38},"after":{"maxSq":4,"screen":0.38}},"rule":"빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 덩이 장면(덤불숲·바위와 덤불·키큰 풀 덩이, 가을은 나무·꽃 포함)"}]
 ```
 
 ## 집 (원본 그대로)
