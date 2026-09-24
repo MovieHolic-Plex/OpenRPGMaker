@@ -33,76 +33,79 @@ for(const spec of layout.floors){
   placements.push({recipeId:id,x,y,width:rows[0].length,height:rows.length});
  }
  const school=(id,x,y)=>put('paw-school-interior/'+id,x,y),special=(id,x,y)=>put('paw-school-special/'+id,x,y),office=(id,x,y)=>put('paw-office/'+id,x,y),library=(id,x,y)=>put('paw-library/'+id,x,y);
- // A four-cell corridor and two aligned stair/entrance cores, all contiguous.
- rect(1,17,44,4);rect(38,13,7,8);wall(38,11,7);
+ // Native furniture groups define room sizes; the corridor is two cells wide.
+ rect(1,16,38,2);rect(32,12,7,6);wall(32,10,7);
  for(let slot=0;slot<6;slot++){
-  const south=slot>=3,x=1+(slot%3)*12,y=south?22:1,kind=spec.kinds[slot];
-  rect(x,y,11,12);wall(x,y,11);if(!south)wall(x,14,11);
-  const door={x:x+10,y:south?21:13,width:1,height:4};rect(door.x,door.y,1,4);caps.add(at(door.x,door.y));lintels.add(at(door.x,door.y));
-  const room={id:`school-${spec.level}-${slot}`,name:spec.rooms[slot],kind,x,y,width:11,height:12,door,center:{x:x+10,y:y+6}};rooms.push(room);doorways.push(door);approaches.push(room.center);
-  if(kind==='classroom'){school('school-clock',x+8,y+1);school('school-notice',x+7,y+1);}
+  const south=slot>=3,kind=spec.kinds[slot],width=kind==='classroom'?10:8;
+  const height=({classroom:11,nurse:10,science:11,library:8,staff:9,principal:8,music:8,art:10,council:8})[kind];
+  const x=[1,12,23][slot%3],y=south?19:12-height;
+  rect(x,y,width,height);wall(x,y,width);if(!south)wall(x,13,width);
+  const door={x:x+width-1,y:south?18:12,width:1,height:4};rect(door.x,door.y,1,4);caps.add(at(door.x,door.y));lintels.add(at(door.x,door.y));
+  const room={id:`school-${spec.level}-${slot}`,name:spec.rooms[slot],kind,x,y,width,height,door,center:{x:x+width-1,y:y+height-1}};rooms.push(room);doorways.push(door);approaches.push(room.center);
+  if(kind==='classroom'){school('school-clock',x+6,y+1);school('school-notice',x+7,y+1);}
   if(!south)school('school-window',x,y);
   if(kind==='classroom'){
-   school('school-blackboard',x+4,y);school('school-lectern',x+5,y+3);
-   for(let row=0;row<2;row++)for(let col=0;col<5;col++){
-    const dx=x+col*2,dy=y+4+row*4;school('school-student-desk',dx,dy);school('school-chair-back',dx,dy+2);approaches.push({x:dx+1,y:dy+1});
+   school('school-blackboard',x+3,y);school('school-lectern',x+3,y+2);
+   for(let row=0;row<2;row++)for(const col of [1,2,4,5,7,8]){
+    const dx=x+col,dy=y+4+row*3;school('school-student-desk',dx,dy);school('school-chair-back',dx,dy+2);approaches.push({x:dx+(col%3===1?-1:1),y:dy+2});
    }
-   approaches.push({x:x+5,y:y+7});
+   approaches.push({x:x+3,y:y+4});
   }else if(kind==='nurse'){
-   special('special-medical-cabinet',x+7,y+1);special('special-scale',x+5,y+2);
-   for(const yy of [y+4,y+8])special('special-bed',x,yy);
-   special('special-screen',x+3,y+5);special('special-worktable',x+6,y+7);special('special-stool',x+7,y+10);special('special-plant',x+9,y+9);
-   approaches.push({x:x+2,y:y+5},{x:x+2,y:y+9});
+   special('special-medical-cabinet',x+4,y+1);special('special-scale',x+6,y+2);
+   for(const yy of [y+4,y+7])special('special-bed',x,yy);
+   special('special-screen',x+3,y+4);special('special-worktable',x+4,y+7);
+   approaches.push({x:x+2,y:y+5},{x:x+2,y:y+8});
   }else if(kind==='science'){
-   special('special-bookcase',x+4,y+2);special('special-skeleton',x+8,y+1);
-   for(const xx of [x,x+6])for(const yy of [y+4,y+8]){special('special-worktable',xx,yy);special('special-stool',xx+1,yy+2);approaches.push({x:xx+3,y:yy+1});}
+   special('special-bookcase',x+3,y+2);special('special-skeleton',x+6,y+1);
+   for(const xx of [x,x+4])for(const yy of [y+4,y+7]){special('special-worktable',xx,yy);special('special-stool',xx+1,yy+2);approaches.push({x:xx+3,y:yy+1});}
   }else if(kind==='library'){
-   for(const xx of [x,x+4])library('bookcase',xx,y+1);
-   library('magazines',x,y+5);library('low-books',x+6,y+5);library('sofa-back',x+6,y+9);
-   approaches.push({x:x+2,y:y+8},{x:x+7,y:y+8});
-  }else if(kind==='staff'||kind==='principal'){
-   office('bookcase',x+4,y+1);
-   for(const xx of [x,x+6])for(const yy of [y+4]){office('desk-white',xx,yy);office('chair-blue',xx+1,yy+3);approaches.push({x:xx+3,y:yy+2});}
-   if(kind==='staff'){special('special-worktable',x+4,y+9);special('special-stool',x+8,y+10);}
-   if(kind==='principal'){library('sofa-front',x,y+9);office('desk-executive',x+6,y+9);}
+   library('bookcase',x,y+1);library('magazines',x+4,y+1);
+   library('low-books',x,y+5);library('sofa-back',x+4,y+5);
+   approaches.push({x:x+1,y:y+4},{x:x+5,y:y+4},{x:x+3,y:y+6});
+  }else if(kind==='staff'){
+   office('bookcase',x+3,y+1);
+   for(const xx of [x,x+4]){office('desk-white',xx,y+4);office('chair-blue',xx+1,y+7);approaches.push({x:xx+3,y:y+6});}
+  }else if(kind==='principal'){
+   office('bookcase',x,y+1);office('desk-executive',x+4,y+3);office('chair-blue',x+5,y+5);
+   library('sofa-front',x,y+5);approaches.push({x:x+3,y:y+6},{x:x+5,y:y+6});
   }else if(kind==='music'){
-   put('music-piano',x,y+3);put('music-cello',x+4,y+4);
-   for(const xx of [x+7,x+9])for(const yy of [y+4,y+7,y+10])special('special-stool',xx,yy);
-   approaches.push({x:x+3,y:y+6});
+   put('music-piano',x,y+3);put('music-cello',x+3,y+3);
+   for(const xx of [x+4,x+6])for(const yy of [y+4,y+6])special('special-stool',xx,yy);
+   approaches.push({x:x+2,y:y+7},{x:x+5,y:y+5});
   }else if(kind==='art'){
-   for(const xx of [x,x+3,x+6,x+9])put('art-easel',xx,y+4);
-   special('special-bookcase',x+4,y+2);
-   special('special-worktable',x,y+8);special('special-worktable',x+6,y+8);
-   approaches.push({x:x+3,y:y+7},{x:x+9,y:y+7});
+   for(const xx of [x,x+2,x+4,x+6])put('art-easel',xx,y+4);
+   special('special-bookcase',x+3,y+2);
+   special('special-worktable',x,y+7);special('special-worktable',x+4,y+7);
+   approaches.push({x:x+3,y:y+6},{x:x+7,y:y+6});
   }else if(kind==='council'){
-   special('special-bookcase',x+4,y+2);school('school-blackboard',x+4,y);
-   for(const yy of [y+4,y+8]){special('special-worktable',x+4,yy);for(const xx of [x+3,x+8])special('special-stool',xx,yy+1);}
-   approaches.push({x:x+7,y:y+7});
+   school('school-blackboard',x+3,y);special('special-bookcase',x,y+3);
+   special('special-worktable',x+3,y+4);
+   for(const xx of [x+2,x+6])special('special-stool',xx,y+5);
+   for(const xx of [x+3,x+5])special('special-stool',xx,y+6);
+   approaches.push({x:x+4,y:y+7});
   }
  }
- for(const base of [1,38]){
-  if(spec.level<4){rect(base,14,3,4);put('stairs-up',base,14);}
-  if(spec.level>1){rect(base+4,16,3,2);rect(base+4,14,3,1,walls[1]);rect(base+4,15,3,1,walls[2]);put('stairs-down',base+4,16);}
+ for(const base of [1,32]){
+  if(spec.level<4){rect(base,13,3,4);put('stairs-up',base,13);}
+  if(spec.level>1){rect(base+4,15,3,2);rect(base+4,13,3,1,walls[1]);rect(base+4,14,3,1,walls[2]);put('stairs-down',base+4,15);}
  }
- // Compact service room: two stalls and a wall-backed basin.
- rect(38,22,7,12);wall(38,22,7);rect(44,21,1,4);caps.add(at(44,21));lintels.add(at(44,21));
- for(let yy=25;yy<=28;yy++)caps.add(at(41,yy));
- for(const xx of [38,40,41,43,44]){caps.add(at(xx,28));wall(xx,29,1);}
- put('toilet',39,25);put('toilet',42,25);put('sink',43,31);
- const washDoor={x:44,y:21,width:1,height:4};
- rooms.push({id:`school-${spec.level}-washroom`,name:`${spec.level}층 화장실`,kind:'washroom',x:38,y:22,width:7,height:12,door:washDoor,center:{x:44,y:27}});
- doorways.push(washDoor);approaches.push({x:39,y:27},{x:42,y:27},{x:43,y:33});
- for(const door of doorways){lower(door.x,door.y+3,token(native,1,'lower','passable'));school('school-notice',door.x-1,door.y+2);}
- const entrance={x:0,y:19,width:1,height:1,direction:'left'},spawn={x:2,y:19};
- if(spec.level===1)rect(0,19,1,1);
+ // Native thin cubicles replace the oversized building-wall stall fronts.
+ rect(32,19,7,8);wall(32,19,7);rect(38,18,1,4);caps.add(at(38,18));lintels.add(at(38,18));
+ put('washroom-open-stalls',32,21);put('toilet',33,21);put('toilet',35,21);put('sink',37,21);
+ const washDoor={x:38,y:18,width:1,height:4};
+ rooms.push({id:`school-${spec.level}-washroom`,name:`${spec.level}층 화장실`,kind:'washroom',x:32,y:19,width:7,height:8,door:washDoor,center:{x:38,y:26}});
+ doorways.push(washDoor);approaches.push({x:33,y:23},{x:35,y:23},{x:37,y:23});
+ for(const door of doorways){lower(door.x,door.y+3,token(native,1,'lower','passable'));school('school-notice',door.x-1,door.y+1);}
+ const entrance={x:0,y:17,width:1,height:1,direction:'left'},spawn={x:2,y:17};
+ if(spec.level===1)rect(0,17,1,1);
 
  for(const i of caps){const x=i%w,y=Math.floor(i/w);let mask=0;for(const[dx,dy,bit]of[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8],[1,-1,16],[1,1,32],[-1,1,64],[-1,-1,128]])if(x+dx>=0&&y+dy>=0&&x+dx<w&&y+dy<h&&caps.has((y+dy)*w+x+dx))mask|=bit;const tile=xp.masks.indexOf(xp.normalize(mask));if(lintels.has(i)){lowerTiles[i]=floor;upperTiles[i]=token(auto.filename,tile,'upper','passable');}else lowerTiles[i]=token(auto.filename,tile,'lower');}
- const stairs=[];for(const base of [1,38]){if(spec.level<4)stairs.push({direction:'up',x:base+1,y:17,approach:{x:base+1,y:18},destinationLevel:spec.level+1,destination:{x:base+5,y:18}});if(spec.level>1)stairs.push({direction:'down',x:base+5,y:17,approach:{x:base+5,y:18},destinationLevel:spec.level-1,destination:{x:base+1,y:18}});}
+ const stairs=[];for(const base of [1,32]){if(spec.level<4)stairs.push({direction:'up',x:base+1,y:16,approach:{x:base+1,y:17},destinationLevel:spec.level+1,destination:{x:base+5,y:17}});if(spec.level>1)stairs.push({direction:'down',x:base+5,y:16,approach:{x:base+5,y:17},destinationLevel:spec.level-1,destination:{x:base+1,y:17}});}
  const walk=i=>i>=0&&i<w*h&&tiles[lowerTiles[i]].passage==='passable'&&(upperTiles[i]===-1||tiles[upperTiles[i]].passage==='passable');
  const queue=[at(spawn.x,spawn.y)],seen=new Set(queue);for(let k=0;k<queue.length;k++){const i=queue[k],x=i%w,y=Math.floor(i/w);for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){if(x+dx<0||x+dx>=w||y+dy<0||y+dy>=h)continue;const next=at(x+dx,y+dy);if(walk(next)&&!seen.has(next)){seen.add(next);queue.push(next);}}}
  for(const cell of [...approaches,...stairs.flatMap(s=>[s,s.approach,...(s.direction==='up'?Array.from({length:4},(_,i)=>({x:s.x,y:s.y-i})):[])])])if(!seen.has(at(cell.x,cell.y))){console.log(Array.from({length:h},(_,y)=>Array.from({length:w},(_,x)=>seen.has(y*w+x)?'.':walk(y*w+x)?'?':'#').join('')).join('\n'));throw Error(`Unreachable floor ${spec.level} ${cell.x},${cell.y}`);}
  // Every room is isolated from all other rooms when its own door is sealed.
- for(const room of rooms){const door=new Set();for(let y=room.door.y;y<room.door.y+room.door.height;y++)for(let x=room.door.x;x<room.door.x+room.door.width;x++)door.add(at(x,y));const q=[at(room.center.x,room.center.y)],s=new Set(q);for(let k=0;k<q.length;k++){const i=q[k],x=i%w,y=Math.floor(i/w);for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const j=at(nx,ny);if(walk(j)&&!door.has(j)&&!s.has(j)){s.add(j);q.push(j);}}}if(s.has(at(20,19)))throw Error('Room leaks through wall '+room.name);}
+ for(const room of rooms){const door=new Set();for(let y=room.door.y;y<room.door.y+room.door.height;y++)for(let x=room.door.x;x<room.door.x+room.door.width;x++)door.add(at(x,y));const q=[at(room.center.x,room.center.y)],s=new Set(q);for(let k=0;k<q.length;k++){const i=q[k],x=i%w,y=Math.floor(i/w);for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const j=at(nx,ny);if(walk(j)&&!door.has(j)&&!s.has(j)){s.add(j);q.push(j);}}}if(s.has(at(20,17)))throw Error('Room leaks through wall '+room.name);}
  result.push({id:`paw-school-floor-${spec.level}`,name:`햇살학교 ${spec.level}층`,level:spec.level,width:w,height:h,lowerTiles,upperTiles,rooms,doorways,placements,approaches,stairs,entrance,spawn,lintels:[...lintels].map(i=>({x:i%w,y:Math.floor(i/w)})),reachable:seen.size});
 }
 const blueprint={guide:await readFile('tiledata/pixel-art-world/SCHOOL-BUILDING.md','utf8'),id:layout.id,name:layout.name,rules:layout.rules,sources,tiles,recipes,floors:result};
