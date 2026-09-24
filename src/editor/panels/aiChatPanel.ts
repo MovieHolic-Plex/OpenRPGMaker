@@ -113,6 +113,8 @@ import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
+import { planStampPlace } from "@/ai/stampPlace";
+import { applyToolToStore } from "@/editor/tools/applyChangesetToStore";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -2150,7 +2152,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const handoff = composerHandoff && composerHandoff.display === typed ? composerHandoff : null;
     const text = handoff?.full ?? typed;
     const shown = handoff ? typed : text;
-    if (!text) {
+    if (!text && !stampPlaceOn) {
       // 조용한 return 은 "버튼이 고장났나" 로 읽혔다. 무엇이 부족한지 말하고 초점을 준다.
       toast("보낼 지시를 입력하세요", "info");
       try {
@@ -2158,6 +2160,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } catch {
         // headless DOM may not implement focus
       }
+      return;
+    }
+    if (stampPlaceOn) {
+      if (turnBusy) {
+        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+        return;
+      }
+      input.value = "";
+      composerHandoff = null;
+      syncInputHeight();
+      stampPlaceNow(text);
       return;
     }
     if (!ensureConfigReadyForSend()) return;
@@ -2280,7 +2293,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
+  let stampPlaceOn = false;
+  const stampPlaceNow = (text: string): void => {
+    const state = editorState.get();
+    const mapId = state.currentMapId;
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!mapId || !map) {
+      toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
+      return;
+    }
+    const plan = planStampPlace({
+      text,
+      mapId,
+      mapWidth: map.width,
+      mapHeight: map.height,
+      selection: state.selection,
+    });
+    const shown = text.trim() || "숲";
+    appendBubble("user", shown);
+    if ("error" in plan) {
+      appendBubble("system", plan.error);
+      return;
+    }
+    const started = performance.now();
+    const result = applyToolToStore("place_props", { ...plan.args });
+    const ms = Math.max(1, Math.round(performance.now() - started));
+    const detail = result.summary || result.issues?.map(issue => issue.message).join(" ") || "바로 깔기에 실패했습니다.";
+    appendBubble("system", result.ok ? `${plan.label} · ${ms}ms. ${detail}` : detail);
+    setStatus(result.ok ? "대기" : "실패");
+  };
   const refreshComposerPlaceholder = (): void => {
+    if (stampPlaceOn) {
+      input.setAttribute("placeholder", "바로 깔기 — 숲, 침엽수, 나무 상자. 비우면 숲.");
+      syncConversationState();
+      return;
+    }
     // 연결 상태를 함께 본다 — 미연결이면 "한 문장으로 지시" 대신 어디를 눌러야 하는지 말한다.
     const placeholder = formatComposerPlaceholder(readAgentBrief(), isAiConfigReady(loadAiConfig(), getAiConnectionStatus(loadAiConfig())));
     if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
@@ -2338,8 +2385,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     if (currentKey && currentKey !== dismissedSelectionKey) selectionTaskActive = true;
     if (!currentKey) dismissedSelectionKey = null;
-    const ctx = mapContext();
-    const chips = [el("span", { class: "ai-context-chip", text: ctx.mapName ?? "맵 없음" })];
+    const chips: HTMLElement[] = [];
     const selection = currentSelectionForRegionTask();
     if (selectionTaskActive && !selection) selectionTaskActive = false;
     if (selection) {
@@ -2883,6 +2929,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     },
     modelLabel: modelChipLabel(),
   });
+  const STAMP_PLACE_KEY = "oprn:ai-stamp-place";
+  stampPlaceOn = localStorage.getItem(STAMP_PLACE_KEY) === "1";
+  composerShell.stampToggle.setAttribute("aria-pressed", String(stampPlaceOn));
+  composerShell.stampToggle.addEventListener("click", () => {
+    stampPlaceOn = composerShell.stampToggle.getAttribute("aria-pressed") === "true";
+    localStorage.setItem(STAMP_PLACE_KEY, stampPlaceOn ? "1" : "0");
+    refreshComposerPlaceholder();
+  });
+  if (stampPlaceOn) refreshComposerPlaceholder();
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;
   openComposerPopover = composerShell.openPopover;

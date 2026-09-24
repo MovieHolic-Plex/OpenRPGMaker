@@ -587,6 +587,10 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   증거 `output/evidence/ai-routine-edit/compact-<width>-<mode>.png`. 모델 전송은 모킹한다.
   단위 회귀는 `test/piAgentTeamBoardRender.test.ts`와 기존 Pi 실행/컴포저 테스트.
 
+## 바로 깔기 (2026-09-25)
+
+컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 전송은 의도 분류·Ultrabrain 계획·Deep 실행을 호출하지 않고 `planStampPlace` → `applyToolToStore("place_props")` 로 끝난다. 드래그 선택이 현재 맵과 같으면 그 사각형, 없으면 맵 전체. 빈 입력은 숲(침엽수·dense). 울창/빽빽은 impassable, 드문드문은 sparse. 모델 연결이 없어도 동작한다.
+
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
 평문 채팅은 기존 `declareIntentCached` 결과를 재사용한다. 오류 없이 `source: llm`,

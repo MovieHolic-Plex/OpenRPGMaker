@@ -78,6 +78,8 @@ export interface ComposerElements {
   readonly autonomySelect: HTMLSelectElement | null;
   /** Pi 팀 토글. `teamToggleOptions` 를 주지 않았으면 null. 읽기 전용·계획 턴에서는 숨는다. */
   readonly teamToggle: HTMLElement | null;
+  /** 바로 깔기. 켜지면 전송이 모델 없이 place_props 로 간다. */
+  readonly stampToggle: HTMLButtonElement;
   readonly setPiTeam: (team: boolean) => void;
   readonly syncApplyMode: () => void;
   readonly syncEffort: (autonomy: AutonomyLevel) => void;
@@ -399,6 +401,22 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
 
   // 액션 행: 항상 존재하는 고정 높이 한 줄. 좌측은 nowrap + 가로 스크롤이라 내용이 길어져도
   // 줄이 늘지 않는다(줄바꿈이 곧 바 높이 변화였다).
+  const stampToggle = el("button", {
+    class: "ai-composer-stamp-toggle",
+    text: "바로 깔기",
+    attrs: {
+      type: "button",
+      "aria-pressed": "false",
+      "aria-label": "바로 깔기",
+      title: "켜면 선택 영역에 바로 깐다. 의도 분류·계획·실행 턴을 거치지 않는다.",
+    },
+    dataset: { testid: "ai-stamp-place" },
+    on: { click: () => {
+      const next = stampToggle.getAttribute("aria-pressed") !== "true";
+      stampToggle.setAttribute("aria-pressed", String(next));
+    } },
+  }) as HTMLButtonElement;
+
   const actions = el("div", {
     class: "ai-composer-actions",
     dataset: { testid: "ai-composer-actions" },
@@ -406,6 +424,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       el("div", {
         class: "ai-composer-actions-lead",
         children: [
+          stampToggle,
           settingsToggle,
           options.undoAppliedButton,
           options.contextChips,
@@ -414,7 +433,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       }),
       el("div", {
         class: "ai-composer-actions-trail",
-        children: [options.statusGroup, modelChip, options.sendButton, options.abortButton],
+        children: [options.statusGroup, options.sendButton, options.abortButton],
       }),
     ],
   });
@@ -571,6 +590,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
     planningPopover,
     autonomySelect,
     teamToggle,
+    stampToggle,
     setPiTeam,
     syncEffort,
     syncApplyMode,
