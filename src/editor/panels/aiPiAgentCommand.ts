@@ -50,12 +50,26 @@ import { adoptSpatialToolProof, authorMergedSpatialProposal, exportSpatialToolPr
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import { changedAreaLabels } from "@/project/changeAreas";
 import { computeChangeSites } from "@/project/changeSites";
 import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
 import { currentTeamActivity, publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
+
+/**
+ * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
+ * 2026-09-24 연애 4회차: 집 12채·주민 14명 마을(과 실내 14장)이 시작 맵 이동 뒤 고아로 남았는데 보고는 「완료」였다.
+ */
+function unreachableWorkIssues(base: Project, after: Project): string[] {
+  const reachable = reachableMapIdsFromStart(after);
+  const orphans = Object.values(after.maps).filter((map) => !reachable.has(map.id) && (map.events?.length ?? 0) > 0
+    && base.maps[map.id] !== map);
+  if (orphans.length === 0) return [];
+  const names = orphans.slice(0, 3).map((map) => `'${map.name}'`).join(", ");
+  return [`시작 맵에서 문으로 갈 수 없는 맵 ${orphans.length}개: ${names}${orphans.length > 3 ? " 외" : ""} — 이어 주지 않으면 거기 만든 것이 플레이에 나오지 않아요.`];
+}
 
 export const PI_COMMAND_PREFIX = "/pi";
 export const TEAM_COMMAND_PREFIX = "/team";
@@ -799,6 +813,7 @@ export async function runPiCommand(
       ...villageCompletion.issues,
       ...(stoppedByLimit && streamErrors[0] ? [streamErrors[0]] : []),
       ...(harmonyIssue ? [harmonyIssue] : []),
+      ...unreachableWorkIssues(base, merged.project),
       ...unresolvedFindings,
     ];
     // 첫 줄은 «무엇을 만들었나» 다(2026-09-23 실측: 「반영했지만 확인할 것이 남았어요」 + 검토 문장

@@ -16,6 +16,7 @@ import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUT
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
+import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import { cloneGameMap } from "@/project/mapClone";
 import {
   appendToTree,
@@ -1186,6 +1187,11 @@ const setStartPosition: ToolDefinition = {
       && collectMapLinkStats(draft, previous.id).playLinkCount === 0
       ? [`이전 시작 맵 '${previous.name}'(${previous.id}) 은 이벤트도 드나드는 문도 없는 빈 맵으로 남았습니다 — 쓸 곳이 없으면 remove_map { mapId: "${previous.id}" } 로 지우고, 쓸 거면 문(create_transfer_pair)으로 이으세요.`]
       : [];
+    // 내용이 있는 이전 시작 맵이 새 시작에서 닿지 않으면 거기 만든 것이 통째로 플레이에서 빠진다 —
+    // 2026-09-24 연애 4회차: 집 12채·주민 14명 마을을 시작 맵에 짓고 시작을 새 기숙사 방으로 옮긴 뒤 끝내 잇지 않았다.
+    if (previous && previous.id !== map.id && (previous.events?.length ?? 0) > 0 && !reachableMapIdsFromStart(draft).has(previous.id)) {
+      warnings.push(`이전 시작 맵 '${previous.name}'(${previous.id}, 이벤트 ${previous.events.length}개)은 새 시작 맵에서 문으로 닿지 않습니다 — create_transfer_pair 나 이동 선택지로 이어야 거기 만든 것이 플레이에 나옵니다.`);
+    }
     return { summary: `시작 위치 설정: ${map.name} (${x}, ${y})`, ...(warnings.length > 0 ? { warnings } : {}) };
   },
 };

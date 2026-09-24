@@ -375,6 +375,17 @@ function applyEventLevelGraphic(draft: Project, map: GameMap, event: GameEvent, 
     return;
   }
   if (graphic.sprite === undefined && graphic.transparent !== true) return;
+  // 모델이 지어낸 sprite id(`easyrpg_charset_actor1` — 실제는 `tex_…`)를 그대로 쓰면 커밋 참조 검증이 이벤트 전체를 반려한다
+  // (2026-09-24 연애 4회차 재생). 등록된 id 로 맞추고, 못 맞추면 이 그림은 버리고 페이지 기본 규칙(주민 그림)에 맡긴다.
+  if (graphic.sprite?.id) {
+    const known = collectResourceIds(draft);
+    if (!known.has(graphic.sprite.id)) {
+      const fixed = [`tex_${graphic.sprite.id}`, graphic.sprite.id.replace(/^tex_/u, "")].find((id) => known.has(id));
+      if (!fixed) { warnings.push(`event.graphic.sprite '${graphic.sprite.id}' 은 없는 리소스라 쓰지 않았습니다 — list_npc_graphics 로 고르세요.`); return; }
+      warnings.push(`event.graphic.sprite '${graphic.sprite.id}' → '${fixed}' 로 맞췄습니다.`);
+      graphic = { ...graphic, sprite: { ...graphic.sprite, id: fixed } };
+    }
+  }
   // pages 를 안 보낸 부분 수정이면 「외형만 바꿔」 다 — 기존 페이지 전부에 입힌다. pages 를 보냈으면 그림 없는 페이지만.
   const reskin = !Object.prototype.hasOwnProperty.call(patch, "pages");
   const pages = (event.pages ?? []).filter((page) => page && typeof page === "object"
