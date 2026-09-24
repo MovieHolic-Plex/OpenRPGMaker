@@ -396,10 +396,11 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       }));
     },
     async saveSerialized(serialized: string, expectedSha?: string | null): Promise<LocalStoreSaveResult> {
-      const parsed = deserializeStoredProjectJson(JSON.parse(serialized));
+      const json = JSON.parse(serialized);
+      const parsed = deserializeStoredProjectJson(json, serialized);
       const wire: ProjectWire = {
         serialized,
-        json: JSON.parse(serialized),
+        json,
         sha256: sha256HexOfText(serialized),
       };
       return driver.transaction(() => {

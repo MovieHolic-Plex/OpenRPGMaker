@@ -19,14 +19,24 @@ export type ProjectSession = {
  * 여기서 부르는 이유: 스토어의 open 은 `oprn-store info` 같은 읽기 전용 도구도 타므로,
  * 여는 순간 쓰는 행동은 창을 여는 이 경로에만 둔다. 실패해도 여는 것을 막지 않는다.
  */
+function uploadedAssetsHaveInlineDataUrl(serialized: string): boolean {
+  // Tileset reference images also use "dataUrl". Those are not uploaded assets, and treating
+  // them as inline media made every new-project open deserialize the whole document.
+  const uploaded = serialized.indexOf('"uploaded":');
+  if (uploaded < 0) return false;
+  const tilesets = serialized.indexOf('"tilesets":', uploaded);
+  const slice = tilesets > uploaded ? serialized.slice(uploaded, tilesets) : serialized.slice(uploaded);
+  return slice.includes('"dataUrl"');
+}
+
 async function separateInlineMediaOnOpen(store: LocalProjectStore): Promise<void> {
   // Normal hosted projects already store uploaded media as file refs. Avoid deserializing the
   // entire project just to discover that there is no inline data URL to migrate. This check is
   // intentionally lexical: a false positive only does the old repair work, while the common
-  // 5–6 MiB project load avoids a second full deserialize before the renderer asks for the same
+  // project load avoids a second full deserialize before the renderer asks for the same
   // snapshot through project.load().
   const serialized = store.exportSerialized();
-  if (!serialized || !serialized.includes('"dataUrl"')) return;
+  if (!serialized || !uploadedAssetsHaveInlineDataUrl(serialized)) return;
   const snapshot = store.loadSnapshot();
   if (!snapshot) return;
   try {
