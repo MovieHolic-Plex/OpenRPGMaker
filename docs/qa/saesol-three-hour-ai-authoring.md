@@ -992,3 +992,6 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - revision476은 새 적4개/팀2개가 저장됐으며 기존 maps/database 레코드와 session/system은 보존됐다. 두 팀 battleFlow는 gauge여서 요청한 strict와 다르다. 최종 종료 시 재확인 후 남아 있으면 수정 대상이다.
 - revision479에서 기존 sw_sr_quest_accept의 이름이 빈 문자열에서 생태조사 수락 설명으로 바뀌었다. ID/세션값은 유지됐고 신규 sw_sr2_ecology_started는 별도로 만들어졌다. 기존 자료 변경 금지 범위를 어긴 이름 변경으로 기록하며 전체 스위치 rename/진행 파손으로 과장하지 않는다. 완료 후 원래 이름 복원이 필요하다.
 - `walking-chain-audit.json`은 기존 도보 증거13구간의4270칸/포털95회를 합산했다. 각 원본의 서로 다른 결과 필드(firstBadge/thirdBadge/passed)를 보존하며, 광산 구출의 옛 보상ID assertion 실패와 실제 failureState 재개를 명시했다. 자동화 이동량을180분 플레이시간으로 환산하지 않는다.
+
+
+- 후속 중간 revision480에서 session의 차이는 신규 ecology 스위치2개의 false 초기값 추가였다. 기존 진행 값 훼손과 구분하도록 범위 보고서를 세분화했다. 이벤트 도구가 sw_sr2_ecology_started 없음으로 커밋을 거부한 기록도 `forest-upsert-integrity-refusal.txt`에 보존했다. 그 시점의 저장소에는 해당 정의가 있어 워커 초안/호출 순서 문제를 추가 확인해야 하며, SQLite 저장 누락이라고 단정하지 않는다. AI는 이후 상태 정의 도구로 보완 중이다.
