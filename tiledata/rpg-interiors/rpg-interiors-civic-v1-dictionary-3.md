@@ -4,6 +4,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
+    "tile": 1864,
+    "label": "무기 거치대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 1894,
     "label": "필경사 책상",
     "passability": {

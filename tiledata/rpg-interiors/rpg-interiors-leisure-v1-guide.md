@@ -46,8 +46,8 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
         9
       ]
     ],
-    "reachable": 65,
-    "walkable": 59,
+    "reachable": 64,
+    "walkable": 57,
     "blocked": []
   },
   {

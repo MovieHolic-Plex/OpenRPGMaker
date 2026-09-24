@@ -6,7 +6,8 @@ const out = "verify-shots/rpg-interiors";
 fs.mkdirSync(out, { recursive: true });
 const plans = JSON.parse(fs.readFileSync("tiledata/rpg-interiors/catalog.json")).plans;
 const shipped = JSON.parse(fs.readFileSync("src/assets/sharedRpgInteriorReferences.json"));
-const browser = await chromium.launch({ headless: true });
+// Without these flags chromium drops vite modules with ERR_NETWORK_CHANGED on this box (tailscale + docker bridges).
+const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 }, acceptDownloads: true });
   const errors = [];

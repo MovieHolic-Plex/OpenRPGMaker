@@ -4,6 +4,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
+    "tile": 936,
+    "label": "편지 쟁반",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 941,
     "label": "독서등",
     "passability": {
@@ -1303,17 +1314,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   },
   {
     "tile": 1863,
-    "label": "무기 거치대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1864,
     "label": "무기 거치대",
     "passability": {
       "up": false,
