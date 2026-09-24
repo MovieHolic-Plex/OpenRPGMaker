@@ -131,6 +131,19 @@ function requiredTemplateBlock(genre: NarrativeHorrorGenre | undefined): string[
 }
 
 /** Build the auto-send user message for a genre chip. */
+/**
+ * 몬스터 수집 장르 전용 저작 요령 — 도구 이름을 적어 두면 그 스키마가 첫 턴부터 노출된다(mentionedToolSchemas).
+ * 2026-09-24 도그푸딩: 도로를 create_map 빈 잔디로 두고 끝냄, 트레이너 battleProcessing 13회 거부, 체육관이 야외 잔디.
+ */
+export const MONSTER_COLLECT_AUTHORING_GUIDE = [
+  "몬스터 수집 저작 요령:",
+  "- 전투는 잡은 몬스터가 싸운다 — configure_monster_system 을 부를 때는 battleParty:true 를 함께 준다.",
+  "- 첫 파트너는 give_starter_monsters(3종 선택 + 재지급 방지)로 만든다.",
+  "- 도로·필드 맵은 create_map 뒤 author_wild_route({mapId, exits, grassPatches, encounters:[{troopId,weight}]}) 로 흙길·숲·키큰 풀숲과 「풀숲에서만」 나오는 야생 조우를 한 번에 시공한다. 결과 exits 칸에 create_transfer_pair 로 문을 달고, trainerSpots 에 트레이너를 둔다.",
+  "- 트레이너·관장은 place_npc 페이지 commands 에 {kind:\"battleProcessing\", troopId:\"조회한 troop id\", canEscape:false, canLose:false} 를 넣는다. 트레이너의 몬스터는 upsert_enemy(speciesId) → upsert_troop 로 만든다.",
+  "- 체육관·연구소·회복 센터·상점은 실내 맵이다. 마을 집 실내를 쓰면 그 맵 이름을 시설 이름으로 바꾸고(set_map_properties) 마을 문 앞에 표지판을 둔다.",
+].join("\n");
+
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
@@ -141,6 +154,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
+      ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
     ].join("\n\n");
   }
   if (preset.packId === "action-rpg") {
