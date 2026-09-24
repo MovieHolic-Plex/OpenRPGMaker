@@ -734,6 +734,21 @@ function upsertLegacyEquipmentItemAsEquipment(draft: Project, itemPatch: Record<
   };
 }
 
+/**
+ * 없는 전투 애니메이션 id 를 지우고 가까운 후보와 함께 경고한다. 애니메이션은 연출이라 거부할 이유가 없다 —
+ * 2026-09-24 JRPG 도그푸딩: upsert_skill animationId:"anim_slash" 가 후보 없는 「animationId does not exist.」 로
+ * 커밋 거부되고, 그 스킬을 배우는 upsert_class 까지 연쇄로 거부됐다.
+ */
+function dropUnknownAnimationId(project: Project, record: { animationId?: string }, label: string, warnings: string[]): void {
+  const id = record.animationId;
+  if (!id || project.database.battleAnimations.some((animation) => animation.id === id)) return;
+  delete record.animationId;
+  const word = id.replace(/^anim_(gen_)?/u, "").split(/[_-]/u)[0] ?? "";
+  const close = word ? project.database.battleAnimations.filter((animation) => animation.id.includes(word) || animation.name?.includes(word)).map((animation) => animation.id) : [];
+  const hints = (close.length ? close : project.database.battleAnimations.map((animation) => animation.id)).slice(0, 8);
+  warnings.push(`${label}.animationId "${id}" 는 전투 애니메이션에 없어 비웠습니다(기본 연출). 쓸 수 있는 id: ${hints.join(", ")}`);
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -757,8 +772,10 @@ const upsertItem: ToolDefinition = {
       : args.item;
     const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
+    const warnings: string[] = [];
+    dropUnknownAnimationId(draft, record, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
-    return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 
@@ -1206,8 +1223,10 @@ const upsertSkill: ToolDefinition = {
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
+    const warnings: string[] = [];
+    dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
-    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 
@@ -1241,6 +1260,7 @@ const upsertClass: ToolDefinition = {
       warnings.push(`직업 parameterCurves 는 직업 변경(changeClass·승급) 뒤에만 능력치로 쓰입니다 — 이 직업으로 시작하는 배우${users.length ? `(${users.join(", ")})` : ""}의 전투 능력치는 배우 parameterCurves 가 정합니다. 역할별 능력치는 upsert_actor parameterCurves 에 [Lv1, Lv99] 로 주세요.`);
     }
     dropUnknownElementRates(draft, record, "class", warnings);
+    dropUnknownAnimationId(draft, record, "class", warnings);
     const outcome = upsertById(draft.database.classes, record);
     return {
       summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
