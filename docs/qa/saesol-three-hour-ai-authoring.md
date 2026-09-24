@@ -40,7 +40,15 @@
 | MEDICINE-032 | 몬스터 전투에서 표시된 회복약 선택이 묵살됨 | PR1262 main 병합 및9897 번들 반영, 전용 플레이어 사용·승리 검증 |
 | AI-031 | 기록판·측량 장치를 사람 그래픽으로 저작 | revision357 사본의 네 화면 직접 확인 |
 | AI-030 | 신규 유적 상태를 만들려고 기존 마을 승리 스위치를 전역 rename | revision330 기존 맵·상태 정의 복구 확인 |
-| GROWTH-029 | 고레벨 포획 동료의 경험치가 0에서 시작 | 미해결; 레벨24→25의 누적 경험치 지연 확인 |
+| GROWTH-029 | 고레벨 포획 동료의 경험치가 0에서 시작 | PR1272 수정 반영; 신규 포획 레벨29/exp755·레벨30/exp806 확인. 기존 인스턴스 소급 수정 없음 |
+| AI-033 | 턴제 프로젝트에 gauge 전투그룹 생성 | strict로 정정, 네 번째 체육관 실제 전투 검증 |
+| AI-034 | 실제 자격·왕복 조건과 다른 안내 | revision398 대사 정정, 실제 관문 왕복 확인 |
+| AI-035 | 정의하지 않은 승리 스위치로 이벤트 생성 | 도구가 저장 거부, 정의/이벤트 복구 후 사천왕 전투 검증 |
+| BATTLE-036 | 상대 교체 뒤 이전 스프라이트·HP 띠 잔류 | PR1321 수정·9897 반영, 교체당 표시1개 및 실제 승리 확인 |
+| AI-037 | 커스텀 잔디를 기본 물 타일로 오인 | PR1322 판정 수정, 타일셋 범위·명시 water 태그 진단 확인 |
+| AI-038 | 장기 저작 중 렌더러 소멸·부분 저장 | 재발·복구 기록. 원인 미확정, 관찰기 자체 대형 요청 수집 부하도 분리 조사 |
+| VISUAL-039 | 일반 NPC에 검은 실루엣 원본 칩 선택 | 저작상 미해결, 렌더링 회귀 아님 |
+| VISUAL-040 | 트레이너 칩을 지정했지만 기사 배우가 시작 선두 | 저작상 미해결, 실제 리소스 선택 함수로 확인; 수정 요청 준비 |
 
 아래는 재현 조건·근거·변경 이력을 포함한 상세 기록이다. 이전 리비전의 수치는 해당 시점의 중간 상태다.
 
@@ -51,6 +59,12 @@
 
 | 확인 범위 | 근거 디렉터리 | 해석 한계 |
 |---|---|---|
+| 새 게임→두 배지 실제 도보 | `fresh-two-badge-walking/` | revision425 사본,574칸/16포털; 이후 저작된 퀘스트는 미검증 |
+| 구출→등대→세 번째 배지 도보 | `fresh-region3-rescue-walking/`, `fresh-third-badge-walking/` | 구출 QA의 옛 보상 ID 실패를 별도 설명. 실제 failureState를 이어 완료 |
+| 산길 측량·팀전·포획→유적→네 번째 배지 도보 | `fresh-region4-survey-walking/`, `fresh-region4-pass-walking/`, `fresh-region4-fuzall-walking/`, `fresh-region4-temple-walking/`, `fresh-fourth-badge-walking/` | 실제 진행 상태를 QA 사본에서 재개; 무중단 세이브로드/180분 증거 아님 |
+| 네 배지 후 그림릿 포획·관문 회복·보급 도보 | `fresh-grimlit-walking/`, `fresh-gate-support-walking/` | 실제 재고·부상 보존, 난수별 포획 횟수는 다름 |
+| 엔딩 이후20맵 도보 연결 | `world-walking-player/` | 후반 플래그가 모두 열린 상태의 연결 검사 |
+| 챔피언·엔딩·마을 복귀 | `region4-champion-player/` | 이전 실제 사천왕 상태를 재개한 구간 검사, 이동은 transferTo |
 | 새 게임부터 첫 두 배지, 실제 전투·보상 | `two-badge-player-transfer-corrected/` | 이동은 transferTo, 한 스타터로 수행 |
 | 밸브 오답 초기화·정답·완료 후 유지와 표식 | `region3-valve-visual-player/` | 구출 전체를 이 실행 하나로 증명하지 않음 |
 | 동료 없음/두 번째 배지 없음에서 6전투 차단 | `region3-guards-player-final/` | 12개 조건 검사, 다른 모든 분기 검증은 아님 |
@@ -896,3 +910,23 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `fresh-fourth-badge-walking/SUMMARY.md`: passed/badgeOnce=true,237칸/포털10회,pageErrors0. 실제 유적 완료 상태로 수련생 두 팀→관장 두 마리 팀을 같은 실행에서 통과했다. 수련생 보상750G/780G, 관장 보상1600G 및 재대화 골드/아이템 보존을 확인했다. 회복약5회 실제 소비, 마지막 네 배지 플래그 모두true다.
 - `fourth-badge.png`를 직접 확인했다. 최초 새 게임에서 시작해 각 구간의 실제 진행 상태를 이어받은 정상 도보 경로가 네 배지까지 연결됐다. QA 사본 재개 및 새 난수 상태를 사용했으므로 무중단 일반 세이브로드 완주나 다른 스타터 균형,180분 분량의 증거와 구분한다.
 - 이 경로는 revision425 콘텐츠 기준이다. 후속 숲 퀘스트가 두 번째 체육관 조건을 보강하면 새로운 시작 경로를 다시 확인해야 한다. 현재 결과를 향후 수정된 퀘스트까지 검증한 것으로 소급하지 않는다.
+
+
+### checkpoint 크기의 주요 구성 실측
+
+- `checkpoint-size-audit.json`은 정본을 읽기 전용으로 분석한 결과다. revision457의 저장 JSON50,993,174바이트 중 tilesets45,380,898바이트, assets4,280,667바이트, database708,249바이트, maps346,565바이트였다. 업로드92개 중80개는 ref,12개는 inline이었다. 따라서 이번 큰 본문의 대부분을 Base64 이미지라고 설명하면 부정확하다.
+- 가장 큰 타일셋은 현재 리그가 사용하지 않는 forest_harmony와 shared_lpc_interior_castle 등이다. 다만 전역에서 읽히는 공용 자료를 임의로 삭제해 크기를 줄이지 않았다.
+- `scripts/lib/piAgentRuntime.ts`의 incremental checkpoint는 accepted/ctx.project 변경 비교, 전체 project clone, onCheckpoint 송신, 반환된 project 재clone을 수행한다. `src/ai/piAgent/client.ts`의 ACK도 전체 project를 포함한다. 작은 타일 작업에도 큰 데이터가 반복 처리되는 구조를 확인했지만, 이 분석만으로55초 전부의 원인이나 renderer 소멸 원인을 단정하지 않는다.
+
+
+### 관찰 도구 자체의 대형 요청 수집도 분리 점검
+
+- 요청20b의 관찰 Node PID109974 RSS는 약4.17GB로 관측됐다. 기존 드라이버는 모든 checkpoint response에서 `request().postDataBuffer()`로 약51MB 요청 본문을 읽어 길이를 기록한다. 이 수집과 Playwright 요청 객체 보존이 관찰 프로세스 부하에 기여할 가능성은 있으나 메모리 프로파일로 확정하지 않았다.
+- 관찰 스크립트의 이 기능을 `CAPTURE_CHECKPOINT_BYTES=1`일 때만 켜도록 변경했다. 현재 실행 중인 프로세스는 그대로 두며 다음 관찰 세션부터 기본 비활성화된다. 크기는 이미 JSONL/정본 분석으로 확보했다. 향후 renderer/관찰기 종료를 편집기 단독의 재현으로 확대 해석하지 않는다. 호스트/워크스페이스 콘텐츠는 이 변경으로 수정하지 않았다.
+
+
+### 네 배지 도보 진행에서 그림릿 포획·리그 보급 연결
+
+- `fresh-grimlit-walking/SUMMARY.md`: passed=true,pageErrors0,98칸/포털3회. 실제 마비→스칼라포드 교체→거품 후 포획구11개(14→3), 회복약3개를 사용해 그림릿 레벨30/exp806을 포획했다. `captured.png`를 직접 확인했다. 앞선 구간 검사에서6회 포획했던 난수 결과를 그대로 기대하지 않았다.
+- `fresh-gate-support-walking/SUMMARY.md`: passed/fullPartyHeal=true,pageErrors0,61칸/포털2회. 부상·마비·PP 소모를 보존해 관문에 걸어간 후 네 동료 완전회복, 무료 소지품/골드 보존, 재치료 무변화를 확인했다. 실제3600G로 상급약8개와 포획구6개를 샀으며 `gate-ready.png`와 `supply-shop.png`를 직접 확인했다.
+- 회복 기대치는 도보로 간호사 앞에 도착한 실제 동료 레벨·기술로 계산한다. 이전 체크포인트의 고정 수치를 쓰지 않아 정상 걷기 성장과 혼동하지 않는다. 각 검사 종료의 실제 진행 상태를 다음 단계로 넘겼으며 정본 세션을 진행 완료 상태로 덮어쓰지 않았다.
