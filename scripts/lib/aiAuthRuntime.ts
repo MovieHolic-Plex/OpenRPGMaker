@@ -521,6 +521,14 @@ export function seedOAuthForTests(
  * 전송에 넘길 요청 시점 자격. 만료됐으면 먼저 갱신한다 —
  * `packRequestApiKey` 는 만료 자격을 의도적으로 거절하므로 이 순서가 계약이다.
  */
+/**
+ * 요청 키로 내줄 OAuth 토큰의 최소 남은 수명. Pi 실행은 시작 때 한 번 푼 키를 워커에 고정 문자열로 넘겨 실행 내내 쓴다 —
+ * 만료 직전 토큰을 그대로 주면 실행 도중 pi-ai 가 「OAuth token expired before request」로 턴 전체를 실패시킨다
+ * (2026-09-24 추리 도그푸딩: 새 프로젝트 첫 생성이 0:56 에 실패, 직후 토큰은 다른 프로세스가 갱신해 52분 남아 있었다).
+ * pi-ai 의 AuthStorage 는 60초 앞당겨 갱신하지만 이 경로는 AuthStorage 를 거치지 않는다.
+ */
+export const REQUEST_KEY_MIN_LIFETIME_MS = 15 * 60_000;
+
 export async function resolveRequestApiKey(provider: string): Promise<string | undefined> {
   const id = requireKnown(provider);
   if (envScanDecision() === "allow") {
@@ -537,10 +545,16 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
     credentials = credentialsOf(id);
   }
   if (!credentials) return undefined;
-  if (Date.now() >= credentials.expires) {
+  const expired = Date.now() >= credentials.expires;
+  const expiringSoon = !expired && credentials.expires - Date.now() < REQUEST_KEY_MIN_LIFETIME_MS;
+  // 조기 갱신은 실패 백오프 중이면 건너뛴다 — 아직 살아 있는 토큰으로 매 요청 제공자를 두드리지 않는다.
+  const backingOff = (refreshFailures.get(id)?.retryAt ?? 0) > Date.now();
+  if (expired || (expiringSoon && !backingOff)) {
     try {
       await refreshProvider(id);
     } catch (error) {
+      // 아직 살아 있는 토큰이면 조기 갱신 실패로 요청을 막지 않는다 — 원래 토큰으로 진행한다.
+      if (!expired && isUsableCredentials(id, credentialsOf(id))) return packRequestApiKey(id, credentialsOf(id)!);
       // 갱신실패의 흔한 원인은 refresh_token 재사용이다 — codex CLI 같은 다른 도구가 먼저 갱신하면 우리 저장본의 refresh 토큰은 이미 소모된 뒤다.
       // 그럴 때 CLI 로그인은 더 신선할 수 있으므로 채용을 시도하고, 그것도 쓸 수 없으면 원래 오류를 올린다.
       // 이 경로가 없으면 한 번 낙은 저장본 행이 검색·완성을 영구히 막는다(2026-09-21 실측).

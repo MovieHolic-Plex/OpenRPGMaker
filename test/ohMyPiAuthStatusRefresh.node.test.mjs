@@ -39,6 +39,30 @@ describe("/auth/status revives an expired-but-refreshable login", () => {
     assert.equal(runtime.authRefreshStatsForTests().attempts, before + 1);
   });
 
+  // 2026-09-24: 만료 1분 전 토큰을 Pi 실행에 고정으로 넘겨 실행이 0:56 에 「OAuth token expired before request」로 실패했다.
+  it("request keys are refreshed ahead of expiry so a long run does not outlive its token", async () => {
+    const adapters = await createOhMyPiAdapters();
+    await adapters.seedOAuth(ANTIGRAVITY, { access: "soon", refresh: "r", expires: Date.now() + 60_000, projectId: "proj-test" });
+    const before = runtime.authRefreshStatsForTests().attempts;
+    assert.equal(JSON.parse(String(await runtime.resolveRequestApiKey(ANTIGRAVITY))).token, "stub-refreshed");
+    assert.equal(runtime.authRefreshStatsForTests().attempts, before + 1);
+
+    // 넉넉히 남은 토큰은 갱신하지 않는다.
+    await adapters.seedOAuth(ANTIGRAVITY, { access: "fresh", refresh: "r", expires: Date.now() + runtime.REQUEST_KEY_MIN_LIFETIME_MS + 60_000, projectId: "proj-test" });
+    assert.equal(JSON.parse(String(await runtime.resolveRequestApiKey(ANTIGRAVITY))).token, "fresh");
+    assert.equal(runtime.authRefreshStatsForTests().attempts, before + 1);
+
+    // 조기 갱신이 실패해도 아직 살아 있는 토큰으로 진행한다.
+    await adapters.seedOAuth(ANTIGRAVITY, { access: "soon2", refresh: "r", expires: Date.now() + 60_000, projectId: "proj-test" });
+    process.env.OPRN_OH_MY_PI_TEST_REFRESH_FAIL = "1";
+    try {
+      assert.equal(JSON.parse(String(await runtime.resolveRequestApiKey(ANTIGRAVITY))).token, "soon2");
+    } finally {
+      delete process.env.OPRN_OH_MY_PI_TEST_REFRESH_FAIL;
+      await adapters.refresh(ANTIGRAVITY); // 백오프를 지워 다음 시험에 새지 않게 한다.
+    }
+  });
+
   it("concurrent status polls and requests share one refresh (single-flight)", async () => {
     const adapters = await createOhMyPiAdapters();
     await adapters.seedOAuth(ANTIGRAVITY, expired());
