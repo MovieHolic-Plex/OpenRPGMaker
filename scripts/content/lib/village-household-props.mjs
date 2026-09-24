@@ -1,5 +1,6 @@
 // Whole, purposeful yard assemblies. No random scatter or distant fallback.
 import fs from 'node:fs';
+import { FARMLAND_TILES } from './village-farmland.mjs';
 export const PROP_PROGRAMS=JSON.parse(fs.readFileSync(new URL('../../../tiledata/forest-villages/diverse/prop-programs.json',import.meta.url)));
 export const HOUSEHOLD_KITS=PROP_PROGRAMS.activities;
 const distance=(a,b)=>Math.max(0,a.x-b.x-b.w+1,b.x-a.x-a.w+1)+Math.max(0,a.y-b.y-b.h+1,b.y-a.y-a.h+1);
@@ -54,7 +55,7 @@ export function inspectHouseholdProps(map,plan) {
   const rule=HOUSEHOLD_KITS[owner.activity]?.items.find(([name])=>name===o.name);
   if(!rule||o.kit!==owner.activity||o.purpose!==rule[3]||o.anchor!==rule[4]) {errors.push({code:'prop-purpose-mismatch',x:o.x,y:o.y});continue;}
   const anchor=purposeAnchor(o,props,owner,plan.activitySites??{});
-  const exists=anchor&&(o.anchor==='house'||o.anchor==='dock'&&Array.from({length:anchor.w*anchor.h},(_,i)=>map.upperTiles[(anchor.y+Math.floor(i/anchor.w))*map.width+anchor.x+i%anchor.w]).every(t=>t===199)||o.anchor==='farm'&&Array.from({length:anchor.w*anchor.h},(_,i)=>map.lowerTiles[(anchor.y+Math.floor(i/anchor.w))*map.width+anchor.x+i%anchor.w]).every(t=>t===188)||!['house','dock','farm'].includes(o.anchor)&&present(map,anchor));
+  const exists=anchor&&(o.anchor==='house'||o.anchor==='dock'&&Array.from({length:anchor.w*anchor.h},(_,i)=>map.upperTiles[(anchor.y+Math.floor(i/anchor.w))*map.width+anchor.x+i%anchor.w]).every(t=>t===199)||o.anchor==='farm'&&Array.from({length:anchor.w*anchor.h},(_,i)=>map.lowerTiles[(anchor.y+Math.floor(i/anchor.w))*map.width+anchor.x+i%anchor.w]).every(t=>FARMLAND_TILES.has(t))||!['house','dock','farm'].includes(o.anchor)&&present(map,anchor));
   if(!exists||distance(o,anchor)>(o.anchor==='dock'?12:o.anchor==='house'?6:3))errors.push({code:o.name==='허수아비'?'scarecrow-without-garden':'prop-purpose-anchor-missing',x:o.x,y:o.y});
 
  }
