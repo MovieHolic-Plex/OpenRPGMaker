@@ -70,6 +70,23 @@ describe("battle dom keyboard and status rows", () => {
     controller.destroy();
   });
 
+  it("announces trainer teams without calling their monsters wild", () => {
+    const { runtime, controller } = setup();
+    try {
+      const project = store.getCurrent();
+      const snapshot = runtime.snapshot();
+      const troop = project.database.troops.find((entry) => entry.id === snapshot.troopId)!;
+      store.replace({
+        ...project,
+        database: { ...project.database, troops: project.database.troops.map((entry) => entry.id === troop.id ? { ...entry, trainerBattle: true } : entry) },
+      });
+      const intro = introDirectorState(snapshot);
+      expect(intro.lines.join(" ")).toContain(troop.name);
+      expect(intro.lines.join(" ")).toContain("승부를 걸어왔다!");
+      expect(intro.lines.join(" ")).not.toContain("야생의");
+    } finally { controller.destroy(); }
+  });
+
   it("party status rows expose name, vitals, HP/MP bars, and an accessible ATB label", () => {
     const { controller } = setup();
     const row = controller.root.querySelector(".battle-actor-status");

@@ -784,3 +784,10 @@ Completed runtime timelines persist into bounded session reports accessible from
 진행 중 타격·포획 연출의 대상은 유지하고, 시퀀스 종료 후 정리한다. 생존 여부만으로
 삭제하면 RM 전투의 쓰러짐 연출과 현재 snapshot의 사망 적까지 지우므로 그렇게 하지 않는다.
 회귀 계약은 `test/battleEnemyRosterDom.test.ts`이며 이번 세션에서는 vitest를 실행하지 않았다.
+
+## 트레이너 전투의 도입 문구 (2026-09-24)
+
+`introDirectorState`는 snapshot.troopId의 `trainerBattle`을 먼저 확인한다. 명시된 트레이너 팀은
+팀 이름으로 「승부를 걸어왔다!」를 표시하며, 그렇지 않은 팀만 기존 종족 기반 야생 판정을 따른다.
+적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
+새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
