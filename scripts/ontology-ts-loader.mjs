@@ -16,6 +16,17 @@ export async function withOntologyModule(callback) {
 export async function withTsModule(entryPoint, outputName, callback) {
   const tempDir = await mkdtemp(resolve(tmpdir(), "rpg-zzu-ontology-"));
   const outputFile = resolve(tempDir, outputName);
+  await buildTsModule(entryPoint, outputFile);
+  try {
+    const ontologyModule = await import(`${pathToFileURL(outputFile).href}?cacheBust=${Date.now()}`);
+    return await callback(ontologyModule);
+  } finally {
+    await rm(tempDir, { force: true, recursive: true });
+  }
+}
+
+/** Bundle a src/ entry (with the @/ alias) to one ESM file. */
+export async function buildTsModule(entryPoint, outputFile) {
   await build({
     absWorkingDir: REPO_ROOT,
     bundle: true,
@@ -33,12 +44,6 @@ export async function withTsModule(entryPoint, outputName, callback) {
       },
     }],
   });
-  try {
-    const ontologyModule = await import(`${pathToFileURL(outputFile).href}?cacheBust=${Date.now()}`);
-    return await callback(ontologyModule);
-  } finally {
-    await rm(tempDir, { force: true, recursive: true });
-  }
 }
 
 function resolveAlias(path) {
