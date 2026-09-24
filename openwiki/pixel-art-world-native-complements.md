@@ -18,3 +18,17 @@
 `externalRecipeExample`은 이제 east/west에서도 실제 앞 방향에 접근칸을 둔다. 기존에는 north 외의 방향을 모두 south로 취급했다. 다른 부품의 sourceRect/배열은 바뀌지 않는다. 새로 생성하는 관련 AI 예제만 올바른 방향을 따른다.
 
 room/doorway는 실제 비어 있는 칸과 연결 구획이며 이벤트를 뜻하지 않는다. 남·동·서 경계는 원본 벽면을 사용한 컷어웨이로, XP 천장을 조립했다고 표현하지 않는다. 화장실 문닫기/잠금, 원룸 전이·취침·조리 등은 별도 저작이다. 공용 publisher와 정본 설치/저장 재로드는 별도 담당 경로를 사용한다.
+
+## 사용자 로컬 공용 등록 경로
+
+`prepare-pixel-art-world-native-browser.mjs <dev URL> <catalog.json> <사용자 PNG 폴더> <비공개 출력>`은
+실제 `prepareExternalTileset`를 호출한다. 서버 레지스트리와 입력 카탈로그의 일치를 먼저 확인하고,
+사용자 파일에서 참고 MD·부품/장면 그림을 만든다. 출력 자체는 정본 저장이 아니다.
+`prepare-pixel-art-world-native-install.mjs`로 설치 자료를 만들고
+`install-pixel-art-world-shared-host.mjs`로 원본 정의를 저장·재로드한다.
+
+그 정본을 `read-pixel-art-world-host.mjs`로 다시 읽은 뒤
+`publish-pixel-art-world-local-library.mjs`가 세 원본의 부품과 전체 장면을 로컬 공용 SQLite에 등록한다.
+장면은 전체 배열·방 구획·접근칸·출입구·실제 그림을 가진 **장소 조립 자료**이며 실행 맵과 구분한다.
+장소의 출입 포트만으로 전이/문 상태 이벤트가 생성되지 않는다.
+그림은 사용자 로컬 저장소에만 두고 Git에는 이 경로와 좌표 메타데이터만 남긴다.

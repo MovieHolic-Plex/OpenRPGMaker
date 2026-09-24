@@ -12,7 +12,7 @@ const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const project = await read(input), proof = await read(proofFile);
 if (!proof.projectId || !proof.projectDir || !proof.sha256) throw Error('Canonical host source proof required');
 if (!proof.portableSha256 || createHash('sha256').update(await fs.readFile(input)).digest('hex') !== proof.portableSha256) throw Error('Portable source does not match canonical read receipt');
-const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
+const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const { PNG } = pngjs, pngs = new Map();
@@ -78,6 +78,20 @@ for(const recipe of extras.recipes){
   const floor=school.tiles.findIndex(t=>t.source==='ST-Schl-I01.png'&&t.tile===6&&t.layer==='lower');
   addObject(tileId,key('paw_'+recipe.id),recipe.name,width,height,Array(width*height).fill(recipe.id.startsWith('stairs-')?floor:-1),upper,
     `${recipe.notes} 원본 ${recipe.source}; 조립 사전 ${JSON.stringify(recipe)}. 현재 번호는 학교 합성 atlas 전용이다. 계단은 action 이벤트와 목적층 출현칸을 따로 연결한다.`);
+}
+
+// Importer scene references are reusable place assemblies, separate from saved
+// game maps. Keep the full geometry and source pixels available to AI readers.
+const complements = await read('src/assets/pixelArtWorldNativeComplementsCatalog.json');
+for (const pack of complements.filter(pack => project.tilesets[pack.id])) for (const scene of pack.scenes) {
+  const tileId=key(pack.id), id=key(scene.id), kitId=id+'_raster';
+  const image=render(tileId,scene.width,scene.height,scene.lowerTiles,scene.upperTiles);
+  const guide=`# ${scene.name}\n\n원본 ${pack.filename}, SHA256 ${pack.sha256}. 공용 tilesetId: \`${tileId}\`.\n이 자료는 고정 타일 조립 장소다. 실행 맵·출입/문 개폐 이벤트는 포함하지 않는다. 실제 게임에 배치할 때 외부 출입구와 목적 맵을 연결하고 문 상태·통행을 별도로 저작한다.\n${scene.notes}\n\n전체 배열, 가구 원점, 지지/접근칸, 방 구획과 출입구:\n\n\`\`\`json\n${JSON.stringify(scene)}\n\`\`\`\n\n부품별 지지칸·방향은 같은 타일셋의 오브젝트 문서를 함께 읽는다. 벽걸이 장식과 바닥형 가구의 지지 조건을 바꾸지 않는다.`;
+  const docs=[category('place-assembly',scene.name,guide,image)];
+  lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:scene.name,width:scene.width,height:scene.height,tileSize:32,rows:rows(scene.width,scene.height,scene.lowerTiles,scene.upperTiles),learnedFrom:'db-authored',referenceDocuments:docs,ai:{description:scene.name+' 고정 조립',placementRules:'전체 배열·가구 방향·접근칸과 문턱을 보존한다. 출입과 문 상태 이벤트는 별도다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'}});
+  lib.places[id]={id,name:scene.name,revision:1,tags:['Pixel Art World','실내','고정 조립','이벤트 별도'],provenance:{origin:'ai',sourceId:scene.id},kind:'facility',layout:'manual',children:[],ports:(scene.doorways??[]).filter(d=>d.from==='outside'||d.to==='outside').map((d,i)=>({id:id+'_entry_'+i,name:'출입구',x:d.x,y:d.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
+  lib.previews[id]=image;
+  await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
 }
 
 const mapIds = new Map(Object.keys(project.maps).map(id=>[id,key(id)]));
