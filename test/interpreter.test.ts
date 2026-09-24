@@ -906,6 +906,18 @@ describe("M2 generic map runtime executor", () => {
     expect(session.m2Runtime?.actors?.actor_hero).toMatchObject({ damage: 12, characterGraphic: "easyrpg-charset-actor2" });
   });
 
+  it("Change Actor Graphic keeps the sheet cell (characterIndex) for effect transformations", () => {
+    const session = mkM2Session();
+    drain(createInterpreter([
+      m2Command("Change Actor Graphic", { target: "actor_hero", value: "charset:tex_easyrpg_charset_people1:3" }),
+    ], session));
+    expect(session.actorCharacterResourceIds?.actor_hero).toBe("tex_easyrpg_charset_people1#3");
+    drain(createInterpreter([
+      m2Command("Change Actor Graphic", { target: "actor_hero", value: "tex_easyrpg_charset_people1", characterIndex: 6 }),
+    ], session));
+    expect(session.actorCharacterResourceIds?.actor_hero).toBe("tex_easyrpg_charset_people1#6");
+  });
+
   it("emits a blocking scrollMap step with direction, return, and lock options", () => {
     const session = mkM2Session();
     const interpreter = createInterpreter([

@@ -85,7 +85,7 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
-    commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp" },
+    commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp. 주인공 모습 바꾸기(변신·효과·옷 갈아입기)는 m2-024-change-actor-graphic + fields {target:actorId, value:charset 검색 id(\"charset:<텍스처>:<칸>\") 또는 텍스처 키, characterIndex:0~7}" },
     fields: { type: "object", additionalProperties: true, description: 'm2Command 필수 필드 객체. 예: {target:"all",operation:"remove",value:10}' },
   },
   required: ["kind"],

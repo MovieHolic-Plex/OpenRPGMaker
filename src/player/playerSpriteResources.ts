@@ -3,6 +3,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Dir } from "@/player/input";
 import { defaultActorCharacterResourceId } from "@/project/actorModel";
 import { resolveActorAppearance } from "@/project/characterAppearances";
+import { parseActorGraphicOverride } from "@/project/actorGraphicOverride";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import type { PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
@@ -14,6 +15,8 @@ export type PlayerSpriteKind = "charset";
 export type PlayerSpriteResource = {
   readonly texture: string;
   readonly resourceId: string;
+  /** 시트 안 인물 칸(0~7). 같은 시트의 다른 칸으로 갈아입었는지 가르는 데 쓴다. */
+  readonly characterIndex: number;
   readonly kind: PlayerSpriteKind;
   readonly walkFrameCount: number;
   readonly idleFrameFor: (direction: Dir) => string | number;
@@ -24,9 +27,10 @@ export function resolvePlayerSpriteResource(project: Project, session: PlaySessi
   const actorId = session.partyActorIds[0];
   const actor = actorId ? project.database.actors.find((entry) => entry.id === actorId) : undefined;
   const effectiveActor = actor ? resolveActorAppearance(project, actor) : undefined;
-  const override = actorId ? session.actorCharacterResourceIds?.[actorId] : undefined;
-  const resourceId = override ?? effectiveActor?.characterResourceId;
-  const characterIndex = override !== undefined ? 0 : effectiveActor?.characterIndex ?? 0;
+  const rawOverride = actorId ? session.actorCharacterResourceIds?.[actorId] : undefined;
+  const override = rawOverride !== undefined ? parseActorGraphicOverride(rawOverride) : undefined;
+  const resourceId = override?.resourceId ?? effectiveActor?.characterResourceId;
+  const characterIndex = override !== undefined ? override.characterIndex : effectiveActor?.characterIndex ?? 0;
   if (resourceId && project.assets.uploaded[resourceId]?.kind === "charset") {
     return createCharsetSpriteResource(resourceId, resourceId, characterIndex);
   }
@@ -54,6 +58,7 @@ function createCharsetSpriteResource(resourceId: string, texture: string, charac
   return {
     texture,
     resourceId,
+    characterIndex,
     kind: "charset",
     walkFrameCount: CHARSET_WALK_SEQUENCE.length,
     idleFrameFor: (direction) => charsetFrameIndex({ characterIndex, direction, pattern: CHARSET_IDLE_PATTERN }),
