@@ -104,7 +104,9 @@ function sceneNarration(value: unknown, index: number): string {
   if (typeof value !== "string") {
     throw new ToolError(`scenes[${index}].narration은 문자열이어야 합니다.`, { code: "invalid-args" });
   }
-  return value;
+  // 모델이 줄바꿈을 한 번 더 이스케이프해 「\\n」 두 글자로 보냈다 — 오프닝에 「밤.\n불의의」 가 그대로 떴다
+  // (추리 도그푸딩 gen). 오프닝 서술에 글자 그대로의 백슬래시-n 을 쓸 이유는 없다.
+  return value.replace(/\\r\\n|\\n/gu, "\n");
 }
 
 function resolveResourceId(
