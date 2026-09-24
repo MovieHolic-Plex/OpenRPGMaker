@@ -102,9 +102,45 @@ export async function preparePixelArtWorldFood(file: File, pack: PixelArtWorldFo
     validateTilesetReferences([composite]);
     rawTileset.referenceDocuments = [raw];
     tileset.referenceDocuments = [composite];
+    // Object records own their exact recipe references, so the Object tab does not
+    // depend on looking up a sibling tileset-wide document after ordinary import.
+    const referencesFor = (category: TilesetReferenceCategory, recipeId: string) => ({
+        ...category,
+        documents: category.documents.filter(document => document.id === 'read-first' || document.id === recipeId),
+        images: category.images.filter(image => image.id === 'source' || image.id === recipeId),
+    });
+    rawTileset.structureKits = pack.recipes.map(recipe => ({
+        id: recipe.id, kind: 'section', name: `${recipe.name} · ${recipe.composition === 'table' ? '원본·받침 필요' : '원본·고정점 미검토'}`,
+        width: recipe.sourceRect.width, height: recipe.sourceRect.height, tileSize: 32,
+        rows: recipe.tiles.map(row => ({ tiles: row.map(() => -1), upperTiles: [...row] })),
+        learnedFrom: 'db-authored',
+        ai: {
+            description: `${recipe.placementKind}. ${recipe.notes}`,
+            placementRules: '원본 소품 추출 객체. 기존 하위 바닥 보존. 기존 상위 식탁을 덮지 않는다. 식탁 합성 객체를 우선 사용하며 매달린 객체의 고정점은 미검토.',
+            role: 'prop', repeatability: 'fixed', layerHome: 'upper',
+            tags: ['paw-food', 'source-only', recipe.composition === 'table' ? 'requires-support' : 'unreviewed-anchor'],
+        },
+        referenceDocuments: [referencesFor(raw, recipe.id)],
+    }));
+    tileset.structureKits = recipes.map((recipe, index) => {
+        const rect = foodCompositionRect(index);
+        return {
+            id: `${recipe.id}-table`, kind: 'section', name: `${recipe.name} · 식탁 합성`,
+            width: 3, height: 3, tileSize: 32,
+            rows: Array.from({ length: 3 }, (_, y) => ({ tiles: [-1, -1, -1], upperTiles: Array.from({ length: 3 }, (_, x) => (rect.y + y) * 12 + rect.x + x) })),
+            learnedFrom: 'db-authored',
+            ai: {
+                description: '음식과 원본 식탁 전체를 픽셀 합성한 완전3×3 객체. 아래 두 행은 식탁, 위 행은 음식 돌출 여백.',
+                placementRules: '전체3×3을 상위에 한 번 배치한다. 하위-1은 기존 바닥 보존이다. 남쪽 로컬(1,3) 접근칸을 비우고 식탁 위에 원본 음식 타일을 다시 덮지 않는다. 5×5참고그림은 바닥과 접근을 포함한 학습 예제다.',
+                role: 'prop', repeatability: 'fixed', layerHome: 'upper', tags: ['paw-food', 'table-composite'],
+            },
+            referenceDocuments: [referencesFor(raw, recipe.id), referencesFor(composite, recipe.id)],
+        };
+    });
+    for (const kit of [...rawTileset.structureKits, ...tileset.structureKits]) validateTilesetReferences(kit.referenceDocuments);
     return { packId: pack.id, sourceSha256: pack.sha256, supportSha256: support.sha256,
         prepared: [{ assetId: sourceId, dataUrl: source.image.toDataURL(), tileset: rawTileset, imageWidth: pack.width, imageHeight: pack.height, filename: pack.filename }, { assetId: composedId, dataUrl: atlas.image.toDataURL(), tileset, imageWidth: 384, imageHeight: rows * 32, filename: `${pack.id}-table.png` }],
-        kits: recipes.map((recipe, index) => ({ id: `${recipe.id}-table`, name: recipe.name, tilesetId: tileset.id, sourceRecipeId: recipe.id, ...foodCompositionExample(index) })),
+        kits: recipes.map((recipe, index) => ({ id: `${recipe.id}-table`, name: recipe.name, tilesetId: tileset.id, sourceRecipeId: recipe.id, objectKitId: tileset.structureKits![index].id, referenceDocuments: tileset.structureKits![index].referenceDocuments, ...foodCompositionExample(index) })),
         excludedCompositionIds: pack.coverage.excludedCompositionIds };
 }
 export async function importPixelArtWorldFood(file: File, pack: PixelArtWorldFoodPack, tableFile: File, signal?: AbortSignal) {

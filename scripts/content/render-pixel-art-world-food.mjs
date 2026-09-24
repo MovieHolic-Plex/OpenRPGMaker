@@ -41,7 +41,7 @@ try {
         } return c.toDataURL(); }, pictures);
         await writeFile(join(out, `${pack.id}-all-tables.png`), Buffer.from(contact.split(',')[1], 'base64'));
         const refs = value.prepared.flatMap(p => p.tileset.referenceDocuments);
-        report.push({ packId: pack.id, sourceFilename: pack.filename, sourceSha256: value.sourceSha256, supportSha256: value.supportSha256, sourceCells: value.prepared[0].tileset.count, rawGroups: value.prepared[0].tileset.tileGroups.length, compositeGroups: value.kits.length, categories: refs.length, documents: refs.reduce((a, r) => a + r.documents.length, 0), images: refs.reduce((a, r) => a + r.images.length, 0), excluded: value.excludedCompositionIds });
+        report.push({ packId: pack.id, sourceFilename: pack.filename, sourceSha256: value.sourceSha256, supportSha256: value.supportSha256, sourceCells: value.prepared[0].tileset.count, rawGroups: value.prepared[0].tileset.tileGroups.length, compositeGroups: value.kits.length, rawObjects: value.prepared[0].tileset.structureKits.length, composedObjects: value.prepared[1].tileset.structureKits.length, categories: refs.length, documents: refs.reduce((a, r) => a + r.documents.length, 0), images: refs.reduce((a, r) => a + r.images.length, 0), excluded: value.excludedCompositionIds });
     }
     const rejection = await page.evaluate(async () => { const { PIXEL_ART_WORLD_FOOD } = await import('/src/project/pixelArtWorldFood.ts'); const { preparePixelArtWorldFood } = await import('/src/editor/pixelArtWorldFoodImport.ts'); try {
         await preparePixelArtWorldFood(new File(['wrong'], 'food.png'), PIXEL_ART_WORLD_FOOD[0], new File(['wrong'], 'table.png'));

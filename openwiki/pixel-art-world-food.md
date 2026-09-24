@@ -11,3 +11,9 @@
 브라우저 개인출력 생성: `node scripts/content/render-pixel-art-world-food.mjs /absolute/downloads http://127.0.0.1:9877`. 승인된워크트리런처를먼저실행한다. 이명령은실제prepare와카드표시만확인하고store/import/save를호출하지않는다. `output/paw-food/browser`의preparedJSON·PNG·install-plan은개인용이며Git/public에싣지않는다. 반환dataUrl은브라우저디코딩후RGBA PNG이므로파일바이트SHA가원본SHA와같다고검증하면안된다. sourceSha256/supportSha256는입력파일검사를통과한원본해시다.
 
 20타일셋·20용도·323MD·313이미지, 원본153그룹+식탁150그룹이준비된다. 150개의5×5는완성객체의조립예제이며150개의방/장소가아니다. source준비/조립검토/공용게시/정본설치를별도단계로보고한다. root전용publisher및정본저장은이모듈의책임이아니다. 자세한전판사전과라이선스는`tiledata/pixel-art-world/FOOD.md`.
+
+## 실제 오브젝트 등록
+
+`preparePixelArtWorldFood`는 이제 타일셋의 `structureKits`도 채운다. 원본153개는 원본 칸 크기를 보존하며 하위는 전부-1, 상위는 전체 원본 배열이다. 이름·태그·문서에 `받침 필요` 또는 `고정점 미검토`를 표시한다. 합성150개는 실제3×3 전체 객체이고 하위는 전부-1로 기존 바닥을 보존한다. 남쪽 로컬(1,3)이 접근칸이다.5×5는 바닥과 접근을 포함한 별도 학습 예제이며 실제 스탬프 크기로 혼동하지 않는다.
+
+각 원본 오브젝트에 source read-first+해당 recipe MD/PNG를, 합성 오브젝트에 source 및 support/composition read-first+해당 recipe MD/PNG를 연결한다. 일반 가져오기가 두 prepared.tileset을 저장할 때 이 오브젝트들도 함께 등록된다. private 반환 `kits`의5×5학습배열은 호환을 위해 유지하며 `objectKitId`로 실제3×3 structureKit를 가리킨다. 안정 ID로 설치하는 게시자는 문서 안 임시 tilesetId와 반환 kits.tilesetId를 함께 치환해야 한다.
