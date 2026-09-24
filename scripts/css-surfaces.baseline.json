@@ -700,7 +700,7 @@
     "R2|database/tabs-b-assistant-panel/01-legacy-preview-panel.css|.ai-preview-status|ai-preview-status",
     "R2|database/tabs-b-assistant-panel/01-legacy-preview-panel.css|.ai-preview-validation-details summary|ai-preview-validation-details",
     "R2|database/tabs-b-assistant-panel/01-legacy-preview-panel.css|.ai-preview-validation-details|ai-preview-validation-details",
-    "R2|database/tabs-b-assistant-panel/01-legacy-preview-panel.css|body:has(.database-modal-backdrop) .right-panel|right-panel",
+    "R2|database/tabs-b-assistant-panel/01-legacy-preview-panel.css|body:has(.database-modal-backdrop:not(.is-parked)) .right-panel|right-panel",
     "R2|database/tabs-b-assistant-panel/01-legacy-preview-panel.css|body:has(.right-panel) .ai-assistant-panel|right-panel",
     "R2|database/tabs-b-assistant-panel/02-chat-dock.css|.ai-authoring-example-chip:hover|ai-authoring-example-chip",
     "R2|database/tabs-b-assistant-panel/02-chat-dock.css|.ai-authoring-example-chips|ai-authoring-example-chips",

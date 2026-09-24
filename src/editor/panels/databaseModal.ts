@@ -689,6 +689,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     backdrop.style.pointerEvents = "none";
     backdrop.setAttribute("aria-hidden", "true");
     backdrop.dataset.testid = "database-modal-parked";
+    // 「모달이 열렸다」를 뜻하는 CSS(`body:has(.database-modal-backdrop) .ai-chat-panel {display:none}` 등)가
+    // 숨겨 둔 창에도 걸려 조수 패널·오른쪽 패널·토스트가 사라졌다(2026-09-24 갤러리 도그푸딩: AI 탭이 빈 칸).
+    backdrop.classList.add("is-parked");
   }
   document.body.append(backdrop);
   renderDatabasePanel(body);
@@ -709,6 +712,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         backdrop.style.pointerEvents = "";
         backdrop.removeAttribute("aria-hidden");
         backdrop.dataset.testid = "database-modal";
+        backdrop.classList.remove("is-parked");
         activeModal = handle;
         if (showOptions && handle) handle.onClose.add(showOptions.onClose);
         document.addEventListener("keydown", handleModalKeyDown);
