@@ -58,10 +58,18 @@ const tilePaletteCache: BasicTilePaletteCache = {};
 function installDocumentListeners(): void {
   if (documentListenersInstalled || typeof window === "undefined" || typeof window.addEventListener !== "function") return;
   documentListenersInstalled = true;
-  // 되돌리기 단추의 켜짐은 맵 편집 기록이 정한다 — 기록이 바뀌면 레일을 다시 그린다.
+  // 되돌리기 단추의 켜짐만 기록이 정한다. 레일을 다시 그리면 타일 칸이 따라 죽는다.
   window.addEventListener(MAP_EDIT_HISTORY_EVENT, () => {
-    if (getEditorChrome().paletteRail && lastContainer?.isConnected) renderBasicLeftRail(lastContainer);
+    if (getEditorChrome().paletteRail && lastContainer?.isConnected) syncBasicRailUndo();
   });
+}
+
+function syncBasicRailUndo(): void {
+  const undo = lastContainer?.querySelector<HTMLButtonElement>('[data-testid="oprn-tool-undo"]');
+  if (!undo) return;
+  const disabled = !getMapEditHistoryState().canUndo;
+  undo.disabled = disabled;
+  undo.setAttribute("aria-disabled", String(disabled));
 }
 
 export function resetBasicLeftRailForTests(): void {
