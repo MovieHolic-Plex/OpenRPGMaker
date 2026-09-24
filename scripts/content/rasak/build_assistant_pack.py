@@ -39,6 +39,7 @@ PURPOSES = {
         'desc': '일본식 성·누각·정원(창호 벽·기와 지붕·돌담·가레산스이 모래밭·석등·징검돌·벚나무·연못). 프리뷰 p01 기준.',
         'windows': [(0, 5, 8, 8), (9, 7, 9, 8), (0, 13, 10, 7)],
         'cross': (9, 7, 8, 7),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False,
         'main_ground': ('A2', 0),
         'alts': [('A2', 1), ('A2', 3), ('A2', 13), ('A1', 4), ('A3', 0), ('A3', 15), ('A4', 16), ('A4', 38), ('A4', 46),
                  ('A5', 'stone_paving_gray'), ('A5', 'stone_floor_tiles')],
@@ -48,6 +49,7 @@ PURPOSES = {
         'desc': '풀밭 고원·갈색 자갈 절벽·폭포·개울·동굴 입구·숲 나무. 절벽 몸통과 가장자리는 A5 평면 칸 조립, 그림자는 절벽 오른쪽 칸. 프리뷰 p02 기준.',
         'windows': [(0, 2, 9, 9), (10, 2, 7, 10)],
         'cross': (0, 3, 8, 7),
+        'path': (('A2', 0), ('A2', 1)), 'cave': False,
         'main_ground': ('A2', 0),
         'alts': [('A2', 1), ('A2', 6), ('A2', 13), ('A1', 7), ('A1', 11), ('A4', 0), ('A4', 8), ('A4', 24), ('A4', 32), ('A4', 40)],
     },
@@ -56,6 +58,7 @@ PURPOSES = {
         'desc': '짙은 풀밭 위 늪 물 웅덩이·흙길·풀숲(2층)·버드나무·고사목·연잎·수정·반딧불. 프리뷰 p28 기준.',
         'windows': [(0, 0, 10, 8), (20, 8, 10, 8), (5, 11, 10, 7)],
         'cross': (0, 0, 8, 7),
+        'path': (('A2', 8), ('A2', 9)), 'cave': False,
         'main_ground': ('A2', 8),
         'alts': [('A2', 10), ('A2', 13), ('A2', 22), ('A2', 29), ('A4', 9), ('A4', 25), ('A4', 33), ('A4', 41)],
     },
@@ -64,6 +67,7 @@ PURPOSES = {
         'desc': '얼음 바닥(A5)·얼음 동굴 천장과 얼음 벽(A4)·검은 낭떠러지 구덩이(2층)·얼음 다리·얼음 바위·화석. 프리뷰 p27a 기준.',
         'windows': [(1, 0, 10, 9), (5, 10, 10, 9)],
         'cross': (1, 1, 8, 7),
+        'path': (('A4', 32), ('A5', 'ice_floor_main')), 'cave': True,
         'main_ground': ('A5', 'ice_floor_main'),
         'alts': [('A1', 6), ('A1', 7), ('A2', 16), ('A2', 17), ('A2', 23), ('A2', 4), ('A4', 2), ('A4', 10), ('A4', 44),
                  ('A5', 'ice_ceiling_icicles'), ('A5', 'ice_wall_face'), ('A5', 'cave_entrance_dark')],
@@ -73,6 +77,7 @@ PURPOSES = {
         'desc': '짙은 회색 자갈 바닥·용암 호수와 용암 폭포(A1)·검은 동굴 벽(A4)·용암 균열(2층)·화산 바위·석순. 프리뷰 p27b 기준.',
         'windows': [(3, 0, 11, 8), (4, 8, 10, 9)],
         'cross': (5, 1, 8, 7),
+        'path': (('A4', 7), ('A2', 9)), 'cave': True,
         'main_ground': ('A2', 9),
         'alts': [('A2', 8), ('A2', 10), ('A2', 22), ('A4', 1), ('A4', 9), ('A4', 15), ('A4', 19), ('A4', 27)],
     },
@@ -834,6 +839,102 @@ def rule_sentences(rules):
     return out
 
 
+def components(cells, w, h):
+    """4이웃 연결 덩이 크기(큰 순)."""
+    cells = set(cells)
+    seen, out = set(), []
+    for c in cells:
+        if c in seen:
+            continue
+        st, n = [c], 0
+        seen.add(c)
+        while st:
+            i = st.pop()
+            n += 1
+            x, y = i % w, i // w
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nx, ny = x + dx, y + dy
+                j = ny * w + nx
+                if 0 <= nx < w and 0 <= ny < h and j in cells and j not in seen:
+                    seen.add(j)
+                    st.append(j)
+        out.append(n)
+    return sorted(out, reverse=True)
+
+
+def density_stats(b, m, main_key):
+    """프리뷰 밀도: 물체·장식 덮임, 물체 수(시작 칸 기준), 덩이 크기, 가장 큰 빈 바닥 정사각형, 길·물 덩이."""
+    w, h = m['width'], m['height']
+    A = w * h
+    L = m['L']
+    occ = [i for i in range(A) if L[3][i] >= 0 or L[4][i] >= 0]
+    dec = [i for i in range(A) if L[2][i] >= 0]
+    anchors = 0
+    for Ly in (3, 4):
+        for t in L[Ly]:
+            o = b.obj_of_tile.get(t)
+            if o:
+                first = next((r, c) for r, row in enumerate(o[0]['cells']) for c, v in enumerate(row) if v >= 0)
+                anchors += (o[1], o[2]) == first
+
+    def empty(i):
+        if L[2][i] >= 0 or L[3][i] >= 0 or L[4][i] >= 0:
+            return False
+        k = b.kind_of_tile.get(L[1][i])
+        return bool(k and k['passable'])
+    best = 0
+    for k in range(1, min(w, h) + 1):
+        if any(all(empty((y0 + y) * w + x0 + x) for y in range(k) for x in range(k)) for y0 in range(h - k + 1) for x0 in range(w - k + 1)):
+            best = k
+        else:
+            break
+    waters, paths = [], []
+    for i, t in enumerate(L[1]):
+        k = b.kind_of_tile.get(t)
+        if k and k['role'] == 'water':
+            waters.append(i)
+        elif k and k['role'] == 'ground' and k['key'] != main_key:
+            paths.append(i)
+    wset = set(waters)
+    near = sum(1 for i in dec if any(0 <= i % w + dx < w and 0 <= i // w + dy < h and
+                                     ((i // w + dy) * w + i % w + dx in wset or L[3][(i // w + dy) * w + i % w + dx] >= 0) for dx, dy, _ in DIRS))
+    return {'area': A, 'objShare': round(100 * len(occ) / A), 'decorShare': round(100 * len(dec) / A), 'objects': anchors,
+            'per100': round(100 * anchors / A, 1), 'objClusters': components(occ, w, h), 'decorClumps': components(dec, w, h),
+            'decorNear': round(100 * near / len(dec)) if dec else 0, 'maxEmpty': best,
+            'pathRuns': components(paths, w, h), 'waterBodies': components(waters, w, h)}
+
+
+def density_section(P, st, cat):
+    """규칙 문서 머리에 넣는 밀도·길·장식 규칙(수치는 프리뷰 실측). 30×20 맵 기준 목표를 준다."""
+    goal_obj = max(12, round(st['per100'] * 6 * 0.6))
+    goal_occ = max(8, round(st['objShare'] * 0.6))
+    goal_dec = max(3, round(st['decorShare'] * 0.6))
+    k = max(4, st['maxEmpty'] + 2)
+    cl = st['decorClumps']
+    clump = f"{min(cl[:6])}~{max(cl)}칸" if cl else '없음'
+    runs = st['pathRuns'][:5]
+    lines = [
+        f"## 밀도·길·장식 — 가장 먼저 지킬 것 (프리뷰 {P['preview']} 실측)",
+        f"- 실측: 물체가 덮은 칸 {st['objShare']}% · 2층 장식 {st['decorShare']}% · 물체 {st['objects']}개(100칸당 {st['per100']}) · "
+        f"빈 바닥 정사각형 최대 {st['maxEmpty']}×{st['maxEmpty']} · 장식 덩이 {clump}(장식 칸의 {st['decorNear']}%가 물가·물체 옆)"
+        + (f" · 물 덩이 {st['waterBodies'][:4]}칸" if st['waterBodies'] else '') + (f" · 길 덩이 {runs}칸" if runs else '') + '.',
+        f"- **30×20 맵 목표**: 물체 {goal_obj}개 이상(칸 {goal_occ}% 이상을 3·4층 물체가 덮음), 2층 장식 {goal_dec}% 이상, "
+        f"**빈 {'바닥' if P['cave'] else '풀밭'}이 {k}×{k} 넘게 남지 않게** 한다. 다 칠한 뒤 show_map_region 으로 빈 곳을 찾아 채운다.",
+        "- 물체 여럿은 stamp_layer_block 한 번에 한 배열로 찍는다(예: 10×8 창 하나에 나무·풀·돌을 함께, 빈칸 -1) — 한 개씩 부르지 않는다.",
+        f"- **길**: 한 번의 연속된 줄로 칠한다 — `paint_tiles mode:\"line\"`(폭 1) 또는 `\"rect\"`(폭 2), 굽는 곳은 줄을 이어서. "
+        "1~2칸짜리 토막을 띄엄띄엄 찍지 않는다(둥근 조각이 흩어진다 — 오류 그림 ⑤). 길의 양 끝은 목적지(입구·물가·다리·맵 가장자리)에 닿게.",
+        "- **2층 장식 덩이**: 사각형·ㄴ자로 칠하지 않는다(오류 그림 ⑥). 물가·나무 밑동·벽 발치를 따라 들쭉날쭉한 덩이로, "
+        "`paint_tiles layer:\"2\" mode:\"cells\"` 에 칸 목록을 준다(한 덩이 " + clump + "). 층 분해 그림 ②와 예제 배열의 \"2\" 가 본보기.",
+    ]
+    if P['cave']:
+        lines.append("- **동굴은 손으로 짓는다**: 둘레·천장(윗면)을 1층에 넓게 칠하고 방·통로 바닥을 그 안에 한 줄로 파낸 뒤, 벽을 바닥 윗줄에 칠한다. "
+                     "사전의 윗면·벽·바닥 번호와 예제 배열만 쓴다.")
+    lines.append("- **이 타일셋에서 쓰지 않는 도구**(다른 칩셋 번호를 깔아 코드가 거부): run_dungeon_room_pipeline·start/advance_dungeon_room_build·"
+                 "run_interior_room_pipeline·start/advance_interior_room_session·furnish_interior_space·author_village·run_village_pipeline·"
+                 "generate_map·build_house·build_village·author_house·build_castle·place_concept·place_props·build_wall·build_roof.")
+    return '\n'.join(lines) + '\n'
+
+
 def pick_cross(b, m, cw, chh):
     W, H = m['width'], m['height']
     best, arg = -1, (0, 0)
@@ -929,7 +1030,7 @@ def build_purpose(pid, b, maps, groups, tables, out_dir, rules):
 
     # 5) 오류 나란히
     err_img, err_notes = error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list)
-    images.append(('errors', '정상/오류 나란히', '같은 창을 정상(왼쪽)과 틀린 방법(오른쪽)으로 칠한 실제 렌더. 빨간 사람 = 캐릭터가 서는 자리(2층·그림자 뒤, 3층 앞).', err_img))
+    images.append(('errors', '정상/오류 나란히', '정상(왼쪽)|오류(오른쪽) 6쌍: ①물체를 1층 ②장식을 3층 ③모양 손으로 ④1층 다시 칠함 ⑤길 토막 ⑥장식 사각형. 빨간 사람 = 캐릭터가 서는 자리(2층·그림자 뒤, 3층 앞).', err_img))
     assert len(images) <= 8, (pid, len(images))
 
     # ── MD ──
@@ -941,13 +1042,14 @@ def build_purpose(pid, b, maps, groups, tables, out_dir, rules):
     shn, shc = stats['sh']
     sh_desc = f"{shn}칸 (" + ', '.join(f'{v}={bits_ko(v)} {c}' for v, c in shc.most_common()) + ')' if shn else '0칸 — 이 프리뷰는 그림자를 쓰지 않는다'
     obj3 = sum(1 for oid in used_obj_ids if obj_by_id[oid]['layer'] == 3)
+    dens = density_stats(b, m, P['main_ground'])
     doc1 = f"""layer-model: mz4
+@@ORDER@@
 # {P['name']} — 규칙 (Rasak Fantasy MZ 48px · 타일셋 `{tsid}`)
 
-{P['desc']}
-번호는 모두 이 타일셋 아틀라스의 0기준 칸 번호(한 줄 96칸, 칸 48px)다. 다른 타일셋 번호를 섞지 않는다.
-쓰기 도구마다 {cat} 를 준다(이 타일셋에는 용도가 여럿이다).
+{P['desc']} 번호는 이 타일셋 아틀라스의 0기준 칸 번호(한 줄 96칸, 48px) — 다른 타일셋 번호를 섞지 않는다. 쓰기 도구마다 {cat}.
 
+{density_section(P, dens, cat)}
 ## 네 층 + 그림자
 | 층 | 도구 인자 | 무엇을 | 프리뷰 {P['preview']} 실측 ({w}×{h}) |
 |---|---|---|---|
@@ -1060,7 +1162,7 @@ O1~O{len(used_obj_ids)} 은 프리뷰에 쓰인 물체(많이 쓰인 순){', 그
 - 1층을 다시 칠해 2층·3층·그림자가 지워진 것(오류 ④), 그림자 누락·방향, 물체가 물 위에 뜬 것, 건물 부품 순서, 아름다움.
 - 통행 경고는 도달 가능성(길이 막혔는지)을 보장하지 않는다. `show_map_region` 그림을 예제 그림과 나란히 보고 확인한다.
 """
-    docs = [('rules', '규칙·층·순서·오류·검사 범위', doc1 + '\n' + doc5.replace('# ', '## ', 1)), ('kinds', '번호 사전 ① 바닥 종류', doc2),
+    docs = [('rules', '규칙·밀도·층·순서', doc1), ('kinds', '번호 사전 ① 바닥 종류 + 오류·검사 범위', doc2 + '\n' + doc5.replace('# ', '## ', 1)),
             ('objects', '번호 사전 ② 물체', doc3), ('examples', '완성 예제', doc4)]
     # 긴 문서는 페이지(6000자)마다 나뉘어 읽힌다. 배열이 페이지 경계에서 잘리지 않게 필요하면 예제를 문서로 나눈다.
     final_docs = []
@@ -1082,6 +1184,10 @@ O1~O{len(used_obj_ids)} 은 프리뷰에 쓰인 물체(많이 쓰인 순){', 그
                 final_docs.append((f'{did}{i + 1}', f'{name} ({i + 1}/{len(parts)})', part))
         else:
             final_docs.append((did, name, md))
+    img_ids = [iid for iid, _, _, _ in images]
+    order = (f"읽는 순서 — 이 용도(categoryId \"{pid}\", tilesetId \"{tsid}\")의 전부다. id 를 지어내지 말 것:\n"
+             f"문서 documentId: {' → '.join(d for d, _, _ in final_docs)} · 그림 imageId: {' → '.join(img_ids)}")
+    final_docs = [(d, n, md.replace('@@ORDER@@', order)) for d, n, md in final_docs]
     assert all(len(md) <= 6000 for _, _, md in final_docs), [(d, len(md)) for d, _, md in final_docs]
     category = {
         'id': pid, 'name': P['name'],
@@ -1098,7 +1204,7 @@ O1~O{len(used_obj_ids)} 은 프리뷰에 쓰인 물체(많이 쓰인 순){', 그
         'documents': [{'id': did, 'chars': len(md), 'pages': -(-len(md) // 6000)} for did, _, md in final_docs],
         'images': [{'id': iid, 'size': [im.width, im.height], 'bytes': len(base64.b64decode(to_data_url(im).split(',')[1]))} for iid, _, _, im in images],
         'kinds': len(kind_list), 'kindsUsed': len(kinds_used), 'objects': len(obj_list), 'objectsUsed': len(used_obj_ids),
-        'windows': [(wn['x0'], wn['y0'], wn['w'], wn['h']) for wn in wins], 'oldArtCellsReplaced': fixed_total,
+        'windows': [(wn['x0'], wn['y0'], wn['w'], wn['h']) for wn in wins], 'oldArtCellsReplaced': fixed_total, 'density': dens,
         'catalogPagesDropped': dropped_catalog,
     }
     return category, info
@@ -1149,6 +1255,17 @@ def best_box(win, cells, w, h):
             if n > best:
                 best, arg = n, (x0, y0)
     return arg
+
+
+def shape_all(wn, groups_by_member, layers=(1, 2)):
+    """창 배열의 자동타일 칸을 엔진 규칙(그룹 variantMap + 연결 집합)으로 한 번에 모양 잡는다."""
+    for L in layers:
+        src = list(wn['L'][L])
+        for i, t in enumerate(src):
+            g = groups_by_member.get(t)
+            if g:
+                mk = mask_at(src, wn['w'], wn['h'], i % wn['w'], i // wn['w'], g['_connect'], g['neighborhood'])
+                wn['L'][L][i] = g['variantMap'][str(mk)]
 
 
 def wcopy(wn):
@@ -1263,6 +1380,56 @@ def error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list):
                   f'2층 장식 {len(wiped)}칸이 지워진다(3·4층·그림자도). 1층을 먼저 끝낸다.'))
     notes.append(f"- ④ 순서 틀림: 프리뷰 ({good4['x0']},{good4['y0']})부터 {CW}×{CH}칸에서 1층을 다시 칠하면 2층 장식 {len(wiped)}칸(맵 좌표 {wiped[:4]}…)이 사라진다. "
                  "paint_tiles 1층은 3·4층·그림자도 비운다.")
+    # ⑤ 길: 한 줄로 이어 칠함 / 1~2칸 토막을 띄엄띄엄
+    base_k, path_k = b.kinds[P['path'][0]], b.kinds[P['path'][1]]
+    ww, hh = CW, CH
+    good5 = {'w': ww, 'h': hh, 'x0': 0, 'y0': 0, 'L': {1: [base_k['representativeTile']] * (ww * hh), 2: [-1] * (ww * hh), 3: [-1] * (ww * hh), 4: [-1] * (ww * hh)}, 'SH': [0] * (ww * hh)}
+    bad5 = wcopy(good5)
+    run = [(0, 1), (1, 1), (2, 1), (3, 1), (3, 2), (3, 3), (4, 3), (5, 3), (0, 2), (1, 2), (2, 2), (4, 2), (4, 4), (5, 4)]
+    dashes = [(0, 1), (2, 1), (3, 3), (5, 3), (5, 4), (1, 2)]
+    for x, y in run:
+        good5['L'][1][y * ww + x] = path_k['representativeTile']
+    for x, y in dashes:
+        bad5['L'][1][y * ww + x] = path_k['representativeTile']
+    for wn in (good5, bad5):
+        shape_all(wn, groups_by_member)
+    pairs.append(('⑤ 길을 토막으로 찍음', framed(render(b, good5), ww, hh, ticks=False), framed(render(b, bad5), ww, hh, ticks=False),
+                  f"{path_k['name'][:14]}: 한 줄(line/rect)로 이어야 길이 된다. 토막은 둥근 조각."))
+    notes.append(f"- ⑤ 길 토막: {path_k['name']} 대표 {path_k['representativeTile']} 를 1~2칸씩 띄엄띄엄 찍으면 칸마다 둥근 조각이 생긴다. "
+                 "정상 = paint_tiles mode:\"line\"/\"rect\" 한 번(또는 이어진 칸 목록)으로 끊김 없이, 끝은 목적지에 닿게.")
+
+    # ⑥ 2층 장식 덩이: 물가를 따라 들쭉날쭉(정상) / 같은 칸 수의 사각형(오류). 장식 kind = 프리뷰 2층에 가장 많이 쓰인 것,
+    #    바탕 = 프리뷰에서 그 장식 밑에 가장 많이 깔린 1층 종류(장식이 보이게).
+    deco_count, under = collections.Counter(), collections.Counter()
+    for i, t in enumerate(m['L'][2]):
+        k = b.kind_of_tile.get(t)
+        if k:
+            deco_count[k['key']] += 1
+            uk = b.kind_of_tile.get(m['L'][1][i])
+            if uk and uk['layer'] == 1 and uk['role'] != 'water':
+                under[uk['key']] += 1
+    deco_k = b.kinds[deco_count.most_common(1)[0][0]] if deco_count else next(k for k in kind_list if k['layer'] == 2)
+    under_k = b.kinds[under.most_common(1)[0][0]] if under else main_k
+    water6 = [(x, y) for y in range(CH) for x in range(4, CW)] + [(3, 2), (3, 3)]
+    hug = [(3, 0), (3, 1), (2, 1), (2, 2), (1, 2), (2, 3), (2, 4), (3, 4), (1, 4)]
+    box = [(x, y) for y in range(0, 3) for x in range(0, 3)]
+    good6 = {'w': CW, 'h': CH, 'x0': 0, 'y0': 0, 'L': {1: [under_k['representativeTile']] * (CW * CH), 2: [-1] * (CW * CH), 3: [-1] * (CW * CH), 4: [-1] * (CW * CH)}, 'SH': [0] * (CW * CH)}
+    if blob_kind and blob_kind['role'] == 'water':
+        for x, y in water6:
+            good6['L'][1][y * CW + x] = blob_kind['representativeTile']
+    bad6 = wcopy(good6)
+    for x, y in hug:
+        if good6['L'][1][y * CW + x] == under_k['representativeTile']:
+            good6['L'][2][y * CW + x] = deco_k['representativeTile']
+    for x, y in box:
+        bad6['L'][2][y * CW + x] = deco_k['representativeTile']
+    for wn in (good6, bad6):
+        shape_all(wn, groups_by_member)
+    pairs.append(('⑥ 2층 장식을 사각형으로', framed(render(b, good6), CW, CH, ticks=False), framed(render(b, bad6), CW, CH, ticks=False),
+                  f"{deco_k['name'][:12]}: 물가·밑동을 따라 들쭉날쭉(정상) / 3×3 사각형(오류)."))
+    near_pct = density_stats(b, m, P['main_ground'])['decorNear']
+    notes.append(f"- ⑥ 장식 모양: 프리뷰 2층 장식 칸의 {near_pct}%가 물가·물체 옆에 붙어 있다. {deco_k['name']} 을(를) 3×3 사각형으로 칠하면 인공적으로 보인다 — "
+                 "물가·나무 밑동을 따라 cells 모드로 들쭉날쭉한 칸 목록을 준다.")
     return side_by_side(pairs, f"{P['name']} — 정상 | 오류 (각 6×5칸, 48px)"), '\n'.join(notes)
 
 
