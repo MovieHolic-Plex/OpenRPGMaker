@@ -24,7 +24,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-grid-board",
@@ -35,7 +50,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-notice",
@@ -46,7 +72,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "school-window",
@@ -57,7 +90,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "school-student-desk",
@@ -68,7 +116,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "north"
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-chair-back",
@@ -79,7 +134,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "north"
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "school-chair-front",
@@ -90,7 +152,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "school-lectern",
@@ -101,7 +170,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-shoe-locker",
@@ -112,7 +188,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-cleaning-locker",
@@ -123,7 +214,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-clock",
@@ -134,7 +232,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "school-plant",
@@ -145,7 +250,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       }
     ],
     "scenePlans": [
@@ -176,34 +288,6 @@
             "width": 14,
             "height": 1,
             "tile": 57
-          },
-          {
-            "x": 0,
-            "y": 3,
-            "width": 1,
-            "height": 10,
-            "tile": 2
-          },
-          {
-            "x": 13,
-            "y": 3,
-            "width": 1,
-            "height": 10,
-            "tile": 2
-          },
-          {
-            "x": 1,
-            "y": 12,
-            "width": 5,
-            "height": 1,
-            "tile": 1
-          },
-          {
-            "x": 7,
-            "y": 12,
-            "width": 6,
-            "height": 1,
-            "tile": 1
           }
         ],
         "placements": [
@@ -424,14 +508,17 @@
           6
         ],
         "lowerTileIds": [
-          1,
-          2,
           6,
           41,
           49,
           57
         ],
-        "notes": "14×13칸, 북쪽 3행 벽. 기존17×20보다46.5% 작다. 책상 원점 (1+2*c,6+3*r), c=0..5,r=0..1; 의자 (x,y+2), 접근칸 (x+1,y+1). 책상2칸과 의자1칸을 자르거나 겹치지 않는다. 세로 통로 x=2,4,6,8,10,12와 앞 가로 통로 y=5를 모두 비운다. 교탁 (6,3) 앞 (6,5). 남쪽 출입구(6,12), 권장 스폰(6,11), 북쪽을 바라본다. 벽·나무 테두리는 하위차단, 6만 통과, 상위 부품은 차단. 문/앉기/이동 이벤트는 별도 저작한다."
+        "notes": "14×13칸, 북쪽3행 벽41/49/57. 책상 원점(1+2*c,6+3*r), c=0..5,r=0..1; 의자(x,y+2), 접근(x+1,y+1). 세로 통로 x=2,4,6,8,10,12와 앞 y=5를 비운다. 교탁(6,3), 접근(6,5). 남쪽 출입구(6,12), 북향 스폰(6,11)을 유지한다. 칠판·창·시계·게시판은 벽 부착물이다. 교탁·책상·의자의 supportCells 밑동은 통과 바닥6에 둔다. 좌우·남쪽의 목재 바닥1/2 차단 띠를 제거하고 통과 바닥6으로 바꿨다. 실제 외벽은 배열 밖에 저작기가 천장/벽으로 둘러싼다. 상위 부품은 차단이며 문/앉기/이동 이벤트는 별도다.",
+        "wallTileIds": [
+          41,
+          49,
+          57
+        ]
       }
     ]
   },
@@ -460,7 +547,22 @@
           "width": 3,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "school-conifer",
@@ -471,7 +573,18 @@
           "width": 2,
           "height": 4
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ]
       },
       {
         "id": "school-bare-tree",
@@ -482,7 +595,18 @@
           "width": 2,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "school-shrub",
@@ -493,7 +617,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-long-hedge",
@@ -504,7 +635,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "school-large-tree",
@@ -515,7 +661,26 @@
           "width": 4,
           "height": 6
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 5
+          },
+          {
+            "x": 1,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 5
+          }
+        ]
       },
       {
         "id": "school-exterior-clock",
@@ -526,7 +691,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "school-exterior-window",
@@ -537,7 +709,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       }
     ]
   },
@@ -566,7 +749,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "special-medical-cabinet",
@@ -577,7 +775,18 @@
           "width": 2,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "special-scale",
@@ -588,7 +797,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-bed",
@@ -599,7 +815,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-screen",
@@ -610,7 +837,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-eye-chart",
@@ -621,7 +859,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-worktable",
@@ -632,7 +877,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-stool",
@@ -643,7 +903,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "special-skeleton",
@@ -654,7 +921,14 @@
           "width": 1,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "special-bookcase",
@@ -665,7 +939,22 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-microscope",
@@ -676,7 +965,20 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "supportTileIds": [
+          340,
+          341,
+          342,
+          343
+        ]
       },
       {
         "id": "special-specimen",
@@ -687,7 +989,20 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "supportTileIds": [
+          340,
+          341,
+          342,
+          343
+        ]
       },
       {
         "id": "special-test-tubes",
@@ -698,7 +1013,20 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "supportTileIds": [
+          340,
+          341,
+          342,
+          343
+        ]
       },
       {
         "id": "special-plant",
@@ -709,7 +1037,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "special-counter-front",
@@ -720,7 +1055,26 @@
           "width": 4,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1,
+            "y": 0
+          },
+          {
+            "x": 2,
+            "y": 0
+          },
+          {
+            "x": 3,
+            "y": 0
+          }
+        ]
       }
     ],
     "scenePlans": [
@@ -751,34 +1105,6 @@
             "width": 11,
             "height": 1,
             "tile": 33
-          },
-          {
-            "x": 0,
-            "y": 3,
-            "width": 1,
-            "height": 8,
-            "tile": 2
-          },
-          {
-            "x": 10,
-            "y": 3,
-            "width": 1,
-            "height": 8,
-            "tile": 2
-          },
-          {
-            "x": 1,
-            "y": 10,
-            "width": 4,
-            "height": 1,
-            "tile": 1
-          },
-          {
-            "x": 6,
-            "y": 10,
-            "width": 4,
-            "height": 1,
-            "tile": 1
           }
         ],
         "placements": [
@@ -790,7 +1116,7 @@
           {
             "recipeId": "special-medical-cabinet",
             "x": 8,
-            "y": 0
+            "y": 1
           },
           {
             "recipeId": "special-eye-chart",
@@ -800,7 +1126,7 @@
           {
             "recipeId": "special-scale",
             "x": 6,
-            "y": 1
+            "y": 2
           },
           {
             "recipeId": "special-bed",
@@ -852,7 +1178,7 @@
           },
           {
             "x": 6,
-            "y": 3
+            "y": 4
           },
           {
             "x": 8,
@@ -867,14 +1193,17 @@
           6
         ],
         "lowerTileIds": [
-          1,
-          2,
           6,
           17,
           25,
           33
         ],
-        "notes": "11×11칸. 남쪽 출입구(5,10), 스폰(5,9), 북쪽을 바라본다. 왼쪽 가로 침대 원점(1,4),(1,7), 진찰 접근은(3,5),(3,8). 가림막은(4,4)2×2로 침대 오른쪽 시야를 가리되 x=3의 병상 접근 통로와 y=6의 가로 통로를 막지 않는다. 오른쪽 상담 실험대(7,5), 의자(8,7), 상담 접근(7,7). 체중계 접근(6,3). 원본의 전신 침대2×2 전체 사용. 시력표·침대·체중계는 그림만 제공하며 회복/검사 이벤트는 별도다."
+        "notes": "11×11칸. 남쪽 출입구(5,10), 스폰(5,9), 북쪽을 바라본다. 왼쪽 침대 원점(1,4),(1,7), 접근(3,5),(3,8). 가림막(4,4)2×2와 상담 테이블(7,5), 의자(8,7), 화분(9,8). 상담 접근(7,7), 테이블 뒤(8,4). 의약품 수납장 원점은(8,1)이며 밑동 y=3은 하위 바닥6에 닿아야 한다. 체중계 원점(6,2), 발판 y=3, 접근(6,4). 창(1,0)과 시력표(5,0)만 벽 부착물이다. 벽17/25/33은 북쪽3행만 쓴다. 좌우·남쪽은 평범한 통과 바닥6이며 원본 목재 바닥1/2를 차단벽처럼 쓰지 않는다. 실제 외벽은 이 배열 밖에 저작기가 천장/벽으로 둘러싼다. 문/회복/진찰 이벤트는 별도다.",
+        "wallTileIds": [
+          17,
+          25,
+          33
+        ]
       },
       {
         "id": "school-lab-compact",
@@ -903,34 +1232,6 @@
             "width": 13,
             "height": 1,
             "tile": 33
-          },
-          {
-            "x": 0,
-            "y": 3,
-            "width": 1,
-            "height": 8,
-            "tile": 2
-          },
-          {
-            "x": 12,
-            "y": 3,
-            "width": 1,
-            "height": 8,
-            "tile": 2
-          },
-          {
-            "x": 1,
-            "y": 10,
-            "width": 5,
-            "height": 1,
-            "tile": 1
-          },
-          {
-            "x": 7,
-            "y": 10,
-            "width": 5,
-            "height": 1,
-            "tile": 1
           },
           {
             "x": 5,
@@ -970,7 +1271,7 @@
           {
             "recipeId": "special-bookcase",
             "x": 1,
-            "y": 1
+            "y": 2
           },
           {
             "recipeId": "special-skeleton",
@@ -1063,15 +1364,13 @@
           },
           {
             "x": 2,
-            "y": 3
+            "y": 4
           }
         ],
         "passableTiles": [
           6
         ],
         "lowerTileIds": [
-          1,
-          2,
           6,
           17,
           25,
@@ -1081,7 +1380,12 @@
           342,
           343
         ],
-        "notes": "13×11칸. 남쪽 출입구(6,10), 스폰(6,9), 북쪽을 바라본다. 독립 실험대3×2는(2,6),(7,6)에 상위전체 배열. 파란 의자는(3,5),(3,8),(8,5),(8,8)이고 통로는 y=9 및 x=1,5,6,10이다. 북쪽 붙박이 카운터의 불투명 상판340,341,342,343은 y=3,x=5..8의 하위차단이다. 투명 전면348,349,350,351은 같은x,y=4의 상위에 두어 하위 바닥6을 보존한다. 뒤에 벽이 붙는 카운터이므로 독립 테이블 상단의 투명 조각332..335는 사용하지 않는다. 현미경(5,3),표본병(6,3),시험관(8,3)은 불투명 상판 위의 상위차단이다. 투명 독립 실험대336..338/344..346 및 전면348..351은 절대로 하위로 옮기지 않는다. 실험 상호작용·수업 이벤트는 별도다."
+        "notes": "13×11칸. 남쪽 출입구(6,10), 스폰(6,9), 북쪽을 바라본다. 책장은(1,2)3×2로 두어 밑동 y=3이 바닥6에 닿는다. 앞 접근(2,4). 창(5,0)은 벽 부착물, 골격 표본(11,1)은 발 y=3이 바닥에 닿는 입식 물체다. 불투명 카운터 상판340..343은 하위(5,3)..(8,3), 투명 전면348..351은 상위(5,4)..(8,4)로 두고 바닥6을 보존한다. 현미경(5,3),표본병(6,3),시험관(8,3)은 상판이 받치는 물체다. 독립 실험대(2,6),(7,6)는 3×2, 의자(3,5),(3,8),(8,5),(8,8). 접근(4,8),(9,8),(5,5),(7,5),(9,5),(10,3),(2,4)을 비운다. 북쪽 벽17/25/33 외 좌우·남쪽은 통과 바닥6이다. 목재 바닥1/2를 차단벽처럼 쓰지 않는다. 실제 외벽은 배열 밖에 천장/벽으로 둘러싼다. 실험 이벤트는 별도다.",
+        "wallTileIds": [
+          17,
+          25,
+          33
+        ]
       }
     ]
   }

@@ -13,7 +13,8 @@
 placements, approachCells, notes, lowerTileIds, passableTiles를 갖는다. importer는 가져온 이미지에서
 완성 그림과 참고 MD를 생성해야 하며 metadata JSON에 그림/dataURL을 넣지 않는다.
 
-바닥 6만 통과하고 벽·목재 테두리·모든 상위 부품은 차단한다. 상위라는 이유로 통행 허용하지 않는다.
+바닥 6만 통과하고 북쪽 벽·모든 상위 부품은 차단한다. 목재 바닥1/2를 벽처럼 쓴 좌우/남쪽 띠는 제거했다.
+실제 외벽은 저작기가 배열 바깥에 천장/벽으로 둘러싼다. 문/스폰 좌표는 유지한다.
 같은 원본 ID에 lower/upper가 충돌하면 안 된다. 생성기는 전체 배열과 출입→접근 경로를 확인한다.
 과학실의 불투명 상판340..343만 하위차단이고 투명 전면348..351은 바닥 위 상위차단이다.
 로컬 그림 생성기는 모든 하위 원본 픽셀 alpha255를 확인한다. `approachCells[0]`은 남쪽 문,
@@ -23,3 +24,9 @@ placements, approachCells, notes, lowerTileIds, passableTiles를 갖는다. impo
 로컬 증거 생성: `node scripts/content/render-pixel-art-world-school.mjs /사용자/원본폴더`.
 `output/paw-school/`의 정상/오류 방 3개, 내장/외관/특별교실 실제 부품 그림과 report를 먼저 읽는다.
 원본/파생 그림은 Git·public·배포 번들에 추가하지 않는다.
+
+접지 수정(2026-09-24): 수납장(8,1), 체중계(6,2), 과학실 책장(1,2)로 옮겨 실제 밑동을
+scene 바닥 y=3에 놓았다. 체중계 접근(6,4), 책장 접근(2,4). 이전 위치는 밑동 전체가 벽 안에
+있는데도 경로 검사만 통과했던 오류였다. recipe의 `placementKind`/`supportCells`로 standing은
+통과 바닥, wall-mounted는 wallTileIds, countertop은 supportTileIds의 상판이 받치는지 생성 단계에서
+확인한다. 원본 픽셀의 밑동/완성 그림 검토도 필요하다. 상세 정정 좌표·실측은 SCHOOL.md에 있다.
