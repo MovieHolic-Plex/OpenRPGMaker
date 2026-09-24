@@ -1,7 +1,7 @@
 import { awaitGraftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
 import { tilesetBaseImageUrl } from "@/editor/tilesetImage";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
-import { createTransparentColorKeyCanvas } from "@/assets/chipsetTransparency";
+import { keyedTilesetImage } from "@/ai/toolImageCanvas";
 import type { ActivityVisual, ActivityVisualRef } from "@/ai/activityVisual";
 import { readActivityMedia, saveActivityMediaBlob, setActivityMediaPreparer } from "@/ai/activityMediaArchive";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -34,7 +34,7 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
   let canvas: HTMLCanvasElement;
   if (visual.kind === "map" && visual.map && visual.tileset) {
     // Both map and tileset are execution snapshots, never the current editor project.
-    let atlas: HTMLCanvasElement | undefined;
+    let atlas: HTMLImageElement | HTMLCanvasElement | undefined;
     if (visual.tileset.image.type === "uploaded" || visual.tileset.tileGrafts?.length) {
       let url = visual.tileset.image.type === "uploaded" ? visual.uploaded || (visual.uploadedAsset && uploadedAssetUrl(visual.uploadedAsset)) : tilesetBaseImageUrl(visual.tileset);
       if (!url) throw new Error("Uploaded atlas snapshot unavailable");
@@ -46,8 +46,7 @@ async function raster(visual: ActivityVisual): Promise<Blob | undefined> {
         if (!url) throw new Error("Graft atlas snapshot unavailable");
       }
       const image = await loadImage(url);
-      atlas = createTransparentColorKeyCanvas(visual.tileset, image) ?? undefined;
-      if (!atlas) throw new Error("Atlas canvas unavailable");
+      atlas = keyedTilesetImage(visual.tileset, image);
     }
     canvas = await renderRegionSnapshot({ tilesets: { [visual.tileset.id]: visual.tileset } } as Project, visual.map, { x: 0, y: 0, width: visual.map.width, height: visual.map.height }, { targetWidth: 960, image: atlas });
   } else {
