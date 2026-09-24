@@ -1,3 +1,4 @@
+import { attachPixelArtWorldSchoolSewer } from '@/project/pixelArtWorldSchoolSewer';
 import { createExternalTileset, externalRecipeExample, validateExternalRecipeExample, type ExternalTilesetPack } from '@/project/externalTilesetCatalog';
 import { validateTilesetReferences, type TilesetReferenceCategory } from '@/project/tilesetReferences';
 import { projectRepository } from '@/project/persistence/repository';
@@ -54,6 +55,7 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
       images: [{ id: 'assembled-scene', name: `${scene.id}.png`, caption: `${scene.name} · 사용자 원본에서 32px 그대로 조립.`, dataUrl: picture.toDataURL('image/png') }],
     });
   }
+  attachPixelArtWorldSchoolSewer(pack, image, tileset);
   validateTilesetReferences(tileset.referenceDocuments);
   attachPixelArtWorldBathGymObjects(pack, tileset);
   const composed = appendPixelArtWorldMansionInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldJapaneseInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldComposites(pack, image, tileset, image);

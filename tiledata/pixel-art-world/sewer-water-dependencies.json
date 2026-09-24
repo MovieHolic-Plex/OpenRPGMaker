@@ -1,0 +1,505 @@
+{
+  "status": "geometry-reviewed-runtime-unimplemented",
+  "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-sewer01.html",
+  "officialStatement": "小さい方は4分割になっています。長さが変えられます。",
+  "sources": [
+    {
+      "filename": "SC-Water01.png",
+      "url": "https://yms.main.jp/dotartworld/sozai/chara/SC-Water01.png",
+      "sha256": "9f0a7680f91b65936b7432ac4640eaa9a4b60547464c3f91d98a609870b6e143",
+      "width": 128,
+      "height": 128,
+      "phaseColumns": 4,
+      "completeCompositeFrames": [
+        {
+          "phase": 0,
+          "sourceRect": {
+            "x": 0,
+            "y": 0,
+            "width": 32,
+            "height": 128
+          },
+          "alphaBBox": [
+            3,
+            4,
+            30,
+            122
+          ]
+        },
+        {
+          "phase": 1,
+          "sourceRect": {
+            "x": 32,
+            "y": 0,
+            "width": 32,
+            "height": 128
+          },
+          "alphaBBox": [
+            3,
+            4,
+            30,
+            121
+          ]
+        },
+        {
+          "phase": 2,
+          "sourceRect": {
+            "x": 64,
+            "y": 0,
+            "width": 32,
+            "height": 128
+          },
+          "alphaBBox": [
+            2,
+            4,
+            30,
+            121
+          ]
+        },
+        {
+          "phase": 3,
+          "sourceRect": {
+            "x": 96,
+            "y": 0,
+            "width": 32,
+            "height": 128
+          },
+          "alphaBBox": [
+            3,
+            4,
+            30,
+            122
+          ]
+        }
+      ],
+      "actualFrameDifferences": [
+        478,
+        572,
+        638,
+        506
+      ],
+      "partsByPhase": [
+        {
+          "phase": 0,
+          "parts": [
+            {
+              "role": "outlet",
+              "sourceRect": {
+                "x": 0,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                3,
+                4,
+                30,
+                32
+              ]
+            },
+            {
+              "role": "outlet-lip-to-stream",
+              "sourceRect": {
+                "x": 0,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                4,
+                0,
+                29,
+                32
+              ]
+            },
+            {
+              "role": "repeatable-stream",
+              "sourceRect": {
+                "x": 0,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                9,
+                0,
+                23,
+                32
+              ]
+            },
+            {
+              "role": "splash",
+              "sourceRect": {
+                "x": 0,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                3,
+                0,
+                29,
+                26
+              ]
+            }
+          ]
+        },
+        {
+          "phase": 1,
+          "parts": [
+            {
+              "role": "outlet",
+              "sourceRect": {
+                "x": 32,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                3,
+                4,
+                30,
+                32
+              ]
+            },
+            {
+              "role": "outlet-lip-to-stream",
+              "sourceRect": {
+                "x": 32,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                4,
+                0,
+                29,
+                32
+              ]
+            },
+            {
+              "role": "repeatable-stream",
+              "sourceRect": {
+                "x": 32,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                9,
+                0,
+                23,
+                32
+              ]
+            },
+            {
+              "role": "splash",
+              "sourceRect": {
+                "x": 32,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                4,
+                0,
+                29,
+                25
+              ]
+            }
+          ]
+        },
+        {
+          "phase": 2,
+          "parts": [
+            {
+              "role": "outlet",
+              "sourceRect": {
+                "x": 64,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                3,
+                4,
+                30,
+                32
+              ]
+            },
+            {
+              "role": "outlet-lip-to-stream",
+              "sourceRect": {
+                "x": 64,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                4,
+                0,
+                29,
+                32
+              ]
+            },
+            {
+              "role": "repeatable-stream",
+              "sourceRect": {
+                "x": 64,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                9,
+                0,
+                23,
+                32
+              ]
+            },
+            {
+              "role": "splash",
+              "sourceRect": {
+                "x": 64,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                2,
+                0,
+                30,
+                25
+              ]
+            }
+          ]
+        },
+        {
+          "phase": 3,
+          "parts": [
+            {
+              "role": "outlet",
+              "sourceRect": {
+                "x": 96,
+                "y": 0,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                3,
+                4,
+                30,
+                32
+              ]
+            },
+            {
+              "role": "outlet-lip-to-stream",
+              "sourceRect": {
+                "x": 96,
+                "y": 32,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                4,
+                0,
+                29,
+                32
+              ]
+            },
+            {
+              "role": "repeatable-stream",
+              "sourceRect": {
+                "x": 96,
+                "y": 64,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                9,
+                0,
+                23,
+                32
+              ]
+            },
+            {
+              "role": "splash",
+              "sourceRect": {
+                "x": 96,
+                "y": 96,
+                "width": 32,
+                "height": 32
+              },
+              "alphaBBox": [
+                3,
+                0,
+                29,
+                26
+              ]
+            }
+          ]
+        }
+      ],
+      "minimumVerifiedAssembly": {
+        "width": 1,
+        "height": 4,
+        "phaseTiles": [
+          [
+            0,
+            4,
+            8,
+            12
+          ],
+          [
+            1,
+            5,
+            9,
+            13
+          ],
+          [
+            2,
+            6,
+            10,
+            14
+          ],
+          [
+            3,
+            7,
+            11,
+            15
+          ]
+        ],
+        "anchor": "Composite origin center-bottom (16,128); last visible splash at y120..121, original padding retained. Single-part events need phase-locked updates."
+      },
+      "lengthGrammarCandidate": {
+        "prefixRows": [
+          0,
+          1
+        ],
+        "repeatBodyRow": 2,
+        "suffixRows": [
+          3
+        ],
+        "rule": "[0,1] + [2]*n + [3], n>=0, with all parts in one phase column. Row1 includes the outlet lower lip and MUST NOT repeat. Locally rendered/visually reviewed n=0,1,3 across4 phases. Native importer does not install or run these animated assemblies.",
+        "observedTileRowsByLength": [
+          {
+            "bodyRepeats": 0,
+            "rows": [
+              0,
+              1,
+              3
+            ]
+          },
+          {
+            "bodyRepeats": 1,
+            "rows": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "bodyRepeats": 3,
+            "rows": [
+              0,
+              1,
+              2,
+              2,
+              2,
+              3
+            ]
+          }
+        ],
+        "unverified": "Frame timing, synchronized part update commands, renderer anchors and water-surface alignment in player.html remain unimplemented."
+      }
+    },
+    {
+      "filename": "SC-Water02.png",
+      "url": "https://yms.main.jp/dotartworld/sozai/chara/SC-Water02.png",
+      "sha256": "e77079fc823bc1d5ce4ea85575524e102b4ed0a594f112ab40e421659060d0e7",
+      "width": 384,
+      "height": 640,
+      "phaseColumns": 4,
+      "completeCompositeFrames": [
+        {
+          "phase": 0,
+          "sourceRect": {
+            "x": 0,
+            "y": 0,
+            "width": 96,
+            "height": 160
+          },
+          "alphaBBox": [
+            15,
+            11,
+            80,
+            160
+          ]
+        },
+        {
+          "phase": 1,
+          "sourceRect": {
+            "x": 96,
+            "y": 0,
+            "width": 96,
+            "height": 160
+          },
+          "alphaBBox": [
+            15,
+            11,
+            80,
+            160
+          ]
+        },
+        {
+          "phase": 2,
+          "sourceRect": {
+            "x": 192,
+            "y": 0,
+            "width": 96,
+            "height": 160
+          },
+          "alphaBBox": [
+            15,
+            11,
+            80,
+            160
+          ]
+        },
+        {
+          "phase": 3,
+          "sourceRect": {
+            "x": 288,
+            "y": 0,
+            "width": 96,
+            "height": 160
+          },
+          "alphaBBox": [
+            15,
+            11,
+            80,
+            160
+          ]
+        }
+      ],
+      "actualFrameDifferences": [
+        1307,
+        1440,
+        1212,
+        1008
+      ],
+      "unusedRows": {
+        "rect": [
+          0,
+          160,
+          384,
+          480
+        ],
+        "nontransparentPixels": 0,
+        "meaning": "Three completely empty 160px charset rows are padding, not12 valid animation frames."
+      },
+      "anchor": "Recommended analysis frame96x160 uses center-bottom(48,160), not the whole640px sheet column. Complete outlet/stream/splash, no length-repeat claim."
+    }
+  ]
+}
