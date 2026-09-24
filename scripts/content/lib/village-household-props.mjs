@@ -25,8 +25,8 @@ export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,re
  for(const h of houses) {
    const kit=HOUSEHOLD_KITS[h.activity];
    if(!kit)throw Error("House activity must be authored: "+h.id);
-   // Compact alternatives keep the same purpose; a garden always retains its bed.
-   const variants=[kit.items,kit.compact.map(i=>kit.items[i])];
+   // Smaller alternatives keep the same purpose; a garden always retains its bed.
+   const variants=[kit.items,...(kit.fallbacks??[kit.compact]).map(ix=>ix.map(i=>kit.items[i]))];
    let result;
    for(const items of variants) {
      const w=Math.max(...items.map(([name,x])=>x+parts.find(p=>p.name===name).width));
@@ -44,6 +44,44 @@ export function placeHouseholdProps({map,houses,parts,roads,access,cliffCells,re
  }
  return {placed,yards};
 }
+// A flower box or pot on each side of the door. The bottom cell stands in the row of the door front, beside the
+// walkway; a two-row piece leans its top on the bare wall above. The door front itself and every road stay clear.
+export function placeDoorFlanks({map,houses,parts,roads,access,stamp,accept=()=>true}) {
+ const W=map.width,at=(x,y)=>y*W+x,placed=[],items=PROP_PROGRAMS.doorway.items;
+ const inHouse=(h,x,y)=>x>=h.x&&x<h.x+h.w&&y>=h.y&&y<h.y+h.h;
+ for(const [n,h] of houses.entries()) {
+  if(h.abandoned)continue;
+  for(const side of [-1,1]) {
+   // Alternate which side takes the box so neighbouring houses do not repeat one picture.
+   const order=(n+(side<0?0:1))%2===0?items:[...items].reverse();
+   let done=false;
+   for(const [name,,,purpose,anchor] of order) {
+    const p=parts.find(q=>q.name===name);
+    for(const d of [1,2]) {
+     const x=side<0?h.doorAt.x-d-(p.width-1):h.doorAt.x+d, y=h.front.y-(p.height-1);
+     const cells=Array.from({length:p.width*p.height},(_,k)=>[x+k%p.width,y+Math.floor(k/p.width)]);
+     const ok=cells.every(([cx,cy])=>{
+      if(cx<1||cy<1||cx>=W-1||cy>=map.height-1)return false;
+      const i=at(cx,cy);
+      if(map.upperTiles[i]!==-1||roads.has(i)||access.some(a=>a.x===cx&&a.y===cy)||cx===h.doorAt.x)return false;
+      if(cy===h.front.y)return map.lowerTiles[i]===240&&!houses.some(o=>inHouse(o,cx,cy));
+      return inHouse(h,cx,cy)&&cy===h.y+h.h-1&&![329,359].includes(map.lowerTiles[i]);
+     });
+     if(!ok)continue;
+     const o={name,x,y,w:p.width,h:p.height,upper:p.targetUpper.flat(),ownerId:h.id,kit:'doorway',purpose,anchor,side:side<0?'left':'right'};
+     cells.forEach(([cx,cy],k)=>{map.upperTiles[at(cx,cy)]=o.upper[k];});
+     const kept=accept(o);
+     for(const [cx,cy] of cells)map.upperTiles[at(cx,cy)]=-1;
+     if(!kept)continue;
+     stamp(o.name,o.x,o.y,o.w,o.h,null,o.upper,'prop');
+     placed.push(o);done=true;break;
+    }
+    if(done)break;
+   }
+  }
+ }
+ return placed;
+}
 export function inspectHouseholdProps(map,plan) {
  const errors=[],props=plan.placements.filter(o=>o.kind==='prop'),allowed=new Set(),ids=new Set(plan.placements.filter(o=>['prop','civic-prop'].includes(o.kind)).flatMap(o=>o.upper).filter(n=>n>=0));
  for(const o of [...plan.placements,...plan.houses]) for(let y=o.y;y<o.y+o.h;y++)for(let x=o.x;x<o.x+o.w;x++)allowed.add(y*map.width+x);
@@ -51,6 +89,12 @@ export function inspectHouseholdProps(map,plan) {
  for(const o of props) {
   const owner=plan.houses.find(h=>h.id===o.ownerId);
   if(!owner){errors.push({code:'prop-owner-missing',x:o.x,y:o.y});continue;}
+  if(o.kit==='doorway') {
+   const rule=PROP_PROGRAMS.doorway.items.find(([name])=>name===o.name);
+   if(!rule||o.purpose!==rule[3]||o.anchor!==rule[4])errors.push({code:'prop-purpose-mismatch',x:o.x,y:o.y});
+   if(o.y+o.h-1!==owner.front.y||o.x<=owner.doorAt.x-4||o.x>owner.doorAt.x+2||o.x<=owner.doorAt.x&&o.x+o.w>owner.doorAt.x||!present(map,o))errors.push({code:'doorway-flank-misplaced',x:o.x,y:o.y});
+   continue;
+  }
   if(o.y<owner.y||o.y+o.h>owner.y+owner.h||!(o.x+o.w<=owner.x&&owner.x-o.x<=6||o.x>=owner.x+owner.w&&o.x+o.w-owner.x-owner.w<=6))errors.push({code:'prop-outside-yard',x:o.x,y:o.y});
   const rule=HOUSEHOLD_KITS[owner.activity]?.items.find(([name])=>name===o.name);
   if(!rule||o.kit!==owner.activity||o.purpose!==rule[3]||o.anchor!==rule[4]) {errors.push({code:'prop-purpose-mismatch',x:o.x,y:o.y});continue;}

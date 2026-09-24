@@ -1,0 +1,12 @@
+{
+  "note": "개정14 · 마을 채우기(B = 압축 + 소품). 사용자가 승인한 시안 claude-viz/village-fullness.html 의 B 를 실제 맵에 적용한다. targets 는 빈 띠를 걷어 낼 목표 크기(폭, 높이)로, 걷을 수 있는 띠가 없으면 그 전에 멈춘다. plaza 는 우물(center)을 둘러쌀 공동 소품, ground 는 풀숲 덩이·세 개 묶음 들꽃·나무 덩이 수.",
+  "villages": {
+    "pine-hamlets": { "target": [56, 50], "plaza": { "zone": "well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "벤치", "화분"] }, "grass": 9, "wild": 18, "trees": 4 },
+    "terrace-cliff-village": { "target": [62, 56], "plaza": { "zone": "well", "center": "낮은 돌 우물", "items": ["벤치", "돌등", "화분"] }, "grass": 10, "wild": 20, "trees": 4 },
+    "twin-falls-river-village": { "target": [62, 56], "plaza": { "zone": "well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치"] }, "grass": 10, "wild": 20, "trees": 4 },
+    "reed-bay-village": { "target": [62, 50], "plaza": { "zone": "well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등"] }, "grass": 9, "wild": 18, "trees": 3 },
+    "chapel-hill-parish": { "target": [56, 50], "plaza": { "zone": "village-well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치", "화분"] }, "grass": 9, "wild": 18, "trees": 4 },
+    "ford-castle-town": { "target": [70, 72], "plaza": { "zone": "mid-market", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치"] }, "grass": 12, "wild": 26, "trees": 5 },
+    "mistpond-hollow": { "target": [56, 50], "plaza": { "zone": "dead-well", "center": "낮은 돌 우물", "items": ["돌등", "마른 묘목", "통나무 더미"] }, "grass": 11, "wild": 12, "trees": 3 }
+  }
+}
