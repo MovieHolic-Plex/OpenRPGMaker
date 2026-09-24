@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
+import { runtimeEventView } from "@/project/runtimeEventState";
+import { startSession } from "@/project/session";
 
 describe("upsert_event pages + 최상위 commands", () => {
   it("명령이 빈 페이지가 하나면 최상위 commands 를 그 페이지로 옮긴다(문 열림 → 다음 기억 transfer)", () => {
@@ -20,6 +22,49 @@ describe("upsert_event pages + 최상위 commands", () => {
     expect(event.pages![0]!.commands.map((command) => command.kind)).toEqual(["text", "transfer"]);
     expect(event.commands).toEqual([]);
     expect(JSON.stringify(res.diff?.warnings)).toContain("pages[0] 로 옮김");
+  });
+
+  it("pages 없이 commands·conditions 만 있으면 페이지로 만들고, 스위치 전에는 칸을 막지 않는다", () => {
+    const ctx = { project: createBlankProject() };
+    const mapId = ctx.project.startMapId;
+    const sw = ctx.project.switches[0]!.id;
+    const res = runTool(ctx, "upsert_event", {
+      mapId,
+      event: {
+        id: "ev_portal_to_bus",
+        x: 10,
+        y: 7,
+        conditions: [{ kind: "switch", switchId: sw, value: true }],
+        commands: [
+          { kind: "text", body: "문이 열렸다." },
+          {
+            kind: "choices",
+            text: "더 깊은 과거로 다이브하시겠습니까?",
+            options: [
+              { text: "다이브한다", branch: [{ kind: "transfer", mapId, x: 2, y: 2 }] },
+              { text: "조금 더 둘러본다", branch: [] },
+            ],
+          },
+        ],
+      },
+    });
+    expect(res.ok, res.summary).toBe(true);
+    const event = ctx.project.maps[mapId]!.events.find((entry) => entry.id === "ev_portal_to_bus")!;
+    expect(event.pages).toHaveLength(1);
+    expect(event.pages![0]!.conditions).toEqual([{ kind: "switch", switchId: sw, value: true }]);
+    expect(event.commands).toEqual([]);
+    expect(event).not.toHaveProperty("conditions");
+    const choices = event.pages![0]!.commands.find((command) => command.kind === "choices") as { prompt?: string; text?: string };
+    expect(choices.prompt).toBe("더 깊은 과거로 다이브하시겠습니까?");
+    expect(choices.text).toBeUndefined();
+    const session = startSession(ctx.project);
+    const closed = runtimeEventView(event, session, {});
+    expect(closed.page).toBeUndefined();
+    expect(closed.priority).toBe("below");
+    session.switches[sw] = true;
+    const open = runtimeEventView(event, session, {});
+    expect(open.page?.commands.map((command) => command.kind)).toEqual(["text", "choices"]);
+    expect(open.sprite?.id).toBeTruthy();
   });
 
   it("어느 페이지인지 모르면 거부한다", () => {
