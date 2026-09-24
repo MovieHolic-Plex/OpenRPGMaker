@@ -800,9 +800,64 @@ export function compileAccusationChoice(input: AccusationInput): Extract<Command
   };
 }
 
-/** speaker 가 빈 문자열이면 이름표 없는 서술이다(물건인 지목 지점). */
+/**
+ * 「탐정: '…'」「모로 박사: …」 처럼 대사 앞에 화자를 붙인 줄. 6회차: 지목 지점 「추리 집결 회합」 의 intro·ready·엔딩 대사를
+ * 전부 이렇게 써서 이름표는 「추리 집결 회합」, 얼굴은 신사, 본문은 「모로 박사: …」 로 셋이 어긋났다.
+ */
+const SPEAKER_PREFIX = /^\s*([^\s\d:：'"‘’“”「『(（\[][^\d:：'"‘’“”「『(（\[\]]{0,15}?)\s*[:：](?:\s+|(?=['"‘“「『(（]))(\S[\s\S]*)$/u;
+
+export function splitSpeakerPrefix(line: string): { readonly speaker?: string; readonly body: string } {
+  const match = SPEAKER_PREFIX.exec(line);
+  if (!match || match[1].trim().split(/\s+/u).length > 4) return { body: line };
+  const quoted = /^(['"‘“「『])([\s\S]*)(['"’”」』])$/u.exec(match[2].trim());
+  return { speaker: match[1].trim(), body: quoted ? quoted[2] : match[2].trim() };
+}
+
+/** speaker 가 빈 문자열이면 이름표 없는 서술이다(물건인 지목 지점). 줄 앞 「이름:」 은 그 줄의 화자로 옮긴다. */
 function say(speaker: string, body: readonly string[]): Command[] {
-  return body.map((line) => (speaker ? { kind: "text", speaker, body: line } : { kind: "text", body: line }));
+  return body.map((line) => {
+    const split = splitSpeakerPrefix(line);
+    const who = split.speaker ?? speaker;
+    return who ? { kind: "text", speaker: who, body: split.body } : { kind: "text", body: split.body };
+  });
+}
+
+const CLEAR_FACE: Command = { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false };
+
+/** 남이 말하는 줄에서는 이 인물의 얼굴을 내리고, 다시 이 인물이 말할 때 올린다(분기 안까지). */
+function faceFollowsSpeaker(commands: readonly Command[], ownName: string, face: Command, shown: boolean): { commands: Command[]; shown: boolean } {
+  const out: Command[] = [];
+  let visible = shown;
+  const branch = (list: readonly Command[] | undefined): Command[] | undefined => {
+    if (!list) return list;
+    const inner = faceFollowsSpeaker(list, ownName, face, visible);
+    return inner.shown === visible ? inner.commands : [...inner.commands, ...(visible ? [structuredClone(face)] : [structuredClone(CLEAR_FACE)])];
+  };
+  for (const command of commands) {
+    if (command.kind === "changeFace") { visible = Boolean(command.resourceId); out.push(command); continue; }
+    if (command.kind === "text" && command.speaker) {
+      const own = command.speaker === ownName || ownName.includes(command.speaker) || command.speaker.includes(ownName);
+      if (own && !visible) { out.push(structuredClone(face)); visible = true; }
+      if (!own && visible) { out.push(structuredClone(CLEAR_FACE)); visible = false; }
+      out.push(command);
+      continue;
+    }
+    if (command.kind === "choices") {
+      out.push({ ...command, options: command.options.map((option) => ({ ...option, branch: branch(option.branch) ?? [] })), ...(command.cancelBranch ? { cancelBranch: branch(command.cancelBranch) } : {}) });
+      continue;
+    }
+    if (command.kind === "presentItem") {
+      out.push({
+        ...command,
+        options: command.options.map((option) => ({ ...option, branch: branch(option.branch) ?? [] })),
+        ...(command.otherwiseBranch ? { otherwiseBranch: branch(command.otherwiseBranch) } : {}),
+        ...(command.cancelBranch ? { cancelBranch: branch(command.cancelBranch) } : {}),
+      });
+      continue;
+    }
+    out.push(command);
+  }
+  return { commands: out, shown: visible };
 }
 
 // 지목 NPC 를 물건으로 지은 경우(manor-mystery 실측 두 번: 「추리 정리 테이블」「사건 정리 수첩」). 기본 주민 외형·얼굴로 그리면
@@ -1044,6 +1099,10 @@ function placeCharacter(
     }
   } else if (input.activity) {
     event.schedule = [{ when: {}, at: { mapId: map.id, x: input.at.x, y: input.at.y }, activity: input.activity }];
+  }
+  for (const page of event.pages ?? []) {
+    const face = page.commands.find((command) => command.kind === "changeFace" && command.resourceId);
+    if (face) page.commands = faceFollowsSpeaker(page.commands, input.name, face, false).commands;
   }
   if (event.x !== input.at.x || event.y !== input.at.y) {
     warnings.push(`'${input.name}' 위치 자동 조정: (${input.at.x}, ${input.at.y}) → (${event.x}, ${event.y})`);
