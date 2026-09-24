@@ -1,0 +1,580 @@
+[
+  {
+    "id": "interior-inn-tavern-1f",
+    "entry": [
+      11,
+      13
+    ],
+    "targets": [
+      [
+        4,
+        6
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        16,
+        5
+      ],
+      [
+        19,
+        5
+      ]
+    ],
+    "reachable": 96,
+    "walkable": 86,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-inn-rooms-2f",
+    "entry": [
+      3,
+      12
+    ],
+    "targets": [
+      [
+        5,
+        6
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        17,
+        7
+      ],
+      [
+        19,
+        12
+      ]
+    ],
+    "reachable": 97,
+    "walkable": 93,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-church-nave",
+    "entry": [
+      9,
+      16
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        15,
+        14
+      ]
+    ],
+    "reachable": 96,
+    "walkable": 93,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-home-one-room",
+    "entry": [
+      7,
+      10
+    ],
+    "targets": [
+      [
+        3,
+        6
+      ],
+      [
+        5,
+        9
+      ],
+      [
+        9,
+        7
+      ]
+    ],
+    "reachable": 36,
+    "walkable": 29,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-home-two-story-1f",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        8
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        11,
+        9
+      ]
+    ],
+    "reachable": 44,
+    "walkable": 37,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-home-two-story-2f",
+    "entry": [
+      10,
+      9
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        14,
+        8
+      ]
+    ],
+    "reachable": 42,
+    "walkable": 40,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-home-chief",
+    "entry": [
+      13,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        13,
+        10
+      ],
+      [
+        21,
+        8
+      ]
+    ],
+    "reachable": 104,
+    "walkable": 89,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-home-abandoned",
+    "entry": [
+      7,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        11,
+        6
+      ]
+    ],
+    "reachable": 40,
+    "walkable": 35,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-adventurers-guild",
+    "entry": [
+      11,
+      13
+    ],
+    "targets": [
+      [
+        16,
+        8
+      ],
+      [
+        8,
+        5
+      ],
+      [
+        10,
+        7
+      ]
+    ],
+    "reachable": 106,
+    "walkable": 101,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-magic-shop",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        8
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        11,
+        8
+      ]
+    ],
+    "reachable": 39,
+    "walkable": 38,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-alchemy-workshop",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        6
+      ],
+      [
+        12,
+        7
+      ],
+      [
+        6,
+        10
+      ]
+    ],
+    "reachable": 57,
+    "walkable": 53,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-library",
+    "entry": [
+      11,
+      14
+    ],
+    "targets": [
+      [
+        10,
+        6
+      ],
+      [
+        8,
+        10
+      ],
+      [
+        14,
+        10
+      ],
+      [
+        19,
+        12
+      ],
+      [
+        2,
+        10
+      ]
+    ],
+    "reachable": 89,
+    "walkable": 85,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-academy-classroom",
+    "entry": [
+      10,
+      13
+    ],
+    "targets": [
+      [
+        9,
+        6
+      ],
+      [
+        4,
+        12
+      ],
+      [
+        15,
+        12
+      ],
+      [
+        14,
+        7
+      ]
+    ],
+    "reachable": 91,
+    "walkable": 82,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-castle-dining",
+    "entry": [
+      11,
+      11
+    ],
+    "targets": [
+      [
+        10,
+        6
+      ],
+      [
+        7,
+        5
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        4,
+        7
+      ]
+    ],
+    "reachable": 77,
+    "walkable": 62,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-castle-bedchamber",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        14,
+        8
+      ]
+    ],
+    "reachable": 48,
+    "walkable": 41,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-castle-barracks",
+    "entry": [
+      11,
+      11
+    ],
+    "targets": [
+      [
+        11,
+        7
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        19,
+        10
+      ]
+    ],
+    "reachable": 68,
+    "walkable": 60,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-castle-treasury",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        6
+      ],
+      [
+        3,
+        6
+      ],
+      [
+        12,
+        6
+      ]
+    ],
+    "reachable": 42,
+    "walkable": 40,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-arena-waiting-room",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        10,
+        5
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        15,
+        9
+      ]
+    ],
+    "reachable": 65,
+    "walkable": 59,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-casino",
+    "entry": [
+      11,
+      13
+    ],
+    "targets": [
+      [
+        16,
+        8
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        3,
+        6
+      ]
+    ],
+    "reachable": 101,
+    "walkable": 89,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-auction-house",
+    "entry": [
+      10,
+      13
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        17,
+        11
+      ]
+    ],
+    "reachable": 80,
+    "walkable": 73,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-ship-cabin",
+    "entry": [
+      17,
+      5
+    ],
+    "targets": [
+      [
+        6,
+        6
+      ],
+      [
+        9,
+        8
+      ],
+      [
+        12,
+        7
+      ],
+      [
+        16,
+        8
+      ]
+    ],
+    "reachable": 62,
+    "walkable": 61,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "interior-ship-hold",
+    "entry": [
+      10,
+      5
+    ],
+    "targets": [
+      [
+        11,
+        9
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        18,
+        8
+      ]
+    ],
+    "reachable": 75,
+    "walkable": 73,
+    "blocked": [],
+    "pockets": []
+  }
+]

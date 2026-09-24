@@ -1,0 +1,32 @@
+{
+  "projectId": "0c70c503-a2f7-432e-9f7b-4c00222702b2",
+  "projectDir": ".oprn-projects/rpg-interiors-20260924",
+  "revision": 1,
+  "sha256": "1b6e82b4113acc042a6121d800b3d8c6ca19151ebd90284db424c5472d67d28d",
+  "saved": true,
+  "reopened": true,
+  "maps": [
+    "interior-inn-tavern-1f",
+    "interior-inn-rooms-2f",
+    "interior-church-nave",
+    "interior-home-one-room",
+    "interior-home-two-story-1f",
+    "interior-home-two-story-2f",
+    "interior-home-chief",
+    "interior-home-abandoned",
+    "interior-adventurers-guild",
+    "interior-magic-shop",
+    "interior-alchemy-workshop",
+    "interior-library",
+    "interior-academy-classroom",
+    "interior-castle-dining",
+    "interior-castle-bedchamber",
+    "interior-castle-barracks",
+    "interior-castle-treasury",
+    "interior-arena-waiting-room",
+    "interior-casino",
+    "interior-auction-house",
+    "interior-ship-cabin",
+    "interior-ship-hold"
+  ]
+}
