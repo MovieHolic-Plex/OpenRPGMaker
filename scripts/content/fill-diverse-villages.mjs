@@ -20,7 +20,9 @@ import { compactVillage, reautotile } from "./lib/village-compact.mjs";
 import { placeHouseholdProps, placeDoorFlanks, inspectHouseholdProps } from "./lib/village-household-props.mjs";
 import { inspectCivicProps } from "./lib/village-civic-props.mjs";
 import { cliffColumns, inspectVillageCliffs } from "./lib/village-cliffs.mjs";
-import { placePlaza, placeTallGrass, placeWildGroups, placeTreeClumps, fillPlainGaps, emptiness, rng, cellsOf } from "./lib/village-fullness.mjs";
+import { placePlaza, placeTreeClumps, fillNaturalGaps, emptiness, rng, cellsOf } from "./lib/village-fullness.mjs";
+import { pruneUnowned } from "./lib/village-ownership.mjs";
+import { reshapePools } from "./lib/village-pools.mjs";
 
 const args = process.argv.slice(2), only = args.find((a) => a.startsWith("--only="))?.slice(7);
 const [input, output] = args.filter((a) => !a.startsWith("--"));
@@ -85,6 +87,12 @@ function fillVillage(plan, strict) {
     }
     plan.placements.push({ name, x, y, w, h, kind, lower: lower ?? "KEEP", upper });
   };
+
+  // 0. No grass crest: the faint /—\ line of grass joins on flat grass read as half-laid tiles (review 2026-09-24).
+  const crestCells = plan.grassJoins.length;
+  for (const j of plan.grassJoins) m.lowerTiles[j.y * m.width + j.x] = 240;
+  plan.grassJoins = [];
+  plan.crest = null;
 
   // 1. Household yards: clear the old 2–3 piece yards, place the whole kits, then the door flanks.
   for (const o of plan.placements.filter((q) => q.kind === "prop")) for (const c of rect(o)) m.upperTiles[c.y * m.width + c.x] = -1;
@@ -222,7 +230,27 @@ function fillVillage(plan, strict) {
   const keepRect = (o, set, pad = 0) => { for (let y = o.y - pad; y < o.y + o.h + pad; y++) for (let x = o.x - pad; x < o.x + o.w + pad; x++) if (x >= 0 && y >= 0 && x < W2 && y < m.height) set.add(at(x, y)); };
   assert(reachOk(seenNow()), "Compaction blocks access " + plan.id + " " + JSON.stringify(plan.access.filter((a) => !seenNow().has(key(a.x, a.y)))));
 
-  // 4. Ground: tall grass, wildflowers in threes, tree clumps.
+  // 4. Plunge pools get an irregular shore (the authored integer ellipses drew as crosses), then every life prop
+  // without a reason within two cells is removed (lib/village-ownership.mjs).
+  const objectCells = new Set();
+  for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, objectCells, 1);
+  const roadNow = () => { const r = new Set(); m.lowerTiles.forEach((t, i) => { if (ROAD.has(t) || t === catalog.riverTiles.bridgeTop || t === catalog.riverTiles.bridgeBottom) r.add(i); }); return r; };
+  const accessRing = new Set();
+  for (const a of plan.access) keepRect({ x: a.x, y: a.y, w: 1, h: 1 }, accessRing, 1);
+  const roadCellsNow = roadNow();
+  const pools = reshapePools({ map: m, pools: plan.river?.pools ?? [], lakeGroup, wet: WET, random,
+    canWet: (x, y) => { const i = at(x, y); return m.lowerTiles[i] === 240 && m.upperTiles[i] === -1 && !objectCells.has(i) && !accessRing.has(i)
+      && ![[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].some(([dx, dy]) => roadCellsNow.has(at(x + dx, y + dy))); },
+    canDry: () => true });
+  assert(reachOk(seenNow()), "Pools block access " + plan.id);
+  const water = new Set(); m.lowerTiles.forEach((t, i) => { if (LAKE.has(t) || t === catalog.riverTiles.fall) water.add(i); });
+  const roadsForOwners = roadNow();
+  for (const [x, y, h] of plan.stairs) for (let d = -1; d <= h + 1; d++) for (const dx of [0, 1]) roadsForOwners.add(at(x + dx, y + d));
+  const pruned = pruneUnowned({ map: m, plan, roads: roadsForOwners, water, inspect: () => [...inspectCivicProps(m, plan), ...inspectHouseholdProps(m, plan)] });
+
+  // 5. Ground: 2–3 tree clumps in front of straight forest edges, then natural scenes (tree + bush, thickets,
+  // flowering shrubs, rocks with a bush) until the gate passes. No tall grass: the old 243–335 art is banned until
+  // the E/F/G redraw lands (placeGrassPatch is ready for it).
   // A ground piece may not cut off any walkable ground: the count of walkable cells the start cannot reach never grows.
   const orphans = () => { const s = seenNow(); let w = 0; for (let i = 0; i < m.lowerTiles.length; i++) if (walk(i)) w++; return { ok: reachOk(s), orphans: w - s.size }; };
   let orphanCount = orphans().orphans;
@@ -232,26 +260,23 @@ function fillVillage(plan, strict) {
   for (const a of plan.access) keepRect({ x: a.x, y: a.y, w: 1, h: 1 }, reserved, 1);
   for (let i = 0; i < W2 * m.height; i++) {
     const l = m.lowerTiles[i], u = m.upperTiles[i];
-    if (WET.has(l) || CLIFF_TILES.has(u) || CLIFF_TILES.has(l)) keepRect({ x: i % W2, y: Math.floor(i / W2), w: 1, h: 1 }, reserved, 1);
+    if (WET.has(l) || CLIFF_TILES.has(u) || CLIFF_TILES.has(l) || ROAD.has(l)) keepRect({ x: i % W2, y: Math.floor(i / W2), w: 1, h: 1 }, reserved, 1);
   }
   const bare = (x, y) => x >= 1 && y >= 1 && x < W2 - 1 && y < m.height - 1 && m.lowerTiles[at(x, y)] === 240 && m.upperTiles[at(x, y)] === -1 && !reserved.has(at(x, y));
-  const isForest = (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && (CAN.has(m.upperTiles[at(x, y)]) || TRUNK.has(m.lowerTiles[at(x, y)]));
-  const nearForest = (x, y) => bare(x, y) && [-2, -1, 0, 1, 2].some((dy) => [-2, -1, 0, 1, 2].some((dx) => isForest(x + dx, y + dy)));
   const clumps = placeTreeClumps({ map: m, bare, isForest: (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && CAN.has(m.upperTiles[at(x, y)]),
     rootRow: (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && ROOTS.has(m.lowerTiles[at(x, y)]), templates, count: spec.trees, random,
     accept: noSealing });
   clumps.forEach((stamps, k) => { for (const s of stamps) { plan.placements.push({ name: s.name, x: s.x, y: s.y, w: s.w, h: s.h, kind: "vegetation", clump: k + 1, lower: s.lower, upper: s.upper }); keepRect(s, reserved, 1); } });
-  const grass = placeTallGrass({ map: m, bare, nearForest, group: tallGrass, count: spec.grass, random, accept: () => true });
-  for (const c of grass) for (const p of c) keepRect({ x: p.x, y: p.y, w: 1, h: 1 }, reserved, 1);
-  const wild = placeWildGroups({ map: m, bare, count: spec.wild, random, accept: noSealing });
-  // The fill gate (FILL-RULES: town maxSq ≤ 4, screen ≤ 40%): walkable natural fill in what is still plain ground.
+  // The fill gate (FILL-RULES: town maxSq ≤ 4, screen ≤ 40%).
   const PLAIN = new Set([240, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147]);
   const isPlain = (x, y) => m.upperTiles[at(x, y)] === -1 && PLAIN.has(m.lowerTiles[at(x, y)]);
   const objects = new Set(), accessCells = new Set(plan.access.map((a) => at(a.x, a.y)));
   for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, objects, 0);
   const before = emptiness(m, isPlain);
-  const gaps = fillPlainGaps({ map: m, isPlain, canTake: (x, y) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)), group: tallGrass, random,
-    flowerGroups: wild.map((g) => [Math.min(...g.cells.map((c) => c.x)) + 1, Math.min(...g.cells.map((c) => c.y)) + 1]) });
+  const gaps = fillNaturalGaps({ map: m, isPlain, templates, random, accept: noSealing,
+    // Solid pieces keep a ring off roads, water, cliffs, doors and objects; flowers only avoid access cells and objects.
+    take: (x, y, solid) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)) && (!solid || bare(x, y)) });
+  gaps.pieces.forEach((p, k) => { for (const s of p.stamps) plan.placements.push({ name: s.name, x: s.x, y: s.y, w: s.w, h: s.h, kind: "vegetation", scene: k + 1, lower: s.lower ?? "KEEP", upper: s.upper }); });
 
   // Final checks, then the plan's derived fields.
   const seen = seenNow();
@@ -275,13 +300,12 @@ function fillVillage(plan, strict) {
   plan.fullness = {
     revision: 14, before: { width: W0, height: H0 }, after: { width: m.width, height: m.height }, removed: carved.removed,
     yards: plan.yards.length, yardProps: plan.placements.filter((o) => o.kind === "prop" && o.kit !== "doorway").length,
-    doorFlanks: flanks.length, plaza: plaza.map((o) => o.name), treeClumps: clumps.length,
-    tallGrass: grass.map((c) => ({ x: Math.min(...c.map((p) => p.x)), y: Math.min(...c.map((p) => p.y)), cells: c.length })),
-    wild: wild.map((g) => ({ name: g.name, cells: g.cells.map((c) => [c.x, c.y]) })),
-    gapFill: { pieces: gaps.pieces.length, cells: gaps.pieces.reduce((n, p) => n + p.cells.length, 0) },
+    doorFlanks: flanks.length, plaza: plaza.map((o) => o.name), treeClumps: clumps.length, crestCellsRemoved: crestCells,
+    pools, unownedRemoved: pruned,
+    scenes: gaps.pieces.map((p) => ({ name: p.name, at: p.stamps[0] ? [p.stamps[0].x, p.stamps[0].y] : p.flowers[0].slice(0, 2), flowers: p.flowers.length })),
     emptiness: { beforeGapFill: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
   };
   m.layoutPlan = { ...m.layoutPlan, regions: plan.houses, entrance: plan.entrance, civicPlaces: plan.civicPlaces, landmarks: plan.landmarks ?? [] };
-  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, grass: grass.length, wild: wild.length, gap: plan.fullness.gapFill.pieces, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
+  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, crest: crestCells, pools: JSON.stringify(pools.map((p) => [p.added, p.dried])), unowned: pruned.length, scenes: gaps.pieces.length, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
 }
 fs.writeFileSync(output, JSON.stringify(catalog));

@@ -346,3 +346,133 @@ export function placeTreeClumps({ map, bare, isForest, rootRow, templates, count
   }
   return placed;
 }
+
+// Natural fill without tall grass (the old 243–335 grass is banned until the E/F/G redraw lands). Each piece is a
+// small scene, never a lone dot: a tree with a bush at its foot, a thicket of bushes, a flowering shrub (a bush with
+// three to five flowers tucked round it), or rocks with a bush beside them. Pieces are whole stamps of the retained
+// vegetation (3×4 broadleaf, 3×3 round bush, 2×2 small bush) and single-cell bush 289 / flowers 348·288 / rocks.
+// Big masses first (few pieces, each a real grove or thicket), so the ground never reads as an even sprinkle.
+const SCENES = [
+  { name: "나무 덩이", weight: 30, parts: [["활엽수", 0, 0], ["활엽수", 3, 1], ["작은 덤불", 6, 3], ["둥근 덤불", 0, 4]], tree: true },
+  { name: "나무 두 그루", weight: 22, parts: [["활엽수", 0, 1], ["활엽수", 3, 0], ["작은 덤불", 1, 5]], tree: true },
+  { name: "나무와 덤불", weight: 18, parts: [["활엽수", 0, 0], ["둥근 덤불", 3, 1], ["작은 덤불", 2, 4]], tree: true },
+  { name: "덤불숲", weight: 18, parts: [["둥근 덤불", 0, 0], ["둥근 덤불", 3, 1], ["작은 덤불", 1, 3]] },
+  { name: "꽃 핀 덤불숲", weight: 14, parts: [["둥근 덤불", 0, 0], ["작은 덤불", 3, 1]], flowers: [4, 5] },
+  { name: "작은 덤불숲", weight: 8, parts: [["작은 덤불", 0, 0], ["작은 덤불", 2, 1], ["덤불", 0, 2]] },
+  { name: "바위와 덤불", weight: 4, parts: [["바위", 0, 0], ["작은 덤불", 1, 0], ["바위", 0, 1]], rocks: true },
+  // Narrow ground (between a road and a house) only takes smaller pieces: a round bush with flowers at its foot, two
+  // small bushes, or a bed of four or five wildflowers — still one clump each.
+  { name: "꽃 핀 둥근 덤불", weight: 10, tier: 2, parts: [["둥근 덤불", 0, 0]], flowers: [3, 5] },
+  // Smaller pieces make an even sprinkle (review 2026-09-24): available, but only when a caller asks for them.
+  { name: "덤불 한 쌍", weight: 8, tier: 3, small: true, parts: [["작은 덤불", 0, 0], ["덤불", 2, 1]], flowers: [3, 4] },
+  { name: "들꽃 무리", weight: 6, tier: 3, small: true, parts: [], flowers: [4, 5] },
+];
+const SINGLE = { "덤불": { name: "덤불", w: 1, h: 1, lower: null, upper: [289] }, "바위": { name: "바위", w: 1, h: 1, lower: null, upper: [537] } };
+export const NATURAL_SCENES = SCENES;
+/**
+ * Fill plain ground until the gate passes with the scenes above. `take(x, y, solid)` says whether a cell may take a
+ * piece (solid pieces need more room: the caller keeps them off roads, doors and access rings); `accept(cells)` is
+ * the caller's reachability check (a scene is rolled back if it seals ground). `allow` filters scenes (a climate
+ * without broadleaf trees or flowers narrows it). Returns { pieces, maxSq, screen }.
+ */
+export function fillNaturalGaps({ map, isPlain, take, templates, random, accept, allow = () => true, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 600, flowerTiles = [348, 288], singles = SINGLE, small = false }) {
+  const W = map.width, H = map.height, at = (x, y) => y * W + x, pieces = [], tried = new Set();
+  const scenes = SCENES.filter((s) => allow(s) && (!s.small || small) && (!s.flowers || flowerTiles.length));
+  const pieceOf = (name) => singles[name] ?? templates[name];
+  for (let step = 0; step < maxSteps && scenes.length; step++) {
+    const e = emptiness(map, isPlain);
+    if (e.maxSq <= limits.maxSq && e.screen <= limits.screen) break;
+    const square = (x0, y0, sw, sh) => {
+      let best = 0, found = null;
+      const dp = Array.from({ length: sh + 1 }, () => Array(sw + 1).fill(0));
+      for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) if (e.P[y0 + y][x0 + x] && take(x0 + x, y0 + y, false) && !tried.has(at(x0 + x, y0 + y))) {
+        dp[y + 1][x + 1] = 1 + Math.min(dp[y][x + 1], dp[y + 1][x], dp[y][x]);
+        if (dp[y + 1][x + 1] > best) { best = dp[y + 1][x + 1]; found = { x: x0 + x - best + 1, y: y0 + y - best + 1, w: best, h: best }; }
+      }
+      return found;
+    };
+    let box = e.maxSq > limits.maxSq ? square(0, 0, W, H) : null;
+    if (!box || box.w <= limits.maxSq) box = e.screen > limits.screen ? square(e.screenAt[0], e.screenAt[1], Math.min(17, W), Math.min(13, H)) : box;
+    if (!box) break;
+    const sx = box.x + Math.floor(random() * box.w), sy = box.y + Math.floor(random() * box.h);
+    // Scenes in a weighted shuffle, each anchored so it covers the seed cell.
+    // Bigger tiers first: a small piece only goes where no grove or thicket fits.
+    const order = scenes.map((s) => [(s.tier ?? 1) * 100 - Math.log(random() + 1e-9) / s.weight, s]).sort((a, b) => a[0] - b[0]).map(([, s]) => s);
+    let placed = null;
+    for (const scene of order) {
+      for (let attempt = 0; attempt < 4 && !placed; attempt++) {
+        const mirror = random() < 0.5;
+        const parts = scene.parts.map(([name, dx, dy]) => ({ t: pieceOf(name), dx, dy }));
+        const w = Math.max(1, ...parts.map((p) => p.dx + p.t.w)), h = Math.max(1, ...parts.map((p) => p.dy + p.t.h));
+        const ox = sx - Math.floor(random() * w), oy = sy - Math.floor(random() * h);
+        const stamps = parts.map((p) => ({ ...p.t, x: ox + (mirror ? w - p.dx - p.t.w : p.dx), y: oy + p.dy }));
+        const cells = stamps.flatMap((st) => cellsOf(st).map((c, k) => ({ ...c, lower: st.lower?.[k] ?? null, upper: st.upper[k] })));
+        if (!cells.every((c) => c.x >= 1 && c.y >= 1 && c.x < W - 1 && c.y < H - 1 && isPlain(c.x, c.y) && take(c.x, c.y, true))) continue;
+        // Flowers hug the scene: a tight run of free cells round it (never a scatter).
+        const flowers = [];
+        if (scene.flowers) {
+          const own = new Set(cells.map((c) => at(c.x, c.y)));
+          const [lo, hi] = scene.flowers, want = lo + Math.floor(random() * (hi - lo + 1));
+          const ring = parts.length ? [] : [at(sx, sy)].filter((k) => isPlain(sx, sy) && take(sx, sy, false));
+          const around = parts.length ? cells : [{ x: sx, y: sy }, { x: sx + 1, y: sy }, { x: sx, y: sy + 1 }, { x: sx - 1, y: sy }, { x: sx, y: sy - 1 }];
+          for (const c of around) for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]]) {
+            const x = c.x + dx, y = c.y + dy, k = at(x, y);
+            if (!own.has(k) && !ring.includes(k) && x >= 1 && y >= 1 && x < W - 1 && y < H - 1 && isPlain(x, y) && take(x, y, false)) ring.push(k);
+          }
+          if (ring.length >= lo) {
+            const run = [parts.length ? ring[Math.floor(random() * ring.length)] : ring[0]];
+            while (run.length < want) {
+              const next = ring.find((k) => !run.includes(k) && run.some((r) => Math.abs(r % W - k % W) <= 1 && Math.abs(Math.floor(r / W) - Math.floor(k / W)) <= 1));
+              if (next === undefined) break;
+              run.push(next);
+            }
+            const shift = random() < 0.5 ? 0 : 1;
+            if (run.length >= lo) run.forEach((k, n) => flowers.push({ x: k % W, y: Math.floor(k / W), upper: flowerTiles[(n + shift) % flowerTiles.length] }));
+          }
+          if (flowers.length < lo) continue;
+        }
+        const saved = [...cells, ...flowers].map((c) => [at(c.x, c.y), map.lowerTiles[at(c.x, c.y)], map.upperTiles[at(c.x, c.y)]]);
+        for (const c of cells) { if (c.lower != null) map.lowerTiles[at(c.x, c.y)] = c.lower; map.upperTiles[at(c.x, c.y)] = c.upper; }
+        for (const f of flowers) map.upperTiles[at(f.x, f.y)] = f.upper;
+        if (!accept([...cells, ...flowers])) { for (const [i, l, u] of saved) { map.lowerTiles[i] = l; map.upperTiles[i] = u; } continue; }
+        placed = { name: scene.name, stamps: stamps.map(({ name, x, y, w, h, lower, upper }) => ({ name, x, y, w, h, lower, upper })), flowers: flowers.map((f) => [f.x, f.y, f.upper]) };
+      }
+      if (placed) break;
+    }
+    if (placed) pieces.push(placed);
+    else tried.add(at(sx, sy));
+  }
+  return { pieces, ...emptiness(map, isPlain) };
+}
+
+/**
+ * Prepared for the E/F/G tall-grass redraw (not called until it lands; the old 243–335 art stays banned). A patch is
+ * a union of 2×2 blocks (never a one-cell strip) with its convex corners trimmed, and one family for the whole patch:
+ * E (dense) when it touches the forest canopy, G (short) within two cells of a house or road, F (bright) otherwise.
+ * `families[kind].variantMap` picks each cell's piece from its eight neighbours (never a random piece).
+ */
+export function placeGrassPatch({ map, seed, blocks, ok, families, touchesCanopy, nearHouseOrRoad, random }) {
+  const W = map.width, at = (x, y) => y * W + x, cells = new Set();
+  let [bx, by] = seed;
+  for (let n = 0; n < blocks; n++) {
+    const block = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([dx, dy]) => [bx + dx, by + dy]);
+    if (block.every(([x, y]) => ok(x, y))) block.forEach(([x, y]) => cells.add(at(x, y)));
+    [bx, by] = [bx + Math.floor(random() * 3) - 1, by + Math.floor(random() * 3) - 1];
+  }
+  // Trim convex corners (a cell open on two perpendicular sides), keeping every 2×2 core.
+  for (const i of [...cells]) {
+    const x = i % W, y = Math.floor(i / W), has = (dx, dy) => cells.has(at(x + dx, y + dy));
+    if ((!has(-1, 0) || !has(1, 0)) && (!has(0, -1) || !has(0, 1)) && cells.size > 6 && random() < 0.6) cells.delete(i);
+  }
+  if (cells.size < 4) return null;
+  const list = [...cells];
+  const kind = list.some((i) => touchesCanopy(i % W, Math.floor(i / W))) ? "E" : list.some((i) => nearHouseOrRoad(i % W, Math.floor(i / W))) ? "G" : "F";
+  const vm = families[kind].variantMap;
+  for (const i of list) {
+    const x = i % W, y = Math.floor(i / W);
+    let mask = 0;
+    [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]].forEach(([dx, dy], b) => { if (cells.has(at(x + dx, y + dy))) mask |= 1 << b; });
+    map.lowerTiles[i] = vm[String(mask)];
+  }
+  return { kind, cells: list.map((i) => [i % W, Math.floor(i / W)]) };
+}
