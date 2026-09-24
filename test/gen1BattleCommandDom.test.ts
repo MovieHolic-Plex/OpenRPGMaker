@@ -106,6 +106,16 @@ describe("Gen1 monster battle command DOM", () => {
     expect(button(fight, "actor-command-struggle").textContent).toContain("Struggle");
   });
 
+  it.each(["trainerBattle", "uncapturable"] as const)("omits balls from Item when %s forbids capture, preserving medicine", (flag) => {
+    const { project, runtime, snapshot } = gen1Harness();
+    project.database.troops.find((troop) => troop.id === snapshot.troopId)![flag] = true;
+    store.replace(project);
+    const { options } = panelOptions(runtime);
+    const items = commandPanel(snapshot, { ...options, submenu: { kind: "item" } }) as unknown as FakeElement;
+    expect(items.querySelector("[data-testid='actor-capture-item_capture_orb']")).toBeNull();
+    expect(items.querySelector(`[data-testid='actor-item-${DEFAULT_ITEM_ID}']`)).not.toBeNull();
+  });
+
   it("puts normal items and balls in Item and routes a ball through canonical capture targeting", () => {
     const { runtime, snapshot } = gen1Harness();
     const beginTargetCommand = vi.fn<(command: TargetedActorCommand) => void>();

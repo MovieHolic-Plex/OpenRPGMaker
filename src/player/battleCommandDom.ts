@@ -498,6 +498,8 @@ function isBattleUsableItem(item: {
 
 function captureItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number; multiplier: number }[] {
   const project = store.getCurrent();
+  const troop = project.database.troops.find((entry) => entry.id === snapshot.troopId);
+  if (troop?.trainerBattle === true || troop?.uncapturable === true) return [];
   const inventory = snapshot.eventState.inventory;
   return project.database.items
     .filter((item) => isCaptureTool(item) && (inventory[item.id] ?? 0) > 0)
