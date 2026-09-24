@@ -42,6 +42,7 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
+import { reachableGateCandidates, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -1688,6 +1689,34 @@ function transferEndpoint(
  * 지형을 확인해 봐야 소용없는 상태에서 3연속 같은 실패를 반복했다. 실패 경로는 셋뿐이므로
  * (범위 밖 / 이벤트 점유 / 통행 불가) 어느 쪽인지 세어서 알려준다.
  */
+/**
+ * transferEndpoint + 도달성 보정. 맵에 이미 플레이어가 서는 칸(시작 위치·들어오는 착지점)이 있는데
+ * 요청 자리가 거기서 걸어 닿지 않으면, 같은 가장자리의 가장 가까운 닿는 칸으로 옮긴다.
+ * 닿는 후보가 없으면 원래 자리를 쓰고 경고만 남긴다(막지 않는다).
+ */
+function reachableTransferEndpoint(
+  project: Project,
+  map: GameMap,
+  requested: { x: number; y: number },
+  label: "A" | "B",
+  notes: string[],
+): { gate: Point; landing: Point } | null {
+  const endpoint = transferEndpoint(project, map, requested.x, requested.y);
+  const reach = walkableFromAnchors(project, map);
+  if (!reach) return endpoint;
+  const reached = (point: Point): boolean => reach.has(point.y * map.width + point.x);
+  const usable = (point: { gate: Point; landing: Point }): boolean => reached(point.gate) && reached(point.landing);
+  if (endpoint && usable(endpoint)) return endpoint;
+  for (const candidate of reachableGateCandidates(map, reach, requested).slice(0, 60)) {
+    const alt = transferEndpoint(project, map, candidate.x, candidate.y, 0);
+    if (!alt || !usable(alt)) continue;
+    notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    return alt;
+  }
+  if (endpoint) notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+  return endpoint;
+}
+
 function transferEndpointFailure(
   project: Project,
   map: GameMap,
@@ -2027,8 +2056,9 @@ const createTransferPair: ToolDefinition = {
     const fade = (args.fade as TransferFade | undefined) ?? "black";
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
-    const endpointA = transferEndpoint(draft, mapA, a.x, a.y);
-    const endpointB = transferEndpoint(draft, mapB, b.x, b.y);
+    const reachNotes: string[] = [];
+    const endpointA = reachableTransferEndpoint(draft, mapA, a, "A", reachNotes);
+    const endpointB = reachableTransferEndpoint(draft, mapB, b, "B", reachNotes);
     if (!endpointA || !endpointB) {
       // 어느 쪽 출입구가 왜 실패했는지 짚는다 — 종전에는 두 쪽을 뭉뚱그려 같은 안내만 냈다.
       const failures = [
@@ -2070,6 +2100,7 @@ const createTransferPair: ToolDefinition = {
     const warnings = [
       ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
       ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
+      ...reachNotes,
     ];
     return {
       summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
