@@ -237,3 +237,24 @@ describe("make_chase_scene tool", () => {
     expect((result.diff?.warnings ?? []).join(" ")).toMatch(/주인공 걷기\(160ms\/칸\)의 \d+%/);
   });
 });
+
+describe("make_chase_scene 은신처 맵", () => {
+  it("다른 방의 옷장을 mapId 로 은신처로 만들고, 맨바닥 은신처는 경고한다", () => {
+    const project = createBlankProject();
+    const ctx = { project };
+    const hall = project.startMapId;
+    const room = runTool(ctx, "create_map", { name: "침실", width: 12, height: 10 });
+    expect(room.ok, room.summary).toBe(true);
+    const roomId = (room.data as { mapId: string }).mapId;
+    const closet = runTool(ctx, "upsert_event", { mapId: roomId, event: { id: "ev_closet", x: 3, y: 3, trigger: { kind: "action" },
+      pages: [{ conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, commands: [] }] } });
+    expect(closet.ok, closet.summary).toBe(true);
+    const result = runTool(ctx, "make_chase_scene", {
+      mapId: hall, chaser: { at: { x: 6, y: 6 }, graphic: { query: "monster" } }, killOnTouch: true,
+      hidingSpots: [{ x: 3, y: 3, mapId: roomId }, { x: 2, y: 2 }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.maps[roomId]!.events.find((event) => event.id === "ev_closet")?.pages?.[0]?.interaction).toEqual({ kind: "hiding" });
+    expect((result.diff?.warnings ?? []).join(" ")).toContain("맨바닥의 보이지 않는 은신처");
+  });
+});

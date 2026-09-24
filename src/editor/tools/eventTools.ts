@@ -2280,13 +2280,18 @@ function chaseStepMs(speed: number, frequency: number): number {
  * 은신처 칸들을 실제 은신 이벤트로 만든다(configure_object_behavior 의 hiding 과 같은 페이지 모양).
  * 칸에 조사 이벤트가 있으면 그 페이지들을 은신처로 바꾸고, 없으면 투명 이벤트를 새로 둔다.
  */
-function placeHidingSpots(_draft: Project, map: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
+function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
   const eventIds: string[] = [];
   const warnings: string[] = [];
   if (!Array.isArray(raw)) return { eventIds, warnings };
   for (const entry of raw) {
     if (entry === null || typeof entry !== "object" || typeof (entry as { x?: unknown }).x !== "number" || typeof (entry as { y?: unknown }).y !== "number") { warnings.push("hidingSpots 항목 무시: {x,y} 필요"); continue; }
     const x = Math.trunc((entry as { x: number }).x), y = Math.trunc((entry as { y: number }).y);
+    // 옷장은 흔히 추격자와 다른 방(맵)에 있다 — 2026-09-24 r3 에서 침실 옷장 좌표를 복도 맵에 넣어
+    // 복도 맨바닥에 보이지 않는 은신처가 생겼다. mapId 를 받는다.
+    const spotMapId = (entry as { mapId?: unknown }).mapId;
+    const map = typeof spotMapId === "string" && spotMapId.trim() ? draft.maps[spotMapId.trim()] : chaserMap;
+    if (!map) { warnings.push(`은신처 맵 '${String(spotMapId)}' 이 없어 건너뛰었습니다.`); continue; }
     if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
     const hideIn = (page: EventPage): void => {
       page.interaction = { kind: "hiding" };
@@ -2301,6 +2306,10 @@ function placeHidingSpots(_draft: Project, map: GameMap, raw: unknown, chaserId:
       if ((existing.pages ?? []).some((page) => page.commands.length > 0)) warnings.push(`은신처 '${existing.id}' 의 조사 명령은 숨기 동작에 가려 실행되지 않습니다.`);
       eventIds.push(existing.id);
       continue;
+    }
+    // 가구·조사 이벤트가 없는 맨바닥이면 플레이어가 찾을 수 없는 투명 은신처다.
+    if (isPassable(draft, map, x, y) && tileAt(map, x, y).upper < 0) {
+      warnings.push(`은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다 — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요.`);
     }
     const id = genId("ev_hiding");
     const page: EventPage = {
@@ -2321,7 +2330,7 @@ const makeChaseScene: ToolDefinition = {
   description:
     "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
     "speed 는 이 엔진 기준이다(RPG Maker 의 4=보통과 다르다): 6=주인공 걷기의 2/3(기본·긴장감 있는 추격), 7=걷기와 같음, 5=절반쯤, 4 이하=걷기의 절반도 안 돼 추격이 되지 않는다. " +
-    "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y} 를 주면 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것.",
+    "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2343,7 +2352,7 @@ const makeChaseScene: ToolDefinition = {
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
-      hidingSpots: { type: "array", items: COORD_SCHEMA, description: "{x,y}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
+      hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
     },
     required: ["mapId", "chaser"],
   },
@@ -2420,7 +2429,10 @@ const makeChaseScene: ToolDefinition = {
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
+    // 붙잡히면 게임 오버인 추격은 기본으로 진입 체크포인트를 둔다 — 없으면 「다시 시작」 이 타이틀뿐이다
+    // (2026-09-24 r3: 첫 추격에 잡히자 버튼이 「타이틀로 돌아가기」 하나). false 를 명시하면 끈다.
+    const wantsCheckpoint = args.checkpointOnEntry === true || (args.checkpointOnEntry === undefined && args.killOnTouch === true);
+    const checkpointEventId = wantsCheckpoint ? ensureMapCheckpointEvent(draft, map) : undefined;
     const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
     const warnings = [

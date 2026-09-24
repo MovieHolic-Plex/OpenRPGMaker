@@ -125,7 +125,11 @@ export function checkHorror(project: Project, briefText: string): Finding[] {
       for (const option of command.options as { text?: unknown }[]) {
         const text = typeof option?.text === "string" ? option.text : "";
         if (ANSWER_LEAK.test(text)) findings.push({ severity: "warning", code: "choice-answer-leak", message: `선택지 「${text}」 가 정답을 괄호로 알려 줍니다 — 퍼즐이 풀 것 없이 끝납니다.`, where: at });
-        if (/숨는다|숨기|숨어|들어간다/u.test(text)) fakeHides.push(command);
+        if (/숨는다|숨기|숨어|들어간다/u.test(text)) {
+          fakeHides.push(command);
+          if (hidingPages.length > 0) findings.push({ severity: "warning", code: "fake-hiding-choice", where: at,
+            message: `「${text}」 선택지는 진짜 은신처가 아니라 대사로 숨는 흉내입니다 — 추격 중이 아니어도 숨고 추격자는 보지 않습니다. 이 칸도 make_chase_scene hidingSpots(다른 방이면 mapId)로.` });
+        }
       }
     }
   });
