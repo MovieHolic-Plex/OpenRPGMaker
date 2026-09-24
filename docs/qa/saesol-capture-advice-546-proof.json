@@ -1,0 +1,14 @@
+{
+  "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+  "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+  "revision": 546,
+  "sha256": "4d9e5391534434d804d79838d272ce71a3e602f5d3728fe2e00c43d7e20152a9",
+  "repeatReadMatches": true,
+  "maps": 20,
+  "events": 188,
+  "inlined": 452,
+  "scope": "Reopened canonical store read twice; media hashes verified and inlined for read-only player QA copy. No project content written.",
+  "beforeBody": "파티의 모든 포켓몬이 활력을 되찾고 상태 이상이 치료되었습니다! 정상 유적까지 힘내세요!",
+  "afterBody": "파티의 체력과 상태 이상이 모두 말끔히 회복되었습니다. 신전의 그림릿은 물 타입 동료로 체력을 낮추고 마비 등 상태 이상을 걸면 포획에 유리하지만 확정은 아닙니다. 전투 중 위험해지면 즉시 회복하거나 언제든 이 야영지로 돌아오세요.",
+  "wholeProjectEqualExceptBody": true
+}
