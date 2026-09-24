@@ -99,4 +99,4 @@ SHA-256: `4becd0ccc997e22003dc8a0f6fb8a6cc12379d14c004d9f744d9b4d0b07ad62e`
 | `park-sandpit-compact` | 작은 모래놀이터 · 원본 3칸 | 0,39,3,3 | standing |
 | `park-tree-planter` | 원형 화단과 나무 | 4,21,4,6 | standing |
 
-장면: `park-play-and-rest` (24×20).
+장면: `park-play-and-rest` (17×13).
