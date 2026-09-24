@@ -73,6 +73,15 @@ describe("snow, volcano, desert and autumn climate villages", () => {
           if (tile >= 0) expect(Math.floor(k / st.w) === st.h - 1 && st.kind !== "shrub" ? map.lowerTiles[i] : map.upperTiles[i]).toBe(tile);
         });
       });
+      // No hedge of trees: at most three trunk feet on one foot row within ten cells, none on the outermost row.
+      const feet = edit.placed.flatMap((g) => g.trees).map((t) => {
+        const st = stamps.find((s) => s.id === t.id)!;
+        return { x: t.x + (st.w - 1) / 2, y: t.y + st.h - 1 };
+      });
+      for (const f of feet) {
+        expect(f.y, `${plan.id} foot on the bottom row`).toBeLessThan(map.height - 1);
+        for (let s = f.x - 9; s <= f.x; s++) expect(feet.filter((g) => g.y === f.y && g.x >= s && g.x < s + 10).length, `${plan.id} row ${f.y}`).toBeLessThanOrEqual(3);
+      }
     }
   });
 

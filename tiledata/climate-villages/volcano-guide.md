@@ -113,22 +113,24 @@ tilesetId=forest_harmony_volcano, 시트 tex_forest_harmony_volcano(30열·16px,
 
 ### 덩이 짓는 법 (이대로 깐다)
 1. 덩이 하나 = 이끄는 나무 한 그루(큰 또는 중간) + 그 옆에 바짝 붙인 곁나무 1~2그루(작은·중간, 안쪽 덩이는 0~1) + 이끄는 나무 **밑동 옆** 칸에 바위 537 1~2개·마른 덤불 1~2개(화산은 바위 없이 마른 덤불만 — 회백색 바위는 잿빛 땅에서 뼈처럼 보인다).
-2. 곁나무는 이끄는 나무 상자의 왼쪽 또는 오른쪽에 붙이고, 밑동 줄이 이끄는 나무 밑동과 같은 줄에서 두 줄 안으로 맞춘다.
+2. 곁나무는 이끄는 나무 상자의 왼쪽 또는 오른쪽에 붙이고, 밑동 줄은 이끄는 나무 밑동에서 **한 줄 비켜**(위·아래 한두 줄) 맞춘다.
 3. 덩이 간격: 맵 가장자리 4칸 띠 안은 덩이 중심끼리 **8칸**, 안쪽은 **13칸**. 가장자리를 촘촘히 두르고 마을 안쪽은 드물게.
-4. 덩이 발치에 키큰 풀(2×2 이상 덩이, lib/tall-grass.mjs arrangeTallGrass 로 정리)을 깔면 나무와 한 덩이로 읽힌다(설원·화산은 집·길 3칸 밖에서만 — G 가 되지 않게).
-5. 놓은 뒤 입구에서 모든 집 문 앞까지 통행 검사(canMove)를 다시 한다. 막히면 그 덩이를 통째로 뺀다.
+4. **일렬 금지**(개정7, 2026-09-25 검수: 맵 윗변에 고목이 울타리처럼 한 줄로 섰다): 가장자리 덩이는 밑동을 그 나무가 들어가는 첫 줄에서 0~3줄 안쪽으로 들쭉날쭉 옮긴다. 밑동끼리 위아래 한 줄 안·가로 10칸 안에는 **3그루까지**만 선다. 맵 맨 아랫줄·맨 왼쪽·맨 오른쪽 칸에는 밑동을 두지 않는다.
+5. 덩이 발치에 키큰 풀(2×2 이상 덩이, lib/tall-grass.mjs arrangeTallGrass 로 정리)을 깔면 나무와 한 덩이로 읽힌다(설원·화산은 집·길 3칸 밖에서만 — G 가 되지 않게).
+6. 놓은 뒤 입구에서 모든 집 문 앞까지 통행 검사(canMove)를 다시 한다. 막히면 그 덩이를 통째로 뺀다.
 
 ### 금지
 - **낱개로 흩뿌리지 않는다**: 나무 한 그루·바위 하나·덤불 하나를 빈 땅에 고르게 뿌리지 말 것. 바위·마른 덤불·선인장은 고목 밑동 옆에 붙은 덩이의 일부로만 둔다.
 - **집·길·문 앞·계단 끝·다리 끝·울타리 2칸 안에는 두지 않는다**(나무 칸 어느 하나도). 물·절벽·다른 물건과는 1칸 띄운다.
 - **나무끼리 칸을 겹치지 않는다**: 한 칸에 위층은 하나뿐이다. 도장 상자(빈 칸 포함)가 서로 겹치면 안 된다.
+- **밑동을 한 줄로 늘어세우지 않는다**: 위아래 한 줄 안·가로 10칸 안에 4그루 이상 금지, 맵 끝 줄·끝 칸 밑동 금지.
 - 잎 달린 나무 도장(960~1123: 활엽수·큰 참나무·숲 벽·기둥·둥근/작은 덤불)과 섞지 말 것.
 
 ### 잎 달린 숲을 걷었다 (이 기후의 마을)
 - 수관 숲(2550~2609)·숲 줄기/연속 숲(1200~1463)·잎 달린 나무 도장(960~1123)·덤불 289 를 모두 맨땅으로 되돌리고 그 자리에 위 방식의 고목 덩이를 세웠다. 걷힌 숲에 붙어 있던 바위 537 도 뺐다.
 - 숲이 끝을 가려 주던 절벽은 **맵 끝까지 이어 붙였다**(그 줄의 몸통 칸으로, 가는 길에 집·길이 없을 때). 이어 붙일 수 없는 끝은 윗단 옆 가장자리 칸(동쪽 2678, 서쪽 2677)을 맵 끝까지 세워 막았다. 계단을 닫고 봤을 때 절벽 윗단과 아랫단이 숲마을 때보다 더 이어지지 않는지 검사한다.
 - 남은 빈 땅은 키큰 풀 덩이로 채웠다(빈칸 게이트). 풀 덩이끼리 닿아도 되는 마른 풀밭(growMeadows)으로 마저 메웠다 — 나무를 더 늘려 채우지 않는다.
-- 코드: `scripts/content/lib/bare-trees.mjs` — clearLeafyTrees(map) → arrangeBareGroves(map, { tileset, houses, keep, reserved, sites, seed, accept, undergrowth }) → growMeadows(...). 절벽: `lib/climate-edits.mjs` extendClearedCliffEnds·cliffEndLedge.
+- 코드: `scripts/content/lib/bare-trees.mjs` — clearLeafyTrees(map) → arrangeBareGroves(map, { tileset, houses, keep, reserved, sites, seed, accept, undergrowth, rowLimit }) → growMeadows(...). 절벽: `lib/climate-edits.mjs` extendClearedCliffEnds·cliffEndLedge.
 
 ## 화산 봉우리
 시트의 원래 칸에 작은 화산 봉우리 두 개가 있다(위층, 통행 불가).
@@ -146,7 +148,7 @@ node scripts/content/author-climate-villages.mjs     # 맵 + 통행 검사(실�
 ```
 
 ```json
-[{"id":"climate-volcano-twin-falls","entry":[17,61],"targets":[[11,12],[48,11],[9,34],[23,31],[41,32],[58,33],[7,56],[45,56]],"reachable":2418,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-ford-castle","entry":[36,83],"targets":[[6,16],[73,19],[9,37],[4,58],[18,59],[49,58],[75,58],[8,81],[42,82],[52,83]],"reachable":3498,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-lava-pond","entry":[31,52],"targets":[[3,9],[43,11],[17,30],[48,30],[19,48],[50,50],[36,50]],"reachable":2333,"blocked":[],"joinedLevels":[]}]
+[{"id":"climate-volcano-twin-falls","entry":[17,61],"targets":[[11,12],[48,11],[9,34],[23,31],[41,32],[58,33],[7,56],[45,56]],"reachable":2423,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-ford-castle","entry":[36,83],"targets":[[6,16],[73,19],[9,37],[4,58],[18,59],[49,58],[75,58],[8,81],[42,82],[52,83]],"reachable":3506,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-lava-pond","entry":[31,52],"targets":[[3,9],[43,11],[17,30],[48,30],[19,48],[50,50],[36,50]],"reachable":2331,"blocked":[],"joinedLevels":[]}]
 ```
 
 ## 실제 구분
