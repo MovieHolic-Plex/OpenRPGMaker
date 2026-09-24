@@ -305,5 +305,21 @@ export function growMeadows(map, { isPlain, take = () => true, members, arrange,
     patches.push(laid.map((i) => [i % W, Math.floor(i / W)]));
     e = emptiness(map, isPlain);
   }
+  // Pinholes: plain cells a meadow closes on three or four sides join it (a meadow, not a sieve).
+  if (patches.length) {
+    const saved = map.lowerTiles.slice(), before = foreign();
+    for (let pass = 0; pass < 2; pass++) {
+      const add = [];
+      for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+        if (!ok(x, y)) continue;
+        const n = [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => ALL_TALL_GRASS.has(map.lowerTiles[at(x + dx, y + dy)])).length;
+        if (n >= 3) add.push(at(x, y));
+      }
+      for (const i of add) map.lowerTiles[i] = 304;
+    }
+    arrange(map);
+    if (foreign() > before) map.lowerTiles = saved;
+    e = emptiness(map, isPlain);
+  }
   return { patches, maxSq: e.maxSq, screen: e.screen };
 }

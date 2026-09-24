@@ -54,13 +54,25 @@ describe("snow, volcano, desert and autumn climate villages", () => {
     expect(autumn.passability).toEqual(village.tileset.passability);
   });
 
-  it("dresses the desert villages with palms and cacti instead of broadleaf trees", () => {
-    for (const plan of catalog.plans.filter((p) => p.climate === "desert")) {
-      const map = maps[plan.id]!, plants = plan.edits.filter((e) => e.kind === "desert-plant") as { x: number; y: number; tile: number }[];
-      expect(plants.length).toBeGreaterThan(10);
-      for (const p of plants) expect(map.upperTiles[p.y * map.width + p.x]).toBe(p.tile);
-      // No free-standing broadleaf canopy (978~980) is left on a desert map.
-      expect(map.upperTiles.some((t) => t >= 978 && t <= 980)).toBe(false);
+  it("trades the leafy forest of the desert and volcano villages for leafless tree groves", () => {
+    const leafy = (t: number) => (t >= 2550 && t <= 2609) || (t >= 1200 && t <= 1463) || (t >= 960 && t <= 1123) || t === 289;
+    const stamps = sheets.bareTrees.stamps;
+    for (const plan of catalog.plans.filter((p) => p.climate === "desert" || p.climate === "volcano")) {
+      const map = maps[plan.id]!;
+      expect(map.lowerTiles.some(leafy) || map.upperTiles.some(leafy), plan.id).toBe(false);
+      const edit = plan.edits.find((e) => e.kind === "bare-trees") as unknown as { trees: number; placed: { trees: { id: string; x: number; y: number }[] }[] };
+      expect(edit.trees).toBeGreaterThan(10);
+      // Every placed tree is on the map as stamped, and no two tree boxes share a cell.
+      const owner = new Map<number, number>();
+      edit.placed.flatMap((g) => g.trees).forEach((t, n) => {
+        const st = stamps.find((s) => s.id === t.id)!;
+        st.tiles.forEach((tile, k) => {
+          const i = (t.y + Math.floor(k / st.w)) * map.width + t.x + (k % st.w);
+          expect(owner.has(i), `${plan.id} overlap at ${i}`).toBe(false);
+          owner.set(i, n);
+          if (tile >= 0) expect(Math.floor(k / st.w) === st.h - 1 && st.kind !== "shrub" ? map.lowerTiles[i] : map.upperTiles[i]).toBe(tile);
+        });
+      });
     }
   });
 

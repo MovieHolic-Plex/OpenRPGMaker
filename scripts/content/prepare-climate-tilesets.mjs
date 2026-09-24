@@ -115,9 +115,10 @@ function bareTrees(climate, from) {
     rows.passability.push(shrub || base ? { ...shut } : { ...open });
     rows.tileMeta.push({
       role: shrub ? "plant" : "prop",
-      tags: ["나무", "잎 없는 나무", "고목", names.tag, shrub ? "덤불" : base ? "밑동" : "수관"],
+      tags: ["나무", "잎 없는 나무", "고목", "투명", names.tag, shrub ? "덤불" : base ? "밑동" : "수관"],
       label: shrub ? name : `${name} (${dx + 1},${dy + 1})`,
-      source: "bundled-default",
+      // Locked like the forest-wall tiles: the renderers only honour defaultLayer / layerBacking on confirmed metadata.
+      source: "user", origin: "user", locked: true, userLocked: true,
       passage: shrub || base ? "solid" : "star",
       defaultLayer: base ? "lower" : "upper",
       layerBacking: base ? 240 : "none",

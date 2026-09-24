@@ -5,7 +5,8 @@ import { chromium } from "playwright";
 const dir = "tiledata/climate-villages", catalog = JSON.parse(fs.readFileSync(dir + "/catalog.json"));
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
 const sources = Object.fromEntries([...new Set(catalog.plans.map((p) => p.from))].map((id) => [id, village.maps[id]]));
-const b = await chromium.launch();
+// This machine's network interfaces make Chromium cancel vite module loads (ERR_NETWORK_CHANGED) without these flags.
+const b = await chromium.launch({ args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const page = await b.newPage();
   await page.route("**/__climate-render", (r) => r.fulfill({ contentType: "text/html", body: '<meta charset="utf-8">' }));
