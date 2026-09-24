@@ -1,6 +1,6 @@
 # 생성형 이미지 사용 단계 — 설계
 
-날짜: 2026-09-25 · 상태: 사용자 검토 대기
+날짜: 2026-09-25 · 상태: 사용자 검토 대기 · 개정 1(코드 대조 검증 반영)
 
 ## 목적
 
@@ -42,7 +42,7 @@ generatedImageUse?: GeneratedImageUse; // 없음 = 「안 정함」
 - `TileAiMetadata` 와 `ResourceProfile`(`src/project/types/base.ts`)에 `imageOrigin?: "generated" | "hand" | "chipset"` 를 더한다.
 - 판별 헬퍼 `isGeneratedImageTile(tileset, tile)` · `isGeneratedImageResource(profile)`:
   `imageOrigin === "generated"` 이거나, 옛 자료 호환으로 `tags` 에 「생성형 이미지」가 있으면 생성형이다.
-- 앞으로 생성 도구(`imageAssetTools`, `generate_opening_image`, 캐릭터 외형 생성, 자료집 생성 창)가 만드는 자원은
+- 앞으로 생성 경로(3-0 의 네 도구와 자료집 생성 창)가 만드는 자원은
   `imageOrigin: "generated"` 를 붙인다. 사람이 버튼으로 만든 것도 붙인다 — 출처 표시는 누가 눌렀는지와 무관하다.
 - `scripts/asset-gen/forest-harmony-buildings/publish_place.py` 는 타일 메타에 `imageOrigin` 을 함께 쓴다
   (생성형 → `generated`, 손 도트 → `hand`). 숲성 마을 저장본을 다시 굽는다.
@@ -59,40 +59,39 @@ generatedImageUse?: GeneratedImageUse; // 없음 = 「안 정함」
 | 안 정함 (필드 없음) | `partial` 과 같다 | 사용 | 첫 생성 때 네 단계 선택 카드 |
 | 사용 안 함 `off` | 없음 | **사용 안 함** | 없음 |
 
-## 3. 조수에게 적용 — 두 겹
+## 3. 조수에게 적용
 
-### 3-1. 도구 노출·호출 게이트 (결정론)
+### 3-0. 코드 대조로 확인한 현재 상태 (개정 1)
 
-「질문」 모드가 쓰기 도구를 숨기는 `src/ai/session/sessionTools.ts` 경로와 같은 곳에서 거른다.
+프로브(`.omo/probe/image-tools-probe.mts`, vite-node)와 코드 읽기로 확인했다.
 
-- 생성 도구 목록 상수 `GENERATED_IMAGE_TOOLS` 를 둔다: `imageAssetTools` 의 생성 도구, `generate_opening_image`,
-  앞으로 생길 건물·소품 생성 도구. 새 생성 도구는 이 목록에 넣어야 한다(도구 카탈로그 테스트로 강제).
-- `off` 이면 이 도구들을 스키마에 싣지 않고, 이름으로 불러도 거부한다
-  (거부 문구: 「이 프로젝트는 생성형 이미지를 쓰지 않도록 설정되어 있습니다. 기존 타일로 만들거나 설정을 바꿔 주세요.」).
-- `off` 이면 쓰기 도구가 생성형 타일·자원을 **새로 놓는 것**을 거부한다: 타일 칠하기·키트 도장·자원 배정 도구가
-  넣으려는 타일/자원을 `isGeneratedImageTile` · `isGeneratedImageResource` 로 검사한다. 이미 맵에 있는 칸을 지우거나
-  그대로 두는 것은 막지 않는다.
-- `off` 이면 조회 도구(`list_resources`, 타일 검색, `read_region_reference`)가 생성형 항목을 결과에서 빼거나
-  「사용 금지 · 생성형 이미지」로 표시한다. 생성형 건물이 있는 장소(숲성 마을)는 배치·지형 참고는 되지만 그 건물 타일은
-  복사할 수 없다고 결과에 적는다.
+| 사실 | 근거 |
+|---|---|
+| 조수 대화 루프는 Pi 하나다 | `src/ai/piAgent/executionRoute.ts` 머리말(2026-09-11), `aiChatPanel.ts` 전송은 `runPiTurn` |
+| 조수 생성 도구는 **넷**이다: `generate_image_asset` · `generate_opening_image` · `generate_game_over_image` · `generate_character_appearance` | `sessionTools.ts` `SESSION_WRITE_TOOL_NAMES` |
+| 넷 다 레지스트리에 `mode: "read"` 로 등록돼 **읽기 전용 Pi 실행에도 노출**된다 | 프로브: `piExposed:true, piReadOnlyExposed:true` |
+| Pi 에서 넷 다 `status:"ui-required"` 쪽지(「생성에는 편집기가 필요하며 아직 등록되지 않았습니다」)만 돌려준다. 쪽지를 받아 실제로 생성하는 곳이 **없다** — Pi 런타임이 실제 실행으로 갈아 끼우는 도구는 `web_search` 하나다 | 프로브 결과, `scripts/lib/piAgentRuntime.ts` `shapeFor`, `ui-required` 소비처 검색 0건 |
+| 실제 생성은 옛 세션 루프에만 있다 | `assistantSession.ts:5164–5219` (`generateImageAsset` 등) |
+| Pi 도구 거름은 `selectPiToolDefinitions` · `resolvePiToolShape` 에서 한다 | `src/ai/piAgent/toolAdapter.ts:77,161` |
 
-### 3-2. 맥락 한 줄 (판단 유도)
+즉 **지금 조수는 대화 중에 그림을 실제로 만들지 못한다.** 이 설정은 「생성 이행」 경로를 먼저 세워야 뜻이 있다.
 
-`src/ai/contextBuilder.ts` 가 조수 맥락에 현재 단계와 뜻을 한 줄 싣는다. 예:
-「그림 단계: 적극 활용 — 기존 타일·키트를 먼저 쓰고, 맞는 게 없을 때만 생성」.
-장소·키트 자료의 `image: '생성형 이미지'` 표시와 함께 조수가 무엇을 고를지 판단하는 근거가 된다.
+### 3-1. 생성 이행 브로커 = 확인 카드 (Pi 워커 ↔ 편집기)
 
-### 3-3. 확인 카드 브로커 (Pi 워커)
+`scripts/lib/piCheckpointBroker.ts` 와 같은 모양의 `scripts/lib/piImageGenerationBroker.ts` 를 둔다.
+확인과 이행을 **한 왕복**으로 묶는다.
 
-조수 도구는 Pi 워커(Bun)에서 돌아 모달을 띄울 수 없다. `scripts/lib/piCheckpointBroker.ts` 와 같은 모양의
-`piImageConsentBroker.ts` 를 둔다.
+1. Pi 런타임이 네 생성 도구를 `shapeFor` 에서 실제 실행으로 갈아 끼운다(`web_search` 와 같은 자리).
+2. 도구가 불리면 워커가 `{ type: "image-generation", requestId, tool, args, level, needsConsent, unset }` 이벤트를 내보내고 기다린다.
+   시간 제한 30분, 런 중단 시 거절(체크포인트 브로커와 같음).
+3. 패널이 이벤트를 받는다.
+   - `needsConsent` 면 대화에 확인 카드를 먼저 띄운다(아래). 거절이면 `{ ok:false, reason:"declined" }`.
+   - 승인이거나 확인이 필요 없으면 편집기 쪽 기존 생성 함수(`generateImageAsset` · `openingImageGeneration` · `characterAppearanceGeneration`)로
+     만들고, 자원을 등록한 뒤 `{ ok:true, resourceId }` 를 돌려준다. 자격(Codex 로그인)은 지금처럼 편집기 쪽 경로가 쓴다.
+4. 워커는 결과를 도구 응답으로 모델에 준다. 모델은 같은 턴에 `resourceId` 를 레코드에 연결할 수 있다.
 
-- 생성 도구가 `partial`/「안 정함」에서 `userRequested` 없이 호출되면 워커가 `{ type: "image-consent", consentId, reason, unset }`
-  이벤트를 내보내고 답을 기다린다. 시간 제한 30분, 런 중단 시 거절로 끝난다(체크포인트 브로커와 같음).
-- `userRequested: true` 는 조수가 사용자의 요청문을 근거로 붙인다. 세션은 이번 턴 사용자 메시지에 생성 요청 표현이
-  있는지 확인해 근거 없는 `userRequested` 를 무시한다(표현 목록은 구현 계획에서 정한다: 「생성해서」, 「그려서」,
-  「이미지로 만들어」 등).
-- 패널은 이벤트를 받아 대화에 카드를 띄우고, 누른 결과를 워커로 돌려보낸다.
+`needsConsent` 규칙: 단계가 `partial` 또는 「안 정함」이고, 이번 턴 사용자 메시지에 생성 요청 표현이 없을 때.
+조수가 붙이는 `userRequested` 는 믿지 않고 세션이 사용자 원문으로 판정한다(표현 목록은 구현 계획에서 확정: 「생성해서」, 「그려서」, 「이미지로 만들어」 등).
 
 카드:
 
@@ -102,12 +101,36 @@ generatedImageUse?: GeneratedImageUse; // 없음 = 「안 정함」
   (`off` 를 고르면 이번 호출도 거부).
 - [기존 타일로] 는 도구에 거부를 돌려주고 조수가 기존 타일로 이어 가게 한다.
 
+### 3-2. 도구 노출 게이트 (결정론)
+
+- 생성 도구 이름 목록 상수 `GENERATED_IMAGE_TOOLS`(위 넷)를 둔다. `mode` 로 판정하지 않는다 — 넷 다 `"read"` 라서
+  읽기 전용 거름에 걸리지 않는다. 새 생성 도구는 이 목록에 넣어야 한다(도구 카탈로그 테스트로 강제).
+- `off` 이면 `selectPiToolDefinitions` · `resolvePiToolShape` 가 이 목록을 빼고, 이름으로 불러도 거부한다
+  (「이 프로젝트는 생성형 이미지를 쓰지 않도록 설정되어 있습니다. 기존 타일로 만들거나 설정을 바꿔 주세요.」).
+- 읽기 전용 실행(자율성 「읽기 전용」·계획 턴)에서도 이 목록을 뺀다. 생성은 자원을 등록하는 쓰기다 — 지금 노출되는 것은 결함이다.
+
+### 3-3. 기존 생성물 차단 (`off`) — 한 초크포인트
+
+타일을 놓는 도구가 많다(`paint_tiles`, `stamp_structure`, 마을·실내 저작 도구 등). 도구마다 검사를 넣으면 새 도구가 빠진다.
+그래서 **Pi 체크포인트 적용 지점**에서 한 번 검사한다: 적용 전 초안과 기준 프로젝트를 비교해,
+**새로 들어간 칸**의 타일이 `isGeneratedImageTile` 이거나 **새로 연결된** 자원이 `isGeneratedImageResource` 면 체크포인트를 거부하고
+거부 사유를 조수에게 돌려준다. 이미 맵에 있던 칸·연결은 건드리지 않는다.
+
+조회 도구(`list_resources`, 타일 검색, `list_structure_kits`, `read_region_reference`)는 `off` 일 때 생성형 항목에
+「사용 금지 · 생성형 이미지」를 붙여 돌려준다. 숲성 마을처럼 생성형 건물이 있는 장소는 배치·지형 참고는 되지만 그 건물 타일은
+쓸 수 없다고 결과에 적는다.
+
+### 3-4. 맥락 한 줄 (판단 유도)
+
+`src/ai/contextBuilder.ts` 가 조수 맥락에 현재 단계와 뜻을 한 줄 싣는다. 예:
+「그림 단계: 적극 활용 — 기존 타일·키트를 먼저 쓰고, 맞는 게 없을 때만 생성」.
+
 ## 4. 화면 — 입구 세 곳
 
 | 입구 | 모습 | 역할 |
 |---|---|---|
 | 조수 입력창 칩 | 「작업 설정」 옆에 `그림 · 적극 활용` (안 정했으면 `그림 · 안 정함`) | 대화 중 늘 보인다. 누르면 네 단계와 설명이 뜨는 작은 창. 바꾸면 프로젝트에 저장 |
-| 대화 확인 카드 | 3-3 의 카드 | 생성하는 순간 묻는다. 단계를 올리는 입구 |
+| 대화 확인 카드 | 3-1 의 카드 | 생성하는 순간 묻는다. 단계를 올리는 입구 |
 | 자료집 → 시스템 | 「생성형 이미지 사용」 한 칸과 설명 | 정식 거처. AI 설정 창에는 현재 값과 이리로 가는 링크만 |
 
 - 칩은 `src/editor/panels/aiComposer.ts` 의 지시줄에 만든다. 「작업 설정」 창 안에 넣지 않는다 — 중요한 설정이라
@@ -118,8 +141,9 @@ generatedImageUse?: GeneratedImageUse; // 없음 = 「안 정함」
 
 ## 5. 검증
 
-- 단위: 단계 정규화 · 판별 헬퍼(필드·옛 태그) · `off` 에서 도구 미노출과 이름 호출 거부 · 생성형 타일 칠하기 거부 ·
-  브로커 승인/거절/중단/시간 제한 · 근거 없는 `userRequested` 무시.
+- 단위: 단계 정규화 · 판별 헬퍼(필드·옛 태그) · `off`·읽기 전용에서 생성 도구 미노출과 이름 호출 거부 ·
+  체크포인트 초크포인트의 생성형 새 칸 거부(기존 칸 통과) · 브로커 승인/거절/중단/시간 제한 · 이행 후 `resourceId` 반환 ·
+  사용자 원문 판정.
 - 브라우저: 칩으로 단계 변경 → 새로고침 뒤 유지 · 「안 정함」에서 첫 생성 요청 시 카드 → 선택값 저장 ·
   `off` 에서 조수가 숲성 마을 건물을 쓰지 않는지(모델 없이 목 스트림으로).
 - 테스트·게이트는 사용자가 그 메시지에서 시킬 때만 돌린다(AGENTS.md).
