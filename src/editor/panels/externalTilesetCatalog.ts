@@ -1,3 +1,4 @@
+import { appendPixelArtWorldEventPropCatalog } from './pixelArtWorldEventPropCatalog';
 import { appendPixelArtWorldDoorCatalog } from "./pixelArtWorldDoorCatalog";
 import { appendPixelArtWorldFoodCatalog } from './pixelArtWorldFoodCatalog';
 import { EXTERNAL_TILESET_PACKS } from '@/project/externalTilesetCatalog';
@@ -66,6 +67,7 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
     ] }));
   }
   appendPixelArtWorldFoodCatalog(content, onImported, controller.signal, controls, { isBusy: () => busy, setBusy: value => { busy = value; }, refresh: () => refreshTargets.forEach(refresh => refresh()) });
+  appendPixelArtWorldEventPropCatalog(content, { signal: controller.signal, controls, refreshTargets, isBusy: () => busy, setBusy: value => { busy = value; }, onImported });
   appendPixelArtWorldDoorCatalog(content, { signal: controller.signal, controls, refreshTargets, isBusy: () => busy, setBusy: value => { busy = value; }, onImported });
   content.append(el('h3', { text: '천장·벽·지붕·지면 연결 소재' }));
   content.append(el('p', { class: 'external-tileset-note', text: '먼저 위의 32px 타일셋을 가져온 뒤 대상을 선택하세요. 원본을 연결 모양으로 조합해 대상 끝에 추가합니다. 자동 성형과 수동 조립은 항목별로 다릅니다. 기존 타일 번호는 유지됩니다.' }));
