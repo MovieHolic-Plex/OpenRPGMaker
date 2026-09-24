@@ -154,6 +154,9 @@ export interface BattleSessionState {
   readonly itemUseCharges?: Readonly<Record<string, number>>;
   readonly gold?: number;
   readonly partyActorIds?: readonly string[];
+  readonly monsterInstances?: import("@/project/monsterOwnership").MonsterOwnershipState["monsterInstances"];
+  readonly monsterParty?: readonly string[];
+  readonly monsterBox?: readonly string[];
   readonly actorSkillIds?: Readonly<Record<string, readonly SkillId[]>>;
   readonly actorExperience?: Readonly<Record<string, number>>;
   readonly actorLevels?: Readonly<Record<string, number>>;

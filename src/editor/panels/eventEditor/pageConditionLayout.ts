@@ -83,6 +83,7 @@ export function advancedConditionEntries(page: Pick<EventPage, "conditions">): A
     // 간단 행이 없는 kind 는 전부 고급 목록에 노출한다 — 누락 시 화면에서 통째로 사라진다.
     // battleResult 는 고급에서 편집 가능, all/any/not 은 읽기 전용 요약 + 삭제.
     if (
+      condition.kind === "monsterSpecies" ||
       condition.kind === "run" ||
       condition.kind === "battleResult" ||
       condition.kind === "all" ||
@@ -106,6 +107,7 @@ export function pageConditionField(
     const prefix = "event-page-advanced-condition";
     const field = (name: string): EventDraftFieldLocator => ({ testId: `${prefix}-${name}-${advancedSuffix}` });
     switch (condition.kind) {
+      case "monsterSpecies": return { testId: "event-condition-monster-species" };
       case "switch": case "variable": case "item": case "actor": return field(condition.kind);
       case "all": case "any": case "not": return field("group-kind");
       case "gold": return field("gold-amount");

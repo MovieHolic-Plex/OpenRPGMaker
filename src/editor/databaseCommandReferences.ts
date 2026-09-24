@@ -235,6 +235,8 @@ function eventGiftPrefsReferences(event: { readonly giftPrefs?: GiftPrefs }, col
 function conditionReferencesDatabase(condition: Condition | BattleEventCondition | undefined, collection: CommandReferenceCollection, id: string): boolean {
   if (!condition) return false;
   switch (condition.kind) {
+    case "monsterSpecies":
+      return collection === "monsterSpecies" && condition.speciesId === id;
     case "actor":
     case "actorHp":
     case "actorTurn":

@@ -1,3 +1,4 @@
+import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 // project/session.ts
 // PlaySession: 플레이 중 런타임 상태. Project는 읽기 전용, 가변 상태는 여기에.
 // v2: switches/variables/timers/mapOverrides 포함.
@@ -856,6 +857,8 @@ export function evalCondition(
       const own = eventId ? selfSwitches[eventId] : undefined;
       return (own?.[condition.key] ?? false) === condition.value;
     }
+    case "monsterSpecies":
+      return ownsMonsterSpecies(session, condition.speciesId) === condition.present;
     case "actor":
       return session.partyActorIds.includes(condition.actorId) === condition.present;
     case "item":

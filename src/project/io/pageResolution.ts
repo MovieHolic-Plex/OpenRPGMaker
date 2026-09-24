@@ -1,3 +1,4 @@
+import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { compareVariableValue } from "../conditionEvaluation";
 import { conditionMatchesSeason, conditionMatchesTimePhase, type GameTime } from "../gameTime";
 import { clampFriendship } from "../session";
@@ -7,7 +8,7 @@ import { evalRelationshipCondition, type RelationshipState } from "../relationsh
 import type { EventPage, EventPageCondition, GameEvent, ProjectSession } from "../types";
 
 type EventPageSession = Pick<ProjectSession, "switches" | "variables"> &
-  Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold">> & {
+  Partial<Pick<ProjectSession, "selfSwitches" | "inventory" | "partyActorIds" | "timers" | "gold" | "monsterInstances" | "monsterParty" | "monsterBox">> & {
     readonly gameTime?: GameTime;
     readonly npcActivities?: Record<string, string>;
     readonly friendship?: Record<string, number>;
@@ -59,6 +60,8 @@ function evalPageCondition(
       const own = (session.selfSwitches ?? {})[event.id];
       return (own?.[condition.key] ?? false) === condition.value;
     }
+    case "monsterSpecies":
+      return ownsMonsterSpecies(session, condition.speciesId) === condition.present;
     case "actor":
       return (session.partyActorIds ?? []).includes(condition.actorId) === condition.present;
     case "item":

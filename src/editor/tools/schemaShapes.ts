@@ -232,6 +232,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
     'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
+    "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
     "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
@@ -246,7 +247,8 @@ export const CONDITION_SCHEMA: JsonSchema = {
     itemId: { type: "string" },
     actorId: { type: "string" },
     value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
-    present: { type: "boolean", description: "item/actor 조건: true=보유/합류, false=미보유/미합류. 필수." },
+    speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
+    present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },
     phase: { type: "string", enum: ["morning", "day", "evening", "night"] },

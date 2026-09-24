@@ -16,6 +16,7 @@ const CONDITION_MODE_OPTIONS = [
   { value: "switch", label: "스위치" },
   { value: "variable", label: "변수" },
   { value: "selfSwitch", label: "이 이벤트 기억" },
+  { value: "monsterSpecies", label: "몬스터 보유" },
   { value: "actor", label: "주인공" },
   { value: "item", label: "아이템" },
   { value: "gold", label: "소지금" },
@@ -82,6 +83,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
       case "selfSwitch":
         onChange({ kind: "selfSwitch", key: "A", value: true });
         return;
+      case "monsterSpecies":
+        onChange({ kind: "monsterSpecies", speciesId: "", present: true });
+        return;
       case "actor":
         onChange({ kind: "actor", actorId: firstActorId(), present: true });
         return;
@@ -133,6 +137,9 @@ export function conditionForm(cond: Condition, onChange: (condition: Condition) 
   wrap.append(field("조건 종류", mode));
 
   switch (cond.kind) {
+    case "monsterSpecies":
+      wrap.append(renderMonsterSpeciesCondition(cond, onChange));
+      break;
     case "switch":
       wrap.append(labeledSwitch(cond, onChange));
       break;
@@ -608,6 +615,8 @@ function field(label: string, control: HTMLElement): HTMLElement {
 
 function conditionHint(kind: Condition["kind"]): string {
   switch (kind) {
+    case "monsterSpecies":
+      return "파티 또는 박스에 해당 종의 몬스터를 현재 보유했는지 검사합니다. 과거 포획 이력은 검사하지 않습니다.";
     case "switch":
       return "선택한 스위치가 켜짐/꺼짐인 경우 참 분기로 들어갑니다.";
     case "variable":
@@ -1235,4 +1244,29 @@ function firstActorId(): ActorId {
 
 function firstItemId(): ItemId {
   return store.getCurrent().database.items[0]?.id ?? "";
+}
+
+
+export function renderMonsterSpeciesCondition(
+  condition: Extract<Condition, { kind: "monsterSpecies" }>,
+  onChange: (condition: Condition) => void,
+): HTMLElement {
+  const box = el("div", { class: "event-condition-detail" });
+  const picker = el("select", { dataset: { testid: "event-condition-monster-species" } }) as HTMLSelectElement;
+  picker.append(el("option", { text: "(몬스터 종 선택)", attrs: { value: "" } }));
+  const records = store.getCurrent().database.monsterSpecies ?? [];
+  for (const species of records) picker.append(el("option", { text: species.name, attrs: { value: species.id } }));
+  if (condition.speciesId && !records.some(s => s.id === condition.speciesId)) {
+    picker.append(el("option", { text: `없는 종: ${condition.speciesId}`, attrs: { value: condition.speciesId } }));
+  }
+  picker.value = condition.speciesId;
+  const present = selectWithOptions([
+    { value: "true", label: "보유함 (파티 또는 박스)" },
+    { value: "false", label: "보유하지 않음" },
+  ], String(condition.present), "event-condition-monster-present");
+  const update = (): void => onChange({ kind: "monsterSpecies", speciesId: picker.value, present: present.value === "true" });
+  picker.addEventListener("change", update);
+  present.addEventListener("change", update);
+  box.append(field("몬스터 종", picker), field("보유 상태", present));
+  return box;
 }
