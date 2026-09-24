@@ -96,11 +96,14 @@ for(const spec of layout.floors){
  // One vertically aligned stair core, entered from the end of the corridor.
  rect(24,7,7,7);wall(24,7,7);rect(27,14,1,4);caps.add(at(27,14));lintels.add(at(27,14));
  doorways.push({x:27,y:14,width:1,height:4});
- const cores=[{base:24,y:9}];
+ const cores=[{base:24,y:8}];
  for(const {base,y} of cores){
   if(spec.level<4){rect(base,y+1,3,2);put('stairs-up-compact',base,y);}
-  if(spec.level>1){rect(base+4,y+1,3,2);rect(base+4,y,3,1,walls[2]);put('stairs-down',base+4,y+1);}
+  if(spec.level>1){rect(base+4,y+1,3,2);put('stairs-down',base+4,y+1);}
  }
+ // Connect the central partition to the north ceiling; its face stops before the shared landing.
+ for(let y=7;y<=8;y++)caps.add(at(27,y));
+ wall(27,9,1);
  for(const door of doorways){lower(door.x,door.y+3,token(native,1,'lower','passable'));if(upperTiles[at(door.x-1,door.y+1)]===-1)school('school-notice',door.x-1,door.y+1);}
  const entrance={x:0,y:19,width:1,height:1,direction:'left'},spawn={x:2,y:19};
  if(spec.level===1)rect(0,19,1,1);
