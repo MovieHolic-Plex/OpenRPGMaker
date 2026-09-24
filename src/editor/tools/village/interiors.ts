@@ -52,7 +52,7 @@ function collectTransferTargets(value: unknown, out: Set<string>): void {
  * 소유 판정 두 갈래: (1) 지금 문이 transfer 로 가리키는 interior, (2) 이 맵의 트리 자식 중
  * 마을 실내 id 패턴(`_숫자 seed_`). author_house 실내는 패턴이 달라 건드리지 않는다.
  */
-function purgeStaleVillageInteriors(draft: Project, map: GameMap): number {
+export function purgeStaleVillageInteriors(draft: Project, map: GameMap): number {
   const staleDoorIds = new Set(
     map.events
       .filter((event) => VILLAGE_DOOR_EVENT_ID.test(event.id))

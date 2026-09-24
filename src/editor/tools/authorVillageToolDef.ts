@@ -3,6 +3,7 @@ import { RIVER_VILLAGE_STYLE_GUIDANCE } from "@/project/defaults/riverVillageSty
 import { prepareVillageDefaultTileset } from "./village/defaultTileset";
 import { applyVillageClimate, borrowForestHarmonyForClimateSheet } from "./village/villageClimate";
 import { placeVillageLandmark } from "./village/villageLandmark";
+import { purgeStaleVillageInteriors } from "./village/interiors";
 import { withVillageMorphologyDefault } from "./village/defaultMorphology";
 import { VILLAGE_MORPHOLOGIES } from "./village/morphologyTypes";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
@@ -240,6 +241,11 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       prepareVillageDefaultTileset(draft, request);
       assertTargetTilesetUsable(draft, request);
       assertTargetCapacity(draft, request);
+      // 재시공 정리는 baseline 스냅샷보다 먼저 — 뒤에 지우면 새로 만든 실내가 baseline 에 이미 있던
+      // id 로 잡혀 "pre-existing map as an interior" 로 거부된다(2026-09-24 연애 romance-r2 replay).
+      if (request.target.kind === "existing" && draft.maps[request.target.mapId]) {
+        purgeStaleVillageInteriors(draft, draft.maps[request.target.mapId]!);
+      }
       const baseline = createDraft(draft);
       switch (request.target.kind) {
         case "existing":
