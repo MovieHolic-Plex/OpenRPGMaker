@@ -103,6 +103,9 @@ function hashMapContent(map: GameMap): number {
   mix(map.tileSize);
   for (const tile of map.lowerTiles) mix(tile);
   for (const tile of map.upperTiles) mix(tile);
+  for (const tile of map.lowerOverlayTiles ?? []) mix(tile);
+  for (const tile of map.upperOverlayTiles ?? []) mix(tile);
+  for (const bits of map.shadowBits ?? []) mix(bits);
   return hash;
 }
 
