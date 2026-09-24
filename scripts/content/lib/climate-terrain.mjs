@@ -120,7 +120,11 @@ function growCells(ctx, sx, sy, size, ok) {
     const [dx, dy] = [[1, 0], [-1, 0], [0, 1], [0, -1]][Math.floor(random() * 4)];
     if (ok(x + dx, y + dy) && !got.has(at(x + dx, y + dy))) { got.add(at(x + dx, y + dy)); front.push([x + dx, y + dy]); }
   }
-  for (const i of [...got]) if ([[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => got.has(i + dy * W + dx)).length < 2) got.delete(i);
+  // ripple lines run across: every cell keeps a left or right neighbour (a one-wide column reads as a dashed fence)
+  for (let again = true; again;) {
+    again = false;
+    for (const i of [...got]) if (!got.has(i - 1) && !got.has(i + 1) || [[1, 0], [-1, 0], [0, 1], [0, -1]].filter(([dx, dy]) => got.has(i + dy * W + dx)).length < 2) { got.delete(i); again = true; }
+  }
   return got;
 }
 

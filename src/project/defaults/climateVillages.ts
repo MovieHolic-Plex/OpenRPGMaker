@@ -56,9 +56,11 @@ export function ensureClimateBareTrees(tileset: TilesetDef): boolean {
   const kind = tileset.image.type === "bundled" ? CLIMATE_VILLAGE_TEXTURES[tileset.image.id] : undefined;
   if (!kind || CLIMATES[kind].id !== tileset.id || !CLIMATES[kind].extraTileGroups.length) return false;
   const have = new Set((tileset.tileGroups ?? []).map(g => g.id));
+  const haveAuto = new Set((tileset.autotileGroups ?? []).map(g => g.id));
   const groups = CLIMATES[kind].extraTileGroups as unknown as { id: string }[];
+  const autos = CLIMATES[kind].extraAutotileGroups as unknown as { id: string }[];
   // Cheap check first: a current tileset is left alone without building a fresh copy.
-  if (tileset.count >= CLIMATES[kind].count && groups.every(g => have.has(g.id))) return false;
+  if (tileset.count >= CLIMATES[kind].count && groups.every(g => have.has(g.id)) && autos.every(g => haveAuto.has(g.id))) return false;
   const fresh = createClimateVillageTileset(kind);
   let changed = false;
   if (tileset.count < fresh.count) {
@@ -70,9 +72,15 @@ export function ensureClimateBareTrees(tileset: TilesetDef): boolean {
     tileset.count = fresh.count;
     changed = true;
   }
-  const missing = (fresh.tileGroups ?? []).filter(g => g.id.startsWith("bare-trees:") && !have.has(g.id));
+  const missing = (fresh.tileGroups ?? []).filter(g => (g.id.startsWith("bare-trees:") || g.id.startsWith("climate-terrain:")) && !have.has(g.id));
   if (missing.length) {
     tileset.tileGroups = [...(tileset.tileGroups ?? []), ...missing];
+    changed = true;
+  }
+  // Climate ground autotiles (lava cracks, lava plates and pools, cracked earth — 2026-09-25).
+  const missingAuto = (fresh.autotileGroups ?? []).filter(g => autos.some(a => a.id === g.id) && !haveAuto.has(g.id));
+  if (missingAuto.length) {
+    tileset.autotileGroups = [...(tileset.autotileGroups ?? []), ...missingAuto];
     changed = true;
   }
   return changed;

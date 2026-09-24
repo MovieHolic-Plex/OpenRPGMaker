@@ -250,7 +250,7 @@ function terrainRows(climate, from, count) {
     previewMap: { width: ripple.length, height: 1, lowerTiles: ripple.map((st) => st.tiles[0]), upperTiles: ripple.map(() => -1) },
     sourceRect: { x: ripple[0].col * 16, y: (TERRAIN.first / 30 + ripple[0].row) * 16, width: ripple.length * 16, height: 16 },
     description: `모래 바닥 변형 4종(물결 줄이 칸 옆변에서 이어진다). ${T_RULES.ripple}`, defaultLayer: "lower",
-    patternGrammar: { kind: "variants", parts: [], repeat: "random", preserveCaps: false }, placementRules: T_RULES.ripple,
+    patternGrammar: { kind: "source_rect", parts: [], repeat: "source_order", preserveCaps: false }, placementRules: T_RULES.ripple,
   });
   const AUTO = { volcano: [["plate", "volcano_lava_plate_47"], ["pool", "volcano_lava_pool_47"], ["crack", "volcano_lava_crack"]], desert: [["cracked", "desert_cracked_earth_47"]], snow: [] }[climate];
   const autotiles = AUTO.map(([k, id]) => {
