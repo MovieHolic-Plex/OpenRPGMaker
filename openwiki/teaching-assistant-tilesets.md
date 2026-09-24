@@ -151,8 +151,10 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 
 그림·아틀라스·맵은 저장소에 넣지 않는다(재배포 금지). 저장소에는 스크립트와 텍스트만:
 `scripts/content/rasak/bake_atlas.py`(사용자 원본 → 굽기 아틀라스, `mz_autotile.py` 표로 오토타일 펼침) →
-`stack_to_layers.py`·`fold_layers.py`(프리뷰 → 4층·그림자) → 조수 지식 묶음 `build_assistant_pack.py` + `apply-assistant-pack.mts`
-(이름표·묶음·autotileGroups·참고문서를 로컬 연구 프로젝트에 저장; 계획 Task 6·7 — 작업 중). 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
+`stack_to_layers.py`·`fold_layers.py`(프리뷰 → 4층·그림자) → 조수 지식 묶음 `scripts/content/rasak/build_assistant_pack.py` +
+`scripts/content/rasak/apply-assistant-pack.mts`(이름표·묶음·autotileGroups·참고문서를 로컬 연구 프로젝트에 저장; 계획 Task 6·7).
+`apply` 는 저장 직전 `fuser` 로 `project.sqlite`(-wal/-shm)를 연 다른 프로세스(호스트·편집기)가 있으면 저장하지 않고 멈춘다(fuser 가 없어도 멈춘다).
+팩이 소유한 것만 갈아 끼운다 — 참고문서는 팩의 용도 id, `tileGroups`·`autotileGroups` 는 `rasak_` 접두어 id. 저자가 쓴 용도·그룹은 남는다. 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
 이름·번호 같은 텍스트만 `tiledata/rasak-fantasy/` 에 둔다. 작업물은 `~/third-party-assets/rasak/`.
 
 ## 알려진 함정

@@ -3,8 +3,10 @@
 ## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
 
 조수가 2층(바닥 장식)·4층(물체 위 물체)·그림자를 쓴다. 층 번호와 맵 칸 이름의 대응은 `src/project/mapLayers.ts` 가 정본이고,
-층을 칠하는 도구(paint_tiles·fill_region·stamp_layer_block) 설명은 `mapHelpers.FOUR_LAYER_GUIDANCE` 한 문장을,
-층을 고르기만 하는 보조 도구(tile_erase·paint_shadow)는 같은 뜻의 짧은 `FOUR_LAYER_GUIDANCE_SHORT` 를 쓴다.
+층을 칠하는 본 도구(paint_tiles·stamp_layer_block) 설명은 `mapHelpers.FOUR_LAYER_GUIDANCE` 한 문장을,
+층을 고르기만 하거나 층 설명이 곁가지인 도구(tile_erase·paint_shadow·fill_region·show_map_region)는 같은 뜻의 짧은
+`FOUR_LAYER_GUIDANCE_SHORT` 를 쓴다 — 도구 설명은 MZ 가 아닌 프로젝트에도 매번 실리므로 긴 문장은 두 곳에만 둔다
+(fill_region 은 「1층을 칠하면 그 칸의 2층 장식을 비운다」를 따로 말한다).
 **1층 칠하기 규칙은 하나다:** 1층을 쓰면 그 칸 2층이 지워진다(paint_tiles·fill_region·stamp_layer_block·paint_road 흙길·마을 길
 모두). paint_tiles 1층만 옛 동작대로 `setLower` 로 3·4층·그림자까지 비운다 — 안내 문장에 그대로 적혀 있다.
 계획: `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 2·3.
@@ -13,7 +15,7 @@
 |---|---|---|
 | `paint_tiles` | `layer: "lower"\|"upper"\|"1"\|"2"\|"3"\|"4"` (lower=1, upper=3) | 홈 레이어 라우팅은 1/3층 요청에만 — 2·4층은 명시 선택 그대로. 2·4층은 클러스터 동반 규칙 없이 칸 그대로. `fill` 은 1·2층만 — 2층 fill 은 (1층, 2층) 쌍이 시작 칸과 같은 칸으로만 번진다(빈 2층이 맵 전체로 새지 않게). 3층을 -1 로 비우면 그 칸 4층도 비운다. 통행 경고는 어느 층을 칠해도 낸다. 1층 칠하기는 `setLower` 라 그 칸 2·3·4층·그림자를 비운다. 결과 `data.effectiveLayer` 는 `"1".."4"`(옛 영수증 `"lower"/"upper"` 는 `proposalCompleteness` 가 계속 읽는다). |
 | `fill_region` | 같은 enum, 기본 1 | 2층에 채우면 1층은 그대로. 1층 채우기는 그 칸 2층을 비우고, `clearUpper` 는 3·4층을 함께 비운다. |
-| `stamp_layer_block` (새) | `layers: {"1"?,"2"?,"3"?,"4"?,shadow?}` 행 배열 | -1 = 건드리지 않음, -2 = 그 층에서 비움. 범위 밖 번호·맵 밖 쓰기 칸이 하나라도 있으면 **아무것도 쓰지 않는다**(맵 밖 -1 칸은 괜찮다). 1층 칸은 그 칸 2층을 비우되 같은 블록의 2층 값이 이긴다. 3·4층은 준 칸만. `reshape:false` 면 1·2층 자동타일을 재성형하지 않는다(참고 예제 번호 그대로). 요약·`data.cells` 에 층별 칸 수. 기존 내용 보호 영역은 실제로 쓰는 칸(≠ -1)만. |
+| `stamp_layer_block` (새) | `layers: {"1"?,"2"?,"3"?,"4"?,shadow?}` 행 배열 | -1 = 건드리지 않음, -2 = 그 층에서 비움. 범위 밖 번호·맵 밖 쓰기 칸이 하나라도 있으면 **아무것도 쓰지 않는다**(맵 밖 -1 칸은 괜찮다). 1층 칸은 그 칸 2층을 비우되 같은 블록의 2층 값이 이긴다. 3·4층은 준 칸만. `reshape:false` 면 1·2층 자동타일을 재성형하지 않는다(참고 예제 번호 그대로). 요약·`data.cells` 에 층별 칸 수. 기존 내용 보호 영역은 1~4층 격자에서 실제로 쓰는 칸(≠ -1)만 — `shadow` 격자는 세지 않는다(`buildSpec.layerBlockRegions`; 그림자만 찍는 블록은 보호할 칸 없음, paint_shadow 와 같다). |
 | `paint_shadow` (새) | `cells[{x,y,quarters?,bits?}]`, `mode: set\|add\|clear` | bit0 좌상·bit1 우상·bit2 좌하·bit3 우하. 맵 밖 칸이 섞이면 아무것도 쓰지 않는다. `clear` 에서 quarters/bits 를 빼면 그 칸 그림자 전부. |
 | `tile_erase` | `both\|all\|lower\|upper\|1\|2\|3\|4\|shadow` (1=lower, 3=upper) | both=all=칸 전체(1층 바닥 복원 + 2·3·4층·그림자). lower=1층 복원 + 2층, upper=3·4층, 2/4/shadow=그 층만. `kind:"market"` 은 both/lower/upper 만. |
 | `clear_region` / `clear_map` | (그대로) | lower 쪽은 2층·그림자, upper 쪽은 4층까지 비운다. |
@@ -25,12 +27,49 @@
   3·4층은 적은 번호 그대로 둔다 — 옛 `upper` 칠하기와 같다(수관 같은 상위 그룹을 모델이 고른 칸째 보존).
 - **옛 맵(선택 칸 없음)은 어떤 도구를 거쳐도 새 키가 생기지 않는다.** 쓰기는 `setLayerTileAt`/`setShadowAt`(빈 값이면 배열을 만들지 않음),
   비운 뒤엔 도구마다 `compactMapLayers`, 그리고 공유 헬퍼(`setLower`)를 쓰는 다른 도구를 위해 `toolRunner.runToolDefinition` 이
-  쓰기 실행 직후 선택 칸이 있는 맵만 한 번 정리한다.
+  쓰기 실행 직후 한 번 정리한다(`compactTouchedMapLayers`). **정리는 이 도구가 건드린 맵만** — 새 맵, 칸이 바뀐 맵
+  (`changeset.tileBuffersDiffer`, 2·4층·그림자 포함), 이번에 선택 칸 키가 새로 생긴 맵. 손대지 않은 맵에 원래 있던 빈 배열은 남긴다
+  (지우면 `event_command_assist` 의 「명령 외의 변경」 비교와 맵 단위 되돌리기 스냅샷이 어긋난다).
+- **옛 프로젝트에도 보이는 paint_tiles 변화(의도):** 3층(upper) 칠하기도 통행 경고를 낸다(나무·바위를 upper 에 칠하면
+  「통행 불가가 되었습니다」), 요약 층 이름표가 `1층 lower` / `3층 upper`, 결과 `data.effectiveLayer` 가 `"1"`..`"4"`
+  (옛 `"lower"`/`"upper"` 대신 — 지금 유일한 독자 `proposalCompleteness` 는 둘 다 읽는다). `classifyProposalSafety` 는 새 경고를
+  unsafe 로 볼 수 있지만 생산 호출자가 없어 자동 적용에는 영향이 없다.
+- 두 새 도구는 맵 단위 되돌리기 목록(`applyChangesetToStore`·`editorToolHook` 의 `MAP_ONLY_WRITE_TOOLS`)과 맵 타일 도구 목록
+  (`aiChatPanelHelpers.MAP_TILE_TOOLS`)에 있고, `firstMapWithTileDiff` 는 2·4층·그림자만 바뀐 제안에도 미리보기 맵을 준다
+  (없는 칸 = 빈칸).
 - 두 새 도구는 참고문서 게이트 목록(`TILESET_REFERENCE_TILE_CHOOSERS`)에 있다. `stamp_layer_block` 은 1·3층을 덮으므로
   기존 내용 보호(`buildSpec.TILE_WRITE_TOOLS`, 영향 영역은 값 ≠ -1 인 칸의 가로 줄)를 받고, 그림자만 쓰는 `paint_shadow` 는 받지 않는다.
-- 아직 1·3층만 보는 조수 경로(Task 4 몫): Pi 고스트 증분 층 유니온(`mapDelta.ts`)·`agentGhostPreview`·`changeset.tileBuffersDiffer`.
+- Pi 고스트 증분(`mapDelta.ts`)·`agentGhostPreview`·`changeset.tileBuffersDiffer` 의 네 층 처리는 아래 「조수가 보는 네 층」 표.
 
-회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출), `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
+### 실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부 (2026-09-25)
+
+`toolRunner.runToolDefinition` 은 쓰기 도구가 끝난 draft 를 보고, **사용자가 올린 타일셋(`image.type === "uploaded"`)을 쓰던 기존 맵의
+`tilesetId` 가 바뀌었는데 인자 `tilesetId` 가 그 새 값이 아니면** `ToolError` `code: "uploaded-tileset-replaced"`(mapId 포함)로 거부한다
+(`rejectUploadedTilesetSwap`). 거부는 draft 를 버리므로 프로젝트는 그대로다. 오류 문장은 모델에게 참고문서(list_tileset_references)를 읽고
+paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tilesetId 를 명시하라고 말한다.
+
+- 왜: 실측(2026-09-25 Rasak 얼음 동굴 시험) — 조수가 `run_dungeon_room_pipeline` 을 불러 업로드 타일셋 맵이 `easyrpg_chipset_dungeon` 으로
+  바뀌었고, 사용자 타일셋과 그 참고문서는 한 번도 쓰이지 않았다. 번들 전용 시공기(castleBuilder·villageClimate·defaultTileset 등)는
+  칩셋을 스스로 정하므로, 도구마다가 아니라 실행기 한 곳에서 막는다.
+- 번들 타일셋 맵·새 맵은 검사 대상이 아니다. 칩셋을 일부러 바꾸는 호출(`set_map_properties{tilesetId}` 등)은 인자에 새 id 가 있어 통과한다.
+- **빠지는 법(`ToolDefinition.allowsTilesetChange: true`):** 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 켠다 — 지금은
+  `revert_last_edit`(이전 스냅샷 복원)·`reset_project`(빈 프로젝트로 교체; 같은 맵 id `map_blank_start` 가 기본 칩셋으로 돌아간다) 둘.
+  둘 다 tilesetId 인자를 받을 수 없어, 빠지지 않으면 「되돌려」·새 프로젝트가 막힌다(최종 리뷰 Important 1 probe).
+  맵 하나를 시공하는 새 도구가 업로드 타일셋 맵의 칩셋을 바꿔야 하면 플래그 대신 `tilesetId` 인자를 받게 하라.
+  공간 저작 도구(`apply_spatial_build`·`edit_spatial_occurrence`·`place_concept` canonical)도 프로젝트를 `Object.assign` 으로 바꾸지만
+  설계에서 맵을 컴파일하는 도구라 빼지 않았다 — 거기서 칩셋이 바뀌면 역시 말없는 바꿔치기다.
+- 회귀: `test/uploadedTilesetSwapGuard.test.ts` — 시험 도구(거부 / tilesetId 명시 통과 `ok:true` / 번들 맵), 실제 회귀
+  `run_dungeon_room_pipeline{mapId, replaceExisting:true}` 거부 + 프로젝트 불변, `reset_project`·`revert_last_edit` 통과, 플래그 목록.
+
+### 남은 일 (네 층)
+
+- `scripts/qa-game/render.mts:92` 이식(graft) 원본은 늘 번들로 취급된다 — 업로드 타일셋이 이식 원본이면 기본 칩셋 그림으로 말없이 대신한다.
+  옛 동작이지만 새 「기본 칩셋 대체 금지」 주석과 어긋난다(최종 리뷰 Minor 6, 보류).
+- 헤드리스 도구 이미지 `renderToolRegionPngBase64` 상한이 1024px 이라 전체 맵 `show_map_region` 한 장이 base64 약 2MB 다. 시험 토큰 비용을
+  줄이려면 브라우저와 같은 512 를 검토(최종 리뷰 Minor 9, 보류).
+- `show_tile_grid` 는 아직 1·3층만 본다(아래 절).
+
+회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출 + 「고침 2차」 정리 범위·그림자 보호·목록), `test/uploadedTilesetSwapGuard.test.ts`, `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
 
 ## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
 
@@ -38,7 +77,7 @@
 
 | 표면 | 계약 |
 |---|---|
-| `show_map_region` 배열 | 맵에 그 칸이 **있을 때만** `layer2`·`layer4`·`shadow`(사분면 비트 0~15) 2D 배열을 더 싣는다. 없으면 키도 없다 — 옛 맵 출력은 바이트 단위로 같다. 설명에 `FOUR_LAYER_GUIDANCE`. |
+| `show_map_region` 배열 | 맵에 그 칸이 **있을 때만** `layer2`·`layer4`·`shadow`(사분면 비트 0~15) 2D 배열을 더 싣는다. 없으면 키도 없다 — 옛 맵 출력은 바이트 단위로 같다. 설명에 짧은 `FOUR_LAYER_GUIDANCE_SHORT`. |
 | 도구 이미지(브라우저·Pi 동반) | `src/ai/toolImageRenderer.ts` `renderTileGridPayload` 가 payload 의 선택 층을 받아 1 → 2 → 그림자(`mapTileDraw.drawShadowQuarters`) → 캐릭터 아래 이벤트 → 3 → 4 → 나머지 이벤트로 그린다. `renderToolImages`(get_map_region·preview_house·look_at_houses 등)는 payload 에 선택 층이 없으면 예전과 같다. |
 | 헤드리스 이미지 | `scripts/pi-agent.mts` 도 `gen.mts` 처럼 `renderToolImage` → `scripts/qa-game/render.mts` `renderToolRegionPngBase64` 를 넘긴다(전에는 show_map_region 이 「맵 이미지 전달 경로가 없습니다」로 실패했다). 이 렌더러는 에디터 `drawMapTileLayer` 를 쓰므로 4층 + 그림자를 그리고, `PngContext` 가 그림자용 save/restore/fillRect(rgba)를 갖는다. |
 | 업로드 타일셋(헤드리스) | `render.mts` 는 업로드 그림판을 **그리는 프로젝트의** `assets.uploaded[id]` 에서 찾는다. 전에는 `tilesetBaseImageUrl(tileset)` 가 전역 store 를 봐서, store 에 없는 그림판(Rasak 48px)이 기본 칩셋 조각으로 그려졌다. 자산이 없거나 ref 만 있고 해석기가 없으면 기본 칩셋으로 대신하지 않고 `note` → 도구 이미지는 `map-rendering-unavailable` 로 실패한다. PNG dataUrl 만 읽는다. |

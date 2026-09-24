@@ -38,7 +38,14 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   `clear_region`·`clear_map`·`mirror_region`·`copy_map_region`·`stamp_layer_block`·`paint_shadow`)는 네 층을 안다 —
   계약은 [editor-ai-tools.md](editor-ai-tools.md) 「조수 쓰기 도구의 네 층」 절(2026-09-25).
 - `mapHelpers.setLower` 는 그 칸의 2·3·4층·그림자를 함께 비운다. 선택 칸이 모두 빈 맵의 키 정리는
-  `toolRunner.runToolDefinition` 이 쓰기 도구 실행 직후 한 번 한다(선택 칸이 있는 맵만 훑는다).
+  `toolRunner.runToolDefinition` 이 쓰기 도구 실행 직후 한 번 한다(`compactTouchedMapLayers` — 선택 칸이 있고 이 도구가 건드린 맵만:
+  새 맵·`tileBuffersDiffer`·키가 새로 생긴 맵. 손대지 않은 맵의 빈 배열은 남긴다).
+- **toolRunner 의 업로드 타일셋 바꿔치기 거부(2026-09-25):** 쓰기 도구가 업로드 타일셋(`image.type === "uploaded"`)을 쓰던 기존 맵의
+  `tilesetId` 를 바꾸고 인자 `tilesetId` 가 그 새 값이 아니면 `uploaded-tileset-replaced` 로 거부하고 draft 를 버린다
+  (`rejectUploadedTilesetSwap`). 이유는 Rasak 얼음 동굴 시험에서 `run_dungeon_room_pipeline` 이 사용자 타일셋을 `easyrpg_chipset_dungeon`
+  으로 말없이 바꾼 일. 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 `ToolDefinition.allowsTilesetChange: true` 로 빠진다
+  (`revert_last_edit`·`reset_project`). 새 쓰기 도구가 업로드 타일셋 맵의 칩셋을 바꿔야 하면 플래그가 아니라 `tilesetId` 인자를 받게 하라.
+  계약·회귀는 [editor-ai-tools.md](editor-ai-tools.md) 「실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부」.
 
 ## 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
 
