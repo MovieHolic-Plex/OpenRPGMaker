@@ -15,6 +15,7 @@ const simulateBattleTool: ToolDefinition = {
     properties: {
       troopId: { type: "string" },
       heroLevel: { type: "integer" },
+      partyActorIds: { type: "array", items: { type: "string" }, description: "모의전 파티(배우 id). 생략하면 시작 파티 — 동료가 나중에 합류하는 게임은 합류가 끝난 파티로 보스를 재 볼 것" },
       inventory: {
         type: "object",
         description: "{ itemId: 수량 } — 키가 아이템 id 인 동적 맵",
@@ -53,10 +54,16 @@ const simulateBattleTool: ToolDefinition = {
     if (!project.database.troops.some((troop) => troop.id === troopId)) {
       throw new ToolError(`트룹을 찾을 수 없습니다: ${troopId}`, { code: "troop-not-found" });
     }
+    const partyActorIds = Array.isArray(args.partyActorIds) ? (args.partyActorIds as unknown[]).filter((id): id is string => typeof id === "string") : undefined;
+    const missingActors = partyActorIds?.filter((id) => !project.database.actors.some((actor) => actor.id === id)) ?? [];
+    if (missingActors.length > 0) {
+      throw new ToolError(`partyActorIds 에 없는 배우: ${missingActors.join(", ")} — 배우 id: ${project.database.actors.slice(0, 8).map((actor) => actor.id).join(", ")}`, { code: "actor-not-found" });
+    }
     const result = simulateBattle({
       project,
       troopId,
       heroLevel: args.heroLevel as number,
+      ...(partyActorIds && partyActorIds.length > 0 ? { partyActorIds } : {}),
       inventory: args.inventory as Record<string, number> | undefined,
       potionItemId: args.potionItemId as string | undefined,
       n: args.n as number | undefined,
