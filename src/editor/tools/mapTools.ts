@@ -1703,6 +1703,8 @@ const setMapProperties: ToolDefinition = {
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
     const changed: string[] = [];
+    const loopWarnings: string[] = [];
+    const saveWarnings: string[] = [];
     if (typeof args.name === "string" && args.name.trim()) {
       const nextName = args.name.trim();
       // 같은 장소를 두 맵으로 만들지 않는다. 2026-09-23 도그푸딩에서 조수는 빈 던전 맵(map_frozen_cave)을
@@ -1773,8 +1775,12 @@ const setMapProperties: ToolDefinition = {
       if (flags.disableTeleport === true) map.disableTeleport = true; else delete map.disableTeleport;
       if (flags.disableEscape === true) map.disableEscape = true; else delete map.disableEscape;
       changed.push("제한 설정");
+      // 저장 금지는 이벤트의 저장 메뉴(일기장·세이브 포인트)까지 막는다 — 2026-09-24 꿈 세계 도그푸딩에서 「일기장으로만
+      // 저장」하려고 모든 맵에 저장 금지를 걸었고, 일기장이 있는 방까지 막혀 저장할 곳이 사라졌다.
+      if (map.disableSave && JSON.stringify(map.events).includes('"kind":"openSaveMenu"')) {
+        saveWarnings.push(`${map.name} 에는 저장 메뉴를 여는 이벤트가 있는데 저장 금지를 켰습니다 — 그 이벤트(일기장·세이브 포인트)도 저장할 수 없게 됩니다. 메뉴 저장만 막으려면 이 맵은 저장 금지를 끄세요.`);
+      }
     }
-    const loopWarnings: string[] = [];
     if (args.loop === "none") {
       delete map.loop;
       changed.push("반복=끔");
@@ -1818,7 +1824,7 @@ const setMapProperties: ToolDefinition = {
       changed.push(`구름 그림자=${map.cloudShadows.enabled ? "켬" : "끔"}`);
     }
     if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
-    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length ? { warnings: loopWarnings } : {}) };
+    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length || saveWarnings.length ? { warnings: [...loopWarnings, ...saveWarnings] } : {}) };
   },
 };
 
