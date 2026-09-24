@@ -2622,17 +2622,19 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
       eventIds.push(existing.id);
       continue;
     }
-    // 가구·조사 이벤트가 없는 맨바닥이면 플레이어가 찾을 수 없는 투명 은신처다.
-    if (isPassable(draft, map, x, y) && tileAt(map, x, y).upper < 0) {
+    // 조사 이벤트가 없는 걸어 다니는 칸이면 플레이어가 찾을 수 없는 투명 은신처다.
+    // 2026-09-24 추격 호러 r7: 러그(바닥 타일 있음) 위 은신처는 upper<0 조건에 걸리지 않아 경고 없이
+    // 통과했다 — 걸어 다닐 수 있는 칸은 옷장·침대(통행 불가 가구)가 아니므로 어느 쪽이든 경고한다.
+    if (isPassable(draft, map, x, y)) {
       const near = map.events
         .filter((event) => event.id !== chaserId && Math.abs(event.x - x) + Math.abs(event.y - y) === 1)
         .map((event) => `${event.id}(${event.x},${event.y})`);
-      warnings.push(
-        `은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다`
-        + (near.length > 0
-          ? ` — 바로 옆 ${near.join(", ")} 가 옷장이면 hidingSpots 를 그 칸으로 다시 주세요.`
-          : " — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요."),
-      );
+      const hint = near.length > 0
+        ? ` — 바로 옆 ${near.join(", ")} 가 옷장이면 hidingSpots 를 그 칸으로 다시 주세요.`
+        : " — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요.";
+      warnings.push(tileAt(map, x, y).upper < 0
+        ? `은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다${hint}`
+        : `은신처 ${map.name}(${x}, ${y}) 에 조사 이벤트가 없어 (바닥·러그 위) 보이지 않는 은신처가 됐습니다${hint}`);
     }
     const id = genId("ev_hiding");
     const page: EventPage = {

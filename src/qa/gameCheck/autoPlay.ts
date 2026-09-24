@@ -11,6 +11,7 @@ import { resolveEventPage } from "@/project/io";
 import type { PlaySession } from "@/project/session";
 import type { GameEvent, Project } from "@/project/types";
 import { runSceneTest, type SceneStep, type SceneTestResult } from "@/testing/sceneTestRunner";
+import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { initiallyOn } from "./progression";
 import { allPages, childLists, conditionLeaves, visitPageCommands, type CommandVisit, type PageRef, type RawCommand } from "./walk";
 import type { AutoPlayReport, AutoPlayRun, AutoPlayStepTrace, CommandWhere } from "./types";
@@ -126,10 +127,23 @@ function elseBranchRequirements(condition: unknown, _page: PageRef): Requirement
   return [];
 }
 
+/** 이 페이지가 숫자 입력(inputNumber)으로 직접 채우는 변수 — 러너·플레이어는 numberInputAnswer 로 정답을 넣는다. */
+function pageInputtedVariables(page: PageRef): Set<string> {
+  const out = new Set<string>();
+  const scan = (list: readonly RawCommand[]): void => {
+    for (const command of list) {
+      if (command.kind === "inputNumber" && typeof command.variableId === "string") out.add(command.variableId);
+      for (const child of childLists(command)) scan(child.list);
+    }
+  };
+  scan(page.commands);
+  return out;
+}
+
 function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
   // 엔딩 조건(호감)을 페이지 조건(요일)보다 먼저 채운다. 만남 잠금을 푸는 명령이
-  // 요일을 올리는 이른 페이지에만 있으면, 요일을 먼저 끝까지 밀면 호감을 되풀이할 수 없다.
+  // 요일을 올리는 이른 페이지에만 있으면, 요일을 되풀이할 수 없다.
   if (visit.command.kind === "triggerEnding") {
     const namedId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
     const ending = namedId
@@ -142,7 +156,14 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
   for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
   for (const segment of visit.segments) {
     if (segment.kind !== "fork") continue;
-    if (segment.branch === "then") reqs.push(...leafRequirements(segment.command.condition, visit.page));
+    if (segment.branch === "then") {
+      const leaves = leafRequirements(segment.command.condition, visit.page);
+      // inputNumber 로 같은 페이지에서 채우는 변수는 선행 조건이 아니다 — 실행 중에 입력이 채운다
+      // (2026-09-24 추격 호러 r7: 금고 inputNumber→fork(var == 7419) 를 「세터 없는 선행」으로 오판해
+      //  암호 이벤트와 열쇠 사슬이 전부 unresolved 로 뜨고 엔딩까지 못 갔다).
+      const inputted = leaves.some((req) => req.kind === "variable") ? pageInputtedVariables(visit.page) : undefined;
+      reqs.push(...(inputted ? leaves.filter((req) => !(req.kind === "variable" && inputted.has(req.id))) : leaves));
+    }
     // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
     if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
   }
@@ -184,12 +205,18 @@ function movesToward(req: Extract<Requirement, { kind: "variable" }>, command: R
   return up || down;
 }
 
-function setterMatches(req: Requirement, visit: CommandVisit): boolean {
+function setterMatches(project: Project, req: Requirement, visit: CommandVisit): boolean {
   const c = visit.command;
   switch (req.kind) {
     case "switch": return c.kind === "setSwitch" && c.switchId === req.id && (c.value === true || c.value === "toggle" || (typeof c.value === "object" && c.value !== null));
     case "selfSwitch": return c.kind === "setSelfSwitch" && c.key === req.key && c.value === true && visit.page.event?.id === req.eventId && visit.page.map?.id === req.mapId;
-    case "variable": return c.kind === "setVariable" && c.variableId === req.id && movesToward(req, c);
+    case "variable": {
+      if (c.kind === "setVariable" && c.variableId === req.id && movesToward(req, c)) return true;
+      // 다른 페이지가 그 변수를 요구하면 inputNumber 페이지도 세터다 — numberInputAnswer 가 고른
+      // 정답이 실제로 문턱을 통과할 때만 후보로 인정한다(추격 호러 r7 금고 암호).
+      if (req.op === undefined || req.value === undefined || c.kind !== "inputNumber" || c.variableId !== req.id) return false;
+      return compare(numberInputAnswer(project, req.id), req.op, req.value);
+    }
     case "item": return c.kind === "changeItem" && c.itemId === req.id && c.op !== "-=";
     case "actor": return c.kind === "changeParty" && c.actorId === req.id && c.action === "add";
     case "map": return c.kind === "transfer" && c.mapId === req.id && visit.page.map?.id !== req.id;
@@ -314,7 +341,7 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
         return 0;
       };
       const preferLargerStep = req.kind === "variable" && (req.op === ">=" || req.op === ">");
-      const candidates = visits.filter((candidate) => setterMatches(req, candidate) && map[candidate.page.map!.id])
+      const candidates = visits.filter((candidate) => setterMatches(project, req, candidate) && map[candidate.page.map!.id])
         .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length
           || (preferLargerStep ? stepToward(b) - stepToward(a) : 0)
           || a.segments.length - b.segments.length);
