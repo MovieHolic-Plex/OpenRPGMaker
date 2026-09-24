@@ -207,7 +207,15 @@ function run(driver: Driver, steps: SceneStep[]): SceneTestResult {
 function tryCommit(driver: Driver, extra: SceneStep[]): { ok: true } | { ok: false; reason: string; result: SceneTestResult } {
   const steps = [...driver.steps, ...extra];
   const result = run(driver, steps);
-  if (!result.ok) return { ok: false, reason: result.failureReason ?? "알 수 없는 실패", result };
+  if (!result.ok) {
+    let reason = result.failureReason ?? "알 수 없는 실패";
+    // 게임 오버는 원인이 앞선 전투다 — 어떤 전투에서 졌는지 붙인다(몬스터 게임: 도로 조우가 너무 잦다, 파트너가 약하다).
+    if (/게임 오버/u.test(reason)) {
+      const battles = result.log.filter((line) => /^(battle|random encounter)/u.test(line));
+      if (battles.length) reason += ` — 전투 ${battles.length}회, 마지막: ${battles.slice(-3).join(" / ")}`;
+    }
+    return { ok: false, reason, result };
+  }
   driver.steps = steps;
   driver.last = result;
   return { ok: true };
@@ -435,6 +443,13 @@ function joinGoal(project: Project, visit: CommandVisit): Goal {
   };
 }
 
+function starterGoal(visit: CommandVisit): Goal {
+  return {
+    label: `첫 파트너 받기 (${String(visit.command.speciesId ?? "?")})`, visit,
+    verify: (session) => ((session.monsterParty ?? []).length > 0 ? null : `giveMonster 가 돌았지만 파티 몬스터가 없습니다 — ${JSON.stringify(visit.command)}`),
+  };
+}
+
 function runPlan(project: Project, label: string, goals: readonly Goal[], deadline: number, preamble: readonly string[] = []): AutoPlayRun {
   const started = Date.now();
   const first = quietScene(project, []);
@@ -481,7 +496,18 @@ export function runAutoPlay(project: Project, options: { readonly budgetMs?: num
   const target = targets[0]!;
   const plan = planCriticalPath(project, target, endingGoal(target));
   const preamble = plan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다 (${u.for.mapId ?? ""} ${u.for.eventId ?? ""})`);
-  const runs: AutoPlayRun[] = [runPlan(project, "기본 경로", plan.goals, deadline, preamble)];
+  // 몬스터 수집: 실제 플레이어는 먼저 박사에게 파트너를 받는다 — 영웅 혼자 야생·관장과 싸우는 경로는 거짓 막힘을 낸다.
+  let give: CommandVisit | undefined;
+  if (project.system?.monsterCollection === true) {
+    for (const page of allPages(project)) {
+      if (give || !page.map || !page.event) continue;
+      visitPageCommands(page, (visit) => { if (!give && visit.command.kind === "giveMonster") give = visit; });
+    }
+  }
+  const starter = give ? planCriticalPath(project, give, starterGoal(give)) : undefined;
+  const runs: AutoPlayRun[] = [starter
+    ? runPlan(project, "기본 경로(파트너 받고)", [...starter.goals, ...plan.goals], deadline, [...starter.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`), ...preamble])
+    : runPlan(project, "기본 경로", plan.goals, deadline, preamble)];
   const join = options.companionJoins?.[0];
   if (join && join.page.map && join.page.event) {
     const joinPlan = planCriticalPath(project, join, joinGoal(project, join));
