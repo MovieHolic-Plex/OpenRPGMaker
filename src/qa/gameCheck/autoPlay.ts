@@ -719,6 +719,15 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false): AutoPlayStepT
   }
   if (goal.done && !goal.done(driver.last.session, driver.last)) {
     if (goal.repeat) return trace(goal.label, false, `되풀이해도 문턱에 닿지 않습니다(지금 ${describeProgress(driver, goal)}).`, driver, visit.where);
+    // 이벤트 안 전투(대개 보스)에져 게임 오버가 났으면 「다른 페이지가 실행됐다」로 보면 오판이다 —
+    // 승리 분기의 목표 명령이 실행되지 않은 원인을 전투 패배라고 못박는다(2026-09-24 JRPG 도그푸딩: 등대·잿불 광산 보스전).
+    const lostBattle = driver.last.finalState.gameOver && driver.last.log.some((line) => /^battle .+: defeat$/u.test(line));
+    if (lostBattle) {
+      const battles = driver.last.log.filter((line) => /^(?:battle|random encounter|field spawn)/u.test(line));
+      return trace(goal.label, false,
+        `이벤트 전투에서 패배해 게임 오버 — 승리 분기의 목표 명령에 닿지 않았습니다${battles.length ? ` — 전투 ${battles.length}회, 마지막: ${battles.slice(-3).join(" / ")}` : ""}`,
+        driver, visit.where);
+    }
     return trace(goal.label, false, `이벤트는 돌았지만 목표가 충족되지 않았습니다 (페이지 ${visit.page.pageIndex + 1} 대신 다른 페이지가 실행됐거나 선택지·조건 분기가 목표 명령을 건너뜀).`, driver, visit.where);
   }
   return trace(goal.label, true, "완료", driver, visit.where);
