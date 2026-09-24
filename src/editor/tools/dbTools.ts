@@ -975,7 +975,8 @@ const upsertTroop: ToolDefinition = {
 
 const defineMonsterSpecies: ToolDefinition = {
   name: "define_monster_species",
-  description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다.",
+  description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다."
+    + " 진화(evolutions.toSpeciesId)는 이미 있는 종만 가리킬 수 있다 — 진화 계통은 **최종 진화형부터** 정의하고 그다음 기본형을 evolutions 와 함께 정의한다.",
   mode: "write",
   parameters: parametersForRecord("species", monsterSpeciesRecordSchema, {
     id: "species_wild_slime",
@@ -1006,7 +1007,8 @@ const defineMonsterSpecies: ToolDefinition = {
     }
     const missingEvolutionSpecies = (record.evolutions ?? []).filter((evolution) => !speciesIds.has(evolution.toSpeciesId)).map((evolution) => evolution.toSpeciesId);
     if (missingEvolutionSpecies.length > 0) {
-      throw new ToolError(`존재하지 않는 진화 toSpeciesId: ${[...new Set(missingEvolutionSpecies)].join(", ")} — 허용 예시: ${knownIds(draft.database.monsterSpecies)}`, { code: "species-not-found" });
+      const missingIds = [...new Set(missingEvolutionSpecies)].join(", ");
+      throw new ToolError(`존재하지 않는 진화 toSpeciesId: ${missingIds} — 진화형(${missingIds})을 먼저 define_monster_species 로 정의한 뒤 이 종을 다시 저장하세요(같은 응답에서 병렬로 부르면 순서가 보장되지 않습니다). 허용 예시: ${knownIds(draft.database.monsterSpecies)}`, { code: "species-not-found" });
     }
     const itemIds = new Set(draft.database.items.map((item) => item.id));
     const missingItems = (record.evolutions ?? []).flatMap((evolution) => evolution.requires.itemId && !itemIds.has(evolution.requires.itemId) ? [evolution.requires.itemId] : []);
