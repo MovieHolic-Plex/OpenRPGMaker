@@ -9,10 +9,10 @@ import { projectRepository } from '@/project/persistence/repository';
 import { store } from '@/project/store';
 import { uploadedAssetForImport } from '@/editor/uploadedAssetStorage';
 import { recordProjectSnapshot } from '@/editor/mapEditHistory';
-import { createPixelArtWorldAutotileReferences, drawXpAutotile } from './pixelArtWorldAutotileReferences';
+import { createPixelArtWorldAutotileReferences, drawXpAutotile, type PixelArtWorldAutotileReferenceOptions } from './pixelArtWorldAutotileReferences';
 
 /** Decode only the user's file. The app never fetches third-party source PNGs. */
-export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWorldAutotilePack, target: TilesetDef, base: HTMLImageElement) {
+export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWorldAutotilePack, target: TilesetDef, base: HTMLImageElement, options?: PixelArtWorldAutotileReferenceOptions) {
   if (!canAppendPixelArtWorldAutotile(target)) throw new Error('32px 사용자 타일셋을 선택하세요. 이식·투명색·공유 참고문서가 있는 타일셋은 먼저 별도로 정리하세요.');
   if (target.autotileGroups?.some(group => group.id === pack.id) || target.tileGroups?.some(group => group.id === pack.id) || target.referenceDocuments?.some(category => category.id === pack.id)) throw new Error('이 자동타일은 이미 추가되어 있습니다.');
   if (file.size > 4_000_000) throw new Error('확인된 원본 PNG를 선택하세요.');
@@ -68,7 +68,7 @@ export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWor
   });
   const raw = document.createElement('canvas'); raw.width = pack.sourceWidth; raw.height = pack.sourceHeight;
   raw.getContext('2d')!.drawImage(source, 0, 0);
-  (tileset.referenceDocuments ??= []).push(createPixelArtWorldAutotileReferences(pack, source, raw.toDataURL('image/png'), offset, tileset.id, tileIds, { image: base, tileset: target }));
+  (tileset.referenceDocuments ??= []).push(createPixelArtWorldAutotileReferences(pack, source, raw.toDataURL('image/png'), offset, tileset.id, tileIds, { image: base, tileset: target }, options));
   validateTilesetReferences(tileset.referenceDocuments);
   validateTileset(tileset.id, tileset);
   return { tileset, assetId, dataUrl: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height, offset, tileIds };

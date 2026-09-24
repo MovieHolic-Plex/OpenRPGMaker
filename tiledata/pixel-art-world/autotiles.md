@@ -114,10 +114,27 @@ full lower/upper sample arrays, wrong-corner/missing-cell/wrong-layer arrays and
 Blob families demonstrate thin runs, isolated cells, holes and junctions. Rectangle-only
 families demonstrate a rectangle rather than advertising unsupported silhouettes.
 
-A sample backing is an actual opaque lower tile from the target. It is identified in
-both arrays and text; its suitability as floor/wall/roof must be chosen for the scene.
-If no backing exists, transparent holes remain and the document marks the sample incomplete.
-The importer never invents a ground color or silently overwrites a map's underlay.
+The optional fifth argument of `preparePixelArtWorldAutotile` is
+`{ referenceBackingTile: number, referenceBackingLabel?: string }`.
+`createPixelArtWorldAutotileReferences` takes the same options as its last argument,
+after the base image/tileset pair. The selected ID must be an integer inside the
+existing target atlas, resolve to lower through `tileLayerHome`, and contain only
+opaque pixels. Invalid IDs, upper tiles and partially transparent tiles are rejected.
+The same selected tile fills the complete sample lower array, normal/error PNGs and
+MD descriptions; labels describe the choice without claiming gameplay suitability.
+
+Without options, the first opaque lower tile remains a **diagnostic fallback**, not
+an endorsed backing. If none exists, the sample remains incomplete. Mixed atlases
+must choose per-family backing: Pool01/02 need deliberate basin material because their
+centers have alpha152/102; wall decorations need native wall backing, and Roof02/Saku
+need opaque roof backing. The category's default world floor is not sufficient.
+
+GroundBase01 contains an opaque cyan editing area and transparent center. Its category,
+read-first document and comparison explicitly say **editing template**, not completed
+normal terrain. A ground underlay does not remove that placeholder. Keep it outside
+finished demonstration scenes unless the intended template composition is separately
+specified; do not recolor/erase source pixels implicitly.
+
 `validateXpAutotilePlacementExample` compares exact sample arrays, not arbitrary scene
 traversal, event execution, aesthetics or AI success rates.
 
