@@ -4,6 +4,7 @@ import {
   createDialogueUI,
   dialogueSpeedDelayMs,
   isDialogueAdvanceKey,
+  nameplateSpeaker,
   resolveDialogueText,
 } from "@/player/dialogue";
 import { dialoguePresentationProfile } from "@/player/dialoguePresentation";
@@ -106,6 +107,17 @@ describe("dialogue speaker nameplate", () => {
     document.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter" }));
     await shown;
     vi.useRealTimers();
+  });
+});
+
+describe("narration speaker", () => {
+  it("「내레이션」 같은 서술 표기는 이름표를 달지 않는다", () => {
+    expect(nameplateSpeaker("내레이션")).toBeUndefined();
+    expect(nameplateSpeaker(" 나레이션 ")).toBeUndefined();
+    expect(nameplateSpeaker("Narrator")).toBeUndefined();
+    expect(nameplateSpeaker("")).toBeUndefined();
+    expect(nameplateSpeaker("모로 박사")).toBe("모로 박사");
+    expect(nameplateSpeaker("내레이션 담당 할머니")).toBe("내레이션 담당 할머니");
   });
 });
 

@@ -246,11 +246,12 @@ export function createDialogueUI(
       }
       // 화자 이름은 본문과 분리된 네임플레이트로 창 상단에 붙인다 (Fields of Mistria 식).
       let nameplate: HTMLElement | undefined;
-      if (request.speaker?.trim()) {
+      const speakerName = nameplateSpeaker(request.speaker);
+      if (speakerName) {
         box.classList.add("has-speaker");
         nameplate = el("div", {
           class: "speaker speaker-nameplate",
-          text: request.speaker.trim(),
+          text: speakerName,
           dataset: { testid: "dialogue-speaker" },
         });
         box.append(nameplate);
@@ -839,6 +840,18 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
 // 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
 // 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
 // RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
+/**
+ * 이름표로 보일 화자. 「내레이션」 같은 서술 표기는 인물이 아니다 — 생성 모델이 서술 줄에 speaker:"내레이션" 을
+ * 달아 엔딩 에필로그에 「내레이션」 이름표가 떴다(2026-09-24 추리 도그푸딩). 이름표 없이 서술로 보인다.
+ */
+const NARRATION_SPEAKER = /^(?:내레이션|나레이션|해설|서술|narration|narrator)$/iu;
+
+export function nameplateSpeaker(speaker: string | undefined): string | undefined {
+  const name = speaker?.trim();
+  if (!name || NARRATION_SPEAKER.test(name)) return undefined;
+  return name;
+}
+
 export function isDialogueAdvanceKey(key: string): boolean {
   return isConfirmKey(key);
 }
