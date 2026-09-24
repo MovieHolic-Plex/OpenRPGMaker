@@ -43,7 +43,8 @@ const defineEnding: ToolDefinition = {
   name: "define_ending",
   description:
     '엔딩 정의만 저장한다. define_ending이나 setSwitch만으로는 실행되지 않는다. ' +
-    '도달 가능한 이벤트 commands에 {"kind":"triggerEnding","endingId":"조회한 엔딩 id"}를 넣으면 해당 엔딩을 직접 실행한다. ' +
+    '도달 가능한 이벤트 commands에 {"kind":"triggerEnding","endingId":"조회한 엔딩 id"}를 넣으면 그 엔딩을 실행한다. ' +
+    '그 엔딩에 conditions가 있으면 호출 시점에도 검사한다 — 거짓이면 엔딩은 열리지 않고 다음 명령으로 넘어간다(호감 부족 고백이 성공으로 끝나면 안 된다). 조건이 없으면 바로 실행된다. ' +
     'endingId 없는 {"kind":"triggerEnding"}은 switch/variable conditions를 만족한 엔딩 중 priority가 가장 높은 항목을 선택한다. ' +
     'epilogue는 script_cutscene beat 배열이다. 아이템을 소비하는 출구는 완료 스위치로 선택되는 상위 페이지를 두어 재조사 시 재잠김·중복 소비를 막는다. ' +
     '정의 후 연결 전은 유효한 중간 편집이지만, 완료 전에는 실제 에필로그·종료와 재조사를 플레이로 검증해야 한다.',
@@ -104,7 +105,8 @@ const defineEnding: ToolDefinition = {
       ...collectEndingWarnings(draft.endings),
       ...(projectTriggersEnding(draft) ? [] : [
         "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 "
-          + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`,
+          + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`
+          + (conditions.length > 0 ? " 호출할 때도 위 조건이 참이어야 엔딩이 열립니다." : ""),
       ]),
     ];
     return {

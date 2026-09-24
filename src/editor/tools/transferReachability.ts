@@ -60,6 +60,45 @@ export function walkableFromAnchors(project: Project, map: GameMap): Set<number>
   return seen;
 }
 
+const CARDINAL_STEPS = [[1, 0], [-1, 0], [0, 1], [0, -1]] as const;
+
+/**
+ * 이 칸을 빼면 이웃 통행 칸이 둘 이상의 묶음으로 갈라지는가.
+ * 막다른 칸(이웃 1)은 아니다 — 출입구로 써도 옆 방이 안 막힌다.
+ * 복도 한 칸·문간처럼 양쪽을 잇는 유일한 칸에 playerTouch 문을 놓으면
+ * 밟는 즉시 다른 맵으로 나가 같은 맵 너머에는 영영 못 간다
+ * (2026-09-24 연애 도그푸딩: 라디오 부스 콘솔이 출구 문 뒤에 갇힘).
+ */
+export function transferTileSeversWalk(project: Project, map: GameMap, x: number, y: number): boolean {
+  const neighbors: Point[] = [];
+  for (const [dx, dy] of CARDINAL_STEPS) {
+    const nx = x + dx;
+    const ny = y + dy;
+    if (!inMapBounds(map, nx, ny)) continue;
+    if (!canMove(project, map, x, y, nx, ny) && !canMove(project, map, nx, ny, x, y)) continue;
+    neighbors.push({ x: nx, y: ny });
+  }
+  if (neighbors.length <= 1) return false;
+  const blocked = y * map.width + x;
+  const start = neighbors[0]!;
+  const seen = new Set<number>([start.y * map.width + start.x]);
+  const queue: Point[] = [start];
+  for (let index = 0; index < queue.length; index += 1) {
+    const cell = queue[index]!;
+    for (const [dx, dy] of CARDINAL_STEPS) {
+      const nx = cell.x + dx;
+      const ny = cell.y + dy;
+      if (!inMapBounds(map, nx, ny)) continue;
+      const key = ny * map.width + nx;
+      if (key === blocked || seen.has(key)) continue;
+      if (!canMove(project, map, cell.x, cell.y, nx, ny)) continue;
+      seen.add(key);
+      queue.push({ x: nx, y: ny });
+    }
+  }
+  return neighbors.slice(1).some((neighbor) => !seen.has(neighbor.y * map.width + neighbor.x));
+}
+
 /**
  * 요청 좌표 대신 시도할 후보 칸들 — 앵커에서 닿는 칸 중 같은 가장자리(가장자리 요청일 때) 또는
  * 반경 NON_EDGE_RADIUS 안, 가까운 순.

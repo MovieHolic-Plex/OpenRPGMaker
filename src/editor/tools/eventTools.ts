@@ -47,7 +47,7 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
-import { reachableGateCandidates, walkableFromAnchors } from "./transferReachability";
+import { reachableGateCandidates, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -1286,6 +1286,9 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     event.name = name;
+    // 뒤 페이지가 「호감 >= 4」만으로 앞 페이지의 +2/+3을 덮으면, 엔딩 문턱 6에는 영영 못 닿는다.
+    // (2026-09-24 연애 도그푸딩: 데이트 페이지가 대화를 지워 나래호감이 4에서 멈춤)
+    keepGainPageBelowHigherEnding(draft, event, normalizationWarnings);
     event.placementRole = "npc";
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
       ? args.characterId.trim()
@@ -1898,6 +1901,7 @@ function transferEndpoint(
   requestedX: number,
   requestedY: number,
   maxRadius = 3,
+  notes?: string[],
 ): { gate: Point; landing: Point } | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
   // 벽에서 1칸 안쪽·벽 칸 위 요청은 벽과 맞닿은 통행 칸으로 먼저 당긴다.
@@ -1915,6 +1919,7 @@ function transferEndpoint(
     if (occupied.has(`${landing.x},${landing.y}`)) return null;
     return landing;
   };
+  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean }> = [];
   for (let radius = snapBlocked ? 1 : 0; radius <= maxRadius; radius += 1) {
     const flushGates: Point[] = [];
     const innerGates: Point[] = [];
@@ -1930,10 +1935,36 @@ function transferEndpoint(
     for (const gate of [...flushGates, ...innerGates]) {
       const landing = landingFree(gate);
       if (!landing) continue;
-      return { gate, landing };
+      choices.push({
+        gate,
+        landing,
+        radius,
+        flush: isFlushGate(gate.x, gate.y),
+        severs: transferTileSeversWalk(project, map, gate.x, gate.y),
+      });
     }
   }
-  return null;
+  if (choices.length === 0) return null;
+  // 유일한 통로(문간 한 칸)보다, 같은 반경 안의 막지 않는 칸을 먼저 고른다.
+  // 유일한 통로보다 막지 않는 칸을 먼저. 그 안에서는 예전처럼 가까운 칸, 그다음 벽에 붙은 칸.
+  choices.sort((a, b) =>
+    Number(a.severs) - Number(b.severs)
+    || a.radius - b.radius
+    || Number(b.flush) - Number(a.flush)
+    || a.gate.y - b.gate.y
+    || a.gate.x - b.gate.x);
+  const picked = choices[0]!;
+  if (notes && !picked.severs) {
+    const blocked = choices.find((choice) => choice.severs && (
+      choice.radius < picked.radius || (choice.radius === picked.radius && choice.flush && !picked.flush)
+    ));
+    if (blocked) {
+      notes.push(
+        `출입구 (${blocked.gate.x},${blocked.gate.y}) 는 같은 맵의 두 구역을 잇는 유일한 통로라 문을 놓으면 한쪽이 막힙니다. (${picked.gate.x},${picked.gate.y}) 에 두었습니다.`,
+      );
+    }
+  }
+  return { gate: picked.gate, landing: picked.landing };
 }
 
 /**
@@ -1956,19 +1987,29 @@ function reachableTransferEndpoint(
   label: "A" | "B",
   notes: string[],
 ): { gate: Point; landing: Point } | null {
-  const endpoint = transferEndpoint(project, map, requested.x, requested.y);
+  const localNotes: string[] = [];
+  const endpoint = transferEndpoint(project, map, requested.x, requested.y, 3, localNotes);
   const reach = walkableFromAnchors(project, map);
-  if (!reach) return endpoint;
+  if (!reach) {
+    notes.push(...localNotes);
+    return endpoint;
+  }
   const reached = (point: Point): boolean => reach.has(point.y * map.width + point.x);
   const usable = (point: { gate: Point; landing: Point }): boolean => reached(point.gate) && reached(point.landing);
-  if (endpoint && usable(endpoint)) return endpoint;
+  if (endpoint && usable(endpoint)) {
+    notes.push(...localNotes);
+    return endpoint;
+  }
   for (const candidate of reachableGateCandidates(map, reach, requested).slice(0, 60)) {
     const alt = transferEndpoint(project, map, candidate.x, candidate.y, 0);
     if (!alt || !usable(alt)) continue;
     notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
     return alt;
   }
-  if (endpoint) notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+  if (endpoint) {
+    notes.push(...localNotes);
+    notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+  }
   return endpoint;
 }
 
@@ -2220,6 +2261,46 @@ function parseVariableOp(raw: unknown, label: string): (typeof VARIABLE_OPS)[num
 function numberArg(raw: unknown, label: string): number {
   if (typeof raw === "number" && Number.isFinite(raw)) return Math.trunc(raw);
   throw new ToolError(`${label} 숫자가 필요합니다.`, { code: "number-arg" });
+}
+
+function commandsRaiseVariable(commands: readonly Command[] | undefined, variableId: string): boolean {
+  for (const command of commands ?? []) {
+    if (command.kind === "setVariable" && command.variableId === variableId && command.op === "+=" && typeof command.value === "number" && command.value > 0) return true;
+    if (command.kind === "choices") {
+      if (command.options.some((option) => commandsRaiseVariable(option.branch, variableId))) return true;
+      if (commandsRaiseVariable(command.cancelBranch, variableId)) return true;
+    } else if (command.kind === "presentItem") {
+      if (command.options.some((option) => commandsRaiseVariable(option.branch, variableId))) return true;
+      if (commandsRaiseVariable(command.otherwiseBranch, variableId) || commandsRaiseVariable(command.cancelBranch, variableId)) return true;
+    } else if (command.kind === "fork") {
+      if (commandsRaiseVariable(command.then, variableId) || commandsRaiseVariable(command.else, variableId)) return true;
+    }
+  }
+  return false;
+}
+
+/** 더 높은 엔딩 문턱이 있는 변수를 올리는 페이지를, 그보다 낮은 조건 페이지가 덮지 않게 분기로 접는다. */
+function keepGainPageBelowHigherEnding(project: Project, event: GameEvent, warnings: string[]): void {
+  const pages = event.pages;
+  if (!pages || pages.length < 2) return;
+  for (let index = pages.length - 1; index >= 1; index -= 1) {
+    const page = pages[index];
+    if (!page || page.conditions.length !== 1) continue;
+    const condition = page.conditions[0];
+    if (!condition || condition.kind !== "variable" || (condition.op !== ">=" && condition.op !== ">")) continue;
+    const capped = (project.endings ?? []).some((ending) => ending.conditions.some((entry) =>
+      entry.kind === "variable" && entry.variableId === condition.variableId
+      && (entry.op === ">=" || entry.op === ">") && entry.value > condition.value));
+    if (!capped) continue;
+    const host = pages.slice(0, index).find((earlier) => commandsRaiseVariable(earlier.commands, condition.variableId));
+    if (!host) continue;
+    // 분기를 앞세우면 문턱에 닿는 날 호감 상승보다 데이트 선택지가 먼저 떠서 상승이 멈춘다.
+    host.commands = [...host.commands, { kind: "fork", condition, then: page.commands }];
+    pages.splice(index, 1);
+    warnings.push(
+      `변수 ${condition.variableId} ${condition.op} ${condition.value} 페이지가 그 변수를 올리는 앞 페이지를 덮어, 더 높은 엔딩 문턱에 닿지 못합니다. 그 페이지 명령을 앞 페이지의 조건 분기로 옮겼습니다.`,
+    );
+  }
 }
 
 function eventUsesFriendship(event: GameEvent): boolean {

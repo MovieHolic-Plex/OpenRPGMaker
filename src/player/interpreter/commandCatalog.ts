@@ -387,12 +387,30 @@ function killParty(state: InterpreterState): void {
   }
 }
 
+function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
+  return ending.conditions.every((condition) => evalCondition(
+    state.session,
+    condition,
+    resolveSocialHost(state) ?? state.currentEventId,
+    locationEvalContext(state),
+  ));
+}
+
 function triggerEnding(
   state: InterpreterState,
+  frame: Frame,
   endingId: string | undefined
 ): CommandExecution {
   const project = state.project;
-  const ending = project ? selectEnding(project.endings ?? [], state, endingId) : undefined;
+  const endings = project?.endings ?? [];
+  // 이름 있는 호출도 그 엔딩의 conditions 를 본다. 호감 ≥ 6 을 엔딩에만 적어 두고
+  // triggerEnding(endingId) 만 부르면, 예전에는 조건이 무시되어 호감 0에도 고백이 성공했다
+  // (2026-09-24 연애 도그푸딩 「골목 라디오의 밤」). 조건이 거짓이면 타이틀로 쫓지 않고 다음 명령으로 넘어간다.
+  if (endingId) {
+    const named = endings.find((ending) => ending.id === endingId);
+    if (named && !endingConditionsMet(state, named)) return resumeNext(frame);
+  }
+  const ending = project ? selectEnding(endings, state, endingId) : undefined;
   if (!ending) {
     console.warn(`[interpreter] 엔딩을 선택할 수 없습니다: ${endingId ?? "(auto)"}`);
     return pause("returnToTitle", { kind: "returnToTitle", title: "엔딩", message: "조건에 맞는 엔딩이 없습니다." });
@@ -414,7 +432,7 @@ function selectEnding(
 ): EndingDef | undefined {
   if (endingId) return endings.find((ending) => ending.id === endingId);
   return endings
-    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state))))
+    .filter((ending) => endingConditionsMet(state, ending))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 }
 
@@ -728,7 +746,7 @@ export function executeCommand(
       killParty(state);
       return pause("gameOver", { kind: "gameOver", message: command.message, ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "triggerEnding":
-      return triggerEnding(state, command.endingId);
+      return triggerEnding(state, frame, command.endingId);
     case "gameOver":
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending":

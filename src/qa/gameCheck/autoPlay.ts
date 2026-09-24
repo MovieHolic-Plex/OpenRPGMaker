@@ -128,16 +128,23 @@ function elseBranchRequirements(condition: unknown, _page: PageRef): Requirement
 
 function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
+  // 엔딩 조건(호감)을 페이지 조건(요일)보다 먼저 채운다. 만남 잠금을 푸는 명령이
+  // 요일을 올리는 이른 페이지에만 있으면, 요일을 먼저 끝까지 밀면 호감을 되풀이할 수 없다.
+  if (visit.command.kind === "triggerEnding") {
+    const namedId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
+    const ending = namedId
+      ? (project.endings ?? []).find((entry) => entry.id === namedId)
+      : [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
+    // 이름 있는 triggerEnding 도 엔딩 conditions 를 선행으로 본다. 런타임이 조건 미달이면
+    // 엔딩을 열지 않으므로, 호감 ≥ 6 없이 고백 선택지만 누르면 도달로 세면 안 된다.
+    for (const condition of ending?.conditions ?? []) reqs.push(...leafRequirements(condition, visit.page));
+  }
   for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
   for (const segment of visit.segments) {
     if (segment.kind !== "fork") continue;
     if (segment.branch === "then") reqs.push(...leafRequirements(segment.command.condition, visit.page));
     // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
     if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
-  }
-  if (visit.command.kind === "triggerEnding" && !visit.command.endingId) {
-    const ending = [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
-    for (const condition of ending?.conditions ?? []) reqs.push(...leafRequirements(condition, visit.page));
   }
   return reqs;
 }
@@ -208,6 +215,24 @@ function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly
   // 「오늘 이미 만났나」 는 페이지 조건(switch=false)으로도, 대사 앞 fork 로도 쓴다 — fork 의 else 에 세터가 있으면
   // 그 스위치가 꺼져 있어야 닿는다(2026-09-24 연애 4회차: 공략 인물 셋 모두 fork{sw_met}·else 에 호감 +2).
   const locks: RawCommand[] = [...(setter.page.conditions as readonly RawCommand[])];
+  // 뒤 페이지가 「오늘 만남 스위치 ON」이면 앞의 호감 +2 페이지를 덮는다. 그 스위치를 끄지 않으면
+  // 되풀이가 한 번(+2)에서 멈춘다(2026-09-24 골목 라디오: 나래호감=2).
+  const turnsOn = new Set<string>();
+  const collectOn = (commands: readonly RawCommand[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (command.kind === "setSwitch" && command.value === true && typeof command.switchId === "string") turnsOn.add(command.switchId);
+      for (const child of childLists(command)) collectOn(child.list);
+    }
+  };
+  collectOn(setter.page.commands as readonly RawCommand[]);
+  const laterPages = setter.page.event?.pages?.slice(setter.page.pageIndex + 1) ?? [];
+  for (const later of laterPages) {
+    for (const condition of later.conditions ?? []) {
+      if (condition.kind === "switch" && condition.value === true && turnsOn.has(condition.switchId)) {
+        locks.push({ kind: "switch", switchId: condition.switchId, value: false });
+      }
+    }
+  }
   for (const segment of setter.segments) {
     if (segment.kind !== "fork") continue;
     const condition = segment.command.condition as RawCommand | undefined;
@@ -279,8 +304,20 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
       if (inProgress.has(key)) return false;
       inProgress.add(key);
       // 가장 얕은 세터를 고른다 — 선행 조건이 적은 후보부터.
+      const stepToward = (visit: CommandVisit): number => {
+        // presentItem 안의 +3 은 자동 플레이가 아이템을 내지 못하면 0에 머문다. 대화 +2 를 먼저 고른다.
+        if (visit.segments.some((segment) => segment.command.kind === "presentItem")) return -1;
+        const command = visit.command;
+        if (command.kind !== "setVariable" || typeof command.value !== "number") return 0;
+        if (command.op === "+=") return command.value;
+        if (command.op === "-=") return -command.value;
+        return 0;
+      };
+      const preferLargerStep = req.kind === "variable" && (req.op === ">=" || req.op === ">");
       const candidates = visits.filter((candidate) => setterMatches(req, candidate) && map[candidate.page.map!.id])
-        .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length || a.segments.length - b.segments.length);
+        .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length
+          || (preferLargerStep ? stepToward(b) - stepToward(a) : 0)
+          || a.segments.length - b.segments.length);
       let ok = false;
       for (const candidate of candidates) {
         const snapshot = goals.length;
