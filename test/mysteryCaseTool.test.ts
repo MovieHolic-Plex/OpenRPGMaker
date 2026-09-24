@@ -381,6 +381,22 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     expect((ctx.project.endings ?? []).map((ending) => ending.id).sort()).toEqual(["ending_mystery_manor_solved", "ending_mystery_manor_wrong"]);
   });
 
+  // manor-mystery 실측 두 번: 「저택 1층」 을 빈 시작 맵 위 바닥 사각형으로 흉내 내고 인물을 세웠다(통행 불가 0.6%).
+  it("벽·가구 없는 맨땅 무대에 사건을 쓰면 실내를 지을 도구를 짚는 경고를 남긴다", () => {
+    const { result } = author(fixture());
+    expect(result.ok).toBe(true);
+    const warnings = (result.diff?.warnings ?? []) as string[];
+    expect(warnings.some((warning) => warning.includes("사건 무대") && warning.includes("place_concept"))).toBe(true);
+    // 방이 있는 맵이면 경고가 없다.
+    const walled = fixture();
+    const map = walled.maps[walled.startMapId];
+    for (let x = 0; x < map.width; x += 1) { map.lowerTiles[x] = TILE.WALL; map.lowerTiles[(map.height - 1) * map.width + x] = TILE.WALL; }
+    for (let y = 0; y < map.height; y += 1) { map.lowerTiles[y * map.width] = TILE.WALL; map.lowerTiles[y * map.width + map.width - 1] = TILE.WALL; }
+    const inside = author(walled, caseSpec(walled.startMapId, (s) => { s.suspects[1].at.x = 8; }));
+    expect(inside.result.ok, JSON.stringify(inside.result)).toBe(true);
+    expect(((inside.result.diff?.warnings ?? []) as string[]).some((warning) => warning.includes("사건 무대"))).toBe(false);
+  });
+
   // manor-mystery 실측 두 번: 지목 NPC 를 「추리 정리 테이블」「사건 정리 수첩」 으로 지었는데 주민 외형·얼굴로 그려졌다.
   it("물건 이름의 지목 NPC 는 보이지 않는 지점으로 두고 얼굴·이름표 없이 서술한다", () => {
     const project = fixture();
