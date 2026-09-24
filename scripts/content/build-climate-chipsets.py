@@ -7,6 +7,9 @@ import numpy as np
 from PIL import Image
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "lib"))
 import canopy_leaves
+import importlib.util
+_tg = importlib.util.spec_from_file_location("tall_grass_redraw", pathlib.Path(__file__).resolve().parent / "tiles" / "tall-grass-redraw.py")
+tall_grass = importlib.util.module_from_spec(_tg); _tg.loader.exec_module(tall_grass)
 
 ROOT = pathlib.Path.cwd()
 cat = json.load(open(ROOT / "tiledata/forest-villages/diverse/catalog.json"))
@@ -231,13 +234,17 @@ INTERIOR = [_slot[47 + k] for k in range(len(canopy_leaves.INTERIOR))]
 MASKS = canopy_leaves.flat_masks()
 def leaves(sheet): return canopy_leaves.bake(sheet, list(range(2550, 2597)), INTERIOR, masks=MASKS)
 
+# Tall grass E/F/G (243..335, 1124..1190) is redrawn with the climate's own grass ramp on the repainted lawn 240
+# instead of the generic recolour (tiles/tall-grass-redraw.py) — frosted tufts, dry scrub, ash grass, russet grass.
+def grass(sheet, climate): return tall_grass.paint_sheet(sheet, climate)
+
 baked = bake(N + len(WATER))
 out_dir = ROOT / "public/assets/climate-villages"; out_dir.mkdir(parents=True, exist_ok=True)
-snowy = leaves(freeze(snow(baked), WATER, N))
+snowy = leaves(grass(freeze(snow(baked), WATER, N), "snow"))
 snowy.save(out_dir / "snow-chipset.png", optimize=True)
-leaves(volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16))).save(out_dir / "volcano-chipset.png", optimize=True)
-leaves(desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16))).save(out_dir / "desert-chipset.png", optimize=True)
-leaves(autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16))).save(out_dir / "autumn-chipset.png", optimize=True)
+leaves(grass(volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16)), "volcano")).save(out_dir / "volcano-chipset.png", optimize=True)
+leaves(grass(desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16)), "desert")).save(out_dir / "desert-chipset.png", optimize=True)
+leaves(grass(autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16)), "autumn")).save(out_dir / "autumn-chipset.png", optimize=True)
 manifest = {
     "source": "tiledata/forest-villages/diverse/catalog.json",
     "baseCount": N,
