@@ -1,5 +1,30 @@
 # Pixel Art World 학교 사용자 PNG 지원
 
+## 계단실 공용 문서와 실제 조수 확인 (2026-09-25)
+
+사용자 검수 계단실은 [SCHOOL-STAIRWELL.md](../tiledata/pixel-art-world/SCHOOL-STAIRWELL.md)에
+0기준 상대좌표, 벽/바닥/난간, 계단참, 조사/출현 좌표, 끝층 예외를 기록했다.
+`prepare-pixel-art-world-school-building.mjs`가 지침을 메타데이터 번들에 넣고
+`pixelArtWorldSchoolBuildingGuide`가 새 원본 가져오기에도 제공한다. 원본 PNG는 배포하지 않는다.
+모든 의존 원본이 있는 사용자 프로젝트에서는 `pixel-art-world-school-stair-reference.mjs`가
+학교2층의(23,6) 9×9를 추출해 두 레이어 전체 배열·원본 SHA/좌표 사전·정상/오류3그림을 만든다.
+`school-stairwell` 용도는 학교 타일셋과 공용 계단 객체 문서에서 읽을 수 있다.
+공용 등록은 기존 `publish-pixel-art-world-local-library.mjs --publish-local`의 CAS/재로드 경로다.
+공용 DB 원본은 `/home/main/.local/share/oprn/shared-content.sqlite`이며 현재 프로젝트 한 행에만 저장하지 않는다.
+
+실제 모델 확인: `bun scripts/qa/pixel-art-world-school-ai.mts --out <개인 증거 폴더>`.
+공용 SQLite를 읽고 단일 Pi 조수의 실제 모델·도구·문서/이미지 전달 게이트를 사용한다.
+빈 맵(15×14)의(3,2)에 배치를 요청하고 정답 배열은 요청문에 넣지 않는다.
+반환 후 두 레이어162칸·범위 밖 보존·실제 엔진 접근·이미지 읽기·완료 응답을 판정한다.
+`renderToolImage`는 data URL이 아닌 순수 base64를 반환해야 한다. 제공자 오류 또는 완료 응답
+누락은 배열이 같아도 실패다. 응답을 모킹하거나 검사 코드가 결과 타일을 고치지 않는다.
+결과는 `save-school-ai-observation.mjs`로 별도 새 SQLite 폴더에 보관한다. 사용자 학교 맵에 시험 맵을 섞지 않는다.
+한 번의 고정 계단실 재현은 새 학교 설계·층간 이벤트 저작·일반적인 모델 성공률의 근거가 아니다.
+실측과 중단/재개 기록은 [SCHOOL-AI-VERIFICATION.md](../tiledata/pixel-art-world/SCHOOL-AI-VERIFICATION.md).
+공용65MD/98페이지/67그림을 전달했고 실제 Gemini 3.7 Flash 결과는162칸 일치·범위 밖 변경0·양쪽 접근 가능이었다.
+제공자 이미지 형식 오류와 확인용 턴 제한을 고친 뒤 결과 맵을 이어받아 마지막 검토/완료 응답을 확인했다.
+학교 정본revision75와 별도 AI 결과 SQLite revision1 모두 재오픈 일치. 사용자 학교12맵은 변경하지 않았다.
+
 공용 정본은 `tiledata/pixel-art-world/school.json`, 생성기는
 `scripts/content/prepare-pixel-art-world-school.mjs`, 실행 번들은
 `src/assets/pixelArtWorldSchoolCatalog.json`이다. 외부 타일셋 공용 카탈로그에서 별도 번들을 합친다.

@@ -132,7 +132,7 @@ for(const recipe of extras.recipes){
   }));
   const floor=school.tiles.findIndex(t=>t.source==='ST-Schl-I01.png'&&t.tile===6&&t.layer==='lower');
   addObject(tileId,key('paw_'+recipe.id),recipe.name,width,height,Array(width*height).fill(recipe.id.startsWith('stairs-')?floor:-1),upper,
-    `${recipe.notes} 원본 ${recipe.source}; 조립 사전 ${JSON.stringify(recipe)}. 현재 번호는 학교 합성 atlas 전용이다. 계단은 action 이벤트와 목적층 출현칸을 따로 연결한다.`,project.tilesets['paw-school-four-composed'].referenceDocuments.filter(c=>c.id==='school-part-'+recipe.id));
+    `${recipe.notes} 원본 ${recipe.source}; 조립 사전 ${JSON.stringify(recipe)}. 현재 번호는 학교 합성 atlas 전용이다. 계단은 action 이벤트와 목적층 출현칸을 따로 연결한다.`,project.tilesets['paw-school-four-composed'].referenceDocuments.filter(c=>c.id==='school-part-'+recipe.id||(recipe.id.startsWith('stairs-')&&c.id==='school-stairwell')));
 }
 
 // Importer scene references are reusable place assemblies, separate from saved

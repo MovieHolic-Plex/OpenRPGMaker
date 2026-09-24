@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import path from 'node:path';
 import pngjs from 'pngjs';
 import {withTsModule} from '../ontology-ts-loader.mjs';
+import {schoolStairReference} from './pixel-art-world-school-stair-reference.mjs';
 const [input,folder]=process.argv.slice(2);
 if(!input||!folder)throw Error('Usage: node scripts/content/author-pixel-art-world-school-building.mjs <canonical-portable.json> <original-folder>');
 const p=JSON.parse(await readFile(input,'utf8')),b=JSON.parse(await readFile('src/assets/pixelArtWorldSchoolBuilding.json','utf8'));
@@ -50,6 +51,11 @@ for(const f of b.floors){
 }
 p.spatialAuthoring.library.places['paw-school-building-design']={...base('paw-school-building-design','햇살학교 · 4층 / 28실'),kind:'facility',layout:'manual',children,ports:[],connections};
 const guide=await readFile('tiledata/pixel-art-world/SCHOOL-BUILDING.md','utf8');
+ts.referenceDocuments.push(schoolStairReference(b,b.stairwellGuide,(width,height,lower,upper)=>{
+ const im=new PNG({width:width*32,height:height*32});
+ for(const a of [lower,upper])a.forEach((t,i)=>{if(t>=0)blit(atlas,im,t%columns*32,Math.floor(t/columns)*32,32,32,i%width*32,Math.floor(i/width)*32);});
+ return 'data:image/png;base64,'+PNG.sync.write(im).toString('base64');
+}));
 ts.referenceDocuments.push({id:'school-building-plan',name:'학교 · 4층 구조와 부품',description:'교실16·특별/관리실8·화장실4. 같은 층의 방과 복도는 연속 보행.',documents:[{id:'guide',name:'먼저 읽기.md',markdown:guide},{id:'sources',name:'원본과 조립 사전.md',markdown:'```json\n'+JSON.stringify({sources:b.sources,tiles:b.tiles,recipes:b.recipes})+'\n```'}],images:[]});
 // The new cabinet owns a complete, source-derived normal/error assembly.
 {
