@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
+  editorStateChangedOnlySelectedTile,
   editorStateNeedsMapTreeRefresh,
   editorStateNeedsPaletteRefresh,
   type EditorState,
@@ -58,6 +59,20 @@ describe("에디터 상태와 맵 트리 갱신", () => {
     const previous = snapshot({ currentMapId: "map-a" });
     const next = snapshot({ currentMapId: "map-b" });
     expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(true);
+  });
+
+  it("고른 타일만 바뀌면 팔레트 전체 재생성이 아니라 선택 동기화다", () => {
+    const previous = snapshot({ selectedTile: 1, tool: "paint", layer: "lower", activePaletteStamp: null });
+    const next = snapshot({ selectedTile: 8, tool: "paint", layer: "lower", activePaletteStamp: null });
+    expect(editorStateChangedOnlySelectedTile(previous, next)).toBe(true);
+    expect(editorStateNeedsPaletteRefresh(previous, next)).toBe(true);
+    expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(false);
+  });
+
+  it("타일과 함께 레이어나 도구가 바뀌면 선택만의 변경이 아니다", () => {
+    const previous = snapshot({ selectedTile: 1, tool: "paint", layer: "lower" });
+    expect(editorStateChangedOnlySelectedTile(previous, snapshot({ selectedTile: 8, layer: "upper" }))).toBe(false);
+    expect(editorStateChangedOnlySelectedTile(previous, snapshot({ selectedTile: 8, tool: "erase" }))).toBe(false);
   });
 
   it("줌만 바뀌면 팔레트도 맵 트리도 갱신하지 않는다", () => {
