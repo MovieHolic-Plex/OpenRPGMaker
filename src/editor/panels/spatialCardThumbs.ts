@@ -32,6 +32,12 @@ const NO_DOCUMENT: object = {};
 
 let generation: readonly object[] = [];
 let baked = new Map<string, HTMLElement>();
+const zoomSrc = new Map<string, string>();
+
+/** 카드가 다시 비어도, 마지막으로 구운 그림 주소. 두 번 클릭 확대가 이 주소를 쓴다. */
+export function spatialThumbSrc(cardId: string): string | undefined {
+  return zoomSrc.get(cardId);
+}
 let pending: PendingThumb[] = [];
 let frame = 0;
 /** 대기열·리스너가 붙은 문서. 이게 바뀌면 남은 일은 전부 남의 문서 것이다. */
@@ -101,12 +107,37 @@ function reusableThumb(cardId: string): HTMLElement | undefined {
   // The gallery and composition picker can show the same card simultaneously.
   // Moving a connected node steals the first view's image; cloning loses canvas pixels
   // and pending image-load handlers. Rebuild only that additional view instead.
-  const images = candidate instanceof HTMLImageElement
-    ? [candidate] : [...(candidate?.querySelectorAll("img") ?? [])];
   const failed = candidate?.matches('[data-preview-state="error"]')
-    || candidate?.querySelector('[data-preview-state="error"]')
-    || images.some(image => image.complete && image.naturalWidth === 0);
-  return candidate?.isConnected || failed ? undefined : candidate;
+    || candidate?.querySelector('[data-preview-state="error"]');
+  if (failed) return undefined;
+  if (!candidate?.isConnected) return candidate;
+  // 셸이 다시 그려지는 동안 이전 그림이 아직 붙어 있으면, 새 카드는 빈 자리로 남고
+  // 곧이은 두 번째 클릭의 확대가 그림을 못 집는다. 붙어 있는 그림은 복제해서 쓴다.
+  return cloneAttachedThumb(candidate);
+}
+
+function cloneAttachedThumb(node: HTMLElement): HTMLElement {
+  if (node instanceof HTMLCanvasElement && node.width > 0 && node.height > 0) {
+    const copy = document.createElement("canvas");
+    copy.width = node.width;
+    copy.height = node.height;
+    copy.className = node.className;
+    const context = copy.getContext("2d");
+    if (context) {
+      context.imageSmoothingEnabled = false;
+      context.drawImage(node, 0, 0);
+    }
+    return copy;
+  }
+  if (node instanceof HTMLImageElement && (node.currentSrc || node.src)) {
+    const copy = document.createElement("img");
+    copy.className = node.className;
+    copy.alt = "";
+    copy.draggable = false;
+    copy.src = node.currentSrc || node.src;
+    return copy;
+  }
+  return node.cloneNode(true) as HTMLElement;
 }
 
 function bake(entry: PendingThumb): void {
@@ -121,6 +152,10 @@ function bake(entry: PendingThumb): void {
     art = el("div", { class: "spatial-card-fallback", dataset: { thumbError: "build" } });
   }
   art.classList.add("spatial-card-thumb-art");
+  const src = art instanceof HTMLImageElement
+    ? (art.currentSrc || art.getAttribute("src") || "")
+    : (art.querySelector("img")?.getAttribute("src") ?? "");
+  if (src) zoomSrc.set(entry.cardId, src);
   bakedThumbs().set(entry.cardId, art);
   entry.slot.replaceChildren(art);
   entry.slot.dataset.thumb = "ready";
@@ -213,6 +248,7 @@ export function flushSpatialCardThumbs(): void {
 export function resetSpatialCardThumbs(): void {
   generation = [];
   baked = new Map();
+  zoomSrc.clear();
   pending = [];
   host = currentDocument();
 }
