@@ -1,5 +1,12 @@
 # Pixel Art World 이자카야·일본식 방
 
+현재 이자카야는 **천장 포함10×16**이다. 아래10×15는 천장이 누락되어 반려된 중간판이다.
+`scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs`가 사용자 SA-WallA01을 실제 가져오기
+경로로480칸 뒤에 추가한다. 천장480..526(47변형),count528,그룹paw-wall-a01 lower/solid/8방.
+원본480칸과 내부 바닥·가구·통로는 보존하고 북천장 한 행만 추가한다. 문(4,15)을 제외한
+외곽47칸을 연결한다. 정본 `tiledata/pixel-art-world/izakaya-ceiling-compiled.json` 및
+공용 장소/저장 맵 두 경로를 함께 갱신한다. 천장 미설치 상태로 공용 재게시하면 거절한다.
+
 2026-09-25 밀도 재검토: 이전11×14 표본은 부스 하나와 빈 카운터 때문에 반려되었다.
 10×15에 부스2개·좌식 방석6개·북향 바 의자3개를 넣고 x4 주통로1칸과 직원행y4,
 의자 뒤y8, 좌식 남쪽y13을 보존한다. 정적 장소 `izakaya-booth-and-zashiki`를 갱신하고

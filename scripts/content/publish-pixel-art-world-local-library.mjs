@@ -23,6 +23,12 @@ const densePlans = (await read('tiledata/pixel-art-world/dense-interiors-compile
 const civicPlans = (await read('tiledata/pixel-art-world/compact-civic.json')).maps;
 const tabletopRecipes = await read('tiledata/pixel-art-world/tabletop-composites.json');
 const nativeLayouts = (await Promise.all(['JapaneseInteriors','MansionInteriors','MansionExteriors','RetrotownExteriors'].map(kind => read(`src/assets/pixelArtWorld${kind}Layout.json`)))).flat();
+const izakayaCeiling=await read('tiledata/pixel-art-world/izakaya-ceiling-compiled.json');
+if(project.tilesets[izakayaCeiling.packId]){
+  const tile=project.tilesets[izakayaCeiling.packId];
+  if(tile.count!==izakayaCeiling.tilesetCount||!tile.autotileGroups?.some(g=>g.id===izakayaCeiling.ceilingGroupId&&g.memberTileIds.length===47))throw Error('Izakaya ceiling must be installed before publishing');
+  nativeLayouts.find(l=>l.packId===izakayaCeiling.packId).scenes=[izakayaCeiling.scene];
+}
 const isExterior=id=>id.startsWith('paw-mansion-exterior-')||id.startsWith('paw-retrotown-');
 const { PNG } = pngjs, pngs = new Map();
 const key = id => { const normalized=id.replaceAll('-', '_'); return `shared_${normalized.startsWith('paw_')?normalized:'paw_'+normalized}`; };

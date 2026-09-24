@@ -40,6 +40,21 @@ composites.parts.sourceRect/offset은 **픽셀**이다. 컴파일된 composites.
 
 ## 실제 장소와 받침
 
+**현재 완성형은10×16, 천장 포함이다.** 아래10×15는 좌석 배치 개선 당시의 중간 도안이다.
+`izakaya-ceiling-compiled.json`이 완성형의 전체 배열·가구·접근 좌표·외곽47칸을 소유한다.
+기존 북벽 위에 천장 한 행을 추가하고 모든 내부 좌표를 y+1로 옮겼다. 내부 바닥 면적은 그대로다.
+북벽17/25 두 행과 부스2·방석6·바3, 주통로x4를 유지한다. 직원행y5, 의자 뒤y9,
+좌식 남쪽y14, 출입(4,15). 좌우/남쪽 외곽도 천장 그룹으로 연결하며 문 양끝은 끝 조각이다.
+
+사용자 원본 `SA-WallA01.png`(96×128, SHA256
+`7732b153bd79758151858409e92b74e49176047e41d5a09f100283dc1e42d861`)을 같은 이자카야
+타일셋에 추가한다. 원본+부스 합성480칸을 보존하고 천장47변형을480..526에 붙인다.
+count528,527은 정렬 공백. **주택의400번대 천장 번호를 이자카야에 복사하면 부스 조각이 된다.**
+`paw-wall-a01`은 lower/solid,8방 연결,256개 마스크 사전이다. 별도 그림 테두리로 대체하지 않는다.
+`prepare-pixel-art-world-izakaya-ceiling.mjs`는 실제 가져오기 경로와 원본 해시를 사용하고,
+480칸 RGBA 보존·밑동·통행·천장 누락/문 봉쇄 반례를 확인한다. 정상/오류 그림과 배열을 프로젝트
+및 공용 문서에 넣는다. 천장 없는 중간 도안은 완성본으로 재발행하지 못하도록 게시기에 조건을 걸었다.
+
 이자카야 **10×15**: 남문 `(4,14)`부터 x4 한 칸 주통로를 사용한다.
 부스 `(1,2)`와 `(1,8)` 두 개, 좌식석 `(5,9)`의 방석6개, 카운터 앞 `(5..7,7)`의
 북향 의자3개를 배치했다. 직원행 y4, 의자 뒤 접근행 y8, 좌식 남쪽 접근행 y13을 보존한다.
@@ -65,6 +80,11 @@ node scripts/content/prepare-pixel-art-world-japanese-interiors.mjs
 node scripts/content/prepare-pixel-art-world-japanese-browser.mjs http://127.0.0.1:PORT src/assets/pixelArtWorldJapaneseInteriorsCatalog.json /absolute/user-png-directory output/paw-japanese-interiors/prepared
 node scripts/content/prepare-pixel-art-world-native-install.mjs src/assets/pixelArtWorldJapaneseInteriorsCatalog.json output/paw-japanese-interiors/prepared output/paw-japanese-interiors/install
 ```
+
+기존 이자카야 정본에 천장 완성형을 추가하는 후속 단계:
+`node scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs <canonical-portable.json> <user-png-folder> <private-output>`.
+같은 폴더의 source-proof.json으로 정본 출처를 확인한다. 준비된 patch.json은
+`save-pixel-art-world-host-patch.mjs`로 저장·재로드하고 공용 게시기를 실행한다.
 
 첫 명령은 메타데이터만 만든다. 브라우저 준비는 실제 importer/shape 검증, 원본400칸 RGBA 보존,
 실제 접지/하위 불투명, 25개 structureKit 문서, 최종 장소 배열 동일성을 확인한다.

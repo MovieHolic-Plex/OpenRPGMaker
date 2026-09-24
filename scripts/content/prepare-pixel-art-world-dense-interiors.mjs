@@ -8,6 +8,7 @@ if(!input||!nativeLibrary||!out)throw Error('Usage: <canonical portable> <prepar
 const read=async f=>JSON.parse(await fs.readFile(f,'utf8'));
 const p=await read(input),native=await read(nativeLibrary),plans=await read('tiledata/pixel-art-world/house-variants.json');
 const source=await read(path.join(path.dirname(input),'source-proof.json'));
+if(p.tilesets['paw-izakaya']?.autotileGroups?.some(g=>g.id==='paw-wall-a01'))throw Error('Ceiling already installed; do not downgrade to the intermediate 480-tile layout. Use prepare-pixel-art-world-izakaya-ceiling.mjs.');
 if(!source.projectId||source.portableSha256!==hashInput(await fs.readFile(input)))throw Error('Canonical source receipt differs');
 function hashInput(bytes){return createHash('sha256').update(bytes).digest('hex');}
 const home=await read('tiledata/pixel-art-world/compact-homes.json');
