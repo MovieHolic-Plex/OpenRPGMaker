@@ -300,6 +300,7 @@ describe("qa gameCheck — 꽃잎 체력 검사는 전투 게임에 쓰지 않�
   });
 });
 
+// 이름 있는 엔딩의 호감 조건
 describe("qa gameCheck — 이름 있는 엔딩의 호감 조건", () => {
   it("triggerEnding(endingId)의 엔딩 조건을 선행 목표로 넣는다", () => {
     const project = createBlankProject();
@@ -326,5 +327,25 @@ describe("qa gameCheck — 이름 있는 엔딩의 호감 조건", () => {
     const plan = planCriticalPath(project, visit, endingGoal(visit));
     expect(plan.goals.map((goal) => goal.label).join("\n")).toContain("나래호감 >= 6 만들기");
     expect(plan.unresolved).toEqual([]);
+  });
+});
+
+// 2026-09-24 감성 스토리 r3: 컷신 say 비트가 text 로 컴파일되며 style·context·container 를 싣는데
+// 검사기는 스키마 폼에 없다고 «모르는 필드» 로 세어 경고 45건을 터뜨렸다(런타임 타입에는 있다).
+describe("qa gameCheck — 런타임 대화 필드는 모르는 필드가 아니다", () => {
+  it("text 명령의 style·context·container 는 command-unknown-field 경고를 만들지 않는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    map.events.push({
+      id: "ev_style_lines", name: "연출 대사", x: 5, y: 5, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: "p", conditions: [], trigger: { kind: "action" }, priority: "same", graphic: {},
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "text", speaker: "노을", body: "빗소리가…", emotion: "sad", style: "calm", context: "whisper", container: "box", autoAdvance: true }],
+      }],
+    } as never);
+    const report = runGameCheck(project, { skipAutoPlay: true });
+    const unknown = report.findings.filter((f) => f.code === "command-unknown-field" && f.where?.eventId === "ev_style_lines");
+    expect(unknown).toEqual([]);
   });
 });
