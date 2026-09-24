@@ -70,9 +70,10 @@ shop(22,24,10);shop(39,24,9,true);
 placeKit('home-red-gable',3,40,'붉은 지붕집','home-compact');
 placeKit('home-red-gable',24,40,'작은 주택','home-compact');
 placeKit('apartment-dark-roof',38,40,'골목 사무실','office-compact');
-// Crosswalks use actual road marking cells from the source; they stay passable.
-for(const y of [17,35])for(const x of [13,14,21,22,30,31,38,39])for(let dy=0;dy<4;dy++)upperTiles[at(x,y+dy)]=token(conveni.filename,6,'upper','passable');
-for(const x of [16,33])for(const y of [14,15,22,23,32,33,40,41])for(let dx=0;dx<4;dx++)upperTiles[at(x+dx,y)]=token(conveni.filename,14,'upper','passable');
+// Tile 14 is a horizontal stripe; tile 6 is a vertical stripe. Zebra bars
+// run across the pedestrian travel direction, with the original transparent gaps.
+for(const y of [17,35])for(const x of [13,14,21,22,30,31,38,39])for(let dy=0;dy<4;dy++)upperTiles[at(x,y+dy)]=token(conveni.filename,14,'upper','passable');
+for(const x of [16,33])for(const y of [14,15,22,23,32,33,40,41])for(let dx=0;dx<4;dx++)upperTiles[at(x+dx,y)]=token(conveni.filename,6,'upper','passable');
 // Small park, a path, playground and benches.
 fill(6,23,2,11,soil);fill(1,29,14,2,soil);
 placeKit('park-swings',1,24);placeKit('park-slide',9,24);
@@ -83,7 +84,11 @@ stamp(2,14,4,21,3,1);stamp(10,14,4,21,3,1);stamp(24,13,4,21,3,1);stamp(40,14,4,2
 stamp(30,31,0,29,2,3);stamp(46,31,0,29,2,3);
 stamp(3,12,0,22,3,1,'ST-Town-E01.png');stamp(21,46,0,22,3,1,'ST-Town-E01.png');
 for(const [x,y]of[[13,12],[13,30]]){
- stamp(x,y,0,24,3,4);
+ // Sparse front-facing signal: pole 192/200/208/216, arm 201, lamps 202.
+ // Source cells 193–195 are a separate white board; 209–211 are the reverse
+ // signal. A rectangular crop includes both and leaves a dangling assembly.
+ stamp(x,y,0,24,1,4);
+ stamp(x+1,y+1,1,25,2,1);
 }
 const walk=i=>tiles[lowerTiles[i]].passage==='passable'&&(upperTiles[i]<0||tiles[upperTiles[i]].passage==='passable');
 const start={x:20,y:22},queue=[at(start.x,start.y)],seen=new Set(queue);
