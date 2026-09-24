@@ -113,7 +113,10 @@ export function dungeonFloorMask(width: number, height: number, graph: DungeonGr
     const vias = style === "winding" && (c.via?.length ?? 0) < 3 ? windingVias(from, to, width, height, design.seed ?? 1) : (c.via ?? []);
     const points = [from, ...vias, to];
     const declared = (c.width ?? 7) / 2;
-    const radius = style === "cave" ? declared + 1.6 : style ? Math.min(declared, 3.25) : declared;
+    // A cave passage must stay narrower than the rooms it joins. Uncapped (declared+1.6 ≈ 5) it was as
+    // wide as a 9×8 room, so every room and link fused into one blob (2026-09-24 r0735 ice cave 36×28).
+    const narrowest = Math.min(from.width, from.height, to.width, to.height);
+    const radius = style === "cave" ? Math.min(declared + 1.6, Math.max(2.4, narrowest * .32 + .8)) : style ? Math.min(declared, 3.25) : declared;
     return points.slice(1).map((b, i) => ({ a: points[i]!, b, radius }));
   });
   return Array.from({ length: width * height }, (_, k) => {

@@ -108,7 +108,26 @@ export function applyConnectedDungeonLayer(map: GameMap, plan: ConnectedDungeonP
       for (let i = 1; i < pool.length; i++) { const dx = Math.round(random() * 6 - 3), dy = 1 + Math.floor(random() * 4); stamp(c.x + dx, c.y + dy, pool[i]!); }
     }
   }
-  return result(next, `local relief, reserved circulation, ${used.length} contextual props`);
+  // Wall-side props leave a room's middle a bare sheet (r0735: an ice cave read as one flat blob).
+  // Each non-entrance room gets one free-standing obstacle cluster in its open middle — off every
+  // reserved route, so circulation is unchanged, and at least three cells from the walls.
+  let obstacles = 0;
+  for (const room of graph.rooms) {
+    if (room.role === "entrance") continue;
+    const cluster: Prop[] = plan.character === "crypt" ? ["pillar", "broken"] : plan.theme === "ice" || room.role === "crystal" ? ["crystal", "spike"] : ["boulder", "rubble"];
+    let best: { x: number; y: number; clearance: number } | undefined;
+    for (let y = room.y - Math.floor(room.height / 2); y <= room.y + Math.floor(room.height / 2); y++) for (let x = room.x - Math.floor(room.width / 2); x <= room.x + Math.floor(room.width / 2); x++) {
+      if (!open(x, y) || reserved.has(y * W + x)) continue;
+      let clearance = 6;
+      for (let dy = -5; dy <= 5; dy++) for (let dx = -5; dx <= 5; dx++) if (!open(x + dx, y + dy)) clearance = Math.min(clearance, Math.hypot(dx, dy));
+      const score = clearance - Math.hypot(x - room.x, y - room.y) * .15;
+      if (clearance >= 3 && (!best || score > best.clearance)) best = { x, y, clearance: score };
+    }
+    if (!best || !stamp(best.x, best.y, cluster[0]!)) continue;
+    obstacles += 1;
+    stamp(best.x + 2, best.y + 1, cluster[1]!) || stamp(best.x - 1, best.y + 2, cluster[1]!);
+  }
+  return result(next, `local relief, reserved circulation, ${used.length} contextual props (${obstacles} free-standing)`);
 }
 
 export function evaluateConnectedDungeon(map: GameMap, plan: ConnectedDungeonPlan, project?: Project) {
