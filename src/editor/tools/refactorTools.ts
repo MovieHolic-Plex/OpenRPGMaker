@@ -199,6 +199,15 @@ function renameConditionSwitch(condition: Condition | undefined, oldId: string, 
   return 0;
 }
 
+/**
+ * Immer draft 는 런타임에 쓰기를 허용하지만 시스템 정의류는 타입상 readonly 로 선언돼 있다.
+ * 치환 자체는 정본 데이터 수정이므로 여기서 한 군데만 캐스트해 위임한다 — 호출부 인라인 캐스트 금지.
+ */
+function reassignReadonlySwitchId(holder: { readonly switchId?: string }, newId: string): void {
+  const writable = holder as { switchId?: string };
+  writable.switchId = newId;
+}
+
 // 프로젝트 전역에서 스위치 id를 치환하고 치환 횟수를 반환한다.
 export function renameSwitchEverywhere(project: Project, oldId: string, newId: string): number {
   let count = 0;
@@ -277,19 +286,99 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
     }
   }
   // 퀘스트 메타의 스위치는 key에서 파생되므로 별도 치환 불필요.
+
+  // DB 항목·스킬·진급·해금·번들·뮤지엄의 스위치 참조 — 안 바꾸면 무결성 검증이 커밋을 거부한다
+  // (2026-09-24 감성 스토리 r3: item_gen2_*_relay switchId 로 11회 반복 커밋 거부).
+  for (const item of project.database.items) {
+    if (item.switchId === oldId) {
+      item.switchId = newId;
+      count += 1;
+    }
+  }
+  for (const skill of project.database.skills) {
+    if (skill.effect.kind === "switch" && skill.effect.switchId === oldId) {
+      skill.effect = { kind: "switch", switchId: newId };
+      count += 1;
+    }
+  }
+  for (const klass of project.database.classes) {
+    for (const promotion of klass.promotions ?? []) {
+      if (promotion.requires.switchId === oldId) {
+        promotion.requires = { ...promotion.requires, switchId: newId };
+        count += 1;
+      }
+    }
+  }
+  for (const lifeSkill of project.database.lifeSkills ?? []) {
+    for (const reward of lifeSkill.levelUpRewards) {
+      if (reward.switchId === oldId) {
+        reassignReadonlySwitchId(reward, newId);
+        count += 1;
+      }
+    }
+  }
+  for (const unlock of project.system.worldUnlocks ?? []) {
+    if (unlock.switchId === oldId) {
+      reassignReadonlySwitchId(unlock, newId);
+      count += 1;
+    }
+  }
+  for (const bundle of project.system.bundles ?? []) {
+    if (bundle.reward?.switchId === oldId) {
+      reassignReadonlySwitchId(bundle.reward, newId);
+      count += 1;
+    }
+  }
+  for (const reward of project.system.museum?.rewards ?? []) {
+    if (reward.reward?.switchId === oldId) {
+      reassignReadonlySwitchId(reward.reward, newId);
+      count += 1;
+    }
+  }
+  // 필드 스폰·이동 경로·목적지 스위치는 런타임이 쓰는 자리다 — 안 바꾸면 옛 id 에 쓰게 된다.
+  for (const map of Object.values(project.maps)) {
+    for (const spawn of map.fieldSpawns ?? []) {
+      if (spawn.onKillSwitchId === oldId) {
+        spawn.onKillSwitchId = newId;
+        count += 1;
+      }
+    }
+    for (const event of map.events) {
+      for (const move of event.moveRoute?.moves ?? []) {
+        if (move.kind === "setSwitch" && move.switchId === oldId) {
+          move.switchId = newId;
+          count += 1;
+        }
+      }
+      for (const page of event.pages ?? []) {
+        for (const move of page.movement?.route?.moves ?? []) {
+          if (move.kind === "setSwitch" && move.switchId === oldId) {
+            move.switchId = newId;
+            count += 1;
+          }
+        }
+        for (const destination of page.movement?.living?.destinations ?? []) {
+          if (destination.switchId === oldId) {
+            destination.switchId = newId;
+            count += 1;
+          }
+        }
+      }
+    }
+  }
   return count;
 }
 
 const RENAME_SWITCH_ACCEPTS =
-  "rename_switch 는 대상(fromId·switchId·fromName 중 하나)과 바꿀 것(to=새 id, name=표시 이름 중 하나 이상)을 받습니다. "
+  "rename_switch 는 대상(fromId·switchId·id·fromName 중 하나)과 바꿀 것(to=새 id, name=표시 이름 중 하나 이상)을 받습니다. "
   + "예: {switchId:\"sw_0001\",name:\"보스 격파\"} 또는 {fromId:\"sw_0001\",to:\"sw_boss_defeated\"}. "
   + "새 스위치를 id 부터 만들려면 대상 없이 {to,name} 만 주세요.";
 
 const renameSwitch: ToolDefinition = {
   name: "rename_switch",
   description:
-    "스위치의 표시 이름(name)을 바꾸거나 id(to)를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). "
-    + "대상은 fromId(별칭 switchId) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다. "
+    "스위치의 표시 이름(name)을 바꾸거나 id(to)를 전 맵/커먼이벤트/트룹/적 행동/DB 항목에서 일괄 치환한다(정의·세션·참조 모두). "
+    + "대상은 fromId(별칭 switchId·id) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다. "
     + "대상 없이 to+name 만 주면 그 id 로 새 스위치를 만든다.",
   mode: "write",
   invalidArgsExample: { switchId: "sw_0001", name: "보스 격파" },
@@ -297,8 +386,9 @@ const renameSwitch: ToolDefinition = {
   parameters: {
     type: "object",
     properties: {
-      fromId: { type: "string", description: "대상 스위치 id(switchId·fromName과 택1)" },
+      fromId: { type: "string", description: "대상 스위치 id(switchId·id·fromName과 택1)" },
       switchId: { type: "string", description: "fromId 별칭" },
+      id: { type: "string", description: "fromId 별칭 — {id, name} 형태로 보낼 때" },
       fromName: { type: "string", description: "대상 스위치 이름(fromId와 택1)" },
       to: { type: "string", description: "새 스위치 id(참조까지 일괄 치환). 이름만 바꿀 때는 생략" },
       name: { type: "string", description: "새 표시 이름. id 는 그대로 둔다" },
@@ -311,13 +401,15 @@ const renameSwitch: ToolDefinition = {
     };
     const fromId = text("fromId");
     const switchId = text("switchId");
+    const id = text("id");
     const fromName = text("fromName");
     const to = text("to");
     const name = text("name");
-    if (fromId && switchId && fromId !== switchId) throw new ToolError(`fromId(${fromId})와 switchId(${switchId})가 다릅니다. 하나만 주세요. ${RENAME_SWITCH_ACCEPTS}`, { code: "rename-target" });
+    const aliases = [fromId, switchId, id].filter((value): value is string => value !== undefined);
+    if (new Set(aliases).size > 1) throw new ToolError(`대상 스위치 id 별칭이 서로 다릅니다: ${[...new Set(aliases)].join(", ")} — 하나만 주세요. ${RENAME_SWITCH_ACCEPTS}`, { code: "rename-target" });
     if (!to && !name) throw new ToolError(`바꿀 것이 없습니다 — to(새 id) 또는 name(새 표시 이름)이 필요합니다. ${RENAME_SWITCH_ACCEPTS}`, { code: "rename-target" });
-    // 대상 스위치 해석: fromId/switchId 우선, 없으면 fromName으로 조회.
-    let oldId: string | undefined = fromId ?? switchId;
+    // 대상 스위치 해석: fromId/switchId/id 우선, 없으면 fromName으로 조회.
+    let oldId: string | undefined = aliases[0];
     if (oldId === undefined && fromName !== undefined) {
       const matches = draft.switches.filter((def) => def.name === fromName);
       if (matches.length === 0) throw new ToolError(`이름으로 스위치를 찾을 수 없습니다: ${fromName}`, { code: "switch-not-found" });
