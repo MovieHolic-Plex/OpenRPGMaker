@@ -66,6 +66,7 @@ export type Condition =
     }
   | { kind: "selfSwitch"; key: SelfSwitchKey; value: boolean }
   | { kind: "actor"; actorId: ActorId; present: boolean }
+  | { kind: "monsterSpecies"; speciesId: MonsterSpeciesId; present: boolean }
   | { kind: "item"; itemId: ItemId; present: boolean }
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
   | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }

@@ -5,6 +5,7 @@ import type { EventPageCondition, Project } from "@/project/types";
 import { selectedOptionValue, selectWithOptions } from "./dom";
 import { commandSummary } from "./commandSummary";
 import {
+  renderMonsterSpeciesCondition,
   renderBattleResultCondition,
   renderFriendshipAtLeastCondition,
   renderRelationshipAtLeastCondition,
@@ -41,6 +42,7 @@ const LEAF_CONDITION_OPTIONS = [
   { value: "variable", label: "변수" },
   { value: "selfSwitch", label: "이 이벤트 기억" },
   { value: "item", label: "아이템" },
+  { value: "monsterSpecies", label: "몬스터 보유" },
   { value: "actor", label: "주인공" },
   { value: "gold", label: "소지금" },
   { value: "timer", label: "타이머" },
@@ -415,6 +417,8 @@ function renderAdvancedConditionContent(
       });
     case "item":
       return advancedItemControl(context, path, condition, suffix);
+    case "monsterSpecies":
+      return renderMonsterSpeciesCondition(condition, onChange);
     case "actor":
       return advancedActorControl(context, path, condition, suffix);
     case "gold":
@@ -486,6 +490,8 @@ function firstEditorMapLocationId(project: Project): string {
 function defaultAdvancedCondition(kind: AdvancedConditionKind): EventPageCondition {
   const project = store.getCurrent();
   switch (kind) {
+    case "monsterSpecies":
+      return { kind: "monsterSpecies", speciesId: "", present: true };
     // 참조는 비운 채 세운다 — 첫 레코드는 사용자의 선택이 아니다(pageConditionModel.defaultSimpleCondition).
     // 빈 참조는 행의 피커가 「(선택)」으로 보이고 초안 검증(reference.*.missing)이 잡는다.
     case "switch":

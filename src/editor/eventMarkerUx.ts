@@ -455,6 +455,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `변수 [${switchVariableName("variable", condition.variableId)}] ${condition.op} ${condition.value}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "monsterSpecies":
+      return `${condition.speciesId} ${condition.present ? "파티 또는 박스 보유" : "미보유"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":

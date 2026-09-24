@@ -108,6 +108,7 @@ export const CONDITION_KINDS = [
   "variable",
   "selfSwitch",
   "actor",
+  "monsterSpecies",
   "item",
   "gold",
   "timer",

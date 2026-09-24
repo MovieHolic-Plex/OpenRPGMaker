@@ -60,6 +60,9 @@ function clauseParts(condition: EventPageCondition, project: Project): SentenceP
     case "selfSwitch":
       return [text("이 이벤트 기억 "), value(condition.key),
         text(condition.value ? " 켜짐" : " 꺼짐")];
+    case "monsterSpecies":
+      return [value(quoted(recordLabel(project.database.monsterSpecies ?? [], condition.speciesId))),
+        text(condition.present ? " 파티 또는 박스에 보유 중" : " 보유 안 함")];
     case "actor":
       return [value(quoted(recordLabel(project.database.actors, condition.actorId))),
         text(condition.present ? " 파티에 있음" : " 파티에 없음")];

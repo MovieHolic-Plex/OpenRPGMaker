@@ -1200,3 +1200,19 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 ## 타일셋 참고문서 데이터 (2026-09-21)
 
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+
+## 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+
+공통 판정 `project/monsterOwnership.ts`의 `ownsMonsterSpecies`는 파티와 박스 ID가
+가리키는 인스턴스의 정확한 `speciesId`를 검사한다. 기절 여부는 보유 여부를 바꾸지
+않으며, 어느 목록에도 없는 고아 인스턴스와 누락 참조는 보유로 세지 않는다.
+이는 현재 소유 여부이며 과거 포획 이력/도감 등록 판정이 아니다.
+
+`Condition`의 `{kind:"monsterSpecies", speciesId, present}`를 추가하고 필드 `evalCondition`,
+`io/pageResolution`, 전투 세션→런타임 브리지와 `battleEvents`, IO shape/참조 검증,
+조건 레지스트리·AI 스키마, 분기/고급 페이지 편집기와 설명/미리보기에 연결했다.
+미리보기는 포획·방생을 시뮬레이션하지 않으므로 판정 불가로 표시한다.
+전투 내 판정은 전투 개시 시점의 소유 스냅샷 기준이다. 연결 코드의 Vite 빌드는 통과했다. 격리 에디터 컴포넌트·SQLite 재오픈·전용 플레이어의 박스/파티/페이지/전투 판정까지 확인했다. 운영 배포는 남아 있다.
+그 뒤 에디터 AI로 실제 포획 과제를 저작하고 SQLite 저장·재로드를 확인한다.
+공통 판정만으로 에디터의 종 보유 조건이 지원된다고 보고하지 않는다.
+회귀 사례는 `test/monsterOwnership.test.ts`에 작성했으며 이번 작업에서 실행하지 않았다.

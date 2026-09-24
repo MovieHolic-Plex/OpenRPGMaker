@@ -1121,6 +1121,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `${recordName("variable", condition.variableId)} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "monsterSpecies":
+      return `${condition.speciesId} ${condition.present ? "파티 또는 박스에 보유" : "보유하지 않음"}`;
     case "actor":
       return `${actorName(condition.actorId)} ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":

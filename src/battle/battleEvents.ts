@@ -1,3 +1,4 @@
+import { ownsMonsterSpecies } from "@/project/monsterOwnership";
 import { growthEffects, permanentActorSkillIds } from '@/project/growth/runtime';
 import { executeM2BattleCommand as executeM2Command } from "@/battle/battleM2CommandExecutor";
 import type { MutableBattler } from "@/battle/battleBattlers";
@@ -28,6 +29,9 @@ export type BattleEventRuntimeState = {
   inventory: Record<string, number>;
   itemUseCharges?: Record<string, number>;
   partyActorIds?: string[];
+  readonly monsterInstances?: import("@/project/monsterOwnership").MonsterOwnershipState["monsterInstances"];
+  readonly monsterParty?: readonly string[];
+  readonly monsterBox?: readonly string[];
   gold?: number;
   actorSkillIds?: Record<string, string[]>;
   actorExperience?: Record<string, number>;
@@ -78,6 +82,9 @@ export const BATTLE_CONDITION_SESSION_STATE_FIELDS = [
   "roguelikeRun",
   "inventory",
   "partyActorIds",
+  "monsterInstances",
+  "monsterParty",
+  "monsterBox",
   "gold",
   "timers",
   "gameTime",
@@ -954,6 +961,8 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
         const own = (conditionState.selfSwitches ?? {})[ownerEventId];
         return (own?.[condition.key] ?? false) === condition.value;
       }
+      case "monsterSpecies":
+        return ownsMonsterSpecies(conditionState, condition.speciesId) === condition.present;
       case "actor":
         return (conditionState.partyActorIds ?? []).includes(condition.actorId) === condition.present;
       case "item":

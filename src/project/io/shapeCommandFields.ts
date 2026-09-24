@@ -627,6 +627,10 @@ export function validateConditionShape(label: string, value: unknown): void {
       requireString(`${label}.key`, condition.key);
       requireBoolean(`${label}.value`, condition.value);
       return;
+    case "monsterSpecies":
+      if (!requireString(`${label}.speciesId`, condition.speciesId).trim()) break;
+      requireBoolean(`${label}.present`, condition.present);
+      return;
     case "actor":
       requireString(`${label}.actorId`, condition.actorId);
       requireBoolean(`${label}.present`, condition.present);
