@@ -154,6 +154,17 @@
   포켓몬 뒷모습 슬롯은 별도 아트 과제다.
   증거 스크립트는 리뷰 당시 `verify-shots/adv-review-{1..5}/` 와 `verify-shots/after/` 에 남겼다(커밋하지 않음).
 
+## 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+
+`battleItemEligibility.ts`의 `isBattleItemUserEligible`를 가방 목록, 명령 접수,
+아이템 효과 실행에서 함께 사용한다. 전투 인스턴스 ID(`mon:monster_2`)는 DB 액터 ID가
+아니므로 `isItemActorEligible`에 직접 넘기면 약이 보이지만 선택이 묵살된다.
+일반 액터는 recordId와 실제 classId로 기존 자격 검사를 유지한다. 등록된 종족의
+몬스터는 액터/직업 제한이 없는 medicine만 허용하며 book/seed의 액터 전용 계약은 유지한다.
+사용 제한·대상·HP/MP 회복량·소모 처리는 기존 전투 아이템 계약을 그대로 따른다.
+회귀 항목은 `test/battleMonsterMedicine.test.ts`; 세션 규칙상 vitest/gates는 사용자 요청 없이 실행하지 않는다.
+실제 플레이 검증은 약 선택 전후 재고·회복 타임라인과 후속 적 반격을 구분해 확인한다.
+
 ## 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
 
 전투 적대적 리뷰 후속으로 고친 세 계약이다. 이 절과 다른 서술이 충돌하면 이 절이 맞다.

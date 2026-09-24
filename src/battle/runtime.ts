@@ -11,7 +11,7 @@ import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
 import type { ActorId, EnemyId, ItemId, ItemRecord, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
-import { isItemActorEligible } from "@/project/itemEligibility";
+import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
@@ -881,7 +881,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
         return Boolean(item && (battleEventState.inventory[command.itemId] ?? 0) > 0 && itemIsBattleUsable(item)
-          && isItemActorEligible(options.project, item, actor.id));
+          && isBattleItemUserEligible(options.project, item, actor));
       }
       case "capture": {
         const item = options.project.database.items.find((record) => record.id === command.captureItemId);
@@ -1683,7 +1683,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const count = battleEventState.inventory[itemId] ?? 0;
     if (count <= 0) return;
     if (!itemIsBattleUsable(item)) return;
-    if (!isItemActorEligible(options.project, item, user.monsterInstanceId ? undefined : user.recordId, user.classId)) return;
+    if (!isBattleItemUserEligible(options.project, item, user)) return;
 
     const skillId = item.activateSkillId ?? item.skillId;
     const usesNativeMedicineEffects = itemUsesNativeBattleEffects(item);

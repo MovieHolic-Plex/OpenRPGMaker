@@ -1,4 +1,5 @@
 import { battleTypeBadges } from "@/player/battleTypeBadges";
+import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import type {
   ActorCommand,
   BattleBattlerSnapshot,
@@ -434,8 +435,10 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
 function battleItems(snapshot: BattleSnapshot): { itemId: ItemId; name: string; count: number }[] {
   const project = store.getCurrent();
   const inventory = snapshot.eventState.inventory;
+  const user = activeActor(snapshot);
   return project.database.items
-    .filter((item) => (inventory[item.id] ?? 0) > 0 && isBattleUsableItem(item))
+    .filter((item) => (inventory[item.id] ?? 0) > 0 && isBattleUsableItem(item)
+      && (!user || isBattleItemUserEligible(project, item, user)))
     .map((item) => ({ itemId: item.id, name: item.name, count: inventory[item.id] ?? 0 }));
 }
 
