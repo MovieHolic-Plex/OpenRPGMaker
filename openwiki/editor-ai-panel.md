@@ -597,7 +597,7 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
 
 ## 바로 깔기 (2026-09-25)
 
-컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 전송은 의도 분류·Ultrabrain 계획·Deep 실행을 호출하지 않고 `planStampPlace` → `applyToolToStore("place_props")` 로 끝난다. 드래그 선택이 현재 맵과 같으면 그 사각형, 없으면 맵 전체. 빈 입력은 숲(침엽수·dense). 울창/빽빽은 impassable, 드문드문은 sparse. 모델 연결이 없어도 동작한다.
+컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 전송은 의도 분류·Ultrabrain 계획·Deep 실행을 호출하지 않고 `planStampPlace` → `applyToolToStore("place_props")` 로 끝난다. 드래그 선택이 현재 맵과 같으면 그 사각형, 없으면 맵 전체. 빈 입력·숲·침엽수·활엽수·울창/빽빽은 impassable(침엽이 기본)로 남은 칸을 채운다. 드문드문은 sparse, 성글은 normal. `나무 상자`·`과일박스`는 밀도 없이 영역 칸 수만큼 `packing:"dense"` 로 깐다. 길·물·이미 찬 위층은 그대로 둔다. 모델 연결이 없어도 동작한다.
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
