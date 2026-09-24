@@ -51,3 +51,21 @@ describe("scene runner monster party battles", () => {
     expect(result.finalState.gameOver).toBe(false);
   });
 });
+
+describe("scene runner gen1 battles", () => {
+  it("uses the monster's damaging skill when gen1 refuses the plain attack", () => {
+    const project = monsterProject([
+      { kind: "giveMonster", speciesId: "species_leafling", level: 30 },
+      { kind: "battleProcessing", troopId: "troop_slime", canEscape: false, canLose: true },
+    ] as never);
+    project.system.battleModel = "gen1";
+    // 약한 슬라임 — 몬스터가 한 수라도 두면 이긴다. 공격만 고집하면(gen1 이 거부) 한 대도 못 친다.
+    for (const enemy of project.database.enemies) if (enemy.id === "enemy_slime") (enemy as unknown as { stats: { maxHp: number } }).stats.maxHp = 5;
+    const result = runSceneTest(project, {
+      mapId: project.startMapId, start: project.startPos,
+      steps: [{ kind: "face", dir: "right" }, { kind: "interact", eventId: "ev_prof" }, { kind: "wait", ticks: 30 }],
+    });
+    expect(result.ok, result.failureReason).toBe(true);
+    expect(result.log, JSON.stringify(result.log)).toContain("battle troop_slime: victory");
+  });
+});
