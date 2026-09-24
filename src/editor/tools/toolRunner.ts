@@ -1,3 +1,4 @@
+import { stripResourceSearchIdPrefixes } from "./resourceSearchIdArgs";
 import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 // editor/tools/toolRunner.ts
 // 툴 실행기. runTool(ctx, name, args, {dryRun}) → ToolResult.
@@ -104,7 +105,7 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
-  const normalizedArgs = normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, args)) as Record<string, unknown>;
+  const normalizedArgs = normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(args))) as Record<string, unknown>;
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);
