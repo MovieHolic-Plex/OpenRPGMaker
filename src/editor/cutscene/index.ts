@@ -220,6 +220,16 @@ type CompileState = {
  * 에필로그가 처음부터 다시 돌아 검은 화면에서 끝없이 반복됐다(추리 도그푸딩 gen: 에필로그 끝에 {kind:"ending"}).
  * 빠진 개수를 함께 돌려준다.
  */
+// Shake Screen 의 intensity 는 select(문자열 "1"/"3"/"6"/"10") 라 숫자를 그대로 넣으면 명령 형식 검사가
+// 「문자열이 아닙니다」로 script_cutscene 전체를 거절한다(추리 도그푸딩 5회차). 가까운 선택지로 맞추고,
+// 런타임이 읽는 value 도 같이 채운다.
+const SHAKE_INTENSITY_STEPS = [1, 3, 6, 10] as const;
+function shakeFields(beat: CutsceneShakeBeat): Record<string, string | number> {
+  const raw = typeof beat.intensity === "number" && Number.isFinite(beat.intensity) ? beat.intensity : 3;
+  const step = SHAKE_INTENSITY_STEPS.reduce((best, value) => (Math.abs(value - raw) < Math.abs(best - raw) ? value : best), 3);
+  return { value: step, intensity: String(step), durationMs: durationMs(beat.durationMs, 400) };
+}
+
 export function withoutEndingBeats(beats: readonly CutsceneBeat[]): { beats: CutsceneBeat[]; removed: number } {
   let removed = 0;
   const strip = (list: readonly CutsceneBeat[]): CutsceneBeat[] => list.flatMap((beat): CutsceneBeat[] => {
@@ -313,7 +323,7 @@ function compileBeat(
     case "flash":
       return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
     case "shake":
-      return [m2Command("Shake Screen", { intensity: beat.intensity ?? 3, durationMs: durationMs(beat.durationMs, 400) })];
+      return [m2Command("Shake Screen", shakeFields(beat))];
     case "wait":
       return [{ kind: "wait", ms: Math.max(0, Math.round(beat.ms)) }];
     case "parallel":

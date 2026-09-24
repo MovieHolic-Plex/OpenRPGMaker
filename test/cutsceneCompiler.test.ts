@@ -110,7 +110,8 @@ describe("compileCutscene", () => {
           "commandId": "m2-048-shake-screen",
           "fields": {
             "durationMs": 120,
-            "intensity": 4,
+            "intensity": "3",
+            "value": 3,
           },
           "kind": "m2Command",
         },
