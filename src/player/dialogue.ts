@@ -114,9 +114,9 @@ const DIALOGUE_BALLOON_TAIL = 7;
 const DIALOGUE_BALLOON_BELOW = 38;
 const DIALOGUE_MOUTH_FRAME_MS = 120;
 
-/** 대화 기록 키. 한글 입력 상태의 ㅣ 도 받는다. */
-export function isDialogueLogKey(key: string): boolean {
-  return key === "l" || key === "L" || key === "ㅣ" || key === "PageUp";
+/** 대화 기록 키. 물리 KeyL 이라 자판 배열과 무관하고, 한글 입력 상태의 ㅣ 도 받는다. */
+export function isDialogueLogKey(key: string, code?: string): boolean {
+  return code === "KeyL" || key === "l" || key === "L" || key === "ㅣ" || key === "PageUp";
 }
 
 export type DialogueChoicesRequest = DialogueSurfaceSettings & {
@@ -324,14 +324,14 @@ export function createDialogueUI(
     if (logPanel) {
       e.preventDefault();
       e.stopImmediatePropagation();
-      if (isDialogueLogKey(e.key) || e.key === "Escape") closeLog();
+      if (isDialogueLogKey(e.key, e.code) || e.key === "Escape") closeLog();
       else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
         const list = logPanel.querySelector<HTMLElement>(".dialogue-log-list");
         if (list) list.scrollTop += e.key === "ArrowUp" ? -24 : 24;
       }
       return true;
     }
-    if (isDialogueLogKey(e.key)) {
+    if (isDialogueLogKey(e.key, e.code)) {
       e.preventDefault();
       e.stopImmediatePropagation();
       openLog();
@@ -536,7 +536,7 @@ export function createDialogueUI(
         const logButton = el("button", {
           class: "dialogue-log-button",
           text: "기록",
-          attrs: { type: "button", "aria-label": "대화 기록 (L)", tabindex: "-1" },
+          attrs: { type: "button", "aria-label": "대화 기록 (L)" },
           dataset: { testid: "dialogue-log-button" },
         });
         logButton.addEventListener("click", (event) => {
@@ -942,8 +942,9 @@ export function createDialogueUI(
         // 입력창에 치는 숫자·Enter 가 선택지를 고르면 안 된다(텍스트 입력 컨트롤은 게임 키가 아니다).
         if (isTextEntryTarget(e.target)) return;
         const n = parseInt(e.key, 10);
-        if (!isNaN(n) && n >= 1 && n <= request.options.length) {
+        if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
+          e.stopPropagation();
           finish(n - 1);
           return;
         }
