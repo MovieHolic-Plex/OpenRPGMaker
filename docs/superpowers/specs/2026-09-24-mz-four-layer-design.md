@@ -38,11 +38,19 @@ interface GameMap {
 - 층 번호 ↔ 칸 이름은 한 곳(`src/project/mapLayers.ts`, 새 파일)에만 둔다.
   ```ts
   type TileLayerNo = 1 | 2 | 3 | 4;
-  tileAt(map, layer, index): number              // 없는 칸은 -1
-  setTileAt(map, layer, index, tile): void       // 필요할 때만 선택 칸을 만든다
-  clearCell(map, index, { layers?, shadow? })    // 칸 비우기
-  forEachLayer(map, fn)                          // 1→4 순서
+  layerTileAt(map, layer, index): number             // 없는 칸은 -1
+  setLayerTileAt(map, layer, index, tile): void      // 필요할 때만 선택 칸을 만든다(빈값이면 만들지 않는다)
+  shadowAt(map, index) / setShadowAt(map, index, bits)
+  cellLayerTiles(map, index): [l1, l2, l3, l4]       // 1→4 순서
+  cloneExtraLayers(map)                              // 선택 칸 깊은 복사(없는 칸은 결과에도 없다)
+  remapExtraLayers(map, w, h, sourceIndex)           // 크기 바꾸기·밀기 — 결과가 모두 비면 키를 뺀다
+  cropExtraLayers(map, srcW, srcH, x, y, w, h)       // 잘라내기·좌상단 크기 바꾸기
+  compactMapLayers(map)                              // 모두 빈 선택 칸을 뺀다(칸을 비우는 변형기 끝에서)
+  malformedExtraLayerKeys(record, expected)          // 길이가 틀린 선택 칸(불러오기에서 버린다)
+  EXTRA_LAYER_KEYS                                   // ["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"]
   ```
+  (초안의 `tileAt/setTileAt/clearCell/forEachLayer` 는 위 이름으로 구현됐다. `clearCell` 은 없다 — 칸 비우기는
+  `setLayerTileAt(…, -1)`·`setShadowAt(…, 0)` 뒤 `compactMapLayers`.)
   새 코드와 고치는 코드는 `lowerTiles[i] = …` 를 직접 쓰지 않고 이 헬퍼를 쓴다.
 - 그림자는 타일이 아니라 비트라서 타일셋과 무관하다. 칸을 넷으로 나눈 조각 단위로 검정 반투명(α 0.5)을 칠한다.
 
@@ -148,8 +156,8 @@ interface GameMap {
 
 **점검표:** 옛 쌓기 칸을 알던 파일 58곳(`grep -rlE "lowerTileStacks|upperTileStacks" src`)이 곧 "칸이 더 있다는 걸 알아야 하는 곳"이다.
 여기에 `lowerTiles`/`upperTiles` 를 직접 쓰는 파일 109곳을 더해 점검한다. 원칙은 둘이다.
-- **맵을 통째로 새로 만드는 곳**(마을·던전 생성기 등): 새 칸도 비운다(`clearCell` 또는 새 맵 생성 헬퍼).
-- **칸 하나를 고치는 곳:** `setTileAt` 을 쓴다. 1층을 새로 깔면서 2층을 남길지는 그 도구의 뜻대로 정한다.
+- **맵을 통째로 새로 만드는 곳**(마을·던전 생성기 등): 새 칸도 비운다(선택 칸을 빼거나 `cropExtraLayers`/`remapExtraLayers`, 새 맵 생성 헬퍼).
+- **칸 하나를 고치는 곳:** `setLayerTileAt` 을 쓴다. 1층을 새로 깔면서 2층을 남길지는 그 도구의 뜻대로 정한다.
 
 **옛 쌓기 걷어내기:** 읽기에서 `lowerTileStacks`/`upperTileStacks` 가 비어 있지 않으면 첫 장을 2층·4층으로 옮기고 나머지는 버린다(경고 기록).
 로컬 프로젝트 196맵·저장소 기본 데이터 모두 0건이라 실제로 옮길 것은 없다. `mapOverlayTiles.ts` 스택 API 는 호출처를 헬퍼로 바꾼 뒤 지운다.

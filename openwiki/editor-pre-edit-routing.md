@@ -10,6 +10,32 @@
 
 Read this before editing editor-facing behavior. Identifies which workflow owns a request and lists agent cautions.
 
+## 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
+
+맵 칸은 1층(`lowerTiles`)·2층(`lowerOverlayTiles?`)·3층(`upperTiles`)·4층(`upperOverlayTiles?`)·그림자(`shadowBits?`)다.
+스키마는 [runtime-project-schema.md](runtime-project-schema.md) 맨 앞 절.
+
+- **새 코드와 고치는 코드는 층 필드를 직접 인덱싱하지 않는다.** `layerTileAt`/`setLayerTileAt`/`shadowAt`/`setShadowAt`/
+  `cellLayerTiles` 를 쓴다. 선택 필드는 쓸 때만 생기고, 없는 맵이 옛 맵이다.
+- **맵을 새 크기로 다시 만드는 코드는 1층·3층을 새로 만들기 전에 반드시** `cropExtraLayers(map, oldW, oldH, x, y, w, h)`
+  (좌상단 크기 바꾸기는 `x=y=0`) 또는 `remapExtraLayers(map, w, h, sourceIndex)` 를 부른다. 안 부르면 선택 층이
+  옛 길이로 남아 칸이 비껴 그려지고, 불러올 때 그 층이 버려진다(경고). 실측: `resize_map` 도구·마을 넓히기
+  (`authorVillageToolDef.growExistingVillageMap`)·Pi 고스트 증분(`ai/piAgent/mapDelta.ts`)·장소/프리셋 잘라내기
+  (`regionReferenceSnapshots.ts`, `referencePresetSnapshot.ts`)가 빠져 있었다. 찾는 법:
+  `git grep -nE "\.(width|height) *= [^=]"` 과 `{ ...map, width, height, lowerTiles… }` 스프레드.
+- `{ ...map, lowerTiles: [...] }` 처럼 **같은 크기** 사본은 선택 배열을 공유한다. 그 사본의 선택 층을 제자리에서
+  바꾸면 원본도 바뀐다 — 바꿀 거면 `cloneExtraLayers` 를 같이 펼친다(`updateMapTiles` 선례).
+- 칸을 비울 수 있는 변형기(지우개·조수 지우기 도구 등)를 새로 만들면 끝에서 `compactMapLayers` 를 부르고
+  `mapLayers.ts` 머리말 목록에 더한다.
+- 통행 표시·검사는 `cellPassability(tileset, map, i)` / `isPassable` 로 네 층을 본다. 1층+3층만 읽어
+  `tilePassability(l, u)` 를 부르는 옛 패턴은 2·4층을 놓친다.
+- 2·4층은 합성·호수 자동타일·받침 없이 칩 그대로 그린다. 캔버스 그리기(`mapTileDraw.drawMapTileLayers`)와
+  에디터 Phaser(`renderTileCellLayer`) 순서는 1 → 1층 스택 → 2 → 그림자 → 3 → 3층 스택 → 4.
+  **알려진 차이:** 캔버스·에디터는 순서대로 겹쳐 4층이 언제나 3층 위지만, 게임은 깊이 규칙이라 3층 ★ + 4층 ×/○ 칸에서
+  3층 ★ 가 위다([runtime-pre-edit-routing.md](runtime-pre-edit-routing.md) 같은 날 절).
+- 아직 1·3층만 보는 곳(PR ②·③ 몫): 붙여넣기 미리보기(`EditScene.ts`), `houseInteriors.ts`, `clear_map`/`mirror_region`,
+  `eventTools` 의 빈 칸 판정, `changeset.tileBuffersDiffer`.
+
 ## 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
 
 물 타일 시계 공유만으로 실제 목록 클릭 지연은 해결되지 않았다. 실제 13맵 프로젝트
