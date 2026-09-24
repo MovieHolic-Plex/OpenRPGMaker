@@ -2,6 +2,7 @@ import { placeCivicProps } from "./lib/village-civic-props.mjs";
 // New exterior studies built from verified whole parts; never edits the source project.
 import { placeHouseholdProps, PROP_PROGRAMS } from "./lib/village-household-props.mjs";
 import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
+import { farmlandTiles } from "./lib/village-farmland.mjs";
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import path from "node:path";
@@ -372,9 +373,10 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
   };
   for (const [x, y, w, h] of spec.farms) {
     if (freeRect(x, y, w, h)) {
-      for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) m.lowerTiles[point(x + dx, y + dy)] = 188;
+      const lower = farmlandTiles(w, h);
+      for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) m.lowerTiles[point(x + dx, y + dy)] = lower[dy * w + dx];
       reserve(x, y, w, h);
-      placements.push({ name: "텃밭", x, y, w, h, kind: "farm", lower: Array(w * h).fill(188), upper: Array(w * h).fill(-1) });
+      placements.push({ name: "텃밭", x, y, w, h, kind: "farm", lower, upper: Array(w * h).fill(-1) });
     }
   }
   // Retain the already approved individual trees exactly while reorganizing props.
