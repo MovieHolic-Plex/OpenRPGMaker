@@ -51,3 +51,33 @@ describe("qa gameCheck — 추격 호러", () => {
     expect(codes).not.toContain("capture-no-retry");
   });
 });
+
+describe("run_scene_test — 은신처", () => {
+  async function scene(hide: boolean) {
+    const { runSceneTest } = await import("@/testing/sceneTestRunner");
+    const ctx = horrorProject();
+    const mapId = ctx.project.startMapId;
+    const made = runTool(ctx, "make_chase_scene", {
+      mapId, chaser: { at: { x: 12, y: 5 }, graphic: { query: "monster" }, speed: 6, sightRange: 3 },
+      pursuit: { scope: "map", doorDelayMs: 0, searchMs: 2000, onLost: "return" },
+      activateSwitch: "sw_oni_awake", killOnTouch: true, hidingSpots: [{ x: 3, y: 4 }],
+    });
+    expect(made.ok, made.summary).toBe(true);
+    return runSceneTest(ctx.project, { mapId, start: { x: 3, y: 5 }, steps: [
+      { kind: "set", switches: { sw_oni_awake: true }, facing: "up" },
+      ...(hide ? [{ kind: "interact" } as const] : []),
+      { kind: "wait", ticks: 600 },
+      { kind: "expect", gameOver: !hide },
+      ...(hide ? [{ kind: "move", dir: "down" } as const] : []),
+    ] });
+  }
+  it("스위치로 깨운 추격자는 시야 밖에서도 달려와 붙잡는다", async () => {
+    const exposed = await scene(false);
+    expect(exposed.ok, exposed.failureReason).toBe(true);
+  });
+  it("보이지 않을 때 옷장에 숨으면 붙잡히지 않고, 숨은 채로는 못 움직인다", async () => {
+    const hidden = await scene(true);
+    expect(hidden.finalState.gameOver).toBe(false);
+    expect(hidden.failureReason).toContain("숨어 있는 동안에는 움직일 수 없습니다");
+  });
+});
