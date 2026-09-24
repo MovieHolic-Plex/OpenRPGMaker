@@ -10,7 +10,9 @@ import { briefTextOf } from "./brief";
 import { allPages, conditionLeaves, visitAllCommands, visitPageCommands, type CommandVisit } from "./walk";
 import type { Finding } from "./types";
 
-const LIFE_BRIEF = /꽃잎|체력|생명|목숨|hp\b|게임\s*오버|게임오버|꽃병/iu;
+// 「게임 오버」만으로는 꽃잎 체력이 아니다. 추격 호러 기획의 「붙잡히면 게임 오버」가
+// set_life_flower 를 권하는 거짓 경고가 됐다(2026-09-24 chase r5·r6).
+const LIFE_BRIEF = /꽃잎|체력|생명|목숨|hp\b|꽃병/iu;
 
 interface LifeUse { readonly decrements: CommandVisit[]; restores: CommandVisit[]; defeatChecks: number }
 

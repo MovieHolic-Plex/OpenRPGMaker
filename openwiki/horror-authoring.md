@@ -17,6 +17,7 @@
 
 `pageHorror.ts`는 기존 `updateEventPage` 경로를 사용하므로 초안·취소·적용·편집 감사 로그를 공유한다.
 AI도 `make_chase_scene.pursuit`와 `configure_object_behavior`로 같은 페이지 필드를 저작한다.
+학교 호러 프리셋 지시(`HORROR_CHASE_AUTHORING_GUIDE`)는 방을 `place_concept`로, 은신을 옷장과 같은 칸의 `hidingSpots`로, 숫자 암호를 `compile_puzzle` `password`(inputNumber)로 만든다. 추격 스위치를 꺼서 숨는 척을 하거나 선택지 보기에 암호 숫자를 적지 않는다.
 가구 그림은 이벤트에 지정하고 아래 타일은 비운다. 정적 의자 타일에 속성을 붙이는 기능은 아니다.
 물체 동작은 일반 조사 명령보다 우선한다. 기존 명령이 있으면 정적 검사가 경고한다.
 

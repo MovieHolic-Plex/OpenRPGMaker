@@ -125,6 +125,10 @@ export function checkHorror(project: Project, briefText: string): Finding[] {
       for (const option of command.options as { text?: unknown }[]) {
         const text = typeof option?.text === "string" ? option.text : "";
         if (ANSWER_LEAK.test(text)) findings.push({ severity: "warning", code: "choice-answer-leak", message: `선택지 「${text}」 가 정답을 괄호로 알려 줍니다 — 퍼즐이 풀 것 없이 끝납니다.`, where: at });
+        if (CODE_BRIEF.test(briefText) && /^\d{3,6}$/u.test(text.trim())) {
+          findings.push({ severity: "warning", code: "code-choice-is-answer", where: at,
+            message: `선택지 「${text}」 가 암호 숫자 그 자체입니다 — compile_puzzle kind:password(inputNumber)로 받고, 보기에 정답을 적지 마세요.` });
+        }
         if (/숨는다|숨기|숨어|들어간다/u.test(text)) {
           fakeHides.push(command);
           if (hidingPages.length > 0) findings.push({ severity: "warning", code: "fake-hiding-choice", where: at,
@@ -204,6 +208,20 @@ export function checkHorror(project: Project, briefText: string): Finding[] {
     visitAllCommands(project, ({ command }) => { if (command.kind === "setLighting" || command.kind === "tintScreen") lightingCommands += 1; });
     const dark = [...chaserMaps].some((id) => project.maps[id] && lit(project.maps[id]!)) || Object.values(project.maps).some(lit);
     if (!dark && lightingCommands === 0) findings.push({ severity: "warning", code: "horror-not-dark", message: "기획은 어두운 분위기인데 어느 맵에도 어두운 조명(defaultLighting ambient<0.75)·조명 명령이 없습니다." });
+  }
+  const chaseSwitchIds = new Set<string>();
+  for (const ref of list) {
+    for (const condition of ref.page.conditions ?? []) {
+      if (condition.kind === "switch" && condition.value !== false) chaseSwitchIds.add(condition.switchId);
+    }
+  }
+  if (chaseSwitchIds.size > 0) {
+    visitAllCommands(project, ({ command, where: at }) => {
+      if (command.kind === "setSwitch" && command.value === false && typeof command.switchId === "string" && chaseSwitchIds.has(command.switchId)) {
+        findings.push({ severity: "warning", code: "chase-switch-cleared", where: at,
+          message: `추격 스위치 ${command.switchId} 를 끕니다 — 추격자가 수색 없이 사라집니다. 숨기는 이 스위치가 아니라 make_chase_scene hidingSpots(옷장과 같은 칸)입니다.` });
+      }
+    });
   }
   if (CODE_BRIEF.test(briefText) && inputNumbers === 0) {
     findings.push({ severity: "info", code: "code-as-choices", message: "기획에 암호·비밀번호 퍼즐이 있는데 숫자 입력(inputNumber) 명령이 없습니다 — 선택지로 고르게 했다면 보기에서 정답을 맞힐 수 있습니다." });
