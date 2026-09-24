@@ -603,3 +603,21 @@ describe("place_concept plan — 모델이 설계하고 코드가 시공한다 (
     expect(data.designNote).toMatch(/템플릿/);
   });
 });
+
+describe("place_concept 이 create_map 빈 맵을 이어받을 때", () => {
+  it("create_map 이 정한 배경음·기후를 버리지 않는다(회상 스토리: 기억마다 다른 BGM)", () => {
+    const context = ctx();
+    const created = runTool(context, "create_map", { id: "map_memory_shop", name: "레코드 가게", width: 20, height: 15, bgmResourceId: "cc0-bgm-rtp-emo-001" }, { dryRun: false });
+    expect(created.ok, created.summary).toBe(true);
+    const blank = context.project.maps.map_memory_shop!;
+    const bgmBefore = structuredClone(blank.bgm);
+    expect(bgmBefore).toBeDefined();
+    blank.climate = { mode: "fixed", weather: "rain", intensity: 0.5 } as GameMap["climate"];
+    const result = runTool(context, "place_concept", { template: true, query: "여관", mapId: "map_memory_shop", seed: 7 }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const built = context.project.maps.map_memory_shop!;
+    expect(built.roomHarnessPlan).toBeDefined();
+    expect(built.bgm).toEqual(bgmBefore);
+    expect(built.climate).toEqual({ mode: "fixed", weather: "rain", intensity: 0.5 });
+  });
+});
