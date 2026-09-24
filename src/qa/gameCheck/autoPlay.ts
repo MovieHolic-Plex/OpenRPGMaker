@@ -285,6 +285,8 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
       inProgress.add(key);
       // 가장 얕은 세터를 고른다 — 선행 조건이 적은 후보부터.
       const stepToward = (visit: CommandVisit): number => {
+        // presentItem 안의 +3 은 자동 플레이가 아이템을 내지 못하면 0에 머문다. 대화 +2 를 먼저 고른다.
+        if (visit.segments.some((segment) => segment.command.kind === "presentItem")) return -1;
         const command = visit.command;
         if (command.kind !== "setVariable" || typeof command.value !== "number") return 0;
         if (command.op === "+=") return command.value;

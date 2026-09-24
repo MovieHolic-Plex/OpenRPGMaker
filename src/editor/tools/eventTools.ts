@@ -2294,7 +2294,8 @@ function keepGainPageBelowHigherEnding(project: Project, event: GameEvent, warni
     if (!capped) continue;
     const host = pages.slice(0, index).find((earlier) => commandsRaiseVariable(earlier.commands, condition.variableId));
     if (!host) continue;
-    host.commands = [{ kind: "fork", condition, then: page.commands }, ...host.commands];
+    // 분기를 앞세우면 문턱에 닿는 날 호감 상승보다 데이트 선택지가 먼저 떠서 상승이 멈춘다.
+    host.commands = [...host.commands, { kind: "fork", condition, then: page.commands }];
     pages.splice(index, 1);
     warnings.push(
       `변수 ${condition.variableId} ${condition.op} ${condition.value} 페이지가 그 변수를 올리는 앞 페이지를 덮어, 더 높은 엔딩 문턱에 닿지 못합니다. 그 페이지 명령을 앞 페이지의 조건 분기로 옮겼습니다.`,
