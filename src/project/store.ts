@@ -837,8 +837,9 @@ class ProjectStore {
   }
 
   /**
-   * Fast path for tile painting. Tile edits only mutate the two dense tile
-   * arrays (and the legacy stack maps), so cloning the whole GameMap on every
+   * Fast path for tile painting. Tile edits only mutate the tile layers — the
+   * dense 1층/3층 arrays, the optional 2층/4층/shadow arrays (copied with
+   * cloneExtraLayers) and the legacy stack maps — so cloning the whole GameMap on every
    * pointer sample needlessly copies events and every optional map setting.
    * Keep the general updateMap contract for arbitrary map edits and use this
    * path for the hot paint/erase/fill loop.
