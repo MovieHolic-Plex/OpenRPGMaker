@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
-import { isPassable, layeredPassability, tilePassability } from "@/project/collision";
+import { canMove, cellPassability, isPassable, layeredPassability, passabilityOf, tilePassability } from "@/project/collision";
 import { setLayerTileAt } from "@/project/mapLayers";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import type { TilesetDef } from "@/project/types";
@@ -45,5 +45,25 @@ describe("layeredPassability", () => {
     expect(isPassable(project, map, 0, 0)).toBe(true);
     setLayerTileAt(map, 4, 0, X);
     expect(isPassable(project, map, 0, 0)).toBe(false);
+  });
+});
+
+describe("배열 없는 통행 읽기", () => {
+  it("passabilityOf 는 layeredPassability 와 같다 — ★·빈칸·범위 밖 번호 포함", () => {
+    const { tileset, O, X, STAR } = setup();
+    const ids = [-1, O, X, STAR, tileset.count + 5];
+    for (const a of ids) for (const b of ids) for (const c of ids) for (const d of ids) {
+      expect(passabilityOf(tileset, a, b, c, d)).toEqual(layeredPassability(tileset, [a, b, c, d]));
+    }
+  });
+  it("cellPassability 와 canMove 가 4층을 읽는다", () => {
+    const { project, map, tileset, O, X } = setup();
+    for (let i = 0; i < 2; i++) setLayerTileAt(map, 1, i, O);
+    expect(cellPassability(tileset, map, 1)).toEqual(layeredPassability(tileset, [O, -1, map.upperTiles[1], -1]));
+    expect(canMove(project, map, 0, 0, 1, 0)).toBe(true);
+    setLayerTileAt(map, 4, 1, X);
+    expect(cellPassability(tileset, map, 1)).toEqual(layeredPassability(tileset, [O, -1, map.upperTiles[1], X]));
+    expect(canMove(project, map, 0, 0, 1, 0)).toBe(false);
+    expect(canMove(project, map, 0, 0, -1, 0)).toBe(false);
   });
 });

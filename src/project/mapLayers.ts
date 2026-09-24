@@ -20,6 +20,8 @@ export const TILE_LAYER_NOS: readonly TileLayerNo[] = [1, 2, 3, 4];
 export type TileLayerGroup = "lower" | "upper";
 export const EXTRA_LAYER_KEYS = ["lowerOverlayTiles", "upperOverlayTiles", "shadowBits"] as const;
 type ExtraLayerKey = (typeof EXTRA_LAYER_KEYS)[number];
+/** 선택 층만 가진 맵 모양. 옮기기 도우미는 이 셋만 읽고 쓴다. */
+export type ExtraLayerFields = Pick<GameMap, ExtraLayerKey>;
 
 export function layerGroup(layer: TileLayerNo): TileLayerGroup {
   return layer <= 2 ? "lower" : "upper";
@@ -108,7 +110,7 @@ export function cloneExtraLayers(map: GameMap): Pick<GameMap, ExtraLayerKey> {
  * 크기 바꾸기·밀기용. 새 격자(width×height)의 각 칸에 원본 칸 번호(sourceIndex)를 받아 옮긴다.
  * sourceIndex 가 -1 이면 빈칸. 결과가 모두 비면 칸을 지운다. map.width/height 는 호출자가 바꾼다.
  */
-export function remapExtraLayers(map: GameMap, width: number, height: number, sourceIndex: (targetIndex: number) => number): void {
+export function remapExtraLayers(map: ExtraLayerFields, width: number, height: number, sourceIndex: (targetIndex: number) => number): void {
   for (const key of EXTRA_LAYER_KEYS) {
     const source = map[key];
     if (!source) continue;
@@ -129,7 +131,7 @@ export function remapExtraLayers(map: GameMap, width: number, height: number, so
  * 스프레드로 만든 사본에 불러도 원본 배열은 건드리지 않는다(새 배열을 붙이거나 칸을 지운다).
  */
 export function cropExtraLayers(
-  map: GameMap,
+  map: ExtraLayerFields,
   sourceWidth: number,
   sourceHeight: number,
   x: number,
