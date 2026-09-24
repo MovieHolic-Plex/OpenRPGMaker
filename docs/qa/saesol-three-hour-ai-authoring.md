@@ -1100,3 +1100,9 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 메뉴/저장 화면에는 몬스터 중심 게임인데 청동 검·방패·여행자 장비와 Lv1 배우 정보가 노출된다. 현재 QA 체크포인트가 가진 기존 기사 배우/장비에서 온 표현이며, 새 게임 트레이너 수정만으로 메뉴 정보가 몬스터 중심으로 바뀌었다고 주장하지 않는다. 포켓몬풍 메뉴/저장 요약을 다듬을 대상이다.
 - 최종 `ecology-save-load-player/SUMMARY.md`: passed/saveLoadMatches=true,pageErrors0. 실제 조사 완료 상태에서1칸 이동해19,29를 게임 메뉴1번 칸에 저장하고 브라우저 reload→타이틀 불러오기→1번 칸으로 복원했다. currentMapId/x/y/gold/inventory/switches/variables/monsterParty/monsterInstances의 JSON 저장값이 일치했다. `loaded.png` 직접 열람. 초기 checkpoint 위치와 다른 저장 위치로 실제 복원을 확인했다. 전체180분 완주 증거는 아니다.
 - 요청21f2는 몸통 배치까지 정본497에 부분 저장한 뒤30초 heartbeat 실패로 종료됐다. 실패 시점의 `stream-timing-failed-paint.json`, `request21f2-heartbeat-failure.txt` 보존. 에디터 작업 설정에서 검토 후 적용(review)을 선택하고 요청21f3으로 미완성 숲을 이어 작성하도록 제출했다. 도구마다 전체 프로젝트 checkpoint를 왕복하는 횟수를 줄이는 기존 UI 경로이며, 최종 초안 확인/실제 적용/SQLite 재로드는 여전히 필요하다.
+
+### 20맵의 콘텐츠·미술 밀도 재점검
+
+- `content-inventory-current.json`은 SQLite에서 맵별 이벤트·중복 제거 대사량·스크립트 전투 troop·하위 타일 종류/최빈 비율을 읽은 정적 인벤토리다. 조건 페이지를 포함하므로 대사량을 플레이시간으로 환산하지 않는다. humanPlaytimeMinutes는 미측정(null)이다.
+- 바위턱마을 map_saesol_town2는 이벤트8개가 있으나 하위 타일 종류2개, 최빈 타일 비율99.2%다. 숲 이후 마을의 실제 회복소/체육관 출입구에 맞춘 건물·길·광장·외곽을 우선 보강할 필요가 있다. 프롬프트22를 준비했으나 현재 숲 요청이 진행 중이므로 동시에 제출하지 않았다.
+- 산길은 하위 타일4종, 유적은3종으로 확인됐다. 적은 타일 종류 자체를 불량 판정으로 삼지는 않지만 실제 화면 및 통행과 함께 후속 미술 점검 대상이다. 맵 수20개만으로 요청한 완성도/180분 분량을 충족했다고 보지 않는다.
