@@ -698,3 +698,35 @@ describe("author_mystery_case — 동봉 검증 시나리오", () => {
     runBundled(ctx.project, scene);
   });
 });
+
+// 6회차: 지목 지점 「추리 집결 회합」 의 대사를 「탐정: '…'」「모로 박사: …」 로 써서 이름표·얼굴·본문이 어긋났다.
+describe("author_mystery_case — 대사 앞 「이름:」", () => {
+  it("줄 앞 화자를 그 줄의 이름표로 옮기고, 남이 말하는 동안 지목 인물 얼굴을 내렸다가 다시 올린다", () => {
+    const project = fixture();
+    const spec = caseSpec(project.startMapId, (s) => {
+      s.accuser.graphic = { query: "신사" };
+      s.accuser.intro = ["탐정: '(모두가 거실에 모였다.)'", "경비대장 로버트: 자, 시작하지."];
+      s.endings.solved.lines = ["탐정: '범인은 당신입니다, 토마스.'", "집사 토마스: “…들켰군요.”", "자네 말이 맞았네."];
+    });
+    const { ctx, result } = author(project, spec);
+    expect(result.ok, JSON.stringify(result)).toBe(true);
+    const accuser = eventNamed(ctx.project, "경비대장 로버트");
+    const first = accuser.pages![0].commands;
+    const lines = first.filter((command): command is Extract<Command, { kind: "text" }> => command.kind === "text");
+    expect(lines[0]).toMatchObject({ speaker: "탐정", body: "(모두가 거실에 모였다.)" });
+    expect(lines[1]).toMatchObject({ speaker: "경비대장 로버트", body: "자, 시작하지." });
+    const faces = (list: readonly Command[]) => list.map((command) => command.kind === "changeFace" ? (command.resourceId ? "F" : "-") : command.kind === "text" ? (command as { speaker?: string }).speaker : null).filter(Boolean);
+    const seq = faces(first);
+    // 탐정 줄 앞에는 얼굴이 내려가 있고, 로버트 줄 앞에서 다시 올라온다.
+    expect(seq.slice(0, 4)).toEqual(["F", "-", "탐정", "F"]);
+    const solved = allCommands(accuser).filter((command) => command.kind === "text" && command.body.includes("들켰군요"));
+    expect(solved[0]).toMatchObject({ speaker: "집사 토마스", body: "…들켰군요." });
+  });
+
+  it("「이름:」 이 없는 줄과 긴 문장 속 콜론은 그대로 둔다", async () => {
+    const { splitSpeakerPrefix } = await import("@/editor/tools/mysteryCaseTool");
+    expect(splitSpeakerPrefix("자네 말이 맞았네.")).toEqual({ body: "자네 말이 맞았네." });
+    expect(splitSpeakerPrefix("시각은 11:30 이었다")).toEqual({ body: "시각은 11:30 이었다" });
+    expect(splitSpeakerPrefix("그는 이렇게 말했다 아주 길게 이어지는 문장: 끝")).toEqual({ body: "그는 이렇게 말했다 아주 길게 이어지는 문장: 끝" });
+  });
+});
