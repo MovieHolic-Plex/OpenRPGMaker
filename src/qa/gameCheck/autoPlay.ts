@@ -121,7 +121,7 @@ function requirementsOf(project: Project, visit: CommandVisit): Requirement[] {
 function elseBranchRequirements(condition: unknown, _page: PageRef): Requirement[] {
   const top = condition as { kind?: string; value?: unknown; switchId?: string; conditions?: unknown[] } | null;
   if (!top || typeof top !== "object") return [];
-  if (top.kind === "all" && Array.isArray(top.conditions)) return top.conditions.flatMap((child) => elseBranchRequirements(child, page));
+  if (top.kind === "all" && Array.isArray(top.conditions)) return top.conditions.flatMap((child) => elseBranchRequirements(child, _page));
   if (top.kind === "switch" && top.value === false && typeof top.switchId === "string") return [{ kind: "switch", id: top.switchId }];
   return [];
 }
