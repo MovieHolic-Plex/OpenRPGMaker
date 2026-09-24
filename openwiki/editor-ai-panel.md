@@ -2991,3 +2991,14 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 수신 `scripts/lib/companionHttpUtil.mjs`는 wire64MiB 제한을 유지하고 gzip 복원은 별도256MiB 상한으로 제한한다. 기존 identity JSON은 계속64MiB다. 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
 
 실측: 새솔 정본507을 포함한 요청83,468,214bytes →34,820,901bytes, 복원 객체 전체 일치. 저장 브리지의128MiB 제한과는 별개다. 루트 필드별 용량에서 tilesets 약73MB가 대부분이었다. 압축 지원은 제작 완료나 LLM 자체 컨텍스트 제한 해결을 의미하지 않는다.
+
+## 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
+
+약119MB 프로젝트를 /pi로 편집할 때 렌더러가 V8 OOM으로 종료됐다.
+`AuthoredProjectBaseline`의 authored/complete와 `ProposalBase`의 content/world는
+전체 정렬 JSON 대신 SHA-256만 장기 보관한다. 비교할 때 같은 canonical JSON을
+다시 계산하고 해시하므로 객체 제자리 수정도 검사하며, world/wiki 예외와
+세대·lineage 검사는 기존대로 유지한다. 세대 기반으로 stale 검사를 생략하지 않는다.
+이 변경은 보관 메모리를 줄인다. 직렬화·해시의 일시 할당과 동기 실행 비용은 남는다.
+회귀 사례: `test/authoredProjectBaseline.test.ts`의 큰 Unicode 문서 끝부분 변경과
+기준선 크기 제한. 이번 세션에서는 사용자 규칙에 따라 테스트/게이트를 실행하지 않았다.
