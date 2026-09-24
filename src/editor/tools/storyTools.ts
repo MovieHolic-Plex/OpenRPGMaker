@@ -18,18 +18,18 @@ import type { Project, StoryFlagDef, StoryFlagKind, SwitchDef, VariableDef } fro
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
-type DeclareStoryFlagAction = "declare" | "rename" | "retire";
+type DeclareStoryFlagAction = "declare" | "update" | "rename" | "retire";
 
-const STORY_FLAG_ACTIONS = ["declare", "rename", "retire"] as const;
+const STORY_FLAG_ACTIONS = ["declare", "update", "rename", "retire"] as const;
 const STORY_FLAG_KINDS = ["switch", "variable"] as const;
 
 const declareStoryFlag: ToolDefinition = {
   name: "declare_story_flag",
-  description: "스위치/변수 번호에 서사 의미를 등록한다. action=declare/rename/retire 지원. targetId 생략 시 미사용 슬롯을 자동 할당한다. 퀘스트·이야기 진행 플래그·스위치 의미 등록. 퀘스트 자체는 create_quest.",
+  description: "스위치/변수 번호에 서사 의미를 등록한다. action=declare/update/rename/retire 지원. 기존 설명만 고칠 때는 update에 id+description만 전달한다(ID·연결·진행·retired 보존). 설명 수정에 retire/재등록을 쓰지 않는다. declare의 targetId 생략 시 미사용 슬롯을 자동 할당한다. 퀘스트 자체는 create_quest.",
   mode: "write",
   domains: ["event", "quest", "system"],
   invalidArgsExample: { id: "met-mayor", kind: "switch", description: "시장과 처음 만남" },
-  invalidArgsHint: "새 플래그는 id/kind/description이 필요하고, rename은 id+newId, retire는 id가 필요합니다.",
+  invalidArgsHint: "새 플래그는 id/kind/description, update는 id+description, rename은 id+newId, retire는 id가 필요합니다.",
   parameters: {
     type: "object",
     properties: {
@@ -46,6 +46,7 @@ const declareStoryFlag: ToolDefinition = {
   },
   run(project, args): ToolExecResult {
     const action = parseAction(args.action);
+    if (action === "update") return updateStoryFlagDescription(project, args);
     if (action === "rename") return renameStoryFlag(project, args);
     if (action === "retire") return retireStoryFlag(project, args);
     return createStoryFlag(project, args);
@@ -165,8 +166,23 @@ export const STORY_TOOLS: readonly ToolDefinition[] = [
 
 function parseAction(value: unknown): DeclareStoryFlagAction {
   if (value === undefined) return "declare";
-  if (value === "declare" || value === "rename" || value === "retire") return value;
-  throw new ToolError("action은 declare/rename/retire 중 하나여야 합니다.", { code: "story-flag-action" });
+  if (value === "declare" || value === "update" || value === "rename" || value === "retire") return value;
+  throw new ToolError("action은 declare/update/rename/retire 중 하나여야 합니다.", { code: "story-flag-action" });
+}
+
+function updateStoryFlagDescription(project: Project, args: Record<string, unknown>): ToolExecResult {
+  const unsupported = Object.keys(args).filter((key) => !["action", "id", "description"].includes(key));
+  if (unsupported.length > 0) {
+    throw new ToolError("update는 id와 description만 받습니다. ID·연결·진행 상태는 변경하지 않습니다.", {
+      code: "story-flag-update-fields",
+    });
+  }
+  const id = requiredStoryFlagId(args.id);
+  const description = requiredNonEmptyString(args.description, "description");
+  const flag = storyFlagById(project, id, { includeRetired: true });
+  if (!flag) throw new ToolError(`story flag를 찾을 수 없습니다: ${id}`, { code: "story-flag-not-found" });
+  flag.description = description;
+  return { summary: `서사 플래그 설명 수정: ${id} — ${description}`, data: { flag } };
 }
 
 function createStoryFlag(project: Project, args: Record<string, unknown>): ToolExecResult {

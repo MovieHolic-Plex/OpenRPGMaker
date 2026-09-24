@@ -50,6 +50,47 @@ function issueCodes(project: Project): string[] {
 }
 
 describe("story flag registry tools", () => {
+  it("updates a description without changing its identity, usage, retirement or progress", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    expect(runTool(ctx, "declare_story_flag", {
+      id: "camp-ridge", kind: "switch", targetId: "sw_0003", description: "산길 조사",
+      questId: "camp", tags: ["camp"],
+    }).ok).toBe(true);
+    ctx.project.storyFlags![0]!.retired = true;
+    ctx.project.session.switches.sw_0003 = true;
+    addEvent(ctx.project, event("camp-reader", [page("p1", [
+      { kind: "switch", switchId: "sw_0003", value: true },
+    ])]));
+    const before = structuredClone(ctx.project);
+
+    expect(runTool(ctx, "declare_story_flag", {
+      action: "update", id: "camp-ridge", description: "새솔마을 조사",
+    }).ok).toBe(true);
+    expect(ctx.project.storyFlags).toEqual([{ ...before.storyFlags![0], description: "새솔마을 조사" }]);
+    expect(ctx.project.session).toEqual(before.session);
+    expect(ctx.project.switches).toEqual(before.switches);
+    expect(ctx.project.maps).toEqual(before.maps);
+    expect(ctx.project.quests).toEqual(before.quests);
+  });
+
+  it("rejects missing descriptions, unknown flags and attempts to retarget an update", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    expect(runTool(ctx, "declare_story_flag", {
+      id: "camp-ridge", kind: "switch", targetId: "sw_0003", description: "산길 조사",
+    }).ok).toBe(true);
+    const before = structuredClone(ctx.project.storyFlags);
+    for (const patch of [
+      { description: "" },
+      { description: "새솔마을", targetId: "sw_0004" },
+      { description: "새솔마을", newId: "other-camp" },
+      { description: "새솔마을", retired: false },
+      { description: "새솔마을", id: "missing-camp" },
+    ]) {
+      expect(runTool(ctx, "declare_story_flag", { action: "update", id: "camp-ridge", ...patch }).ok).toBe(false);
+      expect(ctx.project.storyFlags).toEqual(before);
+    }
+  });
+
   it("declares a story flag and auto-allocates an unused switch target", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, "declare_story_flag", {
