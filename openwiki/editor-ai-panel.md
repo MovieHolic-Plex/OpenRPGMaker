@@ -3001,6 +3001,28 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 전체 정렬 JSON 대신 SHA-256만 장기 보관한다. 비교할 때 같은 canonical JSON을
 다시 계산하고 해시하므로 객체 제자리 수정도 검사하며, world/wiki 예외와
 세대·lineage 검사는 기존대로 유지한다. 세대 기반으로 stale 검사를 생략하지 않는다.
-이 변경은 보관 메모리를 줄인다. 직렬화·해시의 일시 할당과 동기 실행 비용은 남는다.
+이 변경은 보관 메모리를 줄인다. 직렬화·해시의 동기 실행 비용은 아래 2026-09-25 절에서 줄였다.
 회귀 사례: `test/authoredProjectBaseline.test.ts`의 큰 Unicode 문서 끝부분 변경과
 기준선 크기 제한. 이번 세션에서는 사용자 규칙에 따라 테스트/게이트를 실행하지 않았다.
+
+## 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
+
+증상: 팀 호스트(`http://mdc-server:9888`)에서 조수를 쓰면 편집기가 심하게 버벅였다. 26MB 프로젝트(타일셋 25MB, 그중 참고문서 약 19MB)에서
+쓰기 체크포인트 하나마다 메인 스레드가 약 10초 멈췄다(VM의 headless Chromium, `/tmp` 대본 워커로 체크포인트 3회 CPU 프로파일).
+원인은 에이전트가 타일셋을 건드리지 않아도 적용 권위(`captureApplyAuthority`·`isProposalBaseCurrent`·`AuthoredProjectBaseline.matches`)가
+프로젝트 전체를 정렬 직렬화 2회, SHA-256 5회 돌린 것이다. HTTP 서빙은 secure context 가 아니라 `crypto.subtle` 도 쓸 수 없다.
+
+- `src/project/persistence/core/contentDigest.ts` 의 `jsonContentDigest` 는 `canonicalJsonOf` 와 같은 동일성(키 순서 무시)을 노드 요약(머클 방식)으로 낸다.
+  객체·배열마다 (키, 원시값, 자식 토큰) → 토큰 기록을 `WeakMap` 에 두고, **부를 때마다 모든 노드를 현재 값과 대조**한 뒤에만 재사용한다.
+  세대에 묶지 않으므로 사람의 제자리 수정도 잡는다. 256자 이하 노드는 해시하지 않고 글을 그대로 토큰으로 쓴다. 기억은 자식 객체를 붙잡지 않는다.
+- `projectIdentityDigest(project, "proposal" | "authored" | "complete")` 가 적용 권위·초안 기준선의 비교값이다. 이 요약은 정렬 JSON 문자열의 해시와 **다른 값**이다 — 섞어 비교하지 않는다.
+  `composeProjectIdentity`·`contentIdentity`·`authoredIdentity`(문자열)는 다른 호출부를 위해 남아 있다.
+- 스토어의 적용 복제(`eventDraftVault` 의 `projectWithLiveDrafts`·`applyEventDraftVault`)는 `cloneProjectSharingReferenceDocuments` 로 참고문서를 공유하고,
+  `shareContentDigests(원본, 복제)` 로 기억을 넘긴다. 기억은 스스로를 설명하는 기록이라 틀린 짝이나 낡은 원본에 붙어도 대조에서 떨어져 다시 계산될 뿐이다.
+- `sha256HexTextSync` 폴백은 Int32Array 로 블록을 누적하고 64Ki 문자 창 단위로 `encodeInto` 한다(26MB 문자열 전체 인코딩 없음, 서로게이트 쌍은 창 경계에서 쪼개지 않는다).
+- 커밋 기록은 직렬화 문자열을 미리 만들지 않는다(electron 저장소는 쓰지 않고, 메모리 저장소는 없으면 스스로 만든다). 수동 커밋 dedup 은 `lastManualDigest`(저장 형식 보기의 요약)로 비교한다.
+
+실측(같은 VM·같은 대본, 체크포인트 3회): 체크포인트당 긴 작업 10.8/10.1/10.3초 → 2.7/1.8/2.4초, 실행 중 긴 작업 합계 40.5초 → 10.8초.
+실행 시작 때 첫 기준선 요약(캐시 없음)은 약 1.1초다. 남은 체크포인트 비용은 `projectLint.checkRoundtrip`(serialize+deserialize), 되돌리기 스냅샷 서명,
+스토어 복제, 타일 팔레트 다시 그리기에 흩어져 있다. 테스트: `test/contentDigest.test.ts`, `test/sha256.test.ts`(창 경계) — 이번 세션에서는 사용자 규칙에 따라 실행하지 않았고,
+동등성·제자리 수정·기억 넘기기는 실제 26MB 프로젝트로 임시 스크립트에서 확인했다.
