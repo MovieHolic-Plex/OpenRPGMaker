@@ -31,6 +31,8 @@ export function itemAllowsMenu(item: ItemRecord): boolean {
 
 export function itemAllowsBattle(item: ItemRecord): boolean {
   if (item.occasion !== "always" && item.occasion !== "battle") return false;
+  // 포획 도구는 captureProfile 이 계약이다 — 종류가 special 이 아니어도(조수가 normalGoods 로 저장) 전투에서 던진다.
+  if (item.captureProfile) return !item.careProfile;
   if (item.type === "medicine") return !item.onlyEffectiveOnDeadActors;
   return item.type === "special" && !item.careProfile;
 }

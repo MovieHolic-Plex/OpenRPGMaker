@@ -128,6 +128,21 @@ describe("monster collection core", () => {
     expect(snapshot.rewards.exp).toBe(0);
   });
 
+  it("a capture item works by its captureProfile even when saved as a normal item", () => {
+    // 2026-09-24 도그푸딩: 조수가 몬스터볼을 type normalGoods 로 저장 — 메뉴엔 뜨고 던지면 missingItem 이었다.
+    const project = monsterProject();
+    const orb = project.database.items.find((item) => item.id === "item_capture_orb");
+    if (!orb) throw new Error("missing orb");
+    (orb as { type: string }).type = "normalGoods";
+    const runtime = captureRuntime(project, (() => {
+      const values = [0, 0.1, 0.2, 0.3, 0.4];
+      return () => values.shift() ?? 0;
+    })());
+    runtime.performActorCommand({ kind: "capture", captureItemId: "item_capture_orb", targetEnemyId: "enemy-1" });
+    expect(runtime.snapshot().lastCaptureResult?.blockedReason).toBeUndefined();
+    expect(runtime.snapshot().capturedMonsters).toHaveLength(1);
+  });
+
   it("capturing one enemy does not win while another visible enemy is alive", () => {
     const project = monsterProject();
     const troop = project.database.troops.find((record) => record.id === "troop_slime");
