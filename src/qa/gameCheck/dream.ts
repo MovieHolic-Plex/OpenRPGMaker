@@ -10,6 +10,7 @@ import { mapLoopsX, mapLoopsY } from "@/project/mapLoop";
 import { briefTextOf } from "./brief";
 import { visitAllCommands, type CommandVisit } from "./walk";
 import type { Finding } from "./types";
+import { isBareBoard, mapTexture } from "@/project/mapTexture";
 
 const DREAM_BRIEF = /꿈|dream|유메닛키/iu;
 const LOOP_BRIEF = /반복\s*맵|반대편으로\s*이어|끝없는|이어지는\s*(?:맵|숲|복도)|루프/iu;
@@ -42,17 +43,6 @@ function loopOpenings(project: Project, map: GameMap): number {
   return open;
 }
 
-/** 가장 흔한 아래층 타일 비율과 위층이 찬 칸 비율. */
-function mapTexture(map: GameMap): { dominantShare: number; upperShare: number; dominantTile: number } {
-  const counts = new Map<number, number>();
-  for (const tile of map.lowerTiles) counts.set(tile, (counts.get(tile) ?? 0) + 1);
-  let dominantTile = 0, top = 0;
-  for (const [tile, count] of counts) if (count > top) { top = count; dominantTile = tile; }
-  const cells = Math.max(1, map.width * map.height);
-  const upper = map.upperTiles.filter((tile) => tile > 0).length;
-  return { dominantShare: top / cells, upperShare: upper / cells, dominantTile };
-}
-
 export function checkDream(project: Project, briefText = briefTextOf(project)): Finding[] {
   if (!DREAM_BRIEF.test(briefText)) return [];
   const findings: Finding[] = [];
@@ -61,7 +51,7 @@ export function checkDream(project: Project, briefText = briefTextOf(project)): 
   for (const map of maps) {
     if (map.id === project.startMapId || map.width * map.height < 150) continue;
     const texture = mapTexture(map);
-    if (texture.dominantShare >= 0.75 && texture.upperShare < 0.03) {
+    if (isBareBoard(texture)) {
       findings.push({ severity: "warning", code: "dream-world-bare", message: `${map.name}(${map.id}) 은 바닥 ${Math.round(texture.dominantShare * 100)}% 가 한 타일이고 위층 장식이 ${Math.round(texture.upperShare * 100)}% 뿐인 빈 판입니다 — 기획의 세계(촛대·계단·시계 눈알 …)가 그림으로 보이지 않습니다.`, where: { mapId: map.id, mapName: map.name } });
     }
     // 보이지 않는 사물: 그림도 없고 아래 칸도 주변과 같은 바닥인 조사 이벤트.

@@ -66,6 +66,7 @@ import {
   type RowAtom,
   type RunCell,
 } from "./rowArrangement";
+import { isBareBoard, mapTexture } from "@/project/mapTexture";
 
 const WALL_EXAMPLE = { mapId: "map_1", rect: { x: 8, y: 6, w: 6, h: 4 }, material: "흰 집 벽" };
 const ROOF_EXAMPLE = { mapId: "map_1", material: "빨간 지붕", wallRect: { x: 8, y: 6, w: 6, h: 4 } };
@@ -703,6 +704,22 @@ const layPath: ToolDefinition = {
   },
 };
 
+/**
+ * 맵 대부분을 한 바닥으로 채운 뒤 아무것도 올리지 않으면 플레이어에게는 「빈 판」만 보인다.
+ * 2026-09-24 꿈 세계 도그푸딩: create_map → fill_region → upsert_event 만으로 세계 5개를 끝내
+ * 촛불 숲·계단 바다·시계 사막이 전부 흙 한 장이었고 조사 대상은 맨바닥 위 투명 칸이었다.
+ * 막지 않고, 다음 단계를 알려 준다.
+ */
+function bareBoardWarnings(map: GameMap, filledCells: number, layer: string): string[] {
+  const cells = map.width * map.height;
+  if (layer !== "lower" || cells < 64 || filledCells < cells * 0.6) return [];
+  if (!isBareBoard(mapTexture(map))) return [];
+  return [
+    `${map.name} 은 지금 바닥 한 가지뿐인 빈 판입니다 — 이 장소를 알아보게 하는 사물·지형(나무·바위·가구·기둥·장식)을 ` +
+      `place_props(material:"타일 라벨")나 paint_tiles 로 깔고, 조사할 사물 이벤트는 그 사물 타일 칸이나 바로 옆에 두세요.`,
+  ];
+}
+
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
@@ -998,6 +1015,7 @@ const fillRegion: ToolDefinition = {
     const exitNote = exit.corridor.length > 0 ? `, 시작 위치 통로 ${exit.corridor.length}칸 비움` : "";
     const warnings = [
       ...(protectedSkipWarnings(skippedAll) ?? []),
+      ...bareBoardWarnings(map, exit.cells.length, layer),
       ...(exit.corridor.length > 0
         ? [`시작 위치 (${draft.startPos.x},${draft.startPos.y})가 사방으로 막혀 밖으로 나가는 통로 ${exit.corridor.length}칸((${exit.corridor[0].x},${exit.corridor[0].y})~(${exit.corridor[exit.corridor.length - 1].x},${exit.corridor[exit.corridor.length - 1].y}))을 비워 두었습니다`]
         : []),
