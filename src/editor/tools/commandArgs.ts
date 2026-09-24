@@ -103,6 +103,13 @@ function collectKindShapeFailures(label: string, value: unknown): string[] {
     if (raw.kind === "text" && typeof raw.body === "string" && /\\n(?!\[)/u.test(raw.body)) {
       failures.push(`${path}.body: 문자형 역슬래시+n 대신 실제 줄바꿈을 넣으세요. 배우 이름 제어문자 \\n[번호]는 그대로 사용할 수 있습니다.`);
     }
+    if (raw.kind === "fork" && (!isRecord(raw.condition) || !Array.isArray(raw.then))) {
+      failures.push(`${path}: 조건 분기(fork)는 condition 객체 하나와 then 배열을 한 명령 안에 담습니다 — 뒤따르는 명령을 형제로 두는 「조건 시작/끝」 표기가 아닙니다. `
+        + `실제 condition ${describeValue(raw.condition)}, then ${describeValue(raw.then)}. `
+        + `예: {kind:"fork",condition:{kind:"variable",variableId:"var_day",op:">=",value:6},then:[{kind:"text",body:"축제 날이다!"}],else:[{kind:"text",body:"아직이다."}]} `
+        + `(조건 여러 개는 condition:{kind:"all",conditions:[…]}).`);
+      continue;
+    }
     failures.push(...nestedKindShapeFailures(path, raw));
   }
   return failures;
