@@ -136,7 +136,10 @@ export async function replayRecording(dir: string, options: { readonly phases?: 
         await checkpoint(call.name);
         publishMs += Date.now() - p0;
       } catch (error) {
-        calls.push({ ...entry, status: "checkpoint-rejected", differs: true, note: `체크포인트 발행 거절: ${error instanceof Error ? error.message : String(error)}` });
+        const message = error instanceof Error ? error.message : String(error);
+        calls.push({ ...entry, status: "checkpoint-rejected", ok: false, differs: true, note: `체크포인트 발행 거절: ${message}` });
+        // 런타임과 같게: 내용 무결성 거절(commit-rejected)은 그 호출만 되돌리고 계속 간다. 그 밖의 거절은 실행 중단.
+        if (/^적용 실패\(commit-rejected\)/u.test(message)) { ctx.project = snapshotProjectKeepingHeavy(accepted); continue; }
         stoppedAt = call.order;
         break;
       }
