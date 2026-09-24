@@ -1,5 +1,17 @@
 # Pixel Art World 현대 주택 사용자 PNG 지원
 
+## 도시의 서로 다른 두 주택 (2026-09-24 후속)
+
+도시 정본의 중복된 16×18 주택 두 채는 `compact-homes.json`의 13×16/13×15 평면으로 다시 저작했다.
+첫 집은 북쪽 침실·주방과 남쪽 거실, 두 번째 집은 서쪽 거실과 동쪽 침실·주방이다.
+각각 분리 침실과 침대 발치 통로를 유지하며, 장/침대 밑동은 바닥4/11에 닿는다.
+`revise-pixel-art-world-homes.mjs`는 기존 합성 아틀라스의 SHA를 확인하고 실제 `canMove`로
+24개 접근/출구를 확인한 뒤 정본 CAS용 패치를 만든다. 도시 입구의 전이 좌표도 함께 바꾼다.
+`save-pixel-art-world-patch.mjs`로 저장·재로드한 뒤 공용 게시기를 다시 실행한다.
+공용 장소 문서는 각 집의 방·문·가구·전체 배열과 그림을 포함한다.
+
+아래 14×16은 기존 원본 가져오기용 기본 표본이다. 도시의 두 완성 집과 크기/원점을 혼용하지 않는다.
+
 공용 메타데이터 정본은 `tiledata/pixel-art-world/home.json`, 생성기는
 `scripts/content/prepare-pixel-art-world-home.mjs`, 번들은 `src/assets/pixelArtWorldHomeCatalog.json`이다.
 원본 `ST-Town-I01.png`는 사용자가 제작자 페이지에서 받아 가져온다. 그림은 Git·public에 넣지 않는다.
@@ -17,3 +29,7 @@ standing 가구는 실제 불투명 밑동이 바닥에 닿아야 한다. 창·�
 원본 픽셀 alpha255를 확인하고, 생성기는 출입→모든 접근의 4방향 연결과 겹침을 확인한다.
 로컬 그림 생성: `node scripts/content/render-pixel-art-world-home.mjs /사용자/원본폴더`.
 `output/paw-home/report.json` 및 실제 PNG를 읽는다. 정본 저장 증거와 혼동하지 않는다.
+
+두 집 실제 player.html 관찰: 각각 접근점11개를 방문하고 총126회 이동, 도시 action 진입과
+touch 귀환2쌍을 확인했다. 실행 사본의 두 주택 및 도시 map 전체가 정본revision28 재로드와
+정확히 일치한다. 공용 장소 참고문서도 이 배열과 방/가구/접근점으로 다시 게시했다.

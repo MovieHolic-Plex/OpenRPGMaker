@@ -2,6 +2,17 @@
 
 # 타일셋 참고문서 — 프로젝트 데이터
 
+## 공용 SQLite 지역 참고문서 조회 (2026-09-24)
+
+`shared-content`에 저장된 지역과 옛 `shared-tile-references.spatial`은 서로 다른 저장 경로다.
+기존 조회가 옛 `SHARED_REGION_REFERENCES` 배열만 읽어 새 공용 도시의 MD/이미지를 찾지 못했다.
+`sharedSpatialReferences.sharedRegionReferences()`는 호출 시 두 카탈로그를 ID로 합치고
+현재 공용 콘텐츠를 우선한다. 지역 갤러리·AI 지역 목록·지역 문서 조회가 이 함수를 공유한다.
+지역의 전체 타일 배열도 현재 라이브러리의 `sharedRegionSnapshot`을 먼저 읽는다.
+두 endpoint의 부팅 순서나 옛 공간 자료 초기화로 새 지역을 지우지 않는다.
+문서의 저장 여부만으로 완료를 판단하지 말고 `read_spatial_reference`의 지역 MD/이미지와
+`read_region_reference`의 전체 행을 실제로 읽어 확인한다.
+
 ## 사용자 다운로드형 타일셋 지원 (2026-09-24)
 
 자료집 → 맵 → 타일 → **외부 타일셋 다운로드**에서 Pixel Art World 도서관·사무실,

@@ -23,3 +23,14 @@ asset ID와 SpriteDef ID를 동일하게 사용한다. 임의 크기 sprite를 c
 `setEventGraphicPattern`은 렌더 프레임만 바꾼다. 충돌/스위치/transfer/열림 페이지의 통행은
 별도 이벤트 저작이다. 자동 반복이나 출입 기능을 가져오기 완료와 동일시하지 않는다.
 런타임 관찰은 편집기 play가 아닌 전용 player.html에서 수행한다. 자세한 범위는 DOORS.md 참조.
+
+공용 게시 시 문서만 복사하면 sprite가 빠진다. `read-pixel-art-world-host.mjs`는 확인된9개의
+`shared_paw_door_*` 자산도 호스트 API로 해석한다. `publish-pixel-art-world-local-library.mjs`는
+paw-* 타일셋의 문 카테고리와 동일 ID 자산을 함께 요구하고, 프레임 규격·실제 PNG 치수·JSON
+안의 uploaded 참조를 검증한 뒤 공용 assets에 보존한다. 이전 공용 문을 오래된 source로
+지우려는 게시도 중단한다. 정본과 공용 문서가 같은 예약 sprite ID를 써 재치환이 필요 없다.
+
+로컬 설치 관찰: 원본9파일 SHA와 가져온 PNG의 보이는 RGBA가 일치했다. 정본revision33에
+9sprite/6소유자/9용도43MD43PNG를 저장·재로드, 공용 게시 후revision34에21공용 타일셋을
+재투영했다. 기존12맵은 보존됐다. AI 문서 전페이지와43그림, 새 프로젝트 메모리 투영의
+sprite 의존성도 확인했다. 실제 SQLite 새 프로젝트 생성 관찰은 앞선27타일셋 시점의 별도 근거다.

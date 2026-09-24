@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **88쪽 / 3386KB / 약 966,331 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **91쪽 / 3399KB / 약 970,541 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -77,7 +77,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/location-layer-affordance-audit.md` | 1 | `src/styles/editor/map-location-layer.css` |
 | `openwiki/night-monster.md` | 2 | `build-night-monster.mts`, `verify-shots/runtime-qa/night-monster/SUMMARY.md` |
 | `openwiki/opening-still-pack.md` | 4 | `artifacts/stills-library-plan.json`, `queue-status.json`, `review/index.html`, `run-status.json` |
-| `openwiki/pixel-art-world-home.md` | 1 | `ST-Town-I01.png` |
+| `openwiki/pixel-art-world-home.md` | 3 | `ST-Town-I01.png`, `compact-homes.json`, `revise-pixel-art-world-homes.mjs` |
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
@@ -941,9 +941,21 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L114` Runtime and authoring contracts
 - `L133` Verification and examples
 
-### `openwiki/pixel-art-world-home.md` — 2KB · 20줄 · ~483 토큰
+### `openwiki/pixel-art-world-doors.md` — 3KB · 37줄 · ~1,009 토큰
 
 절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-home.md` — 3KB · 36줄 · ~892 토큰
+
+- `L3` 도시의 서로 다른 두 주택 (2026-09-24 후속)
+
+### `openwiki/pixel-art-world-hospitality-complements.md` — 3KB · 24줄 · ~786 토큰
+
+절 제목 없음 (평면 목록 페이지).
+
+### `openwiki/pixel-art-world-native-complements.md` — 4KB · 37줄 · ~1,196 토큰
+
+- `L22` 사용자 로컬 공용 등록 경로
 
 ### `openwiki/pixel-art-world-school.md` — 8KB · 88줄 · ~2,343 토큰
 
@@ -1515,7 +1527,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/team-project-host.md` — 18KB · 231줄 · ~5,702 토큰
+### `openwiki/team-project-host.md` — 20KB · 250줄 · ~6,237 토큰
 
 - `L5` 소유와 실행 위치
 - `L22` 실행
@@ -1527,10 +1539,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L142` 호스트 페이지 CSP (2026-09-22)
 - `L151` 적대적 리뷰 수정 (2026-09-18)
 - `L164` 웹 새 프로젝트 생성 (2026-09-18)
-- `L181` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
-- `L201` 맵 편집 권한 가져오기 (2026-09-18)
-- `L209` 운영 AI와 로그인 유지 (2026-09-18)
-- `L222` 내부 웹 기본 접속 (2026-09-18)
+  - `L181` 새 프로젝트의 공용 기본 자료 보장 (2026-09-24)
+- `L200` 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
+- `L220` 맵 편집 권한 가져오기 (2026-09-18)
+- `L228` 운영 AI와 로그인 유지 (2026-09-18)
+- `L241` 내부 웹 기본 접속 (2026-09-18)
 
 ### `openwiki/testing.md` — 205KB · 1916줄 · ~56,826 토큰 · 통째읽기 잘림
 
@@ -1653,38 +1666,39 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L306` 16px 병행판 (2026-09-22)
   - `L325` 픽셀 크기 기록 계약 (2026-09-22)
 
-### `openwiki/tileset-reference-documents.md` — 43KB · 454줄 · ~13,053 토큰
+### `openwiki/tileset-reference-documents.md` — 44KB · 465줄 · ~13,328 토큰
 
-- `L5` 사용자 다운로드형 타일셋 지원 (2026-09-24)
-  - `L40` 공간 설계·실제 발판 검사
-- `L56` 사용자 경로와 정본
-- `L73` 타일 화면 구성 (2026-09-21)
-- `L94` 저장 계약
-- `L106` AI 선행 읽기 계약
-- `L133` Slates 이관
-- `L146` 확인 자료와 범위
-- `L152` Castle2 성채 학습 이관
-- `L164` 숲마을 공용 자료 (2026-09-21)
-- `L180` 공용 forest_harmony 참고문서 보충 (2026-09-22)
-  - `L195` Castle2 공용 기본 제공 수정
-- `L204` 실행형 부품·조립·검증 자료
-- `L222` 공용 숲 실행 조립법 (2026-09-22)
-  - `L239` 상세 공용 조립 계약 (public-assembly-v2)
-- `L251` 이슬여울 마을 장식 표본 (2026-09-22)
-- `L275` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
-  - `L291` 절벽 조립 교정 (2026-09-23)
-  - `L301` 잔디 경계 개정3 (2026-09-23)
-  - `L311` 굽은 지형·입구 개정4 (2026-09-23)
-  - `L321` 생활 마당 개정5 (2026-09-23)
-  - `L330` 사용 목적 개정6 (2026-09-23)
-  - `L340` 공동 공간·정원 개정7 (2026-09-23)
-  - `L351` 계단 대지 개정8 (2026-09-23)
-  - `L366` 강과 폭포 개정9 (2026-09-23)
-  - `L378` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
-  - `L394` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
-  - `L410` 기후 마을 · 설원·화산 (2026-09-23)
-  - `L423` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
-  - `L436` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
+- `L5` 공용 SQLite 지역 참고문서 조회 (2026-09-24)
+- `L16` 사용자 다운로드형 타일셋 지원 (2026-09-24)
+  - `L51` 공간 설계·실제 발판 검사
+- `L67` 사용자 경로와 정본
+- `L84` 타일 화면 구성 (2026-09-21)
+- `L105` 저장 계약
+- `L117` AI 선행 읽기 계약
+- `L144` Slates 이관
+- `L157` 확인 자료와 범위
+- `L163` Castle2 성채 학습 이관
+- `L175` 숲마을 공용 자료 (2026-09-21)
+- `L191` 공용 forest_harmony 참고문서 보충 (2026-09-22)
+  - `L206` Castle2 공용 기본 제공 수정
+- `L215` 실행형 부품·조립·검증 자료
+- `L233` 공용 숲 실행 조립법 (2026-09-22)
+  - `L250` 상세 공용 조립 계약 (public-assembly-v2)
+- `L262` 이슬여울 마을 장식 표본 (2026-09-22)
+- `L286` 다양한 마을의 번들 소유 참고문서 (2026-09-23)
+  - `L302` 절벽 조립 교정 (2026-09-23)
+  - `L312` 잔디 경계 개정3 (2026-09-23)
+  - `L322` 굽은 지형·입구 개정4 (2026-09-23)
+  - `L332` 생활 마당 개정5 (2026-09-23)
+  - `L341` 사용 목적 개정6 (2026-09-23)
+  - `L351` 공동 공간·정원 개정7 (2026-09-23)
+  - `L362` 계단 대지 개정8 (2026-09-23)
+  - `L377` 강과 폭포 개정9 (2026-09-23)
+  - `L389` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+  - `L405` 판타지 장소 11곳 · 상점·성 내부·마왕성 (2026-09-23)
+  - `L421` 기후 마을 · 설원·화산 (2026-09-23)
+  - `L434` 사막·가을 기후 + 마을 사이 필드 (2026-09-23)
+  - `L447` 나무 몸통 개정 — 잘린 줄기 없애기 (2026-09-23)
 
 ### `openwiki/town-tile-benchmark.md` — 10KB · 153줄 · ~3,024 토큰
 

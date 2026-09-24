@@ -1,5 +1,5 @@
 import type { GameMap, Project, TilesetDef } from './types';
-import { sharedContentTileset } from './sharedContent';
+import { sharedContentTileset, sharedRegionReferences as contentRegions, sharedRegionSnapshot as contentSnapshot } from './sharedContent';
 import type { TilesetReferenceCategory } from './tilesetReferences';
 
 export interface SharedRegionReference {
@@ -15,12 +15,18 @@ export interface SharedSpatialReferences {
   assets: Project['assets']['uploaded'];
 }
 export const SHARED_REGION_REFERENCES: SharedRegionReference[] = [];
+/** Resolve the current content library at read time; legacy loading must not erase it. */
+export function sharedRegionReferences(): SharedRegionReference[] {
+  return [...new Map([...SHARED_REGION_REFERENCES, ...contentRegions()].map(region => [region.id, region])).values()];
+}
 let catalog: SharedSpatialReferences = { regions: [], maps: {}, tilesets: {}, assets: {} };
 export function installSharedSpatialReferences(value?: SharedSpatialReferences): void {
   catalog = value ? structuredClone(value) : { regions: [], maps: {}, tilesets: {}, assets: {} };
   SHARED_REGION_REFERENCES.splice(0, SHARED_REGION_REFERENCES.length, ...catalog.regions);
 }
 export function sharedRegionSnapshot(id: string) {
+  const current = contentSnapshot(id);
+  if (current) return current;
   const reference = catalog.regions.find(r => r.id === id);
   const map = reference && catalog.maps[reference.sourceMapId];
   const tileset = map && catalog.tilesets[map.tilesetId];

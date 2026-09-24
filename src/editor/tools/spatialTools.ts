@@ -1,7 +1,7 @@
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { preloadRegionReference, readRegionReference } from "@/project/regionReferenceSnapshots";
-import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
+import { sharedRegionReferences } from '@/project/sharedSpatialReferences';
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";
@@ -71,7 +71,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     parameters: { type: "object", properties: { id: { type: "string" }, row: { type: "integer", minimum: 0 }, rows: { type: "integer", minimum: 1, maximum: 16 } }, additionalProperties: false },
     prepare: args => typeof args.id === "string" ? preloadRegionReference(args.id) : Promise.resolve(),
     run(_project, args) {
-      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].map(referenceOwnerManifest)) } };
+      if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...sharedRegionReferences()].map(referenceOwnerManifest)) } };
       try { return { summary: "완성 지역 사례 원본", data: readRegionReference(String(args.id), args.row === undefined ? 0 : Number(args.row), args.rows === undefined ? 8 : Number(args.rows)) }; }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
     },

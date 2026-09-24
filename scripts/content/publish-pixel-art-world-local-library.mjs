@@ -12,9 +12,10 @@ const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const project = await read(input), proof = await read(proofFile);
 if (!proof.projectId || !proof.projectDir || !proof.sha256) throw Error('Canonical host source proof required');
 if (!proof.portableSha256 || createHash('sha256').update(await fs.readFile(input)).digest('hex') !== proof.portableSha256) throw Error('Portable source does not match canonical read receipt');
-const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
+const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
+const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
 const { PNG } = pngjs, pngs = new Map();
 const key = id => { const normalized=id.replaceAll('-', '_'); return `shared_${normalized.startsWith('paw_')?normalized:'paw_'+normalized}`; };
 const lib = { version:1, projectDefaults:true, roots:[], places:{}, regions:{}, tilesets:{}, assets:{}, maps:{}, sourceProjectId:proof.projectId, previews:{} };
@@ -31,6 +32,36 @@ for (const source of Object.values(project.tilesets).filter(t => t.id.startsWith
   if (tile.referenceSourceTilesetId) tile.referenceSourceTilesetId = key(tile.referenceSourceTilesetId);
   lib.tilesets[tile.id] = tile; lib.assets[asset.id] = asset;
   pngs.set(tile.id, PNG.sync.read(Buffer.from(asset.dataUrl.split(',')[1],'base64')));
+}
+
+// Door reference documents depend on user-local sprites, not on the tile atlas.
+const doors = await read('src/assets/pixelArtWorldDoors.json');
+for (const pack of doors) {
+  const id=key(pack.id), asset=project.assets.uploaded[id];
+  const categories=Object.values(project.tilesets).filter(t=>t.id.startsWith('paw-')).flatMap(t=>t.referenceDocuments??[]).filter(c=>c.id===pack.id);
+  if(!asset&&!categories.length)continue;
+  if(!asset||!categories.length)throw Error('Incomplete door dependency '+pack.id);
+  const meta=asset.meta;
+  if(asset.kind!=='sprite'||meta.frames!==16||['width','height','frameWidth','frameHeight'].some(k=>meta[k]!==pack[k]))throw Error('Door geometry differs '+id);
+  if(!asset.dataUrl?.startsWith('data:image/png;base64,'))throw Error('Resolve door asset through host first: '+id);
+  const png=PNG.sync.read(Buffer.from(asset.dataUrl.split(',')[1],'base64'));
+  if(png.width!==pack.width||png.height!==pack.height)throw Error('Door PNG dimensions differ '+id);
+  for(const c of categories){
+    let examples=0;
+    for(const d of c.documents)for(const match of d.markdown.matchAll(/```json\s*\n([\s\S]*?)\n```/g)){
+      const visit=value=>{
+        if(!value||typeof value!=='object')return;
+        if(value.type==='uploaded'&&typeof value.id==='string'){
+          if(value.id!==id)throw Error('Door document asset differs '+value.id);
+          examples++;
+        }
+        Object.values(value).forEach(visit);
+      };
+      visit(JSON.parse(match[1]));
+    }
+    if(!examples)throw Error('Door graphic example missing '+pack.id);
+  }
+  lib.assets[id]=structuredClone(asset);
 }
 
 function render(tileId, width, height, lower, upper) {
@@ -82,7 +113,7 @@ for(const recipe of extras.recipes){
 
 // Importer scene references are reusable place assemblies, separate from saved
 // game maps. Keep the full geometry and source pixels available to AI readers.
-const complements = await read('src/assets/pixelArtWorldNativeComplementsCatalog.json');
+const complements = (await Promise.all(['Native','Hospitality'].map(kind => read(`src/assets/pixelArtWorld${kind}ComplementsCatalog.json`)))).flat();
 for (const pack of complements.filter(pack => project.tilesets[pack.id])) for (const scene of pack.scenes) {
   const tileId=key(pack.id), id=key(scene.id), kitId=id+'_raster';
   const image=render(tileId,scene.width,scene.height,scene.lowerTiles,scene.upperTiles);
@@ -91,6 +122,8 @@ for (const pack of complements.filter(pack => project.tilesets[pack.id])) for (c
   lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:scene.name,width:scene.width,height:scene.height,tileSize:32,rows:rows(scene.width,scene.height,scene.lowerTiles,scene.upperTiles),learnedFrom:'db-authored',referenceDocuments:docs,ai:{description:scene.name+' 고정 조립',placementRules:'전체 배열·가구 방향·접근칸과 문턱을 보존한다. 출입과 문 상태 이벤트는 별도다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'}});
   lib.places[id]={id,name:scene.name,revision:1,tags:['Pixel Art World','실내','고정 조립','이벤트 별도'],provenance:{origin:'ai',sourceId:scene.id},kind:'facility',layout:'manual',children:[],ports:(scene.doorways??[]).filter(d=>d.from==='outside'||d.to==='outside').map((d,i)=>({id:id+'_entry_'+i,name:'출입구',x:d.x,y:d.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
   lib.previews[id]=image;
+  // These source-pixel assemblies passed a separate composition review; they remain static examples with explicit event limitations.
+  lib.roots.push(id);
   await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
 }
 
@@ -115,14 +148,16 @@ for(const source of Object.values(project.maps)){
   const image=render(tileId,map.width,map.height,map.lowerTiles,map.upperTiles);lib.previews[id]=image;
   await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
   const floor=school.floors.find(f=>f.id===source.id), schoolGuide=floor?school.guide:'';
-  const guide=`# ${map.name}\n\n정본 ${proof.projectId}, revision ${proof.revision}, 원본 mapId ${source.id}.\n공용 mapId \`${id}\`, tilesetId \`${tileId}\`.\n${schoolGuide}\n\n원본 사건을 보관한 전체 맵은 library.maps에 있다. 장소 그림 킷 자체에는 이벤트가 없다. 계단/출입구는 ports/connections와 원본 events를 함께 읽고 목적 mapId를 다시 연결한다.\n이 사례 하나는 소재 전체 또는 미검토 타일의 지원 완료를 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({width:map.width,height:map.height,lowerTiles:map.lowerTiles,upperTiles:map.upperTiles,events:map.events,...(floor?{rooms:floor.rooms,stairs:floor.stairs,spawn:floor.spawn}:{})})}\n\`\`\``;
+  const candidate=homePlans[source.id];
+  const home=candidate&&candidate.width===map.width&&candidate.height===map.height&&JSON.stringify(candidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(candidate.upperTiles)===JSON.stringify(map.upperTiles)?candidate:null;
+  const guide=`# ${map.name}\n\n정본 ${proof.projectId}, revision ${proof.revision}, 원본 mapId ${source.id}.\n공용 mapId \`${id}\`, tilesetId \`${tileId}\`.\n${schoolGuide}\n\n원본 사건을 보관한 전체 맵은 library.maps에 있다. 장소 그림 킷 자체에는 이벤트가 없다. 계단/출입구는 ports/connections와 원본 events를 함께 읽고 목적 mapId를 다시 연결한다.\n이 사례 하나는 소재 전체 또는 미검토 타일의 지원 완료를 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({width:map.width,height:map.height,lowerTiles:map.lowerTiles,upperTiles:map.upperTiles,events:map.events,...(floor?{rooms:floor.rooms,stairs:floor.stairs,spawn:floor.spawn}:{}),...(home?{rooms:home.rooms,doorways:home.doorways,placements:home.placements,approachCells:home.approachCells,spawn:home.spawn,exitTrigger:home.exitTrigger,designNotes:home.designNotes}:{})})}\n\`\`\``;
   const docs=[category('place-layout',map.name,guide,image)];
-  if(pendingReview[source.id]) docs.unshift({id:'review-pending',name:'수정 전 사례 · 그대로 재사용 금지',description:pendingReview[source.id],documents:[{id:'findings',name:'적대적 시각 검토.md',markdown:`# 수정 대기\n\n${pendingReview[source.id]}\n\n좌표는 이 실제 저장 맵의 0기준 타일 좌표다. 아래 전체 배열/그림은 수정할 원본을 식별하는 자료이며 정상 배치의 정답이 아니다. 공용 장소의 검토 완료 목록에서는 제외한다.`}],images:[]});
+  if(pendingReview[source.id]&&!home) docs.unshift({id:'review-pending',name:'수정 전 사례 · 그대로 재사용 금지',description:pendingReview[source.id],documents:[{id:'findings',name:'적대적 시각 검토.md',markdown:`# 수정 대기\n\n${pendingReview[source.id]}\n\n좌표는 이 실제 저장 맵의 0기준 타일 좌표다. 아래 전체 배열/그림은 수정할 원본을 식별하는 자료이며 정상 배치의 정답이 아니다. 공용 장소의 검토 완료 목록에서는 제외한다.`}],images:[]});
   const kitId=id+'_raster';
   lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:map.name,width:map.width,height:map.height,tileSize:32,rows:rows(map.width,map.height,map.lowerTiles,map.upperTiles),learnedFrom:'db-authored',ai:{description:map.name+' 전체 평면',placementRules:'전체 배열과 한 칸 출입구, 좌석 접근칸, 바닥에 닿는 가구 밑동을 보존한다. 이벤트는 별도로 연결한다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'},referenceDocuments:docs});
   lib.places[id]={id,name:map.name,revision:1,tags:['Pixel Art World',floor?'학교':'현대도시','다운로드 소재'],provenance:{origin:'ai',sourceId:source.id},kind:source.id==='paw_city'?'settlement':'facility',layout:'manual',children:[],ports:(floor?.stairs??[]).map(s=>({id:`${id}_${s.direction}_${s.x<30?'west':'east'}`,name:s.destinationLevel+'층',x:s.x,y:s.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
   // New maps need an explicit visual review before joining the approved roots.
-  if(['paw_city','library-compact-1'].includes(source.id))lib.roots.push(id);
+  if(['paw_city','library-compact-1'].includes(source.id)||home)lib.roots.push(id);
   if(source.id==='paw_city')lib.regions[id]={id,name:map.name,kind:'completed-map',regionKind:'settlement',revision:1,width:map.width,height:map.height,tilesetId:tileId,preview:image,sourceProjectId:proof.projectId,sourceMapId:id,snapshotProjectId:proof.projectId,rules:['50×50 실제 저장 평면. 도로·건물 입구와 시설 목적맵의 연결을 보존한다.','완성도는 별도 시각 검토 대상이며 자동 구조 검사는 미적 승인이 아니다.'],limitations:'현재 도시 배치 참고. 전체 카탈로그 지원 완료가 아니다. 사용자 로컬 다운로드 원본만 포함.',referenceDocuments:docs};
 }
 const buildingId='shared_paw_school_building';
@@ -137,6 +172,10 @@ const summary={source:proof,libraryId:'pixel-art-world-local',places:Object.keys
 summary.referenceCompression=JSON.parse(compressed.stdout);
 await withTsModule('scripts/lib/sharedContentSqlite.ts','paw-shared-publish.mjs',async api=>{
   const old=api.readSharedContent();
+  for(const pack of doors){
+    const id=key(pack.id);
+    if(old.libraries[summary.libraryId]?.assets[id]&&!lib.assets[id])throw Error('Refuse removing an installed door from a stale source: '+id);
+  }
   const expected=old.libraries[summary.libraryId]?hash(JSON.stringify(old.libraries[summary.libraryId])):null;
   if(action==='--publish-local'){
     const saved=api.publishSharedContent(summary.libraryId,lib,expected);
