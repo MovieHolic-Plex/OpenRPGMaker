@@ -2731,7 +2731,9 @@ export class EditScene extends PhaserRuntime.Scene {
 
 function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
-  if (!node) return;
+  // Runs per pointermove; an equal write still replaces the text node and wakes every
+  // body-subtree MutationObserver.
+  if (!node || node.textContent === text) return;
   node.textContent = text;
 }
 

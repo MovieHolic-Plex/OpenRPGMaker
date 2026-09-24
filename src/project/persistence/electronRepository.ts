@@ -208,7 +208,7 @@ export function createElectronRepository(): ElectronRepository {
       const serialized = serialize(persisted);
       const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
+      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256, ...(result.revision === undefined ? {} : { revision: result.revision }) } : result;
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
@@ -227,7 +227,7 @@ export function createElectronRepository(): ElectronRepository {
       if (result.kind === "stale-base") result = await send(true);
       if (result.kind === "stale-base") throw new Error("저장 기준 문서가 서버와 달라 맵 패치를 적용하지 못했습니다");
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
+      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256, ...(result.revision === undefined ? {} : { revision: result.revision }) } : result;
     },
     commits: {
       record(input: CommitInput, target?) {

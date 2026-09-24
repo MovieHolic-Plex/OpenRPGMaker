@@ -88,6 +88,11 @@ export type ProjectChangeDescriptor =
   | ({ readonly scope: "database"; readonly collection?: string } & ProjectChangeAnnotation)
   | ({ readonly scope: "system" | "assets" | "project" } & ProjectChangeAnnotation);
 
+/** Tile-grid-only edit (paint, fill, erase): emitted per pointer sample, never touches events or metadata. */
+export function isTileCellChange(change: ProjectChangeDescriptor | undefined): change is Extract<ProjectChangeDescriptor, { scope: "map" }> {
+  return change?.scope === "map" && !!change.cells?.length;
+}
+
 /** Identity of the project that is actually loaded in this editor session. */
 export type ProjectIdentity =
   | { readonly kind: "remote"; readonly id: string }
@@ -234,6 +239,8 @@ class ProjectStore {
   private writeAuthority: ProjectWriteAuthority | null = null;
   private persistenceRecovery: ProjectPersistenceRecovery = { kind: "ready" };
   private lastPersistenceReceipt: ProjectPersistenceReceipt | null = null;
+  /** Host revision written by this editor's last accepted save; its content is already in memory. */
+  private lastSavedHostRevision: number | null = null;
   /** Load/adoption lineage is separate from the local-edit counter used by catch-up saves. */
   private contentLineage = 0;
   private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
@@ -556,6 +563,7 @@ class ProjectStore {
         this.writeAuthority = saved.authority;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(saved.project));
         this.lastPersistenceReceipt = null;
+        this.lastSavedHostRevision = null;
         this.persistenceRecovery = { kind: "ready", mirror: saved.mirror };
         this.current = preserveEventDraftsOnProject(saved.project, this.current);
         syncEventDraftVaultFromProject(this.current);
@@ -605,6 +613,7 @@ class ProjectStore {
         const sharedDemo = isSharedDemoProjectId(status.projectId);
         this.contentLineage += 1;
         this.lastPersistenceReceipt = null;
+        this.lastSavedHostRevision = null;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
@@ -646,6 +655,11 @@ class ProjectStore {
       return { kind: "failed", message: error instanceof Error ? error.message : "온라인 저장 연결 실패" };
     }
   }
+  /** True when `revision` is the host row this editor just wrote, so re-downloading it is pointless. */
+  isOwnSavedHostRevision(revision: number): boolean {
+    return this.lastSavedHostRevision !== null && this.lastSavedHostRevision === revision;
+  }
+
   /** A host notification may refresh only a clean, unchanged editor. Never overwrite edits made during I/O. */
   async refreshFromHost(): Promise<boolean> {
     if (!this.loaded || !this.remotePersistenceEnabled || this.dirtySinceLastPersist || this.persistInFlight) return false;
@@ -660,6 +674,7 @@ class ProjectStore {
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(snapshot.project));
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
     resetManualProjectCommitBaseline(this.current);
     // External changes invalidate local undo snapshots; do not let Ctrl+Z undo a teammate's work.
     this.emit({ scope: 'project', origin: 'system', projectSwitch: true });
@@ -689,6 +704,7 @@ class ProjectStore {
       }
       this.contentLineage += 1;
       this.lastPersistenceReceipt = null;
+      this.lastSavedHostRevision = null;
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
@@ -748,6 +764,7 @@ class ProjectStore {
     if (options.preserveEventDrafts === false || options.change?.projectSwitch === true) {
       this.contentLineage += 1;
       this.lastPersistenceReceipt = null;
+      this.lastSavedHostRevision = null;
       this.persistedBaseline = null;
     }
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
@@ -894,6 +911,7 @@ class ProjectStore {
   _setCleanPersistStateForTest(): void {
     this.dirtySinceLastPersist = false;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
   }
 
   /** Historical acceptance belongs to its actual submitted owner, not the latest live revision. */
@@ -979,6 +997,7 @@ class ProjectStore {
     persistEventDraftVaultNow();
     this.contentLineage += 1;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
     this.persistedBaseline = null;
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
@@ -1350,7 +1369,10 @@ class ProjectStore {
     let reconciledTeamProject = false;
     this.persistedBaseline = acceptedBaseline;
     if (this.repository.kind === 'local') {
-      receivedTeamChanges = serializeForComparison(savedProject) !== serializeForComparison(submittedProject);
+      // No returned document means the host wrote exactly what was submitted; skip two
+      // whole-project canonical stringifies on every save.
+      receivedTeamChanges = savedProject !== submittedProject
+        && serializeForComparison(savedProject) !== serializeForComparison(submittedProject);
       if (receivedTeamChanges) {
         const merged = mergeTeamProject(submittedProject, projectWithoutEventDrafts(this.current), savedProject);
         if (merged.kind === 'merged') {
@@ -1364,6 +1386,7 @@ class ProjectStore {
       }
     }
     this.lastPersistenceReceipt = receipt ?? null;
+    this.lastSavedHostRevision = result.revision ?? null;
     if (receipt && diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("authoring")) {
       publishDiagnostic({ category: "authoring", phase: "saved", generation: generationAtSubmit, storage: "remote" });
     }
@@ -1411,6 +1434,7 @@ class ProjectStore {
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
     this.contentLineage += 1;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
     this.writeAuthority = null;
     this.persistenceRecovery = { kind: "ready" };
     clearEventDraftVault();

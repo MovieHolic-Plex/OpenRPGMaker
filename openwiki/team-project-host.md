@@ -68,8 +68,11 @@ SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
 - 부분 저장: `core/teamMerge.ts`의 3-way merge. 맵 하나·DB 레코드 하나를 원자적으로 취급한다.
   서로 다른 맵/레코드 변경은 병합하고, 같은 항목의 변경·삭제 충돌은 거절한다.
   순서 변경·맵 트리·기타 루트는 보수적으로 충돌한다. changedMapIds는 신뢰하지 않는다.
-- 병합한 전체 저장본을 응답으로 돌려준다. renderer는 submit 이후 로컬 편집을 보존하면서
-  서버가 수락한 baseline과 팀 변경을 반영한다. 예전 로컬 문서를 응답이라고 꾸미지 않는다.
+- 실제로 팀 병합이 일어난 부분 저장만 병합한 전체 저장본을 응답으로 돌려준다. renderer는 submit
+  이후 로컬 편집을 보존하면서 서버가 수락한 baseline과 팀 변경을 반영한다. 예전 로컬 문서를
+  응답이라고 꾸미지 않는다. 클라이언트 기준 sha 이후 아무도 쓰지 않았으면(`baseSha` 일치)
+  응답에 `serialized` 를 싣지 않고, 전체 저장(`saveSerialized`)은 보낸 문자열을 되돌려 보내지 않는다
+  (2026-09-25, 아래 「웹 편집기 저장 경로 경량화」).
 - 맵 선택 시 호스트가 90초 lease를 부여하고 20초마다 갱신한다. 다른 세션의 살아 있는
   lease가 있으면 UI와 저장 서비스가 편집을 막는다. 명시적인 「편집 권한 가져오기」는
   같은 팀원의 다른 탭 또는 팀 owner에게만 허용한다. 갱신/재시도는 권한을 강제로 가져오지 않는다.
@@ -77,6 +80,8 @@ SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
   제공하지만 DB 모달이 자동 획득하는 형태는 아니다.
 - 팀 상태/정본 revision을 3초마다 조회한다. `PRAGMA data_version`은 같은 연결의 쓰기에
   바뀌지 않으므로 변경 알림 기준으로 쓰지 않는다.
+  이 편집기가 방금 저장해 만든 revision(`SaveResult.revision` → `store.isOwnSavedHostRevision`)은
+  재로드하지 않는다. 그 내용은 이미 메모리에 있다.
 - 깨끗한 편집기만 팀 변경을 재로드한다. I/O 중 mutation/lineage 변화도 검사한다.
   외부 변경을 채택하면 프로젝트 스냅샷 기반 undo를 초기화하고 기존 편집 창은 projectSwitch
   계약에 따라 닫힌다. 동료의 작업을 과거 로컬 스냅샷으로 되돌리는 것을 막는다.
@@ -204,3 +209,18 @@ owner 쿠키를 발급해 설정 변경 직후 접속이 끊기지 않게 한다
 Browser bridge requests of at least1MiB use gzip when CompressionStream exists. Small/keepalive/unsupported-browser requests remain plain JSON. The host accepts identity or gzip after the existing origin/token/session checks, caps wire bytes at128MiB and decoded bytes at256MiB, and rejects unsupported encodings, truncated/corrupt gzip and aborted requests. Login form limits are unchanged. Compression changes no project/merge semantics; stale-base retries still contain the exact base document. Helpers: `electron/browser/requestBody.ts`, `electron/serve/requestBody.ts`.
 
 Manual wire check used the actual109MB canonical document plus its asset patch: JSON141,499,825bytes → gzip57,205,286bytes, exact parsed object equality across loopback HTTP. Five negative cases cover wire/decoded limits, corrupt/truncated gzip and unsupported encoding; small/keepalive/no-CompressionStream fallbacks also checked. This checks transport, not successful canonical save/reload. No full test suite was run.
+
+## 웹 편집기 저장 경로 경량화 (2026-09-25)
+
+웹(HTTP 브리지)에서 편집 중 몇 초마다 멈추던 원인은 저장 한 번이 전체 문서를 여러 번 오가게 한 것이었다.
+참고문서 dataURL 때문에 문서가 수십 MB라 한 번 오갈 때마다 메인 스레드가 멈춘다.
+
+- 자동저장 → revision 증가 → 3초 폴링이 **자기 저장**을 팀 변경으로 보고 `refreshFromHost` 로
+  전체 다운로드 + `serializeForComparison` 두 번. 이제 저장 응답의 revision 을 기억해 건너뛴다.
+- `saveSerialized` 가 받은 문자열을 응답에 그대로 되돌려 보냈다(웹 저장 바이트 두 배). 제거.
+- 병합이 없는 `saveMapPatch` 도 전체 `serialized` 를 돌려줬고, renderer 는 그걸 역직렬화한 뒤
+  팀 변경 여부를 보려고 `serializeForComparison` 을 두 번 더 했다. 이제 서버는 `baseSha` 가 그대로면
+  문서를 싣지 않고, renderer 는 돌려받은 문서가 없으면(`savedProject === submittedProject`) 비교를 건너뛴다.
+
+남은 비용: 참고문서 이미지가 여전히 프로젝트 문서 안에 있다(`tilesets[].referenceDocuments`).
+문서를 가볍게 하려면 에셋으로 분리해야 한다 — 스키마 변경이라 별도 작업이다.

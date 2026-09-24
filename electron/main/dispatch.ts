@@ -43,11 +43,11 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
   const cached = services.get(sessions);
   if (cached) return cached;
   const store = (key: SessionKey) => sessions.require(key).store;
-  const preparedPatches = new WeakMap<object, { base: Project; project: Project; changedMapIds?: readonly string[] }>();
+  const preparedPatches = new WeakMap<object, { base: Project; project: Project; changedMapIds?: readonly string[]; baseSha?: string }>();
 
   function prepareMapPatch(key: SessionKey, payload: unknown):
     | { readonly kind: "stale-base" }
-    | { readonly kind: "ready"; readonly base: Project; readonly project: Project; readonly changedMapIds?: readonly string[] } {
+    | { readonly kind: "ready"; readonly base: Project; readonly project: Project; readonly changedMapIds?: readonly string[]; readonly baseSha?: string } {
     if (payload !== null && typeof payload === "object" && preparedPatches.has(payload)) {
       return { kind: "ready", ...preparedPatches.get(payload)! };
     }
@@ -63,6 +63,8 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
       base: deserializeStoredProjectJson(resolved.baseJson),
       project: deserializeStoredProjectJson(resolved.localJson),
       ...(input.changedMapIds ? { changedMapIds: input.changedMapIds } : {}),
+      // The base came from the stored row only when the client's hash matched it.
+      ...(input.baseSerialized === undefined && input.patch && info.sha256 && input.baseSha === info.sha256 ? { baseSha: info.sha256 } : {}),
     };
     if (payload !== null && typeof payload === "object") preparedPatches.set(payload, ready);
     return { kind: "ready", ...ready };
@@ -149,6 +151,7 @@ export function createStoreHandlers(sessions: SessionRegistry): Readonly<Record<
         baseProject: prepared.base,
         project: prepared.project,
         ...(prepared.changedMapIds ? { changedMapIds: prepared.changedMapIds } : {}),
+        ...(prepared.baseSha ? { baseSha: prepared.baseSha } : {}),
       });
     },
 
