@@ -44,6 +44,57 @@ describe("자동 플레이 숫자 입력 (추격 호러 금고)", () => {
   });
 });
 
+describe("define_ending 미연결 경고 (연애 배드 엔딩)", () => {
+  it("다른 엔딩은 연결됐고 이 엔딩만 안 불리면 정의 시 경고를 낸다", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    // 레퍼런스 검증이 endingId 를 보므로 엔딩을 먼저 정의하고, 이벤트는 upsert_event 로 정규화해 심는다.
+    const ok = runTool(context, "define_ending", {
+      id: "ending_ok", name: "엔딩", conditions: [],
+    });
+    expect(ok.ok, ok.summary).toBe(true);
+    // 첫 정의 시점엔 연결 전이라 미연결 경고가 뜨는 것이 정상 — 연결 후 조용해지는지 reOk 에서 본다.
+    const wired = runTool(context, "upsert_event", {
+      mapId: startMap(context.project).id,
+      event: {
+        id: "ev_wired", name: "연결됨", x: 1, y: 1,
+        pages: [{ id: "p", trigger: { kind: "action" }, commands: [{ kind: "triggerEnding", endingId: "ending_ok" } as Command] }],
+      },
+    });
+    expect(wired.ok, wired.summary).toBe(true);
+
+    // wired 상태를 확정하기 위해 ending_ok 를 한 번 더 정의(경고 재계산) — 이 시점엔 연결돼 있어 조용해야 한다.
+    const reOk = runTool(context, "define_ending", {
+      id: "ending_ok", name: "엔딩", conditions: [],
+    });
+    expect(reOk.ok, reOk.summary).toBe(true);
+    expect((reOk.diff?.warnings ?? []).join(" ")).not.toContain("부르는 triggerEnding 이 아직 없습니다");
+
+    const bad = runTool(context, "define_ending", {
+      id: "ending_bad", name: "배드 엔딩", conditions: [],
+    });
+    expect(bad.ok, bad.summary).toBe(true);
+    expect((bad.diff?.warnings ?? []).join(" ")).toContain("ending_bad");
+    expect((bad.diff?.warnings ?? []).join(" ")).toContain("부르는 triggerEnding 이 아직 없습니다");
+  });
+
+  it("endingId 없는 bare triggerEnding 이 있으면 조건 선택형으로 열 수 있어 경고하지 않는다", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    const bare = runTool(context, "upsert_event", {
+      mapId: startMap(context.project).id,
+      event: {
+        id: "ev_bare", name: "선택형", x: 1, y: 1,
+        pages: [{ id: "p", trigger: { kind: "action" }, commands: [{ kind: "triggerEnding" } as Command] }],
+      },
+    });
+    expect(bare.ok, bare.summary).toBe(true);
+    const result = runTool(context, "define_ending", {
+      id: "ending_any", name: "조건형 엔딩", conditions: [{ kind: "switch", switchId: "sw_x", value: true }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.diff?.warnings ?? []).join(" ")).not.toContain("부르는 triggerEnding 이 아직 없습니다");
+  });
+});
+
 describe("rename_variable 표시 이름 (연애)", () => {
   it("name 만 주면 id 는 두고 표시 이름을 바꾼다", () => {
     const context: ToolContext = { project: createBlankProject() };
