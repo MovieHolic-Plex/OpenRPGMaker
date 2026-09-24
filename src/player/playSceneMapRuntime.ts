@@ -776,7 +776,9 @@ export async function fireAutoTriggers(scene: PlaySceneContext): Promise<void> {
     // 본문이 비었거나 빈 문장뿐인 자동 공용 이벤트는 빈 대사 창만 열고 입력을 잠근다. 건너뛴다.
     if (!commonEventHasContent(commonEvent.commands)) continue;
     scene.autoStartedKeys.add(key);
-    await runCommands(scene, commonEvent.commands);
+    // 전이 뒤에도 명령을 이어 실행한다 — 「transfer → setSwitch false」 패턴(꿈에서 깨어남, 2026-09-24 dream-r5)
+    // 가 전이에서 잘리면 스위치가 남아 자동 이벤트가 맵 로드마다 다시 살아 방으로 되돌린다(출하 플레이어 실측).
+    await runCommands(scene, commonEvent.commands, undefined, { continueAfterTransfer: true });
   }
 }
 
