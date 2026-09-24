@@ -33,6 +33,10 @@ describe("실행 마무리 말", () => {
   it("머리말은 만든 것과 플레이 안내로 시작하고, 확인을 못 끝냈으면 그 사실을 숨기지 않는다", () => {
     const made = "맵 14개 · 이벤트 151개 · 캐릭터 11명을 만들었어요.";
     expect(completionHeadline(made, { unverified: false })).toBe(`${made}\n${COMPLETION_PLAY_HINT}`);
+    const stopped = completionHeadline(made, { unverified: true, stoppedEarly: "Cloud Code Assist API returned a thought-only response" });
+    expect(stopped).toContain("도중에 멈춰");
+    expect(stopped).toContain("thought-only");
+    expect(stopped).not.toContain(COMPLETION_PLAY_HINT);
     expect(completionHeadline(null, { unverified: true }).split("\n")).toEqual([
       "변경 내용을 반영했어요.",
       COMPLETION_PLAY_HINT,

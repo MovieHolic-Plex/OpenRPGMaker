@@ -594,6 +594,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   const done: PiAgentDoneEvent = {
     ...(villageCompletion ? { villageCompletion } : {}),
     type: "done",
+    ...(fatal ? { stoppedEarly: fatal } : {}),
     project: ctx.project,
     stats: { ms: Date.now() - started, turns, toolCalls, toolErrors, ...(usage ? { usage } : {}) },
     changedKeys: changedProjectKeys(base, ctx.project),

@@ -123,6 +123,29 @@ describe("Pi application checkpoints", () => {
     })).rejects.toThrow("declined");
     expect(calls.length).toBeLessThanOrEqual(2);
   });
+  test("a provider error after writes marks the run as stopped early", async () => {
+    let call = 0;
+    const streamFn = () => {
+      call += 1;
+      const stream = createAssistantMessageEventStream();
+      queueMicrotask(() => {
+        if (call === 1) {
+          const message = assistantMessage([{ type: "toolCall", id: "c1", name: "set_project_settings", arguments: { title: "half" } }], "toolUse");
+          stream.push({ type: "start", partial: message } as never);
+          stream.push({ type: "toolcall_end", contentIndex: 0, toolCall: (message as never as { content: never[] }).content[0], partial: message } as never);
+          stream.push({ type: "done", reason: "toolUse", message } as never);
+        } else {
+          const message = { ...(assistantMessage([], "error") as object), errorMessage: "thought-only response" } as never;
+          stream.push({ type: "start", partial: message } as never);
+          stream.push({ type: "error", reason: "error", error: message } as never);
+        }
+      });
+      return stream;
+    };
+    const done = await runPiAgent(request({ applyMode: "default" }), { streamFn: streamFn as never, onCheckpoint: async () => {} });
+    expect(done.project.meta.title).toBe("half");
+    expect(done.stoppedEarly).toContain("thought-only");
+  });
   test("read-only blocks fallback writes and publication in YOLO", async () => {
     let checkpoints = 0;
     const done = await runPiAgent(request({ applyMode: "yolo", readOnly: true }), {
