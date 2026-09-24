@@ -37,7 +37,7 @@ import {
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { assertEventPartyActorReferences } from "./partyActorReferences";
-import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
+import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
@@ -715,6 +715,8 @@ const upsertEvent: ToolDefinition = {
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
     if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);
     if (!existing || "pages" in patch || "commands" in patch) assertEventPartyActorReferences(draft, event);
+    const declaredFlags = declaredFlagsWarning(declareReferencedFlags(draft, event));
+    if (declaredFlags) warnings.push(declaredFlags);
     const outcome = upsertEventIntoMap(map, event);
     warnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);

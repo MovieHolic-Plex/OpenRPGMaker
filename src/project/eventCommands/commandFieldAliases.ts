@@ -20,6 +20,7 @@ const AMOUNT_OP_KINDS = new Set([
 ]);
 
 const CHOICE_BRANCH_ALIASES = ["commands", "then", "actions"] as const;
+const TEXT_BODY_ALIASES = ["text", "message", "content", "line", "dialogue"] as const;
 
 function direction(value: unknown): "add" | "remove" | undefined {
   if (typeof value !== "string") return undefined;
@@ -165,6 +166,17 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
   }
   if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
+  if (command.kind === "text" && typeof command.body !== "string") {
+    // 대사 본문을 `text` 로 쓴 사례(2026-09-24 갤러리 호러: `{kind:"text",text:"엄마: …"}` 가 한 이벤트에 여섯 줄)
+    // — 「대사는 string body가 필요합니다」로 upsert_event 4건이 통째로 반려됐다. 문장 명령의 본문 칸은 body 하나라
+    // body 가 없고 별칭 하나에만 문자열이 있으면 옮긴다.
+    const aliases = TEXT_BODY_ALIASES.filter(key => typeof command[key] === "string");
+    if (aliases.length !== 1) return undefined;
+    const alias = aliases[0]!;
+    command.body = command[alias];
+    delete command[alias];
+    return `text.${alias} 를 body 로 옮겼습니다(문장 명령의 본문 칸은 body).`;
+  }
   if (command.kind === "choices" && Array.isArray(command.options)) {
     // 네이티브 선택지 분기는 `branch` 다. SimplePage 선택지(`commands`)나 fork(`then`) 표기가 섞이면
     // 분기가 비거나 검증에서 거부됐다. branch 가 비어 있고 별칭 하나에만 명령이 있으면 옮긴다.
