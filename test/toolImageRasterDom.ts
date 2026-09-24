@@ -118,6 +118,17 @@ class ToolImageRasterContext {
 
   constructor(private readonly canvas: ToolImageRasterCanvas) {}
 
+  private saved: string[] = [];
+
+  /** drawShadowQuarters 가 fillStyle 을 감싸 되돌린다. */
+  save(): void {
+    this.saved.push(this.fillStyle);
+  }
+
+  restore(): void {
+    this.fillStyle = this.saved.pop() ?? this.fillStyle;
+  }
+
   fillRect(x: number, y: number, w: number, h: number): void {
     const color = parseCssColor(this.fillStyle);
     const x0 = Math.max(0, Math.floor(x));
@@ -125,9 +136,18 @@ class ToolImageRasterContext {
     const x1 = Math.min(this.canvas.width, Math.ceil(x + w));
     const y1 = Math.min(this.canvas.height, Math.ceil(y + h));
     const buf = this.canvas.buffer;
+    const alpha = color.a / 255;
     for (let py = y0; py < y1; py += 1) {
       for (let px = x0; px < x1; px += 1) {
         const i = (py * this.canvas.width + px) * 4;
+        if (color.a < 255) {
+          // 반투명 채움(그림자 사분면) — 아래 색과 섞는다.
+          buf[i] = Math.round(color.r * alpha + (buf[i] ?? 0) * (1 - alpha));
+          buf[i + 1] = Math.round(color.g * alpha + (buf[i + 1] ?? 0) * (1 - alpha));
+          buf[i + 2] = Math.round(color.b * alpha + (buf[i + 2] ?? 0) * (1 - alpha));
+          buf[i + 3] = Math.max(buf[i + 3] ?? 0, color.a);
+          continue;
+        }
         buf[i] = color.r;
         buf[i + 1] = color.g;
         buf[i + 2] = color.b;
@@ -296,6 +316,8 @@ function blit(
 }
 
 function parseCssColor(value: string): { r: number; g: number; b: number; a: number } {
+  const rgba = /^rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)$/u.exec(value);
+  if (rgba) return { r: Number(rgba[1]), g: Number(rgba[2]), b: Number(rgba[3]), a: Math.round(Number(rgba[4]) * 255) };
   if (value.startsWith("#") && value.length === 7) {
     return {
       r: Number.parseInt(value.slice(1, 3), 16),

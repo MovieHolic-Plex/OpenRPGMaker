@@ -1,5 +1,6 @@
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
+import { drawShadowQuarters } from "@/editor/mapTileDraw";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import {
   canvasDataUrl,
@@ -33,6 +34,10 @@ type TileGridPayload = {
   readonly h: number;
   readonly lower: readonly (readonly number[])[];
   readonly upper: readonly (readonly number[])[];
+  /** 2층·4층·그림자(사분면 비트) — show_map_region 이 맵에 그 칸이 있을 때만 싣는다. 없으면 빈 배열. */
+  readonly layer2: readonly (readonly number[])[];
+  readonly layer4: readonly (readonly number[])[];
+  readonly shadow: readonly (readonly number[])[];
   readonly events: readonly RegionEventSprite[];
 };
 
@@ -150,21 +155,26 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, Math.floor(drawSize / 2)));
-  for (let row = 0; row < payload.h; row += 1) {
-    for (let column = 0; column < payload.w; column += 1) {
-      const lowerTile = tileAt(payload.lower, row, column);
-      if (lowerTile >= 0) drawTile(context, image, lowerTile, payload.tileset, column * drawSize, row * drawSize, drawSize);
+  // 캔버스 렌더러(editor/mapTileDraw)와 같은 순서: 1층 → 2층 → 그림자 → 캐릭터 아래 이벤트 → 3층 → 4층 → 나머지 이벤트.
+  // 2·4층·그림자가 없는 옛 맵은 빈 배열이라 아무것도 더 그리지 않는다.
+  const drawGrid = (grid: readonly (readonly number[])[]): void => {
+    for (let row = 0; row < Math.min(payload.h, grid.length); row += 1) {
+      for (let column = 0; column < payload.w; column += 1) {
+        const tile = tileAt(grid, row, column);
+        if (tile >= 0) drawTile(context, image, tile, payload.tileset, column * drawSize, row * drawSize, drawSize);
+      }
     }
+  };
+  drawGrid(payload.lower);
+  drawGrid(payload.layer2);
+  for (let row = 0; row < Math.min(payload.h, payload.shadow.length); row += 1) {
+    for (let column = 0; column < payload.w; column += 1) drawShadowQuarters(context, column, row, drawSize, tileAt(payload.shadow, row, column) & 0b1111);
   }
   const below = payload.events.filter((event) => event.priority === "below");
   const rest = payload.events.filter((event) => event.priority !== "below");
   await drawRegionEventSprites(context, below);
-  for (let row = 0; row < payload.h; row += 1) {
-    for (let column = 0; column < payload.w; column += 1) {
-      const upperTile = tileAt(payload.upper, row, column);
-      if (upperTile >= 0) drawTile(context, image, upperTile, payload.tileset, column * drawSize, row * drawSize, drawSize);
-    }
-  }
+  drawGrid(payload.upper);
+  drawGrid(payload.layer4);
   await drawRegionEventSprites(context, rest);
   const dataUrl = canvasDataUrl(canvas);
   return dataUrl ? [{ dataUrl, label }] : [];
@@ -205,6 +215,9 @@ function tileGridPayload(project: Project, data: unknown): TileGridPayload | nul
   const upper = numberGrid(payload.upper, requestedW, requestedH)
     ?? numberGrid(payload.upperTiles, requestedW, requestedH)
     ?? [];
+  const layer2 = numberGrid(payload.layer2, requestedW, requestedH) ?? [];
+  const layer4 = numberGrid(payload.layer4, requestedW, requestedH) ?? [];
+  const shadow = numberGrid(payload.shadow, requestedW, requestedH) ?? [];
   if (lower.length === 0 && upper.length === 0) return null;
   const w = requestedW ?? Math.max(gridWidth(lower), gridWidth(upper));
   const h = requestedH ?? Math.max(lower.length, upper.length);
@@ -217,7 +230,7 @@ function tileGridPayload(project: Project, data: unknown): TileGridPayload | nul
     ? resolveRegionEventSprites(project, map, { x, y, w, h }, tileDrawSize(w, h, tileset.tileSize))
     : { ok: true as const, sprites: [] };
   if (!events.ok) throw new Error(events.reason);
-  return { tileset, x, y, w, h, lower, upper, events: events.sprites };
+  return { tileset, x, y, w, h, lower, upper, layer2, layer4, shadow, events: events.sprites };
 }
 
 function tilesetForPayload(project: Project, payload: UnknownRecord): TilesetDef | undefined {

@@ -29,6 +29,7 @@ import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan"
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
 import { passageMarkForTile } from "@/project/tilesetPassage";
+import { layerTileAt } from "@/project/mapLayers";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
@@ -118,6 +119,17 @@ function semanticChar(project: Project, map: GameMap, x: number, y: number, hasE
   const upper = map.upperTiles[i] ?? TILE.EMPTY;
   // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
   const tileset = project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID];
+  // MZ 네 층: 2·4층이 있는 칸은 4→1 로 맨 위에서부터 보이는 칸이 기호를 정한다(4층 나무 수관이 1층 늪물을 덮으면 T).
+  // 물·나무가 아닌 칸(꽃·소품)은 아래 층으로 내려가 본다. 2·4층이 없는 칸(옛 맵 전부)은 아래 1·3층 규칙 그대로다.
+  const layer2 = layerTileAt(map, 2, i);
+  const layer4 = layerTileAt(map, 4, i);
+  if (tileset && (layer2 >= 0 || layer4 >= 0)) {
+    for (const tile of [layer4, upper, layer2, lower]) {
+      if (tile < 0) continue;
+      if (isWaterInTileset(map, tileset, tile)) return "~";
+      if (tileCategoriesForTile(tileset, tile).includes("tree")) return "T";
+    }
+  }
   if (isWaterInTileset(map, tileset, lower) || isWaterInTileset(map, tileset, upper)) return "~";
   const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID;
   if ((compatible && (upper === TILE.TREE || lower === TILE.TREE))

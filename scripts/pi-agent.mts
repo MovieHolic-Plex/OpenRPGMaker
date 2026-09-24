@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { runPiAgent } from "./lib/piAgentRuntime.ts";
+import { renderToolRegionPngBase64 } from "./qa-game/render.mts";
 import { runPiTeam } from "./lib/piTeamRuntime.ts";
 import { normalizeTeamSpec } from "../src/ai/piAgent/teamSpec.ts";
 import { resolveRequestApiKey } from "./lib/aiAuthRuntime.ts";
@@ -72,14 +73,17 @@ async function main() {
   const apiKey = await resolveRequestApiKey(provider);
   const groups = mapIds.length > 0 ? mapIds.map((id) => [id]) : [[] as string[]];
   const started = Date.now();
+  // 브라우저는 캔버스로 show_map_region 이미지를 그린다. 헤드리스는 qa-game 과 같은 타일 렌더러(pngjs, 1→2→그림자→3→4층)로
+  // 대신한다 — 넘기지 않으면 런타임이 「맵 이미지 전달 경로가 없습니다」로 호출을 실패시킨다(gen.mts 선례).
+  const renderToolImage = async (project: Project, _toolName: string, data: unknown) => renderToolRegionPngBase64(project, data);
   const run = (ids: string[]) => runPiAgent(
     { provider, model, task, mapIds: ids, ...here, project: base, maxTurns },
-    { apiKey, onEvent: (event) => logEvent(groups.length > 1 ? ids.join(",") : "", event) },
+    { apiKey, renderToolImage, onEvent: (event) => logEvent(groups.length > 1 ? ids.join(",") : "", event) },
   );
   const results: PiAgentDoneEvent[] = [];
   const team = flag("team");
   const teamSpec = arg("team-spec") ? normalizeTeamSpec(JSON.parse(fs.readFileSync(arg("team-spec")!, "utf8"))) : undefined;
-  if (team) results.push(await runPiTeam({ mode: "team", provider, model, task, mapIds, ...here, project: base, ...(teamSpec ? { team: teamSpec } : {}) }, { apiKey, onEvent: (event) => logEvent("", event) }));
+  if (team) results.push(await runPiTeam({ mode: "team", provider, model, task, mapIds, ...here, project: base, ...(teamSpec ? { team: teamSpec } : {}) }, { apiKey, renderToolImage, onEvent: (event) => logEvent("", event) }));
   else if (flag("serial")) for (const ids of groups) results.push(await run(ids));
   else results.push(...await Promise.all(groups.map(run)));
 

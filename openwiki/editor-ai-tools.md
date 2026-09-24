@@ -32,6 +32,23 @@
 
 회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출), `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
 
+## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
+
+계획 `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 1. 쓰기(위 절)와 짝이다.
+
+| 표면 | 계약 |
+|---|---|
+| `show_map_region` 배열 | 맵에 그 칸이 **있을 때만** `layer2`·`layer4`·`shadow`(사분면 비트 0~15) 2D 배열을 더 싣는다. 없으면 키도 없다 — 옛 맵 출력은 바이트 단위로 같다. 설명에 `FOUR_LAYER_GUIDANCE`. |
+| 도구 이미지(브라우저·Pi 동반) | `src/ai/toolImageRenderer.ts` `renderTileGridPayload` 가 payload 의 선택 층을 받아 1 → 2 → 그림자(`mapTileDraw.drawShadowQuarters`) → 캐릭터 아래 이벤트 → 3 → 4 → 나머지 이벤트로 그린다. `renderToolImages`(get_map_region·preview_house·look_at_houses 등)는 payload 에 선택 층이 없으면 예전과 같다. |
+| 헤드리스 이미지 | `scripts/pi-agent.mts` 도 `gen.mts` 처럼 `renderToolImage` → `scripts/qa-game/render.mts` `renderToolRegionPngBase64` 를 넘긴다(전에는 show_map_region 이 「맵 이미지 전달 경로가 없습니다」로 실패했다). 이 렌더러는 에디터 `drawMapTileLayer` 를 쓰므로 4층 + 그림자를 그리고, `PngContext` 가 그림자용 save/restore/fillRect(rgba)를 갖는다. |
+| 업로드 타일셋(헤드리스) | `render.mts` 는 업로드 그림판을 **그리는 프로젝트의** `assets.uploaded[id]` 에서 찾는다. 전에는 `tilesetBaseImageUrl(tileset)` 가 전역 store 를 봐서, store 에 없는 그림판(Rasak 48px)이 기본 칩셋 조각으로 그려졌다. 자산이 없거나 ref 만 있고 해석기가 없으면 기본 칩셋으로 대신하지 않고 `note` → 도구 이미지는 `map-rendering-unavailable` 로 실패한다. PNG dataUrl 만 읽는다. |
+| `get_map_region` 기호 | 2·4층이 있는 칸은 4 → 3 → 2 → 1 로 맨 위부터 첫 물(`~`)·나무(`T`) 칸이 기호를 정한다(4층 수관이 1층 늪물을 덮으면 T). 2·4층이 없는 칸(옛 맵 전부)은 옛 규칙(1·3층 어느 쪽이든 물이면 `~`)이다. |
+| `analyze_map_tile_usage` | `tiles[].layers` 는 옛 이름 `lower`(1층)·`upper`(3층)에 `layer2`·`layer4` 를 더한다. 인접 통계의 합성 칸은 4 → 1 맨 위. 선택 층이 있는 맵만 `data.layerCells {1,2,3,4,shadow}`. |
+| `mapVisualContent` | 선택 층이 있을 때만 투영에 넣는다 → 2·4층·그림자만 바뀌어도 `requiresVisualReview` 가 참. 옛 맵 투영 문자열은 그대로. |
+
+남은 1·3층 전용 표면: 턴 시작 뷰포트 이미지(`renderMapRegionImages` 에 넘기는 뷰포트 데이터), `show_tile_grid`, `get_map_region` 의 `water.bounds`.
+회귀: `test/mzLayerVision.test.ts`, `test/qaGameRender.test.ts`(업로드 그림판·층 순서·못 찾음).
+
 ## 충격 연출 (2026-09-22)
 
 이벤트 명령 조수(`buildEventAssistPrompt`)와 스튜디오 조수(시스템 프롬프트 고정 블록)는 같은 순서를 본다. 함정·피격·마법·폭발·사망은 대사로 시작하지 않는다. `playAudio`(효과음, `loop:false`)와 `showAnimation`(`wait:true`)이 먼저고, 그 다음 HP·스위치·이동·`killPlayer`, 마지막이 설명 대사다. 마법학교처럼 화면을 덮는 컨셉이면 단발 타격이 아니라 화면을 덮는 애니메이션 id(목록에 «화면을 덮음»)를 쓴다. 게임오버 그림·제목은 `get_game_over` / `set_game_over` / `generate_game_over_image` 다. `killPlayer.message` 는 그 순간의 한 줄이다.
