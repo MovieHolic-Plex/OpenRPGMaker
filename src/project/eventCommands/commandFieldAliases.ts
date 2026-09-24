@@ -21,6 +21,8 @@ const AMOUNT_OP_KINDS = new Set([
 
 const CHOICE_OPTIONS_ALIASES = ["choices", "items", "answers"] as const;
 const CHOICE_BRANCH_ALIASES = ["commands", "then", "actions"] as const;
+const TRANSFER_DIRECTION_ALIASES = ["facing", "dir", "faceDirection"] as const;
+const TRANSFER_DIRECTIONS = new Set(["retain", "up", "down", "left", "right"]);
 const TEXT_BODY_ALIASES = ["text", "message", "content", "line", "dialogue"] as const;
 
 function direction(value: unknown): "add" | "remove" | undefined {
@@ -201,6 +203,18 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     delete command.op; delete command.mode; delete command.type;
     command.action = resolved;
     return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
+  }
+  if (command.kind === "transfer" && command.direction === undefined) {
+    // 도착 방향을 `facing`/`dir` 로 쓴 사례(2026-09-24 JRPG ember-4: 보스 처치 뒤 귀환 transfer 에 facing:"down")
+    // — 런타임은 direction 만 읽어 방향이 조용히 버려졌다. 값이 방향 하나일 때만 옮긴다.
+    const aliases = TRANSFER_DIRECTION_ALIASES.filter(key => typeof command[key] === "string" && TRANSFER_DIRECTIONS.has(command[key] as string));
+    if (aliases.length === 1) {
+      const alias = aliases[0]!;
+      command.direction = command[alias];
+      delete command[alias];
+      return `transfer.${alias} 를 direction 으로 옮겼습니다(장소 이동의 도착 방향 칸은 direction).`;
+    }
+    return undefined;
   }
   if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
   if (command.kind === "fork") return canonicalizeForkCommand(command);
