@@ -1419,3 +1419,10 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 정본 크기를 읽기 전용 집계하니 tilesets가약125.8MB(JSON 공백 포함)로 가장 컸다. forest_harmony 참고문서약10.8MB,shared_lpc_interior_castle 참고문서약7.3MB 등 공용 참고자료가 포함돼 있다. 자료를 삭제하거나 특정 프로젝트에서만 접근하도록 바꾸지 않았다.
 - 장기 보관하는 AuthoredProjectBaseline authored/complete와 ProposalBase content/world를 SHA-256으로 축소했다. 비교 입력의 canonical JSON 의미, 객체 제자리 변경 검사, wiki 예외, lineage 및 적용 게이트를 그대로 둔다. 기존 JSON identity API와 동기 구간 메모는 유지하고, 기준선 보관용 문자열만 다이제스트로 바꾼다.
 - 큰 Unicode 문서의 끝부분 변경 감지와 보관 크기 회귀 사례를 추가했다. 사용자 규칙에 따라 테스트/게이트는 실행하지 않았으며 빌드와 실제 편집기 동작을 별도로 확인한다. SHA 계산·직렬화 순간 할당까지 제거한 것은 아니다.
+
+### 요청50 저장 성공524 및 저장 후 OOM 잔존
+
+- compact authority 빌드 exit0(2분16초),main-DvGo8Z2Y.js로 배포했다. 클릭 timeout 뒤 실제 AI 실행이 시작됐으므로 재전송하지 않았다. 초안4이벤트를 검토하고 UI 적용한 뒤524 저장을 확인했다.
+- `player-snapshot-medicine-polished-proof.json`: 정본 재오픈·반복 읽기 일치,20맵163이벤트,외부미디어80개 해시 검증. projectId `6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a`, projectDir `/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red`, sha256 `718e6e177379b02ee1fc05bcc9fdc660eb117453005f2cd3ab180ebae38a7d5a`.
+- `medicine-polished-scope.json`: 단서3명은 uploaded Isaiah charset04/06/07,down,pattern1. 현장조사원24,11. 관리관 포함4이벤트의 페이지수와 대사 body/speaker를 제외한 commands 구조는 이전 정본과 일치한다. 그래픽/이동/대사 수정이며3시간 분량 추가라고 세지 않는다.
+- 10:39:47Z 저장 후 약3236MB old-space에서 V8 OOM이 재발했다. 따라서 compact authority는 저장까지 진전한 보관량 개선이지만 전체 메모리 오류 해결이 아니다. 렌더러의 잔존 대형 스냅샷/직렬화 경로를 더 조사해야 한다. 전용 플레이어 시각 확인은 별도로 수행한다.
