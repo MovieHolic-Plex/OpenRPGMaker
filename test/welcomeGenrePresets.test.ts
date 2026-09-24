@@ -49,6 +49,9 @@ describe("welcomeGenrePresets", () => {
     const gallery = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("horror-gallery")!);
     expect(gallery).toContain("make_gallery_room");
     expect(gallery).toContain("필수 템플릿 툴");
+    // 실내(전시실·화실) 벽 시공 — 2026-09-24 갤러리 r3: 바닥 fill_region 만 반복해 방이 빈 판이었다.
+    expect(gallery).toContain("place_concept");
+    expect(gallery).toContain("get_concept_facility");
     const school = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("school-horror")!);
     expect(school).toContain("make_horror_loop");
     expect(school).toContain("make_chase_scene");
