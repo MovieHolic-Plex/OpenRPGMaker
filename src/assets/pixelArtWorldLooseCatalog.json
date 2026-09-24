@@ -10464,11 +10464,11 @@
             "x": 48,
             "y": 94
           },
-          "placementKind": "ground",
+          "placementKind": "standing",
           "facing": "south",
-          "notes": "수동 확인한 원본 사각 전체. 픽셀 확대·축소·부분 반복 없음. 그림 상태와 게임 이벤트는 별도.",
+          "notes": "96×96 입체 돌더미 전체. 통과형 바닥 무늬가 아니다. 알파가 있는 출력 칸을 차단하고 외곽 접근 칸을 비운다.",
           "supportStatus": "fixed-object",
-          "collision": "passable-overlay",
+          "collision": "conservative-rectangle",
           "nativeSize": {
             "width": 96,
             "height": 96
@@ -10725,7 +10725,7 @@
         },
         {
           "id": "paw-loose-049-01",
-          "name": "공사 표지판 조각 1-1",
+          "name": "두 다리 공사 바리케이드 1-1",
           "pixelRect": {
             "x": 32,
             "y": 0,
@@ -10742,11 +10742,11 @@
             "x": 16,
             "y": 31
           },
-          "placementKind": "wall",
+          "placementKind": "standing",
           "facing": "south",
-          "notes": "수동 확인한 원본 사각 전체. 픽셀 확대·축소·부분 반복 없음. 그림 상태와 게임 이벤트는 별도.",
+          "notes": "두 다리가 포함된 바닥 자립 바리케이드 전체. 벽걸이가 아니다. 기존 하위를 보존하고 두 다리의 불투명 밑동 칸을 차단한다.",
           "supportStatus": "fixed-object",
-          "collision": "passable-overlay",
+          "collision": "opaque-feet",
           "nativeSize": {
             "width": 32,
             "height": 32
@@ -10764,7 +10764,7 @@
         },
         {
           "id": "paw-loose-049-02",
-          "name": "공사 표지판 조각 2-1",
+          "name": "두 다리 공사 바리케이드 2-1",
           "pixelRect": {
             "x": 32,
             "y": 32,
@@ -10781,11 +10781,11 @@
             "x": 16,
             "y": 31
           },
-          "placementKind": "wall",
+          "placementKind": "standing",
           "facing": "south",
-          "notes": "수동 확인한 원본 사각 전체. 픽셀 확대·축소·부분 반복 없음. 그림 상태와 게임 이벤트는 별도.",
+          "notes": "두 다리가 포함된 바닥 자립 바리케이드 전체. 벽걸이가 아니다. 기존 하위를 보존하고 두 다리의 불투명 밑동 칸을 차단한다.",
           "supportStatus": "fixed-object",
-          "collision": "passable-overlay",
+          "collision": "opaque-feet",
           "nativeSize": {
             "width": 32,
             "height": 32
@@ -10803,7 +10803,7 @@
         },
         {
           "id": "paw-loose-049-03",
-          "name": "공사 표지판 조각 3-1",
+          "name": "두 다리 공사 바리케이드 3-1",
           "pixelRect": {
             "x": 32,
             "y": 64,
@@ -10820,11 +10820,11 @@
             "x": 16,
             "y": 31
           },
-          "placementKind": "wall",
+          "placementKind": "standing",
           "facing": "south",
-          "notes": "수동 확인한 원본 사각 전체. 픽셀 확대·축소·부분 반복 없음. 그림 상태와 게임 이벤트는 별도.",
+          "notes": "두 다리가 포함된 바닥 자립 바리케이드 전체. 벽걸이가 아니다. 기존 하위를 보존하고 두 다리의 불투명 밑동 칸을 차단한다.",
           "supportStatus": "fixed-object",
-          "collision": "passable-overlay",
+          "collision": "opaque-feet",
           "nativeSize": {
             "width": 32,
             "height": 32
