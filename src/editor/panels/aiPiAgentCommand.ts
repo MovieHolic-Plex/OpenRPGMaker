@@ -807,7 +807,8 @@ export async function runPiCommand(
     // 「만들었어요」 는 적용이 끝난 뒤에만 말한다 — 삭제 확인을 거절하거나 적용이 실패하면 apply() 가 따로 말한다.
     const appliedOk = await apply();
     if (!appliedOk) return false;
-    const bubble = surface.appendBubble("system", completionHeadline(plainMadeSummary(base, merged.project), { unverified: issues.length === 0 }));
+    const stoppedEarly = results.find((done) => done.stoppedEarly)?.stoppedEarly;
+    const bubble = surface.appendBubble("system", completionHeadline(plainMadeSummary(base, merged.project), { unverified: issues.length === 0, ...(stoppedEarly ? { stoppedEarly } : {}) }));
     if (issues.length) {
       if (bubble && typeof (bubble as HTMLElement).append === "function") (bubble as HTMLElement).append(createRefineFindings(issues));
       else surface.appendBubble("system", refineFindingsText(issues));

@@ -40,7 +40,14 @@ export function plainMadeSummary(before: Project, after: Project): string | null
 }
 
 /** 머리말 — 만든 것 + 플레이 안내. 확인을 못 끝냈으면 그 사실을 숨기지 않고 한 줄 덧붙인다. */
-export function completionHeadline(made: string | null, options: { readonly unverified: boolean }): string {
+export function completionHeadline(made: string | null, options: { readonly unverified: boolean; readonly stoppedEarly?: string }): string {
+  if (options.stoppedEarly) {
+    return [
+      `${made ?? "변경 내용을 반영했어요."} 다만 작업이 도중에 멈춰 요청을 끝까지 만들지 못했어요.`,
+      `멈춘 이유: ${options.stoppedEarly}`,
+      "「이어서 완성해 줘」 라고 보내면 남은 부분을 이어서 만들어요. 마음에 들지 않으면 되돌릴 수 있어요.",
+    ].join("\n");
+  }
   const lines = [made ?? "변경 내용을 반영했어요.", COMPLETION_PLAY_HINT];
   if (options.unverified) lines.push("끝까지 확인하지는 못했어요. 마음에 들지 않으면 되돌릴 수 있어요.");
   return lines.join("\n");

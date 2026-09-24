@@ -174,7 +174,12 @@ type PiAgentEventPayload =
    */
   | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
-      readonly unchangedKeys?: readonly PiCheckpointHeavyKey[] };
+      readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
+      /**
+       * 모델·제공자 오류나 상한으로 **도중에 멈춘** 실행의 사유. 반영된 작업은 남지만 요청을 끝까지 하지 않았다 —
+       * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).
+       */
+      readonly stoppedEarly?: string };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 
