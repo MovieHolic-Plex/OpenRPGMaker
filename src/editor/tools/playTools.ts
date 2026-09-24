@@ -79,6 +79,26 @@ const playWalkthrough: ToolDefinition = {
   },
 };
 
+/**
+ * `{kind:"expect", expect:{inventoryCount:…}}` 처럼 단언을 한 겹 더 감싼 스텝을 펼친다. 추리 도그푸딩 gen 두 판에서
+ * 모델이 동봉 시나리오를 옮겨 적으며 이 모양을 만들어 run_scene_test 가 한 번씩 헛돌았다. 뜻이 하나라 추측이 아니다.
+ */
+export function flattenNestedExpectSteps(args: unknown): { input: unknown; flattened: number[] } {
+  if (!args || typeof args !== "object" || !Array.isArray((args as { steps?: unknown }).steps)) return { input: args, flattened: [] };
+  const flattened: number[] = [];
+  const steps = ((args as { steps: unknown[] }).steps).map((step, index) => {
+    if (!step || typeof step !== "object") return step;
+    const record = step as Record<string, unknown>;
+    const inner = record.expect;
+    if (record.kind !== "expect" || !inner || typeof inner !== "object" || Array.isArray(inner)) return step;
+    const { expect: _nested, ...rest } = record;
+    if (Object.keys(inner).some((key) => key in rest)) return step;
+    flattened.push(index);
+    return { ...rest, ...(inner as Record<string, unknown>) };
+  });
+  return flattened.length > 0 ? { input: { ...(args as object), steps }, flattened } : { input: args, flattened };
+}
+
 const runSceneTestTool: ToolDefinition = {
   name: "run_scene_test",
   description:
@@ -136,11 +156,13 @@ const runSceneTestTool: ToolDefinition = {
     },
     required: ["mapId", "start", "steps"],
   },
-  run(project, args): ToolExecResult {
+  run(project, rawArgs): ToolExecResult {
+    const { input: args, flattened } = flattenNestedExpectSteps(rawArgs);
     const problem = sceneTestInputProblem(args);
     if (problem || !isSceneTestInput(args)) throw new ToolError(`Malformed scene test input: ${problem}`, { code: "invalid-scene-test" });
     const result = runSceneTest(project, args);
     return {
+      ...(flattened.length > 0 ? { warnings: [`expect 스텝 ${flattened.join(", ")} 의 { kind:"expect", expect:{…} } 를 { kind:"expect", …} 로 펼쳐 실행했다 — 단언 필드는 스텝에 바로 쓴다.`] } : {}),
       summary: result.ok
         ? `scene test 성공 (${result.stepsRun}/${result.totalSteps} 스텝)`
         : `scene test 실패: 스텝 ${result.failedStepIndex} — ${result.failureReason}`,
