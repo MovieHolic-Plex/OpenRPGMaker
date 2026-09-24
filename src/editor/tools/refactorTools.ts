@@ -282,13 +282,15 @@ export function renameSwitchEverywhere(project: Project, oldId: string, newId: s
 
 const RENAME_SWITCH_ACCEPTS =
   "rename_switch 는 대상(fromId·switchId·fromName 중 하나)과 바꿀 것(to=새 id, name=표시 이름 중 하나 이상)을 받습니다. "
-  + "예: {switchId:\"sw_0001\",name:\"보스 격파\"} 또는 {fromId:\"sw_0001\",to:\"sw_boss_defeated\"}.";
+  + "예: {switchId:\"sw_0001\",name:\"보스 격파\"} 또는 {fromId:\"sw_0001\",to:\"sw_boss_defeated\"}. "
+  + "새 스위치를 id 부터 만들려면 대상 없이 {to,name} 만 주세요.";
 
 const renameSwitch: ToolDefinition = {
   name: "rename_switch",
   description:
     "스위치의 표시 이름(name)을 바꾸거나 id(to)를 전 맵/커먼이벤트/트룹/적 행동에서 일괄 치환한다(정의·세션·참조 모두). "
-    + "대상은 fromId(별칭 switchId) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다.",
+    + "대상은 fromId(별칭 switchId) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다. "
+    + "대상 없이 to+name 만 주면 그 id 로 새 스위치를 만든다.",
   mode: "write",
   invalidArgsExample: { switchId: "sw_0001", name: "보스 격파" },
   invalidArgsHint: RENAME_SWITCH_ACCEPTS,
@@ -322,7 +324,16 @@ const renameSwitch: ToolDefinition = {
       if (matches.length > 1) throw new ToolError(`이름이 중복되어 대상이 모호합니다: ${fromName}. fromId로 지정하세요.`, { code: "switch-ambiguous" });
       oldId = matches[0].id;
     }
-    if (oldId === undefined) throw new ToolError(`대상 스위치가 없습니다 — fromId(또는 switchId)나 fromName 중 하나가 필요합니다. ${RENAME_SWITCH_ACCEPTS}`, { code: "rename-target" });
+    if (oldId === undefined) {
+      // 대상 없이 to+name 만 오면 그 id 로 새 스위치를 만든다 — 모델이 upsert 처럼 쓴다
+      // (2026-09-24 추격 호러 r7: 같은 거부로 다섯 번 연속 재시도하다 겨우 switchId 별칭으로 갔다).
+      if (to && name) {
+        if (draft.switches.some((def) => def.id === to)) throw new ToolError(`이미 존재하는 스위치 id입니다: ${to} — 이름을 바꾸려면 fromId(또는 switchId)도 지정하세요.`, { code: "switch-exists" });
+        oldId = to;
+      } else {
+        throw new ToolError(`대상 스위치가 없습니다 — fromId(또는 switchId)나 fromName 중 하나가 필요합니다(새 스위치는 대상 없이 to+name). ${RENAME_SWITCH_ACCEPTS}`, { code: "rename-target" });
+      }
+    }
     const exists = draft.switches.some((def) => def.id === oldId);
     const notes: string[] = [];
     let replaced = 0;
@@ -441,7 +452,8 @@ export function renameVariableEverywhere(project: Project, oldId: string, newId:
 
 const RENAME_VARIABLE_ACCEPTS =
   "rename_variable 는 대상(fromId·variableId·fromName 중 하나)과 바꿀 것(to=새 id, name=표시 이름 중 하나 이상)을 받습니다. "
-  + "예: {variableId:\"var_0001\",name:\"나래 호감\"} 또는 {fromId:\"var_0001\",to:\"var_narae_affection\"}.";
+  + "예: {variableId:\"var_0001\",name:\"나래 호감\"} 또는 {fromId:\"var_0001\",to:\"var_narae_affection\"}. "
+  + "새 변수를 id 부터 만들려면 대상 없이 {to,name} 만 주세요.";
 
 // rename_switch 와 같은 계약. 예전에는 id 만 바꿀 수 있어, 모델이 {fromId:"var_0001",to:"나래호감"} 으로
 // 「이름」을 붙이면 표시 이름은 빈 채로 남았다(2026-09-24 연애 도그푸딩: 호감 변수 넷이 이름 없음).
@@ -449,7 +461,8 @@ const renameVariable: ToolDefinition = {
   name: "rename_variable",
   description:
     "변수의 표시 이름(name)을 바꾸거나 id(to)를 전 맵/커먼이벤트/트룹에서 일괄 치환한다(정의·세션·setVariable·조건·숫자입력 참조 포함). "
-    + "대상은 fromId(별칭 variableId) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다.",
+    + "대상은 fromId(별칭 variableId) 또는 fromName. name 만 주면 id·참조는 그대로 두고 이름만 바꾸며, 정의가 없으면 만든다. "
+    + "대상 없이 to+name 만 주면 그 id 로 새 변수를 만든다.",
   mode: "write",
   invalidArgsExample: { variableId: "var_0001", name: "나래 호감" },
   invalidArgsHint: RENAME_VARIABLE_ACCEPTS,
@@ -482,7 +495,15 @@ const renameVariable: ToolDefinition = {
       if (matches.length > 1) throw new ToolError(`이름이 중복되어 대상이 모호합니다: ${fromName}. fromId로 지정하세요.`, { code: "variable-ambiguous" });
       oldId = matches[0].id;
     }
-    if (oldId === undefined) throw new ToolError(`대상 변수가 없습니다 — fromId(또는 variableId)나 fromName 중 하나가 필요합니다. ${RENAME_VARIABLE_ACCEPTS}`, { code: "rename-target" });
+    if (oldId === undefined) {
+      // rename_switch 와 같은 계약: 대상 없이 to+name 이면 그 id 로 새 변수를 만든다.
+      if (to && name) {
+        if (draft.variables.some((def) => def.id === to)) throw new ToolError(`이미 존재하는 변수 id입니다: ${to} — 이름을 바꾸려면 fromId(또는 variableId)도 지정하세요.`, { code: "variable-exists" });
+        oldId = to;
+      } else {
+        throw new ToolError(`대상 변수가 없습니다 — fromId(또는 variableId)나 fromName 중 하나가 필요합니다(새 변수는 대상 없이 to+name). ${RENAME_VARIABLE_ACCEPTS}`, { code: "rename-target" });
+      }
+    }
     const exists = draft.variables.some((def) => def.id === oldId);
     const notes: string[] = [];
     let replaced = 0;
