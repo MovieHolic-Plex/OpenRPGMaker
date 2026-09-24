@@ -184,4 +184,4 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 
 ## 호스트 전용 장소의 목록 썸네일 (2026-09-24)
 
-`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.
+`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 프로젝트에 복사된 장소(`authored-map_*`)는 같은 이름의 `shared_` 공용 미리보기를 붙인다. 직접 칠한 장소는 `public/assets/reviewed-places/<id>.png`를 쓴다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.

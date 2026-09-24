@@ -182,8 +182,21 @@ export function placeCatalogRasters(project: Project, card: SpatialGalleryCard, 
   }
 }
 
+/** 공용 자료집 또는 `shared_` 짝의 구운 그림. 없으면 직접 칠한 장소의 파일 미리보기. */
+export function savedPlacePreviewImage(id: string, fileFallback = false): HTMLElement | undefined {
+  const shared = sharedPlacePreview(id) ?? (id.startsWith("shared_") ? undefined : sharedPlacePreview(`shared_${id}`));
+  if (shared) return catalogListImage(shared, "spatial-card-image");
+  if (fileFallback) return catalogListImage(`/assets/reviewed-places/${id}.png`, "spatial-card-image");
+  return undefined;
+}
+
 export function renderPlaceCardThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.reviewedPlaceId) return catalogListImage(sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
+  if (card.localId) {
+    const place = visibleAuthoringProject().spatialAuthoring?.library.places[card.localId];
+    const saved = savedPlacePreviewImage(card.localId, Boolean(place && "composition" in place && place.composition));
+    if (saved) return saved;
+  }
   const project = visibleAuthoringProject();
   try {
     const target = placeDraftTarget(card);
