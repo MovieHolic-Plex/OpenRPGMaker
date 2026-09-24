@@ -10,6 +10,8 @@ import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTil
 import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
+import { setRegionReferenceDownloadLoader } from "@/project/regionReferenceImport";
+import { readFile } from "node:fs/promises";
 import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
 import { readStoredZipEntry } from "@/project/packageZip";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
@@ -85,6 +87,14 @@ export function createHeadlessBlankProject(): Project {
 
 export function serializeHeadlessProject(project: Project): string {
   return serialize(project);
+}
+
+/**
+ * Headless has no HTTP server for public/: read place downloads (/assets/region-references/*.oprn.json) from the
+ * checkout's public directory instead of fetching them.
+ */
+export function setHeadlessPublicRoot(publicDir: string): void {
+  setRegionReferenceDownloadLoader(async (publicPath) => JSON.parse(await readFile(`${publicDir}/${publicPath.replace(/^\/+/, "")}`, "utf8")));
 }
 
 /** Await the tool's lazy data (reference snapshots etc.) — the browser does this in runToolAsync before run. */

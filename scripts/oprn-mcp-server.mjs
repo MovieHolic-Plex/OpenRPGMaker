@@ -160,6 +160,7 @@ async function main() {
   }
   const rpc = startFramedJsonRpc();
   await withTsModule(HEADLESS_ENTRY, "headless.mjs", async (module) => {
+    module.setHeadlessPublicRoot(fileURLToPath(new URL("../public", import.meta.url)));
     const project = args.projectDir
       ? await loadProjectFromDirectory(args.projectDir)
       : loadProject(module, args.projectPath);

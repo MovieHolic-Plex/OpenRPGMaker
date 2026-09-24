@@ -106,7 +106,7 @@ function addFamily(action: ActionForms, names: string): void {
 
 addFamily(ACTIONS.road, "paint_road lay_path");
 addFamily(ACTIONS.paint, "paint_tiles set_tile_grafts set_tile_metadata set_tile_rules set_group_overlay set_group_junction set_animation_strips");
-addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region");
+addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region import_region_reference");
 addFamily(ACTIONS.erase, "tile_erase clear_region");
 addFamily(ACTIONS.wipeMap, "clear_map");
 addFamily(ACTIONS.resetProject, "reset_project");

@@ -148,6 +148,24 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
   return source.pick(loaded.get(source.file));
 }
 
+/**
+ * The shipped snapshot behind one reference, cropped to the place (lake places sit inside the lake village). Throws the
+ * same 「불러오는 중」 error as readRegionReference until preloadRegionReference resolved; undefined for unknown ids.
+ * Snapshot tilesets can be trimmed (no tileMeta) — importers prefer the reference's projectDownload when it has one.
+ */
+export function regionReferenceSnapshotScene(id: string): PlaceSnapshot | undefined {
+  const reference = regionReference(id);
+  if (!reference) return undefined;
+  const source = snapshotFor(snapshotId(id));
+  if (!source) return undefined;
+  const place = LAKE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (!place) return source;
+  const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + place.y) * source.map.width + place.x, (y + place.y) * source.map.width + place.x + reference.width)).flat();
+  const croppedMap: GameMap = { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] };
+  cropExtraLayers(croppedMap, source.map.width, source.map.height, place.x, place.y, place.width, place.height);
+  return { ...source, map: croppedMap };
+}
+
 /** Bounded rows let AI recover the complete raster without truncating a single large response. */
 export function readRegionReference(id: string, row = 0, rows = 8) {
   const reference = regionReference(id);
@@ -155,13 +173,9 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   if (!Number.isInteger(row) || !Number.isInteger(rows) || row < 0 || row >= reference.height || rows < 1 || rows > 16) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
-  const place = LAKE_PLACE_REFERENCES.find(entry => entry.id === id);
   const source = snapshotFor(snapshotId(id));
   if (!source) throw new Error(`Unknown region reference: ${id}`);
-  const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
-  const croppedMap: GameMap | null = place ? { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } : null;
-  if (croppedMap && place) cropExtraLayers(croppedMap, source.map.width, source.map.height, place.x, place.y, place.width, place.height);
-  const selected = croppedMap ? { ...source, map: croppedMap } : source;
+  const selected = regionReferenceSnapshotScene(id)!;
   const endRow = Math.min(reference.height, row + rows);
   const { map, tileset } = selected;
   const lowerTiles = map.lowerTiles.slice(row * map.width, endRow * map.width);

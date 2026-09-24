@@ -82,6 +82,8 @@ export interface ToolDefinition {
   readonly domains?: readonly ToolDomain[];
   // run 앞에서 기다릴 지연 데이터(청크를 따로 받는 참고 자료 등). 비동기 실행 경로(prepareTool)만 부른다.
   readonly prepare?: (args: Record<string, unknown>) => Promise<void>;
+  // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
+  readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
   run(draft: Project, args: Record<string, unknown>): ToolExecResult;
 }
