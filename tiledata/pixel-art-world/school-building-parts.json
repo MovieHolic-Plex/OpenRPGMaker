@@ -958,6 +958,64 @@
         }
       ],
       "notes": "Read canonical paw-office owned chair-blue-back MD and actual normal/error image before reuse. South of desk, facing north."
+    },
+    {
+      "id": "classroom-rear-lockers",
+      "name": "교실 뒤 목재 사물함 · 3칸",
+      "source": "ST-Schl-I01.png",
+      "sourceRect": {
+        "x": 2,
+        "y": 22,
+        "width": 3,
+        "height": 2
+      },
+      "tiles": [
+        [
+          178,
+          179,
+          180
+        ],
+        [
+          186,
+          187,
+          188
+        ]
+      ],
+      "width": 3,
+      "height": 2,
+      "layer": "upper",
+      "role": "storage",
+      "placementKind": "standing",
+      "facing": "south",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 1
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 2
+        }
+      ],
+      "notes": "학교 원본22/23행의 목재 여닫이 수납장 전체3×2. 신발장18/19행과 구분한다. 문짝/상판을 자르거나 뒤집지 않는다. 교실의 마지막 책상 뒤에 놓고 남쪽 조작면1행과 오른쪽 우회통로를 비운다. 바닥 위 상위차단이며 맨아래3칸은 모두 바닥이 받친다. 원본의 문짝 수를 상호작용 슬롯 수로 자동 해석하지 않는다."
     }
   ]
 }

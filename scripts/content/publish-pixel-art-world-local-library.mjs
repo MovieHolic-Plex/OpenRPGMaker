@@ -132,7 +132,7 @@ for(const recipe of extras.recipes){
   }));
   const floor=school.tiles.findIndex(t=>t.source==='ST-Schl-I01.png'&&t.tile===6&&t.layer==='lower');
   addObject(tileId,key('paw_'+recipe.id),recipe.name,width,height,Array(width*height).fill(recipe.id.startsWith('stairs-')?floor:-1),upper,
-    `${recipe.notes} 원본 ${recipe.source}; 조립 사전 ${JSON.stringify(recipe)}. 현재 번호는 학교 합성 atlas 전용이다. 계단은 action 이벤트와 목적층 출현칸을 따로 연결한다.`);
+    `${recipe.notes} 원본 ${recipe.source}; 조립 사전 ${JSON.stringify(recipe)}. 현재 번호는 학교 합성 atlas 전용이다. 계단은 action 이벤트와 목적층 출현칸을 따로 연결한다.`,project.tilesets['paw-school-four-composed'].referenceDocuments.filter(c=>c.id==='school-part-'+recipe.id));
 }
 
 // Importer scene references are reusable place assemblies, separate from saved
@@ -195,7 +195,7 @@ for(const source of Object.values(project.maps)){
 }
 const buildingId='shared_paw_school_building';
 lib.places[buildingId]={id:buildingId,name:'햇살학교 · 4층 / 28실',revision:1,tags:['Pixel Art World','학교','4층','복도2칸'],provenance:{origin:'ai',sourceId:'paw-school-building-design'},kind:'facility',layout:'manual',children:school.floors.map(f=>({id:key(f.id)+'_slot',source:{kind:'place',id:key(f.id)},level:f.level,x:0,y:0})),ports:[],connections:[],referenceDocuments:[{id:'building-plan',name:'4층 연결과 배치 지침',description:'교실16·특별관리실8·화장실4. 원본 판본과 실제 공간 규칙.',documents:[{id:'guide',name:'조립 지침.md',markdown:school.guide}],images:[]}]};
-for(const floor of school.floors.filter(f=>f.level<4))for(const side of ['west','east'])lib.places[buildingId].connections.push({id:`${buildingId}_${floor.level}_${side}`,from:{childId:key(floor.id)+'_slot',portId:`${key(floor.id)}_up_${side}`},to:{childId:key(`paw-school-floor-${floor.level+1}`)+'_slot',portId:`${key(`paw-school-floor-${floor.level+1}`)}_down_${side}`},bidirectional:true});
+for(const floor of school.floors.filter(f=>f.level<4))for(const side of ['east'])lib.places[buildingId].connections.push({id:`${buildingId}_${floor.level}_${side}`,from:{childId:key(floor.id)+'_slot',portId:`${key(floor.id)}_up_${side}`},to:{childId:key(`paw-school-floor-${floor.level+1}`)+'_slot',portId:`${key(`paw-school-floor-${floor.level+1}`)}_down_${side}`},bidirectional:true});
 lib.roots.push(buildingId);lib.previews[buildingId]=lib.previews[key(school.floors[0].id)];
 // Keep regional reuse instructions alongside the actual city snapshot. These are
 // explicit expansion candidates, not claims that new entrances already exist.

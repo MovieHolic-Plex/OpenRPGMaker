@@ -44,10 +44,10 @@ scene 바닥 y=3에 놓았다. 체중계 접근(6,4), 책장 접근(2,4). 이전
 새 연속 평면 정본은 `tiledata/pixel-art-world/school-building-layout.json`과
 `school-building-parts.json`, 지침은 `SCHOOL-BUILDING.md`다.
 `prepare-pixel-art-world-school-building.mjs`가 `pixelArtWorldSchoolBuilding.json`에
-32×31 네 층, 닫힌 방 경계 28개, 16교실·96석, 특별/관리실8개, 화장실4개와
+32×35 네 층, 닫힌 방 경계 28개, 16교실·96석, 특별/관리실8개, 화장실4개와
 전체 하위/상위 배열을 생성한다. 문을 막았을 때 복도로 새는 경로가 없어야 한다.
 북쪽 세 방과 남쪽 세 방 사이에 2칸 복도를 두고 방 출입은 같은 맵의 보행이다.
-동서 계단은 1↔2↔3↔4층 12방향 전이이며 4층에는 상행 계단이 없다.
+북동 계단실은 1↔2↔3↔4층 6방향 전이이며 4층에는 상행 계단이 없다.
 하행 뒤는 벽으로 막고 세면대는 북쪽 벽 앞, 변기는 원본의 얇은 개방형 칸막이에 설치한다.
 
 `pixelArtWorldSchoolBuildingGuide`를 외부 PNG importer에 연결해 학교 원본을 가져오는
@@ -58,7 +58,7 @@ atlas 전용이며, 현재 원본 한 장의 tile 번호로 사용하면 안 된
 `author-pixel-art-world-school-building.mjs <정본에서 읽은 portable.json> <개인 원본 폴더>`는
 기존 네 개 학교 맵을 네 층으로 교체하고 도시 출입문을 연결한다. 기존 다른 시설은 보존한다.
 공간 설계 library의 4개 space에 `interiorLayout.rooms/doorways`를 기록하며 시설 place에는
-층 번호와 6개 양방향 계단 연결을 기록한다. `save-pixel-art-world-school-host.mjs`는
+층 번호와 3개 양방향 계단 연결을 기록한다. `save-pixel-art-world-school-host.mjs`는
 작업 시작 시 SHA가 같은 정본만 백업 후 저장·재로드한다. 실행 중 호스트에 직접 쓰지 않는다.
 직접 플레이어 관찰은 `scripts/qa/pixel-art-world-school-building-capture.mjs`.
 
@@ -99,3 +99,17 @@ SCHOOL-BUILDING.md 참조. 교무실/교장실 의자는 북향196으로 정정�
 정본학교 저장revision65/공용투영66 재로드 일치. 전용player12계단·28방양방향·도시문2곳
 통과,브라우저오류0. AI 도구는 새 프로젝트에서54MD/87페이지/50이미지를 읽었다.
 변경된 지침은 현재학교 합성 타일·객체·5장소와 공용지역 문서에 연결되어 있다.
+
+### 현재: 독립 계단실과 교실 뒤 사물함
+
+서쪽 교실 뒤 벽에 끼운 계단을 제거하고 북동7×7 계단실 한 곳으로 모았다.
+상/하행 접근(25,13)/(29,13), 복도(1..30,18..19), 서쪽 출구(0,19).
+학교 전체28실 구성과 교실당6석은 유지한다. 교실16곳의 뒤(상대2,10)에 원본
+ST-Schl-I01의(2,22,3,2) 목재 사물함을 놓았다. 배열178..180/186..188.
+앞y12와 양옆 우회경로를 확보해32×35다. 사물함 밑동3칸의 접지 및 정상/오류
+그림은 school-part-classroom-rear-lockers 소유문서에 있고 공용 객체도 이를 공유한다.
+이 절보다 앞선32×31/두 계단 기록은 이전판이다. 현재지침은 SCHOOL-BUILDING.md.
+증거 폴더 output/paw-school-lockers/.
+
+후속 정본revision68/공용투영69 재로드 일치. 실제player 계단6방향·28방출입·16사물함
+앞48칸·도시문2곳,오류0. AI 도구57MD/90페이지/55이미지 전달 확인.
