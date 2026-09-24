@@ -1286,6 +1286,9 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     event.name = name;
+    // 뒤 페이지가 「호감 >= 4」만으로 앞 페이지의 +2/+3을 덮으면, 엔딩 문턱 6에는 영영 못 닿는다.
+    // (2026-09-24 연애 도그푸딩: 데이트 페이지가 대화를 지워 나래호감이 4에서 멈춤)
+    keepGainPageBelowHigherEnding(draft, event, normalizationWarnings);
     event.placementRole = "npc";
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
       ? args.characterId.trim()
@@ -2258,6 +2261,45 @@ function parseVariableOp(raw: unknown, label: string): (typeof VARIABLE_OPS)[num
 function numberArg(raw: unknown, label: string): number {
   if (typeof raw === "number" && Number.isFinite(raw)) return Math.trunc(raw);
   throw new ToolError(`${label} 숫자가 필요합니다.`, { code: "number-arg" });
+}
+
+function commandsRaiseVariable(commands: readonly Command[] | undefined, variableId: string): boolean {
+  for (const command of commands ?? []) {
+    if (command.kind === "setVariable" && command.variableId === variableId && command.op === "+=" && typeof command.value === "number" && command.value > 0) return true;
+    if (command.kind === "choices") {
+      if (command.options.some((option) => commandsRaiseVariable(option.branch, variableId))) return true;
+      if (commandsRaiseVariable(command.cancelBranch, variableId)) return true;
+    } else if (command.kind === "presentItem") {
+      if (command.options.some((option) => commandsRaiseVariable(option.branch, variableId))) return true;
+      if (commandsRaiseVariable(command.otherwiseBranch, variableId) || commandsRaiseVariable(command.cancelBranch, variableId)) return true;
+    } else if (command.kind === "fork") {
+      if (commandsRaiseVariable(command.then, variableId) || commandsRaiseVariable(command.else, variableId)) return true;
+    }
+  }
+  return false;
+}
+
+/** 더 높은 엔딩 문턱이 있는 변수를 올리는 페이지를, 그보다 낮은 조건 페이지가 덮지 않게 분기로 접는다. */
+function keepGainPageBelowHigherEnding(project: Project, event: GameEvent, warnings: string[]): void {
+  const pages = event.pages;
+  if (!pages || pages.length < 2) return;
+  for (let index = pages.length - 1; index >= 1; index -= 1) {
+    const page = pages[index];
+    if (!page || page.conditions.length !== 1) continue;
+    const condition = page.conditions[0];
+    if (!condition || condition.kind !== "variable" || (condition.op !== ">=" && condition.op !== ">")) continue;
+    const capped = (project.endings ?? []).some((ending) => ending.conditions.some((entry) =>
+      entry.kind === "variable" && entry.variableId === condition.variableId
+      && (entry.op === ">=" || entry.op === ">") && entry.value > condition.value));
+    if (!capped) continue;
+    const host = pages.slice(0, index).find((earlier) => commandsRaiseVariable(earlier.commands, condition.variableId));
+    if (!host) continue;
+    host.commands = [{ kind: "fork", condition, then: page.commands }, ...host.commands];
+    pages.splice(index, 1);
+    warnings.push(
+      `변수 ${condition.variableId} ${condition.op} ${condition.value} 페이지가 그 변수를 올리는 앞 페이지를 덮어, 더 높은 엔딩 문턱에 닿지 못합니다. 그 페이지 명령을 앞 페이지의 조건 분기로 옮겼습니다.`,
+    );
+  }
 }
 
 function eventUsesFriendship(event: GameEvent): boolean {

@@ -222,4 +222,32 @@ describe("place_npc SimplePage malformed input normalization", () => {
     expect(event).toBeTruthy();
     expect(event?.pages[0]?.name).toBe("리나");
   });
+
+  it("더 높은 엔딩 문턱이 있으면 낮은 호감 페이지가 상승 대사를 덮지 않는다", () => {
+    const context: ToolContext = { project: createBlankProject() };
+    const variableId = context.project.variables[0]!.id;
+    context.project.endings = [{
+      id: "ending_love", name: "고백", priority: 10,
+      conditions: [{ kind: "variable", variableId, op: ">=", value: 6 }],
+    }];
+    const result = runTool(context, "place_npc", {
+      mapId: context.project.startMapId,
+      x: 4, y: 4, id: "npc_narae", name: "설나래",
+      graphic: { transparent: true },
+      pages: [
+        { choices: [{ text: "맞장구", commands: [{ kind: "setVariable", variableId, op: "+=", value: 2 }] }] },
+        {
+          conditions: [{ kind: "variable", variableId, op: ">=", value: 4 }],
+          choices: [{ text: "옥상으로", commands: [{ kind: "text", text: "올라가자" }] }],
+        },
+      ],
+    }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    const event = context.project.maps[context.project.startMapId]?.events.find((entry) => entry.id === "npc_narae");
+    expect(event?.pages).toHaveLength(1);
+    const body = JSON.stringify(event?.pages[0]?.commands);
+    expect(body).toContain("+=",);
+    expect(body).toContain("올라가자");
+    expect(result.diff?.warnings?.join("\n") ?? "").toContain("조건 분기");
+  });
 });

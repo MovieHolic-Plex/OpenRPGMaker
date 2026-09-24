@@ -284,8 +284,18 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
       if (inProgress.has(key)) return false;
       inProgress.add(key);
       // 가장 얕은 세터를 고른다 — 선행 조건이 적은 후보부터.
+      const stepToward = (visit: CommandVisit): number => {
+        const command = visit.command;
+        if (command.kind !== "setVariable" || typeof command.value !== "number") return 0;
+        if (command.op === "+=") return command.value;
+        if (command.op === "-=") return -command.value;
+        return 0;
+      };
+      const preferLargerStep = req.kind === "variable" && (req.op === ">=" || req.op === ">");
       const candidates = visits.filter((candidate) => setterMatches(req, candidate) && map[candidate.page.map!.id])
-        .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length || a.segments.length - b.segments.length);
+        .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length
+          || (preferLargerStep ? stepToward(b) - stepToward(a) : 0)
+          || a.segments.length - b.segments.length);
       let ok = false;
       for (const candidate of candidates) {
         const snapshot = goals.length;
