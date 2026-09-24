@@ -4,6 +4,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
@@ -854,8 +855,10 @@ const upsertEvent: ToolDefinition = {
     if (!existing || "pages" in patch || "commands" in patch) assertEventPartyActorReferences(draft, event);
     const declaredFlags = declaredFlagsWarning(declareReferencedFlags(draft, event));
     if (declaredFlags) warnings.push(declaredFlags);
+    const shadowedBefore = projectSetterShadowedPages(draft);
     const outcome = upsertEventIntoMap(map, event);
     warnings.push(...unwrittenSwitchGateWarnings(draft, event));
+    for (const [key, hit] of projectSetterShadowedPages(draft)) if (!shadowedBefore.has(key)) warnings.push(hit.message);
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
