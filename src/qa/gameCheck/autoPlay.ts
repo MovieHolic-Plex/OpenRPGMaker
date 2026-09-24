@@ -306,6 +306,17 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
     }
   }
   const mapsInProgress = new Set<string>();
+  // 문 후보·세터 후보 하나가 실패하면 그 시도가 남긴 흔적(planned 표식·unresolved 기록)도goals 와 함께
+  // 되돌린다 — 안 그러면 다음 후보는 «이미 계획됨» 으로 건너뛰고 세터 목표 없이 계획이 끝나,
+  // 런타임에서 문이 (현재 스위치 상태로는) 열리지 않는다(2026-09-24 감성 스토리 r3: 계획 5단·유령 preamble 24건).
+  type PlanSnapshot = { readonly goals: number; readonly unresolved: number; readonly planned: ReadonlySet<string> };
+  const snapshotPlan = (): PlanSnapshot => ({ goals: goals.length, unresolved: unresolved.length, planned: new Set(planned) });
+  const restorePlan = (snapshot: PlanSnapshot): void => {
+    goals.length = snapshot.goals;
+    unresolved.length = snapshot.unresolved;
+    planned.clear();
+    for (const key of snapshot.planned) planned.add(key);
+  };
   const planMapEntry = (mapId: string, depth: number): boolean => {
     if (openMaps.has(mapId) || planned.has(`map:${mapId}`)) return true;
     if (mapsInProgress.has(mapId)) return false;
@@ -314,10 +325,10 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
       .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length);
     let ok = false;
     for (const door of doors) {
-      const snapshot = goals.length;
+      const snapshot = snapshotPlan();
       // 문 자체는 routeTo 가 지난다 — 여기서는 문의 선행 조건만 사슬에 넣는다.
       if (planVisit(door, depth + 1)) { ok = true; break; }
-      goals.length = snapshot;
+      restorePlan(snapshot);
     }
     mapsInProgress.delete(mapId);
     if (ok) planned.add(`map:${mapId}`);
@@ -347,7 +358,7 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
           || a.segments.length - b.segments.length);
       let ok = false;
       for (const candidate of candidates) {
-        const snapshot = goals.length;
+        const snapshot = snapshotPlan();
         if (planVisit(candidate, depth + 1)) {
           const threshold = req.kind === "variable" && req.op && req.value !== undefined ? req : undefined;
           goals.push({
@@ -363,7 +374,7 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
           ok = true;
           break;
         }
-        goals.length = snapshot;
+        restorePlan(snapshot);
       }
       inProgress.delete(key);
       if (!ok) { unresolved.push({ req: requirementLabel(project, req), for: visit.where }); return false; }
