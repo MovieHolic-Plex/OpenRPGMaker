@@ -1,4 +1,4 @@
-import { resolvePixelArtWorldAutotileEdition, canAppendPixelArtWorldAutotile, XP_AUTOTILE_MASKS, xpAutotileAtlasLayout, xpAutotileGroup, type PixelArtWorldAutotilePack } from '@/project/pixelArtWorldAutotiles';
+import { canAppendPixelArtWorldAutotile, XP_AUTOTILE_MASKS, xpAutotileAtlasLayout, xpAutotileGroup, type PixelArtWorldAutotilePack } from '@/project/pixelArtWorldAutotiles';
 import { validateTileset } from '@/project/io/shapeResourceFields';
 import { validateTilesetReferences } from '@/project/tilesetReferences';
 import type { TilesetDef } from '@/project/types';
@@ -17,9 +17,7 @@ export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWor
   if (target.autotileGroups?.some(group => group.id === pack.id) || target.tileGroups?.some(group => group.id === pack.id) || target.referenceDocuments?.some(category => category.id === pack.id)) throw new Error('이 자동타일은 이미 추가되어 있습니다.');
   if (file.size > 4_000_000) throw new Error('확인된 원본 PNG를 선택하세요.');
   const sha = await sha256HexBytes(new Uint8Array(await file.arrayBuffer()));
-  const edition = resolvePixelArtWorldAutotileEdition(pack, sha);
-  if (!edition) throw new Error(`${pack.filename}의 확인된 원본과 다릅니다. 다른 판본에는 연결 정보를 적용하지 않습니다.`);
-  pack = edition;
+  if (sha !== pack.sha256) throw new Error(`${pack.filename}의 확인된 원본과 다릅니다. 다른 판본에는 연결 정보를 적용하지 않습니다.`);
   const url = URL.createObjectURL(file);
   let source: HTMLImageElement;
   try { source = await decodeImage(url); } finally { URL.revokeObjectURL(url); }

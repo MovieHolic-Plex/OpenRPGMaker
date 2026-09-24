@@ -164,12 +164,3 @@ through the shared SQLite API with CAS/history/reload. It preserves other librar
 running canonical host with backup, CAS and reload; existing maps are unchanged.
 Material specimens are objects, not completed places/regions. Actual spatial examples
 using this expanded palette still need authored layouts, movement and visual review.
-
-## Separate archive editions (2026-09-25)
-
-The original140 entries above remain unchanged. [autotiles-archive.md](autotiles-archive.md)
-adds65 visually reviewed static XP families and2 byte-edition aliases sharing existing families.
-They use a separate metadata file and4new user-local atlases, never repack the existing8.
-The combined UI has205families accepting207exact sourceSHA values. ZIP member identity,
-world-map scale, opaque legacy backgrounds, tiny complete arrays and publication limitations
-are documented separately. This is not support for every image on the author's site.

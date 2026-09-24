@@ -1,10 +1,7 @@
 import catalog from '@/assets/pixelArtWorldAutotiles.json';
-import archiveCatalog from '@/assets/pixelArtWorldArchiveAutotiles.json';
 import type { AutotileGroup, TilesetDef, TileGroupRole } from './types';
 import { autotileNeighborMask } from './defaults/autotileEngine';
 
-export interface XpArchiveSource { filename:string; downloadUrl:string; sourcePages:string[]; archiveMember:string; archiveSha256:string }
-export interface XpByteEditionAlias { packId:string; sha256:string; filename:string; archiveSources:XpArchiveSource[]; pixelEquivalentToSha256:string }
 export interface PixelArtWorldAutotilePack {
   id: string;
   name: string;
@@ -32,25 +29,10 @@ export interface PixelArtWorldAutotilePack {
   timingProvenance?: 'editor-default-not-author-specified';
   framePixelHashes?: string[];
   aliases: { filename: string; downloadUrl: string; sourcePages: string[] }[];
-  archiveSources?: XpArchiveSource[];
-  acceptedSourceEditions?: XpByteEditionAlias[];
-  referenceExample?: {width:number;height:number;footprintRows:string[];backingKey:string;purpose:string};
   nonOpaqueMasks: number[];
   restrictions: string[];
 }
-export const PIXEL_ART_WORLD_ARCHIVE_AUTOTILES = archiveCatalog.packs as readonly PixelArtWorldAutotilePack[];
-export const PIXEL_ART_WORLD_AUTOTILES: readonly PixelArtWorldAutotilePack[] = [
-  ...catalog.map(pack => {
-    const acceptedSourceEditions = archiveCatalog.byteEditionAliases.filter(alias => alias.packId === pack.id);
-    return acceptedSourceEditions.length ? {...pack, acceptedSourceEditions} : pack;
-  }) as PixelArtWorldAutotilePack[], ...PIXEL_ART_WORLD_ARCHIVE_AUTOTILES,
-];
-/** A separately SHA-verified PNG edition can share a family only after exact decoded-pixel comparison. */
-export function resolvePixelArtWorldAutotileEdition(pack:PixelArtWorldAutotilePack,sha256:string):PixelArtWorldAutotilePack|null {
-  if(sha256===pack.sha256)return pack;
-  const edition=pack.acceptedSourceEditions?.find(a=>a.sha256===sha256&&a.pixelEquivalentToSha256===pack.sha256);
-  return edition?{...pack,sha256,filename:edition.filename,downloadUrl:edition.archiveSources[0].downloadUrl,archiveSources:edition.archiveSources,aliases:edition.archiveSources,description:pack.description+' 확인된 ZIP PNG 판본은 현재 원본과 decoded 픽셀이 동일하다. 같은 그룹 ID를 사용하며 중복 추가하지 않는다.'}:null;
-}
+export const PIXEL_ART_WORLD_AUTOTILES = catalog as readonly PixelArtWorldAutotilePack[];
 
 /** A diagonal only matters when both incident cardinal neighbors connect. */
 export function normalizeXpAutotileMask(mask: number): number {
@@ -173,13 +155,6 @@ export function xpAutotileAtlasLayout(offset: number, columns: number, frames: 1
 
 /** Manual upper families use the same quarter dictionary without claiming upper brush shaping. */
 export function xpAutotilePlacementExample(pack: PixelArtWorldAutotilePack, tileIds: number[]) {
-  if(pack.referenceExample){
-    const {width,height,footprintRows}=pack.referenceExample;
-    if(footprintRows.length!==height||footprintRows.some(row=>row.length!==width||!/^[01]+$/.test(row)))throw new Error('XP 표본 영역 배열이 올바르지 않습니다.');
-    const seed=footprintRows.flatMap(row=>[...row].map(v=>v==='1'?0:-1)),view={width,height,lowerTiles:seed};
-    const placed=seed.map((t,i)=>t<0?-1:tileIds[XP_AUTOTILE_MASKS.indexOf(normalizeXpAutotileMask(autotileNeighborMask(view,i%width,Math.floor(i/width),v=>v===0,8)))]);
-    return {width,height,lowerTiles:pack.defaultLayer==='lower'?placed:placed.map(()=>-1),upperTiles:pack.defaultLayer==='upper'?placed:placed.map(()=>-1)};
-  }
   const sample = xpAutotileExample(0);
   let indices = sample.lowerTiles;
   if (pack.shapePolicy === 'rectangle') {

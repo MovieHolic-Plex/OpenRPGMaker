@@ -89,8 +89,7 @@ export function createPixelArtWorldAutotileReferences(pack: PixelArtWorldAutotil
         `# ${pack.name}\n\ntilesetId: ${tilesetId}\n\n${pack.description}${template ? '\n\n' + templateNotice : ''}`,
         `원본: ${pack.filename}, ${pack.sourceWidth}×128px XP. SHA-256: ${pack.sha256}. 확인일 ${pack.checkedAt}.`,
         `[제작자](${pack.sourcePage}) · [이용 조건](${pack.termsUrl})\n\n${pack.credit}\n\n원본/가공 소재를 재배포하지 않는다. 첨부 그림은 사용자 원본에서 로컬 생성했다.`,
-        `## 참고 그림 받침\n\n${backingDescription}${pack.referenceExample ? "\n\n"+pack.referenceExample.purpose : ""}`,
-        ...(pack.archiveSources ? ["## 사용자 ZIP 원본\n\n공식 ZIP을 사용자가 내려받아 아래 member PNG를 추출한다. 앱은 ZIP/PNG를 자동 다운로드하지 않는다.\n\n"+json(pack.archiveSources)] : []),
+        `## 참고 그림 받침\n\n${backingDescription}`,
         `## 레이어·통행·지형\n\n홈=${pack.defaultLayer}, 통행=${pack.passage}, 용도=${pack.surface}, 지형 태그=0(중립; 물 피해·수영 등 효과 없음). 받침=${pack.underlay}. 투명 여부와 홈 레이어는 별개다. ${pack.restrictions.join(' ')}`,
         `## 저작 순서\n\n1. 모든 MD/실물 그림을 읽는다.\n2. 용도와 통행 영역, 받침을 정한다.\n3. ${pack.placement === 'lower-autoshape' ? 'lower에 같은 그룹을 칠하면 8방향 자동 성형한다.' : '전체 배열의 마스크 사전으로 수동 배치한다. 자동 성형 그룹은 등록하지 않는다.'}\n4. ${pack.shapePolicy === 'rectangle' ? '최소 2×2 직사각형만 사용한다. 띠/구멍/분기는 금지한다.' : '외딴 점·얇은 선·볼록/오목 모서리의 모든 쿼터를 사용한다. 최소 1×1.'}\n5. upper 배치는 기존 lower 받침을 보존한다. 필요한 바탕이 없으면 저작을 중단하고 먼저 바닥/벽/지붕을 확보한다.\n6. 문/전면 벽/접근칸/이벤트는 별도로 저작한다. 원본 12칸을 완성 타일처럼 복사하지 않는다.`,
         '마스크: N=1,E=2,S=4,W=8,NE=16,SE=32,SW=64,NW=128. 대각은 양쪽 직교가 연결된 경우만 유효. 맵 밖은 비연결. 서로 다른 재료를 자동 연결하지 않는다.',
@@ -104,7 +103,7 @@ export function createPixelArtWorldAutotileReferences(pack: PixelArtWorldAutotil
         '## 판본 별칭(같은 SHA만 허용)', json(pack.aliases),
       ].join('\n\n') },
       { id: 'examples', name: template ? '편집 템플릿 배열과 오류.md' : '조립 배열과 오류.md', markdown: [
-        `# ${template ? '편집 템플릿 — ' : ''}${pack.referenceExample ? '용도별 작은 고정 조립' : pack.shapePolicy === 'rectangle' ? '직사각형 조립' : '직사각형·구멍·외딴 점·얇은 선·분기'} 전체 배열`,
+        `# ${template ? '편집 템플릿 — ' : ''}${pack.shapePolicy === 'rectangle' ? '직사각형 조립' : '직사각형·구멍·외딴 점·얇은 선·분기'} 전체 배열`,
         `원점=(0,0). ${pack.defaultLayer}에 소재를 배치한다. -1은 이 예제가 점유하지 않는 칸. 기존 바닥을 지우라는 뜻이 아니다. ${backingDescription} ${template ? templateNotice : ''} 받침 미확보 상태는 완성 장면으로 사용하지 않는다.`,
         json(example), `![${comparisonTitle}](image:comparison)`, '## 의도적으로 잘못 놓은 전체 배열', json(bad),
         '## 정확한 배열 대조로 확인한 오류 좌표', json(errors),

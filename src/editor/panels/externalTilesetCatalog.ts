@@ -117,17 +117,16 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
         busy = false; controls.forEach(control => { control.disabled = false; });
       }
     });
-    content.append(el('article', { class: 'external-tileset-card', dataset: { search: `${pack.name} ${pack.filename} ${pack.aliases.map(alias => alias.filename).join(' ')} ${pack.acceptedSourceEditions?.flatMap(e=>e.archiveSources.map(a=>a.filename)).join(' ')??''}`.toLocaleLowerCase() }, children: [
+    content.append(el('article', { class: 'external-tileset-card', dataset: { search: `${pack.name} ${pack.filename} ${pack.aliases.map(alias => alias.filename).join(' ')}`.toLocaleLowerCase() }, children: [
       el('h3', { text: pack.name }),
       el('p', { text: `원본 ${pack.sourceWidth}×${pack.sourceHeight}px → 32px · 47모양${pack.frames > 1 ? ' × 4프레임' : ''} · ${pack.defaultLayer === 'lower' ? '하위' : '상위'} · ${pack.placement === 'lower-autoshape' ? '자동 성형' : '수동 마스크 조립'} · ${pack.passage === 'solid' ? '통행 차단' : '통행 허용'}` }),
-      el('p', { text: pack.description }),
-      ...(pack.acceptedSourceEditions??[]).map(edition=>el('p',{children:[el('a',{text:'픽셀 동일 ZIP 판본도 가져오기 가능 ↗',attrs:{href:edition.archiveSources[0].downloadUrl,target:'_blank',rel:'noopener noreferrer'}}),el('small',{text:edition.archiveSources.map(a=>a.archiveMember).join(' 또는 ')})]})), select,
+      el('p', { text: pack.description }), select,
       el('div', { class: 'external-tileset-actions', children: [
-        el('a', { class: 'btn', text: '다운로드 ↗', attrs: { href: pack.archiveSources?.[0]?.downloadUrl ?? pack.sourcePage, target: '_blank', rel: 'noopener noreferrer' } }),
+        el('a', { class: 'btn', text: '다운로드 ↗', attrs: { href: pack.sourcePage, target: '_blank', rel: 'noopener noreferrer' } }),
         button, input,
         el('a', { text: '이용 조건 ↗', attrs: { href: pack.termsUrl, target: '_blank', rel: 'noopener noreferrer' } }),
       ] }),
-      el('small', { text: `${pack.archiveSources ? '공식 ZIP에서 '+pack.archiveSources.map(a=>a.archiveMember).join(' 또는 ')+'를 추출해 PNG를 선택하세요.' : pack.filename+'을 제작자 페이지에서 저장하세요.'} 원본·가공 소재 재배포 금지. 공개 게임에 Pixel Art World 크레딧 필요.` }), status,
+      el('small', { text: `${pack.filename}을 제작자 페이지에서 저장하세요. 원본·가공 소재 재배포 금지. 공개 게임에 Pixel Art World 크레딧 필요.` }), status,
     ] }));
   }
   openDialog('external-tileset-catalog', '외부 타일셋 다운로드', [content], [{ label: '닫기', testid: 'external-tileset-close' }], undefined, () => controller.abort());
