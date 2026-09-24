@@ -482,7 +482,7 @@ export function resolveMaterialByLabel(
       const normalized = normalizeMaterialQuery(raw);
       return {
         status: "missing",
-        message: `"${raw}" 은(는) 있지만 면 채우기 재료가 아닙니다 — 벽·건물·단일 타일은 fill_region 으로 채울 수 없습니다.`,
+        message: `"${raw}" 은(는) 있지만 면 채우기 재료가 아닙니다 — 벽·건물·단일 타일은 fill_region 으로 채울 수 없습니다.${notFillableRoute(exactGroup?.role ?? strong[0]?.role)}`,
         suggestions: fillableMaterialSuggestions(tileset).filter((entry) => normalizeMaterialQuery(entry.label) !== normalized),
         suggestionKind: "fillable",
       };
@@ -495,6 +495,28 @@ export function resolveMaterialByLabel(
   }
   const best = strong[0]!;
   return materialAccessForTile(tileset, best);
+}
+
+/**
+ * 면 채우기가 아닌 재료를 받았을 때 갈 도구. 추리 도그푸딩(qa-game mystery-3)에서 모델이 벽 재료
+ * 「목골 석벽 집 벽 확장」 으로 fill_region 을 같은 인자 그대로 11번 다시 불렀다 — 「채울 수 없다」 만으로는
+ * 어느 도구로 갈지 몰랐다.
+ */
+function notFillableRoute(role: string | undefined): string {
+  switch (role) {
+    case "wall":
+      return " 벽이면 build_wall(material 에 이 라벨)로 선을 긋고, 방이 나뉜 실내 전체면 place_concept(plan, 새 mapId)로 지으세요.";
+    case "building":
+    case "castle":
+    case "roof":
+      return " 건물이면 author_house(외장+실내) 또는 place_concept(실내)로 지으세요.";
+    case "furniture":
+    case "prop":
+    case "decor":
+      return " 가구·소품이면 place_props 나 paint_tiles(한 칸씩)로 놓으세요.";
+    default:
+      return "";
+  }
 }
 
 function materialAccessForGroup(
