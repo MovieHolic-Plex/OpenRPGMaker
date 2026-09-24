@@ -11,8 +11,8 @@ const browser=await chromium.launch();try{
  if(patch.sourceProjectId&&status.projectId!==patch.sourceProjectId)throw Error('Canonical project identity changed');
  const project=JSON.parse(before.serialized);
  for(const section of ['maps','tilesets'])for(const[id,value]of Object.entries(patch[section])){
-  const basis=patch[section==='maps'?'beforeMaps':'beforeTilesets'][id];
-  if(!basis||!isDeepStrictEqual(project[section][id],basis))throw Error('Target changed since preparation: '+section+'/'+id);
+  const bases=patch[section==='maps'?'beforeMaps':'beforeTilesets'],basis=bases[id];
+  if(!Object.hasOwn(bases,id)||(basis===null?Object.hasOwn(project[section],id):!isDeepStrictEqual(project[section][id],basis)))throw Error('Target changed since preparation: '+section+'/'+id);
   project[section][id]=value;
  }
  for(const[id]of Object.entries(patch.assets??{}))if(!Object.hasOwn(patch.beforeAssets??{},id)||!isDeepStrictEqual(project.assets.uploaded[id]??null,patch.beforeAssets[id]))throw Error('Asset changed since preparation: '+id);

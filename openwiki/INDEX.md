@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **92쪽 / 3403KB / 약 971,728 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **92쪽 / 3404KB / 약 972,162 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -941,11 +941,11 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L114` Runtime and authoring contracts
 - `L133` Verification and examples
 
-### `openwiki/pixel-art-world-civic.md` — 3KB · 33줄 · ~917 토큰
+### `openwiki/pixel-art-world-civic.md` — 4KB · 38줄 · ~1,105 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/pixel-art-world-doors.md` — 4KB · 45줄 · ~1,279 토큰
+### `openwiki/pixel-art-world-doors.md` — 5KB · 53줄 · ~1,525 토큰
 
 절 제목 없음 (평면 목록 페이지).
 
