@@ -1,3 +1,4 @@
+import { appendPixelArtWorldDoorCatalog } from "./pixelArtWorldDoorCatalog";
 import { EXTERNAL_TILESET_PACKS } from '@/project/externalTilesetCatalog';
 import { importExternalTileset } from '@/editor/externalTilesetImport';
 import { PIXEL_ART_WORLD_AUTOTILES, canAppendPixelArtWorldAutotile } from '@/project/pixelArtWorldAutotiles';
@@ -20,7 +21,11 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
   content.append(search);
   search.addEventListener('input', () => {
     const query = search.value.trim().toLocaleLowerCase();
-    for (const card of content.querySelectorAll<HTMLElement>('article')) card.hidden = !card.dataset.search?.includes(query);
+    for (const card of content.querySelectorAll<HTMLElement>('article')) {
+      card.hidden = !card.dataset.search?.includes(query);
+      // Card display:grid otherwise overrides the browser's hidden rule.
+      card.style.display = card.hidden ? 'none' : '';
+    }
   });
   for (const pack of EXTERNAL_TILESET_PACKS) {
     const status = el('p', { attrs: { role: 'status', 'aria-live': 'polite' }, dataset: { testid: `${pack.id}-status` } });
@@ -59,6 +64,7 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
       status,
     ] }));
   }
+  appendPixelArtWorldDoorCatalog(content, { signal: controller.signal, controls, refreshTargets, isBusy: () => busy, setBusy: value => { busy = value; }, onImported });
   content.append(el('h3', { text: '천장·벽·지붕·지면 연결 소재' }));
   content.append(el('p', { class: 'external-tileset-note', text: '먼저 위의 32px 타일셋을 가져온 뒤 대상을 선택하세요. 원본을 연결 모양으로 조합해 대상 끝에 추가합니다. 자동 성형과 수동 조립은 항목별로 다릅니다. 기존 타일 번호는 유지됩니다.' }));
   for (const pack of PIXEL_ART_WORLD_AUTOTILES) {

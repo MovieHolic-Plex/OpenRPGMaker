@@ -1,0 +1,3406 @@
+[
+  {
+    "id": "paw-door-schl01",
+    "name": "학교 외관 미닫이문",
+    "filename": "SC-Door-Schl01.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-Schl01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "031bb53ec1e2388a9cfda87b9a0f4326cc48ed7543dc28e651b205fabf24a553",
+    "width": 384,
+    "height": 256,
+    "frameWidth": 96,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "87f2a3a29edffff2988a7338cfd09c5b572992fccbab1a204de7467a1ecc4f2c"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          96,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "dd9e0616efbc2e34093bee529c5d3f0383532cda84c1e3f7c7a925708b37fe61"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          192,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "92f0d49f46a795ab91c499cf35b2d39fb0e87c91ac97ab93fccd4be7a269bec5"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          288,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "a0cdb83e620e4d822082ae9d7754bba5dd892e1dde51152d276da0fd6ba8a2e8"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "e5eab1ecb93393ca13f878b4d654637c2f7de72746cdf4d30f01823ec734b57a"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          96,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "38a31c68d2bf80bed1850b8d31375498b600bff4723dd9d9310b4208a3496d62"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          192,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "71d1567537e4b165e4cab32db330c80206024bd190cc9f6a4b403bb8d8427a79"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          288,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "3754acc5207b2a596a47bc3a5fed04001e0575a2d46ddb1db9c89f0c2fc3bbdc"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "6c9968abd6f4501f8fe4c69205055f79ec6bbcab733b6ec4b579023257232a9f"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          96,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "307274a91d19a36db8352e2289a3eafcfe627a4f6b2555339bfc86eb91c07f5a"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          192,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "2748599c90d3ffd9b59546ab85d5475848df10476a2042c363161778d9c9d610"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          288,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "0d4204cd59f4c558c287d709731278e2dc7379e6e38bbb8b6d2f54bbbba387ab"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "faec063373c7372bc963e9ec7f71fc08fe70e3b58541f3549dd881aa8e5f6be9"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          96,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "ba92d6535c2df497394732d38da804ed242a64c7cc9642ef897a838af5df3c10"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          192,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "f271ae93693eb95b7bb2666e33f024a9cf2f884fa22811f071cd61a29840f7cf"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          288,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "50582b148b567f494ab9220cb4cff06d2f7f3e765155a6b70268f949fa4c0765"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "왼쪽 통로 · 밝은 유리",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "왼쪽 통로 · 어두운 유리",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "오른쪽 통로 · 밝은 유리",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "오른쪽 통로 · 어두운 유리",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-schl02",
+    "name": "학교 실내 미닫이문",
+    "filename": "SC-Door-Schl02.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-Schl02.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "58c726de2c5d2395c6dffe8439e4c097755689afed54273626e9c355c76c6f69",
+    "width": 384,
+    "height": 256,
+    "frameWidth": 96,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "87fb1c1c5fa27d83998ac4344976b103bd9a994f5de6d9a68b868306e8031b2b"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          96,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "65bf8ff563af33e6dc23aea866e22ab733086391de056ca10178862866ce3163"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          192,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "a1f47a47e4dbc69f399b5f3cae61c81210027a10adca8a19d5264ba2085adc00"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          288,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "66b179ed3e64eb09659cc1a305cc571938bc66c691bc0815db67c8cfe91fe180"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "3baecff40db73f4eb157e4acc58a3abdf6d7982747047df64bd3213d59c1141d"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          96,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "65c0e471032dfaa620ace1afb2458cd3731ec50ce46e00ee88cc49678dbfe8d6"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          192,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "704c096a345a047a897e4a8277e5d54b7eff294e937ce2e8fddae58c444fdda1"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          288,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "d7d29ce545744bfb155dd40c915cb88ba7142e625aaf58b497ccb673e8c9313c"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "e6fcbc7458dff957efa19bb8539ea85e82350f587b09919c434cb8219a31092a"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          96,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "45cdf409060d65128ff6230bedf46e7d3a0a58d187fa74245d72783ed2d0038c"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          192,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "c78d0501f604d3c8e6c6de2fee9b90fe1530fbb4814a4f824c248e4e4662bfd1"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          288,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "72dd8e462edaf64e02e266bc705d4d6c5e3309479c625de5b1f0d60c40f6164a"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "ab5e6e5eb8ece0733049abc2f52c15477fc489533a13ff9bac6031173bfa2f9f"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          96,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "c08fe4edba0c37de596528507ba267fb30f98bcedfbc136da7f59e33280e5753"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          192,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "eef73969438a8bb789b36f7d74c853cf202d6e7d940c82b1174a4afbb2051f71"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          288,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "a2cbd6ed1a68bcce9e55030c1953c200f245aa9b9581a4a790b13ed81c930c63"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "왼쪽 통로 · 불투명",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "왼쪽 통로 · 유리",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "오른쪽 통로 · 불투명",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "오른쪽 통로 · 유리",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-schlg01",
+    "name": "학교 체육관 미닫이문",
+    "filename": "SC-Door-SchlG01.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-SchlG01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "4d4b4207e34e3f928649f1f8e09600f297b96d0f53001e1ecd32c0d65d0c031d",
+    "width": 384,
+    "height": 256,
+    "frameWidth": 96,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "72c45927f01c7bc719bae77219152523e732b02f1b033864f5a3a1ab49c0ae2d"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          96,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          11,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "a05376788218a0b83d983c1e5b0a7ac1675d235fd408d99dbd2c28661df5a70e"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          192,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "18277bebfab27016e4ad138d8c00bfb51491a17edbeb643c469434068907ba78"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          288,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          11,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "b9112f2f218c1300891811badfe7b75cedc1b68d998bf1ae0b516301c02b96aa"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "3a9e9805f945a5e48a8d400f61ad40747f4bf818369b208125bb64941101fcf9"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          96,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          11,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "ecc9927f9dac3503dc8c79f1b273ff4c677b744126da46b85a7a1c043333103a"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          192,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "f09ccd47d65a47c54dd7c15d7e90cb34ae298525f56b013998444aebab35271b"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          288,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          11,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "8d6565ff0f1bfd63c8d21fb15d30a599eaf56b81863e083ea131fbff67f0f32c"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "ada669f5419f1e03b358afbb77f8ef396435a289dda970deb4751f7e29aa5dbf"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          96,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          11,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "a11a4c5bf17780d6ce9611c45ef25ff7f93e4450718119e208c789e5779fb926"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          192,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "6f4291f5502e906c2e33af7fe023f83e9cc292d8068b0eda54088505cf9800e9"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          288,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          11,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "32716c248425dfb3b5a53f5546cf9685b1f53397937fe061a66f5a67edc934f7"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "9c13d16aac92925d67b6f756e04179a7780971f5108fbbf574a3c850aef5e68c"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          96,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          11,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "ebfc448778c782a02ad6fa44b430d656c6c419d4534d12738d49dd47cb2f5ab6"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          192,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "c584bafce10d0c8533ff62b773fcc6d9982d07b6cb547d2b21e5a28c35f4ec7b"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          288,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          11,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 3392,
+        "pixelSha256": "cf78c911309974e79bb42475d38e758363d2b839e4b61565f3dfb52741619aa5"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "왼쪽 통로 · 높은 문",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "왼쪽 통로 · 낮은 문",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "오른쪽 통로 · 높은 문",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "오른쪽 통로 · 낮은 문",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-schlw01",
+    "name": "목조 학교 미닫이문 A",
+    "filename": "SC-Door-SchlW01.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-SchlW01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "d51080c0619dde1c6363fdbe8aa4f3ce4808941b2e89c49c92100d81b30d6be8",
+    "width": 384,
+    "height": 256,
+    "frameWidth": 96,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "f9b06d9229a52240675e011521b79dabfd46e5744a5db184609695d5fcce132e"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          96,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "5ff0e1cc4d8cae144d29ff1028ae8693e5fea34ca3ca9edc7cf50440178afa41"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          192,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "6fa47deb7f6635e7e17155d37ae97e54104f93ed1cfbb1b73fc9b1e0f7515142"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          288,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "982f633cacf1f9bf8644cf629dbd6948742559b89ccaf9a72fd4d1b8d59e8e5f"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "91f9a9ea3bf41df75da7c0effd6be76e66463263af35d84e617402a6a6eca569"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          96,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "8b6433e1a13151277e4d3152b6de96a17492349021b59be874266547f7dc94b8"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          192,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "5dbfdf86c7d081af32982829b0f0188943b396b2b5e5c521fbd2a7c622b68b70"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          288,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "a9e5b3e10f91016725244c01d58f4bf0d5c8f517dafe1e3f021b48705769cb36"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "c52f81c59b524b1ef2897e08c0144a495d475527990f43f2b7bee8b7ec9f3443"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          96,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "2d34bab2873ff1ef858137659f6409317f095918b6595dabb45f1bebe510a413"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          192,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "810d807ee02fe4ac03da33b5b1c68545c43035abe7344ab9d2b7e9774e7ef36a"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          288,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "9a47e7cfe7926e2b3aa1aa3f49592beba530b3f579fd2fa7019e41ca041a385b"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "5597fdfc4afc1e8bf32f8eabd3ddff2501f05a40e89ab90ff135214878a71229"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          96,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "1ceb3505c4fdf9d15647365943d51bc1d9e17509109d11269e16da10d1978e1e"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          192,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "06bc1252899a9eca2a5c2e3e5f41f14dd25261e70f763fe12313f26ceaecedf3"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          288,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "d459341abc1208c9d449df9758985f46fdc30e24a3f314d8626537056d51252c"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "왼쪽 통로 · 밝은 유리",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "왼쪽 통로 · 어두운 유리",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "오른쪽 통로 · 밝은 유리",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "오른쪽 통로 · 어두운 유리",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-schlw02",
+    "name": "목조 학교 미닫이문 B",
+    "filename": "SC-Door-SchlW02.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-SchlW02.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "9e057ad8ef9b7b9df6f7a7a65849b9437f15bec849f785cae905cbe827ddbceb",
+    "width": 384,
+    "height": 256,
+    "frameWidth": 96,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "a5bb6599758bf7b7056cc31999685b20b6c52511f5c1b72934fe6aebec44eb04"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          96,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "2bdf36d6c4d7743481246bbcf888b5d3fec9e5ebc925174e2d2d2a2dc4b483b4"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          192,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "16c913a9960083acec923b087ba888a8c23c7d482b60f81fb7de2fa8625a9e2d"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          288,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "f1f418f091751c3990f5bee8db2273a3e9f06d772bdb1f94afca014080cc4e46"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "3fdc787708115ccdd5ab42d528a8e85026f34ceba43cb927cda3931bd868164e"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          96,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "0d736df082822fd8c7a4614c4f5bc4ce6de6693552ac665f073be802c6727957"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          192,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "6ef5ff22cc78b11553314fae80d726fa5d779eb298c80b4d2c58235f20c62a52"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          288,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "baee016a89ed76b729b7a1021beb6db2fca55098d91e9c30ca8e787ee23c06db"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "cb81fcb5491bd5293f2e8456793525576aa6b182baf43c8bd12841b49543ffaa"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          96,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "550c61032e4ebbaa84d1a39e15260cd060f0666fade80dda001357b71b0b0836"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          192,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "e28b8313610838c5bc035f946454b7625993a7d1cb895fea4589c36dd8dbada0"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          288,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "9a37d1dd4b1687b1ab0bc20141a1c85ad92ec45f77102fc90649ee9c530e451e"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "91165db1d325a568256f758272d30d17234add56e217356132011cb379a68a83"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          96,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          32,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "95ef634eea333a9e7b79279cb0b9311b8aa7e7c6b60be440ccd3829aaa164780"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          192,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "273327ac898653fa436aa9bc43f156802248fc1c051462e7293878eeb43f0bd6"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          288,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "nonTransparentPixels": 4096,
+        "pixelSha256": "58a31e57c7b803422aa2749518a78ec66799fdc36e6bb6591354584862b86574"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "왼쪽 통로 · 밝은 유리",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "왼쪽 통로 · 어두운 유리",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "오른쪽 통로 · 밝은 유리",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "오른쪽 통로 · 어두운 유리",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-tolt01",
+    "name": "화장실 정면 여닫이문",
+    "filename": "SC-Door-Tolt01.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-Tolt01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "7e6f65bf0915497bb21879f3c82f82d33820949013925396494e11a68346a62c",
+    "width": 128,
+    "height": 384,
+    "frameWidth": 32,
+    "frameHeight": 96,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          27,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 2208,
+        "pixelSha256": "eefa34d61dae0ff30fea84978cb4b611e1f3343d97cf341f1ac355f9b1bce069"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          32,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          26,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 2240,
+        "pixelSha256": "bb515c2e3e3332dfd30f3fb94abd17c8f4cc7d017213dc36a4ce04ce062a68be"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          64,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1792,
+        "pixelSha256": "7c73170dec266dd538e9d7d2465fbbc2536ca306cbeed04a8f4c2d91ded10a52"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          96,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1792,
+        "pixelSha256": "ed91de797c3f0876d141ef03f1442f9f32bf713290474477d5b71b010ada5d8b"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          27,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1728,
+        "pixelSha256": "9d92dfd114590d8b2e37c968d05beb09b47e92d28e89b5c5f736cacf7ef27a8a"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          32,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          26,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1760,
+        "pixelSha256": "42dbd8774c634152ae6acf89b8f6b539c78a6f965fb3c60f6af46e1dcd5dc8ad"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          64,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1424,
+        "pixelSha256": "a40e73881f66ce3a378e99c1a13a11bc3899307540148bb7d3a33c5fdad5517d"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          96,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1359,
+        "pixelSha256": "179f5311d8c47cc7a578e1c8540ba81b0a74c1d64f3c74dcefd4d14df97b2e62"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          25,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1459,
+        "pixelSha256": "152a2a2b1089e285f9a1aff4df9ee51662e20170458901f4f0b5d096d2f6eb65"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          32,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          24,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1491,
+        "pixelSha256": "88ae1bd4de174bbf8a618ee1098314c32348b6c319f0fedfeb08f626ad32f08c"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          64,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1140,
+        "pixelSha256": "4ab34be368f4522607b8e452a2b7cdd019ec299022c461d04e6df4a23790e1b9"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          96,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 1140,
+        "pixelSha256": "a2e9ab98c568c611bed1b4b15f8b6cb97e5884284a4b9bd8994680e5e74c513e"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          13,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 887,
+        "pixelSha256": "8e377baec17b675731b7fa68610720bedbc254b4ff673dab6791191a29c3cd88"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          32,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          13,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 915,
+        "pixelSha256": "04d7fd2548cb29cbe709a55800ace52251ee8160346f632e45e576307bd6034a"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          64,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 685,
+        "pixelSha256": "4f294064fc617f6695631b25313dc87e03ab23a6e4a567a1604dea57e8fab298"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          96,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          40,
+          32,
+          96
+        ],
+        "nonTransparentPixels": 685,
+        "pixelSha256": "43cf9275f0f0ab791e9ce46c42d6c20a5585abba1bab7406e6d9d71bd712672c"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "밝은 문 · 뒤쪽 경첩",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "나무 문 · 뒤쪽 경첩",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "밝은 문 · 앞쪽 경첩",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "나무 문 · 앞쪽 경첩",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-tolt02",
+    "name": "화장실 측면 여닫이문",
+    "filename": "SC-Door-Tolt02.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-Tolt02.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "b62b65ca038e857ac0c92eef75ca0ea1f11a4d553c4a9c78d49b53af7e1fa435",
+    "width": 128,
+    "height": 384,
+    "frameWidth": 32,
+    "frameHeight": 96,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          27,
+          32,
+          32,
+          77
+        ],
+        "nonTransparentPixels": 225,
+        "pixelSha256": "addd568e0692241ae3d857dd6eabbf7123809077eb6fdc736d3938024d25087f"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          32,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          5,
+          77
+        ],
+        "nonTransparentPixels": 225,
+        "pixelSha256": "3a270c7059d7e7be9a9aeb6f602acbf018a19e0b7034293769e934c685e797f4"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          64,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          27,
+          32,
+          32,
+          76
+        ],
+        "nonTransparentPixels": 220,
+        "pixelSha256": "bb149b6fd0ab13768b5f1347f8d16afceaee0bb4d328fef2962978da60571470"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          96,
+          0,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          5,
+          76
+        ],
+        "nonTransparentPixels": 220,
+        "pixelSha256": "ddd1507a6bb51b3030d3fb656d9f4b779455325950e2d542cd678ef4fe868ba3"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          8,
+          32,
+          32,
+          77
+        ],
+        "nonTransparentPixels": 927,
+        "pixelSha256": "9191a62e530882fa906231926330b564e557e355237cd45ea4ecee8d74e58f35"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          32,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          24,
+          77
+        ],
+        "nonTransparentPixels": 927,
+        "pixelSha256": "cea445b4f99d635aa90c6d1575f5673fcb3c59a2ff26a20e1374eaa117f9e75d"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          64,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          7,
+          32,
+          32,
+          76
+        ],
+        "nonTransparentPixels": 929,
+        "pixelSha256": "f04f6afdae794b5b144cbd135b53f77873a18526f0f39f480a3e49a7e3078455"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          96,
+          96,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          25,
+          76
+        ],
+        "nonTransparentPixels": 929,
+        "pixelSha256": "54cf36172616fb620487fed386d2605c545635fee1f074e82243d98fd729d65f"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          77
+        ],
+        "nonTransparentPixels": 1271,
+        "pixelSha256": "375fad658419abb10e7b15e09ad5b48d546af313e51fecdc456b877374de2ca7"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          32,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          77
+        ],
+        "nonTransparentPixels": 1271,
+        "pixelSha256": "58629db83dae7d02bcdae9024cf8d49be60605cc11f899207c204378c632f70b"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          64,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          76
+        ],
+        "nonTransparentPixels": 1239,
+        "pixelSha256": "f41c2ed7487ef7b8abe0819141e25e0dc85e500e0feaa6ec1f969b725231fa20"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          96,
+          192,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          76
+        ],
+        "nonTransparentPixels": 1239,
+        "pixelSha256": "17a432e206c867c5c664e48efe10b58fd82c7a9c6368665bd91351579078be17"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          77
+        ],
+        "nonTransparentPixels": 1440,
+        "pixelSha256": "475a7a17193a015c606f4c062ff75f50ddae99abfa17db998745e7e7b7705ebc"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          32,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          77
+        ],
+        "nonTransparentPixels": 1440,
+        "pixelSha256": "a409242226abb0343dd2d94d48b8b45b72ccd8c75528e3a5347adf7edfdcec2c"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          64,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          76
+        ],
+        "nonTransparentPixels": 1408,
+        "pixelSha256": "7c7a9e01714bc037d0ea7bebbbdc06cdfbc2b1e3efd8c652f1e80c26c3fafe95"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          96,
+          288,
+          32,
+          96
+        ],
+        "alphaBounds": [
+          0,
+          32,
+          32,
+          76
+        ],
+        "nonTransparentPixels": 1408,
+        "pixelSha256": "1e31ad5821ae515c99a6f2c035dedf944c2e6e6c6c49d43eeb5ee6d2a5be8e31"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "밝은 문 · 오른쪽 경첩",
+        "sourceColumn": 0,
+        "openingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "closingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "밝은 문 · 왼쪽 경첩",
+        "sourceColumn": 1,
+        "openingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "closingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "나무 문 · 오른쪽 경첩",
+        "sourceColumn": 2,
+        "openingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "closingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "나무 문 · 왼쪽 경첩",
+        "sourceColumn": 3,
+        "openingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "closingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음.",
+      "행3→2→1→0이 열림. 아래19~20px 투명 여백도 보존."
+    ]
+  },
+  {
+    "id": "paw-door-convi01",
+    "name": "편의점 단폭 자동문",
+    "filename": "SC-Door-Convi01.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-Convi01.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "e3a0b82c18d56f83267bb6382798f5bd5a0d10af5c64c768deb6bb63daa5b945",
+    "width": 384,
+    "height": 256,
+    "frameWidth": 96,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "460c3cfb982a7d9dde897965b10a8c6b10e273f0bd4e9259dabda8359c55a6ef"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          96,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "3167ce68b4e163eabaef0bd54599724b44de1d018332dbb4790243792253a243"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          192,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "aa9631036fccaf1a4aa74f1ceb6739fa2bddb77128428063aab33e44a4c8a2f0"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          288,
+          0,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "aa9631036fccaf1a4aa74f1ceb6739fa2bddb77128428063aab33e44a4c8a2f0"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "6acee91b1389814b5dea930303c2187394629525a2374669a2105883ee918291"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          96,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "4789e79836d048c0be22a8e0bfe862b7242439090d812746ae2c985792e9eed3"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          192,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "294f86d8db7ed3daed591adcaf9deeac44db9ee5ac25105f6f11eded0b9c741c"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          288,
+          64,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "294f86d8db7ed3daed591adcaf9deeac44db9ee5ac25105f6f11eded0b9c741c"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "0a1e7c6b69b7c75f99f55012e624be30b792a3fccb30793075ba69a38a29a2b5"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          96,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "248fd50701e937091fbd12c81a0616ee9be36f1f7ebed009d967f2ad3d39546c"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          192,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "eabb0e98db45b355ca186e8048bfbfdcfa0302d0ba6007e9c23b91b9c91a5199"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          288,
+          128,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "eabb0e98db45b355ca186e8048bfbfdcfa0302d0ba6007e9c23b91b9c91a5199"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "dcbeced3bd9c7d9353aa39aa821aed82b1bf288f5c71da97cd63c31d59cc94c4"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          96,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "ee6d6373e8a0aa92aee57c65f2c12aec27de5d7f46e73bb7248b99e3d22a33dd"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          192,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "fbb931a98d8c76f2f09b90b8b56847babf5af8757aeb1d23ef3f25ee3dca5a44"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          288,
+          192,
+          96,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          96,
+          64
+        ],
+        "nonTransparentPixels": 6144,
+        "pixelSha256": "fbb931a98d8c76f2f09b90b8b56847babf5af8757aeb1d23ef3f25ee3dca5a44"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "외관 · 왼쪽 통로",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "외관 · 오른쪽 통로",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-2",
+        "name": "내장 · 왼쪽 통로",
+        "sourceColumn": 2,
+        "openingFrames": [
+          2,
+          6,
+          10,
+          14
+        ],
+        "closingFrames": [
+          14,
+          10,
+          6,
+          2
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-3",
+        "name": "내장 · 오른쪽 통로",
+        "sourceColumn": 3,
+        "openingFrames": [
+          3,
+          7,
+          11,
+          15
+        ],
+        "closingFrames": [
+          15,
+          11,
+          7,
+          3
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  },
+  {
+    "id": "paw-door-convi02",
+    "name": "편의점 양폭 자동문",
+    "filename": "SC-Door-Convi02.png",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/door/SC-Door-Convi02.png",
+    "sourcePage": "https://yms.main.jp/dotartworld/page3/door01.html",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "sha256": "cc4185df5b21454514a47905586711fdfea161a9810d8f6e7dab7f36d54c2fb5",
+    "width": 512,
+    "height": 256,
+    "frameWidth": 128,
+    "frameHeight": 64,
+    "columns": 4,
+    "rows": 4,
+    "frames": [
+      {
+        "index": 0,
+        "sourceRect": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "be0411014fa09a2e0e7b2fd3095c69df5e55a59aaefea29b5fbc72526c0d7238"
+      },
+      {
+        "index": 1,
+        "sourceRect": [
+          128,
+          0,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "2f6bdf178f9c5c63845de5ec3c77d16d893f66a6653d9ded4ed7ed256abc69fc"
+      },
+      {
+        "index": 2,
+        "sourceRect": [
+          256,
+          0,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 3,
+        "sourceRect": [
+          384,
+          0,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 4,
+        "sourceRect": [
+          0,
+          64,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "2683d3477c5b33ac6ba59425ed59edfc71d3f6e57285e8bd438afd4d6ab129de"
+      },
+      {
+        "index": 5,
+        "sourceRect": [
+          128,
+          64,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "78d2dd934b4eb2072a970f46280107527cd2e900135b77daf0b621e98ea45860"
+      },
+      {
+        "index": 6,
+        "sourceRect": [
+          256,
+          64,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 7,
+        "sourceRect": [
+          384,
+          64,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 8,
+        "sourceRect": [
+          0,
+          128,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "9361b152dcb16017c5986f12eeee69b4c883ac5e90fad165a30ed756cc8649da"
+      },
+      {
+        "index": 9,
+        "sourceRect": [
+          128,
+          128,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "3d69c5eaec89958c833979e0ad7edef2c633e998cfa3f27df2d4642e0e7bb131"
+      },
+      {
+        "index": 10,
+        "sourceRect": [
+          256,
+          128,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 11,
+        "sourceRect": [
+          384,
+          128,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 12,
+        "sourceRect": [
+          0,
+          192,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "38d068c7c7506dfd899c1c5cdc6d78911a9f916f02de93aaea4390546fff8489"
+      },
+      {
+        "index": 13,
+        "sourceRect": [
+          128,
+          192,
+          128,
+          64
+        ],
+        "alphaBounds": [
+          0,
+          0,
+          128,
+          64
+        ],
+        "nonTransparentPixels": 8192,
+        "pixelSha256": "ece5921316388dc89cafe471c6a66fc6aafcbe0f4fdf09ac4e9f3353d3a328c2"
+      },
+      {
+        "index": 14,
+        "sourceRect": [
+          256,
+          192,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      },
+      {
+        "index": 15,
+        "sourceRect": [
+          384,
+          192,
+          128,
+          64
+        ],
+        "alphaBounds": null,
+        "nonTransparentPixels": 0,
+        "pixelSha256": "29658f733085c9156adb20f1a97d9219bea51032d64b72c11c27918eecf8ec5b"
+      }
+    ],
+    "variants": [
+      {
+        "id": "column-0",
+        "name": "외관 · 중앙 양쪽 열림",
+        "sourceColumn": 0,
+        "openingFrames": [
+          0,
+          4,
+          8,
+          12
+        ],
+        "closingFrames": [
+          12,
+          8,
+          4,
+          0
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      },
+      {
+        "id": "column-1",
+        "name": "내장 · 중앙 양쪽 열림",
+        "sourceColumn": 1,
+        "openingFrames": [
+          1,
+          5,
+          9,
+          13
+        ],
+        "closingFrames": [
+          13,
+          9,
+          5,
+          1
+        ],
+        "placement": "manual-event-graphic",
+        "frameTimingMs": 100,
+        "timingProvenance": "editor-example-not-author-specified"
+      }
+    ],
+    "emptyFrameIndices": [
+      2,
+      3,
+      6,
+      7,
+      10,
+      11,
+      14,
+      15
+    ],
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/",
+    "rights": {
+      "userDownloadRequired": true,
+      "redistributeSourceOrDerivedArt": false,
+      "publicGameCreditRequired": true,
+      "rpgMakerOnlyMarkerObserved": false,
+      "contributor": "yms",
+      "checkedAt": "2026-09-24"
+    },
+    "notes": [
+      "행은 개방 단계, 열은 문 변형. 걷기 애니메이션/16프레임 순환 금지.",
+      "원본 프레임 여백과 바닥 중심 앵커 유지. 투명 개구부에는 별도 실제 벽/바닥 받침 필요.",
+      "그림 변경만으로 통행·문 이벤트·이동 목적지는 생성되지 않음."
+    ]
+  }
+]

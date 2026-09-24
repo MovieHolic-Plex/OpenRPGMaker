@@ -1,3 +1,4 @@
+import { ensureUploadedEventSpriteTextures } from "@/assets/uploadedEventSprites";
 import { ensureUploadedTilesetTextures } from "@/assets/uploadedTilesets";
 // editor/EditScene.ts
 // 에디터의 Phaser 씬. 맵을 그리드 단위로 렌더하고 입력을 actions로 보낸다.
@@ -765,6 +766,7 @@ export class EditScene extends PhaserRuntime.Scene {
     // 타일 칠하기(scope: "map")마다 업로드 목록을 훑지 않도록 자산/프로젝트 변경에서만 돈다.
     if (change.scope !== "map") {
       ensureUploadedCharsetTextures(this, store.getCurrent(), () => this.redraw());
+      ensureUploadedEventSpriteTextures(this, store.getCurrent(), () => this.redraw());
       ensureUploadedTilesetTextures(this, store.getCurrent(), () => this.redraw());
       ensureBundledProjectTextures(this, store.getCurrent(), () => this.redraw());
     }
