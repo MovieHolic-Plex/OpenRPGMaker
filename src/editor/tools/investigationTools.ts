@@ -216,7 +216,10 @@ const placeExamineHotspots: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const hotspots = Array.isArray(args.hotspots) ? args.hotspots : [];
     const occupied = existingEventCells(map);
-    const usedIds = new Set(map.events.map((event) => event.id));
+    // id 는 프로젝트 전역에서 고유해야 한다 — 셀프스위치 once 페이지가 전역 eventId 키라,
+    // 맵마다 ev_examine_1 이 중복되면 맵1 조사 직후 맵2 의 같은 id 가 «이미 조사함» 으로 고정된다
+    // (2026-09-24 감성 스토리 r3: 자동 플레이가「페이지 1 대신 다른 페이지가 실행」으로 실패).
+    const usedIds = new Set(Object.values(draft.maps).flatMap((existing) => existing.events.map((event) => event.id)));
     const warnings: string[] = [];
     const eventIds: string[] = [];
     let skipped = 0;

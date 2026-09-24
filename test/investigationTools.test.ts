@@ -125,6 +125,30 @@ describe("place_examine_hotspots", () => {
       commands: [],
     });
   });
+
+  // 2026-09-24 감성 스토리 r3: usedIds 가 현재 맵 전용이라 두 번째 맵에도 ev_examine_1 이 중복
+  // 생성됐다. once 페이지의 selfSwitch 는 전역 eventId 키라 — 맵1 조사 직후 맵2의 같은 id 이벤트가
+  // «이미 조사함» 페이지로 고정돼 조사 스위치가 안 켜졌다(자동 플레이「페이지 1 대신 다른 페이지」실패).
+  it("다른 맵에 place_examine_hotspots 를 다시 부르면 id 가 프로젝트 전역에서 고유하다", () => {
+    const ctx = { project: createBlankProject() };
+    const first = startMap(ctx.project);
+    const second = runTool(ctx, "create_map", { id: "map_second_memory", name: "두 번째 기억", width: 12, height: 10 });
+    assertTool(second);
+    const firstIds = ((runTool(ctx, "place_examine_hotspots", {
+      mapId: first.id,
+      hotspots: [{ at: { x: 4, y: 4 }, name: "첫 기억 벤치", lines: ["비에 젖었다."], once: true }],
+    }).data) as ToolData).eventIds ?? [];
+    const secondIds = ((runTool(ctx, "place_examine_hotspots", {
+      mapId: "map_second_memory",
+      hotspots: [{ at: { x: 4, y: 4 }, name: "두 번째 기억 벤치", lines: ["劣화했다."], once: true }],
+    }).data) as ToolData).eventIds ?? [];
+
+    expect(firstIds).toHaveLength(1);
+    expect(secondIds).toHaveLength(1);
+    expect(secondIds[0]).not.toBe(firstIds[0]);
+    const allIds = Object.values(ctx.project.maps).flatMap((map) => map.events.map((event) => event.id));
+    expect(new Set(allIds).size).toBe(allIds.length);
+  });
 });
 
 describe("compile_puzzle", () => {
