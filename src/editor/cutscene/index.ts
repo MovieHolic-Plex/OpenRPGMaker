@@ -16,7 +16,10 @@ export type CutsceneBeat =
   | CutsceneWaitBeat
   | CutsceneParallelBeat
   | CutsceneLabelBeat
-  | CutsceneJumpBeat;
+  | CutsceneJumpBeat
+  | CutsceneSwitchBeat
+  | CutsceneTransferBeat
+  | CutsceneEndingBeat;
 
 export type CutsceneSayBeat = {
   readonly kind: "say";
@@ -123,9 +126,40 @@ export type CutsceneJumpBeat = {
   readonly name: string;
 };
 
+/**
+ * 진행 스위치를 켠다. `switchId` 면 전역 스위치, `key`(A~D) 면 이 이벤트의 셀프 스위치.
+ * 컷신이 «다음 장면을 여는» 한 박자라서 비트로 둔다 — 없던 때는 기억 진입·문 열림 컷신을 script_cutscene 으로
+ * 쓸 수 없어 조수가 upsert_event 에 대사만 늘어놓고 이동·카메라·페이드를 전부 버렸다(2026-09-24 회상 스토리 도그푸딩).
+ */
+export type CutsceneSwitchBeat = {
+  readonly kind: "switch";
+  readonly switchId?: string;
+  readonly key?: string;
+  readonly value?: boolean;
+};
+
+/** 다른 맵(다음 기억)으로 옮긴다. 컷신은 옮긴 맵에서 이어서 끝난다(잠금 해제·정리 포함). */
+export type CutsceneTransferBeat = {
+  readonly kind: "transfer";
+  readonly mapId: string;
+  readonly x: number;
+  readonly y: number;
+  readonly facing?: "up" | "down" | "left" | "right" | "retain";
+  readonly fade?: "black" | "white" | "none";
+};
+
+/** 엔딩을 부른다. endingId 생략 시 조건이 맞는 최우선 엔딩. */
+export type CutsceneEndingBeat = {
+  readonly kind: "ending";
+  readonly endingId?: string;
+};
+
 export type CutsceneValidationContext = {
   readonly eventIds?: ReadonlySet<string>;
   readonly resourceIds?: ReadonlySet<string>;
+  readonly mapIds?: ReadonlySet<string>;
+  readonly switchIds?: ReadonlySet<string>;
+  readonly endingIds?: ReadonlySet<string>;
 };
 
 export type CutsceneCompileOptions = {
@@ -185,14 +219,31 @@ export function compileCutscene(beats: readonly CutsceneBeat[], options: Cutscen
   const validation = validateCutscene(beats, options.context);
   if (!validation.ok) throw new CutsceneValidationError(validation.errors);
   const state: CompileState = { pictures: new Map(), faces: new Map(), ...(options.resetFace ? { shownFace: { key: "" } } : {}) };
-  const body = compileBeats(beats, state, { forceNonBlocking: false });
+  // 진행 비트(스위치·맵 이동·엔딩)는 건너뛰기(Esc)로도 빠지면 안 된다 — 건너뛴 플레이어가 다음 기억으로 못 가고
+  // 문이 안 열린다. 그래서 마지막 맵 이동부터 끝까지와 엔딩은 건너뛰기 착지 라벨 **뒤**에 두고,
+  // 그 앞에서 켠 스위치는 라벨 뒤에서 한 번 더 켠다(같은 값이라 정상 재생에서는 변화 없음).
+  const lastTransfer = beats.map((beat) => beat.kind).lastIndexOf("transfer");
+  const head = lastTransfer >= 0 ? beats.slice(0, lastTransfer) : beats;
+  const tail = lastTransfer >= 0 ? beats.slice(lastTransfer) : [];
+  const headBody = compileBeats(head.filter((beat) => beat.kind !== "ending"), state, { forceNonBlocking: false });
+  const committedSwitches = head.filter((beat): beat is CutsceneSwitchBeat => beat.kind === "switch").map(compileSwitchBeat);
+  const cleanup = cleanupCommands(state);
+  // 옮긴 맵에서는 앞 맵의 카메라·색조·그림을 되돌릴 것이 없다 — 꼬리는 제 상태로 따로 모은다(얼굴 흐름만 이어받는다).
+  const tailState: CompileState = { pictures: new Map(), faces: state.faces, ...(state.shownFace ? { shownFace: state.shownFace } : {}) };
+  const tailBody = compileBeats(tail.filter((beat) => beat.kind !== "ending"), tailState, { forceNonBlocking: false });
+  const endings = beats.filter((beat): beat is CutsceneEndingBeat => beat.kind === "ending").slice(-1).flatMap((beat) => compileBeat(beat, state, { forceNonBlocking: false }));
   return [
     { kind: "cutsceneControl", mode: "begin", skippable: options.skippable === true },
     ...(options.resetFace ? [clearFaceCommand()] : []),
-    ...body,
+    ...headBody,
     { kind: "label", name: CUTSCENE_END_LABEL },
-    ...cleanupCommands(state),
+    ...cleanup,
+    ...committedSwitches,
+    ...tailBody,
+    // 맵을 옮긴 뒤 새로 잡힌 카메라·색조만 정리한다(옛 맵 좌표로 되돌리지 않는다).
+    ...cleanupCommands(tailState),
     { kind: "cutsceneControl", mode: "end" },
+    ...endings,
   ];
 }
 
@@ -210,6 +261,7 @@ export function validateCutscene(
     validateEventReferences(beat, path, context, errors);
     validateResourceReferences(beat, path, context, errors);
     validatePictureLifecycle(beat, path, livePictures, errors);
+    validateFlowBeat(beat, path, context, errors);
   });
   return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
 }
@@ -254,7 +306,26 @@ function compileBeat(
       return [{ kind: "label", name: beat.name }];
     case "jump":
       return [{ kind: "gotoLabel", name: beat.name }];
+    case "switch":
+      return [compileSwitchBeat(beat)];
+    case "transfer":
+      return [stripUndefinedFields({
+        kind: "transfer",
+        mapId: beat.mapId,
+        x: Math.round(beat.x),
+        y: Math.round(beat.y),
+        direction: beat.facing,
+        fade: beat.fade ?? "black",
+      }) as Command];
+    case "ending":
+      return [beat.endingId ? { kind: "triggerEnding", endingId: beat.endingId } : { kind: "triggerEnding" }];
   }
+}
+
+function compileSwitchBeat(beat: CutsceneSwitchBeat): Command {
+  const value = beat.value !== false;
+  if (beat.switchId) return { kind: "setSwitch", switchId: beat.switchId, value };
+  return { kind: "setSelfSwitch", key: (beat.key ?? "A").toUpperCase() as "A" | "B" | "C" | "D", value };
 }
 
 function faceCommand(face: Partial<FaceGraphic> & { resourceId: string }): Command {
@@ -423,12 +494,26 @@ function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean): Com
   ];
 }
 
+/** 화면 색조 select 가 받는 이름. hex·rgb 는 value 칸으로 간다(카탈로그 계약). */
+const SCREEN_TINT_COLOR_NAMES: ReadonlySet<string> = new Set(["neutral", "white", "red", "green", "blue", "yellow", "purple", "black"]);
+
+/**
+ * `color:"#c4a070"` 처럼 색 값을 color 에 넣으면 카탈로그 검증이 「값이 카탈로그 옵션에 없습니다」로 컷신 전체를 거부했다 —
+ * 회상 프리셋(memory_opening·bedside_monologue·ending_fade)이 전부 그렇게 써서 한 번도 배치되지 못했다(2026-09-24).
+ */
+function normalizeTint(beat: { readonly color?: string; readonly value?: string }): { readonly color: string; readonly value: string } {
+  const color = beat.color?.trim();
+  if (color && !SCREEN_TINT_COLOR_NAMES.has(color)) return { color: "neutral", value: beat.value ?? color };
+  return { color: color || "neutral", value: beat.value ?? "" };
+}
+
 function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
-  state.tint = { color: beat.color, value: beat.value };
+  const tint = normalizeTint(beat);
+  state.tint = tint;
   const commands: Command[] = [
     m2Command("Tint Screen", {
-      color: beat.color ?? "neutral",
-      value: beat.value ?? "",
+      color: tint.color,
+      value: tint.value,
       durationMs: durationMs(beat.durationMs, 0),
     }),
   ];
@@ -514,6 +599,27 @@ function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): 
 function validateReservedLabels(beat: CutsceneBeat, path: string, errors: string[]): void {
   if ((beat.kind === "label" || beat.kind === "jump") && beat.name === CUTSCENE_END_LABEL) {
     errors.push(`${path}.name: '${CUTSCENE_END_LABEL}' 라벨은 컷신 컴파일러가 자동으로 사용합니다.`);
+  }
+}
+
+function validateFlowBeat(beat: CutsceneBeat, path: string, context: CutsceneValidationContext, errors: string[]): void {
+  if ((beat.kind === "transfer" || beat.kind === "ending") && /\]\.beats\[/u.test(path)) {
+    errors.push(`${path}: ${beat.kind} 비트는 parallel 안에 둘 수 없습니다 — 최상위 beats 에 두세요.`);
+  }
+  if (beat.kind === "switch") {
+    if (beat.switchId !== undefined && beat.key !== undefined) errors.push(`${path}: switchId(전역 스위치)와 key(셀프 스위치) 중 하나만 쓰세요.`);
+    if (beat.switchId === undefined && beat.key !== undefined && !/^[A-Da-d]$/u.test(beat.key)) errors.push(`${path}.key: 셀프 스위치는 A~D 입니다.`);
+    if (beat.switchId !== undefined && context.switchIds && !context.switchIds.has(beat.switchId)) {
+      errors.push(`${path}.switchId: 존재하지 않는 스위치 '${beat.switchId}' — get_database_records(collection:"switches") 로 조회하거나 rename_switch 로 먼저 만드세요.`);
+    }
+  }
+  if (beat.kind === "transfer") {
+    if (typeof beat.mapId !== "string" || !beat.mapId) errors.push(`${path}.mapId: 옮길 맵 id 가 필요합니다.`);
+    else if (context.mapIds && !context.mapIds.has(beat.mapId)) errors.push(`${path}.mapId: 존재하지 않는 맵 '${beat.mapId}'.`);
+    if (typeof beat.x !== "number" || typeof beat.y !== "number") errors.push(`${path}: transfer 에는 도착 칸 x,y 가 필요합니다.`);
+  }
+  if (beat.kind === "ending" && beat.endingId && context.endingIds && !context.endingIds.has(beat.endingId)) {
+    errors.push(`${path}.endingId: 정의되지 않은 엔딩 '${beat.endingId}' — define_ending 으로 먼저 정의하세요.`);
   }
 }
 
@@ -636,6 +742,9 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "parallel",
   "label",
   "jump",
+  "switch",
+  "transfer",
+  "ending",
 ]);
 
 function isCameraObjectTarget(value: unknown): value is { readonly eventId?: string; readonly x?: number; readonly y?: number } {

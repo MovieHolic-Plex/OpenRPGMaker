@@ -89,7 +89,7 @@ describe("compileCutscene", () => {
           "commandId": "m2-046-tint-screen",
           "fields": {
             "color": "neutral",
-            "duration": 200,
+            "durationMs": 200,
             "value": "#101820",
           },
           "kind": "m2Command",
@@ -138,7 +138,7 @@ describe("compileCutscene", () => {
           "commandId": "m2-046-tint-screen",
           "fields": {
             "color": "neutral",
-            "duration": 0,
+            "durationMs": 0,
             "value": "#101820",
           },
           "kind": "m2Command",
