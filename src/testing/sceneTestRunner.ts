@@ -22,6 +22,7 @@ import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import type { Command, Dir, GameMap, Project } from "@/project/types";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
+import { useItemFromMenu } from "@/player/playerItemUse";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
@@ -195,6 +196,8 @@ export type SceneStep =
   | { kind: "move"; dir: Dir; to?: never }
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
   | { kind: "interact"; eventId?: string }
+  /** 메뉴에서 아이템을 쓴다. 스위치 아이템이면 직후 자동 공통 이벤트가 돈다. */
+  | { kind: "useItem"; itemId: string }
   | { kind: "snapshotRewards" }
   | { kind: "purchase"; eventId: string; itemId: string; count: number; unitPrice: number }
   | { kind: "gift"; eventId?: string; itemId: string }
@@ -478,6 +481,7 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
     variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
   } },
   interact: { fields: { eventId: sceneText } },
+  useItem: { fields: { itemId: sceneText }, required: ["itemId"] },
   snapshotRewards: { fields: {} },
   retryCheckpoint: { fields: {} },
   gift: { fields: { eventId: sceneText, itemId: sceneText }, required: ["itemId"] },
@@ -528,6 +532,7 @@ const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, strin
   wait: { ms: "ticks", frames: "ticks", duration: "ticks" },
   move: { direction: "dir", target: "to", position: "to" },
   gift: { item: "itemId" },
+  useItem: { item: "itemId", id: "itemId" },
   expect: { ending: "endingReached", ended: "endingReached", inventory: "inventoryCount", position: "playerAt", switch: "switchOn" },
 };
 
@@ -719,7 +724,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
 function runStep(state: RunnerState, step: SceneStep): string | null {
   if (state.rewardProof && state.held && step.kind !== "choose"
     && !(step.kind === "expect" && step.mapId !== undefined && Object.keys(step).length === 2)) return "Unfinished interaction: only its pending choice may proceed";
-  if (state.held && ["walk", "move", "interact", "gift"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
+  if (state.held && ["walk", "move", "interact", "gift", "useItem"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
   switch (step.kind) {
     case "wait":
       return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
@@ -736,6 +741,8 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
       return runWalkStep(state, step);
     case "interact":
       return runInteractStep(state, step.eventId);
+    case "useItem":
+      return runUseItemStep(state, step.itemId);
     case "snapshotRewards":
       state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
       if (state.rewardProof?.report.phase === "claim") state.rewardClaimSnapshotTaken = true;
@@ -985,6 +992,13 @@ function findGiftEventOverlapping(
   y: number
 ): RuntimeEventView | undefined {
   return events.find((view) => view.trigger.kind === "action" && rectsOverlap(view.bodyRect, pointRect(x, y)));
+}
+
+function runUseItemStep(state: RunnerState, itemId: string): string | null {
+  const actorId = state.session.partyActorIds.find((id): id is string => typeof id === "string");
+  const result = useItemFromMenu(state.project, state.session, itemId, actorId);
+  state.log.push(`useItem ${itemId}: ${result.kind} ${result.message}`);
+  return result.kind === "used" ? null : result.message;
 }
 
 function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
@@ -1441,6 +1455,31 @@ function runAutoTriggers(state: RunnerState): string | null {
     const failure = runEventView(state, event);
     if (failure) return failure;
   }
+  // 실플레이어 fireAutoTriggers 와 같이, 조건 스위치가 켜진 자동 공통 이벤트도 돈다.
+  // 꿈에서 깨는 스위치 아이템은 맵을 바꾸기 전에 이 이벤트로 방으로 돌아간다(2026-09-24).
+  for (const commonEvent of state.project.commonEvents) {
+    if (commonEvent.trigger !== "auto") continue;
+    const key = `common:${commonEvent.id}`;
+    if (commonEvent.conditionSwitchId && state.session.switches[commonEvent.conditionSwitchId] !== true) {
+      state.autoStartedKeys.delete(key);
+      continue;
+    }
+    if (state.autoStartedKeys.has(key) || state.held) continue;
+    state.autoStartedKeys.add(key);
+    const failure = runCommonEventForRunner(state, commonEvent);
+    if (failure) return failure;
+  }
+  return null;
+}
+
+function runCommonEventForRunner(state: RunnerState, commonEvent: { id: string; commands: readonly Command[] }): string | null {
+  if (commonEvent.commands.length === 0) return null;
+  state.log.push(`common ${commonEvent.id} start`);
+  const interp = createInterpreter([...commonEvent.commands], state.session, state.project);
+  const stop = pump(state, interp, interp.start());
+  if (stop.stop === "failed") return stop.reason;
+  if (stop.stop !== "done") return `common ${commonEvent.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
+  state.log.push(`common ${commonEvent.id} done`);
   return null;
 }
 
