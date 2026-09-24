@@ -153,3 +153,10 @@ prop-programs.json이 집별 용도/할 일/지정 이유 및 부품의 목적/�
 - 같은 refit 으로 다시 맞췄다. 공용 용도 `diverse-villages-trunks-v12` + `concept-villages-v3`, 지역 revision 12.
 - 확인: `node scripts/content/check-forest-trunks.mjs` — 다양한 마을·기후 마을·필드 카탈로그와 지역 스냅샷 전부에서 폭 3 미만 밑변·밑변과 다른 줄기·밑변 밖 줄기를 센다(0 이어야 한다). 2026-09-24 「여전히 뿌리만 보인다」 신고의 그림은 이 개정 전(개정11) 비교 그림이었다.
 
+## 수관 잎 채움 개정13 — 검은 속 대신 잎
+
+사용자 판정(2026-09-24): 수관 속이 검고 딱딱해 보이고 오목 모서리가 뻣뻣하다. 큰 덤불 도장 시안들은 기각, 시안 K(잎 채움)를 승인했다.
+- 수관 속의 평평한 색만 테두리 자신의 잎 띠로 채운다. 가장자리 칸의 속 부분 ×0.78, 얕은 속 ×0.60, 깊은 속 ×0.46 — 규칙·칸 번호는 [수관 잎 채움](../canopy-leaves/README.md).
+- 이 카탈로그 타일셋의 굽이숲 그룹에 속 변형 11칸(2597~2607, 원래 수관 이식의 빈 채움 칸)을 더했다(`ensureForestGroveInterior`, 이식 원본 아틀라스 2524~2534).
+- 맵은 다시 저작하지 않고 `node scripts/content/shade-forest-canopy.mjs tiledata/forest-villages/diverse/catalog.json` 로 제자리에서 속 칸(2568)만 깊이 변형으로 바꿨다. 하위 배열·가장자리·줄기는 그대로.
+- 공용 용도 `diverse-villages-canopy-v13` + `concept-villages-v4`, 지역 revision 13, 정본 revision 23. 옛 v12/v3 은 `previous-reference.json` 에 기록.

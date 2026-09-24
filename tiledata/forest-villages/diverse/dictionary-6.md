@@ -4,6 +4,376 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
+    "tile": 2639,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 40,
+    "sourceX": 4,
+    "sourceY": 6,
+    "pixelX": 64,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 29,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낮은 돌 우물",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2640,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 41,
+    "sourceX": 5,
+    "sourceY": 6,
+    "pixelX": 80,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 0,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낮은 돌 우물",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2641,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 46,
+    "sourceX": 4,
+    "sourceY": 7,
+    "pixelX": 64,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 1,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낮은 돌 우물",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2642,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 47,
+    "sourceX": 5,
+    "sourceY": 7,
+    "pixelX": 80,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 2,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낮은 돌 우물",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2643,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 48,
+    "sourceX": 0,
+    "sourceY": 8,
+    "pixelX": 0,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "덩굴 아치",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2644,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 49,
+    "sourceX": 1,
+    "sourceY": 8,
+    "pixelX": 16,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "덩굴 아치",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2645,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 50,
+    "sourceX": 2,
+    "sourceY": 8,
+    "pixelX": 32,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "벽걸이 등불",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2646,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 52,
+    "sourceX": 4,
+    "sourceY": 8,
+    "pixelX": 64,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "낚시 바구니",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2647,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 54,
+    "sourceX": 0,
+    "sourceY": 9,
+    "pixelX": 0,
+    "pixelY": 144,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "덩굴 아치",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2648,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 55,
+    "sourceX": 1,
+    "sourceY": 9,
+    "pixelX": 16,
+    "pixelY": 144,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "덩굴 아치",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2649,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 60,
+    "sourceX": 0,
+    "sourceY": 10,
+    "pixelX": 0,
+    "pixelY": 160,
+    "width": 16,
+    "height": 16,
+    "targetX": 9,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "징검돌",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "passable",
+      "description": "Tibo 원본 → unfake.js 개별 보정, 16px 칩",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2650,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",

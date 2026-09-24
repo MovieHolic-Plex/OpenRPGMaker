@@ -5,7 +5,7 @@ import { chromium } from "playwright";
 const out = "verify-shots/village-diversity";
 fs.mkdirSync(out, { recursive: true });
 const plans = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json")).plans;
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 }, acceptDownloads: true });
   const errors = [];
@@ -50,6 +50,9 @@ try {
     assert.deepEqual(actual.lower, expected.maps[plan.id].lowerTiles);
     assert.deepEqual(actual.upper, expected.maps[plan.id].upperTiles);
     await page.getByTestId(`spatial-card-region-reference:${id}`).click();
+    // The preview lives in the 상세 inspector, which the simplified tabs (#1172) keep closed by default.
+    const toggle = page.getByTestId("spatial-inspector-toggle");
+    if (await toggle.getAttribute("aria-pressed") !== "true") await toggle.click();
     const dimensions = await page.getByTestId("region-reference-preview").locator("img").evaluate(async (img) => {
       await img.decode();
       return [img.naturalWidth, img.naturalHeight];

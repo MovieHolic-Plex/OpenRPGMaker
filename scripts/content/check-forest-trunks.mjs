@@ -19,7 +19,8 @@ if (!files.length) for (const catalog of CATALOGS) {
 }
 // The climate sheets keep the forest_harmony numbers, so one group describes every canopy.
 const group = JSON.parse(fs.readFileSync(CATALOGS[0], "utf8")).tileset.autotileGroups.find((g) => g.id === "forest_harmony_grove_47");
-const canopy = new Set(Object.values(group.variantMap).map(Number));
+// The canopy is every autotile variant plus the leaf-interior depth variants of its full cell (forestGrove.ts).
+const canopy = new Set([...Object.values(group.variantMap), ...group.memberTileIds, ...(group.interiorVariants ?? []).flat()].map(Number));
 
 await withTsModule("src/editor/tools/village/forestTrunkTiles.ts", "check-forest-trunks.mjs", ({ FOREST_TRUNK_MIN_WIDTH, FOREST_TRUNK_TILES, forestTrunkCandidates }) => {
   let findings = 0, maps = 0;

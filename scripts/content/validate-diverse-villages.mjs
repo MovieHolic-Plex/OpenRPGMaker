@@ -27,7 +27,7 @@ async function validateVillageStudy(project, mapId) {
     if (want >= 0 && (want >= t.count || !isDeepStrictEqual(graft(t, want), graft(ref, want)))) add("source-binding", x, y, { layer, tile: want });
     if (actual !== want) {
       const other = m[(layer === "lower" ? "upper" : "lower") + "Tiles"][i];
-      add(want >= 0 && other === want ? "wrong-layer" : layer === "lower" && roots.has(want) ? "cut-root" : layer === "lower" && trunks.has(want) ? "missing-trunk" : layer === "upper" && want >= 2550 && want <= 2596 ? "wrong-edge-direction" : "tile-mismatch", x, y, { layer, expected: want, actual });
+      add(want >= 0 && other === want ? "wrong-layer" : layer === "lower" && roots.has(want) ? "cut-root" : layer === "lower" && trunks.has(want) ? "missing-trunk" : layer === "upper" && want >= 2550 && want <= 2607 ? "wrong-edge-direction" : "tile-mismatch", x, y, { layer, expected: want, actual });
     }
     if (m[layer + "TileStacks"]?.[i]?.length) add("unexpected-stack", x, y, { layer });
   }

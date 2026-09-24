@@ -37,7 +37,7 @@ for (const plan of c.plans) {
     name: plan.name,
     kind: "completed-place",
     placeKind: "natural",
-    revision: 3,
+    revision: 4,
     x: 0,
     y: 0,
     width: map.width,
@@ -56,6 +56,7 @@ for (const plan of c.plans) {
         ? `숲마을 필드 「${plan.from}」과 칸 번호가 같은 기후 시트(${map.tilesetId})로 옮겼다. 기후 편집: ${kinds.join(", ") || "없음(시트만)"}.`
         : "숲마을 「다양한 마을」 타일셋(이식 2550~2729 포함)에 그렸다. 내려받기의 tileGrafts와 통행 정보를 함께 쓴다.",
       `첫 출구에서 모든 출구·계단 끝·다리 끝${plan.cave ? "·동굴 앞" : ""}${plan.freezePond !== undefined ? "·얼음판" : ""}까지 런타임 이동 규칙으로 닿는 것을 확인했다.`,
+      "숲 수관 속은 잎으로 채운 깊이 변형을 쓴다: 8방향이 모두 수관인 칸은 2칸 안에 빈 땅이 있으면 얕은 속(2568·2597~2601), 없으면 깊은 속(2602~2607).",
       `공용 AI 문서 「${category.name}」에 필드 규칙·전체 배열·사용 타일 사전이 있다.`,
     ],
     limitations: "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다.",

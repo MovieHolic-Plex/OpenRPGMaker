@@ -430,7 +430,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 18,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2603,
         "actual": -1
       },
       {
@@ -438,7 +438,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 18,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2604,
         "actual": -1
       },
       {
@@ -542,7 +542,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 19,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2605,
         "actual": -1
       },
       {
@@ -550,7 +550,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 19,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2602,
         "actual": -1
       },
       {
@@ -558,7 +558,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 19,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2600,
         "actual": -1
       },
       {
@@ -614,7 +614,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 20,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2603,
         "actual": -1
       },
       {
@@ -622,7 +622,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 20,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2602,
         "actual": -1
       },
       {
@@ -630,7 +630,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 20,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2601,
         "actual": -1
       },
       {
@@ -686,7 +686,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 21,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2607,
         "actual": -1
       },
       {
@@ -694,7 +694,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 21,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2605,
         "actual": -1
       },
       {
@@ -718,7 +718,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 22,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2604,
         "actual": -1
       },
       {
@@ -726,7 +726,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 22,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2606,
         "actual": -1
       },
       {
@@ -734,7 +734,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 22,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2600,
         "actual": -1
       },
       {
@@ -750,7 +750,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 23,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2606,
         "actual": -1
       },
       {
@@ -758,7 +758,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 23,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2607,
         "actual": -1
       },
       {
@@ -766,7 +766,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 23,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2601,
         "actual": -1
       },
       {
@@ -782,7 +782,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 24,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2604,
         "actual": -1
       },
       {
@@ -790,7 +790,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 24,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2603,
         "actual": -1
       },
       {
@@ -798,7 +798,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 24,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2597,
         "actual": -1
       },
       {
@@ -814,7 +814,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 25,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2604,
         "actual": -1
       },
       {
@@ -822,7 +822,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 25,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2607,
         "actual": -1
       },
       {
@@ -830,7 +830,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 25,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2597,
         "actual": -1
       },
       {
@@ -846,7 +846,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 26,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2605,
         "actual": -1
       },
       {
@@ -854,7 +854,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 26,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2602,
         "actual": -1
       },
       {
@@ -862,7 +862,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 26,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2597,
         "actual": -1
       },
       {
@@ -878,7 +878,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 27,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2604,
         "actual": -1
       },
       {
@@ -886,7 +886,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 27,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2604,
         "actual": -1
       },
       {
@@ -894,7 +894,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 27,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2598,
         "actual": -1
       },
       {
@@ -926,7 +926,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 2,
         "y": 28,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2602,
         "actual": -1
       },
       {
@@ -934,7 +934,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 3,
         "y": 28,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2602,
         "actual": -1
       },
       {
@@ -942,7 +942,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 4,
         "y": 28,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2599,
         "actual": -1
       },
       {
@@ -950,7 +950,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 5,
         "y": 28,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2599,
         "actual": -1
       },
       {
@@ -958,7 +958,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "x": 6,
         "y": 28,
         "layer": "upper",
-        "expected": 2568,
+        "expected": 2598,
         "actual": -1
       },
       {

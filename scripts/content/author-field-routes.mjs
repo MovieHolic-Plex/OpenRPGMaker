@@ -285,7 +285,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
     const field = (x, y) => base(x, y) + (pocket.has(point(Math.floor(x), Math.floor(y))) ? 40 : 0);
     const grove = forest.paintContouredForest(m, area, groveGroup, (x, y) => m.lowerTiles[point(x, y)] === GROUND && m.upperTiles[point(x, y)] === -1 && !reserved.has(point(x, y)), seed, COVERAGE, undefined, field);
     // The trunk repair can leave a few bare cells sealed inside the canopy; close them into the canopy (same autotile).
-    const canopy = new Set(Object.values(groveGroup.variantMap)), isCanopy = (x, y) => inside(x, y) && canopy.has(m.upperTiles[point(x, y)]);
+    const canopy = new Set([...groveGroup.memberTileIds, ...Object.values(groveGroup.variantMap)]), isCanopy = (x, y) => inside(x, y) && canopy.has(m.upperTiles[point(x, y)]);
     const trunk = (t) => 1340 <= t && t < 1470;
     const bare = (i) => m.upperTiles[i] === -1 && (m.lowerTiles[i] === GROUND || trunk(m.lowerTiles[i])) && !reserved.has(i);
     const sealed = new Set();
@@ -313,6 +313,8 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       neighbors.forEach(([ox, oy], bit) => { if (isCanopy(x + ox, y + oy)) mask |= 1 << bit; });
       m.upperTiles[point(x, y)] = groveGroup.variantMap[String(mask)];
     }
+    // The filled pockets changed the depth of the canopy around them: re-pick the leaf interior (forestGrove.ts).
+    forest.shadeForestCanopy(m, groveGroup);
     // Free-standing trees on open meadow, away from the road and each other.
     const random = rng(seed), planted = [];
     const spots = [];

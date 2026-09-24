@@ -8973,6 +8973,369 @@
     }
   },
   {
+    "tile": 2597,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2524,
+    "sourceX": 4,
+    "sourceY": 84,
+    "pixelX": 64,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 2",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2598,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2525,
+    "sourceX": 5,
+    "sourceY": 84,
+    "pixelX": 80,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 3",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2599,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2526,
+    "sourceX": 6,
+    "sourceY": 84,
+    "pixelX": 96,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 4",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2600,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2527,
+    "sourceX": 7,
+    "sourceY": 84,
+    "pixelX": 112,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 5",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2601,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2528,
+    "sourceX": 8,
+    "sourceY": 84,
+    "pixelX": 128,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 6",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2602,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2529,
+    "sourceX": 9,
+    "sourceY": 84,
+    "pixelX": 144,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 1",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2603,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2530,
+    "sourceX": 10,
+    "sourceY": 84,
+    "pixelX": 160,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 2",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2604,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2531,
+    "sourceX": 11,
+    "sourceY": 84,
+    "pixelX": 176,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 3",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2605,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2532,
+    "sourceX": 12,
+    "sourceY": 84,
+    "pixelX": 192,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 4",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2606,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2533,
+    "sourceX": 13,
+    "sourceY": 84,
+    "pixelX": 208,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 5",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2607,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2534,
+    "sourceX": 14,
+    "sourceY": 84,
+    "pixelX": 224,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 6",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2610,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",

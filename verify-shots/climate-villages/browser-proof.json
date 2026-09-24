@@ -2,22 +2,22 @@
   "guidance": [
     {
       "tileset": "forest_harmony_snow",
-      "category": "climate-snow-villages-v3",
+      "category": "climate-snow-villages-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_volcano",
-      "category": "climate-volcano-villages-v3",
+      "category": "climate-volcano-villages-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_desert",
-      "category": "climate-desert-villages-v3",
+      "category": "climate-desert-villages-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_autumn",
-      "category": "climate-autumn-villages-v3",
+      "category": "climate-autumn-villages-v4",
       "present": true
     }
   ],
