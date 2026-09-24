@@ -146,7 +146,7 @@ node scripts/content/author-climate-villages.mjs     # 맵 + 통행 검사(실�
 ```
 
 ```json
-[{"id":"climate-volcano-twin-falls","entry":[17,61],"targets":[[11,12],[48,11],[9,34],[23,31],[41,32],[58,33],[7,56],[45,56]],"reachable":2421,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-ford-castle","entry":[36,83],"targets":[[6,16],[73,19],[9,37],[4,58],[18,59],[49,58],[75,58],[8,81],[42,82],[52,83]],"reachable":3494,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-lava-pond","entry":[31,52],"targets":[[3,9],[43,11],[17,30],[48,30],[19,48],[50,50],[36,50]],"reachable":2337,"blocked":[],"joinedLevels":[]}]
+[{"id":"climate-volcano-twin-falls","entry":[17,61],"targets":[[11,12],[48,11],[9,34],[23,31],[41,32],[58,33],[7,56],[45,56]],"reachable":2418,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-ford-castle","entry":[36,83],"targets":[[6,16],[73,19],[9,37],[4,58],[18,59],[49,58],[75,58],[8,81],[42,82],[52,83]],"reachable":3498,"blocked":[],"joinedLevels":[]},{"id":"climate-volcano-lava-pond","entry":[31,52],"targets":[[3,9],[43,11],[17,30],[48,30],[19,48],[50,50],[36,50]],"reachable":2333,"blocked":[],"joinedLevels":[]}]
 ```
 
 ## 실제 구분

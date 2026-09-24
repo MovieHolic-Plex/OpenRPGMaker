@@ -159,7 +159,7 @@ export function arrangeBareGroves(map, options = {}) {
     const trees = [], props = [];
     // Lead tree, trunk foot on the centre (a cell either side if the box does not fit).
     let lead = null;
-    for (const kind of inBand && random() < 0.6 ? ["big", "mid", "small"] : ["mid", "big", "small"]) {
+    for (const kind of inBand || random() < 0.4 ? ["big", "mid", "small"] : ["mid", "big", "small"]) {
       const st = pick(kind);
       for (const ox of [0, -1, 1]) {
         const x0 = x - Math.floor(st.w / 2) + ox, y0 = y - st.h + 1;
@@ -171,7 +171,7 @@ export function arrangeBareGroves(map, options = {}) {
     // Companions stand against the lead (left or right, feet within two rows of its foot).
     const mates = inBand ? 1 + Math.floor(random() * 2) : Math.floor(random() * 2);
     for (let m = 0; m < mates; m++) {
-      const st = pick(random() < 0.67 ? "small" : "mid"), side = random() < 0.5 ? -1 : 1;
+      const st = pick(random() < 0.5 ? "small" : "mid"), side = random() < 0.5 ? -1 : 1;
       const foot = lead.y0 + lead.st.h - st.h;
       done: for (const s of [side, -side]) for (const dy of [0, 1, -1, 2]) {
         const bx = s > 0 ? Math.max(lead.x0 + lead.st.w, ...trees.map((t) => t.x + t.w)) : Math.min(lead.x0, ...trees.map((t) => t.x)) - st.w;
