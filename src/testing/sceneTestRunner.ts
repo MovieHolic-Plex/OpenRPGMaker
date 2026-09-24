@@ -1,6 +1,7 @@
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import type { ActorCommand } from "@/battle/types";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
 import {
@@ -2393,7 +2394,7 @@ function runHeadlessBattle(
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
-      if (enemy) runtime.performActorCommand({ kind: "attack", targetEnemyId: enemy.id });
+      if (enemy) actHeadless(state.project, runtime, snapshot, enemy.id);
       else runtime.tick(1000);
     } else {
       runtime.tick(1000);
@@ -2411,6 +2412,32 @@ function runHeadlessBattle(
     ...(partyMonsters ? { monsterPartyMode: true } : {}),
   }, state.project);
   return result;
+}
+
+/**
+ * 헤드리스 전투의 한 수. 기본은 「공격」이지만 gen1(포켓몬식)은 기술이 남은 몬스터의 공격을 받지 않는다 —
+ * 그러면 아무 수도 두지 못해 매 전투를 졌다(2026-09-24 몬스터 수집 도그푸딩: 스타터가 Lv3 야생에 패배).
+ * 적을 때리는 기술을 위력 순으로 시도하고, 받아들여지지 않으면 다음 수로 간다.
+ */
+function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRuntime>, snapshot: ReturnType<typeof headlessBattleSnapshot>, targetEnemyId: string): void {
+  // activeActorId 는 기록 id 다(몬스터 배틀러는 id 가 "mon:<개체>" 라 recordId·monsterInstanceId 로 찾는다).
+  const active = snapshot.actors.find((actor) => actor.id === snapshot.activeActorId || actor.recordId === snapshot.activeActorId
+    || actor.monsterInstanceId === snapshot.activeActorId);
+  const skills = new Map(project.database.skills.map((skill) => [skill.id, skill]));
+  const damaging = (active?.skillIds ?? [])
+    .map((skillId) => skills.get(skillId))
+    .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
+    .sort((a, b) => (b.power ?? 0) - (a.power ?? 0));
+  const attempts: ActorCommand[] = project.system.battleModel === "gen1"
+    ? [...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    : [{ kind: "attack", targetEnemyId }];
+  for (const command of attempts) {
+    runtime.performActorCommand(command);
+    const after = headlessBattleSnapshot(runtime);
+    if (after.phase !== "actorCommand" || after.activeActorId !== snapshot.activeActorId || after.result) return;
+  }
+  // 어떤 수도 안 받아 주면 방어로 턴을 넘긴다(무한 대기 방지).
+  runtime.performActorCommand({ kind: "defend" });
 }
 
 function killPartyForRunner(state: RunnerState): void {
