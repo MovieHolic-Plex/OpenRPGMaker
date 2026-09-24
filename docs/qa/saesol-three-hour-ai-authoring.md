@@ -1232,3 +1232,17 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 
 - 복구 결과: 기존 탭의 legacy 요청152,311,174bytes → 기준 문서1개+실제 patch97,366,469bytes. 기존 구현의 diff/apply로 원래 편집 문서와 재구성 문서가 동일함을 확인하고 저장을 재시도했다. `transport-recovery-proof.json`의 실제 응답은 `saved`다. 기존 탭 복구용 어댑터는 저장 wire만 변경했으며 게임 콘텐츠를 생성하지 않았다.
 - 정본 재오픈 결과506,20맵/156이벤트,80미디어 해시 확인 및 반복 읽기 일치(`player-snapshot-transport-recovered-proof.json`).505 대비 맵·DB·세션 전체 동일 여부는 `transport-recovered-scope.json`에 기록했다. 신규 NPC 저작 완료나3시간 완주를 의미하지 않는다. 저장 성공 응답 확인 후 같은 관찰 탭을 새 번들로 reload한다.
+
+
+### AI048 — 저장 복구 후 AI 요청의 별도64MiB 한도
+
+- 같은 관찰 탭 reload 후 에디터의 `자동 저장됨`을 확인했고, 검토 후 적용 모드로 상인 한 명 수정 요청28을 입력했다(`prompt-28-merchant-only.txt`). 실제 UI는 `Pi 에이전트 실행 실패: Request body is too large`, 변경 없음으로 종료됐다. 입력 클릭의 관찰 timeout 뒤 실제 요청이 실행됐으므로 timeout을 미전송으로 간주해 중복 제출하지 않았다.
+- `src/ai/piAgent/client.ts`는 `/v1/agent/run`에 프로젝트 포함 요청 전체를JSON으로 보낸다. `scripts/lib/companionHttpUtil.mjs:readRequestJson`은64MiB를 초과하면 위 문자열을 던진다. 저장 bridge128MiB와 별도 제한이다. 정본506 `current_json`은78,570,541자로 커졌으며, 저장 복구로 AI 전송까지 해결된 것은 아니다. 실제 요청 바이트수/큰 필드의 기여도는 후속 조사 대상이다.
+- 요청28은 미저작·미적용이다. 상인/하린/챔피언 수정과 항구 미술 보강은 여전히 남아 있다. 참고 이미지 삭제로 문서 계약을 축소하지 않고 전송 방식과 자산 중복을 조사해야 한다.
+
+
+### AI048 対応 — Pi 프로젝트 gzip 전송
+
+- 정본507 실측83,468,158bytes. 상위 필드별로 tilesets 약73MB,assets 약10.9MB이며 새 요청 본문은83,468,214bytes였다. 자료를 제거하지 않고 `piRequestBody`로 gzip 전송해34,820,901bytes로 줄였다. run과 checkpoint ACK 모두 적용.
+- 실제 정본을 읽기 전용으로 사용한 wire 왕복 진단에서 전체 객체 일치,작은 identity 호환,취소,손상 gzip,미지원 encoding,64MiB wire 제한,256MiB 복원 제한을 확인했다(`companion-wire-proof.json`). 새 회귀 테스트 파일은 추가했지만 vitest/gates/전체 typecheck는 실행하지 않았다.
+- Vite 빌드 성공.9897 전용 호스트의 기존 번들에는 정본 소스의 readRequestJson 함수와 Content-Encoding CORS만 이식하고 syntax check 후 서비스를 재시작했다. 기존 함수/번들 백업을 보존했으며 다른 작업의 서비스는 건드리지 않았다. AI 요청28은 이미 실패로 종료돼 진행 중 모델 작업을 재시작하지 않았다. renderer를 뒤이어 배포했다. 이 단계는 실제 AI 후속 요청 성공 증거와 구분한다.
