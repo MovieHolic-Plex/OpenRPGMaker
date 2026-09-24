@@ -1,7 +1,10 @@
 // Bundle-owned guidance for tiledata/field-routes → src/assets/sharedFieldRouteReferences.json. No project/host writes.
 // One category per tileset a field is drawn on (the AI reads guidance from the tileset in use); docs are also copied as tiledata/field-routes/*.md.
+// Revision 5 adds the outdoor places of tiledata/rpg-outdoors (lib/outdoor-references.mjs; docs copied as tiledata/rpg-outdoors/*.md)
+// and a category on the bundled world tileset for the outdoor world map.
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
+import { outdoorDocs, loadOutdoors, categoryKey } from "./lib/outdoor-references.mjs";
 const dir = "tiledata/field-routes", target = "src/assets/sharedFieldRouteReferences.json", preview = "public/assets/field-route-references";
 const c = JSON.parse(fs.readFileSync(dir + "/catalog.json")), validation = JSON.parse(fs.readFileSync(dir + "/validation.json"));
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -10,10 +13,11 @@ const block = (o) => "```json\n" + JSON.stringify(o) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const CLIMATE = { forest_harmony_snow: "설원", forest_harmony_volcano: "화산", forest_harmony_desert: "사막", forest_harmony_autumn: "가을" };
 const CATEGORY = {
-  forest_harmony: { id: "field-routes-forest-v4", name: "마을 사이 필드 · 숲길·벼랑길·고갯길 (수관 잎 채움 개정4)", description: "집 없이 맵 가장자리에서 가장자리로 길이 이어지는 마을 사이 필드 세 곳. 출구 규칙(어느 마을 입구와 맞닿는지), 절벽·계단·여울·다리·숲 조립, 전체 배열과 통행 검사" },
+  forest_harmony: { id: "field-routes-forest-v5", name: "마을 사이 필드·야외 장소 · 숲 (개정5: 야외 장소·세폭포 대계곡 추가)", description: "집 없이 맵 가장자리에서 가장자리로 길이 이어지는 마을 사이 필드 세 곳과 야외 장소(마을·성소·장면·필드, 80×64 세폭포 대계곡). 출구 규칙(어디와 맞닿는지), 절벽·계단·여울·다리·숲·항구 조립, 채우기 규칙(쓸 번호·그룹·금지), 전체 배열과 통행 검사" },
+  easyrpg_chipset_world: { id: "rpg-outdoors-world-v1", name: "야외 월드맵 · 은빛 왕국 대륙 전도", description: "EasyRPG 월드 칩셋으로 그린 대륙 월드맵. 바다 해안·지형 오토타일, 장소 아이콘과 흙길, 분홍 키(#ff678b) 주의, 전체 배열" },
   ...Object.fromEntries(Object.entries(CLIMATE).map(([ts, name]) => [ts, {
-    id: `field-routes-${ts.replace("forest_harmony_", "")}-v4`, name: `${name} 마을 사이 필드 (수관 잎 채움 개정4)`,
-    description: `숲마을 필드를 ${name} 시트로 옮긴 필드. 칸 번호는 숲마을과 같고 기후 편집만 더했다. 출구가 맞닿는 ${name} 마을, 전체 배열과 통행 검사`,
+    id: `field-routes-${ts.replace("forest_harmony_", "")}-v5`, name: `${name} 마을 사이 필드·야외 장소 (개정5: 야외 장소 추가)`,
+    description: `숲마을 필드를 ${name} 시트로 옮긴 필드와 ${name} 시트의 야외 장소. 칸 번호는 숲마을과 같고 기후 편집만 더했다. 출구가 맞닿는 곳, 채우기 규칙, 전체 배열과 통행 검사`,
   }])),
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
@@ -64,7 +68,7 @@ for (const [ts, name] of Object.entries(CLIMATE)) {
 
 tilesetId=${ts}, 시트 ${climate.textureKey}(30열·16px, ${climate.count}칸). 좌표는 0기준.
 
-숲마을 필드(tilesetId=forest_harmony)의 두 레이어를 **그대로** 이 타일셋으로 옮긴 뒤 기후 편집만 더했다. 기후 시트는 숲마을 이식을 한 장에 구워 칸 번호가 같으므로, 숲 필드 문서(field-routes-forest-v4)의 부품 번호를 이식 없이 그대로 쓴다. 기후 시트 자체의 규칙(무엇이 칠해졌나, 얼음·용암·야자·선인장)은 같은 타일셋의 「${name} 마을」 분류 문서에 있다.
+숲마을 필드(tilesetId=forest_harmony)의 두 레이어를 **그대로** 이 타일셋으로 옮긴 뒤 기후 편집만 더했다. 기후 시트는 숲마을 이식을 한 장에 구워 칸 번호가 같으므로, 숲 필드 문서(field-routes-forest-v5)의 부품 번호를 이식 없이 그대로 쓴다. 기후 시트 자체의 규칙(무엇이 칠해졌나, 얼음·용암·야자·선인장)은 같은 타일셋의 「${name} 마을」 분류 문서에 있다.
 
 ${rules}
 ## 검사
@@ -108,12 +112,21 @@ ${rows(m.upperTiles.slice(y * m.width, Math.min(y + 16, m.height) * m.width), m.
   }
 }
 
+// The outdoor places (towns, sacred places, scenes, fields, the great valley, the world map).
+const outdoorPlans = outdoorDocs((tilesetId, id, name, markdown) => {
+  fs.writeFileSync(`tiledata/rpg-outdoors/${id}.md`, markdown.replaceAll(/\(image:([^)]+)\)/g, "(images/$1.png)").trimEnd() + "\n");
+  docs[tilesetId].push({ id, name, markdown });
+});
+const { c: outdoors } = loadOutdoors();
+
 // Used tiles with their meaning, per tileset — so a number is never guessed from a picture.
 for (const [ts, k] of Object.entries(CATEGORY)) {
   const climate = Object.values(data.climates).find((x) => x.id === ts);
   const meta = (t) => climate ? climate.metaPatch[t] ?? data.base.tileMeta[t] ?? climate.append.tileMeta[t - data.base.tileMeta.length] : village.tileset.tileMeta[t];
   const pass = (t) => climate ? data.base.passability[t] ?? climate.append.passability[t - data.base.passability.length] : village.tileset.passability[t];
-  const used = [...new Set(plansOn(ts).flatMap((p) => [...c.maps[p.id].lowerTiles, ...c.maps[p.id].upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
+  if (ts === "easyrpg_chipset_world") continue;
+  const layers = [...plansOn(ts).map((p) => c.maps[p.id]), ...outdoorPlans.filter((p) => !p.world && p.tilesetId === ts).map((p) => outdoors.maps[p.id])];
+  const used = [...new Set(layers.flatMap((m) => [...m.lowerTiles, ...m.upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
   const entries = used.map((tile) => ({ tile, label: meta(tile)?.label ?? "", passability: pass(tile) }));
   for (let i = 0; i < entries.length; i += 150) doc(ts, `${k.id}-dictionary-${i / 150 + 1}`, `사용 타일 사전 ${i / 150 + 1}`, `# 사용 타일 사전\n\n${ts}에서 이 분류의 필드가 쓰는 번호·라벨·통행.\n` + block(entries.slice(i, i + 150)));
 }
@@ -124,6 +137,11 @@ for (const p of c.plans) {
   const file = `${preview}/${p.id}.png`;
   execFileSync("convert", [`${dir}/images/${p.id}.png`, "-strip", "-filter", "point", "-resize", "820x820>", "-colors", "128", "-define", "png:compression-level=9", file]);
   images[p.tilesetId].push({ id: p.id, name: p.id + ".png", caption: "실제 타일 완성 지도 · 열람용 축소본", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") });
+}
+for (const p of outdoorPlans) {
+  const file = `${preview}/${p.id}.png`;
+  execFileSync("convert", [`tiledata/rpg-outdoors/images/${p.id}.png`, "-strip", "-filter", "point", "-resize", "640x640>", "-colors", "96", "-define", "png:compression-level=9", file]);
+  images[categoryKey(p)].push({ id: p.id, name: p.id + ".png", caption: "실제 타일 완성 지도 · 열람용 축소본", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") });
 }
 const out = Object.fromEntries(Object.entries(CATEGORY).map(([ts, k]) => [ts, { ...k, documents: docs[ts], images: images[ts] }]));
 for (const k of Object.values(out)) if (k.documents.length > 64 || k.documents.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit " + k.id);

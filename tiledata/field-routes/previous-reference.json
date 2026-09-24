@@ -58,5 +58,25 @@
   {
     "id": "field-routes-autumn-v3",
     "revision": "145025-86a999a2-56009dba"
+  },
+  {
+    "id": "field-routes-forest-v4",
+    "revision": "678099-caad96cf-5b3d75ef"
+  },
+  {
+    "id": "field-routes-snow-v4",
+    "revision": "271209-ce8a9898-c17086f0"
+  },
+  {
+    "id": "field-routes-volcano-v4",
+    "revision": "199231-b3f676aa-57b1e642"
+  },
+  {
+    "id": "field-routes-desert-v4",
+    "revision": "203778-563c8d26-f1f60236"
+  },
+  {
+    "id": "field-routes-autumn-v4",
+    "revision": "221792-adc6c921-fc9a0b19"
   }
 ]
