@@ -42,10 +42,40 @@ function loopOpenings(project: Project, map: GameMap): number {
   return open;
 }
 
+/** 가장 흔한 아래층 타일 비율과 위층이 찬 칸 비율. */
+function mapTexture(map: GameMap): { dominantShare: number; upperShare: number; dominantTile: number } {
+  const counts = new Map<number, number>();
+  for (const tile of map.lowerTiles) counts.set(tile, (counts.get(tile) ?? 0) + 1);
+  let dominantTile = 0, top = 0;
+  for (const [tile, count] of counts) if (count > top) { top = count; dominantTile = tile; }
+  const cells = Math.max(1, map.width * map.height);
+  const upper = map.upperTiles.filter((tile) => tile > 0).length;
+  return { dominantShare: top / cells, upperShare: upper / cells, dominantTile };
+}
+
 export function checkDream(project: Project, briefText = briefTextOf(project)): Finding[] {
   if (!DREAM_BRIEF.test(briefText)) return [];
   const findings: Finding[] = [];
   const maps = Object.values(project.maps);
+  // 꿈 세계가 한 가지 바닥으로 칠한 빈 판이면 탐험할 것이 없다(2026-09-24 dream-5: 촛불 숲 = 잔디 한 장, 사막 = 모래 한 장).
+  for (const map of maps) {
+    if (map.id === project.startMapId || map.width * map.height < 150) continue;
+    const texture = mapTexture(map);
+    if (texture.dominantShare >= 0.75 && texture.upperShare < 0.03) {
+      findings.push({ severity: "warning", code: "dream-world-bare", message: `${map.name}(${map.id}) 은 바닥 ${Math.round(texture.dominantShare * 100)}% 가 한 타일이고 위층 장식이 ${Math.round(texture.upperShare * 100)}% 뿐인 빈 판입니다 — 기획의 세계(촛대·계단·시계 눈알 …)가 그림으로 보이지 않습니다.`, where: { mapId: map.id, mapName: map.name } });
+    }
+    // 보이지 않는 사물: 그림도 없고 아래 칸도 주변과 같은 바닥인 조사 이벤트.
+    const hidden = map.events.filter((event) => {
+      const pages = event.pages ?? [];
+      if (!pages.length || pages.some((page) => page.graphic?.sprite)) return false;
+      if (!pages.some((page) => page.trigger?.kind === "action")) return false;
+      const index = event.y * map.width + event.x;
+      return map.lowerTiles[index] === texture.dominantTile && !(map.upperTiles[index] > 0);
+    });
+    if (hidden.length >= 2) {
+      findings.push({ severity: "warning", code: "dream-invisible-objects", message: `${map.name} 의 조사 대상 ${hidden.length}개(${hidden.slice(0, 4).map((e) => e.name ?? e.id).join("·")})가 그림도 타일도 없는 맨바닥 칸입니다 — 플레이어는 어디를 조사할지 모릅니다.`, where: { mapId: map.id, mapName: map.name } });
+    }
+  }
   const looping = maps.filter((map) => map.loop);
   if (LOOP_BRIEF.test(briefText)) {
     if (looping.length === 0) {
