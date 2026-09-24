@@ -2,7 +2,7 @@
 import {chromium} from 'playwright';
 import {readFile,writeFile} from 'node:fs/promises';
 import {startPlayerQaServer} from '../lib/runtimeQaRun.mjs';
-const out='output/paw-school-four';
+const out=process.env.PAW_SCHOOL_OUTPUT??'output/paw-school-four';
 const project=await readFile(`${out}/reloaded-portable.json`,'utf8');
 const report=JSON.parse(await readFile(`${out}/assembly-report.json`,'utf8'));
 const blueprint=JSON.parse(await readFile('src/assets/pixelArtWorldSchoolBuilding.json','utf8'));
@@ -26,18 +26,18 @@ try{
  }
  for(const floor of blueprint.floors){
   for(const room of floor.rooms){
-   const north=room.door.y===15,x=room.door.x,outer=north?19:22,inner=north?14:27;
+   const north=room.door.y>room.y,x=room.door.x,outer=north?room.door.y+room.door.height:room.door.y-1,inner=north?room.door.y-1:room.door.y+room.door.height;
    await teleport(floor.id,x,outer);await walk(north?'up':'down',floor.id,x,inner);
    await walk(north?'down':'up',floor.id,x,outer);rooms.push({floor:floor.id,room:room.name,bothDirections:true});
   }
-  await teleport(floor.id,floor.level===3?47:22,floor.level===3?9:14);await page.waitForTimeout(500);await idle();await page.screenshot({path:`${out}/runtime-${floor.id}.png`});console.log('rooms',floor.id);
+  const focus=floor.rooms[floor.level===3?2:0].center;await teleport(floor.id,focus.x,focus.y);await page.waitForTimeout(500);await idle();await page.screenshot({path:`${out}/runtime-${floor.id}.png`});console.log('rooms',floor.id);
  }
  const entrance=report.cityEntrance;
  for(let dx=0;dx<2;dx++){
   await teleport('paw_city',entrance.approach.x+dx,entrance.approach.y);
   await page.evaluate(()=>{window.__oprnInput.face('up');window.__oprnInput.action();});
   await page.waitForFunction(()=>window.__oprnDebug.readState().currentMapId==='paw-school-floor-1');await idle();
-  await walk('down','paw_city',entrance.approach.x,entrance.approach.y);
+  await walk(blueprint.floors[0].entrance.direction??'down','paw_city',entrance.approach.x,entrance.approach.y);
  }
  await writeFile(`${out}/runtime-observation.json`,JSON.stringify({stairs:stairs.length,rooms,cityDoors:2,errors},null,2));
  await writeFile(`${out}/SUMMARY.md`,`# School observation\n\nCanonical reload, direct player entry. ${stairs.length} stair transfers; ${rooms.length} doors walked both ways in the same map; 2 city door entries and exits. Browser errors: ${errors.length}.\n\n즉시 확인: runtime-paw-school-floor-1.png, runtime-paw-school-floor-3.png.\n`);

@@ -7,7 +7,7 @@ import {withTsModule} from '../ontology-ts-loader.mjs';
 const [input,folder]=process.argv.slice(2);
 if(!input||!folder)throw Error('Usage: node scripts/content/author-pixel-art-world-school-building.mjs <canonical-portable.json> <original-folder>');
 const p=JSON.parse(await readFile(input,'utf8')),b=JSON.parse(await readFile('src/assets/pixelArtWorldSchoolBuilding.json','utf8'));
-const out='output/paw-school-four';await mkdir(out,{recursive:true});
+const out=process.env.PAW_SCHOOL_OUTPUT??'output/paw-school-four';await mkdir(out,{recursive:true});
 const {PNG}=pngjs,images={};
 for(const s of b.sources){const bytes=await readFile(path.join(folder,s.filename));if(createHash('sha256').update(bytes).digest('hex')!==s.sha256)throw Error('Source changed '+s.filename);images[s.filename]=PNG.sync.read(bytes);}
 const quarters=await withTsModule('src/project/pixelArtWorldAutotiles.ts','school-quarter.mjs',a=>a.xpAutotileQuarters);
@@ -25,7 +25,7 @@ const links=[],grounding=[];
 for(const f of b.floors){
  const map={id:f.id,name:f.name,width:f.width,height:f.height,tileSize:32,tilesetId:tsId,lowerTiles:f.lowerTiles,upperTiles:f.upperTiles,events:[],encounterRate:0,climate:{mode:'indoor'}};
  for(const [i,s]of f.stairs.entries()){const transfer={kind:'transfer',mapId:`paw-school-floor-${s.destinationLevel}`,...s.destination,direction:'down',fade:'black'};map.events.push(event(`${f.id}-stairs-${i}`,`${s.destinationLevel}층으로 ${s.direction==='up'?'올라가기':'내려가기'}`,s.x,s.y,[transfer]));links.push({from:f.id,to:transfer.mapId,at:{x:s.x,y:s.y},approach:s.approach,spawn:s.destination});}
- if(f.level===1)for(let dx=0;dx<2;dx++)map.events.push(event('school-exit-'+dx,'학교 밖으로',f.entrance.x+dx,f.entrance.y,[{kind:'transfer',mapId:'paw_city',...school.approach,direction:'down',fade:'black'}],true));
+ if(f.level===1)for(let dx=0;dx<(f.entrance.width??2);dx++)map.events.push(event('school-exit-'+dx,'학교 밖으로',f.entrance.x+dx,f.entrance.y,[{kind:'transfer',mapId:'paw_city',...school.approach,direction:'down',fade:'black'}],true));
  for(const r of f.rooms)map.events.push(event(r.id+'-name',r.name,r.door.x-1,r.door.y+3,[{kind:'text',text:r.name}]));
  p.maps[f.id]=map;
  // Actual compiled stamp feet: repeated stairs do not use sourceRect height.
@@ -34,8 +34,8 @@ for(const f of b.floors){
 // Replace this task's earlier single-room school while preserving all non-school maps.
 const retired=['school-hallway-0','school-classroom-north-0','school-nurse-compact-0','school-lab-compact-0'];
 for(const id of retired)delete p.maps[id];
-for(const e of p.maps.paw_city.events)for(const commands of [e.commands,...(e.pages??[]).map(p=>p.commands)])for(const c of commands)if(c.kind==='transfer'&&retired.includes(c.mapId)){c.mapId=b.floors[0].id;Object.assign(c,b.floors[0].spawn);}
-p.mapTree.children=p.mapTree.children.filter(n=>!retired.includes(n.mapId));
+for(const e of p.maps.paw_city.events)for(const commands of [e.commands,...(e.pages??[]).map(p=>p.commands)])for(const c of commands)if(c.kind==='transfer'&&(retired.includes(c.mapId)||c.mapId==='paw-school-floor-1')){c.mapId=b.floors[0].id;Object.assign(c,b.floors[0].spawn);}
+p.mapTree.children=p.mapTree.children.filter(n=>!retired.includes(n.mapId)&&!b.floors.some(f=>f.id===n.mapId));
 p.mapTree.children.unshift({mapId:b.floors[0].id,children:b.floors.slice(1).map(f=>({mapId:f.id,children:[]}))});
 const base=(id,name)=>({id,name,revision:1,tags:['Pixel Art World','학교','4층'],provenance:{origin:'ai'}});
 const emptyHash=createHash('sha256').update('{}').digest('hex');
@@ -55,4 +55,4 @@ for(const f of b.floors){const im=new PNG({width:f.width*32,height:f.height*32})
 await withTsModule('src/project/io.ts','school-io.mjs',async api=>{const serialized=api.serialize(p),again=api.deserialize(serialized);for(const f of b.floors)if(JSON.stringify(again.maps[f.id])!==JSON.stringify(p.maps[f.id]))throw Error('Map roundtrip changed '+f.id);if(!again.spatialAuthoring?.library.places['paw-school-building-design'])throw Error('Spatial plan dropped');await writeFile(`${out}/authored.json`,serialized);});
 await withTsModule('src/project/collision.ts','school-collision.mjs',api=>{for(const f of b.floors){const map=p.maps[f.id],q=[f.spawn],seen=new Set([f.spawn.y*f.width+f.spawn.x]);for(let k=0;k<q.length;k++)for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){const a=q[k],x=a.x+dx,y=a.y+dy,i=y*f.width+x;if(!seen.has(i)&&api.canMove(p,map,a.x,a.y,x,y)){seen.add(i);q.push({x,y});}}for(const c of [...f.approaches,...f.stairs.map(s=>s.approach)])if(!seen.has(c.y*f.width+c.x))throw Error(`Engine blocked ${f.id} ${c.x},${c.y}`);}});
 await writeFile(`${out}/assembly-report.json`,JSON.stringify({floors:b.floors.map(f=>({id:f.id,rooms:f.rooms,stairs:f.stairs,spawn:f.spawn,entrance:f.entrance})),links,groundedPlacements:grounding.length,cityEntrance:school},null,2));
-console.log({floors:4,rooms:28,classrooms:16,seats:192,stairs:links.length,groundedPlacements:grounding.length,maps:Object.keys(p.maps).length});
+console.log({floors:4,rooms:28,classrooms:16,seats:b.floors.flatMap(f=>f.placements).filter(p=>p.recipeId.endsWith('/school-student-desk')).length,stairs:links.length,groundedPlacements:grounding.length,maps:Object.keys(p.maps).length});
