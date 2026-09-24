@@ -896,3 +896,16 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `fresh-fourth-badge-walking/SUMMARY.md`: passed/badgeOnce=true,237칸/포털10회,pageErrors0. 실제 유적 완료 상태로 수련생 두 팀→관장 두 마리 팀을 같은 실행에서 통과했다. 수련생 보상750G/780G, 관장 보상1600G 및 재대화 골드/아이템 보존을 확인했다. 회복약5회 실제 소비, 마지막 네 배지 플래그 모두true다.
 - `fourth-badge.png`를 직접 확인했다. 최초 새 게임에서 시작해 각 구간의 실제 진행 상태를 이어받은 정상 도보 경로가 네 배지까지 연결됐다. QA 사본 재개 및 새 난수 상태를 사용했으므로 무중단 일반 세이브로드 완주나 다른 스타터 균형,180분 분량의 증거와 구분한다.
 - 이 경로는 revision425 콘텐츠 기준이다. 후속 숲 퀘스트가 두 번째 체육관 조건을 보강하면 새로운 시작 경로를 다시 확인해야 한다. 현재 결과를 향후 수정된 퀘스트까지 검증한 것으로 소급하지 않는다.
+
+
+### checkpoint 크기의 주요 구성 실측
+
+- `checkpoint-size-audit.json`은 정본을 읽기 전용으로 분석한 결과다. revision457의 저장 JSON50,993,174바이트 중 tilesets45,380,898바이트, assets4,280,667바이트, database708,249바이트, maps346,565바이트였다. 업로드92개 중80개는 ref,12개는 inline이었다. 따라서 이번 큰 본문의 대부분을 Base64 이미지라고 설명하면 부정확하다.
+- 가장 큰 타일셋은 현재 리그가 사용하지 않는 forest_harmony와 shared_lpc_interior_castle 등이다. 다만 전역에서 읽히는 공용 자료를 임의로 삭제해 크기를 줄이지 않았다.
+- `scripts/lib/piAgentRuntime.ts`의 incremental checkpoint는 accepted/ctx.project 변경 비교, 전체 project clone, onCheckpoint 송신, 반환된 project 재clone을 수행한다. `src/ai/piAgent/client.ts`의 ACK도 전체 project를 포함한다. 작은 타일 작업에도 큰 데이터가 반복 처리되는 구조를 확인했지만, 이 분석만으로55초 전부의 원인이나 renderer 소멸 원인을 단정하지 않는다.
+
+
+### 관찰 도구 자체의 대형 요청 수집도 분리 점검
+
+- 요청20b의 관찰 Node PID109974 RSS는 약4.17GB로 관측됐다. 기존 드라이버는 모든 checkpoint response에서 `request().postDataBuffer()`로 약51MB 요청 본문을 읽어 길이를 기록한다. 이 수집과 Playwright 요청 객체 보존이 관찰 프로세스 부하에 기여할 가능성은 있으나 메모리 프로파일로 확정하지 않았다.
+- 관찰 스크립트의 이 기능을 `CAPTURE_CHECKPOINT_BYTES=1`일 때만 켜도록 변경했다. 현재 실행 중인 프로세스는 그대로 두며 다음 관찰 세션부터 기본 비활성화된다. 크기는 이미 JSONL/정본 분석으로 확보했다. 향후 renderer/관찰기 종료를 편집기 단독의 재현으로 확대 해석하지 않는다. 호스트/워크스페이스 콘텐츠는 이 변경으로 수정하지 않았다.
