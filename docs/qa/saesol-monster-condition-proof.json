@@ -38,5 +38,34 @@
     "/home/main/.codex/worktrees/29f7/rpg-zzu/output/saesol-three-hour/monster-condition-editor/condition.png",
     "/home/main/.codex/worktrees/29f7/rpg-zzu/output/saesol-three-hour/monster-condition-battle/battle-condition.png"
   ],
-  "tests": "Vitest/gates/typecheck not run under session instructions"
+  "tests": "Vitest/gates/typecheck not run under session instructions",
+  "deployment": {
+    "status": 200,
+    "assets": [
+      {
+        "name": "/assets/main-px6d5-ZN.js",
+        "sha256": "9cca80e72726fc20daee15af6ddafe2cac9365219887911f2ff7b0a13b18a915",
+        "matchesBuild": true
+      },
+      {
+        "name": "/assets/main-hSkw18us.css",
+        "sha256": "673c7a5001cf09e501e755263bb44eb53abf4f2b078d6d8555c5e885779fe290",
+        "matchesBuild": true
+      }
+    ]
+  },
+  "mergeCommit": "34aa80ba76c96dc19aa1e5f8a6c4289f04ef0b1f",
+  "postDeploySync": {
+    "topLevelChanged": [
+      "tilesets"
+    ],
+    "mapsEqual": true,
+    "databaseEqual": true,
+    "sessionEqual": true,
+    "tileChanged": [
+      "shared_lpc_city_outside"
+    ],
+    "uploadedAdded": [],
+    "uploadedChanged": []
+  }
 }
