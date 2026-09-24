@@ -4,6 +4,7 @@ type BrowserBridgeConfig = {
   readonly endpoint: string;
   readonly token: string;
   readonly companionToken?: string | null;
+  readonly requestBodyEncoding?: "gzip";
 };
 
 declare global {
@@ -51,11 +52,33 @@ function base64ToBytes(value: string): Uint8Array {
 async function call(channel: string, payload: unknown, keepalive = false): Promise<unknown> {
   const config = window.__OPRN_BRIDGE__;
   if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
+  const json = JSON.stringify({ channel, payload });
+  const headers: Record<string, string> = {
+    "content-type": "application/json", "x-oprn-bridge-token": config.token,
+    "x-oprn-session": tabId, "x-oprn-project": selectedProject, "x-oprn-channel": channel,
+  };
+  let body: string | Blob = json;
+  // Capability negotiation keeps an updated browser bridge compatible with older hosts.
+  // Do not retry a failed HTTP save: its CAS outcome may already have been committed.
+  if (!keepalive && config.requestBodyEncoding === "gzip" && typeof CompressionStream === "function") {
+    const plain = new Blob([json], { type: "application/json" });
+    if (plain.size > 1024 * 1024) {
+      try {
+        const compressed = await new Response(plain.stream().pipeThrough(new CompressionStream("gzip"))).blob();
+        if (compressed.size < plain.size && compressed.size <= 64 * 1024 * 1024) {
+          body = compressed;
+          headers["content-encoding"] = "gzip";
+        }
+      } catch {
+        // Encoding can fail before any request was sent. The bounded identity path remains available.
+      }
+    }
+  }
   const response = await fetch(config.endpoint, {
     method: "POST",
     keepalive,
-    headers: { "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject },
-    body: JSON.stringify({ channel, payload }),
+    headers,
+    body,
   });
   if (!response.ok) throw new Error(`${channel}: ${response.status} ${await response.text()}`);
   return await response.json();
