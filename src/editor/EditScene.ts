@@ -38,6 +38,8 @@ import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPre
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
+import { growMapOnEdges, mapEdgeGrowAxes, MAP_EDGE_GROW_ARM_MS, MAP_EDGE_GROW_STEP_MS, type MapEdgeGrowAxes } from "@/editor/mapEdgeGrow";
+import { exceedsMapDimensionLimit, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -256,6 +258,11 @@ export class EditScene extends PhaserRuntime.Scene {
   /** large-map lazy 경로의 타일 청크 컨테이너 저장소(비-lazy 맵은 사용하지 않는다). */
   private readonly tileChunks: Map<string, Phaser.GameObjects.Container> = new Map();
   private cameraPanController: CameraPanController | null = null;
+  private mapEdgeBand: Phaser.GameObjects.Graphics | null = null;
+  private pointerOverCanvas = false;
+  private mapEdgeGrowArmedAt = 0;
+  private mapEdgeGrowLastAt = 0;
+  private mapEdgeGrowLimitNoted = false;
   private cameraScrollbars: CameraScrollbars | null = null;
   private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
   private navigationResizeObserver: ResizeObserver | null = null;
@@ -426,6 +433,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    this.mapEdgeBand = this.add.graphics();
+    this.mapEdgeBand.setDepth(10.1);
     // 청사진은 계획, 고스트는 실물 초안이다 — 계획이 아래로 깔려야 실물이 그 위에 올라간다.
     this.agentBlueprintLayer = this.add.container(0, 0);
     this.agentBlueprintLayer.setDepth(10.2);
@@ -559,6 +568,8 @@ export class EditScene extends PhaserRuntime.Scene {
     // 컬링 추적 목록을 풀어 씬이 내려가도 객체를 붙잡지 않게 한다.
     resetCullableTiles(this);
 
+    this.mapEdgeBand?.destroy();
+    this.mapEdgeBand = null;
     this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
@@ -626,6 +637,7 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   update(): void {
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
+    this.stepMapEdgeGrow();
     this.syncNavigationGeometry();
     this.syncPublishedViewport();
     this.syncTileCullingFrame();
@@ -828,6 +840,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.applyAtPointer(ptr);
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
+      this.pointerOverCanvas = true;
       this.updatePointerStatus(ptr);
       // 붙여넣기 미리보기: 커서 추종.
       if (editorState.get().pastePreview) {
@@ -869,6 +882,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.replayDeferredCameraFocus();
     });
     this.input.on("pointerout", () => {
+      this.pointerOverCanvas = false;
+      this.clearMapEdgeBand();
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
     this.input.on("pointerupoutside", (ptr: Phaser.Input.Pointer) => {
@@ -1523,6 +1538,79 @@ export class EditScene extends PhaserRuntime.Scene {
   private panCameraBy(deltaX: number, deltaY: number): void {
     this.cancelCameraFocus();
     this.cameraPanController?.panBy(deltaX, deltaY);
+  }
+
+  private clearMapEdgeBand(): void {
+    this.mapEdgeBand?.clear();
+    this.mapEdgeGrowArmedAt = 0;
+  }
+
+  /** 맵 테두리 바깥에 포인터가 있으면 그 방향으로 맵 칸을 늘린다. 모서리는 가로·세로를 함께 늘린다. */
+  private stepMapEdgeGrow(): void {
+    const band = this.mapEdgeBand;
+    const gesture = this.pointerGestureState();
+    const busy = gesture.painting || gesture.panning || gesture.dragging || gesture.rightRegionGesture || gesture.pastePreview;
+    const ptr = this.input?.activePointer;
+    if (!band || !this.pointerOverCanvas || busy || !ptr || ptr.isDown) {
+      this.clearMapEdgeBand();
+      return;
+    }
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const camera = this.cameras?.main;
+    if (!mapId || !map || !camera) {
+      this.clearMapEdgeBand();
+      return;
+    }
+    const world = ptr.positionToCamera(camera) as { readonly x: number; readonly y: number };
+    const tileSize = this.activeTileSize();
+    const zoom = camera.zoom > 0 ? camera.zoom : 1;
+    const axes = mapEdgeGrowAxes({
+      worldX: world.x,
+      worldY: world.y,
+      mapWidthPx: map.width * tileSize,
+      mapHeightPx: map.height * tileSize,
+      zoom,
+    });
+    this.paintMapEdgeBand(axes, map.width * tileSize, map.height * tileSize);
+    if (!axes) {
+      this.mapEdgeGrowArmedAt = 0;
+      this.mapEdgeGrowLimitNoted = false;
+      return;
+    }
+    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
+    if (this.mapEdgeGrowArmedAt === 0) this.mapEdgeGrowArmedAt = now;
+    if (now - this.mapEdgeGrowArmedAt < MAP_EDGE_GROW_ARM_MS) return;
+    if (now - this.mapEdgeGrowLastAt < MAP_EDGE_GROW_STEP_MS) return;
+    this.mapEdgeGrowLastAt = now;
+    const grown = growMapOnEdges(mapId, axes);
+    if (!grown) {
+      const wantsWidth = (axes.left || axes.right) && exceedsMapDimensionLimit(map.width + 1, 1);
+      const wantsHeight = (axes.up || axes.down) && exceedsMapDimensionLimit(1, map.height + 1);
+      if ((wantsWidth || wantsHeight) && !this.mapEdgeGrowLimitNoted) {
+        this.mapEdgeGrowLimitNoted = true;
+        toast(mapSizeLimitMessage(), "error");
+      }
+      return;
+    }
+    if (grown.dx !== 0 || grown.dy !== 0) {
+      camera.setScroll(camera.scrollX + grown.dx * tileSize, camera.scrollY + grown.dy * tileSize);
+      this.afterCameraMoved();
+    }
+  }
+
+  private paintMapEdgeBand(axes: MapEdgeGrowAxes | null, mapWidthPx: number, mapHeightPx: number): void {
+    const band = this.mapEdgeBand;
+    if (!band) return;
+    band.clear();
+    if (!axes) return;
+    const zoom = this.cameras.main.zoom > 0 ? this.cameras.main.zoom : 1;
+    const thickness = 6 / zoom;
+    band.fillStyle(0xe8a04a, 0.45);
+    if (axes.left) band.fillRect(-thickness, 0, thickness, mapHeightPx);
+    if (axes.right) band.fillRect(mapWidthPx, 0, thickness, mapHeightPx);
+    if (axes.up) band.fillRect(0, -thickness, mapWidthPx, thickness);
+    if (axes.down) band.fillRect(0, mapHeightPx, mapWidthPx, thickness);
   }
 
   private handleShortcut(event: KeyboardEvent): void {
