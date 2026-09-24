@@ -176,6 +176,22 @@ export function autotileNeighborMask(
   return mask;
 }
 
+/** 그룹이 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. */
+export function autotileGroupLayer(group: AutotileGroup): "lower" | "upper" {
+  return group.layer === "upper" ? "upper" : "lower";
+}
+
+/**
+ * 그룹의 레이어를 엔진이 읽는 `lowerTiles` 자리에 둔 뷰. 같은 배열을 가리키므로 엔진이 쓰면 맵이 제자리에서 바뀐다.
+ * upper 그룹(바닥 위에 겹치는 투명 오토타일)도 엔진을 그대로 쓰게 하는 한 줄짜리 어댑터다.
+ */
+export function autotileGroupLayerView(
+  map: { readonly width: number; readonly height: number; readonly lowerTiles: number[]; readonly upperTiles: number[] },
+  group: AutotileGroup,
+): AutotileMapView {
+  return autotileGroupLayer(group) === "upper" ? { width: map.width, height: map.height, lowerTiles: map.upperTiles } : map;
+}
+
 // 비트마스크에 매핑된 변형 타일. 없으면 undefined.
 export function autotileVariantForMask(group: AutotileGroup, mask: number): number | undefined {
   const value = group.variantMap[String(mask)];

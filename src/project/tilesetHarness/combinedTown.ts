@@ -61,6 +61,8 @@ export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): bool
 }
 
 function applyCustomChipsetMinimalHarness(tileset: TilesetDef): boolean {
+  // MV/MZ 팩 프리셋은 통행·레이어를 프리셋이 정한다 — 16px 표를 들이대면 물·옥상이 상위로 간다.
+  if (tileset.mvPack) return false;
   // Castle2.png ships its own custom-atlas layer defaults. The legacy RM2k3 transparency
   // table is indexed by unrelated 16px combined-town cells and must not reinterpret them.
   if (

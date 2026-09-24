@@ -6,6 +6,7 @@
 // 공정 순서: build_wall → place_door/place_window → build_roof → lay_path → place_props.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { autotileGroupLayer } from "@/project/defaults/autotileEngine";
 import { isPassable, tilePassability } from "@/project/collision";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { roleCapabilities } from "@/project/tileRoles";
@@ -1041,15 +1042,17 @@ const fillRegion: ToolDefinition = {
     const rect = coerceRect(args.rect, "rect", shapeExample);
     requireRectInMap(map, rect, "rect", shapeExample);
     const shape = coerceFillShape(args.shape, FILL_CIRCLE_EXAMPLE);
-    const layer = args.layer === undefined ? "lower" : args.layer;
-    const layerNo = parseToolLayer(layer);
-    if (layerNo === null) failWithExample(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층)`, shapeExample);
+    const requestedLayer = args.layer === undefined ? "lower" : args.layer;
+    const parsedLayer = parseToolLayer(requestedLayer);
+    if (parsedLayer === null) failWithExample(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층)`, shapeExample);
     // 숲마을 계열 시트의 물은 시트 자신의 호수 오토타일(forest_harmony_lake_47, 1517~1563)이다. 어휘에 남은 합본 마을
     // 「애니메이션 물」(0~/120)을 고르면 물가 없는 남색 판이 됐다(2026-09-25 조수 시험).
     const ownLake = ownLakeAutotile(tileset, args.material);
     const { group, softConfirm } = ownLake ? { group: ownLake.group, softConfirm: undefined }
       : requireMaterialGroup(tileset, args.material, shapeExample, { preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     const autotile = ownLake ? ownLake.autotile : autotileGroupForVocab(tileset, group);
+    // 겹침 오토타일(울타리·주차선)은 3층이 집이다 — layer 를 안 주면 거기에 깐다(바닥을 지우지 않는다).
+    const layerNo: TileLayerNo = args.layer === undefined && autotile && autotileGroupLayer(autotile) === "upper" ? 3 : parsedLayer;
     assertFillRegionGroup(tileset, group, autotile);
     const body = fillBodyTile(group, autotile);
     if (body === null) {
@@ -1101,9 +1104,16 @@ const fillRegion: ToolDefinition = {
       if (clearUpper && layerNo === 1 && map.upperTiles[cell.y * map.width + cell.x] !== TILE.EMPTY) upperCleared += 1;
       paintCell(cell);
     }
-    // 오토타일은 칠한 층 배열에서 모양을 잡는다(2층 풀 장식은 2층 이웃 기준). 3·4층 물체는 그대로 둔다.
-    const reshaped = (layerNo === 1 || layerNo === 2) && autotile
-      ? resolveAutotile(autotile, exit.cells, autotileLayerView(map, layerNo), (x, y) => protectedReason({ x, y }) === null) : 0;
+    // 오토타일은 칠한 층 배열에서 모양을 잡는다(2층 풀 장식은 2층 이웃 기준). 겹침 오토타일은 3층, 나머지 3·4층 물체는 그대로 둔다.
+    // 모양 재계산은 이 재료 칸만 바꾼다 — 벽·지붕 재료는 칠한 순간 「구조물」이라 보호 판정만 쓰면
+    // 방금 칠한 외벽·옥상의 가장자리를 영영 못 맞춘다(2026-09-24 MV 팩 실측: 재계산 0칸).
+    const autotileMembers = new Set(autotile?.memberTileIds ?? []);
+    const reshapes = autotile !== undefined && autotile !== null
+      && (autotileGroupLayer(autotile) === "upper" ? layerNo === 3 : layerNo === 1 || layerNo === 2);
+    const reshapeView = reshapes ? autotileLayerView(map, layerNo) : null;
+    const reshaped = autotile && reshapeView
+      ? resolveAutotile(autotile, exit.cells, reshapeView, (x, y) => autotileMembers.has(reshapeView.lowerTiles[y * map.width + x]!)
+        || protectedReason({ x, y }) === null) : 0;
     // 1층을 채운 칸은 2층 장식도 비웠으므로 둘레 2층 장식의 가장자리를 다시 잡는다(2층이 있는 맵만).
     if (layerNo === 1 && map.lowerOverlayTiles) {
       const overlay = autotileLayerView(map, 2);
@@ -1132,7 +1142,7 @@ const fillRegion: ToolDefinition = {
     const exitNote = exit.corridor.length > 0 ? `, 시작 위치 통로 ${exit.corridor.length}칸 비움` : "";
     const warnings = [
       ...(protectedSkipWarnings(skippedAll) ?? []),
-      ...bareBoardWarnings(map, exit.cells.length, layerNo === 1 ? "lower" : String(layer)),
+      ...bareBoardWarnings(map, exit.cells.length, layerNo === 1 ? "lower" : String(requestedLayer)),
       ...(exit.corridor.length > 0
         ? [`시작 위치 (${draft.startPos.x},${draft.startPos.y})가 사방으로 막혀 밖으로 나가는 통로 ${exit.corridor.length}칸((${exit.corridor[0].x},${exit.corridor[0].y})~(${exit.corridor[exit.corridor.length - 1].x},${exit.corridor[exit.corridor.length - 1].y}))을 비워 두었습니다`]
         : []),

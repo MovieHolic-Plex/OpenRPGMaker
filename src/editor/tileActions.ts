@@ -1,7 +1,7 @@
 import { store, type ProjectChangeCell } from "@/project/store";
 import { TILE } from "@/project/defaults";
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
-import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { autotileEditTriggersGroup, autotileGroupLayer, autotileGroupLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 // Autotile groups: RM-style — painting a group body (e.g. dirt 421, dark wall 366)
 // always reshapes edges/corners. Manual autoConnectMode does not suppress that.
 import { resolveForestCanopyReplacementExemptTileIds } from "@/editor/tools/forestComposition";
@@ -171,6 +171,8 @@ export function paintTilesBulk(
   // even when UI Manual is on (RM brush contract). Dirty-cell expansion follows.
   const shapeAutotile = !options.preservePattern
     && lowerEditsNeedAutotileShape(currentMap, tileset, edits, autoConnect);
+  // 바닥 위에 겹치는 투명 오토타일(울타리·주차선)은 상위 붓질에서 모양을 맞춘다.
+  const upperGroups = options.preservePattern ? [] : upperAutotileGroupsTriggered(currentMap, tileset, edits);
   // 정확 배치는 나무 짝 보정도 지난다 — 안 그러면 y=0 밑동은 지워지고, 밑동 위 칸에는
   // 수관이 강제로 심겨 "고른 칸만 바꾼다"는 계약이 그 자리에서 깨진다(OPRN-OUT-017).
   const repairTrees = !options.preservePattern && !exactPlacement
@@ -199,12 +201,28 @@ export function paintTilesBulk(
         previousTile: lowerPrevious,
       });
     }
+    if (upperGroups.length > 0) {
+      const upperPoints = edits.filter((edit) => edit.layer === "upper").map((edit) => ({ x: edit.x, y: edit.y }));
+      for (const group of upperGroups) shapeAutotileGroupAround(autotileGroupLayerView(m, group), group, upperPoints);
+    }
     if (repairTrees) {
       repairTreePairsOnMap(m, tileset, {
         canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(current),
       });
     }
-  }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile) });
+  }, { cells: changedTileCellsForPlannedEdits(mapId, edits, shapeAutotile || upperGroups.length > 0) });
+}
+
+/** 상위 레이어 편집이 건드리는(이전·다음 타일이 트리거인) 겹침 오토타일 그룹. */
+function upperAutotileGroupsTriggered(
+  map: GameMap,
+  tileset: TilesetDef | undefined,
+  edits: readonly PlannedTileEdit[],
+): AutotileGroup[] {
+  const upperEdits = edits.filter((edit) => edit.layer === "upper");
+  if (upperEdits.length === 0) return [];
+  return autotileGroupsForTileset(tileset).filter((group) => autotileGroupLayer(group) === "upper"
+    && upperEdits.some((edit) => autotileEditTriggersGroup(group, tileAt(map, "upper", edit.x, edit.y), edit.tile)));
 }
 
 export function toggleCollision(mapId: MapId, x: number, y: number): void {
@@ -885,7 +903,7 @@ function coordKey(x: number, y: number): string {
 function shapeTerrainAfterLowerEdit(m: GameMap, tileset: TilesetDef | undefined, edit: LowerTileEdit): void {
   if (!edit.autoConnect) return;
   if (edit.layer !== "lower") return;
-  const groups: readonly AutotileGroup[] = autotileGroupsForTileset(tileset);
+  const groups: readonly AutotileGroup[] = autotileGroupsForTileset(tileset).filter((group) => autotileGroupLayer(group) === "lower");
   for (const group of groups) {
     if (autotileEditTriggersGroup(group, edit.previousTile, edit.nextTile)) {
       shapeAutotileGroupAround(m, group, edit.points);

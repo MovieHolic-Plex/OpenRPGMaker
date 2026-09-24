@@ -52,6 +52,7 @@ import { V1_TILE_SUPERSEDED } from "./v2";
 import { CONSTRUCTION_TOOLS_V3, VOCABULARY_TOOLS_V3 } from "./v3";
 import { CASTLE_TOOLS } from "./castleBuilder";
 import { STRUCTURE_KIT_TOOLS } from "./structureKitTools";
+import { TILESET_OBJECT_TOOLS } from "./tilesetObjectTools";
 import { VILLAGE_TOOLS } from "./villageBuilder";
 import { VILLAGE_SESSION_TOOLS } from "./villageSession";
 import { INTERIOR_ROOM_SESSION_TOOLS } from "./interiorRoomSession";
@@ -188,6 +189,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(DUNGEON_ROOM_SESSION_TOOLS, "tile"),
   ...withDomain(CASTLE_TOOLS, "tile"),
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
+  ...withDomain(TILESET_OBJECT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
   // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.

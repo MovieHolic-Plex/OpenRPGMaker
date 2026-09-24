@@ -4,7 +4,7 @@ import { ToolError, type ToolDefinition } from "./types";
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
-  "stamp_forest_recipe", "stamp_tile_recipe",
+  "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object",
   "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "import_region_reference", "stamp_object", "mirror_region", "clear_map",
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",
   "fill_region", "tile_erase", "stamp_layer_block", "paint_shadow", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
@@ -28,7 +28,7 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
  */
 export const TILESET_REFERENCE_TILE_CHOOSERS: ReadonlySet<string> = new Set([
   "paint_tiles", "fill_region", "build_wall", "place_door", "place_window", "build_roof", "lay_path", "place_props", "arrange_rows",
-  "paint_road", "stamp_structure", "build_house", "stamp_forest_recipe", "stamp_tile_recipe",
+  "paint_road", "stamp_structure", "build_house", "stamp_forest_recipe", "stamp_tile_recipe", "stamp_tileset_object",
   // MZ 4층: 모델이 층별 번호 배열·그림자 조각을 직접 고른다.
   "stamp_layer_block", "paint_shadow",
 ]);
