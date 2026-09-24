@@ -1,0 +1,1140 @@
+[
+  {
+    "packId": "paw-mansion-b",
+    "sourceFilename": "ST-MsionB-I01.png",
+    "sourceSha256": "8338e8ebef716a86c687cb0f24683398efe2dadb9303f9c97772509e3ea8de9c",
+    "composites": [],
+    "scenePlans": [
+      {
+        "id": "mansion-b-living-bedroom",
+        "name": "청색 저택 · 응접실과 분리 침실",
+        "width": 11,
+        "height": 12,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 11,
+            "height": 2,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 16
+          },
+          {
+            "x": 10,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 18
+          },
+          {
+            "x": 0,
+            "y": 11,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 4,
+            "y": 11,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 5,
+            "y": 0,
+            "width": 1,
+            "height": 11,
+            "tile": 17
+          },
+          {
+            "x": 5,
+            "y": 7,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msion-b-arched-window",
+            "x": 1,
+            "y": 0
+          },
+          {
+            "recipeId": "msion-b-sofa-front",
+            "x": 1,
+            "y": 3
+          },
+          {
+            "recipeId": "msion-b-coffee-table",
+            "x": 1,
+            "y": 6
+          },
+          {
+            "recipeId": "msion-b-sofa-back",
+            "x": 1,
+            "y": 8
+          },
+          {
+            "recipeId": "msion-b-glass-cabinet",
+            "x": 6,
+            "y": 2
+          },
+          {
+            "recipeId": "msion-b-double-bed",
+            "x": 8,
+            "y": 4
+          },
+          {
+            "recipeId": "msion-b-dresser",
+            "x": 7,
+            "y": 8
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 4,
+            "y": 11
+          },
+          {
+            "x": 4,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 2,
+            "y": 7
+          },
+          {
+            "x": 4,
+            "y": 6
+          },
+          {
+            "x": 5,
+            "y": 7
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 7,
+            "y": 5
+          },
+          {
+            "x": 8,
+            "y": 7
+          },
+          {
+            "x": 8,
+            "y": 10
+          }
+        ],
+        "passableTiles": [
+          0
+        ],
+        "lowerTileIds": [
+          0,
+          16,
+          17,
+          18,
+          25
+        ],
+        "wallTileIds": [
+          16,
+          17,
+          18,
+          25
+        ],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "living",
+            "name": "응접실",
+            "x": 1,
+            "y": 3,
+            "width": 4,
+            "height": 8
+          },
+          {
+            "id": "bedroom",
+            "name": "동쪽 분리 침실",
+            "x": 6,
+            "y": 3,
+            "width": 4,
+            "height": 8
+          }
+        ],
+        "doorways": [
+          {
+            "from": "outside",
+            "to": "living",
+            "x": 4,
+            "y": 11,
+            "width": 1,
+            "height": 1
+          },
+          {
+            "from": "living",
+            "to": "bedroom",
+            "x": 5,
+            "y": 7,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "11×12. x5벽의 (5,7) 한칸으로 침실을 연결한다. 응접소파는 원본 정면/뒷면으로 탁자를 마주보며 y5/y7 접근, 침구는 북쪽머리판·남쪽발치 y7을 보존한다. 장롱 앞6,4와 서랍장 앞8,10이 연결된다. 원본 벽면 컷어웨이이며 자동 천장·닫히는 문·잠금·수면·착석 이벤트는 별도다. 상위 가구 사각형 전체solid, 접근은 그림의 투명 여백이 아닌 실제 빈 칸으로 한다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-p",
+    "sourceFilename": "ST-MsionP-I01.png",
+    "sourceSha256": "2e3f22af16fd5de5de6b9d58543c31979e34b494be2c20fde7ca7de4eddc4c96",
+    "composites": [],
+    "scenePlans": [
+      {
+        "id": "mansion-p-music-bedroom",
+        "name": "분홍 저택 · 음악 응접실과 천개 침실",
+        "width": 12,
+        "height": 12,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 16
+          },
+          {
+            "x": 11,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 18
+          },
+          {
+            "x": 0,
+            "y": 11,
+            "width": 12,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 6,
+            "y": 11,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 7,
+            "y": 0,
+            "width": 1,
+            "height": 11,
+            "tile": 17
+          },
+          {
+            "x": 7,
+            "y": 7,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msion-p-blue-curtain-window",
+            "x": 4,
+            "y": 0
+          },
+          {
+            "recipeId": "msion-p-grand-piano",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "msion-p-harp",
+            "x": 5,
+            "y": 3
+          },
+          {
+            "recipeId": "msion-p-coffee-table",
+            "x": 2,
+            "y": 6
+          },
+          {
+            "recipeId": "msion-p-sofa-back",
+            "x": 2,
+            "y": 8
+          },
+          {
+            "recipeId": "msion-p-canopy-bed",
+            "x": 8,
+            "y": 2
+          },
+          {
+            "recipeId": "msion-p-glass-cabinet",
+            "x": 8,
+            "y": 8
+          },
+          {
+            "recipeId": "msion-p-doll",
+            "x": 10,
+            "y": 3
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 6,
+            "y": 11
+          },
+          {
+            "x": 6,
+            "y": 10
+          },
+          {
+            "x": 2,
+            "y": 5
+          },
+          {
+            "x": 5,
+            "y": 5
+          },
+          {
+            "x": 3,
+            "y": 7
+          },
+          {
+            "x": 6,
+            "y": 7
+          },
+          {
+            "x": 7,
+            "y": 7
+          },
+          {
+            "x": 9,
+            "y": 6
+          },
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 9,
+            "y": 10
+          }
+        ],
+        "passableTiles": [
+          0
+        ],
+        "lowerTileIds": [
+          0,
+          16,
+          17,
+          18,
+          25
+        ],
+        "wallTileIds": [
+          16,
+          17,
+          18,
+          25
+        ],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "music",
+            "name": "피아노·하프와 응접석",
+            "x": 1,
+            "y": 3,
+            "width": 6,
+            "height": 8
+          },
+          {
+            "id": "bedroom",
+            "name": "동쪽 천개 침실",
+            "x": 8,
+            "y": 3,
+            "width": 3,
+            "height": 8
+          }
+        ],
+        "doorways": [
+          {
+            "from": "outside",
+            "to": "music",
+            "x": 6,
+            "y": 11,
+            "width": 1,
+            "height": 1
+          },
+          {
+            "from": "music",
+            "to": "bedroom",
+            "x": 7,
+            "y": 7,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "12×12. 서쪽 피아노 전체3×4와 하프를 보존한다. 피아노 남쪽 건반 접근 y5, 소파 북쪽 접근y7을 분리해 탁자가 건반을 막지 않는다. 동쪽 천개침대2×4는 커튼과 침구까지 완전체, 파란 인형은 P 원본 전용 색이다. 원본 벽면 컷어웨이이며 자동 천장·닫히는 문·잠금·수면·착석 이벤트는 별도다. 상위 가구 사각형 전체solid, 접근은 그림의 투명 여백이 아닌 실제 빈 칸으로 한다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-y",
+    "sourceFilename": "ST-MsionY-I01.png",
+    "sourceSha256": "ab203ceeaf8beed0ea9bf4741e4f52e09f33086dcabb1e1e05b524ae6739e1d1",
+    "composites": [],
+    "scenePlans": [
+      {
+        "id": "mansion-y-dining-parlor",
+        "name": "황색 저택 · 식당과 녹색 응접실",
+        "width": 12,
+        "height": 12,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 2,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 12,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 16
+          },
+          {
+            "x": 11,
+            "y": 3,
+            "width": 1,
+            "height": 8,
+            "tile": 18
+          },
+          {
+            "x": 0,
+            "y": 11,
+            "width": 12,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 10,
+            "y": 11,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 6,
+            "y": 0,
+            "width": 1,
+            "height": 11,
+            "tile": 17
+          },
+          {
+            "x": 6,
+            "y": 7,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msion-y-arched-window",
+            "x": 2,
+            "y": 0
+          },
+          {
+            "recipeId": "msion-y-blue-curtain-window",
+            "x": 8,
+            "y": 0
+          },
+          {
+            "recipeId": "msion-y-dining-table",
+            "x": 2,
+            "y": 3
+          },
+          {
+            "recipeId": "msion-y-chair-east",
+            "x": 1,
+            "y": 4
+          },
+          {
+            "recipeId": "msion-y-chair-west",
+            "x": 5,
+            "y": 4
+          },
+          {
+            "recipeId": "msion-y-glass-cabinet",
+            "x": 2,
+            "y": 8
+          },
+          {
+            "recipeId": "msion-y-sofa-front",
+            "x": 7,
+            "y": 3
+          },
+          {
+            "recipeId": "msion-y-coffee-table",
+            "x": 7,
+            "y": 6
+          },
+          {
+            "recipeId": "msion-y-sofa-back",
+            "x": 7,
+            "y": 8
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 10,
+            "y": 11
+          },
+          {
+            "x": 10,
+            "y": 10
+          },
+          {
+            "x": 3,
+            "y": 6
+          },
+          {
+            "x": 1,
+            "y": 6
+          },
+          {
+            "x": 5,
+            "y": 6
+          },
+          {
+            "x": 3,
+            "y": 10
+          },
+          {
+            "x": 6,
+            "y": 7
+          },
+          {
+            "x": 8,
+            "y": 5
+          },
+          {
+            "x": 8,
+            "y": 7
+          },
+          {
+            "x": 10,
+            "y": 6
+          }
+        ],
+        "passableTiles": [
+          0
+        ],
+        "lowerTileIds": [
+          0,
+          16,
+          17,
+          18,
+          25
+        ],
+        "wallTileIds": [
+          16,
+          17,
+          18,
+          25
+        ],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "parlor",
+            "name": "녹색소파 응접실",
+            "x": 7,
+            "y": 3,
+            "width": 4,
+            "height": 8
+          },
+          {
+            "id": "dining",
+            "name": "서쪽 별도 식당",
+            "x": 1,
+            "y": 3,
+            "width": 5,
+            "height": 8
+          }
+        ],
+        "doorways": [
+          {
+            "from": "outside",
+            "to": "parlor",
+            "x": 10,
+            "y": 11,
+            "width": 1,
+            "height": 1
+          },
+          {
+            "from": "parlor",
+            "to": "dining",
+            "x": 6,
+            "y": 7,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "12×12. 황색 벽에 원본 녹색 소파를 쓴다. 서쪽 식탁과 동서향 의자를 실제로 마주보게 배치하며 y6 접근을 비운다. 동쪽 응접석 y5/y7과 식당문6,7을 잇는다. 색만 바꾼 침실 복제가 아닌 식당+응접실이다. 원본 벽면 컷어웨이이며 자동 천장·닫히는 문·잠금·수면·착석 이벤트는 별도다. 상위 가구 사각형 전체solid, 접근은 그림의 투명 여백이 아닌 실제 빈 칸으로 한다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-w",
+    "sourceFilename": "ST-MsionW-I01.png",
+    "sourceSha256": "61343c5c30906b9d45a4aeeca7584129b2a5c0784aba910d9f01e86b19122092",
+    "composites": [
+      {
+        "id": "msion-w-desk-quill",
+        "name": "전체 목재책상과 깃펜·문서",
+        "canvas": {
+          "width": 96,
+          "height": 64
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "whole-writing-desk",
+            "sourceRect": {
+              "x": 0,
+              "y": 512,
+              "width": 96,
+              "height": 64
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "whole-quill-and-paper",
+            "sourceRect": {
+              "x": 128,
+              "y": 320,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "원본(0,16)3×2는 전체책상, (3,16)1×2는 연장판이므로 독립책상으로 쓰지 않는다. 별도 원본(4,10)1×1 깃펜·문서를 x32,y0에올린다. 원본440칸은보존, 상판받침확인, 전체다리보존. 남쪽직원접근."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "mansion-w-reading-bedroom",
+        "name": "백색 저택 · 서재와 무늬 침실",
+        "width": 11,
+        "height": 11,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 11,
+            "height": 2,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 7,
+            "tile": 16
+          },
+          {
+            "x": 10,
+            "y": 3,
+            "width": 1,
+            "height": 7,
+            "tile": 18
+          },
+          {
+            "x": 0,
+            "y": 10,
+            "width": 11,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 4,
+            "y": 10,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 5,
+            "y": 0,
+            "width": 1,
+            "height": 10,
+            "tile": 17
+          },
+          {
+            "x": 5,
+            "y": 7,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msion-w-bookcase",
+            "x": 1,
+            "y": 1
+          },
+          {
+            "recipeId": "msion-w-desk-quill",
+            "x": 1,
+            "y": 5
+          },
+          {
+            "recipeId": "msion-w-armchair-back",
+            "x": 1,
+            "y": 7
+          },
+          {
+            "recipeId": "msion-w-blue-curtain-window",
+            "x": 8,
+            "y": 0
+          },
+          {
+            "recipeId": "msion-w-double-bed",
+            "x": 7,
+            "y": 3
+          },
+          {
+            "recipeId": "msion-w-vanity",
+            "x": 8,
+            "y": 6
+          },
+          {
+            "recipeId": "msion-w-landscape",
+            "x": 6,
+            "y": 0
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 4,
+            "y": 10
+          },
+          {
+            "x": 4,
+            "y": 9
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 7
+          },
+          {
+            "x": 4,
+            "y": 7
+          },
+          {
+            "x": 5,
+            "y": 7
+          },
+          {
+            "x": 6,
+            "y": 5
+          },
+          {
+            "x": 7,
+            "y": 6
+          },
+          {
+            "x": 8,
+            "y": 9
+          }
+        ],
+        "passableTiles": [
+          0
+        ],
+        "lowerTileIds": [
+          0,
+          16,
+          17,
+          18,
+          25
+        ],
+        "wallTileIds": [
+          16,
+          17,
+          18,
+          25
+        ],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "study",
+            "name": "작은 서재",
+            "x": 1,
+            "y": 3,
+            "width": 4,
+            "height": 7
+          },
+          {
+            "id": "bedroom",
+            "name": "동쪽 무늬 침실",
+            "x": 6,
+            "y": 3,
+            "width": 4,
+            "height": 7
+          }
+        ],
+        "doorways": [
+          {
+            "from": "outside",
+            "to": "study",
+            "x": 4,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          },
+          {
+            "from": "study",
+            "to": "bedroom",
+            "x": 5,
+            "y": 7,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "11×11. 서쪽 책장과 전체3×2책상+원본깃펜/문서 합성은 분리된 작은 서재다. 책상옆x4한칸을 비운다. 북향의자를 책상바로앞1,7로 당겨두고 옆2,7에서접근한다. 동쪽 침구와 풍경화는 W 원본의 별도 무늬를 사용한다. 침구 발치7,6 및 화장대 앞8,9를 보존한다. x5벽문7행으로 두방이 연결된다. 원본 벽면 컷어웨이이며 자동 천장·닫히는 문·잠금·수면·착석 이벤트는 별도다. 상위 가구 사각형 전체solid, 접근은 그림의 투명 여백이 아닌 실제 빈 칸으로 한다."
+      }
+    ]
+  },
+  {
+    "packId": "paw-mansion-r",
+    "sourceFilename": "ST-MsionR-I01.png",
+    "sourceSha256": "e85c9fd260f1a3645ea017a76f5175fbd6e68683b251233b52369a99d66351fa",
+    "composites": [
+      {
+        "id": "msion-r-till-counter",
+        "name": "유리 카운터와 남향 계산기",
+        "canvas": {
+          "width": 96,
+          "height": 64
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "parts": [
+          {
+            "role": "complete-glass-counter",
+            "sourceRect": {
+              "x": 96,
+              "y": 1440,
+              "width": 96,
+              "height": 64
+            },
+            "offset": {
+              "x": 0,
+              "y": 0
+            }
+          },
+          {
+            "role": "complete-south-facing-till",
+            "sourceRect": {
+              "x": 0,
+              "y": 1440,
+              "width": 32,
+              "height": 32
+            },
+            "offset": {
+              "x": 32,
+              "y": 0
+            }
+          }
+        ],
+        "notes": "R 원본 완전 가로케이스(3,45)3×2에 남향 계산기(0,45)1×1을 x32,y0 픽셀 오프셋으로 올린다. 계산기 키패드가 남쪽이므로 직원 접근은 남쪽이다. 상판 받침 실제 픽셀 확인. 원본440칸 뒤에2행추가, 유리/목재다리 삭제·반전·리사이즈 없음."
+      }
+    ],
+    "scenePlans": [
+      {
+        "id": "mansion-r-jewelry-boutique",
+        "name": "적색 보석상 · 직원실과 진열실",
+        "width": 10,
+        "height": 11,
+        "baseTile": 0,
+        "lowerRects": [
+          {
+            "x": 0,
+            "y": 0,
+            "width": 10,
+            "height": 2,
+            "tile": 17
+          },
+          {
+            "x": 0,
+            "y": 2,
+            "width": 10,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 0,
+            "y": 3,
+            "width": 1,
+            "height": 7,
+            "tile": 16
+          },
+          {
+            "x": 9,
+            "y": 3,
+            "width": 1,
+            "height": 7,
+            "tile": 18
+          },
+          {
+            "x": 0,
+            "y": 10,
+            "width": 10,
+            "height": 1,
+            "tile": 25
+          },
+          {
+            "x": 5,
+            "y": 10,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 5,
+            "y": 0,
+            "width": 1,
+            "height": 6,
+            "tile": 17
+          },
+          {
+            "x": 5,
+            "y": 4,
+            "width": 1,
+            "height": 1,
+            "tile": 0
+          },
+          {
+            "x": 1,
+            "y": 5,
+            "width": 5,
+            "height": 1,
+            "tile": 17
+          },
+          {
+            "x": 1,
+            "y": 6,
+            "width": 5,
+            "height": 1,
+            "tile": 25
+          }
+        ],
+        "lowerStamps": [],
+        "placements": [
+          {
+            "recipeId": "msion-r-till-counter",
+            "x": 1,
+            "y": 2
+          },
+          {
+            "recipeId": "msion-r-wide-display",
+            "x": 6,
+            "y": 2
+          },
+          {
+            "recipeId": "msion-r-crown-pedestal",
+            "x": 1,
+            "y": 7
+          },
+          {
+            "recipeId": "msion-r-vertical-display",
+            "x": 7,
+            "y": 5
+          },
+          {
+            "recipeId": "msion-r-landscape",
+            "x": 1,
+            "y": 0
+          }
+        ],
+        "approachCells": [
+          {
+            "x": 5,
+            "y": 10
+          },
+          {
+            "x": 5,
+            "y": 9
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          },
+          {
+            "x": 5,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 4
+          },
+          {
+            "x": 6,
+            "y": 7
+          },
+          {
+            "x": 7,
+            "y": 9
+          },
+          {
+            "x": 1,
+            "y": 9
+          },
+          {
+            "x": 3,
+            "y": 8
+          }
+        ],
+        "passableTiles": [
+          0
+        ],
+        "lowerTileIds": [
+          0,
+          16,
+          17,
+          18,
+          25
+        ],
+        "wallTileIds": [
+          16,
+          17,
+          18,
+          25
+        ],
+        "requiredClearRects": [],
+        "rooms": [
+          {
+            "id": "sales",
+            "name": "고객 진열실",
+            "x": 1,
+            "y": 7,
+            "width": 8,
+            "height": 3
+          },
+          {
+            "id": "staff",
+            "name": "북서 계산 직원실",
+            "x": 1,
+            "y": 3,
+            "width": 4,
+            "height": 2
+          },
+          {
+            "id": "east-display",
+            "name": "동쪽 긴 진열실",
+            "x": 6,
+            "y": 3,
+            "width": 3,
+            "height": 6
+          }
+        ],
+        "doorways": [
+          {
+            "from": "outside",
+            "to": "sales",
+            "x": 5,
+            "y": 10,
+            "width": 1,
+            "height": 1
+          },
+          {
+            "from": "east-display",
+            "to": "staff",
+            "x": 5,
+            "y": 4,
+            "width": 1,
+            "height": 1
+          }
+        ],
+        "notes": "10×11. R 원본 하단은 난간이 아닌 보석상 부품이다. 북서 직원실은 x5벽의4행 문으로 들어가 계산대 남쪽2,4에서 조작한다(원본 키패드 남향). 고객 전시는 북동 가로케이스, 동쪽 세로케이스, 남서 왕관받침으로 구분한다. 왕관은 원본 왕관+받침 전체이며 진열장 유리 밑에 임의음식을 덮지 않는다. 구매/도난/잠금 이벤트는 별도다. 원본 벽면 컷어웨이이며 자동 천장·닫히는 문·잠금·수면·착석 이벤트는 별도다. 상위 가구 사각형 전체solid, 접근은 그림의 투명 여백이 아닌 실제 빈 칸으로 한다."
+      }
+    ]
+  }
+]
