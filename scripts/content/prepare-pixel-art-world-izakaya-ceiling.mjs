@@ -32,17 +32,19 @@ try{
   else prepared=await preparePixelArtWorldAutotile(new File([Uint8Array.from(atob(base64),c=>c.charCodeAt(0))],auto.filename,{type:'image/png'}),auto,baseTile,base,{referenceBackingTile:4,referenceBackingLabel:'이자카야 돌바닥'});
   const tile=prepared.tileset,group=tile.autotileGroups.find(g=>g.id===auto.id);
   if(prepared.offset!==480||tile.count!==528||group.memberTileIds.length!==47||Math.min(...group.memberTileIds)!==480)throw Error('Ceiling atlas contract differs');
-  tile.image=structuredClone(baseTile.image);validateTileset(tile.id,tile);
+  tile.image=structuredClone(baseTile.image);
+  for(const id of plan.hallFloorTiles){tile.passability[id]={up:true,down:true,left:true,right:true};tile.priority[id]='lower';tile.tileMeta[id]={label:'이자카야 목재 마루',description:'원본 첫 행 x0/1. 두 칸을 가로로 반복하는 홀·문턱 바닥. 다다미는 개인실 안쪽만.',defaultLayer:'lower',passage:'passable',repeatability:'repeat',source:'imported'};}
+  validateTileset(tile.id,tile);
   const atlas=await decode(prepared.dataUrl);
   function rgba(im){const c=document.createElement('canvas');c.width=256;c.height=1920;const x=c.getContext('2d');x.drawImage(im,0,0);return x.getImageData(0,0,256,1920).data;}
   const a=rgba(base),b=rgba(atlas);if(a.some((v,i)=>v!==b[i]))throw Error('Original 480-tile pixel prefix changed');
-  const s=structuredClone(plan);s.lowerTiles=Array(s.width*s.height).fill(4);s.upperTiles=Array(s.width*s.height).fill(-1);s.passableTiles=passableTiles;
+  const s=structuredClone(plan);s.lowerTiles=Array.from({length:s.width*s.height},(_,i)=>s.hallFloorTiles[i%s.width%s.hallFloorTiles.length]);s.upperTiles=Array(s.width*s.height).fill(-1);s.passableTiles=[...new Set([...passableTiles,...s.hallFloorTiles])];
   const at=(x,y)=>{if(x<0||y<0||x>=s.width||y>=s.height)throw Error('Out of bounds');return y*s.width+x;};
   for(let x=1;x<s.width-1;x++){s.lowerTiles[at(x,1)]=17;s.lowerTiles[at(x,2)]=25;}
   const k=s.kitchenFloor;for(let y=k.y;y<k.y+k.height;y++)for(let x=k.x;x<k.x+k.width;x++)s.lowerTiles[at(x,y)]=6;
+  const t=s.tatamiFloor;for(let y=0;y<t.height;y++)for(let x=0;x<t.width;x++)s.lowerTiles[at(t.x+x,t.y+y)]=t.tiles[y%t.tiles.length][x%t.tiles[0].length];
   for(const w of s.wallFaces)for(let dy=0;dy<w.tiles.length;dy++)for(let x=w.x;x<w.x+w.width;x++)s.lowerTiles[at(x,w.y+dy)]=w.tiles[dy];
   for(const p of s.placements){const r=recipes.find(r=>r.id===p.recipeId);if(!r)throw Error('Unknown recipe');
-   if(r.id==='izakaya-zashiki-table')for(let y=0;y<4;y++)for(let x=0;x<4;x++)s.lowerTiles[at(p.x+x,p.y+y)]=296+(y<2?y:y-1)*8+x%2;
    r.tiles.forEach((row,y)=>row.forEach((t,x)=>{const i=at(p.x+x,p.y+y);if(s.upperTiles[i]!==-1)throw Error('Furniture overlap');s.upperTiles[i]=t;}));
   }
   s.ceilingGroupId=auto.id;const wallSet=new Set();
@@ -50,7 +52,7 @@ try{
   for(let y=s.entrance.roofY;y<s.height;y++)for(let x=s.entrance.x;x<s.entrance.x+s.entrance.width;x++)wallSet.delete(at(x,y));
   for(const w of s.partitionColumns)for(let y=w.y;y<w.y+w.height;y++)wallSet.add(at(w.x,y));
   for(const w of s.partitionRows)for(let x=w.x;x<w.x+w.width;x++)wallSet.add(at(x,w.y));
-  for(const c of [s.exitTrigger,...s.kitchenDoorCells]){wallSet.delete(at(c.x,c.y));s.lowerTiles[at(c.x,c.y)]=4;}
+  for(const c of [s.exitTrigger,...s.kitchenDoorCells,...s.privateRoomDoorCells]){wallSet.delete(at(c.x,c.y));s.lowerTiles[at(c.x,c.y)]=s.hallFloorTiles[c.x%s.hallFloorTiles.length];}
   s.ceilingCells=[...wallSet].sort((a,b)=>a-b).map(i=>({x:i%s.width,y:Math.floor(i/s.width)}));
   const cells=new Set(s.ceilingCells.map(c=>c.y*s.width+c.x));
   const dirs=[[0,-1,1],[1,0,2],[0,1,4],[-1,0,8],[1,-1,16],[1,1,32],[-1,1,64],[-1,-1,128]];
@@ -74,6 +76,14 @@ try{
   const closedResult=audit(closed);const kitchenTargets=s.approachCells.filter(c=>c.x>=7&&c.y<=5);
   if(kitchenTargets.some(c=>closedResult.reachableCells.includes(at(c.x,c.y))))throw Error('Kitchen partition leaks');
   if(s.approachCells.filter(c=>c.y>=9).some(c=>!closedResult.reachableCells.includes(at(c.x,c.y))))throw Error('Kitchen closure blocks dining');
+  const privateClosed=structuredClone(s);for(const c of s.privateRoomDoorCells)privateClosed.lowerTiles[at(c.x,c.y)]=s.wallTiles[1];
+  const privateResult=audit(privateClosed),inside=c=>c.x>=t.x&&c.x<t.x+t.width&&c.y>=t.y&&c.y<t.y+t.height;
+  if(s.approachCells.filter(inside).some(c=>privateResult.reachableCells.includes(at(c.x,c.y))))throw Error('Private room boundary leaks');
+  if(s.approachCells.filter(c=>!inside(c)&&!s.privateRoomDoorCells.some(d=>d.x===c.x&&d.y===c.y)).some(c=>!privateResult.reachableCells.includes(at(c.x,c.y))))throw Error('Private closure blocks hall or kitchen');
+  const leaking=structuredClone(privateClosed);leaking.lowerTiles[at(6,20)]=s.hallFloorTiles[0];
+  const leakingResult=audit(leaking);
+  if(!s.approachCells.filter(inside).some(c=>leakingResult.reachableCells.includes(at(c.x,c.y))))throw Error('Private boundary negative example was not detected');
+  for(let i=0;i<s.lowerTiles.length;i++)if(t.tiles.flat().includes(s.lowerTiles[i])!==inside({x:i%s.width,y:Math.floor(i/s.width)}))throw Error('Tatami escapes private room or has missing floor');
   const {shapeAutotileGroupAround}=await import('/src/project/defaults/autotileEngine.ts');
   const shaped=structuredClone(s);shapeAutotileGroupAround(shaped,group,s.ceilingCells);
   if(JSON.stringify(shaped.lowerTiles)!==JSON.stringify(s.lowerTiles))throw Error('Engine autotile shape differs');
@@ -81,10 +91,10 @@ try{
   if(!badResult.issues.some(i=>i.code==='CEILING_WALL_MISSING')||!badResult.issues.some(i=>i.code==='CEILING_CONNECTION')||!badResult.issues.some(i=>i.code==='APPROACH_BLOCKED'))throw Error('Negative example was not detected');
   function render(scene){const c=document.createElement('canvas');c.width=scene.width*32;c.height=scene.height*32;const ctx=c.getContext('2d');for(const layer of [scene.lowerTiles,scene.upperTiles])layer.forEach((t,i)=>{if(t>=0)ctx.drawImage(atlas,t%8*32,Math.floor(t/8)*32,32,32,i%scene.width*32,Math.floor(i/scene.width)*32,32,32);});return c;}
   const image=render(s),before=render(baseScene),comparison=document.createElement('canvas');comparison.width=image.width*2;comparison.height=image.height;comparison.getContext('2d').drawImage(image,0,0);comparison.getContext('2d').drawImage(render(bad),image.width,0);
-  const markdown=`# ${s.name} · 연결 천장 포함\n\n현재 tilesetId: ${tile.id}. 천장 원본 ${auto.filename}, SHA256 ${auto.sha256}.\n\n${s.notes}\n\n순서: 원본 이자카야+부스 합성480칸 → 사용자 천장 PNG를 같은 타일셋에 추가 → 분리 조리실·외곽·직원 문 설계 → 천장 자동 연결과 정면 벽 → 전체 가구 → 객석 접근과 조리실 분리 검사. 이 타일셋에서 천장 변형 번호는480..526이며 주택의400번을 복사하면 부스 조각이 된다. 상세 쿼터·256개 마스크 사전과 원본·47변형 그림은 paw-wall-a01 용도를 함께 읽는다.\n\n\`\`\`json\n${JSON.stringify(s,null,2)}\n\`\`\`\n\n![완성](image:assembled-scene)\n\n## 정상 / 오류\n\n왼쪽 정상, 오른쪽 북서 천장 누락(0,0) 및 출입 봉쇄(${s.exitTrigger.x},${s.exitTrigger.y}) 및 조리실 문 두 칸 봉쇄, 내벽 끝 아래 벽 누락(6,2). 구조 검사와 실제 통행이 검출하며 미적 승인·모델 성공률을 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({bad,issues:badResult.issues},null,2)}\n\`\`\`\n\n![정상과 오류](image:ceiling-comparison)`;
+  const markdown=`# ${s.name} · 연결 천장 포함\n\n현재 tilesetId: ${tile.id}. 천장 원본 ${auto.filename}, SHA256 ${auto.sha256}.\n\n${s.notes}\n\n순서: 원본 이자카야+부스 합성480칸 → 사용자 천장 PNG를 같은 타일셋에 추가 → 분리 조리실·다다미 개인실·외곽·각 출입구 설계 → 천장 자동 연결과 정면 벽 → 전체 가구 → 객석 접근과 조리실/개인실 독립 분리 검사. 이 타일셋에서 천장 변형 번호는480..526이며 주택의400번을 복사하면 부스 조각이 된다. 상세 쿼터·256개 마스크 사전과 원본·47변형 그림은 paw-wall-a01 용도를 함께 읽는다.\n\n\`\`\`json\n${JSON.stringify(s,null,2)}\n\`\`\`\n\n![완성](image:assembled-scene)\n\n## 정상 / 오류\n\n왼쪽 정상, 오른쪽 북서 천장 누락(0,0) 및 출입 봉쇄(${s.exitTrigger.x},${s.exitTrigger.y}) 및 조리실 문 두 칸 봉쇄, 내벽 끝 아래 벽 누락(6,2). 구조 검사와 실제 통행이 검출하며 미적 승인·모델 성공률을 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({bad,issues:badResult.issues},null,2)}\n\`\`\`\n\n![정상과 오류](image:ceiling-comparison)`;
   const category={id:'scene-'+s.id,name:s.name+' · 천장 연결',description:'천장47변형·외곽·문 좌우 끝·좌석과 접근 동선. 완성 배열 및 정상/오류.',documents:[{id:'layout',name:'연결 천장과 전체 배열.md',markdown}],images:[{id:'assembled-scene',name:s.id+'.png',caption:'천장 외곽과 문 끝이 연결된 실제 배치',dataUrl:image.toDataURL()},{id:'ceiling-comparison',name:'ceiling-comparison.png',caption:'왼쪽 정상 / 오른쪽 천장 누락과 출입 봉쇄',dataUrl:comparison.toDataURL()}]};
   tile.referenceDocuments=tile.referenceDocuments.filter(c=>!['scene-'+s.id,'assembled-paw-izakaya-dense'].includes(c.id)).concat(category);
-  return {scene:s,tile,dataUrl:prepared.dataUrl,image:image.toDataURL(),before:before.toDataURL(),comparison:comparison.toDataURL(),width:prepared.width,height:prepared.height,checks:{wallFaceCells:s.wallFaceCells.length,allCeilingEndsHaveWalls:true,kitchenSealedWhenDoorClosed:true,diningAccessibleWhenKitchenClosed:true,engineAutoshapeStable:true,ceilingCells:cells.size,variants:group.memberTileIds.length,prefix480Unchanged:true,reachable:good.reachable,approachTargets:targets.length,negativeIssues:badResult.issues}};
+  return {scene:s,tile,dataUrl:prepared.dataUrl,image:image.toDataURL(),before:before.toDataURL(),comparison:comparison.toDataURL(),width:prepared.width,height:prepared.height,checks:{wallFaceCells:s.wallFaceCells.length,allCeilingEndsHaveWalls:true,privateRoomBoundaryBreachDetected:true,privateRoomSealedWhenDoorClosed:true,hallAndKitchenAccessibleWhenPrivateRoomClosed:true,tatamiConfinedToPrivateRoom:true,kitchenSealedWhenDoorClosed:true,diningAccessibleWhenKitchenClosed:true,engineAutoshapeStable:true,ceilingCells:cells.size,variants:group.memberTileIds.length,prefix480Unchanged:true,reachable:good.reachable,approachTargets:targets.length,negativeIssues:badResult.issues}};
  },{baseScene,baseTile,baseAsset,auto,base64:bytes.toString('base64'),recipes:layout.recipes,plan,passableTiles:layout.scenes[0].passableTiles});
 }finally{await browser.close();}
 const mapId='paw-izakaya-dense',old=p.maps[mapId];

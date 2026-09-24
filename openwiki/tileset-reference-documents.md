@@ -505,3 +505,10 @@ host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체
 `buildSharedScene`으로 새 가게2곳과 수정 이자카야를 독립 사본으로 조립하여 원본 배열·벽면
 일치를 확인했다. 이 관찰은 결정적 조립 경로이며 새 LLM 생성 실험은 아니다.
 근거: `output/paw-shop-walls/`의 saved/shared/projection/visual proof. 전체 게이트는 실행하지 않았다.
+
+2026-09-25 개인실 보정: 이자카야 현재판은14×24, 다다미 개인실6석·부스2·바6이다.
+홀 목재0/1·주방6·개인실 다다미를 나누고, 개인실 출입구(6,18)/(6,19)만 막으면
+방만 고립되는지 실제 충돌 엔진으로 확인한다. 천장86/벽면78, 접근 목표82.
+전체 배열·구획·문턱은 `izakaya-kitchen-layout.json`과 `izakaya-ceiling-compiled.json`에 있다.
+같은 맵과 로컬 공용 정적 장소/저장 맵을 갱신하며 `output/paw-izakaya-private-room/`에
+정본·공용 재로드와 새/기존 프로젝트 투영 증거를 남긴다. 개폐 문 이벤트나 새 LLM 실험은 아니다.
