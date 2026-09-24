@@ -20,7 +20,9 @@ type Requirement =
   | { readonly kind: "selfSwitch"; readonly mapId: string; readonly eventId: string; readonly key: string }
   | { readonly kind: "variable"; readonly id: string }
   | { readonly kind: "item"; readonly id: string }
-  | { readonly kind: "actor"; readonly id: string };
+  | { readonly kind: "actor"; readonly id: string }
+  /** 이 맵에 들어가기 — 들어가는 문이 전부 조건부일 때만 생긴다(기억을 차례로 여는 회상 스토리의 문). */
+  | { readonly kind: "map"; readonly id: string };
 
 interface Goal {
   readonly label: string;
@@ -39,6 +41,7 @@ function requirementLabel(project: Project, req: Requirement): string {
     case "variable": return `변수 ${req.id}`;
     case "item": return `아이템 ${req.id}`;
     case "actor": return `배우 ${req.id} 합류`;
+    case "map": return `맵 ${project.maps[req.id]?.name ?? req.id} 진입`;
   }
 }
 
@@ -57,7 +60,53 @@ function leafRequirements(condition: unknown, page: PageRef): Requirement[] {
   return out;
 }
 
+/** 문(transfer)으로 들어가는 방문 목록 — 맵 id → 그 맵으로 옮기는 명령들. */
+const entryCache = new WeakMap<Project, Map<string, CommandVisit[]>>();
+function entriesInto(project: Project, mapId: string): readonly CommandVisit[] {
+  let byMap = entryCache.get(project);
+  if (!byMap) {
+    byMap = new Map();
+    for (const page of allPages(project)) {
+      if (!page.map || !page.event) continue;
+      visitPageCommands(page, (visit) => {
+        const c = visit.command;
+        if (c.kind === "transfer" && typeof c.mapId === "string" && c.mapId !== page.map!.id) {
+          const list = byMap!.get(c.mapId) ?? [];
+          list.push(visit);
+          byMap!.set(c.mapId, list);
+        }
+      });
+    }
+    entryCache.set(project, byMap);
+  }
+  return byMap.get(mapId) ?? [];
+}
+
+/**
+ * 맵이 「잠겨」 있는가 — 시작 맵이 아니고, 조건 없이 열리는 문(그 문이 있는 맵도 안 잠김)이 하나도 없다.
+ * 잠긴 맵의 목표는 그 맵으로 들어가는 문을 먼저 여는 사슬이 필요하다. 없던 때는 두 번째 기억부터
+ * 「가는 문이 (현재 스위치 상태로는) 없습니다」로 오판했다(2026-09-24 회상 스토리 도그푸딩).
+ */
+function mapGated(project: Project, mapId: string, visiting = new Set<string>()): boolean {
+  if (mapId === project.startMapId) return false;
+  if (visiting.has(mapId)) return true;
+  visiting.add(mapId);
+  try {
+    return !entriesInto(project, mapId).some((entry) =>
+      baseRequirementsOf(project, entry).length === 0 && !mapGated(project, entry.page.map!.id, visiting));
+  } finally {
+    visiting.delete(mapId);
+  }
+}
+
 function requirementsOf(project: Project, visit: CommandVisit): Requirement[] {
+  const reqs = baseRequirementsOf(project, visit);
+  const mapId = visit.page.map?.id;
+  if (mapId && mapGated(project, mapId)) reqs.unshift({ kind: "map", id: mapId });
+  return reqs;
+}
+
+function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
   for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
   for (const segment of visit.segments) {
@@ -74,6 +123,7 @@ function satisfiedAtStart(project: Project, req: Requirement): boolean {
   if (req.kind === "switch") return initiallyOn(project, req.id);
   if (req.kind === "actor") return (project.session?.partyActorIds ?? []).includes(req.id);
   if (req.kind === "item") return (project.session?.inventory?.[req.id] ?? 0) > 0;
+  if (req.kind === "map") return !mapGated(project, req.id);
   return false;
 }
 
@@ -85,6 +135,7 @@ function setterMatches(req: Requirement, visit: CommandVisit): boolean {
     case "variable": return c.kind === "setVariable" && c.variableId === req.id;
     case "item": return c.kind === "changeItem" && c.itemId === req.id && c.op !== "-=";
     case "actor": return c.kind === "changeParty" && c.actorId === req.id && c.action === "add";
+    case "map": return c.kind === "transfer" && c.mapId === req.id && visit.page.map?.id !== req.id;
   }
 }
 
@@ -162,11 +213,12 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
         const snapshot = goals.length;
         if (planVisit(candidate, depth + 1)) {
           goals.push({
-            label: `${requirementLabel(project, req)} 켜기`, visit: candidate,
+            label: req.kind === "map" ? requirementLabel(project, req) : `${requirementLabel(project, req)} 켜기`, visit: candidate,
             done: (session) => req.kind === "switch" ? session.switches[req.id] === true
               : req.kind === "selfSwitch" ? session.selfSwitches?.[req.eventId]?.[req.key] === true
               : req.kind === "actor" ? session.partyActorIds.includes(req.id)
-              : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0 : false,
+              : req.kind === "item" ? (session.inventory[req.id] ?? 0) > 0
+              : req.kind === "map" ? session.currentMapId === req.id : false,
           });
           ok = true;
           break;

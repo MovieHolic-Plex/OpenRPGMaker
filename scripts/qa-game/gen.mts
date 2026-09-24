@@ -188,6 +188,8 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     const phase = recorder.phase("build");
     const t2 = Date.now();
     const readOnlyRun = readOnly;
+    // 계획 턴(수 분)에서 푼 OAuth 토큰을 그대로 들고 가면 긴 실행 도중 만료된다 — 동반 서비스처럼 실행 요청마다 새로 푼다.
+    keys.clear();
     const done: PiAgentDoneEvent = await runPiAgent(runRequest, {
       ...await agentKeys(runRequest, keys), onToolCall: phase.onToolCall,
       ...(readOnlyRun ? { readOnlyTools: true } : {}),
