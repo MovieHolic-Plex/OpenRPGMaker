@@ -63,50 +63,6 @@
       "h": 3
     },
     {
-      "ownerId": "mistpond-hollow-house-2",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 38,
-      "y": 8,
-      "side": "left",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "ownerId": "mistpond-hollow-house-4",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 41,
-      "y": 27,
-      "side": "left",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "ownerId": "mistpond-hollow-house-5",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 13,
-      "y": 43,
-      "side": "left",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "ownerId": "mistpond-hollow-house-6",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 44,
-      "y": 49,
-      "side": "left",
-      "w": 3,
-      "h": 1
-    },
-    {
       "ownerId": "mistpond-hollow-house-7",
       "kit": "herbs",
       "name": "약초 손질",
@@ -298,8 +254,8 @@
           1128,
           1161,
           1161,
-          1129,
           1130,
+          240,
           240,
           240,
           240,
@@ -313,8 +269,8 @@
           1188,
           1189,
           1189,
-          1189,
           1190,
+          240,
           240,
           240,
           240,
@@ -512,8 +468,8 @@
           1128,
           1161,
           1161,
-          1129,
           1130,
+          240,
           240,
           240,
           240,
@@ -527,8 +483,8 @@
           1188,
           1189,
           1189,
-          1189,
           1190,
+          240,
           240,
           240,
           240,
@@ -565,13 +521,6 @@
         "maxDistance": 5
       },
       "items": [
-        {
-          "id": "grave-edge-1",
-          "name": "마른 묘목",
-          "x": 53,
-          "y": 26,
-          "purpose": "묘지 울타리 곁 말라 죽은 나무"
-        },
         {
           "id": "grave-edge-2",
           "name": "해골",
@@ -1141,13 +1090,6 @@
       "y": 27,
       "placeId": "pond-offering",
       "propId": "pond-offering-2"
-    },
-    {
-      "role": "civic-use",
-      "x": 53,
-      "y": 27,
-      "placeId": "grave-edge",
-      "propId": "grave-edge-1"
     },
     {
       "role": "civic-use",

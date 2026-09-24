@@ -13,7 +13,7 @@ OUT = ROOT / "public/assets/harbor-kit"
 LPC = ROOT / "public/assets/castle-surroundings/sources/farming_fishing.png"
 SHIP = ROOT / "public/assets/easyrpg-chipset-ship-transparent.png"
 KEY = (255, 103, 139)
-COLS = 16
+COLS = 30  # the app slices bundled chipsets 30 tiles per row (bundledChipsetTilesPerRow)
 
 def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 lpc = Image.open(LPC).convert("RGBA")

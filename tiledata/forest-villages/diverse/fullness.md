@@ -360,8 +360,8 @@
       "rows": 8,
       "rejected": 3
     },
-    "yards": 6,
-    "yardProps": 18,
+    "yards": 2,
+    "yardProps": 7,
     "doorFlanks": 1,
     "plaza": [
       "돌등",
@@ -369,9 +369,9 @@
     ],
     "treeClumps": 0,
     "tallGrass": {
-      "E": 12,
+      "E": 16,
       "F": 10,
-      "G": 179
+      "G": 188
     },
     "pools": [
       {
@@ -385,18 +385,18 @@
         "dried": 4
       }
     ],
-    "unownedRemoved": 3,
+    "unownedRemoved": 15,
     "loneBushesRemoved": 4,
     "harbor": 0,
-    "scenes": 20,
+    "scenes": 18,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 7,
-        "screen": 0.588
+        "screen": 0.597
       },
       "after": {
         "maxSq": 4,
-        "screen": 0.38
+        "screen": 0.389
       }
     }
   },

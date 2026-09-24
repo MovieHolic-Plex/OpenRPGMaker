@@ -1,6 +1,6 @@
 {
  "tileSize": 16,
- "columns": 16,
+ "columns": 30,
  "count": 38,
  "parts": {
   "rowboat": {

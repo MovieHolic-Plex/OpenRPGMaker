@@ -1,7 +1,7 @@
 // Every placed life prop needs a reason next to it (FILL-RULES 3차 판정, 2026-09-24: 「뜬금없는 소재가 뜬금없는 곳에
 // 있는 건 싫다」). A prop is owned when, within two cells, there is the thing it serves — a house, a farm plot, the
 // well, the dock, the water it fishes, a working centre (fire, stall, arch, work table) — or, for roadside pieces
-// (signs, lanterns, benches, mailboxes, notice boards), a road beside it. A tight group (pieces one cell apart) is
+// (signs, lanterns, benches, mailboxes, notice boards), a road beside it. A tight group (pieces of one owner within two cells) is
 // owned when any piece of it is. Unowned props are removed, with their civic items, use cells and dependents.
 const distance = (a, b) => Math.max(0, a.x - b.x - (b.w ?? 1) + 1, b.x - a.x - (a.w ?? 1) + 1) + Math.max(0, a.y - b.y - (b.h ?? 1) + 1, b.y - a.y - (a.h ?? 1) + 1);
 const CENTRES = new Set(["낮은 돌 우물", "모닥불", "장터 노점", "덩굴 아치", "가로 탁자", "돌 오벨리스크"]);
@@ -26,6 +26,8 @@ export function propOwnership({ map, plan, roads, water }) {
   const base = (o) => {
     if (o.name === "벽걸이 등불") return houses.some((h) => distance(o, h) === 0) && "집 벽";
     if (o.name === "허수아비") return within(o, farms, 1) && "밭";
+    // A dead sapling away from the ruin's wall reads as twig noise on the lawn (review: 「나뭇가지 노이즈」).
+    if (o.name === "마른 묘목") return within(o, [...houses, ...landmarks], 1) && "폐가 벽";
     // A notice board also belongs to the stall or well it announces for.
     if (ROADSIDE.has(o.name)) return (near(o, roads, 1) && "길가") || (o.name === "게시판" && within(o, props.filter((q) => CENTRES.has(q.name) && q.name !== "가로 탁자"), 2) && "장터");
     // A bench by a road alone is still a bench alone on the lawn (review 2026-09-24): it needs a place to sit at — a
@@ -43,7 +45,7 @@ export function propOwnership({ map, plan, roads, water }) {
   for (let changed = true; changed;) {
     changed = false;
     for (const o of props) {
-      if (owned.has(o) || ROADSIDE.has(o.name) || SEATS.has(o.name) || o.name === "허수아비") continue;
+      if (owned.has(o) || ROADSIDE.has(o.name) || SEATS.has(o.name) || o.name === "허수아비" || o.name === "마른 묘목") continue;
       const mate = props.find((q) => owned.has(q) && distance(o, q) <= 2 && ((o.ownerId && q.ownerId === o.ownerId) || (o.placeId && q.placeId === o.placeId)));
       if (mate) { owned.set(o, "묶음(" + mate.name + ")"); changed = true; }
     }

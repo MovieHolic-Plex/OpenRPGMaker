@@ -86,13 +86,6 @@
     },
     "items": [
       {
-        "id": "grave-edge-1",
-        "name": "마른 묘목",
-        "x": 53,
-        "y": 26,
-        "purpose": "묘지 울타리 곁 말라 죽은 나무"
-      },
-      {
         "id": "grave-edge-2",
         "name": "해골",
         "x": 60,
