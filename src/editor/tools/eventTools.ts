@@ -319,8 +319,9 @@ const SPEAKING_BEING_WORDS = /사람|주민|아이|소녀|소년|아가씨|청�
  */
 function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graphic: EventPage["graphic"]; label: string } | null {
   if (event.characterId) return null;
-  if ((page.commands ?? []).some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim())) return null;
   const name = (event.name ?? "").trim();
+  if (allPageCommands(page.commands).some((command) => command.kind === "text"
+    && ((typeof command.speaker === "string" && command.speaker.trim()) || bodyNamesSpeaker(command.body, name)))) return null;
   if (!name) return objectGraphicFromId(event.id);
   if (SPEAKING_BEING_WORDS.test(name)) return null;
   // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
@@ -349,10 +350,66 @@ function objectGraphicFromId(id: string): { graphic: EventPage["graphic"]; label
   return { graphic: { transparent: true }, label: "" };
 }
 
+/**
+ * 이벤트 최상위 `graphic`(GameEvent 에 없는 필드)을 그림 없는 페이지의 기본값으로 쓴다.
+ *
+ * 2026-09-24 연애 도그푸딩: 조수가 공략 인물 셋에 `event.graphic:{sprite:actor1, pattern:25/28/31}` 을 정확히 줬는데
+ * 도구는 조용히 버렸다 — 페이지는 그림 없이 발밑·투명이 돼 세 인물이 전부 보이지 않았다. 최상위 trigger·commands 를
+ * 페이지로 옮기는 것과 같은 규칙이다.
+ */
+function applyEventLevelGraphic(draft: Project, map: GameMap, event: GameEvent, patch: Partial<GameEvent>, warnings: string[]): void {
+  const raw = (patch as { graphic?: unknown }).graphic;
+  delete (event as { graphic?: unknown }).graphic;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return;
+  let graphic: EventPageGraphic;
+  try {
+    graphic = "query" in raw || "textureKey" in raw
+      ? resolveGraphic(raw as GraphicSpec, { avoidKeys: usedCharsetGraphicKeysOnMap(map), seed: `${map.id}:${event.id}`, overrides: draft.charsetLabels })
+      : structuredClone(raw) as EventPageGraphic;
+  } catch (error) {
+    if (!(error instanceof ToolError)) throw error;
+    warnings.push(`event.graphic 을 해석하지 못해 버렸습니다: ${error.message}`);
+    return;
+  }
+  if (graphic.sprite === undefined && graphic.transparent !== true) return;
+  // pages 를 안 보낸 부분 수정이면 「외형만 바꿔」 다 — 기존 페이지 전부에 입힌다. pages 를 보냈으면 그림 없는 페이지만.
+  const reskin = !Object.prototype.hasOwnProperty.call(patch, "pages");
+  const pages = (event.pages ?? []).filter((page) => page && typeof page === "object"
+    && (reskin ? (page as Partial<EventPage>).graphic?.transparent !== true : (page as Partial<EventPage>).graphic === undefined));
+  for (const page of pages) (page as EventPage).graphic = structuredClone(graphic);
+  if (pages.length > 0) warnings.push(`이벤트 최상위 graphic 을 ${reskin ? "" : "그림 없는 "}페이지 ${pages.length}개에 적용했습니다(그림은 pages[].graphic 에 두는 것이 정본).`);
+}
+
+/** 분기 안까지 포함한 페이지의 모든 명령 — 「오늘 이미 만났나」 fork 로 시작하는 대화도 대화다. */
+function allPageCommands(commands: readonly Command[] | undefined): Command[] {
+  const out: Command[] = [];
+  const walk = (list: readonly Command[] | undefined, depth: number): void => {
+    if (depth > 8) return;
+    for (const command of list ?? []) {
+      if (!command || typeof command !== "object") continue;
+      out.push(command);
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      for (const child of nested) walk(child, depth + 1);
+    }
+  };
+  walk(commands, 0);
+  return out;
+}
+
 function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
   if (page.trigger?.kind !== "action" || page.priority === "below") return false;
   if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
-  return (page.commands ?? []).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
+  // 2026-09-24 연애 도그푸딩: 공략 인물 셋의 대사가 전부 「오늘 이미 만났나」 fork 안에 있어 최상위만 보는 검사를
+  // 비껴갔다 — 그림 없이 발밑(below) 투명 이벤트가 돼 인물이 보이지도 않고 밟고 지나갔다.
+  return allPageCommands(page.commands).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
+}
+
+/** 「한여름:\n…」 처럼 대사 본문이 화자 이름으로 시작하는가. */
+function bodyNamesSpeaker(body: unknown, name: string): boolean {
+  if (typeof body !== "string" || !name) return false;
+  const text = body.trimStart();
+  return text.startsWith(`${name}:`) || text.startsWith(`${name} :`) || text.startsWith(`[${name}]`) || text.startsWith(`${name}「`);
 }
 
 /**
@@ -893,6 +950,7 @@ const upsertEvent: ToolDefinition = {
       }
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
+    applyEventLevelGraphic(draft, map, event, patch, warnings);
     // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
     const tileHotspot = existing
       ? (existing.pages ?? []).some((page) => page.trigger?.kind === "action") && !(existing.pages ?? []).some((page) => page.graphic?.sprite !== undefined)
