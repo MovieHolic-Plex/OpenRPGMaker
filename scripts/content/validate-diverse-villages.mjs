@@ -94,7 +94,9 @@ function cliffFaults() {
     { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 },
     // Clearing the forest that closes the west end of pine-hamlets' cliff lets you walk round it onto the terrace.
     (() => { const q = catalog.plans.find((p2) => p2.id === "pine-hamlets"), [ex, ey] = q.cliffs[0].points[0];
-      return { code: "terrace-without-stairs", mapId: q.id, x: ex - 4, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + ex - 4], replacement: 240, rects: [{ x: ex - 4, y: ey - 3, w: 9, h: 3 }, { x: ex - 4, y: ey, w: 4, h: q.cliffs[0].height + 1 }, { x: ex - 4, y: ey + q.cliffs[0].height + 1, w: 6, h: 2 }], errorX: ex, errorY: ey }; })(),
+      // Clamped to the map (the compacted village keeps only two forest columns west of the cliff).
+      const x0 = Math.max(0, ex - 4), wing = ex - x0;
+      return { code: "terrace-without-stairs", mapId: q.id, x: x0, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + x0], replacement: 240, rects: [{ x: x0, y: ey - 3, w: wing + 5, h: 3 }, { x: x0, y: ey, w: wing, h: q.cliffs[0].height + 1 }, { x: x0, y: ey + q.cliffs[0].height + 1, w: wing + 8, h: 2 }], errorX: ex, errorY: ey }; })(),
     // A waterfall column painted back to grass mid-face.
     (() => { const q = catalog.plans.find((p2) => p2.id === "twin-falls-river-village"), f = q.falls[0];
       return { code: "waterfall-gap", mapId: q.id, x: f.x, y: f.y + 3, layer: "lower", tile: f.tile, replacement: 240 }; })()

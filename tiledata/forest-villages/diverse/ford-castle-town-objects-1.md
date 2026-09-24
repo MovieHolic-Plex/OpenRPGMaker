@@ -5,8 +5,8 @@
 ```json
 {
   "name": "작은 성",
-  "x": 29,
-  "y": 4,
+  "x": 17,
+  "y": 2,
   "w": 42,
   "h": 33,
   "kind": "landmark",
@@ -5704,8 +5704,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 24,
-  "y": 26,
+  "x": 14,
+  "y": 24,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -5790,8 +5790,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 25,
-  "y": 34,
+  "x": 15,
+  "y": 32,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -5836,8 +5836,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 74,
-  "y": 20,
+  "x": 60,
+  "y": 18,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -5922,8 +5922,8 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 76,
-  "y": 40,
+  "x": 62,
+  "y": 38,
   "w": 3,
   "h": 3,
   "kind": "vegetation",
@@ -5992,8 +5992,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 88,
-  "y": 40,
+  "x": 72,
+  "y": 38,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -6038,8 +6038,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 24,
-  "y": 10,
+  "x": 14,
+  "y": 8,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -6124,209 +6124,7 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 40,
-  "y": 56,
-  "w": 3,
-  "h": 4,
-  "kind": "vegetation",
-  "lower": [
-    240,
-    240,
-    240,
-    240,
-    240,
-    240,
-    1038,
-    1039,
-    1040,
-    1068,
-    1069,
-    1070
-  ],
-  "upper": [
-    978,
-    979,
-    980,
-    1008,
-    1009,
-    1010,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 4,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      1038,
-      1039,
-      1040
-    ],
-    [
-      1068,
-      1069,
-      1070
-    ]
-  ],
-  "upperTiles": [
-    [
-      978,
-      979,
-      980
-    ],
-    [
-      1008,
-      1009,
-      1010
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 둥근 덤불
-```json
-{
-  "name": "숲 나무 · 둥근 덤불",
-  "x": 70,
-  "y": 56,
-  "w": 3,
-  "h": 3,
-  "kind": "vegetation",
-  "lower": [
-    983,
-    984,
-    985,
-    1013,
-    1014,
-    1015,
-    1043,
-    1044,
-    1045
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 3,
-  "lowerTiles": [
-    [
-      983,
-      984,
-      985
-    ],
-    [
-      1013,
-      1014,
-      1015
-    ],
-    [
-      1043,
-      1044,
-      1045
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 20,
-  "y": 57,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 활엽수
-```json
-{
-  "name": "숲 나무 · 활엽수",
-  "x": 75,
+  "x": 28,
   "y": 52,
   "w": 3,
   "h": 4,
@@ -6408,12 +6206,214 @@
 }
 ```
 
+## 숲 나무 · 둥근 덤불
+```json
+{
+  "name": "숲 나무 · 둥근 덤불",
+  "x": 58,
+  "y": 52,
+  "w": 3,
+  "h": 3,
+  "kind": "vegetation",
+  "lower": [
+    983,
+    984,
+    985,
+    1013,
+    1014,
+    1015,
+    1043,
+    1044,
+    1045
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 3,
+  "lowerTiles": [
+    [
+      983,
+      984,
+      985
+    ],
+    [
+      1013,
+      1014,
+      1015
+    ],
+    [
+      1043,
+      1044,
+      1045
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 11,
+  "y": 53,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
 ## 숲 나무 · 활엽수
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 30,
-  "y": 82,
+  "x": 61,
+  "y": 48,
+  "w": 3,
+  "h": 4,
+  "kind": "vegetation",
+  "lower": [
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
+  ],
+  "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
+    ]
+  ],
+  "upperTiles": [
+    [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 활엽수
+```json
+{
+  "name": "숲 나무 · 활엽수",
+  "x": 18,
+  "y": 77,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -6498,8 +6498,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 72,
-  "y": 82,
+  "x": 60,
+  "y": 77,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -6540,34 +6540,86 @@
 }
 ```
 
-## 나무 상자
+## 무기 거치대
 ```json
 {
-  "name": "나무 상자",
-  "x": 21,
-  "y": 17,
+  "id": "castle-drill-1",
+  "name": "무기 거치대",
+  "x": 28,
+  "y": 36,
+  "purpose": "성 병사들이 창과 칼을 거는 자리",
   "w": 1,
-  "h": 1,
-  "kind": "prop",
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "castle-drill",
   "lower": "KEEP",
   "upper": [
-    237
+    687,
+    717
   ],
-  "ownerId": "ford-castle-town-house-1",
-  "kit": "storage",
-  "purpose": "운반 물자 보관",
-  "anchor": "house",
-  "side": "right",
+  "useAt": {
+    "x": 27,
+    "y": 36
+  },
   "width": 1,
-  "height": 1,
+  "height": 2,
   "lowerTiles": [
+    [
+      240
+    ],
     [
       240
     ]
   ],
   "upperTiles": [
     [
-      237
+      687
+    ],
+    [
+      717
+    ]
+  ]
+}
+```
+
+## 무기 거치대
+```json
+{
+  "id": "castle-drill-2",
+  "name": "무기 거치대",
+  "x": 30,
+  "y": 36,
+  "purpose": "두 번째 무기 거치대",
+  "near": "무기 거치대",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "castle-drill",
+  "lower": "KEEP",
+  "upper": [
+    687,
+    717
+  ],
+  "useAt": {
+    "x": 29,
+    "y": 36
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      687
+    ],
+    [
+      717
     ]
   ]
 }
@@ -6576,353 +6628,24 @@
 ## 나무통
 ```json
 {
+  "id": "castle-drill-3",
   "name": "나무통",
-  "x": 23,
-  "y": 17,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "ford-castle-town-house-1",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 빨랫줄
-```json
-{
-  "name": "빨랫줄",
-  "x": 23,
-  "y": 37,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
-  ],
-  "ownerId": "ford-castle-town-house-3",
-  "kit": "laundry",
-  "purpose": "세탁물을 말리는 자리",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2620,
-      2621
-    ],
-    [
-      2625,
-      2626
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
   "x": 26,
-  "y": 38,
+  "y": 36,
+  "purpose": "훈련 뒤 마실 물통",
+  "near": "무기 거치대",
   "w": 1,
   "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "ford-castle-town-house-3",
-  "kit": "laundry",
-  "purpose": "세탁에 쓸 물 보관",
-  "anchor": "빨랫줄",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 빨랫줄
-```json
-{
-  "name": "빨랫줄",
-  "x": 17,
-  "y": 59,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
-  ],
-  "ownerId": "ford-castle-town-house-4",
-  "kit": "laundry",
-  "purpose": "세탁물을 말리는 자리",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2620,
-      2621
-    ],
-    [
-      2625,
-      2626
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 20,
-  "y": 60,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "ford-castle-town-house-4",
-  "kit": "laundry",
-  "purpose": "세탁에 쓸 물 보관",
-  "anchor": "빨랫줄",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 약초 화분
-```json
-{
-  "name": "약초 화분",
-  "x": 33,
-  "y": 59,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2623,
-    2624
-  ],
-  "ownerId": "ford-castle-town-house-5",
-  "kit": "herbs",
-  "purpose": "손질할 약초 재배",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2623,
-      2624
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 33,
-  "y": 61,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "ford-castle-town-house-5",
-  "kit": "herbs",
-  "purpose": "약초 선별·건조 작업면",
-  "anchor": "약초 화분",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 37,
-  "y": 61,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "ford-castle-town-house-5",
-  "kit": "herbs",
-  "purpose": "손질한 약초 보관",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 66,
-  "y": 61,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    237
-  ],
-  "ownerId": "ford-castle-town-house-6",
-  "kit": "storage",
-  "purpose": "운반 물자 보관",
-  "anchor": "house",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      237
-    ]
-  ]
-}
-```
-
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 68,
-  "y": 61,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "castle-drill",
   "lower": "KEEP",
   "upper": [
     2638
   ],
-  "ownerId": "ford-castle-town-house-6",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "right",
+  "useAt": {
+    "x": 26,
+    "y": 37
+  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -6938,71 +6661,27 @@
 }
 ```
 
-## 채소밭
+## 돌등
 ```json
 {
-  "name": "채소밭",
-  "x": 19,
-  "y": 83,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2613,
-    2614,
-    2618,
-    2619
-  ],
-  "ownerId": "ford-castle-town-house-8",
-  "kit": "growing",
-  "purpose": "식재·수확할 작물",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2613,
-      2614
-    ],
-    [
-      2618,
-      2619
-    ]
-  ]
-}
-```
-
-## 허수아비
-```json
-{
-  "name": "허수아비",
-  "x": 19,
-  "y": 81,
+  "id": "castle-drill-4",
+  "name": "돌등",
+  "x": 35,
+  "y": 36,
+  "purpose": "성문 서쪽을 밝히는 등",
   "w": 1,
   "h": 2,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "castle-drill",
   "lower": "KEEP",
   "upper": [
-    2651,
-    2654
+    2655,
+    2656
   ],
-  "ownerId": "ford-castle-town-house-8",
-  "kit": "growing",
-  "purpose": "바로 옆 작물 보호",
-  "anchor": "채소밭",
-  "side": "right",
+  "useAt": {
+    "x": 34,
+    "y": 36
+  },
   "width": 1,
   "height": 2,
   "lowerTiles": [
@@ -7015,108 +6694,150 @@
   ],
   "upperTiles": [
     [
-      2651
+      2655
     ],
     [
-      2654
+      2656
     ]
   ]
 }
 ```
 
-## 씨앗 자루
+## 돌등
 ```json
 {
-  "name": "씨앗 자루",
-  "x": 22,
-  "y": 84,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
+  "id": "castle-drill-5",
+  "name": "돌등",
+  "x": 40,
+  "y": 36,
+  "purpose": "성문 동쪽을 밝히는 등",
+  "near": "돌등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "castle-drill",
   "lower": "KEEP",
   "upper": [
-    2652,
-    2653
+    2655,
+    2656
   ],
-  "ownerId": "ford-castle-town-house-8",
-  "kit": "growing",
-  "purpose": "이 밭에 파종할 씨앗 보관",
-  "anchor": "채소밭",
-  "side": "right",
-  "width": 2,
-  "height": 1,
+  "useAt": {
+    "x": 39,
+    "y": 36
+  },
+  "width": 1,
+  "height": 2,
   "lowerTiles": [
     [
-      240,
+      240
+    ],
+    [
       240
     ]
   ],
   "upperTiles": [
     [
-      2652,
-      2653
+      2655
+    ],
+    [
+      2656
     ]
   ]
 }
 ```
 
-## 가로 탁자
+## 나무 상자
 ```json
 {
-  "name": "가로 탁자",
-  "x": 59,
-  "y": 86,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "ford-castle-town-house-9",
-  "kit": "woodwork",
-  "purpose": "목재를 다루는 작업면",
-  "anchor": "house",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 장작
-```json
-{
-  "name": "장작",
-  "x": 59,
-  "y": 84,
+  "id": "castle-stores-1",
+  "name": "나무 상자",
+  "x": 48,
+  "y": 36,
+  "purpose": "성으로 들일 보급 상자",
   "w": 1,
   "h": 1,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "castle-stores",
+  "lower": "KEEP",
+  "upper": [
+    237
+  ],
+  "useAt": {
+    "x": 48,
+    "y": 37
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      237
+    ]
+  ]
+}
+```
+
+## 술통
+```json
+{
+  "id": "castle-stores-2",
+  "name": "술통",
+  "x": 50,
+  "y": 36,
+  "purpose": "성 창고에 들일 술통",
+  "near": "나무 상자",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "castle-stores",
+  "lower": "KEEP",
+  "upper": [
+    177
+  ],
+  "useAt": {
+    "x": 50,
+    "y": 37
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      177
+    ]
+  ]
+}
+```
+
+## 장작 더미
+```json
+{
+  "id": "castle-stores-3",
+  "name": "장작 더미",
+  "x": 52,
+  "y": 36,
+  "purpose": "성 부엌에 들일 땔감",
+  "near": "나무 상자",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "castle-stores",
   "lower": "KEEP",
   "upper": [
     349
   ],
-  "ownerId": "ford-castle-town-house-9",
-  "kit": "woodwork",
-  "purpose": "작업대에 공급할 목재",
-  "anchor": "가로 탁자",
-  "side": "right",
+  "useAt": {
+    "x": 52,
+    "y": 37
+  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -7132,24 +6853,68 @@
 }
 ```
 
-## 나무 상자
+## 돌등
 ```json
 {
-  "name": "나무 상자",
-  "x": 61,
-  "y": 84,
+  "id": "top-bridge-watch-1",
+  "name": "돌등",
+  "x": 64,
+  "y": 22,
+  "purpose": "윗다리 서쪽 목 밝히기",
   "w": 1,
-  "h": 1,
-  "kind": "prop",
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "top-bridge-watch",
   "lower": "KEEP",
   "upper": [
-    237
+    2655,
+    2656
   ],
-  "ownerId": "ford-castle-town-house-9",
-  "kit": "woodwork",
-  "purpose": "가공한 물건 보관",
-  "anchor": "가로 탁자",
-  "side": "right",
+  "useAt": {
+    "x": 63,
+    "y": 22
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "top-bridge-watch-2",
+  "name": "나무 이정표",
+  "x": 62,
+  "y": 27,
+  "purpose": "강 건너 망루지기 집 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "top-bridge-watch",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 62,
+    "y": 28
+  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -7159,63 +6924,369 @@
   ],
   "upperTiles": [
     [
-      237
+      596
     ]
   ]
 }
 ```
 
-## 나무 상자
+## 장터 노점
 ```json
 {
-  "name": "나무 상자",
+  "id": "mid-market-1",
+  "name": "장터 노점",
+  "x": 30,
+  "y": 56,
+  "purpose": "성 아랫마을 좌판",
+  "w": 3,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "mid-market",
+  "lower": "KEEP",
+  "upper": [
+    468,
+    469,
+    470,
+    234,
+    235,
+    236
+  ],
+  "useAt": {
+    "x": 29,
+    "y": 56
+  },
+  "width": 3,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      468,
+      469,
+      470
+    ],
+    [
+      234,
+      235,
+      236
+    ]
+  ]
+}
+```
+
+## 과일 좌판
+```json
+{
+  "id": "mid-market-2",
+  "name": "과일 좌판",
+  "x": 34,
+  "y": 56,
+  "purpose": "아랫단 텃밭에서 거둔 과일",
+  "near": "장터 노점",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "mid-market",
+  "lower": "KEEP",
+  "upper": [
+    202,
+    203
+  ],
+  "useAt": {
+    "x": 34,
+    "y": 57
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      202,
+      203
+    ]
+  ]
+}
+```
+
+## 낮은 돌 우물
+```json
+{
+  "id": "mid-market-3",
+  "name": "낮은 돌 우물",
+  "x": 40,
+  "y": 55,
+  "purpose": "가운데 단 공동 우물",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "mid-market",
+  "lower": "KEEP",
+  "upper": [
+    2639,
+    2640,
+    2641,
+    2642
+  ],
+  "useAt": {
+    "x": 39,
+    "y": 55
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2639,
+      2640
+    ],
+    [
+      2641,
+      2642
+    ]
+  ]
+}
+```
+
+## 게시판
+```json
+{
+  "id": "mid-market-4",
+  "name": "게시판",
+  "x": 38,
+  "y": 52,
+  "purpose": "성의 포고문을 붙이는 판",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "mid-market",
+  "lower": "KEEP",
+  "upper": [
+    2630,
+    2631,
+    2633,
+    2634
+  ],
+  "useAt": {
+    "x": 37,
+    "y": 52
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2630,
+      2631
+    ],
+    [
+      2633,
+      2634
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "pool-rest-1",
+  "name": "벤치",
+  "x": 62,
+  "y": 54,
+  "purpose": "폭포 아래 소를 보며 쉬는 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "pool-rest",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 62,
+    "y": 55
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 낚시 바구니
+```json
+{
+  "id": "pool-rest-2",
+  "name": "낚시 바구니",
+  "x": 63,
+  "y": 56,
+  "purpose": "소에서 쓰는 낚시 바구니",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "pool-rest",
+  "lower": "KEEP",
+  "upper": [
+    2646
+  ],
+  "useAt": {
+    "x": 63,
+    "y": 57
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2646
+    ]
+  ]
+}
+```
+
+## 모닥불
+```json
+{
+  "id": "lower-fire-1",
+  "name": "모닥불",
+  "x": 59,
+  "y": 77,
+  "purpose": "나루 일꾼들이 저녁에 불을 피우는 자리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "lower-fire",
+  "lower": "KEEP",
+  "upper": [
+    381
+  ],
+  "useAt": {
+    "x": 59,
+    "y": 78
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      381
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "lower-fire-2",
+  "name": "벤치",
   "x": 58,
-  "y": 85,
-  "w": 1,
+  "y": 79,
+  "purpose": "불가에 앉는 자리",
+  "near": "모닥불",
+  "w": 2,
   "h": 1,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "lower-fire",
   "lower": "KEEP",
   "upper": [
-    237
+    327,
+    328
   ],
-  "ownerId": "ford-castle-town-house-10",
-  "kit": "storage",
-  "purpose": "운반 물자 보관",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
+  "useAt": {
+    "x": 58,
+    "y": 80
+  },
+  "width": 2,
   "height": 1,
   "lowerTiles": [
     [
+      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      237
+      327,
+      328
     ]
   ]
 }
 ```
 
-## 나무통
+## 장작 더미
 ```json
 {
-  "name": "나무통",
-  "x": 60,
-  "y": 85,
+  "id": "lower-fire-3",
+  "name": "장작 더미",
+  "x": 62,
+  "y": 77,
+  "purpose": "모닥불 장작",
+  "near": "모닥불",
   "w": 1,
   "h": 1,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "lower-fire",
   "lower": "KEEP",
   "upper": [
-    2638
+    349
   ],
-  "ownerId": "ford-castle-town-house-10",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "left",
+  "useAt": {
+    "x": 63,
+    "y": 77
+  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -7225,7 +7296,7 @@
   ],
   "upperTiles": [
     [
-      2638
+      349
     ]
   ]
 }

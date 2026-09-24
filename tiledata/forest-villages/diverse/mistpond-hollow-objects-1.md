@@ -5,8 +5,8 @@
 ```json
 {
   "name": "울타리 친 못과 석상",
-  "x": 33,
-  "y": 29,
+  "x": 24,
+  "y": 24,
   "w": 15,
   "h": 12,
   "kind": "landmark",
@@ -796,8 +796,8 @@
 ```json
 {
   "name": "잊힌 묘지",
-  "x": 66,
-  "y": 33,
+  "x": 53,
+  "y": 28,
   "w": 7,
   "h": 6,
   "kind": "landmark",
@@ -1011,8 +1011,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 44,
-  "y": 11,
+  "x": 35,
+  "y": 9,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -1057,8 +1057,8 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 34,
-  "y": 24,
+  "x": 25,
+  "y": 20,
   "w": 3,
   "h": 3,
   "kind": "vegetation",
@@ -1127,8 +1127,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 48,
-  "y": 24,
+  "x": 39,
+  "y": 20,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -1173,8 +1173,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 50,
-  "y": 37,
+  "x": 41,
+  "y": 32,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -1259,8 +1259,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 21,
-  "y": 40,
+  "x": 16,
+  "y": 35,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -1305,8 +1305,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 53,
-  "y": 49,
+  "x": 43,
+  "y": 44,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -1391,8 +1391,8 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 32,
-  "y": 54,
+  "x": 25,
+  "y": 47,
   "w": 3,
   "h": 3,
   "kind": "vegetation",
@@ -1461,8 +1461,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 34,
-  "y": 58,
+  "x": 27,
+  "y": 50,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -1498,444 +1498,6 @@
     [
       -1,
       -1
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 11,
-  "y": 10,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-1",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 13,
-  "y": 10,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-1",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 57,
-  "y": 11,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-2",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 59,
-  "y": 11,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-2",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 50,
-  "y": 34,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-4",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 52,
-  "y": 34,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-4",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 18,
-  "y": 52,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-5",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 20,
-  "y": 52,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-5",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 54,
-  "y": 54,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-6",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 56,
-  "y": 54,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-6",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 약초 화분
-```json
-{
-  "name": "약초 화분",
-  "x": 49,
-  "y": 52,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2623,
-    2624
-  ],
-  "ownerId": "mistpond-hollow-house-7",
-  "kit": "herbs",
-  "purpose": "손질할 약초 재배",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2623,
-      2624
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 49,
-  "y": 54,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "mistpond-hollow-house-7",
-  "kit": "herbs",
-  "purpose": "약초 선별·건조 작업면",
-  "anchor": "약초 화분",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 53,
-  "y": 54,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "mistpond-hollow-house-7",
-  "kit": "herbs",
-  "purpose": "손질한 약초 보관",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
     ]
   ]
 }
@@ -1946,8 +1508,8 @@
 {
   "id": "pond-gate-1",
   "name": "흰 돌기둥",
-  "x": 37,
-  "y": 41,
+  "x": 28,
+  "y": 36,
   "purpose": "못 울타리 입구 서쪽 돌기둥",
   "w": 1,
   "h": 2,
@@ -1959,8 +1521,8 @@
     297
   ],
   "useAt": {
-    "x": 36,
-    "y": 41
+    "x": 27,
+    "y": 36
   },
   "width": 1,
   "height": 2,
@@ -1988,8 +1550,8 @@
 {
   "id": "pond-gate-2",
   "name": "흰 돌기둥",
-  "x": 43,
-  "y": 41,
+  "x": 34,
+  "y": 36,
   "purpose": "못 울타리 입구 동쪽 돌기둥",
   "near": "흰 돌기둥",
   "w": 1,
@@ -2002,8 +1564,8 @@
     297
   ],
   "useAt": {
-    "x": 42,
-    "y": 41
+    "x": 33,
+    "y": 36
   },
   "width": 1,
   "height": 2,
@@ -2031,8 +1593,8 @@
 {
   "id": "pond-gate-3",
   "name": "돌등",
-  "x": 35,
-  "y": 42,
+  "x": 26,
+  "y": 37,
   "purpose": "꺼진 채 남은 입구 등",
   "w": 1,
   "h": 2,
@@ -2044,8 +1606,8 @@
     2656
   ],
   "useAt": {
-    "x": 34,
-    "y": 42
+    "x": 25,
+    "y": 37
   },
   "width": 1,
   "height": 2,
@@ -2073,8 +1635,8 @@
 {
   "id": "pond-offering-1",
   "name": "벤치",
-  "x": 49,
-  "y": 36,
+  "x": 40,
+  "y": 31,
   "purpose": "못지기가 석상을 바라보며 앉는 자리",
   "w": 2,
   "h": 1,
@@ -2086,8 +1648,8 @@
     328
   ],
   "useAt": {
-    "x": 49,
-    "y": 37
+    "x": 40,
+    "y": 32
   },
   "width": 2,
   "height": 1,
@@ -2111,8 +1673,8 @@
 {
   "id": "pond-offering-2",
   "name": "꽃 화단",
-  "x": 48,
-  "y": 33,
+  "x": 39,
+  "y": 28,
   "purpose": "석상에 바칠 꽃을 기르는 화단",
   "w": 2,
   "h": 2,
@@ -2126,8 +1688,8 @@
     2617
   ],
   "useAt": {
-    "x": 48,
-    "y": 32
+    "x": 39,
+    "y": 27
   },
   "width": 2,
   "height": 2,
@@ -2159,8 +1721,8 @@
 {
   "id": "grave-edge-1",
   "name": "마른 묘목",
-  "x": 65,
-  "y": 31,
+  "x": 53,
+  "y": 26,
   "purpose": "묘지 울타리 곁 말라 죽은 나무",
   "w": 1,
   "h": 1,
@@ -2171,8 +1733,8 @@
     740
   ],
   "useAt": {
-    "x": 65,
-    "y": 32
+    "x": 53,
+    "y": 27
   },
   "width": 1,
   "height": 1,
@@ -2194,8 +1756,8 @@
 {
   "id": "grave-edge-2",
   "name": "해골",
-  "x": 73,
-  "y": 36,
+  "x": 60,
+  "y": 31,
   "purpose": "묘지 밖에 굴러 나온 해골",
   "w": 1,
   "h": 1,
@@ -2206,8 +1768,8 @@
     383
   ],
   "useAt": {
-    "x": 73,
-    "y": 37
+    "x": 60,
+    "y": 32
   },
   "width": 1,
   "height": 1,
@@ -2229,8 +1791,8 @@
 {
   "id": "grave-edge-3",
   "name": "돌 오벨리스크",
-  "x": 64,
-  "y": 36,
+  "x": 52,
+  "y": 31,
   "purpose": "마을이 비기 전 세운 위령비",
   "w": 1,
   "h": 2,
@@ -2242,8 +1804,8 @@
     599
   ],
   "useAt": {
-    "x": 63,
-    "y": 36
+    "x": 51,
+    "y": 31
   },
   "width": 1,
   "height": 2,
@@ -2271,8 +1833,8 @@
 {
   "id": "dead-well-1",
   "name": "낮은 돌 우물",
-  "x": 36,
-  "y": 46,
+  "x": 27,
+  "y": 41,
   "purpose": "물이 끊긴 옛 공동 우물",
   "w": 2,
   "h": 2,
@@ -2286,8 +1848,8 @@
     2642
   ],
   "useAt": {
-    "x": 35,
-    "y": 46
+    "x": 26,
+    "y": 41
   },
   "width": 2,
   "height": 2,
@@ -2309,6 +1871,447 @@
     [
       2641,
       2642
+    ]
+  ]
+}
+```
+
+## 부서진 울타리
+```json
+{
+  "id": "dead-well-2",
+  "name": "부서진 울타리",
+  "x": 25,
+  "y": 41,
+  "purpose": "무너진 우물가 울타리",
+  "near": "낮은 돌 우물",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "dead-well",
+  "lower": "KEEP",
+  "upper": [
+    410
+  ],
+  "useAt": {
+    "x": 25,
+    "y": 42
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      410
+    ]
+  ]
+}
+```
+
+## 통나무 더미
+```json
+{
+  "id": "dead-well-3",
+  "name": "통나무 더미",
+  "x": 29,
+  "y": 44,
+  "purpose": "썩어 가는 옛 땔감",
+  "near": "낮은 돌 우물",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "dead-well",
+  "lower": "KEEP",
+  "upper": [
+    741
+  ],
+  "useAt": {
+    "x": 29,
+    "y": 45
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      741
+    ]
+  ]
+}
+```
+
+## 항아리
+```json
+{
+  "id": "falls-lookout-1",
+  "name": "항아리",
+  "x": 14,
+  "y": 27,
+  "purpose": "빨래터에 버려진 물항아리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "falls-lookout",
+  "lower": "KEEP",
+  "upper": [
+    352
+  ],
+  "useAt": {
+    "x": 14,
+    "y": 28
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      352
+    ]
+  ]
+}
+```
+
+## 마른 묘목
+```json
+{
+  "id": "falls-lookout-2",
+  "name": "마른 묘목",
+  "x": 15,
+  "y": 35,
+  "purpose": "물가에 선 마른 나무",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "falls-lookout",
+  "lower": "KEEP",
+  "upper": [
+    740
+  ],
+  "useAt": {
+    "x": 15,
+    "y": 36
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      740
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "entry-sign-1",
+  "name": "나무 이정표",
+  "x": 29,
+  "y": 50,
+  "purpose": "글씨가 바랜 마을 이정표",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "entry-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 29,
+    "y": 51
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 마른 묘목
+```json
+{
+  "name": "마른 묘목",
+  "x": 6,
+  "y": 6,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    740
+  ],
+  "ownerId": "mistpond-hollow-house-1",
+  "kit": "abandoned",
+  "purpose": "손길이 끊겨 말라 버린 마당 나무",
+  "anchor": "house",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      740
+    ]
+  ]
+}
+```
+
+## 부서진 울타리
+```json
+{
+  "name": "부서진 울타리",
+  "x": 8,
+  "y": 6,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    410
+  ],
+  "ownerId": "mistpond-hollow-house-1",
+  "kit": "abandoned",
+  "purpose": "무너진 채 남은 마당 경계",
+  "anchor": "마른 묘목",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      410
+    ]
+  ]
+}
+```
+
+## 통나무 더미
+```json
+{
+  "name": "통나무 더미",
+  "x": 6,
+  "y": 8,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    741
+  ],
+  "ownerId": "mistpond-hollow-house-1",
+  "kit": "abandoned",
+  "purpose": "쓰러진 채 썩어 가는 통나무",
+  "anchor": "마른 묘목",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      741
+    ]
+  ]
+}
+```
+
+## 마른 묘목
+```json
+{
+  "name": "마른 묘목",
+  "x": 38,
+  "y": 8,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    740
+  ],
+  "ownerId": "mistpond-hollow-house-2",
+  "kit": "abandoned",
+  "purpose": "손길이 끊겨 말라 버린 마당 나무",
+  "anchor": "house",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      740
+    ]
+  ]
+}
+```
+
+## 부서진 울타리
+```json
+{
+  "name": "부서진 울타리",
+  "x": 40,
+  "y": 8,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    410
+  ],
+  "ownerId": "mistpond-hollow-house-2",
+  "kit": "abandoned",
+  "purpose": "무너진 채 남은 마당 경계",
+  "anchor": "마른 묘목",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      410
+    ]
+  ]
+}
+```
+
+## 통나무 더미
+```json
+{
+  "name": "통나무 더미",
+  "x": 38,
+  "y": 10,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    741
+  ],
+  "ownerId": "mistpond-hollow-house-2",
+  "kit": "abandoned",
+  "purpose": "쓰러진 채 썩어 가는 통나무",
+  "anchor": "마른 묘목",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      741
+    ]
+  ]
+}
+```
+
+## 마른 묘목
+```json
+{
+  "name": "마른 묘목",
+  "x": 41,
+  "y": 27,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    740
+  ],
+  "ownerId": "mistpond-hollow-house-4",
+  "kit": "abandoned",
+  "purpose": "손길이 끊겨 말라 버린 마당 나무",
+  "anchor": "house",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      740
+    ]
+  ]
+}
+```
+
+## 부서진 울타리
+```json
+{
+  "name": "부서진 울타리",
+  "x": 43,
+  "y": 27,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    410
+  ],
+  "ownerId": "mistpond-hollow-house-4",
+  "kit": "abandoned",
+  "purpose": "무너진 채 남은 마당 경계",
+  "anchor": "마른 묘목",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      410
     ]
   ]
 }

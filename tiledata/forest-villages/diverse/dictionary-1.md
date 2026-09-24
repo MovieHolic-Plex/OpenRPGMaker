@@ -1618,6 +1618,90 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
+    "tile": 156,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 156,
+    "sourceX": 6,
+    "sourceY": 5,
+    "pixelX": 96,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 5,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 157,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 157,
+    "sourceX": 7,
+    "sourceY": 5,
+    "pixelX": 112,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 5,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 158,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 158,
+    "sourceX": 8,
+    "sourceY": 5,
+    "pixelX": 128,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 5,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
     "tile": 177,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -1681,6 +1765,62 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "role": "prop",
       "defaultLayer": "upper",
       "passage": "solid"
+    }
+  },
+  {
+    "tile": 186,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 186,
+    "sourceX": 6,
+    "sourceY": 6,
+    "pixelX": 96,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 6,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 187,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 187,
+    "sourceX": 7,
+    "sourceY": 6,
+    "pixelX": 112,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 6,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
     }
   },
   {
@@ -1800,170 +1940,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "tileMeta": {
       "role": "prop",
       "label": "과일박스 우",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 207,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 207,
-    "sourceX": 27,
-    "sourceY": 6,
-    "pixelX": 432,
-    "pixelY": 96,
-    "width": 16,
-    "height": 16,
-    "targetX": 27,
-    "targetY": 6,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "오크통",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 208,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 208,
-    "sourceX": 28,
-    "sourceY": 6,
-    "pixelX": 448,
-    "pixelY": 96,
-    "width": 16,
-    "height": 16,
-    "targetX": 28,
-    "targetY": 6,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "",
-      "description": ""
-    }
-  },
-  {
-    "tile": 209,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 209,
-    "sourceX": 29,
-    "sourceY": 6,
-    "pixelX": 464,
-    "pixelY": 96,
-    "width": 16,
-    "height": 16,
-    "targetX": 29,
-    "targetY": 6,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "성 깃발 아래",
-      "description": "세로 깃발의 제비꼬리 아랫칸(179 아래).",
-      "role": "prop",
-      "defaultLayer": "upper",
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 234,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 234,
-    "sourceX": 24,
-    "sourceY": 7,
-    "pixelX": 384,
-    "pixelY": 112,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 7,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "가로 탁자 좌",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 235,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 235,
-    "sourceX": 25,
-    "sourceY": 7,
-    "pixelX": 400,
-    "pixelY": 112,
-    "width": 16,
-    "height": 16,
-    "targetX": 25,
-    "targetY": 7,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "prop",
-      "label": "가로 탁자 중",
       "source": "bundled-default",
       "passage": "solid",
       "confidence": "high",

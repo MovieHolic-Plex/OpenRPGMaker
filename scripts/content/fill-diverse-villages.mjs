@@ -20,7 +20,7 @@ import { compactVillage, reautotile } from "./lib/village-compact.mjs";
 import { placeHouseholdProps, placeDoorFlanks, inspectHouseholdProps } from "./lib/village-household-props.mjs";
 import { inspectCivicProps } from "./lib/village-civic-props.mjs";
 import { cliffColumns, inspectVillageCliffs } from "./lib/village-cliffs.mjs";
-import { placePlaza, placeTallGrass, placeWildGroups, placeTreeClumps, rng, cellsOf } from "./lib/village-fullness.mjs";
+import { placePlaza, placeTallGrass, placeWildGroups, placeTreeClumps, fillPlainGaps, emptiness, rng, cellsOf } from "./lib/village-fullness.mjs";
 
 const args = process.argv.slice(2), only = args.find((a) => a.startsWith("--only="))?.slice(7);
 const [input, output] = args.filter((a) => !a.startsWith("--"));
@@ -50,9 +50,22 @@ const CLIFF_TILES = new Set(Object.values(catalog.cliffBindings));
 const passable = (t) => t < 0 || Object.values(ts.passability[t] ?? { up: false }).every(Boolean);
 const rect = (o) => cellsOf({ x: o.x, y: o.y, w: o.w, h: o.h });
 
-for (const plan of catalog.plans) {
-  if (only && plan.id !== only) continue;
-  assert(!plan.fullness, "Already filled: " + plan.id);
+// Seams first run loose (a corridor or a one-cell wall may be cut); if any access, terrace or catalog check then
+// fails, the village is redone from its input with the corridor/wall rules on (strict).
+for (const [n, original] of catalog.plans.entries()) {
+  if (only && original.id !== only) continue;
+  assert(!original.fullness, "Already filled: " + original.id);
+  const map0 = catalog.maps[original.id];
+  let done = null;
+  for (const strict of [false, true]) {
+    const plan = structuredClone(original);
+    catalog.maps[plan.id] = structuredClone(map0);
+    try { fillVillage(plan, strict); done = plan; break; }
+    catch (error) { if (strict || !(error instanceof assert.AssertionError)) throw error; console.error(plan.id, "loose seams failed, retrying strict:", error.message.slice(0, 160)); }
+  }
+  catalog.plans[n] = done;
+}
+function fillVillage(plan, strict) {
   const spec = programs[plan.id];
   assert(spec, "No fullness program for " + plan.id);
   let m = catalog.maps[plan.id];
@@ -138,7 +151,35 @@ for (const plan of catalog.plans) {
     return "other";
   };
   const walk = (i) => passable(m.lowerTiles[i]) && passable(m.upperTiles[i]);
-  const carved = compactVillage(m, { hard, cliff, near, soft: classOf, walk, target: { w: spec.target[0], h: spec.target[1] }, strict: !process.env.LOOSE });
+  // Every kept seam: all access cells reachable, every yard prop beside reachable ground, and with the stairs shut
+  // no terrace cell reachable (cells followed by their original index).
+  const accessIdx = plan.access.map((a) => idx(a.x, a.y)), propIdx = plan.placements.filter((o) => o.kind === "prop").map((o) => rect(o).map((c) => idx(c.x, c.y)));
+  const stairIdx = plan.stairs.flatMap(([x, y, h]) => rect({ x, y, w: 2, h: h + 1 }).map((c) => idx(c.x, c.y)));
+  const plateauIdx = plan.cliffColumns.flatMap((c) => Array.from({ length: Math.max(0, c.y - 5) }, (_, k) => idx(c.x, 5 + k)));
+  // Re-autotile roads and water, re-shape the canopy with whole trunks; objects and access cells take no forest.
+  const keptIdx = new Set(plan.access.map((a) => idx(a.x, a.y)));
+  for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) for (const c of rect(o)) keptIdx.add(idx(c.x, c.y));
+  const finish = (sm, pos) => {
+    reautotile(sm, roadGroup, "lower", ROAD);
+    reautotile(sm, lakeGroup, "lower", WET);
+    const kept = new Set([...keptIdx].map((i) => { const p = pos(i); return p.y * sm.width + p.x; }));
+    const at2 = (x, y) => y * sm.width + x;
+    return forest.refitForestTrunks(sm, { x: 0, y: 0, w: sm.width, h: sm.height }, grove, 240,
+      (x, y) => sm.lowerTiles[at2(x, y)] === 240 && sm.upperTiles[at2(x, y)] === -1 && !kept.has(at2(x, y)));
+  };
+  const check = ({ map: raw, at: pos }) => {
+    const sm = structuredClone(raw);
+    finish(sm, pos);
+    const pr = { tilesets: { [ts.id]: ts }, maps: { [sm.id]: sm } }, s = pos(idx(plan.start.x, plan.start.y));
+    const seen = reach.computeReachableCells(pr, sm, s.x, s.y), k = (i) => { const p = pos(i); return key(p.x, p.y); };
+    if (!accessIdx.every((i) => seen.has(k(i)))) return false;
+    if (!propIdx.every((cells) => cells.some((i) => { const p = pos(i); return reach.isAdjacentOrOn(seen, p.x, p.y); }))) return false;
+    const shut = { ...sm, lowerTiles: [...sm.lowerTiles] };
+    for (const i of stairIdx) { const p = pos(i); shut.lowerTiles[p.y * sm.width + p.x] = catalog.cliffBindings[172]; }
+    const below = reach.computeReachableCells({ tilesets: pr.tilesets, maps: { [sm.id]: shut } }, shut, s.x, s.y);
+    return !plateauIdx.some((i) => { const p = pos(i); return p && below.has(key(p.x, p.y)); });
+  };
+  const carved = compactVillage(m, { check, hard, cliff, near, soft: classOf, walk, target: { w: spec.target[0], h: spec.target[1] }, strict });
   const P = (x, y) => carved.place(x, y);
   const mapPoint = (o) => { const p = P(o.x, o.y); o.x = p.x; o.y = p.y; };
   const walkXY = (v) => {
@@ -176,17 +217,16 @@ for (const plan of catalog.plans) {
   // Cliff columns must come back from the profiles exactly (the validator paints them from `cliffs`).
   const fromProfiles = plan.cliffs.flatMap((p) => cliffColumns(p).map((c) => c.x + "," + c.y + "," + c.side));
   assert.deepEqual(fromProfiles.sort(), plan.cliffColumns.map((c) => c.x + "," + c.y + "," + c.side).sort(), "Cliff profile drift " + plan.id);
-  reautotile(m, roadGroup, "lower", ROAD);
-  reautotile(m, lakeGroup, "lower", WET);
-  const W2 = m.width, at = (x, y) => y * W2 + x, kept = new Set();
-  const keepRect = (o, set = kept, pad = 0) => { for (let y = o.y - pad; y < o.y + o.h + pad; y++) for (let x = o.x - pad; x < o.x + o.w + pad; x++) if (x >= 0 && y >= 0 && x < W2 && y < m.height) set.add(at(x, y)); };
-  for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o);
-  for (const a of plan.access) kept.add(at(a.x, a.y));
-  const refit = forest.refitForestTrunks(m, { x: 0, y: 0, w: W2, h: m.height }, grove, 240,
-    (x, y) => m.lowerTiles[at(x, y)] === 240 && m.upperTiles[at(x, y)] === -1 && !kept.has(at(x, y)));
+  const refit = finish(m, carved.at);
+  const W2 = m.width, at = (x, y) => y * W2 + x;
+  const keepRect = (o, set, pad = 0) => { for (let y = o.y - pad; y < o.y + o.h + pad; y++) for (let x = o.x - pad; x < o.x + o.w + pad; x++) if (x >= 0 && y >= 0 && x < W2 && y < m.height) set.add(at(x, y)); };
   assert(reachOk(seenNow()), "Compaction blocks access " + plan.id + " " + JSON.stringify(plan.access.filter((a) => !seenNow().has(key(a.x, a.y)))));
 
   // 4. Ground: tall grass, wildflowers in threes, tree clumps.
+  // A ground piece may not cut off any walkable ground: the count of walkable cells the start cannot reach never grows.
+  const orphans = () => { const s = seenNow(); let w = 0; for (let i = 0; i < m.lowerTiles.length; i++) if (walk(i)) w++; return { ok: reachOk(s), orphans: w - s.size }; };
+  let orphanCount = orphans().orphans;
+  const noSealing = () => { const r = orphans(); if (!r.ok || r.orphans > orphanCount) return false; orphanCount = r.orphans; return true; };
   const reserved = new Set();
   for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, reserved, ["prop", "civic-prop"].includes(o.kind) ? 0 : 1);
   for (const a of plan.access) keepRect({ x: a.x, y: a.y, w: 1, h: 1 }, reserved, 1);
@@ -195,20 +235,22 @@ for (const plan of catalog.plans) {
     if (WET.has(l) || CLIFF_TILES.has(u) || CLIFF_TILES.has(l)) keepRect({ x: i % W2, y: Math.floor(i / W2), w: 1, h: 1 }, reserved, 1);
   }
   const bare = (x, y) => x >= 1 && y >= 1 && x < W2 - 1 && y < m.height - 1 && m.lowerTiles[at(x, y)] === 240 && m.upperTiles[at(x, y)] === -1 && !reserved.has(at(x, y));
-  if (process.env.VILLAGE_FULLNESS_DEBUG) {
-    let n = 0, g = 0;
-    for (let y = 0; y < m.height; y++) for (let x = 0; x < W2; x++) { if (bare(x, y)) n++; if (m.lowerTiles[at(x, y)] === 240 && m.upperTiles[at(x, y)] === -1) g++; }
-    console.error("bare", n, "grass", g, "reserved", reserved.size, W2 * m.height);
-  }
   const isForest = (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && (CAN.has(m.upperTiles[at(x, y)]) || TRUNK.has(m.lowerTiles[at(x, y)]));
   const nearForest = (x, y) => bare(x, y) && [-2, -1, 0, 1, 2].some((dy) => [-2, -1, 0, 1, 2].some((dx) => isForest(x + dx, y + dy)));
   const clumps = placeTreeClumps({ map: m, bare, isForest: (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && CAN.has(m.upperTiles[at(x, y)]),
     rootRow: (x, y) => x >= 0 && y >= 0 && x < W2 && y < m.height && ROOTS.has(m.lowerTiles[at(x, y)]), templates, count: spec.trees, random,
-    accept: () => reachOk(seenNow()) });
+    accept: noSealing });
   clumps.forEach((stamps, k) => { for (const s of stamps) { plan.placements.push({ name: s.name, x: s.x, y: s.y, w: s.w, h: s.h, kind: "vegetation", clump: k + 1, lower: s.lower, upper: s.upper }); keepRect(s, reserved, 1); } });
   const grass = placeTallGrass({ map: m, bare, nearForest, group: tallGrass, count: spec.grass, random, accept: () => true });
   for (const c of grass) for (const p of c) keepRect({ x: p.x, y: p.y, w: 1, h: 1 }, reserved, 1);
-  const wild = placeWildGroups({ map: m, bare, count: spec.wild, random, accept: () => reachOk(seenNow()) });
+  const wild = placeWildGroups({ map: m, bare, count: spec.wild, random, accept: noSealing });
+  // The fill gate (FILL-RULES: town maxSq ≤ 4, screen ≤ 40%): walkable natural fill in what is still plain ground.
+  const PLAIN = new Set([240, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147]);
+  const isPlain = (x, y) => m.upperTiles[at(x, y)] === -1 && PLAIN.has(m.lowerTiles[at(x, y)]);
+  const objects = new Set(), accessCells = new Set(plan.access.map((a) => at(a.x, a.y)));
+  for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, objects, 0);
+  const before = emptiness(m, isPlain);
+  const gaps = fillPlainGaps({ map: m, isPlain, canTake: (x, y) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)), group: tallGrass, random });
 
   // Final checks, then the plan's derived fields.
   const seen = seenNow();
@@ -235,8 +277,10 @@ for (const plan of catalog.plans) {
     doorFlanks: flanks.length, plaza: plaza.map((o) => o.name), treeClumps: clumps.length,
     tallGrass: grass.map((c) => ({ x: Math.min(...c.map((p) => p.x)), y: Math.min(...c.map((p) => p.y)), cells: c.length })),
     wild: wild.map((g) => ({ name: g.name, cells: g.cells.map((c) => [c.x, c.y]) })),
+    gapFill: { pieces: gaps.pieces.length, cells: gaps.pieces.reduce((n, p) => n + p.cells.length, 0) },
+    emptiness: { beforeGapFill: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
   };
   m.layoutPlan = { ...m.layoutPlan, regions: plan.houses, entrance: plan.entrance, civicPlaces: plan.civicPlaces, landmarks: plan.landmarks ?? [] };
-  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, grass: grass.length, wild: wild.length, reachable: seen.size });
+  console.log(plan.id, `${W0}x${H0} -> ${m.width}x${m.height}`, JSON.stringify(carved.removed), { yards: plan.fullness.yards, yardProps: plan.fullness.yardProps, doorFlanks: flanks.length, plaza: plaza.length, trees: clumps.length, grass: grass.length, wild: wild.length, gap: plan.fullness.gapFill.pieces, empty: JSON.stringify(plan.fullness.emptiness), reachable: seen.size });
 }
 fs.writeFileSync(output, JSON.stringify(catalog));

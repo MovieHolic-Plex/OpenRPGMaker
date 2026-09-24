@@ -10,7 +10,7 @@
 // the compacted map (a removed cell maps to where its nearest surviving neighbour went).
 const INF = 1e9;
 
-export function compactVillage(map, { hard, cliff, near, soft: classOf, walk, target, strict = true }) {
+export function compactVillage(map, { hard, cliff, near, soft: classOf, walk, target, strict = true, check = null, retries = 16 }) {
   const W0 = map.width, H0 = map.height;
   let G = Array.from({ length: H0 }, (_, y) => Array.from({ length: W0 }, (_, x) => {
     const i = y * W0 + x;
@@ -24,7 +24,7 @@ export function compactVillage(map, { hard, cliff, near, soft: classOf, walk, ta
     const cost = (x, y) => {
       if (x < 2 || x > W - 3) return [INF, false];
       const b = A[y][x], a = A[y][x - 1], c = A[y][x + 1];
-      if (b.hard) return [INF, false];
+      if (b.hard || b[vertical ? "blockV" : "blockH"]) return [INF, false];
       if (b.cliff) return vertical && same(b, c) && c.cliff ? [6, false] : [INF, false];
       const extra = b.near ? 4 : 0;
       if (b.k === "grass") return strict && !a.walk && !c.walk ? [INF, false] : [1 + extra, true];
@@ -62,17 +62,32 @@ export function compactVillage(map, { hard, cliff, near, soft: classOf, walk, ta
     for (let y = H - 1; y >= 0; y--) { s[y] = x; x = P[y][x]; }
     return { path: s, cost: D[H - 1][s[H - 1]] };
   }
-  const removed = { columns: 0, rows: 0 };
+  const removed = { columns: 0, rows: 0, rejected: 0 };
+  // One seam along an axis. With `check`, the seam is kept only if the smaller map still passes it; otherwise it is
+  // put back and its cells are closed to later seams on that axis (up to `retries` times per step).
+  const snapshot = (A) => {
+    const where = new Map();
+    A.forEach((row, y) => row.forEach((c, x) => where.set(c.i, { x, y })));
+    return { map: { ...map, width: A[0].length, height: A.length, lowerTiles: A.flat().map((c) => c.l), upperTiles: A.flat().map((c) => c.u) }, at: (i) => where.get(i) };
+  };
+  const step = (vertical) => {
+    for (let r = 0; r <= retries; r++) {
+      const A = vertical ? G : T(G), s = seam(A, vertical);
+      if (!s) return false;
+      const cut = s.path.map((x, y) => A[y][x]);
+      s.path.forEach((x, y) => A[y].splice(x, 1));
+      const next = vertical ? A : T(A);
+      if (!check || check(snapshot(next))) { G = next; return true; }
+      s.path.forEach((x, y) => A[y].splice(x, 0, cut[y]));
+      for (const c of cut) c[vertical ? "blockV" : "blockH"] = true;
+      removed.rejected++;
+    }
+    return false;
+  };
   for (;;) {
     let did = false;
-    if (G[0].length > target.w) {
-      const s = seam(G, true);
-      if (s) { s.path.forEach((x, y) => G[y].splice(x, 1)); removed.columns++; did = true; }
-    }
-    if (G.length > target.h) {
-      const Gt = T(G), s = seam(Gt, false);
-      if (s) { s.path.forEach((y, x) => Gt[x].splice(y, 1)); G = T(Gt); removed.rows++; did = true; }
-    }
+    if (G[0].length > target.w && step(true)) { removed.columns++; did = true; }
+    if (G.length > target.h && step(false)) { removed.rows++; did = true; }
     if (!did) break;
   }
   const H = G.length, W = G[0].length, where = new Map();

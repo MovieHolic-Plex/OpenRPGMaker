@@ -117,6 +117,103 @@ export function placeWildGroups({ map, bare, count, random, accept }) {
   return groups;
 }
 
+/** Emptiness of a map as the fill gate measures it (/tmp/oprn-qa/emptiness.py): the side of the largest square of
+ * plain cells, and the largest share of plain cells in any 17×13 screen stepped by four cells. */
+export function emptiness(map, isPlain) {
+  const W = map.width, H = map.height, P = Array.from({ length: H }, (_, y) => Array.from({ length: W }, (_, x) => isPlain(x, y)));
+  const dp = Array.from({ length: H + 1 }, () => Array(W + 1).fill(0));
+  let maxSq = 0, sqAt = [0, 0];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (P[y][x]) {
+    dp[y + 1][x + 1] = 1 + Math.min(dp[y][x + 1], dp[y + 1][x], dp[y][x]);
+    if (dp[y + 1][x + 1] > maxSq) { maxSq = dp[y + 1][x + 1]; sqAt = [x - maxSq + 1, y - maxSq + 1]; }
+  }
+  const sw = Math.min(17, W), sh = Math.min(13, H);
+  let screen = 0, screenAt = [0, 0];
+  const ys = [...Array.from({ length: Math.ceil(Math.max(1, H - sh + 1) / 4) }, (_, k) => k * 4), H - sh];
+  const xs = [...Array.from({ length: Math.ceil(Math.max(1, W - sw + 1) / 4) }, (_, k) => k * 4), W - sw];
+  for (const y0 of ys) for (const x0 of xs) {
+    let p = 0;
+    for (let y = y0; y < y0 + sh; y++) for (let x = x0; x < x0 + sw; x++) p += P[y][x];
+    if (p / (sw * sh) > screen) { screen = p / (sw * sh); screenAt = [x0, y0]; }
+  }
+  return { maxSq, sqAt, screen, screenAt, P };
+}
+
+/** Natural fill until the gate passes: the largest plain square (or, once squares are small, the emptiest screen's
+ * largest plain square) gets a tall-grass patch or a group of three flowers. Both are walkable, so paths and
+ * reachability are untouched; access cells are never covered. */
+export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 400 }) {
+  const W = map.width, H = map.height, at = (x, y) => y * W + x, members = new Set(Object.values(group.variantMap));
+  const pieces = [];
+  const retile = (cells) => {
+    const around = new Set();
+    for (const i of cells) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const x = i % W + dx, y = Math.floor(i / W) + dy;
+      if (x >= 0 && y >= 0 && x < W && y < H && members.has(map.lowerTiles[at(x, y)])) around.add(at(x, y));
+    }
+    for (const i of around) {
+      const x = i % W, y = Math.floor(i / W);
+      let mask = 0;
+      [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]].forEach(([dx, dy], b) => {
+        const X = x + dx, Y = y + dy;
+        if (X >= 0 && Y >= 0 && X < W && Y < H && members.has(map.lowerTiles[at(X, Y)])) mask |= 1 << b;
+      });
+      map.lowerTiles[i] = group.variantMap[String(mask)];
+    }
+  };
+  const tried = new Set();
+  for (let step = 0; step < maxSteps; step++) {
+    const e = emptiness(map, isPlain);
+    if (e.maxSq <= limits.maxSq && e.screen <= limits.screen) break;
+    // Target: the largest plain square overall, or inside the emptiest screen.
+    // Largest square of fillable plain cells inside a region (the whole map, or the emptiest screen).
+    const square = (x0, y0, sw, sh) => {
+      let best = 0, found = null;
+      const dp = Array.from({ length: sh + 1 }, () => Array(sw + 1).fill(0));
+      for (let y = 0; y < sh; y++) for (let x = 0; x < sw; x++) if (e.P[y0 + y][x0 + x] && canTake(x0 + x, y0 + y) && !tried.has(at(x0 + x, y0 + y))) {
+        dp[y + 1][x + 1] = 1 + Math.min(dp[y][x + 1], dp[y + 1][x], dp[y][x]);
+        if (dp[y + 1][x + 1] > best) { best = dp[y + 1][x + 1]; found = { x: x0 + x - best + 1, y: y0 + y - best + 1, w: best, h: best }; }
+      }
+      return found;
+    };
+    let box = e.maxSq > limits.maxSq ? square(0, 0, W, H) : null;
+    if (!box || box.w <= limits.maxSq) box = e.screen > limits.screen ? square(e.screenAt[0], e.screenAt[1], Math.min(17, W), Math.min(13, H)) : box;
+    if (!box) break;
+    const cx = box.x + (box.w >> 1), cy = box.y + (box.h >> 1);
+    const ok = (x, y) => x >= 1 && y >= 1 && x < W - 1 && y < H - 1 && isPlain(x, y) && canTake(x, y) && map.lowerTiles[at(x, y)] === 240;
+    let cells = [];
+    const roll = random();
+    if (roll < 0.4) {
+      // Tall grass: two or three 2×2 blocks stepped off each other, so a patch is never a plain rectangle.
+      const blocks = [[0, 0]], n = 2 + Math.floor(random() * 2);
+      while (blocks.length < n) { const [bx, by] = blocks[blocks.length - 1]; blocks.push([bx + (random() < 0.5 ? 1 : -1) * (1 + Math.floor(random() * 2)), by + (random() < 0.5 ? 1 : -1)]); }
+      const set = new Set();
+      for (const [bx, by] of blocks) for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) if (ok(cx - 1 + bx + dx, cy - 1 + by + dy)) set.add(at(cx - 1 + bx + dx, cy - 1 + by + dy));
+      cells = [...set];
+      if (cells.length) {
+        for (const i of cells) map.lowerTiles[i] = group.variantMap["255"];
+        retile(cells);
+        pieces.push({ name: "키큰 풀", cells: cells.map((i) => [i % W, Math.floor(i / W)]) });
+      }
+    } else if (roll < 0.62) {
+      // Three grass tufts (the tall-grass group's single piece), diagonal to each other so they stay separate.
+      const shape = TRIANGLES[Math.floor(random() * TRIANGLES.length)];
+      const put = shape.map(([dx, dy]) => [cx - 1 + dx, cy - 1 + dy]).filter(([x, y]) => ok(x, y));
+      for (const [x, y] of put) map.lowerTiles[at(x, y)] = group.variantMap["0"];
+      cells = put.map(([x, y]) => at(x, y));
+      if (cells.length) { retile(cells); pieces.push({ name: "풀포기", cells: put }); }
+    } else {
+      const shape = TRIANGLES[Math.floor(random() * TRIANGLES.length)], kind = random() < 0.65 ? [348, 348, 348] : [288, 348, 288];
+      const put = shape.map(([dx, dy], k) => [cx - 1 + dx, cy - 1 + dy, kind[k]]).filter(([x, y]) => ok(x, y));
+      for (const [x, y, t] of put) map.upperTiles[at(x, y)] = t;
+      cells = put.map(([x, y]) => at(x, y));
+      if (put.length) pieces.push({ name: kind[0] === 288 ? "꽃덤불" : "들꽃", cells: put.map(([x, y]) => [x, y]) });
+    }
+    if (!cells.length) for (let dy = 0; dy < box.h; dy++) for (let dx = 0; dx < box.w; dx++) tried.add(at(box.x + dx, box.y + dy));
+  }
+  return { pieces, ...emptiness(map, isPlain) };
+}
+
 // Clumps of two or three standing trees; offsets stagger the pieces so they never read as a row.
 const CLUMPS = [
   [["활엽수", 0, 0], ["작은 덤불", 3, 2]],
@@ -124,6 +221,9 @@ const CLUMPS = [
   [["활엽수", 0, 1], ["활엽수", 3, 0], ["작은 덤불", 6, 3]],
   [["작은 덤불", 0, 1], ["둥근 덤불", 2, 0], ["작은 덤불", 5, 2]],
   [["활엽수", 0, 0], ["둥근 덤불", 3, 1]],
+  [["둥근 덤불", 0, 0], ["작은 덤불", 3, 1]],
+  [["작은 덤불", 0, 0], ["작은 덤불", 2, 1], ["작은 덤불", 1, 3]],
+  [["작은 덤불", 0, 1], ["둥근 덤불", 2, 0]],
 ];
 /** Tree clumps one cell in front of a straight forest edge (a root row of six or more cells, or a canopy side
  * six or more rows tall). Each piece is a whole retained-vegetation stamp; the clump keeps a one-cell ring of
@@ -135,7 +235,7 @@ export function placeTreeClumps({ map, bare, isForest, rootRow, templates, count
     if (!rootRow(x, y) || rootRow(x - 1, y)) continue;
     let e = x;
     while (rootRow(e + 1, y)) e++;
-    if (e - x + 1 >= 6) spots.push({ kind: "below", x0: x, x1: e, y });
+    if (e - x + 1 >= 5) spots.push({ kind: "below", x0: x, x1: e, y });
   }
   // Straight top edges: canopy runs with bare ground above them; the clump stands one row clear of the crowns.
   for (let y = 3; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
@@ -143,17 +243,17 @@ export function placeTreeClumps({ map, bare, isForest, rootRow, templates, count
     if (!top(x) || top(x - 1)) continue;
     let e = x;
     while (top(e + 1)) e++;
-    if (e - x + 1 >= 6) spots.push({ kind: "above", x0: x, x1: e, y });
+    if (e - x + 1 >= 5) spots.push({ kind: "above", x0: x, x1: e, y });
   }
   for (const dir of [-1, 1]) for (let x = 1; x < W - 1; x++) for (let y = 1; y < H - 1; y++) {
     const side = (yy) => isForest(x, yy) && !isForest(x + dir, yy) && bare(x + dir, yy);
     if (!side(y) || side(y - 1)) continue;
     let e = y;
     while (side(e + 1)) e++;
-    if (e - y + 1 >= 6) spots.push({ kind: dir < 0 ? "west" : "east", x, y0: y, y1: e });
+    if (e - y + 1 >= 5) spots.push({ kind: dir < 0 ? "west" : "east", x, y0: y, y1: e });
   }
-  const placed = [];
-  if (process.env.VILLAGE_FULLNESS_DEBUG) console.error("tree spots", spots.length, spots.slice(0, 6));
+  const placed = [], why = { cells: 0, ring: 0, fit: 0 };
+  if (process.env.VILLAGE_FULLNESS_DEBUG) process.on("exit", () => console.error("tree spots", spots.length, why));
   const order = spots.map((s) => [random(), s]).sort((a, b) => a[0] - b[0]).map(([, s]) => s);
   const shuffle = (a) => a.map((v) => [random(), v]).sort((p, q) => p[0] - q[0]).map(([, v]) => v);
   for (const s of order) {
@@ -170,10 +270,14 @@ export function placeTreeClumps({ map, bare, isForest, rootRow, templates, count
     for (const { pieces, w, mirror, o } of shuffle(tries).slice(0, 60)) {
       const stamps = pieces.map((p) => ({ ...p.t, x: o[0] + (mirror ? w - p.dx - p.t.w : p.dx), y: o[1] + p.dy }));
       const own = new Set(stamps.flatMap((st) => cellsOf(st).map((c) => at(c.x, c.y))));
-      const ok = stamps.every((st) => cellsOf(st).every((c) => bare(c.x, c.y))) && [...own].every((i) => {
+      // A standing tree (crown on the upper layer) keeps a one-cell ring of bare ground so its crown never merges
+      // with the forest canopy; a bush (lower layer only) may stand right beside it.
+      const crowned = new Set(stamps.filter((st) => st.upper.some((t) => t >= 0)).flatMap((st) => cellsOf(st).map((c) => at(c.x, c.y))));
+      const ok = stamps.every((st) => cellsOf(st).every((c) => bare(c.x, c.y))) && [...crowned].every((i) => {
         const x = i % W, y = Math.floor(i / W);
         return [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => own.has(at(x + dx, y + dy)) || bare(x + dx, y + dy)));
       });
+      if (process.env.VILLAGE_FULLNESS_DEBUG) (why[ok ? "fit" : stamps.every((st) => cellsOf(st).every((c) => bare(c.x, c.y))) ? "ring" : "cells"] += 1);
       if (!ok || placed.some((q) => q.some((st) => stamps.some((a) => distance(a, st) < 4)))) continue;
       const saved = [...own].map((i) => [i, map.lowerTiles[i], map.upperTiles[i]]);
       for (const st of stamps) cellsOf(st).forEach((c, k) => { map.lowerTiles[at(c.x, c.y)] = st.lower[k]; map.upperTiles[at(c.x, c.y)] = st.upper[k]; });

@@ -1,0 +1,345 @@
+# 마을 채우기 (개정14) — 빈 띠 걷기와 생활 소품
+
+마을이 비어 보이는 가장 큰 이유는 맵이 크고 집 사이가 넓은 것이다. 플레이어는 한 번에 17×13칸만 본다. 그 한 화면에 집 하나와 그 마당, 길, 숲 가장자리가 함께 들어와야 마을로 읽힌다. 개정14는 사용자가 승인한 시안 B(압축 + 소품)를 일곱 마을에 적용했다. 실행: `node scripts/content/fill-diverse-villages.mjs <개정13 catalog> <out>`.
+
+## 순서
+1. **생활 마당.** 집마다 지정한 활동(prop-programs.json activities)이 3~5개 부품 묶음이 된다. 약초집=약초 화분·씨앗 자루·작업대·항아리, 빨래집=빨랫줄·헹굼 통·항아리, 목수=작업대·장작·통나무·상자·통, 창고=상자·통·오크통·과일 상자·술통, 텃밭=채소밭·허수아비·씨앗 자루·울타리, 기존 밭 돌보기=허수아비·씨앗 자루·상자, 폐가=마른 묘목·부서진 울타리·통나무. 자리가 없으면 fallbacks 순서로 줄인다(목적은 같다).
+2. **현관 꽃.** 폐가가 아닌 집의 문 양옆에 꽃 화단(2×2) 또는 화분(1×2)을 하나씩. 아래 칸은 문 앞 줄에 서고, 두 칸짜리는 윗칸이 집 벽 밑단에 겹친다. 문 앞 칸(통로)과 길은 비운다. 검사 코드 `doorway-flank-misplaced`.
+3. **우물가 광장.** 마을 한가운데 우물(낮은 돌 우물)에서 한 칸 띄워 벤치·꽃 화단·돌등·화분을 서로 한 칸씩 떨어뜨려 둔다(fullness-programs.json plaza). 폐촌은 돌등·마른 묘목·통나무. 각 소품은 공동 공간 문서의 그 우물 장소(civicPlaces)에 `…-plaza-N` 으로 들어가고 사용칸(civic-use)이 접근칸에 더해진다.
+4. **빈 띠 걷기(압축).** 물체를 아는 이음매 깎기(lib/village-compact.mjs). 이음매는 행마다(세로) 또는 열마다(가로) 한 칸씩, 이웃 행과 최대 한 칸만 비껴 가며 잔디·숲 수관·길·넓은 물에서만 비스듬히 움직인다. 집·랜드마크·소품·마당·접근칸·계단·폭포·다리·잔디 마감은 자르지 않고 통째로 옮긴다. 절벽 열은 옆 열과 똑같을 때만 세로로 걷고(높이는 그대로), 길은 양옆이 길일 때, 물은 양쪽 두 칸까지 물일 때만(폭4 강은 좁아지지 않는다) 걷는다. 이음매 하나를 걷을 때마다 길·물 오토타일과 수관·줄기 재맞춤을 해 본 뒤, 모든 문 앞·계단 끝·다리목·마당 입구·공동 소품 사용칸이 시작점에서 닿는지, 계단을 막으면 윗단에 못 가는지 확인하고 아니면 되돌린다. 계획의 모든 좌표(집·문·랜드마크·절벽 윤곽·계단·접근칸·길 칸·공동 장소)는 새 맵으로 옮겨 적는다.
+5. **바닥 변화.** 숲 가장자리 두 칸 안에 키큰 풀 덩이(builtin_tall_grass 오토타일, 2×2 블록의 합집합, 걸을 수 있음), 빈 잔디에 들꽃·꽃덤불·덤불·풀포기를 세 개씩 작은 삼각형으로(한 줄·격자 금지, 묶음끼리 네 칸 이상 떨어짐), 곧은 숲 가장자리 앞에 나무 2~3그루 덩이(활엽수는 한 칸 빈 둘레, 덤불은 붙여도 됨). 어떤 바닥 조각도 걸어갈 수 있던 땅을 고립시키지 않는다.
+
+## 지키는 것
+- 절벽 높이, 계단 폭·높이, 강 폭, 집·랜드마크 그림은 그대로다. 윗단은 여전히 계단으로만 오른다.
+- 모든 소품은 완전한 부품이고 소유자·목적·기준 대상이 있다(생활 마당·공동 공간 문서의 검사 그대로).
+- 수관은 줄기를 밑변과 같은 폭으로 다시 맞춘 뒤 속을 깊이별 잎으로 채운다(숲·가구 문서).
+- 걷을 수 있는 띠가 없으면 목표 크기 전에 멈춘다. 성·세 줄 절벽처럼 가로지르는 구조가 많은 마을은 덜 줄어든다.
+
+## 마을별 결과
+```json
+[
+  {
+    "id": "pine-hamlets",
+    "before": {
+      "width": 80,
+      "height": 64
+    },
+    "after": {
+      "width": 62,
+      "height": 54
+    },
+    "removed": {
+      "columns": 18,
+      "rows": 10,
+      "rejected": 1
+    },
+    "yards": 7,
+    "yardProps": 28,
+    "doorFlanks": 8,
+    "plaza": [
+      "벤치",
+      "화분"
+    ],
+    "treeClumps": 0,
+    "tallGrass": 9,
+    "wildGroups": 10
+  },
+  {
+    "id": "terrace-cliff-village",
+    "before": {
+      "width": 88,
+      "height": 72
+    },
+    "after": {
+      "width": 65,
+      "height": 63
+    },
+    "removed": {
+      "columns": 23,
+      "rows": 9,
+      "rejected": 0
+    },
+    "yards": 7,
+    "yardProps": 28,
+    "doorFlanks": 9,
+    "plaza": [
+      "벤치",
+      "돌등",
+      "화분"
+    ],
+    "treeClumps": 1,
+    "tallGrass": 8,
+    "wildGroups": 12
+  },
+  {
+    "id": "twin-falls-river-village",
+    "before": {
+      "width": 88,
+      "height": 72
+    },
+    "after": {
+      "width": 62,
+      "height": 65
+    },
+    "removed": {
+      "columns": 26,
+      "rows": 7,
+      "rejected": 2
+    },
+    "yards": 6,
+    "yardProps": 24,
+    "doorFlanks": 11,
+    "plaza": [
+      "돌등"
+    ],
+    "treeClumps": 0,
+    "tallGrass": 10,
+    "wildGroups": 9
+  },
+  {
+    "id": "reed-bay-village",
+    "before": {
+      "width": 88,
+      "height": 64
+    },
+    "after": {
+      "width": 71,
+      "height": 52
+    },
+    "removed": {
+      "columns": 17,
+      "rows": 12,
+      "rejected": 3
+    },
+    "yards": 6,
+    "yardProps": 20,
+    "doorFlanks": 8,
+    "plaza": [
+      "벤치",
+      "돌등"
+    ],
+    "treeClumps": 0,
+    "tallGrass": 9,
+    "wildGroups": 15
+  },
+  {
+    "id": "chapel-hill-parish",
+    "before": {
+      "width": 80,
+      "height": 64
+    },
+    "after": {
+      "width": 57,
+      "height": 54
+    },
+    "removed": {
+      "columns": 23,
+      "rows": 10,
+      "rejected": 0
+    },
+    "yards": 6,
+    "yardProps": 24,
+    "doorFlanks": 9,
+    "plaza": [
+      "벤치",
+      "꽃 화단"
+    ],
+    "treeClumps": 0,
+    "tallGrass": 4,
+    "wildGroups": 6
+  },
+  {
+    "id": "ford-castle-town",
+    "before": {
+      "width": 100,
+      "height": 92
+    },
+    "after": {
+      "width": 80,
+      "height": 87
+    },
+    "removed": {
+      "columns": 20,
+      "rows": 5,
+      "rejected": 2
+    },
+    "yards": 8,
+    "yardProps": 30,
+    "doorFlanks": 13,
+    "plaza": [
+      "벤치",
+      "꽃 화단",
+      "벤치"
+    ],
+    "treeClumps": 2,
+    "tallGrass": 6,
+    "wildGroups": 31
+  },
+  {
+    "id": "mistpond-hollow",
+    "before": {
+      "width": 80,
+      "height": 64
+    },
+    "after": {
+      "width": 66,
+      "height": 56
+    },
+    "removed": {
+      "columns": 14,
+      "rows": 8,
+      "rejected": 3
+    },
+    "yards": 6,
+    "yardProps": 18,
+    "doorFlanks": 1,
+    "plaza": [
+      "돌등",
+      "마른 묘목"
+    ],
+    "treeClumps": 0,
+    "tallGrass": 9,
+    "wildGroups": 7
+  }
+]
+```
+
+## 입력
+```json
+{
+  "note": "개정14 · 마을 채우기(B = 압축 + 소품). 사용자가 승인한 시안 claude-viz/village-fullness.html 의 B 를 실제 맵에 적용한다. targets 는 빈 띠를 걷어 낼 목표 크기(폭, 높이)로, 걷을 수 있는 띠가 없으면 그 전에 멈춘다. plaza 는 우물(center)을 둘러쌀 공동 소품, ground 는 풀숲 덩이·세 개 묶음 들꽃·나무 덩이 수.",
+  "villages": {
+    "pine-hamlets": {
+      "target": [
+        56,
+        50
+      ],
+      "plaza": {
+        "zone": "well",
+        "center": "낮은 돌 우물",
+        "items": [
+          "벤치",
+          "꽃 화단",
+          "벤치",
+          "화분"
+        ]
+      },
+      "grass": 9,
+      "wild": 18,
+      "trees": 4
+    },
+    "terrace-cliff-village": {
+      "target": [
+        62,
+        56
+      ],
+      "plaza": {
+        "zone": "well",
+        "center": "낮은 돌 우물",
+        "items": [
+          "벤치",
+          "돌등",
+          "화분"
+        ]
+      },
+      "grass": 10,
+      "wild": 20,
+      "trees": 4
+    },
+    "twin-falls-river-village": {
+      "target": [
+        62,
+        56
+      ],
+      "plaza": {
+        "zone": "well",
+        "center": "낮은 돌 우물",
+        "items": [
+          "벤치",
+          "꽃 화단",
+          "돌등",
+          "벤치"
+        ]
+      },
+      "grass": 10,
+      "wild": 20,
+      "trees": 4
+    },
+    "reed-bay-village": {
+      "target": [
+        62,
+        50
+      ],
+      "plaza": {
+        "zone": "well",
+        "center": "낮은 돌 우물",
+        "items": [
+          "벤치",
+          "꽃 화단",
+          "돌등"
+        ]
+      },
+      "grass": 9,
+      "wild": 18,
+      "trees": 3
+    },
+    "chapel-hill-parish": {
+      "target": [
+        56,
+        50
+      ],
+      "plaza": {
+        "zone": "village-well",
+        "center": "낮은 돌 우물",
+        "items": [
+          "벤치",
+          "꽃 화단",
+          "돌등",
+          "벤치",
+          "화분"
+        ]
+      },
+      "grass": 9,
+      "wild": 18,
+      "trees": 4
+    },
+    "ford-castle-town": {
+      "target": [
+        70,
+        72
+      ],
+      "plaza": {
+        "zone": "mid-market",
+        "center": "낮은 돌 우물",
+        "items": [
+          "벤치",
+          "꽃 화단",
+          "돌등",
+          "벤치"
+        ]
+      },
+      "grass": 16,
+      "wild": 40,
+      "trees": 5
+    },
+    "mistpond-hollow": {
+      "target": [
+        56,
+        50
+      ],
+      "plaza": {
+        "zone": "dead-well",
+        "center": "낮은 돌 우물",
+        "items": [
+          "돌등",
+          "마른 묘목",
+          "통나무 더미"
+        ]
+      },
+      "grass": 11,
+      "wild": 12,
+      "trees": 3
+    }
+  }
+}
+```

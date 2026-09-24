@@ -1,6 +1,6 @@
 # 안개못 폐촌
 
-사람이 떠난 마을 한가운데 울타리 친 못과 섬 위 석상이 남았고, 서쪽 강이 절벽을 폭포로 넘어 흐르며 외곽에 잊힌 묘지가 있다. 시작점 (40,60); 집 7채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
+사람이 떠난 마을 한가운데 울타리 친 못과 섬 위 석상이 남았고, 서쪽 강이 절벽을 폭포로 넘어 흐르며 외곽에 잊힌 묘지가 있다. 시작점 (31,52); 집 7채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
 
 ![안개못 폐촌 완성](images/mistpond-hollow.png)
 
@@ -11,13 +11,13 @@
     "id": "mistpond-hollow-shrine-pond",
     "kind": "shrine-pond",
     "label": "울타리 친 못과 석상",
-    "x": 33,
-    "y": 29,
+    "x": 24,
+    "y": 24,
     "w": 15,
     "h": 12,
     "gate": {
-      "x": 39,
-      "y": 40,
+      "x": 30,
+      "y": 35,
       "w": 3
     }
   },
@@ -25,13 +25,13 @@
     "id": "mistpond-hollow-graveyard-small",
     "kind": "graveyard-small",
     "label": "잊힌 묘지",
-    "x": 66,
-    "y": 33,
+    "x": 53,
+    "y": 28,
     "w": 7,
     "h": 6,
     "gate": {
-      "x": 69,
-      "y": 38,
+      "x": 56,
+      "y": 33,
       "w": 1
     }
   }
@@ -43,12 +43,12 @@
 ```json
 {
   "mapId": "mistpond-hollow",
-  "width": 80,
-  "height": 64,
+  "width": 66,
+  "height": 56,
   "seed": 613,
   "start": {
-    "x": 40,
-    "y": 60
+    "x": 31,
+    "y": 52
   },
   "yards": [
     {
@@ -56,52 +56,52 @@
       "kit": "abandoned",
       "name": "버려진 마당",
       "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 11,
-      "y": 10,
+      "x": 6,
+      "y": 6,
       "side": "right",
       "w": 3,
-      "h": 1
+      "h": 3
     },
     {
       "ownerId": "mistpond-hollow-house-2",
       "kit": "abandoned",
       "name": "버려진 마당",
       "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 57,
-      "y": 11,
-      "side": "right",
+      "x": 38,
+      "y": 8,
+      "side": "left",
       "w": 3,
-      "h": 1
+      "h": 3
     },
     {
       "ownerId": "mistpond-hollow-house-4",
       "kit": "abandoned",
       "name": "버려진 마당",
       "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 50,
-      "y": 34,
+      "x": 41,
+      "y": 27,
       "side": "left",
       "w": 3,
-      "h": 1
+      "h": 3
     },
     {
       "ownerId": "mistpond-hollow-house-5",
       "kit": "abandoned",
       "name": "버려진 마당",
       "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 18,
-      "y": 52,
+      "x": 13,
+      "y": 43,
       "side": "left",
       "w": 3,
-      "h": 1
+      "h": 3
     },
     {
       "ownerId": "mistpond-hollow-house-6",
       "kit": "abandoned",
       "name": "버려진 마당",
       "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 54,
-      "y": 54,
+      "x": 44,
+      "y": 49,
       "side": "left",
       "w": 3,
       "h": 1
@@ -111,10 +111,10 @@
       "kit": "herbs",
       "name": "약초 손질",
       "reason": "마지막으로 남은 못지기가 못가 약초를 손질하며 석상을 돌본다",
-      "x": 49,
-      "y": 52,
+      "x": 39,
+      "y": 47,
       "side": "right",
-      "w": 5,
+      "w": 4,
       "h": 3
     }
   ],
@@ -132,29 +132,29 @@
         {
           "id": "pond-gate-1",
           "name": "흰 돌기둥",
-          "x": 37,
-          "y": 41,
+          "x": 28,
+          "y": 36,
           "purpose": "못 울타리 입구 서쪽 돌기둥"
         },
         {
           "id": "pond-gate-2",
           "name": "흰 돌기둥",
-          "x": 43,
-          "y": 41,
+          "x": 34,
+          "y": 36,
           "purpose": "못 울타리 입구 동쪽 돌기둥",
           "near": "흰 돌기둥"
         },
         {
           "id": "pond-gate-3",
           "name": "돌등",
-          "x": 35,
-          "y": 42,
+          "x": 26,
+          "y": 37,
           "purpose": "꺼진 채 남은 입구 등"
         }
       ],
       "site": {
-        "x": 33,
-        "y": 29,
+        "x": 24,
+        "y": 24,
         "w": 15,
         "h": 12,
         "layer": "lower",
@@ -354,21 +354,21 @@
         {
           "id": "pond-offering-1",
           "name": "벤치",
-          "x": 49,
-          "y": 36,
+          "x": 40,
+          "y": 31,
           "purpose": "못지기가 석상을 바라보며 앉는 자리"
         },
         {
           "id": "pond-offering-2",
           "name": "꽃 화단",
-          "x": 48,
-          "y": 33,
+          "x": 39,
+          "y": 28,
           "purpose": "석상에 바칠 꽃을 기르는 화단"
         }
       ],
       "site": {
-        "x": 33,
-        "y": 29,
+        "x": 24,
+        "y": 24,
         "w": 15,
         "h": 12,
         "layer": "lower",
@@ -568,28 +568,28 @@
         {
           "id": "grave-edge-1",
           "name": "마른 묘목",
-          "x": 65,
-          "y": 31,
+          "x": 53,
+          "y": 26,
           "purpose": "묘지 울타리 곁 말라 죽은 나무"
         },
         {
           "id": "grave-edge-2",
           "name": "해골",
-          "x": 73,
-          "y": 36,
+          "x": 60,
+          "y": 31,
           "purpose": "묘지 밖에 굴러 나온 해골"
         },
         {
           "id": "grave-edge-3",
           "name": "돌 오벨리스크",
-          "x": 64,
-          "y": 36,
+          "x": 52,
+          "y": 31,
           "purpose": "마을이 비기 전 세운 위령비"
         }
       ],
       "site": {
-        "x": 66,
-        "y": 33,
+        "x": 53,
+        "y": 28,
         "w": 7,
         "h": 6,
         "layer": "lower",
@@ -644,38 +644,54 @@
       "name": "말라 버린 우물",
       "anchor": {
         "type": "road",
-        "x": 40,
-        "y": 44,
+        "x": 31,
+        "y": 39,
         "maxDistance": 8
       },
       "items": [
         {
           "id": "dead-well-1",
           "name": "낮은 돌 우물",
-          "x": 36,
-          "y": 46,
+          "x": 27,
+          "y": 41,
           "purpose": "물이 끊긴 옛 공동 우물"
         },
         {
           "id": "dead-well-2",
           "name": "부서진 울타리",
-          "x": 34,
-          "y": 46,
+          "x": 25,
+          "y": 41,
           "purpose": "무너진 우물가 울타리",
           "near": "낮은 돌 우물"
         },
         {
           "id": "dead-well-3",
           "name": "통나무 더미",
-          "x": 38,
-          "y": 49,
+          "x": 29,
+          "y": 44,
           "purpose": "썩어 가는 옛 땔감",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "dead-well-plaza-1",
+          "name": "돌등",
+          "x": 30,
+          "y": 41,
+          "purpose": "밤에 우물가를 밝히는 돌등",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "dead-well-plaza-2",
+          "name": "마른 묘목",
+          "x": 27,
+          "y": 38,
+          "purpose": "우물가에 말라 버린 묘목",
           "near": "낮은 돌 우물"
         }
       ],
       "site": {
-        "x": 40,
-        "y": 44,
+        "x": 31,
+        "y": 39,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -689,29 +705,29 @@
       "name": "폭포 아래 옛 빨래터",
       "anchor": {
         "type": "road",
-        "x": 22,
-        "y": 36,
+        "x": 17,
+        "y": 32,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "falls-lookout-1",
           "name": "항아리",
-          "x": 19,
-          "y": 31,
+          "x": 14,
+          "y": 27,
           "purpose": "빨래터에 버려진 물항아리"
         },
         {
           "id": "falls-lookout-2",
           "name": "마른 묘목",
-          "x": 20,
-          "y": 40,
+          "x": 15,
+          "y": 35,
           "purpose": "물가에 선 마른 나무"
         }
       ],
       "site": {
-        "x": 22,
-        "y": 36,
+        "x": 17,
+        "y": 32,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -725,22 +741,22 @@
       "name": "남쪽 입구 길잡이",
       "anchor": {
         "type": "road",
-        "x": 40,
-        "y": 60,
+        "x": 31,
+        "y": 52,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "entry-sign-1",
           "name": "나무 이정표",
-          "x": 38,
-          "y": 58,
+          "x": 29,
+          "y": 50,
           "purpose": "글씨가 바랜 마을 이정표"
         }
       ],
       "site": {
-        "x": 40,
-        "y": 60,
+        "x": 31,
+        "y": 52,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -751,41 +767,41 @@
     }
   ],
   "entrance": {
-    "x": 40,
-    "y": 63
+    "x": 31,
+    "y": 55
   },
   "crest": null,
   "patches": [
     [
       3,
-      40,
+      35,
       8,
       14,
       10
     ],
     [
-      77,
-      20,
+      64,
+      16,
       6,
       12,
       9
     ],
     [
-      76,
-      56,
+      62,
+      48,
       8,
       8,
       9
     ],
     [
-      4,
-      60,
+      0,
+      52,
       8,
       6,
       9
     ],
     [
-      38,
+      30,
       5,
       9,
       4,
@@ -794,15 +810,15 @@
   ],
   "clearings": [
     [
-      40,
-      34,
+      31,
+      29,
       12,
       10,
       12
     ],
     [
-      48,
-      52,
+      39,
+      47,
       14,
       6,
       9
@@ -812,28 +828,28 @@
     {
       "points": [
         [
-          6,
-          18
+          2,
+          14
         ],
         [
-          24,
-          18
+          20,
+          14
         ],
         [
-          26,
-          17
+          21,
+          13
         ],
         [
-          46,
-          17
+          37,
+          13
         ],
         [
-          48,
-          18
+          39,
+          14
         ],
         [
-          74,
-          18
+          61,
+          14
         ]
       ],
       "height": 5
@@ -841,13 +857,13 @@
   ],
   "stairs": [
     [
-      30,
-      17,
+      22,
+      13,
       5
     ],
     [
-      62,
-      18,
+      51,
+      14,
       5
     ]
   ],
@@ -857,360 +873,374 @@
   "cave": null,
   "spine": [
     [
-      40,
-      62
+      31,
+      54
     ],
     [
-      40,
-      44
+      31,
+      39
     ],
     [
-      40,
-      42
-    ],
-    [
-      40,
-      44
-    ],
-    [
-      26,
-      44
-    ],
-    [
-      25,
-      38
-    ],
-    [
-      30,
-      30
-    ],
-    [
-      30,
-      24
-    ],
-    [
-      30,
-      15
-    ],
-    [
-      20,
-      14
-    ],
-    [
-      9,
-      14
-    ],
-    [
-      20,
-      14
-    ],
-    [
-      30,
-      15
-    ],
-    [
-      50,
-      15
-    ],
-    [
-      54,
-      14
-    ],
-    [
-      62,
-      16
-    ],
-    [
-      62,
-      26
-    ],
-    [
-      58,
+      31,
       37
     ],
     [
-      50,
-      44
+      31,
+      39
+    ],
+    [
+      21,
+      38
+    ],
+    [
+      20,
+      33
+    ],
+    [
+      22,
+      26
+    ],
+    [
+      22,
+      20
+    ],
+    [
+      22,
+      12
+    ],
+    [
+      15,
+      11
+    ],
+    [
+      5,
+      11
+    ],
+    [
+      15,
+      11
+    ],
+    [
+      22,
+      12
     ],
     [
       40,
-      44
+      12
+    ],
+    [
+      44,
+      11
+    ],
+    [
+      51,
+      12
+    ],
+    [
+      51,
+      21
+    ],
+    [
+      48,
+      32
+    ],
+    [
+      41,
+      39
+    ],
+    [
+      31,
+      39
+    ],
+    [
+      46,
+      39
+    ],
+    [
+      51,
+      39
     ],
     [
       56,
-      44
-    ],
-    [
-      62,
-      44
-    ],
-    [
-      69,
-      42
+      37
     ]
   ],
   "access": [
     {
       "role": "stairs-top",
-      "x": 30,
-      "y": 16
+      "x": 22,
+      "y": 12
     },
     {
       "role": "stairs-bottom",
-      "x": 30,
-      "y": 23
+      "x": 22,
+      "y": 19
     },
     {
       "role": "stairs-top",
-      "x": 62,
-      "y": 17
+      "x": 51,
+      "y": 13
     },
     {
       "role": "stairs-bottom",
-      "x": 62,
-      "y": 24
+      "x": 51,
+      "y": 20
     },
     {
       "role": "bridge-west",
-      "x": 12,
-      "y": 12
+      "x": 7,
+      "y": 9
     },
     {
       "role": "bridge-east",
+      "x": 12,
+      "y": 9
+    },
+    {
+      "role": "door-front",
+      "x": 3,
+      "y": 9
+    },
+    {
+      "role": "door-front",
+      "x": 43,
+      "y": 11
+    },
+    {
+      "role": "door-front",
       "x": 17,
-      "y": 12
+      "y": 30
     },
     {
       "role": "door-front",
-      "x": 7,
-      "y": 12
+      "x": 48,
+      "y": 30
     },
     {
       "role": "door-front",
-      "x": 53,
-      "y": 12
+      "x": 19,
+      "y": 48
     },
     {
       "role": "door-front",
-      "x": 22,
-      "y": 34
+      "x": 50,
+      "y": 50
     },
     {
       "role": "door-front",
-      "x": 58,
-      "y": 35
-    },
-    {
-      "role": "door-front",
-      "x": 24,
-      "y": 55
-    },
-    {
-      "role": "door-front",
-      "x": 61,
-      "y": 55
-    },
-    {
-      "role": "door-front",
-      "x": 45,
-      "y": 55
+      "x": 36,
+      "y": 50
     },
     {
       "role": "yard-gate",
-      "x": 39,
-      "y": 41,
+      "x": 30,
+      "y": 36,
       "landmarkId": "mistpond-hollow-shrine-pond"
     },
     {
       "role": "yard-inside",
-      "x": 39,
-      "y": 39,
+      "x": 30,
+      "y": 34,
       "landmarkId": "mistpond-hollow-shrine-pond"
     },
     {
       "role": "yard-gate",
-      "x": 69,
-      "y": 39,
+      "x": 56,
+      "y": 34,
       "landmarkId": "mistpond-hollow-graveyard-small"
     },
     {
       "role": "yard-inside",
-      "x": 69,
-      "y": 37,
+      "x": 56,
+      "y": 32,
       "landmarkId": "mistpond-hollow-graveyard-small"
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 63
+      "x": 30,
+      "y": 55
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 63
+      "x": 31,
+      "y": 55
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 63
+      "x": 32,
+      "y": 55
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 62
+      "x": 30,
+      "y": 54
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 62
+      "x": 31,
+      "y": 54
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 62
+      "x": 32,
+      "y": 54
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 61
+      "x": 30,
+      "y": 53
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 61
+      "x": 31,
+      "y": 53
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 61
+      "x": 32,
+      "y": 53
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 60
+      "x": 30,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 60
+      "x": 31,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 60
+      "x": 32,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 59
+      "x": 30,
+      "y": 51
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 59
+      "x": 31,
+      "y": 51
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 59
+      "x": 32,
+      "y": 51
     },
     {
       "role": "civic-use",
-      "x": 36,
-      "y": 41,
+      "x": 27,
+      "y": 36,
       "placeId": "pond-gate",
       "propId": "pond-gate-1"
     },
     {
       "role": "civic-use",
-      "x": 42,
-      "y": 41,
+      "x": 33,
+      "y": 36,
       "placeId": "pond-gate",
       "propId": "pond-gate-2"
     },
     {
       "role": "civic-use",
-      "x": 34,
-      "y": 42,
+      "x": 25,
+      "y": 37,
       "placeId": "pond-gate",
       "propId": "pond-gate-3"
     },
     {
       "role": "civic-use",
-      "x": 49,
-      "y": 37,
+      "x": 40,
+      "y": 32,
       "placeId": "pond-offering",
       "propId": "pond-offering-1"
     },
     {
       "role": "civic-use",
-      "x": 48,
-      "y": 32,
+      "x": 39,
+      "y": 27,
       "placeId": "pond-offering",
       "propId": "pond-offering-2"
     },
     {
       "role": "civic-use",
-      "x": 65,
-      "y": 32,
+      "x": 53,
+      "y": 27,
       "placeId": "grave-edge",
       "propId": "grave-edge-1"
     },
     {
       "role": "civic-use",
-      "x": 73,
-      "y": 37,
+      "x": 60,
+      "y": 32,
       "placeId": "grave-edge",
       "propId": "grave-edge-2"
     },
     {
       "role": "civic-use",
-      "x": 63,
-      "y": 36,
+      "x": 51,
+      "y": 31,
       "placeId": "grave-edge",
       "propId": "grave-edge-3"
     },
     {
       "role": "civic-use",
-      "x": 35,
-      "y": 46,
+      "x": 26,
+      "y": 41,
       "placeId": "dead-well",
       "propId": "dead-well-1"
     },
     {
       "role": "civic-use",
-      "x": 34,
-      "y": 47,
+      "x": 25,
+      "y": 42,
       "placeId": "dead-well",
       "propId": "dead-well-2"
     },
     {
       "role": "civic-use",
-      "x": 38,
-      "y": 50,
+      "x": 29,
+      "y": 45,
       "placeId": "dead-well",
       "propId": "dead-well-3"
     },
     {
       "role": "civic-use",
-      "x": 19,
-      "y": 32,
+      "x": 14,
+      "y": 28,
       "placeId": "falls-lookout",
       "propId": "falls-lookout-1"
     },
     {
       "role": "civic-use",
-      "x": 20,
-      "y": 41,
+      "x": 15,
+      "y": 36,
       "placeId": "falls-lookout",
       "propId": "falls-lookout-2"
     },
     {
       "role": "civic-use",
-      "x": 38,
-      "y": 59,
+      "x": 29,
+      "y": 51,
       "placeId": "entry-sign",
       "propId": "entry-sign-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 29,
+      "y": 41,
+      "placeId": "dead-well",
+      "propId": "dead-well-plaza-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 27,
+      "y": 39,
+      "placeId": "dead-well",
+      "propId": "dead-well-plaza-2"
     }
   ]
 }
@@ -1228,26 +1258,26 @@
   "abandoned": true,
   "vines": [
     {
-      "x": 9,
-      "y": 9,
+      "x": 5,
+      "y": 6,
       "tiles": [
         265,
         295
       ]
     }
   ],
-  "x": 6,
-  "y": 5,
+  "x": 2,
+  "y": 2,
   "w": 4,
   "h": 7,
   "template": 3,
   "doorAt": {
-    "x": 7,
-    "y": 11
+    "x": 3,
+    "y": 8
   },
   "front": {
-    "x": 7,
-    "y": 12
+    "x": 3,
+    "y": 9
   },
   "activity": "abandoned",
   "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
@@ -1354,26 +1384,26 @@
   "abandoned": true,
   "vines": [
     {
-      "x": 55,
-      "y": 9,
+      "x": 45,
+      "y": 8,
       "tiles": [
         265,
         295
       ]
     }
   ],
-  "x": 52,
-  "y": 5,
+  "x": 42,
+  "y": 4,
   "w": 4,
   "h": 7,
   "template": 3,
   "doorAt": {
-    "x": 53,
-    "y": 11
+    "x": 43,
+    "y": 10
   },
   "front": {
-    "x": 53,
-    "y": 12
+    "x": 43,
+    "y": 11
   },
   "activity": "abandoned",
   "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
@@ -1480,26 +1510,26 @@
   "abandoned": true,
   "vines": [
     {
-      "x": 24,
-      "y": 32,
+      "x": 19,
+      "y": 28,
       "tiles": [
         265,
         295
       ]
     }
   ],
-  "x": 20,
-  "y": 26,
+  "x": 15,
+  "y": 22,
   "w": 6,
   "h": 8,
   "template": 2,
   "doorAt": {
-    "x": 22,
-    "y": 33
+    "x": 17,
+    "y": 29
   },
   "front": {
-    "x": 22,
-    "y": 34
+    "x": 17,
+    "y": 30
   },
   "activity": "abandoned",
   "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
@@ -1650,26 +1680,26 @@
   "abandoned": true,
   "vines": [
     {
-      "x": 54,
-      "y": 30,
+      "x": 44,
+      "y": 25,
       "tiles": [
         265,
         295
       ]
     }
   ],
-  "x": 54,
-  "y": 27,
+  "x": 44,
+  "y": 22,
   "w": 6,
   "h": 8,
   "template": 1,
   "doorAt": {
-    "x": 58,
-    "y": 34
+    "x": 48,
+    "y": 29
   },
   "front": {
-    "x": 58,
-    "y": 35
+    "x": 48,
+    "y": 30
   },
   "activity": "abandoned",
   "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
@@ -1820,26 +1850,26 @@
   "abandoned": true,
   "vines": [
     {
-      "x": 26,
-      "y": 53,
+      "x": 21,
+      "y": 46,
       "tiles": [
         265,
         295
       ]
     }
   ],
-  "x": 22,
-  "y": 47,
+  "x": 17,
+  "y": 40,
   "w": 6,
   "h": 8,
   "template": 0,
   "doorAt": {
-    "x": 24,
-    "y": 54
+    "x": 19,
+    "y": 47
   },
   "front": {
-    "x": 24,
-    "y": 55
+    "x": 19,
+    "y": 48
   },
   "activity": "abandoned",
   "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
@@ -1990,26 +2020,26 @@
   "abandoned": true,
   "vines": [
     {
-      "x": 58,
-      "y": 50,
+      "x": 47,
+      "y": 45,
       "tiles": [
         265,
         295
       ]
     }
   ],
-  "x": 58,
-  "y": 46,
+  "x": 47,
+  "y": 41,
   "w": 7,
   "h": 9,
   "template": 4,
   "doorAt": {
-    "x": 61,
-    "y": 54
+    "x": 50,
+    "y": 49
   },
   "front": {
-    "x": 61,
-    "y": 55
+    "x": 50,
+    "y": 50
   },
   "activity": "abandoned",
   "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
@@ -2193,18 +2223,18 @@
   "window": 86,
   "abandoned": false,
   "vines": [],
-  "x": 44,
-  "y": 48,
+  "x": 35,
+  "y": 43,
   "w": 4,
   "h": 7,
   "template": 5,
   "doorAt": {
-    "x": 45,
-    "y": 54
+    "x": 36,
+    "y": 49
   },
   "front": {
-    "x": 45,
-    "y": 55
+    "x": 36,
+    "y": 50
   },
   "activity": "herbs",
   "reason": "마지막으로 남은 못지기가 못가 약초를 손질하며 석상을 돌본다",
@@ -2295,7 +2325,7 @@
       -1,
       -1,
       -1,
-      -1
+      2632
     ]
   ]
 }

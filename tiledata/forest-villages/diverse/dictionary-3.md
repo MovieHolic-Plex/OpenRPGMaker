@@ -4,6 +4,703 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
+    "tile": 379,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 379,
+    "sourceX": 19,
+    "sourceY": 12,
+    "pixelX": 304,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 380,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 380,
+    "sourceX": 20,
+    "sourceY": 12,
+    "pixelX": 320,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 381,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 381,
+    "sourceX": 21,
+    "sourceY": 12,
+    "pixelX": 336,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "모닥불",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 383,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 383,
+    "sourceX": 23,
+    "sourceY": 12,
+    "pixelX": 368,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "해골",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 384,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 384,
+    "sourceX": 24,
+    "sourceY": 12,
+    "pixelX": 384,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "roof",
+      "label": "사선 지붕 캡",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 385,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 385,
+    "sourceX": 25,
+    "sourceY": 12,
+    "pixelX": 400,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "roof",
+      "label": "사선 지붕 캡",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 386,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 386,
+    "sourceX": 26,
+    "sourceY": 12,
+    "pixelX": 416,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "roof",
+      "label": "사선 지붕 캡",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 387,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 387,
+    "sourceX": 27,
+    "sourceY": 12,
+    "pixelX": 432,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "roof",
+      "label": "사선 지붕 캡",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 404,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 404,
+    "sourceX": 14,
+    "sourceY": 13,
+    "pixelX": 224,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 14,
+    "targetY": 13,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "building",
+      "label": "지붕-벽 경계",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 405,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 405,
+    "sourceX": 15,
+    "sourceY": 13,
+    "pixelX": 240,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 15,
+    "targetY": 13,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "building",
+      "label": "지붕-벽 경계",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 406,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 406,
+    "sourceX": 16,
+    "sourceY": 13,
+    "pixelX": 256,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 13,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "building",
+      "label": "지붕-벽 경계",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 407,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 407,
+    "sourceX": 17,
+    "sourceY": 13,
+    "pixelX": 272,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 13,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "building",
+      "label": "지붕-벽 경계",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 408,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 408,
+    "sourceX": 18,
+    "sourceY": 13,
+    "pixelX": 288,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 13,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 409,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 409,
+    "sourceX": 19,
+    "sourceY": 13,
+    "pixelX": 304,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 13,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 410,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 410,
+    "sourceX": 20,
+    "sourceY": 13,
+    "pixelX": 320,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 13,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 412,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 412,
+    "sourceX": 22,
+    "sourceY": 13,
+    "pixelX": 352,
+    "pixelY": 208,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 13,
+    "layers": [
+      "lower",
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "성벽 위 보행로",
+      "description": "두 겹 성벽 사이의 밝은 돌 보행로. 양옆 테두리78/80.",
+      "role": "wall",
+      "defaultLayer": "lower",
+      "passage": "solid"
+    }
+  },
+  {
+    "tile": 436,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 436,
+    "sourceX": 16,
+    "sourceY": 14,
+    "pixelX": 256,
+    "pixelY": 224,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 14,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "building",
+      "label": "지붕-벽 경계",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 437,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 437,
+    "sourceX": 17,
+    "sourceY": 14,
+    "pixelX": 272,
+    "pixelY": 224,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 14,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "building",
+      "label": "지붕-벽 경계",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "lower",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 438,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 438,
+    "sourceX": 18,
+    "sourceY": 14,
+    "pixelX": 288,
+    "pixelY": 224,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 14,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 439,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 439,
+    "sourceX": 19,
+    "sourceY": 14,
+    "pixelX": 304,
+    "pixelY": 224,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 14,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
     "tile": 443,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_easyrpg_chipset_retro_house",
@@ -1587,696 +2284,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "defaultLayer": "lower",
       "layerBacking": 240,
       "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 1074,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1074,
-    "sourceX": 24,
-    "sourceY": 35,
-    "pixelX": 384,
-    "pixelY": 560,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 35,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "작은 덤불",
-        "밑동"
-      ],
-      "label": "Tibo small-bush 2,1",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 작은 덤불 2×2 칸의 (2,1). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 1103,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1103,
-    "sourceX": 23,
-    "sourceY": 36,
-    "pixelX": 368,
-    "pixelY": 576,
-    "width": 16,
-    "height": 16,
-    "targetX": 23,
-    "targetY": 36,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "작은 덤불",
-        "밑동"
-      ],
-      "label": "Tibo small-bush 1,2",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 작은 덤불 2×2 칸의 (1,2). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 1104,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1104,
-    "sourceX": 24,
-    "sourceY": 36,
-    "pixelX": 384,
-    "pixelY": 576,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 36,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "prop",
-      "tags": [
-        "숲",
-        "나무",
-        "작은 덤불",
-        "밑동"
-      ],
-      "label": "Tibo small-bush 2,2",
-      "locked": true,
-      "origin": "user",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "description": "숲 나무 확장 띠 — 작은 덤불 2×2 칸의 (2,2). 밑동·몸통은 하위 레이어에 잔디 받침과 함께 그려지고 지나갈 수 없다.",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "repeatability": "fixed"
-    }
-  },
-  {
-    "tile": 1350,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1350,
-    "sourceX": 0,
-    "sourceY": 45,
-    "pixelX": 0,
-    "pixelY": 720,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 45,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "연속 숲 30",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1141,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1422,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1422,
-    "sourceX": 12,
-    "sourceY": 47,
-    "pixelX": 192,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 12,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1423,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1423,
-    "sourceX": 13,
-    "sourceY": 47,
-    "pixelX": 208,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1424,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1424,
-    "sourceX": 14,
-    "sourceY": 47,
-    "pixelX": 224,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 14,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1425,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1425,
-    "sourceX": 15,
-    "sourceY": 47,
-    "pixelX": 240,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 15,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1426,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1426,
-    "sourceX": 16,
-    "sourceY": 47,
-    "pixelX": 256,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 16,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1427,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1427,
-    "sourceX": 17,
-    "sourceY": 47,
-    "pixelX": 272,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1428,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1428,
-    "sourceX": 18,
-    "sourceY": 47,
-    "pixelX": 288,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1429,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1429,
-    "sourceX": 19,
-    "sourceY": 47,
-    "pixelX": 304,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1430,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1430,
-    "sourceX": 20,
-    "sourceY": 47,
-    "pixelX": 320,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 20,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1431,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1431,
-    "sourceX": 21,
-    "sourceY": 47,
-    "pixelX": 336,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 21,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1432,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1432,
-    "sourceX": 22,
-    "sourceY": 47,
-    "pixelX": 352,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 22,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1433,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1433,
-    "sourceX": 23,
-    "sourceY": 47,
-    "pixelX": 368,
-    "pixelY": 752,
-    "width": 16,
-    "height": 16,
-    "targetX": 23,
-    "targetY": 47,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 왼쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1453,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1453,
-    "sourceX": 13,
-    "sourceY": 48,
-    "pixelX": 208,
-    "pixelY": 768,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 48,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 오른쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1454,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1454,
-    "sourceX": 14,
-    "sourceY": 48,
-    "pixelX": 224,
-    "pixelY": 768,
-    "width": 16,
-    "height": 16,
-    "targetX": 14,
-    "targetY": 48,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 오른쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1455,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1455,
-    "sourceX": 15,
-    "sourceY": 48,
-    "pixelX": 240,
-    "pixelY": 768,
-    "width": 16,
-    "height": 16,
-    "targetX": 15,
-    "targetY": 48,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 오른쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
-    "tile": 1457,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1457,
-    "sourceX": 17,
-    "sourceY": 48,
-    "pixelX": 272,
-    "pixelY": 768,
-    "width": 16,
-    "height": 16,
-    "targetX": 17,
-    "targetY": 48,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "Tibo 오른쪽 숲 마감",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
     }
   }
 ]

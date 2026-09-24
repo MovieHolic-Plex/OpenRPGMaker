@@ -5,8 +5,8 @@
 ```json
 {
   "name": "돌벽 교회",
-  "x": 30,
-  "y": 5,
+  "x": 16,
+  "y": 2,
   "w": 7,
   "h": 9,
   "kind": "landmark",
@@ -316,8 +316,8 @@
 ```json
 {
   "name": "마을 외곽 묘지",
-  "x": 10,
-  "y": 7,
+  "x": 2,
+  "y": 4,
   "w": 9,
   "h": 7,
   "kind": "landmark",
@@ -619,36 +619,36 @@
 ```json
 {
   "name": "텃밭",
-  "x": 24,
-  "y": 50,
+  "x": 14,
+  "y": 42,
   "w": 6,
   "h": 4,
   "kind": "farm",
   "lower": [
+    156,
+    157,
+    157,
+    157,
+    157,
+    158,
+    186,
+    187,
+    187,
+    187,
+    187,
     188,
+    186,
+    187,
+    187,
+    187,
+    187,
     188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188,
-    188
+    216,
+    217,
+    217,
+    217,
+    217,
+    218
   ],
   "upper": [
     -1,
@@ -680,36 +680,36 @@
   "height": 4,
   "lowerTiles": [
     [
-      188,
-      188,
-      188,
-      188,
-      188,
+      156,
+      157,
+      157,
+      157,
+      157,
+      158
+    ],
+    [
+      186,
+      187,
+      187,
+      187,
+      187,
       188
     ],
     [
-      188,
-      188,
-      188,
-      188,
-      188,
+      186,
+      187,
+      187,
+      187,
+      187,
       188
     ],
     [
-      188,
-      188,
-      188,
-      188,
-      188,
-      188
-    ],
-    [
-      188,
-      188,
-      188,
-      188,
-      188,
-      188
+      216,
+      217,
+      217,
+      217,
+      217,
+      218
     ]
   ],
   "upperTiles": [
@@ -753,8 +753,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 21,
-  "y": 28,
+  "x": 11,
+  "y": 23,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -839,8 +839,8 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 34,
-  "y": 30,
+  "x": 20,
+  "y": 25,
   "w": 3,
   "h": 3,
   "kind": "vegetation",
@@ -898,386 +898,6 @@
     ],
     [
       -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 30,
-  "y": 31,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 활엽수
-```json
-{
-  "name": "숲 나무 · 활엽수",
-  "x": 56,
-  "y": 42,
-  "w": 3,
-  "h": 4,
-  "kind": "vegetation",
-  "lower": [
-    240,
-    240,
-    240,
-    240,
-    240,
-    240,
-    1038,
-    1039,
-    1040,
-    1068,
-    1069,
-    1070
-  ],
-  "upper": [
-    978,
-    979,
-    980,
-    1008,
-    1009,
-    1010,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 4,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      1038,
-      1039,
-      1040
-    ],
-    [
-      1068,
-      1069,
-      1070
-    ]
-  ],
-  "upperTiles": [
-    [
-      978,
-      979,
-      980
-    ],
-    [
-      1008,
-      1009,
-      1010
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 둥근 덤불
-```json
-{
-  "name": "숲 나무 · 둥근 덤불",
-  "x": 58,
-  "y": 47,
-  "w": 3,
-  "h": 3,
-  "kind": "vegetation",
-  "lower": [
-    983,
-    984,
-    985,
-    1013,
-    1014,
-    1015,
-    1043,
-    1044,
-    1045
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 3,
-  "lowerTiles": [
-    [
-      983,
-      984,
-      985
-    ],
-    [
-      1013,
-      1014,
-      1015
-    ],
-    [
-      1043,
-      1044,
-      1045
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 34,
-  "y": 48,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 활엽수
-```json
-{
-  "name": "숲 나무 · 활엽수",
-  "x": 33,
-  "y": 51,
-  "w": 3,
-  "h": 4,
-  "kind": "vegetation",
-  "lower": [
-    240,
-    240,
-    240,
-    240,
-    240,
-    240,
-    1038,
-    1039,
-    1040,
-    1068,
-    1069,
-    1070
-  ],
-  "upper": [
-    978,
-    979,
-    980,
-    1008,
-    1009,
-    1010,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 4,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      1038,
-      1039,
-      1040
-    ],
-    [
-      1068,
-      1069,
-      1070
-    ]
-  ],
-  "upperTiles": [
-    [
-      978,
-      979,
-      980
-    ],
-    [
-      1008,
-      1009,
-      1010
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 56,
-  "y": 51,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
       -1,
       -1
     ]
@@ -1290,7 +910,7 @@
 {
   "name": "숲 나무 · 작은 덤불",
   "x": 18,
-  "y": 28,
+  "y": 26,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -1335,8 +955,8 @@
 ```json
 {
   "name": "숲 나무 · 활엽수",
-  "x": 24,
-  "y": 8,
+  "x": 40,
+  "y": 37,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -1421,8 +1041,8 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 41,
-  "y": 6,
+  "x": 42,
+  "y": 41,
   "w": 3,
   "h": 3,
   "kind": "vegetation",
@@ -1487,12 +1107,953 @@
 }
 ```
 
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 23,
+  "y": 41,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 활엽수
+```json
+{
+  "name": "숲 나무 · 활엽수",
+  "x": 22,
+  "y": 43,
+  "w": 3,
+  "h": 4,
+  "kind": "vegetation",
+  "lower": [
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
+  ],
+  "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
+    ]
+  ],
+  "upperTiles": [
+    [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 40,
+  "y": 43,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 8,
+  "y": 23,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 활엽수
+```json
+{
+  "name": "숲 나무 · 활엽수",
+  "x": 13,
+  "y": 5,
+  "w": 3,
+  "h": 4,
+  "kind": "vegetation",
+  "lower": [
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
+  ],
+  "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
+    ]
+  ],
+  "upperTiles": [
+    [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 둥근 덤불
+```json
+{
+  "name": "숲 나무 · 둥근 덤불",
+  "x": 25,
+  "y": 3,
+  "w": 3,
+  "h": 3,
+  "kind": "vegetation",
+  "lower": [
+    983,
+    984,
+    985,
+    1013,
+    1014,
+    1015,
+    1043,
+    1044,
+    1045
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 3,
+  "lowerTiles": [
+    [
+      983,
+      984,
+      985
+    ],
+    [
+      1013,
+      1014,
+      1015
+    ],
+    [
+      1043,
+      1044,
+      1045
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "churchyard-1",
+  "name": "벤치",
+  "x": 16,
+  "y": 13,
+  "purpose": "예배 전후 앉아 기다리는 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "churchyard",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 16,
+    "y": 14
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "churchyard-2",
+  "name": "벤치",
+  "x": 22,
+  "y": 12,
+  "purpose": "교회 앞 동쪽 쉼 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "churchyard",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 22,
+    "y": 13
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "churchyard-3",
+  "name": "돌등",
+  "x": 18,
+  "y": 11,
+  "purpose": "교회 문 서쪽을 밝히는 등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "churchyard",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 17,
+    "y": 11
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "churchyard-4",
+  "name": "돌등",
+  "x": 21,
+  "y": 15,
+  "purpose": "교회 문 동쪽을 밝히는 등",
+  "near": "돌등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "churchyard",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 20,
+    "y": 15
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
+## 꽃 화단
+```json
+{
+  "id": "churchyard-5",
+  "name": "꽃 화단",
+  "x": 24,
+  "y": 6,
+  "purpose": "교회 벽 옆 제단용 꽃밭",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "churchyard",
+  "lower": "KEEP",
+  "upper": [
+    2611,
+    2612,
+    2616,
+    2617
+  ],
+  "useAt": {
+    "x": 23,
+    "y": 6
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2611,
+      2612
+    ],
+    [
+      2616,
+      2617
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "graveyard-gate-1",
+  "name": "돌등",
+  "x": 4,
+  "y": 12,
+  "purpose": "묘지 입구를 밝히는 등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "graveyard-gate",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 3,
+    "y": 12
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
+## 마른 묘목
+```json
+{
+  "id": "graveyard-gate-2",
+  "name": "마른 묘목",
+  "x": 10,
+  "y": 11,
+  "purpose": "묘지 울타리 곁 마른 나무",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "graveyard-gate",
+  "lower": "KEEP",
+  "upper": [
+    740
+  ],
+  "useAt": {
+    "x": 10,
+    "y": 12
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      740
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "falls-pool-1",
+  "name": "벤치",
+  "x": 36,
+  "y": 28,
+  "purpose": "폭포를 바라보며 쉬는 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "falls-pool",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 36,
+    "y": 29
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 낚시 바구니
+```json
+{
+  "id": "falls-pool-2",
+  "name": "낚시 바구니",
+  "x": 38,
+  "y": 30,
+  "purpose": "폭포 아래 소에서 쓰는 낚시 바구니",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "falls-pool",
+  "lower": "KEEP",
+  "upper": [
+    2646
+  ],
+  "useAt": {
+    "x": 38,
+    "y": 31
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2646
+    ]
+  ]
+}
+```
+
+## 낮은 돌 우물
+```json
+{
+  "id": "village-well-1",
+  "name": "낮은 돌 우물",
+  "x": 23,
+  "y": 36,
+  "purpose": "아랫마을 주민의 급수",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "village-well",
+  "lower": "KEEP",
+  "upper": [
+    2639,
+    2640,
+    2641,
+    2642
+  ],
+  "useAt": {
+    "x": 22,
+    "y": 36
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2639,
+      2640
+    ],
+    [
+      2641,
+      2642
+    ]
+  ]
+}
+```
+
+## 항아리
+```json
+{
+  "id": "village-well-2",
+  "name": "항아리",
+  "x": 21,
+  "y": 36,
+  "purpose": "길어 온 물을 담는 용기",
+  "near": "낮은 돌 우물",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "village-well",
+  "lower": "KEEP",
+  "upper": [
+    352
+  ],
+  "useAt": {
+    "x": 21,
+    "y": 37
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      352
+    ]
+  ]
+}
+```
+
+## 게시판
+```json
+{
+  "id": "village-well-3",
+  "name": "게시판",
+  "x": 28,
+  "y": 36,
+  "purpose": "교회 소식과 마을 공지를 붙이는 판",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "village-well",
+  "lower": "KEEP",
+  "upper": [
+    2630,
+    2631,
+    2633,
+    2634
+  ],
+  "useAt": {
+    "x": 27,
+    "y": 36
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2630,
+      2631
+    ],
+    [
+      2633,
+      2634
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "entry-sign-1",
+  "name": "나무 이정표",
+  "x": 23,
+  "y": 48,
+  "purpose": "교회로 오르는 길 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "entry-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 23,
+    "y": 49
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "stair-sign-1",
+  "name": "나무 이정표",
+  "x": 23,
+  "y": 24,
+  "purpose": "언덕 위 교회로 오르는 계단 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "stair-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 23,
+    "y": 25
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
 ## 약초 화분
 ```json
 {
   "name": "약초 화분",
-  "x": 40,
-  "y": 11,
+  "x": 25,
+  "y": 8,
   "w": 2,
   "h": 1,
   "kind": "prop",
@@ -1523,12 +2084,48 @@
 }
 ```
 
+## 씨앗 자루
+```json
+{
+  "name": "씨앗 자루",
+  "x": 27,
+  "y": 8,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2652,
+    2653
+  ],
+  "ownerId": "chapel-hill-parish-house-1",
+  "kit": "herbs",
+  "purpose": "다음에 심을 약초 씨앗",
+  "anchor": "약초 화분",
+  "side": "left",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2652,
+      2653
+    ]
+  ]
+}
+```
+
 ## 가로 탁자
 ```json
 {
   "name": "가로 탁자",
-  "x": 40,
-  "y": 13,
+  "x": 25,
+  "y": 10,
   "w": 3,
   "h": 1,
   "kind": "prop",
@@ -1566,8 +2163,8 @@
 ```json
 {
   "name": "항아리",
-  "x": 44,
-  "y": 13,
+  "x": 28,
+  "y": 10,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1590,575 +2187,6 @@
   "upperTiles": [
     [
       352
-    ]
-  ]
-}
-```
-
-## 빨랫줄
-```json
-{
-  "name": "빨랫줄",
-  "x": 61,
-  "y": 11,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
-  ],
-  "ownerId": "chapel-hill-parish-house-2",
-  "kit": "laundry",
-  "purpose": "세탁물을 말리는 자리",
-  "anchor": "house",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2620,
-      2621
-    ],
-    [
-      2625,
-      2626
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 64,
-  "y": 12,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "chapel-hill-parish-house-2",
-  "kit": "laundry",
-  "purpose": "세탁에 쓸 물 보관",
-  "anchor": "빨랫줄",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 17,
-  "y": 39,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "목재를 다루는 작업면",
-  "anchor": "house",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 장작
-```json
-{
-  "name": "장작",
-  "x": 17,
-  "y": 37,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    349
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "작업대에 공급할 목재",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      349
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 19,
-  "y": 37,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    237
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "가공한 물건 보관",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      237
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 32,
-  "y": 42,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    237
-  ],
-  "ownerId": "chapel-hill-parish-house-4",
-  "kit": "storage",
-  "purpose": "운반 물자 보관",
-  "anchor": "house",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      237
-    ]
-  ]
-}
-```
-
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 34,
-  "y": 42,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "chapel-hill-parish-house-4",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 채소밭
-```json
-{
-  "name": "채소밭",
-  "x": 53,
-  "y": 39,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2613,
-    2614,
-    2618,
-    2619
-  ],
-  "ownerId": "chapel-hill-parish-house-5",
-  "kit": "growing",
-  "purpose": "식재·수확할 작물",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2613,
-      2614
-    ],
-    [
-      2618,
-      2619
-    ]
-  ]
-}
-```
-
-## 허수아비
-```json
-{
-  "name": "허수아비",
-  "x": 53,
-  "y": 37,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2651,
-    2654
-  ],
-  "ownerId": "chapel-hill-parish-house-5",
-  "kit": "growing",
-  "purpose": "바로 옆 작물 보호",
-  "anchor": "채소밭",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2651
-    ],
-    [
-      2654
-    ]
-  ]
-}
-```
-
-## 씨앗 자루
-```json
-{
-  "name": "씨앗 자루",
-  "x": 56,
-  "y": 40,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2652,
-    2653
-  ],
-  "ownerId": "chapel-hill-parish-house-5",
-  "kit": "growing",
-  "purpose": "이 밭에 파종할 씨앗 보관",
-  "anchor": "채소밭",
-  "side": "right",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2652,
-      2653
-    ]
-  ]
-}
-```
-
-## 빨랫줄
-```json
-{
-  "name": "빨랫줄",
-  "x": 19,
-  "y": 51,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
-  ],
-  "ownerId": "chapel-hill-parish-house-6",
-  "kit": "laundry",
-  "purpose": "세탁물을 말리는 자리",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2620,
-      2621
-    ],
-    [
-      2625,
-      2626
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 22,
-  "y": 52,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "chapel-hill-parish-house-6",
-  "kit": "laundry",
-  "purpose": "세탁에 쓸 물 보관",
-  "anchor": "빨랫줄",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "churchyard-1",
-  "name": "벤치",
-  "x": 29,
-  "y": 16,
-  "purpose": "예배 전후 앉아 기다리는 자리",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "churchyard",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
-  ],
-  "useAt": {
-    "x": 29,
-    "y": 17
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      327,
-      328
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "churchyard-2",
-  "name": "벤치",
-  "x": 36,
-  "y": 15,
-  "purpose": "교회 앞 동쪽 쉼 자리",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "churchyard",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
-  ],
-  "useAt": {
-    "x": 36,
-    "y": 16
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      327,
-      328
-    ]
-  ]
-}
-```
-
-## 돌등
-```json
-{
-  "id": "churchyard-3",
-  "name": "돌등",
-  "x": 32,
-  "y": 14,
-  "purpose": "교회 문 서쪽을 밝히는 등",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "churchyard",
-  "lower": "KEEP",
-  "upper": [
-    2655,
-    2656
-  ],
-  "useAt": {
-    "x": 31,
-    "y": 14
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2655
-    ],
-    [
-      2656
     ]
   ]
 }

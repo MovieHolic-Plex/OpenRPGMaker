@@ -6,7 +6,7 @@
     "twin-falls-river-village": { "target": [62, 56], "plaza": { "zone": "well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치"] }, "grass": 10, "wild": 20, "trees": 4 },
     "reed-bay-village": { "target": [62, 50], "plaza": { "zone": "well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등"] }, "grass": 9, "wild": 18, "trees": 3 },
     "chapel-hill-parish": { "target": [56, 50], "plaza": { "zone": "village-well", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치", "화분"] }, "grass": 9, "wild": 18, "trees": 4 },
-    "ford-castle-town": { "target": [70, 72], "plaza": { "zone": "mid-market", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치"] }, "grass": 12, "wild": 26, "trees": 5 },
+    "ford-castle-town": { "target": [70, 72], "plaza": { "zone": "mid-market", "center": "낮은 돌 우물", "items": ["벤치", "꽃 화단", "돌등", "벤치"] }, "grass": 16, "wild": 40, "trees": 5 },
     "mistpond-hollow": { "target": [56, 50], "plaza": { "zone": "dead-well", "center": "낮은 돌 우물", "items": ["돌등", "마른 묘목", "통나무 더미"] }, "grass": 11, "wild": 12, "trees": 3 }
   }
 }
