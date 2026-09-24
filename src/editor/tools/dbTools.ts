@@ -735,6 +735,43 @@ function upsertLegacyEquipmentItemAsEquipment(draft: Project, itemPatch: Record<
 }
 
 /**
+ * 아직 없는 배우·직업 id 때문에 장비 커밋 전체가 거부되지 않게 한다.
+ *
+ * 2026-09-24 JRPG 도그푸딩: 사제 지팡이·실크 로브가 equippableActorIds 에 곧 만들 actor_toma·actor_mira 를
+ * 넣어 「actor does not exist」로 거부됐다. 스탯·가격·직업 제한은 저장하고, 없는 id 만 뺀 뒤 경고한다.
+ */
+function dropUnknownEquipmentRestrictions(
+  project: Project,
+  record: { id: string; equippableActorIds: string[]; equippableClassIds: string[] },
+  warnings: string[],
+): void {
+  const actorIds = new Set(project.database.actors.map((actor) => actor.id));
+  const classIds = new Set(project.database.classes.map((entry) => entry.id));
+  const droppedActors = record.equippableActorIds.filter((id) => !actorIds.has(id));
+  const droppedClasses = record.equippableClassIds.filter((id) => !classIds.has(id));
+  if (droppedActors.length === 0 && droppedClasses.length === 0) return;
+  record.equippableActorIds = record.equippableActorIds.filter((id) => actorIds.has(id));
+  record.equippableClassIds = record.equippableClassIds.filter((id) => classIds.has(id));
+  const dropped = [
+    droppedActors.length ? `equippableActorIds ${droppedActors.join(", ")}` : "",
+    droppedClasses.length ? `equippableClassIds ${droppedClasses.join(", ")}` : "",
+  ].filter(Boolean).join(", ");
+  const kept = [
+    record.equippableActorIds.length ? `배우 ${record.equippableActorIds.join(", ")}` : "",
+    record.equippableClassIds.length ? `직업 ${record.equippableClassIds.join(", ")}` : "",
+  ].filter(Boolean).join(" · ");
+  const actorHint = [...actorIds].slice(0, 6).join(", ") || "(없음)";
+  const classHint = [...classIds].slice(0, 6).join(", ") || "(없음)";
+  warnings.push(
+    `equipment ${record.id}: 아직 없는 착용 제한을 빼고 저장했습니다 (${dropped}). ` +
+      (kept
+        ? `남은 제한: ${kept}.`
+        : "남은 제한이 없어 지금은 아무도 착용할 수 없습니다. 배우·직업을 만든 뒤 equippableActorIds·equippableClassIds 를 다시 지정하세요.") +
+      ` 있는 id 예: 배우 ${actorHint}, 직업 ${classHint}.`,
+  );
+}
+
+/**
  * 없는 전투 애니메이션 id 를 지우고 가까운 후보와 함께 경고한다. 애니메이션은 연출이라 거부할 이유가 없다 —
  * 2026-09-24 JRPG 도그푸딩: upsert_skill animationId:"anim_slash" 가 후보 없는 「animationId does not exist.」 로
  * 커밋 거부되고, 그 스킬을 배우는 upsert_class 까지 연쇄로 거부됐다.
@@ -1290,6 +1327,7 @@ const upsertEquipment: ToolDefinition = {
     if (!hasEquipmentSlot(draft, record.slot)) throw new Error(`Unknown equipment slot: ${record.slot}`);
     const warnings: string[] = [];
     resolveIconResourceId(draft, record, "equipment", warnings);
+    dropUnknownEquipmentRestrictions(draft, record, warnings);
     const outcome = upsertById(draft.database.equipment, record);
     return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
