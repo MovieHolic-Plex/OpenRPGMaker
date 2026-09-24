@@ -15,7 +15,7 @@ import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
-import { validateShopStock } from "@/project/io/shapeCommandFields";
+import { validateConditionShape, validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
@@ -356,6 +356,7 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     page.trigger = event.trigger ?? { kind: "action" };
     filled.push(`trigger(${page.trigger.kind})`);
   }
+  const priorityOmitted = page.priority === undefined;
   if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
   if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
   else if (typeof page.movement === "object" && page.movement !== null) {
@@ -396,6 +397,14 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   } else if (page.graphic === undefined) {
     page.graphic = {};
     filled.push("graphic");
+  }
+  // 그림 없는 페이지(진입 컷신·문 열림 검사·조건 대기 자리표시)에 기본 「same」을 주면 보이지 않는 벽이 된다 —
+  // 회상 스토리 도그푸딩에서 투명 논리 이벤트 넷이 레코드 가게 가운데 줄에 서서 메멘토 둘을 막았다(2026-09-24).
+  // priority 를 생략한 투명 페이지는 발밑(below)·겹침 허용으로 둔다. 조사(action)는 발밑 이벤트도 바라보고 된다.
+  if (priorityOmitted && page.graphic?.sprite === undefined && page.graphic?.appearanceId === undefined && !TILE_HOTSPOT_EVENTS.has(event)) {
+    page.priority = "below";
+    if (page.overlapForbidden === undefined) page.overlapForbidden = false;
+    filled[filled.indexOf("priority")] = "priority(below — 그림 없는 페이지)";
   }
   if (filled.length > 0) {
     warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
@@ -516,6 +525,15 @@ function unwrittenSwitchGateWarnings(project: Project, event: GameEvent): string
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
 function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
   try {
+    // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
+    // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
+    for (const page of event.pages ?? []) {
+      if (page.conditions === undefined) continue;
+      if (!Array.isArray(page.conditions)) {
+        throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${event.id}.${page.id ?? "page"}.conditions 는 배열이어야 합니다(조건 없음은 []).`, { code: "invalid-args" });
+      }
+      page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
+    }
     normalizeEventCommandArrays(event, warnings, supplied);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
