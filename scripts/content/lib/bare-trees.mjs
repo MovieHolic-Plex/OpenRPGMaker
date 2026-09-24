@@ -23,6 +23,7 @@
 //   options.band      edge band width (default 4): groves there are denser (options.spacing.band, default 8 cells
 //                     between grove centres) than inland (options.spacing.inner, default 13).
 //   options.rock      rock tile (default 537; null for none), options.cactus (desert: 769, default none), options.seed.
+//   options.rockChance share of groves that get foot rocks (default: all).
 //   options.accept(cells) → boolean   caller's reachability check; a grove that fails is rolled back whole.
 //   options.undergrowth { size: [min, max] cells (default 18–34), clearance (default = options.clearance), tile (304) }
 //                     grows a tall grass patch (whole 2×2 blocks) from the grove's foot, marked with `tile`; lay the
@@ -211,7 +212,9 @@ export function arrangeBareGroves(map, options = {}) {
     const by = lead.y0 + lead.st.h - 1, lx = lead.x0, rx = lead.x0 + lead.st.w;
     const spots = [[lx - 1, by], [rx, by], [lx - 1, by + 1], [rx, by + 1], [lx + Math.floor(lead.st.w / 2), by + 1], [lx, by + 1]];
     for (let k = spots.length - 1; k > 0; k--) { const j = Math.floor(random() * (k + 1)); [spots[k], spots[j]] = [spots[j], spots[k]]; }
-    let rocks = rock != null ? (inBand ? 1 + Math.floor(random() * 2) : 1) : 0, shrubs = 1 + Math.floor(random() * 2);
+    // options.rockChance (0..1): share of groves that get foot rocks at all (desert 2026-09-25: fewer loose rocks).
+    const rockless = options.rockChance != null && random() >= options.rockChance;
+    let rocks = rock != null && !rockless ? (inBand ? 1 + Math.floor(random() * 2) : 1) : 0, shrubs = 1 + Math.floor(random() * 2);
     const shrubStamps = byKind("shrub");
     for (const [sx, sy] of spots) if (rocks && putTile(rock, sx, sy, props)) rocks--;
     for (const [sx, sy] of spots) if (shrubs && shrubStamps.length && putTile(shrubStamps[Math.floor(random() * shrubStamps.length)].cells[0].tile, sx, sy, props)) shrubs--;

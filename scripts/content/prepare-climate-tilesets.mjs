@@ -90,7 +90,7 @@ const none = { terrain: [], priority: [], passability: [], tileMeta: [] };
 // ── leafless trees (build-climate-chipsets.py → bare-trees.py): same slots from 2880 on snow, volcano and desert ──
 // Crown rows: upper, walkable (drawn over the walker). Bottom row: the trunk base, lower on ground 240, solid.
 // Shrubs 1×1: upper, solid. Cells a tree does not draw on are unused and stay -1 in every stamp.
-const BARE = sheets.bareTrees;
+const BARE = sheets.bareTrees, TERRAIN_FIRST = sheets.terrain.first;
 const BARE_NAMES = {
   desert: { tree: "바랜 고목", shrub: "마른 덤불", tag: "사막", note: "햇볕에 바랜 잎 없는 고목" },
   volcano: { tree: "그을린 고목", shrub: "그을린 덤불", tag: "화산", note: "불씨가 박힌 그을린 잎 없는 고목" },
@@ -104,7 +104,7 @@ function bareTrees(climate, from) {
   const cell = new Map();
   for (const st of BARE.stamps) st.tiles.forEach((t, k) => { if (t >= 0) cell.set(t, { st, dx: k % st.w, dy: Math.floor(k / st.w) }); });
   const shut = { up: false, down: false, left: false, right: false }, open = { up: true, down: true, left: true, right: true };
-  for (let t = from; t < sheets[climate].count; t++) {
+  for (let t = from; t < TERRAIN_FIRST; t++) {
     const c = cell.get(t);
     rows.terrain.push(0);
     if (!c) { rows.priority.push("lower"); rows.passability.push({ ...shut }); rows.tileMeta.push(unused()); continue; }
@@ -154,23 +154,130 @@ function bareTrees(climate, from) {
   return { rows, groups };
 }
 const bare = Object.fromEntries(BARE.climates.map((k) => [k, bareTrees(k, k === "snow" ? TS.count + append.terrain.length : TS.count)]));
-const withBare = (k, a) => ({ terrain: [...a.terrain, ...bare[k].rows.terrain], priority: [...a.priority, ...bare[k].rows.priority], passability: [...a.passability, ...bare[k].rows.passability], tileMeta: [...a.tileMeta, ...bare[k].rows.tileMeta] });
+
+// ── climate ground (build-climate-chipsets.py → climate-terrain.py): from 3030, each sheet draws only its own block ──
+// Volcano: lava cracks (N/E/S/W autotile), cooled lava plates and small lava pools (47 blob autotiles), fumaroles,
+// sulfur, basalt columns, obsidian, ash heaps. Desert: ripple sand, cracked dry earth (47 blob), dunes, sandstone
+// mesas, cacti, bones, a half-buried column. Snow: snow-capped copies of the castle tops.
+const TERRAIN = sheets.terrain;
+const T_NAMES = {
+  crack: "용암 균열", plate: "식은 용암 판", pool: "작은 용암 웅덩이", sulfur: "유황 얼룩", obsidian: "흑요석 조각", ash: "재 더미",
+  fumarole: "분기공", basalt: "현무암 기둥 무리", ripple: "모래 물결", cracked: "갈라진 마른 땅", dune: "사구", mesa: "사암 메사",
+  cactus: "선인장", bones: "짐승 뼈", column: "반쯤 묻힌 돌기둥",
+};
+const T_RULES = {
+  crack: "용암 균열: 1칸 폭으로 가지 치며 이어지는 길(autotile volcano_lava_crack, 네 방향 이웃으로 칸을 고른다). 한 줄기 8~20칸, 식은 용암 판·용암 웅덩이 가장자리에서 시작해 재밭으로 뻗는다. 2×2 로 뭉치지 않는다. 길·문·집·계단 1칸 밖. 지나갈 수 있다(아래 레이어).",
+  plate: "식은 용암 판: 2×2 칸 덩이를 이어 붙인 3×3 이상 덩이(autotile volcano_lava_plate_47). 한 칸 폭 꼬리 금지, 네모 그대로 두지 말고 모서리를 깎는다. 속칸(255)은 본체 3종을 섞는다. 재밭의 큰 빈 땅을 이 판과 균열로 채운다. 지나갈 수 있다.",
+  pool: "작은 용암 웅덩이: 2×2 칸 덩이 2~4개(autotile volcano_lava_pool_47), 굳은 껍질 테두리. 맵마다 한두 곳, 집·길에서 2칸 밖. 지나갈 수 없다.",
+  sulfur: "유황 얼룩: 분기공·균열 곁에 1~2칸. 흩뿌리지 않는다. 지나갈 수 있다.",
+  obsidian: "흑요석 조각: 용암 균열에 붙여 한두 개만(균열 곁 말고는 두지 않는다). 지나갈 수 없다(위 레이어).",
+  ash: "재 더미: 균열·분기공 곁에만 한두 개. 지나갈 수 없다(위 레이어).",
+  fumarole: "분기공: 구멍(아래, 통행 불가) 위 칸에 연기(위, 통과). 연기 두 그림은 같은 분기공의 다른 모양이다(엔진에 타일 움직임이 없어 한 장씩 고른다). 맵마다 1~3곳, 유황 얼룩과 함께.",
+  basalt: "현무암 기둥 무리: 한 덩이로 찍는다(-1 칸은 비운다). 맵 가장자리·절벽 밑에 맵마다 한두 무리. 통행 불가.",
+  ripple: "모래 물결: 모래 바닥 변형 4종. 2×2 이상 덩어리 무늬로 깔고 네 종류를 섞는다(한 칸씩 흩뿌리지 않는다). 사구 곁·트인 모래밭. 지나갈 수 있다.",
+  cracked: "갈라진 마른 땅: 2×2 칸 덩이를 이어 붙인 덩이(autotile desert_cracked_earth_47). 오아시스에서 먼 트인 곳에 한두 덩이. 지나갈 수 있다.",
+  dune: "사구: 한 덩이로 찍는다(-1 칸은 비운다, 아래 레이어, 지나갈 수 있다). 맵 가장자리 띠와 트인 모래밭에 크기(3×2·4×3·6×3)를 섞어 둔다. 집·길 1칸 밖, 서로 겹치지 않는다.",
+  mesa: "사암 메사: 한 덩이로 찍는다(-1 칸은 비운다). 맵마다 0~2개, 가장자리나 길 없는 곳. 통행 불가.",
+  cactus: "선인장: 기둥 선인장(1×2, 윗칸 통과·아랫칸 불가)·통 선인장·꽃 핀 선인장. 두세 그루를 한 무리로, 맵 전체에 서너 무리까지. 한 그루씩 흩뿌리지 않는다.",
+  bones: "짐승 뼈: 길 없는 외딴 곳 한 곳만. 통행 불가.",
+  column: "반쯤 묻힌 돌기둥: 길 없는 외딴 곳 한두 곳, 뼈와 함께 두어도 된다. 통행 불가.",
+};
+const LAYERS = {
+  // kind → (dy, h) → [layer, solid]
+  crack: () => ["lower", false], plate: () => ["lower", false], ripple: () => ["lower", false], cracked: () => ["lower", false],
+  sulfur: () => ["lower", false], dune: () => ["lower", false], pool: () => ["lower", true], basalt: () => ["lower", true], mesa: () => ["lower", true],
+  obsidian: () => ["upper", true], ash: () => ["upper", true], bones: () => ["upper", true],
+  fumarole: (dy) => (dy === 0 ? ["upper", false] : ["lower", true]),
+  cactus: (dy, h) => (h === 2 && dy === 0 ? ["upper", false] : ["upper", true]),
+  column: (dy) => (dy === 0 ? ["upper", false] : ["upper", true]),
+};
+const CLIMATE_TAG = { volcano: "화산", desert: "사막", snow: "설원" };
+function terrainRows(climate, from, count) {
+  const rows = { terrain: [], priority: [], passability: [], tileMeta: [] };
+  const cell = new Map();
+  for (const st of TERRAIN.stamps) if (st.climate === climate) st.tiles.forEach((t, k) => { if (t >= 0) cell.set(t, { st, dx: k % st.w, dy: Math.floor(k / st.w) }); });
+  const walls = new Map(climate === "snow" ? TERRAIN.snowWalls.map(([src, dst]) => [dst, src]) : []);
+  const shut = { up: false, down: false, left: false, right: false }, open = { up: true, down: true, left: true, right: true };
+  for (let t = from; t < count; t++) {
+    const src = walls.get(t);
+    if (src != null) {  // snow-capped castle top: same passage, layer and backing as its source
+      const meta = TS.tileMeta[src] ?? {};
+      rows.terrain.push(TS.terrain[src]); rows.priority.push(TS.priority[src]); rows.passability.push(structuredClone(TS.passability[src]));
+      rows.tileMeta.push({ ...structuredClone(meta), label: `눈 쌓인 ${meta.label ?? "성벽 " + src}`, tags: [...(meta.tags ?? []), "눈", "설원", "눈 쌓인 성벽"],
+        description: `성벽·성탑 윗면 칸 ${src}에 눈이 쌓인 사본(흰 눈 + 푸른 회색 윤곽 1px). 설원 맵의 성벽·성탑·문루에서 ${src} 대신 쓴다. 통행·레이어는 ${src}와 같다.` });
+      continue;
+    }
+    const c = cell.get(t);
+    rows.terrain.push(0);
+    if (!c) { rows.priority.push("lower"); rows.passability.push({ ...shut }); rows.tileMeta.push(unused()); continue; }
+    const { st, dx, dy } = c, [layer, solid] = LAYERS[st.kind](dy, st.h);
+    const name = T_NAMES[st.kind], part = st.id.slice(st.kind === "cactus" || st.kind === "column" ? 0 : st.kind.length + 1);
+    rows.priority.push(layer);
+    rows.passability.push(solid ? { ...shut } : { ...open });
+    rows.tileMeta.push({
+      role: { pool: "water", basalt: "rock", mesa: "rock", obsidian: "rock", ash: "rock", bones: "prop", column: "prop", cactus: "plant" }[st.kind] ?? "terrain",
+      tags: ["기후 지형", CLIMATE_TAG[climate], name, ...(st.kind === "pool" || st.kind === "crack" ? ["용암", "lava"] : [])],
+      label: `${name} · ${part}${st.w * st.h > 1 ? ` (${dx + 1},${dy + 1})` : ""}`,
+      source: "user", origin: "user", locked: true, userLocked: true,
+      passage: solid ? "solid" : layer === "upper" ? "star" : "passable", defaultLayer: layer, layerBacking: layer === "upper" ? "none" : "none",
+      terrainTag: 0, confidence: "high",
+      description: `${CLIMATE_TAG[climate]}판 ${name} (${st.id}). ${T_RULES[st.kind]}`,
+    });
+  }
+  const groups = TERRAIN.stamps.filter((st) => st.climate === climate && !["crack", "plate", "pool", "cracked", "ripple"].includes(st.kind)).map((st) => {
+    const lowerTiles = [], upperTiles = [], tileIds = [], cellLayers = [];
+    st.tiles.forEach((t, k) => {
+      const [layer] = LAYERS[st.kind](Math.floor(k / st.w), st.h);
+      if (t >= 0) { tileIds.push(t); cellLayers.push(layer); }
+      lowerTiles.push(t < 0 ? -1 : layer === "lower" ? t : 240); upperTiles.push(t < 0 || layer === "lower" ? -1 : t);
+    });
+    return {
+      id: `climate-terrain:${st.id}`, name: `${CLIMATE_TAG[climate]} 지형 · ${T_NAMES[st.kind]} ${st.id}`,
+      role: st.kind === "cactus" ? "plant" : ["dune", "sulfur"].includes(st.kind) ? "terrain" : "prop", source: "bundled-default",
+      tileIds, layerHome: "perCell", cellLayers, confidence: "high",
+      previewMap: { width: st.w, height: st.h, lowerTiles, upperTiles },
+      sourceRect: { x: st.col * 16, y: (TERRAIN.first / 30 + st.row) * 16, width: st.w * 16, height: st.h * 16 },
+      description: `${CLIMATE_TAG[climate]}판 ${T_NAMES[st.kind]} ${st.w}×${st.h}. ${T_RULES[st.kind]}`,
+      defaultLayer: cellLayers.every((l) => l === "upper") ? "upper" : cellLayers.every((l) => l === "lower") ? "lower" : "mixed",
+      patternGrammar: { kind: "source_rect", parts: [], repeat: "source_order", preserveCaps: false },
+      placementRules: T_RULES[st.kind],
+    };
+  });
+  const ripple = TERRAIN.stamps.filter((st) => st.climate === climate && st.kind === "ripple");
+  if (ripple.length) groups.push({
+    id: "climate-terrain:ripple", name: "사막 지형 · 모래 물결 바닥 4종", role: "terrain", source: "bundled-default",
+    tileIds: ripple.map((st) => st.tiles[0]), layerHome: "perCell", cellLayers: ripple.map(() => "lower"), confidence: "high",
+    previewMap: { width: ripple.length, height: 1, lowerTiles: ripple.map((st) => st.tiles[0]), upperTiles: ripple.map(() => -1) },
+    sourceRect: { x: ripple[0].col * 16, y: (TERRAIN.first / 30 + ripple[0].row) * 16, width: ripple.length * 16, height: 16 },
+    description: `모래 바닥 변형 4종(물결 줄이 칸 옆변에서 이어진다). ${T_RULES.ripple}`, defaultLayer: "lower",
+    patternGrammar: { kind: "source_rect", parts: [], repeat: "source_order", preserveCaps: false }, placementRules: T_RULES.ripple,
+  });
+  const AUTO = { volcano: [["plate", "volcano_lava_plate_47"], ["pool", "volcano_lava_pool_47"], ["crack", "volcano_lava_crack"]], desert: [["cracked", "desert_cracked_earth_47"]], snow: [] }[climate];
+  const autotiles = AUTO.map(([k, id]) => {
+    const g = TERRAIN.autotiles[k];
+    return { id, name: `${T_NAMES[k]} · ${k === "crack" ? "1칸 폭 네 방향 연결" : "자연 가장자리(2×2 덩이)"}`, neighborhood: 8, memberTileIds: g.members, connectTileIds: g.members,
+      variantMap: g.variantMap, ...(g.interior ? { interiorVariants: [[g.body, ...g.interior], [g.body, ...g.interior]] } : {}), description: T_RULES[k] };
+  });
+  return { rows, groups, autotiles };
+}
+const ground = Object.fromEntries(["snow", "volcano", "desert"].map((k) => [k, terrainRows(k, sheets.bareTrees.first + 150, sheets[k].count)]));
+const withBare = (k, a) => ({ terrain: [...a.terrain, ...bare[k].rows.terrain, ...ground[k].rows.terrain], priority: [...a.priority, ...bare[k].rows.priority, ...ground[k].rows.priority], passability: [...a.passability, ...bare[k].rows.passability, ...ground[k].rows.passability], tileMeta: [...a.tileMeta, ...bare[k].rows.tileMeta, ...ground[k].rows.tileMeta] });
 
 const out = {
   base,
   climates: {
     snow: {
       id: "forest_harmony_snow", textureKey: "tex_forest_harmony_snow", name: "설원 마을 · 눈 덮인 숲마을", count: sheets.snow.count,
-      append: withBare("snow", append), metaPatch: snowMeta, extraAutotileGroups: [iceGroup], extraTileGroups: bare.snow.groups, autotileNames: {},
+      append: withBare("snow", append), metaPatch: snowMeta, extraAutotileGroups: [iceGroup], extraTileGroups: [...bare.snow.groups, ...ground.snow.groups], autotileNames: {},
     },
     volcano: {
       id: "forest_harmony_volcano", textureKey: "tex_forest_harmony_volcano", name: "화산 마을 · 재와 용암의 숲마을", count: sheets.volcano.count,
-      append: withBare("volcano", none), metaPatch: volcanoMeta, extraAutotileGroups: [], extraTileGroups: bare.volcano.groups,
+      append: withBare("volcano", none), metaPatch: volcanoMeta, extraAutotileGroups: ground.volcano.autotiles, extraTileGroups: [...bare.volcano.groups, ...ground.volcano.groups],
       autotileNames: { forest_harmony_lake_47: "용암 못 · 자연 가장자리(물 칸과 같은 번호, 통행 불가)" },
     },
     desert: {
       id: "forest_harmony_desert", textureKey: "tex_forest_harmony_desert", name: "사막 마을 · 모래와 사암의 숲마을", count: sheets.desert.count,
-      append: withBare("desert", none), metaPatch: desertMeta, extraAutotileGroups: [], extraTileGroups: bare.desert.groups, autotileNames: { forest_harmony_lake_47: "오아시스 못 · 자연 가장자리" },
+      append: withBare("desert", none), metaPatch: desertMeta, extraAutotileGroups: ground.desert.autotiles, extraTileGroups: [...bare.desert.groups, ...ground.desert.groups], autotileNames: { forest_harmony_lake_47: "오아시스 못 · 자연 가장자리" },
     },
     autumn: {
       id: "forest_harmony_autumn", textureKey: "tex_forest_harmony_autumn", name: "가을 마을 · 단풍 든 숲마을", count: sheets.autumn.count,
