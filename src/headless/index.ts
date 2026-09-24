@@ -8,6 +8,7 @@ import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
 import { readStoredZipEntry } from "@/project/packageZip";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
+import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
 
 const decoder = new TextDecoder();
 
@@ -194,12 +195,17 @@ function countHeadlessRecordChanges(before: readonly { id: string }[], after: re
   return changed;
 }
 
+/** 바뀐 칸 수 — editor/tools/changeset.ts countTileChanges 와 같은 규칙(2층·4층·그림자 포함). */
 function countTileChanges(before: GameMap, after: GameMap): number {
   let changed = 0;
   const size = Math.max(before.lowerTiles.length, after.lowerTiles.length);
+  const extras = hasExtraLayers(before) || hasExtraLayers(after);
   for (let i = 0; i < size; i += 1) {
     if (before.lowerTiles[i] !== after.lowerTiles[i]) changed += 1;
     else if (before.upperTiles[i] !== after.upperTiles[i]) changed += 1;
+    else if (extras && (layerTileAt(before, 2, i) !== layerTileAt(after, 2, i)
+      || layerTileAt(before, 4, i) !== layerTileAt(after, 4, i)
+      || shadowAt(before, i) !== shadowAt(after, i))) changed += 1;
   }
   return changed;
 }

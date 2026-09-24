@@ -46,8 +46,14 @@
 | `analyze_map_tile_usage` | `tiles[].layers` 는 옛 이름 `lower`(1층)·`upper`(3층)에 `layer2`·`layer4` 를 더한다. 인접 통계의 합성 칸은 4 → 1 맨 위. 선택 층이 있는 맵만 `data.layerCells {1,2,3,4,shadow}`. |
 | `mapVisualContent` | 선택 층이 있을 때만 투영에 넣는다 → 2·4층·그림자만 바뀌어도 `requiresVisualReview` 가 참. 옛 맵 투영 문자열은 그대로. |
 
-남은 1·3층 전용 표면: 턴 시작 뷰포트 이미지(`renderMapRegionImages` 에 넘기는 뷰포트 데이터), `show_tile_grid`, `get_map_region` 의 `water.bounds`.
-회귀: `test/mzLayerVision.test.ts`, `test/qaGameRender.test.ts`(업로드 그림판·층 순서·못 찾음).
+| 턴 시작 뷰포트 이미지 | `mapRegionImagePayload`(`src/ai/mapViewportContext.ts`)가 show_map_region 과 같은 규칙으로 `layer2`·`layer4`·`shadow` 를 싣는다(있을 때만). |
+| `get_map_region` `water.bounds` | 1~4층 어느 층이든 물이면 센다(없는 층은 -1 → 옛 맵은 그대로). |
+| Pi 고스트 증분 | `src/ai/piAgent/mapDelta.ts` 층 유니온 `lower`·`upper`·`layer2`·`layer4`·`shadow`. 선택 층은 두 맵 어느 쪽에도 없으면 항목이 없고(옛 맵 증분 JSON 불변), 사라지면 `{layer, absent:true}` 로 키를 지운다. 크기가 바뀐 맵은 선택 층도 `full`. 생산 `scripts/lib/piAgentRuntime.ts` `emitMapDelta`, 소비 `aiPiGhostBridge`·`aiLaneGhost` 는 `applyMapDeltas` 만 부르므로 그대로 따라간다. |
+| 고스트 칸 | `agentGhostPreview.collectTileDiffCells` 가 2층·그림자 변화는 lower, 4층 변화는 upper 칸으로 **표시만** 한다(tileId 없음 → 칸 테두리). 같은 칸의 1·3층 셀이 있으면 그 셀을 둔다. 2·4층 그림을 고스트에 그리는 일은 PR ②. 적용 전 `paint_tiles` 영역 고스트는 `layer` `"3"`·`"4"`·`"upper"` → upper, 그 밖 → lower. |
+| 변경 집계 | `changeset.ts` `countTileChanges`(칸당 1, 2·4층·그림자 포함 — `src/headless/index.ts` 도 같은 규칙)·`tileBuffersDiffer`(→ `tileChangedMapIds` 재검사 대상). 선택 층은 `comparableMapProperties` 에서 뺐다 — 층 칠하기가 `mapPropertiesChanged` 로 잡혀 `proposalSafety` ZERO_COUNT_KEYS 에 걸리던 길을 막는다. |
+
+남은 1·3층 전용 표면: `show_tile_grid`.
+회귀: `test/mzLayerVision.test.ts`, `test/qaGameRender.test.ts`(업로드 그림판·층 순서·못 찾음), `test/mzLayerGhostAccounting.test.ts`(증분 왕복·옛 맵 불변·집계·고스트 칸·뷰포트 재료).
 
 ## 충격 연출 (2026-09-22)
 

@@ -11,6 +11,7 @@ import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges"
 import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
+import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
 import type { ChangeSummary } from "./types";
 
 // 구조적 복제본(draft) 생성. Project JSON과 editor-only detached session memory를 함께 복제한다.
@@ -71,7 +72,18 @@ function tileBuffersDiffer(before: GameMap, after: GameMap): boolean {
   if (before.width !== after.width || before.height !== after.height) return true;
   if (!sameNumbers(before.lowerTiles, after.lowerTiles)) return true;
   if (!sameNumbers(before.upperTiles, after.upperTiles)) return true;
+  // 2층·4층·그림자(선택 칸). 없는 칸은 빈칸 배열과 같다 — 옛 맵은 셋 다 undefined 라 바로 같다.
+  if (!sameOptionalNumbers(before.lowerOverlayTiles, after.lowerOverlayTiles, -1)) return true;
+  if (!sameOptionalNumbers(before.upperOverlayTiles, after.upperOverlayTiles, -1)) return true;
+  if (!sameOptionalNumbers(before.shadowBits, after.shadowBits, 0)) return true;
   return !sameStacks(before.lowerTileStacks, after.lowerTileStacks) || !sameStacks(before.upperTileStacks, after.upperTileStacks);
+}
+
+/** 선택 칸 비교. 한쪽이 없으면 그쪽을 모두 빈칸(empty)으로 본다. */
+function sameOptionalNumbers(before: readonly number[] | undefined, after: readonly number[] | undefined, empty: number): boolean {
+  if (before === after) return true;
+  if (before && after) return sameNumbers(before, after);
+  return (before ?? after)!.every((value) => value === empty);
 }
 
 function sameNumbers(before: readonly number[], after: readonly number[]): boolean {
@@ -123,12 +135,17 @@ function emptySummary(): ChangeSummary {
   };
 }
 
+/** 바뀐 칸 수 — 한 칸에서 여러 층이 바뀌어도 1. 2층·4층·그림자는 맵에 그 칸이 있을 때만 본다(옛 맵은 지금과 같은 순회). */
 function countTileChanges(before: GameMap, after: GameMap): number {
   let changed = 0;
   const size = Math.max(before.lowerTiles.length, after.lowerTiles.length);
+  const extras = hasExtraLayers(before) || hasExtraLayers(after);
   for (let i = 0; i < size; i += 1) {
     if (before.lowerTiles[i] !== after.lowerTiles[i]) changed += 1;
     else if (before.upperTiles[i] !== after.upperTiles[i]) changed += 1;
+    else if (extras && (layerTileAt(before, 2, i) !== layerTileAt(after, 2, i)
+      || layerTileAt(before, 4, i) !== layerTileAt(after, 4, i)
+      || shadowAt(before, i) !== shadowAt(after, i))) changed += 1;
   }
   return changed;
 }
@@ -139,6 +156,11 @@ function comparableMapProperties(map: GameMap): string {
     upperTiles: _upperTiles,
     lowerTileStacks: _lowerTileStacks,
     upperTileStacks: _upperTileStacks,
+    // 2층·4층·그림자는 타일 칸이다 — countTileChanges 가 센다. 여기 두면 층 칠하기가 「맵 속성 변경」으로 잡혀
+    // 타일만 바꾸는 제안의 안전 검사(proposalSafety ZERO_COUNT_KEYS)에 걸린다.
+    lowerOverlayTiles: _lowerOverlayTiles,
+    upperOverlayTiles: _upperOverlayTiles,
+    shadowBits: _shadowBits,
     events: _events,
     ...properties
   } = map;

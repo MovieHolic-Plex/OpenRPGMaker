@@ -1,6 +1,7 @@
 import type { GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { isAiLiveCanvasEnabled, subscribeAiLiveCanvas } from "@/editor/aiLiveCanvas";
 import { lineCells, type Point } from "@/editor/tools/mapHelpers";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
 
 export type AgentGhostLayer = "lower" | "upper" | "event";
 
@@ -468,16 +469,33 @@ function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap
   if (!before.lowerTiles || !after.lowerTiles) return;
   const lowerChanged = before.lowerTiles !== after.lowerTiles || before.lowerTileStacks !== after.lowerTileStacks;
   const upperChanged = before.upperTiles !== after.upperTiles || before.upperTileStacks !== after.upperTileStacks;
-  if (!lowerChanged && !upperChanged) return;
+  // 2층·4층·그림자(선택 칸). 옛 맵은 양쪽 다 undefined 라 늘 false — 칸을 훑지 않는다.
+  const layer2Changed = before.lowerOverlayTiles !== after.lowerOverlayTiles;
+  const layer4Changed = before.upperOverlayTiles !== after.upperOverlayTiles;
+  const shadowChanged = before.shadowBits !== after.shadowBits;
+  if (!lowerChanged && !upperChanged && !layer2Changed && !layer4Changed && !shadowChanged) return;
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const index = y * before.width + x;
       const nextIndex = y * after.width + x;
+      let lowerCell = false;
+      let upperCell = false;
       if (lowerChanged && (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex]))) {
         includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId, tileId: afterTileId(after, "lower", nextIndex) });
+        lowerCell = true;
       }
       if (upperChanged && (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex]))) {
         includeCell(area, { x, y, layer: "upper", tilesetId: after.tilesetId, tileId: afterTileId(after, "upper", nextIndex) });
+        upperCell = true;
+      }
+      // 2층·그림자는 아래 묶음, 4층은 위 묶음 칸으로 표시만 한다(tileId 없음 → 렌더러가 칸 테두리를 그린다).
+      // 그 층 그림을 고스트에 그리는 일은 PR ② 몫이다. 같은 칸의 1·3층 셀이 이미 있으면 그 셀(실제 타일)을 둔다.
+      if (!lowerCell && ((layer2Changed && layerTileAt(before, 2, index) !== layerTileAt(after, 2, nextIndex))
+        || (shadowChanged && shadowAt(before, index) !== shadowAt(after, nextIndex)))) {
+        includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId });
+      }
+      if (!upperCell && layer4Changed && layerTileAt(before, 4, index) !== layerTileAt(after, 4, nextIndex)) {
+        includeCell(area, { x, y, layer: "upper", tilesetId: after.tilesetId });
       }
     }
   }
@@ -536,7 +554,8 @@ function finalizeArea(area: MutableArea, toolName: string, args: Record<string, 
 
 function paintTilesArea(project: Project, args: Record<string, unknown>): MutableArea | null {
   const mapId = stringValue(args.mapId);
-  const layer = args.layer === "upper" ? "upper" : "lower";
+  // 층 인자는 문자열 enum "lower"|"upper"|"1".."4" — 3·4층은 위 묶음, 1·2층은 아래 묶음 고스트 칸이다.
+  const layer = args.layer === "upper" || args.layer === "3" || args.layer === "4" ? "upper" : "lower";
   const mode = stringValue(args.mode);
   if (!mapId || !mode) return null;
   if (mode === "rect") return rectArea(project, mapId, rectFromEndpoints(args), "paint_tiles", "페인트 영역", layer);

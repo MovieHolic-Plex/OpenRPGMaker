@@ -157,7 +157,9 @@ export function waterBoundsInMap(
       const i = y * map.width + x;
       const lower = map.lowerTiles[i] ?? TILE.EMPTY;
       const upper = map.upperTiles[i] ?? TILE.EMPTY;
-      if (!isWaterInTileset(map, tileset, lower) && !isWaterInTileset(map, tileset, upper)) continue;
+      // 2층·4층 물도 센다(없는 층은 -1 → 물 아님 — 옛 맵은 지금과 같다).
+      if (!isWaterInTileset(map, tileset, lower) && !isWaterInTileset(map, tileset, upper)
+        && !isWaterInTileset(map, tileset, layerTileAt(map, 2, i)) && !isWaterInTileset(map, tileset, layerTileAt(map, 4, i))) continue;
       cellCount += 1;
       if (x < minX) minX = x;
       if (y < minY) minY = y;
