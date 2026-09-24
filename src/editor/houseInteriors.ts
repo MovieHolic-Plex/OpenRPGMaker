@@ -11,6 +11,7 @@ import {
 import {
   floorMaskFromPlan,
   runInteriorRoomPipeline,
+  VR,
   interiorVocabFromTileset,
   type InteriorRoomPlan,
   type InteriorRoomTheme,
@@ -332,14 +333,26 @@ export function resolveHouseInteriorProgram(
   seed: number,
 ): HouseInteriorProgram {
   if (exterior?.program) return exterior.program;
-  const name = (exterior?.ownerName ?? "").toLowerCase();
-  if (/상인|상점|장사|merchant|shop|리코/.test(name)) return "shop";
+  void seed; // kept for API compatibility — no lottery when heuristics miss
+  return houseProgramForOwner(exterior?.ownerName) ?? "dwelling";
+}
+
+/**
+ * 집주인 이름·직업에서 실내 용도를 읽는다. 못 읽으면 undefined(평범한 민가).
+ * 어부·선원·사냥꾼·농부는 연장·통을 두는 작업 공간(workshop), 등대지기·항해사·치료사·사제는
+ * 지도·책·기록이 있는 서재(study) — 같은 민가 도면을 모든 직업에 찍지 않는다.
+ */
+export function houseProgramForOwner(ownerName: string | undefined): HouseInteriorProgram | undefined {
+  const name = (ownerName ?? "").toLowerCase();
+  if (!name) return undefined;
+  if (/상인|상점|장사|잡화|merchant|shop|리코/.test(name)) return "shop";
   if (/여관|주점|술|inn|tavern|숙박/.test(name)) return "inn";
   if (/대장|목수|공방|craft|smith|workshop/.test(name)) return "workshop";
+  if (/어부|선원|뱃사공|낚시|어망|사냥|농부|목동|fisher|sailor|boatman|hunter|farmer/.test(name)) return "workshop";
   if (/학자|서기|마법|sage|study|사서/.test(name)) return "study";
+  if (/등대|항해|지도|약초|치료|의사|사제|신관|수녀|lighthouse|navigator|healer|priest|doctor/.test(name)) return "study";
   if (/촌장|영주|귀족|lord|chief|로안/.test(name)) return "manor";
-  void seed; // kept for API compatibility — no lottery when heuristics miss
-  return "dwelling";
+  return undefined;
 }
 
 export function wallMaterialForKit(kitId: HouseKitId | undefined): InteriorWallMaterial | undefined {
@@ -633,11 +646,13 @@ export function buildHouseInteriorPlan(input: {
         throw error;
       }
     }));
+    // 같은 용도·규모의 집이 한 도면으로 찍히지 않게 — 시드가 도면을 좌우로 뒤집는다.
+    const oriented = ((input.seed >>> 3) & 1) === 1 ? mirrorPlanX(shifted) : shifted;
     if (input.returnMapId === undefined && input.returnX === undefined && input.returnY === undefined) {
-      return shifted;
+      return oriented;
     }
     return {
-      ...shifted,
+      ...oriented,
       ...(input.returnMapId !== undefined ? { returnMapId: input.returnMapId } : {}),
       ...(input.returnX !== undefined ? { returnX: input.returnX } : {}),
       ...(input.returnY !== undefined ? { returnY: input.returnY } : {}),
@@ -657,6 +672,22 @@ export function buildHouseInteriorPlan(input: {
     default:
       return finish(cottage2Plan(input.mapId, input.name, input.seed, program, input.themeHint, input.wallMaterial));
   }
+}
+
+/** 방 배치를 방들의 가로 범위 중심으로 좌우 반전한다(벽 문법·가구는 반전된 도면에서 새로 짓는다). */
+function mirrorPlanX(plan: InteriorRoomPlan): InteriorRoomPlan {
+  const boxes = plan.rooms && plan.rooms.length > 0 ? plan.rooms : plan.wings;
+  if (boxes.length === 0) return plan;
+  const span = Math.min(...boxes.map((box) => box.x)) + Math.max(...boxes.map((box) => box.x + box.w - 1));
+  const flipBox = <T extends { readonly x: number; readonly w: number }>(box: T): T => ({ ...box, x: span - (box.x + box.w - 1) });
+  const flipCell = <T extends { readonly x: number }>(cell: T): T => ({ ...cell, x: span - cell.x });
+  return {
+    ...plan,
+    rooms: plan.rooms?.map(flipBox),
+    wings: plan.wings.map(flipBox),
+    innerDoors: plan.innerDoors?.map(flipCell),
+    door: flipCell(plan.door),
+  };
 }
 
 /**
@@ -1117,46 +1148,61 @@ function wallBackedStairCell(
   const floor = floorMaskFromPlan(plan);
   const W = map.width;
   const isFloor = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < map.height && floor[y * W + x] === true;
-  const free = (x: number, y: number) => isFloor(x, y)
+  const upper = (x: number, y: number) => map.upperTiles[y * W + x] ?? -1;
+  const hasEvent = (x: number, y: number, props: boolean) => (map.events ?? [])
+    .some((event) => event.x === x && event.y === y && !(props && event.id.startsWith("ev_inspect_")));
+  // 엄격: 비어 있는 칸만. 느슨: 계단 앞·착지의 단일 적재 소품(통·상자·자루)은 치우고 쓴다.
+  const free = (x: number, y: number, lenient: boolean) => isFloor(x, y)
     && PASSABLE_LOWER_TILES.has(map.lowerTiles[y * W + x] ?? -1)
-    && (map.upperTiles[y * W + x] ?? -1) < 0
-    && !(map.events ?? []).some((event) => event.x === x && event.y === y)
+    && (upper(x, y) < 0 || (lenient && STAIR_CLEARABLE_PROPS.has(upper(x, y))))
+    && !hasEvent(x, y, lenient)
     && !avoid.some((cell) => cell.x === x && cell.y === y);
   const roomAt = (x: number, y: number) => (plan.rooms ?? []).find((room) => x >= room.x && x < room.x + room.w && y >= room.y && y < room.y + room.h);
   const entry = avoid[0] ?? plan.door;
-  const candidates: { x: number; y: number; score: number }[] = [];
-  for (let y = 1; y < map.height - 1; y += 1) {
-    for (let x = 1; x < W - 1; x += 1) {
-      const room = roomAt(x, y);
-      if (!room || isFloor(x, y - 1)) continue;
-      if (!free(x, y) || !free(x + 1, y) || !free(x, y + 1)) continue;
-      const score = (isFloor(x - 1, y) ? 0 : 100) + (room.theme === "bedroom" ? 0 : 50)
-        - (Math.abs(x - entry.x) + Math.abs(y - entry.y));
-      candidates.push({ x, y, score });
-    }
-  }
-  candidates.sort((a, b) => b.score - a.score || a.y - b.y || a.x - b.x);
-  // 계단 칸은 밟으면 층을 옮긴다 — 그 칸을 막아도 나머지 바닥이 입구에서 다 이어져야 한다.
-  const open = (x: number, y: number) => isFloor(x, y) && (map.upperTiles[y * W + x] ?? -1) < 0;
-  const reach = (blocked?: { x: number; y: number }): number => {
-    const seen = new Set<number>([entry.y * W + entry.x]);
-    const queue = [entry];
-    while (queue.length) {
-      const cell = queue.pop()!;
-      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
-        const x = cell.x + dx;
-        const y = cell.y + dy;
-        if (!open(x, y) || seen.has(y * W + x) || (blocked && blocked.x === x && blocked.y === y)) continue;
-        seen.add(y * W + x);
-        queue.push({ x, y });
+  for (const lenient of [false, true]) {
+    const candidates: { x: number; y: number; score: number }[] = [];
+    for (let y = 1; y < map.height - 1; y += 1) {
+      for (let x = 1; x < W - 1; x += 1) {
+        const room = roomAt(x, y);
+        if (!room || isFloor(x, y - 1)) continue;
+        if (!free(x, y, false) || !free(x + 1, y, lenient) || !free(x, y + 1, lenient)) continue;
+        const score = (isFloor(x - 1, y) ? 0 : 100) + (room.theme === "bedroom" ? 0 : 50)
+          - (Math.abs(x - entry.x) + Math.abs(y - entry.y));
+        candidates.push({ x, y, score });
       }
     }
-    return seen.size;
-  };
-  const all = reach();
-  const best = candidates.find((cell) => reach(cell) === all - 1);
-  return best ? { x: best.x, y: best.y } : undefined;
+    candidates.sort((a, b) => b.score - a.score || a.y - b.y || a.x - b.x);
+    // 계단 칸은 밟으면 층을 옮긴다 — 그 칸을 막아도 나머지 바닥이 입구에서 다 이어져야 한다.
+    const reach = (stair: { x: number; y: number } | undefined, cleared: readonly { x: number; y: number }[]): number => {
+      const open = (x: number, y: number) => isFloor(x, y)
+        && (upper(x, y) < 0 || cleared.some((cell) => cell.x === x && cell.y === y));
+      const seen = new Set<number>([entry.y * W + entry.x]);
+      const queue = [entry];
+      while (queue.length) {
+        const cell = queue.pop()!;
+        for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+          const x = cell.x + dx;
+          const y = cell.y + dy;
+          if (!open(x, y) || seen.has(y * W + x) || (stair && stair.x === x && stair.y === y)) continue;
+          seen.add(y * W + x);
+          queue.push({ x, y });
+        }
+      }
+      return seen.size;
+    };
+    for (const cell of candidates) {
+      const cleared = [{ x: cell.x + 1, y: cell.y }, { x: cell.x, y: cell.y + 1 }];
+      // 치운 칸은 새로 열릴 뿐 — 원래 닿던 바닥이 계단 하나 말고는 줄지 않으면 된다.
+      if (reach(cell, cleared) < reach(undefined, []) - 1) continue;
+      for (const c of cleared) clearPassableLanding(map, c.x, c.y);
+      return { x: cell.x, y: cell.y };
+    }
+  }
+  return undefined;
 }
+
+/** 계단 자리를 내기 위해 치워도 되는 단일 적재 소품(상위 레이어) — 세트 가구(탁자·의자·침대)는 제외. */
+const STAIR_CLEARABLE_PROPS = new Set<number>([VR.BARREL, VR.CRATE, VR.GRAIN, VR.BOX, VR.JARS, VR.BUCKET]);
 
 /**
  * 위층에는 바깥 문이 없다 — 벽 문법은 모든 층의 문 칸 아래 천장 띠를 바닥으로 뚫는데, 위층에서
