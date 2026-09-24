@@ -12,7 +12,7 @@ const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const project = await read(input), proof = await read(proofFile);
 if (!proof.projectId || !proof.projectDir || !proof.sha256) throw Error('Canonical host source proof required');
 if (!proof.portableSha256 || createHash('sha256').update(await fs.readFile(input)).digest('hex') !== proof.portableSha256) throw Error('Portable source does not match canonical read receipt');
-const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
+const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog','BathGymCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
@@ -125,7 +125,7 @@ for(const recipe of extras.recipes){
 
 // Importer scene references are reusable place assemblies, separate from saved
 // game maps. Keep the full geometry and source pixels available to AI readers.
-const complements = (await Promise.all(['Native','Hospitality'].map(kind => read(`src/assets/pixelArtWorld${kind}ComplementsCatalog.json`)))).flat();
+const complements = (await Promise.all(['NativeComplements','HospitalityComplements','BathGym'].map(kind => read(`src/assets/pixelArtWorld${kind}Catalog.json`)))).flat();
 for (const pack of complements.filter(pack => project.tilesets[pack.id])) for (const scene of pack.scenes) {
   const tileId=key(pack.id), id=key(scene.id), kitId=id+'_raster';
   const image=render(tileId,scene.width,scene.height,scene.lowerTiles,scene.upperTiles);
