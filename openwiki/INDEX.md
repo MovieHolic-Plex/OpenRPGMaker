@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **87쪽 / 3377KB / 약 963,661 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **88쪽 / 3382KB / 약 965,283 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -91,7 +91,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/slates-structure-learning.md` | 1 | `read-slates-project.mjs` |
 | `openwiki/slates-study.md` | 3 | `output/slates-study/source-project.json`, `scripts/content/save-slates-study.mjs`, `source-row.json` |
 | `openwiki/slates-village-authoring.md` | 1 | `save-slates-village-50.mjs` |
-| `openwiki/spatial-ai-tools.md` | 2 | `publish-pixel-art-world-local-library.mjs`, `read-pixel-art-world-host.mjs` |
+| `openwiki/spatial-ai-tools.md` | 3 | `pixel-art-world-civic-capture.mjs`, `revise-pixel-art-world-civic.mjs`, `save-pixel-art-world-patch.mjs` |
 | `openwiki/spatial-authoring-controller.md` | 1 | `storeMutationInstrumentation.test.ts` |
 | `openwiki/spatial-catalog-ui.md` | 2 | `output/evidence/interior-removal-executed/host-proof.json`, `output/evidence/place-previews/proof.json` |
 | `openwiki/spatial-geography-compiler.md` | 1 | `.omo/ulw-execute/tile-to-world/execution-policy.md` |
@@ -203,7 +203,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 절 제목 없음 (평면 목록 페이지).
 
-### `openwiki/autotiles.md` — 21KB · 193줄 · ~5,914 토큰
+### `openwiki/autotiles.md` — 22KB · 205줄 · ~6,252 토큰
 
 - `L5` World 지형과 공통 구조물
 - `L25` 1. RM2K식 3×4 템플릿 블록 문법
@@ -951,6 +951,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L69` 반려 후 축소·벽 연속성 수정
   - `L79` 2차 반려 후 밀도 재설계
 
+### `openwiki/pixel-art-world-static-expansion.md` — 3KB · 31줄 · ~969 토큰
+
+- `L23` 정본·공용 설치 도구
+
 ### `openwiki/placed-place-edits.md` — 5KB · 79줄 · ~1,282 토큰
 
 - `L3` Scope and ownership
@@ -1357,7 +1361,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 21KB · 257줄 · ~5,777 토큰
+### `openwiki/spatial-ai-tools.md` — 22KB · 269줄 · ~6,092 토큰
 
 - `L3` 장소 단일 계약 (2026-09-14)
 - `L19` Ownership
@@ -1368,6 +1372,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L184` Evidence and integration boundary
 - `L201` Completed region references (2026-09-13)
 - `L217` 2026-09-24 — 장소·지역·오브젝트의 자체 AI 참고문서
+  - `L258` PAW 시설 재배치와 저장 (2026-09-24)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 

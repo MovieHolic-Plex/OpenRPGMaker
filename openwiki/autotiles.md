@@ -196,3 +196,9 @@ Ditch는 47변형마다 가로 4프레임을 행 경계 안에 붙이고 `animat
 공용에는 원본 판본·별칭·규칙 메타데이터만 배포한다. 사용자 PNG를 가져올 때 실제
 원본/변형/정상·오류 그림과 전체 배열 자료를 생성한다. 출처·쿼터 좌표·제약·관찰 근거:
 [pixel-art-world/autotiles](../tiledata/pixel-art-world/autotiles.md).
+
+확장 카탈로그 UI는 이름·파일명·별칭 검색을 제공한다. 항목별 sourceWidth/sourceHeight,
+frames, defaultLayer, placement를 표시하며 upper 수동 마스크를 하위 자동 성형으로
+안내하지 않는다. 이미 추가한 수동 항목도 대상 목록에서 제외한다. 예약 `shared_`
+타일셋은 다음 로드에서 공용 정의로 갱신되므로 추가 대상으로 쓰지 않는다. 사용자 원본을
+새 타일셋으로 가져온 뒤 연결 소재를 추가한다.

@@ -144,6 +144,94 @@
             "y": 1
           }
         ]
+      },
+      {
+        "id": "loan-counter",
+        "name": "대출·반납 카운터",
+        "sourceRect": {
+          "x": 0,
+          "y": 22,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "reading-table",
+        "name": "목재 독서 테이블",
+        "sourceRect": {
+          "x": 5,
+          "y": 20,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
+      },
+      {
+        "id": "reading-chair-back",
+        "name": "독서 의자 · 뒷면",
+        "sourceRect": {
+          "x": 4,
+          "y": 23,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "librarian-chair",
+        "name": "사서 의자 · 정면",
+        "sourceRect": {
+          "x": 3,
+          "y": 23,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       }
     ]
   },
@@ -282,6 +370,24 @@
           {
             "x": 2,
             "y": 1
+          }
+        ]
+      },
+      {
+        "id": "chair-blue-back",
+        "name": "파란 사무용 의자 · 뒷면",
+        "sourceRect": {
+          "x": 4,
+          "y": 24,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
           }
         ]
       }

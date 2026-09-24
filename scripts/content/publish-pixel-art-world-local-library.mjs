@@ -12,7 +12,7 @@ const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const project = await read(input), proof = await read(proofFile);
 if (!proof.projectId || !proof.projectDir || !proof.sha256) throw Error('Canonical host source proof required');
 if (!proof.portableSha256 || createHash('sha256').update(await fs.readFile(input)).digest('hex') !== proof.portableSha256) throw Error('Portable source does not match canonical read receipt');
-const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
+const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const { PNG } = pngjs, pngs = new Map();
@@ -27,7 +27,7 @@ for (const source of Object.values(project.tilesets).filter(t => t.id.startsWith
   tile.id = key(source.id); asset.id = tile.id+'_image'; tile.image = {type:'uploaded',id:asset.id}; tile.structureKits = [];
   // Source document contents keep their original atlas IDs; explicit mapping is attached below.
   tile.referenceDocuments ??= [];
-  tile.referenceDocuments.unshift({id:'shared-identity',name:'공용 원본과 번호',description:'다운로드한 원본의 사용자 로컬 공용 사본. 타일 번호는 바뀌지 않았다.',documents:[{id:'identity',name:'원본 대응.md',markdown:`원본 tilesetId: ${source.id}\n공용 tilesetId: ${tile.id}\n칸 크기: ${tile.tileSize}px, 열 수: ${tile.tilesPerRow}, count: ${tile.count}.\n원본 참조 문서의 ${source.id}는 여기서는 ${tile.id}다. 타일 번호와 레이어/통행 배열은 그대로 보존한다.\n파일 SHA256: ${hash(Buffer.from(asset.dataUrl.split(',')[1],'base64'))}\n사용자 다운로드 원본은 로컬 공용 SQLite에서만 재사용하며 Git/public/배포 번들에 넣지 않는다.`}],images:[]});
+  tile.referenceDocuments.unshift({id:'shared-identity',name:'공용 원본과 번호',description:'다운로드한 원본의 사용자 로컬 공용 사본. 타일 번호는 바뀌지 않았다.',documents:[{id:'identity',name:'원본 대응.md',markdown:`원본 tilesetId: ${source.id}\n공용 tilesetId: \`${tile.id}\`\n칸 크기: ${tile.tileSize}px, 열 수: ${tile.tilesPerRow}, count: ${tile.count}.\n원본 참조 문서의 ${source.id}는 여기서는 \`${tile.id}\`다. 타일 번호와 레이어/통행 배열은 그대로 보존한다.\n파일 SHA256: ${hash(Buffer.from(asset.dataUrl.split(',')[1],'base64'))}\n사용자 다운로드 원본은 로컬 공용 SQLite에서만 재사용하며 Git/public/배포 번들에 넣지 않는다.`}],images:[]});
   if (tile.referenceSourceTilesetId) tile.referenceSourceTilesetId = key(tile.referenceSourceTilesetId);
   lib.tilesets[tile.id] = tile; lib.assets[asset.id] = asset;
   pngs.set(tile.id, PNG.sync.read(Buffer.from(asset.dataUrl.split(',')[1],'base64')));
@@ -58,10 +58,10 @@ function rows(width,height,lower,upper) {
 }
 function addObject(tileId,id,name,width,height,lower,upper,instructions,sourceDocs=[]) {
   const image=render(tileId,width,height,lower,upper);
-  const doc=category('assembly',name,`${instructions}\n\n공용 tilesetId: ${tileId}; 32px, 0기준 행 우선. -1은 덮지 않는 칸.\n\n\`\`\`json\n${JSON.stringify({width,height,lowerTiles:lower,upperTiles:upper})}\n\`\`\``,image);
+  const doc=category('assembly',name,`${instructions}\n\n공용 tilesetId: \`${tileId}\`; 32px, 0기준 행 우선. -1은 덮지 않는 칸.\n\n\`\`\`json\n${JSON.stringify({width,height,lowerTiles:lower,upperTiles:upper})}\n\`\`\``,image);
   lib.tilesets[tileId].structureKits.push({id,kind:'section',name,width,height,tileSize:32,rows:rows(width,height,lower,upper),learnedFrom:'db-authored',referenceDocuments:[doc,...sourceDocs],ai:{description:name,placementRules:instructions,repeatability:'fixed',layerHome:lower.every(t=>t===-1)?'upper':'perCell',origin:'ai',tags:['Pixel Art World','사용자 다운로드','원본32px']}});
 }
-for(const pack of packs) for(const recipe of pack.recipes){
+for(const pack of packs.filter(pack=>project.tilesets[pack.id])) for(const recipe of pack.recipes){
   const tileId=key(pack.id),width=recipe.tiles[0].length,height=recipe.tiles.length;
   const source=project.tilesets[pack.id].referenceDocuments?.flatMap(c=>c.documents.some(d=>d.id===recipe.id)?[{...c,id:'source-evidence',documents:c.documents.filter(d=>d.id===recipe.id),images:c.images.filter(i=>i.id===recipe.id)}]:[])??[];
   addObject(tileId,key(pack.id+'_'+recipe.id),recipe.name,width,height,Array(width*height).fill(-1),recipe.tiles.flat(),
@@ -83,13 +83,12 @@ for(const recipe of extras.recipes){
 const mapIds = new Map(Object.keys(project.maps).map(id=>[id,key(id)]));
 // Adversarial review findings stay explicit; these sources are not offered as reviewed roots.
 const pendingReview = {
-  'office-compact-7':'의자 (3,7),(8,8)이 북쪽 책상을 등진다. 실제 북향 의자 또는 책상 배치 수정 필요.',
+  'office-compact-7':'북향 의자로 방향은 수정했다. 두 빈 상판에 실제 업무 소품을 합성해야 업무실 역할이 더 명확해진다.',
   'clinic-waiting-exam-2':'대기석이 북벽 TV 반대쪽을 바라본다. 접수대 x2..4/y4..5 뒤 직원 통로도 없다.',
   'conveni-compact-shop-3':'카운터 x2..4/y6..7에 실제 결제 장치가 없다. ATM을 계산대로 오인하지 않는다.',
   'fastfood-compact-diner-4':'주문대 x2..10/y6..7에 결제 장치가 없다. 상판을 자르지 않고 원본 POS와 합성해야 한다.',
   'home-compact-5':'주택 2개가 동일한 평면/가구 배치다. 별도 주거 구성으로 다시 저작할 예정.',
   'home-compact-6':'첫 번째 주택과 동일한 평면/가구 배치다. 별도 주거 구성으로 다시 저작할 예정.',
-  'library-compact-1':'남서 빈 바닥과 중앙 통로가 남고 대출/독서 공간이 부족하다. 출구(6,10)/(7,10)는 보존.',
 };
 function rewriteTransfers(value){
   if(Array.isArray(value))return value.map(rewriteTransfers);
@@ -102,14 +101,14 @@ for(const source of Object.values(project.maps)){
   const image=render(tileId,map.width,map.height,map.lowerTiles,map.upperTiles);lib.previews[id]=image;
   await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
   const floor=school.floors.find(f=>f.id===source.id), schoolGuide=floor?school.guide:'';
-  const guide=`# ${map.name}\n\n정본 ${proof.projectId}, revision ${proof.revision}, 원본 mapId ${source.id}.\n공용 mapId ${id}, tilesetId ${tileId}.\n${schoolGuide}\n\n원본 사건을 보관한 전체 맵은 library.maps에 있다. 장소 그림 킷 자체에는 이벤트가 없다. 계단/출입구는 ports/connections와 원본 events를 함께 읽고 목적 mapId를 다시 연결한다.\n이 사례 하나는 소재 전체 또는 미검토 타일의 지원 완료를 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({width:map.width,height:map.height,lowerTiles:map.lowerTiles,upperTiles:map.upperTiles,events:map.events,...(floor?{rooms:floor.rooms,stairs:floor.stairs,spawn:floor.spawn}:{})})}\n\`\`\``;
+  const guide=`# ${map.name}\n\n정본 ${proof.projectId}, revision ${proof.revision}, 원본 mapId ${source.id}.\n공용 mapId \`${id}\`, tilesetId \`${tileId}\`.\n${schoolGuide}\n\n원본 사건을 보관한 전체 맵은 library.maps에 있다. 장소 그림 킷 자체에는 이벤트가 없다. 계단/출입구는 ports/connections와 원본 events를 함께 읽고 목적 mapId를 다시 연결한다.\n이 사례 하나는 소재 전체 또는 미검토 타일의 지원 완료를 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({width:map.width,height:map.height,lowerTiles:map.lowerTiles,upperTiles:map.upperTiles,events:map.events,...(floor?{rooms:floor.rooms,stairs:floor.stairs,spawn:floor.spawn}:{})})}\n\`\`\``;
   const docs=[category('place-layout',map.name,guide,image)];
   if(pendingReview[source.id]) docs.unshift({id:'review-pending',name:'수정 전 사례 · 그대로 재사용 금지',description:pendingReview[source.id],documents:[{id:'findings',name:'적대적 시각 검토.md',markdown:`# 수정 대기\n\n${pendingReview[source.id]}\n\n좌표는 이 실제 저장 맵의 0기준 타일 좌표다. 아래 전체 배열/그림은 수정할 원본을 식별하는 자료이며 정상 배치의 정답이 아니다. 공용 장소의 검토 완료 목록에서는 제외한다.`}],images:[]});
   const kitId=id+'_raster';
   lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:map.name,width:map.width,height:map.height,tileSize:32,rows:rows(map.width,map.height,map.lowerTiles,map.upperTiles),learnedFrom:'db-authored',ai:{description:map.name+' 전체 평면',placementRules:'전체 배열과 한 칸 출입구, 좌석 접근칸, 바닥에 닿는 가구 밑동을 보존한다. 이벤트는 별도로 연결한다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'},referenceDocuments:docs});
   lib.places[id]={id,name:map.name,revision:1,tags:['Pixel Art World',floor?'학교':'현대도시','다운로드 소재'],provenance:{origin:'ai',sourceId:source.id},kind:source.id==='paw_city'?'settlement':'facility',layout:'manual',children:[],ports:(floor?.stairs??[]).map(s=>({id:`${id}_${s.direction}_${s.x<30?'west':'east'}`,name:s.destinationLevel+'층',x:s.x,y:s.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
   // New maps need an explicit visual review before joining the approved roots.
-  if(source.id==='paw_city')lib.roots.push(id);
+  if(['paw_city','library-compact-1'].includes(source.id))lib.roots.push(id);
   if(source.id==='paw_city')lib.regions[id]={id,name:map.name,kind:'completed-map',regionKind:'settlement',revision:1,width:map.width,height:map.height,tilesetId:tileId,preview:image,sourceProjectId:proof.projectId,sourceMapId:id,snapshotProjectId:proof.projectId,rules:['50×50 실제 저장 평면. 도로·건물 입구와 시설 목적맵의 연결을 보존한다.','완성도는 별도 시각 검토 대상이며 자동 구조 검사는 미적 승인이 아니다.'],limitations:'현재 도시 배치 참고. 전체 카탈로그 지원 완료가 아니다. 사용자 로컬 다운로드 원본만 포함.',referenceDocuments:docs};
 }
 const buildingId='shared_paw_school_building';

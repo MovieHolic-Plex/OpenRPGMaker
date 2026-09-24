@@ -19,3 +19,12 @@
 학교 장면은 북쪽 벽과 통행 바닥을 갖춘 실내 조립 표본이다. 남·동·서쪽 외벽/천장이나 문 이벤트는 표본 배열의 일부가 아니다. 실제 건축 맵을 만들 때 별도로 설계한다. 공원 예제의 잔디/흙 경계는 고정 지면 타일이며 자동 연결된 경계가 아니다.
 
 등록 후에도 기존 프로젝트를 자동 수정하지 않는다. 새 원본을 가져오는 동안 문서가 생성되며, 공용 DB 등록 및 정본 콘텐츠 배치는 해당 게시/저장 작업의 책임이다. 원본·가공 픽셀을 Git/public 또는 메타데이터 JSON에 추가하지 않는다.
+
+## 정본·공용 설치 도구
+
+`prepare-pixel-art-world-native-install.mjs <catalog> <prepared-dir> <out>`은 브라우저
+`prepareExternalTileset` 결과의 원본 SHA/크기와 최신 scene 본문을 다시 대조한다.
+`install-pixel-art-world-shared-host.mjs <host> <library.json> <out>`으로 원본/공용 자료를
+호스트 API에 저장하고 같은 대상에서 재로드한다. 원본을 정본에 설치한 뒤
+`read-pixel-art-world-host.mjs` → `publish-pixel-art-world-local-library.mjs --publish-local`
+순서로 공용 부품과 문서를 갱신한다. 카탈로그에 있어도 정본에 없는 원본은 게시하지 않는다.

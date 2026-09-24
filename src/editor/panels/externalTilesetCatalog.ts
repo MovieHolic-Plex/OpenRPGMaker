@@ -16,6 +16,12 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
     el('p', { text: '제작자에게서 원본을 다운로드한 뒤 PNG를 가져오세요. 확인된 원본에는 AI 조립 설명과 그림이 함께 준비됩니다.' }),
     el('p', { class: 'external-tileset-note', text: '각 타일셋에 표시된 조립 자료와 자동 연결 소재를 지원합니다. 사전 밖의 타일과 완성 장면은 별도로 검토하세요.' }),
   ] });
+  const search = el('input', { attrs: { type: 'search', placeholder: '이름·파일명으로 찾기', 'aria-label': '외부 타일셋 검색' }, dataset: { testid: 'external-tileset-search' } });
+  content.append(search);
+  search.addEventListener('input', () => {
+    const query = search.value.trim().toLocaleLowerCase();
+    for (const card of content.querySelectorAll<HTMLElement>('article')) card.hidden = !card.dataset.search?.includes(query);
+  });
   for (const pack of EXTERNAL_TILESET_PACKS) {
     const status = el('p', { attrs: { role: 'status', 'aria-live': 'polite' }, dataset: { testid: `${pack.id}-status` } });
     const input = el('input', { attrs: { type: 'file', accept: '.png,image/png', hidden: '' }, dataset: { testid: `${pack.id}-file` } });
@@ -40,9 +46,9 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
         controls.forEach(control => { control.disabled = false; });
       }
     });
-    content.append(el('article', { class: 'external-tileset-card', children: [
+    content.append(el('article', { class: 'external-tileset-card', dataset: { search: `${pack.name} ${pack.filename}`.toLocaleLowerCase() }, children: [
       el('h3', { text: pack.name }),
-      el('p', { text: `32px · ${pack.width}×${pack.height}px · ${pack.recipes.length}종 조립 자료${pack.scenes?.length ? ` · 완성 장면 ${pack.scenes.length}개` : ''}` }),
+      el('p', { text: `32px · ${pack.width}×${pack.height}px · ${pack.recipes.length}종 조립 자료${pack.scenes?.length ? ` · 배치 예제 ${pack.scenes.length}개` : ''}` }),
       el('p', { text: pack.recipes.map(recipe => recipe.name).join(' · ') }),
       el('div', { class: 'external-tileset-actions', children: [
         el('a', { class: 'btn', text: '다운로드 ↗', attrs: { href: pack.sourcePage, target: '_blank', rel: 'noopener noreferrer', 'aria-label': `${pack.name} 제작자 다운로드 페이지` } }),
@@ -53,8 +59,8 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
       status,
     ] }));
   }
-  content.append(el('h3', { text: '천장·벽·지붕·지면 자동 연결 추가' }));
-  content.append(el('p', { class: 'external-tileset-note', text: '먼저 위의 32px 타일셋을 가져온 뒤 대상을 선택하세요. 원본을 47가지 연결 모양으로 조합해 대상 끝에 추가합니다. 기존 타일 번호는 유지됩니다.' }));
+  content.append(el('h3', { text: '천장·벽·지붕·지면 연결 소재' }));
+  content.append(el('p', { class: 'external-tileset-note', text: '먼저 위의 32px 타일셋을 가져온 뒤 대상을 선택하세요. 원본을 연결 모양으로 조합해 대상 끝에 추가합니다. 자동 성형과 수동 조립은 항목별로 다릅니다. 기존 타일 번호는 유지됩니다.' }));
   for (const pack of PIXEL_ART_WORLD_AUTOTILES) {
     const status = el('p', { attrs: { role: 'status', 'aria-live': 'polite' }, dataset: { testid: `${pack.id}-status` } });
     const select = el('select', { attrs: { 'aria-label': `${pack.name} 추가 대상` }, dataset: { testid: `${pack.id}-target` } });
@@ -62,7 +68,7 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
       const previous = select.value;
       select.replaceChildren(el('option', { attrs: { value: '' }, text: '추가할 32px 타일셋 선택' }));
       for (const tileset of Object.values(store.getCurrent().tilesets)) {
-        if (!canAppendPixelArtWorldAutotile(tileset) || tileset.autotileGroups?.some(group => group.id === pack.id)) continue;
+        if (!canAppendPixelArtWorldAutotile(tileset) || (pack.frames > 1 && tileset.tilesPerRow < pack.frames) || tileset.autotileGroups?.some(group => group.id === pack.id) || tileset.tileGroups?.some(group => group.id === pack.id) || tileset.referenceDocuments?.some(category => category.id === pack.id)) continue;
         select.append(el('option', { attrs: { value: tileset.id }, text: tileset.name }));
       }
       select.value = previous;
@@ -82,10 +88,10 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
       if (!file || busy || controller.signal.aborted) return;
       if (!tilesetId) { status.textContent = '대상 타일셋을 선택하세요.'; return; }
       busy = true; controls.forEach(control => { control.disabled = true; });
-      status.textContent = '원본 확인 및 47가지 연결 모양 준비 중…';
+      status.textContent = `원본 확인 및 47모양${pack.frames > 1 ? ' × 4프레임' : ''} 준비 중…`;
       try {
         const id = await importPixelArtWorldAutotile(file, pack, tilesetId, controller.signal);
-        status.textContent = '자동 연결과 AI 참고자료를 추가했습니다. 프로젝트 저장 상태는 편집기에서 확인하세요.';
+        status.textContent = `${pack.placement === 'lower-autoshape' ? '자동 성형' : '수동 조립'} 타일과 AI 참고자료를 추가했습니다. 프로젝트 저장 상태는 편집기에서 확인하세요.`;
         refreshTargets.forEach(update => update());
         onImported(id);
       } catch (error) {
@@ -94,9 +100,9 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
         busy = false; controls.forEach(control => { control.disabled = false; });
       }
     });
-    content.append(el('article', { class: 'external-tileset-card', children: [
+    content.append(el('article', { class: 'external-tileset-card', dataset: { search: `${pack.name} ${pack.filename} ${pack.aliases.map(alias => alias.filename).join(' ')}`.toLocaleLowerCase() }, children: [
       el('h3', { text: pack.name }),
-      el('p', { text: `원본 96×128px → 32px 연결 타일 47종 · 하위 · ${pack.passage === 'solid' ? '통행 차단' : '통행 허용'}` }),
+      el('p', { text: `원본 ${pack.sourceWidth}×${pack.sourceHeight}px → 32px · 47모양${pack.frames > 1 ? ' × 4프레임' : ''} · ${pack.defaultLayer === 'lower' ? '하위' : '상위'} · ${pack.placement === 'lower-autoshape' ? '자동 성형' : '수동 마스크 조립'} · ${pack.passage === 'solid' ? '통행 차단' : '통행 허용'}` }),
       el('p', { text: pack.description }), select,
       el('div', { class: 'external-tileset-actions', children: [
         el('a', { class: 'btn', text: '다운로드 ↗', attrs: { href: pack.sourcePage, target: '_blank', rel: 'noopener noreferrer' } }),

@@ -35,8 +35,8 @@ try{
   const p=createBlankProject();p.tilesets={};p.maps={};p.assets.uploaded={};p.mapConnections=[];
   p.meta.title='Pixel Art World · 도시 50×50';p.meta.author='Pixel Art World / ドット絵世界 · 조립: OPRN';
   const sprites={},roomSpecs={},rendered={},roomAssets={};
-  const entries={'school-hallway':[9,8],'school-classroom-north':[6,12],'school-nurse-compact':[5,10],'school-lab-compact':[6,10],'clinic-waiting-exam':[6,11],'conveni-compact-shop':[6,11],'fastfood-compact-diner':[6,11],'library-compact':[5,9],'office-compact':[4,8],'home-compact':[6,15]};
-  for(const pack of EXTERNAL_TILESET_PACKS){
+  const entries={'school-hallway':[9,8],'school-classroom-north':[6,12],'school-nurse-compact':[5,10],'school-lab-compact':[6,10],'clinic-waiting-exam':[6,11],'conveni-compact-shop':[6,11],'fastfood-compact-diner':[6,11],'library-compact':[5,7],'office-compact':[4,8],'home-compact':[6,15]};
+  for(const pack of EXTERNAL_TILESET_PACKS.filter(pack=>files[pack.filename])){
    let prepared=await prepareExternalTileset(file(pack.filename),pack);let t=prepared.tileset;
    const previousId=t.id;t.id=pack.id;for(const c of t.referenceDocuments)for(const d of c.documents)d.markdown=d.markdown.replaceAll(previousId,t.id);
    const scenes=(pack.scenes??[]).filter(s=>entries[s.id]);let offset;

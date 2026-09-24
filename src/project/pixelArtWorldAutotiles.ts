@@ -96,7 +96,7 @@ export function xpAutotileGroup(pack: PixelArtWorldAutotilePack, offset: number,
 
 /** Conservative merge target: no bundled semantics, pending grafts or color-key changes. */
 export function canAppendPixelArtWorldAutotile(tileset: TilesetDef): boolean {
-  return tileset.image.type === 'uploaded' && tileset.kind === 'custom' && tileset.tileSize === 32
+  return !tileset.id.startsWith('shared_') && tileset.image.type === 'uploaded' && tileset.kind === 'custom' && tileset.tileSize === 32
     && Number.isInteger(tileset.tilesPerRow) && tileset.tilesPerRow > 0 && tileset.tilesPerRow <= 128
     && Number.isInteger(tileset.count) && tileset.count > 0
     && !tileset.tileGrafts?.length && !tileset.transparentColor && !tileset.referenceSourceTilesetId;
