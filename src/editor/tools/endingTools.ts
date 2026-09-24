@@ -1,6 +1,6 @@
 import { validateEndingPresentation } from "@/project/io/shapeDatabaseFields";
 import type { EndingPresentation } from "@/project/cinematicSettings";
-import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
+import { compileCutscene, CutsceneValidationError, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { collectEndingWarnings } from "@/project/endings";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -77,7 +77,8 @@ const defineEnding: ToolDefinition = {
     const flagWarnings: string[] = [];
     const conditions = parseEndingConditions(draft, args.conditions, flagWarnings);
     const priority = typeof args.priority === "number" ? Math.trunc(args.priority) : 0;
-    const epilogue = parseEpilogue(draft, args.epilogue);
+    const epilogueWarnings: string[] = [];
+    const epilogue = parseEpilogue(draft, args.epilogue, epilogueWarnings);
     const prior = draft.endings?.find(entry => entry.id === id);
     const presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
     if (presentation !== undefined) {
@@ -99,6 +100,7 @@ const defineEnding: ToolDefinition = {
     else draft.endings.push(ending);
     const warnings = [
       ...flagWarnings,
+      ...epilogueWarnings,
       ...collectEndingWarnings(draft.endings),
       ...(projectTriggersEnding(draft) ? [] : [
         "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 "
@@ -180,15 +182,18 @@ function parseEndingCondition(project: Project, value: unknown, index: number, w
   return structuredClone(condition);
 }
 
-function parseEpilogue(project: Project, value: unknown): Record<string, unknown>[] | undefined {
+function parseEpilogue(project: Project, value: unknown, warnings: string[] = []): Record<string, unknown>[] | undefined {
   if (value === undefined) return undefined;
   if (!Array.isArray(value)) throw new ToolError("epilogue는 beat 배열이어야 합니다.", { code: "ending-epilogue" });
-  const beats = value.map((entry, index) => {
+  const raw = value.map((entry, index) => {
     if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
       throw new ToolError(`epilogue[${index}]는 객체여야 합니다.`, { code: "ending-epilogue-beat" });
     }
     return structuredClone(entry) as Record<string, unknown>;
   });
+  const { beats: kept, removed } = withoutEndingBeats(raw as unknown as CutsceneBeat[]);
+  if (removed > 0) warnings.push(`epilogue 의 ending beat ${removed}개를 뺐다 — 에필로그는 이미 엔딩 안에서 돌고, 끝나면 엔딩 화면이 자동으로 뜬다(다시 부르면 에필로그가 무한 반복된다).`);
+  const beats = kept as unknown as Record<string, unknown>[];
   const eventIds = new Set<string>();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) eventIds.add(event.id);
