@@ -6,13 +6,20 @@ import { createBlankProject } from "@/project/defaults";
 import { runGameCheck } from "@/qa/gameCheck";
 import type { Project } from "@/project/types";
 
-function romance(days: number): Project {
+function romance(days: number, forkLock = false): Project {
   const ctx: { project: Project } = { project: createBlankProject() };
   const room = ctx.project.startMapId;
   const { x, y } = ctx.project.startPos;
   const ok = (name: string, args: Record<string, unknown>) => { const r = runTool(ctx, name, args); expect(r.ok, `${name} ${r.summary}`).toBe(true); };
   ok("create_map", { id: "map_fest", name: "축제", width: 12, height: 10 });
-  ok("upsert_event", { mapId: room, event: { id: "ev_love", x: x + 1, y, pages: [
+  const meet = { kind: "choices", options: [
+    { text: "무심하게", branch: [{ kind: "setVariable", variableId: "var_love", op: "-=", value: 1 }, { kind: "setSwitch", switchId: "sw_met", value: true }] },
+    { text: "다정하게", branch: [{ kind: "setVariable", variableId: "var_love", op: "+=", value: 2 }, { kind: "setSwitch", switchId: "sw_met", value: true }] },
+  ] };
+  if (forkLock) ok("upsert_event", { mapId: room, event: { id: "ev_love", x: x + 1, y, pages: [
+    { trigger: { kind: "action" }, graphic: { transparent: true }, conditions: [], commands: [{ kind: "fork", condition: { kind: "switch", switchId: "sw_met", value: true }, then: [{ kind: "text", body: "내일 봐." }], else: [meet] }] },
+  ] } });
+  else ok("upsert_event", { mapId: room, event: { id: "ev_love", x: x + 1, y, pages: [
     { trigger: { kind: "action" }, graphic: { transparent: true }, conditions: [{ kind: "switch", switchId: "sw_met", value: false }], commands: [{ kind: "choices", options: [
       { text: "무심하게", branch: [{ kind: "setVariable", variableId: "var_love", op: "-=", value: 1 }, { kind: "setSwitch", switchId: "sw_met", value: true }] },
       { text: "다정하게", branch: [{ kind: "setVariable", variableId: "var_love", op: "+=", value: 2 }, { kind: "setSwitch", switchId: "sw_met", value: true }] },
@@ -36,6 +43,10 @@ describe("autoplay day cycles", () => {
     const run = runGameCheck(romance(4)).autoPlay!.runs[0]!;
     expect(run.ok, JSON.stringify(run.steps)).toBe(true);
     expect(run.endingReached).toBe("ending_love");
+  });
+  it("also repeats when the daily lock is a fork around the meeting", () => {
+    const run = runGameCheck(romance(4, true)).autoPlay!.runs[0]!;
+    expect(run.ok, JSON.stringify(run.steps)).toBe(true);
   });
   it("reports when the calendar is too short to reach the threshold", () => {
     const run = runGameCheck(romance(1)).autoPlay!.runs[0]!;
