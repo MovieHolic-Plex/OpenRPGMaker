@@ -1135,3 +1135,5 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 요청23은 최종 확인 중 `OAuth token expired before request`로 종료됐다. `request23-oauth-failure.txt` 보존. 정본은499였으므로 새 숲 보강/예린 그래픽을 저장했다고 보고하지 않는다.
 - 요청24를 에디터에 제출했다. 독립 사용처 조사 `town2-door-tile-usage.json`에서 문타일218은 마을(8,12),598은(20,12)에만 사용된다. 다른 맵 사용은 없었다. 이 사실을 전달하고 두 문 통행만 최소 수정하도록 요청했다.
 - 도달성 오해의 소스 계약: `src/editor/tools/queryTools.ts`의 check_reachability 설명은 '인접 도달'이다. 요약의 '전부 도달 가능'만 보고 playerTouch가 필요한 목표 셀 진입을 증명할 수 없다. GAME-045는 도구가 명시한 인접 계약을 위반한 증거가 아니라, 그 계약을 문 진입 검사로 잘못 사용한 저작/검증 누락이다.
+- 요청24는 사용처 조회 뒤 Cloud Code Assist API empty response로 변경 없이 종료됐다(`request24-empty-response.txt`). 요청24b는 두 문 통행 변경 초안을 생성했고 변경 내용 보기에서 타일셋 하나의 passability/tileMeta만 제시했다.
+- 요청24b 적용 버튼을 누른 뒤 관찰 Chromium이 Page crashed로 종료됐다(관찰기1875194 종료 확인). 정본은499,두 타일 통행은false여서 수정 저장 성공으로 보고하지 않는다. 서버/워커는 유지하고 새 관찰 브라우저로 동일 정본에 재접속한다. `author-21-timing-observer.log`의 말미가 실제 브라우저 크래시 근거다. 원인을 메모리 부족으로 단정할 OS 증거는 아직 없다.
