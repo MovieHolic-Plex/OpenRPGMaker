@@ -791,3 +791,13 @@ Completed runtime timelines persist into bounded session reports accessible from
 팀 이름으로 「승부를 걸어왔다!」를 표시하며, 그렇지 않은 팀만 기존 종족 기반 야생 판정을 따른다.
 적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
 새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
+
+## 포획 불가 전투의 가방 목록 (2026-09-25)
+
+`battleCommandDom.captureItems`는 `snapshot.troopId`의 `trainerBattle` 또는
+`uncapturable`이 true이면 빈 목록을 반환한다. 몬스터식 가방과 일반 포획 하위 메뉴,
+가방 수량 표시가 동일 정책을 쓴다. 회복 아이템은 유지하고 야생전의 볼은 그대로 표시한다.
+엔진 `runtime.ts`의 포획 거부 검사는 계속 필요하다. UI 필터는 엔진 검증을 대체하지 않는다.
+새솔 약품 회수 트레이너전에서 포획 버튼이 가방에 나타난 것을 전용 플레이어로 재현했다.
+회귀 정의: `test/gen1BattleCommandDom.test.ts`의 두 제한 유형과 기존 야생전 경로.
+이번 세션에서는 Vitest를 실행하지 않았다.

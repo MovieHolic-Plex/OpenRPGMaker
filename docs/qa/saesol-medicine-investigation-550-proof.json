@@ -1,0 +1,40 @@
+{
+  "revision": 550,
+  "scope": "Dedicated player; actual fog rescue checkpoint, then actual saved failureState after stale QA facing. No authored progress injected. Battle not yet included.",
+  "firstSegment": {
+    "sha256": "0c30a27c6807be5b197738df48d84d8480677d3fb2c446b54311a2dcf4cf5804",
+    "declineNoReward": true,
+    "insufficientCluesBlocked": true,
+    "walkedSteps": 121,
+    "portals": 2,
+    "failure": "QA approach faced down at(24,12) while target is(24,11); screenshot and canonical positions agree."
+  },
+  "resumedSegment": {
+    "steps": [],
+    "checkpointMatches": true,
+    "resumedAfterStaleApproach": true,
+    "walkedSteps": 121,
+    "walkedPortals": [
+      {
+        "from": "map_sr3_coast",
+        "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+        "to": "map_sr3_mine"
+      },
+      {
+        "from": "map_sr3_mine",
+        "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+        "to": "map_sr3_port"
+      }
+    ],
+    "wrongAccusationsAndDeferNoReward": true,
+    "battleDeclineNoReward": true,
+    "pageErrors": [],
+    "passed": true,
+    "benchmark": {
+      "snapshotRevision": 550,
+      "playerSeconds": 51.918,
+      "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+    }
+  },
+  "resumeResultsSha256": "8b02a8dd31ac2f9365aab02389b69aab20fa720e269e7a0495860ecae23f31aa"
+}
