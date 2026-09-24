@@ -381,6 +381,29 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     expect((ctx.project.endings ?? []).map((ending) => ending.id).sort()).toEqual(["ending_mystery_manor_solved", "ending_mystery_manor_wrong"]);
   });
 
+  // manor-mystery 실측 두 번: 지목 NPC 를 「추리 정리 테이블」「사건 정리 수첩」 으로 지었는데 주민 외형·얼굴로 그려졌다.
+  it("물건 이름의 지목 NPC 는 보이지 않는 지점으로 두고 얼굴·이름표 없이 서술한다", () => {
+    const project = fixture();
+    const spec = caseSpec(project.startMapId, (s) => { s.accuser.name = "사건 정리 수첩"; });
+    const { ctx, result } = author(project, spec);
+    expect(result.ok, JSON.stringify(result)).toBe(true);
+    const accuser = eventNamed(ctx.project, "사건 정리 수첩");
+    for (const page of accuser.pages ?? []) {
+      expect(page.graphic).toEqual({ transparent: true });
+      expect(page.commands.some((command) => command.kind === "changeFace")).toBe(false);
+    }
+    const texts = allCommands(accuser).filter((command): command is Extract<Command, { kind: "text" }> => command.kind === "text");
+    expect(texts.length).toBeGreaterThan(0);
+    expect(texts.every((command) => !command.speaker)).toBe(true);
+    const warnings = (result.diff?.warnings ?? []) as string[];
+    expect(warnings.some((warning) => warning.includes("물건이라"))).toBe(true);
+    // 사람 이름이면 그대로 인물이다. 물건 지목 지점의 「graphic 생략 → 기본 주민」 경고는 사실이 아니므로 뺀다.
+    const personRun = author(fixture());
+    expect(eventNamed(personRun.ctx.project, "경비대장 로버트").pages?.[0]?.graphic).not.toEqual({ transparent: true });
+    const omitted = (list: readonly string[]) => list.filter((warning) => warning.includes("graphic 생략")).length;
+    expect(omitted(warnings)).toBe(omitted((personRun.result.diff?.warnings ?? []) as string[]) - 1);
+  });
+
   it("지목 선택지 컴파일 지점은 한 함수다 — 정답 인덱스가 라벨에 드러나지 않는다", () => {
     const command = compileAccusationChoice({
       prompt: "누구인가?",
