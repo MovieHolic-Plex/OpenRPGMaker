@@ -7,6 +7,7 @@ class Tile extends EventEmitter {
   texture: { key: string };
   frame: { name: string };
   visible = true;
+  active = true;
   destroyed = false;
   animation = "";
   constructor(readonly x: number, readonly y: number, texture: string, frame: string) {

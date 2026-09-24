@@ -50,7 +50,7 @@ import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
 } from "@/editor/mapBackgroundPreviewState";
-import { editorState, EDITOR_ZOOM_LEVELS, type TileClipboard } from "@/editor/editorState";
+import { editorState, EDITOR_ZOOM_LEVELS, type Layer, type TileClipboard } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
@@ -70,6 +70,7 @@ import {
 import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import {
+  editGridTileWindow,
   editSceneTileWindowKey,
   renderEditScene,
   renderEditSceneTileCells,
@@ -83,6 +84,7 @@ import {
   syncSelectionOverlay,
 } from "@/editor/editSceneRender";
 import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
+import { markEditRenderActive, requestEditRenderFrame } from "@/editor/editRenderGate";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
@@ -139,7 +141,7 @@ import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { topTileInStack } from "@/project/mapOverlayTiles";
-import type { MapId } from "@/project/types";
+import type { GameMap, MapId } from "@/project/types";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
@@ -253,6 +255,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastPointerTile: { x: number; y: number } | null = null;
   private lastRenderedMapId: MapId | null = null;
   private lastMaterializedTileWindowKey = "";
+  /** 청크 가시 창 + 청크 수. 같으면 청크 visible 을 다시 훑지 않는다. */
+  private lastChunkVisibilityKey = "";
+  private lastGridWindowKey = "";
+  /** 유휴 렌더 게이트용 — 지난 프레임의 카메라. 바뀌면 렌더를 깨운다. */
+  private lastRenderCamera: { scrollX: number; scrollY: number; zoom: number; width: number; height: number } | null = null;
+  private readonly requestRenderFrame = (): void => requestEditRenderFrame(this.game);
   private lastRenderStateKey = "";
   /** 레이어 색·충돌 오버레이·이벤트 마커·격자. 타일 메시 재생성 키와 분리한다. */
   private lastViewChromeKey = "";
@@ -471,14 +479,20 @@ export class EditScene extends PhaserRuntime.Scene {
       if (!shouldDeferCameraFocus(this.pointerGestureState())) this.panCameraBy(x, y);
     });
     this.observeNavigationGeometry();
+    // 유휴 렌더 게이트(editRenderGate): 객체가 생기거나 사라진 프레임은 반드시 그린다. 조수 고스트·
+    // 초점 강조·텍스처 로드 뒤 재렌더처럼 사용자 입력 없이 오는 변경이 대부분 이 경로로 잡힌다.
+    this.sys.events.on(PhaserRuntime.Scenes.Events.ADDED_TO_SCENE, this.requestRenderFrame);
+    this.sys.events.on(PhaserRuntime.Scenes.Events.REMOVED_FROM_SCENE, this.requestRenderFrame);
     this.redraw();
 
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => {
+      markEditRenderActive(this.game);
       this.clearInvalidPendingEventCoordinate();
       this.redrawForStoreChange(change);
     });
     this.unsubEditor = editorState.subscribe((state) => {
+      markEditRenderActive(this.game);
       const pending = state.pendingEventCoordinate;
       if (pending && (this.mapId() !== pending.mapId || state.layer !== "event" || state.tool !== "event")) {
         editorState.set({ pendingEventCoordinate: null });
@@ -566,6 +580,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.navigationGeometry = null;
     this.lastNavGeometryKey = "";
     this.scale.off("resize", this.handleResize, this);
+    this.sys.events.off(PhaserRuntime.Scenes.Events.ADDED_TO_SCENE, this.requestRenderFrame);
+    this.sys.events.off(PhaserRuntime.Scenes.Events.REMOVED_FROM_SCENE, this.requestRenderFrame);
     this.unbindBrowserContextMenuGuards();
     this.rightRegionGesture = null;
     // 미뤄 둔 초점은 씬과 함께 버린다 — 아래 stopPan 이 재생을 시도하기 전에 비워야 한다.
@@ -631,8 +647,16 @@ export class EditScene extends PhaserRuntime.Scene {
     // 다음 기하 읽기를 강제한다 — 캔버스 사각형이 바뀌었으므로 캐시는 낡았다.
     this.overlayGeometryReadAtMs = 0;
     this.lastNavGeometryKey = "";
+    markEditRenderActive(this.game);
     this.syncNavigationGeometry();
-    this.redraw();
+    // 캔버스 크기는 타일 그림이 아니라 카메라 기하다. 전체 redraw 는 타일 객체를 전부 파괴·재생성해
+    // 창 드래그·패널 토글마다 큰 맵이 멈췄다. 새로 보이는 칸·격자는 다음 update() 가 창 변화를 보고 채운다.
+    const mid = this.mapId();
+    if (!mid || this.lastRenderedMapId !== mid) {
+      this.redraw();
+      return;
+    }
+    this.afterCameraMoved();
   }
 
   /**
@@ -646,6 +670,51 @@ export class EditScene extends PhaserRuntime.Scene {
     this.syncNavigationGeometry();
     this.syncPublishedViewport();
     this.syncTileCullingFrame();
+    this.syncGridWindow();
+    this.syncRenderActivity();
+  }
+
+  /**
+   * 유휴 렌더 게이트에 이번 프레임의 변화를 알린다. 카메라는 팬·휠·키보드·초점 트윈·리사이즈
+   * 어느 경로로든 바뀌므로 경로마다 깨우지 않고 여기서 값을 비교한다.
+   */
+  private syncRenderActivity(): void {
+    const camera = this.cameras?.main;
+    if (camera) {
+      const last = this.lastRenderCamera;
+      if (
+        !last
+        || last.scrollX !== camera.scrollX
+        || last.scrollY !== camera.scrollY
+        || last.zoom !== camera.zoom
+        || last.width !== camera.width
+        || last.height !== camera.height
+      ) {
+        this.lastRenderCamera = { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom, width: camera.width, height: camera.height };
+        markEditRenderActive(this.game);
+      }
+    }
+    if ((this.tweens?.tweens?.length ?? 0) > 0) requestEditRenderFrame(this.game);
+  }
+
+  /** 격자는 카메라 근처 청크만 긋는다(repaintEditGrid). 창이 청크 경계를 넘으면 다시 긋는다. */
+  private syncGridWindow(): void {
+    const gridGraphics = this.gridGraphics;
+    if (!gridGraphics) return;
+    const state = editorState.get();
+    if (!state.showGrid) return;
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!map) return;
+    this.repaintGridWindow(gridGraphics, map, state.layer, false);
+  }
+
+  private repaintGridWindow(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, layer: Layer, force: boolean): void {
+    const bounds = editGridTileWindow(this, map);
+    const key = `${map.id}|${layer}|${bounds.minX},${bounds.minY},${bounds.maxX},${bounds.maxY}`;
+    if (!force && key === this.lastGridWindowKey) return;
+    this.lastGridWindowKey = key;
+    repaintEditGrid(gridGraphics, map, layer, true, bounds);
   }
 
   /**
@@ -684,10 +753,17 @@ export class EditScene extends PhaserRuntime.Scene {
       const lastCx = chunkCoord(Math.floor((view.x + view.width) / tileSize) + 2);
       const firstCy = chunkCoord(Math.floor(view.y / tileSize) - 2);
       const lastCy = chunkCoord(Math.floor((view.y + view.height) / tileSize) + 2);
-      for (const [key, chunk] of this.tileChunks) {
-        const [cx, cy] = key.split(",").map(Number);
-        const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
-        if (chunk.visible !== visible) chunk.setVisible(visible);
+      // 청크는 clear() 로만 사라지고(redraw 가 키를 비운다) 새 청크는 수를 바꾼다 — 창과 수가 같으면 결과도 같다.
+      const chunkKey = `${firstCx},${lastCx},${firstCy},${lastCy},${this.tileChunks.size}`;
+      if (chunkKey !== this.lastChunkVisibilityKey) {
+        this.lastChunkVisibilityKey = chunkKey;
+        for (const [key, chunk] of this.tileChunks) {
+          const comma = key.indexOf(",");
+          const cx = Number(key.slice(0, comma));
+          const cy = Number(key.slice(comma + 1));
+          const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
+          if (chunk.visible !== visible) chunk.setVisible(visible);
+        }
       }
     }
     syncTileCulling(this, view, this.activeTileSize());
@@ -1900,6 +1976,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.lastMaterializedTileWindowKey = "";
     }
     this.lastRenderedMapId = mid;
+    this.lastChunkVisibilityKey = "";
+    this.lastGridWindowKey = "";
     this.lastRenderStateKey = this.renderStateKey(mid);
     this.lastViewChromeKey = this.viewChromeKey();
     this.lastAppliedZoom = editorState.get().zoom;
@@ -2128,7 +2206,8 @@ export class EditScene extends PhaserRuntime.Scene {
       mapId,
       tileIndex: this.tileIndex,
     });
-    repaintEditGrid(gridGraphics, map, state.layer, state.showGrid);
+    if (state.showGrid) this.repaintGridWindow(gridGraphics, map, state.layer, true);
+    else repaintEditGrid(gridGraphics, map, state.layer, false);
   }
 
   private applyCameraZoomOnly(mid: MapId): void {
