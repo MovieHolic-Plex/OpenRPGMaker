@@ -117,11 +117,23 @@ function requirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   return reqs;
 }
 
+/** fork else 는 조건이 거짓일 때 실행된다. 「스위치가 꺼져 있으면 진엔딩」의 else(쓸쓸한 엔딩)는 그 스위치를 켜야 닿는다. */
+function elseBranchRequirements(condition: unknown, _page: PageRef): Requirement[] {
+  const top = condition as { kind?: string; value?: unknown; switchId?: string; conditions?: unknown[] } | null;
+  if (!top || typeof top !== "object") return [];
+  if (top.kind === "all" && Array.isArray(top.conditions)) return top.conditions.flatMap((child) => elseBranchRequirements(child, page));
+  if (top.kind === "switch" && top.value === false && typeof top.switchId === "string") return [{ kind: "switch", id: top.switchId }];
+  return [];
+}
+
 function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
   for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
   for (const segment of visit.segments) {
-    if (segment.kind === "fork" && segment.branch === "then") reqs.push(...leafRequirements(segment.command.condition, visit.page));
+    if (segment.kind !== "fork") continue;
+    if (segment.branch === "then") reqs.push(...leafRequirements(segment.command.condition, visit.page));
+    // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
+    if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
   }
   if (visit.command.kind === "triggerEnding" && !visit.command.endingId) {
     const ending = [...(project.endings ?? [])].sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];

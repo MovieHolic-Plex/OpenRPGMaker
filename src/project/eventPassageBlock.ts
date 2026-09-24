@@ -2,9 +2,10 @@
 //
 // 실측(2026-09-24 갤러리 호러 r5): 출구 회랑 두 방 사이 한 칸 문간에 가면 인형(보통 우선순위 = 막는 이벤트)을
 // 세웠다. 대화 뒤 페이지 2 도 그림이 있어 계속 막았고, 출구 그림에 걸어갈 길이 없어 두 엔딩이 모두 닿지 않았다.
-// mysteryCaseTool 은 자기 인물만 이 검사를 했다 — 여기서는 모든 이벤트 쓰기가 같은 판정을 쓴다(경고일 뿐, 거부 아님).
+// mysteryCaseTool 은 자기 인물만 이 검사를 했다 — 여기서는 모든 이벤트 쓰기가 같은 판정을 쓴다.
+// 경고만으로는 모델이 인형을 안 옮겼다. 장소 이동이 없는 영구 차단은 옆 칸으로 옮기고, 문은 칸을 유지한 채 경고만 한다.
 
-import { canMove } from "./collision";
+import { canMove, isPassableLanding } from "./collision";
 import type { EventPage, GameEvent, GameMap, Project } from "./types";
 
 function pageBlocks(page: EventPage | undefined): boolean {
@@ -75,7 +76,73 @@ export function eventsCutOffBy(project: Project, map: GameMap, event: GameEvent)
   return others.filter((other) => touches(without, other.x, other.y) && !touches(withIt, other.x, other.y));
 }
 
+const DOOR_COMMANDS = new Set(["transfer", "callMapEvent"]);
+
+function commandsInclude(commands: readonly unknown[] | undefined, kinds: ReadonlySet<string>): boolean {
+  for (const raw of commands ?? []) {
+    if (!raw || typeof raw !== "object") continue;
+    const command = raw as Record<string, unknown>;
+    if (typeof command.kind === "string" && kinds.has(command.kind)) return true;
+    for (const value of Object.values(command)) {
+      if (Array.isArray(value) && commandsInclude(value, kinds)) return true;
+      if (value && typeof value === "object" && !Array.isArray(value)) {
+        for (const inner of Object.values(value as Record<string, unknown>)) {
+          if (Array.isArray(inner) && commandsInclude(inner, kinds)) return true;
+        }
+      }
+    }
+  }
+  return false;
+}
+
+/** 문·발판은 그 칸에 있어야 한다. 인형·NPC 처럼 대화만 하는 이벤트와 구분한다. */
+function isDoorEvent(event: GameEvent): boolean {
+  if (commandsInclude(event.commands, DOOR_COMMANDS)) return true;
+  return (event.pages ?? []).some((page) => commandsInclude(page.commands, DOOR_COMMANDS));
+}
+
+function reliefCells(x: number, y: number): { x: number; y: number }[] {
+  const cells: { x: number; y: number; radius: number; ortho: number }[] = [];
+  for (let radius = 1; radius <= 3; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        cells.push({ x: x + dx, y: y + dy, radius, ortho: dx === 0 || dy === 0 ? 0 : 1 });
+      }
+    }
+  }
+  cells.sort((a, b) => a.radius - b.radius || a.ortho - b.ortho || a.y - b.y || a.x - b.x);
+  return cells;
+}
+
+/**
+ * 모든 페이지가 막는 비문 이벤트가 통로를 끊으면 반경 3칸 안에서 끊지 않는 통행 칸으로 옮긴다.
+ * 모델은 경고를 무시하고 문간에 인형을 둔 채 엔딩을 막았다(갤러리 r5). 거부하지 않는다.
+ */
+function relievePermanentChoke(project: Project, map: GameMap, event: GameEvent): string | undefined {
+  if (!eventAlwaysBlocks(event) || isDoorEvent(event)) return undefined;
+  const cut = eventsCutOffBy(project, map, event);
+  if (cut.length === 0) return undefined;
+  const from = { x: event.x, y: event.y };
+  for (const cell of reliefCells(from.x, from.y)) {
+    if (!isPassableLanding(project, map, cell.x, cell.y)) continue;
+    if ((map.events ?? []).some((other) => other.id !== event.id && other.x === cell.x && other.y === cell.y)) continue;
+    event.x = cell.x;
+    event.y = cell.y;
+    if (eventsCutOffBy(project, map, event).length > 0) continue;
+    const names = cut.slice(0, 4).map((other) => `'${other.name ?? other.id}'`).join(", ");
+    return `이벤트 '${event.name ?? event.id}'(${from.x},${from.y})가 통로를 막아 ${names}에 닿을 수 없어 (${cell.x},${cell.y})으로 옮겼습니다. `
+      + "길을 막는 인물은 문간이 아니라 옆 칸에 두세요.";
+  }
+  event.x = from.x;
+  event.y = from.y;
+  return undefined;
+}
+
 export function passageBlockWarning(project: Project, map: GameMap, event: GameEvent): string | undefined {
+  // 호출 시점에 이벤트를 옮긴다. upsert_event·place_npc 가 저장 직후 이 함수만 부른다.
+  const relieved = relievePermanentChoke(project, map, event);
+  if (relieved) return relieved;
   const cut = eventsCutOffBy(project, map, event);
   if (cut.length === 0) return undefined;
   const names = cut.slice(0, 4).map((other) => `'${other.name ?? other.id}'(${other.x},${other.y})`).join(", ");
