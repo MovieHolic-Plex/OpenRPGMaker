@@ -20,8 +20,8 @@ export async function preparePixelArtWorldDoor(file: File, pack: PixelArtWorldDo
     if(!rgba.some((n,i)=>i%4===3&&n>0))throw new Error('빈 프레임은 문으로 등록할 수 없습니다.');
   }
   const dataUrl=canvas.toDataURL('image/png');
-  const asset:UploadedAsset={id:assetId,name:pack.name,kind:'sprite',dataUrl,meta:{width:pack.width,height:pack.height,frames:16,frameWidth:pack.frameWidth,frameHeight:pack.frameHeight}};
-  const sprite:SpriteDef={id:assetId,image:{type:'uploaded',id:assetId},frames:16,frameWidth:pack.frameWidth,frameHeight:pack.frameHeight};
+  const asset:UploadedAsset={id:assetId,name:pack.name,kind:'sprite',dataUrl,meta:{width:pack.width,height:pack.height,frames:pack.frames.length,frameWidth:pack.frameWidth,frameHeight:pack.frameHeight}};
+  const sprite:SpriteDef={id:assetId,image:{type:'uploaded',id:assetId},frames:pack.frames.length,frameWidth:pack.frameWidth,frameHeight:pack.frameHeight};
   const references=createPixelArtWorldDoorReferences(pack,source,dataUrl,assetId);
   validateTilesetReferences([references]);
   return {packId:pack.id,asset,sprite,references};

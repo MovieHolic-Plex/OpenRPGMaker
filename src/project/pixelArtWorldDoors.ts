@@ -9,6 +9,7 @@ export function canAttachPixelArtWorldDoorReferences(target: TilesetDef, pack: P
 }
 /** One-shot graphic commands only. Passage, page switches and transfer are authored separately. */
 export function pixelArtWorldDoorCommands(variant: PixelArtWorldDoorVariant, eventId = '', closing = false): Command[] {
+  if (variant.openingFrames.length === 1) return []; // Static doorway: no fictional opening/closing commands.
   return (closing ? variant.closingFrames : variant.openingFrames).flatMap(pattern => [
     { kind: 'setEventGraphicPattern' as const, eventId, pattern }, { kind: 'wait' as const, ms: variant.frameTimingMs },
   ]);
