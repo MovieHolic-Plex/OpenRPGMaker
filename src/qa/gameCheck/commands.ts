@@ -125,7 +125,12 @@ function checkOne(project: Project, entry: CommandVisit, findings: Finding[]): v
         }
         if (typeof value !== "string" || WILDCARD_IDS.has(value)) continue;
         const ids = recordIds(project, spec.source, where.mapId);
-        if (ids && !ids.has(value)) {
+        // changeItem 은 장비 id 도 소지품으로 받는다 — session.inventory[equipmentId] 는 상점 구매·장착 메뉴와
+        // 같은 저장소다(io/commandReferenceValidation 와 같은 계약). 장비 상점·장비 보상이 있는 JRPG 에서
+        // 검사기만 items 로 보면 유효한 보물상자를 막힘으로 오판한다(2026-09-24 잿불 광산 r4: 기사의 철검 상자).
+        const alsoEquipment = spec.source === "item" && key === "itemId" && command.kind === "changeItem"
+          && recordIds(project, "equipment", where.mapId)?.has(value) === true;
+        if (ids && !ids.has(value) && !alsoEquipment) {
           findings.push({
             severity: BLOCKING_SOURCES.has(spec.source) ? "blocker" : "warning", code: "command-missing-reference",
             message: `${schema.label}(${kind}) 명령이 없는 ${SOURCE_LABEL[spec.source] ?? spec.source} \`${value}\`를 가리킵니다(${key}).`,
