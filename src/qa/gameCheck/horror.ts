@@ -134,7 +134,19 @@ export function checkHorror(project: Project, briefText: string): Finding[] {
     }
   });
 
+  const switchesSet = new Set<string>();
+  visitAllCommands(project, ({ command }) => { if (command.kind === "setSwitch" && command.value !== false && typeof command.switchId === "string") switchesSet.add(command.switchId); });
+  for (const [id, on] of Object.entries(project.session?.switches ?? {})) if (on) switchesSet.add(id);
   for (const ref of list.slice(0, 6)) {
+    for (const condition of ref.page.conditions ?? []) {
+      if (condition.kind === "switch" && condition.value !== false && !switchesSet.has(condition.switchId)) {
+        findings.push({ severity: "warning", code: "chaser-never-wakes", where: where(ref), message: `추격 페이지가 스위치 ${condition.switchId} 를 기다리는데 어디서도 켜지 않습니다 — 추격자가 나타나지 않습니다.` });
+      }
+    }
+    const zones = ref.map.safeZones ?? [];
+    const covered = zones.reduce((sum, zone) => sum + Math.max(0, Math.min(ref.map.width, zone.x + zone.w) - Math.max(0, zone.x)) * Math.max(0, Math.min(ref.map.height, zone.y + zone.h) - Math.max(0, zone.y)), 0);
+    const cover = Math.round(100 * covered / (ref.map.width * ref.map.height));
+    if (cover >= 30) findings.push({ severity: "warning", code: "safe-zone-too-large", where: where(ref), message: `추격 맵의 ${cover}% 가 안전지대라 그 안에서는 잡히지 않습니다.` });
     const step = chaserStepMs(ref.page.movement);
     const ratio = PLAYER_STEP_MS / step;
     if (ratio < 0.5) {
