@@ -1,5 +1,6 @@
 import { appendPixelArtWorldEventPropCatalog } from './pixelArtWorldEventPropCatalog';
 import { appendPixelArtWorldDoorCatalog } from "./pixelArtWorldDoorCatalog";
+import { appendPixelArtWorldLooseSupplementsCatalog } from './pixelArtWorldLooseSupplementsCatalog';
 import { appendPixelArtWorldLooseCatalog } from './pixelArtWorldLooseCatalog';
 import { appendPixelArtWorldFoodCatalog } from './pixelArtWorldFoodCatalog';
 import { EXTERNAL_TILESET_PACKS } from '@/project/externalTilesetCatalog';
@@ -69,6 +70,7 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
   }
   appendPixelArtWorldFoodCatalog(content, onImported, controller.signal, controls, { isBusy: () => busy, setBusy: value => { busy = value; }, refresh: () => refreshTargets.forEach(refresh => refresh()) });
   appendPixelArtWorldLooseCatalog(content, onImported, controller.signal, controls, { isBusy: () => busy, setBusy: value => { busy = value; }, refresh: () => refreshTargets.forEach(refresh => refresh()) });
+  appendPixelArtWorldLooseSupplementsCatalog(content, onImported, controller.signal, controls, { isBusy: () => busy, setBusy: value => { busy = value; }, refresh: () => refreshTargets.forEach(refresh => refresh()) });
   appendPixelArtWorldEventPropCatalog(content, { signal: controller.signal, controls, refreshTargets, isBusy: () => busy, setBusy: value => { busy = value; }, onImported });
   appendPixelArtWorldDoorCatalog(content, { signal: controller.signal, controls, refreshTargets, isBusy: () => busy, setBusy: value => { busy = value; }, onImported });
   content.append(el('h3', { text: '천장·벽·지붕·지면 연결 소재' }));
