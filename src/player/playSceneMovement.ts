@@ -353,7 +353,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
  * advancePlayerStepFrame 이 반대편으로 접어 세운다. 1칸 몸만 — 큰 몸은 가장자리에서 평소처럼 막힌다.
  */
 function tryStartLoopStep(scene: PlaySceneContext, body: PlayerBody, moveX: number, moveY: number, dash: boolean): boolean {
-  if (!scene.map.loop || body.footprint.w !== 1 || body.footprint.h !== 1) return false;
+  if (!scene.map.loop || body.footprint.width !== 1 || body.footprint.height !== 1) return false;
   // 대각으로 모서리를 넘으면 넘는 축 하나로만 걷는다.
   const crossX = moveX !== 0 && loopStepTarget(scene.map, scene.tileX, scene.tileY, moveX, 0) !== null;
   const crossY = moveY !== 0 && loopStepTarget(scene.map, scene.tileX, scene.tileY, 0, moveY) !== null;
