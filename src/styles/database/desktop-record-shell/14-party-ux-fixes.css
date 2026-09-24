@@ -116,7 +116,7 @@
    삭제 버튼(y=836)에서 **120px** 떨어진 곳이었다. 파괴적 액션이 거부됐다는 사실이
    시선에서 가장 먼 곳에 뜬 셈이다. 모달이 열려 있으면 모달 푸터 위로 끌어올린다.
    ───────────────────────────────────────────────────────────────────────── */
-body:has(.database-modal-backdrop) .toast-stack {
+body:has(.database-modal-backdrop:not(.is-parked)) .toast-stack {
   bottom: 96px;
 }
 

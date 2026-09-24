@@ -74,6 +74,8 @@ function hasOpenModalSurface(): boolean {
     return false;
   }
   return surfaces.some((surface) => {
+    // 미리 만들어 숨겨 둔 자료집 창(`is-parked`, visibility:hidden)은 크기가 있어도 열린 모달이 아니다.
+    if (surface.classList?.contains("is-parked")) return false;
     const rect = (surface as HTMLElement).getBoundingClientRect?.();
     return Boolean(rect && rect.width > 0 && rect.height > 0);
   });
