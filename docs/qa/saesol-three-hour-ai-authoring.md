@@ -1401,3 +1401,8 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 실제 main-TUoQXSlX.js가 import하는 `editor-B5eBKAIT.js`의 vv 함수는 `buffer += chunk` 후 전체 `indexOf`를 반복하는 구버전이었다. main의 bd31fe087에는 새 조각만 검색하고 배열로 모아 한 줄 완성 시 join하는 개선이 이미 있다. 소스만 확인하고 배포도 개선됐다고 가정하면 안 된다.
 - 기존 파일을 보존하고 디코더 함수만 동등한 조각 누적 구현으로 교체한 versioned editor/main을 만들었다. index.html을 새 main으로 연결했고 실제9897 HTTP응답에서 `main-TUoQXSlX-linear.js` 참조를 확인했다. 배포 근거/기존 함수/새 함수/SHA는 `linear-decoder-deployment.json`. 호스트/정본은 재시작·수정하지 않았다.
 - 이는 확인된 구버전 경로의 배포 수정이다. OOM의 모든 원인이 해결됐다는 증거는 아니며 실제 AI 최종 초안 수신·검토·저장·재로드를 다시 확인해야 한다. 진단창44가 할당 표본을 기록하며 실행 중이다.
+
+### 배포 실수 수정 — main 모듈을 이중 로드함
+
+- 창44는 AI 요청 전에10:10:37Z 약3792MB old-space에서 V8 OOM으로 종료했다. 할당 표본 `editor-heap-sampling-double-main.json`에 main-TUoQXSlX.js와 main-TUoQXSlX-linear.js 양쪽의 load/직렬화가 잡혔다. 새 진입 이름만 바꾸고 기존 청크의 역방향 main import를 그대로 둔 배포 실수였다. 이 추가 장애는 작업자가 유발한 것으로 구분한다.
+- index를 원래 main URL로 되돌리고 해당 main의 editor import만 개선 디코더 청크로 바꿨다. 기존 main 원문은 별도 백업했다. 앱 singleton의 모듈 URL을 유지하며 다음 창45에서 단일 로드와 저장 상태를 확인한다. 최초 요청42의 OOM과 이중 main 배포 오류는 별도 원인이다.
