@@ -213,3 +213,25 @@ turn. The `spatial-world` capability group includes the reader. The example must
 not be sent to `upsert_spatial_design` as though it were a procedural region.
 Tests reconstruct the complete source through registered tool reads, verify
 metadata/non-mutation, reject invalid pages, and exercise the read-only card.
+
+### Importing a reference (`import_region_reference`, 2026-09-25)
+
+Re-painting reference rows is not the path: the 2026-09-25 assistant trial needed 328 `paint_tiles`
+calls for one village and still lost every slot past the new project's 2550-tile forest sheet.
+`import_region_reference {id, mapId?, x?, y?, newMapId?, name?, includeEvents?}` (write, `map`/`world`)
+does it in one call. Core: `src/project/regionReferenceImport.ts`, shared with the editor place card
+「맵에 넣기」 (`placeReferenceMapPreset`).
+
+- Source: the reference's `projectDownload` (`public/assets/region-references/*.oprn.json`, full tileset
+  with tileMeta/grafts/groups/reference documents + uploaded atlases) first, the bundled snapshot second.
+  The browser fetches it; headless installs a file loader (`setHeadlessPublicRoot`). `prepare` awaits it.
+- Tileset: a missing one is installed whole (e.g. `oprn_dungeon_*`). An existing one with the same image
+  only grows: slots past its end are appended with the source's rules and grafts, blank slots (past the
+  sheet, ungrafted) may take a graft. Only tiles the imported map actually uses must show the same picture;
+  if one does not, a copy tileset `<id>__<referenceId>` is installed instead and `data.tileset.mode` is `copied`.
+- Map: new map by default (tree + start map adoption like `create_map`), or paste into `mapId` at (x,y)
+  with clipping — the target map must use the resolved tileset. Extra layers (MZ 2/4층, shadows) come along.
+  Events are skipped unless `includeEvents` (new map only; transfers into missing maps are dropped).
+- The tool sets `preservesAuthoredRaster`, so the runner's tree-pair repair does not touch reviewed rasters.
+- `ensureTilesetTexture` now waits for bundled graft source sheets loaded after boot (it already waited for
+  uploaded ones); otherwise the first bake cached blank waterfall/bridge cells until reload.

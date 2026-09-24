@@ -21,7 +21,7 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   (좌상단 크기 바꾸기는 `x=y=0`) 또는 `remapExtraLayers(map, w, h, sourceIndex)` 를 부른다. 안 부르면 선택 층이
   옛 길이로 남아 칸이 비껴 그려지고, 불러올 때 그 층이 버려진다(경고). 실측: `resize_map` 도구·마을 넓히기
   (`authorVillageToolDef.growExistingVillageMap`)·Pi 고스트 증분(`ai/piAgent/mapDelta.ts`)·장소/프리셋 잘라내기
-  (`regionReferenceSnapshots.ts`, `referencePresetSnapshot.ts`)가 빠져 있었다. 찾는 법:
+  (`regionReferenceSnapshots.ts`, 옛 `referencePresetSnapshot.ts` — 2026-09-25 `regionReferenceImport.ts` 로 통합)가 빠져 있었다. 찾는 법:
   `git grep -nE "\.(width|height) *= [^=]"` 과 `{ ...map, width, height, lowerTiles… }` 스프레드.
 - `{ ...map, lowerTiles: [...] }` 처럼 **같은 크기** 사본은 선택 배열을 공유한다. 그 사본의 선택 층을 제자리에서
   바꾸면 원본도 바뀐다 — 바꿀 거면 `cloneExtraLayers` 를 같이 펼친다(`updateMapTiles` 선례).

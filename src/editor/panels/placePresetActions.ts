@@ -5,11 +5,11 @@ import { placeChromeState } from "@/editor/panels/spatialPlaceChromeState";
 import { freshSpatialId } from "@/editor/panels/spatialSpaceDraft";
 import { serialize } from "@/project/io";
 import { regionReference } from "@/project/regionReferences";
-import { loadReferencePresetScene } from "@/project/referencePresetSnapshot";
+import { importReferenceScene, preloadRegionReferenceScene } from "@/project/regionReferenceImport";
 import { convertLegacySpatialSnapshot } from "@/project/spatial/legacyImport";
 import { store } from "@/project/store";
 import type { SpatialId } from "@/project/spatial/types";
-import type { GameMap, MapId, Project, TilesetId } from "@/project/types";
+import type { MapId, Project } from "@/project/types";
 
 function note(saveState: string, previewError: string | null = null): void {
   placeChromeState.saveState = saveState;
@@ -86,38 +86,28 @@ export function placeReferenceMapPreset(id: string, rerender: () => void): void 
   }
   note("완성 맵을 프로젝트에 넣는 중…");
   rerender();
-  void loadReferencePresetScene(id).then((scene) => {
-    if (!scene) {
-      note(placeChromeState.saveState, "이 사례의 맵 자료를 찾을 수 없습니다");
-      rerender();
-      return;
-    }
+  // 조수 도구 import_region_reference 와 같은 경로 — 타일셋 이식·뒤쪽 칸·업로드 아틀라스까지 함께 싣는다.
+  void preloadRegionReferenceScene(id).then((scene) => {
     let mapId = "";
+    let tilesetNote = "";
     store.update((draft) => {
-      const tilesetId = scene.tileset.id;
-      if (!Object.hasOwn(draft.tilesets, tilesetId)) draft.tilesets[tilesetId] = { ...scene.tileset, id: tilesetId };
-      const base = `preset:${id}`;
-      mapId = base;
-      let suffix = 2;
-      while (Object.hasOwn(draft.maps, mapId)) mapId = `${base}:${suffix++}`;
-      const map: GameMap = {
-        id: mapId as MapId,
-        name: reference.name,
-        width: scene.map.width,
-        height: scene.map.height,
-        tilesetId: tilesetId as TilesetId,
-        tileSize: scene.map.tileSize || 16,
-        lowerTiles: [...scene.map.lowerTiles],
-        upperTiles: [...scene.map.upperTiles],
-        events: scene.map.events ?? [],
-      };
-      draft.maps[map.id] = map;
+      const result = importReferenceScene(draft, scene, { newMapId: freshPresetMapId(draft, id) });
+      mapId = result.mapId;
+      if (result.tileset.mode === "copied") tilesetNote = ` (타일셋 사본 ${result.tileset.tilesetId})`;
     }, { scope: "project", label: "완성 맵 프리셋" });
     if (mapId) editorState.set({ currentMapId: mapId as MapId });
-    note(`「${reference.name}」을 맵 목록에 넣었습니다`);
+    note(`「${reference.name}」을 맵 목록에 넣었습니다${tilesetNote}`);
     rerender();
   }).catch((error: unknown) => {
     note(placeChromeState.saveState, error instanceof Error ? error.message : String(error));
     rerender();
   });
+}
+
+function freshPresetMapId(draft: Project, id: string): string {
+  const base = `preset:${id}`;
+  let mapId = base;
+  let suffix = 2;
+  while (Object.hasOwn(draft.maps, mapId)) mapId = `${base}:${suffix++}`;
+  return mapId;
 }

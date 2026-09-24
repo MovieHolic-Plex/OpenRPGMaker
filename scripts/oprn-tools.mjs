@@ -6,6 +6,7 @@ import { buildTsModule, withTsModule } from "./ontology-ts-loader.mjs";
 
 const HEADLESS_ENTRY = resolve(fileURLToPath(new URL("../src/headless/index.ts", import.meta.url)));
 const STORE_ENTRY = resolve(fileURLToPath(new URL("../electron/local-store/store.ts", import.meta.url)));
+const PUBLIC_DIR = resolve(fileURLToPath(new URL("../public", import.meta.url)));
 const HISTORY_LIMIT = 20;
 
 function usage() {
@@ -132,6 +133,7 @@ async function withHeadless(bundlePath, callback) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   await withHeadless(args.bundle, async (module) => {
+    module.setHeadlessPublicRoot(PUBLIC_DIR);
     if (args.list) {
       process.stdout.write(`${JSON.stringify({ tools: module.listHeadlessTools() }, null, 2)}\n`);
       return;

@@ -155,7 +155,7 @@ export function runToolDefinition(
     const builtHouses = newlyBuiltHouseSnapshots(draft, protectedHouses);
     // 후처리: 나무 밑동 위 수관(upper) 강제 — 고아 밑동(14,5 등) 방지.
     // Canonical maps include frozen, digest-owned output. Never repair unrelated raster implicitly.
-    const treeRepairNote = draft.spatialAuthoring === undefined
+    const treeRepairNote = draft.spatialAuthoring === undefined && tool.preservesAuthoredRaster !== true
       ? formatTreePairRepairSummary(repairTreePairsOnProject(draft, {
         canopyReplacementExemptTileIds: resolveForestCanopyReplacementExemptTileIds(draft),
       })) : null;

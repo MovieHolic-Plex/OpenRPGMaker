@@ -142,6 +142,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   author_world_bridge: world("다리 놓기", "road"),
   author_world_mountain: world("산 쌓기", "map"),
   read_region_reference: inspect("지역 예시 읽기", "map"),
+  import_region_reference: build("등록 장소 가져오기", "map"),
   list_spatial_designs: inspect("공간 설계 찾기", "map"),
   get_geography_vocabulary: inspect("지형 어휘 읽기", "map"),
   get_spatial_design: inspect("공간 설계 읽기", "map"),
