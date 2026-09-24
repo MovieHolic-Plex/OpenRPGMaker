@@ -43,6 +43,7 @@ import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
+import { expandShortParameterCurves } from "./parameterCurveInput";
 import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
@@ -349,7 +350,7 @@ const parameterCurvesSchema = objectSchema({
   defense: { type: "array", items: integerSchema() },
   mind: { type: "array", items: integerSchema() },
   agility: { type: "array", items: integerSchema() },
-});
+}, "레벨 1~99 능력치 곡선. 99칸 배열 대신 [Lv1값] 또는 [Lv1값, Lv99값] 으로 줘도 곡선을 채운다. 배우의 곡선이 전투 능력치의 정본이다(직업 곡선은 직업 변경 뒤에만).");
 const expCurveSchema = objectSchema({ base: integerSchema(), extra: integerSchema(), acceleration: integerSchema() });
 const actorInitialEquipmentSchema: JsonSchema = {
   type: "object", description: "{ equipment slot id: equipment id }; includes project-authored slots",
@@ -1176,6 +1177,8 @@ const upsertActor: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero", maxLevel: 99 }),
   run(draft, args): ToolExecResult {
+    const warnings: string[] = [];
+    expandShortParameterCurves(args.actor, "actor", warnings);
     const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"]);
     const actorPatch = args.actor as Record<string, unknown>;
     if (typeof actorPatch.appearanceId === "string"
@@ -1183,7 +1186,6 @@ const upsertActor: ToolDefinition = {
       throw new ToolError(`공유 캐릭터 외형을 찾을 수 없습니다: ${actorPatch.appearanceId}`, { code: "appearance-not-found" });
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
-    const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
@@ -1229,9 +1231,15 @@ const upsertClass: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("class", classRecordSchema, { id: "class_mage", name: "마법사", learnedSkills: [{ level: 1, skillId: "skill_fire" }] }),
   run(draft, args): ToolExecResult {
+    const warnings: string[] = [];
+    expandShortParameterCurves(args.class, "class", warnings);
     const merged = mergeRecord(draft.database.classes, args.class, "class", classRecordSchema, { id: "class_mage", name: "마법사" });
     const record = normalizeClassRecord(merged as Partial<ClassRecord> & Pick<ClassRecord, "id" | "name">);
-    const warnings: string[] = [];
+    const classCurvesPatched = Boolean((args.class as { parameterCurves?: unknown } | undefined)?.parameterCurves);
+    if (classCurvesPatched) {
+      const users = draft.database.actors.filter((actor) => actor.classId === record.id).map((actor) => actor.id);
+      warnings.push(`직업 parameterCurves 는 직업 변경(changeClass·승급) 뒤에만 능력치로 쓰입니다 — 이 직업으로 시작하는 배우${users.length ? `(${users.join(", ")})` : ""}의 전투 능력치는 배우 parameterCurves 가 정합니다. 역할별 능력치는 upsert_actor parameterCurves 에 [Lv1, Lv99] 로 주세요.`);
+    }
     dropUnknownElementRates(draft, record, "class", warnings);
     const outcome = upsertById(draft.database.classes, record);
     return {
