@@ -1076,3 +1076,12 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 
 - `ecology-report-player/SUMMARY.md`: passed=true,21칸,wrongPreserved/exactReward/repeatUnchanged=true,pageErrors0. 실제 깃털→잎→발자국 획득 상태에서 수현까지 걸어 오답 무변화→정답300G/몬스터볼3개/done→재대화 보상 없음 확인. `report-complete.png` 직접 열람. 단서 부족/모든 분기/180분 완료 증거로 확대하지 않는다.
 - `ecology-missing-report-player/SUMMARY.md`: passed=true,18칸,missingHintCorrect/noReward=true,pageErrors0. 깃털/잎만 획득한 실제 상태에서 수현이 남은 발자국(7,18)을 안내하며 보상/진행은 바꾸지 않았다. `missing-clue.png` 직접 확인. 여덟 단서 조합 전부를 런타임 검사한 것은 아니다.
+
+### 숲 미술의 부분 저장과 연결 지연 계측
+
+- 요청21f는 isaiah-executable 용도의 shelf/town 이미지 미전달로 타일 쓰기 차단 후 해당 이미지를 읽고 재시도했다. 타일66의3칸 배치 뒤30초 heartbeat 실패. 정본은 지연 후492로 올라갔다. 이 부분 작업을 완성된 숲이라고 하지 않는다. `request21f-heartbeat-failure.txt` 보존.
+- 실패 뒤 호스트2321722와 워커126360은 살아 있었고 서비스 재시작은 하지 않았다. 워커 사망을 확정한 UI 문구는 실제 프로세스 관찰과 구분해야 한다. 최초 원인이 워커/프록시/브라우저 중 어디인지 아직 미확정이다.
+- 종료된 요청의 관찰 브라우저를 정상 종료하고 새 관찰기로 교체했다. 새 실행은 CDP Network.dataReceived의 바이트 수/도착 간격과 PerformanceObserver longtask 시간만 수집한다. 요청/응답 본문은 수집하지 않는다. 기존 postDataBuffer 계측도 비활성이다. 자료는 `stream-timing.json`.
+- 요청21f2로 부분 저장 맵을 먼저 읽고 숲 미술을 이어 작성하도록 제출했다. 서비스/정본 재생성 없이 동일9897 프로젝트를 사용한다.
+
+- 새 관찰기 첫 부팅은 편집 권한 인수 전에 ai-input을 기다려 timeout으로 종료됐다. `boot.txt`에서 이전 호스트 편집 잠금/권한 가져오기 버튼을 확인했다. 이는 관찰기 준비 순서 문제이며 에디터 AI 작업 실패로 세지 않는다. 다음 실행용 관찰기는 권한 인수→입력창 대기로 순서를 수정했고, 현재 재시도는 대기 후 기존 권한 인수 경로를 진행한다.
