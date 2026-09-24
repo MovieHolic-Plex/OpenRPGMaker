@@ -183,7 +183,7 @@ function detailNodes(
       children: [
         el("span", { class: call.ok === false ? "is-failed" : "is-ok", text: call.ok === false ? "실패" : call.ok === true ? "성공" : "기록" }),
         el("time", { text: formatWhen(call.at), attrs: { dateTime: call.at } }),
-        el("span", { text: call.query ?? call.summary || "요약 없음" }),
+        el("span", { text: (call.query ?? call.summary) || "요약 없음" }),
       ],
     })),
   }));
