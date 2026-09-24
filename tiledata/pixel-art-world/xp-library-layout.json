@@ -1,0 +1,701 @@
+{
+  "version": 1,
+  "tilesPerRow": 16,
+  "baseSeedCount": 16,
+  "atlases": [
+    {
+      "id": "paw-xp-interior-floors",
+      "name": "실내 바닥·발판·코타츠",
+      "defaultBackingKey": "indoor-floor",
+      "packIds": [
+        "paw-floor-t06",
+        "paw-floor-t07",
+        "paw-floor-t08",
+        "paw-floor-t10",
+        "paw-floor-t11",
+        "paw-floor-t12",
+        "paw-floor02",
+        "paw-floor05",
+        "paw-floorm01",
+        "paw-floorm03",
+        "paw-floors01",
+        "paw-floort01",
+        "paw-floort02",
+        "paw-floort03",
+        "paw-floort04",
+        "paw-kotatsu01",
+        "paw-kotatsu02",
+        "paw-kyodan01",
+        "paw-sunoko01",
+        "paw-sunoko02",
+        "paw-sunoko03"
+      ],
+      "finalCount": 1024
+    },
+    {
+      "id": "paw-xp-carpets-mats",
+      "name": "카펫·매트",
+      "defaultBackingKey": "indoor-floor",
+      "packIds": [
+        "paw-carpet-rose01",
+        "paw-carpet01",
+        "paw-carpet02",
+        "paw-carpet03",
+        "paw-carpet04",
+        "paw-carpet05",
+        "paw-carpet06",
+        "paw-carpet07",
+        "paw-carpet08",
+        "paw-carpet08st",
+        "paw-carpet09",
+        "paw-carpet09st",
+        "paw-carpet10",
+        "paw-carpet11",
+        "paw-carpet12",
+        "paw-carpet13",
+        "paw-carpet14",
+        "paw-carpet15",
+        "paw-carpet16",
+        "paw-carpet17",
+        "paw-goza01",
+        "paw-goza02",
+        "paw-goza03",
+        "paw-mat01"
+      ],
+      "finalCount": 1168
+    },
+    {
+      "id": "paw-xp-interior-boundaries",
+      "name": "천장·벽 장식·출입구 배경·러그",
+      "defaultBackingKey": "indoor-floor",
+      "packIds": [
+        "paw-wall-a01",
+        "paw-wall-a02",
+        "paw-wall-d01",
+        "paw-cartain01",
+        "paw-cartain02",
+        "paw-dway02",
+        "paw-dwaya01",
+        "paw-dwaya02",
+        "paw-dwayb01",
+        "paw-dwayb02",
+        "paw-dwayc02",
+        "paw-dwayd01",
+        "paw-fur02",
+        "paw-fur03",
+        "paw-ivy01",
+        "paw-window01"
+      ],
+      "finalCount": 784
+    },
+    {
+      "id": "paw-xp-urban-surfaces",
+      "name": "도로·포장·지붕·옥상 난간",
+      "defaultBackingKey": "concrete",
+      "packIds": [
+        "paw-asphaltroad01",
+        "paw-concrete01",
+        "paw-roof01",
+        "paw-asphalt01",
+        "paw-asphalt02",
+        "paw-asphaltbase",
+        "paw-concrete02",
+        "paw-groad01",
+        "paw-groad02",
+        "paw-road01",
+        "paw-road02",
+        "paw-roof02",
+        "paw-roof03",
+        "paw-roof04",
+        "paw-sroad01",
+        "paw-sroad02",
+        "paw-saku01"
+      ],
+      "finalCount": 832
+    },
+    {
+      "id": "paw-xp-ground",
+      "name": "지면·모래·이끼·자갈",
+      "defaultBackingKey": "grass",
+      "packIds": [
+        "paw-ground01",
+        "paw-ground02",
+        "paw-ground03",
+        "paw-groundbase01",
+        "paw-groundg01",
+        "paw-groundg02",
+        "paw-groundg03",
+        "paw-groundg04",
+        "paw-groundg05",
+        "paw-groundg06",
+        "paw-groundy01",
+        "paw-moss01",
+        "paw-moss02",
+        "paw-stone01",
+        "paw-undulation01",
+        "paw-undulation02"
+      ],
+      "finalCount": 784
+    },
+    {
+      "id": "paw-xp-grass-water",
+      "name": "풀밭·수면·수로·수초",
+      "defaultBackingKey": "grass",
+      "packIds": [
+        "paw-ditch01",
+        "paw-ditch02",
+        "paw-ditch03",
+        "paw-ditch04",
+        "paw-grassc01",
+        "paw-grassc02",
+        "paw-grassc03",
+        "paw-grassd01",
+        "paw-grassd02",
+        "paw-grassd03",
+        "paw-grasse01",
+        "paw-grasse02",
+        "paw-grasse03",
+        "paw-grasse04",
+        "paw-grasse05",
+        "paw-grasse06",
+        "paw-pool01",
+        "paw-pool02",
+        "paw-seawds01"
+      ],
+      "finalCount": 1504
+    },
+    {
+      "id": "paw-xp-garden-boundaries",
+      "name": "정원·생울타리·화단·돌 경계",
+      "defaultBackingKey": "grass",
+      "packIds": [
+        "paw-borderg01",
+        "paw-flower01",
+        "paw-gbordera01",
+        "paw-gbordera02",
+        "paw-gborderb01",
+        "paw-gborderb02",
+        "paw-gborderc02",
+        "paw-gborderc03",
+        "paw-kadan01",
+        "paw-kadan02",
+        "paw-kadan03",
+        "paw-stfence01",
+        "paw-stfence02",
+        "paw-stfence03",
+        "paw-stfencebase"
+      ],
+      "finalCount": 736
+    },
+    {
+      "id": "paw-xp-farmland",
+      "name": "밭·작물",
+      "defaultBackingKey": "grass",
+      "packIds": [
+        "paw-hatake01",
+        "paw-hatake02",
+        "paw-hatake03",
+        "paw-hatake04",
+        "paw-hatake05",
+        "paw-hatake06",
+        "paw-hatakeb01",
+        "paw-hatakeb02",
+        "paw-hatakeb03",
+        "paw-hatakeb04",
+        "paw-hatakeb05",
+        "paw-hatakeb06"
+      ],
+      "finalCount": 592
+    }
+  ],
+  "backingSeeds": [
+    {
+      "key": "grass",
+      "packId": "paw-groundg01",
+      "sha256": "5fde882a88c0fa15237776b74e4ac03f5e0fb0014f5e3e3771377e22999cde7c",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "passable",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-GroundG01.png"
+    },
+    {
+      "key": "soil",
+      "packId": "paw-groundg05",
+      "sha256": "a46f40cf4b95631903da122862e75483e0b178597f5531f9a874c7ed4bfe0820",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "passable",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-GroundG05.png"
+    },
+    {
+      "key": "sand",
+      "packId": "paw-groundg04",
+      "sha256": "db3badaa302e62a9f149086674446d94868049ea1fd77c825ac65732c97883a5",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "passable",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-GroundG04.png"
+    },
+    {
+      "key": "asphalt",
+      "packId": "paw-asphaltroad01",
+      "sha256": "1defffef1fe5d051ce71e8b6814dbd3b64560c930e84a284ced4255df109395f",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "passable",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-AsphaltRoad01.png"
+    },
+    {
+      "key": "concrete",
+      "packId": "paw-concrete01",
+      "sha256": "016edc7b7572e20684cfa259e383312619d7ed4d52b55db3d4bb44b67c6aa1c0",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "passable",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-Concrete01.png"
+    },
+    {
+      "key": "indoor-floor",
+      "packId": "paw-floort01",
+      "sha256": "07ffb846c7f174a9265fb2ac0b348a47fc93e24a12415419664ea77f2d341f4a",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "passable",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-FloorT01.png"
+    },
+    {
+      "key": "roof",
+      "packId": "paw-roof01",
+      "sha256": "15d7faf904362bb07108b2e407fb750fd242f1c7db9c4ca2f5f27f2e0aec74bb",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "solid",
+      "note": "Actual opaque center pixels, no recolor.",
+      "filename": "SA-Roof01.png"
+    },
+    {
+      "key": "water",
+      "packId": "paw-ditch01",
+      "sha256": "ce6b06ca456e3bae08680d1fb6dad2eada83c9ab78bfdd1fd5895be7a9b9b7dc",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "nativeSize": 32,
+      "passage": "solid",
+      "note": "Actual center pixels, no recolor. Water seed is static frame0 substrate, not an animation replacement.",
+      "filename": "SA-Ditch01.png"
+    },
+    {
+      "key": "wall",
+      "sha256": "9165bc9e9db4c24369ce511cd5d93fe1ba2f7a32cfaa491f9d933ad9b52183e3",
+      "filename": "ST-Libry-I01.png",
+      "sourceRectPixels": {
+        "x": 32,
+        "y": 64,
+        "width": 32,
+        "height": 32
+      },
+      "sourceTileIndex": 17,
+      "sourceColumns": 8,
+      "nativeSize": 32,
+      "passage": "solid",
+      "note": "Library central wallpaper tile; no side frame. Repeat only wall middle; author top/bottom and doorway separately."
+    }
+  ],
+  "underlayRequirements": [
+    {
+      "packId": "paw-asphaltbase",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "soil",
+        "sand"
+      ],
+      "note": "AsphaltBase has transparent excavated center. Requires distinct underlying ground; do not recolor source or call it a complete asphalt floor."
+    },
+    {
+      "packId": "paw-cartain01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall"
+      ],
+      "note": "Mount on a real wall plane. Ceiling void is not a wall. Requires wall panel/floor composition for room demonstration."
+    },
+    {
+      "packId": "paw-cartain02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall"
+      ],
+      "note": "Mount on a real wall plane. Ceiling void is not a wall. Requires wall panel/floor composition for room demonstration."
+    },
+    {
+      "packId": "paw-dway02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-dwaya01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-dwaya02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-dwayb01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-dwayb02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-dwayc02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-dwayd01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall",
+        "indoor-floor"
+      ],
+      "note": "Needs wall opening and floor approach. Static doorway backdrop is not an event door; default collision stays blocked. Do not claim functioning entrance."
+    },
+    {
+      "packId": "paw-flower01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-fur02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-fur03",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-gbordera02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-gborderb02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-goza02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-goza03",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-grassc03",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-grassd03",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-grasse04",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-grasse05",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-grasse06",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-ground01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil",
+        "sand"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-ground02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil",
+        "sand"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-ground03",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil",
+        "sand"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-groundbase01",
+      "status": "editing-template-not-finished-scene",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil",
+        "sand"
+      ],
+      "note": "GroundBase01 includes an opaque cyan placeholder outside a transparent center. Copying over world grass retains cyan. Needs author-intended template composition; no recolor/source erasure authorized in this plan. Keep as template example, not a finished world floor."
+    },
+    {
+      "packId": "paw-ivy01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall"
+      ],
+      "note": "Mount on a real wall plane. Ceiling void is not a wall. Requires wall panel/floor composition for room demonstration."
+    },
+    {
+      "packId": "paw-kotatsu01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-kotatsu02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-mat01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-pool01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "concrete",
+        "sand",
+        "water"
+      ],
+      "note": "Semi-transparent pooled water uses concrete basin/floor in this specimen, not grass. Preserve source alpha and author surrounding shore/collision separately."
+    },
+    {
+      "packId": "paw-pool02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "concrete",
+        "sand",
+        "water"
+      ],
+      "note": "Semi-transparent pooled water uses concrete basin/floor in this specimen, not grass. Preserve source alpha and author surrounding shore/collision separately."
+    },
+    {
+      "packId": "paw-roof02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "roof"
+      ],
+      "note": "Assemble over opaque roof center; Saku requires a rectangular roof perimeter, not bare world ground."
+    },
+    {
+      "packId": "paw-saku01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "roof"
+      ],
+      "note": "Assemble over opaque roof center; Saku requires a rectangular roof perimeter, not bare world ground."
+    },
+    {
+      "packId": "paw-stfence03",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil"
+      ],
+      "note": "Transparent stone boundary base needs inside/outside ground composition; not a complete floor."
+    },
+    {
+      "packId": "paw-stfencebase",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil"
+      ],
+      "note": "Transparent stone boundary base needs inside/outside ground composition; not a complete floor."
+    },
+    {
+      "packId": "paw-sunoko01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "indoor-floor"
+      ],
+      "note": "Use actual indoor floor beneath the upper footprint; preserve full slat/rug/furniture geometry."
+    },
+    {
+      "packId": "paw-undulation02",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "grass",
+        "soil",
+        "sand"
+      ],
+      "note": "Preserve lower material; shape upper by explicit mask array."
+    },
+    {
+      "packId": "paw-window01",
+      "status": "backing-required",
+      "recommendedBackingKeys": [
+        "wall"
+      ],
+      "note": "Mount on a real wall plane. Ceiling void is not a wall. Requires wall panel/floor composition for room demonstration."
+    },
+    {
+      "packId": "paw-seawds01",
+      "status": "surrounding-water",
+      "recommendedBackingKeys": [
+        "water"
+      ],
+      "note": "Opaque water-plant tile; the water seed surrounds its lower footprint in diagnostic images, not an extra layer beneath it."
+    }
+  ],
+  "limitations": [
+    "140 source support is not140 completed gameplay scenes.",
+    "Manual-mask39upper plus1lower podium do not support brush autoshaping.",
+    "Existing legacy city/school xpAutotileQuarters differs from importer xpFullAutotileQuarters; use the importer or its full-edge resolver for new atlases.",
+    "No source or derived PNG is part of this JSON."
+  ]
+}

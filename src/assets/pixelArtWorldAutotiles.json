@@ -776,7 +776,7 @@
   },
   {
     "id": "paw-carpet08st",
-    "name": "카펫 · Carpet08ST",
+    "name": "붉은색 계단형 세로 러너 · Carpet08ST",
     "filename": "SA-Carpet08ST.png",
     "sha256": "9f0dd0fae6383d793491b676b84914b4e27908faed3ea0e775a1c7ccb792dd88",
     "sourcePage": "https://yms.main.jp/dotartworld/page3/autotiles02.html",
@@ -787,11 +787,11 @@
     "defaultLayer": "lower",
     "passage": "passable",
     "role": "terrain",
-    "surface": "carpet",
+    "surface": "stair-runner",
     "terrainTag": 0,
     "underlay": "none",
-    "placement": "lower-autoshape",
-    "shapePolicy": "blob",
+    "placement": "manual-mask",
+    "shapePolicy": "rectangle",
     "frames": 1,
     "sourceWidth": 96,
     "sourceHeight": 128,
@@ -812,8 +812,13 @@
       }
     ],
     "nonOpaqueMasks": [],
-    "restrictions": [],
-    "description": "카펫. carpet 용도의 32px XP 쿼터 소재. ",
+    "restrictions": [
+      "원본 그림의 가로 단차 음영과 열린 위·아래 끝을 근거로 세로 러너로 분류했다. 제작자 페이지의 계단 용도 명시를 확인했다는 뜻은 아니다.",
+      "좌우 금테를 보존하는 최소 2×2 직사각형만 사용한다. 구멍·가로 분기·독립된 닫힌 러그로 사용하지 않는다.",
+      "상·하 끝은 같은 색 Carpet08 또는 Carpet09 바닥/참으로 이어서 장면을 완성한다. 이 시트만으로 닫힌 끝이나 전이 이벤트는 생기지 않는다.",
+      "하위 전체 마스크 배열을 수동 배치한다. 일반 카펫 자동 붓으로 확장하지 않는다."
+    ],
+    "description": "계단 음영의 세로 러너. 원본 그림의 가로 단차 음영과 열린 위·아래 끝을 근거로 세로 러너로 분류했다. 제작자 페이지의 계단 용도 명시를 확인했다는 뜻은 아니다. 좌우 금테를 보존하는 최소 2×2 직사각형만 사용한다. 구멍·가로 분기·독립된 닫힌 러그로 사용하지 않는다. 상·하 끝은 같은 색 Carpet08 또는 Carpet09 바닥/참으로 이어서 장면을 완성한다. 이 시트만으로 닫힌 끝이나 전이 이벤트는 생기지 않는다. 하위 전체 마스크 배열을 수동 배치한다. 일반 카펫 자동 붓으로 확장하지 않는다.",
     "quarterLayout": "xp-full-edge-v1"
   },
   {
@@ -860,7 +865,7 @@
   },
   {
     "id": "paw-carpet09st",
-    "name": "카펫 · Carpet09ST",
+    "name": "푸른색 계단형 세로 러너 · Carpet09ST",
     "filename": "SA-Carpet09ST.png",
     "sha256": "11c2b9245f0b6e29c38a341d0fde6e8bbb09becd33bd96f79e2f155135759c65",
     "sourcePage": "https://yms.main.jp/dotartworld/page3/autotiles02.html",
@@ -871,11 +876,11 @@
     "defaultLayer": "lower",
     "passage": "passable",
     "role": "terrain",
-    "surface": "carpet",
+    "surface": "stair-runner",
     "terrainTag": 0,
     "underlay": "none",
-    "placement": "lower-autoshape",
-    "shapePolicy": "blob",
+    "placement": "manual-mask",
+    "shapePolicy": "rectangle",
     "frames": 1,
     "sourceWidth": 96,
     "sourceHeight": 128,
@@ -896,8 +901,13 @@
       }
     ],
     "nonOpaqueMasks": [],
-    "restrictions": [],
-    "description": "카펫. carpet 용도의 32px XP 쿼터 소재. ",
+    "restrictions": [
+      "원본 그림의 가로 단차 음영과 열린 위·아래 끝을 근거로 세로 러너로 분류했다. 제작자 페이지의 계단 용도 명시를 확인했다는 뜻은 아니다.",
+      "좌우 금테를 보존하는 최소 2×2 직사각형만 사용한다. 구멍·가로 분기·독립된 닫힌 러그로 사용하지 않는다.",
+      "상·하 끝은 같은 색 Carpet08 또는 Carpet09 바닥/참으로 이어서 장면을 완성한다. 이 시트만으로 닫힌 끝이나 전이 이벤트는 생기지 않는다.",
+      "하위 전체 마스크 배열을 수동 배치한다. 일반 카펫 자동 붓으로 확장하지 않는다."
+    ],
+    "description": "계단 음영의 세로 러너. 원본 그림의 가로 단차 음영과 열린 위·아래 끝을 근거로 세로 러너로 분류했다. 제작자 페이지의 계단 용도 명시를 확인했다는 뜻은 아니다. 좌우 금테를 보존하는 최소 2×2 직사각형만 사용한다. 구멍·가로 분기·독립된 닫힌 러그로 사용하지 않는다. 상·하 끝은 같은 색 Carpet08 또는 Carpet09 바닥/참으로 이어서 장면을 완성한다. 이 시트만으로 닫힌 끝이나 전이 이벤트는 생기지 않는다. 하위 전체 마스크 배열을 수동 배치한다. 일반 카펫 자동 붓으로 확장하지 않는다.",
     "quarterLayout": "xp-full-edge-v1"
   },
   {

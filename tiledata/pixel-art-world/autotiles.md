@@ -62,8 +62,8 @@ The isolated preview is intentionally used instead of reconstructing the outer f
 
 ## Semantics and authoring
 
-There are 100 lower autoshaping families (96 static plus four animated water families)
-and 40 manual-mask families (39 upper, one lower platform). Geometry compatibility is
+There are 98 lower autoshaping families (94 static plus four animated water families)
+and 42 manual-mask families (39 upper, one lower platform and two lower stair runners). Geometry compatibility is
 not a claim that every shape is artistically suitable for every material.
 
 Each entry records `surface`, `role`, `passage`, `defaultLayer`, `underlay`,
@@ -145,3 +145,22 @@ shipped uploaded-atlas registration functions, observing all four frame IDs per 
 7-column targets exercised row padding; layout records also include 4/5/8/13 columns.
 No gates, tests, typecheck or canonical/shared DB writes were run. Installation into a
 particular user's project still requires the supervisor's save/reload and player observation.
+
+## Shared local installation
+
+`xp-library-layout.json` partitions all 140 SHA identities into eight 16-column atlases.
+Slots 0–8 are explicit opaque source backing crops; 9–15 are blocked padding.
+`prepare-pixel-art-world-xp-library.mjs` uses the normal browser importer, then creates
+139 compact 4×3 material assembly specimens with full arrays and actual PNGs.
+GroundBase01 remains documented as an editing template and has no object stamp.
+Carpet08ST/09ST are visually classified as directional stair runners, not closed rugs:
+manual lower placement, rectangle only, open north/south ends connect to matching
+Carpet08/09 landings. This is an inference from the artwork, not an author-stated use.
+
+`publish-pixel-art-world-xp-library.mjs` checks the exact prepared library receipt,
+losslessly compresses reference attachments and publishes `pixel-art-world-xp-local`
+through the shared SQLite API with CAS/history/reload. It preserves other libraries.
+`install-pixel-art-world-shared-host.mjs` copies the same definitions/assets to the
+running canonical host with backup, CAS and reload; existing maps are unchanged.
+Material specimens are objects, not completed places/regions. Actual spatial examples
+using this expanded palette still need authored layouts, movement and visual review.

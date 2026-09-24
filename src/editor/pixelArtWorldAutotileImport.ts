@@ -64,7 +64,7 @@ export async function preparePixelArtWorldAutotile(file: File, pack: PixelArtWor
   (tileset.tileGroups ??= []).push({
     id: pack.id, name: pack.name, role: pack.role, defaultLayer: pack.defaultLayer,
     tileIds, source: 'imported', confidence: 'high',
-    description: pack.description, placementRules: `${pack.placement === 'lower-autoshape' ? '같은 그룹을 lower에 칠해 8방향 자동 성형.' : '참고문서의 전체 마스크 배열로 수동 배치. upper 자동 성형 없음.'} 받침: ${pack.underlay}. ${pack.restrictions.join(' ')} 원본을 12칸으로 잘라 배치하지 않는다.`,
+    description: pack.description, placementRules: `${pack.placement === 'lower-autoshape' ? '같은 그룹을 lower에 칠해 8방향 자동 성형.' : '홈 레이어의 전체 마스크 배열로 수동 배치. 자동 성형 그룹 없음.'} 받침: ${pack.underlay}. ${pack.restrictions.join(' ')} 원본을 12칸으로 잘라 배치하지 않는다.`,
   });
   const raw = document.createElement('canvas'); raw.width = pack.sourceWidth; raw.height = pack.sourceHeight;
   raw.getContext('2d')!.drawImage(source, 0, 0);
