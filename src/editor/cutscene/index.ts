@@ -215,6 +215,22 @@ type CompileState = {
   tint?: FinalTintState;
 };
 
+/**
+ * 엔딩 에필로그 안의 `ending` beat 를 뺀다. 에필로그는 이미 엔딩 안이다 — 같은 엔딩을 다시 부르면
+ * 에필로그가 처음부터 다시 돌아 검은 화면에서 끝없이 반복됐다(추리 도그푸딩 gen: 에필로그 끝에 {kind:"ending"}).
+ * 빠진 개수를 함께 돌려준다.
+ */
+export function withoutEndingBeats(beats: readonly CutsceneBeat[]): { beats: CutsceneBeat[]; removed: number } {
+  let removed = 0;
+  const strip = (list: readonly CutsceneBeat[]): CutsceneBeat[] => list.flatMap((beat): CutsceneBeat[] => {
+    if (beat.kind === "ending") { removed += 1; return []; }
+    if (beat.kind === "parallel") return [{ ...beat, beats: strip(beat.beats) }];
+    return [beat];
+  });
+  const out = strip(beats);
+  return { beats: out, removed };
+}
+
 export function compileCutscene(beats: readonly CutsceneBeat[], options: CutsceneCompileOptions = {}): Command[] {
   const validation = validateCutscene(beats, options.context);
   if (!validation.ok) throw new CutsceneValidationError(validation.errors);

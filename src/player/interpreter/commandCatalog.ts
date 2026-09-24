@@ -40,7 +40,7 @@ import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
-import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
+import { compileCutscene, CutsceneValidationError, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { addFollowerToSession, removeFollowerFromSession } from "@/project/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
@@ -425,7 +425,8 @@ function compileEndingEpilogue(state: InterpreterState, ending: EndingDef): Comm
     for (const event of map.events) eventIds.add(event.id);
   }
   try {
-    return compileCutscene(ending.epilogue as CutsceneBeat[], {
+    // 에필로그 안에서 엔딩을 다시 부르면 에필로그가 무한 반복된다 — 옛 저장본도 여기서 막는다.
+    return compileCutscene(withoutEndingBeats(ending.epilogue as CutsceneBeat[]).beats, {
       resetFace: true,
       context: { eventIds, resourceIds: collectResourceIds(state.project) },
     });
