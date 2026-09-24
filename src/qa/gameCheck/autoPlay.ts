@@ -406,7 +406,7 @@ function executeGoal(driver: Driver, goal: Goal): AutoPlayStepTrace {
   return trace(goal.label, true, "완료", driver, visit.where);
 }
 
-function endingGoal(visit: CommandVisit): Goal {
+export function endingGoal(visit: CommandVisit): Goal {
   const endingId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
   const title = typeof visit.command.title === "string" ? visit.command.title : undefined;
   return {
@@ -459,6 +459,14 @@ function runPlan(project: Project, label: string, goals: readonly Goal[], deadli
   return { label, ok: !firstFailure, ...(firstFailure ? { failure: firstFailure } : {}), ...(reached ? { endingReached: reached } : {}), steps, sceneSteps: driver.steps.length, runs: driver.runs, ms: Date.now() - started, partyAtEnd: driver.last.session.partyActorIds.map((id) => (typeof id === "string" ? id : null)) };
 }
 
+/** 엔딩별 자동 플레이 상한(첫 엔딩 포함). */
+const MAX_ENDING_RUNS = 5;
+
+function endingKey(visit: CommandVisit): string {
+  return typeof visit.command.endingId === "string" ? visit.command.endingId
+    : typeof visit.command.title === "string" ? visit.command.title : `${visit.where.mapId}/${visit.where.eventId}`;
+}
+
 export function runAutoPlay(project: Project, options: { readonly budgetMs?: number; readonly companionJoins?: readonly CommandVisit[] } = {}): AutoPlayReport {
   const deadline = Date.now() + (options.budgetMs ?? 60_000);
   const targets: CommandVisit[] = [];
@@ -479,6 +487,16 @@ export function runAutoPlay(project: Project, options: { readonly budgetMs?: num
     const joinPlan = planCriticalPath(project, join, joinGoal(project, join));
     const goals = [...joinPlan.goals, ...plan.goals];
     runs.push(runPlan(project, "동료 합류 후", goals, deadline, [...joinPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다`), ...preamble]));
+  }
+  // 나머지 엔딩도 하나씩 걸어 본다 — 추리의 오답 엔딩처럼 「다른 결말」이 소프트락인지는 첫 엔딩만 봐서는 모른다.
+  const seenEndings = new Set([endingKey(target)]);
+  for (const other of targets.slice(1)) {
+    const key = endingKey(other);
+    if (seenEndings.has(key) || seenEndings.size >= MAX_ENDING_RUNS || Date.now() > deadline) continue;
+    seenEndings.add(key);
+    const otherPlan = planCriticalPath(project, other, endingGoal(other));
+    runs.push(runPlan(project, `다른 엔딩 ${key}`, otherPlan.goals, deadline,
+      otherPlan.unresolved.map((u) => `선행 조건 ${u.req} 을 채울 이벤트를 찾지 못했습니다 (${u.for.mapId ?? ""} ${u.for.eventId ?? ""})`)));
   }
   return {
     targets: targets.map((visit) => ({ label: visit.command.kind === "triggerEnding" ? `triggerEnding ${String(visit.command.endingId ?? "(자동)")}` : `ending ${String(visit.command.title ?? "")}`, where: visit.where })),
