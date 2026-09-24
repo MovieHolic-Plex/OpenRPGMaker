@@ -35,7 +35,7 @@
 | `catalog.json` | 계획(출구·절벽·집·소품과 주인·깔개·잎 없는 나무 자리 `bareTreeSpots`)과 맵 24장 |
 | `validation.json` | 입구에서 출구·문 앞·계단 끝까지 런타임 `canMove`로 닿는지, 쓴 씨앗 |
 | `images/` | 앱 렌더러로 그린 그림(칸당 16px) |
-| `*.md` | 공용 AI 문서 사본(`src/assets/sharedFieldRouteReferences.json`의 `field-routes-*-v5`·`rpg-outdoors-world-v1` 분류와 같은 본문) |
+| `*.md` | 공용 AI 문서 사본(`src/assets/sharedFieldRouteReferences.json`의 `field-routes-*-v5`(설원 `-v6`)·`rpg-outdoors-world-v1` 분류와 같은 본문) |
 
 재생성 순서(렌더·캡처는 dev 서버 `npm run dev:worktree`가 떠 있어야 한다):
 

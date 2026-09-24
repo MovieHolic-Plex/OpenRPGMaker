@@ -10,6 +10,9 @@ import { loadKit, OutdoorMap } from "./lib/outdoor-kit.mjs";
 import { PLANS } from "./lib/rpg-outdoor-plans.mjs";
 import { buildWorldMap, worldKeyedTileset } from "./lib/rpg-outdoor-world.mjs";
 import { GATES, THEME_FILL } from "./lib/rpg-outdoor-fill.mjs";
+import { snowCastleTops } from "./lib/climate-terrain.mjs";
+
+const SNOW_WALLS = JSON.parse(fs.readFileSync("tiledata/climate-villages/sheets.json", "utf8")).terrain.snowWalls;
 
 const OUT = "tiledata/rpg-outdoors";
 const only = process.env.OUTDOOR_ONLY ? process.env.OUTDOOR_ONLY.split(",") : null;
@@ -53,6 +56,8 @@ await withTsModule("scripts/content/lib/rpg-outdoors-entry.ts", "rpg-outdoors-en
           // Top up the open sand / ash round the groves with clumps (no grass, no trees): rocks on ash, cactus and rocks on sand.
           if (theme.topUp) b.fill({ ...theme, ...theme.topUp, standsAsSpots: false, stands: [], groves: 0 });
         }
+        // Snow maps: castle walls, walks and tower heads take their snow-capped copies (same passage and layer).
+        if (plan.tilesetId === "forest_harmony_snow") b.snowTops = snowCastleTops(b.map, SNOW_WALLS);
         const check = b.check({ entry: entry ?? b.exitList[0].inner, extra: plan.extraTargets ?? [], leak: plan.leak !== false, seals: b.seals ?? [] });
         done = { b, check, seed: plan.seed + attempt, entry: entry ?? b.exitList[0].inner };
       } catch (e) {
