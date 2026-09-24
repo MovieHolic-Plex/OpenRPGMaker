@@ -175,8 +175,13 @@ export function checkHorror(project: Project, briefText: string): Finding[] {
       findings.push({ severity: "warning", code: "chaser-cannot-reach", where: where(ref), message: "추격자 자리에서 걸어서는 주인공이 이 맵에 들어오는 칸에 닿지 못합니다(벽·가구에 갇힘)." });
     }
     // 실제로 붙잡는가: 헤드리스 런타임에서 가까운 칸에 세워 두고 30초.
-    const stand = [...chaserCells.entries()].filter(([, d]) => d >= 4 && d <= 8).map(([key]) => key.split(",").map(Number) as [number, number])
-      .find(([x, y]) => isPassable(project, ref.map, x, y));
+    // 안전지대 칸은 우선 피한다 — 그 안에서는 추격자가 의도적으로 서 있으므로(2026-09-24 추격 r9:
+    // 9×5 안전지대 한가운데 stand 를 잡아 「30초에도 못 잡음」 오탐), 바깥 칸이 있으면 그쪽에서 재는다.
+    const inZone = ([x, y]: [number, number]): boolean =>
+      zones.some((zone) => x >= zone.x && y >= zone.y && x < zone.x + zone.w && y < zone.y + zone.h);
+    const standCells = [...chaserCells.entries()].filter(([, d]) => d >= 4 && d <= 8).map(([key]) => key.split(",").map(Number) as [number, number])
+      .filter(([x, y]) => isPassable(project, ref.map, x, y));
+    const stand = standCells.find(([x, y]) => !inZone([x, y])) ?? standCells[0];
     if (stand) {
       const outcome = simulateCapture(project, ref, { x: stand[0], y: stand[1] });
       if (!outcome.caught) {

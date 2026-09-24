@@ -47,7 +47,7 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
-import { reachableGateCandidates, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
+import { reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -1979,6 +1979,9 @@ function transferEndpoint(
  * transferEndpoint + 도달성 보정. 맵에 이미 플레이어가 서는 칸(시작 위치·들어오는 착지점)이 있는데
  * 요청 자리가 거기서 걸어 닿지 않으면, 같은 가장자리의 가장 가까운 닿는 칸으로 옮긴다.
  * 닿는 후보가 없으면 원래 자리를 쓰고 경고만 남긴다(막지 않는다).
+ *
+ * accept 는 「이 배치로 기존 출입구가 봉쇄되지 않는가」 같은 추가 판정 — 거절하면 사유 문자열을
+ * 되돌려 후보를 이어서 찾는다(2026-09-24 추격 호러 r8: 앵커 검사만으로는 못 잡은 문 봉쇄).
  */
 function reachableTransferEndpoint(
   project: Project,
@@ -1986,29 +1989,73 @@ function reachableTransferEndpoint(
   requested: { x: number; y: number },
   label: "A" | "B",
   notes: string[],
+  accept?: (endpoint: { gate: Point; landing: Point }) => true | string,
 ): { gate: Point; landing: Point } | null {
   const localNotes: string[] = [];
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, 3, localNotes);
   const reach = walkableFromAnchors(project, map);
-  if (!reach) {
+  if (!reach && !accept) {
     notes.push(...localNotes);
     return endpoint;
   }
-  const reached = (point: Point): boolean => reach.has(point.y * map.width + point.x);
-  const usable = (point: { gate: Point; landing: Point }): boolean => reached(point.gate) && reached(point.landing);
-  if (endpoint && usable(endpoint)) {
+  // 앵커도 후보 시작점(원자리)도 없으면 후보를 지어내지 않는다 — 실패 원인 안내(A:/B:)를 유지.
+  if (!reach && !endpoint) {
     notes.push(...localNotes);
     return endpoint;
   }
-  for (const candidate of reachableGateCandidates(map, reach, requested).slice(0, 60)) {
+  const reached = (point: Point): boolean => reach !== null && reach.has(point.y * map.width + point.x);
+  const rejectReason = (candidate: { gate: Point; landing: Point }): string | null => {
+    if (reach && (!reached(candidate.gate) || !reached(candidate.landing))) return "reach";
+    if (accept) {
+      const verdict = accept(candidate);
+      if (verdict !== true) return verdict;
+    }
+    return null;
+  };
+  let firstReject: string | null = null;
+  if (endpoint) {
+    firstReject = rejectReason(endpoint);
+    if (!firstReject) {
+      notes.push(...localNotes);
+      return endpoint;
+    }
+  } else {
+    firstReject = "reach";
+  }
+  // 후보: 앵커에서 닿는 칸(anchors 없으면 통행 칸 전부)을 가까운 순으로.
+  const fallbackCells: Point[] | null = reach ? null : (() => {
+    const out: Point[] = [];
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (isPassable(project, map, x, y)) out.push({ x, y });
+      }
+    }
+    out.sort((a, b) => (Math.abs(a.x - requested.x) + Math.abs(a.y - requested.y)) - (Math.abs(b.x - requested.x) + Math.abs(b.y - requested.y)) || a.y - b.y || a.x - b.x);
+    return out.slice(0, 60);
+  })();
+  const candidates = reach ? reachableGateCandidates(map, reach, requested).slice(0, 60) : fallbackCells ?? [];
+  for (const candidate of candidates) {
     const alt = transferEndpoint(project, map, candidate.x, candidate.y, 0);
-    if (!alt || !usable(alt)) continue;
-    notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    if (!alt) continue;
+    const reason = rejectReason(alt);
+    if (reason) {
+      if (firstReject === "reach" && reason !== "reach") firstReject = reason;
+      continue;
+    }
+    if (firstReject === "reach") {
+      notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    } else {
+      notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${firstReject} — 가장 가까운 다른 자리 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    }
     return alt;
   }
   if (endpoint) {
     notes.push(...localNotes);
-    notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+    if (firstReject === "reach") {
+      notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+    } else {
+      notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${firstReject} — 봉쇄를 피한 자리를 찾지 못했습니다. 기존 문(move_event)을 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`);
+    }
   }
   return endpoint;
 }
@@ -2393,8 +2440,15 @@ const createTransferPair: ToolDefinition = {
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
     const reachNotes: string[] = [];
-    const endpointA = reachableTransferEndpoint(draft, mapA, a, "A", reachNotes);
-    const endpointB = reachableTransferEndpoint(draft, mapB, b, "B", reachNotes);
+    // 봉쇄 판정: 이 배치로 기존(그리고 이번에 놓는) transfer 문이 방 바닥에 실제로 열려 있는가.
+    const sealAccept = (map: GameMap) => (candidate: { gate: Point; landing: Point }): true | string => {
+      const check = transferGatesStayApproachable(draft, map, candidate.gate);
+      if (!check.ok) return `기존 출입구 ${check.sealed.join(", ")} 이(가) 벽·가구·다른 문으로 봉쇄된다`;
+      if (!check.group.has(candidate.landing.y * map.width + candidate.landing.x)) return "착지점이 방 바닥과 갈라진 주머니 칸이다";
+      return true;
+    };
+    const endpointA = reachableTransferEndpoint(draft, mapA, a, "A", reachNotes, sealAccept(mapA));
+    const endpointB = reachableTransferEndpoint(draft, mapB, b, "B", reachNotes, sealAccept(mapB));
     if (!endpointA || !endpointB) {
       // 어느 쪽 출입구가 왜 실패했는지 짚는다 — 종전에는 두 쪽을 뭉뚱그려 같은 안내만 냈다.
       const failures = [
@@ -2431,12 +2485,22 @@ const createTransferPair: ToolDefinition = {
     });
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
+    // 없어 원자리를 쓴 경우 포함). 막지는 않고 경고로 남긴다 — 도구가 제품 결정을 하진 않는다.
+    const sealedAfter: string[] = [];
+    for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
+      const check = transferGatesStayApproachable(draft, map);
+      if (!check.ok) sealedAfter.push(`${map.name}: ${check.sealed.join(", ")}`);
+    }
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
     const adjustedB = gateB.x !== b.x || gateB.y !== b.y;
     const warnings = [
       ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
       ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
       ...reachNotes,
+      ...(sealedAfter.length > 0
+        ? [`봉쇄 위험 — ${sealedAfter.join(" / ")} — 그 문은 밟아도 아무 데도 못 간다(벽·가구·이웃 문이 접근을 막음). move_event 로 문 자리를 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`]
+        : []),
     ];
     return {
       summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
