@@ -12,7 +12,7 @@
 // 게이트가 실패하면 비영점으로 종료한다. 결과는 SUMMARY.md 를 **먼저** 읽어라.
 // 설계: docs/superpowers/specs/2026-08-28-runtime-vision-qa-design.md
 import { chromium, firefox } from "@playwright/test";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { runRuntimeQa, startPlayerQaServer } from "./lib/runtimeQaRun.mjs";
 
@@ -60,7 +60,8 @@ try {
   const page = await browser.newPage();
   report = await runRuntimeQa(page, effective, {
     serverUrl: server.url,
-    outDir: args.out ? join(REPO_ROOT, args.out) : undefined,
+    // resolve: 절대 경로(--out /tmp/...)는 그대로 쓴다. join 은 저장소 안 tmp/... 로 바꿔 버린다.
+    outDir: args.out ? resolve(REPO_ROOT, args.out) : undefined,
   });
 } finally {
   try {
