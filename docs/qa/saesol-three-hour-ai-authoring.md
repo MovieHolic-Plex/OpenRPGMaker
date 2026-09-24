@@ -1426,3 +1426,8 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `player-snapshot-medicine-polished-proof.json`: 정본 재오픈·반복 읽기 일치,20맵163이벤트,외부미디어80개 해시 검증. projectId `6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a`, projectDir `/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red`, sha256 `718e6e177379b02ee1fc05bcc9fdc660eb117453005f2cd3ab180ebae38a7d5a`.
 - `medicine-polished-scope.json`: 단서3명은 uploaded Isaiah charset04/06/07,down,pattern1. 현장조사원24,11. 관리관 포함4이벤트의 페이지수와 대사 body/speaker를 제외한 commands 구조는 이전 정본과 일치한다. 그래픽/이동/대사 수정이며3시간 분량 추가라고 세지 않는다.
 - 10:39:47Z 저장 후 약3236MB old-space에서 V8 OOM이 재발했다. 따라서 compact authority는 저장까지 진전한 보관량 개선이지만 전체 메모리 오류 해결이 아니다. 렌더러의 잔존 대형 스냅샷/직렬화 경로를 더 조사해야 한다. 전용 플레이어 시각 확인은 별도로 수행한다.
+
+### 정본524 단서 인물 시각 확인
+
+- `medicine-polished-player/SUMMARY.md`와3장 PNG를 확인했다. Isaiah 유색 인물3명이 표시되고 현장조사원은 나무 군락이 아닌24,11 모래 평지에 있다. 각 QA 사본은 해당 NPC 바로 옆에서 시작하며 전체 도보 접근의 증거가 아니다. 페이지 오류0,프로세스exit0.
+- Base64 HTML `output/saesol-three-hour/progress-report.html`에 새3장 추가(총59장,6,328,023bytes). 이전 실패 이미지도 리비전/한계를 표시해 보존한다. 메모리 수정PR1408은main병합62f3123f. 저장 후OOM은 미해결이다.
