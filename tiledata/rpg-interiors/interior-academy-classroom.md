@@ -1,8 +1,8 @@
 # 마법 학원 · 교실
 
-마법 학원의 강의실. 선생은 앞(북쪽) 독서대와 칠판 앞에서 가르치고 바닥 마법진에서 시범을 보이며, 학생은 책상 열두 개에 앉아 북쪽을 본다.
+마법 학원의 강의실. 선생은 앞(북쪽) 교탁과 교사 책상에서 가르치고 바닥 마법진에서 시범을 보이며, 학생은 책상 열두 개에 앉아 북쪽을 본다.
 
-석벽·널 바닥 102, 16×8칸. 앞벽에 별자리 판·달 위상 벽판·칠판(메뉴 칠판 1×2) 둘, 교탁(독서대)·교사 책상과 모래시계, 그 앞 마법진 381~443(3×3), 학생 독서 탁자와 등을 보인 의자 268 여섯 쌍×두 줄(가운데 통로 x=8~11, 모두 북쪽 교탁을 본다), 옆벽 쪽 두꺼운 책장·수정구 받침 둘·지구본. 가운데 통로 붉은 러너, 교탁 옆 수정 표본 쟁반·책 더미. 20×15, tilesetId=tibo_interior_expanded. 입구 (10,13), 주인·담당 자리 (9,6). 통행 검사 목표 [[9,6],[4,12],[15,12],[14,7]].
+석벽·널 바닥 102, 16×8칸. 앞벽에 별자리 판·달 위상 벽판, 교탁(독서대)과 그 앞 마법진 381~443(3×3), 오른쪽 교사 책상(나무 상판 위 펼친 룬 서적·모래시계)과 학생 쪽을 보는 의자 267, 학생 독서 탁자와 등을 보인 의자 268 여섯 쌍×두 줄(가운데 통로 붉은 러너), 옆벽 쪽 두꺼운 책장·지구본·수정구 받침. 20×15, tilesetId=tibo_interior_expanded. 입구 (10,13), 주인·담당 자리 (9,6). 통행 검사 목표 [[9,6],[4,12],[15,12],[14,7]].
 
 ![마법 학원 · 교실](images/interior-academy-classroom.png)
 
@@ -12,12 +12,13 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
 [
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-164",
-    "name": "별자리 판",
+    "kitId": "tibo-library-220",
+    "name": "직조 벽걸이",
     "x": 7,
     "y": 3,
-    "w": 2,
-    "h": 2
+    "w": 1,
+    "h": 2,
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
@@ -26,25 +27,56 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 11,
     "y": 3,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "hang"
+  },
+  {
+    "kind": "rug",
+    "group": "harness-interior-house-v1-terrain-teal-carpet",
+    "x": 3,
+    "y": 5,
+    "w": 4,
+    "h": 3,
+    "role": "rug"
+  },
+  {
+    "kind": "tabletop",
+    "group": "harness-interior-house-v1-terrain-deck",
+    "x": 4,
+    "y": 6,
+    "w": 2,
+    "h": 1,
+    "role": "tabletop"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-034",
-    "name": "메뉴 칠판",
-    "x": 12,
-    "y": 4,
-    "w": 1,
-    "h": 2
+    "kitId": "tibo-library-165",
+    "name": "수정 표본 쟁반",
+    "x": 4,
+    "y": 6,
+    "w": 2,
+    "h": 1,
+    "role": "top"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-034",
-    "name": "메뉴 칠판",
-    "x": 6,
+    "kitId": "tibo-v11-1-3",
+    "name": "천체망원경",
+    "x": 4,
     "y": 4,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-073",
+    "name": "덮은 책 더미",
+    "x": 5,
+    "y": 6,
+    "w": 1,
+    "h": 1,
+    "role": "top"
   },
   {
     "kind": "tibo-kit",
@@ -53,38 +85,51 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 9,
     "y": 4,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
+  },
+  {
+    "kind": "tabletop",
+    "group": "harness-interior-house-v1-terrain-deck",
+    "x": 12,
+    "y": 6,
+    "w": 3,
+    "h": 1,
+    "role": "tabletop"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-warm-scribe-desk",
-    "name": "필경사 책상",
-    "x": 13,
-    "y": 5,
+    "kitId": "tibo-library-158",
+    "name": "펼친 룬 서적",
+    "x": 12,
+    "y": 6,
     "w": 2,
-    "h": 2
+    "h": 1,
+    "role": "top"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-v11-1-0",
     "name": "모래시계",
-    "x": 12,
+    "x": 14,
     "y": 6,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "top"
   },
   {
     "kind": "tiles",
     "layer": "upper",
-    "x": 15,
+    "x": 13,
     "y": 5,
     "w": 1,
     "h": 1,
     "rows": [
       [
-        298
+        267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -109,7 +154,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         442,
         443
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -118,7 +164,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 3,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -131,7 +178,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -140,7 +188,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 5,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -153,7 +202,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -162,7 +212,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 7,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -175,7 +226,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -184,7 +236,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 12,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -197,7 +250,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -206,7 +260,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 14,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -219,7 +274,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -228,7 +284,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 16,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -241,7 +298,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -250,7 +308,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 3,
     "y": 11,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -263,7 +322,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -272,7 +332,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 5,
     "y": 11,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -285,7 +346,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -294,7 +356,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 7,
     "y": 11,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -307,7 +370,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -316,7 +380,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 12,
     "y": 11,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -329,7 +394,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -338,7 +404,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 14,
     "y": 11,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -351,7 +418,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -360,7 +428,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 16,
     "y": 11,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -373,7 +442,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "rug",
@@ -381,25 +451,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 9,
     "y": 9,
     "w": 2,
-    "h": 4
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-165",
-    "name": "수정 표본 쟁반",
-    "x": 3,
-    "y": 7,
-    "w": 2,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-073",
-    "name": "덮은 책 더미",
-    "x": 17,
-    "y": 7,
-    "w": 1,
-    "h": 1
+    "h": 4,
+    "role": "rug"
   },
   {
     "kind": "tibo-kit",
@@ -408,7 +461,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 2,
     "y": 4,
     "w": 2,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -417,7 +471,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 17,
     "y": 4,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -426,16 +481,28 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 16,
     "y": 4,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-157",
-    "name": "수정구 받침",
-    "x": 4,
-    "y": 5,
+    "kitId": "tibo-library-215",
+    "name": "둥근 관목 화분",
+    "x": 2,
+    "y": 12,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-215",
+    "name": "둥근 관목 화분",
+    "x": 17,
+    "y": 12,
+    "w": 1,
+    "h": 1,
+    "role": "furn"
   }
 ]
 ```

@@ -15,6 +15,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 42,
+    "label": "청회색 자갈 바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 54,
     "label": "흰 창문",
     "passability": {
@@ -22,17 +33,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 55,
-    "label": "나무 궤짝",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
     },
     "priority": "upper"
   },
@@ -136,7 +136,40 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 85,
+    "label": "불꽃 액자",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 86,
+    "label": "가구 액자",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 102,
+    "label": "나무 널 바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 103,
     "label": "나무 널 바닥",
     "passability": {
       "up": true,
@@ -279,6 +312,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 156,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 158,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 168,
     "label": "짚 돗자리",
     "passability": {
@@ -323,17 +378,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 206,
-    "label": "랜턴",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 222,
     "label": "새싹 밭",
     "passability": {
@@ -354,17 +398,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": true
     },
     "priority": "lower"
-  },
-  {
-    "tile": 267,
-    "label": "등받이 의자 우",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
   },
   {
     "tile": 268,
@@ -411,28 +444,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 288,
-    "label": "화분",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 296,
-    "label": "꽃병",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 297,
     "label": "의자(우향)",
     "passability": {
@@ -453,6 +464,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "upper"
+  },
+  {
+    "tile": 309,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 310,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 311,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
   },
   {
     "tile": 324,
@@ -508,17 +552,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "upper"
-  },
-  {
-    "tile": 369,
-    "label": "어두운 벽 코너",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
   },
   {
     "tile": 371,
@@ -675,50 +708,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 414,
-    "label": "광석 바위",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 415,
-    "label": "둥근 바위 더미",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 416,
-    "label": "부서진 벽돌 더미",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 417,
-    "label": "깨진 유리 조각",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 418,
     "label": "벽 균열 하단",
     "passability": {
@@ -840,6 +829,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 475,
+    "label": "독립 하강 계단 B (1×1)",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 480,
     "label": "책장 수납장",
     "passability": {
@@ -864,17 +864,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 482,
     "label": "책장 수납장",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 483,
-    "label": "세 칸 서랍장",
     "passability": {
       "up": true,
       "down": true,
@@ -924,17 +913,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 513,
-    "label": "세 칸 서랍장",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
     },
     "priority": "upper"
   },
@@ -1159,6 +1137,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 694,
+    "label": "말린 약초 걸이",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 695,
+    "label": "말린 약초 걸이",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 696,
     "label": "작은 빵 화덕",
     "passability": {
@@ -1188,6 +1188,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": false,
       "left": false,
       "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 765,
+    "label": "국자 걸이",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 766,
+    "label": "국자 걸이",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
     },
     "priority": "upper"
   },
@@ -1258,17 +1280,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 813,
-    "label": "짧은 벤치",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 816,
     "label": "높은 걸상",
     "passability": {
@@ -1287,17 +1298,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": false,
       "left": false,
       "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 822,
-    "label": "메뉴 칠판",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
     },
     "priority": "upper"
   },

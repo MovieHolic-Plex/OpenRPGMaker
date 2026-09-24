@@ -5,7 +5,7 @@ easyrpg_chipset_ship(30열·16px). 공용 장소 「푸른물결호 · 가로 �
 ## 조립
 1. interiorRoomPipeline plan→floor→walls로 껍데기(칸막이 방은 rooms + innerDoors).
 2. 벽면 다시 가리키기: 윗줄 74·75·76 → 둥근 창 벽 104·105·106, 아랫줄 104·105·106 → 선체 판벽 134·135·136. 바닥 72 → 목재 갑판 279.
-3. 남쪽 문은 천장으로 되메우고, 갑판에서 내려오는 사다리 22|23(두 칸 폭)을 벽면 두 줄에 놓는다(아래층, 통행).
+3. 남쪽 문은 천장으로 되메우고, 갑판에서 내려오는 사다리 22|23(두 칸 폭·두 줄)을 북벽 바로 앞 바닥에 세운다(아래층, 통행). 벽면 줄은 파지 않는다. 칸막이의 한 칸 벽 끝 조각(77/107)은 판벽 135로 바꾼다(둥근 창 조각이면 해치처럼 보인다).
 4. 배 시트의 소품은 위층: 침대 416/446(세로), 책장 384·책 선반 414, 해도 그림 388/389, 엇갈린 검 295, 그림 358/359, 둥근 탁자 387·걸상 417, 오크통 385, 항아리 386, 밧줄 263, 닻 259, 대포 324/325, 랜턴 119, 물약 선반 148, 환기 격자창 202, 급수 펌프 72/73/102/103(아래층).
 5. 시트에 없는 상자·자루·궤짝은 Tibo 조립을 이 시트 480번 뒤로 이식해 찍는다. 통행·우선순위는 Tibo 원본 칸을 따른다.
 6. transparentColor "#ff678b" 필수 — 번들 그림의 일부 소품 칸에 분홍 색키가 남아 있다(갑판 저장본과 같다).
@@ -20,108 +20,103 @@ easyrpg_chipset_ship(30열·16px). 공용 장소 「푸른물결호 · 가로 �
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1253,
+    "sourceTile": 1249,
     "targetTile": 481
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1249,
+    "sourceTile": 1279,
     "targetTile": 482
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1279,
+    "sourceTile": 1356,
     "targetTile": 483
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1356,
+    "sourceTile": 1386,
     "targetTile": 484
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1386,
+    "sourceTile": 1353,
     "targetTile": 485
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1353,
+    "sourceTile": 1821,
     "targetTile": 486
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1821,
+    "sourceTile": 1822,
     "targetTile": 487
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1822,
+    "sourceTile": 1823,
     "targetTile": 488
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1823,
+    "sourceTile": 1851,
     "targetTile": 489
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1851,
+    "sourceTile": 1852,
     "targetTile": 490
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1852,
+    "sourceTile": 1853,
     "targetTile": 491
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1853,
+    "sourceTile": 767,
     "targetTile": 492
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 767,
+    "sourceTile": 768,
     "targetTile": 493
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 768,
+    "sourceTile": 1352,
     "targetTile": 494
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1352,
+    "sourceTile": 1382,
     "targetTile": 495
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1382,
+    "sourceTile": 1057,
     "targetTile": 496
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1057,
+    "sourceTile": 1058,
     "targetTile": 497
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1058,
+    "sourceTile": 1087,
     "targetTile": 498
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1087,
+    "sourceTile": 1088,
     "targetTile": 499
   },
   {
     "sourceChipset": "tex_tibo_interior_expanded",
-    "sourceTile": 1088,
-    "targetTile": 500
-  },
-  {
-    "sourceChipset": "tex_tibo_interior_expanded",
     "sourceTile": 1247,
-    "targetTile": 501
+    "targetTile": 500
   }
 ]
 ```
@@ -138,16 +133,16 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
     "id": "interior-ship-cabin",
     "entry": [
       17,
-      5
+      7
     ],
     "targets": [
       [
         6,
-        6
+        8
       ],
       [
         9,
-        8
+        7
       ],
       [
         12,
@@ -158,7 +153,7 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
         8
       ]
     ],
-    "reachable": 62,
+    "reachable": 61,
     "walkable": 61,
     "blocked": []
   },
@@ -166,7 +161,7 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
     "id": "interior-ship-hold",
     "entry": [
       10,
-      5
+      7
     ],
     "targets": [
       [
@@ -182,8 +177,8 @@ node scripts/content/author-rpg-interiors.mjs   # 저작 + 통행 검사(막힌 
         8
       ]
     ],
-    "reachable": 70,
-    "walkable": 67,
+    "reachable": 69,
+    "walkable": 66,
     "blocked": []
   }
 ]

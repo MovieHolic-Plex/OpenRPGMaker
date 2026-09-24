@@ -1,8 +1,8 @@
 # 여관 1층 · 주점과 접수대
 
-여관 주인이 운영하는 1층. 손님은 문으로 들어와 오른쪽 접수대에서 방을 잡고, 바에서 술을 받아 긴 식탁에서 먹는다. 계단으로 2층 객실에 오른다.
+여관 주인이 운영하는 1층. 손님은 문으로 들어와 오른쪽 접수대에서 방을 잡고, 바에서 술을 받아 긴 식탁에서 먹는다. 왼쪽 돌바닥 주방에서 요리하고, 동벽 계단으로 2층 객실에 오른다.
 
-크림 벽 18×8칸 홀. 왼쪽 뒤 술통 선반·맥주통·포도주 선반, 그 앞 바 카운터와 높은 걸상 둘(주인 자리 (4,6)), 벽에 술집 간판·메뉴 칠판, 가운데 뒤 장작 벽난로, 벽 다트판, 긴 식탁과 벤치 두 벌, 앞 왼쪽 솥 걸이와 원형 식탁. 오른쪽 뒤 여관 간판 57·열쇠판·접수 계산대·편지 쟁반, 벽에 뚫은 오르막 계단 111/141/171(x=19). 빈 바닥을 끊는 붉은 러그 둘(벽난로 앞, 식탁 앞 통로), 오른쪽 원형 식탁과 걸상 둘. 22×15, tilesetId=tibo_interior_expanded. 입구 (11,13), 주인·담당 자리 (4,6). 통행 검사 목표 [[4,6],[9,7],[16,5],[19,5]].
+크림 벽, 주방 5×8(돌바닥 42)과 홀 12×8을 파이프라인 칸막이로 나눴다(문 (7,10)). 주방: 빵 화덕·불 피운 솥 걸이(돌바닥 위)·벽에 말린 약초·향신료 선반·국자 걸이·조리대·구석에 밀가루·쌀 포대·감자 바구니·당근 상자·뚜껑 통 한 덩이. 홀: 뒷벽 술통 선반·맥주통, 그 앞 바 카운터와 높은 걸상 둘(주인 자리 (9,6)), 가운데 뒤 장작 벽난로와 붉은 깔개, 긴 식탁과 벤치, 원형 식탁과 걸상 둘, 오른쪽 뒤 접수 탁자(나무 상판 위 편지 쟁반·동전 쟁반)와 벽 열쇠판·여관 간판, 동벽에 붙은 오르막 계단 111/141/171(x=19, 바닥 위), 앞 오른쪽 야자 화분. 22×15, tilesetId=tibo_interior_expanded. 입구 (13,13), 주인·담당 자리 (9,6). 통행 검사 목표 [[9,6],[17,5],[19,8],[4,7],[14,11]].
 
 ![여관 1층 · 주점과 접수대](images/interior-inn-tavern-1f.png)
 
@@ -12,102 +12,210 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
 [
   {
     "kind": "tibo-kit",
+    "kitId": "tibo-bread-oven",
+    "name": "작은 빵 화덕",
+    "x": 2,
+    "y": 5,
+    "w": 2,
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-fantasy-hanging-pot",
+    "name": "솥 걸이",
+    "x": 5,
+    "y": 5,
+    "w": 2,
+    "h": 2,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-hanging-herbs",
+    "name": "말린 약초 걸이",
+    "x": 2,
+    "y": 3,
+    "w": 2,
+    "h": 1,
+    "role": "hang"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-011",
+    "name": "향신료 선반",
+    "x": 4,
+    "y": 4,
+    "w": 1,
+    "h": 1,
+    "role": "hang"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-012",
+    "name": "국자 걸이",
+    "x": 5,
+    "y": 3,
+    "w": 2,
+    "h": 1,
+    "role": "hang"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-fantasy-prep-table",
+    "name": "조리대",
+    "x": 2,
+    "y": 8,
+    "w": 3,
+    "h": 2,
+    "role": "table"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-013",
+    "name": "밀가루 포대",
+    "x": 2,
+    "y": 11,
+    "w": 1,
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-014",
+    "name": "쌀 포대",
+    "x": 3,
+    "y": 11,
+    "w": 1,
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-015",
+    "name": "감자 바구니",
+    "x": 2,
+    "y": 12,
+    "w": 1,
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-018",
+    "name": "당근 상자",
+    "x": 3,
+    "y": 12,
+    "w": 1,
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-229",
+    "name": "뚜껑 둥근 통",
+    "x": 4,
+    "y": 11,
+    "w": 1,
+    "h": 2,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
     "kitId": "tibo-fantasy-ale-rack",
     "name": "술통 선반",
-    "x": 2,
+    "x": 8,
     "y": 4,
     "w": 3,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-library-133",
     "name": "받침대 맥주통",
-    "x": 5,
+    "x": 11,
     "y": 4,
     "w": 1,
-    "h": 2
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-134",
-    "name": "포도주 병 선반",
-    "x": 6,
-    "y": 4,
-    "w": 2,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-fantasy-bar-counter",
     "name": "바 카운터",
-    "x": 3,
+    "x": 8,
     "y": 7,
     "w": 4,
-    "h": 2
+    "h": 2,
+    "role": "table"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-library-029",
     "name": "높은 걸상",
-    "x": 3,
+    "x": 9,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-library-029",
     "name": "높은 걸상",
-    "x": 5,
+    "x": 11,
     "y": 9,
     "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-144",
-    "name": "술집 실내 간판",
-    "x": 8,
-    "y": 3,
-    "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-034",
-    "name": "메뉴 칠판",
-    "x": 8,
-    "y": 4,
-    "w": 1,
-    "h": 2
+    "h": 1,
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-medieval-stone-fireplace",
     "name": "장작 벽난로",
-    "x": 10,
-    "y": 4,
-    "w": 3,
-    "h": 3
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-138",
-    "name": "술집 다트판",
-    "x": 14,
+    "x": 13,
     "y": 3,
-    "w": 2,
-    "h": 2
+    "w": 3,
+    "h": 3,
+    "role": "furn"
   },
   {
-    "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-dining-set",
-    "name": "긴 식탁과 벤치",
-    "x": 8,
-    "y": 8,
+    "kind": "rug",
+    "group": "harness-interior-house-v1-terrain-red-carpet",
+    "x": 13,
+    "y": 6,
     "w": 3,
-    "h": 3
+    "h": 1,
+    "role": "rug"
+  },
+  {
+    "kind": "tiles",
+    "layer": "upper",
+    "x": 12,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "rows": [
+      [
+        24
+      ]
+    ],
+    "role": "hang"
+  },
+  {
+    "kind": "tiles",
+    "layer": "upper",
+    "x": 16,
+    "y": 3,
+    "w": 1,
+    "h": 1,
+    "rows": [
+      [
+        24
+      ]
+    ],
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
@@ -116,48 +224,52 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 13,
     "y": 8,
     "w": 3,
-    "h": 3
+    "h": 3,
+    "role": "table"
   },
   {
-    "kind": "tibo-kit",
-    "kitId": "tibo-fantasy-hanging-pot",
-    "name": "솥 걸이",
-    "x": 2,
-    "y": 11,
+    "kind": "tabletop",
+    "group": "harness-interior-house-v1-terrain-deck",
+    "x": 17,
+    "y": 6,
     "w": 2,
-    "h": 2
+    "h": 1,
+    "role": "tabletop"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-025",
-    "name": "원형 식탁",
-    "x": 6,
-    "y": 10,
+    "kitId": "tibo-library-079",
+    "name": "편지 쟁반",
+    "x": 17,
+    "y": 6,
     "w": 1,
-    "h": 2
+    "h": 1,
+    "role": "top"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-030",
-    "name": "낮은 걸상",
-    "x": 5,
-    "y": 11,
+    "kitId": "tibo-library-122",
+    "name": "동전 계산 쟁반",
+    "x": 18,
+    "y": 6,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "top"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-030",
-    "name": "낮은 걸상",
-    "x": 7,
-    "y": 11,
-    "w": 1,
-    "h": 1
+    "kitId": "tibo-v8-1-0",
+    "name": "열쇠판",
+    "x": 17,
+    "y": 3,
+    "w": 2,
+    "h": 1,
+    "role": "hang"
   },
   {
     "kind": "tiles",
     "layer": "upper",
-    "x": 18,
+    "x": 19,
     "y": 3,
     "w": 1,
     "h": 1,
@@ -165,40 +277,14 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         57
       ]
-    ]
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-v8-1-0",
-    "name": "열쇠판",
-    "x": 16,
-    "y": 3,
-    "w": 2,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-125",
-    "name": "상점 계산대",
-    "x": 16,
-    "y": 6,
-    "w": 2,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-079",
-    "name": "편지 쟁반",
-    "x": 17,
-    "y": 5,
-    "w": 1,
-    "h": 1
+    ],
+    "role": "hang"
   },
   {
     "kind": "tiles",
     "layer": "lower",
     "x": 19,
-    "y": 3,
+    "y": 5,
     "w": 1,
     "h": 3,
     "rows": [
@@ -211,25 +297,38 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         171
       ]
-    ]
+    ],
+    "role": "stairs"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-209",
-    "name": "키 큰 실내 야자",
-    "x": 18,
-    "y": 11,
-    "w": 2,
-    "h": 2
+    "kitId": "tibo-library-025",
+    "name": "원형 식탁",
+    "x": 9,
+    "y": 10,
+    "w": 1,
+    "h": 2,
+    "role": "table"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-library-229",
-    "name": "뚜껑 둥근 통",
-    "x": 17,
+    "kitId": "tibo-library-030",
+    "name": "낮은 걸상",
+    "x": 8,
     "y": 11,
     "w": 1,
-    "h": 2
+    "h": 1,
+    "role": "seat"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-030",
+    "name": "낮은 걸상",
+    "x": 10,
+    "y": 11,
+    "w": 1,
+    "h": 1,
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -238,7 +337,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 17,
     "y": 8,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "table"
   },
   {
     "kind": "tibo-kit",
@@ -247,7 +347,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 16,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -256,49 +357,27 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 18,
     "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "seat"
   },
   {
     "kind": "rug",
     "group": "harness-interior-house-v1-terrain-red-carpet",
-    "x": 9,
-    "y": 7,
-    "w": 5,
-    "h": 1
-  },
-  {
-    "kind": "rug",
-    "group": "harness-interior-house-v1-terrain-red-carpet",
-    "x": 9,
+    "x": 12,
     "y": 11,
-    "w": 6,
-    "h": 1
+    "w": 3,
+    "h": 2,
+    "role": "rug"
   },
   {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 7,
-    "y": 3,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        24
-      ]
-    ]
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 13,
-    "y": 3,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        24
-      ]
-    ]
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-209",
+    "name": "키 큰 실내 야자",
+    "x": 18,
+    "y": 11,
+    "w": 2,
+    "h": 2,
+    "role": "furn"
   }
 ]
 ```

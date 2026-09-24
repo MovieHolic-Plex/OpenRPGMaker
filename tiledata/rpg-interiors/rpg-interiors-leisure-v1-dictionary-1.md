@@ -246,6 +246,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 156,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 157,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 158,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 164,
     "label": "밝은 벽돌 벽",
     "passability": {
@@ -312,6 +345,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 186,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 202,
     "label": "붉은 커튼 자락",
     "passability": {
@@ -332,6 +376,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "lower"
+  },
+  {
+    "tile": 216,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 268,
+    "label": "등받이 의자 좌",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
   },
   {
     "tile": 279,
@@ -365,6 +431,28 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": true
     },
     "priority": "lower"
+  },
+  {
+    "tile": 297,
+    "label": "의자(우향)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 298,
+    "label": "의자(좌향)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
   },
   {
     "tile": 309,
@@ -431,39 +519,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "lower"
-  },
-  {
-    "tile": 325,
-    "label": "긴 탁자 좌",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 326,
-    "label": "긴 탁자 몸통(가로 반복)",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 327,
-    "label": "긴 탁자 우",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
   },
   {
     "tile": 339,
@@ -620,6 +675,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 406,
+    "label": "붉은 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 407,
     "label": "붉은 카펫",
     "passability": {
@@ -708,6 +774,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 498,
+    "label": "식사 탁자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 499,
+    "label": "식사 탁자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 500,
+    "label": "식사 탁자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 508,
     "label": "메모 게시판",
     "passability": {
@@ -741,19 +840,19 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 596,
-    "label": "약품함",
+    "tile": 581,
+    "label": "찻잔 탁자",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "upper"
   },
   {
-    "tile": 645,
-    "label": "탁상 종",
+    "tile": 596,
+    "label": "약품함",
     "passability": {
       "up": true,
       "down": true,
@@ -792,17 +891,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 675,
-    "label": "탁상 종",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
     },
     "priority": "upper"
   },
@@ -862,39 +950,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 874,
-    "label": "수건 걸이",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 875,
-    "label": "수건 걸이",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 878,
-    "label": "접은 수건",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 933,
     "label": "잉크와 깃펜",
     "passability": {
@@ -930,28 +985,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1056,
     "label": "동전 계산 쟁반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1061,
-    "label": "상점 계산대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1062,
-    "label": "상점 계산대",
     "passability": {
       "up": false,
       "down": false,
@@ -1104,6 +1137,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 1134,
+    "label": "환약 단지",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 1140,
     "label": "술집 다트판",
     "passability": {
@@ -1161,17 +1205,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1214,
     "label": "작은 업라이트 피아노",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1254,
-    "label": "접이식 야영 걸상",
     "passability": {
       "up": false,
       "down": false,
@@ -1282,39 +1315,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1332,
     "label": "말린 꽃병",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1341,
-    "label": "방패 벽 장식",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1354,
-    "label": "긴 공구 상자",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1355,
-    "label": "긴 공구 상자",
     "passability": {
       "up": false,
       "down": false,

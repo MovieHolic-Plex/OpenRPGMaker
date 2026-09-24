@@ -19,7 +19,7 @@ const project = await withTsModule("scripts/content/lib/rpg-places-entry.ts", "r
   p.startMapId = ids[0];
   const entry = c.plans[0].entry;
   p.startPos = { x: entry[0], y: entry[1] };
-  p.meta.title = "RPG 실내 22곳 · 여관·민가·교회·길드·성·배·투기장·카지노 (정본)";
+  p.meta.title = "RPG 실내 23곳 · 여관·민가·교회·길드·성·배·투기장·카지노 (정본)";
   return JSON.parse(JSON.stringify(p));
 });
 for (const { tilesetId, category } of shipped)

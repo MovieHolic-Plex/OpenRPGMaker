@@ -26,17 +26,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 830,
-    "label": "타원 전신 거울",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 837,
     "label": "여행용 궤짝",
     "passability": {
@@ -61,28 +50,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 842,
     "label": "정사각 식탁",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 852,
-    "label": "메뉴 칠판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 860,
-    "label": "타원 전신 거울",
     "passability": {
       "up": false,
       "down": false,
@@ -127,17 +94,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 897,
     "label": "재 양동이",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 899,
-    "label": "덮은 책 더미",
     "passability": {
       "up": false,
       "down": false,
@@ -213,19 +169,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1061,
-    "label": "상점 계산대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1062,
-    "label": "상점 계산대",
+    "tile": 1056,
+    "label": "동전 계산 쟁반",
     "passability": {
       "up": false,
       "down": false,
@@ -246,107 +191,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1073,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1074,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 1102,
     "label": "받침대 맥주통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1103,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1104,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1110,
-    "label": "술집 다트판",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1111,
-    "label": "술집 다트판",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1119,
-    "label": "술집 실내 간판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1140,
-    "label": "술집 다트판",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1141,
-    "label": "술집 다트판",
     "passability": {
       "up": false,
       "down": false,
@@ -367,17 +213,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1233,
-    "label": "헝겊 인형",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 1234,
     "label": "곰 인형",
     "passability": {
@@ -391,17 +226,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1236,
     "label": "열린 장난감 상자",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1263,
-    "label": "헝겊 인형",
     "passability": {
       "up": false,
       "down": false,
@@ -532,17 +356,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1353,
-    "label": "정사각 보관 상자",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 1359,
     "label": "장작 받침대",
     "passability": {
@@ -572,17 +385,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1364,
-    "label": "자물쇠 금고함",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
     },
     "priority": "upper"
   },
@@ -1320,6 +1122,204 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1757,
+    "label": "목제 침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1758,
+    "label": "목제 침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1759,
+    "label": "목제 침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1760,
+    "label": "옷장",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1761,
+    "label": "옷장",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1762,
+    "label": "세면대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1763,
+    "label": "세면대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1764,
+    "label": "세면대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1777,
+    "label": "긴 식탁과 벤치",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1778,
+    "label": "긴 식탁과 벤치",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1779,
+    "label": "긴 식탁과 벤치",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1785,
+    "label": "찬장",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1786,
+    "label": "찬장",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1787,
+    "label": "목제 침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1788,
+    "label": "목제 침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1789,
+    "label": "목제 침대",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1790,
+    "label": "옷장",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1791,
+    "label": "옷장",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "upper"
   }

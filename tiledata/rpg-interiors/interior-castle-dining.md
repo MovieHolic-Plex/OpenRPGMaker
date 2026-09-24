@@ -1,8 +1,8 @@
 # 성 · 식당
 
-왕과 손님이 식사하는 성의 큰 식당. 붉은 카펫 위 긴 연회 식탁 양 끝에 왕·왕비의 붉은 의자, 벽난로와 식기장, 시종은 오른쪽 음식 운반대로 나른다.
+왕과 손님이 식사하는 성의 큰 식당. 붉은 카펫 위 긴 연회 식탁 양 끝에 왕·왕비의 붉은 의자, 벽난로와 식기장, 시종은 오른쪽 음식 운반대로 나른다. 남쪽 문은 성 1층 서쪽 복도 북쪽 문 틈과 이어진다.
 
-금벽돌 벽·돌바닥 42, 18×6칸. 붉은 카펫 10×4 위에 연회용 긴 식탁 4×2 두 개를 이어 8칸 식탁을 만들고 위쪽은 식탁을 보는 의자 267, 아래쪽은 등을 보인 의자 268 넷씩, 양 끝 붉은 의자 446/476(왕·왕비), 뒷벽에 초상화 둘·풍경화·붉은 커튼 142/143·172/173 두 쌍, 왼쪽 식기장·포도주 선반, 오른쪽 뒤 장작 벽난로, 앞 오른쪽 음식 운반대·왼쪽 물 피처·화분 둘. 식탁 뒤 줄(y=5)도 양 끝으로 돌아 들어갈 수 있다. 22×14, tilesetId=tibo_interior_expanded. 입구 (11,11). 통행 검사 목표 [[10,6],[7,5],[15,8],[4,7]].
+금벽돌 벽·돌바닥 42, 18×6칸. 붉은 카펫 10×4 위에 연회용 긴 식탁 4×2 두 개를 이어 8칸 식탁, 위쪽은 식탁을 보는 의자 267, 아래쪽은 등을 보인 의자 268 넷씩, 양 끝 붉은 의자 446/476, 뒷벽에 초상화 둘·풍경화·붉은 커튼 두 쌍, 서벽에 식기장과 그 아래 포도주 선반(한 덩이), 오른쪽 뒤 장작 벽난로와 식탁 끝 음식 운반대, 앞 화분 둘. 22×14, tilesetId=tibo_interior_expanded. 입구 (11,11). 통행 검사 목표 [[10,6],[7,5],[15,8],[4,7]].
 
 ![성 · 식당](images/interior-castle-dining.png)
 
@@ -16,7 +16,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 5,
     "y": 6,
     "w": 10,
-    "h": 4
+    "h": 4,
+    "role": "rug"
   },
   {
     "kind": "tibo-kit",
@@ -25,7 +26,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 6,
     "y": 7,
     "w": 4,
-    "h": 2
+    "h": 2,
+    "role": "table"
   },
   {
     "kind": "tibo-kit",
@@ -34,7 +36,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 10,
     "y": 7,
     "w": 4,
-    "h": 2
+    "h": 2,
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -47,7 +50,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -60,7 +64,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -73,7 +78,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -86,7 +92,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -99,7 +106,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -112,7 +120,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -125,7 +134,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -138,7 +148,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -154,7 +165,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         476
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -170,16 +182,18 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         476
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-medieval-stone-fireplace",
     "name": "장작 벽난로",
     "x": 16,
-    "y": 4,
+    "y": 3,
     "w": 3,
-    "h": 3
+    "h": 3,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -188,16 +202,18 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 2,
     "y": 4,
     "w": 2,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-library-134",
     "name": "포도주 병 선반",
     "x": 2,
-    "y": 7,
+    "y": 6,
     "w": 2,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -206,7 +222,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 7,
     "y": 3,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
@@ -215,7 +232,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 12,
     "y": 3,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
@@ -224,7 +242,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 9,
     "y": 3,
     "w": 2,
-    "h": 1
+    "h": 1,
+    "role": "hang"
   },
   {
     "kind": "tiles",
@@ -242,7 +261,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         172,
         173
       ]
-    ]
+    ],
+    "role": "hang"
   },
   {
     "kind": "tiles",
@@ -260,25 +280,18 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         172,
         173
       ]
-    ]
+    ],
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-library-031",
     "name": "음식 운반대",
-    "x": 18,
-    "y": 8,
+    "x": 16,
+    "y": 7,
     "w": 2,
-    "h": 2
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-036",
-    "name": "물 피처",
-    "x": 2,
-    "y": 10,
-    "w": 1,
-    "h": 1
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -291,7 +304,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         288
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -304,7 +318,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         288
       ]
-    ]
+    ],
+    "role": "furn"
   }
 ]
 ```

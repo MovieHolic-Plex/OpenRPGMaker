@@ -2,7 +2,7 @@
 
 책을 빌려 읽는 도서관. 문에서 곧장 가운데 열람 탁자로, 양옆 서가 두 줄 사이 통로로 책을 찾고, 문 오른쪽 사서 책상에서 대출을 받는다.
 
-크림 벽·널 바닥 102, 18×9칸. 뒷벽에 큰 책장 18~80(3×3, 아래층) 넷과 독서대·펼친 지도책 받침·지구본, 양옆에 1×2 서가 147/177를 줄지어 세운 두 줄(y=8, 11)로 통로를 만들고, 가운데 긴 열람 탁자 325·326·327 둘(위 탁자는 탁자를 보는 의자 267, 아래 탁자는 등을 보인 의자 268, 두 탁자 사이 한 줄은 통로)·독서등, 서가 옆 접이 사다리·책 더미·발판, 오른쪽 앞 서가 두 칸을 비운 자리에 사서의 필경사 책상과 편지 쟁반(사서 자리 (14,10)). 열람 구역 전체에 청록 러그, 양쪽 서가 끝 화분. 22×16, tilesetId=tibo_interior_expanded. 입구 (11,14), 주인·담당 자리 (14,10). 통행 검사 목표 [[10,6],[8,10],[14,10],[19,12],[2,10]].
+크림 벽·널 바닥 102, 18×9칸. 뒷벽에 큰 책장 18~80(3×3) 넷과 독서대·펼친 지도책 받침·지구본, 양옆에 1×2 서가 147/177 두 줄(y=8, 11), 가운데 청록 러그 위 긴 열람 탁자 둘(위 탁자는 탁자를 보는 의자 267, 아래 탁자는 등을 보인 의자 268)·독서등, 오른쪽 앞 사서 책상과 의자(사서 자리 (14,10)), 양쪽 서가 끝 화분. 22×16, tilesetId=tibo_interior_expanded. 입구 (11,14), 주인·담당 자리 (14,10). 통행 검사 목표 [[10,6],[8,10],[14,10],[19,12],[2,10]].
 
 ![도서관](images/interior-library.png)
 
@@ -33,7 +33,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         79,
         80
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -58,7 +59,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         79,
         80
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -83,7 +85,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         79,
         80
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -108,7 +111,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         79,
         80
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -117,7 +121,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 9,
     "y": 5,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -126,7 +131,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 11,
     "y": 4,
     "w": 2,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -135,7 +141,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 13,
     "y": 4,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -151,7 +158,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -167,7 +175,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -183,7 +192,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -199,7 +209,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -215,7 +226,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -231,7 +243,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -247,7 +260,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -263,7 +277,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -279,7 +294,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -295,7 +311,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -311,7 +328,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -327,7 +345,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -343,7 +362,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -359,7 +379,17 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         177
       ]
-    ]
+    ],
+    "role": "furn"
+  },
+  {
+    "kind": "rug",
+    "group": "harness-interior-house-v1-terrain-teal-carpet",
+    "x": 8,
+    "y": 7,
+    "w": 5,
+    "h": 7,
+    "role": "rug"
   },
   {
     "kind": "tiles",
@@ -374,7 +404,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         326,
         327
       ]
-    ]
+    ],
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -387,7 +418,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -400,7 +432,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         267
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -415,7 +448,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
         326,
         327
       ]
-    ]
+    ],
+    "role": "table"
   },
   {
     "kind": "tiles",
@@ -428,7 +462,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
+    ],
+    "role": "seat"
   },
   {
     "kind": "tiles",
@@ -441,15 +476,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         268
       ]
-    ]
-  },
-  {
-    "kind": "rug",
-    "group": "harness-interior-house-v1-terrain-teal-carpet",
-    "x": 8,
-    "y": 7,
-    "w": 5,
-    "h": 7
+    ],
+    "role": "seat"
   },
   {
     "kind": "tibo-kit",
@@ -458,7 +486,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 12,
     "y": 8,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -471,7 +500,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         288
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -484,34 +514,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         288
       ]
-    ]
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-240",
-    "name": "접이 사다리",
-    "x": 7,
-    "y": 8,
-    "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-073",
-    "name": "덮은 책 더미",
-    "x": 7,
-    "y": 12,
-    "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-073",
-    "name": "덮은 책 더미",
-    "x": 12,
-    "y": 12,
-    "w": 1,
-    "h": 1
+    ],
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -520,16 +524,22 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 14,
     "y": 11,
     "w": 2,
-    "h": 2
+    "h": 2,
+    "role": "table"
   },
   {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-079",
-    "name": "편지 쟁반",
+    "kind": "tiles",
+    "layer": "upper",
     "x": 16,
     "y": 12,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "rows": [
+      [
+        298
+      ]
+    ],
+    "role": "seat"
   }
 ]
 ```

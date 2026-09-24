@@ -1,8 +1,8 @@
 # 성 · 보물고
 
-왕실 보물을 넣어 두는 작은 방. 문 양옆 갑옷 전시대가 지키고, 가운데 돌 제단의 수정구가 가장 귀한 보물, 양옆 벽에 전설의 무기·방패·갑옷, 바닥에 궤짝과 금속 주괴.
+왕실 보물을 넣어 두는 지하 방. 성 1층 계단실의 내리막 계단으로 내려오면 동벽 계단 앞. 붉은 카펫 끝 수정구 받침이 가장 귀한 보물, 양옆에 전설의 검·방패, 갑옷 전시대가 지키고 벽을 따라 궤짝과 주괴.
 
-금벽돌 벽·돌바닥 42, 12×5칸(작다). 뒷벽 가운데 작은 돌 제단과 수정구 받침, 방패 벽 장식 둘, 검 진열대 263/293 둘, 벽에 건 갑옷 290·방패 262·검 260·망치 261, 왼쪽 여행용 궤짝 둘·봉인 상자·수정 표본 쟁반·주괴 더미·목걸이 321, 오른쪽 궤짝 둘·금고함·룬 석판·주괴 더미, 문 양옆 갑옷 전시대 87/117, 문에서 제단까지 붉은 카펫. 16×13, tilesetId=tibo_interior_expanded. 입구 (8,10). 통행 검사 목표 [[8,6],[3,6],[12,6]].
+금벽돌 벽·돌바닥 42, 12×5칸(작다). 남쪽 문을 닫고 동벽에 오르막 계단 111/141/171(성 1층 계단실과 짝). 뒷벽 가운데 수정구 받침과 방패 벽 장식 둘, 검 진열대 263/293 둘, 벽에 건 갑옷 290, 붉은 카펫 양옆 갑옷 전시대 87/117, 왼쪽 궤짝 둘·봉인 상자·주괴 더미, 오른쪽 궤짝·주괴 더미. 16×13, tilesetId=tibo_interior_expanded. 입구 (13,8). 통행 검사 목표 [[8,6],[3,6],[11,8]].
 
 ![성 · 보물고](images/interior-castle-treasury.png)
 
@@ -13,28 +13,21 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   {
     "kind": "rug",
     "group": "harness-interior-house-v1-terrain-red-carpet",
-    "x": 7,
-    "y": 7,
-    "w": 3,
-    "h": 3
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-162",
-    "name": "작은 돌 제단",
-    "x": 7,
-    "y": 5,
-    "w": 2,
-    "h": 1
+    "x": 6,
+    "y": 6,
+    "w": 5,
+    "h": 4,
+    "role": "rug"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-fantasy-crystal-stand",
     "name": "수정구 받침",
-    "x": 9,
+    "x": 8,
     "y": 4,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -43,7 +36,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 5,
     "y": 3,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
@@ -52,7 +46,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 11,
     "y": 3,
     "w": 1,
-    "h": 2
+    "h": 2,
+    "role": "hang"
   },
   {
     "kind": "tiles",
@@ -68,12 +63,13 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         293
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
     "layer": "upper",
-    "x": 12,
+    "x": 11,
     "y": 4,
     "w": 1,
     "h": 2,
@@ -84,7 +80,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         293
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
@@ -97,46 +94,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         290
       ]
-    ]
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 13,
-    "y": 4,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        262
-      ]
-    ]
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 4,
-    "y": 3,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        260
-      ]
-    ]
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 10,
-    "y": 3,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        261
-      ]
-    ]
+    ],
+    "role": "hang"
   },
   {
     "kind": "tibo-kit",
@@ -145,7 +104,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 2,
     "y": 7,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
@@ -154,98 +114,54 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 2,
     "y": 9,
     "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-045",
-    "name": "여행용 궤짝",
-    "x": 13,
-    "y": 7,
-    "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-045",
-    "name": "여행용 궤짝",
-    "x": 13,
-    "y": 9,
-    "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-100",
-    "name": "금속 주괴 더미",
-    "x": 3,
-    "y": 9,
-    "w": 2,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-100",
-    "name": "금속 주괴 더미",
-    "x": 11,
-    "y": 9,
-    "w": 2,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-238",
-    "name": "자물쇠 금고함",
-    "x": 12,
-    "y": 7,
-    "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
     "kitId": "tibo-v10-1-0",
     "name": "봉인 상자",
     "x": 3,
-    "y": 7,
-    "w": 1,
-    "h": 1
-  },
-  {
-    "kind": "tibo-kit",
-    "kitId": "tibo-library-165",
-    "name": "수정 표본 쟁반",
-    "x": 3,
-    "y": 5,
-    "w": 2,
-    "h": 1
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 5,
     "y": 9,
     "w": 1,
     "h": 1,
-    "rows": [
-      [
-        321
-      ]
-    ]
+    "role": "furn"
   },
   {
     "kind": "tibo-kit",
-    "kitId": "tibo-v10-1-1",
-    "name": "룬 석판",
+    "kitId": "tibo-library-100",
+    "name": "금속 주괴 더미",
+    "x": 4,
+    "y": 9,
+    "w": 2,
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-045",
+    "name": "여행용 궤짝",
     "x": 12,
-    "y": 5,
+    "y": 9,
     "w": 1,
-    "h": 1
+    "h": 1,
+    "role": "furn"
+  },
+  {
+    "kind": "tibo-kit",
+    "kitId": "tibo-library-100",
+    "name": "금속 주괴 더미",
+    "x": 10,
+    "y": 9,
+    "w": 2,
+    "h": 1,
+    "role": "furn"
   },
   {
     "kind": "tiles",
     "layer": "upper",
     "x": 6,
-    "y": 8,
+    "y": 7,
     "w": 1,
     "h": 2,
     "rows": [
@@ -255,13 +171,14 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         117
       ]
-    ]
+    ],
+    "role": "furn"
   },
   {
     "kind": "tiles",
     "layer": "upper",
     "x": 10,
-    "y": 8,
+    "y": 7,
     "w": 1,
     "h": 2,
     "rows": [
@@ -271,7 +188,28 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
       [
         117
       ]
-    ]
+    ],
+    "role": "furn"
+  },
+  {
+    "kind": "tiles",
+    "layer": "lower",
+    "x": 13,
+    "y": 5,
+    "w": 1,
+    "h": 3,
+    "rows": [
+      [
+        111
+      ],
+      [
+        141
+      ],
+      [
+        171
+      ]
+    ],
+    "role": "stairs"
   }
 ]
 ```

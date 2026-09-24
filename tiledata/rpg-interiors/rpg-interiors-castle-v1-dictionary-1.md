@@ -59,8 +59,52 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 89,
+    "label": "돌기둥 상단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 111,
+    "label": "가로 돌계단 반복부",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 116,
+    "label": "암흑 공허",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 117,
     "label": "갑옷 전시대 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 119,
+    "label": "돌기둥 하단",
     "passability": {
       "up": false,
       "down": false,
@@ -103,6 +147,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 141,
+    "label": "가로 돌계단 왼끝",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 142,
     "label": "붉은 대형 커튼",
     "passability": {
@@ -116,6 +171,72 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 143,
     "label": "붉은 대형 커튼",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 146,
+    "label": "암흑 흙더미",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 156,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 157,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 158,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 159,
+    "label": "확장 흰색 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 161,
+    "label": "확장 흰색 탁자 상판",
     "passability": {
       "up": false,
       "down": false,
@@ -158,6 +279,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 171,
+    "label": "가로 돌계단 오른끝",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 172,
     "label": "붉은 대형 커튼",
     "passability": {
@@ -180,8 +312,85 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 260,
-    "label": "검(벽걸이)",
+    "tile": 186,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 187,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 188,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 189,
+    "label": "확장 흰색 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 191,
+    "label": "확장 흰색 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 202,
+    "label": "붉은 커튼 자락",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 203,
+    "label": "붉은 커튼 자락",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 204,
+    "label": "촛대",
     "passability": {
       "up": true,
       "down": true,
@@ -191,26 +400,59 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 261,
-    "label": "망치(벽걸이)",
+    "tile": 216,
+    "label": "확장 목재 탁자 상판",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "upper"
+    "priority": "lower"
   },
   {
-    "tile": 262,
-    "label": "방패(벽걸이)",
+    "tile": 217,
+    "label": "확장 목재 탁자 상판",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "upper"
+    "priority": "lower"
+  },
+  {
+    "tile": 218,
+    "label": "확장 목재 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 219,
+    "label": "확장 흰색 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 221,
+    "label": "확장 흰색 탁자 상판",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
   },
   {
     "tile": 263,
@@ -246,6 +488,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 279,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 280,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 281,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 288,
     "label": "화분",
     "passability": {
@@ -264,6 +539,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "down": true,
       "left": true,
       "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 293,
+    "label": "검 진열 박스 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "upper"
   },
@@ -288,6 +574,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "upper"
+  },
+  {
+    "tile": 309,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 310,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 311,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
   },
   {
     "tile": 314,
@@ -323,17 +642,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
-    "tile": 321,
-    "label": "보석 목걸이",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 324,
     "label": "세로 침대 머리",
     "passability": {
@@ -343,6 +651,39 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "upper"
+  },
+  {
+    "tile": 339,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 340,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 341,
+    "label": "청록 카펫",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
   },
   {
     "tile": 344,
@@ -433,6 +774,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 389,
+    "label": "괘종시계 상단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 399,
     "label": "어두운 벽 코너",
     "passability": {
@@ -497,6 +849,17 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": true
     },
     "priority": "lower"
+  },
+  {
+    "tile": 419,
+    "label": "괘종시계 하단",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
   },
   {
     "tile": 429,
@@ -576,6 +939,50 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
+    "tile": 447,
+    "label": "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 448,
+    "label": "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 449,
+    "label": "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 459,
+    "label": "어두운 벽 코너",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
     "tile": 460,
     "label": "동굴 암흑 테두리",
     "passability": {
@@ -587,8 +994,74 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "lower"
   },
   {
+    "tile": 461,
+    "label": "동굴 암흑 테두리",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 474,
+    "label": "독립 하강 계단 A (1×1)",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 475,
+    "label": "독립 하강 계단 B (1×1)",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
     "tile": 476,
     "label": "붉은 의자 좌석(하단 절단)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 477,
+    "label": "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 478,
+    "label": "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 479,
+    "label": "대형 왕좌(3×2 — 좌열 보완 작화·하단 절단)",
     "passability": {
       "up": false,
       "down": false,
@@ -631,8 +1104,52 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 570,
-    "label": "물 양동이",
+    "tile": 508,
+    "label": "메모 게시판",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 509,
+    "label": "메모 게시판",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 590,
+    "label": "열쇠판",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 591,
+    "label": "열쇠판",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 597,
+    "label": "빨래 바구니",
     "passability": {
       "up": false,
       "down": false,
@@ -653,8 +1170,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 630,
-    "label": "룬 석판",
+    "tile": 650,
+    "label": "숫돌",
     "passability": {
       "up": true,
       "down": true,
@@ -664,8 +1181,19 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 814,
-    "label": "긴 벤치",
+    "tile": 651,
+    "label": "숫돌",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 658,
+    "label": "화로",
     "passability": {
       "up": false,
       "down": false,
@@ -675,8 +1203,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 815,
-    "label": "긴 벤치",
+    "tile": 680,
+    "label": "숫돌",
     "passability": {
       "up": false,
       "down": false,
@@ -686,30 +1214,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 818,
-    "label": "음식 운반대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 819,
-    "label": "음식 운반대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 824,
-    "label": "물 피처",
+    "tile": 681,
+    "label": "숫돌",
     "passability": {
       "up": false,
       "down": false,
@@ -719,8 +1225,41 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 827,
-    "label": "침대 옆 협탁",
+    "tile": 692,
+    "label": "버터 교반통",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 694,
+    "label": "말린 약초 걸이",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 695,
+    "label": "말린 약초 걸이",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 722,
+    "label": "버터 교반통",
     "passability": {
       "up": false,
       "down": false,
@@ -730,8 +1269,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 828,
-    "label": "화장대",
+    "tile": 750,
+    "label": "빵 도마",
     "passability": {
       "up": false,
       "down": false,
@@ -741,19 +1280,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 830,
-    "label": "타원 전신 거울",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 837,
-    "label": "여행용 궤짝",
+    "tile": 751,
+    "label": "빵 도마",
     "passability": {
       "up": false,
       "down": false,
@@ -763,8 +1291,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 848,
-    "label": "음식 운반대",
+    "tile": 755,
+    "label": "반죽 그릇",
     "passability": {
       "up": false,
       "down": false,
@@ -774,8 +1302,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 849,
-    "label": "음식 운반대",
+    "tile": 756,
+    "label": "구리 주전자",
     "passability": {
       "up": false,
       "down": false,
@@ -785,541 +1313,13 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 860,
-    "label": "타원 전신 거울",
+    "tile": 760,
+    "label": "접시 더미",
     "passability": {
       "up": false,
       "down": false,
       "left": false,
       "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 885,
-    "label": "기댄 빗자루",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 915,
-    "label": "기댄 빗자루",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 994,
-    "label": "금속 주괴 더미",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 995,
-    "label": "금속 주괴 더미",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1010,
-    "label": "재봉 마네킹",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1040,
-    "label": "재봉 마네킹",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1073,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1074,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1103,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1104,
-    "label": "포도주 병 선반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1173,
-    "label": "작은 돌 제단",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1174,
-    "label": "작은 돌 제단",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1178,
-    "label": "수정 표본 쟁반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1179,
-    "label": "수정 표본 쟁반",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1306,
-    "label": "풍경화",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1307,
-    "label": "풍경화",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1308,
-    "label": "초상화",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1309,
-    "label": "타원 가족 초상화",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1311,
-    "label": "방패 벽 장식",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1338,
-    "label": "초상화",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1341,
-    "label": "방패 벽 장식",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1364,
-    "label": "자물쇠 금고함",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1530,
-    "label": "천개 침대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1531,
-    "label": "천개 침대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1532,
-    "label": "천개 침대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1533,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1534,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1535,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1539,
-    "label": "갑옷 거치대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1540,
-    "label": "갑옷 거치대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1560,
-    "label": "천개 침대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1561,
-    "label": "천개 침대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1562,
-    "label": "천개 침대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1563,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1564,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1565,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1569,
-    "label": "갑옷 거치대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1570,
-    "label": "갑옷 거치대",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1590,
-    "label": "천개 침대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1591,
-    "label": "천개 침대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1592,
-    "label": "천개 침대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1593,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1594,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1595,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1599,
-    "label": "갑옷 거치대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1600,
-    "label": "갑옷 거치대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1627,
-    "label": "연회용 긴 식탁",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1628,
-    "label": "연회용 긴 식탁",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
     },
     "priority": "upper"
   }

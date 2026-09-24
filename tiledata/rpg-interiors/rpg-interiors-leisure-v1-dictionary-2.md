@@ -4,8 +4,19 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
-    "tile": 1356,
-    "label": "쌓인 나무 상자",
+    "tile": 1341,
+    "label": "방패 벽 장식",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1352,
+    "label": "뚜껑 둥근 통",
     "passability": {
       "up": true,
       "down": true,
@@ -26,8 +37,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1386,
-    "label": "쌓인 나무 상자",
+    "tile": 1382,
+    "label": "뚜껑 둥근 통",
     "passability": {
       "up": false,
       "down": false,
@@ -334,39 +345,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1824,
-    "label": "물통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1825,
-    "label": "물통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1826,
-    "label": "물통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 1833,
     "label": "무기 거치대",
     "passability": {
@@ -435,39 +413,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
   {
     "tile": 1847,
     "label": "긴 의자",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1854,
-    "label": "물통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1855,
-    "label": "물통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1856,
-    "label": "물통",
     "passability": {
       "up": false,
       "down": false,
