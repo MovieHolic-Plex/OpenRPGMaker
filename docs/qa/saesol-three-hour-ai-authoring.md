@@ -1381,3 +1381,10 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 520 정본을 읽어517과 비교한 `after-bridge-restart-content-proof.json`에서 맵/DB/세션이 모두 일치하고20맵163이벤트를 유지했다. 전송 수정 이후 게임 저작 내용의 저장 성공으로 혼동하지 않는다.
 - 동일 창 재탐색 시 관찰기 자체의 await page.evaluate가 navigation으로 실패했다. 이 관찰기 오류를 게임 저장 오류로 집계하지 않고 해당 반복 계측을 제거했다. 다음 진단창71f1의 요청 기록에서는 브리지와 이미지여러개가 함께NS_ERROR_ABORT로 종료됐고,별도Firefox창의최초goto도NS_ERROR_ABORT였다. 원인은 미확정이다.
 - mdc-server는100.73.251.77로 해석되며 해당주소HTTP와Host헤더를 유지한127.0.0.1HTTP 둘 다200 응답했다. 실제live gzip진단은 첫 탐색 실패 때문에 실행되지 않았으므로성공으로 보고하지 않는다. Chromium 비교 진단을 시작했다. 이 단계에서는 추가 콘텐츠를 저장 완료로 세지 않는다.
+
+### Chromium 저장 응답과 렌더러 충돌 분리 (요청40)
+
+- `author-40-chromium-gzip.log`의 새 게스트6a74는 편집 화면과 AI 입력 활성화까지 도달했다. `bridge-network-diagnostic.jsonl`09:55:44Z에는 gzip 요청/응답 HTTP200이 기록됐다. 이것만으로 새 게임 콘텐츠 저장을 증명하지 않는다.
+- 읽기 전용 `chromium-boot-save-proof.json`에서 정본522(sha256 `aaa4e00d41c6192292a8adbd9c4d93c6ccd7965e8a8694de66441e985f2fc224`)의20맵163이벤트 및 맵/DB/세션이517과 동일함을 확인했다. 초기 공용 자료 동기화와 게임 저작 변경을 구분한다.
+- 이후 관찰 세션33845가 `page.waitForTimeout: Page crashed`로 exit1 종료했다. 커널09:56:13Z의 chrome-headless trap int3도 확인했다. 호스트 전체 메모리는 여유가 있었지만 이것으로 렌더러 메모리 원인을 배제할 수 없다. 원인은 아직 미확정이다.
+- 적용모드 선택 action은 소비되지 않았고 NPC 수정 요청도 전송되지 않았다. 미소비 action을 별도 보존한 뒤에만 진단 창41을 시작했다. 살아 있는 작업을 timeout만으로 재시작한 것이 아니다. 다음 창은 브라우저 stderr를 기록해 실제 충돌 원인을 수집한다.
