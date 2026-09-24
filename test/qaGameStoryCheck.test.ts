@@ -8,12 +8,18 @@ describe("qa gameCheck — 회상 스토리 장르 검사", () => {
     const ctx = { project: createBlankProject() };
     const mapId = ctx.project.startMapId;
     const ok = (name: string, args: Record<string, unknown>) => { const r = runTool(ctx, name, args); expect(r.ok, r.summary).toBe(true); };
-    ok("place_examine_hotspots", { mapId, hotspots: [{ at: { x: 3, y: 3 }, name: "메멘토: 턴테이블", lines: ["바늘"] }] });
+    ok("place_examine_hotspots", { mapId, hotspots: [
+      { at: { x: 3, y: 3 }, name: "메멘토: 턴테이블", lines: ["바늘"] },
+      { at: { x: 4, y: 3 }, name: "메멘토: 숨은 쪽지", lines: ["글씨"], graphic: { transparent: true } },
+    ] });
     ok("script_cutscene", { mapId, eventId: "ev_intro", x: 6, y: 6, trigger: "auto", once: true, beats: [{ kind: "say", text: "여긴 어디지" }] });
     ok("script_cutscene", { mapId, eventId: "ev_walk", x: 8, y: 6, beats: [{ kind: "moveActor", target: "player", moves: [{ kind: "move", dir: "up" }] }] });
     const report = runGameCheck(ctx.project, { skipAutoPlay: true, briefText: "회상 스토리. 두 주인공 이동 연출, 카메라 이동, 페이드." });
     const codes = report.findings.map((f) => f.code);
-    expect(codes).toContain("story-memento-invisible");
+    const invisible = report.findings.find((f) => f.code === "story-memento-invisible");
+    expect(invisible?.message).toContain("1/2");
+    expect(invisible?.message).toContain("ev_examine_2");
+    expect(invisible?.message).not.toContain("ev_examine_1");
     expect(report.findings.some((f) => f.code === "command-missing-reference" && f.message.includes("@player"))).toBe(false);
     // 이동이 있는 컷신이 하나 있으니 「연출 없음」은 아니다.
     expect(codes).not.toContain("story-no-staging");

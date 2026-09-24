@@ -14,6 +14,16 @@ describe("choices 보기 목록 별칭", () => {
     expect(kept.options).toEqual([{ text: "예", branch: [] }]);
   });
 
+  it("choices.text 질문을 prompt 로 옮긴다", () => {
+    const command: Record<string, unknown> = { kind: "choices", text: "다이브하시겠습니까?", options: [{ text: "들어간다", branch: [] }] };
+    expect(canonicalizeCommandFieldAlias(command)).toContain("choices.text 를 prompt");
+    expect(command.prompt).toBe("다이브하시겠습니까?");
+    expect(command.text).toBeUndefined();
+    const kept: Record<string, unknown> = { kind: "choices", prompt: "이미 있음", text: "버림", options: [] };
+    expect(canonicalizeCommandFieldAlias(kept)).toBeUndefined();
+    expect(kept.prompt).toBe("이미 있음");
+  });
+
   it("place_npc 여관 선택지가 TypeError 없이 배치된다", () => {
     const ctx = { project: createBlankProject() };
     const result = runTool(ctx, "place_npc", {

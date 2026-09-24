@@ -69,10 +69,34 @@ describe("place_examine_hotspots", () => {
     assertTool(result);
     expect(result.summary).toContain("조사 핫스팟 1개 생성, 3개 스킵");
     expect(result.data).toMatchObject({ created: 1, skipped: 3 });
-    // 스킵 3건 + 빈 바닥 위 투명 「책상」 1건(보이지 않는 조사 지점 경고).
     expect(result.diff?.warnings?.filter((warning) => warning.includes("skip"))).toHaveLength(3);
-    expect(result.diff?.warnings?.some((warning) => warning.startsWith("보이지 않는 조사 지점 1개(책상)"))).toBe(true);
+    expect(result.diff?.warnings?.some((warning) => warning.startsWith("보이지 않는 조사 지점"))).toBe(false);
+    expect(result.diff?.warnings?.some((warning) => warning.includes("보석 표식") && warning.includes("책상"))).toBe(true);
+    const placed = startMap(ctx.project).events.find((event) => event.id === "ev_examine_1");
+    expect(placed?.pages?.[0]?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object2");
     expect(startMap(ctx.project).events.map((event) => event.id)).toContain("ev_examine_1");
+  });
+
+  it("graphic:{transparent:true} 는 투명으로 두고, 본문 「이름:」 은 그 줄의 화자로 옮긴다", () => {
+    const ctx = { project: createBlankProject() };
+    const map = startMap(ctx.project);
+    const result = runTool(ctx, "place_examine_hotspots", {
+      mapId: map.id,
+      hotspots: [{
+        at: { x: 4, y: 4 },
+        name: "긁힌 LP판",
+        graphic: { transparent: true },
+        lines: ["서하온: 첫 소절만 남아 있다.", "[잔류 사념: 그 멜로디가 뭐였더라]"],
+      }],
+    });
+    assertTool(result);
+    const event = startMap(ctx.project).events.find((entry) => entry.id === "ev_examine_1");
+    expect(event?.pages?.[0]?.graphic).toEqual({ transparent: true });
+    expect(event?.pages?.[0]?.commands).toEqual([
+      { kind: "text", speaker: "서하온", body: "첫 소절만 남아 있다." },
+      { kind: "text", speaker: "긁힌 LP판", body: "[잔류 사념: 그 멜로디가 뭐였더라]" },
+    ]);
+    expect(result.diff?.warnings?.some((warning) => warning.includes("보이지 않는 조사 지점"))).toBe(true);
   });
 
   it("once:true는 self-switch A 기반 1회성 페이지 구조를 만든다", () => {

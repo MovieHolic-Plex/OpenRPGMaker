@@ -248,6 +248,14 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     return `text.${alias} 를 body 로 옮겼습니다(문장 명령의 본문 칸은 body).`;
   }
   let optionsFix: string | undefined;
+  let promptFix: string | undefined;
+  if (command.kind === "choices" && command.prompt === undefined && typeof command.text === "string" && command.text.trim()) {
+    // 선택지 질문을 text 로 쓴 사례(2026-09-24 회상 스토리: 기억의 문 `{kind:"choices",text:"다이브하시겠습니까?",options}`).
+    // 질문 칸은 prompt 라 런타임은 text 를 버리고, 검사는 모르는 필드로만 남긴다.
+    command.prompt = command.text.trim();
+    delete command.text;
+    promptFix = "choices.text 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
+  }
   if (command.kind === "choices" && !Array.isArray(command.options)) {
     // 보기 목록을 `choices` 로 쓴 사례(2026-09-24 JRPG 도그푸딩: 여관 주인 `{kind:"choices",choices:[{text,branch}]}`)
     // — place_npc 가 「command.options is not iterable」 TypeError 로 죽었다. 보기 목록 칸은 options 하나라 옮긴다.
@@ -274,8 +282,9 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       delete option[alias];
       moved.push(`options[${index}].${alias}`);
     }
-    return joinFixes(optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
+    return joinFixes(promptFix, optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
   }
+  if (promptFix) return promptFix;
   if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind) && typeof command.op !== "string") {
     const resolved = direction(command.action);
     if (!resolved) return undefined;

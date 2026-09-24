@@ -340,12 +340,12 @@ function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graph
 }
 
 /** 영문 id 가 가리키는 사물 — 문은 문 그림, 나머지 사물은 투명. id 에 인물 낱말이 있거나 뜻을 모르면 null(주민 그림). */
-const OBJECT_ID_WORDS = /(?:^|_)(door|gate|mirror|candle|altar|diary|book|drawer|desk|bed|window|statue|clock|eye|photo|picture|frame|umbrella|chest|box|sign|shelf|lamp|stair|stairs|well|grave|painting|vase|table|chair|closet|wardrobe|safe|note|letter|item|prop|object|obj|hotspot|examine)(?:_|$|\d)/iu;
+const OBJECT_ID_WORDS = /(?:^|_)(door|gate|portal|mirror|candle|altar|diary|book|drawer|desk|bed|window|statue|clock|eye|photo|picture|frame|umbrella|chest|box|sign|shelf|lamp|stair|stairs|well|grave|painting|vase|table|chair|closet|wardrobe|safe|note|letter|item|prop|object|obj|hotspot|examine)(?:_|$|\d)/iu;
 const BEING_ID_WORDS = /(?:^|_)(npc|person|people|man|woman|girl|boy|kid|child|villager|guard|shadow|ghost|dancer|resident|merchant|keeper|old|lady|spirit|fairy|monster|cat|dog|bird|character|chara)(?:_|$|\d)/iu;
 
 function objectGraphicFromId(id: string): { graphic: EventPage["graphic"]; label: string } | null {
   if (BEING_ID_WORDS.test(id) || !OBJECT_ID_WORDS.test(id)) return null;
-  if (/(?:^|_)(door|gate)(?:_|$|\d)/iu.test(id)) {
+  if (/(?:^|_)(door|gate|portal)(?:_|$|\d)/iu.test(id)) {
     const hit = searchResources("charset", "문").find((entry) => /문/u.test(entry.label));
     const parsed = hit ? /^charset:(.+):(\d+)$/u.exec(hit.id) : null;
     if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit!.label };
@@ -897,7 +897,33 @@ function routeRootCommandsIntoPage(
       { code: "invalid-args" },
     );
   }
-  if (has("pages") || pages.length === 0) return;
+  if (pages.length === 0) {
+    // 2026-09-24 회상 스토리: 기억의 문을 {commands, conditions} 만으로 만들어 페이지가 0장이었다.
+    // 런타임은 페이지 조건을 안 보고, 페이지가 없으면 priority 기본값 same 이라 그 칸을 처음부터 막는다.
+    const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
+    const rawConditions = (patch as { conditions?: unknown }).conditions;
+    const pageConditions = Array.isArray(rawConditions)
+      ? rawConditions.filter((entry): entry is EventPageCondition => Boolean(entry) && typeof entry === "object" && !Array.isArray(entry))
+      : [];
+    if (movesCommands || pageConditions.length > 0) {
+      const page: Partial<EventPage> = {
+        id: `${event.id}_page`,
+        commands: movesCommands ? structuredClone(patch.commands!) : [],
+        ...(pageConditions.length > 0 ? { conditions: structuredClone(pageConditions) } : {}),
+        ...(has("trigger") && patch.trigger ? { trigger: structuredClone(patch.trigger) } : {}),
+      };
+      event.pages = [page as EventPage];
+      event.commands = structuredClone(existing?.commands ?? []);
+      delete (event as { conditions?: unknown }).conditions;
+      fillRequiredPageFields(event, page, `${event.id}_page`, warnings);
+      const moved = [movesCommands ? "commands" : "", pageConditions.length > 0 ? "conditions" : ""].filter(Boolean).join("·");
+      warnings.push(
+        `pages 없이 보낸 최상위 ${moved} 를 pages[0] 으로 만들었습니다 — 페이지가 없으면 스위치 조건은 무시되고 이벤트가 그 칸을 막습니다.`,
+      );
+    }
+    return;
+  }
+  if (has("pages")) return;
   // 빈 배열은 옮기지 않는다 — 이름만 바꾸려는 패치가 흔히 commands:[] 를 같이 보내는데, 그걸 옮기면 페이지 대사가 지워진다.
   const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
   const movesTrigger = has("trigger") && patch.trigger !== undefined;
