@@ -211,6 +211,7 @@ export const HORROR_CHASE_AUTHORING_GUIDE = [
   "추격 호러 저작 요령:",
   "- 방(현관·복도·서재·침실·창고)은 place_concept(query, plan, 새 mapId)로 벽이 있는 실내를 만든다. fill_region·paint_tiles 로 벽돌 바닥만 깔아 빈 판을 만들지 말 것.",
   "- 방 사이 문은 create_transfer_pair 를 벽·가장자리 통행 칸에 두고, 그 칸에 place_door 로 문 그림을 붙인다. 방 한가운데 투명 칸으로 두지 말 것.",
+  "- 방을 잇는 유일한 통로(문간) 칸에는 playerTouch 컷신·즉사 함정을 얹지 말 것 — 밟는 이벤트가 유일한 길을 막아 자동 검사가 끝까지 못 간다(막힘). 조우 컷신은 통로 옆 조사(action) 이벤트로 두고, 통로 칸에는 create_transfer_pair 문만 두세요.",
   "- 추격자는 make_chase_scene. speed 6, killOnTouch true, checkpointOnEntry true. 여러 방이면 pursuit 에 scope:\"connected\" 만 주고 tracking 은 생략한다(스위치를 켜 깨우면 persistent 가 기본. lastSeen 을 직접 넣으면 벽 너머에서 안 움직인다). activateSwitch 를 켜는 트리거를 같은 흐름에 만든다.",
   "- 옷장 은신은 hidingSpots:[{x,y,mapId}] 를 옷장과 같은 칸에 준다(다른 방이면 mapId). 옆 칸의 투명 은신처는 플레이어가 못 찾는다. 추격 스위치를 setSwitch value:false 로 끄지 말 것 — 추격자가 사라질 뿐 수색하지 않는다.",
   "- 금고·자물쇠의 숫자 암호는 compile_puzzle({kind:\"password\", answer:\"4자리 숫자\", at:{x,y}, prompt:\"암호를 입력한다.\", onSolve:{setSwitch, message}}) 로 만든다. 1~6자리 숫자는 inputNumber 가 된다. 선택지 보기에 정답 숫자를 적지 말 것. 쪽지는 조사 대사 본문에만 숫자를 적는다.",
