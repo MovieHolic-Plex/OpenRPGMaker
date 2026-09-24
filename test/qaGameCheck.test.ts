@@ -102,3 +102,39 @@ describe("qa gameCheck (모델 없는 게임 검사기)", () => {
     expect(companion.failure?.detail).toMatch(/없는 배우|파티가 늘지/u);
   }, 60_000);
 });
+
+describe("qa gameCheck — 턴제 JRPG 장르 검사", () => {
+  function jrpgFixture() {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    project.system.genre = "adventure-jrpg";
+    return project;
+  }
+
+  it("골드만 깎고 아무것도 주지 않는 선택지(가짜 상점)를 짚는다", () => {
+    const project = jrpgFixture();
+    const map = project.maps[project.startMapId]!;
+    map.events.push({
+      id: "ev_fake_shop", name: "무기 상인", x: 1, y: 1,
+      pages: [{
+        id: "p1", name: "무기점", conditions: [], trigger: { kind: "action" }, priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "choices", options: [
+          { label: "철 검 구매 (150 골드)", branch: [{ kind: "changeGold", op: "-=", amount: 150 }, { kind: "text", body: "철 검을 샀다!" }] },
+          { label: "포션 구매 (20 골드)", branch: [{ kind: "changeGold", op: "-=", amount: 20 }, { kind: "changeItem", itemId: "item_potion", op: "+=", amount: 1 }] },
+        ] }],
+      }],
+    } as never);
+    const report = runGameCheck(project, { skipAutoPlay: true });
+    const fake = report.findings.filter((f) => f.code === "jrpg-paid-choice-grants-nothing");
+    expect(fake).toHaveLength(1);
+    expect(fake[0]!.where).toMatchObject({ eventId: "ev_fake_shop", path: "commands[0].options[0]" });
+  });
+
+  it("JRPG 가 아닌 프로젝트에는 장르 검사를 하지 않는다", () => {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    project.system.genre = undefined as never;
+    delete (project as { gameDesignBrief?: unknown }).gameDesignBrief;
+    const report = runGameCheck(project, { skipAutoPlay: true });
+    expect(report.findings.some((f) => f.code.startsWith("jrpg-"))).toBe(false);
+  });
+});
