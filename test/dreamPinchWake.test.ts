@@ -115,6 +115,20 @@ describe("꿈에서 깨는 스위치 아이템", () => {
     });
     expect(woken.ok, woken.failureReason).toBe(true);
 
+    const lateOff = runTool(ctx, "upsert_common_event", {
+      id: "ce_wake", name: "깨기", trigger: "auto", conditionSwitchId: "sw_wake",
+      commands: [
+        { kind: "transfer", mapId: live().startMapId, x: live().startPos.x, y: live().startPos.y, fade: "none" },
+        { kind: "setSwitch", switchId: "sw_wake", value: false },
+      ],
+    });
+    expect(lateOff.ok, lateOff.summary).toBe(true);
+    const stillOnce = runSceneTest(live(), {
+      mapId: "map_trap", start: trapLand,
+      steps: [{ kind: "useItem", itemId: "item_pinch" }, { kind: "face", dir: "up" }, { kind: "expect", mapId: live().startMapId }],
+    });
+    expect(stillOnce.ok, stillOnce.failureReason).toBe(true);
+
     const report = runAutoPlay(live(), { budgetMs: 20_000 });
     expect(report.runs[0]?.ok, report.runs[0]?.failure?.detail).toBe(true);
     expect(report.runs[0]?.endingReached).toBe("ending_wake");

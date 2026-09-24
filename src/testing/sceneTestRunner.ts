@@ -377,6 +377,7 @@ interface RunnerState {
   timeMinuteAccumulator: number;
   activeAnimations: Array<{ readonly animationId: string; remainingMs: number }>;
   readonly autoStartedKeys: Set<string>;
+  inCommonAuto: boolean;
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
   readonly recoverBeforeRandomEncounters: boolean;
@@ -657,6 +658,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     timeMinuteAccumulator: 0,
     activeAnimations: [],
     autoStartedKeys: new Set(),
+    inCommonAuto: false,
     chasers: new Map(),
     encounterAccumulator: 0,
     recoverBeforeRandomEncounters: runnerOptions.recoverBeforeRandomEncounters === true,
@@ -1280,7 +1282,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           const landingFailure = proofPosition(state);
           if (landingFailure) return { stop: "failed", reason: landingFailure };
         }
-        state.autoStartedKeys.clear();
+        clearMapAutoKeys(state);
         {
           // 도착 지점의 구역 진입은 자동 트리거보다 먼지 돌린다(실하 경로와 같은 우선순위).
           // 기록이 없는 맵은 첫 판정이 seed 로 떨어지므로 도착 기준선을 먼지 열어 둔다.
@@ -1443,6 +1445,13 @@ function fireLocationTransitionsForRunner(state: RunnerState): string | null {
   return runLocationTransitionTriggersForRunner(state, update.transitions);
 }
 
+/** 맵 자동 이벤트 키만 지운다. 공통 이벤트 키까지 지우면, 스위치를 끄기 전에 이동하는 깨기 이벤트가 도착 맵에서 다시 자신을 부른다. */
+function clearMapAutoKeys(state: RunnerState): void {
+  for (const key of [...state.autoStartedKeys]) {
+    if (!key.startsWith("common:")) state.autoStartedKeys.delete(key);
+  }
+}
+
 function runAutoTriggers(state: RunnerState): string | null {
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -1464,9 +1473,15 @@ function runAutoTriggers(state: RunnerState): string | null {
       state.autoStartedKeys.delete(key);
       continue;
     }
-    if (state.autoStartedKeys.has(key) || state.held) continue;
+    if (state.autoStartedKeys.has(key) || state.held || state.inCommonAuto) continue;
     state.autoStartedKeys.add(key);
-    const failure = runCommonEventForRunner(state, commonEvent);
+    state.inCommonAuto = true;
+    let failure: string | null;
+    try {
+      failure = runCommonEventForRunner(state, commonEvent);
+    } finally {
+      state.inCommonAuto = false;
+    }
     if (failure) return failure;
   }
   return null;

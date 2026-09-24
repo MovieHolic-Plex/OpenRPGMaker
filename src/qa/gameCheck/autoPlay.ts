@@ -490,12 +490,12 @@ function doorsOn(project: Project, mapId: string, session: PlaySession): Door[] 
 }
 
 /** 인벤토리의 스위치 아이템이 자동/병렬 공통 이벤트로 다른 맵에 옮기면, 막힌 맵의 출구로 친다. */
-function switchEscapeItemId(project: Project, session: PlaySession): string | null {
+function wakeItemId(project: Project, session: PlaySession, switchOn: boolean): string | null {
   for (const [itemId, count] of Object.entries(session.inventory)) {
     if ((count ?? 0) <= 0) continue;
     const item = project.database.items.find((entry) => entry.id === itemId);
     if (!item || item.type !== "switch" || !item.switchId || item.occasion === "battle") continue;
-    if (session.switches[item.switchId] === true) continue;
+    if ((session.switches[item.switchId] === true) !== switchOn) continue;
     const common = project.commonEvents.find((event) =>
       (event.trigger === "auto" || event.trigger === "parallel")
       && event.conditionSwitchId === item.switchId
@@ -503,6 +503,22 @@ function switchEscapeItemId(project: Project, session: PlaySession): string | nu
     if (common) return itemId;
   }
   return null;
+}
+
+function switchEscapeItemId(project: Project, session: PlaySession): string | null {
+  return wakeItemId(project, session, false);
+}
+
+function stuckWakeItemId(project: Project, session: PlaySession): string | null {
+  return wakeItemId(project, session, true);
+}
+
+function wakeSteps(project: Project, itemId: string): SceneStep[] {
+  const switchId = project.database.items.find((item) => item.id === itemId)?.switchId;
+  const steps: SceneStep[] = [{ kind: "useItem", itemId }];
+  // 이동 뒤에 스위치를 끄는 명령이 러너에서 빠지면 다음 세계에서 다시 못 쓴다.
+  if (switchId) steps.push({ kind: "set", switches: { [switchId]: false } });
+  return steps;
 }
 
 function routeTo(project: Project, from: string, to: string, session: PlaySession): Door[] | null {
@@ -640,9 +656,15 @@ function executeGoal(driver: Driver, goal: Goal, escaped = false): AutoPlayStepT
     // 한 목표에서 한 번만 쓴다. 다음 세계에서는 다시 쓸 수 있다.
     const itemId = escaped ? null : switchEscapeItemId(project, driver.last.session);
     if (itemId) {
-      const used = tryCommit(driver, [{ kind: "useItem", itemId }]);
+      const used = tryCommit(driver, wakeSteps(project, itemId));
       if (!used.ok) return trace(goal.label, false, `스위치 아이템 ${itemId} 사용 실패: ${used.reason}`, driver, visit.where);
       return executeGoal(driver, goal, true);
+    }
+    const stuckId = escaped ? null : stuckWakeItemId(project, driver.last.session);
+    if (stuckId) {
+      const off = tryCommit(driver, [{ kind: "set", switches: { [project.database.items.find((item) => item.id === stuckId)!.switchId!]: false } }]);
+      if (!off.ok) return trace(goal.label, false, `스위치 아이템 ${stuckId} 끄기 실패: ${off.reason}`, driver, visit.where);
+      return executeGoal(driver, goal, false);
     }
     return trace(goal.label, false, `${driver.last.session.currentMapId} 에서 ${project.maps[targetMap]?.name ?? targetMap}(${targetMap}) 으로 가는 문이 (현재 스위치 상태로는) 없습니다.`, driver, visit.where);
   }
