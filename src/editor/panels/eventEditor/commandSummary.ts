@@ -690,7 +690,14 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   if (title === "Erase Event" || cmd.commandId === "m2-086-erase-event") {
     const eventId = String(cmd.fields.eventId ?? "").trim();
     return commandLine(
-      "이벤트 지우기",
+      "이번 맵 방문에서만 지우기",
+      valuePart(eventId ? eventId : "이 이벤트"),
+    );
+  }
+  if (title === "Remove Event") {
+    const eventId = String(cmd.fields.eventId ?? "").trim();
+    return commandLine(
+      "맵에서 영구 제거",
       valuePart(eventId ? eventId : "이 이벤트"),
     );
   }

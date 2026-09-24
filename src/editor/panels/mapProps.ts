@@ -103,7 +103,7 @@ function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap
   if (tab === "bgm") {
     if (map.bgm?.mode === "none") return "무음";
     if (map.bgm?.mode === "custom") {
-      return listDatabaseResourceOptions("music", project).find((item) => item.id === map.bgm?.resourceId)?.name ?? "곡 없음";
+      return listDatabaseResourceOptions("music", project).find((item) => item.id === map.bgm?.resourceId)?.name ?? "곡 미지정 — 상위 맵을 따름";
     }
     return "상위 맵/기본 BGM";
   }
@@ -431,9 +431,12 @@ function renderBackgroundTab(host: HTMLElement, map: import("@/project/types").G
     section.append(mapResourceField({
       label: "배경 그림", resourceId: bg.imageId, kind: "backdrop", testid: "map-bg-image",
       dialogTitle: "맵 배경 그림", allowClear: true,
-      onChange: ({ resourceId }) => setMapBackground(map.id, {
-        ...store.getCurrent().maps[map.id]!.background!, imageId: resourceId,
-      }),
+      onChange: ({ resourceId }) => {
+        if (!resourceId) setMapBackground(map.id, null);
+        else setMapBackground(map.id, {
+          ...store.getCurrent().maps[map.id]!.background!, imageId: resourceId,
+        });
+      },
       rerender: () => rerender(host, "map-bg-image-set"),
     }));
 
@@ -635,7 +638,8 @@ function renderBgmTab(host: HTMLElement, map: import("@/project/types").GameMap)
       dialogTitle: "맵 BGM",
       allowClear: true,
       onChange: (result) => {
-        setMapBgm(map.id, { mode: "custom", resourceId: result.resourceId, fadeInMs: store.getCurrent().maps[map.id]?.bgm?.fadeInMs });
+        if (!result.resourceId) setMapBgm(map.id, null);
+        else setMapBgm(map.id, { mode: "custom", resourceId: result.resourceId, fadeInMs: store.getCurrent().maps[map.id]?.bgm?.fadeInMs });
       },
       rerender: rerenderBgm,
     }));
@@ -863,7 +867,7 @@ function rerender(host: HTMLElement, preferredFocusId?: string): void {
     if (draft) input.value = draft.value;
   }
   scroller.scrollTop = scrollTop;
-  if (dialog) paintIndex(dialog, map);
+  if (dialog instanceof HTMLElement) paintIndex(dialog, map);
   // Custom selects are enhanced by the subdialog's MutationObserver after rendering.
   queueMicrotask(() => {
     if (!host.isConnected) return;

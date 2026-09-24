@@ -497,7 +497,7 @@ export function executeCommand(
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.map((option) => ({ text: option.text })),
+        options: command.options.slice(0, 5).map((option) => ({ text: option.text })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
       });
