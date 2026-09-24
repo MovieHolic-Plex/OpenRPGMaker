@@ -1,5 +1,5 @@
 import { store } from "@/project/store";
-import { briefOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
+import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
 import { toast } from "@/util/toast";
 import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } from "./welcomeGenrePresets";
 import { setPendingAiBootIntent } from "./aiBootIntent";
@@ -25,7 +25,7 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
       // 씨앗의 기본 오프닝(왕국·호숫가 그림)이 기획과 어긋나지 않게 기획 문장으로 바꿔 둔다.
       const opening = project.system.opening;
       if (opening && isUntouchedDefaultOpening(opening, project.meta.title)) {
-        project.system.opening = briefOpeningSequence(opening, brief.answers.experience?.text ?? "", project.meta.title);
+        project.system.opening = briefOpeningSequence(opening, briefOpeningMotive(brief), project.meta.title);
       }
     }, { scope: "project", label: "새 프로젝트 기획 전달 준비", origin: "system" });
     if (!stillCurrent() || store.getCurrent().gameDesignBrief?.generationPending) {

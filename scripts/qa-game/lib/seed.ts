@@ -2,7 +2,7 @@
 import { deserialize, serialize } from "../../../src/project/io.ts";
 import { createNewProjectSeed } from "../../../src/editor/genrePacks.ts";
 import { newProjectChoiceById } from "../../../src/editor/newProjectChoices.ts";
-import { briefOpeningSequence, isUntouchedDefaultOpening } from "../../../src/project/defaults/defaultOpeningSequence.ts";
+import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "../../../src/project/defaults/defaultOpeningSequence.ts";
 import { normalizeGameDesignBrief, type GameDesignBrief } from "../../../src/project/gameDesignBrief.ts";
 import type { AiConfig } from "../../../src/ai/llmClient.ts";
 import type { Project } from "../../../src/project/types.ts";
@@ -33,7 +33,7 @@ export function buildBrowserSeed(input: QaBrief): { project: Project; brief: Gam
   if (project.gameDesignBrief) delete project.gameDesignBrief.generationPending;
   const opening = project.system.opening;
   if (opening && isUntouchedDefaultOpening(opening, project.meta.title)) {
-    project.system.opening = briefOpeningSequence(opening, brief.answers.experience?.text ?? "", project.meta.title);
+    project.system.opening = briefOpeningSequence(opening, briefOpeningMotive(brief), project.meta.title);
   }
   return { project: deserialize(serialize(project)), brief };
 }
