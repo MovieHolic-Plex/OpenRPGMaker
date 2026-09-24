@@ -38,6 +38,18 @@ describe("beginner palette source and activation", () => {
     expect(basic.querySelector('[data-testid="selected-tile-status"]')?.textContent).toContain("유리 창문");
   });
 
+  it("keeps the same tile buttons when only the selection changes", () => {
+    const cache = {};
+    const options = { tileset, layer: "lower" as const, query: "", onQuery: vi.fn(), onSelect: vi.fn() };
+    const first = makeBasicTilePalette({ ...options, selectedTile: 1 }, cache);
+    const cell = first.querySelector('[data-tile-index="8"]');
+    const second = makeBasicTilePalette({ ...options, selectedTile: 8 }, cache);
+    expect(second).toBe(first);
+    expect(second.querySelector('[data-tile-index="8"]')).toBe(cell);
+    expect(cell?.classList.contains("active")).toBe(true);
+    expect(first.querySelector('[data-tile-index="1"]')?.classList.contains("active")).toBe(false);
+  });
+
   it("accepts assistive click activation and avoids duplicating physical pointer activation", () => {
     const onSelect = vi.fn();
     const basic = makeBasicTilePalette({ tileset, layer: "lower", selectedTile: -1, query: "", onQuery: vi.fn(), onSelect });

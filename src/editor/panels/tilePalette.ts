@@ -9,7 +9,7 @@ import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
-import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
@@ -71,6 +71,27 @@ type PaletteScroll = {
   readonly sheetTop: number;
 };
 
+/** 칸 집합이 같을 때 시트 노드를 유지한다. 도구·붓·선택은 크롬만 다시 그린다. */
+function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
+  return [
+    tileset.id,
+    tilesetImageUrl(tileset),
+    tileset.count,
+    tileset.tilesPerRow,
+    layer,
+    activeTileCategory,
+    tileSearchQuery,
+    isCustomTileset(tileset) ? "custom" : "grid",
+  ].join("|");
+}
+
+function detachRetainedPalette(container: HTMLElement, key: string): HTMLElement | null {
+  const sheet = container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  if (!sheet || sheet.dataset.retainKey !== key) return null;
+  sheet.remove();
+  return sheet;
+}
+
 export function renderTilePalette(container: HTMLElement): void {
   // The rail owns its focus and flyout snapshots. Do not detach its focused node
   // before it can capture them (the real browser moves focus to body on removal).
@@ -80,8 +101,15 @@ export function renderTilePalette(container: HTMLElement): void {
   }
   const focusSnapshot = captureFocus(container);
   const previousPaletteScroll = readPaletteScroll(container);
-  clearChildren(container);
   const state = editorState.get();
+  let retainedSheet: HTMLElement | null = null;
+  if (state.layer !== "event" && !isFilterActive()) {
+    const project = store.getCurrent();
+    const map = project.maps[state.currentMapId ?? project.startMapId];
+    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    if (tileset) retainedSheet = detachRetainedPalette(container, paintSheetRetainKey(tileset, state.layer));
+  }
+  clearChildren(container);
 
   if (state.layer === "event") {
     // 레이어 전환은 캔버스가 소유한다. 여기서는 공통 셸 안의 내용을 이벤트 목록으로 바꾼다.
@@ -136,7 +164,7 @@ export function renderTilePalette(container: HTMLElement): void {
     return;
   }
 
-  const body = makePaletteSurface({ map, state, tileLayer, tileset });
+  const body = makePaletteSurface({ map, state, tileLayer, tileset, retainedSheet });
   shell.append(body.root);
   const palette: HTMLElement | null = body.palette;
 
@@ -236,8 +264,9 @@ function makePaletteSurface(input: {
   readonly state: ReturnType<typeof editorState.get>;
   readonly tileLayer: Exclude<Layer, "event">;
   readonly tileset: TilesetDef;
+  readonly retainedSheet: HTMLElement | null;
 }): { readonly root: HTMLElement; readonly palette: HTMLElement } {
-  const { map, state, tileLayer, tileset } = input;
+  const { map, state, tileLayer, tileset, retainedSheet } = input;
   const root = el("div", {
     class: "palette-work-pane is-paint",
     dataset: { testid: "palette-work-pane-paint" },
@@ -258,7 +287,7 @@ function makePaletteSurface(input: {
   root.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
   const emptyHint = makePaletteEmptyHint(tileLayer);
 
-  const palette = isCustomTileset(tileset)
+  const palette = retainedSheet ?? (isCustomTileset(tileset)
     ? makeCustomPalette({
         onCreatePaletteStamp: selectPaletteStamp,
         layer: tileLayer,
@@ -278,8 +307,14 @@ function makePaletteSurface(input: {
         tileset,
         emptyHint,
         visibleTiles,
-      });
+      }));
+  palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
+  if (retainedSheet) {
+    const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
+    movePaletteActiveCell(palette, displayTile);
+  }
   if (showQuickTileNumbers) palette.classList.add("show-index");
+  else palette.classList.remove("show-index");
   root.append(palette);
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
