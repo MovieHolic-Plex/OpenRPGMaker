@@ -1,5 +1,5 @@
 import { FOREST_GROVE_GROUP, ensureForestGroveTileset } from "@/project/defaults/forestGrove";
-import { paintForestGroves } from "./forestGroves";
+import { edgeBandScore, paintContouredForest } from "./forestContour";
 import { isForestHarmonyTileset } from "@/project/defaults/forestHarmony";
 // editor/tools/village/treeKit.ts
 // 마을 시공이 심는 나무의 어휘를 타일셋에 따라 고른다.
@@ -221,8 +221,11 @@ export function plantForestBand(
 ): ForestBandReport {
   if (kit.grove) {
     const coverage = Number.isFinite(placementLimit) ? Math.min(0.8, placementLimit * 12 / (rect.w * rect.h)) : 0.8;
-    const grove = paintForestGroves(map, rect, kit.grove, free, seed, coverage);
-    return { placed: Math.ceil(grove.cells.size / 12), cells: grove.cells.size, chunks: grove.trunkRuns };
+    // The band's open side gets a bending treeline. Macrocell packing (paintForestGroves without a
+    // natural edge) filled a 5-wide edge band solid, so the canopy read as a straight-edged black
+    // rectangle (2026-09-24 lighthouse village review: "void" at x 59..63 of a 64-wide map).
+    const grove = paintContouredForest(map, rect, kit.grove, free, seed, coverage, undefined,
+      (x, y) => edgeBandScore(x, y, rect, map, seed));    return { placed: Math.ceil(grove.cells.size / 12), cells: grove.cells.size, chunks: grove.trunkRuns };
   }
   const W = map.width;
   const rng = mulberry32(seed >>> 0);

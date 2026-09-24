@@ -39,6 +39,27 @@ export function forestContourScore(x: number, y: number, area: Rect, seed: numbe
     + 1.2 * noise(wx / 3, wy / 3, seed ^ 0x75931) + (coverage - 0.4) * 7;
 }
 
+/** Contour for an edge band (a strip or block reserved for forest or water). Sides on or next to the map edge
+ * run off the map; every other side gets a treeline that bends in and out with coherent noise, so the
+ * band never paints as a straight-edged rectangle. Positive = canopy. */
+export function edgeBandScore(x: number, y: number, band: Rect, map: Pick<GameMap, "width" | "height">,
+  seed: number): number {
+  const inner: number[] = [];
+  if (band.x > 1) inner.push(x - band.x);
+  if (band.x + band.w < map.width - 1) inner.push(band.x + band.w - x);
+  if (band.y > 1) inner.push(y - band.y);
+  if (band.y + band.h < map.height - 1) inner.push(band.y + band.h - y);
+  const depth = Math.min(band.w, band.h);
+  const reach = inner.length > 0 ? Math.min(...inner) : depth;
+  return reach - depth * 0.25 + depth * 0.6 * fbm(x / 5, y / 5, seed ^ 0x5ee1);
+}
+
+/** Smooth signed offset (about -2..+2 cells) for a treeline's distance from rectangular fields, yards and
+ * houses. A constant distance copies their straight edges into the canopy; this bends the line. */
+export function forestSetbackJitter(x: number, y: number, seed: number): number {
+  return Math.round(2.5 * fbm(x / 5, y / 5, seed ^ 0x3c6ef));
+}
+
 /** Continuous contour fitted to the approved cliff-village trunk assemblies.
  * Root pixels, full three-row height and end caps are shared with legacy groves. */
 export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGroup,
