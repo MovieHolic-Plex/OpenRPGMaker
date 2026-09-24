@@ -202,6 +202,17 @@ describe("batch 3 · configure_monster_system tool + toggle", () => {
     expect(project.system.monsterBattleParty).toBeUndefined();
   });
 
+  it("enabled:true without battleParty keeps an existing monster battle party (monster-collect preset)", () => {
+    const project = createBlankProject();
+    project.system.monsterBattleParty = true;
+    project.system.battleParty = "monsters";
+    tool.run(project, { enabled: true });
+    expect(project.system.monsterBattleParty).toBe(true);
+    expect(project.system.battleParty).toBe("monsters");
+    tool.run(project, { enabled: true, battleParty: false });
+    expect(project.system.monsterBattleParty).toBeUndefined();
+  });
+
   it("enabled:false removes both flags", () => {
     const project = createBlankProject();
     tool.run(project, { enabled: true, battleParty: true });
