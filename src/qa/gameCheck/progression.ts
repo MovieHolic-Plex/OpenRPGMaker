@@ -1,5 +1,6 @@
 // 진행 검사 — 읽히기만 하고 켜지지 않는 스위치, 엔딩 정의와 엔딩 호출, 동료 합류, 전투 성립.
 
+import { monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { allPages, commandList, conditionLeaves, visitAllCommands, visitPageCommands, type CommandVisit, type PageRef } from "./walk";
 import type { CommandWhere, Finding } from "./types";
@@ -166,11 +167,22 @@ export function checkProgression(project: Project): Finding[] {
     for (const enemyId of members) {
       const enemy = enemies.get(enemyId);
       if (!enemy) { findings.push({ severity: "blocker", code: "troop-missing-enemy", message: `적 그룹 ${troop.name}(${troop.id}) 이 없는 적 \`${enemyId}\` 를 담고 있습니다.`, where }); continue; }
-      const canDamage = (enemy.actions ?? []).some((action) => {
+      const authoredDamage = (enemy.actions ?? []).some((action) => {
         const skill = skills.get(action.skillId);
         return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
       });
-      if (!canDamage) findings.push({ severity: "warning", code: "enemy-no-damage", message: `적 ${enemy.name}(${enemy.id}) 에 피해를 주는 행동이 없습니다 — 공격하지 않는 보스가 됩니다.`, where });
+      // 몬스터 파티의 빈 행동은 전투에서 종족 습득 기술로 채운다(enemyBattlers). 그 기술이 피해를 주면 경고하지 않는다.
+      const monsterParty = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+      const species = monsterParty && (enemy.actions ?? []).length === 0 && enemy.skillIds.length === 0 && enemy.speciesId
+        ? monsterSpeciesById(project, enemy.speciesId)
+        : undefined;
+      const inheritedDamage = species
+        ? monsterSkillIdsAtLevel(species, enemy.level ?? 1).some((skillId) => {
+          const skill = skills.get(skillId);
+          return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
+        })
+        : false;
+      if (!authoredDamage && !inheritedDamage) findings.push({ severity: "warning", code: "enemy-no-damage", message: `적 ${enemy.name}(${enemy.id}) 에 피해를 주는 행동이 없습니다 — 공격하지 않는 보스가 됩니다.`, where });
     }
   });
 

@@ -707,8 +707,13 @@ function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number)
     .map((entry) => entry.skillId);
 }
 
-function latestMonsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {
+/** 이 레벨까지 배운 기술 중 슬롯에 남는 최근 것. 플레이어 몬스터와 빈 적 행동이 같은 목록을 쓴다. */
+export function monsterSkillIdsAtLevel(species: MonsterSpeciesRecord, level: number): SkillId[] {
   return uniqueSkillIds(monsterSkillIdsForSpecies(species, level)).slice(-MONSTER_SKILL_MAX);
+}
+
+function latestMonsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {
+  return monsterSkillIdsAtLevel(species, level);
 }
 
 function newSkillsForLevelRange(
