@@ -15,6 +15,7 @@ import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
+import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { cloneGameMap } from "@/project/mapClone";
 import {
   appendToTree,
@@ -1176,9 +1177,16 @@ const setStartPosition: ToolDefinition = {
     if (!isPassable(draft, map, x, y)) {
       throw new ToolError(`시작 위치가 통행 불가 타일입니다: (${x}, ${y})`, { code: "start-impassable", mapId: map.id, x, y });
     }
+    const previous = draft.maps[draft.startMapId];
     draft.startMapId = map.id;
     draft.startPos = { x, y };
-    return { summary: `시작 위치 설정: ${map.name} (${x}, ${y})` };
+    // 새 장소로 시작을 옮기면 빈 시작 맵이 문도 이벤트도 없는 고아로 남기 쉽다(추리 도그푸딩 3·4회차).
+    // 지우는 건 파괴적이라 알려만 준다.
+    const warnings = previous && previous.id !== map.id && (previous.events?.length ?? 0) === 0
+      && collectMapLinkStats(draft, previous.id).playLinkCount === 0
+      ? [`이전 시작 맵 '${previous.name}'(${previous.id}) 은 이벤트도 드나드는 문도 없는 빈 맵으로 남았습니다 — 쓸 곳이 없으면 remove_map { mapId: "${previous.id}" } 로 지우고, 쓸 거면 문(create_transfer_pair)으로 이으세요.`]
+      : [];
+    return { summary: `시작 위치 설정: ${map.name} (${x}, ${y})`, ...(warnings.length > 0 ? { warnings } : {}) };
   },
 };
 
