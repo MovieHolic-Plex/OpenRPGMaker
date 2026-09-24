@@ -1374,3 +1374,10 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - PR1400(main병합3dd09c447)는 큰 브리지 요청을1MiB부터 gzip 전송하고 서버에서 비동기 gunzip으로 복원한다. wire128MiB/decoded256MiB 제한,손상/미지원 인코딩 거절,기존 인증/세션/충돌 경로를 유지한다. 작은 요청/keepalive/CompressionStream 미지원은 기존 JSON이다.
 - `check-bridge-gzip.mjs`는 정본을 읽기만 하며 별도 루프백 HTTP에서 실제 기준문서+자산패치141,499,825bytes를57,205,286bytes로 보내 전체 객체 일치를 확인했다. wire/decoded초과,손상/절단gzip,미지원 인코딩5건과 작은요청/keepalive/미지원브라우저fallback을 검사했다. 전체 테스트는 실행하지 않았다.
 - 요청37이 `Error in input stream`으로 실제 종료하고 미적용/변경없음 화면을 보존한 뒤9897 전용호스트에 수정된 브리지/decoder를 배포했다. 호스트1357042로 재기동했고 새 편집창ee36을 열었다. 전송 진단 통과와 실제 콘텐츠 저장 성공은 구분하며 정본 재로드 검사는 후속 확인 대상이다.
+
+### gzip 배포 후 별도 네트워크 실패 조사
+
+- 새창ee36의 실패 원문은 더 이상128MiB 오류가 아니라 `NetworkError when attempting to fetch resource.`였으며 이후 `온라인 저장을 사용할 수 없습니다.`로 바뀌었다. 호스트1357042는 계속active다. `firefox-store-error-log.json`에 원문을 보존했다.
+- 520 정본을 읽어517과 비교한 `after-bridge-restart-content-proof.json`에서 맵/DB/세션이 모두 일치하고20맵163이벤트를 유지했다. 전송 수정 이후 게임 저작 내용의 저장 성공으로 혼동하지 않는다.
+- 동일 창 재탐색 시 관찰기 자체의 await page.evaluate가 navigation으로 실패했다. 이 관찰기 오류를 게임 저장 오류로 집계하지 않고 해당 반복 계측을 제거했다. 다음 진단창71f1의 요청 기록에서는 브리지와 이미지여러개가 함께NS_ERROR_ABORT로 종료됐고,별도Firefox창의최초goto도NS_ERROR_ABORT였다. 원인은 미확정이다.
+- mdc-server는100.73.251.77로 해석되며 해당주소HTTP와Host헤더를 유지한127.0.0.1HTTP 둘 다200 응답했다. 실제live gzip진단은 첫 탐색 실패 때문에 실행되지 않았으므로성공으로 보고하지 않는다. Chromium 비교 진단을 시작했다. 이 단계에서는 추가 콘텐츠를 저장 완료로 세지 않는다.
