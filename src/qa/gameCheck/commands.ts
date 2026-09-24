@@ -65,7 +65,8 @@ const SOURCE_LABEL: Partial<Record<RecordSource, string>> = {
 /** 없는 참조가 곧 진행 불가·런타임 오류가 되는 참조. 나머지는 경고로 낸다. */
 const BLOCKING_SOURCES: ReadonlySet<RecordSource> = new Set(["actor", "troop", "map", "commonEvent", "item"]);
 /** 대상 없음(«파티 전체» 등)을 뜻하는 관례값. */
-const WILDCARD_IDS: ReadonlySet<string> = new Set(["party", "all", "0", ""]);
+// 「@player」 는 moveEvent 가 주인공을 움직이는 정본 대상(PLAYER_MOVE_TARGET), this-event 는 부른 이벤트 — 없는 이벤트가 아니다.
+const WILDCARD_IDS: ReadonlySet<string> = new Set(["party", "all", "0", "", "@player", "player", "this-event"]);
 
 function isEmpty(value: unknown): boolean {
   return value === undefined || value === null || (typeof value === "string" && value.trim() === "");
