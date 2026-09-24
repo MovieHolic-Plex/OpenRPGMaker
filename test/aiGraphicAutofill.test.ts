@@ -314,3 +314,24 @@ describe("add_companion actor 합류 이벤트 외형", () => {
     expect(joinPage?.graphic?.transparent).not.toBe(true);
   });
 });
+
+describe("타일 가구 위 조사 지점은 사람 그림을 세우지 않는다", () => {
+  it("그림 없는 기존 조사 지점을 대화 페이지로 고쳐도 투명하게 남는다", () => {
+    const ctx = context();
+    const mapId = ctx.project.startMapId;
+    const seeded = runTool(ctx, "upsert_event", {
+      mapId,
+      event: { id: "ev_safe", x: 3, y: 3, trigger: { kind: "action" },
+        pages: [{ conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, commands: [{ kind: "text", body: "철제 금고다." }] }] },
+    });
+    expect(seeded.ok, seeded.summary).toBe(true);
+    const result = runTool(ctx, "upsert_event", {
+      mapId,
+      event: { id: "ev_safe", pages: [{ conditions: [], trigger: { kind: "action" }, graphic: {}, commands: [{ kind: "text", body: "다이얼이 달려 있다." }] }] },
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const page = ctx.project.maps[mapId]?.events.find((entry) => entry.id === "ev_safe")?.pages?.[0];
+    expect(page?.graphic?.sprite).toBeUndefined();
+    expect((result.diff?.warnings ?? []).join(" ")).not.toContain("주민 기본 charset");
+  });
+});
