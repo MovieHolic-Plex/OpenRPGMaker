@@ -116,7 +116,7 @@ async function readZipEntry(bytes: Uint8Array, entry: ZipEntry): Promise<Uint8Ar
   const compressed = bytes.subarray(start, start + entry.compressedSize);
   if (entry.method === 0) return compressed;
   if (entry.method !== 8) throw new Error("이 압축 방식은 열 수 없습니다.");
-  const stream = new Blob([compressed]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  const stream = new Blob([compressed.slice()]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 

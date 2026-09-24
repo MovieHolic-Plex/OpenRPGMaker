@@ -1,5 +1,5 @@
 import { assetPageUrl } from "@/editor/assetBrowser/assetPageAllowlist";
-import { lookupPackCatalog, packTileSize, readLearnedPackCatalog, rememberPackCatalog, sha256Hex, type PackTileSize } from "@/editor/assetBrowser/packCatalog";
+import { lookupPackCatalog, readLearnedPackCatalog, rememberPackCatalog, sha256Hex, type PackTileSize } from "@/editor/assetBrowser/packCatalog";
 import { extractPackImage, listPackImages, suggestPackImage, type PackImage } from "@/editor/assetBrowser/packImages";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -70,7 +70,7 @@ export function openAssetSourceBrowser(onImportFile: (request: AssetSourceImport
     stopListen = bridge.onDownload((payload) => {
       const event = readDownloadEvent(payload);
       if (event === null) return;
-      if (event.kind === "rejected") {
+      if ("kind" in event) {
         toast(event.message, "error");
         return;
       }
@@ -252,7 +252,7 @@ async function useSheet(pack: ReceivedPack, image: PackImage, onUse: (file: File
     const extension = base.includes(".") ? base.slice(base.lastIndexOf(".")) : ".png";
     const title = pack.pageTitle.replace(/[\\/:*?"<>|]+/g, " ").replace(/\s+/g, " ").trim();
     const name = title.length > 0 ? `${title.slice(0, 80)}${extension}` : base;
-    onUse(new File([bytes], name, { type: mimeFor(base) }));
+    onUse(new File([bytes.slice()], name, { type: mimeFor(base) }));
   } catch (error) {
     if (!(error instanceof Error)) throw error;
     toast(error.message, "error");
@@ -262,7 +262,7 @@ async function useSheet(pack: ReceivedPack, image: PackImage, onUse: (file: File
 async function sheetPreview(pack: ReceivedPack, image: PackImage): Promise<HTMLImageElement | null> {
   try {
     const bytes = await extractPackImage(pack.fileName, pack.bytes, image.name);
-    const url = URL.createObjectURL(new Blob([bytes], { type: mimeFor(image.name) }));
+    const url = URL.createObjectURL(new Blob([bytes.slice()], { type: mimeFor(image.name) }));
     previewUrls.push(url);
     return el("img", { attrs: { src: url, alt: image.name } });
   } catch (error) {
