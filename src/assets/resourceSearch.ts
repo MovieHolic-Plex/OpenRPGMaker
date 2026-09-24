@@ -230,21 +230,25 @@ function candidatesForKind(kind: ResourceSearchKind, options: ResourceSearchOpti
       return [
         ...EASYRPG_BACKDROP_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,
+          resourceId: asset.id,
           label: asset.name,
           tags: moodTagsForAsset(asset),
         })),
         ...SCARLOXY_BACKDROP_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,
+          resourceId: asset.id,
           label: asset.name,
           tags: ["backdrop", "battle", "scarloxy", ...asset.tags, ...idWords(asset.id)],
         })),
         ...OGA_BACKDROP_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,
+          resourceId: asset.id,
           label: asset.name,
           tags: ["backdrop", "battle", "opengameart", ...asset.tags, ...idWords(asset.id)],
         })),
         ...OGA_CRAFTPIX_BACKDROP_ASSETS.map((asset) => ({
           id: `backdrop:${asset.id}`,
+          resourceId: asset.id,
           label: asset.name,
           tags: ["backdrop", "battle", "opengameart", "craftpix", ...idWords(asset.id)],
         })),

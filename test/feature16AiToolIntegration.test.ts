@@ -217,12 +217,12 @@ describe('published schema and optional climate validator', () => {
     expect(getTool('upsert_enemy')!.parameters.properties!.enemy!.properties!.rewards!.properties!.drops).toHaveProperty('maxItems', 64);
   });
   it.each([
-    { mode: 'fixed', weather: 'typhoon', intensity: 0.5 }, { mode: 'fixed', weather: 'rain' },
+    { mode: 'fixed', weather: 'typhoon', intensity: 0.5 }, { mode: 'fixed' },
     { mode: 'fixed', weather: 'snow', intensity: 2 }, { mode: 'indoors' }, { mode: 'indoor', weather: 'rain' },
   ])('rejects invalid nested climate %j before a caller normalizes it', climate => {
     expect(() => validateMapClimateInput(climate)).toThrow();
   });
-  it.each([{ mode: 'inherit' }, { mode: 'indoor' }, { mode: 'fixed', weather: 'snow', intensity: 0.6 }])('accepts climate %j', climate => {
+  it.each([{ mode: 'inherit' }, { mode: 'indoor' }, { mode: 'fixed', weather: 'snow', intensity: 0.6 }, { mode: 'fixed', weather: 'fog' }])('accepts climate %j', climate => {
     expect(() => validateMapClimateInput(climate)).not.toThrow();
   });
 });

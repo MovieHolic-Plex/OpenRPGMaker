@@ -117,6 +117,8 @@ export function finalizeSkillCombatPatch(merged: RecordValue, patchValue: unknow
 export function validateMapClimateInput(value: unknown): void {
   validate(value, mapClimateSchema, 'climate');
   const climate = record(value, 'climate');
-  if (climate.mode === 'fixed') requireFields(climate, ['weather', 'intensity'], 'climate');
+  // intensity 는 normalizeMapClimate 가 0.5(none 이면 0)로 채운다 — 빠졌다고 호출 전체(같이 보낸 loop·bgm 까지)를 버리지 않는다
+  // (2026-09-24 꿈 세계 dream-6: climate {mode:fixed, weather:fog} 두 번 거부로 반복 맵 설정도 사라졌다).
+  if (climate.mode === 'fixed') requireFields(climate, ['weather'], 'climate');
   else if (climate.weather !== undefined || climate.intensity !== undefined) invalid('climate', 'weather/intensity는 fixed 모드에서만 사용합니다.');
 }
