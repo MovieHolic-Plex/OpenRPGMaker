@@ -1250,6 +1250,31 @@ function buildVerificationScene(
   return { mapId: draft.startMapId, start: { x: draft.startPos.x, y: draft.startPos.y }, steps };
 }
 
+/** 벽·가구(통행 불가 칸)가 이 비율보다 적으면 「무대 없음」 으로 본다. 지은 실내는 30~65%, 맨땅 판은 0~1% 였다. */
+const BARREN_STAGE_BLOCKED_RATIO = 0.05;
+
+/**
+ * 사건 무대가 맨땅인가. manor-mystery 에서 두 판(헤드리스·브라우저)이 「저택 1층(서재·거실·주방)」 을
+ * 빈 시작 맵 위 나무 바닥 사각형·흙길로 흉내 내고 인물을 세웠다 — 벽도 가구도 없고 실내에 비가 내렸다.
+ * 게이트가 아니라 경고다: 저작은 그대로 두고 무대를 지을 도구를 짚는다.
+ */
+function barrenStageWarnings(draft: Project, spec: MysteryCase): string[] {
+  const mapIds = new Set(placements(spec).map((placement) => placement.at.mapId));
+  const out: string[] = [];
+  for (const mapId of mapIds) {
+    const map = draft.maps[mapId];
+    if (!map) continue;
+    let blocked = 0;
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!isPassable(draft, map, x, y)) blocked += 1;
+    const ratio = blocked / Math.max(1, map.width * map.height);
+    if (ratio >= BARREN_STAGE_BLOCKED_RATIO) continue;
+    out.push(`사건 무대 '${map.name ?? map.id}'(${map.id}) 에 벽·가구가 거의 없습니다(통행 불가 ${(ratio * 100).toFixed(1)}%) — 방·건물 없이 맨땅 위에 인물과 조사 지점만 서 있습니다. `
+      + `저택·여관 같은 실내 장면이면 place_concept(plan, 새 mapId) 로 방을 나눈 실내를, 외장과 함께면 author_house(interior:"linked-interior") 로 짓고, `
+      + `그 맵 좌표로 author_mystery_case 를 다시 불러 사건을 옮기세요(같은 caseId 면 이벤트를 갈아 끼웁니다). 바닥 타일 fill_region 으로 방을 흉내 내지 마세요.`);
+  }
+  return out;
+}
+
 function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const warnings: string[] = [];
   const removed = removePreviousCaseEvents(draft, spec);
@@ -1259,6 +1284,7 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const suspectEvents = placeSuspects(draft, spec, warnings);
   const accuserEvent = placeAccuser(draft, spec, warnings);
   assertEndingsGated(draft, spec, [...clueEvents, ...suspectEvents, accuserEvent]);
+  warnings.push(...barrenStageWarnings(draft, spec));
   const culprit = spec.suspects.find((suspect) => suspect.id === spec.culprit)!;
   // 시나리오는 검증 보조물이다 — 못 만들어도 저작은 성공시키고 사유를 경고로 남긴다(run6: 여기서 던져 저작 전체가 실패했다).
   let verificationScene: SceneTestInput | null = null;
@@ -1429,6 +1455,7 @@ const authorMysteryCase: ToolDefinition = {
   name: "author_mystery_case",
   description:
     "추리/살인사건/탐정 게임은 author_mystery_case 로 만든다(place_examine_hotspots·place_npc·define_ending 을 따로 조립하지 말 것). " +
+    "사건 무대(저택·여관 실내 등)가 아직 없으면 먼저 place_concept·author_house 로 방이 있는 맵을 짓고 그 좌표로 명세를 쓴다. " +
     "사건 명세 하나로 증거 아이템(스위치 없음)·한 번만 주는 조사 지점·용의자 탐문(알리바이/동기/증언/증거 대면)·" +
     "지목 NPC(증거 부족=힌트, 필수 증거 전부=이름 목록→solved/wrong 엔딩)를 컴파일한다. 기존 주민은 suspects[].eventId 로 재사용(시간표 정리). " +
     "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. 저작 결과 data.verificationScene(끝까지 도는 run_scene_test 입력)을 그대로 run_scene_test 에 넣어 플레이 검증.",
