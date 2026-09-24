@@ -12,6 +12,7 @@ import { inspectExternalTileGrounding } from '@/project/externalTileGrounding';
 import { pixelArtWorldSchoolBuildingGuide } from '@/project/pixelArtWorldSchoolBuilding';
 import layoutGuidance from '@/assets/pixelArtWorldLayoutGuidance.json';
 import { attachPixelArtWorldBathGymObjects } from '@/project/pixelArtWorldBathGym';
+import { appendPixelArtWorldRetrotownExteriors } from './pixelArtWorldRetrotownExteriors';
 import { appendPixelArtWorldMansionExteriors } from './pixelArtWorldMansionExteriors';
 import { appendPixelArtWorldMansionInteriors } from './pixelArtWorldMansionInteriors';
 import { appendPixelArtWorldJapaneseInteriors } from './pixelArtWorldJapaneseInteriors';
@@ -59,7 +60,7 @@ export async function prepareExternalTileset(file: File, pack: ExternalTilesetPa
   attachPixelArtWorldSchoolSewer(pack, image, tileset);
   validateTilesetReferences(tileset.referenceDocuments);
   attachPixelArtWorldBathGymObjects(pack, tileset);
-  const composed = appendPixelArtWorldMansionExteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldMansionInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldJapaneseInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldComposites(pack, image, tileset, image);
+  const composed = appendPixelArtWorldRetrotownExteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldMansionExteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldMansionInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldJapaneseInteriors(pack, image, tileset, createReferences, renderExample) ?? appendPixelArtWorldComposites(pack, image, tileset, image);
   return { dataUrl: composed?.dataUrl ?? dataUrl, sourceDataUrl: dataUrl, assetId, tileset: composed?.tileset ?? tileset,
     imageWidth: composed?.imageWidth ?? pack.width, imageHeight: composed?.imageHeight ?? pack.height };
 }

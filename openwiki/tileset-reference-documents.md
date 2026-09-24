@@ -19,6 +19,7 @@
 이자카야·일본식 방의 원본 보존/3층 합성/객체·장소 문서는 [일본식 실내 지침](pixel-art-world-japanese-interiors.md)을 따른다.
 저택 내부5판본의 객체 비교/전체 가구/보석상/상판 조립은 [저택 내부 지침](pixel-art-world-mansion-interiors.md)을 따른다.
 저택 외관3판본의 지붕/전체건물/장식발코니 경계는 [외관 지침](pixel-art-world-mansion-exteriors.md)을 따른다.
+목욕탕·레트로 동네 외관2원본의 whole 지붕/입구/문틀 경계는 [레트로 외관 지침](pixel-art-world-retrotown-exteriors.md)을 따른다.
 
 자료집 → 맵 → 타일 → **외부 타일셋 다운로드**에서 Pixel Art World 도서관·사무실,
 도시 상가·주택가, 학교 내장·외관·특별실, 의원·편의점·식당·주택 내부까지 11팩을 지원한다. 다운로드는 제작자 페이지를 열고, 사용자가 받은 PNG를

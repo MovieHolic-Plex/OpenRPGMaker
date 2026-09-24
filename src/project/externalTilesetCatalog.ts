@@ -7,6 +7,7 @@ import homeCatalog from '@/assets/pixelArtWorldHomeCatalog.json';
 import staticExpansionCatalog from '@/assets/pixelArtWorldStaticExpansionCatalog.json';
 import nativeComplementsCatalog from '@/assets/pixelArtWorldNativeComplementsCatalog.json';
 import hospitalityComplementsCatalog from '@/assets/pixelArtWorldHospitalityComplementsCatalog.json';
+import retrotownExteriorsCatalog from '@/assets/pixelArtWorldRetrotownExteriorsCatalog.json';
 import mansionExteriorsCatalog from '@/assets/pixelArtWorldMansionExteriorsCatalog.json';
 import mansionInteriorsCatalog from '@/assets/pixelArtWorldMansionInteriorsCatalog.json';
 import japaneseInteriorsCatalog from '@/assets/pixelArtWorldJapaneseInteriorsCatalog.json';
@@ -62,7 +63,7 @@ export interface ExternalTileScene {
   doors?: { sceneId: string; x: number; y: number; approach: { x: number; y: number } }[];
   doorways?: { from: string; to: string; x: number; y: number; width: number; height: number }[];
 }
-export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog, ...staticExpansionCatalog, ...nativeComplementsCatalog, ...hospitalityComplementsCatalog, ...bathGymCatalog, ...japaneseInteriorsCatalog, ...mansionInteriorsCatalog, ...schoolSewerCatalog, ...mansionExteriorsCatalog];
+export const EXTERNAL_TILESET_PACKS: readonly ExternalTilesetPack[] = [...catalog, ...urbanCatalog, ...schoolCatalog, ...facilityCatalog, ...homeCatalog, ...staticExpansionCatalog, ...nativeComplementsCatalog, ...hospitalityComplementsCatalog, ...bathGymCatalog, ...japaneseInteriorsCatalog, ...mansionInteriorsCatalog, ...schoolSewerCatalog, ...mansionExteriorsCatalog, ...retrotownExteriorsCatalog];
 
 export function validateExternalTileScenes(pack: ExternalTilesetPack): void {
   const count = pack.width * pack.height / (pack.tileSize ** 2);
