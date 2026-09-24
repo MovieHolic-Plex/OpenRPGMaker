@@ -1,5 +1,7 @@
 import { animationStripForTile } from "./chipsetAnimation";
 import { CHIPSET_TILE_GROUPS } from "./chipsetMapping";
+import { RETRO_WORLD_TILE_OFFSET } from "./constants";
+import { isCombinedTownRetroWorldTileset } from "./combinedTownRetroWorld";
 import { worldCoastAutotileGroup, isWorldTileset } from "./worldCoastMapping";
 import { isWorldSnowTerrain } from "./worldTerrainAutotiles";
 import type { TilesetDef } from "../types";
@@ -96,7 +98,11 @@ const QUARTER_GEOMETRY = {
 
 export function isLakeAutotileTile(tile: number, tileset?: Pick<TilesetDef, "image" | "autotileGroups" | "tileGrafts">): boolean {
   if (isWorldTileset(tileset)) return Boolean(worldCoastAutotileGroup(tileset!)?.memberTileIds.includes(tile));
-  return LAKE_AUTOTILE_TILES.has(tile);
+  if (LAKE_AUTOTILE_TILES.has(tile)) return true;
+  // 혼합 시트의 아래 반쪽은 같은 물 블록을 +480 에 둔다. 그림이 같으므로 합본 마을 쿼터를 그대로 쓴다.
+  if (!isCombinedTownRetroWorldTileset(tileset)) return false;
+  const local = tile - RETRO_WORLD_TILE_OFFSET;
+  return local >= 0 && local < RETRO_WORLD_TILE_OFFSET && LAKE_AUTOTILE_TILES.has(local);
 }
 
 export function lakeAutotileQuarterSources(
@@ -109,7 +115,7 @@ export function lakeAutotileQuarterSources(
   const world = isWorldTileset(tileset);
   const coast = world ? worldCoastAutotileGroup(tileset!) : undefined;
   const skin = world ? LAKE_AUTOTILE_TILE : skinForStoredTile(map.lowerTiles[y * map.width + x]);
-  const waterAt = (px: number, py: number) => hasLakeWater(map, px, py, world, coast?.connectTileIds);
+  const waterAt = (px: number, py: number) => hasLakeWater(map, px, py, world, coast?.connectTileIds, tileset);
   const north = waterAt(x, y - 1);
   const south = waterAt(x, y + 1);
   const west = waterAt(x - 1, y);
@@ -221,9 +227,16 @@ export function sourceQuarterForLakeChip(
   return destQuarter;
 }
 
-function hasLakeWater(map: LakeAutotileMap, x: number, y: number, world: boolean, worldConnections?: readonly number[]): boolean {
+function hasLakeWater(
+  map: LakeAutotileMap,
+  x: number,
+  y: number,
+  world: boolean,
+  worldConnections?: readonly number[],
+  tileset?: Pick<TilesetDef, "image" | "autotileGroups" | "tileGrafts">,
+): boolean {
   // The world canvas ends in open ocean, not an invented strip of land.
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return world;
   const tile = map.lowerTiles[y * map.width + x];
-  return typeof tile === "number" && (world ? Boolean(worldConnections?.includes(tile)) : isLakeAutotileTile(tile));
+  return typeof tile === "number" && (world ? Boolean(worldConnections?.includes(tile)) : isLakeAutotileTile(tile, tileset));
 }
