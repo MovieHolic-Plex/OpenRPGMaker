@@ -303,6 +303,34 @@ function eventLook(event: GameEvent | undefined): EventPageGraphic | undefined {
   return graphic ? structuredClone(graphic) : undefined;
 }
 
+/** 이름에 이 낱말이 있으면 말하는 존재로 본다(주민 그림을 세운다). */
+const SPEAKING_BEING_WORDS = /사람|주민|아이|소녀|소년|아가씨|청년|노인|할머니|할아버지|아저씨|아주머니|아줌마|여인|남자|여자|상인|점원|주인|손님|경비|병사|기사|마법사|의사|박사|탐정|집사|신부|수녀|왕|공주|왕자|어부|농부|사냥꾼|그림자|유령|요정|정령|괴물|몬스터|인형|villager|person|npc|man|woman|girl|boy|guard|ghost/iu;
+
+/**
+ * 투명 action 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 「기억의 거울」「타오르는 촛대」「버려진 우산」「고양이 석상」「오래된 사진 액자」가
+ * 전부 주민 기본 charset(people1)으로 저장돼, 플레이어는 거울·촛대 자리에 서 있는 마을 사람을 봤다. 화자(speaker)가
+ * 있는 대사나 인물 낱말이 든 이름이면 null(주민 그림 유지). 사물이면 이름 낱말과 라벨 낱말이 정확히 겹치는
+ * charset(문·상자…)을, 없으면 투명을 준다.
+ */
+function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graphic: EventPage["graphic"]; label: string } | null {
+  if (event.characterId) return null;
+  if ((page.commands ?? []).some((command) => command.kind === "text" && typeof command.speaker === "string" && command.speaker.trim())) return null;
+  const name = (event.name ?? "").trim();
+  if (!name || SPEAKING_BEING_WORDS.test(name)) return null;
+  // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
+  // 산 고양이를 고르면 안 된다.
+  const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+  for (const hit of head ? searchResources("charset", head).slice(0, 6) : []) {
+    const labelWords = hit.label.split(/[\s()（）·,/]+/u).filter(Boolean);
+    if (!labelWords.includes(head!)) continue;
+    const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
+    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+  }
+  return { graphic: { transparent: true }, label: "" };
+}
+
 function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
   if (page.trigger?.kind !== "action" || page.priority === "below") return false;
   if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
@@ -344,16 +372,25 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
       (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
     )?.graphic;
     const previousLook = siblingGraphic ? undefined : PREVIOUS_EVENT_LOOK.get(event);
-    page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
-    warnings?.push(
-      siblingGraphic
-        ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
-        : previousLook
-        ? `${event.id}.${pageId}: 새 페이지에 graphic 이 없어 이 이벤트가 쓰던 charset 을 그대로 이어 썼습니다(외형 유지).`
-        : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
-          `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
-          `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
-    );
+    const object = siblingGraphic || previousLook ? null : objectEventGraphic(event, page);
+    if (object) {
+      page.graphic = object.graphic;
+      warnings?.push(object.graphic.transparent
+        ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
+          `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
+        : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
+    } else {
+      page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
+      warnings?.push(
+        siblingGraphic
+          ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
+          : previousLook
+          ? `${event.id}.${pageId}: 새 페이지에 graphic 이 없어 이 이벤트가 쓰던 charset 을 그대로 이어 썼습니다(외형 유지).`
+          : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
+            `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
+            `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
+      );
+    }
   } else if (page.graphic === undefined) {
     page.graphic = {};
     filled.push("graphic");
@@ -871,7 +908,12 @@ const placeNpc: ToolDefinition = {
         : typeof dialogue === "object" && dialogue !== null && !Array.isArray(dialogue)
           && Object.keys(dialogue).every((key) => key === "text") && typeof (dialogue as { text?: unknown }).text === "string"
           ? (dialogue as { text: string }).text.trim() : null;
-      if (dialogue === undefined) {
+      // 최상위 commands 는 스키마 밖이지만 모델이 upsert_event 처럼 자주 보낸다. 버리고 인사 한 줄을 깔면
+      // 저작한 대사가 조용히 사라진다(2026-09-24 꿈 세계: 「말없이 춤춘다」가 「그림자 사람 1입니다. 안녕하세요.」로).
+      if (Array.isArray(args.commands) && args.commands.length > 0 && dialogue === undefined) {
+        pagesArg = [{ commands: args.commands }];
+        pagesDefaulted = "최상위 commands → pages[0].commands 로 옮김";
+      } else if (dialogue === undefined) {
         pagesArg = [{ lines: [`${name}입니다. 안녕하세요.`] }];
         pagesDefaulted = "pages 생략 → 인사 한 줄 기본 적용";
       } else if (plainText) {
