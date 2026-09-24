@@ -131,6 +131,8 @@ UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip�
 회원 쿠키를 메모리로 얻은 뒤 Chromium을 닫는다. 같은 origin의 공식 HTTP dispatcher를
 Node에서 호출하며 토큰/쿠키를 로그나 파일에 기록하지 않는다. 협상된 gzip/채널별 한도와
 `expectedSha` CAS를 유지하고 실패한 저장을 자동 재시도하지 않는다. DB 직접 쓰기는 없다.
+`read-pixel-art-world-host.mjs`도 같은 클라이언트로 대용량 정본을 읽고 PAW 자산의
+ref SHA와 실제 바이트를 대조한 뒤 private portable/읽기 영수증을 만든다.
 `install-pixel-art-world-shared-host.mjs`는 설치 전 backup, 저장 후 실제 재로드,
 맵/spatial 해시 보존과 모든 대상 자산 바이트 비교를 완료해야 영수증을 작성한다.
 PAW의 기존 Chromium 설치는 `Target crashed` 후 저장되지 않았고 이 경로로 revision59에
