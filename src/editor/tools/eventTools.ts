@@ -2122,10 +2122,62 @@ const placeTrap: ToolDefinition = {
   },
 };
 
+/** 주인공 걷기 한 칸(PlayScene.moveDurationMs). */
+const PLAYER_WALK_STEP_MS = 160;
+const CHASER_FREQUENCY = 8;
+
+/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (playScenePageMoveRoutes.ts 와 같은 식). */
+function chaseStepMs(speed: number, frequency: number): number {
+  const rank = (value: number) => Math.min(8, Math.max(1, Math.trunc(value)));
+  return Math.max(80, 640 - rank(speed) * 80) + Math.max(80, 1040 - rank(frequency) * 160);
+}
+
+/**
+ * 은신처 칸들을 실제 은신 이벤트로 만든다(configure_object_behavior 의 hiding 과 같은 페이지 모양).
+ * 칸에 조사 이벤트가 있으면 그 페이지들을 은신처로 바꾸고, 없으면 투명 이벤트를 새로 둔다.
+ */
+function placeHidingSpots(draft: Project, map: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
+  const eventIds: string[] = [];
+  const warnings: string[] = [];
+  if (!Array.isArray(raw)) return { eventIds, warnings };
+  for (const entry of raw) {
+    if (entry === null || typeof entry !== "object" || typeof (entry as { x?: unknown }).x !== "number" || typeof (entry as { y?: unknown }).y !== "number") { warnings.push("hidingSpots 항목 무시: {x,y} 필요"); continue; }
+    const x = Math.trunc((entry as { x: number }).x), y = Math.trunc((entry as { y: number }).y);
+    if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
+    const hideIn = (page: EventPage): void => {
+      page.interaction = { kind: "hiding" };
+      page.movement = { ...page.movement, type: "fixed" };
+      page.trigger = { kind: "action" };
+      page.priority = "same";
+      page.overlapForbidden = true;
+    };
+    const existing = map.events.find((event) => event.id !== chaserId && event.x === x && event.y === y && (event.pages ?? []).length > 0);
+    if (existing) {
+      for (const page of existing.pages ?? []) hideIn(page);
+      if ((existing.pages ?? []).some((page) => page.commands.length > 0)) warnings.push(`은신처 '${existing.id}' 의 조사 명령은 숨기 동작에 가려 실행되지 않습니다.`);
+      eventIds.push(existing.id);
+      continue;
+    }
+    const id = genId("ev_hiding");
+    const page: EventPage = {
+      id: `${id}_hide`, name: "은신처", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" },
+      priority: "same", overlapForbidden: true, animationType: "fixedGraphic", movement: PASSIVE, commands: [],
+    };
+    hideIn(page);
+    const event: GameEvent = { id, x, y, trigger: { kind: "action" }, commands: [], pages: [page] };
+    assertEventShape(event);
+    upsertEventIntoMap(map, event);
+    eventIds.push(id);
+  }
+  return { eventIds, warnings };
+}
+
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본.",
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
+    "speed 는 이 엔진 기준이다(RPG Maker 의 4=보통과 다르다): 6=주인공 걷기의 2/3(기본·긴장감 있는 추격), 7=걷기와 같음, 5=절반쯤, 4 이하=걷기의 절반도 안 돼 추격이 되지 않는다. " +
+    "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y} 를 주면 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2147,12 +2199,14 @@ const makeChaseScene: ToolDefinition = {
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
+      hidingSpots: { type: "array", items: COORD_SCHEMA, description: "{x,y}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
     },
     required: ["mapId", "chaser"],
   },
   invalidArgsExample: {
     mapId: "map1",
     chaser: { at: { x: 8, y: 4 }, graphic: { query: "monster" }, speed: 6, sightRange: 8 },
+    hidingSpots: [{ x: 2, y: 3 }],
     killOnTouch: true,
     safeZone: { x: 1, y: 1, w: 3, h: 2 },
     activateSwitch: "sw_chase_on",
@@ -2182,6 +2236,15 @@ const makeChaseScene: ToolDefinition = {
       map.safeZones = [...(map.safeZones ?? []), safeZone];
     }
     const speed = Number.isFinite(chaser.speed) ? Math.max(1, Math.min(8, Math.trunc(chaser.speed ?? 6))) : 6;
+    // 추격자의 한 칸 = 걸음 트윈(speed) + 다음 걸음까지 대기(frequency). 예전엔 frequency=speed 라
+    // speed 3 이 400+560ms/칸 — 주인공 걷기(160ms)의 1/6 속도로 걸어와 추격이 되지 않았다(2026-09-24).
+    // 추격자는 쉬지 않고 쫓으므로 대기는 최소(8)로 두고 보폭은 speed 로만 정한다.
+    const paceMs = chaseStepMs(speed, CHASER_FREQUENCY);
+    // 스위치로 깨우는 추격(「금고를 열자 달려온다」)은 주인공이 벽 너머에 있어도 와야 한다. 추적 정책을 안 정했으면
+    // persistent 로 둔다 — lastSeen 은 직접 봐야 움직여서, 깨운 추격자가 복도에 가만히 서 있었다(2026-09-24).
+    const parsedPursuit = args.pursuit === undefined ? undefined : parsePursuit(args.pursuit);
+    const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
+      ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
     const event: GameEvent = {
       id,
@@ -2202,10 +2265,10 @@ const makeChaseScene: ToolDefinition = {
           movement: {
             type: "chase",
             speed,
-            frequency: speed,
+            frequency: CHASER_FREQUENCY,
             ...(chaser.sightRange !== undefined ? { sightRange: Math.max(0, Math.trunc(chaser.sightRange)) } : {}),
             pathfind: true,
-            ...(args.pursuit !== undefined ? { pursuit: parsePursuit(args.pursuit) } : {}),
+            ...(pursuit ? { pursuit } : {}),
           },
           commands,
         },
@@ -2214,13 +2277,17 @@ const makeChaseScene: ToolDefinition = {
     assertEventShape(event);
     upsertEventIntoMap(map, event);
     const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
+    const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
+    const ratio = PLAYER_WALK_STEP_MS / paceMs;
     const warnings = [
       ...(chaser.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
       ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
+      ...(ratio < 0.5 ? [`추격자 속도 ${speed} 은 한 칸 ${paceMs}ms — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)의 ${Math.round(ratio * 100)}% 라 걸어서도 쉽게 따돌립니다. 긴장감 있는 추격은 speed 6(걷기의 2/3), 같은 속도는 7.`] : []),
+      ...hiding.warnings,
     ];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
-      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
