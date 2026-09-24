@@ -15,7 +15,7 @@ import {
   DEFAULT_TILESET_TEXTURE_KEY,
   LEGACY_RM_TILESET_TEXTURE_KEY,
 } from "@/project/defaults/constants";
-import { DUNGEON_TEXTURE_KEY, INTERIOR_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
+import { INTERIOR_TEXTURE_KEY, isDungeonSheetTexture } from "@/project/tilesetHarness/themePacks";
 import { isWorldTileset, isWorldAnimatedTile } from "@/project/defaults/worldCoastMapping";
 import { isCombinedTownHalfTile, isCombinedTownRetroWorldTileset } from "@/project/defaults/combinedTownRetroWorld";
 import { store } from "@/project/store";
@@ -91,7 +91,7 @@ export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
 export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean {
   return isWorldTileset(tileset) || isDefaultTilesetTexture(tileset)
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
-    || (tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY);
+    || (tileset.image.type === "bundled" && isDungeonSheetTexture(tileset.image.id));
 }
 
 /**

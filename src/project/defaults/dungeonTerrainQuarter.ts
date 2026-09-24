@@ -1,4 +1,4 @@
-import { DUNGEON_TEXTURE_KEY } from "@/project/tilesetHarness/themePacks";
+import { isDungeonSheetTexture } from "@/project/tilesetHarness/themePacks";
 import { dungeonTerrainBlockRoles } from "./dungeonTerrainAutotiles";
 import type { TerrainQuarterKit } from "./terrainQuarterAutotile";
 import type { TilesetDef } from "../types";
@@ -32,7 +32,7 @@ function buildKits(): readonly TerrainQuarterKit[] {
 }
 
 export function isDungeonQuarterTileset(tileset: Pick<TilesetDef, "image">): boolean {
-  return tileset.image.type === "bundled" && tileset.image.id === DUNGEON_TEXTURE_KEY;
+  return tileset.image.type === "bundled" && isDungeonSheetTexture(tileset.image.id);
 }
 
 /** 던전 타일 그림판이면 쿼터 킷 12종, 아니면 null. */

@@ -116,6 +116,11 @@ export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
   // 장소 「개울 건너 숲성 마을」의 생성 건물(설계도 방식)·손 도트 소품 시트. 숲마을 타일셋이 tileGrafts 로 뒤에 붙인다.
   // 재생성: scripts/asset-gen/forest-harmony-buildings/publish_place.py
   { textureKey: FOREST_FANTASY_TOWN_TEXTURE_KEY, path: "assets/forest-harmony/fantasy-town-buildings.png", name: "개울 건너 숲성 마을 · 생성 건물·소품" },
+  // 던전 칩셋을 칸 번호 그대로 다시 칠한 네 장(scripts/content/build-rpg-dungeon-sheets.py) — 던전 장소(tiledata/rpg-dungeons) 사본만 쓴다.
+  { textureKey: "tex_oprn_dungeon_desert", path: "assets/rpg-dungeons/desert-chipset.png", name: "던전 · 사암 피라미드 (재칠)" },
+  { textureKey: "tex_oprn_dungeon_sea", path: "assets/rpg-dungeons/sea-chipset.png", name: "던전 · 해저 동굴 (재칠)" },
+  { textureKey: "tex_oprn_dungeon_lair", path: "assets/rpg-dungeons/lair-chipset.png", name: "던전 · 용의 둥지 (재칠)" },
+  { textureKey: "tex_oprn_dungeon_cave", path: "assets/rpg-dungeons/cave-chipset.png", name: "던전 · 동굴 물웅덩이 (재칠)" },
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
