@@ -652,6 +652,63 @@
         "role": "못지기 집",
         "reason": "마지막으로 남은 못지기가 못가 약초를 손질하며 석상을 돌본다"
       }
+    },
+    "nuleolmok-harbor-town": {
+      "29,7": {
+        "activity": "herbs",
+        "role": "신전 약초집",
+        "reason": "윗단 서쪽 신전 구역 끝 집이 교회에 쓸 약초를 기르고 손질한다"
+      },
+      "45,5": {
+        "activity": "field-tending",
+        "role": "밭 관리집",
+        "reason": "윗단 동쪽 농가 구역 첫 집이 바로 아래 큰 밭(52,14)을 돌본다"
+      },
+      "63,5": {
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "윗단 동쪽 끝 농가는 집 옆에 제 텃밭을 둔다"
+      },
+      "5,30": {
+        "activity": "storage",
+        "role": "장터 창고",
+        "reason": "서쪽 입구 옆 집을 장터 좌판에 댈 물자 창고로 쓴다"
+      },
+      "15,31": {
+        "activity": "woodwork",
+        "role": "목공 작업집",
+        "reason": "장터 북쪽 집은 좌판·통을 짜는 목공 마당을 둔다"
+      },
+      "4,47": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "아랫단 남서쪽 주거 마당은 세탁·건조 공간"
+      },
+      "15,47": {
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "남서쪽 가운데 집은 집 옆 텃밭을 가꾼다"
+      },
+      "27,48": {
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "남서쪽 동쪽 끝 주거는 세탁·건조 마당만 둔다"
+      },
+      "48,41": {
+        "activity": "fishing",
+        "role": "어업 준비집",
+        "reason": "부두 뿌리 바로 위 집에서 어구와 어획 용기를 준비한다"
+      },
+      "57,29": {
+        "activity": "storage",
+        "role": "항구 창고",
+        "reason": "동쪽 계단 아래 집을 배에서 내린 짐을 두는 창고로 쓴다"
+      },
+      "63,40": {
+        "activity": "woodwork",
+        "role": "배 목수집",
+        "reason": "항구 동쪽 물가 집에서 배에 쓸 목재를 다룬다"
+      }
     }
   },
   "doorway": {

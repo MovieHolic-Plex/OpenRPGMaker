@@ -11,7 +11,7 @@
 //     forest edges (lib/village-fullness.mjs).
 // Every step re-checks that every door, stair, bridge end, landmark gate and civic use cell is reachable from the
 // start, that the terraces are reachable only by their stairs, and the catalog's own household/civic/cliff checks.
-// Usage: node scripts/content/fill-diverse-villages.mjs <catalog-before.json> <catalog-out.json> [--only=mapId]
+// Usage: node scripts/content/fill-diverse-villages.mjs <catalog-before.json> <catalog-out.json> [--only=mapId] [--add=villages.json]
 //   (the input is the revision-13 catalog: git show afd4fb604:tiledata/forest-villages/diverse/catalog.json)
 import fs from "node:fs";
 import assert from "node:assert/strict";
@@ -27,8 +27,18 @@ import { ensureHarborGrafts, loadHarborKit, placeHarbor } from "./lib/village-ha
 
 const args = process.argv.slice(2), only = args.find((a) => a.startsWith("--only="))?.slice(7);
 const [input, output] = args.filter((a) => !a.startsWith("--"));
-if (!input || !output) throw Error("Usage: fill-diverse-villages.mjs <catalog-before.json> <catalog-out.json> [--only=mapId]");
+if (!input || !output) throw Error("Usage: fill-diverse-villages.mjs <catalog-before.json> <catalog-out.json> [--only=mapId] [--add=villages.json]");
 const catalog = JSON.parse(fs.readFileSync(input, "utf8"));
+// --add=<file>: villages authored separately on the same tileset ({ plans, maps }, e.g. author-harbor-town.mjs) join
+// the catalog before the fill.
+for (const extraFile of args.filter((a) => a.startsWith("--add=")).map((a) => a.slice(6))) {
+  const more = JSON.parse(fs.readFileSync(extraFile, "utf8"));
+  for (const p of more.plans) {
+    const at = catalog.plans.findIndex((q) => q.id === p.id);
+    if (at >= 0) catalog.plans[at] = p; else catalog.plans.push(p);
+    catalog.maps[p.id] = more.maps[p.id];
+  }
+}
 const DIR = "tiledata/forest-villages/diverse";
 const programs = JSON.parse(fs.readFileSync(`${DIR}/fullness-programs.json`, "utf8")).villages;
 const parts = JSON.parse(fs.readFileSync("tiledata/tilesets/forest_harmony/dewbank-village/parts.json")).props;
