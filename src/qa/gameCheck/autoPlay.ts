@@ -294,6 +294,16 @@ const DIRS = [
   { dir: "right", dx: 1, dy: 0 }, { dir: "left", dx: -1, dy: 0 }, { dir: "down", dx: 0, dy: 1 }, { dir: "up", dx: 0, dy: -1 },
 ] as const;
 
+/** 모든 페이지가 접촉 발동이고 명령이 `callMapEvent(targetId)` 하나뿐인 이벤트(문 발판). */
+function relaysTo(event: GameEvent, targetId: string): boolean {
+  const pages = event.pages ?? [];
+  return pages.length > 0 && pages.every((page) => {
+    const commands = page.commands ?? [];
+    return page.trigger?.kind === "playerTouch" && commands.length === 1
+      && commands[0]!.kind === "callMapEvent" && (commands[0] as { eventId?: string }).eventId === targetId;
+  });
+}
+
 /**
  * 한 칸씩 걷는 경로. 러너의 walk 는 밑에 깔린 다른 문(접촉 이벤트) 위를 지나가다 엉뚱한 맵으로 튄다 —
  * 여기서는 목표 말고 모든 이벤트 칸을 피해서 BFS 한다. 충돌은 런타임과 같은 canMove.
@@ -301,8 +311,12 @@ const DIRS = [
 function pathMoves(project: Project, mapId: string, from: { x: number; y: number }, target: GameEvent, adjacent: boolean): SceneStep[] | null {
   const map = project.maps[mapId];
   if (!map) return null;
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id).map((event) => `${event.x},${event.y}`));
-  const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : x === target.x && y === target.y;
+  // 문 앞 발판(`<문>_step`)처럼 목표를 callMapEvent 로 부르기만 하는 접촉 이벤트는 목표와 같은 칸으로 친다 —
+  // 2층 집 문은 벽 줄에 붙어 발판으로만 닿는데, 발판을 「다른 이벤트」로 피하면 문이 영영 막힌 것으로 보였다.
+  const relays = adjacent ? [] : (map.events ?? []).filter((event) => event.id !== target.id && relaysTo(event, target.id));
+  const relayCells = new Set(relays.map((event) => `${event.x},${event.y}`));
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id).map((event) => `${event.x},${event.y}`).filter((cell) => !relayCells.has(cell)));
+  const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
   const previous = new Map<string, { from: string; dir: typeof DIRS[number]["dir"] }>();
   const queue = [from];
