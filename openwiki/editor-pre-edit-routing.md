@@ -149,6 +149,18 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
+- **우클릭 놓기 → 바는 `finishRightRegionGesture` 가 직접 그린다 (2026-09-25).** 드래그 중에 이미
+  같은 사각형이 선택돼 있으므로 놓을 때의 `selectTileRegion` 은 무변경으로 통지를 건너뛴다.
+  그래서 바가 다음 우연한 redraw(포인터 이동·팬)까지 안 뜨던 것이 "툴바가 느리게 뜬다"의 원인이었다.
+  지금은 놓는 즉시 `renderBuildPaletteOverlay()` 를 부른다(실측: pointerup → DOM 삽입 38–63ms,
+  나머지는 헤드리스 소프트웨어 렌더 프레임). 입력창 자동 포커스는 `focusSelectionPromptOnRender`
+  1회 플래그로 우클릭 제스처에서만 — 다른 경로의 redraw 가 채팅 입력 포커스를 뺏지 않는다.
+- **선택 액션 바 = 컴포저 (2026-09-25).** 한 줄 AI 입력(`selection-chip-prompt`, 6줄까지 자람)이
+  주인공이고, 다듬기·복사·붙여넣기·지우기·걷기 전투·구조물 저장·해제는 같은 상자 안 30px 아이콘이다.
+  Enter 실행(한글 조합 중 Enter 는 무시), Shift+Enter 줄바꿈, 입력이 있으면 `initialInstruction`+`autoRun`,
+  비어 있으면 전체 AI 작업 창. 입력창이 비어 있는 동안 Ctrl+C·Ctrl+V·Del 은 캔버스 동작으로 넘기고,
+  Esc 는 글을 지우거나(있으면) 선택을 해제한다. 아이콘 이름은 `delayedTooltipRollout` 에 등록돼 있다.
+  `selection-chip-ai` 는 DOM 상 첫 버튼(Tab 순서·e2e 계약)이고 화면에서는 CSS `order` 로 맨 끝이다.
 - **lazy 창은 들어온 칸만 더하지 말고 나간 칸을 지운다 (2026-09-22).** `renderVisibleEditSceneTiles` 가
   추가만 하면 팬할수록 컨테이너가 맵 전체로 다시 자란다. 화면 밖 페인트도 객체를 만들지 않는다.
   맵 배열이 정본이고, 그 칸이 창에 들어올 때 만든다.

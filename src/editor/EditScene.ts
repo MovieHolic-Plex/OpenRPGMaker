@@ -121,7 +121,11 @@ import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
-import { renderSelectionActionChips, shouldShowSelectionActionChips } from "@/editor/selectionActionChips";
+import {
+  focusSelectionActionPrompt,
+  renderSelectionActionChips,
+  shouldShowSelectionActionChips,
+} from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
   anchoredSelectionChipsPosition,
@@ -328,6 +332,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private overlayGeometryReadAtMs = 0;
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
+  private focusSelectionPromptOnRender = false;
   /** 붙여넣기 고스트를 마지막으로 조립한 클립보드·원점. 같은 클립보드면 칸만 옮긴다. */
   private pasteGhostClipboard: TileClipboard | null = null;
   private pasteGhostAt: { x: number; y: number } | null = null;
@@ -1110,6 +1115,10 @@ export class EditScene extends PhaserRuntime.Scene {
       // 창이 이미 그 자리에 있고, 칩 바는 창이 열려 있는 동안 물러나 있다.
       if (retargetRegionTaskModal(rect, screen)) return;
       notifyRightDragRegionSelected();
+      // 드래그 중에 이미 같은 사각형이 선택돼 있어 위 selectTileRegion 은 통지 없이 끝난다.
+      // 여기서 직접 그리지 않으면 바는 다음 우연한 redraw(포인터 이동·팬)까지 뜨지 않는다.
+      this.focusSelectionPromptOnRender = true;
+      this.renderBuildPaletteOverlay();
       return;
     }
 
@@ -1123,6 +1132,7 @@ export class EditScene extends PhaserRuntime.Scene {
       isCellInsideSelection(existing, end.x, end.y)
     ) {
       this.lastRightDragScreen = screen;
+      this.focusSelectionPromptOnRender = true;
       this.renderBuildPaletteOverlay();
       return;
     }
@@ -2535,6 +2545,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
+    // 입력창 포커스는 우클릭 제스처가 요청한 이번 한 번만 — 다른 경로의 redraw 가 채팅 입력 등을 뺏지 않게.
+    const wantPromptFocus = this.focusSelectionPromptOnRender;
+    this.focusSelectionPromptOnRender = false;
     // 크기 배지는 칩 바와 수명이 다르다 — 영역 작업 창이 열려 있는 동안에도 대상 영역을
     // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
     // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
@@ -2588,6 +2601,9 @@ export class EditScene extends PhaserRuntime.Scene {
       this.buildPalettePopupKey = popupKey;
     }
     this.positionBuildPaletteOverlay(selection);
+    if (wantPromptFocus && kind === "chips" && this.buildPalettePopup) {
+      focusSelectionActionPrompt(this.buildPalettePopup);
+    }
     this.renderRegionTaskBadge();
   }
 
