@@ -47,6 +47,8 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
   description:
     'Command 예: {kind:"changeItem",itemId:"조회한 ID",op:"-=",amount:1}, ' +
     '{kind:"setSwitch",switchId:"조회한 ID",value:true}, {kind:"triggerEnding",endingId:"정의한 ID"}. ' +
+    '대사는 {kind:"text",body:"…"} — say·fade 는 컷신(script_cutscene·epilogue) 비트 kind 라서 ' +
+    '이벤트 commands 에 넣으면 kind enum 에서 거부된다. ' +
     'triggerEnding의 endingId 생략 시 조건으로 선택한다. switch/item은 조건 kind이며 실행 명령이 아니다.',
   properties: {
     // kind 를 자유 문자열로 두면 모델이 존재하지 않는 kind 를 만들어 보낸다(2026-08-23 실측:
