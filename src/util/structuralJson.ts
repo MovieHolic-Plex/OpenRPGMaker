@@ -6,7 +6,7 @@ export function structuralJson(value: unknown): string {
   });
 }
 
-const TILE_PAYLOAD_KEYS = new Set(["lowerTiles", "upperTiles", "lowerTileStacks", "upperTileStacks"]);
+const TILE_PAYLOAD_KEYS = new Set(["lowerTiles", "upperTiles", "lowerOverlayTiles", "upperOverlayTiles", "shadowBits", "lowerTileStacks", "upperTileStacks"]);
 const LONG_STRING = 512;
 
 /**

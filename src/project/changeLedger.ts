@@ -50,6 +50,9 @@ const FIELD_LABELS: Readonly<Record<string, string>> = {
   tileSize: "타일 크기",
   lowerTiles: "아래층 타일",
   upperTiles: "위층 타일",
+  lowerOverlayTiles: "2층 타일",
+  upperOverlayTiles: "4층 타일",
+  shadowBits: "그림자",
   lowerTileStacks: "아래층 겹침",
   upperTileStacks: "위층 겹침",
   tilesetId: "타일셋",
@@ -305,7 +308,7 @@ function mapEntries(before: Project, after: Project, out: ChangeLedgerEntry[]): 
     const detail = changedFields(prev as unknown as Record<string, unknown>, next as unknown as Record<string, unknown>, {
       skip: ["events"],
       summarize: (key, beforeValue, afterValue) => {
-        if (key === "lowerTiles" || key === "upperTiles") {
+        if (key === "lowerTiles" || key === "upperTiles" || key === "lowerOverlayTiles" || key === "upperOverlayTiles" || key === "shadowBits") {
           const changed = countTileCells(beforeValue, afterValue);
           return changed > 0 ? `${changed}칸 바뀜` : undefined;
         }

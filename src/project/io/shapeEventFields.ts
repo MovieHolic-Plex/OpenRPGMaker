@@ -9,6 +9,7 @@ import { validateCommandArray, validateConditionShape, validateMoveRoute } from 
 import { validateLightingState } from "./shapeLightingFields";
 import { validateTrigger } from "./shapeReferenceFields";
 import { isSeason, isTimePhase } from "@/project/gameTime";
+import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
 import {
   isMapPlanningItemOrigin,
   isMapPlanningItemStatus,
@@ -38,6 +39,9 @@ export function validateMaps(value: unknown): Record<string, unknown> {
     const expected = width * height;
     assert(requireArray(`map ${id}.lowerTiles`, map.lowerTiles).length === expected, `map ${id}: lowerTiles 길이 불일치.`);
     assert(requireArray(`map ${id}.upperTiles`, map.upperTiles).length === expected, `map ${id}: upperTiles 길이 불일치.`);
+    for (const key of EXTRA_LAYER_KEYS) {
+      if (map[key] !== undefined) assert(requireArray(`map ${id}.${key}`, map[key]).length === expected, `map ${id}: ${key} 길이 불일치.`);
+    }
     if (map.lowerTileStacks !== undefined) validateTileStacks(`map ${id}.lowerTileStacks`, map.lowerTileStacks, expected);
     if (map.upperTileStacks !== undefined) validateTileStacks(`map ${id}.upperTileStacks`, map.upperTileStacks, expected);
     if (map.encounterRate !== undefined) requireNumber(`map ${id}.encounterRate`, map.encounterRate);

@@ -41,6 +41,7 @@ import { isLocalTarget, isRemoteTarget, sameProjectTarget, type ProjectTarget } 
 import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
+import { cloneExtraLayers } from "@/project/mapLayers";
 import { sha256HexText } from "@/util/sha256";
 import { normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
@@ -854,6 +855,7 @@ class ProjectStore {
       ...currentMap,
       lowerTiles: currentMap.lowerTiles.slice(),
       upperTiles: currentMap.upperTiles.slice(),
+      ...cloneExtraLayers(currentMap),
       ...(currentMap.lowerTileStacks ? { lowerTileStacks: cloneTileStacks(currentMap.lowerTileStacks) } : {}),
       ...(currentMap.upperTileStacks ? { upperTileStacks: cloneTileStacks(currentMap.upperTileStacks) } : {}),
     };
