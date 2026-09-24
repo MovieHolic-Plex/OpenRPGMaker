@@ -27,7 +27,7 @@ import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
 import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import { followerPositions, recordFollowerPlayerStep, removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules, type FollowerWorld } from "@/project/followers";
-import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import {
   advanceLightingAmbientTransition,
@@ -2522,13 +2522,16 @@ function refreshChasers(state: RunnerState): void {
   }
   for (const view of active) {
     const existing = state.chasers.get(view.event.id);
+    // 런타임은 한 칸 걸음(트윈, speed)이 끝난 뒤 간격(frequency)을 기다린다 — 러너가 간격만 쓰면
+    // 추격자가 실제보다 3배 빨라 「헤드리스로는 잡히는데 플레이로는 도망친다」 가 됐다(2026-09-24).
+    const stepMs = npcMoveDurationMs(view.movement.speed) + npcMoveIntervalMs(view.movement.frequency);
     if (existing) {
-      existing.moveIntervalMs = npcMoveIntervalMs(view.movement.frequency);
+      existing.moveIntervalMs = stepMs;
       continue;
     }
     state.chasers.set(view.event.id, {
       timer: 0,
-      moveIntervalMs: npcMoveIntervalMs(view.movement.frequency),
+      moveIntervalMs: stepMs,
     });
   }
 }
