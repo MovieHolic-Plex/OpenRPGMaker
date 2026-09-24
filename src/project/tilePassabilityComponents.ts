@@ -210,7 +210,7 @@ function unite(parent: Int32Array, rank: Int32Array, a: number, b: number): void
 }
 
 /**
- * 통행 판정에 들어가는 모든 입력의 32비트 지문 — 맵의 하위/상위 타일과 타일 스택,
+ * 통행 판정에 들어가는 모든 입력의 32비트 지문 — 맵의 1~4층 타일과 타일 스택,
  * 그리고 **타일셋의 통행 정의**. FNV-1a 변형.
  *
  * 타일셋을 왜 넣는가: identity 비교만으로는 부족하다. `setPassageMark` 는 같은 TilesetDef
@@ -233,6 +233,9 @@ function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): numbe
   for (let index = 0; index < upper.length; index += 1) {
     hash = Math.imul(hash ^ (upper[index] as number), 0x01000193);
   }
+  // 2·4층(선택 칸)도 칸 통행을 바꾼다(collision.ts §layeredPassability). 없으면 섞지 않아 옛 맵 지문은 그대로다.
+  hash = mixOptionalTiles(hash, 2, map.lowerOverlayTiles);
+  hash = mixOptionalTiles(hash, 4, map.upperOverlayTiles);
   hash = mixStacks(hash, map.lowerTileStacks);
   hash = mixStacks(hash, map.upperTileStacks);
   return mixTilesetPassage(hash, tileset) | 0;
@@ -240,7 +243,7 @@ function passabilityFingerprint(map: GameMap, tileset: TilesetDef | null): numbe
 
 /**
  * 타일셋의 통행 관련 필드만 섞는다 — 4방향 통행 비트와 우선도(★ 판정에 쓰인다,
- * collision.ts §tilePassability). 그림·이름 같은 통행 무관 필드는 넣지 않는다.
+ * collision.ts §layeredPassability). 그림·이름 같은 통행 무관 필드는 넣지 않는다.
  */
 function mixTilesetPassage(hash: number, tileset: TilesetDef | null): number {
   if (!tileset) return hash;
@@ -256,6 +259,15 @@ function mixTilesetPassage(hash: number, tileset: TilesetDef | null): number {
   const priority = tileset.priority;
   for (let index = 0; index < priority.length; index += 1) {
     mixed = Math.imul(mixed ^ (priority[index] === "upper" ? 1 : 0), 0x01000193);
+  }
+  return mixed;
+}
+
+function mixOptionalTiles(hash: number, layer: number, tiles: readonly number[] | undefined): number {
+  if (!tiles) return hash;
+  let mixed = Math.imul(hash ^ (0x4c00 | layer), 0x01000193);
+  for (let index = 0; index < tiles.length; index += 1) {
+    mixed = Math.imul(mixed ^ (tiles[index] as number), 0x01000193);
   }
   return mixed;
 }

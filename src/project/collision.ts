@@ -5,6 +5,7 @@
 
 import type { GameMap, Project, TilesetDef, Dir, PassFlag, CharacterFootprint, FootprintRect } from "./types";
 import { topTileInStack } from "./mapOverlayTiles";
+import { cellLayerTiles } from "./mapLayers";
 import { passageMarkForTile } from "./tilesetPassage";
 import { footprintBounds, passageBounds } from "./footprint";
 
@@ -18,34 +19,57 @@ export function getTileset(project: Project, map: GameMap): TilesetDef | null {
   return project.tilesets[map.tilesetId] ?? null;
 }
 
-// 맵의 (x,y) 칸의 합성 타일 인덱스(lower + upper).
-// 충돌 판정은 upper가 우선(upper에 타일이 있으면 upper, 없으면 lower).
+// 맵의 (x,y) 칸의 타일. lower/upper 는 옛 스택 top 을 반영한 1·3층, layers 는 1~4층 원래 값.
+// 충돌 판정은 layeredPassability(위에서부터 ★ 건너뛰기)가 한다.
 export function tileAt(map: GameMap, x: number, y: number): {
   lower: number;
   upper: number;
+  layers: readonly [number, number, number, number];
 } {
-  if (!inBounds(map, x, y)) return { lower: -1, upper: -1 };
+  if (!inBounds(map, x, y)) return { lower: -1, upper: -1, layers: [-1, -1, -1, -1] };
   const i = y * map.width + x;
+  const layers = cellLayerTiles(map, i);
   return {
-    lower: topTileInStack(map, "lower", i) ?? map.lowerTiles[i],
-    upper: topTileInStack(map, "upper", i) ?? map.upperTiles[i],
+    lower: topTileInStack(map, "lower", i) ?? layers[0],
+    upper: topTileInStack(map, "upper", i) ?? layers[2],
+    layers,
   };
 }
 
-// 한 타일의 합성 passability: upper가 O/X이면 덮어쓰고, ★이면 lower를 따른다.
+const BLOCKED: PassFlag = { up: false, down: false, left: false, right: false };
+
+/**
+ * 칸의 통행(MZ 규칙). tiles 는 1층부터 위로. 맨 위부터 내려가며 빈칸과 ★ 를 건너뛰고,
+ * 처음 만난 타일의 통행이 칸을 정한다. 1층은 ★ 여도 바닥이므로 그 자체로 정한다.
+ * 1층이 비었거나 통행 정보가 없으면 막힘. 두 층([1층,-1,3층,-1])이면 옛 tilePassability 와 같다.
+ */
+export function layeredPassability(tileset: TilesetDef, tiles: readonly number[]): PassFlag {
+  const base = tiles[0] ?? -1;
+  const basePass = base >= 0 && base < tileset.passability.length ? tileset.passability[base] : null;
+  if (!basePass) return { ...BLOCKED };
+  for (let layer = tiles.length - 1; layer >= 1; layer -= 1) {
+    const tile = tiles[layer] ?? -1;
+    if (tile < 0 || tile >= tileset.passability.length) continue;
+    if (passageMarkForTile(tileset, tile) === "star") continue;
+    const pass = tileset.passability[tile];
+    if (pass) return pass;
+  }
+  return basePass;
+}
+
+// 두 층(1층 + 3층) 통행. 3층이 O/X이면 덮어쓰고, ★이면 1층을 따른다.
 export function tilePassability(
   tileset: TilesetDef,
   lower: number,
   upper: number
 ): PassFlag {
-  const lp = lower >= 0 && lower < tileset.passability.length ? tileset.passability[lower] : null;
-  if (!lp) return { up: false, down: false, left: false, right: false };
-  if (upper < 0 || upper >= tileset.passability.length) return lp;
-  const upperMark = passageMarkForTile(tileset, upper);
-  if (upperMark === "star") return lp;
-  const up = tileset.passability[upper];
-  if (!up) return lp;
-  return up;
+  return layeredPassability(tileset, [lower, -1, upper, -1]);
+}
+
+// 옛 스택 top 이 있으면 1·3층 값을 대신한다(tileAt 의 lower/upper). 2·4층은 그대로.
+function withStackTops(t: ReturnType<typeof tileAt>): readonly number[] {
+  if (t.lower === t.layers[0] && t.upper === t.layers[2]) return t.layers;
+  return [t.lower, t.layers[1], t.upper, t.layers[3]];
 }
 
 // 방향 → 해당 방향으로 "나가는/들어가는" 통과 비트.
@@ -82,8 +106,8 @@ export function canMove(
   else return false; // 같은 칸
   const from = tileAt(map, fromX, fromY);
   const to = tileAt(map, toX, toY);
-  const fromPass = tilePassability(tileset, from.lower, from.upper);
-  const toPass = tilePassability(tileset, to.lower, to.upper);
+  const fromPass = layeredPassability(tileset, withStackTops(from));
+  const toPass = layeredPassability(tileset, withStackTops(to));
   // from에서 해당 방향으로 나갈 수 있고, to에 해당 방향으로 들어올 수 있어야 함.
   // RM2K3 관례: from의 나가는 방향 + to의 들어오는 방향(반대) 체크.
   // 단순화: from과 to 양쪽의 해당 방향 비트가 열려있으면 통과.
@@ -110,7 +134,7 @@ export function isPassable(
   const tileset = getTileset(project, map);
   if (!tileset) return false;
   const t = tileAt(map, x, y);
-  const pass = tilePassability(tileset, t.lower, t.upper);
+  const pass = layeredPassability(tileset, withStackTops(t));
   return pass.up || pass.down || pass.left || pass.right;
 }
 
