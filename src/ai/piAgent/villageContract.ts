@@ -1,6 +1,7 @@
 import { withVillageMorphologyDefault } from "@/editor/tools/village/defaultMorphology";
 import { computeReachableCells } from "@/project/lint/reachability";
 import type { Project } from "@/project/types";
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import type { IntentDeclaration, IntentSelectionFact } from "@/ai/intentDeclaration";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import { resolveVillageDesignInput } from "@/editor/tools/village/designContract";
@@ -18,7 +19,10 @@ export interface VillageContract {
 }
 
 export function resolveVillageContract(project: Project, intent: IntentDeclaration, currentMapId: string | null,
-  selection: IntentSelectionFact | null): VillageContract | undefined {
+  selection: IntentSelectionFact | null, requestText?: string): VillageContract | undefined {
+  // 장르 기획 요청은 게임 전체 저작이다. 2026-09-24 몬스터 수집 gen3: 의도 선언이 마을만 골라 계약이 걸렸고,
+  // configure_monster_system·set_opening·set_title_screen 이 「마을 계약」으로 거부된 채 73초 만에 마을만 남았다.
+  if (isGenrePresetBriefRequest(requestText)) return;
   if (intent.source !== "llm" || intent.mode === "question" || !intent.tools.includes("author_village")) return;
   // Multi-goal adventures retain their existing orchestration; this contract owns one village.
   if (intent.adventure || intent.npcRewards || intent.functionalAcceptance?.length || intent.actionCombat) return;

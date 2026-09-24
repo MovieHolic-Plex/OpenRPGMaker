@@ -44,3 +44,8 @@ test('live regression: restoring the old blank-map centre must not strand the pl
  const stranded=structuredClone(ctx.project);stranded.startPos={x:10,y:8};
  expect(validateVillageContract(stranded,base,contract,receipt).issues.join(' ')).toContain('문앞 도달 실패');
 });
+test('a genre preset brief is a whole-game request, never a one-village contract', () => {
+ const base=createBlankProject();
+ expect(resolveVillageContract(base,intent,base.startMapId,null,'장르 프리셋: 몬스터 수집\n\n## 사용자가 확정한 게임 기획')).toBeUndefined();
+ expect(resolveVillageContract(base,intent,base.startMapId,null,'숲마을 하나 지어 줘')).toBeDefined();
+});
