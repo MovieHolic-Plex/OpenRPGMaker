@@ -183,12 +183,6 @@ body.editor-ui-beginner .basic-left-rail.is-icon-rail {
   opacity: 0.45;
 }
 
-.basic-rail-sep {
-  background: var(--border-subtle);
-  flex: 0 0 var(--stroke-1);
-  width: 100%;
-}
-
 .basic-pending-event-cta {
   align-items: center;
   background: color-mix(in srgb, var(--editor-blue, var(--accent)) 26%, var(--mix-base));
@@ -320,41 +314,6 @@ body:has(.test-play-modal-backdrop) .coach-mark-card {
   filter: brightness(0.96);
 }
 
-.basic-rail-tile-thumb {
-  background-color: var(--bg-well);
-  border: 1px solid var(--editor-line, var(--border-subtle));
-  border-radius: 5px;
-  display: block;
-  image-rendering: pixelated;
-}
-
-.basic-rail-flyout {
-  background: var(--editor-popover-bg, var(--bg-overlay));
-  border: 1px solid var(--editor-line-strong, var(--border-strong));
-  border-radius: 12px;
-  box-shadow: var(--shadow-pop, 0 12px 32px rgba(60, 48, 32, 0.12));
-  display: flex;
-  flex-direction: column;
-  left: calc(var(--basic-rail-width) + var(--space-2));
-  max-height: min(78vh, calc(100vh - 80px));
-  position: fixed;
-  top: calc(var(--space-6) + var(--space-4) + var(--space-2));
-  width: 300px;
-  z-index: var(--z-flyout);
-}
-
-/* 맵 플라이아웃: 목록(320px) + 상세 2단이 들어가야 한다.
-   칸 구성은 editor/map-panel.modern.css §초보 플라이아웃 2단 탐색기가 갖는다 —
-   1100px 분기점을 그 파일과 같이 쓴다(그 아래에서는 상세가 목록 밑으로 내려간다). */
-.basic-rail-flyout.is-maps {
-  width: min(700px, calc(100vw - var(--basic-rail-width) - var(--space-4)));
-}
-
-@media (max-width: 1100px) {
-  .basic-rail-flyout.is-maps {
-    width: min(360px, calc(100vw - var(--basic-rail-width) - var(--space-4)));
-  }
-}
 
 /* 짧은 뷰포트: 맵 트리가 시트 공간을 잡아먹지 않게 */
 @media (max-height: 720px) {
@@ -401,146 +360,12 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 
 /* 시트 크게 보기 팝오버 */
 
-.basic-flyout-head {
-  align-items: center;
-  border-bottom: 1px solid var(--editor-line, var(--border-subtle));
-  display: flex;
-  gap: 6px;
-  padding: 8px 10px;
-}
-
-.basic-flyout-title {
-  color: var(--editor-text, var(--text-1));
-  flex: 1 1 auto;
-  font: 700 12px/1.2 var(--font-ui, system-ui, sans-serif);
-}
-
-.basic-flyout-pin,
-.basic-flyout-close {
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 7px;
-  color: var(--editor-text-muted, var(--text-2));
-  cursor: pointer;
-  font-size: 12px;
-  height: 24px;
-  width: 26px;
-}
-
-.basic-flyout-pin:hover,
-.basic-flyout-close:hover {
-  border-color: var(--editor-line-strong, var(--border-strong));
-  color: var(--editor-text, var(--text-1));
-}
-
-.basic-flyout-pin.is-pinned {
-  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 30%, var(--mix-base));
-  color: var(--on-accent);
-}
-
-.basic-flyout-body {
-  min-height: 0;
-  overflow: auto;
-  padding: 10px 12px 12px;
-}
-
-.basic-flyout-map-host {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  min-height: 120px;
-}
-
-/* 이 아래(구 736~938행)에 있던 초보 플라이아웃 맵 목록 규칙은 전부
-   editor/map-panel.modern.css 의 is-basic-flyout 절로 이관됐다(2026-08, Task 6).
-   컨테이너 프리픽스(basic-flyout-map-host, 특이도 0,3,0)가 모던 레이어(0,2,0)를
-   항상 이겨 이름·메타 말줄임과 배지 겹침이 났었다. */
 
 .basic-rail-section {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
-.basic-rail-map-field {
-  border-top: 1px solid var(--border-subtle);
-  display: flex;
-  flex: 0 0 auto;
-  flex-direction: column;
-  gap: 4px;
-  padding-top: 6px;
-}
-.basic-rail-map-head {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
-}
-.basic-rail-map-title {
-  color: var(--editor-text-muted, var(--text-2));
-  font: 600 12px/1.3 var(--font-ui, system-ui, sans-serif);
-}
-.basic-rail-map-add {
-  background: transparent;
-  border: 0;
-  color: var(--editor-blue, var(--accent));
-  cursor: pointer;
-  font: 600 12px/1.3 var(--font-ui, system-ui, sans-serif);
-  padding: 2px 4px;
-}
-.basic-rail-map-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.basic-rail-map-row {
-  align-items: center;
-  background: transparent;
-  border: var(--stroke-1) solid transparent;
-  border-radius: var(--radius-s);
-  cursor: pointer;
-  display: flex;
-  gap: 6px;
-  justify-content: space-between;
-  min-height: 26px;
-  padding: 2px 6px;
-  text-align: left;
-  width: 100%;
-}
-.basic-rail-map-row:hover {
-  border-color: var(--editor-line-strong, var(--border-strong));
-}
-.basic-rail-map-row.is-active {
-  background: color-mix(in srgb, var(--editor-blue, var(--accent)) 28%, var(--mix-base));
-  border-color: color-mix(in srgb, var(--editor-blue, var(--accent)) 55%, transparent);
-  color: var(--on-accent);
-}
-.basic-rail-map-name {
-  font: var(--font-weight-semibold) var(--font-size-sm)/var(--line-height-tight) var(--font-ui);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.basic-rail-map-meta {
-  color: var(--editor-text-muted, var(--text-2));
-  flex: 0 0 auto;
-  font: 500 11px/1.2 var(--font-ui, system-ui, sans-serif);
-}
-.basic-rail-map-row.is-active .basic-rail-map-meta {
-  color: inherit;
-  opacity: 0.85;
-}
-.basic-rail-map-more {
-  background: transparent;
-  border: 0;
-  color: var(--editor-text-muted, var(--text-2));
-  cursor: pointer;
-  font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
-  padding: 2px 4px;
-  text-align: left;
-}
-.basic-rail-map-more:hover {
-  color: var(--editor-text, var(--text-1));
-}
-
 .basic-selected-tile {
   color: var(--editor-text-muted, var(--text-2));
   font: 500 12px/1.3 var(--font-ui, system-ui, sans-serif);
@@ -778,3 +603,28 @@ body.editor-ui-expert .left-panel-stack[data-testid="left-map-root"] {
 .ai-chat-send {
   flex: 0 0 auto;
 }
+
+/* 「그리기」 탭 도구 한 줄 (2026-09-24 정리). 여섯 도구를 3×2 글자 단추에서 아이콘 한 줄로 줄이고,
+   이름은 바로 아래 붓 상태 줄(「칠하기 · 바닥」)이 말한다. 라벨 span 은 DOM 에 남기고 화면에서만 숨긴다 —
+   접근 이름은 aria-label, 테스트는 textContent 를 그대로 읽는다. */
+body.editor-ui-beginner .basic-left-rail.is-icon-rail { gap: 4px; padding: 4px 8px 8px; }
+.basic-left-rail [data-testid="basic-tool-list"].basic-rail-icons {
+  display: flex; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 2px); background: var(--bg-well, var(--bg-inset));
+}
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn {
+  flex: 1 1 0; min-height: 30px; border: 0; border-radius: var(--radius-s); color: var(--text-2);
+}
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn:hover,
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn:focus-visible { color: var(--text-1); background: var(--bg-hover); }
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn.is-active {
+  background: var(--bg-raised); color: var(--accent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent), 0 0 0 .5px color-mix(in srgb, var(--text-1) 8%, transparent);
+}
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-btn svg { width: 18px; height: 18px; }
+.basic-left-rail [data-testid="basic-tool-list"] .basic-rail-label,
+.basic-left-rail .basic-rail-undo .basic-rail-label {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.basic-rail-status .basic-rail-undo { flex: none; width: 30px; min-height: 28px; border: 0; }
+.basic-rail-status .basic-rail-undo:hover:not([disabled]) { background: var(--bg-hover); }

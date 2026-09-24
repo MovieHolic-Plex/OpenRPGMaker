@@ -89,8 +89,8 @@ test("child maps read as a directory tree with increasing depth", async ({ page 
   await page.getByTestId("left-map-root").screenshot({ path: join(OUT, "02-nested-tree.png") });
 });
 
-test("the beginner map flyout shows the same thumbnails and nesting", async ({ page }) => {
-  // Break named: the beginner rail flyout renders its own row grid, so thumbnails can be panel-only.
+test("the beginner sidebar map tab shows the same thumbnails and nesting", async ({ page }) => {
+  // Break named: the beginner sidebar map tab renders its own row grid, so thumbnails can be panel-only.
   test.setTimeout(180_000);
   await page.addInitScript(() => {
     localStorage.setItem("oprn:editor-ui-mode", "beginner");
@@ -98,28 +98,21 @@ test("the beginner map flyout shows the same thumbnails and nesting", async ({ p
   });
   await page.setViewportSize({ height: 1000, width: 1600 });
   await page.goto("/?freshProject=1");
-  await expect(page.getByTestId("basic-rail-toggle-maps")).toBeVisible({ timeout: 30_000 });
-  await page.getByTestId("basic-rail-toggle-maps").click();
+  await expect(page.getByTestId("sidebar-maps")).toBeVisible({ timeout: 30_000 });
+  await page.getByTestId("sidebar-maps").click();
   await expect(page.getByTestId("map-tree")).toBeVisible();
 
   const rootId = await firstRowMapId(page);
-  await page.getByTestId(`map-tree-node-${rootId}`).hover();
-  await page.getByTestId(`map-quick-add-child-${rootId}`).click();
-  await page.getByTestId("map-create-name").fill("민재의 집");
-  await page.getByTestId("map-create-confirm").click();
-  await expect(page.getByTestId("map-create-dialog")).toBeHidden();
+  await addChildMap(page, rootId, "민재의 집");
 
-  // 맵 만들기 다이얼로그가 열리면 플라이아웃은 닫힌다 — 사용자도 다시 여는 경로다.
-  await page.getByTestId("basic-rail-toggle-maps").click();
-  await expect(page.getByTestId("map-tree")).toBeVisible();
   const rows = await readRowFacts(page);
   const missing = rows.filter((row) => row.thumbState !== "map");
-  expect(missing.map((row) => `${row.name}: state=${row.thumbState}`), "flyout rows without a thumbnail").toEqual([]);
+  expect(missing.map((row) => `${row.name}: state=${row.thumbState}`), "sidebar rows without a thumbnail").toEqual([]);
   const house = rows.find((row) => row.name === "민재의 집");
-  expect(house, "민재의 집 row in the flyout").toBeTruthy();
-  expect(house!.ariaLevel, "민재의 집 depth in the flyout").toBe("2");
+  expect(house, "민재의 집 row in the sidebar").toBeTruthy();
+  expect(house!.ariaLevel, "민재의 집 depth in the sidebar").toBe("2");
 
-  await page.getByTestId("map-tree").screenshot({ path: join(OUT, "03-beginner-flyout.png") });
+  await page.getByTestId("map-tree").screenshot({ path: join(OUT, "03-beginner-sidebar.png") });
 });
 
 /** 맵 패널을 기다리기 전에 에디터 부팅을 먼저 기다린다 — 캔버스가 뜨기 전에는

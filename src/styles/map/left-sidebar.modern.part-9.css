@@ -373,3 +373,22 @@
   outline: var(--focus-outline);
   outline-offset: -2px;
 }
+
+/* 「그리기」 탭 붓 크기 세그먼트(2026-09-24). shell 레이어(editor-ui-modes.css)에 두면 이 레이어의
+   `.tile-brush-chip` 테두리·배경과 `.sidebar-brush-state` 여백이 이겨서 여기에 둔다. */
+.basic-rail-status { display: flex; align-items: center; gap: 4px; min-height: 30px; padding: 0 2px 0 6px; }
+.basic-rail-status > .sidebar-brush-controls { flex: 1; min-width: 0; flex-wrap: nowrap; padding-block: 0; }
+.basic-rail-status .sidebar-brush-state { order: -1; margin-left: 0; margin-right: auto; color: var(--text-1); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.basic-rail-status .sidebar-brush-sizes { flex-wrap: nowrap; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 1px); background: var(--bg-well, var(--bg-inset)); }
+.basic-rail-status .sidebar-brush-sizes .tile-brush-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.editor-layout .basic-rail-status .sidebar-brush-sizes .tile-brush-chip {
+  min-width: 24px; min-height: 22px; padding: 0; border: 0; border-radius: var(--radius-s); background: transparent;
+  font: 500 12px/22px var(--font-ui); color: var(--text-2);
+}
+.editor-layout .basic-rail-status .sidebar-brush-sizes .tile-brush-chip.active {
+  background: var(--bg-raised); color: var(--text-1); font-weight: 600; box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent);
+}
+/* 이벤트 레이어: 탭(그리기)·붓 줄(「이벤트」)이 이미 말하므로 패널의 큰 「이벤트」 제목은 뺀다.
+   목록 머리는 Finder 사이드바의 작은 회색 머리처럼. */
+.basic-left-rail .event-editor-sidebar > h3 { display: none; }
+.editor-layout .left-panel-stack .basic-left-rail .event-editor-sidebar .event-list-title { font: 600 11px/1.2 var(--font-ui); color: var(--text-2); padding: 6px 4px 4px; }

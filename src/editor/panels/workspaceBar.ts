@@ -13,8 +13,8 @@
 //
 // 소유권 — 한 명령의 집은 하나다. 두 번째 표면은 첫 번째가 그 모드에서 렌더되지 않을 때만 둔다.
 //  • 패널 도크 멤버십(타일·맵) = 초보에서는 제공하지 않는다. 타일은 아이콘 레일의 고정 호스트이고
-//    맵 도크는 `mapTree=false`라 렌더되지 않는다. 초보의 `basic-rail-toggle-*`는 멤버십을 바꾸는
-//    컨트롤이 아니라 별도 플라이아웃을 여닫는다. 표준·전문가에서는 이 메뉴가 도크 토글을 소유한다.
+//    맵 도크는 `mapTree=false`라 렌더되지 않는다. 초보의 맵은 사이드바 「맵」 탭이 집이다.
+//    표준·전문가에서는 이 메뉴가 도크 토글을 소유한다.
 //  • 편집 모드 = 이 메뉴가 유일한 화면 진입점이다(Ctrl+K 팔레트는 전체 검색이라 예외).
 
 import { getEditorUiMode, setEditorUiMode, getEditorChrome, type EditorUiMode } from "@/editor/editorUiMode";
@@ -109,8 +109,8 @@ function renderPanelsMenu(): readonly [HTMLElement, HTMLElement] {
 
   const layout = getWorkspaceLayout();
   // 「패널」 그룹은 **좌측 레일이 없는 모드에서만** 이 메뉴의 것이다. 초보의 타일은 레일
-  // 호스트라 고정이고 맵 도크는 렌더되지 않는다. `basic-rail-toggle-tiles/-maps` 는 도크
-  // 멤버십이 아니라 별도 플라이아웃을 여닫으므로, 초보에는 도크 그룹 자체를 내놓지 않는다.
+  // 호스트라 고정이고 맵 도크는 렌더되지 않는다(맵은 사이드바 「맵」 탭). 그래서 초보에는
+  // 도크 그룹 자체를 내놓지 않는다.
   if (!paletteRail) {
     menu.append(el("div", { class: "workspace-menu-group", text: "패널" }));
     for (const panel of allPanels().filter((candidate) => candidate.id !== "assistant")) {

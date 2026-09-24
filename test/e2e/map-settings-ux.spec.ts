@@ -15,7 +15,7 @@ async function openSettings(page: Page, mode = "standard"): Promise<void> {
   }, mode);
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
-  if (mode === "beginner") await page.getByTestId("basic-rail-toggle-maps").click();
+  if (mode === "beginner") await page.getByTestId("sidebar-maps").click();
   await page.locator('[data-testid^="map-tree-node-"]').first().dblclick();
   await expect(page.getByRole("dialog", { name: "맵 설정", exact: true })).toBeVisible();
 }

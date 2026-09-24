@@ -28,7 +28,7 @@ async function bootEditor(page: Page, mode: Mode): Promise<void> {
   }
   await page.keyboard.press("Escape").catch(() => {});
   if (mode === "beginner") {
-    await page.getByTestId("basic-rail-toggle-maps").click();
+    await page.getByTestId("sidebar-maps").click();
   }
   await page.getByTestId("map-tree").waitFor({ state: "visible", timeout: 30_000 });
 }
