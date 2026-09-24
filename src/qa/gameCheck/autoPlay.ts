@@ -215,6 +215,24 @@ function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly
   // 「오늘 이미 만났나」 는 페이지 조건(switch=false)으로도, 대사 앞 fork 로도 쓴다 — fork 의 else 에 세터가 있으면
   // 그 스위치가 꺼져 있어야 닿는다(2026-09-24 연애 4회차: 공략 인물 셋 모두 fork{sw_met}·else 에 호감 +2).
   const locks: RawCommand[] = [...(setter.page.conditions as readonly RawCommand[])];
+  // 뒤 페이지가 「오늘 만남 스위치 ON」이면 앞의 호감 +2 페이지를 덮는다. 그 스위치를 끄지 않으면
+  // 되풀이가 한 번(+2)에서 멈춘다(2026-09-24 골목 라디오: 나래호감=2).
+  const turnsOn = new Set<string>();
+  const collectOn = (commands: readonly RawCommand[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (command.kind === "setSwitch" && command.value === true && typeof command.switchId === "string") turnsOn.add(command.switchId);
+      for (const child of childLists(command)) collectOn(child.list);
+    }
+  };
+  collectOn(setter.page.commands as readonly RawCommand[]);
+  const laterPages = setter.page.event?.pages?.slice(setter.page.pageIndex + 1) ?? [];
+  for (const later of laterPages) {
+    for (const condition of later.conditions ?? []) {
+      if (condition.kind === "switch" && condition.value === true && turnsOn.has(condition.switchId)) {
+        locks.push({ kind: "switch", switchId: condition.switchId, value: false });
+      }
+    }
+  }
   for (const segment of setter.segments) {
     if (segment.kind !== "fork") continue;
     const condition = segment.command.condition as RawCommand | undefined;
