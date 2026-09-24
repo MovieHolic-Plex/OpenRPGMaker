@@ -21,6 +21,25 @@ function shallow(command: RawCommand): Record<string, unknown> {
   return out;
 }
 
+/**
+ * 로더가 **없던 칸에 기본값만 채운** 것은 고친 게 아니다(예: shop 의 branchOnTransaction:false).
+ * 2026-09-24 몬스터 도그푸딩: 올바른 상점 명령마다 load-normalized 경고가 떠서 진짜 정규화 흔적을 가렸다.
+ */
+function isDefaultLike(value: unknown): boolean {
+  if (value === false || value === null || value === undefined || value === "" || value === 0) return true;
+  if (Array.isArray(value)) return value.length === 0;
+  return typeof value === "object" && Object.keys(value as object).length === 0;
+}
+
+function withoutAddedDefaults(original: Record<string, unknown>, loaded: Record<string, unknown>): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(loaded)) {
+    if (!(key in original) && isDefaultLike(value)) continue;
+    out[key] = value;
+  }
+  return out;
+}
+
 function commandsByWhere(project: Project): Map<string, { command: RawCommand; where: CommandWhere }> {
   const out = new Map<string, { command: RawCommand; where: CommandWhere }>();
   for (const page of allPages(project)) visitPageCommands(page, ({ command, where }) => out.set(whereText(where), { command, where }));
@@ -41,8 +60,9 @@ export function diffLoadNormalization(raw: unknown, loaded: Project): Finding[] 
     const now = after.get(key);
     if (!now) continue;
     const original = entry.command;
-    const a = JSON.stringify(shallow(original));
-    const b = JSON.stringify(shallow(now.command));
+    const originalShape = shallow(original);
+    const a = JSON.stringify(originalShape);
+    const b = JSON.stringify(withoutAddedDefaults(originalShape, shallow(now.command)));
     if (a === b) continue;
     findings.push({
       severity: "warning", code: "load-normalized",
