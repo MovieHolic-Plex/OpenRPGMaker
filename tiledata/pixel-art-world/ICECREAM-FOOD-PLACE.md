@@ -51,9 +51,17 @@ node scripts/content/prepare-pixel-art-world-icecream-food-place.mjs \
 
 기존 기본 장소를 덮어쓰지 않는 신규 `shared_paw_icecream_orange_drink_place`다.
 `preparation-proof.json`의 기존 의존성 및 대상 새 ID 부재를 최신 읽기와 비교한 뒤,
-동일 타일셋/자산 ID를 유지하여 중앙 공용 라이브러리에 보존형 병합한다. 이후 일반 native
-publisher 재실행도 이 생성 패키지를 포함해야 한다. 이 파일은 게시자나 정본에 직접 쓰지 않는다.
-정본 save/reload 및 실제 자료집 발견 여부는 부모의 별도 완료 단계다.
+동일 타일셋/자산 ID로 `publish-pixel-art-world-icecream-food-place.mjs`를 사용한다.
+게시자는 실제 호스트의 원본2타일셋과 공용 기본 장소/타일셋의 SHA 및 충돌 구현 SHA를
+재확인하고 `pixel-art-world-food-place-local`에 독립 CAS 게시한다. 일반 native publisher는
+이 별도 라이브러리를 대체하지 않는다. 원래 기본 장소도 남긴다.
+
+2026-09-24: 공용 장소1·타일셋1·객체3 저장·재로드 완료. 정본 revision41에서1타일셋과
+실제 자산 바이트를 다시 읽었고 기존12맵을 보존했다. 실제 AI 도구로 타일·객체3·장소의
+28MD/33페이지/27그림 조회가 일치했다. 정적 장소이며 도시 출입·판매 이벤트 맵이 아니다.
+개인 저장 근거는 `output/paw-food-place-install/`에 있다.
+빌드된 실제 자료집에서 `주황 음료` 검색으로 장소 카드·실제 썸네일·자체 AI 참고문서
+영역이 나타나는 것도 확인했다(브라우저 오류0).
 
 [Pixel Art World 규약](https://yms.main.jp/dotartworld/page1/rule.html)에 따라
 원본/가공 소재는 Git·공개 패키지에 넣지 않는다. 사용자 로컬 자료이며 공개 작품에는
