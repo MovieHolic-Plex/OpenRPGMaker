@@ -7,22 +7,52 @@ const sourceNames=Object.fromEntries(kits.sources.map(s=>[s.id,s.filename]));
 const conveni=JSON.parse(await readFile('src/assets/pixelArtWorldUrbanCatalog.json','utf8'))[0];
 sources[conveni.filename]={id:conveni.filename,filename:conveni.filename,url:conveni.downloadUrl,sha256:conveni.sha256,width:conveni.width,height:conveni.height,format:'tileset',tileSize:32,tilesPerRow:8};
 const xp=await withTsModule('src/project/pixelArtWorldAutotiles.ts','paw-city-xp.mjs',api=>({masks:api.XP_AUTOTILE_MASKS,normalize:api.normalizeXpAutotileMask}));
-const width=50,height=50,tiles=[],lookup=new Map(),placements=[],entrances=[];
+const layout=JSON.parse(await readFile('tiledata/pixel-art-world/city-layout.json','utf8'));
+const {width,height}=layout,tiles=[],lookup=new Map(),placements=[],entrances=[];
+if(width!==50||height!==50)throw Error('City layout must remain 50×50');
 function token(source,tile,layer,passage){
  const key=[source,tile,layer,passage].join(':');if(lookup.has(key))return lookup.get(key);
  if(!sources[source])throw Error('Unknown source '+source);
+ const definition=sources[source],tileCount=definition.format==='xp-autotile'?definition.variantMasks.length:definition.width*definition.height/(32*32);
+ if(!Number.isInteger(tile)||tile<0||tile>=tileCount)throw Error('Invalid source tile '+source+':'+tile);
  const id=tiles.length;tiles.push({source,tile,layer,passage});lookup.set(key,id);return id;
 }
 const pavement=token(conveni.filename,4,'lower','passable'),asphalt=token(conveni.filename,11,'lower','passable');
 const grass=token('ST-Park-E01.png',0,'lower','passable'),soil=token('ST-Park-E01.png',2,'lower','passable');
-const lowerTiles=Array(width*height).fill(pavement),upperTiles=Array(width*height).fill(-1);
-const at=(x,y)=>{if(x<0||y<0||x>=width||y>=height)throw Error(`Out of map ${x},${y}`);return y*width+x;};
-function fill(x,y,w,h,t){for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++)lowerTiles[at(x+dx,y+dy)]=t;}
-for(const x of [16,33])fill(x,0,4,50,asphalt);
-for(const y of [17,35])fill(0,y,50,4,asphalt);
-// Small lawns belong to individual parcels, not to the road/sidewalk network.
-fill(1,1,14,13,grass);fill(21,1,11,12,grass);fill(38,1,11,13,grass);
-fill(1,23,14,11,grass);fill(1,40,14,9,grass);fill(21,40,11,9,grass);
+const lowerTiles=Array(width*height).fill(grass),upperTiles=Array(width*height).fill(-1);
+const authoredWalkCells=new Set(),buildingOwner=new Map();
+const at=(x,y)=>{if(!Number.isInteger(x)||!Number.isInteger(y)||x<0||y<0||x>=width||y>=height)throw Error(`Out of map ${x},${y}`);return y*width+x;};
+function eachRect(box,visit){
+ if(!Number.isInteger(box.width)||!Number.isInteger(box.height)||box.width<1||box.height<1)throw Error('Invalid rectangle');
+ for(let dy=0;dy<box.height;dy++)for(let dx=0;dx<box.width;dx++)visit(at(box.x+dx,box.y+dy),box.x+dx,box.y+dy);
+}
+for(const zone of layout.zones)eachRect(zone.bbox,()=>{});
+for(const site of layout.sites){
+ const zone=layout.zones.find(z=>z.id===site.zoneId),b=site.bbox;
+ if(!zone||b.x<zone.bbox.x||b.y<zone.bbox.y||b.x+b.width>zone.bbox.x+zone.bbox.width||b.y+b.height>zone.bbox.y+zone.bbox.height)throw Error('Building outside its purpose zone '+site.id);
+ if(['conveni-front','diner-front'].includes(site.kitId)&&(b.height!==7||b.width<4))throw Error('Invalid shop bbox '+site.id);
+ eachRect(site.bbox,i=>{if(buildingOwner.has(i))throw Error(`Building bbox overlap: ${site.id} / ${buildingOwner.get(i)}`);buildingOwner.set(i,site.id);});
+ const kit=kits.kits.find(k=>k.id===site.kitId);
+ if(kit&&(kit.width!==site.bbox.width||kit.height!==site.bbox.height))throw Error('Kit bbox mismatch '+site.id);
+}
+if(layout.sites.length!==layout.constraints.buildingCount)throw Error('Wrong building count');
+const surfaces={pavement,soil};
+for(const area of layout.surfaceAreas){
+ if(!(area.surface in surfaces))throw Error('Unknown walk surface '+area.surface);
+ eachRect(area.bbox,i=>{if(buildingOwner.has(i))throw Error(`Walkway overlaps building: ${area.id}`);lowerTiles[i]=surfaces[area.surface];authoredWalkCells.add(i);});
+}
+for(const road of layout.roads)eachRect(road.bbox,i=>{
+ if(buildingOwner.has(i))throw Error('Road overlaps building '+road.id);
+ lowerTiles[i]=asphalt;authoredWalkCells.delete(i);
+});
+for(const crossing of layout.crossings)eachRect(crossing.bbox,i=>{
+ if(lowerTiles[i]!==asphalt)throw Error('Crossing outside asphalt '+crossing.id);
+ upperTiles[i]=token(conveni.filename,crossing.tile,'upper','passable');authoredWalkCells.add(i);
+});
+for(const marking of layout.laneMarkings??[])for(const cell of marking.cells){
+ const i=at(cell.x,cell.y);if(lowerTiles[i]!==asphalt||upperTiles[i]!==-1)throw Error('Lane marking outside clear road '+marking.id);
+ upperTiles[i]=token(marking.source,marking.tile,'upper','passable');
+}
 function placeKit(id,x,y,label,room){
  const kit=kits.kits.find(k=>k.id===id);if(!kit)throw Error('Missing kit '+id);
  if(kit.kind==='building'){
@@ -34,6 +64,7 @@ function placeKit(id,x,y,label,room){
  }
  for(const layer of ['lowerTiles','upperTiles'])kit[layer].forEach((cell,i)=>{
   if(!cell)return;const target=at(x+i%kit.width,y+Math.floor(i/kit.width));
+  if(kit.kind==='prop'&&buildingOwner.has(target))throw Error('Prop overlaps building '+id);
   if(layer==='upperTiles'&&upperTiles[target]!==-1)throw Error(`Upper overlap ${id}`);
   const role=layer==='lowerTiles'?'lower':'upper';
   const value=token(sourceNames[cell.source],cell.tile,role,kit.kind==='ground'?'passable':'solid');
@@ -44,7 +75,7 @@ function placeKit(id,x,y,label,room){
 }
 function stamp(x,y,sx,sy,w,h,filename=conveni.filename,passage='solid'){
  for(let dy=0;dy<h;dy++)for(let dx=0;dx<w;dx++){
-  const i=at(x+dx,y+dy);if(upperTiles[i]!==-1)throw Error(`Prop overlap ${x+dx},${y+dy}`);
+  const i=at(x+dx,y+dy);if(buildingOwner.has(i))throw Error(`Prop overlaps building ${x+dx},${y+dy}`);if(upperTiles[i]!==-1)throw Error(`Prop overlap ${x+dx},${y+dy}`);
   upperTiles[i]=token(filename,(sy+dy)*8+sx+dx,'upper',passage);
  }
 }
@@ -63,38 +94,59 @@ function shop(x,y,w,diner=false){
  const item={kitId:diner?'diner-front':'conveni-front',name:diner?'모퉁이 식당':'초록 편의점',x,y,width:w,height:h,kind:'building'};
  placements.push(item);entrances.push({...item,entrance:{x:x+door,y:y+h-1},approach:{x:x+door,y:y+h},room:diner?'fastfood-compact-diner':'conveni-compact-shop',entranceWidth:2});
 }
-placeKit('school-main',2,2,'햇살 학교','school-classroom-north');
-placeKit('clinic-small',22,3,'동네 의원','clinic-waiting-exam');
-placeKit('apartment-dark-roof',38,3,'동네 도서관','library-compact');
-shop(22,24,10);shop(39,24,9,true);
-placeKit('home-red-gable',3,40,'붉은 지붕집','home-compact');
-placeKit('home-red-gable',24,40,'작은 주택','home-compact');
-placeKit('apartment-dark-roof',38,40,'골목 사무실','office-compact');
-// Tile 14 is a horizontal stripe; tile 6 is a vertical stripe. Zebra bars
-// run across the pedestrian travel direction, with the original transparent gaps.
-for(const y of [17,35])for(const x of [13,14,21,22,30,31,38,39])for(let dy=0;dy<4;dy++)upperTiles[at(x,y+dy)]=token(conveni.filename,14,'upper','passable');
-for(const x of [16,33])for(const y of [14,15,22,23,32,33,40,41])for(let dx=0;dx<4;dx++)upperTiles[at(x+dx,y)]=token(conveni.filename,6,'upper','passable');
-// Small park, a path, playground and benches.
-fill(6,23,2,11,soil);fill(1,29,14,2,soil);
-placeKit('park-swings',1,24);placeKit('park-slide',9,24);
-placeKit('park-bench-front',2,31);placeKit('park-bench-front',10,31);
-placeKit('park-tree-planter',10,40);placeKit('park-tree-planter',28,10);
-// Front benches and bicycles make usable forecourts rather than vacant lawns.
-stamp(2,14,4,21,3,1);stamp(10,14,4,21,3,1);stamp(24,13,4,21,3,1);stamp(40,14,4,21,3,1);
-stamp(30,31,0,29,2,3);stamp(46,31,0,29,2,3);
-stamp(3,12,0,22,3,1,'ST-Town-E01.png');stamp(21,46,0,22,3,1,'ST-Town-E01.png');
-for(const [x,y]of[[13,12],[13,30]]){
- // Sparse front-facing signal: pole 192/200/208/216, arm 201, lamps 202.
- // Source cells 193–195 are a separate white board; 209–211 are the reverse
- // signal. A rectangular crop includes both and leaves a dangling assembly.
- stamp(x,y,0,24,1,4);
- stamp(x+1,y+1,1,25,2,1);
+// Geometry comes from purpose-based zones and routes, before any source tiles are placed.
+for(const site of layout.sites){
+ const {x,y,width:w}=site.bbox;
+ if(site.kitId==='conveni-front'||site.kitId==='diner-front')shop(x,y,w,site.kitId==='diner-front');
+ else placeKit(site.kitId,x,y,site.name,site.room);
+ Object.assign(placements.at(-1),{siteId:site.id,zoneId:site.zoneId,name:site.name});
+ Object.assign(entrances.at(-1),{siteId:site.id,zoneId:site.zoneId,name:site.name,room:site.room});
+}
+for(const prop of layout.props){
+ if(prop.kitId)placeKit(prop.kitId,prop.x,prop.y);
+ else if(prop.assembly==='hedge'){
+  if(prop.width<3)throw Error('Hedge needs both end caps');
+  for(let dx=0;dx<prop.width;dx++){const col=dx===0?0:dx===prop.width-1?2:1;stamp(prop.x+dx,prop.y,col,19,1,2,'ST-Park-E01.png');}
+ }else if(prop.assembly==='front-signal'){
+  // Pole 192/200/208/216, arm201, lamps202. No white board or reverse head.
+  stamp(prop.x,prop.y,0,24,1,4);stamp(prop.x+1,prop.y+1,1,25,2,1);
+ }else{const r=prop.sourceRect;stamp(prop.x,prop.y,r.x,r.y,r.width,r.height,prop.source);}
 }
 const walk=i=>tiles[lowerTiles[i]].passage==='passable'&&(upperTiles[i]<0||tiles[upperTiles[i]].passage==='passable');
-const start={x:20,y:22},queue=[at(start.x,start.y)],seen=new Set(queue);
-for(let q=0;q<queue.length;q++){const x=queue[q]%width,y=Math.floor(queue[q]/width);for(const[nx,ny]of[[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){if(nx<0||ny<0||nx>=width||ny>=height)continue;const i=at(nx,ny);if(!seen.has(i)&&walk(i)){seen.add(i);queue.push(i);}}}
-for(const e of entrances)for(let dx=0;dx<e.entranceWidth;dx++)if(!seen.has(at(e.approach.x+dx,e.approach.y)))throw Error('Unreachable entrance: '+e.name+' leaf '+dx);
-const plan={id:'paw-city-50',name:'햇살동 · 도시 50×50',width,height,tileSize:32,sources:Object.values(sources),tiles,lowerTiles,upperTiles,placements,entrances,start,reachableCells:seen.size,notes:'원본 파일 SHA 확인 후 tiles 사전의 각32px 조각을 같은번호 atlas에 합성한다. XP source의 tile은variantMasks 인덱스다. 각 tile은layer/passage별로 분리되어 투명도와 통행을 혼동하지 않는다. 전체 lower→upper 순서. 모든 시설 approach는 시작점에서 연결된다. 시설 내부와 이동 이벤트는 사용자 원본을 가져온 뒤 별도로 생성한다.'};
+const authoredWalk=i=>authoredWalkCells.has(i)&&walk(i);
+function flood(start,allowed){
+ const first=at(start.x,start.y);if(!allowed(first))throw Error(`Blocked route start ${start.x},${start.y}`);
+ const queue=[first],parents=new Map([[first,-1]]);
+ for(let q=0;q<queue.length;q++){
+  const x=queue[q]%width,y=Math.floor(queue[q]/width);
+  for(const[nx,ny]of[[x-1,y],[x+1,y],[x,y-1],[x,y+1]]){
+   if(nx<0||ny<0||nx>=width||ny>=height)continue;
+   const i=at(nx,ny);if(!parents.has(i)&&allowed(i)){parents.set(i,queue[q]);queue.push(i);}
+  }
+ }
+ return parents;
+}
+const start=layout.start,runtimeReach=flood(start,walk),pedestrianReach=flood(start,authoredWalk);
+const entranceChecks=[];
+for(const e of entrances)for(let dx=0;dx<e.entranceWidth;dx++){
+ const i=at(e.approach.x+dx,e.approach.y);
+ if(!pedestrianReach.has(i))throw Error('Entrance lacks authored pedestrian route: '+e.name+' leaf '+dx);
+ entranceChecks.push({siteId:e.siteId,x:e.approach.x+dx,y:e.approach.y});
+}
+const nodes=[...layout.graph.hubs,...entrances.map(e=>({id:e.siteId,...e.approach,kind:'facility',zoneId:e.zoneId}))];
+const nodeById=new Map(nodes.map(n=>[n.id,n]));
+if(nodeById.size!==nodes.length)throw Error('Duplicate graph node');
+for(const n of nodes)if(!pedestrianReach.has(at(n.x,n.y)))throw Error('Disconnected graph node '+n.id);
+const graphEdges=layout.graph.edges.map(edge=>{
+ const a=nodeById.get(edge.from),b=nodeById.get(edge.to);
+ if(!a||!b)throw Error('Unknown graph endpoint');
+ const parents=flood(a,authoredWalk),end=at(b.x,b.y);
+ if(!parents.has(end))throw Error(`Missing pedestrian graph edge ${edge.from} -> ${edge.to}`);
+ const cells=[];for(let i=end;i!==-1;i=parents.get(i))cells.push(i);cells.reverse();
+ return {...edge,distance:cells.length-1,cells};
+});
+const design={...layout,graph:{nodes,edges:graphEdges},generationChecks:{buildingBboxes:layout.sites.length,entranceLeaves:entranceChecks,authoredWalkReachableCells:pedestrianReach.size,graphEdges:graphEdges.length}};
+const plan={id:'paw-city-50',name:'햇살동 · 도시 50×50',width,height,tileSize:32,sources:Object.values(sources),tiles,lowerTiles,upperTiles,placements,entrances,start,reachableCells:runtimeReach.size,design,notes:'사용자가 받은 원본 SHA 확인 후 합성한다. 설계 구역→건물 bbox/보행 geometry→타일 순서. 동서 생활도로와 남쪽 접속로, 학교 마당/상가 중심/주거 골목/공원. design.graph의 cells는 실제 보행 지면과 지정 횡단보도로 계산한 연결이며 잔디·무표시 도로 지름길을 허용하지 않는다. 각 tile의 layer/passage 별도. 전체 lower→upper 순서. 시설 내부와 이동 이벤트는 blueprint 입구를 따라 별도 생성한다.'};
 await writeFile('tiledata/pixel-art-world/city-50.json',JSON.stringify(plan,null,2)+'\n');
 await writeFile('src/assets/pixelArtWorldCity.json',JSON.stringify(plan)+'\n');
-console.log({width,height,tiles:tiles.length,buildings:entrances.length,reachable:seen.size});
+console.log({width,height,tiles:tiles.length,buildings:entrances.length,reachable:runtimeReach.size,authoredWalkReachable:pedestrianReach.size,graphEdges:graphEdges.length});

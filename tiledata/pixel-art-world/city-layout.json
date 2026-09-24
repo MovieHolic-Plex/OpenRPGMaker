@@ -1,0 +1,965 @@
+{
+  "id": "paw-neighborhood-purpose-v2",
+  "width": 50,
+  "height": 50,
+  "purpose": "학교를 중심으로 도보 생활이 가능한 작은 동네. 북쪽 공공시설과 상가, 남쪽 주거 골목과 공원을 한 생활도로로 연결한다.",
+  "references": [
+    {
+      "url": "https://rpgmakerweb.com/blog/mapping-towns",
+      "title": "RPG Maker — Mapping: Towns",
+      "usedFor": "시설 목적, 생활 중심, 짧고 자연스러운 접근, 등간격 격자와 무의미한 빈 공간 피하기"
+    },
+    {
+      "url": "https://www.mapeditor.org/2026/07/14/focus-on-level-design-with-automapping.html",
+      "title": "Tiled — Focus on Level Design with Automapping",
+      "published": "2026-07-14",
+      "usedFor": "의미 있는 blueprint를 타일 출력과 분리"
+    },
+    {
+      "url": "https://arxiv.org/abs/2407.11294",
+      "title": "COHO: Context-Sensitive City-Scale Hierarchical Urban Layout Generation",
+      "published": "2024-07-16",
+      "usedFor": "건물·구역·연결의 계층을 명시적으로 기록",
+      "limit": "학습 모델·논문 알고리즘·평가를 구현하거나 재현한 것이 아니다."
+    }
+  ],
+  "zones": [
+    {
+      "id": "school-campus",
+      "name": "학교와 쉬는 마당",
+      "bbox": {
+        "x": 1,
+        "y": 1,
+        "width": 18,
+        "height": 23
+      },
+      "purpose": "학교 정문에서 앞마당을 거쳐 지정 횡단보도로 연결. 공터는 공이 있는 휴식·놀이 마당."
+    },
+    {
+      "id": "civic-walk",
+      "name": "도서관·의원 보행로",
+      "bbox": {
+        "x": 21,
+        "y": 0,
+        "width": 27,
+        "height": 14
+      },
+      "purpose": "두 시설의 남향 정문을 짧은 공유 보행로로 묶는다."
+    },
+    {
+      "id": "daily-center",
+      "name": "편의점·식당 생활 중심",
+      "bbox": {
+        "x": 19,
+        "y": 14,
+        "width": 30,
+        "height": 12
+      },
+      "purpose": "생활도로 북측 보도에 가까운 두 상가와 공공시설 연결 골목."
+    },
+    {
+      "id": "residential-lane",
+      "name": "엇갈린 집과 작은 접속로",
+      "bbox": {
+        "x": 1,
+        "y": 32,
+        "width": 34,
+        "height": 17
+      },
+      "purpose": "두 집을 서로 다른 깊이에 배치하고 좁은 앞길을 공유. 사무실은 접속로 동쪽."
+    },
+    {
+      "id": "neighborhood-park",
+      "name": "상가 맞은편 공원",
+      "bbox": {
+        "x": 35,
+        "y": 32,
+        "width": 15,
+        "height": 18
+      },
+      "purpose": "횡단보도에서 놀이 공간과 벤치로 곧장 이어지는 입구와 내부 경로."
+    }
+  ],
+  "sites": [
+    {
+      "id": "school",
+      "kitId": "school-main",
+      "bbox": {
+        "x": 3,
+        "y": 3,
+        "width": 13,
+        "height": 10
+      },
+      "name": "햇살 학교",
+      "room": "school-classroom-north",
+      "zoneId": "school-campus"
+    },
+    {
+      "id": "library",
+      "kitId": "apartment-dark-roof",
+      "bbox": {
+        "x": 23,
+        "y": 1,
+        "width": 10,
+        "height": 9
+      },
+      "name": "동네 도서관",
+      "room": "library-compact",
+      "zoneId": "civic-walk"
+    },
+    {
+      "id": "clinic",
+      "kitId": "clinic-small",
+      "bbox": {
+        "x": 37,
+        "y": 4,
+        "width": 9,
+        "height": 7
+      },
+      "name": "동네 의원",
+      "room": "clinic-waiting-exam",
+      "zoneId": "civic-walk"
+    },
+    {
+      "id": "conveni",
+      "kitId": "conveni-front",
+      "bbox": {
+        "x": 20,
+        "y": 15,
+        "width": 10,
+        "height": 7
+      },
+      "name": "초록 편의점",
+      "room": "conveni-compact-shop",
+      "zoneId": "daily-center"
+    },
+    {
+      "id": "diner",
+      "kitId": "diner-front",
+      "bbox": {
+        "x": 36,
+        "y": 16,
+        "width": 9,
+        "height": 7
+      },
+      "name": "모퉁이 식당",
+      "room": "fastfood-compact-diner",
+      "zoneId": "daily-center"
+    },
+    {
+      "id": "home-west",
+      "kitId": "home-red-gable",
+      "bbox": {
+        "x": 3,
+        "y": 33,
+        "width": 6,
+        "height": 9
+      },
+      "name": "붉은 지붕집",
+      "room": "home-compact",
+      "zoneId": "residential-lane"
+    },
+    {
+      "id": "home-court-building",
+      "kitId": "home-red-gable",
+      "bbox": {
+        "x": 12,
+        "y": 36,
+        "width": 6,
+        "height": 9
+      },
+      "name": "작은 주택",
+      "room": "home-compact",
+      "zoneId": "residential-lane"
+    },
+    {
+      "id": "office",
+      "kitId": "apartment-dark-roof",
+      "bbox": {
+        "x": 25,
+        "y": 33,
+        "width": 10,
+        "height": 9
+      },
+      "name": "골목 사무실",
+      "room": "office-compact",
+      "zoneId": "residential-lane"
+    }
+  ],
+  "surfaceAreas": [
+    {
+      "id": "school-forecourt",
+      "surface": "pavement",
+      "bbox": {
+        "x": 3,
+        "y": 13,
+        "width": 13,
+        "height": 3
+      }
+    },
+    {
+      "id": "school-recess-yard",
+      "surface": "soil",
+      "bbox": {
+        "x": 3,
+        "y": 16,
+        "width": 13,
+        "height": 6
+      }
+    },
+    {
+      "id": "school-gate-walk",
+      "surface": "pavement",
+      "bbox": {
+        "x": 9,
+        "y": 13,
+        "width": 2,
+        "height": 13
+      }
+    },
+    {
+      "id": "school-civic-link",
+      "surface": "pavement",
+      "bbox": {
+        "x": 15,
+        "y": 13,
+        "width": 5,
+        "height": 2
+      }
+    },
+    {
+      "id": "civic-lane",
+      "surface": "pavement",
+      "bbox": {
+        "x": 18,
+        "y": 12,
+        "width": 29,
+        "height": 2
+      }
+    },
+    {
+      "id": "library-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 25,
+        "y": 10,
+        "width": 7,
+        "height": 2
+      }
+    },
+    {
+      "id": "clinic-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 38,
+        "y": 11,
+        "width": 7,
+        "height": 2
+      }
+    },
+    {
+      "id": "center-passage",
+      "surface": "pavement",
+      "bbox": {
+        "x": 32,
+        "y": 12,
+        "width": 2,
+        "height": 14
+      }
+    },
+    {
+      "id": "conveni-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 20,
+        "y": 22,
+        "width": 10,
+        "height": 2
+      }
+    },
+    {
+      "id": "diner-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 36,
+        "y": 23,
+        "width": 9,
+        "height": 1
+      }
+    },
+    {
+      "id": "main-north-sidewalk",
+      "surface": "pavement",
+      "bbox": {
+        "x": 0,
+        "y": 23,
+        "width": 50,
+        "height": 2
+      }
+    },
+    {
+      "id": "main-south-sidewalk",
+      "surface": "pavement",
+      "bbox": {
+        "x": 0,
+        "y": 30,
+        "width": 50,
+        "height": 2
+      }
+    },
+    {
+      "id": "lane-west-sidewalk",
+      "surface": "pavement",
+      "bbox": {
+        "x": 18,
+        "y": 30,
+        "width": 1,
+        "height": 17
+      }
+    },
+    {
+      "id": "lane-east-sidewalk",
+      "surface": "pavement",
+      "bbox": {
+        "x": 22,
+        "y": 30,
+        "width": 2,
+        "height": 17
+      }
+    },
+    {
+      "id": "lane-end",
+      "surface": "pavement",
+      "bbox": {
+        "x": 17,
+        "y": 47,
+        "width": 7,
+        "height": 2
+      }
+    },
+    {
+      "id": "home-foot-lane",
+      "surface": "pavement",
+      "bbox": {
+        "x": 10,
+        "y": 31,
+        "width": 2,
+        "height": 15
+      }
+    },
+    {
+      "id": "home-west-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 3,
+        "y": 42,
+        "width": 8,
+        "height": 2
+      }
+    },
+    {
+      "id": "home-court-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 12,
+        "y": 45,
+        "width": 6,
+        "height": 2
+      }
+    },
+    {
+      "id": "office-front",
+      "surface": "pavement",
+      "bbox": {
+        "x": 25,
+        "y": 42,
+        "width": 10,
+        "height": 2
+      }
+    },
+    {
+      "id": "office-lane-link",
+      "surface": "pavement",
+      "bbox": {
+        "x": 23,
+        "y": 43,
+        "width": 3,
+        "height": 2
+      }
+    },
+    {
+      "id": "park-gateway",
+      "surface": "pavement",
+      "bbox": {
+        "x": 39,
+        "y": 31,
+        "width": 2,
+        "height": 9
+      }
+    },
+    {
+      "id": "park-cross-path",
+      "surface": "soil",
+      "bbox": {
+        "x": 36,
+        "y": 39,
+        "width": 12,
+        "height": 3
+      }
+    },
+    {
+      "id": "park-back-path",
+      "surface": "soil",
+      "bbox": {
+        "x": 39,
+        "y": 39,
+        "width": 2,
+        "height": 8
+      }
+    },
+    {
+      "id": "swings-pad",
+      "surface": "soil",
+      "bbox": {
+        "x": 36,
+        "y": 34,
+        "width": 3,
+        "height": 4
+      }
+    },
+    {
+      "id": "slide-pad",
+      "surface": "soil",
+      "bbox": {
+        "x": 42,
+        "y": 34,
+        "width": 5,
+        "height": 4
+      }
+    },
+    {
+      "id": "swings-approach",
+      "surface": "soil",
+      "bbox": {
+        "x": 37,
+        "y": 37,
+        "width": 2,
+        "height": 4
+      }
+    },
+    {
+      "id": "slide-approach",
+      "surface": "soil",
+      "bbox": {
+        "x": 44,
+        "y": 37,
+        "width": 2,
+        "height": 4
+      }
+    },
+    {
+      "id": "conveni-vending-pad",
+      "surface": "pavement",
+      "bbox": {
+        "x": 30,
+        "y": 21,
+        "width": 2,
+        "height": 3
+      }
+    },
+    {
+      "id": "diner-vending-pad",
+      "surface": "pavement",
+      "bbox": {
+        "x": 45,
+        "y": 20,
+        "width": 2,
+        "height": 3
+      }
+    }
+  ],
+  "roads": [
+    {
+      "id": "main-street",
+      "role": "동서 생활도로 한 축",
+      "bbox": {
+        "x": 0,
+        "y": 25,
+        "width": 50,
+        "height": 5
+      }
+    },
+    {
+      "id": "residential-access",
+      "role": "주거·사무실 접속로, 남쪽에서 끝남",
+      "bbox": {
+        "x": 19,
+        "y": 30,
+        "width": 3,
+        "height": 17
+      }
+    }
+  ],
+  "crossings": [
+    {
+      "id": "school-crossing",
+      "bbox": {
+        "x": 9,
+        "y": 25,
+        "width": 2,
+        "height": 5
+      },
+      "tile": 14
+    },
+    {
+      "id": "park-crossing",
+      "bbox": {
+        "x": 39,
+        "y": 25,
+        "width": 2,
+        "height": 5
+      },
+      "tile": 14
+    },
+    {
+      "id": "lane-crossing",
+      "bbox": {
+        "x": 19,
+        "y": 43,
+        "width": 3,
+        "height": 2
+      },
+      "tile": 6
+    }
+  ],
+  "props": [
+    {
+      "kitId": "park-swings",
+      "x": 36,
+      "y": 34
+    },
+    {
+      "kitId": "park-slide",
+      "x": 42,
+      "y": 34
+    },
+    {
+      "kitId": "park-bench-front",
+      "x": 36,
+      "y": 42
+    },
+    {
+      "kitId": "park-bench-front",
+      "x": 44,
+      "y": 42
+    },
+    {
+      "kitId": "park-sandpit",
+      "x": 35,
+      "y": 45
+    },
+    {
+      "kitId": "park-lamp",
+      "x": 41,
+      "y": 41
+    },
+    {
+      "kitId": "park-tree-planter",
+      "x": 0,
+      "y": 15
+    },
+    {
+      "kitId": "park-tree-planter",
+      "x": 16,
+      "y": 1
+    },
+    {
+      "kitId": "park-tree-planter",
+      "x": 45,
+      "y": 14
+    },
+    {
+      "kitId": "park-tree-planter",
+      "x": 0,
+      "y": 44
+    },
+    {
+      "kitId": "park-tree-planter",
+      "x": 45,
+      "y": 44
+    },
+    {
+      "id": "school-front-bench",
+      "source": "ST-Convi-E01.png",
+      "sourceRect": {
+        "x": 4,
+        "y": 21,
+        "width": 3,
+        "height": 1
+      },
+      "x": 3,
+      "y": 13
+    },
+    {
+      "id": "library-front-bench",
+      "source": "ST-Convi-E01.png",
+      "sourceRect": {
+        "x": 4,
+        "y": 21,
+        "width": 3,
+        "height": 1
+      },
+      "x": 24,
+      "y": 11
+    },
+    {
+      "id": "school-bicycles",
+      "source": "ST-Town-E01.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 22,
+        "width": 3,
+        "height": 1
+      },
+      "x": 12,
+      "y": 14
+    },
+    {
+      "id": "home-bicycles",
+      "source": "ST-Town-E01.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 22,
+        "width": 3,
+        "height": 1
+      },
+      "x": 4,
+      "y": 43
+    },
+    {
+      "id": "school-play-ball",
+      "source": "ST-Schl-E01.png",
+      "sourceRect": {
+        "x": 3,
+        "y": 45,
+        "width": 1,
+        "height": 1
+      },
+      "x": 5,
+      "y": 19
+    },
+    {
+      "id": "conveni-vending",
+      "source": "ST-Convi-E01.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 29,
+        "width": 2,
+        "height": 3
+      },
+      "x": 30,
+      "y": 21
+    },
+    {
+      "id": "diner-vending",
+      "source": "ST-Convi-E01.png",
+      "sourceRect": {
+        "x": 0,
+        "y": 29,
+        "width": 2,
+        "height": 3
+      },
+      "x": 45,
+      "y": 20
+    },
+    {
+      "id": "school-crossing-signal",
+      "assembly": "front-signal",
+      "x": 6,
+      "y": 20
+    },
+    {
+      "kitId": "park-tree-planter",
+      "x": 33,
+      "y": 3
+    },
+    {
+      "id": "school-back",
+      "assembly": "hedge",
+      "x": 3,
+      "y": 0,
+      "width": 13
+    },
+    {
+      "id": "clinic-back",
+      "assembly": "hedge",
+      "x": 37,
+      "y": 1,
+      "width": 9
+    },
+    {
+      "id": "school-front-west",
+      "assembly": "hedge",
+      "x": 3,
+      "y": 21,
+      "width": 3
+    },
+    {
+      "id": "school-front-east",
+      "assembly": "hedge",
+      "x": 11,
+      "y": 21,
+      "width": 5
+    },
+    {
+      "id": "diner-back",
+      "assembly": "hedge",
+      "x": 34,
+      "y": 14,
+      "width": 3
+    },
+    {
+      "id": "park-entry-west",
+      "assembly": "hedge",
+      "x": 35,
+      "y": 31,
+      "width": 4
+    },
+    {
+      "id": "park-entry-east",
+      "assembly": "hedge",
+      "x": 41,
+      "y": 31,
+      "width": 6
+    }
+  ],
+  "graph": {
+    "hubs": [
+      {
+        "id": "school-gate",
+        "x": 9,
+        "y": 24
+      },
+      {
+        "id": "west-arrival",
+        "x": 10,
+        "y": 31
+      },
+      {
+        "id": "center-north",
+        "x": 33,
+        "y": 24
+      },
+      {
+        "id": "civic-lane",
+        "x": 33,
+        "y": 13
+      },
+      {
+        "id": "park-gate",
+        "x": 39,
+        "y": 31
+      },
+      {
+        "id": "park-junction",
+        "x": 39,
+        "y": 40
+      },
+      {
+        "id": "home-court",
+        "x": 17,
+        "y": 45
+      },
+      {
+        "id": "office-gate",
+        "x": 23,
+        "y": 31
+      }
+    ],
+    "edges": [
+      {
+        "from": "school",
+        "to": "school-gate",
+        "purpose": "통학"
+      },
+      {
+        "from": "school-gate",
+        "to": "west-arrival",
+        "purpose": "학교 앞 횡단보도"
+      },
+      {
+        "from": "school-gate",
+        "to": "center-north",
+        "purpose": "학교에서 생활상가"
+      },
+      {
+        "from": "center-north",
+        "to": "conveni",
+        "purpose": "장보기"
+      },
+      {
+        "from": "center-north",
+        "to": "diner",
+        "purpose": "식사"
+      },
+      {
+        "from": "center-north",
+        "to": "civic-lane",
+        "purpose": "상가 뒤 공공시설"
+      },
+      {
+        "from": "civic-lane",
+        "to": "library",
+        "purpose": "도서관 방문"
+      },
+      {
+        "from": "civic-lane",
+        "to": "clinic",
+        "purpose": "의원 방문"
+      },
+      {
+        "from": "center-north",
+        "to": "park-gate",
+        "purpose": "생활중심에서 공원 횡단보도"
+      },
+      {
+        "from": "park-gate",
+        "to": "park-junction",
+        "purpose": "놀이·휴식"
+      },
+      {
+        "from": "park-gate",
+        "to": "office-gate",
+        "purpose": "남쪽 보도"
+      },
+      {
+        "from": "west-arrival",
+        "to": "home-west",
+        "purpose": "집 앞 보행 골목"
+      },
+      {
+        "from": "west-arrival",
+        "to": "home-court",
+        "purpose": "엇갈린 주거 마당"
+      },
+      {
+        "from": "home-court",
+        "to": "home-court-building",
+        "purpose": "두 번째 주택"
+      },
+      {
+        "from": "home-court",
+        "to": "office",
+        "purpose": "접속로 횡단"
+      },
+      {
+        "from": "office-gate",
+        "to": "office",
+        "purpose": "사무실 앞 짧은 접근"
+      }
+    ]
+  },
+  "start": {
+    "x": 10,
+    "y": 31
+  },
+  "constraints": {
+    "buildingCount": 8,
+    "buildingBboxesDisjoint": true,
+    "buildingBboxesInsideMap": true,
+    "approachLeavesConnectedOnAuthoredWalkways": true,
+    "graphNodesAndEdgesConnectedOnAuthoredWalkways": true,
+    "sourceUpperAssembliesDoNotOverlap": true,
+    "grassAndUnmarkedRoadsDoNotCountAsAuthoredWalkways": true
+  },
+  "laneMarkings": [
+    {
+      "id": "main-center-dashes",
+      "source": "ST-Convi-E01.png",
+      "tile": 14,
+      "cells": [
+        {
+          "x": 0,
+          "y": 27
+        },
+        {
+          "x": 1,
+          "y": 27
+        },
+        {
+          "x": 4,
+          "y": 27
+        },
+        {
+          "x": 5,
+          "y": 27
+        },
+        {
+          "x": 12,
+          "y": 27
+        },
+        {
+          "x": 13,
+          "y": 27
+        },
+        {
+          "x": 16,
+          "y": 27
+        },
+        {
+          "x": 17,
+          "y": 27
+        },
+        {
+          "x": 24,
+          "y": 27
+        },
+        {
+          "x": 25,
+          "y": 27
+        },
+        {
+          "x": 28,
+          "y": 27
+        },
+        {
+          "x": 29,
+          "y": 27
+        },
+        {
+          "x": 32,
+          "y": 27
+        },
+        {
+          "x": 33,
+          "y": 27
+        },
+        {
+          "x": 36,
+          "y": 27
+        },
+        {
+          "x": 37,
+          "y": 27
+        },
+        {
+          "x": 44,
+          "y": 27
+        },
+        {
+          "x": 45,
+          "y": 27
+        },
+        {
+          "x": 48,
+          "y": 27
+        },
+        {
+          "x": 49,
+          "y": 27
+        }
+      ],
+      "purpose": "차로 방향 식별. 횡단보도와 접속로 앞은 비운다. 표시 자체는 보행 연결을 새로 만들지 않는다."
+    }
+  ]
+}
