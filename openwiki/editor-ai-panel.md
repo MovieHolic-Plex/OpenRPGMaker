@@ -1,6 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
 # Editor AI Panel & Tools
+
+## 도구 사용량 (2026-09-25)
+
+AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화 기록, 활동 로그에서 조수가 부른 도구를 센다.
+같은 호출이 여러 기록에 있으면 한 번만 센다. `pi:시공` 같은 역할 이름은 도구가 아니라서 빼며, 개별 도구
+(예: `web_search`)는 영수증과 대화 항목에 있을 때만 보인다. 「JSON으로 보내기」는 그 표를
+`ai-tool-usage-YYYY-MM-DD.json` 으로 내려받는다. 집계는 `src/ai/toolUsageReport.ts`, 화면은
+`src/editor/panels/aiToolUsagePanel.ts`.
 ## 새 프로젝트 게임 기획 전달 (2026-09-22)
 
 프리셋별 최대 5문항 인터뷰의 확정 기획은 `Project.gameDesignBrief`에 저장한다.
