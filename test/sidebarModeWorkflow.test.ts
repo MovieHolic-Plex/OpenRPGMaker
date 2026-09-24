@@ -83,11 +83,10 @@ describe("mode-specific sidebar painting workflow", () => {
     vi.useRealTimers();
   });
 
-  it("mounts the beginner tile workflow without opening or pinning a flyout", () => {
+  it("mounts the beginner tile workflow as the persistent draw pane", () => {
     expect(find("basic-tile-grid")).not.toBeNull();
     expect(find("basic-tile-search")).not.toBeNull();
     expect(find("selected-tile-status")).not.toBeNull();
-    expect(find("basic-rail-flyout")).toBeNull();
     expect(host.querySelectorAll('[data-testid="basic-tile-grid"]')).toHaveLength(1);
   });
 
@@ -99,7 +98,6 @@ describe("mode-specific sidebar painting workflow", () => {
     expect(editorState.get()).toMatchObject({ selectedTile: 0, tool: "paint", paintShape: "pen", activePaletteStamp: null });
     expect(find("basic-tile-grid")).not.toBeNull();
     expect(document.activeElement).toBe(find("basic-tile-0"));
-    expect(find("basic-rail-flyout")).toBeNull();
   });
 
   it("preserves custom atlas cells and routes selection to the authored layer in the persistent panel", () => {
@@ -126,16 +124,6 @@ describe("mode-specific sidebar painting workflow", () => {
     expect(find("basic-tile-grid")).toBeNull();
     selectSidebarLayer("lower");
     expect(editorState.get()).toMatchObject({ layer: "lower", tool: "paint" });
-    expect(find("basic-tile-grid")).not.toBeNull();
-  });
-
-  it("keeps map flyout Escape focus return without dismissing the persistent picker", () => {
-    control("basic-rail-toggle-maps").click();
-    expect(find("basic-map-list-host")).not.toBeNull();
-    control("basic-flyout-close").focus();
-    document.activeElement!.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-    expect(find("basic-rail-flyout")).toBeNull();
-    expect(document.activeElement).toBe(find("basic-rail-toggle-maps"));
     expect(find("basic-tile-grid")).not.toBeNull();
   });
 
@@ -206,7 +194,6 @@ describe("mode-specific sidebar painting workflow", () => {
     setEditorUiMode("beginner", null);
     renderTilePalette(host);
     expect(editorState.get()).toMatchObject({ selectedTile: 0, tool: "fill", layer: "lower" });
-    expect(find("basic-rail-flyout")).toBeNull();
     expect(find("basic-tile-grid")).not.toBeNull();
   });
 });

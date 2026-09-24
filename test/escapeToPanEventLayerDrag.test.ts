@@ -126,7 +126,6 @@ describe("escapeOwnedByTransientSurface", () => {
   });
 
   it.each([
-    ["기본 레일 플라이아웃", '<div data-testid="basic-rail-flyout"></div>'],
     ["조수 하네스/툴 브라우저/마을 정보 모달", '<div class="database-modal-backdrop"></div>'],
     ["변경 비교 오버레이", '<div data-testid="ai-change-wide"></div>'],
     ["열린 컴포저 팝오버", '<div class="ai-composer-popover"></div>'],
@@ -215,7 +214,7 @@ describe("EditScene.handleEscapeKey", () => {
   });
 
   it("팝오버가 떠 있으면 도구를 바꾸지 않는다 — 한 Esc 로 두 가지가 일어나면 안 된다", () => {
-    document.body.innerHTML = '<div data-testid="basic-rail-flyout"></div>';
+    document.body.innerHTML = '<div class="ai-composer-popover"></div>';
     expect(escapeHarness().handleEscapeKey()).toBe(false);
     expect(editorState.get().tool).toBe("paint");
   });

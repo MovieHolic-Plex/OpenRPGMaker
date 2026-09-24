@@ -660,3 +660,24 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   outline: var(--focus-outline);
   outline-offset: var(--stroke-2, 2px);
 }
+
+/* 사이드바 탭 = 세그먼트 컨트롤(2026-09-24 정리). 「맵 · 그리기 · AI」 세 칸이 한 덩어리로 읽히고,
+   고른 칸만 흰 바탕이 뜬다(macOS 세그먼트). 밑줄 탭은 탭 안의 하위 탭·필터 칩과 같은 무게라 구분이 안 됐다. */
+.ai-chat-sidebar-tabs { gap: 6px; padding: 10px 10px 8px; border-bottom: 0; }
+.ai-chat-sidebar-segments { display: flex; flex: 1; min-width: 0; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 2px); background: var(--bg-well, var(--bg-inset)); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button {
+  flex: 1; min-width: 0; height: 28px; padding: 0 6px; gap: 5px; border-radius: var(--radius-s);
+  color: var(--text-2); font: 500 12.5px var(--font-ui); box-shadow: none;
+}
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button:hover { color: var(--text-1); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] {
+  background: var(--bg-raised); color: var(--text-1); font-weight: 600; border-radius: var(--radius-s);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent), 0 0 0 .5px color-mix(in srgb, var(--text-1) 8%, transparent);
+}
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments svg { width: 15px; height: 15px; flex: none; }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse { margin-left: 0; width: 30px; height: 30px; padding: 0; display: inline-grid; place-items: center; color: var(--text-2); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse:hover { background: var(--bg-hover); color: var(--text-1); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse svg { width: 17px; height: 17px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-segments { flex-direction: column; flex: none; background: transparent; padding: 0; gap: 8px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button { flex: none; width: 36px; height: 36px; padding: 8px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] { background: var(--accent-muted); box-shadow: none; color: var(--accent); }

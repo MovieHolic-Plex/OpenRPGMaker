@@ -92,8 +92,7 @@ test("three sidebar modes retain focus, reachable controls and usable map space"
         expect(await page.locator(".canvas-area").evaluate(e => e.getBoundingClientRect().width)).toBeGreaterThanOrEqual(520);
         await expect(page.getByTestId("basic-tile-grid")).toBeVisible();
         await hitVisible(page.getByTestId("oprn-tool-undo"));
-        await hitVisible(page.getByTestId("basic-rail-toggle-tiles"));
-        await hitVisible(page.getByTestId("basic-rail-toggle-maps"));
+        await hitVisible(page.getByTestId("sidebar-maps"));
       }
       // Every size keeps the same assertions; capture the tightest layout once
       // per mode instead of rasterizing the large fixture nine times.
@@ -113,7 +112,7 @@ test("three sidebar modes retain focus, reachable controls and usable map space"
     await page.getByTestId("layer-lower").click();
     await expect(page.getByTestId("layer-lower")).toHaveAttribute("aria-current", "true");
   }
-  await page.getByTestId("basic-rail-toggle-tiles").click();
+  await page.getByTestId("sidebar-tools").click();
   const sheet = page.getByTestId("basic-tile-grid");
   await expect(sheet.locator(".chipset-tile")).not.toHaveCount(48);
   expect(await sheet.locator(".chipset-tile").count()).toBeGreaterThan(48);
@@ -133,15 +132,14 @@ test("three sidebar modes retain focus, reachable controls and usable map space"
   await expect(page.getByTestId(`basic-tile-${selected}`)).toBeVisible();
   await page.getByTestId("basic-tile-search").fill("");
   await page.screenshot({ path: testInfo.outputPath("beginner-tiles.png") });
-  await page.getByTestId("basic-rail-toggle-maps").click();
+  // 맵 고르기는 사이드바 「맵」 탭이 집이다 — 그리기 탭으로 돌아오면 시트가 그대로 있다.
+  await page.getByTestId("sidebar-maps").click();
+  await expect(page.getByTestId("map-tree")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("beginner-maps.png") });
-  await page.keyboard.press("Escape");
-  await expect(page.getByTestId("basic-rail-flyout")).toHaveCount(0);
-  await expect(page.getByTestId("basic-rail-toggle-maps")).toBeFocused();
+  await page.getByTestId("sidebar-tools").click();
   await expect(sheet).toBeVisible();
-  // Returning to beginner keeps the selected tool but never resurrects a flyout.
   await mode(page, "expert");
   await mode(page, "beginner");
-  await expect(page.getByTestId("basic-rail-flyout")).toHaveCount(0);
+  await expect(page.getByTestId("basic-tile-grid")).toBeVisible();
   await expect(page.getByTestId("tool-paint")).toHaveAttribute("aria-current", "true");
 });

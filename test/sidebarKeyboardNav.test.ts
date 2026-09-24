@@ -97,8 +97,8 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       expect(document.activeElement).toBe(newFillBtn);
     });
 
-    it("keeps one tab stop per tool/panel/brush group and navigates brush sizes", () => {
-      const groupIds = ["basic-tool-list", "basic-panel-toggles", "tile-brush-controls"] as const;
+    it("keeps one tab stop per tool/brush group and navigates brush sizes", () => {
+      const groupIds = ["basic-tool-list", "tile-brush-controls"] as const;
       for (const id of groupIds) {
         const group = findByTestId(container as unknown as FakeElement, id);
         expect(group, id).not.toBeNull();
@@ -108,7 +108,8 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       const railStops = (container as unknown as FakeElement)
         .querySelectorAll("button")
         .filter((b) => b.getAttribute("tabindex") === "0");
-      expect(railStops.length).toBe(4);
+      // 도구 그룹 · 붓 크기 그룹 · 타일 시트 — 되돌리기는 roving 그룹이 아닌 단추라 tabindex 를 달지 않는다.
+      expect(railStops.length).toBe(3);
       const grid = findByTestId(container as unknown as FakeElement, "basic-tile-grid");
       expect(grid?.querySelectorAll("button").filter(b => b.getAttribute("tabindex") === "0")).toHaveLength(1);
 
@@ -128,13 +129,11 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
       expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "brush-size-2"));
     });
 
-    it("도구 그룹은 role=toolbar, 패널 그룹은 라벨 있는 group 이다", () => {
+    it("도구 그룹은 라벨 있는 가로 role=toolbar 다", () => {
       const tools = findByTestId(container as unknown as FakeElement, "basic-tool-list");
       expect(tools?.getAttribute("role")).toBe("toolbar");
+      expect(tools?.getAttribute("aria-orientation")).toBe("horizontal");
       expect(tools?.getAttribute("aria-label")).toBeTruthy();
-      const toggles = findByTestId(container as unknown as FakeElement, "basic-panel-toggles");
-      expect(toggles?.getAttribute("role")).toBe("group");
-      expect(toggles?.getAttribute("aria-label")).toBeTruthy();
     });
 
     it("도구 그룹에서 ArrowDown 은 다음 도구로 포커스를 이동한다", () => {
