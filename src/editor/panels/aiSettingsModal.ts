@@ -47,6 +47,7 @@ import { installAiModalFocus } from "./aiModalFocus";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
+import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
@@ -829,6 +830,7 @@ export function renderAiSettingsForm(options: {
     { id: "models", label: "모델", icon: "spark" },
     { id: "behavior", label: "동작", icon: "gear" },
     { id: "display", label: "표시", icon: "eye" },
+    { id: "usage", label: "사용량", icon: "list" },
     ...extraSections.map((section) => ({ id: `extra-${section.id}`, label: section.title, icon: "list" as const })),
   ];
   const paneEls = new Map<string, HTMLElement>();
@@ -904,6 +906,9 @@ export function renderAiSettingsForm(options: {
       ]),
       pane("display", [
         settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
+      ]),
+      pane("usage", [
+        settingsSection("usage", "도구 사용량", "조수가 부른 도구를 횟수·실패·검색어로 보고, JSON으로 보낼 수 있습니다.", [renderAiToolUsagePanel()]),
       ]),
       ...extraSections.map((section) =>
         pane(`extra-${section.id}`, [settingsSection(section.id, section.title, section.description, [section.content])])),
