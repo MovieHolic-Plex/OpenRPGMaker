@@ -466,18 +466,22 @@ function collectTileDiffCells(area: MutableArea, before: GameMap, after: GameMap
   const width = Math.min(before.width, after.width);
   const height = Math.min(before.height, after.height);
   if (!before.lowerTiles || !after.lowerTiles) return;
-  const lowerChanged = before.lowerTiles !== after.lowerTiles || before.lowerTileStacks !== after.lowerTileStacks;
-  const upperChanged = before.upperTiles !== after.upperTiles || before.upperTileStacks !== after.upperTileStacks;
-  if (!lowerChanged && !upperChanged) return;
+  const lowerChanged = before.lowerTiles !== after.lowerTiles || before.lowerTileStacks !== after.lowerTileStacks || before.lowerOverlayTiles !== after.lowerOverlayTiles;
+  const upperChanged = before.upperTiles !== after.upperTiles || before.upperTileStacks !== after.upperTileStacks || before.upperOverlayTiles !== after.upperOverlayTiles;
+  const shadowChanged = before.shadowBits !== after.shadowBits;
+  if (!lowerChanged && !upperChanged && !shadowChanged) return;
   for (let y = 0; y < height; y += 1) {
     for (let x = 0; x < width; x += 1) {
       const index = y * before.width + x;
       const nextIndex = y * after.width + x;
-      if (lowerChanged && (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex]))) {
-        includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId, tileId: afterTileId(after, "lower", nextIndex) });
+      if (lowerChanged && (before.lowerTiles[index] !== after.lowerTiles[nextIndex] || (before.lowerOverlayTiles?.[index] ?? -1) !== (after.lowerOverlayTiles?.[nextIndex] ?? -1) || !sameStacks(before.lowerTileStacks?.[index], after.lowerTileStacks?.[nextIndex]))) {
+        includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId, tileId: visibleLayerTile(after, "lower", nextIndex) });
       }
-      if (upperChanged && (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex]))) {
-        includeCell(area, { x, y, layer: "upper", tilesetId: after.tilesetId, tileId: afterTileId(after, "upper", nextIndex) });
+      if (upperChanged && (before.upperTiles?.[index] !== after.upperTiles?.[nextIndex] || (before.upperOverlayTiles?.[index] ?? -1) !== (after.upperOverlayTiles?.[nextIndex] ?? -1) || !sameStacks(before.upperTileStacks?.[index], after.upperTileStacks?.[nextIndex]))) {
+        includeCell(area, { x, y, layer: "upper", tilesetId: after.tilesetId, tileId: visibleLayerTile(after, "upper", nextIndex) });
+      }
+      if (shadowChanged && (before.shadowBits?.[index] ?? 0) !== (after.shadowBits?.[nextIndex] ?? 0)) {
+        includeCell(area, { x, y, layer: "lower", tilesetId: after.tilesetId, tileId: after.lowerTiles[nextIndex] });
       }
     }
   }
@@ -508,6 +512,12 @@ function collectEventDiffCells(area: MutableArea, before: GameMap, after: GameMa
 }
 
 /** 변경 후 그 좌표에 실제로 보이는 타일 id(스택이 있으면 최상단). */
+function visibleLayerTile(map: GameMap, layer: "lower" | "upper", index: number): number | undefined {
+  const overlay = layer === "lower" ? map.lowerOverlayTiles?.[index] : map.upperOverlayTiles?.[index];
+  if (typeof overlay === "number" && overlay >= 0) return overlay;
+  return afterTileId(map, layer, index);
+}
+
 function afterTileId(map: GameMap, layer: "lower" | "upper", index: number): number | undefined {
   const stack = layer === "lower" ? map.lowerTileStacks?.[index] : map.upperTileStacks?.[index];
   if (stack && stack.length > 0) return stack[stack.length - 1];
