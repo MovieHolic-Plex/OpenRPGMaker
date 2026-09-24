@@ -189,3 +189,19 @@ export function editorStateNeedsPaletteRefresh(previous: EditorState, next: Edit
   if (previous === next) return false;
   return PALETTE_REFRESH_KEYS.some((key) => previous[key] !== next[key]);
 }
+
+/**
+ * 고른 타일 번호만 바뀌었는가.
+ * 그 경우는 팔레트 칸을 다시 만들 이유가 없다 — 활성 칸과 선택 칩만 바꾸면 된다.
+ * 레이어·도구·스탬프가 같이 바뀌면 보이는 칸 자체가 달라지므로 전체 갱신이다.
+ */
+export function editorStateChangedOnlySelectedTile(previous: EditorState, next: EditorState): boolean {
+  if (previous === next) return false;
+  let selectionChanged = false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] === next[key]) continue;
+    if (key !== "selectedTile") return false;
+    selectionChanged = true;
+  }
+  return selectionChanged;
+}

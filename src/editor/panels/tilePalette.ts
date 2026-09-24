@@ -3,6 +3,7 @@ import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
+import { basicTileLabel } from "@/editor/panels/basicTilePalette";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
@@ -522,6 +523,57 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
     query: tileSearchQuery,
     recent: recentTiles,
   });
+}
+
+/**
+ * 선택 타일만 바뀐 클릭. 시트를 비우고 칸을 다시 만들지 않고 활성 칸·선택 칩만 옮긴다.
+ * 필터가 켜져 있거나 보조 창이 열려 있거나 대상 칸이 아직 없으면 false — 호출부가 전체를 다시 그린다.
+ */
+export function syncMountedPaletteSelection(): boolean {
+  if (typeof document === "undefined") return false;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (!root?.querySelector("[data-testid='tile-palette'], [data-testid='basic-tile-grid']")) return false;
+  if (root.querySelector("[data-sidebar-surface]")) return false;
+  const state = editorState.get();
+  if (state.layer === "event") return false;
+  const tileset = currentTilesetForPalette();
+  if (!tileset) return false;
+  const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
+
+  const basicSheet = root.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
+  if (basicSheet) {
+    const search = root.querySelector<HTMLInputElement>('[data-testid="basic-tile-search"]');
+    if (search && search.value.trim().length > 0) return false;
+    if (!movePaletteActiveCell(basicSheet, displayTile)) return false;
+    const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
+    if (status) {
+      const layerLabel = state.layer === "lower" ? "바닥" : "상위";
+      status.textContent = `${layerLabel} · ${basicTileLabel(tileset, state.selectedTile)}`;
+    }
+    return true;
+  }
+
+  if (isFilterActive()) return false;
+  const sheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  if (!sheet || !movePaletteActiveCell(sheet, displayTile)) return false;
+  const map = store.getCurrent().maps[currentMapId()];
+  const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
+  if (status && map) status.replaceWith(makeSelectedTileStatus(state.selectedTile, tileset, map));
+  return true;
+}
+
+function movePaletteActiveCell(sheet: HTMLElement, displayTile: number): boolean {
+  const nextActive = sheet.querySelector<HTMLElement>(`[data-tile-index="${displayTile}"]`);
+  if (!nextActive) return false;
+  const oldActive = sheet.querySelector<HTMLElement>(".chipset-tile.active");
+  if (oldActive === nextActive) return true;
+  oldActive?.classList.remove("active");
+  oldActive?.setAttribute("aria-pressed", "false");
+  nextActive.classList.add("active");
+  nextActive.setAttribute("aria-pressed", "true");
+  sheet.querySelector<HTMLElement>('.chipset-tile[tabindex="0"]')?.setAttribute("tabindex", "-1");
+  nextActive.setAttribute("tabindex", "0");
+  return true;
 }
 
 export function selectPaletteTile(index: number): void {
