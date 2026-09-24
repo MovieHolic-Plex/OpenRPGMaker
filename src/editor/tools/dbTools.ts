@@ -1506,6 +1506,23 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
   };
 }
 
+
+/**
+ * 없는 리소스 id 는 호출 시점에 거부하고 비슷한 실제 id 를 준다. 예전에는 저장 뒤 커밋 게이트가
+ * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
+ * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
+ */
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm"): string {
+  const known = collectResourceIds(draft);
+  if (known.has(id)) return id;
+  const stem = id.split(/[-_]/u).slice(0, 2).join("-");
+  const near = [...known].filter((candidate) => stem && candidate.startsWith(stem)).slice(0, 6);
+  throw new ToolError(
+    `${field} '${id}' 는 없는 리소스입니다.${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
+    { code: "invalid-args" },
+  );
+}
+
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
   description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출을 갱신한다. titleScreen이 없으면 생성한다.",
@@ -1623,13 +1640,13 @@ const setTitleScreen: ToolDefinition = {
 
     if (typeof args.backgroundResourceId === "string") {
       const background = args.backgroundResourceId.trim();
-      if (background) current.backgroundResourceId = background;
+      if (background) current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
       else delete current.backgroundResourceId;
     }
 
     if (typeof args.musicResourceId === "string") {
       const music = args.musicResourceId.trim();
-      if (music) current.musicResourceId = music;
+      if (music) current.musicResourceId = requireTitleResource(draft, "musicResourceId", music, "bgm");
       else delete current.musicResourceId;
     }
 
