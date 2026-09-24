@@ -988,6 +988,54 @@
 }
 ```
 
+## 게시판
+```json
+{
+  "id": "well-4",
+  "name": "게시판",
+  "x": 34,
+  "y": 21,
+  "purpose": "우물에 모인 주민의 마을 공지",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "well",
+  "lower": "KEEP",
+  "upper": [
+    2630,
+    2631,
+    2633,
+    2634
+  ],
+  "useAt": {
+    "x": 33,
+    "y": 21
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2630,
+      2631
+    ],
+    [
+      2633,
+      2634
+    ]
+  ]
+}
+```
+
 ## 돌등
 ```json
 {
@@ -1298,6 +1346,45 @@
 }
 ```
 
+## 나무 울타리
+```json
+{
+  "id": "garden-7",
+  "name": "나무 울타리",
+  "x": 16,
+  "y": 38,
+  "purpose": "열린 가운데 통로를 남긴 경계",
+  "near": "꽃 화단",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "garden",
+  "lower": "KEEP",
+  "upper": [
+    2636,
+    2637
+  ],
+  "useAt": {
+    "x": 16,
+    "y": 39
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2636,
+      2637
+    ]
+  ]
+}
+```
+
 ## 표지판
 ```json
 {
@@ -1586,76 +1673,6 @@
   "upperTiles": [
     [
       596
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "west-stair-sign-1",
-  "name": "나무 이정표",
-  "x": 13,
-  "y": 22,
-  "purpose": "서쪽 계단으로 오르는 길 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "west-stair-sign",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 13,
-    "y": 23
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 장작 더미
-```json
-{
-  "id": "woodyard-1",
-  "name": "장작 더미",
-  "x": 43,
-  "y": 12,
-  "purpose": "목공 작업에서 나온 장작을 쌓아 두는 자리",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "woodyard",
-  "lower": "KEEP",
-  "upper": [
-    349
-  ],
-  "useAt": {
-    "x": 43,
-    "y": 13
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      349
     ]
   ]
 }

@@ -61,6 +61,13 @@
     },
     "items": [
       {
+        "id": "graveyard-gate-1",
+        "name": "돌등",
+        "x": 4,
+        "y": 12,
+        "purpose": "묘지 입구를 밝히는 등"
+      },
+      {
         "id": "graveyard-gate-2",
         "name": "마른 묘목",
         "x": 10,

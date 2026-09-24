@@ -1,6 +1,174 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
+## 나무 상자
+```json
+{
+  "name": "나무 상자",
+  "x": 39,
+  "y": 14,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    237
+  ],
+  "ownerId": "reed-bay-village-house-3",
+  "kit": "storage",
+  "purpose": "운반 물자 보관",
+  "anchor": "house",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      237
+    ]
+  ]
+}
+```
+
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 41,
+  "y": 14,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "reed-bay-village-house-3",
+  "kit": "storage",
+  "purpose": "같은 창고의 벌크 물자 보관",
+  "anchor": "나무 상자",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 작은 오크통
+```json
+{
+  "name": "작은 오크통",
+  "x": 42,
+  "y": 14,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    207
+  ],
+  "ownerId": "reed-bay-village-house-3",
+  "kit": "storage",
+  "purpose": "기름·식초 같은 작은 통 물자",
+  "anchor": "나무통",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      207
+    ]
+  ]
+}
+```
+
+## 과일 상자
+```json
+{
+  "name": "과일 상자",
+  "x": 39,
+  "y": 16,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    202,
+    203
+  ],
+  "ownerId": "reed-bay-village-house-3",
+  "kit": "storage",
+  "purpose": "나를 수확물 상자",
+  "anchor": "나무 상자",
+  "side": "left",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      202,
+      203
+    ]
+  ]
+}
+```
+
+## 술통
+```json
+{
+  "name": "술통",
+  "x": 42,
+  "y": 16,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    177
+  ],
+  "ownerId": "reed-bay-village-house-3",
+  "kit": "storage",
+  "purpose": "창고에 둔 술",
+  "anchor": "나무통",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      177
+    ]
+  ]
+}
+```
+
 ## 약초 화분
 ```json
 {
@@ -129,6 +297,138 @@
   "kit": "herbs",
   "purpose": "손질한 약초 보관",
   "anchor": "가로 탁자",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      352
+    ]
+  ]
+}
+```
+
+## 낚시 바구니
+```json
+{
+  "name": "낚시 바구니",
+  "x": 48,
+  "y": 29,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2646
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "부두에 가져갈 낚시 도구",
+  "anchor": "dock",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2646
+    ]
+  ]
+}
+```
+
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 50,
+  "y": 29,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "어획물을 담을 용기",
+  "anchor": "낚시 바구니",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 나무 상자
+```json
+{
+  "name": "나무 상자",
+  "x": 48,
+  "y": 31,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    237
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "어구 보관",
+  "anchor": "낚시 바구니",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      237
+    ]
+  ]
+}
+```
+
+## 항아리
+```json
+{
+  "name": "항아리",
+  "x": 50,
+  "y": 31,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    352
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "fishing",
+  "purpose": "어획물을 절일 소금",
+  "anchor": "나무통",
   "side": "right",
   "width": 1,
   "height": 1,
@@ -1052,258 +1352,6 @@
   "upperTiles": [
     [
       2717
-    ]
-  ]
-}
-```
-
-## 계류 말뚝
-```json
-{
-  "name": "계류 말뚝",
-  "x": 62,
-  "y": 41,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2717
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      1563
-    ]
-  ],
-  "upperTiles": [
-    [
-      2717
-    ]
-  ]
-}
-```
-
-## 계류 말뚝
-```json
-{
-  "name": "계류 말뚝",
-  "x": 58,
-  "y": 38,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2717
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      1563
-    ]
-  ],
-  "upperTiles": [
-    [
-      2717
-    ]
-  ]
-}
-```
-
-## 계류 말뚝
-```json
-{
-  "name": "계류 말뚝",
-  "x": 58,
-  "y": 41,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2717
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      1563
-    ]
-  ],
-  "upperTiles": [
-    [
-      2717
-    ]
-  ]
-}
-```
-
-## 감긴 밧줄
-```json
-{
-  "name": "감긴 밧줄",
-  "x": 45,
-  "y": 39,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2718
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2718
-    ]
-  ]
-}
-```
-
-## 닻
-```json
-{
-  "name": "닻",
-  "x": 45,
-  "y": 40,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2719
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2719
-    ]
-  ]
-}
-```
-
-## 오크통
-```json
-{
-  "name": "오크통",
-  "x": 44,
-  "y": 39,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2720
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2720
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 45,
-  "y": 41,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2721
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2721
-    ]
-  ]
-}
-```
-
-## 열린 통
-```json
-{
-  "name": "열린 통",
-  "x": 46,
-  "y": 41,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2722
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2722
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 46,
-  "y": 42,
-  "w": 1,
-  "h": 1,
-  "kind": "harbor-prop",
-  "owner": "dock",
-  "upper": [
-    2721
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2721
     ]
   ]
 }

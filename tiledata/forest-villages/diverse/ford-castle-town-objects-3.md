@@ -5,6 +5,126 @@
 ```json
 {
   "name": "화분",
+  "x": 74,
+  "y": 57,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "ford-castle-town-house-7",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      75
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 77,
+  "y": 57,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "ford-castle-town-house-7",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      77
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 7,
+  "y": 80,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "ford-castle-town-house-8",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      72
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
   "x": 44,
   "y": 81,
   "w": 1,
@@ -797,7 +917,7 @@
 ```json
 {
   "name": "바위",
-  "x": 25,
+  "x": 28,
   "y": 49,
   "w": 1,
   "h": 1,
@@ -873,7 +993,7 @@
 ```json
 {
   "name": "바위",
-  "x": 25,
+  "x": 28,
   "y": 50,
   "w": 1,
   "h": 1,

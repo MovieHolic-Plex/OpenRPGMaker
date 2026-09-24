@@ -436,7 +436,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "result": {
     "valid": false,
     "mapId": "pine-hamlets",
-    "totalErrors": 51,
+    "totalErrors": 44,
     "errors": [
       {
         "code": "wrong-edge-direction",
@@ -519,14 +519,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "tile-mismatch",
-        "x": 6,
-        "y": 14,
-        "layer": "lower",
-        "expected": 273,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 0,
         "y": 15,
@@ -572,14 +564,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "y": 15,
         "layer": "lower",
         "expected": 1459,
-        "actual": 240
-      },
-      {
-        "code": "tile-mismatch",
-        "x": 6,
-        "y": 15,
-        "layer": "lower",
-        "expected": 333,
         "actual": 240
       },
       {
@@ -759,22 +743,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "actual": -1
       },
       {
-        "code": "tile-mismatch",
-        "x": 7,
-        "y": 23,
-        "layer": "lower",
-        "expected": 273,
-        "actual": 240
-      },
-      {
-        "code": "tile-mismatch",
-        "x": 8,
-        "y": 23,
-        "layer": "lower",
-        "expected": 275,
-        "actual": 240
-      },
-      {
         "code": "wrong-edge-direction",
         "x": 0,
         "y": 24,
@@ -813,30 +781,6 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "layer": "upper",
         "expected": 2584,
         "actual": -1
-      },
-      {
-        "code": "tile-mismatch",
-        "x": 6,
-        "y": 24,
-        "layer": "lower",
-        "expected": 273,
-        "actual": 240
-      },
-      {
-        "code": "tile-mismatch",
-        "x": 7,
-        "y": 24,
-        "layer": "lower",
-        "expected": 245,
-        "actual": 240
-      },
-      {
-        "code": "tile-mismatch",
-        "x": 8,
-        "y": 24,
-        "layer": "lower",
-        "expected": 305,
-        "actual": 240
       },
       {
         "code": "terrace-without-stairs",
@@ -1170,7 +1114,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "result": {
     "valid": false,
     "mapId": "reed-bay-village",
-    "totalErrors": 3,
+    "totalErrors": 4,
     "errors": [
       {
         "code": "tile-mismatch",
@@ -1179,6 +1123,11 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
         "layer": "upper",
         "expected": -1,
         "actual": 237
+      },
+      {
+        "code": "unowned-prop",
+        "x": 42,
+        "y": 20
       },
       {
         "code": "blocked-entrance",

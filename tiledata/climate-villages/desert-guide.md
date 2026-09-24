@@ -37,7 +37,7 @@ node scripts/content/author-climate-villages.mjs     # 맵 + 통행 검사(실�
 ```
 
 ```json
-[{"id":"climate-desert-terrace-canyon","entry":[31,56],"targets":[[18,12],[39,15],[12,30],[29,32],[50,33],[13,53],[36,55],[54,52]],"reachable":1527,"blocked":[]},{"id":"climate-desert-reed-bay","entry":[5,27],"targets":[[9,13],[28,8],[45,17],[13,32],[29,26],[44,32],[11,43],[31,41]],"reachable":1503,"blocked":[]}]
+[{"id":"climate-desert-terrace-canyon","entry":[31,56],"targets":[[18,12],[39,15],[12,30],[29,32],[50,33],[13,53],[36,55],[54,52]],"reachable":1496,"blocked":[]},{"id":"climate-desert-reed-bay","entry":[5,27],"targets":[[9,13],[28,8],[45,17],[13,32],[29,26],[44,32],[11,43],[31,41]],"reachable":1513,"blocked":[]}]
 ```
 
 ## 실제 구분

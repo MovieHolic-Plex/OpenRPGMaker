@@ -1,6 +1,39 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
+## 통나무 더미
+```json
+{
+  "name": "통나무 더미",
+  "x": 9,
+  "y": 32,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    741
+  ],
+  "ownerId": "chapel-hill-parish-house-3",
+  "kit": "woodwork",
+  "purpose": "켜서 쓸 원목",
+  "anchor": "가로 탁자",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      741
+    ]
+  ]
+}
+```
+
 ## 나무 상자
 ```json
 {
@@ -161,6 +194,42 @@
   "upperTiles": [
     [
       207
+    ]
+  ]
+}
+```
+
+## 과일 상자
+```json
+{
+  "name": "과일 상자",
+  "x": 10,
+  "y": 37,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    202,
+    203
+  ],
+  "ownerId": "chapel-hill-parish-house-4",
+  "kit": "storage",
+  "purpose": "나를 수확물 상자",
+  "anchor": "나무 상자",
+  "side": "left",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      202,
+      203
     ]
   ]
 }

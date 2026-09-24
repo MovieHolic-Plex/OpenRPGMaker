@@ -1,6 +1,76 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
+## 나무 이정표
+```json
+{
+  "id": "west-stair-sign-1",
+  "name": "나무 이정표",
+  "x": 13,
+  "y": 22,
+  "purpose": "서쪽 계단으로 오르는 길 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "west-stair-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 13,
+    "y": 23
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 장작 더미
+```json
+{
+  "id": "woodyard-1",
+  "name": "장작 더미",
+  "x": 43,
+  "y": 12,
+  "purpose": "목공 작업에서 나온 장작을 쌓아 두는 자리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "woodyard",
+  "lower": "KEEP",
+  "upper": [
+    349
+  ],
+  "useAt": {
+    "x": 43,
+    "y": 13
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      349
+    ]
+  ]
+}
+```
+
 ## 술통
 ```json
 {
@@ -144,6 +214,42 @@
     [
       327,
       328
+    ]
+  ]
+}
+```
+
+## 장작 더미
+```json
+{
+  "id": "campfire-4",
+  "name": "장작 더미",
+  "x": 9,
+  "y": 33,
+  "purpose": "모닥불에 쓸 장작",
+  "near": "모닥불",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "campfire",
+  "lower": "KEEP",
+  "upper": [
+    349
+  ],
+  "useAt": {
+    "x": 9,
+    "y": 34
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      349
     ]
   ]
 }
@@ -1058,167 +1164,34 @@
 }
 ```
 
-## 화분
+## 나무 상자
 ```json
 {
-  "name": "화분",
-  "x": 6,
-  "y": 11,
+  "name": "나무 상자",
+  "x": 17,
+  "y": 39,
   "w": 1,
-  "h": 2,
+  "h": 1,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    2632,
-    2635
+    237
   ],
-  "ownerId": "pine-hamlets-house-1",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
+  "ownerId": "pine-hamlets-house-7",
+  "kit": "storage",
+  "purpose": "운반 물자 보관",
+  "anchor": "house",
   "side": "left",
   "width": 1,
-  "height": 2,
+  "height": 1,
   "lowerTiles": [
-    [
-      75
-    ],
     [
       240
     ]
   ],
   "upperTiles": [
     [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 23,
-  "y": 9,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "pine-hamlets-house-2",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      75
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 47,
-  "y": 13,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "pine-hamlets-house-3",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      76,
-      76
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 51,
-  "y": 13,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "pine-hamlets-house-3",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      76
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
+      237
     ]
   ]
 }

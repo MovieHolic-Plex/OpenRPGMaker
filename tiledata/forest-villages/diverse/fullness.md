@@ -11,7 +11,7 @@
 3. **우물가 광장.** 마을 한가운데 우물(낮은 돌 우물)에서 한 칸 띄워 벤치·꽃 화단·돌등·화분을 서로 한 칸씩 떨어뜨려 둔다(fullness-programs.json plaza). 폐촌은 돌등·마른 묘목·통나무. 각 소품은 공동 공간 문서의 그 우물 장소(civicPlaces)에 `…-plaza-N` 으로 들어가고 사용칸(civic-use)이 접근칸에 더해진다.
 4. **빈 띠 걷기(압축).** 물체를 아는 이음매 깎기(lib/village-compact.mjs). 이음매는 행마다(세로) 또는 열마다(가로) 한 칸씩, 이웃 행과 최대 한 칸만 비껴 가며 잔디·숲 수관·길·넓은 물에서만 비스듬히 움직인다. 집·랜드마크·소품·마당·접근칸·계단·폭포·다리는 자르지 않고 통째로 옮긴다. 절벽 열은 옆 열과 똑같을 때만 세로로 걷고(높이는 그대로), 길은 양옆이 길일 때, 물은 양쪽 두 칸까지 물일 때만(폭4 강은 좁아지지 않는다) 걷는다. 이음매 하나를 걷을 때마다 길·물 오토타일과 수관·줄기 재맞춤을 해 본 뒤, 모든 문 앞·계단 끝·다리목·마당 입구·공동 소품 사용칸이 시작점에서 닿는지, 계단을 막으면 윗단에 못 가는지 확인하고 아니면 되돌린다. 계획의 모든 좌표(집·문·랜드마크·절벽 윤곽·계단·접근칸·길 칸·공동 장소)는 새 맵으로 옮겨 적는다.
    - 4b. **폭포 아래 소(lib/village-pools.mjs).** 정수 타원 웅덩이는 호수 오토타일로 십자 모양이 됐다. 중심을 물길에서 비껴 두고 반지름이 각도마다 흔들리는 비대칭 덩이로 다시 그린다. 폭포 바로 밑 칸과 다리 칸(그 좌우 한 칸)과 물길 행만 고정하고, 한 칸 폭 팔·돌기·한 칸 홈은 없앤다. 길·문 앞·물체 둘레는 물이 되지 않는다.
-   - 4c. **주인 없는 소품 제거(lib/village-ownership.mjs).** 모든 생활·공동 소품은 2칸 안에 이유가 있어야 한다: 집 문·집, 밭, 부두, 랜드마크, 중심 소품(우물·모닥불·장터 노점·덩굴 아치·오벨리스크). 표지판·이정표·게시판·우편함은 길 한 칸 안, 벤치는 중심 소품 2칸 안·물가·랜드마크 옆(길가라는 이유만으로는 안 된다), 돌등은 길가나 우물 옆, 허수아비는 밭 한 칸 안, 낚시 바구니는 물가·부두. 이유가 없으면 지우고, 그것을 짝(near)이나 기준으로 삼던 소품도 연쇄로 지운다. 결과는 fullness.unownedRemoved.
+   - 4c. **주인 없는 소품 제거(lib/village-ownership.mjs).** 모든 생활·공동 소품은 2칸 안에 이유가 있어야 한다: 집 문·집, 밭, 부두, 랜드마크, 중심 소품(우물·모닥불·장터 노점·덩굴 아치·오벨리스크). 표지판·이정표·우편함은 길 한 칸 안, 게시판은 길 한 칸 안이나 장터 노점·우물 2칸 안, 벤치는 중심 소품 2칸 안·물가·랜드마크 옆(길가라는 이유만으로는 안 된다), 돌등은 길가·우물 옆·랜드마크 옆, 허수아비는 밭 한 칸 안, 낚시 바구니는 물가·부두. 같은 집·같은 장소의 묶음은 한 칸 띄워 놓이므로 2칸 안의 짝이 주인이 있으면 함께 주인이 있다. 이유가 없으면 지우고, 그것을 짝(near)이나 기준으로 삼던 소품도 연쇄로 지운다. 결과는 fullness.unownedRemoved.
    - 4d. **항구(lib/village-harbor.mjs).** 부두 판자는 끝이 있어야 한다: 바다 쪽 끝 양옆 물에 나룻배(8×4, LPC CC-BY-SA)를 한 칸 띄워 대고, 판자 가장자리 물 칸에 계류 말뚝을 4칸 간격으로, 부두 뿌리 땅에 밧줄·닻·오크통·상자·열린 통을 붙여 한 덩이로 모은다(EasyRPG 배 칩셋 CC0). 조각은 `tex_harbor_kit`(public/assets/harbor-kit)을 빈 칸 2657~2669·2695~2699·2703~2729 에 이식한다. `ensureHarborGrafts(tileset)` + `placeHarbor({map, dock, …})` 로 다른 숲마을 맵에서도 쓴다.
 5. **바닥 변화.** 곧은 숲 가장자리 앞에 나무 2~5그루 덩이. 원래 맵에 혼자 있던 덤불(2칸 안에 다른 식물이 없는 둥근·작은 덤불)은 흩뿌린 점으로 보이므로 걷어 낸다. 그다음 빈칸 게이트(한 변 5칸 정사각형 없음, 17×13 화면 빈 잔디 40% 이하 — 여유를 두고 39%까지)를 통과할 때까지 **덩이 장면**을 하나씩 놓는다(fillNaturalGaps): 나무 덩이·나무 두 그루·나무와 덤불·덤불숲·꽃 핀 덤불숲·작은 덤불숲·바위와 덤불·**풀숲**, 좁은 자리에만 꽃 핀 둥근 덤불. 낱개 꽃·낱개 덤불은 놓지 않는다(점 뿌리기 금지). 꽃은 장면에 붙은 한 줄로만 핀다.
    - **풀숲 = 키큰 풀 E/F/G(PR #1421).** 10~20칸 덩이를 기르고 2×2 블록 안 칸만 남긴 뒤 `lib/tall-grass.mjs arrangeTallGrass` 로 맵 전체 키큰 풀을 다시 깐다: 2×2 미만 조각 삭제, 곧은 볼록 모서리 해시로 깎기, 덩이마다 한 종류 — 수관 1칸 안이면 E(짙음 243~335), 집·길 3칸 안이면 G(짧음 1128~1190), 나머지 F(밝음 1124~1186). 칸은 그 종류 variantMap 으로 고른다(무작위 칸 금지). 덩이끼리는 한 칸 띄운다. 결과 칸 수는 fullness.tallGrass {E,F,G}.
@@ -43,7 +43,7 @@
       "rejected": 1
     },
     "yards": 7,
-    "yardProps": 23,
+    "yardProps": 28,
     "doorFlanks": 8,
     "plaza": [
       "벤치",
@@ -51,23 +51,23 @@
     ],
     "treeClumps": 0,
     "tallGrass": {
-      "E": 88,
-      "F": 18,
-      "G": 295
+      "E": 31,
+      "F": 0,
+      "G": 184
     },
     "pools": [],
-    "unownedRemoved": 15,
+    "unownedRemoved": 7,
     "loneBushesRemoved": 5,
     "harbor": 0,
-    "scenes": 38,
+    "scenes": 17,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 6,
         "screen": 0.593
       },
       "after": {
-        "maxSq": 3,
-        "screen": 0.339
+        "maxSq": 4,
+        "screen": 0.389
       }
     }
   },
@@ -87,7 +87,7 @@
       "rejected": 0
     },
     "yards": 7,
-    "yardProps": 22,
+    "yardProps": 28,
     "doorFlanks": 9,
     "plaza": [
       "벤치",
@@ -96,23 +96,23 @@
     ],
     "treeClumps": 0,
     "tallGrass": {
-      "E": 44,
-      "F": 29,
-      "G": 163
+      "E": 17,
+      "F": 10,
+      "G": 164
     },
     "pools": [],
-    "unownedRemoved": 15,
+    "unownedRemoved": 6,
     "loneBushesRemoved": 1,
     "harbor": 0,
-    "scenes": 19,
+    "scenes": 18,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 7,
-        "screen": 0.647
+        "screen": 0.638
       },
       "after": {
         "maxSq": 4,
-        "screen": 0.389
+        "screen": 0.38
       }
     }
   },
@@ -132,7 +132,7 @@
       "rejected": 2
     },
     "yards": 6,
-    "yardProps": 18,
+    "yardProps": 24,
     "doorFlanks": 11,
     "plaza": [
       "돌등"
@@ -165,18 +165,18 @@
         "dried": 7
       }
     ],
-    "unownedRemoved": 12,
+    "unownedRemoved": 5,
     "loneBushesRemoved": 5,
     "harbor": 0,
     "scenes": 12,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 6,
-        "screen": 0.566
+        "screen": 0.561
       },
       "after": {
         "maxSq": 4,
-        "screen": 0.389
+        "screen": 0.385
       }
     }
   },
@@ -196,7 +196,7 @@
       "rejected": 3
     },
     "yards": 6,
-    "yardProps": 10,
+    "yardProps": 19,
     "doorFlanks": 8,
     "plaza": [
       "벤치",
@@ -204,15 +204,15 @@
     ],
     "treeClumps": 0,
     "tallGrass": {
-      "E": 49,
-      "F": 21,
-      "G": 195
+      "E": 46,
+      "F": 10,
+      "G": 172
     },
     "pools": [],
-    "unownedRemoved": 26,
+    "unownedRemoved": 17,
     "loneBushesRemoved": 5,
     "harbor": 14,
-    "scenes": 27,
+    "scenes": 26,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 9,
@@ -240,7 +240,7 @@
       "rejected": 0
     },
     "yards": 6,
-    "yardProps": 23,
+    "yardProps": 24,
     "doorFlanks": 9,
     "plaza": [
       "벤치",
@@ -264,7 +264,7 @@
         "dried": 4
       }
     ],
-    "unownedRemoved": 6,
+    "unownedRemoved": 4,
     "loneBushesRemoved": 1,
     "harbor": 0,
     "scenes": 11,
@@ -295,7 +295,7 @@
       "rejected": 2
     },
     "yards": 8,
-    "yardProps": 27,
+    "yardProps": 30,
     "doorFlanks": 13,
     "plaza": [
       "벤치",
@@ -304,9 +304,9 @@
     ],
     "treeClumps": 1,
     "tallGrass": {
-      "E": 40,
-      "F": 25,
-      "G": 336
+      "E": 50,
+      "F": 22,
+      "G": 324
     },
     "pools": [
       {
@@ -330,7 +330,7 @@
         "dried": 9
       }
     ],
-    "unownedRemoved": 6,
+    "unownedRemoved": 3,
     "loneBushesRemoved": 5,
     "harbor": 0,
     "scenes": 34,
@@ -360,8 +360,8 @@
       "rows": 8,
       "rejected": 3
     },
-    "yards": 2,
-    "yardProps": 6,
+    "yards": 6,
+    "yardProps": 18,
     "doorFlanks": 1,
     "plaza": [
       "돌등",
@@ -371,7 +371,7 @@
     "tallGrass": {
       "E": 12,
       "F": 10,
-      "G": 184
+      "G": 179
     },
     "pools": [
       {
@@ -385,18 +385,18 @@
         "dried": 4
       }
     ],
-    "unownedRemoved": 15,
+    "unownedRemoved": 3,
     "loneBushesRemoved": 4,
     "harbor": 0,
-    "scenes": 19,
+    "scenes": 20,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 7,
-        "screen": 0.597
+        "screen": 0.588
       },
       "after": {
         "maxSq": 4,
-        "screen": 0.394
+        "screen": 0.38
       }
     }
   },
@@ -416,7 +416,7 @@
       "rejected": 0
     },
     "yards": 9,
-    "yardProps": 25,
+    "yardProps": 28,
     "doorFlanks": 9,
     "plaza": [
       "벤치",
@@ -425,9 +425,9 @@
     ],
     "treeClumps": 0,
     "tallGrass": {
-      "E": 25,
-      "F": 44,
-      "G": 233
+      "E": 15,
+      "F": 17,
+      "G": 310
     },
     "pools": [
       {
@@ -441,10 +441,10 @@
         "dried": 6
       }
     ],
-    "unownedRemoved": 6,
+    "unownedRemoved": 0,
     "loneBushesRemoved": 0,
     "harbor": 9,
-    "scenes": 28,
+    "scenes": 29,
     "emptiness": {
       "beforeGapFill": {
         "maxSq": 10,
@@ -452,7 +452,7 @@
       },
       "after": {
         "maxSq": 4,
-        "screen": 0.389
+        "screen": 0.38
       }
     }
   }

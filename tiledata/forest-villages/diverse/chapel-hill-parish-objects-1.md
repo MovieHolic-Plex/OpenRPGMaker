@@ -1588,6 +1588,48 @@
 }
 ```
 
+## 돌등
+```json
+{
+  "id": "graveyard-gate-1",
+  "name": "돌등",
+  "x": 4,
+  "y": 12,
+  "purpose": "묘지 입구를 밝히는 등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "graveyard-gate",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 3,
+    "y": 12
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
 ## 마른 묘목
 ```json
 {
@@ -2100,39 +2142,6 @@
   "upperTiles": [
     [
       349
-    ]
-  ]
-}
-```
-
-## 통나무 더미
-```json
-{
-  "name": "통나무 더미",
-  "x": 9,
-  "y": 32,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    741
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "켜서 쓸 원목",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      741
     ]
   ]
 }

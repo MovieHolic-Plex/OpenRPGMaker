@@ -881,6 +881,55 @@
 }
 ```
 
+## 게시판
+```json
+{
+  "id": "market-4",
+  "name": "게시판",
+  "x": 29,
+  "y": 27,
+  "purpose": "배 드나드는 날과 장날을 붙이는 판",
+  "near": "장터 노점",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "market",
+  "lower": "KEEP",
+  "upper": [
+    2630,
+    2631,
+    2633,
+    2634
+  ],
+  "useAt": {
+    "x": 28,
+    "y": 27
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2630,
+      2631
+    ],
+    [
+      2633,
+      2634
+    ]
+  ]
+}
+```
+
 ## 낮은 돌 우물
 ```json
 {
@@ -960,6 +1009,91 @@
   "upperTiles": [
     [
       352
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "church-lamps-1",
+  "name": "돌등",
+  "x": 6,
+  "y": 13,
+  "purpose": "교회 앞길 서쪽을 밝히는 등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "church-lamps",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 5,
+    "y": 13
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "church-lamps-2",
+  "name": "돌등",
+  "x": 14,
+  "y": 13,
+  "purpose": "교회 앞길 동쪽을 밝히는 등",
+  "near": "돌등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "church-lamps",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 15,
+    "y": 13
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
     ]
   ]
 }
@@ -1741,114 +1875,6 @@
   "upperTiles": [
     [
       237
-    ]
-  ]
-}
-```
-
-## 과일 상자
-```json
-{
-  "name": "과일 상자",
-  "x": 60,
-  "y": 34,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    202,
-    203
-  ],
-  "ownerId": "nuleolmok-harbor-town-house-10",
-  "kit": "storage",
-  "purpose": "나를 수확물 상자",
-  "anchor": "나무 상자",
-  "side": "right",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      202,
-      203
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 68,
-  "y": 42,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "nuleolmok-harbor-town-house-11",
-  "kit": "woodwork",
-  "purpose": "목재를 다루는 작업면",
-  "anchor": "house",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 장작
-```json
-{
-  "name": "장작",
-  "x": 68,
-  "y": 40,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    349
-  ],
-  "ownerId": "nuleolmok-harbor-town-house-11",
-  "kit": "woodwork",
-  "purpose": "작업대에 공급할 목재",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      349
     ]
   ]
 }

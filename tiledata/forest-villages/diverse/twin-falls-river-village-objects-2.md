@@ -1,6 +1,45 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
+## 가로 탁자
+```json
+{
+  "name": "가로 탁자",
+  "x": 2,
+  "y": 30,
+  "w": 3,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    234,
+    235,
+    236
+  ],
+  "ownerId": "twin-falls-river-village-house-3",
+  "kit": "herbs",
+  "purpose": "약초 선별·건조 작업면",
+  "anchor": "약초 화분",
+  "side": "left",
+  "width": 3,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      234,
+      235,
+      236
+    ]
+  ]
+}
+```
+
 ## 항아리
 ```json
 {
@@ -67,6 +106,72 @@
 }
 ```
 
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 28,
+  "y": 26,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "twin-falls-river-village-house-4",
+  "kit": "storage",
+  "purpose": "같은 창고의 벌크 물자 보관",
+  "anchor": "나무 상자",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 작은 오크통
+```json
+{
+  "name": "작은 오크통",
+  "x": 29,
+  "y": 26,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    207
+  ],
+  "ownerId": "twin-falls-river-village-house-4",
+  "kit": "storage",
+  "purpose": "기름·식초 같은 작은 통 물자",
+  "anchor": "나무통",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      207
+    ]
+  ]
+}
+```
+
 ## 과일 상자
 ```json
 {
@@ -98,6 +203,39 @@
     [
       202,
       203
+    ]
+  ]
+}
+```
+
+## 술통
+```json
+{
+  "name": "술통",
+  "x": 29,
+  "y": 28,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    177
+  ],
+  "ownerId": "twin-falls-river-village-house-4",
+  "kit": "storage",
+  "purpose": "창고에 둔 술",
+  "anchor": "나무통",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      177
     ]
   ]
 }
@@ -334,6 +472,72 @@
 }
 ```
 
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 50,
+  "y": 53,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "twin-falls-river-village-house-8",
+  "kit": "storage",
+  "purpose": "같은 창고의 벌크 물자 보관",
+  "anchor": "나무 상자",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 작은 오크통
+```json
+{
+  "name": "작은 오크통",
+  "x": 51,
+  "y": 53,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    207
+  ],
+  "ownerId": "twin-falls-river-village-house-8",
+  "kit": "storage",
+  "purpose": "기름·식초 같은 작은 통 물자",
+  "anchor": "나무통",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      207
+    ]
+  ]
+}
+```
+
 ## 과일 상자
 ```json
 {
@@ -365,6 +569,39 @@
     [
       202,
       203
+    ]
+  ]
+}
+```
+
+## 술통
+```json
+{
+  "name": "술통",
+  "x": 51,
+  "y": 55,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    177
+  ],
+  "ownerId": "twin-falls-river-village-house-8",
+  "kit": "storage",
+  "purpose": "창고에 둔 술",
+  "anchor": "나무통",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      177
     ]
   ]
 }

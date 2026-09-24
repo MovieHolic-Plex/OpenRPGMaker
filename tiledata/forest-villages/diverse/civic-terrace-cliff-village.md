@@ -60,6 +60,14 @@
         "y": 12,
         "purpose": "밤에 우물가를 밝히는 돌등",
         "near": "낮은 돌 우물"
+      },
+      {
+        "id": "well-plaza-3",
+        "name": "화분",
+        "x": 32,
+        "y": 11,
+        "purpose": "우물가를 꾸미는 화분",
+        "near": "낮은 돌 우물"
       }
     ],
     "site": {
@@ -378,7 +386,23 @@
       "id": "terrace-cliff-village-house-8",
       "maxDistance": 12
     },
-    "items": [],
+    "items": [
+      {
+        "id": "cave-camp-1",
+        "name": "모닥불",
+        "x": 57,
+        "y": 42,
+        "purpose": "저녁에 동쪽 집 주민이 모이는 불"
+      },
+      {
+        "id": "cave-camp-2",
+        "name": "벤치",
+        "x": 56,
+        "y": 44,
+        "purpose": "불가에 앉는 자리",
+        "near": "모닥불"
+      }
+    ],
     "site": {
       "x": 53,
       "y": 45,

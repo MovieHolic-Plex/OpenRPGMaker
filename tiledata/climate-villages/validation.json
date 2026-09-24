@@ -35,7 +35,7 @@
         45
       ]
     ],
-    "reachable": 1336,
+    "reachable": 1328,
     "blocked": []
   },
   {
@@ -74,7 +74,7 @@
         48
       ]
     ],
-    "reachable": 1337,
+    "reachable": 1333,
     "blocked": []
   },
   {
@@ -121,7 +121,7 @@
         31
       ]
     ],
-    "reachable": 1419,
+    "reachable": 1404,
     "blocked": []
   },
   {
@@ -164,7 +164,7 @@
         56
       ]
     ],
-    "reachable": 1437,
+    "reachable": 1450,
     "blocked": []
   },
   {
@@ -215,7 +215,7 @@
         83
       ]
     ],
-    "reachable": 2619,
+    "reachable": 2616,
     "blocked": []
   },
   {
@@ -254,7 +254,7 @@
         50
       ]
     ],
-    "reachable": 1348,
+    "reachable": 1333,
     "blocked": []
   },
   {
@@ -297,7 +297,7 @@
         52
       ]
     ],
-    "reachable": 1527,
+    "reachable": 1496,
     "blocked": []
   },
   {
@@ -340,7 +340,7 @@
         41
       ]
     ],
-    "reachable": 1503,
+    "reachable": 1513,
     "blocked": []
   },
   {
@@ -383,7 +383,7 @@
         56
       ]
     ],
-    "reachable": 1564,
+    "reachable": 1557,
     "blocked": []
   },
   {
@@ -422,7 +422,7 @@
         48
       ]
     ],
-    "reachable": 1166,
+    "reachable": 1162,
     "blocked": []
   }
 ]

@@ -1004,6 +1004,42 @@
 }
 ```
 
+## 나무통
+```json
+{
+  "id": "lower-pool-fishing-2",
+  "name": "나무통",
+  "x": 24,
+  "y": 48,
+  "purpose": "잡은 물고기를 담는 통",
+  "near": "낚시 바구니",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "lower-pool-fishing",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "useAt": {
+    "x": 24,
+    "y": 49
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
 ## 벤치
 ```json
 {
@@ -1498,45 +1534,6 @@
     [
       2652,
       2653
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 2,
-  "y": 30,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "twin-falls-river-village-house-3",
-  "kit": "herbs",
-  "purpose": "약초 선별·건조 작업면",
-  "anchor": "약초 화분",
-  "side": "left",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
     ]
   ]
 }

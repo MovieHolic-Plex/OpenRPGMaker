@@ -29,7 +29,7 @@ node scripts/content/author-climate-villages.mjs     # 맵 + 통행 검사(실�
 ```
 
 ```json
-[{"id":"climate-autumn-twin-falls","entry":[17,61],"targets":[[11,12],[48,11],[9,34],[23,31],[41,32],[58,33],[7,56],[45,56]],"reachable":1564,"blocked":[]},{"id":"climate-autumn-chapel-hill","entry":[25,50],"targets":[[31,11],[51,11],[6,35],[17,39],[32,36],[6,50],[33,48]],"reachable":1166,"blocked":[]}]
+[{"id":"climate-autumn-twin-falls","entry":[17,61],"targets":[[11,12],[48,11],[9,34],[23,31],[41,32],[58,33],[7,56],[45,56]],"reachable":1557,"blocked":[]},{"id":"climate-autumn-chapel-hill","entry":[25,50],"targets":[[31,11],[51,11],[6,35],[17,39],[32,36],[6,50],[33,48]],"reachable":1162,"blocked":[]}]
 ```
 
 ## 실제 구분

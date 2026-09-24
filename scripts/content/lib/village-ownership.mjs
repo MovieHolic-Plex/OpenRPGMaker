@@ -26,24 +26,25 @@ export function propOwnership({ map, plan, roads, water }) {
   const base = (o) => {
     if (o.name === "벽걸이 등불") return houses.some((h) => distance(o, h) === 0) && "집 벽";
     if (o.name === "허수아비") return within(o, farms, 1) && "밭";
-    if (ROADSIDE.has(o.name)) return near(o, roads, 1) && "길가";
+    // A notice board also belongs to the stall or well it announces for.
+    if (ROADSIDE.has(o.name)) return (near(o, roads, 1) && "길가") || (o.name === "게시판" && within(o, props.filter((q) => CENTRES.has(q.name) && q.name !== "가로 탁자"), 2) && "장터");
     // A bench by a road alone is still a bench alone on the lawn (review 2026-09-24): it needs a place to sit at — a
     // well, campfire, stall or arch, the water's edge, or a landmark.
     if (SEATS.has(o.name)) return (within(o, props.filter((q) => CENTRES.has(q.name) && q.name !== "가로 탁자"), 2) && "쉼터") || (near(o, water, 1) && "물가") || (within(o, landmarks, 2) && "랜드마크");
-    if (LIGHTS.has(o.name)) return (near(o, roads, 1) && "길가") || (within(o, props.filter((q) => q.name === "낮은 돌 우물"), 2) && "우물");
+    if (LIGHTS.has(o.name)) return (near(o, roads, 1) && "길가") || (within(o, props.filter((q) => q.name === "낮은 돌 우물"), 2) && "우물") || (within(o, landmarks, 2) && "랜드마크");
     if (WATERSIDE.has(o.name)) return (near(o, water, 2) && "물가") || (within(o, dock, 2) && "부두");
     if (CENTRES.has(o.name)) return (near(o, roads, 3) || within(o, houses, 3)) && "마을 안";
     return (within(o, houses, 2) && "집") || (within(o, farms, 2) && "밭") || (within(o, dock, 2) && "부두")
       || (within(o, landmarks, 2) && "랜드마크") || (within(o, props.filter((q) => CENTRES.has(q.name)), 2) && "작업터");
   };
   for (const o of props) { const r = base(o); if (r) owned.set(o, r); }
-  // Tight groups: a piece one cell from an owned piece of the same owner/zone is owned by it (except roadside pieces
-  // and seats, which need their own road or centre).
+  // Tight groups: a piece within two cells of an owned piece of the same owner/zone is owned by it — a yard kit is laid
+  // with one-cell gaps (except roadside pieces and seats, which need their own road or centre).
   for (let changed = true; changed;) {
     changed = false;
     for (const o of props) {
       if (owned.has(o) || ROADSIDE.has(o.name) || SEATS.has(o.name) || o.name === "허수아비") continue;
-      const mate = props.find((q) => owned.has(q) && distance(o, q) <= 1 && ((o.ownerId && q.ownerId === o.ownerId) || (o.placeId && q.placeId === o.placeId)));
+      const mate = props.find((q) => owned.has(q) && distance(o, q) <= 2 && ((o.ownerId && q.ownerId === o.ownerId) || (o.placeId && q.placeId === o.placeId)));
       if (mate) { owned.set(o, "묶음(" + mate.name + ")"); changed = true; }
     }
   }

@@ -36,6 +36,80 @@
 }
 ```
 
+## 모닥불
+```json
+{
+  "id": "cave-camp-1",
+  "name": "모닥불",
+  "x": 57,
+  "y": 42,
+  "purpose": "저녁에 동쪽 집 주민이 모이는 불",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "cave-camp",
+  "lower": "KEEP",
+  "upper": [
+    381
+  ],
+  "useAt": {
+    "x": 57,
+    "y": 43
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      381
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "cave-camp-2",
+  "name": "벤치",
+  "x": 56,
+  "y": 44,
+  "purpose": "불가에 앉는 자리",
+  "near": "모닥불",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "cave-camp",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 55,
+    "y": 44
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
 ## 장터 노점
 ```json
 {
@@ -530,6 +604,174 @@
 }
 ```
 
+## 나무 상자
+```json
+{
+  "name": "나무 상자",
+  "x": 4,
+  "y": 27,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    237
+  ],
+  "ownerId": "terrace-cliff-village-house-3",
+  "kit": "storage",
+  "purpose": "운반 물자 보관",
+  "anchor": "house",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      237
+    ]
+  ]
+}
+```
+
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 6,
+  "y": 27,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "terrace-cliff-village-house-3",
+  "kit": "storage",
+  "purpose": "같은 창고의 벌크 물자 보관",
+  "anchor": "나무 상자",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 작은 오크통
+```json
+{
+  "name": "작은 오크통",
+  "x": 7,
+  "y": 27,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    207
+  ],
+  "ownerId": "terrace-cliff-village-house-3",
+  "kit": "storage",
+  "purpose": "기름·식초 같은 작은 통 물자",
+  "anchor": "나무통",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      207
+    ]
+  ]
+}
+```
+
+## 과일 상자
+```json
+{
+  "name": "과일 상자",
+  "x": 4,
+  "y": 29,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    202,
+    203
+  ],
+  "ownerId": "terrace-cliff-village-house-3",
+  "kit": "storage",
+  "purpose": "나를 수확물 상자",
+  "anchor": "나무 상자",
+  "side": "left",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      202,
+      203
+    ]
+  ]
+}
+```
+
+## 술통
+```json
+{
+  "name": "술통",
+  "x": 7,
+  "y": 29,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    177
+  ],
+  "ownerId": "terrace-cliff-village-house-3",
+  "kit": "storage",
+  "purpose": "창고에 둔 술",
+  "anchor": "나무통",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      177
+    ]
+  ]
+}
+```
+
 ## 가로 탁자
 ```json
 {
@@ -892,171 +1134,24 @@
 }
 ```
 
-## 과일 상자
+## 나무통
 ```json
 {
-  "name": "과일 상자",
-  "x": 41,
-  "y": 54,
-  "w": 2,
+  "name": "나무통",
+  "x": 43,
+  "y": 52,
+  "w": 1,
   "h": 1,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    202,
-    203
+    2638
   ],
   "ownerId": "terrace-cliff-village-house-7",
   "kit": "storage",
-  "purpose": "나를 수확물 상자",
+  "purpose": "같은 창고의 벌크 물자 보관",
   "anchor": "나무 상자",
   "side": "right",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      202,
-      203
-    ]
-  ]
-}
-```
-
-## 약초 화분
-```json
-{
-  "name": "약초 화분",
-  "x": 48,
-  "y": 49,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2623,
-    2624
-  ],
-  "ownerId": "terrace-cliff-village-house-8",
-  "kit": "herbs",
-  "purpose": "손질할 약초 재배",
-  "anchor": "house",
-  "side": "left",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2623,
-      2624
-    ]
-  ]
-}
-```
-
-## 씨앗 자루
-```json
-{
-  "name": "씨앗 자루",
-  "x": 50,
-  "y": 49,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2652,
-    2653
-  ],
-  "ownerId": "terrace-cliff-village-house-8",
-  "kit": "herbs",
-  "purpose": "다음에 심을 약초 씨앗",
-  "anchor": "약초 화분",
-  "side": "left",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2652,
-      2653
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 48,
-  "y": 51,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "terrace-cliff-village-house-8",
-  "kit": "herbs",
-  "purpose": "약초 선별·건조 작업면",
-  "anchor": "약초 화분",
-  "side": "left",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 51,
-  "y": 51,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "terrace-cliff-village-house-8",
-  "kit": "herbs",
-  "purpose": "손질한 약초 보관",
-  "anchor": "가로 탁자",
-  "side": "left",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1066,139 +1161,7 @@
   ],
   "upperTiles": [
     [
-      352
-    ]
-  ]
-}
-```
-
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 16,
-  "y": 11,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "terrace-cliff-village-house-1",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      75
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 10,
-  "y": 29,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "terrace-cliff-village-house-3",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      72
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 28,
-  "y": 31,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "terrace-cliff-village-house-4",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      76
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
+      2638
     ]
   ]
 }

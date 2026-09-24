@@ -259,6 +259,14 @@
           "purpose": "폭포 아래 소에서 쓰는 낚시 바구니"
         },
         {
+          "id": "lower-pool-fishing-2",
+          "name": "나무통",
+          "x": 24,
+          "y": 48,
+          "purpose": "잡은 물고기를 담는 통",
+          "near": "낚시 바구니"
+        },
+        {
           "id": "lower-pool-fishing-3",
           "name": "벤치",
           "x": 26,
@@ -1040,6 +1048,13 @@
       "y": 48,
       "placeId": "lower-pool-fishing",
       "propId": "lower-pool-fishing-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 24,
+      "y": 49,
+      "placeId": "lower-pool-fishing",
+      "propId": "lower-pool-fishing-2"
     },
     {
       "role": "civic-use",

@@ -314,12 +314,16 @@ function fillVillage(plan, strict) {
   const PLAIN = new Set([240, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147]);
   const isPlain = (x, y) => m.upperTiles[at(x, y)] === -1 && PLAIN.has(m.lowerTiles[at(x, y)]);
   const objects = new Set(), accessCells = new Set(plan.access.map((a) => at(a.x, a.y)));
-  for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])]) keepRect(o, objects, 0);
+  for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements.filter((p) => p.kind !== "landmark"), ...(plan.yards ?? [])]) keepRect(o, objects, 0);
+  // Tall grass may grow inside a fenced landmark yard (graveyard, shrine pond) — never inside a building.
+  const yardOpen = new Set();
+  for (const l of (plan.landmarks ?? []).filter((q) => q.gate)) keepRect(l, yardOpen, 0);
   const before = emptiness(m, isPlain);
   const gaps = fillNaturalGaps({ map: m, isPlain, templates, random, accept: noSealing, limits: { maxSq: 4, screen: 0.39 },
     // Solid pieces keep a ring off roads, water, cliffs, doors and objects; flowers only avoid access cells and objects.
-    take: (x, y, solid) => !accessCells.has(at(x, y)) && !objects.has(at(x, y)) && (!solid || bare(x, y)),
+    take: (x, y, solid) => !accessCells.has(at(x, y)) && (!objects.has(at(x, y)) || !solid && yardOpen.has(at(x, y))) && (!solid || bare(x, y)),
     grass: { members: ALL_TALL_GRASS, arrange: (map) => { map.lowerTiles = arrangeTallGrass(map, { tileset: ts, houses: plan.houses, seed: plan.seed }).lowerTiles; } } });
+  assert(gaps.maxSq <= 4 && gaps.screen <= 0.4, `fill gate ${plan.id} maxSq=${gaps.maxSq} screen=${gaps.screen.toFixed(3)}`);
   gaps.pieces.forEach((p, k) => { for (const s of p.stamps) plan.placements.push({ name: s.name, x: s.x, y: s.y, w: s.w, h: s.h, kind: "vegetation", scene: k + 1, lower: s.lower ?? "KEEP", upper: s.upper }); });
 
   // Final checks, then the plan's derived fields.

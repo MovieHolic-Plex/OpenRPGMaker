@@ -131,6 +131,13 @@
           "near": "낮은 돌 우물"
         },
         {
+          "id": "well-4",
+          "name": "게시판",
+          "x": 34,
+          "y": 21,
+          "purpose": "우물에 모인 주민의 마을 공지"
+        },
+        {
           "id": "well-5",
           "name": "돌등",
           "x": 30,
@@ -220,6 +227,14 @@
           "x": 12,
           "y": 37,
           "purpose": "정원 남쪽 경계의 짧은 패널",
+          "near": "꽃 화단"
+        },
+        {
+          "id": "garden-7",
+          "name": "나무 울타리",
+          "x": 16,
+          "y": 38,
+          "purpose": "열린 가운데 통로를 남긴 경계",
           "near": "꽃 화단"
         }
       ],
@@ -717,6 +732,14 @@
           "y": 31,
           "purpose": "불가 북쪽 앉을 자리",
           "near": "모닥불"
+        },
+        {
+          "id": "campfire-4",
+          "name": "장작 더미",
+          "x": 9,
+          "y": 33,
+          "purpose": "모닥불에 쓸 장작",
+          "near": "모닥불"
         }
       ],
       "site": {
@@ -1141,6 +1164,13 @@
     },
     {
       "role": "civic-use",
+      "x": 33,
+      "y": 21,
+      "placeId": "well",
+      "propId": "well-4"
+    },
+    {
+      "role": "civic-use",
       "x": 29,
       "y": 23,
       "placeId": "well",
@@ -1187,6 +1217,13 @@
       "y": 38,
       "placeId": "garden",
       "propId": "garden-6"
+    },
+    {
+      "role": "civic-use",
+      "x": 16,
+      "y": 39,
+      "placeId": "garden",
+      "propId": "garden-7"
     },
     {
       "role": "civic-use",
@@ -1271,6 +1308,13 @@
       "y": 32,
       "placeId": "campfire",
       "propId": "campfire-3"
+    },
+    {
+      "role": "civic-use",
+      "x": 9,
+      "y": 34,
+      "placeId": "campfire",
+      "propId": "campfire-4"
     },
     {
       "role": "civic-use",

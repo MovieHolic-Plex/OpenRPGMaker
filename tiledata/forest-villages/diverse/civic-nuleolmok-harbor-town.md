@@ -36,6 +36,14 @@
         "y": 33,
         "purpose": "좌판에 보충할 과일",
         "near": "장터 노점"
+      },
+      {
+        "id": "market-4",
+        "name": "게시판",
+        "x": 29,
+        "y": 27,
+        "purpose": "배 드나드는 날과 장날을 붙이는 판",
+        "near": "장터 노점"
       }
     ],
     "site": {
@@ -112,7 +120,23 @@
       "id": "nuleolmok-harbor-town-church",
       "maxDistance": 6
     },
-    "items": [],
+    "items": [
+      {
+        "id": "church-lamps-1",
+        "name": "돌등",
+        "x": 6,
+        "y": 13,
+        "purpose": "교회 앞길 서쪽을 밝히는 등"
+      },
+      {
+        "id": "church-lamps-2",
+        "name": "돌등",
+        "x": 14,
+        "y": 13,
+        "purpose": "교회 앞길 동쪽을 밝히는 등",
+        "near": "돌등"
+      }
+    ],
     "site": {
       "x": 7,
       "y": 7,
