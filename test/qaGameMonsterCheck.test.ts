@@ -21,6 +21,13 @@ describe("qa-game monster-collect checks", () => {
     expect(checkMonster(project).map((finding) => finding.code)).toContain("monster-capture-item-unusable");
   });
 
+  it("flags a gym map left as a bare create_map field", () => {
+    const project = seed();
+    const base = Object.values(project.maps)[0]!;
+    project.maps.map_gym = { ...base, id: "map_gym", name: "바위 체육관", events: [], lowerTiles: base.lowerTiles.map(() => base.lowerTiles[0]!), upperTiles: base.upperTiles.map(() => -1) };
+    expect(checkMonster(project).map((finding) => finding.code)).toContain("monster-gym-map-bare");
+  });
+
   it("stays silent outside monster games", () => {
     const project = seed();
     project.system.genre = "adventure-jrpg" as never;

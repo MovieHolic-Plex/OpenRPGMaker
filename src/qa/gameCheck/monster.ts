@@ -7,6 +7,7 @@
 //   - 트레이너 battleProcessing 에 troopId 가 없거나 엉뚱한 칸에 들어갔다.
 //   - 스타터를 안 받고도 도로로 나갈 수 있다(영웅 혼자 야생과 싸운다).
 
+import { TILE } from "@/project/defaults/constants";
 import { itemAllowsBattle } from "@/project/itemUsage";
 import { monsterSpeciesForEnemy } from "@/project/monsterCollection";
 import type { GameMap, Project } from "@/project/types";
@@ -126,6 +127,15 @@ export function checkMonster(project: Project, briefText?: string): Finding[] {
   }
   if (GYM.test(briefText ?? "") && !battles.some((battle) => GYM.test(`${battle.eventName ?? ""} ${battle.mapName ?? ""}`))) {
     findings.push({ severity: "warning", code: "monster-no-gym-battle", message: "기획에 체육관·관장이 있는데 관장/체육관 이름의 전투(battleProcessing)가 없습니다." });
+  }
+  // 6) 체육관 맵이 create_map 빈 판 그대로인가 — 도그푸딩 2회 연속 잔디밭 체육관.
+  for (const map of Object.values(project.maps)) {
+    if (!GYM.test(map.name ?? "")) continue;
+    const lower = new Set(map.lowerTiles ?? []);
+    const upperUsed = (map.upperTiles ?? []).some((tile) => tile !== TILE.EMPTY && tile !== 0);
+    if (lower.size <= 1 && !upperUsed) {
+      findings.push({ severity: "warning", code: "monster-gym-map-bare", message: `체육관 맵 ${map.name} 이 한 가지 바닥 타일뿐인 빈 판입니다(벽·장식 없음) — run_dungeon_room_pipeline 등으로 시공하세요.`, where: { mapId: map.id, mapName: map.name } });
+    }
   }
   return findings;
 }
