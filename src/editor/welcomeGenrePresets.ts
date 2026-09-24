@@ -153,6 +153,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       "확정된 기획의 첫 제작 범위만 실제 편집 도구로 구현하세요. 핵심 행동 → 진행 → 사건의 결과가 이어지는 플레이 가능한 구간을 만드세요.",
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",
+      "타이틀 화면과 오프닝은 새 프로젝트 자리표시입니다(오프닝은 제목 카드뿐일 수 있습니다). 기획에 맞게 set_title_screen 으로 타이틀을, edit_opening/set_opening 으로 게임 안 목소리의 도입을 바꾸세요. 기획 요약을 그대로 옮기지 말고, 범인·반전 같은 정답은 도입에 쓰지 마세요.",
       "한국어로 진행하고, 생성 후 기획의 핵심 흐름을 검증하세요. 작성·실행 확인·미확인을 구별해 보고하세요.",
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
     ].join("\n\n");
