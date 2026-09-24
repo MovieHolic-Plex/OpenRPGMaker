@@ -484,7 +484,7 @@ export function validateOptionalCommandResource(
 }
 
 
-function validateMonsterSpeciesReferences(condition: Condition, context: ReferenceContext): void {
+export function validateMonsterSpeciesReferences(condition: Condition, context: Pick<ReferenceContext, "speciesIds">): void {
   if (condition.kind === "monsterSpecies") {
     assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
   } else if (condition.kind === "all" || condition.kind === "any") {

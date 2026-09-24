@@ -1,3 +1,4 @@
+import { validateMonsterSpeciesReferences } from "./commandReferenceValidation";
 import { combatReferenceIssues } from "@/project/combatReferences";
 import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { characterAppearanceReferenceIssues } from "./characterAppearanceValidation";
@@ -379,6 +380,7 @@ function validateEndings(
     seen.add(ending.id);
     for (const condition of ending.conditions) {
       capture(issues, () => validateCondition(condition, switchIds, variableIds));
+      capture(issues, () => validateMonsterSpeciesReferences(condition, { speciesIds: new Set((project.database.monsterSpecies ?? []).map(s => s.id)) }));
     }
   }
 }
@@ -1226,7 +1228,10 @@ function validateMapRecords(
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
       validateGiftPreferenceReferences(`event ${event.id}`, event.giftPrefs, context.itemIds, issues);
       const condition = event.condition;
-      if (condition) capture(issues, () => validateCondition(condition, switchIds, variableIds));
+      if (condition) {
+        capture(issues, () => validateCondition(condition, switchIds, variableIds));
+        capture(issues, () => validateMonsterSpeciesReferences(condition, context));
+      }
       capture(issues, () => validateCommands(event.commands, context));
       capture(issues, () => validateEventPages(event.pages ?? [], context));
     }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { evalCondition } from "@/project/session";
 import { resolveEventPage } from "@/project/io/pageResolution";
+import { validateMonsterSpeciesReferences } from "@/project/io/commandReferenceValidation";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import type { Condition, EventPage, GameEvent } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
@@ -35,6 +36,12 @@ describe("monster species event conditions", () => {
     const ready: Condition = { kind: "all", conditions: [owns, { kind: "switch", switchId: "accepted", value: true }] };
     expect(evalCondition(session, ready)).toBe(false);
     expect(evalCondition(session, { kind: "not", condition: ready })).toBe(true);
+  });
+
+  it("rejects missing species references inside nested conditions", () => {
+    const nested: Condition = { kind: "not", condition: { kind: "any", conditions: [owns] } };
+    expect(() => validateMonsterSpeciesReferences(nested, { speciesIds: new Set(["merin"]) })).not.toThrow();
+    expect(() => validateMonsterSpeciesReferences(nested, { speciesIds: new Set() })).toThrow("merin");
   });
 
   it("rejects incomplete or mistyped authoring input rather than silently dropping it", () => {
