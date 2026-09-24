@@ -1,6 +1,7 @@
 import "@/styles/event/index.css";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateNeedsEventEditorRefresh } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
@@ -147,6 +148,8 @@ function confirmEventEditor(parent: HTMLElement, options: ConfirmOptions): Promi
 }
 
 function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
+  // 명령 미리보기(대사창·전투·화면 효과)가 런타임 시트의 클래스와 --runtime-* 토큰을 쓴다.
+  void preloadRuntimeStyles();
   // 예약은 반드시 첫 렌더 **전에** 남긴다. 도크는 자기가 태어날 때 이 값을 한 번 소비한다.
   // (렌더 뒤에 켜면 초안 생성의 store 갱신이 본문을 다시 그리면서 그 DOM 을 버린다.)
   if (request.aiDock) requestEventAiDockOpen(request.mapId, request.eventId);
@@ -408,7 +411,12 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     }
     refresh();
   });
-  const unsubscribeEditor = editorState.subscribe(refresh);
+  let lastEditorState = editorState.get();
+  const unsubscribeEditor = editorState.subscribe((next) => {
+    const previous = lastEditorState;
+    lastEditorState = next;
+    if (editorStateNeedsEventEditorRefresh(previous, next)) refresh();
+  });
   const unsubscribeAutoSave = store.subscribeAutoSave(() => {
     refreshModalFooterStatus(footer, request);
     refreshModalHeaderSaveState(header, footer);

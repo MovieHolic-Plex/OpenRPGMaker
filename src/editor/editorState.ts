@@ -223,6 +223,34 @@ const PAINT_PICK_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof EditorStat
   "layer",
 ]);
 
+/**
+ * 이벤트 편집기 본문이 읽지 않는 필드들 — 줌·격자·선택 사각형·붓 고르기·애니메이션 프레임.
+ * 본문은 명령 목록 전체를 다시 짓는다. 편집기를 열어 둔 채 맵을 확대하거나 팔레트를 누를
+ * 때마다 수백 행을 다시 그릴 이유가 없다. 도구·레이어·좌표 지정 대기는 여기 넣지 않는다.
+ */
+const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof EditorState>([
+  ...CANVAS_OVERLAY_EDITOR_KEYS,
+  "zoom",
+  "showGrid",
+  "showLayoutBboxes",
+  "selectedTile",
+  "activePaletteStamp",
+  "paintShape",
+  "brushSize",
+  "autoConnectMode",
+  "clusterAssistMode",
+  "selectedAnimationFrameIndex",
+  "selectedAnimationCellIndex",
+]);
+
+export function editorStateNeedsEventEditorRefresh(previous: EditorState, next: EditorState): boolean {
+  if (previous === next) return false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] !== next[key] && !EVENT_EDITOR_IGNORED_KEYS.has(key)) return true;
+  }
+  return false;
+}
+
 export function editorStateChangedOnlyPaintPick(previous: EditorState, next: EditorState): boolean {
   if (previous === next) return false;
   for (const key of Object.keys(next) as (keyof EditorState)[]) {

@@ -14,6 +14,7 @@ import type { GameEvent, MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { setImageWarmQueueSuspended } from "@/assets/imageWarmQueue";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { validateEventDraft } from "@/editor/eventDraftValidator";
 import { prepareEnemyBattleTest } from "@/editor/enemyBattleTest";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
@@ -113,7 +114,7 @@ export async function openTestPlayModal(
     // Phaser preload 가 같은 그림을 바로 읽는다. 여기서 미리 받으면 연결 6개를 워밍이
     // 먼저 차지하고, dev 서버는 no-cache 라 같은 파일을 한 번 더 받는다.
     // Give the browser a paint before heavy player bootstrap.
-    await yieldToBrowser();
+    await yieldToRuntimeSurface();
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
       qaInstrumentation: true,
@@ -172,7 +173,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
       toast(`경고 ${validation.warningCount}개가 있지만 현재 작업 초안을 테스트합니다.`, "info");
     }
     if (preparation.spawn.diagnostic) toast(preparation.spawn.diagnostic, "info");
-    await yieldToBrowser();
+    await yieldToRuntimeSurface();
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
       qaInstrumentation: true,
@@ -210,7 +211,7 @@ async function openTroopBattleTestModalAfterGate(troopId: string, project: Proje
   try {
     await store.flush();
     loading.setStage("preparing");
-    await yieldToBrowser();
+    await yieldToRuntimeSurface();
     // The user can close the test while persistence/assets yield to the browser.
     if (!body.isConnected) return;
     loading.remove();
@@ -315,6 +316,7 @@ export function closeTestPlayModal(): void {
   if (modalRoot) unregisterModal(modalRoot);
   modalRoot?.remove();
   modalRoot = null;
+  document.body.classList.remove("is-test-play-open");
   if (returnFocusAfterEnemyTest) {
     const target = returnFocusAfterEnemyTest.isConnected ? returnFocusAfterEnemyTest
       : document.querySelector<HTMLElement>('[data-testid="db-enemy-battle-test"]');
@@ -336,6 +338,7 @@ function openTestPlayShell(
   // 편집기 색키 워밍이 이 창의 프리로드와 연결·메인 스레드를 나누지 않게 멈춘다.
   // close 가 큐를 다시 켜므로, 그 다음에 건다.
   setImageWarmQueueSuspended(true);
+  void preloadRuntimeStyles();
   // Claim the initiating click/key before persistence and bootstrap yield.
   getAudioEngine().unlock();
   if (shellOptions.nestedEnemyTest && document.activeElement instanceof HTMLElement) {
@@ -441,6 +444,8 @@ function openTestPlayShell(
   windowNode.append(titlebar, body, renderRuntimeDebugPanel());
   backdrop.append(windowNode);
   document.body.append(backdrop);
+  // 코치마크 숨김 CSS 가 body:has() 로 문서 전체를 훑지 않게 상태를 body 에 직접 둔다.
+  document.body.classList.add("is-test-play-open");
   modalRoot = backdrop;
   if (shellOptions.nestedEnemyTest) {
     registerModal(backdrop, closeTestPlayModal);
@@ -569,6 +574,10 @@ function presentOpenFailure(
     return;
   }
   toast(`${title} — ${described.reason}`, "error");
+}
+
+function yieldToRuntimeSurface(): Promise<void> {
+  return Promise.all([yieldToBrowser(), preloadRuntimeStyles()]).then(() => undefined);
 }
 
 function yieldToBrowser(): Promise<void> {

@@ -80,6 +80,9 @@ OPRN Studio is a browser-based top-down tile JRPG maker/editor. It combines:
 - Editor CSS is organized by the named cascade layers in `src/styles/index.css`. Dynamic
   panel sheets must join their owning layer; `src/editor/panels/spatialPlaceLibrary.css`
   is loaded by the database panel and therefore wraps its rules in `@layer database`.
+- The editor entry does not load the runtime surface (`src/styles/runtime/index.css`) eagerly; only
+  `runtime/fonts.css` is eager. Surfaces that render runtime DOM call `preloadRuntimeStyles()`
+  (`src/app/runtimeStyles.ts`). See `openwiki/editor-pre-edit-routing.md` 「편집기 CSS·목록 비용」.
 - Large editor sheets are split at top-level rule or section boundaries. The original
   facade keeps its first chunk and the owning surface `index.css` imports later `.part-N.css`
   chunks directly in the same layer and order. CSS contract tests that inspect a whole

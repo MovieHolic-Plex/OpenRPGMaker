@@ -53,12 +53,14 @@ function normalizeColumns(columns: number | undefined): number {
   return Number.isFinite(value) && value > 0 ? value : 1;
 }
 
-export type VirtualList = {
+export type VirtualList<T = unknown> = {
   readonly element: HTMLElement;
   // 현재 스크롤/높이를 다시 측정해 필요한 경우 보이는 슬라이스를 재렌더한다.
   render(): void;
   // Reveal uses the same measured pitch and bounds as windowing/spacers.
   scrollToIndex(index: number): void;
+  // 같은 스크롤 컨테이너를 유지한 채 항목을 바꾼다(검색·선택 갱신). 스크롤 위치는 보존한다.
+  setItems(items: readonly T[]): void;
 };
 
 export type VirtualListOptions<T> = {
@@ -71,6 +73,8 @@ export type VirtualListOptions<T> = {
   // (브라우저에서 ResizeObserver 가 크기 변화를 render() 로 연결한다). 기본 1.
   readonly columns?: number | ((container: HTMLElement) => number);
   readonly className?: string;
+  // 이미 문서에 붙은 스크롤러를 재사용한다. 주면 className 은 무시하고 자식만 갈아 끼운다.
+  readonly container?: HTMLElement;
   // Opt-in CSS contract: block scroller, grid rowsHost, uniform border-box
   // row heights, gaps only inside rowsHost (not between the spacers).
   readonly measureRows?: boolean;
@@ -79,13 +83,15 @@ export type VirtualListOptions<T> = {
 
 // 스크롤 컨테이너 + 상/하단 스페이서 + 보이는 행 호스트를 구성한다.
 // fake DOM(테스트)에서는 clientHeight/scrollTop 이 없으므로 항상 전부 렌더된다.
-export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualList {
+export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualList<T> {
   const rowHeight = options.rowHeight && options.rowHeight > 0 ? options.rowHeight : DEFAULT_ROW_HEIGHT;
-  const container = el("div", { class: options.className ?? "db-list" });
+  const container = options.container ?? el("div", { class: options.className ?? "db-list" });
   const topSpacer = el("div", { class: "db-virtual-spacer db-virtual-spacer-top", attrs: { "aria-hidden": "true" } });
   const rowsHost = el("div", { class: "db-virtual-rows" });
   const bottomSpacer = el("div", { class: "db-virtual-spacer db-virtual-spacer-bottom", attrs: { "aria-hidden": "true" } });
-  container.append(topSpacer, rowsHost, bottomSpacer);
+  if (options.container) container.replaceChildren(topSpacer, rowsHost, bottomSpacer);
+  else container.append(topSpacer, rowsHost, bottomSpacer);
+  let items = options.items;
 
   // options.columns 는 프로퍼티 접근이라 클로저 안에서 타입 내로잉이 유지되지 않으므로
   // const 로 먼저 고정한다 (숫자 고정값 또는 폭 기반 함수).
@@ -117,7 +123,7 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
         insetBottom = (Number.parseFloat(hostStyle.paddingBottom) || 0) + (Number.parseFloat(containerStyle.paddingBottom) || 0);
       }
     }
-    const total = options.items.length;
+    const total = items.length;
     const rows = Math.ceil(total / columns);
     const viewportHeight = readNumber(container, "clientHeight");
     maxScrollTop = Math.max(0, insetTop + rows * pitch - (rows > 0 ? gap : 0) + insetBottom - viewportHeight);
@@ -148,7 +154,7 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
     currentColumns = columns;
     const rendered: HTMLElement[] = [];
     for (let index = next.start; index < next.end; index += 1) {
-      rendered.push(options.renderRow(options.items[index], index));
+      rendered.push(options.renderRow(items[index], index));
     }
     rowsHost.replaceChildren(...rendered);
   };
@@ -171,6 +177,11 @@ export function createVirtualList<T>(options: VirtualListOptions<T>): VirtualLis
     scrollToIndex(index) {
       render();
       container.scrollTop = Math.min(maxScrollTop, Math.max(0, insetTop + Math.floor(index / currentColumns) * pitch));
+      render();
+    },
+    setItems(next) {
+      items = next;
+      current = { start: -1, end: -1 };
       render();
     },
   };

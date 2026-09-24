@@ -3,6 +3,7 @@ import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
   editorStateChangedOnlySelectedTile,
+  editorStateNeedsEventEditorRefresh,
   editorStateNeedsMapTreeRefresh,
   editorStateNeedsPaletteRefresh,
   type EditorState,
@@ -80,5 +81,24 @@ describe("에디터 상태와 맵 트리 갱신", () => {
     const next = snapshot({ zoom: 1 });
     expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(false);
     expect(editorStateNeedsPaletteRefresh(previous, next)).toBe(false);
+  });
+});
+
+describe("editorStateNeedsEventEditorRefresh", () => {
+  it("줌·선택 사각형·붓 고르기만 바뀌면 이벤트 편집기 본문을 다시 짓지 않는다", () => {
+    const previous = snapshot();
+    const next = snapshot({
+      zoom: previous.zoom === 1 ? 2 : 1,
+      selection: { mapId: "map-1", x: 1, y: 2, width: 3, height: 4 },
+      selectedTile: previous.selectedTile + 1,
+      brushSize: previous.brushSize === 1 ? 2 : 1,
+    });
+    expect(editorStateNeedsEventEditorRefresh(previous, next)).toBe(false);
+  });
+
+  it("본문이 읽는 페이지·도구가 바뀌면 다시 짓는다", () => {
+    const previous = snapshot();
+    expect(editorStateNeedsEventEditorRefresh(previous, snapshot({ selectedEventPageId: "page-x" }))).toBe(true);
+    expect(editorStateNeedsEventEditorRefresh(previous, snapshot({ tool: previous.tool === "event" ? "paint" : "event" }))).toBe(true);
   });
 });

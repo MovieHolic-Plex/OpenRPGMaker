@@ -22,6 +22,7 @@ import { aiImageGenerateField } from "@/editor/panels/aiImageGenerateField";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
 import {
   databaseImageFailurePlaceholder,
   markDatabaseImageFailed,
@@ -80,8 +81,9 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     attrs: { type: "search", placeholder: "검색 (이름 또는 ID)", autocomplete: "off" },
     dataset: { testid: `${prefix}-search` },
   }) as HTMLInputElement;
+  const iconGrid = options.kind === "icon" || options.kind === "image";
   const list = el("div", {
-    class: options.kind === "icon" || options.kind === "image"
+    class: iconGrid
       ? "db-resource-picker-list db-resource-picker-list-icons"
       : "db-resource-picker-list",
     dataset: { testid: `${prefix}-list` },
@@ -94,6 +96,23 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     preview.append(audioPreview.element);
   }
 
+  const selectEntry = (entry: DatabaseResourceOption): void => {
+    if (isUnsupportedAudio(entry.id)) return;
+    selectedId = entry.id;
+    refreshList();
+    refreshPreview();
+    refreshIndexPanel();
+  };
+  const renderOption = (entry: DatabaseResourceOption): HTMLElement =>
+    resourceButton(entry, selectedId, options.kind, store.getCurrent(), characterIndex, () => selectEntry(entry), prefix);
+  // BGM 281곡처럼 긴 한 줄 목록만 창으로 그린다. 아이콘 격자는 auto-fill 열·줄바꿈 이름표라
+  // 행 높이가 균일하지 않아 가상화 계약(databaseListVirtualizer measureRows)을 만족하지 못한다.
+  const virtualList = iconGrid
+    ? null
+    : createVirtualList<DatabaseResourceOption>({ items: [], container: list, measureRows: true, rowHeight: 48, renderRow: renderOption });
+  const emptyHint = el("div", { class: "db-resource-picker-empty", text: "일치하는 리소스가 없습니다." });
+  let filteredEntries: readonly DatabaseResourceOption[] = [];
+
   const refreshList = (): void => {
     const project = store.getCurrent();
     const catalog = listDatabaseResourceOptions(options.kind, project);
@@ -105,20 +124,26 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       if (entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query)) return true;
       return entry.searchTerms?.some((term) => term.toLowerCase().includes(query)) ?? false;
     });
-    list.replaceChildren(
-      ...filtered.map((entry) =>
-        resourceButton(entry, selectedId, options.kind, project, characterIndex, () => {
-          if (isUnsupportedAudio(entry.id)) return;
-          selectedId = entry.id;
-          refreshList();
-          refreshPreview();
-          refreshIndexPanel();
-        }, prefix)
-      )
-    );
-    if (filtered.length === 0) {
-      list.append(el("div", { class: "db-resource-picker-empty", text: "일치하는 리소스가 없습니다." }));
+    filteredEntries = filtered;
+    const hadFocus = list.contains(document.activeElement);
+    if (virtualList) {
+      virtualList.setItems(filtered);
+      if (filtered.length === 0) list.append(emptyHint);
+      else emptyHint.remove();
+    } else {
+      list.replaceChildren(...filtered.map(renderOption));
+      if (filtered.length === 0) list.append(emptyHint);
     }
+    // 행을 다시 그리면 누른 버튼이 사라진다 — 키보드 사용자가 목록 밖으로 튕기지 않게 선택 행에 초점을 되돌린다.
+    if (hadFocus && !list.contains(document.activeElement)) {
+      list.querySelector<HTMLElement>("button.active")?.focus({ preventScroll: true });
+    }
+  };
+  const revealSelected = (): void => {
+    if (!virtualList) return;
+    const index = filteredEntries.findIndex((entry) => entry.id === selectedId);
+    if (index >= 0) virtualList.scrollToIndex(index);
+    else virtualList.render();
   };
 
   const refreshPreview = (): void => {
@@ -172,7 +197,8 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     refreshList();
     refreshPreview();
   });
-  refreshList();
+  // 목록은 창이 문서에 붙은 뒤 채운다 — 떨어진 상태에서는 뷰포트 높이가 0 이라 가상 목록이 전부 그린다.
+  if (!virtualList) refreshList();
   refreshPreview();
   refreshIndexPanel();
 
@@ -217,6 +243,11 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
   ], actions, undefined, () => { unsubscribe?.(); audioPreview?.dispose(); });
+  if (virtualList) {
+    refreshList();
+    // 첫 창은 추정 행 높이로 그렸다. 실측 피치로 다시 재고 현재 선택이 보이게 한다.
+    revealSelected();
+  }
   confirmButton = preview.closest('[role="dialog"]')?.querySelector<HTMLButtonElement>(`[data-testid="${prefix}-ok"]`) ?? null;
   if (confirmButton) confirmButton.disabled = !selectedId || isUnsupportedAudio(selectedId);
   if (options.kind === "music" || options.kind === "sound" || options.kind === "monster") {

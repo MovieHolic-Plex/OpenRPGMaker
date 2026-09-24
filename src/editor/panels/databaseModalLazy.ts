@@ -1,4 +1,5 @@
 import type { DatabaseTab } from "@/editor/panels/database";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { getEditorChrome } from "@/editor/editorUiMode";
 import { uiLabel } from "@/editor/uiCopy";
 import { el } from "@/util/dom";
@@ -177,6 +178,7 @@ export function openDatabaseModalLazy(
 ): void {
   const serial = ++requestSerial;
   pending = { serial, tab: initialTab, options };
+  void preloadRuntimeStyles();
   // 미리 읽어 둔 본문은 껍데기 없이 바로 연다.
   if (readyModule) {
     try {

@@ -18,6 +18,7 @@ import { dialoguePresentationCssVars, dialoguePresentationProfile } from "@/play
 import { prefersReducedMotion } from "@/player/characterLanding";
 import type { DialogueTextControl } from "@/player/dialoguePagination";
 import { applyDialogueFx } from "@/player/dialogueTextRenderer";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { faceDisplayModeOf, renderFacesetCrop } from "./facesetPreview";
 import { SPEAK_SAMPLE_BODY, SPEAK_SAMPLE_SPEAKER } from "@/editor/eventCommands/quickAuthoringDefaults";
 import {
@@ -80,6 +81,7 @@ export type CommandPreviewContext = {
 // 명령 편집 모달 우측 "이미지 리치" 프리뷰 패널. staged command 를 받아 종류별 시각화를
 // 렌더한다. 전용 렌더러가 없으면 요약 카드로 폴백한다(패널이 비어 보이지 않게).
 export function renderCommandPreview(cmd: Command, context?: CommandPreviewContext): HTMLElement {
+  void preloadRuntimeStyles();
   const visual = renderVisual(cmd, context);
   const summaryOnly = visual.classList.contains("ecp-summary-card");
   const panel = el("div", {
@@ -383,6 +385,7 @@ function applyPreviewDialogueLook(overlay: HTMLElement, win: HTMLElement, look: 
  * 여기서 보이는 모양이 곧 게임 모양이다.
  */
 export function renderDialogueLookSample(speaker: string, body: string, look: DialogueLook): HTMLElement {
+  void preloadRuntimeStyles();
   return messageWindowMock(speaker, body, undefined, { replay: false, look });
 }
 

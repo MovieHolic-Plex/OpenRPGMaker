@@ -143,8 +143,7 @@
 }
 
 /* 데이터베이스·리소스 모달이 열리면 조수는 물러난다(02 규칙 유지 — 여기선 데크만 재확인). */
-body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel .ai-deck,
-body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
+body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel .ai-deck {
   display: none;
 }
 

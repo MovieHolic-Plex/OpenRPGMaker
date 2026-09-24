@@ -131,6 +131,37 @@ NPC·캐릭터 Sprite와 런타임 렌더 경로는 이 변경의 대상이 아�
 실측 범위·근거: `reports/2026-09-18-map-switch-performance.md`.
 회귀 계약: `test/sharedTileAnimation.test.ts` (이 세션에서는 저장소 규칙에 따라 실행하지 않음).
 
+## 편집기 CSS·목록 비용 (2026-09-25)
+
+- **런타임 시트는 편집기 첫 화면에 없다.** `src/styles/index.css` 는 `runtime/index.css`(~570KB) 대신
+  `runtime/fonts.css`(픽셀 글꼴 `@font-face` 넷)만 즉시 싣는다 — 저자가 UI 글꼴로 픽셀 글꼴을 고르면 편집기
+  크롬과 맵 이름표도 그 글꼴을 쓴다. 나머지는 `src/app/runtimeStyles.ts` 의 `preloadRuntimeStyles()` 가
+  `src/app/runtimeStylesheet.ts`(부수효과 import 하나 — CSS 게이트가 TS 의 `import "….css"` 로 엔트리를 찾는다)를
+  동적 import 해 싣는다. 부르는 곳: 플레이 모드(`mode.ts`), 테스트 플레이·전투 테스트(`testPlayModal.ts`, 렌더 전 대기),
+  퀵 전투, 자료집 열기(`databaseModal.ts`·`databaseModalLazy.ts`), 이벤트 편집기 열기, 명령 미리보기
+  (`renderCommandPreview`·`renderDialogueLookSample`). **새 편집기 표면이 런타임 DOM(대사창·전투·상태 메뉴·
+  `.play-viewport`)이나 `--runtime-*` 토큰을 쓰면 그 표면을 여는 곳에서 `preloadRuntimeStyles()` 를 불러라.**
+  레이어 순서는 `index.css` 첫 줄이 먼저 선언하므로 늦게 들어와도 승자가 같다 — 승자 게이트 대조(HEAD 기준)에서
+  편집기 엔트리의 변화는 런타임 출처 선언 10,287건이 빠진 것뿐이고 편집기 선언의 승자는 하나도 안 바뀌었다.
+  출하 플레이어(`src/player/player.css` → `playerRuntime.css` → `runtime/index.css`)는 그대로 즉시 싣는다.
+- **자료집 리소스 고르기**(`databaseResourcePickerDialog.ts`)의 한 줄 목록(BGM 281곡 등)은
+  `createVirtualList`(`container` 옵션으로 기존 `-list` 요소를 스크롤러로 재사용, `setItems` 로 스크롤 보존 갱신,
+  `measureRows`)로 창만 그린다. 목록은 대화상자가 문서에 붙은 뒤 채운다(떨어진 상태는 뷰포트 0 → 전량 렌더).
+  열 때 현재 선택으로 스크롤하고, 행을 다시 그려도 목록 안 초점은 선택 행으로 돌아온다. 아이콘·이미지 격자는
+  auto-fill 열과 줄바꿈 이름표라 행 높이가 균일하지 않아 가상화하지 않는다.
+- **타일 팔레트 칸 입력은 판(grid) 하나가 받는다**(`tilePaletteGrid.ts` `installCellActivation`). 칸마다 리스너 셋을
+  달던 비용이 커스텀 아틀라스 2,000칸에서 컸다. 스탬프 제스처가 grid 의 pointerdown 에서 전파를 멈추므로
+  **제스처보다 먼저** 설치한다. 칸 가상화는 하지 않았다 — 스탬프 미리보기·스포이트 노출(`tilePalette.ts` 의
+  `chipset-tile-N` 조회)·roving 이 모든 칸이 DOM 에 있다고 가정한다.
+- **이벤트 편집기는 줌·격자·선택 사각형·붓 고르기 같은 editorState 변화에 본문을 다시 짓지 않는다**
+  (`editorStateNeedsEventEditorRefresh`). 본문이 실제로 읽는 필드(맵·이벤트·페이지·도구·레이어·좌표 대기)는 그대로 갱신한다.
+  명령 행에 `content-visibility` 는 걸지 않았다 — 깊이 레일 `::before` 가 행 밖(음수 left)에 그려져 페인트 격리에 잘린다.
+- **body 루트 `:has()` 대신 상태 클래스:** `body.is-test-play-open`(테스트 플레이 셸이 붙이고 `closeTestPlayModal` 이 뗀다),
+  `body.has-ai-work-strip`(`aiWorkStrip.ts` `applyLayout`). `body:has([data-testid='resource-modal'])` 는 리소스 관리자 창도
+  `.database-modal-backdrop` 이라 같은 규칙의 첫 선택자가 이미 덮어 지웠다. `body:has(.database-modal-backdrop:not(.is-parked))`
+  는 남겼다 — 그 클래스를 쓰는 창이 10곳이라 한 소유자가 상태를 들 수 없다.
+- 팀 보기 전용(`teamReadOnlyUi.ts`)의 body 변이 관찰은 프레임당 한 번으로 모으고, 자료집 대상이 하나도 없으면 조회 한 번으로 끝낸다.
+
 ## 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
 
 `EditScene` 의 전체 재렌더(`redraw`)는 타일 GameObject 를 전부 파괴하고 다시 만든다.
