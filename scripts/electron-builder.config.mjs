@@ -13,7 +13,7 @@ export default {
   // 기본값은 production 의존성을 asar 에 넣어 439MB 를 만들었다(실측) — 명시적으로 뺀다.
   // node:sqlite 는 내장이고 electron 은 패키저가 넣는다.
   files: ["dist/**", "dist-electron/**", "package.json", "scripts/oh-my-pi-worker.ts", "scripts/lib/**", "!node_modules/**"],
-  asarUnpack: ["scripts/**"],
+  asarUnpack: ["scripts/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 맥을 먼저 낸다(설계서 7.5). 리눅스는 서명이 필요 없는 AppImage 로 도그푸딩한다.
