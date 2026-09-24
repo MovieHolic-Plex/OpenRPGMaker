@@ -539,8 +539,9 @@ export async function enterMode(mode: Mode): Promise<void> {
   }
   modeMounted = true;
 
-  // 탑바 갱신(모드 배지/버튼).
+  // 탑바 갱신(모드 배지/버튼). 대기 중에 모드가 다시 바뀌었으면 이전 런이 덮지 않는다.
   await renderTopbar();
+  if (run !== modeRun) return;
   markModeSwitch(startedAt);
 }
 
