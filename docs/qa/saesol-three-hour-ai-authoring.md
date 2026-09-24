@@ -5,7 +5,7 @@
 ## 현재 요약 — 제작 진행 중
 
 - 목표: 약20맵·약180분의 완결된 모험. **아직 달성하지 않았다.**
-- 최근 정본 재오픈 검증: SQLite revision505, 20맵, 156이벤트, 미디어80개 해시 일치. 실제 제작은 에디터 AI 조수의 입력창과 도구로 수행한다.
+- 최근 정본 재오픈 검증: SQLite revision506, 20맵, 156이벤트, 미디어80개 해시 일치. 실제 제작은 에디터 AI 조수의 입력창과 도구로 수행한다.
 - 확인된 플레이: revision425의 새 게임 상태에서 구간별 실제 진행 상태를 이어 두 배지·광산 구출·등대·세 번째 배지·산길·유적·네 번째 배지·사천왕4명·챔피언·엔딩까지 정상 방향 입력/포털로 연결했다. 리그 미술만469로 갱신했다. 챔피언 이후 마을 복귀와 리그 재방문도 확인했다. QA 사본에서 구간별 재개했으므로 무중단 일반 세이브로드와180분 분량의 증거는 아니다. 엔딩 이후20맵 도보 연결도 별도 통과했다.
 - 미완료: 지역2 재대화·타스타터 검증, 확장 후 전체 정상 도보 퀘스트 순서/다른 파티 검증, 지역별 시각 완성, 전체 정상 경로 완주와 실제180분 분량. 리그 revision469 재장식과 통행, 시작 배우470 수정, 숲 생태조사491의 세 단서와 완료 보고를 확인했다. 숲 환경 미술은 보강 중이며 생태조사→체육관 연계는502에서 저장·분기별 플레이 확인했다.
 - 자동 최종 검수는 참조형 캐릭터 렌더링 오류·OAuth 만료 등으로 여러 요청에서 실패했다. 개별 검사 통과를 자동 최종 검수 성공으로 표현하지 않는다.
@@ -1220,3 +1220,15 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `colored-npcs-partial-player/SUMMARY.md`: 세 맵 플레이어 캡처 완료,pageErrors0. 도윤/캠퍼/준혁 세 PNG를 각각 직접 열어 검은 실루엣 대신 청색/녹색/주황색 유색 칩이 렌더되는 것을 확인했다. QA 사본의 시작 위치를 NPC 앞에 지정한 시각 검사이며 도보·전투 회귀 통과를 뜻하지 않는다.
 
 - 요청26c도 MALFORMED_FUNCTION_CALL 뒤 상인/하린2건의 검토 초안을 남겼다. 검토 보기 후 적용을 눌렀으나 관찰 Chromium이 `Page crashed`로 종료됐고 PID2679413이 사라졌다. SQLite는505여서 두 건 저장 성공으로 보고하지 않는다. 서버2321722/워커126360은 살아 있었으므로 재시작하지 않고 새 관찰 브라우저만 연결했다. `author-24-recovery2-observer.log` 말미와 `request26c-review-details.txt`가 근거다.8GB 힙 설정 상태에서도 크래시가 재발했으며 원인은 확정하지 않았다.
+
+
+### SAVE047 — 자동 저장 전체 문서 중복 전송과 실행 번들 불일치
+
+- 복구 관찰 브라우저의 `window.__oprnLogs({ns:'autosave'})`에서 `oprn:project.saveMapPatch: 400 {"error":"request exceeds 134217728 bytes"}`를 반복 확인했다. 단순 SQLite 잠금이나 외부 이미지 접속 실패가 아니다. `output/saesol-three-hour/save-error-log.json`이 실제 오류 근거다.
+- 정본505의 `current_json`은57,113,076자다. 배포된 `main-DRsovAOw.js`는 `baseSerialized`와 `serialized` 전체를 동시에 보내며, JSON 문자열을 다시 JSON 본문에 넣을 때의 escaping까지 포함해128MiB 제한을 넘겼다. 호스트는 이미 `patch`/`baseSha` 입력을 지원한다. 서버 지원과 renderer 사용 여부를 각각 확인해야 한다.
+- main의 기존 수정 `0b9219e2e`(#1163)를 실행용 소스 브랜치에 반영했다(`4fa7e5b7a`). 변경분만 보내고 stale-base일 때만 기준 문서를 추가하는 기존 계약을 사용한다. 요청 한도를 늘려 우회하지 않았다.
+- `npx vite build --outDir output/saesol-native/editor-dist-compact` 성공. 새 정적 파일을 복사한 뒤 index를 원자 교체했으며 이전 assets는 유지했다. 호스트/AI 워커는 재시작하지 않았다. `compact-deploy-proof.json`에 소스 커밋·index 해시·시각 기록. 이 단계만으로 기존 탭의 번들 교체나 정본 저장 성공을 주장하지 않는다.
+- 전체 gates/vitest/typecheck는 실행하지 않았다. 저장 복구와 에디터 AI 후속 변경의 재로드 검증은 별도로 필요하다.
+
+- 복구 결과: 기존 탭의 legacy 요청152,311,174bytes → 기준 문서1개+실제 patch97,366,469bytes. 기존 구현의 diff/apply로 원래 편집 문서와 재구성 문서가 동일함을 확인하고 저장을 재시도했다. `transport-recovery-proof.json`의 실제 응답은 `saved`다. 기존 탭 복구용 어댑터는 저장 wire만 변경했으며 게임 콘텐츠를 생성하지 않았다.
+- 정본 재오픈 결과506,20맵/156이벤트,80미디어 해시 확인 및 반복 읽기 일치(`player-snapshot-transport-recovered-proof.json`).505 대비 맵·DB·세션 전체 동일 여부는 `transport-recovered-scope.json`에 기록했다. 신규 NPC 저작 완료나3시간 완주를 의미하지 않는다. 저장 성공 응답 확인 후 같은 관찰 탭을 새 번들로 reload한다.
