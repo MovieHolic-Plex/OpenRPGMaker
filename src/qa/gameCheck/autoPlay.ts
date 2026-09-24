@@ -128,13 +128,8 @@ function elseBranchRequirements(condition: unknown, _page: PageRef): Requirement
 
 function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[] {
   const reqs: Requirement[] = [];
-  for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
-  for (const segment of visit.segments) {
-    if (segment.kind !== "fork") continue;
-    if (segment.branch === "then") reqs.push(...leafRequirements(segment.command.condition, visit.page));
-    // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
-    if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
-  }
+  // 엔딩 조건(호감)을 페이지 조건(요일)보다 먼저 채운다. 만남 잠금을 푸는 명령이
+  // 요일을 올리는 이른 페이지에만 있으면, 요일을 먼저 끝까지 밀면 호감을 되풀이할 수 없다.
   if (visit.command.kind === "triggerEnding") {
     const namedId = typeof visit.command.endingId === "string" ? visit.command.endingId : undefined;
     const ending = namedId
@@ -143,6 +138,13 @@ function baseRequirementsOf(project: Project, visit: CommandVisit): Requirement[
     // 이름 있는 triggerEnding 도 엔딩 conditions 를 선행으로 본다. 런타임이 조건 미달이면
     // 엔딩을 열지 않으므로, 호감 ≥ 6 없이 고백 선택지만 누르면 도달로 세면 안 된다.
     for (const condition of ending?.conditions ?? []) reqs.push(...leafRequirements(condition, visit.page));
+  }
+  for (const condition of visit.page.conditions) reqs.push(...leafRequirements(condition, visit.page));
+  for (const segment of visit.segments) {
+    if (segment.kind !== "fork") continue;
+    if (segment.branch === "then") reqs.push(...leafRequirements(segment.command.condition, visit.page));
+    // 2026-09-24 갤러리 r2: 장미를 건넨 else 의 triggerEnding 을, 스위치가 꺼진 채로 같은 이벤트를 돌려 놓쳤다.
+    if (segment.branch === "else") reqs.push(...elseBranchRequirements(segment.command.condition, visit.page));
   }
   return reqs;
 }
