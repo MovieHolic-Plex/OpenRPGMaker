@@ -21,6 +21,8 @@ const TRANSIENT_PATTERNS: readonly RegExp[] = [
   /\b(?:502|503|504)\b|bad gateway|service unavailable|gateway timeout/i,
   /\boverloaded\b|\bUNAVAILABLE\b/i,
   /returned an empty response/i,
+  // 2026-09-24 갤러리 호러 r3: 생각만 흘리고 답을 안 준 응답 — 한 번 더 요청하면 대개 풀린다.
+  /thought-only response|without final output/i,
 ];
 
 /** 같은 대화 기록으로 한 번 더 요청하면 나아질 법한 제공자 오류인가. */
