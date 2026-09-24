@@ -839,18 +839,19 @@ def rule_sentences(rules):
     return out
 
 
-def components(cells, w, h):
-    """4이웃 연결 덩이 크기(큰 순)."""
+def components(cells, w, h, members=False):
+    """4이웃 연결 덩이 크기(큰 순). members=True 면 덩이 칸 목록."""
     cells = set(cells)
     seen, out = set(), []
     for c in cells:
         if c in seen:
             continue
-        st, n = [c], 0
+        st, n, got = [c], 0, []
         seen.add(c)
         while st:
             i = st.pop()
             n += 1
+            got.append(i)
             x, y = i % w, i // w
             for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
                 nx, ny = x + dx, y + dy
@@ -858,8 +859,15 @@ def components(cells, w, h):
                 if 0 <= nx < w and 0 <= ny < h and j in cells and j not in seen:
                     seen.add(j)
                     st.append(j)
-        out.append(n)
-    return sorted(out, reverse=True)
+        out.append(got if members else n)
+    return sorted(out, key=len, reverse=True) if members else sorted(out, reverse=True)
+
+
+def iter_run(cells, w, h, x, y, dx, dy):
+    x, y = x + dx, y + dy
+    while 0 <= x < w and 0 <= y < h and y * w + x in cells:
+        yield (x, y)
+        x, y = x + dx, y + dy
 
 
 def density_stats(b, m, main_key):
@@ -898,7 +906,20 @@ def density_stats(b, m, main_key):
     wset = set(waters)
     near = sum(1 for i in dec if any(0 <= i % w + dx < w and 0 <= i // w + dy < h and
                                      ((i // w + dy) * w + i % w + dx in wset or L[3][(i // w + dy) * w + i % w + dx] >= 0) for dx, dy, _ in DIRS))
-    return {'area': A, 'objShare': round(100 * len(occ) / A), 'decorShare': round(100 * len(dec) / A), 'objects': anchors,
+    fills = []
+    for body in components(waters, w, h, members=True)[:4]:
+        xs, ys = [i % w for i in body], [i // w for i in body]
+        fills.append(round(100 * len(body) / ((max(xs) - min(xs) + 1) * (max(ys) - min(ys) + 1))))
+    pset = set(paths)
+    widths = []
+    for i in paths:
+        x, y = i % w, i // w
+        hr = 1 + sum(1 for _ in iter_run(pset, w, h, x, y, 1, 0)) + sum(1 for _ in iter_run(pset, w, h, x, y, -1, 0))
+        vr = 1 + sum(1 for _ in iter_run(pset, w, h, x, y, 0, 1)) + sum(1 for _ in iter_run(pset, w, h, x, y, 0, -1))
+        widths.append(min(hr, vr))
+    widths.sort()
+    return {'waterFill': fills, 'pathWidth': (widths[len(widths) // 2], widths[-1]) if widths else None,
+            'area': A, 'objShare': round(100 * len(occ) / A), 'decorShare': round(100 * len(dec) / A), 'objects': anchors,
             'per100': round(100 * anchors / A, 1), 'objClusters': components(occ, w, h), 'decorClumps': components(dec, w, h),
             'decorNear': round(100 * near / len(dec)) if dec else 0, 'maxEmpty': best,
             'pathRuns': components(paths, w, h), 'waterBodies': components(waters, w, h)}
@@ -921,10 +942,19 @@ def density_section(P, st, cat):
         f"- **30×20 맵 목표**: 물체 {goal_obj}개 이상(칸 {goal_occ}% 이상을 3·4층 물체가 덮음), 2층 장식 {goal_dec}% 이상, "
         f"**빈 {'바닥' if P['cave'] else '풀밭'}이 {k}×{k} 넘게 남지 않게** 한다. 다 칠한 뒤 show_map_region 으로 빈 곳을 찾아 채운다.",
         "- 물체 여럿은 stamp_layer_block 한 번에 한 배열로 찍는다(예: 10×8 창 하나에 나무·풀·돌을 함께, 빈칸 -1) — 한 개씩 부르지 않는다.",
-        f"- **길**: 한 번의 연속된 줄로 칠한다 — `paint_tiles mode:\"line\"`(폭 1) 또는 `\"rect\"`(폭 2), 굽는 곳은 줄을 이어서. "
-        "1~2칸짜리 토막을 띄엄띄엄 찍지 않는다(둥근 조각이 흩어진다 — 오류 그림 ⑤). 길의 양 끝은 목적지(입구·물가·다리·맵 가장자리)에 닿게.",
-        "- **2층 장식 덩이**: 사각형·ㄴ자로 칠하지 않는다(오류 그림 ⑥). 물가·나무 밑동·벽 발치를 따라 들쭉날쭉한 덩이로, "
-        "`paint_tiles layer:\"2\" mode:\"cells\"` 에 칸 목록을 준다(한 덩이 " + clump + "). 층 분해 그림 ②와 예제 배열의 \"2\" 가 본보기.",
+        "- **모양은 자연스럽게 — 직사각형 금지**: 물·흙·모래 같은 면은 네모 하나로 칠하지 않는다(오류 그림 ③)"
+        + (f" — 프리뷰 물 덩이는 둘러싼 사각형의 {'·'.join(str(f) for f in st['waterFill'])}%만 채운다" if st['waterFill'] else '') + ". "
+        "크기가 다른 사각형 2~3개를 겹치고 가장자리 칸 몇 개를 더하거나 빼서 들쭉날쭉하게. 9×6 연못 예(왼쪽 위 x,y): "
+        "rect (x+1,y)~(x+6,y+2) · rect (x,y+2)~(x+4,y+5) · rect (x+4,y+1)~(x+8,y+4), 그다음 cells 로 물 더하기 (x+7,y) (x+5,y+5), "
+        "바닥으로 되돌리기 (x+8,y+4) (x,y+5). 또는 `fill_region shape:\"ellipse\"`(값은 rect|ellipse|circle 셋뿐) 뒤에 가장자리 칸을 cells 로 더하고 뺀다.",
+        f"- **길**: 폭 1~2칸의 굽이진 줄 하나"
+        + (f"(프리뷰 길 폭 중앙값 {st['pathWidth'][0]}칸·최대 {st['pathWidth'][1]}칸)" if st['pathWidth'] else '')
+        + " — `paint_tiles mode:\"line\"` 여러 번을 끝끼리 이어 꺾어 간다(2~4칸마다 한 칸 옆으로). 폭 3칸 넘는 곧은 길·십자로 금지, "
+        "1~2칸 토막을 띄엄띄엄 찍기 금지(오류 그림 ⑤). 끝은 목적지(입구·물가·다리·맵 가장자리)에 닿게."
+        + (" 정원 돌길은 디딤돌 물체(1칸)를 한 칸씩 굽이진 줄로 놓는다." if P['bundle'] == 'rasak_field' else ''),
+        "- **2층 장식·덤불 덩이**: 3~9칸의 들쭉날쭉한 덩이를 물가·나무 밑동·벽 발치에 붙인다(프리뷰 덩이 " + clump
+        + f", 장식 칸의 {st['decorNear']}%가 물가·물체 옆). 사각형·ㄴ자·2×1 막대 금지, 길을 따라 일정 간격으로 늘어놓기 금지(오류 그림 ⑥). "
+        "`paint_tiles layer:\"2\" mode:\"cells\"` 에 칸 목록을 준다. 층 분해 그림 ②와 예제 배열의 \"2\" 가 본보기.",
     ]
     if P['cave']:
         lines.append("- **동굴은 손으로 짓는다**: 둘레·천장(윗면)을 1층에 넓게 칠하고 방·통로 바닥을 그 안에 한 줄로 파낸 뒤, 벽을 바닥 윗줄에 칠한다. "
@@ -1030,7 +1060,7 @@ def build_purpose(pid, b, maps, groups, tables, out_dir, rules):
 
     # 5) 오류 나란히
     err_img, err_notes = error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list)
-    images.append(('errors', '정상/오류 나란히', '정상(왼쪽)|오류(오른쪽) 6쌍: ①물체를 1층 ②장식을 3층 ③모양 손으로 ④1층 다시 칠함 ⑤길 토막 ⑥장식 사각형. 빨간 사람 = 캐릭터가 서는 자리(2층·그림자 뒤, 3층 앞).', err_img))
+    images.append(('errors', '정상/오류 나란히', '정상(왼쪽)|오류(오른쪽) 6쌍: ①물체를 1층 ②장식을 3층 ④1층 다시 칠함 ⑤길 토막 ⑥장식 사각형 ③직사각형 연못(맨 아래 줄, 9×6 조리법). 빨간 사람 = 캐릭터가 서는 자리(2층·그림자 뒤, 3층 앞).', err_img))
     assert len(images) <= 8, (pid, len(images))
 
     # ── MD ──
@@ -1085,7 +1115,7 @@ def build_purpose(pid, b, maps, groups, tables, out_dir, rules):
 ## 금지
 - 물체(3층 번호)를 1층에 찍기 — 바닥이 그 물체 그림으로 바뀌고 투명한 곳이 검게 뚫린다(오류 그림 ①). paint_tiles 1층은 물체를 3층으로 옮겨 주지만 stamp_layer_block 은 준 층에 그대로 쓴다.
 - 2층 장식을 3층에 — 풀숲이 캐릭터 위에 그려진다(오류 그림 ②).
-- 바닥 모양 번호를 손으로 이어 붙이기 — 가장자리가 끊긴다(오류 그림 ③). 대표 번호로 칠하고 엔진에 맡긴다.
+- 물·흙·모래 면을 rect 하나로(오류 그림 ③), 바닥 모양 번호를 손으로 이어 붙이기(가장자리가 끊긴다 — 대표 번호로 칠하고 엔진에 맡긴다).
 - 2층을 칠한 뒤 그 칸 1층을 다시 칠하기 — 2층이 지워진다(오류 그림 ④). 1층을 먼저 다 끝낸다.
 - 번호 사전·tile_query 결과에 없는 번호, 이름이 「합성 칸」「옛 그림자 조각」「빈 칸」인 번호.
 """
@@ -1210,12 +1240,14 @@ O1~O{len(used_obj_ids)} 은 프리뷰에 쓰인 물체(많이 쓰인 순){', 그
     return category, info
 
 
-def side_by_side(pairs, title, per_row=2):
-    """정상 | 오류 나란히, 한 줄에 쌍 둘. pairs = [(제목, 정상그림, 오류그림, 설명)]."""
+def side_by_side(rows, title):
+    """정상 | 오류 나란히. rows = [[(제목, 정상그림, 오류그림, 설명), …], …] — 한 줄에 쌍 한두 개."""
+    pairs = [p for r in rows for p in r]
     cell_w = max(a.width + b2.width for _, a, b2, _ in pairs) + 30
-    rows = [pairs[i:i + per_row] for i in range(0, len(pairs), per_row)]
+    cell_w = max(a.width + b2.width for r in rows if len(r) > 1 for _, a, b2, _ in r) + 30 if any(len(r) > 1 for r in rows) else cell_w
     row_h = [max(max(a.height, b2.height) for _, a, b2, _ in r) + 70 for r in rows]
-    img = Image.new('RGBA', (cell_w * per_row + 10, sum(row_h) + 44), (30, 30, 36, 255))
+    width = max(max(cell_w * len(r), max(a.width + b2.width + 30 for _, a, b2, _ in r)) for r in rows) + 10
+    img = Image.new('RGBA', (width, sum(row_h) + 44), (30, 30, 36, 255))
     d = ImageDraw.Draw(img)
     d.text((10, 8), title, fill=(255, 255, 255), font=font(18))
     y = 40
@@ -1336,32 +1368,33 @@ def error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list):
     notes.append(f"- ② 장식을 3층에: 2층 장식 {lifted}칸을 3층으로 올리면 캐릭터가 맵 ({good2['x0'] + cxy[0]},{good2['y0'] + cxy[1]}) 칸에 섰을 때 "
                  "장식이 몸 위에 그려진다. 통행 검사로는 안 보인다.")
 
-    # ③ 모양을 손으로: 주 바닥 위 물(또는 흙) 한 덩이를 대표 번호만으로(재성형 없음) / 엔진 모양
+    # ③ 연못 모양: 직사각형 하나 / 사각형 셋 겹치고 가장자리 칸을 더하고 뺀 들쭉날쭉(규칙 문서의 9×6 조리법 그대로, 엔진 모양)
     blob_kind = next((k for k in kind_list if k['role'] == 'water' and k['autotile'] == 'floor'), None) \
         or next((k for k in kind_list if k['role'] == 'ground' and k['autotile'] == 'floor' and k is not main_k), None)
-    g3 = groups_by_member[blob_kind['tiles'][0]]
-    ww, hh = CW, CH
-    base = {'w': ww, 'h': hh, 'x0': 0, 'y0': 0, 'L': {1: [main_k['representativeTile']] * (ww * hh), 2: [-1] * (ww * hh), 3: [-1] * (ww * hh), 4: [-1] * (ww * hh)}, 'SH': [0] * (ww * hh)}
-    blob = [(x, y) for y in range(1, 4) for x in range(1, 5)] + [(2, 0)]
-    handmade, shaped = wcopy(base), wcopy(base)
-    for x, y in blob:
-        handmade['L'][1][y * ww + x] = shaped['L'][1][y * ww + x] = blob_kind['representativeTile']
-    gm = groups_by_member.get(main_k['representativeTile'])
-    for tgt, groups in ((shaped, [g3, gm]), (handmade, [gm])):
-        src_arr = list(tgt['L'][1])
-        for g in groups:
-            if not g:
-                continue
-            mem = set(g['memberTileIds'])
-            for y in range(hh):
-                for x in range(ww):
-                    if src_arr[y * ww + x] in mem:
-                        mk = mask_at(src_arr, ww, hh, x, y, g['_connect'], g['neighborhood'])
-                        tgt['L'][1][y * ww + x] = g['variantMap'][str(mk)]
-    pairs.append(('③ 가장자리 모양을 손으로', framed(render(b, shaped), ww, hh, ticks=False), framed(render(b, handmade), ww, hh, ticks=False),
-                  f"대표 {blob_kind['representativeTile']} 만 reshape:false 로 늘어놓으면 네모 칸 그대로."))
-    notes.append(f"- ③ 모양을 손으로: {blob_kind['name']} 대표 {blob_kind['representativeTile']} 를 reshape:false 로 찍거나 모양 번호를 손으로 이어 붙이면 물가가 끊긴다. "
-                 "정상 = paint_tiles/fill_region(재성형) 결과.")
+    PW, PH, ox, oy = 11, 8, 1, 1
+    pond_base = main_k if main_k['autotile'] or main_k['slot'] == 'A5' else main_k
+    def pond_win():
+        return {'w': PW, 'h': PH, 'x0': 0, 'y0': 0, 'L': {1: [pond_base['representativeTile']] * (PW * PH), 2: [-1] * (PW * PH), 3: [-1] * (PW * PH), 4: [-1] * (PW * PH)}, 'SH': [0] * (PW * PH)}
+    rect_p, rag_p = pond_win(), pond_win()
+    wt = blob_kind['representativeTile']
+    for y in range(6):
+        for x in range(9):
+            rect_p['L'][1][(oy + y) * PW + ox + x] = wt
+    def put(x0, y0, x1, y1, t):
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                rag_p['L'][1][(oy + y) * PW + ox + x] = t
+    put(1, 0, 6, 2, wt); put(0, 2, 4, 5, wt); put(4, 1, 8, 4, wt)
+    for x, y in ((7, 0), (5, 5)):
+        put(x, y, x, y, wt)
+    for x, y in ((8, 4), (0, 5)):
+        put(x, y, x, y, pond_base['representativeTile'])
+    for wn in (rect_p, rag_p):
+        shape_all(wn, groups_by_member)
+    pond_pair = ('③ 직사각형 연못 vs 들쭉날쭉 연못', framed(render(b, rag_p), PW, PH, ticks=False), framed(render(b, rect_p), PW, PH, ticks=False),
+                 '정상 = 규칙의 9×6 조리법(사각형 셋 + 칸 넷). 오류 = rect 하나 — 프리뷰에 없는 모양.')
+    notes.append(f"- ③ 직사각형 연못: {blob_kind['name']} 을(를) rect 하나로 칠하면 네모 연못이 된다. 규칙 문서의 9×6 조리법(겹친 사각형 셋 + 가장자리 칸 넷)으로 칠한 것이 정상. "
+                 "모양 번호를 손으로 이어 붙이거나 reshape:false 로 대표 번호만 늘어놓아도 물가가 끊긴다 — 대표 번호로 칠하고 엔진에 맡긴다.")
 
     # ④ 2층 뒤 1층 다시 칠하기: 2층이 사라진다
     src4 = max(wins, key=lambda wn: sum(1 for t in wn['L'][2] if t is not None and t >= 0))
@@ -1430,7 +1463,8 @@ def error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list):
     near_pct = density_stats(b, m, P['main_ground'])['decorNear']
     notes.append(f"- ⑥ 장식 모양: 프리뷰 2층 장식 칸의 {near_pct}%가 물가·물체 옆에 붙어 있다. {deco_k['name']} 을(를) 3×3 사각형으로 칠하면 인공적으로 보인다 — "
                  "물가·나무 밑동을 따라 cells 모드로 들쭉날쭉한 칸 목록을 준다.")
-    return side_by_side(pairs, f"{P['name']} — 정상 | 오류 (각 6×5칸, 48px)"), '\n'.join(notes)
+    rows = [pairs[0:2], pairs[2:4], pairs[4:5], [pond_pair]]  # ①② · ④⑤ · ⑥ · ③(연못, 넓어서 한 줄)
+    return side_by_side(rows, f"{P['name']} — 정상 | 오류 (48px)"), '\n'.join(sorted(notes, key=lambda n: n[2]))
 
 
 # ───────────────────────── main ─────────────────────────
