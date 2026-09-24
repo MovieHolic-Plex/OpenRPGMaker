@@ -1,6 +1,7 @@
 import { sharedRegionSnapshot } from './sharedSpatialReferences';
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
+import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
@@ -39,21 +40,24 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
   "organic-orchard-court-80x72": () => import("./regionReferences/organic-orchard-court.json"),
   "organic-fishing-cove-80x72": () => import("./regionReferences/organic-fishing-cove.json"),
   "organic-five-groves-80x72": () => import("./regionReferences/organic-five-groves.json"),
-  "pine-hamlets-80x64": () => import("./regionReferences/pine-hamlets.json"),
-  "terrace-cliff-village-88x72": () => import("./regionReferences/terrace-cliff-village.json"),
-  "reed-bay-village-88x64": () => import("./regionReferences/reed-bay-village.json"),
-  "twin-falls-river-village-88x72": () => import("./regionReferences/twin-falls-river-village.json"),
-  "chapel-hill-parish-80x64": () => import("./regionReferences/chapel-hill-parish.json"),
-  "ford-castle-town-100x92": () => import("./regionReferences/ford-castle-town.json"),
-  "mistpond-hollow-80x64": () => import("./regionReferences/mistpond-hollow.json"),
+  "pine-hamlets-61x53": () => import("./regionReferences/pine-hamlets.json"),
+  "terrace-cliff-village-62x60": () => import("./regionReferences/terrace-cliff-village.json"),
+  "reed-bay-village-71x52": () => import("./regionReferences/reed-bay-village.json"),
+  "twin-falls-river-village-62x65": () => import("./regionReferences/twin-falls-river-village.json"),
+  "chapel-hill-parish-57x54": () => import("./regionReferences/chapel-hill-parish.json"),
+  "ford-castle-town-80x87": () => import("./regionReferences/ford-castle-town.json"),
+  "mistpond-hollow-66x56": () => import("./regionReferences/mistpond-hollow.json"),
+  "nuleolmok-harbor-town-76x60": () => import("./regionReferences/nuleolmok-harbor-town.json"),
   "river-forest-village-78x44": () => import("./regionReferences/river-forest-village.json"),
   "emerald-basin-80x64": () => import("./regionReferences/emerald-basin.json"),
   "hill-forest-village-64x64": () => import("./regionReferences/hill-forest-village.json"),
+  "forest-fantasy-town-104x96": () => import("./regionReferences/forest-fantasy-town.json"),
   "castle-town-100x100": () => import("./regionReferences/castle-town.json"),
   "walled-settlement-43x45": () => import("./regionReferences/walled-settlement.json"),
   "lake-village-60x60": () => import("./regionReferences/lake-village.json"),
 };
 const FANTASY_FILE: SnapshotFile = () => import("./regionReferences/fantasy-places.json");
+const INTERIOR_FILE: SnapshotFile = () => import("./regionReferences/rpg-interiors.json");
 const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
 const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
 const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
@@ -81,6 +85,8 @@ function snapshotSource(id: string): SnapshotSource | undefined {
   if (place && SNAPSHOT_FILES[place.regionReferenceId]) return whole(SNAPSHOT_FILES[place.regionReferenceId]);
   const fantasy = FANTASY_PLACE_REFERENCES.find(entry => entry.id === id);
   if (fantasy) return fromMaps(FANTASY_FILE, fantasy.sourceMapId);
+  const interior = RPG_INTERIOR_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (interior) return fromMaps(INTERIOR_FILE, interior.sourceMapId);
   const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
   if (climate) return fromMaps(CLIMATE_FILE, climate.sourceMapId);
   const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
@@ -117,7 +123,7 @@ export async function preloadRegionReference(id: string): Promise<void> {
 
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
-  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
+  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
 }
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {

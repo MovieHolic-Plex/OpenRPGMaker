@@ -13,5 +13,5 @@ export const IMAGE_MODEL_CATALOG: readonly {
 }[] = [
   { providerId: ANTIGRAVITY_PROVIDER_ID, providerLabel: "Google", model: DEFAULT_IMAGE_MODEL, label: "Gemini 3.1 Flash Image", supported: true },
   { providerId: ANTIGRAVITY_PROVIDER_ID, providerLabel: "Google", model: "gemini-3-pro-image", label: "Gemini Pro Image · 현재 경로 미지원", supported: false },
-  { providerId: CODEX_PROVIDER_ID, providerLabel: "ChatGPT", model: "codex-image-default", label: "GPT Image 2 (Codex)", supported: true },
+  { providerId: CODEX_PROVIDER_ID, providerLabel: "ChatGPT", model: "codex-image-default", label: "GPT Image (Codex · god-tibo-imagen)", supported: true },
 ];

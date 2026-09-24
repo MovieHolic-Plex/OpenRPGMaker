@@ -8,6 +8,7 @@
 // 유니온 shape 은 `oneOf`/`anyOf` 를 쓰지 않는다 — Gemini 계열 게이트웨이가 요청 전체를 400 으로
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
 import { RELATIONSHIP_STATES } from "@/project/relationshipState";
+import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { CONCEPT_PLAN_ENUMS } from "@/editor/conceptPlan";
 import { DIALOGUE_CONTAINER_IDS, DIALOGUE_CONTEXT_IDS, DIALOGUE_STYLE_IDS, dialogueContainerGuideLines, dialogueInlineTagGuideLines } from "@/project/dialogueStyles";
@@ -47,6 +48,8 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
   description:
     'Command 예: {kind:"changeItem",itemId:"조회한 ID",op:"-=",amount:1}, ' +
     '{kind:"setSwitch",switchId:"조회한 ID",value:true}, {kind:"triggerEnding",endingId:"정의한 ID"}. ' +
+    '대사는 {kind:"text",body:"…"} — say·fade 는 컷신(script_cutscene·epilogue) 비트 kind 라서 ' +
+    '이벤트 commands 에 넣으면 kind enum 에서 거부된다. ' +
     'triggerEnding의 endingId 생략 시 조건으로 선택한다. switch/item은 조건 kind이며 실행 명령이 아니다.',
   properties: {
     // kind 를 자유 문자열로 두면 모델이 존재하지 않는 kind 를 만들어 보낸다(2026-08-23 실측:
@@ -229,6 +232,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
     'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
+    "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
     "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
@@ -243,7 +247,8 @@ export const CONDITION_SCHEMA: JsonSchema = {
     itemId: { type: "string" },
     actorId: { type: "string" },
     value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
-    present: { type: "boolean", description: "item/actor 조건: true=보유/합류, false=미보유/미합류. 필수." },
+    speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
+    present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },
     phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
@@ -294,7 +299,11 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
     },
     priority: { type: "string", enum: ["below", "same", "above"] },
     overlapForbidden: { type: "boolean" },
-    animationType: { type: "string" },
+    animationType: {
+      type: "string",
+      enum: [...EVENT_ANIMATION_TYPES],
+      description: "페이지 애니메이션 유형. 멈춰 있는 대상은 fixedGraphic(방향·프레임 고정), 걸어 다니는 캐릭터 기본은 normal. none 같은 값 금지 — 런타임이 조사 조작을 죽인다.",
+    },
     footprint: {
       type: "object",
       properties: { width: { type: "integer" }, height: { type: "integer" } },

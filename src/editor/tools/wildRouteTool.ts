@@ -12,7 +12,7 @@ import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { TILE } from "@/project/defaults/constants";
 import { canMove } from "@/project/collision";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
-import type { EncounterTableEntry, GameMap, MapNamedLocation, Project, Rect } from "@/project/types";
+import type { EncounterTableEntry, GameEvent, GameMap, MapNamedLocation, Project, Rect } from "@/project/types";
 import { mulberry32, type Rng } from "@/util/rng";
 import { requireMap } from "./mapHelpers";
 import { plantCompactVillageTrees } from "./village/compactVegetation";
@@ -124,6 +124,23 @@ function authoredCells(map: GameMap): number {
   return count;
 }
 
+/** transfer·callMapEvent 를 가진 문(출입구) 이벤트 — 파이프라인이 미리 만든 링크 문도 포함. */
+function isRelayEvent(event: GameEvent): boolean {
+  const scan = (commands: readonly unknown[] | undefined): boolean => {
+    for (const raw of commands ?? []) {
+      if (!raw || typeof raw !== "object") continue;
+      const command = raw as Record<string, unknown>;
+      if (command.kind === "transfer" || command.kind === "callMapEvent") return true;
+      for (const value of Object.values(command)) {
+        if (Array.isArray(value) && scan(value)) return true;
+        if (value && typeof value === "object") for (const inner of Object.values(value as Record<string, unknown>)) if (Array.isArray(inner) && scan(inner)) return true;
+      }
+    }
+    return false;
+  };
+  return scan(event.commands) || (event.pages ?? []).some(page => scan(page.commands));
+}
+
 const authorWildRoute: ToolDefinition = {
   name: "author_wild_route",
   description:
@@ -221,6 +238,25 @@ const authorWildRoute: ToolDefinition = {
       if (ox < map.width && oy < map.height) road.add(oy * map.width + ox);
     });
 
+    // 기존 transfer 문(동굴·체육관 파이프라인이 링크로 미리 만든 출입구 포함)까지 흙길을 끌어 온다.
+    // 안 그러면 replace 재시공이 그 문을 숲 우물에 가두고, 갈아끼운 뒤에는 길이 없어
+    // 「1번 도로 → 동굴」 단계에서 엔딩이 끊긴다(2026-09-24 포켓몬풍 r3 실측 (1,1) 링크 문).
+    const relayDoors = map.events.filter(event => isRelayEvent(event));
+    for (const door of relayDoors) {
+      let nearest = path[0]!, nearestDistance = Infinity;
+      for (const p of path) {
+        const distance = Math.abs(p.x - door.x) + Math.abs(p.y - door.y);
+        if (distance < nearestDistance) { nearestDistance = distance; nearest = p; }
+      }
+      if (nearestDistance === 0) continue;
+      try {
+        for (const p of routePath(map, { x: door.x, y: door.y }, nearest, noise)) road.add(p.y * map.width + p.x);
+        road.add(door.y * map.width + door.x);
+      } catch {
+        warnings.push(`기존 문 (${door.x},${door.y})${door.name ? ` '${door.name}'` : ""} 까지 길을 끌 수 없습니다 — 출구와 문이 이어지도록 지형을 확인하세요.`);
+      }
+    }
+
     // 풀숲: 길 위 고른 간격 지점을 중심으로, 길을 가로지르게 둔다(돌아갈 수 없게 — 포켓몬 도로의 문법).
     const patches: Rect[] = [];
     for (let i = 0; i < patchCount; i++) {
@@ -276,6 +312,11 @@ const authorWildRoute: ToolDefinition = {
 
     for (let i = 0; i + 1 < exits.length; i++) {
       if (!reachable(draft, map, exits[i]!, exits[i + 1]!)) warnings.push(`출구 (${exits[i]!.x},${exits[i]!.y}) → (${exits[i + 1]!.x},${exits[i + 1]!.y}) 가 걸어서 이어지지 않습니다 — show_map_region 으로 확인하세요.`);
+    }
+    for (const door of relayDoors) {
+      if (!reachable(draft, map, exits[0]!, { x: door.x, y: door.y })) {
+        warnings.push(`기존 문 (${door.x},${door.y})${door.name ? ` '${door.name}'` : ""} 가 출구 (${exits[0]!.x},${exits[0]!.y}) 에서 걸어서 이어지지 않습니다 — 주변 지형을 확인하세요.`);
+      }
     }
 
     // 풀숲 로케이션 + 풀숲 한정 조우. 이전에 이 도구가 만든 풀숲 로케이션·조우는 갈아 끼운다.

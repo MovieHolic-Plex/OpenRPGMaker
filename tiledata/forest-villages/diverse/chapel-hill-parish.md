@@ -1,6 +1,6 @@
 # 종탑 언덕 교구마을
 
-윗단 언덕에 스테인드글라스 교회와 울타리 친 외곽 묘지가 있고, 북쪽에서 온 강이 절벽을 폭포로 넘어 아랫마을을 가로지른다. 시작점 (40,60); 집 7채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
+윗단 언덕에 스테인드글라스 교회와 울타리 친 외곽 묘지가 있고, 북쪽에서 온 강이 절벽을 폭포로 넘어 아랫마을을 가로지른다. 시작점 (25,50); 집 7채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
 
 ![종탑 언덕 교구마을 완성](images/chapel-hill-parish.png)
 
@@ -11,14 +11,14 @@
     "id": "chapel-hill-parish-church",
     "kind": "church",
     "label": "돌벽 교회",
-    "x": 30,
-    "y": 5,
+    "x": 16,
+    "y": 2,
     "w": 7,
     "h": 9,
     "doors": [
       {
-        "x": 33,
-        "y": 13
+        "x": 19,
+        "y": 10
       }
     ]
   },
@@ -26,13 +26,13 @@
     "id": "chapel-hill-parish-graveyard",
     "kind": "graveyard",
     "label": "마을 외곽 묘지",
-    "x": 10,
-    "y": 7,
+    "x": 2,
+    "y": 4,
     "w": 9,
     "h": 7,
     "gate": {
-      "x": 14,
-      "y": 13,
+      "x": 6,
+      "y": 10,
       "w": 1
     }
   }
@@ -44,12 +44,12 @@
 ```json
 {
   "mapId": "chapel-hill-parish",
-  "width": 80,
-  "height": 64,
+  "width": 57,
+  "height": 54,
   "seed": 811,
   "start": {
-    "x": 40,
-    "y": 60
+    "x": 25,
+    "y": 50
   },
   "yards": [
     {
@@ -57,10 +57,10 @@
       "kit": "herbs",
       "name": "약초 손질",
       "reason": "교회 옆 사제관에서 제단에 올릴 약초를 기른다",
-      "x": 40,
-      "y": 11,
+      "x": 25,
+      "y": 8,
       "side": "left",
-      "w": 5,
+      "w": 4,
       "h": 3
     },
     {
@@ -68,8 +68,8 @@
       "kit": "laundry",
       "name": "세탁·건조",
       "reason": "윗단 강 건너 집은 세탁 마당만 둔다",
-      "x": 61,
-      "y": 11,
+      "x": 45,
+      "y": 8,
       "side": "left",
       "w": 4,
       "h": 2
@@ -79,10 +79,10 @@
       "kit": "woodwork",
       "name": "목재 가공",
       "reason": "아랫마을 서쪽 목수집이 교회 의자와 관을 짠다",
-      "x": 17,
-      "y": 37,
+      "x": 8,
+      "y": 32,
       "side": "right",
-      "w": 3,
+      "w": 4,
       "h": 3
     },
     {
@@ -90,21 +90,21 @@
       "kit": "storage",
       "name": "물자 보관",
       "reason": "종지기가 초와 종 밧줄을 보관한다",
-      "x": 32,
-      "y": 42,
-      "side": "right",
-      "w": 3,
-      "h": 1
+      "x": 10,
+      "y": 35,
+      "side": "left",
+      "w": 4,
+      "h": 3
     },
     {
       "ownerId": "chapel-hill-parish-house-5",
       "kit": "growing",
       "name": "텃밭 돌보기",
       "reason": "폭포 아래 강둑 평지를 가족 텃밭으로 쓴다",
-      "x": 53,
-      "y": 37,
+      "x": 37,
+      "y": 32,
       "side": "right",
-      "w": 5,
+      "w": 4,
       "h": 4
     },
     {
@@ -112,8 +112,8 @@
       "kit": "laundry",
       "name": "세탁·건조",
       "reason": "남서쪽 집은 세탁 마당만 둔다",
-      "x": 19,
-      "y": 51,
+      "x": 10,
+      "y": 43,
       "side": "right",
       "w": 4,
       "h": 2
@@ -121,8 +121,8 @@
   ],
   "activitySites": {
     "farm": {
-      "x": 24,
-      "y": 50,
+      "x": 14,
+      "y": 42,
       "w": 6,
       "h": 4
     }
@@ -138,45 +138,38 @@
       },
       "items": [
         {
-          "id": "churchyard-1",
-          "name": "벤치",
-          "x": 29,
-          "y": 16,
-          "purpose": "예배 전후 앉아 기다리는 자리"
-        },
-        {
           "id": "churchyard-2",
           "name": "벤치",
-          "x": 36,
-          "y": 15,
+          "x": 22,
+          "y": 12,
           "purpose": "교회 앞 동쪽 쉼 자리"
         },
         {
           "id": "churchyard-3",
           "name": "돌등",
-          "x": 32,
-          "y": 14,
+          "x": 18,
+          "y": 11,
           "purpose": "교회 문 서쪽을 밝히는 등"
         },
         {
           "id": "churchyard-4",
           "name": "돌등",
-          "x": 35,
-          "y": 19,
+          "x": 21,
+          "y": 15,
           "purpose": "교회 문 동쪽을 밝히는 등",
           "near": "돌등"
         },
         {
           "id": "churchyard-5",
           "name": "꽃 화단",
-          "x": 38,
-          "y": 9,
+          "x": 24,
+          "y": 6,
           "purpose": "교회 벽 옆 제단용 꽃밭"
         }
       ],
       "site": {
-        "x": 30,
-        "y": 5,
+        "x": 16,
+        "y": 2,
         "w": 7,
         "h": 9,
         "layer": "lower",
@@ -259,21 +252,21 @@
         {
           "id": "graveyard-gate-1",
           "name": "돌등",
-          "x": 12,
-          "y": 15,
+          "x": 4,
+          "y": 12,
           "purpose": "묘지 입구를 밝히는 등"
         },
         {
           "id": "graveyard-gate-2",
           "name": "마른 묘목",
-          "x": 20,
-          "y": 14,
+          "x": 10,
+          "y": 11,
           "purpose": "묘지 울타리 곁 마른 나무"
         }
       ],
       "site": {
-        "x": 10,
-        "y": 7,
+        "x": 2,
+        "y": 4,
         "w": 9,
         "h": 7,
         "layer": "lower",
@@ -349,29 +342,22 @@
       "name": "폭포 아래 소",
       "anchor": {
         "type": "road",
-        "x": 53,
-        "y": 31,
+        "x": 37,
+        "y": 26,
         "maxDistance": 8
       },
       "items": [
         {
-          "id": "falls-pool-1",
-          "name": "벤치",
-          "x": 52,
-          "y": 33,
-          "purpose": "폭포를 바라보며 쉬는 자리"
-        },
-        {
           "id": "falls-pool-2",
           "name": "낚시 바구니",
-          "x": 54,
-          "y": 35,
+          "x": 38,
+          "y": 30,
           "purpose": "폭포 아래 소에서 쓰는 낚시 바구니"
         }
       ],
       "site": {
-        "x": 53,
-        "y": 31,
+        "x": 37,
+        "y": 26,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -385,37 +371,46 @@
       "name": "아랫마을 공동 우물",
       "anchor": {
         "type": "road",
-        "x": 40,
-        "y": 44,
+        "x": 25,
+        "y": 39,
         "maxDistance": 8
       },
       "items": [
         {
           "id": "village-well-1",
           "name": "낮은 돌 우물",
-          "x": 37,
-          "y": 41,
+          "x": 23,
+          "y": 36,
           "purpose": "아랫마을 주민의 급수"
         },
         {
           "id": "village-well-2",
           "name": "항아리",
-          "x": 35,
-          "y": 41,
+          "x": 21,
+          "y": 36,
           "purpose": "길어 온 물을 담는 용기",
           "near": "낮은 돌 우물"
         },
         {
-          "id": "village-well-3",
-          "name": "게시판",
-          "x": 43,
-          "y": 41,
-          "purpose": "교회 소식과 마을 공지를 붙이는 판"
+          "id": "village-well-plaza-1",
+          "name": "벤치",
+          "x": 22,
+          "y": 34,
+          "purpose": "우물가에 앉아 쉬는 자리",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "village-well-plaza-2",
+          "name": "꽃 화단",
+          "x": 23,
+          "y": 32,
+          "purpose": "마을 한가운데를 꾸미는 화단",
+          "near": "낮은 돌 우물"
         }
       ],
       "site": {
-        "x": 40,
-        "y": 44,
+        "x": 25,
+        "y": 39,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -429,22 +424,22 @@
       "name": "남쪽 입구 길잡이",
       "anchor": {
         "type": "road",
-        "x": 40,
-        "y": 60,
+        "x": 25,
+        "y": 50,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "entry-sign-1",
           "name": "나무 이정표",
-          "x": 38,
-          "y": 58,
+          "x": 23,
+          "y": 48,
           "purpose": "교회로 오르는 길 안내"
         }
       ],
       "site": {
-        "x": 40,
-        "y": 60,
+        "x": 25,
+        "y": 50,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -458,22 +453,14 @@
       "name": "계단 아래 길잡이",
       "anchor": {
         "type": "road",
-        "x": 40,
-        "y": 28,
+        "x": 25,
+        "y": 23,
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "stair-sign-1",
-          "name": "나무 이정표",
-          "x": 38,
-          "y": 29,
-          "purpose": "언덕 위 교회로 오르는 계단 안내"
-        }
-      ],
+      "items": [],
       "site": {
-        "x": 40,
-        "y": 28,
+        "x": 25,
+        "y": 23,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -484,42 +471,42 @@
     }
   ],
   "entrance": {
-    "x": 40,
-    "y": 63
+    "x": 25,
+    "y": 53
   },
   "crest": null,
   "patches": [
     [
-      3,
-      30,
+      1,
+      25,
       8,
       14,
       10
     ],
     [
-      77,
-      30,
+      54,
+      25,
       8,
       14,
       10
     ],
     [
-      73,
-      40,
+      50,
+      34,
       6,
       10,
       10
     ],
     [
-      70,
-      58,
+      54,
+      48,
       10,
       8,
       9
     ],
     [
       4,
-      60,
+      52,
       8,
       8,
       9
@@ -527,22 +514,22 @@
   ],
   "clearings": [
     [
-      33,
-      10,
+      19,
+      7,
       12,
       8,
       10
     ],
     [
-      16,
-      10,
+      8,
+      7,
       9,
       6,
       9
     ],
     [
-      30,
-      42,
+      20,
+      37,
       20,
       8,
       10
@@ -552,28 +539,28 @@
     {
       "points": [
         [
-          6,
-          22
+          2,
+          17
+        ],
+        [
+          11,
+          17
+        ],
+        [
+          12,
+          16
         ],
         [
           20,
-          22
+          16
         ],
         [
           22,
-          21
+          17
         ],
         [
-          34,
-          21
-        ],
-        [
-          36,
-          22
-        ],
-        [
-          74,
-          22
+          54,
+          17
         ]
       ],
       "height": 5
@@ -581,13 +568,13 @@
   ],
   "stairs": [
     [
-      26,
-      21,
+      15,
+      16,
       5
     ],
     [
-      40,
-      22,
+      25,
+      17,
       5
     ]
   ],
@@ -597,358 +584,344 @@
   "cave": null,
   "spine": [
     [
-      40,
-      60
+      25,
+      50
     ],
     [
-      40,
-      44
+      25,
+      39
     ],
     [
-      40,
-      28
+      25,
+      23
     ],
     [
-      40,
-      20
-    ],
-    [
-      33,
+      25,
       16
     ],
     [
-      22,
-      18
+      19,
+      13
     ],
     [
-      14,
-      16
+      12,
+      14
     ],
     [
-      22,
-      18
+      6,
+      13
     ],
     [
-      27,
-      20
+      12,
+      14
     ],
     [
-      33,
-      16
-    ],
-    [
-      48,
-      16
-    ],
-    [
-      56,
+      16,
       15
     ],
     [
-      66,
+      19,
+      13
+    ],
+    [
+      32,
+      13
+    ],
+    [
+      40,
+      12
+    ],
+    [
+      49,
+      13
+    ],
+    [
+      32,
+      13
+    ],
+    [
+      25,
       16
     ],
     [
-      48,
-      16
+      25,
+      27
     ],
     [
-      40,
-      20
+      37,
+      26
     ],
     [
-      40,
-      32
+      25,
+      27
     ],
     [
-      53,
-      31
+      25,
+      39
     ],
     [
-      40,
-      32
+      11,
+      39
     ],
     [
-      40,
-      44
+      6,
+      40
     ],
     [
-      20,
-      44
+      11,
+      39
     ],
     [
-      14,
-      47
+      25,
+      39
     ],
     [
-      20,
-      44
-    ],
-    [
-      40,
-      44
-    ],
-    [
-      52,
-      44
+      36,
+      39
     ]
   ],
   "access": [
     {
       "role": "stairs-top",
-      "x": 26,
-      "y": 20
+      "x": 15,
+      "y": 15
     },
     {
       "role": "stairs-bottom",
-      "x": 26,
-      "y": 27
+      "x": 15,
+      "y": 22
     },
     {
       "role": "stairs-top",
-      "x": 40,
-      "y": 21
+      "x": 25,
+      "y": 16
     },
     {
       "role": "stairs-bottom",
-      "x": 40,
-      "y": 28
+      "x": 25,
+      "y": 23
     },
     {
       "role": "bridge-west",
-      "x": 56,
-      "y": 14
+      "x": 40,
+      "y": 11
     },
     {
       "role": "bridge-east",
-      "x": 61,
-      "y": 14
+      "x": 45,
+      "y": 11
     },
     {
       "role": "door-front",
-      "x": 47,
-      "y": 14
+      "x": 31,
+      "y": 11
     },
     {
       "role": "door-front",
-      "x": 68,
-      "y": 14
+      "x": 51,
+      "y": 11
     },
     {
       "role": "door-front",
-      "x": 14,
-      "y": 40
+      "x": 6,
+      "y": 35
     },
     {
       "role": "door-front",
-      "x": 27,
-      "y": 44
+      "x": 17,
+      "y": 39
     },
     {
       "role": "door-front",
-      "x": 48,
-      "y": 41
+      "x": 32,
+      "y": 36
     },
     {
       "role": "door-front",
-      "x": 14,
-      "y": 58
+      "x": 6,
+      "y": 50
     },
     {
       "role": "door-front",
-      "x": 49,
-      "y": 56
+      "x": 33,
+      "y": 48
     },
     {
       "role": "landmark-door",
-      "x": 33,
-      "y": 14,
+      "x": 19,
+      "y": 11,
       "landmarkId": "chapel-hill-parish-church"
     },
     {
       "role": "yard-gate",
-      "x": 14,
-      "y": 14,
+      "x": 6,
+      "y": 11,
       "landmarkId": "chapel-hill-parish-graveyard"
     },
     {
       "role": "yard-inside",
-      "x": 14,
-      "y": 12,
+      "x": 6,
+      "y": 9,
       "landmarkId": "chapel-hill-parish-graveyard"
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 63
+      "x": 24,
+      "y": 53
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 63
+      "x": 25,
+      "y": 53
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 63
+      "x": 26,
+      "y": 53
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 62
+      "x": 24,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 62
+      "x": 25,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 62
+      "x": 26,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 61
+      "x": 24,
+      "y": 51
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 61
+      "x": 25,
+      "y": 51
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 61
+      "x": 26,
+      "y": 51
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 60
+      "x": 24,
+      "y": 50
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 60
+      "x": 25,
+      "y": 50
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 60
+      "x": 26,
+      "y": 50
     },
     {
       "role": "map-entrance",
-      "x": 39,
-      "y": 59
+      "x": 24,
+      "y": 49
     },
     {
       "role": "map-entrance",
-      "x": 40,
-      "y": 59
+      "x": 25,
+      "y": 49
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 59
+      "x": 26,
+      "y": 49
     },
     {
       "role": "civic-use",
-      "x": 29,
-      "y": 17,
-      "placeId": "churchyard",
-      "propId": "churchyard-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 36,
-      "y": 16,
+      "x": 22,
+      "y": 13,
       "placeId": "churchyard",
       "propId": "churchyard-2"
     },
     {
       "role": "civic-use",
-      "x": 31,
-      "y": 14,
+      "x": 17,
+      "y": 11,
       "placeId": "churchyard",
       "propId": "churchyard-3"
     },
     {
       "role": "civic-use",
-      "x": 34,
-      "y": 19,
+      "x": 20,
+      "y": 15,
       "placeId": "churchyard",
       "propId": "churchyard-4"
     },
     {
       "role": "civic-use",
-      "x": 37,
-      "y": 9,
+      "x": 23,
+      "y": 6,
       "placeId": "churchyard",
       "propId": "churchyard-5"
     },
     {
       "role": "civic-use",
-      "x": 11,
-      "y": 15,
+      "x": 3,
+      "y": 12,
       "placeId": "graveyard-gate",
       "propId": "graveyard-gate-1"
     },
     {
       "role": "civic-use",
-      "x": 20,
-      "y": 15,
+      "x": 10,
+      "y": 12,
       "placeId": "graveyard-gate",
       "propId": "graveyard-gate-2"
     },
     {
       "role": "civic-use",
-      "x": 52,
-      "y": 34,
-      "placeId": "falls-pool",
-      "propId": "falls-pool-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 54,
-      "y": 36,
+      "x": 38,
+      "y": 31,
       "placeId": "falls-pool",
       "propId": "falls-pool-2"
     },
     {
       "role": "civic-use",
-      "x": 36,
-      "y": 41,
+      "x": 22,
+      "y": 36,
       "placeId": "village-well",
       "propId": "village-well-1"
     },
     {
       "role": "civic-use",
-      "x": 35,
-      "y": 42,
+      "x": 21,
+      "y": 37,
       "placeId": "village-well",
       "propId": "village-well-2"
     },
     {
       "role": "civic-use",
-      "x": 42,
-      "y": 41,
-      "placeId": "village-well",
-      "propId": "village-well-3"
-    },
-    {
-      "role": "civic-use",
-      "x": 38,
-      "y": 59,
+      "x": 23,
+      "y": 49,
       "placeId": "entry-sign",
       "propId": "entry-sign-1"
     },
     {
       "role": "civic-use",
-      "x": 38,
-      "y": 30,
-      "placeId": "stair-sign",
-      "propId": "stair-sign-1"
+      "x": 22,
+      "y": 35,
+      "placeId": "village-well",
+      "propId": "village-well-plaza-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 22,
+      "y": 32,
+      "placeId": "village-well",
+      "propId": "village-well-plaza-2"
     }
   ]
 }
@@ -965,18 +938,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 46,
-  "y": 7,
+  "x": 30,
+  "y": 4,
   "w": 4,
   "h": 7,
   "template": 3,
   "doorAt": {
-    "x": 47,
-    "y": 13
+    "x": 31,
+    "y": 10
   },
   "front": {
-    "x": 47,
-    "y": 14
+    "x": 31,
+    "y": 11
   },
   "activity": "herbs",
   "reason": "교회 옆 사제관에서 제단에 올릴 약초를 기른다",
@@ -1064,10 +1037,10 @@
       -1
     ],
     [
+      2632,
       -1,
       -1,
-      -1,
-      -1
+      2632
     ]
   ]
 }
@@ -1082,18 +1055,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 66,
-  "y": 6,
+  "x": 49,
+  "y": 3,
   "w": 6,
   "h": 8,
   "template": 0,
   "doorAt": {
-    "x": 68,
-    "y": 13
+    "x": 51,
+    "y": 10
   },
   "front": {
-    "x": 68,
-    "y": 14
+    "x": 51,
+    "y": 11
   },
   "activity": "laundry",
   "reason": "윗단 강 건너 집은 세탁 마당만 둔다",
@@ -1223,12 +1196,12 @@
       -1
     ],
     [
+      2632,
       -1,
       -1,
       -1,
-      -1,
-      -1,
-      -1
+      2611,
+      2612
     ]
   ]
 }
@@ -1243,18 +1216,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 10,
-  "y": 32,
+  "x": 2,
+  "y": 27,
   "w": 6,
   "h": 8,
   "template": 1,
   "doorAt": {
-    "x": 14,
-    "y": 39
+    "x": 6,
+    "y": 34
   },
   "front": {
-    "x": 14,
-    "y": 40
+    "x": 6,
+    "y": 35
   },
   "activity": "woodwork",
   "reason": "아랫마을 서쪽 목수집이 교회 의자와 관을 짠다",
@@ -1386,8 +1359,8 @@
     [
       -1,
       -1,
-      -1,
-      -1,
+      2611,
+      2612,
       -1,
       -1
     ]
@@ -1404,18 +1377,18 @@
   "window": 86,
   "abandoned": false,
   "vines": [],
-  "x": 24,
-  "y": 35,
+  "x": 14,
+  "y": 30,
   "w": 7,
   "h": 9,
   "template": 4,
   "doorAt": {
-    "x": 27,
-    "y": 43
+    "x": 17,
+    "y": 38
   },
   "front": {
-    "x": 27,
-    "y": 44
+    "x": 17,
+    "y": 39
   },
   "activity": "storage",
   "reason": "종지기가 초와 종 밧줄을 보관한다",
@@ -1599,18 +1572,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 46,
-  "y": 33,
+  "x": 30,
+  "y": 28,
   "w": 6,
   "h": 8,
   "template": 2,
   "doorAt": {
-    "x": 48,
-    "y": 40
+    "x": 32,
+    "y": 35
   },
   "front": {
-    "x": 48,
-    "y": 41
+    "x": 32,
+    "y": 36
   },
   "activity": "growing",
   "reason": "폭포 아래 강둑 평지를 가족 텃밭으로 쓴다",
@@ -1740,11 +1713,11 @@
       -1
     ],
     [
+      2611,
+      2612,
       -1,
       -1,
-      -1,
-      -1,
-      -1,
+      2632,
       -1
     ]
   ]
@@ -1760,18 +1733,18 @@
   "window": 86,
   "abandoned": false,
   "vines": [],
-  "x": 12,
-  "y": 50,
+  "x": 4,
+  "y": 42,
   "w": 6,
   "h": 8,
   "template": 0,
   "doorAt": {
-    "x": 14,
-    "y": 57
+    "x": 6,
+    "y": 49
   },
   "front": {
-    "x": 14,
-    "y": 58
+    "x": 6,
+    "y": 50
   },
   "activity": "laundry",
   "reason": "남서쪽 집은 세탁 마당만 둔다",
@@ -1905,8 +1878,8 @@
       -1,
       -1,
       -1,
-      -1,
-      -1
+      2611,
+      2612
     ]
   ]
 }
@@ -1921,18 +1894,18 @@
   "window": 87,
   "abandoned": false,
   "vines": [],
-  "x": 46,
-  "y": 50,
+  "x": 30,
+  "y": 42,
   "w": 8,
   "h": 6,
   "template": 7,
   "doorAt": {
-    "x": 49,
-    "y": 55
+    "x": 33,
+    "y": 47
   },
   "front": {
-    "x": 49,
-    "y": 56
+    "x": 33,
+    "y": 48
   },
   "activity": "field-tending",
   "reason": "바로 옆 밭을 돌본다",
@@ -2057,7 +2030,7 @@
       -1,
       -1,
       -1,
-      -1,
+      2632,
       -1,
       -1
     ]

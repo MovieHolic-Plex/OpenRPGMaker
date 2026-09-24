@@ -199,6 +199,7 @@ export const HORROR_GALLERY_AUTHORING_GUIDE = [
   "- 튀어나오는 그림·검은 손·가시 바닥 이벤트에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_damage\"}, 꽃병에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_restore\"} 를 넣는다. 체력 변수를 setVariable 로 직접 깎지 않는다.",
   "- 열쇠·레버·순서 퍼즐은 compile_puzzle(item-gate·switch-sequence·password)로 만들고, 조건 분기는 {kind:\"fork\",condition:{kind:\"switch\",switchId,value:true},then:[…]} 모양이다.",
   "- 맵마다 set_scene_mood({mapId, applyMode:\"map\", lighting:{ambient:0.35, color:\"#1a1024\"}}) 로 어둡게 둔다. 기본 조명(ambient 1)은 전시실이 낮처럼 밝다.",
+  "- 전시실·화실 같은 실내는 place_concept({query, mapId, plan}) 로 벽까지 지은 다음 fill_region 로 바닥을 마감한다. 먼저 get_concept_facility 로 물건 어휘(vocabulary)를 읽고 장소·물건을 설계해 plan 으로 넘겨라(시설 템플릿은 비어 있다). fill_region·paint_tiles 로 바닥만 깔아 빈 판으로 끝내지 말 것 — 벽 재질은 거부되고 run_interior_room_pipeline 은 plan 없는 호출을 거부한다.",
   "- 문간·한 칸 통로에 인물을 세우지 마라. 대화를 마친 페이지는 priority:\"below\" 와 overlapForbidden:false 로 비켜 준다.",
 ].join("\n");
 
@@ -211,6 +212,7 @@ export const HORROR_CHASE_AUTHORING_GUIDE = [
   "추격 호러 저작 요령:",
   "- 방(현관·복도·서재·침실·창고)은 place_concept(query, plan, 새 mapId)로 벽이 있는 실내를 만든다. fill_region·paint_tiles 로 벽돌 바닥만 깔아 빈 판을 만들지 말 것.",
   "- 방 사이 문은 create_transfer_pair 를 벽·가장자리 통행 칸에 두고, 그 칸에 place_door 로 문 그림을 붙인다. 방 한가운데 투명 칸으로 두지 말 것.",
+  "- 방을 잇는 유일한 통로(문간) 칸에는 playerTouch 컷신·즉사 함정을 얹지 말 것 — 밟는 이벤트가 유일한 길을 막아 자동 검사가 끝까지 못 간다(막힘). 조우 컷신은 통로 옆 조사(action) 이벤트로 두고, 통로 칸에는 create_transfer_pair 문만 두세요.",
   "- 추격자는 make_chase_scene. speed 6, killOnTouch true, checkpointOnEntry true. 여러 방이면 pursuit 에 scope:\"connected\" 만 주고 tracking 은 생략한다(스위치를 켜 깨우면 persistent 가 기본. lastSeen 을 직접 넣으면 벽 너머에서 안 움직인다). activateSwitch 를 켜는 트리거를 같은 흐름에 만든다.",
   "- 옷장 은신은 hidingSpots:[{x,y,mapId}] 를 옷장과 같은 칸에 준다(다른 방이면 mapId). 옆 칸의 투명 은신처는 플레이어가 못 찾는다. 추격 스위치를 setSwitch value:false 로 끄지 말 것 — 추격자가 사라질 뿐 수색하지 않는다.",
   "- 금고·자물쇠의 숫자 암호는 compile_puzzle({kind:\"password\", answer:\"4자리 숫자\", at:{x,y}, prompt:\"암호를 입력한다.\", onSolve:{setSwitch, message}}) 로 만든다. 1~6자리 숫자는 inputNumber 가 된다. 선택지 보기에 정답 숫자를 적지 말 것. 쪽지는 조사 대사 본문에만 숫자를 적는다.",

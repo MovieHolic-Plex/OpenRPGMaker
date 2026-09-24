@@ -13,7 +13,9 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
+import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
 import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
+import { sha256HexTextSync } from "@/util/sha256";
 import { AuthoredProjectBaseline, composeProjectIdentity, projectIdentityParts, type ProjectIdentityParts, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
@@ -219,11 +221,11 @@ function proposalContent(project: Project): string {
   // World documents are merged from the live store, not replaced by ordinary proposals.
   // Reuse the JSONB comparator without schema normalization: only key order is
   // ignored, while the existing JSON projection, authored values and arrays stay intact.
-  return composeProjectIdentity(identityPartsOf(project), "proposal");
+  return sha256HexTextSync(composeProjectIdentity(identityPartsOf(project), "proposal"));
 }
 
 function worldContent(project: Project): string {
-  return canonicalJsonOf(project.world ?? null)!;
+  return sha256HexTextSync(canonicalJsonOf(project.world ?? null)!);
 }
 
 /**
@@ -365,6 +367,11 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
+  // 보기 전용 팀 프로젝트에서는 store.replace 가 조용히 아무것도 하지 않는다. 여기서 막지 않으면
+  // 호출자가 ok:true 를 받아 「적용됐어요」를 띄운다.
+  if (!canWriteTeamProject()) {
+    return { ok: false, reason: "commit-rejected", issue: TEAM_READ_ONLY_WRITE_MESSAGE, issues: [TEAM_READ_ONLY_WRITE_MESSAGE] };
+  }
   const before = store.getCurrent();
   // 첫 권위 검사부터 마지막 권위 검사까지는 await 도 외부 콜백도 없는 한 동기 구간이다. 그 안에서만 같은 객체
   // (before = 스토어의 현재 프로젝트)의 정체성 문자열을 한 번 만들어 두 검사가 나눠 쓴다 — 예전에는 마지막 검사가

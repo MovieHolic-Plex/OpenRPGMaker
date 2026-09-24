@@ -6,9 +6,9 @@ import {
   TEX_TILESET,
   TILE_FRAME_COUNT,
 } from "@/assets/bundled";
-import { graftedTilesetImageUrl } from "@/assets/tileGraftImageCache";
+import { graftedTilesetImageUrl, setUploadedGraftSourceUrlResolver } from "@/assets/tileGraftImageCache";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
-import { tileGraftsTextureSuffix } from "@/assets/tileGrafts";
+import { activeTileGrafts, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import {
@@ -39,6 +39,12 @@ export function tilesetBaseImageUrl(tileset: TilesetDef, project?: Project): str
   );
 }
 
+setUploadedGraftSourceUrlResolver((textureKey) => {
+  const asset = store.getCurrent().assets.uploaded[textureKey];
+  const url = asset ? uploadedAssetUrl(asset) : "";
+  return url ? withInlineAsset(url) : null;
+});
+
 export function tilesetImageUrl(tileset: TilesetDef): string {
   const baseUrl = tilesetBaseImageUrl(tileset);
   // 타일 이식이 있으면 베이크 결과(dataURL)를 반환 — 팔레트/DB 미리보기에도 이식 타일이 보인다.
@@ -60,6 +66,9 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   if (!tilesetTextureNeedsBake(tileset)) return textureKey;
 
   const baseKey = baseTilesetTextureKey(tileset);
+  // 업로드 그림판에서 이식하는 칸은 그 그림판이 실린 뒤에만 굽는다 — 먼저 구우면 빠진 칸이 든 텍스처가 캐시로 남는다.
+  const uploaded = store.getCurrent().assets.uploaded;
+  if (activeTileGrafts(tileset).some((graft) => uploaded[graft.sourceChipset] && !scene.textures.exists(graft.sourceChipset))) return baseKey;
   const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
   if (!canvas) return baseKey;
 

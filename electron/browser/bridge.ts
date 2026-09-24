@@ -1,3 +1,4 @@
+import { encodeBridgeRequest } from "./requestBody";
 import { OPRN_CHANNELS } from "../shared/channels";
 
 type BrowserBridgeConfig = {
@@ -51,11 +52,12 @@ function base64ToBytes(value: string): Uint8Array {
 async function call(channel: string, payload: unknown, keepalive = false): Promise<unknown> {
   const config = window.__OPRN_BRIDGE__;
   if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
+  const encoded = await encodeBridgeRequest({ channel, payload }, keepalive);
   const response = await fetch(config.endpoint, {
     method: "POST",
     keepalive,
-    headers: { "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject },
-    body: JSON.stringify({ channel, payload }),
+    headers: { ...encoded.headers, "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject },
+    body: encoded.body,
   });
   if (!response.ok) throw new Error(`${channel}: ${response.status} ${await response.text()}`);
   return await response.json();

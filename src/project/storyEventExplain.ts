@@ -1,3 +1,4 @@
+import { ownsMonsterSpecies } from "./monsterOwnership";
 import { compareVariableValue } from "@/project/conditionEvaluation";
 import { timePhaseFor } from "@/project/gameTime";
 import { evalCondition, getFriendship, getSwitch, getTimer, getVariable } from "@/project/session";
@@ -158,6 +159,11 @@ function traceCondition(
         targetLabel: `self:${condition.key}`,
         summary: `self:${condition.key}=${actual ? "on" : "off"} expected ${condition.value ? "on" : "off"}`,
       };
+    }
+    case "monsterSpecies": {
+      const actual = ownsMonsterSpecies(session, condition.speciesId);
+      return { index, kind: condition.kind, ok, targetId: condition.speciesId, actual, expected: condition.present,
+        summary: `monsterSpecies:${condition.speciesId}=${actual ? "owned" : "absent"} expected ${condition.present ? "owned" : "absent"}` };
     }
     case "actor": {
       const actual = session.partyActorIds.includes(condition.actorId);

@@ -196,3 +196,10 @@ node scripts/install-project-host-service.mjs --project-dir /home/main/.local/sh
 owner 쿠키를 발급해 설정 변경 직후 접속이 끊기지 않게 한다. 활성화 결과의 소유자 코드는
 설정 화면에서만 표시한다. 원문을 로그나 증거에 기록하지 않는다. Host/Origin과 RPC 토큰 검증은
 기본 모드에서도 유지한다. AI 운영 허용 설정 `OPRN_HOST_OWNER_AI=1`은 별도로 유지한다.
+
+
+## Large bridge save requests (2026-09-24)
+
+Browser bridge requests of at least1MiB use gzip when CompressionStream exists. Small/keepalive/unsupported-browser requests remain plain JSON. The host accepts identity or gzip after the existing origin/token/session checks, caps wire bytes at128MiB and decoded bytes at256MiB, and rejects unsupported encodings, truncated/corrupt gzip and aborted requests. Login form limits are unchanged. Compression changes no project/merge semantics; stale-base retries still contain the exact base document. Helpers: `electron/browser/requestBody.ts`, `electron/serve/requestBody.ts`.
+
+Manual wire check used the actual109MB canonical document plus its asset patch: JSON141,499,825bytes → gzip57,205,286bytes, exact parsed object equality across loopback HTTP. Five negative cases cover wire/decoded limits, corrupt/truncated gzip and unsupported encoding; small/keepalive/no-CompressionStream fallbacks also checked. This checks transport, not successful canonical save/reload. No full test suite was run.

@@ -1,0 +1,105 @@
+{
+  "scope": "Actual earned five-species capture checkpoint on revision543 QA copy. Real walking and interaction; no injected quest progress or rewards. Not three-hour duration proof.",
+  "errors": [],
+  "approaches": [
+    {
+      "id": "ev_sr_echo_obs_drop",
+      "x": 9,
+      "y": 19,
+      "direction": "up"
+    },
+    {
+      "id": "ev_sr_echo_researcher",
+      "x": 12,
+      "y": 22,
+      "direction": "left"
+    },
+    {
+      "id": "ev_sr_echo_researcher",
+      "x": 12,
+      "y": 22,
+      "direction": "left"
+    },
+    {
+      "id": "ev_sr_echo_obs_wind",
+      "x": 4,
+      "y": 5,
+      "direction": "up"
+    },
+    {
+      "id": "ev_sr_echo_obs_drop",
+      "x": 9,
+      "y": 19,
+      "direction": "up"
+    },
+    {
+      "id": "ev_sr_echo_obs_step",
+      "x": 23,
+      "y": 15,
+      "direction": "left"
+    },
+    {
+      "id": "ev_sr_echo_researcher",
+      "x": 12,
+      "y": 22,
+      "direction": "left"
+    },
+    {
+      "id": "ev_sr_echo_researcher",
+      "x": 12,
+      "y": 22,
+      "direction": "left"
+    },
+    {
+      "id": "ev_sr_echo_researcher",
+      "x": 12,
+      "y": 22,
+      "direction": "left"
+    },
+    {
+      "id": "ev_sr_echo_researcher",
+      "x": 12,
+      "y": 22,
+      "direction": "left"
+    }
+  ],
+  "walkedSteps": 315,
+  "walkedPortals": [
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_4e7c574f-79e9-4923-8f0c-37f21302a804",
+      "to": "map_saesol_town2"
+    },
+    {
+      "from": "map_saesol_town2",
+      "event": "sr_warp_town2_to_forest",
+      "to": "map_saesol_forest"
+    },
+    {
+      "from": "map_saesol_forest",
+      "event": "sr_warp_forest_to_route2",
+      "to": "map_saesol_route2"
+    },
+    {
+      "from": "map_saesol_route2",
+      "event": "sr_warp_route2_to_cavern",
+      "to": "map_variety_cavern"
+    }
+  ],
+  "blockedBeforeAccept": true,
+  "blockedMissingClues": true,
+  "clueOrder": [
+    "wind",
+    "drop",
+    "step"
+  ],
+  "wrongOrderNoPenalty": true,
+  "wrongReasonNoPenalty": true,
+  "reward": {
+    "gold": 500,
+    "balls": 3
+  },
+  "repeatNoReward": true,
+  "passed": true,
+  "automaticSeconds": 73.955
+}

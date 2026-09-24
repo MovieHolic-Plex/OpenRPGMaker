@@ -62,7 +62,9 @@ function genreMechanicLines(project: Project): string[] {
   const lines: string[] = [];
   if (/반대편으로\s*이어|반복\s*맵|끝없는|무한\s*(?:숲|복도|순환)|루프/u.test(text)) {
     lines.push("가장자리가 반대편으로 이어지는 맵(끝없는 숲·반복 복도)은 set_map_properties loop:\"both\"(또는 horizontal/vertical)로 만든다 — 가장자리 이동 이벤트로 흉내 내지 않는다. create_map 이 두른 테두리 벽은 통행 가능한 바닥으로 다시 칠한다.");
-    lines.push("그 맵을 포함한 각 세계는 fill_region 한 장으로 끝내지 않는다. 맵마다 place_props(material:그 장소의 사물 타일 라벨) 또는 paint_tiles 로 나무·촛대·계단·시계를 깔고, 조사 이벤트는 그 타일 위에 둔다. 빈 판 경고가 나오면 장식을 깔기 전에는 완료하지 않는다.");
+    lines.push("그 맵을 포함한 각 세계는 fill_region 한 장으로 끝내지 않는다. 각 세계 맵에 place_props(material:그 장소의 사물 타일 라벨, density:\"sparse\"|\"normal\"|\"dense\") 를 최소 1회 호출해 위층 장식을 맵 칸의 3% 이상(20×20이면 12칸 이상) 깔고, 조사 이벤트는 그 사물 타일 위에 둔다 — paint_tiles 몇 칸으로는 빈 판 기준(위층 3%)을 넘기 어렵다.");
+    lines.push("장식 재료는 기본 칩셋 라벨(침엽수·촛대·바위·시계·돌 계단 등)로 고른다 — forest_harmony 계열은 참고문서를 선행으로 읽지 않으면 여러 차례 거절되므로 야외 마을 맵이 아닌 꿈 세계 장식에는 쓰지 않는다.");
+    lines.push("조사 지점은 place_examine_hotspots 로 모으면 graphic 을 생략해도 보석 표식이 붙는다 — upsert_event 로 graphic 없이 맨바닥에 세우면 플레이어는 찾을 수 없다.");
   }
   if (/외형|모습|변신|옷을?\s*갈아|effect|이펙트/iu.test(text)) {
     lines.push("주인공 외형 바꾸기(변신·효과·옷)는 m2Command commandId:\"m2-024-change-actor-graphic\" fields:{target:actorId, value:\"charset:<텍스처>:<칸>\"} 로 실제 스프라이트를 바꾼다(대사로만 알리지 않는다). 그림은 list_resources kind:\"charset\" 로 고른다.");

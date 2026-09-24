@@ -5,8 +5,8 @@
 ```json
 {
   "name": "울타리 친 못과 석상",
-  "x": 33,
-  "y": 29,
+  "x": 24,
+  "y": 24,
   "w": 15,
   "h": 12,
   "kind": "landmark",
@@ -510,15 +510,15 @@
       1563,
       1561,
       1551,
-      240,
-      240,
+      1128,
+      1130,
       240
     ],
     [
       240,
       240,
-      240,
-      240,
+      1128,
+      1130,
       1533,
       1555,
       1555,
@@ -526,30 +526,34 @@
       1555,
       1555,
       1551,
-      240,
-      240,
-      240,
+      1128,
+      1161,
+      1160,
       240
     ],
     [
       240,
+      1128,
+      1161,
+      1161,
+      1130,
       240,
       240,
       240,
       240,
       240,
       240,
-      240,
-      240,
-      240,
-      240,
-      240,
-      240,
-      240,
+      1188,
+      1161,
+      1160,
       240
     ],
     [
       240,
+      1188,
+      1189,
+      1189,
+      1190,
       240,
       240,
       240,
@@ -557,12 +561,8 @@
       240,
       240,
       240,
-      240,
-      240,
-      240,
-      240,
-      240,
-      240,
+      1188,
+      1190,
       240
     ],
     [
@@ -796,8 +796,8 @@
 ```json
 {
   "name": "잊힌 묘지",
-  "x": 66,
-  "y": 33,
+  "x": 53,
+  "y": 28,
   "w": 7,
   "h": 6,
   "kind": "landmark",
@@ -1007,45 +1007,171 @@
 }
 ```
 
-## 숲 나무 · 작은 덤불
+## 숲 나무 · 활엽수
 ```json
 {
-  "name": "숲 나무 · 작은 덤불",
-  "x": 44,
-  "y": 11,
-  "w": 2,
-  "h": 2,
+  "name": "숲 나무 · 활엽수",
+  "x": 41,
+  "y": 32,
+  "w": 3,
+  "h": 4,
   "kind": "vegetation",
   "lower": [
-    1073,
-    1074,
-    1103,
-    1104
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
   ],
   "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
     -1,
     -1,
     -1,
     -1
   ],
-  "width": 2,
-  "height": 2,
+  "width": 3,
+  "height": 4,
   "lowerTiles": [
     [
-      1073,
-      1074
+      240,
+      240,
+      240
     ],
     [
-      1103,
-      1104
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
     ]
   ],
   "upperTiles": [
     [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
       -1,
       -1
     ],
     [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 활엽수
+```json
+{
+  "name": "숲 나무 · 활엽수",
+  "x": 43,
+  "y": 44,
+  "w": 3,
+  "h": 4,
+  "kind": "vegetation",
+  "lower": [
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
+  ],
+  "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
+    ]
+  ],
+  "upperTiles": [
+    [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
       -1,
       -1
     ]
@@ -1057,8 +1183,8 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 34,
-  "y": 24,
+  "x": 25,
+  "y": 47,
   "w": 3,
   "h": 3,
   "kind": "vegetation",
@@ -1127,8 +1253,8 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 48,
-  "y": 24,
+  "x": 27,
+  "y": 50,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
@@ -1169,358 +1295,239 @@
 }
 ```
 
-## 숲 나무 · 활엽수
+## 흰 돌기둥
 ```json
 {
-  "name": "숲 나무 · 활엽수",
-  "x": 50,
+  "id": "pond-gate-1",
+  "name": "흰 돌기둥",
+  "x": 28,
+  "y": 36,
+  "purpose": "못 울타리 입구 서쪽 돌기둥",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "pond-gate",
+  "lower": "KEEP",
+  "upper": [
+    267,
+    297
+  ],
+  "useAt": {
+    "x": 27,
+    "y": 36
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      267
+    ],
+    [
+      297
+    ]
+  ]
+}
+```
+
+## 흰 돌기둥
+```json
+{
+  "id": "pond-gate-2",
+  "name": "흰 돌기둥",
+  "x": 34,
+  "y": 36,
+  "purpose": "못 울타리 입구 동쪽 돌기둥",
+  "near": "흰 돌기둥",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "pond-gate",
+  "lower": "KEEP",
+  "upper": [
+    267,
+    297
+  ],
+  "useAt": {
+    "x": 33,
+    "y": 36
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      267
+    ],
+    [
+      297
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "pond-gate-3",
+  "name": "돌등",
+  "x": 26,
   "y": 37,
-  "w": 3,
-  "h": 4,
-  "kind": "vegetation",
-  "lower": [
-    240,
-    240,
-    240,
-    240,
-    240,
-    240,
-    1038,
-    1039,
-    1040,
-    1068,
-    1069,
-    1070
-  ],
+  "purpose": "꺼진 채 남은 입구 등",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "pond-gate",
+  "lower": "KEEP",
   "upper": [
-    978,
-    979,
-    980,
-    1008,
-    1009,
-    1010,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
+    2655,
+    2656
   ],
-  "width": 3,
-  "height": 4,
+  "useAt": {
+    "x": 25,
+    "y": 37
+  },
+  "width": 1,
+  "height": 2,
   "lowerTiles": [
     [
-      240,
-      240,
       240
     ],
     [
-      240,
-      240,
       240
-    ],
-    [
-      1038,
-      1039,
-      1040
-    ],
-    [
-      1068,
-      1069,
-      1070
     ]
   ],
   "upperTiles": [
     [
-      978,
-      979,
-      980
+      2655
     ],
     [
-      1008,
-      1009,
-      1010
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
+      2656
     ]
   ]
 }
 ```
 
-## 숲 나무 · 작은 덤불
+## 벤치
 ```json
 {
-  "name": "숲 나무 · 작은 덤불",
-  "x": 21,
-  "y": 40,
+  "id": "pond-offering-1",
+  "name": "벤치",
+  "x": 40,
+  "y": 31,
+  "purpose": "못지기가 석상을 바라보며 앉는 자리",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "pond-offering",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 40,
+    "y": 32
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 꽃 화단
+```json
+{
+  "id": "pond-offering-2",
+  "name": "꽃 화단",
+  "x": 39,
+  "y": 28,
+  "purpose": "석상에 바칠 꽃을 기르는 화단",
   "w": 2,
   "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
+  "kind": "civic-prop",
+  "placeId": "pond-offering",
+  "lower": "KEEP",
   "upper": [
-    -1,
-    -1,
-    -1,
-    -1
+    2611,
+    2612,
+    2616,
+    2617
   ],
+  "useAt": {
+    "x": 39,
+    "y": 27
+  },
   "width": 2,
   "height": 2,
   "lowerTiles": [
     [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 활엽수
-```json
-{
-  "name": "숲 나무 · 활엽수",
-  "x": 53,
-  "y": 49,
-  "w": 3,
-  "h": 4,
-  "kind": "vegetation",
-  "lower": [
-    240,
-    240,
-    240,
-    240,
-    240,
-    240,
-    1038,
-    1039,
-    1040,
-    1068,
-    1069,
-    1070
-  ],
-  "upper": [
-    978,
-    979,
-    980,
-    1008,
-    1009,
-    1010,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 4,
-  "lowerTiles": [
-    [
-      240,
       240,
       240
     ],
     [
       240,
-      240,
       240
-    ],
-    [
-      1038,
-      1039,
-      1040
-    ],
-    [
-      1068,
-      1069,
-      1070
     ]
   ],
   "upperTiles": [
     [
-      978,
-      979,
-      980
+      2611,
+      2612
     ],
     [
-      1008,
-      1009,
-      1010
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
+      2616,
+      2617
     ]
   ]
 }
 ```
 
-## 숲 나무 · 둥근 덤불
+## 해골
 ```json
 {
-  "name": "숲 나무 · 둥근 덤불",
-  "x": 32,
-  "y": 54,
-  "w": 3,
-  "h": 3,
-  "kind": "vegetation",
-  "lower": [
-    983,
-    984,
-    985,
-    1013,
-    1014,
-    1015,
-    1043,
-    1044,
-    1045
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 3,
-  "lowerTiles": [
-    [
-      983,
-      984,
-      985
-    ],
-    [
-      1013,
-      1014,
-      1015
-    ],
-    [
-      1043,
-      1044,
-      1045
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 34,
-  "y": 58,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 11,
-  "y": 10,
+  "id": "grave-edge-2",
+  "name": "해골",
+  "x": 60,
+  "y": 31,
+  "purpose": "묘지 밖에 굴러 나온 해골",
   "w": 1,
   "h": 1,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "grave-edge",
   "lower": "KEEP",
   "upper": [
-    740
+    383
   ],
-  "ownerId": "mistpond-hollow-house-1",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "right",
+  "useAt": {
+    "x": 60,
+    "y": 32
+  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1530,162 +1537,123 @@
   ],
   "upperTiles": [
     [
-      740
+      383
     ]
   ]
 }
 ```
 
-## 부서진 울타리
+## 돌 오벨리스크
 ```json
 {
-  "name": "부서진 울타리",
-  "x": 13,
-  "y": 10,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-1",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 57,
-  "y": 11,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-2",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 59,
-  "y": 11,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-2",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      410
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "name": "마른 묘목",
-  "x": 50,
-  "y": 34,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    740
-  ],
-  "ownerId": "mistpond-hollow-house-4",
-  "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
+  "id": "grave-edge-3",
+  "name": "돌 오벨리스크",
   "x": 52,
-  "y": 34,
+  "y": 31,
+  "purpose": "마을이 비기 전 세운 위령비",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "grave-edge",
+  "lower": "KEEP",
+  "upper": [
+    569,
+    599
+  ],
+  "useAt": {
+    "x": 51,
+    "y": 31
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      569
+    ],
+    [
+      599
+    ]
+  ]
+}
+```
+
+## 낮은 돌 우물
+```json
+{
+  "id": "dead-well-1",
+  "name": "낮은 돌 우물",
+  "x": 27,
+  "y": 41,
+  "purpose": "물이 끊긴 옛 공동 우물",
+  "w": 2,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "dead-well",
+  "lower": "KEEP",
+  "upper": [
+    2639,
+    2640,
+    2641,
+    2642
+  ],
+  "useAt": {
+    "x": 26,
+    "y": 41
+  },
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2639,
+      2640
+    ],
+    [
+      2641,
+      2642
+    ]
+  ]
+}
+```
+
+## 부서진 울타리
+```json
+{
+  "id": "dead-well-2",
+  "name": "부서진 울타리",
+  "x": 25,
+  "y": 41,
+  "purpose": "무너진 우물가 울타리",
+  "near": "낮은 돌 우물",
   "w": 1,
   "h": 1,
-  "kind": "prop",
+  "kind": "civic-prop",
+  "placeId": "dead-well",
   "lower": "KEEP",
   "upper": [
     410
   ],
-  "ownerId": "mistpond-hollow-house-4",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
-  "anchor": "마른 묘목",
-  "side": "left",
+  "useAt": {
+    "x": 25,
+    "y": 42
+  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1701,12 +1669,82 @@
 }
 ```
 
+## 항아리
+```json
+{
+  "id": "falls-lookout-1",
+  "name": "항아리",
+  "x": 14,
+  "y": 27,
+  "purpose": "빨래터에 버려진 물항아리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "falls-lookout",
+  "lower": "KEEP",
+  "upper": [
+    352
+  ],
+  "useAt": {
+    "x": 14,
+    "y": 28
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      352
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "entry-sign-1",
+  "name": "나무 이정표",
+  "x": 29,
+  "y": 50,
+  "purpose": "글씨가 바랜 마을 이정표",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "entry-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 29,
+    "y": 51
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
 ## 마른 묘목
 ```json
 {
   "name": "마른 묘목",
-  "x": 18,
-  "y": 52,
+  "x": 6,
+  "y": 6,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1714,11 +1752,11 @@
   "upper": [
     740
   ],
-  "ownerId": "mistpond-hollow-house-5",
+  "ownerId": "mistpond-hollow-house-1",
   "kit": "abandoned",
   "purpose": "손길이 끊겨 말라 버린 마당 나무",
   "anchor": "house",
-  "side": "left",
+  "side": "right",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1738,8 +1776,8 @@
 ```json
 {
   "name": "부서진 울타리",
-  "x": 20,
-  "y": 52,
+  "x": 8,
+  "y": 6,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1747,11 +1785,11 @@
   "upper": [
     410
   ],
-  "ownerId": "mistpond-hollow-house-5",
+  "ownerId": "mistpond-hollow-house-1",
   "kit": "abandoned",
   "purpose": "무너진 채 남은 마당 경계",
   "anchor": "마른 묘목",
-  "side": "left",
+  "side": "right",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1767,57 +1805,24 @@
 }
 ```
 
-## 마른 묘목
+## 통나무 더미
 ```json
 {
-  "name": "마른 묘목",
-  "x": 54,
-  "y": 54,
+  "name": "통나무 더미",
+  "x": 6,
+  "y": 8,
   "w": 1,
   "h": 1,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    740
+    741
   ],
-  "ownerId": "mistpond-hollow-house-6",
+  "ownerId": "mistpond-hollow-house-1",
   "kit": "abandoned",
-  "purpose": "손길이 끊겨 말라 버린 마당 나무",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      740
-    ]
-  ]
-}
-```
-
-## 부서진 울타리
-```json
-{
-  "name": "부서진 울타리",
-  "x": 56,
-  "y": 54,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    410
-  ],
-  "ownerId": "mistpond-hollow-house-6",
-  "kit": "abandoned",
-  "purpose": "무너진 채 남은 마당 경계",
+  "purpose": "쓰러진 채 썩어 가는 통나무",
   "anchor": "마른 묘목",
-  "side": "left",
+  "side": "right",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1827,7 +1832,7 @@
   ],
   "upperTiles": [
     [
-      410
+      741
     ]
   ]
 }
@@ -1837,8 +1842,8 @@
 ```json
 {
   "name": "약초 화분",
-  "x": 49,
-  "y": 52,
+  "x": 39,
+  "y": 47,
   "w": 2,
   "h": 1,
   "kind": "prop",
@@ -1869,12 +1874,48 @@
 }
 ```
 
+## 씨앗 자루
+```json
+{
+  "name": "씨앗 자루",
+  "x": 41,
+  "y": 47,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2652,
+    2653
+  ],
+  "ownerId": "mistpond-hollow-house-7",
+  "kit": "herbs",
+  "purpose": "다음에 심을 약초 씨앗",
+  "anchor": "약초 화분",
+  "side": "right",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2652,
+      2653
+    ]
+  ]
+}
+```
+
 ## 가로 탁자
 ```json
 {
   "name": "가로 탁자",
-  "x": 49,
-  "y": 54,
+  "x": 39,
+  "y": 49,
   "w": 3,
   "h": 1,
   "kind": "prop",
@@ -1912,8 +1953,8 @@
 ```json
 {
   "name": "항아리",
-  "x": 53,
-  "y": 54,
+  "x": 42,
+  "y": 49,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1941,32 +1982,30 @@
 }
 ```
 
-## 흰 돌기둥
+## 화분
 ```json
 {
-  "id": "pond-gate-1",
-  "name": "흰 돌기둥",
-  "x": 37,
-  "y": 41,
-  "purpose": "못 울타리 입구 서쪽 돌기둥",
+  "name": "화분",
+  "x": 38,
+  "y": 49,
   "w": 1,
   "h": 2,
-  "kind": "civic-prop",
-  "placeId": "pond-gate",
+  "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    267,
-    297
+    2632,
+    2635
   ],
-  "useAt": {
-    "x": 36,
-    "y": 41
-  },
+  "ownerId": "mistpond-hollow-house-7",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
   "width": 1,
   "height": 2,
   "lowerTiles": [
     [
-      240
+      77
     ],
     [
       240
@@ -1974,53 +2013,10 @@
   ],
   "upperTiles": [
     [
-      267
+      2632
     ],
     [
-      297
-    ]
-  ]
-}
-```
-
-## 흰 돌기둥
-```json
-{
-  "id": "pond-gate-2",
-  "name": "흰 돌기둥",
-  "x": 43,
-  "y": 41,
-  "purpose": "못 울타리 입구 동쪽 돌기둥",
-  "near": "흰 돌기둥",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "pond-gate",
-  "lower": "KEEP",
-  "upper": [
-    267,
-    297
-  ],
-  "useAt": {
-    "x": 42,
-    "y": 41
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      267
-    ],
-    [
-      297
+      2635
     ]
   ]
 }
@@ -2029,23 +2025,24 @@
 ## 돌등
 ```json
 {
-  "id": "pond-gate-3",
+  "id": "dead-well-plaza-1",
   "name": "돌등",
-  "x": 35,
-  "y": 42,
-  "purpose": "꺼진 채 남은 입구 등",
+  "x": 30,
+  "y": 41,
+  "purpose": "밤에 우물가를 밝히는 돌등",
+  "near": "낮은 돌 우물",
   "w": 1,
   "h": 2,
   "kind": "civic-prop",
-  "placeId": "pond-gate",
+  "placeId": "dead-well",
   "lower": "KEEP",
   "upper": [
     2655,
     2656
   ],
   "useAt": {
-    "x": 34,
-    "y": 42
+    "x": 29,
+    "y": 41
   },
   "width": 1,
   "height": 2,
@@ -2068,112 +2065,91 @@
 }
 ```
 
-## 벤치
+## 숲 나무 · 둥근 덤불
 ```json
 {
-  "id": "pond-offering-1",
-  "name": "벤치",
-  "x": 49,
-  "y": 36,
-  "purpose": "못지기가 석상을 바라보며 앉는 자리",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "pond-offering",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
+  "name": "숲 나무 · 둥근 덤불",
+  "x": 40,
+  "y": 22,
+  "w": 3,
+  "h": 3,
+  "kind": "vegetation",
+  "scene": 7,
+  "lower": [
+    983,
+    984,
+    985,
+    1013,
+    1014,
+    1015,
+    1043,
+    1044,
+    1045
   ],
-  "useAt": {
-    "x": 49,
-    "y": 37
-  },
-  "width": 2,
-  "height": 1,
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 3,
   "lowerTiles": [
     [
-      240,
-      240
+      983,
+      984,
+      985
+    ],
+    [
+      1013,
+      1014,
+      1015
+    ],
+    [
+      1043,
+      1044,
+      1045
     ]
   ],
   "upperTiles": [
     [
-      327,
-      328
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
     ]
   ]
 }
 ```
 
-## 꽃 화단
+## 바위
 ```json
 {
-  "id": "pond-offering-2",
-  "name": "꽃 화단",
-  "x": 48,
-  "y": 33,
-  "purpose": "석상에 바칠 꽃을 기르는 화단",
-  "w": 2,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "pond-offering",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "useAt": {
-    "x": 48,
-    "y": 32
-  },
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 마른 묘목
-```json
-{
-  "id": "grave-edge-1",
-  "name": "마른 묘목",
-  "x": 65,
-  "y": 31,
-  "purpose": "묘지 울타리 곁 말라 죽은 나무",
+  "name": "바위",
+  "x": 27,
+  "y": 43,
   "w": 1,
   "h": 1,
-  "kind": "civic-prop",
-  "placeId": "grave-edge",
+  "kind": "vegetation",
+  "scene": 15,
   "lower": "KEEP",
   "upper": [
-    740
+    537
   ],
-  "useAt": {
-    "x": 65,
-    "y": 32
-  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -2183,32 +2159,73 @@
   ],
   "upperTiles": [
     [
-      740
+      537
     ]
   ]
 }
 ```
 
-## 해골
+## 숲 나무 · 작은 덤불
 ```json
 {
-  "id": "grave-edge-2",
-  "name": "해골",
-  "x": 73,
-  "y": 36,
-  "purpose": "묘지 밖에 굴러 나온 해골",
+  "name": "숲 나무 · 작은 덤불",
+  "x": 28,
+  "y": 43,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 15,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 27,
+  "y": 44,
   "w": 1,
   "h": 1,
-  "kind": "civic-prop",
-  "placeId": "grave-edge",
+  "kind": "vegetation",
+  "scene": 15,
   "lower": "KEEP",
   "upper": [
-    383
+    537
   ],
-  "useAt": {
-    "x": 73,
-    "y": 37
-  },
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -2218,97 +2235,7 @@
   ],
   "upperTiles": [
     [
-      383
-    ]
-  ]
-}
-```
-
-## 돌 오벨리스크
-```json
-{
-  "id": "grave-edge-3",
-  "name": "돌 오벨리스크",
-  "x": 64,
-  "y": 36,
-  "purpose": "마을이 비기 전 세운 위령비",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "grave-edge",
-  "lower": "KEEP",
-  "upper": [
-    569,
-    599
-  ],
-  "useAt": {
-    "x": 63,
-    "y": 36
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      569
-    ],
-    [
-      599
-    ]
-  ]
-}
-```
-
-## 낮은 돌 우물
-```json
-{
-  "id": "dead-well-1",
-  "name": "낮은 돌 우물",
-  "x": 36,
-  "y": 46,
-  "purpose": "물이 끊긴 옛 공동 우물",
-  "w": 2,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "dead-well",
-  "lower": "KEEP",
-  "upper": [
-    2639,
-    2640,
-    2641,
-    2642
-  ],
-  "useAt": {
-    "x": 35,
-    "y": 46
-  },
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2639,
-      2640
-    ],
-    [
-      2641,
-      2642
+      537
     ]
   ]
 }

@@ -9,7 +9,7 @@ const references = JSON.parse(fs.readFileSync("src/assets/sharedDiverseVillageRe
 const entries = [], places = [];
 const [baseCategory, conceptCategory] = references;
 // Also shown under 장소 (places): the river villages built with 비취 대계곡's water and waterfalls.
-const PLACE_IDS = new Set(["twin-falls-river-village", "chapel-hill-parish", "ford-castle-town", "mistpond-hollow"]);
+const PLACE_IDS = new Set(["twin-falls-river-village", "chapel-hill-parish", "ford-castle-town", "mistpond-hollow", "nuleolmok-harbor-town"]);
 for (const plan of catalog.plans) {
   const result = await validateVillageStudy(project, plan.id);
   assert(result.valid, JSON.stringify(result));
@@ -32,7 +32,7 @@ for (const plan of catalog.plans) {
     name: plan.name,
     kind: "completed-map",
     regionKind: "settlement",
-    revision: 13,
+    revision: 14,
     width: map.width,
     height: map.height,
     tilesetId: map.tilesetId,
@@ -47,6 +47,9 @@ for (const plan of catalog.plans) {
       ...concept ? ["집마다 창문은 한 종류(85 격자·86 덧문·87 아치)이고, 84 스테인드글라스는 교회, 88 깨진 창은 폐가에만 쓴다."] : [],
       "숲마을 · 거리별 잔디 기반. 검수한 집과 3행 숲 몸통을 재사용하고 지형·길·집 원점은 새로 설계했다.",
       "큰 폭포 아래 마을처럼 윗선·반복 암벽 면·밑단을 연결하고 좌우 사선을 구분한다.",
+      `빈 잔디·숲 띠를 걷어 ${plan.fullness.before.width}×${plan.fullness.before.height}에서 ${map.width}×${map.height}로 줄였다(개정14). 집마다 3~5개 생활 마당과 문 양옆 꽃, 우물가 광장, 나무·덤불 덩이와 키큰 풀 덩이(E 숲 가·F 트인 풀밭·G 집·길 곁, 덩이마다 한 종류)를 두어 한 화면(17×13)에 빈 잔디가 40%를 넘지 않는다.`,
+      "소품마다 2칸 안에 이유(집·밭·부두·우물·모닥불·랜드마크)가 있다. 주인 없는 소품, 길가라는 이유만의 벤치, 흩뿌린 낱개 덤불은 없다. 폭포 아래 소는 십자가 아닌 비대칭 덩이다.",
+      ...plan.dock ? ["부두 끝 양옆에 나룻배(LPC CC-BY-SA)를 대고 판자 가장자리에 계류 말뚝, 뿌리 땅에 밧줄·닻·통·상자(EasyRPG CC0)를 모았다(tex_harbor_kit, 크레딧은 harbor-kit/CREDITS.txt)."] : [],
       "숲 수관 속은 잎으로 채운 깊이 변형을 쓴다: 8방향이 모두 수관인 칸은 2칸 안에 빈 땅이 있으면 얕은 속(2568·2597~2601), 없으면 깊은 속(2602~2607).",
       "기본 바닥240을 유지하고 색 맞춤504/505 사선과498/499/528/529 모서리를 사용한다. 다운로드의 tileGrafts와 통행 정보를 함께 사용한다.",
       `공용 AI 문서 「${categoryName}」에 원본 좌표·모든 배열·조립 순서·정상/오류 비교와 검증 명령이 있다.`

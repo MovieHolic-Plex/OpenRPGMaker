@@ -33,8 +33,16 @@ export function commandPromptState(snapshot: BattleSnapshot, openingLine?: strin
   };
 }
 
-/** 인카운트 인트로 배너 — 몬스터 트룹이면 "야생의 ○○이(가) 나타났다!" */
+/** 트레이너 팀은 도전 소개, 그 밖의 몬스터 트룹은 야생 인카운트 소개. */
 export function introDirectorState(snapshot: BattleSnapshot): BattleDirectorState {
+  const troop = store.getCurrent().database.troops.find((entry) => entry.id === snapshot.troopId);
+  if (troop?.trainerBattle === true) {
+    return {
+      step: "intro",
+      lines: [`${withJosa(troop.name, "이/가")} 승부를 걸어왔다!`],
+      activeActorRecordId: snapshot.activeActorId,
+    };
+  }
   const living = snapshot.enemies.filter((enemy) => !enemy.defeated);
   // 같은 이름은 묶어 「초원 슬라임 ×3, 숲 박쥐 ×3」 — 이름을 여섯 번 나열하면 첫 문장이
   // 소음이 되고 창 폭(560px)을 넘겨 생략됐다(2026-09-14 실측).

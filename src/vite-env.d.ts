@@ -114,7 +114,7 @@ interface Window {
   __oprnDbAiLastRequest?: { readonly message: string; readonly at: string };
   // 이 빌드의 버전 메타(src/brand.ts) — 버그 리포트가 커밋과 빌드 시각을 인용할 수 있게 한다.
   __oprnVersion?: () => import("@/brand").AppVersionMeta;
-  __oprnCamera?: () => OprnCameraDebug;
+  __oprnCamera?: () => OprnCameraDebug | null;
   __oprnJuiceLog?: () => readonly OprnRuntimeJuiceLogEntry[];
   __oprnInput?: {
     readonly action: () => void;

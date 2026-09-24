@@ -1,0 +1,135 @@
+{
+  "store": {
+    "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+    "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+    "revision": 537,
+    "sha256": "15f96358ba9edcc7810162858d2b671e9763c0c4abd143a8fe84fea7bb70fd3e",
+    "repeatReadMatches": true,
+    "maps": 20,
+    "events": 184,
+    "inlined": 80,
+    "scope": "Reopened canonical store read twice; media hashes verified and inlined for read-only player QA copy. No project content written."
+  },
+  "scope": {
+    "exactRequestedChangesOnly": true,
+    "enemyStats": {
+      "enemy_serin_howler_1": [
+        17,
+        [
+          32,
+          14,
+          9,
+          7,
+          8,
+          9
+        ]
+      ],
+      "enemy_serin_fuzall_1": [
+        18,
+        [
+          35,
+          14,
+          9,
+          7,
+          10,
+          10
+        ]
+      ],
+      "enemy_serin_kackaburr_2": [
+        24,
+        [
+          48,
+          18,
+          12,
+          10,
+          11,
+          11
+        ]
+      ],
+      "enemy_serin_maluga_2": [
+        25,
+        [
+          52,
+          18,
+          12,
+          10,
+          12,
+          10
+        ]
+      ]
+    },
+    "graphicsPages": 9,
+    "preserved": "All rewards, skills, conditions, commands, maps, session and other DB records."
+  },
+  "deployment": [
+    {
+      "asset": "/assets/main-XL-v9-Cx.js",
+      "sha256": "6dfb377c4b7097739ecdc7c3790cf09320d9e13c3e3b300f55e33319e8eed59d",
+      "matchesBuild": true
+    },
+    {
+      "asset": "/assets/main-hSkw18us.css",
+      "sha256": "673c7a5001cf09e501e755263bb44eb53abf4f2b078d6d8555c5e885779fe290",
+      "matchesBuild": true
+    }
+  ],
+  "intro": {
+    "scope": "Current revision536 plus integrated code. Starts from actual fresh536 first-badge checkpoint and walks to Serin. Intro only; no claimed battle victory.",
+    "errors": [],
+    "walkedSteps": 28,
+    "walkedPortals": [
+      {
+        "from": "map_variety_ridge",
+        "event": "sr_map_variety_ridge_2",
+        "to": "map_saesol_route"
+      }
+    ],
+    "intro": "라이벌 세린의 팀 · 1차전이 승부를 걸어왔다!\n세린의 하울러\n레벨7\n부르록\n레벨 20\n 47/47\nF 자동 꺼짐 · Shift 1×",
+    "passed": true
+  },
+  "fresh": {
+    "scope": "Fresh revision536 new game: opening, starter, delivery, puzzles, first badge and Serin first battle using real walking/portals and keyboard battles. No injected switches, inventory, levels or coordinates. Automated timing is not three-hour proof.",
+    "firstBadge": true,
+    "firstSerinVictory": true,
+    "starterAtFirstBadge": [
+      {
+        "id": "monster_1",
+        "species": "species_isaiah_burrlock",
+        "level": 20
+      }
+    ],
+    "walkedSteps": 358,
+    "errors": [],
+    "healsUsed": 0
+  },
+  "attack": {
+    "scope": "Actual fresh536 first-badge level20 starter/inventory; canonical balanced revision. No injected progress or supplies. First Serin battle only, not full campaign or 3-hour evidence.",
+    "passed": true,
+    "walkedSteps": 28,
+    "pageErrors": [],
+    "benchmark": {
+      "snapshotRevision": 537,
+      "playerSeconds": 56.5,
+      "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+    },
+    "repeatNoReward": true,
+    "healsUsed": 8
+  },
+  "tactical": {
+    "scope": "Actual fresh536 first-badge level20 starter/inventory; canonical balanced revision. No injected progress or supplies. Uses the already owned stun-spore skill once per opponent before attacks. First Serin battle only, not full campaign or 3-hour evidence.",
+    "passed": true,
+    "walkedSteps": 28,
+    "pageErrors": [],
+    "benchmark": {
+      "snapshotRevision": 537,
+      "playerSeconds": 49.354,
+      "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+    },
+    "repeatNoReward": true,
+    "statusAttempts": [
+      "enemy_serin_howler_1",
+      "enemy_serin_fuzall_1"
+    ],
+    "healsUsed": 2
+  }
+}

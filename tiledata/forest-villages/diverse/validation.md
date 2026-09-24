@@ -62,6 +62,14 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [],
     "truncated": false,
     "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
+  },
+  {
+    "valid": true,
+    "mapId": "nuleolmok-harbor-town",
+    "totalErrors": 0,
+    "errors": [],
+    "truncated": false,
+    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
   }
 ]
 ```
@@ -72,8 +80,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "cut-root",
     "mapId": "terrace-cliff-village",
-    "x": 62,
-    "y": 16,
+    "x": 47,
+    "y": 12,
     "layer": "lower",
     "tile": 1430,
     "replacement": 240
@@ -85,8 +93,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "cut-root",
-        "x": 62,
-        "y": 16,
+        "x": 47,
+        "y": 12,
         "layer": "lower",
         "expected": 1430,
         "actual": 240
@@ -106,8 +114,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "missing-trunk",
     "mapId": "terrace-cliff-village",
-    "x": 62,
-    "y": 15,
+    "x": 47,
+    "y": 11,
     "layer": "lower",
     "tile": 1426,
     "replacement": 240
@@ -119,8 +127,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "missing-trunk",
-        "x": 62,
-        "y": 15,
+        "x": 47,
+        "y": 11,
         "layer": "lower",
         "expected": 1426,
         "actual": 240
@@ -140,8 +148,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "wrong-edge-direction",
     "mapId": "terrace-cliff-village",
-    "x": 66,
-    "y": 17,
+    "x": 47,
+    "y": 10,
     "layer": "upper",
     "tile": 2577,
     "replacement": 2589
@@ -153,8 +161,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "wrong-edge-direction",
-        "x": 66,
-        "y": 17,
+        "x": 47,
+        "y": 10,
         "layer": "upper",
         "expected": 2577,
         "actual": 2589
@@ -174,8 +182,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "wrong-layer",
     "mapId": "terrace-cliff-village",
-    "x": 34,
-    "y": 15,
+    "x": 23,
+    "y": 6,
     "layer": "upper",
     "tile": 2620,
     "replacement": -1,
@@ -184,28 +192,33 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
+    "totalErrors": 4,
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 34,
-        "y": 15,
+        "x": 23,
+        "y": 6,
         "layer": "lower",
         "expected": 240,
         "actual": 2620
       },
       {
         "code": "wrong-layer",
-        "x": 34,
-        "y": 15,
+        "x": 23,
+        "y": 6,
         "layer": "upper",
         "expected": 2620,
         "actual": -1
       },
       {
         "code": "prop-purpose-anchor-missing",
-        "x": 37,
-        "y": 16
+        "x": 25,
+        "y": 7
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 26,
+        "y": 7
       }
     ],
     "truncated": false,
@@ -222,8 +235,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "blocked-entrance",
     "mapId": "terrace-cliff-village",
-    "x": 29,
-    "y": 17,
+    "x": 18,
+    "y": 12,
     "layer": "upper",
     "tile": -1,
     "replacement": 237
@@ -235,21 +248,21 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 29,
-        "y": 17,
+        "x": 18,
+        "y": 12,
         "layer": "upper",
         "expected": -1,
         "actual": 237
       },
       {
         "code": "unowned-prop",
-        "x": 29,
-        "y": 17
+        "x": 18,
+        "y": 12
       },
       {
         "code": "blocked-entrance",
-        "x": 29,
-        "y": 17,
+        "x": 18,
+        "y": 12,
         "role": "door-front"
       }
     ],
@@ -267,8 +280,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "cliff-face-direction",
     "mapId": "terrace-cliff-village",
-    "x": 83,
-    "y": 47,
+    "x": 59,
+    "y": 37,
     "layer": "upper",
     "tile": 2691,
     "replacement": 2688
@@ -280,16 +293,16 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 83,
-        "y": 47,
+        "x": 59,
+        "y": 37,
         "layer": "upper",
         "expected": 2691,
         "actual": 2688
       },
       {
         "code": "cliff-face-direction",
-        "x": 83,
-        "y": 47,
+        "x": 59,
+        "y": 37,
         "expectedUpper": 2691,
         "actualUpper": 2688
       }
@@ -309,7 +322,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "code": "cliff-toe-gap",
     "mapId": "terrace-cliff-village",
     "x": 40,
-    "y": 53,
+    "y": 42,
     "layer": "upper",
     "tile": 2686,
     "replacement": -1
@@ -322,7 +335,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
       {
         "code": "tile-mismatch",
         "x": 40,
-        "y": 53,
+        "y": 42,
         "layer": "upper",
         "expected": 2686,
         "actual": -1
@@ -330,7 +343,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
       {
         "code": "cliff-toe-gap",
         "x": 40,
-        "y": 53,
+        "y": 42,
         "expectedUpper": 2686,
         "actualUpper": -1
       }
@@ -349,8 +362,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "cliff-stair-gap",
     "mapId": "terrace-cliff-village",
-    "x": 62,
-    "y": 27,
+    "x": 47,
+    "y": 22,
     "layer": "lower",
     "tile": 2689,
     "replacement": 240
@@ -362,16 +375,16 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 62,
-        "y": 27,
+        "x": 47,
+        "y": 22,
         "layer": "lower",
         "expected": 2689,
         "actual": 240
       },
       {
         "code": "cliff-stair-gap",
-        "x": 62,
-        "y": 27,
+        "x": 47,
+        "y": 22,
         "expectedUpper": -1,
         "actualUpper": -1,
         "expectedLower": 2689,
@@ -392,322 +405,290 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "terrace-without-stairs",
     "mapId": "pine-hamlets",
-    "x": 2,
-    "y": 18,
+    "x": 0,
+    "y": 14,
     "layer": "lower",
     "tile": 240,
     "replacement": 240,
     "rects": [
       {
-        "x": 2,
-        "y": 18,
-        "w": 9,
+        "x": 0,
+        "y": 14,
+        "w": 7,
         "h": 3
       },
       {
-        "x": 2,
-        "y": 21,
-        "w": 4,
+        "x": 0,
+        "y": 17,
+        "w": 2,
         "h": 6
       },
       {
-        "x": 2,
-        "y": 27,
-        "w": 6,
+        "x": 0,
+        "y": 23,
+        "w": 10,
         "h": 2
       }
     ],
-    "errorX": 6,
-    "errorY": 21
+    "errorX": 2,
+    "errorY": 17
   },
   "result": {
     "valid": false,
     "mapId": "pine-hamlets",
-    "totalErrors": 69,
+    "totalErrors": 44,
     "errors": [
       {
         "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 18,
+        "x": 0,
+        "y": 14,
         "layer": "upper",
-        "expected": 2603,
+        "expected": 2583,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 18,
-        "layer": "upper",
-        "expected": 2604,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 18,
-        "layer": "upper",
-        "expected": 2568,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 18,
+        "x": 1,
+        "y": 14,
         "layer": "upper",
         "expected": 2595,
         "actual": -1
       },
       {
         "code": "missing-trunk",
-        "x": 6,
-        "y": 18,
+        "x": 2,
+        "y": 14,
         "layer": "lower",
         "expected": 1422,
         "actual": 240
       },
       {
         "code": "wrong-edge-direction",
-        "x": 6,
-        "y": 18,
+        "x": 2,
+        "y": 14,
         "layer": "upper",
         "expected": 2592,
         "actual": -1
       },
       {
         "code": "missing-trunk",
-        "x": 7,
-        "y": 18,
+        "x": 3,
+        "y": 14,
         "layer": "lower",
         "expected": 1423,
         "actual": 240
       },
       {
         "code": "wrong-edge-direction",
-        "x": 7,
-        "y": 18,
+        "x": 3,
+        "y": 14,
         "layer": "upper",
         "expected": 2592,
         "actual": -1
       },
       {
         "code": "missing-trunk",
-        "x": 8,
-        "y": 18,
-        "layer": "lower",
-        "expected": 1424,
-        "actual": 240
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 8,
-        "y": 18,
-        "layer": "upper",
-        "expected": 2592,
-        "actual": -1
-      },
-      {
-        "code": "missing-trunk",
-        "x": 9,
-        "y": 18,
+        "x": 4,
+        "y": 14,
         "layer": "lower",
         "expected": 1454,
         "actual": 240
       },
       {
         "code": "wrong-edge-direction",
-        "x": 9,
-        "y": 18,
+        "x": 4,
+        "y": 14,
         "layer": "upper",
         "expected": 2590,
         "actual": -1
       },
       {
         "code": "missing-trunk",
-        "x": 10,
-        "y": 18,
+        "x": 5,
+        "y": 14,
         "layer": "lower",
         "expected": 1455,
         "actual": 240
       },
       {
         "code": "wrong-edge-direction",
-        "x": 10,
-        "y": 18,
+        "x": 5,
+        "y": 14,
         "layer": "upper",
         "expected": 2555,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 19,
+        "x": 0,
+        "y": 15,
         "layer": "upper",
-        "expected": 2605,
+        "expected": 2583,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 19,
-        "layer": "upper",
-        "expected": 2602,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 19,
-        "layer": "upper",
-        "expected": 2600,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 19,
+        "x": 1,
+        "y": 15,
         "layer": "upper",
         "expected": 2594,
         "actual": -1
       },
       {
         "code": "missing-trunk",
-        "x": 6,
-        "y": 19,
+        "x": 2,
+        "y": 15,
         "layer": "lower",
         "expected": 1426,
         "actual": 240
       },
       {
         "code": "missing-trunk",
-        "x": 7,
-        "y": 19,
+        "x": 3,
+        "y": 15,
         "layer": "lower",
         "expected": 1427,
         "actual": 240
       },
       {
         "code": "missing-trunk",
-        "x": 8,
-        "y": 19,
-        "layer": "lower",
-        "expected": 1428,
-        "actual": 240
-      },
-      {
-        "code": "missing-trunk",
-        "x": 9,
-        "y": 19,
+        "x": 4,
+        "y": 15,
         "layer": "lower",
         "expected": 1458,
         "actual": 240
       },
       {
         "code": "missing-trunk",
-        "x": 10,
-        "y": 19,
+        "x": 5,
+        "y": 15,
         "layer": "lower",
         "expected": 1459,
         "actual": 240
       },
       {
         "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 20,
+        "x": 0,
+        "y": 16,
         "layer": "upper",
-        "expected": 2603,
+        "expected": 2583,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 20,
-        "layer": "upper",
-        "expected": 2602,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 20,
-        "layer": "upper",
-        "expected": 2601,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 20,
+        "x": 1,
+        "y": 16,
         "layer": "upper",
         "expected": 2594,
         "actual": -1
       },
       {
         "code": "cut-root",
-        "x": 6,
-        "y": 20,
+        "x": 2,
+        "y": 16,
         "layer": "lower",
         "expected": 1430,
         "actual": 240
       },
       {
         "code": "cut-root",
-        "x": 7,
-        "y": 20,
+        "x": 3,
+        "y": 16,
         "layer": "lower",
         "expected": 1431,
         "actual": 240
       },
       {
         "code": "cut-root",
-        "x": 8,
-        "y": 20,
-        "layer": "lower",
-        "expected": 1432,
-        "actual": 240
-      },
-      {
-        "code": "cut-root",
-        "x": 9,
-        "y": 20,
+        "x": 4,
+        "y": 16,
         "layer": "lower",
         "expected": 1462,
         "actual": 240
       },
       {
         "code": "cut-root",
-        "x": 10,
-        "y": 20,
+        "x": 5,
+        "y": 16,
         "layer": "lower",
         "expected": 1463,
         "actual": 240
       },
       {
         "code": "wrong-edge-direction",
-        "x": 2,
+        "x": 0,
+        "y": 17,
+        "layer": "upper",
+        "expected": 2583,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 1,
+        "y": 17,
+        "layer": "upper",
+        "expected": 2594,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 0,
+        "y": 18,
+        "layer": "upper",
+        "expected": 2583,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 1,
+        "y": 18,
+        "layer": "upper",
+        "expected": 2594,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 0,
+        "y": 19,
+        "layer": "upper",
+        "expected": 2583,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 1,
+        "y": 19,
+        "layer": "upper",
+        "expected": 2594,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 0,
+        "y": 20,
+        "layer": "upper",
+        "expected": 2583,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 1,
+        "y": 20,
+        "layer": "upper",
+        "expected": 2594,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 0,
         "y": 21,
         "layer": "upper",
-        "expected": 2607,
+        "expected": 2583,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 21,
-        "layer": "upper",
-        "expected": 2605,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 21,
-        "layer": "upper",
-        "expected": 2568,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
+        "x": 1,
         "y": 21,
         "layer": "upper",
         "expected": 2594,
@@ -715,31 +696,15 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
       },
       {
         "code": "wrong-edge-direction",
-        "x": 2,
+        "x": 0,
         "y": 22,
         "layer": "upper",
-        "expected": 2604,
+        "expected": 2583,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 22,
-        "layer": "upper",
-        "expected": 2606,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 22,
-        "layer": "upper",
-        "expected": 2600,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
+        "x": 1,
         "y": 22,
         "layer": "upper",
         "expected": 2594,
@@ -747,235 +712,83 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
       },
       {
         "code": "wrong-edge-direction",
-        "x": 2,
+        "x": 0,
         "y": 23,
         "layer": "upper",
-        "expected": 2606,
+        "expected": 2583,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 3,
+        "x": 1,
         "y": 23,
-        "layer": "upper",
-        "expected": 2607,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 23,
-        "layer": "upper",
-        "expected": 2601,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 23,
-        "layer": "upper",
-        "expected": 2594,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 24,
-        "layer": "upper",
-        "expected": 2604,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 24,
-        "layer": "upper",
-        "expected": 2603,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 24,
-        "layer": "upper",
-        "expected": 2597,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 24,
-        "layer": "upper",
-        "expected": 2594,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 25,
-        "layer": "upper",
-        "expected": 2604,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 25,
-        "layer": "upper",
-        "expected": 2607,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 25,
-        "layer": "upper",
-        "expected": 2597,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 25,
-        "layer": "upper",
-        "expected": 2594,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 26,
-        "layer": "upper",
-        "expected": 2605,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 26,
-        "layer": "upper",
-        "expected": 2602,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 26,
-        "layer": "upper",
-        "expected": 2597,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 26,
-        "layer": "upper",
-        "expected": 2594,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 2,
-        "y": 27,
-        "layer": "upper",
-        "expected": 2604,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 27,
-        "layer": "upper",
-        "expected": 2604,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 27,
-        "layer": "upper",
-        "expected": 2598,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 27,
         "layer": "upper",
         "expected": 2596,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 6,
-        "y": 27,
+        "x": 2,
+        "y": 23,
         "layer": "upper",
         "expected": 2587,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 7,
-        "y": 27,
+        "x": 3,
+        "y": 23,
         "layer": "upper",
         "expected": 2584,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
+        "x": 0,
+        "y": 24,
+        "layer": "upper",
+        "expected": 2583,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 1,
+        "y": 24,
+        "layer": "upper",
+        "expected": 2601,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
         "x": 2,
-        "y": 28,
-        "layer": "upper",
-        "expected": 2602,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 3,
-        "y": 28,
-        "layer": "upper",
-        "expected": 2602,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 4,
-        "y": 28,
-        "layer": "upper",
-        "expected": 2599,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 5,
-        "y": 28,
-        "layer": "upper",
-        "expected": 2599,
-        "actual": -1
-      },
-      {
-        "code": "wrong-edge-direction",
-        "x": 6,
-        "y": 28,
+        "y": 24,
         "layer": "upper",
         "expected": 2598,
         "actual": -1
       },
       {
         "code": "wrong-edge-direction",
-        "x": 7,
-        "y": 28,
+        "x": 3,
+        "y": 24,
         "layer": "upper",
-        "expected": 2594,
+        "expected": 2596,
+        "actual": -1
+      },
+      {
+        "code": "wrong-edge-direction",
+        "x": 4,
+        "y": 24,
+        "layer": "upper",
+        "expected": 2584,
         "actual": -1
       },
       {
         "code": "terrace-without-stairs",
-        "x": 6,
-        "y": 21,
+        "x": 2,
+        "y": 17,
         "reached": {
-          "x": 6,
-          "y": 20
+          "x": 2,
+          "y": 16
         }
       }
     ],
@@ -993,8 +806,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "waterfall-gap",
     "mapId": "twin-falls-river-village",
-    "x": 41,
-    "y": 22,
+    "x": 32,
+    "y": 17,
     "layer": "lower",
     "tile": 2700,
     "replacement": 240
@@ -1006,16 +819,16 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 41,
-        "y": 22,
+        "x": 32,
+        "y": 17,
         "layer": "lower",
         "expected": 2700,
         "actual": 240
       },
       {
         "code": "waterfall-gap",
-        "x": 41,
-        "y": 22,
+        "x": 32,
+        "y": 17,
         "expectedLower": 2700,
         "actualLower": 240,
         "actualUpper": -1
@@ -1029,155 +842,14 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
 
 ![왼쪽 정상, 오른쪽 오류](images/waterfall-gap.png)
 
-## grass-edge-direction
-```json
-{
-  "input": {
-    "code": "grass-edge-direction",
-    "mapId": "terrace-cliff-village",
-    "x": 26,
-    "y": 7,
-    "layer": "lower",
-    "tile": 2692,
-    "replacement": 2693
-  },
-  "result": {
-    "valid": false,
-    "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
-    "errors": [
-      {
-        "code": "tile-mismatch",
-        "x": 26,
-        "y": 7,
-        "layer": "lower",
-        "expected": 2692,
-        "actual": 2693
-      },
-      {
-        "code": "grass-edge-direction",
-        "x": 26,
-        "y": 7,
-        "expected": 2692,
-        "actual": 2693
-      },
-      {
-        "code": "grass-crest-gap",
-        "x": 26,
-        "y": 7,
-        "sourceTile": 504
-      }
-    ],
-    "truncated": false,
-    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
-  }
-}
-```
-
-![왼쪽 정상, 오른쪽 오류](images/grass-edge-direction.png)
-
-## grass-color-mismatch
-```json
-{
-  "input": {
-    "code": "grass-color-mismatch",
-    "mapId": "terrace-cliff-village",
-    "x": 26,
-    "y": 7,
-    "layer": "lower",
-    "tile": 2692,
-    "replacement": 504
-  },
-  "result": {
-    "valid": false,
-    "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
-    "errors": [
-      {
-        "code": "tile-mismatch",
-        "x": 26,
-        "y": 7,
-        "layer": "lower",
-        "expected": 2692,
-        "actual": 504
-      },
-      {
-        "code": "grass-color-mismatch",
-        "x": 26,
-        "y": 7,
-        "expected": 2692,
-        "actual": 504
-      },
-      {
-        "code": "grass-crest-gap",
-        "x": 26,
-        "y": 7,
-        "sourceTile": 504
-      }
-    ],
-    "truncated": false,
-    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
-  }
-}
-```
-
-![왼쪽 정상, 오른쪽 오류](images/grass-color-mismatch.png)
-
-## grass-crest-gap
-```json
-{
-  "input": {
-    "code": "grass-crest-gap",
-    "mapId": "terrace-cliff-village",
-    "x": 30,
-    "y": 4,
-    "layer": "lower",
-    "tile": 2694,
-    "replacement": 240
-  },
-  "result": {
-    "valid": false,
-    "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
-    "errors": [
-      {
-        "code": "tile-mismatch",
-        "x": 30,
-        "y": 4,
-        "layer": "lower",
-        "expected": 2694,
-        "actual": 240
-      },
-      {
-        "code": "grass-edge-direction",
-        "x": 30,
-        "y": 4,
-        "expected": 2694,
-        "actual": 240
-      },
-      {
-        "code": "grass-crest-gap",
-        "x": 30,
-        "y": 4,
-        "sourceTile": 559
-      }
-    ],
-    "truncated": false,
-    "scope": "Frozen reference arrays, source grafts, engine tile reachability. No event execution or aesthetic scoring."
-  }
-}
-```
-
-![왼쪽 정상, 오른쪽 오류](images/grass-crest-gap.png)
-
 ## map-entrance-blocked
 ```json
 {
   "input": {
     "code": "map-entrance-blocked",
     "mapId": "terrace-cliff-village",
-    "x": 42,
-    "y": 71,
+    "x": 31,
+    "y": 59,
     "layer": "upper",
     "tile": -1,
     "replacement": 237
@@ -1189,26 +861,26 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 42,
-        "y": 71,
+        "x": 31,
+        "y": 59,
         "layer": "upper",
         "expected": -1,
         "actual": 237
       },
       {
         "code": "unowned-prop",
-        "x": 42,
-        "y": 71
+        "x": 31,
+        "y": 59
       },
       {
         "code": "map-entrance-blocked",
-        "x": 42,
-        "y": 71
+        "x": 31,
+        "y": 59
       },
       {
         "code": "blocked-entrance",
-        "x": 42,
-        "y": 71,
+        "x": 31,
+        "y": 59,
         "role": "map-entrance"
       }
     ],
@@ -1226,7 +898,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "unowned-prop",
     "mapId": "terrace-cliff-village",
-    "x": 23,
+    "x": 38,
     "y": 31,
     "layer": "upper",
     "tile": -1,
@@ -1239,7 +911,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 23,
+        "x": 38,
         "y": 31,
         "layer": "upper",
         "expected": -1,
@@ -1247,7 +919,7 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
       },
       {
         "code": "unowned-prop",
-        "x": 23,
+        "x": 38,
         "y": 31
       }
     ],
@@ -1265,36 +937,41 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "scarecrow-without-garden",
     "mapId": "terrace-cliff-village",
-    "x": 70,
-    "y": 41,
+    "x": 54,
+    "y": 31,
     "layer": "upper",
     "tile": 2613,
     "replacement": -1,
-    "errorX": 70,
-    "errorY": 39
+    "errorX": 54,
+    "errorY": 29
   },
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
+    "totalErrors": 4,
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 70,
-        "y": 41,
+        "x": 54,
+        "y": 31,
         "layer": "upper",
         "expected": 2613,
         "actual": -1
       },
       {
         "code": "scarecrow-without-garden",
-        "x": 70,
-        "y": 39
+        "x": 54,
+        "y": 29
       },
       {
         "code": "prop-purpose-anchor-missing",
-        "x": 73,
-        "y": 42
+        "x": 56,
+        "y": 30
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 56,
+        "y": 32
       }
     ],
     "truncated": false,
@@ -1311,36 +988,46 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "prop-purpose-anchor-missing",
     "mapId": "terrace-cliff-village",
-    "x": 46,
-    "y": 38,
+    "x": 34,
+    "y": 31,
     "layer": "upper",
     "tile": 234,
     "replacement": -1,
-    "errorX": 46,
-    "errorY": 36
+    "errorX": 34,
+    "errorY": 29
   },
   "result": {
     "valid": false,
     "mapId": "terrace-cliff-village",
-    "totalErrors": 3,
+    "totalErrors": 5,
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 46,
-        "y": 38,
+        "x": 34,
+        "y": 31,
         "layer": "upper",
         "expected": 234,
         "actual": -1
       },
       {
         "code": "prop-purpose-anchor-missing",
-        "x": 46,
-        "y": 36
+        "x": 34,
+        "y": 29
       },
       {
         "code": "prop-purpose-anchor-missing",
-        "x": 48,
-        "y": 36
+        "x": 35,
+        "y": 29
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 36,
+        "y": 29
+      },
+      {
+        "code": "prop-purpose-anchor-missing",
+        "x": 37,
+        "y": 31
       }
     ],
     "truncated": false,
@@ -1357,41 +1044,51 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "civic-anchor-missing",
     "mapId": "reed-bay-village",
-    "x": 52,
-    "y": 24,
+    "x": 43,
+    "y": 20,
     "layer": "upper",
     "tile": 2639,
     "replacement": -1,
-    "errorX": 54,
-    "errorY": 26
+    "errorX": 45,
+    "errorY": 22
   },
   "result": {
     "valid": false,
     "mapId": "reed-bay-village",
-    "totalErrors": 4,
+    "totalErrors": 6,
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 52,
-        "y": 24,
+        "x": 43,
+        "y": 20,
         "layer": "upper",
         "expected": 2639,
         "actual": -1
       },
       {
         "code": "civic-part-missing",
-        "x": 52,
-        "y": 24
+        "x": 43,
+        "y": 20
       },
       {
         "code": "civic-anchor-missing",
-        "x": 54,
-        "y": 26
+        "x": 45,
+        "y": 22
       },
       {
         "code": "civic-anchor-missing",
-        "x": 52,
-        "y": 26
+        "x": 43,
+        "y": 22
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 46,
+        "y": 21
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 41,
+        "y": 22
       }
     ],
     "truncated": false,
@@ -1408,8 +1105,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "civic-use-blocked",
     "mapId": "reed-bay-village",
-    "x": 51,
-    "y": 24,
+    "x": 42,
+    "y": 20,
     "layer": "upper",
     "tile": -1,
     "replacement": 237
@@ -1421,27 +1118,27 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 51,
-        "y": 24,
+        "x": 42,
+        "y": 20,
         "layer": "upper",
         "expected": -1,
         "actual": 237
       },
       {
         "code": "unowned-prop",
-        "x": 51,
-        "y": 24
+        "x": 42,
+        "y": 20
       },
       {
         "code": "blocked-entrance",
-        "x": 51,
-        "y": 24,
+        "x": 42,
+        "y": 20,
         "role": "civic-use"
       },
       {
         "code": "civic-use-blocked",
-        "x": 51,
-        "y": 24,
+        "x": 42,
+        "y": 20,
         "name": "낮은 돌 우물"
       }
     ],
@@ -1459,8 +1156,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "wall-light-backing",
     "mapId": "reed-bay-village",
-    "x": 36,
-    "y": 9,
+    "x": 30,
+    "y": 6,
     "layer": "lower",
     "tile": 46,
     "replacement": 240
@@ -1472,56 +1169,56 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 36,
-        "y": 9,
+        "x": 30,
+        "y": 6,
         "layer": "lower",
         "expected": 46,
         "actual": 240
       },
       {
         "code": "civic-anchor-missing",
-        "x": 38,
-        "y": 12
-      },
-      {
-        "code": "civic-anchor-missing",
-        "x": 36,
-        "y": 11
-      },
-      {
-        "code": "civic-anchor-missing",
-        "x": 40,
-        "y": 11
-      },
-      {
-        "code": "civic-anchor-missing",
-        "x": 38,
-        "y": 14
-      },
-      {
-        "code": "civic-anchor-missing",
-        "x": 40,
+        "x": 32,
         "y": 9
       },
       {
         "code": "civic-anchor-missing",
-        "x": 36,
-        "y": 14
+        "x": 30,
+        "y": 8
       },
       {
         "code": "civic-anchor-missing",
-        "x": 40,
-        "y": 14
+        "x": 34,
+        "y": 8
       },
       {
         "code": "civic-anchor-missing",
-        "x": 36,
-        "y": 9
+        "x": 32,
+        "y": 11
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 34,
+        "y": 6
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 30,
+        "y": 11
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 34,
+        "y": 11
+      },
+      {
+        "code": "civic-anchor-missing",
+        "x": 30,
+        "y": 6
       },
       {
         "code": "wall-light-backing",
-        "x": 36,
-        "y": 9
+        "x": 30,
+        "y": 6
       }
     ],
     "truncated": false,
@@ -1538,8 +1235,8 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "mixed-windows",
     "mapId": "ford-castle-town",
-    "x": 13,
-    "y": 16,
+    "x": 4,
+    "y": 14,
     "layer": "upper",
     "tile": 87,
     "replacement": 85
@@ -1551,16 +1248,16 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 13,
-        "y": 16,
+        "x": 4,
+        "y": 14,
         "layer": "upper",
         "expected": 87,
         "actual": 85
       },
       {
         "code": "mixed-windows",
-        "x": 13,
-        "y": 16,
+        "x": 4,
+        "y": 14,
         "house": "ford-castle-town-house-1",
         "expected": 87,
         "actual": 85
@@ -1580,13 +1277,13 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
   "input": {
     "code": "landmark-sealed",
     "mapId": "chapel-hill-parish",
-    "x": 14,
-    "y": 13,
+    "x": 6,
+    "y": 10,
     "layer": "upper",
     "tile": -1,
     "replacement": 439,
-    "errorX": 14,
-    "errorY": 12
+    "errorX": 6,
+    "errorY": 9
   },
   "result": {
     "valid": false,
@@ -1595,16 +1292,16 @@ node scripts/content/validate-diverse-villages.mjs project.json terrace-cliff-vi
     "errors": [
       {
         "code": "tile-mismatch",
-        "x": 14,
-        "y": 13,
+        "x": 6,
+        "y": 10,
         "layer": "upper",
         "expected": -1,
         "actual": 439
       },
       {
         "code": "landmark-sealed",
-        "x": 14,
-        "y": 12,
+        "x": 6,
+        "y": 9,
         "role": "yard-inside",
         "landmark": "chapel-hill-parish-graveyard"
       }

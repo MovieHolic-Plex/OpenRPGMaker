@@ -105,10 +105,17 @@ const CORE_BUNDLED_IMAGE_ASSETS = [
   { textureKey: TEX_DIALOGUE_FRAME, path: ASSET_DIALOGUE_FRAME, name: "기본 대사창 테두리" },
 ] as const satisfies readonly BundledImageAsset[];
 
+export const FOREST_FANTASY_TOWN_TEXTURE_KEY = "tex_forest_harmony_fantasy_town";
+/** 480×1168 시트 = 30열 × 73줄. */
+const FOREST_FANTASY_TOWN_FRAME_COUNT = 2190;
+
 /** The reference composite is loaded only by projects that explicitly use its board tileset. */
 export const BUNDLED_REFERENCE_CHIPSET_ASSETS = [
   { textureKey: "tex_forest_cliff_reference", path: "assets/region-references/forest-cliff-village-atlas.png", name: "굽이숲 절벽마을 · 숲 조립 참조" },
   { textureKey: CASTLE_REFERENCE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-reference-composite.png", name: "성채 참고 이미지 · 큰 돌다리 제거" },
+  // 장소 「개울 건너 숲성 마을」의 생성 건물(설계도 방식)·손 도트 소품 시트. 숲마을 타일셋이 tileGrafts 로 뒤에 붙인다.
+  // 재생성: scripts/asset-gen/forest-harmony-buildings/publish_place.py
+  { textureKey: FOREST_FANTASY_TOWN_TEXTURE_KEY, path: "assets/forest-harmony/fantasy-town-buildings.png", name: "개울 건너 숲성 마을 · 생성 건물·소품" },
 ] as const satisfies readonly BundledImageAsset[];
 
 export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
@@ -125,6 +132,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_interior", path: "assets/easyrpg-chipset-interior-transparent.png", name: "실내 · EasyRPG (CC0)" },
   { textureKey: "tex_easyrpg_chipset_ship", path: "assets/easyrpg-chipset-ship-transparent.png", name: "배 · EasyRPG (CC0)" },
+  // Harbor pieces for forest-village harbors (LPC rowboat CC-BY-SA 3.0 + EasyRPG ship tiles CC0) — assets/harbor-kit/CREDITS.txt.
+  { textureKey: "tex_harbor_kit", path: "assets/harbor-kit/harbor-kit.png", name: "항구 조각 · 나룻배·계류 말뚝 (LPC CC-BY-SA · EasyRPG CC0)" },
   { textureKey: "tex_easyrpg_chipset_world", path: "assets/easyrpg-chipset-world-transparent.png", name: "월드맵 · EasyRPG (CC0)" },
   // retro_* 세 장은 출처가 섞여 있다(CC-BY/CC0/WTFPL) — ATTRIBUTION.md 와 vendor AUTHORS.md 참고.
   { textureKey: "tex_easyrpg_chipset_retro_dungeon", path: "assets/easyrpg-chipset-retro-dungeon-transparent.png", name: "레트로 던전 · EasyRPG (CC0)" },
@@ -147,6 +156,7 @@ export function bundledChipsetFrameCount(key: string): number {
   if (key === CASTLE_TILESET_TEXTURE_KEY) return CASTLE_TILE_COUNT;
   if (key === CASTLE_REFERENCE_TILESET_TEXTURE_KEY) return CASTLE_REFERENCE_TILE_COUNT;
   if (key === "tex_forest_cliff_reference") return 2640;
+  if (key === FOREST_FANTASY_TOWN_TEXTURE_KEY) return FOREST_FANTASY_TOWN_FRAME_COUNT;
   if (key === "tex_shared_forest_village_objects") return sharedVillageObjects.count;
   if (key === "tex_forest_harmony") return forestHarmony.count;
   if (key === "tex_forest_harmony_grass_joins") return 10;

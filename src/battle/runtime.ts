@@ -5,7 +5,7 @@ import { combatConditionMet } from "@/battle/combatConditions";
 import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/battleSkillUse";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
-import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
+import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
 import type { ActorId, EnemyId, ItemId, ItemRecord, SkillId } from "@/project/types";
@@ -370,6 +370,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
     battleResult: sessionState.battleResult,
     roguelikeRun: sessionState.roguelikeRun ? structuredClone(sessionState.roguelikeRun) : undefined,
+    monsterInstances: structuredClone(sessionState.monsterInstances ?? {}),
+    monsterParty: [...(sessionState.monsterParty ?? [])],
+    monsterBox: [...(sessionState.monsterBox ?? [])],
     inventory: { ...sessionState.inventory },
     itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
@@ -887,7 +890,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const item = options.project.database.items.find((record) => record.id === command.captureItemId);
         // 포획 여부는 captureProfile 이 정한다. 종류(type)까지 special 로 묶으면 조수가 몬스터볼을
         // normalGoods 로 저장한 게임에서 전투 메뉴엔 공이 뜨는데 던지면 missingItem 으로 실패했다(2026-09-24).
-        return Boolean(item?.captureProfile && itemAllowsBattle(item)
+        return Boolean(item && isCaptureTool(item) && itemAllowsBattle(item)
           && (battleEventState.inventory[command.captureItemId] ?? 0) > 0);
       }
     }
@@ -1720,7 +1723,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function itemIsBattleUsable(authoredItem: ItemRecord): boolean {
     const item = activeItemEffects(authoredItem);
-    if (!itemAllowsBattle(item) || item.captureProfile) return false;
+    if (!itemAllowsBattle(item) || isCaptureTool(authoredItem)) return false;
     return Boolean(
       item.skillId ||
         item.activateSkillId ||
@@ -1822,7 +1825,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const item = options.project.database.items.find((record) => record.id === captureItemId);
     const count = battleEventState.inventory[captureItemId] ?? 0;
-    if (!item?.captureProfile || !itemAllowsBattle(item) || count <= 0) {
+    if (!item?.captureProfile || !isCaptureTool(item) || !itemAllowsBattle(item) || count <= 0) {
       finish({ targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingItem" });
       return;
     }

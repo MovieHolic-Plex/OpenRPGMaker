@@ -481,6 +481,9 @@ function validateCondition(
     case "variable":
       requireReference(issues, pageId, "reference.variable.missing", "변수", condition.variableId, refs.variables, { testId: "event-condition-variable" }, commandPath);
       return;
+    case "monsterSpecies":
+      requireReference(issues, pageId, "reference.species.missing", "몬스터 종", condition.speciesId, refs.species, { testId: "event-condition-monster-species" }, commandPath);
+      return;
     case "actor":
       requireReference(issues, pageId, "reference.actor.missing", "배우", condition.actorId, refs.actors, { testId: "event-condition-actor" }, commandPath);
       return;

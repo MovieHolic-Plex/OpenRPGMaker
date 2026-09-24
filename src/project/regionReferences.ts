@@ -4,6 +4,7 @@ import { CASTLE_PLACE_REFERENCES } from "./castlePlaceReferences";
 import { FOREST_PLACE_REFERENCES } from "./forestPlaceReferences";
 import { SHIP_PLACE_REFERENCES } from "./shipPlaceReferences";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
+import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import { REFERENCE_HOUSE_FORM_DEFS } from "./defaults/referenceHouseFormCatalog";
@@ -88,7 +89,7 @@ export const LAKE_PLACE_REFERENCES = [
 
 
 /** Shipped place examples remain visible even in a new, empty project. */
-export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, ...CLIMATE_VILLAGE_PLACE_REFERENCES, ...FIELD_ROUTE_PLACE_REFERENCES, {
+export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFERENCES, ...FOREST_PLACE_REFERENCES, ...CASTLE_PLACE_REFERENCES, ...FANTASY_PLACE_REFERENCES, ...RPG_INTERIOR_PLACE_REFERENCES, ...CLIMATE_VILLAGE_PLACE_REFERENCES, ...FIELD_ROUTE_PLACE_REFERENCES, {
   id: "emerald-basin-80x64", name: "비취 대계곡", kind: "completed-place" as const,
   placeKind: "natural" as const, revision: 1, x: 0, y: 0, width: 80, height: 64,
   tilesetId: "tileset_emerald_basin_20260914",
@@ -119,6 +120,23 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
     "밭·과수원·풀밭과 산울타리 덤불(289)은 필지 바깥에 두고, 과수원 나무는 합본 마을 2×2 활엽수 그대로다.",
   ],
   limitations: "시공기 출력 그대로의 참고 사례(씨앗 7). 실내 맵과 집 문 이벤트는 포함하지 않는다. 주민 12명은 배치만 있고 대사는 없다.",
+}, {
+  // 2026-09-24: 숲마을 칩셋 + 설계도 방식 생성 건물 29종(god-tibo-imagen, 검사기 통과작만)·칩셋에 없는 소품만 손 도트.
+  // 재생성: scripts/asset-gen/forest-harmony-buildings/ (author_village2 → hand_props --install → author_village2 → publish_place).
+  id: "forest-fantasy-town-104x96", name: "개울 건너 숲성 마을", kind: "completed-place" as const,
+  placeKind: "settlement" as const, revision: 1, x: 0, y: 0, width: 104, height: 96,
+  tilesetId: "forest_harmony_fantasy_town",
+  preview: "/assets/region-references/forest-fantasy-town.png",
+  tilesetPreview: "/assets/forest-harmony/fantasy-town-buildings.png",
+  sourceProjectId: "oprn-forest-fantasy-town-reference-20260924", sourceMapId: "oprn-forest-fantasy-town",
+  rules: [
+    "판타지 중세 숲성 마을. 5칸 절벽 윗단에 영주 저택·예배당과 묘지·마법사의 탑, 강 건너 윗단에 룬석 고리. 윗단과 아랫마을은 계단 둘로만 잇는다.",
+    "북쪽 숲에서 온 개울이 절벽을 폭포로 넘어 아랫마을을 비스듬히 가로지른다. 다리 둘, 물레방앗간은 물가에 붙는다. 갈대는 물 쪽 끝에 붙은 그림을 두세 칸 무리로.",
+    "아랫마을은 나무 울타리 고리로 두르고 남쪽 정문 문루(지나다니는 아치)·모퉁이 망루 둘. 광장과 남북 큰길은 포석, 골목은 흙길 2칸.",
+    "구역: 포석 광장(우물·석상·노점), 모험가 길드, 대장간, 여관, 울타리 목장(양·소), 밭 두 뙈기와 허수아비, 풍차, 닭장, 쌓은 짚단과 건초 수레.",
+    "건물은 숲마을 칩셋 뒤(2730~)에 tileGrafts 로 붙은 생성 시트 칸이다. 통행은 설계도가 정했다. 입구 (51,95)에서 문 39곳이 모두 닿는다. 빈칸 게이트 통과(최대 빈 정사각 4칸, 한 화면 빈 잔디 38%).",
+  ],
+  limitations: "배치 참고 사례. 실내 맵과 문 이동은 포함하지 않는다. 주민 16명·동물 10마리는 배치와 한 줄 대사만 있다. 물레방아·풍차 날개는 정지 그림이다.",
 }, ...DIVERSE_VILLAGE_PLACES];
 
 

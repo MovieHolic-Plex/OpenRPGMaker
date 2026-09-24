@@ -187,6 +187,12 @@ function joinFixes(...fixes: (string | undefined)[]): string | undefined {
   return present.length > 0 ? present.join(" ") : undefined;
 }
 
+/** wait 의 시간 별칭과 밀리초 환산 배율. 초·프레임(1/60초) 표기도 받는다. */
+const WAIT_MS_ALIASES: readonly (readonly [string, number])[] = [
+  ["durationMs", 1], ["duration", 1], ["milliseconds", 1], ["time", 1],
+  ["seconds", 1000], ["sec", 1000], ["frames", 1000 / 60],
+];
+
 /** 명령 하나(중첩 분기 제외)를 제자리에서 고친다. 무엇을 고쳤는지 문장으로 돌려준다. */
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) return undefined;
@@ -215,6 +221,16 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       return `transfer.${alias} 를 direction 으로 옮겼습니다(장소 이동의 도착 방향 칸은 direction).`;
     }
     return undefined;
+  }
+  if (command.kind === "wait" && typeof command.ms !== "number") {
+    // 기다리기를 카메라·페이드 비트처럼 durationMs 로 쓴 사례(2026-09-24 꿈 세계 r3). 런타임은 ms 만 읽어
+    // setTimeout(NaN) 으로 즉시 넘어갔다 — 컷신의 뜸이 통째로 사라졌다.
+    const alias = WAIT_MS_ALIASES.find(([key]) => typeof command[key] === "number" && Number.isFinite(command[key]));
+    if (!alias) return undefined;
+    const [key, toMs] = alias;
+    command.ms = Math.max(0, Math.round((command[key] as number) * toMs));
+    delete command[key];
+    return `wait.${key} 를 ms(밀리초 ${command.ms}) 로 옮겼습니다(기다리기의 시간 칸은 ms).`;
   }
   if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
   if (command.kind === "fork") return canonicalizeForkCommand(command);
@@ -255,6 +271,14 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     command.prompt = command.text.trim();
     delete command.text;
     promptFix = "choices.text 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
+  }
+  if (command.kind === "choices" && command.prompt === undefined && typeof command.body === "string" && command.body.trim()) {
+    // 선택지 질문을 text 명령의 본문 칸인 body 로 쓴 사례(2026-09-24 갤러리 호러 r3: 레버·초상화 3점·엔딩 등
+    // 선택지 6건이 `{kind:"choices",body:"당겨보겠습니까?",options}` — upsert_event 는 받았지만 런타임이 body 를
+    // 버려 플레이어는 물음 없는 선택지만 보았다). 질문 칸은 prompt 라 옮긴다.
+    command.prompt = command.body.trim();
+    delete command.body;
+    promptFix = "choices.body 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
   }
   if (command.kind === "choices" && !Array.isArray(command.options)) {
     // 보기 목록을 `choices` 로 쓴 사례(2026-09-24 JRPG 도그푸딩: 여관 주인 `{kind:"choices",choices:[{text,branch}]}`)

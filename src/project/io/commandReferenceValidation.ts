@@ -217,6 +217,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "fork":
       validateCondition(command.condition, context.switchIds, context.variableIds);
+      validateMonsterSpeciesReferences(command.condition, context);
       validateCommands(command.then, context);
       validateCommands(command.else ?? [], context);
       return;
@@ -368,6 +369,9 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "variable":
       validateCondition(condition, context.switchIds, context.variableIds);
       return;
+    case "monsterSpecies":
+      assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
+      return;
     case "actor":
       assert(context.actorIds.has(condition.actorId), `page condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
       return;
@@ -399,6 +403,9 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "switch":
     case "variable":
       validateCondition(condition, context.switchIds, context.variableIds);
+      return;
+    case "monsterSpecies":
+      assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
       return;
     case "actor":
       assert(context.actorIds.has(condition.actorId), `battle condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
@@ -474,4 +481,15 @@ export function validateOptionalCommandResource(
 ): void {
   if (id.trim().length === 0) return;
   validateOptionalResource(label, id, knownResourceIds);
+}
+
+
+export function validateMonsterSpeciesReferences(condition: Condition, context: Pick<ReferenceContext, "speciesIds">): void {
+  if (condition.kind === "monsterSpecies") {
+    assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
+  } else if (condition.kind === "all" || condition.kind === "any") {
+    for (const child of condition.conditions) validateMonsterSpeciesReferences(child, context);
+  } else if (condition.kind === "not") {
+    validateMonsterSpeciesReferences(condition.condition, context);
+  }
 }

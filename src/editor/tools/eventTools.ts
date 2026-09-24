@@ -5,6 +5,7 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
@@ -35,11 +36,13 @@ import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
   compileSimplePages,
+  examineMarkGraphic,
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
   type GraphicSpec,
 } from "./eventCompile";
+import { mapTexture } from "@/project/mapTexture";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
@@ -47,7 +50,7 @@ import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
-import { reachableGateCandidates, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
+import { reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -246,7 +249,7 @@ function commandArrayOrEmpty(value: unknown, label: string, warnings?: string[])
   return normalizeLowLevelCommandArray(value, label, warnings);
 }
 
-function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
+function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, bareCell?: boolean): void {
   if (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "commands")) {
     event.commands = commandArrayOrEmpty(event.commands, `${event.id}.commands`, warnings);
   }
@@ -260,7 +263,7 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supp
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
     (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
-    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings);
+    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings, bareCell);
   }
 }
 
@@ -427,14 +430,30 @@ function bodyNamesSpeaker(body: unknown, name: string): boolean {
 }
 
 /**
+ * graphic 없이 세워진 조사 이벤트가 게임 검사(dream-invisible-objects) 기준의 「맨바닥」에 있는가 —
+ * 지배 바닥 타일과 같고 그 칸 위층 장식도 없을 때. 2026-09-24 꿈 세계 r4: 시계 눈알 석상 3개가
+ * 「바닥에서 보이지 않습니다」 경고를 받고도 투명 그대로 방치돼 검사에 계속 걸렸다 — 경고는 모델이
+ * 무시하므로 같은 기준으로 표식을 답한다.
+ */
+function isBareDominantFloorCell(map: GameMap, x: number, y: number): boolean {
+  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const texture = mapTexture(map);
+  const index = y * map.width + x;
+  return map.lowerTiles[index] === texture.dominantTile && !(map.upperTiles[index] > 0);
+}
+
+/**
  * `EventPage` 필수 필드를 채운다.
  *
  * 모델은 이벤트 레벨에만 trigger 를 주고 페이지에는 conditions/commands 만 담아 보내는 일이 흔하다.
  * 필수 필드가 비면 프로젝트 린트가 `page.trigger.kind` / `movement.route` 를 읽다 TypeError 로 죽고,
  * 사용자에게는 "후처리 실패: Cannot read properties of undefined" 라는 고칠 수 없는 메시지만 남는다
  * (2026-08-23 실측: upsert_event 3회 연속 같은 실패). 값을 채워 통과시키고 무엇을 채웠는지 경고한다.
+ *
+ * `bareCell` 은 이벤트 칸이 지배 바닥에 위층 장식 없는 맨바닥일 때 true — graphic 없이 세워진 조사
+ * 사물에 보석 표식을 붙이는 기준이다(생략하면 경고만 남기던 옛 동작).
  */
-function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[]): void {
+function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[], bareCell?: boolean): void {
   const filled: string[] = [];
   if (page.id === undefined) { page.id = pageId; filled.push("id"); }
   if (page.name === undefined) { page.name = event.id; filled.push("name"); }
@@ -464,11 +483,28 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     const previousLook = siblingGraphic ? undefined : PREVIOUS_EVENT_LOOK.get(event);
     const object = siblingGraphic || previousLook ? null : objectEventGraphic(event, page);
     if (object) {
-      page.graphic = object.graphic;
-      warnings?.push(object.graphic.transparent
-        ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
-          `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
-        : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
+      if (object.graphic.transparent === true && bareCell === true && !TILE_HOTSPOT_EVENTS.has(event)) {
+        // 맨바닥 위 graphic 없는 조사 사물 — 경고만으로는 모델이 반응하지 않는다(2026-09-24 꿈 세계 r4:
+        // 석상 3개 연속 투명+경고). place_examine_hotspots(#1370) 와 같은 보석 표식으로 답하고,
+        // 발밑 우선순위라 길을 막지 않는다. 투명이 의도면 graphic:{transparent:true} 를 명시하면 된다.
+        page.graphic = examineMarkGraphic();
+        if (priorityOmitted) {
+          page.priority = "below";
+          if (page.overlapForbidden === undefined) page.overlapForbidden = false;
+          const at = filled.indexOf("priority");
+          if (at >= 0) filled[at] = "priority(below — 맨바닥 조사 사물 보석 표식)";
+        }
+        warnings?.push(
+          `${event.id}.${pageId}: '${event.name ?? event.id}' 조사 사물이 graphic 없이 맨바닥 위라 보석 표식을 붙였습니다 — ` +
+          `물건에 맞는 그림은 graphic, 그 칸 사물 타일은 paint_tiles·place_props 로 바꾸세요(투명이 의도면 graphic:{transparent:true}).`,
+        );
+      } else {
+        page.graphic = object.graphic;
+        warnings?.push(object.graphic.transparent
+          ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
+            `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
+          : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
+      }
     } else {
       page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
       warnings?.push(
@@ -669,7 +705,7 @@ function relocateImpassableTransfers(project: Project, event: GameEvent, warning
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
+function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project, bareCell?: boolean): void {
   try {
     // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
     // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
@@ -680,7 +716,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
       }
       page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
     }
-    normalizeEventCommandArrays(event, warnings, supplied);
+    normalizeEventCommandArrays(event, warnings, supplied, bareCell);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
@@ -815,8 +851,14 @@ export function resolveEventPlacement(
     );
   }
   const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
-  if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
-  if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
+  // 같은 칸의 기존 이벤트도 "점유"다 — 조기 반환에서 통행만 보고 넘어가면 새 이벤트가 그 위에
+  // 겹쳐 생겨 앞 이벤트가 그림자진다(2026-09-24 몬스터 수집 r2: NPC 위에 ev_starters 가 겹쳐
+  // autoplay 의 「첫 파트너 받기」 조사가 NPC 를 집고 실패했다). 조정 경로의 nearestPassableCell 은
+  // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
+  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y);
+  const keepRequested = !requestedReserved && !occupiedRequested;
+  if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
+  if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
   const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
   if (!landing) {
     throw new ToolError(
@@ -876,6 +918,7 @@ function routeRootCommandsIntoPage(
   patch: Partial<GameEvent>,
   existing: GameEvent | undefined,
   warnings: string[],
+  bareCell?: boolean,
 ): void {
   const has = (key: keyof GameEvent) => Object.prototype.hasOwnProperty.call(patch, key);
   const pages = event.pages ?? [];
@@ -915,7 +958,7 @@ function routeRootCommandsIntoPage(
       event.pages = [page as EventPage];
       event.commands = structuredClone(existing?.commands ?? []);
       delete (event as { conditions?: unknown }).conditions;
-      fillRequiredPageFields(event, page, `${event.id}_page`, warnings);
+      fillRequiredPageFields(event, page, `${event.id}_page`, warnings, bareCell);
       const moved = [movesCommands ? "commands" : "", pageConditions.length > 0 ? "conditions" : ""].filter(Boolean).join("·");
       warnings.push(
         `pages 없이 보낸 최상위 ${moved} 를 pages[0] 으로 만들었습니다 — 페이지가 없으면 스위치 조건은 무시되고 이벤트가 그 칸을 막습니다.`,
@@ -1014,6 +1057,17 @@ const upsertEvent: ToolDefinition = {
           { code: "invalid-args" },
         );
       }
+      // 유니온 밖 값은 저장됐다가 플레이어가 처음 조사하는 순간 런타임 exhaustiveness trips 를
+      // 때려 씬이 죽는다(2026-09-24 갤러리 도그푸딩: 모델이 32페이지에 "none" 을 넣어 브라우저 완주가 막힘).
+      // args 는 위에서 Partial<GameEvent> 로 캐스팅된 입력이라 런타임 값이 유니온을 어길 수 있다 — includes 로 실제 값을 본다.
+      const animationType = page.animationType;
+      if (animationType !== undefined && !EVENT_ANIMATION_TYPES.includes(animationType)) {
+        throw new ToolError(
+          `event.pages[${index}].animationType ${JSON.stringify(animationType)} 는 알 수 없는 값이다 — 유효값: ${EVENT_ANIMATION_TYPES.join(", ")}. ` +
+          "멈춰 있는 대상은 fixedGraphic, 걸어 다니는 기본은 normal.",
+          { code: "invalid-args" },
+        );
+      }
     }
     const existing = map.events.find((entry) => entry.id === patch.id);
     let event: GameEvent;
@@ -1051,7 +1105,8 @@ const upsertEvent: ToolDefinition = {
         if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
       }
     }
-    routeRootCommandsIntoPage(event, patch, existing, warnings);
+    const bareCell = isBareDominantFloorCell(map, event.x, event.y);
+    routeRootCommandsIntoPage(event, patch, existing, warnings, bareCell);
     applyEventLevelGraphic(draft, map, event, patch, warnings);
     // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
     const tileHotspot = existing
@@ -1060,7 +1115,7 @@ const upsertEvent: ToolDefinition = {
     if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
     const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
     if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
-    assertEventShape(event, warnings, existing ? patch : event, draft);
+    assertEventShape(event, warnings, existing ? patch : event, draft, bareCell);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
     if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);
@@ -1865,6 +1920,11 @@ function uniqueStockItemIds(stock: readonly ShopStockEntry[]): string[] {
 }
 
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
+//
+// 후보가 여러 통행 컴포넌트에 갈라지면 **가장 큰 컴포넌트**의 첫 칸(링 순서)을 고른다.
+// 봉인된 주머니가 방보다 링에서 먼저 나오면 자동 조정이 그 안에 놓이고 플레이어는 끝까지
+// 걸어가지 못한다(2026-09-24 몬스터 수집 r2: NPC 뒤 주머니 (3,4)에 ev_starters 가 앉아
+// 「첫 파트너 받기」 조사가 도달 불가로 막혔다). 단일 컴포넌트 맵에서는 기존과 같은 칸을 고른다.
 function nearestPassableCell(
   project: Project,
   map: GameMap,
@@ -1880,7 +1940,42 @@ function nearestPassableCell(
       .map((event) => `${event.x},${event.y}`),
     ...(reserved ?? []),
   ]);
+  // 컴포넌트 경계: 통행 불가 타일 + 같은 칸을 몸으로 막는 이벤트(EventPlacementAnalysis 와 같은 blocker 정의).
+  const blockerCells = new Set(
+    map.events
+      .filter((event) => {
+        if (event.id === ignoreEventId) return false;
+        const page = event.pages?.[0];
+        return (page?.priority ?? "same") === "same" && page?.overlapForbidden !== false;
+      })
+      .map((event) => `${event.x},${event.y}`),
+  );
+  const componentCache = new Map<string, number>(); // 셀 키 → 같은 컴포넌트의 칸 수
+  const componentSize = (sx: number, sy: number): number => {
+    const cached = componentCache.get(`${sx},${sy}`);
+    if (cached !== undefined) return cached;
+    const cells: string[] = [];
+    const seen = new Set<string>([`${sx},${sy}`]);
+    const queue: Array<[number, number]> = [[sx, sy]];
+    for (let head = 0; head < queue.length; head += 1) {
+      const [cx, cy] = queue[head]!;
+      cells.push(`${cx},${cy}`);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = cx + dx;
+        const ny = cy + dy;
+        const key = `${nx},${ny}`;
+        if (seen.has(key) || !inMapBounds(map, nx, ny)) continue;
+        if (!isPassable(project, map, nx, ny) || blockerCells.has(key)) continue;
+        seen.add(key);
+        queue.push([nx, ny]);
+      }
+    }
+    for (const key of cells) componentCache.set(key, cells.length);
+    return cells.length;
+  };
+  const candidates: Point[] = [];
   for (let radius = 0; radius <= maxRadius; radius += 1) {
+    candidates.length = 0;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
@@ -1888,8 +1983,15 @@ function nearestPassableCell(
         const cy = y + dy;
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
-        if (isPassable(project, map, cx, cy)) return { x: cx, y: cy };
+        if (!isPassable(project, map, cx, cy)) continue;
+        candidates.push({ x: cx, y: cy });
       }
+    }
+    // 가까운 반경이 이긴다 — 그 안에서만 큰 컴포넌트를 고른다(요청 칸 자체 후보는 항상 유지).
+    if (candidates.length > 0) {
+      const sizes = candidates.map((cell) => componentSize(cell.x, cell.y));
+      const maxSize = Math.max(...sizes);
+      return candidates[sizes.indexOf(maxSize)] ?? null;
     }
   }
   return null;
@@ -1979,6 +2081,9 @@ function transferEndpoint(
  * transferEndpoint + 도달성 보정. 맵에 이미 플레이어가 서는 칸(시작 위치·들어오는 착지점)이 있는데
  * 요청 자리가 거기서 걸어 닿지 않으면, 같은 가장자리의 가장 가까운 닿는 칸으로 옮긴다.
  * 닿는 후보가 없으면 원래 자리를 쓰고 경고만 남긴다(막지 않는다).
+ *
+ * accept 는 「이 배치로 기존 출입구가 봉쇄되지 않는가」 같은 추가 판정 — 거절하면 사유 문자열을
+ * 되돌려 후보를 이어서 찾는다(2026-09-24 추격 호러 r8: 앵커 검사만으로는 못 잡은 문 봉쇄).
  */
 function reachableTransferEndpoint(
   project: Project,
@@ -1986,29 +2091,73 @@ function reachableTransferEndpoint(
   requested: { x: number; y: number },
   label: "A" | "B",
   notes: string[],
+  accept?: (endpoint: { gate: Point; landing: Point }) => true | string,
 ): { gate: Point; landing: Point } | null {
   const localNotes: string[] = [];
   const endpoint = transferEndpoint(project, map, requested.x, requested.y, 3, localNotes);
   const reach = walkableFromAnchors(project, map);
-  if (!reach) {
+  if (!reach && !accept) {
     notes.push(...localNotes);
     return endpoint;
   }
-  const reached = (point: Point): boolean => reach.has(point.y * map.width + point.x);
-  const usable = (point: { gate: Point; landing: Point }): boolean => reached(point.gate) && reached(point.landing);
-  if (endpoint && usable(endpoint)) {
+  // 앵커도 후보 시작점(원자리)도 없으면 후보를 지어내지 않는다 — 실패 원인 안내(A:/B:)를 유지.
+  if (!reach && !endpoint) {
     notes.push(...localNotes);
     return endpoint;
   }
-  for (const candidate of reachableGateCandidates(map, reach, requested).slice(0, 60)) {
+  const reached = (point: Point): boolean => reach !== null && reach.has(point.y * map.width + point.x);
+  const rejectReason = (candidate: { gate: Point; landing: Point }): string | null => {
+    if (reach && (!reached(candidate.gate) || !reached(candidate.landing))) return "reach";
+    if (accept) {
+      const verdict = accept(candidate);
+      if (verdict !== true) return verdict;
+    }
+    return null;
+  };
+  let firstReject: string | null = null;
+  if (endpoint) {
+    firstReject = rejectReason(endpoint);
+    if (!firstReject) {
+      notes.push(...localNotes);
+      return endpoint;
+    }
+  } else {
+    firstReject = "reach";
+  }
+  // 후보: 앵커에서 닿는 칸(anchors 없으면 통행 칸 전부)을 가까운 순으로.
+  const fallbackCells: Point[] | null = reach ? null : (() => {
+    const out: Point[] = [];
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (isPassable(project, map, x, y)) out.push({ x, y });
+      }
+    }
+    out.sort((a, b) => (Math.abs(a.x - requested.x) + Math.abs(a.y - requested.y)) - (Math.abs(b.x - requested.x) + Math.abs(b.y - requested.y)) || a.y - b.y || a.x - b.x);
+    return out.slice(0, 60);
+  })();
+  const candidates = reach ? reachableGateCandidates(map, reach, requested).slice(0, 60) : fallbackCells ?? [];
+  for (const candidate of candidates) {
     const alt = transferEndpoint(project, map, candidate.x, candidate.y, 0);
-    if (!alt || !usable(alt)) continue;
-    notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    if (!alt) continue;
+    const reason = rejectReason(alt);
+    if (reason) {
+      if (firstReject === "reach" && reason !== "reach") firstReject = reason;
+      continue;
+    }
+    if (firstReject === "reach") {
+      notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    } else {
+      notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${firstReject} — 가장 가까운 다른 자리 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    }
     return alt;
   }
   if (endpoint) {
     notes.push(...localNotes);
-    notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+    if (firstReject === "reach") {
+      notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+    } else {
+      notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${firstReject} — 봉쇄를 피한 자리를 찾지 못했습니다. 기존 문(move_event)을 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`);
+    }
   }
   return endpoint;
 }
@@ -2393,8 +2542,15 @@ const createTransferPair: ToolDefinition = {
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
     const reachNotes: string[] = [];
-    const endpointA = reachableTransferEndpoint(draft, mapA, a, "A", reachNotes);
-    const endpointB = reachableTransferEndpoint(draft, mapB, b, "B", reachNotes);
+    // 봉쇄 판정: 이 배치로 기존(그리고 이번에 놓는) transfer 문이 방 바닥에 실제로 열려 있는가.
+    const sealAccept = (map: GameMap) => (candidate: { gate: Point; landing: Point }): true | string => {
+      const check = transferGatesStayApproachable(draft, map, candidate.gate);
+      if (!check.ok) return `기존 출입구 ${check.sealed.join(", ")} 이(가) 벽·가구·다른 문으로 봉쇄된다`;
+      if (!check.group.has(candidate.landing.y * map.width + candidate.landing.x)) return "착지점이 방 바닥과 갈라진 주머니 칸이다";
+      return true;
+    };
+    const endpointA = reachableTransferEndpoint(draft, mapA, a, "A", reachNotes, sealAccept(mapA));
+    const endpointB = reachableTransferEndpoint(draft, mapB, b, "B", reachNotes, sealAccept(mapB));
     if (!endpointA || !endpointB) {
       // 어느 쪽 출입구가 왜 실패했는지 짚는다 — 종전에는 두 쪽을 뭉뚱그려 같은 안내만 냈다.
       const failures = [
@@ -2431,12 +2587,22 @@ const createTransferPair: ToolDefinition = {
     });
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
+    // 없어 원자리를 쓴 경우 포함). 막지는 않고 경고로 남긴다 — 도구가 제품 결정을 하진 않는다.
+    const sealedAfter: string[] = [];
+    for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
+      const check = transferGatesStayApproachable(draft, map);
+      if (!check.ok) sealedAfter.push(`${map.name}: ${check.sealed.join(", ")}`);
+    }
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
     const adjustedB = gateB.x !== b.x || gateB.y !== b.y;
     const warnings = [
       ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
       ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
       ...reachNotes,
+      ...(sealedAfter.length > 0
+        ? [`봉쇄 위험 — ${sealedAfter.join(" / ")} — 그 문은 밟아도 아무 데도 못 간다(벽·가구·이웃 문이 접근을 막음). move_event 로 문 자리를 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`]
+        : []),
     ];
     return {
       summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
@@ -2622,17 +2788,19 @@ function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chas
       eventIds.push(existing.id);
       continue;
     }
-    // 가구·조사 이벤트가 없는 맨바닥이면 플레이어가 찾을 수 없는 투명 은신처다.
-    if (isPassable(draft, map, x, y) && tileAt(map, x, y).upper < 0) {
+    // 조사 이벤트가 없는 걸어 다니는 칸이면 플레이어가 찾을 수 없는 투명 은신처다.
+    // 2026-09-24 추격 호러 r7: 러그(바닥 타일 있음) 위 은신처는 upper<0 조건에 걸리지 않아 경고 없이
+    // 통과했다 — 걸어 다닐 수 있는 칸은 옷장·침대(통행 불가 가구)가 아니므로 어느 쪽이든 경고한다.
+    if (isPassable(draft, map, x, y)) {
       const near = map.events
         .filter((event) => event.id !== chaserId && Math.abs(event.x - x) + Math.abs(event.y - y) === 1)
         .map((event) => `${event.id}(${event.x},${event.y})`);
-      warnings.push(
-        `은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다`
-        + (near.length > 0
-          ? ` — 바로 옆 ${near.join(", ")} 가 옷장이면 hidingSpots 를 그 칸으로 다시 주세요.`
-          : " — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요."),
-      );
+      const hint = near.length > 0
+        ? ` — 바로 옆 ${near.join(", ")} 가 옷장이면 hidingSpots 를 그 칸으로 다시 주세요.`
+        : " — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요.";
+      warnings.push(tileAt(map, x, y).upper < 0
+        ? `은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다${hint}`
+        : `은신처 ${map.name}(${x}, ${y}) 에 조사 이벤트가 없어 (바닥·러그 위) 보이지 않는 은신처가 됐습니다${hint}`);
     }
     const id = genId("ev_hiding");
     const page: EventPage = {
@@ -3435,6 +3603,40 @@ const DIR_DELTA: Readonly<Record<string, { readonly dx: number; readonly dy: num
  * moveActor 경로를 맵 위에서 따라가 막히는 칸을 짚는다. 런타임은 막힌 이동에서 최대 30초를 기다린 뒤 넘어가므로
  * 벽으로 걷는 컷신은 「멈춘 것처럼」 보인다. 이벤트 대상만 본다(주인공의 컷신 시작 칸은 진입 경로마다 달라 모른다).
  */
+/**
+ * moveActor 대상은 이벤트 id 여야 하는데, NPC id 는 `ev_npc_<uuid>` 처럼 불투명하고 say 비트는 이름을 쓴다.
+ * 모델이 이름(노을)으로 적으면 검증이 거절하고, 모델은 이동 비트를 빼 버렸다 — 컷신 속 두 사람이 걷지 않았다
+ * (2026-09-24 회상 스토리 도그푸딩). 같은 맵에서 이름·characterId 가 하나로 맞으면 id 로 바꾼다.
+ */
+function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[], warnings: string[]): CutsceneBeat[] {
+  const ids = new Set(map.events.map((event) => event.id));
+  const resolve = (items: readonly CutsceneBeat[]): CutsceneBeat[] => items.map((beat): CutsceneBeat => {
+    if (beat.kind === "parallel") return { ...beat, beats: resolve(beat.beats) };
+    if (beat.kind !== "moveActor") return beat;
+    const raw = (beat.target ?? beat.eventId ?? beat.actor ?? "player").trim();
+    if (raw === "player" || raw === "this-event" || ids.has(raw)) return beat;
+    const matches = map.events.filter((event) => event.name?.trim() === raw || event.characterId === raw);
+    if (matches.length !== 1) return beat;
+    const id = matches[0]!.id;
+    warnings.push(`컷신 moveActor 대상 '${raw}' 를 같은 맵의 이벤트 id '${id}' 로 바꿨습니다(대상 칸은 이벤트 id).`);
+    return { ...beat, target: id, eventId: undefined, actor: undefined };
+  });
+  const resolved = resolve(beats);
+  const speakers = new Set<string>();
+  let moves = 0;
+  const scan = (items: readonly CutsceneBeat[]): void => items.forEach((beat) => {
+    if (beat.kind === "parallel") scan(beat.beats);
+    else if (beat.kind === "moveActor") moves += 1;
+    else if (beat.kind === "say" && typeof beat.speaker === "string") speakers.add(beat.speaker.trim());
+  });
+  scan(resolved);
+  const onMap = [...speakers].filter((name) => name && map.events.some((event) => event.name?.trim() === name));
+  if (moves === 0 && onMap.length >= 2) {
+    warnings.push(`컷신에 맵 위 인물 ${onMap.join("·")} 이 말하지만 moveActor 비트가 하나도 없어 아무도 움직이지 않습니다 — 다가가기·돌아서기 같은 동작이 필요하면 moveActor{target:이름 또는 이벤트 id} 를 넣으세요.`);
+  }
+  return resolved;
+}
+
 function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly CutsceneBeat[]): string[] {
   const warnings: string[] = [];
   const positions = new Map<string, { x: number; y: number }>();
@@ -3517,7 +3719,7 @@ const scriptCutscene: ToolDefinition = {
     const warnings: string[] = [];
     const aliased = canonicalizeSayBeatAliases(args.beats);
     if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
-    const beats = resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings);
+    const beats = resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);

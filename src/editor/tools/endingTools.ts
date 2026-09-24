@@ -39,6 +39,46 @@ function projectTriggersEnding(project: Project): boolean {
     (troop.battleEventPages ?? []).some(page => commandsTriggerEnding(page.commands)));
 }
 
+/** endingId 를 지정해 이 엔딩을 직접 부르는 triggerEnding 이 프로젝트에 있는가. */
+function commandsCallEndingId(commands: readonly Command[] | undefined, endingId: string): boolean {
+  for (const command of commands ?? []) {
+    if (!command || typeof command !== "object") continue;
+    if (command.kind === "triggerEnding" && command.endingId === endingId) return true;
+    let nested: readonly (readonly Command[])[] = [];
+    try { nested = nestedCommandLists(command); } catch { nested = []; }
+    if (nested.some(list => commandsCallEndingId(list, endingId))) return true;
+  }
+  return false;
+}
+
+/** endingId 없는 triggerEnding — 조건으로 엔딩을 고르므로 모든 조건 엔딩이 이 경로로 열릴 수 있다. */
+function projectHasBareTriggerEnding(project: Project): boolean {
+  const bare = (commands: readonly Command[] | undefined): boolean =>
+    (commands ?? []).some(command => command?.kind === "triggerEnding" && !command.endingId);
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      if (bare(event.commands) || (event.pages ?? []).some(page => bare(page.commands))) return true;
+    }
+  }
+  if ((project.commonEvents ?? []).some(common => bare(common.commands))) return true;
+  return (project.database?.troops ?? []).some(troop =>
+    (troop.battleEventPages ?? []).some(page => bare(page.commands)));
+}
+
+/** 이 특정 엔딩 id 를 부르는 곳이 있는가(직접 호출 또는 조건 선택형 bare 호출). */
+function endingIsReachable(project: Project, endingId: string): boolean {
+  if (projectHasBareTriggerEnding(project)) return true;
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      if (commandsCallEndingId(event.commands, endingId)) return true;
+      if ((event.pages ?? []).some(page => commandsCallEndingId(page.commands, endingId))) return true;
+    }
+  }
+  if ((project.commonEvents ?? []).some(common => commandsCallEndingId(common.commands, endingId))) return true;
+  return (project.database?.troops ?? []).some(troop =>
+    (troop.battleEventPages ?? []).some(page => commandsCallEndingId(page.commands, endingId)));
+}
+
 const defineEnding: ToolDefinition = {
   name: "define_ending",
   description:
@@ -107,6 +147,13 @@ const defineEnding: ToolDefinition = {
         "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 "
           + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`
           + (conditions.length > 0 ? " 호출할 때도 위 조건이 참이어야 엔딩이 열립니다." : ""),
+      ]),
+      // 다른 엔딩은 연결됐는데 이 엔딩만 부르는 곳이 없으면(2026-09-24 연애 도그푸딩 r1·r3 실측:
+      // 정의 후 전부 연결하면서 배드 엔딩만 빠졌다) 정의 시점에 그 사실을 알린다. 막지 않는다.
+      ...(endingIsReachable(draft, id) ? [] : [
+        `정의한 엔딩 '${name}'(${id}) 을 부르는 triggerEnding 이 아직 없습니다 — 이대로면 그 결말을 볼 수 없습니다. `
+          + `실패·거절 분기나 마지막 사건 commands 에 {kind:"triggerEnding",endingId:"${id}"} 를 넣으세요. `
+          + `endingId 없는 triggerEnding 으로 조건 선택형을 쓰면 조건이 맞는 때 자동으로 열립니다.`,
       ]),
     ];
     return {

@@ -1,0 +1,129 @@
+{
+  "scope": "Sampled allocation sizes, not retained heap attribution or proven OOM root cause. Project byte sizes computed from readonly revision534 export with JSON text, not network bytes.",
+  "allocations": [
+    {
+      "bytes": 243854184,
+      "function": "uwr",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 14
+    },
+    {
+      "bytes": 243854184,
+      "function": "Si",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 14
+    },
+    {
+      "bytes": 243101600,
+      "function": "Si",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 14
+    },
+    {
+      "bytes": 160770984,
+      "function": "vi",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 14
+    },
+    {
+      "bytes": 151400084,
+      "function": "load",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 16
+    },
+    {
+      "bytes": 145387968,
+      "function": "uC",
+      "asset": "databaseModal-CDF0lIRF.js",
+      "line": 42
+    },
+    {
+      "bytes": 126154564,
+      "function": "(V8 API)",
+      "asset": "",
+      "line": -1
+    },
+    {
+      "bytes": 118572772,
+      "function": "q",
+      "asset": "reviewedPlaceCatalog-CVt4rnwA.js",
+      "line": 0
+    },
+    {
+      "bytes": 31385916,
+      "function": "",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 0
+    },
+    {
+      "bytes": 13898320,
+      "function": "initialize",
+      "asset": "phaser.min-CwlHMuXa.js",
+      "line": 0
+    },
+    {
+      "bytes": 9469372,
+      "function": "pm",
+      "asset": "main-BBuSB_Bj.js",
+      "line": 6
+    },
+    {
+      "bytes": 8962768,
+      "function": "add",
+      "asset": "phaser.min-CwlHMuXa.js",
+      "line": 0
+    },
+    {
+      "bytes": 5191992,
+      "function": "",
+      "asset": "reviewedPlaceCatalog-CVt4rnwA.js",
+      "line": 0
+    },
+    {
+      "bytes": 3933724,
+      "function": "",
+      "asset": "editor-C6MQC0XQ.js",
+      "line": 5
+    },
+    {
+      "bytes": 2488436,
+      "function": "",
+      "asset": "editor-C6MQC0XQ.js",
+      "line": 5
+    }
+  ],
+  "projectTextSizes": [
+    {
+      "characters": 105550763,
+      "field": "tilesets"
+    },
+    {
+      "characters": 17895210,
+      "field": "assets"
+    },
+    {
+      "characters": 778587,
+      "field": "database"
+    },
+    {
+      "characters": 435761,
+      "field": "maps"
+    },
+    {
+      "characters": 248445,
+      "field": "resourceProfiles"
+    },
+    {
+      "characters": 13572,
+      "field": "quests"
+    },
+    {
+      "characters": 6258,
+      "field": "switches"
+    },
+    {
+      "characters": 4788,
+      "field": "system"
+    }
+  ]
+}

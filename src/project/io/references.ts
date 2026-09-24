@@ -1,3 +1,4 @@
+import { validateMonsterSpeciesReferences } from "./commandReferenceValidation";
 import { combatReferenceIssues } from "@/project/combatReferences";
 import { equipmentSlots, hasEquipmentSlot } from "@/project/equipmentSlots";
 import { characterAppearanceReferenceIssues } from "./characterAppearanceValidation";
@@ -379,6 +380,7 @@ function validateEndings(
     seen.add(ending.id);
     for (const condition of ending.conditions) {
       capture(issues, () => validateCondition(condition, switchIds, variableIds));
+      capture(issues, () => validateMonsterSpeciesReferences(condition, { speciesIds: new Set((project.database.monsterSpecies ?? []).map(s => s.id)) }));
     }
   }
 }
@@ -878,15 +880,22 @@ function repairFarmAnimalReferences(project: Project): void {
   }
   const speciesIds = new Set((project.database.farmAnimalSpecies ?? []).map((species) => species.id));
   if (project.system.farmAnimalBuildings !== undefined) {
+    // 맵이 줄어 좌표만 밖으로 나간 축사는 지우지 않고 맵 안으로 당긴다 — 지우면 배정된 개체까지
+    // 말없이 풀린다. 맵 자체가 없어진 축사만 뺀다.
     project.system.farmAnimalBuildings = project.system.farmAnimalBuildings
-      .filter((building) => {
-        const map = project.maps[building.mapId];
-        return Boolean(map && isMapPositionInBounds(building.x, building.y, map.width, map.height));
-      })
-      .map((building) => ({
-        ...building,
-        allowedSpeciesIds: building.allowedSpeciesIds.filter((speciesId) => speciesIds.has(speciesId)),
-      }));
+      .filter((building) => Boolean(project.maps[building.mapId]))
+      .map((building) => {
+        const map = project.maps[building.mapId]!;
+        const inBounds = isMapPositionInBounds(building.x, building.y, map.width, map.height);
+        return {
+          ...building,
+          ...(inBounds ? {} : {
+            x: Math.max(0, Math.min(map.width - 1, Number.isFinite(building.x) ? Math.floor(building.x) : 0)),
+            y: Math.max(0, Math.min(map.height - 1, Number.isFinite(building.y) ? Math.floor(building.y) : 0)),
+          }),
+          allowedSpeciesIds: building.allowedSpeciesIds.filter((speciesId) => speciesIds.has(speciesId)),
+        };
+      });
   }
   if (project.session.farmAnimals === undefined) return;
   const buildingById = new Map(
@@ -1219,7 +1228,10 @@ function validateMapRecords(
       capture(issues, () => validateOptionalResource(`event ${event.id}: sprite`, event.sprite?.id, resourceIds));
       validateGiftPreferenceReferences(`event ${event.id}`, event.giftPrefs, context.itemIds, issues);
       const condition = event.condition;
-      if (condition) capture(issues, () => validateCondition(condition, switchIds, variableIds));
+      if (condition) {
+        capture(issues, () => validateCondition(condition, switchIds, variableIds));
+        capture(issues, () => validateMonsterSpeciesReferences(condition, context));
+      }
       capture(issues, () => validateCommands(event.commands, context));
       capture(issues, () => validateEventPages(event.pages ?? [], context));
     }

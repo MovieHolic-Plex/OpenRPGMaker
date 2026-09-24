@@ -85,8 +85,10 @@ function studyFaults() {
 }
 function cliffFaults() {
   const mapId = "terrace-cliff-village", m = catalog.maps[mapId], p = catalog.plans.find((p2) => p2.id === mapId), b = catalog.cliffBindings;
-  const side = p.cliffColumns.find((c) => c.side === "right" && c.x > 60);
-  const flat = p.cliffColumns.find((c) => c.side === "front" && c.x === 40);
+  // The easternmost right-hand column and a front column near x=40 (compaction moves them).
+  const side = p.cliffColumns.filter((c) => c.side === "right").sort((a, b2) => b2.x - a.x)[0];
+  const onStair = (c) => p.stairs.some(([sx]) => c.x >= sx && c.x < sx + 2);
+  const flat = p.cliffColumns.filter((c) => c.side === "front" && !onStair(c)).sort((a, b2) => Math.abs(a.x - 40) - Math.abs(b2.x - 40))[0];
   const [x, y, h] = p.stairs[1];
   return [
     { code: "cliff-face-direction", mapId, x: side.x, y: side.y + 2, layer: "upper", tile: b[232], replacement: b[231] },
@@ -94,7 +96,9 @@ function cliffFaults() {
     { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 },
     // Clearing the forest that closes the west end of pine-hamlets' cliff lets you walk round it onto the terrace.
     (() => { const q = catalog.plans.find((p2) => p2.id === "pine-hamlets"), [ex, ey] = q.cliffs[0].points[0];
-      return { code: "terrace-without-stairs", mapId: q.id, x: ex - 4, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + ex - 4], replacement: 240, rects: [{ x: ex - 4, y: ey - 3, w: 9, h: 3 }, { x: ex - 4, y: ey, w: 4, h: q.cliffs[0].height + 1 }, { x: ex - 4, y: ey + q.cliffs[0].height + 1, w: 6, h: 2 }], errorX: ex, errorY: ey }; })(),
+      // Clamped to the map (the compacted village keeps only two forest columns west of the cliff).
+      const x0 = Math.max(0, ex - 4), wing = ex - x0;
+      return { code: "terrace-without-stairs", mapId: q.id, x: x0, y: ey - 3, layer: "lower", tile: catalog.maps[q.id].lowerTiles[(ey - 3) * q.width + x0], replacement: 240, rects: [{ x: x0, y: ey - 3, w: wing + 5, h: 3 }, { x: x0, y: ey, w: wing, h: q.cliffs[0].height + 1 }, { x: x0, y: ey + q.cliffs[0].height + 1, w: wing + 8, h: 2 }], errorX: ex, errorY: ey }; })(),
     // A waterfall column painted back to grass mid-face.
     (() => { const q = catalog.plans.find((p2) => p2.id === "twin-falls-river-village"), f = q.falls[0];
       return { code: "waterfall-gap", mapId: q.id, x: f.x, y: f.y + 3, layer: "lower", tile: f.tile, replacement: 240 }; })()
@@ -115,6 +119,9 @@ function applyStudyFault(project, f) {
 }
 function grassFaults() {
   const mapId='terrace-cliff-village', j=catalog.plans.find(p=>p.id===mapId).grassJoins.find(j=>j.sourceTile===504);
+  const entrance={code:'map-entrance-blocked',mapId,...catalog.plans.find(p=>p.id===mapId).entrance,layer:'upper',tile:-1,replacement:237};
+  // Revision 14 removed the grass crest (it read as half-laid tiles), so only the entrance check has a target.
+  if(!j)return [entrance];
   return [
     {code:'grass-edge-direction',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:catalog.grassBindings[505]},
     {code:'grass-color-mismatch',mapId,x:j.x,y:j.y,layer:'lower',tile:j.tile,replacement:504},

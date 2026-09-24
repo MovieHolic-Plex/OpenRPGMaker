@@ -126,16 +126,28 @@ describe("completed house geometry and exact cell ownership", () => {
     expect(houseMap(ctx.project).layoutPlan?.regions[0]?.label).toBe("Renamed by AI");
   });
 
-  it.each(["delete", "crop", "tileset"])("rejects protected map %s", (kind) => {
+  it.each(["crop", "tileset"])("rejects protected map %s", (kind) => {
     const ctx = { project: completedHouseProject() };
     const before = serialize(ctx.project);
     const result = mutateProject(ctx, (draft) => {
       const map = houseMap(draft);
-      if (kind === "delete") delete draft.maps[map.id];
       if (kind === "crop") { map.width -= 1; map.lowerTiles.length = map.width * map.height; map.upperTiles.length = map.width * map.height; }
       if (kind === "tileset") map.tilesetId = "other";
     });
     expect(result.issues?.[0]?.code).toBe("protected-house-write");
+    expect(serialize(ctx.project)).toBe(before);
+  });
+
+  // 집 셀 보호는 살아 있는 맵의 칸을 지키는 검사다 — 맵 자체의 소멸은 시작맵 가드·무결성 왕복·
+  // (에디터) 맵 파괴 승인이 맡는다(2026-09-24 감성 스토리 r3: 집 보호가 remove_map 을 물어
+  // 고아·중복 맵 12개가 정리되지 못함). 하위 계약: 시작맵 통째 삭제는 여전히 거부된다.
+  it("rejects wholesale delete of the start map that carries a house", () => {
+    const ctx = { project: completedHouseProject() };
+    const before = serialize(ctx.project);
+    const result = mutateProject(ctx, (draft) => {
+      delete draft.maps[houseMap(draft).id];
+    });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(false);
     expect(serialize(ctx.project)).toBe(before);
   });
 

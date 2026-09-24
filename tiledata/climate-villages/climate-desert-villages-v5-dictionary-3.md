@@ -1,0 +1,6 @@
+# 사용 타일 사전
+
+forest_harmony_desert에서 이 분류의 맵이 쓰는 번호·라벨·통행.
+```json
+[{"tile":2710,"label":"나룻배 2,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2711,"label":"나룻배 3,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2712,"label":"나룻배 4,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2713,"label":"나룻배 5,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2714,"label":"나룻배 6,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2715,"label":"나룻배 7,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2716,"label":"나룻배 8,4","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2717,"label":"계류 말뚝","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2718,"label":"감긴 밧줄","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2719,"label":"닻","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2720,"label":"오크통","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2721,"label":"나무 상자","passability":{"up":false,"down":false,"left":false,"right":false}},{"tile":2722,"label":"열린 통","passability":{"up":false,"down":false,"left":false,"right":false}}]
+```

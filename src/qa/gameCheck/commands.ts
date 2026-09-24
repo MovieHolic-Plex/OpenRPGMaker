@@ -19,7 +19,10 @@ const KNOWN_KINDS: ReadonlySet<string> = new Set(COMMAND_KINDS);
  * 다루거나 기본값을 두는 것들이다. 여기 없는 필드를 «모르는 필드» 로 본다.
  */
 const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
-  text: ["emotion"],
+  // style·context·container 는 런타임 타입(project/types/events.ts text)에 있는 대화 필드다 — 폼이
+  // 전용 위젯을 안 두는 것뿐이다. 여기 없으면 컷신 say 가 실은 these 필드를 «모르는 필드» 로 세어
+  // 경고를 터뜨린다(2026-09-24 감성 스토리 r3: 경고 75건 중 45건).
+  text: ["emotion", "style", "context", "container"],
   choices: ["prompt", "options", "cancelBehavior", "cancelBranch"],
   presentItem: ["prompt", "itemIds", "options", "otherwiseBranch", "cancelBranch", "consume"],
   fork: ["condition", "then", "else"],
@@ -125,7 +128,12 @@ function checkOne(project: Project, entry: CommandVisit, findings: Finding[]): v
         }
         if (typeof value !== "string" || WILDCARD_IDS.has(value)) continue;
         const ids = recordIds(project, spec.source, where.mapId);
-        if (ids && !ids.has(value)) {
+        // changeItem 은 장비 id 도 소지품으로 받는다 — session.inventory[equipmentId] 는 상점 구매·장착 메뉴와
+        // 같은 저장소다(io/commandReferenceValidation 와 같은 계약). 장비 상점·장비 보상이 있는 JRPG 에서
+        // 검사기만 items 로 보면 유효한 보물상자를 막힘으로 오판한다(2026-09-24 잿불 광산 r4: 기사의 철검 상자).
+        const alsoEquipment = spec.source === "item" && key === "itemId" && command.kind === "changeItem"
+          && recordIds(project, "equipment", where.mapId)?.has(value) === true;
+        if (ids && !ids.has(value) && !alsoEquipment) {
           findings.push({
             severity: BLOCKING_SOURCES.has(spec.source) ? "blocker" : "warning", code: "command-missing-reference",
             message: `${schema.label}(${kind}) 명령이 없는 ${SOURCE_LABEL[spec.source] ?? spec.source} \`${value}\`를 가리킵니다(${key}).`,

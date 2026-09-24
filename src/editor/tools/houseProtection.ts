@@ -189,6 +189,8 @@ function boundsTouch(a: HouseIndex, b: HouseIndex): boolean {
 
 /**
  * Called after every global postprocessor, before commit (also for dry-run). No tool/selection/spec exemption.
+ * 예외는 딱 하나: before 스냅숏의 집이 있던 맵 자체가 통째로 지워졌을 때다 — 셀 단위 보호의 대상이
+ * 아니고, 맵 소멸은 시작맵 가드·무결성 왕복·(에디터) 맵 파괴 승인의 소관이다(2026-09-24 story r3).
  *
  * 마을 한 채를 지을 때마다 세 번 불린다(fences/decor/landscape). 예전에는 짝마다
  * `before.find(...)` 로 훑고 `new Set(...cells.map(cellKey))` 를 **안쪽 루프에서** 다시 만들어
@@ -210,7 +212,12 @@ export function assertHouseProtection(before: readonly HouseSnapshot[], project:
 
   for (const house of [...before, ...built]) {
     const map = project.maps[house.mapId];
-    if (!map || map.id !== house.mapId || map.tilesetId !== house.tilesetId || map.tileSize !== house.tileSize
+    // 맵이 통째로 지워지면 집도 통째로 사라진다 — 셀 단위 보호의 대상이 아니다. 맵 삭제는
+    // 시작맵 가드·무결성 왕복(performMapDeletion roundtrip)·(에디터) 파괴 승인의 소관이고,
+    // 집 보호가 함께 물고 있으면 고아·중복 맵을 지우는 remove_map 이 막힌다
+    // (2026-09-24 감성 스토리 r3: 같은 거부로 두 번 — 고아 맵 12개가 정리되지 못함).
+    if (!map) continue;
+    if (map.id !== house.mapId || map.tilesetId !== house.tilesetId || map.tileSize !== house.tileSize
       || map.width < house.width || map.height < house.height) rejectWrite(house);
     const owners = afterByOwner.get(ownerKey(house)) ?? [];
     const owner = owners[0];

@@ -19,10 +19,12 @@ export function freezeCells(map, cells, ice) {
   return frozen;
 }
 
-/** Pairs of volcanic peaks (4×2) on bare ash only: the ring round each must be plain ground, six cells from any keep-clear point. */
-export function placePeaks(map, count, keepClear) {
+/** Pairs of volcanic peaks (4×2) on bare ash only: the ring round each must be plain ground, six cells from any keep-clear point.
+ * With `dressing`, ground dressing (tall grass, wildflowers — `dressing.is(lower, upper)`) also counts as plain: the
+ * peak's footprint and ring are cleared back to ash and `dressing.cleared(cells)` re-autotiles what is left round it. */
+export function placePeaks(map, count, keepClear, dressing = null) {
   const W = map.width, at = (x, y) => y * W + x;
-  const bare = (x, y) => x >= 0 && y >= 0 && x < W && y < map.height && map.lowerTiles[at(x, y)] === GROUND && map.upperTiles[at(x, y)] < 0;
+  const bare = (x, y) => x >= 0 && y >= 0 && x < W && y < map.height && ((map.lowerTiles[at(x, y)] === GROUND && map.upperTiles[at(x, y)] < 0) || !!dressing?.is(map.lowerTiles[at(x, y)], map.upperTiles[at(x, y)]));
   const picked = [], candidates = [], edits = [];
   for (let y = 2; y < map.height - 3; y++) for (let x = 2; x < W - 5; x++) {
     let ok = true;
@@ -33,6 +35,18 @@ export function placePeaks(map, count, keepClear) {
     const score = ([x, y]) => Math.min(...[...picked, ...keepClear].map(([px, py]) => Math.hypot(px - x, py - y)));
     candidates.sort((a, b) => score(b) - score(a) || a[1] - b[1] || a[0] - b[0]);
     const [x, y] = candidates.shift();
+    if (dressing) {
+      // The candidate list was built before earlier peaks cleared their rings; re-check this one still fits.
+      let fits = true;
+      for (let dy = -1; dy <= 2 && fits; dy++) for (let dx = -1; dx <= 4 && fits; dx++) fits = bare(x + dx, y + dy);
+      if (!fits) continue;
+      const cleared = [];
+      for (let dy = -1; dy <= 2; dy++) for (let dx = -1; dx <= 4; dx++) {
+        const i = at(x + dx, y + dy);
+        if (map.lowerTiles[i] !== GROUND || map.upperTiles[i] >= 0) { map.lowerTiles[i] = GROUND; map.upperTiles[i] = -1; cleared.push(i); }
+      }
+      dressing.cleared(cleared);
+    }
     PEAKS.forEach((r, dy) => r.forEach((t, dx) => { map.upperTiles[at(x + dx, y + dy)] = t; }));
     picked.push([x, y]);
     edits.push({ kind: "volcanic-peaks", x, y, w: 4, h: 2, upper: PEAKS });

@@ -1,3 +1,4 @@
+import { readBridgeRequestBody } from "./requestBody";
 import { sharedContentMiddleware } from "../../scripts/lib/sharedContentSqlite";
 import { SHARED_CONTENT_ENDPOINT } from "../../src/project/sharedContentSchema";
 import { readSharedTileReferences } from "../../scripts/lib/sharedTileReferencesSqlite";
@@ -386,7 +387,7 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
           }
           clients.set(key, Date.now());
           sessions.setMember(key, (signedIn ?? team.owner()).id);
-          const body = JSON.parse(await readRequestBody(request));
+          const body = JSON.parse(await readBridgeRequestBody(request));
           if (body?.channel === 'oprn:host.access') {
             if (sessions.member(key).role !== 'owner') { await sendJson(response, 403, { error: '접속 설정은 소유자만 변경할 수 있습니다.' }); return; }
             const required = body.payload?.required;

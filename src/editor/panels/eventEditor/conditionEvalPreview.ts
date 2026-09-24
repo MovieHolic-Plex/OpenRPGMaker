@@ -92,6 +92,8 @@ function evaluatePreviewCondition(
       const childVerdict = evaluatePreviewCondition(session, condition.condition, hostEventId, mapId);
       return childVerdict === undefined ? undefined : !childVerdict;
     }
+    case "monsterSpecies":
+      return undefined;
     case "selfSwitch":
       if (!hostEventId) return undefined;
       break;
@@ -142,6 +144,8 @@ function describeCondition(condition: Condition | undefined): string {
       return `${recordName("variable", condition.variableId)} ${comparison(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "monsterSpecies":
+      return `${condition.speciesId} ${condition.present ? "파티 또는 박스에 보유" : "보유하지 않음"}`;
     case "actor":
       return `${databaseRecordName("actors", condition.actorId)} ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":

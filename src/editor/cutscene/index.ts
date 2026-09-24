@@ -362,7 +362,7 @@ function compileBeat(
     case "shake":
       return [m2Command("Shake Screen", shakeFields(beat))];
     case "wait":
-      return [{ kind: "wait", ms: Math.max(0, Math.round(beat.ms)) }];
+      return [{ kind: "wait", ms: waitBeatMs(beat) }];
     case "parallel":
       return compileParallelBeat(beat, state);
     case "label":
@@ -607,12 +607,20 @@ function needsWaitAllMovement(beat: CutsceneBeat): boolean {
   return false;
 }
 
+// wait 비트는 ms 가 정본이지만 다른 비트처럼 durationMs 로 쓰는 모델이 있다. 없으면 NaN 이 되어
+// 기다리기가 사라졌다(2026-09-24 꿈 세계 도그푸딩).
+function waitBeatMs(beat: Extract<CutsceneBeat, { kind: "wait" }>): number {
+  const alias = (beat as { readonly durationMs?: unknown }).durationMs;
+  const raw = Number.isFinite(beat.ms) ? beat.ms : typeof alias === "number" && Number.isFinite(alias) ? alias : 0;
+  return Math.max(0, Math.round(raw));
+}
+
 function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "picture" && (beat.wait === true || beat.waitForPicture === true)) return durationMs(beat.durationMs, 0);
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
-  if (beat.kind === "wait") return Math.max(0, Math.round(beat.ms));
+  if (beat.kind === "wait") return waitBeatMs(beat);
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
   return 0;
 }

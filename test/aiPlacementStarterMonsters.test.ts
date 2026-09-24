@@ -111,4 +111,47 @@ describe("give_starter_monsters 통행 가능 배치", () => {
     expect((error as ToolError).message).toContain("(12, 10)");
     expect(map.events).toHaveLength(0);
   });
+
+  // 2026-09-24 몬스터 수집 r2: place_npc 가 먼저 (4,5) 를 쓴 뒤 모델이 같은 칸에 ev_starters 를
+  // 요청했다. 점유 검사가 없어 두 이벤트가 한 칸에 겹쳤고, 조사는 NPC 에 가려 ev_starters 를
+  // 못 건드렸다(autoplay-failed: 첫 파트너 받기).
+  it("요청 칸에 이미 다른 이벤트가 있으면 점유를 피해 자동 조정한다", () => {
+    const { project, map, mapId, speciesId } = fixture();
+    const npc = getTool("place_npc")!.run(project, { mapId, x: 4, y: 5, name: "바람 박사", pages: [{ lines: ["어서 오렴."] }] });
+    const npcAt = npc.data as { x: number; y: number };
+    expect(isPassable(project, map, npcAt.x, npcAt.y)).toBe(true);
+
+    const result = getTool("give_starter_monsters")!.run(project, {
+      speciesIds: [speciesId],
+      actorEvent: { mapId, eventId: "ev_starters", x: npcAt.x, y: npcAt.y },
+    });
+
+    const starter = eventById(map, "ev_starters");
+    expect([starter.x, starter.y]).not.toEqual([npcAt.x, npcAt.y]);
+    expect(result.warnings?.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
+  });
+
+  // r2 후속: 점유 회피 조정이 NPC 뒤 밀폐 주머니에 놓이면 플레이어가 도달할 수 없다.
+  // 같은 반경 후보가 갈라지면 큰 통행 컴포넌트(방) 쪽을 골라야 한다.
+  it("요청 칸 반경 안의 작은 주머니 대신 방 쪽 칸으로 조정한다", () => {
+    const { project, map, mapId, speciesId } = fixture();
+    // (6,6) 은 벽 세 겹 + 입구 NPC 로 봉인된 주머니. 방은 아래쪽이 트여 있다.
+    for (const [wx, wy] of [[4, 5], [5, 5], [6, 5], [4, 6], [6, 7], [7, 6]] as const) {
+      map.lowerTiles[wy * map.width + wx] = TILE.WALL;
+      map.upperTiles[wy * map.width + wx] = TILE.EMPTY;
+    }
+    getTool("place_npc")!.run(project, { mapId, x: 5, y: 6, name: "마을 주민", pages: [{ lines: ["안녕."] }] });
+    const npc = map.events.find((entry) => entry.name === "마을 주민");
+    expect([npc?.x, npc?.y]).toEqual([5, 6]);
+
+    const result = getTool("give_starter_monsters")!.run(project, {
+      speciesIds: [speciesId],
+      actorEvent: { mapId, eventId: "ev_starters", x: 5, y: 6 },
+    });
+
+    const starter = eventById(map, "ev_starters");
+    expect([starter.x, starter.y]).not.toEqual([6, 6]);
+    expect([starter.x, starter.y]).toEqual([4, 7]);
+    expect(result.warnings?.some((warning) => warning.includes("위치 자동 조정"))).toBe(true);
+  });
 });

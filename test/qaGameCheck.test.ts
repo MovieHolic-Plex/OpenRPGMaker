@@ -6,7 +6,7 @@ import { allPages, visitPageCommands, type CommandVisit } from "@/qa/gameCheck/w
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
 import { runSceneTest } from "@/testing/sceneTestRunner";
-import type { Project } from "@/project/types";
+import type { Command, Project } from "@/project/types";
 import { checkGallery } from "@/qa/gameCheck/gallery";
 import { buildQaFixture, type QaFixtureName } from "./fixtures/qaGame/qaGameFixtures";
 
@@ -146,6 +146,107 @@ describe("qa gameCheck — 무작위 인카운터 소모전", () => {
   });
 });
 
+// 보스(드래곤 급)를 잡아서 혼자·합류 파티·확인 레벨로 각각 다르게 이기게 만든 변형.
+// 패배는 게임 오버(canLose:false) — 자동 플레이가 「승리 분기 목표 미도달」로 보고하는 실제 보스전 손실을 재현한다.
+// 2026-09-24 도그푸딩 등대지기의 겨울(혼자만 패배, 동료 합류 후엔 엔딩)·잿불 광산(합류 파티도 도달 레벨에선 패배).
+function bossBattleProject(options: { maxHp: number; attack: number; growCurves?: boolean }): Project {
+  const project = buildQaFixture("clean");
+  const tyrant = structuredClone(project.database.enemies.find((enemy) => enemy.id === "enemy_dragon")!);
+  tyrant.id = "enemy_ember_tyrant";
+  tyrant.name = "잿불 폭군";
+  tyrant.stats = { ...tyrant.stats, maxHp: options.maxHp, attack: options.attack, agility: 30 };
+  project.database.enemies.push(tyrant);
+  const base = structuredClone(project.database.troops.find((troop) => troop.id === "troop_slime")!);
+  project.database.troops.push({ ...base, id: "troop_boss_tyrant", name: "잿불 폭군", enemyIds: [tyrant.id], members: [{ enemyId: tyrant.id, x: 100, y: 100, hidden: false }] });
+  const boss = project.maps.map_cave!.events.find((entry) => entry.id === "ev_boss")!;
+  const battle = boss.pages![0]!.commands.find((command) => command.kind === "battleProcessing") as Extract<Command, { kind: "battleProcessing" }>;
+  battle.troopId = "troop_boss_tyrant";
+  battle.canLose = false;
+  if (options.growCurves) {
+    for (const actor of project.database.actors) {
+      const curves = actor.parameterCurves as Record<string, number[]>;
+      const length = (curves.maxHp ?? [1, 2]).length;
+      const ramp = (from: number, to: number) => Array.from({ length }, (_, index) => Math.round(from + (to - from) * (index / Math.max(1, length - 1))));
+      actor.parameterCurves = { ...curves, maxHp: ramp(514, 2400), attack: ramp(53, 220), defense: ramp(72, 200), agility: ramp(45, 96) };
+    }
+  }
+  return deserialize(serialize(project));
+}
+
+describe("qa gameCheck — 보스 전투 패배는 전투 패배로 보고하고 레벨·합류 전제는 경고로 낮춘다", () => {
+  it("혼자만 지고 동료 합류 실행은 엔딩까지 가면 막힘이 아니다(등대지기의 겨울 r3)", () => {
+    const report = runGameCheck(bossBattleProject({ maxHp: 576, attack: 130 }), { autoPlayBudgetMs: 20_000 });
+    const solo = report.autoPlay!.runs.find((run) => run.label === "기본 경로")!;
+    expect(solo.ok).toBe(false);
+    expect(solo.failure?.detail).toMatch(/이벤트 전투에서 패배해 게임 오버 — 승리 분기의 목표 명령에 닿지 않았습니다/u);
+    expect(solo.failure?.detail).toContain("battle troop_boss_tyrant: defeat");
+    expect(report.autoPlay!.runs.find((run) => run.label === "동료 합류 후")!.ok).toBe(true);
+    expect(codes(report as ReturnType<typeof check>)).toEqual([]);
+    const warning = report.findings.find((finding) => finding.code === "autoplay-boss-attrition");
+    expect(warning?.message).toContain("다른 실행은 엔딩까지 갑니다");
+    expect(warning?.where?.eventId).toBe("ev_boss");
+  });
+
+  it("동료 합류 파티도 도달 레벨에선 지지만 확인 레벨(Lv10) 모의전에서 이기면 경고로 낮춘다(잿불 광산 r2)", () => {
+    const report = runGameCheck(bossBattleProject({ maxHp: 2000, attack: 140, growCurves: true }), { autoPlayBudgetMs: 20_000 });
+    expect(codes(report as ReturnType<typeof check>)).toEqual([]);
+    const warning = report.findings.find((finding) => finding.code === "autoplay-boss-attrition");
+    expect(warning?.message).toContain("모의전으로는 동료 합류 파티 2명 Lv10 에서 승률");
+    expect(report.autoPlay!.runs.every((run) => run.ok === false)).toBe(true);
+  });
+
+  it("확인 레벨에서도 못 이기는 보스는 그대로 막힘이다 — 레벨업으로 못 이기는 걸 경고로 끼우지 않는다", () => {
+    const report = runGameCheck(bossBattleProject({ maxHp: 6000, attack: 250 }), { autoPlayBudgetMs: 20_000 });
+    expect(codes(report as ReturnType<typeof check>)).toContain("autoplay-failed");
+    expect(report.findings.some((finding) => finding.code === "autoplay-boss-attrition")).toBe(false);
+    const solo = report.autoPlay!.runs.find((run) => run.label === "기본 경로")!;
+    expect(solo.failure?.detail).toMatch(/이벤트 전투에서 패배해/u);
+  });
+});
+
+describe("qa gameCheck — changeItem 은 장비 id 도 소지품이다(r4 보물상자)", () => {
+  function chestWith(itemId: string): Project {
+    const project = deserialize(serialize(buildQaFixture("clean")));
+    project.maps[project.startMapId]!.events.push({
+      id: "ev_chest_equipment", name: "낡은 보물상자", x: 7, y: 7,
+      pages: [{
+        id: "p1", name: "p1", conditions: [], graphic: { transparent: true },
+        trigger: { kind: "action" }, priority: "same",
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [
+          { kind: "changeItem", itemId, op: "+=", amount: 1 },
+          { kind: "changeGold", op: "+=", amount: 100 },
+          { kind: "text", body: "보물상자를 열었다!" },
+          { kind: "setSelfSwitch", key: "A", value: true },
+        ] as Command[],
+      }],
+    } as never);
+    return project;
+  }
+
+  it("장비 id 를 가리키는 changeItem 은 커밋·런타임 계약(items∪equipment)과 같게 막힘이 아니다", () => {
+    const equipmentId = chestWith("item_not_here").database.equipment[0]!.id;
+    const report = runGameCheck(chestWith(equipmentId), { skipAutoPlay: true });
+    expect(report.findings.filter((f) => f.code === "command-missing-reference" && f.where?.eventId === "ev_chest_equipment")).toEqual([]);
+    expect(codes(report as ReturnType<typeof check>)).toEqual([]);
+  });
+
+  it("아이템·장비 어디에도 없는 itemId 는 여전히 막힘이다", () => {
+    const report = runGameCheck(chestWith("item_definitely_missing"), { skipAutoPlay: true });
+    const finding = report.findings.find((f) => f.code === "command-missing-reference" && f.where?.eventId === "ev_chest_equipment");
+    expect(finding?.severity).toBe("blocker");
+    expect(finding?.message).toContain("item_definitely_missing");
+  });
+
+  // 실제 gen 런 산출물(.readString 그대로) — 「기사의 철검」 보물상자가 유효 장비 참조였다.
+  const R4 = "qa-runs/jrpg-r4/project.json";
+  it.skipIf(!fs.existsSync(R4))("r4 생성물 전체에서 changeItem 장비 참조 막힘이 없다", () => {
+    const report = runGameCheck(JSON.parse(fs.readFileSync(R4, "utf8")), { autoPlayBudgetMs: 30_000 });
+    expect(report.findings.filter((f) => f.code === "command-missing-reference")).toEqual([]);
+    expect(report.counts.blocker).toBe(0);
+  }, 60_000);
+});
+
 describe("qa gameCheck — 턴제 JRPG 장르 검사", () => {
   function jrpgFixture() {
     const project = deserialize(serialize(buildQaFixture("clean")));
@@ -199,6 +300,7 @@ describe("qa gameCheck — 꽃잎 체력 검사는 전투 게임에 쓰지 않�
   });
 });
 
+// 이름 있는 엔딩의 호감 조건
 describe("qa gameCheck — 이름 있는 엔딩의 호감 조건", () => {
   it("triggerEnding(endingId)의 엔딩 조건을 선행 목표로 넣는다", () => {
     const project = createBlankProject();
@@ -225,5 +327,25 @@ describe("qa gameCheck — 이름 있는 엔딩의 호감 조건", () => {
     const plan = planCriticalPath(project, visit, endingGoal(visit));
     expect(plan.goals.map((goal) => goal.label).join("\n")).toContain("나래호감 >= 6 만들기");
     expect(plan.unresolved).toEqual([]);
+  });
+});
+
+// 2026-09-24 감성 스토리 r3: 컷신 say 비트가 text 로 컴파일되며 style·context·container 를 싣는데
+// 검사기는 스키마 폼에 없다고 «모르는 필드» 로 세어 경고 45건을 터뜨렸다(런타임 타입에는 있다).
+describe("qa gameCheck — 런타임 대화 필드는 모르는 필드가 아니다", () => {
+  it("text 명령의 style·context·container 는 command-unknown-field 경고를 만들지 않는다", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    map.events.push({
+      id: "ev_style_lines", name: "연출 대사", x: 5, y: 5, trigger: { kind: "action" }, commands: [],
+      pages: [{
+        id: "p", conditions: [], trigger: { kind: "action" }, priority: "same", graphic: {},
+        movement: { type: "fixed", speed: 3, frequency: 3 },
+        commands: [{ kind: "text", speaker: "노을", body: "빗소리가…", emotion: "sad", style: "calm", context: "whisper", container: "box", autoAdvance: true }],
+      }],
+    } as never);
+    const report = runGameCheck(project, { skipAutoPlay: true });
+    const unknown = report.findings.filter((f) => f.code === "command-unknown-field" && f.where?.eventId === "ev_style_lines");
+    expect(unknown).toEqual([]);
   });
 });

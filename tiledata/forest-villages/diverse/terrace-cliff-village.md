@@ -1,6 +1,6 @@
 # 층바위 절벽마을
 
-세 높이의 대지, 네 계단과 절벽 아래 작업 마당. 시작점 (42,68); 집 8채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
+세 높이의 대지, 네 계단과 절벽 아래 작업 마당. 시작점 (31,56); 집 8채. 0기준 맵 좌표. 모든 집은 고정 조각이며 회전/잘라내기 금지. cliffs.points는 x가 증가하는 절벽 윗선 꼭짓점, height는 윗선→밑단의 y 차이다. stairs=[x,y,height]는 폭2, 윗선 행 y부터 y+height까지이고 양끝 착지칸은 y-1/y+height+1이다. 이전 plateaus 윤곽은 사용하지 않는다. 몸통·지붕·소품 전체 배열은 다음 부품 문서와 연결한다.
 
 ![층바위 절벽마을 완성](images/terrace-cliff-village.png)
 
@@ -9,12 +9,12 @@
 ```json
 {
   "mapId": "terrace-cliff-village",
-  "width": 88,
-  "height": 72,
+  "width": 62,
+  "height": 60,
   "seed": 347,
   "start": {
-    "x": 42,
-    "y": 68
+    "x": 31,
+    "y": 56
   },
   "yards": [
     {
@@ -22,8 +22,8 @@
       "kit": "laundry",
       "name": "세탁·건조",
       "reason": "상단 서쪽 주거 마당은 세탁·건조 공간",
-      "x": 34,
-      "y": 15,
+      "x": 23,
+      "y": 6,
       "side": "right",
       "w": 4,
       "h": 2
@@ -34,9 +34,9 @@
       "name": "약초 손질",
       "reason": "상단 동쪽 마당에 약초 재배·손질 작업을 지정",
       "x": 43,
-      "y": 16,
-      "side": "left",
-      "w": 5,
+      "y": 10,
+      "side": "right",
+      "w": 4,
       "h": 3
     },
     {
@@ -44,21 +44,21 @@
       "kit": "storage",
       "name": "물자 보관",
       "reason": "중단 서쪽 길가 집을 물자 보관 거점으로 지정",
-      "x": 9,
-      "y": 36,
+      "x": 4,
+      "y": 27,
       "side": "left",
-      "w": 3,
-      "h": 1
+      "w": 4,
+      "h": 3
     },
     {
       "ownerId": "terrace-cliff-village-house-4",
       "kit": "woodwork",
       "name": "목재 가공",
       "reason": "중단 작업 생활권에 가공 작업대를 지정",
-      "x": 46,
-      "y": 36,
+      "x": 34,
+      "y": 29,
       "side": "right",
-      "w": 3,
+      "w": 4,
       "h": 3
     },
     {
@@ -66,10 +66,10 @@
       "kit": "growing",
       "name": "텃밭 돌보기",
       "reason": "중단 동쪽 평탄한 마당을 자급 텃밭으로 지정",
-      "x": 70,
-      "y": 39,
+      "x": 54,
+      "y": 29,
       "side": "right",
-      "w": 5,
+      "w": 4,
       "h": 4
     },
     {
@@ -77,21 +77,21 @@
       "kit": "storage",
       "name": "물자 보관",
       "reason": "남쪽 입구와 연결되는 하단 집에 보관 기능 지정",
-      "x": 53,
-      "y": 65,
+      "x": 41,
+      "y": 52,
       "side": "right",
       "w": 3,
-      "h": 1
+      "h": 3
     },
     {
       "ownerId": "terrace-cliff-village-house-8",
       "kit": "herbs",
       "name": "약초 손질",
       "reason": "하단 동쪽 집에서 약초를 손질하는 공간 지정",
-      "x": 64,
-      "y": 60,
+      "x": 48,
+      "y": 49,
       "side": "left",
-      "w": 5,
+      "w": 4,
       "h": 3
     }
   ],
@@ -102,46 +102,70 @@
       "name": "상단 두 집의 공동 우물터",
       "anchor": {
         "type": "road",
-        "x": 44,
-        "y": 20,
+        "x": 33,
+        "y": 15,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "well-1",
           "name": "낮은 돌 우물",
-          "x": 39,
-          "y": 16,
+          "x": 28,
+          "y": 11,
           "purpose": "상단 주택에서 계단을 내려가지 않고 물 긷기"
         },
         {
           "id": "well-2",
           "name": "항아리",
-          "x": 41,
-          "y": 17,
+          "x": 30,
+          "y": 12,
           "purpose": "물을 담아 집으로 옮기는 용기",
           "near": "낮은 돌 우물"
         },
         {
           "id": "well-3",
           "name": "징검돌",
-          "x": 39,
-          "y": 18,
+          "x": 28,
+          "y": 13,
           "purpose": "급수 작업 발 디딤",
           "near": "낮은 돌 우물"
         },
         {
           "id": "well-4",
           "name": "꽃 화단",
-          "x": 38,
-          "y": 14,
+          "x": 27,
+          "y": 9,
           "purpose": "주민이 가꾸는 우물터 화단",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-plaza-1",
+          "name": "벤치",
+          "x": 30,
+          "y": 10,
+          "purpose": "우물가에 앉아 쉬는 자리",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-plaza-2",
+          "name": "돌등",
+          "x": 26,
+          "y": 12,
+          "purpose": "밤에 우물가를 밝히는 돌등",
+          "near": "낮은 돌 우물"
+        },
+        {
+          "id": "well-plaza-3",
+          "name": "화분",
+          "x": 32,
+          "y": 11,
+          "purpose": "우물가를 꾸미는 화분",
           "near": "낮은 돌 우물"
         }
       ],
       "site": {
-        "x": 44,
-        "y": 20,
+        "x": 33,
+        "y": 15,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -155,36 +179,29 @@
       "name": "중단 계단의 안내 자리",
       "anchor": {
         "type": "road",
-        "x": 34,
-        "y": 32,
+        "x": 23,
+        "y": 26,
         "maxDistance": 10
       },
       "items": [
         {
-          "id": "stairs-1",
-          "name": "게시판",
-          "x": 31,
-          "y": 29,
-          "purpose": "층별 생활권과 공동 작업 공지"
-        },
-        {
           "id": "stairs-2",
           "name": "표지판",
-          "x": 36,
-          "y": 31,
+          "x": 25,
+          "y": 25,
           "purpose": "상단 주거지와 하단 출구 방향"
         },
         {
           "id": "stairs-3",
           "name": "돌등",
-          "x": 33,
-          "y": 30,
+          "x": 22,
+          "y": 24,
           "purpose": "계단 하단 야간 조명"
         }
       ],
       "site": {
-        "x": 34,
-        "y": 32,
+        "x": 23,
+        "y": 26,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -205,54 +222,54 @@
         {
           "id": "garden-1",
           "name": "덩굴 아치",
-          "x": 33,
-          "y": 56,
+          "x": 24,
+          "y": 46,
           "purpose": "집에서 꽃마당으로 들어가는 문"
         },
         {
           "id": "garden-2",
           "name": "꽃 화단",
-          "x": 30,
-          "y": 56,
+          "x": 22,
+          "y": 46,
           "purpose": "마당 입구 화단",
           "near": "덩굴 아치"
         },
         {
           "id": "garden-3",
           "name": "꽃 화단",
-          "x": 36,
-          "y": 56,
+          "x": 27,
+          "y": 46,
           "purpose": "마당 입구 화단",
           "near": "덩굴 아치"
         },
         {
           "id": "garden-4",
           "name": "징검돌",
-          "x": 33,
-          "y": 58,
+          "x": 24,
+          "y": 48,
           "purpose": "꽃마당의 보행 자리",
           "near": "덩굴 아치"
         },
         {
           "id": "garden-5",
           "name": "새집",
-          "x": 36,
-          "y": 58,
+          "x": 27,
+          "y": 48,
           "purpose": "정원의 조용한 새 쉼터",
           "near": "꽃 화단"
         },
         {
           "id": "garden-6",
           "name": "나무 울타리",
-          "x": 36,
-          "y": 60,
+          "x": 27,
+          "y": 50,
           "purpose": "통로를 가리지 않는 정원 경계",
           "near": "꽃 화단"
         }
       ],
       "site": {
-        "x": 18,
-        "y": 55,
+        "x": 11,
+        "y": 45,
         "w": 6,
         "h": 8,
         "layer": "lower",
@@ -320,21 +337,21 @@
         {
           "id": "front-1",
           "name": "우편함",
-          "x": 24,
-          "y": 62,
+          "x": 17,
+          "y": 52,
           "purpose": "길에서 접근하는 우편 수취"
         },
         {
           "id": "front-2",
           "name": "화분",
-          "x": 17,
-          "y": 60,
+          "x": 10,
+          "y": 50,
           "purpose": "집 앞을 가꾸는 화분"
         }
       ],
       "site": {
-        "x": 18,
-        "y": 55,
+        "x": 11,
+        "y": 45,
         "w": 6,
         "h": 8,
         "layer": "lower",
@@ -402,14 +419,14 @@
         {
           "id": "lamp-2-1",
           "name": "벽걸이 등불",
-          "x": 54,
-          "y": 18,
+          "x": 41,
+          "y": 13,
           "purpose": "현관 옆 벽면 조명"
         }
       ],
       "site": {
-        "x": 49,
-        "y": 11,
+        "x": 36,
+        "y": 6,
         "w": 7,
         "h": 9,
         "layer": "lower",
@@ -492,14 +509,14 @@
         {
           "id": "lamp-4-1",
           "name": "벽걸이 등불",
-          "x": 42,
-          "y": 37,
+          "x": 31,
+          "y": 30,
           "purpose": "현관 옆 벽면 조명"
         }
       ],
       "site": {
-        "x": 37,
-        "y": 33,
+        "x": 26,
+        "y": 26,
         "w": 8,
         "h": 6,
         "layer": "lower",
@@ -567,14 +584,14 @@
         {
           "id": "lamp-7-1",
           "name": "벽걸이 등불",
-          "x": 50,
-          "y": 64,
+          "x": 38,
+          "y": 53,
           "purpose": "현관 옆 벽면 조명"
         }
       ],
       "site": {
-        "x": 47,
-        "y": 59,
+        "x": 35,
+        "y": 48,
         "w": 5,
         "h": 7,
         "layer": "lower",
@@ -622,36 +639,29 @@
       "name": "윗단 절벽 끝 전망 쉼터",
       "anchor": {
         "type": "road",
-        "x": 50,
-        "y": 20,
+        "x": 37,
+        "y": 15,
         "maxDistance": 10
       },
       "items": [
         {
-          "id": "overlook-1",
-          "name": "벤치",
-          "x": 47,
-          "y": 17,
-          "purpose": "가운데 단과 아랫단을 내려다보는 자리"
-        },
-        {
           "id": "overlook-2",
           "name": "나무 이정표",
-          "x": 42,
-          "y": 19,
+          "x": 31,
+          "y": 14,
           "purpose": "서쪽 계단으로 내려가는 길 안내"
         },
         {
           "id": "overlook-3",
           "name": "나무 이정표",
-          "x": 59,
-          "y": 19,
+          "x": 45,
+          "y": 14,
           "purpose": "동쪽 계단으로 내려가는 길 안내"
         }
       ],
       "site": {
-        "x": 50,
-        "y": 20,
+        "x": 37,
+        "y": 15,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -665,27 +675,19 @@
       "name": "동쪽 계단 아래 길잡이",
       "anchor": {
         "type": "road",
-        "x": 62,
-        "y": 29,
+        "x": 47,
+        "y": 24,
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "mid-east-sign-1",
-          "name": "나무 이정표",
-          "x": 64,
-          "y": 29,
-          "purpose": "윗단으로 오르는 동쪽 계단 안내"
-        }
-      ],
+      "items": [],
       "site": {
-        "x": 62,
-        "y": 29,
+        "x": 47,
+        "y": 24,
         "w": 1,
         "h": 1,
         "layer": "lower",
         "tiles": [
-          1494
+          1487
         ]
       }
     },
@@ -694,22 +696,14 @@
       "name": "아랫단 계단 발치 길잡이",
       "anchor": {
         "type": "road",
-        "x": 27,
-        "y": 53,
+        "x": 19,
+        "y": 43,
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "lower-signs-1",
-          "name": "나무 이정표",
-          "x": 24,
-          "y": 53,
-          "purpose": "가운데 단으로 오르는 서쪽 계단 안내"
-        }
-      ],
+      "items": [],
       "site": {
-        "x": 27,
-        "y": 53,
+        "x": 19,
+        "y": 43,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -723,22 +717,22 @@
       "name": "아랫단 동쪽 계단 발치",
       "anchor": {
         "type": "road",
-        "x": 46,
-        "y": 53,
+        "x": 34,
+        "y": 43,
         "maxDistance": 10
       },
       "items": [
         {
           "id": "lower-east-sign-1",
           "name": "나무 이정표",
-          "x": 48,
-          "y": 53,
+          "x": 36,
+          "y": 43,
           "purpose": "가운데 단으로 오르는 동쪽 계단 안내"
         }
       ],
       "site": {
-        "x": 46,
-        "y": 53,
+        "x": 34,
+        "y": 43,
         "w": 1,
         "h": 1,
         "layer": "lower",
@@ -759,37 +753,22 @@
         {
           "id": "cave-camp-1",
           "name": "모닥불",
-          "x": 74,
-          "y": 53,
+          "x": 57,
+          "y": 42,
           "purpose": "저녁에 동쪽 집 주민이 모이는 불"
         },
         {
           "id": "cave-camp-2",
           "name": "벤치",
-          "x": 73,
-          "y": 55,
+          "x": 56,
+          "y": 44,
           "purpose": "불가에 앉는 자리",
           "near": "모닥불"
-        },
-        {
-          "id": "cave-camp-3",
-          "name": "나무 상자",
-          "x": 67,
-          "y": 53,
-          "purpose": "땔감과 불쏘시개를 담는 상자"
-        },
-        {
-          "id": "cave-camp-4",
-          "name": "술통",
-          "x": 65,
-          "y": 54,
-          "purpose": "불 곁에 두는 물통",
-          "near": "나무 상자"
         }
       ],
       "site": {
-        "x": 70,
-        "y": 56,
+        "x": 53,
+        "y": 45,
         "w": 4,
         "h": 7,
         "layer": "lower",
@@ -837,37 +816,37 @@
         {
           "id": "mid-market-1",
           "name": "장터 노점",
-          "x": 29,
-          "y": 39,
+          "x": 21,
+          "y": 32,
           "purpose": "세 단 주민이 모두 들르는 가운데 단 좌판"
         },
         {
           "id": "mid-market-2",
           "name": "과일 좌판",
-          "x": 29,
-          "y": 42,
+          "x": 21,
+          "y": 34,
           "purpose": "윗단 과수에서 딴 과일",
           "near": "장터 노점"
         },
         {
           "id": "mid-market-3",
           "name": "작은 오크통",
-          "x": 32,
-          "y": 37,
+          "x": 23,
+          "y": 30,
           "purpose": "노점 음료를 담는 통",
           "near": "장터 노점"
         },
         {
           "id": "mid-market-4",
           "name": "벤치",
-          "x": 32,
-          "y": 42,
+          "x": 23,
+          "y": 34,
           "purpose": "장 보러 온 사람의 쉼 자리"
         }
       ],
       "site": {
-        "x": 37,
-        "y": 33,
+        "x": 26,
+        "y": 26,
         "w": 8,
         "h": 6,
         "layer": "lower",
@@ -935,22 +914,22 @@
         {
           "id": "mid-woodpile-1",
           "name": "장작 더미",
-          "x": 20,
-          "y": 34,
+          "x": 15,
+          "y": 27,
           "purpose": "서쪽 집의 겨울 땔감"
         },
         {
           "id": "mid-woodpile-2",
           "name": "장작 더미",
-          "x": 21,
-          "y": 36,
+          "x": 15,
+          "y": 29,
           "purpose": "땔감 두 번째 더미",
           "near": "장작 더미"
         }
       ],
       "site": {
-        "x": 13,
-        "y": 29,
+        "x": 8,
+        "y": 22,
         "w": 6,
         "h": 8,
         "layer": "lower",
@@ -1008,32 +987,27 @@
     }
   ],
   "entrance": {
-    "x": 42,
-    "y": 71
+    "x": 31,
+    "y": 59
   },
-  "crest": {
-    "x": 26,
-    "y": 4,
-    "width": 39,
-    "shoulder": 3
-  },
+  "crest": null,
   "patches": [
     [
-      9,
-      13,
+      8,
+      10,
       13,
       10,
       11
     ],
     [
-      76,
-      9,
+      55,
+      7,
       13,
       12,
       11
     ],
     [
-      40,
+      29,
       1,
       12,
       7,
@@ -1042,15 +1016,15 @@
   ],
   "clearings": [
     [
-      44,
-      8,
+      33,
+      3,
       22,
       6,
       12
     ],
     [
-      4,
-      34,
+      2,
+      27,
       6,
       8,
       7
@@ -1060,44 +1034,44 @@
     {
       "points": [
         [
-          7,
-          45
+          2,
+          35
         ],
         [
-          14,
-          45
+          9,
+          35
         ],
         [
-          16,
-          46
+          11,
+          36
         ],
         [
-          28,
-          46
+          20,
+          36
+        ],
+        [
+          22,
+          37
         ],
         [
           30,
-          47
+          37
         ],
         [
-          40,
-          47
+          31,
+          36
         ],
         [
-          42,
-          46
+          44,
+          36
         ],
         [
-          56,
-          46
+          45,
+          35
         ],
         [
-          58,
-          45
-        ],
-        [
-          83,
-          45
+          59,
+          35
         ]
       ],
       "height": 6
@@ -1105,52 +1079,52 @@
     {
       "points": [
         [
-          19,
-          21
+          14,
+          16
         ],
         [
-          30,
-          21
+          20,
+          16
         ],
         [
-          32,
-          20
+          21,
+          15
         ],
         [
-          36,
-          20
+          25,
+          15
         ],
         [
-          38,
-          21
+          27,
+          16
         ],
         [
-          44,
-          21
+          33,
+          16
+        ],
+        [
+          35,
+          17
+        ],
+        [
+          45,
+          17
         ],
         [
           46,
-          22
+          16
+        ],
+        [
+          51,
+          16
+        ],
+        [
+          52,
+          15
         ],
         [
           58,
-          22
-        ],
-        [
-          60,
-          21
-        ],
-        [
-          66,
-          21
-        ],
-        [
-          68,
-          20
-        ],
-        [
-          74,
-          20
+          15
         ]
       ],
       "height": 6
@@ -1158,23 +1132,23 @@
   ],
   "stairs": [
     [
-      34,
-      20,
+      23,
+      15,
       6
     ],
     [
-      62,
-      21,
+      47,
+      16,
       6
     ],
     [
-      26,
-      46,
+      18,
+      36,
       6
     ],
     [
-      45,
-      46,
+      33,
+      36,
       6
     ]
   ],
@@ -1184,438 +1158,417 @@
   "cave": null,
   "spine": [
     [
-      42,
-      68
-    ],
-    [
-      42,
-      63
-    ],
-    [
-      27,
+      31,
       56
     ],
     [
-      27,
-      53
+      31,
+      52
     ],
     [
-      27,
-      40
+      19,
+      46
+    ],
+    [
+      19,
+      43
+    ],
+    [
+      19,
+      33
+    ],
+    [
+      23,
+      25
+    ],
+    [
+      23,
+      22
+    ],
+    [
+      23,
+      13
+    ],
+    [
+      47,
+      14
+    ],
+    [
+      47,
+      23
+    ],
+    [
+      45,
+      30
     ],
     [
       34,
-      31
+      34
     ],
     [
       34,
-      27
+      43
     ],
     [
       34,
-      18
+      47
     ],
     [
-      62,
-      19
-    ],
-    [
-      62,
-      28
-    ],
-    [
-      60,
-      40
-    ],
-    [
-      46,
-      44
-    ],
-    [
-      46,
-      53
-    ],
-    [
-      46,
-      58
-    ],
-    [
-      70,
-      66
+      53,
+      55
     ]
   ],
   "access": [
     {
       "role": "stairs-top",
-      "x": 34,
-      "y": 19
+      "x": 23,
+      "y": 14
     },
     {
       "role": "stairs-bottom",
-      "x": 34,
-      "y": 27
+      "x": 23,
+      "y": 22
     },
     {
       "role": "stairs-top",
-      "x": 62,
-      "y": 20
+      "x": 47,
+      "y": 15
     },
     {
       "role": "stairs-bottom",
-      "x": 62,
-      "y": 28
+      "x": 47,
+      "y": 23
     },
     {
       "role": "stairs-top",
-      "x": 26,
-      "y": 45
+      "x": 18,
+      "y": 35
     },
     {
       "role": "stairs-bottom",
-      "x": 26,
-      "y": 53
+      "x": 18,
+      "y": 43
     },
     {
       "role": "stairs-top",
-      "x": 45,
-      "y": 45
+      "x": 33,
+      "y": 35
     },
     {
       "role": "stairs-bottom",
-      "x": 45,
-      "y": 53
-    },
-    {
-      "role": "door-front",
-      "x": 29,
-      "y": 17
-    },
-    {
-      "role": "door-front",
-      "x": 52,
-      "y": 20
-    },
-    {
-      "role": "door-front",
-      "x": 17,
-      "y": 37
-    },
-    {
-      "role": "door-front",
-      "x": 40,
-      "y": 39
-    },
-    {
-      "role": "door-front",
-      "x": 66,
+      "x": 33,
       "y": 43
     },
     {
       "role": "door-front",
-      "x": 20,
-      "y": 63
+      "x": 18,
+      "y": 12
     },
     {
       "role": "door-front",
-      "x": 48,
-      "y": 66
+      "x": 39,
+      "y": 15
     },
     {
       "role": "door-front",
-      "x": 71,
-      "y": 63
+      "x": 12,
+      "y": 30
+    },
+    {
+      "role": "door-front",
+      "x": 29,
+      "y": 32
+    },
+    {
+      "role": "door-front",
+      "x": 50,
+      "y": 33
+    },
+    {
+      "role": "door-front",
+      "x": 13,
+      "y": 53
+    },
+    {
+      "role": "door-front",
+      "x": 36,
+      "y": 55
+    },
+    {
+      "role": "door-front",
+      "x": 54,
+      "y": 52
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 71
+      "x": 30,
+      "y": 59
     },
     {
       "role": "map-entrance",
-      "x": 42,
-      "y": 71
+      "x": 31,
+      "y": 59
     },
     {
       "role": "map-entrance",
-      "x": 43,
-      "y": 71
+      "x": 32,
+      "y": 59
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 70
+      "x": 30,
+      "y": 58
     },
     {
       "role": "map-entrance",
-      "x": 42,
-      "y": 70
+      "x": 31,
+      "y": 58
     },
     {
       "role": "map-entrance",
-      "x": 43,
-      "y": 70
+      "x": 32,
+      "y": 58
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 69
+      "x": 30,
+      "y": 57
     },
     {
       "role": "map-entrance",
-      "x": 42,
-      "y": 69
+      "x": 31,
+      "y": 57
     },
     {
       "role": "map-entrance",
-      "x": 43,
-      "y": 69
+      "x": 32,
+      "y": 57
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 68
+      "x": 30,
+      "y": 56
     },
     {
       "role": "map-entrance",
-      "x": 42,
-      "y": 68
+      "x": 31,
+      "y": 56
     },
     {
       "role": "map-entrance",
-      "x": 43,
-      "y": 68
+      "x": 32,
+      "y": 56
     },
     {
       "role": "map-entrance",
-      "x": 41,
-      "y": 67
+      "x": 30,
+      "y": 55
     },
     {
       "role": "map-entrance",
-      "x": 42,
-      "y": 67
+      "x": 31,
+      "y": 55
     },
     {
       "role": "map-entrance",
-      "x": 43,
-      "y": 67
+      "x": 32,
+      "y": 55
     },
     {
       "role": "civic-use",
-      "x": 38,
-      "y": 16,
+      "x": 27,
+      "y": 11,
       "placeId": "well",
       "propId": "well-1"
     },
     {
       "role": "civic-use",
-      "x": 41,
-      "y": 18,
+      "x": 30,
+      "y": 13,
       "placeId": "well",
       "propId": "well-2"
     },
     {
       "role": "civic-use",
-      "x": 39,
-      "y": 19,
+      "x": 28,
+      "y": 14,
       "placeId": "well",
       "propId": "well-3"
     },
     {
       "role": "civic-use",
-      "x": 37,
-      "y": 14,
+      "x": 26,
+      "y": 9,
       "placeId": "well",
       "propId": "well-4"
     },
     {
       "role": "civic-use",
-      "x": 30,
-      "y": 29,
-      "placeId": "stairs",
-      "propId": "stairs-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 35,
-      "y": 31,
+      "x": 24,
+      "y": 25,
       "placeId": "stairs",
       "propId": "stairs-2"
     },
     {
       "role": "civic-use",
-      "x": 34,
-      "y": 30,
+      "x": 23,
+      "y": 24,
       "placeId": "stairs",
       "propId": "stairs-3"
     },
     {
       "role": "civic-use",
-      "x": 33,
-      "y": 57,
+      "x": 24,
+      "y": 47,
       "placeId": "garden",
       "propId": "garden-1"
     },
     {
       "role": "civic-use",
-      "x": 29,
-      "y": 56,
+      "x": 21,
+      "y": 46,
       "placeId": "garden",
       "propId": "garden-2"
     },
     {
       "role": "civic-use",
-      "x": 35,
-      "y": 56,
+      "x": 26,
+      "y": 46,
       "placeId": "garden",
       "propId": "garden-3"
     },
     {
       "role": "civic-use",
-      "x": 33,
-      "y": 59,
+      "x": 24,
+      "y": 49,
       "placeId": "garden",
       "propId": "garden-4"
     },
     {
       "role": "civic-use",
-      "x": 35,
-      "y": 58,
+      "x": 26,
+      "y": 48,
       "placeId": "garden",
       "propId": "garden-5"
     },
     {
       "role": "civic-use",
-      "x": 36,
-      "y": 61,
+      "x": 27,
+      "y": 51,
       "placeId": "garden",
       "propId": "garden-6"
     },
     {
       "role": "civic-use",
-      "x": 24,
-      "y": 63,
+      "x": 17,
+      "y": 53,
       "placeId": "front",
       "propId": "front-1"
     },
     {
       "role": "civic-use",
-      "x": 16,
-      "y": 60,
+      "x": 9,
+      "y": 50,
       "placeId": "front",
       "propId": "front-2"
     },
     {
       "role": "civic-use",
-      "x": 46,
-      "y": 17,
-      "placeId": "overlook",
-      "propId": "overlook-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 42,
-      "y": 20,
+      "x": 31,
+      "y": 15,
       "placeId": "overlook",
       "propId": "overlook-2"
     },
     {
       "role": "civic-use",
-      "x": 59,
-      "y": 20,
+      "x": 45,
+      "y": 15,
       "placeId": "overlook",
       "propId": "overlook-3"
     },
     {
       "role": "civic-use",
-      "x": 64,
-      "y": 30,
-      "placeId": "mid-east-sign",
-      "propId": "mid-east-sign-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 24,
-      "y": 54,
-      "placeId": "lower-signs",
-      "propId": "lower-signs-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 48,
-      "y": 54,
+      "x": 36,
+      "y": 44,
       "placeId": "lower-east-sign",
       "propId": "lower-east-sign-1"
     },
     {
       "role": "civic-use",
-      "x": 74,
-      "y": 54,
+      "x": 57,
+      "y": 43,
       "placeId": "cave-camp",
       "propId": "cave-camp-1"
     },
     {
       "role": "civic-use",
-      "x": 72,
-      "y": 55,
+      "x": 55,
+      "y": 44,
       "placeId": "cave-camp",
       "propId": "cave-camp-2"
     },
     {
       "role": "civic-use",
-      "x": 67,
-      "y": 54,
-      "placeId": "cave-camp",
-      "propId": "cave-camp-3"
-    },
-    {
-      "role": "civic-use",
-      "x": 65,
-      "y": 55,
-      "placeId": "cave-camp",
-      "propId": "cave-camp-4"
-    },
-    {
-      "role": "civic-use",
-      "x": 28,
-      "y": 39,
+      "x": 20,
+      "y": 32,
       "placeId": "mid-market",
       "propId": "mid-market-1"
     },
     {
       "role": "civic-use",
-      "x": 29,
-      "y": 43,
+      "x": 21,
+      "y": 35,
       "placeId": "mid-market",
       "propId": "mid-market-2"
     },
     {
       "role": "civic-use",
-      "x": 32,
-      "y": 38,
+      "x": 23,
+      "y": 31,
       "placeId": "mid-market",
       "propId": "mid-market-3"
     },
     {
       "role": "civic-use",
-      "x": 32,
-      "y": 43,
+      "x": 23,
+      "y": 35,
       "placeId": "mid-market",
       "propId": "mid-market-4"
     },
     {
       "role": "civic-use",
-      "x": 20,
-      "y": 35,
+      "x": 15,
+      "y": 28,
       "placeId": "mid-woodpile",
       "propId": "mid-woodpile-1"
     },
     {
       "role": "civic-use",
-      "x": 21,
-      "y": 37,
+      "x": 15,
+      "y": 30,
       "placeId": "mid-woodpile",
       "propId": "mid-woodpile-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 30,
+      "y": 11,
+      "placeId": "well",
+      "propId": "well-plaza-1"
+    },
+    {
+      "role": "civic-use",
+      "x": 25,
+      "y": 12,
+      "placeId": "well",
+      "propId": "well-plaza-2"
+    },
+    {
+      "role": "civic-use",
+      "x": 31,
+      "y": 11,
+      "placeId": "well",
+      "propId": "well-plaza-3"
     }
   ]
 }
@@ -1632,18 +1585,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 27,
-  "y": 9,
+  "x": 16,
+  "y": 4,
   "w": 6,
   "h": 8,
   "template": 0,
   "doorAt": {
-    "x": 29,
-    "y": 16
+    "x": 18,
+    "y": 11
   },
   "front": {
-    "x": 29,
-    "y": 17
+    "x": 18,
+    "y": 12
   },
   "activity": "laundry",
   "reason": "상단 서쪽 주거 마당은 세탁·건조 공간",
@@ -1773,8 +1726,8 @@
       -1
     ],
     [
-      -1,
-      -1,
+      2611,
+      2612,
       -1,
       -1,
       -1,
@@ -1793,18 +1746,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 49,
-  "y": 11,
+  "x": 36,
+  "y": 6,
   "w": 7,
   "h": 9,
   "template": 4,
   "doorAt": {
-    "x": 52,
-    "y": 19
+    "x": 39,
+    "y": 14
   },
   "front": {
-    "x": 52,
-    "y": 20
+    "x": 39,
+    "y": 15
   },
   "activity": "herbs",
   "reason": "상단 동쪽 마당에 약초 재배·손질 작업을 지정",
@@ -1988,18 +1941,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 13,
-  "y": 29,
+  "x": 8,
+  "y": 22,
   "w": 6,
   "h": 8,
   "template": 1,
   "doorAt": {
-    "x": 17,
-    "y": 36
+    "x": 12,
+    "y": 29
   },
   "front": {
-    "x": 17,
-    "y": 37
+    "x": 12,
+    "y": 30
   },
   "activity": "storage",
   "reason": "중단 서쪽 길가 집을 물자 보관 거점으로 지정",
@@ -2131,8 +2084,8 @@
     [
       -1,
       -1,
-      -1,
-      -1,
+      2611,
+      2612,
       -1,
       -1
     ]
@@ -2149,18 +2102,18 @@
   "window": 87,
   "abandoned": false,
   "vines": [],
-  "x": 37,
-  "y": 33,
+  "x": 26,
+  "y": 26,
   "w": 8,
   "h": 6,
   "template": 7,
   "doorAt": {
-    "x": 40,
-    "y": 38
+    "x": 29,
+    "y": 31
   },
   "front": {
-    "x": 40,
-    "y": 39
+    "x": 29,
+    "y": 32
   },
   "activity": "woodwork",
   "reason": "중단 작업 생활권에 가공 작업대를 지정",
@@ -2282,11 +2235,11 @@
     [
       -1,
       -1,
+      2632,
       -1,
       -1,
-      -1,
-      -1,
-      -1,
+      2611,
+      2612,
       -1
     ]
   ]
@@ -2302,18 +2255,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 65,
-  "y": 36,
+  "x": 49,
+  "y": 26,
   "w": 4,
   "h": 7,
   "template": 5,
   "doorAt": {
-    "x": 66,
-    "y": 42
+    "x": 50,
+    "y": 32
   },
   "front": {
-    "x": 66,
-    "y": 43
+    "x": 50,
+    "y": 33
   },
   "activity": "growing",
   "reason": "중단 동쪽 평탄한 마당을 자급 텃밭으로 지정",
@@ -2404,7 +2357,7 @@
       -1,
       -1,
       -1,
-      -1
+      2632
     ]
   ]
 }
@@ -2419,18 +2372,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 18,
-  "y": 55,
+  "x": 11,
+  "y": 45,
   "w": 6,
   "h": 8,
   "template": 2,
   "doorAt": {
-    "x": 20,
-    "y": 62
+    "x": 13,
+    "y": 52
   },
   "front": {
-    "x": 20,
-    "y": 63
+    "x": 13,
+    "y": 53
   },
   "activity": "laundry",
   "reason": "하단 서쪽 주거 마당은 세탁·건조 공간",
@@ -2561,7 +2514,7 @@
     ],
     [
       -1,
-      -1,
+      2632,
       -1,
       -1,
       -1,
@@ -2580,18 +2533,18 @@
   "window": null,
   "abandoned": false,
   "vines": [],
-  "x": 47,
-  "y": 59,
+  "x": 35,
+  "y": 48,
   "w": 5,
   "h": 7,
   "template": 6,
   "doorAt": {
-    "x": 48,
-    "y": 65
+    "x": 36,
+    "y": 54
   },
   "front": {
-    "x": 48,
-    "y": 66
+    "x": 36,
+    "y": 55
   },
   "activity": "storage",
   "reason": "남쪽 입구와 연결되는 하단 집에 보관 기능 지정",
@@ -2695,7 +2648,7 @@
       -1,
       -1,
       -1,
-      -1,
+      2632,
       -1
     ]
   ]
@@ -2711,18 +2664,18 @@
   "window": 85,
   "abandoned": false,
   "vines": [],
-  "x": 70,
-  "y": 56,
+  "x": 53,
+  "y": 45,
   "w": 4,
   "h": 7,
   "template": 3,
   "doorAt": {
-    "x": 71,
-    "y": 62
+    "x": 54,
+    "y": 51
   },
   "front": {
-    "x": 71,
-    "y": 63
+    "x": 54,
+    "y": 52
   },
   "activity": "herbs",
   "reason": "하단 동쪽 집에서 약초를 손질하는 공간 지정",
@@ -2810,10 +2763,10 @@
       -1
     ],
     [
+      2632,
       -1,
       -1,
-      -1,
-      -1
+      2632
     ]
   ]
 }

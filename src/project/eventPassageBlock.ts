@@ -5,7 +5,7 @@
 // mysteryCaseTool 은 자기 인물만 이 검사를 했다 — 여기서는 모든 이벤트 쓰기가 같은 판정을 쓴다.
 // 경고만으로는 모델이 인형을 안 옮겼다. 장소 이동이 없는 영구 차단은 옆 칸으로 옮기고, 문은 칸을 유지한 채 경고만 한다.
 
-import { canMove, isPassableLanding } from "./collision";
+import { canMove, isPassable, isPassableLanding } from "./collision";
 import type { EventPage, GameEvent, GameMap, Project } from "./types";
 
 function pageBlocks(page: EventPage | undefined): boolean {
@@ -118,18 +118,26 @@ function reliefCells(x: number, y: number): { x: number; y: number }[] {
 /**
  * 모든 페이지가 막는 비문 이벤트가 통로를 끊으면 반경 3칸 안에서 끊지 않는 통행 칸으로 옮긴다.
  * 모델은 경고를 무시하고 문간에 인형을 둔 채 엔딩을 막았다(갤러리 r5). 거부하지 않는다.
+ *
+ * 후보 수락에 「문(transfer) 앞칸이 가장 큰 통행 컴포넌트에 남는다」를 함께 본다.
+ * cut 판정은 transfer 랜딩을 씨앗으로 우주 전체를 보므로, 랜딩 셀이 문과 바로 인접할 때
+ * 복도 한 칸(랜딩 너머)을 막는 이동을 놓치고 마을에서 문으로 못 걸어가는 상태를 만들 수 있다
+ * (2026-09-24 몬스터 수집 r2: 루트1 랜딩 (32,1) 씨앗 때문에 안내판을 (32,2) 복도 안에 받아
+ * 북쪽 게이트가 마을 쪽에서 도달 불가였다).
  */
 function relievePermanentChoke(project: Project, map: GameMap, event: GameEvent): string | undefined {
   if (!eventAlwaysBlocks(event) || isDoorEvent(event)) return undefined;
   const cut = eventsCutOffBy(project, map, event);
   if (cut.length === 0) return undefined;
   const from = { x: event.x, y: event.y };
+  const doors = (map.events ?? []).filter((other) => other.id !== event.id && isDoorEvent(other));
   for (const cell of reliefCells(from.x, from.y)) {
     if (!isPassableLanding(project, map, cell.x, cell.y)) continue;
     if ((map.events ?? []).some((other) => other.id !== event.id && other.x === cell.x && other.y === cell.y)) continue;
     event.x = cell.x;
     event.y = cell.y;
     if (eventsCutOffBy(project, map, event).length > 0) continue;
+    if (!doorApproachesIntact(project, map, doors)) continue;
     const names = cut.slice(0, 4).map((other) => `'${other.name ?? other.id}'`).join(", ");
     return `이벤트 '${event.name ?? event.id}'(${from.x},${from.y})가 통로를 막아 ${names}에 닿을 수 없어 (${cell.x},${cell.y})으로 옮겼습니다. `
       + "길을 막는 인물은 문간이 아니라 옆 칸에 두세요.";
@@ -137,6 +145,44 @@ function relievePermanentChoke(project: Project, map: GameMap, event: GameEvent)
   event.x = from.x;
   event.y = from.y;
   return undefined;
+}
+
+/**
+ * (호출 시점 이벤트 위치 = 이동 후보)에서 각 문의 접근 가능한 인접 칸 중 최소 하나가
+ * 가장 큰 통행 컴포넌트(타일 + 막는 이벤트)에 붙어 있는가.
+ * 애초에 통행 가능한 인접 칸이 없는 문은 후보 탓이 아니므로 건너뛴다.
+ */
+function doorApproachesIntact(project: Project, map: GameMap, doors: readonly GameEvent[]): boolean {
+  if (doors.length === 0) return true;
+  const blocked = new Set(
+    (map.events ?? []).filter((other) => eventAlwaysBlocks(other)).map((other) => `${other.x},${other.y}`),
+  );
+  const sizes = new Map<string, number>();
+  let largest = 0;
+  for (let y = 0; y < map.height; y += 1) {
+    for (let x = 0; x < map.width; x += 1) {
+      const key = `${x},${y}`;
+      if (sizes.has(key) || blocked.has(key) || !isPassable(project, map, x, y)) continue;
+      const component = walk(project, map, [{ x, y }], blocked);
+      for (const memberKey of component) {
+        if (!sizes.has(memberKey)) sizes.set(memberKey, component.size);
+      }
+      largest = Math.max(largest, component.size);
+    }
+  }
+  for (const door of doors) {
+    const approaches: string[] = [];
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = door.x + dx;
+      const ny = door.y + dy;
+      if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+      if (!isPassable(project, map, nx, ny) || blocked.has(`${nx},${ny}`)) continue;
+      approaches.push(`${nx},${ny}`);
+    }
+    if (approaches.length === 0) continue;
+    if (!approaches.some((key) => sizes.get(key) === largest)) return false;
+  }
+  return true;
 }
 
 export function passageBlockWarning(project: Project, map: GameMap, event: GameEvent): string | undefined {
