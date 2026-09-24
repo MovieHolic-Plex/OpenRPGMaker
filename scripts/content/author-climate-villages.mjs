@@ -11,6 +11,7 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 import { dressDesert, freezeCells, placePeaks, reachable } from "./lib/climate-edits.mjs";
+import { emptiness, fillPlainGaps, retileGrass, rng } from "./lib/village-fullness.mjs";
 
 const OUT = "tiledata/climate-villages";
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -38,6 +39,11 @@ const PLANS = [
     note: "단풍 숲으로 둘러싸인 언덕 위 종탑 교구. 금빛 풀밭의 계단 길과 묘지, 폭포 아래 소가 가을빛이다" },
 ];
 const ice = new Map(sheets.snow.ice), water = new Set(sheets.volcano.lava);
+// Ground dressing from the forest village's fill pass (tall grass, wildflowers): a climate edit may clear it.
+const tallGrass = village.tileset.autotileGroups.find((g) => g.id === "builtin_tall_grass");
+const GRASS = new Set(Object.values(tallGrass.variantMap)), FLOWERS = new Set([348, 288]);
+const UNFLOWERED = { snow: FLOWERS, volcano: FLOWERS, desert: new Set([288]) };
+const PLAIN = new Set([240, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147]);
 
 await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-villages-entry.mjs", async (api) => {
   const tilesets = Object.fromEntries(["snow", "volcano", "desert", "autumn"].map((k) => [k, api.createClimateVillageTileset(k)]));
@@ -51,6 +57,20 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
     const W = map.width, at = (x, y) => y * W + x;
     const edits = [];
     const targets = plan.houses.map((h) => [h.front.x, h.front.y]);
+    // Cells owned by the village's houses, landmarks, props and yards (and every access cell): climate dressing and
+    // fill never touch them.
+    const taken = new Set(plan.access.map((a) => at(a.x, a.y)));
+    for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])])
+      for (let y = o.y; y < o.y + (o.h ?? 1); y++) for (let x = o.x; x < o.x + (o.w ?? 1); x++) taken.add(at(x, y));
+    // Wildflowers do not bloom in snow or ash, and a leafy flower bush does not grow in sand: loose ones on open
+    // ground become a tuft of the sheet's own tall grass (frosted, ash-grey or dry), re-autotiled with its neighbours.
+    if (UNFLOWERED[spec.climate]) {
+      const swapped = [];
+      for (let i = 0; i < map.upperTiles.length; i++)
+        if (UNFLOWERED[spec.climate].has(map.upperTiles[i]) && map.lowerTiles[i] === 240 && !taken.has(i)) { map.upperTiles[i] = -1; map.lowerTiles[i] = tallGrass.variantMap["0"]; swapped.push(i); }
+      retileGrass(map, tallGrass, swapped);
+      edits.push({ kind: "unflowered", cells: swapped.length, tiles: [...UNFLOWERED[spec.climate]], rule: "빈 땅의 들꽃·꽃덤불 → 이 시트의 키큰 풀 한 포기(눈 덮인·잿빛·마른 풀), 이웃과 다시 이음" });
+    }
     if (spec.freeze) {
       const box = plan.landmarks.find((l) => l.id === spec.freeze);
       const cells = [];
@@ -67,7 +87,8 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       targets.push(iceCells[0], inner);
       edits.push({ kind: "freeze", landmark: box.id, box: [box.x, box.y, box.w, box.h], swappedTiles: frozen, rule: "물 칸 t → 얼음 칸 ice[t] (sheets.json snow.ice)" });
     }
-    if (spec.peaks) edits.push(...placePeaks(map, spec.peaks, plan.houses.map((h) => [h.front.x, h.front.y])));
+    if (spec.peaks) edits.push(...placePeaks(map, spec.peaks, plan.houses.map((h) => [h.front.x, h.front.y]),
+      { is: (l, u) => (l === 240 || GRASS.has(l)) && (u < 0 || FLOWERS.has(u)), cleared: (cells) => retileGrass(map, tallGrass, cells) }));
     if (spec.desert) {
       const wet = new Set();
       map.lowerTiles.forEach((t, i) => { if (water.has(t)) wet.add(i); });
@@ -80,6 +101,18 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       const lava = map.lowerTiles.filter((t) => water.has(t)).length + map.upperTiles.filter((t) => water.has(t)).length;
       const bridges = map.lowerTiles.concat(map.upperTiles).filter((t) => sheets.volcano.stoneBridges.includes(t)).length;
       edits.push({ kind: "sheet", lavaCells: lava, basaltBridgeCells: bridges, rule: "물 칸은 시트에서 용암으로 칠해져 있다(번호·통행 그대로)" });
+    }
+    // The fill gate (town: no plain 5×5 square, no 17×13 screen over 40% plain) once more after the climate edits —
+    // a desert that cleared its trees back to sand gets the same walkable fill (tall grass is dry scrub on this sheet).
+    {
+      const isPlain = (x, y) => map.upperTiles[at(x, y)] === -1 && PLAIN.has(map.lowerTiles[at(x, y)]);
+      const before = emptiness(map, isPlain);
+      const gaps = fillPlainGaps({ map, isPlain, canTake: (x, y) => !taken.has(at(x, y)), group: tallGrass, random: rng(plan.seed * 13 + spec.id.length),
+        flowerKinds: [[[348, 348, 348], [288, 348, 288]], [[348, 348, 348]], []][spec.climate === "autumn" ? 0 : spec.climate === "desert" ? 1 : 2] });
+      assert(gaps.maxSq <= 4 && gaps.screen <= 0.4, `fill gate ${spec.id} maxSq=${gaps.maxSq} screen=${gaps.screen.toFixed(3)}`);
+      edits.push({ kind: "fill", pieces: gaps.pieces.length, cells: gaps.pieces.reduce((n, p) => n + p.cells.length, 0),
+        emptiness: { before: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
+        rule: "빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 삐죽한 풀숲 덩이·세 송이 들꽃" });
     }
     // Reachability with the runtime move rule, from the village entrance to every door front (+ the ice).
     const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };
@@ -95,5 +128,5 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
   assert(!bad.length, "unreachable: " + JSON.stringify(bad));
   fs.writeFileSync(`${OUT}/catalog.json`, JSON.stringify({ source: "tiledata/forest-villages/diverse/catalog.json", plans, maps }) + "\n");
   fs.writeFileSync(`${OUT}/validation.json`, JSON.stringify(report, null, 2) + "\n");
-  console.log({ maps: Object.keys(maps), reach: report.map((r) => `${r.id}:${r.reachable}/${r.targets.length}`), edits: plans.map((p) => p.edits.filter((e) => e.kind !== "desert-plant").map((e) => e.kind + (e.swappedTiles ?? e.lavaCells ?? e.plants ?? `@${e.x},${e.y}`))) });
+  console.log({ maps: Object.keys(maps), reach: report.map((r) => `${r.id}:${r.reachable}/${r.targets.length}`), edits: plans.map((p) => p.edits.filter((e) => e.kind !== "desert-plant").map((e) => e.kind + (e.kind === "unflowered" ? e.cells : e.emptiness ? `${e.pieces}:${e.emptiness.before.screen}->${e.emptiness.after.screen}` : e.swappedTiles ?? e.lavaCells ?? e.plants ?? `@${e.x},${e.y}`))) });
 });

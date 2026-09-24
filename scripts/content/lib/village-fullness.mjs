@@ -203,8 +203,9 @@ export function emptiness(map, isPlain) {
  * emptiest screen's largest plain square). Most pieces are a ragged tall-grass patch seeded somewhere inside it
  * (sometimes with three flowers tucked against its edge); the rest are one group of three flowers, never within
  * five cells of another flower group, so the ground never turns into an even dotted carpet. Both are walkable, so
- * paths and reachability are untouched; access cells are never covered. */
-export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 400, flowerGroups = [] }) {
+ * paths and reachability are untouched; access cells are never covered. `flowerKinds` (first = common, last = rarer)
+ * may be narrowed or emptied where flowers would be out of place (snow, ash). */
+export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = { maxSq: 4, screen: 0.4 }, maxSteps = 400, flowerGroups = [], flowerKinds = [[348, 348, 348], [288, 348, 288]] }) {
   const W = map.width, H = map.height, at = (x, y) => y * W + x;
   const pieces = [], tried = new Set(), flowers = [...flowerGroups];
   const ok = (x, y) => x >= 1 && y >= 1 && x < W - 1 && y < H - 1 && isPlain(x, y) && canTake(x, y) && map.lowerTiles[at(x, y)] === 240;
@@ -212,7 +213,7 @@ export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = {
   const putFlowers = (x0, y0, avoid) => {
     const order = TRIANGLES.map((s, k) => [s, random() + k * 0]).sort((a, b) => a[1] - b[1]).map(([s]) => s);
     for (const shape of order) {
-      const kind = random() < 0.6 ? [348, 348, 348] : [288, 348, 288];
+      const kind = random() < 0.6 ? flowerKinds[0] : flowerKinds.at(-1);
       const put = shape.map(([dx, dy], k) => [x0 + dx, y0 + dy, kind[k]]);
       if (!put.every(([x, y]) => ok(x, y) && !avoid.has(at(x, y)))) continue;
       for (const [x, y, t] of put) map.upperTiles[at(x, y)] = t;
@@ -239,7 +240,7 @@ export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = {
     // A seed anywhere in the box, not always its centre, so pieces do not fall on a grid.
     const sx = box.x + Math.floor(random() * box.w), sy = box.y + Math.floor(random() * box.h);
     let placed = 0;
-    if (random() < 0.78 || !flowerFar(sx, sy)) {
+    if (random() < 0.78 || !flowerFar(sx, sy) || !flowerKinds.length) {
       const blob = growBlob({ W, H, seed: [sx, sy], size: 7 + Math.floor(random() * 10), ok, random });
       if (blob && blob.size >= 4) {
         for (const i of blob) map.lowerTiles[i] = group.variantMap["255"];
@@ -249,7 +250,7 @@ export function fillPlainGaps({ map, isPlain, canTake, group, random, limits = {
         pieces.push(piece);
         placed = blob.size;
         // Three flowers against the patch's edge now and then.
-        if (random() < 0.35) {
+        if (random() < 0.35 && flowerKinds.length) {
           const edge = [];
           for (const i of blob) for (const [dx, dy] of [[2, 0], [-3, 0], [0, 2], [0, -3], [2, 2], [-3, -3]]) {
             const x = i % W + dx, y = Math.floor(i / W) + dy;

@@ -8,10 +8,10 @@ const sheets = JSON.parse(fs.readFileSync(dir + "/sheets.json")), data = JSON.pa
 const block = (o) => "```json\n" + JSON.stringify(o) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const CATEGORY = {
-  forest_harmony_snow: { id: "climate-snow-villages-v4", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (수관 잎 채움 개정4)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 설원 마을 세 곳의 전체 배열과 통행 검사" },
-  forest_harmony_volcano: { id: "climate-volcano-villages-v4", name: "화산 마을 · 재와 용암의 숲마을 (수관 잎 채움 개정4)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 화산 봉우리 놓는 법과 화산 마을 세 곳의 전체 배열" },
-  forest_harmony_desert: { id: "climate-desert-villages-v4", name: "사막 마을 · 모래와 사암의 숲마을 (수관 잎 채움 개정4)", description: "숲마을을 모래·사암·마른 덤불로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 나무 대신 야자·선인장 놓는 법과 사막 마을 두 곳의 전체 배열" },
-  forest_harmony_autumn: { id: "climate-autumn-villages-v4", name: "가을 마을 · 단풍 든 숲마을 (수관 잎 채움 개정4)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
+  forest_harmony_snow: { id: "climate-snow-villages-v5", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못 (마을 채우기 개정5)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 설원 마을 세 곳의 전체 배열과 통행 검사" },
+  forest_harmony_volcano: { id: "climate-volcano-villages-v5", name: "화산 마을 · 재와 용암의 숲마을 (마을 채우기 개정5)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 화산 봉우리 놓는 법과 화산 마을 세 곳의 전체 배열" },
+  forest_harmony_desert: { id: "climate-desert-villages-v5", name: "사막 마을 · 모래와 사암의 숲마을 (마을 채우기 개정5)", description: "숲마을을 모래·사암·마른 덤불로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 나무 대신 야자·선인장 놓는 법과 사막 마을 두 곳의 전체 배열" },
+  forest_harmony_autumn: { id: "climate-autumn-villages-v5", name: "가을 마을 · 단풍 든 숲마을 (마을 채우기 개정5)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
 const doc = (tilesetId, id, name, markdown) => {
@@ -28,6 +28,7 @@ const common = `## 공통 — 숲마을과 같은 번호
 - 이식(tileGrafts)이 없다. 이식 그림은 이미 시트에 구워져 있으므로 이 타일셋에 새로 이식하지 말 것.
 - 수관 속은 검은 판이 아니라 이 시트 자신의 잎 테두리로 채워져 있다(가장자리 칸의 속 부분 ×0.78). 8방향이 모두 수관인 속 칸은 2칸 안에 빈 땅이 있으면 얕은 속 [2568, 2597~2601](×0.60), 없으면 깊은 속 [2602~2607](×0.46) 중 하나를 칸 위치로 고른다(오토타일 그룹 interiorVariants). 숲마을 맵을 옮기면 속 변형도 번호 그대로 따라온다.
 - 라벨은 기후에 맞게 앞말이 붙어 있다(예: 「눈 덮인 잔디」, 「용암 · 물 오토타일」). 번호 뜻은 숲마을 라벨과 같다.
+- 빈 땅은 숲마을처럼 채운다(개정5): 삐죽한 키큰 풀 덩이(builtin_tall_grass, 걸을 수 있음)와 세 송이 묶음 들꽃으로 한 변 5칸짜리 빈 정사각형이 없고 17×13 화면마다 빈 땅이 40% 이하가 되게 한다. 키큰 풀은 이 시트에서 눈 덮인 풀·잿빛 풀·마른 풀·금빛 풀로 칠해져 있다. 설원·화산에는 들꽃(348)·꽃덤불(288)을 두지 않고(빈 땅에 있던 것은 키큰 풀 한 포기로 바꿨다), 사막에는 잎 많은 꽃덤불(288)을 두지 않는다. 집·소품·마당·문앞 칸은 건드리지 않는다.
 - 한 맵에서 숲마을 타일셋과 기후 타일셋을 섞을 수 없다(맵 하나 = 타일셋 하나). 기후가 바뀌는 경계는 맵을 나눠 만든다.
 `;
 
