@@ -874,6 +874,20 @@ function isShopRoleNpcName(name: string): boolean {
   return /상점\s*주인|잡화\s*상|잡화점|가게\s*주인|상인|merchant|shopkeeper|shop\s*owner/u.test(name.trim());
 }
 
+/**
+ * 문·문 앞 발판·이동 칸은 NPC 가 아니다. 2026-09-24 JRPG 도그푸딩: 집 문 발판(`<문>_step`, 페이지 이름
+ * 「무기 상인의 집 문」)이 이름의 「상인」 때문에 상인 NPC 로 재사용돼 덮어써졌다 — 문은 돌아다니는 상인이 되고
+ * 집에 들어갈 수 없게 됐다. 모든 페이지가 접촉 발동이거나 이동·연결 명령을 담은 이벤트는 합치지 않는다.
+ */
+function isNpcMergeCandidate(event: GameEvent): boolean {
+  const pages = event.pages ?? [];
+  if (event.id.endsWith("_step") || /문$|door$/iu.test(event.name?.trim() ?? pages[0]?.name?.trim() ?? "")) return false;
+  if (pages.length === 0) return event.trigger?.kind !== "playerTouch";
+  if (pages.every((page) => page.trigger?.kind === "playerTouch" || page.trigger?.kind === "eventTouch")) return false;
+  const relay = (commands: readonly Command[]) => commands.some((command) => command.kind === "transfer" || command.kind === "callMapEvent");
+  return !pages.every((page) => relay(page.commands ?? []));
+}
+
 function findNearbySimilarNpc(
   map: { events: GameEvent[] },
   x: number,
@@ -886,6 +900,7 @@ function findNearbySimilarNpc(
   let best: GameEvent | undefined;
   let bestDist = Infinity;
   for (const event of map.events) {
+    if (!isNpcMergeCandidate(event)) continue;
     const pageName = event.pages?.[0]?.name?.trim() ?? "";
     const eventName = event.name?.trim() || pageName || event.id;
     const hay = eventName.toLowerCase().replace(/\s+/g, "");
