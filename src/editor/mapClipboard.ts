@@ -1,6 +1,6 @@
 import { editorState, type TileSelection } from "@/editor/editorState";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
-import { layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
+import { compactMapLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import { replaceTileStack, tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import type { GameMap, MapId } from "@/project/types";
@@ -162,6 +162,8 @@ export function pasteClipboard(mapId: MapId, x: number, y: number): boolean {
         setShadowAt(targetMap, targetIndex, clipboard.shadow?.[sourceIndex] ?? 0);
       }
     }
+    // 빈 칸을 붙여 마지막 2·4층·그림자 칸이 비면 선택 칸을 뺀다 — 옛 맵 모양으로 돌아간다.
+    compactMapLayers(targetMap);
   }, { scope: "map", mapId, cells });
   showClipboardToast(`${clipboard.width}×${clipboard.height} 붙여넣기 완료`, "ok");
   return true;
@@ -193,6 +195,7 @@ export function clearSelectionRegion(mapId: MapId): boolean {
         setShadowAt(targetMap, idx, 0);
       }
     }
+    compactMapLayers(targetMap);
   }, { scope: "map", mapId, cells });
   showClipboardToast("영역 지우기 완료", "ok");
   return true;

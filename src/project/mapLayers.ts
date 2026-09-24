@@ -6,6 +6,14 @@ import type { GameMap } from "@/project/types";
  * 1층 = lowerTiles, 2층 = lowerOverlayTiles, 3층 = upperTiles, 4층 = upperOverlayTiles.
  * 2·4층과 그림자는 선택 칸이라 옛 맵에는 없다 — 없으면 빈칸이다.
  * 층 번호와 칸 이름의 대응은 이 파일에만 둔다.
+ *
+ * 빈 선택 칸 정리(모든 칸이 -1/0 이면 키를 뺀다 — 옛 맵과 JSON 이 같아진다)는 **칸을 비울 수 있는 변형기 끝에서** 한다.
+ * 저장 경로에서 따로 하지 않는다. 지금 그 자리는 다음이 전부다:
+ * - `remapExtraLayers`/`cropExtraLayers` 가 스스로 정리 — 크기 바꾸기(actions.resizeMap, resize_map 도구,
+ *   마을 넓히기), 밀기(mapShiftActions), 장소·프리셋 잘라내기, Pi 고스트 증분
+ * - `compactMapLayers` 호출 — 붙여넣기·영역 지우기(editor/mapClipboard)
+ * 새로 칸을 지우는 변형기(지우개·조수 도구 등)를 만들면 끝에서 `compactMapLayers` 를 부르고 이 목록에 더한다.
+ * 크기를 바꾸거나 잘라내는 코드는 1층·3층을 새로 만들기 전에 반드시 `cropExtraLayers`/`remapExtraLayers` 를 부른다.
  */
 export type TileLayerNo = 1 | 2 | 3 | 4;
 export const TILE_LAYER_NOS: readonly TileLayerNo[] = [1, 2, 3, 4];
@@ -67,7 +75,7 @@ function isEmptyExtra(key: ExtraLayerKey, values: readonly number[]): boolean {
   return values.every((value) => value === empty);
 }
 
-/** 모두 빈 선택 칸을 지운다. 저장 전·크기 변경 뒤에 부른다. */
+/** 모두 빈 선택 칸을 지운다. 칸을 비울 수 있는 변형기 끝에서 부른다(위 머리말의 목록). */
 export function compactMapLayers(map: GameMap): void {
   for (const key of EXTRA_LAYER_KEYS) {
     const values = map[key];
