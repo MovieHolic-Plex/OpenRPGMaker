@@ -2,6 +2,7 @@ import { sharedRegionSnapshot } from './sharedSpatialReferences';
 import { DIVERSE_VILLAGE_PLACES } from "./diverseVillageReferences";
 import { FANTASY_PLACE_REFERENCES } from "./fantasyPlaceReferences";
 import { RPG_INTERIOR_PLACE_REFERENCES } from "./rpgInteriorPlaceReferences";
+import { RPG_DUNGEON_PLACE_REFERENCES } from "./rpgDungeonPlaceReferences";
 import { CLIMATE_VILLAGE_PLACE_REFERENCES } from "./climateVillagePlaceReferences";
 import { FIELD_ROUTE_PLACE_REFERENCES } from "./fieldRoutePlaceReferences";
 import type { GameMap, TilesetDef } from "./types";
@@ -58,6 +59,7 @@ const SNAPSHOT_FILES: Record<string, SnapshotFile> = {
 };
 const FANTASY_FILE: SnapshotFile = () => import("./regionReferences/fantasy-places.json");
 const INTERIOR_FILE: SnapshotFile = () => import("./regionReferences/rpg-interiors.json");
+const DUNGEON_FILE: SnapshotFile = () => import("./regionReferences/rpg-dungeons.json");
 const CLIMATE_FILE: SnapshotFile = () => import("./regionReferences/climate-villages.json");
 const FIELD_FILE: SnapshotFile = () => import("./regionReferences/field-routes.json");
 const SHIPS_FILE: SnapshotFile = () => import("./regionReferences/ships.json");
@@ -87,6 +89,8 @@ function snapshotSource(id: string): SnapshotSource | undefined {
   if (fantasy) return fromMaps(FANTASY_FILE, fantasy.sourceMapId);
   const interior = RPG_INTERIOR_PLACE_REFERENCES.find(entry => entry.id === id);
   if (interior) return fromMaps(INTERIOR_FILE, interior.sourceMapId);
+  const dungeon = RPG_DUNGEON_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (dungeon) return fromMaps(DUNGEON_FILE, dungeon.sourceMapId);
   const climate = CLIMATE_VILLAGE_PLACE_REFERENCES.find(entry => entry.id === id);
   if (climate) return fromMaps(CLIMATE_FILE, climate.sourceMapId);
   const field = FIELD_ROUTE_PLACE_REFERENCES.find(entry => entry.id === id);
@@ -123,7 +127,7 @@ export async function preloadRegionReference(id: string): Promise<void> {
 
 /** Every snapshot chunk — for sweeps over all references (tests, capture scripts). */
 export async function preloadAllRegionReferences(): Promise<void> {
-  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
+  await Promise.all([...Object.values(SNAPSHOT_FILES), FANTASY_FILE, INTERIOR_FILE, DUNGEON_FILE, CLIMATE_FILE, FIELD_FILE, SHIPS_FILE].map(load));
 }
 
 function snapshotFor(id: string): PlaceSnapshot | undefined {

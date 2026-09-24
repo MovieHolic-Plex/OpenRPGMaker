@@ -1,6 +1,7 @@
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
+import { ensureRpgDungeonReferences } from "./sharedRpgDungeonReferences";
 import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
 import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
@@ -139,6 +140,7 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
+      changed = ensureRpgDungeonReferences(project.tilesets[id]) || changed;
       changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
       // Groves made before the leaf interior gain its depth variants (forest_harmony and the climate sheets).
       changed = ensureForestGroveInterior(project.tilesets[id]) || changed;
@@ -251,6 +253,7 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
   const tileset = bundledEasyRpgTilesetBase(asset);
   ensureRpgPlaceReferences(tileset);
   ensureRpgInteriorReferences(tileset);
+  ensureRpgDungeonReferences(tileset);
   ensureFieldRouteReferences(tileset);
   return tileset;
 }

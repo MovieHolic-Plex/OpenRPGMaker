@@ -1,0 +1,32 @@
+{
+  "projectId": "b9f19baf-00ed-451c-8534-0942d1ffb348",
+  "projectDir": ".oprn-projects/rpg-dungeons-20260924",
+  "revision": 4,
+  "sha256": "9566d80358bbc8513a777c227506d2d01ebdcdf746cbf82cd76406ed647adb9d",
+  "saved": true,
+  "reopened": true,
+  "maps": [
+    "dungeon-cave-entrance",
+    "dungeon-cave-fork",
+    "dungeon-cave-treasure",
+    "dungeon-cave-boss",
+    "dungeon-mine",
+    "dungeon-catacomb",
+    "dungeon-waterway",
+    "dungeon-temple",
+    "dungeon-tower-1f",
+    "dungeon-tower-2f",
+    "dungeon-tower-3f",
+    "dungeon-tower-roof",
+    "dungeon-demon-hall",
+    "dungeon-demon-trap",
+    "dungeon-demon-antechamber",
+    "dungeon-ice-cave",
+    "dungeon-lava-cave",
+    "dungeon-pyramid-hall",
+    "dungeon-pyramid-tomb",
+    "dungeon-sea-cave",
+    "dungeon-dragon-lair",
+    "dungeon-sluice-ruins"
+  ]
+}
