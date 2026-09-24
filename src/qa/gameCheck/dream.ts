@@ -60,10 +60,16 @@ export function checkDream(project: Project, briefText = briefTextOf(project)): 
   }
   const graphicChanges: CommandVisit[] = [];
   let saveMenus = 0;
+  const lockedSaves: CommandVisit[] = [];
   visitAllCommands(project, (visit) => {
     if (isActorGraphicChange(visit)) graphicChanges.push(visit);
-    if ((visit.command as { kind?: string }).kind === "openSaveMenu") saveMenus += 1;
+    if ((visit.command as { kind?: string }).kind !== "openSaveMenu") return;
+    saveMenus += 1;
+    if (visit.where.mapId && project.maps[visit.where.mapId]?.disableSave) lockedSaves.push(visit);
   });
+  for (const visit of lockedSaves) {
+    findings.push({ severity: "warning", code: "dream-save-blocked", message: `저장 메뉴 이벤트가 저장 금지 맵에 있어 저장할 수 없습니다.`, where: visit.where });
+  }
   if (EFFECT_BRIEF.test(briefText) && APPEARANCE_BRIEF.test(briefText) && graphicChanges.length === 0) {
     findings.push({ severity: "warning", code: "dream-effect-no-appearance", message: "기획은 효과를 얻으면 외형이 바뀌는데 주인공 모습을 바꾸는 명령(m2-024-change-actor-graphic)이 어디에도 없습니다 — 대사로만 바뀌었다고 말합니다." });
   }
