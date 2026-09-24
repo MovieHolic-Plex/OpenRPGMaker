@@ -1,0 +1,130 @@
+{
+  "store": {
+    "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+    "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+    "revision": 535,
+    "sha256": "966b65cc9279acd610f1f8cd82f77d519274d4a906d74f99cb477a0eb14171c0",
+    "repeatReadMatches": true,
+    "maps": 20,
+    "events": 184,
+    "inlined": 80,
+    "scope": "Reopened canonical store read twice; media hashes verified and inlined for read-only player QA copy. No project content written."
+  },
+  "scope": "Read-only content preservation and placement audit. Does not prove actual walking, victory, reward guards, balance or play duration.",
+  "newEvents": [
+    {
+      "map": "map_saesol_route",
+      "id": "ev_sr_serin_route1",
+      "x": 15,
+      "y": 22,
+      "approach": {
+        "x": 15,
+        "y": 23,
+        "direction": "up"
+      }
+    },
+    {
+      "map": "map_saesol_town2",
+      "id": "ev_sr_serin_town2",
+      "x": 12,
+      "y": 15,
+      "approach": {
+        "x": 12,
+        "y": 16,
+        "direction": "up"
+      }
+    },
+    {
+      "map": "map_sr3_port",
+      "id": "ev_sr_serin_port",
+      "x": 26,
+      "y": 16,
+      "approach": {
+        "x": 26,
+        "y": 17,
+        "direction": "up"
+      }
+    },
+    {
+      "map": "map_sr4_gate",
+      "id": "ev_sr_serin_gate",
+      "x": 14,
+      "y": 14,
+      "approach": {
+        "x": 14,
+        "y": 15,
+        "direction": "up"
+      }
+    }
+  ],
+  "addedDatabaseCounts": {
+    "enemies": 10,
+    "troops": 4
+  },
+  "newQuest": [
+    {
+      "kind": "graph",
+      "id": "q_serin_notebook",
+      "title": "세린의 여행 수첩",
+      "summary": "자신만의 전술 수첩을 완성해가는 라이벌 세린과 각 지역에서 조우하며 라이벌 배틀을 펼친다.",
+      "nodes": [
+        {
+          "id": "node_serin_1",
+          "description": "1번 길에서 세린과의 1차전 승리",
+          "completesWhen": {
+            "switchId": "sw_sr_serin_won_1",
+            "value": true,
+            "kind": "switch"
+          }
+        },
+        {
+          "id": "node_serin_2",
+          "description": "바위턱마을에서 세린과의 2차전 승리",
+          "completesWhen": {
+            "kind": "switch",
+            "value": true,
+            "switchId": "sw_sr_serin_won_2"
+          }
+        },
+        {
+          "id": "node_serin_3",
+          "description": "해오름 항구에서 세린과의 3차전 승리",
+          "completesWhen": {
+            "kind": "switch",
+            "value": true,
+            "switchId": "sw_sr_serin_won_3"
+          }
+        },
+        {
+          "id": "node_serin_4",
+          "description": "새솔리그 관문에서 세린과의 최종전 승리",
+          "completesWhen": {
+            "kind": "switch",
+            "value": true,
+            "switchId": "sw_sr_serin_won_4"
+          }
+        }
+      ],
+      "edges": [
+        {
+          "from": "node_serin_1",
+          "to": "node_serin_2"
+        },
+        {
+          "from": "node_serin_2",
+          "to": "node_serin_3"
+        },
+        {
+          "from": "node_serin_3",
+          "to": "node_serin_4"
+        }
+      ]
+    }
+  ],
+  "knownUnfixed": [
+    "new event graphic uses textureKey instead of resource id",
+    "final team backdrop snowy at grassland gate",
+    "dialogue recommends nonexistent paralysis cure and panacea does not remove paralysis"
+  ],
+  "actualBattleQA": "not yet run"
+}
