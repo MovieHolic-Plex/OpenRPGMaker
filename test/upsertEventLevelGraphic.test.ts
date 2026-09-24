@@ -20,6 +20,15 @@ describe("upsert_event 인물 그림", () => {
     expect(page(ctx, "ev_summer").graphic).toMatchObject({ pattern: 25, sprite: { id: "tex_easyrpg_charset_people1" } });
     expect(page(ctx, "ev_summer").priority).toBe("same");
   });
+  it("없는 sprite id 는 tex_ 접두로 맞추고, 못 맞추면 버려도 이벤트는 저장된다", () => {
+    const ctx = { project: createBlankProject() };
+    const fixed = runTool(ctx, "upsert_event", { mapId: ctx.project.startMapId, event: { id: "ev_a", name: "한여름", x: 3, y: 3, graphic: { ...SPRITE, sprite: { type: "bundled", id: "easyrpg_charset_people1" } }, pages: [{ trigger: { kind: "action" }, commands: talkInFork }] } });
+    expect(fixed.ok, fixed.summary).toBe(true);
+    expect(page(ctx, "ev_a").graphic?.sprite?.id).toBe("tex_easyrpg_charset_people1");
+    const bogus = runTool(ctx, "upsert_event", { mapId: ctx.project.startMapId, event: { id: "ev_b", name: "윤서하", x: 5, y: 3, graphic: { ...SPRITE, sprite: { type: "bundled", id: "no_such_sheet" } }, pages: [{ trigger: { kind: "action" }, commands: talkInFork }] } });
+    expect(bogus.ok, bogus.summary).toBe(true);
+    expect(page(ctx, "ev_b").graphic?.sprite?.id).not.toBe("no_such_sheet");
+  });
   it("fork 안 대사·「이름:」 본문이면 그림 없어도 인물로 보고 주민 그림을 세운다", () => {
     const ctx = { project: createBlankProject() };
     const r = runTool(ctx, "upsert_event", { mapId: ctx.project.startMapId, event: { id: "ev_summer", name: "한여름", x: 3, y: 3, pages: [{ trigger: { kind: "action" }, commands: talkInFork }] } });
