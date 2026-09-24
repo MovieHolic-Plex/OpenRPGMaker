@@ -2,7 +2,7 @@
 import{chromium}from'playwright';import fs from'node:fs/promises';
 const [host,libraryFile,out]=process.argv.slice(2);if(!host||!libraryFile||!out)throw Error('Usage: <host URL> <local library.json> <private output>');
 await fs.mkdir(out,{recursive:true});
-const b=await chromium.launch();try{const page=await b.newPage();await page.route('**/__paw-library',r=>r.fulfill({path:libraryFile,contentType:'application/json'}));await page.goto(new URL('/__oprn/team',host).href);await page.waitForFunction(()=>window.oprn?.project);
+const b=await chromium.launch();try{const page=await b.newPage(),saveRequests=[];page.on('request',request=>{if(request.headers()['x-oprn-channel']==='oprn:project.save')saveRequests.push({encoding:request.headers()['content-encoding']??'identity',bodyBytes:request.postDataBuffer()?.length??null});});await page.route('**/__paw-library',r=>r.fulfill({path:libraryFile,contentType:'application/json'}));await page.goto(new URL('/__oprn/team',host).href);await page.waitForFunction(()=>window.oprn?.project);
 const result=await page.evaluate(async()=>{
  const status=await window.oprn.project.status(),before=await window.oprn.project.load();const p=JSON.parse(before.serialized),l=await(await fetch('/__paw-library')).json();
  const maps=JSON.stringify(p.maps),spatial=JSON.stringify(p.spatialAuthoring);await window.oprn.project.backup({projectDir:status.projectDir});
@@ -11,5 +11,5 @@ const result=await page.evaluate(async()=>{
  const loaded=await window.oprn.project.load(),after=JSON.parse(loaded.serialized);if(JSON.stringify(after.maps)!==maps||JSON.stringify(after.spatialAuthoring)!==spatial)throw Error('Authored maps or spatial structure changed');
  for(const [id,t]of Object.entries(l.tilesets))if(JSON.stringify(after.tilesets[id])!==JSON.stringify(t))throw Error('Reference projection differs: '+id);
  return{projectId:status.projectId,projectDir:status.projectDir,revision:loaded.revision,sha256:loaded.sha256,reloadedEqual:true,unchangedMaps:Object.keys(after.maps).length,projectedTilesets:Object.keys(l.tilesets).length};
-});await fs.writeFile(out+'/proof.json',JSON.stringify(result,null,2));console.log(result);
+});result.saveRequests=saveRequests;await fs.writeFile(out+'/proof.json',JSON.stringify(result,null,2));console.log(result);
 }finally{await b.close();}
