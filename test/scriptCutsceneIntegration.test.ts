@@ -10,6 +10,8 @@ import {
 } from "./fixtures/memoryCutsceneFixture";
 
 describe("script_cutscene + run_scene_test", () => {
+  // 컷신이 pan 으로 끝나면 끝날 때 카메라가 주인공에게 돌아온다 — 조작이 돌아왔는데 카메라가 화면에 고정돼 있으면
+  // 주인공이 화면 밖으로 걸어 나간다(2026-09-24 회상 스토리). 그림은 컷신이 남긴 상태 그대로다.
   it("회상 컷신이 카메라 pan, 픽처 표시, 종료 후 입력 잠금 해제를 통과한다", () => {
     const project = createMemoryCutsceneProject();
     const result = runTool(
@@ -22,7 +24,7 @@ describe("script_cutscene + run_scene_test", () => {
           { kind: "interact" },
           {
             kind: "expect",
-            cameraAt: { cx: characterSpriteX(4), cy: characterSpriteY(5), tolerance: 0.001 },
+            cameraAt: { cx: characterSpriteX(2), cy: characterSpriteY(2), tolerance: 0.001 },
             pictureVisible: { id: MEMORY_CUTSCENE_PICTURE_ID, resourceId: MEMORY_CUTSCENE_PICTURE_RESOURCE_ID },
             cutsceneLocked: false,
           },
@@ -221,5 +223,26 @@ describe("script_cutscene moveActor 경로 경고", () => {
     expect(placed.ok, placed.summary).toBe(true);
     const warnings = (placed.diff as { warnings?: string[] } | undefined)?.warnings ?? placed.warnings ?? [];
     expect(JSON.stringify(warnings)).toContain("컷신 이동 막힘");
+  });
+});
+
+describe("script_cutscene camera return·fixed 는 카탈로그를 통과한다", () => {
+  it("camera return 비트가 거부되지 않고, fixed 는 lock 으로 남는다", () => {
+    const ctx = { project: createBlankProject() };
+    const mapId = ctx.project.startMapId;
+    const placed = runTool(ctx, "script_cutscene", {
+      mapId, trigger: "action", x: 5, y: 5, eventId: "ev_cam",
+      beats: [
+        { kind: "camera", mode: "pan", x: 8, y: 6, durationMs: 300 },
+        { kind: "say", text: "저기다." },
+        { kind: "camera", mode: "return", durationMs: 300 },
+        { kind: "camera", mode: "fixed", x: 3, y: 3 },
+      ],
+    });
+    expect(placed.ok, placed.summary).toBe(true);
+    const modes = ctx.project.maps[mapId]!.events.find((event) => event.id === "ev_cam")!.pages![0]!.commands
+      .filter((command) => command.kind === "m2Command").map((command) => (command as { fields: { mode?: string } }).fields.mode);
+    expect(modes).toContain("return");
+    expect(modes).toContain("lock");
   });
 });

@@ -5,6 +5,9 @@ const CAMERA_MODE_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "follow", label: "대상 추적" },
   { value: "zoom", label: "줌 변경" },
   { value: "lock", label: "고정" },
+  // 런타임(cameraControlMode)은 처음부터 return 을 알았지만 선택지에 없어 카탈로그 검증이 컷신의 camera return 을
+  // 전부 거부했다 — script_cutscene 은 되돌림 없는 컷신만 저장돼 카메라가 화면에 고정된 채 남았다(2026-09-24).
+  { value: "return", label: "주인공에게 돌아가기" },
 ];
 
 const MODERN_TARGET_OPTIONS: readonly M2CommandFieldOption[] = [
