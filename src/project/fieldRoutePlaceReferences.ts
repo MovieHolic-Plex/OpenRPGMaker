@@ -15,7 +15,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-forest-crossroads.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/field-forest-crossroads.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-forest-crossroads",
     "snapshotProjectId": "oprn-place-field-forest-crossroads-v1",
     "rules": [
@@ -42,7 +42,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-ford-cliff-road.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/field-ford-cliff-road.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-ford-cliff-road",
     "snapshotProjectId": "oprn-place-field-ford-cliff-road-v1",
     "rules": [
@@ -69,7 +69,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-two-step-pass.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/field-two-step-pass.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-two-step-pass",
     "snapshotProjectId": "oprn-place-field-two-step-pass-v1",
     "rules": [
@@ -96,7 +96,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-snow-two-step-pass.png",
     "tilesetPreview": "/assets/climate-villages/snow-chipset.png",
     "projectDownload": "/assets/region-references/field-snow-two-step-pass.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-snow-two-step-pass",
     "snapshotProjectId": "oprn-place-field-snow-two-step-pass-v1",
     "rules": [
@@ -105,7 +105,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "숲마을 필드 「field-two-step-pass」과 칸 번호가 같은 기후 시트(forest_harmony_snow)로 옮겼다. 기후 편집: freeze.",
       "첫 출구에서 모든 출구·계단 끝·다리 끝·동굴 앞·얼음판까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
       "숲 수관 속은 잎으로 채운 깊이 변형을 쓴다: 8방향이 모두 수관인 칸은 2칸 안에 빈 땅이 있으면 얕은 속(2568·2597~2601), 없으면 깊은 속(2602~2607).",
-      "공용 AI 문서 「설원 마을 사이 필드·야외 장소 (개정5: 야외 장소 추가)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
+      "공용 AI 문서 「설원 마을 사이 필드·야외 장소 (개정6: 눈 쌓인 성벽)」에 필드 규칙·전체 배열·사용 타일 사전이 있다."
     ],
     "limitations": "지형 참고 사례. 출구는 어느 마을로 이어지는지만 적었고 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -123,7 +123,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-volcano-ford-cliff-road.png",
     "tilesetPreview": "/assets/climate-villages/volcano-chipset.png",
     "projectDownload": "/assets/region-references/field-volcano-ford-cliff-road.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-volcano-ford-cliff-road",
     "snapshotProjectId": "oprn-place-field-volcano-ford-cliff-road-v1",
     "rules": [
@@ -150,7 +150,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-desert-crossroads.png",
     "tilesetPreview": "/assets/climate-villages/desert-chipset.png",
     "projectDownload": "/assets/region-references/field-desert-crossroads.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-desert-crossroads",
     "snapshotProjectId": "oprn-place-field-desert-crossroads-v1",
     "rules": [
@@ -177,7 +177,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/field-autumn-ford-cliff-road.png",
     "tilesetPreview": "/assets/climate-villages/autumn-chipset.png",
     "projectDownload": "/assets/region-references/field-autumn-ford-cliff-road.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "field-autumn-ford-cliff-road",
     "snapshotProjectId": "oprn-place-field-autumn-ford-cliff-road-v1",
     "rules": [
@@ -204,7 +204,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-border-fortress.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-border-fortress.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-border-fortress",
     "snapshotProjectId": "oprn-place-outdoor-border-fortress-v1",
     "rules": [
@@ -231,7 +231,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-royal-capital.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-royal-capital.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-royal-capital",
     "snapshotProjectId": "oprn-place-outdoor-royal-capital-v1",
     "rules": [
@@ -258,7 +258,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-fairy-spring.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-fairy-spring.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-fairy-spring",
     "snapshotProjectId": "oprn-place-outdoor-fairy-spring-v1",
     "rules": [
@@ -285,7 +285,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-fishing-village.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-fishing-village.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-fishing-village",
     "snapshotProjectId": "oprn-place-outdoor-fishing-village-v1",
     "rules": [
@@ -312,7 +312,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-swamp-village.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-swamp-village.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-swamp-village",
     "snapshotProjectId": "oprn-place-outdoor-swamp-village-v1",
     "rules": [
@@ -339,7 +339,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-ruined-city.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-ruined-city.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-ruined-city",
     "snapshotProjectId": "oprn-place-outdoor-ruined-city-v1",
     "rules": [
@@ -366,7 +366,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-dwarf-mine.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-dwarf-mine.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-dwarf-mine",
     "snapshotProjectId": "oprn-place-outdoor-dwarf-mine-v1",
     "rules": [
@@ -393,7 +393,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-graveyard-hill.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-graveyard-hill.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-graveyard-hill",
     "snapshotProjectId": "oprn-place-outdoor-graveyard-hill-v1",
     "rules": [
@@ -420,7 +420,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-sealed-altar.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-sealed-altar.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-sealed-altar",
     "snapshotProjectId": "oprn-place-outdoor-sealed-altar-v1",
     "rules": [
@@ -447,7 +447,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-opening-overlook.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-opening-overlook.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-opening-overlook",
     "snapshotProjectId": "oprn-place-outdoor-opening-overlook-v1",
     "rules": [
@@ -474,7 +474,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-festival-plaza.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-festival-plaza.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-festival-plaza",
     "snapshotProjectId": "oprn-place-outdoor-festival-plaza-v1",
     "rules": [
@@ -501,7 +501,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-ending-meadow.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-ending-meadow.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-ending-meadow",
     "snapshotProjectId": "oprn-place-outdoor-ending-meadow-v1",
     "rules": [
@@ -528,7 +528,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-mountain-pass.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-mountain-pass.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-mountain-pass",
     "snapshotProjectId": "oprn-place-outdoor-mountain-pass-v1",
     "rules": [
@@ -555,7 +555,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-swamp-field.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-swamp-field.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-swamp-field",
     "snapshotProjectId": "oprn-place-outdoor-swamp-field-v1",
     "rules": [
@@ -582,7 +582,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-desert-oasis-city.png",
     "tilesetPreview": "/assets/climate-villages/desert-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-desert-oasis-city.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-desert-oasis-city",
     "snapshotProjectId": "oprn-place-outdoor-desert-oasis-city-v1",
     "rules": [
@@ -610,7 +610,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-snow-fortress.png",
     "tilesetPreview": "/assets/climate-villages/snow-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-snow-fortress.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-snow-fortress",
     "snapshotProjectId": "oprn-place-outdoor-snow-fortress-v1",
     "rules": [
@@ -619,7 +619,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "기후 시트 forest_harmony_snow에 그렸다. 지형과 배치만 있다.",
       "입구에서 모든 출구와 집 문 앞까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
       "채우기: 풀·꽃·덤불·바위는 덩이로만 두고 흩뿌리지 않는다. 주인 없는 소품은 두지 않는다. 모래·눈·재·가을 땅에는 키큰 풀을 깔지 않는다.",
-      "공용 AI 문서 「설원 마을 사이 필드·야외 장소 (개정5: 야외 장소 추가)」의 「서리성 설원 요새 · 출구와 지형·배치 규칙」에 쓸 타일 번호·그룹·금지 사항이, 「서리성 설원 요새 · 0행부터 전체 배열」부터 전체 배열이 있다."
+      "공용 AI 문서 「설원 마을 사이 필드·야외 장소 (개정6: 눈 쌓인 성벽)」의 「서리성 설원 요새 · 출구와 지형·배치 규칙」에 쓸 타일 번호·그룹·금지 사항이, 「서리성 설원 요새 · 0행부터 전체 배열」부터 전체 배열이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -637,7 +637,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-snow-glacier.png",
     "tilesetPreview": "/assets/climate-villages/snow-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-snow-glacier.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-snow-glacier",
     "snapshotProjectId": "oprn-place-outdoor-snow-glacier-v1",
     "rules": [
@@ -646,7 +646,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
       "기후 시트 forest_harmony_snow에 그렸다. 지형과 배치만 있다.",
       "입구에서 모든 출구와 집 문 앞까지 런타임 이동 규칙으로 닿는 것을 확인했다.",
       "채우기: 풀·꽃·덤불·바위는 덩이로만 두고 흩뿌리지 않는다. 주인 없는 소품은 두지 않는다. 모래·눈·재·가을 땅에는 키큰 풀을 깔지 않는다.",
-      "공용 AI 문서 「설원 마을 사이 필드·야외 장소 (개정5: 야외 장소 추가)」의 「푸른 빙하 설원 · 출구와 지형·배치 규칙」에 쓸 타일 번호·그룹·금지 사항이, 「푸른 빙하 설원 · 0행부터 전체 배열」부터 전체 배열이 있다."
+      "공용 AI 문서 「설원 마을 사이 필드·야외 장소 (개정6: 눈 쌓인 성벽)」의 「푸른 빙하 설원 · 출구와 지형·배치 규칙」에 쓸 타일 번호·그룹·금지 사항이, 「푸른 빙하 설원 · 0행부터 전체 배열」부터 전체 배열이 있다."
     ],
     "limitations": "지형·배치 참고 사례. 문 이동·NPC·이벤트는 포함하지 않는다. 자동 생성 프리셋이 아니다."
   },
@@ -664,7 +664,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-volcano-zone.png",
     "tilesetPreview": "/assets/climate-villages/volcano-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-volcano-zone.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-volcano-zone",
     "snapshotProjectId": "oprn-place-outdoor-volcano-zone-v1",
     "rules": [
@@ -692,7 +692,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-desert-dunes.png",
     "tilesetPreview": "/assets/climate-villages/desert-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-desert-dunes.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-desert-dunes",
     "snapshotProjectId": "oprn-place-outdoor-desert-dunes-v1",
     "rules": [
@@ -720,7 +720,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-beach-cliffs.png",
     "tilesetPreview": "/assets/climate-villages/desert-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-beach-cliffs.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-beach-cliffs",
     "snapshotProjectId": "oprn-place-outdoor-beach-cliffs-v1",
     "rules": [
@@ -748,7 +748,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-nomad-camp.png",
     "tilesetPreview": "/assets/climate-villages/autumn-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-nomad-camp.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-nomad-camp",
     "snapshotProjectId": "oprn-place-outdoor-nomad-camp-v1",
     "rules": [
@@ -775,7 +775,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-old-battlefield.png",
     "tilesetPreview": "/assets/climate-villages/autumn-chipset.png",
     "projectDownload": "/assets/region-references/outdoor-old-battlefield.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-old-battlefield",
     "snapshotProjectId": "oprn-place-outdoor-old-battlefield-v1",
     "rules": [
@@ -802,7 +802,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-great-valley.png",
     "tilesetPreview": "/assets/forest-harmony/chipset.png",
     "projectDownload": "/assets/region-references/outdoor-great-valley.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-great-valley",
     "snapshotProjectId": "oprn-place-outdoor-great-valley-v1",
     "rules": [
@@ -829,7 +829,7 @@ export const FIELD_ROUTE_PLACE_REFERENCES = [
     "preview": "/assets/region-references/outdoor-world-map.png",
     "tilesetPreview": "/assets/easyrpg-chipset-world.png",
     "projectDownload": "/assets/region-references/outdoor-world-map.oprn.json",
-    "sourceProjectId": "2aa0b67c-52bc-46bb-b070-3604010723db",
+    "sourceProjectId": "1e916e09-3330-4e2b-b04e-186bfa39c91e",
     "sourceMapId": "outdoor-world-map",
     "snapshotProjectId": "oprn-place-outdoor-world-map-v1",
     "rules": [

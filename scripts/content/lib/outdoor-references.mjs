@@ -7,6 +7,12 @@ const OUT = "tiledata/rpg-outdoors";
 const SIDE = { west: "서", east: "동", north: "북", south: "남" };
 const CLIMATE_NAME = { forest_harmony: "숲(초록)", forest_harmony_snow: "설원", forest_harmony_volcano: "화산(재)", forest_harmony_desert: "사막", forest_harmony_autumn: "가을", easyrpg_chipset_world: "월드맵" };
 const GREEN = new Set(["forest_harmony"]);
+const SNOW_WALLS = JSON.parse(fs.readFileSync("tiledata/climate-villages/sheets.json")).terrain.snowWalls;
+const snowWallText = () => {
+  const by = new Map();
+  for (const [src, dst] of SNOW_WALLS) by.set(src, [...(by.get(src) ?? []), dst]);
+  return [...by].map(([src, d]) => `${src}→${d.join("/")}`).join(" ");
+};
 
 export function loadOutdoors() {
   const c = JSON.parse(fs.readFileSync(`${OUT}/catalog.json`));
@@ -26,7 +32,7 @@ ${barren
 - 나무는 잎 없는 나무(2880~3029, 타일 그룹 bare-trees:big-1…3·mid-1…3·small-1…3·shrub-1…5)를 **덩이로만** 세운다: 큰/중간 한 그루 + 곁나무 0~2 + 밑동 옆 바위 537·마른 덤불(shrub, 사막 안쪽은 선인장 769). 덩이 사이는 맵 가장자리 띠 8칸·안쪽 13칸, 집·길·문·계단·다리 2칸 밖, 물·절벽·다른 물건 1칸 밖. 같은 밑동 줄에 세 그루 넘게 늘어세우지 않는다(울타리처럼 보인다). 도우미: scripts/content/lib/bare-trees.mjs arrangeBareGroves(사막 물가 야자 770 은 plantPalmGroves). 이 맵들은 채우기가 남긴 1×2 자리를 덩이 후보로 주었다.
 - ${ts === "forest_harmony_volcano" ? "재 들판의 남은 빈칸은 지형과 돌로 메운다: 화산 봉우리(4×2, 윗줄 858·859·918·919 / 아랫줄 888·889·948·949), 용암 강·못(불규칙 가장자리, 네모 용암 금지), 절벽 발치와 들판의 바위 537·29 너덜(7~12칸 덩이). 키큰 풀 덩이로 메우지 않는다. 마른 가지 740 은 덩이로도 쓰지 않는다(고르게 흩은 잔해로 읽힌다)." : "모래밭의 남은 빈칸은 선인장 769 덩이(6~10칸, 물가는 야자 770)와 바위 537·29 무리(5~8칸)로 메우고, 들꽃은 물가 7칸 안에만 묶음으로 둔다. 키큰 풀은 깔지 않는다."}`
     : `- 나무 덩이: 나무 키트(활엽수 978~980/1008~1010·1038~1040/1068~1070 3×4, 둥근 덤불 983~985/1013~1015/1043~1045 3×3, 작은 덤불 1073/1074/1103/1104 2×2)를 어깨를 붙여 3~7그루씩. 줄·바둑판으로 세우지 않는다.${ts === "forest_harmony_snow" ? " 설원은 침엽수 도장도 2~4그루 덩이로 쓴다." : ""}`}
-- 꽃: 들꽃 348 을 **3~5칸 묶음**(2×2 속 + 한두 칸)이나 화단 키트(꽃 화단·화분)로만. 한 칸씩 흩은 「색종이 밭」 금지.
+${ts === "forest_harmony_snow" ? `- **눈 쌓인 성벽**(개정6): 설원 시트의 성벽·성탑·문루 윗면은 눈 얹힌 사본으로 바꿔 깐다 — 흉벽 톱니 위 눈 3줄, 윗면 석판은 반쯤 눈 더미, 성벽 위 길(412·21)은 튀어나온 돌만 하얗게, 안쪽 벽면 51 은 **맨 윗줄에만** 눈 처마(두 줄 벽면의 아랫줄은 51 그대로), 성탑 머리 24·25 는 눈 모자. 원본→사본(여러 개면 칸 위치로 번갈아): ${snowWallText()}. 통행·레이어·밑칠은 원본과 같다. 도우미 scripts/content/lib/climate-terrain.mjs snowCastleTops(map, snowWalls).\n` : ""}- 꽃: 들꽃 348 을 **3~5칸 묶음**(2×2 속 + 한두 칸)이나 화단 키트(꽃 화단·화분)로만. 한 칸씩 흩은 「색종이 밭」 금지.
 - 덤불 289 묶음·작은 덤불 2×2, 바위 537·29 는 3~6칸 무리로 절벽 발치·물가·숲 가장자리에만. 한 줄(가로·세로 3칸 이상 일렬) 금지.
 ${green ? `- 키큰 풀: E builtin_tall_grass(243~335, 숲 수관 1칸 안)·F builtin_tall_grass_light(1124~1126/1154~1156/1184~1186, 외톨이 1127, 속 1157, 트인 곳)·G builtin_tall_grass_short(1128~1130/1158~1160/1188~1190, 외톨이 1131, 속 1161, 집·길 3칸 안). 덩이마다 한 종류, 2×2 이상, variantMap 으로 이웃에 맞춰 고른다(scripts/content/lib/tall-grass.mjs arrangeTallGrass).` : `- 키큰 풀 E/F/G 금지: 모래·눈·재·가을 시트에 깐 풀(재칠본 포함)은 초록 띠나 진흙 얼룩으로 읽힌다. 이 시트에는 풀 덩이를 깔지 않는다.`}
 - 금지 재료: 짙은 수풀 builtin_undergrowth(9·11·39~41·69~71·99~101, 검은 초록 구불이), 어두운 덤불 986~988·1016~1018·1046~1048(구덩이로 보임), 마른 가지 740·바위·뼈 383·부서진 울타리 410 을 고르게 흩뿌리기(절벽·폐허 벽·물가 곁 1~3곳에 몰아 둔다).

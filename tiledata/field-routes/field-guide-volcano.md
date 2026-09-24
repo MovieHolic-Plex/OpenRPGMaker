@@ -1,6 +1,6 @@
 # 화산 마을 사이 필드
 
-tilesetId=forest_harmony_volcano, 시트 tex_forest_harmony_volcano(30열·16px, 3030칸). 좌표는 0기준.
+tilesetId=forest_harmony_volcano, 시트 tex_forest_harmony_volcano(30열·16px, 3660칸). 좌표는 0기준.
 
 숲마을 필드(tilesetId=forest_harmony)의 두 레이어를 **그대로** 이 타일셋으로 옮긴 뒤 기후 편집만 더했다. 기후 시트는 숲마을 이식을 한 장에 구워 칸 번호가 같으므로, 숲 필드 문서(field-routes-forest-v5)의 부품 번호를 이식 없이 그대로 쓴다. 기후 시트 자체의 규칙(무엇이 칠해졌나, 얼음·용암·야자·선인장)은 같은 타일셋의 「화산 마을」 분류 문서에 있다.
 

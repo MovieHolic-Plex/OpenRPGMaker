@@ -78,5 +78,29 @@
   {
     "id": "field-routes-autumn-v4",
     "revision": "221792-adc6c921-fc9a0b19"
+  },
+  {
+    "id": "field-routes-forest-v5",
+    "revision": "2076928-b2040348-a23c75d0"
+  },
+  {
+    "id": "rpg-outdoors-world-v1",
+    "revision": "76403-db1b0344-29ecc928"
+  },
+  {
+    "id": "field-routes-snow-v5",
+    "revision": "498939-2fc2edc3-c128dd63"
+  },
+  {
+    "id": "field-routes-volcano-v5",
+    "revision": "269217-bcab307b-b1c18c23"
+  },
+  {
+    "id": "field-routes-desert-v5",
+    "revision": "393197-a069d0af-653ede99"
+  },
+  {
+    "id": "field-routes-autumn-v5",
+    "revision": "403486-60439237-3b0f5a7"
   }
 ]
