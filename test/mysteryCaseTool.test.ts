@@ -387,6 +387,9 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     expect(result.ok).toBe(true);
     const warnings = (result.diff?.warnings ?? []) as string[];
     expect(warnings.some((warning) => warning.includes("사건 무대") && warning.includes("place_concept"))).toBe(true);
+    // 5회차: 경고만으로는 모델이 요약의 「다음 = run_scene_test」 만 따랐다 — 요약이 무대부터 짚는다.
+    expect(result.summary.indexOf("place_concept")).toBeGreaterThan(-1);
+    expect(result.summary.indexOf("place_concept")).toBeLessThan(result.summary.indexOf("run_scene_test"));
     // 방이 있는 맵이면 경고가 없다.
     const walled = fixture();
     const map = walled.maps[walled.startMapId];
@@ -395,6 +398,7 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     const inside = author(walled, caseSpec(walled.startMapId, (s) => { s.suspects[1].at.x = 8; }));
     expect(inside.result.ok, JSON.stringify(inside.result)).toBe(true);
     expect(((inside.result.diff?.warnings ?? []) as string[]).some((warning) => warning.includes("사건 무대"))).toBe(false);
+    expect(inside.result.summary).not.toContain("맨땅");
   });
 
   // manor-mystery 실측 두 번: 지목 NPC 를 「추리 정리 테이블」「사건 정리 수첩」 으로 지었는데 주민 외형·얼굴로 그려졌다.
