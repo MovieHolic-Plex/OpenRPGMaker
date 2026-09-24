@@ -6,6 +6,8 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { withTsModule } from '../ontology-ts-loader.mjs';
 import { appendRegionCandidates } from './append-pixel-art-world-region-candidates.mjs';
+import { extractSchoolRooms } from './pixel-art-world-school-rooms.mjs';
+import { appendSceneAuthoringGuide } from './append-pixel-art-world-authoring-guide.mjs';
 
 const [input, proofFile, out, action] = process.argv.slice(2);
 if (!input || !proofFile || !out || !['--prepare', '--publish-local'].includes(action)) throw Error('Usage: <host-reloaded portable.json> <source-proof.json> <private-output> --prepare|--publish-local');
@@ -197,6 +199,17 @@ const buildingId='shared_paw_school_building';
 lib.places[buildingId]={id:buildingId,name:'햇살학교 · 4층 / 28실',revision:1,tags:['Pixel Art World','학교','4층','복도2칸'],provenance:{origin:'ai',sourceId:'paw-school-building-design'},kind:'facility',layout:'manual',children:school.floors.map(f=>({id:key(f.id)+'_slot',source:{kind:'place',id:key(f.id)},level:f.level,x:0,y:0})),ports:[],connections:[],referenceDocuments:[{id:'building-plan',name:'4층 연결과 배치 지침',description:'교실16·특별관리실8·화장실4. 원본 판본과 실제 공간 규칙.',documents:[{id:'guide',name:'조립 지침.md',markdown:school.guide}],images:[]}]};
 for(const floor of school.floors.filter(f=>f.level<4))for(const side of ['east'])lib.places[buildingId].connections.push({id:`${buildingId}_${floor.level}_${side}`,from:{childId:key(floor.id)+'_slot',portId:`${key(floor.id)}_up_${side}`},to:{childId:key(`paw-school-floor-${floor.level+1}`)+'_slot',portId:`${key(`paw-school-floor-${floor.level+1}`)}_down_${side}`},bidirectional:true});
 lib.roots.push(buildingId);lib.previews[buildingId]=lib.previews[key(school.floors[0].id)];
+// Every classroom/special room is independently discoverable and constructible.
+for (const room of extractSchoolRooms(project,school)) {
+  const id=key(room.id),tileId=key(room.tilesetId),kitId=id+'_raster';
+  const image=render(tileId,room.width,room.height,room.lowerTiles,room.upperTiles);
+  const guide=`# ${room.name} · ${room.level}층 독립 실내\n\n${room.limitation}\n정본 ${proof.projectId}, revision ${proof.revision}. 원본 ${room.sourceMapId}, 잘라낸 원점 ${JSON.stringify(room.sourceOrigin)}. 모든 좌표는 아래 독립 맵의 0기준 상대좌표다. tilesetId ${tileId}.\n\n${school.guide}\n\n문턱과 벽 전체, 가구 전체를 포함한다. crop 밖에 새 복도를 자동으로 만들지 않는다. 바닥형 가구의 밑동과 조작면을 바닥에 두고 벽에 완전히 올리지 않는다. 사물함의 정상/오류 비교는 같은 타일셋 school-part-classroom-rear-lockers, 계단실 비교는 school-stairwell을 읽는다. 아래 부품 번호는 합성 atlas 전용이며 원본 PNG 번호가 아니다.\n\n\`\`\`json\n${JSON.stringify({...room,id,tilesetId:tileId})}\n\`\`\``;
+  const docs=[category('room-layout',room.name,guide,image)];
+  lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:room.name,width:room.width,height:room.height,tileSize:32,rows:rows(room.width,room.height,room.lowerTiles,room.upperTiles),learnedFrom:'db-authored',referenceDocuments:docs,ai:{description:room.name+' · 학교 독립 실내',placementRules:'벽·문턱·전체 가구·접근칸을 보존한다. 외부 전이는 별도 연결.',repeatability:'fixed',layerHome:'perCell',origin:'ai'}});
+  lib.places[id]={id,name:`${room.level}층 · ${room.name}`,revision:1,tags:['Pixel Art World','학교','실내',room.kind,room.kind==='classroom'?'교실':'특별실','독립 방'],provenance:{origin:'ai',sourceId:room.id},kind:'facility',layout:'manual',children:[],ports:[{id:id+'_entry',name:'출입구 · 외부 연결 별도',...room.entry}],connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
+  lib.roots.push(id);lib.previews[id]=image;
+  await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
+}
 // Keep regional reuse instructions alongside the actual city snapshot. These are
 // explicit expansion candidates, not claims that new entrances already exist.
 const cityRegion=lib.regions.shared_paw_city;
@@ -219,6 +232,7 @@ if(cityRegion)for(const family of[{prefix:'paw-mansion-exterior-',id:'mansion-ex
   });
 }
 await withTsModule('scripts/lib/sharedContentSqlite.ts','paw-region-candidate-read.mjs',api=>appendRegionCandidates(lib,api.readSharedContent()));
+await appendSceneAuthoringGuide(lib);
 await fs.writeFile(out+'/library.json',JSON.stringify(lib));
 // Preserve every reference pixel while avoiding the host's 64 MiB request cap.
 const compressed=await promisify(execFile)('python3',['scripts/content/compress-pixel-art-world-reference-images.py',out+'/library.json']);

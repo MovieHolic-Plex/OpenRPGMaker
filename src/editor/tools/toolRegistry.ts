@@ -78,6 +78,7 @@ import { withMonsterAppearanceEnvelope } from "./monsterAppearanceTools";
 import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
 
 export { PLACEMENT_TOOLS };
@@ -174,6 +175,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_VILLAGE_TOOL,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
+  ...SHARED_SCENE_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),

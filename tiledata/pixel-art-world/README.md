@@ -68,3 +68,7 @@ DIMENSIONS / FLOOR_REPLACED / OBJECT_CELL / APPROACH_BLOCKED를 좌표와 반환
 저장소 API를 닫았다 다시 열어 문서·자산을 재확인했다. 경로와 범위는 [CITY-50.md](CITY-50.md)를 따른다.
 브라우저 임시 fixture의 가져오기/JSON 왕복만으로 정본 저장을 대신하지 않는다.
 tests/gates/vitest/typecheck는 사용자 요청 없이 실행하지 않는다.
+
+학교·교실·특별실·실내·도시를 조수로 실제 구현하는 경로와 검증 범위는
+[AI-SCENE-AUTHORING.md](AI-SCENE-AUTHORING.md)를 읽는다. 기존46장소에학교28실을 추가한74장소다.
+380원본 범위를 늘리거나 그림을 배포하는 변경이 아니다.

@@ -2050,3 +2050,24 @@ Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조�
 `output/shared-spatial-catalog/probe.mts`. 새 프로젝트 설치, 기존 규칙/맵 불변,
 두 지역의 전체 페이지 배열 일치, 가구 복사 레이어/크기 보존을 직접 확인했다.
 전체 테스트 게이트와 운영 배포 확인은 별도이며 이 기록으로 대체하지 않는다.
+
+### 공용 저작 장면 → 실제 맵 구현 (2026-09-25)
+
+`sharedSceneTools.ts`의 `list_shared_scenes`(20개 페이지), `inspect_shared_scene`,
+`build_shared_scene`는 설치된 공용 장소를 실제 맵으로 복사한다. `sharedSceneAuthoring.ts`가
+전체 두 레이어·독립 타일셋/그림·events를 유지하고 내부 mapId를 재연결한다.
+필수 revision/namespace/links로 낡은 카탈로그와 덮어쓰기를 거절한다.
+`include`는 전이 목적맵 폐쇄, `omit`은 외부 전이를 가진 이벤트 전체 제외와 목록 보고,
+`reject`는 외부 연결이 있으면 실패다. 모든 의존성과 착지 이동 가능성을 확인한 뒤 한 번에 적용한다.
+기존 runner의 draft/commit/공간 계층 검증을 통과한다. 사용자 원본을 내려받거나 원격에 쓰지 않는다.
+
+Pi는 find_tools로 발견한 뒤 장소/지역 자체의 `read_spatial_reference` MD/그림을 읽고 실행한다.
+임의 번호를 선택하는 paint가 아니라 저장 예제를 복제하므로 타일 선택 선행 게이트는 적용하지 않는다.
+후속 타일 변경은 원래 타일 참고문서 읽기 게이트가 적용된다. 반환 `tilesetIdMapping`과
+사본 참고문서 첫 문서의 번호 대응을 따른다. 시작점 변경은 `setStart:true`일 때만 한다.
+
+PAW는 기존46장소 + 학교28실 = 74장소. 도시 include는12맵, 학교 omit은4맵/외부출구1개 제외.
+[사용 절차·배치 규칙·범위](../tiledata/pixel-art-world/AI-SCENE-AUTHORING.md).
+자료 존재/결정론 검사/실제 모델 재현/임의 새 평면 설계를 같은 주장으로 합치지 않는다.
+실제 모델7종류/21맵 생성, 별도SQLite 저장·재오픈, 실제player 전이32건의 근거와
+실패한 관측기 시도는 [SCENE-AI-VERIFICATION](../tiledata/pixel-art-world/SCENE-AI-VERIFICATION.md)에 기록한다.

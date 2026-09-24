@@ -468,3 +468,12 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 - 2026-09-24 후속(사용자: 「여전히 이상함」): 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이라 뺐다.
   최소 폭 3, 폭 1·2 밑변은 이웃 열 높이로 합친다. 분류 `diverse-villages-trunks-v12`·`concept-villages-v3`·`climate-*-villages-v3`·`field-routes-*-v3`, 지역 revision 다양한 마을 12·기후/필드 3.
 
+
+### 공용 PAW 장면 실행 경로 (2026-09-25)
+
+[AI-SCENE-AUTHORING](../tiledata/pixel-art-world/AI-SCENE-AUTHORING.md):
+계단뿐 아니라 학교·교실·특별실·실내·도시74장소를 검색/문서·그림 조회/실제 구현한다.
+`publish-pixel-art-world-local-library.mjs`는 저장된 학교 층과 번호 청사진의 일치를 확인한 뒤
+`pixel-art-world-school-rooms.mjs`로28실을 추출한다. 각 장소가 원본 원점·전체 배열·부품·접근칸·실제 그림을 소유한다.
+공용 SQLite와 새/기존 프로젝트가 같은 자료를 사용한다. 원본/파생 그림은 사용자 로컬에만 둔다.
+`build_shared_scene`는 이벤트까지 보관한 library.maps를 우선하고 정적 kit는 events=[]로 구별한다.
