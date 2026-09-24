@@ -108,45 +108,7 @@
         "y": 40,
         "maxDistance": 11
       },
-      "items": [
-        {
-          "id": "market-1",
-          "name": "가로 탁자",
-          "x": 20,
-          "y": 33,
-          "purpose": "수확물을 선별하고 판매하는 작업면"
-        },
-        {
-          "id": "market-3",
-          "name": "과일 상자",
-          "x": 23,
-          "y": 33,
-          "purpose": "판매대에 보충할 과일 저장",
-          "near": "가로 탁자"
-        },
-        {
-          "id": "market-4",
-          "name": "게시판",
-          "x": 19,
-          "y": 31,
-          "purpose": "판매 자리와 마을 소식 안내"
-        },
-        {
-          "id": "market-5",
-          "name": "징검돌",
-          "x": 20,
-          "y": 35,
-          "purpose": "판매자와 손님이 서는 자리",
-          "near": "가로 탁자"
-        },
-        {
-          "id": "market-6",
-          "name": "나무 울타리",
-          "x": 20,
-          "y": 39,
-          "purpose": "밭 북쪽 경계 보호"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 20,
         "y": 40,
@@ -381,22 +343,7 @@
         "y": 39,
         "maxDistance": 8
       },
-      "items": [
-        {
-          "id": "dock-1",
-          "name": "표지판",
-          "x": 50,
-          "y": 36,
-          "purpose": "선착장 이용 방향 안내"
-        },
-        {
-          "id": "dock-2",
-          "name": "돌등",
-          "x": 52,
-          "y": 37,
-          "purpose": "선착장 진입부 조명"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 46,
         "y": 39,
@@ -458,13 +405,6 @@
         "maxDistance": 10
       },
       "items": [
-        {
-          "id": "front-1",
-          "name": "화분",
-          "x": 48,
-          "y": 33,
-          "purpose": "여관 현관 옆 환영 식물"
-        },
         {
           "id": "front-2",
           "name": "우편함",
@@ -756,28 +696,6 @@
       },
       "items": [
         {
-          "id": "dock-store-1",
-          "name": "술통",
-          "x": 46,
-          "y": 36,
-          "purpose": "배에서 내린 물통"
-        },
-        {
-          "id": "dock-store-2",
-          "name": "술통",
-          "x": 47,
-          "y": 36,
-          "purpose": "절인 생선을 담은 통",
-          "near": "술통"
-        },
-        {
-          "id": "dock-store-3",
-          "name": "나무 상자",
-          "x": 43,
-          "y": 38,
-          "purpose": "배로 들여온 짐 상자"
-        },
-        {
           "id": "dock-store-4",
           "name": "낚시 바구니",
           "x": 48,
@@ -846,23 +764,7 @@
         "y": 40,
         "maxDistance": 11
       },
-      "items": [
-        {
-          "id": "market-stall-1",
-          "name": "장터 노점",
-          "x": 25,
-          "y": 33,
-          "purpose": "밭에서 거둔 채소를 파는 좌판"
-        },
-        {
-          "id": "market-stall-2",
-          "name": "작은 오크통",
-          "x": 24,
-          "y": 36,
-          "purpose": "노점 음료 통",
-          "near": "장터 노점"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 20,
         "y": 40,
@@ -906,15 +808,7 @@
         "y": 21,
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "west-stair-sign-1",
-          "name": "나무 이정표",
-          "x": 13,
-          "y": 21,
-          "purpose": "윗단 서쪽 집으로 오르는 계단 안내"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 15,
         "y": 21,
@@ -1001,14 +895,6 @@
           "purpose": "물가에서 저녁에 불을 피우는 자리"
         },
         {
-          "id": "beach-fire-2",
-          "name": "벤치",
-          "x": 14,
-          "y": 45,
-          "purpose": "물가를 보고 앉는 자리",
-          "near": "모닥불"
-        },
-        {
           "id": "beach-fire-3",
           "name": "장작 더미",
           "x": 18,
@@ -1083,15 +969,7 @@
         "id": "reed-bay-village-house-1",
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "overlook-1",
-          "name": "벤치",
-          "x": 18,
-          "y": 13,
-          "purpose": "절벽 끝에서 포구를 내려다보는 자리"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 8,
         "y": 6,
@@ -1135,12 +1013,7 @@
     "x": 0,
     "y": 27
   },
-  "crest": {
-    "x": 6,
-    "y": 2,
-    "width": 17,
-    "shoulder": 3
-  },
+  "crest": null,
   "patches": [
     [
       3,
@@ -1167,7 +1040,7 @@
   "clearings": [
     [
       17,
-      6,
+      5,
       11,
       6,
       8
@@ -1411,41 +1284,6 @@
     },
     {
       "role": "civic-use",
-      "x": 20,
-      "y": 34,
-      "placeId": "market",
-      "propId": "market-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 23,
-      "y": 34,
-      "placeId": "market",
-      "propId": "market-3"
-    },
-    {
-      "role": "civic-use",
-      "x": 18,
-      "y": 31,
-      "placeId": "market",
-      "propId": "market-4"
-    },
-    {
-      "role": "civic-use",
-      "x": 20,
-      "y": 36,
-      "placeId": "market",
-      "propId": "market-5"
-    },
-    {
-      "role": "civic-use",
-      "x": 20,
-      "y": 40,
-      "placeId": "market",
-      "propId": "market-6"
-    },
-    {
-      "role": "civic-use",
       "x": 42,
       "y": 20,
       "placeId": "well",
@@ -1523,27 +1361,6 @@
     },
     {
       "role": "civic-use",
-      "x": 49,
-      "y": 36,
-      "placeId": "dock",
-      "propId": "dock-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 51,
-      "y": 37,
-      "placeId": "dock",
-      "propId": "dock-2"
-    },
-    {
-      "role": "civic-use",
-      "x": 47,
-      "y": 33,
-      "placeId": "front",
-      "propId": "front-1"
-    },
-    {
-      "role": "civic-use",
       "x": 42,
       "y": 32,
       "placeId": "front",
@@ -1551,52 +1368,10 @@
     },
     {
       "role": "civic-use",
-      "x": 46,
-      "y": 37,
-      "placeId": "dock-store",
-      "propId": "dock-store-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 47,
-      "y": 37,
-      "placeId": "dock-store",
-      "propId": "dock-store-2"
-    },
-    {
-      "role": "civic-use",
-      "x": 43,
-      "y": 39,
-      "placeId": "dock-store",
-      "propId": "dock-store-3"
-    },
-    {
-      "role": "civic-use",
       "x": 48,
       "y": 43,
       "placeId": "dock-store",
       "propId": "dock-store-4"
-    },
-    {
-      "role": "civic-use",
-      "x": 25,
-      "y": 32,
-      "placeId": "market-stall",
-      "propId": "market-stall-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 24,
-      "y": 37,
-      "placeId": "market-stall",
-      "propId": "market-stall-2"
-    },
-    {
-      "role": "civic-use",
-      "x": 13,
-      "y": 22,
-      "placeId": "west-stair-sign",
-      "propId": "west-stair-sign-1"
     },
     {
       "role": "civic-use",
@@ -1621,24 +1396,10 @@
     },
     {
       "role": "civic-use",
-      "x": 14,
-      "y": 46,
-      "placeId": "beach-fire",
-      "propId": "beach-fire-2"
-    },
-    {
-      "role": "civic-use",
       "x": 18,
       "y": 44,
       "placeId": "beach-fire",
       "propId": "beach-fire-3"
-    },
-    {
-      "role": "civic-use",
-      "x": 18,
-      "y": 14,
-      "placeId": "overlook",
-      "propId": "overlook-1"
     },
     {
       "role": "civic-use",

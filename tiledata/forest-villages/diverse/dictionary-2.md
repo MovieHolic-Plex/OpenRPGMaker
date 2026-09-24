@@ -357,41 +357,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 243,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 243,
-    "sourceX": 3,
-    "sourceY": 8,
-    "pixelX": 48,
-    "pixelY": 128,
-    "width": 16,
-    "height": 16,
-    "targetX": 3,
-    "targetY": 8,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "role": "terrain",
-      "label": "키큰 풀",
-      "source": "bundled-default",
-      "passage": "passable",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "lower",
-      "repeatability": "auto"
-    }
-  },
-  {
     "tile": 245,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -416,12 +381,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 오목 모서리",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 오목 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -583,12 +548,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 북서 모서리",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 북서 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -618,12 +583,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 북쪽 변",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 북쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -653,12 +618,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 북동 모서리",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 북동 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -952,12 +917,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 서쪽 변",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 서쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -987,12 +952,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 몸통",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 몸통 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -1022,12 +987,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 동쪽 변",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 동쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -1290,12 +1255,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 남서 모서리",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 남서 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -1325,12 +1290,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 남쪽 변",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 남쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -1360,12 +1325,12 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "priority": "lower",
     "tileMeta": {
       "role": "terrain",
-      "label": "키큰 풀",
+      "label": "키큰 풀 · 짙음 · 남동 모서리",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
       "terrainTag": 0,
-      "description": "",
+      "description": "키큰 풀 · 짙음(숲 가)의 남동 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
       "defaultLayer": "lower",
       "repeatability": "auto"
     }
@@ -1972,6 +1937,41 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "width": 16,
     "height": 16,
     "targetX": 18,
+    "targetY": 12,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "fence",
+      "label": "울타리",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 379,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 379,
+    "sourceX": 19,
+    "sourceY": 12,
+    "pixelX": 304,
+    "pixelY": 192,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
     "targetY": 12,
     "layers": [
       "upper"

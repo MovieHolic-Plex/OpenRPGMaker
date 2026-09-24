@@ -1,458 +1,6 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 4,
-  "y": 15,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "ford-castle-town-house-1",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      76,
-      76
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 72,
-  "y": 18,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-2",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      75
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 75,
-  "y": 18,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-2",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      77
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 8,
-  "y": 36,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-3",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      75
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 11,
-  "y": 36,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-3",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      77
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 3,
-  "y": 57,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-4",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      75
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 48,
-  "y": 57,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-6",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      73
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 51,
-  "y": 57,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "ford-castle-town-house-6",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      73,
-      74
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 74,
-  "y": 57,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-7",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      75
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 77,
-  "y": 57,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-7",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      77
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 7,
-  "y": 80,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "ford-castle-town-house-8",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      72
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
 ## 화분
 ```json
 {
@@ -664,7 +212,7 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 60,
+  "x": 64,
   "y": 14,
   "w": 2,
   "h": 2,
@@ -711,7 +259,7 @@
 ```json
 {
   "name": "숲 나무 · 둥근 덤불",
-  "x": 62,
+  "x": 61,
   "y": 13,
   "w": 3,
   "h": 3,
@@ -782,12 +330,12 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 2,
-  "y": 29,
+  "x": 13,
+  "y": 20,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
-  "clump": 2,
+  "scene": 1,
   "lower": [
     1073,
     1074,
@@ -829,12 +377,262 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 4,
-  "y": 30,
+  "x": 11,
+  "y": 21,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
-  "clump": 2,
+  "scene": 1,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 덤불
+```json
+{
+  "name": "덤불",
+  "x": 14,
+  "y": 22,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 1,
+  "lower": "KEEP",
+  "upper": [
+    289
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      289
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 활엽수
+```json
+{
+  "name": "숲 나무 · 활엽수",
+  "x": 42,
+  "y": 49,
+  "w": 3,
+  "h": 4,
+  "kind": "vegetation",
+  "scene": 3,
+  "lower": [
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
+  ],
+  "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
+    ]
+  ],
+  "upperTiles": [
+    [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 활엽수
+```json
+{
+  "name": "숲 나무 · 활엽수",
+  "x": 39,
+  "y": 48,
+  "w": 3,
+  "h": 4,
+  "kind": "vegetation",
+  "scene": 3,
+  "lower": [
+    240,
+    240,
+    240,
+    240,
+    240,
+    240,
+    1038,
+    1039,
+    1040,
+    1068,
+    1069,
+    1070
+  ],
+  "upper": [
+    978,
+    979,
+    980,
+    1008,
+    1009,
+    1010,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 4,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      240,
+      240,
+      240
+    ],
+    [
+      1038,
+      1039,
+      1040
+    ],
+    [
+      1068,
+      1069,
+      1070
+    ]
+  ],
+  "upperTiles": [
+    [
+      978,
+      979,
+      980
+    ],
+    [
+      1008,
+      1009,
+      1010
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 42,
+  "y": 53,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 3,
   "lower": [
     1073,
     1074,
@@ -876,12 +674,12 @@
 ```json
 {
   "name": "숲 나무 · 작은 덤불",
-  "x": 3,
-  "y": 32,
+  "x": 10,
+  "y": 51,
   "w": 2,
   "h": 2,
   "kind": "vegetation",
-  "clump": 2,
+  "scene": 17,
   "lower": [
     1073,
     1074,
@@ -914,6 +712,187 @@
     [
       -1,
       -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 12,
+  "y": 52,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 17,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 덤불
+```json
+{
+  "name": "덤불",
+  "x": 10,
+  "y": 53,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 17,
+  "lower": "KEEP",
+  "upper": [
+    289
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      289
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 25,
+  "y": 49,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 26,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      537
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 26,
+  "y": 49,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 26,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 25,
+  "y": 50,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 26,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      537
     ]
   ]
 }

@@ -1,669 +1,628 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 나무 상자
+## 숲 나무 · 둥근 덤불
 ```json
 {
-  "name": "나무 상자",
-  "x": 48,
-  "y": 31,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    237
+  "name": "숲 나무 · 둥근 덤불",
+  "x": 24,
+  "y": 30,
+  "w": 3,
+  "h": 3,
+  "kind": "vegetation",
+  "scene": 1,
+  "lower": [
+    983,
+    984,
+    985,
+    1013,
+    1014,
+    1015,
+    1043,
+    1044,
+    1045
   ],
-  "ownerId": "reed-bay-village-house-6",
-  "kit": "fishing",
-  "purpose": "어구 보관",
-  "anchor": "낚시 바구니",
-  "side": "right",
-  "width": 1,
-  "height": 1,
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 3,
   "lowerTiles": [
     [
-      240
+      983,
+      984,
+      985
+    ],
+    [
+      1013,
+      1014,
+      1015
+    ],
+    [
+      1043,
+      1044,
+      1045
     ]
   ],
   "upperTiles": [
     [
-      237
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
     ]
   ]
 }
 ```
 
-## 항아리
+## 숲 나무 · 둥근 덤불
 ```json
 {
-  "name": "항아리",
-  "x": 50,
+  "name": "숲 나무 · 둥근 덤불",
+  "x": 21,
   "y": 31,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
+  "w": 3,
+  "h": 3,
+  "kind": "vegetation",
+  "scene": 1,
+  "lower": [
+    983,
+    984,
+    985,
+    1013,
+    1014,
+    1015,
+    1043,
+    1044,
+    1045
   ],
-  "ownerId": "reed-bay-village-house-6",
-  "kit": "fishing",
-  "purpose": "어획물을 절일 소금",
-  "anchor": "나무통",
-  "side": "right",
-  "width": 1,
-  "height": 1,
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 3,
+  "height": 3,
   "lowerTiles": [
     [
-      240
+      983,
+      984,
+      985
+    ],
+    [
+      1013,
+      1014,
+      1015
+    ],
+    [
+      1043,
+      1044,
+      1045
     ]
   ],
   "upperTiles": [
     [
-      352
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1,
+      -1
     ]
   ]
 }
 ```
 
-## 빨랫줄
+## 숲 나무 · 작은 덤불
 ```json
 {
-  "name": "빨랫줄",
-  "x": 5,
-  "y": 41,
+  "name": "숲 나무 · 작은 덤불",
+  "x": 24,
+  "y": 33,
   "w": 2,
   "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
+  "kind": "vegetation",
+  "scene": 1,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
   ],
-  "ownerId": "reed-bay-village-house-7",
-  "kit": "laundry",
-  "purpose": "세탁물을 말리는 자리",
-  "anchor": "house",
-  "side": "left",
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
   "width": 2,
   "height": 2,
   "lowerTiles": [
     [
-      240,
-      240
+      1073,
+      1074
     ],
     [
-      240,
-      240
+      1103,
+      1104
     ]
   ],
   "upperTiles": [
     [
-      2620,
-      2621
+      -1,
+      -1
     ],
     [
-      2625,
-      2626
+      -1,
+      -1
     ]
   ]
 }
 ```
 
-## 나무통
+## 숲 나무 · 작은 덤불
 ```json
 {
-  "name": "나무통",
-  "x": 7,
-  "y": 42,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
+  "name": "숲 나무 · 작은 덤불",
+  "x": 54,
+  "y": 36,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 7,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
   ],
-  "ownerId": "reed-bay-village-house-7",
-  "kit": "laundry",
-  "purpose": "빨래를 헹구는 물통",
-  "anchor": "빨랫줄",
-  "side": "left",
-  "width": 1,
-  "height": 1,
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
   "lowerTiles": [
     [
-      240
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
     ]
   ],
   "upperTiles": [
     [
-      2638
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
     ]
   ]
 }
 ```
 
-## 항아리
+## 숲 나무 · 작은 덤불
 ```json
 {
-  "name": "항아리",
-  "x": 8,
-  "y": 42,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "reed-bay-village-house-7",
-  "kit": "laundry",
-  "purpose": "세탁에 쓸 물 보관",
-  "anchor": "빨랫줄",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 허수아비
-```json
-{
-  "name": "허수아비",
-  "x": 26,
+  "name": "숲 나무 · 작은 덤불",
+  "x": 52,
   "y": 37,
-  "w": 1,
+  "w": 2,
   "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2651,
-    2654
+  "kind": "vegetation",
+  "scene": 7,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
   ],
-  "ownerId": "reed-bay-village-house-8",
-  "kit": "field-tending",
-  "purpose": "기존 밭의 작물 보호",
-  "anchor": "farm",
-  "side": "left",
-  "width": 1,
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
   "height": 2,
   "lowerTiles": [
     [
-      240
+      1073,
+      1074
     ],
     [
-      240
+      1103,
+      1104
     ]
   ],
   "upperTiles": [
     [
-      2651
+      -1,
+      -1
     ],
     [
-      2654
+      -1,
+      -1
     ]
   ]
 }
 ```
 
-## 씨앗 자루
+## 덤불
 ```json
 {
-  "name": "씨앗 자루",
-  "x": 26,
-  "y": 40,
-  "w": 2,
+  "name": "덤불",
+  "x": 55,
+  "y": 38,
+  "w": 1,
   "h": 1,
-  "kind": "prop",
+  "kind": "vegetation",
+  "scene": 7,
   "lower": "KEEP",
   "upper": [
-    2652,
-    2653
+    289
   ],
-  "ownerId": "reed-bay-village-house-8",
-  "kit": "field-tending",
-  "purpose": "그 밭의 파종 준비",
-  "anchor": "farm",
-  "side": "left",
-  "width": 2,
+  "width": 1,
   "height": 1,
   "lowerTiles": [
     [
-      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      2652,
-      2653
+      289
     ]
   ]
 }
 ```
 
-## 화분
+## 바위
 ```json
 {
-  "name": "화분",
-  "x": 8,
-  "y": 12,
+  "name": "바위",
+  "x": 28,
+  "y": 29,
   "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      75
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 11,
-  "y": 12,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      77
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 26,
-  "y": 7,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "reed-bay-village-house-2",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      76
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 47,
-  "y": 16,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      77
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 31,
-  "y": 25,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "reed-bay-village-house-5",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      77
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 46,
-  "y": 31,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "reed-bay-village-house-6",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      76,
-      77
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 꽃 화단
-```json
-{
-  "name": "꽃 화단",
-  "x": 9,
-  "y": 42,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2611,
-    2612,
-    2616,
-    2617
-  ],
-  "ownerId": "reed-bay-village-house-7",
-  "kit": "doorway",
-  "purpose": "현관 옆을 밝히는 꽃 화단",
-  "anchor": "door",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      75
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2611,
-      2612
-    ],
-    [
-      2616,
-      2617
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "name": "화분",
-  "x": 30,
-  "y": 40,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "ownerId": "reed-bay-village-house-8",
-  "kit": "doorway",
-  "purpose": "현관 옆에 둔 꽃 화분",
-  "anchor": "door",
-  "side": "left",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      73
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "well-plaza-1",
-  "name": "벤치",
-  "x": 46,
-  "y": 21,
-  "purpose": "우물가에 앉아 쉬는 자리",
-  "near": "낮은 돌 우물",
-  "w": 2,
   "h": 1,
-  "kind": "civic-prop",
-  "placeId": "well",
+  "kind": "vegetation",
+  "scene": 10,
   "lower": "KEEP",
   "upper": [
-    327,
-    328
+    537
   ],
-  "useAt": {
-    "x": 46,
-    "y": 22
-  },
-  "width": 2,
+  "width": 1,
   "height": 1,
   "lowerTiles": [
     [
-      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      327,
-      328
+      537
     ]
   ]
 }
 ```
 
-## 돌등
+## 숲 나무 · 작은 덤불
 ```json
 {
-  "id": "well-plaza-2",
-  "name": "돌등",
-  "x": 41,
-  "y": 22,
-  "purpose": "밤에 우물가를 밝히는 돌등",
-  "near": "낮은 돌 우물",
-  "w": 1,
+  "name": "숲 나무 · 작은 덤불",
+  "x": 29,
+  "y": 29,
+  "w": 2,
   "h": 2,
-  "kind": "civic-prop",
-  "placeId": "well",
-  "lower": "KEEP",
-  "upper": [
-    2655,
-    2656
+  "kind": "vegetation",
+  "scene": 10,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
   ],
-  "useAt": {
-    "x": 40,
-    "y": 22
-  },
-  "width": 1,
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
   "height": 2,
   "lowerTiles": [
     [
-      240
+      1073,
+      1074
     ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 28,
+  "y": 30,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 10,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
     [
       240
     ]
   ],
   "upperTiles": [
     [
-      2655
+      537
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 18,
+  "y": 35,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 15,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      537
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 19,
+  "y": 35,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 15,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
     ],
     [
-      2656
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 18,
+  "y": 36,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 15,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      537
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 54,
+  "y": 17,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 18,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      537
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 55,
+  "y": 17,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 18,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 바위
+```json
+{
+  "name": "바위",
+  "x": 54,
+  "y": 18,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 18,
+  "lower": "KEEP",
+  "upper": [
+    537
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      537
     ]
   ]
 }

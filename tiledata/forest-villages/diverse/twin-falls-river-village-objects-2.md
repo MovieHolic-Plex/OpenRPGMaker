@@ -1,400 +1,6 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 돌등
-```json
-{
-  "id": "entry-sign-2",
-  "name": "돌등",
-  "x": 19,
-  "y": 58,
-  "purpose": "입구 길 밝히기",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "entry-sign",
-  "lower": "KEEP",
-  "upper": [
-    2655,
-    2656
-  ],
-  "useAt": {
-    "x": 18,
-    "y": 58
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2655
-    ],
-    [
-      2656
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "stair-signs-w-1",
-  "name": "나무 이정표",
-  "x": 14,
-  "y": 47,
-  "purpose": "가운데 단으로 오르는 서쪽 계단 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "stair-signs-w",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 14,
-    "y": 48
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "stair-signs-e-1",
-  "name": "나무 이정표",
-  "x": 52,
-  "y": 47,
-  "purpose": "가운데 단으로 오르는 동쪽 계단 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "stair-signs-e",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 52,
-    "y": 48
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 16,
-  "y": 10,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "twin-falls-river-village-house-1",
-  "kit": "woodwork",
-  "purpose": "목재를 다루는 작업면",
-  "anchor": "house",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 장작
-```json
-{
-  "name": "장작",
-  "x": 16,
-  "y": 8,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    349
-  ],
-  "ownerId": "twin-falls-river-village-house-1",
-  "kit": "woodwork",
-  "purpose": "작업대에 공급할 목재",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      349
-    ]
-  ]
-}
-```
-
-## 통나무 더미
-```json
-{
-  "name": "통나무 더미",
-  "x": 17,
-  "y": 8,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    741
-  ],
-  "ownerId": "twin-falls-river-village-house-1",
-  "kit": "woodwork",
-  "purpose": "켜서 쓸 원목",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      741
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 18,
-  "y": 8,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    237
-  ],
-  "ownerId": "twin-falls-river-village-house-1",
-  "kit": "woodwork",
-  "purpose": "가공한 물건 보관",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      237
-    ]
-  ]
-}
-```
-
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 19,
-  "y": 10,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "twin-falls-river-village-house-1",
-  "kit": "woodwork",
-  "purpose": "짜 맞춘 통 완성품",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 약초 화분
-```json
-{
-  "name": "약초 화분",
-  "x": 2,
-  "y": 28,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2623,
-    2624
-  ],
-  "ownerId": "twin-falls-river-village-house-3",
-  "kit": "herbs",
-  "purpose": "손질할 약초 재배",
-  "anchor": "house",
-  "side": "left",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2623,
-      2624
-    ]
-  ]
-}
-```
-
-## 씨앗 자루
-```json
-{
-  "name": "씨앗 자루",
-  "x": 4,
-  "y": 28,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2652,
-    2653
-  ],
-  "ownerId": "twin-falls-river-village-house-3",
-  "kit": "herbs",
-  "purpose": "다음에 심을 약초 씨앗",
-  "anchor": "약초 화분",
-  "side": "left",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2652,
-      2653
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 2,
-  "y": 30,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "twin-falls-river-village-house-3",
-  "kit": "herbs",
-  "purpose": "약초 선별·건조 작업면",
-  "anchor": "약초 화분",
-  "side": "left",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
 ## 항아리
 ```json
 {
@@ -461,72 +67,6 @@
 }
 ```
 
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 28,
-  "y": 26,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "twin-falls-river-village-house-4",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 작은 오크통
-```json
-{
-  "name": "작은 오크통",
-  "x": 29,
-  "y": 26,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    207
-  ],
-  "ownerId": "twin-falls-river-village-house-4",
-  "kit": "storage",
-  "purpose": "기름·식초 같은 작은 통 물자",
-  "anchor": "나무통",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      207
-    ]
-  ]
-}
-```
-
 ## 과일 상자
 ```json
 {
@@ -558,39 +98,6 @@
     [
       202,
       203
-    ]
-  ]
-}
-```
-
-## 술통
-```json
-{
-  "name": "술통",
-  "x": 29,
-  "y": 28,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    177
-  ],
-  "ownerId": "twin-falls-river-village-house-4",
-  "kit": "storage",
-  "purpose": "창고에 둔 술",
-  "anchor": "나무통",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      177
     ]
   ]
 }
@@ -827,72 +334,6 @@
 }
 ```
 
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 50,
-  "y": 53,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "twin-falls-river-village-house-8",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 작은 오크통
-```json
-{
-  "name": "작은 오크통",
-  "x": 51,
-  "y": 53,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    207
-  ],
-  "ownerId": "twin-falls-river-village-house-8",
-  "kit": "storage",
-  "purpose": "기름·식초 같은 작은 통 물자",
-  "anchor": "나무통",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      207
-    ]
-  ]
-}
-```
-
 ## 과일 상자
 ```json
 {
@@ -924,39 +365,6 @@
     [
       202,
       203
-    ]
-  ]
-}
-```
-
-## 술통
-```json
-{
-  "name": "술통",
-  "x": 51,
-  "y": 55,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    177
-  ],
-  "ownerId": "twin-falls-river-village-house-8",
-  "kit": "storage",
-  "purpose": "창고에 둔 술",
-  "anchor": "나무통",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      177
     ]
   ]
 }
@@ -1175,6 +583,295 @@
     ],
     [
       2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 22,
+  "y": 30,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "twin-falls-river-village-house-4",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      75
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 25,
+  "y": 30,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "twin-falls-river-village-house-4",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      77
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 40,
+  "y": 31,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "twin-falls-river-village-house-5",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      75
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 43,
+  "y": 31,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "twin-falls-river-village-house-5",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      76
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 꽃 화단
+```json
+{
+  "name": "꽃 화단",
+  "x": 5,
+  "y": 55,
+  "w": 2,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2611,
+    2612,
+    2616,
+    2617
+  ],
+  "ownerId": "twin-falls-river-village-house-7",
+  "kit": "doorway",
+  "purpose": "현관 옆을 밝히는 꽃 화단",
+  "anchor": "door",
+  "side": "left",
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      75
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2611,
+      2612
+    ],
+    [
+      2616,
+      2617
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 47,
+  "y": 55,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "twin-falls-river-village-house-8",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      77
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "well-plaza-1",
+  "name": "돌등",
+  "x": 18,
+  "y": 31,
+  "purpose": "밤에 우물가를 밝히는 돌등",
+  "near": "낮은 돌 우물",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "well",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 17,
+    "y": 31
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
     ]
   ]
 }

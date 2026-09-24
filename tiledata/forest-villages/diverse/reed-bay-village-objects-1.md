@@ -140,7 +140,7 @@
 {
   "name": "숲 나무 · 활엽수",
   "x": 16,
-  "y": 4,
+  "y": 3,
   "w": 3,
   "h": 4,
   "kind": "vegetation",
@@ -284,52 +284,6 @@
     ],
     [
       -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 43,
-  "y": 40,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
       -1,
       -1
     ]
@@ -625,122 +579,6 @@
 }
 ```
 
-## 숲 나무 · 둥근 덤불
-```json
-{
-  "name": "숲 나무 · 둥근 덤불",
-  "x": 21,
-  "y": 36,
-  "w": 3,
-  "h": 3,
-  "kind": "vegetation",
-  "lower": [
-    983,
-    984,
-    985,
-    1013,
-    1014,
-    1015,
-    1043,
-    1044,
-    1045
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 3,
-  "lowerTiles": [
-    [
-      983,
-      984,
-      985
-    ],
-    [
-      1013,
-      1014,
-      1015
-    ],
-    [
-      1043,
-      1044,
-      1045
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 5,
-  "y": 22,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
 ## 숲 나무 · 활엽수
 ```json
 {
@@ -820,52 +658,6 @@
     ],
     [
       -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 53,
-  "y": 36,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
       -1,
       -1
     ]
@@ -1040,257 +832,6 @@
       -1,
       -1,
       -1
-    ]
-  ]
-}
-```
-
-## 숲 나무 · 작은 덤불
-```json
-{
-  "name": "숲 나무 · 작은 덤불",
-  "x": 23,
-  "y": 30,
-  "w": 2,
-  "h": 2,
-  "kind": "vegetation",
-  "lower": [
-    1073,
-    1074,
-    1103,
-    1104
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      1073,
-      1074
-    ],
-    [
-      1103,
-      1104
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "id": "market-1",
-  "name": "가로 탁자",
-  "x": 20,
-  "y": 33,
-  "purpose": "수확물을 선별하고 판매하는 작업면",
-  "w": 3,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "market",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "useAt": {
-    "x": 20,
-    "y": 34
-  },
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 과일 상자
-```json
-{
-  "id": "market-3",
-  "name": "과일 상자",
-  "x": 23,
-  "y": 33,
-  "purpose": "판매대에 보충할 과일 저장",
-  "near": "가로 탁자",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "market",
-  "lower": "KEEP",
-  "upper": [
-    202,
-    203
-  ],
-  "useAt": {
-    "x": 23,
-    "y": 34
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      202,
-      203
-    ]
-  ]
-}
-```
-
-## 게시판
-```json
-{
-  "id": "market-4",
-  "name": "게시판",
-  "x": 19,
-  "y": 31,
-  "purpose": "판매 자리와 마을 소식 안내",
-  "w": 2,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "market",
-  "lower": "KEEP",
-  "upper": [
-    2630,
-    2631,
-    2633,
-    2634
-  ],
-  "useAt": {
-    "x": 18,
-    "y": 31
-  },
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2630,
-      2631
-    ],
-    [
-      2633,
-      2634
-    ]
-  ]
-}
-```
-
-## 징검돌
-```json
-{
-  "id": "market-5",
-  "name": "징검돌",
-  "x": 20,
-  "y": 35,
-  "purpose": "판매자와 손님이 서는 자리",
-  "near": "가로 탁자",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "market",
-  "lower": "KEEP",
-  "upper": [
-    2649,
-    2650
-  ],
-  "useAt": {
-    "x": 20,
-    "y": 36
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2649,
-      2650
-    ]
-  ]
-}
-```
-
-## 나무 울타리
-```json
-{
-  "id": "market-6",
-  "name": "나무 울타리",
-  "x": 20,
-  "y": 39,
-  "purpose": "밭 북쪽 경계 보호",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "market",
-  "lower": "KEEP",
-  "upper": [
-    2636,
-    2637
-  ],
-  "useAt": {
-    "x": 20,
-    "y": 40
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2636,
-      2637
     ]
   ]
 }
@@ -1773,27 +1314,375 @@
 }
 ```
 
-## 표지판
+## 우편함
 ```json
 {
-  "id": "dock-1",
-  "name": "표지판",
-  "x": 50,
-  "y": 36,
-  "purpose": "선착장 이용 방향 안내",
+  "id": "front-2",
+  "name": "우편함",
+  "x": 42,
+  "y": 31,
+  "purpose": "여관 투숙객 우편 수취",
   "w": 1,
-  "h": 2,
+  "h": 1,
   "kind": "civic-prop",
-  "placeId": "dock",
+  "placeId": "front",
   "lower": "KEEP",
   "upper": [
-    2610,
-    2615
+    350
   ],
   "useAt": {
-    "x": 49,
-    "y": 36
+    "x": 42,
+    "y": 32
   },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      350
+    ]
+  ]
+}
+```
+
+## 벽걸이 등불
+```json
+{
+  "id": "lamp-2-1",
+  "name": "벽걸이 등불",
+  "x": 30,
+  "y": 6,
+  "purpose": "현관 옆 벽면 조명",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "lamp-2",
+  "lower": "KEEP",
+  "upper": [
+    2645
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      46
+    ]
+  ],
+  "upperTiles": [
+    [
+      2645
+    ]
+  ]
+}
+```
+
+## 벽걸이 등불
+```json
+{
+  "id": "lamp-6-1",
+  "name": "벽걸이 등불",
+  "x": 46,
+  "y": 30,
+  "purpose": "현관 옆 벽면 조명",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "lamp-6",
+  "lower": "KEEP",
+  "upper": [
+    2645
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      46
+    ]
+  ],
+  "upperTiles": [
+    [
+      2645
+    ]
+  ]
+}
+```
+
+## 벽걸이 등불
+```json
+{
+  "id": "lamp-8-1",
+  "name": "벽걸이 등불",
+  "x": 33,
+  "y": 39,
+  "purpose": "현관 옆 벽면 조명",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "lamp-8",
+  "lower": "KEEP",
+  "upper": [
+    2645
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      43
+    ]
+  ],
+  "upperTiles": [
+    [
+      2645
+    ]
+  ]
+}
+```
+
+## 낚시 바구니
+```json
+{
+  "id": "dock-store-4",
+  "name": "낚시 바구니",
+  "x": 48,
+  "y": 42,
+  "purpose": "선착장 끝에서 쓰는 낚시 바구니",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "dock-store",
+  "lower": "KEEP",
+  "upper": [
+    2646
+  ],
+  "useAt": {
+    "x": 48,
+    "y": 43
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2646
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "east-stair-sign-1",
+  "name": "나무 이정표",
+  "x": 23,
+  "y": 19,
+  "purpose": "윗단 파랑 지붕 집으로 오르는 계단 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "east-stair-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 23,
+    "y": 20
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 나무 이정표
+```json
+{
+  "id": "entry-sign-1",
+  "name": "나무 이정표",
+  "x": 4,
+  "y": 25,
+  "purpose": "마을 서쪽 입구 방향 안내",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "entry-sign",
+  "lower": "KEEP",
+  "upper": [
+    596
+  ],
+  "useAt": {
+    "x": 4,
+    "y": 26
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      596
+    ]
+  ]
+}
+```
+
+## 모닥불
+```json
+{
+  "id": "beach-fire-1",
+  "name": "모닥불",
+  "x": 17,
+  "y": 44,
+  "purpose": "물가에서 저녁에 불을 피우는 자리",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "beach-fire",
+  "lower": "KEEP",
+  "upper": [
+    381
+  ],
+  "useAt": {
+    "x": 17,
+    "y": 45
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      381
+    ]
+  ]
+}
+```
+
+## 장작 더미
+```json
+{
+  "id": "beach-fire-3",
+  "name": "장작 더미",
+  "x": 18,
+  "y": 43,
+  "purpose": "모닥불 장작",
+  "near": "모닥불",
+  "w": 1,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "beach-fire",
+  "lower": "KEEP",
+  "upper": [
+    349
+  ],
+  "useAt": {
+    "x": 18,
+    "y": 44
+  },
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      349
+    ]
+  ]
+}
+```
+
+## 채소밭
+```json
+{
+  "name": "채소밭",
+  "x": 13,
+  "y": 11,
+  "w": 2,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2613,
+    2614,
+    2618,
+    2619
+  ],
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "growing",
+  "purpose": "식재·수확할 작물",
+  "anchor": "house",
+  "side": "right",
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2613,
+      2614
+    ],
+    [
+      2618,
+      2619
+    ]
+  ]
+}
+```
+
+## 허수아비
+```json
+{
+  "name": "허수아비",
+  "x": 13,
+  "y": 9,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2651,
+    2654
+  ],
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "growing",
+  "purpose": "바로 옆 작물 보호",
+  "anchor": "채소밭",
+  "side": "right",
   "width": 1,
   "height": 2,
   "lowerTiles": [
@@ -1806,10 +1695,10 @@
   ],
   "upperTiles": [
     [
-      2610
+      2651
     ],
     [
-      2615
+      2654
     ]
   ]
 }

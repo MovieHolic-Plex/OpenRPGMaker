@@ -1,956 +1,6 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 돌등
-```json
-{
-  "id": "dock-2",
-  "name": "돌등",
-  "x": 52,
-  "y": 37,
-  "purpose": "선착장 진입부 조명",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "dock",
-  "lower": "KEEP",
-  "upper": [
-    2655,
-    2656
-  ],
-  "useAt": {
-    "x": 51,
-    "y": 37
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2655
-    ],
-    [
-      2656
-    ]
-  ]
-}
-```
-
-## 화분
-```json
-{
-  "id": "front-1",
-  "name": "화분",
-  "x": 48,
-  "y": 33,
-  "purpose": "여관 현관 옆 환영 식물",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "front",
-  "lower": "KEEP",
-  "upper": [
-    2632,
-    2635
-  ],
-  "useAt": {
-    "x": 47,
-    "y": 33
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2632
-    ],
-    [
-      2635
-    ]
-  ]
-}
-```
-
-## 우편함
-```json
-{
-  "id": "front-2",
-  "name": "우편함",
-  "x": 42,
-  "y": 31,
-  "purpose": "여관 투숙객 우편 수취",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "front",
-  "lower": "KEEP",
-  "upper": [
-    350
-  ],
-  "useAt": {
-    "x": 42,
-    "y": 32
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      350
-    ]
-  ]
-}
-```
-
-## 벽걸이 등불
-```json
-{
-  "id": "lamp-2-1",
-  "name": "벽걸이 등불",
-  "x": 30,
-  "y": 6,
-  "purpose": "현관 옆 벽면 조명",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "lamp-2",
-  "lower": "KEEP",
-  "upper": [
-    2645
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      46
-    ]
-  ],
-  "upperTiles": [
-    [
-      2645
-    ]
-  ]
-}
-```
-
-## 벽걸이 등불
-```json
-{
-  "id": "lamp-6-1",
-  "name": "벽걸이 등불",
-  "x": 46,
-  "y": 30,
-  "purpose": "현관 옆 벽면 조명",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "lamp-6",
-  "lower": "KEEP",
-  "upper": [
-    2645
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      46
-    ]
-  ],
-  "upperTiles": [
-    [
-      2645
-    ]
-  ]
-}
-```
-
-## 벽걸이 등불
-```json
-{
-  "id": "lamp-8-1",
-  "name": "벽걸이 등불",
-  "x": 33,
-  "y": 39,
-  "purpose": "현관 옆 벽면 조명",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "lamp-8",
-  "lower": "KEEP",
-  "upper": [
-    2645
-  ],
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      43
-    ]
-  ],
-  "upperTiles": [
-    [
-      2645
-    ]
-  ]
-}
-```
-
-## 술통
-```json
-{
-  "id": "dock-store-1",
-  "name": "술통",
-  "x": 46,
-  "y": 36,
-  "purpose": "배에서 내린 물통",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "dock-store",
-  "lower": "KEEP",
-  "upper": [
-    177
-  ],
-  "useAt": {
-    "x": 46,
-    "y": 37
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      177
-    ]
-  ]
-}
-```
-
-## 술통
-```json
-{
-  "id": "dock-store-2",
-  "name": "술통",
-  "x": 47,
-  "y": 36,
-  "purpose": "절인 생선을 담은 통",
-  "near": "술통",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "dock-store",
-  "lower": "KEEP",
-  "upper": [
-    177
-  ],
-  "useAt": {
-    "x": 47,
-    "y": 37
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      177
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "id": "dock-store-3",
-  "name": "나무 상자",
-  "x": 43,
-  "y": 38,
-  "purpose": "배로 들여온 짐 상자",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "dock-store",
-  "lower": "KEEP",
-  "upper": [
-    237
-  ],
-  "useAt": {
-    "x": 43,
-    "y": 39
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      237
-    ]
-  ]
-}
-```
-
-## 낚시 바구니
-```json
-{
-  "id": "dock-store-4",
-  "name": "낚시 바구니",
-  "x": 48,
-  "y": 42,
-  "purpose": "선착장 끝에서 쓰는 낚시 바구니",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "dock-store",
-  "lower": "KEEP",
-  "upper": [
-    2646
-  ],
-  "useAt": {
-    "x": 48,
-    "y": 43
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2646
-    ]
-  ]
-}
-```
-
-## 장터 노점
-```json
-{
-  "id": "market-stall-1",
-  "name": "장터 노점",
-  "x": 25,
-  "y": 33,
-  "purpose": "밭에서 거둔 채소를 파는 좌판",
-  "w": 3,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "market-stall",
-  "lower": "KEEP",
-  "upper": [
-    468,
-    469,
-    470,
-    234,
-    235,
-    236
-  ],
-  "useAt": {
-    "x": 25,
-    "y": 32
-  },
-  "width": 3,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ],
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      468,
-      469,
-      470
-    ],
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 작은 오크통
-```json
-{
-  "id": "market-stall-2",
-  "name": "작은 오크통",
-  "x": 24,
-  "y": 36,
-  "purpose": "노점 음료 통",
-  "near": "장터 노점",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "market-stall",
-  "lower": "KEEP",
-  "upper": [
-    207
-  ],
-  "useAt": {
-    "x": 24,
-    "y": 37
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      207
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "west-stair-sign-1",
-  "name": "나무 이정표",
-  "x": 13,
-  "y": 21,
-  "purpose": "윗단 서쪽 집으로 오르는 계단 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "west-stair-sign",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 13,
-    "y": 22
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "east-stair-sign-1",
-  "name": "나무 이정표",
-  "x": 23,
-  "y": 19,
-  "purpose": "윗단 파랑 지붕 집으로 오르는 계단 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "east-stair-sign",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 23,
-    "y": 20
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "entry-sign-1",
-  "name": "나무 이정표",
-  "x": 4,
-  "y": 25,
-  "purpose": "마을 서쪽 입구 방향 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "entry-sign",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 4,
-    "y": 26
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 모닥불
-```json
-{
-  "id": "beach-fire-1",
-  "name": "모닥불",
-  "x": 17,
-  "y": 44,
-  "purpose": "물가에서 저녁에 불을 피우는 자리",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "beach-fire",
-  "lower": "KEEP",
-  "upper": [
-    381
-  ],
-  "useAt": {
-    "x": 17,
-    "y": 45
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      381
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "beach-fire-2",
-  "name": "벤치",
-  "x": 14,
-  "y": 45,
-  "purpose": "물가를 보고 앉는 자리",
-  "near": "모닥불",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "beach-fire",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
-  ],
-  "useAt": {
-    "x": 14,
-    "y": 46
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      327,
-      328
-    ]
-  ]
-}
-```
-
-## 장작 더미
-```json
-{
-  "id": "beach-fire-3",
-  "name": "장작 더미",
-  "x": 18,
-  "y": 43,
-  "purpose": "모닥불 장작",
-  "near": "모닥불",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "beach-fire",
-  "lower": "KEEP",
-  "upper": [
-    349
-  ],
-  "useAt": {
-    "x": 18,
-    "y": 44
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      349
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "overlook-1",
-  "name": "벤치",
-  "x": 18,
-  "y": 13,
-  "purpose": "절벽 끝에서 포구를 내려다보는 자리",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "overlook",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
-  ],
-  "useAt": {
-    "x": 18,
-    "y": 14
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      327,
-      328
-    ]
-  ]
-}
-```
-
-## 채소밭
-```json
-{
-  "name": "채소밭",
-  "x": 13,
-  "y": 11,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2613,
-    2614,
-    2618,
-    2619
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "growing",
-  "purpose": "식재·수확할 작물",
-  "anchor": "house",
-  "side": "right",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2613,
-      2614
-    ],
-    [
-      2618,
-      2619
-    ]
-  ]
-}
-```
-
-## 허수아비
-```json
-{
-  "name": "허수아비",
-  "x": 13,
-  "y": 9,
-  "w": 1,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2651,
-    2654
-  ],
-  "ownerId": "reed-bay-village-house-1",
-  "kit": "growing",
-  "purpose": "바로 옆 작물 보호",
-  "anchor": "채소밭",
-  "side": "right",
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2651
-    ],
-    [
-      2654
-    ]
-  ]
-}
-```
-
-## 나무 상자
-```json
-{
-  "name": "나무 상자",
-  "x": 39,
-  "y": 14,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    237
-  ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "storage",
-  "purpose": "운반 물자 보관",
-  "anchor": "house",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      237
-    ]
-  ]
-}
-```
-
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 41,
-  "y": 14,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "storage",
-  "purpose": "같은 창고의 벌크 물자 보관",
-  "anchor": "나무 상자",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 작은 오크통
-```json
-{
-  "name": "작은 오크통",
-  "x": 42,
-  "y": 14,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    207
-  ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "storage",
-  "purpose": "기름·식초 같은 작은 통 물자",
-  "anchor": "나무통",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      207
-    ]
-  ]
-}
-```
-
-## 과일 상자
-```json
-{
-  "name": "과일 상자",
-  "x": 39,
-  "y": 16,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    202,
-    203
-  ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "storage",
-  "purpose": "나를 수확물 상자",
-  "anchor": "나무 상자",
-  "side": "left",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      202,
-      203
-    ]
-  ]
-}
-```
-
-## 술통
-```json
-{
-  "name": "술통",
-  "x": 42,
-  "y": 16,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    177
-  ],
-  "ownerId": "reed-bay-village-house-3",
-  "kit": "storage",
-  "purpose": "창고에 둔 술",
-  "anchor": "나무통",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      177
-    ]
-  ]
-}
-```
-
 ## 약초 화분
 ```json
 {
@@ -1095,34 +145,47 @@
 }
 ```
 
-## 낚시 바구니
+## 빨랫줄
 ```json
 {
-  "name": "낚시 바구니",
-  "x": 48,
-  "y": 29,
-  "w": 1,
-  "h": 1,
+  "name": "빨랫줄",
+  "x": 5,
+  "y": 41,
+  "w": 2,
+  "h": 2,
   "kind": "prop",
   "lower": "KEEP",
   "upper": [
-    2646
+    2620,
+    2621,
+    2625,
+    2626
   ],
-  "ownerId": "reed-bay-village-house-6",
-  "kit": "fishing",
-  "purpose": "부두에 가져갈 낚시 도구",
-  "anchor": "dock",
-  "side": "right",
-  "width": 1,
-  "height": 1,
+  "ownerId": "reed-bay-village-house-7",
+  "kit": "laundry",
+  "purpose": "세탁물을 말리는 자리",
+  "anchor": "house",
+  "side": "left",
+  "width": 2,
+  "height": 2,
   "lowerTiles": [
     [
+      240,
+      240
+    ],
+    [
+      240,
       240
     ]
   ],
   "upperTiles": [
     [
-      2646
+      2620,
+      2621
+    ],
+    [
+      2625,
+      2626
     ]
   ]
 }
@@ -1132,8 +195,8 @@
 ```json
 {
   "name": "나무통",
-  "x": 50,
-  "y": 29,
+  "x": 7,
+  "y": 42,
   "w": 1,
   "h": 1,
   "kind": "prop",
@@ -1141,11 +204,11 @@
   "upper": [
     2638
   ],
-  "ownerId": "reed-bay-village-house-6",
-  "kit": "fishing",
-  "purpose": "어획물을 담을 용기",
-  "anchor": "낚시 바구니",
-  "side": "right",
+  "ownerId": "reed-bay-village-house-7",
+  "kit": "laundry",
+  "purpose": "빨래를 헹구는 물통",
+  "anchor": "빨랫줄",
+  "side": "left",
   "width": 1,
   "height": 1,
   "lowerTiles": [
@@ -1156,6 +219,1091 @@
   "upperTiles": [
     [
       2638
+    ]
+  ]
+}
+```
+
+## 항아리
+```json
+{
+  "name": "항아리",
+  "x": 8,
+  "y": 42,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    352
+  ],
+  "ownerId": "reed-bay-village-house-7",
+  "kit": "laundry",
+  "purpose": "세탁에 쓸 물 보관",
+  "anchor": "빨랫줄",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      352
+    ]
+  ]
+}
+```
+
+## 씨앗 자루
+```json
+{
+  "name": "씨앗 자루",
+  "x": 26,
+  "y": 40,
+  "w": 2,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2652,
+    2653
+  ],
+  "ownerId": "reed-bay-village-house-8",
+  "kit": "field-tending",
+  "purpose": "그 밭의 파종 준비",
+  "anchor": "farm",
+  "side": "left",
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2652,
+      2653
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 8,
+  "y": 12,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      75
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 11,
+  "y": 12,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "reed-bay-village-house-1",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      77
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 26,
+  "y": 7,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "reed-bay-village-house-2",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      76
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 47,
+  "y": 16,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "reed-bay-village-house-3",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      77
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 31,
+  "y": 25,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "reed-bay-village-house-5",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "right",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      77
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 꽃 화단
+```json
+{
+  "name": "꽃 화단",
+  "x": 46,
+  "y": 31,
+  "w": 2,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2611,
+    2612,
+    2616,
+    2617
+  ],
+  "ownerId": "reed-bay-village-house-6",
+  "kit": "doorway",
+  "purpose": "현관 옆을 밝히는 꽃 화단",
+  "anchor": "door",
+  "side": "right",
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      76,
+      77
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2611,
+      2612
+    ],
+    [
+      2616,
+      2617
+    ]
+  ]
+}
+```
+
+## 꽃 화단
+```json
+{
+  "name": "꽃 화단",
+  "x": 9,
+  "y": 42,
+  "w": 2,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2611,
+    2612,
+    2616,
+    2617
+  ],
+  "ownerId": "reed-bay-village-house-7",
+  "kit": "doorway",
+  "purpose": "현관 옆을 밝히는 꽃 화단",
+  "anchor": "door",
+  "side": "left",
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      75
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2611,
+      2612
+    ],
+    [
+      2616,
+      2617
+    ]
+  ]
+}
+```
+
+## 화분
+```json
+{
+  "name": "화분",
+  "x": 30,
+  "y": 40,
+  "w": 1,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2632,
+    2635
+  ],
+  "ownerId": "reed-bay-village-house-8",
+  "kit": "doorway",
+  "purpose": "현관 옆에 둔 꽃 화분",
+  "anchor": "door",
+  "side": "left",
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      73
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2632
+    ],
+    [
+      2635
+    ]
+  ]
+}
+```
+
+## 벤치
+```json
+{
+  "id": "well-plaza-1",
+  "name": "벤치",
+  "x": 46,
+  "y": 21,
+  "purpose": "우물가에 앉아 쉬는 자리",
+  "near": "낮은 돌 우물",
+  "w": 2,
+  "h": 1,
+  "kind": "civic-prop",
+  "placeId": "well",
+  "lower": "KEEP",
+  "upper": [
+    327,
+    328
+  ],
+  "useAt": {
+    "x": 46,
+    "y": 22
+  },
+  "width": 2,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      327,
+      328
+    ]
+  ]
+}
+```
+
+## 돌등
+```json
+{
+  "id": "well-plaza-2",
+  "name": "돌등",
+  "x": 41,
+  "y": 22,
+  "purpose": "밤에 우물가를 밝히는 돌등",
+  "near": "낮은 돌 우물",
+  "w": 1,
+  "h": 2,
+  "kind": "civic-prop",
+  "placeId": "well",
+  "lower": "KEEP",
+  "upper": [
+    2655,
+    2656
+  ],
+  "useAt": {
+    "x": 40,
+    "y": 22
+  },
+  "width": 1,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240
+    ],
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2655
+    ],
+    [
+      2656
+    ]
+  ]
+}
+```
+
+## 나룻배
+```json
+{
+  "name": "나룻배",
+  "x": 59,
+  "y": 34,
+  "w": 8,
+  "h": 4,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2657,
+    2658,
+    2659,
+    2660,
+    2661,
+    2662,
+    2663,
+    2664,
+    2665,
+    2666,
+    2667,
+    2668,
+    2669,
+    2695,
+    2696,
+    2697,
+    2698,
+    2699,
+    2703,
+    2704,
+    2705,
+    2706,
+    2707,
+    2708,
+    -1,
+    2710,
+    2711,
+    2712,
+    2713,
+    2714,
+    2715,
+    2716
+  ],
+  "width": 8,
+  "height": 4,
+  "lowerTiles": [
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2657,
+      2658,
+      2659,
+      2660,
+      2661,
+      2662,
+      2663,
+      2664
+    ],
+    [
+      2665,
+      2666,
+      2667,
+      2668,
+      2669,
+      2695,
+      2696,
+      2697
+    ],
+    [
+      2698,
+      2699,
+      2703,
+      2704,
+      2705,
+      2706,
+      2707,
+      2708
+    ],
+    [
+      -1,
+      2710,
+      2711,
+      2712,
+      2713,
+      2714,
+      2715,
+      2716
+    ]
+  ]
+}
+```
+
+## 나룻배
+```json
+{
+  "name": "나룻배",
+  "x": 59,
+  "y": 42,
+  "w": 8,
+  "h": 4,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2657,
+    2658,
+    2659,
+    2660,
+    2661,
+    2662,
+    2663,
+    2664,
+    2665,
+    2666,
+    2667,
+    2668,
+    2669,
+    2695,
+    2696,
+    2697,
+    2698,
+    2699,
+    2703,
+    2704,
+    2705,
+    2706,
+    2707,
+    2708,
+    -1,
+    2710,
+    2711,
+    2712,
+    2713,
+    2714,
+    2715,
+    2716
+  ],
+  "width": 8,
+  "height": 4,
+  "lowerTiles": [
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    [
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ],
+    [
+      1558,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563,
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2657,
+      2658,
+      2659,
+      2660,
+      2661,
+      2662,
+      2663,
+      2664
+    ],
+    [
+      2665,
+      2666,
+      2667,
+      2668,
+      2669,
+      2695,
+      2696,
+      2697
+    ],
+    [
+      2698,
+      2699,
+      2703,
+      2704,
+      2705,
+      2706,
+      2707,
+      2708
+    ],
+    [
+      -1,
+      2710,
+      2711,
+      2712,
+      2713,
+      2714,
+      2715,
+      2716
+    ]
+  ]
+}
+```
+
+## 계류 말뚝
+```json
+{
+  "name": "계류 말뚝",
+  "x": 66,
+  "y": 38,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2717
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2717
+    ]
+  ]
+}
+```
+
+## 계류 말뚝
+```json
+{
+  "name": "계류 말뚝",
+  "x": 66,
+  "y": 41,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2717
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2717
+    ]
+  ]
+}
+```
+
+## 계류 말뚝
+```json
+{
+  "name": "계류 말뚝",
+  "x": 62,
+  "y": 38,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2717
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2717
+    ]
+  ]
+}
+```
+
+## 계류 말뚝
+```json
+{
+  "name": "계류 말뚝",
+  "x": 62,
+  "y": 41,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2717
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2717
+    ]
+  ]
+}
+```
+
+## 계류 말뚝
+```json
+{
+  "name": "계류 말뚝",
+  "x": 58,
+  "y": 38,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2717
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2717
+    ]
+  ]
+}
+```
+
+## 계류 말뚝
+```json
+{
+  "name": "계류 말뚝",
+  "x": 58,
+  "y": 41,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2717
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      1563
+    ]
+  ],
+  "upperTiles": [
+    [
+      2717
+    ]
+  ]
+}
+```
+
+## 감긴 밧줄
+```json
+{
+  "name": "감긴 밧줄",
+  "x": 45,
+  "y": 39,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2718
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2718
+    ]
+  ]
+}
+```
+
+## 닻
+```json
+{
+  "name": "닻",
+  "x": 45,
+  "y": 40,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2719
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2719
+    ]
+  ]
+}
+```
+
+## 오크통
+```json
+{
+  "name": "오크통",
+  "x": 44,
+  "y": 39,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2720
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2720
+    ]
+  ]
+}
+```
+
+## 나무 상자
+```json
+{
+  "name": "나무 상자",
+  "x": 45,
+  "y": 41,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2721
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2721
+    ]
+  ]
+}
+```
+
+## 열린 통
+```json
+{
+  "name": "열린 통",
+  "x": 46,
+  "y": 41,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2722
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2722
+    ]
+  ]
+}
+```
+
+## 나무 상자
+```json
+{
+  "name": "나무 상자",
+  "x": 46,
+  "y": 42,
+  "w": 1,
+  "h": 1,
+  "kind": "harbor-prop",
+  "owner": "dock",
+  "upper": [
+    2721
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2721
     ]
   ]
 }

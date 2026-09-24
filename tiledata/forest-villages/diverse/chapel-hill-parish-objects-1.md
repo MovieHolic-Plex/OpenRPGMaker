@@ -1417,114 +1417,6 @@
 }
 ```
 
-## 숲 나무 · 둥근 덤불
-```json
-{
-  "name": "숲 나무 · 둥근 덤불",
-  "x": 25,
-  "y": 3,
-  "w": 3,
-  "h": 3,
-  "kind": "vegetation",
-  "lower": [
-    983,
-    984,
-    985,
-    1013,
-    1014,
-    1015,
-    1043,
-    1044,
-    1045
-  ],
-  "upper": [
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1,
-    -1
-  ],
-  "width": 3,
-  "height": 3,
-  "lowerTiles": [
-    [
-      983,
-      984,
-      985
-    ],
-    [
-      1013,
-      1014,
-      1015
-    ],
-    [
-      1043,
-      1044,
-      1045
-    ]
-  ],
-  "upperTiles": [
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ],
-    [
-      -1,
-      -1,
-      -1
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "churchyard-1",
-  "name": "벤치",
-  "x": 16,
-  "y": 13,
-  "purpose": "예배 전후 앉아 기다리는 자리",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "churchyard",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
-  ],
-  "useAt": {
-    "x": 16,
-    "y": 14
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      327,
-      328
-    ]
-  ]
-}
-```
-
 ## 벤치
 ```json
 {
@@ -1696,48 +1588,6 @@
 }
 ```
 
-## 돌등
-```json
-{
-  "id": "graveyard-gate-1",
-  "name": "돌등",
-  "x": 4,
-  "y": 12,
-  "purpose": "묘지 입구를 밝히는 등",
-  "w": 1,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "graveyard-gate",
-  "lower": "KEEP",
-  "upper": [
-    2655,
-    2656
-  ],
-  "useAt": {
-    "x": 3,
-    "y": 12
-  },
-  "width": 1,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240
-    ],
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2655
-    ],
-    [
-      2656
-    ]
-  ]
-}
-```
-
 ## 마른 묘목
 ```json
 {
@@ -1768,44 +1618,6 @@
   "upperTiles": [
     [
       740
-    ]
-  ]
-}
-```
-
-## 벤치
-```json
-{
-  "id": "falls-pool-1",
-  "name": "벤치",
-  "x": 36,
-  "y": 28,
-  "purpose": "폭포를 바라보며 쉬는 자리",
-  "w": 2,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "falls-pool",
-  "lower": "KEEP",
-  "upper": [
-    327,
-    328
-  ],
-  "useAt": {
-    "x": 36,
-    "y": 29
-  },
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      327,
-      328
     ]
   ]
 }
@@ -1930,54 +1742,6 @@
 }
 ```
 
-## 게시판
-```json
-{
-  "id": "village-well-3",
-  "name": "게시판",
-  "x": 28,
-  "y": 36,
-  "purpose": "교회 소식과 마을 공지를 붙이는 판",
-  "w": 2,
-  "h": 2,
-  "kind": "civic-prop",
-  "placeId": "village-well",
-  "lower": "KEEP",
-  "upper": [
-    2630,
-    2631,
-    2633,
-    2634
-  ],
-  "useAt": {
-    "x": 27,
-    "y": 36
-  },
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2630,
-      2631
-    ],
-    [
-      2633,
-      2634
-    ]
-  ]
-}
-```
-
 ## 나무 이정표
 ```json
 {
@@ -1997,41 +1761,6 @@
   "useAt": {
     "x": 23,
     "y": 49
-  },
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      596
-    ]
-  ]
-}
-```
-
-## 나무 이정표
-```json
-{
-  "id": "stair-sign-1",
-  "name": "나무 이정표",
-  "x": 23,
-  "y": 24,
-  "purpose": "언덕 위 교회로 오르는 계단 안내",
-  "w": 1,
-  "h": 1,
-  "kind": "civic-prop",
-  "placeId": "stair-sign",
-  "lower": "KEEP",
-  "upper": [
-    596
-  ],
-  "useAt": {
-    "x": 23,
-    "y": 25
   },
   "width": 1,
   "height": 1,
@@ -2187,6 +1916,223 @@
   "upperTiles": [
     [
       352
+    ]
+  ]
+}
+```
+
+## 빨랫줄
+```json
+{
+  "name": "빨랫줄",
+  "x": 45,
+  "y": 8,
+  "w": 2,
+  "h": 2,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2620,
+    2621,
+    2625,
+    2626
+  ],
+  "ownerId": "chapel-hill-parish-house-2",
+  "kit": "laundry",
+  "purpose": "세탁물을 말리는 자리",
+  "anchor": "house",
+  "side": "left",
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      240,
+      240
+    ],
+    [
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2620,
+      2621
+    ],
+    [
+      2625,
+      2626
+    ]
+  ]
+}
+```
+
+## 나무통
+```json
+{
+  "name": "나무통",
+  "x": 47,
+  "y": 9,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    2638
+  ],
+  "ownerId": "chapel-hill-parish-house-2",
+  "kit": "laundry",
+  "purpose": "빨래를 헹구는 물통",
+  "anchor": "빨랫줄",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      2638
+    ]
+  ]
+}
+```
+
+## 항아리
+```json
+{
+  "name": "항아리",
+  "x": 48,
+  "y": 9,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    352
+  ],
+  "ownerId": "chapel-hill-parish-house-2",
+  "kit": "laundry",
+  "purpose": "세탁에 쓸 물 보관",
+  "anchor": "빨랫줄",
+  "side": "left",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      352
+    ]
+  ]
+}
+```
+
+## 가로 탁자
+```json
+{
+  "name": "가로 탁자",
+  "x": 8,
+  "y": 34,
+  "w": 3,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    234,
+    235,
+    236
+  ],
+  "ownerId": "chapel-hill-parish-house-3",
+  "kit": "woodwork",
+  "purpose": "목재를 다루는 작업면",
+  "anchor": "house",
+  "side": "right",
+  "width": 3,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240,
+      240,
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      234,
+      235,
+      236
+    ]
+  ]
+}
+```
+
+## 장작
+```json
+{
+  "name": "장작",
+  "x": 8,
+  "y": 32,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    349
+  ],
+  "ownerId": "chapel-hill-parish-house-3",
+  "kit": "woodwork",
+  "purpose": "작업대에 공급할 목재",
+  "anchor": "가로 탁자",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      349
+    ]
+  ]
+}
+```
+
+## 통나무 더미
+```json
+{
+  "name": "통나무 더미",
+  "x": 9,
+  "y": 32,
+  "w": 1,
+  "h": 1,
+  "kind": "prop",
+  "lower": "KEEP",
+  "upper": [
+    741
+  ],
+  "ownerId": "chapel-hill-parish-house-3",
+  "kit": "woodwork",
+  "purpose": "켜서 쓸 원목",
+  "anchor": "가로 탁자",
+  "side": "right",
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      741
     ]
   ]
 }

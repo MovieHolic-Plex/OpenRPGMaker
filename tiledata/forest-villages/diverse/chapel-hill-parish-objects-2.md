@@ -1,223 +1,6 @@
 # 실제 소품의 완전한 두 레이어 배열
 
 각 항목 (x,y,w,h)는 맵 절대 좌표다. 하위는 정답 바닥 포함. upper=-1은 빈 칸이다. 다른 곳에 상위 소품만 복제할 때 하위 바닥은 유지한다.
-## 빨랫줄
-```json
-{
-  "name": "빨랫줄",
-  "x": 45,
-  "y": 8,
-  "w": 2,
-  "h": 2,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2620,
-    2621,
-    2625,
-    2626
-  ],
-  "ownerId": "chapel-hill-parish-house-2",
-  "kit": "laundry",
-  "purpose": "세탁물을 말리는 자리",
-  "anchor": "house",
-  "side": "left",
-  "width": 2,
-  "height": 2,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ],
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2620,
-      2621
-    ],
-    [
-      2625,
-      2626
-    ]
-  ]
-}
-```
-
-## 나무통
-```json
-{
-  "name": "나무통",
-  "x": 47,
-  "y": 9,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    2638
-  ],
-  "ownerId": "chapel-hill-parish-house-2",
-  "kit": "laundry",
-  "purpose": "빨래를 헹구는 물통",
-  "anchor": "빨랫줄",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      2638
-    ]
-  ]
-}
-```
-
-## 항아리
-```json
-{
-  "name": "항아리",
-  "x": 48,
-  "y": 9,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    352
-  ],
-  "ownerId": "chapel-hill-parish-house-2",
-  "kit": "laundry",
-  "purpose": "세탁에 쓸 물 보관",
-  "anchor": "빨랫줄",
-  "side": "left",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      352
-    ]
-  ]
-}
-```
-
-## 가로 탁자
-```json
-{
-  "name": "가로 탁자",
-  "x": 8,
-  "y": 34,
-  "w": 3,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    234,
-    235,
-    236
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "목재를 다루는 작업면",
-  "anchor": "house",
-  "side": "right",
-  "width": 3,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      234,
-      235,
-      236
-    ]
-  ]
-}
-```
-
-## 장작
-```json
-{
-  "name": "장작",
-  "x": 8,
-  "y": 32,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    349
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "작업대에 공급할 목재",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      349
-    ]
-  ]
-}
-```
-
-## 통나무 더미
-```json
-{
-  "name": "통나무 더미",
-  "x": 9,
-  "y": 32,
-  "w": 1,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    741
-  ],
-  "ownerId": "chapel-hill-parish-house-3",
-  "kit": "woodwork",
-  "purpose": "켜서 쓸 원목",
-  "anchor": "가로 탁자",
-  "side": "right",
-  "width": 1,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      741
-    ]
-  ]
-}
-```
-
 ## 나무 상자
 ```json
 {
@@ -378,42 +161,6 @@
   "upperTiles": [
     [
       207
-    ]
-  ]
-}
-```
-
-## 과일 상자
-```json
-{
-  "name": "과일 상자",
-  "x": 10,
-  "y": 37,
-  "w": 2,
-  "h": 1,
-  "kind": "prop",
-  "lower": "KEEP",
-  "upper": [
-    202,
-    203
-  ],
-  "ownerId": "chapel-hill-parish-house-4",
-  "kit": "storage",
-  "purpose": "나를 수확물 상자",
-  "anchor": "나무 상자",
-  "side": "left",
-  "width": 2,
-  "height": 1,
-  "lowerTiles": [
-    [
-      240,
-      240
-    ]
-  ],
-  "upperTiles": [
-    [
-      202,
-      203
     ]
   ]
 }
@@ -1189,6 +936,129 @@
     [
       2616,
       2617
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 27,
+  "y": 3,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 3,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 숲 나무 · 작은 덤불
+```json
+{
+  "name": "숲 나무 · 작은 덤불",
+  "x": 25,
+  "y": 4,
+  "w": 2,
+  "h": 2,
+  "kind": "vegetation",
+  "scene": 3,
+  "lower": [
+    1073,
+    1074,
+    1103,
+    1104
+  ],
+  "upper": [
+    -1,
+    -1,
+    -1,
+    -1
+  ],
+  "width": 2,
+  "height": 2,
+  "lowerTiles": [
+    [
+      1073,
+      1074
+    ],
+    [
+      1103,
+      1104
+    ]
+  ],
+  "upperTiles": [
+    [
+      -1,
+      -1
+    ],
+    [
+      -1,
+      -1
+    ]
+  ]
+}
+```
+
+## 덤불
+```json
+{
+  "name": "덤불",
+  "x": 28,
+  "y": 5,
+  "w": 1,
+  "h": 1,
+  "kind": "vegetation",
+  "scene": 3,
+  "lower": "KEEP",
+  "upper": [
+    289
+  ],
+  "width": 1,
+  "height": 1,
+  "lowerTiles": [
+    [
+      240
+    ]
+  ],
+  "upperTiles": [
+    [
+      289
     ]
   ]
 }

@@ -149,6 +149,131 @@
     "sourceChipset": "tex_easyrpg_chipset_world",
     "sourceTile": 103,
     "targetTile": 2702
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 13,
+    "targetTile": 2695
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 14,
+    "targetTile": 2696
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 15,
+    "targetTile": 2697
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 16,
+    "targetTile": 2698
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 17,
+    "targetTile": 2699
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 18,
+    "targetTile": 2703
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 19,
+    "targetTile": 2704
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 20,
+    "targetTile": 2705
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 21,
+    "targetTile": 2706
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 22,
+    "targetTile": 2707
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 23,
+    "targetTile": 2708
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 24,
+    "targetTile": 2709
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 25,
+    "targetTile": 2710
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 26,
+    "targetTile": 2711
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 27,
+    "targetTile": 2712
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 28,
+    "targetTile": 2713
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 29,
+    "targetTile": 2714
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 30,
+    "targetTile": 2715
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 31,
+    "targetTile": 2716
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 32,
+    "targetTile": 2717
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 33,
+    "targetTile": 2718
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 34,
+    "targetTile": 2719
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 35,
+    "targetTile": 2720
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 36,
+    "targetTile": 2721
+  },
+  {
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 37,
+    "targetTile": 2722
   }
 ]
 ```
@@ -297,59 +422,59 @@
       "points": [
         [
           2,
-          19
+          17
         ],
         [
           6,
-          19
+          17
         ],
         [
           7,
-          18
+          16
         ],
         [
           17,
-          18
+          16
         ],
         [
           18,
-          17
+          15
         ],
         [
-          25,
-          17
+          21,
+          15
         ],
         [
-          26,
-          16
+          22,
+          14
+        ],
+        [
+          35,
+          14
+        ],
+        [
+          37,
+          15
         ],
         [
           39,
-          16
+          15
         ],
         [
-          41,
-          17
+          42,
+          18
         ],
         [
-          43,
-          17
-        ],
-        [
-          46,
-          20
+          56,
+          18
         ],
         [
           57,
-          20
+          17
         ],
         [
           58,
-          19
-        ],
-        [
-          59,
-          19
+          17
         ]
       ],
       "height": 5
@@ -358,17 +483,17 @@
   "stairs": [
     [
       10,
-      18,
-      5
-    ],
-    [
-      32,
       16,
       5
     ],
     [
-      51,
-      20,
+      28,
+      14,
+      5
+    ],
+    [
+      47,
+      18,
       5
     ]
   ]
@@ -383,43 +508,43 @@
       "points": [
         [
           2,
-          38
+          35
         ],
         [
           9,
-          38
+          35
         ],
         [
           11,
-          39
+          36
         ],
         [
           20,
-          39
+          36
         ],
         [
           22,
-          40
+          37
         ],
         [
           30,
-          40
+          37
         ],
         [
           31,
-          39
+          36
         ],
         [
-          46,
-          39
+          44,
+          36
         ],
         [
-          47,
-          38
+          45,
+          35
         ],
         [
-          62,
-          38
+          59,
+          35
         ]
       ],
       "height": 6
@@ -428,51 +553,51 @@
       "points": [
         [
           14,
-          19
+          16
         ],
         [
           20,
-          19
+          16
         ],
         [
           21,
-          18
+          15
         ],
         [
           25,
-          18
+          15
         ],
         [
           27,
-          19
+          16
         ],
         [
           33,
-          19
+          16
         ],
         [
           35,
-          20
+          17
         ],
         [
-          48,
-          20
+          45,
+          17
         ],
         [
-          49,
-          19
+          46,
+          16
         ],
         [
-          54,
-          19
+          51,
+          16
         ],
         [
-          55,
-          18
+          52,
+          15
         ],
         [
-          61,
-          18
+          58,
+          15
         ]
       ],
       "height": 6
@@ -481,22 +606,22 @@
   "stairs": [
     [
       23,
+      15,
+      6
+    ],
+    [
+      47,
+      16,
+      6
+    ],
+    [
       18,
+      36,
       6
     ],
     [
-      50,
-      19,
-      6
-    ],
-    [
-      18,
-      39,
-      6
-    ],
-    [
-      34,
-      39,
+      33,
+      36,
       6
     ]
   ]
@@ -859,7 +984,73 @@
 }
 ```
 
+### 너울목 항구 마을
+```json
+{
+  "cliffs": [
+    {
+      "points": [
+        [
+          3,
+          20
+        ],
+        [
+          16,
+          20
+        ],
+        [
+          17,
+          19
+        ],
+        [
+          30,
+          19
+        ],
+        [
+          32,
+          20
+        ],
+        [
+          45,
+          20
+        ],
+        [
+          46,
+          19
+        ],
+        [
+          58,
+          19
+        ],
+        [
+          60,
+          20
+        ],
+        [
+          71,
+          20
+        ]
+      ],
+      "height": 5
+    }
+  ],
+  "stairs": [
+    [
+      23,
+      19,
+      5
+    ],
+    [
+      52,
+      19,
+      5
+    ]
+  ]
+}
+```
+
 전체 출력은 각 rows 문서의 두 레이어 배열을 사용한다. 구현은 scripts/content/lib/village-cliffs.mjs의 cliffColumns/paintVillageCliffs다.
 
 
 선착장은 갈대물굽이 포구 (46,39), 폭21·높이2. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (66,39)까지 연결을 검사한다.
+선착장은 너울목 항구 마을 (51,48), 폭2·높이8. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (52,48)까지 연결을 검사한다.

@@ -14,13 +14,6 @@
     },
     "items": [
       {
-        "id": "churchyard-1",
-        "name": "벤치",
-        "x": 16,
-        "y": 13,
-        "purpose": "예배 전후 앉아 기다리는 자리"
-      },
-      {
         "id": "churchyard-2",
         "name": "벤치",
         "x": 22,
@@ -68,13 +61,6 @@
     },
     "items": [
       {
-        "id": "graveyard-gate-1",
-        "name": "돌등",
-        "x": 4,
-        "y": 12,
-        "purpose": "묘지 입구를 밝히는 등"
-      },
-      {
         "id": "graveyard-gate-2",
         "name": "마른 묘목",
         "x": 10,
@@ -100,13 +86,6 @@
       "maxDistance": 8
     },
     "items": [
-      {
-        "id": "falls-pool-1",
-        "name": "벤치",
-        "x": 36,
-        "y": 28,
-        "purpose": "폭포를 바라보며 쉬는 자리"
-      },
       {
         "id": "falls-pool-2",
         "name": "낚시 바구니",
@@ -147,13 +126,6 @@
         "y": 36,
         "purpose": "길어 온 물을 담는 용기",
         "near": "낮은 돌 우물"
-      },
-      {
-        "id": "village-well-3",
-        "name": "게시판",
-        "x": 28,
-        "y": 36,
-        "purpose": "교회 소식과 마을 공지를 붙이는 판"
       },
       {
         "id": "village-well-plaza-1",
@@ -215,15 +187,7 @@
       "y": 23,
       "maxDistance": 10
     },
-    "items": [
-      {
-        "id": "stair-sign-1",
-        "name": "나무 이정표",
-        "x": 23,
-        "y": 24,
-        "purpose": "언덕 위 교회로 오르는 계단 안내"
-      }
-    ],
+    "items": [],
     "site": {
       "x": 25,
       "y": 23,

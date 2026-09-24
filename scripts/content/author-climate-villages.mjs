@@ -11,7 +11,8 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 import { dressDesert, freezeCells, placePeaks, reachable } from "./lib/climate-edits.mjs";
-import { emptiness, fillPlainGaps, retileGrass, rng } from "./lib/village-fullness.mjs";
+import { emptiness, fillNaturalGaps, rng } from "./lib/village-fullness.mjs";
+import { arrangeTallGrass, ALL_TALL_GRASS } from "./lib/tall-grass.mjs";
 
 const OUT = "tiledata/climate-villages";
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -19,8 +20,8 @@ const sheets = JSON.parse(fs.readFileSync(`${OUT}/sheets.json`));
 const PLANS = [
   { id: "climate-snow-pine-hamlets", climate: "snow", from: "pine-hamlets", name: "솔바람 산촌 · 설원",
     note: "눈 덮인 산기슭에 흩어진 산촌. 솔숲 수관에 눈이 얹히고 지붕이 하얗게 덮였다. 개울은 얼지 않고 흐른다" },
-  { id: "climate-snow-chapel-hill", climate: "snow", from: "chapel-hill-parish", name: "종탑 언덕 교구 · 설원",
-    note: "눈 쌓인 언덕 위 종탑 교구. 계단 길과 묘지, 교구 마당이 모두 눈밭이 된다" },
+  { id: "climate-snow-chapel-hill", climate: "snow", from: "chapel-hill-parish", name: "종탑 언덕 교구 · 설원", freezeRiver: true,
+    note: "눈 쌓인 언덕 위 종탑 교구. 계단 길과 묘지, 교구 마당이 모두 눈밭이 되고 강과 폭포 아래 소가 얼어붙었다(폭포만 흐른다)" },
   { id: "climate-snow-frozen-mistpond", climate: "snow", from: "mistpond-hollow", name: "얼어붙은 안개못", freeze: "mistpond-hollow-shrine-pond",
     note: "울타리 친 못이 통째로 얼어 석상 섬까지 걸어 들어갈 수 있는 설원 폐촌. 서쪽 강과 폭포는 얼지 않았다" },
   { id: "climate-volcano-twin-falls", climate: "volcano", from: "twin-falls-river-village", name: "두 폭포 · 용암 강마을",
@@ -39,10 +40,21 @@ const PLANS = [
     note: "단풍 숲으로 둘러싸인 언덕 위 종탑 교구. 금빛 풀밭의 계단 길과 묘지, 폭포 아래 소가 가을빛이다" },
 ];
 const ice = new Map(sheets.snow.ice), water = new Set(sheets.volcano.lava);
-// Ground dressing from the forest village's fill pass (tall grass, wildflowers): a climate edit may clear it.
-const tallGrass = village.tileset.autotileGroups.find((g) => g.id === "builtin_tall_grass");
-const GRASS = new Set(Object.values(tallGrass.variantMap)), FLOWERS = new Set([348, 288]);
-const UNFLOWERED = { snow: FLOWERS, volcano: FLOWERS, desert: new Set([288]) };
+// Ground dressing from the forest village's fill pass (tall grass E/F/G, wildflowers): a climate edit may clear it.
+const GRASS = ALL_TALL_GRASS, FLOWERS = new Set([348, 288]);
+// Wildflowers do not bloom in snow, ash or sand.
+const UNFLOWERED = { snow: FLOWERS, volcano: FLOWERS, desert: FLOWERS };
+// A leafy broadleaf tree is green on every sheet: in snow it gives way to a snow-laden round bush, in sand the
+// desert dressing turns it into palms and cacti, and the gap fill of both skips tree scenes.
+const LEAFLESS = new Set(["snow", "desert"]);
+const LAKE = new Set(Object.values(village.tileset.autotileGroups.find((g) => g.id === "forest_harmony_lake_47").variantMap));
+const ROAD = new Set(Object.values(village.tileset.autotileGroups.find((g) => g.id === "forest_harmony_road_47").variantMap));
+const CLIFF = new Set(Object.values(village.cliffBindings));
+const vegetation = {};
+for (const list of Object.values(JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/retained-vegetation.json")))) for (const o of list) {
+  const short = o.name.split(" · ")[1];
+  vegetation[short] ??= { name: o.name, w: o.w, h: o.h, lower: o.lower, upper: o.upper };
+}
 const PLAIN = new Set([240, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147]);
 
 await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-villages-entry.mjs", async (api) => {
@@ -62,14 +74,33 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
     const taken = new Set(plan.access.map((a) => at(a.x, a.y)));
     for (const o of [...plan.houses, ...(plan.landmarks ?? []), ...plan.placements, ...(plan.yards ?? [])])
       for (let y = o.y; y < o.y + (o.h ?? 1); y++) for (let x = o.x; x < o.x + (o.w ?? 1); x++) taken.add(at(x, y));
-    // Wildflowers do not bloom in snow or ash, and a leafy flower bush does not grow in sand: loose ones on open
-    // ground become a tuft of the sheet's own tall grass (frosted, ash-grey or dry), re-autotiled with its neighbours.
+    // Wildflowers do not bloom in snow, ash or sand: loose ones on open ground go (a lone tuft of grass in their place
+    // read as a dotted carpet, review 2026-09-24); the gap fill below groups what is left.
     if (UNFLOWERED[spec.climate]) {
-      const swapped = [];
+      let removed = 0;
       for (let i = 0; i < map.upperTiles.length; i++)
-        if (UNFLOWERED[spec.climate].has(map.upperTiles[i]) && map.lowerTiles[i] === 240 && !taken.has(i)) { map.upperTiles[i] = -1; map.lowerTiles[i] = tallGrass.variantMap["0"]; swapped.push(i); }
-      retileGrass(map, tallGrass, swapped);
-      edits.push({ kind: "unflowered", cells: swapped.length, tiles: [...UNFLOWERED[spec.climate]], rule: "빈 땅의 들꽃·꽃덤불 → 이 시트의 키큰 풀 한 포기(눈 덮인·잿빛·마른 풀), 이웃과 다시 이음" });
+        if (UNFLOWERED[spec.climate].has(map.upperTiles[i]) && map.lowerTiles[i] === 240 && !taken.has(i)) { map.upperTiles[i] = -1; removed++; }
+      edits.push({ kind: "unflowered", cells: removed, tiles: [...UNFLOWERED[spec.climate]], rule: "빈 땅의 들꽃·꽃덤불을 걷는다(눈·재·모래에는 꽃이 피지 않는다)" });
+    }
+    if (spec.climate === "snow") {
+      // Green broadleaf crowns in snow (review): each whole 3×4 tree becomes the snow-laden round bush 3×3 on its lower
+      // three rows; the crown row goes back to snow.
+      const bush = vegetation["둥근 덤불"];
+      let swapped = 0;
+      for (const o of plan.placements.filter((p) => p.kind === "vegetation" && /활엽수/.test(p.name) && p.w === 3 && p.h === 4)) {
+        for (let y = o.y; y < o.y + 4; y++) for (let x = o.x; x < o.x + 3; x++) { map.lowerTiles[at(x, y)] = 240; map.upperTiles[at(x, y)] = -1; }
+        for (let k = 0; k < 9; k++) { const i = at(o.x + k % 3, o.y + 1 + Math.floor(k / 3)); map.lowerTiles[i] = bush.lower[k]; map.upperTiles[i] = bush.upper[k]; }
+        swapped++;
+      }
+      edits.push({ kind: "snow-bushes", trees: swapped, rule: "활엽수 3×4 → 눈 덮인 둥근 덤불 3×3(아래 세 줄), 맨 윗줄은 눈밭" });
+    }
+    if (spec.freezeRiver) {
+      // The whole river and its plunge pools freeze (the waterfall keeps falling); bridges stay.
+      const cells = [];
+      map.lowerTiles.forEach((t, i) => { if (LAKE.has(t)) cells.push(i); });
+      const frozen = freezeCells(map, cells, ice);
+      assert(frozen > 40, "river did not freeze");
+      edits.push({ kind: "freeze-river", swappedTiles: frozen, rule: "강·소의 물 칸 t → 얼음 칸 ice[t]; 폭포(2700)와 다리는 그대로" });
     }
     if (spec.freeze) {
       const box = plan.landmarks.find((l) => l.id === spec.freeze);
@@ -88,7 +119,7 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       edits.push({ kind: "freeze", landmark: box.id, box: [box.x, box.y, box.w, box.h], swappedTiles: frozen, rule: "물 칸 t → 얼음 칸 ice[t] (sheets.json snow.ice)" });
     }
     if (spec.peaks) edits.push(...placePeaks(map, spec.peaks, plan.houses.map((h) => [h.front.x, h.front.y]),
-      { is: (l, u) => (l === 240 || GRASS.has(l)) && (u < 0 || FLOWERS.has(u)), cleared: (cells) => retileGrass(map, tallGrass, cells) }));
+      { is: (l, u) => (l === 240 || GRASS.has(l)) && (u < 0 || FLOWERS.has(u)), cleared: () => { map.lowerTiles = arrangeTallGrass(map, { tileset, houses: plan.houses, seed: plan.seed }).lowerTiles; } }));
     if (spec.desert) {
       const wet = new Set();
       map.lowerTiles.forEach((t, i) => { if (water.has(t)) wet.add(i); });
@@ -102,17 +133,28 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       const bridges = map.lowerTiles.concat(map.upperTiles).filter((t) => sheets.volcano.stoneBridges.includes(t)).length;
       edits.push({ kind: "sheet", lavaCells: lava, basaltBridgeCells: bridges, rule: "물 칸은 시트에서 용암으로 칠해져 있다(번호·통행 그대로)" });
     }
-    // The fill gate (town: no plain 5×5 square, no 17×13 screen over 40% plain) once more after the climate edits —
-    // a desert that cleared its trees back to sand gets the same walkable fill (tall grass is dry scrub on this sheet).
+    // The fill gate (town: no plain 5×5 square, no 17×13 screen over 40% plain) once more after the climate edits,
+    // with the same grouped scenes as the forest village (lib/village-fullness.mjs fillNaturalGaps): no tree scenes in
+    // snow or sand, no flowers in snow, ash or sand; tall grass E/F/G is the sheet's own frosted / ash / dry / russet grass.
     {
       const isPlain = (x, y) => map.upperTiles[at(x, y)] === -1 && PLAIN.has(map.lowerTiles[at(x, y)]);
+      const near = (x, y, r, test) => { for (let yy = y - r; yy <= y + r; yy++) for (let xx = x - r; xx <= x + r; xx++) if (xx >= 0 && yy >= 0 && xx < W && yy < map.height && test(at(xx, yy))) return true; return false; };
+      const ring = new Set();
+      for (const a of plan.access) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) ring.add(at(a.x + dx, a.y + dy));
+      const bare = (x, y) => !ring.has(at(x, y)) && !near(x, y, 1, (i) => taken.has(i) || ROAD.has(map.lowerTiles[i]) || LAKE.has(map.lowerTiles[i]) || water.has(map.lowerTiles[i]) || map.lowerTiles[i] >= sheets.baseCount || CLIFF.has(map.upperTiles[i]) || CLIFF.has(map.lowerTiles[i]));
+      const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };
+      const entry = [plan.start.x, plan.start.y];
+      const reachOk = () => { const seen = reachable(api.canMove, project, map, entry); return targets.every(([x, y]) => seen.has(at(x, y))); };
       const before = emptiness(map, isPlain);
-      const gaps = fillPlainGaps({ map, isPlain, canTake: (x, y) => !taken.has(at(x, y)), group: tallGrass, random: rng(plan.seed * 13 + spec.id.length),
-        flowerKinds: [[[348, 348, 348], [288, 348, 288]], [[348, 348, 348]], []][spec.climate === "autumn" ? 0 : spec.climate === "desert" ? 1 : 2] });
+      const gaps = fillNaturalGaps({ map, isPlain, templates: vegetation, random: rng(plan.seed * 13 + spec.id.length), accept: reachOk,
+        limits: { maxSq: 4, screen: 0.39 }, allow: (scene) => !(LEAFLESS.has(spec.climate) && scene.tree),
+        flowerTiles: UNFLOWERED[spec.climate] ? [] : [348, 288],
+        take: (x, y, solid) => !taken.has(at(x, y)) && !ring.has(at(x, y)) && (!solid || bare(x, y)),
+        grass: { members: ALL_TALL_GRASS, arrange: (m) => { m.lowerTiles = arrangeTallGrass(m, { tileset, houses: plan.houses, seed: plan.seed }).lowerTiles; } } });
       assert(gaps.maxSq <= 4 && gaps.screen <= 0.4, `fill gate ${spec.id} maxSq=${gaps.maxSq} screen=${gaps.screen.toFixed(3)}`);
-      edits.push({ kind: "fill", pieces: gaps.pieces.length, cells: gaps.pieces.reduce((n, p) => n + p.cells.length, 0),
+      edits.push({ kind: "fill", pieces: gaps.pieces.length, scenes: gaps.pieces.map((p) => p.name),
         emptiness: { before: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
-        rule: "빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 삐죽한 풀숲 덩이·세 송이 들꽃" });
+        rule: "빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 덩이 장면(덤불숲·바위와 덤불·키큰 풀 덩이, 가을은 나무·꽃 포함)" });
     }
     // Reachability with the runtime move rule, from the village entrance to every door front (+ the ice).
     const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };

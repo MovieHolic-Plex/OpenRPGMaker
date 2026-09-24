@@ -4,41 +4,6 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
-    "tile": 379,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 379,
-    "sourceX": 19,
-    "sourceY": 12,
-    "pixelX": 304,
-    "pixelY": 192,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 12,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "role": "fence",
-      "label": "울타리",
-      "source": "bundled-default",
-      "passage": "solid",
-      "confidence": "high",
-      "terrainTag": 0,
-      "description": "",
-      "defaultLayer": "upper",
-      "repeatability": "fixed"
-    }
-  },
-  {
     "tile": 380,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -984,6 +949,44 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "role": "wall",
       "defaultLayer": "upper",
       "passage": "solid"
+    }
+  },
+  {
+    "tile": 537,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 537,
+    "sourceX": 27,
+    "sourceY": 17,
+    "pixelX": 432,
+    "pixelY": 272,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 17,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "rock",
+      "tags": [
+        "회백색 바위 더미",
+        "rock",
+        "돌무더기",
+        "회백색"
+      ],
+      "label": "회백색 바위 더미",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": ""
     }
   },
   {

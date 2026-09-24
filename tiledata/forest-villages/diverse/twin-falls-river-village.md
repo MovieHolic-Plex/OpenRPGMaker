@@ -97,13 +97,6 @@
       },
       "items": [
         {
-          "id": "falls-overlook-1",
-          "name": "벤치",
-          "x": 29,
-          "y": 12,
-          "purpose": "윗 폭포가 떨어지는 소리를 들으며 쉬는 자리"
-        },
-        {
           "id": "falls-overlook-2",
           "name": "벤치",
           "x": 36,
@@ -182,13 +175,6 @@
           "y": 29,
           "purpose": "길어 온 물을 담는 용기",
           "near": "낮은 돌 우물"
-        },
-        {
-          "id": "well-3",
-          "name": "게시판",
-          "x": 15,
-          "y": 31,
-          "purpose": "우물에 모인 주민의 마을 공지"
         },
         {
           "id": "well-plaza-1",
@@ -273,14 +259,6 @@
           "purpose": "폭포 아래 소에서 쓰는 낚시 바구니"
         },
         {
-          "id": "lower-pool-fishing-2",
-          "name": "나무통",
-          "x": 24,
-          "y": 48,
-          "purpose": "잡은 물고기를 담는 통",
-          "near": "낚시 바구니"
-        },
-        {
           "id": "lower-pool-fishing-3",
           "name": "벤치",
           "x": 26,
@@ -314,22 +292,6 @@
           "x": 40,
           "y": 45,
           "purpose": "폭포 아래에서 저녁에 불을 피우는 자리"
-        },
-        {
-          "id": "pool-fire-2",
-          "name": "벤치",
-          "x": 42,
-          "y": 47,
-          "purpose": "불가에 앉는 자리",
-          "near": "모닥불"
-        },
-        {
-          "id": "pool-fire-3",
-          "name": "장작 더미",
-          "x": 43,
-          "y": 45,
-          "purpose": "모닥불 장작",
-          "near": "모닥불"
         }
       ],
       "site": {
@@ -542,15 +504,7 @@
         "y": 46,
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "stair-signs-e-1",
-          "name": "나무 이정표",
-          "x": 52,
-          "y": 47,
-          "purpose": "가운데 단으로 오르는 동쪽 계단 안내"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 50,
         "y": 46,
@@ -1026,13 +980,6 @@
     },
     {
       "role": "civic-use",
-      "x": 29,
-      "y": 13,
-      "placeId": "falls-overlook",
-      "propId": "falls-overlook-1"
-    },
-    {
-      "role": "civic-use",
       "x": 36,
       "y": 11,
       "placeId": "falls-overlook",
@@ -1068,13 +1015,6 @@
     },
     {
       "role": "civic-use",
-      "x": 14,
-      "y": 31,
-      "placeId": "well",
-      "propId": "well-3"
-    },
-    {
-      "role": "civic-use",
       "x": 35,
       "y": 34,
       "placeId": "bridge-market",
@@ -1103,13 +1043,6 @@
     },
     {
       "role": "civic-use",
-      "x": 24,
-      "y": 49,
-      "placeId": "lower-pool-fishing",
-      "propId": "lower-pool-fishing-2"
-    },
-    {
-      "role": "civic-use",
       "x": 25,
       "y": 50,
       "placeId": "lower-pool-fishing",
@@ -1121,20 +1054,6 @@
       "y": 46,
       "placeId": "pool-fire",
       "propId": "pool-fire-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 42,
-      "y": 48,
-      "placeId": "pool-fire",
-      "propId": "pool-fire-2"
-    },
-    {
-      "role": "civic-use",
-      "x": 43,
-      "y": 46,
-      "placeId": "pool-fire",
-      "propId": "pool-fire-3"
     },
     {
       "role": "civic-use",
@@ -1170,13 +1089,6 @@
       "y": 48,
       "placeId": "stair-signs-w",
       "propId": "stair-signs-w-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 52,
-      "y": 48,
-      "placeId": "stair-signs-e",
-      "propId": "stair-signs-e-1"
     },
     {
       "role": "civic-use",

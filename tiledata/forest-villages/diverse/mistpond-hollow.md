@@ -63,50 +63,6 @@
       "h": 3
     },
     {
-      "ownerId": "mistpond-hollow-house-2",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 38,
-      "y": 8,
-      "side": "left",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "ownerId": "mistpond-hollow-house-4",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 41,
-      "y": 27,
-      "side": "left",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "ownerId": "mistpond-hollow-house-5",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 13,
-      "y": 43,
-      "side": "left",
-      "w": 3,
-      "h": 3
-    },
-    {
-      "ownerId": "mistpond-hollow-house-6",
-      "kit": "abandoned",
-      "name": "버려진 마당",
-      "reason": "사람이 떠나 마당이 말라 버렸고 부서진 울타리만 남았다",
-      "x": 44,
-      "y": 49,
-      "side": "left",
-      "w": 3,
-      "h": 1
-    },
-    {
       "ownerId": "mistpond-hollow-house-7",
       "kit": "herbs",
       "name": "약초 손질",
@@ -665,27 +621,11 @@
           "near": "낮은 돌 우물"
         },
         {
-          "id": "dead-well-3",
-          "name": "통나무 더미",
-          "x": 29,
-          "y": 44,
-          "purpose": "썩어 가는 옛 땔감",
-          "near": "낮은 돌 우물"
-        },
-        {
           "id": "dead-well-plaza-1",
           "name": "돌등",
           "x": 30,
           "y": 41,
           "purpose": "밤에 우물가를 밝히는 돌등",
-          "near": "낮은 돌 우물"
-        },
-        {
-          "id": "dead-well-plaza-2",
-          "name": "마른 묘목",
-          "x": 27,
-          "y": 38,
-          "purpose": "우물가에 말라 버린 묘목",
           "near": "낮은 돌 우물"
         }
       ],
@@ -716,13 +656,6 @@
           "x": 14,
           "y": 27,
           "purpose": "빨래터에 버려진 물항아리"
-        },
-        {
-          "id": "falls-lookout-2",
-          "name": "마른 묘목",
-          "x": 15,
-          "y": 35,
-          "purpose": "물가에 선 마른 나무"
         }
       ],
       "site": {
@@ -1202,24 +1135,10 @@
     },
     {
       "role": "civic-use",
-      "x": 29,
-      "y": 45,
-      "placeId": "dead-well",
-      "propId": "dead-well-3"
-    },
-    {
-      "role": "civic-use",
       "x": 14,
       "y": 28,
       "placeId": "falls-lookout",
       "propId": "falls-lookout-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 15,
-      "y": 36,
-      "placeId": "falls-lookout",
-      "propId": "falls-lookout-2"
     },
     {
       "role": "civic-use",
@@ -1234,13 +1153,6 @@
       "y": 41,
       "placeId": "dead-well",
       "propId": "dead-well-plaza-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 27,
-      "y": 39,
-      "placeId": "dead-well",
-      "propId": "dead-well-plaza-2"
     }
   ]
 }

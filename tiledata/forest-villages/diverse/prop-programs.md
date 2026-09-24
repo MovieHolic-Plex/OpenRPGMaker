@@ -393,23 +393,23 @@
       {
         "id": "pine-hamlets-house-1",
         "x": 6,
-        "y": 7,
+        "y": 5,
         "activity": "laundry",
         "role": "주거",
         "reason": "상단 서쪽 집의 생활 마당을 세탁·건조 공간으로 지정"
       },
       {
         "id": "pine-hamlets-house-2",
-        "x": 26,
-        "y": 4,
+        "x": 22,
+        "y": 2,
         "activity": "growing",
         "role": "텃밭집",
         "reason": "집 동쪽의 평탄한 빈터를 가족 텃밭으로 지정"
       },
       {
         "id": "pine-hamlets-house-3",
-        "x": 50,
-        "y": 10,
+        "x": 46,
+        "y": 8,
         "activity": "woodwork",
         "role": "목공 작업집",
         "reason": "북동 숲 생활권의 집에 목재 작업 기능을 부여"
@@ -417,31 +417,31 @@
       {
         "id": "pine-hamlets-house-4",
         "x": 11,
-        "y": 28,
+        "y": 26,
         "activity": "herbs",
         "role": "약초 작업집",
         "reason": "서쪽 숲길 가까운 집의 야외 작업을 약초 손질로 지정"
       },
       {
         "id": "pine-hamlets-house-5",
-        "x": 37,
-        "y": 26,
+        "x": 33,
+        "y": 24,
         "activity": "laundry",
         "role": "주거",
         "reason": "중앙 갈림길의 주거 집에는 세탁 기능만 지정"
       },
       {
         "id": "pine-hamlets-house-6",
-        "x": 50,
-        "y": 35,
+        "x": 46,
+        "y": 33,
         "activity": "growing",
         "role": "텃밭집",
         "reason": "남동 집 옆 빈터를 소규모 자급 텃밭으로 지정"
       },
       {
         "id": "pine-hamlets-house-7",
-        "x": 23,
-        "y": 39,
+        "x": 21,
+        "y": 37,
         "activity": "storage",
         "role": "물자 보관집",
         "reason": "남쪽 진입 생활권의 집을 물자 보관 거점으로 지정"
@@ -451,15 +451,15 @@
       {
         "id": "terrace-cliff-village-house-1",
         "x": 16,
-        "y": 7,
+        "y": 4,
         "activity": "laundry",
         "role": "주거",
         "reason": "상단 서쪽 주거 마당은 세탁·건조 공간"
       },
       {
         "id": "terrace-cliff-village-house-2",
-        "x": 38,
-        "y": 9,
+        "x": 36,
+        "y": 6,
         "activity": "herbs",
         "role": "약초 작업집",
         "reason": "상단 동쪽 마당에 약초 재배·손질 작업을 지정"
@@ -467,7 +467,7 @@
       {
         "id": "terrace-cliff-village-house-3",
         "x": 8,
-        "y": 25,
+        "y": 22,
         "activity": "storage",
         "role": "물자 보관집",
         "reason": "중단 서쪽 길가 집을 물자 보관 거점으로 지정"
@@ -475,15 +475,15 @@
       {
         "id": "terrace-cliff-village-house-4",
         "x": 26,
-        "y": 29,
+        "y": 26,
         "activity": "woodwork",
         "role": "목공 작업집",
         "reason": "중단 작업 생활권에 가공 작업대를 지정"
       },
       {
         "id": "terrace-cliff-village-house-5",
-        "x": 52,
-        "y": 29,
+        "x": 49,
+        "y": 26,
         "activity": "growing",
         "role": "텃밭집",
         "reason": "중단 동쪽 평탄한 마당을 자급 텃밭으로 지정"
@@ -491,23 +491,23 @@
       {
         "id": "terrace-cliff-village-house-6",
         "x": 11,
-        "y": 48,
+        "y": 45,
         "activity": "laundry",
         "role": "주거",
         "reason": "하단 서쪽 주거 마당은 세탁·건조 공간"
       },
       {
         "id": "terrace-cliff-village-house-7",
-        "x": 36,
-        "y": 51,
+        "x": 35,
+        "y": 48,
         "activity": "storage",
         "role": "물자 보관집",
         "reason": "남쪽 입구와 연결되는 하단 집에 보관 기능 지정"
       },
       {
         "id": "terrace-cliff-village-house-8",
-        "x": 56,
-        "y": 48,
+        "x": 53,
+        "y": 45,
         "activity": "herbs",
         "role": "약초 작업집",
         "reason": "하단 동쪽 집에서 약초를 손질하는 공간 지정"
@@ -841,6 +841,96 @@
         "activity": "herbs",
         "role": "못지기 집",
         "reason": "마지막으로 남은 못지기가 못가 약초를 손질하며 석상을 돌본다"
+      }
+    ],
+    "nuleolmok-harbor-town": [
+      {
+        "id": "nuleolmok-harbor-town-house-1",
+        "x": 27,
+        "y": 7,
+        "activity": "herbs",
+        "role": "신전 약초집",
+        "reason": "윗단 서쪽 신전 구역 끝 집이 교회에 쓸 약초를 기르고 손질한다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-2",
+        "x": 41,
+        "y": 5,
+        "activity": "field-tending",
+        "role": "밭 관리집",
+        "reason": "윗단 동쪽 농가 구역 첫 집이 바로 아래 큰 밭(52,14)을 돌본다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-3",
+        "x": 59,
+        "y": 5,
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "윗단 동쪽 끝 농가는 집 옆에 제 텃밭을 둔다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-4",
+        "x": 4,
+        "y": 28,
+        "activity": "storage",
+        "role": "장터 창고",
+        "reason": "서쪽 입구 옆 집을 장터 좌판에 댈 물자 창고로 쓴다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-5",
+        "x": 14,
+        "y": 29,
+        "activity": "woodwork",
+        "role": "목공 작업집",
+        "reason": "장터 북쪽 집은 좌판·통을 짜는 목공 마당을 둔다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-6",
+        "x": 4,
+        "y": 43,
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "아랫단 남서쪽 주거 마당은 세탁·건조 공간"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-7",
+        "x": 14,
+        "y": 43,
+        "activity": "growing",
+        "role": "텃밭집",
+        "reason": "남서쪽 가운데 집은 집 옆 텃밭을 가꾼다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-8",
+        "x": 26,
+        "y": 44,
+        "activity": "laundry",
+        "role": "주거",
+        "reason": "남서쪽 동쪽 끝 주거는 세탁·건조 마당만 둔다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-9",
+        "x": 44,
+        "y": 39,
+        "activity": "fishing",
+        "role": "어업 준비집",
+        "reason": "부두 뿌리 바로 위 집에서 어구와 어획 용기를 준비한다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-10",
+        "x": 53,
+        "y": 27,
+        "activity": "storage",
+        "role": "항구 창고",
+        "reason": "동쪽 계단 아래 집을 배에서 내린 짐을 두는 창고로 쓴다"
+      },
+      {
+        "id": "nuleolmok-harbor-town-house-11",
+        "x": 59,
+        "y": 38,
+        "activity": "woodwork",
+        "role": "배 목수집",
+        "reason": "항구 동쪽 물가 집에서 배에 쓸 목재를 다룬다"
       }
     ]
   }

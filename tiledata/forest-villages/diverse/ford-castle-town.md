@@ -3126,22 +3126,7 @@
         "y": 59,
         "maxDistance": 10
       },
-      "items": [
-        {
-          "id": "pool-rest-1",
-          "name": "벤치",
-          "x": 62,
-          "y": 54,
-          "purpose": "폭포 아래 소를 보며 쉬는 자리"
-        },
-        {
-          "id": "pool-rest-2",
-          "name": "낚시 바구니",
-          "x": 63,
-          "y": 56,
-          "purpose": "소에서 쓰는 낚시 바구니"
-        }
-      ],
+      "items": [],
       "site": {
         "x": 66,
         "y": 59,
@@ -3175,14 +3160,6 @@
           "x": 58,
           "y": 79,
           "purpose": "불가에 앉는 자리",
-          "near": "모닥불"
-        },
-        {
-          "id": "lower-fire-3",
-          "name": "장작 더미",
-          "x": 62,
-          "y": 77,
-          "purpose": "모닥불 장작",
           "near": "모닥불"
         }
       ],
@@ -3879,20 +3856,6 @@
     },
     {
       "role": "civic-use",
-      "x": 62,
-      "y": 55,
-      "placeId": "pool-rest",
-      "propId": "pool-rest-1"
-    },
-    {
-      "role": "civic-use",
-      "x": 63,
-      "y": 57,
-      "placeId": "pool-rest",
-      "propId": "pool-rest-2"
-    },
-    {
-      "role": "civic-use",
       "x": 59,
       "y": 78,
       "placeId": "lower-fire",
@@ -3904,13 +3867,6 @@
       "y": 80,
       "placeId": "lower-fire",
       "propId": "lower-fire-2"
-    },
-    {
-      "role": "civic-use",
-      "x": 63,
-      "y": 77,
-      "placeId": "lower-fire",
-      "propId": "lower-fire-3"
     },
     {
       "role": "civic-use",

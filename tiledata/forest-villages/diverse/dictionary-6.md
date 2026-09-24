@@ -4,6 +4,642 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
 ```json
 [
   {
+    "tile": 2598,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2525,
+    "sourceX": 5,
+    "sourceY": 84,
+    "pixelX": 80,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 3",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2599,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2526,
+    "sourceX": 6,
+    "sourceY": 84,
+    "pixelX": 96,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 4",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2600,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2527,
+    "sourceX": 7,
+    "sourceY": 84,
+    "pixelX": 112,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 5",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2601,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2528,
+    "sourceX": 8,
+    "sourceY": 84,
+    "pixelX": 128,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 얕음 6",
+      "description": "굽이숲 수관의 잎 채움 얕은 속(2칸 안에 빈 땅). 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2602,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2529,
+    "sourceX": 9,
+    "sourceY": 84,
+    "pixelX": 144,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 1",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2603,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2530,
+    "sourceX": 10,
+    "sourceY": 84,
+    "pixelX": 160,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 2",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2604,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2531,
+    "sourceX": 11,
+    "sourceY": 84,
+    "pixelX": 176,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 3",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2605,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2532,
+    "sourceX": 12,
+    "sourceY": 84,
+    "pixelX": 192,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 4",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2606,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2533,
+    "sourceX": 13,
+    "sourceY": 84,
+    "pixelX": 208,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 5",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2607,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 2534,
+    "sourceX": 14,
+    "sourceY": 84,
+    "pixelX": 224,
+    "pixelY": 1344,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 86,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관 속 · 깊음 6",
+      "description": "굽이숲 수관의 잎 채움 깊은 속. 8방향이 모두 수관인 칸에만 놓는다(칠하는 도구가 위치로 고른다). 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2610,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 0,
+    "sourceX": 0,
+    "sourceY": 0,
+    "pixelX": 0,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 0,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "표지판",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2611,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 2,
+    "sourceX": 2,
+    "sourceY": 0,
+    "pixelX": 32,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 1,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "꽃 화단",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2612,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 3,
+    "sourceX": 3,
+    "sourceY": 0,
+    "pixelX": 48,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 2,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "꽃 화단",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2613,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 4,
+    "sourceX": 4,
+    "sourceY": 0,
+    "pixelX": 64,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "채소밭",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2614,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 5,
+    "sourceX": 5,
+    "sourceY": 0,
+    "pixelX": 80,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "채소밭",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2615,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 6,
+    "sourceX": 0,
+    "sourceY": 1,
+    "pixelX": 0,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "표지판",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2616,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 8,
+    "sourceX": 2,
+    "sourceY": 1,
+    "pixelX": 32,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "꽃 화단",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2617,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 9,
+    "sourceX": 3,
+    "sourceY": 1,
+    "pixelX": 48,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "꽃 화단",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
+    "tile": 2618,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_shared_forest_village_objects",
+    "sourceTile": 10,
+    "sourceX": 4,
+    "sourceY": 1,
+    "pixelX": 64,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 87,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "채소밭",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "description": "기존 승인 소품의 16px 원본 칩 복사",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2619,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_shared_forest_village_objects",
@@ -1215,339 +1851,9 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     }
   },
   {
-    "tile": 2670,
+    "tile": 2657,
     "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 3,
-    "sourceX": 3,
-    "sourceY": 0,
-    "pixelX": 48,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 498",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2671,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 4,
-    "sourceX": 4,
-    "sourceY": 0,
-    "pixelX": 64,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 1,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 499",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2672,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 5,
-    "sourceX": 5,
-    "sourceY": 0,
-    "pixelX": 80,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 2,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 528",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2673,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 6,
-    "sourceX": 6,
-    "sourceY": 0,
-    "pixelX": 96,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 3,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 529",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2680,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 7,
-    "sourceX": 7,
-    "sourceY": 0,
-    "pixelX": 112,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 10,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 619",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2683,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 652,
-    "sourceX": 22,
-    "sourceY": 21,
-    "pixelX": 352,
-    "pixelY": 336,
-    "width": 16,
-    "height": 16,
-    "targetX": 13,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 652",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2686,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 682,
-    "sourceX": 22,
-    "sourceY": 22,
-    "pixelX": 352,
-    "pixelY": 352,
-    "width": 16,
-    "height": 16,
-    "targetX": 16,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 682",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2688,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 711,
-    "sourceX": 21,
-    "sourceY": 23,
-    "pixelX": 336,
-    "pixelY": 368,
-    "width": 16,
-    "height": 16,
-    "targetX": 18,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 711",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2689,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 854,
-    "sourceX": 14,
-    "sourceY": 28,
-    "pixelX": 224,
-    "pixelY": 448,
-    "width": 16,
-    "height": 16,
-    "targetX": 19,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "돌계단",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "floor",
-      "defaultLayer": "lower",
-      "source": "user",
-      "userLocked": true,
-      "passage": "passable"
-    }
-  },
-  {
-    "tile": 2691,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 8,
-    "sourceX": 8,
-    "sourceY": 0,
-    "pixelX": 128,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 21,
-    "targetY": 89,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "절벽 · 숲마을 712",
-      "description": "바닥240에 맞는 숲마을 색 보정판. 큰 폭포 원본의 밝은 잔디판과 구분한다.",
-      "role": "cliff",
-      "defaultLayer": "upper",
-      "source": "user",
-      "userLocked": true,
-      "passage": "solid"
-    }
-  },
-  {
-    "tile": 2692,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
+    "sourceChipset": "tex_harbor_kit",
     "sourceTile": 0,
     "sourceX": 0,
     "sourceY": 0,
@@ -1555,112 +1861,10 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
     "pixelY": 0,
     "width": 16,
     "height": 16,
-    "targetX": 22,
-    "targetY": 89,
+    "targetX": 17,
+    "targetY": 88,
     "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "잔디 사선 504 · 색 맞춤",
-      "description": "바닥240 유지. 원본 경계의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.",
-      "role": "terrain",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "passage": "passable",
-      "source": "user",
-      "userLocked": true
-    }
-  },
-  {
-    "tile": 2693,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 1,
-    "sourceX": 1,
-    "sourceY": 0,
-    "pixelX": 16,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 23,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "잔디 사선 505 · 색 맞춤",
-      "description": "바닥240 유지. 원본 경계의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.",
-      "role": "terrain",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "passage": "passable",
-      "source": "user",
-      "userLocked": true
-    }
-  },
-  {
-    "tile": 2694,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 9,
-    "sourceX": 9,
-    "sourceY": 0,
-    "pixelX": 144,
-    "pixelY": 0,
-    "width": 16,
-    "height": 16,
-    "targetX": 24,
-    "targetY": 89,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "잔디 수평 반복 559 · 색 맞춤",
-      "description": "바닥240 유지. 원본 경계의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.",
-      "role": "terrain",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "passage": "passable",
-      "source": "user",
-      "userLocked": true
-    }
-  },
-  {
-    "tile": 2700,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_world",
-    "sourceTile": 123,
-    "sourceX": 3,
-    "sourceY": 4,
-    "pixelX": 48,
-    "pixelY": 64,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 90,
-    "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
       "up": false,
@@ -1668,81 +1872,152 @@ source는 원본 시트, target은 이 마을용 합성 시트다. 0기준. 폭/
       "left": false,
       "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "label": "폭포 · World 123",
-      "description": "절벽 면을 대신하는 폭포. 윗선 칸은 물, 면·밑단 칸이 폭포다. 번들 칩셋이라 정지 그림(첫 프레임).",
-      "role": "water",
-      "defaultLayer": "lower",
+      "role": "prop",
+      "label": "나룻배 1,1",
       "source": "user",
       "userLocked": true,
-      "passage": "solid"
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   },
   {
-    "tile": 2701,
+    "tile": 2658,
     "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_world",
-    "sourceTile": 102,
-    "sourceX": 12,
-    "sourceY": 3,
-    "pixelX": 192,
-    "pixelY": 48,
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 1,
+    "sourceX": 1,
+    "sourceY": 0,
+    "pixelX": 16,
+    "pixelY": 0,
     "width": 16,
     "height": 16,
-    "targetX": 1,
-    "targetY": 90,
+    "targetX": 18,
+    "targetY": 88,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "label": "나무다리 윗줄 · World 102",
-      "description": "강을 가로지르는 2행 다리. 윗줄102·아랫줄103을 강폭만큼 반복한다.",
-      "role": "bridge",
-      "defaultLayer": "lower",
+      "role": "prop",
+      "label": "나룻배 2,1",
       "source": "user",
       "userLocked": true,
-      "passage": "passable"
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   },
   {
-    "tile": 2702,
+    "tile": 2659,
     "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_easyrpg_chipset_world",
-    "sourceTile": 103,
-    "sourceX": 13,
-    "sourceY": 3,
-    "pixelX": 208,
-    "pixelY": 48,
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 2,
+    "sourceX": 2,
+    "sourceY": 0,
+    "pixelX": 32,
+    "pixelY": 0,
     "width": 16,
     "height": 16,
-    "targetX": 2,
-    "targetY": 90,
+    "targetX": 19,
+    "targetY": 88,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "label": "나무다리 아랫줄 · World 103",
-      "description": "강을 가로지르는 2행 다리. 윗줄102·아랫줄103을 강폭만큼 반복한다.",
-      "role": "bridge",
-      "defaultLayer": "lower",
+      "role": "prop",
+      "label": "나룻배 3,1",
       "source": "user",
       "userLocked": true,
-      "passage": "passable"
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2660,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 3,
+    "sourceX": 3,
+    "sourceY": 0,
+    "pixelX": 48,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 4,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2661,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 4,
+    "sourceX": 4,
+    "sourceY": 0,
+    "pixelX": 64,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 5,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   }
 ]
