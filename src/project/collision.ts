@@ -42,6 +42,7 @@ const BLOCKED: PassFlag = { up: false, down: false, left: false, right: false };
  * 칸의 통행(MZ 규칙). tiles 는 1층부터 위로. 맨 위부터 내려가며 빈칸과 ★ 를 건너뛰고,
  * 처음 만난 타일의 통행이 칸을 정한다. 1층은 ★ 여도 바닥이므로 그 자체로 정한다.
  * 1층이 비었거나 통행 정보가 없으면 막힘. 두 층([1층,-1,3층,-1])이면 옛 tilePassability 와 같다.
+ * 배열을 받는 외부 호출자·테스트용이다. 뜨거운 경로는 passabilityOf / cellPassability 를 쓴다.
  */
 export function layeredPassability(tileset: TilesetDef, tiles: readonly number[]): PassFlag {
   const base = tiles[0] ?? -1;
@@ -57,19 +58,48 @@ export function layeredPassability(tileset: TilesetDef, tiles: readonly number[]
   return basePass;
 }
 
+// 한 층이 칸을 정하는가: 범위 밖·빈칸·★·통행 정보 없음이면 null(아래 층으로 내려간다).
+function decidingPass(tileset: TilesetDef, tile: number): PassFlag | null {
+  if (tile < 0 || tile >= tileset.passability.length) return null;
+  if (passageMarkForTile(tileset, tile) === "star") return null;
+  return tileset.passability[tile] ?? null;
+}
+
+// layeredPassability 와 같은 규칙을 네 층으로 펼친 것. 막힘이면 null — 배열도 결과 객체도 만들지 않는다.
+function passabilityOrNull(tileset: TilesetDef, l1: number, l2: number, l3: number, l4: number): PassFlag | null {
+  const basePass = l1 >= 0 && l1 < tileset.passability.length ? tileset.passability[l1] : null;
+  if (!basePass) return null;
+  return decidingPass(tileset, l4) ?? decidingPass(tileset, l3) ?? decidingPass(tileset, l2) ?? basePass;
+}
+
+/** 네 층(1층부터) 통행 — layeredPassability(tileset, [l1, l2, l3, l4]) 와 같고 배열을 만들지 않는다. */
+export function passabilityOf(tileset: TilesetDef, l1: number, l2: number, l3: number, l4: number): PassFlag {
+  return passabilityOrNull(tileset, l1, l2, l3, l4) ?? { ...BLOCKED };
+}
+
+// 칸 i 의 네 층 값을 직접 읽는다. 옛 스택 top 이 있으면 1·3층을 대신한다(tileAt 의 lower/upper 와 같다).
+function cellPassOrNull(tileset: TilesetDef, map: GameMap, i: number): PassFlag | null {
+  return passabilityOrNull(
+    tileset,
+    topTileInStack(map, "lower", i) ?? map.lowerTiles[i] ?? -1,
+    map.lowerOverlayTiles?.[i] ?? -1,
+    topTileInStack(map, "upper", i) ?? map.upperTiles[i] ?? -1,
+    map.upperOverlayTiles?.[i] ?? -1,
+  );
+}
+
+/** 칸 번호 i(= y*width+x) 의 통행. 1~4층과 옛 스택 top 을 모두 본다. 경계 검사는 호출자가 한다. */
+export function cellPassability(tileset: TilesetDef, map: GameMap, i: number): PassFlag {
+  return cellPassOrNull(tileset, map, i) ?? { ...BLOCKED };
+}
+
 // 두 층(1층 + 3층) 통행. 3층이 O/X이면 덮어쓰고, ★이면 1층을 따른다.
 export function tilePassability(
   tileset: TilesetDef,
   lower: number,
   upper: number
 ): PassFlag {
-  return layeredPassability(tileset, [lower, -1, upper, -1]);
-}
-
-// 옛 스택 top 이 있으면 1·3층 값을 대신한다(tileAt 의 lower/upper). 2·4층은 그대로.
-function withStackTops(t: ReturnType<typeof tileAt>): readonly number[] {
-  if (t.lower === t.layers[0] && t.upper === t.layers[2]) return t.layers;
-  return [t.lower, t.layers[1], t.upper, t.layers[3]];
+  return passabilityOf(tileset, lower, -1, upper, -1);
 }
 
 // 방향 → 해당 방향으로 "나가는/들어가는" 통과 비트.
@@ -104,14 +134,13 @@ export function canMove(
   else if (dy > 0) dir = "down";
   else if (dy < 0) dir = "up";
   else return false; // 같은 칸
-  const from = tileAt(map, fromX, fromY);
-  const to = tileAt(map, toX, toY);
-  const fromPass = layeredPassability(tileset, withStackTops(from));
-  const toPass = layeredPassability(tileset, withStackTops(to));
+  // 칸 밖 from 은 tileAt 처럼 네 층 모두 빈칸 → 막힘.
+  const fromPass = inBounds(map, fromX, fromY) ? cellPassOrNull(tileset, map, fromY * map.width + fromX) : null;
+  const toPass = cellPassOrNull(tileset, map, toY * map.width + toX);
   // from에서 해당 방향으로 나갈 수 있고, to에 해당 방향으로 들어올 수 있어야 함.
   // RM2K3 관례: from의 나가는 방향 + to의 들어오는 방향(반대) 체크.
   // 단순화: from과 to 양쪽의 해당 방향 비트가 열려있으면 통과.
-  return dirPassable(fromPass, dir) && dirPassable(toPass, oppositeDir(dir));
+  return dirPassable(fromPass ?? BLOCKED, dir) && dirPassable(toPass ?? BLOCKED, oppositeDir(dir));
 }
 
 function oppositeDir(dir: Dir): Dir {
@@ -133,9 +162,8 @@ export function isPassable(
   if (!inBounds(map, x, y)) return false;
   const tileset = getTileset(project, map);
   if (!tileset) return false;
-  const t = tileAt(map, x, y);
-  const pass = layeredPassability(tileset, withStackTops(t));
-  return pass.up || pass.down || pass.left || pass.right;
+  const pass = cellPassOrNull(tileset, map, y * map.width + x);
+  return pass !== null && (pass.up || pass.down || pass.left || pass.right);
 }
 
 /**

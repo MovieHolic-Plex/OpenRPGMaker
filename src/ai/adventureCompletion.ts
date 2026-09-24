@@ -1,5 +1,5 @@
 import type { Command, GameMap, Project } from "@/project/types";
-import { canMove, tileAt, tilePassability } from "@/project/collision";
+import { canMove, cellPassability, inBounds } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
 import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
@@ -140,8 +140,7 @@ export function adventureCompletionProblems(project: Project, required: Adventur
       const hasInteraction = commands(map).some(entry => entry.event === event && ["text", "changeItem", "changeGold", "changeParty", "battleProcessing"].includes(entry.command.kind));
       if (!hasInteraction) continue;
       const tileset = project.tilesets[map.tilesetId];
-      const tile = tileAt(map, event.x, event.y);
-      const pass = tileset && tilePassability(tileset, tile.lower, tile.upper);
+      const pass = tileset && inBounds(map, event.x, event.y) ? cellPassability(tileset, map, event.y * map.width + event.x) : null;
       const occupiesFloor = event.pages?.some(page => page.graphic.sprite && !page.graphic.transparent);
       if (!accessible(cells, event) || (occupiesFloor && (!pass || !Object.values(pass).some(Boolean)))) {
         const issue = `맵 ${map.id} 이벤트 ${event.id}가 막힌 타일 위이거나 접근 불가입니다. 건물/벽 겹침을 확인하고 통행 가능한 자리로 옮기세요.`;

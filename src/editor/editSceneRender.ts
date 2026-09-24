@@ -4,9 +4,9 @@ import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/ch
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
 import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStability";
-import { tilePassability } from "@/project/collision";
+import { cellPassability } from "@/project/collision";
 import { layerTileAt, shadowAt } from "@/project/mapLayers";
-import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
+import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
 import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
@@ -495,11 +495,9 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
   collG.fillStyle(0xff4444, 0.35);
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
-      const i = y * map.width + x;
-      const lower = topTileInStack(map, "lower", i) ?? map.lowerTiles[i];
-      const upper = topTileInStack(map, "upper", i) ?? map.upperTiles[i];
       if (!tileset) continue;
-      const pass = tilePassability(tileset, lower, upper);
+      // 1~4층 모두 본다(4층 × 가 통행 3층 위에 있으면 빨갛게). 옛 스택 top 도 cellPassability 가 반영한다.
+      const pass = cellPassability(tileset, map, y * map.width + x);
       if (!pass.up && !pass.down && !pass.left && !pass.right) {
         collG.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
       }

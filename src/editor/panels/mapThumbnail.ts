@@ -103,9 +103,17 @@ function hashMapContent(map: GameMap): number {
   mix(map.tileSize);
   for (const tile of map.lowerTiles) mix(tile);
   for (const tile of map.upperTiles) mix(tile);
-  for (const tile of map.lowerOverlayTiles ?? []) mix(tile);
-  for (const tile of map.upperOverlayTiles ?? []) mix(tile);
-  for (const bits of map.shadowBits ?? []) mix(bits);
+  // 선택 층은 있을 때만 태그·길이를 앞에 섞는다 — 옛 맵(선택 층 없음)의 해시는 그대로이고,
+  // 같은 길이의 두 층이 내용을 맞바꿔도 다른 값이 된다.
+  const mixOptional = (tag: number, values: readonly number[] | undefined): void => {
+    if (!values) return;
+    mix(tag);
+    mix(values.length);
+    for (const value of values) mix(value);
+  };
+  mixOptional(0x4c32, map.lowerOverlayTiles);
+  mixOptional(0x4c34, map.upperOverlayTiles);
+  mixOptional(0x5348, map.shadowBits);
   return hash;
 }
 
