@@ -19,6 +19,7 @@ const AMOUNT_OP_KINDS = new Set([
   "changeGold", "changeItem", "changeExp", "changeLevel", "changeActorHp", "changeActorMp", "changeLifeSkillExp",
 ]);
 
+const CHOICE_OPTIONS_ALIASES = ["choices", "items", "answers"] as const;
 const CHOICE_BRANCH_ALIASES = ["commands", "then", "actions"] as const;
 const TEXT_BODY_ALIASES = ["text", "message", "content", "line", "dialogue"] as const;
 
@@ -177,6 +178,18 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     delete command[alias];
     return `text.${alias} 를 body 로 옮겼습니다(문장 명령의 본문 칸은 body).`;
   }
+  let optionsFix: string | undefined;
+  if (command.kind === "choices" && !Array.isArray(command.options)) {
+    // 보기 목록을 `choices` 로 쓴 사례(2026-09-24 JRPG 도그푸딩: 여관 주인 `{kind:"choices",choices:[{text,branch}]}`)
+    // — place_npc 가 「command.options is not iterable」 TypeError 로 죽었다. 보기 목록 칸은 options 하나라 옮긴다.
+    const aliases = CHOICE_OPTIONS_ALIASES.filter(key => Array.isArray(command[key]));
+    if (aliases.length === 1) {
+      const alias = aliases[0]!;
+      command.options = command[alias];
+      delete command[alias];
+      optionsFix = `choices.${alias} 를 options 로 옮겼습니다(선택지 보기 목록의 정본 키는 options).`;
+    }
+  }
   if (command.kind === "choices" && Array.isArray(command.options)) {
     // 네이티브 선택지 분기는 `branch` 다. SimplePage 선택지(`commands`)나 fork(`then`) 표기가 섞이면
     // 분기가 비거나 검증에서 거부됐다. branch 가 비어 있고 별칭 하나에만 명령이 있으면 옮긴다.
@@ -192,7 +205,7 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       delete option[alias];
       moved.push(`options[${index}].${alias}`);
     }
-    return moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined;
+    return joinFixes(optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
   }
   if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind) && typeof command.op !== "string") {
     const resolved = direction(command.action);
