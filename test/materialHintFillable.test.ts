@@ -28,4 +28,17 @@ describe("면 채우기 재료 힌트", () => {
     expect(result.summary).toContain("채울 수 있는 재료");
     expect(result.summary).toMatch(/"물"|"모래"|"흙길"/u);
   });
+  });
+
+  // qa-game mystery-3: 벽 재료로 fill_region 을 같은 인자로 11번 재시도했다 — 어느 도구로 갈지 알려 준다.
+  it("벽 재료는 build_wall·place_concept 로, 가구는 place_props 로 보낸다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const wall = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "목골 석벽 집 벽 확장" });
+    expect(wall.ok).toBe(false);
+    expect(wall.summary).toContain("build_wall");
+    expect(wall.summary).toContain("place_concept");
+    const table = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 3, h: 3 }, material: "탁자(가로)" });
+    expect(table.ok).toBe(false);
+    expect(table.summary).toMatch(/place_props|build_wall/u);
+  });
 });
