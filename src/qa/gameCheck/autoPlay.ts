@@ -193,12 +193,23 @@ export interface CriticalPlan {
  */
 function pageResetGoals(project: Project, setter: CommandVisit, visits: readonly CommandVisit[]): Goal[] {
   const resets: Goal[] = [];
-  for (const condition of setter.page.conditions as readonly RawCommand[]) {
+  // 「오늘 이미 만났나」 는 페이지 조건(switch=false)으로도, 대사 앞 fork 로도 쓴다 — fork 의 else 에 세터가 있으면
+  // 그 스위치가 꺼져 있어야 닿는다(2026-09-24 연애 4회차: 공략 인물 셋 모두 fork{sw_met}·else 에 호감 +2).
+  const locks: RawCommand[] = [...(setter.page.conditions as readonly RawCommand[])];
+  for (const segment of setter.segments) {
+    if (segment.kind !== "fork") continue;
+    const condition = segment.command.condition as RawCommand | undefined;
+    if (condition?.kind !== "switch" || typeof condition.switchId !== "string") continue;
+    if (segment.branch === "else" && condition.value === true) locks.push({ ...condition, value: false });
+    if (segment.branch === "then" && condition.value === false) locks.push(condition);
+  }
+  for (const condition of locks) {
     if (condition.kind !== "switch" || condition.value !== false || typeof condition.switchId !== "string") continue;
     const id = condition.switchId;
+    if (resets.some((goal) => goal.label.includes(id))) continue;
     const reset = visits.find((visit) => visit.command.kind === "setSwitch" && visit.command.switchId === id && visit.command.value === false
       && visit.page.event !== setter.page.event && requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req)));
-    if (reset) resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id} 끄기`, visit: reset, done: (session) => session.switches[id] !== true });
+    if (reset) resets.push({ label: `스위치 ${project.switches.find((s) => s.id === id)?.name || id}(${id}) 끄기`, visit: reset, done: (session) => session.switches[id] !== true });
   }
   return resets;
 }
