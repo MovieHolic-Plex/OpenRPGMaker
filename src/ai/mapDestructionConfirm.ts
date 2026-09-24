@@ -15,7 +15,7 @@
 
 import type { ProposedCall } from "./assistantSession";
 import type { Project } from "@/project/types";
-import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "./approvalPolicy";
+import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "./approvalPolicy";
 
 /** 맵 규모 파괴를 포함한 제안인가. 이름 기반이라 diff 계산 전에도 답할 수 있다. */
 export function proposalHasMapDestruction(calls: readonly ProposedCall[]): boolean {
@@ -91,7 +91,8 @@ export interface MapLossConfirmRequest extends MapDestructionConfirmRequest {
 export function mapLossConfirmRequest(before: Project, proposed: Project): MapLossConfirmRequest | null {
   const removed = removedMapIds(before, proposed);
   const emptied = emptiedEventMapIds(before, proposed);
-  if (removed.length === 0 && emptied.length === 0) return null;
+  const wiped = wipedTileMapIds(before, proposed);
+  if (removed.length === 0 && emptied.length === 0 && wiped.length === 0) return null;
   const describe = (id: string): string => {
     const map = before.maps[id];
     const name = map?.name?.trim() ? map.name : id;
@@ -100,6 +101,7 @@ export function mapLossConfirmRequest(before: Project, proposed: Project): MapLo
   const headline = [
     removed.length > 0 ? `맵 ${removed.length}개를 프로젝트에서 지웁니다.` : null,
     emptied.length > 0 ? `맵 ${emptied.length}개는 남지만 이벤트가 전부 사라집니다.` : null,
+    wiped.length > 0 ? `맵 ${wiped.length}개는 타일이 전부 지워집니다.` : null,
   ].filter((line) => line !== null).join(" ");
   const label = removed.length > 0 ? `맵 ${removed.length}개 삭제` : `이벤트 비우기(맵 ${emptied.length}개)`;
   return {

@@ -11,8 +11,7 @@ const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
 
 /**
- * 타이틀 메뉴는 키보드(↑↓ / Z·Enter·Space / X·Esc) 전용이다.
- * 포인터는 선택이나 확정을 바꾸지 않으며 E2E도 실제 키 입력 경로를 쓴다.
+ * 타이틀 메뉴는 키보드(↑↓ / Z·Enter·Space / X·Esc)와 항목 클릭으로 확정한다.
  */
 export type TitleScreenActions = {
   readonly onNewGame: () => void;
@@ -101,7 +100,7 @@ export function focusSelectedTitleOption(title: HTMLElement): void {
 
 export function renderTitleScreen(
   project: Project,
-  _actions: TitleScreenActions,
+  actions: TitleScreenActions,
   selectedIndex = 0,
   context?: TitleMenuContext,
 ): HTMLElement {
@@ -127,6 +126,7 @@ export function renderTitleScreen(
   title.append(...titleNodes);
   const showInputHint = settings.showInputHint !== false;
   const menu = renderMenu(settings, options, clampedIndex, showInputHint);
+  wireTitleOptionClicks(menu, options, actions);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
   title.append(renderTitleEditorialCopy());
@@ -377,6 +377,26 @@ function renderMenu(
     );
   }
   return menu;
+}
+
+function wireTitleOptionClicks(
+  menu: HTMLElement,
+  options: readonly TitleMenuOption[],
+  actions: TitleScreenActions,
+): void {
+  const buttons = Array.from(menu.querySelectorAll<HTMLElement>(".rm-title-menu-button"));
+  const run: Record<TitleMenuOptionId, () => void> = {
+    newGame: actions.onNewGame,
+    resume: actions.onResume,
+    continueGame: actions.onContinue,
+    quit: actions.onQuit,
+  };
+  buttons.forEach((button, index) => {
+    const option = options[index];
+    if (!option) return;
+    button.setAttribute("data-play-input-owner", "play-ui");
+    button.addEventListener("click", () => run[option.id]());
+  });
 }
 
 function titleOption(

@@ -794,7 +794,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
-    // 타이틀 확정은 handleTitleKey의 키보드 경로만 사용한다.
+    // 타이틀 확정은 키보드와 메뉴 클릭이 같은 activateTitleOption 으로 모인다.
     const title = renderTitleScreen(project, {
       onNewGame: () => confirmTitleThen(() => activateTitleOption("newGame")),
       onResume: () => confirmTitleThen(() => activateTitleOption("resume")),
