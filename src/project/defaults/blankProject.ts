@@ -10,6 +10,7 @@
 // 여기에는 **에디터를 끌지 않는 것만** 둔다. 새 데모/쇼케이스 빌더는 defaultProject.ts 로.
 import type { CommonEvent, GameMap, MapId, Project, SwitchDef, VariableDef } from "../types";
 import { SCHEMA_VERSION } from "../types";
+import { ensureSharedContent } from "../sharedContent";
 import { DEFAULT_ACTOR_ID } from "./constants";
 import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "./defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms } from "./defaultDatabase";
@@ -113,6 +114,8 @@ export function createProjectWithMaps(starters: readonly GameMap[], selectedInde
   repairLegacyRateKeys(project);
   // 재생 불가 BGM(MIDI) 참조 교체 — 픽스처는 defaultSystem() 변경이 닿지 않는다.
   repairUnplayableSystemBgm(project);
+  // Bootstrap/headless callers install the host snapshot before creating a seed.
+  ensureSharedContent(project);
   return project;
 }
 

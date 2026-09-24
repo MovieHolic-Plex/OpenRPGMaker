@@ -178,6 +178,25 @@ DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 
 - 회귀 계약: `test/team/webProjectCreation.test.ts` (독립 저장, 원본 보존, 재시작 후 로드,
   로그인 리다이렉트, 잘못된 경로/시드, viewer 제한). 실행 여부는 완료 보고에서 구분한다.
 
+### 새 프로젝트의 공용 기본 자료 보장 (2026-09-24)
+
+부팅은 공용 catalog 로드를 기다렸지만, 동기 `createProjectWithMaps`는 설치된 snapshot을
+사용하지 않았고 새 폴더 생성은 정규화를 거치지 않은 seed를 바로 저장했다. 실측에서 같은
+9개 라이브러리를 로드한 상태로 기본 타일셋 25개만 생성됐으며, 수동 projection 후 49개가 됐다.
+경고가 없었으므로 이 누락을 timeout이나 HMR 문제로 분류하지 않는다.
+
+- `createProjectWithMaps`는 이미 설치된 `projectDefaults` 자료를 `ensureSharedContent`로 적용한다.
+  동기 factory는 네트워크를 하지 않으므로 headless 호출자는 먼저 `installSharedContent`를 해야 한다.
+- `createProjectFolderWithSeed`는 저장 직전에 공용 catalog를 다시 로드하고 seed에 적용한다.
+  HTTP(S) 호스트에서는 네트워크·HTTP(404 포함)·JSON/catalog 오류 시 생성 RPC를 호출하지 않는다.
+  기존 새 프로젝트 오류 toast가 이유를 표시하며 기존 폴더는 그대로다.
+- 59MB를 넘는 공용 catalog를 고려해 읽기 제한은 60초다. 기존 프로젝트 부팅의 선택적 로딩은
+  경고 후 진행하지만, 새 프로젝트는 실패한 로딩이나 오래된 snapshot으로 생성하지 않는다.
+- 배포 Electron의 `app://`는 현재 공용 content endpoint가 없어 선택적 로딩을 유지한다.
+  이 변경으로 데스크톱 공용 catalog 배포가 구현됐다고 간주하지 않는다.
+- 예약 `shared_` ID의 자료와 그림을 함께 적용한다. 사용자 독립 ID, 맵, 시작 장르와 설계 brief는
+  유지한다. SQLite 생성/재로드는 기존 호스트 경로가 담당한다.
+
 ## 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
 
 코드 머지만으로 서비스의 `ExecStart=...vite...preview`는 바뀌지 않는다. 이 상태는 HTTP 200이어도

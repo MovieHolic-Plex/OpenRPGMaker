@@ -25,16 +25,19 @@ export function sharedContentTileset(id: string): TilesetDef | undefined {
   for(const lib of Object.values(snapshot.libraries)) if(Object.hasOwn(lib.tilesets,id)) return lib.tilesets[id];
   return undefined;
 }
-/** Host-wide catalog read before the project is normalized. No project id is sent. */
-export async function loadSharedContent(): Promise<void> {
+/** Host-wide catalog read before normalization. Creation requires a successful host response; opening an existing project remains tolerant. */
+export async function loadSharedContent(options: { required?: boolean } = {}): Promise<void> {
   if(typeof window==='undefined') return;
   try {
-    const r=await fetch(SHARED_CONTENT_ENDPOINT,{cache:'no-store',signal:AbortSignal.timeout(10000)});
-    if(!r.ok) { if(r.status===404) return; throw new Error(`HTTP ${r.status}`); }
+    const r=await fetch(SHARED_CONTENT_ENDPOINT,{cache:'no-store',signal:AbortSignal.timeout(60000)});
+    if(!r.ok) { if(r.status===404 && !options.required) return; throw new Error(`HTTP ${r.status}`); }
     const value=await r.json() as SharedContentSnapshot;
     await installSharedContent(value);
 
-  } catch(error) { console.warn('공용 SQLite 자료를 불러오지 못했습니다.',error); }
+  } catch(error) {
+    if(options.required) throw new Error('공용 자료를 불러오지 못해 새 프로젝트 생성을 중단했습니다. 다시 시도해 주세요.', { cause: error });
+    console.warn('공용 SQLite 자료를 불러오지 못했습니다.',error);
+  }
 }
 /** Reserved shared IDs are projections. User copies use independent IDs and are never replaced. */
 export function ensureSharedContent(project: Project): boolean {
