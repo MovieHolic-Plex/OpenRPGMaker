@@ -216,6 +216,7 @@ export function presentEditorWelcome(
       dataset: { testid: EDITOR_WELCOME_TESTIDS.host },
     });
 
+    const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     const settle = (result: EditorWelcomeResult): void => {
       if (settled) return;
       settled = true;
@@ -223,6 +224,7 @@ export function presentEditorWelcome(
       document.body.classList.remove("director-briefing-open");
       if (result.dismiss) setEditorWelcomeDismissed(true);
       root.remove();
+      if (opener?.isConnected) opener.focus();
       resolve(result);
     };
 
