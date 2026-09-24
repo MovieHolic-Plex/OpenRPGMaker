@@ -26,7 +26,8 @@ export function openExternalTilesetCatalog(onImported: (tilesetId: string) => vo
   search.addEventListener('input', () => {
     const query = search.value.trim().toLocaleLowerCase();
     for (const card of content.querySelectorAll<HTMLElement>('article')) {
-      card.hidden = !card.dataset.search?.includes(query);
+      const searchable = card.dataset.search ?? card.textContent?.toLocaleLowerCase() ?? '';
+      card.hidden = query.length > 0 && !searchable.includes(query);
       // Card display:grid otherwise overrides the browser's hidden rule.
       card.style.display = card.hidden ? 'none' : '';
     }
