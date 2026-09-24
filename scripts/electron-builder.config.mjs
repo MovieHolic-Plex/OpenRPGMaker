@@ -12,12 +12,15 @@ export default {
   // 메인·preload 는 esbuild 번들이라 런타임 node_modules 가 필요 없고, 렌더러는 vite 번들이다.
   // 기본값은 production 의존성을 asar 에 넣어 439MB 를 만들었다(실측) — 명시적으로 뺀다.
   // node:sqlite 는 내장이고 electron 은 패키저가 넣는다.
-  files: ["dist/**", "dist-electron/**", "package.json", "!node_modules/**"],
+  files: ["dist/**", "dist-electron/**", "package.json", "scripts/oh-my-pi-worker.ts", "scripts/lib/**", "!node_modules/**"],
+  asarUnpack: ["scripts/**"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 맥을 먼저 낸다(설계서 7.5). 리눅스는 서명이 필요 없는 AppImage 로 도그푸딩한다.
   mac: { target: ["dmg", "zip"], category: "public.app-category.developer-tools" },
   linux: { target: ["AppImage"], category: "Development" },
+  // zip 은 압축만 하므로 리눅스에서 wine 없이 만든다. NSIS exe 는 wine 이 필요하다.
+  win: { target: ["zip"] },
   // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
   publish: null,
 };

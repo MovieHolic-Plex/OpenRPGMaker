@@ -2,7 +2,7 @@
 // 깨는 지점: import.meta.env.DEV=false 일 때 17832(브라우저 루프백)로 가면
 // mdc-server:9888 에서 연 탭이 사용자 PC 의 127.0.0.1 을 두드린다.
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { companionCompletionsBaseUrl, DEFAULT_CHATGPT_BASE_URL, humanizeLlmStatus } from "@/ai/llmClient";
+import { companionCompletionsBaseUrl, companionRequestBaseUrl, DEFAULT_CHATGPT_BASE_URL, humanizeLlmStatus } from "@/ai/llmClient";
 import { companionAuthUrl, companionCredentialMissing } from "@/ai/chatgptOAuthClient";
 import { DEFAULT_OH_MY_PI_PROVIDER } from "@/ai/ohMyPiProviders";
 
@@ -15,6 +15,11 @@ describe("동반 서비스 같은 오리진", () => {
     expect(companionCompletionsBaseUrl({ DEV: false })).toBe("/v1");
     expect(companionCompletionsBaseUrl({ DEV: true })).toBe("/v1");
     expect(DEFAULT_CHATGPT_BASE_URL).toBe("/v1");
+  });
+
+  it("일렉트론 브리지가 있으면 채팅은 루프백 /v1 로 간다", () => {
+    vi.stubGlobal("window", { oprn: { companionOrigin: "http://127.0.0.1:43123" } });
+    expect(companionRequestBaseUrl()).toBe("http://127.0.0.1:43123/v1");
   });
 
   it("인증 경로는 같은 오리진 /auth 다", () => {
