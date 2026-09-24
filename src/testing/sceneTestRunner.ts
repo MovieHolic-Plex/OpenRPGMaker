@@ -1,4 +1,5 @@
 import { recoverAll } from "@/project/sessionActorCommands";
+import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
@@ -1377,8 +1378,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         state.log.push(`shop: ${formatShopItems(step.items ?? step.itemIds.map((itemId) => ({ itemId })))}`);
         return { stop: "shop", step };
       case "inputWait":
-      case "inputNumber":
         step = interp.resume(0);
+        break;
+      case "inputNumber":
+        step = interp.resume(numberInputAnswer(state.project, step.variableId));
         break;
       case "enterHeroName":
         step = interp.resume("");
