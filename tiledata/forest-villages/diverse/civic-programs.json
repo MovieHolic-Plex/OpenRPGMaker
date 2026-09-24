@@ -2127,5 +2127,103 @@
         }
       ]
     }
+  ],
+  "nuleolmok-harbor-town": [
+    {
+      "id": "market",
+      "name": "장터 광장 좌판",
+      "anchor": {
+        "type": "road",
+        "x": 26,
+        "y": 35,
+        "maxDistance": 9
+      },
+      "items": [
+        {
+          "id": "market-1",
+          "name": "장터 노점",
+          "x": 28,
+          "y": 32,
+          "purpose": "항구에서 들어온 물건과 밭 작물을 파는 좌판"
+        },
+        {
+          "id": "market-2",
+          "name": "과일 좌판",
+          "x": 32,
+          "y": 33,
+          "purpose": "윗단 농가에서 내려온 과일",
+          "near": "장터 노점"
+        },
+        {
+          "id": "market-3",
+          "name": "과일 상자",
+          "x": 28,
+          "y": 35,
+          "purpose": "좌판에 보충할 과일",
+          "near": "장터 노점"
+        },
+        {
+          "id": "market-4",
+          "name": "게시판",
+          "x": 30,
+          "y": 29,
+          "purpose": "배 드나드는 날과 장날을 붙이는 판",
+          "near": "장터 노점"
+        }
+      ]
+    },
+    {
+      "id": "well",
+      "name": "장터 광장 우물",
+      "anchor": {
+        "type": "road",
+        "x": 26,
+        "y": 39,
+        "maxDistance": 8
+      },
+      "items": [
+        {
+          "id": "well-1",
+          "name": "낮은 돌 우물",
+          "x": 30,
+          "y": 37,
+          "purpose": "장터와 아랫단 집들의 급수"
+        },
+        {
+          "id": "well-2",
+          "name": "항아리",
+          "x": 32,
+          "y": 38,
+          "purpose": "우물물을 담는 용기",
+          "near": "낮은 돌 우물"
+        }
+      ]
+    },
+    {
+      "id": "church-lamps",
+      "name": "교회 앞 돌등",
+      "anchor": {
+        "type": "landmark",
+        "id": "nuleolmok-harbor-town-church",
+        "maxDistance": 6
+      },
+      "items": [
+        {
+          "id": "church-lamps-1",
+          "name": "돌등",
+          "x": 7,
+          "y": 13,
+          "purpose": "교회 앞길 서쪽을 밝히는 등"
+        },
+        {
+          "id": "church-lamps-2",
+          "name": "돌등",
+          "x": 15,
+          "y": 13,
+          "purpose": "교회 앞길 동쪽을 밝히는 등",
+          "near": "돌등"
+        }
+      ]
+    }
   ]
 }

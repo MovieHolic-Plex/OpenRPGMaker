@@ -26,7 +26,7 @@ doc("guide", "네 마을을 다르게 만드는 기준", `# 산촌·절벽·포�
 1. 지형과 생활권부터 고른다. 산촌은 한 줄 절벽 위 윗단과 아랫마을, 절벽마을은 중첩 대지와 높이별 생활권, 포구는 남·동쪽 물굽이와 선착장이다.
 2. 같은 직선 길 양쪽에 집을 대칭 배치하지 않는다. 집마다 x,y를 지정하고 문앞을 길의 가지로 연결한다. 각 마을 문서에 좌표와 폭·높이를 고정 기록했다.
 3. 절벽의 내부·외부와 계단 착지칸을 먼저 확정한다. 윗단은 계단으로만 오른다: 절벽 양 끝을 숲에 묻고 계단을 막은 채 윗단에 닿는지 검사한다(개정8). 다음 물→건물 전체 조립→길→숲 전체 조립→생활 소품→독립 나무 순서. 소품은 집 소유자와 생활 마당을 지정하고 묶음 전체의 접근을 검사한다. 실패한 묶음은 전체 철회한다.
-4. 집의 용도와 할 일을 명시하고 필요한 물건을 실제 기준 대상 가까이에 놓는다. 집 순서로 활동을 교대하지 않는다. 목재는 작업대, 어구는 실제 부두, 허수아비는 실제 밭에 연결한다. 중앙 무작위 배치는 금지한다. 구체적인 상대좌표와 충돌 조건은 생활 마당 문서에 있다. 큰 숲 내부는 잎으로 채운 수관 속(가장자리에서 멀수록 어두운 두 단, 숲·가구 문서), 열린 구역은 잔디·길·생활 소품이다.
+4. 집의 용도와 할 일을 명시하고 필요한 물건을 실제 기준 대상 가까이에 놓는다. 집 순서로 활동을 교대하지 않는다. 목재는 작업대, 어구는 실제 부두, 허수아비는 실제 밭에 연결한다. 중앙 무작위 배치는 금지한다. 구체적인 상대좌표와 충돌 조건은 생활 마당 문서에 있다. 큰 숲 내부는 잎으로 채운 수관 속(가장자리에서 멀수록 어두운 두 단, 숲·가구 문서), 열린 구역은 잔디·길·생활 소품이다. 빈 잔디·숲 띠는 남기지 않는다(개정14, 마을 채우기 문서): 한 화면(17×13칸)에 집과 마당이 함께 들어오게 맵을 줄이고, 집마다 3~5개 생활 마당과 문 양옆 꽃, 우물가 광장, 나무·덤불·키큰 풀(E/F/G, 덩이마다 한 종류) 덩이를 둔다. 낱개 꽃·덤불 점 뿌리기, 주인 없는 소품(2칸 안에 집·밭·부두·우물 같은 이유가 없는 것), 길가라는 이유만의 벤치는 두지 않는다. 부두 끝에는 나룻배·계류 말뚝·짐을 둔다.
 5. 우물터·공지·길 안내·정원·환대도 목적이다. 공동 공간 문서와 civic 입력에 지정한 장소에만 완전한 소품을 더하고 실제 사용칸과 출입구 통행을 재검사한다.
 6. 입력/정답: 각 마을의 cliffs, houses, stairs, ponds, spine이 입력 계획이다. full layout 문서와 지역 read_region_reference의 16행 이하 연속 페이지가 전체 하위/상위 정답이다. 이미지의 방향만 보고 번호를 추측하지 않는다.
 7. 작업 복사본에 먼저 배치하고 모든 접근칸 검사 후 통째로 저장한다. 실패한 일부 배치를 원본 프로젝트에 남기지 않는다. 이 참고 맵은 외관/타일 통행 사례이며 실내·NPC·문 전이 이벤트는 포함하지 않는다.
@@ -110,8 +110,8 @@ ${block(sourceCliffs)}
 ${c.plans.map(p=>"### "+p.name+"\n"+block({cliffs:p.cliffs,stairs:p.stairs})).join("\n")}
 전체 출력은 각 rows 문서의 두 레이어 배열을 사용한다. 구현은 scripts/content/lib/village-cliffs.mjs의 cliffColumns/paintVillageCliffs다.
 
-동굴 입구는 층바위 (71,52), upper 원본413이며 받침은 원본172다. 접근칸 (71,54)은 비워 둔다. 실내 전이 이벤트는 없다.
-선착장은 포구 (56,45), 폭21·높이2. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (76,45)까지 연결을 검사한다.
+${c.plans.filter(p=>p.cave).map(p=>`동굴 입구는 ${p.name} (${p.cave[0]},${p.cave[1]}), upper 원본413이며 받침은 원본172다. 접근칸 (${p.cave[0]},${p.cave[1]+2})은 비워 둔다. 실내 전이 이벤트는 없다.`).join('\n')}
+${c.plans.filter(p=>p.dock).map(p=>`선착장은 ${p.name} (${p.dock[0]},${p.dock[1]}), 폭${p.dock[2]}·높이${p.dock[3]}. lower 물/땅을 보존하고 upper199를 반복한다. 마지막 (${p.dock[0]+p.dock[2]-1},${p.dock[1]})까지 연결을 검사한다.`).join('\n')}
 `);
 const grassSource = JSON.parse(fs.readFileSync(dir + "/grass-joins-source.json"));
 doc("grass-joins", "504–559–505 · 완전한 잔디 마감", `# 사선 잔디 경계와 바닥색
@@ -138,9 +138,7 @@ ${block({tilesetId:'forest_harmony',grassBindings:c.grassBindings,grafts:t.tileG
 ${c.plans.map(p=>'### '+p.name+'\n'+block(p.grassJoins)).join('\n')}
 
 ## 입력 → 완전한 두 레이어 출력
-층바위의 완전한 /—\\ 입력과 출력. 좌표는 맵 기준, 배열은 행 단위다.
-${block(c.plans.find(p=>p.id==='terrace-cliff-village').crest)}
-${block({x:26,y:4,...crop(c.maps['terrace-cliff-village'],26,4,39,4)})}
+${(()=>{const q=c.plans.find(p=>p.id==='terrace-cliff-village').crest;return q?'층바위의 완전한 /—\\ 입력과 출력. 좌표는 맵 기준, 배열은 행 단위다.\n'+block(q)+'\n'+block({x:q.x,y:q.y,...crop(c.maps['terrace-cliff-village'],q.x,q.y,q.width,q.shoulder+1)}):'개정14(2026-09-24)에서 평평한 잔디 위 마감 줄(crest, 2692~2694)을 모두 걷었다: 덜 깔린 칸처럼 옅은 사다리꼴·사선으로 보였다. 504/505 사선과 모서리는 절벽 윗선 잔디 경계에만 쓴다. 규칙은 마을 채우기 문서 0번.';})()}
 
 자동 검사 grass-edge-direction은 반대 사선, grass-color-mismatch는 밝은 원본504/505/559를 잘못 쓴 칸, grass-backing은 받침240 누락의 좌표를 반환한다. grass-crest-gap은 빠진 수평 반복·양쪽 마감, map-entrance-blocked는 맵 가장자리 폭3 통로의 막힌 칸을 반환한다. 정상/오류 그림은 검증 문서 참조. 위의 파생 시트는 모든 새/기존 프로젝트에서 번들 등록되며 문서는 forest_harmony를 공유한다.
 `);
@@ -156,8 +154,8 @@ ${block(t.autotileGroups.find((g) => g.id === "forest_harmony_grove_47").variant
 수관 속 잎 채움(개정13): 수관 안쪽은 검은 판이 아니라 가장자리와 같은 잎으로 채워져 있다. 가장자리 47칸은 번호 그대로이고 평평했던 속 부분만 잎(밝기 ×0.78)이 되었다. 8방향이 모두 수관인 속 칸(mask 255)은 깊이로 두 단을 쓴다: 2칸 안(체비쇼프 거리 2)에 수관이 아닌 칸이나 맵 밖이 있으면 **얕은 속**(×0.60), 없으면 **깊은 속**(×0.46). 각 단의 여섯 칸 중 하나를 칸 위치 해시로 고른다(오토타일 그룹의 interiorVariants, 첫 칸 2568이 variantMap[255]). 모든 변형은 상위·통행 불가 수관이고 이웃 판정·줄기 맞춤에서 수관으로 친다. 손으로 칠할 때는 2568만 놓아도 된다 — paintContouredForest·refitForestTrunks와 \`node scripts/content/shade-forest-canopy.mjs <catalog>\`가 같은 규칙으로 바꾼다. 가장자리 칸(mask 255 아닌 칸)에는 속 변형을 놓지 않는다.
 ${block({ interiorVariants: t.autotileGroups.find((g) => g.id === "forest_harmony_grove_47").interiorVariants, shallow: "open ground within 2 cells", deep: "no open ground within 2 cells" })}
 
-입력 산촌 숲 영역 rect=(2,48,16,14). 아래 upper의 수관 번호가 마스크 true이고 lower는 뿌리/바닥 정답이다. 전체 산촌 그림의 왼쪽 아래와 대조한다.
-${block(crop(c.maps["pine-hamlets"], 2, 48, 16, 14))}
+입력 산촌 숲 영역 rect=(2,${c.maps['pine-hamlets'].height-16},16,14). 아래 upper의 수관 번호가 마스크 true이고 lower는 뿌리/바닥 정답이다. 전체 산촌 그림의 왼쪽 아래와 대조한다.
+${block(crop(c.maps["pine-hamlets"], 2, c.maps["pine-hamlets"].height - 16, 16, 14))}
 
 가로 탁자: upper [234,235,236], 폭3·높이1 고정. 과일상자 upper[202,203], 별도 상위 조각. 하위 KEEP. 같은 상위 칸에 겹쳐 넣지 않는다.
 울타리 소품: upper[2636,2637], 폭2·높이1의 완결 패널이다. 회전하거나 잘라 모서리로 쓰지 않는다. 닫힌 울타리가 필요하면 기존 공용 fence-gate의 NW378/NE380/SW438/SE410, 수평379, 수직408을 쓰고 출입구를 비운다. 이번 표본에는 닫힌 울타리 조립을 쓰지 않았다.
@@ -166,12 +164,13 @@ let checks = "# 정상·오류와 자동 좌표 검사\n\n```bash\nnode scripts/
 for (const e of validation.examples) checks += "\n## " + e.input.code + "\n" + block(e) + "\n![왼쪽 정상, 오른쪽 오류](image:" + e.input.code + ")\n";
 doc("validation", "좌표 검증 · 정상/오류 " + validation.examples.length + "종", checks);
 doc('household-props','소품의 사용 목적 · 기준 대상과 동선',fs.readFileSync(dir+'/household-props.md','utf8'));
-doc('prop-programs','사용 목적 입력 사전 · 집별 활동과 부품 관계','# 활동별 부품·상대좌표·목적·기준 및 집별 명시 선언\n\n'+block(JSON.parse(fs.readFileSync(dir+'/prop-programs.json'))));
+{const pp=JSON.parse(fs.readFileSync(dir+'/prop-programs.json'));doc('prop-programs','사용 목적 입력 사전 · 집별 활동과 부품 관계','# 활동별 부품·상대좌표·목적·기준 및 집별 명시 선언\n\n활동 묶음(개정14: 3~5개)과 현관 꽃(doorway: 문 양옆 화단·화분, 문 앞 한 칸은 통로로 비움). 집별 선언은 완성 맵 좌표의 집 id로 적는다(prop-programs.json 의 x,y 키는 압축 전 저작 좌표).\n\n'+block({activities:pp.activities,doorway:pp.doorway,houses:Object.fromEntries(c.plans.map(p=>[p.id,p.houses.map(h=>({id:h.id,x:h.x,y:h.y,activity:h.activity,role:h.role,reason:h.reason}))]))}));}
 doc('civic-props','공동 공간·정원·환대 · 실행 배치 규칙',fs.readFileSync(dir+'/civic-props.md','utf8'));
-for(const [id,zones] of Object.entries(JSON.parse(fs.readFileSync(dir+'/civic-programs.json'))))doc('civic-'+id,'장소별 소품 입력 · '+c.plans.find(p=>p.id===id).name,'# 공동 공간과 정원의 명시 배치 입력\n\n'+block(zones),seriesOf(id));
+for(const p of c.plans)doc('civic-'+p.id,'장소별 소품 · '+p.name,'# 공동 공간과 정원의 배치(완성 맵 좌표)\n\n개정14에서 우물가에 광장 소품(id …-plaza-N)을 더했다. civic-programs.json 은 압축 전 저작 입력이다.\n\n'+block(p.civicPlaces.map(({site,...z})=>({...z,site:site&&{x:site.x,y:site.y,w:site.w,h:site.h,layer:site.layer}}))),seriesOf(p.id));
+doc('fullness','마을 채우기 개정14 · 빈 띠 걷기와 생활 소품',fs.readFileSync(dir+'/fullness-rules.md','utf8')+'\n## 마을별 결과\n'+block(c.plans.map(p=>({id:p.id,before:p.fullness.before,after:p.fullness.after,removed:p.fullness.removed,yards:p.fullness.yards,yardProps:p.fullness.yardProps,doorFlanks:p.fullness.doorFlanks,plaza:p.fullness.plaza,treeClumps:p.fullness.treeClumps,tallGrass:p.fullness.tallGrass,pools:p.fullness.pools,unownedRemoved:p.fullness.unownedRemoved.length,loneBushesRemoved:p.fullness.loneBushesRemoved.length,harbor:p.fullness.harbor.length,scenes:p.fullness.scenes.length,emptiness:p.fullness.emptiness})))+'\n## 입력\n'+block(JSON.parse(fs.readFileSync(dir+'/fullness-programs.json'))));
 doc('research-layout','최근 연구 적용 · 지형·숲·입구',fs.readFileSync(dir+'/research-layout.md','utf8'));
 const landmarks = JSON.parse(fs.readFileSync(dir + "/landmarks.json")), labels = JSON.parse(fs.readFileSync(dir + "/tile-labels.json"));
-doc("concept-guide", "교회·작은 성·묘지·울타리 못 · 통째 조립", `# 컨셉 마을 세 곳 — 교회 언덕·여울성·안개못 폐촌
+doc("concept-guide", "교회·작은 성·묘지·울타리 못 · 통째 조립", `# 컨셉 마을 — 교회 언덕·여울성·안개못 폐촌·너울목 항구
 
 비취 대계곡의 강·폭포 방식(개정9 river/bridges)을 그대로 쓰고, 마을마다 다른 랜드마크를 하나씩 세운다. 원본·이식 사전과 절벽·잔디·숲·생활 소품 규칙은 「다양한 마을」 분류 문서를 따른다. 좌표는 0기준 맵 좌표다.
 
@@ -206,8 +205,8 @@ const images = fs.readdirSync(dir + "/images").filter((n) => n.endsWith(".png"))
   return { id: n.slice(0, -4), name: n, caption: n.includes("village") || n === "pine-hamlets.png" ? "실제 타일 완성 지도 · 열람용 축소본" : "정상/오류 실제 타일 비교", dataUrl: "data:image/png;base64," + fs.readFileSync(file).toString("base64") };
 });
 const conceptImages = new Set(conceptPlans.map((p) => p.id));
-const category = { id: "diverse-villages-canopy-v13", name: "다양한 마을 · 산촌·절벽·포구·강마을 (수관 잎 채움 개정13)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
-const concept = { id: "concept-villages-v4", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌 (수관 잎 채움 개정4)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
+const category = { id: "diverse-villages-fullness-v14", name: "다양한 마을 · 산촌·절벽·포구·강마을 (마을 채우기 개정14)", description: "서로 다른 새 지역 4개, 지형·집·생활권 계획, 전체 배열과 원본/이식 사전, 문·계단·부두 접근 및 " + validation.examples.length + "종 오류 검사", documents: docs, images: images.filter((i) => !conceptImages.has(i.id)) };
+const concept = { id: "concept-villages-v5", name: "컨셉 마을 · 교회 언덕·여울성·안개못 폐촌·너울목 항구 (마을 채우기 개정5)", description: "강·폭포 위에 교회와 외곽 묘지, 작은 성, 울타리 친 못과 폐가를 통째로 세운 지역 3개와 네 구역(신전·농가·장터·항구)의 큰 항구 마을, 랜드마크 조립 배열과 창문 규칙", documents: conceptDocs, images: images.filter((i) => conceptImages.has(i.id)) };
 for (const k of [category, concept]) if (k.documents.length > 64 || k.documents.some((d) => d.markdown.length > 12e4)) throw Error("Reference page limit " + k.id);
 fs.writeFileSync(target, JSON.stringify([category, concept]) + "\n");
 console.log({ documents: docs.length, conceptDocuments: conceptDocs.length, images: category.images.length, conceptImages: concept.images.length, bytes: fs.statSync(target).size, tiles: dictionary.length });

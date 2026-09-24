@@ -1614,6 +1614,90 @@
     }
   },
   {
+    "tile": 156,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 156,
+    "sourceX": 6,
+    "sourceY": 5,
+    "pixelX": 96,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 5,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 157,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 157,
+    "sourceX": 7,
+    "sourceY": 5,
+    "pixelX": 112,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 5,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 158,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 158,
+    "sourceX": 8,
+    "sourceY": 5,
+    "pixelX": 128,
+    "pixelY": 80,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 5,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
     "tile": 177,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -1677,6 +1761,62 @@
       "role": "prop",
       "defaultLayer": "upper",
       "passage": "solid"
+    }
+  },
+  {
+    "tile": 186,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 186,
+    "sourceX": 6,
+    "sourceY": 6,
+    "pixelX": 96,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 6,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 187,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 187,
+    "sourceX": 7,
+    "sourceY": 6,
+    "pixelX": 112,
+    "pixelY": 96,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 6,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
     }
   },
   {
@@ -1900,6 +2040,90 @@
     }
   },
   {
+    "tile": 216,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 216,
+    "sourceX": 6,
+    "sourceY": 7,
+    "pixelX": 96,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 7,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 217,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 217,
+    "sourceX": 7,
+    "sourceY": 7,
+    "pixelX": 112,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 7,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
+    "tile": 218,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 218,
+    "sourceX": 8,
+    "sourceY": 7,
+    "pixelX": 128,
+    "pixelY": 112,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 7,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "",
+      "description": ""
+    }
+  },
+  {
     "tile": 234,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -2075,6 +2299,41 @@
     }
   },
   {
+    "tile": 245,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 245,
+    "sourceX": 5,
+    "sourceY": 8,
+    "pixelX": 80,
+    "pixelY": 128,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 8,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 오목 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 오목 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
     "tile": 248,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -2207,6 +2466,111 @@
     }
   },
   {
+    "tile": 273,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 273,
+    "sourceX": 3,
+    "sourceY": 9,
+    "pixelX": 48,
+    "pixelY": 144,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 9,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 북서 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 북서 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
+    "tile": 274,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 274,
+    "sourceX": 4,
+    "sourceY": 9,
+    "pixelX": 64,
+    "pixelY": 144,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 9,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 북쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 북쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
+    "tile": 275,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 275,
+    "sourceX": 5,
+    "sourceY": 9,
+    "pixelX": 80,
+    "pixelY": 144,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 9,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 북동 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 북동 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
     "tile": 276,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -2297,6 +2661,41 @@
       "role": "wall",
       "defaultLayer": "lower",
       "passage": "solid"
+    }
+  },
+  {
+    "tile": 288,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 288,
+    "sourceX": 18,
+    "sourceY": 9,
+    "pixelX": 288,
+    "pixelY": 144,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 9,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "Flowers",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "",
+      "defaultLayer": "upper",
+      "repeatability": "fixed"
     }
   },
   {
@@ -2433,6 +2832,111 @@
       "description": "",
       "defaultLayer": "upper",
       "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 303,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 303,
+    "sourceX": 3,
+    "sourceY": 10,
+    "pixelX": 48,
+    "pixelY": 160,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 10,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 서쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 서쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
+    "tile": 304,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 304,
+    "sourceX": 4,
+    "sourceY": 10,
+    "pixelX": 64,
+    "pixelY": 160,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 10,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 몸통",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 몸통 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
+    "tile": 305,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 305,
+    "sourceX": 5,
+    "sourceY": 10,
+    "pixelX": 80,
+    "pixelY": 160,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 10,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 동쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 동쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
     }
   },
   {
@@ -2666,6 +3170,111 @@
       "description": "",
       "defaultLayer": "lower",
       "repeatability": "fixed"
+    }
+  },
+  {
+    "tile": 333,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 333,
+    "sourceX": 3,
+    "sourceY": 11,
+    "pixelX": 48,
+    "pixelY": 176,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 11,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 남서 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 남서 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
+    "tile": 334,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 334,
+    "sourceX": 4,
+    "sourceY": 11,
+    "pixelX": 64,
+    "pixelY": 176,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 11,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 남쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 남쪽 변 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
+    }
+  },
+  {
+    "tile": 335,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 335,
+    "sourceX": 5,
+    "sourceY": 11,
+    "pixelX": 80,
+    "pixelY": 176,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 11,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짙음 · 남동 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "키큰 풀 · 짙음(숲 가)의 남동 모서리 칸. 숲 수관에 닿는 덩이. 오토타일 builtin_tall_grass 이 이웃에 맞춰 고른다.",
+      "defaultLayer": "lower",
+      "repeatability": "auto"
     }
   },
   {
@@ -4277,6 +4886,44 @@
     }
   },
   {
+    "tile": 537,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 537,
+    "sourceX": 27,
+    "sourceY": 17,
+    "pixelX": 432,
+    "pixelY": 272,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 17,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "rock",
+      "tags": [
+        "회백색 바위 더미",
+        "rock",
+        "돌무더기",
+        "회백색"
+      ],
+      "label": "회백색 바위 더미",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": ""
+    }
+  },
+  {
     "tile": 568,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -5706,6 +6353,706 @@
     }
   },
   {
+    "tile": 1124,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1124,
+    "sourceX": 14,
+    "sourceY": 37,
+    "pixelX": 224,
+    "pixelY": 592,
+    "width": 16,
+    "height": 16,
+    "targetX": 14,
+    "targetY": 37,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 북서 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 북서 모서리 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1125,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1125,
+    "sourceX": 15,
+    "sourceY": 37,
+    "pixelX": 240,
+    "pixelY": 592,
+    "width": 16,
+    "height": 16,
+    "targetX": 15,
+    "targetY": 37,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 북쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 북쪽 변 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1126,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1126,
+    "sourceX": 16,
+    "sourceY": 37,
+    "pixelX": 256,
+    "pixelY": 592,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 37,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 북동 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 북동 모서리 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1128,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1128,
+    "sourceX": 18,
+    "sourceY": 37,
+    "pixelX": 288,
+    "pixelY": 592,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 37,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 북서 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 북서 모서리 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1129,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1129,
+    "sourceX": 19,
+    "sourceY": 37,
+    "pixelX": 304,
+    "pixelY": 592,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 37,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 북쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 북쪽 변 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1130,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1130,
+    "sourceX": 20,
+    "sourceY": 37,
+    "pixelX": 320,
+    "pixelY": 592,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 37,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 북동 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 북동 모서리 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1154,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1154,
+    "sourceX": 14,
+    "sourceY": 38,
+    "pixelX": 224,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 14,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 서쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 서쪽 변 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1155,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1155,
+    "sourceX": 15,
+    "sourceY": 38,
+    "pixelX": 240,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 15,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 몸통",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 몸통 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1156,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1156,
+    "sourceX": 16,
+    "sourceY": 38,
+    "pixelX": 256,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 동쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 동쪽 변 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1157,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1157,
+    "sourceX": 17,
+    "sourceY": 38,
+    "pixelX": 272,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 오목 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 오목 모서리 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1158,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1158,
+    "sourceX": 18,
+    "sourceY": 38,
+    "pixelX": 288,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 서쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 서쪽 변 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1159,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1159,
+    "sourceX": 19,
+    "sourceY": 38,
+    "pixelX": 304,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 몸통",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 몸통 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1160,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1160,
+    "sourceX": 20,
+    "sourceY": 38,
+    "pixelX": 320,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 동쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 동쪽 변 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1161,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1161,
+    "sourceX": 21,
+    "sourceY": 38,
+    "pixelX": 336,
+    "pixelY": 608,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 38,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 오목 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 오목 모서리 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1184,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1184,
+    "sourceX": 14,
+    "sourceY": 39,
+    "pixelX": 224,
+    "pixelY": 624,
+    "width": 16,
+    "height": 16,
+    "targetX": 14,
+    "targetY": 39,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 남서 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 남서 모서리 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1185,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1185,
+    "sourceX": 15,
+    "sourceY": 39,
+    "pixelX": 240,
+    "pixelY": 624,
+    "width": 16,
+    "height": 16,
+    "targetX": 15,
+    "targetY": 39,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 남쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 남쪽 변 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1186,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1186,
+    "sourceX": 16,
+    "sourceY": 39,
+    "pixelX": 256,
+    "pixelY": 624,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 39,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 밝음 · 남동 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 밝음(트인 풀밭)의 남동 모서리 칸. 숲·집·길에서 떨어진 트인 풀밭 덩이. 오토타일 builtin_tall_grass_light 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1188,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1188,
+    "sourceX": 18,
+    "sourceY": 39,
+    "pixelX": 288,
+    "pixelY": 624,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 39,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 남서 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 남서 모서리 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1189,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1189,
+    "sourceX": 19,
+    "sourceY": 39,
+    "pixelX": 304,
+    "pixelY": 624,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 39,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 남쪽 변",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 남쪽 변 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
+    "tile": 1190,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1190,
+    "sourceX": 20,
+    "sourceY": 39,
+    "pixelX": 320,
+    "pixelY": 624,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 39,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "role": "terrain",
+      "label": "키큰 풀 · 짧음 · 남동 모서리",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "defaultLayer": "lower",
+      "repeatability": "auto",
+      "description": "키큰 풀 · 짧음(집·길 곁)의 남동 모서리 칸. 집·길 곁 덩이. 오토타일 builtin_tall_grass_short 이 이웃에 맞춰 고른다."
+    }
+  },
+  {
     "tile": 1350,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -6630,6 +7977,39 @@
     }
   },
   {
+    "tile": 1479,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_harmony",
+    "sourceTile": 1479,
+    "sourceX": 9,
+    "sourceY": 49,
+    "pixelX": 144,
+    "pixelY": 784,
+    "width": 16,
+    "height": 16,
+    "targetX": 9,
+    "targetY": 49,
+    "layers": [
+      "lower"
+    ],
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower",
+    "tileMeta": {
+      "label": "road 연결 1479",
+      "source": "user",
+      "passage": "passable",
+      "userLocked": true,
+      "defaultLayer": "lower",
+      "layerBacking": 1145,
+      "description": ""
+    }
+  },
+  {
     "tile": 1480,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -7488,39 +8868,6 @@
     }
   },
   {
-    "tile": 1525,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1525,
-    "sourceX": 25,
-    "sourceY": 50,
-    "pixelX": 400,
-    "pixelY": 800,
-    "width": 16,
-    "height": 16,
-    "targetX": 25,
-    "targetY": 50,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "lake 연결 1525",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
     "tile": 1533,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -7884,39 +9231,6 @@
     }
   },
   {
-    "tile": 1560,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony",
-    "sourceTile": 1560,
-    "sourceX": 0,
-    "sourceY": 52,
-    "pixelX": 0,
-    "pixelY": 832,
-    "width": 16,
-    "height": 16,
-    "targetX": 0,
-    "targetY": 52,
-    "layers": [
-      "lower"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower",
-    "tileMeta": {
-      "label": "lake 연결 1560",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "lower",
-      "layerBacking": 1145,
-      "description": ""
-    }
-  },
-  {
     "tile": 1561,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony",
@@ -8214,6 +9528,39 @@
     }
   },
   {
+    "tile": 2567,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_forest_cliff_reference",
+    "sourceTile": 1591,
+    "sourceX": 1,
+    "sourceY": 53,
+    "pixelX": 16,
+    "pixelY": 848,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 85,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "label": "굽이숲 수관",
+      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
+      "source": "user",
+      "passage": "solid",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "layerBacking": "none"
+    }
+  },
+  {
     "tile": 2568,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
@@ -8247,116 +9594,17 @@
     }
   },
   {
-    "tile": 2569,
+    "tile": 2574,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2550,
-    "sourceX": 0,
+    "sourceTile": 2555,
+    "sourceX": 5,
     "sourceY": 85,
-    "pixelX": 0,
+    "pixelX": 80,
     "pixelY": 1360,
     "width": 16,
     "height": 16,
-    "targetX": 19,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2572,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2553,
-    "sourceX": 3,
-    "sourceY": 85,
-    "pixelX": 48,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 22,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2573,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2554,
-    "sourceX": 4,
-    "sourceY": 85,
-    "pixelX": 64,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 23,
-    "targetY": 85,
-    "layers": [
-      "upper"
-    ],
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper",
-    "tileMeta": {
-      "label": "굽이숲 수관",
-      "description": "굽이숲 수관 이식 칸. 상위·통행 불가.",
-      "source": "user",
-      "passage": "solid",
-      "userLocked": true,
-      "defaultLayer": "upper",
-      "layerBacking": "none"
-    }
-  },
-  {
-    "tile": 2576,
-    "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_cliff_reference",
-    "sourceTile": 2557,
-    "sourceX": 7,
-    "sourceY": 85,
-    "pixelX": 112,
-    "pixelY": 1360,
-    "width": 16,
-    "height": 16,
-    "targetX": 26,
+    "targetX": 24,
     "targetY": 85,
     "layers": [
       "upper"
@@ -10853,6 +12101,448 @@
     }
   },
   {
+    "tile": 2657,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 0,
+    "sourceX": 0,
+    "sourceY": 0,
+    "pixelX": 0,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 1,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2658,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 1,
+    "sourceX": 1,
+    "sourceY": 0,
+    "pixelX": 16,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 2,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2659,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 2,
+    "sourceX": 2,
+    "sourceY": 0,
+    "pixelX": 32,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 3,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2660,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 3,
+    "sourceX": 3,
+    "sourceY": 0,
+    "pixelX": 48,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 4,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2661,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 4,
+    "sourceX": 4,
+    "sourceY": 0,
+    "pixelX": 64,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 5,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2662,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 5,
+    "sourceX": 5,
+    "sourceY": 0,
+    "pixelX": 80,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 6,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2663,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 6,
+    "sourceX": 6,
+    "sourceY": 0,
+    "pixelX": 96,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 23,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 7,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2664,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 7,
+    "sourceX": 7,
+    "sourceY": 0,
+    "pixelX": 112,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 24,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 8,1",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2665,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 8,
+    "sourceX": 8,
+    "sourceY": 0,
+    "pixelX": 128,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 25,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 1,2",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2666,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 9,
+    "sourceX": 9,
+    "sourceY": 0,
+    "pixelX": 144,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 26,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 2,2",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2667,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 10,
+    "sourceX": 10,
+    "sourceY": 0,
+    "pixelX": 160,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 27,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 3,2",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2668,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 11,
+    "sourceX": 11,
+    "sourceY": 0,
+    "pixelX": 176,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 28,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 4,2",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2669,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 12,
+    "sourceX": 12,
+    "sourceY": 0,
+    "pixelX": 192,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 29,
+    "targetY": 88,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 5,2",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
     "tile": 2670,
     "tilesetId": "forest_harmony",
     "sourceChipset": "tex_forest_harmony_grass_joins",
@@ -11183,105 +12873,173 @@
     }
   },
   {
-    "tile": 2692,
+    "tile": 2695,
     "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 0,
-    "sourceX": 0,
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 13,
+    "sourceX": 13,
     "sourceY": 0,
-    "pixelX": 0,
+    "pixelX": 208,
     "pixelY": 0,
     "width": 16,
     "height": 16,
-    "targetX": 22,
+    "targetX": 25,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "label": "잔디 사선 504 · 색 맞춤",
-      "description": "바닥240 유지. 원본 경계의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.",
-      "role": "terrain",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "passage": "passable",
+      "role": "prop",
+      "label": "나룻배 6,2",
       "source": "user",
-      "userLocked": true
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   },
   {
-    "tile": 2693,
+    "tile": 2696,
     "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 1,
-    "sourceX": 1,
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 14,
+    "sourceX": 14,
     "sourceY": 0,
-    "pixelX": 16,
+    "pixelX": 224,
     "pixelY": 0,
     "width": 16,
     "height": 16,
-    "targetX": 23,
+    "targetX": 26,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "label": "잔디 사선 505 · 색 맞춤",
-      "description": "바닥240 유지. 원본 경계의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.",
-      "role": "terrain",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "passage": "passable",
+      "role": "prop",
+      "label": "나룻배 7,2",
       "source": "user",
-      "userLocked": true
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   },
   {
-    "tile": 2694,
+    "tile": 2697,
     "tilesetId": "forest_harmony",
-    "sourceChipset": "tex_forest_harmony_grass_joins",
-    "sourceTile": 9,
-    "sourceX": 9,
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 15,
+    "sourceX": 15,
     "sourceY": 0,
-    "pixelX": 144,
+    "pixelX": 240,
     "pixelY": 0,
     "width": 16,
     "height": 16,
-    "targetX": 24,
+    "targetX": 27,
     "targetY": 89,
     "layers": [
-      "lower"
+      "upper"
     ],
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
-    "priority": "lower",
+    "priority": "upper",
     "tileMeta": {
-      "label": "잔디 수평 반복 559 · 색 맞춤",
-      "description": "바닥240 유지. 원본 경계의 알파 모양 보존. 지붕/암벽 면이 아닌 잔디 가장자리.",
-      "role": "terrain",
-      "defaultLayer": "lower",
-      "layerBacking": 240,
-      "passage": "passable",
+      "role": "prop",
+      "label": "나룻배 8,2",
       "source": "user",
-      "userLocked": true
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2698,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 16,
+    "sourceX": 16,
+    "sourceY": 0,
+    "pixelX": 256,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 28,
+    "targetY": 89,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 1,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2699,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 17,
+    "sourceX": 17,
+    "sourceY": 0,
+    "pixelX": 272,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 29,
+    "targetY": 89,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 2,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   },
   {
@@ -11381,6 +13139,652 @@
       "source": "user",
       "userLocked": true,
       "passage": "passable"
+    }
+  },
+  {
+    "tile": 2703,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 18,
+    "sourceX": 18,
+    "sourceY": 0,
+    "pixelX": 288,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 3,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 3,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2704,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 19,
+    "sourceX": 19,
+    "sourceY": 0,
+    "pixelX": 304,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 4,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 4,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2705,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 20,
+    "sourceX": 20,
+    "sourceY": 0,
+    "pixelX": 320,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 5,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 5,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2706,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 21,
+    "sourceX": 21,
+    "sourceY": 0,
+    "pixelX": 336,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 6,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 6,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2707,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 22,
+    "sourceX": 22,
+    "sourceY": 0,
+    "pixelX": 352,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 7,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 7,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2708,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 23,
+    "sourceX": 23,
+    "sourceY": 0,
+    "pixelX": 368,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 8,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 8,3",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2710,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 25,
+    "sourceX": 25,
+    "sourceY": 0,
+    "pixelX": 400,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 10,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 2,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2711,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 26,
+    "sourceX": 26,
+    "sourceY": 0,
+    "pixelX": 416,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 11,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 3,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2712,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 27,
+    "sourceX": 27,
+    "sourceY": 0,
+    "pixelX": 432,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 12,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 4,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2713,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 28,
+    "sourceX": 28,
+    "sourceY": 0,
+    "pixelX": 448,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 13,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 5,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2714,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 29,
+    "sourceX": 29,
+    "sourceY": 0,
+    "pixelX": 464,
+    "pixelY": 0,
+    "width": 16,
+    "height": 16,
+    "targetX": 14,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 6,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2715,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 30,
+    "sourceX": 0,
+    "sourceY": 1,
+    "pixelX": 0,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 15,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 7,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2716,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 31,
+    "sourceX": 1,
+    "sourceY": 1,
+    "pixelX": 16,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 16,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나룻배 8,4",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC-BY-SA 3.0, farming_fishing.png (LPC, Daniel Eddeland)). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2717,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 32,
+    "sourceX": 2,
+    "sourceY": 1,
+    "pixelX": 32,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 17,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "계류 말뚝",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC0, easyrpg-chipset-ship (EasyRPG, CC0) tile 329). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2718,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 33,
+    "sourceX": 3,
+    "sourceY": 1,
+    "pixelX": 48,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 18,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "감긴 밧줄",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC0, easyrpg-chipset-ship (EasyRPG, CC0) tile 263). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2719,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 34,
+    "sourceX": 4,
+    "sourceY": 1,
+    "pixelX": 64,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 19,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "닻",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC0, easyrpg-chipset-ship (EasyRPG, CC0) tile 259). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2720,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 35,
+    "sourceX": 5,
+    "sourceY": 1,
+    "pixelX": 80,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 20,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "오크통",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC0, easyrpg-chipset-ship (EasyRPG, CC0) tile 385). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2721,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 36,
+    "sourceX": 6,
+    "sourceY": 1,
+    "pixelX": 96,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 21,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "나무 상자",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC0, easyrpg-chipset-ship (EasyRPG, CC0) tile 379). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
+    }
+  },
+  {
+    "tile": 2722,
+    "tilesetId": "forest_harmony",
+    "sourceChipset": "tex_harbor_kit",
+    "sourceTile": 37,
+    "sourceX": 7,
+    "sourceY": 1,
+    "pixelX": 112,
+    "pixelY": 16,
+    "width": 16,
+    "height": 16,
+    "targetX": 22,
+    "targetY": 90,
+    "layers": [
+      "upper"
+    ],
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper",
+    "tileMeta": {
+      "role": "prop",
+      "label": "열린 통",
+      "source": "user",
+      "userLocked": true,
+      "defaultLayer": "upper",
+      "passage": "solid",
+      "layerBacking": "none",
+      "description": "항구 조각(CC0, easyrpg-chipset-ship (EasyRPG, CC0) tile 415). 물 위(배·말뚝) 또는 부두 뿌리 땅 위(밧줄·닻·통·상자)에 둔다."
     }
   }
 ]

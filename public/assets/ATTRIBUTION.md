@@ -478,3 +478,14 @@ hand-pixelled using only colours already present in `forest-harmony/chipset.png`
 Blueprints, style kit and scripts: `tiledata/forest-harmony-buildings/` and
 `scripts/asset-gen/forest-harmony-buildings/`. This is provenance, not a new licence
 claim; existing forest-harmony component notices still apply.
+
+## Harbor kit (2026-09-24)
+
+- File: `harbor-kit/harbor-kit.png` (16px cells), built by `scripts/content/build-harbor-kit.py`; exact rectangles and
+  source hashes in `harbor-kit/parts.json`.
+- Rowboat: Daniel Eddeland (Daneeklu), LPC farming/fishing tiles, CC BY-SA 3.0 —
+  `castle-surroundings/sources/farming_fishing.png` rectangle (224,448,128,64), unchanged pixels.
+- Mooring post, coiled rope, anchor, barrels, crate: EasyRPG ship chipset (CC0) tiles 329/263/259/385/379/415; the
+  colour key #ff678b became transparency, no other change.
+- Grafted onto the forest-village tileset for harbors. The packed sheet is distributed under CC BY-SA 3.0; the credit
+  file `harbor-kit/CREDITS.txt` accompanies exports.

@@ -434,3 +434,11 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 분류는 둘: `diverse-villages-canopy-v13`(52 MD·30 이미지) + `concept-villages-v4`(27 MD·3 이미지, 수관 잎 채움 개정). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
 - 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
 - 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.
+
+### 마을 채우기 개정14 · 항구 · 큰 항구 마을 (2026-09-24)
+- `fill-diverse-villages.mjs <개정13 catalog> <out> --add=<author-harbor-town.mjs 출력>`: 빈 띠 걷기(이음매 압축) → 생활 마당·현관 꽃·우물 광장 →
+  잔디 마감 제거·소 비대칭화(`lib/village-pools.mjs`)·주인 없는 소품 제거(`lib/village-ownership.mjs`)·부두 끝 나룻배/말뚝/짐(`lib/village-harbor.mjs`) →
+  외톨이 덤불 제거 → 덩이 장면(`fillNaturalGaps`: 나무·덤불숲·바위와 덤불·키큰 풀 E/F/G 덩이)으로 빈칸 게이트(5칸 정사각형 없음, 17×13 ≤40%) 통과. 규칙 `tiledata/forest-villages/diverse/fullness-rules.md`.
+- 항구 조각 `tex_harbor_kit`(LPC 나룻배 CC-BY-SA + EasyRPG 말뚝·짐 CC0, 크레딧 `public/assets/harbor-kit/CREDITS.txt`, 내보내기에 동봉). 다른 숲마을 맵은 `ensureHarborGrafts(tileset)` + `placeHarbor({map, dock, …})`.
+- 큰 항구 마을 「너울목」(`author-harbor-town.mjs`, 80×64 → 76×60): 신전·농가·장터·항구 네 구역, 강·폭포·두 다리·두 계단으로 한 바퀴. 장소·지역 모두 등록.
+- 분류 `diverse-villages-fullness-v14`(53 MD·27 이미지) + `concept-villages-v5`(36 MD·4 이미지), 지역 revision14, 정본 revision26. 기후 마을은 `climate-*-villages-v5`.
