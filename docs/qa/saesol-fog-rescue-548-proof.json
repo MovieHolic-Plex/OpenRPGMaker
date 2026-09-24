@@ -1,0 +1,101 @@
+{
+  "scope": "Fog rescue actual walking from earned fourth-badge checkpoint. No injected quest flags/items/levels. Fast automatic input is not human duration.",
+  "steps": [],
+  "walkedSteps": 879,
+  "walkedPortals": [
+    {
+      "from": "map_sr4_gym",
+      "event": "ev_gate_beae648f-8610-4d47-930e-26e5be9479fc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_e7bdbcc8-daf0-4d4c-81d1-6efa8c393229",
+      "to": "map_sr4_pass"
+    },
+    {
+      "from": "map_sr4_pass",
+      "event": "ev_sr4_pass_to_port",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f3c86abf-7a75-4a4e-8d12-4d70b08c2b65",
+      "to": "map_sr3_coast"
+    },
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_sr3_port_to_lighthouse",
+      "to": "map_sr3_lighthouse"
+    },
+    {
+      "from": "map_sr3_lighthouse",
+      "event": "ev_sr3_lighthouse_to_port",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_gate_351f3b3e-1df8-41ab-893c-e53040acd204",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f3c86abf-7a75-4a4e-8d12-4d70b08c2b65",
+      "to": "map_sr3_coast"
+    },
+    {
+      "from": "map_sr3_coast",
+      "event": "ev_gate_3b0384b3-201d-4135-94f5-65f15442ec8b",
+      "to": "map_sr3_mine"
+    },
+    {
+      "from": "map_sr3_mine",
+      "event": "ev_gate_f26aa0c2-311d-4f8f-8401-cb9b9919e97f",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_sr3_port_to_lighthouse",
+      "to": "map_sr3_lighthouse"
+    },
+    {
+      "from": "map_sr3_lighthouse",
+      "event": "ev_sr3_lighthouse_to_port",
+      "to": "map_sr3_port"
+    }
+  ],
+  "pageErrors": [],
+  "passed": true,
+  "benchmark": {
+    "snapshotRevision": 548,
+    "playerSeconds": 231.887,
+    "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+  },
+  "resultsSha256": "dd5fc98275bec59e3b6b65830e6e53b1902147ff0fc8bfafb5ac4310be617006",
+  "sourceSnapshotRevision": 548,
+  "assertions": [
+    "Prerequisite lighthouse earned before run",
+    "Clues before acceptance do not advance",
+    "Decline does not start quest",
+    "Clues collected west/north/south",
+    "Wrong route and two-stage signal choices do not complete",
+    "Rescue before report does not grant reward",
+    "Report grants600G and2super potions once",
+    "Repeat report and sailor dialogue do not duplicate resources"
+  ]
+}
