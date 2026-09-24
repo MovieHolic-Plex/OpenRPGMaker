@@ -1023,3 +1023,11 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 요청21d는 planning에서 여러 숲 영역을 읽은 뒤 `Thinking loop detected: ... 8 low-information segments recycling recent wording`로 종료됐다. UI는 변경 없음/적용하지 않음으로 표시했고 정본도486 그대로였다. `request21d-thinking-loop-failure.txt`에 실제 종료 표시를 보존했다. 이 실패를 heartbeat/SQLite 오류와 합치지 않는다.
 - 기존 지원 버튼 `ai-new-chat`으로 새 대화를 시작했다. UI가 이전 대화를 기록에 저장했다고 표시한 뒤 `/pi` 요청21d1을 제출했다. 목표는 조사원 이벤트1개이며 수락/거절/조건/재대화만 작성한다. 기존 상태정의와 타일은 변경 금지다.
 - 새 실행에서 기존 이벤트/조건/수현 대사를 조회하는 도구 실행을 확인했다. 대화 길이가 반복 사고의 원인이라는 증거는 없으며 새 대화 사용 자체를 문제 해결로 세지 않는다. 실제 이벤트 저장·플레이 확인이 다음 근거다.
+
+
+### 조사원 이벤트 저장 (revision487)
+
+- 요청21d1은 저장 완료 응답으로 종료됐다. `player-snapshot-researcher487-proof.json`: SQLite 재오픈·반복읽기 일치,20맵/151이벤트, 미디어80개 해시 확인. 새 ev_sr2_ecology_researcher는2번길(18,6), 유색06칩, 미수락/진행/완료3페이지다.
+-486→487의 변경은 maps.map_saesol_route2.events뿐이며 기존 이벤트 배열 항목과 모든 타일은 보존됐다. sw_sr_starter와 sw_sr_badge를 확인한 후 started만 설정하고, 거절/재대화에 재화 지급이 없다.
+- 실제 첫 배지 획득·두 번째 관장 직전 체크포인트로77칸/포털3회 걸어갔다. 첫 QA는 거절 무변화까지 확인하고 수락 후 비교에서 정상적으로 true가 된 started를 이전 false와 같아야 한다고 잘못 검사했다. `ecology-researcher-asserted-started-unchanged/`에 실패를 보존하고, 수락 전후 비교에서 의도된 started만 제외해 재실행 중이다.
+- 후속 `/pi` 요청21d2는 발자국·깃털·잎 세 관찰점의 단서/정답/오답 이유를 구체화해 제출했다. 실제 종족 타입(부르록 grass/poison, 치카디 normal/flying, 카카버 grass)을 읽어 확인했다. 현재는 관찰점만 저작하며 보고 보상과 체육관 연결은 다음 단계다.
