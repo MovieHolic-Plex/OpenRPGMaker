@@ -66,8 +66,12 @@ describe("게임 화면 — 2층·그림자·4층", () => {
     const { scene, made } = sceneFor(map, project);
     renderTiles(scene as never);
     const first = made.length;
+    expect(made.some((m) => m.frame === "tile_1" && m.x === 0 && m.y === 0)).toBe(false);
     setLayerTileAt(map, 2, 0, 1);
     renderTiles(scene as never);
     expect(made.length).toBeGreaterThan(first * 2 - 1);
+    // 두 번째 그리기에서 (0,0) 에 2층 타일 1 이 새로 그려졌다.
+    const second = made.slice(first);
+    expect(second.some((m) => m.kind === "image" && m.frame === "tile_1" && m.x === 0 && m.y === 0)).toBe(true);
   });
 });
