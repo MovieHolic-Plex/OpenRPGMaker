@@ -110,8 +110,45 @@ export function planCriticalPath(project: Project, target: CommandVisit, targetG
   const unresolved: { req: string; for: CommandWhere }[] = [];
   const planned = new Set<string>();
   const inProgress = new Set<string>();
+  // 잠긴 문도 선행 조건이다(2026-09-24 갤러리 호러: 화실 문의 transfer 페이지가 「화실 개방」 스위치를 기다리고,
+  // 그 스위치는 붉은 열쇠 → 조각상 → 레버 → 초상화 퍼즐 사슬 끝에 켜진다). 목표가 시작 조건만으로 못 가는 맵에
+  // 있으면, 그 맵으로 들어가는 문 명령 하나를 먼저 목표 사슬에 넣는다 — 그 문의 페이지 조건이 곧 선행 조건이다.
+  const doorVisits = visits.filter((visit) => visit.command.kind === "transfer" && typeof visit.command.mapId === "string"
+    && visit.command.mapId !== visit.page.map!.id);
+  const freeDoor = (visit: CommandVisit): boolean => requirementsOf(project, visit).every((req) => satisfiedAtStart(project, req));
+  const openMaps = new Set<string>([project.startMapId]);
+  for (let grew = true; grew;) {
+    grew = false;
+    for (const door of doorVisits) {
+      const to = door.command.mapId as string;
+      if (!openMaps.has(to) && openMaps.has(door.page.map!.id) && freeDoor(door)) { openMaps.add(to); grew = true; }
+    }
+  }
+  const mapsInProgress = new Set<string>();
+  const planMapEntry = (mapId: string, depth: number): boolean => {
+    if (openMaps.has(mapId) || planned.has(`map:${mapId}`)) return true;
+    if (mapsInProgress.has(mapId)) return false;
+    mapsInProgress.add(mapId);
+    const doors = doorVisits.filter((door) => door.command.mapId === mapId)
+      .sort((a, b) => requirementsOf(project, a).length - requirementsOf(project, b).length);
+    let ok = false;
+    for (const door of doors) {
+      const snapshot = goals.length;
+      // 문 자체는 routeTo 가 지난다 — 여기서는 문의 선행 조건만 사슬에 넣는다.
+      if (planVisit(door, depth + 1)) { ok = true; break; }
+      goals.length = snapshot;
+    }
+    mapsInProgress.delete(mapId);
+    if (ok) planned.add(`map:${mapId}`);
+    return ok;
+  };
   const planVisit = (visit: CommandVisit, depth: number): boolean => {
     if (depth > 12) return false;
+    const onMap = visit.page.map?.id;
+    if (onMap && !planMapEntry(onMap, depth)) {
+      unresolved.push({ req: `${project.maps[onMap]?.name ?? onMap} 로 들어가는 문`, for: visit.where });
+      return false;
+    }
     for (const req of requirementsOf(project, visit)) {
       const key = reqKey(req);
       if (planned.has(key) || satisfiedAtStart(project, req)) continue;
