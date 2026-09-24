@@ -2051,3 +2051,7 @@ Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조�
 `output/shared-spatial-catalog/probe.mts`. 새 프로젝트 설치, 기존 규칙/맵 불변,
 두 지역의 전체 페이지 배열 일치, 가구 복사 레이어/크기 보존을 직접 확인했다.
 전체 테스트 게이트와 운영 배포 확인은 별도이며 이 기록으로 대체하지 않는다.
+
+## Isaiah 물 태그 판정 보완 (2026-09-24)
+
+기존 타일셋별 물 판정을 유지하며 `tileMeta.tags`의 정확한 `water`도 읽는다. Isaiah 공용 자료는 role 대신 tags를 쓰므로 이 경로가 필요하다. 기본 합본 마을 호환 그림의 숫자 판정과 category/role/팔레트/그룹 판정은 보존한다. 별도9897 구버전 워커에서 잔디0번을 물38칸으로 보고한 재현 및 갱신 여부는 `docs/qa/saesol-three-hour-ai-authoring.md`에 기록했다.

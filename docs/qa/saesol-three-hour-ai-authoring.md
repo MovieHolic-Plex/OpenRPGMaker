@@ -762,3 +762,21 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 최종 `region4-league-first-player/SUMMARY.md`: passed=true, pageErrors0, 실제 회복약2회. 매 명령 화면에서 활성 적 스프라이트1개·HP 행1개를 검사했고, 교체 후 PNG를 직접 확인했다. 전반 사천왕 각각900G, 선행 승리 없는 둘째 도전 차단, 재대화 골드·아이템 무변화가 통과했다. 마지막 관문 회복 뒤 실제 진행 상태는6372G와 두 승리 플래그다.
 - 비교 증거: `region4-league-first-stale-dom/failure.png`(기존), `region4-league-first-stale-hud/enemy_sr4_league_e2_2.png`(첫 수정의 HP 잔류), `region4-league-first-player/enemy_sr4_league_e2_2.png`(최종). 전기 동료를 고집해 회복약을 소진한 중간 시도와 쓰러진 동료 선택 timeout은 별도 `region4-league-first-electric-strategy`에 보존했다. 바위 기술을 가진 방어형 동료로 공략을 바꿨으며 정본 능력치/아이템을 낮추거나 보충하지 않았다.
 - 최종 Vite build 성공(66초). 9897 정적 번들을 갱신하고 기존 해시 자산을 유지했다. 서비스 재시작/정본 DB 재작성은 하지 않았다. 기존 열린 탭은 새로고침 후 수정 번들을 읽는다.
+
+### AI-037 — 커스텀 잔디를 기본 칩셋 물로 오인하는 읽기 도구
+
+- 저장된 리그 관문에서 `get_map_region(map_sr4_gate,0,8,10,8)`을 실행하면 물38칸이라고 보고했다. 모든 오인 좌표는 lower 타일0번이며 공용 Isaiah 메타데이터는 `grass 0`, tags `[grass]`다. 근거 `custom-water-audit.json`의 좌표별 내역.
+- 원인은 `isMapWaterTile`이 타일셋 ID 없이 기본 아틀라스 숫자 범위를 적용한 것. 문자 그리드와 물 경계 계산에 실제 맵 타일셋을 전달하고, 커스텀 물은 명시적인 water 역할/태그만 인정하도록 수정했다. TREE/WALL 숫자도 기본 아틀라스에만 적용한다.
+- 회귀 계약을 `test/mapRegionWaterAndCompact.test.ts`에 추가했다. vitest/gates는 실행하지 않았다. 정본 맵/타일 데이터는 변경하지 않고 도구의 해석을 수정한다.
+- `custom-water-audit-fixed.json` 재실행에서 같은 영역 물0칸을 확인했다. 수정은 소스/도구 진단 기준이며 진행 중인9897 AI 작업의 워커 재시작은 하지 않았다. 기존 열린 세션에 새 판정이 적용됐다고 주장하지 않는다.
+
+### 후반 사천왕 정본 저장과 챔피언 저작 시작
+
+- 에디터 AI 요청17은 두 승리 스위치를 먼저 정의한 뒤 고유 적4개·트룹2개·이벤트2개를 저장했다. revision418에서 사천왕 셋째(8,16), 넷째(14,16)가 존재한다.
+- `player-snapshot-league-last-proof.json`: projectDir `/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red`, projectId `6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a`, 맵20개/이벤트149개. 정본을 다시 열어 두 번 읽은 내용이 일치하고 외부 미디어80개의 해시를 확인했다.
+- 요청17 완료 표시와 저장 응답을 확인한 뒤 실제 에디터 AI 입력창으로 요청18(챔피언·일회성 엔딩·자유 탐험 복귀)을 전달했다. 전반 사천왕 둘을 실제로 이긴6372G 체크포인트로 후반 두 전투 검증을 시작했다. 엔딩/전체 도보/180분 분량은 아직 미완료다.
+
+- 후반 전투 실제 검사 완료: `region4-league-last-player/SUMMARY.md` passed=true, pageErrors0. 세 번째 이전에 네 번째 도전 차단, 각1000G, 재대화 무보상, 활성 이미지/HP 행 각각1개를 확인했다. 실제 회복약6개를 소비했고 관문에서 전원 회복한 최종6372→8372G 및 사천왕1~4 승리 상태를 저장했다(QA 결과 파일). 전투/관문 스크린샷을 직접 열어 확인했다.
+- 진단 probe는 커스텀 grass0=false/water425=true, 기본 WATER=true, 정의 없는 타일셋=false였다. 읽기 도구의 명시적 메타데이터 경로와 기본 아틀라스 호환을 각각 확인했다.
+
+- main 병합 시 기존 `9804b602f`가 호환 아틀라스별 `isWaterInTileset`을 이미 도입한 것을 확인했다. 기존 함수와 나무/벽 처리를 보존하고 누락된 `tileMeta.tags: [water]` 판정만 보완했다. 작업트리의 단독 판별 API 확장은 main에 중복 도입하지 않았다.

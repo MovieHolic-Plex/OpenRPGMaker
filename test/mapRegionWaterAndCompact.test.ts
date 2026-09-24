@@ -104,3 +104,32 @@ describe("show_map_region size cap", () => {
     expect((result.warnings ?? []).some((w: string) => w.includes("잘랐"))).toBe(true);
   });
 });
+
+describe("custom atlas semantics", () => {
+  it("uses authored water metadata rather than colliding default atlas numbers", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId]!;
+    const tileset = structuredClone(project.tilesets[map.tilesetId]!);
+    tileset.id = "custom-semantic-atlas";
+    tileset.image = { type: "uploaded", id: "custom-semantic-image" };
+    tileset.tileMeta = [];
+    tileset.palettePresets = [];
+    tileset.tileGroups = [];
+    tileset.tileMeta[0] = { label: "grass", description: "", tags: ["grass"] };
+    tileset.tileMeta[425] = { label: "water", description: "", tags: ["water"] };
+    project.tilesets[tileset.id] = tileset;
+    map.tilesetId = tileset.id;
+    map.events = [];
+    map.lowerTiles.fill(0);
+    map.upperTiles.fill(TILE.EMPTY);
+    map.lowerTiles[map.width + 1] = 425;
+    const result = runTool({ project }, "get_map_region", { mapId: map.id, x: 0, y: 0, w: 3, h: 3 });
+    expect(result.ok).toBe(true);
+    const data = result.data as { grid: string[]; water: { cellCount: number; bounds: unknown } };
+    expect(data.water).toMatchObject({ cellCount: 1, bounds: { x: 1, y: 1, w: 1, h: 1 } });
+    expect(data.grid[1][1]).toBe("~");
+    expect(data.grid[0]).not.toContain("~");
+    expect(waterBoundsInMap(map, 0, 0, 3, 3)).toBeNull();
+    expect(waterBoundsInMap(map, 0, 0, 3, 3, tileset)?.cellCount).toBe(1);
+  });
+});

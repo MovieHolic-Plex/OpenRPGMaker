@@ -45,6 +45,7 @@ function isWaterInTileset(map: GameMap, tileset: TilesetDef | undefined, tile: n
   if (tile < 0) return false;
   if (!tileset) return (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID && isMapWaterTile(tile);
   return tileCategoriesForTile(tileset, tile).includes("water")
+    || tileset.tileMeta?.[tile]?.tags?.includes("water") === true
     || (isCombinedTownCompatibleTileset(tileset) && isMapWaterTile(tile));
 }
 
