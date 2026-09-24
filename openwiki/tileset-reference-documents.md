@@ -477,7 +477,7 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 `pixel-art-world-school-rooms.mjs`로28실을 추출한다. 각 장소가 원본 원점·전체 배열·부품·접근칸·실제 그림을 소유한다.
 공용 SQLite와 새/기존 프로젝트가 같은 자료를 사용한다. 원본/파생 그림은 사용자 로컬에만 둔다.
 `build_shared_scene`는 이벤트까지 보관한 library.maps를 우선하고 정적 kit는 events=[]로 구별한다.
-후속 수정: 이자카야 분리 조리실·천장 포함12×18(부스2·방석6·바3), 독립 침실2 주택15×15.
+후속 수정: 이자카야 분리 조리실·천장/남쪽 벽 포함12×20(부스2·방석6·바3), 독립 침실2 주택15×15.
 `tiledata/pixel-art-world/house-variants.json`과 `scripts/content/prepare-pixel-art-world-dense-interiors.mjs`가 메타데이터·전체 배열·
 프로젝트 소유 그림을 생성하고 엔진 통행으로 접근점을 검사한다. `scripts/content/save-pixel-art-world-host-patch.mjs`는
 host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체 문서를 다시 읽어 비교한다.
@@ -487,5 +487,21 @@ host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체
 정적 장소와 저장 맵 양쪽에 적용한다. 원본480칸은 보존하며 천장47변형과 연결 그룹은480번부터다.
 
 이자카야 확대 청사진은 `tiledata/pixel-art-world/izakaya-kitchen-layout.json`이다.
-내벽x6/y6·직원 문(6,4)/(6,5)·주통로 두 칸·43접근점·천장63칸을 실제 충돌/자동 성형으로 검사한다.
+내벽x6/y6·직원 문(6,4)/(6,5)·주통로 두 칸·45접근점·천장61칸/벽52칸을 실제 충돌/자동 성형으로 검사한다.
 직원 문을 봉쇄하는 반례에서 주방만 고립되어야 한다. 카운터 상부 벽 겹침과 밑동 바닥 지지를 구별한다.
+
+## PAW 천장 아래 벽과 실제 가게2종 (2026-09-25)
+
+천장 덩어리의 남쪽 끝 아래에는 반드시 벽 몸통/하단 두 행을 둔다. 맵 경계도 예외가 아니다.
+`scripts/content/pixel-art-world-ceiling-walls.mjs`가 좌표를 산출하고 누락/경계 초과를 거절한다.
+`prepare-pixel-art-world-retail-interiors.mjs`는 사용자 원본으로 서점·아이스크림점10×15를 만들고
+`retail-interiors-compiled.json`의 전체 배열과 정본이 일치할 때 공용 루트에 게시한다.
+새 원본 다운로드 없음. 실제 이미지·MD·정상/오류 비교는 사용자 로컬 정본/공용에만 둔다.
+상세: [가게·벽 계약](../tiledata/pixel-art-world/RETAIL-INTERIORS.md).
+
+후속 확인: 정본revision81의3맵과 아이스크림 아틀라스를 공식 호스트 저장 후 재로드했다.
+공용64장소/16맵을 CAS 게시·재로드했다. 실제 `createBlankProject`와 기존 프로젝트의
+`ensureSharedContent`에서 최신3타일 정의가 일치하고 두 번째 투영은 불변이다.
+`buildSharedScene`으로 새 가게2곳과 수정 이자카야를 독립 사본으로 조립하여 원본 배열·벽면
+일치를 확인했다. 이 관찰은 결정적 조립 경로이며 새 LLM 생성 실험은 아니다.
+근거: `output/paw-shop-walls/`의 saved/shared/projection/visual proof. 전체 게이트는 실행하지 않았다.
