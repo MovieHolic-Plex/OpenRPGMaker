@@ -263,6 +263,12 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supp
  * 방법이 없으므로 의도된 저작이 아니다. 투명 이벤트를 원할 때는 `graphic:{transparent:true}` 가
  * 명시적 경로이므로, 그 표시가 없는 대화형 action 페이지에만 주민 기본 그래픽을 채운다.
  */
+/**
+ * 타일로 그려진 가구·문 위의 조사 지점(place_concept 가구, 벽·문 칸). 그림은 타일이 맡으므로 이벤트는
+ * 투명한 게 의도다 — 여기에 주민 그림을 세우면 금고·현관문·옷장이 사람으로 보인다(2026-09-24 추격 호러).
+ */
+const TILE_HOTSPOT_EVENTS = new WeakSet<GameEvent>();
+
 function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
   if (page.trigger?.kind !== "action" || page.priority === "below") return false;
   if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
@@ -299,7 +305,7 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     if (typeof movement.frequency !== "number" || !Number.isFinite(movement.frequency)) { movement.frequency = PASSIVE.frequency; missing.push("frequency"); }
     if (missing.length > 0) filled.push(`movement.${missing.join("/")}`);
   }
-  if (isInvisibleTalkablePage(page)) {
+  if (isInvisibleTalkablePage(page) && !TILE_HOTSPOT_EVENTS.has(event)) {
     const siblingGraphic = event.pages?.find(
       (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
     )?.graphic;
@@ -710,6 +716,11 @@ const upsertEvent: ToolDefinition = {
       }
     }
     routeRootCommandsIntoPage(event, patch, existing, warnings);
+    // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
+    const tileHotspot = existing
+      ? (existing.pages ?? []).some((page) => page.trigger?.kind === "action") && !(existing.pages ?? []).some((page) => page.graphic?.sprite !== undefined)
+      : inMapBounds(map, event.x, event.y) && !isPassable(draft, map, event.x, event.y);
+    if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
     assertEventShape(event, warnings, existing ? patch : event);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
