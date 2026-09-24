@@ -100,9 +100,9 @@
   position: relative; inset: auto; width: 100%; max-width: none; flex: 0 0 auto;
   margin: 0; padding: 12px 14px 16px; background: var(--bg-raised); border-top: 0;
 }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer { border: 1px solid var(--border-default); border-radius: var(--radius-l); background: var(--bg-raised); padding: 12px; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { flex-wrap: wrap; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-assistant-input { min-height: 72px; font-size: 13px; line-height: 1.7; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer { border: 1px solid var(--border-default); border-radius: var(--radius-l); background: var(--bg-raised); padding: 8px 10px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { flex-wrap: nowrap; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-assistant-input { min-height: 36px; font-size: 13px; line-height: 1.4; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-conversation-outcome { flex: 0 0 auto; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-resize-handle { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-popover { max-width: min(340px, 88vw); }
@@ -144,10 +144,16 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-deck .ai-chat-secondary-actions > button { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; min-height: 34px; padding: 7px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); }
 .ai-deck .ai-chat-secondary-actions > button:hover { background: var(--bg-inset); color: var(--text-1); }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead { flex-wrap: wrap; gap: 5px; overflow: visible; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: 100%; justify-content: flex-end; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: auto; justify-content: flex-end; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-model { margin-right: auto; font-size: 10px; color: var(--text-3); }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-effort-select { border: 0; background: var(--bg-inset); font-size: 11px; }
+.ai-chat-panel .ai-composer-stamp-toggle[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent);
+  color: var(--accent-active);
+}
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-conversation-outcome { font-size: 10px; color: var(--text-3); padding: 6px 18px; border: 0; }
 
 /* Minimum glass over black, including the mode segment's 6% ink tint: AA text, not element opacity. */

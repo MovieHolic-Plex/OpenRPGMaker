@@ -74,6 +74,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "move_event",
   "remove_event",
   "author_house",
+  "place_props",
 ]);
 
 export type ToolUndoScope =
