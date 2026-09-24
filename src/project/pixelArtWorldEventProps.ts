@@ -2,7 +2,7 @@ import catalog from '@/assets/pixelArtWorldEventProps.json';
 import type { Command, TilesetDef } from './types';
 export const PIXEL_ART_WORLD_EVENT_PROPS = catalog.packs;
 export const PIXEL_ART_WORLD_EVENT_PROP_AUDIT = catalog.sources;
-export type PixelArtWorldEventPropPack = typeof catalog.packs[number];
+export type PixelArtWorldEventPropPack = (typeof catalog.packs[number]) & { frameComposites?: {index:number;width:number;height:number;phase:number;sourceRows:number[]|null;parts:{sourceRect:number[];destination:number[]}[]}[] };
 export type PixelArtWorldEventPropVariant = PixelArtWorldEventPropPack['variants'][number];
 export function canAttachEventPropReferences(target: TilesetDef, pack: PixelArtWorldEventPropPack) {
   return pack.rights.runtimeImportAllowed && target.tileSize === 32 && !target.id.startsWith('shared_') && !target.referenceSourceTilesetId

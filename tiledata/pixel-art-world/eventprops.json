@@ -498,6 +498,26 @@
       "status": "supported",
       "variants": 8,
       "frames": 16
+    },
+    {
+      "filename": "SC-Water01.png",
+      "sha256": "9f0a7680f91b65936b7432ac4640eaa9a4b60547464c3f91d98a609870b6e143",
+      "source_page": "https://yms.main.jp/dotartworld/page2/tile-sewer01.html",
+      "download_url": "https://yms.main.jp/dotartworld/sozai/chara/SC-Water01.png",
+      "packId": "paw-eventprop-water01",
+      "status": "supported",
+      "variants": 6,
+      "frames": 12
+    },
+    {
+      "filename": "SC-Water02.png",
+      "sha256": "e77079fc823bc1d5ce4ea85575524e102b4ed0a594f112ab40e421659060d0e7",
+      "source_page": "https://yms.main.jp/dotartworld/page2/tile-sewer01.html",
+      "download_url": "https://yms.main.jp/dotartworld/sozai/chara/SC-Water02.png",
+      "packId": "paw-eventprop-water02",
+      "status": "supported",
+      "variants": 2,
+      "frames": 4
     }
   ],
   "packs": [
@@ -24849,6 +24869,1508 @@
         "credit": "Pixel Art World / ドット絵世界 · yms",
         "checkedAt": "2026-09-24",
         "reason": "No RPG Maker-only marker at this source; source pixels remain user-local."
+      }
+    },
+    {
+      "id": "paw-eventprop-water01",
+      "name": "Pixel Art World · 길이 조절 작은 배수 물줄기",
+      "filename": "SC-Water01.png",
+      "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-sewer01.html",
+      "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chara/SC-Water01.png",
+      "sha256": "9f0a7680f91b65936b7432ac4640eaa9a4b60547464c3f91d98a609870b6e143",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "width": 128,
+      "height": 128,
+      "frameWidth": 32,
+      "frameHeight": 192,
+      "atlasColumns": 4,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            90
+          ],
+          "nonTransparentPixels": 1582,
+          "pixelSha256": "26462d6e3b70eae9fb181e2e57a66faa7756170b5c3d7ed0b716bc215e265c74",
+          "atlasOffset": [
+            0,
+            96
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            32,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            89
+          ],
+          "nonTransparentPixels": 1569,
+          "pixelSha256": "1417c8a0ef64f26d36a5ca035f3a43a383013161b2feb89f1b8a130a8eefb2a4",
+          "atlasOffset": [
+            0,
+            96
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            64,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            2,
+            4,
+            30,
+            89
+          ],
+          "nonTransparentPixels": 1566,
+          "pixelSha256": "1dc391df9db0af0ecda3327041becb7a0f3adff90581df81a9ddc21998e9f1ee",
+          "atlasOffset": [
+            0,
+            96
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            96,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            90
+          ],
+          "nonTransparentPixels": 1549,
+          "pixelSha256": "e719ddf4b380cac9ed39594643e2b2c3aeaea61f0119ecfd1a4b2966275b5884",
+          "atlasOffset": [
+            0,
+            96
+          ]
+        },
+        {
+          "index": 4,
+          "sourceRect": [
+            0,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            122
+          ],
+          "nonTransparentPixels": 2030,
+          "pixelSha256": "50b5d4eeabeb695c80c40a5e49c95b176ddc6d93d03c44414acba8594dfcc184",
+          "atlasOffset": [
+            0,
+            64
+          ]
+        },
+        {
+          "index": 5,
+          "sourceRect": [
+            32,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            121
+          ],
+          "nonTransparentPixels": 2017,
+          "pixelSha256": "4aee3e97ff73532d3849cb8cadd32f6facd0e012bc78f1bfe982dc2be2c1382f",
+          "atlasOffset": [
+            0,
+            64
+          ]
+        },
+        {
+          "index": 6,
+          "sourceRect": [
+            64,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            2,
+            4,
+            30,
+            121
+          ],
+          "nonTransparentPixels": 2014,
+          "pixelSha256": "304459ee36d85674a4b02592ef11ded90b734e72f9c824de3998e669e4a2bdf6",
+          "atlasOffset": [
+            0,
+            64
+          ]
+        },
+        {
+          "index": 7,
+          "sourceRect": [
+            96,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            122
+          ],
+          "nonTransparentPixels": 1997,
+          "pixelSha256": "3ddc8d362bba4ec5b8f1754d36e0b9243ac97892d85f29f19bec3028d81eb884",
+          "atlasOffset": [
+            0,
+            64
+          ]
+        },
+        {
+          "index": 8,
+          "sourceRect": [
+            0,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            186
+          ],
+          "nonTransparentPixels": 2926,
+          "pixelSha256": "41d28a29b5dc1fa13ebcda1df99bec2a5afd156336b07d9d63c7ab7884661e77",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        },
+        {
+          "index": 9,
+          "sourceRect": [
+            32,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            185
+          ],
+          "nonTransparentPixels": 2913,
+          "pixelSha256": "090f0c14ccea74d9a1fb60f2ff85ae1e7701bbac83bc57b68433f80af10cfd1d",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        },
+        {
+          "index": 10,
+          "sourceRect": [
+            64,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            2,
+            4,
+            30,
+            185
+          ],
+          "nonTransparentPixels": 2910,
+          "pixelSha256": "99ec3838fa14835a9645ace05452daee36d5a48a1aeca6305506a4b17fd3b48d",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        },
+        {
+          "index": 11,
+          "sourceRect": [
+            96,
+            0,
+            32,
+            128
+          ],
+          "sourceAnchor": [
+            16,
+            128
+          ],
+          "alphaBounds": [
+            3,
+            4,
+            30,
+            186
+          ],
+          "nonTransparentPixels": 2893,
+          "pixelSha256": "6cf36222d6e9a5359bad68dc459d7cb9a3bbe578dda307516eaab749a057b436",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        }
+      ],
+      "frameComposites": [
+        {
+          "index": 0,
+          "width": 32,
+          "height": 96,
+          "phase": 0,
+          "sourceRows": [
+            0,
+            1,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                0,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "width": 32,
+          "height": 96,
+          "phase": 1,
+          "sourceRows": [
+            0,
+            1,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                32,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "width": 32,
+          "height": 96,
+          "phase": 2,
+          "sourceRows": [
+            0,
+            1,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                64,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "width": 32,
+          "height": 96,
+          "phase": 3,
+          "sourceRows": [
+            0,
+            1,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                96,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            }
+          ]
+        },
+        {
+          "index": 4,
+          "width": 32,
+          "height": 128,
+          "phase": 0,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                0,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            }
+          ]
+        },
+        {
+          "index": 5,
+          "width": 32,
+          "height": 128,
+          "phase": 1,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                32,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            }
+          ]
+        },
+        {
+          "index": 6,
+          "width": 32,
+          "height": 128,
+          "phase": 2,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                64,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            }
+          ]
+        },
+        {
+          "index": 7,
+          "width": 32,
+          "height": 128,
+          "phase": 3,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                96,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            }
+          ]
+        },
+        {
+          "index": 8,
+          "width": 32,
+          "height": 192,
+          "phase": 0,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            2,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                0,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                128
+              ]
+            },
+            {
+              "sourceRect": [
+                0,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                160
+              ]
+            }
+          ]
+        },
+        {
+          "index": 9,
+          "width": 32,
+          "height": 192,
+          "phase": 1,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            2,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                32,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                128
+              ]
+            },
+            {
+              "sourceRect": [
+                32,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                160
+              ]
+            }
+          ]
+        },
+        {
+          "index": 10,
+          "width": 32,
+          "height": 192,
+          "phase": 2,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            2,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                64,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                128
+              ]
+            },
+            {
+              "sourceRect": [
+                64,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                160
+              ]
+            }
+          ]
+        },
+        {
+          "index": 11,
+          "width": 32,
+          "height": 192,
+          "phase": 3,
+          "sourceRows": [
+            0,
+            1,
+            2,
+            2,
+            2,
+            3
+          ],
+          "parts": [
+            {
+              "sourceRect": [
+                96,
+                0,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                32,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                32
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                64
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                96
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                64,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                128
+              ]
+            },
+            {
+              "sourceRect": [
+                96,
+                96,
+                32,
+                32
+              ],
+              "destination": [
+                0,
+                160
+              ]
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "length-3-static",
+          "name": "3칸 완성 물줄기 · 정지 위상0",
+          "kind": "static",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                0
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        },
+        {
+          "id": "length-3-loop",
+          "name": "3칸 완성 물줄기 · 4위상 반복",
+          "kind": "loop",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        },
+        {
+          "id": "length-4-static",
+          "name": "4칸 완성 물줄기 · 정지 위상0",
+          "kind": "static",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                4
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        },
+        {
+          "id": "length-4-loop",
+          "name": "4칸 완성 물줄기 · 4위상 반복",
+          "kind": "loop",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                4,
+                5,
+                6,
+                7
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        },
+        {
+          "id": "length-6-static",
+          "name": "6칸 완성 물줄기 · 정지 위상0",
+          "kind": "static",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                8
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        },
+        {
+          "id": "length-6-loop",
+          "name": "6칸 완성 물줄기 · 4위상 반복",
+          "kind": "loop",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                8,
+                9,
+                10,
+                11
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        }
+      ],
+      "placement": "wall-outlet-to-water-surface",
+      "notes": [
+        "정면 벽 배수구+물기둥+물보라 전체를 한 이벤트 프레임으로 조립한다. 실물 sourceParts를 phase마다 동기화한 한 그림이므로 여러 이벤트의 위상차가 없다. 바닥중앙 anchor와 투명 위쪽 패딩을 보존하며 scale1이다.",
+        "120ms는 예시 속도다. 제작자 FPS/실제 물리 속도가 아니다. static은 첫 위상 고정, loop는 명시한4프레임만 setEventGraphicPattern/wait으로 순환한다.",
+        "frameComposites가 있는 항목은 frames.sourceRect를 직접 복사하지 않는다. sourceRect는 원본 한 위상의 포함 영역이고 frameComposites.parts가 실제 합성 순서다. destination 좌표는 패딩 전 완성 프레임, atlasOffset은192px 또는160px 공통 프레임 내부의 바닥 정렬 패딩이다.",
+        "32px 행0/1은 배수구+아랫입술, 행2만 반복 물기둥, 행3은 물보라. 길이3/4/6의 행배열은[0,1,3]/[0,1,2,3]/[0,1,2,2,2,3]. 행1을 반복하면 중간에 배수구가 생기므로 금지.",
+        "그림 상단 배수구는 정면 벽, 하단 물보라는 차단 수로 수면에 맞춘다. 머리/물보라를 별도 가구로 중복 배치하지 않는다. 통행·수영·수위·유량 제어·실내 전이는 자동 생성하지 않는다. ST-Sewer-01.png 표본은 별도 사용자 PNG가 있어야 렌더된다."
+      ],
+      "rights": {
+        "profile": "yms-general",
+        "runtimeImportAllowed": true,
+        "sharedProjectDefaultsAllowed": true,
+        "redistributeArt": false,
+        "credit": "Pixel Art World / ドット絵世界 · yms",
+        "checkedAt": "2026-09-24",
+        "reason": "Official sewer page has no RPG Maker-only marker; source/derived art remains user-local."
+      }
+    },
+    {
+      "id": "paw-eventprop-water02",
+      "name": "Pixel Art World · 큰 배수 물줄기",
+      "filename": "SC-Water02.png",
+      "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-sewer01.html",
+      "downloadUrl": "https://yms.main.jp/dotartworld/sozai/chara/SC-Water02.png",
+      "sha256": "e77079fc823bc1d5ce4ea85575524e102b4ed0a594f112ab40e421659060d0e7",
+      "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+      "width": 384,
+      "height": 640,
+      "frameWidth": 96,
+      "frameHeight": 160,
+      "atlasColumns": 4,
+      "frames": [
+        {
+          "index": 0,
+          "sourceRect": [
+            0,
+            0,
+            96,
+            160
+          ],
+          "sourceAnchor": [
+            48,
+            160
+          ],
+          "alphaBounds": [
+            15,
+            11,
+            80,
+            160
+          ],
+          "nonTransparentPixels": 6605,
+          "pixelSha256": "57577bfae1d6b700637b27e01543a1e3d3d1de887d53fa49853b946d06f3b3cc",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        },
+        {
+          "index": 1,
+          "sourceRect": [
+            96,
+            0,
+            96,
+            160
+          ],
+          "sourceAnchor": [
+            48,
+            160
+          ],
+          "alphaBounds": [
+            15,
+            11,
+            80,
+            160
+          ],
+          "nonTransparentPixels": 6579,
+          "pixelSha256": "ecbfd67720751a2c8778c8b101971cfa202256083eb47e750a6091a4bb1b1879",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        },
+        {
+          "index": 2,
+          "sourceRect": [
+            192,
+            0,
+            96,
+            160
+          ],
+          "sourceAnchor": [
+            48,
+            160
+          ],
+          "alphaBounds": [
+            15,
+            11,
+            80,
+            160
+          ],
+          "nonTransparentPixels": 6606,
+          "pixelSha256": "41a2c47c20e6843cbe7e71d96c230ac53d4f6f74b0638cf7ab97c56ed1d729dc",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        },
+        {
+          "index": 3,
+          "sourceRect": [
+            288,
+            0,
+            96,
+            160
+          ],
+          "sourceAnchor": [
+            48,
+            160
+          ],
+          "alphaBounds": [
+            15,
+            11,
+            80,
+            160
+          ],
+          "nonTransparentPixels": 6555,
+          "pixelSha256": "c5d5d119373d54f3dbc0f8eb4f27df94c1106463667c19c8c1cf588d1c1bc5bd",
+          "atlasOffset": [
+            0,
+            0
+          ]
+        }
+      ],
+      "frameComposites": [
+        {
+          "index": 0,
+          "width": 96,
+          "height": 160,
+          "phase": 0,
+          "sourceRows": null,
+          "parts": [
+            {
+              "sourceRect": [
+                0,
+                0,
+                96,
+                160
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "index": 1,
+          "width": 96,
+          "height": 160,
+          "phase": 1,
+          "sourceRows": null,
+          "parts": [
+            {
+              "sourceRect": [
+                96,
+                0,
+                96,
+                160
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "width": 96,
+          "height": 160,
+          "phase": 2,
+          "sourceRows": null,
+          "parts": [
+            {
+              "sourceRect": [
+                192,
+                0,
+                96,
+                160
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            }
+          ]
+        },
+        {
+          "index": 3,
+          "width": 96,
+          "height": 160,
+          "phase": 3,
+          "sourceRows": null,
+          "parts": [
+            {
+              "sourceRect": [
+                288,
+                0,
+                96,
+                160
+              ],
+              "destination": [
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "id": "length-5-static",
+          "name": "5칸 완성 물줄기 · 정지 위상0",
+          "kind": "static",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                0
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        },
+        {
+          "id": "length-5-loop",
+          "name": "5칸 완성 물줄기 · 4위상 반복",
+          "kind": "loop",
+          "direction": "south-facing-wall",
+          "parts": [
+            {
+              "x": 0,
+              "y": 0,
+              "frames": [
+                0,
+                1,
+                2,
+                3
+              ]
+            }
+          ],
+          "frameTimingMs": 120,
+          "timingProvenance": "editor-example-not-author-rate"
+        }
+      ],
+      "placement": "wall-outlet-to-water-surface",
+      "notes": [
+        "정면 벽 배수구+물기둥+물보라 전체를 한 이벤트 프레임으로 조립한다. 실물 sourceParts를 phase마다 동기화한 한 그림이므로 여러 이벤트의 위상차가 없다. 바닥중앙 anchor와 투명 위쪽 패딩을 보존하며 scale1이다.",
+        "120ms는 예시 속도다. 제작자 FPS/실제 물리 속도가 아니다. static은 첫 위상 고정, loop는 명시한4프레임만 setEventGraphicPattern/wait으로 순환한다.",
+        "frameComposites가 있는 항목은 frames.sourceRect를 직접 복사하지 않는다. sourceRect는 원본 한 위상의 포함 영역이고 frameComposites.parts가 실제 합성 순서다. destination 좌표는 패딩 전 완성 프레임, atlasOffset은192px 또는160px 공통 프레임 내부의 바닥 정렬 패딩이다.",
+        "원본384×640 중 첫160px에96×160 완성 물줄기4개만 있다. 아래480px는 완전투명이다. 빈12프레임을 등록하지 않으며640px높이 프레임으로 잘못 잡아 밑동을480px 내리지 않는다.",
+        "그림 상단 배수구는 정면 벽, 하단 물보라는 차단 수로 수면에 맞춘다. 머리/물보라를 별도 가구로 중복 배치하지 않는다. 통행·수영·수위·유량 제어·실내 전이는 자동 생성하지 않는다. ST-Sewer-01.png 표본은 별도 사용자 PNG가 있어야 렌더된다."
+      ],
+      "rights": {
+        "profile": "yms-general",
+        "runtimeImportAllowed": true,
+        "sharedProjectDefaultsAllowed": true,
+        "redistributeArt": false,
+        "credit": "Pixel Art World / ドット絵世界 · yms",
+        "checkedAt": "2026-09-24",
+        "reason": "Official sewer page has no RPG Maker-only marker; source/derived art remains user-local."
       }
     }
   ],

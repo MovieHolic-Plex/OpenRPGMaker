@@ -1,9 +1,11 @@
 # Pixel Art World 연출 오브젝트 — 원본과 이벤트 프레임
 
 MD항목26/27의 chara01/02와 연결 차량 페이지를 합친 다운로드 원본은50장이다.
-`eventprops.json`에는 전체 출처 분류와48장의 기하가 있다. 범용39장/270변형,
+이 최초 범위는48장의 기하다. 범용39장/270변형,
 RTP 제한 분석9장/59변형, 문 카탈로그에 이미 있는 Ev01/Ev02 2장(중복 집계 없음)이다.
 카탈로그에서 원래 제외된 Funassi는 실제 다운로드50장에 포함되지 않는다.
+하수도 페이지 SC-Water01/02 2장을 별도로 추가하여 현재 카탈로그는50pack(범용41/제한9),
+직접 출처52장(문 중복2장 포함)이다. 추가8변형/16완성프레임은 [WATER-EVENTPROPS.md](WATER-EVENTPROPS.md)를 따른다.
 PNG는 사용자 로컬에서만 읽으며 Git/public/배포용 픽셀 번들에 넣지 않는다.
 
 ## 제작자 근거와 권리
@@ -66,7 +68,7 @@ UI에는 파일 입력이 없다. 공용 새 프로젝트 자동 등록 대상�
 
 ## 이벤트와 AI 참고자료
 
-`preparePixelArtWorldEventProp(file,pack,assetId)`는 SHA/치수/전체 알파 좌표를 검사하고
+`preparePixelArtWorldEventProp(file,pack,assetId,options?)`는 SHA/치수/전체 알파 좌표를 검사하고
 `{packId,sourceSha256,asset,references}`를 반환한다. `importPixelArtWorldEventProp`는
 32px 사용자 타일셋의 표준 referenceDocuments에 한 용도를 추가한다. 예약 shared owner,
 다른 원본을 참조하는 owner, 중복 용도,32용도 상한은 거절한다. 비동기 중 프로젝트/저장

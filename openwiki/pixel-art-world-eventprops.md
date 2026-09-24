@@ -3,7 +3,7 @@
 메타데이터 정본: `tiledata/pixel-art-world/eventprops.json`.
 자세한 sourceRect/예외/권리/관찰: [EVENTPROPS.md](../tiledata/pixel-art-world/EVENTPROPS.md).
 
-- `pixelArtWorldEventProps.ts`: 범용39·제한9 기하와 명시 프레임,12×10 진단 이벤트 배열/좌표 검사.
+- `pixelArtWorldEventProps.ts`: 범용41·제한9 기하와 명시 프레임,12×10 진단 이벤트 배열/좌표 검사.
 - `pixelArtWorldEventPropImport.ts`: 사용자SHA 확인 →4열 공통 프레임 atlas →실제 알파 좌표
   대조 →표준 asset adapter와 owner 참고문서 등록. lineage/저장 대상/owner변경 보호.
 - `pixelArtWorldEventPropReferences.ts`: 전체 원본/crop/프레임, 실제 조립/누락 그림과 전체 이벤트 배열.
@@ -33,3 +33,10 @@ visible RGBA 일치를 각각 검사한다. 원본의 raw-RGBA 해시를 가공 
 아직 제공하지 않으며, 이 상태를270개의 완성 장소나 타일 오브젝트로 세지 않는다.
 통합 편집기 빌드 후 실제 호스트 자료집에서 자판기 다운로드·대상 선택 카드를 검색해
 확인했다(브라우저 오류0). 개인 화면 근거는 `output/paw-eventprops-install/`에 있다.
+SC-Water01/02는 [WATER-EVENTPROPS.md](../tiledata/pixel-art-world/WATER-EVENTPROPS.md)의
+`frameComposites.parts`로 한 위상의 전체 물줄기를 먼저 합성한다. 작은 것은3/4/6칸별4프레임,
+큰 것은96×160 실제4프레임만 사용한다. sourceRect 포함영역을 그대로 자르면 짧은/긴 물줄기가 깨진다.
+`preparePixelArtWorldEventProp` 네 번째 / `importPixelArtWorldEventProp` 다섯 번째 인자의
+`{supportFile?:File}`에 정확한 ST-Sewer 원본을 주면 `pixelArtWorldWaterSupportReferences.ts`가
+실제 벽/수면 전체배열·정상오류·좌표검사를 같은 owned category에 추가한다.
+별도 엔진 sprite타입이나 자동 map/event 삽입은 없다. 기존48pack ID/배열은 보존했다.

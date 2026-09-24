@@ -11,8 +11,9 @@
 2 tilesets/assets, 3 places의 library를 만든다. DB 모듈·쓰기 경로는 없다.
 공용과 정본 게시/재로드는 감독자 단계다. source/derived artwork Git/public 배포는 하지 않는다.
 
-물 SC-Water01/02는 현재 eventprops에 없으며 별도 의존성으로만 적는다.
-`sewer-water-dependencies.json`은 후속 연출 작업용 기하 근거이고 런타임 지원 선언이 아니다.
+물 SC-Water01/02는 별도 eventprops importer가 지원한다. native 하수도 importer는 자동 설치하지 않는다.
+`sewer-water-dependencies.json`은 기하 근거이며 실제 명령/앵커 계약은
+[WATER-EVENTPROPS.md](../tiledata/pixel-art-world/WATER-EVENTPROPS.md)를 따른다.
 특히 작은 물줄기 행1에는 배수구 아래가 있어 반복할 수 없고, 큰 물줄기 아래3개 charset행은 비어 있다.
 
 ## 별도 로컬 게시 경계 (2026-09-25)
