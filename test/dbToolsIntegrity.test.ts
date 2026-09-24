@@ -153,6 +153,18 @@ describe("DB write tools", () => {
     expect(ctx.project.database.states.some((state) => state.id === "state_x")).toBe(false);
   });
 
+  // 추리 도그푸딩 gen: 지어낸 배경 id 가 커밋 게이트에서 변경 전체(제목·음악 포함)를 되돌렸다 — 호출 시점에 짚는다.
+  it("set_title_screen rejects an unknown background id at call time with real candidates", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const bad = runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "easyrpg-title-nope-1" }, { dryRun: false });
+    expect(bad.ok).toBe(false);
+    const message = JSON.stringify(bad.issues);
+    expect(message).toContain("없는 리소스");
+    expect(message).toContain("list_resources");
+    expect(message).toMatch(/easyrpg-title-title\d/u);
+    expect(runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "easyrpg-title-title2" }, { dryRun: false }).ok).toBe(true);
+  });
+
   it("set_title_screen creates titleScreen when missing and nested-merges sounds/titleGraphic", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     delete ctx.project.system.titleScreen;
