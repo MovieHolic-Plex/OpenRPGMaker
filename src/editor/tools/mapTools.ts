@@ -1,3 +1,4 @@
+import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness";
 import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { validateMapClimateInput } from "./combatAuthoringValidation";
@@ -1657,10 +1658,18 @@ const cloudShadowSchema: JsonSchema = {
   additionalProperties: false,
 };
 
+/** 반복 축 가장자리에서 양쪽 칸이 모두 통행 가능한 줄 수(넘어갈 수 있는 자리). */
+function loopEdgeOpenings(project: Project, map: GameMap): number {
+  let open = 0;
+  if (mapLoopsX(map)) for (let y = 0; y < map.height; y++) if (isPassable(project, map, 0, y) && isPassable(project, map, map.width - 1, y)) open++;
+  if (mapLoopsY(map)) for (let x = 0; x < map.width; x++) if (isPassable(project, map, x, 0) && isPassable(project, map, x, map.height - 1)) open++;
+  return open;
+}
+
 // 맵 속성 설정. 크기 변경은 resize_map, 트리 위치는 manage_map_tree로 분리.
 const setMapProperties: ToolDefinition = {
   name: "set_map_properties",
-  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속).",
+  description: "맵 편집기의 전체 속성을 설정한다: 이름·타일셋·인카운트·BGM·배경·전투 배경·저장/이동/도주 제한·미니맵·구름 그림자·기후(실내 차단/고정/상속)·반복 맵(loop: 가장자리가 반대편으로 이어짐 — 끝없는 숲·꿈 세계·반복 복도는 가장자리 이동 이벤트 대신 이것).",
   mode: "write",
   parameters: {
     type: "object",
@@ -1687,6 +1696,7 @@ const setMapProperties: ToolDefinition = {
       clearCloudShadows: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
+      loop: { type: "string", enum: ["none", ...MAP_LOOP_VALUES], description: "반복 맵. horizontal=좌우 끝이 이어짐, vertical=위아래, both=사방, none=끔. 플레이어가 가장자리를 넘으면 반대편 같은 줄에 선다(반대편 칸이 통행 가능해야 한다)." },
     },
     required: ["mapId"],
   },
@@ -1764,6 +1774,16 @@ const setMapProperties: ToolDefinition = {
       if (flags.disableEscape === true) map.disableEscape = true; else delete map.disableEscape;
       changed.push("제한 설정");
     }
+    const loopWarnings: string[] = [];
+    if (args.loop === "none") {
+      delete map.loop;
+      changed.push("반복=끔");
+    } else if (isMapLoop(args.loop)) {
+      map.loop = args.loop;
+      changed.push(`반복=${mapLoopLabel(map.loop)}`);
+      const open = loopEdgeOpenings(draft, map);
+      if (open === 0) loopWarnings.push(`반복 가장자리에 양쪽 모두 통행 가능한 칸이 없습니다 — 맵 테두리가 벽·물이면 넘어갈 수 없습니다. 가장자리 줄을 통행 가능한 바닥으로 칠하세요.`);
+    }
     if (args.clearMinimap === true) {
       delete map.minimap;
       changed.push("미니맵=끔");
@@ -1798,7 +1818,7 @@ const setMapProperties: ToolDefinition = {
       changed.push(`구름 그림자=${map.cloudShadows.enabled ? "켬" : "끔"}`);
     }
     if (changed.length === 0) throw new ToolError("바꿀 맵 속성이 없습니다.", { code: "invalid-args", mapId: map.id });
-    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id } };
+    return { summary: `${map.name} 속성 변경 — ${changed.join(", ")}`, data: { mapId: map.id }, ...(loopWarnings.length ? { warnings: loopWarnings } : {}) };
   },
 };
 

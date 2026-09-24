@@ -77,6 +77,8 @@ export interface GameMap {
   bgm?: MapBgmSetting;
   /** 전투 배경 이미지 리소스 ID. 없으면 타일셋 기본. */
   battleBackground?: string;
+  /** 가장자리가 반대편으로 이어지는 반복 맵(RM 「맵 루프」). 없으면 반복 없음. project/mapLoop.ts. */
+  loop?: import("../mapLoop").MapLoop;
   /** 세이브 금지 맵 (RM2003 "Save" 체크 해제). */
   disableSave?: boolean;
   /** 텔레포트(이동) 금지 맵. */

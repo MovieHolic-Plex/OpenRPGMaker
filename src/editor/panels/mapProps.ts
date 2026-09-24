@@ -2,7 +2,7 @@ import { renderMapAtmosphere } from "./mapAtmosphere";
 import { selectField as climateSelectField } from "@/editor/panels/databaseControls";
 import {
   resizeMap, renameMap, setMapEncounterRate, setMapEncounterTable, setMapFieldSpawns, setMapTileset,
-  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapMinimap,
+  setMapTroopIds, setStartMap, setStartPos, setMapBackground, setMapBgm, setMapBattleBackground, setMapFlags, setMapLoop, setMapMinimap,
   setMapCloudShadows, setMapClimate,
 } from "@/editor/actions";
 import { appendGroupedTilesetOptions } from "@/editor/tilesetSelectOptions";
@@ -13,6 +13,7 @@ import { openDatabaseResourcePickerDialog, listDatabaseResourceOptions, type Dat
 import { openDialog } from "@/editor/panels/databaseEnemyRecordSupport";
 import { editorState } from "@/editor/editorState";
 import { DEFAULT_ENEMY_FACTION_ID, factionName, resolveFactionTable } from "@/project/factions";
+import { isMapLoop, mapLoopLabel, MAP_LOOP_VALUES } from "@/project/mapLoop";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import { mapLocations } from "@/project/mapNamedLocations";
@@ -574,6 +575,17 @@ function renderRestrictionsTab(host: HTMLElement, map: import("@/project/types")
   section.append(makeCheck("도주 금지", "map-disable-escape", Boolean(map.disableEscape), (v) => {
     setMapFlags(map.id, { disableSave: store.getCurrent().maps[map.id]?.disableSave, disableTeleport: store.getCurrent().maps[map.id]?.disableTeleport, disableEscape: v });
   }));
+  const loopSelect = el("select", { dataset: { testid: "map-loop" } }) as HTMLSelectElement;
+  for (const value of ["", ...MAP_LOOP_VALUES] as const) {
+    const option = el("option", { text: mapLoopLabel(value || undefined) }) as HTMLOptionElement;
+    option.value = value;
+    loopSelect.append(option);
+  }
+  loopSelect.value = map.loop ?? "";
+  loopSelect.addEventListener("change", () => setMapLoop(map.id, isMapLoop(loopSelect.value) ? loopSelect.value : undefined));
+  const loopRow = el("label", { class: "map-props-check-row" });
+  loopRow.append(el("span", { text: "가장자리 이어짐" }), loopSelect);
+  section.append(loopRow);
 
   host.append(section);
 }
