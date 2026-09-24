@@ -1,0 +1,73 @@
+{
+  "scope": "Revision541 read-only copy, actual earned second-badge/rival2 checkpoint. Walk through real portals and catch existing wild monsters using owned balls. No invented species, levels or rewards. Not 3-hour proof.",
+  "pageErrors": [],
+  "captures": [
+    {
+      "species": "howler",
+      "throws": 1,
+      "ballsBefore": 15,
+      "ballsAfter": 14,
+      "caught": {
+        "instanceId": "monster_4",
+        "speciesId": "species_isaiah_howler",
+        "level": 4,
+        "exp": 16,
+        "ivs": {
+          "hp": 0,
+          "atk": 13,
+          "def": 0,
+          "spd": 12
+        },
+        "friendship": 70,
+        "caughtAt": {
+          "mapId": "map_variety_cavern",
+          "x": 21,
+          "y": 11
+        },
+        "currentHp": 11,
+        "stateIds": [
+          "state_isaiah_paralysis"
+        ],
+        "stateTurns": {},
+        "skillIds": [
+          "skill_isaiah_bite",
+          "skill_isaiah_gust"
+        ],
+        "skillPp": {
+          "skill_isaiah_bite": 25,
+          "skill_isaiah_gust": 35
+        }
+      }
+    }
+  ],
+  "checkpointMatches": true,
+  "walkedSteps": 98,
+  "walkedPortals": [
+    {
+      "from": "map_variety_lab",
+      "event": "sr_map_variety_lab_0",
+      "to": "map_variety_ridge"
+    },
+    {
+      "from": "map_variety_ridge",
+      "event": "sr_map_variety_ridge_2",
+      "to": "map_saesol_route"
+    },
+    {
+      "from": "map_saesol_route",
+      "event": "sr_map_saesol_route_2",
+      "to": "map_variety_cavern"
+    }
+  ],
+  "healedAtMother": true,
+  "approach": {
+    "mapId": "map_variety_cavern",
+    "x": 21,
+    "y": 11,
+    "direction": "left"
+  },
+  "weakenedWithActualChickadee": true,
+  "throws": 1,
+  "passed": true,
+  "automaticSeconds": 38.612
+}
