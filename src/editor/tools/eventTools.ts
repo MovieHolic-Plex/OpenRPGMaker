@@ -400,6 +400,54 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
   }
 }
 
+/** 조건이 이 아이템을 「가지고 있다」로 보장하는가(all 안의 한 갈래까지). */
+function conditionHoldsItem(condition: Condition | undefined, itemId: string): boolean {
+  if (!condition) return false;
+  if (condition.kind === "item") return condition.itemId === itemId && condition.present !== false;
+  if (condition.kind === "all") return condition.conditions.some((child) => conditionHoldsItem(child, itemId));
+  return false;
+}
+
+/**
+ * 선택지 분기 안에서 아이템을 1개 이상 빼는데, 그 아이템을 가졌는지 보는 조건이 없다 — 없는 선물을 건네도
+ * 뒤따르는 호감·보상이 그대로 붙는다(changeItem 은 0개에서 조용히 멈춘다).
+ * 2026-09-24 연애 도그푸딩: 공략 인물 셋의 「선물을 건넨다」 9갈래가 전부 이 모양이라 잡화점에 가지 않고도 +3 을 받았다.
+ * 거부하지 않는다(분위기용 선택지도 있다) — 소지 조건 fork 나 presentItem 을 알려 준다.
+ */
+function unguardedItemSpendWarnings(event: GameEvent): string[] {
+  const unguarded = new Set<string>();
+  const walk = (commands: readonly Command[] | undefined, held: readonly Condition[], inChoice: boolean): void => {
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "changeItem" && inChoice && (command.op === "-=" || (typeof command.amount === "number" && command.amount < 0))
+        && typeof command.itemId === "string" && !held.some((condition) => conditionHoldsItem(condition, command.itemId))) {
+        unguarded.add(command.itemId);
+      }
+      if (command.kind === "choices") {
+        for (const option of command.options ?? []) walk(option?.branch, held, true);
+        walk(command.cancelBranch, held, true);
+      } else if (command.kind === "fork") {
+        walk(command.then, [...held, command.condition], inChoice);
+        walk(command.else, held, inChoice);
+      } else if (command.kind !== "presentItem") {
+        let nested: readonly (readonly Command[])[] = [];
+        try { nested = nestedCommandLists(command); } catch { nested = []; }
+        for (const list of nested) walk(list, held, inChoice);
+      }
+    }
+  };
+  walk(event.commands, [], false);
+  for (const page of event.pages ?? []) {
+    walk(page.commands, page.conditions ?? [], false);
+  }
+  if (unguarded.size === 0) return [];
+  return [
+    `이벤트 '${event.id}': 선택지가 아이템 ${[...unguarded].join(", ")} 을(를) 빼는데 소지 여부를 보지 않습니다 — 가진 게 없어도 그 분기의 호감·보상이 그대로 붙습니다. `
+    + `선물·제출은 presentItem({kind:"presentItem",itemIds:[…],options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume:true} — 가진 것만 목록에 뜬다)으로 쓰거나, `
+    + `분기를 fork{condition:{kind:"item",itemId,present:true},then:[…],else:[…]} 로 감싸세요.`,
+  ];
+}
+
 /**
  * 모든 선택지의 분기가 비어 있는 choices 명령 — 무엇을 골라도 아무 일도 없다.
  *
@@ -473,6 +521,7 @@ function assertEventShape(event: GameEvent, warnings?: string[], supplied: Parti
     }
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
     for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
+    for (const warning of unguardedItemSpendWarnings(event)) warnings?.push(warning);
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -689,7 +738,7 @@ function routeRootCommandsIntoPage(
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.`,
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기·선물 건네기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.`,
   mode: "write",
   parameters: {
     type: "object",
