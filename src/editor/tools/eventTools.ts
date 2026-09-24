@@ -19,7 +19,7 @@ import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
-import type { Command, Condition, Dir, EventPage, EventPageCondition, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
   compileCutscene,
   CutsceneValidationError,
@@ -269,6 +269,40 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supp
  */
 const TILE_HOTSPOT_EVENTS = new WeakSet<GameEvent>();
 
+/**
+ * upsert_event 가 기존 이벤트의 pages 를 통째로 바꿀 때, 바뀌기 전 그 이벤트의 그림.
+ * 새 페이지에 graphic 이 없으면 기본 주민이 아니라 이 그림을 이어 쓴다 — 2026-09-24 연애 도그푸딩:
+ * place_npc 로 「girl」「woman」「boy」 를 따로 입힌 공략 인물 셋이 대사를 고치는 upsert_event 한 번씩에
+ * 전부 같은 기본 주민(people1 #25)이 됐다.
+ */
+const PREVIOUS_EVENT_LOOK = new WeakMap<GameEvent, EventPageGraphic>();
+
+const GENERIC_NPC_NAME = /주민|마을 ?사람|행인|손님|병사|경비|상인|점원|아이|villager|guard|merchant|citizen/iu;
+
+/**
+ * 다른 맵에 같은 이름으로 이미 선 인물의 외형. 한 인물이 맵마다 다른 사람처럼 보이면 안 된다 —
+ * 2026-09-24 연애 도그푸딩: 축제 광장에 다시 세운 공략 인물 셋이 query 가 달라 평소와 다른 얼굴이 됐다.
+ * 일반 역할 이름(주민·상인·경비 …)은 여러 사람이므로 건너뛴다.
+ */
+function recurringCharacterLook(project: Project, mapId: string, name: string): { mapId: string; graphic: EventPageGraphic } | undefined {
+  const trimmed = name.trim();
+  if (trimmed.length < 2 || GENERIC_NPC_NAME.test(trimmed)) return undefined;
+  for (const map of Object.values(project.maps)) {
+    if (map.id === mapId) continue;
+    for (const event of map.events) {
+      if (event.name?.trim() !== trimmed) continue;
+      const graphic = eventLook(event);
+      if (graphic) return { mapId: map.id, graphic };
+    }
+  }
+  return undefined;
+}
+
+function eventLook(event: GameEvent | undefined): EventPageGraphic | undefined {
+  const graphic = event?.pages?.find((page) => page.graphic?.sprite !== undefined && page.graphic.transparent !== true)?.graphic;
+  return graphic ? structuredClone(graphic) : undefined;
+}
+
 function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
   if (page.trigger?.kind !== "action" || page.priority === "below") return false;
   if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
@@ -309,10 +343,13 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     const siblingGraphic = event.pages?.find(
       (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
     )?.graphic;
-    page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : resolveGraphicQuery("villager");
+    const previousLook = siblingGraphic ? undefined : PREVIOUS_EVENT_LOOK.get(event);
+    page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
     warnings?.push(
       siblingGraphic
         ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
+        : previousLook
+        ? `${event.id}.${pageId}: 새 페이지에 graphic 이 없어 이 이벤트가 쓰던 charset 을 그대로 이어 썼습니다(외형 유지).`
         : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
           `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
           `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
@@ -721,6 +758,8 @@ const upsertEvent: ToolDefinition = {
       ? (existing.pages ?? []).some((page) => page.trigger?.kind === "action") && !(existing.pages ?? []).some((page) => page.graphic?.sprite !== undefined)
       : inMapBounds(map, event.x, event.y) && !isPassable(draft, map, event.x, event.y);
     if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
+    const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
+    if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
     assertEventShape(event, warnings, existing ? patch : event);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
@@ -863,7 +902,9 @@ const placeNpc: ToolDefinition = {
     // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 타일 그림판 몰림을 줄인다.
     const normalizationWarnings: string[] = [];
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
-    const graphic = resolveGraphic(graphicSpec, {
+    const recurring = "query" in graphicSpec ? recurringCharacterLook(draft, map.id, name) : undefined;
+    if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${graphicSpec.query}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
+    const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
