@@ -1,0 +1,42 @@
+{
+  "scope": "Read-only548 project copy using actual survey-complete checkpoint; real healer visits, Scallapod switch, PP-aware attacks and owned potions. Two trainer victories and repeated dialogue no reward. New runtime RNG; not uninterrupted or3-hour proof.",
+  "steps": [
+    {
+      "id": "ev_sr4_pass_trainer1",
+      "flag": "sw_sr4_trainer1_won",
+      "won": true
+    },
+    {
+      "id": "ev_sr4_pass_trainer2",
+      "flag": "sw_sr4_trainer2_won",
+      "won": true
+    }
+  ],
+  "checkpointMatches": true,
+  "matchesActualSurvey": true,
+  "walkedSteps": 127,
+  "heals": [
+    {
+      "id": "monster_6",
+      "hp": 31,
+      "max": 66
+    },
+    {
+      "id": "monster_6",
+      "hp": 29,
+      "max": 66
+    },
+    {
+      "id": "monster_6",
+      "hp": 35,
+      "max": 66
+    },
+    {
+      "id": "monster_6",
+      "hp": 34,
+      "max": 68
+    }
+  ],
+  "passed": true,
+  "pageErrors": []
+}
