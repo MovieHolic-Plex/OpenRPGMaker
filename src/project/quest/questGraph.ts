@@ -381,7 +381,7 @@ function appendPlayableSiteSteps(
     return true;
   }
   if (isBattleGatedWrite(project, site)) {
-    appendManualSetSteps(state, conditions, `manualHint: ${site.label} 앞에 전투 승리가 필요해 디버그 set으로 대체합니다.`);
+    appendManualSetSteps(state, conditions, `manualHint: ${site.label} 전투 결과가 필요해 디버그 set으로 대체합니다.`);
     return true;
   }
   const map = project.maps[site.mapId];
@@ -559,6 +559,7 @@ function questGraphStructureWarnings(quest: QuestGraphDef): QuestLintIssue[] {
 }
 
 function isBattleGatedWrite(project: Project, site: StoryFlagUsageSite): boolean {
+  if (/\.(?:victoryBranch|defeatBranch|escapeBranch)\[/u.test(site.commandPath ?? "")) return true;
   const context = rootCommandContextForSite(project, site);
   if (!context) return false;
   return context.commands.slice(0, context.rootIndex).some(commandContainsBattle);
@@ -606,7 +607,7 @@ function rootCommandIndex(path: string): number | null {
 }
 
 function commandAtNestedPath(root: Command, path: string): Command | null {
-  const tokens = [...path.matchAll(/\.(then|else|body|cancelBranch|successBranch|failureBranch)\[(\d+)\]|\.(options)\[(\d+)\]\.branch\[(\d+)\]/gu)];
+  const tokens = [...path.matchAll(/\.(then|else|body|cancelBranch|successBranch|failureBranch|victoryBranch|defeatBranch|escapeBranch)\[(\d+)\]|\.(options)\[(\d+)\]\.branch\[(\d+)\]/gu)];
   let current: Command = root;
   for (const token of tokens) {
     if (token[1]) {
@@ -627,6 +628,11 @@ function commandAtNestedPath(root: Command, path: string): Command | null {
 }
 
 function commandBranch(command: Command, branch: string): readonly Command[] | undefined {
+  if (command.kind === "battleProcessing") {
+    if (branch === "victoryBranch") return command.victoryBranch;
+    if (branch === "defeatBranch") return command.defeatBranch;
+    if (branch === "escapeBranch") return command.escapeBranch;
+  }
   if (command.kind === "fork" && branch === "then") return command.then;
   if (command.kind === "fork" && branch === "else") return command.else;
   if (command.kind === "loop" && branch === "body") return command.body;

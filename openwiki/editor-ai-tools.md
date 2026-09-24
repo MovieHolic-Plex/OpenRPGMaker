@@ -2055,3 +2055,13 @@ Pi worker 모두 로드한다. `read_region_reference`의 목록/페이지 조�
 ## Isaiah 물 태그 판정 보완 (2026-09-24)
 
 기존 타일셋별 물 판정을 유지하며 `tileMeta.tags`의 정확한 `water`도 읽는다. Isaiah 공용 자료는 role 대신 tags를 쓰므로 이 경로가 필요하다. 기본 합본 마을 호환 그림의 숫자 판정과 category/role/팔레트/그룹 판정은 보존한다. 별도9897 구버전 워커에서 잔디0번을 물38칸으로 보고한 재현 및 갱신 여부는 `docs/qa/saesol-three-hour-ai-authoring.md`에 기록했다.
+
+## 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+
+`storyFlagUsage.scanCommand`는 battleProcessing의 victoryBranch/defeatBranch/escapeBranch도
+재귀 순회해 읽기·쓰기 위치를 기록한다. 이 분기를 빠뜨리면 실제 전투 승리로 설정되는 플래그가
+「write site 없음」으로 오인되어 define_quest의 초안 커밋이 거부되고, AI가 정상 전투 이벤트를
+불필요하게 수정하려 한다. 기존 이벤트를 평탄화해 이 검사 오류에 맞추지 않는다.
+`questGraph.commandAtNestedPath`도 같은 세 경로를 해석한다. 전투 결과 분기 안의 위치는
+`isBattleGatedWrite`가 수동 검증으로 분류한다. write site 발견은 실제 승리·탈출·패배 증거가 아니다.
+정본532 사례와 수정 전후 위치 비교는 `docs/qa/saesol-three-hour-ai-authoring.md` 요청64 이후 기록 참조.
