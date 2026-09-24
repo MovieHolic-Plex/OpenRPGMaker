@@ -473,3 +473,13 @@ Existing `actorRows` and `partyActorIds` save/load paths remain authoritative. O
 Feature16 integration removed fabricated comparison numbers and cart/checkout claims,
 stock urgency text and the redundant split heading. Story-mode shortcuts honor
 buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authoritative.
+
+## 퀘스트 일지의 긴 문장과 키보드 읽기 (2026-09-24)
+
+`questsDetail`의 요약·상태·단계 행은 `data-quest-row`로 표시한다. 런타임
+`statusMenuEdgeDock.css`에서 해당 행만 한 열로 배치하여 긴 제목과 설명의 겹침을 막는다.
+일지에는 실행 버튼이 없으므로 `moveSelectedDetailAction`은 quests에 한해 ↑↓ 입력을
+목록 높이의60% 스크롤로 처리한다. 기존 선택 가능한 행의 커서/실행 동작은 유지한다.
+사건 등록은 기존 상태를 읽는 `define_quest` 그래프 메타를 사용하며, 단순 일지 연결을 위해
+`create_quest`로 기존 이벤트를 재컴파일하지 않는다. 검증 기록은
+`docs/qa/saesol-three-hour-ai-authoring.md`의 요청61 절을 참조한다.

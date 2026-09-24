@@ -407,3 +407,16 @@
 .oprn-status-menu .has-item-facts .status-menu-showcase-description { display: none; }
 .oprn-status-menu .status-menu-detail-value { max-width: 100%; }
 .oprn-status-menu [data-testid="status-menu-owned-equipment-worn"] .status-menu-detail-value { justify-self: stretch; text-align: left; }
+
+/* Quest prose needs the whole row; max-content values otherwise squeeze titles. */
+.oprn-status-menu .status-menu-detail-row[data-quest-row] {
+  grid-template-columns: minmax(0, 1fr);
+}
+.oprn-status-menu [data-quest-row] .status-menu-detail-label,
+.oprn-status-menu [data-quest-row] .status-menu-detail-value {
+  grid-column: 1;
+  justify-self: stretch;
+  text-align: left;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

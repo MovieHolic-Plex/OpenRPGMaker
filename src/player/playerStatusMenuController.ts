@@ -682,7 +682,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function moveSelectedDetailAction(delta: -1 | 1): boolean {
     const actions = detailActionButtons();
-    if (mode !== "function" || actions.length === 0) return false;
+    if (mode !== "function") return false;
+    if (actions.length === 0) {
+      if (selectedCommand !== "quests") return false;
+      const list = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
+      if (!list) return false;
+      list.scrollTop += delta * Math.max(24, list.clientHeight * 0.6);
+      return true;
+    }
     setDetailCursor(wrapStatusMenuIndex(selectedDetailActionIndex + delta, actions.length));
     syncRenderedDetailCursor();
     const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");

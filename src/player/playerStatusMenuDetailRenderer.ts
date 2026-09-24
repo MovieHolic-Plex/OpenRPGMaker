@@ -190,10 +190,7 @@ function renderDetailEntry(options: {
     : el("div", {
         class: rowClasses,
         attrs: informationalList ? { role: "listitem" } : undefined,
-        dataset: {
-          ...(entry.testId ? { testid: entry.testId } : {}),
-          ...(entry.unavailableReason ? { unavailableReason: entry.unavailableReason } : {}),
-        },
+        dataset: detailEntryDataset(entry, undefined),
       });
   if (selected) row.classList.add("selected");
   if (entry.vitals) {
