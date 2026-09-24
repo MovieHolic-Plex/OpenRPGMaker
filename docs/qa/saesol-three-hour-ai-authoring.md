@@ -1388,3 +1388,16 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 읽기 전용 `chromium-boot-save-proof.json`에서 정본522(sha256 `aaa4e00d41c6192292a8adbd9c4d93c6ccd7965e8a8694de66441e985f2fc224`)의20맵163이벤트 및 맵/DB/세션이517과 동일함을 확인했다. 초기 공용 자료 동기화와 게임 저작 변경을 구분한다.
 - 이후 관찰 세션33845가 `page.waitForTimeout: Page crashed`로 exit1 종료했다. 커널09:56:13Z의 chrome-headless trap int3도 확인했다. 호스트 전체 메모리는 여유가 있었지만 이것으로 렌더러 메모리 원인을 배제할 수 없다. 원인은 아직 미확정이다.
 - 적용모드 선택 action은 소비되지 않았고 NPC 수정 요청도 전송되지 않았다. 미소비 action을 별도 보존한 뒤에만 진단 창41을 시작했다. 살아 있는 작업을 timeout만으로 재시작한 것이 아니다. 다음 창은 브라우저 stderr를 기록해 실제 충돌 원인을 수집한다.
+
+### 요청42 — 명령 스키마 재시도와 V8 메모리 고갈 확인
+
+- 진단창41은 일시 응답 지연 뒤 회복해 실제 AI 요청42를 수행했다. 계획 단계에서 지역/인물/타일/통행을 읽고 시공 단계로 전환했다. 따라서 앞선 body 조회 timeout만으로 작업 종료라고 판단하면 안 된다.
+- 관리관 upsert_event에서 `ev_sr3_medicine_officer_p3.commands[1].condition가 객체가 아닙니다`가 발생했다. AI 재시도는 도구 형식 검사를 통과했지만, 최종 초안 검토·적용·저장은 하지 못했다. 원문: `request42-command-schema-error.txt`.
+- `author41-resource-samples.jsonl`10:03:23Z 렌더러 RSS3,732,428kB/최고4,960,564kB. 같은 창 로그10:04:41Z에는 약2823MB old-space GC 후 `V8 javascript OOM (CALL_AND_RETRY_LAST)`가 명시됐고 관찰 세션46666은 exit1로 종료했다. 이번 페이지 충돌의 직접 실패 유형은 메모리 고갈로 확인됐다. 어떤 객체/경로가 원인인지는 아직 미확정이다.
+- 최신 main의 NDJSON decoder에는 이미 조각 배열 누적 개선이 있다. 이전 워크트리 코드를 보고 동일 수정을 중복 적용하지 않는다. 종료 확인 뒤 새 진단창에서 HeapProfiler 할당 표본을 수집하며, 새 게임 저작 완료로 세지 않는다.
+
+### 배포된 디코더와 main 소스 불일치 발견·반영
+
+- 실제 main-TUoQXSlX.js가 import하는 `editor-B5eBKAIT.js`의 vv 함수는 `buffer += chunk` 후 전체 `indexOf`를 반복하는 구버전이었다. main의 bd31fe087에는 새 조각만 검색하고 배열로 모아 한 줄 완성 시 join하는 개선이 이미 있다. 소스만 확인하고 배포도 개선됐다고 가정하면 안 된다.
+- 기존 파일을 보존하고 디코더 함수만 동등한 조각 누적 구현으로 교체한 versioned editor/main을 만들었다. index.html을 새 main으로 연결했고 실제9897 HTTP응답에서 `main-TUoQXSlX-linear.js` 참조를 확인했다. 배포 근거/기존 함수/새 함수/SHA는 `linear-decoder-deployment.json`. 호스트/정본은 재시작·수정하지 않았다.
+- 이는 확인된 구버전 경로의 배포 수정이다. OOM의 모든 원인이 해결됐다는 증거는 아니며 실제 AI 최종 초안 수신·검토·저장·재로드를 다시 확인해야 한다. 진단창44가 할당 표본을 기록하며 실행 중이다.
