@@ -42,7 +42,7 @@ export function createCompanionMiddleware(options = {}) {
     if (req.method === "OPTIONS") {
       res.statusCode = 204;
       res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Oprn-Provider, X-Oprn-Companion-Token");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Content-Encoding, X-Oprn-Provider, X-Oprn-Companion-Token");
       res.end();
       return;
     }

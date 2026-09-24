@@ -6,6 +6,7 @@ import type { Project } from "@/project/types";
 import { companionAuthUrl } from "@/ai/chatgptOAuthClient";
 import { companionTokenHeaders } from "@/ai/companionToken";
 import { createPiAgentLineDecoder, PI_AGENT_STALE_MS, restoreCheckpointProject, slimCheckpointProject, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "./protocol";
+import { piRequestBody } from "./requestBody";
 
 export interface RunPiAgentClientOptions {
   readonly onCheckpoint?: (event: Extract<PiAgentEvent, { type: "checkpoint" }>) => Promise<Project | void>;
@@ -26,10 +27,11 @@ export class PiAgentClientError extends Error {
 export async function runPiAgentViaCompanion(request: PiAgentRequest, options: RunPiAgentClientOptions = {}): Promise<PiAgentDoneEvent> {
   const captureEpoch = inspectionEpoch();
   const doFetch = options.fetchImpl ?? fetch;
+  const wire = await piRequestBody(request, options.signal);
   const response = await doFetch(companionAuthUrl("/v1/agent/run", request.provider), {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
-    body: JSON.stringify(request),
+    ...wire,
+    headers: { ...wire.headers, ...companionTokenHeaders() },
     ...(options.signal ? { signal: options.signal } : {}),
   });
   if (!response.ok) {
@@ -108,9 +110,11 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
         const ackProject = project && event.unchangedKeys?.length
           ? slimCheckpointProject(project, event.unchangedKeys)
           : project;
+        const ackWire = await piRequestBody({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project: ackProject }, options.signal);
         const ack = await doFetch(companionAuthUrl("/v1/agent/checkpoint", request.provider), {
-          method: "POST", headers: { "Content-Type": "application/json", ...companionTokenHeaders() },
-          body: JSON.stringify({ checkpointId: event.checkpointId, ok: issue === undefined, issue, project: ackProject }),
+          method: "POST",
+          ...ackWire,
+          headers: { ...ackWire.headers, ...companionTokenHeaders() },
           ...(options.signal ? { signal: options.signal } : {}),
         });
         if (!ack.ok) throw new PiAgentClientError(stale ? "적용 응답을 전달하지 못했습니다 — 워커 연결이 먼저 끊겼습니다." : "적용 응답을 전달하지 못했습니다.", ack.status);
