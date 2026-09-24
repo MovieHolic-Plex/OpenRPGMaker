@@ -1451,5 +1451,14 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 
 - 실제 AI 검토 초안6이벤트를 UI로 적용했다. 정본526 재오픈 반복읽기 일치,20맵168이벤트,미디어80개 해시 확인. `player-snapshot-restoration-polished-proof.json`,sha256 `78f1e59ff6f9eaa0f5c496590c57cac4a5d01b5648e73db9dc92a4ea5f62b7aa`. projectDir/projectId는525와 동일하다.
 - 배달원 두 페이지 모두charset04/down/pattern1. DB·세션·맵의 이벤트 외 필드 동일,모든 NPC 좌표 동일. 새5명은 대사 body/speaker 외 명령 및 페이지 조건 동일하다.
-- 그러나 수현의 기존 pages[0]이 변경됐다. started를 먼저 보던 fork가clue1 우선으로 재편됐고 복수단서 조합 안내가 생략됐다. 명시적으로 첫 페이지 보존을 지시했으나 AI가 어겼다. `restoration-polished-scope.json`의rangerFirstPageExact=false/pageCommandsPreserved=false가 근거다. 초안 UI는 페이지 단위 요약만 보여 이 세부 변경을 발견하기 어려웠다. 원본 첫 페이지 JSON을 제공하는 요청55로 복구한다.
+- 그러나 수현의 기존 pages[0]이 변경됐다. started를 먼저 보던 fork가clue1 우선으로 재편됐다. 최초 구조 diff만 보고 복수단서 안내가 생략됐다고 판단했으나 아래 조건별 비교로 그 판단을 정정한다. 명시적으로 첫 페이지 보존을 지시했으나 AI가 어겼다. `restoration-polished-scope.json`의rangerFirstPageExact=false/pageCommandsPreserved=false가 근거다. 초안 UI는 페이지 단위 요약만 보여 이 세부 변경을 발견하기 어려웠다. 원본 첫 페이지 JSON을 제공하는 요청55로 복구한다.
 - 11:12:50Z 저장 후V8 OOM 재발.「적용 완료」와「아직 적용하지 않았으니」안내 동시표시도 남았다. 브라우저가 종료된 것을 확인한 뒤 새 관찰 창에서 복구 요청을 준비했다.
+
+### 요청55 복구 및526 조건별 비교의 범위
+
+- `ranger526-hint-regression.json`: switch fork를 읽기 전용으로 펼쳐 started/clue1/clue2/clue3의16조합을 비교했다. choices는 실행하지 않고 명령으로 보존한다. started=true의8조합은 모두 원본과 동일했다. 차이는 started=false인데 단서가true인7조합뿐이다. 따라서 정상 진행 힌트 누락을 확정한 초기 구조 diff 해석은 잘못이었다. 원본 보존 지시 위반은 맞지만 정상 플레이 진행 파손의 증거는 아니다.
+- 요청55에 원본 pages[0] JSON을 제공했고 실제 AI가1이벤트 수정 초안을 반환했다. UI 요약에는 루트 priority/movement 기본값도 추가됐으므로 재로드에서 페이지 정확 일치와 기타 변경 범위를 다시 확인한다.
+- 배달원526 전용 플레이어 화면에서유색charset04를 직접 확인했다. 인접 시작 사본이며 도보 증거가 아니다. 페이지 오류0,프로세스exit0. 보고서64장/6,853,487bytes에 배달원 및 통제 패배 화면을 포함했다. 회복소 빈 가구와2번길 단조로운 지형은 미술 개선 대상으로 남는다.
+
+- 복구 저장527 재오픈·반복읽기 일치: `player-snapshot-ecology-repaired-proof.json`,20맵168이벤트,미디어80개,sha256 `6529e35372cef33bf6bfff5a68abd98d3b8abffb1ba7d08f2756e52dda8ede80`. projectDir `/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red`,projectId `6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a`.
+- `ecology-repaired-scope.json`: 원본525의 수현 pages[0]과 정확 일치,수정526의 pages[1]과 정확 일치. 변경 이벤트는 수현 하나이며DB/세션 동일. 이벤트 루트에movement/priority 기본값이 추가됐지만 실제 두 페이지 값은 보존됐다. UI의 저장 응답 대기 문구보다 정본 재로드를 근거로 저장을 확정했다. 전체3시간 분량/완주 및 전반적인 메모리 오류 해결은 여전히 미완료다.
