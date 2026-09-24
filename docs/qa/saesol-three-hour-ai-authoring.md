@@ -1038,3 +1038,11 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - `ecology-researcher-player/SUMMARY.md`: passed=true,77칸/포털3회,declineUnchanged/acceptedOnlyNewFlag/repeatUnchanged=true,pageErrors0. 실제 첫 배지 체크포인트로 걸어가 거절 무변화→수락 시 started만 변경→수현 보고 안내와 재대화 무보상을 확인했다. `reminder.png`를 직접 확인했다.
 - 두 번째 중간 QA는 타이핑 중인 문자열을350ms만에 비교해서 실패했다. `ecology-researcher-typing-assertion/`을 보존하고 대사에 수현까지 실제 출력되는 것을 기다린 후 재검사했다. 최종 통과 결과로 실패 기록을 덮어쓰지 않았다.
 - 이번 검사에는 미자격 차단/조사 완료 페이지/세 관찰점/180분 분량은 포함되지 않는다. 화면의 기사 배우는 기존 진행 체크포인트가 가진 partyActorIds에서 왔으며, 정본 새 게임의 트레이너 수정 결과와 구분한다.
+
+
+### 첫 관찰점 부분 저장과 실제 오답·정답·재조사 통과
+
+- 요청21d2는 첫 관찰점 저장 후 heartbeat30초 실패로 종료됐다. `request21d2-heartbeat-failure.txt`를 보존했다. SQLite488 재오픈·반복 읽기 일치·미디어80개 해시 확인, 새 발자국 관찰점은 숲(7,18),3페이지다.487→488 숲의 변경은 events뿐이다.
+- `ecology-clue1-player/SUMMARY.md`: passed=true,38칸/포털1회,wrongPreserved/correctOnlyClueFlag/repeatUnchanged=true,pageErrors0. 실제 의뢰 수락 상태로 걸어가 바람 오답 무변화→채집자 정답으로 clue1_done만 기록→재조사 무보상을 확인했다. `clue-recorded.png`를 직접 확인했다.
+- 관찰점은 투명/same priority 이벤트이며 타일 표식은 아직 없다. 동작 통과와 별개로 발견하기 어렵다. 표시 가능한 소품/표지 보강이 필요하며 지금 화면을 완성된 탐색 지점이라고 하지 않는다. 기존 숲 안내 표지도 이름과 달리06 사람 칩을 쓰는 기존 저작 불일치가 확인됐다.
+- 에디터 AI에 요청21d3으로 깃털 지점 하나만 이어 작성하도록 제출했고 이벤트 쓰기 단계에 들어간 것을 확인했다. 이미 저장된 발자국 지점/기존 소포/출입구 보존을 명시했다.
