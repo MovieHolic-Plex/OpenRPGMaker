@@ -1368,3 +1368,9 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - Firefox 새 창에서도 자동 저장 실패가 나타났다. `firefox-save-error-log.json`의09:33:41/09:34:18 오류는 `oprn:project.saveMapPatch: 400 {"error":"request exceeds 134217728 bytes"}`다. 브라우저 종류만으로 해결되지 않았다. 요청37의 전송 클릭은 timeout이었으나 이후 같은 창에서 실제 AI 도구 응답/통행 검사를 확인했으므로 중복 전송하지 않았다.
 - 정본518의 current_json은109,071,102자이며 큰 절은tilesets91,572,770자/assets16,223,226자였다(`save-size518.json`). 타일셋305개,517 대비 공용Pixel Art World 타일셋 다수가 추가됐다. 새 게임맵 저작 때문이라고 단정하지 않는다. 배포 main-TUoQXSlX.js는 이미 patch+baseSha와 stale-base시 baseSerialized fallback을 사용하므로 과거 전체문서2개를 항상 보내던 구버전과 구분한다.
 - 호스트 정본/현재 브라우저 간 전체 문서 fallback을 포함한 실제 요청 크기와 공용 카탈로그 동기화 관계는 추가 진단 대상이다. 크기 제한을 임의로 제거하거나 공유 자료를 삭제하지 않았다. 현재 요청37은 미적용 작업 중이며, 그 초안을 저장 완료로 보고하지 않는다.
+
+### SAVE051 전송 수정 — gzip 브리지
+
+- PR1400(main병합3dd09c447)는 큰 브리지 요청을1MiB부터 gzip 전송하고 서버에서 비동기 gunzip으로 복원한다. wire128MiB/decoded256MiB 제한,손상/미지원 인코딩 거절,기존 인증/세션/충돌 경로를 유지한다. 작은 요청/keepalive/CompressionStream 미지원은 기존 JSON이다.
+- `check-bridge-gzip.mjs`는 정본을 읽기만 하며 별도 루프백 HTTP에서 실제 기준문서+자산패치141,499,825bytes를57,205,286bytes로 보내 전체 객체 일치를 확인했다. wire/decoded초과,손상/절단gzip,미지원 인코딩5건과 작은요청/keepalive/미지원브라우저fallback을 검사했다. 전체 테스트는 실행하지 않았다.
+- 요청37이 `Error in input stream`으로 실제 종료하고 미적용/변경없음 화면을 보존한 뒤9897 전용호스트에 수정된 브리지/decoder를 배포했다. 호스트1357042로 재기동했고 새 편집창ee36을 열었다. 전송 진단 통과와 실제 콘텐츠 저장 성공은 구분하며 정본 재로드 검사는 후속 확인 대상이다.
