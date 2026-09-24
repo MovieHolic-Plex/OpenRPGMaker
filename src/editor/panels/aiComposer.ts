@@ -431,7 +431,7 @@ export function createComposerElements(options: ComposerOptions): ComposerElemen
       type: "button",
       "aria-pressed": "false",
       "aria-label": "바로 깔기",
-      title: "켜면 선택 영역에 바로 깐다. 의도 분류·계획·실행 턴을 거치지 않는다.",
+      title: "켜면 문장으로 도구를 고른 뒤 바로 깐다. 모델 턴은 없다.",
     },
     dataset: { testid: "ai-stamp-place" },
     on: { click: () => {
