@@ -144,6 +144,42 @@ function canonicalizeBattleCommand(command: RecordValue): string | undefined {
   return fixes.length > 0 ? fixes.join(" ") : undefined;
 }
 
+// 조건 분기를 페이지 조건처럼 `conditions:[…]` 로 쓴 사례(2026-09-24 연애 도그푸딩:
+// `{kind:"fork",conditions:[{kind:"variable",variableId:"var_day",op:">=",value:6}],then:[…]}`) —
+// 「condition가 객체가 아닙니다」로 이벤트 전체가 거부됐다. 조건 하나면 그대로, 여럿이면 all 로 묶는다.
+const FORK_THEN_ALIASES = ["thenBranch", "branch", "ifTrue", "commands"] as const;
+const FORK_ELSE_ALIASES = ["elseBranch", "otherwise", "ifFalse"] as const;
+
+function isRecordValue(value: unknown): value is RecordValue {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function moveSingleAlias(command: RecordValue, target: "then" | "else", aliases: readonly string[]): string | undefined {
+  if (Array.isArray(command[target])) return undefined;
+  const present = aliases.filter(key => Array.isArray(command[key]));
+  if (present.length !== 1) return undefined;
+  command[target] = command[present[0]!];
+  delete command[present[0]!];
+  return `fork.${present[0]} 를 ${target} 로 옮겼습니다.`;
+}
+
+function canonicalizeForkCommand(command: RecordValue): string | undefined {
+  const fixes: string[] = [];
+  if (!isRecordValue(command.condition) && Array.isArray(command.conditions)) {
+    const conditions = command.conditions.filter(isRecordValue);
+    if (conditions.length > 0 && conditions.length === command.conditions.length) {
+      command.condition = conditions.length === 1 ? conditions[0] : { kind: "all", conditions };
+      delete command.conditions;
+      fixes.push(`fork.conditions(배열 ${conditions.length}개)를 condition${conditions.length > 1 ? `:{kind:"all"}` : ""} 로 옮겼습니다(조건 분기는 condition 객체 하나).`);
+    }
+  }
+  const thenFix = moveSingleAlias(command, "then", FORK_THEN_ALIASES);
+  if (thenFix) fixes.push(thenFix);
+  const elseFix = moveSingleAlias(command, "else", FORK_ELSE_ALIASES);
+  if (elseFix) fixes.push(elseFix);
+  return fixes.length > 0 ? fixes.join(" ") : undefined;
+}
+
 function joinFixes(...fixes: (string | undefined)[]): string | undefined {
   const present = fixes.filter((fix): fix is string => Boolean(fix));
   return present.length > 0 ? present.join(" ") : undefined;
@@ -167,6 +203,7 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
   }
   if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
+  if (command.kind === "fork") return canonicalizeForkCommand(command);
   if (command.kind === "text" && typeof command.body !== "string") {
     // 대사 본문을 `text` 로 쓴 사례(2026-09-24 갤러리 호러: `{kind:"text",text:"엄마: …"}` 가 한 이벤트에 여섯 줄)
     // — 「대사는 string body가 필요합니다」로 upsert_event 4건이 통째로 반려됐다. 문장 명령의 본문 칸은 body 하나라
