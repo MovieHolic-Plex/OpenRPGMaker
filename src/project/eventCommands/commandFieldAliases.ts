@@ -225,6 +225,17 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     delete command.amount;
     return "setVariable.amount 를 value 로 옮겼습니다(변수 명령의 값 칸은 value).";
   }
+  if (command.kind === "inputNumber" && typeof command.digits !== "number") {
+    // 숫자 입력 자릿수를 amount·length 로 쓴 사례(2026-09-24 추격 호러 r5: `{kind:"inputNumber",variableId,amount:4}`)
+    // — 「digits가 숫자가 아닙니다」로 금고 이벤트가 거부됐고, 모델은 정답을 적은 선택지로 물러났다.
+    const alias = (["amount", "length", "maxDigits", "digitCount", "size"] as const).find(key => typeof command[key] === "number");
+    if (alias) {
+      command.digits = Math.max(1, Math.min(6, Math.trunc(command[alias] as number)));
+      delete command[alias];
+      return `inputNumber.${alias} 를 digits(자릿수) 로 옮겼습니다.`;
+    }
+    return undefined;
+  }
   if (command.kind === "text" && typeof command.body !== "string") {
     // 대사 본문을 `text` 로 쓴 사례(2026-09-24 갤러리 호러: `{kind:"text",text:"엄마: …"}` 가 한 이벤트에 여섯 줄)
     // — 「대사는 string body가 필요합니다」로 upsert_event 4건이 통째로 반려됐다. 문장 명령의 본문 칸은 body 하나라
