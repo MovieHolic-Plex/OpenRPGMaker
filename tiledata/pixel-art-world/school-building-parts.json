@@ -721,6 +721,243 @@
         }
       ],
       "notes": "Native 3-cell wide open-stall frame (columns 2..4, rows12..16). Repeat the front middle-junction tiles from column0 for two adjacent stalls. Empty rear cells hold toilets. Front center tiles115/123/131 are the overhead lintel/open doorway and allow passage. Place top at room row2; feet on floor row6. Five rows only: row17 belongs to the NEXT closed-door variant and must never be appended."
+    },
+    {
+      "id": "stairs-up-compact",
+      "name": "학교 상행계단 · 원본3행 최소형",
+      "width": 3,
+      "height": 3,
+      "tiles": [
+        [
+          112,
+          -1,
+          114
+        ],
+        [
+          120,
+          121,
+          122
+        ],
+        [
+          128,
+          129,
+          130
+        ]
+      ],
+      "role": "stairs",
+      "placementKind": "standing",
+      "layer": "upper",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 1,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 2
+        }
+      ],
+      "passableCells": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 2
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 1,
+          "y": 3
+        }
+      ],
+      "transferCell": {
+        "x": 1,
+        "y": 0
+      },
+      "notes": "Original whole rows14,15,16 exactly once. Four-row example repeats middle row; compact version preserves every original source row without repetition. Center transparent113 keeps floor6. Corridor starts after full bottom rail row.",
+      "sourceRects": [
+        {
+          "tile": 112,
+          "x": 0,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 114,
+          "x": 2,
+          "y": 14,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 120,
+          "x": 0,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 121,
+          "x": 1,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 122,
+          "x": 2,
+          "y": 15,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 128,
+          "x": 0,
+          "y": 16,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 129,
+          "x": 1,
+          "y": 16,
+          "width": 1,
+          "height": 1
+        },
+        {
+          "tile": 130,
+          "x": 2,
+          "y": 16,
+          "width": 1,
+          "height": 1
+        }
+      ],
+      "lowerTiles": [
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          6,
+          6,
+          6
+        ],
+        [
+          6,
+          6,
+          6
+        ]
+      ],
+      "blockedCells": [
+        {
+          "x": 0,
+          "y": 0
+        },
+        {
+          "x": 2,
+          "y": 0
+        },
+        {
+          "x": 0,
+          "y": 1
+        },
+        {
+          "x": 2,
+          "y": 1
+        },
+        {
+          "x": 0,
+          "y": 2
+        },
+        {
+          "x": 2,
+          "y": 2
+        }
+      ],
+      "sourceRect": {
+        "x": 0,
+        "y": 14,
+        "width": 3,
+        "height": 3
+      },
+      "sourceRectPixels": {
+        "x": 0,
+        "y": 448,
+        "width": 96,
+        "height": 96
+      },
+      "sourceTiles": [
+        [
+          112,
+          113,
+          114
+        ],
+        [
+          120,
+          121,
+          122
+        ],
+        [
+          128,
+          129,
+          130
+        ]
+      ],
+      "assemblyOperation": "whole original 3x3 source; transparent113 represented by -1",
+      "sourceRectIsAssembledFootprint": true,
+      "source": "ST-Schl-I01.png",
+      "walkCells": [
+        {
+          "x": 1,
+          "y": 0
+        },
+        {
+          "x": 1,
+          "y": 1
+        },
+        {
+          "x": 1,
+          "y": 2
+        }
+      ]
+    },
+    {
+      "id": "office-chair-back",
+      "name": "사무의자 북향 뒷면",
+      "source": "ST-Office-I01.png",
+      "sourceRect": {
+        "x": 4,
+        "y": 24,
+        "width": 1,
+        "height": 1
+      },
+      "tiles": [
+        [
+          196
+        ]
+      ],
+      "facing": "north",
+      "placementKind": "standing",
+      "supportCells": [
+        {
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "notes": "Read canonical paw-office owned chair-blue-back MD and actual normal/error image before reuse. South of desk, facing north."
     }
   ]
 }

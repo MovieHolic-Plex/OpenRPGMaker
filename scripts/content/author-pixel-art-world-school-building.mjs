@@ -42,7 +42,7 @@ const emptyHash=createHash('sha256').update('{}').digest('hex');
 p.spatialAuthoring??={version:1,library:{objects:{},spaces:{},places:{},regions:{},worlds:{}},occurrences:{},rootOccurrenceIds:[],connections:[],legacyImport:{version:1,sourceHash:emptyHash,mapping:[],backup:{encoding:'raw-json',json:'{}',sha256:emptyHash}}};
 const children=[],connections=[];
 for(const f of b.floors){
- const id=f.id+'-design',ports=f.stairs.map(s=>({id:`${id}-${s.direction}-${s.x<30?'west':'east'}`,name:`${s.destinationLevel}층 계단`,x:s.x,y:s.y}));
+ const id=f.id+'-design',ports=f.stairs.map(s=>({id:`${id}-${s.direction}-${s.x<f.width/2?'west':'east'}`,name:`${s.destinationLevel}층 계단`,x:s.x,y:s.y}));
  const tiles=[];for(const layer of ['lower','upper'])f[layer+'Tiles'].forEach((tile,i)=>{if(tile>=0)tiles.push({x:i%f.width,y:Math.floor(i/f.width),layer,tile});});
  p.spatialAuthoring.library.spaces[id]={...base(id,f.name),environment:'interior',role:'room',tilesetId:tsId,shape:'rect',width:f.width,height:f.height,floor:'school-green',wall:'school-cream',objectSlots:[],ports,interiorLayout:{rooms:f.rooms.map(({id,name,x,y,width,height})=>({id,name,x,y,width,height})),doorways:f.doorways.flatMap(d=>Array.from({length:d.height},(_,y)=>Array.from({length:d.width},(_,x)=>({x:d.x+x,y:d.y+y}))).flat())},composition:{tilesetId:tsId,width:f.width,height:f.height,tiles,members:[]}};
  children.push({id:f.id+'-slot',source:{kind:'space',id},level:f.level,x:0,y:0});

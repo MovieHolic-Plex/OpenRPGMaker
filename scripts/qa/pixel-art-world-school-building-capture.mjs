@@ -3,7 +3,12 @@ import {chromium} from 'playwright';
 import {readFile,writeFile} from 'node:fs/promises';
 import {startPlayerQaServer} from '../lib/runtimeQaRun.mjs';
 const out=process.env.PAW_SCHOOL_OUTPUT??'output/paw-school-four';
-const project=await readFile(`${out}/reloaded-portable.json`,'utf8');
+const source=JSON.parse(await readFile(`${out}/reloaded-portable.json`,'utf8'));
+// Authoring documents have no player behavior; keep all map, event, collision
+// and asset data while avoiding a second renderer copy of the AI image library.
+for(const tileset of Object.values(source.tilesets)){delete tileset.referenceDocuments;delete tileset.structureKits;}
+delete source.spatialAuthoring;
+const project=JSON.stringify(source);
 const report=JSON.parse(await readFile(`${out}/assembly-report.json`,'utf8'));
 const blueprint=JSON.parse(await readFile('src/assets/pixelArtWorldSchoolBuilding.json','utf8'));
 const server=await startPlayerQaServer();
