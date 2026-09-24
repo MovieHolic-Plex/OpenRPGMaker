@@ -40,3 +40,20 @@ SC-Water01/02는 [WATER-EVENTPROPS.md](../tiledata/pixel-art-world/WATER-EVENTPR
 `{supportFile?:File}`에 정확한 ST-Sewer 원본을 주면 `pixelArtWorldWaterSupportReferences.ts`가
 실제 벽/수면 전체배열·정상오류·좌표검사를 같은 owned category에 추가한다.
 별도 엔진 sprite타입이나 자동 map/event 삽입은 없다. 기존48pack ID/배열은 보존했다.
+
+## 물 연출 공용 설치 (2026-09-25)
+
+물2원본 추가 후 허용 원본은41, 변형278이다. 준비 스크립트는 허용 카탈로그 전체와 pack ID를
+대조하고, `frameComposites.parts`를 원본에서 각각 조립한 모든 프레임 RGBA를 검증한다.
+Water01 atlas128×576/32×192프레임12개, Water02 atlas384×160/96×160프레임4개다.
+원본 크기를 파생 atlas 크기로 잘못 검사하지 않는다. 프레임 부품 겹침은 암묵적으로 합성하지 않는다.
+
+물의4개 loop 예제는 실제 `waterSupportExample` 전체 배열/events와 문서 JSON이 일치하며,
+받침 오류가 `SPLASH_SUPPORT_CHANGED`로 탐지되는지 확인한 뒤 공용 라이브러리에 게시한다.
+기존39원본의 픽셀/문서는 유지된다. 실제 플레이어의4경우 모두 loop4프레임·static1프레임,
+14~15전환을 관찰했고 오류0이었다. 실행 사본은 지지 학습용이며 기존 도시 맵에 삽입한 것은 아니다.
+
+정본 revision56의 통합 저장에서 공용 연출2소유자/43자산 바이트를 포함해 재로드했다.
+AI 실제 도구 전체 조회323MD/649페이지/642그림, 새 프로젝트 메모리 투영의 직렬화 왕복과
+두 번째 투영 무변경을 확인했다. SQLite 새 폴더 생성 근거는 별도 저장 영수증을 사용한다.
+실제 최신 빌드 다운로드 카드2종도 확인했다. 개인 근거 `output/paw-water-install/`.

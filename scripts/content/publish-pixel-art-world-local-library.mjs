@@ -13,13 +13,13 @@ const read = async file => JSON.parse(await fs.readFile(file, 'utf8'));
 const project = await read(input), proof = await read(proofFile);
 if (!proof.projectId || !proof.projectDir || !proof.sha256) throw Error('Canonical host source proof required');
 if (!proof.portableSha256 || createHash('sha256').update(await fs.readFile(input)).digest('hex') !== proof.portableSha256) throw Error('Portable source does not match canonical read receipt');
-const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog','BathGymCatalog','JapaneseInteriorsCatalog','MansionInteriorsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
+const packs = (await Promise.all(['Catalog','UrbanCatalog','SchoolCatalog','FacilitiesCatalog','HomeCatalog','StaticExpansionCatalog','NativeComplementsCatalog','HospitalityComplementsCatalog','BathGymCatalog','JapaneseInteriorsCatalog','MansionInteriorsCatalog','MansionExteriorsCatalog'].map(n => read(`src/assets/pixelArtWorld${n}.json`)))).flat();
 const school = await read('src/assets/pixelArtWorldSchoolBuilding.json');
 const extras = await read('tiledata/pixel-art-world/school-building-parts.json');
 const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
 const civicPlans = (await read('tiledata/pixel-art-world/compact-civic.json')).maps;
 const tabletopRecipes = await read('tiledata/pixel-art-world/tabletop-composites.json');
-const nativeLayouts = (await Promise.all(['JapaneseInteriors','MansionInteriors'].map(kind => read(`src/assets/pixelArtWorld${kind}Layout.json`)))).flat();
+const nativeLayouts = (await Promise.all(['JapaneseInteriors','MansionInteriors','MansionExteriors'].map(kind => read(`src/assets/pixelArtWorld${kind}Layout.json`)))).flat();
 const { PNG } = pngjs, pngs = new Map();
 const key = id => { const normalized=id.replaceAll('-', '_'); return `shared_${normalized.startsWith('paw_')?normalized:'paw_'+normalized}`; };
 const lib = { version:1, projectDefaults:true, roots:[], places:{}, regions:{}, tilesets:{}, assets:{}, maps:{}, sourceProjectId:proof.projectId, previews:{} };
@@ -149,7 +149,7 @@ for (const pack of complements.filter(pack => project.tilesets[pack.id])) for (c
     docs.push(JSON.parse(JSON.stringify(category).replaceAll(pack.id,tileId)));
   }
   lib.tilesets[tileId].structureKits.push({id:kitId,kind:'section',name:scene.name,width:scene.width,height:scene.height,tileSize:32,rows:rows(scene.width,scene.height,scene.lowerTiles,scene.upperTiles),learnedFrom:'db-authored',referenceDocuments:docs,ai:{description:scene.name+' 고정 조립',placementRules:'전체 배열·가구 방향·접근칸과 문턱을 보존한다. 출입과 문 상태 이벤트는 별도다.',repeatability:'fixed',layerHome:'perCell',origin:'ai'}});
-  lib.places[id]={id,name:scene.name,revision:1,tags:['Pixel Art World','실내','고정 조립','이벤트 별도'],provenance:{origin:'ai',sourceId:scene.id},kind:'facility',layout:'manual',children:[],ports:(scene.doorways??[]).filter(d=>d.from==='outside'||d.to==='outside').map((d,i)=>({id:id+'_entry_'+i,name:'출입구',x:d.x,y:d.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
+  lib.places[id]={id,name:scene.name,revision:1,tags:['Pixel Art World',pack.id.startsWith('paw-mansion-exterior-')?'실외':'실내','고정 조립','이벤트 별도'],provenance:{origin:'ai',sourceId:scene.id},kind:'facility',layout:'manual',children:[],ports:(scene.doorways??[]).filter(d=>d.from==='outside'||d.to==='outside'||(pack.id.startsWith('paw-mansion-exterior-')&&d.to==='house')).map((d,i)=>({id:id+'_entry_'+i,name:'출입구',x:d.x,y:d.y})),connections:[],exterior:{tilesetId:tileId,kitId},referenceDocuments:docs};
   lib.previews[id]=image;
   // These source-pixel assemblies passed a separate composition review; they remain static examples with explicit event limitations.
   lib.roots.push(id);
@@ -206,6 +206,15 @@ if(cityRegion){
     id:'facility-expansion',name:'시설 확장 후보 · 도시에는 아직 미배치',description:'저장된 도시와 정적 실내 표본을 구분하고 전체 배열·출입구·접근칸을 보존한다.',
     documents:candidates.map(({pack,scene})=>({id:scene.id,name:scene.name+' · 지역 연결.md',markdown:`# ${scene.name} — 추가 후보\n\n현재 50×50 도시의 실행 맵/출입 이벤트에는 이 실내가 없다. 공용 장소 \`${key(scene.id)}\`, 타일셋 \`${key(pack.id)}\`의 정적 표본이다. 실내 전체를 도시의 건물 외관 위에 찍지 않는다.\n\n새 실내 맵에 아래 전체 하위/상위 배열을 배치한다. 문턱(doorways)의 바깥 연결과 실내 approachCells를 보존하고, 기존 도시의 건물 입구 이벤트를 먼저 읽어 목적 맵과 복귀 출현칸을 명시적으로 연결한다. 기존 목적 맵/주택 방/학교 계단 연결을 덮지 않는다. 지도가 연결되어도 입욕·식사·수면·스포츠 상호작용이 자동으로 생기지는 않는다.\n\n원본 ${pack.filename}, SHA256 ${pack.sha256}. 좁은 출입구를 가구로 막지 않으며 활동 공간과 통로를 장식으로 채우지 않는다.\n\n\`\`\`json\n${JSON.stringify({placeId:key(scene.id),tilesetId:key(pack.id),...scene},null,2)}\n\`\`\`\n\n배치 후 해당 장소의 객체 문서에서 밑동·벽 받침·방향을 확인하고 출입구→모든 접근점→복귀를 실제 플레이어로 확인한다. 아래 그림은 공용 실내 표본이며 도시 연결 완료 그림이 아니다.\n\n![실내 전체](image:${scene.id})`})),
     images:candidates.map(({scene})=>({id:scene.id,name:scene.id+'.png',caption:scene.name+' · 도시 연결 전 정적 장소',dataUrl:lib.previews[key(scene.id)]})),
+  });
+}
+// Exterior footprints own separate regional guidance; indoor placement prose does not apply.
+if(cityRegion){
+  const layouts=nativeLayouts.filter(layout=>layout.packId.startsWith('paw-mansion-exterior-')&&project.tilesets[layout.packId]);
+  const candidates=layouts.flatMap(layout=>layout.scenes.map(scene=>({layout,scene})));
+  if(candidates.length)cityRegion.referenceDocuments.push({id:'mansion-exterior-candidates',name:'저택 외관 · 도시 연결 전',description:'완전 건물과 짧은 정원 접근로. 기존 도시와 번호 체계는 다르다.',
+    documents:candidates.map(({layout,scene})=>({id:scene.id,name:scene.name+' 지역 배치.md',markdown:`# ${scene.name}\n\n공용 장소 ${key(scene.id)}, 타일셋 ${key(layout.packId)}. 원본 ${layout.sourceFilename}, SHA256 ${layout.sourceSha256}. 이 외관은 아직 현재 도시 맵에 배치되지 않았다. 건물 전체는 차단하며 지붕/벽/장식 발코니를 걷는 칸으로 바꾸지 않는다. 현관 앞 접근로와 정원 가구 밑동을 보존한다. 기존 도시 아틀라스와 합칠 때 번호와 원본 의존성을 함께 치환하거나 동일 타일셋의 별도 지도를 사용한다. 다른 색 저택의 지붕/벽 조각을 섞지 않는다. 실내는 별도 장소를 선택하고 현관→실내→현관 복귀 이벤트를 직접 저작한다.\n\n전체 배열과 접근점:\n\n\`\`\`json\n${JSON.stringify({placeId:key(scene.id),tilesetId:key(layout.packId),...scene},null,2)}\n\`\`\`\n\n배치 전 장소/객체의 정상·오류 그림과 부품 문서를 읽고 배치 후 출입/복귀를 실제 플레이어에서 확인한다.`})),
+    images:candidates.map(({scene})=>({id:scene.id,name:scene.id+'.png',caption:scene.name+' · 미연결 정적 외관',dataUrl:lib.previews[key(scene.id)]})),
   });
 }
 await withTsModule('scripts/lib/sharedContentSqlite.ts','paw-region-candidate-read.mjs',api=>appendRegionCandidates(lib,api.readSharedContent()));
