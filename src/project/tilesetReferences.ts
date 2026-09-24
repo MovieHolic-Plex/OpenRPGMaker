@@ -1,5 +1,5 @@
 import type { Project, TilesetDef } from "./types";
-import { isBundledReferenceImage } from "./bundledReferenceImages";
+import { isBundledReferenceImage } from "./bundledReferenceImagePath";
 
 /** Authored, portable reference material. Uploaded image bytes travel with the project;
  * shipped images are same-origin static paths (`isBundledReferenceImage`). */

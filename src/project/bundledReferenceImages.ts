@@ -1,17 +1,10 @@
-import manifest from "@/assets/bundledReferenceImageManifest.json";
+import manifest from "../assets/bundledReferenceImageManifest.json";
+import { isBundledReferenceImage } from "./bundledReferenceImagePath";
 import type { Project } from "./types";
 
-/**
- * Shipped reference images are same-origin static files, not inline bytes (see
- * scripts/content/externalize-reference-images.mjs). Authored uploads stay `data:` URLs
- * so they still travel with the project.
- */
-const BUNDLED_REFERENCE_IMAGE_PATH = /^\/assets\/(?:[\w-]+\/)*[\w.-]+\.(?:png|jpe?g|webp)$/u;
-const bundledPaths = manifest as Readonly<Record<string, string>>;
+export { isBundledReferenceImage };
 
-export function isBundledReferenceImage(src: string): boolean {
-  return BUNDLED_REFERENCE_IMAGE_PATH.test(src) && !src.split("/").includes("..");
-}
+const bundledPaths = manifest as Readonly<Record<string, string>>;
 
 /** Must match `digest` in scripts/content/externalize-reference-images.mjs. */
 export function referenceImageDigest(value: string): string {
