@@ -928,3 +928,56 @@ describe("edit scene tile culling", () => {
     expect(offscreenAfter.every((t) => !t.visible)).toBe(true);
   });
 });
+
+function renderOneCell(extra: { overlay?: number; upperOverlay?: number; shadow?: number }, layer: Layer = "lower") {
+  const project = createBlankProject();
+  const map = project.maps[project.startMapId];
+  map.width = 1;
+  map.height = 1;
+  map.lowerTiles = [1];
+  map.upperTiles = [3];
+  if (extra.overlay !== undefined) map.lowerOverlayTiles = [extra.overlay];
+  if (extra.upperOverlay !== undefined) map.upperOverlayTiles = [extra.upperOverlay];
+  if (extra.shadow !== undefined) map.shadowBits = [extra.shadow];
+  map.events = [];
+  store.replace(project);
+  editorState.set({ currentMapId: map.id, layer, selectedEventId: null, selection: null, tool: "select" });
+  const lower: MockObject[] = [];
+  const upper: MockObject[] = [];
+  renderEditScene({
+    scene: mockScene(),
+    tileLayer: mockContainer(lower),
+    upperTileLayer: mockContainer(upper),
+    overlayLayer: mockContainer(),
+    gridGraphics: mockGridGraphics(),
+    mapId: map.id,
+  });
+  return { lower, upper };
+}
+
+describe("새 층 — 에디터 그리기", () => {
+  it("2층·그림자는 아래 묶음 끝에, 4층은 위 묶음 끝에 붙는다", () => {
+    const base = renderOneCell({});
+    const withExtra = renderOneCell({ overlay: 2, upperOverlay: 4, shadow: 0b1001 });
+    expect(withExtra.lower.length).toBe(base.lower.length + 1 + 2);
+    expect(withExtra.upper.length).toBe(base.upper.length + 1);
+    const shades = withExtra.lower.slice(-2);
+    expect(shades.every((o) => o.kind === "rectangle" && o.fillColor === 0x000000 && o.alpha === 0.5)).toBe(true);
+    expect(shades.map((o) => [o.x, o.y])).toEqual([[0, 0], [8, 8]]); // bit0 왼위, bit3 오른아래 (16px 칸)
+    expect(["image", "sprite"]).toContain(withExtra.upper.at(-1)?.kind); // 4층 타일이 위 묶음 마지막
+  });
+
+  it("위층 편집 중이면 2층·그림자도 1층처럼 흐리다", () => {
+    const { lower } = renderOneCell({ overlay: 2, shadow: 0b0001 }, "upper");
+    const overlay = lower.at(-2)!;
+    const shade = lower.at(-1)!;
+    expect(overlay.alpha).toBe(0.58);
+    expect(shade.alpha).toBeCloseTo(0.5 * 0.58);
+  });
+
+  it("새 칸이 없는 맵은 예전과 같은 객체만 만든다", () => {
+    const { lower, upper } = renderOneCell({});
+    expect(lower).toHaveLength(1);
+    expect(upper).toHaveLength(1);
+  });
+});

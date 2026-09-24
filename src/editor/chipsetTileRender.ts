@@ -78,6 +78,22 @@ export function createChipsetTileObject(
   return createRawTileObject(scene, tileset, x * tileSize, y * tileSize, tile);
 }
 
+/**
+ * 타일 한 칸을 원래 모양 그대로 — 지형 쿼터 합성·호수 자동타일·길 변형·받침 없이.
+ * 2층·4층은 저자가 고른 칩 그대로 그린다(게임 renderRawTile 과 같은 규칙).
+ */
+export function createRawChipsetTileObject(
+  scene: Phaser.Scene,
+  map: GameMap,
+  tileset: TilesetDef,
+  x: number,
+  y: number,
+  tile: number
+): ChipsetTilePiece {
+  const tileSize = mapTileSize(map, tileset);
+  return createRawTileObject(scene, tileset, x * tileSize, y * tileSize, tile);
+}
+
 function createBackedTileObject(
   scene: Phaser.Scene,
   tileset: TilesetDef,

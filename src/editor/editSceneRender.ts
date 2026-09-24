@@ -1,10 +1,11 @@
 import type Phaser from "phaser";
 import { editorState, type Layer } from "@/editor/editorState";
-import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
 import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStability";
 import { tilePassability } from "@/project/collision";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
@@ -315,6 +316,21 @@ function renderTileCellLayer(
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 1, "lower", x, y);
     }
+    // 2층·그림자 — 게임과 같은 순서(1층 → 1층 스택 → 2층 → 그림자). 2층은 합성 없이 칩 그대로.
+    const overlay = layerTileAt(map, 2, i);
+    if (overlay >= 0) {
+      const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
+      overlayTile.setAlpha(lowerAlpha);
+      if (activeLayer === "upper") tintIfPossible(overlayTile, 0xc8d9bf);
+      addTileObject(context, objects, overlayTile, 1, "lower", x, y);
+    }
+    const bits = shadowAt(map, i);
+    if (bits !== 0) {
+      for (const shade of createShadowQuarters(context.scene, x, y, tileSize, bits)) {
+        shade.setAlpha(0.5 * lowerAlpha);
+        addTileObject(context, objects, shade, 2, "lower", x, y);
+      }
+    }
   } else {
     const dimUpper = activeLayer === "lower";
     const upper = map.upperTiles[i];
@@ -328,6 +344,13 @@ function renderTileCellLayer(
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
       addTileObject(context, objects, upperTile, 21, "upper", x, y);
+    }
+    // 4층 — 3층 스택 위, 합성 없이 칩 그대로.
+    const overlay = layerTileAt(map, 4, i);
+    if (overlay >= 0) {
+      const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
+      if (dimUpper) tintIfPossible(overlayTile, 0xc8d9bf);
+      addTileObject(context, objects, overlayTile, 21, "upper", x, y);
     }
   }
   context.tileIndex?.set(tileIndexKey(layer, x, y), objects);
@@ -429,6 +452,19 @@ function tintIfPossible(object: Phaser.GameObjects.GameObject, tint: number): vo
 
 function isTintable(object: Phaser.GameObjects.GameObject): object is Phaser.GameObjects.GameObject & TintableGameObject {
   return "setTint" in object && typeof object.setTint === "function";
+}
+
+/** 그림자 조각(칸의 ¼)마다 검정 사각형 하나. bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래. 알파는 호출자가 정한다. */
+function createShadowQuarters(scene: Phaser.Scene, x: number, y: number, tileSize: number, bits: number): Phaser.GameObjects.Rectangle[] {
+  const half = tileSize / 2;
+  const out: Phaser.GameObjects.Rectangle[] = [];
+  for (let quarter = 0; quarter < 4; quarter += 1) {
+    if (!(bits & (1 << quarter))) continue;
+    const rect = scene.add.rectangle(x * tileSize + (quarter % 2) * half, y * tileSize + Math.floor(quarter / 2) * half, half, half, 0x000000);
+    rect.setOrigin(0, 0);
+    out.push(rect);
+  }
+  return out;
 }
 
 /** 빈 하위 칸의 체커. 미리보기 중에는 알파를 낮춰 뒤의 배경이 비치게 한다(신호는 유지). */
