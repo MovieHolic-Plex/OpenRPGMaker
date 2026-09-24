@@ -96,9 +96,9 @@ for(const spec of layout.floors){
  // One vertically aligned stair core, entered from the end of the corridor.
  rect(24,7,7,7);wall(24,7,7);rect(27,14,1,4);caps.add(at(27,14));lintels.add(at(27,14));
  doorways.push({x:27,y:14,width:1,height:4});
- const cores=[{base:24,y:10}];
+ const cores=[{base:24,y:9}];
  for(const {base,y} of cores){
-  if(spec.level<4){rect(base,y,3,3);put('stairs-up-compact',base,y);}
+  if(spec.level<4){rect(base,y+1,3,2);put('stairs-up-compact',base,y);}
   if(spec.level>1){rect(base+4,y+1,3,2);rect(base+4,y,3,1,walls[2]);put('stairs-down',base+4,y+1);}
  }
  for(const door of doorways){lower(door.x,door.y+3,token(native,1,'lower','passable'));if(upperTiles[at(door.x-1,door.y+1)]===-1)school('school-notice',door.x-1,door.y+1);}
@@ -109,7 +109,8 @@ for(const spec of layout.floors){
  const stairs=[];for(const {base,y} of cores){if(spec.level<4)stairs.push({direction:'up',x:base+1,y:y+2,approach:{x:base+1,y:y+3},destinationLevel:spec.level+1,destination:{x:base+5,y:y+3}});if(spec.level>1)stairs.push({direction:'down',x:base+5,y:y+2,approach:{x:base+5,y:y+3},destinationLevel:spec.level-1,destination:{x:base+1,y:y+3}});}
  const walk=i=>i>=0&&i<w*h&&tiles[lowerTiles[i]].passage==='passable'&&(upperTiles[i]===-1||tiles[upperTiles[i]].passage==='passable');
  const queue=[at(spawn.x,spawn.y)],seen=new Set(queue);for(let k=0;k<queue.length;k++){const i=queue[k],x=i%w,y=Math.floor(i/w);for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){if(x+dx<0||x+dx>=w||y+dy<0||y+dy>=h)continue;const next=at(x+dx,y+dy);if(walk(next)&&!seen.has(next)){seen.add(next);queue.push(next);}}}
- for(const cell of [...approaches,...stairs.flatMap(s=>[s,s.approach,...(s.direction==='up'?Array.from({length:3},(_,i)=>({x:s.x,y:s.y-i})):[])])])if(!seen.has(at(cell.x,cell.y))){console.log(Array.from({length:h},(_,y)=>Array.from({length:w},(_,x)=>seen.has(y*w+x)?'.':walk(y*w+x)?'?':'#').join('')).join('\n'));throw Error(`Unreachable floor ${spec.level} ${cell.x},${cell.y}`);}
+ // The transparent top-center cell retains its wall; only the two tread rows are walkable.
+ for(const cell of [...approaches,...stairs.flatMap(s=>[s,s.approach,...(s.direction==='up'?Array.from({length:2},(_,i)=>({x:s.x,y:s.y-i})):[])])])if(!seen.has(at(cell.x,cell.y))){console.log(Array.from({length:h},(_,y)=>Array.from({length:w},(_,x)=>seen.has(y*w+x)?'.':walk(y*w+x)?'?':'#').join('')).join('\n'));throw Error(`Unreachable floor ${spec.level} ${cell.x},${cell.y}`);}
  // Every room is isolated from all other rooms when its own door is sealed.
  for(const room of rooms){const door=new Set();for(let y=room.door.y;y<room.door.y+room.door.height;y++)for(let x=room.door.x;x<room.door.x+room.door.width;x++)door.add(at(x,y));const q=[at(room.center.x,room.center.y)],s=new Set(q);for(let k=0;k<q.length;k++){const i=q[k],x=i%w,y=Math.floor(i/w);for(const[dx,dy]of[[-1,0],[1,0],[0,-1],[0,1]]){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const j=at(nx,ny);if(walk(j)&&!door.has(j)&&!s.has(j)){s.add(j);q.push(j);}}}if(s.has(at(20,19)))throw Error('Room leaks through wall '+room.name);}
  result.push({id:`paw-school-floor-${spec.level}`,name:`햇살학교 ${spec.level}층`,level:spec.level,width:w,height:h,lowerTiles,upperTiles,rooms,doorways,placements,approaches,stairs,entrance,spawn,lintels:[...lintels].map(i=>({x:i%w,y:Math.floor(i/w)})),reachable:seen.size});
