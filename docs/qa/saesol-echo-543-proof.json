@@ -1,0 +1,131 @@
+{
+  "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+  "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+  "revision": 543,
+  "sha256": "af9b25bffa35018e3203da3fca3309cf1433fad14002ed2553d6bbc4f89309e2",
+  "repeatReadMatches": true,
+  "maps": 20,
+  "events": 188,
+  "inlined": 452,
+  "scope": "Reopened canonical store read twice; media hashes verified and inlined for read-only player QA copy. No project content written.",
+  "contentScope": {
+    "newEvents": [
+      {
+        "id": "ev_sr_echo_obs_drop",
+        "name": "물방울 관측원",
+        "x": 9,
+        "y": 18
+      },
+      {
+        "id": "ev_sr_echo_obs_step",
+        "name": "발자국 관측원",
+        "x": 22,
+        "y": 15
+      },
+      {
+        "id": "ev_sr_echo_obs_wind",
+        "name": "바람 관측원",
+        "x": 4,
+        "y": 4
+      },
+      {
+        "id": "ev_sr_echo_researcher",
+        "name": "음향 연구원",
+        "x": 11,
+        "y": 22
+      }
+    ],
+    "existingEventsPreserved": true,
+    "mapGeometryPreserved": true,
+    "databasePreserved": true,
+    "priorProgressPreserved": true,
+    "flagsAdded": [
+      "sw_sr_echo_accepted",
+      "sw_sr_echo_done",
+      "sw_sr_echo_drop",
+      "sw_sr_echo_step",
+      "sw_sr_echo_wind"
+    ],
+    "questAdded": {
+      "kind": "graph",
+      "id": "q_sr_echo",
+      "title": "세 갈래 울림의 기록",
+      "summary": "푸른울림 동굴에 흩어진 세 관측원의 증언을 수집해 공명음의 발생 순서와 첫 소리를 논리적으로 규명한다.",
+      "nodes": [
+        {
+          "id": "node_accept",
+          "description": "푸른울림 동굴 입구의 음향 연구원에게 탐사 의뢰 수락",
+          "completesWhen": {
+            "value": true,
+            "switchId": "sw_sr_echo_accepted",
+            "kind": "switch"
+          },
+          "activatesFlags": [
+            "flag-sr-echo-accepted"
+          ]
+        },
+        {
+          "id": "node_clues",
+          "description": "동굴 각지의 관측원 3명에게서 물방울·바람·발자국 증언 수집",
+          "completesWhen": {
+            "all": [
+              {
+                "switchId": "sw_sr_echo_drop",
+                "kind": "switch",
+                "value": true
+              },
+              {
+                "kind": "switch",
+                "switchId": "sw_sr_echo_wind",
+                "value": true
+              },
+              {
+                "kind": "switch",
+                "value": true,
+                "switchId": "sw_sr_echo_step"
+              }
+            ]
+          },
+          "activatesFlags": [
+            "flag-sr-echo-drop",
+            "flag-sr-echo-wind",
+            "flag-sr-echo-step"
+          ]
+        },
+        {
+          "id": "node_done",
+          "description": "연구원에게 시간 순서와 확정 증언을 정확히 대조 보고하여 과제 완수",
+          "completesWhen": {
+            "kind": "switch",
+            "switchId": "sw_sr_echo_done",
+            "value": true
+          },
+          "activatesFlags": [
+            "flag-sr-echo-done"
+          ]
+        }
+      ],
+      "edges": [
+        {
+          "from": "node_accept",
+          "to": "node_clues"
+        },
+        {
+          "from": "node_clues",
+          "to": "node_done"
+        }
+      ]
+    },
+    "otherTopLevelChanges": [],
+    "scope": "Static stored content scope; walking and puzzle branches require runtime QA."
+  },
+  "existingStoryFlagsPreserved": true,
+  "storyFlagsAdded": [
+    "flag-sr-echo-accepted",
+    "flag-sr-echo-done",
+    "flag-sr-echo-drop",
+    "flag-sr-echo-step",
+    "flag-sr-echo-wind"
+  ],
+  "quests": 13
+}

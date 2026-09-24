@@ -1,0 +1,129 @@
+{
+  "scope": "Revision542 read-only copy, actual earned second-badge/rival2 checkpoint. Walk through real portals and catch existing wild monsters using owned balls. No invented species, levels or rewards. Not 3-hour proof.",
+  "pageErrors": [],
+  "captures": [
+    {
+      "species": "maluga",
+      "throws": 2,
+      "ballsBefore": 15,
+      "ballsAfter": 13,
+      "caught": {
+        "instanceId": "monster_5",
+        "speciesId": "species_isaiah_maluga",
+        "level": 24,
+        "exp": 523,
+        "ivs": {
+          "hp": 4,
+          "atk": 5,
+          "def": 9,
+          "spd": 6
+        },
+        "friendship": 70,
+        "caughtAt": {
+          "mapId": "map_sr3_coast",
+          "x": 21,
+          "y": 18
+        },
+        "currentHp": 58,
+        "stateIds": [
+          "state_isaiah_paralysis"
+        ],
+        "stateTurns": {},
+        "skillIds": [
+          "skill_isaiah_bite",
+          "skill_isaiah_water_gun"
+        ],
+        "skillPp": {
+          "skill_isaiah_bite": 25,
+          "skill_isaiah_water_gun": 25
+        }
+      }
+    },
+    {
+      "species": "scallapod",
+      "throws": 3,
+      "ballsBefore": 13,
+      "ballsAfter": 10,
+      "caught": {
+        "instanceId": "monster_6",
+        "speciesId": "species_isaiah_scallapod",
+        "level": 24,
+        "exp": 523,
+        "ivs": {
+          "hp": 5,
+          "atk": 6,
+          "def": 11,
+          "spd": 12
+        },
+        "friendship": 70,
+        "caughtAt": {
+          "mapId": "map_sr3_coast",
+          "x": 41,
+          "y": 16
+        },
+        "currentHp": 54,
+        "stateIds": [
+          "state_isaiah_paralysis"
+        ],
+        "stateTurns": {},
+        "skillIds": [
+          "skill_isaiah_bubble",
+          "skill_isaiah_rock_throw"
+        ],
+        "skillPp": {
+          "skill_isaiah_bubble": 30,
+          "skill_isaiah_rock_throw": 15
+        }
+      }
+    }
+  ],
+  "checkpointMatches": true,
+  "walkedSteps": 321,
+  "walkedPortals": [
+    {
+      "from": "map_variety_lab",
+      "event": "sr_map_variety_lab_0",
+      "to": "map_variety_ridge"
+    },
+    {
+      "from": "map_variety_ridge",
+      "event": "sr_map_variety_ridge_2",
+      "to": "map_saesol_route"
+    },
+    {
+      "from": "map_saesol_route",
+      "event": "sr_map_saesol_route_2",
+      "to": "map_variety_cavern"
+    },
+    {
+      "from": "map_variety_cavern",
+      "event": "sr_warp_cavern_to_route2",
+      "to": "map_saesol_route2"
+    },
+    {
+      "from": "map_saesol_route2",
+      "event": "sr_warp_route2_to_forest",
+      "to": "map_saesol_forest"
+    },
+    {
+      "from": "map_saesol_forest",
+      "event": "sr_warp_forest_to_town2",
+      "to": "map_saesol_town2"
+    },
+    {
+      "from": "map_saesol_town2",
+      "event": "ev_gate_558ed082-4b10-453b-9f29-0402a9fe7472",
+      "to": "map_sr3_coast"
+    }
+  ],
+  "healedAtMother": true,
+  "approach": {
+    "mapId": "map_sr3_coast",
+    "x": 41,
+    "y": 16,
+    "direction": "up"
+  },
+  "throws": 3,
+  "passed": true,
+  "automaticSeconds": 101.641
+}
