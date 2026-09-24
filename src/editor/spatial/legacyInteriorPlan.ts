@@ -1,6 +1,5 @@
 import { checkedDocument, own } from "@/project/spatial/domain";
-import { choice } from "@/project/spatial/guardValues";
-import { CONCEPT_FLOOR_MATERIALS } from "@/project/types/conceptBundle";
+import { conceptFloorMaterialOrWood } from "@/project/types/conceptBundle";
 import type { Project } from "@/project/types";
 import { CONCEPT_FLOOR_TILES, type ConceptOverlayRoom } from "../conceptBundleResolve";
 import type { InteriorRoomPlan, RoomSpec } from "../interiorRoomPipeline";
@@ -24,7 +23,7 @@ export function bindCanonicalInteriorPlan(plan: InteriorRoomPlan, project: Proje
         label: object.name, chips: [...slot.chipOverrides ?? object.chips], required: slot.required }));
     });
     overlay[room.id] = { placeId: space.id, placeLabel: space.name, role: space.role, things };
-    return { ...room, floorTile: room.floorTile ?? plan.floorTile ?? CONCEPT_FLOOR_TILES[choice(CONCEPT_FLOOR_MATERIALS)(space.floor, `${space.id}.floor`)] };
+    return { ...room, floorTile: room.floorTile ?? plan.floorTile ?? CONCEPT_FLOOR_TILES[conceptFloorMaterialOrWood(space.floor)] };
   });
   return { ...plan, rooms, concept: { bundleId: "canonical", facilityId: "canonical", facilityLabel: plan.name, rooms: overlay } };
 }

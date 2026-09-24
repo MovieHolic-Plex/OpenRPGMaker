@@ -142,6 +142,12 @@ export function isConceptFloorMaterial(value: string): value is ConceptFloorMate
   return (CONCEPT_FLOOR_MATERIALS as readonly string[]).includes(value);
 }
 
+/** 공간 문서에 적힌 바닥. 허용 밖(`mixed` 등)이면 생략 기본값인 나무로 본다.
+ *  시설 이름만 모으는 지시 해석이 방 하나 때문에 멈추지 않게 한다. */
+export function conceptFloorMaterialOrWood(value: string): ConceptFloorMaterial {
+  return isConceptFloorMaterial(value) ? value : "wood";
+}
+
 /** 시설 벽면 재질. 생략 시 크림 벽. 파이프라인 wallMaterial 과 같은 값. */
 export const CONCEPT_WALL_MATERIALS = ["cream", "gold-brick", "stone-brick"] as const;
 export type ConceptWallMaterial = (typeof CONCEPT_WALL_MATERIALS)[number];
