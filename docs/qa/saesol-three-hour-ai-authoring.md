@@ -1401,3 +1401,14 @@ AI가 전달한 세 그룹의 타일 수정을 적용해 revision93에 저장했
 - 실제 main-TUoQXSlX.js가 import하는 `editor-B5eBKAIT.js`의 vv 함수는 `buffer += chunk` 후 전체 `indexOf`를 반복하는 구버전이었다. main의 bd31fe087에는 새 조각만 검색하고 배열로 모아 한 줄 완성 시 join하는 개선이 이미 있다. 소스만 확인하고 배포도 개선됐다고 가정하면 안 된다.
 - 기존 파일을 보존하고 디코더 함수만 동등한 조각 누적 구현으로 교체한 versioned editor/main을 만들었다. index.html을 새 main으로 연결했고 실제9897 HTTP응답에서 `main-TUoQXSlX-linear.js` 참조를 확인했다. 배포 근거/기존 함수/새 함수/SHA는 `linear-decoder-deployment.json`. 호스트/정본은 재시작·수정하지 않았다.
 - 이는 확인된 구버전 경로의 배포 수정이다. OOM의 모든 원인이 해결됐다는 증거는 아니며 실제 AI 최종 초안 수신·검토·저장·재로드를 다시 확인해야 한다. 진단창44가 할당 표본을 기록하며 실행 중이다.
+
+### 배포 실수 수정 — main 모듈을 이중 로드함
+
+- 창44는 AI 요청 전에10:10:37Z 약3792MB old-space에서 V8 OOM으로 종료했다. 할당 표본 `editor-heap-sampling-double-main.json`에 main-TUoQXSlX.js와 main-TUoQXSlX-linear.js 양쪽의 load/직렬화가 잡혔다. 새 진입 이름만 바꾸고 기존 청크의 역방향 main import를 그대로 둔 배포 실수였다. 이 추가 장애는 작업자가 유발한 것으로 구분한다.
+- index를 원래 main URL로 되돌리고 해당 main의 editor import만 개선 디코더 청크로 바꿨다. 기존 main 원문은 별도 백업했다. 앱 singleton의 모듈 URL을 유지하며 다음 창45에서 단일 로드와 저장 상태를 확인한다. 최초 요청42의 OOM과 이중 main 배포 오류는 별도 원인이다.
+
+### 요청46 — 최종 초안 수신 성공, 적용 단계 OOM 분리
+
+- 단일 main 로드 확인 후 요청46은 실제 AI로4이벤트 수정 초안을 끝까지 받았다. `request46-draft-ready.txt`/`request46-review.txt`에 검토 대기와4이벤트 수정·현장 조사원Y13→11을 보존했다. 응답 검토는 미완료 표시였으므로 자동 검증 성공으로 세지 않는다.
+- UI 적용 클릭 뒤 다시 페이지 OOM이 발생했다. 정본은522이고517과 맵이 동일하다. 저장 완료 아님. `editor-heap-sampling-apply-oom.json`에는 적용 matches/직렬화/identity join 등 각238MB가량의 문자열 할당이 여럿 남아 있다. 디코더 개선으로 최종 응답 수신은 진전했으나 적용 메모리 문제는 남았다.
+- 최신 main에는 captureApplyAuthority/identity 공유 범위 등 적용 경로 개선이 더 있으므로 최신 main 편집기를 별도 dist에 빌드한다. 기존dist와 정본은 보존하고 빌드 성공 확인 후 전용9897에만 반영한다. 전체 테스트/게이트 실행과는 구분한다.
