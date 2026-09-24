@@ -166,6 +166,20 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
   맵 배열이 정본이고, 그 칸이 창에 들어올 때 만든다.
   타일은 16×16 청크의 자식이다. 창 밖으로 나간 객체는 그 청크에서 `remove` 한다.
   `tileLayer.remove` 는 직계 자식만 지우므로 스프라이트는 남고 인덱스만 사라져 다시 들어오면 겹친다.
+- **유휴 렌더 생략 (2026-09-25).** 편집기 게임은 `installEditRenderGate`(`src/editor/editRenderGate.ts`,
+  `startEditGame` 이 설치)가 `Game.step` 을 감싸 **렌더 단계만** 건너뛴다 — update·트윈·애니메이션 시계·입력 폴링은
+  매 프레임 돈다. 렌더 조건: 최근 500ms 안의 활동(`markEditRenderActive`: 캔버스 포인터·키·창 리사이즈·store/editorState
+  구독·`EditScene.update` 가 본 카메라 변화) 또는 한 프레임 요청(`requestEditRenderFrame`: 씬의 ADDED/REMOVED_FROM_SCENE,
+  진행 중 트윈, 보이는 물 칸의 애니메이션 프레임) 또는 1초 하트비트. **새 캔버스 변화가 사용자 입력 없이 객체의 속성만
+  바꾼다면**(객체 생성·파괴 없이 setTint/setPosition 등) 그 경로에서 `requestEditRenderFrame(scene.game)` 을 불러라 —
+  안 부르면 최대 1초 늦게 보인다. `loop.sleep()` 으로 바꾸지 마라: 트윈·물 애니메이션·키보드 큐가 같이 멈추고
+  테스트 플레이 잠재우기(`editorGameSuspension`)와 같은 스위치를 두고 다툰다. 관측: `editRenderGateStats(game)`.
+- **지연 창 문턱 2_048칸 (2026-09-25).** `LAZY_EDIT_MAP_CELL_THRESHOLD` 가 8_192 였을 때는 90×90 까지 모든 칸을
+  만들었다. 창이 맵 전체를 덮으면(축소·카메라 없는 테스트) lazy 경로도 전부 그리므로 작은 맵 결과는 같다.
+- **격자는 카메라 근처 청크만 긋는다 (2026-09-25).** `repaintEditGrid(…, bounds)` + `editGridTileWindow` 가 카메라 창을
+  청크 경계로 넓힌 범위만 긋고, `EditScene.update` 의 `syncGridWindow` 가 창이 청크를 넘을 때 다시 긋는다.
+- **리사이즈는 전체 redraw 가 아니다 (2026-09-25).** `handleResize` 는 내비 기하 + `afterCameraMoved` 만 한다.
+  새로 보이는 칸·격자는 다음 `update()` 가 창 변화를 보고 채운다. 아직 그린 적 없는 맵일 때만 redraw 한다.
 - AI 패널의 class/style/높이 변화로 `overlayGeometryReadAtMs` 를 0으로 돌리지 마라.
   스트리밍이 매 프레임 `getBoundingClientRect` 를 호출해 편집 입력이 멈춘다.
   캔버스 크기만 즉시 무효화하고, 조수 카드 가림은 250ms TTL 로 다시 잰다.

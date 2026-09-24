@@ -9,16 +9,11 @@ import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
+import { repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
-
-const DEFAULT_GRID_COLOR = 0xffffff;
-const DEFAULT_GRID_ALPHA = 0.08;
-const EVENT_GRID_COLOR = 0x000000;
-// 0.45 는 칸마다 검은 테를 둘러 타일이 어둡게 죽었다(2026-09-24 visual QA). 칸 경계만 읽히면 된다.
-const EVENT_GRID_ALPHA = 0.22;
 
 type CameraFocus = {
   readonly x: number;
@@ -108,10 +103,12 @@ function getOrCreateChunk(
 /**
  * Large maps should not pay the cost of creating every tile before the first frame.
  * The existing culling pass can hide objects, but it cannot undo their construction.
- * Keep the threshold below the common 128×128 render-contract fixture so the existing
- * small/editor capture behavior remains unchanged while 100×100 hosted maps use the lazy path.
+ * 8_192 left every map up to 90×90 fully materialized (tens of thousands of objects for a
+ * 64×64 town with stacks/shadows). 2_048 sends 46×46 and larger through the camera window;
+ * when the window covers the whole map (zoomed out, or tests without a camera) the lazy
+ * path still renders every cell, so small-map capture behavior is unchanged.
  */
-export const LAZY_EDIT_MAP_CELL_THRESHOLD = 8_192;
+export const LAZY_EDIT_MAP_CELL_THRESHOLD = 2_048;
 
 type EditSceneTileWindow = {
   readonly minX: number;
@@ -145,6 +142,19 @@ export function editSceneTileWindowKey(scene: Phaser.Scene, map: GameMap): strin
   return `${window.minX},${window.minY},${window.maxX},${window.maxY}`;
 }
 
+/**
+ * 격자를 그을 칸 범위 — 카메라 창을 청크 경계로 넓히고 한 청크 여유를 더한다. 청크 단위로 잘라야
+ * 팬하는 동안 칸 하나 넘을 때마다가 아니라 청크 하나 넘을 때만 격자를 다시 긋는다.
+ */
+export function editGridTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
+  const window = cameraTileWindow(scene, map);
+  const minX = Math.max(0, (chunkCoord(window.minX) - 1) * EDIT_TILE_CHUNK_TILES);
+  const minY = Math.max(0, (chunkCoord(window.minY) - 1) * EDIT_TILE_CHUNK_TILES);
+  const maxX = Math.min(map.width - 1, (chunkCoord(window.maxX) + 2) * EDIT_TILE_CHUNK_TILES - 1);
+  const maxY = Math.min(map.height - 1, (chunkCoord(window.maxY) + 2) * EDIT_TILE_CHUNK_TILES - 1);
+  return { minX, minY, maxX, maxY };
+}
+
 export type EditSceneRenderStats = {
   readonly tileObjectsUpdated: number;
 };
@@ -170,7 +180,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   if (mapOnlyCapture) return { tileObjectsUpdated };
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]));
   if (state.tool === "collision") renderCollisionOverlay(context, map);
-  if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
+  if (state.showGrid) repaintEditGrid(context.gridGraphics, map, state.layer, true, editGridTileWindow(context.scene, map));
   renderStartPosition(context);
   renderEventMarkers({ ...context, tileSize: mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]) }, map, state.layer);
   return { tileObjectsUpdated };
@@ -504,22 +514,6 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
     }
   }
   context.overlayLayer.add(collG);
-}
-
-function renderGrid(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, activeLayer: Layer): void {
-  const color = activeLayer === "event" ? EVENT_GRID_COLOR : DEFAULT_GRID_COLOR;
-  const alpha = activeLayer === "event" ? EVENT_GRID_ALPHA : DEFAULT_GRID_ALPHA;
-  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
-  gridGraphics.lineStyle(1, color, alpha);
-  for (let x = 0; x <= map.width; x++) {
-    gridGraphics.moveTo(x * tileSize, 0);
-    gridGraphics.lineTo(x * tileSize, map.height * tileSize);
-  }
-  for (let y = 0; y <= map.height; y++) {
-    gridGraphics.moveTo(0, y * tileSize);
-    gridGraphics.lineTo(map.width * tileSize, y * tileSize);
-  }
-  gridGraphics.strokePath();
 }
 
 function renderStartPosition(context: EditSceneRenderContext): void {

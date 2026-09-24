@@ -18,6 +18,7 @@ import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { syncProjectFontTheme } from "@/app/fontTheme";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
 import { configureEditorGameAccessor } from "@/editor/panels/editorGameSuspension";
+import { installEditRenderGate, type EditRenderGateGame } from "@/editor/editRenderGate";
 import { importWithRetry } from "@/util/dynamicImport";
 import {
   markInitialEditRender,
@@ -577,6 +578,17 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
     next.destroy(true);
     return next;
   }
+  const CoreEvents = PhaserRuntime.Core.Events;
+  installEditRenderGate(next as unknown as EditRenderGateGame, {
+    PRE_STEP: CoreEvents.PRE_STEP,
+    STEP: CoreEvents.STEP,
+    POST_STEP: CoreEvents.POST_STEP,
+    PRE_RENDER: CoreEvents.PRE_RENDER,
+    POST_RENDER: CoreEvents.POST_RENDER,
+    DESTROY: CoreEvents.DESTROY,
+    VISIBLE: CoreEvents.VISIBLE,
+    RESUME: CoreEvents.RESUME,
+  });
   game?.destroy(true);
   game = next;
   return next;

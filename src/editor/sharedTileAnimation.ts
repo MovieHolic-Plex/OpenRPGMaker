@@ -1,4 +1,5 @@
 import type Phaser from "phaser";
+import { requestEditRenderFrame } from "@/editor/editRenderGate";
 
 interface TileAnimationGroup {
   readonly driver: Phaser.GameObjects.Sprite;
@@ -30,6 +31,7 @@ export function createSharedAnimatedTile(
     group = { driver, images };
     groups.set(animation, group);
     driver.on("animationupdate", () => {
+      let updated = false;
       for (const image of images) {
         // Large-map culling hides the tile's parent container. Phaser leaves a
         // child image's own `visible` flag unchanged, so checking only that
@@ -38,7 +40,10 @@ export function createSharedAnimatedTile(
         // seen while preserving the frame for the next reveal.
         if (!isVisibleInScene(image)) continue;
         image.setTexture(driver.texture.key, driver.frame.name);
+        updated = true;
       }
+      // 편집기는 유휴 중 렌더를 건너뛴다(editRenderGate) — 보이는 물 칸이 바뀐 프레임만 그리게 한다.
+      if (updated) requestEditRenderFrame(scene.game);
     });
     driver.play(animation);
   }

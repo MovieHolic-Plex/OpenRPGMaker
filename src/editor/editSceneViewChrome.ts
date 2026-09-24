@@ -47,25 +47,44 @@ export function applyEditTileLayerPresentation(tileIndex: EditSceneTileIndex, ac
   }
 }
 
+/** 격자를 그릴 칸 범위(양 끝 포함). 없으면 맵 전체. */
+export type EditGridTileWindow = {
+  readonly minX: number;
+  readonly minY: number;
+  readonly maxX: number;
+  readonly maxY: number;
+};
+
+/**
+ * 격자는 `bounds` 칸 범위 안에서만 긋는다. 맵 전체 선을 한 Graphics 에 담으면 WebGL 이 매 렌더마다
+ * 선 수만큼 사각형을 다시 쌓는다(100×100 맵에서 202개 × 전체 길이). 창은 카메라가 청크 경계를
+ * 넘을 때 EditScene.update 가 다시 준다.
+ */
 export function repaintEditGrid(
   gridGraphics: Phaser.GameObjects.Graphics,
   map: GameMap,
   activeLayer: Layer,
   showGrid: boolean,
+  bounds?: EditGridTileWindow,
 ): void {
   gridGraphics.clear();
   if (!showGrid) return;
   const color = activeLayer === "event" ? EVENT_GRID_COLOR : DEFAULT_GRID_COLOR;
   const alpha = activeLayer === "event" ? EVENT_GRID_ALPHA : DEFAULT_GRID_ALPHA;
   const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
+  const minX = bounds ? Math.max(0, bounds.minX) : 0;
+  const minY = bounds ? Math.max(0, bounds.minY) : 0;
+  const maxX = bounds ? Math.min(map.width, bounds.maxX + 1) : map.width;
+  const maxY = bounds ? Math.min(map.height, bounds.maxY + 1) : map.height;
+  if (maxX < minX || maxY < minY) return;
   gridGraphics.lineStyle(1, color, alpha);
-  for (let x = 0; x <= map.width; x += 1) {
-    gridGraphics.moveTo(x * tileSize, 0);
-    gridGraphics.lineTo(x * tileSize, map.height * tileSize);
+  for (let x = minX; x <= maxX; x += 1) {
+    gridGraphics.moveTo(x * tileSize, minY * tileSize);
+    gridGraphics.lineTo(x * tileSize, maxY * tileSize);
   }
-  for (let y = 0; y <= map.height; y += 1) {
-    gridGraphics.moveTo(0, y * tileSize);
-    gridGraphics.lineTo(map.width * tileSize, y * tileSize);
+  for (let y = minY; y <= maxY; y += 1) {
+    gridGraphics.moveTo(minX * tileSize, y * tileSize);
+    gridGraphics.lineTo(maxX * tileSize, y * tileSize);
   }
   gridGraphics.strokePath();
 }
