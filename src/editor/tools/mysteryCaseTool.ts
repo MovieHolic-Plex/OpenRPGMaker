@@ -800,8 +800,17 @@ export function compileAccusationChoice(input: AccusationInput): Extract<Command
   };
 }
 
+/** speaker 가 빈 문자열이면 이름표 없는 서술이다(물건인 지목 지점). */
 function say(speaker: string, body: readonly string[]): Command[] {
-  return body.map((line) => ({ kind: "text", speaker, body: line }));
+  return body.map((line) => (speaker ? { kind: "text", speaker, body: line } : { kind: "text", body: line }));
+}
+
+// 지목 NPC 를 물건으로 지은 경우(manor-mystery 실측 두 번: 「추리 정리 테이블」「사건 정리 수첩」). 기본 주민 외형·얼굴로 그리면
+// 수첩이 콧수염 사내 얼굴로 말하고, 한 번은 주인공과 같은 탐정 스프라이트로 서 있었다.
+const OBJECT_ACCUSER = /수첩|노트|메모|테이블|탁자|책상|게시판|칠판|보드|일지|장부|서류|기록부|추리판|단서판|table|desk|board|notebook|journal/iu;
+
+export function isObjectAccuser(accuser: Pick<AccuserSpec, "name" | "graphic" | "eventId">): boolean {
+  return !accuser.graphic && !accuser.eventId && OBJECT_ACCUSER.test(accuser.name);
 }
 
 function evidenceReactions(spec: MysteryCase, suspect: SuspectSpec): EvidenceReaction[] {
@@ -1071,6 +1080,9 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
     itemId: mysteryClueItemId(spec.caseId, clueId),
     present: true,
   }));
+  const object = isObjectAccuser(accuser);
+  const voice = object ? "" : accuser.name;
+  const warningsBefore = warnings.length;
   placeCharacter(draft, {
     id,
     name: accuser.name,
@@ -1079,13 +1091,13 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
     reuse: accuser.eventId !== undefined,
     pages: [
       // 1페이지: 필수 증거 미확보 — 힌트만. 엔딩 명령을 두지 않는다.
-      { name: "증거 부족", commands: say(accuser.name, [...accuser.intro, ...accuser.hint]) },
+      { name: "증거 부족", commands: say(voice, [...accuser.intro, ...accuser.hint]) },
       // 2페이지(뒤 페이지 우선): 필수 증거를 모두 가졌을 때만 지목.
       {
         name: "범인 지목",
         conditions: requiredConditions,
         commands: [
-          ...say(accuser.name, accuser.ready),
+          ...say(voice, accuser.ready),
           compileAccusationChoice({
             prompt: accuser.prompt,
             suspects: spec.suspects,
@@ -1094,13 +1106,24 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
             wrongEndingId: spec.endings.wrong.id,
             solvedLines: spec.endings.solved.lines,
             wrongLines: spec.endings.wrong.lines,
-            notYetLines: ["확신이 서면 다시 오게."],
-            speaker: accuser.name,
+            notYetLines: [object ? "아직 확신이 서지 않는다." : "확신이 서면 다시 오게."],
+            speaker: voice,
           }),
         ],
       },
     ],
   }, warnings);
+  if (object) {
+    const own = warnings.splice(warningsBefore);
+    warnings.push(...own.filter((warning) => !warning.includes("graphic 생략")));
+    // 물건: 보이지 않는 조사 지점처럼 두고(통행은 막아 가구처럼), 얼굴·이름표 없이 서술로 말한다.
+    const event = draft.maps[accuser.at.mapId]?.events.find((entry) => entry.id === id);
+    for (const page of event?.pages ?? []) {
+      page.graphic = { transparent: true };
+      page.commands = page.commands.filter((command) => command.kind !== "changeFace");
+    }
+    warnings.push(`지목 NPC '${accuser.name}' 는 물건이라 사람 외형 없이 보이지 않는 조사 지점(얼굴·이름표 없는 서술)으로 두었다 — 탁자·책상 같은 가구 타일 위(${accuser.at.x}, ${accuser.at.y})에 있어야 플레이어가 찾는다. 사람이 추리를 듣게 하려면 accuser.name 을 인물(경감·집사 등)로 하거나 graphic 을 주어라.`);
+  }
   return id;
 }
 
