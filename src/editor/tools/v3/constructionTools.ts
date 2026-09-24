@@ -31,6 +31,7 @@ import {
 } from "../forestDensity";
 import {
   FOUR_LAYER_GUIDANCE,
+  FOUR_LAYER_GUIDANCE_SHORT,
   TOOL_LAYER_ENUM,
   inMapBounds,
   parseToolLayer,
@@ -1218,9 +1219,14 @@ function mostFrequentTile(counts: ReadonlyMap<number, number>, tileset: TilesetD
 }
 
 type EraseLayer = "both" | "all" | "lower" | "upper" | "2" | "4" | "shadow";
+const ERASE_LAYER_ENUM = ["both", "all", "lower", "upper", "1", "2", "3", "4", "shadow"] as const;
 
-function isEraseLayer(value: unknown): value is EraseLayer {
-  return value === "both" || value === "all" || value === "lower" || value === "upper" || value === "2" || value === "4" || value === "shadow";
+/** 지우기 층 인자 → 범위 이름. "1"/"3" 은 paint_tiles 와 같은 별칭(lower/upper). 모르면 null. */
+function coerceEraseLayer(value: unknown): EraseLayer | null {
+  if (value === "1") return "lower";
+  if (value === "3") return "upper";
+  return value === "both" || value === "all" || value === "lower" || value === "upper" || value === "2" || value === "4" || value === "shadow"
+    ? value : null;
 }
 
 /**
@@ -1244,7 +1250,7 @@ function eraseScope(layer: EraseLayer): { readonly ground: boolean; readonly lay
 const tileErase: ToolDefinition = {
   name: "tile_erase",
   description:
-    "지정 사각형을 정리한다(v3). layer: both(기본, 칸 전체 — 1·2·3·4층·그림자)/all(both 와 같다)/lower(1층 바닥 복원 + 2층 비움)/upper(3·4층)/2/4/shadow(그 층만). " + FOUR_LAYER_GUIDANCE + " 상위는 빈 칸이 되고, 하위는 맵에서 관측된 통행 가능한 하위 지면(rect 밖 우선, 없으면 안쪽의 최빈 지면)으로 복원한다. 벽·지붕·소품·막힌 타일은 바닥 후보가 아니다. 유효한 지면이 없으면 erase-ground-unresolved로 변경 없이 실패한다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
+    "지정 사각형을 정리한다(v3). layer: both(기본, 칸 전체 — 1·2·3·4층·그림자)/all(both 와 같다)/lower=1(1층 바닥 복원 + 2층 비움)/upper=3(3·4층)/2/4/shadow(그 층만). " + FOUR_LAYER_GUIDANCE_SHORT + " 상위는 빈 칸이 되고, 하위는 맵에서 관측된 통행 가능한 하위 지면(rect 밖 우선, 없으면 안쪽의 최빈 지면)으로 복원한다. 벽·지붕·소품·막힌 타일은 바닥 후보가 아니다. 유효한 지면이 없으면 erase-ground-unresolved로 변경 없이 실패한다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
     "kind: all(기본, rect 전체를 통째로 비움)/market(시장·상점 데크 철거 전용 — 나무 마루·좌판 난간·진열대·과일·나무 상자·돌 단만 지우고, " +
     "겹친 집(벽·창문·지붕)·흙길(360)·잔디처럼 시장 타일이 아닌 것은 그대로 보존한다. 시장 lower를 지운 칸은 잔디로 되돌린다). " +
     "집과 시장이 한 bbox에 섞여 있으면 kind=market 을 쓸 것 — kind 생략(all)은 집까지 다 지운다.",
@@ -1259,7 +1265,7 @@ const tileErase: ToolDefinition = {
         properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
         required: ["x", "y", "w", "h"],
       },
-      layer: { type: "string", enum: ["both", "all", "lower", "upper", "2", "4", "shadow"], description: "기본 both(칸 전체). 2/4/shadow 는 그 층만" },
+      layer: { type: "string", enum: [...ERASE_LAYER_ENUM], description: "기본 both(칸 전체). 1=lower, 3=upper, 2/4/shadow 는 그 층만" },
       kind: {
         type: "string",
         enum: ["all", "market"],
@@ -1271,9 +1277,9 @@ const tileErase: ToolDefinition = {
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, ERASE_EXAMPLE);
     const rect = coerceRect(args.rect, "rect", ERASE_EXAMPLE);
-    const layer = args.layer === undefined ? "both" : args.layer;
-    if (!isEraseLayer(layer)) {
-      failWithExample("layer는 both/all/lower/upper/2/4/shadow 중 하나여야 합니다", ERASE_EXAMPLE);
+    const layer = coerceEraseLayer(args.layer === undefined ? "both" : args.layer);
+    if (layer === null) {
+      failWithExample(`layer는 ${ERASE_LAYER_ENUM.join("/")} 중 하나여야 합니다(1=lower, 3=upper)`, ERASE_EXAMPLE);
     }
     const kind = coerceEraseKind(args.kind);
     const allCells = cellsInRect(map, rect);

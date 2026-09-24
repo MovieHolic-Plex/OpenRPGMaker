@@ -11,7 +11,7 @@ import { autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/
 import { TILE } from "@/project/defaults/constants";
 import { compactMapLayers, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
 import type { GameMap } from "@/project/types";
-import { FOUR_LAYER_GUIDANCE, inMapBounds, passabilityWarning, requireMap, type Point } from "./mapHelpers";
+import { FOUR_LAYER_GUIDANCE, FOUR_LAYER_GUIDANCE_SHORT, inMapBounds, passabilityWarning, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 
 /** 배열 값 -1 = 그 칸 건드리지 않음, -2 = 그 칸을 그 층에서 비움. */
@@ -97,7 +97,8 @@ const stampLayerBlock: ToolDefinition = {
     + `${FOUR_LAYER_GUIDANCE} `
     + "layers 의 키는 \"1\"|\"2\"|\"3\"|\"4\"|\"shadow\", 값은 행 배열(위→아래). 칸 값 -1=건드리지 않음, -2=그 칸을 그 층에서 비움, 그 밖은 타일 번호(그림자는 0~15 사분면 비트: 1=좌상 2=우상 4=좌하 8=우하). "
     + "1층 칸을 찍으면 그 칸의 2층은 비워진다(같은 블록에 2층 값이 있으면 그 값). 3·4층·그림자는 준 칸만 바뀐다. "
-    + "범위 밖 번호나 맵 밖 칸이 하나라도 있으면 아무것도 쓰지 않고 실패한다. 1·2층 자동타일 멤버는 찍은 뒤 그 층 이웃에 맞춰 재성형된다.",
+    + "범위 밖 번호나 맵 밖 칸이 하나라도 있으면 아무것도 쓰지 않고 실패한다. 1·2층 자동타일 멤버는 찍은 뒤 그 층 이웃에 맞춰 재성형된다 — "
+    + "참고문서 예제를 번호 그대로 옮기려면 reshape:false(재성형 안 함).",
   mode: "write",
   domains: ["map", "tile"],
   invalidArgsExample: STAMP_EXAMPLE,
@@ -112,6 +113,7 @@ const stampLayerBlock: ToolDefinition = {
         description: "층별 2차원 배열. 필요한 층만 준다",
         properties: { "1": GRID_SCHEMA, "2": GRID_SCHEMA, "3": GRID_SCHEMA, "4": GRID_SCHEMA, shadow: GRID_SCHEMA },
       },
+      reshape: { type: "boolean", description: "기본 true — 1·2층 자동타일 멤버를 찍은 뒤 이웃에 맞춰 재성형. false 면 찍은 번호 그대로" },
     },
     required: ["mapId", "x", "y", "layers"],
   },
@@ -124,6 +126,8 @@ const stampLayerBlock: ToolDefinition = {
     const tileset = draft.tilesets[map.tilesetId];
     const plan = planStamp(map, tileset?.count, x0, y0, layers as Record<string, unknown>);
     if (plan.size === 0) invalid("쓸 칸이 없습니다 — 모든 칸이 -1(건드리지 않음)입니다.", map.id);
+    if (args.reshape !== undefined && typeof args.reshape !== "boolean") invalid("reshape 는 true/false 여야 합니다.", map.id);
+    const reshape = args.reshape !== false;
 
     // 같은 블록에 2층 값이 있는 칸 — 1층 칸이 2층을 비우는 규칙에서 뺀다.
     const layer2Cells = new Set((plan.get("2") ?? []).map((w) => w.y * map.width + w.x));
@@ -153,7 +157,7 @@ const stampLayerBlock: ToolDefinition = {
       [1, written.get(1) ?? []],
       [2, [...(written.get(2) ?? []), ...(map.lowerOverlayTiles ? written.get(1) ?? [] : [])]],
     ]);
-    for (const layer of [1, 2] as const) {
+    for (const layer of reshape ? [1, 2] as const : [] as const) {
       const points = reshapePoints.get(layer)!;
       if (points.length === 0) continue;
       const view = autotileLayerView(map, layer);
@@ -169,7 +173,7 @@ const stampLayerBlock: ToolDefinition = {
     return {
       summary: `${map.name} (${x0},${y0}) 에 층 블록 찍기 — ${parts.join(" · ")}`,
       ...(warning ? { warnings: [warning] } : {}),
-      data: { x: x0, y: y0, width: cols, height: rows, cells: counts },
+      data: { x: x0, y: y0, width: cols, height: rows, cells: counts, reshaped: reshape },
     };
   },
 };
@@ -182,7 +186,7 @@ const paintShadow: ToolDefinition = {
   name: "paint_shadow",
   description:
     "그림자 사분면을 칠한다 — 벽·절벽 아래 바닥 칸에 드리우는 반투명 검정(칸을 넷으로 나눈 조각). "
-    + `${FOUR_LAYER_GUIDANCE} `
+    + `${FOUR_LAYER_GUIDANCE_SHORT} `
     + "cells[{x,y,quarters?:[\"tl\"|\"tr\"|\"bl\"|\"br\"], bits?:0~15}] — quarters 또는 bits(1=좌상 2=우상 4=좌하 8=우하, 합). "
     + "mode: set(기본, 그 칸 그림자를 이것으로)|add(더하기)|clear(빼기 — quarters/bits 가 없으면 그 칸 그림자 전부 지움). 맵 밖 칸이 하나라도 있으면 아무것도 쓰지 않는다.",
   mode: "write",
@@ -231,7 +235,7 @@ const paintShadow: ToolDefinition = {
         bits = cell.bits;
       }
       if (cell.quarters !== undefined) {
-        if (!Array.isArray(cell.quarters) || cell.quarters.some((q) => !(q in QUARTER_BITS))) shadowInvalid(`cells[${i}].quarters 는 "tl"|"tr"|"bl"|"br" 배열이어야 합니다.`, map.id);
+        if (!Array.isArray(cell.quarters) || cell.quarters.some((q) => typeof q !== "string" || !Object.hasOwn(QUARTER_BITS, q))) shadowInvalid(`cells[${i}].quarters 는 "tl"|"tr"|"bl"|"br" 배열이어야 합니다.`, map.id);
         bits = (bits ?? 0) | (cell.quarters as Quarter[]).reduce((sum, q) => sum | QUARTER_BITS[q], 0);
       }
       if (bits === null && mode !== "clear") shadowInvalid(`cells[${i}] 에 quarters 또는 bits 가 필요합니다(clear 모드만 생략 가능).`, map.id);

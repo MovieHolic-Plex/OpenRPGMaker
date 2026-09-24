@@ -4,6 +4,11 @@ import { describe, expect, it } from "vitest";
 import { affectedRegions, TILE_WRITE_TOOLS } from "@/ai/buildSpec";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReferenceTools";
+import { getTool } from "@/editor/tools/toolRegistry";
+import { isPassable } from "@/project/collision";
+import { FOUR_LAYER_GUIDANCE, FOUR_LAYER_GUIDANCE_SHORT } from "@/editor/tools/mapHelpers";
+import { paintRoadRect } from "@/project/defaults/roadAutotile";
+import { paintTownPathNetwork } from "@/project/defaults/townPathAutotile";
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -286,7 +291,98 @@ describe("새 도구의 게이트 배선", () => {
     expect(TILESET_REFERENCE_TILE_CHOOSERS.has("stamp_layer_block")).toBe(true);
     expect(TILESET_REFERENCE_TILE_CHOOSERS.has("paint_shadow")).toBe(true);
     expect(TILE_WRITE_TOOLS.has("stamp_layer_block")).toBe(true);
+    // 보호 영역은 실제로 쓰는 칸(≠ -1)만 — 행마다 이어진 가로 줄.
     expect(affectedRegions("stamp_layer_block", { mapId: "m", x: 2, y: 3, layers: { "1": [[1, 1]], "3": [[-1], [-1], [5]] } }))
-      .toEqual([{ mapId: "m", x: 2, y: 3, w: 2, h: 3 }]);
+      .toEqual([{ mapId: "m", x: 2, y: 3, w: 2, h: 1 }, { mapId: "m", x: 2, y: 5, w: 1, h: 1 }]);
+    expect(affectedRegions("stamp_layer_block", { mapId: "m", x: 0, y: 0, layers: { "3": [[7, -1, 7, 7]] } }))
+      .toEqual([{ mapId: "m", x: 0, y: 0, w: 1, h: 1 }, { mapId: "m", x: 2, y: 0, w: 2, h: 1 }]);
+  });
+});
+
+describe("고침 1차(리뷰)", () => {
+  it("tile_erase 는 \"1\"(=lower)·\"3\"(=upper) 별칭도 받는다", () => {
+    const ctx = context();
+    seedExtras(mapOf(ctx), 3, 3);
+    ok(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 3, y: 3, w: 1, h: 1 }, layer: "3" });
+    let map = mapOf(ctx);
+    expect(map.upperTiles[idx(map, 3, 3)]).toBe(TILE.EMPTY);
+    expect(map.upperOverlayTiles).toBeUndefined();
+    expect(layerTileAt(map, 2, idx(map, 3, 3))).toBe(20);
+    ok(ctx, "tile_erase", { mapId: MAP_ID, rect: { x: 3, y: 3, w: 1, h: 1 }, layer: "1" });
+    map = mapOf(ctx);
+    expect(map.lowerOverlayTiles).toBeUndefined();
+    expect(shadowAt(map, idx(map, 3, 3))).toBe(3); // lower 범위는 그림자를 건드리지 않는다
+  });
+
+  it("2층 fill 은 (1층, 2층) 쌍으로 번진다 — 빈 2층이라도 시작 칸과 다른 1층을 넘지 않는다", () => {
+    const ctx = context();
+    const map = mapOf(ctx);
+    // 1층: 가운데 3×2 풀밭(240)만 나머지(물 대용 1)와 다르다.
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) map.lowerTiles[idx(map, x, y)] = 1;
+    for (let y = 4; y <= 5; y += 1) for (let x = 3; x <= 5; x += 1) map.lowerTiles[idx(map, x, y)] = TILE.GRASS;
+    const lowerBefore = map.lowerTiles.slice();
+    const r = ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "2", mode: "fill", tile: 31, from: { x: 4, y: 4 } });
+    expect(r.data).toMatchObject({ tilesTouched: 6, effectiveLayer: "2" });
+    const after = mapOf(ctx);
+    expect(after.lowerOverlayTiles!.filter((t) => t === 31)).toHaveLength(6);
+    expect(layerTileAt(after, 2, idx(after, 2, 4))).toBe(TILE.EMPTY);
+    expect(after.lowerTiles).toEqual(lowerBefore);
+  });
+
+  it("paint_tiles 3층 -1 은 그 칸 4층도 비운다, 3층 칠하기도 통행 경고를 낸다", () => {
+    const ctx = context();
+    seedExtras(mapOf(ctx), 3, 3);
+    ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "3", mode: "cells", tile: -1, cells: [{ x: 3, y: 3 }] });
+    const map = mapOf(ctx);
+    expect(map.upperOverlayTiles).toBeUndefined();
+    expect(layerTileAt(map, 2, idx(map, 3, 3))).toBe(20);
+    // 통행 불가 3층 칩(★ 아님)을 찾아 칠하면 경고가 나온다.
+    const tileset = ctx.project.tilesets[DEFAULT_TILESET_ID]!;
+    const probe = structuredClone(map);
+    const blocking = [...Array(tileset.count).keys()].find((t) => {
+      if (tileset.priority[t] !== "upper") return false;
+      probe.upperTiles[idx(probe, 6, 6)] = t;
+      return !isPassable(ctx.project, probe, 6, 6);
+    });
+    expect(blocking).toBeDefined();
+    const r = ok(ctx, "paint_tiles", { mapId: MAP_ID, layer: "3", mode: "cells", tile: blocking!, cells: [{ x: 6, y: 6 }] });
+    expect(r.diff?.warnings.join(" ")).toContain("통행 불가");
+  });
+
+  it("stamp_layer_block reshape:false 는 찍은 자동타일 번호를 그대로 둔다", () => {
+    const ctx = context(true);
+    const r = ok(ctx, "stamp_layer_block", { mapId: MAP_ID, x: 4, y: 4, reshape: false, layers: { "2": [[DECO.body, DECO.body, DECO.body]] } });
+    const map = mapOf(ctx);
+    expect([4, 5, 6].map((x) => layerTileAt(map, 2, idx(map, x, 4)))).toEqual([DECO.body, DECO.body, DECO.body]);
+    expect(r.data).toMatchObject({ reshaped: false });
+  });
+
+  it("paint_shadow quarters 는 자기 키만 받는다(프로토타입 키 거부)", () => {
+    const ctx = context();
+    expect(runTool(ctx, "paint_shadow", { mapId: MAP_ID, cells: [{ x: 1, y: 1, quarters: ["toString"] }] }).ok).toBe(false);
+    expectNoExtraKeys(mapOf(ctx));
+  });
+
+  it("「1층 칠하기」 규칙을 안내 한 문장이 말하고, 보조 도구는 짧은 안내를 쓴다", () => {
+    expect(FOUR_LAYER_GUIDANCE).toContain("1층을 칠하면 그 칸 2층이 지워진다");
+    for (const name of ["paint_tiles", "fill_region", "stamp_layer_block"]) expect(getTool(name)!.description, name).toContain(FOUR_LAYER_GUIDANCE);
+    for (const name of ["tile_erase", "paint_shadow"]) {
+      expect(getTool(name)!.description, name).toContain(FOUR_LAYER_GUIDANCE_SHORT);
+      expect(getTool(name)!.description, name).not.toContain(FOUR_LAYER_GUIDANCE);
+    }
+  });
+
+  it("흙길·마을 길의 1층 쓰기도 그 칸 2층을 지우고, 옛 맵에는 키를 만들지 않는다", () => {
+    const ctx = context();
+    const map = mapOf(ctx);
+    paintRoadRect(map, { x: 1, y: 1, width: 2, height: 1 });
+    paintTownPathNetwork(map, [{ x: 1, y: 3, width: 2, height: 1 }]);
+    expectNoExtraKeys(map);
+    setLayerTileAt(map, 2, idx(map, 5, 1), 20);
+    setLayerTileAt(map, 2, idx(map, 5, 3), 21);
+    paintRoadRect(map, { x: 5, y: 1, width: 1, height: 1 });
+    paintTownPathNetwork(map, [{ x: 5, y: 3, width: 1, height: 1 }]);
+    expect(layerTileAt(map, 2, idx(map, 5, 1))).toBe(TILE.EMPTY);
+    expect(layerTileAt(map, 2, idx(map, 5, 3))).toBe(TILE.EMPTY);
   });
 });

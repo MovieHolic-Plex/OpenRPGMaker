@@ -390,10 +390,10 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
 
   if (mapId === null) return [];
 
-  // stamp_layer_block: {x,y} + 층별 2차원 배열 — 가장 큰 배열이 덮는 상자.
+  // stamp_layer_block: {x,y} + 층별 2차원 배열 — 실제로 쓰는 칸(값 ≠ -1)만. -1 칸은 건드리지 않으므로 보호 판정에서 뺀다.
   if (toolName === "stamp_layer_block") {
-    const block = layerBlockRegion(mapId, args);
-    if (block !== null) return [block];
+    const block = layerBlockRegions(mapId, args);
+    if (block !== null) return block;
   }
 
   const cellRegions = pointRegions(mapId, args.cells);
@@ -731,16 +731,36 @@ function rectFromObject(mapId: string, value: unknown): AffectedRegion | null {
   return { mapId, x: value.x, y: value.y, w: value.w, h: value.h };
 }
 
-function layerBlockRegion(mapId: string, args: Record<string, unknown>): AffectedRegion | null {
-  if (!isFiniteNumber(args.x) || !isFiniteNumber(args.y) || typeof args.layers !== "object" || args.layers === null) return null;
-  let w = 0;
-  let h = 0;
+/** 층 블록이 실제로 쓰는 칸(어느 층이든 값 ≠ -1)을 행마다 이어진 가로 줄로 묶는다. 쓰는 칸이 없으면 null. */
+function layerBlockRegions(mapId: string, args: Record<string, unknown>): AffectedRegion[] | null {
+  const x0 = args.x, y0 = args.y;
+  if (!isFiniteNumber(x0) || !isFiniteNumber(y0) || typeof args.layers !== "object" || args.layers === null) return null;
+  const rows = new Map<number, Set<number>>();
   for (const grid of Object.values(args.layers as Record<string, unknown>)) {
     if (!Array.isArray(grid)) continue;
-    h = Math.max(h, grid.length);
-    for (const row of grid) if (Array.isArray(row)) w = Math.max(w, row.length);
+    grid.forEach((row, dy) => {
+      if (!Array.isArray(row)) return;
+      row.forEach((value, dx) => {
+        if (value === -1) return;
+        const cols = rows.get(dy) ?? new Set<number>();
+        cols.add(dx);
+        rows.set(dy, cols);
+      });
+    });
   }
-  return w > 0 && h > 0 ? { mapId, x: args.x, y: args.y, w, h } : null;
+  const regions: AffectedRegion[] = [];
+  for (const [dy, cols] of [...rows].sort((a, b) => a[0] - b[0])) {
+    const sorted = [...cols].sort((a, b) => a - b);
+    let start = sorted[0]!;
+    let prev = start;
+    for (const dx of [...sorted.slice(1), Number.NaN]) {
+      if (dx === prev + 1) { prev = dx; continue; }
+      regions.push({ mapId, x: x0 + start, y: y0 + dy, w: prev - start + 1, h: 1 });
+      start = dx;
+      prev = dx;
+    }
+  }
+  return regions.length > 0 ? regions : null;
 }
 
 function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegion | null {

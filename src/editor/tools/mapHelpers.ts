@@ -77,7 +77,11 @@ export type ToolLayerArg = (typeof TOOL_LAYER_ENUM)[number];
 export const FOUR_LAYER_GUIDANCE =
   "층: 1층 바닥(물·흙·벽 자동타일), 2층 바닥 장식(1층 위에 겹치는 풀·흙 자동타일, 캐릭터 아래), "
   + "3층 물체(나무·바위·건물, ★ 은 캐릭터 위), 4층 물체 위 물체(3층 위에 겹쳐 쌓기), 그림자(벽 아래 사분면). "
-  + "lower=1층, upper=3층.";
+  + "lower=1층, upper=3층. 1층을 칠하면 그 칸 2층이 지워진다(paint_tiles 1층은 기존처럼 3·4층·그림자까지 비운다).";
+
+/** 짧은 층 안내 — 층을 고르기만 하는 보조 도구(tile_erase·paint_shadow)용. 뜻은 FOUR_LAYER_GUIDANCE 와 같다. */
+export const FOUR_LAYER_GUIDANCE_SHORT =
+  "층: 1 바닥·2 바닥 장식·3 물체·4 물체 위 물체·그림자(벽 아래 사분면). lower=1층, upper=3층.";
 
 /** 층 인자 → 층 번호. 모르는 값이면 null. */
 export function parseToolLayer(value: unknown): TileLayerNo | null {
@@ -137,10 +141,16 @@ export function floodFill(map: GameMap, start: Point, tile: number): Point[] {
   return filled;
 }
 
-/** 시작 칸과 같은 타일로 이어진 칸(4방향). layer 기본 1층 — 2층 채우기는 2층 배열에서 번진다. */
+/**
+ * 시작 칸과 같은 타일로 이어진 칸(4방향). layer 기본 1층.
+ * 2층 채우기는 (1층, 2층) 쌍이 시작 칸과 같은 칸으로만 번진다 — 2층이 비어 있으면 모든 칸이 -1 이라
+ * 2층만 보면 물·벽·길까지 맵 전체가 이어진다(「이 풀밭에 풀 장식」이 맵 전체가 된다).
+ */
 export function floodFillCells(map: GameMap, start: Point, tile: number, layer: TileLayerNo = 1): Point[] {
   if (!inMapBounds(map, start.x, start.y)) return [];
-  const source = layerTileAt(map, layer, start.y * map.width + start.x);
+  const startIndex = start.y * map.width + start.x;
+  const source = layerTileAt(map, layer, startIndex);
+  const ground = layer === 2 ? layerTileAt(map, 1, startIndex) : null;
   if (source === tile) return [];
   const filled: Point[] = [];
   const stack: Point[] = [start];
@@ -151,7 +161,9 @@ export function floodFillCells(map: GameMap, start: Point, tile: number, layer: 
     if (seen.has(key)) continue;
     seen.add(key);
     if (!inMapBounds(map, point.x, point.y)) continue;
-    if (layerTileAt(map, layer, point.y * map.width + point.x) !== source) continue;
+    const index = point.y * map.width + point.x;
+    if (layerTileAt(map, layer, index) !== source) continue;
+    if (ground !== null && layerTileAt(map, 1, index) !== ground) continue;
     filled.push(point);
     stack.push({ x: point.x + 1, y: point.y }, { x: point.x - 1, y: point.y }, { x: point.x, y: point.y + 1 }, { x: point.x, y: point.y - 1 });
   }

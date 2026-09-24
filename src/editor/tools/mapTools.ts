@@ -468,9 +468,8 @@ const paintTiles: ToolDefinition = {
       }
     }
     compactMapLayers(map);
-    const warning = groundPoints.length > 0 || layerNo === 4
-      ? passabilityWarning(draft, map, paintResult.touched)
-      : null;
+    // 통행은 네 층이 함께 정한다 — 어느 층을 칠해도 막힌 칸을 알린다(3층 물체가 가장 흔히 막는다).
+    const warning = paintResult.touched.length > 0 ? passabilityWarning(draft, map, paintResult.touched) : null;
     const skippedNote = paintResult.skipped > 0
       ? layerNo === 2 || layerNo === 4 ? `맵 밖 ${paintResult.skipped}칸은 건너뛰었습니다.` : `hard 규칙 동반 배치가 불가능한 ${paintResult.skipped}칸은 거부했습니다.`
       : null;
@@ -552,7 +551,10 @@ function applyClusterAwarePaint(
       setLower(map, edit.x, edit.y, edit.tile);
       lowerTouched.add(coordKey(edit.x, edit.y));
     } else {
-      map.upperTiles[edit.y * map.width + edit.x] = edit.tile;
+      const index = edit.y * map.width + edit.x;
+      map.upperTiles[index] = edit.tile;
+      // 3층을 비우면 그 위에 얹힌 4층도 비운다(뜬 물체를 남기지 않는다 — tile_erase upper 와 같다).
+      if (edit.tile < 0) setLayerTileAt(map, 4, index, TILE.EMPTY);
     }
     touched.push({ x: edit.x, y: edit.y });
   }
