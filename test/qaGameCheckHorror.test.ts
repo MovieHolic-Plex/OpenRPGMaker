@@ -81,3 +81,21 @@ describe("run_scene_test — 은신처", () => {
     expect(hidden.failureReason).toContain("숨어 있는 동안에는 움직일 수 없습니다");
   });
 });
+
+describe("안전지대·깨우는 스위치", () => {
+  it("맵을 덮는 안전지대와 아무도 켜지 않는 추격 스위치를 도구와 검사가 알린다", () => {
+    const ctx = horrorProject();
+    const mapId = ctx.project.startMapId;
+    const map = ctx.project.maps[mapId]!;
+    const result = runTool(ctx, "make_chase_scene", {
+      mapId, chaser: { at: { x: 5, y: 5 }, graphic: { query: "monster" }, speed: 6 }, killOnTouch: true,
+      safeZone: { x: 0, y: 0, w: map.width, h: map.height - 2 }, activateSwitch: "sw_never_on",
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const warnings = (result.diff?.warnings ?? []).join(" ");
+    expect(warnings).toContain("안전지대가 맵의");
+    expect(warnings).toContain("sw_never_on");
+    const codes = checkHorror(ctx.project, BRIEF).map((finding) => finding.code);
+    expect(codes).toEqual(expect.arrayContaining(["safe-zone-too-large", "chaser-never-wakes"]));
+  });
+});

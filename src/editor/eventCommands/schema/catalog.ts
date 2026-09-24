@@ -744,7 +744,7 @@ defineCommand({
   kind: "checkpointSave",
   family: "system",
   label: "체크포인트",
-  fields: {},
+  fields: { label: f.text("표시 이름", { optional: true }) },
   summary: () => "체크포인트 저장",
 });
 

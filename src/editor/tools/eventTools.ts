@@ -2367,7 +2367,7 @@ const makeChaseScene: ToolDefinition = {
       },
       pursuit: PURSUIT_SCHEMA,
       killOnTouch: { type: "boolean" },
-      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
+      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
       hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
@@ -2453,7 +2453,13 @@ const makeChaseScene: ToolDefinition = {
     const checkpointEventId = wantsCheckpoint ? ensureMapCheckpointEvent(draft, map) : undefined;
     const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
     const ratio = PLAYER_WALK_STEP_MS / paceMs;
+    // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
+    // 추격 맵 전체가 무적 구역이 됐다 — 안전지대는 세이브 방·계단참 같은 작은 구역이다.
+    const safeCover = safeZone ? Math.round(100 * Math.max(0, Math.min(map.width, safeZone.x + safeZone.w) - Math.max(0, safeZone.x))
+      * Math.max(0, Math.min(map.height, safeZone.y + safeZone.h) - Math.max(0, safeZone.y)) / (map.width * map.height)) : 0;
     const warnings = [
+      ...(safeCover >= 30 ? [`안전지대가 맵의 ${safeCover}% 를 덮어 그 안에서는 절대 붙잡히지 않습니다 — 추격이 성립하지 않습니다. 안전지대는 세이브 방처럼 작은 구역(몇 칸)으로 두세요.`] : []),
+      ...unwrittenSwitchGateWarnings(draft, event),
       ...(chaser.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
       ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
       ...(ratio < 0.5 ? [`추격자 속도 ${speed} 은 한 칸 ${paceMs}ms — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)의 ${Math.round(ratio * 100)}% 라 걸어서도 쉽게 따돌립니다. 긴장감 있는 추격은 speed 6(걷기의 2/3), 같은 속도는 7.`] : []),
