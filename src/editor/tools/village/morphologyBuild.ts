@@ -1,4 +1,5 @@
 import { paintForestGroves } from "./forestGroves";
+import { forestSetbackJitter } from "./forestContour";
 // editor/tools/village/morphologyBuild.ts
 // 형태 유형 계획(morphologyPlan)을 맵에 시공한다 — 기존 스탬퍼(킷 집·레시피 집·길 오토타일·울타리 타일·
 // 경작지 오토타일)를 그대로 쓴다. 나무만 타일셋에 따라 킷(treeKit.ts)을 고른다 — 합본 마을 원자 또는
@@ -569,10 +570,14 @@ function paintTreeGradient(
     }
   }
   if (kit.grove) {
+    const groveSeed = Math.floor(rng() * 0xffffffff);
+    // The setback bends (never under TREE_MIN_DISTANCE): a constant one copied the fields' and yards'
+    // straight edges into the canopy, which then read as a rectangular black void beside them
+    // (2026-09-24 lighthouse village review).
     const grove = paintForestGroves(map, area, kit.grove,
       (x, y) => free(x, y) && (occ[y * W + x] === OCC.free || occ[y * W + x] === OCC.commons)
-        && dist[y * W + x]! >= TREE_MIN_DISTANCE,
-      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+        && dist[y * W + x]! >= TREE_MIN_DISTANCE + Math.max(0, forestSetbackJitter(x, y, groveSeed)),
+      groveSeed, forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
     for (const index of grove.cells) occ[index] = OCC.reserved;
     return Math.ceil(grove.cells.size / 12);
   }
