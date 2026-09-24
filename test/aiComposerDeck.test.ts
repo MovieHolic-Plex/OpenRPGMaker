@@ -96,6 +96,40 @@ describe("aiComposer — 데크 컴포저", () => {
     expect(actions.querySelector(".ai-composer-mode-option")).toBeNull();
   });
 
+  it("모델명을 누르면 AI 설정 콜백이 돈다", () => {
+    let opened = 0;
+    const input = document.createElement("textarea");
+    const shell = createComposerElements({
+      input,
+      collapseButton: button("ai-collapse"),
+      sendButton: button("ai-send"),
+      abortButton: button("ai-abort"),
+      undoAppliedButton: button("ai-composer-undo"),
+      contextChips: div("ai-context-chips"),
+      composerChips: div("ai-composer-chips"),
+      nextSteps: div("ai-next-steps"),
+      queueIndicator: div("ai-pending-queue"),
+      statusGroup: div("ai-status-group"),
+      onNewChat: () => undefined,
+      modelLabel: "Gemini 3.7 Flash",
+      onModelClick: () => { opened += 1; },
+    });
+    const chip = findByTestId(shell.actions as unknown as FakeElement, "ai-composer-model");
+    (chip as unknown as FakeElement).dispatchEvent(new Event("click"));
+    expect(opened).toBe(1);
+  });
+
+  it("턴·토큰 줄은 비어 있으면 숨고, 값이 있으면 입력줄에 보인다", () => {
+    const { shell } = render();
+    const chip = findByTestId(shell.actions as unknown as FakeElement, "ai-composer-spend");
+    expect(chip?.hidden).toBe(true);
+    shell.setSpend("3턴 · 12,400토큰");
+    expect(chip?.hidden).toBe(false);
+    expect(chip?.textContent).toBe("3턴 · 12,400토큰");
+    shell.setSpend(null);
+    expect(chip?.hidden).toBe(true);
+  });
+
   it("모델 칩은 라벨을 보이고 null 이면 숨는다", () => {
     // Break: 라벨이 없을 때 「null」 이 찍히거나 칩이 자리를 먹는다.
     const { shell } = render({ modelLabel: "Gemini 3.7 Flash" });

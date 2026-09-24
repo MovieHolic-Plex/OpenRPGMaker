@@ -34,9 +34,13 @@ import {
   loadAiBackgroundOpacity,
   saveAiBackgroundOpacity,
   applyAiFontSize,
+  applyAiRenderWeight,
   loadAiFontSize,
+  loadAiRenderWeight,
   saveAiFontSize,
+  saveAiRenderWeight,
   type AiFontSize,
+  type AiRenderWeight,
 } from "@/editor/panels/aiPanelLayout";
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { installAiModalFocus } from "./aiModalFocus";
@@ -423,6 +427,27 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   fontSizeSelect.value = loadAiFontSize();
   const fontSizeDescription = "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다. 바꾸면 즉시 적용되고 저장됩니다.";
+  const renderWeightSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-render-weight" },
+    children: [
+      el("option", { attrs: { value: "light" }, text: "가볍게" }),
+      el("option", { attrs: { value: "heavy" }, text: "무겁게" }),
+      el("option", { attrs: { value: "off" }, text: "끄기" }),
+    ],
+  }) as HTMLSelectElement;
+  renderWeightSelect.value = loadAiRenderWeight();
+  applyAiRenderWeight(loadAiRenderWeight());
+  const renderWeightDescription = "조수 창이 맵 위를 어떻게 그릴지입니다. 가볍게는 흐림 없이 반투명, 무겁게는 유리 블러, 끄기는 불투명한 판입니다. 내장 GPU에서는 무겁게가 마우스를 움직일 때마다 느려집니다.";
+  const renderWeightRow = settingsRow("화면 무게", renderWeightDescription, renderWeightSelect);
+  renderWeightSelect.addEventListener("change", () => {
+    const raw = renderWeightSelect.value;
+    const weight: AiRenderWeight = raw === "heavy" || raw === "off" ? raw : "light";
+    saveAiRenderWeight(weight);
+    applyAiRenderWeight(weight);
+    savedHint.textContent = savedAtText();
+  });
+
   const fontSizeRow = settingsRow("글자 크기", fontSizeDescription, fontSizeSelect);
   fontSizeRow.setAttribute("title", fontSizeDescription);
 
@@ -878,7 +903,7 @@ export function renderAiSettingsForm(options: {
           [autonomyRow, piTeamRow, piApplyRow, maxTokens.row, behaviorAdvanced]),
       ]),
       pane("display", [
-        settingsSection("display", "표시", "AI 패널의 읽기 환경을 조정합니다.", [fontSizeRow, backgroundOpacityRow]),
+        settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
       ]),
       ...extraSections.map((section) =>
         pane(`extra-${section.id}`, [settingsSection(section.id, section.title, section.description, [section.content])])),

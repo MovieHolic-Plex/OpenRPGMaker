@@ -182,21 +182,26 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   backdrop-filter: blur(20px) saturate(1.08);
   -webkit-backdrop-filter: blur(20px) saturate(1.08);
   border-radius: var(--ai-deck-radius);
-  /* 위치는 레일 드래그가 패널에 심는 --ai-deck-right/--ai-deck-bottom 을 따른다
-     (aiDeckMoveChrome.ts). 저장값이 없으면 기존 우하단(inset) 그대로다.
-     right/bottom 앵커라 기록이 열려도 위로만 자라 끌어 놓은 아래 모서리가 안정적이다. */
+  /* 기본은 왼쪽 아래. 저장 위치가 있으면 has-custom-deck-pos 가 right 앵커로 바꾼다.
+     bottom 앵커라 기록이 열려도 위로만 자란다. */
   bottom: var(--ai-deck-bottom, var(--ai-deck-inset));
   box-shadow: var(--ai-deck-shadow);
   display: flex;
   flex-direction: column;
+  left: var(--ai-deck-inset);
   max-height: calc(100% - var(--ai-deck-inset) * 2);
   pointer-events: auto;
   position: absolute;
-  right: var(--ai-deck-right, var(--ai-deck-inset));
+  right: auto;
   transition: width 200ms ease;
   /* 폭 상한은 뷰포트가 아니라 패널(=캔버스 영역) 기준이다 — 100vw 로 재면 좁은 창에서 데크가 좌측 도구
      기둥 위로 넘어간다(e2e assistant-single-dock 900px 실측: x 248 < 캔버스 304). */
   width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100% - var(--ai-deck-inset) - 12px));
+}
+
+.ai-chat-panel.chat-dock-float.has-custom-deck-pos:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  left: auto;
+  right: var(--ai-deck-right, var(--ai-deck-inset));
 }
 
 /* 유휴·빈 대화·포커스 없음 = 컴포저만 좁게. 포커스·턴·대화가 있으면 열린 폭. */
@@ -601,6 +606,23 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 }
 
 /* hidden 속성만으로는 위 display 규칙에 밀린다(특이도 함정) — 명시적으로 못박는다. */
+/* 화면 무게. 기본(light)·끄기(off)는 캔버스 위 블러를 끈다. 무겁게(heavy)만 유리 블러를 남긴다. */
+html:is(:not([data-ai-render]), [data-ai-render="light"], [data-ai-render="off"]) :is(
+  .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck,
+  .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore,
+  .ai-work-strip-toggle,
+  .ai-work-card,
+  .ai-ghost-phase-chip,
+  .selection-action-chips,
+  .ai-deck > .ai-lock-scrim
+) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-ai-render="off"] {
+  --ai-deck-glass: var(--bg-raised);
+}
+
 .ai-deck > .ai-lock-scrim[hidden] {
   display: none;
 }

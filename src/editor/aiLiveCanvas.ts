@@ -1,15 +1,15 @@
-// 맵 위 실시간 시공 연출(고스트·청사진·카메라 따라가기·공개 대기)의 켜짐.
-// 작업 기록의 표시 수준과는 별개다. 꺼도 도구 실행·초안·적용은 그대로다.
+// 맵 위 실시간 시공 연출(고스트·청사진·카메라 따라가기·공개 대기).
+// 기본은 꺼짐. 작업 기록의 표시 수준과는 별개고, 꺼도 도구 실행·초안·적용은 그대로다.
 
 export const AI_LIVE_CANVAS_EVENT = "oprn-ai-live-canvas";
 const KEY = "oprn:ai-live-canvas";
 const listeners = new Set<() => void>();
-let fallback = true;
+let fallback = false;
 let cached: boolean | undefined;
 
 function readStored(): boolean {
   try {
-    return localStorage.getItem(KEY) !== "off";
+    return localStorage.getItem(KEY) === "on";
   } catch {
     return fallback;
   }
