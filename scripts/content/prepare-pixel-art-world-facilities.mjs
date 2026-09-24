@@ -33,6 +33,17 @@ for (const pack of packs) {
         upperTiles[index] = tile;
       }));
     }
+    for (const placement of placements) {
+      const recipe = pack.recipes.find(r => r.id === placement.recipeId);
+      if (!['standing', 'wall-mounted', 'countertop'].includes(recipe.placementKind) || !recipe.supportCells?.length) fail(`Missing support metadata ${recipe.id}`);
+      const permitted = recipe.placementKind === 'standing' ? passableTiles
+        : recipe.placementKind === 'wall-mounted' ? plan.wallTileIds : recipe.supportTileIds;
+      for (const cell of recipe.supportCells) {
+        if (!Number.isInteger(cell.x) || !Number.isInteger(cell.y) || cell.x < 0 || cell.y < 0 || cell.x >= recipe.sourceRect.width || cell.y >= recipe.sourceRect.height) fail(`Invalid support cell ${recipe.id}`);
+        const x = placement.x + cell.x, y = placement.y + cell.y;
+        if (!permitted?.includes(lowerTiles[indexAt(x, y)])) fail(`SUPPORT_MISMATCH ${id}/${recipe.id} at ${x},${y}`);
+      }
+    }
     for (const tile of [...lowerTiles, ...upperTiles]) if (!Number.isInteger(tile) || tile < -1 || tile >= count) fail(`Invalid tile ${id}: ${tile}`);
     const upperIds = new Set(upperTiles.filter(tile => tile >= 0));
     if (lowerTileIds.some(tile => upperIds.has(tile))) fail(`Contradictory layer ${id}`);

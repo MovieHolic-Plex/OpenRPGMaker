@@ -24,7 +24,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "clinic-reception",
@@ -35,18 +46,40 @@
           "width": 3,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "clinic-waiting-bench",
-        "name": "대기 의자 2석",
+        "name": "대기 의자 · 정면 단품",
         "sourceRect": {
           "x": 5,
           "y": 17,
-          "width": 2,
+          "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "clinic-exam-couch",
@@ -57,7 +90,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "clinic-monitor",
@@ -68,18 +112,32 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "clinic-medicine",
-        "name": "약품 보관장",
+        "name": "약품장 · 상단 유리와 하단 서랍 완전체",
         "sourceRect": {
-          "x": 3,
-          "y": 45,
+          "x": 0,
+          "y": 47,
           "width": 1,
-          "height": 2
+          "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "clinic-stool",
@@ -90,18 +148,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
-      },
-      {
-        "id": "clinic-sink",
-        "name": "이동 검사대와 부속 장치",
-        "sourceRect": {
-          "x": 2,
-          "y": 31,
-          "width": 2,
-          "height": 2
-        },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "clinic-poster",
@@ -112,7 +166,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "clinic-clock",
@@ -123,18 +184,32 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "clinic-plant",
         "name": "병원 화분",
         "sourceRect": {
           "x": 7,
-          "y": 6,
+          "y": 5,
           "width": 1,
-          "height": 2
+          "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "clinic-tv",
@@ -145,7 +220,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "clinic-privacy",
@@ -156,7 +246,36 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "clinic-privacy-side",
+        "name": "이동식 가림막 · 옆면",
+        "sourceRect": {
+          "x": 0,
+          "y": 24,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       }
     ],
     "scenePlans": [
@@ -205,7 +324,7 @@
           {
             "recipeId": "clinic-tv",
             "x": 4,
-            "y": 2
+            "y": 1
           },
           {
             "recipeId": "clinic-poster",
@@ -219,13 +338,13 @@
           },
           {
             "recipeId": "clinic-window",
-            "x": 9,
+            "x": 10,
             "y": 1
           },
           {
-            "recipeId": "clinic-privacy",
-            "x": 7,
-            "y": 3
+            "recipeId": "clinic-medicine",
+            "x": 8,
+            "y": 1
           },
           {
             "recipeId": "clinic-exam-couch",
@@ -240,17 +359,22 @@
           {
             "recipeId": "clinic-stool",
             "x": 9,
+            "y": 5
+          },
+          {
+            "recipeId": "clinic-privacy-side",
+            "x": 7,
+            "y": 3
+          },
+          {
+            "recipeId": "clinic-privacy",
+            "x": 7,
             "y": 6
           },
           {
-            "recipeId": "clinic-medicine",
-            "x": 11,
-            "y": 7
-          },
-          {
-            "recipeId": "clinic-sink",
-            "x": 8,
-            "y": 8
+            "recipeId": "clinic-privacy",
+            "x": 9,
+            "y": 6
           },
           {
             "recipeId": "clinic-waiting-bench",
@@ -259,18 +383,33 @@
           },
           {
             "recipeId": "clinic-waiting-bench",
-            "x": 4,
+            "x": 2,
             "y": 7
           },
           {
             "recipeId": "clinic-waiting-bench",
             "x": 4,
+            "y": 7
+          },
+          {
+            "recipeId": "clinic-waiting-bench",
+            "x": 5,
+            "y": 7
+          },
+          {
+            "recipeId": "clinic-waiting-bench",
+            "x": 4,
+            "y": 9
+          },
+          {
+            "recipeId": "clinic-waiting-bench",
+            "x": 5,
             "y": 9
           },
           {
             "recipeId": "clinic-plant",
-            "x": 1,
-            "y": 9
+            "x": 12,
+            "y": 8
           }
         ],
         "approachCells": [
@@ -288,7 +427,7 @@
           },
           {
             "x": 5,
-            "y": 5
+            "y": 4
           },
           {
             "x": 2,
@@ -299,6 +438,10 @@
             "y": 6
           },
           {
+            "x": 8,
+            "y": 4
+          },
+          {
             "x": 10,
             "y": 5
           },
@@ -307,25 +450,29 @@
             "y": 5
           },
           {
-            "x": 10,
+            "x": 11,
             "y": 7
-          },
-          {
-            "x": 10,
-            "y": 9
           },
           {
             "x": 6,
             "y": 9
+          },
+          {
+            "x": 3,
+            "y": 9
           }
         ],
-        "notes": "남쪽 입구에서 주요 가구 앞까지 한 칸 이상의 연결 통로. 전체 사각 영역 상위 부품은 차단. 검사는 배열/좌표/통행 연결만 확인하며 이벤트 실행이나 미학을 증명하지 않는다.",
+        "notes": "대기·접수는 서쪽, 진찰 구역은 북동쪽이다. (7,3)의 옆면 가림막과 (7,6)/(9,6)의 앞면 가림막이 진찰 공간의 경계를 만든다. 진찰실 남쪽 출입 통로는 x=11,12이다. 모든 가구는 upper이며 하위 바닥을 보존한다. 141/149 정면 의자만 반복하고 다른 방향 142/150을 같은 벤치로 이어붙이지 않는다. 약품장은 376/384/392 완전한 3칸 가구이며 하단이 바닥에 접한다.",
         "passableTiles": [
           1
         ],
         "lowerTileIds": [
           0,
           1,
+          17,
+          25
+        ],
+        "wallTileIds": [
           17,
           25
         ]
@@ -357,7 +504,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-desserts",
@@ -368,7 +526,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-drinks",
@@ -379,7 +548,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-fridge",
@@ -390,7 +570,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-register",
@@ -401,7 +592,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-warm-food",
@@ -412,7 +610,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-bread",
@@ -423,7 +632,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-wine",
@@ -434,7 +650,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-dry-goods",
@@ -445,7 +672,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-snacks",
@@ -456,7 +694,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-cosmetics",
@@ -467,7 +716,18 @@
           "width": 2,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "conveni-magazines",
@@ -478,7 +738,22 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "conveni-basket",
@@ -489,7 +764,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "conveni-clock",
@@ -500,7 +782,58 @@
           "width": 1,
           "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      {
+        "id": "conveni-service-counter",
+        "name": "가로 고객 응대 카운터 완전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 11,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
+      },
+      {
+        "id": "conveni-atm",
+        "name": "독립형 ATM",
+        "sourceRect": {
+          "x": 4,
+          "y": 19,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
       }
     ],
     "scenePlans": [
@@ -538,48 +871,6 @@
             "width": 2,
             "height": 1,
             "tile": 1
-          },
-          {
-            "x": 1,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 88
-          },
-          {
-            "x": 2,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 89
-          },
-          {
-            "x": 3,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 90
-          },
-          {
-            "x": 1,
-            "y": 6,
-            "width": 1,
-            "height": 1,
-            "tile": 96
-          },
-          {
-            "x": 2,
-            "y": 6,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 3,
-            "y": 6,
-            "width": 1,
-            "height": 1,
-            "tile": 98
           }
         ],
         "placements": [
@@ -614,16 +905,6 @@
             "y": 1
           },
           {
-            "recipeId": "conveni-register",
-            "x": 1,
-            "y": 5
-          },
-          {
-            "recipeId": "conveni-warm-food",
-            "x": 2,
-            "y": 5
-          },
-          {
             "recipeId": "conveni-wine",
             "x": 5,
             "y": 6
@@ -640,7 +921,7 @@
           },
           {
             "recipeId": "conveni-snacks",
-            "x": 2,
+            "x": 3,
             "y": 9
           },
           {
@@ -650,7 +931,17 @@
           },
           {
             "recipeId": "conveni-basket",
-            "x": 2,
+            "x": 12,
+            "y": 10
+          },
+          {
+            "recipeId": "conveni-service-counter",
+            "x": 1,
+            "y": 5
+          },
+          {
+            "recipeId": "conveni-atm",
+            "x": 1,
             "y": 7
           }
         ],
@@ -664,8 +955,8 @@
             "y": 11
           },
           {
-            "x": 1,
-            "y": 7
+            "x": 2,
+            "y": 8
           },
           {
             "x": 3,
@@ -704,15 +995,15 @@
             "y": 8
           },
           {
-            "x": 3,
+            "x": 10,
             "y": 8
           },
           {
-            "x": 10,
-            "y": 8
+            "x": 1,
+            "y": 10
           }
         ],
-        "notes": "남쪽 입구에서 주요 가구 앞까지 한 칸 이상의 연결 통로. 전체 사각 영역 상위 부품은 차단. 검사는 배열/좌표/통행 연결만 확인하며 이벤트 실행이나 미학을 증명하지 않는다.",
+        "notes": "진열장·3×2 고객 응대 카운터·독립 ATM은 모두 upper이며 바닥1을 보존한다. 카운터 남쪽 y=7 고객 동선, 북쪽 y=4 관리 동선을 유지한다. 북쪽 냉장 진열은 벽 하단에 걸치되 마지막 행 y=3은 바닥 위에 접지한다. POS/온장고 같은 countertop 소품은 받침을 확인하지 못한 이 장면에 넣지 않는다. 원본153/154의 용기와169/170의 단말을 셀프 계산대 한 물체로 잘못 결합하지 않는다.",
         "passableTiles": [
           1
         ],
@@ -720,13 +1011,11 @@
           0,
           1,
           17,
-          25,
-          88,
-          89,
-          90,
-          96,
-          97,
-          98
+          25
+        ],
+        "wallTileIds": [
+          17,
+          25
         ]
       }
     ]
@@ -756,7 +1045,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-menu-sandwich",
@@ -767,7 +1063,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-menu-drink",
@@ -778,7 +1081,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-register",
@@ -789,7 +1099,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-till",
@@ -800,18 +1117,32 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-sink",
-        "name": "주방 2칸 싱크",
+        "name": "싱크볼 · 조리대 위 소품",
         "sourceRect": {
           "x": 6,
           "y": 42,
-          "width": 2,
-          "height": 2
+          "width": 1,
+          "height": 1
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "countertop",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "diner-table",
@@ -822,7 +1153,14 @@
           "width": 1,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "diner-chair-east",
@@ -833,7 +1171,14 @@
           "width": 1,
           "height": 1
         },
-        "facing": "east"
+        "facing": "east",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "diner-chair-west",
@@ -844,18 +1189,36 @@
           "width": 1,
           "height": 1
         },
-        "facing": "west"
+        "facing": "west",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ]
       },
       {
         "id": "diner-waste",
-        "name": "분리수거함",
+        "name": "분리수거함 · 큰 갈색/녹색 두 통",
         "sourceRect": {
           "x": 6,
-          "y": 21,
+          "y": 22,
           "width": 2,
-          "height": 3
+          "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-plant",
@@ -866,7 +1229,14 @@
           "width": 1,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ]
       },
       {
         "id": "diner-poster",
@@ -877,7 +1247,14 @@
           "width": 1,
           "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ]
       },
       {
         "id": "diner-window",
@@ -888,40 +1265,96 @@
           "width": 3,
           "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       },
       {
-        "id": "diner-counter-front-left",
-        "name": "주문대 앞면 왼쪽 마감",
+        "id": "diner-counter",
+        "name": "가로 주문대 · 완전한 3칸 상판과 앞면",
         "sourceRect": {
           "x": 0,
-          "y": 15,
-          "width": 1,
-          "height": 1
+          "y": 14,
+          "width": 3,
+          "height": 2
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ]
       },
       {
-        "id": "diner-counter-front-middle",
-        "name": "주문대 앞면 반복 중간",
+        "id": "diner-oven",
+        "name": "주방 보온 진열장 · 후드와 하부 포함",
         "sourceRect": {
-          "x": 1,
-          "y": 15,
-          "width": 1,
-          "height": 1
+          "x": 6,
+          "y": 36,
+          "width": 2,
+          "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ]
       },
       {
-        "id": "diner-counter-front-right",
-        "name": "주문대 앞면 오른쪽 마감",
+        "id": "diner-kitchen-unit",
+        "name": "금속 조리대 · 작업면과 하부장 완전체",
         "sourceRect": {
-          "x": 2,
-          "y": 15,
-          "width": 1,
-          "height": 1
+          "x": 4,
+          "y": 39,
+          "width": 3,
+          "height": 3
         },
-        "facing": "south"
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ]
       }
     ],
     "scenePlans": [
@@ -959,99 +1392,43 @@
             "width": 2,
             "height": 1,
             "tile": 0
-          },
-          {
-            "x": 1,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 96
-          },
-          {
-            "x": 2,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 3,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 4,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 5,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 6,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 7,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 97
-          },
-          {
-            "x": 8,
-            "y": 5,
-            "width": 1,
-            "height": 1,
-            "tile": 98
           }
         ],
         "placements": [
           {
             "recipeId": "diner-menu-burger",
-            "x": 2,
+            "x": 1,
             "y": 1
           },
           {
             "recipeId": "diner-menu-sandwich",
-            "x": 4,
+            "x": 2,
             "y": 1
           },
           {
             "recipeId": "diner-menu-drink",
-            "x": 6,
+            "x": 3,
             "y": 1
           },
           {
-            "recipeId": "diner-register",
-            "x": 2,
-            "y": 4
-          },
-          {
-            "recipeId": "diner-till",
-            "x": 5,
-            "y": 4
-          },
-          {
-            "recipeId": "diner-sink",
-            "x": 10,
+            "recipeId": "diner-oven",
+            "x": 11,
             "y": 2
+          },
+          {
+            "recipeId": "diner-counter",
+            "x": 1,
+            "y": 5
+          },
+          {
+            "recipeId": "diner-counter",
+            "x": 5,
+            "y": 5
           },
           {
             "recipeId": "diner-waste",
             "x": 11,
-            "y": 5
+            "y": 8
           },
           {
             "recipeId": "diner-table",
@@ -1086,47 +1463,12 @@
           {
             "recipeId": "diner-plant",
             "x": 12,
-            "y": 8
+            "y": 5
           },
           {
-            "recipeId": "diner-counter-front-left",
-            "x": 1,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-middle",
-            "x": 2,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-middle",
-            "x": 3,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-middle",
-            "x": 4,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-middle",
+            "recipeId": "diner-kitchen-unit",
             "x": 5,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-middle",
-            "x": 6,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-middle",
-            "x": 7,
-            "y": 6
-          },
-          {
-            "recipeId": "diner-counter-front-right",
-            "x": 8,
-            "y": 6
+            "y": 1
           }
         ],
         "approachCells": [
@@ -1143,20 +1485,20 @@
             "y": 7
           },
           {
-            "x": 5,
+            "x": 6,
             "y": 7
           },
           {
-            "x": 9,
+            "x": 4,
             "y": 5
           },
           {
-            "x": 10,
+            "x": 9,
             "y": 4
           },
           {
-            "x": 10,
-            "y": 6
+            "x": 11,
+            "y": 7
           },
           {
             "x": 3,
@@ -1185,9 +1527,21 @@
           {
             "x": 6,
             "y": 10
+          },
+          {
+            "x": 10,
+            "y": 5
+          },
+          {
+            "x": 11,
+            "y": 5
+          },
+          {
+            "x": 10,
+            "y": 10
           }
         ],
-        "notes": "남쪽 입구에서 주요 가구 앞까지 한 칸 이상의 연결 통로. 전체 사각 영역 상위 부품은 차단. 검사는 배열/좌표/통행 연결만 확인하며 이벤트 실행이나 미학을 증명하지 않는다.",
+        "notes": "3×2 가로 주문대112,113,114/120,121,122 전체를 upper에 놓는다. 세로 주문대 몸통96..98은 가로 반복하지 않는다. POS와 카운터를 서로 다른 불완전 레이어로 겹치지 않으며 이 장면에서는 POS를 생략한다. 분리수거함은182,183/190,191의 2×2 완전체이고174/175 작은 변형을 위로 이어붙이지 않는다. 주방 후드와 보온장294,295/302,303/310,311은 하단을 바닥 y=4에 접지한다. 작업 통로 y=4, 고객 통로 y=7이 연결된다. 싱크볼342는 조리대 위 별도 소품이고350/351은 난간이므로 합치지 않는다. 장면은 받침 없는 싱크볼 대신316,317,318/324,325,326/332,333,334 금속 조리대 완전체를 사용한다.",
         "passableTiles": [
           0
         ],
@@ -1195,10 +1549,11 @@
           8,
           0,
           17,
-          33,
-          96,
-          97,
-          98
+          33
+        ],
+        "wallTileIds": [
+          17,
+          33
         ]
       }
     ]
