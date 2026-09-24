@@ -2,6 +2,7 @@ import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { RIVER_VILLAGE_STYLE_GUIDANCE } from "@/project/defaults/riverVillageStyle";
 import { prepareVillageDefaultTileset } from "./village/defaultTileset";
 import { applyVillageClimate, borrowForestHarmonyForClimateSheet } from "./village/villageClimate";
+import { placeVillageLandmark } from "./village/villageLandmark";
 import { withVillageMorphologyDefault } from "./village/defaultMorphology";
 import { VILLAGE_MORPHOLOGIES } from "./village/morphologyTypes";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
@@ -160,6 +161,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
         },
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
         groundTheme: { type: "string", enum: ["grass", "snow"], description: "마을 전체 지면. 기획·세계관이 눈·겨울·눈보라·설원이면 snow — 숲마을 칩셋은 칸 번호가 같은 설원 칩셋(forest_harmony_snow)으로 바뀌고 맵 날씨가 눈이 되어 이 마을 아래 실내·던전의 전투 배경도 설원이 된다. theme 문장은 코드가 읽지 않으니 눈 마을이면 반드시 지정한다." },
+        landmark: { type: "string", enum: ["lighthouse"], description: "마을 안 랜드마크. lighthouse=물가(물이 없으면 북쪽) 빈 땅에 둥근 탑 등대(2×5, 꼭대기 등불)를 세우고 입구 앞칸 좌표를 경고로 돌려준다 — 그 좌표로 create_transfer_pair 해 등대 맵과 잇는다. 기획에 등대가 있으면 지정한다(theme 문장은 코드가 읽지 않는다)." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         morphology: {
           type: "string",
@@ -266,11 +268,14 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const renameWarnings = request.target.kind === "existing"
         ? renameVillageTargetMap(draft, request.target.mapId, requestedExistingName)
         : [];
+      // 랜드마크는 숲마을 칩셋일 때 세운다 — 기후 칩셋은 칸 번호가 같아 그대로 옮겨 간다.
+      const landmark = request.landmark ? placeVillageLandmark(draft, request.target.mapId, request.landmark) : undefined;
       const climateWarnings = applyVillageClimate(draft, request, borrowed.climate);
-      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...climateWarnings];
+      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...(landmark?.warnings ?? []), ...climateWarnings];
       return {
-        summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`,
-        data,
+        summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`
+          + (landmark?.placed ? ` Lighthouse at (${landmark.placed.x},${landmark.placed.y}), entrance (${landmark.placed.entrance.x},${landmark.placed.entrance.y}).` : ""),
+        data: landmark?.placed ? { ...data, landmark: landmark.placed } : data,
         ...(warnings.length === 0 ? {} : { warnings }),
       };
     },

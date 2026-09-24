@@ -8,7 +8,7 @@ export const DUNGEON_DESIGN_PROPERTIES = {
   character: { type: "string", enum: ["cavern", "mine", "crystal", "crypt"], description: "공간 용도와 소품 문법. mine은 입구와 작업장을 잇는 연속 철로." },
   path: { type: "string", enum: [...DUNGEON_PATHS], description: "세계관과 이번 요청으로 정한 길의 형태. straight는 곧은 방과 길, cave는 경계가 녹는 공동, winding은 방은 남기고 길만 꺾임. 생략하면 crypt만 곧은 형태이고 그 외는 동굴이다." },
   linkMapId: { type: "string", description: "이 던전 입구와 양방향으로 이어질 바깥 맵 id. 그 맵이 있을 때만 출입구를 놓는다." },
-  landmark: { type: "string", enum: [...DUNGEON_LANDMARKS], description: "입구에서 가장 먼 방에 두는 표지. altar 제단, tower 탑, gate 문, sound 소리 표식." },
+  landmark: { type: "string", enum: [...DUNGEON_LANDMARKS], description: "입구에서 가장 먼 방(single-room 은 방 북쪽 가운데)에 두는 표지. altar 제단, tower 탑, gate 문, sound 소리 표식, beacon 봉화(돌기둥 사이 횃불 화로대 — 등대 꼭대기·봉화대)." },
   pressure: { type: "string", enum: [...DUNGEON_PRESSURES], description: "가만히 있지 않는 것. patrol은 troopId가 있을 때 순찰, tide는 밀물, rising은 차오르는 물." },
   troopId: { type: "string", description: "pressure가 patrol일 때 순찰할 트룹 id." },
   graph: {
