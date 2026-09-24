@@ -25,7 +25,7 @@ import {
   mountPerfMetrics,
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
@@ -82,7 +82,13 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   // 마이크로태스크로 합쳐 갱신한다.
   // 테스트에서 editorState가 부분 목킹될 수 있으므로 함수 존재를 가드.
   if (typeof editorState.subscribe === "function") {
-    editorState.subscribe(() => {
+    let lastTopbarState = editorState.get?.();
+    editorState.subscribe((state) => {
+      const previous = lastTopbarState;
+      lastTopbarState = state;
+      // 레이어 단추는 menu.ts 가 제자리에서 바꾼다. 타일·붓만 고른 클릭마다 탑바를 통째로
+      // 다시 지으면 대형 칩셋 팔레트 클릭이 그만큼 굼떠진다(2026-09-25 실측).
+      if (previous && editorStateChangedOnlyPaintPick(previous, state)) return;
       if (topbarRefreshQueued) return;
       topbarRefreshQueued = true;
       queueMicrotask(() => {

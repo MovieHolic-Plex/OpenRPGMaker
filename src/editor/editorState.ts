@@ -195,6 +195,43 @@ export function editorStateNeedsPaletteRefresh(previous: EditorState, next: Edit
 }
 
 /**
+ * 고른 타일과 타일 레이어(바닥↔상위)만 바뀌었는가 — 상위 전용 타일을 고르면 레이어가 따라온다.
+ * 이벤트 레이어로 들어가거나 나오는 전환은 보이는 패널 자체가 바뀌므로 제외한다.
+ */
+export function editorStateChangedOnlySelectedTileAndLayer(previous: EditorState, next: EditorState): boolean {
+  if (previous === next || previous.layer === "event" || next.layer === "event") return false;
+  let changed = false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] === next[key]) continue;
+    if (key !== "selectedTile" && key !== "layer") return false;
+    changed = true;
+  }
+  return changed;
+}
+
+/**
+ * 붓 고르기(타일·스탬프·붓 모양·크기·도구·레이어)만 바뀌었는가.
+ * 조수 패널은 이 필드를 입력창 안내문으로만 읽는다. 팔레트 클릭마다 칩·레일·크기 측정을
+ * 다시 돌리면 본문 `:has()` 무효화로 문서 전체 스타일을 여러 번 다시 계산한다(2026-09-25 실측).
+ */
+const PAINT_PICK_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof EditorState>([
+  "selectedTile",
+  "activePaletteStamp",
+  "paintShape",
+  "brushSize",
+  "tool",
+  "layer",
+]);
+
+export function editorStateChangedOnlyPaintPick(previous: EditorState, next: EditorState): boolean {
+  if (previous === next) return false;
+  for (const key of Object.keys(next) as (keyof EditorState)[]) {
+    if (previous[key] !== next[key] && !PAINT_PICK_KEYS.has(key)) return false;
+  }
+  return true;
+}
+
+/**
  * 고른 타일 번호만 바뀌었는가.
  * 그 경우는 팔레트 칸을 다시 만들 이유가 없다 — 활성 칸과 선택 칩만 바꾸면 된다.
  * 레이어·도구·스탬프가 같이 바뀌면 보이는 칸 자체가 달라지므로 전체 갱신이다.
