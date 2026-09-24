@@ -160,3 +160,15 @@ prop-programs.json이 집별 용도/할 일/지정 이유 및 부품의 목적/�
 - 이 카탈로그 타일셋의 굽이숲 그룹에 속 변형 11칸(2597~2607, 원래 수관 이식의 빈 채움 칸)을 더했다(`ensureForestGroveInterior`, 이식 원본 아틀라스 2524~2534).
 - 맵은 다시 저작하지 않고 `node scripts/content/shade-forest-canopy.mjs tiledata/forest-villages/diverse/catalog.json` 로 제자리에서 속 칸(2568)만 깊이 변형으로 바꿨다. 하위 배열·가장자리·줄기는 그대로.
 - 공용 용도 `diverse-villages-canopy-v13` + `concept-villages-v4`, 지역 revision 13, 정본 revision 23. 옛 v12/v3 은 `previous-reference.json` 에 기록.
+
+## 마을 채우기 개정14 — 빈 띠 걷기·덩이 장면·항구 (2026-09-24)
+
+사용자 판정: 「여전히 맵이 빈 공간이 너무 많다」, 전체 검수 뒤 「뜬금없는 소재가 뜬금없는 곳에 있는 건 싫다」「항구의 끝인가? 배는?」「비취 대계곡처럼 대형 마을을 고려해야 한다」.
+- 규칙 전부: [마을 채우기](fullness-rules.md). 실행 `node scripts/content/fill-diverse-villages.mjs <개정13 catalog> <out> --add=<항구 마을>`.
+  입력은 개정13 카탈로그(origin/main)에 `node scripts/content/refit-farmland-edges.mjs <catalog>` 를 먼저 돌린 것.
+- 잔디 마감(crest, 2692~2694)을 모두 걷었다: 옅은 사다리꼴·사선이 덜 깔린 칸처럼 보였다. `grassFaults` 는 이제 입구 막힘 검사 하나만 만든다.
+- 폭포 아래 소는 비대칭 덩이(lib/village-pools.mjs), 주인 없는 소품·길가라는 이유만의 벤치는 지운다(lib/village-ownership.mjs), 원래 맵의 외톨이 덤불도 걷는다.
+- 빈칸 게이트(`python3 /tmp/oprn-qa/emptiness.py <catalog> --kind town --plain 240,1140-1147`: 5칸 정사각형 없음, 17×13 화면 빈 잔디 ≤40%)를 덩이 장면으로 넘긴다. 키큰 풀은 E/F/G(PR #1421, `lib/tall-grass.mjs`).
+- 항구 조각 `tex_harbor_kit`(public/assets/harbor-kit, `scripts/content/build-harbor-kit.py`): LPC 나룻배(CC-BY-SA 3.0, Daniel Eddeland) + EasyRPG 배 칩셋 말뚝·밧줄·닻·통·상자(CC0). 이 카탈로그 타일셋의 빈 칸 2657~2669·2695~2699·2703~2729 에 이식. `lib/village-harbor.mjs` `ensureHarborGrafts`·`placeHarbor` 는 다른 숲마을 맵에서도 쓴다. 큰 배(EasyRPG 갑판 맵)는 걸어 다니는 갑판 그림이라 바깥 풍경의 배로 쓰지 않았다.
+- 큰 항구 마을 「너울목 항구 마을」(`nuleolmok-harbor-town`, 저작 80×64 → 76×60, `scripts/content/author-harbor-town.mjs`): 윗단 서쪽 신전 구역(교회·묘지·약초집), 윗단 동쪽 농가 구역(큰 밭·텃밭집), 아랫단 서쪽 장터 광장(우물·노점·과일 좌판·게시판), 아랫단 남동쪽 항구(긴 부두·나룻배 둘·어업집·창고·배 목수집). 강이 윗단을 가로질러 폭포로 떨어지고, 두 계단과 두 다리가 한 바퀴 도는 길을 만든다. 장소(places)와 지역(regions)에 모두 올렸다.
+- 공용 용도 `diverse-villages-fullness-v14` + `concept-villages-v5`, 지역 revision 14.

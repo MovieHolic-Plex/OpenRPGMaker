@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3378KB / 약 963,952 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3384KB / 약 965,651 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -15,15 +15,15 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 
 | 페이지 | 통짜 크기 | 가장 큰 절 | 줄 | 토큰 추정 |
 |---|---|---|---|---|
-| `openwiki/editor-ai-panel.md` | 503KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 2986 | ~145,102 |
+| `openwiki/editor-ai-panel.md` | 505KB | 100KB ⚠상한 초과 — 절을 더 쪼개라 | 3005 | ~145,757 |
 | `openwiki/editor-ai-tools.md` | 245KB | 86KB ⚠상한 초과 — 절을 더 쪼개라 | 2058 | ~69,521 |
-| `openwiki/editor-database.md` | 355KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2143 | ~103,383 |
+| `openwiki/editor-database.md` | 355KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2143 | ~103,420 |
 | `openwiki/editor-event-authoring.md` | 155KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 872 | ~45,047 |
 | `openwiki/editor-event-commands.md` | 62KB | 32KB | 258 | ~17,025 |
 | `openwiki/editor-interior-room-harness.md` | 93KB | 6KB | 451 | ~27,026 |
-| `openwiki/editor-pre-edit-routing.md` | 132KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 770 | ~38,306 |
+| `openwiki/editor-pre-edit-routing.md` | 132KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 772 | ~38,382 |
 | `openwiki/editor-workflows-misc.md` | 68KB | 30KB | 486 | ~18,555 |
-| `openwiki/runtime-battle.md` | 165KB | 31KB | 787 | ~47,334 |
+| `openwiki/runtime-battle.md` | 165KB | 31KB | 787 | ~47,401 |
 | `openwiki/runtime-pre-edit-routing.md` | 52KB | 33KB | 346 | ~15,263 |
 | `openwiki/runtime-project-schema.md` | 165KB | 65KB ⚠상한 초과 — 절을 더 쪼개라 | 1203 | ~45,360 |
 | `openwiki/runtime-sessions.md` | 103KB | 48KB | 476 | ~27,520 |
@@ -42,7 +42,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 11 | 11, 12, 14, 15, 16, 17, 18, 19 |
 | `openwiki/editor-event-commands.md` | 6 | 117, 130, 131, 133, 136, 137 |
 | `openwiki/editor-observability.md` | 1 | 335 |
-| `openwiki/editor-pre-edit-routing.md` | 5 | 574, 583, 591, 595, 619 |
+| `openwiki/editor-pre-edit-routing.md` | 5 | 576, 585, 593, 597, 621 |
 | `openwiki/state-system.md` | 2 | 5, 86 |
 
 ## 없는 파일을 가리키는 참조
@@ -302,7 +302,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L55` 설치 지점
 - `L61` 테스트
 
-### `openwiki/editor-ai-panel.md` — 503KB · 2986줄 · ~145,102 토큰 · 통째읽기 잘림 · 깨진 줄 25
+### `openwiki/editor-ai-panel.md` — 505KB · 3005줄 · ~145,757 토큰 · 통째읽기 잘림 · 깨진 줄 25
 
 - `L4` 새 프로젝트 게임 기획 전달 (2026-09-22)
 - `L13` 제작 전 그래픽 선택과 자동 큰 창 (2026-09-21)
@@ -388,6 +388,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2944` Pi 시공 연출과 공간 밑그림 복구 (2026-09-21)
 - `L2975` 실시간 맵 연출 헤드리스 (2026-09-22)
 - `L2983` 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
+- `L2987` 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
+- `L2995` 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
 
 ### `openwiki/editor-ai-tools.md` — 245KB · 2058줄 · ~69,521 토큰 · 통째읽기 잘림 · 깨진 줄 6
 
@@ -468,7 +470,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L2032` 공용 LPC 자료 정리와 지역·오브젝트 조회 (2026-09-23)
 - `L2055` Isaiah 물 태그 판정 보완 (2026-09-24)
 
-### `openwiki/editor-database.md` — 355KB · 2143줄 · ~103,383 토큰 · 통째읽기 잘림 · 깨진 줄 7
+### `openwiki/editor-database.md` — 355KB · 2143줄 · ~103,420 토큰 · 통째읽기 잘림 · 깨진 줄 7
 
 - `L3` 자료집 열기 (2026-09-24)
 - `L7` 게임 오버 라이브러리 저작 (2026-09-23)
@@ -731,7 +733,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L496` 검증
 - `L503` Feature16 저작 보조 관측 경계 (2026-09-21)
 
-### `openwiki/editor-pre-edit-routing.md` — 132KB · 770줄 · ~38,306 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 132KB · 772줄 · ~38,382 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L5` 맵별 16/32/48px 좌표
 - `L13` 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
@@ -739,28 +741,28 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L79` 맵 전환과 물 타일 애니메이션 공유 (2026-09-18)
 - `L97` 편집기 재렌더 비용 — 줌은 카메라 경로다 (2026-09-16)
   - `L147` 커스텀 칩 팔레트의 빈틈 없는 표시 (2026-09-21)
-- `L162` Exterior door backing
-- `L172` Tile brush reliability (2026-09-06)
-- `L210` Combo Brush (2026-09-10, OPRN-OUT-022)
-  - `L215` 용어 (코드와 UI 가 같은 말을 쓴다)
-  - `L227` 소유 경계
-  - `L239` 근거 규칙 — 번호 인접으로 추론하지 않는다
-  - `L250` 검토 책임
-  - `L262` 경계와 진단
-  - `L272` 회귀 이음줌
-- `L284` Pre-edit routing
-  - `L286` 명명 로케이션 레이어 (2026-09-10)
-  - `L368` 로케이션 역할과 겹침 클릭 (2026-09-12)
-  - `L406` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
-  - `L408` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
-  - `L461` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
-  - `L521` Automatic usage guides disabled (2026-09-06)
-  - `L531` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
-- `L638` Agent cautions
-- `L648` 헤더 용어 정본과 중복 감사 (2026-08-30)
-  - `L684` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
-  - `L716` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
-  - `L745` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
+- `L164` Exterior door backing
+- `L174` Tile brush reliability (2026-09-06)
+- `L212` Combo Brush (2026-09-10, OPRN-OUT-022)
+  - `L217` 용어 (코드와 UI 가 같은 말을 쓴다)
+  - `L229` 소유 경계
+  - `L241` 근거 규칙 — 번호 인접으로 추론하지 않는다
+  - `L252` 검토 책임
+  - `L264` 경계와 진단
+  - `L274` 회귀 이음줌
+- `L286` Pre-edit routing
+  - `L288` 명명 로케이션 레이어 (2026-09-10)
+  - `L370` 로케이션 역할과 겹침 클릭 (2026-09-12)
+  - `L408` 설계 영역 이관 도구 (LOC-ADOPT, 2026-09-10)
+  - `L410` 로케이션 앵커 — 좌표 대신 이름으로 가리키기 (2026-09-12)
+  - `L463` Standard / Expert focus modes (2026-09-07; supersedes sidebar density notes below)
+  - `L523` Automatic usage guides disabled (2026-09-06)
+  - `L533` Sidebar mode workflow (2026-09-06; supersedes older 72px/tile-flyout notes below)
+- `L640` Agent cautions
+- `L650` 헤더 용어 정본과 중복 감사 (2026-08-30)
+  - `L686` 톱바 영역 진입점 감사표 (`renderTopbar` 실측)
+  - `L718` 사이드바 ↔ 톱바 소유권 (2026-08-30 중복 정리)
+  - `L747` 스튜디오 바 — 톱바 한 줄 (2026-09-03, 표준·전문가 대격변)
 
 ### `openwiki/editor-storage-chest.md` — 2KB · 17줄 · ~571 토큰
 
@@ -844,16 +846,16 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L192` 연결 프리셋과 그래프 (2026-09-06)
 - `L226` 검증
 
-### `openwiki/horror-authoring.md` — 17KB · 185줄 · ~5,487 토큰
+### `openwiki/horror-authoring.md` — 18KB · 186줄 · ~5,583 토큰
 
 - `L8` 저작 표면
-- `L23` 데이터와 런타임
-- `L40` 연결 방 추격 연속성 (2026-09-06)
-- `L66` NPC 발견 이벤트와 공통 전투 소유권 (2026-09-06)
-- `L126` 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
-- `L149` 실내 제작과 검증
-- `L160` 검증 경로
-- `L174` 전체 게이트 후속 수정 (2026-09-05)
+- `L24` 데이터와 런타임
+- `L41` 연결 방 추격 연속성 (2026-09-06)
+- `L67` NPC 발견 이벤트와 공통 전투 소유권 (2026-09-06)
+- `L127` 가구 밀기 애니메이션 (2026-09-05 후속 체험 수정)
+- `L150` 실내 제작과 검증
+- `L161` 검증 경로
+- `L175` 전체 게이트 후속 수정 (2026-09-05)
 
 ### `openwiki/interior-tile-benchmark.md` — 9KB · 158줄 · ~2,814 토큰
 
@@ -1015,7 +1017,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 165KB · 787줄 · ~47,334 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 165KB · 787줄 · ~47,401 토큰 · 통째읽기 잘림
 
 - `L3` 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
 - `L13` 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
@@ -1396,7 +1398,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L83` Ownership and regeneration
 - `L106` Contract fixtures and proof
 
-### `openwiki/spatial-geography-ui.md` — 31KB · 437줄 · ~8,772 토큰
+### `openwiki/spatial-geography-ui.md` — 32KB · 445줄 · ~9,146 토큰
 
 - `L9` Public modules
 - `L27` Regions gallery contract (2026-09-22)
@@ -1422,6 +1424,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L395` 계단 대지 개정8 (2026-09-23)
   - `L410` 강과 폭포 개정9 (2026-09-23)
   - `L422` 컨셉 마을 3종 · 창문 개정10 (2026-09-23)
+  - `L438` 마을 채우기 개정14 · 항구 · 큰 항구 마을 (2026-09-24)
 
 ### `openwiki/spatial-manual-build.md` — 11KB · 177줄 · ~2,738 토큰
 
@@ -1480,7 +1483,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L108` Implementation invariants
 - `L119` Sources
 
-### `openwiki/state-system.md` — 12KB · 130줄 · ~3,251 토큰 · 깨진 줄 2
+### `openwiki/state-system.md` — 12KB · 133줄 · ~3,384 토큰 · 깨진 줄 2
 
 - `L7` TL;DR (use this when explaining to a user)
 - `L15` Layers and ownership
@@ -1490,8 +1493,8 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` Editor surface
 - `L92` Runtime application
 - `L103` Common confusion points
-- `L112` Files to inspect before editing
-- `L124` Related pages
+- `L115` Files to inspect before editing
+- `L127` Related pages
 
 ### `openwiki/storage-retirement.md` — 4KB · 55줄 · ~1,203 토큰
 
@@ -1512,7 +1515,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L107` 알려진 함정
 - `L117` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
 
-### `openwiki/team-project-host.md` — 16KB · 199줄 · ~4,964 토큰
+### `openwiki/team-project-host.md` — 17KB · 206줄 · ~5,225 토큰
 
 - `L5` 소유와 실행 위치
 - `L22` 실행
@@ -1527,6 +1530,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L169` 맵 편집 권한 가져오기 (2026-09-18)
 - `L177` 운영 AI와 로그인 유지 (2026-09-18)
 - `L190` 내부 웹 기본 접속 (2026-09-18)
+- `L201` Large bridge save requests (2026-09-24)
 
 ### `openwiki/testing.md` — 205KB · 1916줄 · ~56,826 토큰 · 통째읽기 잘림
 

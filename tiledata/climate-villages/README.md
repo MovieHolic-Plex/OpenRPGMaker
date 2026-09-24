@@ -37,7 +37,8 @@ node scripts/qa/capture-climate-villages.mjs
 - 사막·가을은 숲 자체도 칠한다. 수관(이식 2550~2596, `TREE` 밖)·숲 줄기 조립(1350·1422~1433·1453~1463)·layerBacking으로 밑에 깔리는 잔디(1141·1145…)까지 함께 칠해야 초록 점이 안 남는다. 선인장 769·야자 770은 일부러 초록으로 둔다.
 - 사막 마을은 나무 도장을 모래로 되돌리고 발치에 야자(물 5칸 안)·선인장을 놓는다(`lib/climate-edits.mjs` `dressDesert`, 필드와 공용).
 - 못을 얼릴 때는 한 덩어리를 통째로 대응표로 바꾼다. 일부만 바꾸면 물과 얼음 사이에 물가 테두리가 없다.
-- 분류는 `climate-*-villages-v4`(v2 정확한 폭, v3 폭 2 조각 제거, v4 수관 잎 채움). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedClimateVillageReferences.json tiledata/climate-villages/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureClimateVillageReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
+- 분류는 `climate-*-villages-v5`(v2 정확한 폭, v3 폭 2 조각 제거, v4 수관 잎 채움, v5 마을 채우기 — 아래). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedClimateVillageReferences.json tiledata/climate-villages/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureClimateVillageReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
 - 원본 숲마을의 줄기를 다시 맞추면(`scripts/content/refit-forest-trunks.mjs`) 여기 `author-climate-villages.mjs` 부터 다시 돈다. 끝나면 `node scripts/content/check-forest-trunks.mjs` 로 줄기 규칙을 확인한다.
 - 수관(2550~2596)은 채우기 전의 평평한 그림(`tiledata/forest-villages/canopy-leaves/flat-canopy.png`)으로 칠한 뒤, 시트마다 마지막에 **그 시트 자신의 잎 테두리**로 속을 채우고 속 변형 11칸(2597~2607)을 굽는다(`scripts/content/lib/canopy_leaves.py`). 규칙은 [수관 잎 채움](../forest-villages/canopy-leaves/README.md).
 - 시트를 다시 칠하면 `prepare-climate-tilesets.mjs`부터 다시 돌린다(얼음 칸 수가 바뀌면 타일셋 칸 수도 바뀐다).
+- 마을 채우기(v5, 2026-09-24 검수 반영): 원본 숲마을 개정14 를 그대로 옮긴 뒤 기후마다 다시 게이트(5칸 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 덩이 장면으로 넘긴다(`fillNaturalGaps`). 키큰 풀은 E/F/G(PR #1421) — 시트가 서리·재·마른·단풍 풀로 칠한다. 설원·화산은 집·길 곁 G 를 걷고 새 덩이도 E·F 만(G 없이 게이트를 못 넘는 마을은 G 를 남기고 편집 기록 `buried-grass.kept` 에 적는다). 설원·화산·사막에는 꽃이 없다(덤불에 붙은 꽃은 덤불 289 로). 설원의 활엽수는 눈 덮인 둥근 덤불로, 설원·사막 채우기는 나무 장면을 쓰지 않는다. 설원 종탑 언덕은 강과 소가 얼었다(`freezeRiver`, 폭포만 흐른다).
