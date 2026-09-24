@@ -16,6 +16,7 @@ import { cliffEndLedge, dressDesert, extendClearedCliffEnds, freezeCells, placeP
 import { arrangeBareGroves, clearLeafyTrees, growMeadows, isLeafyTree, plantPalmGroves, CACTUS } from "./lib/bare-trees.mjs";
 import { emptiness, fillNaturalGaps, rng } from "./lib/village-fullness.mjs";
 import { arrangeTallGrass, ALL_TALL_GRASS, TALL_GRASS_TILES } from "./lib/tall-grass.mjs";
+import { dressDesertGround, dressVolcanoGround, terrainKit } from "./lib/climate-terrain.mjs";
 const BURIED = new Set(["snow", "volcano"]);
 // Snow and ash: the short grass by houses and roads (G) is trodden under; the dark forest-edge grass (E) and the light
 // meadow grass (F) stay, in the sheet's frosted / ash colours.
@@ -35,8 +36,8 @@ const PLANS = [
     note: "용암 강이 마을 한가운데를 흐르다 두 줄 절벽에서 용암 폭포로 떨어진다. 단마다 현무암 다리가 두 강둑을 잇는다. 숲 대신 그을린 고목 덩이가 맵 가장자리를 두른다" },
   { id: "climate-volcano-ford-castle", climate: "volcano", from: "ford-castle-town", name: "잿빛 여울성", bare: {},
     note: "재로 덮인 벌판 위 성채 마을. 해자와 여울이 용암으로 바뀌고, 숲이 있던 자리에는 그을린 고목이 덩이로 서 있다" },
-  { id: "climate-volcano-lava-pond", climate: "volcano", from: "mistpond-hollow", name: "용암못 폐촌", peaks: 2, bare: {},
-    note: "울타리 친 못이 끓는 용암못이 된 폐촌. 빈 재밭 두 곳에 작은 화산 봉우리 한 쌍(잠든 봉우리·분화하는 봉우리)이 솟아 있고, 그을린 고목 덩이가 폐촌을 둘러싼다" },
+  { id: "climate-volcano-lava-pond", climate: "volcano", from: "mistpond-hollow", name: "용암못 폐촌", peaks: 1, bare: {},
+    note: "울타리 친 못이 끓는 용암못이 된 폐촌. 빈 재밭에 작은 화산 봉우리 한 쌍(잠든 봉우리·분화하는 봉우리)이 솟고, 재밭은 식은 용암 판과 가지 친 용암 균열로 갈라졌다. 그을린 고목 덩이가 폐촌을 둘러싼다" },
   { id: "climate-desert-terrace-canyon", climate: "desert", from: "terrace-cliff-village", name: "사암 층바위 협곡마을", bare: {},
     note: "세 높이의 사암 대지를 네 계단이 잇는 협곡 마을. 햇볕에 바랜 고목이 바위·선인장·마른 덤불과 덩이 지어 협곡 가장자리에 서 있다" },
   { id: "climate-desert-reed-bay", climate: "desert", from: "reed-bay-village", name: "모래 물굽이 포구", bare: { palms: 3 },
@@ -206,6 +207,14 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       // each with its own rocks and dry shrubs at the foot. Cliffs that ended in forest at the map edge run on to it.
       const forestBefore = map.lowerTiles.filter(isLeafyTree).length + map.upperTiles.filter((t) => t >= 0 && isLeafyTree(t)).length;
       const { cleared, orphans } = clearLeafyTrees(map);
+      // No grass carpets on ash or sand (user 2026-09-25): ash keeps no tall grass at all, sand only the dry grass
+      // within four cells of the water; loose foot rocks of the forest village's bush clumps go with the grass.
+      const grassBefore = map.lowerTiles.filter((t) => GRASS.has(t)).length;
+      {
+        const wet = new Set(); map.lowerTiles.forEach((t, i) => { if (water.has(t)) wet.add(i); });
+        const nearWet = (i) => { const x = i % W, y = Math.floor(i / W); for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) if (wet.has(at(x + dx, y + dy))) return true; return false; };
+        map.lowerTiles.forEach((t, i) => { if (GRASS.has(t) && (spec.climate === "volcano" || !nearWet(i))) map.lowerTiles[i] = 240; });
+      }
       const openGround = (i) => !taken.has(i) && map.upperTiles[i] < 0 && (PLAIN.has(map.lowerTiles[i]) || GRASS.has(map.lowerTiles[i]));
       const cliffCells = extendClearedCliffEnds(map, { cliff: CLIFF, cleared, open: openGround });
       // A cliff end the forest used to close and no extension can reach (a house or road on the way): a side ledge
@@ -263,11 +272,12 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       const palms = spec.bare.palms ? plantPalmGroves(map, { water: wet, groups: spec.bare.palms, seed: plan.seed, keep, houses: plan.houses, tileset, accept, reserved: taken }) : [];
       const groves = arrangeBareGroves(map, { tileset, houses: plan.houses, keep, reserved: taken, sites: cleared, seed: plan.seed,
         // Ash: no pale rock piles at the foot (they read as bones on grey ash) — dry shrubs only.
-        cactus: spec.climate === "desert" ? CACTUS : null, rock: spec.climate === "desert" ? 537 : null, accept, undergrowth: { clearance: BURIED.has(spec.climate) ? 3 : 1 } });
+        // No cactus and only an occasional rock at the foot (the new cacti stand in their own clumps), no undergrowth grass.
+        cactus: null, rock: spec.climate === "desert" ? 537 : null, rockChance: 0.3, accept });
       map.lowerTiles = arrangeTallGrass(map, { tileset, houses: plan.houses, seed: plan.seed }).lowerTiles;
       assert(groves.trees >= 4, `too few leafless trees on ${spec.id}: ${groves.trees}`);
       const forestAfter = map.lowerTiles.filter(isLeafyTree).length + map.upperTiles.filter((t) => t >= 0 && isLeafyTree(t)).length;
-      edits.push({ kind: "bare-trees", forestCells: { before: forestBefore, after: forestAfter }, clearedCells: cleared.size, orphanRocks: orphans,
+      edits.push({ kind: "bare-trees", forestCells: { before: forestBefore, after: forestAfter }, clearedCells: cleared.size, orphanRocks: orphans, grassCells: { before: grassBefore, after: map.lowerTiles.filter((t) => GRASS.has(t)).length },
         cliffExtended: cliffCells.length, ledges, forestPlugs: plugs, palms: palms.length, groves: groves.groves.length, trees: groves.trees, placed: groves.groves,
         rule: "잎 달린 숲·나무 도장(2550~2609·1200~1463·960~1123·289) → 맨땅; 잎 없는 나무(2880~, bare-trees:*) 덩이 — 가장자리 띠 8칸·안쪽 13칸 간격, 큰/중간 한 그루+곁나무 1~2+밑동 옆 바위·마른 덤불(사막 안쪽은 선인장); 집·길·문·계단·다리·울타리 2칸 밖; 물가 야자는 2~3그루 무리" });
     }
@@ -318,6 +328,34 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       const meadows = (members) => growMeadows(map, { isPlain, take: (x, y) => !yardFree.has(at(x, y)), members, seed: plan.seed,
         arrange: (mm) => { mm.lowerTiles = arrangeTallGrass(mm, { tileset, houses: plan.houses, seed: plan.seed }).lowerTiles; }, limits: { maxSq: 4, screen: 0.39 } });
       const passes = (g) => g.maxSq <= 4 && g.screen <= 0.4;
+      if (spec.bare) {
+        // Sand and ash (user 2026-09-25: 「돌·선인장·풀이 너무 많다」, 「화산은 균열·용암, 모래는 사구」): the gate is met by
+        // the ground itself — lava plates and crack networks, dunes and ripple sand (lib/climate-terrain.mjs) — with a
+        // few set pieces (a lava pool with its fumarole, one basalt cluster; mesas, one remote bones spot, a few cactus
+        // clumps). No tall grass meadows, no loose rocks.
+        const before = emptiness(map, isPlain);
+        const kit = terrainKit(tileset);
+        const wetCells = new Set(); map.lowerTiles.forEach((t, i) => { if (water.has(t)) wetCells.add(i); });
+        // Walkable ground may also run inside a landmark's open yard (cracks round the fenced lava pond), never over
+        // houses, household yards, props or access cells.
+        const groundFree = new Set(plan.access.map((a) => at(a.x, a.y)));
+        const isLandmark = (o) => (plan.landmarks ?? []).some((l) => l.x === o.x && l.y === o.y && l.w === o.w && l.h === o.h);
+        for (const o of [...plan.houses, ...plan.placements.filter((p) => p.kind !== "vegetation" && !isLandmark(p)), ...(plan.yards ?? [])])
+          for (let y = o.y; y < o.y + (o.h ?? 1); y++) for (let x = o.x; x < o.x + (o.w ?? 1); x++) groundFree.add(at(x, y));
+        const opts = { kit, isPlain, seed: plan.seed, accept: reachOk, limits: { maxSq: 4, screen: 0.39 }, water: wetCells,
+          // (ground keeps one cell off house walls, so a plate or dune never reads as rubble heaped against a house)
+          take: (x, y, solid) => (solid ? !taken.has(at(x, y)) && bare(x, y) : !groundFree.has(at(x, y)) && !ring.has(at(x, y)) && !near(x, y, 0, (i) => ROAD.has(map.lowerTiles[i]))
+            && !plan.houses.some((h) => x >= h.x - 1 && x <= h.x + h.w && y >= h.y - 1 && y <= h.y + h.h)),
+          ...(spec.bare.ground ?? {}) };
+        const gaps = spec.climate === "volcano" ? dressVolcanoGround(map, opts) : dressDesertGround(map, opts);
+        (process.env.CLIMATE_SOFT ? (ok, msg) => ok || console.error("GATE", msg, JSON.stringify(gaps.screenAt)) : assert)(passes(gaps), `ground gate ${spec.id} maxSq=${gaps.maxSq} screen=${gaps.screen.toFixed(3)}`);
+        const kinds = {}; for (const p of gaps.pieces) kinds[p.kind] = (kinds[p.kind] ?? 0) + 1;
+        edits.push({ kind: "ground", pieces: kinds, cells: gaps.counts,
+          emptiness: { before: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
+          rule: spec.climate === "volcano"
+            ? "빈칸 게이트를 땅으로 넘긴다: 식은 용암 판(2×2 덩이, 3×3 이상)·용암 균열(1칸 폭 가지)·작은 용암 웅덩이 1~2(분기공·유황)·현무암 기둥 한 무리, 흑요석·재 더미는 균열 곁에만. 키큰 풀·바위 없음"
+            : "빈칸 게이트를 땅으로 넘긴다: 사구(3×2·4×3·6×3)·모래 물결 덩이·갈라진 마른 땅, 사암 메사 0~2, 외딴 곳 뼈·묻힌 기둥 한 곳, 선인장 무리 3~4. 풀은 물가만, 흩은 바위 없음" });
+      } else {
       const fill = (trodden) => {
         const g = fillGaps(trodden);
         if (!spec.bare || passes(g)) return g;
@@ -355,6 +393,7 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       edits.push({ kind: "fill", pieces: gaps.pieces.length, scenes: gaps.pieces.map((p) => p.name), ...(gaps.meadows ? { meadows: gaps.meadows } : {}),
         emptiness: { before: { maxSq: before.maxSq, screen: +before.screen.toFixed(3) }, after: { maxSq: gaps.maxSq, screen: +gaps.screen.toFixed(3) } },
         rule: "빈칸 게이트(한 변 5칸 빈 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 넘을 때까지 덩이 장면(덤불숲·바위와 덤불·키큰 풀 덩이, 가을은 나무·꽃 포함)" });
+      }
     }
     // Reachability with the runtime move rule, from the village entrance to every door front (+ the ice).
     const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };
