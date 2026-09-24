@@ -40,7 +40,7 @@ export function appendPixelArtWorldFoodCatalog(content: HTMLElement, onImported:
                 controls.forEach(control => { control.disabled = false; });
             }
         });
-        content.append(el('article', { class: 'external-tileset-card', children: [
+        content.append(el('article', { class: 'external-tileset-card', dataset: { search: `${pack.name} ${pack.filename} 음식 식기 식탁 food ${pack.recipes.map(recipe => recipe.name).join(' ')}`.toLocaleLowerCase() }, children: [
                 el('h3', { text: pack.name }), el('p', { text: `원본 ${pack.width}×${pack.height}px · 4열 · ${pack.recipes.length}개 그림 묶음 · 식탁 합성 ${pack.coverage.tableComposites}개` }),
                 el('p', { text: pack.recipes.map(recipe => recipe.name).join(' · ') }),
                 el('div', { class: 'external-tileset-actions', children: [el('a', { class: 'btn', text: '음식 다운로드 ↗', attrs: { href: pack.sourcePage, target: '_blank', rel: 'noopener noreferrer' } }), el('a', { text: '식탁 원본 다운로드 ↗', attrs: { href: PIXEL_ART_WORLD_FOOD_SUPPORT.sourcePage, target: '_blank', rel: 'noopener noreferrer' } }), button, input, el('a', { text: '이용 조건 ↗', attrs: { href: pack.termsUrl, target: '_blank', rel: 'noopener noreferrer' } })] }),

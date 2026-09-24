@@ -108,6 +108,11 @@ UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip�
 | 비압축 + `oprn:project.save` 명시 헤더 | 256MiB | 256MiB |
 | 나머지 브리지 RPC (mapPatch 포함) | 64MiB | 64MiB |
 
+새 프로젝트의 `oprn:start.createProject`도 전체 `seed` 안에 공용 자산·AI 문서를 담으므로
+`project.save`와 같은 상한을 적용한다(2026-09-24). 음식 자료 추가 뒤 실제 신규 생성에서
+64MiB 해제 상한의 413이 발생했다. 생성 채널만 추가 허용하며 헤더/본문 일치 검사와
+기존 팀 owner 확인, seed 검증, 폴더 생성·실패 정리는 그대로 유지한다.
+
 `Content-Length`와 실제 수신량을 모두 제한하며 gzip 출력도 스트리밍 중 제한한다.
 과대 요청은413, 지원하지 않는 인코딩은415, 잘못된 gzip/JSON/채널 불일치는400이다.
 실패한 본문은 핸들러로 전달하지 않는다. gzip 해제는 브리지 POST 전용이며 로그인

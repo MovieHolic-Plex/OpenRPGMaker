@@ -17,3 +17,20 @@
 `preparePixelArtWorldFood`는 이제 타일셋의 `structureKits`도 채운다. 원본153개는 원본 칸 크기를 보존하며 하위는 전부-1, 상위는 전체 원본 배열이다. 이름·태그·문서에 `받침 필요` 또는 `고정점 미검토`를 표시한다. 합성150개는 실제3×3 전체 객체이고 하위는 전부-1로 기존 바닥을 보존한다. 남쪽 로컬(1,3)이 접근칸이다.5×5는 바닥과 접근을 포함한 별도 학습 예제이며 실제 스탬프 크기로 혼동하지 않는다.
 
 각 원본 오브젝트에 source read-first+해당 recipe MD/PNG를, 합성 오브젝트에 source 및 support/composition read-first+해당 recipe MD/PNG를 연결한다. 일반 가져오기가 두 prepared.tileset을 저장할 때 이 오브젝트들도 함께 등록된다. private 반환 `kits`의5×5학습배열은 호환을 위해 유지하며 `objectKitId`로 실제3×3 structureKit를 가리킨다. 안정 ID로 설치하는 게시자는 문서 안 임시 tilesetId와 반환 kits.tilesetId를 함께 치환해야 한다.
+
+## 공용·정본 설치 (2026-09-24)
+
+`prepare-pixel-art-world-food-library.mjs`는 사용자 원본 SHA/실제 RGBA/완전 객체 배열을 확인하고
+임시 ID를 문서 안까지 `shared_paw_food_*`로 바꾼다. `publish-pixel-art-world-food-library.mjs`
+`--publish-local`은 참고 PNG를 픽셀 손실 없이 압축한 뒤 별도 `pixel-art-world-food-local`에 CAS 게시한다.
+기존 native·XP 라이브러리를 대체하지 않는다. 원본/가공 픽셀은 로컬 DB에만 있고 Git에는 없다.
+
+정본 revision39에서20타일셋과20자산 바이트가 저장·재로드됐다. 실제 AI 도구로303객체의
+소유 문서와 그림을 조회하고, 새 SQLite 프로젝트 자동 생성에도20타일셋이 포함됨을 확인했다.
+생성 seed가64MiB를 넘어413이 났던 생성 채널의 전송 상한 수정은 `team-project-host.md`를 따른다.
+현재 설치는 객체 조립 자료다. 실제 음식이 놓인 장소의 저작/저장은 별도로 기록한다.
+
+빌드된 편집기의 실제 file input으로 F-Party02.png와 식탁 원본을 함께 가져왔다.
+별도 확인용 SQLite 프로젝트에서 신규 원본/식탁2타일셋·각9오브젝트와2자산 바이트를
+새 페이지로 revision4 재로드했다. UI 성공 문구 직후의 저장 요청은 아직 진행 중일 수 있어
+그 문구만 저장 완료로 쓰지 않는다. 개인 증거는 `output/paw-food-install/ui-import-proof.json`.

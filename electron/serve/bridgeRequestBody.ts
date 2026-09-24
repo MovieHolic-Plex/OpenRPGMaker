@@ -23,7 +23,10 @@ export async function readBridgeRequestBody(request: IncomingMessage): Promise<{
     throw new BridgeRequestBodyError('unsupported bridge content-encoding', 415);
   }
   // The hint grants only a bounded transport allowance; it must match the parsed envelope.
-  const decodedLimit = channelHint === OPRN_CHANNELS.projectSave ? PROJECT_SAVE_BODY_LIMIT : BRIDGE_BODY_LIMIT;
+  // Creation carries a full serialized seed, including the same shared assets
+  // and reference documents as a later save. Keep its allowance equally bounded.
+  const projectDocument = channelHint === OPRN_CHANNELS.projectSave || channelHint === OPRN_CHANNELS.startCreateProject;
+  const decodedLimit = projectDocument ? PROJECT_SAVE_BODY_LIMIT : BRIDGE_BODY_LIMIT;
   const wireLimit = encoding === 'gzip' ? BRIDGE_BODY_LIMIT : decodedLimit;
   const declaredLength = Number(request.headers['content-length']);
   if (Number.isFinite(declaredLength) && declaredLength > wireLimit) {

@@ -17,3 +17,17 @@ loop는parallel 목록의재실행이며 모든대기120ms는예시다. 이벤�
 
 RTP제한9는정확한geometry분석자료다. XP소유자확인으로OPRN엔진사용이허용되는것은아니며
 기본sharedContent에자동등록하면안된다. 현재문43과기존AIcrop/loader파일은변경하지않는다.
+
+## 로컬 공용 설치 (2026-09-24)
+
+`prepare-pixel-art-world-eventprop-library.mjs`는 원본39개 SHA와 모든 프레임의 실제 픽셀을
+확인한다. 브라우저 캔버스의 반투명 RGB는 PNG 재인코딩에서 달라질 수 있다(촛불 alpha1의
+RGB 오차 최대125). 원본 alpha와 premultiplied 채널 일치, 브라우저 정규화 source와 atlas의
+visible RGBA 일치를 각각 검사한다. 원본의 raw-RGBA 해시를 가공 PNG 해시로 주장하지 않는다.
+
+`publish-pixel-art-world-eventprop-library.mjs --publish-local`은39스프라이트와2문서 전용
+소유자를 별도 `pixel-art-world-eventprops-local`에 CAS 게시한다. native publisher가 이 별도
+라이브러리를 다시 생성할 필요는 없다. 문서 소유자의 빈32px칸은 게임용 타일/객체가 아니다.
+정본 revision40에서41자산 바이트 및2소유자 저장·재로드, 기존12맵 보존을 확인했다.
+실제 AI 조회309MD/620페이지/618그림이 일치했다. 객체 스탬프·공간 배치·큰 그림 전체 충돌은
+아직 제공하지 않으며, 이 상태를270개의 완성 장소나 타일 오브젝트로 세지 않는다.
