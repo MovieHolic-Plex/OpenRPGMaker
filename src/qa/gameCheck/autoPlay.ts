@@ -488,7 +488,12 @@ function pathMoves(project: Project, mapId: string, from: { x: number; y: number
   // 2층 집 문은 벽 줄에 붙어 발판으로만 닿는데, 발판을 「다른 이벤트」로 피하면 문이 영영 막힌 것으로 보였다.
   const relays = adjacent ? [] : (map.events ?? []).filter((event) => event.id !== target.id && relaysTo(event, target.id));
   const relayCells = new Set(relays.map((event) => `${event.x},${event.y}`));
-  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id).map((event) => `${event.x},${event.y}`).filter((cell) => !relayCells.has(cell)));
+  // 밟아도 아무 일 없는 이벤트(모든 페이지가 발밑·겹침 허용이고 접촉 발동이 아님 — 조사 지점·자동 컷신 자리)는 지나간다.
+  // 전부 피하면 좁은 기억 방(11×9)에서 투명 조사 지점·컷신 자리에 둘러싸인 메멘토가 「길이 없다」로 오판됐다(2026-09-24).
+  const harmless = (event: GameEvent) => (event.pages ?? []).length > 0 && (event.pages ?? []).every((page) =>
+    page.priority === "below" && page.overlapForbidden === false
+    && !["playerTouch", "touch", "eventTouch"].includes(page.trigger?.kind ?? ""));
+  const occupied = new Set((map.events ?? []).filter((event) => event.id !== target.id && !harmless(event)).map((event) => `${event.x},${event.y}`).filter((cell) => !relayCells.has(cell)));
   const isGoal = (x: number, y: number) => adjacent ? Math.abs(x - target.x) + Math.abs(y - target.y) === 1 : (x === target.x && y === target.y) || relayCells.has(`${x},${y}`);
   const key = (x: number, y: number) => `${x},${y}`;
   const previous = new Map<string, { from: string; dir: typeof DIRS[number]["dir"] }>();

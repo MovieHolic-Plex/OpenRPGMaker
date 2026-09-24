@@ -119,7 +119,11 @@ export function runtimeEventView(
   const runtimePosition = positions[event.id];
   const position = location ? { x: location.x, y: location.y } : runtimePosition ?? { x: event.x, y: event.y };
   const runtimeDirection = location?.direction ?? runtimePosition?.direction;
-  const transparent = page?.graphic.transparent === true;
+  // 페이지가 있는데 조건이 맞는 페이지가 하나도 없으면(RPG 쯔꾸르 규칙대로) 그 이벤트는 맵에 없는 것과 같다 —
+  // 보이지도, 막지도 않는다. 예전에는 기본값 same·겹침 금지로 서서, 한 번 돈 자동 컷신(once: 셀프 스위치 A 가 켜져
+  // 페이지가 꺼짐)이 도착 칸 옆에 보이지 않는 벽으로 남아 기억 방 메멘토에 못 갔다(2026-09-24 회상 스토리).
+  const dormant = !page && (event.pages?.length ?? 0) > 0;
+  const transparent = dormant || page?.graphic.transparent === true;
   const footprint = normalizeCharacterFootprint(page?.footprint);
   const passRows = normalizePassRows(page?.passRows, footprint.height);
   return {
@@ -129,8 +133,8 @@ export function runtimeEventView(
     x: position.x,
     y: position.y,
     trigger: page?.trigger ?? event.trigger,
-    priority: page?.priority ?? "same",
-    overlapForbidden: page?.overlapForbidden ?? true,
+    priority: dormant ? "below" : page?.priority ?? "same",
+    overlapForbidden: dormant ? false : page?.overlapForbidden ?? true,
     footprint,
     passRows,
     bodyRect: footprintBounds(position.x, position.y, footprint),
