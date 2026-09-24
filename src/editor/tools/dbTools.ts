@@ -14,7 +14,7 @@ import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
-import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { monsterBattleStatsForSpecies, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
@@ -906,7 +906,8 @@ const upsertEnemy: ToolDefinition = {
     "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
     "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. " +
     "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩의 하한을 맞추고(주신 값보다 낮추지 않음) 모의전 결과를 경고로 돌려준다. " +
-    "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인).",
+    "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인). " +
+    "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위).",
   mode: "write",
   parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
     role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
@@ -920,8 +921,25 @@ const upsertEnemy: ToolDefinition = {
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
     ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
+    // 몬스터 파티 게임: 플레이어 몬스터는 종족+레벨 공식으로 싸운다. 종이 있는 적도 같은 공식이어야 레벨이 곧 강함이다.
+    // 2026-09-24 몬스터 수집 gen5: 모델이 적 stats 를 공식의 약 2배(Lv4 박쥐 HP 30·공 12 ↔ 공식 HP 15·공 8)로 적어
+    // Lv5 스타터가 첫 동굴 박쥐에게 졌고, 보스 하한은 액터 파티(HP 514) 기준으로 관장 공격을 18→266 으로 올렸다.
+    const monsterParty = draft.system.battleParty === "monsters" || draft.system.monsterBattleParty === true;
+    const species = monsterParty && record.speciesId ? monsterSpeciesById(draft, record.speciesId) : undefined;
+    if (species) {
+      const level = record.level ?? 1;
+      const formula = monsterBattleStatsForSpecies(species, level, undefined);
+      const keys = ["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const;
+      const changed = keys.filter((key) => record.stats[key] !== formula[key]);
+      if (changed.length > 0) {
+        record.stats = { ...record.stats, ...formula };
+        warnings.push(`몬스터 파티 게임이라 종 ${species.name} Lv${level} 공식 능력치로 맞췄습니다(${changed.map((key) => `${key} ${formula[key]}`).join(", ")}). 강하게 하려면 stats 대신 level 을 올리세요.`);
+      }
+      if (record.level === undefined) warnings.push(`level 이 없어 Lv1 로 계산했습니다 — 야생·트레이너 몬스터는 level 을 주세요.`);
+    }
     const outcome = upsertById(draft.database.enemies, record);
-    const bossNote = isBossEnemy(record, args.role) ? scaleBossToStartParty(draft, record).note : undefined;
+    // 보스 하한은 액터 파티 척도라 몬스터 파티 게임에서는 쓰지 않는다 — 관장 강도는 level 로 정한다.
+    const bossNote = isBossEnemy(record, args.role) && !species ? scaleBossToStartParty(draft, record).note : undefined;
     if (bossNote) warnings.push(bossNote);
     // 이 적이 든 첫 트룹 하나만 본다 — 경고 한 줄이면 고칠 방향이 선다.
     const firstTroop = draft.database.troops.find(troop => troop.enemyIds.includes(record.id));
