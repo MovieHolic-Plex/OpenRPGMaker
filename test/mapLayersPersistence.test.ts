@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import { store } from "@/project/store";
@@ -20,14 +20,24 @@ describe("새 층 칸 — 저장 경로", () => {
     expect(shadowAt(after, 2)).toBe(3);
   });
 
-  it("검증은 길이가 틀린 새 칸을 거부하고 맞는 칸은 통과시킨다", () => {
+  it("검증은 길이가 틀린 선택 칸을 경고와 함께 버리고, 맞는 칸과 1·3층은 그대로 둔다", () => {
     const project = structuredClone(store.getCurrent());
     const map = project.maps[project.startMapId];
     map.lowerOverlayTiles = new Array(map.width * map.height).fill(-1);
     map.shadowBits = new Array(map.width * map.height).fill(0);
     expect(() => validateMaps(project.maps)).not.toThrow();
     map.upperOverlayTiles = [1, 2, 3];
-    expect(() => validateMaps(project.maps)).toThrow(/upperOverlayTiles 길이 불일치/);
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    try {
+      expect(() => validateMaps(project.maps)).not.toThrow();
+      expect("upperOverlayTiles" in map).toBe(false);
+      expect(map.lowerOverlayTiles).toHaveLength(map.width * map.height);
+      expect(warn.mock.calls.some(([message]) => /upperOverlayTiles/.test(String(message)) && String(message).includes(map.id))).toBe(true);
+    } finally {
+      warn.mockRestore();
+    }
+    map.upperTiles = [1, 2, 3];
+    expect(() => validateMaps(project.maps)).toThrow(/upperTiles 길이 불일치/);
   });
 });
 

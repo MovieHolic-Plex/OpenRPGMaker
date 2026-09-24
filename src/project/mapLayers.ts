@@ -75,6 +75,17 @@ export function compactMapLayers(map: GameMap): void {
   }
 }
 
+/**
+ * 길이가 칸 수(expected)와 다른 선택 칸 이름. 배열이 아닌 값은 여기서 세지 않는다(형식 오류는 검증기가 던진다).
+ * 불러오기는 이 칸을 경고와 함께 버리고(`validateMaps`), 저장 쪽 검사(`projectLint` 왕복)는 오류로 보고한다.
+ */
+export function malformedExtraLayerKeys(map: Readonly<Record<string, unknown>>, expected: number): ExtraLayerKey[] {
+  return EXTRA_LAYER_KEYS.filter((key) => {
+    const value = map[key];
+    return Array.isArray(value) && value.length !== expected;
+  });
+}
+
 /** 선택 칸의 깊은 복사. 없는 칸은 결과에도 없다(스프레드로 붙이면 옛 맵 모양이 그대로다). */
 export function cloneExtraLayers(map: GameMap): Pick<GameMap, ExtraLayerKey> {
   const out: Pick<GameMap, ExtraLayerKey> = {};
@@ -102,4 +113,25 @@ export function remapExtraLayers(map: GameMap, width: number, height: number, so
     if (isEmptyExtra(key, next)) delete map[key];
     else map[key] = next;
   }
+}
+
+/**
+ * 원본 격자(sourceWidth×sourceHeight)의 (x,y) 부터 width×height 를 잘라 선택 칸을 옮긴다. 원본 밖은 빈칸.
+ * 좌상단 기준 크기 바꾸기는 `cropExtraLayers(map, oldW, oldH, 0, 0, newW, newH)` 다.
+ * 스프레드로 만든 사본에 불러도 원본 배열은 건드리지 않는다(새 배열을 붙이거나 칸을 지운다).
+ */
+export function cropExtraLayers(
+  map: GameMap,
+  sourceWidth: number,
+  sourceHeight: number,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): void {
+  remapExtraLayers(map, width, height, (target) => {
+    const sx = x + (target % width);
+    const sy = y + Math.floor(target / width);
+    return sx >= 0 && sy >= 0 && sx < sourceWidth && sy < sourceHeight ? sy * sourceWidth + sx : -1;
+  });
 }

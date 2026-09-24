@@ -1,5 +1,6 @@
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 import type { GameMap, TilesetDef } from "./types";
+import { cropExtraLayers } from "./mapLayers";
 
 type SnapshotMap = {
   width: number;
@@ -53,10 +54,9 @@ const SHIP_MAP: Record<string, string> = {
 
 function crop(scene: Scene, x: number, y: number, width: number, height: number): Scene {
   const take = (tiles: number[]) => Array.from({ length: height }, (_, row) => tiles.slice((y + row) * scene.map.width + x, (y + row) * scene.map.width + x + width)).flat();
-  return {
-    tileset: scene.tileset,
-    map: { ...scene.map, width, height, lowerTiles: take(scene.map.lowerTiles), upperTiles: take(scene.map.upperTiles), events: [] },
-  };
+  const map: GameMap = { ...scene.map, width, height, lowerTiles: take(scene.map.lowerTiles), upperTiles: take(scene.map.upperTiles), events: [] };
+  cropExtraLayers(map, scene.map.width, scene.map.height, x, y, width, height);
+  return { tileset: scene.tileset, map };
 }
 
 /** One shipped example. The gallery does not call this. */

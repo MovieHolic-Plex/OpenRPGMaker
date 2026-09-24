@@ -14,6 +14,7 @@
 // 칸 하나는 JSON 으로 약 16바이트이고 배열 한 칸은 약 2바이트라, 8분의 1을 넘으면 통째가 싸다.
 
 import type { GameEvent, GameMap, MapId } from "@/project/types";
+import { cropExtraLayers } from "@/project/mapLayers";
 
 export type PiMapDeltaLayer = "lower" | "upper";
 
@@ -244,6 +245,11 @@ export function applyMapDeltas(maps: MapsRecord, deltas: readonly PiMapDelta[]):
     } else {
       map = { ...current };
       if (delta.shape) {
+        // 증분은 1층·3층만 나른다. 크기가 바뀌면 2층·4층·그림자를 resize_map 과 같은 좌상단 기준으로 옮겨
+        // 길이를 새 크기에 맞춘다(옛 길이로 남으면 칸이 비껴 그려지고 검증이 깨진다).
+        if (delta.shape.width !== current.width || delta.shape.height !== current.height) {
+          cropExtraLayers(map, current.width, current.height, 0, 0, delta.shape.width, delta.shape.height);
+        }
         map.name = delta.shape.name;
         map.width = delta.shape.width;
         map.height = delta.shape.height;

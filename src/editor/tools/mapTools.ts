@@ -33,6 +33,7 @@ import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
+import { cropExtraLayers } from "@/project/mapLayers";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
@@ -2042,6 +2043,8 @@ const resizeMapTool: ToolDefinition = {
     }
     const nextLowerStacks = resizedTileStacks(map.lowerTileStacks, oldW, oldH, width, height);
     const nextUpperStacks = resizedTileStacks(map.upperTileStacks, oldW, oldH, width, height);
+    // 2층·4층·그림자도 같은 좌상단 기준으로 옮긴다 — 옛 길이로 남으면 로드가 깨진다.
+    cropExtraLayers(map, oldW, oldH, 0, 0, width, height);
     map.width = width;
     map.height = height;
     map.lowerTiles = newLower;
