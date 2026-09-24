@@ -27,6 +27,8 @@ import { store } from "@/project/store";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { showConfirm } from "@/editor/ui/modal";
 import type { TileGroupMetadata, TilesetDef } from "@/project/types";
+import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
+import { mountAssistantErrorDetail } from "@/editor/panels/assistantErrorDetail";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 
@@ -302,10 +304,15 @@ export function openClusterAiModal(detail: ClusterAiModalDetail): void {
       renderQuickReplies(assistantText);
       renderProposal(result);
       status.textContent = result.stoppedReason === "error" ? "오류" : result.proposedCalls.length > 0 ? "검토 대기" : "완료";
-      if (result.error) appendBubble("system", `오류: ${result.error}`);
+      if (result.error) {
+        const bubble = appendBubble("system", `오류: ${result.error}`);
+        mountAssistantErrorDetail(bubble, { message: result.error, request: trimmed, ...(result.errorDetail ? { thrown: result.errorDetail } : {}) });
+      }
     } catch (cause) {
       status.textContent = "오류";
-      appendBubble("system", `오류: ${cause instanceof Error ? cause.message : String(cause)}`);
+      const message = cause instanceof Error ? cause.message : String(cause);
+      const bubble = appendBubble("system", `오류: ${message}`);
+      mountAssistantErrorDetail(bubble, { message, request: trimmed, thrown: formatThrownDiagnostic(cause, { request: trimmed, stoppedReason: "error" }) });
     } finally {
       setBusy(false);
     }

@@ -15,10 +15,19 @@
 | `src/editor/eventDiffLabel.ts` | `EventDiff` → 사람이 읽는 라벨 + 필드 목록 |
 | `src/editor/editActivityEndpoint.ts` | `EDIT_ACTIVITY_DISK_ENDPOINT = "/__oprn/edit-activity"` |
 | `src/app/errorTrap.ts` | 전역 오류 트랩(`window.onerror` / `unhandledrejection` / 리소스 404) |
+| `src/ai/errorDiagnostic.ts` | 조수 턴이 잡은 예외의 이름·스택·cause 덤프 |
+| `src/editor/panels/assistantErrorDetail.ts` | 조수 오류 말풍선의 「자세히 보기」·「복사」 |
 | `vite.config.ts` | dev/preview 미들웨어 — `output/edit-activity/` 로 미러 |
 | `src/project/projectCommitLog.ts` | 커밋 경계에서 행위 기록을 잘라 커밋 row 에 싣는다(커서 소유) |
 | `scripts/list-edit-activity.mjs` | `npm run edit:log` (라이브 세션 — 디스크 미러 조회) |
 | `scripts/list-project-commits.mjs` | `npm run commit:log` (저장된 것 — DB 커밋 + 실린 행위 조회) |
+
+## 조수 오류 자세히 보기 (2026-09-25)
+
+채팅·영역 작업·클러스터·설정집 정리에서 오류 말풍선이 뜨면 「자세히 보기」와 「복사」가 붙는다.
+본문은 선택 가능한 `<pre>`다. 내용은 예외 이름·메시지·스택·cause, 그 시점의 로거 링버퍼 최신 80건,
+리소스 404를 뺀 오류 트랩 최신 20건이다. 세션이 Error를 아직 들고 있으면 `TurnResult.errorDetail`
+(`formatThrownDiagnostic`)이 스택을 보존한다. 메시지 문자열만 있는 경로는 로그·트랩만 싣는다.
 
 ## 조수 실행 기록과 표시 수준 (2026-09-21)
 

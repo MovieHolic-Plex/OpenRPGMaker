@@ -1,6 +1,8 @@
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
+import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
+import { mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
@@ -2716,7 +2718,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }, (cause: unknown) => {
         if (!owns()) { console.warn("[projectWiki] Retired maintenance settled", cause); return; }
         const message = cause instanceof Error ? cause.message : String(cause);
-        appendBubble("system", `설정집 정리를 완료하지 못했습니다: ${message}`);
+        const bubble = appendBubble("system", `설정집 정리를 완료하지 못했습니다: ${message}`);
+        mountAssistantErrorDetail(bubble, { message, thrown: formatThrownDiagnostic(cause, { stoppedReason: "error" }) });
         setStatus("기록 정리 실패");
       }).finally(() => { if (owns()) retireMaintenance(); }));
     },
