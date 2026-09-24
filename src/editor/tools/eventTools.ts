@@ -1046,8 +1046,11 @@ const upsertEvent: ToolDefinition = {
     warnings.push(...unwrittenSwitchGateWarnings(draft, event));
     for (const [key, hit] of projectSetterShadowedPages(draft)) if (!shadowedBefore.has(key)) warnings.push(hit.message);
     const stored = map.events.find((candidate) => candidate.id === event.id) ?? event;
+    const beforeReliefX = stored.x;
+    const beforeReliefY = stored.y;
     const passage = passageBlockWarning(draft, map, stored);
     if (passage) warnings.push(passage);
+    if (stored.x !== beforeReliefX || stored.y !== beforeReliefY) adjusted = true;
     if (map.disableSave && JSON.stringify(event.pages ?? []).includes('"kind":"openSaveMenu"')) {
       warnings.push(`${map.name} 은(는) 저장 금지 맵이라 이 이벤트의 저장 메뉴(openSaveMenu)에서도 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요(메뉴 저장만 막는 기능이 아닙니다).`);
     }
@@ -1275,6 +1278,8 @@ const placeNpc: ToolDefinition = {
     normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
     const npcPassage = passageBlockWarning(draft, map, event);
     if (npcPassage) normalizationWarnings.push(npcPassage);
+    finalX = event.x;
+    finalY = event.y;
     const adjusted = finalX !== requestedX || finalY !== requestedY;
     const warnings = [
       ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${finalX}, ${finalY})`] : []),

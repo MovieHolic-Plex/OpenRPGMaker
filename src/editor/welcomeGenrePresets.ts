@@ -178,6 +178,8 @@ export const HORROR_GALLERY_AUTHORING_GUIDE = [
   "- 꽃잎·장미처럼 부서지는 생명(체력)은 set_life_flower({name,max,showAfterSwitchId,defeatEndingId?}) 한 번으로 만든다 — 체력 변수·꽃잎 HUD·피해/회복 공용 이벤트·0장 게임 오버가 함께 생긴다.",
   "- 튀어나오는 그림·검은 손·가시 바닥 이벤트에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_damage\"}, 꽃병에는 {kind:\"callCommonEvent\",commonEventId:\"ce_life_restore\"} 를 넣는다. 체력 변수를 setVariable 로 직접 깎지 않는다.",
   "- 열쇠·레버·순서 퍼즐은 compile_puzzle(item-gate·switch-sequence·password)로 만들고, 조건 분기는 {kind:\"fork\",condition:{kind:\"switch\",switchId,value:true},then:[…]} 모양이다.",
+  "- 맵마다 set_scene_mood({mapId, applyMode:\"map\", lighting:{ambient:0.35, color:\"#1a1024\"}}) 로 어둡게 둔다. 기본 조명(ambient 1)은 전시실이 낮처럼 밝다.",
+  "- 문간·한 칸 통로에 인물을 세우지 마라. 대화를 마친 페이지는 priority:\"below\" 와 overlapForbidden:false 로 비켜 준다.",
 ].join("\n");
 
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {

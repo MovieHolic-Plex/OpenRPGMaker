@@ -81,7 +81,17 @@ export function checkMapGraph(project: Project, graph: MapGraph): Finding[] {
     const inbound = graph.inbound.get(map.id) ?? 0;
     const where = { mapId: map.id, mapName: map.name };
     if (events === 0 && inbound === 0) {
-      findings.push({ severity: "blocker", code: "orphan-empty-map", message: `${map.name}(${map.id}) ${map.width}×${map.height} 은 이벤트도 들어오는 문도 없는 빈 껍데기 맵입니다 — 기획의 장소가 실제로는 만들어지지 않았을 수 있습니다.`, where });
+      // 시드 빈 맵은 조수가 시작 위치만 새 맵으로 옮기면 남는다. 플레이 경로가 아니라 막힘으로 세지 않는다
+      // (2026-09-24 갤러리 r5: 엔딩은 출구 인형에 막혔는데 빈 시드 맵이 막힘 1건으로 같이 올랐다).
+      const seedLeftBehind = map.id === "map_blank_start" && project.startMapId !== map.id;
+      findings.push({
+        severity: seedLeftBehind ? "warning" : "blocker",
+        code: "orphan-empty-map",
+        message: seedLeftBehind
+          ? `시작 맵을 옮긴 뒤 남은 빈 시드 맵 ${map.name}(${map.id}) ${map.width}×${map.height} 입니다. 플레이에는 쓰이지 않습니다.`
+          : `${map.name}(${map.id}) ${map.width}×${map.height} 은 이벤트도 들어오는 문도 없는 빈 껍데기 맵입니다 — 기획의 장소가 실제로는 만들어지지 않았을 수 있습니다.`,
+        where,
+      });
     } else if (!graph.reachable.has(map.id)) {
       findings.push({ severity: events > 0 ? "blocker" : "warning", code: "unreachable-map", message: `${map.name}(${map.id}) 은 시작 맵에서 문으로 갈 수 없습니다${inbound > 0 ? " (들어오는 문은 모두 못 가는 맵에 있습니다)" : ""}.`, where });
     }
