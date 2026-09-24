@@ -18,6 +18,13 @@ function defeatInCommands(commands: unknown): boolean {
   return /"kind":"(gameOver|killPlayer|triggerEnding|ending|returnToTitle)"/u.test(JSON.stringify(commands ?? []));
 }
 
+function usesBattles(project: Project): boolean {
+  if (Object.values(project.maps).some((map) => (map.encounterRate ?? 0) > 0 && ((map.encounterTable?.length ?? 0) > 0 || (map.troopIds?.length ?? 0) > 0))) return true;
+  let battle = false;
+  visitAllCommands(project, (visit) => { if (visit.command.kind === "battleProcessing") battle = true; });
+  return battle;
+}
+
 export function checkGallery(project: Project, briefText = briefTextOf(project)): Finding[] {
   if (!LIFE_BRIEF.test(briefText)) return [];
   const uses = new Map<string, LifeUse>();
@@ -37,7 +44,9 @@ export function checkGallery(project: Project, briefText = briefTextOf(project))
   const lifeVariables = [...uses.entries()].filter(([, entry]) => entry.decrements.length > 0);
   if (lifeVariables.length === 0) {
     const hpDamage = /"kind":"changeActorHp"/u.test(JSON.stringify(project.maps)) || /"kind":"changeActorHp"/u.test(JSON.stringify(project.commonEvents ?? []));
-    return hpDamage ? [] : [{
+    // 전투가 있는 게임(턴제 JRPG 등)의 「체력·게임 오버」는 전투 HP 다 — 전투가 깎는다. 꽃잎 체력을 요구하면 거짓 경고다
+    // (2026-09-24 JRPG 도그푸딩 ember-4: 인카운터·보스전이 있는 광산 게임에 set_life_flower 를 권했다).
+    return hpDamage || usesBattles(project) ? [] : [{
       severity: "warning", code: "gallery-no-life-damage",
       message: "기획에 체력(꽃잎·생명·게임오버)이 있는데 체력을 깎는 곳이 없습니다 — 함정·튀어나오는 그림이 아무 대가 없이 지나갑니다. set_life_flower 로 만들고 함정에서 ce_life_damage 를 부르세요.",
     }];

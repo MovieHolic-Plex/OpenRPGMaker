@@ -4,6 +4,7 @@ import { runGameCheck } from "@/qa/gameCheck";
 import { deserialize, serialize } from "@/project/io";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import type { Project } from "@/project/types";
+import { checkGallery } from "@/qa/gameCheck/gallery";
 import { buildQaFixture, type QaFixtureName } from "./fixtures/qaGame/qaGameFixtures";
 
 // 픽스처는 저장·다시 읽기를 거친다 — 검사기는 로더가 돌려준 모양(런타임이 보는 모양)을 본다.
@@ -175,5 +176,18 @@ describe("qa gameCheck — 턴제 JRPG 장르 검사", () => {
     delete (project as { gameDesignBrief?: unknown }).gameDesignBrief;
     const report = runGameCheck(project, { skipAutoPlay: true });
     expect(report.findings.some((f) => f.code.startsWith("jrpg-"))).toBe(false);
+  });
+});
+
+describe("qa gameCheck — 꽃잎 체력 검사는 전투 게임에 쓰지 않는다", () => {
+  const brief = "체력이 0이 되면 게임 오버. 광산의 용암 골렘을 쓰러뜨린다.";
+  it("보스전이 있는 게임은 전투 HP 가 체력이다 — gallery-no-life-damage 없음", () => {
+    expect(checkGallery(buildQaFixture("clean"), brief).map((f) => f.code)).not.toContain("gallery-no-life-damage");
+  });
+  it("전투가 없는 게임은 여전히 짚는다", () => {
+    const project = buildQaFixture("clean");
+    const boss = project.maps.map_cave!.events.find((event) => event.id === "ev_boss")!;
+    boss.pages[0]!.commands = [{ kind: "text", body: "정령이 사라졌다." }];
+    expect(checkGallery(project, brief).map((f) => f.code)).toContain("gallery-no-life-damage");
   });
 });
