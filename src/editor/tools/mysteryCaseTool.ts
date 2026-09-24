@@ -1345,22 +1345,33 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   assertEndingsGated(draft, spec, [...clueEvents, ...suspectEvents, accuserEvent]);
   const barren = barrenStageWarnings(draft, spec);
   warnings.push(...barren);
+  const stageMapCount = new Set(placements(spec).map((placement) => placement.at.mapId)).size;
+  // 7회차(안개 저택): 요약이 place_concept 를 먼저 말해도 뒤에 「verificationScene 을 run_scene_test 에 넣어라」가
+  // 있으면 모델은 그것만 하고 풀밭으로 끝냈다. 무대가 전부 맨땅이면 붙여 넣을 시나리오를 주지 않는다.
+  const allBarren = stageMapCount > 0 && barren.length === stageMapCount;
   const culprit = spec.suspects.find((suspect) => suspect.id === spec.culprit)!;
   // 시나리오는 검증 보조물이다 — 못 만들어도 저작은 성공시키고 사유를 경고로 남긴다(run6: 여기서 던져 저작 전체가 실패했다).
   let verificationScene: SceneTestInput | null = null;
-  try {
-    verificationScene = buildVerificationScene(draft, spec, { clueEvents, suspectEvents, accuserEvent });
-  } catch (error) {
-    if (!(error instanceof ToolError)) throw error;
-    warnings.push(`${error.message} — data.verificationScene 없이 저작했습니다. run_scene_test 입력을 직접 짜라.`);
+  if (!allBarren) {
+    try {
+      verificationScene = buildVerificationScene(draft, spec, { clueEvents, suspectEvents, accuserEvent });
+    } catch (error) {
+      if (!(error instanceof ToolError)) throw error;
+      warnings.push(`${error.message} — data.verificationScene 없이 저작했습니다. run_scene_test 입력을 직접 짜라.`);
+    }
   }
+  const next = allBarren
+    ? `다음 할 일 1순위: 사건 무대 ${barren.length}곳이 전부 맨땅(벽·가구 없음)이다. 지금은 run_scene_test 를 호출하지 마라. 먼저 place_concept(plan, 새 mapId) 나 author_house(interior:"linked-interior") 로 벽·가구가 있는 방을 짓고, 그 좌표로 author_mystery_case 를 같은 caseId 로 다시 불러라. 바닥 fill_region 으로 방을 흉내 내지 마라. data.verificationScene 은 방이 생긴 뒤에만 준다. `
+    : barren.length > 0
+      ? `다음 할 일: 맨땅 무대 ${barren.length}곳은 place_concept 로 방을 보강한 뒤 같은 caseId 로 다시 저작하라. `
+      : "";
+  const verify = verificationScene
+    ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
+    : allBarren
+      ? ""
+      : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라.";
   return {
-    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${barren.length > 0
-      // 5회차: 맨땅 경고를 warnings 에만 두자 모델은 요약의 「다음 = run_scene_test」 만 따라 풀밭 저택으로 끝냈다.
-      ? `다음 할 일 1순위: 사건 무대 ${barren.length}곳이 맨땅(벽·가구 없음)이다 — 먼저 place_concept(plan, 새 mapId) 나 author_house(interior:"linked-interior") 로 방을 짓고, 그 좌표로 author_mystery_case 를 다시 불러라(같은 caseId 면 갈아 끼운다). 그다음에 run_scene_test. `
-      : ""}${verificationScene
-      ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
-      : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라."}`,
+    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${next}${verify}`,
     data: {
       caseId: spec.caseId,
       culprit: culprit.id,
@@ -1521,7 +1532,9 @@ const authorMysteryCase: ToolDefinition = {
     "사건 무대(저택·여관 실내 등)가 아직 없으면 먼저 place_concept·author_house 로 방이 있는 맵을 짓고 그 좌표로 명세를 쓴다. " +
     "사건 명세 하나로 증거 아이템(스위치 없음)·한 번만 주는 조사 지점·용의자 탐문(알리바이/동기/증언/증거 대면)·" +
     "지목 NPC(증거 부족=힌트, 필수 증거 전부=이름 목록→solved/wrong 엔딩)를 컴파일한다. 기존 주민은 suspects[].eventId 로 재사용(시간표 정리). " +
-    "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. 저작 결과 data.verificationScene(끝까지 도는 run_scene_test 입력)을 그대로 run_scene_test 에 넣어 플레이 검증.",
+    "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. " +
+    "요약이 data.verificationScene 을 run_scene_test 에 넣으라고 할 때만 그 입력을 그대로 검증한다. " +
+    "요약이 맨땅이라 지금은 run_scene_test 를 호출하지 말라고 하면 방을 짓고 같은 caseId 로 다시 부른다.",
   mode: "write",
   parameters: CASE_PARAMETERS,
   invalidArgsExample: CASE_EXAMPLE,

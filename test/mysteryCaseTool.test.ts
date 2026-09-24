@@ -82,6 +82,13 @@ function linkInn(project: Project): void {
 
 const W: SceneStep = { kind: "wait", ticks: 400 };
 
+/** 북쪽·서쪽 가장자리만 벽. 사건 좌표(x≥3, y≥3)와 남동쪽 문은 건드리지 않고 맨땅 판정을 넘긴다. */
+function furnishStage(project: Project): void {
+  const map = project.maps[project.startMapId]!;
+  for (let x = 0; x < map.width; x += 1) map.lowerTiles[x] = TILE.WALL;
+  for (let y = 1; y < map.height; y += 1) map.lowerTiles[y * map.width] = TILE.WALL;
+}
+
 // 대상 이벤트 바로 아래 칸에 서서 위를 보고 조사한다.
 function talk(event: GameEvent): SceneStep[] {
   return [{ kind: "set", x: event.x, y: event.y + 1, facing: "up" }, { kind: "interact", eventId: event.id }, W];
@@ -387,9 +394,11 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     expect(result.ok).toBe(true);
     const warnings = (result.diff?.warnings ?? []) as string[];
     expect(warnings.some((warning) => warning.includes("사건 무대") && warning.includes("place_concept"))).toBe(true);
-    // 5회차: 경고만으로는 모델이 요약의 「다음 = run_scene_test」 만 따랐다 — 요약이 무대부터 짚는다.
-    expect(result.summary.indexOf("place_concept")).toBeGreaterThan(-1);
-    expect(result.summary.indexOf("place_concept")).toBeLessThan(result.summary.indexOf("run_scene_test"));
+    // 7회차: place_concept 를 먼저 말해도 뒤에 「verificationScene 을 run_scene_test 에」가 있으면 모델은 그것만 한다.
+    expect(result.summary).toContain("지금은 run_scene_test 를 호출하지 마라");
+    expect(result.summary).toContain("place_concept");
+    expect(result.summary).not.toContain("data.verificationScene 을 고치지 말고");
+    expect((result.data as { verificationScene?: unknown }).verificationScene).toBeUndefined();
     // 방이 있는 맵이면 경고가 없다.
     const walled = fixture();
     const map = walled.maps[walled.startMapId];
@@ -399,6 +408,8 @@ describe("author_mystery_case — 컴파일 산출물", () => {
     expect(inside.result.ok, JSON.stringify(inside.result)).toBe(true);
     expect(((inside.result.diff?.warnings ?? []) as string[]).some((warning) => warning.includes("사건 무대"))).toBe(false);
     expect(inside.result.summary).not.toContain("맨땅");
+    expect(inside.result.summary).toContain("data.verificationScene");
+    expect((inside.result.data as { verificationScene?: unknown }).verificationScene).toBeTruthy();
   });
 
   // manor-mystery 실측 두 번: 지목 NPC 를 「추리 정리 테이블」「사건 정리 수첩」 으로 지었는데 주민 외형·얼굴로 그려졌다.
@@ -638,6 +649,7 @@ describe("author_mystery_case — 동봉 검증 시나리오", () => {
 
   it("그대로 run_scene_test 에 넣으면 증거 수집 → 증거 대면 → 정답 지목 → solved 엔딩까지 통과한다", () => {
     const project = fixture();
+    furnishStage(project);
     const { ctx, result } = author(project);
     expect(result.ok, result.summary).toBe(true);
     const scene = bundled(result);
@@ -661,6 +673,7 @@ describe("author_mystery_case — 동봉 검증 시나리오", () => {
 
   it("시간 시스템이 켜지고 용의자에게 시간표가 있어도(재사용 주민 포함) 통과한다", () => {
     const project = fixture();
+    furnishStage(project);
     project.system.timeSystem = { enabled: true, dayStartHour: 6, dayEndHour: 26 };
     const map = project.maps[project.startMapId];
     map.events.push({
@@ -687,6 +700,7 @@ describe("author_mystery_case — 동봉 검증 시나리오", () => {
 
   it("조사 지점이 다른 맵에 있으면 set 스텝으로 그 맵에 들어가 조사한다", () => {
     const project = fixture();
+    furnishStage(project);
     const ctx = { project };
     expect(runTool(ctx, "create_map", { id: "map_inn", name: "주막", width: 20, height: 15 }).ok).toBe(true);
     linkInn(ctx.project);

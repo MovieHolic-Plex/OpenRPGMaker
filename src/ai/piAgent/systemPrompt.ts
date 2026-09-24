@@ -66,5 +66,9 @@ function genreMechanicLines(project: Project): string[] {
   if (/외형|모습|변신|옷을?\s*갈아|effect|이펙트/iu.test(text)) {
     lines.push("주인공 외형 바꾸기(변신·효과·옷)는 m2Command commandId:\"m2-024-change-actor-graphic\" fields:{target:actorId, value:\"charset:<텍스처>:<칸>\"} 로 실제 스프라이트를 바꾼다(대사로만 알리지 않는다). 그림은 list_resources kind:\"charset\" 로 고른다.");
   }
+  // 2026-09-24 추리 도그푸딩: 계획은 증거 스위치, 시공은 빈 맵 나무 바닥이었다. 낱말이 있을 때만.
+  if (/추리|탐정|용의자|지목|독살|살인사건/u.test(text)) {
+    lines.push("추리 기획은 실내를 먼저 짓는다. 실행 순서: get_concept_facility → place_concept(plan, 새 mapId) 로 벽·가구가 있는 방, 그 좌표에 author_mystery_case. fill_region 바닥 사각형으로 저택을 흉내 내지 않는다. author_mystery_case 요약이 맨땅이면 run_scene_test 를 호출하지 말고 방을 지은 뒤 같은 caseId 로 다시 부른다.");
+  }
   return lines;
 }

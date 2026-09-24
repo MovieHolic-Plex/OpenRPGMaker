@@ -135,6 +135,26 @@ function requiredTemplateBlock(genre: NarrativeHorrorGenre | undefined): string[
  * 회상 스토리 기획 경로의 연출 지시. 없던 때 조수는 script_cutscene 을 노출받고도 기억 진입·문 열림·엔딩을
  * upsert_event 대사 나열 + transfer 로만 만들어 기획의 「페이드·두 주인공 이동·카메라」를 전부 말없이 뺐다(2026-09-24).
  */
+/** 기획 문장이 추리(단서·지목)를 시키는지. 회상 프리셋 안에서도 저택 사건을 컷신·스위치로 만들지 않게 한다. */
+const MYSTERY_BRIEF_RE = /추리|탐정|용의자|지목|독살|살인사건/u;
+
+export function textAsksForMystery(text: string): boolean {
+  return MYSTERY_BRIEF_RE.test(text);
+}
+
+/**
+ * 추리 저작 요령. 도구 이름을 적어 두면 그 스키마가 첫 턴부터 노출된다(mentionedToolSchemas).
+ * 2026-09-24 도그푸딩 7회차: 회상 프리셋이 script_cutscene 만 찍어 계획은 증거 스위치였고,
+ * 시공은 fill_region 나무 바닥 위에 author_mystery_case 를 올린 뒤 맨땅 경고를 무시하고 run_scene_test 로 끝냈다.
+ */
+export const MYSTERY_AUTHORING_GUIDE = [
+  "추리 저작 요령 (조사·증거 제시·지목은 컷신이 아니다. 이 요령이 회상 컷신 지시보다 우선한다):",
+  "- 실행 계획의 첫 시공 항목은 place_concept 다. 저택·서재·거실·주방은 get_concept_facility 로 장소·물건을 읽고 place_concept({query, mapId, plan}) 으로 벽과 가구가 있는 새 맵에 짓는다. fill_region 으로 바닥 사각형을 깔아 방을 흉내 내지 않는다.",
+  "- 다음 항목은 author_mystery_case 다. 단서·용의자 대화·증거 제시·지목·오답 엔딩을 스위치·변수나 place_npc·define_ending 으로 조립하지 않는다. 좌표는 그 방 안의 통행 칸이다. 쓰기 전에 check_mystery_case 로 검사한다.",
+  "- author_mystery_case 요약이 「지금은 run_scene_test 를 호출하지 마라」이면 그 말을 따른다. 방을 지은 뒤 같은 caseId 로 다시 author_mystery_case 를 부르고, 요약이 data.verificationScene 을 run_scene_test 에 넣으라고 할 때만 검증한다.",
+  "- script_cutscene 은 오프닝과 엔딩 에필로그만 쓴다. 오프닝·지목 선택지에 범인 이름을 단정하지 않는다.",
+].join("\n");
+
 export const MOON_CUTSCENE_STAGING_LINE =
   "연출은 script_cutscene 한 번으로 한 장면씩 쓰세요: 장면 진입은 trigger:'auto'·once:true 로 fade in → 인물 moveActor(이벤트 id·player) → camera pan/return → say, "
   + "조건이 모이면 열리는 장면(메멘토 다 모음 등)은 requiresSwitches, 다음 장면·기억으로 넘어갈 때는 switch·transfer 비트, 마지막은 ending 비트. "
@@ -195,6 +215,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       ...(preset.packId === "monster-collect" ? [MONSTER_COLLECT_AUTHORING_GUIDE] : []),
       ...(preset.packId === "adventure-jrpg" ? [ADVENTURE_JRPG_AUTHORING_GUIDE] : []),
       ...(preset.narrativeHorrorGenre === "moon-cutscene" ? [MOON_CUTSCENE_STAGING_LINE] : []),
+      ...(textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ].join("\n\n");
   }
