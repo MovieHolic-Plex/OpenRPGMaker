@@ -131,10 +131,15 @@ export function arrangeBareGroves(map, options = {}) {
   const rowFull = (st, x0, y0) => {
     if (st.kind === "shrub") return false;
     const f = footOf(st, x0, y0);
-    // Every `span`-cell window of the rows round this foot keeps at most `count` feet.
-    const xs = feet.filter((g) => Math.abs(g.y - f.y) <= rowLimit.rows).map((g) => g.x);
-    for (let s = f.x - rowLimit.span + 1; s <= f.x; s++) if (xs.filter((x) => x >= s && x < s + rowLimit.span).length + 1 > rowLimit.count) return true;
-    return false;
+    // Round every foot (this one and its neighbours), each `span`-cell window of the rows within `rows` of it keeps at
+    // most `count` feet once this one stands.
+    const near = (a, g) => Math.abs(a.y - g.y) <= rowLimit.rows, all = [...feet, f];
+    const crowded = (g) => {
+      const xs = all.filter((h) => near(h, g)).map((h) => h.x);
+      for (let s = g.x - rowLimit.span + 1; s <= g.x; s++) if (xs.filter((x) => x >= s && x < s + rowLimit.span).length > rowLimit.count) return true;
+      return false;
+    };
+    return [f, ...feet.filter((g) => near(g, f) && Math.abs(g.x - f.x) < rowLimit.span)].some(crowded);
   };
   const fits = (st, x0, y0) => {
     for (let dy = 0; dy < st.h; dy++) for (let dx = 0; dx < st.w; dx++) if (!inside(x0 + dx, y0 + dy) || taken[at(x0 + dx, y0 + dy)]) return false;
