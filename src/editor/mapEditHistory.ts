@@ -2,6 +2,7 @@ import type { GameMap, MapId, Project } from "@/project/types";
 import { mapWithCommittedEvents, projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { store } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
+import { jsonEqual } from "@/util/structuralJson";
 
 const MAX_HISTORY = 50;
 const LARGE_HISTORY_LIMIT = 25;
@@ -65,21 +66,15 @@ let historyRevision = 0;
 export function getMapEditHistoryRevision(): number {
   return historyRevision;
 }
-// 마지막으로 스냅샷을 밀어넣은 undo 스택 top 의 직렬화 서명(연속 중복 스냅샷 dedup 용).
-let topSignature: string | null = null;
 // 텍스트 입력처럼 커밋 단위로 1 스냅샷만 남기기 위한 병합 키.
 // 같은 키가 연속으로 들어오면(같은 필드를 계속 타이핑) 스냅샷을 추가하지 않는다.
 let lastCoalesceKey: string | null = null;
 
-function snapshotSignature(snapshot: HistorySnapshot): string {
-  // JSON 직렬화 가능한 Project 이므로 값 동등성 비교로 충분하다.
-  // (연속 스냅샷의 top 하나와만 비교 → false negative 는 dedup 미적용일 뿐 무해)
-  return JSON.stringify(snapshot);
-}
-
-function historyTopSignature(): string | null {
+function sameAsHistoryTop(snapshot: HistorySnapshot): boolean {
+  // 연속 중복 스냅샷 dedup: top 하나와만 값 비교한다. 전체 프로젝트를 문자열로 만들지 않고
+  // 첫 차이에서 멈춘다 (false negative 는 dedup 미적용일 뿐 무해).
   const top = undoStack[undoStack.length - 1];
-  return top ? snapshotSignature(top.snapshot) : null;
+  return top !== undefined && jsonEqual(top.snapshot, snapshot);
 }
 
 function normalizedLabel(label: string | undefined): string {
@@ -187,10 +182,8 @@ function isLargeHistorySnapshot(snapshot: HistorySnapshot): boolean {
 }
 
 function pushSnapshot(snapshot: HistorySnapshot, label?: string, mapId?: string | null): void {
-  const signature = snapshotSignature(snapshot);
-  if (undoStack.length > 0 && signature === topSignature) return;
+  if (sameAsHistoryTop(snapshot)) return;
   undoStack.push(makeEntry(snapshot, label, mapId));
-  topSignature = signature;
   trimUndoStack(snapshot);
   redoStack = [];
   emitHistoryChange();
@@ -200,7 +193,6 @@ function pushSnapshot(snapshot: HistorySnapshot, label?: string, mapId?: string 
 // 다시 undo 할 대상이 사라지므로 무조건 push 한다.
 function pushSnapshotForRedo(entry: HistoryEntry): void {
   undoStack.push(entry);
-  topSignature = snapshotSignature(entry.snapshot);
   trimUndoStack(entry.snapshot);
 }
 
@@ -226,7 +218,7 @@ export function recordProjectSnapshot(label?: string, mapId?: string | null, opt
 /** Commit an already validated project proposal; rejected store writes never alter history. */
 export function applyProjectWithHistory(project: Project, label: string): boolean {
   const before = projectWithoutEventDrafts(store.getCurrent());
-  if (JSON.stringify(before) === JSON.stringify(projectWithoutEventDrafts(project))) return false;
+  if (jsonEqual(before, projectWithoutEventDrafts(project))) return false;
   store.replace(project, { change: { label }, commitHistory: () => {
     lastCoalesceKey = null;
     pushSnapshot({ kind: "project", before }, label);
@@ -250,9 +242,9 @@ export function recordMapEditIfChanged(
   edit();
   const after = store.getCurrent();
   const mapChanged = beforeMap !== after.maps[mapId]
-    && JSON.stringify(beforeMap) !== JSON.stringify(after.maps[mapId]);
+    && !jsonEqual(beforeMap, after.maps[mapId]);
   const tilesetsChanged = options.includeTilesets && before.tilesets !== after.tilesets
-    && JSON.stringify(before.tilesets) !== JSON.stringify(after.tilesets);
+    && !jsonEqual(before.tilesets, after.tilesets);
   if (!beforeMap || (!mapChanged && !tilesetsChanged)) return false;
   lastCoalesceKey = null;
   pushSnapshot({
@@ -290,12 +282,10 @@ export function undoMapEdit(): boolean {
     return false;
   }
   redoStack.push(makeEntry(currentSnapshot, previous.label, previous.mapId));
-  topSignature = historyTopSignature();
   lastCoalesceKey = null;
   if (!restoreSnapshot(previous.snapshot)) {
     redoStack.pop();
     undoStack.push(previous);
-    topSignature = historyTopSignature();
     emitHistoryChange();
     return false;
   }
@@ -313,13 +303,11 @@ export function redoMapEdit(): boolean {
     return false;
   }
   const undoBackup = undoStack.slice();
-  const signatureBackup = topSignature;
   pushSnapshotForRedo(makeEntry(currentSnapshot, next.label, next.mapId));
   lastCoalesceKey = null;
   if (!restoreSnapshot(next.snapshot)) {
     undoStack.length = 0;
     undoStack.push(...undoBackup);
-    topSignature = signatureBackup;
     redoStack.push(next);
     emitHistoryChange();
     return false;
@@ -348,7 +336,6 @@ export function getMapEditHistoryMarker(): number {
 export function truncateMapEditHistoryFromMarker(marker: number): void {
   undoStack = undoStack.filter((entry) => entry.at < marker);
   redoStack = [];
-  topSignature = historyTopSignature();
   lastCoalesceKey = null;
   emitHistoryChange();
 }
@@ -356,7 +343,6 @@ export function truncateMapEditHistoryFromMarker(marker: number): void {
 export function resetMapEditHistory(): void {
   undoStack = [];
   redoStack = [];
-  topSignature = null;
   lastCoalesceKey = null;
   seq = 0;
   emitHistoryChange();
@@ -457,7 +443,6 @@ export function revertToHistoryIndex(index: number): boolean {
   }
   redoStack.push(makeEntry({ kind: "project", before: projectWithoutEventDrafts(store.getCurrent()) }, target.label, target.mapId));
   undoStack = undoStack.slice(0, index);
-  topSignature = historyTopSignature();
   lastCoalesceKey = null;
   store.replace(project);
   emitHistoryChange();
@@ -495,6 +480,10 @@ export function redoToHistoryIndex(index: number): boolean {
   store.replace(project);
   emitHistoryChange();
   return true;
+}
+
+export function getMapEditHistoryDepth(): number {
+  return undoStack.length;
 }
 
 export function getMapEditHistoryDebugEntries(): readonly {

@@ -18,7 +18,7 @@ import { reconcileRunCheckpoint, type RunRecovery } from "@/ai/runRecovery";
 // - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
 import {
-  getMapEditHistoryDebugEntries,
+  getMapEditHistoryDepth,
   getMapEditHistoryMarker,
   getMapEditHistoryState,
   MAP_EDIT_HISTORY_EVENT,
@@ -1320,7 +1320,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       return;
     }
-    const historyDepthBefore = getMapEditHistoryDebugEntries().length;
+    const historyDepthBefore = getMapEditHistoryDepth();
     const reverted = revertToHistoryMarker(turn.marker);
     const entriesBefore = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
     // 클릭 사실만으로는 «실제로 되돌아갔는지» 를 알 수 없다 — 되돌린 스냅샷 수와 대화 절단
@@ -1331,7 +1331,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       testid: "ai-turn-rewind",
       detail: {
         reverted,
-        revertedSnapshots: Math.max(0, historyDepthBefore - getMapEditHistoryDebugEntries().length),
+        revertedSnapshots: Math.max(0, historyDepthBefore - getMapEditHistoryDepth()),
         entriesBefore,
         entriesAfter: turn.entries.length,
       },

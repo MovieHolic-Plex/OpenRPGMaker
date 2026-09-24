@@ -45,6 +45,9 @@ export function startTeamSession(): void {
       latest = await bridge.status();
       setTeamRole(latest.member.role);
       syncTeamReadOnlyUi();
+      // Our own autosave bumps the revision too; refetching it downloaded and re-hashed
+      // the whole project a few seconds after every save.
+      if (latest.revision !== seen && store.isOwnSavedHostRevision(latest.revision)) seen = latest.revision;
       if (latest.revision !== seen && await store.refreshFromHost()) seen = latest.revision;
       text.textContent = `${latest.team.name} · ${latest.member.label}${latest.member.role === 'viewer' ? ' · 보기 전용 — 변경할 수 없습니다' : ''}${seen >= 0 && latest.revision !== seen && store.hasUnsavedChanges() ? ' · 저장 후 팀 변경 반영' : ''}`;
     } catch { setTeamRole(null); syncTeamReadOnlyUi(); latest = null; text.textContent = '팀 연결 끊김 · 저장 상태를 확인하세요'; }

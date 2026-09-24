@@ -42,6 +42,8 @@ export type LocalMapPatchInput = {
   readonly baseProject: Project;
   readonly project: Project;
   readonly changedMapIds?: readonly string[];
+  /** Stored sha the base was read from; lets the save skip echoing an unmerged document. */
+  readonly baseSha?: string | null;
 };
 
 export type LocalCommitInput = {
@@ -407,7 +409,9 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         if (expectedSha !== undefined && (readProjectRow(driver)?.sha256 ?? null) !== expectedSha) {
           return { kind: "conflict", conflicts: [{ mapId: "project", name: "프로젝트가 다른 사용자에 의해 변경되었습니다" }] };
         }
-        return { kind: "saved", sha256: wire.sha256, serialized,
+        // The caller already holds `serialized`; echoing a multi-megabyte body back
+        // over the HTTP bridge doubled every web save.
+        return { kind: "saved", sha256: wire.sha256,
           revision: writeProjectRow(driver, parsed, wire, projectId, clock()) };
       });
     },
@@ -422,8 +426,13 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
         const wire = await projectWire(plan.project);
         const written = driver.transaction((): LocalStoreSaveResult | null => {
           if ((readProjectRow(driver)?.sha256 ?? null) !== (planned?.sha256 ?? null)) return null;
-          return { kind: "saved", sha256: wire.sha256, serialized: wire.serialized,
-            revision: writeProjectRow(driver, plan.project, wire, projectId, clock()) };
+          const revision = writeProjectRow(driver, plan.project, wire, projectId, clock());
+          // Nobody wrote since the caller's base: the merge is the caller's own document,
+          // so only a real team merge has content worth sending back.
+          const untouched = input.baseSha != null && planned?.sha256 === input.baseSha;
+          return untouched
+            ? { kind: "saved", sha256: wire.sha256, revision }
+            : { kind: "saved", sha256: wire.sha256, serialized: wire.serialized, revision };
         });
         if (written) return written;
       }

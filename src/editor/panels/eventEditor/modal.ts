@@ -19,7 +19,7 @@ import { eventDraftDiffById, eventDraftHasUserChanges } from "@/project/eventDra
 import { showConfirm, type ConfirmOptions } from "@/editor/ui/modal";
 import { validateEventDraft, type EventDraftValidation } from "@/editor/eventDraftValidator";
 import { openSelectedEventTestModal } from "@/editor/panels/testPlayModal";
-import { store, type AutoSaveState } from "@/project/store";
+import { isTileCellChange, store, type AutoSaveState } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 import { renderEditorIcon } from "./editorIcons";
@@ -330,6 +330,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     requestClose();
   });
   let stableRendered = false;
+  let tilePaintRefreshTimer: ReturnType<typeof setTimeout> | null = null;
   let refreshing = false;
   let refreshPending = false;
   // Removing a focused inline field can dispatch change and synchronously emit again.
@@ -392,6 +393,14 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       closeHandler(true);
       return;
     }
+    if (isTileCellChange(change)) {
+      // Painting emits per pointer sample and never touches events. Other maps cannot
+      // affect this body; on this map only the validation bell can, so settle first.
+      if (change.mapId !== request.mapId) return;
+      if (tilePaintRefreshTimer !== null) clearTimeout(tilePaintRefreshTimer);
+      tilePaintRefreshTimer = setTimeout(() => { tilePaintRefreshTimer = null; refresh(); }, 500);
+      return;
+    }
     const live = store.getCurrent().maps[request.mapId]?.events.some(event => event.id === request.eventId);
     if (!live && !store.restoreEventDraftFromVault(request.mapId, request.eventId)) {
       closeHandler(true);
@@ -440,6 +449,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     // 닫는 자리에서 이 이벤트의 예약을 확실히 버린다.
     clearEventAiDockOpenRequest(request.mapId, request.eventId);
     unsubscribeStore();
+    if (tilePaintRefreshTimer !== null) clearTimeout(tilePaintRefreshTimer);
     unsubscribeEditor();
     unsubscribeAutoSave();
     if (!saved) discardEventDraft(request.mapId, request.eventId);
