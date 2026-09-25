@@ -109,6 +109,16 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
 - `stamp_object` 는 입구 부위가 있는 킷을 찍으면 요약·data 에 **입구 맵 좌표와 길 끝 칸**을 돌려준다(E2 에서 길이 지붕으로 가던 것이 E3 에서 입구로 간다).
 - 이미 있는 연구 프로젝트는 `apply --atlas-dir <baked>` 로 아틀라스 그림·칸 수를 갈아 끼운다(칸 수가 늘어난 경우만; `build_assistant_pack.py` 는 덤프가 짧으면 새 칸을 기본값으로 채운다).
 
+## 상점·성 실내 예제 3개 (2026-09-25)
+
+- 실내 묶음에 이미 들어 있던 대장간(`smith_*` 163)·재봉(`tailor_*` 106)·왕실(`royal_*` 107) 물체로 예제 셋과 참고문서 용도 셋을 만들었다.
+  `interior_smithy`(ex_smithy 26×17 — 불 작업장/무기 가게/창고) · `interior_tailor`(ex_tailor 22×16 — 가게/작업실/탈의실) · `interior_castle`(ex_castle 34×24 — 알현실/서재/침실/근위대/식당, 제작자 p21 구성).
+  `check_examples` 빈 바닥 3·10·12% · 빈 정사각형 3·4·3 · 대칭 1.1·1.6·1.0.
+- 성·대장간 작업장 벽은 **A5 평면 벽면**(돌 벽돌 3104, 아치 돌벽 3124)이다 — 이 팩 A4 벽에는 회색 돌벽이 없다. 성은 벽면 3줄이라 3×3 아치 창이 들어간다(`castle_interior`, 가로 문 `door_h3`).
+  조립기(`compose_examples.py` `ground`)·검사기(`check_examples.py`)·오류 그림 ②⑤(`build_assistant_pack.py`)가 A5 막힌 벽면 그룹을 벽으로, 검은 빈칸을 천장으로 본다.
+  사전 대표 번호(석판 3088 = 흰 벽돌 무늬, 막돌 3120)가 성에 맞지 않아 성 조리법(`room_notes`)에 실제 번호(석판 3091·아치 3124·벽돌 3104)를 적었다.
+- 「벽 속 화덕」(`smith_furnace_wall_*`, 이름에 「벽돌 포함」·「벽 아랫줄에 놓음」)은 벽면 칸에 박는 물체라 조립 검사에서 벽 위 허용.
+
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
 | 프리뷰 | 묶음 | 완전 일치 | ±32 이내 | 남은 차이 |

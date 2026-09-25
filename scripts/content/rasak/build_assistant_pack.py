@@ -123,6 +123,60 @@ PURPOSES = {
         'alts': [('A2', 0), ('A2', 15), ('A2', 16), ('A2', 24), ('A2', 12), ('A4', 0), ('A4', 2), ('A4', 8), ('A4', 30), ('A4', 40)],
         'recipe': 'room',
     },
+    'interior_smithy': {
+        'bundle': 'rasak_interior', 'preview': 'ex_smithy', 'name': '대장간·무기점 실내',
+        'desc': '대장간 방 셋 — 불 작업장(회색 돌벽 A5 · 벽 속 화덕 · 화로+풀무 · 모루 셋 · 담금통 · 숫돌 · 수력 망치 · 원자재 구석)/무기 가게(카운터·무기대·갑옷 걸이)/창고(주괴·쇠막대·통). 조립 예제 ex_smithy(26×17) 기준.',
+        'windows': [(0, 0, 14, 9), (0, 8, 15, 9), (14, 0, 12, 8), (14, 7, 12, 10)],
+        'cross': (1, 1, 9, 7),
+        'path': (('A2', 9), ('A2', 10)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 9),
+        'alts': [('A2', 16), ('A2', 24), ('A2', 10), ('A2', 1), ('A2', 7), ('A4', 33), ('A4', 30), ('A5', 'stone_brick_wall'), ('A5', 'rough_wall')],
+        'recipe': 'room',
+        'room_notes': """## 대장간 — 방마다 할 일(예제 ex_smithy)
+- **작업장 벽은 돌**: A4 벽 대신 A5 돌 벽돌 벽면(`stone_brick_wall`)을 벽면 두 줄에 칠한다(불 쓰는 방). 바닥은 회색 자갈 판석. 가게·창고는 통나무 벽 + 널 마루로 방을 나눈다.
+- **불 자리 한 벌**: 벽 속 화덕(`smith_furnace_wall_*` — 이름에 「벽돌 포함」, **벽면 아랫줄**에 박는다) 한두 개 + 바로 아래 둥근 화로+풀무(3×2) + 석탄 구유 + 쇠막대 꽂힌 통.
+- **모루 자리 = 모루 + 망치 + 담금통**: 모루(그루터기·통 받침 1×2 또는 1칸)마다 옆에 세운 망치, 곁에 담금통(칼 꽂힌 것). 작업장에 두세 벌, 서로 다른 모양으로.
+- 수력 망치(3×3)·숫돌·작업대(2×1, 벽 쪽)·공구판(벽걸이)·원자재 구석(쇠막대 다발·돌 블록 더미·판재·세운 판재)을 벽을 따라 덩이로. 바닥에 놋쇠 조각·흙 얼룩 몇 칸.
+- **무기 가게**: 카운터 = 탁자형 자동타일 한 줄 + 위에 투구·검·단검(4층). 카운터 뒤 벽 쪽에 무기대·갑옷 걸이(주인 설 칸 하나 비움), 벽에 문장 방패·걸어 둔 창·검. 손님 쪽에 문 앞 깔개·활과 화살통·검 받침.
+""",
+    },
+    'interior_tailor': {
+        'bundle': 'rasak_interior', 'preview': 'ex_tailor', 'name': '재봉점·옷가게 실내',
+        'desc': '재봉점 방 셋 — 가게(옷 걸이 봉·큰 옷장·마네킹 줄·재봉 도구 카운터·둥근 진열 탁자)/작업실(재봉 책상 셋·베틀·물레)/탈의실(옷장·거울·마네킹). 조립 예제 ex_tailor(22×16) 기준.',
+        'windows': [(0, 0, 13, 8), (0, 7, 13, 9), (13, 0, 9, 9), (13, 8, 9, 8)],
+        'cross': (3, 3, 8, 7),
+        'path': (('A2', 0), ('A2', 10)), 'cave': False, 'interior': True,
+        'main_ground': ('A2', 0),
+        'alts': [('A2', 10), ('A2', 11), ('A2', 15), ('A2', 17), ('A4', 3), ('A4', 26), ('A4', 28), ('A4', 29), ('A4', 44)],
+        'recipe': 'room',
+        'room_notes': """## 재봉점 — 방마다 할 일(예제 ex_tailor)
+- **가게**: 벽에 옷 걸이 가로대·쇠 옷걸이 봉(+ 걸린 옷 4층)·신발 선반, 큰 양문 옷장(3×3, 아랫줄 바닥). 한쪽 벽을 따라 **차림이 다른 마네킹 줄**(정장·드레스·줄자) — 같은 마네킹을 되풀이하지 않는다.
+- **카운터** = 판자 탁자형 자동타일 한 줄 + 위에 줄자·가위·반짇고리·실 진열대·바늘꽂이·개킨 옷(4층). 뒤에 걸상·물레.
+- **진열 탁자**: 둥근 탁자(2×2) 위에 개킨 옷·모자 받침(4층), 밑에 무늬 깔개. 문 쪽에 옷걸이대 + 걸린 옷, 털실 바구니, 궤짝.
+- **작업실**: 재봉 책상(1×3, 윗줄이 벽면 — 벽에 붙여 나란히 셋, 색 다르게) · 베틀(2×2) 둘 · 물레 · 털실 바구니.
+- **탈의실**: 옷장(열림·닫힘) · A자 전신 거울 · 거울 달린 마네킹 · 작은 둥근 탁자와 개킨 옷.
+""",
+    },
+    'interior_castle': {
+        'bundle': 'rasak_interior', 'preview': 'ex_castle', 'name': '성·왕궁 실내',
+        'desc': '성 1층 방 다섯 — 알현실(붉은 융단·왕좌·벨벳 기둥·깃발·아치 창, 양옆 다르게)/서재(책장·책상·천구의)/왕의 침실/근위대 방/식당. 벽은 A5 돌 벽면 3줄(제작자 p21). 조립 예제 ex_castle(34×24) 기준.',
+        'windows': [(0, 0, 11, 15), (8, 0, 11, 15), (19, 0, 15, 11), (0, 15, 19, 9)],
+        'cross': (20, 13, 10, 9),
+        'path': (('A2', 25), ('A2', 0)), 'cave': False, 'interior': True,
+        'main_ground': ('A5', 'stone_tile_floor'),
+        'alts': [('A2', 25), ('A2', 26), ('A2', 17), ('A2', 18), ('A2', 0), ('A2', 10), ('A4', 33), ('A4', 37), ('A5', 'stone_brick_wall'), ('A5', 'rough_wall'), ('A5', 'stone_tile_floor')],
+        'recipe': 'room',
+        'room_notes': """## 성 실내 — 돌 벽 3줄 · 왕좌 축 · 방마다 할 일(예제 ex_castle, 제작자 p21)
+- **벽면은 A5 3줄**: 윗줄 = 아치 돌벽 **3124**, 아래 두 줄 = 회색 돌 벽돌 **3104**(번호 사전의 A5 대표 번호가 아니라 이 두 번호). 천장 테두리는 회색 돌 테두리 A4 윗면. 알현실·근위대 바닥은 밝은 회색 석판 **3091**(사전 대표 3088 은 흰 벽돌 무늬), 서재·침실은 헤링본, 식당은 널.
+  A5 는 자동타일이 아니므로 rect 로 칠하면 번호 그대로 깔린다. 「방 짓기」 2의 「벽면 2줄」은 이 성에서는 3줄로 읽는다.
+  벽이 3줄이라 큰 아치 창·커튼 창(3×3 벽걸이)이 벽면에 그대로 들어간다. 가로 칸막이 문은 천장 1칸 + 아래 방 벽면 **3칸**, 세로 4칸을 바닥으로 뚫는다.
+- **알현실**: 뒷벽 가운데 걷은 커튼(3×2) 아래 왕좌(1×2) + 발받침, 거기서 문까지 붉은 융단(A2 융단 kind 3칸 폭 rect — 금테는 엔진이 잡는다). 융단 양옆에 벨벳 기둥(1×3) 두 쌍, 뒷벽에 아치 창 둘과 깃발.
+  **양옆을 다르게 채운다**: 한쪽은 근위(기사상·갑옷 걸이·무기대·깃발 받침), 다른 쪽은 알현 대기(붉은 소파·둥근 융단과 탁자·여신상·꽃병·천구의). 거울처럼 놓지 않는다.
+- **서재**: 뒷벽에 넓은 책장(2×2, 아랫줄 바닥) 줄 + 긴 아치 창 · 벽시계 · 풍경화, 가운데 책상(2×2, 의자 달림) 둘 · 천구의 · 지구의, 남색 융단.
+- **왕의 침실**: 커튼 창 둘, 벽에 붙인 침대 둘(나란히 = 큰 침대) + 양쪽 협탁, 큰 옷장(3×3), 곰 가죽 깔개, 식탁보 덮은 탁자와 발받침, 소파, 여신상.
+- **근위대 방·식당**: 방패·창 걸이·무기대·투구 받침·침대·궤짝·걸상 / 러너 깐 긴 탁자와 음식·찬장·술통.
+""",
+    },
 }
 # 규칙 문서 머리의 「읽는 순서」 줄(@@ORDER@@)은 나눈 뒤에 채워진다 — 그 길이만큼 페이지 한도에서 미리 뺀다.
 ORDER_RESERVE = 500
@@ -1323,7 +1377,7 @@ def recipe_md(P, b, cat):
 - 쓰지 말 것: 붉은 얼룩 kind(핏자국처럼 보임 — 공포 맵에만), 한 방 안의 바닥 kind 네모 조각(칸막이 없는 헤링본 네모는 칠 실수로 보인다 — 방을 나눠라).
 - `run_interior_room_pipeline`·`furnish_interior_space`·`place_concept` 는 이 팩에서 쓰지 않는다(다른 칩셋 번호).
 
-"""
+""" + P.get('room_notes', '')
 
 
 def density_section(P, st, cat):
@@ -1791,7 +1845,8 @@ def error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list):
                 i = y * src['w'] + x
                 t, o = src['L'][1][i], src['L'][3][i]
                 e = b.entries[t] if t is not None and 0 <= t < len(b.entries) else None
-                if not e or e.get('slot') not in ('A1', 'A2') or o not in (None, -1):
+                a5_floor = bool(e) and e.get('slot') == 'A5' and (b.kind_of_tile.get(t) or {}).get('passable')
+                if not e or (e.get('slot') not in ('A1', 'A2') and not a5_floor) or o not in (None, -1):
                     return None
             return cells
         # 바닥(A1·A2)이고 물체가 없는 4×3 자리에만 장식 덩이를 만든다 — 지붕·벽 위 장식을 「정상」으로 보여 주면 안 된다
@@ -1925,17 +1980,22 @@ def error_pairs(b, P, m, wins, groups_by_member, main_k, kind_list):
         g5, _ = crop_win(win, 0, 0, CW, CH)
         b5 = wcopy(g5)
         n5 = 0
+        is_wall5 = lambda k: bool(k) and (k['role'] == 'wall' or (k['slot'] == 'A5' and not k.get('passable') and '벽' in k['name']))
+        # 바꿀 바닥 = 이 창에서 가장 많이 쓴 통행 바닥 칸(성 실내는 사전 대표가 아니라 실제 석판 번호)
+        from collections import Counter
+        floor_votes = Counter(t for t in g5['L'][1] if (b.kind_of_tile.get(t) or {}).get('passable'))
+        floor5 = floor_votes.most_common(1)[0][0] if floor_votes else main_k['representativeTile']
         for i, t in enumerate(g5['L'][1]):
             k = b.kind_of_tile.get(t)
-            if k and k['role'] == 'wall':
-                b5['L'][1][i] = main_k['representativeTile']
+            if is_wall5(k):
+                b5['L'][1][i] = floor5
                 for L in (3, 4):
                     b5['L'][L][i] = -1
                 n5 += 1
         shape_all(b5, groups_by_member)
         pairs.append(('⑤ 벽면을 빠뜨림', framed(render(b, g5), CW, CH, ticks=False), framed(render(b, b5), CW, CH, ticks=False),
                       f'벽면 {n5}칸 없이 천장 바로 밑에 바닥 — 방이 납작하고 창·액자를 걸 곳이 없다.'))
-        notes.append(f"- ⑤ 벽면 빠뜨림: 방 안쪽 맨 윗 2줄은 A4 벽 번호다. 바닥으로 칠하면 천장 테두리 바로 밑이 바닥이 되어 방이 납작해진다(그림 ⑤ 오른쪽).")
+        notes.append(f"- ⑤ 벽면 빠뜨림: 방 안쪽 맨 윗줄들은 벽 번호다(A4 벽 2줄, 성 실내는 A5 돌 벽면 3줄). 바닥으로 칠하면 천장 테두리 바로 밑이 바닥이 되어 방이 납작해진다(그림 ⑤ 오른쪽).")
         # ⑥ 벽걸이를 바닥 줄에: 이름에 「벽걸이」가 있는 3층 물체를 2줄 아래로
         hung = [i for i, t in enumerate(win['L'][3]) if t is not None and t >= 0 and b.obj_of_tile.get(t) and '벽걸이' in b.obj_of_tile[t][0]['name']]
         if hung:

@@ -70,6 +70,7 @@ class Canvas:
                     self.errors.append(f'{where}: 2층 바닥 장식이 ({cx},{cy}) {self.ground(cx, cy)} 위')
         if ly == 3 and cells:
             wall_mount = '벽걸이' in o['name']
+            in_wall = '벽 아랫줄에 놓음' in o['name'] or '벽돌 포함' in o['name']   # 벽 속 화덕처럼 벽면 칸에 박는 물체
             bottom = max(cy for _, cy, _ in cells)
             for cx, cy, _ in cells:
                 if not self.ok(cx, cy):
@@ -79,7 +80,7 @@ class Canvas:
                     continue
                 if wall_mount and g != 'wall':
                     self.errors.append(f'{where}: 벽걸이인데 ({cx},{cy}) 가 벽면이 아님({g})')
-                if not wall_mount and cy == bottom and g in ('wall', 'roof', 'ceiling'):
+                if not wall_mount and cy == bottom and g in ('wall', 'roof', 'ceiling') and not (g == 'wall' and in_wall):
                     self.errors.append(f'{where}: 바닥 물체의 밑줄 ({cx},{cy}) 이 {g} 위')
         for cx, cy, t in cells:
             if self.ok(cx, cy):
@@ -100,6 +101,11 @@ class Canvas:
                 return 'water'
             if slot == 'A2' and '탁자' in self.ctx.kind_name(self.b, f'{slot}:{kind}'):
                 return 'table'
+        elif isinstance(v, int):
+            # A5 평면 칸: 막힌 벽면 그룹(돌 벽돌·막돌·판벽)은 벽면, 검은 빈칸은 천장 — 성 실내는 A4 벽 대신 A5 벽면 3줄을 쓴다.
+            role = self.ctx.a5_role(self.b, v)
+            if role:
+                return role
         return 'floor' 
 
     def shadow(self, x, y, bits=5):
@@ -202,6 +208,16 @@ class Ctx:
             return k['tiles'][0]
         slot, kind = key.split(':')
         return ('k', slot, int(kind))
+
+    def a5_role(self, b, t):
+        for k in self.names['bundles'][b]['kinds']:
+            if k['slot'] == 'A5' and t in k.get('tiles', ()):
+                if k['kind'] == 'A5:void_black':
+                    return 'ceiling'
+                if not k.get('passable') and '벽' in k.get('name', ''):
+                    return 'wall'
+                return None
+        return None
 
     def kind_name(self, b, key):
         for k in self.names['bundles'][b]['kinds']:
