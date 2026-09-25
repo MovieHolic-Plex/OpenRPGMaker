@@ -13,7 +13,7 @@
 //  · 벽은 킷 나인슬라이스(+하프팀버 기둥 열) — 부품마다 따로 끊어 덩어리가 둘로 읽히게 한다.
 //  · 불투명 칸을 새로 칠하면 그 칸의 상위(앞서 얹은 캡·창)를 지운다. 캡만 얹는 칸은 하위를 건드리지 않는다.
 
-import { CHIMNEY_TILE, HOUSE_KITS, type HouseKit, type HouseKitId } from "@/editor/houseKit";
+import { CHIMNEY_TILE, HOUSE_KITS, isWallPostAt, type HouseKit, type HouseKitId } from "@/editor/houseKit";
 import { housePartTile } from "@/project/defaults/forestHarmonyHouseParts";
 import type { AuthoredHouseFormDef, AuthoredHouseFormRow } from "@/project/defaults/authoredHouseFormCatalog";
 import {
@@ -109,13 +109,16 @@ interface Canvas {
   readonly h: number;
   readonly lower: number[];
   readonly upper: number[];
+  /** 칸마다 그 칸 벽을 칠한 부품 번호(-1 = 벽 아님) — 보이는 벽 면·창 자리 계산용. */
+  readonly wallOwner: number[];
 }
 
-/** 불투명 칸 — 하위를 칠하고 앞서 얹은 상위(캡·창)를 지운다. */
-function paint(canvas: Canvas, x: number, y: number, tile: number): void {
+/** 불투명 칸 — 하위를 칠하고 앞서 얹은 상위(캡·창)를 지운다. owner 는 벽을 칠한 부품(지붕이면 -1). */
+function paint(canvas: Canvas, x: number, y: number, tile: number, owner = -1): void {
   if (x < 0 || y < 0 || x >= canvas.w || y >= canvas.h) return;
   canvas.lower[y * canvas.w + x] = tile;
   canvas.upper[y * canvas.w + x] = -1;
+  canvas.wallOwner[y * canvas.w + x] = owner;
 }
 
 /** 투명 캡·창 — 상위만 얹는다. */
@@ -128,15 +131,15 @@ function wallTileAt(kit: HouseKit, role: 0 | 1 | 2, offset: number, width: numbe
   const slice = role === 0 ? kit.wall.top : role === 1 ? kit.wall.mid : kit.wall.bottom;
   if (offset === 0) return slice[0];
   if (offset === width - 1) return slice[2];
-  if (kit.postColumn && offset % kit.postColumn.every === 0) return kit.postColumn.tiles[role];
+  if (kit.postColumn && isWallPostAt(kit, offset, width)) return kit.postColumn.tiles[role];
   return slice[1];
 }
 
-function isPostOffset(kit: HouseKit, offset: number, width: number): boolean {
-  return kit.postColumn !== undefined && offset > 0 && offset < width - 1 && offset % kit.postColumn.every === 0;
-}
+const isPostOffset = (kit: HouseKit, offset: number, width: number): boolean => isWallPostAt(kit, offset, width);
 
 interface PartPlacement {
+  /** spec.parts 안 순번 — 벽 주인 표시. */
+  readonly index: number;
   readonly part: GablePart;
   /** 캔버스 좌표로 옮긴 x·bottom. */
   readonly x: number;
@@ -148,7 +151,7 @@ function drawWalls(canvas: Canvas, kit: HouseKit, placed: PartPlacement): void {
   const { part, x, bottom, wallTop } = placed;
   for (let y = wallTop; y <= bottom; y += 1) {
     const role: 0 | 1 | 2 = y === wallTop ? 0 : y === bottom ? 2 : 1;
-    for (let dx = 0; dx < part.w; dx += 1) paint(canvas, x + dx, y, wallTileAt(kit, role, dx, part.w));
+    for (let dx = 0; dx < part.w; dx += 1) paint(canvas, x + dx, y, wallTileAt(kit, role, dx, part.w), placed.index);
   }
 }
 
@@ -217,17 +220,94 @@ function doorOffset(kit: HouseKit, part: GablePart): number {
   return base;
 }
 
-function drawWindows(canvas: Canvas, kit: HouseKit, placed: PartPlacement, doorX: number | undefined): void {
-  const { part, x, wallTop } = placed;
-  if (part.wall === "low") return;
-  const y = wallTop + 1;
-  for (let dx = 1; dx < part.w - 1; dx += 1) {
-    const cx = x + dx;
-    if (doorX !== undefined && Math.abs(cx - doorX) <= 1) continue;
-    if (isPostOffset(kit, dx, part.w)) continue;
-    // 킷 창 규칙과 같은 간격(두 칸 띄움, 왼쪽 두 번째 칸부터).
-    if ((dx - 1) % 3 !== 0) continue;
-    overlay(canvas, cx, y, kit.windowTile);
+/**
+ * 사선 캡 뒤 메우기(2026-09-25 사용자 검토): 두 박공이 앞뒤로 엇갈리면 앞 박공의 사선 캡(투명) 밑이 비고 그 바깥에
+ * 뒤 지붕이 서서, 실루엣 안쪽에 풀밭 삼각형이 비친다. 그런 캡 칸의 하위를 바깥(없으면 위) 지붕 칸으로 채워
+ * 뒤 지붕이 사선 뒤로 이어지게 한다. 실루엣 바깥(바깥·위가 빈) 캡은 그대로 둔다.
+ */
+function backfillSlopes(canvas: Canvas, roof: GableRoofMaterial): void {
+  const roofTiles = new Set([roof.lit, roof.dark, roof.top, roof.body, roof.eave]);
+  const lowerAt = (x: number, y: number): number => (x < 0 || y < 0 || x >= canvas.w || y >= canvas.h ? -1 : canvas.lower[y * canvas.w + x]!);
+  for (let pass = 0; pass < 4; pass += 1) {
+    let changed = false;
+    for (let y = 0; y < canvas.h; y += 1) {
+      for (let x = 0; x < canvas.w; x += 1) {
+        const index = y * canvas.w + x;
+        if (canvas.lower[index] !== -1) continue;
+        const upper = canvas.upper[index]!;
+        const outside = upper === roof.capL ? x - 1 : upper === roof.capR ? x + 1 : undefined;
+        if (outside === undefined) continue;
+        const side = lowerAt(outside, y);
+        const above = lowerAt(x, y - 1);
+        if (side === -1 && above === -1) continue;
+        const fill = roofTiles.has(side) ? side : roofTiles.has(above) ? above : roof.body;
+        canvas.lower[index] = fill === roof.top || fill === roof.eave ? roof.body : fill;
+        changed = true;
+      }
+    }
+    if (!changed) return;
+  }
+}
+
+/** 창을 낼 벽 줄 —보통 벽은 가운데 줄, 낮은 벽(상·하 2줄)은 윗줄(처마 밑 창). */
+function windowRows(placed: PartPlacement): number[] {
+  return [placed.part.wall === "low" ? placed.wallTop : placed.wallTop + 1];
+}
+
+/** 이 줄에서 부품 벽이 실제로 보이는 연속 칸 구간(뒤 부품이 앞 부품에 가린 곳은 뺀다). */
+function visibleWallRuns(canvas: Canvas, placed: PartPlacement, y: number): { x0: number; x1: number }[] {
+  const runs: { x0: number; x1: number }[] = [];
+  let start = -1;
+  for (let x = placed.x; x <= placed.x + placed.part.w; x += 1) {
+    const own = x < placed.x + placed.part.w && y >= 0 && y < canvas.h && canvas.wallOwner[y * canvas.w + x] === placed.index;
+    if (own && start < 0) start = x;
+    if (!own && start >= 0) { runs.push({ x0: start, x1: x - 1 }); start = -1; }
+  }
+  return runs;
+}
+
+/** 연속 후보 칸 구간 안에 창을 고르게 — 칸 3개마다 하나꼴, 서로 붙지 않게, 가운데 정렬. */
+function spreadInSegment(a: number, b: number): number[] {
+  const length = b - a + 1;
+  const count = Math.max(1, Math.floor((length + 2) / 3));
+  if (count === 1) return [a + Math.floor((length - 1) / 2)];
+  return Array.from({ length: count }, (_, i) => a + Math.round((i * (length - 1)) / (count - 1)));
+}
+
+/**
+ * 창 배치(2026-09-25 사용자 규칙): 보이는 벽 면이 3칸 이상이면 창이 적어도 하나. 넓은 면은 빈 벽 2~3칸마다 하나,
+ * 문과는 붙지 않게(문 좌우 한 칸 비움), 벽 끝 칸·기둥 열에는 내지 않는다. 문 양쪽 구간을 따로 채워 좌우가 맞는다.
+ */
+function drawWindows(canvas: Canvas, kit: HouseKit, placements: readonly PartPlacement[], doorAt: { readonly x: number; readonly y: number }, doorPart: PartPlacement): void {
+  for (const placed of placements) {
+    for (const y of windowRows(placed)) {
+      for (const run of visibleWallRuns(canvas, placed, y)) {
+        if (run.x1 - run.x0 + 1 < 3) continue;
+        const free = (x: number): boolean => {
+          if (x <= run.x0 || x >= run.x1) return false;
+          if (isPostOffset(kit, x - placed.x, placed.part.w)) return false;
+          if (placed === doorPart && Math.abs(x - doorAt.x) <= 1) return false;
+          return canvas.upper[y * canvas.w + x] === -1;
+        };
+        let segmentStart = -1;
+        let placedAny = false;
+        for (let x = run.x0; x <= run.x1 + 1; x += 1) {
+          const ok = x <= run.x1 && free(x);
+          if (ok && segmentStart < 0) segmentStart = x;
+          if (!ok && segmentStart >= 0) {
+            for (const wx of spreadInSegment(segmentStart, x - 1)) overlay(canvas, wx, y, kit.windowTile);
+            segmentStart = -1;
+            placedAny = true;
+          }
+        }
+        if (placedAny) continue;
+        // 폭 4 박공처럼 문이 안쪽 칸을 다 먹으면 문에서 먼 벽 끝 칸에 창(끝 반기둥 옆에 붙는 작은 창).
+        const ends = [run.x0, run.x1]
+          .filter((x) => !(placed === doorPart && Math.abs(x - doorAt.x) <= 1) && canvas.upper[y * canvas.w + x] === -1)
+          .sort((a, b) => Math.abs(b - doorAt.x) - Math.abs(a - doorAt.x));
+        if (ends.length > 0) overlay(canvas, ends[0]!, y, kit.windowTile);
+      }
+    }
   }
 }
 
@@ -345,6 +425,18 @@ function addAccents(context: AccentContext, seed: number): void {
  * id 는 spec id 그대로라 author_house·마을·감지가 같은 이름을 본다.
  */
 export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitId, options: GableComposeOptions = {}): AuthoredHouseFormDef {
+  return composeInternal(spec, kitId, options).form;
+}
+
+interface ComposeResult {
+  readonly form: AuthoredHouseFormDef;
+  readonly canvas: Canvas;
+  readonly placements: readonly PartPlacement[];
+  readonly roof: GableRoofMaterial;
+  readonly doorPart: PartPlacement;
+}
+
+function composeInternal(spec: GableHouseFormSpec, kitId: HouseKitId, options: GableComposeOptions): ComposeResult {
   const kit = HOUSE_KITS[kitId];
   const roof = gableRoofMaterialForKit(kit);
   const minX = Math.min(...spec.parts.map((part) => part.x));
@@ -353,9 +445,11 @@ export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitI
   const maxY = Math.max(...spec.parts.map((part) => part.bottom));
   const w = maxX - minX + 1;
   const h = maxY - minY + 1;
-  const canvas: Canvas = { w, h, lower: new Array<number>(w * h).fill(-1), upper: new Array<number>(w * h).fill(-1) };
+  const canvas: Canvas = {
+    w, h, lower: new Array<number>(w * h).fill(-1), upper: new Array<number>(w * h).fill(-1), wallOwner: new Array<number>(w * h).fill(-1),
+  };
   const placements: PartPlacement[] = spec.parts
-    .map((part) => ({ part, x: part.x - minX, bottom: part.bottom - minY, wallTop: part.bottom - minY - wallRowsOf(part) + 1 }))
+    .map((part, index) => ({ index, part, x: part.x - minX, bottom: part.bottom - minY, wallTop: part.bottom - minY - wallRowsOf(part) + 1 }))
     .sort((a, b) => a.bottom - b.bottom || (a.part.kind === b.part.kind ? 0 : a.part.kind === "block" ? -1 : 1));
   const doorPart = placements.find((placed) => placed.part.door === true)
     ?? placements.reduce((best, placed) => (placed.bottom > best.bottom || (placed.bottom === best.bottom && placed.part.w > best.part.w) ? placed : best));
@@ -365,8 +459,9 @@ export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitI
     if (placed.part.kind === "front") apexes.push(drawFrontRoof(canvas, kit, roof, placed as PartPlacement & { readonly part: GableFrontPart }));
     else drawBlockRoof(canvas, roof, placed as PartPlacement & { readonly part: GableBlockPart });
     drawWalls(canvas, kit, placed);
-    drawWindows(canvas, kit, placed, placed === doorPart ? doorAt.x : undefined);
   }
+  backfillSlopes(canvas, roof);
+  drawWindows(canvas, kit, placements, doorAt, doorPart);
   if (options.accentSeed !== undefined) {
     addAccents({ canvas, kit, roof, placements, apexes, doorAt, doorPart }, options.accentSeed >>> 0);
   }
@@ -376,7 +471,87 @@ export function composeGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitI
     const upperTiles = canvas.upper.slice(y * w, (y + 1) * w);
     rows.push(upperTiles.some((tile) => tile !== -1) ? { tiles, upperTiles } : { tiles });
   }
-  return { id: spec.id, name: spec.name, w, h, stories: 1, kitId, doorAt, rows };
+  return { form: { id: spec.id, name: spec.name, w, h, stories: 1, kitId, doorAt, rows }, canvas, placements, roof, doorPart };
+}
+
+/** 합성 검사 결과 — 비어 있으면 통과. */
+export interface GableFormAuditIssue {
+  readonly kind: "floating-slope" | "enclosed-gap" | "narrow-wall" | "no-window";
+  readonly x: number;
+  readonly y: number;
+  readonly detail: string;
+}
+
+/**
+ * 합성한 박공 형태를 검사한다(2026-09-25 사용자 검토 규칙). 킷과 무관한 칸 모양 결함을 찾는다.
+ *  · floating-slope: 사선 캡(/ \) 칸 밑이 비었는데 그 바깥쪽(/ 는 왼쪽, \ 는 오른쪽) 또는 위 칸이 지붕·벽으로 차 있다 —
+ *    지붕 실루엣 **안쪽**에서 사선 뒤로 풀밭이 비친다(교차 박공 날개 옆 삼각 구멍). 처마 밑 캡은 밑이 비면 무조건.
+ *  · enclosed-gap: 형태 바깥과 이어지지 않은 빈 칸(지붕에 난 구멍).
+ *  · narrow-wall: 부품 벽 맨 아랫줄에서 보이는 벽 면이 1~2칸.
+ *  · no-window: 3칸 이상 벽 면이 있는데 창이 하나도 없다.
+ */
+export function auditGableHouseForm(spec: GableHouseFormSpec, kitId: HouseKitId = "blue-stone"): GableFormAuditIssue[] {
+  const { canvas, placements, roof, form } = composeInternal(spec, kitId, {});
+  const issues: GableFormAuditIssue[] = [];
+  const empty = (x: number, y: number): boolean =>
+    x < 0 || y < 0 || x >= canvas.w || y >= canvas.h || canvas.lower[y * canvas.w + x] === -1;
+  for (let y = 0; y < canvas.h; y += 1) {
+    for (let x = 0; x < canvas.w; x += 1) {
+      if (!empty(x, y)) continue;
+      const upper = canvas.upper[y * canvas.w + x]!;
+      if (upper === roof.underL || upper === roof.underR) {
+        issues.push({ kind: "floating-slope", x, y, detail: "처마 밑 캡 뒤가 비었다" });
+        continue;
+      }
+      const outside = upper === roof.capL ? x - 1 : upper === roof.capR ? x + 1 : undefined;
+      if (outside === undefined) continue;
+      if (!empty(outside, y) || !empty(x, y - 1)) {
+        issues.push({ kind: "floating-slope", x, y, detail: `사선 캡(${upper === roof.capL ? "/" : "\\"}) 뒤가 비었는데 바깥이 막혔다` });
+      }
+    }
+  }
+  // 바깥과 이어진 빈 칸 — 테두리에서 빈 칸만 따라 번진다.
+  const reach = new Set<number>();
+  const queue: number[] = [];
+  for (let y = 0; y < canvas.h; y += 1) {
+    for (let x = 0; x < canvas.w; x += 1) {
+      const border = x === 0 || y === 0 || x === canvas.w - 1 || y === canvas.h - 1;
+      if (border && empty(x, y)) {
+        reach.add(y * canvas.w + x);
+        queue.push(y * canvas.w + x);
+      }
+    }
+  }
+  while (queue.length > 0) {
+    const cell = queue.pop()!;
+    const x = cell % canvas.w;
+    const y = Math.floor(cell / canvas.w);
+    for (const [nx, ny] of [[x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]] as const) {
+      if (nx < 0 || ny < 0 || nx >= canvas.w || ny >= canvas.h || !empty(nx, ny)) continue;
+      const key = ny * canvas.w + nx;
+      if (!reach.has(key)) {
+        reach.add(key);
+        queue.push(key);
+      }
+    }
+  }
+  for (let y = 0; y < canvas.h; y += 1) {
+    for (let x = 0; x < canvas.w; x += 1) {
+      if (empty(x, y) && !reach.has(y * canvas.w + x)) issues.push({ kind: "enclosed-gap", x, y, detail: "지붕·벽에 둘러싸인 빈 칸" });
+    }
+  }
+  let wideFace = false;
+  for (const placed of placements) {
+    for (const run of visibleWallRuns(canvas, placed, placed.bottom)) {
+      const width = run.x1 - run.x0 + 1;
+      if (width >= 3) wideFace = true;
+      else issues.push({ kind: "narrow-wall", x: run.x0, y: placed.bottom, detail: `보이는 벽 면이 ${width}칸` });
+    }
+  }
+  const windowTile = HOUSE_KITS[kitId].windowTile;
+  const windows = form.rows.reduce((sum, row) => sum + (row.upperTiles ?? []).filter((tile) => tile === windowTile).length, 0);
+  if (wideFace && windows === 0) issues.push({ kind: "no-window", x: form.doorAt.x, y: form.doorAt.y, detail: "3칸 이상 벽 면에 창이 없다" });
+  return issues;
 }
 
 /** id 로 합성. 박공 형태가 아니면 undefined. */

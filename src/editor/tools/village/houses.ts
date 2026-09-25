@@ -197,6 +197,18 @@ const GABLE_CANDIDATE_SHARE = 0.6;
  * 비례한 몫보다 자주 앞에 서게 해 기본 분배에서 골고루 나오게 한다(2026-09-25).
  */
 function gableFirst(list: readonly HouseCandidate[], rng: Rng): HouseCandidate[] {
+  // 가중치가 1 보다 작은 형태(mixWeight)는 그 확률로만 제자리에 서고, 나머지는 목록 끝으로 밀린다.
+  const demoted: HouseCandidate[] = [];
+  const kept = list.filter((candidate) => {
+    const weight = candidate.template.mixWeight;
+    if (weight === undefined || weight >= 1 || rng() < weight) return true;
+    demoted.push(candidate);
+    return false;
+  });
+  return [...mergeGables(kept, rng), ...demoted];
+}
+
+function mergeGables(list: readonly HouseCandidate[], rng: Rng): HouseCandidate[] {
   const gables = list.filter((candidate) => candidate.template.compose !== undefined);
   const others = list.filter((candidate) => candidate.template.compose === undefined);
   if (gables.length === 0 || others.length === 0) return [...list];

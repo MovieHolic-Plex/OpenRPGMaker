@@ -1,6 +1,6 @@
 import { gableHouseFormSize, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
 import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId } from "@/editor/houseKit";
-import { findGableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
+import { findGableHouseFormSpec, gableFormMixWeight } from "@/project/defaults/gableHouseFormCatalog";
 import { ToolError } from "@/editor/tools/types";
 import {
   AUTHORED_HOUSE_FORM_DEFS,
@@ -87,14 +87,23 @@ function assignDefaultGableForms(request: AuthorHouseRequest): AuthorHouseReques
     if (plan.templateId !== undefined || plan.wings.length !== 1) return plan;
     if ((plan.stories ?? 1) > 1 || plan.lowWall === true || plan.roofDeck === true) return plan;
     const wing = plan.wings[0] as HouseWing;
-    const sized = GABLE_HOUSE_FORM_SPECS.map((spec) => ({ spec, ...gableHouseFormSize(spec) }))
+    const sized = GABLE_HOUSE_FORM_SPECS.filter((spec) => gableFormMixWeight(spec) > 0)
+      .map((spec) => ({ spec, ...gableHouseFormSize(spec) }))
       .filter((entry) => entry.w <= wing.w && entry.h <= wing.h);
     if (sized.length === 0) return plan;
     const close = sized.filter((entry) => entry.w >= wing.w - 2 && entry.h >= wing.h - 2);
     const pool = close.length > 0 ? close : sized;
     const fresh = pool.filter((entry) => !used.has(entry.spec.id));
     const from = fresh.length > 0 ? fresh : pool;
-    const chosen = from[hashInts(seed, index, wing.x, wing.y, wing.w, wing.h) % from.length]!;
+    // 가중치 추첨(spec.mix) — 해시를 [0,1) 로 펴서 누적 가중치에서 고른다.
+    const weights = from.map((entry) => gableFormMixWeight(entry.spec));
+    let ticket = (hashInts(seed, index, wing.x, wing.y, wing.w, wing.h) / 0x100000000) * weights.reduce((sum, weight) => sum + weight, 0);
+    let pick = 0;
+    while (pick < from.length - 1 && ticket >= weights[pick]!) {
+      ticket -= weights[pick]!;
+      pick += 1;
+    }
+    const chosen = from[pick]!;
     used.add(chosen.spec.id);
     return {
       ...plan,

@@ -249,6 +249,8 @@ export interface HouseTemplate {
    * 2026-09-25: ㄷ자 깊은·ㅁ자 중정은 날개 지붕이 안 이어져 구멍처럼 보이고, estate-* 는 두 채를 따로 놓은 것처럼 보였다.
    */
   readonly excludeFromDefaultMix?: boolean;
+  /** 자동 추첨 가중치(기본 1). 1 보다 작으면 덜 자주 나온다 — 박공 + 달개(2026-09-25 「애매하다」). */
+  readonly mixWeight?: number;
 }
 
 /** 이 템플릿이 이 킷으로 찍을 셀 레시피 — 합성 형태면 합성, 고정 레시피면 그대로, 날개 문법이면 undefined. */

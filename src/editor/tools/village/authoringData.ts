@@ -8,7 +8,7 @@
 import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { composeGableHouseForm } from "@/editor/gableHouseCompose";
 import { AUTHORED_HOUSE_FORM_DEFS, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
-import { GABLE_HOUSE_FORM_SPECS, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
+import { GABLE_HOUSE_FORM_SPECS, gableFormMixWeight, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
@@ -197,6 +197,9 @@ export function gableSpecToTemplate(spec: GableHouseFormSpec): HouseTemplate {
     wingsAt: (x: number, y: number) => [{ x, y, w: preview.w, h: preview.h }],
     form: preview,
     compose: (kitId, accentSeed) => composeGableHouseForm(spec, kitId, accentSeed === undefined ? {} : { accentSeed }),
+    // 가중치 0 = 자동 추첨 제외(곁채 …), 0<w<1 = 덜 자주(달개).
+    ...(gableFormMixWeight(spec) === 0 ? { excludeFromDefaultMix: true } : {}),
+    ...(gableFormMixWeight(spec) > 0 && gableFormMixWeight(spec) !== 1 ? { mixWeight: gableFormMixWeight(spec) } : {}),
   };
 }
 
@@ -310,12 +313,12 @@ function shapeReason(record: {
 
 /**
  * 자동 추첨에서 빼는 내장 형태(2026-09-25 사용자 「집 모양」 검토). 지워지지는 않는다 — housePlans[].templateId 나
- * 프리셋 templateIds 로 명시하면 그대로 짓는다.
- *  · u-deep·courtyard: 안뜰 쪽 날개 지붕이 이어지지 않아 지붕에 구멍이 난 것처럼 읽힌다.
+ * 프리셋 templateIds 로 명시하면 그대로 짓는다. 박공 조합 형태의 제외·가중치는 카탈로그 spec.mix 가 정한다.
+ *  · courtyard: 안뜰 쪽 날개 지붕이 이어지지 않아 지붕에 구멍이 난 것처럼 읽힌다.
  *  · estate-*: 본채와 헛간이 떨어진 필지형이라 울타리 없이 서면 집 두 채로 읽힌다.
+ *  · u-deep 은 팔을 3칸으로 줄인 뒤(2026-09-25 2차 검토) 다시 믹스에 넣었다.
  */
 export const DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS: ReadonlySet<string> = new Set([
-  "u-deep",
   "courtyard",
   "estate-shed-r",
   "estate-shed-l",
