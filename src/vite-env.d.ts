@@ -20,6 +20,7 @@ interface ImportMetaEnv {
   readonly VITE_TOUCH_CONTROLS?: string;
   /** CC0 BGM 카탈로그 CDN 베이스. 미설정이면 같은 오리진 로컬 경로로 떨어진다. */
   readonly VITE_BGM_CDN_BASE?: string;
+  readonly VITE_STILL_CDN_BASE?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
 }

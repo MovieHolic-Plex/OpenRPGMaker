@@ -9,8 +9,11 @@ function omitRetiredTerrainTemplates(owner: object): Record<string, unknown> {
   return Object.fromEntries(Object.entries(owner).filter(([key]) => key !== "terrainTemplates"));
 }
 
-/** Only the project root and tileset records own the retired field, never nested dictionaries. */
-function projectJson(project: Project) {
+/**
+ * Only the project root and tileset records own the retired field, never nested dictionaries.
+ * The returned view shares everything below those records with `project` — read it, never mutate it.
+ */
+export function projectWireView(project: Project) {
   return {
     ...omitRetiredTerrainTemplates(project),
     tilesets: Object.fromEntries(Object.entries(project.tilesets).map(([id, tileset]) => [id, omitRetiredTerrainTemplates(tileset)])),
@@ -22,7 +25,7 @@ function projectJson(project: Project) {
  * Compact (no pretty indent) — payload size and main-thread stringify cost matter on large maps.
  */
 export function serialize(project: Project): string {
-  return JSON.stringify(projectJson(project));
+  return JSON.stringify(projectWireView(project));
 }
 
 /**
@@ -39,7 +42,7 @@ export function serializeForComparison(project: Project): string {
 
 /** Human-readable project.json for .oprn packages and debug dumps only. */
 export function serializePretty(project: Project): string {
-  return JSON.stringify(projectJson(project), null, 2);
+  return JSON.stringify(projectWireView(project), null, 2);
 }
 
 export function deserialize(raw: string): Project {

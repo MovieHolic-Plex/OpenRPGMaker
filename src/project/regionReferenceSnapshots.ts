@@ -9,7 +9,10 @@ import type { GameMap, TilesetDef } from "./types";
 import { cropExtraLayers } from "./mapLayers";
 import { LAKE_PLACE_REFERENCES, regionReference } from "./regionReferences";
 
-type PlaceSnapshot = { map: GameMap; tileset: TilesetDef };
+/** 건물 목록·킷 요약(생성 건물 장소). 조수가 「3층 대저택」처럼 이름으로 고르고 출처(생성형 이미지/손 도트)를 본다. */
+type PlaceBuilding = { id: string; role: string; name: string; kit: string; image: string; x: number; y: number; width: number; height: number; doors: { x: number; y: number }[] };
+type PlaceKitSummary = { kit: string; name: string; image: string; blueprint: string; width: number; height: number; stories?: number | null; usedHere: string[] };
+type PlaceSnapshot = { map: GameMap; tileset: TilesetDef; buildings?: PlaceBuilding[]; kits?: PlaceKitSummary[] };
 type SnapshotFile = () => Promise<{ default: unknown }>;
 type MultiMapFile = { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> };
 
@@ -145,6 +148,24 @@ function snapshotFor(id: string): PlaceSnapshot | undefined {
   return source.pick(loaded.get(source.file));
 }
 
+/**
+ * The shipped snapshot behind one reference, cropped to the place (lake places sit inside the lake village). Throws the
+ * same 「불러오는 중」 error as readRegionReference until preloadRegionReference resolved; undefined for unknown ids.
+ * Snapshot tilesets can be trimmed (no tileMeta) — importers prefer the reference's projectDownload when it has one.
+ */
+export function regionReferenceSnapshotScene(id: string): PlaceSnapshot | undefined {
+  const reference = regionReference(id);
+  if (!reference) return undefined;
+  const source = snapshotFor(snapshotId(id));
+  if (!source) return undefined;
+  const place = LAKE_PLACE_REFERENCES.find(entry => entry.id === id);
+  if (!place) return source;
+  const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + place.y) * source.map.width + place.x, (y + place.y) * source.map.width + place.x + reference.width)).flat();
+  const croppedMap: GameMap = { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] };
+  cropExtraLayers(croppedMap, source.map.width, source.map.height, place.x, place.y, place.width, place.height);
+  return { ...source, map: croppedMap };
+}
+
 /** Bounded rows let AI recover the complete raster without truncating a single large response. */
 export function readRegionReference(id: string, row = 0, rows = 8) {
   const reference = regionReference(id);
@@ -152,19 +173,17 @@ export function readRegionReference(id: string, row = 0, rows = 8) {
   if (!Number.isInteger(row) || !Number.isInteger(rows) || row < 0 || row >= reference.height || rows < 1 || rows > 16) {
     throw new Error("row must be within the map; rows must be 1..16");
   }
-  const place = LAKE_PLACE_REFERENCES.find(entry => entry.id === id);
   const source = snapshotFor(snapshotId(id));
   if (!source) throw new Error(`Unknown region reference: ${id}`);
-  const crop = (tiles: number[]) => Array.from({ length: reference.height }, (_, y) => tiles.slice((y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0), (y + (place?.y ?? 0)) * source.map.width + (place?.x ?? 0) + reference.width)).flat();
-  const croppedMap: GameMap | null = place ? { ...source.map, width: place.width, height: place.height, lowerTiles: crop(source.map.lowerTiles), upperTiles: crop(source.map.upperTiles), events: [] } : null;
-  if (croppedMap && place) cropExtraLayers(croppedMap, source.map.width, source.map.height, place.x, place.y, place.width, place.height);
-  const selected = croppedMap ? { ...source, map: croppedMap } : source;
+  const selected = regionReferenceSnapshotScene(id)!;
   const endRow = Math.min(reference.height, row + rows);
   const { map, tileset } = selected;
   const lowerTiles = map.lowerTiles.slice(row * map.width, endRow * map.width);
   const upperTiles = map.upperTiles.slice(row * map.width, endRow * map.width);
   const used = [...new Set([...lowerTiles, ...upperTiles])].filter(tile => tile >= 0);
-  return structuredClone({ ...reference, map: {
+  // 건물 목록·킷 요약은 첫 쪽(row 0)에만 싣는다 — 이어 읽기마다 되풀이하지 않게.
+  const catalog = row === 0 && source.buildings ? { buildings: source.buildings, kits: source.kits ?? [] } : {};
+  return structuredClone({ ...reference, ...catalog, map: {
     id: map.id, width: map.width, height: map.height, tileSize: map.tileSize,
     tilesetId: map.tilesetId, row, rows: endRow - row, nextRow: endRow < map.height ? endRow : null,
     lowerTiles, upperTiles, events: map.events,

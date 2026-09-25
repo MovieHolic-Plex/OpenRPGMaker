@@ -1,6 +1,7 @@
+import { drawMapTileLayer } from "@/editor/mapTileDraw";
+import { tileBackingTile } from "@/editor/tileLayerPolicy";
+import { cropExtraLayers } from "@/project/mapLayers";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
-import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
-import { drawShadowQuarters } from "@/editor/mapTileDraw";
 import { mapVisualEvidenceUnavailable } from "./mapVisualEvidence";
 import {
   canvasDataUrl,
@@ -8,6 +9,7 @@ import {
   drawCheckerBackground,
   drawTile,
   EMPTY_TILE,
+  keyedTilesetImage,
   loadTilesetImage,
   tileDrawSize,
 } from "./toolImageCanvas";
@@ -28,16 +30,13 @@ type UnknownRecord = { readonly [key: string]: unknown };
 
 type TileGridPayload = {
   readonly tileset: TilesetDef;
+  readonly map?: GameMap;
   readonly x: number;
   readonly y: number;
   readonly w: number;
   readonly h: number;
   readonly lower: readonly (readonly number[])[];
   readonly upper: readonly (readonly number[])[];
-  /** 2층·4층·그림자(사분면 비트) — show_map_region 이 맵에 그 칸이 있을 때만 싣는다. 없으면 빈 배열. */
-  readonly layer2: readonly (readonly number[])[];
-  readonly layer4: readonly (readonly number[])[];
-  readonly shadow: readonly (readonly number[])[];
   readonly events: readonly RegionEventSprite[];
 };
 
@@ -61,9 +60,7 @@ export async function renderPiMapImage(project: Project, data: unknown): Promise
   if (!map) throw new Error("map-rendering-unavailable: map missing");
   const unavailable = mapVisualEvidenceUnavailable(map);
   if (unavailable) throw new Error(unavailable);
-  if (Object.keys(map.lowerTileStacks ?? {}).length || Object.keys(map.upperTileStacks ?? {}).length) throw new Error("map-rendering-unavailable: layered stacks need renderer support");
-  const tileset = project.tilesets[map.tilesetId];
-  for (let y=0;y<map.height;y++) for(let x=0;x<map.width;x++) if(chipsetQuarterComposition(map, tileset, x, y)) throw new Error("map-rendering-unavailable: quarter composition needs renderer support");
+  if (!project.tilesets[map.tilesetId]) throw new Error("map-rendering-unavailable: tileset missing");
   const payload = tileGridPayload(project, data);
   if (!payload) throw new Error("map-rendering-unavailable: invalid region");
   const images = await renderTileGridPayload(payload, "현재 초안", project);
@@ -102,7 +99,7 @@ async function renderShowTiles(project: Project, data: unknown): Promise<Rendere
   const visibleTiles = tiles.filter((tile) => tile >= 0).slice(0, MAX_TILE_SWATCHES);
   if (visibleTiles.length === 0) return [];
 
-  const image = await loadTilesetImage(tileset);
+  const image = keyedTilesetImage(tileset, await loadTilesetImage(tileset));
   const swatchSize = Math.max(tileset.tileSize * TILE_SWATCH_SCALE, MIN_SWATCH_SIZE);
   const captionHeight = 20;
   const gap = 8;
@@ -147,7 +144,7 @@ async function renderTileGrid(project: Project, data: unknown, label = "영역")
 }
 
 async function renderTileGridPayload(payload: TileGridPayload, label: string, draft?: Project): Promise<RenderedToolImage[]> {
-  const image = await loadTilesetImage(payload.tileset, draft);
+  const image = keyedTilesetImage(payload.tileset, await loadTilesetImage(payload.tileset, draft));
   // Whole-map coverage renders reach here, so the canvas is sized to the delivered
   // image rather than drawn huge and shrunk. Small regions keep the native scale.
   const drawSize = tileDrawSize(payload.w, payload.h, payload.tileset.tileSize);
@@ -155,26 +152,36 @@ async function renderTileGridPayload(payload: TileGridPayload, label: string, dr
   if (!canvasPair) return [];
   const { canvas, context } = canvasPair;
   drawCheckerBackground(context, canvas.width, canvas.height, Math.max(4, Math.floor(drawSize / 2)));
-  // 캔버스 렌더러(editor/mapTileDraw)와 같은 순서: 1층 → 2층 → 그림자 → 캐릭터 아래 이벤트 → 3층 → 4층 → 나머지 이벤트.
-  // 2·4층·그림자가 없는 옛 맵은 빈 배열이라 아무것도 더 그리지 않는다.
-  const drawGrid = (grid: readonly (readonly number[])[]): void => {
-    for (let row = 0; row < Math.min(payload.h, grid.length); row += 1) {
-      for (let column = 0; column < payload.w; column += 1) {
-        const tile = tileAt(grid, row, column);
-        if (tile >= 0) drawTile(context, image, tile, payload.tileset, column * drawSize, row * drawSize, drawSize);
-      }
+  if (payload.map) {
+    const scale = drawSize / payload.tileset.tileSize;
+    const region = cropMapRegion(payload.map, payload.x, payload.y, payload.w, payload.h);
+    drawMapTileLayer(context, image, region, payload.tileset, "lower", scale);
+    const below = payload.events.filter((event) => event.priority === "below");
+    const rest = payload.events.filter((event) => event.priority !== "below");
+    await drawRegionEventSprites(context, below);
+    drawMapTileLayer(context, image, region, payload.tileset, "upper", scale);
+    await drawRegionEventSprites(context, rest);
+    const dataUrl = canvasDataUrl(canvas);
+    return dataUrl ? [{ dataUrl, label }] : [];
+  }
+  for (let row = 0; row < payload.h; row += 1) {
+    for (let column = 0; column < payload.w; column += 1) {
+      const lowerTile = tileAt(payload.lower, row, column);
+      if (lowerTile < 0) continue;
+      const backing = tileBackingTile(payload.tileset, lowerTile);
+      if (backing !== null) drawTile(context, image, backing, payload.tileset, column * drawSize, row * drawSize, drawSize);
+      drawTile(context, image, lowerTile, payload.tileset, column * drawSize, row * drawSize, drawSize);
     }
-  };
-  drawGrid(payload.lower);
-  drawGrid(payload.layer2);
-  for (let row = 0; row < Math.min(payload.h, payload.shadow.length); row += 1) {
-    for (let column = 0; column < payload.w; column += 1) drawShadowQuarters(context, column, row, drawSize, tileAt(payload.shadow, row, column) & 0b1111);
   }
   const below = payload.events.filter((event) => event.priority === "below");
   const rest = payload.events.filter((event) => event.priority !== "below");
   await drawRegionEventSprites(context, below);
-  drawGrid(payload.upper);
-  drawGrid(payload.layer4);
+  for (let row = 0; row < payload.h; row += 1) {
+    for (let column = 0; column < payload.w; column += 1) {
+      const upperTile = tileAt(payload.upper, row, column);
+      if (upperTile >= 0) drawTile(context, image, upperTile, payload.tileset, column * drawSize, row * drawSize, drawSize);
+    }
+  }
   await drawRegionEventSprites(context, rest);
   const dataUrl = canvasDataUrl(canvas);
   return dataUrl ? [{ dataUrl, label }] : [];
@@ -215,9 +222,6 @@ function tileGridPayload(project: Project, data: unknown): TileGridPayload | nul
   const upper = numberGrid(payload.upper, requestedW, requestedH)
     ?? numberGrid(payload.upperTiles, requestedW, requestedH)
     ?? [];
-  const layer2 = numberGrid(payload.layer2, requestedW, requestedH) ?? [];
-  const layer4 = numberGrid(payload.layer4, requestedW, requestedH) ?? [];
-  const shadow = numberGrid(payload.shadow, requestedW, requestedH) ?? [];
   if (lower.length === 0 && upper.length === 0) return null;
   const w = requestedW ?? Math.max(gridWidth(lower), gridWidth(upper));
   const h = requestedH ?? Math.max(lower.length, upper.length);
@@ -230,7 +234,25 @@ function tileGridPayload(project: Project, data: unknown): TileGridPayload | nul
     ? resolveRegionEventSprites(project, map, { x, y, w, h }, tileDrawSize(w, h, tileset.tileSize))
     : { ok: true as const, sprites: [] };
   if (!events.ok) throw new Error(events.reason);
-  return { tileset, x, y, w, h, lower, upper, layer2, layer4, shadow, events: events.sprites };
+  return { tileset, map, x, y, w, h, lower, upper, events: events.sprites };
+}
+
+function cropMapRegion(map: GameMap, x: number, y: number, w: number, h: number): GameMap {
+  const cut = (tiles: readonly number[]): number[] => Array.from({ length: w * h }, (_, index) => {
+    const column = index % w;
+    const row = Math.floor(index / w);
+    return tiles[(y + row) * map.width + x + column] ?? -1;
+  });
+  const cropped: GameMap = {
+    ...map,
+    width: w,
+    height: h,
+    lowerTiles: cut(map.lowerTiles),
+    upperTiles: cut(map.upperTiles),
+    events: [],
+  };
+  cropExtraLayers(cropped, map.width, map.height, x, y, w, h);
+  return cropped;
 }
 
 function tilesetForPayload(project: Project, payload: UnknownRecord): TilesetDef | undefined {

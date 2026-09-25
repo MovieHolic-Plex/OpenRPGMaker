@@ -100,7 +100,7 @@ describe.each(["topbar", "panel"] as const)("%s settings entry", (entry) => {
     // 지시줄에 추론 셀렉트는 없다 — 레벨 프리셋이 저장 config 의 추론을 정한다.
     expect(document.querySelector("[data-testid='ai-composer-reasoning']")).toBeNull();
     expect(loadAiConfig().reasoningEffort).toBe(resolveAutonomy("max").reasoningEffort);
-    expect(control("ai-composer-model").textContent).toContain("gemini-2.5-pro");
+    expect(document.querySelector("[data-testid='ai-composer-model']")).toBeNull();
   });
 });
 

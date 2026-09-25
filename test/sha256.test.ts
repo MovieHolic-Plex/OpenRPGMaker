@@ -17,6 +17,20 @@ describe("sha256", () => {
     expect(digest).toBe(expected);
   });
 
+  it("streams long text without splitting surrogate pairs at encoding windows", async () => {
+    const { createHash } = await import("node:crypto");
+    const window = 1 << 16;
+    for (const shift of [-1, 0, 1]) {
+      for (const text of [
+        `${"x".repeat(window - 1 + shift)}😀tail`,
+        `${"x".repeat(window - 1 + shift)}\ud800tail`,
+        `${"숲".repeat(window + shift)}\udc00\ud800`,
+      ]) {
+        expect(sha256HexTextSync(text)).toBe(createHash("sha256").update(Buffer.from(new TextEncoder().encode(text))).digest("hex"));
+      }
+    }
+  });
+
   afterEach(() => {
     vi.unstubAllGlobals();
   });

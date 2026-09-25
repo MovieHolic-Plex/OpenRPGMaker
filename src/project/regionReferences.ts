@@ -125,7 +125,7 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
   // 2026-09-24: 숲마을 칩셋 + 설계도 방식 생성 건물 29종(god-tibo-imagen, 검사기 통과작만)·칩셋에 없는 소품만 손 도트.
   // 재생성: scripts/asset-gen/forest-harmony-buildings/ (author_village2 → hand_props --install → author_village2 → publish_place).
   id: "forest-fantasy-town-104x96", name: "개울 건너 숲성 마을", kind: "completed-place" as const,
-  placeKind: "settlement" as const, revision: 1, x: 0, y: 0, width: 104, height: 96,
+  placeKind: "settlement" as const, revision: 2, x: 0, y: 0, width: 104, height: 96,
   tilesetId: "forest_harmony_fantasy_town",
   preview: "/assets/region-references/forest-fantasy-town.png",
   tilesetPreview: "/assets/forest-harmony/fantasy-town-buildings.png",
@@ -136,6 +136,8 @@ export const PLACE_REFERENCES = [...LAKE_PLACE_REFERENCES, ...SHIP_PLACE_REFEREN
     "아랫마을은 나무 울타리 고리로 두르고 남쪽 정문 문루(지나다니는 아치)·모퉁이 망루 둘. 광장과 남북 큰길은 포석, 골목은 흙길 2칸.",
     "구역: 포석 광장(우물·석상·노점), 모험가 길드, 대장간, 여관, 울타리 목장(양·소), 밭 두 뙈기와 허수아비, 풍차, 닭장, 쌓은 짚단과 건초 수레.",
     "건물은 숲마을 칩셋 뒤(2730~)에 tileGrafts 로 붙은 생성 시트 칸이다. 통행은 설계도가 정했다. 입구 (51,95)에서 문 39곳이 모두 닿는다. 빈칸 게이트 통과(최대 빈 정사각 4칸, 한 화면 빈 잔디 38%).",
+    "건물 21채는 전부 「생성형 이미지」(god-tibo-imagen, 설계도 검사 통과작)다: 3층 대저택·예배당·마법사의 탑·여관·모험가 길드·잡화점·대장간·물레방앗간·풍차·정문 문루·망루·곳간·닭장·집 여러 채. 첫 쪽(row 0)의 buildings 에 이름·자리·문, kits 에 킷 id·크기·출처가 있고, 같은 이름의 structureKits(fft-…)로 통째 찍을 수 있다. 소품 중 건초 수레·짚단·버섯·갈대·들꽃 변형은 「손 도트」.",
+    "키큰 풀은 E/F/G 규칙(#1421)으로 정리했다 — 집·길 곁이라 대부분 G(짧음), 숲 곁 몇 덩이만 E.",
   ],
   limitations: "배치 참고 사례. 실내 맵과 문 이동은 포함하지 않는다. 주민 16명·동물 10마리는 배치와 한 줄 대사만 있다. 물레방아·풍차 날개는 정지 그림이다.",
 }, ...DIVERSE_VILLAGE_PLACES];
@@ -158,6 +160,6 @@ function referenceHouseFormNote(referenceId: string): string {
 
 export function regionReferenceContext(): string {
   return "## 지역·장소 — 완성 맵 참고 사례\n" + [...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES].map(r =>
-    `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 읽기 전용 참고 자료이며 생성 계약이 아니다.${referenceHouseFormNote(r.id)}`
+    `- ${r.name} (${r.id}, ${r.width}×${r.height}): ${r.rules.join(" ")}\n실제 배치: read_region_reference({id:'${r.id}',row:0,rows:8}), nextRow로 이어 읽기. 그대로 맵으로 쓰려면 import_region_reference({id:'${r.id}'}) 한 번(타일셋·이식 포함).${referenceHouseFormNote(r.id)}`
   ).join("\n");
 }

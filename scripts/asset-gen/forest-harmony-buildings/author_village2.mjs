@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { withTsModule } from "../../ontology-ts-loader.mjs";
+import { arrangeTallGrass } from "../../content/lib/tall-grass.mjs";
 import { paintVillageCliffs } from "../../content/lib/village-cliffs.mjs";
 import { farmlandTiles } from "../../content/lib/village-farmland.mjs";
 const [picksPath, outPath] = process.argv.slice(2);
@@ -434,12 +435,16 @@ for (let k = 0; k < 600; k++) {
   const sq = largestSquare();
   if (sq.best > 4) { if (!cluster(sq.at[0] + (sq.best >> 1), sq.at[1] + (sq.best >> 1), sq.best, k)) break; continue; }
   const sc = worstScreen();
-  if (sc.worst <= 0.38) break;
+  if (sc.worst <= 0.35) break;   // 키큰 풀 정리(2×2 미만 띠 제거)로 다시 비는 몫을 남긴다
   const inner = largestSquare(sc.at[0], sc.at[1], sc.at[0] + 17, sc.at[1] + 13);
   if (!inner.at || !cluster(inner.at[0] + (inner.best >> 1), inner.at[1] + (inner.best >> 1), inner.best, k)) break;
 }
 paintGroup(tallGrass, group("builtin_tall_grass"));
-const fillReport = { maxSq: largestSquare().best, screen: Math.round(worstScreen().worst * 100), clusters: fillers.length, tallGrass: tallGrass.size };
+// 키큰 풀 E/F/G(#1421): 덩이마다 한 종류 — 수관 곁 E(짙음), 집·길 3칸 안 G(짧음), 나머지 F(밝음). 2×2 안 되는 띠는 잔디로.
+const arranged = arrangeTallGrass(m, { tileset: ts, houses: buildings.map((b) => ({ x: b.x, y: b.y, w: b.w, h: b.h })), seed: plan.seed });
+m.lowerTiles = arranged.lowerTiles;
+for (const i of [...tallGrass]) if (m.lowerTiles[i] === 240) tallGrass.delete(i);
+const fillReport = { maxSq: largestSquare().best, screen: Math.round(worstScreen().worst * 100), clusters: fillers.length, tallGrass: tallGrass.size, tallGrassTypes: arranged.stats };
 
 // ── 사람·동물(이벤트) ──
 const frame = (k) => (Math.floor(k / 4) * 4 + 2) * 12 + (k % 4) * 3 + 1;   // 아래를 보고 선 칸(easyrpgRtp.charsetFrameIndex 와 같은 식)

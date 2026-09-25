@@ -239,8 +239,16 @@ Auto-generated schema dump (not policy): `docs/tool-catalog.md`.
 - Use `node scripts/oprn-tools.mjs --list` to inspect the headless tool catalog and each tool's read/write mode.
 - Use `node scripts/oprn-mcp-server.mjs --project <project.json|project.oprn> [--audit-log output/tool-audit.jsonl]` for MCP over stdio (legacy `.rpgzzu` packages still open).
 - The MCP server uses JSON-RPC 2.0 with `Content-Length` stdio framing and exposes `initialize`, `tools/list`, and `tools/call`.
-- Headless/MCP execution is read-only for project storage: read tools run normally, write tools only produce dry-run summaries/diffs/issues.
-- Do not add store save, project commit, or remote transport imports to `src/headless/` or the headless scripts; audit logs may record tool name, args, summary, and ok status, but never project JSON.
+- The MCP server is read-only for project storage: read tools run normally, write tools only produce dry-run summaries/diffs/issues.
+- The CLI saves only when asked (2026-09-25, for assistant-path trials): `--write` stores a successful write tool's
+  result back into the `--project` JSON (or `--out <file.json>`); `--new --project <new.json>` first creates an empty
+  project exactly as the editor opens it (`createHeadlessBlankProject` = blank project + the store's load-time
+  normalizers). Every saved call keeps the previous file in `<project>.history/` so `revert_last_edit {steps}` and
+  `list_edit_history` work across processes. `--bundle <file>` reuses a prebuilt tool bundle (delete it after editing src/).
+- Headless runs go through the editor's own runner (`runToolDefinition`: argument normalization, tree repair, commit
+  gate) and await `tool.prepare` first, so lazy data such as `read_region_reference` snapshots loads like in the browser.
+- Do not add store save, project commit, or remote transport imports to `src/headless/`; the CLI writes only the local
+  JSON file it was given. Audit logs may record tool name, args, summary, and ok status, but never project JSON.
 
 ## Live editor AI assistant MCP (same UI session)
 

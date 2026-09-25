@@ -27,6 +27,8 @@ export type SaveResult =
       readonly commitId?: string;
       readonly authority?: ProjectWriteAuthority;
       readonly mirror?: MirrorStatus;
+      /** Host document revision this save produced (local SQLite host only). */
+      readonly revision?: number;
     };
 
 export type MapPatchInput = {

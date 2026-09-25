@@ -52,12 +52,15 @@ function startWorker() {
     const bun = process.env.OPRN_BUN_PATH || (existsSync(localBun) ? localBun : "bun");
     // Tests point this at a script that crashes on startup to pin the failure contract.
     const command = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
+    const packedBin = process.env.OPRN_OH_MY_PI_WORKER_BIN;
     const child = command
       ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
-      : spawn(bun, [script], {
-        stdio: ["ignore", "pipe", "pipe"],
-        env: { ...process.env },
-      });
+      : packedBin && existsSync(packedBin)
+        ? spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } })
+        : spawn(bun, [script], {
+          stdio: ["ignore", "pipe", "pipe"],
+          env: { ...process.env },
+        });
     workerChild = child;
     let settled = false;
     const fail = (error) => {

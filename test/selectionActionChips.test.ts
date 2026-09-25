@@ -102,6 +102,24 @@ describe("renderSelectionActionChips", () => {
     expect(calls).toHaveLength(1);
     expect(calls[0]?.mapId).toBe("map-1");
   });
+
+  it("입력창에 쓴 지시는 실행 버튼으로 곧장 autoRun 된다", () => {
+    const calls: RegionTaskModalOptions[] = [];
+    const stub = ((options: RegionTaskModalOptions) => {
+      calls.push(options);
+      return document.createElement("div");
+    }) as never;
+    const bar = renderSelectionActionChips(SELECTION, stub);
+    document.body.append(bar);
+    const prompt = findByTestId(document.body as unknown as FakeElement, "selection-chip-prompt") as unknown as HTMLTextAreaElement;
+    expect(prompt).toBeTruthy();
+    prompt.value = "  연못 하나 만들어줘  ";
+    (findByTestId(document.body as unknown as FakeElement, "selection-chip-ai") as unknown as HTMLElement).click();
+    expect(calls).toHaveLength(1);
+    expect(calls[0]?.initialInstruction).toBe("연못 하나 만들어줘");
+    expect(calls[0]?.autoRun).toBe(true);
+    expect(calls[0]).not.toHaveProperty("mode");
+  });
 });
 
 describe("지우기 확인 (넓은 영역)", () => {

@@ -3,12 +3,13 @@ import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
 import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
 import { ensureRpgDungeonReferences } from "./sharedRpgDungeonReferences";
 import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
-import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
+import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
 import { ensureForestGroveInterior } from "./forestGrove";
 import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
+import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -137,11 +138,15 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     if (project.tilesets[id]) {
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
+      // Older saves stop at 2550/2610: append the shared tail slots (only past the end or into blank slots).
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyVillageSlots(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
       changed = ensureRpgDungeonReferences(project.tilesets[id]) || changed;
       changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
+      // Leafless trees appended to the snow, volcano and desert sheets (2880~): older saves grow to the new count.
+      changed = ensureClimateBareTrees(project.tilesets[id]) || changed;
       // Groves made before the leaf interior gain its depth variants (forest_harmony and the climate sheets).
       changed = ensureForestGroveInterior(project.tilesets[id]) || changed;
       // Tall grass E/F/G: F and G groups, the fixed E grammar (forest_harmony and the climate sheets).
@@ -261,7 +266,8 @@ function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[nu
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
-  if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
+  // New projects start with the shared tail slots the place documents use (2550~2759).
+  if (asset.textureKey === FOREST_HARMONY_TEXTURE) { const tileset = createForestHarmonyTileset(); ensureForestHarmonyVillageSlots(tileset); return tileset; }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();

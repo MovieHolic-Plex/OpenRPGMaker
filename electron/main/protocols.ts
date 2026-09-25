@@ -1,9 +1,12 @@
+import { sharedContentResponse } from '../../scripts/lib/sharedContentSqlite';
+import { SHARED_CONTENT_ENDPOINT } from '../../src/project/sharedContentSchema';
 import { existsSync, readFileSync } from "node:fs";
 import { extname, normalize, resolve, sep } from "node:path";
 import { protocol } from "electron";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
+import { isCompanionPath } from "../../scripts/lib/ohMyPiHttp.mjs";
 import type { SessionRegistry } from "./sessions";
 import { sharedCharacterGraphicsResponse } from "../../scripts/lib/sharedCharacterGraphics";
 import { SHARED_CHARACTER_GRAPHICS_ENDPOINT } from "../../src/project/sharedCharacterGraphicsSchema";
@@ -44,10 +47,18 @@ function fileResponse(target: string): Response {
   });
 }
 
-export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () => string): void {
+export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () => string, companionOrigin: () => string | null = () => null): void {
   const root = resolve(rendererDir);
   protocol.handle(OPRN_APP_SCHEME, async (request) => {
     const url = new URL(request.url);
+    const origin = companionOrigin();
+    if (origin && isCompanionPath(url.pathname)) {
+      const headers = new Headers(request.headers);
+      headers.delete("host");
+      const body = request.method === "GET" || request.method === "HEAD" ? undefined : await request.arrayBuffer();
+      return fetch(new URL(`${url.pathname}${url.search}`, origin), { method: request.method, headers, body });
+    }
+    if (url.pathname === SHARED_CONTENT_ENDPOINT) { const r = sharedContentResponse(request.method); return Response.json(r.body, {status:r.status,headers:{'cache-control':'no-store'}}); }
     if (url.pathname === SHARED_CHARACTER_GRAPHICS_ENDPOINT) {
       if (request.method === "POST" && (request.headers.get("x-oprn-shared-catalog") !== "1" || Number(request.headers.get("content-length") ?? 0) > 2 * 1024 * 1024)) return new Response(null, { status: 403 });
       try {

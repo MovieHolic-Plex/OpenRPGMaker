@@ -1,6 +1,8 @@
 import type { Project, TilesetDef } from "./types";
+import { isBundledReferenceImage } from "./bundledReferenceImagePath";
 
-/** Authored, portable reference material. Image bytes travel with the project. */
+/** Authored, portable reference material. Uploaded image bytes travel with the project;
+ * shipped images are same-origin static paths (`isBundledReferenceImage`). */
 export interface TilesetReferenceDocument { id: string; name: string; markdown: string }
 export interface TilesetReferenceImage { id: string; name: string; caption: string; dataUrl: string }
 export interface TilesetReferenceCategory {
@@ -56,7 +58,8 @@ export function validateTilesetReferences(value: unknown): asserts value is Tile
     for (const img of list(group.images, REFERENCE_LIMITS.images)) {
       if (!string(img.name, 200).trim()) fail("이미지 이름이 필요합니다.");
       string(img.caption, 4000);
-      if (!REFERENCE_IMAGE_PATTERN.test(string(img.dataUrl, Math.ceil(REFERENCE_LIMITS.imageBytes * 4 / 3) + 64))) fail("PNG/JPEG/WebP 이미지 데이터가 필요합니다.");
+      const src = string(img.dataUrl, Math.ceil(REFERENCE_LIMITS.imageBytes * 4 / 3) + 64);
+      if (!REFERENCE_IMAGE_PATTERN.test(src) && !isBundledReferenceImage(src)) fail("PNG/JPEG/WebP 이미지 데이터가 필요합니다.");
     }
   }
 }

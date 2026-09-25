@@ -1,0 +1,36 @@
+{
+  "scope": "Revision550 medicine investigation from actual completed fog rescue and investigation state. Continues actual accused state, owned party/items, trainer fight and one-time report reward. Defeat branch not covered.",
+  "steps": [],
+  "checkpointMatches": true,
+  "walkedSteps": 31,
+  "battleInputs": [
+    "skill_isaiah_rock_throw",
+    "skill_isaiah_rock_throw",
+    "skill_isaiah_bubble",
+    "skill_isaiah_bubble",
+    "skill_isaiah_bubble",
+    "skill_isaiah_bubble",
+    "skill_isaiah_bubble"
+  ],
+  "victoryRecovered": true,
+  "repeatBattleBlocked": true,
+  "rewardOnce": {
+    "gold": 700,
+    "superPotions": 3
+  },
+  "pageErrors": [],
+  "passed": true,
+  "benchmark": {
+    "snapshotRevision": 550,
+    "playerSeconds": 39.979,
+    "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+  },
+  "resultsSha256": "b7908bdbad98545bcf97cc896dfa9dde0149e06fe724b926a606b388379c7f24",
+  "captureBagVerification": "Victory did not enter the bag. Separate dedicated-player proof saesol-capture-bag-550-proof.json opened the trainer bag and observed0 capture options and6 medicine options.",
+  "deployment": {
+    "asset": "/assets/main-BdSKK0WE.js",
+    "sha256": "a95ae6ec1ca21117f3cab517a1bda2537177e065d884f23ee29245170fe5b7d8",
+    "servedMatchesBuild": true,
+    "scope": "Production renderer updated; canonical SQLite unchanged by deployment; existing host preserved."
+  }
+}

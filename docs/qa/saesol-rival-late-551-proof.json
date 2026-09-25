@@ -1,0 +1,154 @@
+{
+  "scope": "Revision551 dedicated player, actual earned school-completion party. Continue third and fourth rival battles with prior first/second victories preserved. Actual walking, refusals/hints, repeat prevention and final reward. No injected levels/items/flags; separate resumed runtime, not duration proof.",
+  "steps": [
+    {
+      "won": 3,
+      "event": "ev_sr_serin_port"
+    },
+    {
+      "won": 4,
+      "event": "ev_sr_serin_gate"
+    }
+  ],
+  "priorRun": "fresh550-school-battles/results.json",
+  "walkedSteps": 203,
+  "walkedPortals": [
+    {
+      "from": "map_sr4_gate",
+      "event": "ev_gate_cb415f7c-bbc4-476f-a893-44d1bf9a48a2",
+      "to": "map_sr4_gym"
+    },
+    {
+      "from": "map_sr4_gym",
+      "event": "ev_gate_beae648f-8610-4d47-930e-26e5be9479fc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_e7bdbcc8-daf0-4d4c-81d1-6efa8c393229",
+      "to": "map_sr4_pass"
+    },
+    {
+      "from": "map_sr4_pass",
+      "event": "ev_sr4_pass_to_port",
+      "to": "map_sr3_port"
+    },
+    {
+      "from": "map_sr3_port",
+      "event": "ev_sr3_port_to_pass",
+      "to": "map_sr4_pass"
+    },
+    {
+      "from": "map_sr4_pass",
+      "event": "ev_gate_7490c58c-4599-4672-b5d5-1e82b9f64acc",
+      "to": "map_sr4_temple"
+    },
+    {
+      "from": "map_sr4_temple",
+      "event": "ev_gate_29a48b7a-d759-42bc-b5d0-d1bf78abe351",
+      "to": "map_sr4_gym"
+    },
+    {
+      "from": "map_sr4_gym",
+      "event": "ev_gate_6f17c55a-3dbd-48ef-bb34-aee51fd97cb9",
+      "to": "map_sr4_gate"
+    }
+  ],
+  "shownEnemies": [
+    "enemy_serin_burrlock_3",
+    "enemy_serin_scallapod_3",
+    "enemy_serin_spaero_3",
+    "enemy_serin_grimlit_4",
+    "enemy_serin_spaero_4",
+    "enemy_serin_ruffalo_4"
+  ],
+  "switchesUsed": [
+    {
+      "enemy": "enemy_serin_burrlock_3",
+      "to": "monster_7"
+    },
+    {
+      "enemy": "enemy_serin_scallapod_3",
+      "to": "monster_1"
+    },
+    {
+      "enemy": "enemy_serin_spaero_3",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_serin_grimlit_4",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_serin_ruffalo_4",
+      "to": "monster_1"
+    }
+  ],
+  "moves": [
+    {
+      "enemy": "enemy_serin_burrlock_3",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_serin_burrlock_3",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_serin_scallapod_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_serin_spaero_3",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_serin_spaero_3",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_serin_grimlit_4",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_serin_grimlit_4",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_serin_spaero_4",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_serin_spaero_4",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_serin_ruffalo_4",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_serin_ruffalo_4",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    }
+  ],
+  "oneTimeFinalReward": true,
+  "repeatNoReward": true,
+  "passed": true,
+  "pageErrors": [],
+  "benchmark": {
+    "snapshotRevision": 551,
+    "playerSeconds": 149.465,
+    "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+  },
+  "resultsSha256": "01b3a7710b35c27c2b5e2abbd5ccb5fa69163579bde8a28ce7a7752b09efd9cd"
+}

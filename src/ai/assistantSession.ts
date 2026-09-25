@@ -8,6 +8,7 @@ import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type Ru
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+import { formatThrownDiagnostic } from "./errorDiagnostic";
 import { type ResultReview, type ReviewFinding } from "./independentReview";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { runProjectLint } from "@/editor/tools/queryTools";
@@ -1907,10 +1908,12 @@ export class AssistantSession {
       if (operation.signal.aborted) return cancelled ?? cancel();
       this.runExecution = signal?.aborted || isLlmAbortError(cause) ? "cancelled" : "failed";
       const error = cause instanceof Error ? cause.message : String(cause);
+      const stoppedReason = this.runExecution === "cancelled" ? "aborted" : "error";
+      const errorDetail = formatThrownDiagnostic(cause, { request: this.currentTurnRequestText, stoppedReason });
       this.pushAudit({ kind: "status", text: `turn-boundary-error ${error}` });
-      return await this.finishAssessedRunRecap(this.withTurnLedger({ assistantText: "", error,
+      return await this.finishAssessedRunRecap(this.withTurnLedger({ assistantText: "", error, errorDetail,
         proposedCalls: this.finalizeProposals(this.turnProposals),
-        stoppedReason: this.runExecution === "cancelled" ? "aborted" : "error",
+        stoppedReason,
       }), startedAt, usageBefore, auditFrom, subscriber);
     } finally {
       releaseFreezeGuard();
@@ -2103,10 +2106,11 @@ export class AssistantSession {
         operation.assertCurrent();
         const error = cause instanceof Error ? cause.message : String(cause);
         const stoppedReason = signal?.aborted ? "aborted" : "error";
+        const errorDetail = formatThrownDiagnostic(cause, { request: instruction, stoppedReason });
         this.runExecution = signal?.aborted ? "cancelled" : "failed";
         this.pushAudit({ kind: "status", text: `프로젝트 기록 준비 실패: ${error}` });
         onEvent({ type: "status", text: `프로젝트 기록을 확인하지 못했습니다: ${error}` });
-        return { assistantText: "", proposedCalls: [], stoppedReason, error };
+        return { assistantText: "", proposedCalls: [], stoppedReason, error, errorDetail };
       }
     }
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
@@ -4864,10 +4868,11 @@ export class AssistantSession {
         const error = isRetryableLlmError(cause) && !isOhMyPiWorkerCrash(cause)
           ? appendTransientRetryGuidance(rawError)
           : rawError;
+        const errorDetail = formatThrownDiagnostic(cause, { request: this.currentTurnRequestText, stoppedReason: "error" });
         this.runExecution = "failed";
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
-        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error, errorDetail };
       }
       if (pendingImages) {
         const delivered = new Set(result.imageDelivery?.flatMap(({ messageIndex, partIndex }) => {
@@ -5419,7 +5424,7 @@ export class AssistantSession {
           }
 
           if (name === "read_tileset_reference" && toolResult.ok) {
-            roundImages.push(...this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult));
+            roundImages.push(...await operation.wait(this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult)));
           }
 
           // 비전(BUG C): '보여줘' 계열 툴이면 이미지를 렌더해 모아둔다. 렌더 실패는 무시(텍스트로 진행).

@@ -298,7 +298,7 @@ describe("자율성 다이얼 런 표면", () => {
     await flushAsync();
   });
 
-  it("컴포저 모델 칩에 저장된 레벨 라벨이 함께 보인다", async () => {
+  it("컴포저 입력줄에는 모델명을 두지 않는다", async () => {
     resetEditorUiModeForTests("standard");
     storage.set(
       AI_CONFIG_STORAGE_KEY,
@@ -306,8 +306,6 @@ describe("자율성 다이얼 런 표면", () => {
     );
     const panel = renderPanel();
     await whenAiChatPanelSettled();
-
-    // autonomous 라벨은 「자율」이다(autonomyLevels AUTONOMY_LEVELS).
-    expect(findByTestId(panel, "ai-composer-model")?.textContent).toContain("자율");
+    expect(findByTestId(panel, "ai-composer-model")).toBeNull();
   });
 });

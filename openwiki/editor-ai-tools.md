@@ -126,9 +126,11 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
 ## AI 새 야외·마을의 기본 칩셋 (2026-09-21)
 
-- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 AI 새 야외의 기본값을 소유한다.
+- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 새 프로젝트·새 맵·AI 새 야외의 기본값을 소유한다.
   기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만
-  합본 마을로 폴백한다. `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
+  합본 마을로 폴백한다. `createBlankProject`의 시작 맵, 맵 만들기 대화의 빈 맵, `addMap`/`addChildMap`의
+  생략 칩셋이 같은 값을 쓴다. 「부모와 같게」는 부모 칩셋을 유지한다.
+  `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
 - `create_map`, `generate_map`의 village/forest, `author_village`와 내부 마을 생성,
   `build_world`의 town/field가 같은 정책을 쓴다. 명시 칩셋은 우선한다.
   `generate_map` cave는 고정 입구/POI 유무와 관계없이 던전 칩셋을 기본으로 한다.
@@ -2175,3 +2177,15 @@ Saesol authoring request75 exposed the missing tool schema: stored species and
 runtime followers supported the setting, but the AI tool rejected `fieldGraphic`
 and returned a prose draft with no project change. This schema change closes that
 input gap; publishing it does not itself change any canonical game data.
+
+## 기존 서사 플래그의 설명 수정 (2026-09-25)
+
+`declare_story_flag`의 `action:"update"`는 기존 플래그의 `description`만 수정한다.
+입력은 `action`, `id`, 비어 있지 않은 `description`뿐이며 추가 필드는 거부한다.
+ID·kind·targetId·questId·tags·retired·스위치 이름과 값·세션·이벤트/퀘스트 참조를 유지한다.
+retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 않는다. 없는 ID는 생성하지 않는다.
+
+사용 예: `{action:"update",id:"sr-camp-ridge-heard",description:"새솔마을 현장 조사 완료"}`.
+설명을 바꾸기 위해 retire 후 재등록하거나 rename을 쓰지 않는다. 기존 declare/rename/retire
+계약은 유지한다. 새솔 저작 요청80에서 설명 교정 대신 retired=true 초안이 생성되어 폐기된
+사례 때문에 추가했다. 회귀 정의: `test/storyFlags.test.ts` (이번 세션에서 실행하지 않음).

@@ -8,6 +8,7 @@
 
 - 검토된 장소와 지역 사례는 `public/assets/catalog-thumbs/` 의 긴 변 256px 그림을 쓴다. 원본은 상세에서만 연다.
 - 칩셋 목록 줄은 `catalog-thumbs/sheets/` 의 32×40 크롭이다. 다시 만들 때는 `scripts/content/build-catalog-thumbs.py`.
+  이 스크립트는 `public/assets/reviewed-places` 파일과 호스트 공용 SQLite `previews` 의 data URL을 같은 256px 썸네일로 넣는다. 새솔마을처럼 원본 PNG 파일이 없는 장소도 목록은 그 썸네일을 연다.
 - 장소·지역·세계 스테이지(맵 컴파일, 칸 격자)는 「상세」를 열었을 때만 붙는다. 오브젝트 카드는 그 물건의 칸만 나중에 굽는다.
 
 ## Concept and selection contract (2026-09-12)
@@ -184,4 +185,4 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 
 ## 호스트 전용 장소의 목록 썸네일 (2026-09-24)
 
-`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.
+`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 프로젝트에 복사된 장소(`authored-map_*`)는 같은 이름의 `shared_` 공용 미리보기를 붙인다. 직접 칠한 장소는 `public/assets/reviewed-places/<id>.png`를 쓴다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.

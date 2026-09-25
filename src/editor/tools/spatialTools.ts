@@ -1,6 +1,7 @@
 import { publicSpatialValue, publicSpatialKind, storageSpatialSource, storageSpatialDesign } from "./spatialPlaceContract";
 import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences";
 import { preloadRegionReference, readRegionReference } from "@/project/regionReferenceSnapshots";
+import { importReferenceScene, preloadRegionReferenceScene, regionReferenceScene } from "@/project/regionReferenceImport";
 import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
@@ -63,13 +64,54 @@ function connectionCompileRoot(document: SpatialAuthoringDocument, link: Pick<Sp
 }
 export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
   { name: "read_region_reference", mode: "read", domains: ["world", "map", "database"],
-    description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command.",
+    description: "Read a completed region example: frozen tile rows, tile passage/priority, image and authoring lessons. Omit id to list examples. Works without spatial activation. Rows are zero-based; tile arrays are row-major and -1 means empty. Follow nextRow to recover the whole map; this is a reference, not a procedural design or build command. To put the place itself into the project (new map or pasted into a map), call import_region_reference instead of repainting these rows.",
     parameters: { type: "object", properties: { id: { type: "string" }, row: { type: "integer", minimum: 0 }, rows: { type: "integer", minimum: 1, maximum: 16 } }, additionalProperties: false },
     prepare: args => typeof args.id === "string" ? preloadRegionReference(args.id) : Promise.resolve(),
     run(_project, args) {
       if (args.id === undefined) return { summary: "완성 지역 사례", data: { references: structuredClone([...REGION_REFERENCES, ...PLACE_REFERENCES, ...SHARED_REGION_REFERENCES]) } };
       try { return { summary: "완성 지역 사례 원본", data: readRegionReference(String(args.id), args.row === undefined ? 0 : Number(args.row), args.rows === undefined ? 8 : Number(args.rows)) }; }
       catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
+    },
+  },
+  { name: "import_region_reference", mode: "write", domains: ["map", "world"],
+    description: "Import a registered place (read_region_reference ids: forest/concept/climate villages, fields and outdoor places, fantasy places, interiors, dungeons, ships) into the project in one call — its tiles, all layers, and the tileset it needs (tile grafts, per-tile rules, groups and reference documents come along; a missing tileset such as oprn_dungeon_* is installed, a bundled one like forest_harmony only grows its missing tail slots 2550~). Omit mapId to create a new map (default; optional newMapId/name, includeEvents copies events whose transfers stay inside known maps). Give mapId (+x,y top-left, default 0,0) to paste into an existing map on the same tileset; overflow is clipped. Use this instead of re-painting read_region_reference rows. If the project's tileset already shows other pictures in those slots, a separate copy tileset is installed and data.tileset.mode is 'copied'.",
+    parameters: { type: "object", properties: {
+      id: { type: "string", description: "등록 장소 id (read_region_reference 를 id 없이 불러 목록)" },
+      mapId: { type: "string", description: "붙일 기존 맵. 생략하면 새 맵" },
+      x: { type: "integer", minimum: 0 }, y: { type: "integer", minimum: 0 },
+      newMapId: { type: "string" }, name: { type: "string" },
+      includeEvents: { type: "boolean", description: "새 맵에 장소의 이벤트도 복사(없는 맵으로 가는 이동 이벤트는 뺀다). 기본 false" },
+    }, required: ["id"], additionalProperties: false },
+    prepare: args => typeof args.id === "string" ? preloadRegionReferenceScene(args.id).then(() => undefined) : Promise.resolve(),
+    preservesAuthoredRaster: true,
+    run(project, args) {
+      let scene;
+      try { scene = regionReferenceScene(String(args.id)); }
+      catch (error) { throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args" }); }
+      if (args.mapId !== undefined && (args.newMapId !== undefined || args.name !== undefined || args.includeEvents !== undefined)) {
+        throw new ToolError("newMapId·name·includeEvents 는 새 맵으로 가져올 때만 쓴다 — mapId 와 함께 줄 수 없다", { code: "invalid-args" });
+      }
+      let result;
+      try {
+        result = importReferenceScene(project, scene, {
+          ...(args.mapId !== undefined ? { mapId: String(args.mapId), x: Number(args.x ?? 0), y: Number(args.y ?? 0) } : {}),
+          ...(args.newMapId !== undefined ? { newMapId: String(args.newMapId) } : {}),
+          ...(args.name !== undefined ? { name: String(args.name) } : {}),
+          ...(args.includeEvents === true ? { includeEvents: true } : {}),
+        });
+      } catch (error) {
+        throw new ToolError(error instanceof Error ? error.message : String(error), { code: "invalid-args", ...(args.mapId !== undefined ? { mapId: String(args.mapId) } : {}) });
+      }
+      const ts = result.tileset;
+      const tilesetNote = ts.mode === "same" ? `타일셋 ${ts.tilesetId} 그대로` : ts.mode === "extended" ? `타일셋 ${ts.tilesetId} 에 칸 ${ts.tilesAdded}·이식 ${ts.graftsAdded} 추가`
+        : ts.mode === "installed" ? `타일셋 ${ts.tilesetId} 설치` : `타일셋 사본 ${ts.tilesetId} 설치(${ts.conflict})`;
+      const warnings = [
+        ...(result.clipped ? [`맵 밖으로 나간 부분은 잘랐다 — 붙인 범위 ${JSON.stringify(result.rect)}`] : []),
+        ...(result.eventsSkipped > 0 ? [`장소 이벤트 ${result.eventsSkipped}개는 가져오지 않았다${args.includeEvents === true ? "(없는 맵으로 이동)" : " — includeEvents:true 로 새 맵에 복사"}`] : []),
+        ...(ts.mode === "copied" ? [`프로젝트의 ${scene.tileset.id} 는 같은 칸에 다른 그림이 있어(${ts.conflict}) 사본 ${ts.tilesetId} 를 만들었다 — 이 맵은 사본 타일셋을 쓴다`] : []),
+      ];
+      return { summary: `「${scene.name}」 ${result.created ? "새 맵" : "붙이기"} ${result.mapId} ${result.rect.width}×${result.rect.height} · ${tilesetNote}`,
+        data: { ...result, referenceId: scene.referenceId, source: scene.source }, ...(warnings.length ? { warnings } : {}) };
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],

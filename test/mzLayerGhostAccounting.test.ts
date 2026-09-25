@@ -199,7 +199,7 @@ describe("changeset — 선택 층 변경 집계", () => {
 });
 
 describe("고스트 — 선택 층 변화 칸 표시", () => {
-  it("2층·그림자는 아래 칸, 4층은 위 칸으로 표시하고 타일 id 는 싣지 않는다", () => {
+  it("2층·그림자는 아래 칸, 4층은 위 칸으로 표시하고 타일 id 는 그 칸에 보이는 선택 층 타일이다", () => {
     const base = project();
     const draft = clone(base);
     const map = mapOf(draft);
@@ -214,17 +214,18 @@ describe("고스트 — 선택 층 변화 칸 표시", () => {
       { x: 5, y: 2, layer: "upper" },
       { x: 6, y: 2, layer: "lower" },
     ]);
-    expect(cells.every((cell) => cell.tileId === undefined)).toBe(true);
+    expect(cells[0]!.tileId).toBe(40);
+    expect(cells[1]!.tileId).toBe(41);
   });
 
-  it("같은 칸의 1층도 바뀌면 1층 셀(실제 타일)을 둔다", () => {
+  it("같은 칸의 1층도 바뀌면 셀은 하나이고 보이는 맨 위(2층) 타일을 싣는다", () => {
     const base = project();
     const draft = clone(base);
     const map = mapOf(draft);
     map.lowerTiles[idx(map, 3, 2)] = 7;
     setLayerTileAt(map, 2, idx(map, 3, 2), 40);
     const previews = summarizeAgentGhostPreviewForProjectDiff(base, draft);
-    expect(previews[0]!.cells).toEqual([{ x: 3, y: 2, layer: "lower", tilesetId: map.tilesetId, tileId: 7 }]);
+    expect(previews[0]!.cells).toEqual([{ x: 3, y: 2, layer: "lower", tilesetId: map.tilesetId, tileId: 40 }]);
   });
 
   it("선택 층이 없는 두 맵은 전과 같은 셀만 나온다", () => {

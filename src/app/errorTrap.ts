@@ -171,11 +171,14 @@ function record(partial: Omit<TrappedError, "seq" | "at">): void {
   trapped.push(entry);
   if (trapped.length > MAX_TRAPPED) {
     const dropped = trapped.length - MAX_TRAPPED;
-    trapped = trapped.slice(dropped);
-    // 인덱스가 앞으로 밀렸으므로 서명 테이블도 같이 당긴다(안 하면 남의 엔트리 count 를 올린다).
+    // 첫 오류는 원인인 경우가 많다. 앞에서 통째로 밀지 않고, 첫 건을 남긴 채 그 다음을 버린다.
+    const tailStart = dropped + 1;
+    const first = trapped[0];
+    if (first) trapped = [first, ...trapped.slice(tailStart)];
     for (const [sigKey, state] of signatures) {
+      if (state.index === 0) continue;
       const shifted = state.index - dropped;
-      if (shifted < 0) signatures.delete(sigKey);
+      if (shifted < 1) signatures.delete(sigKey);
       else signatures.set(sigKey, { ...state, index: shifted });
     }
   }

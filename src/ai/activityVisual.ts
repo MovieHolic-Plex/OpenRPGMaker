@@ -1,4 +1,5 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { cloneExtraLayers, cropExtraLayers } from "@/project/mapLayers";
 import type { GameMap, Project, TilesetDef, UploadedAsset } from "@/project/types";
 
 /** Execution-time, bounded visual evidence. No live project references or command bodies. */
@@ -79,7 +80,8 @@ function capture(project: Project, name: string, args: Record<string, any>, data
       if (source) {
         const { id, name: title, image, kind, tileSize, tilesPerRow, count, passability, priority, terrain, transparentColor, autotileGroups, tileMeta, tileGrafts } = source;
         const tileset = structuredClone({ id, name: title, image, kind, tileSize, tilesPerRow, count, passability, priority, terrain, transparentColor, autotileGroups, tileMeta, tileGrafts });
-        const cropped: GameMap = { id: map.id, name: map.name, width, height, tileSize: map.tileSize, tilesetId: map.tilesetId, lowerTiles: cut(map.lowerTiles), upperTiles: cut(map.upperTiles), events: map.events.filter(e => e.x >= ox && e.y >= oy && e.x < ox + width && e.y < oy + height).slice(0, 40).map(e => ({ id: e.id, name: e.name, x: e.x - ox, y: e.y - oy, trigger: e.trigger, commands: [] })) };
+        const cropped: GameMap = { id: map.id, name: map.name, width, height, tileSize: map.tileSize, tilesetId: map.tilesetId, lowerTiles: cut(map.lowerTiles), upperTiles: cut(map.upperTiles), ...cloneExtraLayers(map), events: map.events.filter(e => e.x >= ox && e.y >= oy && e.x < ox + width && e.y < oy + height).slice(0, 40).map(e => ({ id: e.id, name: e.name, x: e.x - ox, y: e.y - oy, trigger: e.trigger, commands: [] })) };
+        cropExtraLayers(cropped, map.width, map.height, ox, oy, width, height);
         const visual: ActivityVisual = { kind: "map", title: map.name, caption: `영역 (${ox}, ${oy}) · ${width}×${height} · 이벤트는 위치 표시`, phase, target: `map:${mapId}:${ox},${oy}`, map: cropped, tileset, ...asset(project, image.type === "uploaded" ? image.id : undefined), origin: { x: ox, y: oy } };
         if (JSON.stringify(visual).length <= 1_100_000) visuals.push(visual);
       }

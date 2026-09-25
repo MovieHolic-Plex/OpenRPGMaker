@@ -8,6 +8,7 @@ import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { searchResources, type ResourceSearchKind, type ResourceSearchResult } from "@/assets/resourceSearch";
 import { isPassable } from "@/project/collision";
+import { cellLayerTiles } from "@/project/mapLayers";
 import { isCombinedTownCompatibleTileset } from "@/project/tilesetHarness/combinedTown";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
@@ -29,7 +30,6 @@ import { findLayoutRegions, rankRegionsByCenter } from "@/project/mapLayoutPlan"
 import { lintTilesetPalettes } from "@/editor/lint/tilesetPaletteLint";
 import { verifyPlacedTiles } from "@/project/lint/postTileVerify";
 import { passageMarkForTile } from "@/project/tilesetPassage";
-import { layerTileAt } from "@/project/mapLayers";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA } from "./schemaShapes";
@@ -115,26 +115,14 @@ const getProjectSummary: ToolDefinition = {
 function semanticChar(project: Project, map: GameMap, x: number, y: number, hasEvent: boolean): string {
   if (hasEvent) return "E";
   const i = y * map.width + x;
-  const lower = map.lowerTiles[i] ?? TILE.EMPTY;
-  const upper = map.upperTiles[i] ?? TILE.EMPTY;
+  const layers = cellLayerTiles(map, i);
   // 호수 오토타일·타일 그림판 물 — TILE.WATER(120)만 보면 호수를 못 찾는다.
   const tileset = project.tilesets[map.tilesetId ?? DEFAULT_TILESET_ID];
-  // MZ 네 층: 2·4층이 있는 칸은 4→1 로 맨 위에서부터 보이는 칸이 기호를 정한다(4층 나무 수관이 1층 늪물을 덮으면 T).
-  // 물·나무가 아닌 칸(꽃·소품)은 아래 층으로 내려가 본다. 2·4층이 없는 칸(옛 맵 전부)은 아래 1·3층 규칙 그대로다.
-  const layer2 = layerTileAt(map, 2, i);
-  const layer4 = layerTileAt(map, 4, i);
-  if (tileset && (layer2 >= 0 || layer4 >= 0)) {
-    for (const tile of [layer4, upper, layer2, lower]) {
-      if (tile < 0) continue;
-      if (isWaterInTileset(map, tileset, tile)) return "~";
-      if (tileCategoriesForTile(tileset, tile).includes("tree")) return "T";
-    }
-  }
-  if (isWaterInTileset(map, tileset, lower) || isWaterInTileset(map, tileset, upper)) return "~";
+  if (layers.some((tile) => isWaterInTileset(map, tileset, tile))) return "~";
   const compatible = tileset ? isCombinedTownCompatibleTileset(tileset) : (map.tilesetId ?? DEFAULT_TILESET_ID) === DEFAULT_TILESET_ID;
-  if ((compatible && (upper === TILE.TREE || lower === TILE.TREE))
-    || (tileset && [lower, upper].some(tile => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
-  if (compatible && lower === TILE.WALL) return "#";
+  if ((compatible && layers.some((tile) => tile === TILE.TREE))
+    || (tileset && layers.some((tile) => tile >= 0 && tileCategoriesForTile(tileset, tile).includes("tree")))) return "T";
+  if (compatible && layers[0] === TILE.WALL) return "#";
   return isPassable(project, map, x, y) ? "." : "#";
 }
 
@@ -154,12 +142,8 @@ export function waterBoundsInMap(
   let cellCount = 0;
   for (let y = y0; y < y1; y += 1) {
     for (let x = x0; x < x1; x += 1) {
-      const i = y * map.width + x;
-      const lower = map.lowerTiles[i] ?? TILE.EMPTY;
-      const upper = map.upperTiles[i] ?? TILE.EMPTY;
-      // 2층·4층 물도 센다(없는 층은 -1 → 물 아님 — 옛 맵은 지금과 같다).
-      if (!isWaterInTileset(map, tileset, lower) && !isWaterInTileset(map, tileset, upper)
-        && !isWaterInTileset(map, tileset, layerTileAt(map, 2, i)) && !isWaterInTileset(map, tileset, layerTileAt(map, 4, i))) continue;
+      const layers = cellLayerTiles(map, y * map.width + x);
+      if (!layers.some((tile) => isWaterInTileset(map, tileset, tile))) continue;
       cellCount += 1;
       if (x < minX) minX = x;
       if (y < minY) minY = y;

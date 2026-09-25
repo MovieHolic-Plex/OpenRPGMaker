@@ -21,7 +21,7 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   (좌상단 크기 바꾸기는 `x=y=0`) 또는 `remapExtraLayers(map, w, h, sourceIndex)` 를 부른다. 안 부르면 선택 층이
   옛 길이로 남아 칸이 비껴 그려지고, 불러올 때 그 층이 버려진다(경고). 실측: `resize_map` 도구·마을 넓히기
   (`authorVillageToolDef.growExistingVillageMap`)·Pi 고스트 증분(`ai/piAgent/mapDelta.ts`)·장소/프리셋 잘라내기
-  (`regionReferenceSnapshots.ts`, `referencePresetSnapshot.ts`)가 빠져 있었다. 찾는 법:
+  (`regionReferenceSnapshots.ts`, 옛 `referencePresetSnapshot.ts` — 2026-09-25 `regionReferenceImport.ts` 로 통합)가 빠져 있었다. 찾는 법:
   `git grep -nE "\.(width|height) *= [^=]"` 과 `{ ...map, width, height, lowerTiles… }` 스프레드.
 - `{ ...map, lowerTiles: [...] }` 처럼 **같은 크기** 사본은 선택 배열을 공유한다. 그 사본의 선택 층을 제자리에서
   바꾸면 원본도 바뀐다 — 바꿀 거면 `cloneExtraLayers` 를 같이 펼친다(`updateMapTiles` 선례).
@@ -160,11 +160,37 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 - **우클릭 영역 드래그 (2026-09-19):** 드래그 중에는 선택 사각형·크기 배지만 갱신하고,
   `selection-action-chips` DOM은 pointerup의 최종 영역에서 한 번만 만든다. 이전에는
   pointermove마다 버튼을 만들고 `getBoundingClientRect`로 레이아웃을 강제했다.
+- **우클릭 놓기 → 바는 `finishRightRegionGesture` 가 직접 그린다 (2026-09-25).** 드래그 중에 이미
+  같은 사각형이 선택돼 있으므로 놓을 때의 `selectTileRegion` 은 무변경으로 통지를 건너뛴다.
+  그래서 바가 다음 우연한 redraw(포인터 이동·팬)까지 안 뜨던 것이 "툴바가 느리게 뜬다"의 원인이었다.
+  지금은 놓는 즉시 `renderBuildPaletteOverlay()` 를 부른다(실측: pointerup → DOM 삽입 38–63ms,
+  나머지는 헤드리스 소프트웨어 렌더 프레임). 입력창 자동 포커스는 `focusSelectionPromptOnRender`
+  1회 플래그로 우클릭 제스처에서만 — 다른 경로의 redraw 가 채팅 입력 포커스를 뺏지 않는다.
+- **선택 액션 바 = 컴포저 (2026-09-25).** 한 줄 AI 입력(`selection-chip-prompt`, 6줄까지 자람)이
+  주인공이고, 다듬기·복사·붙여넣기·지우기·걷기 전투·구조물 저장·해제는 같은 상자 안 30px 아이콘이다.
+  Enter 실행(한글 조합 중 Enter 는 무시), Shift+Enter 줄바꿈, 입력이 있으면 `initialInstruction`+`autoRun`,
+  비어 있으면 전체 AI 작업 창. 입력창이 비어 있는 동안 Ctrl+C·Ctrl+V·Del 은 캔버스 동작으로 넘기고,
+  Esc 는 글을 지우거나(있으면) 선택을 해제한다. 아이콘 이름은 `delayedTooltipRollout` 에 등록돼 있다.
+  `selection-chip-ai` 는 DOM 상 첫 버튼(Tab 순서·e2e 계약)이고 화면에서는 CSS `order` 로 맨 끝이다.
 - **lazy 창은 들어온 칸만 더하지 말고 나간 칸을 지운다 (2026-09-22).** `renderVisibleEditSceneTiles` 가
   추가만 하면 팬할수록 컨테이너가 맵 전체로 다시 자란다. 화면 밖 페인트도 객체를 만들지 않는다.
   맵 배열이 정본이고, 그 칸이 창에 들어올 때 만든다.
   타일은 16×16 청크의 자식이다. 창 밖으로 나간 객체는 그 청크에서 `remove` 한다.
   `tileLayer.remove` 는 직계 자식만 지우므로 스프라이트는 남고 인덱스만 사라져 다시 들어오면 겹친다.
+- **유휴 렌더 생략 (2026-09-25).** 편집기 게임은 `installEditRenderGate`(`src/editor/editRenderGate.ts`,
+  `startEditGame` 이 설치)가 `Game.step` 을 감싸 **렌더 단계만** 건너뛴다 — update·트윈·애니메이션 시계·입력 폴링은
+  매 프레임 돈다. 렌더 조건: 최근 500ms 안의 활동(`markEditRenderActive`: 캔버스 포인터·키·창 리사이즈·store/editorState
+  구독·`EditScene.update` 가 본 카메라 변화) 또는 한 프레임 요청(`requestEditRenderFrame`: 씬의 ADDED/REMOVED_FROM_SCENE,
+  진행 중 트윈, 보이는 물 칸의 애니메이션 프레임) 또는 1초 하트비트. **새 캔버스 변화가 사용자 입력 없이 객체의 속성만
+  바꾼다면**(객체 생성·파괴 없이 setTint/setPosition 등) 그 경로에서 `requestEditRenderFrame(scene.game)` 을 불러라 —
+  안 부르면 최대 1초 늦게 보인다. `loop.sleep()` 으로 바꾸지 마라: 트윈·물 애니메이션·키보드 큐가 같이 멈추고
+  테스트 플레이 잠재우기(`editorGameSuspension`)와 같은 스위치를 두고 다툰다. 관측: `editRenderGateStats(game)`.
+- **지연 창 문턱 2_048칸 (2026-09-25).** `LAZY_EDIT_MAP_CELL_THRESHOLD` 가 8_192 였을 때는 90×90 까지 모든 칸을
+  만들었다. 창이 맵 전체를 덮으면(축소·카메라 없는 테스트) lazy 경로도 전부 그리므로 작은 맵 결과는 같다.
+- **격자는 카메라 근처 청크만 긋는다 (2026-09-25).** `repaintEditGrid(…, bounds)` + `editGridTileWindow` 가 카메라 창을
+  청크 경계로 넓힌 범위만 긋고, `EditScene.update` 의 `syncGridWindow` 가 창이 청크를 넘을 때 다시 긋는다.
+- **리사이즈는 전체 redraw 가 아니다 (2026-09-25).** `handleResize` 는 내비 기하 + `afterCameraMoved` 만 한다.
+  새로 보이는 칸·격자는 다음 `update()` 가 창 변화를 보고 채운다. 아직 그린 적 없는 맵일 때만 redraw 한다.
 - AI 패널의 class/style/높이 변화로 `overlayGeometryReadAtMs` 를 0으로 돌리지 마라.
   스트리밍이 매 프레임 `getBoundingClientRect` 를 호출해 편집 입력이 멈춘다.
   캔버스 크기만 즉시 무효화하고, 조수 카드 가림은 250ms TTL 로 다시 잰다.
@@ -194,7 +220,9 @@ Phaser 3.90 에서 이 재생성은 **O(N²)** 다: `Container.add` 가 자식�
 초보 레일은 동일 칩셋·이미지·검색 조건에서 팔레트 DOM을 재사용한다. 선택 시 2,000개 이상의
 셀을 다시 만들면 지연 생성 중인 뒷부분이 사라지거나 키보드/드래그 상태가 끊긴다.
 표준 팔레트도 같다. `selectedTile` 만 바뀐 에디터 통지는 `syncMountedPaletteSelection` 이
-활성 칸과 선택 칩만 옮긴다. 레이어·도구·스탬프·필터·열린 보조 창이 같이 바뀌면 시트를 다시 그린다.
+활성 칸과 선택 칩만 옮긴다. 도구·붓·스탬프만 바뀌면 시트 노드는 `retainKey`(타일셋·그림·레이어·필터)가
+같을 때 그대로 두고 크롬만 다시 그린다. 레이어·필터·검색·타일셋 그림이 바뀌거나 보조 창이 열려
+선택 동기화가 실패하면 시트를 다시 그린다. 초보 레일의 되돌리기 기록은 단추만 갱신한다.
 DOM 미리보기는 이식 PNG의 공유 Blob URL을 쓰고 증거·내보내기는 data URL을 유지한다.
 같은 맵에서 도구·선택만 바뀌면 프로젝트 전체 참조 감사와 JSON 내보내기를 다시 하지 않는다.
 
@@ -660,7 +688,7 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 - Team workflow visualization, mock editor login, topbar identity/history **icon** buttons (trailing cluster), commit-history panel (outside-click dismiss), and map-lock badges: start in `src/editor/teamWorkflowUi.ts`, `src/editor/panels/menu.ts`, `src/editor/panels/mapList.ts`, `src/editor/panels/editor.ts`, `src/project/editorIdentity.ts`, and `src/project/legacyDbProjectSync.ts`. Locked maps use the canvas-top badge with last activity plus a guarded edit-rights takeover action; there is no duplicate statusbar state. Login remains mock-only until Phase 8 auth switchover; do not add LegacyDb Auth calls here.
 
 - **맵 URL 동기화 + 뒤로가기 (2026-07-24):** `src/editor/mapUrlSync.ts` owns `?map=<mapId>` URL parameter sync. 맵 전환 시 `pushState`로 히스토리 기록, `popstate`으로 뒤로가기/앞으로가기 시 맵 복원. 부팅 시 `restoreMapFromUrl()` → `installMapUrlSync()` in `src/app/mode.ts`. `projectUrl.ts`의 `?project=` 파라미터와 공존.
-- **RM2003 맵 속성 탭 (2026-07-24):** `src/editor/panels/mapProps.ts` rewritten as tabbed dialog (일반/배경/BGM/전투/제한/인카운터/필드스폰). New `GameMap` fields: `background?: MapBackground`, `bgm?: MapBgmSetting`, `battleBackground?: string`, `disableSave?`, `disableTeleport?`, `disableEscape?`. Actions: `setMapBackground`, `setMapBgm`, `setMapBattleBackground`, `setMapFlags` in `src/editor/actions.ts`. Types: `MapBackground`, `MapBgmSetting` in `src/project/types/project.ts`. CSS: `src/styles/editor/map-props.css`.
+- **RM2003 맵 속성 (2026-09-25):** `src/editor/panels/mapProps.ts` 는 항목 목록이다. 항목을 누르면 그 섹션만 같은 창 안에 열린다. 목록 줄에 현재 값 요약, 배경·전투 그림, 지정 곡 재생이 있다. 섹션 DOM 은 숨긴 채로 유지해서 다른 항목으로 갔다 와도 입력 초안이 남는다. 이전(2026-07-24)에는 한 스크롤에 일반/배경/BGM/전투/제한/인카운터/필드스폰을 쌓았다. New `GameMap` fields: `background?: MapBackground`, `bgm?: MapBgmSetting`, `battleBackground?: string`, `disableSave?`, `disableTeleport?`, `disableEscape?`. Actions: `setMapBackground`, `setMapBgm`, `setMapBattleBackground`, `setMapFlags` in `src/editor/actions.ts`. Types: `MapBackground`, `MapBgmSetting` in `src/project/types/project.ts`. CSS: `src/styles/editor/map-props.css`.
 - **맵 배경 탭 미리보기 (2026-09-14):** 「맵 배경」 탭에서 고른 그림을 `map-bg-preview` 로 보여준다
   (`mapProps.renderBackgroundTab`, `.map-bg-preview` 는 `src/styles/editor/map-props.css`).
   캔버스가 배경을 그리지 않기 때문이다 — 빈 칸 체커(2026-08-27 의도된 신호)를 약화시키지 않고는
@@ -678,6 +706,8 @@ authoring. Generic world CRUD and blanket lint/digests remain excluded.
 
 
 - **그림 워밍업 소유자 (2026-08-28):** 편집기 다이얼로그가 쓰는 그림 카탈로그 프리로드는 `src/assets/editorAssetWarmup.ts` 만 한다. `scheduleEditorAssetWarmup()` 은 `renderEditor` 끝에서 한 번 불리고 `requestIdleCallback` 로 미뤄지며(없으면 800ms 폴백), tier 순서는 `picker`(캐릭셋 21 + 낱장 얼굴 80 + 칩셋 13) → `library`(CC0 아이콘 234) 다. 이벤트 편집기 모달은 `warmEditorPickerAssets()` 로 `picker` tier 를 앞당긴다. 실제 요청은 공용 큐 `src/assets/imageWarmQueue.ts` 가 URL 단위 in-flight 공유 + 전체 동시 요청 상한 6(배경 호출 몫 4 / 요구 호출 몫 6)으로 낸다. 테스트 플레이 창이 열려 있는 동안은 `setImageWarmQueueSuspended(true)` 로 이 큐를 멈춘다. 색키 워밍이 플레이 프리로드의 HTTP 슬롯과 메인 스레드를 가져가지 않게 하고, 창을 닫으면 다시 흐른다. dev 서버가 HTTP/1.1 이라 상한 없이 수백 장을 걸면 사용자가 지금 보는 그림이 큐 뒤로 밀린다. 새 피커를 만들 때 `new Image()` 나 `<link rel=prefetch>` 를 손으로 뿌리지 말고 tier 목록에 경로를 추가하라. 몬스터/전투 스킨 아트(40MB+)와 업로드 `dataUrl` 은 의도적으로 제외다. `navigator.connection.saveData` 또는 2G 에서는 배경 워밍을 아예 걸지 않는다. 계약: `test/editorAssetWarmup.test.ts`.
+- **store 구독자는 칠하기 샘플을 거른다 (2026-09-25):** `store.subscribe` 알림은 동기이고 묶이지 않는다. 칠하기·채우기·지우기는 포인터 샘플마다 `scope: "map"` + `cells` 로 알린다. 이벤트·위치·대사·맵 이름처럼 타일 id 를 읽지 않는 표면은 `isTileCellChange(change)` 로 걸러라. 걸러 버리거나(`mapLocationLayer`, `aiAuthoring/dialogue`), 썸네일·경고처럼 결과가 필요하면 획이 멈춘 뒤 500ms 에 한 번 그린다(`mapSidebarSection`, 이벤트 편집기 모달). 되돌리기 중복 판정·변경 감지에는 `JSON.stringify(a) === JSON.stringify(b)` 대신 `jsonEqual` (`src/util/structuralJson.ts`)을 쓴다 — 프로젝트 전체를 문자열로 만들지 않고 첫 차이에서 멈춘다. 되돌리기 개수만 필요하면 `getMapEditHistoryDepth()` 를 쓴다(`getMapEditHistoryDebugEntries()` 는 스냅샷 전부를 직렬화한다). 손 팬은 카메라만 샘플마다 옮기고 오버레이 동기화(`onPanMove`)는 프레임당 한 번이다(`CameraPanController`).
+- **store 구독자는 칠하기 샘플을 거른다 (2026-09-25):** `store.subscribe` 알림은 동기이고 묶이지 않는다. 칠하기·채우기·지우기는 포인터 샘플마다 `scope: "map"` + `cells` 로 알린다. 이벤트·위치·대사·맵 이름처럼 타일 id 를 읽지 않는 표면은 `isTileCellChange(change)` 로 걸러라. 걸러 버리거나(`mapLocationLayer`, `aiAuthoring/dialogue`), 썸네일·경고처럼 결과가 필요하면 획이 멈춘 뒤 500ms 에 한 번 그린다(`mapSidebarSection`, 이벤트 편집기 모달). 되돌리기 중복 판정·변경 감지에는 `JSON.stringify(a) === JSON.stringify(b)` 대신 `jsonEqual` (`src/util/structuralJson.ts`)을 쓴다 — 프로젝트 전체를 문자열로 만들지 않고 첫 차이에서 멈춘다. 되돌리기 개수만 필요하면 `getMapEditHistoryDepth()` 를 쓴다(`getMapEditHistoryDebugEntries()` 는 스냅샷 전부를 직렬화한다). 손 팬은 카메라만 샘플마다 옮기고 오버레이 동기화(`onPanMove`)는 프레임당 한 번이다(`CameraPanController`).
 - Editor code should mutate authored project data, not live play-session state.
 - **raw `console.*` 를 새로 심지 말 것 (2026-08-29):** `createLogger(ns)` (`src/util/logger.ts`) 를 쓴다. raw 콘솔은 링버퍼에 남지 않아 사후 조사에서 존재하지 않는 것과 같다(감사 당시 `src/` 의 로그 103건이 전부 raw 콘솔이었다). 알려진 관측 공백 목록(되돌리기 스냅샷 없는 파일 21개, `resetMapEditHistory()` 프로덕션 호출 0건, AI 영역 작업의 라벨·origin 누락, `mapEditLocks` 거부 미기록 등)은 `openwiki/editor-observability.md` 하단 표에 있다 — 그 근처를 손대면 이어서 정리하라.
 - If an editor change affects saved JSON, update `openwiki/runtime-project-schema.md` guidance and verify migration/serialization paths.

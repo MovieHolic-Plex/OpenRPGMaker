@@ -101,9 +101,12 @@ function handleRequest(module, project, auditLogPath, request) {
         failure(id, -32602, "tools/call params.arguments must be an object");
         return;
       }
-      const result = module.runHeadlessTool(project, name, args);
-      audit(auditLogPath, { tool: name, args, summary: result.summary, ok: result.ok });
-      success(id, { content: textContent(result), isError: result.ok !== true });
+      // Lazy tool data (reference snapshots) loads before the synchronous run, as in the editor.
+      void module.prepareHeadlessTool(name, args).then(() => {
+        const result = module.runHeadlessTool(project, name, args);
+        audit(auditLogPath, { tool: name, args, summary: result.summary, ok: result.ok });
+        success(id, { content: textContent(result), isError: result.ok !== true });
+      }).catch((error) => failure(id, -32603, error instanceof Error ? error.message : String(error)));
       return;
     }
     failure(id, -32601, `Method not found: ${request.method}`);
@@ -157,6 +160,7 @@ async function main() {
   }
   const rpc = startFramedJsonRpc();
   await withTsModule(HEADLESS_ENTRY, "headless.mjs", async (module) => {
+    module.setHeadlessPublicRoot(fileURLToPath(new URL("../public", import.meta.url)));
     const project = args.projectDir
       ? await loadProjectFromDirectory(args.projectDir)
       : loadProject(module, args.projectPath);

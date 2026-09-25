@@ -1,0 +1,605 @@
+[
+  {
+    "id": "outdoor-border-fortress",
+    "seed": 3401,
+    "entry": [
+      24,
+      35
+    ],
+    "reachable": 795,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [
+      {
+        "name": "성문 닫힘",
+        "close": 5,
+        "target": [
+          24,
+          4
+        ],
+        "sealed": true
+      }
+    ],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.335,
+      "at": [
+        28,
+        21
+      ],
+      "screenAt": [
+        20,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-royal-capital",
+    "seed": 3301,
+    "entry": [
+      36,
+      73
+    ],
+    "reachable": 1877,
+    "targets": 15,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.339,
+      "at": [
+        15,
+        8
+      ],
+      "screenAt": [
+        12,
+        8
+      ]
+    }
+  },
+  {
+    "id": "outdoor-fairy-spring",
+    "seed": 3102,
+    "entry": [
+      18,
+      25
+    ],
+    "reachable": 398,
+    "targets": 1,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.344,
+      "at": [
+        25,
+        6
+      ],
+      "screenAt": [
+        4,
+        8
+      ]
+    }
+  },
+  {
+    "id": "outdoor-fishing-village",
+    "seed": 3201,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 609,
+    "targets": 10,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.339,
+      "at": [
+        35,
+        11
+      ],
+      "screenAt": [
+        24,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-swamp-village",
+    "seed": 3501,
+    "entry": [
+      16,
+      31
+    ],
+    "reachable": 926,
+    "targets": 10,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.344,
+      "at": [
+        28,
+        0
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-ruined-city",
+    "seed": 3601,
+    "entry": [
+      24,
+      35
+    ],
+    "reachable": 1225,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.335,
+      "at": [
+        8,
+        4
+      ],
+      "screenAt": [
+        16,
+        16
+      ]
+    }
+  },
+  {
+    "id": "outdoor-dwarf-mine",
+    "seed": 3701,
+    "entry": [
+      20,
+      39
+    ],
+    "reachable": 811,
+    "targets": 14,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.339,
+      "at": [
+        32,
+        3
+      ],
+      "screenAt": [
+        20,
+        0
+      ]
+    }
+  },
+  {
+    "id": "outdoor-graveyard-hill",
+    "seed": 3801,
+    "entry": [
+      19,
+      29
+    ],
+    "reachable": 610,
+    "targets": 9,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.33,
+      "at": [
+        19,
+        0
+      ],
+      "screenAt": [
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-sealed-altar",
+    "seed": 3901,
+    "entry": [
+      17,
+      25
+    ],
+    "reachable": 313,
+    "targets": 1,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 2,
+      "screen": 0.344,
+      "at": [
+        15,
+        23
+      ],
+      "screenAt": [
+        8,
+        8
+      ]
+    }
+  },
+  {
+    "id": "outdoor-opening-overlook",
+    "seed": 4001,
+    "entry": [
+      14,
+      4
+    ],
+    "reachable": 279,
+    "targets": 1,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.335,
+      "at": [
+        34,
+        22
+      ],
+      "screenAt": [
+        12,
+        0
+      ]
+    }
+  },
+  {
+    "id": "outdoor-festival-plaza",
+    "seed": 4101,
+    "entry": [
+      20,
+      27
+    ],
+    "reachable": 703,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.344,
+      "at": [
+        25,
+        18
+      ],
+      "screenAt": [
+        12,
+        12
+      ]
+    }
+  },
+  {
+    "id": "outdoor-ending-meadow",
+    "seed": 4201,
+    "entry": [
+      12,
+      25
+    ],
+    "reachable": 729,
+    "targets": 2,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 2,
+      "screen": 0.339,
+      "at": [
+        20,
+        0
+      ],
+      "screenAt": [
+        4,
+        12
+      ]
+    }
+  },
+  {
+    "id": "outdoor-mountain-pass",
+    "seed": 4301,
+    "entry": [
+      18,
+      51
+    ],
+    "reachable": 1028,
+    "targets": 11,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.434,
+      "at": [
+        22,
+        17
+      ],
+      "screenAt": [
+        24,
+        0
+      ]
+    }
+  },
+  {
+    "id": "outdoor-swamp-field",
+    "seed": 4401,
+    "entry": [
+      4,
+      19
+    ],
+    "reachable": 1334,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.439,
+      "at": [
+        41,
+        3
+      ],
+      "screenAt": [
+        24,
+        16
+      ]
+    }
+  },
+  {
+    "id": "outdoor-desert-oasis-city",
+    "seed": 5101,
+    "entry": [
+      23,
+      35
+    ],
+    "reachable": 1041,
+    "targets": 10,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.394,
+      "at": [
+        8,
+        0
+      ],
+      "screenAt": [
+        0,
+        24
+      ]
+    }
+  },
+  {
+    "id": "outdoor-snow-fortress",
+    "seed": 5201,
+    "entry": [
+      29,
+      45
+    ],
+    "reachable": 906,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.33,
+      "at": [
+        28,
+        23
+      ],
+      "screenAt": [
+        32,
+        37
+      ]
+    }
+  },
+  {
+    "id": "outdoor-snow-glacier",
+    "seed": 5301,
+    "entry": [
+      4,
+      33
+    ],
+    "reachable": 1140,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.439,
+      "at": [
+        39,
+        19
+      ],
+      "screenAt": [
+        0,
+        24
+      ]
+    }
+  },
+  {
+    "id": "outdoor-volcano-zone",
+    "seed": 5401,
+    "entry": [
+      20,
+      35
+    ],
+    "reachable": 786,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.439,
+      "at": [
+        28,
+        2
+      ],
+      "screenAt": [
+        4,
+        24
+      ]
+    }
+  },
+  {
+    "id": "outdoor-desert-dunes",
+    "seed": 5502,
+    "entry": [
+      4,
+      34
+    ],
+    "reachable": 1009,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.439,
+      "at": [
+        25,
+        1
+      ],
+      "screenAt": [
+        16,
+        27
+      ]
+    }
+  },
+  {
+    "id": "outdoor-beach-cliffs",
+    "seed": 5601,
+    "entry": [
+      4,
+      20
+    ],
+    "reachable": 787,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.439,
+      "at": [
+        11,
+        0
+      ],
+      "screenAt": [
+        12,
+        0
+      ]
+    }
+  },
+  {
+    "id": "outdoor-nomad-camp",
+    "seed": 5701,
+    "entry": [
+      4,
+      17
+    ],
+    "reachable": 522,
+    "targets": 4,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 2,
+      "screen": 0.339,
+      "at": [
+        28,
+        9
+      ],
+      "screenAt": [
+        20,
+        12
+      ]
+    }
+  },
+  {
+    "id": "outdoor-old-battlefield",
+    "seed": 5802,
+    "entry": [
+      4,
+      22
+    ],
+    "reachable": 704,
+    "targets": 2,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.462,
+      "at": [
+        33,
+        15
+      ],
+      "screenAt": [
+        8,
+        8
+      ]
+    }
+  },
+  {
+    "id": "outdoor-great-valley",
+    "seed": 6101,
+    "entry": [
+      22,
+      59
+    ],
+    "reachable": 2307,
+    "targets": 15,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.439,
+      "at": [
+        68,
+        6
+      ],
+      "screenAt": [
+        8,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-world-map",
+    "seed": 7101,
+    "reachable": 1136,
+    "places": 23,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.611,
+      "at": [
+        27,
+        20
+      ],
+      "screenAt": [
+        30,
+        32
+      ]
+    }
+  }
+]

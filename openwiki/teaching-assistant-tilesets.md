@@ -180,3 +180,20 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 그리고 Claude Code 가 `AGENTS.md` 를 자동으로 읽도록 저장소 루트 `CLAUDE.md` 가 한 줄짜리 가져오기(골뱅이 + AGENTS.md)로 불러온다
 (Claude Code 는 `CLAUDE.md` 만 자동 로드한다. Codex 는 `AGENTS.md` 를 직접 읽는다).
 `tilesetReferenceTools.ts` 머리 주석도 이 문서를 가리킨다.
+
+## 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
+
+조수 시험에서 문서대로 칠한 번호가 새 프로젝트에 없었다 — 숲마을 시트는 2550칸인데 장소 문서는 2550~2759(굽이숲 수관·절벽·계단·
+폭포·다리·배·말뚝·생활 소품·판타지 폐성)를 쓰고, 던전 문서는 새 프로젝트에 없는 `oprn_dungeon_*` 타일셋으로 그렸다.
+
+- **forest_harmony 공용 뒤쪽 칸**: `src/project/defaults/forestHarmonyExtension.ts` 가 새 프로젝트(번들 생성 경로)와 옛 프로젝트
+  (`ensureBundledTilesets`, 로드 때)에 2550~2759 이식·칸 규칙·굽이숲 그룹·항구 조각 그룹·생활 소품 킷 19종을 붙인다. 끝 뒤 칸과
+  빈 칸(원본 시트 밖, 이식 없음)만 쓰고, 그 자리에 다른 이식(생성 건물 등)이 있는 프로젝트는 건드리지 않는다.
+  원본 `src/assets/forestHarmonyVillageExtension.json` ← `node scripts/content/extract-forest-harmony-extension.mjs`
+  (너울목 + 판타지 폐성 내려받기). `createForestHarmonyTileset()` 자체는 원본 2550칸 그대로다(테스트 계약).
+- **던전 재칠 시트**: `src/project/defaults/dungeonSheetTilesets.ts` 의 `ensureDocumentedTileset` 이 `create_map`·`set_map_properties`
+  ·`import_region_reference` 에서 처음 쓸 때 `oprn_dungeon_cave|stone|desert|sea|lair` 를 프로젝트의 `easyrpg_chipset_dungeon`
+  바탕으로 만든다(칸 번호 같음, 뒤 30칸 계단·보물상자 이식, 문서는 `referenceSourceTilesetId` 로 원본과 공유).
+  원본 `src/assets/dungeonSheetTilesets.json` ← `node scripts/content/extract-dungeon-sheet-tilesets.mjs`.
+- **`stamp_forest_recipe`** 는 원본 칸(0~2549)의 이식만 비교한다 — 전에는 칸 수가 2550이 아니면 번들 원본도 「파생판」으로 거부했다.
+- 새 문서가 새 칸 번호를 쓰면 위 두 JSON 을 다시 뽑아 번들한다. 기후 시트(3030칸, 고목 2880~)는 이미 구운 시트라 해당 없음.

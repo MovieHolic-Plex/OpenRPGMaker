@@ -4,7 +4,7 @@
 //   · 저장 키: `oprn:ai-deck-pos` — { right, bottom } = 패널 변에서 데크 변까지의 거리(px)
 //   · 손잡이: `.ai-deck-rail` 의 비상호작용 표면(who·state·spacer·레일 자체)
 //     — 아이콘 줄(`.ai-deck-rail-actions`)과 레일에 붙은 팝오버(`.ai-composer-popover`)는 제외
-//   · 더블클릭은 저장 위치를 지워 기본 자리(우하단 inset)로 되돌린다
+//   · 더블클릭은 저장 위치를 지워 기본 자리(왼쪽 아래)로 되돌린다
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { editorState } from "@/editor/editorState";
@@ -122,15 +122,17 @@ describe("저장 위치 복원", () => {
 
     const { panel } = renderSurface();
 
+    expect(panel.classList.contains("has-custom-deck-pos")).toBe(true);
     expect(deckRight(panel)).toBe("200px");
     expect(deckBottom(panel)).toBe("140px");
   });
 
-  it("저장값이 없으면 변수를 쓰지 않는다 — CSS 기본 우하단이 산다", () => {
+  it("저장값이 없으면 변수를 쓰지 않는다 — CSS 기본 왼쪽 아래가 산다", () => {
     installFakeWindow();
 
     const { panel } = renderSurface();
 
+    expect(panel.classList.contains("has-custom-deck-pos")).toBe(false);
     expect(deckRight(panel)).toBe("");
     expect(deckBottom(panel)).toBe("");
   });

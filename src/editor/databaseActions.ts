@@ -86,9 +86,14 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
   recordProjectSnapshot();
   store.update((project) => {
     switch (collection) {
-      case "actors":
+      case "actors": {
+        let classId = project.database.classes[0]?.id;
+        if (!classId) {
+          classId = genId(databaseRecordPrefix("classes"));
+          project.database.classes.push(normalizeClassRecord({ id: classId, name: "새 직업", skillIds: [] }));
+        }
         project.database.actors.push(
-          createActorRecord(id, project.database.classes[0]?.id ?? "", {
+          createActorRecord(id, classId, {
             characterResourceId: project.database.actors[0]?.characterResourceId,
             battleCharacterResourceId: project.database.actors[0]?.battleCharacterResourceId,
             defaultEquipmentId: project.database.equipment.find((entry) => entry.slot === "weapon")?.id,
@@ -96,6 +101,7 @@ export function addDatabaseRecord(collection: DatabaseCollection): string {
           })
         );
         return;
+      }
       case "classes":
         project.database.classes.push(normalizeClassRecord({ id, name: "새 직업", skillIds: [] }));
         return;

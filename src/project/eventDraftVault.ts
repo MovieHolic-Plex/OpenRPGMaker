@@ -1,6 +1,19 @@
 import { eventWithoutDraft, rebaseOpenEditDraft } from "@/project/eventDrafts";
 import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
+import { shareContentDigests } from "@/project/persistence/core/contentDigest";
+import { cloneProjectSharingReferenceDocuments } from "@/project/projectClone";
+
+/**
+ * 스토어가 적용마다 만드는 복제. 타일셋 참고문서는 store.update 와 같이 공유하고, 원본의 정체성 요약 기억을
+ * 넘겨 다음 적용 권위 검사가 처음부터 돌지 않게 한다(2026-09-25 실측: 26 MB 프로젝트에서 AI 체크포인트마다
+ * 전체 structuredClone 과 그 복제본의 요약 재계산이 1 s 넘게 걸렸다).
+ */
+function cloneKeepingDigests(project: Project): Project {
+  const next = cloneProjectSharingReferenceDocuments(project);
+  shareContentDigests(project, next);
+  return next;
+}
 
 export type EventDraftVaultEntry = {
   readonly mapId: MapId;
@@ -102,7 +115,7 @@ export function getEventDraftVaultEntry(mapId: MapId, eventId: string): EventDra
  */
 export function applyEventDraftVault(project: Project): Project {
   if (vault.size === 0) return project;
-  const next = structuredClone(project);
+  const next = cloneKeepingDigests(project);
   for (const entry of vault.values()) {
     const map = next.maps[entry.mapId];
     if (!map || !entry.event.draft) continue;
@@ -162,7 +175,7 @@ export function preserveEventDraftsOnProject(incoming: Project, live: Project): 
 }
 
 function projectWithLiveDrafts(incoming: Project, live: Project): Project {
-  const next = structuredClone(incoming);
+  const next = cloneKeepingDigests(incoming);
   for (const [mapId, liveMap] of Object.entries(live.maps)) {
     const targetMap = next.maps[mapId];
     if (!targetMap) continue;

@@ -14,9 +14,8 @@ import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/projec
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
 import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
-import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
-import { sha256HexTextSync } from "@/util/sha256";
-import { AuthoredProjectBaseline, composeProjectIdentity, projectIdentityParts, type ProjectIdentityParts, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
+import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { AuthoredProjectBaseline, projectIdentityDigest, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
@@ -27,7 +26,7 @@ import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivit
 import type { ProjectChangeAnnotation } from "@/project/store";
 import { mapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
-import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "@/ai/approvalPolicy";
+import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
 /**
  * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
@@ -78,6 +77,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "move_event",
   "remove_event",
   "author_house",
+  "place_props",
 ]);
 
 export type ToolUndoScope =
@@ -224,15 +224,15 @@ function proposalContent(project: Project): string {
   // World documents are merged from the live store, not replaced by ordinary proposals.
   // Reuse the JSONB comparator without schema normalization: only key order is
   // ignored, while the existing JSON projection, authored values and arrays stay intact.
-  return sha256HexTextSync(composeProjectIdentity(identityPartsOf(project), "proposal"));
+  return projectIdentityDigest(project, "proposal");
 }
 
 function worldContent(project: Project): string {
-  return sha256HexTextSync(canonicalJsonOf(project.world ?? null)!);
+  return jsonContentDigest(project.world ?? null)!;
 }
 
 /**
- * 한 동기 구간 안에서만 같은 객체의 정체성 문자열을 한 번만 만든다.
+ * 한 동기 구간 안에서만 같은 객체의 정체성 요약을 한 번만 만든다.
  *
  * 왜(2026-09-23 실측, 34.9 MB 프로젝트): 체크포인트 하나가 같은 객체를 두고 proposalContent·
  * authoredIdentity·contentIdentity 를 겹쳐 계산했다 — 한 번에 0.5 s 씩 메인 스레드가 멈췄다.
@@ -240,8 +240,9 @@ function worldContent(project: Project): string {
  * 구간을 넘겨 기억하지 않는다: 사람은 세대를 올리지 않고 객체를 제자리에서 고칠 수 있고
  * (aiMutationApplyAccounting «live content changes without a generation increment»), 그걸
  * 잡는 게 바로 stale-base 검사다. 기억을 세대에 묶었더니 그 편집 위로 옛 제안이 적용됐다.
+ * 구간 밖의 재사용은 contentDigest 가 노드마다 현재 값을 대조한 뒤에만 한다.
  */
-interface IdentityMemo { parts?: ProjectIdentityParts; content?: string; authored?: string; complete?: string }
+interface IdentityMemo { content?: string; authored?: string; complete?: string }
 let identityScope: WeakMap<Project, IdentityMemo> | null = null;
 function withIdentityScope<T>(run: () => T): T {
   if (identityScope) return run();
@@ -254,11 +255,6 @@ function memoOf(project: Project): IdentityMemo | null {
   if (!memo) identityScope.set(project, memo = {});
   return memo;
 }
-/** 세 정체성이 나눠 쓰는 최상위 조각. 구간 밖에서는 매번 새로 만든다. */
-function identityPartsOf(project: Project): ProjectIdentityParts {
-  const memo = memoOf(project);
-  return memo ? (memo.parts ??= projectIdentityParts(project)) : projectIdentityParts(project);
-}
 function proposalContentOf(project: Project): string {
   const memo = memoOf(project);
   return memo ? (memo.content ??= proposalContent(project)) : proposalContent(project);
@@ -266,13 +262,11 @@ function proposalContentOf(project: Project): string {
 const storeIdentities: ProjectIdentitySource = {
   authored: project => {
     const memo = memoOf(project);
-    return memo ? (memo.authored ??= composeProjectIdentity(identityPartsOf(project), "authored"))
-      : composeProjectIdentity(identityPartsOf(project), "authored");
+    return memo ? (memo.authored ??= projectIdentityDigest(project, "authored")) : projectIdentityDigest(project, "authored");
   },
   complete: project => {
     const memo = memoOf(project);
-    return memo ? (memo.complete ??= composeProjectIdentity(identityPartsOf(project), "complete"))
-      : composeProjectIdentity(identityPartsOf(project), "complete");
+    return memo ? (memo.complete ??= projectIdentityDigest(project, "complete")) : projectIdentityDigest(project, "complete");
   },
 };
 
@@ -398,7 +392,7 @@ export async function applyProposedProject(
     // 그 경로는 자기 확인을 따로 받는다.
     const losesMaps = options.resetProject === true
       ? false
-      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0;
+      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0 || wipedTileMapIds(before, proposed).length > 0;
     if (options.mapDestructionApproved !== true
       && (losesMaps || options.toolNames.some((name) => isMapDestruction(name)))) {
       const issue = losesMaps

@@ -25,7 +25,24 @@ type HoverPreviewSpec = {
   readonly tileSize?: number;
 };
 
+const HOVER_PREVIEW_KEY = "oprnHoverPreviewKey";
+
+function hoverPreviewKey(spec: HoverPreviewSpec): string {
+  const state = editorState.get();
+  const stamp = state.activePaletteStamp;
+  const stampKey = stamp
+    ? `${stamp.width}x${stamp.height}:${stamp.source.startTile}-${stamp.source.endTile}:${stamp.cells.length}`
+    : "";
+  return [
+    spec.mapId, spec.centerX, spec.centerY, state.tool, state.layer,
+    state.selectedTile, state.brushSize, state.paintShape, stampKey,
+  ].join("|");
+}
+
 export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
+  const key = hoverPreviewKey(spec);
+  if (spec.layer.getData(HOVER_PREVIEW_KEY) === key && spec.layer.list.length > 0) return;
+  spec.layer.setData(HOVER_PREVIEW_KEY, key);
   spec.layer.removeAll(true);
   const map = store.getCurrent().maps[spec.mapId];
   if (!map) return;

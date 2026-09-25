@@ -1,6 +1,8 @@
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal } from "./aiAuthoring/modal";
+import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
+import { mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { createActivityToolbar } from "./aiActivityView";
 import { onlyEventPageCommandsChanged } from "@/ai/eventCommandScope";
 import { createProjectSuggestions } from "./aiProjectSuggestions";
@@ -16,7 +18,7 @@ import { reconcileRunCheckpoint, type RunRecovery } from "@/ai/runRecovery";
 // - ChatGPT OAuth 토큰은 브라우저에 저장하지 않는다. API 키 폴백만 설정 localStorage를 쓴다.
 
 import {
-  getMapEditHistoryDebugEntries,
+  getMapEditHistoryDepth,
   getMapEditHistoryMarker,
   getMapEditHistoryState,
   MAP_EDIT_HISTORY_EVENT,
@@ -33,7 +35,7 @@ import {
 } from "@/editor/aiApplyCompletion";
 import type { ChangeSummary, Project, TilesetDef } from "@/project/types";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import {
   clearAgentGhostPreview,
@@ -88,7 +90,7 @@ import type { AuditEntry } from "@/ai/assistantSession";
 import { serializeAuditTranscript } from "@/ai/conversationReplay";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { RunOperation } from "@/ai/runOperation";
-import { EMPTY_SESSION_USAGE } from "@/ai/sessionUsage";
+import { EMPTY_SESSION_USAGE, formatTokenCount } from "@/ai/sessionUsage";
 import { createAiContextMeter, type AiContextMeterHandle, type AiContextSnapshot } from "./aiContextMeter";
 import { closeAiConversationHistoryModal, openAiConversationHistoryModal } from "./aiConversationHistoryModal";
 import { openAiInstructionsModal } from "./aiInstructionsModal";
@@ -113,6 +115,8 @@ import { renderPreferenceMemorySettings } from "./aiPreferenceMemorySettings";
 import { createCollapsedUndoButton, createDirectorRestoreButton, setRestoreButtonState } from "./aiDirectorChrome";
 import { getEditorUiMode } from "@/editor/editorUiMode";
 import { openAiSettingsModal, registerAiSettingsPanel } from "./aiSettingsModal";
+import { planStampPlace } from "@/ai/stampPlace";
+import { applyToolToStore } from "@/editor/tools/applyChangesetToStore";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
@@ -135,7 +139,9 @@ import {
   applyAiBackgroundOpacity,
   loadAiBackgroundOpacity,
   applyAiFontSize,
+  applyAiRenderWeight,
   loadAiFontSize,
+  loadAiRenderWeight,
   saveAiFontSize,
   savePanelCollapsed,
   stepAiFontSize,
@@ -1023,6 +1029,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 안내(toast)를 하지 않는다: 사용자가 누른 새 대화와 프로젝트 전환은 같은 정리를 하지만
    * 사용자에게 할 말이 다르다.
    */
+  let conversationSpend = { turns: 0, tokens: 0 };
+  let paintConversationSpend = (): void => {};
+
   const resetConversationState = (
     reason: "manual" | "project-switch",
     /**
@@ -1084,6 +1093,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.setWorkPlan(null, false);
     // 이어받는 전환은 시작 화면을 깔지 않는다 — 곧 복원된 대화가 그 자리를 채운다(깜빡임 제거).
     if (!resumeTarget) ensureStartScreen();
+    conversationSpend = { turns: 0, tokens: 0 };
+    paintConversationSpend();
     setStatus(resumeTarget ? "이전 대화" : reason === "project-switch" ? "새 프로젝트 — 새 대화" : "새 대화");
     refreshExportButton();
     syncGlassIdle();
@@ -1309,7 +1320,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
       return;
     }
-    const historyDepthBefore = getMapEditHistoryDebugEntries().length;
+    const historyDepthBefore = getMapEditHistoryDepth();
     const reverted = revertToHistoryMarker(turn.marker);
     const entriesBefore = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])].length;
     // 클릭 사실만으로는 «실제로 되돌아갔는지» 를 알 수 없다 — 되돌린 스냅샷 수와 대화 절단
@@ -1320,7 +1331,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       testid: "ai-turn-rewind",
       detail: {
         reverted,
-        revertedSnapshots: Math.max(0, historyDepthBefore - getMapEditHistoryDebugEntries().length),
+        revertedSnapshots: Math.max(0, historyDepthBefore - getMapEditHistoryDepth()),
         entriesBefore,
         entriesAfter: turn.entries.length,
       },
@@ -2091,6 +2102,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // Pi 경로는 세션도 없고 auditHistory 를 채우는 곳도 없어서, 브리지 audit() 이 늘 빈 배열이었다
         // (2026-09-16 실측). 세션 항목과 같은 자리에 누적해 bridge·내보내기가 같은 원천을 본다.
         onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
+        onSpend: (spend) => {
+          conversationSpend = {
+            turns: conversationSpend.turns + spend.turns,
+            tokens: conversationSpend.tokens + spend.tokens,
+          };
+          paintConversationSpend();
+        },
       }, plan ? {
         readOnly: plan.readOnly,
         routineEdit: plan.routineEdit,
@@ -2150,7 +2168,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const handoff = composerHandoff && composerHandoff.display === typed ? composerHandoff : null;
     const text = handoff?.full ?? typed;
     const shown = handoff ? typed : text;
-    if (!text) {
+    if (!text && !stampPlaceOn) {
       // 조용한 return 은 "버튼이 고장났나" 로 읽혔다. 무엇이 부족한지 말하고 초점을 준다.
       toast("보낼 지시를 입력하세요", "info");
       try {
@@ -2158,6 +2176,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       } catch {
         // headless DOM may not implement focus
       }
+      return;
+    }
+    if (stampPlaceOn) {
+      if (turnBusy) {
+        toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
+        return;
+      }
+      input.value = "";
+      composerHandoff = null;
+      syncInputHeight();
+      stampPlaceNow(text);
       return;
     }
     if (!ensureConfigReadyForSend()) return;
@@ -2280,7 +2309,41 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   // AI가 지금 무엇을 보고 있는지 — 현재 맵 + 선택 영역 칩.
   const contextChips = el("div", { class: "ai-context-chips", dataset: { testid: "ai-context-chips" } });
+  let stampPlaceOn = false;
+  const stampPlaceNow = (text: string): void => {
+    const state = editorState.get();
+    const mapId = state.currentMapId;
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!mapId || !map) {
+      toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
+      return;
+    }
+    const plan = planStampPlace({
+      text,
+      mapId,
+      mapWidth: map.width,
+      mapHeight: map.height,
+      selection: state.selection,
+    });
+    const shown = text.trim() || "숲";
+    appendBubble("user", shown);
+    if ("error" in plan) {
+      appendBubble("system", plan.error);
+      return;
+    }
+    const started = performance.now();
+    const result = applyToolToStore(plan.tool, { ...plan.args });
+    const ms = Math.max(1, Math.round(performance.now() - started));
+    const detail = result.summary || result.issues?.map(issue => issue.message).join(" ") || "바로 깔기에 실패했습니다.";
+    appendBubble("system", result.ok ? `${plan.label} · ${ms}ms. ${detail}` : detail);
+    setStatus(result.ok ? "대기" : "실패");
+  };
   const refreshComposerPlaceholder = (): void => {
+    if (stampPlaceOn) {
+      input.setAttribute("placeholder", "바로 깔기 — 숲, 길, 물, 집, 지워. 비우면 숲.");
+      syncConversationState();
+      return;
+    }
     // 연결 상태를 함께 본다 — 미연결이면 "한 문장으로 지시" 대신 어디를 눌러야 하는지 말한다.
     const placeholder = formatComposerPlaceholder(readAgentBrief(), isAiConfigReady(loadAiConfig(), getAiConnectionStatus(loadAiConfig())));
     if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
@@ -2338,8 +2401,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     }
     if (currentKey && currentKey !== dismissedSelectionKey) selectionTaskActive = true;
     if (!currentKey) dismissedSelectionKey = null;
-    const ctx = mapContext();
-    const chips = [el("span", { class: "ai-context-chip", text: ctx.mapName ?? "맵 없음" })];
+    const chips: HTMLElement[] = [];
     const selection = currentSelectionForRegionTask();
     if (selectionTaskActive && !selection) selectionTaskActive = false;
     if (selection) {
@@ -2360,7 +2422,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
   refreshContextChips();
   refreshComposerPlaceholder();
-  const unsubscribeContextEditor = editorState.subscribe(() => {
+  let lastContextEditorState = editorState.get();
+  const unsubscribeContextEditor = editorState.subscribe((state) => {
+    const previous = lastContextEditorState;
+    lastContextEditorState = state;
+    // 타일·붓만 고른 클릭은 안내문 한 줄만 바뀐다 — 칩·레일·패널 크기는 그대로다.
+    if (editorStateChangedOnlyPaintPick(previous, state)) {
+      refreshComposerPlaceholder();
+      return;
+    }
     // 맵을 바꾸면 재사용 선택은 그 맵의 것이 아니다 — 칩보다 먼저 범위를 갈아끈는다.
     planningReuseControl?.refresh();
     refreshContextChips();
@@ -2694,7 +2764,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }, (cause: unknown) => {
         if (!owns()) { console.warn("[projectWiki] Retired maintenance settled", cause); return; }
         const message = cause instanceof Error ? cause.message : String(cause);
-        appendBubble("system", `설정집 정리를 완료하지 못했습니다: ${message}`);
+        const bubble = appendBubble("system", `설정집 정리를 완료하지 못했습니다: ${message}`);
+        mountAssistantErrorDetail(bubble, { message, thrown: formatThrownDiagnostic(cause, { stoppedReason: "error" }) });
         setStatus("기록 정리 실패");
       }).finally(() => { if (owns()) retireMaintenance(); }));
     },
@@ -2882,7 +2953,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       },
     },
     modelLabel: modelChipLabel(),
+    onModelClick: () => openAiSettings("first"),
   });
+  const STAMP_PLACE_KEY = "oprn:ai-stamp-place";
+  stampPlaceOn = localStorage.getItem(STAMP_PLACE_KEY) === "1";
+  composerShell.stampToggle.setAttribute("aria-pressed", String(stampPlaceOn));
+  composerShell.stampToggle.addEventListener("click", () => {
+    stampPlaceOn = composerShell.stampToggle.getAttribute("aria-pressed") === "true";
+    localStorage.setItem(STAMP_PLACE_KEY, stampPlaceOn ? "1" : "0");
+    refreshComposerPlaceholder();
+  });
+  if (stampPlaceOn) refreshComposerPlaceholder();
+  paintConversationSpend = (): void => {
+    const quiet = conversationSpend.turns === 0 && conversationSpend.tokens === 0;
+    composerShell.setSpend(quiet ? null : `${formatTokenCount(conversationSpend.turns)}턴 · ${formatTokenCount(conversationSpend.tokens)}토큰`);
+  };
   const commandBar = composerShell.commandBar;
   const commandMenu = composerShell.commandMenu;
   openComposerPopover = composerShell.openPopover;
@@ -3046,6 +3131,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 저장된 글자 크기를 부팅 시 즉시 적용(영속 — V3C).
   applyAiFontSize(panel, loadAiFontSize());
   applyAiBackgroundOpacity(panel, loadAiBackgroundOpacity());
+  applyAiRenderWeight(loadAiRenderWeight());
   // 헤드리스/콘솔 디버깅용 하네스 접근점: window.__oprnAiHarness() → 주입 포함 원본 메시지 + 감사 로그.
   const harnessAccessor = () => controller.session?.getHarnessSnapshot() ?? null;
   if (typeof window !== "undefined") {

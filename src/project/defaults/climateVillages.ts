@@ -5,7 +5,8 @@ import { referenceRevision, type TilesetReferenceCategory } from "../tilesetRefe
 import previousReferences from "../../../tiledata/climate-villages/previous-reference.json";
 
 // Snow, volcano, desert and autumn repaints of the diverse forest-village sheet (scripts/content/build-climate-chipsets.py).
-// Tile numbers match forest_harmony (grafts baked in); the snow sheet appends frozen copies of the water tiles.
+// Tile numbers match forest_harmony (grafts baked in); the snow sheet appends frozen copies of the water tiles, and
+// snow, volcano and desert carry leafless trees from 2880 (tile groups bare-trees:*).
 export type ClimateVillageKind = "snow" | "volcano" | "desert" | "autumn";
 type Climate = (typeof data.climates)[ClimateVillageKind];
 const CLIMATES = data.climates as Record<ClimateVillageKind, Climate>;
@@ -28,6 +29,8 @@ export function createClimateVillageTileset(kind: ClimateVillageKind): TilesetDe
   const names = climate.autotileNames as Record<string, string>;
   const autotileGroups = [...(base.autotileGroups ?? []), ...(structuredClone(climate.extraAutotileGroups) as unknown as NonNullable<TilesetDef["autotileGroups"]>)]
     .map(group => names[group.id] ? { ...group, name: names[group.id]! } : group);
+  // Leafless trees (bare-trees:*) on snow, volcano and desert; autumn has none.
+  const tileGroups = [...(base.tileGroups ?? []), ...(structuredClone(climate.extraTileGroups) as unknown as NonNullable<TilesetDef["tileGroups"]>)];
   const tileset: TilesetDef = {
     ...base,
     id: climate.id,
@@ -38,10 +41,49 @@ export function createClimateVillageTileset(kind: ClimateVillageKind): TilesetDe
     priority: [...base.priority, ...append.priority],
     passability: [...base.passability, ...append.passability],
     tileMeta,
+    tileGroups,
     autotileGroups,
   };
   ensureClimateVillageReferences(tileset);
   return tileset;
+}
+
+/**
+ * Climate tilesets saved before the leafless trees (2026-09-25) end at the old sheet size: grow them to the bundled
+ * count (the appended cells and their bare-trees:* groups). Existing cells and user edits are left alone.
+ */
+export function ensureClimateBareTrees(tileset: TilesetDef): boolean {
+  const kind = tileset.image.type === "bundled" ? CLIMATE_VILLAGE_TEXTURES[tileset.image.id] : undefined;
+  if (!kind || CLIMATES[kind].id !== tileset.id || !CLIMATES[kind].extraTileGroups.length) return false;
+  const have = new Set((tileset.tileGroups ?? []).map(g => g.id));
+  const haveAuto = new Set((tileset.autotileGroups ?? []).map(g => g.id));
+  const groups = CLIMATES[kind].extraTileGroups as unknown as { id: string }[];
+  const autos = CLIMATES[kind].extraAutotileGroups as unknown as { id: string }[];
+  // Cheap check first: a current tileset is left alone without building a fresh copy.
+  if (tileset.count >= CLIMATES[kind].count && groups.every(g => have.has(g.id)) && autos.every(g => haveAuto.has(g.id))) return false;
+  const fresh = createClimateVillageTileset(kind);
+  let changed = false;
+  if (tileset.count < fresh.count) {
+    const from = tileset.count;
+    tileset.terrain = [...tileset.terrain.slice(0, from), ...fresh.terrain.slice(from)];
+    tileset.priority = [...tileset.priority.slice(0, from), ...fresh.priority.slice(from)];
+    tileset.passability = [...tileset.passability.slice(0, from), ...fresh.passability.slice(from)];
+    tileset.tileMeta = [...(tileset.tileMeta ?? []).slice(0, from), ...(fresh.tileMeta ?? []).slice(from)];
+    tileset.count = fresh.count;
+    changed = true;
+  }
+  const missing = (fresh.tileGroups ?? []).filter(g => (g.id.startsWith("bare-trees:") || g.id.startsWith("climate-terrain:")) && !have.has(g.id));
+  if (missing.length) {
+    tileset.tileGroups = [...(tileset.tileGroups ?? []), ...missing];
+    changed = true;
+  }
+  // Climate ground autotiles (lava cracks, lava plates and pools, cracked earth — 2026-09-25).
+  const missingAuto = (fresh.autotileGroups ?? []).filter(g => autos.some(a => a.id === g.id) && !haveAuto.has(g.id));
+  if (missingAuto.length) {
+    tileset.autotileGroups = [...(tileset.autotileGroups ?? []), ...missingAuto];
+    changed = true;
+  }
+  return changed;
 }
 
 /** Add the shipped climate guidance once and retire unedited older revisions; authored or shared-from categories are left alone. */

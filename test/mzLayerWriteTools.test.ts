@@ -27,6 +27,10 @@ const DECO_GROUP: AutotileGroup = {
 
 function context(withDecoGroup = false): ToolContext {
   const project = createBlankProject();
+  // 시험은 합본 마을 칩 번호(TILE.*)를 쓴다 — 빈 프로젝트 시작 맵의 기본 칩셋이 바뀌어도 같은 칩셋 위에서 잰다.
+  const start = project.maps[MAP_ID]!;
+  start.tilesetId = DEFAULT_TILESET_ID;
+  start.tileSize = project.tilesets[DEFAULT_TILESET_ID]!.tileSize;
   if (withDecoGroup) project.tilesets[DEFAULT_TILESET_ID]!.autotileGroups = [DECO_GROUP];
   return { project };
 }

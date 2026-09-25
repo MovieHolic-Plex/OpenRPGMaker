@@ -11,6 +11,7 @@ import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { activeTileGrafts, tileGraftsTextureSuffix } from "@/assets/tileGrafts";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
+import { rawChipsetTextureKey } from "@/assets/chipsetTransparency";
 import {
   DEFAULT_TILESET_TEXTURE_KEY,
   LEGACY_RM_TILESET_TEXTURE_KEY,
@@ -60,6 +61,8 @@ export function tilesetTextureKey(tileset: TilesetDef): string {
   return `${baseKey}${transparentSuffix}${tileGraftsTextureSuffix(tileset)}`;
 }
 
+const BUNDLED_CHIPSET_KEYS: ReadonlySet<string> = new Set([...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS].map((asset) => asset.textureKey));
+
 export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): string {
   const textureKey = tilesetTextureKey(tileset);
   if (scene.textures.exists(textureKey)) return textureKey;
@@ -69,6 +72,10 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   // 업로드 그림판에서 이식하는 칸은 그 그림판이 실린 뒤에만 굽는다 — 먼저 구우면 빠진 칸이 든 텍스처가 캐시로 남는다.
   const uploaded = store.getCurrent().assets.uploaded;
   if (activeTileGrafts(tileset).some((graft) => uploaded[graft.sourceChipset] && !scene.textures.exists(graft.sourceChipset))) return baseKey;
+  // 번들 그림판도 같다 — 부팅 뒤에 들어온 이식(장소 가져오기 등)의 소스 칩셋은 ensureBundledProjectTextures 가 뒤늦게 싣는다.
+  // 그 전에 구우면 폭포·다리 칸이 빈칸으로 캐시에 남는다(2026-09-25 너울목 가져오기).
+  if (activeTileGrafts(tileset).some((graft) => BUNDLED_CHIPSET_KEYS.has(graft.sourceChipset)
+    && !scene.textures.exists(graft.sourceChipset) && !scene.textures.exists(rawChipsetTextureKey(graft.sourceChipset)))) return baseKey;
   const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
   if (!canvas) return baseKey;
 
@@ -81,6 +88,31 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
   return textureKey;
 }
 
+/**
+ * 16px·30열 시트 중 합본 마을과 물 블록(0/30/60/90/120과 가로 3프레임)이 칸 단위로 같은 것.
+ * 월드맵 본편은 해안 그룹이 이미 같은 칸을 합성한다. 던전·잔디 사선·부분만 같은 실내는 빠진다.
+ */
+const COMBINED_TOWN_WATER_BLOCK_TEXTURES = new Set<string>([
+  "tex_forest_harmony",
+  "tex_forest_harmony_snow",
+  "tex_forest_harmony_volcano",
+  "tex_forest_harmony_desert",
+  "tex_forest_harmony_autumn",
+  "tex_easyrpg_chipset_ship",
+  "tex_easyrpg_chipset_retro_exterior",
+  "tex_easyrpg_chipset_retro_house",
+  "tex_easyrpg_chipset_retro_world",
+  "tex_easyrpg_chipset_combined_town_retro_world",
+  "tex_tibo_interior_expanded",
+  "tex_modern_exteriors_nocturne",
+  "tex_scarloxy_chipset_grassland",
+  "tex_scarloxy_chipset_wilds",
+]);
+
+function usesCombinedTownWaterBlock(tileset: TilesetDef): boolean {
+  return tileset.image.type === "bundled" && COMBINED_TOWN_WATER_BLOCK_TEXTURES.has(tileset.image.id);
+}
+
 export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
   return (
     tileset.image.type === "bundled" &&
@@ -90,6 +122,7 @@ export function isDefaultTilesetTexture(tileset: TilesetDef): boolean {
 
 export function supportsChipsetQuarterComposition(tileset: TilesetDef): boolean {
   return isWorldTileset(tileset) || isDefaultTilesetTexture(tileset)
+    || usesCombinedTownWaterBlock(tileset)
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY)
     || (tileset.image.type === "bundled" && isDungeonSheetTexture(tileset.image.id));
 }
@@ -103,6 +136,7 @@ export function supportsChipsetTileAnimation(tileset: TilesetDef, tile: number):
   return isDefaultTilesetTexture(tileset)
     || (isCombinedTownRetroWorldTileset(tileset) && isCombinedTownHalfTile(tile))
     || (isWorldTileset(tileset) && isWorldAnimatedTile(tile, tileset))
+    || (usesCombinedTownWaterBlock(tileset) && animationStripForTile(tile)?.key.startsWith("chipset_tile_") === true)
     || (tileset.image.type === "bundled" && tileset.image.id === INTERIOR_TEXTURE_KEY
       && animationStripForTile(tile)?.baseTile === 124);
 }

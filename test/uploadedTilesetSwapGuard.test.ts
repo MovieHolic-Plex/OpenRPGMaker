@@ -106,7 +106,7 @@ describe("업로드 타일셋 칩셋 바꿔치기 거부", () => {
     expect(result.ok, result.summary).toBe(true);
     expect(hasSwapIssue(result.issues)).toBe(false);
     expect(ctx.project.meta.title).toBe("새 게임");
-    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(DEFAULT_TILESET_ID);
+    expect(ctx.project.maps[MAP_ID]!.tilesetId).toBe(createBlankProject().maps[MAP_ID]!.tilesetId);
   });
 
   it("revert_last_edit 는 업로드 타일셋으로 바꾼 칩셋 변경을 되돌린다", () => {

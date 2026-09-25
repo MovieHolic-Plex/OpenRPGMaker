@@ -1,5 +1,5 @@
 import { el } from '@/util/dom';
-import { store } from '@/project/store';
+import { isTileCellChange, store } from '@/project/store';
 import { selectEditorMap } from '@/editor/mapSelection';
 import { openEventEditorModal } from '@/editor/panels/eventEditor/modal';
 import { STYLE_RULES_LIMIT } from '@/project/aiAuthoring';
@@ -109,7 +109,9 @@ export function createDialogueInventory(close: () => void): FeaturePane {
   refillFilters(); render();
   let sourceFingerprint = JSON.stringify(rows);
   let rulesFingerprint = settings().dialogueStyleRules;
-  const unsubscribe = store.subscribe(() => {
+  const unsubscribe = store.subscribe((_project, change) => {
+    // Dialogue lives in events; tile painting emits per pointer sample.
+    if (isTileCellChange(change)) return;
     const currentRows = collectDialogue(store.getCurrent());
     const fingerprint = JSON.stringify(currentRows);
     const nextRules = settings().dialogueStyleRules;

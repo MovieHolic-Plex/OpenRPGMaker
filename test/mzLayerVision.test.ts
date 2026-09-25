@@ -146,12 +146,12 @@ describe("get_map_region 기호는 맨 위 층", () => {
   const grid = (project: Project, map: GameMap): string =>
     (runTool({ project }, "get_map_region", { mapId: map.id, x: 0, y: 0, w: map.width, h: map.height }).data as { grid: string[] }).grid.join("\n");
 
-  it("4층 나무가 1층 물을 덮으면 T, 2층 물은 ~, 물·나무 아닌 4층 칸은 아래로 내려가 본다", () => {
+  it("어느 층이든 물이 있으면 ~(main 의 cellLayerTiles 규칙) — 2층 물도 ~", () => {
     const { project, map } = plainProject(4, 1);
     map.lowerTiles = [1, 0, 1, 0];
     map.upperOverlayTiles = [2, -1, 3, -1];
     map.lowerOverlayTiles = [-1, 1, -1, -1];
-    expect(grid(project, map)).toBe("T~~.");
+    expect(grid(project, map)).toBe("~~~.");
   });
 
   it("2·4층이 없는 칸은 옛 규칙 그대로(3층 나무 아래 물 = ~)", () => {

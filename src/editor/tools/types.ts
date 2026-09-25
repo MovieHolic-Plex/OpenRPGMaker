@@ -87,6 +87,8 @@ export interface ToolDefinition {
   // "이전/새 프로젝트 그대로"라 칩셋이 달라지는 것이 정상이고, tilesetId 인자를 받을 수도 없다.
   // 맵 하나를 시공하는 도구는 켜지 말고 인자에 새 tilesetId 를 명시하게 하라.
   readonly allowsTilesetChange?: boolean;
+  // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
+  readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
   run(draft: Project, args: Record<string, unknown>): ToolExecResult;
 }

@@ -5,6 +5,8 @@
 //
 // 세션이 없는 경로이므로 감사 기록은 이 실행부가 직접 controller.auditHistory 에 쌓는다.
 import { store } from "@/project/store";
+import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
+import { mountAssistantErrorDetail } from "./assistantErrorDetail";
 import { toast } from "@/util/toast";
 import type { AuditEntry, SessionEvent } from "@/ai/assistantSession";
 import { buildConversationTurnContext } from "@/ai/conversationTurnContext";
@@ -257,12 +259,17 @@ export function createAiRegionTaskRunner(deps: AiRegionTaskRunnerDeps): AiRegion
       deps.surface.appendBubble("system", summary);
       recordRegionAudit({ kind: "status", text: summary, at: new Date().toISOString() });
       deps.surface.setStatus(result.ok ? (result.applied ? "적용됨" : "완료") : "오류");
-      if (!result.ok && result.error) toast(`영역 작업 실패: ${result.error}`, "error");
+      if (!result.ok && result.error) {
+        toast(`영역 작업 실패: ${result.error}`, "error");
+        const bubble = deps.surface.appendBubble("system", `오류: ${result.error}`);
+        mountAssistantErrorDetail(bubble, { message: result.error, request: text });
+      }
     } catch (cause) {
       if (!ownsRegionRun()) return;
       const message = cause instanceof Error ? cause.message : String(cause);
       deps.surface.setStatus("오류");
-      deps.surface.appendBubble("system", `오류: ${message}`);
+      const bubble = deps.surface.appendBubble("system", `오류: ${message}`);
+      mountAssistantErrorDetail(bubble, { message, request: text, thrown: formatThrownDiagnostic(cause, { request: text, stoppedReason: "error" }) });
       recordRegionAudit({ kind: "status", text: `오류: ${message}`, at: new Date().toISOString() });
     } finally {
       const regionEntries = [...auditHistoryAtRegionStart, ...regionAuditEntries];

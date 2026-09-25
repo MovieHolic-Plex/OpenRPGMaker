@@ -7,6 +7,7 @@
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { isPassable, tilePassability } from "@/project/collision";
+import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { roleCapabilities } from "@/project/tileRoles";
 import { tileMetaLocked, tileMetaOrigin } from "@/project/tilesetPalette";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
@@ -23,12 +24,15 @@ import type { AutotileGroup, GameMap, Project, TileGroupMetadata, TilesetDef } f
 import { forestCompositionApplies, measureForestArea, plantForestComposition } from "../forestComposition";
 import { protectedHouseCells } from "../houseProtection";
 import {
+  forestCoverageTarget,
   forestPackingFor,
   forestPlacementPlan,
   forestTreeKindFromResolvedMaterial,
   type ForestDensity,
   treeFootprintCells,
 } from "../forestDensity";
+import { paintForestGroves } from "../village/forestGroves";
+import { prepareVillageTreeKit } from "../village/treeKit";
 import {
   FOUR_LAYER_GUIDANCE_SHORT,
   TOOL_LAYER_ENUM,
@@ -56,7 +60,7 @@ import {
 } from "../roadObstacles";
 import { naturalnessArg, naturalnessLabel, rngForTool } from "../naturalToolArgs";
 import { placePropsOnDraft } from "../placePropsDomain";
-import type { ScatterPacking } from "../placementTools";
+import { isPathSurfaceTile, type ScatterPacking } from "../placementTools";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "../types";
 import { coerceInt, coercePoint, coercePointArray, failWithExample } from "../toolArgCoerce";
 import { tilesetGrammarProfile } from "./grammarProfiles";
@@ -768,10 +772,50 @@ function bareBoardWarnings(map: GameMap, filledCells: number, layer: string): st
   ];
 }
 
+/** 숲마을 칩의 숲은 침엽수 260/290이 아니라 굽이숲 수관이다. 군락이 없으면 null. */
+function placeGroveCanopy(
+  draft: Project,
+  map: GameMap,
+  tileset: TilesetDef,
+  area: Rect,
+  density: "dense" | "impassable",
+  seed: number,
+): ToolExecResult | null {
+  const grove = prepareVillageTreeKit(tileset).grove;
+  if (!grove) return null;
+  const blocked = new Set(protectedHouseCells(map).map(({ x, y }) => `${x},${y}`));
+  for (const event of map.events) blocked.add(`${event.x},${event.y}`);
+  const free = (x: number, y: number): boolean => {
+    if (!inMapBounds(map, x, y) || blocked.has(`${x},${y}`)) return false;
+    const index = y * map.width + x;
+    const lower = map.lowerTiles[index] ?? TILE.EMPTY;
+    const upper = map.upperTiles[index] ?? TILE.EMPTY;
+    if (upper !== TILE.EMPTY) return false;
+    if (isLakeAutotileTile(lower) || lower === TILE.WALL || isPathSurfaceTile(lower)) return false;
+    const pass = tilePassability(tileset, lower, TILE.EMPTY);
+    return pass.up || pass.down || pass.left || pass.right;
+  };
+  const painted = paintForestGroves(map, area, grove, free, seed, forestCoverageTarget(density), undefined, true);
+  const reachable = reachableCellCount(draft, map, area);
+  return {
+    summary: `${map.name} (${area.x},${area.y}) ${area.w}×${area.h} 굽이숲 수관(density=${density})`
+      + ` — 수관 ${painted.canopyCells}칸, 밑동 ${painted.trunkRuns}줄,`
+      + ` 밖에서 걸어 들어올 수 있는 칸 ${reachable}.`,
+    data: {
+      placed: painted.canopyCells,
+      density,
+      material: "굽이숲 수관",
+      canopyCells: painted.canopyCells,
+      trunkRuns: painted.trunkRuns,
+      reachableCells: reachable,
+    },
+  };
+}
+
 const placeProps: ToolDefinition = {
   name: "place_props",
   description:
-    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.  밀도는 enum 으로 직접: 숲=density:\"dense\", 울창·빽빽·통행 불가=\"impassable\", 드문드문·가로수=\"sparse\"(코드가 문장을 읽지 않는다). 같은 area 에 place_props 는 1회. 물·호수 칸 위 금지 — area 는 호수 바깥 육지만, 호수를 채운 뒤 둘레에 깔 것. 장식 박스·나무상자·나무박스는 material:\"나무 상자\"(count:N), 과일박스는 material:\"과일박스\" — small-props 가방이나 place_chest 로 대체 금지. 마을 규모 숲은 author_village({forestDensity}). 등불·장식 소품도 이 툴."
+    "소품을 area 안에 산포한다(v3). material=타일 라벨/설명(예: \"침엽수\", \"나무 상자\", \"과일박스\"). 그룹 id·vocabId 금지. 물·길·통행 불가·upper 점유 칸 스킵. 면 채우기는 fill_region.  밀도는 enum 으로 직접: 숲=density:\"dense\", 울창·빽빽·통행 불가=\"impassable\", 드문드문·가로수=\"sparse\"(코드가 문장을 읽지 않는다). 숲마을 칩(forest_harmony)에서 dense·impassable 은 침엽수 산포가 아니라 굽이숲 수관과 3줄 밑동을 깐다. 같은 area 에 place_props 는 1회. 물·호수 칸 위 금지 — area 는 호수 바깥 육지만, 호수를 채운 뒤 둘레에 깔 것. 장식 박스·나무상자·나무박스는 material:\"나무 상자\"(count:N), 과일박스는 material:\"과일박스\" — small-props 가방이나 place_chest 로 대체 금지. 마을 규모 숲은 author_village({forestDensity}). 등불·장식 소품도 이 툴."
     + "숲은 모델이 density:sparse|normal|dense|impassable 을 넣으면 count·packing을 면적에서 자동 계산한다"
     + "(sparse=15%, normal=40%, 숲=dense 80%, 울창/빽빽/통행 불가=impassable 100%). "
     + "사용자 문장을 코드가 읽지 않는다 — 밀도 enum을 생략하면 일반 산포(count 필수). "
@@ -834,6 +878,8 @@ const placeProps: ToolDefinition = {
     // 수종·덤불·하층식생이 섞인 지형이다(렌더 실측: 한 재료 dense 는 산울타리 밭으로 읽혔다).
     if (density && forestMaterial && args.count === undefined && forestCompositionApplies(density)) {
       const seed = args.seed === undefined ? 11 : coerceInt(args.seed, "seed", PROPS_EXAMPLE);
+      const grove = placeGroveCanopy(draft, map, tileset, area, density, seed);
+      if (grove) return grove;
       const composition = plantForestComposition(draft, {
         mapId: map.id,
         area,

@@ -11,7 +11,8 @@
     <title>OPRN Studio</title>
     <!--
       첫 로드 로더: 편집기 번들이 평가·마운트되기까지(실측 ~5.6초) 빈 회색 화면만 보이던 자리.
-      JS·외부 자산 없이 이 파일만으로 그려지고, 편집기 셸이 뜨면 src/app/bootLoader.ts 가 지운다.
+      기본 세 줄은 이 파일만으로 그려지고, 지난 로드가 남긴 프로젝트 줄이 있으면 아래 스크립트가 갈아끼운다.
+      편집기 셸이 뜨면 src/app/bootLoader.ts 가 지운다.
       #app 안이 아니라 형제로 둔다 — bootApp 은 #app 을 비우지 않고 append 하므로.
     -->
     <style>
@@ -38,32 +39,37 @@
         font-weight: 700;
         letter-spacing: -0.01em;
       }
-      #oprn-boot-loader .oprn-boot-spinner {
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        border: 3px solid #dbe1e6;
-        border-top-color: #2563eb;
-        animation: oprn-boot-spin 0.8s linear infinite;
+      #oprn-boot-loader .oprn-boot-lines {
+        width: min(100% - 32px, 22rem);
+        height: 2.8em;
+        overflow: hidden;
+        text-align: center;
+      }
+      #oprn-boot-loader .oprn-boot-track {
+        animation: oprn-boot-lines 5.4s ease-out forwards;
+      }
+      #oprn-boot-loader .oprn-boot-track p {
+        height: 2.8em;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       #oprn-boot-loader .oprn-boot-text {
         font-size: 13px;
         color: #475569;
       }
-      @keyframes oprn-boot-spin {
-        to {
-          transform: rotate(360deg);
-        }
+      @keyframes oprn-boot-lines {
+        0%, 30% { transform: translateY(0); }
+        38%, 64% { transform: translateY(-2.8em); }
+        72%, 100% { transform: translateY(-5.6em); }
       }
-      /* 움직임 줄이기: 회전 대신 정지한 고리, 페이드도 끈다. 문구가 상태를 전한다. */
       @media (prefers-reduced-motion: reduce) {
         #oprn-boot-loader {
           transition: none;
         }
-        #oprn-boot-loader .oprn-boot-spinner {
+        #oprn-boot-loader .oprn-boot-track {
           animation: none;
-          border-color: #2563eb;
-          opacity: 0.6;
         }
       }
     </style>
@@ -71,9 +77,33 @@
   <body>
     <div id="oprn-boot-loader" data-testid="boot-loader" role="status" aria-live="polite">
       <div class="oprn-boot-brand">OPRN Studio</div>
-      <div class="oprn-boot-spinner" aria-hidden="true"></div>
+      <div class="oprn-boot-lines">
+        <div class="oprn-boot-track">
+          <p>맵·이벤트 편집</p>
+          <p>AI 어시스턴트</p>
+          <p>자동 저장</p>
+        </div>
+      </div>
       <div class="oprn-boot-text">불러오는 중…</div>
     </div>
+    <script>
+      (function () {
+        try {
+          var raw = localStorage.getItem("oprn:boot-brief");
+          if (!raw) return;
+          var lines = JSON.parse(raw);
+          if (!Array.isArray(lines) || lines.length !== 3) return;
+          var nodes = document.querySelectorAll("#oprn-boot-loader .oprn-boot-track p");
+          if (nodes.length !== 3) return;
+          for (var i = 0; i < 3; i += 1) {
+            if (typeof lines[i] !== "string" || lines[i].length === 0) return;
+          }
+          for (var j = 0; j < 3; j += 1) nodes[j].textContent = lines[j];
+        } catch (error) {
+          /* 캐시가 깨져 있으면 기본 기능 줄을 그대로 둔다. */
+        }
+      })();
+    </script>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>
