@@ -10,7 +10,7 @@ const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y)
 const CATEGORY = {
   tibo_interior_expanded: { id: "fantasy-interiors-v2", name: "판타지 실내 · 상점·대장간·왕좌의 방·복도·마법사 탑 (개정2)", description: "무기점·방어구점·도구점·대장간·왕좌의 방·성 복도·마법사 탑 한 층. 집 실내 벽 문법 위에 Tibo 소품을 놓는 배치 규칙, 전체 배열과 통행 검사" },
   easyrpg_chipset_dungeon: { id: "fantasy-dungeon-rooms-v1", name: "판타지 던전 방 · 성 지하 감옥·마왕성 왕좌의 방 (개정1)", description: "「무너진 납골당」과 같은 던전 벽 조립 위에 감방·쇠창살, 용암 못·카펫·왕좌를 놓은 방 두 개와 전체 배열" },
-  forest_harmony: { id: "fantasy-exteriors-v1", name: "판타지 외관 · 상점가·폐성 (개정1)", description: "여울성 나루 집에 가게 간판(칼·방패·항아리)과 대장간 마당을 붙인 상점가, 성 조립을 그대로 둔 폐성. 간판 라벨과 폐성 규칙" },
+  forest_harmony: { id: "fantasy-exteriors-v2", name: "판타지 외관 · 상점가·폐성 (개정1)", description: "여울성 나루 집에 가게 간판(칼·방패·항아리)과 대장간 마당을 붙인 상점가, 성 조립을 그대로 둔 폐성. 간판 라벨과 폐성 규칙" },
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
 const doc = (tilesetId, id, name, markdown) => {

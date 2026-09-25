@@ -10,6 +10,7 @@ import { arrangeTallGrass } from "./tall-grass.mjs";
 import { arrangeBareGroves, bareTreeStamps } from "./bare-trees.mjs";
 import { cliffColumns, paintVillageCliffs } from "./village-cliffs.mjs";
 import { dressDesertGround, dressVolcanoGround, terrainKit } from "./climate-terrain.mjs";
+import { stairTile, isStairTile } from "./cliff-stairs.mjs";
 
 export const GROUND = 240;
 export const N8 = [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]];
@@ -192,7 +193,7 @@ export class OutdoorMap {
       for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
         const i = this.at(xx, yy);
         assert(this.cliffCells.has(i), `Stair must span the whole face ${this.spec.id} ${xx},${yy}`);
-        this.lower[i] = cliff[374]; this.upper[i] = -1;
+        this.lower[i] = stairTile(xx, x); this.upper[i] = -1;
       }
       this.reserve(x, y - 1, 2, height + 3, 1);
       const top = { x, y: y - 1 }, bottom = { x, y: y + height + 1 };
@@ -392,7 +393,7 @@ export class OutdoorMap {
     }
     for (const i of river) {
       const [x, y] = this.xy(i);
-      assert(this.lower[i] !== this.kit.cliff[374], "River runs over a stair " + this.spec.id);
+      assert(!isStairTile(this.lower[i], this.kit.cliff[374]), "River runs over a stair " + this.spec.id);
       this.edgeWet.add(i);
       if (!this.cliffCells.has(i)) { this.water.add(i); continue; }
       const c = this.cliffPlan.columns.find((k) => k.x === x && y >= k.y && y <= k.y + k.height);
@@ -495,7 +496,7 @@ export class OutdoorMap {
       let r = (y % 10) + " ";
       for (let x = 0; x < this.W; x++) {
         const i = this.at(x, y);
-        r += this.water.has(i) ? (this.bridgeCells.has(i) ? "=" : "~") : this.fallCells.has(i) ? "|" : this.lower[i] === this.kit.cliff[374] ? "S" : this.cliffCells.has(i) ? "#"
+        r += this.water.has(i) ? (this.bridgeCells.has(i) ? "=" : "~") : this.fallCells.has(i) ? "|" : isStairTile(this.lower[i], this.kit.cliff[374]) ? "S" : this.cliffCells.has(i) ? "#"
           : this.roads.has(i) ? "+" : this.paved.has(i) ? ":" : this.solid.has(i) ? "X" : this.occupied.has(i) ? "o" : this.wings.has(i) ? "w" : this.isForest(i) ? "T" : this.keep.has(i) ? "," : ".";
       }
       rows.push(r);
@@ -714,7 +715,7 @@ export class OutdoorMap {
   }
   blockedForRoad(i) {
     return (this.water.has(i) && !this.bridgeCells.has(i)) || this.fallCells.has(i) || this.wings.has(i) || this.solid.has(i) || this.noRoad.has(i)
-      || (this.cliffCells.has(i) && this.lower[i] !== this.kit.cliff[374]);
+      || (this.cliffCells.has(i) && !isStairTile(this.lower[i], this.kit.cliff[374]));
   }
   resolve(p) {
     if (Array.isArray(p)) return p;
@@ -766,7 +767,7 @@ export class OutdoorMap {
         if (this.inside(x + dx, y + dy) && !this.blockedForRoad(ni) && this.bare(ni) && !this.keepDoor(ni)) this.roads.add(ni);
       }
     }
-    const g = this.kit.groups[groupName], paint = new Set([...this.roads].filter((i) => this.lower[i] !== this.kit.cliff[374] && !this.bridgeCells.has(i) && !this.paved.has(i) && !this.solid.has(i) && !this.occupied.has(i)));
+    const g = this.kit.groups[groupName], paint = new Set([...this.roads].filter((i) => !isStairTile(this.lower[i], this.kit.cliff[374]) && !this.bridgeCells.has(i) && !this.paved.has(i) && !this.solid.has(i) && !this.occupied.has(i)));
     const join = new Set([...paint, ...[...this.paved.keys()].filter((i) => this.paved.get(i) === groupName)]);
     for (const i of paint) {
       const [x, y] = this.xy(i);

@@ -644,22 +644,6 @@ forest_harmony에서 이 분류의 맵이 쓰는 번호·라벨·통행. graft�
     }
   },
   {
-    "tile": 2689,
-    "label": "돌계단",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower",
-    "graft": {
-      "sourceChipset": "tex_forest_harmony",
-      "sourceTile": 854,
-      "targetTile": 2689
-    }
-  },
-  {
     "tile": 2691,
     "label": "절벽 · 숲마을 712",
     "passability": {
