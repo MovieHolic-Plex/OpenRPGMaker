@@ -10,6 +10,7 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 
 import type { LintIssue } from "@/project/lint/projectLint";
 import type { Project } from "@/project/types";
+import { sameFamilyTilesets, tilesetFamily, tilesetFamilyLabel } from "@/project/tilesetFamily";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
@@ -44,6 +45,56 @@ function rejectUploadedTilesetSwap(before: Project, draft: Project, name: string
       { code: "uploaded-tileset-replaced", mapId: id },
     );
   }
+}
+
+/** 계열 검사 메시지에 싣는 같은 계열 후보 수 상한. */
+const FAMILY_CANDIDATE_LIMIT = 8;
+
+/**
+ * 조수가 사용자가 보는 맵과 다른 그림체(칩셋 계열)로 맵을 만들거나 칩셋을 바꾸면 거부한다(2026-09-25 사용자 결정).
+ * 기준 = ctx.currentMapId 맵의 칩셋 계열. 대상 = 이번에 새로 생긴 맵 + tilesetId 가 바뀐 맵.
+ * 사용자가 이 대화에서 승인한 계열(ctx.approvedTilesetFamilies)은 통과한다. currentMapId 가 없으면 검사하지 않는다.
+ * 같은 계열 후보를 알려 주고, 없으면 ask_tileset_change 로 견본을 보여 묻고 턴을 끝내라고 지시한다.
+ */
+function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Project, name: string): void {
+  const currentMap = ctx.currentMapId ? before.maps[ctx.currentMapId] : undefined;
+  if (!currentMap) return;
+  const baseFamily = tilesetFamily(before, currentMap.tilesetId);
+  const approved = new Set(ctx.approvedTilesetFamilies ?? []);
+  for (const [id, next] of Object.entries(draft.maps)) {
+    const previous = before.maps[id];
+    if (previous && previous.tilesetId === next.tilesetId) continue;
+    const family = tilesetFamily(draft, next.tilesetId);
+    if (family === baseFamily || approved.has(family)) continue;
+    const fromName = before.tilesets[currentMap.tilesetId]?.name ?? currentMap.tilesetId;
+    const toName = draft.tilesets[next.tilesetId]?.name ?? next.tilesetId;
+    const candidates = sameFamilyTilesets(before, baseFamily).slice(0, FAMILY_CANDIDATE_LIMIT)
+      .map((tileset) => `${tileset.id}(${tileset.name})`);
+    const fromLabel = tilesetFamilyLabel(before, baseFamily);
+    const toLabel = tilesetFamilyLabel(draft, family);
+    throw new ToolError(
+      `사용자가 보고 있는 맵 ${currentMap.id} 의 칩셋은 「${fromName}」(${currentMap.tilesetId}, ${fromLabel} 계열)인데 `
+      + `${name} 이 맵 ${id} 에 「${toName}」(${next.tilesetId}, ${toLabel} 계열)을 쓰려 해 거부했다 — 사용자 승인 없이 타일 그림체를 바꾸지 않는다. `
+      + `같은 계열 후보: ${candidates.length ? candidates.join(", ") : "없음"}. `
+      + `같은 계열 후보 중 맞는 것을 tilesetId 로 지정해 다시 불러라(이 도구가 tilesetId 를 못 받으면 create_map(tilesetId=후보) 로 빈 맵을 만든 뒤 칠하기 도구로 직접 깔아라). `
+      + `맞는 후보가 없으면 칠하지 말고 ask_tileset_change(toTilesetId="${next.tilesetId}") 로 사용자에게 견본을 보여 묻고 턴을 끝내라.`,
+      { code: "tileset-family-change", mapId: id },
+    );
+  }
+}
+
+/**
+ * tilesetId 없이 불린 create_map 류 도구에 지금 보는 맵의 칩셋을 채운다(ToolDefinition.defaultTilesetId 주석).
+ * 도구 기본값이 지금 보는 맵과 같은 계열이면 그대로 둔다.
+ */
+function argsWithCurrentMapTileset(ctx: ToolContext, tool: ToolDefinition, args: Record<string, unknown>): Record<string, unknown> {
+  if (!tool.defaultTilesetId || !ctx.currentMapId) return args;
+  if (typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0) return args;
+  const currentMap = ctx.project.maps[ctx.currentMapId];
+  if (!currentMap || !ctx.project.tilesets[currentMap.tilesetId]) return args;
+  const own = tool.defaultTilesetId(ctx.project);
+  if (tilesetFamily(ctx.project, own) === tilesetFamily(ctx.project, currentMap.tilesetId)) return args;
+  return { ...args, tilesetId: currentMap.tilesetId };
 }
 
 /**
@@ -146,7 +197,8 @@ export function runToolDefinition(
 ): ToolResult {
   const name = tool.name;
 
-  const normalizedArgs = normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(args))) as Record<string, unknown>;
+  const normalizedArgs = argsWithCurrentMapTileset(ctx, tool,
+    normalizeArgsForSchema(tool.parameters, normalizePlaceToolArgs(tool.name, stripResourceSearchIdPrefixes(args))) as Record<string, unknown>);
   const argErrors = validateArgs(tool.parameters, normalizedArgs);
   if (argErrors.length > 0) {
     const repair = tool.invalidArgsRepair?.(normalizedArgs);
@@ -188,7 +240,10 @@ export function runToolDefinition(
     beginSpatialToolProposal(draft, before);
     exec = tool.run(draft, normalizedArgs);
     compactTouchedMapLayers(before, draft);
-    if (!tool.allowsTilesetChange) rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
+    if (!tool.allowsTilesetChange) {
+      rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
+      rejectTilesetFamilyChange(ctx, before, draft, name);
+    }
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
     return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };

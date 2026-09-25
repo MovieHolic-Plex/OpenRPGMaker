@@ -189,6 +189,7 @@ const createMap: ToolDefinition = {
   // 작은 맵에서는 면적만 먹는다(12×10 지하실 = 120칸 중 40칸). 런타임 호출 호환은 남긴다 — 과거 대화
   description: `새 맵을 생성한다(테두리 없는 잔디 평지, 최대 ${MAX_TOOL_MAP_DIMENSION}×${MAX_TOOL_MAP_DIMENSION}). 시작 맵이 없으면 이 맵을 시작 맵으로 채택한다. BGM은 맵 이름을 각 곡의 제목·태그·기획 설명·청취 설명과 대조해 고른다(seed 생략 시 맵 id에서 유도 + 이미 쓴 곡 회피, bgm/bgmResourceId가 있으면 그걸 쓴다). 실내 시설·방을 만들라는 요청에서 빈 맵만 만들고 끝내지 말 것 — 실내는 place_concept 또는 start_interior_room_session 이 새 mapId 까지 함께 시공한다.`,
   mode: "write",
+  defaultTilesetId: defaultOutdoorTilesetId,
   parameters: {
     type: "object",
     properties: {
@@ -199,7 +200,7 @@ const createMap: ToolDefinition = {
       // border 는 여기 없다 — 위 주석 참조. run() 은 인자를 계속 받는다(런타임 호환).
       seed: { type: "integer", description: "명시 BGM 선택 시드(생략 시 맵 id에서 유도, 이미 쓴 곡 회피)" },
       bgmResourceId: { type: "string", description: "맵 BGM 리소스 id. 있으면 자동 선택을 건너뛴다." },
-      tilesetId: { type: "string", description: "타일셋 id(생략 시 숲마을 · 거리별 잔디. 실내·던전은 해당 칩셋을 명시). 프로젝트에 있는 타일셋만." },
+      tilesetId: { type: "string", description: "타일셋 id(생략 시 숲마을 · 거리별 잔디, 사용자가 보는 맵이 다른 계열 칩셋이면 그 맵의 칩셋. 실내·던전은 해당 칩셋을 명시). 프로젝트에 있는 타일셋만." },
       bgm: {
         type: "object",
         description: "명시적 BGM 설정. 있으면 자동 선택을 건너뛴다.",

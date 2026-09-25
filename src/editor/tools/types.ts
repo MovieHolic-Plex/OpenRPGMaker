@@ -94,6 +94,13 @@ export interface ToolDefinition {
   // "이전/새 프로젝트 그대로"라 칩셋이 달라지는 것이 정상이고, tilesetId 인자를 받을 수도 없다.
   // 맵 하나를 시공하는 도구는 켜지 말고 인자에 새 tilesetId 를 명시하게 하라.
   readonly allowsTilesetChange?: boolean;
+  /**
+   * 이 도구가 tilesetId 인자 없이 불렸을 때 쓰는 자기 기본 칩셋(2026-09-25, create_map 만 켠다).
+   * 실행기는 ctx.currentMapId 가 있고 이 기본값이 지금 보는 맵과 **다른 계열**이면 인자에 지금 보는 맵의 tilesetId 를 넣는다.
+   * 같은 계열이면 도구 기본값을 그대로 둔다(EasyRPG 실내를 보며 만든 새 맵이 실내 칩셋이 되지 않게).
+   * EasyRPG 타일 번호를 가정하는 도구(generate_map·방 파이프라인)는 켜지 마라 — 계열 검사가 막는다.
+   */
+  readonly defaultTilesetId?: (project: Project) => string;
   // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
   readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
