@@ -153,6 +153,12 @@ export type ApplyToolSequenceOptions = {
   readonly agentName?: string;
   readonly source?: "agent" | "human";
   readonly summary?: string;
+  /**
+   * 실패한 호출을 건너뛰고 나머지를 이어 적용한다. 성공한 호출만 한 undo 체크포인트로 반영한다.
+   * 바로 깔기(stampPlaceRunner)가 쓴다 — 여러 단계 중 하나가 재료를 못 찾아도 나머지는 깔려야 한다.
+   * 기본(false)은 기존 계약 그대로: 첫 실패에서 멈추고 전부 성공했을 때만 반영한다.
+   */
+  readonly continueOnError?: boolean;
 };
 
 // 여러 툴 호출을 하나의 undo 체크포인트로 묶어 순차 적용한다(어시스턴트 changeset 수락용).
@@ -172,13 +178,14 @@ export function applyToolSequenceToStore(
     const result = runTool(ctx, call.name, split.args, { dryRun: false });
     if (result.ok && result.diff) mutated = true;
     results.push(result);
-    if (!result.ok) break; // 실패 시 중단(부분 적용 방지).
+    if (!result.ok && !options.continueOnError) break; // 실패 시 중단(부분 적용 방지).
   }
-  if (mutated && results.every((result) => result.ok)) {
-    const diff = combineDiffs(results.map((result) => result.diff));
-    const toolNames = calls.map((call) => call.name);
+  if (mutated && (options.continueOnError || results.every((result) => result.ok))) {
+    const applied = results.filter((result) => result.ok);
+    const diff = combineDiffs(applied.map((result) => result.diff));
+    const toolNames = calls.filter((_call, index) => results[index]?.ok).map((call) => call.name);
     const summary = options.summary
-      ?? (results.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff));
+      ?? (applied.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff));
     const byAgent = options.source === "agent";
     finishSpatialToolAcceptance(ctx.project);
     recordProjectSnapshot();
