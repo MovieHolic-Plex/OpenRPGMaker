@@ -107,7 +107,8 @@ Herd New worktree 훅은 `npm run wt adopt -- --path <checkout>` (또는 `WT_WOR
    가 `../rpg-zzu/node_modules` 를 허용하는데 이 상대 경로가 워크트리 루트 기준으로 풀리기 때문이다.
 3. **node_modules 정션** — 윈도우 junction (관리자 권한 불필요). 수 GB 중복 방지.
 4. **`.env` / `.env.local` 복사** — gitignored 라 워크트리에 따라오지 않는다.
-5. **`DEV_SERVER_PORT` 고유 배정** — 9801부터(9888 preview·9999 메인 dev 는 예약). 메인이 `--port 9999 --strictPort` 를 점유한다.
+5. **`DEV_SERVER_PORT` 고유 배정** — 9801~9998(198칸, 9888 preview·9999 메인 dev 는 예약). 메인이 `--port 9999 --strictPort` 를 점유한다.
+   100칸이던 시절 등록 워크트리 98개에서 꽉 차 **새 워크트리가 배정 실패**했다(2026-09-25 실측) — 그래서 상한을 9998 로 늘렸다.
 
 워크트리에서 dev 서버는 반드시 **`npm run dev:worktree`** 로 띄운다. 두 스크립트는 `scripts/dev-server.mjs`
 를 지나며(2026-09-17), 거기서 포트가 고정된다:

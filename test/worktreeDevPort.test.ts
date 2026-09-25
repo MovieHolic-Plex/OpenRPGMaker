@@ -7,6 +7,8 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import {
   MAIN_DEV_PORT,
+  PORT_BASE,
+  PORT_COUNT,
   PREVIEW_PORT,
   claimedPortsByOthers,
   decideMainDev,
@@ -61,14 +63,14 @@ describe("worktreeDevPort · 배정 규칙", () => {
 
   it("예약 포트(9999 메인 dev·9888 preview)는 갖지도, 배정하지도 않는다", () => {
     expect(decideWorktreePort({ current: MAIN_DEV_PORT, claimed })).toMatchObject({ reason: "reserved" });
-    // 9888 이 배정 범위(9801~9900) 안에 있다 — 스캔이 건너뛰어야 한다.
+    // 9888 이 배정 범위 안에 있다 — 스캔이 건너뛰어야 한다.
     const packed = new Map(Array.from({ length: 87 }, (_, i) => [9801 + i, ["/x"]] as [number, string[]]));
     expect(decideWorktreePort({ current: null, claimed: packed }).port).toBe(9889);
     expect(PREVIEW_PORT).toBe(9888);
   });
 
   it("범위가 다 차면 정리하라고 던진다", () => {
-    const full = new Map(Array.from({ length: 100 }, (_, i) => [9801 + i, ["/x"]] as [number, string[]]));
+    const full = new Map(Array.from({ length: PORT_COUNT }, (_, i) => [PORT_BASE + i, ["/x"]] as [number, string[]]));
     expect(() => decideWorktreePort({ current: null, claimed: full })).toThrow(/다 찼습니다/);
   });
 

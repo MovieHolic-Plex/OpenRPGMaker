@@ -23,7 +23,10 @@ export const MAIN_DEV_PORT = 9999;
 export const PREVIEW_PORT = 9888;
 export const RESERVED_PORTS = new Set([MAIN_DEV_PORT, PREVIEW_PORT]);
 export const PORT_BASE = 9801;
-export const PORT_COUNT = 100;
+// 100 칸(9801~9900)은 실측에서 꽉 찼다 — 등록 워크트리 98개가 각자 한 칸을 쥐면 새로 만든
+// 워크트리가 "배정 범위가 다 찼습니다" 로 죽는다(2026-09-25, t3·paseo 경로 재현).
+// 9901~9998 을 새로 열어 198 칸으로 둔다.
+export const PORT_COUNT = 198;
 export const ENV_PORT_KEY = "DEV_SERVER_PORT";
 
 const ENV_PORT_LINE = /^DEV_SERVER_PORT=(\d+)[ \t]*$/m;
