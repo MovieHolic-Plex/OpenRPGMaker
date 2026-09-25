@@ -2,12 +2,42 @@
   "id": "tibo_interior_expanded",
   "kind": "custom",
   "name": "실내 확장 · Tibo",
-  "count": 2010,
+  "count": 2040,
   "image": {
     "id": "tex_tibo_interior_expanded",
     "type": "bundled"
   },
   "terrain": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
     0,
     0,
     0,
@@ -4029,6 +4059,36 @@
     "lower",
     "lower",
     "lower",
+    "upper",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "lower",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
+    "upper",
     "upper"
   ],
   "tileMeta": [
@@ -30098,6 +30158,501 @@
       "source": "bundled-default",
       "description": "",
       "defaultLayer": "upper"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "짚 깔린 흙바닥",
+        "straw",
+        "짚",
+        "마구간",
+        "헛간",
+        "바닥",
+        "실내"
+      ],
+      "label": "짚 깔린 흙바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "마구간 칸 안에 두껍게 깐 짚. 세 변형을 섞어 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "짚 깔린 흙바닥",
+        "straw",
+        "짚",
+        "마구간",
+        "헛간",
+        "바닥",
+        "실내"
+      ],
+      "label": "짚 깔린 흙바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "마구간 칸 안에 두껍게 깐 짚. 세 변형을 섞어 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "짚 깔린 흙바닥",
+        "straw",
+        "짚",
+        "마구간",
+        "헛간",
+        "바닥",
+        "실내"
+      ],
+      "label": "짚 깔린 흙바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "마구간 칸 안에 두껍게 깐 짚. 세 변형을 섞어 깐다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "짚 흩어진 흙바닥",
+        "straw",
+        "짚",
+        "마구간",
+        "헛간",
+        "바닥",
+        "실내"
+      ],
+      "label": "짚 흩어진 흙바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "짚 칸의 가장자리·통로로 흘러나온 짚. 짙은 짚 둘레를 들쭉날쭉하게 두른다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "짚 흩어진 흙바닥",
+        "straw",
+        "짚",
+        "마구간",
+        "헛간",
+        "바닥",
+        "실내"
+      ],
+      "label": "짚 흩어진 흙바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "짚 칸의 가장자리·통로로 흘러나온 짚. 짙은 짚 둘레를 들쭉날쭉하게 두른다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "terrain",
+      "tags": [
+        "짚 흩어진 흙바닥",
+        "straw",
+        "짚",
+        "마구간",
+        "헛간",
+        "바닥",
+        "실내"
+      ],
+      "label": "짚 흩어진 흙바닥",
+      "source": "bundled-default",
+      "passage": "passable",
+      "confidence": "high",
+      "terrainTag": 0,
+      "description": "짚 칸의 가장자리·통로로 흘러나온 짚. 짙은 짚 둘레를 들쭉날쭉하게 두른다",
+      "defaultLayer": "lower",
+      "repeatability": "repeat"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "마구간 칸막이 북쪽 끝",
+        "stall partition",
+        "칸막이",
+        "마구간",
+        "판자",
+        "헛간",
+        "실내"
+      ],
+      "label": "마구간 칸막이 북쪽 끝",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "남북으로 세우는 판자 칸막이. 북쪽 끝은 벽 앞 첫 바닥 줄, 가운데를 늘이고, 남쪽 끝 기둥으로 닫는다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "마구간 칸막이 가운데",
+        "stall partition",
+        "칸막이",
+        "마구간",
+        "판자",
+        "헛간",
+        "실내"
+      ],
+      "label": "마구간 칸막이 가운데",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "남북으로 세우는 판자 칸막이. 북쪽 끝은 벽 앞 첫 바닥 줄, 가운데를 늘이고, 남쪽 끝 기둥으로 닫는다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "마구간 칸막이 남쪽 끝 기둥",
+        "stall partition",
+        "칸막이",
+        "마구간",
+        "판자",
+        "헛간",
+        "실내"
+      ],
+      "label": "마구간 칸막이 남쪽 끝 기둥",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "남북으로 세우는 판자 칸막이. 북쪽 끝은 벽 앞 첫 바닥 줄, 가운데를 늘이고, 남쪽 끝 기둥으로 닫는다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "건초 더미 왼쪽 위",
+        "hay",
+        "건초",
+        "마구간",
+        "헛간",
+        "실내"
+      ],
+      "label": "건초 더미 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 건초 더미. 마구간 곁에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "건초 더미 오른쪽 위",
+        "hay",
+        "건초",
+        "마구간",
+        "헛간",
+        "실내"
+      ],
+      "label": "건초 더미 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 건초 더미. 마구간 곁에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "건초 더미 왼쪽 아래",
+        "hay",
+        "건초",
+        "마구간",
+        "헛간",
+        "실내"
+      ],
+      "label": "건초 더미 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 건초 더미. 마구간 곁에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "건초 더미 오른쪽 아래",
+        "hay",
+        "건초",
+        "마구간",
+        "헛간",
+        "실내"
+      ],
+      "label": "건초 더미 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 건초 더미. 마구간 곁에 둔다",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(오른쪽 보기) 왼쪽 위",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(오른쪽 보기) 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(오른쪽 보기) 오른쪽 위",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(오른쪽 보기) 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(오른쪽 보기) 왼쪽 아래",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(오른쪽 보기) 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(오른쪽 보기) 오른쪽 아래",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(오른쪽 보기) 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(왼쪽 보기) 왼쪽 위",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(왼쪽 보기) 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(왼쪽 보기) 오른쪽 위",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(왼쪽 보기) 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(왼쪽 보기) 왼쪽 아래",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(왼쪽 보기) 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "말(왼쪽 보기) 오른쪽 아래",
+        "horse",
+        "말",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "말(왼쪽 보기) 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 말. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "젖소(오른쪽 보기) 왼쪽 위",
+        "cow",
+        "소",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "젖소(오른쪽 보기) 왼쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 젖소. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "젖소(오른쪽 보기) 오른쪽 위",
+        "cow",
+        "소",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "젖소(오른쪽 보기) 오른쪽 위",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 젖소. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "젖소(오른쪽 보기) 왼쪽 아래",
+        "cow",
+        "소",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "젖소(오른쪽 보기) 왼쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 젖소. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "role": "object",
+      "tags": [
+        "젖소(오른쪽 보기) 오른쪽 아래",
+        "cow",
+        "소",
+        "가축",
+        "헛간",
+        "실내"
+      ],
+      "label": "젖소(오른쪽 보기) 오른쪽 아래",
+      "source": "bundled-default",
+      "passage": "solid",
+      "confidence": "high",
+      "description": "2×2 서 있는 젖소. 마구간 칸 안 짚 위에 둔다(EasyRPG CharSet/Animal CC0)",
+      "defaultLayer": "upper",
+      "repeatability": "unique"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
+    },
+    {
+      "label": "",
+      "source": "bundled-default",
+      "description": "",
+      "defaultLayer": "upper"
     }
   ],
   "tileSize": 16,
@@ -38220,6 +38775,67 @@
       "confidence": "high",
       "defaultLayer": "lower",
       "placementRules": "3×3 조각(짚 돗자리 108~170과 같은 배치). 가운데 2004를 늘려 넓힌다."
+    },
+    {
+      "id": "barn-straw",
+      "name": "짚 깔린 흙바닥(마구간)",
+      "tileIds": [
+        2010,
+        2011,
+        2012,
+        2013,
+        2014,
+        2015
+      ],
+      "role": "terrain",
+      "description": "짙은 짚 2010~2012를 칸 안에 섞어 깔고, 둘레·통로에 흩어진 짚 2013~2015를 들쭉날쭉하게 두른다. 네모 판으로 깔지 않는다.",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "lower",
+      "placementRules": "짙은 짚 2010~2012를 칸 안에 섞어 깔고, 둘레·통로에 흩어진 짚 2013~2015를 들쭉날쭉하게 두른다. 네모 판으로 깔지 않는다."
+    },
+    {
+      "id": "barn-stall-partition",
+      "name": "마구간 칸막이",
+      "tileIds": [
+        2016,
+        2017,
+        2018
+      ],
+      "role": "object",
+      "description": "남북으로 한 칸 폭. 2016 북쪽 끝(벽·먹이통 옆 첫 바닥 줄) → 2017 가운데 반복 → 2018 남쪽 끝 기둥. upper 층, 막힘.",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "upper",
+      "placementRules": "남북으로 한 칸 폭. 2016 북쪽 끝(벽·먹이통 옆 첫 바닥 줄) → 2017 가운데 반복 → 2018 남쪽 끝 기둥. upper 층, 막힘."
+    },
+    {
+      "id": "barn-animals",
+      "name": "헛간 가축·건초",
+      "tileIds": [
+        2019,
+        2020,
+        2021,
+        2022,
+        2023,
+        2024,
+        2025,
+        2026,
+        2027,
+        2028,
+        2029,
+        2030,
+        2031,
+        2032,
+        2033,
+        2034
+      ],
+      "role": "object",
+      "description": "2×2 조각(윗줄 둘, 아랫줄 둘): 건초 더미 2019~2022, 말(오른쪽) 2023~2026, 말(왼쪽) 2027~2030, 젖소(오른쪽) 2031~2034. 가축은 칸막이 사이 짚 위에만.",
+      "source": "bundled-default",
+      "confidence": "high",
+      "defaultLayer": "upper",
+      "placementRules": "2×2 조각(윗줄 둘, 아랫줄 둘): 건초 더미 2019~2022, 말(오른쪽) 2023~2026, 말(왼쪽) 2027~2030, 젖소(오른쪽) 2031~2034. 가축은 칸막이 사이 짚 위에만."
     }
   ],
   "passability": [
@@ -50252,6 +50868,186 @@
       "down": true,
       "left": true,
       "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     {
       "up": true,

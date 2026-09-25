@@ -8,7 +8,7 @@ const project = JSON.parse(fs.readFileSync(input));
 const c = JSON.parse(fs.readFileSync("tiledata/rpg-interiors/catalog.json"));
 const proof = JSON.parse(fs.readFileSync("tiledata/rpg-interiors/storage-proof.json"));
 const shipped = JSON.parse(fs.readFileSync("src/assets/sharedRpgInteriorReferences.json"));
-const CATEGORY = { "inn-homes": "rpg-interiors-inn-homes-v2", civic: "rpg-interiors-civic-v2", castle: "rpg-interiors-castle-v2", leisure: "rpg-interiors-leisure-v2", ship: "rpg-interiors-ship-v1", climate: "rpg-interiors-climate-v2", staples: "rpg-interiors-staples-v2", sewer: "rpg-interiors-sewer-prison-v1" };
+const CATEGORY = { "inn-homes": "rpg-interiors-inn-homes-v3", civic: "rpg-interiors-civic-v3", castle: "rpg-interiors-castle-v3", leisure: "rpg-interiors-leisure-v3", ship: "rpg-interiors-ship-v1", climate: "rpg-interiors-climate-v3", staples: "rpg-interiors-staples-v3", sewer: "rpg-interiors-sewer-prison-v1" };
 const SHEET = { tibo_interior_expanded: "/assets/tibo-interior/interior-expanded.png", easyrpg_chipset_ship: "/assets/easyrpg-chipset-ship-transparent.png", oprn_dungeon_stone: "/assets/easyrpg-chipset-dungeon-transparent.png" };
 const entries = [], snapshotMaps = {}, snapshotTilesets = {};
 for (const plan of c.plans) {

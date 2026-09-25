@@ -353,30 +353,6 @@
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 259,
-    "label": "바위/수정 소품 259",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
-    "tile": 260,
-    "label": "바위/수정 소품 260",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
     "tile": 265,
     "label": "가구/집기 265",
     "passability": {
@@ -497,18 +473,6 @@
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 382,
-    "label": "바위/수정 소품 382",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
     "tile": 383,
     "label": "바위/수정 소품 383",
     "passability": {
@@ -554,54 +518,6 @@
       "right": false
     },
     "priority": "lower"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
-    "tile": 405,
-    "label": "녹회색 암반 단상 405",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
-    "tile": 406,
-    "label": "녹회색 암반 단상 406",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
-    "tile": 407,
-    "label": "녹회색 암반 단상 407",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
-    "tile": 412,
-    "label": "바위/수정 소품 412",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
   },
   {
     "tileset": "oprn_dungeon_sea",
@@ -653,37 +569,37 @@
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 435,
-    "label": "녹회색 암반 단상 435",
+    "tile": 438,
+    "label": "석조 돔/화덕 438",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower"
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 436,
-    "label": "녹회색 암반 단상 436",
+    "tile": 439,
+    "label": "석조 돔/화덕 439",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower"
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 437,
-    "label": "녹회색 암반 단상 437",
+    "tile": 440,
+    "label": "석조 돔/화덕 440",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower"
   },
@@ -737,18 +653,6 @@
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 459,
-    "label": "심연/천장(회암 테두리) 459",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "lower"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
     "tile": 460,
     "label": "심연/천장(회암 테두리) 460",
     "passability": {
@@ -761,8 +665,8 @@
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 461,
-    "label": "심연/천장(회암 테두리) 461",
+    "tile": 468,
+    "label": "석조 돔/화덕 468",
     "passability": {
       "up": false,
       "down": false,
@@ -773,37 +677,25 @@
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 465,
-    "label": "녹회색 암반 단상 465",
+    "tile": 469,
+    "label": "석조 돔/화덕 469",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower"
   },
   {
     "tileset": "oprn_dungeon_sea",
-    "tile": 466,
-    "label": "녹회색 암반 단상 466",
+    "tile": 470,
+    "label": "석조 돔/화덕 470",
     "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "lower"
-  },
-  {
-    "tileset": "oprn_dungeon_sea",
-    "tile": 467,
-    "label": "녹회색 암반 단상 467",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
     },
     "priority": "lower"
   },

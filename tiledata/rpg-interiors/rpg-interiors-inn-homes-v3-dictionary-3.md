@@ -4,17 +4,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
-    "tile": 1903,
-    "label": "쿠션 긴 의자",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 1928,
     "label": "따뜻한 목재 식기장",
     "passability": {

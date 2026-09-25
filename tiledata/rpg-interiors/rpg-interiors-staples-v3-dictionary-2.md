@@ -4,105 +4,6 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
-    "tile": 1362,
-    "label": "접이식 가림막",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1382,
-    "label": "뚜껑 둥근 통",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1391,
-    "label": "접이식 가림막",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1392,
-    "label": "접이식 가림막",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1533,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1534,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1535,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1563,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1564,
-    "label": "장작 벽난로",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
     "tile": 1565,
     "label": "장작 벽난로",
     "passability": {
@@ -717,6 +618,281 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
       "right": false
     },
     "priority": "lower"
+  },
+  {
+    "tile": 2010,
+    "label": "짚 깔린 흙바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 2011,
+    "label": "짚 깔린 흙바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 2012,
+    "label": "짚 깔린 흙바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 2013,
+    "label": "짚 흩어진 흙바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 2014,
+    "label": "짚 흩어진 흙바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 2015,
+    "label": "짚 흩어진 흙바닥",
+    "passability": {
+      "up": true,
+      "down": true,
+      "left": true,
+      "right": true
+    },
+    "priority": "lower"
+  },
+  {
+    "tile": 2016,
+    "label": "마구간 칸막이 북쪽 끝",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2017,
+    "label": "마구간 칸막이 가운데",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2018,
+    "label": "마구간 칸막이 남쪽 끝 기둥",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2019,
+    "label": "건초 더미 왼쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2020,
+    "label": "건초 더미 오른쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2021,
+    "label": "건초 더미 왼쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2022,
+    "label": "건초 더미 오른쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2023,
+    "label": "말(오른쪽 보기) 왼쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2024,
+    "label": "말(오른쪽 보기) 오른쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2025,
+    "label": "말(오른쪽 보기) 왼쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2026,
+    "label": "말(오른쪽 보기) 오른쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2027,
+    "label": "말(왼쪽 보기) 왼쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2028,
+    "label": "말(왼쪽 보기) 오른쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2029,
+    "label": "말(왼쪽 보기) 왼쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2030,
+    "label": "말(왼쪽 보기) 오른쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2031,
+    "label": "젖소(오른쪽 보기) 왼쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2032,
+    "label": "젖소(오른쪽 보기) 오른쪽 위",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2033,
+    "label": "젖소(오른쪽 보기) 왼쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 2034,
+    "label": "젖소(오른쪽 보기) 오른쪽 아래",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
   }
 ]
 ```
