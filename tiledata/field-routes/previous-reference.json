@@ -114,5 +114,13 @@
   {
     "id": "field-routes-desert-v6",
     "revision": "174824-6c2d94a2-5fe44c28"
+  },
+  {
+    "id": "field-routes-volcano-v7",
+    "revision": "294087-c767f5bf-d7974ec5"
+  },
+  {
+    "id": "field-routes-desert-v7",
+    "revision": "421481-3751d3ce-d917214a"
   }
 ]
