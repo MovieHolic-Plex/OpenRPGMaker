@@ -283,6 +283,40 @@ export function syncBattleMessageWindow(windowNode: HTMLElement, state: BattleDi
   }
 }
 
+const REWARD_COUNT_UP_MS = 520;
+
+/**
+ * 경험치·골드 수치(「+17」)를 0 에서 최종값까지 센다. 끝나면 원래 글자로 되돌려
+ * 놓으므로 최종 textContent 는 세지 않은 경우와 같다. 감소 모션·rAF 없음이면 세지 않는다.
+ */
+function countUpRewardValue(value: HTMLElement): void {
+  const finalText = value.textContent ?? "";
+  const match = /^(\D*)(\d[\d,]*)(.*)$/su.exec(finalText);
+  if (!match) return;
+  const target = Number(match[2].replace(/,/gu, ""));
+  if (!Number.isFinite(target) || target < 2) return;
+  if (typeof window === "undefined" || typeof window.requestAnimationFrame !== "function") return;
+  if (typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const token = String((Number(value.dataset.countToken ?? "0") || 0) + 1);
+  value.dataset.countToken = token;
+  value.dataset.counting = "true";
+  const started = performance.now();
+  const step = (now: number): void => {
+    if (value.dataset.countToken !== token || !value.isConnected) return;
+    const t = Math.min(1, (now - started) / REWARD_COUNT_UP_MS);
+    if (t >= 1) {
+      value.textContent = finalText;
+      delete value.dataset.counting;
+      return;
+    }
+    const eased = 1 - (1 - t) ** 3;
+    value.textContent = `${match[1]}${Math.round(target * eased).toLocaleString("en-US")}${match[3]}`;
+    window.requestAnimationFrame(step);
+  };
+  value.textContent = `${match[1]}0${match[3]}`;
+  window.requestAnimationFrame(step);
+}
+
 export function battleResultPanel(snapshot: BattleSnapshot, revealStage = 0): HTMLElement | undefined {
   if (!snapshot.result) return undefined;
   const panel = document.createElement("div");
@@ -363,7 +397,14 @@ export function syncBattleResultPanel(panel: HTMLElement, snapshot: BattleSnapsh
     // 작은 패널이 떴다가 행이 하나씩 끼어들며 패널이 커지고 확인 버튼이 아래로 밀려났다
     // (감독 지적 2: 승리 UI 널뛰기). 패널은 처음부터 최종 크기다.
     const revealed = Number(item.dataset.revealIndex) < revealStage;
+    const wasRevealed = item.dataset.revealed === "true";
     item.dataset.revealed = revealed ? "true" : "false";
+    if (revealed && !wasRevealed) {
+      const value = item.querySelector<HTMLElement>(".battle-result-reward-value");
+      // 모두 공개(확인키 건너뛰기)는 revealStage 가 행 수보다 크다 — 그때는 세지 않고 최종값을 바로 보인다.
+      const counted = item.querySelector(".battle-result-reward-icon-exp, .battle-result-reward-icon-gold");
+      if (value && counted && revealStage <= cards.children.length) countUpRewardValue(value);
+    }
     const fill = item.querySelector<HTMLElement>(".battle-result-exp-fill");
     if (!fill) continue;
     const bar = fill.parentElement as HTMLElement;

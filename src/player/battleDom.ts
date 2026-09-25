@@ -137,6 +137,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let targetReturnSubmenu: BattleCommandSubmenu = null;
   let directorState: BattleDirectorState = commandPromptState(initialSnapshot);
   let resultRevealStage = 0;
+  let finaleCelebrated: BattleSnapshot["result"] | undefined;
   let sequenceBusy = false;
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
@@ -412,6 +413,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         ? findBattlerNode(field, options.runtime.snapshot().activeActorId!)
         : null;
       emitBattleJuice(success ? "escape" : "hit-miss", actorNode ?? undefined);
+    },
+    onResultPending(result) {
+      showFinaleStamp(result);
     },
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
@@ -1046,6 +1050,28 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return true;
   }
 
+  /** 결과 홀드 동안 필드 한가운데 찍히는 도장. 결과 패널이 뜨면 걷는다(syncResultHost).
+   *  결과 소리·플래시는 도장과 같은 순간에 한 번 울린다 — 패널이 뜰 때까지 기다리면 막타와
+   *  팡파레 사이가 1.5초 비었다(2026-09-25 녹화). 도주는 자기 연출이 있어 도장을 찍지 않는다. */
+  function showFinaleStamp(result: NonNullable<BattleSnapshot["result"]>): void {
+    if (result === "escape" || finaleCelebrated === result) return;
+    root.querySelector(".battle-finale-stamp")?.remove();
+    const stamp = document.createElement("div");
+    stamp.className = "battle-finale-stamp";
+    stamp.dataset.testid = "battle-finale-stamp";
+    stamp.dataset.battleResult = result;
+    stamp.setAttribute("aria-hidden", "true");
+    const text = document.createElement("span");
+    text.className = "battle-finale-stamp-text";
+    text.textContent = result === "victory" ? "승리!" : "전멸…";
+    stamp.append(text);
+    field.append(stamp);
+    root.dataset.battleFinale = result;
+    finaleCelebrated = result;
+    emitBattleJuice(result === "victory" ? "victory" : "defeat", root);
+    flashBattleField(root, result === "victory" ? "victory" : "defeat");
+  }
+
   function syncResultHost(snapshot: BattleSnapshot, showResult: boolean): void {
     if (!showResult) {
       resultHost.replaceChildren();
@@ -1066,8 +1092,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
       // 결과 팡파레도 사건 1개 = 소리 1개. emitBattleJuice 가 큐를 울리므로
       // 여기서 합성 보이스를 겹쳐 부르지 않는다(예전 결함).
-      emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
-      flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
+      // 도장만 걷는다. data-battle-finale 은 전투가 닫힐 때까지 둔다 — 지우면 결과 패널이 뜨는 순간
+      // 승리 줌(1.035)과 전멸 흑백이 한 프레임에 원상으로 튀었다.
+      field.querySelector(".battle-finale-stamp")?.remove();
+      if (finaleCelebrated !== snapshot.result) {
+        emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
+        flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
+      }
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }
