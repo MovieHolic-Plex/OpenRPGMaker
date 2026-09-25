@@ -2,7 +2,9 @@ import { DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP, templateBlockFromAnchor } from ".
 import type { AutotileGroup, TilesetDef } from "../types";
 import type { TerrainQuarterKit } from "./terrainQuarterAutotile";
 
-const TEXTURE = "tex_easyrpg_chipset_interior";
+// Tibo's expanded sheet repeats the EasyRPG interior atlas cell-for-cell in 0~479, so its ceiling uses the
+// same quarters. Without them thin partitions and T-junctions draw whole tiles and leave rim stubs.
+const TEXTURES = new Set(["tex_easyrpg_chipset_interior", "tex_tibo_interior_expanded"]);
 const GROUP: AutotileGroup = {
   ...DEFAULT_DARKNESS_DEEP_AUTOTILE_GROUP,
   id: "harness-interior-house-v1-ceiling",
@@ -23,7 +25,7 @@ const KIT: TerrainQuarterKit = {
 };
 
 function isInterior(tileset: Pick<TilesetDef, "image">): boolean {
-  return tileset.image.type === "bundled" && tileset.image.id === TEXTURE;
+  return tileset.image.type === "bundled" && TEXTURES.has(tileset.image.id);
 }
 
 function hasGraft(tileset: Pick<TilesetDef, "tileGrafts">): boolean {

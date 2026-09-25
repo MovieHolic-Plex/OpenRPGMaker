@@ -5890,13 +5890,13 @@
     {
       "role": "building",
       "tags": [
-        "가로 돌계단 반복부",
+        "벽에 붙은 오르막 계단 맨 위(벽면 바로 아래 바닥)",
         "stone stairs",
         "돌계단",
-        "가로",
-        "반복"
+        "세로",
+        "위"
       ],
-      "label": "가로 돌계단 반복부",
+      "label": "벽에 붙은 오르막 계단 맨 위(벽면 바로 아래 바닥)",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
@@ -6405,13 +6405,13 @@
     {
       "role": "building",
       "tags": [
-        "가로 돌계단 왼끝",
+        "벽에 붙은 오르막 계단 가운데(111 아래·171 위)",
         "stone stairs",
         "돌계단",
-        "가로",
-        "왼끝"
+        "세로",
+        "가운데"
       ],
-      "label": "가로 돌계단 왼끝",
+      "label": "벽에 붙은 오르막 계단 가운데(111 아래·171 위)",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
@@ -6925,13 +6925,13 @@
     {
       "role": "building",
       "tags": [
-        "가로 돌계단 오른끝",
+        "벽에 붙은 오르막 계단 맨 아래",
         "stone stairs",
         "돌계단",
-        "가로",
-        "오른끝"
+        "세로",
+        "아래"
       ],
-      "label": "가로 돌계단 오른끝",
+      "label": "벽에 붙은 오르막 계단 맨 아래",
       "source": "bundled-default",
       "passage": "passable",
       "confidence": "high",
