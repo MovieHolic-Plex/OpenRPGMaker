@@ -333,6 +333,14 @@ function upperIfEmpty(map: GameMap, x: number, y: number, tile: number): void {
   if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
 }
 
+/** 연속 빈 벽 구간 [a,b] 안의 창 자리 — 칸 3개마다 하나꼴, 서로 붙지 않게, 가운데 정렬. 박공 합성기와 같은 규칙. */
+export function spreadWindowsInSegment(a: number, b: number): number[] {
+  const length = b - a + 1;
+  const count = Math.max(1, Math.floor((length + 2) / 3));
+  if (count === 1) return [a + Math.floor((length - 1) / 2)];
+  return Array.from({ length: count }, (_, i) => a + Math.round((i * (length - 1)) / (count - 1)));
+}
+
 function placeWindowsOnWallRuns(
   map: GameMap,
   kit: HouseKit,
@@ -346,10 +354,24 @@ function placeWindowsOnWallRuns(
   const isPostTile = (x: number, y: number): boolean =>
     kit.postColumn !== undefined && (kit.postColumn.tiles as readonly number[]).includes(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
   const nearDoor = (x: number, y: number): boolean => doorAt !== undefined && Math.abs(x - doorAt.x) <= 1 && y >= doorAt.y - 2;
+  const spread = windows === undefined || windows === false || windows.spacing === undefined;
   for (const run of runs) {
     if (run.x1 - run.x0 + 1 < 3) continue;
     let placed = false;
-    for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) {
+    if (spread) {
+      // 기본 간격(2026-09-25 「넓은 면은 빈 벽 2~3칸마다, 좌우 맞게」): 문·기둥으로 끊긴 빈 구간마다 고르게.
+      let start = -1;
+      for (let x = run.x0 + 1; x <= run.x1; x += 1) {
+        const ok = x <= run.x1 - 1 && !nearDoor(x, run.y) && !isPostTile(x, run.y);
+        if (ok && start < 0) start = x;
+        if (!ok && start >= 0) {
+          for (const wx of spreadWindowsInSegment(start, x - 1)) upperIfEmpty(map, wx, run.y, kit.windowTile);
+          placed = true;
+          start = -1;
+        }
+      }
+    }
+    for (let x = run.x0 + 1; !spread && x <= run.x1 - 1; x += step) {
       if (nearDoor(x, run.y)) continue;
       // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
       if (isPostTile(x, run.y)) continue;

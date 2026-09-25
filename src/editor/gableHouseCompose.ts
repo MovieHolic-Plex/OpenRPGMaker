@@ -13,7 +13,7 @@
 //  · 벽은 킷 나인슬라이스(+하프팀버 기둥 열) — 부품마다 따로 끊어 덩어리가 둘로 읽히게 한다.
 //  · 불투명 칸을 새로 칠하면 그 칸의 상위(앞서 얹은 캡·창)를 지운다. 캡만 얹는 칸은 하위를 건드리지 않는다.
 
-import { CHIMNEY_TILE, HOUSE_KITS, isWallPostAt, type HouseKit, type HouseKitId } from "@/editor/houseKit";
+import { CHIMNEY_TILE, HOUSE_KITS, isWallPostAt, spreadWindowsInSegment, type HouseKit, type HouseKitId } from "@/editor/houseKit";
 import { housePartTile } from "@/project/defaults/forestHarmonyHouseParts";
 import type { AuthoredHouseFormDef, AuthoredHouseFormRow } from "@/project/defaults/authoredHouseFormCatalog";
 import {
@@ -270,14 +270,6 @@ function visibleWallRuns(canvas: Canvas, placed: PartPlacement, y: number): { x0
   return runs;
 }
 
-/** 연속 후보 칸 구간 안에 창을 고르게 — 칸 3개마다 하나꼴, 서로 붙지 않게, 가운데 정렬. */
-function spreadInSegment(a: number, b: number): number[] {
-  const length = b - a + 1;
-  const count = Math.max(1, Math.floor((length + 2) / 3));
-  if (count === 1) return [a + Math.floor((length - 1) / 2)];
-  return Array.from({ length: count }, (_, i) => a + Math.round((i * (length - 1)) / (count - 1)));
-}
-
 /**
  * 창 배치(2026-09-25 사용자 규칙): 보이는 벽 면이 3칸 이상이면 창이 적어도 하나. 넓은 면은 빈 벽 2~3칸마다 하나,
  * 문과는 붙지 않게(문 좌우 한 칸 비움), 벽 끝 칸·기둥 열에는 내지 않는다. 문 양쪽 구간을 따로 채워 좌우가 맞는다.
@@ -299,7 +291,7 @@ function drawWindows(canvas: Canvas, kit: HouseKit, placements: readonly PartPla
           const ok = x <= run.x1 && free(x);
           if (ok && segmentStart < 0) segmentStart = x;
           if (!ok && segmentStart >= 0) {
-            for (const wx of spreadInSegment(segmentStart, x - 1)) overlay(canvas, wx, y, kit.windowTile);
+            for (const wx of spreadWindowsInSegment(segmentStart, x - 1)) overlay(canvas, wx, y, kit.windowTile);
             segmentStart = -1;
             placedAny = true;
           }
