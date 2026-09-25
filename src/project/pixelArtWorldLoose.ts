@@ -77,13 +77,13 @@ export function looseExample(recipe: LooseRecipe) {
 export function createLooseTileset(pack: LoosePack, assetId: string, id: string, sourceOnly = false): TilesetDef {
     const count = sourceOnly ? pack.width * pack.height / 256 : pack.atlas.count;
     const t: TilesetDef = { id, name: `Pixel Art World · ${pack.name}${sourceOnly ? ' · 원본 참고' : ' · 완전 객체'}`, kind: 'custom', image: { type: 'uploaded', id: assetId }, tileSize: sourceOnly ? 16 : 32, tilesPerRow: sourceOnly ? pack.width / 16 : 8, count,
-        passability: Array.from({ length: count }, () => ({ up: true, down: true, left: true, right: true })), priority: Array.from({ length: count }, () => 'upper' as const), terrain: Array<number>(count).fill(0), tileMeta: Array.from({ length: count }, () => ({ label: sourceOnly ? '원본 참고 픽셀' : '예약 빈 칸', defaultLayer: 'upper' as const, passage: 'passable' as const, source: 'imported' as const })), tileGroups: [], structureKits: [], autotileGroups: [] };
+        passability: Array.from({ length: count }, () => ({ up: true, down: true, left: true, right: true })), priority: Array.from({ length: count }, () => 'upper' as const), terrain: Array<number>(count).fill(0), tileMeta: Array.from({ length: count }, () => ({ label: sourceOnly ? '원본 참고 픽셀' : '예약 빈 칸', description: sourceOnly ? '조립 전 원본 시트의 참고 픽셀. 배치용이 아니다.' : '아직 소품을 배정하지 않은 예약 칸. 배치에 쓰지 않는다.', defaultLayer: 'upper' as const, passage: 'passable' as const, source: 'imported' as const })), tileGroups: [], structureKits: [], autotileGroups: [] };
     if (sourceOnly)
         return t;
     for (const tile of [0, 1, 2]) {
         t.priority[tile] = 'lower';
         t.passability[tile] = { up: tile === 0, down: tile === 0, left: tile === 0, right: tile === 0 };
-        t.tileMeta![tile] = { label: tile === 0 ? '예제 바닥' : '예제 벽', defaultLayer: 'lower', passage: tile === 0 ? 'passable' : 'solid', source: 'imported' };
+        t.tileMeta![tile] = { label: tile === 0 ? '예제 바닥' : '예제 벽', description: tile === 0 ? '완전 소품 예제가 서 있는 바닥 칸. 통행 가능.' : '예제 장면의 배경 벽 칸. 통행 불가.', defaultLayer: 'lower', passage: tile === 0 ? 'passable' : 'solid', source: 'imported' };
     }
     for (const r of fixedLooseRecipes(pack)) {
         const q = r.outputRect!, tiles = Array.from({ length: q.height }, (_, y) => Array.from({ length: q.width }, (_, x) => (q.y + y) * 8 + q.x + x)), example = looseExample(r);

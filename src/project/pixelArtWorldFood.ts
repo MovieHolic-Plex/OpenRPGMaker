@@ -44,12 +44,12 @@ export function createFoodTileset(pack: PixelArtWorldFoodPack, assetId: string, 
         image: { type: 'uploaded', id: assetId }, tileSize: 32, tilesPerRow: columns, count,
         passability: Array.from({ length: count }, () => ({ up: true, down: true, left: true, right: true })),
         priority: Array.from({ length: count }, () => 'upper' as const), terrain: Array<number>(count).fill(0),
-        tileMeta: Array.from({ length: count }, () => ({ label: '빈 예약칸', defaultLayer: 'upper' as const, passage: 'passable' as const, source: 'imported' as const })),
+        tileMeta: Array.from({ length: count }, () => ({ label: '빈 예약칸', description: '아직 소품을 배정하지 않은 예약 칸. 배치에 쓰지 않는다.', defaultLayer: 'upper' as const, passage: 'passable' as const, source: 'imported' as const })),
         tileGroups: [], autotileGroups: [],
     };
     if (composed) {
         tileset.priority[0] = 'lower';
-        tileset.tileMeta![0] = { label: '식탁 예제의 원본 바닥', defaultLayer: 'lower', passage: 'passable', repeatability: 'repeat', source: 'imported' };
+        tileset.tileMeta![0] = { label: '식탁 예제의 원본 바닥', description: '식탁 합성 예제가 깔고 있는 바닥 칸. 통행 가능하며 반복해 깔 수 있다.', defaultLayer: 'lower', passage: 'passable', repeatability: 'repeat', source: 'imported' };
     }
     recipes.forEach((recipe, index) => {
         const rect = composed ? foodCompositionRect(index) : recipe.sourceRect;

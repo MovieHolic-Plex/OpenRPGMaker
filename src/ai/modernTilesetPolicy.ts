@@ -59,4 +59,6 @@ export function modernTilesetViolation(before: Project, after: Project, policy: 
       return `현대 맵 '${map.name}'에는 설치된 Pixel Art World 칩셋만 사용할 수 있습니다. '${map.tilesetId}' 사용/혼합 변경은 적용하지 않았습니다. PAW 타일셋을 조회해 선택하세요. 없으면 자료집 → 맵 → 타일 → 외부 타일셋 다운로드에서 원본 PNG 다운로드/가져오기를 안내하세요.`;
     }
   }
+  // 위반이 없으면 undefined — noImplicitReturns 아래에서는 암묵 종료가 오류다.
+  return undefined;
 }

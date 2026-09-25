@@ -164,7 +164,7 @@ export function deleteMap(mapId: MapId): DeleteMapResult {
   // 확인창이 "삭제 후 Ctrl+Z로 되돌릴 수 있습니다"(mapDeleteConfirm.ts:31)를 인쇄한다 —
   // 약속을 참으로 만들려면 삭제 직전 상태를 되돌리기 스택에 남겨야 한다.
   recordProjectSnapshot(`맵 삭제: ${plan.impact.mapName}`);
-  store.update((p) => applyMapDeletion(p, mapId), { scope: "project" });
+  store.update((p) => applyMapDeletions(p, [mapId]), { scope: "project" });
   return { ok: true, impact: plan.impact };
 }
 
