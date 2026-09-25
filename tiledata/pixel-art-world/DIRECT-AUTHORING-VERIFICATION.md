@@ -161,3 +161,21 @@ SHA `671a0263eb3d117c0f7da0d718b70362ffa635e0cd29241f73d6d2686bea9531`.
   SHA `9418364c7c7cb9c16502d1add1be7453fdcd678820a127a3b56563b2996b2bdf`. 공식 API 저장/닫기/재오픈 일치. 시각 불합격 검토용이다.
 - 증거: `output/paw-direct-v2/guide-reviewed/guide-save-proof.json`,
   `home-visual-repair/storage-proof.json`, `home-visual-repair/visual-review.json`.
+
+## 넓은 빈 띠·천장 덩어리·문설주 검사 추가 후 (2026-09-25 오후)
+
+새 검사: `maxEmptyStrip {width:3,length:4}`(EXCESS_EMPTY_STRIP), `CEILING_MASS`(천장 2×2),
+`ROOM_SIDE_FULLY_OPEN`(문턱이 방 한 변 전체). 승인된 식당·의원 결과는 새 검사에서도 오류0이다.
+이전에 구조 통과였던 home-visual-repair(3×8 띠)·home-repair(5×3 띠, 화장실 한 변 개방)는 이제 실패한다.
+같은 제공자(gemini-3.7-flash, thinking high)로 4회 실행했다. 결과는 `output/paw-direct-v3/`.
+
+| 실행 | 시작점 | 결과 | 사람 판정 |
+|---|---|---|---|
+| home-fresh | 빈 맵, 감독 피드백 없음 | 252초, paint63, 검사 5→1→0 (당시 검사) | 가장 근접. 욕실·화장실이 바닥2줄+서쪽 한 변 전체 개방 → 새 검사 ROOM_SIDE_FULLY_OPEN 2 |
+| home-strip-repair | home-visual-repair + 빈 띠 피드백 | 79초, paint4, 검사 1→0 | 빈 띠를 천장 덩어리로 메우고 외벽 이중. 보고서의 "10×18"은 실제 10×21 → CEILING_MASS 10 |
+| home-fresh2 | 빈 맵, 새 검사 포함 | 900초 시간 상한, paint200 | 중간에 상위층 전체를 tile:-1 rect 로 지우고 재설계하다 가구 없이 종료 |
+| home-door-repair | home-fresh + 문 피드백 | 100턴 상한, paint73 | 상위층 전체 삭제 후 미완료. 도구 결함이 아니라 모델의 자발적 전체 삭제 |
+
+집계: 새 조건에서 시각 합격 0/4. 검사를 추가하면 모델이 검사를 피하는 방식(천장 메우기)으로 대응하거나
+전체를 지우고 다시 설계하다 예산을 소진한다. 다음 후보: 상위층 전체 rect 삭제 거부 또는 확인 요구,
+방 깊이 3칸 이상을 사전 지침의 설계 순서 첫 단계로 이동, 1R-A 처럼 거의 맞은 결과는 문 위치만 고치도록 범위 한정.
