@@ -1,0 +1,4285 @@
+{
+  "version": 1,
+  "frozenAt": "2026-09-25",
+  "reason": "사용자 할당량 제약에 따라 기존380고유원본SHA로 범위 확정. 신규 소재 추가 중단.",
+  "sourceCount": 380,
+  "scope": "Importer-connected source identities; not380completed places or a blanket quality approval.",
+  "sources": [
+    {
+      "sha256": "003d29e6ad611ee314099b7de026c039951a4e63e5e7c09ff22302c90bfb5b0e",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-023",
+          "filename": "oinarisama.png",
+          "name": "oinarisama.png"
+        },
+        {
+          "group": "supplement",
+          "id": "shrine",
+          "filename": "oinarisama.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "01466cdfed00529581f8c14ba6b4f188212c07992cde88dddef7effb14ef0b78",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatakeb04",
+          "filename": "SA-HatakeB04.png",
+          "name": "밭·작물 · HatakeB04"
+        }
+      ]
+    },
+    {
+      "sha256": "014cf4fbd29c2ba9f32d53fc88fc4d123f04763f0b7c51075fc17ffdcfa97d96",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-pool02",
+          "filename": "SA-Pool02.png",
+          "name": "수면 테두리 · Pool02"
+        }
+      ]
+    },
+    {
+      "sha256": "016edc7b7572e20684cfa259e383312619d7ed4d52b55db3d4bb44b67c6aa1c0",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-concrete01",
+          "filename": "SA-Concrete01.png",
+          "name": "콘크리트 경계"
+        }
+      ]
+    },
+    {
+      "sha256": "01a01f5f03a6d63be300fd787519b230334253c1d3f21621ef5060a91a501c89",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-kadan03",
+          "filename": "SA-Kadan03.png",
+          "name": "벽돌 화단 · Kadan03"
+        }
+      ]
+    },
+    {
+      "sha256": "01a889186d91ebdc30da74486cd27439bd74c5012c5b0b5d820f1160f9741c8f",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-ruins01",
+          "filename": "SC-Door-Ruins01.png",
+          "name": "Pixel Art World · 유적 석문"
+        }
+      ]
+    },
+    {
+      "sha256": "01f364c4815ec468849a9e96121166c9d475ba8ed78b0b5a5568a54261783de9",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-carp01",
+          "filename": "SC-Carp01.png",
+          "name": "Pixel Art World · 잉어 헤엄"
+        }
+      ]
+    },
+    {
+      "sha256": "02042abd8b045fc5d784b0e98b21f5aff4000bedebc3b03c5a264a431447b144",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatake02",
+          "filename": "SA-Hatake02.png",
+          "name": "밭·작물 · Hatake02"
+        }
+      ]
+    },
+    {
+      "sha256": "031bb53ec1e2388a9cfda87b9a0f4326cc48ed7543dc28e651b205fabf24a553",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-schl01",
+          "filename": "SC-Door-Schl01.png",
+          "name": "학교 외관 미닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "036bb7b541cd28a793125503d9db7b098879e1d366fe3c69414bcddd29f31c26",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grassc03",
+          "filename": "SA-GrassC03.png",
+          "name": "풀밭 · GrassC03"
+        }
+      ]
+    },
+    {
+      "sha256": "04956c570be6feda2b2ce4e129072794ab8eddfc4ab725bdd834b6f73bc95141",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-088",
+          "filename": "Botticelli.png",
+          "name": "Botticelli.png"
+        }
+      ]
+    },
+    {
+      "sha256": "04a7d0dd6bc45e674bd6d3ec684dbf412bad927e2741d22bfe3e3b5dcec2661c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatakeb06",
+          "filename": "SA-HatakeB06.png",
+          "name": "밭·작물 · HatakeB06"
+        }
+      ]
+    },
+    {
+      "sha256": "0562fcb5b9bbca934ae7bf0277714ffc25fec759be5d58599b171fc717472cd2",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-025",
+          "filename": "torii02.png",
+          "name": "torii02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "0575c2838cf81065b9f4ef3490891bc64dd2eb10d493717a53a9ddfce28137e0",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor-t07",
+          "filename": "SA-Floor-T07.png",
+          "name": "실내 바닥 · Floor-T07"
+        }
+      ]
+    },
+    {
+      "sha256": "05e16cb4cfe3f98eb23e84afe5d826de2d39e8167465c64f6dcc602085dcbd18",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-door-evs01",
+          "filename": "SC-Door-Evs01.png",
+          "name": "Pixel Art World · 엘리베이터 층 표시기"
+        }
+      ]
+    },
+    {
+      "sha256": "065b747bc0b0562b1d1780786adfaac8338635927ea0ce5f3c9e09675eb291ce",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groad01",
+          "filename": "SA-GRoad01.png",
+          "name": "잔디 위 포장길 · GRoad01"
+        }
+      ]
+    },
+    {
+      "sha256": "07995fa77a79f1181f6c91d3bc0eba573f6c561f8cf6b79e9c0820d1d490c9dc",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grasse02",
+          "filename": "SA-GrassE02.png",
+          "name": "풀밭 · GrassE02"
+        }
+      ]
+    },
+    {
+      "sha256": "07ffb846c7f174a9265fb2ac0b348a47fc93e24a12415419664ea77f2d341f4a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floort01",
+          "filename": "SA-FloorT01.png",
+          "name": "실내 바닥 · FloorT01"
+        }
+      ]
+    },
+    {
+      "sha256": "0a83340a4e148b152de719f71f858e09e1491074d4b2d62a05f8ac1cc745b396",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-054",
+          "filename": "hinanset01.png",
+          "name": "hinanset01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "0ad864590df6fb2bcb6316ef3cc9d43686c1d767a6d5a97bc82de94e7013aaf0",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-006",
+          "filename": "kuri.png",
+          "name": "kuri.png"
+        }
+      ]
+    },
+    {
+      "sha256": "0be9ea0889b2d1ae42313cec9da89c28b451fbf17cd23ddd67dbc29377f59fa5",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-076",
+          "filename": "pierrot2.png",
+          "name": "pierrot2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "0d9e2c378202c719d290dbdc5697956b45bd8c1daab443500ac2dde3b5645368",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet08",
+          "filename": "SA-Carpet08.png",
+          "name": "카펫 · Carpet08"
+        }
+      ]
+    },
+    {
+      "sha256": "0eb57527f3f5bc059145399cab23f66a80e10e5690fa70cb03a3262b97d4d638",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-sunoko02",
+          "filename": "SA-Sunoko02.png",
+          "name": "나무 발판 · Sunoko02"
+        }
+      ]
+    },
+    {
+      "sha256": "0ee979d779659728004547427fb84663cd847db6b9b6644dcf40e238cc5fbd20",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-017",
+          "filename": "hanami.png",
+          "name": "hanami.png"
+        }
+      ]
+    },
+    {
+      "sha256": "0f45d19fe360255ebac51e6a0b927b2c3213aaec1b6a1d83f8fda64ea01e5415",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floorm03",
+          "filename": "SA-FloorM03.png",
+          "name": "실내 바닥 · FloorM03"
+        }
+      ]
+    },
+    {
+      "sha256": "0f75cdf4b520599ed516da61067ec87c332946d59316ae75aa6b4eea0c7d27a5",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-car02",
+          "filename": "SC-Car02.png",
+          "name": "Pixel Art World · 네 색 차 앞뒤 정적 그림"
+        }
+      ]
+    },
+    {
+      "sha256": "112efeb30e988210950dca1dca477d17130a0925c424353be9acf0d3a9aa2f59",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-set-schl01",
+          "filename": "SC-Set-Schl01.png",
+          "name": "Pixel Art World · 학교 수도대·열린 교문"
+        }
+      ]
+    },
+    {
+      "sha256": "1174a42296b5738d0f2cd7a844d743509194da89c62d3d634150a527c8275d89",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-clinic-interior",
+          "filename": "ST-Hospital-I01.png",
+          "name": "Pixel Art World · 동네의원 내장"
+        }
+      ]
+    },
+    {
+      "sha256": "11c2b9245f0b6e29c38a341d0fde6e8bbb09becd33bd96f79e2f155135759c65",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet09st",
+          "filename": "SA-Carpet09ST.png",
+          "name": "푸른색 계단형 세로 러너 · Carpet09ST"
+        }
+      ]
+    },
+    {
+      "sha256": "11e67ccd353fa8d95929db53f60b28e1c829675bfbc2d89d4eb80c14f4ddaed1",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-031",
+          "filename": "himawari.png",
+          "name": "himawari.png"
+        }
+      ]
+    },
+    {
+      "sha256": "121b2b6783dd53dbede33bdbb6789b51549436461d4caa31327f557c4dc36f34",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-090",
+          "filename": "Bophomet.png",
+          "name": "Bophomet.png"
+        }
+      ]
+    },
+    {
+      "sha256": "1265dfc7a0a652f7d69aa791fc54b439195b53fb9544b952094997d61f85cc49",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-legacy-pizza",
+          "filename": "F-Party02.png",
+          "name": "Pixel Art World · 구판 피자·파티"
+        }
+      ]
+    },
+    {
+      "sha256": "1294843d13ba76a7ae4aac4949e93a2c1fb887a42c19019c07d49560bcebd692",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-goza01",
+          "filename": "SA-Goza01.png",
+          "name": "돗자리 · Goza01"
+        }
+      ]
+    },
+    {
+      "sha256": "14025ba78f24984ae8e497fcda90c860795ac993999a48fcd1fe1eca48810dfb",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-saku01",
+          "filename": "SA-Saku01.png",
+          "name": "옥상 난간 · Saku01"
+        }
+      ]
+    },
+    {
+      "sha256": "15d7faf904362bb07108b2e407fb750fd242f1c7db9c4ca2f5f27f2e0aec74bb",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-roof01",
+          "filename": "SA-Roof01.png",
+          "name": "밝은 건물 지붕"
+        }
+      ]
+    },
+    {
+      "sha256": "15e1cb4e7be04078de74e2052e083f33646242b2f7961429255fa4d76c7c5ae2",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-046",
+          "filename": "post.png",
+          "name": "post.png"
+        }
+      ]
+    },
+    {
+      "sha256": "16376c2e6dff8aa51f74d43d9bc3db24c300f13586482cce9f5b866828e9dd35",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-kotatsu01",
+          "filename": "SA-Kotatsu01.png",
+          "name": "코타츠 상판·덮개 · Kotatsu01"
+        }
+      ]
+    },
+    {
+      "sha256": "164119832581c9d79941c154edde232e079dc2fdc6f48122c4c3c4340c7e7d81",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-noren02",
+          "filename": "SC-Noren02.png",
+          "name": "Pixel Art World · 좁은 노렌 정적 상태"
+        }
+      ]
+    },
+    {
+      "sha256": "18036a280e14ed2af33f8ccce85204767fd2793a87accf6c7fc5fa9a610b7f5e",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-074",
+          "filename": "horrorbear.png",
+          "name": "horrorbear.png"
+        }
+      ]
+    },
+    {
+      "sha256": "1807918dbe8edb5cc53cf4415d6a01939343992dde376733d59671256ed4a9cc",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ditch02",
+          "filename": "SA-Ditch02.png",
+          "name": "수로 · Ditch02"
+        }
+      ]
+    },
+    {
+      "sha256": "1847cb4ff76f135b92815e493c89a8387468c61b1630593f7907abe3ecc5ceb8",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-093",
+          "filename": "SB-Spider04.png",
+          "name": "SB-Spider04.png"
+        }
+      ]
+    },
+    {
+      "sha256": "194d27c80f8256cd627c13770c6bf2d4184f7d2ade5629e341b4bc3509b2635a",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-stone01",
+          "filename": "SC-Stone01.png",
+          "name": "Pixel Art World · 발광 돌"
+        }
+      ]
+    },
+    {
+      "sha256": "1a48151aa07d6b2c7d59b7a8674bf143060841d25ad2d5dd20bc4e5d214d246b",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-exterior-b",
+          "filename": "ST-MsionB-E01.png",
+          "name": "Pixel Art World · 저택 외관 B"
+        }
+      ]
+    },
+    {
+      "sha256": "1af770d648d448895fbd4cc8548a636537ffafc29a3a912c4542ea36bc8deca1",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-028",
+          "filename": "sakura.png",
+          "name": "sakura.png"
+        }
+      ]
+    },
+    {
+      "sha256": "1b397de841d82af43e42f31db6143e5935888a7099bb9047f89896ee9ec9a10b",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-skeleton01",
+          "filename": "SC-Skeleton01.png",
+          "name": "Pixel Art World · 매달린 해골 표정"
+        }
+      ]
+    },
+    {
+      "sha256": "1bf360bf97d9b0079c15c61ac71b6e3ac0e84397d6d5f2e5676d312a755dca48",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-window01",
+          "filename": "SA-Window01.png",
+          "name": "유리창 · Window01"
+        }
+      ]
+    },
+    {
+      "sha256": "1c83fad2385cce268cb1cfdf4d5cced8ee2e01467c60ae3103e0aa10e2ae5a3b",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-04",
+          "filename": "SC-Door04.png",
+          "name": "Pixel Art World · 실내문 04"
+        }
+      ]
+    },
+    {
+      "sha256": "1defffef1fe5d051ce71e8b6814dbd3b64560c930e84a284ced4255df109395f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-asphaltroad01",
+          "filename": "SA-AsphaltRoad01.png",
+          "name": "아스팔트 길"
+        }
+      ]
+    },
+    {
+      "sha256": "1e1a5f5a1150d2fe918a9c16df2a0874df3dddd58ca6aede56910b353f26196c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-stfencebase",
+          "filename": "SA-StFenceBase.png",
+          "name": "돌 경계 · StFenceBase"
+        }
+      ]
+    },
+    {
+      "sha256": "1e6387ff9375ab41c44f342c41675cd55b9a33daa7330d374224fe4b806ccbd8",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-105",
+          "filename": "SI-Unko01.png",
+          "name": "SI-Unko01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "20516cb6f8270101b3c63c1b4529567b634c97dc82d0211146e8702d6b5eaf22",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-008",
+          "filename": "kimono.png",
+          "name": "kimono.png"
+        }
+      ]
+    },
+    {
+      "sha256": "22dd9be0d28919cbdd8569be3e12d37bde4e2f7c28b2c751d5452de37a928c57",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-kadan02",
+          "filename": "SA-Kadan02.png",
+          "name": "벽돌 화단 · Kadan02"
+        }
+      ]
+    },
+    {
+      "sha256": "25ec118cbf09cb64d86ec6afdb5c724ee34db8f41c8e88b6623f046b5543bf01",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor-t12",
+          "filename": "SA-Floor-T12.png",
+          "name": "실내 바닥 · Floor-T12"
+        }
+      ]
+    },
+    {
+      "sha256": "276e73051ab36ed9586780d027d62a208c41fbab3255847d54e8c96b905dedf4",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-059",
+          "filename": "SC-Candle03.png",
+          "name": "SC-Candle03.png"
+        }
+      ]
+    },
+    {
+      "sha256": "282c1d563427e602c8572a06578a67443aac593be0dec508dfd01edbbf70a1f6",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-047",
+          "filename": "koji2.png",
+          "name": "koji2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "289943cd7cd4da7decea02e8d44661671da91945c59c7dc6caade9f2a4fa1830",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-094",
+          "filename": "sf.png",
+          "name": "sf.png"
+        }
+      ]
+    },
+    {
+      "sha256": "2a119c03d85cbd546b79c6f826dc5f4387dc88f8f3621ea9ea7f14109245f932",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-santa01",
+          "filename": "SC-Santa01.png",
+          "name": "Pixel Art World · 산타 걷기"
+        }
+      ]
+    },
+    {
+      "sha256": "2ac74ea68a1f00c80521242421df2f4342780884d3266540c0ad50c871666b5f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet05",
+          "filename": "SA-Carpet05.png",
+          "name": "카펫 · Carpet05"
+        }
+      ]
+    },
+    {
+      "sha256": "2b4d4a5a408eb347b37e5d946eff7f0cc56e2a02625e91c52e2ac3fcc40e0246",
+      "registrations": [
+        {
+          "group": "facility",
+          "id": "kitchens",
+          "filename": "SPT-kitchen01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "2b794d7816e7e45cd1f3ec7d8b03364aadcd7e1905bd17585b15b15235eab19e",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ground02",
+          "filename": "SA-Ground02.png",
+          "name": "지면 · Ground02"
+        }
+      ]
+    },
+    {
+      "sha256": "2b87e1353a4b32fe393be49e539f0c6bc003cea24e5b9b2e87945dfb022f4f96",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-autoaw",
+          "filename": "SC-Door-AutoAW.png",
+          "name": "Pixel Art World · 자동문 AutoAW"
+        }
+      ]
+    },
+    {
+      "sha256": "2bc8da939553f08fbdf58f0095a8793d4e1e1188a6f891de359d0dc5871b65f4",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-owl02",
+          "filename": "SC-Owl02.png",
+          "name": "Pixel Art World · 부엉이 앉기·제자리 비행"
+        }
+      ]
+    },
+    {
+      "sha256": "2ce6f69b5822b0b090034a6a9bd892fd86d29420fc21e808596c45c51e68441a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-goza02",
+          "filename": "SA-Goza02.png",
+          "name": "돗자리 · Goza02"
+        }
+      ]
+    },
+    {
+      "sha256": "2d93e38de24ce7093f192c72aecfae03cacfe8ac7fcddfeb70717561c35a80a3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-041",
+          "filename": "bicycle02.png",
+          "name": "bicycle02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "2e3f22af16fd5de5de6b9d58543c31979e34b494be2c20fde7ca7de4eddc4c96",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-p",
+          "filename": "ST-MsionP-I01.png",
+          "name": "Pixel Art World · 저택 내부 P"
+        }
+      ]
+    },
+    {
+      "sha256": "2fe46a3ef49d4ae6abe2403c93e24bceedfc4a128ea29f0efe5b80382338d86b",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-01",
+          "filename": "SC-Door01.png",
+          "name": "Pixel Art World · 실내문 01"
+        }
+      ]
+    },
+    {
+      "sha256": "302235022baa1a493b5d536f8de89a03b287ae593a5b2ff1168554cfa60baecb",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-051",
+          "filename": "Halloween.png",
+          "name": "Halloween.png"
+        }
+      ]
+    },
+    {
+      "sha256": "307f197ecefcd9fbc9316403f72d15665fe223730916f70aa7c1ba103d6cc885",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-autoas",
+          "filename": "SC-Door-AutoAS.png",
+          "name": "Pixel Art World · 자동문 AutoAS"
+        }
+      ]
+    },
+    {
+      "sha256": "3123f01148956fa8c3cbf7d19ad9b8268fd859887d1f3230031fdfdd88b8af29",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-wall-a02",
+          "filename": "SA-WallA02.png",
+          "name": "밝은 천장·벽 경계"
+        }
+      ]
+    },
+    {
+      "sha256": "32a31deea040395612455d75a9a78d0d0963d1a1c405226a860832dbf0e12acb",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor-t08",
+          "filename": "SA-Floor-T08.png",
+          "name": "실내 바닥 · Floor-T08"
+        }
+      ]
+    },
+    {
+      "sha256": "3375238abee35db986b562fdd06f0f75dba6d61949218212d9d8e3a0bf1fb37d",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-wood-school-interior",
+          "filename": "ST-Schl-WI01.png",
+          "name": "Pixel Art World · 목조학교 · 기본 내부"
+        },
+        {
+          "group": "facility",
+          "id": "room",
+          "filename": "ST-Schl-WI01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "33c40faba03031fdca7b7bb5ebf2d9d93126b35da8b75f6d534c1a58bc03fbc4",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-stfence01",
+          "filename": "SA-StFence01.png",
+          "name": "돌 경계 · StFence01"
+        }
+      ]
+    },
+    {
+      "sha256": "33c6563645f89e189f6967506c4403fcc5151b91e6b786bdff0d2cf864c856c1",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet-rose01",
+          "filename": "SA-Carpet-Rose01.png",
+          "name": "카펫 · Carpet-Rose01"
+        }
+      ]
+    },
+    {
+      "sha256": "345be418f185f323f2a00a960c8b8bac63ebe99dee3d02ca787f05c04973e11f",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-05",
+          "filename": "SC-Door05.png",
+          "name": "Pixel Art World · 실내문 05"
+        }
+      ]
+    },
+    {
+      "sha256": "34b0eaba9525ed4529c8df05b65e0c0a02ab46821923248ebe4b30d5e0258fe2",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-067",
+          "filename": "Le Penseur.png",
+          "name": "Le Penseur.png"
+        }
+      ]
+    },
+    {
+      "sha256": "353f1cb5d5ded1f6155825fa2698a745382b20e572e58a136bcd50a26bff5b67",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-jp01",
+          "filename": "SC-Door-JP01.png",
+          "name": "Pixel Art World · 일본풍 외관문 A"
+        }
+      ]
+    },
+    {
+      "sha256": "36e5f775678a47a27e785620a07ee1c4ba9d67f5a59a6c60d5e230e1ed554970",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-wood-school-exterior",
+          "filename": "ST-Schl-WE01.png",
+          "name": "Pixel Art World · 목조학교 외관"
+        }
+      ]
+    },
+    {
+      "sha256": "36e7379aac03b503961f8f20147f9d782429e371121a0f09b1b0bac084d9a07c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floort03",
+          "filename": "SA-FloorT03.png",
+          "name": "실내 바닥 · FloorT03"
+        }
+      ]
+    },
+    {
+      "sha256": "3723b044833d5a95680298df805d7b6ae321f6be89d6ddf375c2f5c8122d8775",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-exterior-p",
+          "filename": "ST-MsionP-E01.png",
+          "name": "Pixel Art World · 저택 외관 P"
+        }
+      ]
+    },
+    {
+      "sha256": "381c7aff9cb4835f9e63d30e1d6aba2ce13441ff2983a38fc4bd6825235de38d",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grassd02",
+          "filename": "SA-GrassD02.png",
+          "name": "풀밭 · GrassD02"
+        }
+      ]
+    },
+    {
+      "sha256": "39b7b14027c50019479c609e44427163a52f38eef89af4c68ce6e4593a7b616f",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-school-exterior",
+          "filename": "ST-Schl-E01.png",
+          "name": "Pixel Art World · 학교 외관"
+        }
+      ]
+    },
+    {
+      "sha256": "39eb3e4642f97c44d849f81815594b223b1dfb9f2edf0a6a51b50b862d0d8b1d",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-road01",
+          "filename": "SA-Road01.png",
+          "name": "타일 포장길 · Road01"
+        }
+      ]
+    },
+    {
+      "sha256": "3a77115da410d18348181dd4ebc653cbe39a07d5ef3ea7451359765b53dec0f2",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-stone01",
+          "filename": "SA-Stone01.png",
+          "name": "자갈 지면 · Stone01"
+        }
+      ]
+    },
+    {
+      "sha256": "3abbb3e0b48ad11228e2294fc7e28555e5098bc2882f5d0d9ac632331598d3c6",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-jp02",
+          "filename": "SC-Door-JP02.png",
+          "name": "Pixel Art World · 일본풍 외관문 B"
+        }
+      ]
+    },
+    {
+      "sha256": "3ac2ab1dbe273efe71c09e1a0a31c11a760c364249d0aab9deaaa29fd1c55905",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-asphaltbase",
+          "filename": "SA-AsphaltBase.png",
+          "name": "아스팔트 · AsphaltBase"
+        }
+      ]
+    },
+    {
+      "sha256": "3ade22091f7c5f1a04be6dd16ecb7708fe88efcfa952c0ed1972ba8eac2aca2e",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatakeb05",
+          "filename": "SA-HatakeB05.png",
+          "name": "밭·작물 · HatakeB05"
+        }
+      ]
+    },
+    {
+      "sha256": "3b16a7750e783b4ad20bf73f7830ccb3096c130af967f668e03324d45ba12948",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ivy01",
+          "filename": "SA-Ivy01.png",
+          "name": "벽 덩굴 · Ivy01"
+        }
+      ]
+    },
+    {
+      "sha256": "3ba2eaab7cbe938088c328a52dcee33b034cb3880a4f58c898994cd2eef75217",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-032",
+          "filename": "icho2.png",
+          "name": "icho2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "3c32c8cd88efabea454916981d4aac6df62244ef386f760eac892d81a058b03d",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-sunoko03",
+          "filename": "SA-Sunoko03.png",
+          "name": "나무 발판 · Sunoko03"
+        }
+      ]
+    },
+    {
+      "sha256": "3d482c3330296739272187b861c3b31075b3cb28604c645bd82d5bfa242bba5d",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floorm01",
+          "filename": "SA-FloorM01.png",
+          "name": "실내 바닥 · FloorM01"
+        }
+      ]
+    },
+    {
+      "sha256": "3da58af2eed2fa4eaf1e303788c6525f0bbe7259a13b01cf2012e2e86275c0af",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet15",
+          "filename": "SA-Carpet15.png",
+          "name": "카펫 · Carpet15"
+        }
+      ]
+    },
+    {
+      "sha256": "3dc2947162346fee2479d107ddc071c8c0c025526271d3461c5ffc2b3c5ca809",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ditch04",
+          "filename": "SA-Ditch04.png",
+          "name": "수로 · Ditch04"
+        }
+      ]
+    },
+    {
+      "sha256": "3de8974290eaa8464220337652e540b5cf414a4604306275464256450d840063",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-lamp01",
+          "filename": "SC-Lamp01.png",
+          "name": "Pixel Art World · 색별 등불"
+        }
+      ]
+    },
+    {
+      "sha256": "3f236e8bfb1c7cf5e47d58ea23388cd6866dd352abc41064adafcc7c6d8f020a",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-078",
+          "filename": "chair.png",
+          "name": "chair.png"
+        }
+      ]
+    },
+    {
+      "sha256": "418d1542bf58b37e398258332ecf04b5914b272065f981ef809fed080b878bc3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-034",
+          "filename": "ohaka.png",
+          "name": "ohaka.png"
+        }
+      ]
+    },
+    {
+      "sha256": "41f9da7c2f23f7a7c71ce511a9ad77b787b3585d4e59dd135d932bb2d97f4a65",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-020",
+          "filename": "syakanyorai2.png",
+          "name": "syakanyorai2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "42d80aa5706c9e0731847cbcccfee1fa6fdd1cb1d922dc57af83dfe2de4d3671",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grasse03",
+          "filename": "SA-GrassE03.png",
+          "name": "풀밭 · GrassE03"
+        }
+      ]
+    },
+    {
+      "sha256": "451daedeab8e739a683202d6c1c563f4a6fcd452785c591839dbbd929509998f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dway02",
+          "filename": "SA-Dway02.png",
+          "name": "출입구 배경 · Dway02"
+        }
+      ]
+    },
+    {
+      "sha256": "455f8b8a61b90c8473f5c08fe88d74646e8028f756bd24ec08b9c6cbc176ef31",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-personal-room-male",
+          "filename": "ST-Room-I01.png",
+          "name": "Pixel Art World · 개인방 · 남성 원본"
+        }
+      ]
+    },
+    {
+      "sha256": "46e86f0e79c075978356eebb941ac3605a6e0df5372444ec09e8661778328854",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet06",
+          "filename": "SA-Carpet06.png",
+          "name": "카펫 · Carpet06"
+        }
+      ]
+    },
+    {
+      "sha256": "4769c99df2461d753265d01b3a526e25ec06e88b6df351856c201bb715f94b80",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-exterior-y",
+          "filename": "ST-MsionY-E01.png",
+          "name": "Pixel Art World · 저택 외관 Y"
+        }
+      ]
+    },
+    {
+      "sha256": "47743384b19c5337b63bb57ff7fc92d5013a441edfa854dcc6e2174e868c6591",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-018",
+          "filename": "demise01.png",
+          "name": "demise01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "488bc886b47f74d32df66383c049a30c8d38151d3fefa12571010ae0c8c22418",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-wood-school-special",
+          "filename": "ST-Schl-WI02.png",
+          "name": "Pixel Art World · 목조학교 · 특별교실"
+        }
+      ]
+    },
+    {
+      "sha256": "492a038275c15f43955c03fdca7872a90699e887d46a7b5428aaf6568705a7b2",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-labo03",
+          "filename": "SC-Labo03.png",
+          "name": "Pixel Art World · 과학실 소품·전체 실험 장치"
+        }
+      ]
+    },
+    {
+      "sha256": "49a9296bd32968ef20fc39f689505b733a83422b6c189b88401c430e82c763d8",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-bento",
+          "filename": "SC-F-Obento01.png",
+          "name": "Pixel Art World · 도시락"
+        }
+      ]
+    },
+    {
+      "sha256": "49b89c7180841a78be70fe9fd2277fc4fd33952922ee1b2b1f7902b377fccc36",
+      "registrations": [
+        {
+          "group": "facility",
+          "id": "glass",
+          "filename": "gtaible.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "4af1f819a5809e258d739d88ec9bb104acc34fe570a711d1de28c87288c987ce",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-009",
+          "filename": "tubo.png",
+          "name": "tubo.png"
+        }
+      ]
+    },
+    {
+      "sha256": "4b21d73ecf19f59a125f35cef75da516607bd9b72eb5c300753ea2626fd63db9",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-party-tableware",
+          "filename": "SC-F-Party02.png",
+          "name": "Pixel Art World · 파티 식기"
+        }
+      ]
+    },
+    {
+      "sha256": "4b6cf27fc8bbca49c5b4aaeadca3dc6e5ac57a05ccecb4dee84264203fe68f50",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-owl01",
+          "filename": "SC-Owl01.png",
+          "name": "Pixel Art World · 부엉이 비행"
+        }
+      ]
+    },
+    {
+      "sha256": "4becd0ccc997e22003dc8a0f6fb8a6cc12379d14c004d9f744d9b4d0b07ad62e",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-park",
+          "filename": "ST-Park-E01.png",
+          "name": "Pixel Art World · 공원"
+        },
+        {
+          "group": "supplement",
+          "id": "park",
+          "filename": "ST-Park-E01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "4c3317c494345c7c9c381848d591cddf7a988ea3e00f6fdbc76ae6081b071037",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-065",
+          "filename": "toy.png",
+          "name": "toy.png"
+        }
+      ]
+    },
+    {
+      "sha256": "4d4b4207e34e3f928649f1f8e09600f297b96d0f53001e1ecd32c0d65d0c031d",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-schlg01",
+          "filename": "SC-Door-SchlG01.png",
+          "name": "학교 체육관 미닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "4d94f4a63f6ead17ea390203601245df12da8278feb10a6d9dac1063d952e26c",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-retrotown-rtown",
+          "filename": "ST-RTown-E01.png",
+          "name": "Pixel Art World · 레트로 동네 외관"
+        }
+      ]
+    },
+    {
+      "sha256": "4f057aba7cbd7d29bb91a501ad3bb14d5ae59a41550e4c954f8c2970f0f4538c",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-book02",
+          "filename": "SC-Book02.png",
+          "name": "Pixel Art World · 책의 색·펼침 상태"
+        }
+      ]
+    },
+    {
+      "sha256": "50114c160ecb4a8b07d83ff56c5ab33ab264a74e4822602f614cc9ae98a8a952",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-03",
+          "filename": "SC-Door03.png",
+          "name": "Pixel Art World · 실내문 03"
+        }
+      ]
+    },
+    {
+      "sha256": "5099645c9ca3362cc1a692886eb354489b45d74bd5ceb3b6353aa0bc16564f2c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-gborderc02",
+          "filename": "SA-GBorderC02.png",
+          "name": "생울타리·화단 · GBorderC02"
+        }
+      ]
+    },
+    {
+      "sha256": "526b8eaa252ecead2417d9799340805bb67044248da385407b33396d401991e4",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-gborderc03",
+          "filename": "SA-GBorderC03.png",
+          "name": "생울타리·화단 · GBorderC03"
+        }
+      ]
+    },
+    {
+      "sha256": "52c0e10cf764d8de1e8c816f56ec1a1729ea9b7353297ed8c21640af6f2fccde",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-urban-convenience",
+          "filename": "ST-Convi-E01.png",
+          "name": "Pixel Art World · 도시 상가"
+        },
+        {
+          "group": "facility",
+          "id": "street",
+          "filename": "ST-Convi-E01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "55447b90e70b0cbead6ce2fb1aa7042207237977028ed49fb2128210891feef1",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-098",
+          "filename": "moai.png",
+          "name": "moai.png"
+        }
+      ]
+    },
+    {
+      "sha256": "557d16595a939295b652be7bffc8e5bbfa0cb2df27191d9f03f90946a005b113",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-030",
+          "filename": "momiji.png",
+          "name": "momiji.png"
+        }
+      ]
+    },
+    {
+      "sha256": "55d8e553744cff68e527f755b600ce978472f62c61684e127bb1da3c578d47ee",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-roof03",
+          "filename": "SA-Roof03.png",
+          "name": "지붕 · Roof03"
+        }
+      ]
+    },
+    {
+      "sha256": "561a82aa4b9453404e4c26db2eb0d1f2cf7e40063e5a5ab330f747cd7d580f9e",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-arch01",
+          "filename": "SC-Door-Arch01.png",
+          "name": "Pixel Art World · 아치 문과 정적 출입구"
+        }
+      ]
+    },
+    {
+      "sha256": "562e807d4b946a059f484c2e385a114b00009d1d3402f6b85a70404b1124d79f",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-pictures01",
+          "filename": "SC-Pictures01.png",
+          "name": "Pixel Art World · 벽 액자 묶음"
+        }
+      ]
+    },
+    {
+      "sha256": "57ade3ffe0b60aece342e8657cd615369747f748f1bbf3072edbf0a562a7b4de",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-070",
+          "filename": "hakusei.png",
+          "name": "hakusei.png"
+        }
+      ]
+    },
+    {
+      "sha256": "58878cc2a33584a9886b5eb701c977ba64477e65460253d85b5a428754ecf704",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor-t10",
+          "filename": "SA-Floor-T10.png",
+          "name": "실내 바닥 · Floor-T10"
+        }
+      ]
+    },
+    {
+      "sha256": "58c726de2c5d2395c6dffe8439e4c097755689afed54273626e9c355c76c6f69",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-schl02",
+          "filename": "SC-Door-Schl02.png",
+          "name": "학교 실내 미닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "592522e661b57282c29707077ef05f7b9660c3e1cd8ec89fb5f51b076f600abc",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-07",
+          "filename": "SC-Door07.png",
+          "name": "Pixel Art World · 실내문 07"
+        }
+      ]
+    },
+    {
+      "sha256": "5a653fda5b077503d130fc76f6794a392284d16673b282ab26c4a9a535d697c6",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-metal02",
+          "filename": "SC-Door-Metal02.png",
+          "name": "Pixel Art World · 금속문 · 밝은 배경"
+        }
+      ]
+    },
+    {
+      "sha256": "5abfd28b72f0ea62892fccb31fd8821df705552a9c425d83c94a583b8a38aecb",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-022",
+          "filename": "hina02.png",
+          "name": "hina02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "5cbc733f595de265b827b38e80db382f5b0b3f17f162e0069ffb204a5e6bb0d1",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-sushi",
+          "filename": "susi.png",
+          "name": "Pixel Art World · 초밥"
+        }
+      ]
+    },
+    {
+      "sha256": "5d18c450d024ea02be6c6b5ce20eea8acd7405517cef5e6e181fea56c90fd8e0",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-ingredients",
+          "filename": "SC-F-Vegetable01.png",
+          "name": "Pixel Art World · 식재료·조리 소품"
+        }
+      ]
+    },
+    {
+      "sha256": "5d4a786302e66d963ba7e2f4b64ad75334abefce4dc5604fb134e128cc9c8eea",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-sunoko01",
+          "filename": "SA-Sunoko01.png",
+          "name": "나무 발판 · Sunoko01"
+        }
+      ]
+    },
+    {
+      "sha256": "5f60acf2e85499951cda8067c3ff5a67ac08277b7ee5b284110c770c73d1583b",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-104",
+          "filename": "unko.png",
+          "name": "unko.png"
+        }
+      ]
+    },
+    {
+      "sha256": "5fae6ebb6a1a758d35e896c9b4cc1c20cc5fda5f494c339005f76668dc3f074d",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-mushroom01",
+          "filename": "SC-Mushroom01.png",
+          "name": "Pixel Art World · 버섯 묶음"
+        }
+      ]
+    },
+    {
+      "sha256": "5fde882a88c0fa15237776b74e4ac03f5e0fb0014f5e3e3771377e22999cde7c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundg01",
+          "filename": "SA-GroundG01.png",
+          "name": "지면 · GroundG01"
+        }
+      ]
+    },
+    {
+      "sha256": "5fe8c05e46116d2556497ef8eee71714a03b2fb139559e6247094ea6b7c0b41a",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-candle01",
+          "filename": "SC-Candle01.png",
+          "name": "Pixel Art World · 촛대 불꽃"
+        }
+      ]
+    },
+    {
+      "sha256": "5ff8d4d922210c47962f4d861512832c5bb381c84db2480abfc548d9d1632b94",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-079",
+          "filename": "studio.png",
+          "name": "studio.png"
+        }
+      ]
+    },
+    {
+      "sha256": "6027e4fe954278e37c74ba9f9dde4e05e0743e3bc9d2bf88938005416acd8904",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-075",
+          "filename": "zakuro.png",
+          "name": "zakuro.png"
+        }
+      ]
+    },
+    {
+      "sha256": "61343c5c30906b9d45a4aeeca7584129b2a5c0784aba910d9f01e86b19122092",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-w",
+          "filename": "ST-MsionW-I01.png",
+          "name": "Pixel Art World · 저택 내부 W"
+        }
+      ]
+    },
+    {
+      "sha256": "61b87874260e4a81657dfc706f8ddc7f6fae7bc91bd4ea0ead39af77f375c939",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-chinese-a",
+          "filename": "SC-F-Cninese01.png",
+          "name": "Pixel Art World · 중화 요리 A"
+        }
+      ]
+    },
+    {
+      "sha256": "62a4ca19ebeeb1bdeabac07b17febd78534507cad722ac61ac9ee6b57e18d376",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-undulation01",
+          "filename": "SA-Undulation01.png",
+          "name": "기복 있는 지면 · Undulation01"
+        }
+      ]
+    },
+    {
+      "sha256": "62d11300e5cf373c0b836b452a3e22bd6906a1db400c9c0383804f7226f9fe1e",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-027",
+          "filename": "ume.png",
+          "name": "ume.png"
+        }
+      ]
+    },
+    {
+      "sha256": "63668c65565edb5d9e01e16d7daee5f5ca67a8c92e43f60e614ea257e9af7f51",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-u01",
+          "filename": "SC-Door-U01.png",
+          "name": "Pixel Art World · 목욕탕 미닫이문과 정적 노렌"
+        }
+      ]
+    },
+    {
+      "sha256": "63b35b9bc8da8f814c9fc872c7c3dfa7def7ac0a8b6767448561b09f790b31c7",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groad02",
+          "filename": "SA-GRoad02.png",
+          "name": "잔디 위 포장길 · GRoad02"
+        }
+      ]
+    },
+    {
+      "sha256": "64062ac74e79ab7fccb291afd4f26408142d78b510ebdefbdb24b41c650dba1d",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-gborderb02",
+          "filename": "SA-GBorderB02.png",
+          "name": "생울타리·화단 · GBorderB02"
+        }
+      ]
+    },
+    {
+      "sha256": "64d84e0abe9969f4db1e78fd4f5f1150ad9e1a0660352186ff01b33f73a355c6",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-kotatsu02",
+          "filename": "SA-Kotatsu02.png",
+          "name": "코타츠 상판·덮개 · Kotatsu02"
+        }
+      ]
+    },
+    {
+      "sha256": "66339559aa492af2d0cc973c7fce0e99ff73ab031a95abcb864c3a71bc9c3a3b",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-roof04",
+          "filename": "SA-Roof04.png",
+          "name": "지붕 · Roof04"
+        }
+      ]
+    },
+    {
+      "sha256": "66d7edb104a07bdc6df62a5e46872e267b06dd3ba79998604d5131882782c793",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-set-schl02",
+          "filename": "SC-Set-Schl02.png",
+          "name": "Pixel Art World · 학교 골대·수도대·타이어·심판대"
+        }
+      ]
+    },
+    {
+      "sha256": "6725e647d6007ab7bca5f4a9f2f784c7433bac672fdd01e649bf6cb544773d77",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-conveni-interior",
+          "filename": "ST-Convi-I01.png",
+          "name": "Pixel Art World · 편의점 내장"
+        }
+      ]
+    },
+    {
+      "sha256": "674b151ae4ac913ec4c8eac1d81f7b8ec78777bac20014c44a14645048264058",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-049",
+          "filename": "koji1.png",
+          "name": "koji1.png"
+        }
+      ]
+    },
+    {
+      "sha256": "682d7a80bb67179422af40e063c4d4acf474e3f7e81e78c9512f5d1c93a8016a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-wall-d01",
+          "filename": "SA-WallD01.png",
+          "name": "가는 목재 천장·벽 경계"
+        }
+      ]
+    },
+    {
+      "sha256": "688750ee90ab161c33127e53165cb507277b2ad95fcccb00ae5b490dda27e8b4",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-019",
+          "filename": "syakanyorai.png",
+          "name": "syakanyorai.png"
+        }
+      ]
+    },
+    {
+      "sha256": "6af034e253606274be5690527dd0cf1b5fde1eed3b588e8540f60d989afe0ab2",
+      "registrations": [
+        {
+          "group": "facility",
+          "id": "signs",
+          "filename": "SPT-Gym01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "6b194460c767ab0d97d5987623ece3fed9fe41ea0dee249e0ad0e2406def83a6",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet03",
+          "filename": "SA-Carpet03.png",
+          "name": "카펫 · Carpet03"
+        }
+      ]
+    },
+    {
+      "sha256": "6c5488583371c4efbbb47c53f2f40402780b834ebee80385eeae7e3340b0f18a",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-izakaya",
+          "filename": "ST-Izakaya-I01.png",
+          "name": "Pixel Art World · 이자카야·일식당"
+        }
+      ]
+    },
+    {
+      "sha256": "6dcd530bc114b4208cbf8e5e34bbff83d24991d21a17dfe44d11cd8e044d0d54",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-party-meals",
+          "filename": "SC-F-Party01.png",
+          "name": "Pixel Art World · 파티 요리"
+        }
+      ]
+    },
+    {
+      "sha256": "6e5825e6e7c92efdc97cd40dd408d0d0597948d952fb3d78fb55b99966610fbd",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-072",
+          "filename": "present2.png",
+          "name": "present2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "6e595a60892230211157ff7c6765bd9683cf0d800fe83dfcf7339cfcf20d633f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet14",
+          "filename": "SA-Carpet14.png",
+          "name": "카펫 · Carpet14"
+        }
+      ]
+    },
+    {
+      "sha256": "70672a4e173856dce360986370b55970933bdb4ce449198e98af5a09b3efd342",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-fastfood-interior",
+          "filename": "ST-Fdshop-I01.png",
+          "name": "Pixel Art World · 패스트푸드 내장"
+        }
+      ]
+    },
+    {
+      "sha256": "707722057efcc37367c73a98cc1e78d51fb704afc9a743d03f65f56118afc97a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grassc01",
+          "filename": "SA-GrassC01.png",
+          "name": "풀밭 · GrassC01"
+        }
+      ]
+    },
+    {
+      "sha256": "71649fa46885b07a21c03fb2f08bdd011652ab9185275c90e48f22a8c523b406",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor02",
+          "filename": "SA-Floor02.png",
+          "name": "실내 바닥 · Floor02"
+        }
+      ]
+    },
+    {
+      "sha256": "719bff1b200eb557a49bcfa4c96d36728b42ece5c3643b90c8e8ec8b5e13e1db",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-moss02",
+          "filename": "SA-Moss02.png",
+          "name": "이끼 지면 · Moss02"
+        }
+      ]
+    },
+    {
+      "sha256": "7208849fe37bda131fba7643e87c2d406dc1b29f867526a3b77dd823fb26173a",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-084",
+          "filename": "suiren.png",
+          "name": "suiren.png"
+        }
+      ]
+    },
+    {
+      "sha256": "724436d3ff7684e8a6f448a51d04ff030c987da00ffb78a1424cffd64b2360d1",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-101",
+          "filename": "Eu-Cage02.png",
+          "name": "Eu-Cage02.png"
+        },
+        {
+          "group": "supplement",
+          "id": "cage-blue",
+          "filename": "Eu-Cage02.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "72a8061f2bb755a5a40a3df98121500507870b6b75afc2ff09e0e1048b0da05c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet16",
+          "filename": "SA-Carpet16.png",
+          "name": "카펫 · Carpet16"
+        }
+      ]
+    },
+    {
+      "sha256": "733c83ec3c6df090ee678105b070d8f3c8ac8625abbffc8dccdfef5c94c0f610",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floort04",
+          "filename": "SA-FloorT04.png",
+          "name": "실내 바닥 · FloorT04"
+        }
+      ]
+    },
+    {
+      "sha256": "740f4bf70b52cd78d0214e2a1683c253fae3ab466a1a20faed9dd69cecbd5083",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-undulation02",
+          "filename": "SA-Undulation02.png",
+          "name": "기복 있는 지면 · Undulation02"
+        }
+      ]
+    },
+    {
+      "sha256": "74bdd024677f3cc9ec8bf4cd9d13f9011f543e6118ea934303a6f72f2d5a6144",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-cupboard01",
+          "filename": "SC-Cupboard01.png",
+          "name": "Pixel Art World · 찬장·책장 개방"
+        }
+      ]
+    },
+    {
+      "sha256": "7511aad9aec3f6853cef038400377de6ef8a7a15db3eccd290b7e02644fab419",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-015",
+          "filename": "demise02.png",
+          "name": "demise02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "75143c8774d6bf9ede0850784c8878116f70ca08db2f8151b9a889095793c77a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-road02",
+          "filename": "SA-Road02.png",
+          "name": "타일 포장길 · Road02"
+        }
+      ]
+    },
+    {
+      "sha256": "7732b153bd79758151858409e92b74e49176047e41d5a09f100283dc1e42d861",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-wall-a01",
+          "filename": "SA-WallA01.png",
+          "name": "회색 천장·벽 경계"
+        }
+      ]
+    },
+    {
+      "sha256": "775c8940689f331c9da9bcc6168c2396d593c934068c87b7740a9c2e85ff4ab2",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-christmastree01",
+          "filename": "SC-ChristmasTree01.png",
+          "name": "Pixel Art World · 트리 점멸·장식 단계"
+        }
+      ]
+    },
+    {
+      "sha256": "77910ff16d3f72ad5b39924b7a7e98076f758e13ab2878c7730442ce248b88fa",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet04",
+          "filename": "SA-Carpet04.png",
+          "name": "카펫 · Carpet04"
+        }
+      ]
+    },
+    {
+      "sha256": "7840db31e83bde5e12c26a67392a2de4b061a24f9cd455a14422e6703593f61f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-stfence03",
+          "filename": "SA-StFence03.png",
+          "name": "돌 경계 · StFence03"
+        }
+      ]
+    },
+    {
+      "sha256": "7850f1bc6d82ac8a9947df171e733ddde6614599bd9c6d950e4774deef3b1e1e",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-sewer",
+          "filename": "ST-Sewer-01.png",
+          "name": "Pixel Art World · 하수도"
+        }
+      ]
+    },
+    {
+      "sha256": "7a0710a2b93af6189a1b8e0b75c126c6baa1452bb25a8547c4374ead5d7b35dc",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet11",
+          "filename": "SA-Carpet11.png",
+          "name": "카펫 · Carpet11"
+        }
+      ]
+    },
+    {
+      "sha256": "7a24cf7a6398ad1f6ccd6f57790d4487a684397c0ad969f0cabe83efd3f2f0bb",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-gbordera02",
+          "filename": "SA-GBorderA02.png",
+          "name": "생울타리·화단 · GBorderA02"
+        }
+      ]
+    },
+    {
+      "sha256": "7a5e91a10c19ec70e250baa962960785cf4dc22b64780d157659c3420ef3e6a0",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dwayc02",
+          "filename": "SA-DwayC02.png",
+          "name": "출입구 배경 · DwayC02"
+        }
+      ]
+    },
+    {
+      "sha256": "7c99d41b353e93af972a331fe2a2a758fdf8d006c6ef7a88b16679ff7874abeb",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dwayb02",
+          "filename": "SA-DwayB02.png",
+          "name": "출입구 배경 · DwayB02"
+        }
+      ]
+    },
+    {
+      "sha256": "7cbcb9991ffa4c3e576e5b149afe76c20b197b1766fc59ab19cf09ac882c1225",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatake04",
+          "filename": "SA-Hatake04.png",
+          "name": "밭·작물 · Hatake04"
+        }
+      ]
+    },
+    {
+      "sha256": "7d1fd02be11acef8a3e5180549372ce7607146f2e48b5ef4e7dfae953158ffc3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-014",
+          "filename": "kingyocho.png",
+          "name": "kingyocho.png"
+        }
+      ]
+    },
+    {
+      "sha256": "7d2b13c60e6568f82a6792076233dfb0b50130cef6a8794e0814a66907361e78",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-053",
+          "filename": "antiqueitem.png",
+          "name": "antiqueitem.png"
+        }
+      ]
+    },
+    {
+      "sha256": "7e45bf8a331251fce53effc385a85d4580ddfcc076a147790979a25cd82c4f95",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grasse05",
+          "filename": "SA-GrassE05.png",
+          "name": "풀밭 · GrassE05"
+        }
+      ]
+    },
+    {
+      "sha256": "7e6f65bf0915497bb21879f3c82f82d33820949013925396494e11a68346a62c",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-tolt01",
+          "filename": "SC-Door-Tolt01.png",
+          "name": "화장실 정면 여닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "7e6fd46a5d610d30a5bbebbc6629edfc52ddc3561707c5249b06931eaf6d75b3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-039",
+          "filename": "hayabusa1300.png",
+          "name": "hayabusa1300.png"
+        }
+      ]
+    },
+    {
+      "sha256": "7fbcf4ed82d6f294685c2a2e234287f042b22ecd3a28c42d1a9e8a072f673bd6",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-089",
+          "filename": "Vermeer.png",
+          "name": "Vermeer.png"
+        }
+      ]
+    },
+    {
+      "sha256": "800110f7768bfea83614cb7431f9048af0204b84db30d0e2482345a3fdbc85e0",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-office",
+          "filename": "ST-Office-I01.png",
+          "name": "Pixel Art World · 사무실"
+        }
+      ]
+    },
+    {
+      "sha256": "80110c41f17f349bd762dc5c5e9a3bf55f5eb60e7ee8daa11947c95999cf5d74",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dwaya01",
+          "filename": "SA-DwayA01.png",
+          "name": "출입구 배경 · DwayA01"
+        }
+      ]
+    },
+    {
+      "sha256": "803045ed38d73b5b139b4527518a49658b1ac8dc601d5d7da7ab6a30df3f7b6f",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-062",
+          "filename": "sofa-skull.png",
+          "name": "sofa-skull.png"
+        }
+      ]
+    },
+    {
+      "sha256": "80be1acffc41d466952e35bbadc05ca7d47747f8b5e0dafe5e772f1f007a1225",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-097",
+          "filename": "skull02.png",
+          "name": "skull02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "81af06191bca3ca95591779ee86a1e78774ecc240f424de89b6620075356b1e4",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-ev01",
+          "filename": "SC-Door-Ev01.png",
+          "name": "Pixel Art World · 엘리베이터 외부문"
+        }
+      ]
+    },
+    {
+      "sha256": "82aafb6427b178ad242dcd6415300b74361f314b55d303ccf695fbda58f7248e",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatake05",
+          "filename": "SA-Hatake05.png",
+          "name": "밭·작물 · Hatake05"
+        }
+      ]
+    },
+    {
+      "sha256": "8338e8ebef716a86c687cb0f24683398efe2dadb9303f9c97772509e3ea8de9c",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-b",
+          "filename": "ST-MsionB-I01.png",
+          "name": "Pixel Art World · 저택 내부 B"
+        }
+      ]
+    },
+    {
+      "sha256": "84add732f5b65af0f761973888030ce903c950841dfb9ec4a11123b212d67ea4",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-013",
+          "filename": "botan.png",
+          "name": "botan.png"
+        }
+      ]
+    },
+    {
+      "sha256": "84e94cc83779be04a39334120394482fbaa0880b7556d03ce0a585c9c75bc24d",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-autobw",
+          "filename": "SC-Door-AutoBW.png",
+          "name": "Pixel Art World · 자동문 AutoBW"
+        }
+      ]
+    },
+    {
+      "sha256": "84ec27c40518f09554ff646b7fcd80afe5dbb352ad828465bfad7924349d1e14",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-010",
+          "filename": "kodomonohi.png",
+          "name": "kodomonohi.png"
+        }
+      ]
+    },
+    {
+      "sha256": "8667246423284808bf5047c2bd0b1f4750a5d555da0ce09b243c24f4e399751b",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-washitu",
+          "filename": "ST-Washitu-I01.png",
+          "name": "Pixel Art World · 일본식 방"
+        }
+      ]
+    },
+    {
+      "sha256": "8776ae6f6f19f1305c3d1b52c01a3f9d72374e62ab2aa18caf7d1b546ad42eb2",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-091",
+          "filename": "Pantocrator.png",
+          "name": "Pantocrator.png"
+        }
+      ]
+    },
+    {
+      "sha256": "88ad1306bda1570221c7f625f84fcecbd96d49f8e1e4aa98900f7004a98228cd",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-056",
+          "filename": "BlackMagic01.png",
+          "name": "BlackMagic01.png"
+        },
+        {
+          "group": "supplement",
+          "id": "altar",
+          "filename": "BlackMagic01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "88ea5da312fecf15098a3a0239b278d23f365ce978d4bbee727584ca24775b81",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-school-gym",
+          "filename": "ST-Schl-Gym.png",
+          "name": "Pixel Art World · 체육관"
+        },
+        {
+          "group": "facility",
+          "id": "room",
+          "filename": "ST-Schl-Gym.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "895d779b884e18e08f6bb8d864e44fed47087703e1ca3e7965ace045c9c91419",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-pri01",
+          "filename": "SC-Door-Pri01.png",
+          "name": "Pixel Art World · 철창 미닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "896eeeb75445f8776d27e5fb55a1153046990f22a9b806a0f29d9c2b11c59bf3",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-owl03",
+          "filename": "SC-Owl03.png",
+          "name": "Pixel Art World · 부엉이 걷기"
+        }
+      ]
+    },
+    {
+      "sha256": "8b6805ba829328e5087ec91bb4ff29db6cea189bf2ff2e1cfb627045bfca54d5",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-037",
+          "filename": "road.png",
+          "name": "road.png"
+        }
+      ]
+    },
+    {
+      "sha256": "8b6daad6a51892ee50c3dd3eb595ced93e4428954483380f08481b6dc80ec0a2",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-gbordera01",
+          "filename": "SA-GBorderA01.png",
+          "name": "생울타리·화단 · GBorderA01"
+        }
+      ]
+    },
+    {
+      "sha256": "8b6dba57aeb402642e475aee6e7cb01fb81afc35148fd3fa6a412aca5c04db73",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-063",
+          "filename": "doll.png",
+          "name": "doll.png"
+        }
+      ]
+    },
+    {
+      "sha256": "8b8e3432eaa24590d81f901743764c37ac7f853bd100dbbe9489e46e1946de2c",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-autoam",
+          "filename": "SC-Door-AutoAM.png",
+          "name": "Pixel Art World · 자동문 AutoAM"
+        }
+      ]
+    },
+    {
+      "sha256": "8e0c15ed66eb6c9470e680597d5af55080b1aa8bdcc74f7e78feaf173f3861c8",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-061",
+          "filename": "Organs.png",
+          "name": "Organs.png"
+        }
+      ]
+    },
+    {
+      "sha256": "8e44b4e33ac7a0ee281811e4bca6d6ca22b6ba293ff9d00a7efaacdeec819445",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-077",
+          "filename": "gpiano.png",
+          "name": "gpiano.png"
+        }
+      ]
+    },
+    {
+      "sha256": "8f660982a7a483012ef76ff534dc9801243b294fe6d3adeac1f835d175c8c6b2",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-103",
+          "filename": "UFO-Light01.png",
+          "name": "UFO-Light01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "901715aea426d541e8ec0312eed44848de2f0349fd3c1cf6b37204b2b77a94ee",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-096",
+          "filename": "Skull.png",
+          "name": "Skull.png"
+        }
+      ]
+    },
+    {
+      "sha256": "90e27184f03e9260d0983e238be056cfa02df84d1a10b2f40b33931c81fb80a8",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-nobori02",
+          "filename": "SC-Nobori02.png",
+          "name": "Pixel Art World · 음식점 세로 깃발 B"
+        }
+      ]
+    },
+    {
+      "sha256": "9165bc9e9db4c24369ce511cd5d93fe1ba2f7a32cfaa491f9d933ad9b52183e3",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-library",
+          "filename": "ST-Libry-I01.png",
+          "name": "Pixel Art World · 도서관"
+        }
+      ]
+    },
+    {
+      "sha256": "92fcb0c62bc86db1aa60e875988f815df0c31d984bbc6ec37feb0ef02bebc767",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-050",
+          "filename": "sofa03.png",
+          "name": "sofa03.png"
+        }
+      ]
+    },
+    {
+      "sha256": "930dde09c52ecb74e2d3b32dd966b4e65721b75a7461bb7bc85323eb8bf0f999",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-083",
+          "filename": "wmap.png",
+          "name": "wmap.png"
+        }
+      ]
+    },
+    {
+      "sha256": "95b5242ff6c308d939615ce32de62062239ea5b7cd71669cc607ddc3c6904523",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-057",
+          "filename": "Chandelier.png",
+          "name": "Chandelier.png"
+        }
+      ]
+    },
+    {
+      "sha256": "96e87341f368f714ae6f425e707bebec851a09a7bd409ab76736a8705fcb3efc",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ditch03",
+          "filename": "SA-Ditch03.png",
+          "name": "수로 · Ditch03"
+        }
+      ]
+    },
+    {
+      "sha256": "981d3a258bdc83945743859118f1722f1c343e41e2d4b5a545ce1339d768cf00",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-066",
+          "filename": "bear.png",
+          "name": "bear.png"
+        }
+      ]
+    },
+    {
+      "sha256": "986d82d0d051b32246a39a29283b8e169a29e8c21dd74de24f8a5acce5be678c",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-095",
+          "filename": "sword.png",
+          "name": "sword.png"
+        }
+      ]
+    },
+    {
+      "sha256": "98708279b4c4d3901684cb02a1ed9dbac42c0d62f286f028ecf5b86f54b35fe3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-082",
+          "filename": "kasatate.png",
+          "name": "kasatate.png"
+        }
+      ]
+    },
+    {
+      "sha256": "99c3bcc6ccd4ead736b635c98c82a16ba6e24421550b0d431cff4144a8e53578",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatake06",
+          "filename": "SA-Hatake06.png",
+          "name": "밭·작물 · Hatake06"
+        }
+      ]
+    },
+    {
+      "sha256": "9a3979e957a8094644046b32267077364a476511efbfa5807a39156fa5c10c48",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-home",
+          "filename": "ST-Town-I01.png",
+          "name": "Pixel Art World · 현대 주택"
+        },
+        {
+          "group": "facility",
+          "id": "room",
+          "filename": "ST-Town-I01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "9a90f9441bb798e87e29ae798988f5f88b6b9959c377ba1c4b7be1242a67cdc0",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-099",
+          "filename": "skull01.png",
+          "name": "skull01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "9b12d0270dbd431b76c565e95f33ee7f51f9606415edfe3ecfcef92eb1c3b099",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatakeb01",
+          "filename": "SA-HatakeB01.png",
+          "name": "밭·작물 · HatakeB01"
+        }
+      ]
+    },
+    {
+      "sha256": "9b53357c0d0b7a34073952ad188b777a07aa73451ee4c5dfb4496ce51757a504",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-walllion01",
+          "filename": "SC-WallLion01.png",
+          "name": "Pixel Art World · 금색 사자 분수"
+        }
+      ]
+    },
+    {
+      "sha256": "9c552d5f0025de544cdc6b73dfdf8bbbd2d33810beb62a3d94106aad614adde9",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-santa02",
+          "filename": "SC-Santa02.png",
+          "name": "Pixel Art World · 짐을 든 산타 걷기"
+        }
+      ]
+    },
+    {
+      "sha256": "9e057ad8ef9b7b9df6f7a7a65849b9437f15bec849f785cae905cbe827ddbceb",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-schlw02",
+          "filename": "SC-Door-SchlW02.png",
+          "name": "목조 학교 미닫이문 B"
+        }
+      ]
+    },
+    {
+      "sha256": "9e09d0606a3c35db53d6e9b68a68edd64a8372587fe71635e4771e6deb7479e1",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-autobm",
+          "filename": "SC-Door-AutoBM.png",
+          "name": "Pixel Art World · 자동문 AutoBM"
+        }
+      ]
+    },
+    {
+      "sha256": "9e23be719d6d465d8fd59073a7f39a858c3b97fda672da4a28080ea3a24902dd",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-nobori01",
+          "filename": "SC-Nobori01.png",
+          "name": "Pixel Art World · 음식점 세로 깃발 A"
+        }
+      ]
+    },
+    {
+      "sha256": "9e67d39c82443776075c500de63dbd387d56048bd8b73e9480761423315bec79",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-02",
+          "filename": "SC-Door02.png",
+          "name": "Pixel Art World · 실내문 02"
+        }
+      ]
+    },
+    {
+      "sha256": "9ecbc2432d31a804be46bf0580f9d37807ca5560cc9a9994b858d2463eb42d4b",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet07",
+          "filename": "SA-Carpet07.png",
+          "name": "카펫 · Carpet07"
+        }
+      ]
+    },
+    {
+      "sha256": "9ee0dbb6c712bd5f6189e33c1dc56e4b3542946286679b5500e1c1bac07a9f11",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet10",
+          "filename": "SA-Carpet10.png",
+          "name": "카펫 · Carpet10"
+        }
+      ]
+    },
+    {
+      "sha256": "9f0a7680f91b65936b7432ac4640eaa9a4b60547464c3f91d98a609870b6e143",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-water01",
+          "filename": "SC-Water01.png",
+          "name": "Pixel Art World · 길이 조절 작은 배수 물줄기"
+        }
+      ]
+    },
+    {
+      "sha256": "9f0dd0fae6383d793491b676b84914b4e27908faed3ea0e775a1c7ccb792dd88",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet08st",
+          "filename": "SA-Carpet08ST.png",
+          "name": "붉은색 계단형 세로 러너 · Carpet08ST"
+        }
+      ]
+    },
+    {
+      "sha256": "9f2cadd502a10b79d30a2b42665f778c3c85d5e02f9633d46b1bb6348169777f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-kyodan01",
+          "filename": "SA-Kyodan01.png",
+          "name": "교단 · Kyodan01"
+        }
+      ]
+    },
+    {
+      "sha256": "a01254677bba8892816005a5fafe2d8edccfd4bbbf9fe6c0345aa60a8865caba",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-08",
+          "filename": "SC-Door08.png",
+          "name": "Pixel Art World · 실내문 08"
+        }
+      ]
+    },
+    {
+      "sha256": "a0262d2f0943d37e1046b19cd3a5f86d485a896871ed6cb45348e58051f562ae",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-turtle01",
+          "filename": "SC-Turtle01.png",
+          "name": "Pixel Art World · 거북 걷기"
+        }
+      ]
+    },
+    {
+      "sha256": "a02694aff74179620a733ec09d6f3f70dda6bfad353a59ecdb52e29358669551",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-labo01",
+          "filename": "SC-Labo01.png",
+          "name": "Pixel Art World · 과학실 표본병·모형"
+        }
+      ]
+    },
+    {
+      "sha256": "a072e8ec0bbf0d5df83d16e526154df493c4975bdf3e2d1028cbbaac56fd2d90",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-sroad02",
+          "filename": "SA-SRoad02.png",
+          "name": "모래 위 포장길 · SRoad02"
+        }
+      ]
+    },
+    {
+      "sha256": "a09d78e5cb1997f2e8edd711732793868dee0228a9c51fc6ae932ce379c5699a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grassc02",
+          "filename": "SA-GrassC02.png",
+          "name": "풀밭 · GrassC02"
+        }
+      ]
+    },
+    {
+      "sha256": "a15198fb0c6eba82c9bb0e38b1a36b8bb0eb53b1a07fc6324205d30564a1f527",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-nobori03",
+          "filename": "SC-Nobori03.png",
+          "name": "Pixel Art World · 무늬 세로 깃발"
+        }
+      ]
+    },
+    {
+      "sha256": "a203f079c921096fcd32f11362bbd2e3655a4c5593c6c29fe473875d31017736",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundg03",
+          "filename": "SA-GroundG03.png",
+          "name": "지면 · GroundG03"
+        }
+      ]
+    },
+    {
+      "sha256": "a322f549ff6b35b11532a1da51a13a51dd79ebd110a3f6af116e00e7e6893683",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-mat01",
+          "filename": "SA-Mat01.png",
+          "name": "매트 · Mat01"
+        }
+      ]
+    },
+    {
+      "sha256": "a3e4a6aa41900fa7d95ffaa96c9a7fbad1168db217f22de8e59989a945313eeb",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-038",
+          "filename": "patcar.png",
+          "name": "patcar.png"
+        }
+      ]
+    },
+    {
+      "sha256": "a46f40cf4b95631903da122862e75483e0b178597f5531f9a874c7ed4bfe0820",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundg05",
+          "filename": "SA-GroundG05.png",
+          "name": "지면 · GroundG05"
+        }
+      ]
+    },
+    {
+      "sha256": "a5deca7b104a16b86e8a27ea80f890497fba84fc99c04b22f0b744c19a5813be",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-public-restroom",
+          "filename": "ST-Toilet-I01.png",
+          "name": "Pixel Art World · 공용 화장실"
+        }
+      ]
+    },
+    {
+      "sha256": "a5f2ec7743d4f6b297d2160237d3bec311ca8ab7e3b8fb3fe3258b67efe55ee5",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grasse04",
+          "filename": "SA-GrassE04.png",
+          "name": "풀밭 · GrassE04"
+        }
+      ]
+    },
+    {
+      "sha256": "a7fc2cea08a853b15974f4d713a551b082a1da68d612996ca3b0b8ed9aaad76e",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-071",
+          "filename": "christmasdeco.png",
+          "name": "christmasdeco.png"
+        }
+      ]
+    },
+    {
+      "sha256": "a8175407465299828875f83c19fbbf8e871d89ba0bf16343828fc68f84440647",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-048",
+          "filename": "syomeisyasinki.png",
+          "name": "syomeisyasinki.png"
+        }
+      ]
+    },
+    {
+      "sha256": "a82593f305af4689b6b152632dfe23d771883699b473801aa4a1e91f919c9ab8",
+      "registrations": [
+        {
+          "group": "facility",
+          "id": "windows",
+          "filename": "SPT-WSchool01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "a93351419561ddec5599a47826156d14c998e7de07d874c57b0eb948dff70552",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-lama01",
+          "filename": "SC-Lama01.png",
+          "name": "Pixel Art World · 라마 걷기"
+        }
+      ]
+    },
+    {
+      "sha256": "a9b9ce37b9280984c5e3426157aeb716d693c089cd1999313d80dde56489d5a0",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatakeb03",
+          "filename": "SA-HatakeB03.png",
+          "name": "밭·작물 · HatakeB03"
+        }
+      ]
+    },
+    {
+      "sha256": "a9dccd8b4046f3fe4f0898b854c49c1b5d5ebf3cf6d473ed2a2aa8e77fcba6b3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-024",
+          "filename": "torii01.png",
+          "name": "torii01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "aa99533a4c4cc944ab8863a84b17f3a44ad718e83e3cf275ba4bea8632971d80",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-i01",
+          "filename": "SC-DoorI01.png",
+          "name": "Pixel Art World · 개인방 목재문"
+        }
+      ]
+    },
+    {
+      "sha256": "aafbf9b4292d7c5d34587e4e25dfc4c5cd9818d01a6ce3b05b1c3571735f16da",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-school-special",
+          "filename": "ST-Schl-I02.png",
+          "name": "Pixel Art World · 학교 특별교실"
+        }
+      ]
+    },
+    {
+      "sha256": "ab118c29b8f17bd0268b08bf9f466a4aaf7393c36cbdc1632889d8b1525e20e6",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-bd02",
+          "filename": "SC-Bd02.png",
+          "name": "Pixel Art World · 가로 상점 간판"
+        }
+      ]
+    },
+    {
+      "sha256": "ab203ceeaf8beed0ea9bf4741e4f52e09f33086dcabb1e1e05b524ae6739e1d1",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-y",
+          "filename": "ST-MsionY-I01.png",
+          "name": "Pixel Art World · 저택 내부 Y"
+        }
+      ]
+    },
+    {
+      "sha256": "ad12ed690dbdf8f8228c8dd62514463a71f091c4bab4d761abd244d5db4b4f99",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-asphalt01",
+          "filename": "SA-Asphalt01.png",
+          "name": "아스팔트 · Asphalt01"
+        }
+      ]
+    },
+    {
+      "sha256": "aeda7393c7487ad44f56349d57005c5b58419c5ac0864b566b2497850339a870",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-roof02",
+          "filename": "SA-Roof02.png",
+          "name": "지붕 · Roof02"
+        }
+      ]
+    },
+    {
+      "sha256": "af0108cc4a48bb9c073a9d68d2d2dbef4049b7fb5c6ae7f975106fb62fc11c5f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-stfence02",
+          "filename": "SA-StFence02.png",
+          "name": "돌 경계 · StFence02"
+        }
+      ]
+    },
+    {
+      "sha256": "af43ea0c42b69c092bb0eaaf55b7f56421fc4db23522e4921436042c21385267",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-entce01",
+          "filename": "SC-Door-Entce01.png",
+          "name": "Pixel Art World · 유리 출입문"
+        }
+      ]
+    },
+    {
+      "sha256": "afcf1e5928e3385258c73fa3583862b7bf2069f57a2afa4e8a204f85d0e02180",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-033",
+          "filename": "vege.png",
+          "name": "vege.png"
+        }
+      ]
+    },
+    {
+      "sha256": "b0abffadbf98f632170e7ae05403840c08c0bd03b383e410176c72af97b462f4",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-walllion02",
+          "filename": "SC-WallLion02.png",
+          "name": "Pixel Art World · 회색 사자 분수"
+        }
+      ]
+    },
+    {
+      "sha256": "b338db73ebe56a539046c842b094c8588c25960f161d6197e571b3415f77753d",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-035",
+          "filename": "takezaku.png",
+          "name": "takezaku.png"
+        }
+      ]
+    },
+    {
+      "sha256": "b414d79c27779cfa4903f87595cb6406f874deef2c8f324cd0cc99c4f9b630c1",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-school-interior",
+          "filename": "ST-Schl-I01.png",
+          "name": "Pixel Art World · 학교 내장"
+        }
+      ]
+    },
+    {
+      "sha256": "b52a639ecc8278243d594c2ab9d0341f7687e4b3b8ade8816ce0bf19f82b81cb",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-asphalt02",
+          "filename": "SA-Asphalt02.png",
+          "name": "아스팔트 · Asphalt02"
+        }
+      ]
+    },
+    {
+      "sha256": "b62b65ca038e857ac0c92eef75ca0ea1f11a4d553c4a9c78d49b53af7e1fa435",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-tolt02",
+          "filename": "SC-Door-Tolt02.png",
+          "name": "화장실 측면 여닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "b7214c7cc2d5477e70417ab6429ea5d5f7fdd564a0120deb2ce84ce472092480",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-080",
+          "filename": "whiteboard.png",
+          "name": "whiteboard.png"
+        }
+      ]
+    },
+    {
+      "sha256": "b8991a5b9efbf4bd806cd2bf282d6bd0452496dfecea722f103b964233ab21c3",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet01",
+          "filename": "SA-Carpet01.png",
+          "name": "카펫 · Carpet01"
+        }
+      ]
+    },
+    {
+      "sha256": "b94a5703252be70960bf3bbd6626a9a96d57f7c8c8efc2c2db9d00d13cd206f5",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-personal-room-female",
+          "filename": "ST-Room-I02.png",
+          "name": "Pixel Art World · 개인방 · 여성 원본"
+        }
+      ]
+    },
+    {
+      "sha256": "b9525d8951f5eaae44ab0b745a666b11fa583d658503edce13591292325363c5",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-016",
+          "filename": "tigermat2.png",
+          "name": "tigermat2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "ba07b2a2fac566683624efd8aaf598a6d90937ef18a7343b067964f91afeb513",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-002",
+          "filename": "nastu1.png",
+          "name": "nastu1.png"
+        }
+      ]
+    },
+    {
+      "sha256": "ba8f5dbdd80c346fbb6ae2bc3250331e8f99e2c6950e4d648f86e2a56c077269",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-064",
+          "filename": "present.png",
+          "name": "present.png"
+        }
+      ]
+    },
+    {
+      "sha256": "bad6589aa0a5b577e87e5e1e335b33210bb50f9586978a016d162cb2a5eceb8f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-flower01",
+          "filename": "SA-Flower01.png",
+          "name": "꽃밭 · Flower01"
+        }
+      ]
+    },
+    {
+      "sha256": "bad9cfdfe6f5c8344c54d3f89b08bc1aecfcb0cda858d5fc055faf748e8efed0",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-040",
+          "filename": "bicycle01.png",
+          "name": "bicycle01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "bafe03e12b7a9efae447f749b8bfd3c7e1c99b12a1d997caebcc83f268c2e047",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dwayd01",
+          "filename": "SA-DwayD01.png",
+          "name": "출입구 배경 · DwayD01"
+        }
+      ]
+    },
+    {
+      "sha256": "bb81f6714f49bb0dd5c0b7e1078f598579bf6d66ddbf2de27d4fde3b45e7fe4e",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-087",
+          "filename": "Olympia.png",
+          "name": "Olympia.png"
+        }
+      ]
+    },
+    {
+      "sha256": "bc1909fd8520333ea69a54113d41597233e73fbf081def507edac87bf5eb886a",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-japanese-public-bath",
+          "filename": "ST-Sento-I02.png",
+          "name": "Pixel Art World · 일본식 대중목욕탕"
+        }
+      ]
+    },
+    {
+      "sha256": "bc7093707fe1b85ad1755b236531fe26b46f83f21cae463773f2668481ecfdc4",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-kadan01",
+          "filename": "SA-Kadan01.png",
+          "name": "벽돌 화단 · Kadan01"
+        }
+      ]
+    },
+    {
+      "sha256": "bcd64a752852a06a7b4f55cccd61c017ec9ac10748bae0e87a6c1b3c1dffdd57",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-pointer01",
+          "filename": "SC-Pointer01.png",
+          "name": "Pixel Art World · 반투명 화살표"
+        }
+      ]
+    },
+    {
+      "sha256": "bd3000061513232411d8e6dc4b46b80ee21d9bd5f407315df40af5002ecc211f",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-cl01",
+          "filename": "SC-Door-Cl01.png",
+          "name": "Pixel Art World · 목재 미닫이문"
+        }
+      ]
+    },
+    {
+      "sha256": "be0a2aafb566253c4b63af44421850f1ecd5b3553bf19bf6cc450d389d711e95",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-goza03",
+          "filename": "SA-Goza03.png",
+          "name": "돗자리 · Goza03"
+        }
+      ]
+    },
+    {
+      "sha256": "be699708498f9d9b2a309a90496d689093c5623fadffaf2315786123c0807106",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-052",
+          "filename": "table.png",
+          "name": "table.png"
+        }
+      ]
+    },
+    {
+      "sha256": "bfdd46ba076a119f84cb7c98940a0fc6488d133b07c21f0bf0676915fa421ee0",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-retrotown-sento",
+          "filename": "ST-Sento-E01.png",
+          "name": "Pixel Art World · 목욕탕 외관"
+        }
+      ]
+    },
+    {
+      "sha256": "c20ce184558f4821385ec7cad879c11ced3e9fae8e584addc47ec60a716d166d",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-000",
+          "filename": "byobu.png",
+          "name": "byobu.png"
+        }
+      ]
+    },
+    {
+      "sha256": "c2aeec69b913c5c324ada3ff85f48e4e155ded25a2a9f1612ef9a650f0b3dea3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-026",
+          "filename": "tree01.png",
+          "name": "tree01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "c477c757d2185c9eb685f06614a8a8475f3cb9df74fc1114663cecfa0f4c508b",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet12",
+          "filename": "SA-Carpet12.png",
+          "name": "카펫 · Carpet12"
+        }
+      ]
+    },
+    {
+      "sha256": "c507eceaa881c003f86d0f73c3d71967539900d312ecf28c24259f2f3f2d0729",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-012",
+          "filename": "manekineko2.png",
+          "name": "manekineko2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "c556bf8db2a7c0c89168c18d657747c2a9303b591a909662d6fdb4a1705d93a4",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dwaya02",
+          "filename": "SA-DwayA02.png",
+          "name": "출입구 배경 · DwayA02"
+        }
+      ]
+    },
+    {
+      "sha256": "c5d667991f48e48c9ec3ac09ae4e072370e0d6358cc2f10452c4b8c3f9b16b17",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-pool01",
+          "filename": "SA-Pool01.png",
+          "name": "수면 테두리 · Pool01"
+        }
+      ]
+    },
+    {
+      "sha256": "c6293c7437d5c561f455e5826d459cc2ceea2700366f847162c864b19b0b87bf",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-fur02",
+          "filename": "SA-Fur02.png",
+          "name": "털 러그 · Fur02"
+        }
+      ]
+    },
+    {
+      "sha256": "c6b4d4a9e6feb9df0999f5613ff43291f7e1cf9672d32b7682e59e8662df867d",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-car01",
+          "filename": "SC-Car01.png",
+          "name": "Pixel Art World · 흰색·빨간 차 측면 바퀴"
+        }
+      ]
+    },
+    {
+      "sha256": "c7553f8a6e583a8d7ce1fe1becd05671ef34e3d89ec125416bf42560c167134c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grassd03",
+          "filename": "SA-GrassD03.png",
+          "name": "풀밭 · GrassD03"
+        }
+      ]
+    },
+    {
+      "sha256": "c7610cf7e63022efd871d88db8ba7d0046e9426db08169c76e6a3b61a23a8746",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-036",
+          "filename": "car.png",
+          "name": "car.png"
+        }
+      ]
+    },
+    {
+      "sha256": "c8eabe69f93536bd20e6fccbe96ba8c582a6a9f647c6ebe5a97a7ac8568cfd61",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-011",
+          "filename": "jizo.png",
+          "name": "jizo.png"
+        }
+      ]
+    },
+    {
+      "sha256": "c96a8953e99fbb44b6762dfcae9e44e56a151a9caa1b945b96d2515b8dca757c",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-ev02",
+          "filename": "SC-Door-Ev02.png",
+          "name": "Pixel Art World · 엘리베이터 내부문"
+        }
+      ]
+    },
+    {
+      "sha256": "cb33fb4239613479abb4f705faaabef10a9e940d60b349dd5a535a41f65d5da8",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatake01",
+          "filename": "SA-Hatake01.png",
+          "name": "밭·작물 · Hatake01"
+        }
+      ]
+    },
+    {
+      "sha256": "cb41acb5762814f9f844980343b3af6e059914e321571929efb68fbf1f08d9a3",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor-t11",
+          "filename": "SA-Floor-T11.png",
+          "name": "실내 바닥 · Floor-T11"
+        }
+      ]
+    },
+    {
+      "sha256": "cb9c0a9a0aa7226d0b43ecd956373aa21b86e4954d3c5b27baa9c09cf2182466",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-autobs",
+          "filename": "SC-Door-AutoBS.png",
+          "name": "Pixel Art World · 자동문 AutoBS"
+        }
+      ]
+    },
+    {
+      "sha256": "cc4185df5b21454514a47905586711fdfea161a9810d8f6e7dab7f36d54c2fb5",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-convi02",
+          "filename": "SC-Door-Convi02.png",
+          "name": "편의점 양폭 자동문"
+        }
+      ]
+    },
+    {
+      "sha256": "cd503500d1ce2b5235e8f3e6dbf39f79d16c40b9c3de1199797375ff1a2dc7a4",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-chinese-b",
+          "filename": "SC-F-Cninese02.png",
+          "name": "Pixel Art World · 중화 요리 B"
+        }
+      ]
+    },
+    {
+      "sha256": "ce2cb356d2e7926658680e8552d3beb0ffe5fcdabf3aac43a42d11b7efe10725",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-081",
+          "filename": "kenbikyou.png",
+          "name": "kenbikyou.png"
+        }
+      ]
+    },
+    {
+      "sha256": "ce6b06ca456e3bae08680d1fb6dad2eada83c9ab78bfdd1fd5895be7a9b9b7dc",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ditch01",
+          "filename": "SA-Ditch01.png",
+          "name": "수로 · Ditch01"
+        }
+      ]
+    },
+    {
+      "sha256": "ce8e5f087bb385b9f8baff5936b59a664ec5bc45798cad8347ca926bf58d2e70",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-068",
+          "filename": "ArmillarySphere.png",
+          "name": "ArmillarySphere.png"
+        }
+      ]
+    },
+    {
+      "sha256": "d0019f03edce5425c4a49f618dc07754ee51ad38b2e810cd3f4700172fd237a3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-007",
+          "filename": "kane.png",
+          "name": "kane.png"
+        }
+      ]
+    },
+    {
+      "sha256": "d1cb6c161386034addad3abd9669fee43269bf2326b58ef25600bc76f17e5e12",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floors01",
+          "filename": "SA-FloorS01.png",
+          "name": "실내 바닥 · FloorS01"
+        }
+      ]
+    },
+    {
+      "sha256": "d28c556e346a833c14caf3e4668bf1fcec67c7862bc7b63f9b2279207fe7a13e",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-urban-residential",
+          "filename": "ST-Town-E01.png",
+          "name": "Pixel Art World · 주택가 소품"
+        }
+      ]
+    },
+    {
+      "sha256": "d3d589e1215cdcca23b17c4a2654d907cd5171e03eb5ec4d23d9ec602a726cad",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-concrete02",
+          "filename": "SA-Concrete02.png",
+          "name": "콘크리트 · Concrete02"
+        }
+      ]
+    },
+    {
+      "sha256": "d469608fed2860444e220e15c6298d0a5d5cff74b44005a0f3b07a3e29fe4759",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-labo02",
+          "filename": "SC-Labo02.png",
+          "name": "Pixel Art World · 과학실 실험 용기"
+        }
+      ]
+    },
+    {
+      "sha256": "d4cbc1540c7894c1e9832d8a1d896099a764dc59f3f32721d6832a78b637c693",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-seawds01",
+          "filename": "SA-Seawds01.png",
+          "name": "수초 · Seawds01"
+        }
+      ]
+    },
+    {
+      "sha256": "d51080c0619dde1c6363fdbe8aa4f3ce4808941b2e89c49c92100d81b30d6be8",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-schlw01",
+          "filename": "SC-Door-SchlW01.png",
+          "name": "목조 학교 미닫이문 A"
+        }
+      ]
+    },
+    {
+      "sha256": "d5910d0f8f68eac9fc30d43cf49b87b3a364751164eb498c7b4e4620fa51af96",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-042",
+          "filename": "guardrail.png",
+          "name": "guardrail.png"
+        },
+        {
+          "group": "supplement",
+          "id": "garden",
+          "filename": "guardrail.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "d64cf199977c60817a78c4699640f182fa631ce4c519067bb4188c96a0a229d2",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-fur03",
+          "filename": "SA-Fur03.png",
+          "name": "털 러그 · Fur03"
+        }
+      ]
+    },
+    {
+      "sha256": "d6ce60769ebd1c26fb3204c03735e823ffc2a57c396fdcffe418c8b1e7ab6854",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-029",
+          "filename": "sakura2.png",
+          "name": "sakura2.png"
+        }
+      ]
+    },
+    {
+      "sha256": "d778ada93e7c9bb377b64b896df9d530fc76b5f3979a003845e6c2c3f5fa5d84",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-005",
+          "filename": "otukimi.png",
+          "name": "otukimi.png"
+        }
+      ]
+    },
+    {
+      "sha256": "d80e48a5c26c4c718200948bf17ca544b9ab9a3a34e758b084fafbb7e3f4709a",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-060",
+          "filename": "SC-Candle04.png",
+          "name": "SC-Candle04.png"
+        },
+        {
+          "group": "supplement",
+          "id": "flames",
+          "filename": "SC-Candle04.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "d8687ddc3e78b75e302f7ad907fce193d72294d72a51ca560048eb5debc77409",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-gborderb01",
+          "filename": "SA-GBorderB01.png",
+          "name": "생울타리·화단 · GBorderB01"
+        }
+      ]
+    },
+    {
+      "sha256": "d8af68a1cd38d68fde66357f2ec9583bf72c0cd42c505ed7b8c103338bc41f97",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-086",
+          "filename": "monnalisa.png",
+          "name": "monnalisa.png"
+        }
+      ]
+    },
+    {
+      "sha256": "d8bafd342b989100ee2b76cbf7a9528f4b345132b507a445147b8ad0227b5246",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ground03",
+          "filename": "SA-Ground03.png",
+          "name": "지면 · Ground03"
+        }
+      ]
+    },
+    {
+      "sha256": "d8d951f58e21ed2249143afc4d6e4f250857ff0db1bac8cedcbd66e2aec96265",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-100",
+          "filename": "Eu-Cage01.png",
+          "name": "Eu-Cage01.png"
+        },
+        {
+          "group": "supplement",
+          "id": "cage-brass",
+          "filename": "Eu-Cage01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "d9261ffcc160efcb202e762bfafc8ef2ea53d7c489d846f249a8c0fbb347e813",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-juice",
+          "filename": "SC-F-Juice01.png",
+          "name": "Pixel Art World · 음료"
+        }
+      ]
+    },
+    {
+      "sha256": "da2ede2a823451e9fa3965e2701810fc2b2ed7742004157eb5209bf38d19362c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floort02",
+          "filename": "SA-FloorT02.png",
+          "name": "실내 바닥 · FloorT02"
+        }
+      ]
+    },
+    {
+      "sha256": "da57b8718ee974a9482dcde762183a64e5925a07d3792f165c4e17a12bfcfff1",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatakeb02",
+          "filename": "SA-HatakeB02.png",
+          "name": "밭·작물 · HatakeB02"
+        }
+      ]
+    },
+    {
+      "sha256": "db3badaa302e62a9f149086674446d94868049ea1fd77c825ac65732c97883a5",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundg04",
+          "filename": "SA-GroundG04.png",
+          "name": "지면 · GroundG04"
+        }
+      ]
+    },
+    {
+      "sha256": "dd657f57929ec912a61602c9eb5067bb51e7b365ad9efdc1f9d1c6cbc27a3031",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-owl-mail",
+          "filename": "SC-Owl-Mail.png",
+          "name": "Pixel Art World · 우편 부엉이 비행"
+        }
+      ]
+    },
+    {
+      "sha256": "de4b193908be878d3814f433918e070190089b36dcc768cce03e00679203f37c",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundg06",
+          "filename": "SA-GroundG06.png",
+          "name": "지면 · GroundG06"
+        }
+      ]
+    },
+    {
+      "sha256": "df2f0cfbbbe3fac3a80c4cdedce08b57d7aa8373b457d1090f5773ac28b98b3d",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundbase01",
+          "filename": "SA-GroundBase01.png",
+          "name": "지면 · GroundBase01"
+        }
+      ]
+    },
+    {
+      "sha256": "df4a5c45c5d4c1b7dff93ecc4acb9cd0be226e6dfb57a80340925c82f0183522",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-metal01",
+          "filename": "SC-Door-Metal01.png",
+          "name": "Pixel Art World · 금속문 · 어두운 배경"
+        }
+      ]
+    },
+    {
+      "sha256": "e0477182df7d0477a43802e1c88d8205bdbc6e154b7fc143218e5682682d71fa",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-055",
+          "filename": "hinanset02.png",
+          "name": "hinanset02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "e06f1bf5bfe173ec4bcd32540523da4c03ed57b71748b12f876092a5079c8fb5",
+      "registrations": [
+        {
+          "group": "facility",
+          "id": "signals",
+          "filename": "SPT-Signal01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "e234ca44725ce855130db17fd88e48134b7c522d07f42a921f2f560fabae0472",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-004",
+          "filename": "okame.png",
+          "name": "okame.png"
+        }
+      ]
+    },
+    {
+      "sha256": "e2dd3bbd80898b0ff97f8201df693862234a6debb07227a72b52cf8d7a0183e0",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-dwayb01",
+          "filename": "SA-DwayB01.png",
+          "name": "출입구 배경 · DwayB01"
+        }
+      ]
+    },
+    {
+      "sha256": "e3a0b82c18d56f83267bb6382798f5bd5a0d10af5c64c768deb6bb63daa5b945",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-convi01",
+          "filename": "SC-Door-Convi01.png",
+          "name": "편의점 단폭 자동문"
+        }
+      ]
+    },
+    {
+      "sha256": "e3b08c6d24ef330e7150e7ee8df6a655bc9673bbae69f58cb6b67615a2e9c3e1",
+      "registrations": [
+        {
+          "group": "food",
+          "id": "paw-food-cup-noodles",
+          "filename": "SC-F-IstNudle01.png",
+          "name": "Pixel Art World · 컵라면"
+        }
+      ]
+    },
+    {
+      "sha256": "e3ed42d5e81d07a25abec24511f8c6be4ad8856ecc7bbd62a1e6987bb9565bd2",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grasse01",
+          "filename": "SA-GrassE01.png",
+          "name": "풀밭 · GrassE01"
+        }
+      ]
+    },
+    {
+      "sha256": "e3f47c770799b1c44b91eb31c3947622a0ce4382c800d642f5c908f664237d78",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grasse06",
+          "filename": "SA-GrassE06.png",
+          "name": "풀밭 · GrassE06"
+        }
+      ]
+    },
+    {
+      "sha256": "e40583d021d2a89ee3b787f1112b40d62e0e62e1f31701f1a7fe4dc54b313454",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet13",
+          "filename": "SA-Carpet13.png",
+          "name": "카펫 · Carpet13"
+        }
+      ]
+    },
+    {
+      "sha256": "e4c666be9f7c68e4cfa477a45ec2e92b36eb3e14d2afc35b8ac0a6ef262d2c85",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-058",
+          "filename": "BlackMagic02.png",
+          "name": "BlackMagic02.png"
+        }
+      ]
+    },
+    {
+      "sha256": "e51438a218c382b953767b5e0b7c295f6ec608cd0145a898e0388c4200ab1310",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-moss01",
+          "filename": "SA-Moss01.png",
+          "name": "이끼 지면 · Moss01"
+        }
+      ]
+    },
+    {
+      "sha256": "e551c1b70fde23a4b7f776a0da43e7d20402fdcfe9de59c18de25af694f6b786",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundy01",
+          "filename": "SA-GroundY01.png",
+          "name": "지면 · GroundY01"
+        }
+      ]
+    },
+    {
+      "sha256": "e56c92cf3f340c0e4336312b6242185734e48ca8fceb59b3fc0ff0d1b7cb92b0",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-metal03",
+          "filename": "SC-Door-Metal03.png",
+          "name": "Pixel Art World · 금속문 · 투명 개구부"
+        }
+      ]
+    },
+    {
+      "sha256": "e59bf5a2c36265d0f54c911ef646340c7203931716784c5fa084f39c1ab00101",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-gate-euro03",
+          "filename": "!$Gate-Euro03.png",
+          "name": "Pixel Art World · 장식 양문 · 3열 규격"
+        }
+      ]
+    },
+    {
+      "sha256": "e63a66452f2256c8f01a4208548cb5d0df34258f895140a1dada5c34c6924e68",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-noren01",
+          "filename": "SC-Noren01.png",
+          "name": "Pixel Art World · 넓은 노렌 정적 상태"
+        }
+      ]
+    },
+    {
+      "sha256": "e66dd50e1782d9c39013a04b9d96899c1e0b75ae0e08e0c6ea32ec29fa6db00d",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-home-bath",
+          "filename": "ST-Bath-I01.png",
+          "name": "Pixel Art World · 주택 욕실·세면실"
+        }
+      ]
+    },
+    {
+      "sha256": "e6a3bf696457d9a92c05d395d94380a1644ba982cb488257401537b49dcde805",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-polesign",
+          "filename": "SC-Polesign.png",
+          "name": "Pixel Art World · 회전 폴사인과 정적 거리 소품"
+        }
+      ]
+    },
+    {
+      "sha256": "e77079fc823bc1d5ce4ea85575524e102b4ed0a594f112ab40e421659060d0e7",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-water02",
+          "filename": "SC-Water02.png",
+          "name": "Pixel Art World · 큰 배수 물줄기"
+        }
+      ]
+    },
+    {
+      "sha256": "e809e85575423699d965505b82adf794b2b2d68b90cba76b5ff13aa9bfe6c756",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-bd03",
+          "filename": "SC-Bd03.png",
+          "name": "Pixel Art World · 높이 조정 상점 간판"
+        }
+      ]
+    },
+    {
+      "sha256": "e8205c23acb646296da7a6aa2624f0f79615a4d9beb124b8e82aae73e6fd73ba",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-085",
+          "filename": "odalisque.png",
+          "name": "odalisque.png"
+        }
+      ]
+    },
+    {
+      "sha256": "e822fd398149740720105a70f63becd3071674f1b5e3048a4ae8243455e038c4",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor-t06",
+          "filename": "SA-Floor-T06.png",
+          "name": "실내 바닥 · Floor-T06"
+        }
+      ]
+    },
+    {
+      "sha256": "e85c9fd260f1a3645ea017a76f5175fbd6e68683b251233b52369a99d66351fa",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-mansion-r",
+          "filename": "ST-MsionR-I01.png",
+          "name": "Pixel Art World · 저택 내부 R"
+        }
+      ]
+    },
+    {
+      "sha256": "e915ae20c408b36c385b2646ac08941cfe8e786e70824abbf9a4fc065bddb8c4",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-092",
+          "filename": "SB-Spider01.png",
+          "name": "SB-Spider01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "e99da8283ec3b95bc23c7bbb75db82490cbb63f503a7a19e66d4ecf0148a34a0",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-021",
+          "filename": "hina01.png",
+          "name": "hina01.png"
+        },
+        {
+          "group": "supplement",
+          "id": "hina",
+          "filename": "hina01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "eb1644c232192587847cfdcbc832dc38d7c38c9acf54e1cc0bbc78790496e959",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-entce03",
+          "filename": "SC-Door-Entce03.png",
+          "name": "Pixel Art World · 극장 양문"
+        }
+      ]
+    },
+    {
+      "sha256": "ebc64223a115cd061c7f7ddfe2bb8c859176b76b74225f8de7a3f30406254bff",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-045",
+          "filename": "streetlamp.png",
+          "name": "streetlamp.png"
+        }
+      ]
+    },
+    {
+      "sha256": "ec7f4f6d20889e27ae442ddb4fa9f6823b48f643abcaf31f30eb50cb6a7553ad",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-ground01",
+          "filename": "SA-Ground01.png",
+          "name": "지면 · Ground01"
+        }
+      ]
+    },
+    {
+      "sha256": "ed9f91ce6d114ad5956d41b8dbcdc2c17af6dc7b88ed6caf0b2669d987a62be0",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-06",
+          "filename": "SC-Door06.png",
+          "name": "Pixel Art World · 실내문 06"
+        }
+      ]
+    },
+    {
+      "sha256": "eee3d654d4f1978c99ab291b9cef9c8e54de3f43e413d8465b33aa9152d626f4",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-floor05",
+          "filename": "SA-Floor05.png",
+          "name": "실내 바닥 · Floor05"
+        }
+      ]
+    },
+    {
+      "sha256": "eee762c26f2564455fe7ef8083cb3c86b8302f5e7a513decf785063e8ea7f50e",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-cartain01",
+          "filename": "SA-Cartain01.png",
+          "name": "벽걸이 커튼 · Cartain01"
+        }
+      ]
+    },
+    {
+      "sha256": "ef55ae2c1c47e7d65f51c425c537d22b1d8a70846cef3ad522d2e1f8c110af15",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-09",
+          "filename": "SC-Door09.png",
+          "name": "Pixel Art World · 실내문 09"
+        }
+      ]
+    },
+    {
+      "sha256": "ef95c06e1dda0ee371b3abc7a211ad8631e3f8f66e7c934bb1469e7f266f8543",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-car03",
+          "filename": "SC-Car03.png",
+          "name": "Pixel Art World · 노랑·파란 차 측면 바퀴"
+        }
+      ]
+    },
+    {
+      "sha256": "f140e4b79b501f3cd7e71ca313d856f73d5748611391c6d27d24b6d1e1868c30",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-102",
+          "filename": "UFO01.png",
+          "name": "UFO01.png"
+        }
+      ]
+    },
+    {
+      "sha256": "f225c9b45df4fb310c5107a040b8461bb25d0fed2ad87c14bd6ec94e874d08cf",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-entce02",
+          "filename": "SC-Door-Entce02.png",
+          "name": "Pixel Art World · 어두운 유리 출입문"
+        }
+      ]
+    },
+    {
+      "sha256": "f25b67886a656df2e1a63df8861b9a4aab8adfa27a21d6024304a12a23d8585a",
+      "registrations": [
+        {
+          "group": "native",
+          "id": "paw-icecream-shop",
+          "filename": "ST-Icecream-I01.png",
+          "name": "Pixel Art World · 아이스크림점"
+        },
+        {
+          "group": "supplement",
+          "id": "indoor",
+          "filename": "ST-Icecream-I01.png",
+          "name": null
+        },
+        {
+          "group": "supplement",
+          "id": "indoor",
+          "filename": "ST-Icecream-I01.png",
+          "name": null
+        },
+        {
+          "group": "supplement",
+          "id": "indoor",
+          "filename": "ST-Icecream-I01.png",
+          "name": null
+        },
+        {
+          "group": "facility",
+          "id": "room",
+          "filename": "ST-Icecream-I01.png",
+          "name": null
+        }
+      ]
+    },
+    {
+      "sha256": "f3755cd0c2b6b02a9c162222585b6b3bcceb44f6195a997122b755459fe3da59",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-borderg01",
+          "filename": "SA-BorderG01.png",
+          "name": "생울타리 · BorderG01"
+        }
+      ]
+    },
+    {
+      "sha256": "f3e3570ab782f91f5b6f654b98d41dc244d33a394d37987444647320089f1119",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet17",
+          "filename": "SA-Carpet17.png",
+          "name": "카펫 · Carpet17"
+        }
+      ]
+    },
+    {
+      "sha256": "f498e1e462768f7a033c846852f88bbe97947d045585dfeb8cd26fc7b9c911a2",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-groundg02",
+          "filename": "SA-GroundG02.png",
+          "name": "지면 · GroundG02"
+        }
+      ]
+    },
+    {
+      "sha256": "f49e134f71f86e51ba8a57d0a157d7b742505a863656c6f6705fcdaec6b4e9f5",
+      "registrations": [
+        {
+          "group": "event",
+          "id": "paw-eventprop-vdgmacine01",
+          "filename": "SC-VdgMacine01.png",
+          "name": "Pixel Art World · 자판기 · 두 이벤트 조립"
+        }
+      ]
+    },
+    {
+      "sha256": "f5c66013514c3358eb21049917c98e557b4efc3e522aef592244353a797d09c3",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-001",
+          "filename": "kakigooriya.png",
+          "name": "kakigooriya.png"
+        }
+      ]
+    },
+    {
+      "sha256": "f690a42402c4343d505ea4693a26274f3642a34c2fe34cdc0698c158295d7354",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-cartain02",
+          "filename": "SA-Cartain02.png",
+          "name": "벽걸이 커튼 · Cartain02"
+        }
+      ]
+    },
+    {
+      "sha256": "f69f71f1d355b80318964547ce4f5b80da72691f6d3cd05a91995a7303b269c8",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-003",
+          "filename": "nomen.png",
+          "name": "nomen.png"
+        }
+      ]
+    },
+    {
+      "sha256": "f742ce5684f839f580f2fed551c2dd094455b7d03972568525fbc8fcf9080e69",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-grassd01",
+          "filename": "SA-GrassD01.png",
+          "name": "풀밭 · GrassD01"
+        }
+      ]
+    },
+    {
+      "sha256": "f85f57fc22fb0b791b8528fb1329285750c3e85293ef9d11cdd61ddfb6fe7a69",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-hatake03",
+          "filename": "SA-Hatake03.png",
+          "name": "밭·작물 · Hatake03"
+        }
+      ]
+    },
+    {
+      "sha256": "f86b114c5edc10281925b0ba9053cf289557bb35b1acd4e10e370cf61b9d5914",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-dg01",
+          "filename": "SC-Door-Dg01.png",
+          "name": "Pixel Art World · 하수도 격자문"
+        }
+      ]
+    },
+    {
+      "sha256": "f8828aeb938da60504f94c515e05aa0115c64d6f5eed01a443d9ec9e0a21935a",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet02",
+          "filename": "SA-Carpet02.png",
+          "name": "카펫 · Carpet02"
+        }
+      ]
+    },
+    {
+      "sha256": "f984b3e50ff5b2ccf1b94eb441c41f343eabfe7dd5ee1f64e48dbd0a0e12340f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-sroad01",
+          "filename": "SA-SRoad01.png",
+          "name": "모래 위 포장길 · SRoad01"
+        }
+      ]
+    },
+    {
+      "sha256": "fa3d911252ec0b3908738b9321f8e81913f825354c5b8bd67f7b244ea86665b7",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-069",
+          "filename": "flag.png",
+          "name": "flag.png"
+        }
+      ]
+    },
+    {
+      "sha256": "fd3083c29dd7cefc2b3aff7125aff97ad9172de42c792a70b0026e7f72c0aca1",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-044",
+          "filename": "busstop.png",
+          "name": "busstop.png"
+        }
+      ]
+    },
+    {
+      "sha256": "fdc51533fa80ebb036d4398bff844cb0b8114fa59d9ec67c8856a0f770d773d4",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-043",
+          "filename": "saku.png",
+          "name": "saku.png"
+        }
+      ]
+    },
+    {
+      "sha256": "fef8db9d9c88dad5f73c49b8c1b858b4f8ff438f4c5eac3357bf227d77773919",
+      "registrations": [
+        {
+          "group": "loose",
+          "id": "paw-loose-073",
+          "filename": "billiard1.png",
+          "name": "billiard1.png"
+        }
+      ]
+    },
+    {
+      "sha256": "ff5ae80c4eb7c901ecc2d0326aac9b0af1baae372c652ace218b428bf6df9a6f",
+      "registrations": [
+        {
+          "group": "xp",
+          "id": "paw-carpet09",
+          "filename": "SA-Carpet09.png",
+          "name": "카펫 · Carpet09"
+        }
+      ]
+    },
+    {
+      "sha256": "ffa862fac9f47582822281a052dedc38fb55903231aa29453020766969c07258",
+      "registrations": [
+        {
+          "group": "door",
+          "id": "paw-door-entce04",
+          "filename": "SC-Door-Entce04.png",
+          "name": "Pixel Art World · 병원 양문"
+        }
+      ]
+    }
+  ]
+}

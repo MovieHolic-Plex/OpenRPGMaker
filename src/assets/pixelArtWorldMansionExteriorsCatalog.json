@@ -1,0 +1,2144 @@
+[
+  {
+    "id": "paw-mansion-exterior-b",
+    "name": "Pixel Art World · 저택 외관 B",
+    "filename": "ST-MsionB-E01.png",
+    "width": 256,
+    "height": 1632,
+    "tileSize": 32,
+    "sha256": "1a48151aa07d6b2c7d59b7a8674bf143060841d25ad2d5dd20bc4e5d214d246b",
+    "checkedAt": "2026-09-24",
+    "floorTile": 4,
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionB-E01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "notes": "B/P/Y 외관은 공식 색상변형이지만 원본SHA와 픽셀을 각기 보존한다. whole 지붕/기둥/난간/창/문을 자르거나 뒤집지 않는다. 건물 합성은 지붕 중앙/벽 중앙 원본셀만 반복하며 양쪽곡면/전면처마/석축끝은보존한다. 검토 지상 출입건물만 제공한다. 공식 보행발코니는 건물1+창2+발코니3레이어가 필요하므로 이번static two-layer지원에 포함되지 않는다. 장식발코니는 캐릭터를 올려놓는 층이 아니다. sourceRect는칸, compositeparts는픽셀이다. 원본408칸을 보존한다. 문·잠금·전이는별도.",
+    "recipes": [
+      {
+        "id": "msex-b-roof-whole",
+        "name": "곡면 지붕 · 상단/양측/전면처마 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            224,
+            225,
+            226,
+            227,
+            228
+          ],
+          [
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          [
+            240,
+            241,
+            242,
+            243,
+            244
+          ],
+          [
+            248,
+            249,
+            250,
+            251,
+            252
+          ],
+          [
+            256,
+            257,
+            258,
+            259,
+            260
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-wall-bay",
+        "name": "기둥과 석축을 포함한 외벽 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            264,
+            265,
+            266,
+            267,
+            268
+          ],
+          [
+            272,
+            273,
+            274,
+            275,
+            276
+          ],
+          [
+            280,
+            281,
+            282,
+            283,
+            284
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-facade-door-window",
+        "name": "2층 아치창과 1층 현관 · 전면 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            293,
+            294,
+            295
+          ],
+          [
+            301,
+            302,
+            303
+          ],
+          [
+            309,
+            310,
+            311
+          ],
+          [
+            317,
+            318,
+            319
+          ],
+          [
+            325,
+            326,
+            327
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-arched-window-small",
+        "name": "작은 아치창",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-arched-window-tall",
+        "name": "키큰 아치창",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            191
+          ],
+          [
+            199
+          ],
+          [
+            207
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-arched-window-wide",
+        "name": "3열 아치창",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            213,
+            214,
+            215
+          ],
+          [
+            221,
+            222,
+            223
+          ],
+          [
+            229,
+            230,
+            231
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-balcony-enclosure",
+        "name": "발코니 난간 앞뒤·측면과 전면토대",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329,
+            330
+          ],
+          [
+            336,
+            337,
+            338
+          ],
+          [
+            344,
+            345,
+            346
+          ],
+          [
+            352,
+            353,
+            354
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-bench-front",
+        "name": "정원벤치 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105
+          ],
+          [
+            112,
+            113
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-bench-back",
+        "name": "정원벤치 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            120,
+            121
+          ],
+          [
+            128,
+            129
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-street-lamp",
+        "name": "쌍등 가로등 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            106
+          ],
+          [
+            114
+          ],
+          [
+            122
+          ],
+          [
+            130
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-tea-table",
+        "name": "원형 티테이블 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            76,
+            77
+          ],
+          [
+            84,
+            85
+          ],
+          [
+            92,
+            93
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-tea-stool",
+        "name": "등받이 없는 원형 정원스툴",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "all-sides",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            94
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-rose-red",
+        "name": "붉은 장미 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            72,
+            73
+          ],
+          [
+            80,
+            81
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-rose-pink",
+        "name": "분홍 장미 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            74,
+            75
+          ],
+          [
+            82,
+            83
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-flower-pedestal",
+        "name": "꽃과 원형 화분 받침",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-topiary-round",
+        "name": "둥근 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            124,
+            125
+          ],
+          [
+            132,
+            133
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-topiary-tall",
+        "name": "긴 정원수",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            110,
+            111
+          ],
+          [
+            118,
+            119
+          ],
+          [
+            126,
+            127
+          ],
+          [
+            134,
+            135
+          ]
+        ]
+      },
+      {
+        "id": "msex-b-garden-gate-closed",
+        "name": "닫힌 철제 정원문",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            16,
+            17,
+            18
+          ],
+          [
+            24,
+            25,
+            26
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-mansion-exterior-p",
+    "name": "Pixel Art World · 저택 외관 P",
+    "filename": "ST-MsionP-E01.png",
+    "width": 256,
+    "height": 1632,
+    "tileSize": 32,
+    "sha256": "3723b044833d5a95680298df805d7b6ae321f6be89d6ddf375c2f5c8122d8775",
+    "checkedAt": "2026-09-24",
+    "floorTile": 4,
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionP-E01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "notes": "B/P/Y 외관은 공식 색상변형이지만 원본SHA와 픽셀을 각기 보존한다. whole 지붕/기둥/난간/창/문을 자르거나 뒤집지 않는다. 건물 합성은 지붕 중앙/벽 중앙 원본셀만 반복하며 양쪽곡면/전면처마/석축끝은보존한다. 검토 지상 출입건물만 제공한다. 공식 보행발코니는 건물1+창2+발코니3레이어가 필요하므로 이번static two-layer지원에 포함되지 않는다. 장식발코니는 캐릭터를 올려놓는 층이 아니다. sourceRect는칸, compositeparts는픽셀이다. 원본408칸을 보존한다. 문·잠금·전이는별도.",
+    "recipes": [
+      {
+        "id": "msex-p-roof-whole",
+        "name": "곡면 지붕 · 상단/양측/전면처마 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            224,
+            225,
+            226,
+            227,
+            228
+          ],
+          [
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          [
+            240,
+            241,
+            242,
+            243,
+            244
+          ],
+          [
+            248,
+            249,
+            250,
+            251,
+            252
+          ],
+          [
+            256,
+            257,
+            258,
+            259,
+            260
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-wall-bay",
+        "name": "기둥과 석축을 포함한 외벽 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            264,
+            265,
+            266,
+            267,
+            268
+          ],
+          [
+            272,
+            273,
+            274,
+            275,
+            276
+          ],
+          [
+            280,
+            281,
+            282,
+            283,
+            284
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-facade-door-window",
+        "name": "2층 아치창과 1층 현관 · 전면 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            293,
+            294,
+            295
+          ],
+          [
+            301,
+            302,
+            303
+          ],
+          [
+            309,
+            310,
+            311
+          ],
+          [
+            317,
+            318,
+            319
+          ],
+          [
+            325,
+            326,
+            327
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-arched-window-small",
+        "name": "작은 아치창",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-arched-window-tall",
+        "name": "키큰 아치창",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            191
+          ],
+          [
+            199
+          ],
+          [
+            207
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-arched-window-wide",
+        "name": "3열 아치창",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            213,
+            214,
+            215
+          ],
+          [
+            221,
+            222,
+            223
+          ],
+          [
+            229,
+            230,
+            231
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-balcony-enclosure",
+        "name": "발코니 난간 앞뒤·측면과 전면토대",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329,
+            330
+          ],
+          [
+            336,
+            337,
+            338
+          ],
+          [
+            344,
+            345,
+            346
+          ],
+          [
+            352,
+            353,
+            354
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-bench-front",
+        "name": "정원벤치 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105
+          ],
+          [
+            112,
+            113
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-bench-back",
+        "name": "정원벤치 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            120,
+            121
+          ],
+          [
+            128,
+            129
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-street-lamp",
+        "name": "쌍등 가로등 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            106
+          ],
+          [
+            114
+          ],
+          [
+            122
+          ],
+          [
+            130
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-tea-table",
+        "name": "원형 티테이블 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            76,
+            77
+          ],
+          [
+            84,
+            85
+          ],
+          [
+            92,
+            93
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-tea-stool",
+        "name": "등받이 없는 원형 정원스툴",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "all-sides",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            94
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-rose-red",
+        "name": "붉은 장미 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            72,
+            73
+          ],
+          [
+            80,
+            81
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-rose-pink",
+        "name": "분홍 장미 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            74,
+            75
+          ],
+          [
+            82,
+            83
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-flower-pedestal",
+        "name": "꽃과 원형 화분 받침",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-topiary-round",
+        "name": "둥근 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            124,
+            125
+          ],
+          [
+            132,
+            133
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-topiary-tall",
+        "name": "긴 정원수",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            110,
+            111
+          ],
+          [
+            118,
+            119
+          ],
+          [
+            126,
+            127
+          ],
+          [
+            134,
+            135
+          ]
+        ]
+      },
+      {
+        "id": "msex-p-garden-gate-closed",
+        "name": "닫힌 철제 정원문",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            16,
+            17,
+            18
+          ],
+          [
+            24,
+            25,
+            26
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "paw-mansion-exterior-y",
+    "name": "Pixel Art World · 저택 외관 Y",
+    "filename": "ST-MsionY-E01.png",
+    "width": 256,
+    "height": 1632,
+    "tileSize": 32,
+    "sha256": "4769c99df2461d753265d01b3a526e25ec06e88b6df351856c201bb715f94b80",
+    "checkedAt": "2026-09-24",
+    "floorTile": 4,
+    "sourcePage": "https://yms.main.jp/dotartworld/page2/tile-mansion01.html",
+    "downloadUrl": "https://yms.main.jp/dotartworld/sozai/tileset/ST-MsionY-E01.png",
+    "termsUrl": "https://yms.main.jp/dotartworld/page1/rule.html",
+    "credit": "Pixel Art World / ドット絵世界 — https://yms.main.jp/dotartworld/",
+    "notes": "B/P/Y 외관은 공식 색상변형이지만 원본SHA와 픽셀을 각기 보존한다. whole 지붕/기둥/난간/창/문을 자르거나 뒤집지 않는다. 건물 합성은 지붕 중앙/벽 중앙 원본셀만 반복하며 양쪽곡면/전면처마/석축끝은보존한다. 검토 지상 출입건물만 제공한다. 공식 보행발코니는 건물1+창2+발코니3레이어가 필요하므로 이번static two-layer지원에 포함되지 않는다. 장식발코니는 캐릭터를 올려놓는 층이 아니다. sourceRect는칸, compositeparts는픽셀이다. 원본408칸을 보존한다. 문·잠금·전이는별도.",
+    "recipes": [
+      {
+        "id": "msex-y-roof-whole",
+        "name": "곡면 지붕 · 상단/양측/전면처마 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 28,
+          "width": 5,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          },
+          {
+            "x": 3,
+            "y": 4
+          },
+          {
+            "x": 4,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            224,
+            225,
+            226,
+            227,
+            228
+          ],
+          [
+            232,
+            233,
+            234,
+            235,
+            236
+          ],
+          [
+            240,
+            241,
+            242,
+            243,
+            244
+          ],
+          [
+            248,
+            249,
+            250,
+            251,
+            252
+          ],
+          [
+            256,
+            257,
+            258,
+            259,
+            260
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-wall-bay",
+        "name": "기둥과 석축을 포함한 외벽 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 33,
+          "width": 5,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          },
+          {
+            "x": 3,
+            "y": 2
+          },
+          {
+            "x": 4,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            264,
+            265,
+            266,
+            267,
+            268
+          ],
+          [
+            272,
+            273,
+            274,
+            275,
+            276
+          ],
+          [
+            280,
+            281,
+            282,
+            283,
+            284
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-facade-door-window",
+        "name": "2층 아치창과 1층 현관 · 전면 전체",
+        "sourceRect": {
+          "x": 5,
+          "y": 36,
+          "width": 3,
+          "height": 5
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 4
+          },
+          {
+            "x": 1,
+            "y": 4
+          },
+          {
+            "x": 2,
+            "y": 4
+          }
+        ],
+        "tiles": [
+          [
+            293,
+            294,
+            295
+          ],
+          [
+            301,
+            302,
+            303
+          ],
+          [
+            309,
+            310,
+            311
+          ],
+          [
+            317,
+            318,
+            319
+          ],
+          [
+            325,
+            326,
+            327
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-arched-window-small",
+        "name": "작은 아치창",
+        "sourceRect": {
+          "x": 6,
+          "y": 23,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            190
+          ],
+          [
+            198
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-arched-window-tall",
+        "name": "키큰 아치창",
+        "sourceRect": {
+          "x": 7,
+          "y": 23,
+          "width": 1,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            191
+          ],
+          [
+            199
+          ],
+          [
+            207
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-arched-window-wide",
+        "name": "3열 아치창",
+        "sourceRect": {
+          "x": 5,
+          "y": 26,
+          "width": 3,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "wall-mounted",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "x": 2,
+            "y": 2
+          }
+        ],
+        "exampleWallRows": [
+          273,
+          273,
+          281
+        ],
+        "tiles": [
+          [
+            213,
+            214,
+            215
+          ],
+          [
+            221,
+            222,
+            223
+          ],
+          [
+            229,
+            230,
+            231
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-balcony-enclosure",
+        "name": "발코니 난간 앞뒤·측면과 전면토대",
+        "sourceRect": {
+          "x": 0,
+          "y": 41,
+          "width": 3,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "building-part",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          },
+          {
+            "x": 2,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            328,
+            329,
+            330
+          ],
+          [
+            336,
+            337,
+            338
+          ],
+          [
+            344,
+            345,
+            346
+          ],
+          [
+            352,
+            353,
+            354
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-bench-front",
+        "name": "정원벤치 정면",
+        "sourceRect": {
+          "x": 0,
+          "y": 13,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            104,
+            105
+          ],
+          [
+            112,
+            113
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-bench-back",
+        "name": "정원벤치 뒷면",
+        "sourceRect": {
+          "x": 0,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "north",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            120,
+            121
+          ],
+          [
+            128,
+            129
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-street-lamp",
+        "name": "쌍등 가로등 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 13,
+          "width": 1,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            106
+          ],
+          [
+            114
+          ],
+          [
+            122
+          ],
+          [
+            130
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-tea-table",
+        "name": "원형 티테이블 전체",
+        "sourceRect": {
+          "x": 4,
+          "y": 9,
+          "width": 2,
+          "height": 3
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 2
+          },
+          {
+            "x": 1,
+            "y": 2
+          }
+        ],
+        "tiles": [
+          [
+            76,
+            77
+          ],
+          [
+            84,
+            85
+          ],
+          [
+            92,
+            93
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-tea-stool",
+        "name": "등받이 없는 원형 정원스툴",
+        "sourceRect": {
+          "x": 6,
+          "y": 11,
+          "width": 1,
+          "height": 1
+        },
+        "facing": "all-sides",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "tiles": [
+          [
+            94
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-rose-red",
+        "name": "붉은 장미 전체",
+        "sourceRect": {
+          "x": 0,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            72,
+            73
+          ],
+          [
+            80,
+            81
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-rose-pink",
+        "name": "분홍 장미 전체",
+        "sourceRect": {
+          "x": 2,
+          "y": 9,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            74,
+            75
+          ],
+          [
+            82,
+            83
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-flower-pedestal",
+        "name": "꽃과 원형 화분 받침",
+        "sourceRect": {
+          "x": 5,
+          "y": 13,
+          "width": 1,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            109
+          ],
+          [
+            117
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-topiary-round",
+        "name": "둥근 정원수",
+        "sourceRect": {
+          "x": 4,
+          "y": 15,
+          "width": 2,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            124,
+            125
+          ],
+          [
+            132,
+            133
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-topiary-tall",
+        "name": "긴 정원수",
+        "sourceRect": {
+          "x": 6,
+          "y": 13,
+          "width": 2,
+          "height": 4
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 3
+          },
+          {
+            "x": 1,
+            "y": 3
+          }
+        ],
+        "tiles": [
+          [
+            110,
+            111
+          ],
+          [
+            118,
+            119
+          ],
+          [
+            126,
+            127
+          ],
+          [
+            134,
+            135
+          ]
+        ]
+      },
+      {
+        "id": "msex-y-garden-gate-closed",
+        "name": "닫힌 철제 정원문",
+        "sourceRect": {
+          "x": 0,
+          "y": 2,
+          "width": 3,
+          "height": 2
+        },
+        "facing": "south",
+        "placementKind": "standing",
+        "supportCells": [
+          {
+            "x": 0,
+            "y": 1
+          },
+          {
+            "x": 1,
+            "y": 1
+          },
+          {
+            "x": 2,
+            "y": 1
+          }
+        ],
+        "tiles": [
+          [
+            16,
+            17,
+            18
+          ],
+          [
+            24,
+            25,
+            26
+          ]
+        ]
+      }
+    ]
+  }
+]

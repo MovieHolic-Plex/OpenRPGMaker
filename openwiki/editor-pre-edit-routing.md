@@ -103,6 +103,17 @@ identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가
 쿼터 이미지는 프레임 변경 때 건너뛴다. 자식 이미지의 `visible`만 보지 말고 부모 체인까지
 확인해야 화면 밖 호수 쿼터 갱신이 다시 살아나지 않는다.
 
+## 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
+
+`databaseModalDirtySession`은 모달을 열거나 clean 상태를 갱신할 때와 되돌릴 때
+`cloneProjectSharingReferenceDocuments`를 사용한다. `store.update`와 같은 계약이며
+타일 참고문서 배열은 통째로 교체하는 불변 데이터로 공유한다. 기존 전체 structuredClone은
+PAW380의 대용량 MD/그림을 추가 복사했다. 참고문서 원소를 직접 mutate하는 새 경로를 만들면 안 된다.
+맵 제외 dirty 서명, 현재 맵/mapTree 보존, DB 편집 복원과 히스토리 절단 계약은 유지한다.
+수정한 실제 빌드에서 PAW 프로젝트 DB→타일→외부 소재7카드→장소2개 AI 패널을 열고
+브라우저 오류0을 관찰했다. DB 준비21,088ms는 성능 개선 완료를 의미하지 않는다.
+증거는 `output/paw-380-corrections/editor-observations.json`이며 테스트/게이트는 실행하지 않았다.
+
 ## database 표면 CSS 지연 로드와 공용 다이얼로그 (2026-09-21)
 
 database/index.css 진입 시트가 databaseModal.ts 청크에 묶여 늦게 로드된 뒤(2026-09-19

@@ -566,7 +566,9 @@ function applyClusterAwarePaint(
   const lowerTouched = new Set<string>();
   for (const edit of planned.values()) {
     if (edit.layer === "lower") {
-      setLower(map, edit.x, edit.y, edit.tile);
+      // Painting one layer must not silently erase another. The legacy setLower helper
+      // clears upper decorations for terrain generators; AI painting follows the manual brush.
+      map.lowerTiles[edit.y * map.width + edit.x] = edit.tile;
       lowerTouched.add(coordKey(edit.x, edit.y));
     } else {
       const index = edit.y * map.width + edit.x;

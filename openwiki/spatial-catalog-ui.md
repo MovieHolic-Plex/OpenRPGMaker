@@ -187,6 +187,19 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 
 `spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 프로젝트에 복사된 장소(`authored-map_*`)는 같은 이름의 `shared_` 공용 미리보기를 붙인다. 직접 칠한 장소는 `public/assets/reviewed-places/<id>.png`를 쓴다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.
 
+## 2026-09-24 — 공간 소유자의 참고문서 표시
+
+`spatialReferenceDocuments`는 장소·직접 방·지역·오브젝트·구조 킷 속성에 읽기 전용
+「AI 참고문서」를 표시한다. 문서를 펼칠 때 기존 Markdown 렌더러로 본문과 첨부를 그리며,
+MD에서 인용하지 않은 첨부도 이름으로 직접 열 수 있다. 타일 참고문서로 소유권을 우회하지 않는다.
+공용 장소는 `reviewedPlaceReferences`로 원본 문서를 읽고, 복사한 장소는 자신의 문서를 가진다.
+
+Pixel Art World의 로컬 라이브러리는 사용자가 받은 원본만 포함한다. 실제 시설 사례 중
+시각 검토가 남은 항목에는 `review-pending` 문서를 붙이고 검토 완료 roots에서 제외한다.
+배열을 보관했다는 이유로 정상 정답 사례라 표시하지 않는다. 학교 장소 그림의 복사와
+원본 맵 events 보관은 다른 계약이며, 새 프로젝트에서 이벤트를 연결/재생하는 후속 검증이 필요하다.
+
+
 ## RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
 
 `scripts/content/publish-rpg-places-shared-library.mjs` 가 RPG 실내 34·RPG 던전 25·판타지 장소 11을 호스트 공용 SQLite 라이브러리

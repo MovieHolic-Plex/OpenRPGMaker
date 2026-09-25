@@ -177,3 +177,40 @@ native PNGs. Tests: `tiboRecovery.test.ts`; runtime `tibo-recovery.scenario.mjs`
 - 타 칩셋·이식된 소스·수정된 그룹 문법에는 고정 천장 쿼터를 적용하지 않는다. 기본 등록은 기존 ID/겹치는 사용자 그룹·사용자 메타/잠금·이식을 덮어쓰지 않는다.
 - 편집기·런타임·캔버스 미리보기·보고서 PNG는 공통 쿼터 진입점을 사용한다. `renderInteriorMapPng`도 천장을 무조건 통짜 픽셀로 기대해서는 안 된다.
 - 진단과 수정 전 증거: `reports/ceiling-audit-2026-09-18/`. 수정 후 브라우저 증거: `reports/ceiling-fix-2026-09-18/`. 회귀 계약: `test/interiorCeilingAutotile.test.ts`, `test/placeConceptRender.test.ts`. 이 세션에서는 vitest/전체 게이트를 실행하지 않았다.
+
+## Pixel Art World XP 사용자 원본 (2026-09-24)
+
+`pixelArtWorldAutotiles.ts`의 공용 카탈로그는 SHA별 정적 XP 136종(96×128),
+Ditch 애니메이션 4종(384×128)을 제공한다. VX/MV·혼합 규격 12종은 포함하지 않는다.
+`xpFullAutotileQuarters`는 32px 외곽의 양쪽 16px 쿼터를 보존한다. 예전 half-edge 공식은
+난간 남변의 절반을 누락했다. 기존 도시/학교 저작기의 `xpAutotileQuarters`는 호환용으로
+유지하며 저장된 그림/번호는 재작성하지 않는다. 새 가져오기는 full-edge 공식을 사용한다.
+
+98종은 lower 8방 자동 성형, 42종은 명시된 홈 레이어에 마스크 배열 수동 조립이다.
+upper 자동 성형은 없다. 커튼·창·출입구 배경·코타츠·난간·교단은 직사각형 제한이며
+받침 종류/통행/지형 의미를 각 메타데이터에 기록한다. 투명하다고 통행 가능하다는 뜻은 아니다.
+
+Ditch는 47변형마다 가로 4프레임을 행 경계 안에 붙이고 `animationStrips`를 등록한다.
+3fps는 편집기 기본값이며 원작 지정 속도가 아니다. 기존 uploaded-atlas 편집기/플레이어
+등록 경로가 재생한다. 기존 6종 ID/해시/47변형 번호와 정적 배치 간격은 유지한다.
+
+공용에는 원본 판본·별칭·규칙 메타데이터만 배포한다. 사용자 PNG를 가져올 때 실제
+원본/변형/정상·오류 그림과 전체 배열 자료를 생성한다. 출처·쿼터 좌표·제약·관찰 근거:
+[pixel-art-world/autotiles](../tiledata/pixel-art-world/autotiles.md).
+
+확장 카탈로그 UI는 이름·파일명·별칭 검색을 제공한다. 항목별 sourceWidth/sourceHeight,
+frames, defaultLayer, placement를 표시하며 upper 수동 마스크를 하위 자동 성형으로
+안내하지 않는다. 이미 추가한 수동 항목도 대상 목록에서 제외한다. 예약 `shared_`
+타일셋은 다음 로드에서 공용 정의로 갱신되므로 추가 대상으로 쓰지 않는다. 사용자 원본을
+새 타일셋으로 가져온 뒤 연결 소재를 추가한다.
+
+### XP 공용 로컬 설치와 조립 표본
+
+`tiledata/pixel-art-world/xp-library-layout.json`은 140개 원본을 8아틀라스로 나눈다.
+`prepare-pixel-art-world-xp-library.mjs`가 실제 가져오기 경로로 픽셀·참고문서·139개 4×3 오브젝트를 만든다.
+각 원본에 적합한 불투명 받침을 명시한다. 벽은 도서관 원본17번, Pool은 콘크리트 받침이며
+GroundBase는 편집 템플릿이라 오브젝트에서 제외한다. Carpet08ST/09ST는 시각 판정상 세로 러너이므로
+닫힌 카펫/임의 blob 대신 직사각형 수동 하위 조립으로 제한한다.
+`publish-pixel-art-world-xp-library.mjs`는 별도 `pixel-art-world-xp-local` 공용 라이브러리에 CAS 저장하고 재로드한다.
+정본 호스트에는 `install-pixel-art-world-shared-host.mjs`로 설치한다. 원본·파생 그림은 사용자 로컬에만 있다.
+이 자료는 완성된 장소/지역을 대신하지 않는다. 8시트 전체 조립 그림을 적대적으로 검토했다.

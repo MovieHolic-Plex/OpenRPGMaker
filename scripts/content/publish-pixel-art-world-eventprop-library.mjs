@@ -1,0 +1,20 @@
+import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {withTsModule} from '../ontology-ts-loader.mjs';
+const[preparedDir,out,action]=process.argv.slice(2);
+if(!out||action!=='--publish-local')throw Error('Usage: <prepared directory> <private output> --publish-local');
+const hash=x=>createHash('sha256').update(x).digest('hex');
+const bytes=await fs.readFile(preparedDir+'/library.json'),proof=JSON.parse(await fs.readFile(preparedDir+'/preparation-proof.json','utf8'));
+if(hash(bytes)!==proof.librarySha256||hash(await fs.readFile('src/assets/pixelArtWorldEventProps.json'))!==proof.catalogSha256)throw Error('Prepared event metadata is stale');
+await fs.mkdir(out,{recursive:true});await fs.writeFile(out+'/library.json',bytes);
+const compressed=await promisify(execFile)('python3',['scripts/content/compress-pixel-art-world-reference-images.py',out+'/library.json']);
+const lib=JSON.parse(await fs.readFile(out+'/library.json','utf8'));
+await withTsModule('scripts/lib/sharedContentSqlite.ts','paw-eventprops-publish.mjs',async api=>{
+ const id='pixel-art-world-eventprops-local',before=api.readSharedContent(),expected=before.libraries[id]?hash(JSON.stringify(before.libraries[id])):null;
+ const saved=api.publishSharedContent(id,lib,expected),after=api.readSharedContent();
+ for(const[other,value]of Object.entries(before.libraries))if(other!==id&&JSON.stringify(after.libraries[other])!==JSON.stringify(value))throw Error('Unrelated library changed '+other);
+ const result={libraryId:id,file:saved.file,revision:saved.revision,reloadedEqual:JSON.stringify(saved.reloaded)===JSON.stringify(lib),sprites:proof.sprites,referenceOwners:proof.referenceOwners,variants:proof.variants,tileObjects:0,places:0,regions:0,referenceCompression:JSON.parse(compressed.stdout),source:proof.source};
+ await fs.writeFile(out+'/proof.json',JSON.stringify(result,null,2));console.log(result);
+});

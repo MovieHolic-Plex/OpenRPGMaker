@@ -16,13 +16,23 @@ export function readSharedTileReferences(file = process.env.OPRN_SHARED_CONTENT_
     const entries: SharedTileReferenceSnapshot['entries'] = [], seen = new Set<string>();
     const spatial: SharedSpatialReferences = {regions: [], maps: {}, tilesets: {}, assets: {}};
     for (const row of rows) {
-      const lib = JSON.parse(row.payload) as { tilesets: Project['tilesets']; assets: Project['assets']['uploaded']; maps?: Project['maps']; regionReferences?: SharedSpatialReferences['regions'] };
-      if (lib.regionReferences?.length) {
-        for (const reference of lib.regionReferences) {
-          const map = lib.maps?.[reference.sourceMapId], tile = map && lib.tilesets[map.tilesetId];
+      const lib = JSON.parse(row.payload) as { tilesets: Project['tilesets']; assets: Project['assets']['uploaded']; maps?: Project['maps']; regionReferences?: SharedSpatialReferences['regions']; regions?: Record<string, SharedSpatialReferences['regions'][number]> };
+      const regions = new Map((lib.regionReferences ?? []).map(reference => [reference.id, reference]));
+      for (const reference of Object.values(lib.regions ?? {})) {
+        const previous = regions.get(reference.id);
+        if (previous && JSON.stringify(previous) !== JSON.stringify(reference)) throw new Error(`Conflicting shared region reference: ${reference.id}`);
+        regions.set(reference.id, reference);
+      }
+      if (regions.size) {
+        for (const reference of regions.values()) {
+          // regions is keyed by the saved snapshot; sourceMapId is provenance and
+          // several snapshots can legitimately originate from the same source map.
+          const snapshot = lib.regions?.[reference.id] ? lib.maps?.[reference.id] : lib.maps?.[reference.sourceMapId];
+          const map = snapshot && { ...snapshot, id: reference.id }, tile = map && lib.tilesets[map.tilesetId];
           if (!reference.id.startsWith('shared_') || !map || !tile || reference.width !== map.width || reference.height !== map.height
             || reference.tilesetId !== map.tilesetId || map.lowerTiles.length !== map.width * map.height || map.upperTiles.length !== map.width * map.height) throw new Error('Invalid shared region reference');
-          spatial.regions.push(reference); spatial.maps[map.id] = map; spatial.tilesets[tile.id] = tile;
+          if (reference.referenceDocuments) validateTilesetReferences(reference.referenceDocuments);
+          spatial.regions.push({ ...reference, sourceMapId: map.id }); spatial.maps[map.id] = map; spatial.tilesets[tile.id] = tile;
           if (tile.image.type === 'uploaded' && lib.assets[tile.image.id]) spatial.assets[tile.image.id] = lib.assets[tile.image.id];
         }
       }

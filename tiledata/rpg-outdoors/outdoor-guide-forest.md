@@ -1,4 +1,4 @@
-# 야외 장소 15곳 — 숲(초록) 시트
+# 야외 장소 19곳 — 숲(초록) 시트
 
 tilesetId=forest_harmony. 좌표는 0기준, 16px. 지형과 배치만 있고 이벤트(문 이동·NPC)는 없다. 출구마다 어느 맵과 맞닿는지(meets)만 적었다.
 숲마을 「다양한 마을」 타일셋(이식 포함 2730칸)으로 그렸다. 수관·절벽·폭포·다리·항구 조각(나룻배·계류 말뚝·밧줄·닻·통·상자 = harbor-kit 그룹, 이식 2657~2669·2695~2699·2703~2729)은 이식 번호다.
@@ -33,3 +33,7 @@ tilesetId=forest_harmony. 좌표는 0기준, 16px. 지형과 배치만 있고 �
 - 구름재 산길 협곡 (outdoor-mountain-pass, 44×56, 필드 게이트)
 - 검은물 늪지 필드 (outdoor-swamp-field, 56×40, 필드 게이트)
 - 세폭포 대계곡 (outdoor-great-valley, 80×64, 필드 게이트)
+- 미혹의 숲 미로 (outdoor-forest-maze, 56×48, 필드 게이트)
+- 숲 속 모닥불 야영지 (outdoor-forest-camp, 38×30, 마을·장면 게이트)
+- 들녘 농장과 목장 (outdoor-farm-ranch, 50×40, 마을·장면 게이트)
+- 갈매기 곶 등대 (outdoor-lighthouse-cape, 44×38, 마을·장면 게이트)

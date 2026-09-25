@@ -2,6 +2,73 @@
 
 # 타일셋 참고문서 — 프로젝트 데이터
 
+## 공용 SQLite 지역 참고문서 조회 (2026-09-24)
+
+`shared-content`에 저장된 지역과 옛 `shared-tile-references.spatial`은 서로 다른 저장 경로다.
+기존 조회가 옛 `SHARED_REGION_REFERENCES` 배열만 읽어 새 공용 도시의 MD/이미지를 찾지 못했다.
+`sharedSpatialReferences.sharedRegionReferences()`는 호출 시 두 카탈로그를 ID로 합치고
+현재 공용 콘텐츠를 우선한다. 지역 갤러리·AI 지역 목록·지역 문서 조회가 이 함수를 공유한다.
+지역의 전체 타일 배열도 현재 라이브러리의 `sharedRegionSnapshot`을 먼저 읽는다.
+두 endpoint의 부팅 순서나 옛 공간 자료 초기화로 새 지역을 지우지 않는다.
+문서의 저장 여부만으로 완료를 판단하지 말고 `read_spatial_reference`의 지역 MD/이미지와
+`read_region_reference`의 전체 행을 실제로 읽어 확인한다.
+
+## 사용자 다운로드형 타일셋 지원 (2026-09-24)
+
+욕실·체육관 native 2팩의 원본/완전체/객체 AI 문서와 준비 경로는 [별도 지침](pixel-art-world-bath-gym.md)을 따른다.
+이자카야·일본식 방의 원본 보존/3층 합성/객체·장소 문서는 [일본식 실내 지침](pixel-art-world-japanese-interiors.md)을 따른다.
+저택 내부5판본의 객체 비교/전체 가구/보석상/상판 조립은 [저택 내부 지침](pixel-art-world-mansion-interiors.md)을 따른다.
+저택 외관3판본의 지붕/전체건물/장식발코니 경계는 [외관 지침](pixel-art-world-mansion-exteriors.md)을 따른다.
+목욕탕·레트로 동네 외관2원본의 whole 지붕/입구/문틀 경계는 [레트로 외관 지침](pixel-art-world-retrotown-exteriors.md)을 따른다.
+
+자료집 → 맵 → 타일 → **외부 타일셋 다운로드**에서 Pixel Art World 도서관·사무실,
+도시 상가·주택가, 학교 내장·외관·특별실, 의원·편의점·식당·주택 내부까지 11팩을 지원한다. 다운로드는 제작자 페이지를 열고, 사용자가 받은 PNG를
+가져올 때 SHA-256 + 디코딩 치수를 확인한다. 원본/샘플 그림은 앱에 번들하지 않는다.
+공용 메타데이터는 `tiledata/pixel-art-world/catalog.json` →
+`scripts/content/prepare-pixel-art-world-references.mjs` → `src/assets/pixelArtWorldCatalog.json`.
+기존·새 프로젝트 모두 같은 카탈로그를 사용하지만, 원본을 가져오기 전에는 타일셋을 만들지 않는다.
+
+`src/editor/externalTilesetImport.ts`가 사용자 PNG에서 조립/오류 비교 그림을 만들고
+원본 1 MD/PNG + 부품당 1 MD/PNG를 `referenceDocuments`에 넣는다.
+도시 사거리(28×27), 작은 교실(14×13), 현관·복도(19×9), 도서관·사무실·시설 내부 등 scene은
+별도 용도마다 전체 배열 1 MD + 실제 합성 1 PNG를 추가한다. 따라서 조수의 기존 문서·이미지
+선행 읽기 계약을 그대로 사용한다. 타일 번호·칸/픽셀 좌표·lower/upper 전체 배열,
+통행/접근칸·크레딧을 포함한다. 이 그림은 사용자 프로젝트에서만 생성·보관한다.
+등록은 한 번의 snapshot + store.update로 undo/dirty/저장 경로를 공유한다.
+비동기 준비 중 프로젝트 lineage/저장 대상 변경 또는 대화상자 닫기는 등록을 취소한다.
+단, 이미 asset 저장이 시작된 경우 참조되지 않는 파일은 저장소의 자산 정리 대상이 될 수 있다.
+
+시트 전체의 의미 분석은 아니다. 명시된 완성 장면과 검토 부품에 조립 배열을 제공한다. 검토된 가구는 upper·차단,
+바닥은 lower·통과, 나머지는 미검토·차단이다. `externalRecipeExample`과
+`validateExternalRecipeExample`은 고정 가구 예제의 구조와 접근칸만 다룬다.
+범위·원본 판본·자료 생성 절차: [pixel-art-world](../tiledata/pixel-art-world/README.md),
+[도시](../tiledata/pixel-art-world/URBAN.md), [학교](pixel-art-world-school.md).
+도시·학교 메타데이터는 각각 `prepare-pixel-art-world-urban.mjs` / `prepare-pixel-art-world-school.mjs`로 생성한다.
+`ExternalTileScene`은 전체 배열·접근칸·통행/홈 레이어를 명시하며 가져오기 전에 검증한다.
+
+[도시 50×50](../tiledata/pixel-art-world/CITY-50.md)은 여러 사용자 원본을 조합하는 별도 청사진이다.
+`prepare-pixel-art-world-city.mjs` → `pixelArtWorldCity.json`에는 픽셀 없이 원본 해시·합성 번호 사전·전체 배열·출입구를 싣는다.
+관련 도시 팩을 가져오면 `pixelArtWorldCityGuide`가 5 MD와 현재 사용자 원본 이미지를 추가한다.
+번호는 현재 시트가 아닌 합성 atlas 전용이다. 다른 원본이나 시설 이벤트를 자동 설치하지 않는다.
+`author-pixel-art-world-city.mjs`는 로컬 원본으로 12맵을 만들고,
+`save-pixel-art-world-city.mjs`는 새 사용자 SQLite 프로젝트에 저장·재오픈한다.
+저작 결과 그림은 사용자 프로젝트에만 존재한다. 자료집의 다운로드 방식이나 소재 번들 정책은 바뀌지 않는다.
+
+### 공간 설계·실제 발판 검사
+
+공유 설계 근거는 `tiledata/pixel-art-world/MAPPING-RESEARCH.md`이며
+`prepare-pixel-art-world-layout-guidance.mjs` → `pixelArtWorldLayoutGuidance.json`으로 번들한다.
+모든 해당 PNG 가져오기에서 공통 설계 MD를 추가한다. Tiled 2026 청사진 분리,
+DPLAN의 문 연결 관계, COHO의 도시 계층과 RPG Maker의 실무 지침을 구별해 기록한다.
+논문 모델을 구현하거나 미학을 자동 검증했다는 의미는 아니다.
+
+`ExternalTileRecipe.placementKind`는 standing/wall-mounted/countertop을 구분하고
+`supportCells`는 조각 내부의 지지 위치다. 가져오기 준비 중 `externalTileGrounding.ts`가
+standing의 실제 불투명 최하단 픽셀과 scene 바닥을 대조해 벽 위 가구를 거절한다.
+완전한 조각인지, 용도에 맞는 공간인지는 PNG 검토가 따로 필요하다.
+`ExternalTileScene.rooms/doorways/ceilingCells`는 주택 방/문/천장 경계를,
+`doors`는 학교 복도와 각 실의 문/접근 좌표를 보존한다.
+학교는 거리→현관·복도→각 실→복도로 전이하며 입구 선택 메뉴를 사용하지 않는다.
 > 조수가 타일셋에 대해 무엇을 보고 무엇을 못 보는지, 새 타일셋을 가르칠 때의 순서는 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 에서 시작한다.
 
 ## 사용자 경로와 정본
@@ -402,6 +469,50 @@ w=5 LEFT3+RIGHT 뒤2, w=4 LEFT 앞2+RIGHT 뒤2, w=3 LEFT 앞2+RIGHT 끝, w=2 LEF
 - 2026-09-24 후속(사용자: 「여전히 이상함」): 폭 2 조립(LEFT 첫 열+RIGHT 끝 열)은 닫히지만 수관 계단 끝에 가는 뿌리 하나가 매달린 모양이라 뺐다.
   최소 폭 3, 폭 1·2 밑변은 이웃 열 높이로 합친다. 분류 `diverse-villages-trunks-v12`·`concept-villages-v3`·`climate-*-villages-v3`·`field-routes-*-v3`, 지역 revision 다양한 마을 12·기후/필드 3.
 
+
+### 공용 PAW 장면 실행 경로 (2026-09-25)
+
+[AI-SCENE-AUTHORING](../tiledata/pixel-art-world/AI-SCENE-AUTHORING.md):
+계단뿐 아니라 학교·교실·특별실·실내·도시76장소를 검색/문서·그림 조회/실제 구현한다.
+`publish-pixel-art-world-local-library.mjs`는 저장된 학교 층과 번호 청사진의 일치를 확인한 뒤
+`pixel-art-world-school-rooms.mjs`로28실을 추출한다. 각 장소가 원본 원점·전체 배열·부품·접근칸·실제 그림을 소유한다.
+공용 SQLite와 새/기존 프로젝트가 같은 자료를 사용한다. 원본/파생 그림은 사용자 로컬에만 둔다.
+`build_shared_scene`는 이벤트까지 보관한 library.maps를 우선하고 정적 kit는 events=[]로 구별한다.
+후속 수정: 이자카야 분리 조리실·천장/남쪽 벽 포함12×20(부스2·방석6·바3), 독립 침실2 주택15×15.
+`tiledata/pixel-art-world/house-variants.json`과 `scripts/content/prepare-pixel-art-world-dense-interiors.mjs`가 메타데이터·전체 배열·
+프로젝트 소유 그림을 생성하고 엔진 통행으로 접근점을 검사한다. `scripts/content/save-pixel-art-world-host-patch.mjs`는
+host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체 문서를 다시 읽어 비교한다.
+두 신규 맵은 도시 외부 전이 없는 독립 표본이다. 이전74장소 AI 재현 실험과 신규 저작분 확인을 구별한다.
+이자카야의 천장 없는10×15는 중간 도안이다. `scripts/content/prepare-pixel-art-world-izakaya-ceiling.mjs`로
+기존 사용자 WallA01을 같은 타일셋에 추가하고 `tiledata/pixel-art-world/izakaya-ceiling-compiled.json`을
+정적 장소와 저장 맵 양쪽에 적용한다. 원본480칸은 보존하며 천장47변형과 연결 그룹은480번부터다.
+
+이자카야 확대 청사진은 `tiledata/pixel-art-world/izakaya-kitchen-layout.json`이다.
+내벽x6/y6·직원 문(6,4)/(6,5)·주통로 두 칸·45접근점·천장61칸/벽52칸을 실제 충돌/자동 성형으로 검사한다.
+직원 문을 봉쇄하는 반례에서 주방만 고립되어야 한다. 카운터 상부 벽 겹침과 밑동 바닥 지지를 구별한다.
+
+## PAW 천장 아래 벽과 실제 가게2종 (2026-09-25)
+
+천장 덩어리의 남쪽 끝 아래에는 반드시 벽 몸통/하단 두 행을 둔다. 맵 경계도 예외가 아니다.
+`scripts/content/pixel-art-world-ceiling-walls.mjs`가 좌표를 산출하고 누락/경계 초과를 거절한다.
+`prepare-pixel-art-world-retail-interiors.mjs`는 사용자 원본으로 서점·아이스크림점10×15를 만들고
+`retail-interiors-compiled.json`의 전체 배열과 정본이 일치할 때 공용 루트에 게시한다.
+새 원본 다운로드 없음. 실제 이미지·MD·정상/오류 비교는 사용자 로컬 정본/공용에만 둔다.
+상세: [가게·벽 계약](../tiledata/pixel-art-world/RETAIL-INTERIORS.md).
+
+후속 확인: 정본revision81의3맵과 아이스크림 아틀라스를 공식 호스트 저장 후 재로드했다.
+공용64장소/16맵을 CAS 게시·재로드했다. 실제 `createBlankProject`와 기존 프로젝트의
+`ensureSharedContent`에서 최신3타일 정의가 일치하고 두 번째 투영은 불변이다.
+`buildSharedScene`으로 새 가게2곳과 수정 이자카야를 독립 사본으로 조립하여 원본 배열·벽면
+일치를 확인했다. 이 관찰은 결정적 조립 경로이며 새 LLM 생성 실험은 아니다.
+근거: `output/paw-shop-walls/`의 saved/shared/projection/visual proof. 전체 게이트는 실행하지 않았다.
+
+2026-09-25 개인실 보정: 이자카야 현재판은14×24, 다다미 개인실6석·부스2·바6이다.
+홀 목재0/1·주방6·개인실 다다미를 나누고, 개인실 출입구(6,18)/(6,19)만 막으면
+방만 고립되는지 실제 충돌 엔진으로 확인한다. 천장86/벽면78, 접근 목표82.
+전체 배열·구획·문턱은 `izakaya-kitchen-layout.json`과 `izakaya-ceiling-compiled.json`에 있다.
+같은 맵과 로컬 공용 정적 장소/저장 맵을 갱신하며 `output/paw-izakaya-private-room/`에
+정본·공용 재로드와 새/기존 프로젝트 투영 증거를 남긴다. 개폐 문 이벤트나 새 LLM 실험은 아니다.
 ### 수관 잎 채움 (2026-09-24)
 
 굽이숲 수관 속이 검은 판이라 딱딱해 보였다(사용자). 승인 시안 K: 평평한 속 색만 테두리 자신의 잎 띠로 채우고, 깊이로 어둡게 한다

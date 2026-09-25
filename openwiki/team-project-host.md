@@ -93,6 +93,56 @@ SQLite 전환 후 저장 대상이 없는 메모리 어댑터로 열렸다.
 - 하나의 프로젝트 폴더는 하나의 실행 중인 호스트가 관리한다. 여러 독립 서버 프로세스를
   같은 폴더에 붙이는 다중 호스트 구성은 지원하지 않는다(lease는 호스트 메모리 소유).
 
+## 큰 프로젝트의 HTTP 저장 전송 (2026-09-24)
+
+브라우저 HTTP 브리지의 압축은 프로젝트 문서/CAS 계약을 바꾸지 않는 전송 계층이다.
+`electron/browser/bridge.ts`는 호스트 설정 `requestBodyEncoding: "gzip"`이 있을 때만,
+UTF-8 JSON 요청이 1MiB를 초과하고 `CompressionStream`이 있으면 gzip을 사용한다.
+더 작아지지 않거나 압축 결과가 64MiB를 넘으면 비압축을 사용한다. 압축 기능이 없거나
+전송 전 압축이 실패해도 비압축 경로가 있다. HTTP 오류 뒤 저장을 자동 재전송하지 않는다.
+구버전 호스트가 capability를 광고하지 않으면 기존 JSON 전송을 유지한다.
+
+새 호스트의 `electron/serve/bridgeRequestBody.ts`는 Origin/회원/브리지 토큰 인증 **이후**,
+프로젝트 세션을 열거나 저장 핸들러를 실행하기 **이전**에 요청을 검증한다.
+브라우저가 보내는 `x-oprn-channel`과 JSON의 `channel`은 반드시 일치해야 한다.
+헤더 없는 기존 소규모 요청은 허용하지만, 확대된 한도를 얻지는 않는다.
+
+| 요청 | 전송 바이트 상한 | 압축 해제 후 상한 |
+|---|---:|---:|
+| gzip + `oprn:project.save` 명시 헤더 | 64MiB | 256MiB |
+| 비압축 + `oprn:project.save` 명시 헤더 | 256MiB | 256MiB |
+| 나머지 브리지 RPC (mapPatch 포함) | 64MiB | 64MiB |
+
+새 프로젝트의 `oprn:start.createProject`도 전체 `seed` 안에 공용 자산·AI 문서를 담으므로
+`project.save`와 같은 상한을 적용한다(2026-09-24). 음식 자료 추가 뒤 실제 신규 생성에서
+64MiB 해제 상한의 413이 발생했다. 생성 채널만 추가 허용하며 헤더/본문 일치 검사와
+기존 팀 owner 확인, seed 검증, 폴더 생성·실패 정리는 그대로 유지한다.
+
+`Content-Length`와 실제 수신량을 모두 제한하며 gzip 출력도 스트리밍 중 제한한다.
+과대 요청은413, 지원하지 않는 인코딩은415, 잘못된 gzip/JSON/채널 불일치는400이다.
+실패한 본문은 핸들러로 전달하지 않는다. gzip 해제는 브리지 POST 전용이며 로그인
+본문은 기존4096바이트 그대로다. 브리지 토큰/회원 인증·쓰기 권한·expectedSha 비교·
+3-way merge·SQLite 저장은 기존 서비스가 담당한다. `serialized` 원문 문자열을
+재직렬화하거나 expectedSha를 변경하지 않는다. 존재하지 않는 저장 채널은 추가하지 않는다.
+
+브라우저 브리지와 호스트를 함께 다시 빌드해야 capability와 해제기가 연결된다.
+외부 프록시가 있으면 압축 전송 크기 한도도 별도로 적용된다.
+격리 HTTP sink 관찰은 실제 브리지/본문 해제기의 바이트 보존과 거절 동작만 확인하며,
+정본 저장·재로드 증거를 대신하지 않는다.
+
+### 헤드리스 대용량 콘텐츠 설치 (2026-09-25)
+
+`scripts/lib/hostBridgeClient.mjs`는 작은 `/__oprn/team` 페이지에서 실제 브리지 설정과
+회원 쿠키를 메모리로 얻은 뒤 Chromium을 닫는다. 같은 origin의 공식 HTTP dispatcher를
+Node에서 호출하며 토큰/쿠키를 로그나 파일에 기록하지 않는다. 협상된 gzip/채널별 한도와
+`expectedSha` CAS를 유지하고 실패한 저장을 자동 재시도하지 않는다. DB 직접 쓰기는 없다.
+`read-pixel-art-world-host.mjs`도 같은 클라이언트로 대용량 정본을 읽고 PAW 자산의
+ref SHA와 실제 바이트를 대조한 뒤 private portable/읽기 영수증을 만든다.
+`install-pixel-art-world-shared-host.mjs`는 설치 전 backup, 저장 후 실제 재로드,
+맵/spatial 해시 보존과 모든 대상 자산 바이트 비교를 완료해야 영수증을 작성한다.
+PAW의 기존 Chromium 설치는 `Target crashed` 후 저장되지 않았고 이 경로로 revision59에
+저장·재로드했다. 렌더러 충돌 원인은 확정하지 않았으며 편집기 UI의 메모리 문제 해결을 뜻하지 않는다.
+
 ## 백업과 이전
 
 `store.backup()`은 `backups/<시간-uuid>/project.sqlite`와 `assets/`를 함께 만든다.
@@ -151,6 +201,25 @@ DB 스냅샷의 에셋 목록으로 파일을 복사하며 실패 시 불완전 
   선택한 프로젝트만 백업하며 추가 프로젝트 전체를 재귀 백업하지 않는다. 팀 정보는 기본 DB에 있다.
 - 회귀 계약: `test/team/webProjectCreation.test.ts` (독립 저장, 원본 보존, 재시작 후 로드,
   로그인 리다이렉트, 잘못된 경로/시드, viewer 제한). 실행 여부는 완료 보고에서 구분한다.
+
+### 새 프로젝트의 공용 기본 자료 보장 (2026-09-24)
+
+부팅은 공용 catalog 로드를 기다렸지만, 동기 `createProjectWithMaps`는 설치된 snapshot을
+사용하지 않았고 새 폴더 생성은 정규화를 거치지 않은 seed를 바로 저장했다. 실측에서 같은
+9개 라이브러리를 로드한 상태로 기본 타일셋 25개만 생성됐으며, 수동 projection 후 49개가 됐다.
+경고가 없었으므로 이 누락을 timeout이나 HMR 문제로 분류하지 않는다.
+
+- `createProjectWithMaps`는 이미 설치된 `projectDefaults` 자료를 `ensureSharedContent`로 적용한다.
+  동기 factory는 네트워크를 하지 않으므로 headless 호출자는 먼저 `installSharedContent`를 해야 한다.
+- `createProjectFolderWithSeed`는 저장 직전에 공용 catalog를 다시 로드하고 seed에 적용한다.
+  HTTP(S) 호스트에서는 네트워크·HTTP(404 포함)·JSON/catalog 오류 시 생성 RPC를 호출하지 않는다.
+  기존 새 프로젝트 오류 toast가 이유를 표시하며 기존 폴더는 그대로다.
+- 59MB를 넘는 공용 catalog를 고려해 읽기 제한은 60초다. 기존 프로젝트 부팅의 선택적 로딩은
+  경고 후 진행하지만, 새 프로젝트는 실패한 로딩이나 오래된 snapshot으로 생성하지 않는다.
+- 배포 Electron의 `app://`는 현재 공용 content endpoint가 없어 선택적 로딩을 유지한다.
+  이 변경으로 데스크톱 공용 catalog 배포가 구현됐다고 간주하지 않는다.
+- 예약 `shared_` ID의 자료와 그림을 함께 적용한다. 사용자 독립 ID, 맵, 시작 장르와 설계 brief는
+  유지한다. SQLite 생성/재로드는 기존 호스트 경로가 담당한다.
 
 ## 운영 systemd가 Vite preview에 고정된 경우 (2026-09-18)
 

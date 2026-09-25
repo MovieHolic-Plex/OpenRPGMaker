@@ -1,4 +1,5 @@
 import { PiTilesetReferenceGate } from "./tilesetReferenceGate";
+import { spatialReferenceImages } from '@/editor/tools/spatialReferenceTools';
 import { TILESET_REFERENCE_READ_TOOLS, TILESET_REFERENCE_WRITERS } from "@/editor/tools/tilesetReferenceTools";
 // 레지스트리 툴 → Pi AgentTool 모양 어댑터. 순수 함수라 브라우저/Bun/Node 어디서나 같다.
 //
@@ -17,6 +18,7 @@ import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
+import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
 
 export interface PiToolTextContent {
   readonly type: "text";
@@ -47,6 +49,7 @@ export interface PiToolCallRecord {
 }
 
 export interface CreatePiToolsetOptions {
+  readonly modernTilesetPolicy?: ModernTilesetPolicy;
   readonly referenceGate?: PiTilesetReferenceGate;
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
   readonly domains?: readonly string[];
@@ -218,6 +221,10 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
         : runTool(ctx, tool.name, args));
+      if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
+        const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
+        if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
+      }
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
       if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
         const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name, options.scopeAllowsSystem === true);
@@ -238,6 +245,9 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
         }
+      }
+      if (tool.name === 'read_spatial_reference') for (const image of spatialReferenceImages(ctx.project,args,result.data)) {
+        content.push({type:'image',mimeType:image.dataUrl.slice(5,image.dataUrl.indexOf(';')),data:image.dataUrl.slice(image.dataUrl.indexOf(',')+1)});
       }
       return { content, details: result };
     },
