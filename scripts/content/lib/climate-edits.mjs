@@ -59,9 +59,10 @@ export function placePeaks(map, count, keepClear, dressing = null) {
  * Desert dressing. Broadleaf trees and bushes would not grow in sand: each free-standing tree stamp is cleared back to
  * sand and replaced by one plant at its foot — a palm when water is within five cells, a cactus otherwise (a big tree
  * also leaves a boulder). Then palms line the water's edge and a few cacti stand on open sand. Everything stays one
- * cell off roads, doors and other plants (the ring round each plant is bare sand).
+ * cell off roads, doors and other plants (the ring round each plant is bare sand). `feet: false` leaves no plant where a
+ * tree stood unless water is near (a palm).
  */
-export function dressDesert(map, { vegetation, water, keepClear, palms, cacti, seed }) {
+export function dressDesert(map, { vegetation, water, keepClear, palms, cacti, seed, feet = true }) {
   const W = map.width, H = map.height, at = (x, y) => y * W + x, inside = (x, y) => x >= 0 && y >= 0 && x < W && y < H;
   const bare = (x, y) => inside(x, y) && map.lowerTiles[at(x, y)] === GROUND && map.upperTiles[at(x, y)] < 0;
   const ringBare = (x, y) => [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => bare(x + dx, y + dy)));
@@ -76,8 +77,9 @@ export function dressDesert(map, { vegetation, water, keepClear, palms, cacti, s
     if (!cells.every(([x, y, k]) => map.lowerTiles[at(x, y)] === o.lower[k] && map.upperTiles[at(x, y)] === o.upper[k])) continue;
     for (const [x, y] of cells) { map.lowerTiles[at(x, y)] = GROUND; map.upperTiles[at(x, y)] = -1; }
     const fx = o.x + (o.w >> 1), fy = o.y + o.h - 1;
-    plant(fx, fy, nearWater(fx, fy, 5) ? PALM : CACTUS, "replaces " + o.name);
-    if (o.w * o.h >= 12) plant(o.x, o.y + 1, BOULDER, "replaces " + o.name);
+    // feet: false (desert ground, 2026-09-25) — no lone cactus or boulder where a tree stood; a palm only by water
+    if (feet || nearWater(fx, fy, 5)) plant(fx, fy, nearWater(fx, fy, 5) ? PALM : CACTUS, "replaces " + o.name);
+    if (feet && o.w * o.h >= 12) plant(o.x, o.y + 1, BOULDER, "replaces " + o.name);
     replaced++;
   }
   // Palms on the water's edge (one cell from water), spaced three apart, scanning from a seeded offset.

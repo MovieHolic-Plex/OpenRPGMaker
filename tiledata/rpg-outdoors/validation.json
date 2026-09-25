@@ -366,21 +366,21 @@
       23,
       35
     ],
-    "reachable": 1041,
+    "reachable": 1327,
     "targets": 10,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 3,
-      "screen": 0.394,
+      "screen": 0.362,
       "at": [
-        8,
+        4,
         0
       ],
       "screenAt": [
         0,
-        24
+        0
       ]
     }
   },
@@ -441,45 +441,45 @@
       20,
       35
     ],
-    "reachable": 786,
-    "targets": 7,
-    "blocked": 0,
-    "terraceLeaks": 0,
-    "seals": [],
-    "emptiness": {
-      "maxSq": 3,
-      "screen": 0.439,
-      "at": [
-        28,
-        2
-      ],
-      "screenAt": [
-        4,
-        24
-      ]
-    }
-  },
-  {
-    "id": "outdoor-desert-dunes",
-    "seed": 5502,
-    "entry": [
-      4,
-      34
-    ],
-    "reachable": 1009,
+    "reachable": 1344,
     "targets": 7,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 4,
-      "screen": 0.439,
+      "screen": 0.462,
       "at": [
-        25,
-        1
+        8,
+        10
       ],
       "screenAt": [
-        16,
+        0,
+        4
+      ]
+    }
+  },
+  {
+    "id": "outdoor-desert-dunes",
+    "seed": 5501,
+    "entry": [
+      4,
+      34
+    ],
+    "reachable": 1592,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.462,
+      "at": [
+        20,
+        21
+      ],
+      "screenAt": [
+        39,
         27
       ]
     }
@@ -491,21 +491,21 @@
       4,
       20
     ],
-    "reachable": 787,
+    "reachable": 981,
     "targets": 6,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 4,
-      "screen": 0.439,
+      "screen": 0.466,
       "at": [
-        11,
+        3,
         0
       ],
       "screenAt": [
-        12,
-        0
+        0,
+        12
       ]
     }
   },

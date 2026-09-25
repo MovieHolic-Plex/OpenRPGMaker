@@ -24,6 +24,8 @@
 //   options.accept(cells)          reachability check for solid pieces (rolled back when it fails).
 //   options.seed, options.limits, options.edgeBand (default 4)
 //   options.setPieces              false to skip the set pieces (fields that already have their own).
+//   desert: options.duneSeas (runs of 3–6 dunes, default 0), options.duneShare (fill share of dunes, 0.45),
+//           options.mesas, options.cactusClumps; volcano: options.pools, options.basalt.
 import { emptiness } from "./village-fullness.mjs";
 import { rng } from "./bare-trees.mjs";
 
@@ -391,6 +393,31 @@ export function dressDesertGround(map, options) {
       if (b) pieces.push({ kind: "column", x: x + 2, y: y - 1, cells: 2 });
       break;
     }
+    // Dune seas (options.duneSeas, default none): a run of three to six dunes of mixed sizes a cell or two apart on wide
+    // open sand — the dune field reads as dunes, not as one mound here and there.
+    for (let k = 0, tries = 0; k < (options.duneSeas ?? 0) && tries < 200; tries++) {
+      const cx = 6 + Math.floor(R() * (ctx.W - 12)), cy = 5 + Math.floor(R() * (ctx.H - 10));
+      let open = 0;
+      for (let dy = -4; dy <= 4; dy++) for (let dx = -7; dx <= 7; dx++) if (ctx.free(cx + dx, cy + dy)) open++;
+      if (open < 15 * 9 * 0.7) continue;
+      const got = [];
+      for (const [ox, oy] of [[0, 0], [6, 1], [-6, -1], [3, -4], [-3, 4], [9, -3], [-9, 3]].sort(() => R() - 0.5)) {
+        if (got.length >= 3 + Math.floor(R() * 4)) break;
+        const d = dune(cx + ox + Math.floor(R() * 3) - 1, cy + oy, got.length ? 3 + Math.floor(R() * 3) : 5);
+        if (d) got.push(d);
+      }
+      if (got.length < 3) continue;
+      pieces.push(...got); k++;
+      // the floor of the dune field is ripple sand (the gaps and stamp corners between dunes would stay bare)
+      const xs = got.map((d) => d.x), ys = got.map((d) => d.y);
+      let floor = 0;
+      for (let y = Math.min(...ys) - 3; y <= Math.max(...ys) + 3; y++) for (let x = Math.min(...xs) - 4; x <= Math.max(...xs) + 4; x++) {
+        if (!ctx.free(x, y)) continue;
+        const i = ctx.at(x, y), h = ((Math.imul(x, 73856093) ^ Math.imul(y, 19349663)) >>> 0) % 7;
+        map.lowerTiles[i] = kit.ripple[h < 2 ? 0 : h < 4 ? 1 : h < 6 ? 2 : 3]; ctx.mine[i] = 1; floor++;
+      }
+      pieces.push({ kind: "ripple", x: cx, y: cy, cells: floor });
+    }
     // Cactus clumps: a saguaro with one or two small cacti, three or four clumps per map.
     for (let k = 0, tries = 0; k < (options.cactusClumps ?? 2 + Math.floor(R() * 2)) && tries < 300; tries++) {
       const x = 2 + Math.floor(R() * (ctx.W - 4)), y = 2 + Math.floor(R() * (ctx.H - 5));
@@ -408,7 +435,7 @@ export function dressDesertGround(map, options) {
   // Fill: dunes in the edge band and wide sand, ripple patches, now and then cracked earth.
   const res = fillLoop(map, ctx, options, pieces, (sx, sy, bs) => {
     const r = R();
-    if (r < 0.45 && bs >= 2) { const d = dune(sx, sy, bs); if (d) return d; }
+    if (r < (options.duneShare ?? 0.45) && bs >= 2) { const d = dune(sx, sy, bs); if (d) return d; }
     if (r > 0.9 && bs >= 3) { const c = cracked(sx, sy, 10 + Math.floor(R() * 10)); if (c) return c; }
     return ripple(sx, sy, 10 + Math.floor(R() * 14));
   });

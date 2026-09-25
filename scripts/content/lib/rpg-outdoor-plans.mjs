@@ -387,9 +387,8 @@ export const PLANS = [
       b.yards();
       b.singlesWhere(770, 12, (x, y) => b.nearWater(x, y, 1) && !b.water.has(b.at(x, y)), 3, { shore: true });
       b.gardenPlots(3, { owner: "오아시스 물가 밭" });
-      b.singlesWhere(769, 6, (x, y) => !b.nearWater(x, y, 6), 5);
-      // Desert (user 2026-09-25): hardly any trees — rocks, cacti, dry shrubs; bare-tree spots (마른나무 for now) from the fill.
-      b.threes(537, 2, null, 2);
+      // Desert (user 2026-09-25): hardly any trees, few rocks and cacti — the open sand is dunes, ripples and cracked earth
+      // with a few cactus clumps (theme ground, OutdoorMap.climateGround); bare-tree spots from the fill.
     },
   },
   {
@@ -444,7 +443,7 @@ export const PLANS = [
   {
     id: "outdoor-volcano-zone", gate: "field", name: "불꽃산 화산 지대", category: "volcano", tilesetId: "forest_harmony_volcano", width: 56, height: 40, seed: 5401,
     purpose: "용암 강과 화산 봉우리의 화산 필드. 용암이 절벽을 폭포로 넘고 현무암 다리로 건넌다",
-    note: "재 덮인 절벽 위 화산 봉우리들 사이에서 용암 강이 흘러나와 절벽을 용암 폭포로 넘는다. 아랫단 길은 현무암 다리로 용암 강을 건너고 돌계단으로 윗단에 오른다. 재 들판 곳곳에 작은 화산 봉우리가 솟고 바위 너덜이 깔렸다. 그을린 잎 없는 나무가 몇 덩이 서 있다",
+    note: "재 덮인 절벽 위 화산 봉우리들 사이에서 용암 강이 흘러나와 절벽을 용암 폭포로 넘는다. 아랫단 길은 현무암 다리로 용암 강을 건너고 돌계단으로 윗단에 오른다. 재 들판은 식은 용암 판과 가지 친 용암 균열로 덮이고, 분기공이 김을 뿜는 작은 용암 웅덩이와 현무암 기둥 한 무리가 있다. 화산 봉우리는 넷, 그을린 잎 없는 나무가 몇 덩이 서 있다",
     build(b) {
       b.cliffs([{ points: [[0, 15], [16, 15], [18, 16], [34, 16], [36, 15], [55, 15]], height: 6, left: "open", right: "open" }]);
       b.stairs([[12, 15, 6]]);
@@ -457,16 +456,17 @@ export const PLANS = [
       b.connect();
       b.paintRoads();
       // Ash cones break the open ash (terrain before props); the bare-tree copses are capped (few trees on ash).
-      b.peaks([[24, 5], [44, 4], [4, 24], [4, 6, true], [28, 11, true], [50, 10, true], [2, 33, true], [27, 24, true], [50, 36, true]]);
+      // Three cones only (user 2026-09-25: 「돌이 너무 많다」); the open ash is lava plates, crack networks and a lava pool
+      // with its fumarole (theme ground, OutdoorMap.climateGround).
+      b.peaks([[24, 5], [44, 4], [4, 24], [50, 36, true]]);
       b.props([["마른나무", 8, 31], ["마른나무", 46, 22], ["해골", 30, 36], ["나무 이정표", 22, 30, "화산 경고 표지"]]);
       // No canopy on the ash (user 2026-09-25); bare-tree spots come from the fill.
-      b.threes(740, 3, null, 2);
     },
   },
   {
-    id: "outdoor-desert-dunes", gate: "field", name: "금빛 모래언덕", category: "desert", tilesetId: "forest_harmony_desert", width: 56, height: 40, seed: 5501,
-    purpose: "모래언덕 둔덕 두 줄과 작은 샘의 사막 필드. 선인장·바위·해골 사이로 대상 길이 이어진다",
-    note: "사암 둔덕 두 줄이 층을 이루고 돌계단으로 오르내린다. 아랫단에 야자수 둘러선 작은 샘, 모래밭에 선인장·바위·짐승 해골이 흩어져 있고 서쪽에서 동쪽으로 대상 길이 난다",
+    id: "outdoor-desert-dunes", gate: "field", groundOpts: { duneSeas: 2, duneShare: 0.5 }, name: "금빛 모래언덕", category: "desert", tilesetId: "forest_harmony_desert", width: 56, height: 40, seed: 5501,
+    purpose: "모래언덕 둔덕 두 줄과 작은 샘의 사막 필드. 사구와 모래 물결 사이로 대상 길이 이어진다",
+    note: "사암 둔덕 두 줄이 층을 이루고 돌계단으로 오르내린다. 아랫단에 야자수 둘러선 작은 샘, 모래밭은 크고 작은 사구와 모래 물결이 덮고 사암 메사·선인장 무리·짐승 해골이 드문드문 있다. 서쪽에서 동쪽으로 대상 길이 난다",
     build(b) {
       b.cliffs([{ points: [[0, 12], [10, 12], [12, 11], [24, 11], [26, 12], [55, 12]], height: 4, left: "open", right: "open" },
         { points: [[0, 26], [18, 26], [20, 25], [30, 25], [32, 26], [46, 26], [48, 25], [55, 25]], height: 4, left: "open", right: "open" }]);
@@ -478,15 +478,14 @@ export const PLANS = [
       b.paintRoads();
       b.props([["해골", 30, 31], ["해골", 50, 16], ["돌 오벨리스크", 5, 33, "모래에 묻힌 옛 표석"], ["천막", 6, 24, "나그네 천막"], ["모닥불", 9, 27]]);
       b.singlesWhere(770, 5, (x, y) => b.nearWater(x, y, 1) && !b.water.has(b.at(x, y)), 2, { shore: true });
-      b.singlesWhere(769, 12, (x, y) => !b.nearWater(x, y, 5), 5);
-      // No forest band on the dunes (user 2026-09-25): rocks, cacti, dry shrubs and bare-tree spots from the fill.
-      b.threes(537, 4, null, 2);
+      // No forest band on the dunes (user 2026-09-25) and few rocks or cacti: the sand itself is dunes and ripples, with
+      // a mesa, cracked earth and a few cactus clumps (theme ground); bare-tree spots from the fill.
     },
   },
   {
     id: "outdoor-beach-cliffs", gate: "field", name: "야자 해변 해안 절벽", category: "desert", tilesetId: "forest_harmony_desert", width: 56, height: 36, seed: 5601,
     purpose: "모래 해변과 바다로 떨어지는 해안 절벽 필드. 야자수·바위·선착장, 절벽 윗단 해안길",
-    note: "서쪽 모래 해변이 남쪽 바다로 완만히 내려가고 동쪽은 사암 해안 절벽이 바다로 곧장 떨어진다. 절벽 윗단으로 돌계단 하나, 해변엔 야자수와 바위, 낚시용 선착장이 있다",
+    note: "서쪽 모래 해변이 남쪽 바다로 완만히 내려가고 동쪽은 사암 해안 절벽이 바다로 곧장 떨어진다. 절벽 윗단으로 돌계단 하나, 해변엔 야자수와 사구·모래 물결, 낚시용 선착장이 있다",
     build(b) {
       b.cliffs([{ points: [[0, 8], [18, 8], [20, 9], [34, 9], [36, 10], [55, 10]], height: 5, left: "open", right: "open" }]);
       b.stairs([[24, 9, 5]]);
@@ -500,8 +499,7 @@ export const PLANS = [
       b.props([["낚시 바구니", 18, 22, "낚시꾼 자리", "선착장"], ["나무통", 13, 22, "미끼 통", "선착장"], ["통나무 더미", 30, 20, "해안길 쉼터 통나무", "해안길"], ["돌 석상", 44, 6, "바다를 보는 등대 석상"]]);
       b.singlesWhere(770, 10, (x, y) => y > 14 && y < 26 && !b.water.has(b.at(x, y)), 4);
       b.singlesWhere(770, 4, (x, y) => y < 8, 5);
-      // No forest band over the beach (user 2026-09-25): palms by the water, rocks and dry shrubs from the fill.
-      b.threes(537, 4, [2, 14, 50, 12], 2);
+      // No forest band over the beach (user 2026-09-25): palms by the water; the open sand is ripples and dunes (theme ground).
     },
   },
   {

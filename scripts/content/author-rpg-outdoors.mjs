@@ -49,12 +49,19 @@ await withTsModule("scripts/content/lib/rpg-outdoors-entry.ts", "rpg-outdoors-en
         for (const [group, items] of plan.plaza ?? []) b.plazaFill(group, items);
         b.pruneUnowned();
         const theme = { ...GATES[plan.gate ?? "town"], ...THEME_FILL[plan.theme ?? plan.tilesetId], plaza: plan.plaza ?? [], ...(plan.fill ?? {}) };
-        if (plan.fill !== false) b.fill(theme);
+        if (plan.fill !== false) b.fill(theme.ground ? { ...theme, ...theme.fillGate } : theme);
         // Desert and ash: leafless-tree groves (lib/bare-trees.mjs) on the spots fill left bare.
         if (theme.standsAsSpots) {
-          b.bareGroves({ seed: plan.seed, cactus: plan.tilesetId === "forest_harmony_desert" ? 769 : null });
+          b.bareGroves({ seed: plan.seed, cactus: theme.ground ? null : plan.tilesetId === "forest_harmony_desert" ? 769 : null, ...(theme.groveRockChance != null ? { rockChance: theme.groveRockChance } : {}) });
           // Top up the open sand / ash round the groves with clumps (no grass, no trees): rocks on ash, cactus and rocks on sand.
           if (theme.topUp) b.fill({ ...theme, ...theme.topUp, standsAsSpots: false, stands: [], groves: 0 });
+        }
+        // Desert and ash: the rest of the gate is closed by the ground (dunes, ripples, lava plates, cracks…).
+        if (theme.ground) {
+          const hard = GATES[plan.gate ?? "town"] === GATES.field ? { maxSq: 5, screen: 0.5 } : { maxSq: 4, screen: 0.4 };
+          const g = b.climateGround({ climate: theme.ground, maxSq: hard.maxSq, screen: hard.screen - 0.03, seed: plan.seed, ...(theme.groundOpts ?? {}), ...(plan.groundOpts ?? {}) });
+          if (process.env.OUTDOOR_SOFT) { if (g.screen > hard.screen || g.maxSq > hard.maxSq) console.log("GROUND GATE", plan.id, g, "\n" + b.ascii()); }
+          else assert(g.maxSq <= hard.maxSq && g.screen <= hard.screen, `Ground gate ${plan.id} maxSq=${g.maxSq} screen=${g.screen.toFixed(3)}`);
         }
         // Snow maps: castle walls, walks and tower heads take their snow-capped copies (same passage and layer).
         if (plan.tilesetId === "forest_harmony_snow") b.snowTops = snowCastleTops(b.map, SNOW_WALLS);
@@ -80,7 +87,7 @@ await withTsModule("scripts/content/lib/rpg-outdoors-entry.ts", "rpg-outdoors-en
     plans.push({ ...strip(plan), seedUsed: seed, entry, exits: b.exitList.map(({ inner, ...e }) => e), access: b.access, stairs: b.stairList.map(({ top, bottom, ...s }) => s),
       cliffs: b.cliffProfiles ?? [], falls: b.falls, houses: b.houses, landmarks: b.landmarks,
       placements: b.placements.filter((o) => o.kind !== "dressing").map(({ lower, upper, cells, ...o }) => o),
-      dressing: b.placements.filter((o) => o.kind === "dressing").length, forest: b.forestReport ?? null, bareTreeSpots: b.bareSpots ?? [], bareGroves: b.groveReport ?? null, skipped: b.log.skipped });
+      dressing: b.placements.filter((o) => o.kind === "dressing").length, forest: b.forestReport ?? null, ground: b.groundReport ?? null, bareTreeSpots: b.bareSpots ?? [], bareGroves: b.groveReport ?? null, skipped: b.log.skipped });
     report.push({ id: plan.id, seed, entry, ...check, emptiness: b.fillReport ? { maxSq: b.fillReport.maxSq, screen: +b.fillReport.screen.toFixed(3), at: b.fillReport.at, screenAt: b.fillReport.screenAt } : null });
     console.log(plan.id, `${plan.width}x${plan.height}`, { seed, houses: b.houses.length, props: b.placements.filter((o) => o.kind === "prop").length, reachable: check.reachable, skipped: b.log.skipped.length, empty: b.fillReport && [b.fillReport.maxSq, +b.fillReport.screen.toFixed(2)], groves: b.groveReport ?? undefined });
   }
