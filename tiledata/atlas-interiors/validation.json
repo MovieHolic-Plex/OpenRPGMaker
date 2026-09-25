@@ -1338,5 +1338,319 @@
     "walkable": 55,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "atlas-interior-hospital-ward",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        8
+      ],
+      [
+        2,
+        7
+      ],
+      [
+        21,
+        8
+      ],
+      [
+        11,
+        6
+      ],
+      [
+        12,
+        10
+      ]
+    ],
+    "reachable": 98,
+    "walkable": 97,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-clinic",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        13,
+        8
+      ],
+      [
+        8,
+        6
+      ]
+    ],
+    "reachable": 53,
+    "walkable": 42,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bank-hall",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        5,
+        8
+      ],
+      [
+        10,
+        8
+      ],
+      [
+        15,
+        8
+      ],
+      [
+        17,
+        5
+      ],
+      [
+        7,
+        5
+      ]
+    ],
+    "reachable": 106,
+    "walkable": 100,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bank-vault",
+    "entry": [
+      9,
+      11
+    ],
+    "targets": [
+      [
+        3,
+        10
+      ],
+      [
+        10,
+        10
+      ],
+      [
+        15,
+        10
+      ]
+    ],
+    "reachable": 26,
+    "walkable": 61,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-theater-hall",
+    "entry": [
+      13,
+      15
+    ],
+    "targets": [
+      [
+        12,
+        6
+      ],
+      [
+        13,
+        10
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        23,
+        11
+      ],
+      [
+        5,
+        6
+      ]
+    ],
+    "reachable": 130,
+    "walkable": 122,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-theater-backstage",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        6
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        6,
+        7
+      ]
+    ],
+    "reachable": 59,
+    "walkable": 49,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bathhouse",
+    "entry": [
+      11,
+      12
+    ],
+    "targets": [
+      [
+        9,
+        9
+      ],
+      [
+        7,
+        7
+      ],
+      [
+        14,
+        9
+      ],
+      [
+        4,
+        11
+      ],
+      [
+        21,
+        8
+      ]
+    ],
+    "reachable": 99,
+    "walkable": 90,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-hot-spring",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        10
+      ],
+      [
+        7,
+        9
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        18,
+        9
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 77,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-grand-casino",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        12,
+        5
+      ],
+      [
+        6,
+        10
+      ],
+      [
+        18,
+        6
+      ],
+      [
+        21,
+        10
+      ],
+      [
+        12,
+        8
+      ]
+    ],
+    "reachable": 130,
+    "walkable": 117,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-black-market-auction",
+    "entry": [
+      11,
+      13
+    ],
+    "targets": [
+      [
+        11,
+        6
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        2,
+        10
+      ],
+      [
+        19,
+        10
+      ]
+    ],
+    "reachable": 85,
+    "walkable": 80,
+    "blocked": [],
+    "pockets": []
   }
 ]
