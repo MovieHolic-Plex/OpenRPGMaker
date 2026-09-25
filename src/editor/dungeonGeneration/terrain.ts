@@ -8,6 +8,8 @@ export type DungeonMaterial = { floor: number; roof: number; roofKey: string; wa
 export function dungeonMaterial(theme: string, character: DungeonDesign["character"]): DungeonMaterial {
   if (theme === "ice") return { floor: 67, roof: 427, roofKey: "abyss-blue", wallTop: 373, wallBottom: 403 };
   if (character === "crypt") return { floor: 187, roof: 430, roofKey: "abyss-gray", wallTop: 22, wallBottom: 52 };
+  // Lava cave = dungeon-lava-cave.md: red rock floor 301, gold-rimmed pit roof, red wall 133 over its dark foot 163.
+  if (theme === "lava") return { floor: 301, roof: 310, roofKey: "pit-gold", wallTop: 133, wallBottom: 163 };
   return { floor: 421, roof: 310, roofKey: "pit-gold", wallTop: 226, wallBottom: 226 };
 }
 export function shapeDungeonTerrain(map: GameMap, key: string, cells: DungeonPoint[]): void {
