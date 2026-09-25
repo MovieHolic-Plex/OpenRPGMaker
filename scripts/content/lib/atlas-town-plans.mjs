@@ -4,4 +4,5 @@ import { WATER_PLANS } from "./atlas-plans-water.mjs";
 import { CAPITAL_PLANS } from "./atlas-plans-capital.mjs";
 import { PORT_PLANS } from "./atlas-plans-port.mjs";
 import { MOUNTAIN_PLANS } from "./atlas-plans-mountain.mjs";
-export const PLANS = [...HOME_PLANS, ...WATER_PLANS, ...CAPITAL_PLANS, ...PORT_PLANS, ...MOUNTAIN_PLANS];
+import { RURAL_PLANS } from "./atlas-plans-rural.mjs";
+export const PLANS = [...HOME_PLANS, ...WATER_PLANS, ...CAPITAL_PLANS, ...PORT_PLANS, ...MOUNTAIN_PLANS, ...RURAL_PLANS];

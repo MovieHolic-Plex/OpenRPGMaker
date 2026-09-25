@@ -313,5 +313,25 @@ export class TownMap extends OutdoorMap {
     for (const x of [x0, x1]) if (this.freeRect(x, y, 1, 2, { keep: false, paved: true })) this.put(post, x, y, { owner, purpose: "줄을 거는 등롱 기둥" });
     for (let x = x0 + 1; x < x1; x++) this.overlay(string, x, y, { owner });
   }
+  // A tilled field (farmland paving) with vegetable beds in rows — every bed row, then a furrow row. Cells that are not
+  // free are left as they are (a field bends round a tree or a path). Returns the number of beds.
+  crops(x, y, w, h, { owner = "밭", beds = 0.85, scarecrow = true } = {}) {
+    const cells = [];
+    for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) { const i = this.at(xx, yy); if (this.inside(xx, yy) && this.bare(i) && !this.occupied.has(i) && !this.roads.has(i) && !this.water.has(i) && !this.paved.has(i)) cells.push(i); }
+    assert(cells.length >= w * h * 0.6, `Field does not fit ${this.spec.id} ${x},${y}`);
+    this.pave(cells, "farm");
+    const bed = this.part("채소밭"), free = new Set(cells);
+    let n = 0;
+    for (let yy = y; yy + bed.h <= y + h; yy += bed.h + 1) for (let xx = x; xx + bed.w <= x + w; xx += bed.w) {
+      const all = []; for (let dy = 0; dy < bed.h; dy++) for (let dx = 0; dx < bed.w; dx++) all.push(this.at(xx + dx, yy + dy));
+      if (!all.every((i) => free.has(i)) || this.random() > beds) continue;
+      all.forEach((i, k) => { this.upper[i] = bed.upper[Math.floor(k / bed.w)][k % bed.w]; this.occupied.add(i); });
+      n++;
+    }
+    if (scarecrow) { const sx = x + (w >> 1), sy = y + h - 2; if (this.freeRect(sx, sy, 1, 2, { keep: false, paved: true })) this.put("허수아비", sx, sy, { owner, purpose: "까마귀 쫓는 허수아비", check: false }); }
+    for (const i of cells) this.keep.add(i);
+    this.placements.push({ name: owner, kind: "paving", group: "farm", cells: cells.length, x, y, w, h });
+    return n;
+  }
 }
 export { GROUND };

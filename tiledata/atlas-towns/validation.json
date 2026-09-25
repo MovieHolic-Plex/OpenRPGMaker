@@ -923,5 +923,280 @@
     0
    ]
   }
+ },
+ {
+  "id": "town-farm-wheat",
+  "seed": 16101,
+  "entry": [
+   4,
+   24
+  ],
+  "reachable": 1321,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.348,
+   "at": [
+    52,
+    33
+   ],
+   "screenAt": [
+    39,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-orchard",
+  "seed": 16201,
+  "entry": [
+   24,
+   37
+  ],
+  "reachable": 1199,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.33,
+   "at": [
+    27,
+    8
+   ],
+   "screenAt": [
+    24,
+    0
+   ]
+  }
+ },
+ {
+  "id": "town-horse-ranch",
+  "seed": 16301,
+  "entry": [
+   4,
+   20
+  ],
+  "reachable": 1720,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.344,
+   "at": [
+    27,
+    5
+   ],
+   "screenAt": [
+    40,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-vineyard",
+  "seed": 16401,
+  "entry": [
+   4,
+   29
+  ],
+  "reachable": 960,
+  "targets": 8,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.335,
+   "at": [
+    20,
+    19
+   ],
+   "screenAt": [
+    8,
+    20
+   ]
+  }
+ },
+ {
+  "id": "town-harvest-fair",
+  "seed": 16501,
+  "entry": [
+   26,
+   37
+  ],
+  "reachable": 927,
+  "targets": 6,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.33,
+   "at": [
+    37,
+    3
+   ],
+   "screenAt": [
+    4,
+    12
+   ]
+  }
+ },
+ {
+  "id": "town-woodcutter",
+  "seed": 16601,
+  "entry": [
+   26,
+   37
+  ],
+  "reachable": 1081,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.339,
+   "at": [
+    9,
+    5
+   ],
+   "screenAt": [
+    8,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-hunter",
+  "seed": 16701,
+  "entry": [
+   4,
+   22
+  ],
+  "reachable": 768,
+  "targets": 5,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    8,
+    6
+   ],
+   "screenAt": [
+    24,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-crossroads-inn",
+  "seed": 16801,
+  "entry": [
+   26,
+   4
+  ],
+  "reachable": 1337,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.339,
+   "at": [
+    35,
+    39
+   ],
+   "screenAt": [
+    16,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-market-town",
+  "seed": 16901,
+  "entry": [
+   30,
+   45
+  ],
+  "reachable": 1594,
+  "targets": 18,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 2,
+   "screen": 0.339,
+   "at": [
+    5,
+    0
+   ],
+   "screenAt": [
+    16,
+    20
+   ]
+  }
+ },
+ {
+  "id": "town-bee-meadow",
+  "seed": 17001,
+  "entry": [
+   4,
+   22
+  ],
+  "reachable": 1158,
+  "targets": 7,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    3,
+    3
+   ],
+   "screenAt": [
+    12,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-mill-river",
+  "seed": 17101,
+  "entry": [
+   4,
+   20
+  ],
+  "reachable": 1257,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    6,
+    7
+   ],
+   "screenAt": [
+    24,
+    4
+   ]
+  }
  }
 ]
