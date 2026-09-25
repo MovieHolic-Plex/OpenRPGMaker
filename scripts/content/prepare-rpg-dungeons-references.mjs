@@ -9,12 +9,15 @@ const c = JSON.parse(fs.readFileSync(dir + "/catalog.json")), validation = JSON.
 const block = (o) => "```json\n" + JSON.stringify(o, null, 2) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const NATURAL = new Set(["cave", "mine", "ice", "lava", "sea", "lair"]);
-const categoryOf = (p) => (p.series === "grand" ? "grand" : p.series === "sunken" ? "sunken" : NATURAL.has(p.series) ? "natural" : "built");
+const categoryOf = (p) => (p.series === "grand" ? "grand" : p.series === "sunken" ? "sunken" : p.series === "frontier" ? "frontier" : NATURAL.has(p.series) ? "natural" : "built");
 const CATEGORY = {
   natural: { id: "rpg-dungeons-natural-v2", name: "RPG 던전 · 자연 동굴·광산·얼음·용암·해저·용의 둥지 (개정2)", description: "자연 동굴 네 칸 연결(입구·갈림길·보물방·보스방), 레일 광산, 얼음 동굴, 용암 동굴, 해저 동굴, 용의 둥지. 불규칙한 방 몸통·바위 혀·물/용암 웅덩이·벽 모서리 잔해 규칙과 전체 배열" },
-  built: { id: "rpg-dungeons-built-v1", name: "RPG 던전 · 묘지·수로·신전·마법사 탑·마왕성·피라미드 (개정1)", description: "지하 묘지, 지하 수로, 고대 신전, 마법사 탑 1~3층과 옥상(계단 위치 맞춤), 마왕성 복도·함정방·보스방 앞, 피라미드 기둥 회랑과 왕의 묘실(석관). 지은 던전의 벽·계단·가구 묶음 규칙과 전체 배열" },
+  // v2 (2026-09-25): the demon hall's south door became a rim gap that leads to the new 마왕성 정문 홀 (frontier).
+  built: { id: "rpg-dungeons-built-v2", name: "RPG 던전 · 묘지·수로·신전·마법사 탑·마왕성·피라미드 (개정2)", description: "지하 묘지, 지하 수로, 고대 신전, 마법사 탑 1~3층과 옥상(계단 위치 맞춤), 마왕성 복도·함정방·보스방 앞, 피라미드 기둥 회랑과 왕의 묘실(석관). 지은 던전의 벽·계단·가구 묶음 규칙과 전체 배열" },
   grand: { id: "rpg-dungeons-grand-v1", name: "RPG 던전 · 큰 던전 「잊힌 수문 유적」 80×64 (개정1)", description: "입구 동굴·수문 수로·적암 전실과 보스방·무너진 대전 네 구역을 한 바퀴 도는 길과 지름길로 이은 큰 던전. 레버·열쇠 자리, 구역마다 다른 바닥과 전체 배열" },
   // Added 2026-09-25 as its own category, so existing projects receive it (ensureRpgDungeonReferences only adds missing ids).
+  // Added 2026-09-25 as its own category (existing projects receive it through the ensure path).
+  frontier: { id: "rpg-dungeons-frontier-v1", name: "RPG 던전 · 마왕성 정문·투기장·늪 신전·해적 소굴·우물 밑 굴", description: "마왕성 정문 홀(1층 복도와 외관 성문 사이), 투기장 경기장(모래판·관중석·우승자 관람석, 투사 대기실 계단), 독늪에 잠긴 폐신전(검붉은 진창 늪과 널판 길), 바다로 트인 물길의 해적 소굴(선착장·배·야영지·보물 굴·망루), 마을 우물 밑 첫 모험용 작은 굴. 출입구·계단·늪/물·채움 규칙과 전체 배열" },
   sunken: { id: "rpg-dungeons-sunken-temple-v2", name: "RPG 던전 · 해저 신전 세 방 (입구 회랑·산호 기둥 대전·바다 여신 제단, 개정2)", description: "해저 동굴 북쪽에서 이어지는 물에 잠긴 신전 세 방. 해저 재칠 시트(oprn_dungeon_sea)의 바다 바위 벽·석주, 신전 석판 바닥, 곧은 물길과 판자 다리, 바닥이 꺼진 불규칙한 물웅덩이, 석주 밑동의 산호 무리·해초, 제단 섬을 두른 둥근 물 해자, 벽 아치·테두리 문 틈 출입구. 방 잇기·채움 규칙과 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
@@ -108,6 +111,26 @@ ${check}
 ${reach("sunken")}
 ## 실제 구분
 ${list("sunken")}
+`);
+
+doc("frontier", "rpg-dungeons-frontier-guide", "변경 던전 규칙 · 정문 홀·투기장·늪 신전·해적 소굴·우물 밑 굴", `# 마왕성 정문 홀 · 투기장 경기장 · 늪 신전 · 해적 소굴 · 우물 밑 굴
+
+${COMMON}
+## 이 분류만의 규칙
+- 출입구는 방에 낸다: 북쪽은 벽면 두 줄(방 사각형의 첫 두 줄)에 석조 아치 A를 얹고 그 아래 첫 바닥 줄이 출구, 남·동·서쪽은 맵 끝 테두리 한 줄을 뚫은 문 틈. 허공 위로 바닥 띠를 맵 끝까지 끌어내지 않는다. 서쪽 문 틈은 벽면 두 줄이 생기므로 네 줄 높이로 판다.
+- 방 잇기(좌표만, 이동 이벤트 없음): 마왕성 외관(outdoor-demon-castle) 성문 앞 (30,34) ↔ 정문 홀 남쪽 문 틈 (16,24), 정문 홀 북쪽 아치 앞 (16,5) ↔ 1층 복도(dungeon-demon-hall) 남쪽 문 틈 (17,16). 투기장 서쪽 투사 계단 (3,14) ↔ 투기장 대기실(interior-arena-waiting-room) 동벽 계단 앞 (16,6).
+- 마왕성 정문 홀: 적암 바닥 위 무늬 석판 길과 붉은 카펫이 성문에서 아치까지 곧게 가고 석주 세 쌍이 줄을 선다. 양쪽 용암 못은 모양이 서로 다르게, 그 아래 갈색 단(D) 둘 — 소환 마법진+화로 둘, 가고일 둘+뼈 무더기. 성문 안쪽·아치 앞을 가고일이 지킨다.
+- 투기장: 모래(82)는 일부러 비운 싸움터라 소품을 두지 않고 네 귀에만 석주. 관중석은 무늬 석판(109) 층 줄 위에 걸상(356)을 한 칸 걸러 놓고, 경기장 앞을 쇠 난간(234~236)이 막는다(우승자 관람석 앞과 남쪽 입장 통로만 트임). 우승자 관람석은 갈색 단 위 왕좌+화로 둘+가고일 둘. 투사 계단은 서쪽 관중석의 내려가는 돌계단(난간 뒤, 3칸 폭 그대로)이고 곁에 물통·나무통.
+- 늪 신전: 동굴 재칠 시트(oprn_dungeon_cave). 독늪은 담색 테두리 구덩이 오토타일(pit-pale 246~308)을 바닥이 꺼진 검붉은 진창으로 쓰고(파란 물은 맑은 샘처럼 보여 쓰지 않는다) 가장자리가 불규칙한 덩이로 판다. 늪을 건너는 길은 진창 위에 upper 141 널판(! 칸)만 곧게 얹는다. 신전 석판 바닥 양 모서리까지 진창이 스며들고, 무너진 바깥 석주는 늪가 돌무더기. 늪 섬의 상자·쓰러진 석주, 널판 길 어귀의 경고 표지판과 모험가 뼈는 모두 이유 있는 자리.
+- 해적 소굴: 해저 재칠 시트(oprn_dungeon_sea). 동쪽 맵 끝으로 바다 물길이 트이고(물 칸이 맵 밖으로 이어진다), 널판 선착장이 물길로 뻗는다. 배는 물 위 널판으로 선체를 그리고 뱃전 두 줄을 어두운 판자 252·253·254로 둘러 뗏목과 구별한다(가운데 갑판 줄이 이물·고물로 튀어나온다). 짐은 선착장 뿌리 양옆·배 위·굴길 어귀에만, 보물은 막다른 굴 끝에 묶음으로. 야영지·망루 바닥은 널마루(171).
+- 우물 밑 굴: 20×16 첫 모험용. 북쪽 벽면에 사다리(297)를 두 줄로 걸고 그 아래 첫 바닥 칸이 입구(= 우물로 오르는 출구), 밑에 널판 디딤과 떨어진 두레박. 물웅덩이는 벽에 붙은 불규칙한 덩이 하나, 쥐 둥지는 막다른 구석에 뼈·잔돌·부서진 통과 잃어버린 상자를 한 무더기로. 색이 다른 바닥 조각(111 등)으로 젖은 바닥을 칠하지 않는다(네모 조각으로 보인다).
+- 지은 방은 바닥 꾸밈(groves·heaps)을 끄고, 빈칸 게이트는 지형(카펫·무늬 석판 줄·단·용암·늪·물)으로 맞춘다.
+
+## 검사
+${check}
+${reach("frontier")}
+## 실제 구분
+${list("frontier")}
 `);
 
 doc("grand", "rpg-dungeons-grand-guide", "큰 던전 규칙 · 네 구역·한 바퀴·지름길·열쇠 자리", `# 큰 던전 「잊힌 수문 유적」 80×64
