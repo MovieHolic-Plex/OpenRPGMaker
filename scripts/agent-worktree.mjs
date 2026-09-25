@@ -122,7 +122,9 @@ function provision(path, { force = false } = {}) {
   const assigned = ensureWorktreeDevPort(path);
   const port = String(assigned.port);
   if (assigned.reason !== "kept") {
-    const why = assigned.reason === "missing" ? "없어서" : assigned.reason === "duplicate" ? `${assigned.previous} 가 다른 체크아웃과 겹쳐` : `${assigned.previous} 가 예약 포트라`;
+    const holders = assigned.holders ?? [];
+    const shown = holders.length > 2 ? `${holders.slice(0, 2).join(", ")} 외 ${holders.length - 2}곳` : holders.join(", ");
+    const why = assigned.reason === "missing" ? "없어서" : assigned.reason === "duplicate" ? `${assigned.previous} 를 ${shown || "다른 체크아웃"} 이 쥐고 있어` : `${assigned.previous} 가 예약 포트라`;
     applied.push(`DEV_SERVER_PORT=${port} (${why} 배정)`);
   }
   return { port, applied };
