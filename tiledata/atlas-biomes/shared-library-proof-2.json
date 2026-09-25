@@ -1,0 +1,54 @@
+{
+  "id": "oprn-atlas-biomes-20260925-2",
+  "places": 0,
+  "regions": 50,
+  "maps": 50,
+  "bytes": 47715022,
+  "tilesets": {
+    "shared_atlas_biome_tundra": {
+      "count": 3510,
+      "references": []
+    },
+    "shared_atlas_biome_blight": {
+      "count": 3480,
+      "references": []
+    },
+    "shared_atlas_biome_skyisle": {
+      "count": 3150,
+      "references": []
+    },
+    "shared_atlas_biome_tropical": {
+      "count": 3480,
+      "references": []
+    },
+    "shared_atlas_biome_jungle": {
+      "count": 3600,
+      "references": []
+    },
+    "shared_atlas_biome_taiga": {
+      "count": 3510,
+      "references": []
+    },
+    "shared_atlas_biome_savanna": {
+      "count": 3510,
+      "references": []
+    },
+    "shared_atlas_biome_mushroom": {
+      "count": 3510,
+      "references": []
+    },
+    "shared_atlas_biome_swamp": {
+      "count": 3480,
+      "references": []
+    },
+    "shared_atlas_biome_world": {
+      "count": 780,
+      "references": []
+    }
+  },
+  "renderCheck": "50 maps pixel-identical with the shared atlas",
+  "file": "/home/main/.local/share/oprn/shared-content.sqlite",
+  "revision": "0c41ef71d833184303c2076f48c1b8e670fd91ec75fc2372b3439f12de29f8ed",
+  "reloaded": true,
+  "publishedAt": "2026-09-25T19:31:17.231Z"
+}
