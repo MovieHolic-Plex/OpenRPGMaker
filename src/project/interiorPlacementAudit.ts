@@ -7,10 +7,12 @@ export type InteriorRoom = { id: string; seed: Point; doorways: Point[] };
 type Part = { id: string; tiles: number[][]; supportCells: Point[]; placementKind: string; facing?: string };
 type Material = { kind: string; mapped: number[][] };
 type Dictionary = { materials: Record<string, Material>; objects: Part[]; ceiling: { variantMap: Record<string, number> } };
-export type InteriorFinding = { code: string; x: number; y: number; objectId?: string; expected?: number };
+export type InteriorRequirement = { ids: string[]; min: number; max?: number; roomId?: string; side?: 'east' | 'west' };
+export type InteriorRequirements = { objects?: InteriorRequirement[]; roomIds?: string[]; maxArea?: number; maxEmptySquare?: number; southExit?: boolean };
+export type InteriorFinding = { code: string; x: number; y: number; objectId?: string; expected?: number; actual?: number };
 
 /** Read only. The installed part dictionary supplies semantics, never a target floor plan. */
-export function inspectInteriorPlacement(project: Project, mapId: string, wallMaterial: string, entry: Point, rooms: InteriorRoom[] = []) {
+export function inspectInteriorPlacement(project: Project, mapId: string, wallMaterial: string, entry: Point, rooms: InteriorRoom[] = [], requirements: InteriorRequirements = {}) {
   const map = project.maps[mapId], tile = map && project.tilesets[map.tilesetId];
   if (!map || !tile) throw new Error('맵/타일셋을 찾을 수 없습니다.');
   if (map.lowerTiles.length !== map.width * map.height || map.upperTiles.length !== map.width * map.height || ![...map.lowerTiles, ...map.upperTiles].every(n => Number.isInteger(n) && n >= -1 && n < tile.count)) throw new Error('맵 배열 크기/타일 번호 오류');
@@ -69,7 +71,7 @@ export function inspectInteriorPlacement(project: Project, mapId: string, wallMa
       const back = part?.facing === 'north' ? { x: o.x, y: o.y + o.height } : part?.facing === 'south' ? { x: o.x, y: o.y - 1 } : part?.facing === 'east' ? { x: o.x - 1, y: o.y + o.height - 1 } : part?.facing === 'west' ? { x: o.x + o.width, y: o.y + o.height - 1 } : undefined;
       if (back && !reachable(back.x, back.y)) findings.push({ code: 'CHAIR_BACK_BLOCKED', ...back, objectId: o.id });
     }
-    if (/wardrobe|drawers|bookcase|fridge|kitchen|stove|tea$|wash-station|lockers|shoe-rack|milk-machine|double-sink|toilet|washer|linen|medicine|tv$|cage|chest/.test(o.id) && !Array.from({ length: o.width }, (_, dx) => reachable(o.x + dx, o.y + o.height)).some(Boolean)) findings.push({ code: 'OBJECT_FRONT_BLOCKED', x: o.x, y: o.y + o.height, objectId: o.id });
+    if (/wardrobe|drawers|bookcase|fridge|kitchen|stove|tea$|tub|wash-station|lockers|shoe-rack|milk-machine|double-sink|toilet|washer|linen|medicine|tv$|cage|chest/.test(o.id) && !Array.from({ length: o.width }, (_, dx) => reachable(o.x + dx, o.y + o.height)).some(Boolean)) findings.push({ code: 'OBJECT_FRONT_BLOCKED', x: o.x, y: o.y + o.height, objectId: o.id });
     if (o.id === 'izakaya-counter' || o.id === 'clinic-reception') for (const y of [o.y - 1, o.y + o.height]) if (!Array.from({ length: o.width }, (_, dx) => reachable(o.x + dx, y)).some(Boolean)) findings.push({ code: 'COUNTER_ACCESS', x: o.x, y, objectId: o.id });
   }
   const counts: Record<string, number> = {};
@@ -114,5 +116,29 @@ export function inspectInteriorPlacement(project: Project, mapId: string, wallMa
       if (region === undefined || hall === undefined || !adjacent.has(region) || !adjacent.has(hall)) findings.push({ code: 'ROOM_NO_DIRECT_HALL_ACCESS', x: start % map.width, y: Math.floor(start / map.width), objectId: room.id });
     }
   }
-  return { valid: findings.length === 0, totalIssues: findings.length, issues: findings.slice(0, 80), omittedIssues: Math.max(0, findings.length - 80), objectCounts: counts, objects: objects.slice(0, 200), rooms: roomReports, reachableFloorCells: seen.size, boundaryExits: { south: Array.from({ length: map.width }, (_, x) => x).filter(x => reachable(x, map.height - 1)) }, limitations: '배열/사전 기반 구조 검사. 독립방은 rooms에 선언한 방만 검사한다. 방 용도·좌석 수 요구 충족·미적 품질·게임 이벤트는 별도 확인. 혼합 벽 재료/다중 타일 스택은 지원하지 않는다. 수정하지 않는다.' };
+  // A caller-supplied request contract is checked against detected whole objects, not labels alone.
+  const known = new Set(dict.objects.map(o => o.id));
+  if (!requirements || typeof requirements !== 'object' ||
+      (requirements.objects !== undefined && (!Array.isArray(requirements.objects) || requirements.objects.length > 128 || requirements.objects.some(r => !r || !Array.isArray(r.ids) || !r.ids.length || r.ids.some(id => !known.has(id)) || !Number.isInteger(r.min) || r.min < 0 || (r.max !== undefined && (!Number.isInteger(r.max) || r.max < r.min)) || (r.roomId !== undefined && typeof r.roomId !== 'string') || (r.side !== undefined && !['east', 'west'].includes(r.side))))) ||
+      (requirements.roomIds !== undefined && (!Array.isArray(requirements.roomIds) || requirements.roomIds.length > 16 || requirements.roomIds.some(id => typeof id !== 'string' || !id))) ||
+      [requirements.maxArea, requirements.maxEmptySquare].some(n => n !== undefined && (!Number.isInteger(n) || n < 1))) throw new Error('요구조건의 가구 ID/수량/방/면적 형식을 확인하세요.');
+  for (const id of requirements.roomIds ?? []) if (!rooms.some(r => r.id === id)) findings.push({ code: 'REQUIRED_ROOM_MISSING', ...entry, objectId: id });
+  for (const req of requirements.objects ?? []) {
+    const room = req.roomId === undefined ? undefined : roomReports.find(r => r.id === req.roomId);
+    const matches = objects.filter(o => req.ids.includes(o.id) &&
+      (!req.side || (req.side === 'east' ? o.x >= map.width / 2 : o.x + o.width <= map.width / 2)) &&
+      (req.roomId === undefined || (room?.region !== undefined && dict.objects.find(p => p.id === o.id)!.supportCells.every(c => regions.get(at(o.x + c.x, o.y + c.y)) === room.region))));
+    if (matches.length < req.min || (req.max !== undefined && matches.length > req.max)) findings.push({ code: 'REQUIRED_OBJECT_COUNT', ...entry, objectId: req.ids.join('|') + (req.roomId ? '@' + req.roomId : '') + (req.side ? ':' + req.side : ''), expected: matches.length < req.min ? req.min : req.max, actual: matches.length });
+  }
+  if (requirements.maxArea !== undefined && map.width * map.height > requirements.maxArea) findings.push({ code: 'EXCESS_MAP_AREA', ...entry, expected: requirements.maxArea, actual: map.width * map.height });
+  // Largest unobstructed square is a measurable review hint, never an aesthetic score.
+  const square = new Uint16Array(map.width * map.height); let largest = { x: 0, y: 0, size: 0 };
+  for (let y = 0; y < map.height; y++) for (let x = 0; x < map.width; x++) {
+    const i = at(x, y); if (!floors.has(map.lowerTiles[i]) || map.upperTiles[i] >= 0) continue;
+    square[i] = 1 + (x && y ? Math.min(square[i - 1], square[i - map.width], square[i - map.width - 1]) : 0);
+    if (square[i] > largest.size) largest = { x: x - square[i] + 1, y: y - square[i] + 1, size: square[i] };
+  }
+  if (requirements.maxEmptySquare !== undefined && largest.size > requirements.maxEmptySquare) findings.push({ code: 'EXCESS_EMPTY_SQUARE', x: largest.x, y: largest.y, expected: requirements.maxEmptySquare, actual: largest.size });
+  if (requirements.southExit && !Array.from({ length: map.width }, (_, x) => reachable(x, map.height - 1)).some(Boolean)) findings.push({ code: 'SOUTH_EXIT_MISSING', x: entry.x, y: map.height - 1 });
+  return { valid: findings.length === 0, totalIssues: findings.length, issues: findings.slice(0, 80), omittedIssues: Math.max(0, findings.length - 80), largestEmptySquare: largest, checkedRequirements: requirements, objectCounts: counts, objects: objects.slice(0, 200), rooms: roomReports, reachableFloorCells: seen.size, boundaryExits: { south: Array.from({ length: map.width }, (_, x) => x).filter(x => reachable(x, map.height - 1)) }, limitations: '배열/사전 기반 구조 검사. 독립방은 rooms에 선언한 방만 검사한다. 요구조건은 requirements에 선언한 것만 검사한다. 미적 품질·게임 이벤트는 별도 확인. 혼합 벽 재료/다중 타일 스택은 지원하지 않는다. 수정하지 않는다.' };
 }

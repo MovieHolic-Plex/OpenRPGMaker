@@ -364,7 +364,7 @@ const manageMapTree: ToolDefinition = {
 
 const paintTiles: ToolDefinition = {
   name: "paint_tiles",
-  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). rect는 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다. 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함).",
+  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). rect는 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다. 하위 레이어를 칠해도 같은 칸의 상위 가구는 보존한다(상위 삭제는 layer:upper,tile:-1로 명시). 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함).",
   mode: "write",
   parameters: {
     type: "object",
@@ -489,7 +489,9 @@ function applyClusterAwarePaint(
   const lowerTouched = new Set<string>();
   for (const edit of planned.values()) {
     if (edit.layer === "lower") {
-      setLower(map, edit.x, edit.y, edit.tile);
+      // Painting one layer must not silently erase another. The legacy setLower helper
+      // clears upper decorations for terrain generators; AI painting follows the manual brush.
+      map.lowerTiles[edit.y * map.width + edit.x] = edit.tile;
       lowerTouched.add(coordKey(edit.x, edit.y));
     } else {
       map.upperTiles[edit.y * map.width + edit.x] = edit.tile;
