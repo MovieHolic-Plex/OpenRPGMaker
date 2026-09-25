@@ -8,6 +8,7 @@
 // 하나이고, 컴포저 「팀」 토글과 설정 「Pi 팀 실행」 이 같은 값을 읽는다. 경로 enum 으로 한 번 더
 // 인코딩하면 라우트 → `/pi team` 문자열 → 파서 왕복이 생겨 한 비트를 네 곳에서 표현하게 된다.
 
+import { formatPackTownNote, type PackTownTarget } from "./packTownRoute";
 import type { AutonomyResolution } from "@/ai/autonomyLevels";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import {
@@ -74,6 +75,8 @@ export interface PiIntentNoteInput {
   readonly targetMap: PiIntentNoteTargetMap | null;
   /** 사용자의 선택 사각형. 있으면 «그 안에서» 경계와 author_village target 을 못박는다. */
   readonly selection: IntentSelectionFact | null;
+  /** 요청이 팩 도시 타일셋(Rasak 등) 마을이면 그 타일셋 — 숲마을 노트 대신 build_pack_town 노트(packTownRoute). */
+  readonly packTown?: PackTownTarget | null;
 }
 
 /**
@@ -93,7 +96,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
   // Generic scale advice must not override a saved design or resize before its validation.
   const noteIntent = preset ? { ...input.intent, construction: undefined } : input.intent;
   const intentNote = formatIntentNote(noteIntent, { clarifyBypassed: true, targetMap: input.targetMap });
-  const villageNote = formatPiVillageNote(input);
+  const villageNote = input.packTown ? formatPackTownNote(input.packTown, input.targetMap) : formatPiVillageNote(input);
   const scopeNote = input.selection
     ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
     : null;
