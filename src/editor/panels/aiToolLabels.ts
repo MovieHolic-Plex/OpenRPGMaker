@@ -54,6 +54,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   scatter_object: build("흩어 놓기", "tree"),
   mirror_region: build("영역 뒤집기", "grid"),
   copy_map_region: build("영역 복사", "grid"),
+  move_region: build("영역 옮기기", "grid"),
   shift_map: build("맵 밀기", "grid"),
   generate_map: build("맵 만들기", "map"),
   create_map: build("새 맵", "map"),

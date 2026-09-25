@@ -21,6 +21,7 @@
 | `clear_region` / `clear_map` | (그대로) | lower 쪽은 2층·그림자, upper 쪽은 4층까지 비운다. |
 | `mirror_region` | (그대로) | 선택 층도 옮기고 그림자 사분면을 축에 맞춰 뒤집는다(좌우 tl↔tr·bl↔br). |
 | `copy_map_region` | `layers: all\|lower\|upper` | all = 1~4층·그림자, lower = 1·2층, upper = 3·4층. 보호 칸 되돌리기도 다섯 값을 되돌린다. |
+| `move_region` | `layers: all\|lower\|upper` + `fill: grass\|empty` | 잘라내기+붙여넣기. **옮기는 층과 비우는 층이 같다** — `layers:"upper"` 면 계단만 옮기고 1·2층·그림자는 보존한다. 같은 맵에서 겹치면 목적지에 쓴 칸은 비우지 않는다(전부 비우면 방금 옮긴 내용이 지워진다). 원본 비우기도 통행 보장 칸(시작 위치·transfer 목적지)의 두 번째 기록자라 목적지와 같은 스킵·되돌림 정책을 탄다. `withEvents` 는 id 를 보존해 **이동**(복제 아님)하고 같은 맵만 허용, 끄면 남은 이벤트를 경고로 알린다. |
 
 - **오토타일 재성형은 칠한 층 배열에서, 바닥 층(1·2층)에서만** 한다(`autotileEngine.autotileLayerView(map, layer)`).
   2층 풀 장식은 2층 이웃 기준으로 가장자리가 잡히고 1층은 안 바뀐다. 1층을 칠한 칸은 2층도 비웠으므로 둘레 2층 장식도 다시 잡는다.
