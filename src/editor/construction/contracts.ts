@@ -118,7 +118,7 @@ export type VillageHousePlan = {
   readonly program?: "dwelling" | "shop" | "inn" | "workshop" | "study" | "manor";
 };
 
-export const VILLAGE_GROUND_THEMES = ["grass", "snow"] as const;
+export const VILLAGE_GROUND_THEMES = ["grass", "snow", "desert", "volcano", "autumn"] as const;
 export type VillageGroundTheme = (typeof VILLAGE_GROUND_THEMES)[number];
 /** 시공 뒤 마을 안에 세우는 랜드마크 — 코드가 theme 문장을 읽지 않으므로 모델이 명시한다. */
 export const VILLAGE_LANDMARKS = ["lighthouse"] as const;

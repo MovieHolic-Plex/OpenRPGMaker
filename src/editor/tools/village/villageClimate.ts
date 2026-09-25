@@ -13,6 +13,9 @@ import { CLIMATE_VILLAGE_TEXTURES, climateVillageTilesetId, createClimateVillage
 import { createForestHarmonyTileset, FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import { normalizeMapClimate } from "@/project/mapClimate";
 import type { Project } from "@/project/types";
+import { dressClimateMap } from "@/project/climateDressing";
+
+const CLIMATE_LABEL: Readonly<Record<ClimateVillageKind, string>> = { snow: "설원", desert: "사막", volcano: "화산", autumn: "가을" };
 
 function climateKindOf(project: Project, tilesetId: string | undefined): ClimateVillageKind | undefined {
   const tileset = tilesetId ? project.tilesets[tilesetId] : undefined;
@@ -48,12 +51,19 @@ export function borrowForestHarmonyForClimateSheet(
 export function applyVillageClimate(project: Project, request: AuthorVillageRequest, borrowed: ClimateVillageKind | undefined): string[] {
   const map = project.maps[request.target.mapId];
   if (!map || map.tilesetId !== FOREST_HARMONY_ID) return [];
-  const kind: ClimateVillageKind | undefined = request.groundTheme === "snow" ? "snow" : borrowed;
+  const theme = request.groundTheme;
+  const kind: ClimateVillageKind | undefined = theme === "snow" || theme === "desert" || theme === "volcano" || theme === "autumn" ? theme : borrowed;
   if (!kind) return [];
   const tilesetId = climateVillageTilesetId(kind);
   project.tilesets[tilesetId] ??= createClimateVillageTileset(kind);
   map.tilesetId = tilesetId;
-  const warnings = borrowed === kind ? [] : [`groundTheme:"snow" → 숲마을 칩셋을 칸 번호가 같은 설원 칩셋(${tilesetId})으로 바꿨습니다.`];
+  const warnings = borrowed === kind ? [] : [`groundTheme:"${kind}" → 숲마을 칩셋을 칸 번호가 같은 ${CLIMATE_LABEL[kind]} 칩셋(${tilesetId})으로 바꿨습니다.`];
+  // 사막·화산은 잎 달린 숲을 걷고 잎 없는 고목 덩이로, 셋 다 꽃덤불·화분을 뺀다(2026-09-25 조수 시험 — 사막 마을에 꽃덤불 33칸).
+  if (kind !== "snow") {
+    const dressed = dressClimateMap(map, project.tilesets[tilesetId]!, kind, request.seed ?? 1);
+    warnings.push(`${CLIMATE_LABEL[kind]} 손질: 꽃덤불·화분 ${dressed.gardenRemoved}칸 제거`
+      + (kind === "autumn" ? "" : `, 잎 달린 나무 ${dressed.treesCleared}칸 → 고목 덩이 ${dressed.groves}곳(${dressed.bareTrees}그루)${dressed.palms ? `, 물가 야자 ${dressed.palms}그루` : ""}`) + ".");
+  }
   if (kind === "snow" && (!map.climate || map.climate.mode === "inherit")) {
     map.climate = normalizeMapClimate({ mode: "fixed", weather: "snow", intensity: 0.6 })!;
     warnings.push("맵 날씨를 눈(climate fixed snow)으로 두었습니다 — 이 마을 아래 실내·던전의 전투 배경도 설원을 따릅니다.");

@@ -162,7 +162,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           },
         },
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
-        groundTheme: { type: "string", enum: ["grass", "snow"], description: "마을 전체 지면. 기획·세계관이 눈·겨울·눈보라·설원이면 snow — 숲마을 칩셋은 칸 번호가 같은 설원 칩셋(forest_harmony_snow)으로 바뀌고 맵 날씨가 눈이 되어 이 마을 아래 실내·던전의 전투 배경도 설원이 된다. theme 문장은 코드가 읽지 않으니 눈 마을이면 반드시 지정한다." },
+        groundTheme: { type: "string", enum: ["grass", "snow", "desert", "volcano", "autumn"], description: "마을 전체 지면·기후. 숲마을 칩셋 마을을 칸 번호가 같은 기후 칩셋으로 옮긴다. snow: 설원(forest_harmony_snow)·맵 날씨 눈 — 이 마을 아래 실내·던전의 전투 배경도 설원. desert: 사막(forest_harmony_desert) — 잎 달린 숲을 걷고 잎 없는 고목 덩이·선인장, 물가 야자. volcano: 화산(forest_harmony_volcano) — 잎 없는 고목 덩이·바위. autumn: 가을(forest_harmony_autumn). desert·volcano·autumn 은 꽃덤불·화분도 뺀다. 기후 칩셋을 target.tilesetId 로 줘도 같다. theme 문장은 코드가 읽지 않으니 기후 마을이면 반드시 지정한다." },
         landmark: { type: "string", enum: ["lighthouse"], description: "마을 안 랜드마크. lighthouse=물가(물이 없으면 북쪽) 빈 땅에 둥근 탑 등대(2×5, 꼭대기 등불)를 세우고 입구 앞칸 좌표를 경고로 돌려준다 — 그 좌표로 create_transfer_pair 해 등대 맵과 잇는다. 기획에 등대가 있으면 지정한다(theme 문장은 코드가 읽지 않는다)." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         morphology: {
