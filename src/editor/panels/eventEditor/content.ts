@@ -33,6 +33,7 @@ import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModern
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
 import { openEventCommandEditDialog, openNewEventCommandDialog } from "./commandEditDialog";
 import { applyMemoryOpeningTemplate } from "./memoryOpeningTemplate";
+import { applySceneTemplate } from "./sceneTemplate";
 import { renderCommandList } from "./commandList";
 import { handleCommandShortcut, openCommandContextMenu } from "./commandListContextMenu";
 import {
@@ -944,12 +945,14 @@ function renderEmptyCommandLine(
     readonly templateId?: EventBeginnerTemplateId;
     readonly testId: string;
     readonly memoryOpening?: boolean;
+    readonly scene?: boolean;
   }[] = [
     { label: "대사하는 NPC", templateId: "talking-npc", testId: "event-template-talking-npc" },
     { label: "보물상자", templateId: "treasure-chest", testId: "event-template-treasure-chest" },
     { label: "문/맵 이동", templateId: "transfer", testId: "event-template-transfer" },
     { label: "상점", templateId: "shop", testId: "event-template-shop" },
     { label: "전투 시작", templateId: "battle", testId: "event-template-battle" },
+    { label: "장면", testId: "event-template-scene", scene: true },
     { label: "회상 오프닝", testId: "event-template-memory-opening", memoryOpening: true },
     { label: "빈 이벤트 / 명령 검색", testId: "event-template-empty-search" },
   ];
@@ -975,6 +978,10 @@ function renderEmptyCommandLine(
             click: () => {
               if (template.memoryOpening) {
                 applyMemoryOpeningTemplate(mapId, eventId, pageCommandHistory(mapId, eventId, pageId).replaceAll);
+                return;
+              }
+              if (template.scene) {
+                applySceneTemplate(pageCommandHistory(mapId, eventId, pageId).replaceAll);
                 return;
               }
               if (!template.templateId) {

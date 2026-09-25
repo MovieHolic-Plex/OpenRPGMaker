@@ -361,6 +361,7 @@ async function consumeBlockingStep(
         mapHeight: scene.map.height,
         autoAdvance: step.autoAdvance === true,
         emotion: step.emotion,
+        ...(step.voiceResourceId ? { voiceResourceId: step.voiceResourceId } : {}),
       });
       {
         const skipped = skipController.takeResult();

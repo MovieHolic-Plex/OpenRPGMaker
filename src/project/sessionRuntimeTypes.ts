@@ -294,6 +294,7 @@ export interface PlaySessionLike {
   factionStanceOverrides?: FactionStanceOverrides;
   friendship?: Record<string, number>;
   relationships?: Record<string, RelationshipState>;
+  galleryUnlocks?: string[];
   dailyGifts?: Record<string, string>;
   followers?: RuntimeFollowerLike[];
   followerTrail?: RuntimeFollowerTrailPointLike[];

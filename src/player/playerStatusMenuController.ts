@@ -24,6 +24,7 @@ import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
+import { closeGalleryViewer, galleryViewerIsOpen, stepGalleryViewer } from "@/player/galleryViewer";
 import { resolveLifeLedgerTab, type LifeLedgerTabId } from "@/player/lifeLedger";
 import { createLifePlacementLiveReader } from "@/player/lifePlacementScene";
 import { moveMonster, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
@@ -287,6 +288,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
 
   const toggleMenu = (): void => {
+    if (galleryViewerIsOpen()) {
+      closeGalleryViewer();
+      return;
+    }
     if (!options.getActiveScene()) return;
     const session = options.getActiveScene()?.getSession();
     if (session?.m2Runtime?.access?.menu === false && !currentMenu()) return;
@@ -296,6 +301,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       return;
     }
     if (menu) {
+      closeGalleryViewer();
       options.closeMenuWithJuice();
       return;
     }
@@ -308,6 +314,22 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const handleKey = (key: RuntimeMenuKey): boolean => {
     if (!currentMenu()) return false;
+    if (galleryViewerIsOpen()) {
+      if (isCancelMenuKey(key) || isConfirmMenuKey(key)) {
+        closeGalleryViewer();
+        return true;
+      }
+      const viewDirection = directionForKey(key);
+      if (viewDirection === "left" || viewDirection === "up") {
+        stepGalleryViewer(-1);
+        return true;
+      }
+      if (viewDirection === "right" || viewDirection === "down") {
+        stepGalleryViewer(1);
+        return true;
+      }
+      return false;
+    }
     const direction = directionForKey(key);
     if (mode === "function") {
       if (direction === "left") {
@@ -557,6 +579,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "battle-reports":
       case "quests":
       case "relationships":
+      case "gallery":
       case "life-ledger":
         resetSubscreenState();
         mode = "function";
@@ -654,6 +677,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "load":
       case "quests":
       case "relationships":
+      case "gallery":
       case "life-ledger":
       case "row":
       case "status":
@@ -794,6 +818,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "load":
       case "quests":
       case "relationships":
+      case "gallery":
       case "life-ledger":
       case "row":
       case "status":

@@ -2,6 +2,7 @@ import { defaultActorFaceResourceId } from "@/project/actorModel";
 import type { PlaySession } from "@/project/session";
 import { resolveActorName, resolveActorFaceResourceId } from "@/project/sessionActorCommands";
 import { effectiveActorClassId } from "@/project/sessionClass";
+import { isGalleryEnabled, galleryMenuLabel, listGalleryUnlocks } from "@/project/gallery";
 import { isGiftSystemEnabled } from "@/project/friendship";
 import { resolveTerms } from "@/project/terms";
 import type { Project } from "@/project/types";
@@ -24,6 +25,7 @@ export const STATUS_MENU_COMMAND_IDS = [
   "battle-reports",
   "quests",
   "relationships",
+  "gallery",
   "life-ledger",
   "options",
   "wait",
@@ -32,7 +34,7 @@ export const STATUS_MENU_COMMAND_IDS = [
 
 export type StatusMenuCommandId = (typeof STATUS_MENU_COMMAND_IDS)[number];
 
-/** 레일 그룹 — 13개 명령을 평면 나열하면 "아이템"과 "타이틀"이 같은 위계로 읽힌다. */
+/** 레일 그룹 — 명령을 평면 나열하면 "아이템"과 "타이틀"이 같은 위계로 읽힌다. */
 export const STATUS_MENU_COMMAND_GROUP_IDS = ["action", "party", "record", "system"] as const;
 export type StatusMenuCommandGroupId = (typeof STATUS_MENU_COMMAND_GROUP_IDS)[number];
 
@@ -45,7 +47,7 @@ const STATUS_MENU_COMMAND_GROUPS: readonly {
 }[] = [
   { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
   { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["battle-reports", "quests", "relationships", "life-ledger"] },
+  { id: "record", label: "기록", commandIds: ["battle-reports", "quests", "relationships", "gallery", "life-ledger"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
   { id: "system", label: "시스템", commandIds: ["save", "load", "wait", "options", "to-title"] },
 ];
@@ -154,10 +156,10 @@ export function listStatusMenuRailIds(project: Project, session: PlaySession): S
   return [...expanded, ...entries];
 }
 
-export function statusMenuRailLabel(railId: StatusMenuRailId, waitModeEnabled: boolean): string {
+export function statusMenuRailLabel(railId: StatusMenuRailId, waitModeEnabled: boolean, project?: Project): string {
   return isStatusMenuGroupEntryId(railId)
     ? statusMenuGroupEntryLabel(railId)
-    : statusMenuCommandLabel(railId, waitModeEnabled);
+    : statusMenuCommandLabel(railId, waitModeEnabled, project);
 }
 
 export function statusMenuCommandGroupLabel(groupId: StatusMenuCommandGroupId): string {
@@ -225,6 +227,7 @@ export function listStatusMenuCommandIds(project: Project, session: PlaySession)
   // 그룹 순서대로 평탄화 — 화면 순서와 ↑↓ 이동 순서를 한 배열이 결정한다.
   return STATUS_MENU_COMMAND_GROUPS.flatMap((group) => group.commandIds).filter((id) => {
     if (id === "relationships") return showRelationships;
+    if (id === "gallery") return isGalleryEnabled(project);
     if (id === "life-ledger") return hasLifeLedgerData(project, session);
     if (id === "save") return !saveDisabled;
     return true;
@@ -287,7 +290,7 @@ export function createPlayerStatusMenuSnapshot(
     seenGroups.add(groupId);
     return {
       id,
-      label: statusMenuRailLabel(id, options.waitModeEnabled ?? true),
+      label: statusMenuRailLabel(id, options.waitModeEnabled ?? true, project),
       groupId,
       groupStart,
       destructive: !opensGroup && STATUS_MENU_DESTRUCTIVE_COMMAND_IDS.includes(id),
@@ -305,7 +308,7 @@ export function createPlayerStatusMenuSnapshot(
   };
 }
 
-export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean): string {
+export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeEnabled: boolean, project?: Project): string {
   switch (commandId) {
     case "items": return "아이템";
     case "skills": return "스킬";
@@ -320,6 +323,7 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     case "battle-reports": return "전투 기록";
     case "quests": return "임무";
     case "relationships": return "관계";
+    case "gallery": return galleryMenuLabel(project);
     case "life-ledger": return "생활 장부";
     // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
@@ -392,6 +396,8 @@ export function statusMenuCommandSummary(
     case "relationships":
     case "life-ledger":
       return "";
+    case "gallery":
+      return `${listGalleryUnlocks(session).length}장`;
     case "party-menu": {
       const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
       return crit > 0 ? `위험 ${crit} · ${party}명` : `${party}명 양호`;
@@ -399,7 +405,7 @@ export function statusMenuCommandSummary(
     case "record-menu":
     case "system-menu":
       return listStatusMenuGroupCommandIds(id, project, session)
-        .map((commandId) => statusMenuCommandLabel(commandId, waitModeEnabled))
+        .map((commandId) => statusMenuCommandLabel(commandId, waitModeEnabled, project))
         .join(" · ");
   }
 }

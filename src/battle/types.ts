@@ -48,6 +48,7 @@ export type BattleEventPauseSnapshot =
       readonly speaker?: string; readonly face?: FaceGraphic;
       readonly settings?: MessageWindowSettings; readonly autoAdvance?: boolean;
       readonly emotion?: string;
+      readonly voiceResourceId?: string;
     };
 
 export type BattleEventPauseResponse =

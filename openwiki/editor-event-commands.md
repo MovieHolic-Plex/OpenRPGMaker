@@ -1,5 +1,15 @@
 # Editor Event Commands & Tools
 
+## 장면 · 그림 갤러리 표시 · 줄 음성 (2026-09-25)
+
+빈 이벤트 템플릿 「장면」(`event-template-scene`, `src/editor/panels/eventEditor/sceneTemplate.ts`)은
+화면 숨기기 → 그림 표시(`recordInGallery`) → 화면 보이기 → 문장 → 다시 숨긴 뒤 그림을 지우고
+스위치 `sw_scene_seen`(이름 「장면을 봄」, 없을 때만 추가)를 켠다.
+
+그림 표시 폼의 「남기기」는 `showPicture.recordInGallery`. 문장 폼의 「이 줄의 음성」은
+`text.voiceResourceId`. 메뉴에 모이는 조건과 이름 변경은 자료집 → 시스템 → 시작 설정의 갤러리 칸.
+런타임 계약은 `openwiki/runtime-sessions.md` 의 갤러리 절.
+
 ## 게임 오버 선택 (2026-09-23)
 
 `gameOver`와 `killPlayer` 폼은 `gameOverCommandBody.ts`에서 이름별 항목을 고른다.

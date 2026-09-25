@@ -34,6 +34,8 @@ import {
 import { prefersReducedMotion } from "@/player/characterLanding";
 import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
+import { resolveAudioSource } from "@/player/audio/audioResources";
+import { playLineVoice, stopLineVoice } from "@/player/lineVoice";
 import { createDialogueVoice } from "@/player/dialogueVoice";
 import {
   DIALOGUE_TAG_COLORS,
@@ -90,6 +92,8 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly speakerKey?: string;
   /** [소리:id] 태그. 런타임이 효과음을 낸다. */
   readonly onSound?: (soundId: string) => void;
+  /** 이 줄 전체의 음성 파일. 있으면 글자 삑 소리는 내지 않는다. */
+  readonly voiceResourceId?: string;
   /** [화면흔들] 태그. 런타임이 카메라를 흔든다(대사 상자는 스스로 흔든다). */
   readonly onScreenShake?: () => void;
   /** 표정의 이모트를 머리 위에 띄운다. */
@@ -425,10 +429,14 @@ export function createDialogueUI(
 
   function showText(request: DialogueTextRequest): Promise<void> {
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
+    const voiceFile = request.voiceResourceId?.trim();
+    const voiceUrl = voiceFile ? resolveAudioSource(voiceFile, store.getCurrent()) : null;
+    if (voiceUrl) playLineVoice(voiceUrl);
+    else stopLineVoice();
     const requestedLook = request.look ?? resolveDialogueLook(store.getCurrent(), { speaker: request.speaker, emotion: request.emotion });
     if (isNonBlockingContainer(requestedLook.container)) {
       // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
-      showAmbient(request, requestedLook);
+      showAmbient(request, voiceUrl ? { ...requestedLook, voice: null } : requestedLook);
       return Promise.resolve();
     }
     const wasOpen = takeOverOverlay();
@@ -443,7 +451,7 @@ export function createDialogueUI(
         reducedMotion: resolveReducedMotion(request.reducedMotion),
       });
       activeExitMs = profile.exitMs;
-      let voice = createDialogueVoice(look);
+      let voice = createDialogueVoice(voiceUrl ? { ...look, voice: null } : look);
       let box!: HTMLElement;
       let bodyEl!: HTMLElement;
       let cursor!: HTMLElement;
@@ -650,7 +658,7 @@ export function createDialogueUI(
           voicePitch: look.basePitch + (expression?.pitch ?? 0),
           ...(expression?.emote ? { emote: expression.emote } : {}),
         };
-        voice = createDialogueVoice(look);
+        voice = createDialogueVoice(voiceUrl ? { ...look, voice: null } : look);
         if (expression?.face && faceEl) {
           currentFaceId = expression.face;
           setFaceImage(faceEl, expression.face);
@@ -1004,6 +1012,7 @@ export function createDialogueUI(
 
   /** 즉시 컷. 퇴장 예약이 걸려 있으면 취소하고 바로 비운다. */
   function hide(): void {
+    stopLineVoice();
     cancelActiveText?.();
     cancelActiveChoice?.();
     if (pendingExit) {

@@ -22,7 +22,8 @@ const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
   // style·context·container 는 런타임 타입(project/types/events.ts text)에 있는 대화 필드다 — 폼이
   // 전용 위젯을 안 두는 것뿐이다. 여기 없으면 컷신 say 가 실은 these 필드를 «모르는 필드» 로 세어
   // 경고를 터뜨린다(2026-09-24 감성 스토리 r3: 경고 75건 중 45건).
-  text: ["emotion", "style", "context", "container"],
+  text: ["emotion", "style", "context", "container", "voiceResourceId"],
+  showPicture: ["recordInGallery"],
   choices: ["prompt", "options", "cancelBehavior", "cancelBranch"],
   presentItem: ["prompt", "itemIds", "options", "otherwiseBranch", "cancelBranch", "consume"],
   fork: ["condition", "then", "else"],

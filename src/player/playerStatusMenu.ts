@@ -124,7 +124,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   // 사이드 파티(스킨 옵션)는 작업 패널에서만 — 트레이·확인 카드·대상 선택은 파티 정보를 따로 갖거나 필요 없다.
   // Effects, equipment comparisons and tabbed pages need the full detail layout.
   // Never hide decision-making information to make room for a second party view.
-  const needsFullDetail = selectedCommand === "options" || selectedCommand === "items" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
+  const needsFullDetail = selectedCommand === "options" || selectedCommand === "items" || selectedCommand === "gallery" || Boolean(detail.tabs?.length) || detail.entries.some((entry) => entry.statDelta || entry.facts?.length);
   const sideParty = skin.sideParty && !needsFullDetail && mode === "function" && presentation === "work-panel" && !options.targetItemId
     ? renderSidePartyMini(options.project, snapshot)
     : undefined;
@@ -282,6 +282,7 @@ function statusMenuCommandIcon(commandId: StatusMenuRailId): string {
     case "battle-reports": return "▤";
     case "quests": return "✓";
     case "relationships": return "∞";
+    case "gallery": return "▣";
     case "life-ledger": return "▦";
     case "save": return "↓";
     case "load": return "↑";
@@ -309,6 +310,7 @@ function statusMenuCommandIconName(commandId: StatusMenuRailId): string {
     case "battle-reports": return "book-magic";
     case "quests": return "map";
     case "relationships": return "world";
+    case "gallery": return "map";
     case "life-ledger": return "book-magic";
     case "save": return "crystal";
     case "load": return "warp-scroll";
@@ -344,6 +346,7 @@ function runCommand(command: StatusMenuCommand, actions: PlayerStatusMenuActions
     case "battle-reports":
     case "quests":
     case "relationships":
+    case "gallery":
     case "life-ledger":
       actions.onCommand(command.id as StatusMenuCommandId);
       return;

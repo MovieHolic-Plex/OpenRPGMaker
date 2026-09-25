@@ -1173,6 +1173,14 @@ export interface SystemRecords {
   // 전투를 몬스터 파티로 진행(옵션 A). monsterCollection(포획 게이트)과 별개 축이다.
   monsterBattleParty?: boolean;
   giftSystem?: boolean;
+  /**
+   * 갤러리. enabled 가 아니면 메뉴에 나오지 않는다.
+   * label 을 비우면 메뉴 이름은 「갤러리」. 다른 낱말을 적어 두면 그 이름으로 보인다.
+   */
+  gallery?: {
+    readonly enabled: boolean;
+    readonly label?: string;
+  };
   typeChart?: TypeChartRecord;
   timeSystem?: TimeSystemConfig;
   /** Opt-in 실시간 액션 전투 패키지. 생략 시 필드 스폰 접촉은 기존 턴제 전투로 라우팅된다. */

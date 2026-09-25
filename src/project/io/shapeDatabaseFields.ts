@@ -131,6 +131,11 @@ export function validateSystem(value: unknown): void {
   if (system.monsterCollection !== undefined) requireBoolean("system.monsterCollection", system.monsterCollection);
   if (system.monsterBattleParty !== undefined) requireBoolean("system.monsterBattleParty", system.monsterBattleParty);
   if (system.giftSystem !== undefined) requireBoolean("system.giftSystem", system.giftSystem);
+  if (system.gallery !== undefined) {
+    const gallery = requireRecord("system.gallery", system.gallery);
+    if (gallery.enabled !== undefined) requireBoolean("system.gallery.enabled", gallery.enabled);
+    if (gallery.label !== undefined) requireString("system.gallery.label", gallery.label);
+  }
   if (system.timeSystem !== undefined) validateTimeSystem(system.timeSystem);
   if (system.worldGen !== undefined) {
     const worldGen = requireRecord("system.worldGen", system.worldGen);

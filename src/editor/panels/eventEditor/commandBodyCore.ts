@@ -26,6 +26,7 @@ import {
 import type { Command, Condition, MessageWindowFormat, MessageWindowPosition, SwitchValue } from "@/project/types";
 import { factionName, resolveFactionTable } from "@/project/factions";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { resourceDisplayName } from "@/player/resourceDisplay";
 import { store } from "@/project/store";
 import {
   DIALOGUE_CONTAINER_IDS,
@@ -198,6 +199,12 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
     attrs: { "aria-live": "polite", "aria-atomic": "true" },
     dataset: { testid: "event-command-text-live-preview" },
   });
+  let voiceResourceId = cmd.voiceResourceId?.trim() ?? "";
+  const voiceName = el("span", {
+    class: "event-command-text-voice-name",
+    text: voiceResourceId ? resourceDisplayName(voiceResourceId, voiceResourceId) : "없음",
+    dataset: { testid: "event-command-text-voice-name" },
+  });
   const readDraft = (): Extract<Command, { kind: "text" }> => {
     const nextEmotion = emotion.select.value;
     const nextContext = lineContext.select.value;
@@ -210,6 +217,7 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
       ...(nextContext && nextContext !== "speech" ? { context: nextContext } : {}),
       ...(lineStyle.value ? { style: lineStyle.value } : {}),
       ...(lineContainer.select.value ? { container: lineContainer.select.value } : {}),
+      ...(voiceResourceId ? { voiceResourceId } : {}),
     };
   };
   // 연출은 **바뀐 순간에만** 프리뷰에서 재생한다. 프리뷰는 본문을 한 글자 칠 때마다 다시
@@ -378,6 +386,51 @@ function textBody(context: CommandEditContext, cmd: Extract<Command, { kind: "te
           ],
         }),
         presentation,
+        el("div", {
+          class: "event-command-text-voice-field",
+          attrs: { style: "display:flex;flex-wrap:wrap;gap:6px;align-items:center;" },
+          dataset: { testid: "event-command-text-voice" },
+          children: [
+            el("span", { class: "event-command-text-body-label", text: "이 줄의 음성" }),
+            voiceName,
+            el("button", {
+              class: "btn small",
+              text: "음성 고르기",
+              attrs: { type: "button" },
+              dataset: { testid: "event-command-text-voice-pick" },
+              on: {
+                click: () => {
+                  openDatabaseResourcePickerDialog({
+                    kind: "sound",
+                    title: "음성 고르기",
+                    currentId: voiceResourceId,
+                    onConfirm: (result) => {
+                      voiceResourceId = result.resourceId.trim();
+                      voiceName.textContent = voiceResourceId
+                        ? resourceDisplayName(voiceResourceId, voiceResourceId)
+                        : "없음";
+                      apply();
+                    },
+                  });
+                },
+              },
+            }),
+            el("button", {
+              class: "btn small",
+              text: "지우기",
+              attrs: { type: "button" },
+              dataset: { testid: "event-command-text-voice-clear" },
+              on: {
+                click: () => {
+                  voiceResourceId = "";
+                  voiceName.textContent = "없음";
+                  apply();
+                },
+              },
+            }),
+            el("small", { text: "이 대사가 뜰 때 한 번 재생합니다. 배경음은 그대로 두고, 글자 소리는 내지 않습니다." }),
+          ],
+        }),
         easyTools,
         advanced,
         controlDetails,

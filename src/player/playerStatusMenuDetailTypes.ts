@@ -26,6 +26,8 @@ export type StatusMenuDetailEntry = {
     readonly sheet?: BattleAnimationSheet;
     readonly alt: string;
     readonly testId: string;
+    /** 픽셀 아이콘이 아닌 그림(갤러리 CG)은 부드럽게 그린다. */
+    readonly smooth?: boolean;
   };
   readonly testId?: string;
   /** 이 후보를 고르면 능력치가 어떻게 변하는가. 커서가 올라간 항목의 값을 사이드바가 그린다.
@@ -62,6 +64,8 @@ export type StatusMenuDetail = {
   readonly entries: readonly StatusMenuDetailEntry[];
   readonly emptyLabel?: string;
   readonly hint?: string;
+  /** gallery: 고른 그림을 목록 위에 크게 둔다. */
+  readonly layout?: "gallery";
   readonly artwork?: { readonly src: string; readonly alt: string };
   readonly tabs?: readonly {
     readonly id: string;

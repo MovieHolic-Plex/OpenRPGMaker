@@ -1,6 +1,7 @@
 // Page 3 native command rich forms (맵·연출): lighting, weather, animation, picture, tile.
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { galleryMenuLabel } from "@/project/gallery";
 import { store } from "@/project/store";
 import type { Command, WeatherKind } from "@/project/types";
 import { el } from "@/util/dom";
@@ -1123,6 +1124,12 @@ export function showPictureBody(
   const opacity = numberInput(opacityToPercent(cmd.opacity ?? 255), "불투명도(%)", "show-picture-opacity-input");
   const rotation = numberInput(cmd.rotation ?? 0, "회전(도)", "show-picture-rotation-input");
   const durationMs = numberInput(cmd.durationMs ?? 0, "전환 시간 — 0이면 즉시", "show-picture-duration-input");
+  const recordInGallery = el("input", {
+    attrs: { type: "checkbox" },
+    dataset: { testid: "show-picture-gallery" },
+  }) as HTMLInputElement;
+  recordInGallery.checked = cmd.recordInGallery === true;
+  const galleryLabel = galleryMenuLabel(store.getCurrent());
   const preview = el("div", {
     class: "actor-m2-preview page3-command-preview",
     dataset: { testid: "show-picture-preview" },
@@ -1154,6 +1161,7 @@ export function showPictureBody(
       // 회전은 한 바퀴를 넘겨도 뜻이 통하므로 접지 않고 그대로 싣는다.
       rotation: parseInt(rotation.value, 10) || 0,
       durationMs: intInRange(durationMs, 0, 0, 60_000),
+      ...(recordInGallery.checked ? { recordInGallery: true } : {}),
     });
     renderPreview();
   };
@@ -1221,6 +1229,7 @@ export function showPictureBody(
     control.addEventListener("change", commit);
     control.addEventListener("input", renderPreview);
   }
+  recordInGallery.addEventListener("change", commit);
 
   for (const preset of [
     { id: "center", label: "중앙", x: 160, y: 120 },
@@ -1304,6 +1313,17 @@ export function showPictureBody(
               el("div", { class: "actor-m2-inline page3-coord-row", children: [x, y] })
             ),
             fieldBlock("위치 프리셋", presets),
+            fieldBlock(
+              "메뉴에 남기기",
+              el("label", {
+                class: "page3-gallery-record",
+                attrs: { style: "display:flex;gap:8px;align-items:flex-start;line-height:1.45;white-space:normal;" },
+                children: [
+                  recordInGallery,
+                  el("span", { text: `보면 메뉴의 ${galleryLabel}에 모입니다. 시스템에서 켜야 합니다.` }),
+                ],
+              }),
+            ),
             fieldBlock(
               "크기 · 불투명도",
               el("div", { class: "actor-m2-inline page3-coord-row", children: [scale, opacity] })

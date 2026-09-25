@@ -451,6 +451,7 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
             face: face ? { ...face } : undefined,
             settings: options.state.messageWindowSettings ? { ...options.state.messageWindowSettings } : undefined,
             autoAdvance: command.autoAdvance, emotion: command.emotion,
+            ...(command.voiceResourceId ? { voiceResourceId: command.voiceResourceId } : {}),
           };
           return { kind: "pause", request: pendingPause };
         case "fork": {

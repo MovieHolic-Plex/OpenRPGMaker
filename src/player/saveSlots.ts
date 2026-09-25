@@ -11,6 +11,7 @@ import { isPromotionLineage } from '@/project/growth/requirements';
 import { isGrowthProgress } from "@/project/growth/validation";
 import { refreshGrowthVitals } from '@/project/growth/vitals';
 import type { ActorInitialEquipment, CharacterFootprint, Project } from "@/project/types";
+import { normalizeGalleryUnlocks } from "@/project/gallery";
 import { normalizeRelationships } from "@/project/relationshipState";
 import { normalizeCharacterFootprint } from "@/project/footprint";
 import {
@@ -197,6 +198,7 @@ export type SaveSnapshot = {
     readonly farmPlotsAdvancedThrough?: PlaySession["farmPlotsAdvancedThrough"];
     readonly friendship?: PlaySession["friendship"];
     readonly relationships?: PlaySession["relationships"];
+    readonly galleryUnlocks?: PlaySession["galleryUnlocks"];
     readonly dailyGifts?: PlaySession["dailyGifts"];
     readonly dailyTalks?: PlaySession["dailyTalks"];
     readonly monsterCareSteps?: number;
@@ -421,6 +423,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       farmPlotsAdvancedThrough: structuredClone(session.farmPlotsAdvancedThrough),
       friendship: structuredClone(session.friendship ?? {}),
       relationships: structuredClone(session.relationships ?? {}),
+      galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dailyGifts: structuredClone(session.dailyGifts ?? {}),
       dailyTalks: structuredClone(session.dailyTalks ?? {}),
       monsterCareSteps: session.monsterCareSteps,
@@ -641,6 +644,9 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
   session.farmPlotsAdvancedThrough = normalizeFarmPlotDateForProject(project, snapshot.session.farmPlotsAdvancedThrough);
   session.friendship = normalizeFriendshipRecord(snapshot.session.friendship);
   session.relationships = normalizeRelationships(snapshot.session.relationships) ?? {};
+  const galleryUnlocks = normalizeGalleryUnlocks(snapshot.session.galleryUnlocks);
+  if (galleryUnlocks) session.galleryUnlocks = galleryUnlocks;
+  else delete session.galleryUnlocks;
   session.dailyGifts = structuredClone(snapshot.session.dailyGifts ?? {});
   session.dailyTalks = structuredClone(snapshot.session.dailyTalks ?? {});
   if (typeof snapshot.session.monsterCareSteps === "number") {
@@ -1075,6 +1081,7 @@ function parseSessionRecord(session: Record<string, unknown>): ParsedSessionResu
       farmPlotsAdvancedThrough: isFarmPlotDate(session.farmPlotsAdvancedThrough) ? session.farmPlotsAdvancedThrough : undefined,
       friendship: isNumberRecord(session.friendship) ? normalizeFriendshipRecord(session.friendship) : undefined,
       relationships: normalizeRelationships(session.relationships),
+      galleryUnlocks: normalizeGalleryUnlocks(session.galleryUnlocks),
       dailyGifts: isStringRecord(session.dailyGifts) ? session.dailyGifts : undefined,
       dailyTalks: isStringRecord(session.dailyTalks) ? session.dailyTalks : undefined,
       monsterCareSteps: typeof session.monsterCareSteps === "number" && Number.isFinite(session.monsterCareSteps)

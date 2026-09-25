@@ -483,3 +483,15 @@ buyOnly/sellOnly; real item comparison and purchase/sale handlers remain authori
 사건 등록은 기존 상태를 읽는 `define_quest` 그래프 메타를 사용하며, 단순 일지 연결을 위해
 `create_quest`로 기존 이벤트를 재컴파일하지 않는다. 검증 기록은
 `docs/qa/saesol-three-hour-ai-authoring.md`의 요청61 절을 참조한다.
+
+## 갤러리와 줄 음성 (2026-09-25)
+
+`system.gallery.enabled` 가 참일 때만 ESC 메뉴 기록에 항목이 생긴다. 표시 이름은
+`system.gallery.label` 이고, 비우면 「갤러리」다. 꺼 두어도 커스텀 이름은 남는다.
+`showPicture.recordInGallery` 가 참인 그림을 실행하면 `session.galleryUnlocks` 에
+리소스 id 가 본 순서로 쌓이고 Save 스냅샷에 들어간다. 같은 그림은 한 번만 남는다.
+목록에서 결정하면 `.play-stage` 안의 `gallery-viewer` 가 그 그림을 화면 크기로 연다.
+
+`text.voiceResourceId` 는 그 줄이 열릴 때 음성 파일을 한 번 재생한다. 배경음·효과음 채널은
+건드리지 않고, 설정 「대사 목소리」 음량을 쓴다. 파일이 있으면 글자 삑 소리는 내지 않는다.
+줄이 바뀌거나 대사창이 닫히면 멈춘다.
