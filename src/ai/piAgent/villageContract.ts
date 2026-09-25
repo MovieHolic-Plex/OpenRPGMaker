@@ -1,3 +1,4 @@
+import { packTownTargetFor } from "./packTownRoute";
 import { withVillageMorphologyDefault } from "@/editor/tools/village/defaultMorphology";
 import { computeReachableCells } from "@/project/lint/reachability";
 import type { Project } from "@/project/types";
@@ -24,6 +25,8 @@ export function resolveVillageContract(project: Project, intent: IntentDeclarati
   // configure_monster_system·set_opening·set_title_screen 이 「마을 계약」으로 거부된 채 73초 만에 마을만 남았다.
   if (isGenrePresetBriefRequest(requestText)) return;
   if (intent.source !== "llm" || intent.mode === "question" || !intent.tools.includes("author_village")) return;
+  // 팩 도시 타일셋(Rasak 등) 마을은 build_pack_town 이 짠다 — 계약을 걸면 author_village 만 허용돼 숲마을로 바뀐다(packTownRoute).
+  if (packTownTargetFor(project, requestText, intent.targetMapId ?? currentMapId)) return;
   // Multi-goal adventures retain their existing orchestration; this contract owns one village.
   if (intent.adventure || intent.npcRewards || intent.functionalAcceptance?.length || intent.actionCombat) return;
   const declared = intent.construction;
