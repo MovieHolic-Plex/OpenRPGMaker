@@ -66,6 +66,22 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
   1층 75.7%(같은 종류만 49.5%) · 2층 81.7%. 남은 차이는 제작자가 모양을 고정해 칠한 칸과, 엔진이 방향을 가리지 않는 벽 규칙.
 - 예제 창에는 합성 칸이 없어야 하고(스크립트가 막는다), p27b 둘레 암반은 엔진 모양으로 바꿔 싣는다.
 
+## 마을·실내 묶음 (2026-09-25)
+
+- 묶음 `rasak_town`(A1 도시 물 · A2 도시 땅 · A3 City1 지붕 16종+벽 16종 · A4 도시 벽 · A5 도시 · B 마을 · C 건물 · D 구조물 · E 시장 · 추가 울타리·정원·농장·작물·여름 나무)과
+  `rasak_interior`(A2 실내 바닥·양탄자·탁자형 · A4 집 천장+벽 · A5 집 · B 집 · C 거실 · D 주점 · E 창고 · 추가 대장간·재봉·왕실).
+  이름표: town kind 139 · 물체 796, interior kind 104 · 물체 1003, 이름 없는 조각 0. 층은 명세 플래그(`L1` 바닥재 · `L2` 깔개 · `L4` 탁상 소품·굴뚝)로 정한다.
+- 이 두 묶음은 **제작자 타일 프리뷰가 없다**(p24 는 손그림 세계 지도, p21·p22 실내는 조명 덧칠). 그래서 `compose_examples.py` 가
+  MZ 기본 규칙(같은 kind 끼리 잇기, 맵 가장자리 = 이어짐)으로 조립한 예제 맵 4장(`ex_village`·`ex_city`·`ex_house_room`·`ex_tavern`)을
+  `maps/rasak_preview_ex_*.layers.map.json` 으로 써서 프리뷰 자리에 넣는다. 예제 명세는 `compose_examples_specs.py`(kind 번호·물체 id).
+  실제 엔진으로 예제의 자동타일을 다시 잡으면 100% 같다(`apply-assistant-pack verify`).
+- 참고문서 용도 4개 추가: `town_village`·`town_city`(A3 지붕+벽 집 짓기 조리법, 도시 큰길·좌판 조립) · `interior_house`·`interior_tavern`
+  (A4 천장 테두리 → 벽면 두 줄 → A2 바닥, 벽걸이·키 큰 가구·탁상 소품 4층 규칙, 실내는 네모 방이 정상, 오류 그림 ⑤벽면 빠뜨림 ⑥벽걸이를 바닥 줄에).
+- 모든 Rasak 묶음 타일셋은 `family: "rasak-fantasy"` 로 발행한다 — 조수의 칩셋 계열 규칙(같은 계열끼리는 말없이 오간다)이 이걸 본다.
+- 순서: `bake_atlas.py --bundle rasak_town|rasak_interior` → 이름 명세(`knowledge/work/new/spec_*.py`, 로컬) → `knowledge/work/build.py` →
+  `compose_examples.py` → `publish-study-project.mjs --layers`(새 폴더) → `apply dump` → `build_assistant_pack.py` → `apply verify|apply|export`.
+  새 묶음은 합성 칸이 없으므로 `manifest.layers.json`·`atlas.layers.png` 는 `manifest.json`·`atlas.png` 사본이다.
+
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)
 
 | 프리뷰 | 묶음 | 완전 일치 | ±32 이내 | 남은 차이 |

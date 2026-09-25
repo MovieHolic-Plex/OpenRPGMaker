@@ -65,6 +65,8 @@ export interface ContextOptions {
    * 구조 키트·맵 요약이 이전 맵을 설명해, 라이브 뷰포트 블록과 서로 다른 맵을 가리킨다.
    */
   getCurrentMapId?: () => string | null | undefined;
+  /** 사용자가 이 대화에서 승인한 칩셋 계열(`ToolContext.approvedTilesetFamilies`). 세션이 도구를 부를 때마다 읽는다. */
+  getApprovedTilesetFamilies?: () => readonly string[];
   /**
    * 프로젝트 한정 성향 조회 키(conversationScopeKey 값). 패널이 넣고 세션이 성향 조회에 쓴다.
    * 없으면 전역 성향만 붙는다 — 전역 성향은 이 값과 무관하게 항상 붙는다(사람의 취향은

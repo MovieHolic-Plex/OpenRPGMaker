@@ -7,7 +7,7 @@ import type { Project, TilesetDef } from "@/project/types";
 import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import { hasExtraLayers } from "@/project/mapLayers";
 import { referenceOwner } from "@/project/tilesetReferences";
-import { HOUSE_VARIETY_POLICY_LINE } from "../promptPolicies";
+import { HOUSE_VARIETY_POLICY_LINE, TILESET_FAMILY_POLICY_LINE } from "../promptPolicies";
 
 export function describeScopedMaps(project: Project, mapIds: readonly string[]): string[] {
   return mapIds.map((id) => {
@@ -52,6 +52,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     "완료하면 무엇을 했는지 한두 문장으로 보고하고 종료한다. 사용자에게 되묻지 않는다 — 판단이 필요하면 합리적인 기본값을 택하고 보고에 적는다.",
     // 집 규칙은 채팅 세션과 같은 문장을 쓴다 — 툴 설명만으로는 모델이 templateId 를 비워 사각형만 깔았다(2026-09-17).
     HOUSE_VARIETY_POLICY_LINE,
+    TILESET_FAMILY_POLICY_LINE,
   ];
 }
 

@@ -43,6 +43,7 @@ import { searchWebWithCodex } from "./codexWebSearchRuntime.ts";
 import { WEB_SEARCH_TOOL } from "../../src/editor/tools/webSearchTool.ts";
 import { CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
+import type { ToolContext } from "../../src/editor/tools/types.ts";
 
 export interface RunPiAgentOptions {
   readonly onCheckpoint?: (checkpoint: PiProjectCheckpoint, signal?: AbortSignal) => Promise<Project | void>;
@@ -182,7 +183,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   installSharedSpatialReferences(readSharedTileReferences().spatial);
   const emit = (event: PiAgentEvent) => options.onEvent?.({ ...event, at: event.at ?? Date.now() });
   const base = request.project;
-  const ctx = { project: structuredClone(base) as Project };
+  // 지금 보는 맵·승인 계열은 실행기의 칩셋 계열 검사와 create_map 기본 칩셋이 읽는다(ToolContext 주석).
+  const ctx: ToolContext = {
+    project: structuredClone(base) as Project,
+    ...(request.currentMapId && base.maps[request.currentMapId] ? { currentMapId: request.currentMapId } : {}),
+    ...(request.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: [...request.approvedTilesetFamilies] } : {}),
+  };
   const referenceGate = new PiTilesetReferenceGate();
   const model = resolvePiModel(request.provider, request.model);
   // 어댑터와 코어 이벤트의 호출 id로 결과를 연결한다. 같은 이름의 병렬 호출도 섞지 않는다.
