@@ -347,13 +347,13 @@ export function createKit(api, base) {
     return { rules, report };
   }
 
-  // Object rectangles → lower/upper arrays (plain floor becomes -1 so the piece stands on any floor).
+  // Object rectangles → lower/upper arrays (plain floor and wall faces become -1 so the piece stands on any floor/wall).
   function cutObjects() {
     return objects.map(({ _room, rect, ...o }) => {
       const mm = _room.m, lower = [], upper = [];
       for (let y = rect[1]; y < rect[1] + o.height; y++) for (let x = rect[0]; x < rect[0] + o.width; x++) {
         const lo = mm.lowerTiles[y * mm.width + x], up = mm.upperTiles[y * mm.width + x];
-        lower.push(PLAIN.has(lo) ? -1 : lo);
+        lower.push(PLAIN.has(lo) || FACE.has(lo) ? -1 : lo);   // plain floor and wall faces take the host map's own
         upper.push(up);
       }
       assert(upper.some((t) => t >= 0) || lower.some((t) => t >= 0), `${o.id}: empty object`);
