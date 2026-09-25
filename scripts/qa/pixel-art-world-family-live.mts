@@ -26,7 +26,12 @@ project.maps = {[mapId]: {id: mapId, name: '조수 직접 설계 · ' + card.nam
   lowerTiles: Array(card.width * card.height).fill(-1), upperTiles: Array(card.width * card.height).fill(-1), events: [], encounterRate: 0}};
 project.mapTree = {mapId, children: []}; project.startMapId = mapId; project.startPos = {x: Math.floor(card.width / 2), y: card.height - 2};
 const resume = resumeArg && resumeArg !== '-' ? resumeArg : undefined;
-if (resume) project = JSON.parse(fs.readFileSync(resume + '/result-project.json', 'utf8'));
+if (resume) {
+  project = JSON.parse(fs.readFileSync(resume + '/result-project.json', 'utf8'));
+  // Keep the painted map but read the currently published dictionary (same atlas, possibly corrected rules).
+  if (project.tilesets[tilesetId].count !== owner.count) throw Error('Published atlas changed; cannot resume');
+  project.tilesets[tilesetId].referenceDocuments = structuredClone(owner.referenceDocuments);
+}
 
 const calls: any[] = [], events: any[] = [], renders: any[] = [], cache = new Map();
 function png(p: any, data: any) {

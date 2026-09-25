@@ -97,8 +97,12 @@ for fam in spec['families']:
                 continue
             tiles = [[take(cell(im, n), (sheet, n), {'label': r['name'], 'passage': 'blocked', 'layer': 'upper'}) for n in row] for row in r['tiles']]
             oid = r['id'] if r['id'] not in {o['id'] for o in objects} else key + '-' + r['id']
+            kind, support = r['placementKind'], r['supportCells']
+            if kind == 'wall-mounted' and len(r['tiles']) > len(conf['wall']) and 'window' not in r['id']:
+                # Taller than this sheet's wall face (a urinal or door on a two-row wall; windows stay wall-mounted): its foot stands on the floor.
+                kind, support = 'standing', [{'x': x, 'y': len(r['tiles']) - 1} for x in range(len(r['tiles'][0]))]
             objects.append({'id': oid, 'name': r['name'], 'sourceId': pack['id'], 'filename': pack['filename'], 'sha256': pack['sha256'],
-                            'originalTiles': r['tiles'], 'tiles': tiles, 'placementKind': r['placementKind'], 'facing': r['facing'], 'supportCells': r['supportCells']})
+                            'originalTiles': r['tiles'], 'tiles': tiles, 'placementKind': kind, 'facing': r['facing'], 'supportCells': support})
             count += 1
         sheet_info.append({'sheet': pack['filename'], 'floor': 'floor-' + key, 'wall': 'wall-' + key, 'wallRows': len(conf['wall']), 'objects': count})
     # Loose single-object sheets: render the reviewed pixel rectangle into its output cell box, then copy cells.
