@@ -1,5 +1,5 @@
 import { isDungeonSheetTilesetId } from "@/project/defaults/dungeonSheetTilesets";
-import { referenceManifest, referenceOwner, referenceRevision, REFERENCE_PAGE_SIZE } from "@/project/tilesetReferences";
+import { referenceManifest, referenceOwner, referencePage, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
 import { ToolError, type ToolDefinition } from "./types";
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
@@ -91,7 +91,7 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
   },
   {
     name: "read_tileset_reference", mode: "read", domains: ["tile", "map", "database"],
-    description: "용도의 MD 한 페이지 또는 이미지 한 장을 읽는다. documentId/imageId 중 하나만 지정. MD는 nextOffset이 null일 때까지 읽는다. 이미지는 실제 이미지 입력으로 전달된다. 같은 응답에 배치를 함께 호출하지 말고 반환 자료를 본 다음 배치한다.",
+    description: "용도의 MD 한 페이지 또는 이미지 한 장을 읽는다. documentId/imageId 중 하나만 지정 — id 목록은 list_tileset_references({tilesetId, categoryId}) 가 준다(용도 id 는 list_tileset_references({tilesetId})). MD는 nextOffset이 null일 때까지 읽는다(페이지는 문단·코드 블록 경계에서 끊겨 사전 JSON 이 한 페이지에 온전히 온다). 이미지는 실제 이미지 입력으로 전달된다. 같은 응답에 배치를 함께 호출하지 말고 반환 자료를 본 다음 배치한다.",
     parameters: { type: "object", properties: {
       tilesetId: { type: "string" }, categoryId: { type: "string" }, documentId: { type: "string" }, imageId: { type: "string" }, offset: { type: "integer", minimum: 0 },
     }, required: ["tilesetId", "categoryId"], additionalProperties: false },
@@ -107,9 +107,10 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
         const doc = group.documents.find(d => d.id === args.documentId);
         if (!doc) throw new ToolError(`MD 문서를 찾을 수 없습니다 — ${unknownIdMessage("documentId", args.documentId, group.documents.map(d => d.id))} 전체 목록은 list_tileset_references({tilesetId,categoryId}).`);
         const offset = Number(args.offset ?? 0);
-        if (!Number.isSafeInteger(offset) || offset < 0 || offset > doc.markdown.length || offset % REFERENCE_PAGE_SIZE !== 0) throw new ToolError(`offset은 ${REFERENCE_PAGE_SIZE} 단위의 페이지 시작점이어야 합니다.`);
-        const end = Math.min(doc.markdown.length, offset + REFERENCE_PAGE_SIZE);
-        return { summary: `${group.name} / ${doc.name} (${offset}–${end})`, data: { ...base, document: { id: doc.id, name: doc.name, markdown: doc.markdown.slice(offset, end), offset, nextOffset: end < doc.markdown.length ? end : null, totalCharacters: doc.markdown.length } } };
+        const page = Number.isSafeInteger(offset) ? referencePage(doc.markdown, offset) : null;
+        if (!page) throw new ToolError(`offset 은 페이지 시작점이어야 합니다 — 이 문서의 페이지: ${referencePageStarts(doc.markdown).join(", ")}. 처음은 offset 생략, 다음은 응답의 nextOffset.`);
+        const pages = referencePageStarts(doc.markdown);
+        return { summary: `${group.name} / ${doc.name} (${offset}–${page.end}, ${pages.indexOf(offset) + 1}/${pages.length}쪽)`, data: { ...base, document: { id: doc.id, name: doc.name, markdown: page.text, offset, nextOffset: page.nextOffset, page: pages.indexOf(offset) + 1, pages: pages.length, totalCharacters: doc.markdown.length } } };
       }
       if (args.offset !== undefined) throw new ToolError("이미지에는 offset을 사용하지 않습니다.");
       const img = group.images.find(i => i.id === args.imageId);

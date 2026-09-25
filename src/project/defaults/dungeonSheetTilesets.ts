@@ -42,6 +42,17 @@ export function ensureDungeonSheetTileset(project: Pick<Project, "tilesets">, id
   for (const [tile, cell] of Object.entries(sheet.overrides)) setCell(tileset, Number(tile), cell);
   sheet.tail.forEach((cell, i) => setCell(tileset, 480 + i, { ...cell, tileMeta: cell.tileMeta ?? { label: "", description: "" } }));
   tileset.tileGrafts = [...(base.tileGrafts ?? []).filter(graft => graft.targetTile < 480), ...structuredClone(sheet.tileGrafts)];
+  // Planks 141… are a floor on the lower layer and a bridge on the upper one over water, lava or a pit — the dungeon
+  // documents and the authored dungeons (stone 94, sea 68 cells upper) put them upstairs, but the stock group said
+  // lower-only, so paint_tiles moved a bridge down and erased the lava under it (2026-09-25 assistant trial).
+  tileset.tileGroups = (tileset.tileGroups ?? []).map(group => {
+    if (group.id !== "harness-dungeon-v1-planks") return group;
+    for (const tile of group.tileIds) {
+      const meta = tileset.tileMeta?.[tile] as (TileAiMetadata & { defaultLayer?: string }) | undefined;
+      if (meta?.defaultLayer) delete meta.defaultLayer;
+    }
+    return { ...group, defaultLayer: "mixed" as const, placementRules: `${group.placementRules} 바닥이면 lower, 물·용암·구덩이 위 다리면 upper(아래 칸은 그대로 둔다).` };
+  });
   project.tilesets[id] = tileset;
   return true;
 }

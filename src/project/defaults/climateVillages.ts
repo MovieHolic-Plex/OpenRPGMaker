@@ -19,6 +19,15 @@ export function climateVillageTilesetId(kind: ClimateVillageKind): string {
   return CLIMATES[kind].id;
 }
 
+// Cells the recolour turned into a different object than the forest cell under it. The desert palm 770 is a standing
+// tree on the upper layer (authored desert maps: every palm upper; documents say upper) but inherited the forest
+// cell's lower priority, so paint_tiles routed palms to the lower layer (2026-09-25 assistant trial).
+const PRIORITY_FIXES: Partial<Record<ClimateVillageKind, Readonly<Record<number, "lower" | "upper">>>> = { desert: { 770: "upper" } };
+function withPriorityFixes(kind: ClimateVillageKind, priority: ("lower" | "upper")[]): ("lower" | "upper")[] {
+  for (const [tile, layer] of Object.entries(PRIORITY_FIXES[kind] ?? {})) priority[Number(tile)] = layer;
+  return priority;
+}
+
 /** Independent copy: shared base arrays + this climate's labels, appended ice tiles and extra autotile. */
 export function createClimateVillageTileset(kind: ClimateVillageKind): TilesetDef {
   const climate = CLIMATES[kind];
@@ -38,7 +47,7 @@ export function createClimateVillageTileset(kind: ClimateVillageKind): TilesetDe
     image: { type: "bundled", id: climate.textureKey },
     count: climate.count,
     terrain: [...base.terrain, ...append.terrain],
-    priority: [...base.priority, ...append.priority],
+    priority: withPriorityFixes(kind, [...base.priority, ...append.priority]),
     passability: [...base.passability, ...append.passability],
     tileMeta,
     tileGroups,

@@ -228,11 +228,31 @@ export function plantPalmGroves(map: GameMap, tileset: TilesetDef, { groups = 3,
   return placed;
 }
 
-export interface ClimateDressResult { readonly treesCleared: number; readonly gardenRemoved: number; readonly groves: number; readonly bareTrees: number; readonly palms: number }
+export interface ClimateDressResult { readonly treesCleared: number; readonly gardenRemoved: number; readonly groves: number; readonly bareTrees: number; readonly palms: number; readonly grassRemoved: number }
+
+/** Volcano: no tall grass at all; desert: tall grass only within four cells of water (authored rule, 2026-09-25). */
+function thinTallGrass(map: GameMap, tileset: TilesetDef, climate: "desert" | "volcano"): number {
+  const W = map.width, H = map.height, ctx = contexts(tileset);
+  const nearWater = (x: number, y: number) => {
+    for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) {
+      const xx = x + dx, yy = y + dy;
+      if (xx >= 0 && yy >= 0 && xx < W && yy < H && ctx.water(map.lowerTiles[yy * W + xx]!)) return true;
+    }
+    return false;
+  };
+  let removed = 0;
+  for (let i = 0; i < map.lowerTiles.length; i++) {
+    if (!ALL_TALL_GRASS.has(map.lowerTiles[i]!)) continue;
+    if (climate === "desert" && nearWater(i % W, Math.floor(i / W))) continue;
+    map.lowerTiles[i] = GROUND;
+    removed += 1;
+  }
+  return removed;
+}
 
 /**
  * Dress a forest-village map that now points at a climate sheet. Desert / volcano: leafy trees and bushes → bare
- * ground, then bare-tree groves where the forest stood (desert inland groves may take a cactus, palms by water);
+ * ground, then bare-tree groves where the forest stood (desert: palms by water); tall grass goes (desert keeps it by water);
  * all three: flower bushes 288 and planters 351 are removed. Only cells that were trees become groves, so nothing that
  * was walkable is blocked.
  */
@@ -242,9 +262,11 @@ export function dressClimateMap(map: GameMap, tileset: TilesetDef, climate: Dres
     if (GARDEN_TILES.has(map.upperTiles[i]!)) { map.upperTiles[i] = -1; gardenRemoved += 1; }
     if (GARDEN_TILES.has(map.lowerTiles[i]!)) { map.lowerTiles[i] = GROUND; gardenRemoved += 1; }
   }
-  if (climate === "autumn") return { treesCleared: 0, gardenRemoved, groves: 0, bareTrees: 0, palms: 0 };
+  if (climate === "autumn") return { treesCleared: 0, gardenRemoved, groves: 0, bareTrees: 0, palms: 0, grassRemoved: 0 };
+  const grassRemoved = thinTallGrass(map, tileset, climate);
   const cleared = clearLeafyTrees(map);
-  const groves = arrangeBareGroves(map, tileset, { sites: cleared, seed, ...(climate === "desert" ? { cactus: CACTUS, rockChance: 0.5 } : {}) });
+  // Same as the authored villages (#1489): foot rocks on 30% of groves, no cactus at a grove's foot.
+  const groves = arrangeBareGroves(map, tileset, { sites: cleared, seed, rockChance: 0.3, cactus: null });
   const palms = climate === "desert" ? plantPalmGroves(map, tileset, { seed }) : 0;
-  return { treesCleared: cleared.size, gardenRemoved, groves: groves.groves, bareTrees: groves.trees, palms };
+  return { treesCleared: cleared.size, gardenRemoved, groves: groves.groves, bareTrees: groves.trees, palms, grassRemoved };
 }

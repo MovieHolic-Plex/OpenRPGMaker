@@ -14,6 +14,56 @@ export interface TilesetReferenceCategory {
 }
 export const REFERENCE_LIMITS = { categories: 32, documents: 64, images: 256, markdown: 120_000, imageBytes: 4_000_000 } as const;
 export const REFERENCE_PAGE_SIZE = 6000;
+
+const FENCE = "```";
+/**
+ * Page start offsets for a reference document. A page ends at a paragraph (or line) break near REFERENCE_PAGE_SIZE and
+ * never inside a fenced block — a tile dictionary in a ```json fence stays whole on one page (up to three page sizes;
+ * longer fences are cut at a line break). Fixed 6000-character cuts split dictionaries mid-entry (2026-09-25 trial).
+ * read_tileset_reference and the read-before-write evidence both page by these offsets.
+ */
+export function referencePageStarts(markdown: string): number[] {
+  const starts = [0];
+  let pos = 0;
+  while (markdown.length - pos > REFERENCE_PAGE_SIZE) {
+    const slice = markdown.slice(pos, pos + REFERENCE_PAGE_SIZE);
+    let end: number | null = null;
+    const fences: number[] = [];
+    for (let at = slice.indexOf(FENCE); at !== -1; at = slice.indexOf(FENCE, at + FENCE.length)) fences.push(at);
+    if (fences.length % 2 === 1) {
+      const open = fences[fences.length - 1]!;
+      const lineStart = slice.lastIndexOf("\n", open) + 1;
+      if (lineStart > REFERENCE_PAGE_SIZE / 4) end = pos + lineStart;
+      else {
+        // The block opens near the page start: keep it whole when it closes within three pages.
+        const close = markdown.indexOf(FENCE, pos + open + FENCE.length);
+        const lineEnd = close === -1 ? -1 : markdown.indexOf("\n", close);
+        const after = lineEnd === -1 ? markdown.length : lineEnd + 1;
+        if (close !== -1 && after - pos <= 3 * REFERENCE_PAGE_SIZE) end = after;
+      }
+    }
+    if (end === null) {
+      const para = slice.lastIndexOf("\n\n");
+      const line = slice.lastIndexOf("\n");
+      end = pos + (para > REFERENCE_PAGE_SIZE / 2 ? para + 2 : line > REFERENCE_PAGE_SIZE / 2 ? line + 1 : REFERENCE_PAGE_SIZE);
+    }
+    // A short tail (a closing line or two) stays on this page rather than becoming a page of its own.
+    if (end >= markdown.length || markdown.length - end < REFERENCE_PAGE_SIZE / 10) break;
+    starts.push(end);
+    pos = end;
+  }
+  return starts;
+}
+
+/** The page of `markdown` starting at `offset` (one of referencePageStarts) and the next start, or null at the end. */
+export function referencePage(markdown: string, offset: number): { text: string; end: number; nextOffset: number | null } | null {
+  const starts = referencePageStarts(markdown);
+  const index = starts.indexOf(offset);
+  if (index === -1) return null;
+  const next = starts[index + 1];
+  const end = next ?? markdown.length;
+  return { text: markdown.slice(offset, end), end, nextOffset: next ?? null };
+}
 export const REFERENCE_IMAGE_PATTERN = /^data:image\/(?:png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/u;
 
 export function referenceOwner(project: Project, tileset: TilesetDef): TilesetDef {
