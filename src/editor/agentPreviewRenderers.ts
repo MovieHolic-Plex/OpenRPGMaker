@@ -110,9 +110,12 @@ export function ghostPhaseChipInfo(options: {
   }
 
   const narration = narrateAiActivity({ toolName: options.toolName ?? "" });
+  // 셀 수를 아직 모르는 구간(도구 시작 직후의 빈 프리뷰)에서는 분수를 아예 쓰지 않는다 —
+  // "0/0 셀" 은 진행 상태가 아니라 계측 실패로 읽힌다.
+  const hasCount = options.totalCount > 0;
   return {
     koreanLabel: narration.action,
-    text: `${narration.action} · ${options.revealedCount}/${options.totalCount} 셀`,
+    text: hasCount ? `${narration.action} · ${options.revealedCount}/${options.totalCount} 셀` : narration.action,
     spinner: true,
   };
 }

@@ -119,6 +119,18 @@ describe("ghostPhaseChipInfo helper", () => {
     expect(stillRunningInfo.spinner).toBe(true);
     expect(stillRunningInfo.text).toBe("타일을 칠하는 중 · 10/10 셀");
   });
+
+  it("셀 수를 아직 모르는 도구 시작 직후에는 0/0 분수를 쓰지 않고 행동만 알린다", () => {
+    const info = ghostPhaseChipInfo({
+      toolName: "paint_tiles",
+      revealedCount: 0,
+      totalCount: 0,
+      isScheduleComplete: false,
+    });
+    expect(info.text).toBe("타일을 칠하는 중");
+    expect(info.text).not.toContain("0/0");
+    expect(info.spinner).toBe(true);
+  });
 });
 
 /** Phaser 씬 이벤트 최소 대역 — 프레임 티커(update)와 shutdown/destroy 만 다룬다. */
