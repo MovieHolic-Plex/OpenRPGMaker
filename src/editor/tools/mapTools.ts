@@ -373,9 +373,17 @@ const manageMapTree: ToolDefinition = {
   },
 };
 
+/** Clumps that must not be glued to walls: tall grass, bushes, flowers, and any autotile shape other than plain ground. */
+function isTerrainClumpTile(tileset: TilesetDef | undefined, tile: number): boolean {
+  if (!tileset) return false;
+  const meta = tileset.tileMeta?.[tile] as { label?: string; role?: string } | undefined;
+  if (meta?.role === "prop" || /키큰 풀|수풀|덤불|꽃|풀숲|tall grass|bush|flower/iu.test(meta?.label ?? "")) return true;
+  return autotileGroupsForTileset(tileset).some(group => group.memberTileIds.includes(tile) && !/road|path|길|sand|모래|floor|바닥/iu.test(`${group.id} ${group.name ?? ""}`));
+}
+
 const paintTiles: ToolDefinition = {
   name: "paint_tiles",
-  description: `타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기, 1·2층만)/cells(개별 셀). rect는 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다. 통행성이 바뀌면 경고를 반환한다. ${FOUR_LAYER_GUIDANCE} 1층을 칠하면 그 칸의 2·3·4층·그림자를 비운다. 1/3층 요청에서 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅되고, 2·4층은 요청한 층에 그대로 놓는다. 1·2층의 지형 오토타일 멤버(흙길/모래/풀 장식 등)는 그 층 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함). 여러 칸·여러 층 물체는 stamp_layer_block.`,
+  description: `타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기, 1·2층만)/cells(개별 셀). rect는 바닥·지면 타일일 때만 벽과 1칸 틈을 메워 벽에 붙인다(키큰 풀·수풀·꽃 같은 덩이와 상위 칩, 문 곁은 늘리지 않는다). 통행성이 바뀌면 경고를 반환한다. ${FOUR_LAYER_GUIDANCE} 1층을 칠하면 그 칸의 2·3·4층·그림자를 비운다. 1/3층 요청에서 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅되고, 2·4층은 요청한 층에 그대로 놓는다. 1·2층의 지형 오토타일 멤버(흙길/모래/풀 장식 등)는 그 층 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함). 여러 칸·여러 층 물체는 stamp_layer_block.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -441,7 +449,13 @@ const paintTiles: ToolDefinition = {
       if (!from || !to) throw new ToolError("rect 모드는 from/to가 필요합니다.");
       for (let y = Math.min(from.y, to.y); y <= Math.max(from.y, to.y); y += 1)
         for (let x = Math.min(from.x, to.x); x <= Math.max(from.x, to.x); x += 1) targetCells.push({ x, y });
-      targetCells = expandCellsAgainstWalls(draft, map, targetCells);
+      // 틈 메움은 바닥·지면 면만 — 키큰 풀·수풀·꽃 같은 지형 덩이나 상위 칩을 집 벽·문 옆에 붙이지 않는다
+      // (2026-09-25 조수 시험). 문(이벤트) 곁 칸도 늘리지 않는다.
+      if (layerNo === 1 && tile >= 0 && !isTerrainClumpTile(tileset, tile)) {
+        const expanded = expandCellsAgainstWalls(draft, map, targetCells);
+        const nearEvent = (cell: Point) => map.events.some(event => Math.abs(event.x - cell.x) + Math.abs(event.y - cell.y) <= 1);
+        targetCells = [...targetCells, ...expanded.slice(targetCells.length).filter(cell => !nearEvent(cell))];
+      }
     } else if (mode === "line") {
       if (!from || !to) throw new ToolError("line 모드는 from/to가 필요합니다.");
       targetCells = lineCells(from, to);

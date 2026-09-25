@@ -1860,7 +1860,9 @@ function isVillageStartGround(tileId: number): boolean {
 /** 잔디 칸에 눈 오토타일을 깐다. 시공과 바닥 스와치가 같은 페인터를 지난다. grass 는 무연산. */
 export function paintGroundThemeStrip(map: GameMap, area: Rect, value: unknown): void {
   if (value === undefined || value === "grass") return;
-  if (value !== "snow") throw new ToolError("groundTheme은 grass|snow여야 합니다.", { code: "invalid-args", mapId: map.id });
+  // desert·volcano·autumn 은 숲마을 기후 칩셋 전용(author_village applyVillageClimate) — 합본 마을 지면에는 칠할 것이 없다.
+  if (value === "desert" || value === "volcano" || value === "autumn") return;
+  if (value !== "snow") throw new ToolError("groundTheme은 grass|snow|desert|volcano|autumn 이어야 합니다.", { code: "invalid-args", mapId: map.id });
   const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const points: Point[] = [];
   for (let y = area.y; y < area.y + area.h; y += 1) {
