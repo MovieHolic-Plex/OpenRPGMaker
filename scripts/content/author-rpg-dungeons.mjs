@@ -8,7 +8,8 @@
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import { withTsModule } from "../ontology-ts-loader.mjs";
-import { createKit, GRAFTS, GRAFT_CHIPSETS, lines } from "./rpg-dungeons/kit.mjs";
+import { createKit, lines } from "./rpg-dungeons/kit.mjs";
+import { dungeonFamily, loadParts } from "./rpg-dungeons/family.mjs";
 import { dungeonPlans } from "./rpg-dungeons/plans.mjs";
 import { outdoorPlans } from "./rpg-dungeons/outdoor.mjs";
 import { dressFloor } from "./rpg-dungeons/dress.mjs";
@@ -20,32 +21,9 @@ const WALL_FACE_TOPS = new Set([103, 102, 104]);
 
 await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "rpg-dungeons-entry.mjs", async (api) => {
   const base = api.createBlankProject();
-  const TIBO = base.tilesets.tibo_interior_expanded, TOWN = base.tilesets.easyrpg_chipset_combined_town;
-  // Dungeon-family tilesets: the bundled dungeon definition with three Tibo props grafted after tile 479.
-  const family = (id, name, texture, drawn = []) => {
-    const t = structuredClone(base.tilesets.easyrpg_chipset_dungeon);
-    delete t.referenceDocuments;
-    Object.assign(t, { id, name, image: { type: "bundled", id: texture } });
-    t.tileGrafts = Object.values(GRAFTS).map((g) => ({ sourceChipset: GRAFT_CHIPSETS[g.chipset ?? "tibo"], sourceTile: g.source, targetTile: g.target }));
-    t.count = 510;
-    while (t.terrain.length < t.count) t.terrain.push(0);
-    while (t.priority.length < t.count) t.priority.push("lower");
-    while (t.passability.length < t.count) t.passability.push({ up: false, down: false, left: false, right: false });
-    while (t.tileMeta.length < t.count) t.tileMeta.push({ label: "미사용", source: "unknown" });
-    for (const g of Object.values(GRAFTS)) {
-      const src = g.chipset === "town" ? TOWN : TIBO;
-      t.passability[g.target] = structuredClone(src.passability[g.source]);
-      t.priority[g.target] = "lower";
-      t.tileMeta[g.target] = { label: `${g.label} · ${g.chipset === "town" ? "EasyRPG 마을" : "Tibo"} ${g.source} 이식`, source: "custom" };
-    }
-    // Slots this repaint draws over with its own piece (the desert sheet's coffin sits in the unused rail slots).
-    for (const [tile, label] of drawn) {
-      t.passability[tile] = { up: false, down: false, left: false, right: false };
-      t.priority[tile] = "lower";
-      t.tileMeta[tile] = { ...structuredClone(t.tileMeta[145]), label, source: "custom" };
-    }
-    return t;
-  };
+  // Dungeon-family tilesets: the bundled dungeon definition + the grafts (kit GRAFTS 480~488, atlas parts 510~).
+  const parts = loadParts();
+  const family = (id, name, texture, drawn = []) => dungeonFamily(base, { id, name, texture, drawn, parts });
   const tilesets = {
     oprn_dungeon_stone: family("oprn_dungeon_stone", "던전 · EasyRPG + 계단·상자·광차 이식", "tex_easyrpg_chipset_dungeon"),
     oprn_dungeon_desert: family("oprn_dungeon_desert", "던전 · 사암 피라미드 (재칠)", "tex_oprn_dungeon_desert", [54, 55, 84, 85, 116, 144].map((t, i) => [t, `파라오 석관 ${i + 1}/6 (직접 그림)`])),
@@ -53,7 +31,7 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "rpg-dungeons-en
     oprn_dungeon_lair: family("oprn_dungeon_lair", "던전 · 용의 둥지 (재칠)", "tex_oprn_dungeon_lair"),
     oprn_dungeon_cave: family("oprn_dungeon_cave", "던전 · 동굴 물웅덩이 (재칠)", "tex_oprn_dungeon_cave"),
   };
-  const kit = createKit(tilesets.oprn_dungeon_stone);
+  const kit = createKit(tilesets.oprn_dungeon_stone, { parts });
 
   // Shortest walk from the entrance to every target/exit (runtime move rule); dressing keeps off these cells.
   const routes = (spec, m, tilesetId) => {
