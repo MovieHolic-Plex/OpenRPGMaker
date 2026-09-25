@@ -6,6 +6,7 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isDeepStrictEqual } from "node:util";
 import { withTsModule } from "../ontology-ts-loader.mjs";
+import { STAIR_LEFT } from "./lib/cliff-stairs.mjs";
 const catalog = JSON.parse(fs.readFileSync(new URL("../../tiledata/forest-villages/diverse/catalog.json", import.meta.url)));
 const roots = new Set([1430, 1431, 1432, 1433, 1461, 1462, 1463]), trunks = new Set([1422, 1423, 1424, 1425, 1350, 1426, 1427, 1428, 1429, 1453, 1454, 1455, 1457, 1458, 1459]);
 async function validateVillageStudy(project, mapId) {
@@ -93,7 +94,7 @@ function cliffFaults() {
   return [
     { code: "cliff-face-direction", mapId, x: side.x, y: side.y + 2, layer: "upper", tile: b[232], replacement: b[231] },
     { code: "cliff-toe-gap", mapId, x: flat.x, y: flat.y + flat.height, layer: "upper", tile: b[202], replacement: -1 },
-    { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: b[374], replacement: 240 },
+    { code: "cliff-stair-gap", mapId, x, y: y + h, layer: "lower", tile: STAIR_LEFT, replacement: 240 },
     // Clearing the forest that closes the west end of pine-hamlets' cliff lets you walk round it onto the terrace.
     (() => { const q = catalog.plans.find((p2) => p2.id === "pine-hamlets"), [ex, ey] = q.cliffs[0].points[0];
       // Clamped to the map (the compacted village keeps only two forest columns west of the cliff).

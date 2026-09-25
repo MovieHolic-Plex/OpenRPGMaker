@@ -12,6 +12,7 @@ import { withTsModule } from "../ontology-ts-loader.mjs";
 import { dressDesert, freezeCells, placePeaks, reachable } from "./lib/climate-edits.mjs";
 import { dressDesertGround, dressVolcanoGround, terrainKit } from "./lib/climate-terrain.mjs";
 import { arrangeBareGroves, clearLeafyTrees } from "./lib/bare-trees.mjs";
+import { stairTile, isStairTile } from "./lib/cliff-stairs.mjs";
 
 const OUT = "tiledata/field-routes";
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -124,7 +125,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
     for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
       const i = point(xx, yy);
       assert(cliffPlan.cliff.has(i), "Stair must span the whole face " + spec.id);
-      m.lowerTiles[i] = cliff[374]; m.upperTiles[i] = -1;
+      m.lowerTiles[i] = stairTile(xx, x); m.upperTiles[i] = -1;
     }
     reserve(x, y - 1, 2, height + 3, 1);
     const top = { x, y: y - 1 }, bottom = { x, y: y + height + 1 };
@@ -146,7 +147,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       if (inside(x, y) && ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 && !cliffPlan.cliff.has(point(x, y))) river.add(point(x, y));
     for (const i of river) {
       const x = i % W, y = Math.floor(i / W);
-      assert(m.lowerTiles[i] !== cliff[374], "River runs over a stair " + spec.id);
+      assert(!isStairTile(m.lowerTiles[i], cliff[374]), "River runs over a stair " + spec.id);
       if (!cliffPlan.cliff.has(i)) { water.add(i); continue; }
       const c = cliffPlan.columns.find((k) => k.x === x && y >= k.y && y <= k.y + k.height);
       m.upperTiles[i] = -1;
@@ -193,7 +194,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
   }
   // Solid cells for road routing: water (not bridges), cliff faces (not stairs), cliff wings.
   const solid = new Set();
-  for (let i = 0; i < W * H; i++) if ((water.has(i) && !bridgeCells.has(i)) || fallCells.has(i) || wings.has(i) || (cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374])) solid.add(i);
+  for (let i = 0; i < W * H; i++) if ((water.has(i) && !bridgeCells.has(i)) || fallCells.has(i) || wings.has(i) || (cliffPlan.cliff.has(i) && !isStairTile(m.lowerTiles[i], cliff[374]))) solid.add(i);
   if (spec.cave) solid.add(point(...spec.cave));
   // Exits: 3 wide at the map edge, 5 deep.
   const exits = spec.exits.map((e, n) => {
@@ -250,7 +251,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       if (inside(x + dx, y + dy) && !solid.has(ni) && m.lowerTiles[ni] === GROUND) roads.add(ni);
     }
   }
-  const roadPaint = new Set([...roads].filter((i) => m.lowerTiles[i] !== cliff[374] && !bridgeCells.has(i)));
+  const roadPaint = new Set([...roads].filter((i) => !isStairTile(m.lowerTiles[i], cliff[374]) && !bridgeCells.has(i)));
   paintGroup(roadPaint, roadGroup);
   for (const i of roads) reserve(i % W, Math.floor(i / W), 1, 1, 2);
   // Props: whole parts, beside the road, never on it.

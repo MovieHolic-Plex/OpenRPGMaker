@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3476KB / 약 992,669 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3478KB / 약 993,472 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -20,8 +20,8 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-database.md` | 355KB | 61KB ⚠상한 초과 — 절을 더 쪼개라 | 2143 | ~103,420 |
 | `openwiki/editor-event-authoring.md` | 155KB | 78KB ⚠상한 초과 — 절을 더 쪼개라 | 872 | ~45,047 |
 | `openwiki/editor-event-commands.md` | 62KB | 32KB | 258 | ~17,025 |
-| `openwiki/editor-interior-room-harness.md` | 93KB | 6KB | 451 | ~27,117 |
-| `openwiki/editor-pre-edit-routing.md` | 149KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 888 | ~43,293 |
+| `openwiki/editor-interior-room-harness.md` | 95KB | 6KB | 456 | ~27,634 |
+| `openwiki/editor-pre-edit-routing.md` | 149KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 888 | ~43,315 |
 | `openwiki/editor-workflows-misc.md` | 68KB | 30KB | 486 | ~18,651 |
 | `openwiki/runtime-battle.md` | 175KB | 31KB | 882 | ~50,386 |
 | `openwiki/runtime-pre-edit-routing.md` | 54KB | 34KB | 366 | ~15,889 |
@@ -64,7 +64,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/editor-event-command-fixes.md` | 16 | `.omo/evidence/event-command-remediation/U04/api-ownership.md`, `event-editor-rich-forms.css`, `scripts/qa/runtime/event-command-remediation-u02.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u04.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u05.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u06.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u14.scenario.mjs`, `scripts/qa/runtime/event-command-remediation-u28-text.scenario.mjs`, `test/e2e/event-command-remediation-U02.spec.ts`, `test/e2e/event-command-remediation-U04.spec.ts`, `test/e2e/event-command-remediation-U05.spec.ts`, `test/e2e/event-command-remediation-U06.spec.ts`, `test/eventCommandRemediation/U02.test.ts`, `test/eventCommandRemediation/U04.test.ts`, `test/eventCommandRemediation/U05.test.ts`, `test/eventCommandRemediation/U06.test.ts` |
 | `openwiki/editor-event-commands.md` | 16 | `02-changeface-play-mock-larger.css`, `07-identifiable-previews.css`, `choicesDialog.ts`, `event-editor.command-preview.css`, `event-editor.command-preview/01-event-editor-modern-import.css`, `event-editor.commerce.css`, `event-editor.part-1.css`, `event-editor.part-2/3.css`, `event-editor.shop.css`, `eventCommandSupportRepairs.test.ts`, `messageCommandDialogs.ts`, `messageDialogControls.ts`, `src/styles/editor/event-editor.part-2.css`, `test/dialoguePreviewPresentationCss.test.ts`, `test/eventEditorTrustLoop.test.ts`, `textCommandDialog.ts` |
 | `openwiki/editor-genre-packs.md` | 2 | `src/editor/panels/newProjectDialog.ts`, `test/modalEscapeLayerGate.test.ts` |
-| `openwiki/editor-interior-room-harness.md` | 38 | `hearth-lit.json`, `hearth-unlit.json`, `output/audit-element-cliff-seams.py`, `output/audit-element-complex-seams.py`, `output/audit-four-context-dungeons-v3.py`, `output/audit-four-context-dungeons.py`, `output/build-element-complex-caves.mts`, `output/build-element-confluence-caves.mts`, `output/build-element-contour-caves.mts`, `output/build-four-context-dungeons-v2.mts`, `output/build-four-context-dungeons-v3.mts`, `output/build-four-context-dungeons.mts`, `output/context-element-caves.mts`, `output/decorate-element-caves.mts`, `output/element-complex-qa.mjs`, `output/element-confluence-qa.mjs`, `output/element-contour-qa.mjs`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `output/four-context-dungeons-qa.mjs`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-element-complex-caves.mts`, `output/save-element-confluence-caves.mts`, `output/save-four-context-dungeons-v3.mts`, `output/save-four-context-dungeons.mts`, `reports.json`, `scripts/demo-assistant-interior-build.mts`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts`, `test/storeSaveOrdering.test.ts` |
+| `openwiki/editor-interior-room-harness.md` | 39 | `hearth-lit.json`, `hearth-unlit.json`, `output/audit-element-cliff-seams.py`, `output/audit-element-complex-seams.py`, `output/audit-four-context-dungeons-v3.py`, `output/audit-four-context-dungeons.py`, `output/build-element-complex-caves.mts`, `output/build-element-confluence-caves.mts`, `output/build-element-contour-caves.mts`, `output/build-four-context-dungeons-v2.mts`, `output/build-four-context-dungeons-v3.mts`, `output/build-four-context-dungeons.mts`, `output/context-element-caves.mts`, `output/decorate-element-caves.mts`, `output/element-complex-qa.mjs`, `output/element-confluence-qa.mjs`, `output/element-contour-qa.mjs`, `output/evidence/concept-v2/index.html`, `output/evidence/inn-exploration-v4/index.html`, `output/evidence/inn-inspection-v5/index.html`, `output/evidence/pr618-fixtures/inn.json`, `output/four-context-dungeons-qa.mjs`, `output/four-context-dungeons-v3-qa.mjs`, `output/save-element-complex-caves.mts`, `output/save-element-confluence-caves.mts`, `output/save-four-context-dungeons-v3.mts`, `output/save-four-context-dungeons.mts`, `reports.json`, `save-cliff-stairs.mjs`, `scripts/demo-assistant-interior-build.mts`, `seam-audit.json`, `test/innConceptRebuild.test.ts`, `test/innExploration.test.ts`, `test/interiorConceptAssemblies.test.ts`, `test/interiorLoadConsistency.test.ts`, `test/interiorLongTable.test.ts`, `test/stoneHearth.test.ts`, `test/storeDeferredLineage.test.ts`, `test/storeSaveOrdering.test.ts` |
 | `openwiki/editor-observability.md` | 2 | `scripts/qa/issue693-boot-diagnostics.mjs`, `scripts/qa/issue693-diagnostics.mjs` |
 | `openwiki/editor-pre-edit-routing.md` | 21 | `@/styles/database/index.css`, `authoringTestGate.ts`, `dbConnectionAdvancedSettings.ts`, `event-editor.part-4.css`, `figma-editor.css`, `figma-editor/10-map-tree.css`, `legacyDb-root-cache.spec.ts`, `referencePresetSnapshot.ts`, `rm2k3.part-1.css`, `shell/editor-responsive-expert.css`, `src/editor/tools/worldTools.ts`, `src/project/legacyDbProjectSync.ts`, `src/styles/editor/event-editor.balanced.css`, `src/styles/editor/left-sidebar.modern.css`, `src/styles/editor/map-location-layer.css`, `src/styles/editor/map-props.css`, `src/styles/editor/region-task.css`, `test/modalEscapeLayerGate.test.ts`, `test/regionTaskHouseProtection.test.ts`, `test/worldAiExclusion.test.ts`, `worldTools.ts` |
 | `openwiki/editor-validation.md` | 8 | `final-layout.json`, `test/aiBlockedEventRelocation.test.ts`, `test/aiToolDiscoveryEscalation.test.ts`, `test/databaseSystemView.test.ts`, `test/interiorLongTable.test.ts`, `test/p0ProjectSchema.test.ts`, `test/projectLint.test.ts`, `viewport-matrix.json` |
@@ -686,45 +686,45 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L70` Validation
 - `L72` Two new-project surfaces, one choice model (2026-09-11)
 
-### `openwiki/editor-interior-room-harness.md` — 93KB · 451줄 · ~27,117 토큰 · 통째읽기 잘림
+### `openwiki/editor-interior-room-harness.md` — 95KB · 456줄 · ~27,634 토큰 · 통째읽기 잘림
 
 - `L7` 던전 천장과 단차의 구분 — 사용자 정정 (2026-09-13)
-- `L21` 대형 광산 저작 접합 교정 (2026-09-13)
-- `L29` 사용자 광산 참고 이미지와 확장판 (2026-09-13)
-- `L37` 광산 참고 문법의 얼음·용암 적용 (2026-09-13)
-- `L45` 얼음·용암 절벽 굴곡과 소품 보강 (2026-09-14)
-- `L53` 서로 합류하는 복합 절벽 — 실제 반영 (2026-09-14)
-- `L66` 기존 칩셋 던전 네 종류 (2026-09-14)
-- `L77` 네 던전의 연결 구조 우선 재저작 (2026-09-14)
-- `L85` 설산 빙벽 조립 정정 (2026-09-13)
-- `L97` Interior authoring/load consistency (2026-09-07)
-- `L138` Closed expandable long tables (2026-09-07)
-- `L179` 사용자 타일 정정: 항아리·돌계단·석조 화로
-- `L190` 여관 검수표와 숙박 검증
-- `L198` 여관 꾸러미 전면 재구성 (2026-09-06)
-- `L217` 실내 의미·형태 검토 반영 (2026-09-05)
-- `L230` 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
-- `L241` Tileset-specific map generation contract
-- `L253` Interior Room Session Harness (villager-room-v1)
-- `L266` Safe detached draft and approval harness
-- `L274` Interior object catalog is the shape source of truth (2026-08-28)
-- `L285` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
-- `L298` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
-- `L312` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
-- `L318` 입구 예약·멀티타일 통행 복원 (2026-09-05)
-- `L326` 공포 게임 제작 기능 (2026-09-05)
-- `L330` 여관 외 시설의 공간 구성 (2026-09-05)
-- `L340` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
-- `L348` 비직사각 실내 정본 재설계 (2026-09-13)
-- `L357` 생활 구역 조합으로 실내 저작 (2026-09-14)
-- `L366` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
-- `L373` 연결 던전의 에디터 통합 (2026-09-14)
-- `L377` Compact interiors and automatic furnishing budgets (2026-09-14)
-- `L388` Open domestic interiors: activity areas are not enclosed rooms (2026-09-14)
-  - `L400` Follow-up: excess floor and furniture depth (2026-09-14)
-  - `L410` Small props require supports; short bathroom steps (2026-09-14)
-  - `L420` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
-  - `L430` All-interior review (2026-09-15)
+- `L26` 대형 광산 저작 접합 교정 (2026-09-13)
+- `L34` 사용자 광산 참고 이미지와 확장판 (2026-09-13)
+- `L42` 광산 참고 문법의 얼음·용암 적용 (2026-09-13)
+- `L50` 얼음·용암 절벽 굴곡과 소품 보강 (2026-09-14)
+- `L58` 서로 합류하는 복합 절벽 — 실제 반영 (2026-09-14)
+- `L71` 기존 칩셋 던전 네 종류 (2026-09-14)
+- `L82` 네 던전의 연결 구조 우선 재저작 (2026-09-14)
+- `L90` 설산 빙벽 조립 정정 (2026-09-13)
+- `L102` Interior authoring/load consistency (2026-09-07)
+- `L143` Closed expandable long tables (2026-09-07)
+- `L184` 사용자 타일 정정: 항아리·돌계단·석조 화로
+- `L195` 여관 검수표와 숙박 검증
+- `L203` 여관 꾸러미 전면 재구성 (2026-09-06)
+- `L222` 실내 의미·형태 검토 반영 (2026-09-05)
+- `L235` 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
+- `L246` Tileset-specific map generation contract
+- `L258` Interior Room Session Harness (villager-room-v1)
+- `L271` Safe detached draft and approval harness
+- `L279` Interior object catalog is the shape source of truth (2026-08-28)
+- `L290` 소품 표면 어휘가 `PlacementZone` 으로 통일됐다 (2026-08-30, PR #316)
+- `L303` 개념 시설 시공 — place_concept 경로가 파이프라인에서 다른 점 (2026-09-02)
+- `L317` 도면 호환성과 외장 스탬프 후속 (2026-09-05)
+- `L323` 입구 예약·멀티타일 통행 복원 (2026-09-05)
+- `L331` 공포 게임 제작 기능 (2026-09-05)
+- `L335` 여관 외 시설의 공간 구성 (2026-09-05)
+- `L345` PR618 통합: 큰 탁자와 기존 시설 구성 (2026-09-06)
+- `L353` 비직사각 실내 정본 재설계 (2026-09-13)
+- `L362` 생활 구역 조합으로 실내 저작 (2026-09-14)
+- `L371` 여관·잡화점의 시설별 실내 기준 (2026-09-14)
+- `L378` 연결 던전의 에디터 통합 (2026-09-14)
+- `L382` Compact interiors and automatic furnishing budgets (2026-09-14)
+- `L393` Open domestic interiors: activity areas are not enclosed rooms (2026-09-14)
+  - `L405` Follow-up: excess floor and furniture depth (2026-09-14)
+  - `L415` Small props require supports; short bathroom steps (2026-09-14)
+  - `L425` Reference-house correction: no shrub pots, cooking supports, inset cabinets (2026-09-14)
+  - `L435` All-interior review (2026-09-15)
 
 ### `openwiki/editor-observability.md` — 43KB · 523줄 · ~12,379 토큰 · 깨진 줄 1
 
@@ -747,7 +747,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L505` 검증
 - `L512` Feature16 저작 보조 관측 경계 (2026-09-21)
 
-### `openwiki/editor-pre-edit-routing.md` — 149KB · 888줄 · ~43,293 토큰 · 통째읽기 잘림 · 깨진 줄 5
+### `openwiki/editor-pre-edit-routing.md` — 149KB · 888줄 · ~43,315 토큰 · 통째읽기 잘림 · 깨진 줄 5
 
 - `L5` 맵별 16/32/48px 좌표
 - `L13` 맵 칸 층은 `mapLayers.ts` 로만 읽고 쓴다 (MZ식 4층, 2026-09-24)
@@ -1529,7 +1529,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 26KB · 242줄 · ~7,833 토큰
+### `openwiki/teaching-assistant-tilesets.md` — 27KB · 248줄 · ~8,097 토큰
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
@@ -1542,10 +1542,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L116` 조수가 지금 받는 것
   - `L130` 네 층 팩을 가르치는 순서
   - `L150` Rasak Fantasy 파이프라인 (저장소 밖 그림)
-- `L167` 알려진 함정
-- `L177` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
-- `L191` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
-- `L226` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
+- `L173` 알려진 함정
+- `L183` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
+- `L197` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+- `L232` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
 ### `openwiki/team-project-host.md` — 19KB · 227줄 · ~5,793 토큰
 

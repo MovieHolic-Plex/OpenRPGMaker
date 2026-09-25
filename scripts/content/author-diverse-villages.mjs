@@ -7,6 +7,7 @@ import fs from "node:fs";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { withTsModule } from "../ontology-ts-loader.mjs";
+import { stairTile, isStairTile } from "./lib/cliff-stairs.mjs";
 const [input, out] = process.argv.slice(2);
 if (!input || !out) throw Error("Usage: author-diverse-villages.mjs canonical-export.json output-dir");
 fs.mkdirSync(out, { recursive: true });
@@ -120,7 +121,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
     for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
       const i = point(xx, yy);
       assert(cliffPlan.cliff.has(i), "Stair must span the whole face");
-      m.lowerTiles[i] = cliff[374];
+      m.lowerTiles[i] = stairTile(xx, x);
       m.upperTiles[i] = -1;
     }
     reserve(x, y - 1, 2, height + 3, 1);
@@ -144,7 +145,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
     }
     for (const i of river) {
       const x = i % W, y = Math.floor(i / W);
-      assert(m.lowerTiles[i] !== cliff[374], "River runs over a stair " + spec.id + " " + x + "," + y);
+      assert(!isStairTile(m.lowerTiles[i], cliff[374]), "River runs over a stair " + spec.id + " " + x + "," + y);
       if (!cliffPlan.cliff.has(i)) { water.add(i); continue; }
       const c = cliffPlan.columns.find((k) => k.x === x && y >= k.y && y <= k.y + k.height);
       m.upperTiles[i] = -1;
@@ -267,7 +268,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
   const project = { tilesets: { [ts.id]: ts }, maps: { [m.id]: m } };
   const solid = new Set(landmarkSolid);
   for (const h of houses) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) solid.add(point(x, y));
-  for (let i = 0; i < W * H; i++) if (water.has(i) && !bridgeCells.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
+  for (let i = 0; i < W * H; i++) if (water.has(i) && !bridgeCells.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && !isStairTile(m.lowerTiles[i], cliff[374])) solid.add(i);
   const route = (a, b) => {
     const start = point(...a), end = point(...b), dist = new Map([[start, 0]]), prev = new Map(), q = [start];
     let found = false;
@@ -325,7 +326,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
       if (inside(x + dx, y + dy) && !solid.has(ni) && m.lowerTiles[ni] === 240) roads.add(ni);
     }
   }
-  const roadPaint = new Set([...roads].filter((i) => m.lowerTiles[i] !== cliff[374] && !bridgeCells.has(i)));
+  const roadPaint = new Set([...roads].filter((i) => !isStairTile(m.lowerTiles[i], cliff[374]) && !bridgeCells.has(i)));
   paintGroup(roadPaint, roadGroup);
   for (const i of roads) reserve(i % W, Math.floor(i / W), 1, 1, 2);
   if (spec.dock) {

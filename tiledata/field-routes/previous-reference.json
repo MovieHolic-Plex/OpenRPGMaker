@@ -126,5 +126,21 @@
   {
     "id": "field-routes-desert-v8",
     "revision": "331575-55aa6475-b7d90d23"
+  },
+  {
+    "id": "field-routes-snow-v7",
+    "revision": "217202-368d951c-17bf3192"
+  },
+  {
+    "id": "field-routes-desert-v9",
+    "revision": "215276-5723dcaf-6a7b76c7"
+  },
+  {
+    "id": "field-routes-volcano-v8",
+    "revision": "180476-bd625527-2dee8517"
+  },
+  {
+    "id": "field-routes-autumn-v6",
+    "revision": "202263-5413f822-47972208"
   }
 ]

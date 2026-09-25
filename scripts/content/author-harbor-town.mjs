@@ -19,6 +19,7 @@ import { placeCivicProps } from "./lib/village-civic-props.mjs";
 import { placeHouseholdProps, PROP_PROGRAMS } from "./lib/village-household-props.mjs";
 import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
 import { farmlandTiles } from "./lib/village-farmland.mjs";
+import { stairTile, isStairTile } from "./lib/cliff-stairs.mjs";
 
 const [input, out] = process.argv.slice(2);
 if (!input || !out) throw Error("Usage: author-harbor-town.mjs <catalog.json> <out.json>");
@@ -85,7 +86,7 @@ for (const [x, y, height] of spec.stairs) {
   for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
     const i = point(xx, yy);
     assert(cliffPlan.cliff.has(i), "Stair must span the whole face");
-    m.lowerTiles[i] = cliff[374];
+    m.lowerTiles[i] = stairTile(xx, x);
     m.upperTiles[i] = -1;
   }
   reserve(x, y - 1, 2, height + 3, 1);
@@ -189,7 +190,7 @@ for (const [kind, x, y] of spec.landmarks) {
 const project = { tilesets: { [ts.id]: ts }, maps: { [m.id]: m } };
 const solid = new Set(landmarkSolid);
 for (const h of houses) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) solid.add(point(x, y));
-for (let i = 0; i < W * H; i++) if (water.has(i) && !bridgeCells.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
+for (let i = 0; i < W * H; i++) if (water.has(i) && !bridgeCells.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && !isStairTile(m.lowerTiles[i], cliff[374])) solid.add(i);
 let bx, by;
 const route = (a, b) => {
   [bx, by] = b;
@@ -236,7 +237,7 @@ for (const i of centerRoads) {
     if (inside(x + dx, y + dy) && !solid.has(ni) && m.lowerTiles[ni] === 240 && m.upperTiles[ni] === -1) roads.add(ni);
   }
 }
-const roadPaint = new Set([...roads].filter((i) => m.lowerTiles[i] !== cliff[374] && !bridgeCells.has(i) && m.upperTiles[i] !== 199));
+const roadPaint = new Set([...roads].filter((i) => !isStairTile(m.lowerTiles[i], cliff[374]) && !bridgeCells.has(i) && m.upperTiles[i] !== 199));
 paintGroup(roadPaint, roadGroup);
 for (const i of roads) reserve(i % W, Math.floor(i / W), 1, 1, 2);
 const field = (x, y) => {
