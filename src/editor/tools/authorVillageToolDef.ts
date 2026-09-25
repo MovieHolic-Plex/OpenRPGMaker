@@ -32,7 +32,7 @@ import {
 } from "./villageBuilder";
 import { RECT_SCHEMA } from "./schemaShapes";
 import { villageTemplateCatalog } from "./village/authoringData";
-import { villageFormTemplates } from "./village/authoringData";
+import { villageFormTemplates, villageGableTemplates } from "./village/authoringData";
 import { HOUSE_TEMPLATES, MIN_BOUNDS_SIZE } from "./village/constants";
 
 import { resolveVillageDesignInput } from "./village/designContract";
@@ -153,7 +153,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
               ownerName: { type: "string" },
               templateId: {
                 type: "string",
-                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략: ${[...HOUSE_TEMPLATES, ...villageFormTemplates()].map((template) => template.id).join(", ")}. ref-walled-*/ref-castle-* 는 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 셀 레시피다.`,
+                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략(생략하면 박공 조합 형태가 먼저 골고루 섞인다): ${[...villageGableTemplates(), ...HOUSE_TEMPLATES, ...villageFormTemplates()].map((template) => template.id).join(", ")}. gable-* 는 박공 조합 형태(정면 세모 박공·교차 박공·현관 박공·측면 박공 — 재료는 kitId 를 따른다), ref-walled-*/ref-castle-* 는 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 셀 레시피(재료 고정)다.`,
               },
               fence: { type: "boolean", description: "이 집에만 울타리. 기본 없음. 명시한 manor(부잣집)는 생략 시 true이며 false로 해제 가능. 중요한 집에만 지정하세요." },
               program: { type: "string", enum: ["dwelling", "shop", "inn", "workshop", "study", "manor"] },

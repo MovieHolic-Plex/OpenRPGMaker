@@ -6,7 +6,9 @@
 // 저장된 레코드는 신뢰하지 않는다 — 열거형·범위를 여기서 좁히고, 못 쓰는 값은 경고로 흘린다.
 
 import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { composeGableHouseForm } from "@/editor/gableHouseCompose";
 import { AUTHORED_HOUSE_FORM_DEFS, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
+import { GABLE_HOUSE_FORM_SPECS, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
@@ -179,6 +181,35 @@ export function villageFormTemplates(): HouseTemplate[] {
   return AUTHORED_HOUSE_FORM_DEFS.filter((form) => form.w <= VILLAGE_RANGE.templateW.max).map(formToTemplate);
 }
 
+/**
+ * 박공 조합 형태 → 슬롯 카탈로그 템플릿. 재료는 킷을 따른다(compose) — form 은 미리보기용 기본 재료 합성본.
+ * 치수는 킷과 무관하다(박공 문법은 칸 모양을 재료로 바꾸지 않는다).
+ */
+export function gableSpecToTemplate(spec: GableHouseFormSpec): HouseTemplate {
+  const preview = composeGableHouseForm(spec, "bright-plaster");
+  return {
+    id: spec.id,
+    name: spec.name,
+    w: preview.w,
+    h: preview.h,
+    stories: 1,
+    wings: [{ x: 0, y: 0, w: preview.w, h: preview.h }],
+    wingsAt: (x: number, y: number) => [{ x, y, w: preview.w, h: preview.h }],
+    form: preview,
+    compose: (kitId) => composeGableHouseForm(spec, kitId),
+  };
+}
+
+/** 마을 슬롯에 들어가는 박공 조합 형태 — 폭이 슬롯 상한(8)을 넘는 것은 author_house 전용. */
+export function villageGableTemplates(): HouseTemplate[] {
+  return GABLE_HOUSE_FORM_SPECS.map(gableSpecToTemplate).filter((template) => template.w <= VILLAGE_RANGE.templateW.max);
+}
+
+/** 박공 조합 형태인가 — 마을 형태 추첨이 이 풀을 먼저 본다(2026-09-25 기본 분배). */
+export function isGableTemplate(template: Pick<HouseTemplate, "compose">): boolean {
+  return template.compose !== undefined;
+}
+
 /** 사용자 형태 레코드를 시공 가능한 템플릿으로 좁힌다. 규약 위반이면 이유를 준다. */
 export function templateFromRecord(record: VillageHouseTemplateRecord): { template: HouseTemplate } | { reason: string } {
   const { id, name, w, h } = record;
@@ -284,7 +315,7 @@ export interface TemplateCatalogResult {
 
 /**
  * 시공에 쓸 형태 카탈로그.
- *  · 내장 34종 + 참고 사례 셀 레시피(폭 8 이하) + 사용자 형태. 같은 id면 사용자 것이 이긴다(오버라이드).
+ *  · 내장 34종 + 참고 사례 셀 레시피(폭 8 이하) + 박공 조합 형태(폭 8 이하) + 사용자 형태. 같은 id면 사용자 것이 이긴다(오버라이드).
  *  · allowIds(프리셋 화이트리스트)가 있으면 그 id만 남긴다. 하나도 안 남으면 전체로 되돌린다.
  */
 export function villageTemplateCatalog(
@@ -295,6 +326,7 @@ export function villageTemplateCatalog(
   const byId = new Map<string, HouseTemplate>();
   for (const def of HOUSE_TEMPLATE_DEFS) byId.set(def.id, defToTemplate(def));
   for (const template of villageFormTemplates()) byId.set(template.id, template);
+  for (const template of villageGableTemplates()) byId.set(template.id, template);
   for (const record of villageAuthoringData(project).templates) {
     const resolved = templateFromRecord(record);
     if ("reason" in resolved) {

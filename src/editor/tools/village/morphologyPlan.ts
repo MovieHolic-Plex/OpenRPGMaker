@@ -110,6 +110,8 @@ export const OCC = {
 
 const MAX_TEMPLATE_W = 8;
 const MAX_TEMPLATE_H = 9;
+/** 형태 추첨에서 박공 조합 형태 풀을 먼저 고를 확률 — 나머지는 전체 풀(날개·참고 레시피·박공)에서. */
+const GABLE_SHARE = 0.6;
 
 class PlanGrid {
   readonly occ: Uint8Array;
@@ -415,7 +417,11 @@ function pickTemplate(ctx: PlanCtx, maxW: number, maxH: number): HouseTemplate |
   const preferTall = ctx.storeyDebt >= 4 && fits.some((template) => (template.stories ?? 1) > 1);
   const pool = preferTall ? fits.filter((template) => (template.stories ?? 1) > 1) : fits;
   const distinct = pool.filter((template) => template.id !== ctx.lastTemplateId);
-  const source = distinct.length > 0 ? distinct : pool;
+  const base = distinct.length > 0 ? distinct : pool;
+  // 기본 분배(2026-09-25 「집 모양이 다 비슷비슷」): 박공 조합 형태를 먼저 본다 — 모임지붕 날개 형태만으로는
+  // 위에서 네모 덩어리로 읽힌다. 박공 풀이 있으면 GABLE_SHARE 확률로 그 안에서 고르게 뽑는다.
+  const gables = base.filter((template) => template.compose !== undefined);
+  const source = gables.length > 0 && gables.length < base.length && ctx.rng() < GABLE_SHARE ? gables : base;
   const chosen = source[Math.floor(ctx.rng() * source.length)]!;
   ctx.lastTemplateId = chosen.id;
   ctx.storeyDebt = (chosen.stories ?? 1) > 1 ? 0 : ctx.storeyDebt + 1;

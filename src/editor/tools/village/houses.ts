@@ -29,6 +29,8 @@ import {
   type Rect,
   type SettlementLayout,
   type VillageIntent,
+  templateFormFor,
+  templateHasFixedKit,
 } from "./constants";
 
 export function houseBlockedCells(houses: readonly BuiltHouse[], map?: GameMap): Set<string> {
@@ -187,6 +189,27 @@ export interface HouseBoulevardHint {
   readonly axis?: "both" | "ew" | "ns";
 }
 
+/** 박공 조합 형태 후보를 먼저 뽑는 확률 — morphologyPlan 의 GABLE_SHARE 와 같은 기본 분배. */
+const GABLE_CANDIDATE_SHARE = 0.6;
+
+/**
+ * 섞인 후보 목록을 박공/그 밖으로 나눠 가중 병합한다(각 목록 안의 순서는 유지). 박공 형태가 템플릿 수에
+ * 비례한 몫보다 자주 앞에 서게 해 기본 분배에서 골고루 나오게 한다(2026-09-25).
+ */
+function gableFirst(list: readonly HouseCandidate[], rng: Rng): HouseCandidate[] {
+  const gables = list.filter((candidate) => candidate.template.compose !== undefined);
+  const others = list.filter((candidate) => candidate.template.compose === undefined);
+  if (gables.length === 0 || others.length === 0) return [...list];
+  const out: HouseCandidate[] = [];
+  let g = 0;
+  let o = 0;
+  while (g < gables.length || o < others.length) {
+    const takeGable = o >= others.length || (g < gables.length && rng() < GABLE_CANDIDATE_SHARE);
+    out.push(takeGable ? gables[g++]! : others[o++]!);
+  }
+  return out;
+}
+
 export function buildHouses(
   map: GameMap,
   area: Rect,
@@ -209,9 +232,9 @@ export function buildHouses(
   const existing = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
   const candidates = [
-    ...shuffled(available.filter((candidate) => candidate.sketch === true), rng),
-    ...shuffled(available.filter((candidate) => candidate.organic && candidate.sketch !== true), rng),
-    ...shuffled(available.filter((candidate) => !candidate.organic), rng),
+    ...gableFirst(shuffled(available.filter((candidate) => candidate.sketch === true), rng), rng),
+    ...gableFirst(shuffled(available.filter((candidate) => candidate.organic && candidate.sketch !== true), rng), rng),
+    ...gableFirst(shuffled(available.filter((candidate) => !candidate.organic), rng), rng),
   ];
   const houses: BuiltHouse[] = [];
   const usedTemplateIds = new Set<string>();
@@ -233,8 +256,8 @@ export function buildHouses(
       const forcedTemplateId = relaxForcedTemplates ? undefined : intent.houseTemplates[houses.length];
       if (forced && candidate.template.kitId && candidate.template.kitId !== forced) continue;
       // 셀 레시피는 재료가 셀에 박혀 있다 — 재료를 하나로 고정한 마을(테마 원형·설계서)에는 그 재료의 레시피만 섞는다.
-      const form = candidate.template.form;
-      if (form && !forced && !forcedTemplateId && intent.kitMix !== "mixed" && form.kitId !== intent.kitMix) continue;
+      const fixedForm = templateHasFixedKit(candidate.template) ? candidate.template.form : undefined;
+      if (fixedForm && !forced && !forcedTemplateId && intent.kitMix !== "mixed" && fixedForm.kitId !== intent.kitMix) continue;
       if (!forcedTemplateId && target >= 4 && houses.length === 0 && hasMultiStoryCandidate && (candidate.template.stories ?? 1) === 1) continue;
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
       const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
@@ -248,6 +271,8 @@ export function buildHouses(
       // housePlans[].templateId 가 있으면 그 템플릿만 허용(촌장 ㄱ자 등).
       if (forcedTemplateId && candidate.template.id !== forcedTemplateId) continue;
       const stories: 1 | 2 | 3 = candidate.template.stories === 3 ? 3 : candidate.template.stories === 2 ? 2 : 1;
+      // 박공 조합 형태는 고른 킷으로 합성한다 — 고정 레시피는 그대로.
+      const form = templateFormFor(candidate.template, kitId);
       const result = form
         ? stampAuthoredHouseForm(map, form, { x: candidate.bbox.x, y: candidate.bbox.y })
         : stampFootprintHouseKit(map, {

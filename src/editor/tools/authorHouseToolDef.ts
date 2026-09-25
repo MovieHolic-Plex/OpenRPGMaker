@@ -1,3 +1,4 @@
+import { gableHouseFormSize, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
 import { ALL_HOUSE_KIT_IDS } from "@/editor/houseKit";
 import { AUTHORED_HOUSE_FORM_DEFS } from "@/project/defaults/authoredHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
@@ -6,10 +7,18 @@ import { CONCEPT_PLAN_SCHEMA } from "./schemaShapes";
 import type { ToolDefinition } from "./types";
 
 const KIT_IDS = [...ALL_HOUSE_KIT_IDS];
-// 날개 템플릿 + 저작 형태(고정 셀 레시피) — 같은 templateId 축을 공유한다.
-const TEMPLATE_IDS = [...HOUSE_TEMPLATE_DEFS.map((def) => def.id), ...AUTHORED_HOUSE_FORM_DEFS.map((def) => def.id)];
+// 박공 조합 형태(킷을 따르는 셀 합성) + 날개 템플릿 + 저작 형태(고정 셀 레시피) — 같은 templateId 축을 공유한다.
+const TEMPLATE_IDS = [
+  ...GABLE_HOUSE_FORM_SPECS.map((spec) => spec.id),
+  ...HOUSE_TEMPLATE_DEFS.map((def) => def.id),
+  ...AUTHORED_HOUSE_FORM_DEFS.map((def) => def.id),
+];
 /** 스키마 설명용 — "이 id 는 이런 꼴" 을 모델이 알아야 골라 쓴다. */
 const TEMPLATE_CATALOG = [
+  ...GABLE_HOUSE_FORM_SPECS.map((spec) => {
+    const size = gableHouseFormSize(spec);
+    return `${spec.id}(${spec.name} ${size.w}×${size.h} 박공)`;
+  }),
   ...HOUSE_TEMPLATE_DEFS.map((def) => `${def.id}(${def.name} ${def.w}×${def.h})`),
   ...AUTHORED_HOUSE_FORM_DEFS.map((def) => `${def.id}(${def.name} ${def.w}×${def.h} 고정 레시피)`),
 ].join(", ");
@@ -45,7 +54,9 @@ const SHAPE_PROPERTIES = {
     enum: TEMPLATE_IDS,
     description:
       `외장 형태 카탈로그(${TEMPLATE_IDS.length}종). **집마다 서로 다른 값을 써서 실루엣을 갈라라** — `
-      + `ㄱ자·ㄷ자·중정·현관 돌출·계단식 2층·옥상 데크는 이 값으로만 나온다. 목록: ${TEMPLATE_CATALOG}`,
+      + `gable-* 는 박공 조합(정면 세모 박공·쌍박공·교차 박공 ㄱ/T자·현관 박공·측면 박공 장옥 — 재료는 kitId 를 따른다)으로 위에서 봐도 실루엣이 갈린다. `
+      + `ㄱ자·ㄷ자·중정·현관 돌출·계단식 2층·옥상 데크는 이 값으로만 나온다. `
+      + `생략하면 사각형 한 장·단층 집에는 날개 사각형 안에 드는 박공 형태가 골고루 배정된다(층수·낮은 벽·옥상 데크·여러 날개를 주면 사각형 그대로). 목록: ${TEMPLATE_CATALOG}`,
   },
   stories: {
     type: "integer",
@@ -103,7 +114,7 @@ export const AUTHOR_HOUSE_TOOL: ToolDefinition = {
     + "무엇을 설계할지는 get_concept_facility(query) 의 템플릿·물건 어휘·levers 를 읽고 정하라(민가는 3장소, 여관은 층·객실). "
     + "여러 채는 반드시 kind=lots + houses[]로 한 번에 호출한다(개별 반복 호출 금지). "
     + `**모양 다양성이 필수다: 집마다 서로 다른 templateId(${TEMPLATE_IDS.length}종 카탈로그)를 배정하고 kitId 도 섞어라.** `
-    + "templateId 를 생략하면 wings 그대로의 사각형이 되어 결과가 단조로워진다. "
+    + "templateId 를 생략하면 단층 사각형 집에는 박공 조합 형태(gable-*)가 골고루 배정된다 — 특정 모양이 필요하면 templateId 로 지정하라. "
     + "결과 data.variety 와 경고에 모양/킷 분포가 실리고, 깐 뒤에는 look_at_houses 로 눈으로 확인하라. "
     + "wing 크기 제약: w≥3, h≥5 (지붕+벽 포함). windows는 false 또는 {spacing?:N}만 유효(true 불가). "
     + "외장 없는 독립 실내 방 요청에는 사용하지 않는다.",

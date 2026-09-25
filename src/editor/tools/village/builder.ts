@@ -70,6 +70,7 @@ import {
   type Rect,
   type SettlementLayout,
   type VillageIntent,
+  templateFormFor,
 } from "./constants";
 import {
   matchVillageArchetype,
@@ -1957,7 +1958,8 @@ function setVillageHarnessLayoutPlan(
         ],
       },
       ...houses.map((house) => {
-        const form = house.formId ? intent.templateCatalog.find((template) => template.id === house.formId)?.form : undefined;
+        const formTemplate = house.formId ? intent.templateCatalog.find((template) => template.id === house.formId) : undefined;
+        const form = formTemplate ? templateFormFor(formTemplate, house.kitId) : undefined;
         return {
         id: uniqueHouseRegionId(map, "village_house", reservedIds),
         role: "house",
