@@ -26,7 +26,7 @@ import type { AutotileGroup, GameMap, Project, TilesetDef } from "../../../src/p
 // 묶음 목록은 tiledata/rasak-fantasy/bundles.json 이 정본이다(마을·실내가 추가되며 손으로 적은 목록이 어긋났다).
 const RASAK = (JSON.parse(readFileSync("tiledata/rasak-fantasy/bundles.json", "utf8")) as { bundles: { id: string }[] }).bundles.map((b) => b.id);
 // 이 팩이 소유하는 참고문서 용도(build_assistant_pack.py PURPOSES). 덤프 때 이미 있으면 --force 없이는 멈춘다.
-const PURPOSE_IDS = ["field_garden", "field_cliff", "swamp", "cave_ice", "cave_lava", "town_village", "town_city", "interior_house", "interior_tavern", "town_buildings"];
+const PURPOSE_IDS = ["field_garden", "field_cliff", "swamp", "cave_ice", "cave_lava", "town_village", "town_city", "interior_house", "interior_tavern", "town_buildings", "interior_smithy", "interior_tailor", "interior_castle"];
 // p27b 둘레 암반(A4 kind 7)은 옛 그림이라 표 검증에서 뺀다(names-review.md).
 const OLD_ART: Record<string, string> = { rasak_preview_p27b: "rasak_a4_k7" };
 
@@ -272,6 +272,9 @@ async function main() {
       ["city_trial", "시험 · 도시 광장", "rasak_town", 3072],
       ["house_trial", "시험 · 민가 실내", "rasak_interior", 1536],
       ["tavern_trial", "시험 · 여관 실내", "rasak_interior", 1536],
+      ["smithy_trial", "시험 · 대장간 실내", "rasak_interior", 1536],
+      ["tailor_trial", "시험 · 재봉점 실내", "rasak_interior", 1536],
+      ["castle_trial", "시험 · 성 실내", "rasak_interior", 1536],
     ];
     for (const [id, name, ts, ground] of trials) {
       if (!project.tilesets[ts]) continue;

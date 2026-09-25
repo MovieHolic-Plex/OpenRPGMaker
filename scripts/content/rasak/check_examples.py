@@ -28,8 +28,24 @@ def slot_of(man, t):
     return e.get('slot') if e else None
 
 
-def measure(m, man, interior):
+def a5_roles(root, bundle):
+    """A5 평면 칸 중 막힌 벽면(돌 벽돌·막돌·판벽)과 검은 빈칸 번호 — 성 실내는 A4 대신 A5 벽면을 쓴다."""
+    local = root / 'knowledge' / 'names.json'
+    names = load(local if local.exists() else Path(__file__).resolve().parents[3] / 'tiledata/rasak-fantasy/names.json')
+    walls, void = set(), set()
+    for k in names['bundles'].get(bundle, {}).get('kinds', []):
+        if k['slot'] != 'A5':
+            continue
+        if k['kind'] == 'A5:void_black':
+            void |= set(k['tiles'])
+        elif not k.get('passable') and '벽' in k.get('name', ''):
+            walls |= set(k['tiles'])
+    return walls, void
+
+
+def measure(m, man, interior, a5=(frozenset(), frozenset())):
     w, h = m['width'], m['height']
+    a5_walls, a5_void = a5
     n = w * h
     L1 = m['lowerTiles']
     L2 = m.get('lowerOverlayTiles') or [-1] * n
@@ -39,10 +55,10 @@ def measure(m, man, interior):
     def is_wall(i):
         s = slot_of(man, L1[i])
         e = man['entries'][L1[i]] if L1[i] is not None and 0 <= L1[i] < len(man['entries']) else None
-        return s == 'A3' or (s == 'A4')
+        return s == 'A3' or (s == 'A4') or L1[i] in a5_walls
 
     def is_ceiling(i):
-        if L1[i] is None or L1[i] < 0:
+        if L1[i] is None or L1[i] < 0 or L1[i] in a5_void:
             return True
         e = man['entries'][L1[i]]
         return bool(e) and e.get('slot') == 'A4' and not e.get('wall')
@@ -110,7 +126,7 @@ def main():
         m = load(p)
         man = load(root / 'baked' / m['tilesetId'] / 'manifest.json')
         interior = m['tilesetId'] == 'rasak_interior'
-        stats, orphan = measure(m, man, interior)
+        stats, orphan = measure(m, man, interior, a5_roles(root, m['tilesetId']))
         bad = verdict(stats, interior)
         fails += bool(bad)
         print(('FAIL ' if bad else 'ok   ') + Path(p).name, json.dumps(stats, ensure_ascii=False), '; '.join(bad), orphan if orphan else '')
