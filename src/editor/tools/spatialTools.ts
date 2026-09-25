@@ -5,7 +5,6 @@ import { sharedRegionReferences } from '@/project/sharedSpatialReferences';
 import { importReferenceScene, preloadRegionReferenceScene, preloadReviewedPlaceScenes, regionReferenceScene, reviewedPlaceScenes } from "@/project/regionReferenceImport";
 import { isSharedDesignId, matchesQuery, sharedObjects, sharedPlaces } from "./sharedDesignCatalog";
 import { prepareSharedObject, sharedDesignDetail } from "./sharedObjectTools";
-import { SHARED_REGION_REFERENCES } from '@/project/sharedSpatialReferences';
 import { previewSpatialAuthoring } from "@/editor/spatial/preview";
 import type { SpatialAuthoringRequest } from "@/editor/spatial/authoringTypes";
 import { SpatialCompileError, type SpatialStampTarget } from "@/editor/spatial/compilerTypes";

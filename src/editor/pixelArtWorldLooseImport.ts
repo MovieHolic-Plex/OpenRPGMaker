@@ -6,6 +6,7 @@ import { projectRepository } from '@/project/persistence/repository';
 import { store } from '@/project/store';
 import { recordProjectSnapshot } from '@/editor/mapEditHistory';
 import { uploadedAssetForImport } from '@/editor/uploadedAssetStorage';
+import type { UploadedAsset } from '@/project/types';
 function canvas(width: number, height: number) { const image = document.createElement('canvas'); image.width = width; image.height = height; const ctx = image.getContext('2d'); if (!ctx)
     throw Error('이미지 캔버스를 만들지 못했습니다.'); ctx.imageSmoothingEnabled = false; return { image, ctx }; }
 async function original(file: File, expected: {
@@ -128,7 +129,7 @@ export async function importPixelArtWorldLoose(file: File, pack: LoosePack, supp
     ensure();
     const value = await preparePixelArtWorldLoose(file, pack, supportFile);
     ensure();
-    const assets = [];
+    const assets: UploadedAsset[] = [];
     for (const p of value.prepared) {
         assets.push(await uploadedAssetForImport({ repository, id: p.assetId, name: p.filename, kind: 'chipset', dataUrl: p.dataUrl, meta: { tileSize: p.tileset.tileSize, frameWidth: p.tileset.tileSize, frameHeight: p.tileset.tileSize, width: p.imageWidth, height: p.imageHeight, frames: p.tileset.count } }));
         ensure();

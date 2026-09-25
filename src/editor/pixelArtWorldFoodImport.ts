@@ -6,6 +6,7 @@ import { projectRepository } from '@/project/persistence/repository';
 import { store } from '@/project/store';
 import { recordProjectSnapshot } from '@/editor/mapEditHistory';
 import { uploadedAssetForImport } from '@/editor/uploadedAssetStorage';
+import type { UploadedAsset } from '@/project/types';
 function canvas(width: number, height: number) {
     const image = document.createElement('canvas');
     image.width = width;
@@ -150,7 +151,7 @@ export async function importPixelArtWorldFood(file: File, pack: PixelArtWorldFoo
     ensure();
     const value = await preparePixelArtWorldFood(file, pack, tableFile);
     ensure();
-    const assets = [];
+    const assets: UploadedAsset[] = [];
     for (const prepared of value.prepared) {
         assets.push(await uploadedAssetForImport({ repository, id: prepared.assetId, name: prepared.filename, kind: 'chipset', dataUrl: prepared.dataUrl, meta: { tileSize: 32, frameWidth: 32, frameHeight: 32, width: prepared.imageWidth, height: prepared.imageHeight, frames: prepared.tileset.count } }));
         ensure();

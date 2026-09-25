@@ -14,7 +14,7 @@ export class PiInteriorCompletion {
   constructor(private readonly enabled: boolean, fixed: Record<string, InteriorRequirements> = {}) {
     for (const [id, requirements] of Object.entries(fixed)) this.requirements.set(id, structuredClone(requirements));
   }
-  record(project: Project, record: PiToolCallRecord) {
+  record(_project: Project, record: PiToolCallRecord) {
     if (!this.enabled || !record.result.ok) return;
     const a = (record.args && typeof record.args === 'object' ? record.args : {}) as Record<string, any>, id = String(a.mapId ?? '');
     if (record.name === 'inspect_interior_layout') {

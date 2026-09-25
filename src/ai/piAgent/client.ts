@@ -45,7 +45,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     throw new PiAgentClientError(`Pi 에이전트 실행 실패: ${detail}`, response.status);
   }
   if (!response.body) throw new PiAgentClientError("Pi 에이전트 응답에 본문이 없습니다");
-  let done: PiAgentDoneEvent | null = null;
+  // 대입이 스트림 콜백 안에서만 일어나 제어흐름 분석이 초기값 null 로 좁힌다(그러면 truthy 분기가 never 가 된다).
+  let done: PiAgentDoneEvent | null = null as PiAgentDoneEvent | null;
   let lastError: string | null = null;
   let checkpoints = Promise.resolve();
   let checkpointError: unknown;
