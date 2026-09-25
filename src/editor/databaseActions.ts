@@ -241,7 +241,10 @@ export function updateDatabaseRecord(collection: DatabaseCollection, id: string,
   // 텍스트/숫자 필드는 keystroke 마다 호출되므로, 같은 레코드의 같은 필드 편집은
   // 커밋 단위(1 스냅샷)로 병합한다. 필드가 바뀌면 키가 달라져 새 스냅샷이 남는다.
   recordCoalescedSnapshot(`db-update:${collection}:${id}:${Object.keys(patch).sort().join(",")}`);
-  store.update((project) => {
+  // `store.update` 가 아니라 `store.updateDatabase` 다 — 이 본문은 `project.database` 만 만지므로
+  // 프로젝트 전체를 복제할 이유가 없다. 실측(2026-09-25): 이름 한 글자당 778ms(최대 1,392ms).
+  store.updateDatabase(collection, (database) => {
+    const project = { database } as Pick<Project, "database">;
     switch (collection) {
       case "actors": {
         const record = project.database.actors.find((entry) => entry.id === id);

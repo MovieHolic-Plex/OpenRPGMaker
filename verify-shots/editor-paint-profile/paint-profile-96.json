@@ -1,0 +1,249 @@
+{
+  "size": 96,
+  "wallMs": 3341,
+  "profileMs": 5288.3,
+  "pageErrors": [],
+  "topSelf": [
+    {
+      "ms": 3933.2,
+      "fn": "(program)",
+      "url": "",
+      "line": 0
+    },
+    {
+      "ms": 389.5,
+      "fn": "texImage2D",
+      "url": "",
+      "line": 0
+    },
+    {
+      "ms": 217.40000000000006,
+      "fn": "t.exports",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 68.6,
+      "fn": "(idle)",
+      "url": "",
+      "line": 0
+    },
+    {
+      "ms": 57.69999999999995,
+      "fn": "get",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 57.5,
+      "fn": "(garbage collector)",
+      "url": "",
+      "line": 0
+    },
+    {
+      "ms": 39.6,
+      "fn": "batchSprite",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 29.700000000000017,
+      "fn": "initialize",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 25.1,
+      "fn": "batchQuad",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 23.1,
+      "fn": "loadImage",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 21.1,
+      "fn": "getBoundingClientRect",
+      "url": "",
+      "line": 0
+    },
+    {
+      "ms": 20.9,
+      "fn": "registerUploadedTilesetFrames",
+      "url": "/src/assets/uploadedTilesets.ts",
+      "line": 44
+    },
+    {
+      "ms": 16.8,
+      "fn": "createSharedAnimatedTile",
+      "url": "/src/editor/sharedTileAnimation.ts",
+      "line": 3
+    },
+    {
+      "ms": 16.5,
+      "fn": "setAlpha",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 15.6,
+      "fn": "renderTileCellLayer",
+      "url": "/src/editor/editSceneRender.ts",
+      "line": 165
+    },
+    {
+      "ms": 13.5,
+      "fn": "loadIdentity",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 13.000000000000002,
+      "fn": "multiply",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 9.700000000000001,
+      "fn": "a.emit",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 9.3,
+      "fn": "add",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 7.3,
+      "fn": "r",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 6.8999999999999995,
+      "fn": "setBlendMode",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 6.3,
+      "fn": "destroy",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 6.1,
+      "fn": "setFrame",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 5.8,
+      "fn": "setQuad",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 5.6,
+      "fn": "renderVisibleEditSceneTiles",
+      "url": "/src/editor/editSceneRender.ts",
+      "line": 140
+    },
+    {
+      "ms": 5.6,
+      "fn": "bufferData",
+      "url": "",
+      "line": 0
+    },
+    {
+      "ms": 5.300000000000001,
+      "fn": "addToRenderList",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 5.1,
+      "fn": "multiplyWithOffset",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 4.6,
+      "fn": "removeFromDisplayList",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 4.4,
+      "fn": "registerUploadedTilesets",
+      "url": "/src/assets/uploadedTilesets.ts",
+      "line": 70
+    },
+    {
+      "ms": 4.3,
+      "fn": "has",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 4.2,
+      "fn": "setTexture",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 4.1,
+      "fn": "(anonymous)",
+      "url": "/src/editor/sharedTileAnimation.ts",
+      "line": 26
+    },
+    {
+      "ms": 4,
+      "fn": "a.removeListener",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 3.9000000000000004,
+      "fn": "animationStripForTile",
+      "url": "/src/project/defaults/chipsetAnimation.ts",
+      "line": 42
+    },
+    {
+      "ms": 3.9,
+      "fn": "setScrollFactor",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 3.8999999999999995,
+      "fn": "set",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 3.5,
+      "fn": "render",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 3.5,
+      "fn": "o",
+      "url": "/@fs/home/main/z-project/rpg-zzu/node_modules/phaser/dist/phaser.min.js",
+      "line": 1
+    },
+    {
+      "ms": 3.4,
+      "fn": "createObjectURL",
+      "url": "",
+      "line": 0
+    }
+  ],
+  "subtreeTotals": {}
+}

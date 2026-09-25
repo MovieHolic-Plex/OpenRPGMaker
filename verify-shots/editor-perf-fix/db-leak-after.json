@@ -1,0 +1,21 @@
+{
+  "label": "db-leak-after",
+  "intervalsAfterBoot": 2,
+  "dbCost": {
+    "actorId": "actor_hero",
+    "medianMs": 21.3,
+    "maxMs": 620.2,
+    "firstMs": 16.6
+  },
+  "leak": {
+    "before": 2,
+    "afterOpen": 44,
+    "afterClose": 23,
+    "opened": true,
+    "closed": true,
+    "cardCount": 105,
+    "error": null,
+    "leaked": 21
+  },
+  "pageErrors": []
+}

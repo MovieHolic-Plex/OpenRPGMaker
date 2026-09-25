@@ -44,7 +44,7 @@ import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } 
 import { repairMapTreeOrphans } from "@/project/mapTree";
 import { cloneExtraLayers } from "@/project/mapLayers";
 import { sha256HexText } from "@/util/sha256";
-import { normalizationFingerprint } from "@/util/structuralJson";
+import { jsonEqual, normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
 import { createLogger } from "@/util/logger";
 import {
@@ -331,7 +331,7 @@ class ProjectStore {
             else this.beginLocalProjectSession();
             this.remotePersistenceEnabled = !sharedDemo;
             this.remotePersistenceDisabledReason = sharedDemo ? "shared-demo" : null;
-            this.persistedBaseline = sharedDemo ? null : structuredClone(projectWithoutEventDrafts(this.current));
+            this.persistedBaseline = sharedDemo ? null : projectWithoutEventDrafts(this.current);
             resetManualProjectCommitBaseline(this.current);
             this.syncProjectUrlBar();
           }
@@ -562,7 +562,7 @@ class ProjectStore {
           });
         }
         this.writeAuthority = saved.authority;
-        this.persistedBaseline = structuredClone(projectWithoutEventDrafts(saved.project));
+        this.persistedBaseline = projectWithoutEventDrafts(saved.project);
         this.lastPersistenceReceipt = null;
         this.lastSavedHostRevision = null;
         this.persistenceRecovery = { kind: "ready", mirror: saved.mirror };
@@ -626,12 +626,12 @@ class ProjectStore {
         this.persistenceRecovery = { kind: "ready" };
         this.loaded = true;
         if (this.writeAuthority?.mode === "canonical") {
-          this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+          this.persistedBaseline = projectWithoutEventDrafts(this.current);
           this.dirtySinceLastPersist = false;
         }
         await this.normalizeCurrentProject();
         if (this.writeAuthority?.mode !== "canonical") {
-          this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+          this.persistedBaseline = projectWithoutEventDrafts(this.current);
           this.dirtySinceLastPersist = false;
         }
         resetManualProjectCommitBaseline(this.current);
@@ -670,9 +670,14 @@ class ProjectStore {
     const snapshot = await this.repository.loadSnapshot(target);
     if (!snapshot || generation !== this.mutationGeneration || lineage !== this.contentLineage
       || this.dirtySinceLastPersist || this.persistInFlight || !sameProjectTarget(target, this.repository.currentTarget())) return false;
-    if (this.persistedBaseline && serializeForComparison(snapshot.project) === serializeForComparison(this.persistedBaseline)) return true;
+    // 호스트가 들고 있는 문서가 지금 기준본과 같은가. 전역 직렬화 대신 값 바교를 한다 —
+    // 3초 팀 폴링(editor/teamSession.ts)이 이 경로를 통과하고, `serializeForComparison` 는 한 번에
+    // 프로젝트 전체를 stringify→parse→검사→정렬 재-stringify 한다(2026-09-25 실측 2,486ms × 2).
+    // `jsonEqual` 은 같은 객제를 만나면 지나가고 첫 차이에서 멈춘다. 문서 로드 정규화가 기본값을
+    // 메우는 만큼 «다르다» 로 달 수 있지만, 그 방향은 논리적으로 같은 스냅샷을 한 번 다시 얹는 것뿐이다.
+    if (this.persistedBaseline && jsonEqual(snapshot.project, this.persistedBaseline)) return true;
     this.current = preserveEventDraftsOnProject(snapshot.project, this.current);
-    this.persistedBaseline = structuredClone(projectWithoutEventDrafts(snapshot.project));
+    this.persistedBaseline = projectWithoutEventDrafts(snapshot.project);
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
     this.lastSavedHostRevision = null;
@@ -714,12 +719,12 @@ class ProjectStore {
       this.writeAuthority = authority;
       this.persistenceRecovery = { kind: "ready" };
       if (this.writeAuthority?.mode === "canonical") {
-        this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+        this.persistedBaseline = projectWithoutEventDrafts(this.current);
         this.dirtySinceLastPersist = false;
       }
       await this.normalizeCurrentProject();
       if (this.writeAuthority?.mode !== "canonical") {
-        this.persistedBaseline = structuredClone(projectWithoutEventDrafts(this.current));
+        this.persistedBaseline = projectWithoutEventDrafts(this.current);
         this.dirtySinceLastPersist = false;
       }
       resetManualProjectCommitBaseline(this.current);
@@ -819,6 +824,49 @@ class ProjectStore {
     ensureMapTreeCoversAllMaps(draft);
     ensureSwitchVariableSlots(draft);
     removeLegacySpriteReferences(draft);
+    this.current = draft;
+    syncEventDraftVaultFromProject(this.current);
+    this.markLocalMutation(change);
+    this.emit(change);
+    this.scheduleAutoSave();
+  }
+
+  /**
+   * Fast path for database record edits. DB 레코드 편집은 `database[collection]` 하나만 건드리므로,
+   * 키스트로크마다 프로젝트 전체를 복제할 이유가 없다.
+   *
+   * 왜 (2026-09-25 실측): `updateDatabaseRecord` 는 텍스트/숫자 필드에서 **키스트로크마다** 불리며
+   * `update()` 를 타서 프로젝트 전체를 복제했다 — 이름 한 글자당 778ms(최대 1,392ms).
+   * 레코드 객체까지 복제하는 이유: 호짜부가 레코드에 필드를 직접 대입하므로(databaseActions.ts),
+   * 배열만 슬라이스하면 이전 리비전과 지속화 기준본이 들고 있는 객체를 같이 바꿋다.
+   *
+   * 정규화는 이 편집이 실제로 무네새롬 수 있는 것만 돌린다:
+   * - `ensureSwitchVariableSlots`: 돌린다. 아이템 스위지 바인드(`items[].switchId`)가 이 경로로 쓰이고,
+   *   `ensureItemSwitchDefs` 가 그 값을 읽는다(itemSwitchDefs.ts).
+   * - `removeLegacySpriteReferences`: 돌리지만 **`draft.database` 로 스코프**한다. DB 레코드 편집은
+   *   database 속에만 참조를 만들 수 있고(배우 characterResourceId · 적 monsterResourceId 등),
+   *   프로젝트 전역 재가 시키면 42MB 참고문서 문자열까지 훑는다(실측 99ms).
+   * - `ensureProjectMapConnections` / `ensureMapTreeCoversAllMaps`: DB 레코드 편집은 맵을 바꿀 수 없지만
+   *   O(맵) 이서 사실상 공짜다 — 안 재본 skip 을 늘리지 않고 그대로 둔다.
+   *
+   * 변경 기씩자는 `update()` 와 동일하게 `{scope:"project"}` 를 낸다. 스코프를 즐이는 것은
+   * 구독자 8곳의 동작을 동시에 바꿔 별도 변경으로 다룬다.
+   */
+  updateDatabase(
+    collection: keyof Project["database"],
+    databaseMutator: (draft: Project["database"]) => void,
+    change: ProjectChangeDescriptor = { scope: "project" },
+  ): void {
+    if (!canWriteTeamProject()) return;
+    const database: Project["database"] = {
+      ...this.current.database,
+      [collection]: structuredClone(this.current.database[collection]),
+    };
+    const draft: Project = { ...this.current, database };
+    databaseMutator(draft.database);
+    assertCanonicalReplacement(draft, this.writeAuthority);
+    ensureSwitchVariableSlots(draft);
+    removeLegacySpriteReferences(draft.database);
     this.current = draft;
     syncEventDraftVaultFromProject(this.current);
     this.markLocalMutation(change);
@@ -1342,7 +1390,13 @@ class ProjectStore {
     if (result.kind === "conflict") return result;
     const savedProject = result.project ?? submittedProject;
     // Keep accepted content detached even if a replacement arrives during receipt hashing.
-    const acceptedBaseline = structuredClone(projectWithoutEventDrafts(savedProject));
+    // 복제는 `projectWithoutEventDrafts` → `cloneProjectSharingReferenceDocuments` 가 한다:
+    // 맵·DB·타일셋 레코드는 새 객체지만 타일셋 참고문서 배열은 **일부러 공유**한다.
+    // 문서는 통째로 교체만 하고 원소를 고치지 않는 계약이고(projectClone.ts 머리말), 공유해야
+    // 다음 저장의 문서 비교가 배열 실체 하나로 끝난다(projectPatch.sameTilesetValue).
+    // 예전의 바깥 structuredClone 은 그 배열까지 떼어 내 저장마다 42MB 를 복사하고, 비교를
+    // 언제나 «다른 배열»로 만들어 전체 문서를 다시 직렬화하게 했다(2026-09-25 실측 약 0.6s + 1.5s).
+    const acceptedBaseline = projectWithoutEventDrafts(savedProject);
     let receipt: ProjectPersistenceReceipt | undefined;
     try {
       // Capture accepted content before the hash await; never derive it from live getCurrent().
@@ -1382,7 +1436,7 @@ class ProjectStore {
         } else {
           // An edit made during I/O conflicts with an accepted team change. Keep its old
           // base so the next save reports a conflict rather than silently rebasing it away.
-          this.persistedBaseline = structuredClone(submittedProject);
+          this.persistedBaseline = submittedProject;
         }
       }
     }

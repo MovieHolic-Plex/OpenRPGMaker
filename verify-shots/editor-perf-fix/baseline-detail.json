@@ -1,0 +1,107 @@
+{
+  "label": "baseline-detail",
+  "bootMs": 20629,
+  "pageErrors": [],
+  "mapId": "map_village",
+  "maps": 8,
+  "tilesets": 322,
+  "referenceDocumentsMB": 42,
+  "rows": [
+    {
+      "name": "paint 1 cell",
+      "iterations": 15,
+      "medianMs": 3,
+      "maxMs": 7.5
+    },
+    {
+      "name": "projectWithoutEventDrafts",
+      "iterations": 3,
+      "medianMs": 569.8,
+      "maxMs": 605.8
+    },
+    {
+      "name": "serialize(project)",
+      "iterations": 3,
+      "medianMs": 686.4,
+      "maxMs": 747.1
+    },
+    {
+      "name": "serializeForComparison",
+      "iterations": 2,
+      "medianMs": 2486.2,
+      "maxMs": 2486.2
+    },
+    {
+      "name": "canonicalJsonString",
+      "iterations": 2,
+      "medianMs": 1694.5,
+      "maxMs": 1694.5
+    },
+    {
+      "name": "jsonContentDigest (cold)",
+      "iterations": 1,
+      "medianMs": 2433.7,
+      "maxMs": 2433.7
+    },
+    {
+      "name": "jsonContentDigest (warm)",
+      "iterations": 3,
+      "medianMs": 133.6,
+      "maxMs": 158
+    },
+    {
+      "name": "structuredClone(project)",
+      "iterations": 2,
+      "medianMs": 761.6,
+      "maxMs": 761.6
+    },
+    {
+      "name": "diffProjectDocuments (parsed inputs)",
+      "iterations": 2,
+      "medianMs": 2813.9,
+      "maxMs": 2813.9
+    },
+    {
+      "name": "diffProjectDocuments (in-memory identity)",
+      "iterations": 3,
+      "medianMs": 0,
+      "maxMs": 0.1
+    },
+    {
+      "name": "FULL saveMapPatch body (legacy shape)",
+      "iterations": 1,
+      "medianMs": 5176.9,
+      "maxMs": 5176.9
+    },
+    {
+      "name": "syncEventDraftVaultFromProject",
+      "iterations": 5,
+      "medianMs": 0,
+      "maxMs": 0.2
+    },
+    {
+      "name": "store.update (whole-project clone)",
+      "iterations": 3,
+      "medianMs": 1173.8,
+      "maxMs": 1230.7
+    },
+    {
+      "name": "removeLegacySpriteReferences (whole project walk)",
+      "iterations": 3,
+      "medianMs": 99.3,
+      "maxMs": 190.9
+    },
+    {
+      "name": "ensureBundledTilesets",
+      "iterations": 2,
+      "medianMs": 38.5,
+      "maxMs": 38.5
+    },
+    {
+      "name": "ProjectExportMirror.serialize (cold)",
+      "iterations": 2,
+      "medianMs": 723.4,
+      "maxMs": 723.4
+    }
+  ]
+}

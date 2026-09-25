@@ -32,8 +32,13 @@ export type SaveResult =
     };
 
 export type MapPatchInput = {
+  /**
+   * 이벤트 초안을 이미 떼낸 기준본. **어댑터는 다시 투사하지 않는다** — 한 번 더 부르면
+   * 저장 한 번에 전역 딥클로이가 두 번 더 도다(2026-09-25 실측: 42MB 문서 토한 프로젝트에서 한 번에 563ms).
+   */
   readonly baseProject: Project;
   readonly changedMapIds?: readonly string[];
+  /** 같은 처리를 마친 로컬 문서. */
   readonly project: Project;
   readonly authority?: ProjectWriteAuthority;
 };

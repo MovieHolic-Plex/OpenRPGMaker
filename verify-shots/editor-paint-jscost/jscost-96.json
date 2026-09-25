@@ -1,0 +1,50 @@
+{
+  "size": 96,
+  "pageErrors": [],
+  "mapId": "map_system",
+  "mapSize": "96x96",
+  "rows": [
+    {
+      "label": "paintTilesBulk 1cell (full path)",
+      "iterations": 20,
+      "medianMs": 1.2,
+      "maxMs": 5.8,
+      "totalMs": 30.1
+    },
+    {
+      "label": "recordMapEditIfChanged (1st stroke sample)",
+      "iterations": 10,
+      "medianMs": 3.8,
+      "maxMs": 4.4,
+      "totalMs": 38.2
+    },
+    {
+      "label": "paintTilesBulk 1cell UPPER (tree repair on)",
+      "iterations": 20,
+      "medianMs": 1,
+      "maxMs": 1.9,
+      "totalMs": 20.3
+    },
+    {
+      "label": "repairTreePairsOnMap (whole map scan)",
+      "iterations": 10,
+      "medianMs": 3.4,
+      "maxMs": 6.8,
+      "totalMs": 37.8
+    },
+    {
+      "label": "resolveForestCanopyReplacementExemptTileIds",
+      "iterations": 10,
+      "medianMs": 0.3,
+      "maxMs": 2.8,
+      "totalMs": 5.7
+    },
+    {
+      "label": "store.updateMapTiles + emit fanout",
+      "iterations": 20,
+      "medianMs": 0.9,
+      "maxMs": 8.1,
+      "totalMs": 25.8
+    }
+  ]
+}

@@ -123,7 +123,6 @@ import { runStampPlace } from "@/editor/stampPlaceRunner";
 import { getTool } from "@/editor/tools/toolRegistry";
 import {
   formatComposerPlaceholder,
-  readAgentBrief,
 } from "./aiAgentBrief";
 import {
   isAiAssistantBridgeConnected,
@@ -531,7 +530,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
 
   const input = el("textarea", {
     class: "ai-assistant-input",
-    attrs: { placeholder: formatComposerPlaceholder(readAgentBrief()), rows: "1" },
+    attrs: { placeholder: formatComposerPlaceholder(), rows: "1" },
     dataset: { testid: "ai-input" },
   }) as HTMLTextAreaElement;
 
@@ -2374,7 +2373,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     // 연결 상태를 함께 본다 — 미연결이면 "한 문장으로 지시" 대신 어디를 눌러야 하는지 말한다.
-    const placeholder = formatComposerPlaceholder(readAgentBrief(), isAiConfigReady(loadAiConfig(), getAiConnectionStatus(loadAiConfig())));
+    // 이 함수는 store emit 마다 불린다(아래 구독). 안내문은 브리핑을 쓰지 않으므로 맵을 읽지 않고,
+    // 설정도 한 번만 읽는다 — 예전엔 loadAiConfig() 를 한 식에서 두 번 부르며 localStorage 를
+    // 두 번 파싱하고, 쓰이지 않는 readAgentBrief() 가 lowerTiles 전체를 훑었다.
+    const aiConfig = loadAiConfig();
+    const placeholder = formatComposerPlaceholder(isAiConfigReady(aiConfig, getAiConnectionStatus(aiConfig)));
     if (input.getAttribute("placeholder") !== placeholder) input.setAttribute("placeholder", placeholder);
     syncConversationState();
   };

@@ -1,0 +1,123 @@
+{
+  "label": "ulw-real-rasak",
+  "bootMs": 21921,
+  "pageErrors": [],
+  "mapId": "map_village",
+  "mapSize": "68x44",
+  "maps": 8,
+  "tilesets": 322,
+  "weightMB": {
+    "version": 0,
+    "meta": 0,
+    "assets": 16.3,
+    "resourceProfiles": 0.2,
+    "tilesets": 91.6,
+    "switches": 0,
+    "variables": 0,
+    "commonEvents": 0,
+    "database": 0.6,
+    "system": 0,
+    "session": 0,
+    "maps": 0.1,
+    "mapConnections": 0,
+    "mapTree": 0,
+    "startMapId": 0,
+    "startPos": 0,
+    "flags": 0,
+    "villageInfoDocuments": 0
+  },
+  "referenceDocumentsMB": 42,
+  "rows": [
+    {
+      "label": "paint 1 cell (action+store+fanout+render)",
+      "iterations": 20,
+      "medianMs": 2.8,
+      "maxMs": 9.2,
+      "totalMs": 62.8
+    },
+    {
+      "label": "recordMapEditIfChanged (stroke 1st sample)",
+      "iterations": 8,
+      "medianMs": 4.2,
+      "maxMs": 5.1,
+      "totalMs": 34
+    },
+    {
+      "label": "projectWithoutEventDrafts (deep clone)",
+      "iterations": 5,
+      "medianMs": 590,
+      "maxMs": 601.2,
+      "totalMs": 2902.1
+    },
+    {
+      "label": "projectJsonWithoutEventDrafts (stringify)",
+      "iterations": 5,
+      "medianMs": 772,
+      "maxMs": 4161.7,
+      "totalMs": 7185.1
+    },
+    {
+      "label": "canonicalJsonString (autosave path)",
+      "iterations": 3,
+      "medianMs": 1263.5,
+      "maxMs": 1470.6,
+      "totalMs": 3916
+    },
+    {
+      "label": "ProjectExportMirror.serialize (cold each time)",
+      "iterations": 3,
+      "medianMs": 679,
+      "maxMs": 680.4,
+      "totalMs": 2033.6
+    },
+    {
+      "label": "structuredClone(project)",
+      "iterations": 3,
+      "medianMs": 712.6,
+      "maxMs": 716.6,
+      "totalMs": 2130.9
+    },
+    {
+      "label": "structuredClone(tilesets)",
+      "iterations": 3,
+      "medianMs": 639.3,
+      "maxMs": 776.8,
+      "totalMs": 2048.3
+    },
+    {
+      "label": "serialize(project)",
+      "iterations": 3,
+      "medianMs": 722.9,
+      "maxMs": 748,
+      "totalMs": 2189.6
+    },
+    {
+      "label": "JSON.parse(serialized)",
+      "iterations": 3,
+      "medianMs": 355.6,
+      "maxMs": 357.1,
+      "totalMs": 1034.7
+    },
+    {
+      "label": "diffProjectDocuments (322 tilesets)",
+      "iterations": 3,
+      "medianMs": 1535.1,
+      "maxMs": 1635,
+      "totalMs": 4696.9
+    },
+    {
+      "label": "FULL saveMapPatch body (2 clones + 2 serialize + 2 parse + diff)",
+      "iterations": 2,
+      "medianMs": 5135,
+      "maxMs": 5135,
+      "totalMs": 10059.2
+    },
+    {
+      "label": "serializeForComparison (save receipt)",
+      "iterations": 2,
+      "medianMs": 2943.2,
+      "maxMs": 2943.2,
+      "totalMs": 5847
+    }
+  ]
+}

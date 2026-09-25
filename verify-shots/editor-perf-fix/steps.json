@@ -1,0 +1,156 @@
+{
+  "label": "steps",
+  "bootMs": 22159,
+  "pageErrors": [],
+  "mapId": "map_blank_start",
+  "maps": 1,
+  "tilesets": 321,
+  "referenceDocumentsMB": 39.9,
+  "rows": [
+    {
+      "name": "paint 1 cell",
+      "iterations": 15,
+      "medianMs": 3.1,
+      "maxMs": 9
+    },
+    {
+      "name": "projectWithoutEventDrafts",
+      "iterations": 3,
+      "medianMs": 532.5,
+      "maxMs": 545.9
+    },
+    {
+      "name": "serialize(project)",
+      "iterations": 3,
+      "medianMs": 630.9,
+      "maxMs": 649.6
+    },
+    {
+      "name": "serializeForComparison",
+      "iterations": 2,
+      "medianMs": 2183.9,
+      "maxMs": 2183.9
+    },
+    {
+      "name": "canonicalJsonString",
+      "iterations": 2,
+      "medianMs": 1239,
+      "maxMs": 1239
+    },
+    {
+      "name": "jsonContentDigest (cold)",
+      "iterations": 1,
+      "medianMs": 2376.7,
+      "maxMs": 2376.7
+    },
+    {
+      "name": "jsonContentDigest (warm)",
+      "iterations": 3,
+      "medianMs": 140.7,
+      "maxMs": 157
+    },
+    {
+      "name": "structuredClone(project)",
+      "iterations": 2,
+      "medianMs": 783.2,
+      "maxMs": 783.2
+    },
+    {
+      "name": "diffProjectDocuments (parsed inputs)",
+      "iterations": 2,
+      "medianMs": 2970.1,
+      "maxMs": 2970.1
+    },
+    {
+      "name": "diffProjectDocuments (in-memory identity)",
+      "iterations": 3,
+      "medianMs": 0.1,
+      "maxMs": 0.1
+    },
+    {
+      "name": "NEW saveMapPatch body (wireView diff, no reprojection)",
+      "iterations": 3,
+      "medianMs": 2426.3,
+      "maxMs": 2966.3
+    },
+    {
+      "name": "  step: projectWithoutEventDrafts(local)",
+      "iterations": 3,
+      "medianMs": 609.7,
+      "maxMs": 818.9
+    },
+    {
+      "name": "  step: projectWireView x2",
+      "iterations": 3,
+      "medianMs": 1.1,
+      "maxMs": 2.9
+    },
+    {
+      "name": "  step: diff(wireView base, wireView local)",
+      "iterations": 3,
+      "medianMs": 1342.6,
+      "maxMs": 1423
+    },
+    {
+      "name": "  step: withWirePatchValues(patch)",
+      "iterations": 3,
+      "medianMs": 0,
+      "maxMs": 0.1
+    },
+    {
+      "name": "  info: patch top keys",
+      "patchKeys": [],
+      "tilesetSetCount": 0,
+      "mapsSetCount": 0,
+      "baseIsPersisted": false
+    },
+    {
+      "name": "FULL saveMapPatch body (legacy shape)",
+      "iterations": 1,
+      "medianMs": 5039.3,
+      "maxMs": 5039.3
+    },
+    {
+      "name": "syncEventDraftVaultFromProject",
+      "iterations": 5,
+      "medianMs": 0,
+      "maxMs": 0.3
+    },
+    {
+      "name": "store.update (whole-project clone)",
+      "iterations": 3,
+      "medianMs": 675.9,
+      "maxMs": 728.3
+    },
+    {
+      "name": "store.updateDatabase (scoped clone)",
+      "iterations": 5,
+      "medianMs": 6.3,
+      "maxMs": 7.4
+    },
+    {
+      "name": "removeLegacySpriteReferences (whole project walk)",
+      "iterations": 3,
+      "medianMs": 80.6,
+      "maxMs": 465.8
+    },
+    {
+      "name": "ensureBundledTilesets",
+      "iterations": 2,
+      "medianMs": 61.7,
+      "maxMs": 61.7
+    },
+    {
+      "name": "ProjectExportMirror.serialize (cold)",
+      "iterations": 2,
+      "medianMs": 768.7,
+      "maxMs": 768.7
+    },
+    {
+      "name": "normalizationFingerprint",
+      "iterations": 2,
+      "medianMs": 888.9,
+      "maxMs": 888.9
+    }
+  ]
+}
