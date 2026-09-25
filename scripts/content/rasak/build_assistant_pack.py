@@ -325,16 +325,17 @@ def connect_candidates(b, kind, sets):
 
 
 def mask_at(arr, w, h, x, y, conn, nb):
+    """MZ 규칙: 맵 밖 = 이어짐. 그룹의 edgeConnects 와 같다(autotileEngine.autotileNeighborMask)."""
     m = 0
     for dx, dy, bit in (DIRS if nb == 8 else DIRS[:4]):
         nx, ny = x + dx, y + dy
-        if 0 <= nx < w and 0 <= ny < h and arr[ny * w + nx] in conn:
+        if not (0 <= nx < w and 0 <= ny < h) or arr[ny * w + nx] in conn:
             m |= bit
     return m
 
 
-def autotile_agreement(b, maps, previews, groups_by_member, border=False):
-    """엔진식(같은 층 배열, 맵 밖 = 끊김) 재성형이 프리뷰 모양과 같은 칸 비율. 층·슬롯별."""
+def autotile_agreement(b, maps, previews, groups_by_member, border=True):
+    """엔진식(같은 층 배열, 맵 밖 = 이어짐 — edgeConnects) 재성형이 프리뷰 모양과 같은 칸 비율. 층·슬롯별."""
     res = collections.defaultdict(lambda: [0, 0])
     for p in previews:
         m = maps[p]
@@ -413,6 +414,7 @@ def build_autotile_groups(b, maps, tables, raw_maps):
             'neighborhood': pk['nb'],
             'memberTileIds': list(dict.fromkeys(k['tiles'])),
             'variantMap': pk['vm'],
+            'edgeConnects': True,
             '_connect': conn, '_rule': cname,
         }
         if cname != 'own':

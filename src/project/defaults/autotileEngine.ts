@@ -151,14 +151,17 @@ function tileAt(map: AutotileMapView, x: number, y: number): number | undefined 
 }
 
 // (x,y) 셀의 이웃 연결 비트마스크를 계산한다.
+// edgeConnects: 맵 밖을 이어진 이웃으로 본다(RPG Maker MZ 규칙, AutotileGroup.edgeConnects).
 export function autotileNeighborMask(
   map: AutotileMapView,
   x: number,
   y: number,
   isConnected: (tile: number) => boolean,
-  neighborhood: AutotileNeighborhood = 4
+  neighborhood: AutotileNeighborhood = 4,
+  edgeConnects = false
 ): number {
   const connectedAt = (dx: number, dy: number): boolean => {
+    if (edgeConnects && !inBounds(map, x + dx, y + dy)) return true;
     const tile = tileAt(map, x + dx, y + dy);
     return typeof tile === "number" && isConnected(tile);
   };
@@ -197,7 +200,7 @@ export function autotileVariantForCell(map: AutotileMapView, group: AutotileGrou
   const members = new Set<number>(group.memberTileIds);
   if (!members.has(current)) return undefined;
   const connect = connectSet(group);
-  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4);
+  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.edgeConnects === true);
   return autotileVariantForMask(group, mask);
 }
 
@@ -220,6 +223,7 @@ export function shapeAutotileGroupAround(
   const connect = connectSet(group);
   const isConnected = (tile: number): boolean => connect.has(tile);
   const neighborhood = group.neighborhood ?? 4;
+  const edgeConnects = group.edgeConnects === true;
   const offsets = neighborhood === 8 ? RECHECK_OFFSETS_8 : RECHECK_OFFSETS;
   // A depth variant of the full cell is already right for a full mask; only shadeAutotileInterior re-picks it.
   const interior = new Set((group.interiorVariants ?? []).flat());
@@ -235,7 +239,7 @@ export function shapeAutotileGroupAround(
       if (canWrite && !canWrite(cx, cy)) continue;
       const current = tileAt(map, cx, cy);
       if (typeof current !== "number" || !members.has(current)) continue;
-      const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood);
+      const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood, edgeConnects);
       const variant = autotileVariantForMask(group, mask);
       if (variant === full && interior.has(current)) continue;
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
