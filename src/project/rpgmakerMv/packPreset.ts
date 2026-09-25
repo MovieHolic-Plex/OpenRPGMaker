@@ -87,6 +87,71 @@ export interface MvPackPreset {
    * 창 난 벽 위에 찍으면 밑 창이 비친다 — 찍는 칸의 벽을 창 없는 짝으로 바꾼다(작가 예시의 1층 상가처럼).
    */
   readonly plainWalls?: readonly { readonly sheet: string; readonly kind: number; readonly plainKind: number }[];
+  /** 마을 짜임 도구(build_pack_town)가 쓰는 재료 이름·물체 id. 없으면 그 팩은 도구를 못 쓴다. */
+  readonly town?: MvTownRecipe;
   /** 참고문서 첫 쪽에 들어갈 조립 지침(MD). 칸 번호는 굽는 시점에 채운다 — `{{object:id}}`, `{{auto:name}}`. */
   readonly guide: string;
+}
+
+/** 건물 한 벌: 위→아래 옥상 · 창 난 위층(한 줄 = 한 층) · 창 없는 1층 띠. 이름은 autotiles 의 name. */
+export interface MvTownFacade {
+  readonly roof: string;
+  readonly upper: string;
+  readonly ground: string;
+  readonly door: string;
+  /** 가게면 문 위 차양(3칸 overhead). 없으면 사무실·아파트. */
+  readonly awning?: string;
+  /** 1층 띠가 2줄일 때 문 옆에 잇는 쇼윈도(1×2 wallmount). */
+  readonly shopfront?: string;
+}
+
+/**
+ * 마을 짜임 재료. 작가·사용자 맵과 미국 소도시 짜임(가게 줄은 벽을 맞대고, 주택은 앞마당·진입로,
+ * 연석과 보도 사이 잔디 띠, 횡단보도는 교차로에만)을 이 팩의 재료로 옮긴다 — townLayout.ts.
+ */
+export interface MvTownRecipe {
+  readonly road: string;
+  /** 교차로 한가운데 — 가장자리에 횡단보도 줄이 저절로 그려지는 차도 재료. */
+  readonly intersection: string;
+  readonly sidewalk: string;
+  /** 연석과 보도 사이 잔디 띠·마당 잔디. */
+  readonly lawn: string;
+  /** 가게 뒤 골목·뒷마당 주차. */
+  readonly alley: string;
+  readonly driveway: string;
+  readonly path: string;
+  /** 겹침 울타리(위층 선). */
+  readonly fence: string;
+  /** 뒷마당 텃밭(흙·밭). 없으면 안 만든다. */
+  readonly garden?: string;
+  /** 뒷마당 주차 칸 선(겹침). 없으면 안 긋는다. */
+  readonly parkingLine?: string;
+  readonly shops: readonly MvTownFacade[];
+  readonly offices: readonly MvTownFacade[];
+  readonly houses: readonly { readonly roof: string; readonly wall: string }[];
+  readonly objects: {
+    readonly lamp: string;
+    readonly lampAlt?: string;
+    readonly planterTree: string;
+    readonly streetTree: string;
+    readonly yardTrees: readonly string[];
+    readonly hydrant: string;
+    readonly trash: string;
+    readonly bench: string;
+    readonly benchLong?: string;
+    readonly fountain?: string;
+    readonly bushes: readonly string[];
+    readonly flowerBeds: readonly string[];
+    readonly vending: readonly string[];
+    /** 골목·뒷마당에 두는 것(분리수거함·배전함·상자). */
+    readonly backProps: readonly string[];
+    readonly houseDoor: string;
+    readonly houseWindows: readonly string[];
+    readonly roofProps: readonly string[];
+    readonly laneHorizontal: string;
+    /** 세로 차도를 건너는 횡단보도(1칸, 가로로 이어 찍기) — T 교차로 입구. */
+    readonly crosswalkVertical: string;
+    readonly arrowLeft: string;
+    readonly arrowRight: string;
+  };
 }
