@@ -24,6 +24,18 @@ for f in sorted(glob.glob('src/assets/pixelArtWorld*Catalog.json')):
         if name.startswith('ST-') and p.get('recipes') and name not in packs:
             packs[name] = p
 
+loose, loose_images = {}, {}
+for pack in json.loads(Path('src/assets/pixelArtWorldLooseCatalog.json').read_text())['packs']:
+    for r in pack['recipes']:
+        loose[r['id']] = (pack, r)
+def loose_image(pack):
+    if pack['id'] not in loose_images:
+        data = (src_dir / 'by-source/sozai/chips' / pack['filename']).read_bytes()
+        if hashlib.sha256(data).hexdigest() != pack['sha256']:
+            raise SystemExit('Loose source edition differs: ' + pack['filename'])
+        loose_images[pack['id']] = Image.open(io.BytesIO(data)).convert('RGBA')
+    return loose_images[pack['id']]
+
 sources = {}
 def source(sheet):
     if sheet not in sources:
@@ -62,7 +74,7 @@ for fam in spec['families']:
              for n in ceiling_group['memberTileIds']}
     ceiling = {'paintTile': remap[ceiling_group['memberTileIds'][0]],
                'variantMap': {k: remap[v] for k, v in ceiling_group['variantMap'].items()}}
-    materials, objects, kits, sheet_info = {}, [], [], []
+    materials, objects, kits, sheet_info, sheet_info_loose = {}, [], [], [], []
     for sheet in fam['sheets']:
         pack, im = source(sheet)
         conf = spec['sheets'][sheet]; key = conf['key']
@@ -89,6 +101,20 @@ for fam in spec['families']:
                             'originalTiles': r['tiles'], 'tiles': tiles, 'placementKind': r['placementKind'], 'facing': r['facing'], 'supportCells': r['supportCells']})
             count += 1
         sheet_info.append({'sheet': pack['filename'], 'floor': 'floor-' + key, 'wall': 'wall-' + key, 'wallRows': len(conf['wall']), 'objects': count})
+    # Loose single-object sheets: render the reviewed pixel rectangle into its output cell box, then copy cells.
+    for rid in fam.get('loose', []):
+        pack, r = loose[rid]
+        src = loose_image(pack)
+        box = r['outputRect']; off = r.get('pixelOffset', {'x': 0, 'y': 0}); pr = r['pixelRect']
+        canvas = Image.new('RGBA', (box['width'] * S, box['height'] * S), (0, 0, 0, 0))
+        canvas.alpha_composite(src.crop((pr['x'], pr['y'], pr['x'] + pr['width'], pr['y'] + pr['height'])), (off['x'], off['y']))
+        wall_kind = r['placementKind'] == 'wall'
+        tiles = [[take(canvas.crop((x * S, y * S, x * S + S, y * S + S)), ('loose', rid, x, y), {'label': r['name'], 'passage': 'blocked', 'layer': 'upper'})
+                  for x in range(box['width'])] for y in range(box['height'])]
+        objects.append({'id': rid, 'name': r['name'], 'sourceId': pack['id'], 'filename': pack['filename'], 'sha256': pack['sha256'],
+                        'pixelRect': pr, 'tiles': tiles, 'placementKind': 'wall-mounted' if wall_kind else 'standing', 'facing': r.get('facing', 'south'),
+                        'supportCells': [] if wall_kind else [{'x': x, 'y': box['height'] - 1} for x in range(box['width'])]})
+        sheet_info_loose.append(rid)
     ids = [o['id'] for o in objects]
     if len(ids) != len(set(ids)):
         raise SystemExit('Duplicate object id in ' + fam['id'])
@@ -107,7 +133,8 @@ for fam in spec['families']:
               "repeatAsBlock 바닥(다다미)은 mapped 전체 블록을 통째로 반복한다. "
               "카운터 위 소품(계산대 POS·현미경 등)은 카운터와 같은 상위 칸을 써야 해서 이 사전에 없다. 카운터 완전체만 쓴다.\n\n"
               "| 원본 | 바닥 | 벽 | 벽 행 | 가구 수 |\n|---|---|---|---|---|\n"
-              + ''.join(f"| {i['sheet']} | {i['floor']} | {i['wall']} | {i['wallRows']} | {i['objects']} |\n" for i in sheet_info) + "\n")
+              + ''.join(f"| {i['sheet']} | {i['floor']} | {i['wall']} | {i['wallRows']} | {i['objects']} |\n" for i in sheet_info)
+              + (f"\n낱장 소품 {len(sheet_info_loose)}개(paw-loose-*): 원본 낱장 그림의 검토 영역 전체. standing은 맨 아래 행이 받침, wall-mounted는 벽 정면에 건다.\n" if sheet_info_loose else '') + "\n")
     general = re.sub(r'wall-wood/clinic은2행, wall-sento/gym은3행이다\.', '벽 행 수는 위 표를 따른다.', method)
     dict_md = ('# 직접 배치 재료·가구 사전\n\n완성 맵 좌표나 배열은 없다. 객체 tiles는 현재 번호, originalTiles는 원본 번호.\n\n```json\n'
                + json.dumps(dictionary, ensure_ascii=False, separators=(',', ':')) + '\n```\n')

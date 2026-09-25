@@ -212,7 +212,8 @@
         "1DK 아파트",
         "나가야",
         "다다미 주택",
-        "기숙사"
+        "기숙사",
+        "코인 세탁소"
       ]
     },
     {
@@ -254,6 +255,20 @@
         "잡화점",
         "골동품점",
         "보석점"
+      ],
+      "loose": [
+        "paw-loose-008-00",
+        "paw-loose-009-00",
+        "paw-loose-012-00",
+        "paw-loose-000-00",
+        "paw-loose-000-01",
+        "paw-loose-063-00",
+        "paw-loose-063-02",
+        "paw-loose-065-04",
+        "paw-loose-065-06",
+        "paw-loose-066-00",
+        "paw-loose-053-03",
+        "paw-loose-082-00"
       ]
     },
     {
@@ -278,6 +293,12 @@
         "사무실",
         "공원 관리소",
         "코인 세탁소"
+      ],
+      "loose": [
+        "paw-loose-080-00",
+        "paw-loose-083-00",
+        "paw-loose-082-00",
+        "paw-loose-069-00"
       ]
     },
     {
@@ -289,7 +310,8 @@
         "Schl-Gym",
         "Schl-WI01",
         "Schl-WI02",
-        "Toilet-I01"
+        "Toilet-I01",
+        "Office-I01"
       ],
       "types": [
         "교실",
@@ -298,6 +320,14 @@
         "과학실",
         "체육관",
         "목조 교실"
+      ],
+      "loose": [
+        "paw-loose-080-00",
+        "paw-loose-078-00",
+        "paw-loose-078-02",
+        "paw-loose-079-15",
+        "paw-loose-079-17",
+        "paw-loose-079-11"
       ]
     },
     {
@@ -318,6 +348,31 @@
         "당구장",
         "미술관",
         "서양 저택"
+      ],
+      "loose": [
+        "paw-loose-073-00",
+        "paw-loose-085-00",
+        "paw-loose-086-00",
+        "paw-loose-087-00",
+        "paw-loose-088-00",
+        "paw-loose-089-00",
+        "paw-loose-067-00",
+        "paw-loose-068-00",
+        "paw-loose-079-15",
+        "paw-loose-079-17",
+        "paw-loose-007-00",
+        "paw-loose-019-00",
+        "paw-loose-020-00",
+        "paw-loose-000-00",
+        "paw-loose-023-00",
+        "paw-loose-023-07",
+        "paw-loose-023-08",
+        "paw-loose-023-09",
+        "paw-loose-050-00",
+        "paw-loose-050-04",
+        "paw-loose-050-02",
+        "paw-loose-070-11",
+        "paw-loose-070-05"
       ]
     }
   ]
