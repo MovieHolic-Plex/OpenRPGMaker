@@ -59,6 +59,8 @@ import { parsePiCommand, plainPiCommand, runPiCommand, type ParsedPiCommand, typ
 import { createTeamPanel } from "./aiTeamPanel";
 import { createAiTeamSidebar } from "./aiTeamSidebar";
 import { createCreationChoice, creationSubject } from "./aiCreationChoice";
+import { createTilesetChangeCard } from "./aiTilesetChangeCard";
+import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
 import { createAssistantWide } from "./aiAssistantWide";
 import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
@@ -914,6 +916,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           // 맵 이동은 세션을 끊지 않지만 시스템 프롬프트는 톨려야 한다 — 고정 값이면
           // 타일 어휘·구조 키트·맵 요약이 세션 시작 맵에 머버 라이브 뷰포트와 어긋난다.
           getCurrentMapId: () => editorState.get().currentMapId ?? null,
+          // 질문 카드에서 사용자가 승인한 칩셋 계열 — 실행기 계열 검사가 이 계열로의 변경을 통과시킨다.
+          getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         },
         // 감사 항목에 남길 턴 상황의 선택 영역 — 컨텍스트 꼬리표와 같은 조건(활성 선택만).
         getTurnSelection: () => (selectionTaskActive ? mapContext().selection : null),
@@ -1030,6 +1034,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 사용자에게 할 말이 다르다.
    */
   let conversationSpend = { turns: 0, tokens: 0 };
+  /**
+   * 이 대화에서 사용자가 질문 카드(aiTilesetChangeCard)로 승인한 칩셋 계열. 새 대화면 비운다.
+   * Pi 요청의 approvedTilesetFamilies·채팅 세션 도구 ctx 로 간다.
+   */
+  let approvedTilesetFamilies: string[] = [];
   let paintConversationSpend = (): void => {};
 
   const resetConversationState = (
@@ -1073,6 +1082,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     pendingPriorTranscript = null;
     controller.auditHistory = [];
     controller.statusTimeline = [];
+    approvedTilesetFamilies = [];
     // 이어받을 대화가 있으면 그 id 로 곧장 간다 — 버릴 id 를 발급하지 않는다.
     conversationId = resumeTarget?.id ?? genId("conv");
     const nextIdentity = store.getProjectIdentity();
@@ -2080,8 +2090,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     setTeamStopHandler(() => abortActiveTurn());
     // 유휴 판정을 갱신해야 로그 카드가 펼쳐진다 — 이 경로는 세션 턴 러너를 거치지 않아 스스로 부른다.
     syncGlassIdle();
+    // 조수가 ask_tileset_change 로 물었으면 턴이 끝난 뒤 질문 카드를 띄운다(마지막 질문 하나).
+    let tilesetQuestion = null as TilesetChangeQuestion | null;
+    const turnConversation = conversationId;
     try {
       await runPiCommand(command, {
+        getApprovedTilesetFamilies: () => approvedTilesetFamilies,
+        onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         appendBubble: (role, line) => appendBubble(role, line),
         appendProcess: (text) => (reviewCard ?? ensureWorkCard()).attachElement(el("p", { class: "ai-work-process-note", text })),
         appendCard: (element) => { appendChangeCard(element); },
@@ -2134,6 +2149,21 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       refreshAbortButton();
       syncGlassIdle();
     }
+    if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
+  };
+  /** 칩셋 계열 변경 질문 카드. 고르면 승인 목록을 고치고 후속 요청을 평소 전송 경로로 보낸다. */
+  const showTilesetChangeCard = (question: TilesetChangeQuestion): void => {
+    const owner = conversationId;
+    const card = createTilesetChangeCard(store.getCurrent(), question, (decision) => {
+      if (disposed || owner !== conversationId) return;
+      if (decision.approved && !approvedTilesetFamilies.includes(decision.family)) {
+        approvedTilesetFamilies = [...approvedTilesetFamilies, decision.family];
+      }
+      restoreComposer(decision.followUp);
+      void send();
+    });
+    log.append(card);
+    card.scrollIntoView?.({ block: "nearest" });
   };
   // do 레벨의 질문 발화를 읽기 전용으로 승격하는 분류 호출 — 세션 경로의 mode=question→ask 자동
   // 승격이 Pi 이관(2026-09-11)에서 빠져 「균형」 질문 턴에 쓰기 툴이 달려 갔다(2026-09-12 실측).
