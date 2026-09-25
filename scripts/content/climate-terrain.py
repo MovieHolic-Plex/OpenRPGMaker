@@ -176,32 +176,37 @@ def mixed_seams(seed, n, variant):
         seam = np.where(inner, s2, seam); cid = np.where(inner, c2 + n, cid)
     return seam, cid
 
-PL = dict(o=hexc('241b18'), a=hexc('3f3632'), b=hexc('463c37'), l=hexc('564b45'), h=hexc('6e635b'), seam=hexc('2a1d19'))
+PL = dict(o=hexc('2c2421'), a=hexc('463e3a'), b=hexc('4b433e'), l=hexc('58504a'), h=hexc('675e57'), seam=hexc('302724'))
 
 def paint_plate(ground, m, variant=0):
-    """Cooled lava crust: flat plates a shade darker than the ash, dark seams that glow here and there, a thin raised
-    rim (lit on the upper left) and a scorched fringe — ground, not a heap of rocks."""
+    """Cooled lava sheet (pahoehoe), not rubble (user 2026-09-25: the cell-seamed plates read as heaps of rocks): a flat
+    dark crust a few shades under the ash with soft ropy flow lines, a thin lit rim on the upper left and a crumbling
+    edge. Rarely an ember in a flow line. Every line is periodic in 16 px, so tiles and body variants join."""
     wob = periodic_noise(11, octaves=((2, 1.0), (4, 0.6)))
     D, gx, gy = blob_field(m if variant == 0 else 255, 9.0, 5.0, wob, 2.4, 2.6)
-    seam, cid = mixed_seams(5, 6, variant)
-    out = ground.copy()
-    glow = periodic_noise(23, octaves=((2, 1.0), (4, 0.5)))
+    out = ground.copy(); R = random.Random(300 + variant)
+    ph = [R.uniform(0, 2 * math.pi) for _ in range(3)]
+    glow = periodic_noise(23 + variant, octaves=((2, 1.0), (4, 0.5)))
     for y in range(16):
         for x in range(16):
             d = D[y, x]
-            if d < -1.5: continue
-            if d < 0:  # scorched halo round the plate
-                if dither(x, y, 0.45 + 0.3 * (d + 1.5) / 1.5): out[y, x, :3] = V['scorch']
+            if d < -1.0: continue
+            if d < 0:
+                if dither(x, y, 0.25 * (d + 1.0)): out[y, x, :3] = V['scorch']
                 continue
-            if d < 1.0: out[y, x, :3] = PL['o']; continue
-            lit = -(gx[y, x] + gy[y, x])  # normal points to the upper left → lit rim
+            if d < 1.0:
+                if dither(x, y, 0.65): out[y, x, :3] = PL['o']
+                continue
+            lit = -(gx[y, x] + gy[y, x])
             if d < 2.0:
-                out[y, x, :3] = PL['h'] if lit > 0.25 else PL['seam'] if lit < -0.25 else PL['l']; continue
-            c = PL['a'] if cid[y, x] % 2 else PL['b']
-            if 1.0 <= seam[y, x] < 1.6 and (x + y) % 2: c = PL['l']   # plate edges catch the light
-            if seam[y, x] < 0.8 and d > 2.4:
-                c = PL['seam']
-                if seam[y, x] < 0.45 and glow[y, x] > 0.4: c = V['hot'] if glow[y, x] > 0.75 else V['core']
+                out[y, x, :3] = PL['h'] if lit > 0.3 else PL['l'] if lit > -0.2 else PL['o']; continue
+            # ropy flow: bowed lines every 5 px, running across the tile (periodic in x and y)
+            c = PL['a']
+            for k, y0 in enumerate((2, 7, 12)):
+                yl = y0 + 1.4 * math.sin(2 * math.pi * x / 16 + ph[k]) + 0.8 * math.sin(4 * math.pi * x / 16 + ph[(k + 1) % 3])
+                dd = y - yl
+                if -0.5 <= dd < 0.5: c = PL['seam'] if not (glow[y, x] > 0.8 and variant) else V['core']
+                elif 0.5 <= dd < 1.5: c = PL['l'] if (x + y) % 2 else PL['b']
             out[y, x, :3] = c
     return out
 
@@ -247,30 +252,44 @@ def seg_dist(px, py, a, b):
     return np.hypot(px - ax - t * vx, py - ay - t * vy), t
 
 def paint_crack(ground, m, alt=0):
+    """A hairline fissure in the ash, not a glowing pipe (user 2026-09-25: the first cracks read as orange pipes): a dark
+    1 px line that zigzags from the cell centre to the middle of each open side, 2 px only where branches meet, and only
+    some stretches of it glow with embers. The side midpoints are fixed, so neighbouring cells join."""
     R = random.Random(1000 + m * 7 + alt * 101)
     dirs = [k for k in 'NESW' if m & DIRS[k]]
-    cx, cy = 7.5 + R.uniform(-1.2, 1.2), 7.5 + R.uniform(-1.2, 1.2)
-    segs = []  # (a, b, width at a, width at b)
-    if not dirs:  # a short lone fissure
-        a = (cx - 3, cy + 2); b = (cx + 3, cy - 2); segs += [(a, (cx, cy + 0.5), 0.3, 1.0), ((cx, cy + 0.5), b, 1.0, 0.3)]
+    cx, cy = 7 + R.choice((-1, 0, 1)), 7 + R.choice((-1, 0, 1))
+    ends = {'N': (7, 0), 'E': (15, 7), 'S': (7, 15), 'W': (0, 7)}
+    pix = {}  # (x, y) -> width class (2 = junction)
+    def line(a, b):
+        n = int(max(abs(b[0] - a[0]), abs(b[1] - a[1]))) * 2 + 1
+        for i in range(n + 1):
+            t = i / n; pix.setdefault((int(round(a[0] + (b[0] - a[0]) * t)), int(round(a[1] + (b[1] - a[1]) * t))), 1)
+    def zig(a, b):
+        # two kinks pushed sideways, so the run jags instead of going straight
+        vx, vy = b[0] - a[0], b[1] - a[1]; L = math.hypot(vx, vy) or 1; nx, ny = -vy / L, vx / L
+        k1, k2 = R.uniform(0.28, 0.42), R.uniform(0.6, 0.78); j1, j2 = R.uniform(-2.6, 2.6), R.uniform(-2.2, 2.2)
+        p1 = (a[0] + vx * k1 + nx * j1, a[1] + vy * k1 + ny * j1); p2 = (a[0] + vx * k2 + nx * j2, a[1] + vy * k2 + ny * j2)
+        line(a, p1); line(p1, p2); line(p2, b)
+    if not dirs:  # a short lone split
+        zig((cx - 3, cy + 1), (cx + 3, cy - 1))
     for k in dirs:
-        mid = CRACK_IN[k]; jitter = R.uniform(-1.6, 1.6)
-        j = (mid[0] + (jitter if k in 'NS' else 0), mid[1] + (jitter if k in 'EW' else 0))
-        full = len(dirs) > 1
-        segs += [((cx, cy), j, 1.0 if full else 0.35, 1.0), (j, mid, 1.0, 1.0), (mid, CRACK_END[k], 1.0, 1.0)]
-    yy, xx = np.mgrid[0:16, 0:16].astype(np.float32) + 0.5
-    best = np.full((16, 16), 99.0, np.float32); width = np.ones((16, 16), np.float32)
-    for a, b, wa, wb in segs:
-        d, t = seg_dist(xx, yy, a, b); w = wa + (wb - wa) * t
-        upd = d / np.maximum(w, 0.2) < best / np.maximum(width, 0.2)
-        best = np.where(upd, d, best); width = np.where(upd, w, width)
-    out = ground.copy(); nz = periodic_noise(77 + alt)
-    for y in range(16):
-        for x in range(16):
-            d, w = best[y, x], width[y, x]
-            if d < 1.05 * w: out[y, x, :3] = V['white'] if (w > 0.9 and d < 0.35 and (x * 3 + y * 5 + alt) % 7 == 0) else V['hot'] if d < 0.5 * w and nz[y, x] > -0.1 else V['core']
-            elif d < 2.1 * w: out[y, x, :3] = V['crustD']
-            elif d < 3.0 * w and dither(x, y, 0.6): out[y, x, :3] = V['scorch']
+        e = ends[k]
+        # the last two pixels run square to the side so the neighbour's line meets it
+        inner = (e[0], e[1] + 2) if k == 'N' else (e[0], e[1] - 2) if k == 'S' else (e[0] - 2, e[1]) if k == 'E' else (e[0] + 2, e[1])
+        zig((cx, cy), inner); line(inner, e)
+    if len(dirs) >= 3:
+        for dx, dy in ((0, 0), (1, 0), (0, 1)): pix[(cx + dx, cy + dy)] = 2
+    out = ground.copy(); nz = periodic_noise(77 + alt + m)
+    for (x, y), w in pix.items():
+        if not (0 <= x < 16 and 0 <= y < 16): continue
+        glow = nz[y, x] > 0.15 or w == 2
+        out[y, x, :3] = (V['hot'] if nz[y, x] > 0.55 and (x + y) % 3 == 0 else V['core']) if glow else V['soot']
+    # a soot lip on the lower-right of the line (the crack's shadow) where it glows
+    for (x, y), w in list(pix.items()):
+        for dx, dy in ((1, 0), (0, 1)):
+            q = (x + dx, y + dy)
+            if q in pix or not (0 <= q[0] < 16 and 0 <= q[1] < 16): continue
+            if dither(q[0], q[1], 0.55): out[q[1], q[0], :3] = V['crustD'] if nz[y, x] > 0.15 else V['crust']
     return out
 
 def paint_sulfur(ground, variant):
@@ -439,51 +458,39 @@ def paint_cracked(ground, m, variant=0):
     return out
 
 def paint_dune(w, h, seed, ground):
-    """Sand dune seen from above with the light from the upper left: an oval mound split by a sharp bowed crest — the
-    windward back (upper left) lit and brightest at the crest, the steep slip face (lower right) in shade, darkest just
-    under the crest. The foot fades into plain sand, so the stamp sits on the 240 ground with no seam."""
+    """Sand dunes as landforms, not stickers (user 2026-09-25: the first crescents looked pasted on): one or two long
+    bowed ridges drawn by relighting the 240 sand itself — the windward back a touch brighter, fading into the plain
+    sand with an ordered dither, a 1 px bright crest, and a narrow slip face in shade just under it. No outline and no
+    other colours, so the foot never shows a seam."""
     W, H = w * 16, h * 16; R = random.Random(seed)
-    out = np.tile(ground, (h, w, 1)).astype(np.float32)
-    cx, cy = W * R.uniform(0.47, 0.53), H * R.uniform(0.5, 0.56)
-    rx, ry = W * 0.47 - 1, H * 0.44 - 1
-    wob = [R.uniform(-1, 1) for _ in range(4)]
-    # crest: a quadratic curve from the lower left to the upper right, bowed toward the lower right
-    p0 = (cx - rx * 0.78, cy + ry * R.uniform(0.2, 0.4)); p2 = (cx + rx * 0.78, cy - ry * R.uniform(0.35, 0.55))
-    p1 = (cx + rx * 0.2, cy + ry * 0.25)
-    ts = np.linspace(0, 1, 60)
-    crx = (1 - ts) ** 2 * p0[0] + 2 * (1 - ts) * ts * p1[0] + ts ** 2 * p2[0]
-    cry = (1 - ts) ** 2 * p0[1] + 2 * (1 - ts) * ts * p1[1] + ts ** 2 * p2[1]
+    base = np.tile(ground, (h, w, 1)).astype(np.float32); out = base.copy()
     A = np.zeros((H, W), bool)
-    for y in range(H):
-        for x in range(W):
-            dx, dy = (x + 0.5 - cx) / rx, (y + 0.5 - cy) / ry
-            th = math.atan2(dy, dx)
-            e = math.hypot(dx, dy) / (1 + 0.07 * sum(wob[k] * math.sin((k + 2) * th + k * 1.7) for k in range(4)))
-            if e >= 1: continue
-            hgt = 1 - e
-            # side of the crest: sign of the cross product with the nearest crest segment
-            k = int(np.argmin((crx - x - 0.5) ** 2 + (cry - y - 0.5) ** 2)); k = min(k, len(ts) - 2)
-            tx, ty = crx[k + 1] - crx[k], cry[k + 1] - cry[k]
-            s = tx * (y + 0.5 - cry[k]) - ty * (x + 0.5 - crx[k])   # > 0: lower right of the crest (lee)
-            dist = math.hypot(x + 0.5 - crx[k], y + 0.5 - cry[k])
-            if s > 0:
-                if hgt < 0.1: c = D_['shade'] if dither(x, y, hgt / 0.1 * 0.8) else None
-                else: c = D_['shadeD'] if dist < 2.5 else D_['shade']
-            else:
-                if dist < 1.2 and hgt > 0.12: c = D_['high']
-                elif hgt > 0.28: c = D_['lit'] if dist > 5 or (x + y) % 3 else D_['high']
-                elif hgt > 0.06: c = D_['lit'] if dither(x, y, (hgt - 0.06) / 0.22) else None
-                else: c = None
-                if c is not None and 0.3 < hgt and dist > 3 and int(x * 0.45 + y) % 5 == 0 and (x + y) % 2: c = D_['rip']
-            if c is None: continue
-            out[y, x, :3] = c; A[y, x] = True
-    # 1px line along the crest's lee edge; soft shadow where the slip face meets flat sand
-    for y in range(1, H):
-        for x in range(W):
-            if A[y, x] and A[y - 1, x] and (out[y, x, :3] == D_['shadeD']).all() and (out[y - 1, x, :3] == D_['high']).all(): out[y, x, :3] = D_['line']
-    for y in range(H - 1, 0, -1):
-        for x in range(W - 1, 0, -1):
-            if not A[y, x] and A[y - 1, x - 1] and (out[y - 1, x - 1, :3] == D_['shade']).all() and dither(x, y, 0.5): out[y, x, :3] = D_['shade']; A[y, x] = True
+    def tone(y, x, k):
+        out[y, x, :3] = np.clip(base[y, x, :3] * k, 0, 255); A[y, x] = True
+    ridges = 1 if w < 5 else 2
+    for r in range(ridges):
+        x0 = R.uniform(1, 4) + (W * 0.35 if r else 0); x1 = W - R.uniform(1, 4) - (0 if r or ridges == 1 else W * 0.3)
+        yc = H * (0.42 if ridges == 1 else (0.35 if r == 0 else 0.62)) + R.uniform(-2, 2)
+        amp, ph, tilt = R.uniform(1.5, 3.5), R.uniform(0, math.pi), R.uniform(-0.12, 0.12)
+        back, face = min(11.0, H * 0.45), min(5.0, H * 0.22)
+        for x in range(int(x0), int(x1) + 1):
+            if not 0 <= x < W: continue
+            u = (x + 0.5 - x0) / max(1.0, x1 - x0)
+            if not 0 <= u <= 1: continue
+            hgt = math.sin(math.pi * u) ** 0.8                      # 0 at the tips, 1 mid-ridge
+            yl = yc + amp * math.sin(math.pi * u * 1.3 + ph) + tilt * (x - W / 2)
+            ycrest = int(round(yl))
+            bw, fw = back * hgt, face * hgt
+            for y in range(max(0, int(ycrest - bw)), min(H, int(ycrest + fw) + 1)):
+                d = y - ycrest
+                if d == 0 and hgt > 0.25: tone(y, x, 1.17)             # crest
+                elif d < 0:                                            # windward back
+                    f = 1 - (-d) / max(bw, 1e-3)
+                    if dither(x, y, min(1.0, f * 1.6)): tone(y, x, 1.04 + 0.07 * f)
+                else:                                                  # slip face
+                    f = 1 - d / max(fw, 1e-3)
+                    if d <= 1 and hgt > 0.35: tone(y, x, 0.76)
+                    elif dither(x, y, min(1.0, f * 1.5)): tone(y, x, 0.86)
     return out, A
 
 

@@ -366,20 +366,20 @@
       23,
       35
     ],
-    "reachable": 1327,
+    "reachable": 1338,
     "targets": 10,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 3,
-      "screen": 0.362,
+      "screen": 0.357,
       "at": [
-        4,
+        28,
         0
       ],
       "screenAt": [
-        0,
+        28,
         0
       ]
     }
@@ -447,11 +447,11 @@
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.462,
+      "maxSq": 5,
+      "screen": 0.466,
       "at": [
-        8,
-        10
+        49,
+        22
       ],
       "screenAt": [
         0,
@@ -466,7 +466,7 @@
       4,
       34
     ],
-    "reachable": 1592,
+    "reachable": 1606,
     "targets": 7,
     "blocked": 0,
     "terraceLeaks": 0,
@@ -475,11 +475,11 @@
       "maxSq": 4,
       "screen": 0.462,
       "at": [
-        20,
-        21
+        33,
+        0
       ],
       "screenAt": [
-        39,
+        20,
         27
       ]
     }
@@ -491,21 +491,21 @@
       4,
       20
     ],
-    "reachable": 981,
+    "reachable": 989,
     "targets": 6,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.466,
+      "maxSq": 5,
+      "screen": 0.462,
       "at": [
-        3,
+        21,
         0
       ],
       "screenAt": [
         0,
-        12
+        16
       ]
     }
   },

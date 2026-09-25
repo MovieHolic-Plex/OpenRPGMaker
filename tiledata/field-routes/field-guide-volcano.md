@@ -25,7 +25,7 @@ node scripts/content/author-field-routes.mjs   # 숲 필드 + 기후 필드, 통
 ```
 
 ```json
-[{"id":"field-volcano-ford-cliff-road","entry":[48,67],"targets":[[30,28],[30,36],[58,53],[63,53],[48,71],[99,54],[40,0]],"reachable":2318,"blocked":[]}]
+[{"id":"field-volcano-ford-cliff-road","entry":[48,67],"targets":[[30,28],[30,36],[58,53],[63,53],[48,71],[99,54],[40,0]],"reachable":2320,"blocked":[]}]
 ```
 
 ## 실제 구분

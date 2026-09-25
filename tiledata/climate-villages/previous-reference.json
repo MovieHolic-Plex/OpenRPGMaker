@@ -114,5 +114,13 @@
   {
     "id": "climate-snow-villages-v8",
     "revision": "138950-617aba39-25a76d9b"
+  },
+  {
+    "id": "climate-volcano-villages-v9",
+    "revision": "210606-db7b2a7-ca584e3d"
+  },
+  {
+    "id": "climate-desert-villages-v9",
+    "revision": "147018-a60b4526-e82082de"
   }
 ]
