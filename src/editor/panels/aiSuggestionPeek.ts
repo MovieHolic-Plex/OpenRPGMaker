@@ -15,6 +15,7 @@
 // 비모달이다. 투명 전면 레이어를 깔지 않는다 — 보이지 않는 레이어가 맵 클릭을 삼킨 P0 사고가
 // 있었다(2026-08-19). 바깥 클릭·Escape 로 닫히고 포커스는 버튼으로 돌아간다.
 
+import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
 import { el } from "@/util/dom";
 import { deckIcon } from "./aiDeckIcons";
 
@@ -37,7 +38,7 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     class: "ai-suggestion-peek-button",
     attrs: { type: "button", "aria-haspopup": "dialog", "aria-expanded": "false", "aria-label": "살펴볼 것", title: "살펴볼 것" },
     dataset: { testid: "ai-suggestion-peek" },
-    children: [deckIcon("alert", { size: 22 }), badge],
+    children: [deckIcon("spark", { size: 22 }), badge],
   }) as HTMLButtonElement;
   const body = el("div", { class: "ai-suggestion-peek-body", dataset: { testid: "ai-suggestion-peek-body" } });
   const popover = el("section", {
@@ -59,11 +60,15 @@ export function createAiSuggestionPeek(): AiSuggestionPeek {
     // 나가면 키보드 사용자에게는 「열렸는데 아무것도 없다」로 보인다.
     popover.querySelector<HTMLElement>("button, [href], [tabindex]")?.focus();
   };
-  const setOpen = (next: boolean): void => {
+  const layerOwner = {};
+  const setOpen = (next: boolean, restoreFocus = true): void => {
     if (disposed || open === next) return;
     open = next;
     sync();
-    if (!open && document.contains(button)) button.focus();
+    // 다른 층이 떠서 밀려 닫힐 때는 포커스를 되찾지 않는다 — 새 층(팔레트 입력칸 등)의 포커스를 뺏는다.
+    if (open) claimTransientLayer(layerOwner, () => setOpen(false, false));
+    else releaseTransientLayer(layerOwner);
+    if (!open && restoreFocus && document.contains(button)) button.focus();
   };
 
   button.addEventListener("click", () => setOpen(!open));

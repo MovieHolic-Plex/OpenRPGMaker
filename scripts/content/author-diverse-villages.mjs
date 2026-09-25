@@ -2,10 +2,12 @@ import { placeCivicProps } from "./lib/village-civic-props.mjs";
 // New exterior studies built from verified whole parts; never edits the source project.
 import { placeHouseholdProps, PROP_PROGRAMS } from "./lib/village-household-props.mjs";
 import { paintVillageCliffs } from "./lib/village-cliffs.mjs";
+import { farmlandTiles } from "./lib/village-farmland.mjs";
 import fs from "node:fs";
 import assert from "node:assert/strict";
 import path from "node:path";
 import { withTsModule } from "../ontology-ts-loader.mjs";
+import { stairTile, isStairTile } from "./lib/cliff-stairs.mjs";
 const [input, out] = process.argv.slice(2);
 if (!input || !out) throw Error("Usage: author-diverse-villages.mjs canonical-export.json output-dir");
 fs.mkdirSync(out, { recursive: true });
@@ -119,7 +121,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
     for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
       const i = point(xx, yy);
       assert(cliffPlan.cliff.has(i), "Stair must span the whole face");
-      m.lowerTiles[i] = cliff[374];
+      m.lowerTiles[i] = stairTile(xx, x);
       m.upperTiles[i] = -1;
     }
     reserve(x, y - 1, 2, height + 3, 1);
@@ -143,7 +145,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
     }
     for (const i of river) {
       const x = i % W, y = Math.floor(i / W);
-      assert(m.lowerTiles[i] !== cliff[374], "River runs over a stair " + spec.id + " " + x + "," + y);
+      assert(!isStairTile(m.lowerTiles[i], cliff[374]), "River runs over a stair " + spec.id + " " + x + "," + y);
       if (!cliffPlan.cliff.has(i)) { water.add(i); continue; }
       const c = cliffPlan.columns.find((k) => k.x === x && y >= k.y && y <= k.y + k.height);
       m.upperTiles[i] = -1;
@@ -266,7 +268,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
   const project = { tilesets: { [ts.id]: ts }, maps: { [m.id]: m } };
   const solid = new Set(landmarkSolid);
   for (const h of houses) for (let y = h.y; y < h.y + h.h; y++) for (let x = h.x; x < h.x + h.w; x++) solid.add(point(x, y));
-  for (let i = 0; i < W * H; i++) if (water.has(i) && !bridgeCells.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374]) solid.add(i);
+  for (let i = 0; i < W * H; i++) if (water.has(i) && !bridgeCells.has(i) || wings.has(i) || cliffPlan.cliff.has(i) && !isStairTile(m.lowerTiles[i], cliff[374])) solid.add(i);
   const route = (a, b) => {
     const start = point(...a), end = point(...b), dist = new Map([[start, 0]]), prev = new Map(), q = [start];
     let found = false;
@@ -324,7 +326,7 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
       if (inside(x + dx, y + dy) && !solid.has(ni) && m.lowerTiles[ni] === 240) roads.add(ni);
     }
   }
-  const roadPaint = new Set([...roads].filter((i) => m.lowerTiles[i] !== cliff[374] && !bridgeCells.has(i)));
+  const roadPaint = new Set([...roads].filter((i) => !isStairTile(m.lowerTiles[i], cliff[374]) && !bridgeCells.has(i)));
   paintGroup(roadPaint, roadGroup);
   for (const i of roads) reserve(i % W, Math.floor(i / W), 1, 1, 2);
   if (spec.dock) {
@@ -372,9 +374,10 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
   };
   for (const [x, y, w, h] of spec.farms) {
     if (freeRect(x, y, w, h)) {
-      for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) m.lowerTiles[point(x + dx, y + dy)] = 188;
+      const lower = farmlandTiles(w, h);
+      for (let dy = 0; dy < h; dy++) for (let dx = 0; dx < w; dx++) m.lowerTiles[point(x + dx, y + dy)] = lower[dy * w + dx];
       reserve(x, y, w, h);
-      placements.push({ name: "텃밭", x, y, w, h, kind: "farm", lower: Array(w * h).fill(188), upper: Array(w * h).fill(-1) });
+      placements.push({ name: "텃밭", x, y, w, h, kind: "farm", lower, upper: Array(w * h).fill(-1) });
     }
   }
   // Retain the already approved individual trees exactly while reorganizing props.
@@ -404,6 +407,8 @@ for (const spec of plans.filter((p) => !process.env.VILLAGE_ONLY || p.id === pro
     const leaks = [...below].map((k) => k.split(",").map(Number)).filter(([x, y]) => cliffPlan.cells[point(x, y)] === "plateau");
     assert.equal(leaks.length, 0, "Terrace reachable without stairs " + spec.id + " " + JSON.stringify(leaks.slice(0, 6)));
   }
+  // Leaf interior by depth over the finished canopy (forestGrove.ts); a pure function of the canopy mask.
+  forest.shadeForestCanopy(m, group("forest_harmony_grove_47"));
   m.layoutPlan = { version: 1, kind: "diverse-village-reference", seed: spec.seed, regions: houses, notes: spec.note, entrance:spec.entrance, civicPlaces:civic.zones, landmarks };
   result.maps[m.id] = m;
   result.plans.push({ ...spec, falls, houses, landmarks, placements, activitySites, civicPlaces:civic.zones, yards:household.yards.filter(y=>!rejectedOwners.has(y.ownerId)), access, grassJoins, grove: { canopyCells: grove.canopyCells, trunkRuns: grove.trunkRuns }, reachableCells: reachable.size, cliffColumns: cliffPlan.columns, roadCells: [...roads] });

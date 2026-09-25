@@ -492,22 +492,25 @@ function questsDetail(project: Project, session: PlaySession): StatusMenuDetail 
         value: quest.summary,
         description: "임무 요약",
         testId: `status-menu-quest-${quest.key}`,
+        attributes: { "data-quest-row": "summary" },
       },
       {
         label: "진행",
         value: `${questStateLabel(quest.state)} (${quest.completedSteps}/${quest.totalSteps})`,
         description: "완료한 단계 / 전체 단계",
         testId: `status-menu-quest-state-${quest.key}`,
+        attributes: { "data-quest-row": "state" },
       },
       ...quest.steps.map((step) => ({
         label: `${step.index + 1}. ${step.done ? "완료" : "진행"}`,
         value: step.label,
         description: step.done ? "완료됨" : "대기 중",
         testId: `status-menu-quest-step-${quest.key}-${step.index}`,
+        attributes: { "data-quest-row": "step" },
       })),
     ]),
     emptyLabel: "등록된 임무가 없습니다",
-    hint: "선택하면 임무 진행 상황을 봅니다.",
+    hint: "↑↓로 임무 목록을 읽습니다. ← 메뉴로 돌아갑니다.",
   };
 }
 

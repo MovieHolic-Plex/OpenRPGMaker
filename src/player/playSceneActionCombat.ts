@@ -1,5 +1,6 @@
 import { mapTileSize } from "@/project/tileGeometry";
-import { automaticCharacterScale } from "@/project/characterScale";
+import { playerCharacterScale } from "@/player/playerCharacterScale";
+import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { canPayActionSkill } from "@/battle/action/skillEffects";
 import { actionFieldSlow } from "./actionFieldSlow";
 import { applyActionFieldStatus, canCastActionProfile, castActionFieldProfile, clearActionSkills, markActionCast, updateActionSkills } from "./playSceneActionSkills";
@@ -61,6 +62,7 @@ import { inBounds, isPassable } from "@/project/collision";
 import { moveRuntimeEventPosition } from "@/project/runtimeEventState"
 import { monsterTypesForRecord, typeChartMultiplierForTypes } from "@/battle/typeChart";
 import { applyActorLevelUp } from "@/player/battleRewardsToSession";
+import { expForRewardActor, rewardActorIds } from "@/battle/rewardPolicy";
 import { actorDerivedStats } from "@/battle/battleBattlers";
 import { battleSkillMpCost } from "@/battle/battleSkillUse";
 import { effectiveActorClassId } from "@/project/sessionClass";
@@ -449,7 +451,7 @@ function damageEnemyByNpc(
     }
   }
   if (scene.fieldSpawnState) {
-    resolveFieldSpawnVictory(scene.fieldSpawnState, victim.eventId);
+    recordFieldSpawnKill(scene, resolveFieldSpawnVictory(scene.fieldSpawnState, victim.eventId));
     syncFieldSpawnEventsIntoMap(scene.map, scene.fieldSpawnState, scene.eventPositions);
     scene.renderTiles();
     scene.registerPageMoveRoutes();
@@ -856,8 +858,10 @@ function grantActionKillRewards(scene: PlaySceneContext, enemy: ActionEnemyState
   if (enemy.exp > 0) {
     const project = store.getCurrent();
     let leveledUp = false;
-    for (const actorId of scene.session.partyActorIds) {
-      scene.session.actorExperience[actorId] = (scene.session.actorExperience[actorId] ?? 0) + enemy.exp;
+    const recipients = rewardActorIds(project, scene.session.partyActorIds, scene.session.partyActorIds);
+    for (const actorId of recipients) {
+      const gained = expForRewardActor(enemy.exp, scene.session.actorLevels[actorId] ?? 1, undefined, project.system.rewardPolicy);
+      scene.session.actorExperience[actorId] = (scene.session.actorExperience[actorId] ?? 0) + gained;
       if (applyActorLevelUp(scene.session, project, actorId)) leveledUp = true;
     }
     text = text ? `${text} EXP+${enemy.exp}` : `EXP+${enemy.exp}`;
@@ -988,7 +992,7 @@ function flashSwingArc(scene: PlaySceneContext, facing: Dir, range: number): voi
 // 현재 맵의 자동 배율을 기준으로 눌렀다 펴고, 종료 시에도 그 배율로 복원한다.
 function pulsePlayerSwing(scene: PlaySceneContext): void {
   scene.tweens.killTweensOf(scene.player);
-  const baseScale = automaticCharacterScale(scene.player.width, mapTileSize(scene.map));
+  const baseScale = playerCharacterScale(scene);
   scene.player.setScale(baseScale, baseScale);
   scene.tweens.add({
     targets: scene.player,
@@ -1049,9 +1053,12 @@ function spawnDamageNumber(scene: PlaySceneContext, worldX: number, worldY: numb
   });
   label.setOrigin(0.5, 1);
   label.setDepth(COMBAT_DEPTH + 1);
+  // 기준과 칸 크기가 다른 맵에서도 같은 화면 크기로 — 글꼴 px 대신 배율로 키워 선명도를 지킨다.
+  const worldScale = runtimeMapWorldScale(scene);
+  label.setScale(worldScale);
   scene.tweens.add({
     targets: label,
-    y: worldY - DAMAGE_NUMBER_RISE_PX,
+    y: worldY - DAMAGE_NUMBER_RISE_PX * worldScale,
     alpha: 0,
     duration: 650,
     onComplete: () => label.destroy(),

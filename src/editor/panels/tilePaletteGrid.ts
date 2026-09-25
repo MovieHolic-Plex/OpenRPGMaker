@@ -253,6 +253,7 @@ export function makeGridPalette(input: MakeGridPaletteWithStampArgs): HTMLElemen
     grid.append(makeGridCell(args, tileId));
     shown += 1;
   }
+  installCellActivation(grid, args.onSelectTile);
   installGridRoving(grid, GRID_PALETTE_COLUMNS);
   if (input.onCreatePaletteStamp) {
     installPaletteStampGesture(
@@ -313,7 +314,7 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     ? Math.min(INITIAL_CUSTOM_PALETTE_CELLS, displayTiles.length)
     : displayTiles.length;
   const appendCells = (from: number, to: number): void => {
-    const fragment = document.createDocumentFragment();
+    const cells: HTMLButtonElement[] = [];
     for (let index = from; index < to; index += 1) {
       const tileId = displayTiles[index];
       if (tileId === undefined) continue;
@@ -323,11 +324,12 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
       });
       if (!passesFilter(args, tileId)) cell.classList.add("is-filtered-out");
       if (from > 0) cell.tabIndex = -1;
-      fragment.append(cell);
+      cells.push(cell);
     }
-    grid.append(fragment);
+    grid.append(...cells);
   };
   appendCells(0, initialCount);
+  installCellActivation(grid, args.onSelectTile);
   installGridRoving(grid, columns);
   if (args.onCreatePaletteStamp) {
     installPaletteStampGesture(
@@ -353,6 +355,47 @@ export function makeCustomPalette(args: MakeCustomPaletteArgs): HTMLElement {
     else window.setTimeout(appendBatch, 0);
   }
   return sheet;
+}
+
+/**
+ * 칸 선택 입력을 판 하나에서 받는다. 커스텀 아틀라스는 2,000칸을 넘어서 칸마다 리스너 3개를
+ * 달면 생성 비용의 큰 몫이 된다. 스탬프 제스처(installPaletteStampGesture)도 grid 의
+ * pointerdown 을 듣고 전파를 멈추므로, 칸 선택이 먼저 돌도록 **그보다 먼저** 설치해야 한다.
+ */
+function installCellActivation(grid: HTMLElement, onSelectTile: (index: number) => void): void {
+  const tileOf = (event: Event): number | null => {
+    const target = event.target;
+    if (!(target instanceof Element)) return null;
+    const cell = target.closest<HTMLElement>(".chipset-tile");
+    if (!cell || !grid.contains(cell)) return null;
+    const tile = Number(cell.dataset.tileIndex);
+    return Number.isInteger(tile) ? tile : null;
+  };
+  grid.addEventListener("pointerdown", (event) => {
+    if ("button" in event && typeof event.button === "number" && event.button !== 0) return;
+    const tile = tileOf(event);
+    if (tile === null) return;
+    event.preventDefault();
+    onSelectTile(tile);
+  });
+  grid.addEventListener("click", (event) => {
+    const tile = tileOf(event);
+    if (tile === null) return;
+    event.preventDefault();
+    // Assistive technology activates buttons with a zero-detail click and
+    // no pointerdown. Physical clicks were already handled above.
+    if (!Reflect.get(event, "detail")) onSelectTile(tile);
+  });
+  // Enter/Space selects immediately; preventDefault suppresses the later
+  // native click so this path does not activate the same tile twice.
+  grid.addEventListener("keydown", (event) => {
+    const key = Reflect.get(event, "key");
+    if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
+    const tile = tileOf(event);
+    if (tile === null) return;
+    event.preventDefault();
+    onSelectTile(tile);
+  });
 }
 
 /**
@@ -463,27 +506,6 @@ function makePaletteCell(
       ),
     },
     dataset: { testid: `chipset-tile-${tileId}`, tileIndex: String(tileId) },
-    on: {
-      pointerdown: (event) => {
-        if ("button" in event && typeof event.button === "number" && event.button !== 0) return;
-        event.preventDefault();
-        args.onSelectTile(tileId);
-      },
-      click: (event) => {
-        event.preventDefault();
-        // Assistive technology activates buttons with a zero-detail click and
-        // no pointerdown. Physical clicks were already handled above.
-        if (!Reflect.get(event, "detail")) args.onSelectTile(tileId);
-      },
-      // Enter/Space selects immediately; preventDefault suppresses the later
-      // native click so this path does not activate the same tile twice.
-      keydown: (event) => {
-        const key = Reflect.get(event, "key");
-        if (key !== "Enter" && key !== " " && key !== "Spacebar") return;
-        event.preventDefault();
-        args.onSelectTile(tileId);
-      },
-    },
   });
   if (decorations.badge) {
     cell.append(el("span", {

@@ -89,7 +89,7 @@ describe("compileCutscene", () => {
           "commandId": "m2-046-tint-screen",
           "fields": {
             "color": "neutral",
-            "duration": 200,
+            "durationMs": 200,
             "value": "#101820",
           },
           "kind": "m2Command",
@@ -110,7 +110,8 @@ describe("compileCutscene", () => {
           "commandId": "m2-048-shake-screen",
           "fields": {
             "durationMs": 120,
-            "intensity": 4,
+            "intensity": "3",
+            "value": 3,
           },
           "kind": "m2Command",
         },
@@ -125,12 +126,10 @@ describe("compileCutscene", () => {
         {
           "commandId": "m2-201-camera-control",
           "fields": {
-            "durationMs": 0,
-            "mode": "panTo",
-            "target": "screen",
+            "durationMs": 300,
+            "mode": "return",
+            "target": "player",
             "wait": true,
-            "x": 5,
-            "y": 6,
           },
           "kind": "m2Command",
         },
@@ -138,7 +137,7 @@ describe("compileCutscene", () => {
           "commandId": "m2-046-tint-screen",
           "fields": {
             "color": "neutral",
-            "duration": 0,
+            "durationMs": 0,
             "value": "#101820",
           },
           "kind": "m2Command",

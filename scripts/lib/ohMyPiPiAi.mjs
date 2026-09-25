@@ -52,12 +52,15 @@ function startWorker() {
     const bun = process.env.OPRN_BUN_PATH || (existsSync(localBun) ? localBun : "bun");
     // Tests point this at a script that crashes on startup to pin the failure contract.
     const command = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
+    const packedBin = process.env.OPRN_OH_MY_PI_WORKER_BIN;
     const child = command
       ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
-      : spawn(bun, [script], {
-        stdio: ["ignore", "pipe", "pipe"],
-        env: { ...process.env },
-      });
+      : packedBin && existsSync(packedBin)
+        ? spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } })
+        : spawn(bun, [script], {
+          stdio: ["ignore", "pipe", "pipe"],
+          env: { ...process.env },
+        });
     workerChild = child;
     let settled = false;
     const fail = (error) => {
@@ -120,11 +123,22 @@ async function workerJson(pathname, body) {
   // A dev reload may mark it stale, but must not retire its pending decision.
   if (["/agent/checkpoint", "/agent/render"].includes(pathname) && !workerPortPromise) throw Object.assign(new Error("적용 대기 실행이 종료되었습니다."), { status: 409 });
   const port = await (["/agent/checkpoint", "/agent/render"].includes(pathname) ? workerPortPromise : startWorker());
-  const response = await fetch(`http://127.0.0.1:${port}${pathname}`, {
+  const post = () => fetch(`http://127.0.0.1:${port}${pathname}`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body ?? {}),
   });
+  let response;
+  try {
+    response = await post();
+  } catch (error) {
+    // 적용·그림 응답은 워커가 기다리는 한 번짜리 결정이라 잃으면 실행 전체가 끊긴다. 부하 걸린 머신에서
+    // 워커 소켓이 본문 도중 닫혀(`other side closed`, 핸들러는 불리지도 않았다) 턴이 통째로 죽었다
+    // (2026-09-25 Rasak 마을, 턴마다 1~15분 사이). 새 연결로 한 번만 다시 보낸다 — 브로커는 같은 id 의
+    // 재전달을 받아 준다.
+    if (!["/agent/checkpoint", "/agent/render"].includes(pathname) || error?.cause?.code !== "UND_ERR_SOCKET") throw error;
+    response = await post();
+  }
   const payload = await response.json();
   if (!response.ok) {
     const error = new Error(payload?.error || `oh-my-pi worker ${response.status}`);

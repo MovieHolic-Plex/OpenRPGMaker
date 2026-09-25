@@ -1,0 +1,838 @@
+/* === 대화창 스타일 프리셋 · 대사 종류 ===
+   목록·이름·설명의 출처는 src/project/dialogueStyles.ts 다. 여기서는 모양만 정한다.
+
+   - 스타일은 **오버레이**의 data-dialogue-style 에 실린다(대사 상자·선택지·소지금 창이 같이 바뀐다).
+   - 대사 종류는 **상자**의 data-dialogue-context 에 실린다(한 줄의 것이다).
+   - 기본값 glass 는 여기서 아무것도 하지 않는다 — dialogue.css 그대로다.
+
+   상자의 padding 은 건드리지 않는다. 테두리 두께·글꼴 크기는 바꿔도 된다 — 페이지 나누기가
+   렌더 뒤에 상자 칸 높이를 실제로 재서 계산한다(dialoguePagination.ts).
+
+   이름표는 상자 **테두리 안쪽** 기준 top:-9px 에 붙는다(absolute 는 padding box 기준). 그래서 테두리가
+   두껍거나 이름표가 크면 이름표 아랫변이 본문 첫 줄을 덮는다. 스타일마다 --runtime-dialogue-speaker-inset
+   을 「이름표 높이(글자×1.2 + 위아래 3px + 이름표 테두리×2) − 7px」 이상으로 둔다.
+
+   글꼴은 오버레이에서 --runtime-dialogue-font 로 덮는다. 화자 프로필 글꼴은 상자에 인라인으로
+   심기므로 스타일보다 이긴다(상자가 더 가깝다). */
+
+.dialogue-overlay[data-dialogue-style],
+.dialogue-ambient-layer [data-dialogue-style] {
+  --dlg-bg: var(--runtime-dialogue-glass-surface);
+  --dlg-border: 1px solid var(--runtime-dialogue-glass-border);
+  --dlg-radius: var(--runtime-dialogue-radius);
+  --dlg-shadow: var(--runtime-dialogue-glass-shadow);
+  --dlg-filter: none;
+  --dlg-hairline: transparent;
+  --dlg-text: var(--runtime-window-text);
+  --dlg-text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.88);
+  --dlg-name-bg: var(--dlg-bg);
+  --dlg-name-text: var(--dlg-text);
+  --dlg-name-border: var(--dlg-border);
+  --dlg-name-radius: var(--dlg-radius);
+  --dlg-name-shadow: none;
+  --dlg-accent: var(--runtime-dialogue-glass-accent);
+  --dlg-select-bg: rgba(255, 255, 255, 0.12);
+  --dlg-weight: 700;
+}
+
+/* 이름 색은 스타일과 상관없이 화자 프로필이 정한다(dialogue.ts 가 이름표에 심는다). */
+.dialogue-box .speaker.speaker-nameplate {
+  color: var(--dialogue-speaker-color, var(--dlg-name-text, var(--runtime-dialogue-text)));
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) {
+  --runtime-dialogue-text: var(--dlg-text);
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .dialogue-box:not(.transparent) {
+  backdrop-filter: var(--dlg-filter);
+  background: var(--dlg-bg);
+  border: var(--dlg-border);
+  border-radius: var(--dlg-radius);
+  box-shadow: var(--dlg-shadow);
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .dialogue-box::before {
+  border-color: var(--dlg-hairline);
+  border-radius: var(--dlg-radius);
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .dialogue-box .body,
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .dialogue-box .speaker,
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .choice-list .choice-btn {
+  font-weight: var(--dlg-weight);
+  text-shadow: var(--dlg-text-shadow);
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .dialogue-box .speaker.speaker-nameplate {
+  background: var(--dlg-name-bg);
+  border: var(--dlg-name-border);
+  border-radius: var(--dlg-name-radius);
+  box-shadow: var(--dlg-name-shadow);
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]) .dialogue-page-cursor {
+  background: var(--dlg-accent);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]).choices-active .choice-list .choice-btn.selected,
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]).choices-active .choice-list .choice-btn:focus-visible {
+  background: var(--dlg-select-bg);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.dialogue-overlay[data-dialogue-style]:not([data-dialogue-style="glass"]).choices-active .choice-list .choice-btn.selected::before {
+  color: var(--dlg-accent);
+}
+
+/* ── 고전 · 윈도스킨 ── 자료집 시스템 그림(system.systemResourceId)을 9칸으로 편다. */
+.dialogue-overlay[data-dialogue-style="classic"],
+.dialogue-ambient-layer [data-dialogue-style="classic"] {
+  --runtime-dialogue-speaker-inset: 12px;
+  --dlg-bg: var(--runtime-window-fill-fallback, rgba(28, 36, 72, 0.94));
+  --dlg-border: 1px solid transparent;
+  --dlg-radius: 0;
+  --dlg-shadow: none;
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-accent: rgb(255, 230, 140);
+  --dlg-name-bg: rgba(12, 16, 36, 0.9);
+  --dlg-name-border: 1px solid rgba(255, 255, 255, 0.5);
+  --dlg-name-radius: 2px;
+}
+
+/* border 단축 속성이 border-image 를 none 으로 되돌리므로(위 공통 규칙) 같은 특이도로 뒤에서 다시 건다. */
+.dialogue-overlay[data-dialogue-style="classic"]:not([data-dialogue-style="glass"]) .dialogue-box:not(.transparent) {
+  border-image: var(--runtime-window-skin) 24 fill / 8px / 0 stretch;
+}
+
+/* ── 레트로 흑창 · 흰 선 ── */
+.dialogue-overlay[data-dialogue-style="retro-black"],
+.dialogue-ambient-layer [data-dialogue-style="retro-black"] {
+  --runtime-dialogue-speaker-inset: 16px;
+  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font-size: 10px;
+  --dlg-bg: rgb(0, 0, 0);
+  --dlg-border: 2px solid rgb(255, 255, 255);
+  --dlg-radius: 4px;
+  --dlg-shadow: 0 0 0 2px rgb(0, 0, 0);
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(255, 255, 255);
+  --dlg-weight: 400;
+}
+
+/* ── 청색 그라데이션 · 입체 테두리 ── */
+.dialogue-overlay[data-dialogue-style="retro-blue"],
+.dialogue-ambient-layer [data-dialogue-style="retro-blue"] {
+  --runtime-dialogue-speaker-inset: 14px;
+  --dlg-bg: linear-gradient(180deg, rgb(52, 72, 196), rgb(10, 18, 92));
+  --dlg-border: 2px solid rgb(226, 232, 255);
+  --dlg-radius: 4px;
+  --dlg-shadow: inset 0 0 0 1px rgb(96, 110, 180), 0 0 0 1px rgb(20, 22, 50), 0 3px 8px rgba(0, 0, 20, 0.5);
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-text-shadow: 1px 1px 0 rgb(8, 10, 40);
+  --dlg-accent: rgb(255, 255, 255);
+  --dlg-select-bg: rgba(255, 255, 255, 0.16);
+}
+
+/* ── 휴대기 흰 창 · 굵은 틀 ── */
+.dialogue-overlay[data-dialogue-style="handheld"],
+.dialogue-ambient-layer [data-dialogue-style="handheld"] {
+  --runtime-dialogue-speaker-inset: 18px;
+  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font-size: 10px;
+  --dlg-bg: rgb(248, 248, 240);
+  --dlg-border: 3px solid rgb(64, 72, 88);
+  --dlg-radius: 6px;
+  --dlg-shadow: inset 0 0 0 2px rgb(200, 208, 224), 0 2px 0 rgba(0, 0, 0, 0.35);
+  --dlg-text: rgb(48, 48, 56);
+  --dlg-text-shadow: 1px 1px 0 rgb(208, 208, 200);
+  --dlg-accent: rgb(224, 64, 56);
+  --dlg-select-bg: rgba(64, 72, 88, 0.12);
+  --dlg-weight: 400;
+}
+
+/* ── 겹선 흑창 · 둥근 모서리 ── */
+.dialogue-overlay[data-dialogue-style="double-line"],
+.dialogue-ambient-layer [data-dialogue-style="double-line"] {
+  --runtime-dialogue-speaker-inset: 14px;
+  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font-size: 10px;
+  --dlg-bg: rgb(0, 0, 0);
+  --dlg-border: 1px solid rgb(255, 255, 255);
+  --dlg-radius: 8px;
+  --dlg-shadow: 0 0 0 2px rgb(0, 0, 0), 0 0 0 3px rgb(255, 255, 255);
+  --dlg-hairline: rgb(255, 255, 255);
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(255, 255, 255);
+  --dlg-name-shadow: 0 0 0 2px rgb(0, 0, 0), 0 0 0 3px rgb(255, 255, 255);
+  --dlg-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style="double-line"] .dialogue-box::before {
+  inset: 2px;
+}
+
+/* ── 굵은 흑백 · 픽셀 ── */
+.dialogue-overlay[data-dialogue-style="mono-heavy"],
+.dialogue-ambient-layer [data-dialogue-style="mono-heavy"] {
+  --runtime-dialogue-speaker-inset: 21px;
+  --runtime-dialogue-font: var(--runtime-pixel-font);
+  --runtime-dialogue-font-size: 11px;
+  --dlg-bg: rgb(0, 0, 0);
+  --dlg-border: 4px solid rgb(255, 255, 255);
+  --dlg-radius: 0;
+  --dlg-shadow: none;
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(255, 230, 0);
+  --dlg-select-bg: transparent;
+  --dlg-name-bg: rgb(0, 0, 0);
+  --dlg-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style="mono-heavy"].choices-active .choice-list .choice-btn.selected {
+  color: rgb(255, 230, 0);
+}
+
+/* ── 흰 카드 · 둥근 ── */
+.dialogue-overlay[data-dialogue-style="white-card"],
+.dialogue-ambient-layer [data-dialogue-style="white-card"] {
+  --runtime-dialogue-speaker-inset: 11px;
+  --dlg-bg: rgba(255, 255, 255, 0.96);
+  --dlg-border: 1px solid rgba(20, 30, 50, 0.1);
+  --dlg-radius: 14px;
+  --dlg-shadow: 0 6px 18px rgba(10, 20, 40, 0.35);
+  --dlg-text: rgb(38, 44, 60);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(236, 84, 124);
+  --dlg-name-bg: rgb(236, 84, 124);
+  --dlg-name-text: rgb(255, 255, 255);
+  --dlg-name-border: 0 solid transparent;
+  --dlg-name-radius: 999px;
+  --dlg-select-bg: rgba(236, 84, 124, 0.14);
+}
+
+/* ── 나무틀 양피지 ── */
+.dialogue-overlay[data-dialogue-style="wood"],
+.dialogue-ambient-layer [data-dialogue-style="wood"] {
+  --runtime-dialogue-speaker-inset: 15px;
+  --dlg-bg: linear-gradient(180deg, rgb(252, 236, 196), rgb(238, 212, 160));
+  --dlg-border: 4px solid rgb(122, 74, 38);
+  --dlg-radius: 6px;
+  --dlg-shadow: inset 0 0 0 2px rgb(196, 140, 84), 0 3px 0 rgb(72, 42, 20);
+  --dlg-text: rgb(74, 44, 22);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(160, 60, 30);
+  --dlg-name-bg: rgb(122, 74, 38);
+  --dlg-name-text: rgb(255, 238, 200);
+  --dlg-name-border: 2px solid rgb(72, 42, 20);
+  --dlg-name-radius: 4px;
+  --dlg-select-bg: rgba(122, 74, 38, 0.16);
+}
+
+/* ── 말랑 크림 · 이름 알약 ── */
+.dialogue-overlay[data-dialogue-style="cream"],
+.dialogue-ambient-layer [data-dialogue-style="cream"] {
+  --runtime-dialogue-speaker-inset: 15px;
+  --dlg-bg: rgb(255, 248, 226);
+  --dlg-border: 2px solid rgb(240, 214, 160);
+  --dlg-radius: 22px;
+  --dlg-shadow: 0 4px 0 rgb(226, 196, 138);
+  --dlg-text: rgb(110, 84, 58);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(255, 150, 80);
+  --dlg-name-bg: rgb(255, 176, 96);
+  --dlg-name-text: rgb(255, 255, 255);
+  --dlg-name-border: 2px solid rgb(255, 248, 226);
+  --dlg-name-radius: 999px;
+  --dlg-select-bg: rgba(255, 176, 96, 0.22);
+}
+
+/* ── 금장 흑판 ── */
+.dialogue-overlay[data-dialogue-style="gold"],
+.dialogue-ambient-layer [data-dialogue-style="gold"] {
+  --runtime-dialogue-speaker-inset: 14px;
+  --runtime-dialogue-font: Georgia, "Noto Serif KR", serif;
+  --runtime-dialogue-font-size: 10px;
+  --dlg-bg: linear-gradient(180deg, rgba(22, 18, 12, 0.95), rgba(8, 6, 4, 0.95));
+  --dlg-border: 1px solid rgb(196, 160, 86);
+  --dlg-radius: 2px;
+  --dlg-shadow: inset 0 0 0 3px rgba(8, 6, 4, 0.95), inset 0 0 0 4px rgba(196, 160, 86, 0.55), 0 4px 12px rgba(0, 0, 0, 0.55);
+  --dlg-text: rgb(244, 234, 210);
+  --dlg-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
+  --dlg-accent: rgb(222, 186, 104);
+  --dlg-name-bg: rgb(12, 10, 6);
+  --dlg-name-text: rgb(232, 200, 120);
+  --dlg-name-border: 1px solid rgb(196, 160, 86);
+  --dlg-select-bg: rgba(196, 160, 86, 0.18);
+  --dlg-weight: 400;
+}
+
+/* ── 기울인 흑백 · 강렬 ── 상자 자체는 곧게 두고(칸 계산) 틀과 이름표만 기울인다. */
+.dialogue-overlay[data-dialogue-style="skew"],
+.dialogue-ambient-layer [data-dialogue-style="skew"] {
+  --runtime-dialogue-speaker-inset: 15px;
+  --dlg-bg: rgb(12, 12, 12);
+  --dlg-border: 2px solid rgb(255, 255, 255);
+  --dlg-radius: 0;
+  --dlg-shadow: 5px 5px 0 rgb(220, 20, 40);
+  --dlg-text: rgb(255, 255, 255);
+  --dlg-text-shadow: none;
+  --dlg-accent: rgb(220, 20, 40);
+  --dlg-name-bg: rgb(255, 255, 255);
+  --dlg-name-text: rgb(12, 12, 12);
+  --dlg-name-border: 0 solid transparent;
+  --dlg-name-shadow: 3px 3px 0 rgb(220, 20, 40);
+  --dlg-select-bg: rgb(220, 20, 40);
+}
+
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box:not(.transparent) {
+  clip-path: polygon(0 6%, 100% 0, 99% 100%, 1% 94%);
+}
+
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box .speaker.speaker-nameplate {
+  font-style: italic;
+  transform: skewX(-12deg) rotate(-3deg);
+}
+
+/* clip-path 는 위로 튀어나온 이름표까지 자른다 — 이름이 있을 때는 자르지 않는다. */
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box.has-speaker:not(.transparent) {
+  clip-path: none;
+  transform: skewX(-4deg);
+}
+
+.dialogue-overlay[data-dialogue-style="skew"] .dialogue-box.has-speaker .dialogue-content {
+  transform: skewX(4deg);
+}
+
+/* ── 떠 있는 글 · 명조 ── 창 없이 아래쪽만 어둡게 번진다. */
+.dialogue-overlay[data-dialogue-style="float"],
+.dialogue-ambient-layer [data-dialogue-style="float"] {
+  --runtime-dialogue-font: Georgia, "Noto Serif KR", serif;
+  --runtime-dialogue-font-size: 10px;
+  --dlg-bg: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.72) 45%);
+  --dlg-border: 1px solid transparent;
+  --dlg-radius: 0;
+  --dlg-shadow: none;
+  --dlg-text: rgb(232, 228, 240);
+  --dlg-text-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
+  --dlg-accent: rgb(200, 196, 220);
+  --dlg-name-bg: transparent;
+  --dlg-name-text: rgb(180, 176, 204);
+  --dlg-name-border: 1px solid transparent;
+  --dlg-select-bg: rgba(255, 255, 255, 0.08);
+  --dlg-weight: 400;
+}
+
+/* ── 단말기 · 녹색 주사선 ── */
+.dialogue-overlay[data-dialogue-style="terminal"],
+.dialogue-ambient-layer [data-dialogue-style="terminal"] {
+  --runtime-dialogue-speaker-inset: 13px;
+  --runtime-dialogue-font: "Cascadia Mono", "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  --dlg-bg:
+    repeating-linear-gradient(180deg, rgba(60, 255, 120, 0.06) 0 1px, transparent 1px 3px),
+    rgba(2, 14, 6, 0.94);
+  --dlg-border: 1px solid rgb(60, 220, 110);
+  --dlg-radius: 2px;
+  --dlg-shadow: 0 0 10px rgba(60, 220, 110, 0.35);
+  --dlg-text: rgb(110, 255, 150);
+  --dlg-text-shadow: 0 0 4px rgba(60, 255, 120, 0.6);
+  --dlg-accent: rgb(110, 255, 150);
+  --dlg-name-bg: rgb(2, 14, 6);
+  --dlg-select-bg: rgba(60, 220, 110, 0.18);
+  --dlg-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style="terminal"] .dialogue-box .speaker.speaker-nameplate::before {
+  content: "> ";
+}
+
+/* === 대사 종류 (data-dialogue-context, 상자 단위) ===
+   스타일 위에 한 겹 얹는다. 이름·얼굴 숨김, 즉시 표시, 소리는 dialogue.ts 가 한다. */
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="narration"]:not(.transparent) {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: transparent;
+  border-image: none;
+  box-shadow: none;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="narration"] .body,
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="sign"] .body,
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="system"] .body {
+  text-align: center;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="narration"] .body {
+  color: rgb(228, 224, 236);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="thought"]:not(.transparent) {
+  border-style: dashed;
+  border-width: 2px;
+  border-radius: 18px;
+  opacity: 0.92;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="thought"] .body {
+  font-style: italic;
+  opacity: 0.8;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="thought"] .body::before {
+  content: "( ";
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="thought"] .body::after {
+  content: " )";
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="whisper"]:not(.transparent) {
+  border-style: dotted;
+  border-width: 2px;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="whisper"] .body {
+  font-size: calc(var(--runtime-dialogue-font-size) * 0.9);
+  font-weight: 400;
+  opacity: 0.66;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="shout"]:not(.transparent) {
+  border-width: 2px;
+  border-color: rgb(255, 90, 70);
+  border-radius: 0;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="shout"] .body {
+  font-size: calc(var(--runtime-dialogue-font-size) * 1.2);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="radio"]:not(.transparent) {
+  background:
+    repeating-linear-gradient(180deg, rgba(120, 200, 255, 0.08) 0 1px, transparent 1px 3px),
+    rgba(6, 18, 30, 0.92);
+  border-color: rgb(110, 180, 230);
+  border-image: none;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="radio"] .body {
+  color: rgb(186, 226, 255);
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="sign"]:not(.transparent) {
+  background: linear-gradient(180deg, rgb(168, 116, 68), rgb(132, 86, 48));
+  border: 3px solid rgb(84, 52, 26);
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgb(196, 146, 94);
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="sign"] .body {
+  color: rgb(255, 240, 210);
+  text-shadow: 1px 1px 0 rgb(60, 36, 16);
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="letter"]:not(.transparent) {
+  background: linear-gradient(180deg, rgb(250, 240, 214), rgb(236, 220, 184));
+  border: 1px solid rgb(190, 168, 124);
+  border-image: none;
+  border-radius: 2px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="letter"] .body {
+  color: rgb(70, 50, 30);
+  font-family: Georgia, "Noto Serif KR", serif;
+  font-weight: 400;
+  text-shadow: none;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="system"]:not(.transparent) {
+  background: rgba(24, 28, 36, 0.94);
+  border: 1px solid rgba(200, 210, 230, 0.4);
+  border-image: none;
+  border-radius: 4px;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context="system"] .body {
+  color: rgb(214, 222, 236);
+  font-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style] .dialogue-box[data-dialogue-context]::before {
+  border-color: transparent;
+}
+
+/* === 본문 태그 [흔들] [물결] [크게] [작게] [색:…] ===
+   transform 은 인라인 글자에 안 먹는다 — 흔들·물결 글자만 inline-block 으로 쪼갠다(dialogueTextRenderer).
+   --dialogue-fx-index 로 글자마다 위상을 어긋나게 한다. 크기는 페이지 나누기가 렌더 뒤에 재므로 자유롭다. */
+.dialogue-fx-shake,
+.dialogue-fx-wave {
+  display: inline-block;
+  white-space: pre;
+}
+
+.dialogue-fx-shake,
+.dialogue-box .body .dialogue-char.dialogue-fx-shake {
+  animation: dialogue-fx-shake 0.18s steps(2, end) infinite;
+  animation-delay: calc(var(--dialogue-fx-index, 0) * -37ms);
+}
+
+.dialogue-fx-wave,
+.dialogue-box .body .dialogue-char.dialogue-fx-wave {
+  animation: dialogue-fx-wave 1.1s ease-in-out infinite;
+  animation-delay: calc(var(--dialogue-fx-index, 0) * -90ms);
+}
+
+.dialogue-fx-big {
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+.dialogue-fx-small {
+  font-size: 0.8em;
+}
+
+@keyframes dialogue-fx-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(1px, -1px); }
+  50% { transform: translate(-1px, 1px); }
+  75% { transform: translate(1px, 1px); }
+  100% { transform: translate(-1px, -1px); }
+}
+
+@keyframes dialogue-fx-wave {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+/* === 끝 표시 — 다음 장 ▼(마름모) / 대화 끝 ■(네모) === */
+.dialogue-page-cursor.is-end {
+  border-radius: 0;
+  transform: none;
+}
+
+.dialogue-box.page-ready .dialogue-page-cursor.is-end {
+  animation: dialogue-page-cursor-end 1.1s ease-in-out infinite;
+}
+
+@keyframes dialogue-page-cursor-end {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* === 비트 [화면흔들] — 상자도 같이 떤다(카메라는 장면이 흔든다) === */
+.dialogue-box.dialogue-beat-shake {
+  animation: dialogue-beat-shake 0.24s linear 1;
+}
+
+@keyframes dialogue-beat-shake {
+  0%, 100% { translate: 0 0; }
+  20% { translate: -3px 1px; }
+  40% { translate: 3px -1px; }
+  60% { translate: -2px 0; }
+  80% { translate: 2px 1px; }
+}
+
+/* === 표정 이모트 — 이름표 옆 16px 칸(맵 이모트와 같은 시트) === */
+.dialogue-emote-badge {
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  image-rendering: pixelated;
+  /* 대사 도중 표정 태그가 붙여도 이름표 높이가 늘지 않게(본문 여백은 붙이기 전에 쟀다). */
+  margin: -6px 0 -6px 4px;
+  vertical-align: -4px;
+  width: 16px;
+}
+
+/* === 말풍선 — 머리 위에 붙는 상자 ===
+   오버레이가 화면 전체를 덮고, 상자는 dialogue.ts placeBalloonNode 가 left/top 을 정한다.
+   꼬리 x 는 --balloon-tail-x, 캐릭터 아래로 내려가면 .tail-up 으로 꼬리를 위로 뒤집는다. */
+.dialogue-overlay.balloon-active,
+.dialogue-overlay.balloon-active.position-top,
+.dialogue-overlay.balloon-active.position-center,
+.dialogue-overlay.balloon-active.position-bottom {
+  bottom: 0;
+  height: auto;
+  min-height: 0;
+  padding: 0;
+  top: 0;
+  transform: none;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon {
+  max-width: calc(150px + 22px);
+  min-height: 0;
+  padding: 4px 14px 5px 8px;
+  position: absolute;
+  width: max-content;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.has-speaker {
+  padding-top: var(--runtime-dialogue-speaker-inset);
+}
+
+.dialogue-box.dialogue-balloon .dialogue-page-cursor {
+  bottom: 3px;
+  right: 3px;
+}
+
+.dialogue-balloon::after,
+.dialogue-bark::after {
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid var(--dlg-tail, var(--dlg-name-bg, rgba(12, 18, 30, 0.86)));
+  bottom: -7px;
+  box-sizing: content-box;
+  content: "";
+  display: block;
+  height: 0;
+  inset-inline-start: calc(var(--balloon-tail-x, 50%) - 6px);
+  position: absolute;
+  top: auto;
+  width: 0;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon::after {
+  background: none;
+  border-image: none;
+  border-radius: 0;
+  box-shadow: none;
+  inset-block-end: -7px;
+  inset-block-start: auto;
+  inset-inline-end: auto;
+  opacity: 1;
+}
+
+.dialogue-balloon.tail-up::after,
+.dialogue-bark.tail-up::after {
+  border-bottom: 7px solid var(--dlg-tail, var(--dlg-name-bg, rgba(12, 18, 30, 0.86)));
+  border-top: 0;
+  bottom: auto;
+  top: -7px;
+}
+
+/* 위로 뒤집힌 꼬리는 이름표와 같은 변에 붙는다 — 이름표 위에 그려 가리지 않게 한다. */
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.tail-up::after {
+  inset-block-end: auto;
+  inset-block-start: -15px;
+  z-index: 5;
+}
+
+/* === 흘림 대사 · 코너 대사 — 게임을 멈추지 않는 그릇 === */
+.dialogue-ambient-layer {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 38;
+}
+
+.dialogue-bark {
+  animation: dialogue-ambient-in 160ms var(--runtime-dialogue-enter-ease) 1;
+  background: var(--dlg-bg, rgba(12, 18, 30, 0.86));
+  border: var(--dlg-border, 1px solid var(--runtime-dialogue-glass-border));
+  border-radius: 6px;
+  box-shadow: var(--dlg-shadow, none);
+  color: var(--dlg-text, var(--runtime-dialogue-text));
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  line-height: 1.25;
+  max-width: 140px;
+  padding: 3px 6px;
+  position: absolute;
+  text-shadow: var(--dlg-text-shadow, 1px 1px 0 rgba(0, 0, 0, 0.88));
+  width: max-content;
+}
+
+.dialogue-corner-stack {
+  bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  left: 8px;
+  max-width: 190px;
+  position: absolute;
+}
+
+.dialogue-corner-item {
+  align-items: center;
+  animation: dialogue-corner-in 200ms var(--runtime-dialogue-enter-ease) 1;
+  background: var(--dlg-bg, rgba(12, 18, 30, 0.86));
+  border: var(--dlg-border, 1px solid var(--runtime-dialogue-glass-border));
+  border-radius: 6px;
+  box-shadow: var(--dlg-shadow, none);
+  color: var(--dlg-text, var(--runtime-dialogue-text));
+  display: flex;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  gap: 5px;
+  line-height: 1.25;
+  padding: 3px 6px 3px 3px;
+  text-shadow: var(--dlg-text-shadow, 1px 1px 0 rgba(0, 0, 0, 0.88));
+}
+
+.dialogue-corner-item .dialogue-face.dialogue-corner-face {
+  flex: 0 0 auto;
+  height: 24px;
+  margin: 0;
+  width: 24px;
+}
+
+.dialogue-corner-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dialogue-corner-name {
+  color: var(--dlg-name-text, var(--runtime-window-highlight));
+  font-size: 0.85em;
+}
+
+.dialogue-bark.is-leaving,
+.dialogue-corner-item.is-leaving {
+  opacity: 0;
+  transition: opacity 180ms linear;
+}
+
+@keyframes dialogue-ambient-in {
+  from { opacity: 0; translate: 0 3px; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+@keyframes dialogue-corner-in {
+  from { opacity: 0; translate: -6px 0; }
+  to { opacity: 1; translate: 0 0; }
+}
+
+/* === 초상 무대 — 앞 화자는 반대쪽에 흐리게 남는다 === */
+.dialogue-box .dialogue-face.dialogue-portrait-listener {
+  filter: brightness(0.45) saturate(0.6);
+  opacity: 0.9;
+  z-index: 0;
+}
+
+/* 상자의 bust-left/right 는 말하는 쪽 기준이라 듣는 쪽 초상까지 같은 편에 몰아넣는다 — 제 편으로 되돌린다.
+   초상은 상자 위에 서므로 본문 칸은 더 줄이지 않는다. */
+.dialogue-box.has-portrait-listener .dialogue-face.dialogue-face-bust.dialogue-portrait-listener.dialogue-face-side-left {
+  left: 12px;
+  right: auto;
+  z-index: 2;
+}
+
+.dialogue-box.has-portrait-listener .dialogue-face.dialogue-face-bust.dialogue-portrait-listener.dialogue-face-side-right {
+  left: auto;
+  right: 12px;
+  z-index: 2;
+}
+
+/* === 대화 기록 === */
+.dialogue-log-button {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 3px;
+  color: var(--dlg-text, var(--runtime-dialogue-text));
+  cursor: pointer;
+  font-family: var(--runtime-dialogue-font);
+  font-size: 7px;
+  line-height: 1;
+  opacity: 0.7;
+  padding: 1px 3px;
+  pointer-events: auto;
+  position: absolute;
+  right: 4px;
+  top: 3px;
+}
+
+.dialogue-log-button:hover,
+.dialogue-log-button:focus-visible {
+  opacity: 1;
+}
+
+.dialogue-log {
+  background: rgba(6, 10, 18, 0.9);
+  box-sizing: border-box;
+  color: var(--runtime-dialogue-text);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--runtime-dialogue-font);
+  font-size: var(--runtime-dialogue-font-size);
+  inset: 0;
+  padding: 8px 12px;
+  pointer-events: auto;
+  position: absolute;
+  z-index: 41;
+}
+
+.dialogue-log-head {
+  align-items: baseline;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  padding-bottom: 3px;
+}
+
+.dialogue-log-head span {
+  color: var(--runtime-dialogue-muted);
+  font-size: 0.8em;
+}
+
+.dialogue-log-list {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.dialogue-log-entry {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.dialogue-log-speaker {
+  color: var(--runtime-window-highlight);
+  font-size: 0.85em;
+}
+
+.dialogue-log-entry.no-speaker .dialogue-log-text,
+.dialogue-log-entry[data-context="narration"] .dialogue-log-text {
+  color: var(--runtime-dialogue-muted);
+  font-style: italic;
+}
+
+.dialogue-log-text {
+  white-space: pre-wrap;
+}
+
+.dialogue-log-empty {
+  color: var(--runtime-dialogue-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogue-fx-shake,
+  .dialogue-fx-wave,
+  .dialogue-box .body .dialogue-char.dialogue-fx-shake,
+  .dialogue-box .body .dialogue-char.dialogue-fx-wave,
+  .dialogue-box.dialogue-beat-shake,
+  .dialogue-bark,
+  .dialogue-corner-item {
+    animation: none;
+  }
+}

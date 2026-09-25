@@ -909,17 +909,43 @@
 /* Dedicated left map section: navigation and properties, independent of tiles. */
 .map-sidebar-section { display: flex; flex: 1; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; background: var(--bg-raised); }
 .map-sidebar-section[hidden], .map-sidebar-section [hidden] { display: none; }
-.map-sidebar-tabs { display: flex; gap: 6px; padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); }
-.map-sidebar-tabs button { flex: 1; padding: 8px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); cursor: pointer; }
-.map-sidebar-tabs button[aria-pressed="true"] { color: var(--accent); background: var(--accent-muted); }
-.map-sidebar-list, .map-sidebar-properties { flex: 1; min-height: 0; overflow-y: auto; padding: 12px; }
+.map-sidebar-list { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 10px 12px; }
 .map-sidebar-list > .map-tree-panel { height: auto; max-height: none; }
-.map-sidebar-properties .map-props { max-width: 100%; }
-.map-sidebar-properties { padding: 0; overflow: hidden; }
-.map-sidebar-properties .map-props-dialog { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
-.map-sidebar-properties .map-props-tabs { flex-direction: row; padding: 8px 12px; gap: 4px; overflow-x: auto; overflow-y: hidden; border-right: 0; border-bottom: 1px solid var(--border-subtle); }
-.map-sidebar-properties .map-props-tab { flex-shrink: 0; min-height: 32px; padding: 5px 8px; font-size: 11px; }
-.map-sidebar-properties .map-props-body { padding: 12px; gap: 14px; }
-.map-sidebar-properties .map-props-section-block { padding: 12px; gap: 12px; }
-.map-sidebar-properties .map-props-section-title { font-size: 15px; }
-.map-sidebar-properties .map-props-save-hint { padding: 10px 14px; font-size: 11px; }
+
+/* ── 사이드바 「맵」 탭 — Finder 사이드바처럼 이름만 읽히게 (2026-09-24) ─────────────────────
+   한 행에 손잡이·큰 썸네일·굵은 이름·크기·이벤트 수·문 수·⋮ 일곱 가지가 늘 보였다. 기본은 작은 썸네일 +
+   이름, 크기·이벤트 수는 고른 행에만, 손잡이·⋮·헤더 보조 단추는 마우스를 올리거나 포커스가 들어올 때만
+   보인다(opacity — 자리는 그대로라 행이 흔들리지 않고, 키보드로도 닿는다). 필터 칩은 검색창을 쓸 때만 편다. */
+.map-sidebar-section .map-tree-panel { --map-row-thumb: 24px; --map-row-handle: 8px; }
+.map-sidebar-section .map-tree-panel .map-item { min-height: 28px; gap: 6px; border-radius: 6px; }
+.map-sidebar-section .map-tree-panel .map-item.map-node { border-left: 0; }
+.map-sidebar-section .map-tree-panel .map-tree-thumb { width: 24px; height: 18px; border-radius: 3px; }
+.map-sidebar-section .map-tree-panel .map-tree-name { font: 500 13px/1.25 var(--font-ui); }
+.map-sidebar-section .map-tree-panel .map-item:not(.active) .map-tree-meta { display: none; }
+.map-sidebar-section .map-tree-panel .map-item.active { box-shadow: none; }
+.map-sidebar-section .map-tree-panel .map-item.active .map-tree-name { font-weight: 600; }
+.map-sidebar-section .map-tree-panel .map-item.active .map-tree-meta { font: 500 11px/1.2 var(--font-ui); color: var(--text-2); }
+.map-sidebar-section .map-tree-panel .map-tree-drag-handle:not(.is-disabled) { opacity: 0; }
+.map-sidebar-section .map-tree-panel .map-item:hover .map-tree-drag-handle:not(.is-disabled),
+.map-sidebar-section .map-tree-panel .map-item:focus-within .map-tree-drag-handle:not(.is-disabled) { opacity: 0.7; }
+.map-sidebar-section .map-tree-panel .map-item .map-tree-action { opacity: 0; }
+.map-sidebar-section .map-tree-panel .map-item.active .map-tree-action,
+.map-sidebar-section .map-tree-panel .map-item:hover .map-tree-action,
+.map-sidebar-section .map-tree-panel .map-item:focus-within .map-tree-action { opacity: 1; background: transparent; border-color: transparent; }
+.map-sidebar-section .map-tree-panel .start-mark { padding: 2px 6px; background: var(--bg-hover); border-color: transparent; color: var(--text-2); font-weight: 600; }
+.map-sidebar-section .map-tree-panel .map-tree-header { margin: 4px 0 4px; padding: 0 4px; }
+.map-sidebar-section .map-tree-panel .map-tree-header h3 { font: 600 11px/1.2 var(--font-ui); color: var(--text-2); }
+.map-sidebar-section .map-tree-panel .map-tree-title { color: var(--text-2); }
+.map-sidebar-section .map-tree-panel .map-tree-count { background: transparent; padding: 0; font: 500 11px/1 var(--font-ui); }
+.map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action:not(.is-primary) { opacity: 0; transition: opacity .12s ease; }
+.map-sidebar-section .map-tree-panel .map-tree-header:hover .map-tree-header-actions .map-tree-action,
+.map-sidebar-section .map-tree-panel .map-tree-header:focus-within .map-tree-header-actions .map-tree-action { opacity: 1; }
+.map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action { width: 26px; height: 26px; border-color: transparent; background: transparent; }
+.map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action.has-text { width: auto; padding: 0 8px; }
+.map-sidebar-section .map-tree-panel .map-tree-filter-input { height: 28px; border: 0; border-radius: 7px; background: var(--bg-well, var(--bg-inset)); font: 400 13px/1.2 var(--font-ui); padding: 0 8px; }
+.map-sidebar-section .map-tree-panel .map-tree-filter:not(:focus-within):not(:has(.map-tree-facet.is-active:not([data-testid="map-tree-facet-all"])))
+  .map-tree-filter-facets { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action { transition: none; }
+}
+.map-sidebar-section .map-tree-panel .map-tree-header h3 { border-bottom: 0; }

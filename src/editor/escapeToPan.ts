@@ -34,7 +34,6 @@
 //     Esc 를 소비해 자기 표면을 닫으면서도 이벤트에 표시를 남기지 않아, 같은 Esc 가
 //     EditScene 까지 그대로 흘러온다(한 번 눌러 두 가지가 일어난다). ESCAPE_OWNER_SELECTORS
 //     가 그 표면들을 DOM 으로 되짚어 화면 밀기 전환을 양보하는 이유다.
-//     - src/editor/panels/basicLeftRail.ts:106   기본 모드 레일 플라이아웃
 //     - src/editor/panels/aiHarnessModal.ts:333  ┐
 //     - src/editor/panels/toolBrowserModal.ts:246 ├ 셋 다 .database-modal-backdrop
 //     - src/editor/panels/villageInfoModal.ts:80 ┘
@@ -55,7 +54,6 @@ import { editorState } from "@/editor/editorState";
  * 각 항목은 위 목록의 한 줄과 1:1 대응한다 — 짝 없는 선택자를 늘리지 말 것.
  */
 const ESCAPE_OWNER_SELECTORS: readonly string[] = [
-  '[data-testid="basic-rail-flyout"]',
   // 도크 모드(.is-docked)는 제외한다 — 도크는 맵을 그대로 조작하는 보조 패널이라
   // Esc 를 소유하지 않는다. 존재만 보던 시절에는 도크를 켜 둔 내내 화면 밀기 전환과
   // 선택 해제가 영원히 막혔다(2026-09-19 리뷰 P0-3b).

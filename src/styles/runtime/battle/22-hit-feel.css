@@ -1,0 +1,235 @@
+/* =========================================================================
+   타격감 층 (2026-09-25) — 「멈춤 → 대비 → 여운」.
+
+   왜: 연출 부품(히트스톱·세기·넉백·플래시)은 이미 있었지만 전부 ease-out 으로 서서히 퍼졌다.
+   히트스톱은 무대가 1.2% 커질 뿐 아무것도 멈추지 않았고, 30% 미만 피해는 흔들림 0px,
+   플래시는 34% 흰 막이 320ms 동안 빠지는 안개였다(2026-09-25 출하 플레이어 녹화 실측, openwiki/runtime-battle.md 「타격감 층」).
+   이 층은 **스킨 시트 뒤에** 로드된다(runtime/index.css) — 같은 특정도면 여기가 이긴다.
+
+   JS 쪽 짝: battleDom.onHitFeel(점멸), battleFieldDom.applyActionMotion(예비동작 변수·행 강조),
+   spawnHitSparks(명중 파편), showDamageFeedback(--pop-scale), battleJuice.flashBattleField(hurt).
+   ========================================================================= */
+
+/* ---- ⑥ 피격 점멸 ---------------------------------------------------------
+   blinkBattlerNode 가 55ms 간격으로 이 클래스를 세 번 토글한다. visibility 라 idle·숨쉬기
+   애니메이션 슬롯을 건드리지 않는다. */
+.battle-hit-blink-off :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
+  visibility: hidden;
+}
+
+/* ---- ② 타격 흔들림 ---------------------------------------------------------
+   battleJuice.flashBattleField 의 `battle-hit-shake` + `--battle-hit-shake-*`. 스킬 애니메이션의
+   `battle-screen-shake` 와 이름을 나눴다 — 그쪽은 프레임마다 클래스·변수를 다시 써서 타격 흔들림을
+   지웠다. 둘이 겹치면 타격 쪽이 이긴다(특정도 0,6,0 — 유리 창 폴백 흔들림 규칙과 같고 뒤다).
+   포켓몬은 흔들지 않는다(20-pokemon-skin.css ⑦). */
+.battle-scene[data-battle-ui-style][data-battle-skin]:not([data-battle-ui-style="pokemon"]).battle-hit-shake .battle-field {
+  --battle-shake-x: var(--battle-hit-shake-x, 6px);
+  --battle-shake-y: var(--battle-hit-shake-y, 4px);
+  animation: battle-field-shake var(--battle-hit-shake-period, 90ms) linear var(--battle-hit-shake-iterations, 3);
+}
+
+/* ---- ③ 하드 플래시 --------------------------------------------------------
+   번쩍임은 **머물렀다 끊긴다**. 서서히 빠지는 흰 막은 번쩍임이 아니라 안개로 읽힌다. */
+.battle-scene.battle-flash-hit .battle-field::after {
+  animation: battle-flash-snap 130ms linear forwards;
+}
+.battle-scene.battle-flash-critical .battle-field::after {
+  animation: battle-flash-snap 190ms linear forwards;
+}
+@keyframes battle-flash-snap {
+  0%, 45% { opacity: 1; }
+  100% { opacity: 0; }
+}
+/* 아군이 맞았다: 흰 막 대신 붉은 테두리가 조여 든다. 정면 스킨은 아군을 그리지 않으므로
+   이 비네트와 파티 행 흔들림(is-hit)이 "내가 맞았다" 의 전부다. */
+.battle-scene.battle-flash-hurt .battle-field::after {
+  animation: battle-flash-snap 240ms linear forwards;
+  background: radial-gradient(ellipse at 50% 50%, rgba(160, 10, 20, 0) 42%, rgba(200, 16, 28, 0.72) 100%);
+}
+
+/* ---- ⑨ 카메라 펀치의 축 ----------------------------------------------------
+   맞은 자리(--hit-origin-x/y, battleHitIntensityDom)로 당겨 든다. 값이 없으면 예전 축. */
+.battle-scene .battle-field {
+  transform-origin: var(--hit-origin-x, 50%) var(--hit-origin-y, 60%);
+}
+
+/* ---- ④ 피해 숫자 -----------------------------------------------------------
+   튀어 올랐다(오버슈트) 떨어져 한 번 튕기고 머문다. 크기는 세기가 정한다(--pop-scale,
+   graze 0.85 · normal 1 · heavy 1.3 · crushing 1.6). 길이(0.9s / 막타 0.6s)는 기존 규칙 그대로다.
+   아군 파티 카드 안 팝업과 빗나감·회복·완전 방어는 원래 연출을 둔다. */
+.battle-scene .battle-damage-popup:not(.battle-damage-popup-party):not(.battle-damage-popup-miss):not(.battle-damage-popup-heal):not(.battle-damage-popup-blocked) {
+  animation-name: battle-damage-bounce;
+  animation-timing-function: linear;
+}
+.battle-scene .battle-damage-popup.battle-damage-popup-critical {
+  --pop-crit: 1.2;
+}
+@keyframes battle-damage-bounce {
+  0% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -40%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 0.4));
+  }
+  9% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -150%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.35));
+  }
+  20% {
+    transform: translate(var(--pop-x, -50%), -170%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 1.05));
+  }
+  36% {
+    transform: translate(var(--pop-x, -50%), -100%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1)));
+  }
+  44% {
+    transform: translate(var(--pop-x, -50%), -118%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1)));
+  }
+  52%, 84% {
+    opacity: 1;
+    transform: translate(var(--pop-x, -50%), -100%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1)));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--pop-x, -50%), -112%) scale(calc(var(--pop-scale, 1) * var(--pop-crit, 1) * 0.96));
+  }
+}
+
+/* ---- ⑪ 명중 파편 -----------------------------------------------------------
+   spawnHitSparks 가 노드 발끝 위 --shard-rise 에 둔다. 히트스톱 동안은 0% 프레임(뭉친 불꽃)에
+   멈춰 있다가 정지가 풀리면 퍼진다. */
+.battle-hit-sparks {
+  height: 0;
+  inset: auto 0 0 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 6;
+}
+.battle-hit-spark {
+  animation: battle-hit-spark-fly 320ms cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+  background: #fff;
+  border-radius: 1px;
+  box-shadow: 0 0 6px 1px var(--battle-accent, #ffd66b);
+  display: block;
+  height: var(--ss, 5px);
+  left: 50%;
+  opacity: 0;
+  position: absolute;
+  top: calc(-1 * var(--shard-rise, 60px));
+  width: var(--ss, 5px);
+}
+@keyframes battle-hit-spark-fly {
+  0% { opacity: 1; translate: 0 0; scale: 1.5; }
+  100% { opacity: 0; translate: var(--sx, 0px) var(--sy, -30px); scale: 0.4; }
+}
+
+/* ---- ⑦ 예비동작 → 순간 타격 -------------------------------------------------
+   approach 비트의 전진은 비트 끝(=착탄)에 도착하도록 늦게 출발하고, back-in 곡선이라 먼저
+   살짝 물러났다가 가장 빠른 속도로 부딪힌다. 비트 길이는 applyActionMotion 이 --motion-beat-ms 로
+   심는다. 스킨별 lunge 규칙(0,5,0)보다 특정도가 높아야 한다 — 이동 거리는 스킨 것을 그대로 쓴다. */
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-motion-lunge.battle-motion-user[data-motion-phase="approach"] {
+  transition-delay: max(0ms, calc(var(--motion-beat-ms, 470ms) - 240ms));
+  transition-duration: 240ms;
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.55, -0.5, 0.7, 0.1);
+}
+/* 적의 내리찍기는 예고(windup) 뒤 정지 비트와 함께 온다 — 이미 맞은 뒤에 느리게 도착하면 안 된다. */
+.battle-scene[data-battle-ui-style][data-battle-skin] .battle-motion-lunge.battle-motion-user[data-motion-phase="impact"] {
+  transition-duration: 60ms;
+  transition-property: transform;
+  transition-timing-function: ease-in;
+}
+
+/* ---- ⑧ 공격자 표시 (정면 · 유리 창) -----------------------------------------
+   아군 스프라이트가 없는 정면 스킨은 행동하는 아군의 파티 행이 앞으로 나온다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-actor-status.is-acting {
+  background-color: rgba(255, 214, 140, 0.14);
+  box-shadow: inset 3px 0 0 var(--battle-accent, #ffd66b);
+  transform: translate(8px, -3px);
+  transition: transform 90ms cubic-bezier(0.2, 0.9, 0.3, 1.3), background-color 90ms ease-out;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-actor-status {
+  transition: transform 160ms ease-out, background-color 160ms ease-out;
+}
+
+/* ---- ⑤ HP 잔상 바 (정면 · 유리 창) -----------------------------------------
+   채움은 곧장 줄고, 깎인 만큼의 흰 잔상이 잠시 머물렀다 따라 빠진다. 회복 때 잔상은 채움 뒤에
+   숨어 보이지 않는다. 폭은 채움과 같은 --battle-stat. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-stat-bar-hp {
+  position: relative;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-stat-bar-hp::before {
+  position: relative;
+  transition: width 90ms ease-out, background-color 240ms ease-out;
+  z-index: 1;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"] .battle-stat-bar-hp::after {
+  background: rgba(255, 244, 222, 0.9);
+  border-radius: 4px;
+  bottom: 0;
+  content: "";
+  left: 0;
+  position: absolute;
+  top: 0;
+  transition: width 440ms cubic-bezier(0.4, 0, 0.2, 1) 360ms;
+  width: var(--battle-stat, 100%);
+}
+
+/* ---- 몬스터 대치(pokemon) 문법 ---------------------------------------------
+   이 스킨은 화면을 흔들지 않고 숫자도 띄우지 않는다(20-pokemon-skin.css ⑦⑧). 타격은
+   정지 + 흰 실루엣 + 점멸 + HP 바가 **눈에 보이게 줄어드는 것**으로 말한다. */
+.battle-scene[data-battle-ui-style="pokemon"]:is(.battle-flash-hit, .battle-flash-critical, .battle-flash-hurt) .battle-field::after {
+  animation: none;
+  opacity: 0;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-hit-sparks {
+  display: none;
+}
+.battle-scene[data-battle-ui-style="pokemon"] .battle-stat-bar-hp::before,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy-list-bar::before {
+  transition: width 620ms cubic-bezier(0.45, 0, 0.55, 1);
+}
+/* 기절: 흐려지는 대신 발판 아래로 꺼진다. 아래로 내려간 만큼 아래쪽을 잘라 발 선이 그대로다. */
+.battle-scene[data-battle-ui-style="pokemon"] .battle-enemy.defeated .battle-enemy-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor.defeated .battle-skin-actor-image,
+.battle-scene[data-battle-ui-style="pokemon"] .battle-actor.defeated .battle-monster-image {
+  animation: pkmn-battler-sink 480ms cubic-bezier(0.5, 0, 0.9, 0.45) forwards;
+}
+@keyframes pkmn-battler-sink {
+  0% { clip-path: inset(0 0 0 0); translate: 0 0; }
+  100% { clip-path: inset(0 0 100% 0); translate: 0 100%; }
+}
+
+/* ---- ① 진짜 히트스톱 (파일 끝에 둔다) ----------------------------------------
+   스킨·기절 규칙의 animation 단축 속성이 play-state 를 running 으로 되돌리므로, 특정도를 올리고
+   이 파일의 다른 animation 규칙보다 뒤에 둔다.
+   정지 비트(시퀀서 impact) 동안 배틀러·팝업·파편의 CSS 애니메이션을 **멈춘다**. 흔들림은
+   `.battle-field` 의 애니메이션이라 여기 걸리지 않아 계속 돈다 — 멈춘 화면이 떨린다.
+   피격 juice·팝업·격파 분해는 정지 중에 시작돼 0% 프레임에 붙들려 있다가, 정지가 풀리는
+   순간 한꺼번에 터진다. 옛 1.2% 맥동은 걷는다. */
+.battle-scene.battle-hit-stop {
+  animation: none;
+}
+.battle-scene[data-battle-ui-style][data-battle-skin].battle-hit-stop :is(.battle-enemy, .battle-actor, .battle-enemy *, .battle-actor *, .battle-damage-popup, .battle-actor-status) {
+  animation-play-state: paused;
+}
+/* 정지 중 맞은 쪽은 흰 실루엣. 분해·기절 키프레임이 image 의 filter 를 잡고 있어서(애니메이션은 보통
+   선언을 이긴다) 우선순위 플래그 없이는 막타 프레임에 실루엣이 사라진다. transition 도 같은 이유로 끈다
+   (2026-09-25 실측: 유리 창 적 이미지의 filter transition 때문에 정지 첫 프레임이 brightness(1) 이었다). */
+.battle-scene.battle-hit-stop .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
+  filter: brightness(0) invert(1) !important;
+  /* 스킨의 filter transition 이 있으면 실루엣이 정지 내내 서서히 하얘진다 — 번쩍임은 끊어서 온다. */
+  transition: none !important;
+}
+.battle-scene.battle-hit-stop-critical .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
+  filter: brightness(0) invert(1) drop-shadow(0 0 8px rgba(255, 206, 110, 0.95)) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-ui-style][data-battle-skin]:not([data-battle-ui-style="pokemon"]).battle-hit-shake .battle-field {
+    animation: none;
+  }
+  .battle-hit-sparks {
+    display: none;
+  }
+  .battle-scene[data-battle-ui-style][data-battle-skin] .battle-motion-lunge.battle-motion-user[data-motion-phase] {
+    transition-delay: 0ms;
+  }
+}

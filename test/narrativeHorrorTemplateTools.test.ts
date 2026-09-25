@@ -73,6 +73,33 @@ describe("narrative/horror template tools", () => {
     expect(hasCheckpoint).toBe(true);
   });
 
+  it("make_horror_loop hidingSpots mapId 는 다른 방의 옷장을 은신처로 만든다", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const mapId = ctx.project.startMapId;
+    const roomId = "map_bedroom_hide";
+    const source = ctx.project.maps[mapId]!;
+    ctx.project.maps[roomId] = { ...structuredClone(source), id: roomId, name: "침실", events: [] };
+    const closet = runTool(ctx, "upsert_event", {
+      mapId: roomId,
+      event: {
+        id: "ev_closet", x: 4, y: 4,
+        pages: [{ id: "p", name: "옷장", conditions: [], trigger: { kind: "action" }, commands: [{ kind: "text", body: "옷장이다." }] }],
+      },
+    });
+    expect(closet.ok, closet.summary).toBe(true);
+    const result = runTool(ctx, "make_horror_loop", {
+      mapId,
+      trapCells: [{ x: 3, y: 3 }],
+      includeChase: true,
+      chaserAt: { x: 8, y: 3 },
+      hidingSpots: [{ x: 4, y: 4, mapId: roomId }],
+      mood: false,
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const page = ctx.project.maps[roomId]!.events.find((event) => event.id === "ev_closet")?.pages?.[0];
+    expect(page?.interaction).toEqual({ kind: "hiding" });
+  });
+
   it("make_gallery_room places hotspots and item-gate puzzle", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const mapId = ctx.project.startMapId;

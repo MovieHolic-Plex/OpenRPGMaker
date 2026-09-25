@@ -1,5 +1,6 @@
 // 진행 검사 — 읽히기만 하고 켜지지 않는 스위치, 엔딩 정의와 엔딩 호출, 동료 합류, 전투 성립.
 
+import { monsterSkillIdsAtLevel, monsterSpeciesById } from "@/project/monsterCollection";
 import type { Project } from "@/project/types";
 import { allPages, commandList, conditionLeaves, visitAllCommands, visitPageCommands, type CommandVisit, type PageRef } from "./walk";
 import type { CommandWhere, Finding } from "./types";
@@ -131,10 +132,28 @@ export function checkProgression(project: Project): Finding[] {
       findings.push({ severity: "blocker", code: "ending-none-defined", message: "엔딩 id 없이 triggerEnding 을 부르지만 정의된 엔딩이 없습니다.", where: trigger.where });
     }
   }
+  // 엔딩별로 부르는 곳이 있는가. 전체에서 하나라도 부르면 위 no-ending-trigger 는 조용해서, 정의만 있고
+  // 아무도 부르지 않는 배드 엔딩이 남았다(2026-09-24 연애 도그푸딩). id 없는 호출은 조건으로 고르므로 제외한다.
+  const namedCalls = new Set<string>();
+  let autoSelects = false;
+  for (const trigger of triggers) {
+    const endingId = trigger.command.kind === "triggerEnding" && typeof trigger.command.endingId === "string" ? trigger.command.endingId : undefined;
+    if (endingId) namedCalls.add(endingId);
+    else autoSelects = true;
+  }
+  if (triggers.length > 0 && !autoSelects) {
+    for (const ending of endings) {
+      if (namedCalls.has(ending.id)) continue;
+      findings.push({
+        severity: "warning", code: "ending-uninvoked",
+        message: `엔딩 「${ending.name || ending.id}」 은 정의만 있고 부르는 곳(triggerEnding endingId:${ending.id})이 없어 볼 수 없습니다.`,
+      });
+    }
+  }
   for (const ending of endings) {
     for (const condition of ending.conditions ?? []) {
       if (condition.kind === "switch" && condition.value === true && !settable.has(condition.switchId) && !initiallyOn(project, condition.switchId)) {
-        // endingId 를 지정해 부르면 조건은 보지 않는다 — 그래도 조건 없이 자동 선택되는 호출이 있으면 막힌다.
+        // 조건 없이 자동 선택되는 호출(endingId 없음)이 있으면 이 조건 스위치가 곧 도달 조건이라 막힌다.
         const autoSelected = triggers.some((t) => t.command.kind === "triggerEnding" && !t.command.endingId);
         findings.push({
           severity: autoSelected ? "blocker" : "warning", code: "ending-switch-never-set",
@@ -166,11 +185,22 @@ export function checkProgression(project: Project): Finding[] {
     for (const enemyId of members) {
       const enemy = enemies.get(enemyId);
       if (!enemy) { findings.push({ severity: "blocker", code: "troop-missing-enemy", message: `적 그룹 ${troop.name}(${troop.id}) 이 없는 적 \`${enemyId}\` 를 담고 있습니다.`, where }); continue; }
-      const canDamage = (enemy.actions ?? []).some((action) => {
+      const authoredDamage = (enemy.actions ?? []).some((action) => {
         const skill = skills.get(action.skillId);
         return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
       });
-      if (!canDamage) findings.push({ severity: "warning", code: "enemy-no-damage", message: `적 ${enemy.name}(${enemy.id}) 에 피해를 주는 행동이 없습니다 — 공격하지 않는 보스가 됩니다.`, where });
+      // 몬스터 파티의 빈 행동은 전투에서 종족 습득 기술로 채운다(enemyBattlers). 그 기술이 피해를 주면 경고하지 않는다.
+      const monsterParty = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+      const species = monsterParty && (enemy.actions ?? []).length === 0 && enemy.skillIds.length === 0 && enemy.speciesId
+        ? monsterSpeciesById(project, enemy.speciesId)
+        : undefined;
+      const inheritedDamage = species
+        ? monsterSkillIdsAtLevel(species, enemy.level ?? 1).some((skillId) => {
+          const skill = skills.get(skillId);
+          return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
+        })
+        : false;
+      if (!authoredDamage && !inheritedDamage) findings.push({ severity: "warning", code: "enemy-no-damage", message: `적 ${enemy.name}(${enemy.id}) 에 피해를 주는 행동이 없습니다 — 공격하지 않는 보스가 됩니다.`, where });
     }
   });
 

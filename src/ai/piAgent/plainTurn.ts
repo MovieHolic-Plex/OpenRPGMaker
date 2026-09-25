@@ -89,7 +89,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
       && (declared.intent.mode === "create" || declared.intent.mode === "modify")
       && declared.intent.needsPlan === false
       && declared.intent.clarify === null };
-    plan = { ...plan, villageContract: requestsModernMap(project, text, currentMapId ? [currentMapId] : []) ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null) };
+    plan = { ...plan, villageContract: requestsModernMap(project, text, currentMapId ? [currentMapId] : []) ? undefined : resolveVillageContract(project, declared.intent, currentMapId, selection ?? null, text) };
     if (declared.intent.mode === "question") {
       plan = { ...plan, readOnly: true };
       questionPromoted = true;
@@ -128,6 +128,7 @@ export function buildUltrabrainPlanRequest(input: {
   readonly modelTask: string;
   readonly mapIds: readonly string[];
   readonly currentMapId?: string;
+  readonly approvedTilesetFamilies?: readonly string[];
   readonly project: Project;
   readonly scopedByUser: boolean;
   readonly maxTurns?: number;
@@ -137,6 +138,7 @@ export function buildUltrabrainPlanRequest(input: {
     mode: "single", provider: input.brain.providerId!, model: input.brain.model,
     task: `${PLAN_ONLY_PREFIX}${input.modelTask}`, mapIds: input.mapIds,
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}), project: input.project,
+    ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
     scopeStrict: input.scopedByUser,
     readOnly: true, maxTurns: Math.min(input.maxTurns ?? PLAN_MAX_TURNS, PLAN_MAX_TURNS),
     thinkingLevel: input.brain.reasoningEffort as PiAgentThinkingLevel,
@@ -163,6 +165,7 @@ export function buildPiRunRequest(input: {
   readonly executionTask: string;
   readonly mapIds: readonly string[];
   readonly currentMapId?: string;
+  readonly approvedTilesetFamilies?: readonly string[];
   readonly project: Project;
   readonly scopedByUser: boolean;
   readonly mapBundleMerge: boolean;
@@ -182,6 +185,7 @@ export function buildPiRunRequest(input: {
     task: input.planOnly ? `${PLAN_ONLY_PREFIX}${input.modelTask}` : input.executionTask,
     mapIds: input.mapIds,
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}),
+    ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
     project: input.project,
     // 평문 턴의 기본 대상 맵은 계약이 아니다 — 계약으로 읽히면 모델이 DB·시스템을 손대지 않는다.
     scopeStrict: input.scopedByUser,

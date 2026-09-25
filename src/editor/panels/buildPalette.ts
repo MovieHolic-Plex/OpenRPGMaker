@@ -10,7 +10,7 @@ import {
   type BuildPaletteApplyOptions,
 } from "@/editor/panels/buildPaletteCore";
 import type { HouseKitId } from "@/editor/houseKit";
-import { openRegionTaskModal } from "@/editor/panels/regionTaskModal";
+import { openRegionInAssistant } from "@/editor/aiRegionHandoff";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
@@ -76,7 +76,7 @@ export function isBuildPaletteEnabled(): boolean {
 }
 
 export function renderBuildPalettePopup(
-  openRegionTask: typeof openRegionTaskModal = openRegionTaskModal,
+  openRegionTask: typeof openRegionInAssistant = openRegionInAssistant,
 ): HTMLElement | null {
   if (!buildPaletteEnabled) return null;
   const selection = editorState.get().selection;
@@ -260,7 +260,7 @@ function optionTestId(key: HouseOptionKey): string {
 
 function openBuildPaletteAiFill(
   selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>,
-  openRegionTask: typeof openRegionTaskModal,
+  openRegionTask: typeof openRegionInAssistant,
 ): void {
   const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
   const prompt = [
@@ -274,7 +274,7 @@ function openBuildPaletteAiFill(
 function openBuildPaletteAiConstruction(
   selection: NonNullable<ReturnType<typeof editorState.get>["selection"]>,
   primitive: "house" | "village",
-  openRegionTask: typeof openRegionTaskModal,
+  openRegionTask: typeof openRegionInAssistant,
 ): void {
   const region = { x: selection.x, y: selection.y, width: selection.width, height: selection.height };
   const initialInstruction = primitive === "house"

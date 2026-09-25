@@ -1,4 +1,5 @@
-import type { AutotileGroup, AutotileNeighborhood } from "../types";
+import type { AutotileGroup, AutotileNeighborhood, GameMap } from "../types";
+import type { TileLayerNo } from "../mapLayers";
 
 // 범용 오토타일(지형 자동 연결) 엔진 — 순수 로직.
 // 이웃 연결 상태를 비트마스크로 계산하고 variantMap 조회로 배치 타일을 결정한다.
@@ -21,6 +22,21 @@ export interface AutotileMapView {
   readonly width: number;
   readonly height: number;
   readonly lowerTiles: number[];
+}
+
+/**
+ * 한 층(1~4)의 배열을 엔진 뷰로 빌려준다 — 엔진은 `lowerTiles` 이름으로 읽고 쓰지만 실제로는 고른 층이다.
+ * 1층 = lowerTiles, 3층 = upperTiles, 2·4층 = 선택 칸(lowerOverlayTiles/upperOverlayTiles).
+ * 2·4층 칸이 없는 맵에는 맵에 붙지 않은 빈 배열(-1)을 준다 — 빈칸엔 그룹 멤버가 없어 엔진이 쓰지 않으므로
+ * 옛 맵에 새 키가 생기지 않는다. 2·4층에 멤버를 칠하면(setLayerTileAt) 그때 배열이 생기고 이 뷰가 그 배열을 쓴다.
+ * 층 번호와 칸 이름의 대응은 mapLayers.ts 가 정본이다.
+ */
+export function autotileLayerView(map: GameMap, layer: TileLayerNo): AutotileMapView {
+  const { width, height } = map;
+  if (layer === 1) return { width, height, lowerTiles: map.lowerTiles };
+  if (layer === 3) return { width, height, lowerTiles: map.upperTiles };
+  const tiles = layer === 2 ? map.lowerOverlayTiles : map.upperOverlayTiles;
+  return { width, height, lowerTiles: tiles ?? new Array<number>(width * height).fill(-1) };
 }
 
 export interface AutotilePoint {
@@ -135,14 +151,17 @@ function tileAt(map: AutotileMapView, x: number, y: number): number | undefined 
 }
 
 // (x,y) 셀의 이웃 연결 비트마스크를 계산한다.
+// edgeConnects: 맵 밖을 이어진 이웃으로 본다(RPG Maker MZ 규칙, AutotileGroup.edgeConnects).
 export function autotileNeighborMask(
   map: AutotileMapView,
   x: number,
   y: number,
   isConnected: (tile: number) => boolean,
-  neighborhood: AutotileNeighborhood = 4
+  neighborhood: AutotileNeighborhood = 4,
+  edgeConnects = false
 ): number {
   const connectedAt = (dx: number, dy: number): boolean => {
+    if (edgeConnects && !inBounds(map, x + dx, y + dy)) return true;
     const tile = tileAt(map, x + dx, y + dy);
     return typeof tile === "number" && isConnected(tile);
   };
@@ -181,7 +200,7 @@ export function autotileVariantForCell(map: AutotileMapView, group: AutotileGrou
   const members = new Set<number>(group.memberTileIds);
   if (!members.has(current)) return undefined;
   const connect = connectSet(group);
-  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4);
+  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.edgeConnects === true);
   return autotileVariantForMask(group, mask);
 }
 
@@ -204,7 +223,11 @@ export function shapeAutotileGroupAround(
   const connect = connectSet(group);
   const isConnected = (tile: number): boolean => connect.has(tile);
   const neighborhood = group.neighborhood ?? 4;
+  const edgeConnects = group.edgeConnects === true;
   const offsets = neighborhood === 8 ? RECHECK_OFFSETS_8 : RECHECK_OFFSETS;
+  // A depth variant of the full cell is already right for a full mask; only shadeAutotileInterior re-picks it.
+  const interior = new Set((group.interiorVariants ?? []).flat());
+  const full = group.variantMap[String(neighborhood === 8 ? 255 : 15)];
   const visited = new Set<string>();
   for (const point of points) {
     for (const offset of offsets) {
@@ -216,9 +239,62 @@ export function shapeAutotileGroupAround(
       if (canWrite && !canWrite(cx, cy)) continue;
       const current = tileAt(map, cx, cy);
       if (typeof current !== "number" || !members.has(current)) continue;
-      const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood);
+      const mask = autotileNeighborMask(map, cx, cy, isConnected, neighborhood, edgeConnects);
       const variant = autotileVariantForMask(group, mask);
+      if (variant === full && interior.has(current)) continue;
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }
   }
+}
+
+export interface AutotileArea {
+  readonly x: number;
+  readonly y: number;
+  readonly w: number;
+  readonly h: number;
+}
+
+/** Position hash for variant choice: stable across repaints, no per-call randomness. */
+function cellHash(x: number, y: number): number {
+  let n = Math.imul(x, 374761393) ^ Math.imul(y, 668265263) ^ 0x2f6b1d;
+  n = Math.imul(n ^ (n >>> 13), 1274126177);
+  return (n ^ (n >>> 16)) >>> 0;
+}
+
+/**
+ * Depth-shaded interior (AutotileGroup.interiorVariants): every full cell (all 8 neighbours connected) in the
+ * area gets a depth variant — tier 0 when an unconnected cell or the map edge lies within Chebyshev distance 2,
+ * tier 1 when deeper — chosen by a hash of its position, so painting the same mask twice gives the same tiles.
+ * Only cells holding the full variant or one of its depth variants are touched; edges stay as painted.
+ * Returns the number of cells written.
+ */
+export function shadeAutotileInterior(map: AutotileMapView, group: AutotileGroup, area?: AutotileArea): number {
+  const tiers = group.interiorVariants?.filter((tier) => tier.length > 0) ?? [];
+  const full = group.variantMap["255"];
+  if (tiers.length === 0 || typeof full !== "number" || (group.neighborhood ?? 4) !== 8) return 0;
+  const connect = connectSet(group);
+  const own = new Set<number>([full, ...tiers.flat()]);
+  const on = (x: number, y: number): boolean => {
+    const tile = tileAt(map, x, y);
+    return typeof tile === "number" && connect.has(tile);
+  };
+  const x0 = Math.max(0, area?.x ?? 0), y0 = Math.max(0, area?.y ?? 0);
+  const x1 = Math.min(map.width, area ? area.x + area.w : map.width), y1 = Math.min(map.height, area ? area.y + area.h : map.height);
+  let written = 0;
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const index = y * map.width + x;
+    if (!own.has(map.lowerTiles[index]!)) continue;
+    let depth = 2;
+    for (let dy = -2; dy <= 2 && depth > 0; dy++) for (let dx = -2; dx <= 2; dx++) {
+      if (on(x + dx, y + dy)) continue;
+      depth = Math.min(depth, Math.max(Math.abs(dx), Math.abs(dy)) - 1);
+      if (depth === 0) break;
+    }
+    // A cell with an open neighbour is an edge, not an interior cell: leave it to the variant map.
+    if (depth === 0) continue;
+    const tier = tiers[Math.min(depth - 1, tiers.length - 1)]!;
+    const tile = tier[cellHash(x, y) % tier.length]!;
+    if (map.lowerTiles[index] !== tile) { map.lowerTiles[index] = tile; written++; }
+  }
+  return written;
 }

@@ -80,6 +80,8 @@ export const DUNGEON_ROOM_SESSION_TOOLS: readonly ToolDefinition[] = [
     description:
       "던전을 공간 구조부터 생성한다. 기본 connected: 역할별 방·굽은 통로·순환 길 → 천장 하단 직선 벽 → 공동의 단차 → 통로를 보존한 소품. "
       + "theme(lava/stone/ice), character(cavern/mine/crystal/crypt), path(straight|cave|winding, 세계관과 이번 요청), seed와 graph(방·연결)를 지정한다. "
+      + "theme별: lava = 적암 바닥(301)·붉은 벽, 가장 큰 방을 가로지르는 불의 강 하나 + 판자 다리(141, 통행 가능)와 방마다 불규칙한 용암 웅덩이(통행 불가), 갈색 바위·화로·바닥 불길, 수정·여신상 없음, landmark altar는 제단 마법진(3×3). "
+      + "stone = 흙 바닥, 큰 방의 바위 단차 두 줄 + 판자 다리, 회색 바위·수정 방. ice = 눈 바닥, 얼음 능선, 수정 무리. (crypt는 테마와 무관하게 석재 묘실.) "
       + "생성 후 evaluate_dungeon_room으로 통행·지지·철로를 검사하고 show_map_region으로 전체 시각 검토하라. demo는 기존 작은 단일 방이다.",
     mode: "write",
     parameters: {

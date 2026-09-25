@@ -69,8 +69,34 @@ describe("place_examine_hotspots", () => {
     assertTool(result);
     expect(result.summary).toContain("조사 핫스팟 1개 생성, 3개 스킵");
     expect(result.data).toMatchObject({ created: 1, skipped: 3 });
-    expect(result.diff?.warnings).toHaveLength(3);
+    expect(result.diff?.warnings?.filter((warning) => warning.includes("skip"))).toHaveLength(3);
+    expect(result.diff?.warnings?.some((warning) => warning.startsWith("보이지 않는 조사 지점"))).toBe(false);
+    expect(result.diff?.warnings?.some((warning) => warning.includes("보석 표식") && warning.includes("책상"))).toBe(true);
+    const placed = startMap(ctx.project).events.find((event) => event.id === "ev_examine_1");
+    expect(placed?.pages?.[0]?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object2");
     expect(startMap(ctx.project).events.map((event) => event.id)).toContain("ev_examine_1");
+  });
+
+  it("graphic:{transparent:true} 는 투명으로 두고, 본문 「이름:」 은 그 줄의 화자로 옮긴다", () => {
+    const ctx = { project: createBlankProject() };
+    const map = startMap(ctx.project);
+    const result = runTool(ctx, "place_examine_hotspots", {
+      mapId: map.id,
+      hotspots: [{
+        at: { x: 4, y: 4 },
+        name: "긁힌 LP판",
+        graphic: { transparent: true },
+        lines: ["서하온: 첫 소절만 남아 있다.", "[잔류 사념: 그 멜로디가 뭐였더라]"],
+      }],
+    });
+    assertTool(result);
+    const event = startMap(ctx.project).events.find((entry) => entry.id === "ev_examine_1");
+    expect(event?.pages?.[0]?.graphic).toEqual({ transparent: true });
+    expect(event?.pages?.[0]?.commands).toEqual([
+      { kind: "text", speaker: "서하온", body: "첫 소절만 남아 있다." },
+      { kind: "text", speaker: "긁힌 LP판", body: "[잔류 사념: 그 멜로디가 뭐였더라]" },
+    ]);
+    expect(result.diff?.warnings?.some((warning) => warning.includes("보이지 않는 조사 지점"))).toBe(true);
   });
 
   it("once:true는 self-switch A 기반 1회성 페이지 구조를 만든다", () => {
@@ -98,6 +124,30 @@ describe("place_examine_hotspots", () => {
       conditions: [{ kind: "selfSwitch", key: "A", value: true }],
       commands: [],
     });
+  });
+
+  // 2026-09-24 감성 스토리 r3: usedIds 가 현재 맵 전용이라 두 번째 맵에도 ev_examine_1 이 중복
+  // 생성됐다. once 페이지의 selfSwitch 는 전역 eventId 키라 — 맵1 조사 직후 맵2의 같은 id 이벤트가
+  // «이미 조사함» 페이지로 고정돼 조사 스위치가 안 켜졌다(자동 플레이「페이지 1 대신 다른 페이지」실패).
+  it("다른 맵에 place_examine_hotspots 를 다시 부르면 id 가 프로젝트 전역에서 고유하다", () => {
+    const ctx = { project: createBlankProject() };
+    const first = startMap(ctx.project);
+    const second = runTool(ctx, "create_map", { id: "map_second_memory", name: "두 번째 기억", width: 12, height: 10 });
+    assertTool(second);
+    const firstIds = ((runTool(ctx, "place_examine_hotspots", {
+      mapId: first.id,
+      hotspots: [{ at: { x: 4, y: 4 }, name: "첫 기억 벤치", lines: ["비에 젖었다."], once: true }],
+    }).data) as ToolData).eventIds ?? [];
+    const secondIds = ((runTool(ctx, "place_examine_hotspots", {
+      mapId: "map_second_memory",
+      hotspots: [{ at: { x: 4, y: 4 }, name: "두 번째 기억 벤치", lines: ["劣화했다."], once: true }],
+    }).data) as ToolData).eventIds ?? [];
+
+    expect(firstIds).toHaveLength(1);
+    expect(secondIds).toHaveLength(1);
+    expect(secondIds[0]).not.toBe(firstIds[0]);
+    const allIds = Object.values(ctx.project.maps).flatMap((map) => map.events.map((event) => event.id));
+    expect(new Set(allIds).size).toBe(allIds.length);
   });
 });
 

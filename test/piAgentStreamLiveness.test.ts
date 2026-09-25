@@ -137,3 +137,43 @@ describe("보드 — delta 는 「생각 중」 한 줄, heartbeat 는 무시", 
     expect(state).toBe(before);
   });
 });
+
+describe("브라우저 워치독 — 우리가 적용 중인 침묵은 끊지 않는다", () => {
+  it("체크포인트 적용이 staleMs 보다 길어도 실행을 끊지 않고 done 을 받는다", async () => {
+    let ackBody: { ok?: boolean } | null = null;
+    const fetchImpl = (async (url: string, init?: RequestInit) => {
+      if (String(url).includes("/v1/agent/checkpoint")) {
+        ackBody = JSON.parse(String(init?.body));
+        return new Response("{}", { status: 200 });
+      }
+      return ndjsonResponse((write, close) => {
+        write({ type: "checkpoint", checkpointId: "c1", project: request.project, label: "t", toolName: "t" } as never);
+        // 워커는 ACK 를 기다리며 조용하다(heartbeat 도 페이지가 바빠 못 읽은 상황).
+        const wait = setInterval(() => {
+          if (!ackBody) return;
+          clearInterval(wait);
+          write({ type: "done", project: request.project, stats: { ms: 1, turns: 1, toolCalls: 1, toolErrors: 0 }, changedKeys: [] });
+          close();
+        }, 5);
+      });
+    }) as unknown as typeof fetch;
+    const done = await runPiAgentViaCompanion(request, {
+      fetchImpl, staleMs: 30,
+      onCheckpoint: () => new Promise(resolve => setTimeout(() => resolve(request.project), 120)),
+    });
+    expect(done.type).toBe("done");
+    expect(ackBody).toMatchObject({ ok: true });
+  });
+
+  it("워치독이 끊은 뒤의 ACK 실패보다 끊긴 원인을 보고한다", async () => {
+    const fetchImpl = (async (url: string) => {
+      if (String(url).includes("/v1/agent/checkpoint")) return new Response("{}", { status: 409 });
+      return ndjsonResponse((write) => {
+        write({ type: "start", provider: "p", model: "m", toolCount: 1 });
+        setTimeout(() => write({ type: "checkpoint", checkpointId: "c1", project: request.project, label: "t", toolName: "t" } as never), 80);
+      });
+    }) as unknown as typeof fetch;
+    await expect(runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40, onCheckpoint: async () => request.project }))
+      .rejects.toSatisfy((error: unknown) => error instanceof PiAgentClientError && /신호가 없어 연결을 끊었습니다/.test(error.message));
+  });
+});

@@ -4,7 +4,7 @@ import { chromium } from "playwright";
 const input = process.argv[2];
 if (!input) throw Error("Usage: capture-diverse-village-references.mjs canonical-reloaded-project.json");
 const p = JSON.parse(fs.readFileSync(input));
-const b = await chromium.launch({ headless: true });
+const b = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const page = await b.newPage({ viewport: { width: 1440, height: 1e3 } }), errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -20,7 +20,7 @@ try {
     const draw = () => document.getElementById("host").replaceChildren(mod.renderTilesetReferences(p2.tilesets.forest_harmony, draw));
     draw();
   }, p);
-  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-trunks-v12");
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("diverse-villages-canopy-v13");
   await page.getByRole("button", { name: "층바위 절벽마을 · 지형과 배치", exact: true }).click();
   await page.locator(".tileset-reference-markdown img").first().evaluate((im) => im.decode());
   await page.screenshot({ path: "verify-shots/village-diversity/reference-panel.png" });
@@ -31,7 +31,7 @@ try {
   await page.screenshot({ path: "verify-shots/village-diversity/reference-errors.png" });
   const baseCategory = await page.getByLabel("참고문서 용도", { exact: true }).inputValue(), baseImages = await page.locator(".tileset-reference-markdown img").count();
   // The concept villages ship as their own category (64 documents per category).
-  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("concept-villages-v3");
+  await page.getByLabel("참고문서 용도", { exact: true }).selectOption("concept-villages-v4");
   await page.getByRole("button", { name: "교회·작은 성·묘지·울타리 못 · 통째 조립", exact: true }).click();
   await page.screenshot({ path: "verify-shots/village-diversity/reference-concept.png" });
   await page.getByRole("button", { name: "여울성 나루 · 지형과 배치", exact: true }).click();

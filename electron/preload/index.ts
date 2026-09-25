@@ -67,6 +67,16 @@ const bridge = {
     createProject: invoke(OPRN_CHANNELS.startCreateProject),
     importFile: invoke(OPRN_CHANNELS.startImportFile),
   },
+  assetBrowser: {
+    open: invoke(OPRN_CHANNELS.assetBrowserOpen),
+    setBounds: invoke(OPRN_CHANNELS.assetBrowserBounds),
+    close: invoke(OPRN_CHANNELS.assetBrowserClose),
+    onDownload: (callback: (payload: unknown) => void): (() => void) => {
+      const listener = (_event: unknown, payload: unknown): void => callback(payload);
+      ipcRenderer.on(OPRN_CHANNELS.assetBrowserDownload, listener);
+      return () => ipcRenderer.removeListener(OPRN_CHANNELS.assetBrowserDownload, listener);
+    },
+  },
 } as const;
 
 contextBridge.exposeInMainWorld("oprn", bridge);

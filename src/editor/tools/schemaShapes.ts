@@ -8,8 +8,10 @@
 // 유니온 shape 은 `oneOf`/`anyOf` 를 쓰지 않는다 — Gemini 계열 게이트웨이가 요청 전체를 400 으로
 // 죽인다. 대신 키 합집합을 모두 선택 필드로 선언하고 required 를 비워 둔다.
 import { RELATIONSHIP_STATES } from "@/project/relationshipState";
+import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { CONCEPT_PLAN_ENUMS } from "@/editor/conceptPlan";
+import { DIALOGUE_CONTAINER_IDS, DIALOGUE_CONTEXT_IDS, DIALOGUE_STYLE_IDS, dialogueContainerGuideLines, dialogueInlineTagGuideLines } from "@/project/dialogueStyles";
 import type { JsonSchema } from "./types";
 
 /** `{x,y}` 좌표. 두 필드 모두 필수. */
@@ -46,6 +48,8 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
   description:
     'Command 예: {kind:"changeItem",itemId:"조회한 ID",op:"-=",amount:1}, ' +
     '{kind:"setSwitch",switchId:"조회한 ID",value:true}, {kind:"triggerEnding",endingId:"정의한 ID"}. ' +
+    '대사는 {kind:"text",body:"…"} — say·fade 는 컷신(script_cutscene·epilogue) 비트 kind 라서 ' +
+    '이벤트 commands 에 넣으면 kind enum 에서 거부된다. ' +
     'triggerEnding의 endingId 생략 시 조건으로 선택한다. switch/item은 조건 kind이며 실행 명령이 아니다.',
   properties: {
     // kind 를 자유 문자열로 두면 모델이 존재하지 않는 kind 를 만들어 보낸다(2026-08-23 실측:
@@ -67,6 +71,17 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     itemId: { type: "string" },
     speciesId: { type: "string", description: "giveMonster: 조회한 monsterSpecies ID" },
     level: { type: "integer", description: "giveMonster: 지급할 몬스터의 레벨" },
+    // kind 별 필수 참조 필드. 여기 없으면 Gemini 계열은 선언된 칸(speaker·itemId·fields·text)에 id 를 밀어 넣는다
+    // (2026-09-24 실측: battleProcessing troopId 를 13번 연속 다른 칸에 넣어 거부, changeParty 는 speciesId 로 보냄).
+    troopId: { type: "string", description: "battleProcessing: 조회한 troop ID(트레이너·관장·야생 무리)" },
+    canEscape: { type: "boolean", description: "battleProcessing: 도망 허용" },
+    canLose: { type: "boolean", description: "battleProcessing: 져도 게임 오버 없이 계속" },
+    actorId: { type: "string", description: "changeParty/changeExp/changeLevel/learnSkill/changeActorHp 등: 조회한 actor ID(몬스터 종 ID 아님)" },
+    action: { type: "string", description: "changeParty: add|remove. learnSkill: learn|forget." },
+    skillId: { type: "string", description: "learnSkill: 조회한 skill ID" },
+    eventId: { type: "string", description: "moveEvent/callMapEvent: 대상 이벤트 ID" },
+    commonEventId: { type: "string", description: "callCommonEvent: 공통 이벤트 ID" },
+    ms: { type: "integer", description: "wait: 기다릴 밀리초" },
     switchId: { type: "string" },
     variableId: { type: "string" },
     label: { type: "string" },
@@ -74,7 +89,7 @@ const COMMAND_LEAF_SCHEMA: JsonSchema = {
     delta: { type: "integer", description: "changeFriendship 변화량" },
     speaker: { type: "string" },
     body: { type: "string", description: "text 대사 본문" },
-    commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp" },
+    commandId: { type: "string", description: "m2Command id, 예: m2-098-change-enemy-hp. 주인공 모습 바꾸기(변신·효과·옷 갈아입기)는 m2-024-change-actor-graphic + fields {target:actorId, value:charset 검색 id(\"charset:<텍스처>:<칸>\") 또는 텍스처 키, characterIndex:0~7}" },
     fields: { type: "object", additionalProperties: true, description: 'm2Command 필수 필드 객체. 예: {target:"all",operation:"remove",value:10}' },
   },
   required: ["kind"],
@@ -93,7 +108,8 @@ export const COMMAND_SCHEMA: JsonSchema = {
       type: "array",
       description:
         "choices: {text,branch} 선택지. presentItem: {itemId,branch} — 그 아이템을 냈을 때 실행할 Command[]. " +
-        "증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 으로 만든다.",
+        "증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 으로 만든다. " +
+        "battleProcessing 은 options 를 받지 않는다 — 전투 결과 분기는 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch.",
       items: {
         type: "object",
         properties: {
@@ -106,9 +122,21 @@ export const COMMAND_SCHEMA: JsonSchema = {
     },
     cancelBehavior: { type: "string", enum: ["disallow", "choice1", "choice2", "choice3", "choice4", "choice5", "branch"] },
     cancelBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "choices: 취소 분기. presentItem: 아무것도 안 내고 닫았거나 보여줄 후보가 없을 때." },
-    itemIds: { type: "array", items: { type: "string" }, description: "presentItem 목록 후보. 생략하면 소지품 전체. 소지한 것만 뜬다." },
+    itemIds: { type: "array", items: { type: "string" }, description: "shop: 파는 아이템 ID 목록(필수). presentItem: 목록 후보 — 생략하면 소지품 전체, 소지한 것만 뜬다." },
     otherwiseBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "presentItem: options 에 없는(틀린) 아이템을 냈을 때." },
     consume: { type: "boolean", description: "presentItem: true 면 맞는 아이템을 1개 소모." },
+    troopId: { type: "string", description: "battleProcessing: 싸울 부대(troop) ID" },
+    canEscape: { type: "boolean", description: "battleProcessing: 도주 허용(기본 true)" },
+    canLose: { type: "boolean", description: "battleProcessing: 패배해도 게임 오버 없이 진행(기본 false). defeatBranch 를 쓰려면 true." },
+    branchOnResult: {
+      type: "boolean",
+      description:
+        "battleProcessing: true 면 전투 결과로 분기한다. 보스 처치 후 스위치·셀프 스위치를 켜는 명령은 victoryBranch 에 넣는다. " +
+        '예: {kind:"battleProcessing",troopId:"조회한 ID",canEscape:false,canLose:false,branchOnResult:true,victoryBranch:[{kind:"setSelfSwitch",key:"A",value:true}]}',
+    },
+    victoryBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true): 이겼을 때 실행할 Command[]" },
+    defeatBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true, canLose:true): 졌을 때 실행할 Command[]" },
+    escapeBranch: { type: "array", items: COMMAND_LEAF_SCHEMA, description: "battleProcessing(branchOnResult:true, canEscape:true): 도망쳤을 때 실행할 Command[]" },
   },
 };
 
@@ -146,13 +174,29 @@ export const CUTSCENE_BEAT_SCHEMA: JsonSchema = {
   properties: {
     kind: {
       type: "string",
-      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump"],
+      // text·narrate 는 say 의 별칭 — 받아서 say 로 옮긴다(이벤트 명령 모양 {kind:"text",body} 가 enum 에서 통째로 튕기던 문제).
+      enum: ["say", "moveActor", "camera", "picture", "music", "fade", "tint", "flash", "shake", "wait", "parallel", "label", "jump", "switch", "transfer", "ending", "text", "narrate"],
     },
+    // 진행 비트: switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId}
+    switchId: { type: "string", description: "switch 비트: 켤 전역 스위치 id" },
+    key: { type: "string", enum: ["A", "B", "C", "D"], description: "switch 비트: 이 이벤트의 셀프 스위치(switchId 대신)" },
+    value: { type: "boolean", description: "switch 비트: 기본 true" },
+    mapId: { type: "string", description: "transfer 비트: 옮길 맵 id" },
+    facing: { type: "string", enum: ["up", "down", "left", "right", "retain"], description: "transfer 비트: 도착 후 방향" },
+    fade: { type: "string", enum: ["black", "white", "none"], description: "transfer 비트: 전환 페이드(기본 black)" },
+    endingId: { type: "string", description: "ending 비트: define_ending 으로 정의한 엔딩 id" },
     speaker: { type: "string" },
-    text: { type: "string" },
+    text: { type: "string", description: `say 본문. 인라인 태그를 쓸 수 있다(여는 태그는 [/] 로 닫음):\n${dialogueInlineTagGuideLines().join("\n")}` },
     lines: { type: "array", items: { type: "string" } },
     emotion: { type: "string" },
     autoAdvance: { type: "boolean" },
+    context: {
+      type: "string",
+      enum: [...DIALOGUE_CONTEXT_IDS],
+      description: "say 전용 대사 종류. narration(내레이션)·thought(속마음)·whisper·shout·radio·sign(표지판)·letter(편지)·system(안내). 일반 대사는 생략.",
+    },
+    style: { type: "string", enum: [...DIALOGUE_STYLE_IDS], description: "say 전용. 이 대사만 다른 대화창. 보통 생략." },
+    container: { type: "string", enum: [...DIALOGUE_CONTAINER_IDS], description: `say 전용 대사 그릇:\n${dialogueContainerGuideLines().join("\n")}\n마을 사람 잡담은 bark, 무전·동료 한마디는 corner.` },
     face: FACE_SCHEMA,
     direction: { type: "string", enum: ["in", "out"] },
     target: { type: "string" },
@@ -188,6 +232,7 @@ export const CONDITION_SCHEMA: JsonSchema = {
   description:
     "kind=switch → switchId + value(boolean). kind=variable → variableId + op + value(number). " +
     'kind=item → itemId + present(boolean), 예: {kind:"item",itemId:"조회한 ID",present:true}. ' +
+    "kind=monsterSpecies → speciesId + present(boolean). 파티 또는 박스의 현재 보유 여부(과거 포획 이력 아님). " +
     "kind=all|any → conditions[]. kind=not → condition. kind=selfSwitch → key + value(boolean).",
   properties: {
     kind: {
@@ -202,7 +247,8 @@ export const CONDITION_SCHEMA: JsonSchema = {
     itemId: { type: "string" },
     actorId: { type: "string" },
     value: { description: "switch/selfSwitch: boolean 필수. variable/friendshipAtLeast: number 필수. run: query별 boolean 또는 number." },
-    present: { type: "boolean", description: "item/actor 조건: true=보유/합류, false=미보유/미합류. 필수." },
+    speciesId: { type: "string", description: "monsterSpecies 조건: 조회한 몬스터 종 ID" },
+    present: { type: "boolean", description: "item/actor/monsterSpecies 조건: true=보유/합류, false=미보유/미합류. 필수." },
     op: { type: "string", enum: ["==", ">=", "<=", ">", "<", "!="] },
     amount: { type: "integer" },
     phase: { type: "string", enum: ["morning", "day", "evening", "night"] },
@@ -253,7 +299,11 @@ export const NATIVE_EVENT_PAGE_SCHEMA: JsonSchema = {
     },
     priority: { type: "string", enum: ["below", "same", "above"] },
     overlapForbidden: { type: "boolean" },
-    animationType: { type: "string" },
+    animationType: {
+      type: "string",
+      enum: [...EVENT_ANIMATION_TYPES],
+      description: "페이지 애니메이션 유형. 멈춰 있는 대상은 fixedGraphic(방향·프레임 고정), 걸어 다니는 캐릭터 기본은 normal. none 같은 값 금지 — 런타임이 조사 조작을 죽인다.",
+    },
     footprint: {
       type: "object",
       properties: { width: { type: "integer" }, height: { type: "integer" } },

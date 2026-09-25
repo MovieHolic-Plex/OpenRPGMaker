@@ -118,8 +118,11 @@ export type VillageHousePlan = {
   readonly program?: "dwelling" | "shop" | "inn" | "workshop" | "study" | "manor";
 };
 
-export const VILLAGE_GROUND_THEMES = ["grass", "snow"] as const;
+export const VILLAGE_GROUND_THEMES = ["grass", "snow", "desert", "volcano", "autumn"] as const;
 export type VillageGroundTheme = (typeof VILLAGE_GROUND_THEMES)[number];
+/** 시공 뒤 마을 안에 세우는 랜드마크 — 코드가 theme 문장을 읽지 않으므로 모델이 명시한다. */
+export const VILLAGE_LANDMARKS = ["lighthouse"] as const;
+export type VillageLandmark = (typeof VILLAGE_LANDMARKS)[number];
 
 export const VILLAGE_SETTLEMENT_LAYOUTS = ["plaza-ring", "street-grid", "clusters"] as const;
 export { VILLAGE_MORPHOLOGIES, type VillageMorphology } from "@/editor/tools/village/morphologyTypes";
@@ -146,6 +149,8 @@ export type AuthorVillageRequest = {
   readonly houseClustering?: "balanced" | "tight";
   readonly countPolicy: ConstructionCountPolicy;
   readonly groundTheme?: VillageGroundTheme;
+  /** lighthouse=물가 빈 땅에 둥근 탑 등대(꼭대기 등불). */
+  readonly landmark?: VillageLandmark;
   readonly settlementLayout?: VillageSettlementLayout;
   /** 취락 형태 유형 — 있으면 뼈대 길·필지 먼저 짓고 settlementLayout 은 무시된다. */
   readonly morphology?: VillageMorphology;

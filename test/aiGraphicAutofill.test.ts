@@ -185,6 +185,53 @@ describe("upsert_event NPC 외형 자동 부여", () => {
     expect((result.diff?.warnings ?? []).join(" ")).toContain("graphic:{transparent:true}");
   });
 
+  // 2026-09-24 꿈 세계 도그푸딩: 거울·촛대·액자가 주민 그림으로 서 있었다.
+  it("이름이 사물인 조사 이벤트에는 주민 그림을 세우지 않는다", () => {
+    const ctx = context();
+    const upsert = (id: string, name: string, x: number) => runTool(ctx, "upsert_event", {
+      mapId: ctx.project.startMapId,
+      event: { id, name, x, y: 3, trigger: { kind: "action" }, pages: [{ conditions: [], commands: [{ kind: "text", body: "…" }] }] },
+    });
+    const pageOf = (id: string) => ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === id)?.pages?.[0];
+    const mirror = upsert("ev_mirror", "기억의 거울", 3);
+    expect(mirror.ok, mirror.summary).toBe(true);
+    expect(pageOf("ev_mirror")?.graphic).toEqual({ transparent: true });
+    expect((mirror.diff?.warnings ?? []).join(" ")).toContain("사물 타일을 칠하거나");
+    upsert("ev_door", "붉은 문 (촛불 숲)", 5);
+    expect(pageOf("ev_door")?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object1");
+    upsert("ev_shadow", "그림자 사람", 7);
+    expect(pageOf("ev_shadow")?.graphic?.sprite?.id).toBeTruthy();
+    expect(pageOf("ev_shadow")?.graphic?.sprite?.id).not.toBe("tex_easyrpg_charset_object1");
+  });
+
+  it("이름 없는 이벤트는 id 로 사물을 알아본다(dream-6: ev_forest_candle_altar 가 주민 그림)", () => {
+    const ctx = context();
+    const upsert = (id: string, x: number) => runTool(ctx, "upsert_event", {
+      mapId: ctx.project.startMapId,
+      event: { id, x, y: 5, trigger: { kind: "action" }, pages: [{ conditions: [], commands: [{ kind: "text", body: "…" }] }] },
+    });
+    const pageOf = (id: string) => ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === id)?.pages?.[0];
+    upsert("ev_forest_candle_altar", 2);
+    expect(pageOf("ev_forest_candle_altar")?.graphic).toEqual({ transparent: true });
+    upsert("ev_hub_door_sea", 4);
+    expect(pageOf("ev_hub_door_sea")?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object1");
+    upsert("ev_sea_shadow_1", 6);
+    expect(pageOf("ev_sea_shadow_1")?.graphic?.sprite?.id).not.toBe("tex_easyrpg_charset_object1");
+    expect(pageOf("ev_sea_shadow_1")?.graphic?.transparent).not.toBe(true);
+  });
+
+  it("place_npc 의 최상위 commands 는 인사 한 줄로 덮이지 않는다", () => {
+    const ctx = context();
+    const result = runTool(ctx, "place_npc", {
+      mapId: ctx.project.startMapId, x: 4, y: 4, name: "춤추는 그림자", id: "ev_dancer",
+      commands: [{ kind: "text", body: "…(말없이 춤춘다)" }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const commands = JSON.stringify(ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === "ev_dancer")?.pages);
+    expect(commands).toContain("말없이 춤춘다");
+    expect(commands).not.toContain("안녕하세요");
+  });
+
   it("두 페이지 NPC는 비어 있는 뒷 페이지에 앞 페이지 외형을 그대로 재사용한다", () => {
     const ctx = context();
     const explicitGraphic = {
@@ -312,5 +359,26 @@ describe("add_companion actor 합류 이벤트 외형", () => {
       );
     expect(joinPage?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_people1");
     expect(joinPage?.graphic?.transparent).not.toBe(true);
+  });
+});
+
+describe("타일 가구 위 조사 지점은 사람 그림을 세우지 않는다", () => {
+  it("그림 없는 기존 조사 지점을 대화 페이지로 고쳐도 투명하게 남는다", () => {
+    const ctx = context();
+    const mapId = ctx.project.startMapId;
+    const seeded = runTool(ctx, "upsert_event", {
+      mapId,
+      event: { id: "ev_safe", x: 3, y: 3, trigger: { kind: "action" },
+        pages: [{ conditions: [], trigger: { kind: "action" }, graphic: { transparent: true }, commands: [{ kind: "text", body: "철제 금고다." }] }] },
+    });
+    expect(seeded.ok, seeded.summary).toBe(true);
+    const result = runTool(ctx, "upsert_event", {
+      mapId,
+      event: { id: "ev_safe", pages: [{ conditions: [], trigger: { kind: "action" }, graphic: {}, commands: [{ kind: "text", body: "다이얼이 달려 있다." }] }] },
+    });
+    expect(result.ok, result.summary).toBe(true);
+    const page = ctx.project.maps[mapId]?.events.find((entry) => entry.id === "ev_safe")?.pages?.[0];
+    expect(page?.graphic?.sprite).toBeUndefined();
+    expect((result.diff?.warnings ?? []).join(" ")).not.toContain("주민 기본 charset");
   });
 });

@@ -93,6 +93,24 @@ describe("checkpointSave / killPlayer / triggerEnding", () => {
     expect(session.flags["ending:ending_low"]).toBeUndefined();
   });
 
+  it("이름 있는 triggerEnding은 엔딩 조건이 거짓이면 끝나지 않고, 참이면 그 엔딩을 연다", () => {
+    const project = createBlankProject();
+    const session = startSession(project);
+    const variableId = project.variables[0]!.id;
+    project.endings = [
+      { id: "ending_love", name: "고백", priority: 10, conditions: [{ kind: "variable", variableId, op: ">=", value: 6 }] },
+    ];
+    session.variables[variableId] = 2;
+    const blocked = createInterpreter([{ kind: "triggerEnding", endingId: "ending_love" }], session, project).start();
+    expect(blocked).toEqual({ kind: "done" });
+    expect(session.flags["ending:ending_love"]).toBeUndefined();
+
+    session.variables[variableId] = 6;
+    const opened = createInterpreter([{ kind: "triggerEnding", endingId: "ending_love" }], session, project).start();
+    expect(opened).toEqual({ kind: "returnToTitle", title: "고백", message: "" });
+    expect(session.flags["ending:ending_love"]).toBe(true);
+  });
+
   it("define_ending은 같은 조건 집합의 낮은 priority 엔딩을 warning으로 보고한다", () => {
     const project = createBlankProject();
     const switchId = project.switches[0]!.id;

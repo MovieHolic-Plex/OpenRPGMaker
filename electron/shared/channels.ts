@@ -38,6 +38,10 @@ export const OPRN_CHANNELS = {
   startOpenFolder: "oprn:start.openFolder",
   startCreateProject: "oprn:start.createProject",
   startImportFile: "oprn:start.importFile",
+  assetBrowserOpen: "oprn:assetBrowser.open",
+  assetBrowserBounds: "oprn:assetBrowser.bounds",
+  assetBrowserClose: "oprn:assetBrowser.close",
+  assetBrowserDownload: "oprn:assetBrowser.download",
 } as const;
 
 export type OprnChannel = (typeof OPRN_CHANNELS)[keyof typeof OPRN_CHANNELS];

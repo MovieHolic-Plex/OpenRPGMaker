@@ -12,7 +12,9 @@ import { switchVariableReferenceMessage } from "@/editor/databaseReferences";
 import { editorState } from "@/editor/editorState";
 import type { DeleteResult } from "@/editor/databaseActions";
 import { store } from "@/project/store";
+import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
 import { createBlankMap, TILE } from "@/project/defaults";
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { cloneGameMap } from "@/project/mapClone";
@@ -31,8 +33,9 @@ import {
   selectionRoots,
   siblingIndex,
 } from "@/project/mapTree";
-import { applyMapDeletion, planMapDeletion, type MapDeletionImpact } from "@/project/mapDeletion";
+import { applyMapDeletions, planMapDeletion, planMapDeletions, type MapDeletionBatchOptions, type MapDeletionImpact } from "@/project/mapDeletion";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
+import { remapExtraLayers } from "@/project/mapLayers";
 export {
   eraseTile,
   eraseTilesBulk,
@@ -64,7 +67,7 @@ export function addMap(name: string, width = 16, height = 16, tilesetId?: string
   if (!allowMapSize(width, height)) return "";
   let newId: MapId = "";
   store.update((p) => {
-    const m = createBlankMap(name || "새 맵", width, height, tilesetId);
+    const m = createBlankMap(name || "새 맵", width, height, tilesetId ?? defaultOutdoorTilesetId(p));
     if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
     p.maps[m.id] = m;
     // mapTree에 루트 자식으로 추가.
@@ -85,7 +88,7 @@ export function addChildMap(parentId: MapId, name: string, size: AddChildMapSize
   store.update((p) => {
     const parent = findTreeNode(p.mapTree, parentId);
     if (!p.maps[parentId] && !parent) return;
-    const m = createBlankMap(name || "새 맵", size.width, size.height, tilesetId ?? p.maps[parentId]?.tilesetId);
+    const m = createBlankMap(name || "새 맵", size.width, size.height, tilesetId ?? defaultOutdoorTilesetId(p));
     if (fillTile !== undefined) m.lowerTiles.fill(fillTile);
     p.maps[m.id] = m;
     appendToTree(p.mapTree, m.id, parentId);
@@ -165,29 +168,26 @@ export function deleteMap(mapId: MapId): DeleteMapResult {
   return { ok: true, impact: plan.impact };
 }
 
-export function deleteMapsInOrder(mapIds: readonly MapId[]): DeleteMapResult {
-  const remaining = mapIds.filter((mapId) => store.getCurrent().maps[mapId]);
+export function deleteMapsInOrder(mapIds: readonly MapId[], options?: MapDeletionBatchOptions): DeleteMapResult {
+  const project = store.getCurrent();
+  const remaining = mapIds.filter((mapId) => project.maps[mapId]);
   if (remaining.length === 0) return { ok: false, message: "맵을 찾을 수 없습니다." };
-  // 마지막 한 장은 루프 가드가 건너뛴다 — 삭제될 것이 없으면 스냅샷도 남기지 않는다.
-  if (Object.keys(store.getCurrent().maps).length <= 1) {
+  // 마지막 한 장은 남긴다 — 삭제될 것이 없으면 스냅샷도 남기지 않는다.
+  if (Object.keys(project.maps).length <= 1) {
     return { ok: false, message: "맵을 삭제할 수 없습니다." };
   }
+  // 검증에 실패하면 적용하지 않는다. 미리보기와 재로드 검증은 묶음당 한 번이다.
+  const plan = planMapDeletions(project, remaining, options);
+  if (!plan.ok) return { ok: false, message: plan.block.message };
   // 재귀 삭제 문구의 "한 번의 실행 취소로"(mapDeleteConfirm.ts:39) — 묶음당 스냅샷 1건.
   const [firstTargetId] = remaining;
   recordProjectSnapshot(remaining.length === 1 && firstTargetId
     ? `맵 삭제: ${store.getCurrent().maps[firstTargetId]?.name ?? firstTargetId}`
     : `맵 ${remaining.length}개 삭제`);
-  let lastImpact: MapDeletionImpact | null = null;
   store.update((p) => {
-    for (const mapId of remaining) {
-      if (!p.maps[mapId] || Object.keys(p.maps).length <= 1) continue;
-      const plan = planMapDeletion(p, mapId);
-      if (plan.ok) lastImpact = plan.impact;
-      applyMapDeletion(p, mapId);
-    }
+    applyMapDeletions(p, remaining, options);
   }, { scope: "project" });
-  if (!lastImpact) return { ok: false, message: "맵을 삭제할 수 없습니다." };
-  return { ok: true, impact: lastImpact };
+  return { ok: true, impact: plan.impact };
 }
 
 export function renameMap(mapId: MapId, name: string): void {
@@ -233,6 +233,11 @@ export function resizeMap(mapId: MapId, width: number, height: number): void {
         newUpper[y * width + x] = oldUpper[y * oldW + x];
       }
     }
+    remapExtraLayers(m, width, height, (target) => {
+      const tx = target % width;
+      const ty = Math.floor(target / width);
+      return tx < minW && ty < minH ? ty * oldW + tx : -1;
+    });
     m.width = width;
     m.height = height;
     m.lowerTiles = newLower;
@@ -369,6 +374,15 @@ export function setMapFlags(mapId: MapId, flags: { disableSave?: boolean; disabl
     if (flags.disableSave) map.disableSave = true; else delete map.disableSave;
     if (flags.disableTeleport) map.disableTeleport = true; else delete map.disableTeleport;
     if (flags.disableEscape) map.disableEscape = true; else delete map.disableEscape;
+  }, { scope: "map", mapId });
+}
+
+export function setMapLoop(mapId: MapId, loop: import("@/project/mapLoop").MapLoop | undefined): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (loop) map.loop = loop; else delete map.loop;
   }, { scope: "map", mapId });
 }
 
@@ -509,11 +523,17 @@ export function renameSwitch(id: string, name: string): void {
   }, { scope: "database", collection: "switches" });
 }
 export function deleteSwitch(id: string): DeleteResult {
+  if (!canWriteTeamProject()) return { ok: false, message: TEAM_READ_ONLY_WRITE_MESSAGE };
   const message = switchVariableReferenceMessage("switch", id);
   if (message) return { ok: false, message };
   recordProjectSnapshot();
+  // 칸을 빼면 뒤 번호가 한 칸씩 당겨지고, 정규화(ensureSwitchVariableSlots)가 남은 세션 값을 보고
+  // 같은 id 를 이름 없이 맨 끝에 다시 붙였다. 번호는 그대로 두고 이름과 값만 비운 빈 칸으로 만든다
+  // — addSwitch 가 이름 없는 칸을 먼저 재사용한다.
   store.update((p) => {
-    p.switches = p.switches.filter((s) => s.id !== id);
+    const record = p.switches.find((s) => s.id === id);
+    if (record) record.name = "";
+    p.session.switches[id] = false;
   }, { scope: "database", collection: "switches" });
   return { ok: true };
 }
@@ -544,11 +564,15 @@ export function renameVariable(id: string, name: string): void {
   }, { scope: "database", collection: "variables" });
 }
 export function deleteVariable(id: string): DeleteResult {
+  if (!canWriteTeamProject()) return { ok: false, message: TEAM_READ_ONLY_WRITE_MESSAGE };
   const message = switchVariableReferenceMessage("variable", id);
   if (message) return { ok: false, message };
   recordProjectSnapshot();
+  // deleteSwitch 와 같은 이유로 칸을 빼지 않고 비운다.
   store.update((p) => {
-    p.variables = p.variables.filter((v) => v.id !== id);
+    const record = p.variables.find((v) => v.id === id);
+    if (record) record.name = "";
+    p.session.variables[id] = 0;
   }, { scope: "database", collection: "variables" });
   return { ok: true };
 }

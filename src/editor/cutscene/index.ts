@@ -16,7 +16,10 @@ export type CutsceneBeat =
   | CutsceneWaitBeat
   | CutsceneParallelBeat
   | CutsceneLabelBeat
-  | CutsceneJumpBeat;
+  | CutsceneJumpBeat
+  | CutsceneSwitchBeat
+  | CutsceneTransferBeat
+  | CutsceneEndingBeat;
 
 export type CutsceneSayBeat = {
   readonly kind: "say";
@@ -26,6 +29,12 @@ export type CutsceneSayBeat = {
   readonly lines?: readonly string[];
   readonly emotion?: string;
   readonly autoAdvance?: boolean;
+  /** 대사 종류(narration·thought·sign…) — src/project/dialogueStyles.ts DIALOGUE_CONTEXTS. */
+  readonly context?: string;
+  /** 이 대사만 다른 대화창 스타일. 보통은 비워 두고 화자 프로필·프로젝트 기본을 따른다. */
+  readonly style?: string;
+  /** 대사 그릇(box·balloon·bark·corner). 흘림·코너는 게임을 멈추지 않는다. */
+  readonly container?: string;
 };
 
 export type CutsceneMoveActorBeat = {
@@ -123,9 +132,40 @@ export type CutsceneJumpBeat = {
   readonly name: string;
 };
 
+/**
+ * 진행 스위치를 켠다. `switchId` 면 전역 스위치, `key`(A~D) 면 이 이벤트의 셀프 스위치.
+ * 컷신이 «다음 장면을 여는» 한 박자라서 비트로 둔다 — 없던 때는 기억 진입·문 열림 컷신을 script_cutscene 으로
+ * 쓸 수 없어 조수가 upsert_event 에 대사만 늘어놓고 이동·카메라·페이드를 전부 버렸다(2026-09-24 회상 스토리 도그푸딩).
+ */
+export type CutsceneSwitchBeat = {
+  readonly kind: "switch";
+  readonly switchId?: string;
+  readonly key?: string;
+  readonly value?: boolean;
+};
+
+/** 다른 맵(다음 기억)으로 옮긴다. 컷신은 옮긴 맵에서 이어서 끝난다(잠금 해제·정리 포함). */
+export type CutsceneTransferBeat = {
+  readonly kind: "transfer";
+  readonly mapId: string;
+  readonly x: number;
+  readonly y: number;
+  readonly facing?: "up" | "down" | "left" | "right" | "retain";
+  readonly fade?: "black" | "white" | "none";
+};
+
+/** 엔딩을 부른다. endingId 생략 시 조건이 맞는 최우선 엔딩. */
+export type CutsceneEndingBeat = {
+  readonly kind: "ending";
+  readonly endingId?: string;
+};
+
 export type CutsceneValidationContext = {
   readonly eventIds?: ReadonlySet<string>;
   readonly resourceIds?: ReadonlySet<string>;
+  readonly mapIds?: ReadonlySet<string>;
+  readonly switchIds?: ReadonlySet<string>;
+  readonly endingIds?: ReadonlySet<string>;
 };
 
 export type CutsceneCompileOptions = {
@@ -181,18 +221,92 @@ type CompileState = {
   tint?: FinalTintState;
 };
 
+/**
+ * 엔딩 에필로그 안의 `ending` beat 를 뺀다. 에필로그는 이미 엔딩 안이다 — 같은 엔딩을 다시 부르면
+ * 에필로그가 처음부터 다시 돌아 검은 화면에서 끝없이 반복됐다(추리 도그푸딩 gen: 에필로그 끝에 {kind:"ending"}).
+ * 빠진 개수를 함께 돌려준다.
+ */
+// Shake Screen 의 intensity 는 select(문자열 "1"/"3"/"6"/"10") 라 숫자를 그대로 넣으면 명령 형식 검사가
+// 「문자열이 아닙니다」로 script_cutscene 전체를 거절한다(추리 도그푸딩 5회차). 가까운 선택지로 맞추고,
+// 런타임이 읽는 value 도 같이 채운다.
+const SHAKE_INTENSITY_STEPS = [1, 3, 6, 10] as const;
+function shakeFields(beat: CutsceneShakeBeat): Record<string, string | number> {
+  const raw = typeof beat.intensity === "number" && Number.isFinite(beat.intensity) ? beat.intensity : 3;
+  const step = SHAKE_INTENSITY_STEPS.reduce((best, value) => (Math.abs(value - raw) < Math.abs(best - raw) ? value : best), 3);
+  return { value: step, intensity: String(step), durationMs: durationMs(beat.durationMs, 400) };
+}
+
+/**
+ * 이벤트 명령 모양으로 쓴 대사 비트를 say 로 옮긴다 — `{kind:"text",body:"…"}`(문장 표시 명령의 모양).
+ * 2026-09-24 갤러리 호러 r5: define_ending 세 번이 에필로그 전부를 이 모양으로 보내 스키마 enum 에서 통째로 튕겼고,
+ * 패배 엔딩이 없어 set_life_flower 까지 연쇄로 실패했다. 문장 비트는 say 하나라 뜻이 겹치지 않는다.
+ */
+const SAY_KIND_ALIASES: ReadonlySet<string> = new Set(["text", "narrate", "narration", "dialogue", "message"]);
+const SAY_TEXT_ALIASES = ["body", "message", "content", "line"] as const;
+export function canonicalizeSayBeatAliases(beats: unknown): { beats: unknown; moved: number } {
+  let moved = 0;
+  const visit = (list: unknown): unknown => {
+    if (!Array.isArray(list)) return list;
+    return list.map((entry) => {
+      if (!isRecord(entry)) return entry;
+      if (entry.kind === "parallel" && Array.isArray(entry.beats)) return { ...entry, beats: visit(entry.beats) };
+      if (typeof entry.kind !== "string" || !SAY_KIND_ALIASES.has(entry.kind)) return entry;
+      const next: Record<string, unknown> = { ...entry, kind: "say" };
+      if (typeof next.text !== "string" && !Array.isArray(next.lines)) {
+        const alias = SAY_TEXT_ALIASES.find((key) => typeof next[key] === "string");
+        if (alias) { next.text = next[alias]; delete next[alias]; }
+      }
+      moved += 1;
+      return next;
+    });
+  };
+  const out = visit(beats);
+  return { beats: out, moved };
+}
+
+export const SAY_BEAT_ALIAS_WARNING = (moved: number): string =>
+  `대사 비트 ${moved}개를 say 로 옮겼습니다 — 컷신·에필로그의 대사는 {kind:"say",speaker?,text} 입니다({kind:"text",body} 는 이벤트 명령 모양).`;
+
+export function withoutEndingBeats(beats: readonly CutsceneBeat[]): { beats: CutsceneBeat[]; removed: number } {
+  let removed = 0;
+  const strip = (list: readonly CutsceneBeat[]): CutsceneBeat[] => list.flatMap((beat): CutsceneBeat[] => {
+    if (beat.kind === "ending") { removed += 1; return []; }
+    if (beat.kind === "parallel") return [{ ...beat, beats: strip(beat.beats) }];
+    return [beat];
+  });
+  const out = strip(beats);
+  return { beats: out, removed };
+}
+
 export function compileCutscene(beats: readonly CutsceneBeat[], options: CutsceneCompileOptions = {}): Command[] {
   const validation = validateCutscene(beats, options.context);
   if (!validation.ok) throw new CutsceneValidationError(validation.errors);
   const state: CompileState = { pictures: new Map(), faces: new Map(), ...(options.resetFace ? { shownFace: { key: "" } } : {}) };
-  const body = compileBeats(beats, state, { forceNonBlocking: false });
+  // 진행 비트(스위치·맵 이동·엔딩)는 건너뛰기(Esc)로도 빠지면 안 된다 — 건너뛴 플레이어가 다음 기억으로 못 가고
+  // 문이 안 열린다. 그래서 마지막 맵 이동부터 끝까지와 엔딩은 건너뛰기 착지 라벨 **뒤**에 두고,
+  // 그 앞에서 켠 스위치는 라벨 뒤에서 한 번 더 켠다(같은 값이라 정상 재생에서는 변화 없음).
+  const lastTransfer = beats.map((beat) => beat.kind).lastIndexOf("transfer");
+  const head = lastTransfer >= 0 ? beats.slice(0, lastTransfer) : beats;
+  const tail = lastTransfer >= 0 ? beats.slice(lastTransfer) : [];
+  const headBody = compileBeats(head.filter((beat) => beat.kind !== "ending"), state, { forceNonBlocking: false });
+  const committedSwitches = head.filter((beat): beat is CutsceneSwitchBeat => beat.kind === "switch").map(compileSwitchBeat);
+  const cleanup = cleanupCommands(state);
+  // 옮긴 맵에서는 앞 맵의 카메라·색조·그림을 되돌릴 것이 없다 — 꼬리는 제 상태로 따로 모은다(얼굴 흐름만 이어받는다).
+  const tailState: CompileState = { pictures: new Map(), faces: state.faces, ...(state.shownFace ? { shownFace: state.shownFace } : {}) };
+  const tailBody = compileBeats(tail.filter((beat) => beat.kind !== "ending"), tailState, { forceNonBlocking: false });
+  const endings = beats.filter((beat): beat is CutsceneEndingBeat => beat.kind === "ending").slice(-1).flatMap((beat) => compileBeat(beat, state, { forceNonBlocking: false }));
   return [
     { kind: "cutsceneControl", mode: "begin", skippable: options.skippable === true },
     ...(options.resetFace ? [clearFaceCommand()] : []),
-    ...body,
+    ...headBody,
     { kind: "label", name: CUTSCENE_END_LABEL },
-    ...cleanupCommands(state),
+    ...cleanup,
+    ...committedSwitches,
+    ...tailBody,
+    // 맵을 옮긴 뒤 새로 잡힌 카메라·색조만 정리한다(옛 맵 좌표로 되돌리지 않는다).
+    ...cleanupCommands(tailState),
     { kind: "cutsceneControl", mode: "end" },
+    ...endings,
   ];
 }
 
@@ -210,6 +324,7 @@ export function validateCutscene(
     validateEventReferences(beat, path, context, errors);
     validateResourceReferences(beat, path, context, errors);
     validatePictureLifecycle(beat, path, livePictures, errors);
+    validateFlowBeat(beat, path, context, errors);
   });
   return errors.length === 0 ? { ok: true, errors: [] } : { ok: false, errors };
 }
@@ -245,16 +360,35 @@ function compileBeat(
     case "flash":
       return [m2Command("Flash Screen", { color: beat.color ?? "white", durationMs: durationMs(beat.durationMs, 300) })];
     case "shake":
-      return [m2Command("Shake Screen", { intensity: beat.intensity ?? 3, durationMs: durationMs(beat.durationMs, 400) })];
+      return [m2Command("Shake Screen", shakeFields(beat))];
     case "wait":
-      return [{ kind: "wait", ms: Math.max(0, Math.round(beat.ms)) }];
+      return [{ kind: "wait", ms: waitBeatMs(beat) }];
     case "parallel":
       return compileParallelBeat(beat, state);
     case "label":
       return [{ kind: "label", name: beat.name }];
     case "jump":
       return [{ kind: "gotoLabel", name: beat.name }];
+    case "switch":
+      return [compileSwitchBeat(beat)];
+    case "transfer":
+      return [stripUndefinedFields({
+        kind: "transfer",
+        mapId: beat.mapId,
+        x: Math.round(beat.x),
+        y: Math.round(beat.y),
+        direction: beat.facing,
+        fade: beat.fade ?? "black",
+      }) as Command];
+    case "ending":
+      return [beat.endingId ? { kind: "triggerEnding", endingId: beat.endingId } : { kind: "triggerEnding" }];
   }
+}
+
+function compileSwitchBeat(beat: CutsceneSwitchBeat): Command {
+  const value = beat.value !== false;
+  if (beat.switchId) return { kind: "setSwitch", switchId: beat.switchId, value };
+  return { kind: "setSelfSwitch", key: (beat.key ?? "A").toUpperCase() as "A" | "B" | "C" | "D", value };
 }
 
 function faceCommand(face: Partial<FaceGraphic> & { resourceId: string }): Command {
@@ -306,6 +440,9 @@ function compileSayBeat(beat: CutsceneSayBeat, state: CompileState): Command[] {
       body,
       ...(beat.emotion !== undefined ? { emotion: beat.emotion } : {}),
       ...(beat.autoAdvance !== undefined ? { autoAdvance: beat.autoAdvance } : {}),
+      ...(beat.context ? { context: beat.context } : {}),
+      ...(beat.style ? { style: beat.style } : {}),
+      ...(beat.container ? { container: beat.container } : {}),
     });
   }
   return commands;
@@ -339,7 +476,8 @@ function cameraFields(beat: CutsceneCameraBeat, forceNonBlocking: boolean): M2Co
   const x = beat.x ?? objectTarget?.x;
   const y = beat.y ?? objectTarget?.y;
   const targetText = typeof target === "string" ? target : eventId ? eventId : x !== undefined || y !== undefined ? "screen" : "player";
-  const mode = beat.mode === "return" ? "return" : beat.mode === "pan" ? "panTo" : beat.mode;
+  // 카탈로그 선택지 값으로 옮긴다(panTo·follow·lock·return) — 「fixed」는 카탈로그에서 lock 이다.
+  const mode = beat.mode === "return" ? "return" : beat.mode === "pan" ? "panTo" : beat.mode === "fixed" ? "lock" : beat.mode;
   return m2Fields({
     mode,
     target: targetText,
@@ -423,12 +561,26 @@ function compileFadeBeat(beat: CutsceneFadeBeat, forceNonBlocking: boolean): Com
   ];
 }
 
+/** 화면 색조 select 가 받는 이름. hex·rgb 는 value 칸으로 간다(카탈로그 계약). */
+const SCREEN_TINT_COLOR_NAMES: ReadonlySet<string> = new Set(["neutral", "white", "red", "green", "blue", "yellow", "purple", "black"]);
+
+/**
+ * `color:"#c4a070"` 처럼 색 값을 color 에 넣으면 카탈로그 검증이 「값이 카탈로그 옵션에 없습니다」로 컷신 전체를 거부했다 —
+ * 회상 프리셋(memory_opening·bedside_monologue·ending_fade)이 전부 그렇게 써서 한 번도 배치되지 못했다(2026-09-24).
+ */
+function normalizeTint(beat: { readonly color?: string; readonly value?: string }): { readonly color: string; readonly value: string } {
+  const color = beat.color?.trim();
+  if (color && !SCREEN_TINT_COLOR_NAMES.has(color)) return { color: "neutral", value: beat.value ?? color };
+  return { color: color || "neutral", value: beat.value ?? "" };
+}
+
 function compileTintBeat(beat: CutsceneTintBeat, state: CompileState, forceNonBlocking: boolean): Command[] {
-  state.tint = { color: beat.color, value: beat.value };
+  const tint = normalizeTint(beat);
+  state.tint = tint;
   const commands: Command[] = [
     m2Command("Tint Screen", {
-      color: beat.color ?? "neutral",
-      value: beat.value ?? "",
+      color: tint.color,
+      value: tint.value,
       durationMs: durationMs(beat.durationMs, 0),
     }),
   ];
@@ -455,12 +607,20 @@ function needsWaitAllMovement(beat: CutsceneBeat): boolean {
   return false;
 }
 
+// wait 비트는 ms 가 정본이지만 다른 비트처럼 durationMs 로 쓰는 모델이 있다. 없으면 NaN 이 되어
+// 기다리기가 사라졌다(2026-09-24 꿈 세계 도그푸딩).
+function waitBeatMs(beat: Extract<CutsceneBeat, { kind: "wait" }>): number {
+  const alias = (beat as { readonly durationMs?: unknown }).durationMs;
+  const raw = Number.isFinite(beat.ms) ? beat.ms : typeof alias === "number" && Number.isFinite(alias) ? alias : 0;
+  return Math.max(0, Math.round(raw));
+}
+
 function parallelWaitMs(beat: CutsceneBeat): number {
   if (beat.kind === "picture" && (beat.wait === true || beat.waitForPicture === true)) return durationMs(beat.durationMs, 0);
   if (beat.kind === "camera" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "fade" && beat.wait === true) return durationMs(beat.durationMs, 300);
   if (beat.kind === "tint" && beat.wait === true) return durationMs(beat.durationMs, 0);
-  if (beat.kind === "wait") return Math.max(0, Math.round(beat.ms));
+  if (beat.kind === "wait") return waitBeatMs(beat);
   if (beat.kind === "parallel") return Math.max(0, ...beat.beats.map(parallelWaitMs));
   return 0;
 }
@@ -468,7 +628,12 @@ function parallelWaitMs(beat: CutsceneBeat): number {
 function cleanupCommands(state: CompileState): Command[] {
   const commands: Command[] = [];
   if (state.camera) {
-    commands.push(m2Command("Camera Control", { ...state.camera.fields, durationMs: 0, wait: true }));
+    // pan 으로 끝난 카메라는 화면 좌표에 고정된 채 남는다(런타임은 stopFollow). 컷신이 끝나 조작이 돌아왔는데
+    // 카메라가 따라오지 않아 주인공이 화면 밖으로 걸어 나갔다(2026-09-24 회상 스토리: 기억 진입 컷신 넷이 전부
+    // 마지막에 pan 만 하고 return 을 안 했다). pan 이면 주인공에게 되돌리고, 명시적 fixed·follow 는 그대로 둔다.
+    commands.push(state.camera.fields.mode === "panTo"
+      ? m2Command("Camera Control", { mode: "return", target: "player", durationMs: 300, wait: true })
+      : m2Command("Camera Control", { ...state.camera.fields, durationMs: 0, wait: true }));
   }
   if (state.tint) {
     commands.push(m2Command("Tint Screen", { color: state.tint.color ?? "neutral", value: state.tint.value ?? "", durationMs: 0 }));
@@ -514,6 +679,27 @@ function validateKnownBeat(beat: CutsceneBeat, path: string, errors: string[]): 
 function validateReservedLabels(beat: CutsceneBeat, path: string, errors: string[]): void {
   if ((beat.kind === "label" || beat.kind === "jump") && beat.name === CUTSCENE_END_LABEL) {
     errors.push(`${path}.name: '${CUTSCENE_END_LABEL}' 라벨은 컷신 컴파일러가 자동으로 사용합니다.`);
+  }
+}
+
+function validateFlowBeat(beat: CutsceneBeat, path: string, context: CutsceneValidationContext, errors: string[]): void {
+  if ((beat.kind === "transfer" || beat.kind === "ending") && /\]\.beats\[/u.test(path)) {
+    errors.push(`${path}: ${beat.kind} 비트는 parallel 안에 둘 수 없습니다 — 최상위 beats 에 두세요.`);
+  }
+  if (beat.kind === "switch") {
+    if (beat.switchId !== undefined && beat.key !== undefined) errors.push(`${path}: switchId(전역 스위치)와 key(셀프 스위치) 중 하나만 쓰세요.`);
+    if (beat.switchId === undefined && beat.key !== undefined && !/^[A-Da-d]$/u.test(beat.key)) errors.push(`${path}.key: 셀프 스위치는 A~D 입니다.`);
+    if (beat.switchId !== undefined && context.switchIds && !context.switchIds.has(beat.switchId)) {
+      errors.push(`${path}.switchId: 존재하지 않는 스위치 '${beat.switchId}' — get_database_records(collection:"switches") 로 조회하거나 rename_switch 로 먼저 만드세요.`);
+    }
+  }
+  if (beat.kind === "transfer") {
+    if (typeof beat.mapId !== "string" || !beat.mapId) errors.push(`${path}.mapId: 옮길 맵 id 가 필요합니다.`);
+    else if (context.mapIds && !context.mapIds.has(beat.mapId)) errors.push(`${path}.mapId: 존재하지 않는 맵 '${beat.mapId}'.`);
+    if (typeof beat.x !== "number" || typeof beat.y !== "number") errors.push(`${path}: transfer 에는 도착 칸 x,y 가 필요합니다.`);
+  }
+  if (beat.kind === "ending" && beat.endingId && context.endingIds && !context.endingIds.has(beat.endingId)) {
+    errors.push(`${path}.endingId: 정의되지 않은 엔딩 '${beat.endingId}' — define_ending 으로 먼저 정의하세요.`);
   }
 }
 
@@ -636,6 +822,9 @@ const KNOWN_BEAT_KINDS: ReadonlySet<string> = new Set([
   "parallel",
   "label",
   "jump",
+  "switch",
+  "transfer",
+  "ending",
 ]);
 
 function isCameraObjectTarget(value: unknown): value is { readonly eventId?: string; readonly x?: number; readonly y?: number } {

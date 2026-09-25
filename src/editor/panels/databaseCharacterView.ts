@@ -39,6 +39,8 @@ import {
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { SEASON_OPTIONS } from "@/editor/panels/eventEditor/conditionForm";
 import { characterListThumbnail } from "@/editor/panels/characterListThumbnail";
+import { characterDialogueCard } from "@/editor/panels/databaseCharacterDialogueCard";
+import { normalizeSpeakerDialogueProfile, type SpeakerDialogueProfile } from "@/project/dialogueStyles";
 import {
   characterIdExists,
   listCharacterIdIndex,
@@ -556,6 +558,7 @@ function profileCards(
           ),
         ],
       }),
+      characterDialogueCard(characterId, profile, (dialoguePatch) => patchProfile(characterId, {}, { dialoguePatch })),
       birthdayCard(characterId, profile, rerender),
       spanning(giftPrefsCard(characterId, profile.giftPrefs, project, rerender)),
       spanning(giftResponsesCard(characterId, profile.giftResponses)),
@@ -841,7 +844,14 @@ function jumpToHost(host: CharacterIdUsageHost): void {
 function patchProfile(
   characterId: string,
   patch: Partial<CharacterProfile>,
-  options: { readonly clearDisplayName?: boolean; readonly clearBirthday?: boolean; readonly clearGiftPrefs?: boolean; readonly clearGiftResponses?: boolean } = {},
+  options: {
+    readonly clearDisplayName?: boolean;
+    readonly clearBirthday?: boolean;
+    readonly clearGiftPrefs?: boolean;
+    readonly clearGiftResponses?: boolean;
+    /** 「대화」 카드의 칸 단위 수정. undefined 값은 그 칸을 지운다(프로젝트 기본으로). */
+    readonly dialoguePatch?: Partial<Record<keyof SpeakerDialogueProfile, unknown>>;
+  } = {},
 ): void {
   recordCoalescedSnapshot(`db-character:${characterId}`);
   store.update((project) => {
@@ -856,6 +866,7 @@ function patchProfile(
       birthday?: CharacterProfile["birthday"];
       giftPrefs?: GiftPrefs;
       giftResponses?: GiftResponses;
+      dialogue?: SpeakerDialogueProfile;
     } = {};
     const displayName = options.clearDisplayName ? undefined : nextProfile.displayName;
     const birthday = options.clearBirthday ? undefined : nextProfile.birthday;
@@ -865,6 +876,10 @@ function patchProfile(
     if (birthday !== undefined) rebuilt.birthday = birthday;
     if (giftPrefs !== undefined) rebuilt.giftPrefs = giftPrefs;
     if (giftResponses !== undefined) rebuilt.giftResponses = giftResponses;
+    const dialogue = options.dialoguePatch
+      ? normalizeSpeakerDialogueProfile({ ...existing.dialogue, ...options.dialoguePatch })
+      : nextProfile.dialogue;
+    if (dialogue !== undefined) rebuilt.dialogue = dialogue;
     const next = { ...(project.characters ?? {}) };
     // Empty profile object is still a valid registered profile (orphan → profile).
     next[characterId] = rebuilt;

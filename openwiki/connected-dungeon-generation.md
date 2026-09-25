@@ -21,6 +21,7 @@
 ## 설계 입력
 
 `character`: cavern / mine / crystal / crypt. `theme`: stone / lava / ice.
+lava(crypt 제외, `lava.ts`)는 문서 `tiledata/rpg-dungeons/dungeon-lava-cave.md`의 칸을 쓴다: 적암 바닥 301·벽 133/163, 가장 큰 방을 가로지르는 불의 강 하나(다리 자리만 곧게 3줄, 판자 다리 upper 141)와 방마다 불규칙한 용암 웅덩이(오토타일 몸통 304, 통행 불가), 갈색 바위·화로·바닥 불길. 수정 방·여신상 없음, `landmark: altar`는 제단 마법진(3×3). stone·ice·crypt 결과는 그대로다.
 `path`: straight / cave / winding. 조수가 세계관과 이번 요청으로 정한다. 생략하면 crypt만 곧은 방이고 그 외는 동굴 실루엣이다. straight는 직사각형 방과 좁은 곧은 길, cave는 방 경계가 녹는 공동, winding은 방은 직사각형으로 남기고 길만 꺾는다.
 
 `linkMapId`가 있고 그 맵이 프로젝트에 있으면 던전 입구와 양방향 전이를 놓는다. `landmark`(altar/tower/gate/sound)는 입구에서 가장 먼 방 옆의 열린 칸에 표지를 찍는다. `pressure`의 patrol은 `troopId`가 실제 트룹일 때만 순찰 스폰을 두고, tide와 rising은 입구 옆에서 배회하는 사건으로 둔다.

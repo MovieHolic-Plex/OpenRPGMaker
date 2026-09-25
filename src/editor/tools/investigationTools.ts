@@ -8,13 +8,18 @@ import type { Command, EventPage, EventPageCondition, EventPageGraphic, GameEven
 import { withJosa } from "@/util/josa";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
-import { resolveGraphic, type GraphicSpec } from "./eventCompile";
+import { examineMarkGraphic, resolveGraphic, type GraphicSpec } from "./eventCompile";
 import { resolveEventPlacement } from "./eventTools";
+import { splitSpeakerPrefix } from "./mysteryCaseTool";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { COORD_SCHEMA, CUTSCENE_BEAT_SCHEMA, GRAPHIC_SPEC_SCHEMA } from "./schemaShapes";
 
 const PASSIVE: EventPage["movement"] = { type: "fixed", speed: 3, frequency: 3 };
 const TRANSPARENT: EventPageGraphic = { transparent: true };
+/** 그림 없는 조사 지점의 표식. 주민을 세우면 물건이 사람이 된다(2026-09-24 회상 스토리, 메멘토 12개 전부 투명). */
+function mementoMark(): EventPageGraphic {
+  return examineMarkGraphic();
+}
 const SELF_ONCE_KEY = "A";
 
 type RecordValue = Record<string, unknown>;
@@ -103,11 +108,17 @@ function textCommands(lines: unknown, speaker?: string): Command[] {
   if (!Array.isArray(lines)) return [];
   return lines
     .filter((line): line is string => typeof line === "string" && line.length > 0)
-    .map((body) => (speaker ? { kind: "text", speaker, body } : { kind: "text", body }));
+    .map((body) => {
+      const split = splitSpeakerPrefix(body);
+      const who = split.speaker ?? speaker;
+      return who ? { kind: "text", speaker: who, body: split.body } : { kind: "text", body: split.body };
+    });
 }
 
 function graphicFromUnknown(value: unknown): EventPageGraphic {
-  if (value === undefined || value === null) return TRANSPARENT;
+  // null 은 투명 명시. 생략은 빈 바닥이라 보석 표식을 붙인다.
+  if (value === undefined) return mementoMark();
+  if (value === null) return TRANSPARENT;
   if (!isRecord(value)) throw new ToolError("graphic은 {query} 또는 {textureKey,characterIndex} 객체/null이어야 합니다.", { code: "graphic-shape" });
   return resolveGraphic(value as GraphicSpec);
 }
@@ -170,7 +181,7 @@ const placeExamineHotspots: ToolDefinition = {
   name: "place_examine_hotspots",
   description:
     "조사 핫스팟을 한 번에 여러 개 배치한다. 각 항목은 {at:{x,y},name,lines?,beats?,once?,itemId?,setSwitch?,graphic?}.  「조사」「살펴보기」 지점 요청의 정본. 이브식 갤러리 방 전체는 make_gallery_room." +
-    "좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다.",
+    " graphic 을 생략하면 빈 바닥 위에 보석 표식(object2)을 붙인다. 투명이 의도라면 graphic:{transparent:true}. 좌표 중복/기존 이벤트 겹침/맵 밖/개별 참조 오류는 해당 항목만 skip하고 warning으로 반환한다.",
   mode: "write",
   parameters: {
     type: "object",
@@ -205,10 +216,15 @@ const placeExamineHotspots: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const hotspots = Array.isArray(args.hotspots) ? args.hotspots : [];
     const occupied = existingEventCells(map);
-    const usedIds = new Set(map.events.map((event) => event.id));
+    // id 는 프로젝트 전역에서 고유해야 한다 — 셀프스위치 once 페이지가 전역 eventId 키라,
+    // 맵마다 ev_examine_1 이 중복되면 맵1 조사 직후 맵2 의 같은 id 가 «이미 조사함» 으로 고정된다
+    // (2026-09-24 감성 스토리 r3: 자동 플레이가「페이지 1 대신 다른 페이지가 실행」으로 실패).
+    const usedIds = new Set(Object.values(draft.maps).flatMap((existing) => existing.events.map((event) => event.id)));
     const warnings: string[] = [];
     const eventIds: string[] = [];
     let skipped = 0;
+    const invisible: string[] = [];
+    const marked: string[] = [];
 
     hotspots.forEach((raw, index) => {
       try {
@@ -239,6 +255,7 @@ const placeExamineHotspots: ToolDefinition = {
         const placementKey = cellKey(landing);
         const eventId = uniqueEventId(usedIds, `ev_examine_${index + 1}`);
         const graphic = graphicFromUnknown(raw.graphic);
+        if (raw.graphic === undefined) marked.push(name);
         const commands = commandsForHotspot(draft, map, raw, eventId);
         const pages = raw.once === true
           ? [
@@ -270,6 +287,11 @@ const placeExamineHotspots: ToolDefinition = {
         map.events.push(event);
         occupied.add(placementKey);
         eventIds.push(eventId);
+        // 그림도 없고 그 칸 윗층에 물건 타일도 없으면 플레이어 눈에는 빈 바닥이다 — 회상 스토리 도그푸딩에서
+        // 메멘토 9개가 전부 이랬다(무엇을 조사할지 보이지 않아 모든 칸에서 버튼을 눌러야 한다).
+        const visibleGraphic = graphic.transparent !== true && (graphic.sprite !== undefined || graphic.appearanceId !== undefined);
+        const propUnder = (map.upperTiles[landing.y * map.width + landing.x] ?? -1) > 0;
+        if (!visibleGraphic && !propUnder) invisible.push(name);
       } catch (cause) {
         skipped += 1;
         const message = cause instanceof Error ? cause.message : String(cause);
@@ -277,8 +299,19 @@ const placeExamineHotspots: ToolDefinition = {
       }
     });
 
+    if (marked.length > 0) {
+      warnings.push(
+        `그림 없는 조사 지점 ${marked.length}개(${marked.join(", ")})에 보석 표식을 붙였습니다 — 물건에 맞는 그림은 hotspots[].graphic({query:\"…\"}) 또는 그 칸의 소품 타일로 바꾸세요.`,
+      );
+    }
+    if (invisible.length > 0) {
+      warnings.push(
+        `보이지 않는 조사 지점 ${invisible.length}개(${invisible.join(", ")}): 그림이 없고 그 칸에 물건 타일도 없어 플레이어에게는 빈 바닥이다 — `
+          + "place_props·paint_tiles 로 그 칸에 물건을 놓거나 hotspots[].graphic({query:\"…\"} 또는 charset)을 주세요.",
+      );
+    }
     return {
-      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성, ${skipped}개 스킵`,
+      summary: `${map.name}에 조사 핫스팟 ${eventIds.length}개 생성, ${skipped}개 스킵${invisible.length ? ` — 그중 ${invisible.length}개는 빈 바닥 위 투명(보이지 않음)` : ""}`,
       data: { created: eventIds.length, skipped, eventIds },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -772,7 +805,8 @@ const compilePuzzle: ToolDefinition = {
   name: "compile_puzzle",
   description:
     "선언형 퍼즐을 이벤트로 컴파일한다. 공통 {mapId,puzzleId,kind,onSolve:{setSwitch?,beats?,message?},reset?}. " +
-    "kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다.",
+    "kind는 switch-sequence/password/item-gate/push-switches. 컴파일 전 결정적 solvability 검증을 수행하고 위반 시 한국어 사유로 거부한다. " +
+    "password 의 answer 가 1~6자리 숫자면 inputNumber 로 받는다. 선택지 보기에 정답 숫자를 적지 말 것.",
   mode: "write",
   parameters: {
     type: "object",

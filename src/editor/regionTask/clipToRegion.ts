@@ -57,7 +57,8 @@ function stacksToField(stacks: Stacks): Stacks | undefined {
 
 /**
  * proposed 프로젝트에서 mapId 맵의 region 밖 타일 변경을 base로 되돌린다.
- * 맵 크기가 base와 다르면(리사이즈 등) 셀 대응이 깨지므로 그대로 통과.
+ * 맵 크기가 base와 다르면 셀 대응이 깨진다. 리사이즈를 통과시키면 영역 밖
+ * 칸이 승인 없이 바뀌므로, 그 맵은 기준 크기로 되돌린다.
  */
 export function clipMapCellsToRegion(
   base: Project,
@@ -69,7 +70,10 @@ export function clipMapCellsToRegion(
   const proposedMap = proposed.maps[mapId];
   if (!baseMap || !proposedMap) return { project: proposed, clippedCells: 0 };
   if (baseMap.width !== proposedMap.width || baseMap.height !== proposedMap.height) {
-    return { project: proposed, clippedCells: 0 };
+    return {
+      project: { ...proposed, maps: { ...proposed.maps, [mapId]: baseMap } },
+      clippedCells: Math.abs(proposedMap.width - baseMap.width) + Math.abs(proposedMap.height - baseMap.height),
+    };
   }
 
   const { width, height } = baseMap;

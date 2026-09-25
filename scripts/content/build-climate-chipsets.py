@@ -2,9 +2,20 @@
 # Tile numbers stay identical to forest_harmony; only pixels change. Snow appends frozen copies of the water tiles.
 # Usage: python3 scripts/content/build-climate-chipsets.py   (writes public/assets/climate-villages/*.png + tiledata/climate-villages/sheets.json)
 # Climates: snow, volcano, desert (sand, sandstone cliffs, dry scrub, oasis water), autumn (gold grass, autumn leaves).
-import json, re, pathlib
+# Snow, volcano and desert also get leafless trees (bare-trees.py) in the same slots from 2880 (rows 96..100; the
+# rows between the sheet's own end and 2880 stay transparent), so one stamp number means the same tree on all three.
+import json, re, pathlib, sys
 import numpy as np
 from PIL import Image
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "lib"))
+import canopy_leaves
+import importlib.util
+_tg = importlib.util.spec_from_file_location("tall_grass_redraw", pathlib.Path(__file__).resolve().parent / "tiles" / "tall-grass-redraw.py")
+tall_grass = importlib.util.module_from_spec(_tg); _tg.loader.exec_module(tall_grass)
+_bt = importlib.util.spec_from_file_location("bare_trees", pathlib.Path(__file__).resolve().parent / "bare-trees.py")
+_ct = importlib.util.spec_from_file_location("climate_terrain", pathlib.Path(__file__).resolve().parent / "climate-terrain.py")
+climate_terrain = importlib.util.module_from_spec(_ct); _ct.loader.exec_module(climate_terrain)
+bare_trees = importlib.util.module_from_spec(_bt); _bt.loader.exec_module(bare_trees)
 
 ROOT = pathlib.Path.cwd()
 cat = json.load(open(ROOT / "tiledata/forest-villages/diverse/catalog.json"))
@@ -17,7 +28,11 @@ def sheet(key):
     if key not in _sheets: _sheets[key] = Image.open(ROOT / "public" / TEX[key]).convert("RGBA")
     return _sheets[key]
 
+# The canopy is repainted flat (as drawn before the leaf fill) and gets this sheet's own leaf fill afterwards.
+FLAT_CANOPY = dict(zip(range(2550, 2597), canopy_leaves.flat_tiles()))
+
 def tile_img(t):
+    if t in FLAT_CANOPY: return FLAT_CANOPY[t]
     g = GRAFT.get(t)
     key, src = (g["sourceChipset"], g["sourceTile"]) if g else (TS["image"]["id"], t)
     sh = sheet(key); per = sh.width // 16
@@ -216,22 +231,44 @@ def autumn(sheet):
     out[..., :3][r] = red[r]
     return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
 
+# Leaf interior (lib/canopy_leaves.py), last step per sheet: the 47 canopy slots in place plus the 11 depth variants
+# of the full cell, in the slots the catalog grove lists (2597..2607, its padding row: ensureForestGroveInterior).
+_grove = next(g for g in TS["autotileGroups"] if g["id"] == "forest_harmony_grove_47")
+_tiers = canopy_leaves.CANOPY["interior"]["tiers"]
+_slot = dict(zip(_tiers[0] + _tiers[1], _grove["interiorVariants"][0] + _grove["interiorVariants"][1]))
+INTERIOR = [_slot[47 + k] for k in range(len(canopy_leaves.INTERIOR))]
+MASKS = canopy_leaves.flat_masks()
+def leaves(sheet): return canopy_leaves.bake(sheet, list(range(2550, 2597)), INTERIOR, masks=MASKS)
+
+# Tall grass E/F/G (243..335, 1124..1190) is redrawn with the climate's own grass ramp on the repainted lawn 240
+# instead of the generic recolour (tiles/tall-grass-redraw.py) — frosted tufts, dry scrub, ash grass, russet grass.
+def grass(sheet, climate): return tall_grass.paint_sheet(sheet, climate)
+
 baked = bake(N + len(WATER))
 out_dir = ROOT / "public/assets/climate-villages"; out_dir.mkdir(parents=True, exist_ok=True)
-snowy = freeze(snow(baked), WATER, N)
-snowy.save(out_dir / "snow-chipset.png", optimize=True)
-volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "volcano-chipset.png", optimize=True)
-desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "desert-chipset.png", optimize=True)
-autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16)).save(out_dir / "autumn-chipset.png", optimize=True)
+assert N + len(WATER) <= bare_trees.FIRST, "ice copies would overlap the leafless trees"
+snowy = leaves(grass(freeze(snow(baked), WATER, N), "snow"))
+# Climate ground (climate-terrain.py) from 3030 after the leafless trees: each sheet draws its own block.
+assert bare_trees.COUNT <= climate_terrain.FIRST, "climate ground would overlap the leafless trees"
+def finish(sheet, climate): return climate_terrain.bake(bare_trees.bake(sheet, climate), climate)
+finish(snowy, "snow").save(out_dir / "snow-chipset.png", optimize=True)
+finish(leaves(grass(volcano(baked).crop((0, 0, 480, (N + 29) // 30 * 16)), "volcano")), "volcano").save(out_dir / "volcano-chipset.png", optimize=True)
+finish(leaves(grass(desert(baked).crop((0, 0, 480, (N + 29) // 30 * 16)), "desert")), "desert").save(out_dir / "desert-chipset.png", optimize=True)
+leaves(grass(autumn(baked).crop((0, 0, 480, (N + 29) // 30 * 16)), "autumn")).save(out_dir / "autumn-chipset.png", optimize=True)
 manifest = {
     "source": "tiledata/forest-villages/diverse/catalog.json",
     "baseCount": N,
-    "snow": {"count": N + len(WATER), "ice": [[t, N + k] for k, t in enumerate(WATER)]},
-    "volcano": {"count": N, "lava": WATER, "stoneBridges": BRIDGES},
-    "desert": {"count": N, "sandstone": sorted(CLIFF)},
+    "snow": {"count": climate_terrain.COUNT, "ice": [[t, N + k] for k, t in enumerate(WATER)]},
+    "volcano": {"count": climate_terrain.COUNT, "lava": WATER, "stoneBridges": BRIDGES},
+    "desert": {"count": climate_terrain.COUNT, "sandstone": sorted(CLIFF)},
     "autumn": {"count": N},
     "roofTiles": sorted(ROOF),
+    # Leafless trees on snow / volcano / desert: one stamp per tree, tiles row-major (-1 = the tree draws nothing there).
+    "bareTrees": {"first": bare_trees.FIRST, "climates": list(bare_trees.PALETTE), "stamps": bare_trees.layout()},
+    # Climate ground from 3030 (climate-terrain.py): stamps (-1 = draws nothing), blob / crack autotiles, snow caps.
+    "terrain": {"first": climate_terrain.FIRST, "stamps": climate_terrain.layout(), "autotiles": climate_terrain.autotile_groups(),
+                "snowWalls": climate_terrain.snow_layout()},
 }
 pathlib.Path(ROOT / "tiledata/climate-villages").mkdir(parents=True, exist_ok=True)
 (ROOT / "tiledata/climate-villages/sheets.json").write_text(json.dumps(manifest, ensure_ascii=False) + "\n")
-print({"snow": manifest["snow"]["count"], "volcano": N, "desert": N, "autumn": N, "water": len(WATER), "bridges": BRIDGES, "roofs": len(ROOF)})
+print({"snow": manifest["snow"]["count"], "volcano": manifest["volcano"]["count"], "desert": manifest["desert"]["count"], "bareTreeCells": sum(t >= 0 for st in manifest["bareTrees"]["stamps"] for t in st["tiles"]), "autumn": N, "water": len(WATER), "bridges": BRIDGES, "roofs": len(ROOF)})

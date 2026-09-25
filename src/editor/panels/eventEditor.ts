@@ -82,7 +82,8 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
   const list = el("div", { class: "event-list", dataset: { testid: "event-list" } });
   list.append(el("div", { class: "event-list-title", text: "맵 이벤트 목록" }));
   if (events.length === 0) {
-    list.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다." }));
+    // 다음 행동을 말한다 — 「없습니다」 만으로는 어떻게 놓는지 알 수 없었다(2026-09-24 visual QA).
+    list.append(el("div", { class: "event-list-empty", text: "이 맵에는 이벤트가 없습니다. 맵의 빈 칸을 더블클릭하면 새 이벤트를 만듭니다." }));
     return list;
   }
   for (const event of events) {

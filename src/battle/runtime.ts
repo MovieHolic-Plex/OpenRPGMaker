@@ -5,13 +5,13 @@ import { combatConditionMet } from "@/battle/combatConditions";
 import { advanceBattleSkillCooldowns, startBattleSkillCooldown } from "@/battle/battleSkillUse";
 import { effectiveActorClassId } from '@/project/sessionClass';
 import { battleTroopError } from '@/project/battleAdmission';
-import { activeItemEffects, itemAllowsBattle } from "@/project/itemUsage";
+import { activeItemEffects, isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
 // SIZE_OK: Battle runtime keeps turn state, troop-event callbacks, and snapshot
 // assembly together so battle-event regressions can verify one state machine.
 import type { ActorId, EnemyId, ItemId, ItemRecord, SkillId } from "@/project/types";
 import { startStateOf } from "@/project/session";
 import { transitionItemState } from "@/project/itemTransitions";
-import { isItemActorEligible } from "@/project/itemEligibility";
+import { isBattleItemUserEligible } from "@/battle/battleItemEligibility";
 import { DEFAULT_ANIMATION_ID, DEFAULT_SKILL_ID } from "@/project/defaults/constants";
 import { createBattleAnimationSnapshot } from "@/battle/animationSnapshot";
 import { actorBattlers, average, battlerSnapshot, enemyBattlers, monsterPartyBattlers, refreshActorBattlerDerivedStats, type MutableBattler } from "@/battle/battleBattlers";
@@ -370,6 +370,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     // 직전 전투 처리 결과(세션 SSOT 스냅샷). battleResult 조건 평가 기준.
     battleResult: sessionState.battleResult,
     roguelikeRun: sessionState.roguelikeRun ? structuredClone(sessionState.roguelikeRun) : undefined,
+    monsterInstances: structuredClone(sessionState.monsterInstances ?? {}),
+    monsterParty: [...(sessionState.monsterParty ?? [])],
+    monsterBox: [...(sessionState.monsterBox ?? [])],
     inventory: { ...sessionState.inventory },
     itemUseCharges: { ...(sessionState.itemUseCharges ?? {}) },
     gold: typeof sessionState.gold === "number" ? sessionState.gold : 0,
@@ -728,6 +731,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   function tick(deltaMs: number): void {
     if (battleFlow === "strict") return;
     if (phase !== "charging" || result) return;
+    if (turn >= STRICT_MAX_ROUNDS) {
+      recordTimeline({ kind: "stalemate", reason: "strictCap", side: "actor" });
+      escaped = true;
+      result = "escape";
+      phase = "resolved";
+      return;
+    }
     if (beginForcedSwitchIfNeeded()) return;
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number => agilityMultiplierForStates(options.project, battler);
@@ -769,7 +779,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const forcedActor = forcedSwitchActor();
     if (forcedActor) {
       if (command.kind !== "switch") return;
-      if (!switchActiveActor(forcedActor.recordId, command.targetActorId)) return;
+      if (!switchActiveActor(forcedActor.recordId, command.targetActorId)) {
+        if (switchCandidateActors().length === 0) {
+          activeActorId = undefined;
+          phase = battleFlow === "strict" ? "roundResolve" : "charging";
+        }
+        return;
+      }
       activeActorId = undefined;
       currentActorCommandKind = undefined;
       if (battleFlow === "strict") {
@@ -881,11 +897,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         const item = options.project.database.items.find((record) => record.id === command.itemId);
         // actor/class 제한 체크 — 불일치 시 커맨드 자체를 거부한다 (무효 턴으로 소모 안 함)
         return Boolean(item && (battleEventState.inventory[command.itemId] ?? 0) > 0 && itemIsBattleUsable(item)
-          && isItemActorEligible(options.project, item, actor.id));
+          && isBattleItemUserEligible(options.project, item, actor));
       }
       case "capture": {
         const item = options.project.database.items.find((record) => record.id === command.captureItemId);
-        return Boolean(item?.captureProfile && item.type === "special" && itemAllowsBattle(item)
+        // 포획 여부는 captureProfile 이 정한다. 종류(type)까지 special 로 묶으면 조수가 몬스터볼을
+        // normalGoods 로 저장한 게임에서 전투 메뉴엔 공이 뜨는데 던지면 missingItem 으로 실패했다(2026-09-24).
+        return Boolean(item && isCaptureTool(item) && itemAllowsBattle(item)
           && (battleEventState.inventory[command.captureItemId] ?? 0) > 0);
       }
     }
@@ -1681,7 +1699,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const count = battleEventState.inventory[itemId] ?? 0;
     if (count <= 0) return;
     if (!itemIsBattleUsable(item)) return;
-    if (!isItemActorEligible(options.project, item, user.monsterInstanceId ? undefined : user.recordId, user.classId)) return;
+    if (!isBattleItemUserEligible(options.project, item, user)) return;
 
     const skillId = item.activateSkillId ?? item.skillId;
     const usesNativeMedicineEffects = itemUsesNativeBattleEffects(item);
@@ -1718,7 +1736,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
   function itemIsBattleUsable(authoredItem: ItemRecord): boolean {
     const item = activeItemEffects(authoredItem);
-    if (!itemAllowsBattle(item) || item.captureProfile) return false;
+    if (!itemAllowsBattle(item) || isCaptureTool(authoredItem)) return false;
     return Boolean(
       item.skillId ||
         item.activateSkillId ||
@@ -1820,7 +1838,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     }
     const item = options.project.database.items.find((record) => record.id === captureItemId);
     const count = battleEventState.inventory[captureItemId] ?? 0;
-    if (!item?.captureProfile || item.type !== "special" || !itemAllowsBattle(item) || count <= 0) {
+    if (!item?.captureProfile || !isCaptureTool(item) || !itemAllowsBattle(item) || count <= 0) {
       finish({ targetId: target.id, captureItemId, success: false, rate: 0, blockedReason: "missingItem" });
       return;
     }

@@ -16,8 +16,10 @@ import { PRODUCT_BRAND } from "@/brand";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import { editorPlayBootDiagnosticSink } from "@/app/editorPlayBootDiagnostics";
 import { syncProjectFontTheme } from "@/app/fontTheme";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { createPlayGame, type PlayGameBootOptions } from "@/player/createPlayGame";
 import { configureEditorGameAccessor } from "@/editor/panels/editorGameSuspension";
+import { installEditRenderGate, type EditRenderGateGame } from "@/editor/editRenderGate";
 import { importWithRetry } from "@/util/dynamicImport";
 import {
   markInitialEditRender,
@@ -25,12 +27,14 @@ import {
   mountPerfMetrics,
 } from "@/app/perfMetrics";
 import { MAP_EDIT_HISTORY_EVENT } from "@/editor/mapEditHistory";
-import { editorState } from "@/editor/editorState";
+import { editorState, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { hasDeepLinkedProject, presentEditorWelcome, setEditorWelcomeDismissed, shouldPresentEditorWelcome } from "@/editor/editorWelcome";
 import { isForcedWelcomeRehearsal } from "@/editor/automationBootContext";
 import { hasElectronBridge, openFolderHeldByMainProcess, type ElectronRepository } from "@/project/persistence/electronRepository";
 import { projectRepository } from "@/project/persistence/repository";
 import { dismissBootLoader } from "@/app/bootLoader";
+import { rememberBootBrief } from "@/app/bootBrief";
+import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 
 export type Mode = "edit" | "play";
 
@@ -82,7 +86,13 @@ export async function bootApp(root: HTMLElement): Promise<void> {
   // 마이크로태스크로 합쳐 갱신한다.
   // 테스트에서 editorState가 부분 목킹될 수 있으므로 함수 존재를 가드.
   if (typeof editorState.subscribe === "function") {
-    editorState.subscribe(() => {
+    let lastTopbarState = editorState.get?.();
+    editorState.subscribe((state) => {
+      const previous = lastTopbarState;
+      lastTopbarState = state;
+      // 레이어 단추는 menu.ts 가 제자리에서 바꾼다. 타일·붓만 고른 클릭마다 탑바를 통째로
+      // 다시 지으면 대형 칩셋 팔레트 클릭이 그만큼 굼떠진다(2026-09-25 실측).
+      if (previous && editorStateChangedOnlyPaintPick(previous, state)) return;
       if (topbarRefreshQueued) return;
       topbarRefreshQueued = true;
       queueMicrotask(() => {
@@ -109,6 +119,7 @@ export async function bootApp(root: HTMLElement): Promise<void> {
     await attachElectronFolderAtBoot();
     // P6: 온라인 저장이 없다 — 첫 방문에 열 원격 데모 행도, 발급할 행도 없다. 항상 기존 로드 경로다.
     await store.load();
+    rememberBootBrief(store.getCurrent(), getAiConnectionStatus().kind === "ready");
   } catch (error) {
     // 오진 방지(도그푸딩 결함 ②): DB 연결이 정말 필요한 경우와, 연결은 되지만 저장된
     // 프로젝트 데이터가 무결성 검증에 실패한 경우(벽돌)를 구분해 다른 화면을 보여준다.
@@ -522,7 +533,7 @@ export async function enterMode(mode: Mode): Promise<void> {
     if (run !== modeRun) return;
     renderEditor(elements.main);
   } else {
-    const { renderPlayer } = await import("@/player/player");
+    const [{ renderPlayer }] = await Promise.all([import("@/player/player"), preloadRuntimeStyles()]);
     if (run !== modeRun) return;
     // Editor play mode is an authoring surface, not the shipped export player: QA
     // instrumentation stays on so debug hooks/state mirrors remain available here.
@@ -533,8 +544,9 @@ export async function enterMode(mode: Mode): Promise<void> {
   }
   modeMounted = true;
 
-  // 탑바 갱신(모드 배지/버튼).
+  // 탑바 갱신(모드 배지/버튼). 대기 중에 모드가 다시 바뀌었으면 이전 런이 덮지 않는다.
   await renderTopbar();
+  if (run !== modeRun) return;
   markModeSwitch(startedAt);
 }
 
@@ -567,6 +579,17 @@ export async function startEditGame(parent: HTMLElement): Promise<Phaser.Game> {
     next.destroy(true);
     return next;
   }
+  const CoreEvents = PhaserRuntime.Core.Events;
+  installEditRenderGate(next as unknown as EditRenderGateGame, {
+    PRE_STEP: CoreEvents.PRE_STEP,
+    STEP: CoreEvents.STEP,
+    POST_STEP: CoreEvents.POST_STEP,
+    PRE_RENDER: CoreEvents.PRE_RENDER,
+    POST_RENDER: CoreEvents.POST_RENDER,
+    DESTROY: CoreEvents.DESTROY,
+    VISIBLE: CoreEvents.VISIBLE,
+    RESUME: CoreEvents.RESUME,
+  });
   game?.destroy(true);
   game = next;
   return next;

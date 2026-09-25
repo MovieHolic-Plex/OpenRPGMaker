@@ -1,5 +1,6 @@
 import { tileStackAt } from "@/project/mapOverlayTiles";
-import { loadTilesetImage, type TilesetCanvasImage } from "@/editor/mapTileDraw";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
+import { drawShadowQuarters, loadTilesetImage, type TilesetCanvasImage } from "@/editor/mapTileDraw";
 import { isLakeAutotileTile, lakeAutotileQuarterSources } from "@/project/defaults/lakeAutotile";
 import { chipsetQuarterComposition } from "@/project/defaults/terrainQuarterAutotile";
 import {
@@ -124,6 +125,15 @@ function drawStack(context: CanvasRenderingContext2D, image: TilesetCanvasImage,
     const x = index % map.width;
     const y = Math.floor(index / map.width);
     for (const tile of tileStackAt(map, layer, index)) drawRawTile(context, image, tileset, tile, x, y, 0, 0, tileset.tileSize);
+  }
+  // 2층(lower)·4층(upper)은 칩 그대로, 그림자는 2층 위 — mapTileDraw 와 같은 순서.
+  for (let index = 0; index < map.width * map.height; index += 1) {
+    const overlay = layerTileAt(map, layer === "lower" ? 2 : 4, index);
+    if (overlay >= 0) drawRawTile(context, image, tileset, overlay, index % map.width, Math.floor(index / map.width), 0, 0, tileset.tileSize);
+  }
+  if (layer !== "lower" || !map.shadowBits) return;
+  for (let index = 0; index < map.width * map.height; index += 1) {
+    drawShadowQuarters(context, index % map.width, Math.floor(index / map.width), tileset.tileSize, shadowAt(map, index));
   }
 }
 

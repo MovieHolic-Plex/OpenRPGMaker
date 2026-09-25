@@ -150,6 +150,9 @@ export function placePlayerOnCurrentMap(scene: PlaySceneContext, x: number, y: n
   updateCharacterDepth(scene.player, "same");
   syncFollowerSprites(scene);
   scene.moving = false;
+  // 순간이동은 걸음을 떼지 않으므로 연타 디바운스 키를 여기서 비운다 — 안 비우면 옮긴 자리에서 같은
+  // NPC 에게 다시 말을 걸 수 없다.
+  scene.lastActionTargetKey = "";
   scene.centerCamera();
 }
 

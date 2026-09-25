@@ -25,7 +25,6 @@ const EXPLICIT_FALLBACK_FAMILY = new Set([
   "prune_unused",
   "rename_switch",
   "rename_variable",
-  "reset_project",
   "run_dungeon_room_pipeline",
   "run_interior_room_pipeline",
   "set_cluster_rule",

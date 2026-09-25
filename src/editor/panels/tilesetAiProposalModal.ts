@@ -161,7 +161,7 @@ function renderHeader(onClose: () => void): HTMLElement {
       el("h4", { text: "AI 메타 제안" }),
       el("button", {
         class: "database-modal-close",
-        text: "x",
+        text: "×",
         attrs: { type: "button", "aria-label": "닫기" },
         on: { click: onClose },
       }),

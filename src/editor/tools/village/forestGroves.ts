@@ -1,5 +1,5 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
-import { paintContouredForest } from "./forestContour";
+import { paintContouredForest, shadeForestCanopy } from "./forestContour";
 import { forestTrunkCandidates } from "./forestTrunkTiles";
 
 const NEIGHBORS = [[0,-1], [1,0], [0,1], [-1,0], [1,-1], [1,1], [-1,1], [-1,-1]];
@@ -87,5 +87,6 @@ export function paintForestGroves(map: GameMap, area: Rect, group: AutotileGroup
     map.upperTiles[index] = group.variantMap[String(mask)]!;
   }
   for (const [index, tile] of trunks) map.lowerTiles[index] = tile;
+  shadeForestCanopy(map, group, area);
   return { cells: new Set([...forest, ...trunks.keys()]), canopyCells: forest.size, trunkRuns };
 }

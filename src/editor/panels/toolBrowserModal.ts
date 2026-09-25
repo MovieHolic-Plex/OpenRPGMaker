@@ -200,7 +200,7 @@ export function openToolBrowserModal(): HTMLElement {
 
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "x",
+    text: "×",
     attrs: { type: "button", "aria-label": "닫기" },
     dataset: { testid: "tool-browser-close" },
   });

@@ -50,6 +50,11 @@ export interface PiAgentRequest {
    * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
    */
   readonly currentMapId?: string;
+  /**
+   * 사용자가 이 대화에서 승인한 칩셋 계열(`src/project/tilesetFamily.ts`). 도구 ctx 에 그대로 실려
+   * 실행기 계열 검사(`tileset-family-change`)가 이 계열로의 변경을 통과시킨다. 비우면 승인 없음.
+   */
+  readonly approvedTilesetFamilies?: readonly string[];
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];
@@ -176,7 +181,12 @@ type PiAgentEventPayload =
    */
   | { readonly type: "done"; readonly villageCompletion?: PiVillageCompletion; readonly interiorCompletion?: readonly { mapId: string; issues: readonly unknown[] }[]; readonly project: Project; readonly stats: PiAgentStats; readonly changedKeys: readonly string[]; readonly spatialProof?: SpatialToolProof | null;
       /** 요청 프로젝트와 내용이 같아 project 에서 뺀 무거운 키. 클라이언트가 요청 프로젝트의 것을 다시 붙인다. */
-      readonly unchangedKeys?: readonly PiCheckpointHeavyKey[] };
+      readonly unchangedKeys?: readonly PiCheckpointHeavyKey[];
+      /**
+       * 모델·제공자 오류나 상한으로 **도중에 멈춘** 실행의 사유. 반영된 작업은 남지만 요청을 끝까지 하지 않았다 —
+       * 패널이 「만들었어요 · 플레이해 보세요」 대신 멈췄다고 말하게 한다(2026-09-24 연애 도그푸딩: 공략 인물 하나 없이 완료 표시).
+       */
+      readonly stoppedEarly?: string };
 
 export type PiAgentDoneEvent = Extract<PiAgentEvent, { type: "done" }>;
 

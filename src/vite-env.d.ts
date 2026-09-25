@@ -20,6 +20,7 @@ interface ImportMetaEnv {
   readonly VITE_TOUCH_CONTROLS?: string;
   /** CC0 BGM 카탈로그 CDN 베이스. 미설정이면 같은 오리진 로컬 경로로 떨어진다. */
   readonly VITE_BGM_CDN_BASE?: string;
+  readonly VITE_STILL_CDN_BASE?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
 }
@@ -114,7 +115,7 @@ interface Window {
   __oprnDbAiLastRequest?: { readonly message: string; readonly at: string };
   // 이 빌드의 버전 메타(src/brand.ts) — 버그 리포트가 커밋과 빌드 시각을 인용할 수 있게 한다.
   __oprnVersion?: () => import("@/brand").AppVersionMeta;
-  __oprnCamera?: () => OprnCameraDebug;
+  __oprnCamera?: () => OprnCameraDebug | null;
   __oprnJuiceLog?: () => readonly OprnRuntimeJuiceLogEntry[];
   __oprnInput?: {
     readonly action: () => void;

@@ -205,8 +205,6 @@
 
 :is(.walk-encounter-shell, .walk-encounter-list, .walk-encounter-picker) :is(button, input, select, summary):focus-visible { outline: var(--focus-outline); outline-offset: var(--stroke-2); }
 
-.selection-action-chips:has([data-testid="selection-chip-walk-encounter"]) { flex-wrap: wrap; border-radius: var(--radius-s); }
-
 @media (max-width: 600px) {
   .walk-encounter-options-grid { grid-template-columns: minmax(0, 1fr); }
   .walk-encounter-row-main { grid-template-columns: minmax(0, 1fr) var(--walk-weight-width) var(--walk-share-width); }

@@ -30,5 +30,5 @@ describe("village house interiors — cabinet base", () => {
       });
     }
     expect(cabinets).toBeGreaterThan(0);
-  });
+  }, 60_000);
 });

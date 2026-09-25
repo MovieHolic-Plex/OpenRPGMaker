@@ -1,4 +1,6 @@
 import type { AutotileGroup, GameMap, Rect } from "@/project/types";
+import { shadeAutotileInterior } from "@/project/defaults/autotileEngine";
+import { forestCanopyTiles } from "@/project/defaults/forestGrove";
 import { FOREST_TRUNK_MIN_WIDTH, FOREST_TRUNK_TILES, forestTrunkCandidates } from "./forestTrunkTiles";
 import type { ForestGroveReport } from "./forestGroves";
 
@@ -35,6 +37,27 @@ export function forestContourScore(x: number, y: number, area: Rect, seed: numbe
   const clearing = (Math.hypot((wx - area.w / 2) / rx, (wy - area.h / 2) / ry) - 1) * Math.min(rx, ry);
   return clearing + 7 * fbm(wx / 8, wy / 8, seed ^ 0x91671)
     + 1.2 * noise(wx / 3, wy / 3, seed ^ 0x75931) + (coverage - 0.4) * 7;
+}
+
+/** Contour for an edge band (a strip or block reserved for forest or water). Sides on or next to the map edge
+ * run off the map; every other side gets a treeline that bends in and out with coherent noise, so the
+ * band never paints as a straight-edged rectangle. Positive = canopy. */
+export function edgeBandScore(x: number, y: number, band: Rect, map: Pick<GameMap, "width" | "height">,
+  seed: number): number {
+  const inner: number[] = [];
+  if (band.x > 1) inner.push(x - band.x);
+  if (band.x + band.w < map.width - 1) inner.push(band.x + band.w - x);
+  if (band.y > 1) inner.push(y - band.y);
+  if (band.y + band.h < map.height - 1) inner.push(band.y + band.h - y);
+  const depth = Math.min(band.w, band.h);
+  const reach = inner.length > 0 ? Math.min(...inner) : depth;
+  return reach - depth * 0.25 + depth * 0.6 * fbm(x / 5, y / 5, seed ^ 0x5ee1);
+}
+
+/** Smooth signed offset (about -2..+2 cells) for a treeline's distance from rectangular fields, yards and
+ * houses. A constant distance copies their straight edges into the canopy; this bends the line. */
+export function forestSetbackJitter(x: number, y: number, seed: number): number {
+  return Math.round(2.5 * fbm(x / 5, y / 5, seed ^ 0x3c6ef));
 }
 
 /** Continuous contour fitted to the approved cliff-village trunk assemblies.
@@ -74,7 +97,9 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
     }
     if (component.length < 8) component.forEach(index => forest.delete(index));
   }
-  return fitForest(map, area, group, forest, open, desired);
+  const report = fitForest(map, area, group, forest, open, desired);
+  shadeForestCanopy(map, group, area);
+  return report;
 }
 
 /** Re-fits the trunks of a canopy already on the map, for maps painted before the trunk assemblies
@@ -82,7 +107,7 @@ export function paintContouredForest(map: GameMap, area: Rect, group: AutotileGr
  * become `ground`, and `free` says which other cells may take canopy or trunks. */
 export function refitForestTrunks(map: GameMap, area: Rect, group: AutotileGroup, ground: number,
   free: (x: number, y: number) => boolean): ForestGroveReport {
-  const W = map.width, canopy = new Set(Object.values(group.variantMap)), before = new Set<number>();
+  const W = map.width, canopy = forestCanopyTiles(group), before = new Set<number>();
   for (let y = Math.max(0, area.y); y < Math.min(map.height, area.y + area.h); y++)
     for (let x = Math.max(0, area.x); x < Math.min(W, area.x + area.w); x++) {
       const index = y * W + x;
@@ -95,6 +120,7 @@ export function refitForestTrunks(map: GameMap, area: Rect, group: AutotileGroup
     && !map.lowerTileStacks?.[y * W + x]?.length && !map.upperTileStacks?.[y * W + x]?.length;
   const forest = new Set(before), report = fitForest(map, area, group, forest, open);
   for (const index of before) if (!forest.has(index)) map.upperTiles[index] = -1;
+  shadeForestCanopy(map, group, area);
   return report;
 }
 
@@ -149,6 +175,13 @@ function fitForest(map: GameMap, area: Rect, group: AutotileGroup, forest: Set<n
   }
   for (const [index, tile] of trunks) map.lowerTiles[index] = tile;
   return { cells: new Set([...forest, ...trunks.keys()]), canopyCells: forest.size, trunkRuns };
+}
+
+/** Leaf interior by depth (forestGrove.ts): re-pick the full canopy cells within two cells of the area, whose depth
+ * the new edges may have changed. Seeded by position only, so repainting the same mask gives the same tiles. */
+export function shadeForestCanopy(map: GameMap, group: AutotileGroup, area?: Rect): number {
+  const grown = area && { x: area.x - 2, y: area.y - 2, w: area.w + 4, h: area.h + 4 };
+  return shadeAutotileInterior({ width: map.width, height: map.height, lowerTiles: map.upperTiles }, group, grown);
 }
 
 /** Trunks fit any bottom edge FOREST_TRUNK_MIN_WIDTH or more cells wide (forestTrunkCandidates); the

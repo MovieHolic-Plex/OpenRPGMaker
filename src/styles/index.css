@@ -27,5 +27,6 @@
 @import "./map/index.css";
 @import "./database/editor-startup-ai.css" layer(database);
 @import "./resources/index.css";
-@import "./runtime/index.css";
+/* 런타임 시트는 플레이·테스트 플레이·런타임 미리보기를 여는 순간 src/app/runtimeStyles.ts 가 지연 로드한다. */
+@import "./runtime/fonts.css" layer(runtime);
 @import "./overrides.css";

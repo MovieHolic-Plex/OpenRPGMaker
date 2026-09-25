@@ -116,6 +116,9 @@ export async function playBattle(
         roguelikeRun: scene.session.roguelikeRun,
         itemUseCharges: scene.session.itemUseCharges,
         gold: scene.session.gold,
+        monsterInstances: scene.session.monsterInstances,
+        monsterParty: scene.session.monsterParty,
+        monsterBox: scene.session.monsterBox,
         partyActorIds: scene.session.partyActorIds,
         actorSkillIds: scene.session.actorSkillIds,
         actorExperience: scene.session.actorExperience,
@@ -172,7 +175,10 @@ export async function playBattle(
       let exiting = false;
       let closingDom = false;
       const entrySkin = getBattleSkin(resolveSkinId(project.system.battleUiStyle));
-      const entryTransition = createSkinBattleTransition(host, entrySkin.transition);
+      // 필드 캔버스: 진입 때 빨려 들어가고 복귀 때 내려앉는다(battleTransition.setFieldMotion).
+      const gameCanvas: unknown = Reflect.get(scene.game, "canvas");
+      const fieldCanvas = gameCanvas instanceof HTMLElement ? gameCanvas : undefined;
+      const entryTransition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas);
       const cleanup = (): void => {
         signal?.removeEventListener("abort", abort);
         scene.events?.off("shutdown", onShutdown);
@@ -239,7 +245,7 @@ export async function playBattle(
             if (exiting) return;
             exiting = true;
             try {
-              const transition = createSkinBattleTransition(host, entrySkin.transition);
+              const transition = createSkinBattleTransition(host, entrySkin.transition, undefined, fieldCanvas);
               exitTransition = transition;
               void transition.exit().then(async () => {
                 if (!current()) { abort(); return; }

@@ -315,6 +315,12 @@
   --db-footer-status-fg: var(--db-studio-warning);
 }
 
+/* 저장하지 않는 세션 — 실패가 아니라 안내라 회색으로 말한다. */
+.database-modal-backdrop .database-modal-window .database-footer-status[data-status-kind="info"] {
+  --db-footer-status-bg: var(--db-studio-inset, rgba(15, 23, 42, 0.05));
+  --db-footer-status-fg: var(--db-studio-text-2);
+}
+
 /* 실패 문구는 잘리면 쓸모가 없다 — 충돌 맵 이름 목록이 ellipsis 로 사라지던 경로.
    오류일 때만 줄바꿈을 허용하고 폭 제한을 푼다. */
 .database-modal-backdrop .database-modal-window .database-footer-status[data-status-kind="error"] {

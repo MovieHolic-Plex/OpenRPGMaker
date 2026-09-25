@@ -3,6 +3,7 @@ import { runTool, type ToolContext } from "@/editor/tools";
 import { createBlankProject, DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults";
 import { explainEvent } from "@/project/storyEventExplain";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
+import { normalizeQuestGraph, lintQuestGraph, generateQuestWalkthrough } from "@/project/quest/questGraph";
 import { projectLint } from "@/project/lint/projectLint";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project, StoryFlagDef } from "@/project/types";
@@ -49,6 +50,47 @@ function issueCodes(project: Project): string[] {
 }
 
 describe("story flag registry tools", () => {
+  it("updates a description without changing its identity, usage, retirement or progress", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    expect(runTool(ctx, "declare_story_flag", {
+      id: "camp-ridge", kind: "switch", targetId: "sw_0003", description: "산길 조사",
+      questId: "camp", tags: ["camp"],
+    }).ok).toBe(true);
+    ctx.project.storyFlags![0]!.retired = true;
+    ctx.project.session.switches.sw_0003 = true;
+    addEvent(ctx.project, event("camp-reader", [page("p1", [
+      { kind: "switch", switchId: "sw_0003", value: true },
+    ])]));
+    const before = structuredClone(ctx.project);
+
+    expect(runTool(ctx, "declare_story_flag", {
+      action: "update", id: "camp-ridge", description: "새솔마을 조사",
+    }).ok).toBe(true);
+    expect(ctx.project.storyFlags).toEqual([{ ...before.storyFlags![0], description: "새솔마을 조사" }]);
+    expect(ctx.project.session).toEqual(before.session);
+    expect(ctx.project.switches).toEqual(before.switches);
+    expect(ctx.project.maps).toEqual(before.maps);
+    expect(ctx.project.quests).toEqual(before.quests);
+  });
+
+  it("rejects missing descriptions, unknown flags and attempts to retarget an update", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    expect(runTool(ctx, "declare_story_flag", {
+      id: "camp-ridge", kind: "switch", targetId: "sw_0003", description: "산길 조사",
+    }).ok).toBe(true);
+    const before = structuredClone(ctx.project.storyFlags);
+    for (const patch of [
+      { description: "" },
+      { description: "새솔마을", targetId: "sw_0004" },
+      { description: "새솔마을", newId: "other-camp" },
+      { description: "새솔마을", retired: false },
+      { description: "새솔마을", id: "missing-camp" },
+    ]) {
+      expect(runTool(ctx, "declare_story_flag", { action: "update", id: "camp-ridge", ...patch }).ok).toBe(false);
+      expect(ctx.project.storyFlags).toEqual(before);
+    }
+  });
+
   it("declares a story flag and auto-allocates an unused switch target", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, "declare_story_flag", {
@@ -98,6 +140,37 @@ describe("story flag registry tools", () => {
 });
 
 describe("story flag usage index and lint", () => {
+  it("indexes reads and writes inside nested battle outcome branches", () => {
+    const project = createBlankProject();
+    addEvent(project, event("ev_outcomes", [page("p1", [], [{
+      kind: "choices", options: [{ text: "Battle", branch: [{
+        kind: "battleProcessing", troopId: project.database.troops[0]!.id,
+        canEscape: true, canLose: true, branchOnResult: true,
+        victoryBranch: [{ kind: "setSwitch", switchId: "sw_0003", value: true }],
+        defeatBranch: [{ kind: "setVariable", variableId: "var_0001", op: "=", value: { kind: "var", id: "var_0002" } }],
+        escapeBranch: [{ kind: "fork", condition: { kind: "switch", switchId: "sw_0004", value: true },
+          then: [{ kind: "setSwitch", switchId: "sw_0005", value: true }] }],
+      }] }],
+    }])]));
+    const index = buildStoryFlagUsageIndex(project);
+    const victory = usageBucketFor(index, "switch", "sw_0003").writes;
+    expect(victory).toHaveLength(1);
+    expect(victory[0]).toMatchObject({ eventId: "ev_outcomes", pageId: "p1", commandPath: "pages[0].commands[0].options[0].branch[0].victoryBranch[0]" });
+    expect(usageBucketFor(index, "variable", "var_0001").writes).toHaveLength(1);
+    expect(usageBucketFor(index, "variable", "var_0002").reads).toHaveLength(1);
+    expect(usageBucketFor(index, "switch", "sw_0004").reads).toHaveLength(1);
+    expect(usageBucketFor(index, "switch", "sw_0005").writes[0]?.commandPath).toContain(".escapeBranch[0].then[0]");
+    const quest = normalizeQuestGraph(project, {
+      id: "battle-result", title: "Battle result", edges: [],
+      nodes: [{ id: "victory", description: "Win", completesWhen: { kind: "switch", switchId: "sw_0003", value: true } }],
+    });
+    expect(lintQuestGraph(project, quest).filter((issue) => issue.code === "quest-graph:dead-end-node")).toEqual([]);
+    project.quests = [quest];
+    const walkthrough = generateQuestWalkthrough(project, quest.id);
+    expect(walkthrough.nodes[0]?.automatic).toBe(false);
+    expect(walkthrough.manualHints).not.toHaveLength(0);
+  });
+
   it("indexes page conditions, forks, writes, common events, move routes, and troop events", () => {
     const project = createBlankProject();
     addEvent(project, event("ev_story", [

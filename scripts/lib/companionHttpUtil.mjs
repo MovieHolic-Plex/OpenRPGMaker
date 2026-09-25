@@ -1,5 +1,9 @@
+import { gunzipSync } from "node:zlib";
+
 export async function readRequestJson(req) {
   if (req.method === "GET" || req.method === "OPTIONS") return {};
+  const encoding = req.headers?.["content-encoding"] ?? "identity";
+  if (encoding !== "identity" && encoding !== "gzip") throw new Error("Unsupported request content encoding");
   const chunks = [];
   let size = 0;
   for await (const chunk of req) {
@@ -7,7 +11,10 @@ export async function readRequestJson(req) {
     if (size > 64 * 1024 * 1024) throw new Error("Request body is too large");
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
   }
-  const raw = Buffer.concat(chunks).toString("utf8") || "{}";
+  const wire = Buffer.concat(chunks);
+  // Bound decompression independently; the compressed body still has the 64MiB cap.
+  const decoded = encoding === "gzip" ? gunzipSync(wire, { maxOutputLength: 256 * 1024 * 1024 }) : wire;
+  const raw = decoded.toString("utf8") || "{}";
   return JSON.parse(raw);
 }
 

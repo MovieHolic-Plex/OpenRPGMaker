@@ -8,6 +8,7 @@ import { readLatestRunCheckpoint, saveRunCheckpoint, type RunCheckpoint, type Ru
 import { checkpointContentIdentity, reconcileRunCheckpoint, type RunRecovery, type RunRuntimeState } from "./runRecovery";
 import { ACCEPTANCE_EXAMPLES, acceptanceRecord, type AcceptanceSnapshot, type AcceptancePromise, type AcceptanceSource, type RequirementWithdrawalAction } from "./assistantAcceptance";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
+import { formatThrownDiagnostic } from "./errorDiagnostic";
 import { type ResultReview, type ReviewFinding } from "./independentReview";
 import type { LintIssue } from "@/project/lint/projectLint";
 import { runProjectLint } from "@/editor/tools/queryTools";
@@ -689,6 +690,22 @@ export class AssistantSession {
   private lastTurnPlanOnly = false;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
   private ctx: ToolContext;
+
+  /**
+   * 세션 도구 ctx. 지금 보는 맵·승인 칩셋 계열은 도구를 부를 때마다 최신 값을 읽는다(칩셋 계열 검사·create_map 기본 칩셋).
+   * 실행기는 ctx.project 만 갈아 끼우므로 게터가 살아 있다.
+   */
+  private toolContext(project: Project): ToolContext {
+    const options = (): ContextOptions => this.contextOptions ?? {};
+    return {
+      project,
+      get currentMapId() {
+        const id = resolveContextMapId(options());
+        return id && this.project.maps[id] ? id : undefined;
+      },
+      get approvedTilesetFamilies() { return options().getApprovedTilesetFamilies?.(); },
+    };
+  }
   private readonly messages: ChatMessage[] = [];
   private readonly audit: AuditEntry[] = [];
   // 세션 시작 시점 스냅샷(수락 시 store와 대조/리플레이용). rebaseProject로 갱신될 수 있다.
@@ -986,7 +1003,7 @@ export class AssistantSession {
     this.draftBaseline = new AuthoredProjectBaseline(project);
     this.observedLiveWorld = structuredClone(project.world);
     this.baselineProject = structuredClone(project);
-    this.ctx = { project: cloneDetachedDraft(project) };
+    this.ctx = this.toolContext(cloneDetachedDraft(project));
     this.proposalBase = captureProposalBase(project);
     this.acceptanceRequestBaseline = structuredClone(project);
     this.reviewBaseline = structuredClone(project);
@@ -1154,7 +1171,7 @@ export class AssistantSession {
     this.draftBaselineCurrent = true;
     this.pruneRemovedMapSpecs(this.ctx.project, project);
     this.baselineProject = structuredClone(project);
-    this.ctx = { project: cloneDetachedDraft(project) };
+    this.ctx = this.toolContext(cloneDetachedDraft(project));
     this.proposalBase = captureProposalBase(project);
     // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
     this.milestoneApplyFailed = false;
@@ -1908,10 +1925,12 @@ export class AssistantSession {
       if (operation.signal.aborted) return cancelled ?? cancel();
       this.runExecution = signal?.aborted || isLlmAbortError(cause) ? "cancelled" : "failed";
       const error = cause instanceof Error ? cause.message : String(cause);
+      const stoppedReason = this.runExecution === "cancelled" ? "aborted" : "error";
+      const errorDetail = formatThrownDiagnostic(cause, { request: this.currentTurnRequestText, stoppedReason });
       this.pushAudit({ kind: "status", text: `turn-boundary-error ${error}` });
-      return await this.finishAssessedRunRecap(this.withTurnLedger({ assistantText: "", error,
+      return await this.finishAssessedRunRecap(this.withTurnLedger({ assistantText: "", error, errorDetail,
         proposedCalls: this.finalizeProposals(this.turnProposals),
-        stoppedReason: this.runExecution === "cancelled" ? "aborted" : "error",
+        stoppedReason,
       }), startedAt, usageBefore, auditFrom, subscriber);
     } finally {
       releaseFreezeGuard();
@@ -2104,10 +2123,11 @@ export class AssistantSession {
         operation.assertCurrent();
         const error = cause instanceof Error ? cause.message : String(cause);
         const stoppedReason = signal?.aborted ? "aborted" : "error";
+        const errorDetail = formatThrownDiagnostic(cause, { request: instruction, stoppedReason });
         this.runExecution = signal?.aborted ? "cancelled" : "failed";
         this.pushAudit({ kind: "status", text: `프로젝트 기록 준비 실패: ${error}` });
         onEvent({ type: "status", text: `프로젝트 기록을 확인하지 못했습니다: ${error}` });
-        return { assistantText: "", proposedCalls: [], stoppedReason, error };
+        return { assistantText: "", proposedCalls: [], stoppedReason, error, errorDetail };
       }
     }
     // 의도 선언: 모델이 한 번 읽어 구조화한다(수정/생성·실내/야외·시설·되묻기·계획·툴). 코드는 이 선언만
@@ -2236,7 +2256,7 @@ export class AssistantSession {
     if (!continuesGoal) {
       // Retain an unchanged previously reviewed draft as content, not apply authority.
       // The entry already retired that authority; unreviewed unrelated drafts still drop.
-      if (this.turnProposals.size > 0 && reviewedDraftAtEntry !== JSON.stringify(this.ctx.project)) this.ctx = { project: cloneDetachedDraft(this.baselineProject) };
+      if (this.turnProposals.size > 0 && reviewedDraftAtEntry !== JSON.stringify(this.ctx.project)) this.ctx = this.toolContext(cloneDetachedDraft(this.baselineProject));
       this.reviewBaseline = structuredClone(this.ctx.project);
       this.reviewToolResults = [];
       this.resultReview = null;
@@ -4865,10 +4885,11 @@ export class AssistantSession {
         const error = isRetryableLlmError(cause) && !isOhMyPiWorkerCrash(cause)
           ? appendTransientRetryGuidance(rawError)
           : rawError;
+        const errorDetail = formatThrownDiagnostic(cause, { request: this.currentTurnRequestText, stoppedReason: "error" });
         this.runExecution = "failed";
         this.lastTurnFailed = true; // 수동 재시도(retryLastTurn) 허용 상태로 표시.
         this.pushAudit({ kind: "status", text: `턴 중단(error): ${error} · 출력 토큰 ~${spentOutputTokens}` });
-        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error };
+        return { assistantText, proposedCalls: this.finalizeProposals(proposedByKey), stoppedReason: "error", error, errorDetail };
       }
       if (pendingImages) {
         const delivered = new Set(result.imageDelivery?.flatMap(({ messageIndex, partIndex }) => {
@@ -5420,7 +5441,7 @@ export class AssistantSession {
           }
 
           if (name === "read_tileset_reference" && toolResult.ok) {
-            roundImages.push(...this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult));
+            roundImages.push(...await operation.wait(this.readEvidence.tilesetReferences.imagesForRead(this.ctx.project, toolResult)));
           }
           if (name === 'read_spatial_reference' && toolResult.ok) {
             roundImages.push(...spatialReferenceImages(this.ctx.project, args, toolResult.data));

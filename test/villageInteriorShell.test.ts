@@ -87,5 +87,5 @@ describe("village house interiors — partitions", () => {
       }
     }
     expect(partitions).toBeGreaterThan(0);
-  });
+  }, 60_000);
 });

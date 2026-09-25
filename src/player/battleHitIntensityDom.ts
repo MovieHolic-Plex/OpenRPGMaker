@@ -40,6 +40,16 @@ export function applyHitIntensity(
     return;
   }
   root.dataset.hitIntensity = intensity;
+  // 펀치는 맞은 자리로 당겨 든다 — 필드 가운데를 축으로 키우면 가장자리 적은 오히려 밀려난다.
+  const x = target?.style.getPropertyValue("--battle-node-x");
+  const y = target?.style.getPropertyValue("--battle-node-y");
+  if (x && y) {
+    root.style.setProperty("--hit-origin-x", x);
+    root.style.setProperty("--hit-origin-y", y);
+  } else {
+    root.style.removeProperty("--hit-origin-x");
+    root.style.removeProperty("--hit-origin-y");
+  }
   const stage = hitIntensityStageVariables(intensity);
   root.style.setProperty("--hit-punch", stage["--hit-punch"]!);
   if (stage["--hit-punch"] !== "1") punchStage(root);

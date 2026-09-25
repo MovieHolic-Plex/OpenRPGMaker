@@ -49,7 +49,7 @@ import {
 import { DEFAULT_ADOPTION_ROLES, adoptionRoleLabel, surveyMapAdoption } from "@/project/mapLocationAdoption";
 import { LOCATION_ROLES, LOCATION_ROLE_LABELS, locationRoleTag } from "@/project/locationRoles";
 import { isLocationDrawClick, locationDisplayColor, mapLocations, rectFromDrag } from "@/project/mapNamedLocations";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { GameMap, MapNamedLocation, Rect } from "@/project/types";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { clearChildren, el } from "@/util/dom";
@@ -927,7 +927,12 @@ export function installMapLocationLayer(): () => void {
     if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
     render();
   });
-  const offStore = store.subscribe(() => render());
+  const offStore = store.subscribe((_project, change) => {
+    // Location boxes do not depend on tile ids; painting emits per pointer sample.
+    if (isTileCellChange(change)) return;
+    if (!locationLayerState().enabled && !overlayEl?.childElementCount) return;
+    render();
+  });
   teardown = () => {
     offLayer();
     offEditor();

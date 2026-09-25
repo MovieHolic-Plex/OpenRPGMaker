@@ -9,10 +9,6 @@
   내보내기 ZIP 은 다른 계약이다(`webExportAssets` 는 이미지 프로필을 계속 넣는다).
   회귀: `test/playBootAssetSelection.test.ts`.
 - **호스트 프로젝트 초기 연결:** `electron/main/sessions.ts`의 세션 오픈은 인라인 `dataUrl`이
-
-## 맵별 16/32/48px 좌표
-
-타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.
   실제로 들어 있는 문서에서만 미디어 분리용 전체 역직렬화를 수행한다. 일반적인 파일 참조
   프로젝트는 `project.load()`가 곧 읽을 5~6MiB 문서를 미디어 검사 때문에 한 번 더 복원하지
   않는다. `electron/main/dispatch.ts`의 `project.load`도 저장된 wire 문자열을 그대로 보내고
@@ -203,6 +199,30 @@
   `fixedDirection`, `fourFrame` 은 저작되지만 `playSceneAutonomousSprites.ts` 가 normal 로 취급한다.
   정지 애니메이션은 무버 없는 이벤트에도 프레임 클록이 필요하므로 별도 작업이다.
 - **Action combat runtime:** for real-time action combat (`system.actionCombat` + `map.actionCombat`), routing, pure rule modules in `src/battle/action/`, and scene integration in `src/player/playSceneActionCombat.ts`, see `openwiki/runtime-action-combat.md`.
+
+## 게임 화면의 2층·그림자·4층 (MZ식 4층, 2026-09-24)
+
+`playSceneMapRuntime.renderTiles` 는 칸마다 1층 → 1층 스택 → 2층 → 그림자 → 3층 → 3층 스택 → 4층을 만든다.
+2·4층은 `renderRawTile` 로 칩 그대로(지형 쿼터·호수 자동타일·받침 경로 없음). `tilesHash` 에 새 배열이 들어 있어
+2층만 바뀌어도 다시 그린다.
+
+- 깊이(`src/player/characterDepth.ts`): `OVERLAY_LAYER_DEPTH_OFFSET = 0.01` 은 같은 묶음 안에서 위 층을 조금 올린다 —
+  2층 = `y*2 + 0.01`, 4층 = 그 타일의 3층 규칙 값(`mapUpperTileDepth`) `+ 0.01`. `SHADOW_LAYER_DEPTH_OFFSET = 0.02` 는
+  그림자(`y*2 + 0.02`, 2층 위·3층 밑). 설계 초안의 `+0.25` 는 × 가구가 같은 줄 캐릭터 앞으로 튀어서 버렸다.
+- **lower 컨테이너(`scene.tileLayer`) 안의 깊이는 명목값이다.** Phaser 컨테이너는 자식 depth 로 정렬하지 않으므로
+  실제 순서는 넣은 순서(위 칸 순서)다. 1·2층·그림자는 이 컨테이너라 순서가 곧 그리기 순서다.
+- 3·4층은 타일 표시 규칙을 따른다: ★ → `upperTileLayer` 컨테이너(고정, 캐릭터 위), ○ → 캐릭터 밑, × → root 에서
+  캐릭터와 y 정렬. 그래서 **같은 칸에 3층 ★ + 4층 ×/○ 이면 3층이 위**다(MZ 도 ★ 를 윗 타일맵에 그린다). 캔버스·에디터는
+  순서대로 그려 4층이 위라 이 경우만 에디터와 게임 화면이 다르다. 실측: Rasak p02 (7,4) 한 칸(휴리스틱상 ★ 인 B 칸 위의
+  × 나무). 같은 규칙끼리는 4층이 +0.01 위다.
+- 통행은 `collision.ts` 의 `cellPassability`(4 → 1, ★ 건너뛰기). 게임 쪽 `canMove`/`isPassable` 이 그대로 쓴다.
+- 출하 경로 검증: `npm run qa:runtime -- --scenario rasak-layers --project /tmp/... --out /tmp/...` (Rasak 자료는
+  재배포 금지라 프로젝트·PNG 는 저장소 밖). 프레임을 멈추고 같은 수만 밀어 합성 판과 4층 판을 비교했다:
+  p01·p28·p27b 픽셀 동일, p27a 채널 1 이하(그림자 알파 반올림), p02 는 위 3층 ★/4층 × 한 칸만 다르다.
+
+## 맵별 16/32/48px 좌표
+
+타일 크기 관련 수정은 [tile-geometry.md](tile-geometry.md)를 먼저 읽는다. 원본 아틀라스 슬라이싱과 맵 월드 좌표, 미리보기 표시 크기를 구분한다.
 
 ## ESC skill thumbnails (2026-09-06)
 

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { runtimeMapWorldScale } from "@/player/runtimeViewScale";
 import { TILE_SIZE } from "@/assets/bundled";
 import {
   clampEmoteDurationMs,
@@ -64,13 +65,15 @@ export function showSceneEmote(
   const sprite = scene.add.sprite(host.x, anchorY(host), EMOTE_TEXTURE_KEY, emoteFrameIndex(emote));
   sprite.setDepth(EMOTE_DEPTH);
   sprite.setScrollFactor(1);
-  sprite.setScale(0.4);
+  // 타일 크기가 기준과 다른 맵에서도 말풍선이 캐릭터와 같은 비율로 보이게 세계 배율을 곱한다.
+  const worldScale = runtimeMapWorldScale(scene);
+  sprite.setScale(0.4 * worldScale);
   sprite.setAlpha(0);
 
   const lifetime = clampEmoteDurationMs(durationMs);
   const lift = { value: 0 };
-  scene.tweens.add({ targets: sprite, scale: 1, alpha: 1, duration: EMOTE_POP_MS, ease: "Back.easeOut" });
-  scene.tweens.add({ targets: lift, value: -EMOTE_RISE_PX, duration: lifetime, ease: "Sine.easeOut" });
+  scene.tweens.add({ targets: sprite, scale: worldScale, alpha: 1, duration: EMOTE_POP_MS, ease: "Back.easeOut" });
+  scene.tweens.add({ targets: lift, value: -EMOTE_RISE_PX * worldScale, duration: lifetime, ease: "Sine.easeOut" });
   scene.tweens.add({
     targets: sprite,
     alpha: 0,

@@ -68,7 +68,9 @@ export const SPATIAL_BUILD_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id, occu
 export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id,
   resolved: { type: "boolean", description: "default true — resolved transitive source closure. false returns only the design body (enough for an upsert revision round-trip when the full payload is truncated)." } }, ["kind", "id"]);
 export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA,
-  query: { ...text, description: "Case-insensitive substring of saved id, name or tags. For exteriors try kind:object and query:건물 외형, then the authored name/tag; for complete houses use kind:place. Omit query to list all designs of the kind." } }, []);
+  query: { ...text, description: "Case-insensitive substring of saved id, name or tags. For exteriors try kind:object and query:건물 외형, then the authored name/tag; for complete houses use kind:place. Omit query to list all designs of the kind." },
+  limit: { type: "integer", minimum: 1, maximum: 200, description: "Shared rows per page (default 40)." },
+  offset: { type: "integer", minimum: 0, description: "Skip this many shared rows (data.shared.nextOffset)." } }, []);
 export const SPATIAL_APPLY_SCHEMA = object({ previewId: id });
 // Occurrence endpoints use occurrenceId (concrete frozen id), not design childId slots.
 const occurrenceEndpoint = object({ occurrenceId: id, portId: id });

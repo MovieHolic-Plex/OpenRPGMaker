@@ -8,7 +8,8 @@
 // 쓰기 툴이 성공할 때마다 체크포인트를 createPiPublication → applyProposedProject(스토어 커밋 게이트)로 발행한다.
 //
 // 다른 점: 모델이 없으므로 앞 호출의 결과가 달라져도 뒤 호출 인자는 녹화 그대로다(갈라지면 뒤쪽 차이는 연쇄 효과일 수 있다).
-// 코어가 인자 검증에서 거절한 호출·레지스트리 밖 툴(set_build_spec·consult_writer·web_search)은 다시 돌리지 않는다.
+// 레지스트리 밖 툴(set_build_spec·consult_writer·web_search)은 다시 돌리지 않는다. 코어가 인자 검증에서 거절한 호출은
+// 지금 스키마로도 거절될 때만 건너뛴다(계약을 고쳤으면 다시 돌려 확인한다).
 
 import fs from "node:fs";
 import path from "node:path";
@@ -22,6 +23,8 @@ import { normalizePiApplyMode, isLiveApplyMode } from "../../src/ai/piAgent/appl
 import { createPiPublication } from "../../src/editor/panels/aiPiPublication.ts";
 import { exportSpatialToolProof, finishSpatialToolAcceptance } from "../../src/editor/tools/spatialToolState.ts";
 import type { Project } from "../../src/project/types.ts";
+import { validateArgs } from "../../src/editor/tools/jsonSchema.ts";
+import type { JsonSchema } from "../../src/editor/tools/types.ts";
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -96,9 +99,16 @@ export async function replayRecording(dir: string, options: { readonly phases?: 
   for (const call of recorded) {
     const base: Omit<ReplayedCall, "status" | "differs"> = { order: call.order, phase: call.phase, name: call.name, recordedOk: call.ok, recordedWarnings: call.warnings };
     if (RUNTIME_TOOLS.has(call.name)) { calls.push({ ...base, status: "skipped", differs: false, note: "Pi 런타임 전용 툴" }); continue; }
-    if (!call.registry && !call.ok) { calls.push({ ...base, status: "skipped", differs: false, note: "녹화 때 코어가 인자 검증에서 거절" }); continue; }
     let record: PiToolCallRecord | undefined;
     const shape = resolvePiToolShape(ctx, call.name, { referenceGate: gate, onCall: (entry) => { record = entry; }, ...scopeGuard });
+    if (!call.registry && !call.ok) {
+      // 녹화 때 코어가 인자 검증에서 거절한 호출 — 지금 스키마로도 거절되면 건너뛰고, 통과하면(계약을 고친 뒤) 다시 돌린다.
+      const schemaErrors = shape ? validateArgs(shape.parameters as JsonSchema, call.args) : ["툴 없음"];
+      if (schemaErrors.length > 0) {
+        calls.push({ ...base, status: "skipped", differs: false, note: `녹화 때 코어가 인자 검증에서 거절(지금도: ${schemaErrors.slice(0, 2).join("; ")})` });
+        continue;
+      }
+    }
     if (!shape) { calls.push({ ...base, status: "unavailable", differs: true, note: "지금 레지스트리에 없는 툴(이름 변경·삭제·deprecated)" }); continue; }
     const t = Date.now();
     let thrown: string | undefined;
@@ -126,7 +136,10 @@ export async function replayRecording(dir: string, options: { readonly phases?: 
         await checkpoint(call.name);
         publishMs += Date.now() - p0;
       } catch (error) {
-        calls.push({ ...entry, status: "checkpoint-rejected", differs: true, note: `체크포인트 발행 거절: ${error instanceof Error ? error.message : String(error)}` });
+        const message = error instanceof Error ? error.message : String(error);
+        calls.push({ ...entry, status: "checkpoint-rejected", ok: false, differs: true, note: `체크포인트 발행 거절: ${message}` });
+        // 런타임과 같게: 내용 무결성 거절(commit-rejected)은 그 호출만 되돌리고 계속 간다. 그 밖의 거절은 실행 중단.
+        if (/^적용 실패\(commit-rejected\)/u.test(message)) { ctx.project = snapshotProjectKeepingHeavy(accepted); continue; }
         stoppedAt = call.order;
         break;
       }

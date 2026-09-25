@@ -10,6 +10,76 @@
 
 # Runtime Battle Behavior
 
+## 타격감 층 (2026-09-25)
+
+사용자 신고 「게임적인 느낌이 거의 안 든다, 타격감이 없다」. 출하 player 녹화로 원인을 쟀다:
+히트스톱은 무대 1.2% 맥동뿐 아무것도 멈추지 않았고, 30% 미만 피해는 흔들림 0px, 필드 플래시는
+34% 흰 막 320ms ease-out(안개), 피해 숫자는 크기 고정 0.9초 부유, 아군 전진은 130ms 에 도착해
+340ms 서 있다가 맞혔다. 부품은 있었고 **수치와 시간 구조**가 문제였다.
+
+- CSS 소유: `src/styles/runtime/battle/22-hit-feel.css`. `runtime/index.css` 에서 **스킨 시트 뒤**(`_windowskin.css` 다음)
+  에 로드된다 — 같은 특정도의 스킨 규칙을 이긴다. 순서는 `test/playerRuntimeCss.test.ts` 가 고정한다.
+- **진짜 히트스톱:** `.battle-hit-stop` 동안 배틀러·팝업·파티 행 애니메이션을 `animation-play-state: paused` 로 멈춘다.
+  흔들림(`.battle-field` 애니메이션)과 필드 플래시는 계속 돈다. 맞은 쪽 이미지는 흰 실루엣(`!important` —
+  분해·기절 키프레임과 스킨 filter transition 을 이겨야 한다). 파일 **맨 끝**에 둔다: 이 파일의 다른 `animation` 단축
+  속성이 play-state 를 running 으로 되돌린다. 정지 길이는 기존 시퀀서 비트(110ms × weight) 그대로다.
+- **점멸:** 정지가 풀리는 순간(`battleDom.onHitFeel(false)`) `blinkBattlerNode` 가 `battle-hit-blink-off` 를 55ms 간격 3회 토글.
+  visibility 라 idle·숨쉬기 애니메이션 슬롯을 건드리지 않는다. 격파 대상·reduced-motion 은 건너뛴다.
+- **흔들림은 자기 클래스:** `battleJuice.flashBattleField` 는 `battle-hit-shake` + `--battle-hit-shake-*` 를 쓴다.
+  스킬 애니메이션 층(`battleAnimationDom.applyTimingEffects`)이 `battle-screen-shake`·`--battle-shake-*` 를 프레임마다
+  다시 쓰고 지워서, 같은 이름이면 타격 흔들림이 착탄 직후 사라졌다(실측). 세기표 `HIT_INTENSITY_STYLE.shakePx` 는
+  2/3/7/11(graze→crushing), 리듬 `SHAKE_RHYTHM` 은 60ms×2 … 80ms×4. 포켓몬은 흔들지 않는다.
+- **하드 플래시:** `battle-flash-snap`(45% 유지 후 끊김, 130/190ms). 아군 피격은 `flashBattleField(..., { hurt: true })` →
+  `battle-flash-hurt` 붉은 비네트. 포켓몬은 필드 플래시를 끈다(적 공격 때 회색 막의 원인).
+- **숫자:** `battle-damage-bounce`(튀어 올라 떨어져 한 번 튕김). 크기는 `--pop-scale` = 노드의 `data-hit-intensity`
+  (0.85/1/1.3/1.6, `showDamageFeedback`), 급소 ×1.2. 파티 카드 팝업·빗나감·회복·방어는 옛 연출.
+- **명중 파편:** `spawnHitSparks(node, intensity)` 5~12개, 막타는 격파 조각이 대신한다. 포켓몬·reduced-motion 숨김.
+- **예비동작:** `applyActionMotion` 이 사용자 노드에 `data-motion-phase`(= 비트 kind)와 `--motion-beat-ms` 를 심고,
+  approach 의 lunge 는 `delay = 비트 − 240ms`, back-in 곡선으로 비트 끝에 도착한다. impact 의 lunge(적 내리찍기)는 60ms.
+- **공격자 표시(정면):** 아군을 그리지 않는 스킨은 행동 아군의 파티 행에 `is-acting`(앞으로 나옴·강조).
+- **HP 잔상(유리 창):** `.battle-stat-bar-hp::after` 가 같은 `--battle-stat` 폭으로 360ms 뒤 440ms 따라 빠진다. 채움은 90ms.
+  포켓몬 HP 바는 `::after` 가 「체력」 라벨이라 잔상 대신 620ms 로 눈에 보이게 줄어든다.
+- **포켓몬 기절:** 흐려지는 대신 `pkmn-battler-sink`(translate 100% + 아래쪽 clip)로 발판 아래로 꺼진다.
+- 함정: 헤드리스·고부하에서는 rAF 가 수백 ms 늦어 juice·플래시 클래스가 정지가 끝난 뒤 붙는다(실측 272ms).
+  정지 중 상태를 잴 때는 스크린샷이 아니라 동기 `getComputedStyle`·MutationObserver 로 잰다. transition 이 걸린 속성은
+  동기 계산값이 **시작값**으로 읽힌다.
+- 남은 것: 소리 층(찰칵+쿵 시차·음높이 흔들기), 막타 슬로, 몬스터 대치 초반 피해량(Lv11→Lv3 가 2/25)은 따로 확인.
+  회귀: `test/battleHitIntensity.test.ts`.
+
+## 진입 · 결판 · 복귀 연출 (2026-09-25)
+
+출하 플레이어 실시간 녹화(15fps 프레임)로 잰 결함과 고친 자리. CSS 는 `battle/23-entry-exit.css` 한 장이다.
+
+- **진입**
+  - 필드 캔버스가 커버 동안 확대·회전하며 빨려 든다. `createBattleTransition(host, schedule, field)` 의 세 번째 인자로
+    `playSceneBattle` 이 `scene.game.canvas` 를 넘기고, `setFieldMotion` 이 `battle-encounter-swirl` 을 붙인다.
+    키프레임은 **선형 + 앞당김**이다. 처음엔 ease-in 이라 확대 대부분이 닫히는 막대 뒤에서 일어나 보이지 않았다
+    (rAF 실측: 400ms 에 scale 1.0, 980ms 에 1.47).
+  - 흰 플래시는 두 번 친다. 막대는 가운데서 자라는 V 대신 홀짝이 좌우에서 엇갈려 닫힌다.
+    `slide-pokemon`·`curtain-dq` 처럼 막대 방향을 스스로 정하는 스킨은 예외다.
+  - 유리 뼈대 인트로는 커버가 걷히는 **동안** 시작한다. 예전엔 걷힌 뒤라 빈 배경만 330ms 보였다.
+    적은 검은 실루엣으로 미끄러져 와서 멈출 때 번쩍이며 색을 입는다(120 + index×90ms 지연, 700ms).
+- **결판**
+  - 시퀀서 훅 `onResultPending(result)` 가 결과 홀드(`BATTLE_RESULT_HOLD_MS` 900) 직전에 한 번 불린다.
+  - 결판 막타(뒤에 피해·회복·빗나감 엔트리가 없고 결과가 이미 정해진 격파)는 격파 대사와 **같은 순간**에 이 훅을 부르고,
+    대사 체류를 `BATTLE_DECISIVE_KILL_LINE_MS`(240)로 줄인다. 예전엔 대사 660ms + 홀드 900ms 동안 빈 필드였다.
+  - `battleDom.showFinaleStamp` 가 필드에 「승리!」/「전멸…」 도장(`.battle-finale-stamp`)을 찍고 루트에
+    `data-battle-finale` 을 단다. 승리면 필드가 1.035배 다가오고, 전멸이면 필드가 흑백으로 가라앉는다.
+    도주는 도장이 없다. 같은 결과로 두 번 불러도 한 번만 찍는다.
+  - 결과 소리(`emitBattleJuice`)와 플래시는 도장과 함께 울린다. 결과 패널은 이미 울렸으면 다시 울리지 않는다.
+    도장만 걷고 `data-battle-finale` 은 전투가 닫힐 때까지 둔다. 지우면 패널이 뜨는 순간 줌·흑백이 한 프레임에 튄다.
+- **결과 패널**
+  - 경험치·골드 수치는 공개될 때 0 에서 최종값까지 520ms 동안 센다(`battleDirectorDom.countUpRewardValue`).
+    끝나면 원래 글자로 되돌리므로 최종 `textContent` 는 같다.
+  - 확인키 건너뛰기(모두 공개), 감소 모션, rAF 가 없는 환경에서는 세지 않는다. 레벨 업 행은 튀어나오며 테가 퍼진다.
+- **복귀**
+  - 끝날 때 커버는 스킨 색이 아니라 항상 검정이다. 정면 스킨은 파랑 커버로 페이드해 필드가 파랗게 물든 채 돌아왔다.
+  - `BATTLE_TRANSITION_EXIT_MS` 220 → 300. 복귀 열림은 `BATTLE_TRANSITION_RETURN_MS`(460)이고,
+    진입 열림(`REVEAL_MS` 300, 인트로 CSS 의 `--battle-reveal-ms`)과 분리했다.
+  - 필드 캔버스는 `battle-return-settle` 로 살짝 당겨졌다가 제자리로 내려앉는다.
+- **남은 것:** 게이지 흐름에서 인트로 뒤 「행동 게이지가 차는 중」 대기가 약 1.5초다. 초기 ATB 는 규칙 쪽 값이라 이번엔 건드리지 않았다.
+- **기본 스킨:** 편집기 기본은 이미 `rm2000`(정면)이다(`DEFAULT_BATTLE_SKIN_ID`, 드롭다운 첫 항목). 라벨에 「(기본)」을 붙였다.
+
 ## 전투 리뷰 후속: 상태 안내와 무대 채움 (2026-09-20)
 
 - `battleDom`은 우상단에 `F 자동 꺼짐/켜짐 · Shift 1×/1.8×/3×` 상태를 표시한다.
@@ -153,6 +223,17 @@
 - 당시 남겨 둔 전투 배율 정책은 2026-09-20 후속에서 최대 contain으로 변경했다(위 절).
   포켓몬 뒷모습 슬롯은 별도 아트 과제다.
   증거 스크립트는 리뷰 당시 `verify-shots/adv-review-{1..5}/` 와 `verify-shots/after/` 에 남겼다(커밋하지 않음).
+
+## 몬스터 파티의 전투 회복약 자격 (2026-09-24)
+
+`battleItemEligibility.ts`의 `isBattleItemUserEligible`를 가방 목록, 명령 접수,
+아이템 효과 실행에서 함께 사용한다. 전투 인스턴스 ID(`mon:monster_2`)는 DB 액터 ID가
+아니므로 `isItemActorEligible`에 직접 넘기면 약이 보이지만 선택이 묵살된다.
+일반 액터는 recordId와 실제 classId로 기존 자격 검사를 유지한다. 등록된 종족의
+몬스터는 액터/직업 제한이 없는 medicine만 허용하며 book/seed의 액터 전용 계약은 유지한다.
+사용 제한·대상·HP/MP 회복량·소모 처리는 기존 전투 아이템 계약을 그대로 따른다.
+회귀 항목은 `test/battleMonsterMedicine.test.ts`; 세션 규칙상 vitest/gates는 사용자 요청 없이 실행하지 않는다.
+실제 플레이 검증은 약 선택 전후 재고·회복 타임라인과 후속 적 반격을 구분해 확인한다.
 
 ## 회복 자원·인트로 배너·타이머 write-back 계약 (2026-09-15)
 
@@ -414,17 +495,25 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 
 감소 모션에서는 눌림·먼지가 함께 빠지므로 이 경로 자체가 없다.
 
-## 지원 전투 시스템은 둘뿐이다 (2026-08-28)
+## 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
 
 - 지원 규칙은 **RM식 턴제** (`system.battleModel` 미설정 또는 `"rm2k3"`, 기본값)와 **포켓몬식** (`"gen1"`)이다. 표시 방식은 **정면** (`rm2000`, 기본값), **측면** (`rm2003`), **몬스터 대치** (`pokemon`) 세 가지다. 규칙 모델과 표시 스킨은 별개다.
 - 기본 `rm2000`은 적만 필드에 세우고 아군은 이름·HP·MP 상태창으로 표시한다(`partyFacing: "hidden"`, `showAllySprites: false`). 2026-09-03 연출 추가 때 들어간 뒷모습 파티를 2026-09-06 사용자 요청으로 복구했다. 미설정·`classic`·명시적 `rm2000` 모두 같은 경로다. 측면 `rm2003`의 아군 전투 시트와 `pokemon`의 후면 스프라이트는 유지한다. 회귀: `test/battleFieldAllySprite.test.ts`; 출하 화면: `npm run qa:runtime -- --scenario battle-frontview`.
 - **스킨 id 이력 (2026-09-03):** 기존 정면 스킨 `rm2003`을 `rm2000`으로 개명한 뒤, 같은 날 `rm2003`을 별도 측면 스킨으로 되살렸다. 현재 `resolveSkinId("rm2003") === "rm2003"`이며 옛 별칭 `classic`만 `rm2000`으로 간다. 등록 스킨은 12종이다. 두 스킨은 `_rm2000.css`의 유리 HUD를 `family: "glass"`로 공유하고 측면 배치는 `_rm2003.css`가 담당한다. 사용자 노출 라벨은 「유리 창 · 정면 필드」와 「유리 창 · 측면 필드」이며 타사 제품명은 쓰지 않는다(`test/detsukuruBrandStrings.test.ts`).
-- 지원 종료(deprecated) 스킨 9종: `octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`. 실시간 2D 타일 액션 전투(`system.actionCombat`)는 계속 지원한다. 아래 스킨 지원 종료와 별개이며 최신 계약은 이 문서의 Supported action authoring 및 `openwiki/runtime-action-combat.md`를 따른다.
-- 지원 종료의 뜻은 좁다. 저장된 프로젝트는 그대로 돈다.
-  - 레지스트리는 여전히 지원 종료 스킨 9종을 들고 있다. 삭제도, 조용한 remap도 없다.
-  - `resolveSkinId` 는 저장된 지원 종료 id 를 다른 id 로 바꾸지 않는다 (`resolveSkinId("octopath") === "octopath"`).
-  - 스킨별 CSS(`src/styles/runtime/battle-skins/`) 와 배경(backdrop) 은 그대로 남긴다. 지우지 말 것.
-  - 줄어드는 것은 **새 저작 노출뿐이다.** 자료집 → 시스템의 스킨 드롭다운은 활성 3종만 나열하고, 프로젝트가 이미 저장해 둔 지원 종료 id가 있으면 그 항목 하나만 `(지원 종료)` 라벨로 덧붙여 선택을 보존한다.
+- **스킨 12종 전부 활성 (2026-09-25).** 2026-08-28 에 지원 종료였던 9종(`octopath`, `chrono`, `bravely`, `dragonquest`, `ff`, `mother`, `goldensun`, `mv`, `vxace`)은
+  각자 CSS 파일을 버리고 **유리 뼈대(family glass)의 변형**으로 되살렸다. 이유: 전투 개선이 활성 3종에만 들어가, 2026-09-25 출하 player 촬영에서
+  9종 대부분이 이름표·HP 바가 겹치고 명령창이 깨져 있었다. 스킨은 이제 세 값의 조합이다.
+  - **구도** `layout`(루트 `data-battle-layout`): `frontview` → `_rm2000.css`, `sideview` → `_rm2003.css`. 두 시트와 `05-poses-motion.css` 의 구도 규칙은
+    스킨 id 가 아니라 `[data-battle-skin-family="glass"][data-battle-layout=…]` 로 스코프한다. 배치는 `battlerPlacements.ts` 의 `FRONTVIEW`/`SIDEVIEW` 공유 객체
+    (`BATTLER_PLACEMENTS[id] === BATTLER_PLACEMENTS.rm2000|rm2003`). `showAllySprites` 는 구도가 정한다(측면만 true). `firstperson`/`active` 구도는 쓰지 않는다.
+  - **HUD** `hudTemplate`(`data-battle-hud`): `rows`(기본 줄) · `boxes`(얼굴 카드: 심야·금갈색) · `ring`(얼굴 둘레 HP 링: 청람) · `minimal`(표면 없는 얇은 줄: 먹빛·세피아).
+    CSS 는 `battle-skins/_glass-variants.css`. 링은 `syncBattleParty` 가 행에 심는 `--battle-hp-pct`·`data-hp-state` 를 읽는다.
+  - **색** `themeVars`: rm2000·rm2003 을 뺀 스킨은 `_glass-variants.css` 가 `--battle-window-*` → `--rm-floor/card/hairline…` 별칭으로 흘려 넣는다.
+    검은 창·코발트 창은 흰 테두리·각진 모서리. 배경 보정은 `--battle-backdrop-filter`.
+  - 지운 파일: `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`(약 1,500줄). 스킨별 ATB 가속
+    (`battle/runtime.ts`, chrono 1.18 등)과 전환 연출(`_transitions.css`)은 유지한다.
+  - `isDeprecatedBattleSkin`·`(지원 종료)` 드롭다운 경로는 남아 있다(지금은 해당 스킨 없음). 드롭다운 순서는 `ACTIVE_BATTLE_SKIN_IDS`(기본 셋 → 정면 → 측면).
+  - `test/fixtures/battleEnemyFeetRatios.json` 의 9종 항목은 해당 구도(rm2000/rm2003) 실측값의 사본이다 — 필드 기하가 같아졌기 때문이다.
 - 코드 권위자: `src/battle/skins/registry.ts` (`ACTIVE_BATTLE_SKIN_IDS` / `listActiveBattleSkinIds()` / `isDeprecatedBattleSkin()`), 저작 표면은 `src/editor/panels/databaseSystemView.ts`, 계약 테스트는 `test/battleSystemDeprecation.test.ts`.
 
 ## Roguelike run boundary (2026-08-24)
@@ -491,7 +580,7 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 ### 스킨 CSS 캐스케이드와 저작 가능 스킨
 
 - Battle CSS cascade contract (2026-08-27): `src/styles/runtime/index.css` imports 18 battle leaves into `layer(runtime)` in source order and carries **zero importance flags**; per-skin files in `src/styles/runtime/battle-skins/` load after it, so a skin rule scoped to `[data-battle-ui-style="classic"][data-battle-skin="<id>"]` already wins on specificity + source order. `_rm2000.css` is therefore **flag-free**, and `test/battleRm2000PixelGrid.test.ts` audits three invariants for it: no forced declarations, every px literal even, and at most four even font-size steps (26 / 20 / 16 / 12 px — the 640x480 logical stage is drawn at half-integer device scales, so odd logical px land on half device pixels). When a shared or other-skin rule must keep its forced declaration for the other 11 skins, narrow it away from rm2000 with a **specificity-neutral** `:not(:where([data-battle-skin="rm2000"]))` / `:not(:where([data-battle-skin="rm2003"] *))` instead of raising specificity — that is what the generic battler sizes in `_battlers.css` do (`.battle-skin-actor-image`, `.battle-enemy-image`), and it is why the other skins stayed byte-identical when the 279 rm2003(now rm2000) flags were deleted. The consolidated classic layout lives in `_rm2000.css` scoped to `[data-battle-ui-style="classic"][data-battle-skin="rm2003"]`. An absolutely-positioned grid child uses its **grid area** as containing block — the message window spans `grid-column/row: 1 / -1` so `top` anchors to the scene, not the HUD row. `--battle-stage-inset-top` is declared **exactly once** (`battle/01-scene-base.css`) as `var(--battle-stage-skin-inset-top, 48px)`; a skin retunes the stage only through that knob (`_rm2000.css` sets `48px`), so the battler groups (`battle/07-640-scene-turn-ribbon.css`), `.battle-animation-layer` and `.battle-effects-layer` always resolve to the same box and the percentage `--battle-node-x/y` anchors land on the same point. The shared "compact HUD layer" in the battle leaves owns the 320x240 stage geometry (scene grid `1fr + var(--battle-hud-height)` = 96px, HUD row placement, victory box sizing) **and the typography floor**: all battle text sits on the runtime pixel grid (9px primary / 7px secondary Galmuri11, never sub-7px) - the old 2.5-7px "cram-to-fit" pass was removed because it rendered as unreadable smudge at integer stage scale. The root command menu shows one-line entries (`small` detail hidden unless the menu has a `.battle-submenu-header`), and `.battle-command-panel` is pinned to `height:100%` of its `battle-command-host` grid cell so larger type compresses rows instead of overflowing the HUD.
-- Battle UI skin is project-level presentation. **Of the 11 registered skins only `rm2000` and `pokemon` are authorable**; the other 9 stay loadable for saved projects but are 지원 종료 (see "지원 전투 시스템은 둘뿐이다 (2026-08-28)" above for the exact contract). `system.battleUiStyle` (default `rm2000` via `DEFAULT_BATTLE_SKIN_ID` — unset/unknown resolve to the default, legacy `classic` → `rm2000`, legacy `rm2003` → `rm2000`, `pokemon` → `pokemon`). DOM stamps `data-battle-ui-style` in `battleDom.ts`; CSS under `src/styles/runtime/index.css` plus per-skin overrides in `src/styles/runtime/battle-skins/` own layout. Do **not** author per-map-event skins. If a fight needs a different skin later, override at `battleProcessing` / troop (same layering as `battleFlow`), not on every event row. Keep rules in `src/battle`; skins stay presentation-only. Pokemon skin uses its own 1:1 staging (enemy upper-right / ally lower-left) and does not reuse classic left-right columns.
+- Battle UI skin is project-level presentation. **All 12 registered skins are authorable since 2026-09-25** — 11 are glass-skeleton variants (layout × HUD × palette) and one is `pokemon` (see "지원 전투 시스템은 둘뿐이다" above for the exact contract). `system.battleUiStyle` (default `rm2000` via `DEFAULT_BATTLE_SKIN_ID` — unset/unknown resolve to the default, legacy `classic` → `rm2000`, legacy `rm2003` → `rm2000`, `pokemon` → `pokemon`). DOM stamps `data-battle-ui-style` in `battleDom.ts`; CSS under `src/styles/runtime/index.css` plus per-skin overrides in `src/styles/runtime/battle-skins/` own layout. Do **not** author per-map-event skins. If a fight needs a different skin later, override at `battleProcessing` / troop (same layering as `battleFlow`), not on every event row. Keep rules in `src/battle`; skins stay presentation-only. Pokemon skin uses its own 1:1 staging (enemy upper-right / ally lower-left) and does not reuse classic left-right columns.
 ### Gen 1(포켓몬식) 규칙 모델
 
 - Gen1 rule model is authored as `system.battleModel` (`rm2k3` default, or `gen1`) and stamped on `body[data-battle-model]`. It gates **rules only**, never presentation. Exact cartridge-oriented authorities live in `src/battle/gen1/{rng,damage,capture,status}.ts`; `runtime.ts` adapts the injected `[0,1)` session RNG to bytes and calls those modules. Strict flow orders switch → field command → move priority → paralysis-adjusted Speed, and consumes randomness only for a real tie. Do not confuse `SkillRecord.movePriority` with `EnemyActionPattern.priority` (AI weight). The rm2k3 path must remain unchanged.
@@ -531,10 +620,11 @@ For real-time action combat on action maps (`system.actionCombat` + `map.actionC
 - Class battle commands are runtime data. `classes[].battleCommands` is consumed by the battle DOM in authored order, with fallback to attack/skill/item/defend/escape only when a class has no usable runtime command. `skillSubsetName` filters the skill submenu by `SkillRecord.type`, `skillId` invokes a specific skill, and `guard` is a supported alias for the existing `defend` action.
 - Class battle commands use `"switch"` for 교체; legacy `"event"` is still accepted as a compatibility alias but should not be authored for new data.
 - Monster collection is gated by `system.monsterCollection`. When enabled, runtime actor commands may expose `"capture"` and class command / tool rows can author it; when omitted or false, default battle command / tool UI does not add capture.
-- Monster species are authored in optional `database.monsterSpecies[]` records with species id, name, monster graphic, optional `types` (max two), base stats, optional EXP curve, capture rate, level skill list, and optional `evolutions`. Battle `EnemyRecord.speciesId` links an enemy battler to a collectable species without making enemy records become player-owned monsters. Troop `uncapturable:true` blocks capture attempts for bosses or scripted fights.
+- Monster species are authored in optional `database.monsterSpecies[]` records with species id, name, monster graphic, optional `types` (max two), base stats, optional EXP curve, capture rate, level skill list, and optional `evolutions`. Battle `EnemyRecord.speciesId` links an enemy battler to a collectable species without making enemy records become player-owned monsters. In a monster-party game, an enemy with no damaging action gets that species' moves learned by its level (`upsert_enemy` writes them; `enemyBattlers` fills an empty list at battle time) so the fight and a later capture use the learnset instead of Struggle with no moves. Troop `uncapturable:true` blocks capture attempts for bosses or scripted fights.
 - Monster evolution records use `{ toSpeciesId, requires }`, where requirements can include `level`, consumable `itemId`, and `friendshipAtLeast`. Victory reward application grants EXP to the live monster party and runs deterministic level-up evolution checks after EXP/skill updates. `evolveMonster { instanceId, toSpeciesId? }` is the explicit event-command / tool path for item/scripted evolution; it keeps nickname, level, EXP, friendship, caughtAt, and instance id, recalculates HP from the old current-HP ratio, swaps species id, and merges newly available target-species level skills.
 - `system.typeChart` is an optional authored Pokemon-style type matrix with `{ types, multipliers }`. When absent, battle damage stays legacy-neutral. When present, `SkillRecord.elementId` doubles as the attack type: damage multiplies attack type versus each defender species type, then applies 1.5 STAB when the attacking enemy species has the same type. Actor/enemy battles without linked monster species or typed skills remain unaffected.
 - Capture uses battle RNG and item `captureProfile.multiplier` with `captureRate * (1 - currentHp / maxHp * 0.7) * multiplier`, clamped to 0..1. A valid failed attempt consumes the capture item and the actor turn; success hides/removes the target, records a captured monster snapshot, and excludes that enemy from EXP rewards.
+- New monsters created by `giveMonster` without explicit EXP start at `totalExpForLevel(species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, clampedLevel)`. EXP is cumulative, so starting a high-level capture at zero incorrectly delays its next level. Explicit EXP (including zero) is preserved; existing instances and saves are not migrated. Regression contract: `test/monsterInitialExperience.test.ts`.
 - `PlayScene` bridges successful battle captures into the live session through `giveMonster`, using the current map/tile as `caughtAt`. Headless `simulate_battle` accepts strict-script `"capture"` actions with `captureItemId` and returns first-sample `capturedMonsters` plus `capturedCount`.
 - Runtime class changes live on `PlaySession.classOverrides`, not on `ActorRecord.classId`. `Change Actor Class` and `promoteActor` preserve level, clamp current HP/MP to the new class maximums, keep existing session-learned skills, immediately add class skills up to the current level, and save/load the override. Status menu, equipment permission checks, battle actor construction, level-up growth, learned skills, and class battle commands should all resolve through the effective class helper rather than reading `actor.classId` directly.
 - Class promotions are authored as `ClassRecord.promotions[]` with deterministic requirements: `level`, `switchId`, `itemId` consumed on success, and `variableId` plus `atLeast`. `promoteActor { actorId, toClassId? }` selects the first satisfied promotion when `toClassId` is omitted and runs success/failure branches without pausing the interpreter.
@@ -762,3 +852,30 @@ Completed runtime timelines persist into bounded session reports accessible from
 - Skill prediction clones vitals, state counters and MP/PP/cooldown maps, consumes one cast cost on the clone, and recomputes every hit against evolving state/vitals. Self targets share the cloned caster. Gen1 enemy unlimited PP is preserved. Ordinary-hit previews apply **guaranteed** state transitions between hits (including RM hit recovery, Gen1 immunity/major-status exclusivity and fire defrost); probabilistic procs remain excluded, just like variance, misses and criticals. No runtime RNG or snapshot data is mutated.
 - HP versus MP is retained for both damage and healing in Gen1/RM timeline → sequencer feedback → popup/director text. The HP presentation ledger ignores **all** MP feedback, so MP damage cannot animate HP loss/death. MP gauges continue using authoritative snapshots, as before.
 - Parent-only command: `npm test -- test/feature16CombatHardening.test.ts`. Coverage: actual strict extra-cast rejection; gauge cooldown cycles; strict/gauge state/turn drops; cost-aware evolving formula and ordinary-formula predictions; sequencer-to-ledger MP damage; exact Gen1 MP timeline. Implementation agent did not run tests, typecheck, server or browser.
+
+## Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+
+`runtime.visibleEnemies()`는 Gen1의 현재 적 한 마리만 반환한다. 필드 갱신은 새 노드를
+추가하면서 이전 노드를 제거하지 않아, 첫 상대를 쓰러뜨린 뒤 다음 명령 화면에 이전
+몬스터와 HP 띠가 남았다. `syncEnemyGroup`과 별도 HP 목록의 `syncEnemyListPanel`은 전달받은 snapshot의 배틀러 ID에 없는
+노드를 정리한다. `battleDom.syncView`의 `retainDepartedEnemies: sequenceBusy`로
+진행 중 타격·포획 연출의 대상은 유지하고, 시퀀스 종료 후 정리한다. 생존 여부만으로
+삭제하면 RM 전투의 쓰러짐 연출과 현재 snapshot의 사망 적까지 지우므로 그렇게 하지 않는다.
+회귀 계약은 `test/battleEnemyRosterDom.test.ts`이며 이번 세션에서는 vitest를 실행하지 않았다.
+
+## 트레이너 전투의 도입 문구 (2026-09-24)
+
+`introDirectorState`는 snapshot.troopId의 `trainerBattle`을 먼저 확인한다. 명시된 트레이너 팀은
+팀 이름으로 「승부를 걸어왔다!」를 표시하며, 그렇지 않은 팀만 기존 종족 기반 야생 판정을 따른다.
+적 이름에 소유자 이름이 있다는 이유만으로 트레이너라고 추정하지 않는다. 포획 차단 조건은 그대로다.
+새솔 라이벌 실전에서 몬스터 종족만 보고 「야생의 세린의 …」로 소개하던 불일치를 확인했다.
+
+## 포획 불가 전투의 가방 목록 (2026-09-25)
+
+`battleCommandDom.captureItems`는 `snapshot.troopId`의 `trainerBattle` 또는
+`uncapturable`이 true이면 빈 목록을 반환한다. 몬스터식 가방과 일반 포획 하위 메뉴,
+가방 수량 표시가 동일 정책을 쓴다. 회복 아이템은 유지하고 야생전의 볼은 그대로 표시한다.
+엔진 `runtime.ts`의 포획 거부 검사는 계속 필요하다. UI 필터는 엔진 검증을 대체하지 않는다.
+새솔 약품 회수 트레이너전에서 포획 버튼이 가방에 나타난 것을 전용 플레이어로 재현했다.
+회귀 정의: `test/gen1BattleCommandDom.test.ts`의 두 제한 유형과 기존 야생전 경로.
+이번 세션에서는 Vitest를 실행하지 않았다.

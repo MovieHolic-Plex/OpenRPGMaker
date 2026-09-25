@@ -57,6 +57,8 @@ import { playPresentItem } from "@/player/playScenePresentItem";
 import { completeDetectionEncounter } from "@/project/npcBehavior";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { getCharacterProfile, resolveCharacterSpeaker } from "@/project/characterProfiles";
+import { resolveDialogueLook } from "@/project/dialogueStyles";
+import { dialogueSceneHooks } from "@/player/playSceneDialogueHooks";
 
 export type RunCommandsOptions = {
   readonly allowNested?: boolean;
@@ -314,7 +316,7 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
 }
 
 function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController): Promise<void> {
-  const duration = Math.max(0, Math.round(ms));
+  const duration = Number.isFinite(ms) ? Math.max(0, Math.round(ms)) : 0;
   if (duration === 0) return Promise.resolve();
   return Promise.race([
     new Promise<void>((resolve) => window.setTimeout(resolve, duration)),
@@ -339,8 +341,18 @@ async function consumeBlockingStep(
       const event = step.speaker === undefined && currentEventId
         ? runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions).find((view) => view.event.id === currentEventId)?.event
         : undefined;
+      const speaker = step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName;
       await dialogue.showText({
-        speaker: step.speaker ?? getCharacterProfile(project, event?.characterId)?.displayName,
+        speaker,
+        look: resolveDialogueLook(project, {
+          speaker,
+          characterId: event?.characterId,
+          style: step.style,
+          context: step.context,
+          container: step.container,
+          emotion: step.emotion,
+        }),
+        ...dialogueSceneHooks(scene, { speaker, currentEventId }),
         body: step.body,
         face: step.face,
         settings: scene.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,

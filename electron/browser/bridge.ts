@@ -1,3 +1,4 @@
+import { encodeBridgeRequest } from "./requestBody";
 import { OPRN_CHANNELS } from "../shared/channels";
 
 type BrowserBridgeConfig = {
@@ -49,36 +50,16 @@ function base64ToBytes(value: string): Uint8Array {
   return bytes;
 }
 
-async function call(channel: string, payload: unknown, keepalive = false): Promise<unknown> {
+async function call(channel: string, payload: unknown, keepalive = false, compress = true): Promise<unknown> {
   const config = window.__OPRN_BRIDGE__;
   if (!config) throw new Error("oprn 브리지 설정이 없습니다 — 로컬 서버가 주입한 페이지가 아닙니다");
-  const json = JSON.stringify({ channel, payload });
-  const headers: Record<string, string> = {
-    "content-type": "application/json", "x-oprn-bridge-token": config.token,
-    "x-oprn-session": tabId, "x-oprn-project": selectedProject, "x-oprn-channel": channel,
-  };
-  let body: string | Blob = json;
-  // Capability negotiation keeps an updated browser bridge compatible with older hosts.
-  // Do not retry a failed HTTP save: its CAS outcome may already have been committed.
-  if (!keepalive && config.requestBodyEncoding === "gzip" && typeof CompressionStream === "function") {
-    const plain = new Blob([json], { type: "application/json" });
-    if (plain.size > 1024 * 1024) {
-      try {
-        const compressed = await new Response(plain.stream().pipeThrough(new CompressionStream("gzip"))).blob();
-        if (compressed.size < plain.size && compressed.size <= 64 * 1024 * 1024) {
-          body = compressed;
-          headers["content-encoding"] = "gzip";
-        }
-      } catch {
-        // Encoding can fail before any request was sent. The bounded identity path remains available.
-      }
-    }
-  }
+  const encoded = await encodeBridgeRequest({ channel, payload }, keepalive, compress);
   const response = await fetch(config.endpoint, {
     method: "POST",
     keepalive,
-    headers,
-    body,
+    // x-oprn-channel lets the host grant project-document channels the larger decoded allowance.
+    headers: { ...encoded.headers, "content-type": "application/json", "x-oprn-bridge-token": config.token, "x-oprn-session": tabId, "x-oprn-project": selectedProject, "x-oprn-channel": channel },
+    body: encoded.body,
   });
   if (!response.ok) throw new Error(`${channel}: ${response.status} ${await response.text()}`);
   return await response.json();
@@ -167,7 +148,8 @@ async function readAsset(payload: unknown): Promise<Uint8Array> {
     },
     openRecent: async () => null,
     createProject: async (input: unknown) => {
-      const created = await call(OPRN_CHANNELS.startCreateProject, input) as { projectDir: string; projectId: string };
+      // The seed is already one JSON string. Gzipping that body costs more than sending it on a LAN.
+      const created = await call(OPRN_CHANNELS.startCreateProject, input, false, false) as { projectDir: string; projectId: string };
       const url = new URL(location.href);
       url.search = '';
       url.hash = '';

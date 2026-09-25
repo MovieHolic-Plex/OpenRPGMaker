@@ -33,6 +33,7 @@ import { BATTLE_ASSET_PIXEL_SCALE } from "@/player/battleStageScale";
 import { battlerHiresSheet, battlerHiresSheetUrl } from "@/assets/battlerHiresSheets";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
 import { store } from "@/project/store";
+import { scheduleBattleTimer } from "@/player/battleTimerScope";
 
 /** 같은 이름이 둘 이상이면 1-base 순번을 붙여 구분한다("초원 슬라임 1/2").
  *  필드 이름표·대상 목록·전투 로그가 **같은 문자열**을 쓰도록 이 함수 하나만 쓴다 —
@@ -176,6 +177,8 @@ export function battleField(snapshot: BattleSnapshot): HTMLElement {
 
 export interface BattleFieldPresentation {
   readonly ledger?: BattlePresentationLedger;
+  /** Keep outgoing targets available until queued hit/capture beats finish. */
+  readonly retainDepartedEnemies?: boolean;
   /** 시퀀스가 돌지 않는 화면(명령/타깃 선택)에서 지난 액션의 attack/hit pose 잔류를 걷는다. */
   readonly calm?: boolean;
   /** 지금 impact 비트로 맞고 있는 배틀러 — 이 배틀러만 hit pose 를 보여준다. */
@@ -256,12 +259,16 @@ export function syncBattleParty(party: HTMLElement, snapshot: BattleSnapshot, pr
       const pct = hpPercent(presented.hp, actor.maxHp);
       hpBar.style.setProperty("--battle-stat", `${pct}%`);
       hpBar.dataset.hpState = hpBarState(pct);
+      // 링 게이지 HUD(_glass-variants.css)는 얼굴 둘레를 HP 로 채운다 — 원은 행 단위 변수를 읽는다.
+      row.style.setProperty("--battle-hp-pct", String(pct));
+      row.dataset.hpState = hpBarState(pct);
     }
     const mpBar = row.querySelector<HTMLElement>(".battle-stat-bar-mp");
     if (mpBar) mpBar.style.setProperty("--battle-stat", `${hpPercent(actor.mp, actor.maxMp)}%`);
     const gaugePct = Math.max(0, Math.min(100, Math.round(actor.gauge)));
     const atbBar = row.querySelector<HTMLElement>(".battle-atb-bar");
     if (atbBar) atbBar.style.setProperty("--battle-atb", `${gaugePct}%`);
+    row.style.setProperty("--battle-atb-pct", String(gaugePct));
     const atbValueNode = row.querySelector<HTMLElement>(".battle-atb-value");
     if (atbValueNode) atbValueNode.textContent = `${gaugePct}%`;
     if (partyStatusRowsCarryIcons()) {
@@ -333,6 +340,12 @@ export function syncSceneBackdropVar(field: HTMLElement): void {
 function syncEnemyGroup(field: HTMLElement, snapshot: BattleSnapshot, presentation?: BattleFieldPresentation): void {
   const group = field.querySelector(".battle-enemy-group");
   if (!group) return;
+  if (!presentation?.retainDepartedEnemies) {
+    const currentIds = new Set(snapshot.enemies.map((enemy) => enemy.id));
+    for (const node of group.querySelectorAll<HTMLElement>(":scope > .battle-enemy")) {
+      if (!currentIds.has(node.dataset.testid ?? "")) node.remove();
+    }
+  }
   const positions = resolveEnemyRowPositions(snapshot, snapshot.enemies);
   for (const [index, enemy] of snapshot.enemies.entries()) {
     let node = group.querySelector<HTMLElement>(`[data-testid="${enemy.id}"]`);
@@ -496,6 +509,8 @@ function applyBattlerPose(node: HTMLElement, pose: BattleBattlerSnapshot["pose"]
   }
 }
 
+const POP_SCALE: Readonly<Record<string, number>> = { graze: 0.85, normal: 1, heavy: 1.3, crushing: 1.6 };
+
 function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void {
   const layer = field.querySelector<HTMLElement>(".battle-effects-layer")
     ?? appendEffectsLayer(field);
@@ -534,6 +549,10 @@ function showDamageFeedback(field: HTMLElement, feedback: DamageFeedback): void 
     // 막타 팝업(900ms)이 기절 페이드(550~620ms)보다 오래 남아 빈 자리에 떠 있었다 —
     // 사망 대상의 팝업은 페이드와 함께 끝낸다(9차 리뷰).
     if (anchor.classList.contains("defeated")) popup.classList.add("battle-damage-popup-final");
+    // 숫자 크기가 위력을 말한다 — 7 과 700 이 같은 28px 이던 때는 숫자를 읽어야만 셌다.
+    // 세기는 battleDom 이 이 동기화 직전에 노드에 심는다(applyHitIntensity).
+    const popScale = POP_SCALE[anchor.dataset.hitIntensity ?? ""];
+    if (popScale && !feedback.healing && !feedback.miss) popup.style.setProperty("--pop-scale", String(popScale));
     layer.append(popup);
   } else if (!showPartyRowDamage(field, feedback, popup)) {
     layer.append(popup);
@@ -576,10 +595,11 @@ function appendEffectsLayer(field: HTMLElement): HTMLElement {
   return layer;
 }
 
-/** rm2000 은 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터 PNG 알파를
- *  반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
+/** 유리 뼈대의 정면 구도(rm2000 과 그 변형)는 필드 위에 어두운 그라데이션을 얹지 않는다 — 그게 몬스터
+ *  PNG 알파를 반투명처럼 보이게 했다. 다른 스킨은 기존 스크림을 유지한다. */
 function battleBackdropImage(url: string): string {
-  if (activeSkin().id === "rm2000") return `url("${url}")`;
+  const skin = activeSkin();
+  if (skin.family === "glass" && skin.layout === "frontview") return `url("${url}")`;
   return `linear-gradient(rgba(4, 10, 24, 0.12), rgba(2, 6, 14, 0.28)), url("${url}")`;
 }
 
@@ -906,6 +926,53 @@ export function spawnDeathShards(node: HTMLElement): void {
   window.setTimeout(() => container.remove(), 900);
 }
 
+const HIT_SPARK_COUNT: Readonly<Record<string, number>> = { graze: 5, normal: 7, heavy: 10, crushing: 12 };
+
+/**
+ * 명중 파편 — 맞은 순간 몸통 한가운데서 작은 불꽃이 튄다(CSS: 22-hit-feel.css `.battle-hit-spark`).
+ * 격파 조각(spawnDeathShards)과 같은 결정적 배치를 쓰되 짧고 가깝다. 수는 세기가 정한다.
+ * 히트스톱 동안에는 CSS 가 멈춰 두었다가 정지가 풀리는 순간 터진다.
+ */
+export function spawnHitSparks(node: HTMLElement, intensity: string): void {
+  node.querySelector(".battle-hit-sparks")?.remove();
+  const count = HIT_SPARK_COUNT[intensity] ?? 7;
+  const container = document.createElement("span");
+  container.className = "battle-hit-sparks";
+  container.dataset.testid = "battle-hit-sparks";
+  container.setAttribute("aria-hidden", "true");
+  const sprite = battlerSpriteNode(node);
+  const spriteHeight = sprite.offsetHeight > 0 ? sprite.offsetHeight : 120;
+  container.style.setProperty("--shard-rise", `${Math.round(spriteHeight * 0.5)}px`);
+  const reach = intensity === "crushing" ? 1.5 : intensity === "heavy" ? 1.25 : 1;
+  for (let index = 0; index < count; index += 1) {
+    const spark = document.createElement("i");
+    spark.className = "battle-hit-spark";
+    const angle = (index / count) * Math.PI * 2 + ((index * 5) % 3) * 0.3;
+    const distance = (26 + ((index * 11) % 5) * 7) * reach;
+    spark.style.setProperty("--sx", `${Math.round(Math.cos(angle) * distance)}px`);
+    spark.style.setProperty("--sy", `${Math.round(Math.sin(angle) * distance * 0.8)}px`);
+    spark.style.setProperty("--ss", `${4 + ((index * 3) % 3) * 2}px`);
+    container.append(spark);
+  }
+  node.append(container);
+  scheduleBattleTimer(() => container.remove(), 700);
+}
+
+/** 피격 점멸 한 번의 길이. 세 번 꺼졌다 켜진다(드퀘·포켓몬 공통 문법). */
+export const HIT_BLINK_STEP_MS = 55;
+
+/**
+ * 맞은 배틀러를 세 번 깜빡인다. `visibility` 를 클래스로 토글한다 — 스프라이트의 animation 슬롯은
+ * idle·숨쉬기·기절이 쓰고 있어서 거기에 점멸을 얹으면 그 연출이 처음부터 다시 돈다.
+ */
+export function blinkBattlerNode(node: HTMLElement): void {
+  node.classList.remove("battle-hit-blink-off");
+  for (let step = 0; step < 6; step += 1) {
+    scheduleBattleTimer(() => node.classList.toggle("battle-hit-blink-off", step % 2 === 0), step * HIT_BLINK_STEP_MS);
+  }
+  scheduleBattleTimer(() => node.classList.remove("battle-hit-blink-off"), 6 * HIT_BLINK_STEP_MS);
+}
+
 /** Side-view approach / knockback classes for the current resolve beat. */
 export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | undefined): void {
   for (const node of field.querySelectorAll<HTMLElement>(".battle-actor, .battle-enemy")) {
@@ -918,6 +985,8 @@ export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       "battle-motion-target",
     );
   }
+  const party = field.parentElement?.querySelector<HTMLElement>(".battle-party");
+  for (const row of party?.querySelectorAll<HTMLElement>(".battle-actor-status.is-acting") ?? []) row.classList.remove("is-acting");
   if (!beat) return;
   const user = beat.userId ? findBattlerNode(field, beat.userId) : null;
   if (user) {
@@ -925,6 +994,13 @@ export function applyActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     if (beat.userMotion === "windup") user.classList.add("battle-motion-windup");
     else if (beat.userMotion === "lunge") user.classList.add("battle-motion-lunge");
     else if (beat.userMotion === "return") user.classList.add("battle-motion-return");
+    // 예비동작 → 순간 타격(22-hit-feel.css): approach 비트의 전진은 비트 끝에 **도착**하도록
+    // 늦게 출발한다. 예전엔 130ms 에 도착해 340ms 를 서 있다가 맞혔다 — 가장 느린 순간이 타격이었다.
+    user.dataset.motionPhase = beat.kind;
+    user.style.setProperty("--motion-beat-ms", `${Math.max(0, Math.round(beat.durationMs))}ms`);
+  } else if (beat.userId && beat.userMotion !== "idle") {
+    // 아군을 그리지 않는 정면 스킨: 누가 때리는지 파티 카드의 그 행이 앞으로 나와 말한다.
+    party?.querySelector<HTMLElement>(`.battle-actor-status[data-record-id="${beat.userId}"]`)?.classList.add("is-acting");
   }
   if (beat.targetId) {
     const target = findBattlerNode(field, beat.targetId);
@@ -999,7 +1075,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
   if (actor.level) {
     const lv = document.createElement("span");
     lv.className = "battle-actor-level";
-    // 라벨/값을 나눠 담는다 — vxace 스킨이 참조처럼 "라벨 배지 + 큰 숫자" 로 그리려면
+    // 라벨/값을 나눠 담는다 — 얼굴 카드 HUD 가 "라벨 배지 + 큰 숫자" 로 그리려면
     // 두 조각의 서식이 달라야 한다. 합친 textContent 는 "Lv 1" 로 한 노드일 때와 같다.
     lv.append(vitalLabel(activeSkin().id === "pokemon" ? "레벨" : "Lv"), vitalValue(` ${actor.level}`));
     name.append(lv);
@@ -1013,7 +1089,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 
   const hpGauge = statBar("hp", actor.hp, actor.maxHp);
   const mpGauge = statBar("mp", actor.mp, actor.maxMp);
-  // 얼굴 초상은 vxace 스킨 전용 노출(기본 CSS 에서 display:none) — 기존 11종 레이아웃은 그대로.
+  // 얼굴 초상 — 유리 뼈대는 행 왼쪽 작은 초상, 얼굴 카드 HUD(boxes·ring)는 카드 머리에 크게 쓴다.
   const face = actorFaceNode(actor);
   if (face) row.append(face);
   row.append(name, vitals, hpGauge, mpGauge);
@@ -1036,7 +1112,7 @@ function actorStatusRow(actor: BattleBattlerSnapshot, battleFlow: BattleSnapshot
 
 /** 셀 우측의 역할 글자 한 자. 참조 스크린샷의 진형 배지(前/中/後) 자리인데 이 엔진에는
  *  진형 개념이 없다 — 대신 **실재하는** 직업명의 첫 글자를 쓴다(전사→"전"). 직업이 없으면 만들지 않는다.
- *  기본 CSS 에서 숨기고 vxace 스킨에서만 노출한다. */
+ *  기본 CSS 에서 숨기고 얼굴 카드 HUD(_glass-variants.css)에서만 노출한다. */
 function actorRoleNode(actor: BattleBattlerSnapshot): HTMLElement | null {
   if (!actor.classId) return null;
   const className = store.getCurrent().database.classes.find((entry) => entry.id === actor.classId)?.name;

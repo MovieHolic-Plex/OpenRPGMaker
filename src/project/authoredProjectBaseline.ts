@@ -1,5 +1,6 @@
 import type { Project } from "./types";
 import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
+import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
 
 // Same JSON value semantics as proposal bases and remote JSONB: object key order
 // is not authored drift. Array order and every authored value remain significant.
@@ -68,16 +69,33 @@ export function composeProjectIdentity(parts: ProjectIdentityParts, kind: "propo
   return `{${entries.map(entry => entry[1]).join(",")}}`;
 }
 
+function digestOf(value: unknown): string {
+  const digest = jsonContentDigest(value);
+  if (digest === undefined) throw new SyntaxError("projectDigest: value has no JSON representation");
+  return digest;
+}
+
 /**
- * 같은 프로젝트 객체의 정체성 문자열을 다시 계산하지 않게 해 주는 공급자. 호출자가 «이 객체는 그 뒤로
- * 바뀌지 않았다»를 보증할 수 있을 때만 준다(스토어의 현재 프로젝트 + 같은 편집 세대).
+ * 정체성의 SHA-256 요약. 요약이 같다 ⇔ 같은 종류의 정체성 문자열(composeProjectIdentity)이 같다.
+ * 적용 권위는 이것만 비교한다 — 정체성 문자열을 통째로 만들고 해시하면 큰 프로젝트에서 체크포인트마다
+ * 메인 스레드가 초 단위로 멈춘다(contentDigest 주석).
  */
+export function projectIdentityDigest(project: Project, kind: "proposal" | "authored" | "complete"): string {
+  if (kind === "complete") return digestOf(project);
+  const { world, ...rest } = project;
+  return digestOf(kind === "proposal" ? rest : { ...rest, world: authoredWorld(world) });
+}
+
+/** 같은 프로젝트 객체의 정체성 요약을 다시 계산하지 않게 해 주는 공급자(한 동기 구간 안에서만 기억한다). */
 export interface ProjectIdentitySource {
   authored(project: Project): string;
   complete(project: Project): string;
 }
 
-const direct: ProjectIdentitySource = { authored: authoredIdentity, complete: contentIdentity };
+const direct: ProjectIdentitySource = {
+  authored: project => projectIdentityDigest(project, "authored"),
+  complete: project => projectIdentityDigest(project, "complete"),
+};
 
 /** Capture at draft creation, not at acceptance. No mutable Project reference is
  * authority; context refreshes and callers cannot rewrite these captured values. */
@@ -86,12 +104,15 @@ export class AuthoredProjectBaseline {
   private readonly complete: string;
 
   constructor(project: Project, identities: ProjectIdentitySource = direct) {
+    // Keep immutable authority, not two full project JSON strings, for the
+    // lifetime of a detached draft. Every check re-verifies current values.
     this.authored = identities.authored(project);
     this.complete = identities.complete(project);
     Object.freeze(this);
   }
 
   matches(project: Project, includeWiki = false, identities: ProjectIdentitySource = direct): boolean {
-    return includeWiki ? this.complete === identities.complete(project) : this.authored === identities.authored(project);
+    return includeWiki ? this.complete === identities.complete(project)
+      : this.authored === identities.authored(project);
   }
 }

@@ -1,22 +1,19 @@
 import type Phaser from "phaser";
 import { editorState, type Layer } from "@/editor/editorState";
-import { createChipsetTileObject } from "@/editor/chipsetTileRender";
+import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
 import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
 import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStability";
-import { tilePassability } from "@/project/collision";
-import { tileStackAt, topTileInStack } from "@/project/mapOverlayTiles";
+import { cellPassability } from "@/project/collision";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
+import { tileStackAt } from "@/project/mapOverlayTiles";
 import { store, type ProjectChangeCell } from "@/project/store";
 import { renderWalkEncounterOverlay } from "@/editor/walkEncounterOverlay";
+import { repaintEditGrid } from "@/editor/editSceneViewChrome";
 import { invalidateCullingWindow, resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap, MapId } from "@/project/types";
 export { editorEventMarkerTexture, eventMarkerTileScale, renderEventLayerClickFeedback } from "@/editor/editSceneEventMarkers";
-
-const DEFAULT_GRID_COLOR = 0xffffff;
-const DEFAULT_GRID_ALPHA = 0.08;
-const EVENT_GRID_COLOR = 0x000000;
-const EVENT_GRID_ALPHA = 0.45;
 
 type CameraFocus = {
   readonly x: number;
@@ -106,10 +103,12 @@ function getOrCreateChunk(
 /**
  * Large maps should not pay the cost of creating every tile before the first frame.
  * The existing culling pass can hide objects, but it cannot undo their construction.
- * Keep the threshold below the common 128×128 render-contract fixture so the existing
- * small/editor capture behavior remains unchanged while 100×100 hosted maps use the lazy path.
+ * 8_192 left every map up to 90×90 fully materialized (tens of thousands of objects for a
+ * 64×64 town with stacks/shadows). 2_048 sends 46×46 and larger through the camera window;
+ * when the window covers the whole map (zoomed out, or tests without a camera) the lazy
+ * path still renders every cell, so small-map capture behavior is unchanged.
  */
-export const LAZY_EDIT_MAP_CELL_THRESHOLD = 8_192;
+export const LAZY_EDIT_MAP_CELL_THRESHOLD = 2_048;
 
 type EditSceneTileWindow = {
   readonly minX: number;
@@ -143,6 +142,19 @@ export function editSceneTileWindowKey(scene: Phaser.Scene, map: GameMap): strin
   return `${window.minX},${window.minY},${window.maxX},${window.maxY}`;
 }
 
+/**
+ * 격자를 그을 칸 범위 — 카메라 창을 청크 경계로 넓히고 한 청크 여유를 더한다. 청크 단위로 잘라야
+ * 팬하는 동안 칸 하나 넘을 때마다가 아니라 청크 하나 넘을 때만 격자를 다시 긋는다.
+ */
+export function editGridTileWindow(scene: Phaser.Scene, map: GameMap): EditSceneTileWindow {
+  const window = cameraTileWindow(scene, map);
+  const minX = Math.max(0, (chunkCoord(window.minX) - 1) * EDIT_TILE_CHUNK_TILES);
+  const minY = Math.max(0, (chunkCoord(window.minY) - 1) * EDIT_TILE_CHUNK_TILES);
+  const maxX = Math.min(map.width - 1, (chunkCoord(window.maxX) + 2) * EDIT_TILE_CHUNK_TILES - 1);
+  const maxY = Math.min(map.height - 1, (chunkCoord(window.maxY) + 2) * EDIT_TILE_CHUNK_TILES - 1);
+  return { minX, minY, maxX, maxY };
+}
+
 export type EditSceneRenderStats = {
   readonly tileObjectsUpdated: number;
 };
@@ -168,7 +180,7 @@ export function renderEditScene(context: EditSceneRenderContext): EditSceneRende
   if (mapOnlyCapture) return { tileObjectsUpdated };
   renderWalkEncounterOverlay(context.scene, context.overlayLayer, map, mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]));
   if (state.tool === "collision") renderCollisionOverlay(context, map);
-  if (state.showGrid) renderGrid(context.gridGraphics, map, state.layer);
+  if (state.showGrid) repaintEditGrid(context.gridGraphics, map, state.layer, true, editGridTileWindow(context.scene, map));
   renderStartPosition(context);
   renderEventMarkers({ ...context, tileSize: mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]) }, map, state.layer);
   return { tileObjectsUpdated };
@@ -314,6 +326,21 @@ function renderTileCellLayer(
       if (activeLayer === "upper") tintIfPossible(lowerTile, 0xc8d9bf);
       addTileObject(context, objects, lowerTile, 1, "lower", x, y);
     }
+    // 2층·그림자 — 게임과 같은 순서(1층 → 1층 스택 → 2층 → 그림자). 2층은 합성 없이 칩 그대로.
+    const overlay = layerTileAt(map, 2, i);
+    if (overlay >= 0) {
+      const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
+      overlayTile.setAlpha(lowerAlpha);
+      if (activeLayer === "upper") tintIfPossible(overlayTile, 0xc8d9bf);
+      addTileObject(context, objects, overlayTile, 1, "lower", x, y);
+    }
+    const bits = shadowAt(map, i);
+    if (bits !== 0) {
+      for (const shade of createShadowQuarters(context.scene, x, y, tileSize, bits)) {
+        shade.setAlpha(0.5 * lowerAlpha);
+        addTileObject(context, objects, shade, 2, "lower", x, y);
+      }
+    }
   } else {
     const dimUpper = activeLayer === "lower";
     const upper = map.upperTiles[i];
@@ -327,6 +354,13 @@ function renderTileCellLayer(
       const upperTile = createChipsetTileObject(context.scene, map, tileset, x, y, stackedUpper);
       if (dimUpper) tintIfPossible(upperTile, 0xc8d9bf);
       addTileObject(context, objects, upperTile, 21, "upper", x, y);
+    }
+    // 4층 — 3층 스택 위, 합성 없이 칩 그대로.
+    const overlay = layerTileAt(map, 4, i);
+    if (overlay >= 0) {
+      const overlayTile = createRawChipsetTileObject(context.scene, map, tileset, x, y, overlay);
+      if (dimUpper) tintIfPossible(overlayTile, 0xc8d9bf);
+      addTileObject(context, objects, overlayTile, 21, "upper", x, y);
     }
   }
   context.tileIndex?.set(tileIndexKey(layer, x, y), objects);
@@ -430,6 +464,19 @@ function isTintable(object: Phaser.GameObjects.GameObject): object is Phaser.Gam
   return "setTint" in object && typeof object.setTint === "function";
 }
 
+/** 그림자 조각(칸의 ¼)마다 검정 사각형 하나. bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래. 알파는 호출자가 정한다. */
+function createShadowQuarters(scene: Phaser.Scene, x: number, y: number, tileSize: number, bits: number): Phaser.GameObjects.Rectangle[] {
+  const half = tileSize / 2;
+  const out: Phaser.GameObjects.Rectangle[] = [];
+  for (let quarter = 0; quarter < 4; quarter += 1) {
+    if (!(bits & (1 << quarter))) continue;
+    const rect = scene.add.rectangle(x * tileSize + (quarter % 2) * half, y * tileSize + Math.floor(quarter / 2) * half, half, half, 0x000000);
+    rect.setOrigin(0, 0);
+    out.push(rect);
+  }
+  return out;
+}
+
 /** 빈 하위 칸의 체커. 미리보기 중에는 알파를 낮춰 뒤의 배경이 비치게 한다(신호는 유지). */
 function createEmptyTile(
   scene: Phaser.Scene,
@@ -458,33 +505,15 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
   collG.fillStyle(0xff4444, 0.35);
   for (let y = 0; y < map.height; y++) {
     for (let x = 0; x < map.width; x++) {
-      const i = y * map.width + x;
-      const lower = topTileInStack(map, "lower", i) ?? map.lowerTiles[i];
-      const upper = topTileInStack(map, "upper", i) ?? map.upperTiles[i];
       if (!tileset) continue;
-      const pass = tilePassability(tileset, lower, upper);
+      // 1~4층 모두 본다(4층 × 가 통행 3층 위에 있으면 빨갛게). 옛 스택 top 도 cellPassability 가 반영한다.
+      const pass = cellPassability(tileset, map, y * map.width + x);
       if (!pass.up && !pass.down && !pass.left && !pass.right) {
         collG.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
       }
     }
   }
   context.overlayLayer.add(collG);
-}
-
-function renderGrid(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, activeLayer: Layer): void {
-  const color = activeLayer === "event" ? EVENT_GRID_COLOR : DEFAULT_GRID_COLOR;
-  const alpha = activeLayer === "event" ? EVENT_GRID_ALPHA : DEFAULT_GRID_ALPHA;
-  const tileSize = mapTileSize(map, store.getCurrent().tilesets[map.tilesetId]);
-  gridGraphics.lineStyle(1, color, alpha);
-  for (let x = 0; x <= map.width; x++) {
-    gridGraphics.moveTo(x * tileSize, 0);
-    gridGraphics.lineTo(x * tileSize, map.height * tileSize);
-  }
-  for (let y = 0; y <= map.height; y++) {
-    gridGraphics.moveTo(0, y * tileSize);
-    gridGraphics.lineTo(map.width * tileSize, y * tileSize);
-  }
-  gridGraphics.strokePath();
 }
 
 function renderStartPosition(context: EditSceneRenderContext): void {

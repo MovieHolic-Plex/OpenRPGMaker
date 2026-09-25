@@ -179,7 +179,7 @@ describe("native preserved paint completeness", () => {
     expect(ctx.project.maps.map_basement.lowerTiles).toEqual(before.lowerTiles);
     expect(ctx.project.maps.map_basement.upperTiles).toEqual(before.upperTiles);
     expect(proposalCompletenessWarnings({ buildSpec: spec, calls: [historical, metadata], project: ctx.project })).toHaveLength(expectedWarnings);
-    expect(historical.result.data).toMatchObject({ effectiveLayer: "upper" });
+    expect(historical.result.data).toMatchObject({ effectiveLayer: "3" });
     expect(Object.isFrozen(historical.result.data)).toBe(true);
     // Ledger serialization keeps structured execution evidence, without summary prose.
     const serialized: ProposalCompletenessCall = JSON.parse(JSON.stringify({ name: historical.name, args: historical.args,

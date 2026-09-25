@@ -14,6 +14,7 @@ import {
   fallbackMeasureDialogueText,
   paginateDialogueSegments,
   type DialogueTextControl,
+  type DialogueTextFx,
   type DialogueTextMeasure,
   type DialogueTextSegment,
 } from "@/player/dialoguePagination";
@@ -33,6 +34,18 @@ import {
 import { prefersReducedMotion } from "@/player/characterLanding";
 import { isCancelKey, isConfirmKey, isTextEntryTarget, normalizeKey } from "@/player/keyBindings";
 import { applySystemWindowSkinVariable } from "@/player/systemGraphics";
+import { createDialogueVoice } from "@/player/dialogueVoice";
+import {
+  DIALOGUE_TAG_COLORS,
+  isNonBlockingContainer,
+  parseDialogueEmotion,
+  punctuationPauseMs,
+  resolveDialogueLook,
+  type DialogueLook,
+} from "@/project/dialogueStyles";
+import { resolveFontStack } from "@/project/fontRegistry";
+import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, emoteFrameIndex, type EmoteKind } from "@/project/emotes";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 import { el, clearChildren } from "@/util/dom";
@@ -42,6 +55,11 @@ type DialogueSurfaceSettings = {
   readonly playerTileY: number;
   readonly mapHeight: number;
   readonly textContext?: DialogueTextContext;
+  /**
+   * 대화창 스타일·대사 종류·화자 목소리(project/dialogueStyles.ts resolveDialogueLook).
+   * 생략하면 프로젝트 기본 스타일 + 화자 이름으로 찾은 프로필을 쓴다.
+   */
+  readonly look?: DialogueLook;
 };
 
 export type DialogueTextContext = {
@@ -63,7 +81,43 @@ export type DialogueTextRequest = DialogueSurfaceSettings & {
   readonly emotion?: string;
   /** 검사용 주입 구멍. 생략하면 matchMedia 를 본다. */
   readonly reducedMotion?: boolean;
+  /**
+   * 말하는 캐릭터의 머리 위 한 점(대사 무대의 논리 px). 말풍선·흘림 대사가 여기에 붙는다.
+   * 매 프레임 다시 부른다 — 캐릭터가 움직이면 말풍선도 따라간다. 없으면 말풍선은 상자가 된다.
+   */
+  readonly anchor?: () => { readonly x: number; readonly y: number } | undefined;
+  /** 초상 무대가 「같은 화자인가」를 가르는 열쇠. 생략하면 화자 이름. */
+  readonly speakerKey?: string;
+  /** [소리:id] 태그. 런타임이 효과음을 낸다. */
+  readonly onSound?: (soundId: string) => void;
+  /** [화면흔들] 태그. 런타임이 카메라를 흔든다(대사 상자는 스스로 흔든다). */
+  readonly onScreenShake?: () => void;
+  /** 표정의 이모트를 머리 위에 띄운다. */
+  readonly onEmote?: (emote: EmoteKind) => void;
 };
+
+/** 대화 기록 한 줄. */
+export type DialogueLogEntry = {
+  readonly speaker?: string;
+  readonly color?: string;
+  readonly text: string;
+  readonly context: string;
+};
+
+const DIALOGUE_LOG_LIMIT = 200;
+/** 말풍선 본문 폭(논리 px). 넘으면 줄을 바꾸고, 세 줄을 넘으면 상자로 간다. */
+const DIALOGUE_BALLOON_TEXT_WIDTH = 150;
+const DIALOGUE_BALLOON_MAX_LINES = 3;
+const DIALOGUE_BALLOON_EDGE = 4;
+const DIALOGUE_BALLOON_TAIL = 7;
+/** 위가 모자라 아래로 뒤집을 때 머리 기준점에서 내리는 거리 — 대략 캐릭터 한 명 키. */
+const DIALOGUE_BALLOON_BELOW = 38;
+const DIALOGUE_MOUTH_FRAME_MS = 120;
+
+/** 대화 기록 키. 물리 KeyL 이라 자판 배열과 무관하고, 한글 입력 상태의 ㅣ 도 받는다. */
+export function isDialogueLogKey(key: string, code?: string): boolean {
+  return code === "KeyL" || key === "l" || key === "L" || key === "ㅣ" || key === "PageUp";
+}
 
 export type DialogueChoicesRequest = DialogueSurfaceSettings & {
   readonly prompt?: string;
@@ -115,6 +169,11 @@ export interface DialogueUI {
   hide(): void;
   /** 퇴장 연출을 재생한 뒤 창을 뺀다. 대화 세션이 끝나는 자리에서 쓴다. */
   close(): void;
+  /** 대화 기록 창. 대화 중에는 L 로도 연다. */
+  openLog(): void;
+  closeLog(): void;
+  /** 이 플레이 세션에서 본 대사(오래된 것부터, 최대 200줄). */
+  dialogueLog(): readonly DialogueLogEntry[];
 }
 
 /** 지연 실행 주입 구멍. 취소 함수를 돌려준다. createBattleTransition 과 같은 형태. */
@@ -188,6 +247,9 @@ export function createDialogueUI(
       settled = true;
       pendingExit = null;
       clearOverlay();
+      // 대화 세션이 끝났다 — 초상 무대가 기억한 앞 화자를 잊는다.
+      lastPortrait = undefined;
+      listenerPortrait = undefined;
     };
     const cancelTimer = schedule(finish, exitMs);
     // schedule 이 동기로 끝냈으면(node 환경) 예약을 남기지 않는다.
@@ -205,74 +267,315 @@ export function createDialogueUI(
     }, enterMs);
   };
 
+  // ── 대화 기록(백로그) ──────────────────────────────────────────────────────
+  // 이 UI 가 살아 있는 동안(한 플레이 세션) 본 대사를 모은다. 저장 파일에는 넣지 않는다.
+  const logEntries: DialogueLogEntry[] = [];
+  let logPanel: HTMLElement | undefined;
+  const recordLog = (request: DialogueTextRequest, look: DialogueLook): void => {
+    const text = parseDialogueText(request.body, request.textContext).map((segment) => segment.text).join("").trim();
+    if (!text) return;
+    const speaker = look.hideName ? undefined : nameplateSpeaker(request.speaker);
+    logEntries.push({
+      text,
+      context: look.context,
+      ...(speaker ? { speaker } : {}),
+      ...(look.nameColor ? { color: look.nameColor } : {}),
+    });
+    if (logEntries.length > DIALOGUE_LOG_LIMIT) logEntries.splice(0, logEntries.length - DIALOGUE_LOG_LIMIT);
+  };
+  const closeLog = (): void => {
+    logPanel?.remove();
+    logPanel = undefined;
+  };
+  const openLog = (): void => {
+    closeLog();
+    const list = el("ol", { class: "dialogue-log-list" });
+    for (const entry of logEntries) {
+      const item = el("li", {
+        class: `dialogue-log-entry${entry.speaker ? "" : " no-speaker"}`,
+        dataset: { context: entry.context },
+      });
+      if (entry.speaker) {
+        const name = el("strong", { class: "dialogue-log-speaker", text: entry.speaker });
+        if (entry.color) name.style.color = entry.color;
+        item.append(name);
+      }
+      item.append(el("span", { class: "dialogue-log-text", text: entry.text }));
+      list.append(item);
+    }
+    if (logEntries.length === 0) list.append(el("li", { class: "dialogue-log-empty", text: "아직 나눈 대화가 없습니다." }));
+    logPanel = el("div", {
+      class: "dialogue-log",
+      attrs: { role: "dialog", "aria-label": "대화 기록" },
+      dataset: { testid: "dialogue-log" },
+      children: [
+        el("div", { class: "dialogue-log-head", children: [
+          el("strong", { text: "대화 기록" }),
+          el("span", { text: "L · Esc 닫기 · ↑↓ 넘겨 보기" }),
+        ] }),
+        list,
+      ],
+    });
+    host.append(logPanel);
+    list.scrollTop = list.scrollHeight;
+  };
+  /** 대화 중 기록 키. 기록이 열려 있으면 다른 키는 삼킨다. 처리했으면 true. */
+  const handleLogKey = (e: KeyboardEvent): boolean => {
+    if (logPanel) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      if (isDialogueLogKey(e.key, e.code) || e.key === "Escape") closeLog();
+      else if (e.key === "ArrowUp" || e.key === "ArrowDown") {
+        const list = logPanel.querySelector<HTMLElement>(".dialogue-log-list");
+        if (list) list.scrollTop += e.key === "ArrowUp" ? -24 : 24;
+      }
+      return true;
+    }
+    if (isDialogueLogKey(e.key, e.code)) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openLog();
+      return true;
+    }
+    return false;
+  };
+
+  // ── 흘림 대사 · 코너 대사(게임을 멈추지 않는 그릇) ─────────────────────────
+  const ambientLayer = el("div", { class: "dialogue-ambient-layer", attrs: { "aria-live": "polite" } });
+  const cornerStack = el("div", { class: "dialogue-corner-stack", dataset: { testid: "dialogue-corner-stack" } });
+  ambientLayer.append(cornerStack);
+  host.append(ambientLayer);
+  const activeBarks = new Map<string, () => void>();
+  const showAmbient = (request: DialogueTextRequest, look: DialogueLook): void => {
+    recordLog(request, look);
+    const segments = parseDialogueText(request.body, request.textContext);
+    const chars = segments.flatMap((segment) => Array.from(segment.text));
+    const lifetime = Math.min(7000, Math.max(2200, 1600 + chars.length * 90));
+    const voice = createDialogueVoice(look);
+    const body = el("div", { class: "body dialogue-ambient-body" });
+    const renderer = mountDialoguePage(body, segments);
+    let shown = 0;
+    const delay = Math.max(12, DEFAULT_DIALOGUE_CHAR_DELAY_MS * look.delayScale);
+    const typer = window.setInterval(() => {
+      shown += 1;
+      renderer.reveal(shown);
+      voice.speak(chars[shown - 1] ?? "");
+      if (shown >= chars.length) window.clearInterval(typer);
+    }, delay);
+    let node: HTMLElement;
+    let raf = 0;
+    const key = request.speakerKey ?? request.speaker ?? "";
+    if (look.container === "corner") {
+      const face = look.hideFace ? undefined : request.face;
+      node = el("div", {
+        class: "dialogue-corner-item",
+        dataset: { testid: "dialogue-corner", dialogueStyle: look.style },
+      });
+      if (face?.resourceId) {
+        const faceEl = renderFace({ ...face, presentation: "face", resourceId: look.expressionFace ?? face.resourceId });
+        faceEl.classList.add("dialogue-corner-face");
+        node.append(faceEl);
+      }
+      const column = el("div", { class: "dialogue-corner-text" });
+      const cornerName = look.hideName ? undefined : nameplateSpeaker(request.speaker);
+      if (cornerName) {
+        const name = el("strong", { class: "dialogue-corner-name", text: cornerName });
+        if (look.nameColor) name.style.color = look.nameColor;
+        column.append(name);
+      }
+      column.append(body);
+      node.append(column);
+      cornerStack.append(node);
+      while (cornerStack.children.length > 3) cornerStack.firstElementChild?.remove();
+    } else {
+      activeBarks.get(key)?.();
+      node = el("div", {
+        class: "dialogue-bark",
+        dataset: { testid: "dialogue-bark", dialogueStyle: look.style },
+        children: [body],
+      });
+      if (look.nameColor) node.style.setProperty("--dialogue-speaker-color", look.nameColor);
+      ambientLayer.append(node);
+      const place = (): void => {
+        placeBalloonNode(node, request.anchor?.(), host);
+        raf = typeof requestAnimationFrame === "function" ? requestAnimationFrame(place) : 0;
+      };
+      place();
+    }
+    if (look.emote) request.onEmote?.(look.emote);
+    let removed = false;
+    const remove = (): void => {
+      if (removed) return;
+      removed = true;
+      window.clearInterval(typer);
+      window.clearTimeout(expire);
+      if (raf && typeof cancelAnimationFrame === "function") cancelAnimationFrame(raf);
+      node.classList.add("is-leaving");
+      window.setTimeout(() => node.remove(), 180);
+      if (activeBarks.get(key) === remove) activeBarks.delete(key);
+    };
+    const expire = window.setTimeout(remove, lifetime);
+    if (look.container === "bark") activeBarks.set(key, remove);
+  };
+
+  // ── 초상 무대: 앞 화자의 초상을 반대쪽에 흐리게 남긴다 ──────────────────────
+  // 대화 세션(창이 이어서 열려 있는 동안)에만 기억한다. 퇴장이 끝나면 잊는다.
+  let lastPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
+  let listenerPortrait: { readonly key: string; readonly face: FaceGraphic } | undefined;
+
   function showText(request: DialogueTextRequest): Promise<void> {
     if (request.signal?.aborted) return Promise.reject(new DOMException("Text cancelled", "AbortError"));
+    const requestedLook = request.look ?? resolveDialogueLook(store.getCurrent(), { speaker: request.speaker, emotion: request.emotion });
+    if (isNonBlockingContainer(requestedLook.container)) {
+      // 흘림·코너 대사는 대사 상자를 건드리지 않고, 기다리지도 않는다.
+      showAmbient(request, requestedLook);
+      return Promise.resolve();
+    }
     const wasOpen = takeOverOverlay();
     return new Promise<void>((resolve, reject) => {
       let settled = false;
-      const box = dialogueBox("", "dialogue-box");
-      const position = applyTextSettings(overlay, box, request);
+      let look = requestedLook;
+      // 말풍선은 머리 위 기준점이 있어야 그린다. 없으면(편집기 미리보기·플레이어 이벤트 밖) 상자다.
+      let useBalloon = look.container === "balloon" && request.anchor?.() !== undefined;
+      recordLog(request, look);
+      const speakerKey = request.speaker?.trim() || request.speakerKey || "";
       const profile = dialoguePresentationProfile(request.emotion, {
         reducedMotion: resolveReducedMotion(request.reducedMotion),
       });
-      applyDialoguePresentation(box, profile);
-      applyDialogueScrim(scrim, profile, position);
       activeExitMs = profile.exitMs;
-      const portraitMode = dialoguePortraitMode(request.face);
-      const isPortrait = portraitMode !== "face";
-      const content = el("div", {
-        class: [
-          "dialogue-content",
-          request.face?.position === "right" ? "face-right" : "",
-          isPortrait ? "has-bust" : "",
-          isPortrait ? `portrait-${portraitMode}` : "",
-        ]
-          .filter(Boolean)
-          .join(" "),
-      });
-      if (request.face && !isPortrait) content.append(renderFace(request.face));
-      const textColumn = el("div", { class: "dialogue-text-column" });
-      const bodyEl = el("div", { class: "body" });
-      textColumn.append(bodyEl);
-      content.append(textColumn);
-      box.append(content);
-      if (request.face && isPortrait) {
-        // Attach to the message box so left/right tracks the window, not the full screen.
-        box.classList.add("has-bust-face", `portrait-${portraitMode}`);
-        if (request.face.position === "right") box.classList.add("bust-right");
-        else box.classList.add("bust-left");
-        overlay.classList.add("has-bust-face");
-        box.append(renderFace(request.face));
-      }
-      // 화자 이름은 본문과 분리된 네임플레이트로 창 상단에 붙인다 (Fields of Mistria 식).
-      let nameplate: HTMLElement | undefined;
-      if (request.speaker?.trim()) {
-        box.classList.add("has-speaker");
-        nameplate = el("div", {
-          class: "speaker speaker-nameplate",
-          text: request.speaker.trim(),
-          dataset: { testid: "dialogue-speaker" },
-        });
-        box.append(nameplate);
-      }
-      const cursor = el("div", {
-        class: "dialogue-page-cursor",
-        text: "▼",
-        attrs: { "aria-hidden": "true" },
-      });
-      box.append(cursor);
-      overlay.append(box);
-      // 이름표가 본문 첫 줄을 덮지 않게 여백을 재서 심는다. 오버레이에 붙인 **뒤**라야
-      // offsetHeight 가 나오고, 줄 수를 세기 **전**이라야 그 줄 수가 실제 본문 칸을 본다.
-      if (nameplate) reserveSpeakerInset(box, nameplate);
+      let voice = createDialogueVoice(look);
+      let box!: HTMLElement;
+      let bodyEl!: HTMLElement;
+      let cursor!: HTMLElement;
+      let faceEl: HTMLElement | undefined;
+      let faceForLine: FaceGraphic | undefined;
+      let position!: MessageWindowPosition;
+      let pages!: ReturnType<typeof paginateDialogueSegments>;
+      const segmentsAll = parseDialogueText(request.body, request.textContext);
 
-      const measure = createDialogueTextMeasure(bodyEl);
-      const pages = paginateDialogueSegments(parseDialogueText(request.body, request.textContext), {
-        maxWidth: dialogueBodyWidth(request, position, logicalHostWidth(host)),
-        measure,
-        maxLines: dialogueMaxLines(bodyEl),
-        fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
-      });
+      const mount = (balloon: boolean): void => {
+        box = dialogueBox("", "dialogue-box");
+        applyDialogueLook(overlay, box, look);
+        position = applyTextSettings(overlay, box, request);
+        applyDialoguePresentation(box, profile);
+        applyDialogueScrim(scrim, profile, position);
+        const baseFace = look.hideFace || balloon ? undefined : request.face;
+        faceForLine = baseFace && look.expressionFace ? { ...baseFace, resourceId: look.expressionFace } : baseFace;
+        const face = faceForLine;
+        const portraitMode = dialoguePortraitMode(face);
+        const isPortrait = portraitMode !== "face";
+        const content = el("div", {
+          class: [
+            "dialogue-content",
+            face?.position === "right" ? "face-right" : "",
+            isPortrait ? "has-bust" : "",
+            isPortrait ? `portrait-${portraitMode}` : "",
+          ]
+            .filter(Boolean)
+            .join(" "),
+        });
+        faceEl = undefined;
+        if (face && !isPortrait) {
+          faceEl = renderFace(face);
+          content.append(faceEl);
+        }
+        const textColumn = el("div", { class: "dialogue-text-column" });
+        bodyEl = el("div", { class: "body" });
+        textColumn.append(bodyEl);
+        content.append(textColumn);
+        box.append(content);
+        if (face && isPortrait) {
+          // Attach to the message box so left/right tracks the window, not the full screen.
+          box.classList.add("has-bust-face", `portrait-${portraitMode}`);
+          if (face.position === "right") box.classList.add("bust-right");
+          else box.classList.add("bust-left");
+          overlay.classList.add("has-bust-face");
+          faceEl = renderFace(face);
+          box.append(faceEl);
+          // 초상 무대: 방금 전 다른 화자의 초상을 반대편에 흐리게 남긴다(듣는 쪽).
+          // 같은 화자가 이어 말하면 듣는 쪽은 그대로 남는다.
+          if (wasOpen && lastPortrait && lastPortrait.key !== speakerKey) listenerPortrait = lastPortrait;
+          else if (!wasOpen || listenerPortrait?.key === speakerKey) listenerPortrait = undefined;
+          if (listenerPortrait) {
+            const side: FaceGraphic["position"] = face.position === "right" ? "left" : "right";
+            const other = renderFace({ ...listenerPortrait.face, position: side });
+            other.classList.add("dialogue-portrait-listener");
+            other.dataset.testid = "dialogue-portrait-listener";
+            box.classList.add("has-portrait-listener");
+            box.append(other);
+          }
+          lastPortrait = { key: speakerKey, face };
+        }
+        if (balloon) {
+          overlay.classList.add("balloon-active");
+          box.classList.add("dialogue-balloon");
+          box.dataset.testid = "dialogue-box";
+          box.dataset.container = "balloon";
+        }
+        // 화자 이름은 본문과 분리된 네임플레이트로 창 상단에 붙인다 (Fields of Mistria 식).
+        let nameplate: HTMLElement | undefined;
+        const speakerName = nameplateSpeaker(request.speaker);
+        if (speakerName && !look.hideName) {
+          box.classList.add("has-speaker");
+          nameplate = el("div", {
+            class: "speaker speaker-nameplate",
+            text: speakerName + look.nameSuffix,
+            dataset: { testid: "dialogue-speaker" },
+          });
+          if (look.nameColor) nameplate.style.setProperty("--dialogue-speaker-color", look.nameColor);
+          if (look.emote) nameplate.append(emoteBadge(look.emote));
+          box.append(nameplate);
+        }
+        cursor = el("div", {
+          class: "dialogue-page-cursor",
+          text: "▼",
+          attrs: { "aria-hidden": "true" },
+        });
+        box.append(cursor);
+        // 대화 기록 단추 — 마우스로도 열 수 있게. 키는 L.
+        const logButton = el("button", {
+          class: "dialogue-log-button",
+          text: "기록",
+          attrs: { type: "button", "aria-label": "대화 기록 (L)" },
+          dataset: { testid: "dialogue-log-button" },
+        });
+        logButton.addEventListener("click", (event) => {
+          event.stopPropagation();
+          if (logPanel) closeLog();
+          else openLog();
+        });
+        if (!balloon) box.append(logButton);
+        overlay.append(box);
+        // 이름표가 본문 첫 줄을 덮지 않게 여백을 재서 심는다. 오버레이에 붙인 **뒤**라야
+        // offsetHeight 가 나오고, 줄 수를 세기 **전**이라야 그 줄 수가 실제 본문 칸을 본다.
+        if (nameplate && !balloon) reserveSpeakerInset(box, nameplate);
+        const measure = createDialogueTextMeasure(bodyEl);
+        pages = paginateDialogueSegments(segmentsAll, {
+          maxWidth: balloon
+            ? DIALOGUE_BALLOON_TEXT_WIDTH
+            : dialogueBodyWidth({ ...request, face }, position, logicalHostWidth(host)),
+          measure,
+          maxLines: balloon ? DIALOGUE_BALLOON_MAX_LINES : dialogueMaxLines(bodyEl),
+          fallbackCharWidth: DIALOGUE_FALLBACK_CHAR_WIDTH,
+        });
+      };
+
+      mount(useBalloon);
+      if (useBalloon && pages.length > 1) {
+        // 말풍선에 다 안 들어가면 상자로 되돌린다 — 말풍선이 여러 장 넘어가면 읽기 어렵다.
+        box.remove();
+        overlay.classList.remove("balloon-active");
+        useBalloon = false;
+        mount(false);
+      }
+      if (look.emote) request.onEmote?.(look.emote);
+      let balloonRaf = 0;
+      const placeBalloon = (): void => {
+        placeBalloonNode(box, request.anchor?.(), host);
+        balloonRaf = typeof requestAnimationFrame === "function" ? requestAnimationFrame(placeBalloon) : 0;
+      };
+      if (useBalloon) placeBalloon();
+
       // 진입 연출은 페이지네이션이 끝난 뒤에 건다. 연출은 transform/opacity 뿐이라
       // clientHeight 에 영향이 없지만, 순서를 고정해 두면 나중에 레이아웃 속성을
       // 실수로 애니메이션해도 측정이 먼저 끝나 있다(줄 수가 틀어지면 문장이 조용히 잘린다).
@@ -285,13 +588,38 @@ export function createDialogueUI(
       let autoClosePage = request.autoAdvance === true;
       // 프로파일 배율은 기본 지연에만 적용한다. \s[n]은 프로파일을 덮어쓰지만
       // 기기별 읽기 속도 배율은 기본 지연과 명시한 속도 양쪽에 적용한다.
-      let charDelayMs = playerTextDelay(dialogueScaledCharDelayMs(DEFAULT_DIALOGUE_CHAR_DELAY_MS, profile));
+      let charDelayMs = playerTextDelay(dialogueScaledCharDelayMs(DEFAULT_DIALOGUE_CHAR_DELAY_MS, profile)) * look.delayScale;
+      // [빠르게]·[느리게] 배율. \s[n] 과 곱한다.
+      let rateFactor = 1;
+      // [넘기기금지] 구간 — 켜져 있으면 키로 남은 글자를 한 번에 채우지 않는다.
+      let locked = false;
       let fastMode = false;
       let timer = 0;
       let goldWindow: HTMLElement | undefined;
+      // 입 모양: 말하는 동안 평소 얼굴과 입 벌린 얼굴을 번갈아 보인다.
+      let mouthTimer = 0;
+      let mouthOpen = false;
+      let currentFaceId = faceForLine?.resourceId;
+      const stopMouth = (): void => {
+        if (mouthTimer) window.clearInterval(mouthTimer);
+        mouthTimer = 0;
+        if (mouthOpen && faceEl && currentFaceId) setFaceImage(faceEl, currentFaceId);
+        mouthOpen = false;
+      };
+      const startMouth = (): void => {
+        stopMouth();
+        if (!faceEl || !look.talkFace || !currentFaceId || look.instant) return;
+        const talk = look.talkFace;
+        mouthTimer = window.setInterval(() => {
+          mouthOpen = !mouthOpen;
+          if (faceEl && currentFaceId) setFaceImage(faceEl, mouthOpen ? talk : currentFaceId);
+        }, DIALOGUE_MOUTH_FRAME_MS);
+      };
       // 페이지마다 새로 마운트한다. 타이핑은 이 렌더러에 "몇 글자까지" 만 알려주고
       // 이미 붙은 글자 노드는 건드리지 않는다 — 그래야 글자 연출이 되감기지 않는다.
       let pageRenderer: DialoguePageRenderer | undefined;
+      // 목소리가 읽을 글자. 토큰은 글자를 들고 있지 않아서 페이지마다 같은 순서로 펼쳐 둔다.
+      let pageChars: string[] = [];
 
       const currentSegments = (): readonly DialogueTextSegment[] => pages[pageIndex]?.segments ?? [];
       const currentTokens = (): readonly DialoguePlaybackToken[] => dialoguePlaybackTokens(currentSegments());
@@ -312,13 +640,46 @@ export function createDialogueUI(
         }
         goldWindow.removeAttribute("hidden");
       };
+      const applyExpression = (emotionText: string): void => {
+        const emotion = parseDialogueEmotion(emotionText);
+        if (!emotion) return;
+        const expression = look.expressions?.[emotion];
+        look = {
+          ...look,
+          emotion,
+          voicePitch: look.basePitch + (expression?.pitch ?? 0),
+          ...(expression?.emote ? { emote: expression.emote } : {}),
+        };
+        voice = createDialogueVoice(look);
+        if (expression?.face && faceEl) {
+          currentFaceId = expression.face;
+          setFaceImage(faceEl, expression.face);
+        }
+        box.dataset.dialogueExpression = emotion;
+        if (expression?.emote) {
+          request.onEmote?.(expression.emote);
+          const plate = box.querySelector<HTMLElement>(".speaker-nameplate");
+          plate?.querySelector(".dialogue-emote-badge")?.remove();
+          plate?.append(emoteBadge(expression.emote));
+        }
+      };
+      // 비트가 실제로 울린 순서를 상자에 남긴다(런타임 QA 가 소리 없는 헤드리스에서 읽는다).
+      const noteBeat = (beat: string): void => {
+        box.dataset.dialogueBeats = box.dataset.dialogueBeats ? `${box.dataset.dialogueBeats} ${beat}` : beat;
+      };
+      const beatShake = (): void => {
+        request.onScreenShake?.();
+        box.classList.remove("dialogue-beat-shake");
+        void box.offsetWidth;
+        box.classList.add("dialogue-beat-shake");
+      };
       const executeControl = (
         control: DialogueTextControl,
         skipWaits: boolean
       ): number | "pause" => {
         switch (control.kind) {
           case "speed":
-            charDelayMs = playerTextDelay(dialogueSpeedDelayMs(control.value));
+            charDelayMs = playerTextDelay(dialogueSpeedDelayMs(control.value)) * look.delayScale;
             return 0;
           case "gold":
             showGoldWindow();
@@ -338,11 +699,37 @@ export function createDialogueUI(
           case "autoClose":
             autoClosePage = true;
             return 0;
+          case "rate":
+            rateFactor = control.factor;
+            return 0;
+          case "expression":
+            applyExpression(control.emotion);
+            return 0;
+          case "sound":
+            if (!skipWaits) {
+              request.onSound?.(control.soundId);
+              noteBeat(`sound:${control.soundId}`);
+            }
+            return 0;
+          case "screenShake":
+            if (!skipWaits) {
+              beatShake();
+              noteBeat("screenShake");
+            }
+            return 0;
+          case "lock":
+            locked = control.on;
+            return 0;
         }
       };
       const markPageReady = (): void => {
         typing = false;
         waitingForControl = false;
+        stopMouth();
+        const last = pageIndex >= pages.length - 1;
+        // ▼ 다음 쪽이 있다 / ■ 이 대사가 끝이다.
+        cursor.textContent = last ? "■" : "▼";
+        cursor.classList.toggle("is-end", last);
         box.classList.add("page-ready");
       };
       const consumeRemainingPage = (): void => {
@@ -353,6 +740,13 @@ export function createDialogueUI(
           if (token?.kind === "char") {
             visibleChars += 1;
           } else if (token?.kind === "control") {
+            // 넘기기금지 구간 앞에서는 멈추고 거기서부터 다시 흘린다(표지판 같은 즉시 표시는 예외).
+            if (token.control.kind === "lock" && token.control.on && !look.instant) {
+              locked = true;
+              pageRenderer?.reveal(visibleChars);
+              timer = window.setTimeout(typeStep, 0);
+              return;
+            }
             executeControl(token.control, true);
           }
         }
@@ -374,6 +768,7 @@ export function createDialogueUI(
             if (effect === "pause") {
               typing = false;
               waitingForControl = true;
+              stopMouth();
               box.classList.add("page-ready");
               return;
             }
@@ -386,7 +781,13 @@ export function createDialogueUI(
           if (token?.kind === "char") {
             visibleChars += 1;
             pageRenderer?.reveal(visibleChars);
-            timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
+            const char = pageChars[visibleChars - 1] ?? "";
+            if (!fastMode) voice.speak(char);
+            // 구두점 뒤 쉼 — 말의 호흡. 화자 빠르기·기기 읽기 속도를 같이 탄다.
+            const pause = look.punctuationPause && !fastMode
+              ? playerTextDelay(punctuationPauseMs(char, pageChars[visibleChars])) * look.delayScale
+              : 0;
+            timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs * rateFactor + pause);
             return;
           }
         }
@@ -401,19 +802,30 @@ export function createDialogueUI(
         waitingForControl = false;
         autoClosePage = request.autoAdvance === true;
         box.classList.remove("page-ready");
+        cursor.classList.remove("is-end");
+        cursor.textContent = "▼";
         pageRenderer = mountDialoguePage(bodyEl, currentSegments());
+        pageChars = currentSegments().flatMap((segment) => Array.from(segment.text));
+        // 표지판·편지·안내는 흘리지 않고 한 번에 보인다.
+        if (look.instant) {
+          consumeRemainingPage();
+          return;
+        }
+        startMouth();
         timer = window.setTimeout(typeStep, fastMode ? 0 : charDelayMs);
       };
       const advance = () => {
-        if (settled) return;
+        if (settled || logPanel) return;
         if (waitingForControl) {
           waitingForControl = false;
           typing = true;
           box.classList.remove("page-ready");
+          startMouth();
           timer = window.setTimeout(typeStep, 0);
           return;
         }
         if (typing) {
+          if (locked) return;
           consumeRemainingPage();
           return;
         }
@@ -429,6 +841,7 @@ export function createDialogueUI(
       const onKey = (e: KeyboardEvent) => {
         // 텍스트 입력 컨트롤(런타임 디버그 패널)에 치는 Enter/Space 는 대사 진행이 아니다.
         if (settled || e.repeat || e.isComposing || isTextEntryTarget(e.target)) return;
+        if (handleLogKey(e)) return;
         if (isDialogueAdvanceKey(e.key)) {
           e.preventDefault();
           e.stopImmediatePropagation();
@@ -438,6 +851,8 @@ export function createDialogueUI(
       const cleanup = () => {
         cancelEnter();
         clearTimeout(timer);
+        stopMouth();
+        if (balloonRaf && typeof cancelAnimationFrame === "function") cancelAnimationFrame(balloonRaf);
         box.removeEventListener("click", advance);
         document.removeEventListener("keydown", onKey);
         request.signal?.removeEventListener("abort", abort);
@@ -447,6 +862,7 @@ export function createDialogueUI(
         if (settled) return;
         settled = true;
         cleanup();
+        closeLog();
         clearOverlay();
         reject(new DOMException("Text cancelled", "AbortError"));
       };
@@ -467,6 +883,7 @@ export function createDialogueUI(
       overlay.classList.add("choices-active");
       if (request.options.length >= 4) overlay.classList.add("choices-compact");
       const choicesWindow = dialogueBox("choices", "dialogue-box");
+      applyDialogueLook(overlay, choicesWindow, request.look ?? resolveDialogueLook(store.getCurrent()));
       applyTextSettings(overlay, choicesWindow, request, position);
       const choicesProfile = dialoguePresentationProfile(undefined, {
         reducedMotion: resolveReducedMotion(undefined),
@@ -525,8 +942,9 @@ export function createDialogueUI(
         // 입력창에 치는 숫자·Enter 가 선택지를 고르면 안 된다(텍스트 입력 컨트롤은 게임 키가 아니다).
         if (isTextEntryTarget(e.target)) return;
         const n = parseInt(e.key, 10);
-        if (!isNaN(n) && n >= 1 && n <= request.options.length) {
+        if (!isNaN(n) && n >= 1 && n <= request.options.length && !document.querySelector("[data-testid='title-screen']")) {
           e.preventDefault();
+          e.stopPropagation();
           finish(n - 1);
           return;
         }
@@ -560,7 +978,7 @@ export function createDialogueUI(
       request.options.forEach((opt, idx) => {
         const btn = el("button", {
           class: "choice-btn",
-          attrs: { role: "option", type: "button" },
+          attrs: { role: "option", type: "button", "data-play-input-owner": "play-ui" },
           dataset: { testid: `runtime-choice-${idx}` },
         });
         renderDialogueSegments(btn, parseDialogueText(opt.text, request.textContext));
@@ -593,6 +1011,9 @@ export function createDialogueUI(
       pendingExit = null;
     }
     clearOverlay();
+    closeLog();
+    lastPortrait = undefined;
+    listenerPortrait = undefined;
   }
 
   /** 퇴장 연출을 재생한 뒤 비운다. 이미 예약이 걸려 있으면 그대로 둔다. */
@@ -616,7 +1037,66 @@ export function createDialogueUI(
     },
     hide,
     close,
+    openLog,
+    closeLog,
+    dialogueLog: () => [...logEntries],
   };
+}
+
+/**
+ * 말풍선·흘림 대사를 머리 위 기준점에 붙인다. 화면 가장자리에서 밀려나지 않게 가두고,
+ * 위가 모자라면 캐릭터 아래로 내려 꼬리를 위로 뒤집는다. 꼬리 x 는 기준점을 가리킨다.
+ * 기준점이 없으면 화면 위 가운데에 둔다(흘림 대사가 사라지지 않게).
+ */
+function placeBalloonNode(
+  node: HTMLElement,
+  anchor: { readonly x: number; readonly y: number } | undefined,
+  host: HTMLElement,
+): void {
+  const hostWidth = logicalHostWidth(host);
+  const hostHeight = logicalHostHeight(host);
+  const width = node.offsetWidth;
+  const height = node.offsetHeight;
+  const point = anchor ?? { x: hostWidth / 2, y: height + DIALOGUE_BALLOON_TAIL + DIALOGUE_BALLOON_EDGE * 2 };
+  const maxLeft = Math.max(DIALOGUE_BALLOON_EDGE, hostWidth - width - DIALOGUE_BALLOON_EDGE);
+  const left = Math.min(maxLeft, Math.max(DIALOGUE_BALLOON_EDGE, point.x - width / 2));
+  let top = point.y - height - DIALOGUE_BALLOON_TAIL;
+  const below = top < DIALOGUE_BALLOON_EDGE;
+  if (below) top = Math.min(hostHeight - height - DIALOGUE_BALLOON_EDGE, point.y + DIALOGUE_BALLOON_BELOW);
+  node.style.left = `${Math.round(left)}px`;
+  node.style.top = `${Math.round(top)}px`;
+  node.classList.toggle("tail-up", below);
+  node.style.setProperty("--balloon-tail-x", `${Math.round(Math.min(width - 10, Math.max(10, point.x - left)))}px`);
+  node.dataset.balloonEdge = left <= DIALOGUE_BALLOON_EDGE ? "left" : left >= maxLeft ? "right" : "";
+}
+
+function logicalHostHeight(host: HTMLElement): number {
+  if (Number.isFinite(host.clientHeight) && host.clientHeight > 0) return host.clientHeight;
+  const inlineHeight = Number.parseFloat(host.style.height);
+  if (Number.isFinite(inlineHeight) && inlineHeight > 0) return inlineHeight;
+  return PLAY_RESOLUTION.height;
+}
+
+/** 얼굴·초상 노드의 그림만 바꾼다(표정·입 모양). renderFace 의 두 모양을 다 받는다. */
+function setFaceImage(node: HTMLElement, resourceId: string): void {
+  const url = safeResourceImageUrl(resolveAssetResourceUrl(resourceId, { project: store.getCurrent() }));
+  if (!url) return;
+  if (node.classList.contains("dialogue-face-image")) node.style.setProperty("--face-url", `url("${url}")`);
+  else node.style.backgroundImage = `url("${url}")`;
+  node.dataset.resourceId = resourceId;
+}
+
+/** 이름표 옆 작은 이모트(맵 이모트와 같은 시트). */
+function emoteBadge(emote: EmoteKind): HTMLElement {
+  return el("span", {
+    class: "dialogue-emote-badge",
+    attrs: {
+      "aria-label": emote,
+      role: "img",
+      style: `background-image:url("${withInlineAsset(`/${EMOTE_ASSET_PATH}`)}");background-position:-${emoteFrameIndex(emote) * EMOTE_FRAME_SIZE}px 0`,
+    },
+    dataset: { testid: "dialogue-emote-badge", emote },
+  });
 }
 
 export function resolveDialogueText(value: string, context?: DialogueTextContext): string {
@@ -628,12 +1108,19 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
   let colorIndex = 0;
   let buffer = "";
   let pendingControls: DialogueTextControl[] = [];
+  // 본문 태그 상태. [/] 는 가장 최근에 연 태그 하나를 닫는다.
+  let fx: DialogueTextFx | undefined;
+  let rate = 1;
+  const openTags: ({ readonly type: "fx"; readonly previous: DialogueTextFx | undefined }
+    | { readonly type: "rate"; readonly previous: number }
+    | { readonly type: "lock" })[] = [];
   const push = (includeEmpty = false): void => {
     if (!buffer && !includeEmpty && pendingControls.length === 0) return;
     segments.push({
       text: buffer,
       colorIndex,
       ...(pendingControls.length > 0 ? { controlsBefore: pendingControls } : {}),
+      ...(fx ? { fx } : {}),
     });
     buffer = "";
     pendingControls = [];
@@ -642,8 +1129,55 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
     if (buffer) push();
     pendingControls.push(control);
   };
+  const openFx = (patch: DialogueTextFx): void => {
+    if (buffer) push();
+    openTags.push({ type: "fx", previous: fx });
+    fx = { ...fx, ...patch };
+  };
+  const applyTag = (raw: string): boolean => {
+    const tag = parseInlineTag(raw);
+    if (!tag) return false;
+    switch (tag.kind) {
+      case "close": {
+        const top = openTags.pop();
+        if (!top) return true;
+        if (top.type === "fx") {
+          if (buffer) push();
+          fx = top.previous;
+        } else if (top.type === "rate") {
+          rate = top.previous;
+          addControl({ kind: "rate", factor: rate });
+        } else {
+          addControl({ kind: "lock", on: false });
+        }
+        return true;
+      }
+      case "fx":
+        openFx(tag.fx);
+        return true;
+      case "rate":
+        openTags.push({ type: "rate", previous: rate });
+        rate = tag.factor;
+        addControl({ kind: "rate", factor: rate });
+        return true;
+      case "lock":
+        openTags.push({ type: "lock" });
+        addControl({ kind: "lock", on: true });
+        return true;
+      case "control":
+        addControl(tag.control);
+        return true;
+    }
+  };
   for (let i = 0; i < value.length; i += 1) {
     const char = value[i];
+    if (char === "[") {
+      const end = value.indexOf("]", i + 1);
+      if (end > i && end - i <= 40 && applyTag(value.slice(i + 1, end))) {
+        i = end;
+        continue;
+      }
+    }
     if (char !== "\\") {
       buffer += char;
       continue;
@@ -706,6 +1240,52 @@ export function parseDialogueText(value: string, context?: DialogueTextContext):
   }
   push(pendingControls.length > 0);
   return segments;
+}
+
+type ParsedInlineTag =
+  | { readonly kind: "close" }
+  | { readonly kind: "fx"; readonly fx: DialogueTextFx }
+  | { readonly kind: "rate"; readonly factor: number }
+  | { readonly kind: "lock" }
+  | { readonly kind: "control"; readonly control: DialogueTextControl };
+
+/**
+ * 본문 태그 하나(대괄호 안쪽)를 읽는다. 모르는 태그는 undefined — 그대로 글자로 보인다.
+ * 목록·예시는 project/dialogueStyles.ts DIALOGUE_INLINE_TAGS 가 정본이다.
+ */
+function parseInlineTag(raw: string): ParsedInlineTag | undefined {
+  const text = raw.trim();
+  if (text === "/") return { kind: "close" };
+  const colon = text.search(/[:：]/u);
+  const name = (colon >= 0 ? text.slice(0, colon) : text).trim().toLowerCase();
+  const arg = colon >= 0 ? text.slice(colon + 1).trim() : "";
+  switch (name) {
+    case "흔들": case "shake": return { kind: "fx", fx: { shake: true } };
+    case "물결": case "wave": return { kind: "fx", fx: { wave: true } };
+    case "크게": case "big": return { kind: "fx", fx: { size: "big" } };
+    case "작게": case "small": return { kind: "fx", fx: { size: "small" } };
+    case "색": case "color": {
+      const color = DIALOGUE_TAG_COLORS[arg] ?? DIALOGUE_TAG_COLORS[arg.toLowerCase()]
+        ?? (/^#[0-9a-f]{6}$/iu.test(arg) ? arg : undefined);
+      return color ? { kind: "fx", fx: { color } } : undefined;
+    }
+    case "쉼": case "pause": {
+      const seconds = Number(arg || "0.5");
+      if (!Number.isFinite(seconds) || seconds < 0) return undefined;
+      return { kind: "control", control: { kind: "wait", ms: Math.round(Math.min(5, seconds) * 1000) } };
+    }
+    case "빠르게": case "fast": return { kind: "rate", factor: 0.5 };
+    case "느리게": case "slow": return { kind: "rate", factor: 2 };
+    case "표정": case "face": {
+      const emotion = parseDialogueEmotion(arg);
+      return emotion ? { kind: "control", control: { kind: "expression", emotion } } : undefined;
+    }
+    case "소리": case "sound":
+      return arg ? { kind: "control", control: { kind: "sound", soundId: arg } } : undefined;
+    case "화면흔들": case "screenshake": return { kind: "control", control: { kind: "screenShake" } };
+    case "넘기기금지": case "noskip": return { kind: "lock" };
+    default: return undefined;
+  }
 }
 
 function resolveVariable(context: DialogueTextContext | undefined, index: number): number {
@@ -828,6 +1408,7 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
   const box = el("div", {
     class: `dialogue-box${extraClass ? ` ${extraClass}` : ""}`,
     dataset: { testid: testId },
+    attrs: { "data-play-input-owner": "play-ui" },
   });
   // 대화/이름상자/선택지 창도 자료집 System 윈도스킨 파이프를 통한다.
   // 하드코드 hex 유리 토큰만 쓰던 시절엔 윈도스킨을 바꿔도 메시지 창은 그대로여시
@@ -839,6 +1420,18 @@ function dialogueBox(extraClass: string, testId: string): HTMLElement {
 // 대사 진행은 결정 키만. Esc 는 취소 키인데 여기서만 "진행"으로 동작해
 // 취소가 확인 역할을 하던 결함(적대 리뷰 4)을 잘라냈다. 메시지 창에서 취소는
 // RM 관례대로 아무 일도 하지 않는다 — X 와 Esc 가 이제 동일하게 무반응이다.
+/**
+ * 이름표로 보일 화자. 「내레이션」 같은 서술 표기는 인물이 아니다 — 생성 모델이 서술 줄에 speaker:"내레이션" 을
+ * 달아 엔딩 에필로그에 「내레이션」 이름표가 떴다(2026-09-24 추리 도그푸딩). 이름표 없이 서술로 보인다.
+ */
+const NARRATION_SPEAKER = /^(?:내레이션|나레이션|해설|서술|narration|narrator)$/iu;
+
+export function nameplateSpeaker(speaker: string | undefined): string | undefined {
+  const name = speaker?.trim();
+  if (!name || NARRATION_SPEAKER.test(name)) return undefined;
+  return name;
+}
+
 export function isDialogueAdvanceKey(key: string): boolean {
   return isConfirmKey(key);
 }
@@ -855,6 +1448,20 @@ function applyTextSettings(
   box.dataset.messageFormat = settings.format;
   box.dataset.messagePosition = position;
   return position;
+}
+
+/**
+ * 대화창 스타일은 **오버레이**에 싣는다 — 대사 상자·선택지·소지금 창이 같은 스킨을 받게.
+ * resetOverlay() 는 className 만 덮으므로 dataset 은 창을 열 때마다 여기서 다시 쓴다.
+ * 대사 종류(context)는 한 줄의 것이라 **상자**에 싣는다. CSS: src/styles/dialogueStyles.css.
+ */
+function applyDialogueLook(overlay: HTMLElement, box: HTMLElement, look: DialogueLook): void {
+  overlay.dataset.dialogueStyle = look.style;
+  box.dataset.dialogueStyle = look.style;
+  if (look.context !== "speech") box.dataset.dialogueContext = look.context;
+  // 외침은 감정 흔들림과 같은 규칙을 탄다 — 움직임 줄이기 안전망도 그대로 받는다.
+  if (look.shake) box.dataset.dialogueShake = "1";
+  if (look.font) box.style.setProperty("--runtime-dialogue-font", resolveFontStack(look.font));
 }
 
 function applyOverlayPosition(overlay: HTMLElement, request: DialogueSurfaceSettings): MessageWindowPosition {

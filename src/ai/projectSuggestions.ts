@@ -184,15 +184,19 @@ export function inspectProjectSuggestions(project: Project, mapId: string): Proj
       [landings.map(entry => [entry.event.id, entry.command.x, entry.command.y])], { x, y });
   }
   const referenced = referencedIds(project);
+  // 이벤트를 하나도 놓지 않은 새 프로젝트에서 「기본 DB 물건 228개가 안 쓰인다」는 할 말이 아니다 —
+  // 첫 화면부터 살펴볼 것 3개를 띄워 경고처럼 읽혔다(2026-09-24 visual QA). 무언가를 놓기 시작한
+  // 뒤에야 「연결이 빠졌다」가 의미를 갖는다. 빈 맵에는 위의 no-events 한 장이면 된다.
+  const authored = Object.values(project.maps).some((m) => (m?.events.length ?? 0) > 0);
   const items = project.database.items;
-  if (items.length > 0 && items.every((item) => !referenced.items.has(item.id))) {
+  if (authored && items.length > 0 && items.every((item) => !referenced.items.has(item.id))) {
     add("items-unused", "DB 물건을 하나라도 쓰게 할까요?",
       "DB에 물건 " + items.length + "개가 있지만 프로젝트 어디에서도 쓰이지 않아요. 상점을 열어도 살 것이 없어요.",
       "맵 분위기에 맞는 물건 몇 개를 골라 상점 판매 목록이나 보물상자 보상으로 연결해줘.",
       [items.map(i => i.id)]);
   }
   const troops = project.database.troops;
-  if (troops.length > 0 && troops.every((troop) => !referenced.troops.has(troop.id))) {
+  if (authored && troops.length > 0 && troops.every((troop) => !referenced.troops.has(troop.id))) {
     add("troops-unused", "DB 적 그룹을 하나라도 쓰게 할까요?",
       "DB에 적 그룹 " + troops.length + "개가 있지만 어느 맵에서도 만날 수 없어요.",
       "맵 분위기에 맞는 적 그룹을 골라 적 만나기 목록에 넣어줘.",

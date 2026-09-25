@@ -23,11 +23,15 @@
 import {
   CHIMNEY_TILE,
   HOUSE_KITS,
-  MIXABLE_HOUSE_KIT_IDS,
+  ALL_HOUSE_KIT_IDS,
+  MATERIAL_HOUSE_KIT_IDS,
   stampFootprintHouseKit,
   type HouseKit,
   type HouseKitId,
 } from "@/editor/houseKit";
+import { composeGableHouseForm, gableRoofMaterialForKit, gableRoofTiles, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
+import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
+import type { AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
 import { TILE } from "@/project/defaults/constants";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import type { GameMap } from "@/project/types";
@@ -43,7 +47,7 @@ export type HouseRect = { readonly x: number; readonly y: number; readonly w: nu
 export type HousePoint = { readonly x: number; readonly y: number };
 
 /** 지붕 색 — kitId 6종은 지붕색 3가지로 접힌다. "색만 바꾼 다양성"을 잡아내는 축. */
-export type HouseRoofColor = "blue" | "orange" | "red";
+export type HouseRoofColor = "blue" | "orange" | "red" | "moss" | "thatch" | "slate" | "charcoal";
 
 export type DetectedHouse = {
   readonly index: number;
@@ -100,9 +104,11 @@ function kitRoofTileIds(kit: HouseKit): readonly number[] {
   return out;
 }
 
-const ROOF_TILES: ReadonlySet<number> = new Set<number>(
-  Object.values(HOUSE_KITS).flatMap((kit) => kitRoofTileIds(kit)),
-);
+const ROOF_TILES: ReadonlySet<number> = new Set<number>([
+  ...Object.values(HOUSE_KITS).flatMap((kit) => kitRoofTileIds(kit)),
+  // 박공 조합 형태의 측면 덩어리 지붕(436/437·374/375 …) — 킷 지붕 표에는 없다.
+  ...gableRoofTiles(),
+]);
 
 /**
  * 벽 밴드 판정 타일. 지붕 집합과 겹치는 값은 빼서 "이 행은 벽인가"를 오판하지 않게 한다
@@ -119,6 +125,7 @@ const WALL_BAND_TILES: ReadonlySet<number> = new Set<number>(
 /** 어떤 킷이든 집 몸체로 보는 타일 전체 + 문. 마스크(=모양) 판정의 유일한 기준. */
 const HOUSE_MASK_TILES: ReadonlySet<number> = new Set<number>([
   ...Object.values(HOUSE_KITS).flatMap((kit) => [...kitWallTileIds(kit), ...kitRoofTileIds(kit)]),
+  ...gableRoofTiles(),
   DOOR_TOP_TILE,
   DOOR_BOTTOM_TILE,
 ]);
@@ -138,7 +145,27 @@ const ROOF_COLOR_BY_KIT: Readonly<Record<HouseKitId, HouseRoofColor>> = {
   "bright-plaster": "orange",
   "amber-wood": "orange",
   "timber-hall": "red",
+  "amber-brick": "orange",
+  "moss-plaster": "moss",
+  "thatch-plaster": "thatch",
+  "thatch-log": "thatch",
+  "slate-brick": "slate",
+  "charcoal-timber": "charcoal",
 };
+
+/**
+ * 재료 킷(2026-09-25) 판정 — 재칠 지붕 칸은 재료마다 고유하고, 붉은 벽돌·반목조 벽 칸도 고유하다.
+ * 기존 다섯 킷의 판정(아래 classifyKit 본문)보다 먼저 본다.
+ */
+const MATERIAL_ROOF_BY_TILE: ReadonlyMap<number, HouseRoofColor> = new Map(
+  MATERIAL_HOUSE_KIT_IDS.flatMap((kitId) => {
+    const kit = HOUSE_KITS[kitId];
+    const tiles = [...kitRoofTileIds(kit), ...Object.values(gableRoofMaterialForKit(kit)).filter((value): value is number => typeof value === "number")];
+    return ROOF_COLOR_BY_KIT[kitId] === "orange" ? [] : tiles.map((tile): [number, HouseRoofColor] => [tile, ROOF_COLOR_BY_KIT[kitId]]);
+  }),
+);
+const BRICK_WALL_TILES: ReadonlySet<number> = new Set(kitWallTileIds(HOUSE_KITS["amber-brick"]).filter((tile) => tile >= 3000));
+const HALF_TIMBER_TILES: ReadonlySet<number> = new Set(kitWallTileIds(HOUSE_KITS["charcoal-timber"]).filter((tile) => tile >= 3000));
 
 export function roofColorForKit(kitId: HouseKitId): HouseRoofColor {
   return ROOF_COLOR_BY_KIT[kitId];
@@ -241,6 +268,18 @@ function shapeSignature(map: GameMap, component: Component): string {
 }
 
 function classifyKit(map: GameMap, cells: readonly number[]): HouseKitId | null {
+  let materialRoof: HouseRoofColor | undefined;
+  let brickWall = false;
+  let halfTimber = false;
+  for (const index of cells) {
+    for (const tile of [map.lowerTiles[index] ?? TILE.EMPTY, map.upperTiles[index] ?? TILE.EMPTY]) {
+      materialRoof ??= MATERIAL_ROOF_BY_TILE.get(tile);
+      if (BRICK_WALL_TILES.has(tile)) brickWall = true;
+      if (HALF_TIMBER_TILES.has(tile)) halfTimber = true;
+    }
+  }
+  const materialKit = classifyMaterialKit(map, cells, materialRoof, brickWall, halfTimber);
+  if (materialKit !== undefined) return materialKit;
   let post = false;
   let stone15 = false;
   let plaster12 = false;
@@ -262,6 +301,24 @@ function classifyKit(map: GameMap, cells: readonly number[]): HouseKitId | null 
   if (blueRoof) return wood102 ? "slate-wood" : stone15 ? "blue-stone" : null;
   if (brightTrim) return wood102 ? "amber-wood" : plaster12 ? "bright-plaster" : null;
   return null;
+}
+
+function classifyMaterialKit(
+  map: GameMap,
+  cells: readonly number[],
+  roof: HouseRoofColor | undefined,
+  brickWall: boolean,
+  halfTimber: boolean,
+): HouseKitId | null | undefined {
+  if (roof === undefined) return brickWall ? "amber-brick" : undefined;
+  const wood = cells.some((index) => WALL_WOOD_102.has(map.lowerTiles[index] ?? TILE.EMPTY));
+  switch (roof) {
+    case "moss": return "moss-plaster";
+    case "thatch": return wood ? "thatch-log" : "thatch-plaster";
+    case "slate": return brickWall ? "slate-brick" : null;
+    case "charcoal": return halfTimber ? "charcoal-timber" : null;
+    default: return undefined;
+  }
 }
 
 function findDoor(map: GameMap, cells: readonly number[]): HousePoint | null {
@@ -322,7 +379,7 @@ function catalogSignatures(): ReadonlyMap<string, string> {
   if (CATALOG_SIGNATURE_CACHE) return CATALOG_SIGNATURE_CACHE;
   const table = new Map<string, string>();
   for (const def of HOUSE_TEMPLATE_DEFS) {
-    const kitIds: readonly HouseKitId[] = def.kitId ? [def.kitId] : MIXABLE_HOUSE_KIT_IDS;
+    const kitIds: readonly HouseKitId[] = def.kitId ? [def.kitId] : ALL_HOUSE_KIT_IDS;
     const storyOptions: readonly (1 | 2 | 3)[] = def.lowWall ? [1] : [...new Set<1 | 2 | 3>([def.stories ?? 1, 1, 2, 3])];
     for (const kitId of kitIds) {
       for (const stories of storyOptions) {
@@ -334,8 +391,48 @@ function catalogSignatures(): ReadonlyMap<string, string> {
       }
     }
   }
+  // 박공 조합 형태 — 킷마다 합성해 같은 서명 함수로 등록한다.
+  for (const spec of GABLE_HOUSE_FORM_SPECS) {
+    for (const kitId of ALL_HOUSE_KIT_IDS) {
+      for (const signature of formSignatures(composeGableHouseForm(spec, kitId))) {
+        const key = `${kitId}|${signature}`;
+        if (!table.has(key)) table.set(key, spec.id);
+      }
+    }
+  }
   CATALOG_SIGNATURE_CACHE = table;
   return table;
+}
+
+/** 셀 레시피 한 장을 스크래치 맵에 찍어 문 유/무 서명을 낸다(stampSignatures 의 레시피 판). */
+function formSignatures(form: AuthoredHouseFormDef): readonly string[] {
+  const pad = 2;
+  const width = form.w + pad * 2;
+  const height = form.h + pad * 2;
+  const scratch = {
+    id: `scratch_${form.id}_${form.kitId}`,
+    name: form.id,
+    width,
+    height,
+    lowerTiles: new Array<number>(width * height).fill(TILE.EMPTY),
+    upperTiles: new Array<number>(width * height).fill(TILE.EMPTY),
+    events: [],
+  } as unknown as GameMap;
+  const result = stampAuthoredHouseForm(scratch, form, { x: pad, y: pad });
+  if (!result.ok) return [];
+  const signatures = new Set<string>();
+  const collect = (): void => {
+    for (const component of connectedComponents(scratch, { x: 0, y: 0, w: width, h: height })) {
+      signatures.add(shapeSignature(scratch, component));
+    }
+  };
+  collect();
+  if (result.doorAt) {
+    scratch.lowerTiles[(result.doorAt.y - 1) * width + result.doorAt.x] = DOOR_TOP_TILE;
+    scratch.lowerTiles[result.doorAt.y * width + result.doorAt.x] = DOOR_BOTTOM_TILE;
+    collect();
+  }
+  return [...signatures];
 }
 
 function stampBBox(wings: readonly HouseRect[]): HouseRect {
@@ -418,7 +515,8 @@ export function houseVarietyReport(houses: readonly DetectedHouse[]): HouseVarie
   const repeatedKits = kits.filter(([, count]) => count > 1);
   const usedTemplateIds = new Set(houses.flatMap((house) => (house.templateId === null ? [] : [house.templateId])));
   const usedKitIds = new Set(houses.flatMap((house) => (house.kitId === null ? [] : [house.kitId])));
-  const unusedTemplateIds = HOUSE_TEMPLATE_DEFS.map((def) => def.id).filter((id) => !usedTemplateIds.has(id));
+  const unusedTemplateIds = [...GABLE_HOUSE_FORM_SPECS.map((spec) => spec.id), ...HOUSE_TEMPLATE_DEFS.map((def) => def.id)]
+    .filter((id) => !usedTemplateIds.has(id));
   const unusedKitIds = (Object.keys(HOUSE_KITS) as HouseKitId[]).filter((id) => !usedKitIds.has(id));
 
   const distinctShapes = shapes.length;

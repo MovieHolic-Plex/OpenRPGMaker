@@ -106,6 +106,26 @@ describe("places gallery library-first layout", () => {
     expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
   });
 
+  it("keeps the place search field while Korean composition filters the gallery", () => {
+    setDatabaseActiveTab("spatialPlaces");
+    paint();
+    const search = host.querySelector<HTMLInputElement>("[data-testid='place-filter-search']");
+    if (!search) throw new Error("missing place search");
+    const before = host.querySelectorAll("[data-card-id]").length;
+    expect(before).toBeGreaterThan(1);
+    search.value = "가";
+    search.dispatchEvent(new InputEvent("input", { bubbles: true, data: "가", isComposing: true }));
+    expect(search.isConnected, "조합 중에 검색 칸이 교체되면 한글이 사라진다").toBe(true);
+    expect(host.querySelector("[data-testid='place-filter-search']")).toBe(search);
+    expect(host.querySelectorAll("[data-card-id]").length).toBeLessThanOrEqual(before);
+    search.value = "zzzz-no-match";
+    search.dispatchEvent(new Event("input", { bubbles: true }));
+    expect(host.querySelector("[data-testid='place-filter-search']")).toBe(search);
+    expect(host.querySelector("[data-testid='spatial-gallery-empty']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='place-library-count']")?.textContent).toBe("0개");
+    host.querySelector<HTMLButtonElement>("[data-testid='spatial-filter-reset']")?.click();
+  });
+
   it("offers a filter reset when the gallery matches nothing", () => {
     setDatabaseActiveTab("spatialPlaces");
     paint();

@@ -71,8 +71,11 @@ export function eventSpriteScale(
   authoredScale?: number,
   tileSize = 16,
   scaleMode?: EventPageGraphic["scaleMode"],
+  referenceTileSize = tileSize,
 ): number {
-  if (isCharsetSpriteTexture(texture)) return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode });
+  if (isCharsetSpriteTexture(texture)) {
+    return characterRenderScale(sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize);
+  }
   const scale = normalizeCharacterScale(authoredScale);
   if (!texture?.fitSize) return scale;
   const size = Math.max(sprite.width ?? 0, sprite.height ?? 0);

@@ -8,7 +8,7 @@ import { runSceneTest } from "@/testing/sceneTestRunner";
 import { TilesetReferenceEvidence } from "@/ai/tilesetReferenceEvidence";
 import { compileCutscene } from "@/editor/cutscene";
 import { resolveBattleBackdrop } from "@/battle/battleBackdrop";
-import { briefOpeningSequence, defaultOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
+import { briefOpeningMotive, briefOpeningSequence, defaultOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
 import type { Command, GameEvent, Project } from "@/project/types";
 
 /** runTool 은 성공하면 ctx.project 를 새 초안으로 갈아 끼운다 — 결과는 항상 ctx.project 에서 읽는다. */
@@ -204,5 +204,22 @@ describe("defect 8 — backdrop and opening do not contradict the plan", () => {
     expect(opened.scenes.map(scene => scene.narration)).toEqual([motive, "— 등대지기의 겨울 —"]);
     expect(opened.scenes.every(scene => scene.kind === "text")).toBe(true);
     expect(isUntouchedDefaultOpening(opened, "등대지기의 겨울")).toBe(false);
+  });
+
+  // 2026-09-24 추리 도그푸딩: 회상 스토리의 첫 답(「내 말로 답하기」 기획 설명 400자)이 오프닝 첫 장면이 되어 범인을 누설했다.
+  it("발단을 묻는 프리셋의 답만 오프닝에 옮기고, 나머지는 제목 카드만 둔다", () => {
+    const answers = (text: string) => ({ experience: { question: "q", label: "l", text, source: "user" as const } });
+    const pitch = "추리 게임이에요. 폭풍우 밤 저택에서 백작이 독살됩니다. 진범은 모로 박사예요.";
+    expect(briefOpeningMotive({ presetId: "story-cutscene", answers: answers(pitch) })).toBe("");
+    const stock = defaultOpeningSequence("안개 저택");
+    const opened = briefOpeningSequence(stock, "", "안개 저택");
+    expect(opened.scenes.map(scene => scene.narration)).toEqual(["— 안개 저택 —"]);
+    expect(isUntouchedDefaultOpening(opened, "안개 저택")).toBe(false);
+    // 발단 답은 앞 문장만, 90자 안에서.
+    const long = "눈보라가 그치지 않는 항구 마을에서 겨울마다 불을 밝히던 등대지기 할아버지가 사라졌다. 손녀가 그 이유를 찾아 떠난다. 그리고 아주 긴 설명이 이어진다 — 동료·보스·엔딩까지 모두 정해 두었다.";
+    const motive = briefOpeningMotive({ presetId: "adventure-jrpg", answers: answers(long) });
+    expect(motive.length).toBeLessThanOrEqual(90);
+    expect(motive.startsWith("눈보라가 그치지 않는")).toBe(true);
+    expect(briefOpeningMotive({ presetId: "adventure-jrpg", answers: answers("짧은 발단.") })).toBe("짧은 발단.");
   });
 });

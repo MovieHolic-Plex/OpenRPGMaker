@@ -217,6 +217,7 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       return;
     case "fork":
       validateCondition(command.condition, context.switchIds, context.variableIds);
+      validateMonsterSpeciesReferences(command.condition, context);
       validateCommands(command.then, context);
       validateCommands(command.else ?? [], context);
       return;
@@ -315,7 +316,8 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       }
       return;
     case "changeItem":
-      assert(context.itemIds.has(command.itemId), `changeItem: itemId가 존재하지 않습니다: ${command.itemId}`);
+      // 장비도 소지품(session.inventory[equipmentId])으로 들어간다 — 상점 구매·장착 메뉴와 같은 저장소.
+      assert(context.itemIds.has(command.itemId) || context.equipmentIds.has(command.itemId), `changeItem: itemId가 아이템·장비 어디에도 없습니다: ${command.itemId}`);
       if (typeof command.amount !== "number") {
         assert(context.variableIds.has(command.amount.id), `changeItem: amount variableId가 존재하지 않습니다: ${command.amount.id}`);
       }
@@ -367,6 +369,9 @@ function validatePageCondition(condition: EventPageCondition, context: Reference
     case "variable":
       validateCondition(condition, context.switchIds, context.variableIds);
       return;
+    case "monsterSpecies":
+      assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
+      return;
     case "actor":
       assert(context.actorIds.has(condition.actorId), `page condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
       return;
@@ -398,6 +403,9 @@ function validateBattleEventCondition(condition: BattleEventCondition, context: 
     case "switch":
     case "variable":
       validateCondition(condition, context.switchIds, context.variableIds);
+      return;
+    case "monsterSpecies":
+      assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
       return;
     case "actor":
       assert(context.actorIds.has(condition.actorId), `battle condition: actorId가 존재하지 않습니다: ${condition.actorId}`);
@@ -473,4 +481,15 @@ export function validateOptionalCommandResource(
 ): void {
   if (id.trim().length === 0) return;
   validateOptionalResource(label, id, knownResourceIds);
+}
+
+
+export function validateMonsterSpeciesReferences(condition: Condition, context: Pick<ReferenceContext, "speciesIds">): void {
+  if (condition.kind === "monsterSpecies") {
+    assert(context.speciesIds.has(condition.speciesId), `condition: speciesId가 존재하지 않습니다: ${condition.speciesId}`);
+  } else if (condition.kind === "all" || condition.kind === "any") {
+    for (const child of condition.conditions) validateMonsterSpeciesReferences(child, context);
+  } else if (condition.kind === "not") {
+    validateMonsterSpeciesReferences(condition.condition, context);
+  }
 }

@@ -491,6 +491,8 @@ function pageConditionSummary(condition: EventPageCondition): string {
       return `${switchVariableName("variable", condition.variableId).replace(/^\d{4}:\s*/u, "")} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "monsterSpecies":
+      return `${recordName(store.getCurrent().database.monsterSpecies ?? [], condition.speciesId)} ${condition.present ? "보유 중" : "미보유"}`;
     case "actor":
       return `주인공 [${recordName(store.getCurrent().database.actors, condition.actorId)}] ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":
@@ -538,6 +540,8 @@ function pageConditionCompactSummary(condition: EventPageCondition): string {
     }
     case "item":
       return condition.present ? "아이템 보유 중" : "아이템 보유 안 함";
+    case "monsterSpecies":
+      return `${recordName(store.getCurrent().database.monsterSpecies ?? [], condition.speciesId)} ${condition.present ? "보유 중" : "미보유"}`;
     case "actor":
       return condition.present ? "파티에 있음" : "파티에 없음";
     case "gold": {
@@ -1425,6 +1429,8 @@ function pageConditionBadgeText(condition: EventPageCondition): string {
       const id = truncateBadgeToken(switchVariableName("variable", condition.variableId), 10);
       return `${id} ${compareAmountLabel(condition.op, condition.value)}`;
     }
+    case "monsterSpecies":
+      return `${recordName(store.getCurrent().database.monsterSpecies ?? [], condition.speciesId)} ${condition.present ? "보유 중" : "미보유"}`;
     case "actor": {
       const name = truncateBadgeToken(recordName(store.getCurrent().database.actors, condition.actorId), 10);
       return condition.present ? name : `!${name}`;

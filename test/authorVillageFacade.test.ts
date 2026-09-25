@@ -241,6 +241,32 @@ describe("author_village facade", () => {
     expect(serialize(project)).toBe(before);
   });
 
+  it("re-authoring the same village replaces previous interiors without a scope violation", () => {
+    const project = createExistingProject(48);
+    const first = runFacade(project, {
+      target: { ...EXISTING_TARGET, fullMap: true },
+      houseCount: 3,
+      countPolicy: "exact",
+      seed: 7,
+      interior: true,
+    });
+    expect(first.ok, `${first.summary} ${JSON.stringify(first.issues ?? [])}`).toBe(true);
+    const firstInteriors = Object.keys(project.maps).filter((id) => id.startsWith("map_house_interior"));
+
+    const second = runFacade(project, {
+      target: { ...EXISTING_TARGET, fullMap: true },
+      houseCount: 3,
+      countPolicy: "exact",
+      seed: 7,
+      interior: true,
+    });
+    expect(second.ok, `${second.summary} ${JSON.stringify(second.issues ?? [])}`).toBe(true);
+    // 이전 실내가 고아로 남지 않는다 — 재시공이 실내를 하나의 세트로 유지한다.
+    const secondInteriors = Object.keys(project.maps).filter((id) => id.startsWith("map_house_interior"));
+    expect(secondInteriors.length).toBeLessThanOrEqual(firstInteriors.length);
+    expect(project.maps.map_existing.events.filter((event) => event.id.startsWith("ev_house_door_"))).toHaveLength(6); // 문 3 + 발판 3
+  });
+
   it("keeps the upper floor of a two-storey house inside scope on a legacy project", () => {
     // 레거시(spatialAuthoring 없음) 프로젝트: 문 이벤트는 1층만 가리키고 2층은 1층 계단 transfer 로 이어진다.
     // 예전 스코프 검사는 문이 직접 가리키는 맵만 실내로 봐서 _f2 를 "undeclared map" 으로 거부했다.

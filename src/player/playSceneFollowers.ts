@@ -1,4 +1,5 @@
 import { mapTileSize } from "@/project/tileGeometry";
+import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { DEFAULT_EASYRPG_CHARSET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import { characterSpriteX, characterSpriteY, placeCharacterSprite, updateCharacterDepth } from "@/player/characterDepth";
@@ -119,7 +120,7 @@ export function syncFollowerSprites(
     }
     // 동료도 배율을 따른다 — 큰 동료가 이벤트로 서 있을 때와 따라올 때 크기가 달라지면
     // 같은 캐릭터로 보이지 않는다. 자동 배율은 현재 맵에서 다시 계산한다.
-    sprite.setScale(eventSpriteScale(texture, sprite, position.follower.graphic.scale, mapTileSize(scene.map), position.follower.graphic.scaleMode));
+    sprite.setScale(eventSpriteScale(texture, sprite, position.follower.graphic.scale, mapTileSize(scene.map), position.follower.graphic.scaleMode, projectReferenceTileSize(store.getCurrent())));
     sprite.setFrame(frame);
   }
   for (const key of [...scene.followerSprites.keys()]) {

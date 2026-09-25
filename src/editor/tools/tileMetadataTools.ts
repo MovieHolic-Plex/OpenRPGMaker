@@ -17,6 +17,7 @@ import { RETRO_WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetr
 import { SHIP_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsShip";
 import { WORLD_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsWorld";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { hasExtraLayers, layerTileAt, shadowAt, TILE_LAYER_NOS } from "@/project/mapLayers";
 import {
   COMBINED_TOWN_HARNESS_PREFIX,
   DUNGEON_TEXTURE_KEY,
@@ -640,11 +641,24 @@ interface TileUsageStat {
   mostCommonAbove: number | null;
 }
 
-// 합성 뷰(상위가 있으면 상위, 없으면 하위) — 인접 통계용.
+// 합성 뷰(4→1 로 맨 위 비지 않은 층, 모두 비면 1층 값) — 인접 통계용. 2·4층이 없는 옛 맵은 「상위 있으면 상위, 없으면 하위」 그대로.
 function compositeTile(map: GameMap, x: number, y: number): number {
   const i = y * map.width + x;
-  const upper = map.upperTiles[i];
-  return upper !== TILE.EMPTY && upper !== undefined ? upper : map.lowerTiles[i];
+  for (const layer of [4, 3, 2] as const) {
+    const tile = layerTileAt(map, layer, i);
+    if (tile !== TILE.EMPTY) return tile;
+  }
+  return map.lowerTiles[i];
+}
+
+/** 층별 채운 칸 수(1~4층 + 그림자 조각이 있는 칸). 2·4층·그림자가 있는 맵에서만 결과에 싣는다. */
+function layerCellCounts(map: GameMap): Record<"1" | "2" | "3" | "4" | "shadow", number> {
+  const counts = { "1": 0, "2": 0, "3": 0, "4": 0, shadow: 0 };
+  for (let i = 0; i < map.width * map.height; i += 1) {
+    for (const layer of TILE_LAYER_NOS) if (layerTileAt(map, layer, i) !== TILE.EMPTY) counts[layer] += 1;
+    if (shadowAt(map, i) !== 0) counts.shadow += 1;
+  }
+  return counts;
 }
 
 function modeOf(counts: Map<number, number>): number | null {
@@ -698,7 +712,8 @@ function largestClusterBbox(map: GameMap, cells: readonly number[]): { x: number
 const analyzeMapTileUsage: ToolDefinition = {
   name: "analyze_map_tile_usage",
   description:
-    "사람이 깐 맵에서 사용된 타일 종류·사용량·설명 유무·대표 영역(sampleRegion)·인접 통계(mostCommonBelow/Above)를 추출한다. 맵 인터뷰의 시작점 — 설명 없는(described=false) 타일부터 질문하라.",
+    "사람이 깐 맵에서 사용된 타일 종류·사용량·설명 유무·대표 영역(sampleRegion)·인접 통계(mostCommonBelow/Above)를 추출한다. 맵 인터뷰의 시작점 — 설명 없는(described=false) 타일부터 질문하라. " +
+    "tiles[].layers 는 lower(1층)·upper(3층)·layer2·layer4 — 2·4층·그림자가 있는 맵은 data.layerCells 에 층별 칸 수가 온다.",
   mode: "read",
   parameters: {
     type: "object",
@@ -714,7 +729,8 @@ const analyzeMapTileUsage: ToolDefinition = {
     // 기본 false: 인터뷰가 이미 설명한 타일을 계속 재질문하던 버그(#7)의 핵심 — 설명 없는 타일만 반환한다.
     const includeDescribed = args.includeDescribed === true;
 
-    // 레이어별 타일 → 등장 칸 목록.
+    // 레이어별 타일 → 등장 칸 목록. 층 이름은 옛 소비자를 위해 1층 "lower"·3층 "upper" 를 유지하고,
+    // 2·4층은 show_map_region 배열 키와 같은 "layer2"·"layer4" 다(옛 맵에는 나오지 않는다).
     const cellsByTile = new Map<number, { layers: Set<string>; cells: number[] }>();
     const record = (tile: number, layer: string, cell: number): void => {
       if (tile === TILE.EMPTY || tile === undefined) return;
@@ -726,6 +742,8 @@ const analyzeMapTileUsage: ToolDefinition = {
     for (let i = 0; i < map.width * map.height; i += 1) {
       record(map.lowerTiles[i], "lower", i);
       record(map.upperTiles[i], "upper", i);
+      if (map.lowerOverlayTiles) record(layerTileAt(map, 2, i), "layer2", i);
+      if (map.upperOverlayTiles) record(layerTileAt(map, 4, i), "layer4", i);
     }
 
     const groupedTiles = new Set<number>();
@@ -781,6 +799,7 @@ const analyzeMapTileUsage: ToolDefinition = {
         mapId: map.id,
         tilesetId: tileset.id,
         coverage: { used: stats.length, described },
+        ...(hasExtraLayers(map) ? { layerCells: layerCellCounts(map) } : {}),
         truncated: listed.length < (includeDescribed ? stats.length : stats.length - described),
         tiles: listed,
       },

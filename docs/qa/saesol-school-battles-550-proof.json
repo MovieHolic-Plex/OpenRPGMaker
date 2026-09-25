@@ -1,0 +1,278 @@
+{
+  "scope": "Revision550 dedicated player. Continue actual school acceptance after earned medicine and forest completion. Three strict school teams and one-time reward; no injected inventory/levels/flags. Separate resumed runtime, not uninterrupted duration proof.",
+  "steps": [
+    {
+      "won": "type"
+    },
+    {
+      "won": "resource"
+    },
+    {
+      "won": "role"
+    }
+  ],
+  "walkedSteps": 132,
+  "shownEnemies": [
+    "enemy_sr_league_school_type_1",
+    "enemy_sr_league_school_type_2",
+    "enemy_sr_league_school_type_3",
+    "enemy_sr_league_school_resource_1",
+    "enemy_sr_league_school_resource_2",
+    "enemy_sr_league_school_resource_3",
+    "enemy_sr_league_school_role_1",
+    "enemy_sr_league_school_role_2",
+    "enemy_sr_league_school_role_3"
+  ],
+  "moves": [
+    {
+      "enemy": "enemy_sr_league_school_type_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_2",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_2",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_2",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_1",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_1",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_1",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_3",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_3",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_3",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_3",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_3",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    }
+  ],
+  "heals": [
+    {
+      "id": "monster_1",
+      "hp": 40,
+      "max": 81
+    },
+    {
+      "id": "monster_1",
+      "hp": 47,
+      "max": 81
+    },
+    {
+      "id": "monster_1",
+      "hp": 26,
+      "max": 81
+    },
+    {
+      "id": "monster_1",
+      "hp": 25,
+      "max": 81
+    },
+    {
+      "id": "monster_1",
+      "hp": 27,
+      "max": 83
+    },
+    {
+      "id": "monster_7",
+      "hp": 40,
+      "max": 77
+    },
+    {
+      "id": "monster_7",
+      "hp": 36,
+      "max": 77
+    },
+    {
+      "id": "monster_7",
+      "hp": 43,
+      "max": 77
+    },
+    {
+      "id": "monster_1",
+      "hp": 38,
+      "max": 87
+    },
+    {
+      "id": "monster_1",
+      "hp": 33,
+      "max": 87
+    },
+    {
+      "id": "monster_1",
+      "hp": 32,
+      "max": 87
+    }
+  ],
+  "switchesUsed": [
+    {
+      "enemy": "enemy_sr_league_school_type_2",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_sr_league_school_type_3",
+      "to": "monster_1"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_1",
+      "to": "monster_7"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_2",
+      "to": "monster_1"
+    },
+    {
+      "enemy": "enemy_sr_league_school_resource_3",
+      "to": "monster_7"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_1",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_sr_league_school_role_2",
+      "to": "monster_1"
+    }
+  ],
+  "oneTimeFinalReward": true,
+  "repeatNoReward": true,
+  "passed": true,
+  "pageErrors": [],
+  "benchmark": {
+    "snapshotRevision": 550,
+    "playerSeconds": 188.411,
+    "scope": "Automatic fast dialogue and tactical input; not human duration. Resumed earned state across segments; no invented progress."
+  },
+  "inventoryDelta": {
+    "item_super_potion": -9
+  },
+  "resultsSha256": "56fdad7e99c50181b9fe8aee9ea236e9aadc5170e9c4d92e9f9eae43d2363ec8"
+}

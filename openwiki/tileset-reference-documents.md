@@ -69,6 +69,7 @@ standing의 실제 불투명 최하단 픽셀과 scene 바닥을 대조해 벽 �
 `ExternalTileScene.rooms/doorways/ceilingCells`는 주택 방/문/천장 경계를,
 `doors`는 학교 복도와 각 실의 문/접근 좌표를 보존한다.
 학교는 거리→현관·복도→각 실→복도로 전이하며 입구 선택 메뉴를 사용하지 않는다.
+> 조수가 타일셋에 대해 무엇을 보고 무엇을 못 보는지, 새 타일셋을 가르칠 때의 순서는 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 에서 시작한다.
 
 ## 사용자 경로와 정본
 
@@ -293,7 +294,7 @@ SQLite 저장은 호스트를 종료한 후 `register-forest-executable-referenc
 
 `tiledata/forest-villages/diverse/` → `scripts/content/prepare-diverse-village-references.mjs` →
 `src/assets/sharedDiverseVillageReferences.json` → `forestHarmony.ts` 생성자/ensure 경로.
-현재 용도 ID는 `diverse-villages-trunks-v12`(문서52개/이미지30개)과 `concept-villages-v3`(문서27개/이미지3개)이다.
+현재 용도 ID는 `diverse-villages-canopy-v13`(문서52개/이미지30개)과 `concept-villages-v4`(문서27개/이미지3개)이다.
 완성 맵 3개, 지형 입력과 집·소품 좌표, 모든 두 레이어 배열, 절벽 이식·숲 조립·문앞 접근을 포함한다.
 잘린 뿌리·빠진 줄기·반대 외곽·잘못된 레이어·막힌 입구의 정상/오류 그림과 좌표 반환 예제가 있다.
 자동 검사는 이 동결 표본과의 비교이며 임의 마을용 미적 판정기가 아니다.
@@ -512,3 +513,30 @@ host API의 CAS로 저장하며 새 맵을 현재 mapTree에 추가하고 전체
 전체 배열·구획·문턱은 `izakaya-kitchen-layout.json`과 `izakaya-ceiling-compiled.json`에 있다.
 같은 맵과 로컬 공용 정적 장소/저장 맵을 갱신하며 `output/paw-izakaya-private-room/`에
 정본·공용 재로드와 새/기존 프로젝트 투영 증거를 남긴다. 개폐 문 이벤트나 새 LLM 실험은 아니다.
+### 수관 잎 채움 (2026-09-24)
+
+굽이숲 수관 속이 검은 판이라 딱딱해 보였다(사용자). 승인 시안 K: 평평한 속 색만 테두리 자신의 잎 띠로 채우고, 깊이로 어둡게 한다
+(가장자리 칸의 속 ×0.78, 얕은 속 ×0.60, 깊은 속 ×0.46). 규칙·칸 번호·재현 명령은 `tiledata/forest-villages/canopy-leaves/README.md`.
+- 오토타일 그룹에 `interiorVariants`(깊이 순, `types/base.ts`)를 더했다: 얕은 속 `[2568, 2597..2601]`, 깊은 속 `[2602..2607]`(수관 시작 2550 기준, 모든 시트 공통).
+  모두 `memberTileIds`/`connectTileIds` 에 들어 있어 이웃·줄기·지우기 판정은 수관으로 본다. 엔진(`shapeAutotileGroupAround`)은 속 칸의 깊이 변형을 되돌리지 않는다.
+- 칠하는 쪽: `paintContouredForest`·`paintForestGroves`·`refitForestTrunks` 가 끝에 `shadeForestCanopy`(→ `shadeAutotileInterior`)로 속 칸을 칸 위치 해시로 고른다. 결정적이라 다시 칠해도 같다.
+- 옛 그룹(속 변형 없음)은 불러올 때 `ensureForestGroveInterior`(`ensureBundledTilesets`)가 채움 칸에 더한다. 기후 시트는 그림이 구워져 있어 이식 없이 번호만 더한다.
+- 분류 `diverse-villages-canopy-v13`·`concept-villages-v4`·`climate-*-villages-v4`·`field-routes-*-v4`, 지역 revision 다양한 마을 13·기후/필드 4. 옛 v12/v3 는 은퇴 목록에 기록.
+- 그림이 바뀐 것은 아틀라스 원본 칸이라, 다시 저작하지 않은 옛 참고 맵(절벽마을·판타지 장소 등)도 가장자리와 기본 속(2568, 얕은 속 한 무늬)은 새 모양으로 보인다. 깊이 변형은 새로 칠한 24곳에만 있다.
+
+## 번들 참고 이미지는 정적 경로다 (2026-09-25)
+
+`TilesetReferenceImage.dataUrl` 은 두 형태다. 사용자가 올린 그림은 `data:image/...;base64,` 로 프로젝트와 함께 이동한다.
+번들이 준 그림은 같은 출처 정적 경로(`/assets/...png|jpg|webp`, `isBundledReferenceImage`)다.
+
+- 왜: 번들 JSON 에 dataURL 이 약 15MB(중복 제외) 있었고, 그것이 모든 프로젝트 문서에 복사됐다. 부팅 때마다 파싱하고
+  저장할 때마다 직렬화·전송했다 — 웹(HTTP 브리지)에서 편집 중 멈춤의 주원인이었다. 번들 JSON 25.9MB → 6.3MB.
+- 생성: `scripts/content/externalize-reference-images.mjs`. `public/assets/` 에 같은 바이트가 이미 있으면 그 파일을 쓰고
+  (182장 중 154장), 없으면 `public/assets/reference-images/<sha256 앞 20자>.<ext>` 로 쓴다.
+  `src/assets/bundledReferenceImageManifest.json` 에 원래 dataURL 의 FNV 요약 → 경로를 남긴다.
+- 기존 프로젝트: 부팅 정규화기 `bundledReferenceImages` (`externalizeBundledReferenceImages`) 가 목록에 있는 인라인 사본만
+  경로로 바꾸고 저장한다. 올린 그림과 목록에 없는 옛 번들 그림은 그대로다.
+- 화면(`tilesetReferencePanel`)은 `<img src>` 라 두 형태를 그대로 쓴다. 모델 입력은 제공자가 이 호스트 경로를 못 읽으므로
+  `resolveReferenceImageDataUrl` 로 보낼 때만 바이트로 바꾼다(`TilesetReferenceEvidence.imagesForRead` 는 async).
+  Node(헤드리스·테스트)에서는 체크아웃의 `public/` 을 읽는다. `export-tileset-references.mjs` 도 경로를 `public/` 에서 읽는다.
+- 플레이어 빌드는 `publicDir: false` 이고 내보내기는 참고문서를 지우므로 이 파일들은 게임 산출물에 들어가지 않는다.

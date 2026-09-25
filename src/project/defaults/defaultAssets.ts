@@ -1,10 +1,18 @@
 import { ensureSharedCastleReferences } from "./sharedCastleReferences";
 import { ensureRpgPlaceReferences } from "./sharedRpgPlaceReferences";
+import { ensureRpgInteriorReferences } from "./sharedRpgInteriorReferences";
+import { ensureRpgDungeonReferences } from "./sharedRpgDungeonReferences";
 import { ensureFieldRouteReferences } from "./sharedFieldRouteReferences";
-import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateVillageReferences } from "./climateVillages";
+import { ensureElfTreetopReferences } from "./sharedElfTreetopReferences";
+import { CLIMATE_VILLAGE_TEXTURES, createClimateVillageTileset, ensureClimateBareTrees, ensureClimateVillageReferences } from "./climateVillages";
 import { createSharedVillageObjectsTileset, ensureSharedVillageObjectReferences, SHARED_VILLAGE_OBJECT_ID, SHARED_VILLAGE_OBJECT_TEXTURE } from "./sharedVillageObjects";
 import { createCastleTileset } from "./castleTileset";
+import { ensureForestGroveInterior } from "./forestGrove";
+import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
+import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
+import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
+import { ensureForestHarmonyTreetopParts } from "./forestHarmonyTreetopParts";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -21,6 +29,7 @@ import { getResourceProfileSpec } from "@/project/resourceProfiles";
 import { applyCombinedTownHarness, applyEasyRpgThemeMetadataPacks, ensureTilesetHarnesses, RETRO_WORLD_TEXTURE_KEY } from "@/project/tilesetHarness";
 import { bundledAssetRef, CASTLE_TILESET_ID, CASTLE_TILESET_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TEXTURE_KEY, COMBINED_TOWN_RETRO_WORLD_TILESET_ID, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_TILE_COUNT, DEFAULT_TILE_SIZE, DEFAULT_TILESET_ID, DEFAULT_TILESET_NAME, DEFAULT_TILESET_TEXTURE_KEY, DEFAULT_TILES_PER_ROW, LEGACY_RM_TILESET_ID, LEGACY_RM_TILESET_TEXTURE_KEY } from "./constants";
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
+import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -132,10 +141,25 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     if (project.tilesets[id]) {
       if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) changed = extendForestGrassJoinsTileset(project.tilesets[id]) || changed;
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
+      // Older saves stop at 2550/2610: append the shared tail slots (only past the end or into blank slots).
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyVillageSlots(project.tilesets[id]) || changed;
+      // House parts (chimneys, dormers, awnings, gable finials) from 3060 — gable house forms use them when present.
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyHouseParts(project.tilesets[id]) || changed;
+      // Elf treetop village parts from 3131 (after the house parts) — decks, rope bridges, trunk houses.
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyTreetopParts(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
+      changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
+      changed = ensureRpgDungeonReferences(project.tilesets[id]) || changed;
       changed = ensureClimateVillageReferences(project.tilesets[id]) || changed;
+      // Leafless trees appended to the snow, volcano and desert sheets (2880~): older saves grow to the new count.
+      changed = ensureClimateBareTrees(project.tilesets[id]) || changed;
+      // Groves made before the leaf interior gain its depth variants (forest_harmony and the climate sheets).
+      changed = ensureForestGroveInterior(project.tilesets[id]) || changed;
+      // Tall grass E/F/G: F and G groups, the fixed E grammar (forest_harmony and the climate sheets).
+      changed = ensureForestTallGrass(project.tilesets[id]) || changed;
       changed = ensureFieldRouteReferences(project.tilesets[id]) || changed;
+      changed = ensureElfTreetopReferences(project.tilesets[id]) || changed;
       if (id === SHARED_VILLAGE_OBJECT_ID) changed = ensureSharedVillageObjectReferences(project.tilesets[id]) || changed;
       if (id === TIBO_INTERIOR_ID) changed = extendTiboInteriorDefaults(project.tilesets[id]) || changed;
       changed = seedLpcWoodenFurnitureKits(project.tilesets[id]) || changed;
@@ -196,6 +220,7 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
       // Tile grids are number arrays. Walking every cell looking for a sprite id
       // made heavy-project load scan millions of numbers for a match that cannot occur.
       if (key === "lowerTiles" || key === "upperTiles" || key === "lowerTileStacks" || key === "upperTileStacks") continue;
+      if ((EXTRA_LAYER_KEYS as readonly string[]).includes(key)) continue;
       const item = value[key];
       if (isLegacySpriteReference(key)) {
         delete value[key];
@@ -240,14 +265,24 @@ function legacyRmTilesetReplacementId(map: Pick<GameMap, "id" | "name">): string
 function bundledEasyRpgTileset(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   const tileset = bundledEasyRpgTilesetBase(asset);
   ensureRpgPlaceReferences(tileset);
+  ensureRpgInteriorReferences(tileset);
+  ensureRpgDungeonReferences(tileset);
   ensureFieldRouteReferences(tileset);
+  ensureElfTreetopReferences(tileset);
   return tileset;
 }
 
 function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): TilesetDef {
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
-  if (asset.textureKey === FOREST_HARMONY_TEXTURE) return createForestHarmonyTileset();
+  // New projects start with the shared tail slots the place documents use (2550~2759).
+  if (asset.textureKey === FOREST_HARMONY_TEXTURE) {
+    const tileset = createForestHarmonyTileset();
+    ensureForestHarmonyVillageSlots(tileset);
+    ensureForestHarmonyHouseParts(tileset);
+    ensureForestHarmonyTreetopParts(tileset);
+    return tileset;
+  }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();

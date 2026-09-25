@@ -72,16 +72,20 @@ function lintCutsceneBeats(beats: readonly RecordValue[]): string[] {
   return warnings;
 }
 
-function memoryBeats(speaker: string, lines: readonly string[]): RecordValue[] {
+/**
+ * 대사 호흡. 카메라는 초점 칸이 주어졌을 때만 옮긴다 — 예전에는 모든 맵에서 (4,3) 으로 고정 팬해
+ * 엉뚱한 벽 구석을 비추고 돌아왔다.
+ */
+function memoryBeats(speaker: string, lines: readonly string[], focus?: { x: number; y: number }): RecordValue[] {
   const beats: RecordValue[] = [
-    { kind: "camera", mode: "pan", x: 4, y: 3, durationMs: 700, wait: true },
+    ...(focus ? [{ kind: "camera", mode: "pan", x: focus.x, y: focus.y, durationMs: 700, wait: true }] : []),
     { kind: "wait", ms: 250 },
   ];
   for (const [index, line] of lines.entries()) {
     beats.push({ kind: "say", speaker, text: line });
     if (index < lines.length - 1) beats.push({ kind: "wait", ms: 350 });
   }
-  beats.push({ kind: "camera", mode: "return", durationMs: 400, wait: true });
+  if (focus) beats.push({ kind: "camera", mode: "return", durationMs: 400, wait: true });
   return beats;
 }
 
@@ -108,6 +112,9 @@ export const scriptCutscenePreset: ToolDefinition = {
       skippable: { type: "boolean" },
       pictureResourceId: { type: "string", description: "memory_opening 스틸 그림 리소스" },
       bgmResourceId: { type: "string", description: "memory_opening 회상 BGM 리소스" },
+      focus: { ...COORD_SCHEMA, description: "{x,y} 대사 동안 카메라가 비출 칸(생략 시 카메라 고정)" },
+      trigger: { type: "string", enum: ["action", "auto"], description: "기본: ending_fade=auto, 나머지=action" },
+      requiresSwitches: { type: "array", items: { type: "string" }, description: "이 스위치가 모두 켜졌을 때만 재생(예: 마지막 기억의 메멘토)" },
     },
     required: ["mapId", "preset"],
   },
@@ -134,20 +141,42 @@ export const scriptCutscenePreset: ToolDefinition = {
 
     const pictureResourceId = typeof args.pictureResourceId === "string" ? args.pictureResourceId.trim() : "";
     const bgmResourceId = typeof args.bgmResourceId === "string" ? args.bgmResourceId.trim() : "";
+    const focusArg = isRecord(args.focus) ? args.focus : undefined;
+    const focus = focusArg && typeof focusArg.x === "number" && typeof focusArg.y === "number"
+      ? { x: Math.trunc(focusArg.x), y: Math.trunc(focusArg.y) }
+      : undefined;
+    const endingId = preset === "ending_fade" ? cleanString(args.endingId, "ending_memory") : undefined;
+    const endingName = cleanString(args.endingName, "기억의 끝");
+    const endingSwitchId = endingId ? cleanString(args.endingSwitchId, `sw_${endingId}`) : undefined;
+    if (endingId && endingSwitchId) {
+      // 엔딩 비트가 참조하므로 컷신보다 먼저 정의한다.
+      ensureNamedSwitch(draft, endingSwitchId, `엔딩: ${endingName}`);
+      runNamedTool(draft, "define_ending", {
+        id: endingId,
+        name: endingName,
+        priority: 10,
+        conditions: [{ kind: "switch", switchId: endingSwitchId, value: true }],
+        epilogue: [{ kind: "say", speaker, text: lines[lines.length - 1] ?? "끝." }],
+      });
+    }
     let beats: RecordValue[];
     if (preset === "bedside_monologue") {
       beats = [
         { kind: "tint", color: "#1a2030", durationMs: 600, wait: true },
         { kind: "wait", ms: 300 },
-        ...memoryBeats(speaker, lines).filter((b) => b.kind !== "camera" || b.mode !== "pan"),
+        ...memoryBeats(speaker, lines, focus),
         { kind: "tint", color: "#ffffff", durationMs: 500, wait: true },
       ];
     } else if (preset === "ending_fade") {
       beats = [
         { kind: "wait", ms: 200 },
-        ...memoryBeats(speaker, lines),
-        { kind: "tint", color: "#000000", durationMs: 900, wait: true },
+        ...memoryBeats(speaker, lines, focus),
+        { kind: "fade", direction: "out", durationMs: 900, wait: true },
         { kind: "wait", ms: 400 },
+        // 엔딩 스위치를 켜고 실제로 엔딩을 부른다 — 예전에는 조건 스위치를 아무도 켜지 않아 자동 재생 컷신이
+        // 끝없이 되풀이되고 엔딩은 오지 않았다.
+        { kind: "switch", switchId: endingSwitchId },
+        { kind: "ending", endingId },
       ];
     } else {
       beats = recollectionBeats({
@@ -159,31 +188,21 @@ export const scriptCutscenePreset: ToolDefinition = {
     }
 
     const lint = lintCutsceneBeats(beats);
+    const trigger = args.trigger === "auto" || args.trigger === "action" ? args.trigger : preset === "ending_fade" ? "auto" : "action";
     const cutsceneArgs: Record<string, unknown> = {
       mapId: map.id,
       beats,
       skippable: args.skippable !== false,
-      trigger: preset === "ending_fade" ? "auto" : "action",
+      trigger,
+      // 자동 재생은 한 번만 — 조건이 계속 맞으면 맵에 들어올 때마다(또는 끝나자마자) 다시 돈다.
+      ...(trigger === "auto" ? { once: true } : {}),
+      ...(Array.isArray(args.requiresSwitches) ? { requiresSwitches: args.requiresSwitches } : {}),
     };
     if (typeof args.eventId === "string" && args.eventId.trim()) cutsceneArgs.eventId = args.eventId.trim();
     if (typeof args.x === "number") cutsceneArgs.x = Math.trunc(args.x);
     if (typeof args.y === "number") cutsceneArgs.y = Math.trunc(args.y);
 
     const cut = runNamedTool(draft, "script_cutscene", cutsceneArgs);
-    let endingId: string | undefined;
-    if (preset === "ending_fade") {
-      endingId = cleanString(args.endingId, "ending_memory");
-      const endingName = cleanString(args.endingName, "기억의 끝");
-      const switchId = cleanString(args.endingSwitchId, `sw_${endingId}`);
-      ensureNamedSwitch(draft, switchId, `엔딩: ${endingName}`);
-      runNamedTool(draft, "define_ending", {
-        id: endingId,
-        name: endingName,
-        priority: 10,
-        conditions: [{ kind: "switch", switchId, value: true }],
-        epilogue: [{ kind: "say", speaker, text: lines[lines.length - 1] ?? "끝." }],
-      });
-    }
 
     return {
       summary: `${map.name}에 컷신 프리셋 '${preset}' 배치 (beat ${beats.length})${endingId ? ` · 엔딩 ${endingId}` : ""}`,
@@ -203,7 +222,8 @@ const makeHorrorLoop: ToolDefinition = {
   name: "make_horror_loop",
   description:
     "마녀의집식 트랩·체크포인트·(선택)추격 루프를 한 번에 배치한다.  마녀의집·저택 호러 슬라이스(트랩+체크포인트+추격)를 원큐로. 분위기는 set_scene_mood 와 함께." +
-    "trapCells 또는 trapCount+origin으로 트랩을 깔고 respawnCheckpoint를 강제하며, includeChase면 make_chase_scene을 붙인다.",
+    "trapCells 또는 trapCount+origin으로 트랩을 깔고 respawnCheckpoint를 강제하며, includeChase면 make_chase_scene을 붙인다. " +
+    "옷장이 다른 방이면 hidingSpots[].mapId. 숫자 암호·열쇠는 이 툴이 아니라 compile_puzzle kind:password(inputNumber).",
   mode: "write",
   domains: ["event"],
   parameters: {
@@ -217,6 +237,19 @@ const makeHorrorLoop: ToolDefinition = {
       includeChase: { type: "boolean" },
       chaserAt: { ...COORD_SCHEMA, description: "{x,y} 추격자 시작" },
       safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
+      hidingSpots: {
+        type: "array",
+        description: "{x,y,mapId?}[] 추격을 피해 숨을 옷장 칸. 다른 방이면 mapId. 옷장과 같은 칸에 둔다.",
+        items: {
+          type: "object",
+          properties: {
+            x: { type: "integer" },
+            y: { type: "integer" },
+            mapId: { type: "string", description: "옷장이 추격자 맵이 아니면 그 mapId" },
+          },
+          required: ["x", "y"],
+        },
+      },
       mood: { type: "boolean", description: "true면 어두운 set_scene_mood 적용" },
       activateSwitch: { type: "string" },
     },
@@ -272,10 +305,11 @@ const makeHorrorLoop: ToolDefinition = {
         chaser: {
           at: { x: cx, y: cy },
           graphic: { query: "monster" },
-          speed: 5,
+          speed: 6,
           sightRange: 7,
         },
         killOnTouch: true,
+        ...(Array.isArray(args.hidingSpots) ? { hidingSpots: args.hidingSpots } : {}),
         ...(isRecord(args.safeZone) ? { safeZone: args.safeZone } : {}),
         ...(typeof args.activateSwitch === "string" && args.activateSwitch.trim()
           ? { activateSwitch: args.activateSwitch.trim() }

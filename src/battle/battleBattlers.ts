@@ -7,7 +7,7 @@ import { clampLevel, normalizeActorRecord, parameterValueAtLevel } from "@/proje
 import { normalizeEnemyRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { startStateOf } from "@/project/session";
 import type { MonsterInstance } from "@/project/session";
-import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
+import { monsterBattleStats, monsterCurrentHp, monsterDisplayName, monsterSkillIds, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterInstanceBattleState } from "@/project/monsterCollection";
 import { classLearnedSkillIdsUpToLevel, effectiveActorClassId } from "@/project/sessionClass";
 import type { ActorId, ActorInitialEquipment, ActorParameterKey, EnemyActionPattern, EnemyId, Project, SkillId } from "@/project/types";
 import { resolveBattlerPose } from "@/battle/battlePose";
@@ -411,6 +411,17 @@ export const monsterBattlers = monsterPartyBattlers;
  */
 export { classicEnemyFormation } from "@/battle/battlerPlacements";
 
+/** 몬스터 파티에서 행동이 비어 있으면 종족 습득 기술을 쓴다. 빈 skillIds 를 포획에 복사하면 파티 몬스터가 기술을 잃는다. */
+function enemyBattlerSkillIds(project: Project, enemy: ReturnType<typeof normalizeEnemyRecord>): SkillId[] {
+  if (enemy.skillIds.length > 0) return enemy.skillIds;
+  const monsterParty = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+  if (!monsterParty || !enemy.speciesId) return enemy.skillIds;
+  const species = monsterSpeciesById(project, enemy.speciesId);
+  if (!species) return enemy.skillIds;
+  const learned = monsterSkillIdsAtLevel(species, enemy.level ?? 1);
+  return learned.length > 0 ? learned : enemy.skillIds;
+}
+
 export function enemyBattlers(project: Project, troop: TroopRecord): MutableBattler[] {
   const members = troop.members?.length
     ? troop.members
@@ -455,7 +466,7 @@ export function enemyBattlers(project: Project, troop: TroopRecord): MutableBatt
       stateIds: [],
       stateTurns: {},
       defending: false,
-      skillIds: normalizedEnemy.skillIds,
+      skillIds: enemyBattlerSkillIds(project, normalizedEnemy),
       enemyActions: normalizedEnemy.actions,
       // 몬스터 종 트룹 판별(인트로 "야생의 ○○" 분기)과 포획 UI가 스냅샷에서 읽는다.
       speciesId: normalizedEnemy.speciesId,

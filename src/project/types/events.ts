@@ -66,6 +66,7 @@ export type Condition =
     }
   | { kind: "selfSwitch"; key: SelfSwitchKey; value: boolean }
   | { kind: "actor"; actorId: ActorId; present: boolean }
+  | { kind: "monsterSpecies"; speciesId: MonsterSpeciesId; present: boolean }
   | { kind: "item"; itemId: ItemId; present: boolean }
   | { kind: "gold"; op: ">=" | "<=" | ">" | "<" | "==" | "!="; amount: number }
   | { kind: "timer"; timerId: "timer1" | "timer2"; seconds: number }
@@ -202,6 +203,8 @@ export interface CharacterProfile {
   readonly giftPrefs?: GiftPrefs;
   /** Default gift responses; event.giftResponses fully overrides when present. */
   readonly giftResponses?: GiftResponses;
+  /** 이 인물이 말할 때의 대화창 스타일·이름색·목소리·빠르기·글꼴 (project/dialogueStyles.ts). */
+  readonly dialogue?: import("@/project/dialogueStyles").SpeakerDialogueProfile;
 }
 
 /** Merchant-event shop price bridge. Applied via resolveSocialKey when bond >= minFriendship. */
@@ -272,6 +275,12 @@ export type Command =
       emotion?: string;
       /** true 면 키 입력 없이 다음 단계로 진행. */
       autoAdvance?: boolean;
+      /** 이 한 줄만 쓰는 대화창 스타일(DialogueStyleId). 비우면 화자 프로필 → 프로젝트 기본. */
+      style?: string;
+      /** 대사 종류(DialogueContextId): narration·thought·whisper·shout·radio·sign·letter·system. 비우면 일반 대사. */
+      context?: string;
+      /** 대사 그릇(DialogueContainerId): box·balloon·bark·corner. 비우면 화자 프로필 → 상자. */
+      container?: string;
     }
   | ({ kind: "changeFace"; appearanceId?: string } & FaceGraphic)
   | {
@@ -517,13 +526,18 @@ export type Command =
 
 export type EventPriority = "below" | "same" | "above";
 export type AutonomousMovement = "fixed" | "random" | "approach" | "custom" | "living" | "chase";
-export type EventAnimationType =
-  | "normal"
-  | "step"
-  | "fixedDirection"
-  | "fixedDirectionStep"
-  | "fixedGraphic"
-  | "fourFrame";
+/** 페이지 애니메이션 유형의 단일 진실 소스 — 툴 스키마 enum 과 로더 정규화도 여기서 가져간다.
+ * 2026-09-24 갤러리 도그푸딩: 유니온에 없는 "none" 이 32페이지에 저장돼 런타임 canActionTurn 의
+ * exhaustiveness 트립와이어가 첫 조작에서 씬을 통째로 죽였다(브라우저 완주 막힘). */
+export const EVENT_ANIMATION_TYPES = [
+  "normal",
+  "step",
+  "fixedDirection",
+  "fixedDirectionStep",
+  "fixedGraphic",
+  "fourFrame",
+] as const;
+export type EventAnimationType = (typeof EVENT_ANIMATION_TYPES)[number];
 
 export interface EventPageGraphic {
   appearanceId?: string;

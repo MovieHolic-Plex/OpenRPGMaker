@@ -329,3 +329,91 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-menu-skin-card[aria-pressed="true"] .db-system-menu-skin-card-state {
   color: var(--db-studio-accent);
 }
+
+/* 대화창 스타일 카드는 메뉴 스킨 카드 틀을 그대로 쓰고, 그림 대신 게임 규칙으로 그린 견본 창(.ecp-runtime-*)을 싣는다.
+   무대는 아래쪽에 붙어 축소되므로 높이만 줄여 대사창 띠만 남긴다. */
+.database-modal-backdrop .db-system-dialogue-style-card .ecp-stage.ecp-stage-runtime,
+.database-modal-backdrop .db-system-dialogue-context-card .ecp-stage.ecp-stage-runtime {
+  aspect-ratio: 320 / 92;
+}
+
+.database-modal-backdrop .db-system-dialogue-style-card .ecp-runtime-frame {
+  pointer-events: none;
+}
+
+.database-modal-backdrop .db-system-dialogue-style-card[data-recommended="true"] .db-system-menu-skin-card-state {
+  color: var(--db-studio-accent);
+}
+
+.database-modal-backdrop .db-system-dialogue-context-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: 12px;
+}
+
+.database-modal-backdrop .db-system-dialogue-context-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+
+.database-modal-backdrop .db-system-dialogue-context-card figcaption {
+  color: var(--db-studio-text-2);
+  display: flex;
+  flex-direction: column;
+  font: 500 12px/1.45 var(--font-ui);
+  gap: 2px;
+}
+
+.database-modal-backdrop .db-system-dialogue-context-card figcaption strong {
+  color: var(--db-studio-text-1);
+  font-size: 13px;
+}
+
+.database-modal-backdrop .db-system-dialogue-style-gallery {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+}
+
+/* 캐릭터 「대화」 카드의 견본 창 — 시스템 갤러리와 같은 띠 모양으로 자른다. */
+.database-modal-backdrop .db-character-dialogue-preview .ecp-stage.ecp-stage-runtime {
+  aspect-ratio: 320 / 92;
+}
+
+.database-modal-backdrop .db-character-dialogue-color-row {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.database-modal-backdrop .db-character-expression-field {
+  align-items: start;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.database-modal-backdrop .db-character-expression-table {
+  border-collapse: collapse;
+  font-size: 12px;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-character-expression-table th,
+.database-modal-backdrop .db-character-expression-table td {
+  padding: 2px 4px;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .db-character-expression-table select,
+.database-modal-backdrop .db-character-expression-table input {
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.database-modal-backdrop .db-character-expression-table input[type="number"] {
+  width: 56px;
+}

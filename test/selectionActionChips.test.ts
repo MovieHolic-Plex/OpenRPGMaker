@@ -2,14 +2,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   renderSelectionActionChips,
   SELECTION_CHIP_PRESETS,
-  selectionChipModalOptions,
+  selectionHandoff,
   shouldShowSelectionActionChips,
 } from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
   anchoredSelectionChipsPosition,
 } from "@/editor/selectionOverlayAnchor";
-import type { RegionTaskModalOptions } from "@/editor/panels/regionTaskModal";
+import type { AiRegionHandoff } from "@/editor/aiRegionHandoff";
+import { isStampPlaceOn, resetStampPlaceModeForTest, setStampPlaceOn } from "@/editor/stampPlaceMode";
 import type { TileSelection } from "@/editor/editorState";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 
@@ -51,56 +52,77 @@ describe("shouldShowSelectionActionChips", () => {
   });
 });
 
-describe("selectionChipModalOptions", () => {
-  it("AI 칩(instruction=null)은 autoRun 없이 모달만 연다", () => {
-    const ai = SELECTION_CHIP_PRESETS.find((p) => p.id === "ai");
-    expect(ai).toBeTruthy();
-    const options = selectionChipModalOptions(ai!, SELECTION);
-    expect(options.mapId).toBe("map-1");
-    expect(options.region).toEqual({ x: 3, y: 4, width: 5, height: 6 });
-    expect(options.initialInstruction).toBeUndefined();
-    expect(options.autoRun).toBeUndefined();
-    // 일반 칩은 mode 키를 넣지 않는다 — 모달의 키워드 라우팅이 결정한다.
-    expect(options).not.toHaveProperty("mode");
+describe("selectionHandoff", () => {
+  it("입력 문장과 영역을 조수 채팅으로 곧장 넘긴다 — 영역 작업 창을 거치지 않는다", () => {
+    expect(selectionHandoff(SELECTION, "연못", false)).toEqual({
+      mapId: "map-1",
+      region: { x: 3, y: 4, width: 5, height: 6 },
+      instruction: "연못",
+      autoRun: true,
+      stamp: false,
+    });
   });
 
-  it("다듬기 칩은 지시문·autoRun·mode 를 함께 실어 원탭으로 실행된다", () => {
-    const polish = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "polish");
-    expect(polish).toBeTruthy();
-    const options = selectionChipModalOptions(polish!, SELECTION);
-    expect(options.initialInstruction).toBe(polish!.instruction);
-    expect(options.autoRun).toBe(true);
-    // mode 를 안 실으면 어휘 매칭에만 의존하게 되고, 지시문을 손보면 조용히 일반 경로가 된다.
-    expect(options.mode).toBe("polish");
-  });
-
-  it("앵커를 주면 모달이 그 좌표 근처에 뜬다", () => {
-    const polish = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "polish")!;
-    const options = selectionChipModalOptions(polish, SELECTION, { x: 120, y: 240 });
-    expect(options.anchor).toEqual({ x: 120, y: 240 });
+  it("바로 깔기 켜짐은 stamp 로 실린다", () => {
+    expect(selectionHandoff(SELECTION, "", true).stamp).toBe(true);
   });
 });
 
 describe("renderSelectionActionChips", () => {
   let restore: () => void;
-  beforeEach(() => { restore = installFakeDom(); });
+  beforeEach(() => {
+    restore = installFakeDom();
+    resetStampPlaceModeForTest();
+    globalThis.localStorage?.removeItem("oprn:ai-stamp-place");
+  });
   afterEach(() => { restore(); });
 
-  it("AI 칩 1개를 렌더하고 클릭 시 주입된 openModal을 호출한다", () => {
-    const calls: RegionTaskModalOptions[] = [];
-    const stub = ((options: RegionTaskModalOptions) => {
-      calls.push(options);
-      return document.createElement("div");
-    }) as never;
-    const bar = renderSelectionActionChips(SELECTION, stub);
-    document.body.append(bar);
-    expect(findByTestId(document.body as unknown as FakeElement, "selection-action-chips")).toBeTruthy();
+  const body = (): FakeElement => document.body as unknown as FakeElement;
+  const mount = (calls: AiRegionHandoff[]): void => {
+    document.body.append(renderSelectionActionChips(SELECTION, (handoff) => { calls.push(handoff); }));
+  };
+
+  it("입력창에 쓴 지시는 실행 버튼으로 곧장 채팅 턴이 된다", () => {
+    const calls: AiRegionHandoff[] = [];
+    mount(calls);
     for (const preset of SELECTION_CHIP_PRESETS) {
-      expect(findByTestId(document.body as unknown as FakeElement, `selection-chip-${preset.id}`)).toBeTruthy();
+      expect(findByTestId(body(), `selection-chip-${preset.id}`)).toBeTruthy();
     }
-    (findByTestId(document.body as unknown as FakeElement, "selection-chip-ai") as unknown as HTMLElement).click();
+    const prompt = findByTestId(body(), "selection-chip-prompt") as unknown as HTMLTextAreaElement;
+    prompt.value = "  연못 하나 만들어줘  ";
+    (findByTestId(body(), "selection-chip-ai") as unknown as HTMLElement).click();
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.mapId).toBe("map-1");
+    expect(calls[0]).toMatchObject({ mapId: "map-1", instruction: "연못 하나 만들어줘", autoRun: true, stamp: false });
+  });
+
+  it("빈 입력의 실행은 아무것도 넘기지 않는다(바로 깔기 꺼짐)", () => {
+    const calls: AiRegionHandoff[] = [];
+    mount(calls);
+    (findByTestId(body(), "selection-chip-ai") as unknown as HTMLElement).click();
+    expect(calls).toHaveLength(0);
+  });
+
+  it("번개 토글은 바로 깔기를 켜고, 빈 입력도 바로 깔기(숲)로 넘긴다", () => {
+    const calls: AiRegionHandoff[] = [];
+    mount(calls);
+    const stamp = findByTestId(body(), "selection-chip-stamp") as unknown as HTMLElement;
+    expect(stamp.getAttribute("aria-pressed")).toBe("false");
+    stamp.click();
+    expect(isStampPlaceOn()).toBe(true);
+    expect(stamp.getAttribute("aria-pressed")).toBe("true");
+    (findByTestId(body(), "selection-chip-ai") as unknown as HTMLElement).click();
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ instruction: "", stamp: true });
+  });
+
+  it("다듬기는 다듬기 지시문을 채팅으로 넘긴다(바로 깔기와 무관)", () => {
+    setStampPlaceOn(true);
+    const calls: AiRegionHandoff[] = [];
+    mount(calls);
+    (findByTestId(body(), "selection-chip-polish") as unknown as HTMLElement).click();
+    const polish = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "polish")!;
+    expect(calls).toHaveLength(1);
+    expect(calls[0]).toMatchObject({ instruction: polish.instruction, stamp: false });
   });
 });
 

@@ -18,7 +18,7 @@ describe("isCellInsideSelection", () => {
 });
 
 describe("regionTaskMenuItems", () => {
-  it("keeps AI routing alongside the encounter action", () => {
+  it("keeps AI routing alongside the encounter action — it hands the region to the assistant chat", () => {
     const openModal = vi.fn();
     const items = regionTaskMenuItems(SELECTION, openModal);
     expect(items.map((item) => item.testId)).toEqual(["region-walk-encounter-menu-item", "region-ai-task-menu-item"]);

@@ -23,7 +23,7 @@ export function openLegacyVillageInfoModal(): void {
   });
   const closeButton = el("button", {
     class: "database-modal-close",
-    text: "x",
+    text: "×",
     attrs: { type: "button", title: "닫기", "aria-label": "마을 정보 닫기" },
     dataset: { testid: "village-info-close" },
   });

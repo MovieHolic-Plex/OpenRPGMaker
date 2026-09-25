@@ -170,6 +170,16 @@ describe("Pi 경로 실행 결과 4축", () => {
     expect(h.requests[0]?.toolNames).toBeUndefined();
   });
 
+  it("지금 보는 맵과 대화 승인 칩셋 계열을 요청에 싣는다(칩셋 계열 검사 재료)", async () => {
+    const { surface } = harness();
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "성을 지어라" }, { ...surface(), getApprovedTilesetFamilies: () => ["castle"] }, { routineEdit: true });
+    expect(h.requests[0]?.currentMapId).toBe("map_a");
+    expect(h.requests[0]?.approvedTilesetFamilies).toEqual(["castle"]);
+    h.requests.length = 0;
+    await runPiCommand({ mode: "single", mapIds: ["map_a"], task: "성을 지어라" }, surface(), { routineEdit: true });
+    expect(h.requests[0]?.approvedTilesetFamilies).toBeUndefined();
+  });
+
   it("적용 성공: response-final · 목표 미평가 · 적용됨 — 마지막 호출이 유효 outcomes", async () => {
     h.results.push({ project: projectWith("바뀜"), toolErrors: 0 });
     const { outcomeCalls, surface } = harness();

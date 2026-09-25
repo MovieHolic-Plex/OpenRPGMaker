@@ -301,3 +301,34 @@ describe("팔레트 필터 (visibleTiles)", () => {
     }
   });
 });
+
+describe("칸 선택 입력은 판 하나가 받는다", () => {
+  function dispatch(target: HTMLElement, type: string, init: Record<string, unknown> = {}): void {
+    const event = new Event(type, { bubbles: true, cancelable: true });
+    for (const [key, value] of Object.entries(init)) Object.defineProperty(event, key, { configurable: true, value });
+    target.dispatchEvent(event);
+  }
+
+  it("포인터·보조기기 클릭·Enter 가 누른 칸의 타일을 한 번씩 고른다", () => {
+    const restore = installFakeDom();
+    try {
+      const picked: number[] = [];
+      const tileset = makeCustomTileset([]);
+      tileset.count = 64;
+      tileset.tilesPerRow = 8;
+      const root = renderWithFakeDom(() => makeCustomPalette({ layer: "lower", onSelectTile: (tile) => picked.push(tile), selectedTile: 0, tileset }));
+      const cell = root.querySelector<HTMLElement>('[data-testid="chipset-tile-9"]')!;
+
+      dispatch(cell, "pointerdown", { button: 0 });
+      dispatch(cell, "click", { detail: 1 });
+      dispatch(cell, "pointerdown", { button: 2 });
+      expect(picked).toEqual([9]);
+
+      dispatch(cell, "click", { detail: 0 });
+      dispatch(root.querySelector<HTMLElement>('[data-testid="chipset-tile-10"]')!, "keydown", { key: "Enter" });
+      expect(picked).toEqual([9, 9, 10]);
+    } finally {
+      restore();
+    }
+  });
+});

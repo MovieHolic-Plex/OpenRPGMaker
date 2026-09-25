@@ -1145,6 +1145,14 @@ export interface SystemRecords {
   battleUiStyle?: BattleUiStyle;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
+  /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
+  dialogueStyle?: import("@/project/dialogueStyles").DialogueStyleId;
+  /** 대화창 글꼴 — 에디터 UI 글꼴과 따로 간다. 생략 = 스타일이 정한 글꼴. */
+  dialogueFont?: import("@/project/fontRegistry").FontFamilyId;
+  /** 프로젝트 기본 말 빠르기 배율(0.5~2). 생략 = 1. 화자 빠르기와 곱한다. */
+  dialogueSpeed?: number;
+  /** false 면 구두점 뒤에 쉬지 않는다. 생략 = 쉰다. */
+  dialoguePunctuationPause?: boolean;
   fieldHud?: import("../fieldHud").FieldHudConfig;
   /** Project-wide, scoped battle menu CSS; absent preserves the selected skin. */
   battleCommandCss?: string;

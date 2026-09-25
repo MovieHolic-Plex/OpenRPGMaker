@@ -1,4 +1,5 @@
 import { paintForestGroves } from "./forestGroves";
+import { forestSetbackJitter } from "./forestContour";
 // editor/tools/village/morphologyBuild.ts
 // 형태 유형 계획(morphologyPlan)을 맵에 시공한다 — 기존 스탬퍼(킷 집·레시피 집·길 오토타일·울타리 타일·
 // 경작지 오토타일)를 그대로 쓴다. 나무만 타일셋에 따라 킷(treeKit.ts)을 고른다 — 합본 마을 원자 또는
@@ -11,7 +12,9 @@ import { paintForestGroves } from "./forestGroves";
 import { paintOrganicVillageLake } from "./organicLake";
 import { BRIDGE_PLANK_TILE } from "./landscape";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
-import { stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { gableAccentSeed } from "@/editor/gableHouseCompose";
+import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
+import { houseKitForTileset, mixableHouseKitIds, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_FARMLAND_AUTOTILE_GROUP, DEFAULT_TALL_GRASS_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -37,7 +40,6 @@ import {
   FENCE_TOP_LEFT,
   FENCE_TOP_RAIL,
   FENCE_TOP_RIGHT,
-  HOUSE_KITS,
   pointInRect,
   requireTool,
   ROAD_TILES,
@@ -46,6 +48,8 @@ import {
   type Point,
   type Rect,
   type VillageIntent,
+  templateFormFor,
+  templateHasFixedKit,
 } from "./constants";
 import { applyRoofDeck, houseBlockedCells } from "./houses";
 import {
@@ -99,6 +103,8 @@ export interface MorphologyBuildArgs {
   /** 나무 어휘. 생략하면 합본 마을 원자(침엽수 1×2·활엽수 2×2). */
   readonly treeKit?: TreeKit;
   readonly windows: HouseKitWindowsOption | undefined;
+  /** 집 부품·재료 킷 칸을 써도 되는가(기후 마을은 false). 생략하면 맵 타일셋으로 판정. */
+  readonly houseParts?: boolean;
   readonly paintDoorTiles: boolean;
   readonly warnings: string[];
 }
@@ -124,7 +130,7 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   const { draft, map, area, seed, intent, warnings } = args;
   const rng = mulberry32((seed ^ 0x3c6ef35f) >>> 0);
   const templates = intent.templateCatalog.filter((template) =>
-    !template.form || intent.kitMix === "mixed" || template.form.kitId === intent.kitMix);
+    !templateHasFixedKit(template) || intent.kitMix === "mixed" || template.form?.kitId === intent.kitMix);
   const plan = planVillageMorphology({
     morphology: args.morphology,
     area,
@@ -162,14 +168,18 @@ export function buildMorphologyVillage(args: MorphologyBuildArgs): MorphologyBui
   const houses: BuiltHouse[] = [];
   const slots: HouseSlot[] = [];
   const usedKits = new Set<HouseKitId>();
+  const houseParts = args.houseParts ?? tilesetHasHouseParts(draft.tilesets[map.tilesetId]);
+  // 킷 믹스 후보 — 부품 칸이 있는 타일셋이면 재료 킷까지.
+  const kitPool = mixableHouseKitIds(houseParts);
   for (const slot of plan.houses) {
     const { template, bbox } = slot;
-    const form = template.form;
-    const unused = HOUSE_KITS.filter((id) => !usedKits.has(id));
-    const pool = usedKits.size < 3 && unused.length > 0 ? unused : HOUSE_KITS;
-    const kitId: HouseKitId = template.kitId
-      ?? form?.kitId
-      ?? (intent.kitMix === "mixed" ? pool[Math.floor(rng() * pool.length)]! : intent.kitMix);
+    const unused = kitPool.filter((id) => !usedKits.has(id));
+    const pool = usedKits.size < 3 && unused.length > 0 ? unused : kitPool;
+    const kitId: HouseKitId = houseKitForTileset(template.kitId
+      ?? (templateHasFixedKit(template) ? template.form?.kitId : undefined)
+      ?? (intent.kitMix === "mixed" ? pool[Math.floor(rng() * pool.length)]! : intent.kitMix), houseParts);
+    // 박공 조합 형태는 고른 킷으로 합성(부품 칸이 있는 타일셋이면 굴뚝·지붕창 등 0~2개), 고정 레시피는 그대로.
+    const form = templateFormFor(template, kitId, houseParts ? gableAccentSeed(template.id, bbox.x, bbox.y, seed) : undefined);
     const stories: 1 | 2 | 3 = template.stories === 3 ? 3 : template.stories === 2 ? 2 : 1;
     const result = form
       ? stampAuthoredHouseForm(map, form, { x: bbox.x, y: bbox.y })
@@ -569,10 +579,14 @@ function paintTreeGradient(
     }
   }
   if (kit.grove) {
+    const groveSeed = Math.floor(rng() * 0xffffffff);
+    // The setback bends (never under TREE_MIN_DISTANCE): a constant one copied the fields' and yards'
+    // straight edges into the canopy, which then read as a rectangular black void beside them
+    // (2026-09-24 lighthouse village review).
     const grove = paintForestGroves(map, area, kit.grove,
       (x, y) => free(x, y) && (occ[y * W + x] === OCC.free || occ[y * W + x] === OCC.commons)
-        && dist[y * W + x]! >= TREE_MIN_DISTANCE,
-      Math.floor(rng() * 0xffffffff), forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
+        && dist[y * W + x]! >= TREE_MIN_DISTANCE + Math.max(0, forestSetbackJitter(x, y, groveSeed)),
+      groveSeed, forestCoverageTarget(intent.forestDensity ?? "normal"), undefined, true);
     for (const index of grove.cells) occ[index] = OCC.reserved;
     return Math.ceil(grove.cells.size / 12);
   }

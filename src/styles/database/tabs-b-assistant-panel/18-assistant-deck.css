@@ -100,9 +100,9 @@
   position: relative; inset: auto; width: 100%; max-width: none; flex: 0 0 auto;
   margin: 0; padding: 12px 14px 16px; background: var(--bg-raised); border-top: 0;
 }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer { border: 1px solid var(--border-default); border-radius: var(--radius-l); background: var(--bg-raised); padding: 12px; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { flex-wrap: wrap; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-assistant-input { min-height: 72px; font-size: 13px; line-height: 1.7; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer { border: 1px solid var(--border-default); border-radius: var(--radius-l); background: var(--bg-raised); padding: 8px 10px; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { flex-wrap: nowrap; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-assistant-input { min-height: 36px; font-size: 13px; line-height: 1.4; padding: 0; border: 0; border-radius: 0; box-shadow: none; background: transparent; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-conversation-outcome { flex: 0 0 auto; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-chat-resize-handle { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-popover { max-width: min(340px, 88vw); }
@@ -144,10 +144,18 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-deck .ai-chat-secondary-actions > button { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; min-height: 34px; padding: 7px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); }
 .ai-deck .ai-chat-secondary-actions > button:hover { background: var(--bg-inset); color: var(--text-1); }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead { flex-wrap: wrap; gap: 5px; overflow: visible; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: 100%; justify-content: flex-end; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: auto; justify-content: flex-end; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-model { margin-right: auto; font-size: 10px; color: var(--text-3); }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-effort-select { border: 0; background: var(--bg-inset); font-size: 11px; }
+/* 켜짐은 왼쪽 사이드바의 납작한 칩 규칙(:not 때문에 명시도가 더 높다)보다 세야 보인다. */
+.ai-chat-panel .ai-composer-stamp-toggle[aria-pressed="true"],
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle[aria-pressed="true"] {
+  background: var(--accent-muted);
+  border: 1px solid var(--accent);
+  color: var(--accent-active);
+}
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-conversation-outcome { font-size: 10px; color: var(--text-3); padding: 6px 18px; border: 0; }
 
 /* Minimum glass over black, including the mode segment's 6% ink tint: AA text, not element opacity. */
@@ -182,21 +190,26 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   backdrop-filter: blur(20px) saturate(1.08);
   -webkit-backdrop-filter: blur(20px) saturate(1.08);
   border-radius: var(--ai-deck-radius);
-  /* 위치는 레일 드래그가 패널에 심는 --ai-deck-right/--ai-deck-bottom 을 따른다
-     (aiDeckMoveChrome.ts). 저장값이 없으면 기존 우하단(inset) 그대로다.
-     right/bottom 앵커라 기록이 열려도 위로만 자라 끌어 놓은 아래 모서리가 안정적이다. */
+  /* 기본은 왼쪽 아래. 저장 위치가 있으면 has-custom-deck-pos 가 right 앵커로 바꾼다.
+     bottom 앵커라 기록이 열려도 위로만 자란다. */
   bottom: var(--ai-deck-bottom, var(--ai-deck-inset));
   box-shadow: var(--ai-deck-shadow);
   display: flex;
   flex-direction: column;
+  left: var(--ai-deck-inset);
   max-height: calc(100% - var(--ai-deck-inset) * 2);
   pointer-events: auto;
   position: absolute;
-  right: var(--ai-deck-right, var(--ai-deck-inset));
+  right: auto;
   transition: width 200ms ease;
   /* 폭 상한은 뷰포트가 아니라 패널(=캔버스 영역) 기준이다 — 100vw 로 재면 좁은 창에서 데크가 좌측 도구
      기둥 위로 넘어간다(e2e assistant-single-dock 900px 실측: x 248 < 캔버스 304). */
   width: min(var(--ai-float-bar-width, var(--ai-deck-open-width)), calc(100% - var(--ai-deck-inset) - 12px));
+}
+
+.ai-chat-panel.chat-dock-float.has-custom-deck-pos:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck {
+  left: auto;
+  right: var(--ai-deck-right, var(--ai-deck-inset));
 }
 
 /* 유휴·빈 대화·포커스 없음 = 컴포저만 좁게. 포커스·턴·대화가 있으면 열린 폭. */
@@ -601,6 +614,23 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 }
 
 /* hidden 속성만으로는 위 display 규칙에 밀린다(특이도 함정) — 명시적으로 못박는다. */
+/* 화면 무게. 기본(light)·끄기(off)는 캔버스 위 블러를 끈다. 무겁게(heavy)만 유리 블러를 남긴다. */
+html:is(:not([data-ai-render]), [data-ai-render="light"], [data-ai-render="off"]) :is(
+  .ai-chat-panel.chat-dock-float:not(.is-studio):not(.is-history-open):not(.is-collapsed) .ai-deck,
+  .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore,
+  .ai-work-strip-toggle,
+  .ai-work-card,
+  .ai-ghost-phase-chip,
+  .selection-action-chips,
+  .ai-deck > .ai-lock-scrim
+) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html[data-ai-render="off"] {
+  --ai-deck-glass: var(--bg-raised);
+}
+
 .ai-deck > .ai-lock-scrim[hidden] {
   display: none;
 }
@@ -660,3 +690,24 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
   outline: var(--focus-outline);
   outline-offset: var(--stroke-2, 2px);
 }
+
+/* 사이드바 탭 = 세그먼트 컨트롤(2026-09-24 정리). 「맵 · 그리기 · AI」 세 칸이 한 덩어리로 읽히고,
+   고른 칸만 흰 바탕이 뜬다(macOS 세그먼트). 밑줄 탭은 탭 안의 하위 탭·필터 칩과 같은 무게라 구분이 안 됐다. */
+.ai-chat-sidebar-tabs { gap: 6px; padding: 10px 10px 8px; border-bottom: 0; }
+.ai-chat-sidebar-segments { display: flex; flex: 1; min-width: 0; gap: 2px; padding: 2px; border-radius: calc(var(--radius-s) + 2px); background: var(--bg-well, var(--bg-inset)); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button {
+  flex: 1; min-width: 0; height: 28px; padding: 0 6px; gap: 5px; border-radius: var(--radius-s);
+  color: var(--text-2); font: 500 12.5px var(--font-ui); box-shadow: none;
+}
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button:hover { color: var(--text-1); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] {
+  background: var(--bg-raised); color: var(--text-1); font-weight: 600; border-radius: var(--radius-s);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--text-1) 14%, transparent), 0 0 0 .5px color-mix(in srgb, var(--text-1) 8%, transparent);
+}
+.ai-chat-sidebar-tabs .ai-chat-sidebar-segments svg { width: 15px; height: 15px; flex: none; }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse { margin-left: 0; width: 30px; height: 30px; padding: 0; display: inline-grid; place-items: center; color: var(--text-2); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse:hover { background: var(--bg-hover); color: var(--text-1); }
+.ai-chat-sidebar-tabs .ai-chat-sidebar-collapse svg { width: 17px; height: 17px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-segments { flex-direction: column; flex: none; background: transparent; padding: 0; gap: 8px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button { flex: none; width: 36px; height: 36px; padding: 8px; }
+.ai-chat-sidebar.is-collapsed .ai-chat-sidebar-tabs .ai-chat-sidebar-segments > button[aria-pressed="true"] { background: var(--accent-muted); box-shadow: none; color: var(--accent); }

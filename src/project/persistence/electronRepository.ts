@@ -60,6 +60,13 @@ export type OprnBridgeStart = {
   readonly createProject: (input: { readonly title?: string; readonly seed?: string }) => Promise<{ readonly projectDir: string; readonly projectId: string } | null>;
 };
 
+export type OprnAssetBrowser = {
+  open(payload: { readonly url: string; readonly x: number; readonly y: number; readonly width: number; readonly height: number }): Promise<{ readonly title: string; readonly url: string }>;
+  setBounds(payload: { readonly x: number; readonly y: number; readonly width: number; readonly height: number }): Promise<boolean>;
+  close(): Promise<boolean>;
+  onDownload(callback: (payload: unknown) => void): () => void;
+};
+
 export type OprnBridge = {
   readonly team?: import("../../../electron/shared/team").TeamBridge;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
@@ -77,6 +84,8 @@ export type OprnBridge = {
   readonly assets: OprnBridgeAssets;
   /** 시작 화면이 쓰는 새 프로젝트/폴더 열기. 편집기도 같은 경로로 폴더를 만든다. */
   readonly start: OprnBridgeStart;
+  /** 데스크톱 앱에서만 있다. 제작자 페이지를 창 안에 열고, 받은 파일은 이 프로젝트로만 넘긴다. */
+  readonly assetBrowser?: OprnAssetBrowser;
 };
 
 declare global {
@@ -199,7 +208,7 @@ export function createElectronRepository(): ElectronRepository {
       const serialized = serialize(persisted);
       const result = await electronBridge().project.save({ projectDir: resolved.projectDir, serialized, expectedSha: loadedSha });
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
+      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256, ...(result.revision === undefined ? {} : { revision: result.revision }) } : result;
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
@@ -218,7 +227,7 @@ export function createElectronRepository(): ElectronRepository {
       if (result.kind === "stale-base") result = await send(true);
       if (result.kind === "stale-base") throw new Error("저장 기준 문서가 서버와 달라 맵 패치를 적용하지 못했습니다");
       if (result.kind === "saved") loadedSha = result.sha256 ?? null;
-      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256 } : result;
+      return result.kind === "saved" ? { kind: "saved", project: result.serialized ? deserialize(result.serialized) : persisted, sha256: result.sha256, ...(result.revision === undefined ? {} : { revision: result.revision }) } : result;
     },
     commits: {
       record(input: CommitInput, target?) {

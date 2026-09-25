@@ -6,7 +6,10 @@
 // 저장된 레코드는 신뢰하지 않는다 — 열거형·범위를 여기서 좁히고, 못 쓰는 값은 경고로 흘린다.
 
 import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
+import { composeGableHouseForm } from "@/editor/gableHouseCompose";
 import { AUTHORED_HOUSE_FORM_DEFS, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
+import { recipeHasWindow, withWindowRules } from "@/editor/authoredHouseFormStamp";
+import { GABLE_HOUSE_FORM_SPECS, gableFormMixWeight, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
@@ -176,7 +179,44 @@ export function formToTemplate(form: AuthoredHouseFormDef): HouseTemplate {
  * author_house 로만 쓴다. 정주지·왕궁 도시 참고 형태가 여기서 34종 날개 형태와 같은 후보 풀에 섞인다.
  */
 export function villageFormTemplates(): HouseTemplate[] {
-  return AUTHORED_HOUSE_FORM_DEFS.filter((form) => form.w <= VILLAGE_RANGE.templateW.max).map(formToTemplate);
+  // 레시피 창은 공통 창 규칙으로 다시 낸다 — 창 자리가 없는 좁은 레시피는 자동 추첨에서 뺀다(2026-09-25 3차).
+  return AUTHORED_HOUSE_FORM_DEFS.filter((form) => form.w <= VILLAGE_RANGE.templateW.max).map((raw) => {
+    const form = withWindowRules(raw);
+    const template = formToTemplate(form);
+    return recipeHasWindow(form) ? template : { ...template, excludeFromDefaultMix: true };
+  });
+}
+
+/**
+ * 박공 조합 형태 → 슬롯 카탈로그 템플릿. 재료는 킷을 따른다(compose) — form 은 미리보기용 기본 재료 합성본.
+ * 치수는 킷과 무관하다(박공 문법은 칸 모양을 재료로 바꾸지 않는다).
+ */
+export function gableSpecToTemplate(spec: GableHouseFormSpec): HouseTemplate {
+  const preview = composeGableHouseForm(spec, "bright-plaster");
+  return {
+    id: spec.id,
+    name: spec.name,
+    w: preview.w,
+    h: preview.h,
+    stories: preview.stories === 2 ? 2 : 1,
+    wings: [{ x: 0, y: 0, w: preview.w, h: preview.h }],
+    wingsAt: (x: number, y: number) => [{ x, y, w: preview.w, h: preview.h }],
+    form: preview,
+    compose: (kitId, accentSeed) => composeGableHouseForm(spec, kitId, accentSeed === undefined ? {} : { accentSeed }),
+    // 가중치 0 = 자동 추첨 제외(곁채 …), 0<w<1 = 덜 자주(달개).
+    ...(gableFormMixWeight(spec) === 0 ? { excludeFromDefaultMix: true } : {}),
+    ...(gableFormMixWeight(spec) > 0 && gableFormMixWeight(spec) !== 1 ? { mixWeight: gableFormMixWeight(spec) } : {}),
+  };
+}
+
+/** 마을 슬롯에 들어가는 박공 조합 형태 — 폭이 슬롯 상한(8)을 넘는 것은 author_house 전용. */
+export function villageGableTemplates(): HouseTemplate[] {
+  return GABLE_HOUSE_FORM_SPECS.map(gableSpecToTemplate).filter((template) => template.w <= VILLAGE_RANGE.templateW.max);
+}
+
+/** 박공 조합 형태인가 — 마을 형태 추첨이 이 풀을 먼저 본다(2026-09-25 기본 분배). */
+export function isGableTemplate(template: Pick<HouseTemplate, "compose">): boolean {
+  return template.compose !== undefined;
 }
 
 /** 사용자 형태 레코드를 시공 가능한 템플릿으로 좁힌다. 규약 위반이면 이유를 준다. */
@@ -277,6 +317,33 @@ function shapeReason(record: {
   return undefined;
 }
 
+/**
+ * 자동 추첨에서 빼는 내장 형태(2026-09-25 사용자 「집 모양」 검토). 지워지지는 않는다 — housePlans[].templateId 나
+ * 프리셋 templateIds 로 명시하면 그대로 짓는다. 박공 조합 형태의 제외·가중치는 카탈로그 spec.mix 가 정한다.
+ *  · courtyard: 안뜰 쪽 날개 지붕이 이어지지 않아 지붕에 구멍이 난 것처럼 읽힌다.
+ *  · estate-*: 본채와 헛간이 떨어진 필지형이라 울타리 없이 서면 집 두 채로 읽힌다.
+ *  · 「보이는 벽 면은 3칸 이상」 규칙(2차 검토)에 폭 8 안에서 맞출 수 없는 형태 — u·u-deep 은 안뜰 안쪽 벽이 2칸
+ *    (3+2+3), t-porch·t-hall 은 가운데 현관 옆 본채 벽이 2칸(2+3+3 / 3+3+2). test/houseTemplateFaces.test.ts 가 잰다.
+ *  · 창을 낼 3칸 벽(끝 | 창 | 끝)이 없는 집(3차), 탑처럼 솟는 계단식 2층 둘(3차) — 아래 목록 주석.
+ *  · 고정 레시피(ref-*·저택)는 villageFormTemplates 가 창을 다시 내 보고 창이 없으면 따로 뺀다.
+ */
+export const DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS: ReadonlySet<string> = new Set([
+  "courtyard",
+  "estate-shed-r",
+  "estate-shed-l",
+  "estate-barn",
+  "u",
+  "u-deep",
+  "t-porch",
+  "t-hall",
+  // 3차(창 규칙): 문을 빼면 「끝 | 창 | 끝」 3칸 벽이 남지 않아 창을 낼 자리가 없는 집.
+  // (외양간 hut-low 는 창 없는 창고라 남긴다.)
+  "rect-min",
+  // 3차: 계단식 2층 중 탑처럼 높이 솟는 둘 — 다층 몫은 2층 박공(gable-2f*)이 맡는다.
+  "tier-wide",
+  "tier-symmetric",
+]);
+
 export interface TemplateCatalogResult {
   readonly templates: readonly HouseTemplate[];
   readonly warnings: readonly string[];
@@ -284,7 +351,7 @@ export interface TemplateCatalogResult {
 
 /**
  * 시공에 쓸 형태 카탈로그.
- *  · 내장 34종 + 참고 사례 셀 레시피(폭 8 이하) + 사용자 형태. 같은 id면 사용자 것이 이긴다(오버라이드).
+ *  · 내장 34종 + 참고 사례 셀 레시피(폭 8 이하) + 박공 조합 형태(폭 8 이하) + 사용자 형태. 같은 id면 사용자 것이 이긴다(오버라이드).
  *  · allowIds(프리셋 화이트리스트)가 있으면 그 id만 남긴다. 하나도 안 남으면 전체로 되돌린다.
  */
 export function villageTemplateCatalog(
@@ -295,6 +362,7 @@ export function villageTemplateCatalog(
   const byId = new Map<string, HouseTemplate>();
   for (const def of HOUSE_TEMPLATE_DEFS) byId.set(def.id, defToTemplate(def));
   for (const template of villageFormTemplates()) byId.set(template.id, template);
+  for (const template of villageGableTemplates()) byId.set(template.id, template);
   for (const record of villageAuthoringData(project).templates) {
     const resolved = templateFromRecord(record);
     if ("reason" in resolved) {
@@ -305,7 +373,12 @@ export function villageTemplateCatalog(
   }
   const all = [...byId.values()];
   const wanted = allowIds?.filter((id) => id.trim()) ?? [];
-  if (wanted.length === 0) return { templates: all, warnings };
+  if (wanted.length === 0) {
+    // 기본 카탈로그: 어색한 형태는 자동 추첨에서만 뺀다(명시 templateId 는 계속 받는다).
+    const templates = all.map((template) =>
+      DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS.has(template.id) ? { ...template, excludeFromDefaultMix: true } : template);
+    return { templates, warnings };
+  }
   const missing = wanted.filter((id) => !byId.has(id));
   if (missing.length > 0) warnings.push(`프리셋이 가리키는 형태 id를 찾을 수 없습니다: ${missing.join(", ")}`);
   const filtered = all.filter((template) => wanted.includes(template.id));

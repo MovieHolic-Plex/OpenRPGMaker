@@ -21,7 +21,7 @@ export function tileBrushActionLabel(stamp: PaletteStamp | null): string | null 
   return `도장 ${stamp.width}×${stamp.height}`;
 }
 
-/** Beginner keeps its button group; focus modes expose only applicable brush size. */
+/** Both modes expose brush size only where it applies; beginner keeps its button group, focus modes a select. */
 export function makeTileBrushControls(state: EditorState, rerender: () => void): HTMLElement {
   const stamp = state.activePaletteStamp;
   const shape = { pen: "칠하기", rect: "사각형", round: "타원" }[state.paintShape];
@@ -31,8 +31,9 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
   const composite = isComboBrush(stamp);
   const layer = layerUiLabel(state.layer);
   const row = el("div", { class: "sidebar-brush-controls", dataset: { testid: "tile-brush-controls" } });
+  // 크기는 같은 타일을 되풀이하는 붓(칠하기 · 자유선)과 지우기에서만 뜻이 있다 — 다른 도구에선 숨긴다.
+  const applicable = state.layer !== "event" && (state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
   if (!getEditorChrome().paletteRail) {
-    const applicable = state.layer !== "event" && (state.tool === "erase" || (state.tool === "paint" && state.paintShape === "pen" && !stamp));
     if (applicable) {
       const select = el("select", {
         attrs: { "aria-label": "브러시 크기" }, dataset: { testid: "brush-size-select" },
@@ -55,27 +56,32 @@ export function makeTileBrushControls(state: EditorState, rerender: () => void):
       on: { click: () => { selectTileTool("pen"); rerender(); } } }));
     return row;
   }
-  const sizes = el("div", {
-    class: "sidebar-brush-sizes", attrs: { role: "group", "aria-label": "브러시 크기" },
-    dataset: { roving: "true" },
-  });
-  sizes.append(el("span", { class: "tile-brush-label", text: "크기" }));
-  for (const size of EDITOR_BRUSH_SIZES) {
-    sizes.append(el("button", {
-      class: "btn tile-brush-chip" + (state.brushSize === size ? " active" : ""), text: String(size),
-      attrs: { type: "button", "aria-label": `브러시 ${size} x ${size}`, "aria-pressed": String(state.brushSize === size) },
-      dataset: { testid: `brush-size-${size}` },
-      on: { click: () => { setTileBrushSize(size); rerender(); } },
-    }));
-  }
-  row.append(sizes, el("span", {
+  const brushState = el("span", {
     class: "sidebar-brush-state" + (composite ? " is-combo-brush" : ""),
     // 합성 붓은 배지가 이미 레이어를 말한다 — "바닥+상위 · 바닥"처럼 중복하지 않는다.
-    text: composite ? action : `${action} · ${layer}`,
+    // 이벤트 레이어는 도구 이름이 곧 레이어라 "이벤트 · 이벤트"로 겹쳐 읽히지 않게 한 번만 쓴다.
+    text: composite || state.layer === "event" ? action : `${action} · ${layer}`,
     dataset: { testid: "tile-brush-state", shape: state.paintShape, layer: state.layer,
       brushKind: composite ? "combo" : stamp ? "stamp" : "repeat",
       stampWidth: String(stamp?.width ?? 0), stampHeight: String(stamp?.height ?? 0), stampCells: String(stamp?.cells.length ?? 0) },
-  }));
+  });
+  row.append(brushState);
+  if (applicable) {
+    const sizes = el("div", {
+      class: "sidebar-brush-sizes", attrs: { role: "group", "aria-label": "브러시 크기" },
+      dataset: { roving: "true" },
+    });
+    sizes.append(el("span", { class: "tile-brush-label", text: "크기" }));
+    for (const size of EDITOR_BRUSH_SIZES) {
+      sizes.append(el("button", {
+        class: "btn tile-brush-chip" + (state.brushSize === size ? " active" : ""), text: String(size),
+        attrs: { type: "button", "aria-label": `브러시 ${size} x ${size}`, "aria-pressed": String(state.brushSize === size) },
+        dataset: { testid: `brush-size-${size}` },
+        on: { click: () => { setTileBrushSize(size); rerender(); } },
+      }));
+    }
+    row.append(sizes);
+  }
   if (stamp) row.append(el("button", {
     class: "btn", text: composite ? "조합 붓 해제" : "도장 해제", attrs: { type: "button" }, dataset: { testid: "palette-stamp-clear" },
     on: { click: () => { selectTileTool("pen"); rerender(); } },

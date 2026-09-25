@@ -6,9 +6,9 @@
 
 | 타일셋 | 시트 | 칸 | 바뀐 것 |
 |---|---|---|---|
-| `forest_harmony_snow` 설원 마을 | `public/assets/climate-villages/snow-chipset.png` | 2868 | 잔디→눈, 수관·지붕에 눈, 물은 그대로. 2730~는 물 칸의 얼음 사본(걸을 수 있음) |
-| `forest_harmony_volcano` 화산 마을 | `public/assets/climate-villages/volcano-chipset.png` | 2730 | 잔디→재, 잎 그을림, 물 칸 전부 용암, 나무다리→현무암 다리 |
-| `forest_harmony_desert` 사막 마을 | `public/assets/climate-villages/desert-chipset.png` | 2730 | 잔디→모래, 숲·잎→마른 덤불, 절벽 흙벽→사암, 지붕 흙빛, 물은 오아시스 물 그대로 |
+| `forest_harmony_snow` 설원 마을 | `public/assets/climate-villages/snow-chipset.png` | 3660 | 잔디→눈, 수관·지붕에 눈, 물은 그대로. 2730~2867은 물 칸의 얼음 사본(걸을 수 있음), 2880~는 눈 얹힌 고목 |
+| `forest_harmony_volcano` 화산 마을 | `public/assets/climate-villages/volcano-chipset.png` | 3660 | 잔디→재, 잎 그을림, 물 칸 전부 용암, 나무다리→현무암 다리, 2880~는 그을린 고목, 3030~는 용암 균열·식은 용암 판·용암 웅덩이·분기공·현무암 기둥 |
+| `forest_harmony_desert` 사막 마을 | `public/assets/climate-villages/desert-chipset.png` | 3660 | 잔디→모래, 숲·잎→마른 덤불, 절벽 흙벽→사암, 지붕 흙빛, 물은 오아시스 물 그대로, 2880~는 바랜 고목, 3300~는 사구·모래 물결·갈라진 땅·메사·선인장 |
 | `forest_harmony_autumn` 가을 마을 | `public/assets/climate-villages/autumn-chipset.png` | 2730 | 잔디→금빛 풀, 숲→단풍(적갈·주황·금빛), 활엽수 노랑·덤불 빨강 |
 
 | 파일 | 내용 |
@@ -35,8 +35,14 @@ node scripts/qa/capture-climate-villages.mjs
 
 - 물 판정은 색이 아니라 **물 칸 번호 집합**이다. 색으로 하면 파란 지붕·청회색 성벽까지 용암이 된다.
 - 사막·가을은 숲 자체도 칠한다. 수관(이식 2550~2596, `TREE` 밖)·숲 줄기 조립(1350·1422~1433·1453~1463)·layerBacking으로 밑에 깔리는 잔디(1141·1145…)까지 함께 칠해야 초록 점이 안 남는다. 선인장 769·야자 770은 일부러 초록으로 둔다.
-- 사막 마을은 나무 도장을 모래로 되돌리고 발치에 야자(물 5칸 안)·선인장을 놓는다(`lib/climate-edits.mjs` `dressDesert`, 필드와 공용).
+- 잎 없는 나무(2026-09-25): `scripts/content/bare-trees.py` 가 설원·화산·사막 시트의 **같은 번호** 2880~3029(96~100행, 30열)에 굽는다 — 큰 4×5 ×3·중간 3×4 ×3·작은 2×3 ×3·마른 덤불 1×1 ×5, 그룹 `bare-trees:big-1…shrub-5`(수관 위층·통과, 밑동 줄 아래층·받침 240·통행 불가, 그림 없는 칸 -1). 사막·화산 시트는 91~95행을 빈칸으로 늘렸고 설원 얼음 칸(2730~2867)과 겹치지 않는다. 가을·숲마을엔 없다.
+- 사막·화산 마을(`bare`)은 잎 달린 숲(2550~2609·1200~1463)·나무 도장(960~1123)·덤불 289 를 모두 걷고 잎 없는 고목 **덩이**를 세운다(`lib/bare-trees.mjs` clearLeafyTrees → arrangeBareGroves, 가장자리 띠 8칸·안쪽 13칸, 밑동 일렬 금지 rowLimit, 집·길·문·계단·다리·울타리 2칸 밖). 숲이 가려 주던 절벽 끝은 맵 끝까지 잇거나(`extendClearedCliffEnds`) 윗단 옆 가장자리(2677/2678, `cliffEndLedge`)로 막고, 계단을 닫았을 때 윗단·아랫단이 숲마을보다 더 이어지지 않는지 검사한다(validation.json joinedLevels). 사막 물가 야자는 2~3그루 무리(`plantPalmGroves`). 빈칸 게이트는 아래 기후 지형으로 넘긴다.
+- 기후 지형(2026-09-25, 분류 v8): `scripts/content/climate-terrain.py` 가 3030 부터 굽는다(각 시트는 제 기후 칸만 그리고 나머지는 투명·미사용). 화산 3030~3299 = 용암 균열 16+2(오토타일 `volcano_lava_crack`, N/E/S/W)·식은 용암 판 47+2(`volcano_lava_plate_47`)·용암 웅덩이 47+2(`volcano_lava_pool_47`)·유황·흑요석·재 더미·분기공 1×2·현무암 기둥 4무리. 사막 3300~3629 = 모래 물결 4·선인장 4·뼈·묻힌 기둥·갈라진 땅 47+2(`desert_cracked_earth_47`)·사구 5(3×2·4×3·6×3)·메사 3. 설원 3630~3646 = 성벽·성탑 윗면의 눈 쌓인 사본 17칸(`snowWalls` 대응표 [원본, 사본]; 성벽 위 길 412·21 은 사본이 여럿이라 칸 위치로 번갈아 놓는다). 흉벽 톱니 윗면 3줄·석판 반쯤 눈 더미·길은 튀어나온 돌만 흰색·벽면 51 은 맨 윗줄만 눈 처마·성탑 머리 눈 모자, 돌과 맞닿는 곳 1px #8ea3b5 윤곽. 도우미 `lib/climate-terrain.mjs` `snowCastleTops`. 도장은 tileGroups `climate-terrain:*`, 번호는 `sheets.json` 의 `terrain`. 블롭 47칸은 3×3 이웃으로 한 칸씩 그려 모서리가 둥글고 무늬가 16px 주기라 어느 이웃과도 이어진다.
+- 사막·화산 마을의 빈칸 게이트는 이제 **땅으로** 넘긴다(`lib/climate-terrain.mjs` dressVolcanoGround·dressDesertGround): 키큰 풀(화산 0, 사막은 물가 4칸 안만)·마른 풀밭·흩은 바위·고목 밑 선인장을 걷고, 화산은 판·균열·웅덩이(분기공)·기둥, 사막은 사구·물결·갈라진 땅·메사·선인장 무리·외딴 뼈 한 곳. 고목 밑동 바위는 덩이 셋 중 하나꼴(`rockChance: 0.3`). 용암못 폐촌의 봉우리는 한 쌍만.
+- `dressDesert`(나무 도장 → 야자·선인장)는 이제 필드(`author-field-routes.mjs`)만 쓴다.
 - 못을 얼릴 때는 한 덩어리를 통째로 대응표로 바꾼다. 일부만 바꾸면 물과 얼음 사이에 물가 테두리가 없다.
-- 분류는 `climate-*-villages-v3`(나무 몸통 개정: v2 정확한 폭, v3 폭 2 조각 제거). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedClimateVillageReferences.json tiledata/climate-villages/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureClimateVillageReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
+- 분류는 화산·사막 `climate-*-villages-v9`(v8 기후 지형 — 위, v9 타일 사전 보강: 문서가 이름을 대는 선인장 769·야자 770·바위 537·29·사막 F·G 키큰 풀·기후 지형 칸 전부를 맵에 안 쓰여도 사전에 싣고 층을 함께 적는다), 설원 `climate-snow-villages-v8`(v7 고목 일렬 금지, v8 눈 쌓인 성벽), 가을 `climate-autumn-villages-v5`(v2 정확한 폭, v3 폭 2 조각 제거, v4 수관 잎 채움, v5 마을 채우기 — 아래, v6 잎 없는 나무, v7 가장자리 고목이 한 밑동 줄로 늘어서지 않게: 0~3줄 들쭉날쭉, 위아래 한 줄·가로 10칸 안 3그루까지, 맵 끝 줄·끝 칸 밑동 금지). 개정할 때는 먼저 `node scripts/content/record-previous-references.mjs src/assets/sharedClimateVillageReferences.json tiledata/climate-villages/previous-reference.json` 으로 배포본을 기록한 뒤 id 를 올린다. `ensureClimateVillageReferences` 는 기록과 정확히 같은 옛 사본만 은퇴시키고 고친 사본은 남긴다.
 - 원본 숲마을의 줄기를 다시 맞추면(`scripts/content/refit-forest-trunks.mjs`) 여기 `author-climate-villages.mjs` 부터 다시 돈다. 끝나면 `node scripts/content/check-forest-trunks.mjs` 로 줄기 규칙을 확인한다.
+- 수관(2550~2596)은 채우기 전의 평평한 그림(`tiledata/forest-villages/canopy-leaves/flat-canopy.png`)으로 칠한 뒤, 시트마다 마지막에 **그 시트 자신의 잎 테두리**로 속을 채우고 속 변형 11칸(2597~2607)을 굽는다(`scripts/content/lib/canopy_leaves.py`). 규칙은 [수관 잎 채움](../forest-villages/canopy-leaves/README.md).
 - 시트를 다시 칠하면 `prepare-climate-tilesets.mjs`부터 다시 돌린다(얼음 칸 수가 바뀌면 타일셋 칸 수도 바뀐다).
+- 마을 채우기(v5, 2026-09-24 검수 반영): 원본 숲마을 개정14 를 그대로 옮긴 뒤 기후마다 다시 게이트(5칸 정사각형 없음, 17×13 화면 빈 땅 ≤40%)를 덩이 장면으로 넘긴다(`fillNaturalGaps`). 키큰 풀은 E/F/G(PR #1421) — 시트가 서리·재·마른·단풍 풀로 칠한다. 설원·화산은 집·길 곁 G 를 걷고 새 덩이도 E·F 만(G 없이 게이트를 못 넘는 마을은 G 를 남기고 편집 기록 `buried-grass.kept` 에 적는다). 설원·화산·사막에는 꽃이 없다(덤불에 붙은 꽃은 덤불 289 로). 설원의 활엽수는 눈 덮인 둥근 덤불로, 설원·사막 채우기는 나무 장면을 쓰지 않는다. 설원 종탑 언덕은 강과 소가 얼었다(`freezeRiver`, 폭포만 흐른다).

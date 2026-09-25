@@ -6,7 +6,7 @@ import { riverBandDepth } from "@/project/worldGenRules";
 // 3층: plan_village(계층 계획) → build_village(제약 시공) → critique_village(비평 루프).
 
 import { ALL_HOUSE_KIT_IDS, isHouseKitId, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
-import type { HouseInteriorProgram } from "@/editor/houseInteriors";
+import { houseProgramForOwner, type HouseInteriorProgram } from "@/editor/houseInteriors";
 import { setMapLayoutPlan } from "@/project/mapLayoutPlan";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
 import { DEFAULT_SNOW_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
@@ -70,7 +70,9 @@ import {
   type Rect,
   type SettlementLayout,
   type VillageIntent,
+  templateFormFor,
 } from "./constants";
+import { tilesetHasHouseParts } from "@/project/defaults/forestHarmonyHouseParts";
 import {
   matchVillageArchetype,
   presetOverrides,
@@ -199,6 +201,10 @@ export function buildVillageDomain(
   const map = requireVillageMap(draft, mapId);
   // 타일셋 스코프 가드 — village/ 모듈의 원시 타일 id는 전부 combined_town 좌표다.
   const tilesetForMap = draft.tilesets?.[map.tilesetId];
+  // 집 부품·재료 킷 칸(3060~)은 숲마을 타일셋에만 있다. 기후 마을(snow·desert·volcano·autumn)은 숲마을로 지은 뒤
+  // 기후 칩셋으로 옮기므로(villageClimate) 처음부터 쓰지 않는다.
+  const housePartsOk = tilesetHasHouseParts(tilesetForMap)
+    && !(["snow", "desert", "volcano", "autumn"] as readonly unknown[]).includes(merged.groundTheme);
   if (!tilesetForMap || !isCombinedTownCompatibleTileset(tilesetForMap)) {
     throw new ToolError(
       `build_village는 숲마을·합본 마을 호환 칩셋 전용이다 — 이 맵의 타일셋: ${map.tilesetId}. ` +
@@ -371,7 +377,7 @@ export function buildVillageDomain(
     const treeKit = prepareVillageTreeKit(tilesetForMap);
     reliefNotes.push(`tree kit ${treeKit.id}`);
     morph = buildMorphologyVillage({
-      draft, map, area, seed, intent, morphology,
+      draft, map, area, seed, intent, morphology, houseParts: housePartsOk,
       maxHouses: housePlan.explicit ? housePlan.count : MAX_HOUSES,
       ...(morphology === "river" ? { riverWidth: riverBandDepth(Math.min(area.w, area.h), worldGenRules.water) } : {}),
       blocked: morphBlocked, softBlocked: morphForest, ...(relief ? { cliffBlocked: relief.cliff } : {}),
@@ -391,6 +397,7 @@ export function buildVillageDomain(
     boulevard ? { ewRow: boulevard.ewRow, nsCol: boulevard.nsCol, axis: boulevard.axis } : undefined,
     !doorEventsPlanned,
     sketchSites,
+    housePartsOk,
   );
   assertHouseProtection(existingHouses, draft, []);
   perfLap("houses");
@@ -1534,6 +1541,12 @@ function coerceHousePlan(housesArg: unknown, housePlansArg: unknown): HousePlanC
  * 부여한다(이미 프로그램이 있으면 건너뜀). 간판(472/473)은 decor가 이 프로그램을 보고 건다.
  */
 function assignShopPrograms(houses: BuiltHouse[], plaza: Plaza, warnings: string[]): void {
+  // 집주인 직업이 용도를 말하면(어부·등대지기·여관 주인…) 그 용도가 정본이다 — 광장 근접순
+  // 상점가 배정이 등대지기의 집을 상점으로 덮어쓰지 않게 먼저 못박는다.
+  for (const [index, house] of houses.entries()) {
+    const role = house.program === undefined ? houseProgramForOwner(house.ownerName) : undefined;
+    if (role) houses[index] = { ...house, program: role };
+  }
   if (houses.length < 3) return;
   const gate = { x: plaza.centerX, y: plaza.rect.y + plaza.rect.h };
   const order = houses
@@ -1541,7 +1554,10 @@ function assignShopPrograms(houses: BuiltHouse[], plaza: Plaza, warnings: string
     .sort((a, b) => a.dist - b.dist)
     .filter(({ index }) => houses[index]!.program === undefined)
     .map(({ index }) => index);
-  const roles: HouseInteriorProgram[] = ["shop", "shop", "inn"];
+  // 이름으로 이미 선 가게·여관만큼 자동 배정을 줄인다.
+  const named = houses.map((house) => house.program);
+  const roles = (["shop", "shop", "inn"] as HouseInteriorProgram[]).filter((role, i, list) =>
+    named.filter((program) => program === role).length <= list.slice(0, i).filter((r) => r === role).length);
   const assigned: string[] = [];
   for (let i = 0; i < roles.length && i < order.length; i += 1) {
     const index = order[i]!;
@@ -1851,7 +1867,9 @@ function isVillageStartGround(tileId: number): boolean {
 /** 잔디 칸에 눈 오토타일을 깐다. 시공과 바닥 스와치가 같은 페인터를 지난다. grass 는 무연산. */
 export function paintGroundThemeStrip(map: GameMap, area: Rect, value: unknown): void {
   if (value === undefined || value === "grass") return;
-  if (value !== "snow") throw new ToolError("groundTheme은 grass|snow여야 합니다.", { code: "invalid-args", mapId: map.id });
+  // desert·volcano·autumn 은 숲마을 기후 칩셋 전용(author_village applyVillageClimate) — 합본 마을 지면에는 칠할 것이 없다.
+  if (value === "desert" || value === "volcano" || value === "autumn") return;
+  if (value !== "snow") throw new ToolError("groundTheme은 grass|snow|desert|volcano|autumn 이어야 합니다.", { code: "invalid-args", mapId: map.id });
   const protectedCells = new Set(protectedHouseCells(map).map(({ x, y }) => coordKey(x, y)));
   const points: Point[] = [];
   for (let y = area.y; y < area.y + area.h; y += 1) {
@@ -1902,6 +1920,12 @@ function setVillageHarnessLayoutPlan(
     "amber-wood": "오렌지 통나무",
     "slate-wood": "파랑 통나무",
     "timber-hall": "빨간 널지붕 목조홀",
+    "moss-plaster": "초록 기와 회벽",
+    "thatch-plaster": "초가 회벽",
+    "thatch-log": "초가 통나무",
+    "amber-brick": "오렌지 벽돌",
+    "slate-brick": "슬레이트 벽돌",
+    "charcoal-timber": "검은 기와 반목조",
   };
   const explicitKits = intent.houseKits.slice(0, houses.length);
   const explicitTemplates = intent.houseTemplates.slice(0, houses.length);
@@ -1946,7 +1970,8 @@ function setVillageHarnessLayoutPlan(
         ],
       },
       ...houses.map((house) => {
-        const form = house.formId ? intent.templateCatalog.find((template) => template.id === house.formId)?.form : undefined;
+        const formTemplate = house.formId ? intent.templateCatalog.find((template) => template.id === house.formId) : undefined;
+        const form = formTemplate ? templateFormFor(formTemplate, house.kitId) : undefined;
         return {
         id: uniqueHouseRegionId(map, "village_house", reservedIds),
         role: "house",

@@ -52,16 +52,18 @@
    회귀 스펙: test/e2e/_ai-assistant-hostile-eval.spec.ts (H 히트테스트). */
 
 /* 접힘 상태: float 은 inset:0 이라 그대로 접으면 투명 패널이 캔버스 전체를 덮어
-   맵 클릭을 삼킨다. 접히면 inset 을 우하단으로 되돌리고 복원 pill 만 남긴다.
-   2026-09-12: 레일 드래그로 옮긴 자리(--ai-deck-right/bottom, aiDeckMoveChrome 가
-   패널에 심는다)를 그대로 따라간다 — 접어도 조수는 사용자가 놓아 둔 그 자리다. */
+   맵 클릭을 삼킨다. 접히면 inset 을 왼쪽 아래로 되돌리고 복원 pill 만 남긴다.
+   끌어 둔 자리는 has-custom-deck-pos 의 right/bottom 을 따른다. */
 .ai-chat-panel.chat-dock-float.is-collapsed {
   background: transparent;
   border: none;
   box-shadow: none;
-  inset: auto var(--ai-deck-right, var(--ai-deck-inset, 16px)) var(--ai-deck-bottom, var(--ai-deck-inset, 16px)) auto;
+  inset: auto auto var(--ai-deck-bottom, var(--ai-deck-inset, 16px)) var(--ai-deck-inset, 16px);
   padding: 0;
   pointer-events: none;
+}
+.ai-chat-panel.chat-dock-float.is-collapsed.has-custom-deck-pos {
+  inset: auto var(--ai-deck-right, var(--ai-deck-inset, 16px)) var(--ai-deck-bottom, var(--ai-deck-inset, 16px)) auto;
 }
 .ai-chat-panel.chat-dock-float.is-collapsed > .ai-collapsed-restore {
   pointer-events: auto;
@@ -117,8 +119,8 @@
 
 /* 입력창만 보기: 대기 중에는 맵을 가리는 카드 본문을 접되, 하단 ⋯ 메뉴로 언제든
    다른 대기 화면을 고를 수 있게 한다. */
-body:has(.database-modal-backdrop) .ai-chat-panel,
-body:has([data-testid='resource-modal']) .ai-chat-panel {
+/* 리소스 관리자 창도 .database-modal-backdrop 이라 첫 선택자가 이미 덮는다. */
+body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel {
   display: none;
 }
 .ai-status-group {

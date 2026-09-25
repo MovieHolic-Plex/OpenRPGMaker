@@ -2,13 +2,14 @@ import { el, clearChildren } from "@/util/dom";
 import { editorState } from "@/editor/editorState";
 import type { Layer } from "@/editor/editorState";
 import { getEditorChrome } from "@/editor/editorUiMode";
-import { renderBasicLeftRail } from "@/editor/panels/basicLeftRail";
+import { renderBasicLeftRail, syncBasicRailBrushStatus } from "@/editor/panels/basicLeftRail";
+import { basicTileLabel } from "@/editor/panels/basicTilePalette";
 import { renderEventEditor } from "@/editor/panels/eventEditor";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { makePaintShapeSelect } from "@/editor/panels/tileToolOptions";
 import { makeSidebarMapHeader } from "@/editor/panels/sidebarMapHeader";
 import { makeSidebarSurface } from "@/editor/panels/sidebarSurface";
-import { isDefaultTilesetTexture, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
+import { isDefaultTilesetTexture, tilesetImageUrl, tilesetTileBackgroundStyle } from "@/editor/tilesetImage";
 import { openTilePropsDialog } from "@/editor/panels/tilePropsDialog";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { makeStructureKitShelf } from "@/editor/harnessSuggestion/structureKitShelf";
@@ -70,6 +71,27 @@ type PaletteScroll = {
   readonly sheetTop: number;
 };
 
+/** 칸 집합이 같을 때 시트 노드를 유지한다. 도구·붓·선택은 크롬만 다시 그린다. */
+function paintSheetRetainKey(tileset: TilesetDef, layer: Exclude<Layer, "event">): string {
+  return [
+    tileset.id,
+    tilesetImageUrl(tileset),
+    tileset.count,
+    tileset.tilesPerRow,
+    layer,
+    activeTileCategory,
+    tileSearchQuery,
+    isCustomTileset(tileset) ? "custom" : "grid",
+  ].join("|");
+}
+
+function detachRetainedPalette(container: HTMLElement, key: string): HTMLElement | null {
+  const sheet = container.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  if (!sheet || sheet.dataset.retainKey !== key) return null;
+  sheet.remove();
+  return sheet;
+}
+
 export function renderTilePalette(container: HTMLElement): void {
   // The rail owns its focus and flyout snapshots. Do not detach its focused node
   // before it can capture them (the real browser moves focus to body on removal).
@@ -79,8 +101,15 @@ export function renderTilePalette(container: HTMLElement): void {
   }
   const focusSnapshot = captureFocus(container);
   const previousPaletteScroll = readPaletteScroll(container);
-  clearChildren(container);
   const state = editorState.get();
+  let retainedSheet: HTMLElement | null = null;
+  if (state.layer !== "event" && !isFilterActive()) {
+    const project = store.getCurrent();
+    const map = project.maps[state.currentMapId ?? project.startMapId];
+    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+    if (tileset) retainedSheet = detachRetainedPalette(container, paintSheetRetainKey(tileset, state.layer));
+  }
+  clearChildren(container);
 
   if (state.layer === "event") {
     // 레이어 전환은 캔버스가 소유한다. 여기서는 공통 셸 안의 내용을 이벤트 목록으로 바꾼다.
@@ -135,7 +164,7 @@ export function renderTilePalette(container: HTMLElement): void {
     return;
   }
 
-  const body = makePaletteSurface({ map, state, tileLayer, tileset });
+  const body = makePaletteSurface({ map, state, tileLayer, tileset, retainedSheet });
   shell.append(body.root);
   const palette: HTMLElement | null = body.palette;
 
@@ -235,8 +264,9 @@ function makePaletteSurface(input: {
   readonly state: ReturnType<typeof editorState.get>;
   readonly tileLayer: Exclude<Layer, "event">;
   readonly tileset: TilesetDef;
+  readonly retainedSheet: HTMLElement | null;
 }): { readonly root: HTMLElement; readonly palette: HTMLElement } {
-  const { map, state, tileLayer, tileset } = input;
+  const { map, state, tileLayer, tileset, retainedSheet } = input;
   const root = el("div", {
     class: "palette-work-pane is-paint",
     dataset: { testid: "palette-work-pane-paint" },
@@ -257,7 +287,7 @@ function makePaletteSurface(input: {
   root.append(makePaletteFilterBar(tileset, tileLayer, state.selectedTile));
   const emptyHint = makePaletteEmptyHint(tileLayer);
 
-  const palette = isCustomTileset(tileset)
+  const palette = retainedSheet ?? (isCustomTileset(tileset)
     ? makeCustomPalette({
         onCreatePaletteStamp: selectPaletteStamp,
         layer: tileLayer,
@@ -277,8 +307,14 @@ function makePaletteSurface(input: {
         tileset,
         emptyHint,
         visibleTiles,
-      });
+      }));
+  palette.dataset.retainKey = paintSheetRetainKey(tileset, tileLayer);
+  if (retainedSheet) {
+    const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
+    movePaletteActiveCell(palette, displayTile);
+  }
   if (showQuickTileNumbers) palette.classList.add("show-index");
+  else palette.classList.remove("show-index");
   root.append(palette);
 
   root.append(makeSelectedTileStatus(state.selectedTile, tileset, map));
@@ -524,6 +560,74 @@ function filteredTileIndexes(tileset: TilesetDef): readonly number[] {
   });
 }
 
+/**
+ * 선택 타일만 바뀐 클릭. 시트를 비우고 칸을 다시 만들지 않고 활성 칸·선택 칩만 옮긴다.
+ * 필터가 켜져 있거나 보조 창이 열려 있거나 대상 칸이 아직 없으면 false — 호출부가 전체를 다시 그린다.
+ */
+export function syncMountedPaletteSelection(): boolean {
+  if (typeof document === "undefined") return false;
+  const root = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+  if (!root?.querySelector("[data-testid='tile-palette'], [data-testid='basic-tile-grid']")) return false;
+  if (root.querySelector("[data-sidebar-surface]")) return false;
+  const state = editorState.get();
+  if (state.layer === "event") return false;
+  const tileset = currentTilesetForPalette();
+  if (!tileset) return false;
+  const displayTile = isCustomTileset(tileset) ? state.selectedTile : gridPaletteDisplayTile(tileset, state.selectedTile);
+
+  const basicSheet = root.querySelector<HTMLElement>('[data-testid="basic-tile-grid"]');
+  if (basicSheet) {
+    const search = root.querySelector<HTMLInputElement>('[data-testid="basic-tile-search"]');
+    if (search && search.value.trim().length > 0) return false;
+    if (!movePaletteActiveCell(basicSheet, displayTile)) return false;
+    const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
+    if (status) {
+      const layerLabel = state.layer === "lower" ? "바닥" : "상위";
+      status.textContent = `${layerLabel} · ${basicTileLabel(tileset, state.selectedTile)}`;
+    }
+    return true;
+  }
+
+  if (isFilterActive()) return false;
+  const sheet = root.querySelector<HTMLElement>('[data-testid="tile-palette"]');
+  if (!sheet || !movePaletteActiveCell(sheet, displayTile)) return false;
+  const map = store.getCurrent().maps[currentMapId()];
+  const status = root.querySelector<HTMLElement>('[data-testid="selected-tile-status"]');
+  if (status && map) status.replaceWith(makeSelectedTileStatus(state.selectedTile, tileset, map));
+  return true;
+}
+
+/**
+ * 타일을 고르며 레이어도 바뀐 클릭(상위 전용 타일). 커스텀 아틀라스는 두 레이어에 같은 칸을
+ * 보이므로 활성 칸·선택 글·붓 상태만 옮기면 된다. 기본 칩셋은 레이어마다 보이는 칸이 다르고,
+ * 필터가 걸린 팔레트는 빈 칸 안내가 레이어를 말한다 — 둘 다 false 를 돌려 호출부가 전체를 다시 그린다.
+ */
+export function syncMountedPaletteLayerSelection(): boolean {
+  if (typeof document === "undefined") return false;
+  const tileset = currentTilesetForPalette();
+  if (!tileset || !isCustomTileset(tileset)) return false;
+  if (!syncMountedPaletteSelection()) return false;
+  if (getEditorChrome().paletteRail) return syncBasicRailBrushStatus();
+  const controls = document.querySelector<HTMLElement>('[data-testid="left-palette-root"] [data-testid="tile-brush-controls"]');
+  if (!controls) return false;
+  controls.replaceWith(makeTileBrushControls(editorState.get(), renderPalettePreservingViewport));
+  return true;
+}
+
+function movePaletteActiveCell(sheet: HTMLElement, displayTile: number): boolean {
+  const nextActive = sheet.querySelector<HTMLElement>(`[data-tile-index="${displayTile}"]`);
+  if (!nextActive) return false;
+  const oldActive = sheet.querySelector<HTMLElement>(".chipset-tile.active");
+  if (oldActive === nextActive) return true;
+  oldActive?.classList.remove("active");
+  oldActive?.setAttribute("aria-pressed", "false");
+  nextActive.classList.add("active");
+  nextActive.setAttribute("aria-pressed", "true");
+  sheet.querySelector<HTMLElement>('.chipset-tile[tabindex="0"]')?.setAttribute("tabindex", "-1");
+  nextActive.setAttribute("tabindex", "0");
+  return true;
+}
+
 export function selectPaletteTile(index: number): void {
   // 타일을 고르는 것은 「칠하겠다」는 선언이다. 같은 도구 상태가 유지되는 경우(이미 브러시)
   // 에는 아래 editorState 변화가 tool 을 건드리지 않아 감시자가 못 잡는다 — 여기서 끊는다.
@@ -608,6 +712,9 @@ function preservePaletteViewport(action: () => void): void {
   const restore = (): void => {
     const nextContainer = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
     const nextPalette = nextContainer ? paletteViewportElement(nextContainer) : null;
+    // 다시 그려지지 않았으면(선택만 제자리에서 옮긴 클릭) 스크롤도 그대로다. 여기서 scrollTop 을
+    // 쓰면 방금 바뀐 활성 칸 때문에 레이아웃을 강제로 네 번 더 돈다.
+    if (nextContainer === container && nextPalette === palette) return;
     if (scroll && nextContainer && nextPalette) applyPaletteScroll(nextContainer, nextPalette, scroll);
     if (palette && container && scroll) applyPaletteScroll(container, palette, scroll);
     window.scrollTo(windowScroll.x, windowScroll.y);

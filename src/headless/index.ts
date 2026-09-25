@@ -2,12 +2,21 @@ import { validateArgs } from "@/editor/tools/jsonSchema";
 import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
 import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
+import { normalizeToolArgs, runToolDefinition } from "@/editor/tools/toolRunner";
 import { ToolError, type ChangeSummary, type JsonSchema, type ToolMode, type ToolResult } from "@/editor/tools/types";
-import { deserialize } from "@/project/io";
+import { deserialize, serialize } from "@/project/io";
+import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacyRmTileset } from "@/project/defaults/defaultAssets";
+import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
+import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
+import { ensureBundledBattleAnimations } from "@/project/defaults/defaultDatabase";
+import { setRegionReferenceDownloadLoader } from "@/project/regionReferenceImport";
+import { readFile } from "node:fs/promises";
 import { LEGACY_RPGZZU_EXTENSION, OPRN_EXTENSION } from "@/project/package";
 import { readStoredZipEntry } from "@/project/packageZip";
 import { projectLint, type LintIssue } from "@/project/lint/projectLint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
+import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
 
 const decoder = new TextDecoder();
 
@@ -55,6 +64,56 @@ export function listHeadlessMcpTools(): readonly HeadlessMcpToolInfo[] {
     description: tool.mode === "write" ? `${tool.description} [dry-run only]` : tool.description,
     inputSchema: tool.parameters,
   }));
+}
+
+/**
+ * The load-time repairs the editor store runs on open (bundled tilesets, reference documents, slots). Without them a
+ * headless project lacks what the same project shows in the editor — the assistant would test a different project.
+ */
+export function normalizeHeadlessProject(project: Project): Project {
+  ensureSwitchVariableSlots(project);
+  ensureBundledTilesets(project);
+  ensureSharedTileReferences(project);
+  removeLegacyRmTileset(project);
+  ensureBundledResourceProfiles(project);
+  ensureDefaultDatabaseIconResources(project);
+  ensureBundledBattleAnimations(project);
+  return project;
+}
+
+/** A new empty project exactly as the editor opens it (blank start map + normalization). */
+export function createHeadlessBlankProject(): Project {
+  return normalizeHeadlessProject(deserialize(serialize(createBlankProject())));
+}
+
+export function serializeHeadlessProject(project: Project): string {
+  return serialize(project);
+}
+
+/**
+ * Headless has no HTTP server for public/: read place downloads (/assets/region-references/*.oprn.json) from the
+ * checkout's public directory instead of fetching them.
+ */
+export function setHeadlessPublicRoot(publicDir: string): void {
+  setRegionReferenceDownloadLoader(async (publicPath) => JSON.parse(await readFile(`${publicDir}/${publicPath.replace(/^\/+/, "")}`, "utf8")));
+}
+
+/** Await the tool's lazy data (reference snapshots etc.) — the browser does this in runToolAsync before run. */
+export async function prepareHeadlessTool(name: string, args: Record<string, unknown>): Promise<void> {
+  const tool = getTool(name);
+  if (tool?.prepare) await tool.prepare(normalizeToolArgs(name, args)).catch(() => undefined);
+}
+
+/**
+ * Run a tool through the same runner as the editor (argument normalization, draft, tree repair, commit gate) and
+ * return the resulting project. A rejected or read call returns the input project unchanged.
+ */
+export function runHeadlessToolWithProject(project: Project, name: string, args: Record<string, unknown>): { result: ToolResult; project: Project } {
+  const tool = getTool(name);
+  if (!tool) return { result: runHeadlessTool(project, name, args), project };
+  const ctx = { project };
+  const result = runToolDefinition(ctx, tool, args);
+  return { result, project: ctx.project };
 }
 
 export function runHeadlessTool(project: Project, name: string, args: Record<string, unknown>): ToolResult {
@@ -194,12 +253,17 @@ function countHeadlessRecordChanges(before: readonly { id: string }[], after: re
   return changed;
 }
 
+/** 바뀐 칸 수 — editor/tools/changeset.ts countTileChanges 와 같은 규칙(2층·4층·그림자 포함). */
 function countTileChanges(before: GameMap, after: GameMap): number {
   let changed = 0;
   const size = Math.max(before.lowerTiles.length, after.lowerTiles.length);
+  const extras = hasExtraLayers(before) || hasExtraLayers(after);
   for (let i = 0; i < size; i += 1) {
     if (before.lowerTiles[i] !== after.lowerTiles[i]) changed += 1;
     else if (before.upperTiles[i] !== after.upperTiles[i]) changed += 1;
+    else if (extras && (layerTileAt(before, 2, i) !== layerTileAt(after, 2, i)
+      || layerTileAt(before, 4, i) !== layerTileAt(after, 4, i)
+      || shadowAt(before, i) !== shadowAt(after, i))) changed += 1;
   }
   return changed;
 }

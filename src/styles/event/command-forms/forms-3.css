@@ -195,6 +195,20 @@
   transform: translateY(1px);
 }
 
+/* 본문 태그 줄 — 버튼 글자가 곧 넣을 태그다. 문장 도구보다 낮고 촘촘하게. */
+.event-command-text-tools-row.event-command-text-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.event-command-text-tool.event-command-text-tag {
+  display: inline-flex;
+  font: 600 12px/1 var(--font-mono, "Cascadia Mono", Consolas, monospace);
+  min-height: 26px;
+  padding: 4px 8px;
+}
+
 .event-command-text-tool-glyph {
   font: 800 15px/1 var(--font-mono, "Cascadia Mono", Consolas, monospace);
 }

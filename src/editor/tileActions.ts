@@ -544,9 +544,8 @@ export function fillTile(mapId: MapId, layer: TileLayer, x: number, y: number, n
     const queue = [startIdx];
     const seen = new Set<number>([startIdx]);
     const changedPoints: RoadPoint[] = [];
-    while (queue.length) {
-      const idx = queue.shift();
-      if (idx === undefined) break;
+    for (let head = 0; head < queue.length; head += 1) {
+      const idx = queue[head]!;
       const cx = idx % m.width;
       const cy = Math.floor(idx / m.width);
       setTileSafe(m, targetLayer, cx, cy, newTile);
@@ -595,9 +594,8 @@ function planFillTile(mapId: MapId, layer: TileLayer, x: number, y: number, newT
   const queue = [startIdx];
   const seen = new Set<number>([startIdx]);
   const points: RoadPoint[] = [];
-  while (queue.length) {
-    const idx = queue.shift();
-    if (idx === undefined) break;
+  for (let head = 0; head < queue.length; head += 1) {
+    const idx = queue[head]!;
     const cx = idx % map.width;
     const cy = Math.floor(idx / map.width);
     points.push({ x: cx, y: cy });

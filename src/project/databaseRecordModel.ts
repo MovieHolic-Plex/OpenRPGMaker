@@ -13,6 +13,8 @@ import { normalizeBattleAnimationRecord } from "@/project/databaseAnimationRecor
 import { normalizeActionCombatConfig, normalizeActionSkillProfile, normalizeActionWeaponProfile } from "@/project/actionCombat";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { normalizeSystemFontConfig } from "@/project/fontRegistry";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_PROJECT_SPEED_LIMITS, isDialogueStyleId } from "@/project/dialogueStyles";
+import { isFontFamilyId } from "@/project/fontRegistry";
 import { normalizeElementRecords, normalizeGlobalBattleCommands, normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
@@ -207,6 +209,15 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
     ...(isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID
       ? { menuUiStyle: system.menuUiStyle }
       : {}),
+    // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
+    ...(isDialogueStyleId(system.dialogueStyle) && system.dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID
+      ? { dialogueStyle: system.dialogueStyle }
+      : {}),
+    ...(isFontFamilyId(system.dialogueFont) ? { dialogueFont: system.dialogueFont } : {}),
+    ...(typeof system.dialogueSpeed === "number" && Number.isFinite(system.dialogueSpeed) && system.dialogueSpeed !== 1
+      ? { dialogueSpeed: Math.round(Math.min(DIALOGUE_PROJECT_SPEED_LIMITS.max, Math.max(DIALOGUE_PROJECT_SPEED_LIMITS.min, system.dialogueSpeed)) * 100) / 100 }
+      : {}),
+    ...(system.dialoguePunctuationPause === false ? { dialoguePunctuationPause: false } : {}),
     // 기본(actors)은 저장하지 않고, 명시적 monsters 선택만 보존한다.
     ...(system.battleParty === "monsters" ? { battleParty: "monsters" as const } : {}),
     // 기본(rm2k3)은 저장하지 않고, 명시적 gen1 선택만 보존한다(무효값도 rm2k3로 정규화).

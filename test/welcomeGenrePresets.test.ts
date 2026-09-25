@@ -49,10 +49,38 @@ describe("welcomeGenrePresets", () => {
     const gallery = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("horror-gallery")!);
     expect(gallery).toContain("make_gallery_room");
     expect(gallery).toContain("필수 템플릿 툴");
+    // 실내(전시실·화실) 벽 시공 — 2026-09-24 갤러리 r3: 바닥 fill_region 만 반복해 방이 빈 판이었다.
+    expect(gallery).toContain("place_concept");
+    expect(gallery).toContain("get_concept_facility");
     const school = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("school-horror")!);
     expect(school).toContain("make_horror_loop");
+    expect(school).toContain("make_chase_scene");
     const story = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("story-cutscene")!);
     expect(story).toContain("script_cutscene_preset");
+  });
+
+  it("school-horror 기획 지시가 추격·은신·암호 도구를 첫 요청에 노출한다", async () => {
+    const { mentionedToolSchemas } = await import("@/ai/planToolExposure");
+    const preset = welcomeGenrePresetById("school-horror")!;
+    const answer = (text: string) => ({ question: "q", label: "항목", text, source: "user" as const });
+    const prompt = buildWelcomeGenrePresetPrompt(preset, {
+      version: 1,
+      presetId: "school-horror",
+      summary: "폐저택에서 쫓아오는 술래를 피해 열쇠로 탈출",
+      answers: {
+        experience: answer("직접 쫓아오는 존재"),
+        activity: answer("도주하고 숨기"),
+        progression: answer("열쇠를 찾아 구역별로 통과"),
+        detail: answer("가까운 안전 지점에서 재개"),
+        scope: answer("짧은 한 구역과 결말까지"),
+      },
+    });
+    expect(prompt).toContain("hidingSpots");
+    expect(prompt).toContain("compile_puzzle");
+    expect(prompt).toContain("place_concept");
+    expect(prompt).not.toContain("set_life_flower");
+    const names = (mentionedToolSchemas(prompt) as { function: { name: string } }[]).map((tool) => tool.function.name);
+    expect(names).toEqual(expect.arrayContaining(["make_chase_scene", "compile_puzzle", "place_concept", "place_door"]));
   });
 
   it("free-text gallery intent injects make_gallery_room", () => {

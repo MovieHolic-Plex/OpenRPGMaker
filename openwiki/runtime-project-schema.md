@@ -1,5 +1,38 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 맵 칸 2층·4층·그림자 — 선택 필드 (MZ식 4층 PR ①, 2026-09-24)
+
+설계: `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`. `GameMap` 에 선택 필드 셋이 붙었다.
+스키마 버전은 올리지 않았다(없는 맵 = 빈칸이라 이관이 없다).
+
+| 필드 | 층 | 빈값 | 길이 |
+|---|---|---|---|
+| `lowerOverlayTiles?: number[]` | 2층(1층 위, 늘 캐릭터 밑) | `-1` | `width*height` |
+| `upperOverlayTiles?: number[]` | 4층(3층 위, 3층과 같은 ★/○/× 규칙) | `-1` | `width*height` |
+| `shadowBits?: number[]` | 그림자(2층 위·3층 밑) | `0` | `width*height`, 값 0..15 (bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래) |
+
+- `lowerTiles`=1층, `upperTiles`=3층은 그대로다. 층 번호↔필드 이름은 `src/project/mapLayers.ts` 에만 둔다
+  (`layerTileAt`/`setLayerTileAt`/`shadowAt`/`setShadowAt`/`cellLayerTiles`/`cloneExtraLayers`/
+  `remapExtraLayers`/`cropExtraLayers`/`compactMapLayers`/`malformedExtraLayerKeys`/`EXTRA_LAYER_KEYS`).
+- **쓰는 맵에만 생긴다.** `setLayerTileAt`/`setShadowAt` 은 빈값을 쓸 때 배열을 만들지 않는다.
+  **모두 빈값이 되면 키를 뺀다** — 옛 맵과 새 맵의 JSON 이 같다. 정리 지점은 저장 경로가 아니라 칸을 비우는
+  변형기 끝이다: `remapExtraLayers`/`cropExtraLayers`(크기 바꾸기·밀기·잘라내기·Pi 증분)는 스스로 정리하고,
+  붙여넣기·영역 지우기(`editor/mapClipboard.ts`)는 끝에서 `compactMapLayers` 를 부른다. 목록은 `mapLayers.ts` 머리말.
+- **검증:** `validateMaps`(`io/shapeEventFields.ts`) 는 1층·3층 길이를 엄격히 본다(틀리면 던진다).
+  선택 필드는 배열이어야 하고, **길이가 틀리면 `console.warn`(맵 id + 필드) 후 그 필드만 버리고 불러온다** —
+  선택 층 하나 때문에 프로젝트 전체가 안 열리지 않게. 저장 쪽은 `projectLint` 의 왕복 검사(`serialize-roundtrip`)가
+  같은 경우를 **오류**로 보고한다(왕복 자체는 더 이상 던지지 않으므로 따로 센다).
+- 저장 경로(`store.update`/`updateMap`/`updateMapTiles`/undo/`duplicateMap`/serialize·deserialize/웹 내보내기/
+  `exportProjectStoreShim`)는 필드를 보존한다. `updateMapTiles` 는 `cloneExtraLayers` 로 깊은 복사한다.
+- 통행: `collision.ts` — 맨 위(4층)부터 내려가며 빈칸·★ 를 건너뛰고 처음 만난 타일이 칸을 정한다. 1층은 ★ 여도
+  그 자체로 정한다. 뜨거운 경로는 배열을 만들지 않는 `passabilityOf(ts,l1,l2,l3,l4)`/`cellPassability(ts,map,i)` 이고
+  `layeredPassability(ts, tiles[])` 는 외부·테스트용 같은 규칙이다. 그림자는 통행에 관여하지 않는다.
+- 옛 맵 불변 실측(2026-09-24): 번들 장소 참고 67 + `src/project/regionReferences` 41 + 픽스처 프로젝트 파일,
+  맵 238개에서 기준 커밋(22121b817)과 HEAD 의 `drawMapTileLayers` 호출 기록·`canMove` 4방향 격자·게임
+  `renderTiles` 깊이 기록이 모두 같았다(차이 0).
+- 회귀: `test/mapLayers.test.ts`, `test/mapLayersPersistence.test.ts`(저장 왕복·undo·불러오기 버림·lint),
+  `test/mapLayersEditing.test.ts`, `test/mapLayersOldMap.test.ts`(옛 맵에 키가 생기지 않는다).
+
 ## 이름별 게임 오버 (2026-09-23)
 
 v4 선택 필드: `system.gameOvers?: {id,name,settings:GameOverSettings}[]`, `defaultGameOverId?:string`.
@@ -947,6 +980,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
 - **`test/fixtures/projects/dew-village-demo.json` is deliberately kept old.** It is the legacy specimen for the three legacy-repair tests in `test/legacyDbProjectSync.test.ts` (imported as `dewVillageDemoLegacySpecimen`), which need a pre-migration project to have anything to repair — `retiredEquipmentItemReplacement` rewrites an existing row and does nothing when the row is absent. Do not "helpfully" refresh it or point those tests at the shipped fixture: the tests would pass vacuously.
 - Shop economy session fields `shopLoyaltySpend` / `shopTradeCounts` / `shopMileagePoints` / `shopPawnTickets` / `shopLastRestockDayKey` persist S/A/B shop economy state (loyalty discount, dynamic pricing, mileage). Purchases preflight the player stack, player/merchant gold, and trade counters before committing the item grant; sales likewise preflight inventory, payout capacity, merchant gold, and every shop ledger before checking `changeItemsAtomically` and committing gold/count changes. A full, unsafe, or overflowing value leaves inventory, player gold, trade ledgers, and merchant gold unchanged. Mileage accrues **only on successful purchase** via `mileageRate` and is **deducted on refund** via `refundShopMileage`. Repair/appraisal services gate on `appraisalUnidentifiedPool` — empty pool disables the menu and returns `failed` (no gold is charged). Festival/traveling shops are **condition-gated**: `festivalFlag`/`travelingRouteId` must be wrapped in a `fork`/`condition` event; runtime does not auto-show a closed festival shop.
 - `TilesetDef.transparentColor` is an optional authored-project hex color key (`#rrggbb`) set by the editor. It is persisted with the tileset, validated as an optional string, and render-time transparency should prefer it over bundled chipset default color keys.
+- `TilesetDef.family` (2026-09-25) is an optional non-empty string naming the chipset art family (예: `"rasak-fantasy"`). Missing on legacy records and bundled sheets — `src/project/tilesetFamily.ts` then follows `referenceSourceTilesetId` to the root, uses `uploaded:<root id>` for uploaded sheets and `tilesetArtStyle()` for bundled ones. Persisted as-is; the assistant runner refuses cross-family chipset changes unless the user approved (`openwiki/teaching-assistant-tilesets.md` 「칩셋 계열 규칙」).
 - `TilesetDef.kind` optionally classifies a sheet as `"rpg2k"` or `"custom"`. Legacy records infer uploaded or non-480 sheets as custom; bundled 480-chip sheets remain RPG2K. Editor tileset selectors group both categories. Custom map palettes preserve exact source-cell order (up to ten visible columns) and must not apply Combined Town tile-number/autotile-collapse semantics; explicit tile metadata and priority still control layer routing.
 - `TileGroupMetadata.junctions` and `TileGroupMetadata.overlays` are optional authored structural-rule arrays. They are persisted with tile groups for roof/wall boundary omissions/replacements and conditional overlay tiles; keep them backward compatible and validate referenced roles/tiles through tileset semantic checks.
 - `TileGroupMetadata.rules` is an optional authored cluster-rule array. `hard` rules map to project lint errors but do not block `commitChangeset`; placement-time enforcement plus lint reporting is the hard-rule contract. `medium` maps to warnings and `soft` maps to info. Current rule kinds are adjacency, spacing, and count, with validation owned by `src/project/lint/clusterRuleValidators.ts`; spacing/count use footprint instances rather than raw occupied cells.
@@ -1200,3 +1234,19 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 ## 타일셋 참고문서 데이터 (2026-09-21)
 
 [타일셋 참고문서](tileset-reference-documents.md): 프로젝트 소유의 용도별 MD·이미지, 파생 타일셋의 원본 공유, Pi/레거시 AI 전달 확인, 저장·내보내기 계약.
+
+## 몬스터 보유 조건 연결 작업 (2026-09-25, 진행 중)
+
+공통 판정 `project/monsterOwnership.ts`의 `ownsMonsterSpecies`는 파티와 박스 ID가
+가리키는 인스턴스의 정확한 `speciesId`를 검사한다. 기절 여부는 보유 여부를 바꾸지
+않으며, 어느 목록에도 없는 고아 인스턴스와 누락 참조는 보유로 세지 않는다.
+이는 현재 소유 여부이며 과거 포획 이력/도감 등록 판정이 아니다.
+
+`Condition`의 `{kind:"monsterSpecies", speciesId, present}`를 추가하고 필드 `evalCondition`,
+`io/pageResolution`, 전투 세션→런타임 브리지와 `battleEvents`, IO shape/참조 검증,
+조건 레지스트리·AI 스키마, 분기/고급 페이지 편집기와 설명/미리보기에 연결했다.
+미리보기는 포획·방생을 시뮬레이션하지 않으므로 판정 불가로 표시한다.
+전투 내 판정은 전투 개시 시점의 소유 스냅샷 기준이다. 연결 코드의 Vite 빌드는 통과했다. 격리 에디터 컴포넌트·SQLite 재오픈·전용 플레이어의 박스/파티/페이지/전투 판정까지 확인했다. 운영 배포는 남아 있다.
+그 뒤 에디터 AI로 실제 포획 과제를 저작하고 SQLite 저장·재로드를 확인한다.
+공통 판정만으로 에디터의 종 보유 조건이 지원된다고 보고하지 않는다.
+회귀 사례는 `test/monsterOwnership.test.ts`에 작성했으며 이번 작업에서 실행하지 않았다.

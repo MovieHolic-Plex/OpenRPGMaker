@@ -1,6 +1,6 @@
 import { validateEndingPresentation } from "@/project/io/shapeDatabaseFields";
 import type { EndingPresentation } from "@/project/cinematicSettings";
-import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
+import { canonicalizeSayBeatAliases, compileCutscene, CutsceneValidationError, SAY_BEAT_ALIAS_WARNING, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { collectEndingWarnings } from "@/project/endings";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -39,11 +39,52 @@ function projectTriggersEnding(project: Project): boolean {
     (troop.battleEventPages ?? []).some(page => commandsTriggerEnding(page.commands)));
 }
 
+/** endingId 를 지정해 이 엔딩을 직접 부르는 triggerEnding 이 프로젝트에 있는가. */
+function commandsCallEndingId(commands: readonly Command[] | undefined, endingId: string): boolean {
+  for (const command of commands ?? []) {
+    if (!command || typeof command !== "object") continue;
+    if (command.kind === "triggerEnding" && command.endingId === endingId) return true;
+    let nested: readonly (readonly Command[])[] = [];
+    try { nested = nestedCommandLists(command); } catch { nested = []; }
+    if (nested.some(list => commandsCallEndingId(list, endingId))) return true;
+  }
+  return false;
+}
+
+/** endingId 없는 triggerEnding — 조건으로 엔딩을 고르므로 모든 조건 엔딩이 이 경로로 열릴 수 있다. */
+function projectHasBareTriggerEnding(project: Project): boolean {
+  const bare = (commands: readonly Command[] | undefined): boolean =>
+    (commands ?? []).some(command => command?.kind === "triggerEnding" && !command.endingId);
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      if (bare(event.commands) || (event.pages ?? []).some(page => bare(page.commands))) return true;
+    }
+  }
+  if ((project.commonEvents ?? []).some(common => bare(common.commands))) return true;
+  return (project.database?.troops ?? []).some(troop =>
+    (troop.battleEventPages ?? []).some(page => bare(page.commands)));
+}
+
+/** 이 특정 엔딩 id 를 부르는 곳이 있는가(직접 호출 또는 조건 선택형 bare 호출). */
+function endingIsReachable(project: Project, endingId: string): boolean {
+  if (projectHasBareTriggerEnding(project)) return true;
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const event of map.events ?? []) {
+      if (commandsCallEndingId(event.commands, endingId)) return true;
+      if ((event.pages ?? []).some(page => commandsCallEndingId(page.commands, endingId))) return true;
+    }
+  }
+  if ((project.commonEvents ?? []).some(common => commandsCallEndingId(common.commands, endingId))) return true;
+  return (project.database?.troops ?? []).some(troop =>
+    (troop.battleEventPages ?? []).some(page => commandsCallEndingId(page.commands, endingId)));
+}
+
 const defineEnding: ToolDefinition = {
   name: "define_ending",
   description:
     '엔딩 정의만 저장한다. define_ending이나 setSwitch만으로는 실행되지 않는다. ' +
-    '도달 가능한 이벤트 commands에 {"kind":"triggerEnding","endingId":"조회한 엔딩 id"}를 넣으면 해당 엔딩을 직접 실행한다. ' +
+    '도달 가능한 이벤트 commands에 {"kind":"triggerEnding","endingId":"조회한 엔딩 id"}를 넣으면 그 엔딩을 실행한다. ' +
+    '그 엔딩에 conditions가 있으면 호출 시점에도 검사한다 — 거짓이면 엔딩은 열리지 않고 다음 명령으로 넘어간다(호감 부족 고백이 성공으로 끝나면 안 된다). 조건이 없으면 바로 실행된다. ' +
     'endingId 없는 {"kind":"triggerEnding"}은 switch/variable conditions를 만족한 엔딩 중 priority가 가장 높은 항목을 선택한다. ' +
     'epilogue는 script_cutscene beat 배열이다. 아이템을 소비하는 출구는 완료 스위치로 선택되는 상위 페이지를 두어 재조사 시 재잠김·중복 소비를 막는다. ' +
     '정의 후 연결 전은 유효한 중간 편집이지만, 완료 전에는 실제 에필로그·종료와 재조사를 플레이로 검증해야 한다.',
@@ -77,7 +118,8 @@ const defineEnding: ToolDefinition = {
     const flagWarnings: string[] = [];
     const conditions = parseEndingConditions(draft, args.conditions, flagWarnings);
     const priority = typeof args.priority === "number" ? Math.trunc(args.priority) : 0;
-    const epilogue = parseEpilogue(draft, args.epilogue);
+    const epilogueWarnings: string[] = [];
+    const epilogue = parseEpilogue(draft, args.epilogue, epilogueWarnings);
     const prior = draft.endings?.find(entry => entry.id === id);
     const presentation = args.presentation === undefined ? prior?.presentation : args.presentation as EndingPresentation;
     if (presentation !== undefined) {
@@ -99,10 +141,19 @@ const defineEnding: ToolDefinition = {
     else draft.endings.push(ending);
     const warnings = [
       ...flagWarnings,
+      ...epilogueWarnings,
       ...collectEndingWarnings(draft.endings),
       ...(projectTriggersEnding(draft) ? [] : [
         "아직 어떤 이벤트도 triggerEnding 을 부르지 않습니다 — 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 "
-          + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`,
+          + `{kind:"triggerEnding",endingId:"${id}"} 를 넣어야 이 엔딩이 실행됩니다.`
+          + (conditions.length > 0 ? " 호출할 때도 위 조건이 참이어야 엔딩이 열립니다." : ""),
+      ]),
+      // 다른 엔딩은 연결됐는데 이 엔딩만 부르는 곳이 없으면(2026-09-24 연애 도그푸딩 r1·r3 실측:
+      // 정의 후 전부 연결하면서 배드 엔딩만 빠졌다) 정의 시점에 그 사실을 알린다. 막지 않는다.
+      ...(endingIsReachable(draft, id) ? [] : [
+        `정의한 엔딩 '${name}'(${id}) 을 부르는 triggerEnding 이 아직 없습니다 — 이대로면 그 결말을 볼 수 없습니다. `
+          + `실패·거절 분기나 마지막 사건 commands 에 {kind:"triggerEnding",endingId:"${id}"} 를 넣으세요. `
+          + `endingId 없는 triggerEnding 으로 조건 선택형을 쓰면 조건이 맞는 때 자동으로 열립니다.`,
       ]),
     ];
     return {
@@ -180,15 +231,20 @@ function parseEndingCondition(project: Project, value: unknown, index: number, w
   return structuredClone(condition);
 }
 
-function parseEpilogue(project: Project, value: unknown): Record<string, unknown>[] | undefined {
+function parseEpilogue(project: Project, value: unknown, warnings: string[] = []): Record<string, unknown>[] | undefined {
   if (value === undefined) return undefined;
   if (!Array.isArray(value)) throw new ToolError("epilogue는 beat 배열이어야 합니다.", { code: "ending-epilogue" });
-  const beats = value.map((entry, index) => {
+  const aliased = canonicalizeSayBeatAliases(value);
+  if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
+  const raw = (aliased.beats as unknown[]).map((entry, index) => {
     if (typeof entry !== "object" || entry === null || Array.isArray(entry)) {
       throw new ToolError(`epilogue[${index}]는 객체여야 합니다.`, { code: "ending-epilogue-beat" });
     }
     return structuredClone(entry) as Record<string, unknown>;
   });
+  const { beats: kept, removed } = withoutEndingBeats(raw as unknown as CutsceneBeat[]);
+  if (removed > 0) warnings.push(`epilogue 의 ending beat ${removed}개를 뺐다 — 에필로그는 이미 엔딩 안에서 돌고, 끝나면 엔딩 화면이 자동으로 뜬다(다시 부르면 에필로그가 무한 반복된다).`);
+  const beats = kept as unknown as Record<string, unknown>[];
   const eventIds = new Set<string>();
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) eventIds.add(event.id);

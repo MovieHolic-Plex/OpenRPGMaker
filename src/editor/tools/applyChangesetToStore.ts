@@ -13,8 +13,9 @@ import { loadAiConfig } from "@/ai/llmClient";
 import { currentAgentEditorIdentity, currentHumanEditorIdentity } from "@/project/editorIdentity";
 import { combineDiffs, recordProjectCommit, recordProjectCommitFireAndForget, resetManualProjectCommitBaseline, summaryForDiff, type CommitLogInput, type CommitRow } from "@/project/projectCommitLog";
 import { store } from "@/project/store";
-import { canonicalJsonOf } from "@/project/persistence/core/canonicalJson";
-import { AuthoredProjectBaseline, composeProjectIdentity, projectIdentityParts, type ProjectIdentityParts, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
+import { canWriteTeamProject, TEAM_READ_ONLY_WRITE_MESSAGE } from "@/project/teamAccess";
+import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
+import { AuthoredProjectBaseline, projectIdentityDigest, type ProjectIdentitySource } from "@/project/authoredProjectBaseline";
 import type { ChangeSummary, Project } from "@/project/types";
 import { reconcileReviewedWorldForApply } from "@/project/world";
 import { commitChangeset, summarizeChanges } from "./changeset";
@@ -25,7 +26,7 @@ import type { EditActivityField, EditActivityOrigin } from "@/editor/editActivit
 import type { ProjectChangeAnnotation } from "@/project/store";
 import { mapCellApply } from "@/editor/incrementalMapApply";
 import type { RunOperation } from "@/ai/runOperation";
-import { emptiedEventMapIds, isMapDestruction, removedMapIds } from "@/ai/approvalPolicy";
+import { emptiedEventMapIds, isMapDestruction, removedMapIds, wipedTileMapIds } from "@/ai/approvalPolicy";
 
 /**
  * AI/툴 적용을 행위 로그에 남길 주석으로 바꾼다.
@@ -59,6 +60,9 @@ function applyAnnotation(
 
 const MAP_ONLY_WRITE_TOOLS = new Set([
   "paint_tiles",
+  // MZ 4층 블록·그림자 — mapId 한 맵의 칸만 쓴다(맵 스냅샷이 2·4층·그림자까지 담는다).
+  "stamp_layer_block",
+  "paint_shadow",
   "paint_road",
   "stamp_structure",
   "build_house",
@@ -73,6 +77,7 @@ const MAP_ONLY_WRITE_TOOLS = new Set([
   "move_event",
   "remove_event",
   "author_house",
+  "place_props",
 ]);
 
 export type ToolUndoScope =
@@ -148,6 +153,12 @@ export type ApplyToolSequenceOptions = {
   readonly agentName?: string;
   readonly source?: "agent" | "human";
   readonly summary?: string;
+  /**
+   * 실패한 호출을 건너뛰고 나머지를 이어 적용한다. 성공한 호출만 한 undo 체크포인트로 반영한다.
+   * 바로 깔기(stampPlaceRunner)가 쓴다 — 여러 단계 중 하나가 재료를 못 찾아도 나머지는 깔려야 한다.
+   * 기본(false)은 기존 계약 그대로: 첫 실패에서 멈추고 전부 성공했을 때만 반영한다.
+   */
+  readonly continueOnError?: boolean;
 };
 
 // 여러 툴 호출을 하나의 undo 체크포인트로 묶어 순차 적용한다(어시스턴트 changeset 수락용).
@@ -167,13 +178,14 @@ export function applyToolSequenceToStore(
     const result = runTool(ctx, call.name, split.args, { dryRun: false });
     if (result.ok && result.diff) mutated = true;
     results.push(result);
-    if (!result.ok) break; // 실패 시 중단(부분 적용 방지).
+    if (!result.ok && !options.continueOnError) break; // 실패 시 중단(부분 적용 방지).
   }
-  if (mutated && results.every((result) => result.ok)) {
-    const diff = combineDiffs(results.map((result) => result.diff));
-    const toolNames = calls.map((call) => call.name);
+  if (mutated && (options.continueOnError || results.every((result) => result.ok))) {
+    const applied = results.filter((result) => result.ok);
+    const diff = combineDiffs(applied.map((result) => result.diff));
+    const toolNames = calls.filter((_call, index) => results[index]?.ok).map((call) => call.name);
     const summary = options.summary
-      ?? (results.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff));
+      ?? (applied.map((result) => result.summary).filter(Boolean).join(" / ") || summaryForDiff(diff));
     const byAgent = options.source === "agent";
     finishSpatialToolAcceptance(ctx.project);
     recordProjectSnapshot();
@@ -219,15 +231,15 @@ function proposalContent(project: Project): string {
   // World documents are merged from the live store, not replaced by ordinary proposals.
   // Reuse the JSONB comparator without schema normalization: only key order is
   // ignored, while the existing JSON projection, authored values and arrays stay intact.
-  return composeProjectIdentity(identityPartsOf(project), "proposal");
+  return projectIdentityDigest(project, "proposal");
 }
 
 function worldContent(project: Project): string {
-  return canonicalJsonOf(project.world ?? null)!;
+  return jsonContentDigest(project.world ?? null)!;
 }
 
 /**
- * 한 동기 구간 안에서만 같은 객체의 정체성 문자열을 한 번만 만든다.
+ * 한 동기 구간 안에서만 같은 객체의 정체성 요약을 한 번만 만든다.
  *
  * 왜(2026-09-23 실측, 34.9 MB 프로젝트): 체크포인트 하나가 같은 객체를 두고 proposalContent·
  * authoredIdentity·contentIdentity 를 겹쳐 계산했다 — 한 번에 0.5 s 씩 메인 스레드가 멈췄다.
@@ -235,8 +247,9 @@ function worldContent(project: Project): string {
  * 구간을 넘겨 기억하지 않는다: 사람은 세대를 올리지 않고 객체를 제자리에서 고칠 수 있고
  * (aiMutationApplyAccounting «live content changes without a generation increment»), 그걸
  * 잡는 게 바로 stale-base 검사다. 기억을 세대에 묶었더니 그 편집 위로 옛 제안이 적용됐다.
+ * 구간 밖의 재사용은 contentDigest 가 노드마다 현재 값을 대조한 뒤에만 한다.
  */
-interface IdentityMemo { parts?: ProjectIdentityParts; content?: string; authored?: string; complete?: string }
+interface IdentityMemo { content?: string; authored?: string; complete?: string }
 let identityScope: WeakMap<Project, IdentityMemo> | null = null;
 function withIdentityScope<T>(run: () => T): T {
   if (identityScope) return run();
@@ -249,11 +262,6 @@ function memoOf(project: Project): IdentityMemo | null {
   if (!memo) identityScope.set(project, memo = {});
   return memo;
 }
-/** 세 정체성이 나눠 쓰는 최상위 조각. 구간 밖에서는 매번 새로 만든다. */
-function identityPartsOf(project: Project): ProjectIdentityParts {
-  const memo = memoOf(project);
-  return memo ? (memo.parts ??= projectIdentityParts(project)) : projectIdentityParts(project);
-}
 function proposalContentOf(project: Project): string {
   const memo = memoOf(project);
   return memo ? (memo.content ??= proposalContent(project)) : proposalContent(project);
@@ -261,13 +269,11 @@ function proposalContentOf(project: Project): string {
 const storeIdentities: ProjectIdentitySource = {
   authored: project => {
     const memo = memoOf(project);
-    return memo ? (memo.authored ??= composeProjectIdentity(identityPartsOf(project), "authored"))
-      : composeProjectIdentity(identityPartsOf(project), "authored");
+    return memo ? (memo.authored ??= projectIdentityDigest(project, "authored")) : projectIdentityDigest(project, "authored");
   },
   complete: project => {
     const memo = memoOf(project);
-    return memo ? (memo.complete ??= composeProjectIdentity(identityPartsOf(project), "complete"))
-      : composeProjectIdentity(identityPartsOf(project), "complete");
+    return memo ? (memo.complete ??= projectIdentityDigest(project, "complete")) : projectIdentityDigest(project, "complete");
   },
 };
 
@@ -365,6 +371,11 @@ export async function applyProposedProject(
   options: ApplyProposedProjectOptions,
 ): Promise<ApplyProposedProjectResult> {
   if (options.operation?.signal.aborted) return { ok: false, reason: "retired-run", issue: "Run authority retired" };
+  // 보기 전용 팀 프로젝트에서는 store.replace 가 조용히 아무것도 하지 않는다. 여기서 막지 않으면
+  // 호출자가 ok:true 를 받아 「적용됐어요」를 띄운다.
+  if (!canWriteTeamProject()) {
+    return { ok: false, reason: "commit-rejected", issue: TEAM_READ_ONLY_WRITE_MESSAGE, issues: [TEAM_READ_ONLY_WRITE_MESSAGE] };
+  }
   const before = store.getCurrent();
   // 첫 권위 검사부터 마지막 권위 검사까지는 await 도 외부 콜백도 없는 한 동기 구간이다. 그 안에서만 같은 객체
   // (before = 스토어의 현재 프로젝트)의 정체성 문자열을 한 번 만들어 두 검사가 나눠 쓴다 — 예전에는 마지막 검사가
@@ -388,7 +399,7 @@ export async function applyProposedProject(
     // 그 경로는 자기 확인을 따로 받는다.
     const losesMaps = options.resetProject === true
       ? false
-      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0;
+      : removedMapIds(before, proposed).length > 0 || emptiedEventMapIds(before, proposed).length > 0 || wipedTileMapIds(before, proposed).length > 0;
     if (options.mapDestructionApproved !== true
       && (losesMaps || options.toolNames.some((name) => isMapDestruction(name)))) {
       const issue = losesMaps

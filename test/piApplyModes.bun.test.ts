@@ -123,6 +123,29 @@ describe("Pi application checkpoints", () => {
     })).rejects.toThrow("declined");
     expect(calls.length).toBeLessThanOrEqual(2);
   });
+  test("a provider error after writes marks the run as stopped early", async () => {
+    let call = 0;
+    const streamFn = () => {
+      call += 1;
+      const stream = createAssistantMessageEventStream();
+      queueMicrotask(() => {
+        if (call === 1) {
+          const message = assistantMessage([{ type: "toolCall", id: "c1", name: "set_project_settings", arguments: { title: "half" } }], "toolUse");
+          stream.push({ type: "start", partial: message } as never);
+          stream.push({ type: "toolcall_end", contentIndex: 0, toolCall: (message as never as { content: never[] }).content[0], partial: message } as never);
+          stream.push({ type: "done", reason: "toolUse", message } as never);
+        } else {
+          const message = { ...(assistantMessage([], "error") as object), errorMessage: "thought-only response" } as never;
+          stream.push({ type: "start", partial: message } as never);
+          stream.push({ type: "error", reason: "error", error: message } as never);
+        }
+      });
+      return stream;
+    };
+    const done = await runPiAgent(request({ applyMode: "default" }), { streamFn: streamFn as never, onCheckpoint: async () => {} });
+    expect(done.project.meta.title).toBe("half");
+    expect(done.stoppedEarly).toContain("thought-only");
+  });
   test("read-only blocks fallback writes and publication in YOLO", async () => {
     let checkpoints = 0;
     const done = await runPiAgent(request({ applyMode: "yolo", readOnly: true }), {
@@ -143,4 +166,23 @@ test("checkpoint wait is retired when the core aborts the active tool", async ()
     onCheckpoint: (checkpoint, signal) => requestPiCheckpoint(checkpoint, () => { controller.abort(); }, signal!),
   });
   await expect(task).rejects.toThrow("중단");
+});
+
+test("a content rejection reverts only that write and the run continues", async () => {
+  const calls: ScriptedCall[] = [];
+  const events: PiAgentEvent[] = [];
+  const done = await runPiAgent(request({ applyMode: "default" }), {
+    onEvent: event => events.push(event),
+    streamFn: scriptedStream(calls, [
+      { name: "set_project_settings", args: { title: "rejected" } },
+      { name: "set_project_settings", args: { title: "accepted" } },
+    ]) as never,
+    onCheckpoint: async checkpoint => {
+      if (checkpoint.project.meta.title === "rejected") throw new Error("적용 실패(commit-rejected): 직렬화 왕복 실패: movement.speed가 숫자가 아닙니다.");
+    },
+  });
+  expect(calls.length).toBe(3);
+  expect(done.project.meta.title).toBe("accepted");
+  const failed = events.find(event => event.type === "tool_end" && !(event as { ok?: boolean }).ok) as { summary?: string } | undefined;
+  expect(failed?.summary).toContain("되돌렸습니다");
 });

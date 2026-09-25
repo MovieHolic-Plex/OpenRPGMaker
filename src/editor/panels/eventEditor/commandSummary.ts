@@ -690,7 +690,14 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   if (title === "Erase Event" || cmd.commandId === "m2-086-erase-event") {
     const eventId = String(cmd.fields.eventId ?? "").trim();
     return commandLine(
-      "이벤트 지우기",
+      "이번 맵 방문에서만 지우기",
+      valuePart(eventId ? eventId : "이 이벤트"),
+    );
+  }
+  if (title === "Remove Event") {
+    const eventId = String(cmd.fields.eventId ?? "").trim();
+    return commandLine(
+      "맵에서 영구 제거",
       valuePart(eventId ? eventId : "이 이벤트"),
     );
   }
@@ -1121,6 +1128,8 @@ function conditionSummary(condition: Extract<Command, { kind: "fork" }>['conditi
       return `${recordName("variable", condition.variableId)} ${compareAmountLabel(condition.op, condition.value)}`;
     case "selfSwitch":
       return `이 이벤트 기억 ${condition.key} ${condition.value ? "켜짐" : "꺼짐"}`;
+    case "monsterSpecies":
+      return `${condition.speciesId} ${condition.present ? "파티 또는 박스에 보유" : "보유하지 않음"}`;
     case "actor":
       return `${actorName(condition.actorId)} ${condition.present ? "파티에 있음" : "파티에 없음"}`;
     case "item":

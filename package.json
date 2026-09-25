@@ -1,7 +1,7 @@
 {
   "name": "oprn",
-  "version": "0.8.0",
-  "description": "\uc6f9 \uae30\ubc18 \ud0d1\ubdf0 \ud0c0\uc77c JRPG \uba54\uc774\ucee4 (MVP)",
+  "version": "0.9.0",
+  "description": "웹 기반 탑뷰 타일 JRPG 메이커 (MVP)",
   "private": true,
   "type": "module",
   "main": "dist-electron/main.cjs",
@@ -105,6 +105,7 @@
   },
   "dependencies": {
     "@oh-my-pi/pi-agent-core": "^17.4.0",
+    "god-tibo-imagen": "^0.4.1",
     "jimp": "^0.16.13",
     "phaser": "^3.90.0",
     "tar": "7.5.22",

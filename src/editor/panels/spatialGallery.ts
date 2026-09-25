@@ -14,7 +14,7 @@ import {
   catalogWorldDesign,
 } from "@/editor/content/spatial/catalogSeed";
 import { worldDefById } from "@/project/defaults/spatial/geographyCatalog";
-import { renderPlaceCardThumb } from "@/editor/panels/spatialPlacePreview";
+import { renderPlaceCardThumb, savedPlacePreviewImage } from "@/editor/panels/spatialPlacePreview";
 import { spaceCanvasLayout } from "@/editor/panels/spatialSpaceLayoutView";
 import {
   blankSettlementRegionDesign,
@@ -24,6 +24,7 @@ import {
 } from "@/editor/panels/spatialGeographyDraft";
 import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
 import { catalogListImage } from "@/editor/panels/catalogListImage";
+import { sharedObjectDef } from "@/editor/tools/sharedDesignCatalog";
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
 import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
@@ -50,6 +51,15 @@ function renderBuiltinObject(tileset: TilesetDef, kitId: string): HTMLElement | 
 }
 
 function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
+  if (card.sharedObjectId) {
+    const preview = sharedObjectDef(card.sharedObjectId)?.preview;
+    if (preview) {
+      const img = catalogListImage(preview, "spatial-card-image");
+      img.style.imageRendering = "pixelated";
+      img.style.objectFit = "contain";
+      return img;
+    }
+  }
   const tileset = tilesetOf(card);
   const kitId = card.objectId ?? card.localId;
   if (tileset && kitId) {
@@ -249,6 +259,11 @@ export function renderSpatialListThumb(card: SpatialGalleryCard): HTMLElement {
   if (card.kind === "objects" || card.kind === "spaces") return renderSpatialCardThumb(card);
   if (card.regionReferenceId) return regionReferenceImage(card.regionReferenceId, true);
   if (card.reviewedPlaceId) return catalogListImage(sharedPlacePreview(card.reviewedPlaceId) ?? `/assets/reviewed-places/${card.reviewedPlaceId}.png`, "spatial-card-image");
+  if (card.kind === "places" && card.localId) {
+    const place = visibleAuthoringProject().spatialAuthoring?.library.places[card.localId];
+    const saved = savedPlacePreviewImage(card.localId, Boolean(place && "composition" in place && place.composition));
+    if (saved) return saved;
+  }
   const tileset = tilesetOf(card);
   if (!tileset) return el("div", { class: "spatial-card-fallback" });
   const thumb = tilesetListThumb(tileset);

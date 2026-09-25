@@ -34,15 +34,20 @@ import {
   loadAiBackgroundOpacity,
   saveAiBackgroundOpacity,
   applyAiFontSize,
+  applyAiRenderWeight,
   loadAiFontSize,
+  loadAiRenderWeight,
   saveAiFontSize,
+  saveAiRenderWeight,
   type AiFontSize,
+  type AiRenderWeight,
 } from "@/editor/panels/aiPanelLayout";
 import { isTopModal, registerModal } from "@/editor/ui/modalStack";
 import { installAiModalFocus } from "./aiModalFocus";
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { renderAiAuthSettings } from "./aiAuthSettings";
+import { renderAiToolUsagePanel } from "./aiToolUsagePanel";
 import { deckIcon } from "./aiDeckIcons";
 import { installEventEditorCustomSelects } from "./eventEditor/customSelect";
 
@@ -245,7 +250,7 @@ export function renderAiSettingsForm(options: {
     imageStatus.dataset.availability = entry?.supported ? "supported" : "unsupported";
     imageStatus.textContent = entry?.supported
       ? entry.providerLabel + " 로그인이 필요합니다. 인증 정보는 동반 서비스에만 보관하며 실제 생성 시 확인합니다."
-        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " GPT Image 2(gpt-image-2)를 명시적으로 요청합니다. 날짜가 붙은 세부 스냅샷 버전은 제공자가 알려 주지 않습니다. 현재 텍스트 설명만 지원합니다. 참조 그림이 있는 생성은 Gemini를 선택해 주세요.")
+        + (entry.providerId === DEFAULT_IMAGE_PROVIDER_ID ? "" : " god-tibo-imagen 경로(Codex 응답 API의 그림 도구)로 생성합니다. 참조 그림을 2장까지 함께 보낼 수 있습니다. 앱에 Codex 로그인이 없으면 codex CLI 로그인(~/.codex/auth.json)을 씁니다.")
       : "이 이미지 경로는 현재 미지원 또는 검증 전입니다. 저장된 선택은 유지하며 다른 모델로 자동 전환하지 않습니다.";
   };
   const refreshImageModels = (selected: string): void => {
@@ -423,6 +428,27 @@ export function renderAiSettingsForm(options: {
   }) as HTMLSelectElement;
   fontSizeSelect.value = loadAiFontSize();
   const fontSizeDescription = "채팅 로그, 제안 카드, 도구 로그의 글자 크기입니다. 바꾸면 즉시 적용되고 저장됩니다.";
+  const renderWeightSelect = el("select", {
+    class: "ai-config-select",
+    dataset: { testid: "ai-render-weight" },
+    children: [
+      el("option", { attrs: { value: "light" }, text: "가볍게" }),
+      el("option", { attrs: { value: "heavy" }, text: "무겁게" }),
+      el("option", { attrs: { value: "off" }, text: "끄기" }),
+    ],
+  }) as HTMLSelectElement;
+  renderWeightSelect.value = loadAiRenderWeight();
+  applyAiRenderWeight(loadAiRenderWeight());
+  const renderWeightDescription = "조수 창이 맵 위를 어떻게 그릴지입니다. 가볍게는 흐림 없이 반투명, 무겁게는 유리 블러, 끄기는 불투명한 판입니다. 내장 GPU에서는 무겁게가 마우스를 움직일 때마다 느려집니다.";
+  const renderWeightRow = settingsRow("화면 무게", renderWeightDescription, renderWeightSelect);
+  renderWeightSelect.addEventListener("change", () => {
+    const raw = renderWeightSelect.value;
+    const weight: AiRenderWeight = raw === "heavy" || raw === "off" ? raw : "light";
+    saveAiRenderWeight(weight);
+    applyAiRenderWeight(weight);
+    savedHint.textContent = savedAtText();
+  });
+
   const fontSizeRow = settingsRow("글자 크기", fontSizeDescription, fontSizeSelect);
   fontSizeRow.setAttribute("title", fontSizeDescription);
 
@@ -804,6 +830,7 @@ export function renderAiSettingsForm(options: {
     { id: "models", label: "모델", icon: "spark" },
     { id: "behavior", label: "동작", icon: "gear" },
     { id: "display", label: "표시", icon: "eye" },
+    { id: "usage", label: "사용량", icon: "list" },
     ...extraSections.map((section) => ({ id: `extra-${section.id}`, label: section.title, icon: "list" as const })),
   ];
   const paneEls = new Map<string, HTMLElement>();
@@ -878,7 +905,10 @@ export function renderAiSettingsForm(options: {
           [autonomyRow, piTeamRow, piApplyRow, maxTokens.row, behaviorAdvanced]),
       ]),
       pane("display", [
-        settingsSection("display", "표시", "AI 패널의 읽기 환경을 조정합니다.", [fontSizeRow, backgroundOpacityRow]),
+        settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
+      ]),
+      pane("usage", [
+        settingsSection("usage", "도구 사용량", "조수가 부른 도구를 횟수·실패·검색어로 보고, JSON으로 보낼 수 있습니다.", [renderAiToolUsagePanel()]),
       ]),
       ...extraSections.map((section) =>
         pane(`extra-${section.id}`, [settingsSection(section.id, section.title, section.description, [section.content])])),

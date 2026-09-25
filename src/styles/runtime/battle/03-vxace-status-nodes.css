@@ -1,5 +1,5 @@
-/* vxace 스킨 전용 노드 — 기존 11종 스킨의 레이아웃이 바뀌지 않도록 기본은 숨긴다.
-   각 스킨 CSS 가 필요할 때만 display 를 되돌린다(현재는 _vxace.css 만). */
+/* 얼굴·역할·ATB 수치 등 선택 노드 — 기본은 숨기고 스킨 CSS 가 필요할 때만 display 를 되돌린다
+   (유리 뼈대 `_rm2000.css` 는 얼굴, 얼굴 카드 HUD `_glass-variants.css` 는 얼굴·역할). */
 .battle-actor-status .battle-actor-face,
 .battle-actor-status .battle-actor-role,
 .battle-actor-status .battle-atb-value,

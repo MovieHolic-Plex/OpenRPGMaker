@@ -1,0 +1,26 @@
+{
+  "projectDir": "/home/main/.codex/worktrees/29f7/rpg-zzu/output/projects/saesol-red",
+  "projectId": "6d1a79cf-08b1-4d20-b6a8-fe632bf0a42a",
+  "revision": 545,
+  "sha256": "167ef842a73a38676153afd2eda6baea3fe3f334579a9c699e14e1fc2a408988",
+  "repeatReadMatches": true,
+  "maps": 20,
+  "events": 188,
+  "inlined": 452,
+  "scope": "Canonical reopened; only eleven fieldGraphic.scale values differ. Dedicated player size/visual verification is separate.",
+  "changedSpecies": [
+    "species_isaiah_burrlock",
+    "species_isaiah_chickadee",
+    "species_isaiah_fuzall",
+    "species_isaiah_grimlit",
+    "species_isaiah_howler",
+    "species_isaiah_kackaburr",
+    "species_isaiah_maluga",
+    "species_isaiah_merin",
+    "species_isaiah_ruffalo",
+    "species_isaiah_scallapod",
+    "species_isaiah_spaero"
+  ],
+  "fieldScale": 0.5,
+  "allOtherDataPreserved": true
+}

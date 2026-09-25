@@ -7,6 +7,10 @@ import {
 import { collectProjectReferenceIssues } from "@/project/io/references";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { claimTransientLayer, releaseTransientLayer } from "@/editor/ui/transientLayer";
+
+// 다시 그려져도 같은 층이다 — 모듈 하나가 owner 를 들어야 재렌더가 스스로를 닫지 않는다.
+const JOURNEY_LAYER_OWNER = {};
 
 const JOURNEY_ICON = `
   <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
@@ -46,16 +50,46 @@ export function renderAuthoringJourney(
         : pendingCount > 0 ? `저작 진행 · 남은 단계 ${pendingCount}` : "저작 진행 완료",
     },
     dataset: { testid: "authoring-journey-toggle" },
-    on: {
-      click: () => {
-        open = !open;
-        root.classList.toggle("is-open", open);
-        toggle.setAttribute("aria-expanded", String(open));
-        strip.hidden = !open;
-        options.onOpenChange?.(open);
-      },
-    },
+    on: { click: () => setOpen(!open) },
   });
+  // 예전엔 토글 버튼으로만 닫혀서, 열어 둔 채 도움말·AI 설정·이벤트 레이어로 가도 캔버스 위에
+  // 계속 남았다(2026-09-24 visual QA). 바깥 클릭·Escape·다른 층이 뜨면 닫는다.
+  const onPointerDown = (event: PointerEvent): void => {
+    if (!root.isConnected) return detach();
+    if (event.target instanceof Node && root.contains(event.target)) return;
+    setOpen(false);
+  };
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (!root.isConnected) return detach();
+    if (event.key !== "Escape" || event.defaultPrevented) return;
+    event.preventDefault();
+    setOpen(false);
+    toggle.focus();
+  };
+  const attach = (): void => {
+    claimTransientLayer(JOURNEY_LAYER_OWNER, () => setOpen(false));
+    if (typeof document === "undefined" || typeof document.addEventListener !== "function") return;
+    document.addEventListener("pointerdown", onPointerDown, true);
+    document.addEventListener("keydown", onKeyDown);
+  };
+  function detach(): void {
+    if (typeof document === "undefined" || typeof document.removeEventListener !== "function") return;
+    document.removeEventListener("pointerdown", onPointerDown, true);
+    document.removeEventListener("keydown", onKeyDown);
+  }
+  function setOpen(next: boolean): void {
+    if (open === next) return;
+    open = next;
+    root.classList.toggle("is-open", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    strip.hidden = !open;
+    if (open) attach();
+    else {
+      detach();
+      releaseTransientLayer(JOURNEY_LAYER_OWNER);
+    }
+    options.onOpenChange?.(open);
+  }
   if (referenceIssues.length > 0) {
     toggle.append(el("span", {
       class: "authoring-journey-badge",
@@ -157,5 +191,6 @@ export function renderAuthoringJourney(
   }
   strip.append(list);
   root.append(toggle, strip);
+  if (open) attach();
   return root;
 }

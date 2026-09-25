@@ -46,6 +46,30 @@ describe("rename_switch", () => {
     expect(ctx.project.switches.some((entry) => entry.id === "sw_by_name")).toBe(true);
     expect(projectLint(ctx.project).filter((issue) => issue.severity === "error")).toEqual([]);
   });
+
+  // 2026-09-24 헤드리스 r0735: 모델이 {switchId, name} 으로 표시 이름을 붙이려다 인자 검증에서 두 번 거부됐다.
+  it("switchId + name 으로 id·참조는 두고 표시 이름만 바꾼다", () => {
+    const ctx: ToolContext = { project: createEmberQuestProject() };
+    const result = runTool(ctx, "rename_switch", { switchId: EMBER_SWITCH.q1Started, name: "촌장 의뢰 수락" }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.switches.find((entry) => entry.id === EMBER_SWITCH.q1Started)?.name).toBe("촌장 의뢰 수락");
+    expect(projectLint(ctx.project).filter((issue) => issue.severity === "error")).toEqual([]);
+  });
+
+  it("정의가 없는 스위치에 name 을 주면 정의를 만든다", () => {
+    const ctx: ToolContext = { project: createEmberQuestProject() };
+    const result = runTool(ctx, "rename_switch", { switchId: "sw_new_flag", name: "새 플래그" }, { dryRun: false });
+    expect(result.ok, result.summary).toBe(true);
+    expect(ctx.project.switches.find((entry) => entry.id === "sw_new_flag")).toEqual({ id: "sw_new_flag", name: "새 플래그" });
+  });
+
+  it("바꿀 것이 없으면 받는 인자를 정확히 말한다", () => {
+    const ctx: ToolContext = { project: createEmberQuestProject() };
+    const result = runTool(ctx, "rename_switch", { switchId: EMBER_SWITCH.q1Started }, { dryRun: false });
+    expect(result.ok).toBe(false);
+    expect(result.summary).toContain("name");
+    expect(result.summary).toContain("to");
+  });
 });
 
 describe("prune_unused", () => {

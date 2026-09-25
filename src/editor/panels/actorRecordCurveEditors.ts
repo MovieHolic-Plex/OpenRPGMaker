@@ -138,7 +138,7 @@ function openActorParameterDialog(actor: ActorRecord, initialKey: ActorParameter
       class: "db-class-dialog db-class-parameter-dialog",
       attrs: { role: "dialog", "aria-label": "주인공 능력치 곡선 설정" },
       children: [
-        el("header", { children: [el("strong", { text: "능력치 곡선" }), el("button", { text: "x", attrs: { type: "button" }, on: { click: close } })] }),
+        el("header", { children: [el("strong", { text: "능력치 곡선" }), el("button", { text: "×", attrs: { type: "button", "aria-label": "닫기", title: "닫기" }, on: { click: close } })] }),
         tabs,
         el("div", { class: "db-class-dialog-body", children: [
           graph,
@@ -210,7 +210,7 @@ function openActorExperienceDialog(actor: ActorRecord, refresh: () => void = () 
       class: "db-class-dialog db-class-exp-dialog",
       attrs: { role: "dialog", "aria-label": "주인공 경험치 곡선 설정" },
       children: [
-        el("header", { children: [el("strong", { text: "경험치 곡선" }), el("button", { text: "x", attrs: { type: "button" }, on: { click: close } })] }),
+        el("header", { children: [el("strong", { text: "경험치 곡선" }), el("button", { text: "×", attrs: { type: "button", "aria-label": "닫기", title: "닫기" }, on: { click: close } })] }),
         el("div", { class: "db-class-exp-dialog-body", children: [table, graph] }),
         el("div", { class: "db-class-exp-controls", children: [
           dialogNumberLabel("기본값", baseInput),

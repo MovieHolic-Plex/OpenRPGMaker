@@ -10,6 +10,9 @@ import assert from "node:assert/strict";
 import { cliffColumns, paintVillageCliffs } from "./lib/village-cliffs.mjs";
 import { withTsModule } from "../ontology-ts-loader.mjs";
 import { dressDesert, freezeCells, placePeaks, reachable } from "./lib/climate-edits.mjs";
+import { dressDesertGround, dressVolcanoGround, terrainKit } from "./lib/climate-terrain.mjs";
+import { arrangeBareGroves, clearLeafyTrees } from "./lib/bare-trees.mjs";
+import { stairTile, isStairTile } from "./lib/cliff-stairs.mjs";
 
 const OUT = "tiledata/field-routes";
 const village = JSON.parse(fs.readFileSync("tiledata/forest-villages/diverse/catalog.json"));
@@ -71,12 +74,12 @@ const CLIMATE_FIELDS = [
   { id: "field-snow-two-step-pass", climate: "snow", from: "field-two-step-pass", name: "눈 덮인 두 단 고갯길", freezePond: 0,
     meets: ["필드 남쪽", "얼어붙은 안개못 남쪽 입구(40,63)"],
     note: "눈 덮인 절벽 두 줄을 계단 두 곳으로 오르는 고갯길. 가운뎃단의 못이 얼어 걸어서 건널 수 있고, 윗단 절벽에 동굴 입구가 있다" },
-  { id: "field-volcano-ford-cliff-road", climate: "volcano", from: "field-ford-cliff-road", name: "용암 강 벼랑길", peaks: 1,
+  { id: "field-volcano-ford-cliff-road", climate: "volcano", from: "field-ford-cliff-road", name: "용암 강 벼랑길", peaks: 1, ground: "volcano",
     meets: ["잿빛 여울성 남쪽 입구(48,91)", "다음 필드", "용암못 폐촌 남쪽 입구(40,63)"],
-    note: "재 덮인 절벽 위아래로 난 길. 북쪽에서 흘러온 용암 강이 절벽을 용암 폭포로 넘고, 아랫단 길은 현무암 다리로 건넌다. 빈 재밭에 화산 봉우리 한 쌍이 있다" },
-  { id: "field-desert-crossroads", climate: "desert", from: "field-forest-crossroads", name: "오아시스 세 갈래길", desert: { palms: 10, cacti: 12 },
+    note: "재 덮인 절벽 위아래로 난 길. 북쪽에서 흘러온 용암 강이 절벽을 용암 폭포로 넘고, 아랫단 길은 현무암 다리로 건넌다. 빈 재밭은 식은 용암 판과 가지 친 용암 균열로 덮이고, 분기공이 김을 뿜는 작은 용암 웅덩이와 화산 봉우리 한 쌍이 있다" },
+  { id: "field-desert-crossroads", climate: "desert", from: "field-forest-crossroads", name: "오아시스 세 갈래길", desert: { palms: 10, cacti: 0, feet: false }, ground: "desert", bareForest: true, groundOpts: { duneSeas: 2, duneShare: 0.55 },
     meets: ["모래 물굽이 포구 서쪽 입구(0,33)", "사암 층바위 협곡마을 남쪽 입구(42,71)", "다음 필드"],
-    note: "마른 덤불숲 사이 모래밭에서 길이 세 갈래로 갈린다. 남동쪽 오아시스 못가에 야자수가 둘러서고 모래밭에 선인장이 흩어져 있다" },
+    note: "트인 모래밭에서 길이 세 갈래로 갈린다. 남동쪽 오아시스 못가에 야자수가 둘러서고, 모래밭은 사구 능선과 모래 물결로 덮였다. 잎 없는 고목은 드문드문 덩이로만 서 있고 선인장은 한 무리뿐이다" },
   { id: "field-autumn-ford-cliff-road", climate: "autumn", from: "field-ford-cliff-road", name: "단풍 여울 벼랑길",
     meets: ["가을 두 폭포 강마을 남쪽 입구(24,71)", "다음 필드", "가을 종탑 언덕 교구 남쪽 입구(40,63)"],
     note: "단풍 숲을 가로지르는 절벽 위아래 길. 여울이 절벽을 폭포로 넘고, 금빛 풀밭 길이 나무다리로 여울을 건너 계단으로 윗단에 오른다" },
@@ -122,7 +125,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
     for (let yy = y; yy <= y + height; yy++) for (let xx = x; xx < x + 2; xx++) {
       const i = point(xx, yy);
       assert(cliffPlan.cliff.has(i), "Stair must span the whole face " + spec.id);
-      m.lowerTiles[i] = cliff[374]; m.upperTiles[i] = -1;
+      m.lowerTiles[i] = stairTile(xx, x); m.upperTiles[i] = -1;
     }
     reserve(x, y - 1, 2, height + 3, 1);
     const top = { x, y: y - 1 }, bottom = { x, y: y + height + 1 };
@@ -144,7 +147,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       if (inside(x, y) && ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2 <= 1 && !cliffPlan.cliff.has(point(x, y))) river.add(point(x, y));
     for (const i of river) {
       const x = i % W, y = Math.floor(i / W);
-      assert(m.lowerTiles[i] !== cliff[374], "River runs over a stair " + spec.id);
+      assert(!isStairTile(m.lowerTiles[i], cliff[374]), "River runs over a stair " + spec.id);
       if (!cliffPlan.cliff.has(i)) { water.add(i); continue; }
       const c = cliffPlan.columns.find((k) => k.x === x && y >= k.y && y <= k.y + k.height);
       m.upperTiles[i] = -1;
@@ -191,7 +194,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
   }
   // Solid cells for road routing: water (not bridges), cliff faces (not stairs), cliff wings.
   const solid = new Set();
-  for (let i = 0; i < W * H; i++) if ((water.has(i) && !bridgeCells.has(i)) || fallCells.has(i) || wings.has(i) || (cliffPlan.cliff.has(i) && m.lowerTiles[i] !== cliff[374])) solid.add(i);
+  for (let i = 0; i < W * H; i++) if ((water.has(i) && !bridgeCells.has(i)) || fallCells.has(i) || wings.has(i) || (cliffPlan.cliff.has(i) && !isStairTile(m.lowerTiles[i], cliff[374]))) solid.add(i);
   if (spec.cave) solid.add(point(...spec.cave));
   // Exits: 3 wide at the map edge, 5 deep.
   const exits = spec.exits.map((e, n) => {
@@ -248,7 +251,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       if (inside(x + dx, y + dy) && !solid.has(ni) && m.lowerTiles[ni] === GROUND) roads.add(ni);
     }
   }
-  const roadPaint = new Set([...roads].filter((i) => m.lowerTiles[i] !== cliff[374] && !bridgeCells.has(i)));
+  const roadPaint = new Set([...roads].filter((i) => !isStairTile(m.lowerTiles[i], cliff[374]) && !bridgeCells.has(i)));
   paintGroup(roadPaint, roadGroup);
   for (const i of roads) reserve(i % W, Math.floor(i / W), 1, 1, 2);
   // Props: whole parts, beside the road, never on it.
@@ -285,7 +288,7 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
     const field = (x, y) => base(x, y) + (pocket.has(point(Math.floor(x), Math.floor(y))) ? 40 : 0);
     const grove = forest.paintContouredForest(m, area, groveGroup, (x, y) => m.lowerTiles[point(x, y)] === GROUND && m.upperTiles[point(x, y)] === -1 && !reserved.has(point(x, y)), seed, COVERAGE, undefined, field);
     // The trunk repair can leave a few bare cells sealed inside the canopy; close them into the canopy (same autotile).
-    const canopy = new Set(Object.values(groveGroup.variantMap)), isCanopy = (x, y) => inside(x, y) && canopy.has(m.upperTiles[point(x, y)]);
+    const canopy = new Set([...groveGroup.memberTileIds, ...Object.values(groveGroup.variantMap)]), isCanopy = (x, y) => inside(x, y) && canopy.has(m.upperTiles[point(x, y)]);
     const trunk = (t) => 1340 <= t && t < 1470;
     const bare = (i) => m.upperTiles[i] === -1 && (m.lowerTiles[i] === GROUND || trunk(m.lowerTiles[i])) && !reserved.has(i);
     const sealed = new Set();
@@ -313,6 +316,8 @@ for (const spec of PLANS.filter((p) => !process.env.FIELD_ONLY || p.id === proce
       neighbors.forEach(([ox, oy], bit) => { if (isCanopy(x + ox, y + oy)) mask |= 1 << bit; });
       m.upperTiles[point(x, y)] = groveGroup.variantMap[String(mask)];
     }
+    // The filled pockets changed the depth of the canopy around them: re-pick the leaf interior (forestGrove.ts).
+    forest.shadeForestCanopy(m, groveGroup);
     // Free-standing trees on open meadow, away from the road and each other.
     const random = rng(seed), planted = [];
     const spots = [];
@@ -415,6 +420,43 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "field-clima
       const dressed = dressDesert(map, { vegetation: plan.placements.filter((o) => o.kind === "vegetation"), water: wet, keepClear, seed: plan.seed, ...spec.desert });
       edits.push({ kind: "desert", replacedTrees: dressed.replaced, plants: dressed.edits.length, rule: "나무 덩이 → 발치에 야자(물 5칸 안)·선인장(큰 나무는 바위 하나 더), 물가 야자, 빈 모래밭 선인장" }, ...dressed.edits);
     }
+    // Desert and ash ground (user 2026-09-25: 「돌·선인장·풀이 너무 많다」): loose rock and flower-shrub singles and (ash)
+    // the leafy bushes of the forest field go, and the emptiness gate (field: ≤5, ≤50%) is met by the ground itself —
+    // lava plates, cracks and a lava pool on ash; dunes, ripples, cracked earth, a mesa and a few cactus clumps on sand.
+    if (spec.ground) {
+      const PLAIN = new Set([240, 1140, 1141, 1142, 1143, 1144, 1145, 1146, 1147]);
+      let cleared = 0;
+      for (let i = 0; i < map.upperTiles.length; i++) if (DRESSING[map.upperTiles[i]]) { map.upperTiles[i] = -1; cleared++; }
+      if (spec.climate === "volcano") for (const o of plan.placements.filter((p) => p.kind === "vegetation")) {
+        for (let k = 0; k < o.w * o.h; k++) {
+          const i = at(o.x + k % o.w, o.y + Math.floor(k / o.w));
+          if (map.lowerTiles[i] === o.lower[k] && map.upperTiles[i] === o.upper[k]) { if (o.lower[k] >= 0 && o.lower[k] !== 240) map.lowerTiles[i] = 240; map.upperTiles[i] = -1; cleared++; }
+        }
+      }
+      const wet = new Set(); map.lowerTiles.forEach((t, i) => { if (WATER.has(t)) wet.add(i); });
+      const ring = new Set(); for (const [x, y] of keepClear) for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) ring.add(at(x + dx, y + dy));
+      const project = { maps: { [map.id]: map }, tilesets: { [tileset.id]: tileset } };
+      const isPlain = (x, y) => map.upperTiles[at(x, y)] === -1 && PLAIN.has(map.lowerTiles[at(x, y)]);
+      const accept = () => { const seen = reachable(api.canMove, project, map, plan.entry); return targets.every(([x, y]) => seen.has(at(x, y))); };
+      // Desert (user 2026-09-25: 「사막치고 나무가 너무 많다」): the forest field's thicket walls go back to open sand and
+      // leafless-tree groves stand on a few of the cleared spots (sparse: edge band every ~16 cells, inland every ~22). The
+      // forest field's campfire (381) goes too — a lone fire in the open sand reads as a fire in the road.
+      if (spec.bareForest) {
+        const { cleared: bare } = clearLeafyTrees(map);
+        for (let i = 0; i < map.upperTiles.length; i++) if (map.upperTiles[i] === 381) { map.upperTiles[i] = -1; cleared++; }
+        const groves = arrangeBareGroves(map, { tileset, keep: keepClear, sites: bare, seed: plan.seed, accept, spacing: { band: 16, inner: 22 } });
+        edits.push({ kind: "bare-trees", clearedCells: bare.size, groves: groves.groves.length, trees: groves.trees,
+          rule: "숲 벽(잎 달린 수관) → 맨 모래; 잎 없는 나무 덩이 드문드문(가장자리 띠 16칸·안쪽 22칸 간격); 모닥불 381 제거" });
+      }
+      const opts = { kit: terrainKit(tileset), isPlain, take: (x, y) => !ring.has(at(x, y)), accept, seed: plan.seed, limits: { maxSq: 5, screen: 0.47 }, water: wet, ...(spec.groundOpts ?? {}) };
+      const g = spec.ground === "volcano" ? dressVolcanoGround(map, opts) : dressDesertGround(map, opts);
+      assert(g.maxSq <= 5 && g.screen <= 0.5, `ground gate ${spec.id} maxSq=${g.maxSq} screen=${g.screen.toFixed(3)}`);
+      const kinds = {}; for (const p of g.pieces) kinds[p.kind] = (kinds[p.kind] ?? 0) + 1;
+      edits.push({ kind: "ground", clearedCells: cleared, pieces: kinds, cells: g.counts, emptiness: { maxSq: g.maxSq, screen: +g.screen.toFixed(3) },
+        rule: spec.ground === "volcano"
+          ? "흩은 바위·꽃 관목과 잎 달린 덤불을 걷고, 빈칸 게이트(필드 ≤5·≤50%)를 땅으로 넘긴다: 식은 용암 판·용암 균열·작은 용암 웅덩이(분기공·유황)·현무암 기둥 한 무리"
+          : "흩은 바위·꽃 관목과 나무 자리 선인장을 두지 않고, 빈칸 게이트(필드 ≤5·≤50%)를 땅으로 넘긴다: 사구·모래 물결·갈라진 땅·메사·외딴 뼈 한 곳·선인장 무리 몇" });
+    }
     if (spec.climate === "volcano") {
       const lava = map.lowerTiles.filter((t) => WATER.has(t)).length + map.upperTiles.filter((t) => WATER.has(t)).length;
       const bridges = map.lowerTiles.concat(map.upperTiles).filter((t) => sheets.volcano.stoneBridges.includes(t)).length;
@@ -427,7 +469,7 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "field-clima
     maps[spec.id] = map;
     const { meets, ...rest } = spec;
     // Desert trees were replaced by plants (recorded in edits), so they are no longer placements of this map.
-    const placements = spec.desert ? plan.placements.filter((o) => o.kind !== "vegetation") : plan.placements;
+    const placements = spec.desert || spec.ground ? plan.placements.filter((o) => o.kind !== "vegetation" && !(spec.ground && o.kind === "dressing")) : plan.placements;
     plans.push({ ...plan, ...rest, tilesetId: tileset.id, exits: plan.exits.map((e, n) => ({ ...e, meets: meets[n] })), placements, targets, edits });
     console.log(spec.id, { edits: edits.filter((e) => e.kind !== "desert-plant").map((e) => e.kind), reachable: seen.size });
   }

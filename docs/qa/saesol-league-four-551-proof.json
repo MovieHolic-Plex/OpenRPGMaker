@@ -1,0 +1,248 @@
+{
+  "scope": "Revision551 dedicated player. Actual school and late-rival completion checkpoint, earned six-monster party. Buy8super potions with earned gold, then four Elite Four in order. Real walking, repeated reward checks and actual inputs; separate resumed runtime, not human duration proof.",
+  "steps": [
+    {
+      "id": "ev_sr4_league_e1",
+      "stage": 3,
+      "seal": true
+    },
+    {
+      "won": 1,
+      "goldDelta": 900
+    },
+    {
+      "id": "ev_sr4_league_e2",
+      "stage": 3,
+      "seal": true
+    },
+    {
+      "won": 2,
+      "goldDelta": 900
+    },
+    {
+      "id": "ev_sr4_league_e3",
+      "stage": 3,
+      "seal": true
+    },
+    {
+      "won": 3,
+      "goldDelta": 1000
+    },
+    {
+      "id": "ev_sr4_league_e4",
+      "stage": 3,
+      "seal": true
+    },
+    {
+      "won": 4,
+      "goldDelta": 1000
+    }
+  ],
+  "checkpointMatches": true,
+  "walkedSteps": 148,
+  "purchase": {
+    "spent": 2400,
+    "superPotions": 8
+  },
+  "walkedPortals": [
+    {
+      "from": "map_sr4_gate",
+      "event": "ev_gate_f50f2a3b-0b63-483b-9cf9-a3960f0e91b6",
+      "to": "map_sr4_league"
+    },
+    {
+      "from": "map_sr4_league",
+      "event": "ev_gate_1ccbb3ee-db33-4951-889b-8b6e85d20ccc",
+      "to": "map_sr4_gate"
+    },
+    {
+      "from": "map_sr4_gate",
+      "event": "ev_gate_f50f2a3b-0b63-483b-9cf9-a3960f0e91b6",
+      "to": "map_sr4_league"
+    },
+    {
+      "from": "map_sr4_league",
+      "event": "ev_gate_1ccbb3ee-db33-4951-889b-8b6e85d20ccc",
+      "to": "map_sr4_gate"
+    },
+    {
+      "from": "map_sr4_gate",
+      "event": "ev_gate_f50f2a3b-0b63-483b-9cf9-a3960f0e91b6",
+      "to": "map_sr4_league"
+    },
+    {
+      "from": "map_sr4_league",
+      "event": "ev_gate_1ccbb3ee-db33-4951-889b-8b6e85d20ccc",
+      "to": "map_sr4_gate"
+    },
+    {
+      "from": "map_sr4_gate",
+      "event": "ev_gate_f50f2a3b-0b63-483b-9cf9-a3960f0e91b6",
+      "to": "map_sr4_league"
+    },
+    {
+      "from": "map_sr4_league",
+      "event": "ev_gate_1ccbb3ee-db33-4951-889b-8b6e85d20ccc",
+      "to": "map_sr4_gate"
+    },
+    {
+      "from": "map_sr4_gate",
+      "event": "ev_gate_f50f2a3b-0b63-483b-9cf9-a3960f0e91b6",
+      "to": "map_sr4_league"
+    },
+    {
+      "from": "map_sr4_league",
+      "event": "ev_gate_1ccbb3ee-db33-4951-889b-8b6e85d20ccc",
+      "to": "map_sr4_gate"
+    }
+  ],
+  "orderBlocked": true,
+  "shownEnemies": [
+    "enemy_sr4_league_e1_1",
+    "enemy_sr4_league_e1_2",
+    "enemy_sr4_league_e2_1",
+    "enemy_sr4_league_e2_2",
+    "enemy_sr4_league_e3_1",
+    "enemy_sr4_league_e3_2",
+    "enemy_sr4_league_e4_1",
+    "enemy_sr4_league_e4_2"
+  ],
+  "moves": [
+    {
+      "enemy": "enemy_sr4_league_e1_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e1_1",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e1_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e1_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_2",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_2",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_2",
+      "ally": "monster_7",
+      "skill": "skill_isaiah_ember"
+    },
+    {
+      "enemy": "enemy_sr4_league_e4_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr4_league_e4_1",
+      "ally": "monster_6",
+      "skill": "skill_isaiah_rock_throw"
+    },
+    {
+      "enemy": "enemy_sr4_league_e4_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    },
+    {
+      "enemy": "enemy_sr4_league_e4_2",
+      "ally": "monster_1",
+      "skill": "skill_isaiah_vine_whip"
+    }
+  ],
+  "heals": [
+    {
+      "id": "monster_1",
+      "hp": 51,
+      "max": 94
+    },
+    {
+      "id": "monster_7",
+      "hp": 46,
+      "max": 86
+    }
+  ],
+  "switchesUsed": [
+    {
+      "enemy": "enemy_sr4_league_e2_1",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_sr4_league_e2_2",
+      "to": "monster_1"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_1",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_sr4_league_e3_2",
+      "to": "monster_7"
+    },
+    {
+      "enemy": "enemy_sr4_league_e4_1",
+      "to": "monster_6"
+    },
+    {
+      "enemy": "enemy_sr4_league_e4_2",
+      "to": "monster_1"
+    }
+  ],
+  "passed": true,
+  "pageErrors": [],
+  "resultsSha256": "4c96cd69c72acad9be9f6effc242edd2600653378d7de01e83a13e2e31cf0287"
+}

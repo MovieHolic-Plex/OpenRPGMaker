@@ -467,6 +467,8 @@ const TERM_GROUPS: readonly TermGroup[] = [
       { key: "attack", label: "공격" },
       { key: "skill", label: "스킬", testid: "db-field-skill-term" },
       { key: "item", label: "아이템" },
+      { key: "defend", label: "방어" },
+      { key: "escape", label: "도주" },
       { key: "capture", label: "포획" },
       { key: "back", label: "뒤로" },
       { key: "target", label: "대상" },
@@ -792,6 +794,10 @@ type TwoStepDeleteButtonOptions = {
 function twoStepDeleteButton(options: TwoStepDeleteButtonOptions): HTMLElement {
   let armedUntil = 0;
   let resetTimer: number | null = null;
+  const restoreAriaLabel = (): void => {
+    if (options.ariaLabel) button.setAttribute("aria-label", options.ariaLabel);
+    else button.removeAttribute("aria-label");
+  };
   const button = el("button", {
     class: options.className,
     text: DELETE_IDLE_LABEL,
@@ -804,6 +810,7 @@ function twoStepDeleteButton(options: TwoStepDeleteButtonOptions): HTMLElement {
           armedUntil = now + DELETE_CONFIRM_WINDOW_MS;
           button.textContent = DELETE_CONFIRM_LABEL;
           button.classList.add("confirming");
+          button.setAttribute("aria-label", `${DELETE_CONFIRM_LABEL} 한 번 더 누르면 삭제합니다${options.ariaLabel ? ` — ${options.ariaLabel}` : ""}`);
           if (resetTimer !== null) window.clearTimeout(resetTimer);
           resetTimer = window.setTimeout(() => {
             resetTimer = null;
@@ -811,6 +818,7 @@ function twoStepDeleteButton(options: TwoStepDeleteButtonOptions): HTMLElement {
               armedUntil = 0;
               button.textContent = DELETE_IDLE_LABEL;
               button.classList.remove("confirming");
+              restoreAriaLabel();
             }
           }, DELETE_CONFIRM_WINDOW_MS + 100);
           return;
@@ -818,6 +826,7 @@ function twoStepDeleteButton(options: TwoStepDeleteButtonOptions): HTMLElement {
         armedUntil = 0;
         button.textContent = DELETE_IDLE_LABEL;
         button.classList.remove("confirming");
+        restoreAriaLabel();
         const result = options.onDelete();
         if (!result.ok) {
           toast(result.message, "error");

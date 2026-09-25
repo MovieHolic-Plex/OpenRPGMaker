@@ -12,6 +12,11 @@ The LLM-harnessed interior pipeline: start session, advance build per layer, eva
 - `dungeonRoomPipeline.ts`의 직선 천장 벽 계약은 유지한다. 과거 예제나 메타 설명의 “대각 절벽”이라는 이름만 보고 천장 연결까지 허용된 것으로 해석하지 않는다.
 - 적용 콘텐츠: LegacyDb `rpg-zzu-ashen-vault-20260913` / `map_ashen_vault`. 엔진의 높이 시스템을 추가한 것이 아니라 칩셋 그림의 조립 규칙이다.
 - 추가 사용자 정정: 내부 단차는 **대각면 → 직선면 → 가로 계단 → 직선면 → 대각면**으로 연결할 수 있다. 계단을 벽 앞에 장식처럼 붙이지 말고 벽면을 실제로 끊어 위쪽·아래쪽 지면을 잇는다. 벽면은 통행 불가, 계단은 통행 가능이며 양방향 이동을 확인한다. 같은 문법으로 두 단을 쌓아 다층 지형을 표현할 수 있다.
+- **계단 조각은 시트에 그려진 모양 그대로 쓴다**(2026-09-25 사용자 지적 「1×3 으로 이상하게, 1×1 을 2×2 처럼」).
+  - Tibo `141|111|171` 은 **가로** 조각(왼끝·몸통·오른끝)이다. 오르막은 세 칸을 한 줄로 놓고 세 줄 쌓아(첫 바닥 줄 + 북쪽 벽면 두 줄) 벽을 타고 오르게 한다. 한 열에 세로로 쌓으면 난간이 한 칸씩 튄 부러진 기둥이 된다.
+  - Tibo `474`·`475`·`444`·`445` 는 각각 완성된 **1×1 계단**이다(타일 라벨 「독립 하강/대각 계단 (1×1)」). 한 자리에 **한 칸만** 쓴다 — `474|475` 를 나란히 붙이면 계단 두 개로 보인다(2026-09-25 사용자 지적, 등대 등불 방). 배경이 투명하므로 바닥 위 윗층에 얹는다(아래층에 깔면 바닥이 검게 빈다). 위층 내리막은 아래층 3칸 폭 계단의 가운데 x 에 둔다.
+  - 숲마을 계열 절벽 계단은 난간 있는 `111|112…|113` 을 절벽 면 한 줄마다 한 줄씩 깐다. 난간 없는 한 칸 디딤판 `2689`(옛 `bindings[374]`)을 두 칸씩 붙이면 회색 판을 절벽에 박은 것처럼 보인다. 생성기는 `scripts/content/lib/cliff-stairs.mjs`, 이미 그린 맵은 `fix-cliff-stairs.mjs`(JSON)·`save-cliff-stairs.mjs`(정본)로 고친다.
+  - 계단 칸 위층에는 아무것도 놓지 않고 발치 줄도 비운다(`author-rpg-interiors.mjs` 가 검사한다).
 - **계단을 벽의 밑동으로 쓰지 않는다.** 이 맵에서 `106`을 직선 벽의 마지막 행에 반복한 것은 저작 버그였다. 계단 `105/106/107`은 명시적으로 뚫은 계단 통로에만 놓고, 벽 몸통과 구분한다. 이동 테스트 통과만으로 이 시각 오류를 발견할 수 없으므로 계단 타일의 전체 배치 위치가 의도한 통로와 일치하는지도 확인한다.
 - **대각선 4칸과 정방향 벽 3칸이 같은 높이**다(사용자 정정). 두 쪽을 모두 4칸으로 쌓으면 접합 높이가 어긋난다. 이 맵의 하향 대각 끝에 이어지는 직선 구간은 대각 상단의 지면 부분을 고려해 한 행 아래에서 시작하며 아래 경계를 유지한다. 연결 계단도 같은 3행 높이에 맞춘다. 대각 타일 배열과 천장 벽은 이 보정으로 바꾸지 않는다.
 
@@ -229,11 +234,11 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 
 ## 모든 AI 실내의 개념 꾸러미 계약 (2026-09-05)
 
-- 신규 독립 실내의 기본 경로는 `get_concept_facility` → 요청에 맞는 `plan` → `place_concept`다. 조회 이름이 미등록이거나 생략되면 `sources[]`에 **현재 프로젝트 꾸러미의 시설별 장소·물건 plan**을 반환한다. 모델은 이를 조합해 미등록 실내를 설계한다. 빈 꾸러미 배열은 사용자 삭제이므로 plan을 주더라도 재시드하거나 레거시 가구로 대체하지 않는다.
+- 신규 독립 실내의 기본 경로는 `get_concept_facility` → 요청에 맞는 `plan` → `place_concept`다. 조회 이름이 미등록이거나 생략되면 `sources[]`에 **현재 프로젝트 꾸러미의 시설별 장소·물건 plan**을 반환한다. 모델은 이를 조합해 미등록 실내를 설계한다. 빈 꾸러미는 재시드하지 않는다. 다만 시공 해석은 번들 기본값 여관·민가(`FALLBACK_INTERIOR_BUNDLES`)로 푼다(2026-09-25, 초안 폐기 뒤 새 프로젝트에서 template·방 테마 호출이 전부 막히던 것).
 - 기존 좌표형 도구도 우회하지 않는다. `RoomHarnessKit.preparePlan`을 공유 엔진의 start/run 양쪽에서 **플랜 저장 전에** 호출한다. 실내 킷의 `interiorConceptPlan.bindInteriorConceptPlan`은 rooms 또는 wings를 꾸러미 장소에 연결하고 `concept` 오버레이를 저장한다. 기본 7종 및 외관 용도(shop·workshop·dwelling·manor·inn) theme은 장소 별칭만 가지며 가구 목록은 코드에서 가져오지 않는다. 미등록 장소는 `concept-place-not-found`로 조회·설계 경로를 안내한다. 이미 모델이 설계한 concept 오버레이는 보존한다.
 - `author_house`와 마을 하네스는 `createHouseInteriorMap({ project: draft, … })`를 호출한다. 시설은 용도에서 선택(dwelling/manor→민가, shop→상점, inn→여관, workshop→대장간, study→서재)하고 **도면도 꾸러미 장소·크기·개수·층에서** 만든다. 구조물 그림은 해당 프로젝트의 가구 어휘를 읽는다. 외관이 추가 층을 요구하면 같은 꾸러미의 장소를 재사용하고, 명시된 꾸러미 층이 있으면 우선한다. 안팎·층간 전이는 기존 연결기로 연결한다. 프로젝트 없는 저수준 도면/패리티 하네스만 종전 순수 파이프라인을 유지한다.
 - 집 내부에도 `roomHarnessPlan`을 남기므로 저장·재로드 후 방 단위 수정이 가능하다. `furnish_interior_space`는 옛 도면을 꾸러미에 연결하고, theme 변경 시 대상 방의 오버레이만 교체한다. 재시공 방의 생성 이벤트만 걷고 칩 이벤트를 다시 붙이며 다른 방 이벤트는 보존한다. 개념 이벤트 id는 기존 맵 id 집합과 충돌하지 않는다.
-- `generate_map`의 `rooms` 프로필은 `concept-interior-required`로 개념 경로를 안내한다. 현재 개념 시공의 그림·벽 문법은 `easyrpg_chipset_interior`만 지원하며 다른 칩셋을 무음 대체하지 않는다. 야외·던전 프로필은 기존 경로다.
+- `generate_map`의 `rooms` 프로필은 `concept-interior-required`로 개념 경로를 안내한다. 현재 개념 시공의 그림·벽 문법은 `easyrpg_chipset_interior`와 `tibo_interior_expanded`(0~479칸이 픽셀 동일, 결과 타일 번호도 동일)만 지원하며 다른 칩셋을 무음 대체하지 않는다. Tibo 킷은 파이프라인 어휘에서 빼고 `stamp_object`(`kit:tibo_interior_expanded/<kitId>`)로 찍는다. 야외·던전 프로필은 기존 경로다.
 - 계약: `test/interiorConceptRoutes.test.ts`(수정한 꾸러미의 독립 방/start/집/마을/위층 반영, 직렬화, 미등록 시설 조합, 삭제·우회 차단, 방 이벤트 재시공), `test/generateMap.test.ts`, 기존 `test/interiorRoomPipelineParity.test.ts`.
 
 - **2026-09-05 시설 확장:** 기본 초안은 19시설·51장소 구성. 연결 집은 프로그램 id와 같은 시설을 먼저 찾고 기존 매핑으로 폴백하므로, `manor`는 등록된 귀족 저택을 쓰고 옛 프로젝트는 기존 민가를 계속 쓴다. `test/interiorConceptRoutes.test.ts`가 양쪽을 검증한다.
@@ -350,7 +355,7 @@ compatibility evidence, not whole-task17 provider/UI/publication acceptance.
 - `interiorRoomFootprint.ts` owns `rect/l/alcove/l-right/bay/notch/cross`. New variants expose mirrored elbows, a south bay, an inward side-wall pier, and a cross-shaped footprint. Small existing rooms keep the legacy rectangular fallback. Spatial guards, AI tool schemas, and inspector controls accept the same values.
 - `SpatialInteriorLayout.rooms[]` optionally stores `shape` and `floor` per room; omitted values retain rectangular rooms and the space material. The existing wall grammar compiles the floor union, shared partitions and explicit doorways together. Shape `rect` on an envelope does not imply that its rooms fill that envelope.
 - Floor materials now include `jade` (13), `gravel` (42), and `dark-stone` (43), alongside wood/plank/stone/mat. These are material selections, not new pixel art or runtime passage overrides.
-- `HOUSE_SHELL_FACE_TILES` includes cream, stone-brick and gold-brick face cells. Both fixed wall overlap and automatic wall furniture use it; the former cream-only check rejected cabinets after wall retint.
+- `HOUSE_SHELL_FACE_TILES` includes cream, stone-brick and gold-brick face cells. Since 2026-09-25 it also includes the climate faces `log` 1980~1985, `sandstone` 1986~1991 and `basalt` 1992~1997, which exist **only on `tibo_interior_expanded`** (row 66 baked by `scripts/content/bake-climate-interior-tiles.py`, registered by `register-climate-interior-tiles.mjs`). They are in `WALL_FACE_RETINT` for the authored climate interiors (`tiledata/rpg-interiors`, category `rpg-interiors-climate-v1`); the assistant tool enums still offer only cream|gold-brick|stone-brick because house interiors are built on the 480-cell `easyrpg_chipset_interior`, where those ids do not exist. Both fixed wall overlap and automatic wall furniture use it; the former cream-only check rejected cabinets after wall retint.
 - `scripts/lib/diverseInteriorCatalog.mts` rebuilds the existing interior library with preserved IDs, restores program-specific furniture assemblies, and leaves user tile metadata intact. Publish uses `edit_spatial_occurrence(operation:refresh)` for the three saved house roots and validates LegacyDb reload; rendering evidence belongs in `output/evidence/interior-redesign`.
 - Contract tests: `test/spatialInteriorLayout.test.ts` checks connected irregular floors, per-room materials and save/load, alongside existing spatial schema and object-placement contracts.
 

@@ -1,8 +1,18 @@
-import { automaticCharacterScale } from "@/project/characterScale";
+import { mapCharacterScale } from "@/project/characterScale";
+import { projectReferenceTileSize } from "@/project/mapViewScale";
+import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap } from "@/project/types";
 
 const appliedScales = new WeakMap<object, number>();
+
+/** The player's map-derived scale; swing/jump tweens return to this value. */
+export function playerCharacterScale(scene: {
+  readonly map: GameMap;
+  readonly player?: { readonly width?: number };
+}): number {
+  return mapCharacterScale(scene.player?.width, mapTileSize(scene.map), projectReferenceTileSize(store.getCurrent()));
+}
 
 /** Update on map/graphic changes, without resetting active swing/jump animation every refresh. */
 export function syncPlayerCharacterScale(scene: {
@@ -11,7 +21,7 @@ export function syncPlayerCharacterScale(scene: {
 }): void {
   const player = scene.player;
   if (!player?.setScale) return;
-  const scale = automaticCharacterScale(player.width, mapTileSize(scene.map));
+  const scale = playerCharacterScale(scene);
   if (appliedScales.get(player) === scale) return;
   player.setScale(scale);
   appliedScales.set(player, scale);

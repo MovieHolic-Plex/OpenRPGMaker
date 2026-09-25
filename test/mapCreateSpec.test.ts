@@ -5,10 +5,21 @@ import { INTERIOR_FLOOR_TILE, resolveMapCreateDefaults } from "@/project/mapCrea
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { createBlankProject } from "@/project/defaults";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { FOREST_HARMONY_ID } from "@/project/defaults/forestHarmony";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 
 describe("resolveMapCreateDefaults", () => {
+  it("starts a new project and a new blank map on forest harmony", () => {
+    const project = createBlankProject();
+    expect(project.maps[project.startMapId]?.tilesetId).toBe(FOREST_HARMONY_ID);
+    expect(project.tilesets[FOREST_HARMONY_ID]?.name).toBe("숲마을 · 거리별 잔디");
+    const spec = resolveMapCreateDefaults(project, { parentId: project.startMapId });
+    expect(spec.preset).toBe("blank");
+    expect(spec.tilesetId).toBe(FOREST_HARMONY_ID);
+    expect(spec.parentId).toBe(project.startMapId);
+  });
+
   it("inherits parent size and tileset", () => {
     const project = createBlankProject();
     const parentId = project.startMapId;

@@ -117,7 +117,7 @@ function prepareActionEnemy(
     if (factionId !== undefined) enemy.factionId = factionId;
     if (args.monsterResourceId !== undefined) enemy.monsterResourceId = args.monsterResourceId as string;
     if (args.transparent !== undefined) enemy.transparent = args.transparent as boolean;
-    ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings);
+    ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
     return { enemy, outcome: "modified" };
   }
   if (typeof args.name !== "string" || args.name.length === 0) {
@@ -140,7 +140,7 @@ function prepareActionEnemy(
   });
   enemy.actionProfile = profile;
   if (factionId !== undefined) enemy.factionId = factionId;
-  ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings);
+  ensureMonsterGraphic(draft, enemy, enemy, "monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
   return { enemy, outcome: "added" };
 }
 

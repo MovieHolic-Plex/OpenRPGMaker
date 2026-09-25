@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { buildHouseKit } from "@/editor/tools/houseKitDomain";
+import { registerCompletedHouse } from "@/editor/tools/houseProtection";
 import { deserialize, serialize } from "@/project/io";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";
 
@@ -147,5 +148,21 @@ describe("completed house transaction invariant", () => {
     expect(serialize(ctx.project)).toBe(before);
     expect(runTool(ctx, "clear_region", args).ok).toBe(true);
     expect(houseMap(ctx.project).lowerTiles[10 * houseMap(ctx.project).width + 12]).toBe(-1);
+  });
+
+  // 2026-09-24 감성 스토리 r3: 집이 등록된 중복·고아 맵을 remove_map 으로 지우려 했지만 집 보호가
+  // 막아 12개 unreachable 맵이 정리되지 못했다. 집 보호는 살아 있는 맵의 셀 편집을 막는다 —
+  // 맵 통째 삭제는 시작맵 가드·무결성 왕복·(에디터) 맵 파괴 승인의 소관이다.
+  it("집이 있는 별도 맵을 remove_map 으로 지운다", () => {
+    const ctx = { project: completedHouseProject() };
+    const created = runTool(ctx, "create_map", { id: "map_village", name: "마을", width: 12, height: 10 });
+    expect(created.ok, created.summary).toBe(true);
+    const village = ctx.project.maps.map_village!;
+    registerCompletedHouse(ctx.project, village, { label: "강가 집", x: 2, y: 2, w: 5, h: 5 });
+
+    const removed = runTool(ctx, "remove_map", { mapId: "map_village" });
+
+    expect(removed.ok, JSON.stringify(removed.issues)).toBe(true);
+    expect(ctx.project.maps.map_village).toBeUndefined();
   });
 });

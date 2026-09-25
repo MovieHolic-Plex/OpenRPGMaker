@@ -1,4 +1,5 @@
 import "@/styles/database/index.css";
+import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { dismissCoachMarks } from "@/editor/coachMarks";
 import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import type { DatabaseCollection } from "@/editor/databaseActions";
@@ -116,11 +117,45 @@ export function requestDatabaseModalClose(reason: EditorModalCloseAttempt | "bat
   activeModal.requestClose(reason);
 }
 
+type ParkedDatabaseModal = {
+  readonly show: (options?: { readonly onClose: () => void }) => void;
+  readonly discard: () => void;
+};
+
+let parkedModal: ParkedDatabaseModal | null = null;
+let parkingModal = false;
+
+/** 자료집 묶음을 읽은 뒤 창까지 만들어 숨겨 둔다. 클릭은 그걸 보여 준다. */
+export function prewarmDatabaseModal(): void {
+  if (parkingModal || activeModal || parkedModal) return;
+  if (typeof document === "undefined") return;
+  parkingModal = true;
+  try {
+    openDatabaseModal();
+  } catch {
+    // 미리 만들기 실패는 클릭 때 보통 경로로 다시 연다.
+  } finally {
+    parkingModal = false;
+  }
+}
+
 export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly onClose: () => void }): void {
+  // 제목 화면·상태 메뉴·전투 명령·시네마틱 미리보기가 런타임 시트를 쓴다.
+  // 부팅 때 숨겨 만드는 창(prewarm)은 싣지 않는다 — 그러면 편집기 첫 화면이 다시 런타임 시트를 읽는다.
+  if (!parkingModal) void preloadRuntimeStyles();
   // 맵 도구 레일을 가리키는 온보드 코치마크가 body 최상위에 매달려 모달 위를 덮어
   // 목록 제목과 탭 검색을 가리는 사고가 있었다 — 모달이 열리면 화면을 모달에게 넘긴다.
   // 본 것으로 기록하지는 않는다(welcome intent 와 같은 정책).
-  dismissCoachMarks();
+  if (!parkingModal) dismissCoachMarks();
+  if (parkedModal) {
+    const parked = parkedModal;
+    parkedModal = null;
+    if (!initialTab) {
+      parked.show(options);
+      return;
+    }
+    parked.discard();
+  }
   // Reuse the open session for cross-tab links; rebuilding it would discard staged cards.
   if (activeModal && document.querySelector("[data-testid='database-modal']")) {
     if (options) activeModal.onClose.add(options.onClose);
@@ -146,9 +181,9 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     setSelectedRecordId(catalogCollection, catalogRecordId);
   }
   if (initialTab) setDatabaseActiveTab(initialTab);
-  const opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  let opener = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   // Topbar rerenders can replace the opener while the modal remains mounted.
-  const openerTestId = opener?.dataset.testid;
+  let openerTestId = opener?.dataset.testid;
   const dirtySession = createDatabaseModalDirtySession();
   // 사이드 도킹(M8): 모달⇄우측 도크 토글 상태. localStorage 에 저장돼 다음 오픈 시 복원된다.
   let dockMode = false;
@@ -493,7 +528,11 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
       : databaseFooterStatus(store.getAutoSaveState());
     footerStatus.textContent = status.text;
     footerStatus.dataset.statusKind = status.kind;
+    // 저장하지 않는 세션에서 파란 「지금 저장」 은 옆의 「저장되지 않습니다」 와 모순이다(2026-09-24 visual QA).
+    // 버튼은 남기되(편집 확정은 여전히 한다) 주 버튼 무게를 내린다.
+    applyButton?.classList.toggle("primary", status.kind !== "info");
   };
+  let applyButton: HTMLElement | null = null;
   paintFooterStatus();
   // 설정집 초안이 움직이면 사용자가 이미 다음 작업으로 넘어간 것 — 붙잡아 둔 문구를 놓는다.
   const unsubscribeCodex = codexSession.subscribe(() => {
@@ -561,7 +600,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
         dataset: { testid: DATABASE_FOOTER_ACTION_TEST_IDS.ok },
         on: { click: () => dismissKeepingEdits("cancel") },
       }),
-      el("button", {
+      applyButton = el("button", {
         class: "database-footer-button primary",
         text: "지금 저장",
         attrs: { type: "button", title: DATABASE_APPLY_BUTTON_HINT },
@@ -594,6 +633,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
     });
   }
   windowEl?.append(footer);
+  paintFooterStatus(); // 주 버튼 무게는 버튼이 생긴 뒤에야 칠할 수 있다.
   // ── 사이드 도킹(M8): 백드롭 투명·포인터 통과 + 창 우측 고정. 맵 캔버스는 그대로 조작 가능. ──
   const applyDockMode = (next: boolean): void => {
     if (!(windowEl instanceof HTMLElement)) return;
@@ -651,8 +691,54 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: { readonly
   };
 
   dockToggleButton.addEventListener("click", () => applyDockMode(!dockMode));
+  if (parkingModal) {
+    // display:none 으로 빼 두면 클릭 때 레이아웃을 다시 낸다.
+    // 보이지만 않게 두고 클릭은 통과시킨다. 자료집 CSS 의 display:grid 가 hidden 속성을 이긴다.
+    backdrop.style.visibility = "hidden";
+    backdrop.style.pointerEvents = "none";
+    backdrop.setAttribute("aria-hidden", "true");
+    backdrop.dataset.testid = "database-modal-parked";
+    // 「모달이 열렸다」를 뜻하는 CSS(`body:has(.database-modal-backdrop) .ai-chat-panel {display:none}` 등)가
+    // 숨겨 둔 창에도 걸려 조수 패널·오른쪽 패널·토스트가 사라졌다(2026-09-24 갤러리 도그푸딩: AI 탭이 빈 칸).
+    backdrop.classList.add("is-parked");
+  }
   document.body.append(backdrop);
   renderDatabasePanel(body);
+  if (parkingModal) {
+    // 숨긴 창이 단축키와 포커스를 가져가면 편집이 막힌다. 클릭 때 다시 붙인다.
+    document.removeEventListener("keydown", handleModalKeyDown);
+    document.removeEventListener("keydown", handleHistoryKeyDown);
+    const handle = activeModal;
+    activeModal = null;
+    parkedModal = {
+      show: (showOptions) => {
+        const current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        if (current && !backdrop.contains(current)) {
+          opener = current;
+          openerTestId = current.dataset.testid;
+        }
+        backdrop.style.visibility = "";
+        backdrop.style.pointerEvents = "";
+        backdrop.removeAttribute("aria-hidden");
+        backdrop.dataset.testid = "database-modal";
+        backdrop.classList.remove("is-parked");
+        activeModal = handle;
+        if (showOptions && handle) handle.onClose.add(showOptions.onClose);
+        document.addEventListener("keydown", handleModalKeyDown);
+        document.addEventListener("keydown", handleHistoryKeyDown);
+        dismissCoachMarks();
+        syncModalLayer(false);
+        if (readStoredDockMode()) applyDockMode(true);
+        closeButton.focus();
+      },
+      discard: () => {
+        backdrop.hidden = false;
+        activeModal = handle;
+        handle?.close();
+      },
+    };
+    return;
+  }
   // 창 모드로 시작한다 — 아래 도크 복원이 있으면 syncModalLayer 가 다시 정리한다.
   syncModalLayer(false);
   // 지난 세션의 도크 상태 복원 — 렌더 후 적용해도 클래스/aria 만 바꾸므로 안전하다.

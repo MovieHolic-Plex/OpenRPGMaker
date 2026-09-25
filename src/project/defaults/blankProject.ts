@@ -12,6 +12,7 @@ import type { CommonEvent, GameMap, MapId, Project, SwitchDef, VariableDef } fro
 import { SCHEMA_VERSION } from "../types";
 import { ensureSharedContent } from "../sharedContent";
 import { DEFAULT_ACTOR_ID } from "./constants";
+import { FOREST_HARMONY_ID } from "./forestHarmony";
 import { defaultAssetSet, defaultResourceProfiles, defaultTilesets } from "./defaultAssets";
 import { defaultDatabase, defaultSession, defaultSystem, defaultTerms } from "./defaultDatabase";
 import { defaultOpeningSequence } from "./defaultOpeningSequence";
@@ -120,7 +121,7 @@ export function createProjectWithMaps(starters: readonly GameMap[], selectedInde
 }
 
 export function createBlankProject(): Project {
-  const map = createBlankMap("빈 맵", BLANK_PROJECT_MAP_WIDTH, BLANK_PROJECT_MAP_HEIGHT);
+  const map = createBlankMap("빈 맵", BLANK_PROJECT_MAP_WIDTH, BLANK_PROJECT_MAP_HEIGHT, FOREST_HARMONY_ID);
   map.id = BLANK_PROJECT_START_MAP_ID;
   const project = createProjectWithMaps([map], 0);
   project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };

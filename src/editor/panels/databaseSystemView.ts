@@ -15,6 +15,7 @@ import { resourcePickerControl as baseResourcePickerControl, listDatabaseResourc
 import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
+import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
 import {
   DEFAULT_DODGE_IFRAMES_MS,
   DEFAULT_DODGE_STAMINA_COST,
@@ -103,6 +104,7 @@ export type SystemSectionSlug =
   | "display"
   | "hud"
   | "menu"
+  | "dialogue"
   | "font"
   | "resources"
   | "startup"
@@ -138,6 +140,7 @@ const SYSTEM_SECTION_ORDER: readonly { readonly slug: SystemSectionSlug; readonl
   { slug: "party", label: "초기 파티" },
   { slug: "display", label: "화면" },
   { slug: "menu", label: "게임 메뉴" },
+  { slug: "dialogue", label: "대화창" },
   { slug: "hud", label: "인게임 HUD" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
@@ -282,6 +285,7 @@ function systemSectionNodes(
     ]),
     display: section("display", [playResolutionFieldset(project, rerender)]),
     menu: section("menu", [menuSkinFieldset(project)]),
+    dialogue: section("dialogue", dialogueStyleSection(project, { updateSystem, fieldset: rm2k3Fieldset, help: systemHelp })),
     hud: section("hud", [fieldHudEditor(project, config => updateSystem(draft => { draft.system.fieldHud = config; }))]),
     font: section("font", [systemFontFieldset(project, rerender)]),
     resources: section("resources", [
@@ -368,8 +372,8 @@ function systemSectionNodes(
         ),
         field("전투 UI 스타일", (() => {
           // literalLabel 스위치에는 스킨 라벨이 없으므로 레지스트리 라벨로 직접 빌드한다.
-          // 지원 스킨은 3종(정면 rm2000 · 측면 rm2003 · 몬스터 대치 pokemon)이다. 저장된 프로젝트가 지원 종료 스킨을 쓰고 있으면 그 항목만 추가로 남겨
-          // 저작자가 자기 설정을 보고 유지할 수 있게 한다(암묵 remap 금지).
+          // 2026-09-25: 12종 전부 활성이다(정면·측면 유리 뼈대의 색·HUD 변형 + 몬스터 대치). deprecated 표식이 다시
+          // 생기면 저장된 그 스킨 항목만 「(지원 종료)」로 남겨 선택을 보존한다(암묵 remap 금지).
           const select = el("select", { dataset: { testid: "db-field-system-battle-ui-style" } });
           const savedId = resolveSkinId(project.system.battleUiStyle);
           for (const id of listActiveBattleSkinIds()) {
@@ -781,7 +785,7 @@ function cameraZoomField(rerender: SystemRefresh): HTMLElement {
   return rm2k3Fieldset("기본 카메라 배율", [
     el("p", {
       class: "db-system-resolution-help",
-      text: "프로젝트 모든 맵에 적용되는 기본 배율입니다. 해상도를 올릴 때 함께 올려야 보이는 범위가 유지됩니다(1440x1080 이면 4.5). 이벤트 명령은 이 값을 일시적으로 덮어쓸 다.",
+      text: "프로젝트 모든 맵에 적용되는 기본 배율입니다. 해상도를 올릴 때 함께 올려야 보이는 범위가 유지됩니다(1440x1080 이면 4.5). 이벤트 명령은 이 값을 일시적으로 덮어씁니다.",
       dataset: { testid: "db-system-camera-zoom-help" },
     }),
     numberField("배율", "db-field-system-camera-zoom", () => resolveCameraZoom(store.getCurrent().system), (next) => {
@@ -2346,6 +2350,7 @@ const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string
   display: "게임 화면의 크기와 맵에 미치는 영향을 확인합니다.",
   hud: "게임 화면에 표시할 정보와 디자인을 구성합니다.",
   menu: "플레이 중 ESC 또는 X로 여는 메뉴의 디자인을 선택하고 미리 확인합니다.",
+  dialogue: "NPC 대사창의 모양·글꼴·글자 소리를 고르고, 대사 종류별 모양을 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
   startup: "전투 방식, 기본 소리와 보상 규칙을 정합니다.",

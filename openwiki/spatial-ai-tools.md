@@ -266,3 +266,62 @@ Pillow/WebP를 사용해 참고 이미지 284개를 무손실로 다시 인코�
 action 입장과 touch 귀환을 관찰한다. 편집기 play 모드를 통과하지 않는다.
 공용 장소 검토 상태는 별도다. 의자 방향 수정만으로 빈 사무실 상판까지 완성됐다고
 표시하지 않는다. 도서관은 중앙 두 칸 이동로·대출대·독서석을 유지한다.
+### Shared places and objects without activation (2026-09-25)
+
+The 2026-09-25 trial found `list_spatial_designs` answering 0 rows (`spatial-inactive`) in every new project, so
+the assistant never saw the places and objects the editor 장소/오브젝트 tabs show. Now `data.shared` is always
+filled — read-only rows every project sees, with or without `spatialAuthoring`, paged by `limit`/`offset`
+(default 40). Catalog: `src/editor/tools/sharedDesignCatalog.ts`; stamping: `src/project/objectStamp.ts` +
+`src/editor/tools/sharedObjectTools.ts`.
+
+- kind `place`: `reviewed:<id>` = `reviewedPlaceIndex()` (65 bundled + shared_* from the shared SQLite,
+  same as the 장소 tab), plus every `REGION_REFERENCES`/`PLACE_REFERENCES` id. Put one in with
+  `import_region_reference` (reviewed places bring every floor/room map as new maps; the 11MB
+  `reviewedPlaces/catalog.json` is imported only then).
+- kind `object`: the **shared object catalog** `src/assets/sharedObjectCatalog.json` (195 objects, `obj:<category>/…`)
+  plus this project's other section kits (`kit:<tileset>/<kit>`) and preview tile groups (`group:<tileset>/<group>`).
+  Catalog categories: `tree` (bare-trees per snow/volcano/desert sheet, 42), `volcano` (peaks: dormant, erupting,
+  pair), `terrain` (climate-terrain pieces 3030~ — sulfur, obsidian, ash heap, fumarole, basalt, cactus, bones,
+  buried column, dunes, mesas, ripple — plus a lava pool and a cooled plate built from the volcano autotiles;
+  mesas and bones carry the tag 「요청 시에만」: the assistant stamps them only when the user asks — the user dislikes them),
+  `harbor` (forest rowboat, mooring post, rope+anchor, cargo, castle-courtyard boats/dock/sacks/firewood), `gate`
+  (gatehouse `fft-bp4-gatehouse-c16`, town gate), `house` (authored house forms incl. ref-walled/ref-castle gables,
+  generated `fft-*` buildings), `prop` (19 forest village props, 20 combined-town outdoor objects, fft props).
+  Every entry has name, tags, tilesetId, `passage` (computed from the source cells), `owner` (where it belongs — next
+  to what) and a preview `/assets/shared-objects/<id>.png`. Generator: `node scripts/content/build-shared-object-catalog.mjs`
+  (sources in `scripts/content/lib/shared-object-catalog-entry.ts`; place kits are indexed by
+  `build-shared-object-index.mjs`). The ids `refkit:`/`part:`/`pattern:`/`house:` from #1499 still resolve (aliases).
+- The editor 오브젝트 tab lists the same catalog as 공용 오브젝트 cards (`sharedObjectId`), with owner/passage in the
+  inspector and a 「현재 맵 가운데에 찍기」 button that runs `stamp_object`.
+- Assistant rule (Pi system prompt, capability policy): places → `import_region_reference`, objects →
+  `stamp_object`; follow `owner`; never re-paint cells one by one.
+- `stamp_object {objectId, mapId, x, y, layers?}` keeps authored cells. When the map's tileset shows another
+  picture at a number, `translateTiles` grafts the source picture (sheet cell or graft source) onto the map's
+  tileset and renumbers, reusing an existing graft of the same picture; the tileset stays a whole number of rows.
+  Place-sourced objects load their place in `prepare`; `get_spatial_design` with a shared id returns the row and
+  its cells.
+- The shared SQLite (`~/.local/share/oprn/shared-content.sqlite`, served GET-only at `/__oprn/shared-content`) is
+  written only by `publishSharedContent` (`scripts/lib/sharedContentSqlite.ts`); its `shared_*` places reach this
+  list through `installSharedReviewedPlaces` → `reviewedPlaceIndex`. Nothing here writes to it or to any remote store.
+
+### Importing a reference (`import_region_reference`, 2026-09-25)
+
+Re-painting reference rows is not the path: the 2026-09-25 assistant trial needed 328 `paint_tiles`
+calls for one village and still lost every slot past the new project's 2550-tile forest sheet.
+`import_region_reference {id, mapId?, x?, y?, newMapId?, name?, includeEvents?}` (write, `map`/`world`)
+does it in one call. Core: `src/project/regionReferenceImport.ts`, shared with the editor place card
+「맵에 넣기」 (`placeReferenceMapPreset`).
+
+- Source: the reference's `projectDownload` (`public/assets/region-references/*.oprn.json`, full tileset
+  with tileMeta/grafts/groups/reference documents + uploaded atlases) first, the bundled snapshot second.
+  The browser fetches it; headless installs a file loader (`setHeadlessPublicRoot`). `prepare` awaits it.
+- Tileset: a missing one is installed whole (e.g. `oprn_dungeon_*`). An existing one with the same image
+  only grows: slots past its end are appended with the source's rules and grafts, blank slots (past the
+  sheet, ungrafted) may take a graft. Only tiles the imported map actually uses must show the same picture;
+  if one does not, a copy tileset `<id>__<referenceId>` is installed instead and `data.tileset.mode` is `copied`.
+- Map: new map by default (tree + start map adoption like `create_map`), or paste into `mapId` at (x,y)
+  with clipping — the target map must use the resolved tileset. Extra layers (MZ 2/4층, shadows) come along.
+  Events are skipped unless `includeEvents` (new map only; transfers into missing maps are dropped).
+- The tool sets `preservesAuthoredRaster`, so the runner's tree-pair repair does not touch reviewed rasters.
+- `ensureTilesetTexture` now waits for bundled graft source sheets loaded after boot (it already waited for
+  uploaded ones); otherwise the first bake cached blank waterfall/bridge cells until reload.

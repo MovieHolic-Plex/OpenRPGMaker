@@ -82,7 +82,8 @@ describe("export battle asset URLs", () => {
 
   it("builds runtime fonts and fallback window skin without root-only URLs", async () => {
     // Given
-    const input = resolve("src/styles/runtime/system.css");
+    // 글꼴은 fonts.css(편집기가 런타임 시트 없이 즉시 싣는다), 기본 윈도스킨은 system.css 가 소유한다.
+    const input = [resolve("src/styles/runtime/fonts.css"), resolve("src/styles/runtime/system.css")];
 
     // When
     const built = await build({
@@ -91,9 +92,11 @@ describe("export battle asset URLs", () => {
     });
     const output = Array.isArray(built) ? built[0] : built;
     if (!output || !("output" in output)) throw new Error("Expected completed CSS build");
-    const css = output.output.find((file) => file.type === "asset" && file.fileName.endsWith(".css"));
-    if (!css || css.type !== "asset") throw new Error("CSS artifact missing");
-    const text = typeof css.source === "string" ? css.source : new TextDecoder().decode(css.source);
+    const cssFiles = output.output.filter((file) => file.type === "asset" && file.fileName.endsWith(".css"));
+    if (cssFiles.length === 0) throw new Error("CSS artifact missing");
+    const text = cssFiles
+      .map((css) => (css.type !== "asset" ? "" : typeof css.source === "string" ? css.source : new TextDecoder().decode(css.source)))
+      .join("\n");
 
     // Then
     expect([...text.matchAll(/url\(["']?(\/assets\/[^"')]+)["']?\)/g)]).toEqual([]);

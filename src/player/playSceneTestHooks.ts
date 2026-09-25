@@ -70,7 +70,7 @@ type TestHookWindow = Window & {
   __oprnActionCombat?: () => ActionCombatDebug | null;
   __oprnPlayerSprite?: () => PlayerSpriteDebug | null;
   __oprnCharacterSprites?: () => CharacterSpriteDebug | null;
-  __oprnCamera?: () => CameraDebug;
+  __oprnCamera?: () => CameraDebug | null;
   /** 재생성·카메라 스냅 계수기 스냅숏. 값이 없으면(계측 없는 씬) null. */
   __oprnPerf?: () => RuntimePerfCounters | null;
   __oprnEmotes?: () => readonly SceneEmoteDebug[];
@@ -571,8 +571,13 @@ async function runActionCombatSceneProof(
   }
 }
 
-function cameraDebug(scene: Phaser.Scene): CameraDebug {
-  const camera = scene.cameras.main;
+function cameraDebug(scene: Phaser.Scene): CameraDebug | null {
+  // Phaser CameraManager.shutdown() 은 Scene SHUTDOWN 에서 main 을 undefined 로 비운다.
+  // 훅 정리도 같은 SHUTDOWN 리스너인데 등록 순서상 카메라가 먼저 비워질 수 있다 —
+  // 그 틈에 관측하면 "undefined.centerX" TypeError 가 QA 런 전체를 죽였다
+  // (추리 레인 증거 런 2026-09-24, beat 26). 소비자는 이미 null 허용이다.
+  const camera = scene.cameras?.main;
+  if (!camera) return null;
   return {
     centerX: camera.centerX,
     centerY: camera.centerY,

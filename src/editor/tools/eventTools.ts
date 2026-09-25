@@ -1,28 +1,34 @@
+import { passageBlockWarning } from "../../project/eventPassageBlock";
 import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horrorBehaviorTools";
 // editor/tools/eventTools.ts
 // 이벤트 쓰기 툴: upsert_event / place_npc / create_transfer_pair / place_battle_blocker
 //              / duplicate_event / remove_event / move_event.
 
 import { shadowedPageWarnings } from "@/project/eventPageShadow";
+import { EVENT_ANIMATION_TYPES } from "@/project/types";
+import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsage";
 import { ACTION_CONTROLS_GUIDE } from "@/player/keyBindings";
 import { EventPlacementAnalysis, eventRequiresPassableTile } from "@/project/eventPlacementRecovery";
-import { isPassable, tileAt } from "@/project/collision";
+import { canMove, isPassable, tileAt } from "@/project/collision";
+import { normalizeLightingState } from "@/project/lightingRules";
 import { isWaterChipsetTile } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { roleCapabilities } from "@/project/tileRoles";
 import { isSeason, isTimePhase, resolveTimeSystem, type Season } from "@/project/gameTime";
-import { validateShopStock } from "@/project/io/shapeCommandFields";
+import { validateConditionShape, validateShopStock } from "@/project/io/shapeCommandFields";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommandsForEvent } from "@/project/lint/projectLint";
 import { genId } from "@/util/id";
 import { chestOpenCommands, chestOpenedGraphic, lootGrantCommands } from "@/editor/lootFeedback";
-import type { Command, Condition, Dir, EventPage, EventPageCondition, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
+import type { Command, Condition, Dir, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, GameEvent, GameMap, GiftPrefs, GiftResponses, NpcScheduleEntry, NpcScheduleWhen, Project, SelfSwitchKey, ShopStockEntry, TransferFade, Trigger } from "@/project/types";
 import {
+  canonicalizeSayBeatAliases,
   compileCutscene,
   CutsceneValidationError,
+  SAY_BEAT_ALIAS_WARNING,
   type CutsceneBeat,
 } from "@/editor/cutscene";
 import { sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";
@@ -30,18 +36,21 @@ import { searchResources } from "@/assets/resourceSearch";
 import {
   charsetGraphic,
   compileSimplePages,
+  examineMarkGraphic,
   resolveGraphic,
   resolveGraphicQuery,
   usedCharsetGraphicKeysOnMap,
   type GraphicSpec,
 } from "./eventCompile";
+import { mapTexture } from "@/project/mapTexture";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
 import { assertEventPartyActorReferences } from "./partyActorReferences";
-import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
+import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
 import { inMapBounds, requireMap, type Point } from "./mapHelpers";
 import { ToolError, type SimplePage, type ToolDefinition, type ToolExecResult } from "./types";
 import { isFlushPassable, snapFlushToWall } from "./wallFlush";
+import { reachableGateCandidates, transferGatesStayApproachable, transferTileSeversWalk, walkableFromAnchors } from "./transferReachability";
 import {
   COMMAND_SCHEMA,
   COORD_SCHEMA,
@@ -240,7 +249,7 @@ function commandArrayOrEmpty(value: unknown, label: string, warnings?: string[])
   return normalizeLowLevelCommandArray(value, label, warnings);
 }
 
-function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
+function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, bareCell?: boolean): void {
   if (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "commands")) {
     event.commands = commandArrayOrEmpty(event.commands, `${event.id}.commands`, warnings);
   }
@@ -254,7 +263,7 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supp
     if (typeof page !== "object" || page === null || Array.isArray(page)) continue;
     const pageId = typeof page.id === "string" ? page.id : `pages[${index}]`;
     (page as EventPage).commands = commandArrayOrEmpty((page as { commands?: unknown }).commands, `${event.id}.${pageId}.commands`, warnings);
-    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings);
+    fillRequiredPageFields(event, page as Partial<EventPage>, pageId, warnings, bareCell);
   }
 }
 
@@ -263,10 +272,174 @@ function normalizeEventCommandArrays(event: GameEvent, warnings?: string[], supp
  * 방법이 없으므로 의도된 저작이 아니다. 투명 이벤트를 원할 때는 `graphic:{transparent:true}` 가
  * 명시적 경로이므로, 그 표시가 없는 대화형 action 페이지에만 주민 기본 그래픽을 채운다.
  */
+/**
+ * 타일로 그려진 가구·문 위의 조사 지점(place_concept 가구, 벽·문 칸). 그림은 타일이 맡으므로 이벤트는
+ * 투명한 게 의도다 — 여기에 주민 그림을 세우면 금고·현관문·옷장이 사람으로 보인다(2026-09-24 추격 호러).
+ */
+const TILE_HOTSPOT_EVENTS = new WeakSet<GameEvent>();
+
+/**
+ * upsert_event 가 기존 이벤트의 pages 를 통째로 바꿀 때, 바뀌기 전 그 이벤트의 그림.
+ * 새 페이지에 graphic 이 없으면 기본 주민이 아니라 이 그림을 이어 쓴다 — 2026-09-24 연애 도그푸딩:
+ * place_npc 로 「girl」「woman」「boy」 를 따로 입힌 공략 인물 셋이 대사를 고치는 upsert_event 한 번씩에
+ * 전부 같은 기본 주민(people1 #25)이 됐다.
+ */
+const PREVIOUS_EVENT_LOOK = new WeakMap<GameEvent, EventPageGraphic>();
+
+const GENERIC_NPC_NAME = /주민|마을 ?사람|행인|손님|병사|경비|상인|점원|아이|villager|guard|merchant|citizen/iu;
+
+/**
+ * 다른 맵에 같은 이름으로 이미 선 인물의 외형. 한 인물이 맵마다 다른 사람처럼 보이면 안 된다 —
+ * 2026-09-24 연애 도그푸딩: 축제 광장에 다시 세운 공략 인물 셋이 query 가 달라 평소와 다른 얼굴이 됐다.
+ * 일반 역할 이름(주민·상인·경비 …)은 여러 사람이므로 건너뛴다.
+ */
+function recurringCharacterLook(project: Project, mapId: string, name: string): { mapId: string; graphic: EventPageGraphic } | undefined {
+  const trimmed = name.trim();
+  if (trimmed.length < 2 || GENERIC_NPC_NAME.test(trimmed)) return undefined;
+  for (const map of Object.values(project.maps)) {
+    if (map.id === mapId) continue;
+    for (const event of map.events) {
+      if (event.name?.trim() !== trimmed) continue;
+      const graphic = eventLook(event);
+      if (graphic) return { mapId: map.id, graphic };
+    }
+  }
+  return undefined;
+}
+
+function eventLook(event: GameEvent | undefined): EventPageGraphic | undefined {
+  const graphic = event?.pages?.find((page) => page.graphic?.sprite !== undefined && page.graphic.transparent !== true)?.graphic;
+  return graphic ? structuredClone(graphic) : undefined;
+}
+
+/** 이름에 이 낱말이 있으면 말하는 존재로 본다(주민 그림을 세운다). */
+const SPEAKING_BEING_WORDS = /사람|주민|아이|소녀|소년|아가씨|청년|노인|할머니|할아버지|아저씨|아주머니|아줌마|여인|남자|여자|상인|점원|주인|손님|경비|병사|기사|마법사|의사|박사|탐정|집사|신부|수녀|왕|공주|왕자|어부|농부|사냥꾼|그림자|유령|요정|정령|괴물|몬스터|인형|villager|person|npc|man|woman|girl|boy|guard|ghost/iu;
+
+/**
+ * 투명 action 페이지가 말하는 인물이 아니라 조사할 사물인가 — 그렇다면 주민 그림 대신 쓸 그래픽.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 「기억의 거울」「타오르는 촛대」「버려진 우산」「고양이 석상」「오래된 사진 액자」가
+ * 전부 주민 기본 charset(people1)으로 저장돼, 플레이어는 거울·촛대 자리에 서 있는 마을 사람을 봤다. 화자(speaker)가
+ * 있는 대사나 인물 낱말이 든 이름이면 null(주민 그림 유지). 사물이면 이름 낱말과 라벨 낱말이 정확히 겹치는
+ * charset(문·상자…)을, 없으면 투명을 준다.
+ */
+function objectEventGraphic(event: GameEvent, page: Partial<EventPage>): { graphic: EventPage["graphic"]; label: string } | null {
+  if (event.characterId) return null;
+  const name = (event.name ?? "").trim();
+  if (allPageCommands(page.commands).some((command) => command.kind === "text"
+    && ((typeof command.speaker === "string" && command.speaker.trim()) || bodyNamesSpeaker(command.body, name)))) return null;
+  if (!name) return objectGraphicFromId(event.id);
+  if (SPEAKING_BEING_WORDS.test(name)) return null;
+  // 머리 명사(괄호 앞 마지막 낱말)만 본다 — 「붉은 문」의 「붉은」이 붉은 몬스터를, 「고양이 석상」의 「고양이」가
+  // 산 고양이를 고르면 안 된다.
+  const head = name.replace(/[(（].*$/u, "").trim().split(/[\s·,/]+/u).filter(Boolean).at(-1);
+  for (const hit of head ? searchResources("charset", head).slice(0, 6) : []) {
+    const labelWords = hit.label.split(/[\s()（）·,/]+/u).filter(Boolean);
+    if (!labelWords.includes(head!)) continue;
+    const parsed = /^charset:(.+):(\d+)$/u.exec(hit.id);
+    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit.label };
+  }
+  return { graphic: { transparent: true }, label: "" };
+}
+
+/** 영문 id 가 가리키는 사물 — 문은 문 그림, 나머지 사물은 투명. id 에 인물 낱말이 있거나 뜻을 모르면 null(주민 그림). */
+const OBJECT_ID_WORDS = /(?:^|_)(door|gate|portal|mirror|candle|altar|diary|book|drawer|desk|bed|window|statue|clock|eye|photo|picture|frame|umbrella|chest|box|sign|shelf|lamp|stair|stairs|well|grave|painting|vase|table|chair|closet|wardrobe|safe|note|letter|item|prop|object|obj|hotspot|examine)(?:_|$|\d)/iu;
+const BEING_ID_WORDS = /(?:^|_)(npc|person|people|man|woman|girl|boy|kid|child|villager|guard|shadow|ghost|dancer|resident|merchant|keeper|old|lady|spirit|fairy|monster|cat|dog|bird|character|chara)(?:_|$|\d)/iu;
+
+function objectGraphicFromId(id: string): { graphic: EventPage["graphic"]; label: string } | null {
+  if (BEING_ID_WORDS.test(id) || !OBJECT_ID_WORDS.test(id)) return null;
+  if (/(?:^|_)(door|gate|portal)(?:_|$|\d)/iu.test(id)) {
+    const hit = searchResources("charset", "문").find((entry) => /문/u.test(entry.label));
+    const parsed = hit ? /^charset:(.+):(\d+)$/u.exec(hit.id) : null;
+    if (parsed) return { graphic: charsetGraphic(parsed[1]!, Number(parsed[2])), label: hit!.label };
+  }
+  return { graphic: { transparent: true }, label: "" };
+}
+
+/**
+ * 이벤트 최상위 `graphic`(GameEvent 에 없는 필드)을 그림 없는 페이지의 기본값으로 쓴다.
+ *
+ * 2026-09-24 연애 도그푸딩: 조수가 공략 인물 셋에 `event.graphic:{sprite:actor1, pattern:25/28/31}` 을 정확히 줬는데
+ * 도구는 조용히 버렸다 — 페이지는 그림 없이 발밑·투명이 돼 세 인물이 전부 보이지 않았다. 최상위 trigger·commands 를
+ * 페이지로 옮기는 것과 같은 규칙이다.
+ */
+function applyEventLevelGraphic(draft: Project, map: GameMap, event: GameEvent, patch: Partial<GameEvent>, warnings: string[]): void {
+  const raw = (patch as { graphic?: unknown }).graphic;
+  delete (event as { graphic?: unknown }).graphic;
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return;
+  let graphic: EventPageGraphic;
+  try {
+    graphic = "query" in raw || "textureKey" in raw
+      ? resolveGraphic(raw as GraphicSpec, { avoidKeys: usedCharsetGraphicKeysOnMap(map), seed: `${map.id}:${event.id}`, overrides: draft.charsetLabels })
+      : structuredClone(raw) as EventPageGraphic;
+  } catch (error) {
+    if (!(error instanceof ToolError)) throw error;
+    warnings.push(`event.graphic 을 해석하지 못해 버렸습니다: ${error.message}`);
+    return;
+  }
+  if (graphic.sprite === undefined && graphic.transparent !== true) return;
+  // 모델이 지어낸 sprite id(`easyrpg_charset_actor1` — 실제는 `tex_…`)를 그대로 쓰면 커밋 참조 검증이 이벤트 전체를 반려한다
+  // (2026-09-24 연애 4회차 재생). 등록된 id 로 맞추고, 못 맞추면 이 그림은 버리고 페이지 기본 규칙(주민 그림)에 맡긴다.
+  if (graphic.sprite?.id) {
+    const known = collectResourceIds(draft);
+    if (!known.has(graphic.sprite.id)) {
+      const fixed = [`tex_${graphic.sprite.id}`, graphic.sprite.id.replace(/^tex_/u, "")].find((id) => known.has(id));
+      if (!fixed) { warnings.push(`event.graphic.sprite '${graphic.sprite.id}' 은 없는 리소스라 쓰지 않았습니다 — list_npc_graphics 로 고르세요.`); return; }
+      warnings.push(`event.graphic.sprite '${graphic.sprite.id}' → '${fixed}' 로 맞췄습니다.`);
+      graphic = { ...graphic, sprite: { ...graphic.sprite, id: fixed } };
+    }
+  }
+  // pages 를 안 보낸 부분 수정이면 「외형만 바꿔」 다 — 기존 페이지 전부에 입힌다. pages 를 보냈으면 그림 없는 페이지만.
+  const reskin = !Object.prototype.hasOwnProperty.call(patch, "pages");
+  const pages = (event.pages ?? []).filter((page) => page && typeof page === "object"
+    && (reskin ? (page as Partial<EventPage>).graphic?.transparent !== true : (page as Partial<EventPage>).graphic === undefined));
+  for (const page of pages) (page as EventPage).graphic = structuredClone(graphic);
+  if (pages.length > 0) warnings.push(`이벤트 최상위 graphic 을 ${reskin ? "" : "그림 없는 "}페이지 ${pages.length}개에 적용했습니다(그림은 pages[].graphic 에 두는 것이 정본).`);
+}
+
+/** 분기 안까지 포함한 페이지의 모든 명령 — 「오늘 이미 만났나」 fork 로 시작하는 대화도 대화다. */
+function allPageCommands(commands: readonly Command[] | undefined): Command[] {
+  const out: Command[] = [];
+  const walk = (list: readonly Command[] | undefined, depth: number): void => {
+    if (depth > 8) return;
+    for (const command of list ?? []) {
+      if (!command || typeof command !== "object") continue;
+      out.push(command);
+      let nested: readonly (readonly Command[])[] = [];
+      try { nested = nestedCommandLists(command); } catch { nested = []; }
+      for (const child of nested) walk(child, depth + 1);
+    }
+  };
+  walk(commands, 0);
+  return out;
+}
+
 function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
   if (page.trigger?.kind !== "action" || page.priority === "below") return false;
   if (page.graphic?.transparent === true || page.graphic?.sprite !== undefined) return false;
-  return (page.commands ?? []).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
+  // 2026-09-24 연애 도그푸딩: 공략 인물 셋의 대사가 전부 「오늘 이미 만났나」 fork 안에 있어 최상위만 보는 검사를
+  // 비껴갔다 — 그림 없이 발밑(below) 투명 이벤트가 돼 인물이 보이지도 않고 밟고 지나갔다.
+  return allPageCommands(page.commands).some((command) => DIALOGUE_COMMAND_KINDS.has(command.kind));
+}
+
+/** 「한여름:\n…」 처럼 대사 본문이 화자 이름으로 시작하는가. */
+function bodyNamesSpeaker(body: unknown, name: string): boolean {
+  if (typeof body !== "string" || !name) return false;
+  const text = body.trimStart();
+  return text.startsWith(`${name}:`) || text.startsWith(`${name} :`) || text.startsWith(`[${name}]`) || text.startsWith(`${name}「`);
+}
+
+/**
+ * graphic 없이 세워진 조사 이벤트가 게임 검사(dream-invisible-objects) 기준의 「맨바닥」에 있는가 —
+ * 지배 바닥 타일과 같고 그 칸 위층 장식도 없을 때. 2026-09-24 꿈 세계 r4: 시계 눈알 석상 3개가
+ * 「바닥에서 보이지 않습니다」 경고를 받고도 투명 그대로 방치돼 검사에 계속 걸렸다 — 경고는 모델이
+ * 무시하므로 같은 기준으로 표식을 답한다.
+ */
+function isBareDominantFloorCell(map: GameMap, x: number, y: number): boolean {
+  if (!Number.isInteger(x) || !Number.isInteger(y) || x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+  const texture = mapTexture(map);
+  const index = y * map.width + x;
+  return map.lowerTiles[index] === texture.dominantTile && !(map.upperTiles[index] > 0);
 }
 
 /**
@@ -276,8 +449,11 @@ function isInvisibleTalkablePage(page: Partial<EventPage>): boolean {
  * 필수 필드가 비면 프로젝트 린트가 `page.trigger.kind` / `movement.route` 를 읽다 TypeError 로 죽고,
  * 사용자에게는 "후처리 실패: Cannot read properties of undefined" 라는 고칠 수 없는 메시지만 남는다
  * (2026-08-23 실측: upsert_event 3회 연속 같은 실패). 값을 채워 통과시키고 무엇을 채웠는지 경고한다.
+ *
+ * `bareCell` 은 이벤트 칸이 지배 바닥에 위층 장식 없는 맨바닥일 때 true — graphic 없이 세워진 조사
+ * 사물에 보석 표식을 붙이는 기준이다(생략하면 경고만 남기던 옛 동작).
  */
-function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[]): void {
+function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, pageId: string, warnings?: string[], bareCell?: boolean): void {
   const filled: string[] = [];
   if (page.id === undefined) { page.id = pageId; filled.push("id"); }
   if (page.name === undefined) { page.name = event.id; filled.push("name"); }
@@ -286,27 +462,124 @@ function fillRequiredPageFields(event: GameEvent, page: Partial<EventPage>, page
     page.trigger = event.trigger ?? { kind: "action" };
     filled.push(`trigger(${page.trigger.kind})`);
   }
+  const priorityOmitted = page.priority === undefined;
   if (page.priority === undefined) { page.priority = "same"; filled.push("priority"); }
   if (page.movement === undefined) { page.movement = PASSIVE; filled.push("movement"); }
-  if (isInvisibleTalkablePage(page)) {
+  else if (typeof page.movement === "object" && page.movement !== null) {
+    // `movement:{type:"fixed"}` 처럼 속도·빈도를 뺀 부분 객체는 도구 검사를 통과하고 적용 단계의
+    // 직렬화 왕복에서야 `movement.speed가 숫자가 아닙니다` 로 죽었다 — 조수 실행 전체가 중단됐다
+    // (2026-09-24 추격 호러 도그푸딩, 38번째 호출). 빠진 숫자만 기본값으로 채운다.
+    const movement = page.movement as Partial<EventPage["movement"]>;
+    const missing: string[] = [];
+    if (typeof movement.type !== "string") { movement.type = PASSIVE.type; missing.push("type"); }
+    if (typeof movement.speed !== "number" || !Number.isFinite(movement.speed)) { movement.speed = PASSIVE.speed; missing.push("speed"); }
+    if (typeof movement.frequency !== "number" || !Number.isFinite(movement.frequency)) { movement.frequency = PASSIVE.frequency; missing.push("frequency"); }
+    if (missing.length > 0) filled.push(`movement.${missing.join("/")}`);
+  }
+  if (isInvisibleTalkablePage(page) && !TILE_HOTSPOT_EVENTS.has(event)) {
     const siblingGraphic = event.pages?.find(
       (sibling) => sibling !== page && sibling.graphic?.sprite !== undefined,
     )?.graphic;
-    page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : resolveGraphicQuery("villager");
-    warnings?.push(
-      siblingGraphic
-        ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
-        : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
-          `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
-          `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
-    );
+    const previousLook = siblingGraphic ? undefined : PREVIOUS_EVENT_LOOK.get(event);
+    const object = siblingGraphic || previousLook ? null : objectEventGraphic(event, page);
+    if (object) {
+      if (object.graphic.transparent === true && bareCell === true && !TILE_HOTSPOT_EVENTS.has(event)) {
+        // 맨바닥 위 graphic 없는 조사 사물 — 경고만으로는 모델이 반응하지 않는다(2026-09-24 꿈 세계 r4:
+        // 석상 3개 연속 투명+경고). place_examine_hotspots(#1370) 와 같은 보석 표식으로 답하고,
+        // 발밑 우선순위라 길을 막지 않는다. 투명이 의도면 graphic:{transparent:true} 를 명시하면 된다.
+        page.graphic = examineMarkGraphic();
+        if (priorityOmitted) {
+          page.priority = "below";
+          if (page.overlapForbidden === undefined) page.overlapForbidden = false;
+          const at = filled.indexOf("priority");
+          if (at >= 0) filled[at] = "priority(below — 맨바닥 조사 사물 보석 표식)";
+        }
+        warnings?.push(
+          `${event.id}.${pageId}: '${event.name ?? event.id}' 조사 사물이 graphic 없이 맨바닥 위라 보석 표식을 붙였습니다 — ` +
+          `물건에 맞는 그림은 graphic, 그 칸 사물 타일은 paint_tiles·place_props 로 바꾸세요(투명이 의도면 graphic:{transparent:true}).`,
+        );
+      } else {
+        page.graphic = object.graphic;
+        warnings?.push(object.graphic.transparent
+          ? `${event.id}.${pageId}: '${event.name ?? event.id}' 은(는) 말하는 인물이 아니라 조사할 사물로 보여 주민 그림을 세우지 않고 투명으로 두었습니다 — ` +
+            `이대로는 바닥에서 보이지 않습니다. 그 칸에 사물 타일을 칠하거나(paint_tiles·place_props) graphic 을 지정하세요.`
+          : `${event.id}.${pageId}: 조사할 사물 '${event.name ?? event.id}' 에 이름으로 찾은 그림 「${object.label}」 을 붙였습니다.`);
+      }
+    } else {
+      page.graphic = siblingGraphic ? structuredClone(siblingGraphic) : previousLook ? structuredClone(previousLook) : resolveGraphicQuery("villager");
+      warnings?.push(
+        siblingGraphic
+          ? `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — 다른 페이지의 charset 을 재사용했습니다.`
+          : previousLook
+          ? `${event.id}.${pageId}: 새 페이지에 graphic 이 없어 이 이벤트가 쓰던 charset 을 그대로 이어 썼습니다(외형 유지).`
+          : `${event.id}.${pageId}: 대화가 있는 action 페이지인데 그래픽이 비어 있어 보이지 않습니다 — ` +
+            `주민 기본 charset 을 붙였습니다. 투명 이벤트가 의도라면 graphic:{transparent:true} 를 명시하고, ` +
+            `다른 외형이 필요하면 place_npc {graphic:{query:"…"}} 를 쓰세요.`,
+      );
+    }
   } else if (page.graphic === undefined) {
     page.graphic = {};
     filled.push("graphic");
   }
+  // 그림 없는 페이지(진입 컷신·문 열림 검사·조건 대기 자리표시)에 기본 「same」을 주면 보이지 않는 벽이 된다 —
+  // 회상 스토리 도그푸딩에서 투명 논리 이벤트 넷이 레코드 가게 가운데 줄에 서서 메멘토 둘을 막았다(2026-09-24).
+  // priority 를 생략한 투명 페이지는 발밑(below)·겹침 허용으로 둔다. 조사(action)는 발밑 이벤트도 바라보고 된다.
+  if (priorityOmitted && page.graphic?.sprite === undefined && page.graphic?.appearanceId === undefined && !TILE_HOTSPOT_EVENTS.has(event)) {
+    page.priority = "below";
+    if (page.overlapForbidden === undefined) page.overlapForbidden = false;
+    filled[filled.indexOf("priority")] = "priority(below — 그림 없는 페이지)";
+  }
   if (filled.length > 0) {
     warnings?.push(`${event.id}.${pageId}: 필수 페이지 필드 자동 보완 — ${filled.join(", ")}`);
   }
+}
+
+/** 조건이 이 아이템을 「가지고 있다」로 보장하는가(all 안의 한 갈래까지). */
+function conditionHoldsItem(condition: Condition | undefined, itemId: string): boolean {
+  if (!condition) return false;
+  if (condition.kind === "item") return condition.itemId === itemId && condition.present !== false;
+  if (condition.kind === "all") return condition.conditions.some((child) => conditionHoldsItem(child, itemId));
+  return false;
+}
+
+/**
+ * 선택지 분기 안에서 아이템을 1개 이상 빼는데, 그 아이템을 가졌는지 보는 조건이 없다 — 없는 선물을 건네도
+ * 뒤따르는 호감·보상이 그대로 붙는다(changeItem 은 0개에서 조용히 멈춘다).
+ * 2026-09-24 연애 도그푸딩: 공략 인물 셋의 「선물을 건넨다」 9갈래가 전부 이 모양이라 잡화점에 가지 않고도 +3 을 받았다.
+ * 거부하지 않는다(분위기용 선택지도 있다) — 소지 조건 fork 나 presentItem 을 알려 준다.
+ */
+function unguardedItemSpendWarnings(event: GameEvent): string[] {
+  const unguarded = new Set<string>();
+  const walk = (commands: readonly Command[] | undefined, held: readonly Condition[], inChoice: boolean): void => {
+    for (const command of commands ?? []) {
+      if (!command || typeof command !== "object") continue;
+      if (command.kind === "changeItem" && inChoice && (command.op === "-=" || (typeof command.amount === "number" && command.amount < 0))
+        && typeof command.itemId === "string" && !held.some((condition) => conditionHoldsItem(condition, command.itemId))) {
+        unguarded.add(command.itemId);
+      }
+      if (command.kind === "choices") {
+        for (const option of command.options ?? []) walk(option?.branch, held, true);
+        walk(command.cancelBranch, held, true);
+      } else if (command.kind === "fork") {
+        walk(command.then, [...held, command.condition], inChoice);
+        walk(command.else, held, inChoice);
+      } else if (command.kind !== "presentItem") {
+        let nested: readonly (readonly Command[])[] = [];
+        try { nested = nestedCommandLists(command); } catch { nested = []; }
+        for (const list of nested) walk(list, held, inChoice);
+      }
+    }
+  };
+  walk(event.commands, [], false);
+  for (const page of event.pages ?? []) {
+    walk(page.commands, page.conditions ?? [], false);
+  }
+  if (unguarded.size === 0) return [];
+  return [
+    `이벤트 '${event.id}': 선택지가 아이템 ${[...unguarded].join(", ")} 을(를) 빼는데 소지 여부를 보지 않습니다 — 가진 게 없어도 그 분기의 호감·보상이 그대로 붙습니다. `
+    + `선물·제출은 presentItem({kind:"presentItem",itemIds:[…],options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume:true} — 가진 것만 목록에 뜬다)으로 쓰거나, `
+    + `분기를 fork{condition:{kind:"item",itemId,present:true},then:[…],else:[…]} 로 감싸세요.`,
+  ];
 }
 
 /**
@@ -372,16 +645,88 @@ function unwrittenSwitchGateWarnings(project: Project, event: GameEvent): string
   return warnings;
 }
 
+function hasPlayerTouchEventAt(map: GameMap, x: number, y: number): boolean {
+  for (const event of map.events) {
+    if (event.x !== x || event.y !== y) continue;
+    if (event.trigger?.kind === "playerTouch") return true;
+    if ((event.pages ?? []).some((page) => page.trigger?.kind === "playerTouch")) return true;
+  }
+  return false;
+}
+
+/** 통행 불가(또는 맵 바로 밖) 착지를 반경 3 안의 통행 칸으로 옮긴다. playerTouch 칸은 즉시 재전이되므로 피한다. */
+function nearestTransferLanding(project: Project, map: GameMap, x: number, y: number, maxRadius: number): Point | null {
+  let any: Point | null = null;
+  for (let radius = 0; radius <= maxRadius; radius += 1) {
+    for (let dy = -radius; dy <= radius; dy += 1) {
+      for (let dx = -radius; dx <= radius; dx += 1) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
+        const cx = x + dx;
+        const cy = y + dy;
+        if (!inMapBounds(map, cx, cy) || !isPassable(project, map, cx, cy)) continue;
+        const point = { x: cx, y: cy };
+        if (!any) any = point;
+        if (!hasPlayerTouchEventAt(map, cx, cy)) return point;
+      }
+    }
+  }
+  return any;
+}
+
+/**
+ * 전이 한 칸이 벽이면 커밋 게이트가 이벤트 전체를 거부한다.
+ * 2026-09-24 JRPG 도그푸딩: 귀환 포탈의 transfer 가 마을 문에서 한 칸 어긋나
+ * place_npc 가 「transfer 목적지가 통행 불가」로 통째로 버려졌다.
+ */
+function relocateImpassableTransfers(project: Project, event: GameEvent, warnings?: string[]): void {
+  const seen = new Set<Command>();
+  const walk = (commands: readonly Command[] | undefined): void => {
+    for (const command of commands ?? []) {
+      if (!command || seen.has(command)) continue;
+      seen.add(command);
+      if (command.kind === "transfer") {
+        const target = project.maps[command.mapId];
+        if (target && !isPassable(project, target, command.x, command.y)) {
+          const landing = nearestTransferLanding(project, target, command.x, command.y, 3);
+          if (landing && (landing.x !== command.x || landing.y !== command.y)) {
+            warnings?.push(
+              `transfer 목적지가 통행 불가 타일이라 옮겼습니다: ${command.mapId} (${command.x}, ${command.y}) → (${landing.x}, ${landing.y}). 착지 칸은 get_map_region 으로 확인하세요.`,
+            );
+            command.x = landing.x;
+            command.y = landing.y;
+          }
+        }
+      }
+      for (const list of nestedCommandLists(command)) walk(list);
+    }
+  };
+  walk(event.commands);
+  for (const page of event.pages ?? []) walk(page.commands);
+}
+
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event): void {
+function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project, bareCell?: boolean): void {
   try {
-    normalizeEventCommandArrays(event, warnings, supplied);
+    // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
+    // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
+    for (const page of event.pages ?? []) {
+      if (page.conditions === undefined) continue;
+      if (!Array.isArray(page.conditions)) {
+        throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${event.id}.${page.id ?? "page"}.conditions 는 배열이어야 합니다(조건 없음은 []).`, { code: "invalid-args" });
+      }
+      page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
+    }
+    normalizeEventCommandArrays(event, warnings, supplied, bareCell);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
     }
     for (const warning of shadowedPageWarnings(`이벤트 '${event.id}'`, event.pages, event.commands)) warnings?.push(warning);
     for (const warning of emptyChoiceWarnings(event)) warnings?.push(warning);
+    for (const warning of unguardedItemSpendWarnings(event)) warnings?.push(warning);
+    if (project && (supplied === event || Object.prototype.hasOwnProperty.call(supplied, "pages") || Object.prototype.hasOwnProperty.call(supplied, "commands"))) {
+      relocateImpassableTransfers(project, event, warnings);
+    }
   } catch (cause) {
     if (cause instanceof ToolError) throw cause;
     throw new ToolError(`이벤트 형식이 올바르지 않습니다: ${cause instanceof Error ? cause.message : String(cause)}`, {
@@ -506,8 +851,14 @@ export function resolveEventPlacement(
     );
   }
   const requestedReserved = options.reserved?.has(`${x},${y}`) === true;
-  if (!requestedReserved && isPassable(project, map, x, y)) return { x, y, adjusted: false };
-  if (!requestedReserved && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
+  // 같은 칸의 기존 이벤트도 "점유"다 — 조기 반환에서 통행만 보고 넘어가면 새 이벤트가 그 위에
+  // 겹쳐 생겨 앞 이벤트가 그림자진다(2026-09-24 몬스터 수집 r2: NPC 위에 ev_starters 가 겹쳐
+  // autoplay 의 「첫 파트너 받기」 조사가 NPC 를 집고 실패했다). 조정 경로의 nearestPassableCell 은
+  // 이미 점유를 피하므로, 점유 칸 요청은 조정 경로로 보낸다.
+  const occupiedRequested = map.events.some((event) => event.id !== options.ignoreEventId && event.x === x && event.y === y);
+  const keepRequested = !requestedReserved && !occupiedRequested;
+  if (keepRequested && isPassable(project, map, x, y)) return { x, y, adjusted: false };
+  if (keepRequested && !mustStandOnPassable && passableLanding(project, map, x, y)) return { x, y, adjusted: false };
   const landing = nearestPassableCell(project, map, x, y, 3, options.ignoreEventId, options.reserved);
   if (!landing) {
     throw new ToolError(
@@ -567,10 +918,55 @@ function routeRootCommandsIntoPage(
   patch: Partial<GameEvent>,
   existing: GameEvent | undefined,
   warnings: string[],
+  bareCell?: boolean,
 ): void {
   const has = (key: keyof GameEvent) => Object.prototype.hasOwnProperty.call(patch, key);
   const pages = event.pages ?? [];
-  if (has("pages") || pages.length === 0) return;
+  if (has("pages") && pages.length > 0 && Array.isArray(patch.commands) && patch.commands.length > 0) {
+    // pages 와 최상위 commands 를 같이 보내고 페이지에는 명령을 안 넣은 경우 — 회상 스토리 도그푸딩에서 「메멘토 3개를
+    // 모으면 열리는 문」이 이렇게 저장돼 조건 페이지는 비고 다음 기억으로 가는 transfer 는 최상위에 묻혔다(도달 불가).
+    const empty = pages.filter((page) => !Array.isArray(page.commands) || page.commands.length === 0);
+    if (empty.length === 1) {
+      const index = pages.indexOf(empty[0]!);
+      event.pages = pages.map((page, i) => i === index ? { ...page, commands: structuredClone(patch.commands!) } : page);
+      event.commands = structuredClone(existing?.commands ?? []);
+      warnings.push(`최상위 commands → 명령이 비어 있던 pages[${index}] 로 옮김 (페이지가 있는 이벤트는 페이지 명령만 실행된다)`);
+      return;
+    }
+    throw new ToolError(
+      `이벤트 '${event.id}'에 pages 와 최상위 commands 를 함께 보냈습니다 — 페이지가 있으면 최상위 commands 는 실행되지 않습니다. ` +
+      (empty.length === 0 ? "모든 페이지에 이미 명령이 있어 어디에 둘지 모릅니다. " : `명령이 빈 페이지가 ${empty.length}개라 어디에 둘지 모릅니다. `) +
+      "명령을 해당 pages[].commands 에 넣으세요.",
+      { code: "invalid-args" },
+    );
+  }
+  if (pages.length === 0) {
+    // 2026-09-24 회상 스토리: 기억의 문을 {commands, conditions} 만으로 만들어 페이지가 0장이었다.
+    // 런타임은 페이지 조건을 안 보고, 페이지가 없으면 priority 기본값 same 이라 그 칸을 처음부터 막는다.
+    const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
+    const rawConditions = (patch as { conditions?: unknown }).conditions;
+    const pageConditions = Array.isArray(rawConditions)
+      ? rawConditions.filter((entry): entry is EventPageCondition => Boolean(entry) && typeof entry === "object" && !Array.isArray(entry))
+      : [];
+    if (movesCommands || pageConditions.length > 0) {
+      const page: Partial<EventPage> = {
+        id: `${event.id}_page`,
+        commands: movesCommands ? structuredClone(patch.commands!) : [],
+        ...(pageConditions.length > 0 ? { conditions: structuredClone(pageConditions) } : {}),
+        ...(has("trigger") && patch.trigger ? { trigger: structuredClone(patch.trigger) } : {}),
+      };
+      event.pages = [page as EventPage];
+      event.commands = structuredClone(existing?.commands ?? []);
+      delete (event as { conditions?: unknown }).conditions;
+      fillRequiredPageFields(event, page, `${event.id}_page`, warnings, bareCell);
+      const moved = [movesCommands ? "commands" : "", pageConditions.length > 0 ? "conditions" : ""].filter(Boolean).join("·");
+      warnings.push(
+        `pages 없이 보낸 최상위 ${moved} 를 pages[0] 으로 만들었습니다 — 페이지가 없으면 스위치 조건은 무시되고 이벤트가 그 칸을 막습니다.`,
+      );
+    }
+    return;
+  }
+  if (has("pages")) return;
   // 빈 배열은 옮기지 않는다 — 이름만 바꾸려는 패치가 흔히 commands:[] 를 같이 보내는데, 그걸 옮기면 페이지 대사가 지워진다.
   const movesCommands = has("commands") && Array.isArray(patch.commands) && patch.commands.length > 0;
   const movesTrigger = has("trigger") && patch.trigger !== undefined;
@@ -598,7 +994,7 @@ function routeRootCommandsIntoPage(
 
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
-  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다.`,
+  description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기·선물 건네기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.`,
   mode: "write",
   parameters: {
     type: "object",
@@ -661,6 +1057,17 @@ const upsertEvent: ToolDefinition = {
           { code: "invalid-args" },
         );
       }
+      // 유니온 밖 값은 저장됐다가 플레이어가 처음 조사하는 순간 런타임 exhaustiveness trips 를
+      // 때려 씬이 죽는다(2026-09-24 갤러리 도그푸딩: 모델이 32페이지에 "none" 을 넣어 브라우저 완주가 막힘).
+      // args 는 위에서 Partial<GameEvent> 로 캐스팅된 입력이라 런타임 값이 유니온을 어길 수 있다 — includes 로 실제 값을 본다.
+      const animationType = page.animationType;
+      if (animationType !== undefined && !EVENT_ANIMATION_TYPES.includes(animationType)) {
+        throw new ToolError(
+          `event.pages[${index}].animationType ${JSON.stringify(animationType)} 는 알 수 없는 값이다 — 유효값: ${EVENT_ANIMATION_TYPES.join(", ")}. ` +
+          "멈춰 있는 대상은 fixedGraphic, 걸어 다니는 기본은 normal.",
+          { code: "invalid-args" },
+        );
+      }
     }
     const existing = map.events.find((entry) => entry.id === patch.id);
     let event: GameEvent;
@@ -698,11 +1105,36 @@ const upsertEvent: ToolDefinition = {
         if (adjusted) warnings.push(placementAdjustedWarning(`이벤트 '${event.id}'`, requested, placement));
       }
     }
-    routeRootCommandsIntoPage(event, patch, existing, warnings);
-    assertEventShape(event, warnings, existing ? patch : event);
+    const bareCell = isBareDominantFloorCell(map, event.x, event.y);
+    routeRootCommandsIntoPage(event, patch, existing, warnings, bareCell);
+    applyEventLevelGraphic(draft, map, event, patch, warnings);
+    // 기존 투명 조사 지점(그림 없는 action 페이지뿐)이나 통행 불가 칸(가구·벽·문 타일) 위의 새 이벤트는 타일이 그림이다.
+    const tileHotspot = existing
+      ? (existing.pages ?? []).some((page) => page.trigger?.kind === "action") && !(existing.pages ?? []).some((page) => page.graphic?.sprite !== undefined)
+      : inMapBounds(map, event.x, event.y) && !isPassable(draft, map, event.x, event.y);
+    if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
+    const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
+    if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
+    assertEventShape(event, warnings, existing ? patch : event, draft, bareCell);
+    // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
+    // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
+    if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);
     if (!existing || "pages" in patch || "commands" in patch) assertEventPartyActorReferences(draft, event);
+    const declaredFlags = declaredFlagsWarning(declareReferencedFlags(draft, event));
+    if (declaredFlags) warnings.push(declaredFlags);
+    const shadowedBefore = projectSetterShadowedPages(draft);
     const outcome = upsertEventIntoMap(map, event);
     warnings.push(...unwrittenSwitchGateWarnings(draft, event));
+    for (const [key, hit] of projectSetterShadowedPages(draft)) if (!shadowedBefore.has(key)) warnings.push(hit.message);
+    const stored = map.events.find((candidate) => candidate.id === event.id) ?? event;
+    const beforeReliefX = stored.x;
+    const beforeReliefY = stored.y;
+    const passage = passageBlockWarning(draft, map, stored);
+    if (passage) warnings.push(passage);
+    if (stored.x !== beforeReliefX || stored.y !== beforeReliefY) adjusted = true;
+    if (map.disableSave && JSON.stringify(event.pages ?? []).includes('"kind":"openSaveMenu"')) {
+      warnings.push(`${map.name} 은(는) 저장 금지 맵이라 이 이벤트의 저장 메뉴(openSaveMenu)에서도 저장할 수 없습니다 — 저장 장소라면 set_map_properties 로 이 맵의 저장 금지를 끄세요(메뉴 저장만 막는 기능이 아닙니다).`);
+    }
     const unsupportedCommands = countLimitedRuntimeSupportCommandsForEvent(event);
     return {
       summary: `${map.name}에 이벤트 '${event.id}' ${outcome === "added" ? "추가" : "수정"} — 미지원 커맨드 ${unsupportedCommands}건${adjusted ? ` — 위치 자동 조정 (${event.x}, ${event.y})` : ""}`,
@@ -718,6 +1150,20 @@ function isShopRoleNpcName(name: string): boolean {
   return /상점\s*주인|잡화\s*상|잡화점|가게\s*주인|상인|merchant|shopkeeper|shop\s*owner/u.test(name.trim());
 }
 
+/**
+ * 문·문 앞 발판·이동 칸은 NPC 가 아니다. 2026-09-24 JRPG 도그푸딩: 집 문 발판(`<문>_step`, 페이지 이름
+ * 「무기 상인의 집 문」)이 이름의 「상인」 때문에 상인 NPC 로 재사용돼 덮어써졌다 — 문은 돌아다니는 상인이 되고
+ * 집에 들어갈 수 없게 됐다. 모든 페이지가 접촉 발동이거나 이동·연결 명령을 담은 이벤트는 합치지 않는다.
+ */
+function isNpcMergeCandidate(event: GameEvent): boolean {
+  const pages = event.pages ?? [];
+  if (event.id.endsWith("_step") || /문$|door$/iu.test(event.name?.trim() ?? pages[0]?.name?.trim() ?? "")) return false;
+  if (pages.length === 0) return event.trigger?.kind !== "playerTouch";
+  if (pages.every((page) => page.trigger?.kind === "playerTouch" || page.trigger?.kind === "eventTouch")) return false;
+  const relay = (commands: readonly Command[]) => commands.some((command) => command.kind === "transfer" || command.kind === "callMapEvent");
+  return !pages.every((page) => relay(page.commands ?? []));
+}
+
 function findNearbySimilarNpc(
   map: { events: GameEvent[] },
   x: number,
@@ -730,6 +1176,7 @@ function findNearbySimilarNpc(
   let best: GameEvent | undefined;
   let bestDist = Infinity;
   for (const event of map.events) {
+    if (!isNpcMergeCandidate(event)) continue;
     const pageName = event.pages?.[0]?.name?.trim() ?? "";
     const eventName = event.name?.trim() || pageName || event.id;
     const hay = eventName.toLowerCase().replace(/\s+/g, "");
@@ -761,8 +1208,12 @@ const placeNpc: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      x: { type: "integer" },
-      y: { type: "integer" },
+      x: { type: "integer", description: "배치 칸 x. x,y 대신 home:{x,y} 도 받는다." },
+      y: { type: "integer", description: "배치 칸 y." },
+      home: {
+        type: "object", description: "make_villager 와 같은 모양의 배치 칸 {x,y} — x,y 를 줬으면 생략.",
+        properties: { x: { type: "integer" }, y: { type: "integer" } },
+      },
       name: { type: "string" },
       graphic: GRAPHIC_SPEC_SCHEMA,
       face: FACE_SCHEMA,
@@ -777,7 +1228,9 @@ const placeNpc: ToolDefinition = {
       guide: { type: "string", enum: ["action-controls"], description: "키 바인딩 정본의 조작 안내 한 페이지. pages 대신 사용하며 맵별 고정 ID로 재사용한다." },
       characterId: { type: "string", description: "공유 호감/선물 키. 호감 페이지를 쓰면 필수. 생략 시 호감 조건/커맨드가 있으면 이름에서 할당" },
     },
-    required: ["mapId", "x", "y", "name"],
+    // x,y 또는 home 중 하나 — 스키마 required 로 두면 make_villager 모양(home)으로 부른 호출이 Pi 검증에서
+    // 통째로 거부됐다(2026-09-24 JRPG ember-4: 상점 NPC 넷이 전부 「x,y is required」). run 에서 둘 중 하나를 요구한다.
+    required: ["mapId", "name"],
   },
   invalidArgsHint: "대화 NPC는 pages:[{lines:[원래 대사]}]가 필수입니다. dialogue.text는 pages의 lines로 옮기세요. 오브젝트 기믹을 만들려는 경우에만 place_chest/place_storage_chest/place_savepoint를 사용하세요.",
   invalidArgsRepair(args) {
@@ -789,8 +1242,14 @@ const placeNpc: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    const requestedX = args.x as number;
-    const requestedY = args.y as number;
+    const home = args.home && typeof args.home === "object" && !Array.isArray(args.home) ? args.home as { x?: unknown; y?: unknown } : undefined;
+    const rawX = args.x ?? home?.x;
+    const rawY = args.y ?? home?.y;
+    if (!Number.isInteger(rawX) || !Number.isInteger(rawY)) {
+      throw new ToolError(`place_npc 에는 배치 칸 x,y(정수) 또는 home:{x,y} 가 필요합니다 — 받은 x=${JSON.stringify(args.x)}, y=${JSON.stringify(args.y)}, home=${JSON.stringify(args.home)}.`, { code: "invalid-args" });
+    }
+    const requestedX = rawX as number;
+    const requestedY = rawY as number;
     const name = args.name as string;
     const actionGuide = args.guide === "action-controls";
     // 2026-09-18 거부 대신 기본값. pages 없는 NPC 를 invalid-args 로 막던 규칙이 한 런에서 4번 나왔다 —
@@ -805,7 +1264,12 @@ const placeNpc: ToolDefinition = {
         : typeof dialogue === "object" && dialogue !== null && !Array.isArray(dialogue)
           && Object.keys(dialogue).every((key) => key === "text") && typeof (dialogue as { text?: unknown }).text === "string"
           ? (dialogue as { text: string }).text.trim() : null;
-      if (dialogue === undefined) {
+      // 최상위 commands 는 스키마 밖이지만 모델이 upsert_event 처럼 자주 보낸다. 버리고 인사 한 줄을 깔면
+      // 저작한 대사가 조용히 사라진다(2026-09-24 꿈 세계: 「말없이 춤춘다」가 「그림자 사람 1입니다. 안녕하세요.」로).
+      if (Array.isArray(args.commands) && args.commands.length > 0 && dialogue === undefined) {
+        pagesArg = [{ commands: args.commands }];
+        pagesDefaulted = "최상위 commands → pages[0].commands 로 옮김";
+      } else if (dialogue === undefined) {
         pagesArg = [{ lines: [`${name}입니다. 안녕하세요.`] }];
         pagesDefaulted = "pages 생략 → 인사 한 줄 기본 적용";
       } else if (plainText) {
@@ -836,7 +1300,10 @@ const placeNpc: ToolDefinition = {
     // 일반 query + 시드 샘플 + 맵 내 중복 회피로 동일 타일 그림판 몰림을 줄인다.
     const normalizationWarnings: string[] = [];
     const graphicSpec = (args.graphic as GraphicSpec | undefined) ?? { query: "villager" };
-    const graphic = resolveGraphic(graphicSpec, {
+    const specQuery = "query" in graphicSpec ? graphicSpec.query : undefined;
+    const recurring = specQuery !== undefined ? recurringCharacterLook(draft, map.id, name) : undefined;
+    if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
+    const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
       avoidKeys: usedCharsetGraphicKeysOnMap(map),
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
@@ -874,6 +1341,9 @@ const placeNpc: ToolDefinition = {
       event = { id, x, y, trigger: { kind: "action" }, commands: [], pages };
     }
     event.name = name;
+    // 뒤 페이지가 「호감 >= 4」만으로 앞 페이지의 +2/+3을 덮으면, 엔딩 문턱 6에는 영영 못 닿는다.
+    // (2026-09-24 연애 도그푸딩: 데이트 페이지가 대화를 지워 나래호감이 4에서 멈춤)
+    keepGainPageBelowHigherEnding(draft, event, normalizationWarnings);
     event.placementRole = "npc";
     const requestedCharacterId = typeof args.characterId === "string" && args.characterId.trim()
       ? args.characterId.trim()
@@ -886,10 +1356,14 @@ const placeNpc: ToolDefinition = {
       normalizationWarnings.push(`호감 페이지/커맨드 → characterId '${event.characterId}' 자동 할당`);
     }
     ensureEventStoryFlags(draft, event, normalizationWarnings);
-    assertEventShape(event, normalizationWarnings);
+    assertEventShape(event, normalizationWarnings, event, draft);
     assertEventPartyActorReferences(draft, event);
     upsertEventIntoMap(map, event);
     normalizationWarnings.push(...unwrittenSwitchGateWarnings(draft, event));
+    const npcPassage = passageBlockWarning(draft, map, event);
+    if (npcPassage) normalizationWarnings.push(npcPassage);
+    finalX = event.x;
+    finalY = event.y;
     const adjusted = finalX !== requestedX || finalY !== requestedY;
     const warnings = [
       ...(adjusted ? [`NPC '${name}' 위치 자동 조정: (${requestedX}, ${requestedY}) → (${finalX}, ${finalY})`] : []),
@@ -1207,7 +1681,7 @@ const makeVillager: ToolDefinition = {
 const setShopStock: ToolDefinition = {
   name: "set_shop_stock",
   description:
-    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — 아이템 id 는 get_database_records 로 먼저 확인.",
+    "기존 이벤트의 첫 shop 커맨드에 계절 재고(stock)를 설정한다. shop 커맨드가 없으면 첫 페이지(없으면 이벤트 루트)에 상점 커맨드를 추가한다. 상인 NPC 에 판매 재고를 연결하는 정본 — itemId 에는 아이템 id 와 착용 장비(database.equipment) id 를 모두 쓸 수 있다(무기점·방어구점). id 는 get_database_records 로 먼저 확인.",
   mode: "write",
   parameters: {
     type: "object",
@@ -1316,7 +1790,7 @@ function parseShopStock(project: Project, raw: unknown, label: string): ShopStoc
       throw new ToolError(`${label}[${index}]는 객체여야 합니다.`, { code: "shop-stock" });
     }
     const record = value as Record<string, unknown>;
-    const itemId = itemIdArg(project, record.itemId, `${label}[${index}].itemId`);
+    const itemId = sellableIdArg(project, record.itemId, `${label}[${index}].itemId`);
     const seasons = record.seasons === undefined ? undefined : parseSeasonArray(record.seasons, `${label}[${index}].seasons`);
     const priceOverride = record.priceOverride === undefined ? undefined : priceArg(record.priceOverride, `${label}[${index}].priceOverride`);
     const priceBySeason = record.priceBySeason === undefined ? undefined : parsePriceBySeason(record.priceBySeason, `${label}[${index}].priceBySeason`);
@@ -1342,6 +1816,13 @@ function itemIdArg(project: Project, raw: unknown, label: string): string {
     throw new ToolError(`${label} 존재하지 않는 itemId: ${itemId} — 허용 예시: ${knownIds(project.database.items)}`, { code: "item-not-found" });
   }
   return itemId;
+}
+
+/** 상점 재고 id — 런타임 상점(goodsIndex)·참조 검증과 같이 아이템과 착용 장비를 모두 받는다. */
+function sellableIdArg(project: Project, raw: unknown, label: string): string {
+  const itemId = stringArg(raw, label);
+  if (project.database.items.some((item) => item.id === itemId) || project.database.equipment.some((record) => record.id === itemId)) return itemId;
+  throw new ToolError(`${label} 존재하지 않는 itemId: ${itemId} — 아이템(${knownIds(project.database.items)}) 또는 장비(${knownIds(project.database.equipment)}) id 를 쓰세요`, { code: "item-not-found" });
 }
 
 function parseSeasonArray(raw: unknown, label: string): Season[] {
@@ -1439,6 +1920,11 @@ function uniqueStockItemIds(stock: readonly ShopStockEntry[]): string[] {
 }
 
 // (x,y)에서 가까운 순(링 확장)으로 통행 가능 + 이벤트 없는 칸을 찾는다.
+//
+// 후보가 여러 통행 컴포넌트에 갈라지면 **가장 큰 컴포넌트**의 첫 칸(링 순서)을 고른다.
+// 봉인된 주머니가 방보다 링에서 먼저 나오면 자동 조정이 그 안에 놓이고 플레이어는 끝까지
+// 걸어가지 못한다(2026-09-24 몬스터 수집 r2: NPC 뒤 주머니 (3,4)에 ev_starters 가 앉아
+// 「첫 파트너 받기」 조사가 도달 불가로 막혔다). 단일 컴포넌트 맵에서는 기존과 같은 칸을 고른다.
 function nearestPassableCell(
   project: Project,
   map: GameMap,
@@ -1454,7 +1940,42 @@ function nearestPassableCell(
       .map((event) => `${event.x},${event.y}`),
     ...(reserved ?? []),
   ]);
+  // 컴포넌트 경계: 통행 불가 타일 + 같은 칸을 몸으로 막는 이벤트(EventPlacementAnalysis 와 같은 blocker 정의).
+  const blockerCells = new Set(
+    map.events
+      .filter((event) => {
+        if (event.id === ignoreEventId) return false;
+        const page = event.pages?.[0];
+        return (page?.priority ?? "same") === "same" && page?.overlapForbidden !== false;
+      })
+      .map((event) => `${event.x},${event.y}`),
+  );
+  const componentCache = new Map<string, number>(); // 셀 키 → 같은 컴포넌트의 칸 수
+  const componentSize = (sx: number, sy: number): number => {
+    const cached = componentCache.get(`${sx},${sy}`);
+    if (cached !== undefined) return cached;
+    const cells: string[] = [];
+    const seen = new Set<string>([`${sx},${sy}`]);
+    const queue: Array<[number, number]> = [[sx, sy]];
+    for (let head = 0; head < queue.length; head += 1) {
+      const [cx, cy] = queue[head]!;
+      cells.push(`${cx},${cy}`);
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+        const nx = cx + dx;
+        const ny = cy + dy;
+        const key = `${nx},${ny}`;
+        if (seen.has(key) || !inMapBounds(map, nx, ny)) continue;
+        if (!isPassable(project, map, nx, ny) || blockerCells.has(key)) continue;
+        seen.add(key);
+        queue.push([nx, ny]);
+      }
+    }
+    for (const key of cells) componentCache.set(key, cells.length);
+    return cells.length;
+  };
+  const candidates: Point[] = [];
   for (let radius = 0; radius <= maxRadius; radius += 1) {
+    candidates.length = 0;
     for (let dy = -radius; dy <= radius; dy += 1) {
       for (let dx = -radius; dx <= radius; dx += 1) {
         if (Math.max(Math.abs(dx), Math.abs(dy)) !== radius) continue;
@@ -1462,8 +1983,15 @@ function nearestPassableCell(
         const cy = y + dy;
         if (!inMapBounds(map, cx, cy)) continue;
         if (occupied.has(`${cx},${cy}`)) continue;
-        if (isPassable(project, map, cx, cy)) return { x: cx, y: cy };
+        if (!isPassable(project, map, cx, cy)) continue;
+        candidates.push({ x: cx, y: cy });
       }
+    }
+    // 가까운 반경이 이긴다 — 그 안에서만 큰 컴포넌트를 고른다(요청 칸 자체 후보는 항상 유지).
+    if (candidates.length > 0) {
+      const sizes = candidates.map((cell) => componentSize(cell.x, cell.y));
+      const maxSize = Math.max(...sizes);
+      return candidates[sizes.indexOf(maxSize)] ?? null;
     }
   }
   return null;
@@ -1475,6 +2003,7 @@ function transferEndpoint(
   requestedX: number,
   requestedY: number,
   maxRadius = 3,
+  notes?: string[],
 ): { gate: Point; landing: Point } | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
   // 벽에서 1칸 안쪽·벽 칸 위 요청은 벽과 맞닿은 통행 칸으로 먼저 당긴다.
@@ -1492,6 +2021,7 @@ function transferEndpoint(
     if (occupied.has(`${landing.x},${landing.y}`)) return null;
     return landing;
   };
+  const choices: Array<{ gate: Point; landing: Point; radius: number; flush: boolean; severs: boolean }> = [];
   for (let radius = snapBlocked ? 1 : 0; radius <= maxRadius; radius += 1) {
     const flushGates: Point[] = [];
     const innerGates: Point[] = [];
@@ -1507,10 +2037,36 @@ function transferEndpoint(
     for (const gate of [...flushGates, ...innerGates]) {
       const landing = landingFree(gate);
       if (!landing) continue;
-      return { gate, landing };
+      choices.push({
+        gate,
+        landing,
+        radius,
+        flush: isFlushGate(gate.x, gate.y),
+        severs: transferTileSeversWalk(project, map, gate.x, gate.y),
+      });
     }
   }
-  return null;
+  if (choices.length === 0) return null;
+  // 유일한 통로(문간 한 칸)보다, 같은 반경 안의 막지 않는 칸을 먼저 고른다.
+  // 유일한 통로보다 막지 않는 칸을 먼저. 그 안에서는 예전처럼 가까운 칸, 그다음 벽에 붙은 칸.
+  choices.sort((a, b) =>
+    Number(a.severs) - Number(b.severs)
+    || a.radius - b.radius
+    || Number(b.flush) - Number(a.flush)
+    || a.gate.y - b.gate.y
+    || a.gate.x - b.gate.x);
+  const picked = choices[0]!;
+  if (notes && !picked.severs) {
+    const blocked = choices.find((choice) => choice.severs && (
+      choice.radius < picked.radius || (choice.radius === picked.radius && choice.flush && !picked.flush)
+    ));
+    if (blocked) {
+      notes.push(
+        `출입구 (${blocked.gate.x},${blocked.gate.y}) 는 같은 맵의 두 구역을 잇는 유일한 통로라 문을 놓으면 한쪽이 막힙니다. (${picked.gate.x},${picked.gate.y}) 에 두었습니다.`,
+      );
+    }
+  }
+  return { gate: picked.gate, landing: picked.landing };
 }
 
 /**
@@ -1521,6 +2077,91 @@ function transferEndpoint(
  * 지형을 확인해 봐야 소용없는 상태에서 3연속 같은 실패를 반복했다. 실패 경로는 셋뿐이므로
  * (범위 밖 / 이벤트 점유 / 통행 불가) 어느 쪽인지 세어서 알려준다.
  */
+/**
+ * transferEndpoint + 도달성 보정. 맵에 이미 플레이어가 서는 칸(시작 위치·들어오는 착지점)이 있는데
+ * 요청 자리가 거기서 걸어 닿지 않으면, 같은 가장자리의 가장 가까운 닿는 칸으로 옮긴다.
+ * 닿는 후보가 없으면 원래 자리를 쓰고 경고만 남긴다(막지 않는다).
+ *
+ * accept 는 「이 배치로 기존 출입구가 봉쇄되지 않는가」 같은 추가 판정 — 거절하면 사유 문자열을
+ * 되돌려 후보를 이어서 찾는다(2026-09-24 추격 호러 r8: 앵커 검사만으로는 못 잡은 문 봉쇄).
+ */
+function reachableTransferEndpoint(
+  project: Project,
+  map: GameMap,
+  requested: { x: number; y: number },
+  label: "A" | "B",
+  notes: string[],
+  accept?: (endpoint: { gate: Point; landing: Point }) => true | string,
+): { gate: Point; landing: Point } | null {
+  const localNotes: string[] = [];
+  const endpoint = transferEndpoint(project, map, requested.x, requested.y, 3, localNotes);
+  const reach = walkableFromAnchors(project, map);
+  if (!reach && !accept) {
+    notes.push(...localNotes);
+    return endpoint;
+  }
+  // 앵커도 후보 시작점(원자리)도 없으면 후보를 지어내지 않는다 — 실패 원인 안내(A:/B:)를 유지.
+  if (!reach && !endpoint) {
+    notes.push(...localNotes);
+    return endpoint;
+  }
+  const reached = (point: Point): boolean => reach !== null && reach.has(point.y * map.width + point.x);
+  const rejectReason = (candidate: { gate: Point; landing: Point }): string | null => {
+    if (reach && (!reached(candidate.gate) || !reached(candidate.landing))) return "reach";
+    if (accept) {
+      const verdict = accept(candidate);
+      if (verdict !== true) return verdict;
+    }
+    return null;
+  };
+  let firstReject: string | null = null;
+  if (endpoint) {
+    firstReject = rejectReason(endpoint);
+    if (!firstReject) {
+      notes.push(...localNotes);
+      return endpoint;
+    }
+  } else {
+    firstReject = "reach";
+  }
+  // 후보: 앵커에서 닿는 칸(anchors 없으면 통행 칸 전부)을 가까운 순으로.
+  const fallbackCells: Point[] | null = reach ? null : (() => {
+    const out: Point[] = [];
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (isPassable(project, map, x, y)) out.push({ x, y });
+      }
+    }
+    out.sort((a, b) => (Math.abs(a.x - requested.x) + Math.abs(a.y - requested.y)) - (Math.abs(b.x - requested.x) + Math.abs(b.y - requested.y)) || a.y - b.y || a.x - b.x);
+    return out.slice(0, 60);
+  })();
+  const candidates = reach ? reachableGateCandidates(map, reach, requested).slice(0, 60) : fallbackCells ?? [];
+  for (const candidate of candidates) {
+    const alt = transferEndpoint(project, map, candidate.x, candidate.y, 0);
+    if (!alt) continue;
+    const reason = rejectReason(alt);
+    if (reason) {
+      if (firstReject === "reach" && reason !== "reach") firstReject = reason;
+      continue;
+    }
+    if (firstReject === "reach") {
+      notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않아 가장 가까운 닿는 칸 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    } else {
+      notes.push(`출입구 ${label} (${requested.x},${requested.y}) 는 ${firstReject} — 가장 가까운 다른 자리 (${alt.gate.x},${alt.gate.y}) 로 옮겼습니다.`);
+    }
+    return alt;
+  }
+  if (endpoint) {
+    notes.push(...localNotes);
+    if (firstReject === "reach") {
+      notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${map.name} 의 시작 위치·다른 입구에서 걸어 닿지 않습니다 — 길을 먼저 내거나 show_map_region 으로 닿는 칸을 확인하세요.`);
+    } else {
+      notes.push(`출입구 ${label} (${endpoint.gate.x},${endpoint.gate.y}) 는 ${firstReject} — 봉쇄를 피한 자리를 찾지 못했습니다. 기존 문(move_event)을 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`);
+    }
+  }
+  return endpoint;
+}
+
 function transferEndpointFailure(
   project: Project,
   map: GameMap,
@@ -1771,6 +2412,46 @@ function numberArg(raw: unknown, label: string): number {
   throw new ToolError(`${label} 숫자가 필요합니다.`, { code: "number-arg" });
 }
 
+function commandsRaiseVariable(commands: readonly Command[] | undefined, variableId: string): boolean {
+  for (const command of commands ?? []) {
+    if (command.kind === "setVariable" && command.variableId === variableId && command.op === "+=" && typeof command.value === "number" && command.value > 0) return true;
+    if (command.kind === "choices") {
+      if (command.options.some((option) => commandsRaiseVariable(option.branch, variableId))) return true;
+      if (commandsRaiseVariable(command.cancelBranch, variableId)) return true;
+    } else if (command.kind === "presentItem") {
+      if (command.options.some((option) => commandsRaiseVariable(option.branch, variableId))) return true;
+      if (commandsRaiseVariable(command.otherwiseBranch, variableId) || commandsRaiseVariable(command.cancelBranch, variableId)) return true;
+    } else if (command.kind === "fork") {
+      if (commandsRaiseVariable(command.then, variableId) || commandsRaiseVariable(command.else, variableId)) return true;
+    }
+  }
+  return false;
+}
+
+/** 더 높은 엔딩 문턱이 있는 변수를 올리는 페이지를, 그보다 낮은 조건 페이지가 덮지 않게 분기로 접는다. */
+function keepGainPageBelowHigherEnding(project: Project, event: GameEvent, warnings: string[]): void {
+  const pages = event.pages;
+  if (!pages || pages.length < 2) return;
+  for (let index = pages.length - 1; index >= 1; index -= 1) {
+    const page = pages[index];
+    if (!page || page.conditions.length !== 1) continue;
+    const condition = page.conditions[0];
+    if (!condition || condition.kind !== "variable" || (condition.op !== ">=" && condition.op !== ">")) continue;
+    const capped = (project.endings ?? []).some((ending) => ending.conditions.some((entry) =>
+      entry.kind === "variable" && entry.variableId === condition.variableId
+      && (entry.op === ">=" || entry.op === ">") && entry.value > condition.value));
+    if (!capped) continue;
+    const host = pages.slice(0, index).find((earlier) => commandsRaiseVariable(earlier.commands, condition.variableId));
+    if (!host) continue;
+    // 분기를 앞세우면 문턱에 닿는 날 호감 상승보다 데이트 선택지가 먼저 떠서 상승이 멈춘다.
+    host.commands = [...host.commands, { kind: "fork", condition, then: page.commands }];
+    pages.splice(index, 1);
+    warnings.push(
+      `변수 ${condition.variableId} ${condition.op} ${condition.value} 페이지가 그 변수를 올리는 앞 페이지를 덮어, 더 높은 엔딩 문턱에 닿지 못합니다. 그 페이지 명령을 앞 페이지의 조건 분기로 옮겼습니다.`,
+    );
+  }
+}
+
 function eventUsesFriendship(event: GameEvent): boolean {
   const blob = JSON.stringify(event.pages ?? []);
   return blob.includes("friendshipAtLeast") || blob.includes("changeFriendship") || blob.includes("getFriendship");
@@ -1860,8 +2541,16 @@ const createTransferPair: ToolDefinition = {
     const fade = (args.fade as TransferFade | undefined) ?? "black";
     const mapA = requireMap(draft, a.mapId);
     const mapB = requireMap(draft, b.mapId);
-    const endpointA = transferEndpoint(draft, mapA, a.x, a.y);
-    const endpointB = transferEndpoint(draft, mapB, b.x, b.y);
+    const reachNotes: string[] = [];
+    // 봉쇄 판정: 이 배치로 기존(그리고 이번에 놓는) transfer 문이 방 바닥에 실제로 열려 있는가.
+    const sealAccept = (map: GameMap) => (candidate: { gate: Point; landing: Point }): true | string => {
+      const check = transferGatesStayApproachable(draft, map, candidate.gate);
+      if (!check.ok) return `기존 출입구 ${check.sealed.join(", ")} 이(가) 벽·가구·다른 문으로 봉쇄된다`;
+      if (!check.group.has(candidate.landing.y * map.width + candidate.landing.x)) return "착지점이 방 바닥과 갈라진 주머니 칸이다";
+      return true;
+    };
+    const endpointA = reachableTransferEndpoint(draft, mapA, a, "A", reachNotes, sealAccept(mapA));
+    const endpointB = reachableTransferEndpoint(draft, mapB, b, "B", reachNotes, sealAccept(mapB));
     if (!endpointA || !endpointB) {
       // 어느 쪽 출입구가 왜 실패했는지 짚는다 — 종전에는 두 쪽을 뭉뚱그려 같은 안내만 냈다.
       const failures = [
@@ -1898,11 +2587,22 @@ const createTransferPair: ToolDefinition = {
     });
     upsertEventIntoMap(mapA, gate(idA, gateA.x, gateA.y, transferTo(b.mapId, landingB.x, landingB.y)));
     upsertEventIntoMap(mapB, gate(idB, gateB.x, gateB.y, transferTo(a.mapId, landingA.x, landingA.y)));
+    // 배치가 끝난 뒤 두 맵의 모든 transfer 문이 방 바닥으로 열리는지 최종 점검(같은 맵 쌍·후보가
+    // 없어 원자리를 쓴 경우 포함). 막지는 않고 경고로 남긴다 — 도구가 제품 결정을 하진 않는다.
+    const sealedAfter: string[] = [];
+    for (const map of a.mapId === b.mapId ? [mapA] : [mapA, mapB]) {
+      const check = transferGatesStayApproachable(draft, map);
+      if (!check.ok) sealedAfter.push(`${map.name}: ${check.sealed.join(", ")}`);
+    }
     const adjustedA = gateA.x !== a.x || gateA.y !== a.y;
     const adjustedB = gateB.x !== b.x || gateB.y !== b.y;
     const warnings = [
       ...(adjustedA ? [`출입구 A 위치 자동 조정: (${a.x},${a.y}) → (${gateA.x},${gateA.y})`] : []),
       ...(adjustedB ? [`출입구 B 위치 자동 조정: (${b.x},${b.y}) → (${gateB.x},${gateB.y})`] : []),
+      ...reachNotes,
+      ...(sealedAfter.length > 0
+        ? [`봉쇄 위험 — ${sealedAfter.join(" / ")} — 그 문은 밟아도 아무 데도 못 간다(벽·가구·이웃 문이 접근을 막음). move_event 로 문 자리를 옮기거나 빈 자리로 좌표를 바꿔 다시 create_transfer_pair 하세요.`]
+        : []),
     ];
     return {
       summary: `출입구 쌍 생성: ${mapA.name}(${gateA.x},${gateA.y}) ↔ ${mapB.name}(${gateB.x},${gateB.y})`,
@@ -2047,10 +2747,82 @@ const placeTrap: ToolDefinition = {
   },
 };
 
+/** 주인공 걷기 한 칸(PlayScene.moveDurationMs). */
+const PLAYER_WALK_STEP_MS = 160;
+const CHASER_FREQUENCY = 8;
+
+/** 런타임 추격 한 칸 = npcMoveDurationMs(speed) + npcMoveIntervalMs(frequency) (playScenePageMoveRoutes.ts 와 같은 식). */
+function chaseStepMs(speed: number, frequency: number): number {
+  const rank = (value: number) => Math.min(8, Math.max(1, Math.trunc(value)));
+  return Math.max(80, 640 - rank(speed) * 80) + Math.max(80, 1040 - rank(frequency) * 160);
+}
+
+/**
+ * 은신처 칸들을 실제 은신 이벤트로 만든다(configure_object_behavior 의 hiding 과 같은 페이지 모양).
+ * 칸에 조사 이벤트가 있으면 그 페이지들을 은신처로 바꾸고, 없으면 투명 이벤트를 새로 둔다.
+ */
+function placeHidingSpots(draft: Project, chaserMap: GameMap, raw: unknown, chaserId: string): { eventIds: string[]; warnings: string[] } {
+  const eventIds: string[] = [];
+  const warnings: string[] = [];
+  if (!Array.isArray(raw)) return { eventIds, warnings };
+  for (const entry of raw) {
+    if (entry === null || typeof entry !== "object" || typeof (entry as { x?: unknown }).x !== "number" || typeof (entry as { y?: unknown }).y !== "number") { warnings.push("hidingSpots 항목 무시: {x,y} 필요"); continue; }
+    const x = Math.trunc((entry as { x: number }).x), y = Math.trunc((entry as { y: number }).y);
+    // 옷장은 흔히 추격자와 다른 방(맵)에 있다 — 2026-09-24 r3 에서 침실 옷장 좌표를 복도 맵에 넣어
+    // 복도 맨바닥에 보이지 않는 은신처가 생겼다. mapId 를 받는다.
+    const spotMapId = (entry as { mapId?: unknown }).mapId;
+    const map = typeof spotMapId === "string" && spotMapId.trim() ? draft.maps[spotMapId.trim()] : chaserMap;
+    if (!map) { warnings.push(`은신처 맵 '${String(spotMapId)}' 이 없어 건너뛰었습니다.`); continue; }
+    if (!inMapBounds(map, x, y)) { warnings.push(`은신처 (${x}, ${y}) 가 맵 밖이라 건너뛰었습니다.`); continue; }
+    const hideIn = (page: EventPage): void => {
+      page.interaction = { kind: "hiding" };
+      page.movement = { ...page.movement, type: "fixed" };
+      page.trigger = { kind: "action" };
+      page.priority = "same";
+      page.overlapForbidden = true;
+    };
+    const existing = map.events.find((event) => event.id !== chaserId && event.x === x && event.y === y && (event.pages ?? []).length > 0);
+    if (existing) {
+      for (const page of existing.pages ?? []) hideIn(page);
+      if ((existing.pages ?? []).some((page) => page.commands.length > 0)) warnings.push(`은신처 '${existing.id}' 의 조사 명령은 숨기 동작에 가려 실행되지 않습니다.`);
+      eventIds.push(existing.id);
+      continue;
+    }
+    // 조사 이벤트가 없는 걸어 다니는 칸이면 플레이어가 찾을 수 없는 투명 은신처다.
+    // 2026-09-24 추격 호러 r7: 러그(바닥 타일 있음) 위 은신처는 upper<0 조건에 걸리지 않아 경고 없이
+    // 통과했다 — 걸어 다닐 수 있는 칸은 옷장·침대(통행 불가 가구)가 아니므로 어느 쪽이든 경고한다.
+    if (isPassable(draft, map, x, y)) {
+      const near = map.events
+        .filter((event) => event.id !== chaserId && Math.abs(event.x - x) + Math.abs(event.y - y) === 1)
+        .map((event) => `${event.id}(${event.x},${event.y})`);
+      const hint = near.length > 0
+        ? ` — 바로 옆 ${near.join(", ")} 가 옷장이면 hidingSpots 를 그 칸으로 다시 주세요.`
+        : " — 옷장·침대 칸 좌표인지, 다른 방이면 hidingSpots[].mapId 를 확인하세요.";
+      warnings.push(tileAt(map, x, y).upper < 0
+        ? `은신처 ${map.name}(${x}, ${y}) 에 가구·조사 이벤트가 없어 맨바닥의 보이지 않는 은신처가 됐습니다${hint}`
+        : `은신처 ${map.name}(${x}, ${y}) 에 조사 이벤트가 없어 (바닥·러그 위) 보이지 않는 은신처가 됐습니다${hint}`);
+    }
+    const id = genId("ev_hiding");
+    const page: EventPage = {
+      id: `${id}_hide`, name: "은신처", conditions: [], graphic: { transparent: true }, trigger: { kind: "action" },
+      priority: "same", overlapForbidden: true, animationType: "fixedGraphic", movement: PASSIVE, commands: [],
+    };
+    hideIn(page);
+    const event: GameEvent = { id, x, y, trigger: { kind: "action" }, commands: [], pages: [page] };
+    assertEventShape(event);
+    upsertEventIntoMap(map, event);
+    eventIds.push(id);
+  }
+  return { eventIds, warnings };
+}
+
 const makeChaseScene: ToolDefinition = {
   name: "make_chase_scene",
   description:
-    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본.",
+    "장애물을 우회하는 실시간 추격자 이벤트를 만든다. chaser.at/graphic/speed/sightRange를 받고, killOnTouch면 eventTouch에서 killPlayer를 실행한다. safeZone은 map.safeZones에 추가하며, activateSwitch가 있으면 해당 스위치 ON 페이지에서만 추격한다. 추격자는 캐릭터형이므로 통행 불가 칸이면 근처(반경 3) 통행 가능 칸으로 자동 착지한다. pursuit.scope=connected면 문으로 연결된 방까지 추격한다. doorDelayMs/searchMs/onLost로 문 대기·수색·복귀를 설정한다. 추격전·「쫓아오는」 요청의 정본. " +
+    "speed 는 이 엔진 기준이다(RPG Maker 의 4=보통과 다르다): 6=주인공 걷기의 2/3(기본·긴장감 있는 추격), 7=걷기와 같음, 5=절반쯤, 4 이하=걷기의 절반도 안 돼 추격이 되지 않는다. " +
+    "hidingSpots 에 옷장·침대 밑·사물함 칸 {x,y,mapId?} 를 주면(다른 방이면 mapId) 그 칸의 조사 이벤트(없으면 새 투명 이벤트)를 진짜 은신처로 만든다 — 조사하면 숨고(주인공이 사라지고 못 움직임) 다시 조사하면 나온다. 숨는 걸 본 추격자가 아니면 놓치고 수색하다 돌아간다. 은신을 대사·선택지+스위치 끄기로 흉내 내지 말 것. " +
+    "activateSwitch 를 setSwitch value:false 로 끄면 추격자가 사라질 뿐 은신이 아니다. 숫자 암호·금고·열쇠는 compile_puzzle kind:password — answer 가 1~6자리 숫자면 inputNumber. 선택지 보기에 정답 숫자를 적지 말 것.",
   mode: "write",
   parameters: {
     type: "object",
@@ -2069,15 +2841,18 @@ const makeChaseScene: ToolDefinition = {
       },
       pursuit: PURSUIT_SCHEMA,
       killOnTouch: { type: "boolean" },
-      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대" },
+      safeZone: { ...RECT_SCHEMA, description: "{x,y,w,h} 안전 지대 — 이 안의 주인공은 절대 잡히지 않는다. 세이브 방·계단참 같은 몇 칸짜리 구역만. 추격 통로를 덮지 말 것" },
       activateSwitch: { type: "string" },
       checkpointOnEntry: { type: "boolean" },
+      mood: { type: "boolean", description: "공포 장르에서 조명이 없는 추격 맵을 어둡게(ambient 0.5). 기본 true, false 면 그대로" },
+      hidingSpots: { type: "array", items: { type: "object", properties: { x: { type: "integer" }, y: { type: "integer" }, mapId: { type: "string", description: "옷장이 다른 방(맵)에 있으면 그 mapId. 생략하면 추격자 맵" } }, required: ["x", "y"] }, description: "{x,y,mapId?}[] 은신처(옷장 등) 칸. 그 칸의 조사 이벤트를 은신처로 바꾸고, 없으면 투명 은신 이벤트를 만든다." },
     },
     required: ["mapId", "chaser"],
   },
   invalidArgsExample: {
     mapId: "map1",
     chaser: { at: { x: 8, y: 4 }, graphic: { query: "monster" }, speed: 6, sightRange: 8 },
+    hidingSpots: [{ x: 2, y: 3 }],
     killOnTouch: true,
     safeZone: { x: 1, y: 1, w: 3, h: 2 },
     activateSwitch: "sw_chase_on",
@@ -2107,6 +2882,15 @@ const makeChaseScene: ToolDefinition = {
       map.safeZones = [...(map.safeZones ?? []), safeZone];
     }
     const speed = Number.isFinite(chaser.speed) ? Math.max(1, Math.min(8, Math.trunc(chaser.speed ?? 6))) : 6;
+    // 추격자의 한 칸 = 걸음 트윈(speed) + 다음 걸음까지 대기(frequency). 예전엔 frequency=speed 라
+    // speed 3 이 400+560ms/칸 — 주인공 걷기(160ms)의 1/6 속도로 걸어와 추격이 되지 않았다(2026-09-24).
+    // 추격자는 쉬지 않고 쫓으므로 대기는 최소(8)로 두고 보폭은 speed 로만 정한다.
+    const paceMs = chaseStepMs(speed, CHASER_FREQUENCY);
+    // 스위치로 깨우는 추격(「금고를 열자 달려온다」)은 주인공이 벽 너머에 있어도 와야 한다. 추적 정책을 안 정했으면
+    // persistent 로 둔다 — lastSeen 은 직접 봐야 움직여서, 깨운 추격자가 복도에 가만히 서 있었다(2026-09-24).
+    const parsedPursuit = args.pursuit === undefined ? undefined : parsePursuit(args.pursuit);
+    const pursuit = parsedPursuit && activateSwitch && parsedPursuit.tracking === undefined
+      ? { ...parsedPursuit, tracking: "persistent" as const } : parsedPursuit;
     const commands: Command[] = args.killOnTouch === true ? [{ kind: "killPlayer", message: "붙잡혔다." }] : [];
     const event: GameEvent = {
       id,
@@ -2127,10 +2911,10 @@ const makeChaseScene: ToolDefinition = {
           movement: {
             type: "chase",
             speed,
-            frequency: speed,
+            frequency: CHASER_FREQUENCY,
             ...(chaser.sightRange !== undefined ? { sightRange: Math.max(0, Math.trunc(chaser.sightRange)) } : {}),
             pathfind: true,
-            ...(args.pursuit !== undefined ? { pursuit: parsePursuit(args.pursuit) } : {}),
+            ...(pursuit ? { pursuit } : {}),
           },
           commands,
         },
@@ -2138,14 +2922,31 @@ const makeChaseScene: ToolDefinition = {
     };
     assertEventShape(event);
     upsertEventIntoMap(map, event);
-    const checkpointEventId = args.checkpointOnEntry === true ? ensureMapCheckpointEvent(draft, map) : undefined;
+    // 붙잡히면 게임 오버인 추격은 기본으로 진입 체크포인트를 둔다 — 없으면 「다시 시작」 이 타이틀뿐이다
+    // (2026-09-24 r3: 첫 추격에 잡히자 버튼이 「타이틀로 돌아가기」 하나). false 를 명시하면 끈다.
+    const wantsCheckpoint = args.checkpointOnEntry === true || (args.checkpointOnEntry === undefined && args.killOnTouch === true);
+    const checkpointEventId = wantsCheckpoint ? ensureMapCheckpointEvent(draft, map) : undefined;
+    // 공포 장르의 추격 맵이 기본 밝기면 어둡게 한다 — r2~r5 네 번 모두 「어둡고 긴장감 있게」 기획에서 조명을
+    // 한 번도 만지지 않았다. 이미 조명을 정했거나 mood:false 면 두고, 무엇을 했는지 요약에 싣는다.
+    const darkened = args.mood !== false && draft.system?.genre === "horror-chase" && !map.defaultLighting;
+    if (darkened) map.defaultLighting = normalizeLightingState({ ambient: 0.5, color: "#1a1020", sources: [] });
+    const hiding = placeHidingSpots(draft, map, args.hidingSpots, id);
+    const ratio = PLAYER_WALK_STEP_MS / paceMs;
+    // 안전지대 안에서는 절대 잡히지 않는다. 2026-09-24 r4 에서 11×22 복도에 12×17 안전지대를 깔아
+    // 추격 맵 전체가 무적 구역이 됐다 — 안전지대는 세이브 방·계단참 같은 작은 구역이다.
+    const safeCover = safeZone ? Math.round(100 * Math.max(0, Math.min(map.width, safeZone.x + safeZone.w) - Math.max(0, safeZone.x))
+      * Math.max(0, Math.min(map.height, safeZone.y + safeZone.h) - Math.max(0, safeZone.y)) / (map.width * map.height)) : 0;
     const warnings = [
+      ...(safeCover >= 30 ? [`안전지대가 맵의 ${safeCover}% 를 덮어 그 안에서는 절대 붙잡히지 않습니다 — 추격이 성립하지 않습니다. 안전지대는 세이브 방처럼 작은 구역(몇 칸)으로 두세요.`] : []),
+      ...unwrittenSwitchGateWarnings(draft, event),
       ...(chaser.graphic === undefined ? ['graphic 생략 → query:"monster" 기본 적용'] : []),
       ...(placement.adjusted ? [placementAdjustedWarning("추격자", chaser.at, placement)] : []),
+      ...(ratio < 0.5 ? [`추격자 속도 ${speed} 은 한 칸 ${paceMs}ms — 주인공 걷기(${PLAYER_WALK_STEP_MS}ms/칸)의 ${Math.round(ratio * 100)}% 라 걸어서도 쉽게 따돌립니다. 긴장감 있는 추격은 speed 6(걷기의 2/3), 같은 속도는 7.`] : []),
+      ...hiding.warnings,
     ];
     return {
-      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y})${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
-      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, x: placement.x, y: placement.y, adjusted: placement.adjusted },
+      summary: `${map.name}에 추격자 '${id}' 생성 (${placement.x}, ${placement.y}) — 한 칸 ${paceMs}ms(걷기의 ${Math.round(ratio * 100)}%)${placement.adjusted ? ` — 요청 좌표 (${chaser.at.x}, ${chaser.at.y})에서 자동 조정` : ""}${safeZone ? " — 안전지대 추가" : ""}${hiding.eventIds.length ? ` — 은신처 ${hiding.eventIds.length}곳` : ""}${darkened ? " — 맵을 어둡게(ambient 0.5, 밝기는 set_lighting·set_scene_mood 로 조절)" : ""}${checkpointEventId ? ` — 진입 체크포인트 ${checkpointEventId}` : ""}`,
+      data: { eventId: id, safeZone, activateSwitch, checkpointEventId, hidingEventIds: hiding.eventIds, stepMs: paceMs, x: placement.x, y: placement.y, adjusted: placement.adjusted },
       ...(warnings.length > 0 ? { warnings } : {}),
     };
   },
@@ -2226,9 +3027,11 @@ const placeChest: ToolDefinition = {
     }
     const warnings: string[] = [];
     if (adjusted) warnings.push(placementAdjustedWarning("보물상자", { x: requestedX, y: requestedY }, placement));
-    const itemRecord = itemId ? draft.database.items.find((item) => item.id === itemId) : undefined;
+    const itemRecord = itemId
+      ? draft.database.items.find((item) => item.id === itemId) ?? draft.database.equipment.find((record) => record.id === itemId)
+      : undefined;
     if (itemId && !itemRecord) {
-      warnings.push(`아이템 '${itemId}'가 데이터베이스에 없습니다 — upsert_item으로 먼저 만들거나 기존 id를 쓰세요`);
+      warnings.push(`아이템 '${itemId}'가 데이터베이스(아이템·장비)에 없습니다 — upsert_item/upsert_equipment 로 먼저 만들거나 기존 id를 쓰세요`);
     }
     const graphic = resolveGraphic({ query: "보물상자" }, { overrides: draft.charsetLabels });
     const id = (args.id as string | undefined) ?? genId("ev_chest");
@@ -2792,6 +3595,80 @@ function resolveCutsceneMusicResources(project: Project, beats: readonly Cutscen
   return visit(beats, "beats");
 }
 
+const DIR_DELTA: Readonly<Record<string, { readonly dx: number; readonly dy: number }>> = {
+  up: { dx: 0, dy: -1 }, down: { dx: 0, dy: 1 }, left: { dx: -1, dy: 0 }, right: { dx: 1, dy: 0 },
+};
+
+/**
+ * moveActor 경로를 맵 위에서 따라가 막히는 칸을 짚는다. 런타임은 막힌 이동에서 최대 30초를 기다린 뒤 넘어가므로
+ * 벽으로 걷는 컷신은 「멈춘 것처럼」 보인다. 이벤트 대상만 본다(주인공의 컷신 시작 칸은 진입 경로마다 달라 모른다).
+ */
+/**
+ * moveActor 대상은 이벤트 id 여야 하는데, NPC id 는 `ev_npc_<uuid>` 처럼 불투명하고 say 비트는 이름을 쓴다.
+ * 모델이 이름(노을)으로 적으면 검증이 거절하고, 모델은 이동 비트를 빼 버렸다 — 컷신 속 두 사람이 걷지 않았다
+ * (2026-09-24 회상 스토리 도그푸딩). 같은 맵에서 이름·characterId 가 하나로 맞으면 id 로 바꾼다.
+ */
+function resolveCutsceneActorTargets(map: GameMap, beats: readonly CutsceneBeat[], warnings: string[]): CutsceneBeat[] {
+  const ids = new Set(map.events.map((event) => event.id));
+  const resolve = (items: readonly CutsceneBeat[]): CutsceneBeat[] => items.map((beat): CutsceneBeat => {
+    if (beat.kind === "parallel") return { ...beat, beats: resolve(beat.beats) };
+    if (beat.kind !== "moveActor") return beat;
+    const raw = (beat.target ?? beat.eventId ?? beat.actor ?? "player").trim();
+    if (raw === "player" || raw === "this-event" || ids.has(raw)) return beat;
+    const matches = map.events.filter((event) => event.name?.trim() === raw || event.characterId === raw);
+    if (matches.length !== 1) return beat;
+    const id = matches[0]!.id;
+    warnings.push(`컷신 moveActor 대상 '${raw}' 를 같은 맵의 이벤트 id '${id}' 로 바꿨습니다(대상 칸은 이벤트 id).`);
+    return { ...beat, target: id, eventId: undefined, actor: undefined };
+  });
+  const resolved = resolve(beats);
+  const speakers = new Set<string>();
+  let moves = 0;
+  const scan = (items: readonly CutsceneBeat[]): void => items.forEach((beat) => {
+    if (beat.kind === "parallel") scan(beat.beats);
+    else if (beat.kind === "moveActor") moves += 1;
+    else if (beat.kind === "say" && typeof beat.speaker === "string") speakers.add(beat.speaker.trim());
+  });
+  scan(resolved);
+  const onMap = [...speakers].filter((name) => name && map.events.some((event) => event.name?.trim() === name));
+  if (moves === 0 && onMap.length >= 2) {
+    warnings.push(`컷신에 맵 위 인물 ${onMap.join("·")} 이 말하지만 moveActor 비트가 하나도 없어 아무도 움직이지 않습니다 — 다가가기·돌아서기 같은 동작이 필요하면 moveActor{target:이름 또는 이벤트 id} 를 넣으세요.`);
+  }
+  return resolved;
+}
+
+function cutsceneMoveWarnings(project: Project, map: GameMap, beats: readonly CutsceneBeat[]): string[] {
+  const warnings: string[] = [];
+  const positions = new Map<string, { x: number; y: number }>();
+  const walk = (items: readonly CutsceneBeat[], path: string): void => items.forEach((beat, index) => {
+    const beatPath = `${path}[${index}]`;
+    if (beat.kind === "parallel") { walk(beat.beats, `${beatPath}.beats`); return; }
+    if (beat.kind !== "moveActor") return;
+    const target = beat.target ?? beat.eventId ?? beat.actor ?? "player";
+    if (target === "player" || target === "this-event") return;
+    const event = map.events.find((entry) => entry.id === target);
+    if (!event) return;
+    const at = positions.get(target) ?? { x: event.x, y: event.y };
+    let through = false;
+    for (const move of beat.route?.moves ?? beat.moves ?? []) {
+      if (move.kind === "setThrough") through = move.enabled;
+      if (move.kind !== "move") continue;
+      const delta = DIR_DELTA[move.dir];
+      if (!delta) continue;
+      const next = { x: at.x + delta.dx, y: at.y + delta.dy };
+      if (!through && !canMove(project, map, at.x, at.y, next.x, next.y)) {
+        warnings.push(`컷신 이동 막힘: ${beatPath} '${target}' 이 (${at.x},${at.y})→(${next.x},${next.y}) 로 못 간다(벽·물·맵 밖) — 런타임은 최대 30초 멈춘다. 경로를 통행 가능한 칸으로 고치세요.`);
+        break;
+      }
+      at.x = next.x;
+      at.y = next.y;
+    }
+    positions.set(target, at);
+  });
+  walk(beats, "beats");
+  return warnings;
+}
+
 const scriptCutscene: ToolDefinition = {
   name: "script_cutscene",
   description:
@@ -2799,8 +3676,10 @@ const scriptCutscene: ToolDefinition = {
     "**플레이어 조작(이동·조사·공격·메뉴)을 잠그고 시청만 하게 만드는 장면 전용 도구다** — " +
     "회상/플래시백, 오프닝, 엔딩, 시네마틱, '플레이어가 아무것도 못 하는 장면' 요청은 모두 이 툴이다. " +
     "잠금/해제와 스킵 라벨은 컴파일러가 자동으로 감싸므로 upsert_event 로 수동 조립하지 말 것. beat 종류: " +
-    "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves,wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
-    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump. " +
+    "say{speaker,face,text|lines}, moveActor{target:'player'|eventId,moves:[{kind:'move',dir:'up'},{kind:'turn',dir:'left'}],wait}, camera{mode:'pan|follow|fixed|return',target|x,y,durationMs,wait,zoom}, " +
+    "picture{action:'show|move|erase',pictureId,resourceId,x,y,durationMs,wait}, music{action:'bgm|se|fade|stop',resourceId}, fade{direction:'in|out',durationMs,wait}, tint{color|value,durationMs,wait}, flash, shake, wait{ms}, parallel{beats}, label, jump, " +
+    "진행 비트 switch{switchId|key,value} · transfer{mapId,x,y,facing,fade} · ending{endingId} — 기억/장면 진입·다음 장면으로 넘어가는 문·엔딩 컷신도 이 툴 하나로 쓴다(Esc 건너뛰기로도 스위치·이동·엔딩은 빠지지 않는다). " +
+    "맵에 들어오면 한 번 재생: trigger:'auto', once:true. 조건이 모이면 재생(메멘토 3개 등): trigger:'auto', requiresSwitches:[…], once:true. " +
     "예: {mapId:'map1',eventId:'ev_memory',skippable:true,beats:[{kind:'camera',mode:'pan',x:8,y:6,durationMs:600},{kind:'say',speaker:'나',text:'그날을 기억한다.'},{kind:'camera',mode:'return'}]}",
   mode: "write",
   parameters: {
@@ -2815,6 +3694,11 @@ const scriptCutscene: ToolDefinition = {
       skippable: { type: "boolean", description: "true면 컷신 잠금 중 Esc 두 번으로 cutscene_end 라벨로 점프" },
       mode: { type: "string", enum: ["replace", "append"], description: "기본 replace. 같은 이벤트에서 이름 컷신 페이지를 교체한다. append는 페이지를 쌓는다." },
       once: { type: "boolean", description: "true면 셀프스위치 A가 꺼져 있을 때만 재생하고 끝나면 A를 켠다." },
+      requiresSwitches: {
+        type: "array",
+        items: { type: "string" },
+        description: "이 전역 스위치가 모두 켜졌을 때만 페이지가 선다(예: 메멘토 3개를 다 모으면 자동 재생되는 문 열림 컷신). 없는 스위치 id 는 거부.",
+      },
     },
     required: ["mapId", "beats"],
   },
@@ -2833,15 +3717,34 @@ const scriptCutscene: ToolDefinition = {
     const map = requireMap(draft, args.mapId as string);
     const trigger = triggerFromArg(args.trigger);
     const warnings: string[] = [];
-    const beats = resolveCutsceneMusicResources(draft, args.beats as CutsceneBeat[], warnings);
+    const aliased = canonicalizeSayBeatAliases(args.beats);
+    if (aliased.moved > 0) warnings.push(SAY_BEAT_ALIAS_WARNING(aliased.moved));
+    const beats = resolveCutsceneActorTargets(map, resolveCutsceneMusicResources(draft, aliased.beats as CutsceneBeat[], warnings), warnings);
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : genId("ev_cutscene");
     const eventIds = new Set(map.events.map((event) => event.id));
     eventIds.add(eventId);
+    const switchIds = new Set(draft.switches.map((entry) => entry.id));
+    const requiresSwitches = Array.isArray(args.requiresSwitches)
+      ? [...new Set(args.requiresSwitches.filter((id): id is string => typeof id === "string" && id.trim().length > 0).map((id) => id.trim()))]
+      : [];
+    const missingRequired = requiresSwitches.filter((id) => !switchIds.has(id));
+    if (missingRequired.length > 0) {
+      throw new ToolError(
+        `requiresSwitches 에 없는 스위치: ${missingRequired.join(", ")} — get_database_records(collection:"switches") 로 실제 id 를 조회하세요.`,
+        { code: "cutscene-validation", mapId: map.id },
+      );
+    }
     let commands: Command[];
     try {
       commands = compileCutscene(beats, {
         skippable: args.skippable === true,
-        context: { eventIds, resourceIds: collectResourceIds(draft) },
+        context: {
+          eventIds,
+          resourceIds: collectResourceIds(draft),
+          mapIds: new Set(Object.keys(draft.maps)),
+          switchIds,
+          endingIds: new Set((draft.endings ?? []).map((ending) => ending.id)),
+        },
       });
     } catch (cause) {
       if (cause instanceof CutsceneValidationError) {
@@ -2849,18 +3752,25 @@ const scriptCutscene: ToolDefinition = {
       }
       throw cause;
     }
+    warnings.push(...cutsceneMoveWarnings(draft, map, beats));
     const existing = map.events.find((event) => event.id === eventId);
     const mode = args.mode === "append" ? "append" : "replace";
     const once = args.once === true;
     if (once) {
-      commands = [...commands, { kind: "setSelfSwitch", key: "A", value: true }];
+      // 끝이 아니라 잠금 직후에 켠다 — 컷신이 다른 맵으로 옮기거나 엔딩으로 끝나면 끝줄까지 오지 않아 자동 재생이 되풀이된다.
+      const beginIndex = commands.findIndex((command) => command.kind === "cutsceneControl");
+      commands = [...commands.slice(0, beginIndex + 1), { kind: "setSelfSwitch", key: "A", value: true }, ...commands.slice(beginIndex + 1)];
     }
+    const conditions: EventPageCondition[] = [
+      ...requiresSwitches.map((switchId): EventPageCondition => ({ kind: "switch", switchId, value: true })),
+      ...(once ? [{ kind: "selfSwitch", key: "A", value: false } satisfies EventPageCondition] : []),
+    ];
     const page = cutscenePage(
       `${eventId}_cutscene_${(existing?.pages?.length ?? 0) + 1}`,
       "컷신",
       trigger,
       commands,
-      once ? [{ kind: "selfSwitch", key: "A", value: false }] : []
+      conditions
     );
     const outcome = existing ? "modified" : "added";
     let event: GameEvent;

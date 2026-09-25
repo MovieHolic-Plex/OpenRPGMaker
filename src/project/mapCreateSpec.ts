@@ -1,3 +1,4 @@
+import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import type { MapId, Project } from "@/project/types";
 
@@ -27,7 +28,7 @@ export type MapCreateRequest = {
 export function resolveMapCreateDefaults(project: Project, request: MapCreateRequest = {}): MapCreateSpec {
   const parentId = request.parentId ?? "";
   const parent = parentId ? project.maps[parentId] : undefined;
-  const preset = request.preset ?? (parent ? "inherit-parent" : "blank");
+  const preset = request.preset ?? "blank";
   const interiorTileset = project.tilesets[INTERIOR_TILESET_ID] ? INTERIOR_TILESET_ID : parent?.tilesetId ?? firstTilesetId(project);
   const inheritedTileset = parent?.tilesetId ?? firstTilesetId(project);
 
@@ -55,7 +56,7 @@ export function resolveMapCreateDefaults(project: Project, request: MapCreateReq
     name: request.name ?? "새 맵",
     width: DEFAULT_BLANK_MAP_SIZE.width,
     height: DEFAULT_BLANK_MAP_SIZE.height,
-    tilesetId: inheritedTileset,
+    tilesetId: defaultOutdoorTilesetId(project),
     parentId,
     preset: "blank",
   };

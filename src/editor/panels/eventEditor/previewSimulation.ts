@@ -262,6 +262,7 @@ function evalForkCondition(
  */
 function conditionNeedsUnsimulatedState(condition: Condition): boolean {
   switch (condition.kind) {
+    case "monsterSpecies":
     case "timer":
     case "timePhase":
     case "season":

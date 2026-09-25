@@ -25,12 +25,16 @@ import { HOUSE_VISION_TOOLS } from "./houseVisionTools";
 import { INVESTIGATION_TOOLS } from "./investigationTools";
 import { MYSTERY_CASE_TOOLS } from "./mysteryCaseTool";
 import { NARRATIVE_HORROR_TEMPLATE_TOOLS } from "./narrativeHorrorTemplateTools";
+import { LIFE_FLOWER_TOOLS } from "./lifeFlowerTools";
 import { LIGHTING_TOOLS } from "./lightingTools";
 import { ACTION_TOOLS } from "./actionTools";
 import { PROJECT_WIKI_TOOLS } from "./projectWikiTools";
 import { MAP_TOOLS } from "./mapTools";
+import { LAYER_TOOLS } from "./layerTools";
 import { MAP_LOCATION_TOOLS } from "./mapLocationTools";
 import { MONSTER_SYSTEM_TOOLS } from "./monsterSystemTools";
+import { WILD_ROUTE_TOOLS } from "./wildRouteTool";
+import { TALL_GRASS_TOOLS } from "./tallGrassTool";
 import { PALETTE_PRESET_TOOLS } from "./palettePresetTools";
 import { PLAY_TOOLS } from "./playTools";
 import { PLACEMENT_TOOLS } from "./placementTools";
@@ -80,7 +84,9 @@ import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
+import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
 import { WEB_SEARCH_TOOLS } from "./webSearchTool";
+import { TILESET_CHANGE_TOOLS } from "./tilesetChangeTools";
 
 export { PLACEMENT_TOOLS };
 
@@ -177,6 +183,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
   ...SHARED_SCENE_TOOLS,
+  ...SHARED_OBJECT_TOOLS,
   ...withDomain(CONSTRUCTION_TOOLS_V3, "tile"),
   ...withDomain(HOUSE_VISION_TOOLS, "tile"),
   ...withDomain(VILLAGE_TOOLS, "tile"),
@@ -187,9 +194,13 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(STRUCTURE_KIT_TOOLS, "tile"),
   ...withDomain(TILE_QUERY_TOOLS, "tile"),
   ...withDomain(MAP_TOOLS, "map"),
+  // MZ 4층 쓰기(stamp_layer_block·paint_shadow) — 각 툴이 map·tile 두 도메인을 선언한다.
+  ...withDomain(LAYER_TOOLS, "map"),
   ...withDomain(MAP_LOCATION_TOOLS, "map"),
   ...withDomain(ACTION_TOOLS, "map"),
   ...withDomain(MAP_GEN_TOOLS, "map"),
+  ...withDomain(WILD_ROUTE_TOOLS, "map"),
+  ...withDomain(TALL_GRASS_TOOLS, "map"),
   ...withDomain(EVENT_TOOLS, "event"),
   ...withDomain(EVENT_COMMAND_ASSIST_TOOLS, "event"),
   ...withDomain(NPC_CAST_TOOLS, "event"),
@@ -197,6 +208,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(INVESTIGATION_TOOLS, "event"),
   ...withDomain(MYSTERY_CASE_TOOLS, "event"),
   ...withDomain(NARRATIVE_HORROR_TEMPLATE_TOOLS, "event"),
+  ...withDomain(LIFE_FLOWER_TOOLS, "event"),
   ...withDomain(LIGHTING_TOOLS, "event"),
   ...withDomain(ENDING_TOOLS, "event"),
   ...withDomain(DB_TOOLS, "database"),
@@ -207,6 +219,8 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(GAME_SYSTEM_TOGGLE_TOOLS, "system"),
   ...withDomain(TILESET_ATLAS_TOOLS, "tile"),
   ...TILESET_REFERENCE_TOOLS,
+  // 다른 칩셋 계열이 필요할 때 사용자에게 묻는 도구 — 실행기 거부 메시지가 이름을 부르므로 core 로 늘 노출한다.
+  ...TILESET_CHANGE_TOOLS,
   ...TILE_ASSEMBLY_GUIDE_TOOLS,
   ...INTERIOR_PLACEMENT_TOOLS,
   ...FOREST_RECIPE_TOOLS,

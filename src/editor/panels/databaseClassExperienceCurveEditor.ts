@@ -130,7 +130,7 @@ function openExperienceCurveDialog(options: ExperienceCurvePanelOptions): void {
       class: "db-class-dialog db-class-exp-dialog",
       attrs: { role: "dialog", "aria-label": options.dialogLabel },
       children: [
-        el("header", { children: [el("strong", { text: "경험치 곡선" }), el("button", { text: "x", attrs: { type: "button" }, on: { click: close } })] }),
+        el("header", { children: [el("strong", { text: "경험치 곡선" }), el("button", { text: "×", attrs: { type: "button", "aria-label": "닫기", title: "닫기" }, on: { click: close } })] }),
         el("div", { class: "db-class-exp-dialog-tabs", children: [totalTab, deltaTab] }),
         el("div", { class: "db-class-exp-dialog-body", children: [table, graph] }),
         el("div", { class: "db-class-exp-controls", children: [

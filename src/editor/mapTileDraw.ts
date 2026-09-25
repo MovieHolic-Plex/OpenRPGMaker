@@ -9,6 +9,7 @@ import {
   chipsetQuarterComposition,
   type ChipsetQuarterComposition,
 } from "@/project/defaults/terrainQuarterAutotile";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
 import { tileStackAt } from "@/project/mapOverlayTiles";
 import { createTransparentColorKeyCanvas, isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
@@ -26,7 +27,7 @@ export class MapTileDrawError extends Error {
   }
 }
 
-/** lower→lower스택→upper→upper스택 순서로 모든 타일 레이어를 그린다. */
+/** 1층→1층 스택→2층→그림자→3층→3층 스택→4층 순서로 모든 타일 레이어를 그린다. */
 export function drawMapTileLayers(
   context: CanvasRenderingContext2D,
   image: TilesetCanvasImage,
@@ -45,6 +46,29 @@ export function drawMapTileLayer(
 ): void {
   drawLayer(context, image, map, tileset, layer === "lower" ? map.lowerTiles : map.upperTiles, scale);
   drawStackLayer(context, image, map, tileset, layer, scale);
+  // 2층(lower)·4층(upper)은 합성·받침 없이 칩 그대로. 옛 맵에는 칸이 없어 아무것도 안 그린다.
+  const overlayLayer = layer === "lower" ? 2 : 4;
+  for (let index = 0; index < map.width * map.height; index += 1) {
+    const overlay = layerTileAt(map, overlayLayer, index);
+    if (overlay >= 0) drawRawTile(context, image, tileset, overlay, index % map.width, Math.floor(index / map.width), scale);
+  }
+  if (layer !== "lower" || !map.shadowBits) return;
+  const size = tileset.tileSize * scale;
+  for (let index = 0; index < map.width * map.height; index += 1) {
+    drawShadowQuarters(context, index % map.width, Math.floor(index / map.width), size, shadowAt(map, index));
+  }
+}
+
+/** 그림자 조각(칸의 ¼)마다 반투명 검정 사각형. bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래. size = 그려지는 칸 크기(px). */
+export function drawShadowQuarters(context: CanvasRenderingContext2D, x: number, y: number, size: number, bits: number): void {
+  if (bits === 0) return;
+  const half = size / 2;
+  context.save();
+  context.fillStyle = "rgba(0,0,0,0.5)";
+  for (let quarter = 0; quarter < 4; quarter += 1) {
+    if (bits & (1 << quarter)) context.fillRect(x * size + (quarter % 2) * half, y * size + Math.floor(quarter / 2) * half, half, half);
+  }
+  context.restore();
 }
 
 function drawStackLayer(

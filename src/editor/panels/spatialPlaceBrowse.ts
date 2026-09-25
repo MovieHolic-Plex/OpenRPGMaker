@@ -10,6 +10,7 @@ import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess"
 import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
 import { reviewedPlaceSummary } from "@/project/defaults/spatial/reviewedPlaceIndex";
 import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
+import { spatialThumbSrc } from "@/editor/panels/spatialCardThumbs";
 import { el } from "@/util/dom";
 
 const DOUBLE_CLICK_MS = 450;
@@ -406,13 +407,14 @@ function intrinsicSize(node: HTMLElement): { readonly w: number; readonly h: num
 function cloneThumb(button: HTMLElement): HTMLElement | null {
   const thumb = button.querySelector(".spatial-card-thumb");
   if (!(thumb instanceof HTMLElement)) return null;
-  if (thumb.querySelector('[data-thumb="pending"]')) return null;
   const pieces = [...thumb.querySelectorAll("canvas, img")].flatMap((node) => {
     const cloned = cloneArt(node);
     return cloned ? [cloned] : [];
   });
   const error = thumb.querySelector(".spatial-place-preview-error");
   if (pieces.length === 0) {
+    const src = spatialThumbSrc(button.dataset.placeZoom ?? "");
+    if (src) return cloneArt(Object.assign(document.createElement("img"), { src }));
     if (error instanceof HTMLElement && error.textContent) {
       return el("p", { class: "spatial-place-zoom-empty", text: error.textContent });
     }
@@ -436,22 +438,21 @@ function cloneArt(node: Element): HTMLElement | null {
     return copy;
   }
   if (node instanceof HTMLImageElement) {
-    if (!node.complete || node.naturalWidth < 1) return null;
+    const src = node.currentSrc || node.src;
+    if (!src) return null;
     const copy = document.createElement("img");
     copy.className = "spatial-place-zoom-art";
     copy.alt = "";
     copy.draggable = false;
-    copy.src = node.currentSrc || node.src;
+    copy.src = src;
     return copy;
   }
   return null;
 }
 
 function overlayHost(): HTMLElement | null {
-  const body = document.querySelector(".database-modal-body");
-  if (body instanceof HTMLElement) return body;
-  const backdrop = document.querySelector(".database-modal-backdrop");
-  if (backdrop instanceof HTMLElement) return backdrop;
+  // 자료집 본문은 카드 클릭마다 replaceChildren 으로 비운다. 상세를 그 안에 두면
+  // 두 번째 클릭의 새로 그리기가 방금 연 확대 창을 지운다.
   return document.body;
 }
 

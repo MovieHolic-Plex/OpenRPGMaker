@@ -15,7 +15,7 @@ export const DECK_ICON_NAMES = [
   "plus", "clock", "more", "chevron-down", "chevron-right", "arrow-up", "stop", "check", "spark", "pin",
   "selection", "x", "undo", "expand", "list", "question", "gear", "export", "book", "compress", "wrench",
   "scroll", "eye", "house", "wall", "road", "door", "box", "user", "shop", "flag", "grid", "shield", "map",
-  "tree", "link", "search", "memory", "alert",
+  "tree", "link", "search", "memory", "alert", "sidebar", "brush",
 ] as const;
 
 export type DeckIconName = (typeof DECK_ICON_NAMES)[number];
@@ -41,6 +41,9 @@ const SHAPES: Readonly<Record<DeckIconName, readonly Shape[]>> = {
   spark: [path("M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z")],
   // 느낌표 — 「살펴볼 것이 있다」는 뜻. 물음표(question)와 헷갈리지 않게 삼각형 안에 세운다.
   alert: [path("M12 3.5l9 16H3z"), path("M12 10v4"), circle(12, 17, 0.9)],
+  // 사이드바 가리기/보이기 — Mac 앱 공통 모양(창 + 왼쪽 칸).
+  sidebar: [rect(3, 4.5, 18, 15, 2.5), path("M9.5 4.5v15")],
+  brush: [path("M19.5 3.5 10 13l1 1 9.5-9.5a1.4 1.4 0 0 0-1-2z"), path("M9.5 13.5c-2 0-3.5 1.4-3.5 3.3 0 1.2-.8 2-2 2.2 1 1 2.4 1.5 4 1.5 2.8 0 4.5-1.8 4.5-4.2z")],
   pin: [path("M12 21s-6-5.3-6-11a6 6 0 1 1 12 0c0 5.7-6 11-6 11z"), circle(12, 10, 2.2)],
   selection: [path("M4 8V6a2 2 0 0 1 2-2h2M16 4h2a2 2 0 0 1 2 2v2M20 16v2a2 2 0 0 1-2 2h-2M8 20H6a2 2 0 0 1-2-2v-2")],
   x: [path("M6 6l12 12M18 6L6 18")],

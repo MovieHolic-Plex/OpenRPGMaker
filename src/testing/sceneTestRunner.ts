@@ -1,6 +1,9 @@
+import { recoverAll } from "@/project/sessionActorCommands";
+import { numberInputAnswer } from "@/testing/numberInputAnswer";
 import { buildLifeRuntimeSnapshot, type LifeRuntimeSnapshot } from "@/player/runtimeDom";
 import { canMove, isPassable, isPassableLanding } from "@/project/collision";
 import { headlessBattleSnapshot, createBattleRuntime, type BattleResult } from "@/battle/runtime";
+import type { ActorCommand } from "@/battle/types";
 import { resolveEventPage } from "@/project/io";
 import { checkReachability } from "@/project/lint/reachability";
 import {
@@ -20,10 +23,13 @@ import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
 import type { Command, Dir, GameMap, Project } from "@/project/types";
 import { characterSpriteX, characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { createInterpreter, type Interpreter, type StepResult } from "@/player/interpreter";
+import { useItemFromMenu } from "@/player/playerItemUse";
 import { restoreSessionCheckpoint } from "@/player/checkpoints";
 import { nextChaseDecision, type ChaseRuntimeState } from "@/player/chaseAi";
+import { isPlayerHiding, pursuitTarget, toggleHiding } from "@/player/horrorRuntime";
+import type { AutonomousMover } from "@/player/playSceneTypes";
 import { followerPositions, recordFollowerPlayerStep, removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules, type FollowerWorld } from "@/project/followers";
-import { npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
+import { npcMoveDurationMs, npcMoveIntervalMs } from "@/player/playScenePageMoveRoutes";
 import type { RuntimeCameraSessionState, RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import {
   advanceLightingAmbientTransition,
@@ -46,6 +52,7 @@ import { isCutsceneInputLocked, releaseCutsceneControlForOwner } from "@/player/
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { battleAnimationDurationMs } from "@/player/battleAnimationPlayback";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
+import { monsterBattlePartyOf } from "@/project/monsterCollection";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 import {
   advanceFieldSpawns,
@@ -190,6 +197,8 @@ export type SceneStep =
   | { kind: "move"; dir: Dir; to?: never }
   | { kind: "move"; dir?: never; to: { x: number; y: number } }
   | { kind: "interact"; eventId?: string }
+  /** 메뉴에서 아이템을 쓴다. 스위치 아이템이면 직후 자동 공통 이벤트가 돈다. */
+  | { kind: "useItem"; itemId: string }
   | { kind: "snapshotRewards" }
   | { kind: "purchase"; eventId: string; itemId: string; count: number; unitPrice: number }
   | { kind: "gift"; eventId?: string; itemId: string }
@@ -249,6 +258,16 @@ export interface SceneTestInput {
   readonly mapId: string;
   readonly start: { readonly x: number; readonly y: number };
   readonly steps: readonly SceneStep[];
+}
+
+/** 모델 입력(SceneTestInput)과 따로 두는 러너 설정 — run_scene_test 도구에는 드러나지 않는다. */
+export interface SceneRunnerOptions {
+  /**
+   * 무작위 인카운터 직전마다 파티를 전부 회복한다(QA 자동 플레이 전용 — 플레이어가 여관·포션으로 버티는 것을 흉내).
+   * 스크립트 전투(보스)는 회복하지 않고 들어간다 — 보스 앞에서 체력을 관리하는 것은 설계의 몫이다.
+   * 기본은 꺼짐: 실제 소모를 그대로 본다.
+   */
+  readonly recoverBeforeRandomEncounters?: boolean;
 }
 
 export interface SceneInteractionReceipt {
@@ -359,8 +378,10 @@ interface RunnerState {
   timeMinuteAccumulator: number;
   activeAnimations: Array<{ readonly animationId: string; remainingMs: number }>;
   readonly autoStartedKeys: Set<string>;
+  inCommonAuto: boolean;
   readonly chasers: Map<string, ChaseRuntimeState>;
   encounterAccumulator: number;
+  readonly recoverBeforeRandomEncounters: boolean;
   facing: Dir;
   /** Runner-observable transcript of message text bodies shown so far. */
   readonly messages: string[];
@@ -462,6 +483,7 @@ const SCENE_STEP_SPECS: Readonly<Record<string, SceneStepSpec>> = {
     variables: sceneNumbers, inventory: sceneNumbers, gold: sceneNumber, manualHint: sceneText,
   } },
   interact: { fields: { eventId: sceneText } },
+  useItem: { fields: { itemId: sceneText }, required: ["itemId"] },
   snapshotRewards: { fields: {} },
   retryCheckpoint: { fields: {} },
   gift: { fields: { eventId: sceneText, itemId: sceneText }, required: ["itemId"] },
@@ -512,6 +534,7 @@ const SCENE_FIELD_ALIASES: Readonly<Record<string, Readonly<Record<string, strin
   wait: { ms: "ticks", frames: "ticks", duration: "ticks" },
   move: { direction: "dir", target: "to", position: "to" },
   gift: { item: "itemId" },
+  useItem: { item: "itemId", id: "itemId" },
   expect: { ending: "endingReached", ended: "endingReached", inventory: "inventoryCount", position: "playerAt", switch: "switchOn" },
 };
 
@@ -599,7 +622,7 @@ export function isSceneTestInput(value: unknown): value is SceneTestInput {
   return sceneTestInputProblem(value) === null;
 }
 
-export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof): SceneTestResult {
+export function runSceneTest(project: Project, input: SceneTestInput, rewardProof?: SceneRewardProof, runnerOptions: SceneRunnerOptions = {}): SceneTestResult {
   const session = startSession(project, 1);
   const inputProblem = sceneTestInputProblem(input);
   if (inputProblem) {
@@ -636,8 +659,10 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
     timeMinuteAccumulator: 0,
     activeAnimations: [],
     autoStartedKeys: new Set(),
+    inCommonAuto: false,
     chasers: new Map(),
     encounterAccumulator: 0,
+    recoverBeforeRandomEncounters: runnerOptions.recoverBeforeRandomEncounters === true,
     facing: "down",
     messages: [],
     gameOver: false,
@@ -682,6 +707,10 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
         if (rewardProof.report.phase !== "prelude" && state.session.currentMapId !== rewardProof.target.mapId) unverified("Protected target map changed");
       }
       reason = runStep(state, step) ?? state.runtimeFailure;
+      // 런타임은 매 프레임 자동 실행 페이지를 다시 본다 — 조사로 켠 스위치가 같은 맵의 자동 컷신(메멘토를 다 모으면
+      // 열리는 문 등)을 세우면 바로 돈다. 러너는 맵 진입 때만 돌려서 그 컷신이 영영 안 돌았다(2026-09-24 회상 스토리).
+      // 이미 돈 페이지는 autoStartedKeys 가 걸러 한 번만 돈다. 선택을 기다리는 중에는 건드리지 않는다.
+      if (reason === null && !state.held && step.kind !== "expect") reason = runAutoTriggers(state) ?? state.runtimeFailure;
       reason ??= checkEarlyReward(state);
     } catch (cause) {
       state.setupFailure = { kind: "execution-failure", stepIndex: i, mapId: state.session.currentMapId };
@@ -698,7 +727,7 @@ export function runSceneTest(project: Project, input: SceneTestInput, rewardProo
 function runStep(state: RunnerState, step: SceneStep): string | null {
   if (state.rewardProof && state.held && step.kind !== "choose"
     && !(step.kind === "expect" && step.mapId !== undefined && Object.keys(step).length === 2)) return "Unfinished interaction: only its pending choice may proceed";
-  if (state.held && ["walk", "move", "interact", "gift"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
+  if (state.held && ["walk", "move", "interact", "gift", "useItem"].includes(step.kind)) return `Interaction still waiting for ${state.held.mode}`;
   switch (step.kind) {
     case "wait":
       return advanceTime(state, Math.max(0, Math.trunc(step.ticks)) * TICK_MS);
@@ -708,11 +737,15 @@ function runStep(state: RunnerState, step: SceneStep): string | null {
     case "set":
       return runSetStep(state, step);
     case "move":
+      if (state.session.horror?.hiding) return "숨어 있는 동안에는 움직일 수 없습니다 — interact 로 은신처에서 나오세요.";
       return runMoveStep(state, step);
     case "walk":
+      if (state.session.horror?.hiding) return "숨어 있는 동안에는 움직일 수 없습니다 — interact 로 은신처에서 나오세요.";
       return runWalkStep(state, step);
     case "interact":
       return runInteractStep(state, step.eventId);
+    case "useItem":
+      return runUseItemStep(state, step.itemId);
     case "snapshotRewards":
       state.rewardBaseline = { gold: state.session.gold, inventory: { ...state.session.inventory }, monsters: ownedMonsterCounts(state.session) };
       if (state.rewardProof?.report.phase === "claim") state.rewardClaimSnapshotTaken = true;
@@ -964,6 +997,13 @@ function findGiftEventOverlapping(
   return events.find((view) => view.trigger.kind === "action" && rectsOverlap(view.bodyRect, pointRect(x, y)));
 }
 
+function runUseItemStep(state: RunnerState, itemId: string): string | null {
+  const actorId = state.session.partyActorIds.find((id): id is string => typeof id === "string");
+  const result = useItemFromMenu(state.project, state.session, itemId, actorId);
+  state.log.push(`useItem ${itemId}: ${result.kind} ${result.message}`);
+  return result.kind === "used" ? null : result.message;
+}
+
 function runInteractStep(state: RunnerState, expectedEventId?: string): string | null {
   // Capture before every selection exit; clear only when the intended event is selected.
   if (expectedEventId !== undefined) state.failedSelection = {
@@ -972,6 +1012,15 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
   if (state.gameOver) return "게임 오버 중에는 이벤트를 조사할 수 없습니다.";
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
+  // 런타임(playSceneMovement handleAction)과 같다: 숨어 있으면 조사 키는 나오기, 은신처 조사는 숨기.
+  const world = { project: state.project, map, session: state.session, positions: state.eventPositions };
+  if (state.session.horror?.hiding) {
+    const from = state.session.horror.hiding.eventId;
+    toggleHiding(world);
+    delete state.failedSelection;
+    state.log.push(`hide exit ${from}`);
+    return null;
+  }
   const delta = directionDelta(state.facing);
   for (const target of [
     { mapId: map.id, x: state.session.x + delta.x, y: state.session.y + delta.y },
@@ -981,6 +1030,12 @@ function runInteractStep(state: RunnerState, expectedEventId?: string): string |
     if (event) {
       if (expectedEventId !== undefined && event.event.id !== expectedEventId) return `Interaction target: expected ${expectedEventId}, actual ${event.event.id}`;
       delete state.failedSelection;
+      if (event.page?.interaction?.kind === "hiding") {
+        toggleHiding(world, event);
+        const witnessed = state.session.horror?.hiding?.witnessedBy ?? [];
+        state.log.push(`hide in ${event.event.id}${witnessed.length ? ` (seen by ${witnessed.join(",")})` : ""}`);
+        return null;
+      }
       return runEventView(state, event);
     }
     const chest = findChestAt(state.session, map.id, target.x, target.y);
@@ -1228,7 +1283,7 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
           const landingFailure = proofPosition(state);
           if (landingFailure) return { stop: "failed", reason: landingFailure };
         }
-        state.autoStartedKeys.clear();
+        clearMapAutoKeys(state);
         {
           // 도착 지점의 구역 진입은 자동 트리거보다 먼지 돌린다(실하 경로와 같은 우선순위).
           // 기록이 없는 맵은 첫 판정이 seed 로 떨어지므로 도착 기준선을 먼지 열어 둔다.
@@ -1323,8 +1378,10 @@ function pump(state: RunnerState, interp: Interpreter, first: StepResult): PumpS
         state.log.push(`shop: ${formatShopItems(step.items ?? step.itemIds.map((itemId) => ({ itemId })))}`);
         return { stop: "shop", step };
       case "inputWait":
-      case "inputNumber":
         step = interp.resume(0);
+        break;
+      case "inputNumber":
+        step = interp.resume(numberInputAnswer(state.project, step.variableId));
         break;
       case "enterHeroName":
         step = interp.resume("");
@@ -1391,6 +1448,13 @@ function fireLocationTransitionsForRunner(state: RunnerState): string | null {
   return runLocationTransitionTriggersForRunner(state, update.transitions);
 }
 
+/** 맵 자동 이벤트 키만 지운다. 공통 이벤트 키까지 지우면, 스위치를 끄기 전에 이동하는 깨기 이벤트가 도착 맵에서 다시 자신을 부른다. */
+function clearMapAutoKeys(state: RunnerState): void {
+  for (const key of [...state.autoStartedKeys]) {
+    if (!key.startsWith("common:")) state.autoStartedKeys.delete(key);
+  }
+}
+
 function runAutoTriggers(state: RunnerState): string | null {
   const map = currentMap(state);
   if (!map) return `현재 맵 없음: ${state.session.currentMapId}`;
@@ -1403,6 +1467,37 @@ function runAutoTriggers(state: RunnerState): string | null {
     const failure = runEventView(state, event);
     if (failure) return failure;
   }
+  // 실플레이어 fireAutoTriggers 와 같이, 조건 스위치가 켜진 자동 공통 이벤트도 돈다.
+  // 꿈에서 깨는 스위치 아이템은 맵을 바꾸기 전에 이 이벤트로 방으로 돌아간다(2026-09-24).
+  for (const commonEvent of state.project.commonEvents) {
+    if (commonEvent.trigger !== "auto") continue;
+    const key = `common:${commonEvent.id}`;
+    if (commonEvent.conditionSwitchId && state.session.switches[commonEvent.conditionSwitchId] !== true) {
+      state.autoStartedKeys.delete(key);
+      continue;
+    }
+    if (state.autoStartedKeys.has(key) || state.held || state.inCommonAuto) continue;
+    state.autoStartedKeys.add(key);
+    state.inCommonAuto = true;
+    let failure: string | null;
+    try {
+      failure = runCommonEventForRunner(state, commonEvent);
+    } finally {
+      state.inCommonAuto = false;
+    }
+    if (failure) return failure;
+  }
+  return null;
+}
+
+function runCommonEventForRunner(state: RunnerState, commonEvent: { id: string; commands: readonly Command[] }): string | null {
+  if (commonEvent.commands.length === 0) return null;
+  state.log.push(`common ${commonEvent.id} start`);
+  const interp = createInterpreter([...commonEvent.commands], state.session, state.project);
+  const stop = pump(state, interp, interp.start());
+  if (stop.stop === "failed") return stop.reason;
+  if (stop.stop !== "done") return `common ${commonEvent.id}: 블로킹 단계 ${stop.stop}는 headless에서 처리할 수 없습니다.`;
+  state.log.push(`common ${commonEvent.id} done`);
   return null;
 }
 
@@ -2326,11 +2421,15 @@ function maybeTriggerRandomEncounterForRunner(state: RunnerState): string | null
     ? eligibleEncounterEntries(map, state.session, position).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return null;
+  // 실제 플레이(playSceneMovement)와 같이: 몬스터 파티 전투인데 파트너가 없으면 야생이 나오지 않는다.
+  const monsterBattle = monsterBattlePartyOf(state.project, state.session);
+  if (monsterBattle.requested && monsterBattle.party.length === 0) return null;
   state.encounterAccumulator += rate;
   if (state.encounterAccumulator < 1000 && nextSessionRandom(state.session, "encounter") * 1000 >= state.encounterAccumulator) return null;
   state.encounterAccumulator = 0;
   const troopId = pickEncounterTroopForMap(map, state.session, position);
   if (!troopId) return null;
+  if (state.recoverBeforeRandomEncounters) recoverAll(state.session, undefined, state.project);
   const outcome = runHeadlessBattle(state, { kind: "battleProcessing", troopId, canEscape: true, canLose: false });
   state.session.battleResult = outcome;
   state.log.push(`random encounter ${troopId}: ${outcome}`);
@@ -2346,6 +2445,10 @@ function runHeadlessBattle(
   step: Extract<StepResult, { kind: "battleProcessing" }>
 ): BattleResult {
   if (state.rewardProof) unverified("Unsupported battle");
+  // 몬스터 수집 게임은 파티 몬스터가 싸운다(playSceneBattle 과 같은 입력). 빠뜨리면 헤드리스 전투가 Lv1 영웅으로
+  // 치러져 거짓 게임 오버가 나고, run_scene_test 로 관장전을 검증할 수 없었다.
+  const monsterBattle = monsterBattlePartyOf(state.project, state.session);
+  const partyMonsters = monsterBattle.party.length > 0 ? monsterBattle.party : undefined;
   const runtime = createBattleRuntime({
     project: state.project,
     troopId: step.troopId,
@@ -2366,7 +2469,9 @@ function runHeadlessBattle(
       classOverrides: state.session.classOverrides,
       stateIds: state.session.actorStateIds,
       partyActorIds: state.session.partyActorIds,
+      ...(partyMonsters ? { monsterParty: partyMonsters } : {}),
     },
+    ...(partyMonsters ? { partyMonsters } : {}),
     sessionState: {
       switches: state.session.switches,
       variables: state.session.variables,
@@ -2383,7 +2488,7 @@ function runHeadlessBattle(
     if (snapshot.result) break;
     if (snapshot.phase === "actorCommand") {
       const enemy = snapshot.enemies.find((entry) => !entry.defeated && entry.hp > 0);
-      if (enemy) runtime.performActorCommand({ kind: "attack", targetEnemyId: enemy.id });
+      if (enemy) actHeadless(state.project, runtime, snapshot, enemy.id);
       else runtime.tick(1000);
     } else {
       runtime.tick(1000);
@@ -2398,8 +2503,35 @@ function runHeadlessBattle(
     actors: [...final.actors, ...final.reserveActors],
     eventState: final.eventState,
     participatingActorIds: final.participatingActorIds,
+    ...(partyMonsters ? { monsterPartyMode: true } : {}),
   }, state.project);
   return result;
+}
+
+/**
+ * 헤드리스 전투의 한 수. 기본은 「공격」이지만 gen1(포켓몬식)은 기술이 남은 몬스터의 공격을 받지 않는다 —
+ * 그러면 아무 수도 두지 못해 매 전투를 졌다(2026-09-24 몬스터 수집 도그푸딩: 스타터가 Lv3 야생에 패배).
+ * 적을 때리는 기술을 위력 순으로 시도하고, 받아들여지지 않으면 다음 수로 간다.
+ */
+function actHeadless(project: Project, runtime: ReturnType<typeof createBattleRuntime>, snapshot: ReturnType<typeof headlessBattleSnapshot>, targetEnemyId: string): void {
+  // activeActorId 는 기록 id 다(몬스터 배틀러는 id 가 "mon:<개체>" 라 recordId·monsterInstanceId 로 찾는다).
+  const active = snapshot.actors.find((actor) => actor.id === snapshot.activeActorId || actor.recordId === snapshot.activeActorId
+    || actor.monsterInstanceId === snapshot.activeActorId);
+  const skills = new Map(project.database.skills.map((skill) => [skill.id, skill]));
+  const damaging = (active?.skillIds ?? [])
+    .map((skillId) => skills.get(skillId))
+    .filter((skill): skill is NonNullable<typeof skill> => !!skill && (skill.scope === "enemy" || skill.scope === "allEnemies") && (skill.power ?? 0) > 0)
+    .sort((a, b) => (b.power ?? 0) - (a.power ?? 0));
+  const attempts: ActorCommand[] = project.system.battleModel === "gen1"
+    ? [...damaging.map((skill) => ({ kind: "skill" as const, skillId: skill.id, targetEnemyId })), { kind: "attack", targetEnemyId }]
+    : [{ kind: "attack", targetEnemyId }];
+  for (const command of attempts) {
+    runtime.performActorCommand(command);
+    const after = headlessBattleSnapshot(runtime);
+    if (after.phase !== "actorCommand" || after.activeActorId !== snapshot.activeActorId || after.result) return;
+  }
+  // 어떤 수도 안 받아 주면 방어로 턴을 넘긴다(무한 대기 방지).
+  runtime.performActorCommand({ kind: "defend" });
 }
 
 function killPartyForRunner(state: RunnerState): void {
@@ -2447,13 +2579,16 @@ function refreshChasers(state: RunnerState): void {
   }
   for (const view of active) {
     const existing = state.chasers.get(view.event.id);
+    // 런타임은 한 칸 걸음(트윈, speed)이 끝난 뒤 간격(frequency)을 기다린다 — 러너가 간격만 쓰면
+    // 추격자가 실제보다 3배 빨라 「헤드리스로는 잡히는데 플레이로는 도망친다」 가 됐다(2026-09-24).
+    const stepMs = npcMoveDurationMs(view.movement.speed) + npcMoveIntervalMs(view.movement.frequency);
     if (existing) {
-      existing.moveIntervalMs = npcMoveIntervalMs(view.movement.frequency);
+      existing.moveIntervalMs = stepMs;
       continue;
     }
     state.chasers.set(view.event.id, {
       timer: 0,
-      moveIntervalMs: npcMoveIntervalMs(view.movement.frequency),
+      moveIntervalMs: stepMs,
     });
   }
 }
@@ -2467,17 +2602,30 @@ function advanceChasers(state: RunnerState, deltaMs: number): void {
     const view = runtimeEventViewsForMap(state.project, map, state.session, state.eventPositions)
       .find((entry) => entry.event.id === eventId);
     if (!view) continue;
-    const decision = nextChaseDecision({
+    // 런타임(playSceneAutonomous updateChaseNpc)과 같은 추적 정책: 시야·수색·복귀, 숨은 주인공은 표적이 아니다.
+    const world = { project: state.project, map, session: state.session, positions: state.eventPositions };
+    isPlayerHiding(world);
+    const tracked = pursuitTarget(world, view, mover as unknown as AutonomousMover, deltaMs);
+    if (tracked === null) continue;
+    const player = { x: state.session.x, y: state.session.y };
+    const target = tracked ?? player;
+    let decision = nextChaseDecision({
       project: state.project,
       map,
       from: { x: view.x, y: view.y },
-      player: { x: state.session.x, y: state.session.y },
+      player: target,
       deltaMs,
       mover,
-      sightRange: view.movement.sightRange,
-      giveUpRange: view.movement.giveUpRange,
+      sightRange: tracked ? undefined : view.movement.sightRange,
+      giveUpRange: tracked ? undefined : view.movement.giveUpRange,
       pathfind: view.movement.pathfind,
     });
+    if (tracked?.searching && decision.kind === "touch" && (target.x !== player.x || target.y !== player.y)) {
+      decision = { kind: "move", x: target.x, y: target.y, dir: decision.dir };
+    }
+    if (decision.kind === "touch" && tracked?.searching) continue;
+    // 수색 중 목적지가 주인공 칸이면(숨은 옷장 앞) 밟지 않고 선다 — 런타임 isPlayerOccupyingTile 과 같다.
+    if (decision.kind === "move" && decision.x === player.x && decision.y === player.y) continue;
     if (decision.kind === "move") {
       const position = { x: decision.x, y: decision.y, direction: decision.dir };
       const location = state.session.eventLocations[eventId];

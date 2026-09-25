@@ -17,6 +17,9 @@ export class CameraPanController {
   private isPanning = false;
   private spacePanActive = false;
   private panStart: PanStart | null = null;
+  // The camera follows every sample, but overlay/viewport sync runs once per frame:
+  // a drag delivers both pointermove and mousemove, often several per frame.
+  private panMoveFrame: number | null = null;
 
   private readonly handleAuxiliaryCanvasPointerDown = (event: MouseEvent | PointerEvent): void => {
     if (!this.isMiddleButtonEvent(event)) return;
@@ -101,6 +104,7 @@ export class CameraPanController {
     this.isPanning = false;
     this.panStart = null;
     this.unbindWindowGuards();
+    this.flushPanMove();
     if (wasPanning) this.options.onPanEnd();
   }
 
@@ -163,6 +167,25 @@ export class CameraPanController {
       start.scrollX - dx / camera.zoom,
       start.scrollY - dy / camera.zoom
     );
+    this.schedulePanMove();
+  }
+
+  private schedulePanMove(): void {
+    if (this.panMoveFrame !== null) return;
+    if (typeof requestAnimationFrame !== "function") {
+      this.options.onPanMove();
+      return;
+    }
+    this.panMoveFrame = requestAnimationFrame(() => {
+      this.panMoveFrame = null;
+      this.options.onPanMove();
+    });
+  }
+
+  private flushPanMove(): void {
+    if (this.panMoveFrame === null) return;
+    cancelAnimationFrame(this.panMoveFrame);
+    this.panMoveFrame = null;
     this.options.onPanMove();
   }
 

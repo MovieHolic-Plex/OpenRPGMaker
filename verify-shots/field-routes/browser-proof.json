@@ -2,27 +2,27 @@
   "guidance": [
     {
       "tileset": "forest_harmony",
-      "category": "field-routes-forest-v3",
+      "category": "field-routes-forest-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_snow",
-      "category": "field-routes-snow-v3",
+      "category": "field-routes-snow-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_volcano",
-      "category": "field-routes-volcano-v3",
+      "category": "field-routes-volcano-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_desert",
-      "category": "field-routes-desert-v3",
+      "category": "field-routes-desert-v4",
       "present": true
     },
     {
       "tileset": "forest_harmony_autumn",
-      "category": "field-routes-autumn-v3",
+      "category": "field-routes-autumn-v4",
       "present": true
     }
   ],

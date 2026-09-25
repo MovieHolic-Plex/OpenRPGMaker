@@ -40,7 +40,7 @@ import { planScreenEffect } from "@/player/interpreter/screenEffectPlan";
 import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 import { beginCutsceneControl, endCutsceneControl } from "@/player/cutsceneControl";
 import { saveSessionCheckpoint } from "@/player/checkpoints";
-import { compileCutscene, CutsceneValidationError, type CutsceneBeat } from "@/editor/cutscene";
+import { compileCutscene, CutsceneValidationError, withoutEndingBeats, type CutsceneBeat } from "@/editor/cutscene";
 import { addFollowerToSession, removeFollowerFromSession } from "@/project/followers";
 import { addSessionLight, removeSessionLight, setSessionLighting } from "@/project/lightingRules";
 import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
@@ -67,7 +67,9 @@ function resumeNext(frame: Frame): CommandExecution {
 }
 
 function callCommonEvent(state: InterpreterState, frame: Frame, commonEventId: string): CommandExecution {
-  const commonEvent = state.session.commonEvents?.find((entry) => entry.id === commonEventId);
+  // 플레이 씬은 세션에 공용 이벤트를 실어 두지만(playSceneInterpreter), 헤드리스 경로(run_scene_test·qa:game 자동 플레이)는
+  // 세션만 만들고 싣지 않아 모든 callCommonEvent 가 「공통 이벤트 없음」으로 조용히 건너뛰어졌다 — 프로젝트 정의로 폴백한다.
+  const commonEvent = (state.session.commonEvents ?? state.project?.commonEvents)?.find((entry) => entry.id === commonEventId);
   if (commonEvent?.commands.length) {
     if (pushFrame(state, commonEvent.commands)) return { kind: "continue" };
     console.warn("[interpreter] common event recursion limit");
@@ -385,12 +387,30 @@ function killParty(state: InterpreterState): void {
   }
 }
 
+function endingConditionsMet(state: InterpreterState, ending: EndingDef): boolean {
+  return ending.conditions.every((condition) => evalCondition(
+    state.session,
+    condition,
+    resolveSocialHost(state) ?? state.currentEventId,
+    locationEvalContext(state),
+  ));
+}
+
 function triggerEnding(
   state: InterpreterState,
+  frame: Frame,
   endingId: string | undefined
 ): CommandExecution {
   const project = state.project;
-  const ending = project ? selectEnding(project.endings ?? [], state, endingId) : undefined;
+  const endings = project?.endings ?? [];
+  // 이름 있는 호출도 그 엔딩의 conditions 를 본다. 호감 ≥ 6 을 엔딩에만 적어 두고
+  // triggerEnding(endingId) 만 부르면, 예전에는 조건이 무시되어 호감 0에도 고백이 성공했다
+  // (2026-09-24 연애 도그푸딩 「골목 라디오의 밤」). 조건이 거짓이면 타이틀로 쫓지 않고 다음 명령으로 넘어간다.
+  if (endingId) {
+    const named = endings.find((ending) => ending.id === endingId);
+    if (named && !endingConditionsMet(state, named)) return resumeNext(frame);
+  }
+  const ending = project ? selectEnding(endings, state, endingId) : undefined;
   if (!ending) {
     console.warn(`[interpreter] 엔딩을 선택할 수 없습니다: ${endingId ?? "(auto)"}`);
     return pause("returnToTitle", { kind: "returnToTitle", title: "엔딩", message: "조건에 맞는 엔딩이 없습니다." });
@@ -412,7 +432,7 @@ function selectEnding(
 ): EndingDef | undefined {
   if (endingId) return endings.find((ending) => ending.id === endingId);
   return endings
-    .filter((ending) => ending.conditions.every((condition) => evalCondition(state.session, condition, resolveSocialHost(state) ?? state.currentEventId, locationEvalContext(state))))
+    .filter((ending) => endingConditionsMet(state, ending))
     .sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))[0];
 }
 
@@ -423,7 +443,8 @@ function compileEndingEpilogue(state: InterpreterState, ending: EndingDef): Comm
     for (const event of map.events) eventIds.add(event.id);
   }
   try {
-    return compileCutscene(ending.epilogue as CutsceneBeat[], {
+    // 에필로그 안에서 엔딩을 다시 부르면 에필로그가 무한 반복된다 — 옛 저장본도 여기서 막는다.
+    return compileCutscene(withoutEndingBeats(ending.epilogue as CutsceneBeat[]).beats, {
       resetFace: true,
       context: { eventIds, resourceIds: collectResourceIds(state.project) },
     });
@@ -468,12 +489,15 @@ export function executeCommand(
         settings: state.session.messageWindowSettings,
         autoAdvance: command.autoAdvance === true,
         emotion: command.emotion,
+        ...(command.style ? { style: command.style } : {}),
+        ...(command.context ? { context: command.context } : {}),
+        ...(command.container ? { container: command.container } : {}),
       });
     case "choices":
       return pause("choices", {
         kind: "choices",
         prompt: command.prompt,
-        options: command.options.map((option) => ({ text: option.text })),
+        options: command.options.slice(0, 5).map((option) => ({ text: option.text })),
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
         cancelBehavior: command.cancelBehavior,
       });
@@ -725,7 +749,7 @@ export function executeCommand(
       killParty(state);
       return pause("gameOver", { kind: "gameOver", message: command.message, ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "triggerEnding":
-      return triggerEnding(state, command.endingId);
+      return triggerEnding(state, frame, command.endingId);
     case "gameOver":
       return pause("gameOver", { kind: "gameOver", ...(command.gameOverId ? { gameOverId: command.gameOverId } : {}) });
     case "ending":

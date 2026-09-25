@@ -2,7 +2,7 @@ import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderBasicLeftRail, resetBasicLeftRailForTests } from "@/editor/panels/basicLeftRail";
 import { editorState } from "@/editor/editorState";
-import { resetEditorUiModeForTests, setEditorUiMode } from "@/editor/editorUiMode";
+import { resetEditorUiModeForTests } from "@/editor/editorUiMode";
 import { uiLabel } from "@/editor/uiCopy";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
@@ -48,8 +48,7 @@ describe("basic icon rail", () => {
       ["tool-fill", "채우기"],
       ["tool-event", "장면"],
       ["tool-eyedropper", "집기"],
-      ["basic-rail-toggle-tiles", "타일"],
-      ["basic-rail-toggle-maps", "맵"],
+      ["oprn-tool-undo", "되돌리기"],
     ] as const;
 
     for (const [testId, label] of expectedLabels) {
@@ -72,7 +71,6 @@ describe("basic icon rail", () => {
 
   it("타일은 처음부터 보이고 선택 뒤에도 남는다", () => {
     expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
     click("basic-tile-0");
     renderBasicLeftRail(container);
     expect(editorState.get().selectedTile).toBe(0);
@@ -120,71 +118,36 @@ describe("basic icon rail", () => {
     expect(select?.getAttribute("aria-pressed")).toBeNull();
   });
 
-  it("플라이아웃을 닫으면 포커스가 그것을 연 토글로 돌아온다", () => {
-    click("basic-rail-toggle-maps");
+  it("이벤트 레이어에서는 타일 도구를 숨기고 선택·장면만 남긴다", () => {
+    selectSidebarLayer("event");
     renderBasicLeftRail(container);
-    const closeBtn = findByTestId(container as unknown as FakeElement, "basic-flyout-close") as unknown as HTMLElement | null;
-    expect(closeBtn).toBeTruthy();
-    closeBtn!.focus();
-    closeBtn!.click();
+    for (const id of ["tool-paint", "tool-erase", "tool-fill", "tool-eyedropper"]) {
+      expect(findByTestId(container as unknown as FakeElement, id), id).toBeNull();
+    }
+    expect(findByTestId(container as unknown as FakeElement, "tool-select")).toBeTruthy();
+    expect(findByTestId(container as unknown as FakeElement, "tool-event")?.getAttribute("aria-current")).toBe("true");
+    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeNull();
+    expect(findByTestId(container as unknown as FakeElement, "brush-size-1")).toBeNull();
+    // 붓 줄은 레이어 이름을 한 번만 말한다 — 「이벤트 · 이벤트」가 아니다.
+    expect(findByTestId(container as unknown as FakeElement, "tile-brush-state")?.textContent).toBe("이벤트");
+    selectSidebarLayer("lower");
     renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
-    expect(document.activeElement).toBe(findByTestId(container as unknown as FakeElement, "basic-rail-toggle-maps"));
+    expect(findByTestId(container as unknown as FakeElement, "tool-paint")).toBeTruthy();
   });
 
-  it("모드를 바꿨다 초보로 돌아오면 열지 않은 플라이아웃이 남지 않는다", () => {
-    click("basic-rail-toggle-maps");
+  it("붓 크기는 크기가 뜻 있는 도구(칠하기·지우기)에서만 보인다", () => {
+    expect(findByTestId(container as unknown as FakeElement, "brush-size-1")).toBeTruthy();
+    for (const tool of ["fill", "select", "eyedropper"] as const) {
+      editorState.set({ tool });
+      renderBasicLeftRail(container);
+      expect(findByTestId(container as unknown as FakeElement, "brush-size-1"), tool).toBeNull();
+    }
+    editorState.set({ tool: "erase" });
     renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
-
-    setEditorUiMode("standard", null);
-    setEditorUiMode("beginner", null);
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
+    expect(findByTestId(container as unknown as FakeElement, "brush-size-1")).toBeTruthy();
   });
 
-  it("칠하기는 맵 플라이아웃을 다시 열지 않고 타일을 계속 보여 준다", () => {
-    editorState.set({ selectedTile: 0, tool: "select" });
-    renderBasicLeftRail(container);
-    click("basic-rail-toggle-maps");
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
-    click("basic-rail-toggle-maps");
-    renderBasicLeftRail(container);
-    click("tool-paint");
-    renderBasicLeftRail(container);
-    expect(editorState.get().tool).toBe("paint");
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeNull();
-    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
-  });
-
-  it("호출자가 컨테이너를 비운 뒤 다시 그려도 열린 플라이아웃은 살아 있다", () => {
-    // renderTilePalette 는 clearChildren 뒤에 renderBasicLeftRail 을 부른다. 예전 isStaleFlyoutState
-    // 는 "컨테이너 안에 레일이 없다"를 «다른 모드가 덮어썼다»로 오진해서, editorState 가 바뀔 때마다
-    // (맵 선택 포함) 열림 상태를 초기화했다 — 맵을 고르면 맵 플라이아웃이 스스로 닫혔다.
-    click("basic-rail-toggle-maps");
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
-
-    clearChildren(container);
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
-    expect(findByTestId(container as unknown as FakeElement, "map-tree")).toBeTruthy();
-  });
-
-  it("맵 플라이아웃의 핀은 선택 재렌더에도 유지된다", () => {
-    click("basic-rail-toggle-maps");
-    renderBasicLeftRail(container);
-    click("basic-flyout-pin");
-    renderBasicLeftRail(container);
-    click("basic-tile-0");
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-rail-flyout")).toBeTruthy();
-    expect(findByTestId(container as unknown as FakeElement, "basic-flyout-pin")?.getAttribute("aria-pressed")).toBe("true");
-    expect(findByTestId(container as unknown as FakeElement, "basic-tile-grid")).toBeTruthy();
-  });
-
-  it("타일셋이 없으면 비활성 타일 버튼이 이벤트 레이어가 아니라 실제 원인을 말한다", () => {
+  it("타일셋이 없으면 빈 상태의 원인을 말한다", () => {
     const project = store.getCurrent();
     const map = project.maps[project.startMapId];
     store.replace({
@@ -192,51 +155,19 @@ describe("basic icon rail", () => {
       tilesets: Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => id !== map.tilesetId)),
     });
     renderBasicLeftRail(container);
-    const title = findByTestId(container as unknown as FakeElement, "basic-rail-toggle-tiles")?.getAttribute("title");
-    expect(title).toContain(uiLabel("tilesetMissing"));
-    expect(title).not.toContain("이벤트 레이어");
+    expect(container.querySelector(".empty-hint")?.textContent).toBe(uiLabel("tilesetMissing"));
   });
 
   it("소비처 없는 data-rail-label 잔해를 더 쓰지 않는다", () => {
-    for (const id of ["tool-paint", "basic-rail-toggle-tiles", "basic-rail-toggle-maps"]) {
-      expect(findByTestId(container as unknown as FakeElement, id)?.dataset.railLabel, id).toBeUndefined();
-    }
+    expect(findByTestId(container as unknown as FakeElement, "tool-paint")?.dataset.railLabel).toBeUndefined();
   });
 
-  it("맵 토글 → 플라이아웃에 기본 맵 목록 렌더 (전문가 인라인 액션 없음)", () => {
-    click("basic-rail-toggle-maps");
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "map-tree")).toBeTruthy();
-    expect(findByTestId(container as unknown as FakeElement, "map-add")).toBeTruthy();
-    // 전문가 패널 전용 인라인 컨트롤은 기본 플라이아웃에 없음
-    const mapId = store.getCurrent().startMapId;
-    expect(findByTestId(container as unknown as FakeElement, `map-parent-select-${mapId}`)).toBeFalsy();
-    expect(findByTestId(container as unknown as FakeElement, `map-delete-${mapId}`)).toBeFalsy();
-    expect(findByTestId(container as unknown as FakeElement, `map-more-${mapId}`)).toBeTruthy();
-    expect(findByTestId(container as unknown as FakeElement, "basic-map-list-host")).toBeTruthy();
-  });
-  it("하단 맵 필드가 상시 렌더되고 행 클릭으로 맵을 바꾼다", () => {
+  it("맵 고르기는 「맵」 탭 하나가 집이다 — 그리기 탭에 맵 목록·지름길을 다시 두지 않는다", () => {
     createMapFromSpec({ name: "두번째맵" });
-    const project = store.getCurrent();
-    const second = Object.keys(project.maps).find((id) => id !== project.startMapId) ?? project.startMapId;
+    clearChildren(container);
     renderBasicLeftRail(container);
-    const field = findByTestId(container as unknown as FakeElement, "basic-map-field");
-    expect(field).toBeTruthy();
-    const row = findByTestId(container as unknown as FakeElement, `basic-map-field-row-${second}`);
-    expect(row).toBeTruthy();
-    (row as unknown as HTMLElement).click();
-    expect(editorState.get().currentMapId).toBe(second);
-    renderBasicLeftRail(container);
-    const active = findByTestId(container as unknown as FakeElement, `basic-map-field-row-${second}`);
-    expect(active?.getAttribute("aria-selected")).toBe("true");
-  });
-
-  it("하단 맵 필드의 전체 보기가 맵 플라이아웃을 연다", () => {
-    const more = findByTestId(container as unknown as FakeElement, "basic-map-field-more");
-    expect(more).toBeTruthy();
-    (more as unknown as HTMLElement).click();
-    renderBasicLeftRail(container);
-    expect(findByTestId(container as unknown as FakeElement, "basic-map-list-host")).toBeTruthy();
-    expect(findByTestId(container as unknown as FakeElement, "basic-map-field")).toBeTruthy();
+    for (const id of ["map-tree", "basic-map-field", "basic-rail-toggle-maps", "basic-rail-toggle-tiles", "basic-panel-toggles"]) {
+      expect(findByTestId(container as unknown as FakeElement, id), id).toBeNull();
+    }
   });
 });

@@ -49,6 +49,12 @@ export interface GameMap {
   tileSize: number;
   lowerTiles: number[];
   upperTiles: number[];
+  /** 2층(바닥 장식). 선택 — 없으면 빈칸. 길이 width*height, -1 = 빈칸. `src/project/mapLayers.ts` 로만 읽고 쓴다. */
+  lowerOverlayTiles?: number[];
+  /** 4층(물체 하나 더). 선택 — 없으면 빈칸. */
+  upperOverlayTiles?: number[];
+  /** 그림자 비트 0..15(bit0 왼위·bit1 오른위·bit2 왼아래·bit3 오른아래, MZ 와 같음). 선택 — 없으면 0. */
+  shadowBits?: number[];
   lowerTileStacks?: Record<number, number[]>;
   upperTileStacks?: Record<number, number[]>;
   events: GameEvent[];
@@ -77,6 +83,8 @@ export interface GameMap {
   bgm?: MapBgmSetting;
   /** 전투 배경 이미지 리소스 ID. 없으면 타일셋 기본. */
   battleBackground?: string;
+  /** 가장자리가 반대편으로 이어지는 반복 맵(RM 「맵 루프」). 없으면 반복 없음. project/mapLoop.ts. */
+  loop?: import("../mapLoop").MapLoop;
   /** 세이브 금지 맵 (RM2003 "Save" 체크 해제). */
   disableSave?: boolean;
   /** 텔레포트(이동) 금지 맵. */

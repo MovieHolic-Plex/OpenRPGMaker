@@ -25,13 +25,14 @@
 // inline-block 이어야 하는데, 그러면 픽셀 폰트의 베이스라인·줄높이 정합과 줄바꿈 단위가
 // 흔들린다. 그래서 CSS 쪽 `dialogue-char-enter` 는 페이드만 한다.
 
-import type { DialogueTextSegment } from "@/player/dialoguePagination";
+import type { DialogueTextFx, DialogueTextSegment } from "@/player/dialoguePagination";
 import { clearChildren, el } from "@/util/dom";
 
 /** 글자 한 칸. 색은 세그먼트에서 물려받는다. */
 type FlatChar = {
   readonly text: string;
   readonly colorIndex: number;
+  readonly fx?: DialogueTextFx;
 };
 
 export type DialoguePageRenderer = {
@@ -47,10 +48,26 @@ function colorClass(colorIndex: number): string {
   return `dialogue-char dialogue-color dialogue-color-${colorIndex}`;
 }
 
+/**
+ * 본문 태그 효과를 노드에 싣는다. 흔들·물결은 transform 이 필요해 그 글자만 inline-block 이 된다
+ * (위 머리말의 「글자 연출은 opacity 만」 규칙의 예외 — 작가가 고른 구간에만 걸린다).
+ * 물결은 글자 번호로 박자를 어긋나게 한다.
+ */
+export function applyDialogueFx(node: HTMLElement, fx: DialogueTextFx | undefined, index: number): void {
+  if (!fx) return;
+  if (fx.shake) node.classList.add("dialogue-fx-shake");
+  if (fx.wave) node.classList.add("dialogue-fx-wave");
+  if (fx.size) node.classList.add(`dialogue-fx-${fx.size}`);
+  if (fx.color) node.style.color = fx.color;
+  if (fx.shake || fx.wave) node.style.setProperty("--dialogue-fx-index", String(index));
+}
+
 function flattenSegments(segments: readonly DialogueTextSegment[]): FlatChar[] {
   const chars: FlatChar[] = [];
   for (const segment of segments) {
-    for (const text of Array.from(segment.text)) chars.push({ text, colorIndex: segment.colorIndex });
+    for (const text of Array.from(segment.text)) {
+      chars.push({ text, colorIndex: segment.colorIndex, ...(segment.fx ? { fx: segment.fx } : {}) });
+    }
   }
   return chars;
 }
@@ -72,11 +89,22 @@ export function renderDialogueSegments(
     const text = chars.slice(0, remaining).join("");
     remaining -= chars.length;
     if (!text) continue;
-    if (segment.colorIndex === 0) {
+    if (segment.fx?.shake || segment.fx?.wave) {
+      // 흔들·물결은 글자마다 박자가 달라야 해서 글자 단위로 쪼갠다.
+      Array.from(text).forEach((char, index) => {
+        const node = el("span", { class: segment.colorIndex === 0 ? "dialogue-char" : colorClass(segment.colorIndex), text: char });
+        applyDialogueFx(node, segment.fx, index);
+        target.append(node);
+      });
+      continue;
+    }
+    if (segment.colorIndex === 0 && !segment.fx) {
       target.append(document.createTextNode(text));
       continue;
     }
-    target.append(el("span", { class: `dialogue-color dialogue-color-${segment.colorIndex}`, text }));
+    const node = el("span", { class: segment.colorIndex === 0 ? "dialogue-char" : `dialogue-color dialogue-color-${segment.colorIndex}`, text });
+    applyDialogueFx(node, segment.fx, 0);
+    target.append(node);
   }
 }
 
@@ -101,6 +129,7 @@ export function mountDialoguePage(
     });
     // 건너뛰기로 한꺼번에 붙는 글자까지 페이드시키면 수십 자가 동시에 밝아져 어수선하다.
     if (instant) node.classList.add("dialogue-char-instant");
+    applyDialogueFx(node, char.fx, nodes.length);
     nodes.push(node);
     target.append(node);
   };

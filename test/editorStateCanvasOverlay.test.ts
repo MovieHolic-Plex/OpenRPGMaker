@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
+  editorStateChangedOnlySelectedTile,
+  editorStateNeedsEventEditorRefresh,
   editorStateNeedsMapTreeRefresh,
   editorStateNeedsPaletteRefresh,
   type EditorState,
@@ -60,10 +62,43 @@ describe("에디터 상태와 맵 트리 갱신", () => {
     expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(true);
   });
 
+  it("고른 타일만 바뀌면 팔레트 전체 재생성이 아니라 선택 동기화다", () => {
+    const previous = snapshot({ selectedTile: 1, tool: "paint", layer: "lower", activePaletteStamp: null });
+    const next = snapshot({ selectedTile: 8, tool: "paint", layer: "lower", activePaletteStamp: null });
+    expect(editorStateChangedOnlySelectedTile(previous, next)).toBe(true);
+    expect(editorStateNeedsPaletteRefresh(previous, next)).toBe(true);
+    expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(false);
+  });
+
+  it("타일과 함께 레이어나 도구가 바뀌면 선택만의 변경이 아니다", () => {
+    const previous = snapshot({ selectedTile: 1, tool: "paint", layer: "lower" });
+    expect(editorStateChangedOnlySelectedTile(previous, snapshot({ selectedTile: 8, layer: "upper" }))).toBe(false);
+    expect(editorStateChangedOnlySelectedTile(previous, snapshot({ selectedTile: 8, tool: "erase" }))).toBe(false);
+  });
+
   it("줌만 바뀌면 팔레트도 맵 트리도 갱신하지 않는다", () => {
     const previous = snapshot({ zoom: 2 });
     const next = snapshot({ zoom: 1 });
     expect(editorStateNeedsMapTreeRefresh(previous, next)).toBe(false);
     expect(editorStateNeedsPaletteRefresh(previous, next)).toBe(false);
+  });
+});
+
+describe("editorStateNeedsEventEditorRefresh", () => {
+  it("줌·선택 사각형·붓 고르기만 바뀌면 이벤트 편집기 본문을 다시 짓지 않는다", () => {
+    const previous = snapshot();
+    const next = snapshot({
+      zoom: previous.zoom === 1 ? 2 : 1,
+      selection: { mapId: "map-1", x: 1, y: 2, width: 3, height: 4 },
+      selectedTile: previous.selectedTile + 1,
+      brushSize: previous.brushSize === 1 ? 2 : 1,
+    });
+    expect(editorStateNeedsEventEditorRefresh(previous, next)).toBe(false);
+  });
+
+  it("본문이 읽는 페이지·도구가 바뀌면 다시 짓는다", () => {
+    const previous = snapshot();
+    expect(editorStateNeedsEventEditorRefresh(previous, snapshot({ selectedEventPageId: "page-x" }))).toBe(true);
+    expect(editorStateNeedsEventEditorRefresh(previous, snapshot({ tool: previous.tool === "event" ? "paint" : "event" }))).toBe(true);
   });
 });

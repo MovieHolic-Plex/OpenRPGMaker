@@ -66,6 +66,8 @@ import { distillPreferences } from "@/ai/preferenceDistiller";
 import { observeTurn, shouldDistillPreferences } from "@/ai/preferenceSignals";
 import { aiUiEventMarker, recordAiUiEvent, takeAiUiEventsSince } from "@/ai/uiEventLog";
 import { AI_UI_ACTIONS } from "@/ai/uiEventTypes";
+import { formatThrownDiagnostic } from "@/ai/errorDiagnostic";
+import { mountAssistantErrorDetail } from "./assistantErrorDetail";
 
 export interface AiTurnRunnerDeps {
   /** 채팅 턴과 영역 작업이 공유하는 실행 표면(상태 줄·진행·중단·로그·접힘). */
@@ -127,7 +129,7 @@ export interface AiTurnRunner {
     runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode; readonly onSettled?: () => void; readonly deferApply?: boolean },
   ) => Promise<void>;
   /** LLM 오류 버블 + [설정 열기]/[재시도] 행. */
-  readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string, runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode }) => void;
+  readonly appendErrorWithRetry: (message: string, session: AssistantSession, requestText: string, runOpts?: { readonly autonomous?: boolean; readonly composerMode?: ComposerMode }, detail?: string) => void;
 }
 
 export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
@@ -759,7 +761,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         settleBlueprintForTurnEnd(null);
         deps.surface.appendBubble("system", result.error ?? "결정적 검사(lint error 0)를 통과하지 못해 초안을 적용하지 않았습니다.");
         deps.surface.setStatus("검사 미통과");
-        if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
+        if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts, result.errorDetail);
         return;
       }
       // Count applied milestones for accounting; only proposedCalls may be replayed.
@@ -857,7 +859,7 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         // 마킹어 재렌더(위 streamedBubbles.forEach) 뒤에서 붙여야 쓸려나가지 않는다.
         decorateAssistantMentions(assistantBubble, result.assistantText, store.getCurrent());
       }
-      if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts);
+      if (result.error) appendErrorWithRetry(result.error, session, requestText, runOpts, result.errorDetail);
     } catch (cause) {
       if (!ownsTurn(true)) return;
       if (abortController.signal.aborted) {
@@ -875,6 +877,11 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
       settleBlueprintForTurnEnd(null);
       deps.surface.setStatus("오류");
       const errorBubble = deps.surface.appendBubble("system", `오류: ${turnCatchError}`);
+      mountAssistantErrorDetail(errorBubble, {
+        message: turnCatchError,
+        request: requestText,
+        thrown: formatThrownDiagnostic(cause, { request: requestText, stoppedReason: "error" }),
+      });
       // Any transport throw mounts settings opener — covers connection refused / 401 / network throw
       {
         const settingsBtn = el("button", {
@@ -892,7 +899,13 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
         catch (cause) {
           if (ownsTurn(true) && !abortController.signal.aborted) {
             turnFailed = true;
-            deps.surface.appendBubble("system", `실행 복구 기록 저장 실패: ${cause instanceof Error ? cause.message : String(cause)}`);
+            const message = cause instanceof Error ? cause.message : String(cause);
+            const bubble = deps.surface.appendBubble("system", `실행 복구 기록 저장 실패: ${message}`);
+            mountAssistantErrorDetail(bubble, {
+              message,
+              request: requestText,
+              thrown: formatThrownDiagnostic(cause, { request: requestText, stoppedReason: "error" }),
+            });
           }
         }
       }
@@ -904,8 +917,9 @@ export function createAiTurnRunner(deps: AiTurnRunnerDeps): AiTurnRunner {
   // LLM 오류 버블 + 수동 [재시도] 버튼(도그푸딩 결함 ⑥). 오류 메시지에는 llmClient가
   // 만든 원인(네트워크/429/5xx/인증 등)이 그대로 담긴다. 자동 재시도 1회(지수 백오프)는
   // llmClient.chatCompletion이 이미 수행했고, 여기의 버튼은 그 이후의 수동 재개다.
-  const appendErrorWithRetry: AiTurnRunner["appendErrorWithRetry"] = (message, session, requestText, runOpts): void => {
+  const appendErrorWithRetry: AiTurnRunner["appendErrorWithRetry"] = (message, session, requestText, runOpts, detail): void => {
     const bubble = deps.surface.appendBubble("system", `오류: ${message}`);
+    mountAssistantErrorDetail(bubble, { message, request: requestText, ...(detail ? { thrown: detail } : {}) });
     const actions: HTMLElement[] = [];
     // Any transport failure mounts settings opener — do not threshold on message content.
     {

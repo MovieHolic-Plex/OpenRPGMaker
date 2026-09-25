@@ -18,6 +18,7 @@ import { interiorRoomRects, type InteriorRoomShape } from "@/project/interiorRoo
  */
 import {
   CEILING_MEMBER_TILES,
+  isCeilingTile,
   paintInteriorHouseWalls,
   planInteriorHouseWalls,
   shapeInteriorCeiling,
@@ -58,6 +59,8 @@ import type {
 
 export const INTERIOR_ROOM_KIT_ID = "villager-room-v1" as const;
 export const INTERIOR_ROOM_TILESET_ID = "easyrpg_chipset_interior";
+/** 실내 파이프라인 번호를 그대로 받는 Tibo 확장 시트(0~479칸 = 실내 칩셋 그림). */
+export const TIBO_INTERIOR_TILESET_ID = "tibo_interior_expanded";
 /** @deprecated multi-row cream face; walls are now 366 dark-wall autotile ring */
 export const INTERIOR_ROOM_FACE_ROWS = 1;
 export const INTERIOR_ROOM_HARNESS_PREFIX = "harness-interior-house-v1-";
@@ -116,7 +119,7 @@ const FLOOR_MATERIAL_TILES = new Set<number>([12, 13, 42, 43, 72, 73, 102, 103, 
 
 // 벽면 재질(하우스 셸의 크림 면 104|105|106을 방 완성 후 리틴트) — "저택 느낌은 벽부터" 지적.
 // 상단 행/하단 행이 다른 아트(하단은 걸레받이 몰딩)를 쓰는 2단 면.
-export type InteriorWallMaterial = "cream" | "gold-brick" | "stone-brick";
+export type InteriorWallMaterial = "cream" | "gold-brick" | "stone-brick" | "log" | "sandstone" | "basalt";
 
 
 /**
@@ -279,6 +282,10 @@ export const INTERIOR_ROOM_THEME_CATALOG: Readonly<Record<InteriorRoomTheme, Int
 let activeInteriorVocab: InteriorRoomVocab | null = null;
 
 export function interiorVocabFromTileset(tileset: Project["tilesets"][string] | undefined): InteriorRoomVocab {
+  // Tibo 확장 시트: 0~479칸이 실내 칩셋과 같은 그림이라 가구 어휘도 실내 카탈로그를 그대로 쓴다.
+  // 시트의 Tibo 킷(328개, 전부 테마 5종이 붙어 있다)을 어휘에 넣으면 방 테마 가구 단계가 킷을 통째로 뿌린다 —
+  // 킷은 stamp_object(kit:tibo_interior_expanded/<kitId>)로 따로 찍는다.
+  if (tileset?.id === TIBO_INTERIOR_TILESET_ID) tileset = { ...tileset, structureKits: [] };
   return resolveInteriorRoomVocab(tileset, INTERIOR_OBJECT_CATALOG, BUILTIN_INTERIOR_ROOM_KINDS);
 }
 
@@ -1047,7 +1054,7 @@ function paintRoomSpace(
       conceptWarnings = [];
     }
   } else {
-    paintThemeFurniture(map, mask, theme, plan.door, room, luxury);
+    paintThemeFurniture(map, mask, theme, plan.door, room, luxury, floor);
     if (isBuiltinInteriorTheme(theme)) {
       applyThemeModifiers(map, mask, modifiers, plan.door);
       placeSouthFiller(map, mask, theme, plan.door, mask.filter(Boolean).length);
@@ -1063,6 +1070,7 @@ function paintRoomSpace(
 function paintFurniture(map: GameMap, floor: boolean[], plan: InteriorRoomPlan, sink?: ConceptPlacement[]): string[] {
   const warnings: string[] = [];
   RNG = mulberry32((plan.seed ?? 1) * 0x9e3779b1 + 1);
+  paintedBedrooms = [];
   // 복도 카펫 먼저 — 복도 테마 방은 붉은 카펫 러너로 잇는다(2026-07-20 사용자 교정).
   // 개념 꾸러미가 정본이면 파이프가 가구를 보태지 않는다.
   placementJournals.delete(map);
@@ -1165,6 +1173,7 @@ export function furnishInteriorSpace(
   }
   // 방별 결정적 시드(플랜 시드 + 방 인덱스 성분) — 같은 인자로 재호출하면 같은 배치.
   RNG = mulberry32(((seed ?? nextPlan.seed ?? 1) + idx * 977) * 0x9e3779b1 + 1);
+  paintedBedrooms = [];
   placementJournals.delete(map);
   if (!nextPlan.concept) placementJournals.set(map, []);
   const placements: ConceptPlacement[] = [];
@@ -1659,6 +1668,7 @@ function paintThemeFurniture(
   door: DoorSpec,
   room?: RoomSpec,
   luxury = false,
+  houseFloor: readonly boolean[] = floor,
 ): void {
   const inRoom = (c: { x: number; y: number }): boolean => {
     if (!room) return true;
@@ -1671,6 +1681,12 @@ function paintThemeFurniture(
   const corners = listCorners(floor, map, door).filter(inRoom);
   const open = listOpenFloor(floor, map, door).filter(inRoom);
   const wallSnap = listWallSnapFloor(floor, map, door).filter(inRoom);
+  // 창은 바깥을 향한 벽에만 — 벽면 윗줄 너머(같은 열 북쪽)가 맵 끝까지 천장뿐이어야 바깥벽이다.
+  // 그 사이에 다른 방 바닥이나 벽면(칸막이·북쪽 방의 벽)이 있으면 실내 칸막이다.
+  const interiorBacked = new Set(wallFace
+    .filter((c) => Array.from({ length: c.y }, (_, y) => y * map.width + c.x)
+      .some((i) => houseFloor[i] || !isCeilingTile(getL(map, i % map.width, Math.floor(i / map.width)))))
+    .map((c) => c.y * map.width + c.x));
   const area = floor.filter(Boolean).length;
   // 장식 로테이션 — 방 위치 + 시드 RNG로 세트를 바꾼다(같은 테마 방 복붙 방지 + 재생성 다양성).
   const variant = (((room?.x ?? door.x) + (room?.y ?? door.y)) + Math.floor(RNG() * 3)) % 3;
@@ -1685,7 +1701,7 @@ function paintThemeFurniture(
 
   if (plan.theme === "corridor") {
     // 복도: 통행이 주인 — 바닥 점유물 금지, 벽 장식과 벽에 붙는 전시물(흉상/갑옷)만.
-    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW]);
+    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     else placePicturePair(map, wallFace);
     if (area >= 24) {
       const [top, bottom] = variant === 2 ? [VR.ARMOR_T, VR.ARMOR_B] : [VR.BUST_T, VR.BUST_B];
@@ -1694,24 +1710,53 @@ function paintThemeFurniture(
     return;
   }
   if (plan.theme === "bedroom") {
+    // 같은 집의 두 번째 침실은 앞 침실의 거울상 + 다른 변주 — 나란한 두 침실이 복사본으로 찍히지
+    // 않게 한다(검수: 「좌우 침실의 침대·협탁·거울·액자가 완전히 동일」). 침대는 앞 방 침대의
+    // 좌우 반대 자리부터 찾고, 벽 장식 변주를 한 칸 돌린다.
+    const twin = room ? paintedBedrooms.at(-1) : undefined;
+    const bedVariant = twin ? (twin.variant + 1) % 3 : variant;
+    // 침대 방향도 앞 침실과 반대로(가로↔세로), 키 큰 가구도 바꾼다(거울↔괘종시계).
+    const vertical = twin ? !twin.vertical : bedVariant === 1;
+    const bedOrder = twin && room
+      ? [...northFloor].sort((a, b) => {
+        const target = room.x + room.w - twin.offset - twin.width;
+        return Math.abs(a.x - target) - Math.abs(b.x - target) || b.x - a.x;
+      })
+      : northFloor;
     // 침대 방향 변주(3차 리뷰: 20장 전원 가로·머리 서쪽 단일 방향) — variant 1은 세로 침대.
-    const bed = (variant === 1 ? placeBedVertical(map, northFloor, plan.door) : null)
-      ?? placeBedPair(map, northFloor, plan.door);
+    const bed = (vertical ? placeBedVertical(map, bedOrder, plan.door, Boolean(twin)) : null)
+      ?? placeBedPair(map, bedOrder, plan.door, Boolean(twin));
+    const horizontalBed = Boolean(bed?.cells[1] && bed.cells[1].x !== bed.cells[0]!.x);
     // 소품 적재적소: 협탁은 침대 머리맡 옆 1칸 — 성공하면 코너 폴백은 생략.
     const bedside = bed ? placeBedsideProp(map, bed.cells, plan.door) : false;
     // 러그: 소형 침실(4×4=16)도 침대 발치 1칸 앵커로 허용 — 빈 나무바닥 방지.
     if (bed && area >= 16) placeRugUnder(map, bed.x, bed.y + 1, RUG_TEAL);
-    placeTallPairU(map, northFloor, plan.door, VR.MIRROR_T, VR.MIRROR_B);
+    const mirror = twin?.tall !== "mirror";
+    const tallOrder = twin ? [...northFloor].sort((p, q) => q.x - p.x) : northFloor;
+    const tall = mirror
+      ? placeTallPairU(map, tallOrder, plan.door, VR.MIRROR_T, VR.MIRROR_B, Boolean(twin))
+      : placeTallPairU(map, tallOrder, plan.door, VR.CLOCK_T, VR.CLOCK_B, Boolean(twin));
+    if (room) {
+      paintedBedrooms.push({
+        variant: bedVariant,
+        offset: bed ? bed.x - room.x : 0,
+        width: horizontalBed ? 2 : 1,
+        vertical: Boolean(bed) && !horizontalBed,
+        tall: tall ? (mirror ? "mirror" : "clock") : "none",
+      });
+    }
     // 벽 장식 이중화: 창 + 그림/시계 — 북벽이 텅 비는 소형 침실 방지.
-    if (variant === 0) {
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+    if (bedVariant === 0) {
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
       placePicturePair(map, wallFace);
-    } else if (variant === 1) {
+    } else if (bedVariant === 1) {
       placePicturePair(map, wallFace);
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     } else {
-      placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      // 시계를 이미 키 큰 가구로 세웠으면 두 번째 시계를 나란히 세우지 않는다.
+      if (mirror || !tall) placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
+      else placePicturePair(map, wallFace);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     }
     // 2026-07-20 사용자 교정: "모든 방마다 탁자" 강제 해제 — 침실에는 탁자 세트를 놓지 않는다.
     // 침대·협탁·거울·러그·벽 장식이 침실의 본문이다.
@@ -1739,10 +1784,10 @@ function paintThemeFurniture(
     // 수정구: 넓을 때만 — 좁은 서재는 책상·서가 밀도가 우선.
     if (variant === 0 && area >= 28) placeOpen(map, open, [VR.CRYSTAL_BALL]);
     placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
-    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW, VR.RELIGIOUS]);
+    if (variant === 0) placeWallMount(map, wallFace, [VR.WINDOW, VR.RELIGIOUS], interiorBacked);
     else {
       placePicturePair(map, wallFace);
-      placeWallMount(map, wallFace, [VR.WINDOW]);
+      placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     }
     placeCorner(map, corners, [VR.BOX]);
     // 서재: 책장·책상이 본문 — 구석 잡동사니/캐비닛 과적 금지.
@@ -1768,7 +1813,7 @@ function paintThemeFurniture(
       (c) => !stove || Math.max(Math.abs(c.x - stove.x), Math.abs(c.y - stove.y)) > 1,
     );
     placeTableChairSet(map, awayFromStove, plan.door);
-    placeWallMount(map, wallFace, [VR.WINDOW, VR.FRUIT_SHELF]);
+    placeWallMount(map, wallFace, [VR.WINDOW, VR.FRUIT_SHELF], interiorBacked);
     placeCorner(map, corners, [VR.BUCKET, VR.JARS]);
     // 주방: 화덕·작업대가 본체 — 벽 스냅 통/병 과적 금지.
     const kitchenLoads = Math.max(1, Math.min(2, Math.floor(area / 20)));
@@ -1782,7 +1827,8 @@ function paintThemeFurniture(
   }
   if (plan.theme === "storage") {
     // 창고: 적재물은 벽 스냅이 기본(중앙 부유 금지) — 물량 상향(3차 리뷰: "가장 채우기 쉬운데 가장 비었다").
-    placeWallMount(map, wallFace, [VR.LADDER, VR.WINDOW]);
+    // 사다리는 오를 곳(다락·개구부)이 있을 때만 뜻이 있다 — 벽에 홀로 걸린 사다리 대신 선반.
+    placeWallMount(map, wallFace, [VR.SHELF_JARS, VR.WINDOW], interiorBacked);
     placeCorner(map, corners, [VR.CRATE, VR.BARREL, VR.BOX]);
     // 창고도 가득 채우지 않음 — 벽 따라 여백 유지.
     const loads = Math.max(2, Math.min(4, Math.floor(area / 12)));
@@ -1803,7 +1849,7 @@ function paintThemeFurniture(
     if (!placedTable) placeTableChairSet(map, open, plan.door);
     if (variant === 1) placePianoTriple(map, northFloor, plan.door);
     else placeTallPairU(map, northFloor, plan.door, VR.DISPLAY_T, VR.DISPLAY_B);
-    placeWallMount(map, wallFace, variant === 2 ? [VR.TAVERN_SIGN, VR.WINDOW, VR.SWORD_RACK] : [VR.TAVERN_SIGN, VR.WINDOW]);
+    placeWallMount(map, wallFace, variant === 2 ? [VR.TAVERN_SIGN, VR.WINDOW, VR.SWORD_RACK] : [VR.TAVERN_SIGN, VR.WINDOW], interiorBacked);
     placeCorner(map, corners, [VR.BARREL, VR.CRATE]);
     placeAgainstWall(map, wallSnap, repeatTiles([VR.BARREL, VR.CRATE], Math.max(1, Math.min(2, Math.floor(area / 28)))), 2);
     return;
@@ -1826,11 +1872,11 @@ function paintThemeFurniture(
   else placeTallPairU(map, northFloor, plan.door, VR.CLOCK_T, VR.CLOCK_B);
   // 벽 이중 장식 + 사이드보드(캐비닛) + 코너 적재(통·상자 — 레퍼런스 남서 코너).
   if (variant === 0) {
-    placeWallMount(map, wallFace, [VR.WINDOW]);
+    placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
     placePicturePair(map, wallFace);
   } else {
     placePicturePair(map, wallFace);
-    placeWallMount(map, wallFace, [VR.WINDOW]);
+    placeWallMount(map, wallFace, [VR.WINDOW], interiorBacked);
   }
   placeCorner(map, corners, [VR.BARREL, VR.BOX, VR.JARS]);
   placeAgainstWall(map, wallSnap, [VR.CABINET_U], 2);
@@ -1854,6 +1900,14 @@ function mulberry32(seed: number): () => number {
   };
 }
 let RNG: () => number = mulberry32(1);
+/** 한 번의 가구 시공(맵 하나)에서 이미 꾸민 침실 — 두 번째 침실이 거울상·다른 변주를 고른다. */
+let paintedBedrooms: Array<{
+  readonly variant: number;
+  readonly offset: number;
+  readonly width: number;
+  readonly vertical: boolean;
+  readonly tall: "mirror" | "clock" | "none";
+}> = [];
 
 /**
  * 카탈로그 정의(형태 정본: interiorObjectCatalog)의 셀 id를 가져온다.
@@ -1965,8 +2019,9 @@ function placeBedVertical(
   map: GameMap,
   northFloor: Array<{ x: number; y: number }>,
   door: DoorSpec,
+  ordered = false,
 ): { x: number; y: number; cells: Array<{ x: number; y: number }> } | null {
-  for (const c of rotated(northFloor)) {
+  for (const c of ordered ? northFloor : rotated(northFloor)) {
     if (c.x === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x, c.y + 1)) continue;
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x, c.y + 1)) continue;
@@ -2199,9 +2254,10 @@ function placeTallPairU(
   door: DoorSpec,
   top: number,
   bottom: number,
+  ordered = false,
 ): boolean {
   const wall = houseShellWallMembers();
-  for (const c of rotated(northFloor)) {
+  for (const c of ordered ? northFloor : rotated(northFloor)) {
     if (c.x === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y)) continue;
     if (!wall.has(getL(map, c.x, c.y - 1))) continue;
@@ -2451,8 +2507,9 @@ function placeBedPair(
   map: GameMap,
   northFloor: Array<{ x: number; y: number }>,
   door: DoorSpec,
+  ordered = false,
 ): { x: number; y: number; cells: Array<{ x: number; y: number }> } | null {
-  for (const c of rotated(northFloor)) {
+  for (const c of ordered ? northFloor : rotated(northFloor)) {
     if (c.x === door.x || c.x + 1 === door.x) continue;
     if (!isWalkFloor(map, c.x, c.y) || !isWalkFloor(map, c.x + 1, c.y)) continue;
     if (!isUpperEmpty(map, c.x, c.y) || !isUpperEmpty(map, c.x + 1, c.y)) continue;
@@ -2508,19 +2565,27 @@ function placeWallMount(
   map: GameMap,
   wallFace: Array<{ x: number; y: number }>,
   tiles: readonly number[],
+  interiorBacked: ReadonlySet<number> = new Set(),
 ): void {
   // skip picture tiles — handled as pair
   const singles = tiles.filter((t) => t !== VR.PICTURE_L && t !== VR.PICTURE_R);
   let wi = 0;
   for (const tile of singles) {
     if (PROP_SURFACE[tile] !== "wallFace") continue;
+    // 창이 건너뛴 칸막이 벽면은 다음 벽걸이(그림·선반)가 쓸 수 있게 남긴다.
+    let skipped: number | undefined;
     while (wi < wallFace.length) {
       const cell = wallFace[wi]!;
       wi += 1;
       if (!isUpperEmpty(map, cell.x, cell.y)) continue;
+      if (tile === VR.WINDOW && interiorBacked.has(cell.y * map.width + cell.x)) {
+        skipped ??= wi - 1;
+        continue;
+      }
       setU(map, cell.x, cell.y, tile);
       break;
     }
+    if (skipped !== undefined) wi = skipped;
   }
 }
 

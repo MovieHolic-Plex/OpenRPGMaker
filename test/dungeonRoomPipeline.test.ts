@@ -154,4 +154,34 @@ describe("dungeon-room-v1 pipeline", () => {
     }
     expect(ok).toBe(true);
   });
+  it("single-room honors the landmark instead of dropping it (등대 꼭대기가 빈 돌방이던 결함)", () => {
+    const project = createBlankProject();
+    // r0735 녹화 그대로: create_map 뒤 single-room + landmark.
+    const tool = getTool("run_dungeon_room_pipeline")!;
+    for (const [landmark, center] of [["altar", 145], ["beacon", 263]] as const) {
+      const mapId = `map_top_${landmark}`;
+      const res = tool.run(project, { mapId, name: "침묵의 등대 꼭대기", width: 20, height: 16, theme: "stone", layout: "single-room", hazard: false, landmark });
+      expect(res.summary).toContain(mapId);
+      const map = project.maps[mapId]!;
+      const upper = map.upperTiles;
+      expect(upper.filter((tile) => tile === center)).toHaveLength(1);
+      const at = upper.indexOf(center);
+      const x = at % map.width;
+      const y = (at - x) / map.width;
+      expect(y).toBeLessThan(map.height / 2);
+      expect(Math.abs(x - map.width / 2)).toBeLessThanOrEqual(1);
+      if (landmark === "beacon") {
+        expect(upper[at + map.width]).toBe(293);
+        expect([upper[at - 2], upper[at + 2]]).toEqual([446, 446]);
+      }
+      expect(evaluateDungeonRoom(map, { mapId, name: "t", width: 20, height: 16, theme: "stone", layout: "single-room", hazard: false } as DungeonRoomPlan).ok).toBe(true);
+    }
+  });
+
+  it("single-room says so when it cannot place a link or pressure", () => {
+    const plan = { mapId: "m", name: "m", width: 12, height: 10, theme: "stone", layout: "single-room", linkMapId: "map_town", pressure: "tide" } as DungeonRoomPlan;
+    const { warnings } = runDungeonRoomPipeline(plan, createBlankProject());
+    expect(warnings.join("\n")).toContain("create_transfer_pair");
+    expect(warnings.join("\n")).toContain("pressure(tide)");
+  });
 });

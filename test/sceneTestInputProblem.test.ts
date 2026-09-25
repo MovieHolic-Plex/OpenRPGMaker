@@ -78,3 +78,19 @@ describe("run_scene_test 입력 거부 문구", () => {
     expect(isSceneTestInput(valid)).toBe(true);
   });
 });
+
+describe("run_scene_test — 한 겹 감싼 expect", () => {
+  // 추리 도그푸딩 gen 두 판: 동봉 시나리오를 옮겨 적으며 {kind:"expect", expect:{…}} 로 감싸 한 번씩 헛돌았다.
+  it("{kind:'expect', expect:{…}} 를 펼쳐 실행하고 경고한다", async () => {
+    const { runTool } = await import("@/editor/tools");
+    const { createBlankProject } = await import("@/project/defaults");
+    const project = createBlankProject();
+    const result = runTool({ project }, "run_scene_test", {
+      mapId: project.startMapId, start: project.startPos,
+      steps: [{ kind: "wait", ticks: 1 }, { kind: "expect", expect: { playerAt: project.startPos } }],
+    });
+    expect(result.ok, result.summary).toBe(true);
+    expect((result.data as { ok: boolean }).ok).toBe(true);
+    expect(JSON.stringify(result.warnings)).toContain("펼쳐");
+  });
+});

@@ -150,6 +150,8 @@ function ensureStrip(): HTMLElement {
 function applyLayout(): void {
   if (!stripEl || !cardsHost || !headToggle || !headCount || !overflowChip) return;
   stripEl.hidden = cards.length === 0;
+  // 토스트를 띠 위로 올리는 CSS 가 body:has() 대신 이 클래스를 본다.
+  document.body.classList.toggle("has-ai-work-strip", !stripEl.hidden);
   syncAnchor();
   stripEl.classList.toggle("is-folded", folded);
   headToggle.setAttribute("aria-expanded", String(!folded));
@@ -406,6 +408,7 @@ export function aiWorkCardCount(): number {
 export function resetAiWorkStripForTest(): void {
   stripEl?.remove();
   stripEl = null;
+  document.body?.classList.remove("has-ai-work-strip");
   headToggle = null;
   headCount = null;
   overflowChip = null;

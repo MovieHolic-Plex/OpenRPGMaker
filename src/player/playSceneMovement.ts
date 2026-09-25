@@ -5,7 +5,8 @@ import { advanceFurniturePush, beginFurniturePush, clearFurniturePush, furniture
 import { advancePursuitDoors, isPlayerHiding, pushObject, toggleHiding } from "./horrorRuntime";
 import { refreshRuntimeEntities } from "./playSceneMapRuntime";
 import { conditionWaitScenes } from "@/player/runtimeConditionWait";
-import { canMoveFootprint, inBounds } from "@/project/collision";
+import { canMoveFootprint, inBounds, isPassable } from "@/project/collision";
+import { loopStepTarget, wrapLoopPosition } from "@/project/mapLoop";
 // 경로 세팅은 잎 모듈에 있다(가벼운 소비자가 이 파일 전체를 끌어오지 않도록) — 기존
 // 임포트 경로를 깨지 않기 위해 여기서 다시 내보낸다.
 export { startPlayerRoute } from "@/player/playerRouteState";
@@ -35,7 +36,7 @@ import { isCutsceneInputLocked } from "@/player/cutsceneControl";
 import { recordFollowerPlayerStep } from "@/project/followers";
 import { updateFollowerSpriteMotion } from "@/player/playSceneFollowers";
 import { applyWalkCareTicks } from "@/project/monsterCare";
-import { applyGen1FieldPoisonStep } from "@/project/monsterCollection";
+import { applyGen1FieldPoisonStep, monsterBattlePartyOf } from "@/project/monsterCollection";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
 import { eligibleEncounterEntries, pickEncounterTroopForMap } from "@/player/encounters";
 import { terrainRecordAt } from "@/project/terrainAt";
@@ -60,6 +61,7 @@ type ActionEventSceneContext = Pick<
   | "lastActionTargetKey"
   | "map"
   | "runEvent"
+  | "running"
   | "session"
   | "tileX"
   | "tileY"
@@ -207,6 +209,17 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
   if (scene.moveElapsedFrames >= totalFrames) {
     scene.moveProgress = 1;
     clearFurniturePush(scene);
+    // 반복 맵에서 맵 밖으로 걸어 나간 걸음은 반대편으로 접는다. 카메라도 같은 거리만큼 옮겨 화면이 쓸려 가지 않게 한다.
+    const landed = wrapLoopPosition(scene.map, scene.movingTo.x, scene.movingTo.y);
+    if (landed.x !== scene.movingTo.x || landed.y !== scene.movingTo.y) {
+      const size = mapTileSize(scene.map);
+      const camera = scene.cameras?.main;
+      if (camera) {
+        camera.scrollX += (landed.x - scene.movingTo.x) * size;
+        camera.scrollY += (landed.y - scene.movingTo.y) * size;
+      }
+      scene.movingTo = landed;
+    }
     scene.tileX = scene.movingTo.x;
     scene.tileY = scene.movingTo.y;
     scene.session.x = scene.tileX;
@@ -309,6 +322,7 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
     if (input.dir === "up" || input.dir === "down") moveX = 0;
     else moveY = 0;
   }
+  if (tryStartLoopStep(scene, body, moveX, moveY, input.dash)) return;
   const step = resolveDiagonalStep(moveX, moveY, canStep);
   if (!step) {
     if (diagnosticObserved("collision")) publishDiagnostic({ category: "collision", phase: "terrain", x: scene.tileX + moveX, y: scene.tileY + moveY });
@@ -333,6 +347,33 @@ function tryStartMove(scene: PlaySceneContext, input: InputState): void {
   scene.dashing = input.dash;
   beginPlayerStep(scene, nx, ny);
   scene.lastActionTargetKey = "";
+}
+
+/**
+ * 반복 맵(map.loop)의 가장자리를 넘는 걸음. 맵 밖 한 칸까지 걸어 나가고, 걸음이 끝나면
+ * advancePlayerStepFrame 이 반대편으로 접어 세운다. 1칸 몸만 — 큰 몸은 가장자리에서 평소처럼 막힌다.
+ */
+function tryStartLoopStep(scene: PlaySceneContext, body: PlayerBody, moveX: number, moveY: number, dash: boolean): boolean {
+  if (!scene.map.loop || body.footprint.width !== 1 || body.footprint.height !== 1) return false;
+  // 대각으로 모서리를 넘으면 넘는 축 하나로만 걷는다.
+  const crossX = moveX !== 0 && loopStepTarget(scene.map, scene.tileX, scene.tileY, moveX, 0) !== null;
+  const crossY = moveY !== 0 && loopStepTarget(scene.map, scene.tileX, scene.tileY, 0, moveY) !== null;
+  if (!crossX && !crossY) return false;
+  const dx = crossX ? moveX : 0;
+  const dy = crossX ? 0 : moveY;
+  const target = loopStepTarget(scene.map, scene.tileX, scene.tileY, dx, dy)!;
+  scene.facing = facingForStep(dx, dy);
+  const project = store.getCurrent();
+  if (!isPassable(project, scene.map, target.x, target.y)) return true;
+  const blockingEvent = findBlockingEventForPlayerBody(scene, body, target.x, target.y);
+  if (blockingEvent) {
+    firePlayerTouchEvent(scene, blockingEvent.event.id, blockingEvent.trigger.kind);
+    return true;
+  }
+  scene.dashing = dash;
+  beginPlayerStep(scene, scene.tileX + dx, scene.tileY + dy);
+  scene.lastActionTargetKey = "";
+  return true;
 }
 
 /** Both movement and action input use this single collision + animation transaction. */
@@ -533,6 +574,9 @@ function performAction(
     // 가리키므로, 타일 키로는 매번 새 대상으로 보였다. 1x1 에서는 대상 이벤트와 정면 칸이
     // 1:1 이라 동작이 같다(이동을 시작하면 어느 쪽이든 키가 비워진다).
     if (event.event.id === scene.lastActionTargetKey) return true;
+    // 다른 이벤트가 도는 중이면 runEvent 는 조용히 돌아간다. 그때 키를 먼저 박으면 걸음을 떼기 전까지
+    // 같은 NPC 에게 영영 말을 못 건다(2026-09-24 몬스터 수집 도그푸딩: 관장이 사방에서 무응답).
+    if (scene.running) return true;
     scene.lastActionTargetKey = event.event.id;
     turnActionEventTowardPlayer(scene, event);
     void scene.runEvent(event.event.id);
@@ -547,6 +591,7 @@ function performAction(
   const underfoot = findRuntimeEventInScene(scene, scene.tileX, scene.tileY, "action");
   if (underfoot) {
     if (underfoot.event.id === scene.lastActionTargetKey) return true;
+    if (scene.running) return true;
     scene.lastActionTargetKey = underfoot.event.id;
     void scene.runEvent(underfoot.event.id);
     return true;
@@ -788,6 +833,10 @@ export function maybeTriggerRandomEncounter(scene: PlaySceneContext): void {
     ? eligibleEncounterEntries(map, scene.session, position).length > 0
     : (map.troopIds?.length ?? 0) > 0;
   if (!hasCandidates) return;
+  // 몬스터 파티 전투인데 아직 파트너가 없으면 야생이 나오지 않는다 — 전투를 열 수 없어 매 걸음 오류 창이 떴다
+  // (2026-09-24 몬스터 수집 도그푸딩: 스타터 없이 도로로 나갈 수 있는 생성 게임).
+  const monsterBattle = monsterBattlePartyOf(store.getCurrent(), scene.session);
+  if (monsterBattle.requested && monsterBattle.party.length === 0) return;
   encounterStepCounter += 1;
   encounterAccumulator += rate;
   // 누적 가중치가 임계(1000)를 넘으면 인카운트 발생. 매 스텝마다 rate가 쌓여

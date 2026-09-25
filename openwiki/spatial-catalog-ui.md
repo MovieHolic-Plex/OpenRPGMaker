@@ -8,6 +8,7 @@
 
 - 검토된 장소와 지역 사례는 `public/assets/catalog-thumbs/` 의 긴 변 256px 그림을 쓴다. 원본은 상세에서만 연다.
 - 칩셋 목록 줄은 `catalog-thumbs/sheets/` 의 32×40 크롭이다. 다시 만들 때는 `scripts/content/build-catalog-thumbs.py`.
+  이 스크립트는 `public/assets/reviewed-places` 파일과 호스트 공용 SQLite `previews` 의 data URL을 같은 256px 썸네일로 넣는다. 새솔마을처럼 원본 PNG 파일이 없는 장소도 목록은 그 썸네일을 연다.
 - 장소·지역·세계 스테이지(맵 컴파일, 칸 격자)는 「상세」를 열었을 때만 붙는다. 오브젝트 카드는 그 물건의 칸만 나중에 굽는다.
 
 ## Concept and selection contract (2026-09-12)
@@ -184,7 +185,7 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 
 ## 호스트 전용 장소의 목록 썸네일 (2026-09-24)
 
-`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.
+`spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 프로젝트에 복사된 장소(`authored-map_*`)는 같은 이름의 `shared_` 공용 미리보기를 붙인다. 직접 칠한 장소는 `public/assets/reviewed-places/<id>.png`를 쓴다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.
 
 ## 2026-09-24 — 공간 소유자의 참고문서 표시
 
@@ -197,3 +198,13 @@ Pixel Art World의 로컬 라이브러리는 사용자가 받은 원본만 포�
 시각 검토가 남은 항목에는 `review-pending` 문서를 붙이고 검토 완료 roots에서 제외한다.
 배열을 보관했다는 이유로 정상 정답 사례라 표시하지 않는다. 학교 장소 그림의 복사와
 원본 맵 events 보관은 다른 계약이며, 새 프로젝트에서 이벤트를 연결/재생하는 후속 검증이 필요하다.
+
+
+## RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
+
+`scripts/content/publish-rpg-places-shared-library.mjs` 가 RPG 실내 34·RPG 던전 25·판타지 장소 11을 호스트 공용 SQLite 라이브러리
+`oprn-rpg-fantasy-places-20260925` 한 개로 올린다. 원본은 각 파이프라인의 정본 저장 재오픈본(`output/evidence/<pipeline>/reloaded.json`).
+번들 타일셋은 `shared_rpg_*` 사본으로 싣는다 — 그림은 이식(tileGrafts)·색 키를 구운 업로드 아틀라스, 맵마다 `raster_rpg_<id>` 구획 키트,
+AI 참고문서는 파이프라인 분류만(던전 재칠 넷은 `referenceSourceTilesetId` 로 돌 사본의 문서를 공유). 올리기 전에 70장 모두를 원래 타일셋과
+공용 사본으로 그려 픽셀이 같아야만 게시한다. 증명은 `tiledata/rpg-places/shared-library-proof.json`. 같은 장소가 번들 「완성 장소 사례」 카드로도
+보이는 것은 검수 실내 31종과 같은 이중 경로다. 맵을 다시 고치면 파이프라인 저장 → 이 스크립트를 다시 돌린다(같은 id 에 비교 교환으로 덮는다).

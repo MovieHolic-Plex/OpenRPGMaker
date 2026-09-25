@@ -1,5 +1,115 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 조수 쓰기 도구의 네 층 — 1~4층·그림자 (MZ식 4층, 2026-09-25)
+
+조수가 2층(바닥 장식)·4층(물체 위 물체)·그림자를 쓴다. 층 번호와 맵 칸 이름의 대응은 `src/project/mapLayers.ts` 가 정본이고,
+층을 칠하는 본 도구(paint_tiles·stamp_layer_block) 설명은 `mapHelpers.FOUR_LAYER_GUIDANCE` 한 문장을,
+층을 고르기만 하거나 층 설명이 곁가지인 도구(tile_erase·paint_shadow·fill_region·show_map_region)는 같은 뜻의 짧은
+`FOUR_LAYER_GUIDANCE_SHORT` 를 쓴다 — 도구 설명은 MZ 가 아닌 프로젝트에도 매번 실리므로 긴 문장은 두 곳에만 둔다
+(fill_region 은 「1층을 칠하면 그 칸의 2층 장식을 비운다」를 따로 말한다).
+**1층 칠하기 규칙은 하나다:** 1층을 쓰면 그 칸 2층이 지워진다(paint_tiles·fill_region·stamp_layer_block·paint_road 흙길·마을 길
+모두). paint_tiles 1층만 옛 동작대로 `setLower` 로 3·4층·그림자까지 비운다 — 안내 문장에 그대로 적혀 있다.
+계획: `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 2·3.
+
+| 도구 | 층 인자 | 계약 |
+|---|---|---|
+| `paint_tiles` | `layer: "lower"\|"upper"\|"1"\|"2"\|"3"\|"4"` (lower=1, upper=3) | 홈 레이어 라우팅은 1/3층 요청에만 — 2·4층은 명시 선택 그대로. 2·4층은 클러스터 동반 규칙 없이 칸 그대로. `fill` 은 1·2층만 — 2층 fill 은 (1층, 2층) 쌍이 시작 칸과 같은 칸으로만 번진다(빈 2층이 맵 전체로 새지 않게). 3층을 -1 로 비우면 그 칸 4층도 비운다. 통행 경고는 어느 층을 칠해도 낸다. 1층 칠하기는 `setLower` 라 그 칸 2·3·4층·그림자를 비운다. 결과 `data.effectiveLayer` 는 `"1".."4"`(옛 영수증 `"lower"/"upper"` 는 `proposalCompleteness` 가 계속 읽는다). |
+| `fill_region` | 같은 enum, 기본 1 | 2층에 채우면 1층은 그대로. 1층 채우기는 그 칸 2층을 비우고, `clearUpper` 는 3·4층을 함께 비운다. |
+| `stamp_layer_block` (새) | `layers: {"1"?,"2"?,"3"?,"4"?,shadow?}` 행 배열 | -1 = 건드리지 않음, -2 = 그 층에서 비움. 범위 밖 번호·맵 밖 쓰기 칸이 하나라도 있으면 **아무것도 쓰지 않는다**(맵 밖 -1 칸은 괜찮다). 1층 칸은 그 칸 2층을 비우되 같은 블록의 2층 값이 이긴다. 3·4층은 준 칸만. `reshape:false` 면 1·2층 자동타일을 재성형하지 않는다(참고 예제 번호 그대로). 요약·`data.cells` 에 층별 칸 수. 기존 내용 보호 영역은 1~4층 격자에서 실제로 쓰는 칸(≠ -1)만 — `shadow` 격자는 세지 않는다(`buildSpec.layerBlockRegions`; 그림자만 찍는 블록은 보호할 칸 없음, paint_shadow 와 같다). |
+| `paint_shadow` (새) | `cells[{x,y,quarters?,bits?}]`, `mode: set\|add\|clear` | bit0 좌상·bit1 우상·bit2 좌하·bit3 우하. 맵 밖 칸이 섞이면 아무것도 쓰지 않는다. `clear` 에서 quarters/bits 를 빼면 그 칸 그림자 전부. |
+| `tile_erase` | `both\|all\|lower\|upper\|1\|2\|3\|4\|shadow` (1=lower, 3=upper) | both=all=칸 전체(1층 바닥 복원 + 2·3·4층·그림자). lower=1층 복원 + 2층, upper=3·4층, 2/4/shadow=그 층만. `kind:"market"` 은 both/lower/upper 만. |
+| `clear_region` / `clear_map` | (그대로) | lower 쪽은 2층·그림자, upper 쪽은 4층까지 비운다. |
+| `mirror_region` | (그대로) | 선택 층도 옮기고 그림자 사분면을 축에 맞춰 뒤집는다(좌우 tl↔tr·bl↔br). |
+| `copy_map_region` | `layers: all\|lower\|upper` | all = 1~4층·그림자, lower = 1·2층, upper = 3·4층. 보호 칸 되돌리기도 다섯 값을 되돌린다. |
+
+- **오토타일 재성형은 칠한 층 배열에서, 바닥 층(1·2층)에서만** 한다(`autotileEngine.autotileLayerView(map, layer)`).
+  2층 풀 장식은 2층 이웃 기준으로 가장자리가 잡히고 1층은 안 바뀐다. 1층을 칠한 칸은 2층도 비웠으므로 둘레 2층 장식도 다시 잡는다.
+  3·4층은 적은 번호 그대로 둔다 — 옛 `upper` 칠하기와 같다(수관 같은 상위 그룹을 모델이 고른 칸째 보존).
+- **옛 맵(선택 칸 없음)은 어떤 도구를 거쳐도 새 키가 생기지 않는다.** 쓰기는 `setLayerTileAt`/`setShadowAt`(빈 값이면 배열을 만들지 않음),
+  비운 뒤엔 도구마다 `compactMapLayers`, 그리고 공유 헬퍼(`setLower`)를 쓰는 다른 도구를 위해 `toolRunner.runToolDefinition` 이
+  쓰기 실행 직후 한 번 정리한다(`compactTouchedMapLayers`). **정리는 이 도구가 건드린 맵만** — 새 맵, 칸이 바뀐 맵
+  (`changeset.tileBuffersDiffer`, 2·4층·그림자 포함), 이번에 선택 칸 키가 새로 생긴 맵. 손대지 않은 맵에 원래 있던 빈 배열은 남긴다
+  (지우면 `event_command_assist` 의 「명령 외의 변경」 비교와 맵 단위 되돌리기 스냅샷이 어긋난다).
+- **옛 프로젝트에도 보이는 paint_tiles 변화(의도):** 3층(upper) 칠하기도 통행 경고를 낸다(나무·바위를 upper 에 칠하면
+  「통행 불가가 되었습니다」), 요약 층 이름표가 `1층 lower` / `3층 upper`, 결과 `data.effectiveLayer` 가 `"1"`..`"4"`
+  (옛 `"lower"`/`"upper"` 대신 — 지금 유일한 독자 `proposalCompleteness` 는 둘 다 읽는다). `classifyProposalSafety` 는 새 경고를
+  unsafe 로 볼 수 있지만 생산 호출자가 없어 자동 적용에는 영향이 없다.
+- 두 새 도구는 맵 단위 되돌리기 목록(`applyChangesetToStore`·`editorToolHook` 의 `MAP_ONLY_WRITE_TOOLS`)과 맵 타일 도구 목록
+  (`aiChatPanelHelpers.MAP_TILE_TOOLS`)에 있고, `firstMapWithTileDiff` 는 2·4층·그림자만 바뀐 제안에도 미리보기 맵을 준다
+  (없는 칸 = 빈칸).
+- 두 새 도구는 참고문서 게이트 목록(`TILESET_REFERENCE_TILE_CHOOSERS`)에 있다. `stamp_layer_block` 은 1·3층을 덮으므로
+  기존 내용 보호(`buildSpec.TILE_WRITE_TOOLS`, 영향 영역은 값 ≠ -1 인 칸의 가로 줄)를 받고, 그림자만 쓰는 `paint_shadow` 는 받지 않는다.
+- Pi 고스트 증분(`mapDelta.ts`)·`agentGhostPreview`·`changeset.tileBuffersDiffer` 의 네 층 처리는 아래 「조수가 보는 네 층」 표.
+
+### 실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부 (2026-09-25)
+
+`toolRunner.runToolDefinition` 은 쓰기 도구가 끝난 draft 를 보고, **사용자가 올린 타일셋(`image.type === "uploaded"`)을 쓰던 기존 맵의
+`tilesetId` 가 바뀌었는데 인자 `tilesetId` 가 그 새 값이 아니면** `ToolError` `code: "uploaded-tileset-replaced"`(mapId 포함)로 거부한다
+(`rejectUploadedTilesetSwap`). 거부는 draft 를 버리므로 프로젝트는 그대로다. 오류 문장은 모델에게 참고문서(list_tileset_references)를 읽고
+paint_tiles·stamp_layer_block 으로 직접 깔라고, 정말 바꾸려면 tilesetId 를 명시하라고 말한다.
+
+- 왜: 실측(2026-09-25 Rasak 얼음 동굴 시험) — 조수가 `run_dungeon_room_pipeline` 을 불러 업로드 타일셋 맵이 `easyrpg_chipset_dungeon` 으로
+  바뀌었고, 사용자 타일셋과 그 참고문서는 한 번도 쓰이지 않았다. 번들 전용 시공기(castleBuilder·villageClimate·defaultTileset 등)는
+  칩셋을 스스로 정하므로, 도구마다가 아니라 실행기 한 곳에서 막는다.
+- 번들 타일셋 맵·새 맵은 검사 대상이 아니다. 칩셋을 일부러 바꾸는 호출(`set_map_properties{tilesetId}` 등)은 인자에 새 id 가 있어 통과한다.
+- **빠지는 법(`ToolDefinition.allowsTilesetChange: true`):** 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 켠다 — 지금은
+  `revert_last_edit`(이전 스냅샷 복원)·`reset_project`(빈 프로젝트로 교체; 같은 맵 id `map_blank_start` 가 기본 칩셋으로 돌아간다) 둘.
+  둘 다 tilesetId 인자를 받을 수 없어, 빠지지 않으면 「되돌려」·새 프로젝트가 막힌다(최종 리뷰 Important 1 probe).
+  맵 하나를 시공하는 새 도구가 업로드 타일셋 맵의 칩셋을 바꿔야 하면 플래그 대신 `tilesetId` 인자를 받게 하라.
+  공간 저작 도구(`apply_spatial_build`·`edit_spatial_occurrence`·`place_concept` canonical)도 프로젝트를 `Object.assign` 으로 바꾸지만
+  설계에서 맵을 컴파일하는 도구라 빼지 않았다 — 거기서 칩셋이 바뀌면 역시 말없는 바꿔치기다.
+- 회귀: `test/uploadedTilesetSwapGuard.test.ts` — 시험 도구(거부 / tilesetId 명시 통과 `ok:true` / 번들 맵), 실제 회귀
+  `run_dungeon_room_pipeline{mapId, replaceExisting:true}` 거부 + 프로젝트 불변, `reset_project`·`revert_last_edit` 통과, 플래그 목록.
+
+### 실행기 계약 — 칩셋 계열 검사 `tileset-family-change` 와 `ask_tileset_change` (2026-09-25)
+
+- `ToolContext` 에 선택 `currentMapId`(사용자가 보고 있는 맵)·`approvedTilesetFamilies`(대화에서 승인한 목표 계열)가 있다.
+  Pi 요청 같은 이름 필드 → 워커 ctx, 채팅 세션은 게터로 매 호출 최신 값. 둘 다 없으면 아래 동작이 꺼진다(옛 동작).
+- 쓰기 도구 실행 뒤 `rejectTilesetFamilyChange`: 새 맵·`tilesetId` 가 바뀐 맵의 계열(`src/project/tilesetFamily.ts`)이 지금 보는 맵과 다르고
+  승인 목록에 없으면 `ToolError{code:"tileset-family-change", mapId}`. 메시지 = 지금 칩셋(이름·계열) → 쓰려던 칩셋, 같은 계열 후보 ≤8,
+  「후보로 다시 / 없으면 ask_tileset_change 로 묻고 턴 끝」. `allowsTilesetChange` 도구는 건너뛴다, 읽기 도구는 검사 없음, dryRun 도 검사.
+- `ToolDefinition.defaultTilesetId(project)`(create_map 만): tilesetId 없이 불리고 이 기본값이 지금 보는 맵과 다른 계열이면 실행기가 인자에
+  지금 보는 맵의 tilesetId 를 넣는다. 같은 계열이면 도구 기본값(숲마을) 그대로.
+- `ToolDefinition.fillsCurrentMapId`(ask_tileset_change 만): 비어 있는 `mapId` 인자를 `ctx.currentMapId` 로 채운다.
+- `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}` — 읽기·core. 오류 `tileset-not-found`·`tileset-same-family`·`map-not-found`.
+  data `{kind:"tileset-change-question", mapId, fromTilesetId, toTilesetId, fromFamily, toFamily, fromLabel, toLabel, reason, purpose}` — 패널
+  `aiTilesetChangeCard.ts` 가 턴 끝에 견본 두 장 카드로 띄운다. 전체 흐름은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「칩셋 계열 규칙」.
+- 회귀: `test/tilesetFamilyGuard.test.ts`(업로드 계열 맵 + 던전 파이프라인 거부 / 같은 계열 통과 / 승인 통과 / currentMapId 없음 / reset·revert /
+  create_map 기본 칩셋 두 경우 / easyrpg 통과 / dryRun / ask_tileset_change), `test/tilesetFamily.test.ts`, `test/aiTilesetChangeCard.test.ts`.
+
+### 남은 일 (네 층)
+
+- `scripts/qa-game/render.mts:92` 이식(graft) 원본은 늘 번들로 취급된다 — 업로드 타일셋이 이식 원본이면 기본 칩셋 그림으로 말없이 대신한다.
+  옛 동작이지만 새 「기본 칩셋 대체 금지」 주석과 어긋난다(최종 리뷰 Minor 6, 보류).
+- 헤드리스 도구 이미지 `renderToolRegionPngBase64` 상한이 1024px 이라 전체 맵 `show_map_region` 한 장이 base64 약 2MB 다. 시험 토큰 비용을
+  줄이려면 브라우저와 같은 512 를 검토(최종 리뷰 Minor 9, 보류).
+- `show_tile_grid` 는 아직 1·3층만 본다(아래 절).
+
+회귀: `test/mzLayerWriteTools.test.ts`(도구별 + 옛 맵 11 호출 + 「고침 2차」 정리 범위·그림자 보호·목록), `test/uploadedTilesetSwapGuard.test.ts`, `test/autotileLayerView.test.ts`, `test/tilesetTeachingGuards.test.ts`.
+
+## 조수가 보는 네 층 — 읽기 도구·도구 이미지 (MZ식 4층, 2026-09-25)
+
+계획 `docs/superpowers/plans/2026-09-25-mz-layers-assistant.md` Task 1. 쓰기(위 절)와 짝이다.
+
+| 표면 | 계약 |
+|---|---|
+| `show_map_region` 배열 | 맵에 그 칸이 **있을 때만** `layer2`·`layer4`·`shadow`(사분면 비트 0~15) 2D 배열을 더 싣는다. 없으면 키도 없다 — 옛 맵 출력은 바이트 단위로 같다. 설명에 짧은 `FOUR_LAYER_GUIDANCE_SHORT`. |
+| 도구 이미지(브라우저·Pi 동반) | `src/ai/toolImageRenderer.ts` `renderTileGridPayload` 가 payload 의 선택 층을 받아 1 → 2 → 그림자(`mapTileDraw.drawShadowQuarters`) → 캐릭터 아래 이벤트 → 3 → 4 → 나머지 이벤트로 그린다. `renderToolImages`(get_map_region·preview_house·look_at_houses 등)는 payload 에 선택 층이 없으면 예전과 같다. |
+| 헤드리스 이미지 | `scripts/pi-agent.mts` 도 `gen.mts` 처럼 `renderToolImage` → `scripts/qa-game/render.mts` `renderToolRegionPngBase64` 를 넘긴다(전에는 show_map_region 이 「맵 이미지 전달 경로가 없습니다」로 실패했다). 이 렌더러는 에디터 `drawMapTileLayer` 를 쓰므로 4층 + 그림자를 그리고, `PngContext` 가 그림자용 save/restore/fillRect(rgba)를 갖는다. |
+| 업로드 타일셋(헤드리스) | `render.mts` 는 업로드 그림판을 **그리는 프로젝트의** `assets.uploaded[id]` 에서 찾는다. 전에는 `tilesetBaseImageUrl(tileset)` 가 전역 store 를 봐서, store 에 없는 그림판(Rasak 48px)이 기본 칩셋 조각으로 그려졌다. 자산이 없거나 ref 만 있고 해석기가 없으면 기본 칩셋으로 대신하지 않고 `note` → 도구 이미지는 `map-rendering-unavailable` 로 실패한다. PNG dataUrl 만 읽는다. |
+| `get_map_region` 기호 | 2·4층이 있는 칸은 4 → 3 → 2 → 1 로 맨 위부터 첫 물(`~`)·나무(`T`) 칸이 기호를 정한다(4층 수관이 1층 늪물을 덮으면 T). 2·4층이 없는 칸(옛 맵 전부)은 옛 규칙(1·3층 어느 쪽이든 물이면 `~`)이다. |
+| `analyze_map_tile_usage` | `tiles[].layers` 는 옛 이름 `lower`(1층)·`upper`(3층)에 `layer2`·`layer4` 를 더한다. 인접 통계의 합성 칸은 4 → 1 맨 위. 선택 층이 있는 맵만 `data.layerCells {1,2,3,4,shadow}`. |
+| `mapVisualContent` | 선택 층이 있을 때만 투영에 넣는다 → 2·4층·그림자만 바뀌어도 `requiresVisualReview` 가 참. 옛 맵 투영 문자열은 그대로. |
+
+| 턴 시작 뷰포트 이미지 | `mapRegionImagePayload`(`src/ai/mapViewportContext.ts`)가 show_map_region 과 같은 규칙으로 `layer2`·`layer4`·`shadow` 를 싣는다(있을 때만). |
+| `get_map_region` `water.bounds` | 1~4층 어느 층이든 물이면 센다(없는 층은 -1 → 옛 맵은 그대로). |
+| Pi 고스트 증분 | `src/ai/piAgent/mapDelta.ts` 층 유니온 `lower`·`upper`·`layer2`·`layer4`·`shadow`. 선택 층은 두 맵 어느 쪽에도 없으면 항목이 없고(옛 맵 증분 JSON 불변), 사라지면 `{layer, absent:true}` 로 키를 지운다. 크기가 바뀐 맵은 선택 층도 `full`. 생산 `scripts/lib/piAgentRuntime.ts` `emitMapDelta`, 소비 `aiPiGhostBridge`·`aiLaneGhost` 는 `applyMapDeltas` 만 부르므로 그대로 따라간다. |
+| 고스트 칸 | `agentGhostPreview.collectTileDiffCells` 가 2층·그림자 변화는 lower, 4층 변화는 upper 칸으로 **표시만** 한다(tileId 없음 → 칸 테두리). 같은 칸의 1·3층 셀이 있으면 그 셀을 둔다. 2·4층 그림을 고스트에 그리는 일은 PR ②. 적용 전 `paint_tiles` 영역 고스트는 `layer` `"3"`·`"4"`·`"upper"` → upper, 그 밖 → lower. |
+| 변경 집계 | `changeset.ts` `countTileChanges`(칸당 1, 2·4층·그림자 포함 — `src/headless/index.ts` 도 같은 규칙)·`tileBuffersDiffer`(→ `tileChangedMapIds` 재검사 대상). 선택 층은 `comparableMapProperties` 에서 뺐다 — 층 칠하기가 `mapPropertiesChanged` 로 잡혀 `proposalSafety` ZERO_COUNT_KEYS 에 걸리던 길을 막는다. |
+
+남은 1·3층 전용 표면: `show_tile_grid`.
+회귀: `test/mzLayerVision.test.ts`, `test/qaGameRender.test.ts`(업로드 그림판·층 순서·못 찾음), `test/mzLayerGhostAccounting.test.ts`(증분 왕복·옛 맵 불변·집계·고스트 칸·뷰포트 재료).
+
 ## 충격 연출 (2026-09-22)
 
 이벤트 명령 조수(`buildEventAssistPrompt`)와 스튜디오 조수(시스템 프롬프트 고정 블록)는 같은 순서를 본다. 함정·피격·마법·폭발·사망은 대사로 시작하지 않는다. `playAudio`(효과음, `loop:false`)와 `showAnimation`(`wait:true`)이 먼저고, 그 다음 HP·스위치·이동·`killPlayer`, 마지막이 설명 대사다. 마법학교처럼 화면을 덮는 컨셉이면 단발 타격이 아니라 화면을 덮는 애니메이션 id(목록에 «화면을 덮음»)를 쓴다. 게임오버 그림·제목은 `get_game_over` / `set_game_over` / `generate_game_over_image` 다. `killPlayer.message` 는 그 순간의 한 줄이다.
@@ -32,9 +142,11 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
 ### 검색 중 사용자에게 보이는 것 (2026-09-21 실측)
 ## AI 새 야외·마을의 기본 칩셋 (2026-09-21)
 
-- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 AI 새 야외의 기본값을 소유한다.
+- `defaults/forestHarmony.ts::defaultOutdoorTilesetId`가 새 프로젝트·새 맵·AI 새 야외의 기본값을 소유한다.
   기본 제공 `forest_harmony`(숲마을 · 거리별 잔디)를 우선하며, 번들이 없는 축소된 옛 프로젝트만
-  합본 마을로 폴백한다. `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
+  합본 마을로 폴백한다. `createBlankProject`의 시작 맵, 맵 만들기 대화의 빈 맵, `addMap`/`addChildMap`의
+  생략 칩셋이 같은 값을 쓴다. 「부모와 같게」는 부모 칩셋을 유지한다.
+  `DEFAULT_TILESET_ID`는 기존 데이터·번호 계약이므로 바꾸지 않는다.
 - `create_map`, `generate_map`의 village/forest, `author_village`와 내부 마을 생성,
   `build_world`의 town/field가 같은 정책을 쓴다. 명시 칩셋은 우선한다.
   `generate_map` cave는 고정 입구/POI 유무와 관계없이 던전 칩셋을 기본으로 한다.
@@ -72,6 +184,7 @@ DEFAULT/AUTO/YOLO/단계별 적용에서는 검색까지 직렬 실행됐다. �
   참조 칩셋의 47개 연결 조각은 기존 `tileGrafts` 경로로 현재 마지막 타일 뒤에 추가한다.
   `forest_harmony_grove_47`은 독립 그룹이다. 옛 1617·수관 그룹·잠긴 메타데이터·기존 graft는
   덮지 않으며, 사용자 확장 슬롯이 있어도 그 뒤에 추가한다. 조회/그래픽 미리보기는 변이하지 않는다.
+  47칸 뒤 11칸은 수관 속의 깊이 변형(`interiorVariants`, 잎 채움)이다. 페인터가 끝에 `shadeForestCanopy` 로 고른다.
 - 승인 원본은 `forest-cliff-village-atlas.png`; 새 그림 생성이나 참조 맵 수정은 없다.
   Phaser preload·공통 graft bake·내보내기가 같은 번들 소스를 사용한다.
   `authorVillageScope`는 이 결정론적 추가 결과만 허용하며 다른 칩셋 변경은 계속 거부한다.
@@ -2154,3 +2267,44 @@ agent_done을 실패로 남기고 최종 결과에 문제를 전달한다. 이�
 함께 전달한다. 숫자 좌표만 보고 막힌 문을 반복 수정하지 않도록 구조 오류와 실제 모습을 같이
 본다. 이것은 실제 현재 배열의 렌더이며 모형 그림이 아니다. 후속 지시는 show_map_region도 요청하지만,
 완료 검사 자체는 검사 도구에 붙인 최신 전체 PNG 역시 현재 그림으로 인정한다.
+## Isaiah 물 태그 판정 보완 (2026-09-24)
+
+기존 타일셋별 물 판정을 유지하며 `tileMeta.tags`의 정확한 `water`도 읽는다. Isaiah 공용 자료는 role 대신 tags를 쓰므로 이 경로가 필요하다. 기본 합본 마을 호환 그림의 숫자 판정과 category/role/팔레트/그룹 판정은 보존한다. 별도9897 구버전 워커에서 잔디0번을 물38칸으로 보고한 재현 및 갱신 여부는 `docs/qa/saesol-three-hour-ai-authoring.md`에 기록했다.
+
+## 전투 결과 분기의 퀘스트 완료 플래그 (2026-09-24)
+
+`storyFlagUsage.scanCommand`는 battleProcessing의 victoryBranch/defeatBranch/escapeBranch도
+재귀 순회해 읽기·쓰기 위치를 기록한다. 이 분기를 빠뜨리면 실제 전투 승리로 설정되는 플래그가
+「write site 없음」으로 오인되어 define_quest의 초안 커밋이 거부되고, AI가 정상 전투 이벤트를
+불필요하게 수정하려 한다. 기존 이벤트를 평탄화해 이 검사 오류에 맞추지 않는다.
+`questGraph.commandAtNestedPath`도 같은 세 경로를 해석한다. 전투 결과 분기 안의 위치는
+`isBattleGatedWrite`가 수동 검증으로 분류한다. write site 발견은 실제 승리·탈출·패배 증거가 아니다.
+정본532 사례와 수정 전후 위치 비교는 `docs/qa/saesol-three-hour-ai-authoring.md` 요청64 이후 기록 참조.
+
+## Monster follower graphic authoring (2026-09-25)
+
+`define_monster_species` accepts `graphic.fieldGraphic` (the persisted
+`EventPageGraphic` shape) and the legacy `fieldCharsetId`. A partial
+`{species:{id,graphic:{fieldGraphic:{scale:0.5}}}}` merges recursively, preserving
+sprite ID/type, direction, pattern and other species data. Scale uses the shared
+character scale bounds (0.25–8); `scaleMode` accepts auto/manual. These are field
+settings, not front/back battle image settings. A new field graphic needs a sprite
+ID to survive species normalization; a scale-only patch requires an existing
+field graphic. Field sprite IDs come from registered resources, not texture keys.
+
+Saesol authoring request75 exposed the missing tool schema: stored species and
+runtime followers supported the setting, but the AI tool rejected `fieldGraphic`
+and returned a prose draft with no project change. This schema change closes that
+input gap; publishing it does not itself change any canonical game data.
+
+## 기존 서사 플래그의 설명 수정 (2026-09-25)
+
+`declare_story_flag`의 `action:"update"`는 기존 플래그의 `description`만 수정한다.
+입력은 `action`, `id`, 비어 있지 않은 `description`뿐이며 추가 필드는 거부한다.
+ID·kind·targetId·questId·tags·retired·스위치 이름과 값·세션·이벤트/퀘스트 참조를 유지한다.
+retired된 플래그도 설명은 고칠 수 있으나 다시 활성화하지 않는다. 없는 ID는 생성하지 않는다.
+
+사용 예: `{action:"update",id:"sr-camp-ridge-heard",description:"새솔마을 현장 조사 완료"}`.
+설명을 바꾸기 위해 retire 후 재등록하거나 rename을 쓰지 않는다. 기존 declare/rename/retire
+계약은 유지한다. 새솔 저작 요청80에서 설명 교정 대신 retired=true 초안이 생성되어 폐기된
+사례 때문에 추가했다. 회귀 정의: `test/storyFlags.test.ts` (이번 세션에서 실행하지 않음).

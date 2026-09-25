@@ -1,20 +1,25 @@
-import { referenceManifest, referenceOwner, referenceRevision, REFERENCE_PAGE_SIZE } from "@/project/tilesetReferences";
+import { isDungeonSheetTilesetId } from "@/project/defaults/dungeonSheetTilesets";
+import { referenceManifest, referenceOwner, referencePage, referencePageStarts, referenceRevision } from "@/project/tilesetReferences";
 import { ToolError, type ToolDefinition } from "./types";
 
 export const TILESET_REFERENCE_READ_TOOLS = ["list_tileset_references", "read_tileset_reference"] as const;
 export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
   "stamp_forest_recipe", "stamp_tile_recipe",
-  "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "mirror_region", "clear_map", "build_shared_scene",
+  "create_map", "duplicate_map", "resize_map", "shift_map", "set_map_properties", "copy_map_region", "import_region_reference", "stamp_object", "mirror_region", "clear_map", "build_shared_scene",
   "paint_tiles", "paint_road", "build_house", "build_village", "stamp_structure", "clear_region", "author_house", "author_village",
-  "fill_region", "tile_erase", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
+  "fill_region", "tile_erase", "stamp_layer_block", "paint_shadow", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
   "make_hunting_ground", "create_farm_plot", "apply_spatial_build", "edit_spatial_occurrence",
   "author_world_bridge", "author_world_mountain", "arrange_rows", "generate_map", "build_castle", "place_concept",
   "start_interior_room_session", "advance_interior_room_build", "run_interior_room_pipeline", "furnish_interior_space",
   "start_dungeon_room_session", "advance_dungeon_room_build", "run_dungeon_room_pipeline",
   "run_village_pipeline", "start_village_session", "advance_village_build", "run_village_session", "plant_tree_clusters",
+  "arrange_tall_grass",
 ]);
 
 /**
+ * 조수가 타일셋을 배우는 경로 전체와 새 도구·타일셋 점검표: openwiki/teaching-assistant-tilesets.md
+ * 이 목록에서 빠진 칠하기 도구는 test/tilesetTeachingGuards.test.ts 가 잡는다.
+ *
  * 선행 읽기 게이트가 걸리는 쓰기 도구 — 모델이 **타일을 직접 고르는** 도구(타일 번호·재질 어휘·팔레트·조립법 ID).
  * 참고문서는 그 선택을 추측하지 않게 하려고 있다. 나머지 WRITERS(빈 맵 생성·크기/복제/이동·결정론 파이프라인·세션 전진)는
  * 코드가 타일을 고르므로 문서를 읽어도 결과가 바뀌지 않는다 — 그런데도 게이트가 걸려, 22×18 보스방 create_map 하나에
@@ -24,6 +29,8 @@ export const TILESET_REFERENCE_WRITERS: ReadonlySet<string> = new Set([
 export const TILESET_REFERENCE_TILE_CHOOSERS: ReadonlySet<string> = new Set([
   "paint_tiles", "fill_region", "build_wall", "place_door", "place_window", "build_roof", "lay_path", "place_props", "arrange_rows",
   "paint_road", "stamp_structure", "build_house", "stamp_forest_recipe", "stamp_tile_recipe",
+  // MZ 4층: 모델이 층별 번호 배열·그림자 조각을 직접 고른다.
+  "stamp_layer_block", "paint_shadow",
 ]);
 
 /** Purpose is explicit structured author intent, never inferred from prompt keywords. */
@@ -37,6 +44,21 @@ export function withTilesetReferencePurpose(tool: ToolDefinition): ToolDefinitio
   return { ...tool, description, parameters: {
     ...tool.parameters, properties: { ...tool.parameters.properties, referencePurpose: { type: "string", description: purpose } },
   }, run(project, args) { const { referencePurpose: _purpose, ...rest } = args; return tool.run(project, rest); } };
+}
+
+/**
+ * 없는 ID 를 받았을 때 고를 수 있는 ID 를 함께 돌려준다. r0735: 모델이 목록을 보기 전에
+ * documentId "climate-snow-villages-v3-guide" 를 지어내 「MD 문서를 찾을 수 없습니다」만 받았다
+ * (실제 안내 문서는 "snow-guide"). 이름 조각이 겹치는 후보를 앞에 둔다.
+ */
+function unknownIdMessage(label: string, requested: unknown, ids: readonly string[], limit = 20): string {
+  const wanted = String(requested ?? "");
+  const words = wanted.toLowerCase().split(/[^a-z0-9가-힣]+/u).filter(word => word.length >= 3);
+  const score = (id: string): number => words.filter(word => id.toLowerCase().includes(word)).length;
+  const ranked = [...ids].sort((a, b) => score(b) - score(a));
+  const shown = ranked.slice(0, limit).join(", ");
+  const more = ids.length > limit ? ` 외 ${ids.length - limit}개` : "";
+  return `${label} '${wanted}'를 찾을 수 없습니다. 이 용도의 ${label}: ${shown || "(없음)"}${more}.`;
 }
 
 export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
@@ -70,29 +92,30 @@ export const TILESET_REFERENCE_TOOLS: readonly ToolDefinition[] = [
   },
   {
     name: "read_tileset_reference", mode: "read", domains: ["tile", "map", "database"],
-    description: "용도의 MD 한 페이지 또는 이미지 한 장을 읽는다. documentId/imageId 중 하나만 지정. MD는 nextOffset이 null일 때까지 읽는다. 이미지는 실제 이미지 입력으로 전달된다. 같은 응답에 배치를 함께 호출하지 말고 반환 자료를 본 다음 배치한다.",
+    description: "용도의 MD 한 페이지 또는 이미지 한 장을 읽는다. documentId/imageId 중 하나만 지정 — id 목록은 list_tileset_references({tilesetId, categoryId}) 가 준다(용도 id 는 list_tileset_references({tilesetId})). MD는 nextOffset이 null일 때까지 읽는다(페이지는 문단·코드 블록 경계에서 끊겨 사전 JSON 이 한 페이지에 온전히 온다). 이미지는 실제 이미지 입력으로 전달된다. 같은 응답에 배치를 함께 호출하지 말고 반환 자료를 본 다음 배치한다.",
     parameters: { type: "object", properties: {
       tilesetId: { type: "string" }, categoryId: { type: "string" }, documentId: { type: "string" }, imageId: { type: "string" }, offset: { type: "integer", minimum: 0 },
     }, required: ["tilesetId", "categoryId"], additionalProperties: false },
     run(project, args) {
       const tileset = project.tilesets[String(args.tilesetId)];
-      if (!tileset) throw new ToolError("타일셋을 찾을 수 없습니다.");
+      if (!tileset) throw new ToolError(`타일셋 '${String(args.tilesetId)}'을 찾을 수 없습니다. 타일셋 ID: ${Object.keys(project.tilesets).join(", ")}.${isDungeonSheetTilesetId(String(args.tilesetId)) ? " 던전 재칠 시트의 문서는 easyrpg_chipset_dungeon 에 있다(같은 칸 번호) — 그 tilesetId 로 읽고, 맵은 create_map({tilesetId:'" + String(args.tilesetId) + "'}) 로 만들면 타일셋이 자동으로 생긴다." : ""}`);
       const owner = referenceOwner(project, tileset);
       const group = owner.referenceDocuments?.find(g => g.id === args.categoryId);
-      if (!group) throw new ToolError("용도를 찾을 수 없습니다. list_tileset_references로 ID를 확인하세요.");
+      if (!group) throw new ToolError(unknownIdMessage("용도 categoryId", args.categoryId, (owner.referenceDocuments ?? []).map(g => g.id)).replace("이 용도의 ", `타일셋 ${tileset.id} 의 `));
       if ((args.documentId === undefined) === (args.imageId === undefined)) throw new ToolError("documentId/imageId 중 하나만 지정하세요.");
       const base = { tilesetId: tileset.id, ownerId: owner.id, categoryId: group.id, revision: referenceRevision(group) };
       if (args.documentId !== undefined) {
         const doc = group.documents.find(d => d.id === args.documentId);
-        if (!doc) throw new ToolError("MD 문서를 찾을 수 없습니다.");
+        if (!doc) throw new ToolError(`MD 문서를 찾을 수 없습니다 — ${unknownIdMessage("documentId", args.documentId, group.documents.map(d => d.id))} 전체 목록은 list_tileset_references({tilesetId,categoryId}).`);
         const offset = Number(args.offset ?? 0);
-        if (!Number.isSafeInteger(offset) || offset < 0 || offset > doc.markdown.length || offset % REFERENCE_PAGE_SIZE !== 0) throw new ToolError(`offset은 ${REFERENCE_PAGE_SIZE} 단위의 페이지 시작점이어야 합니다.`);
-        const end = Math.min(doc.markdown.length, offset + REFERENCE_PAGE_SIZE);
-        return { summary: `${group.name} / ${doc.name} (${offset}–${end})`, data: { ...base, document: { id: doc.id, name: doc.name, markdown: doc.markdown.slice(offset, end), offset, nextOffset: end < doc.markdown.length ? end : null, totalCharacters: doc.markdown.length } } };
+        const page = Number.isSafeInteger(offset) ? referencePage(doc.markdown, offset) : null;
+        if (!page) throw new ToolError(`offset 은 페이지 시작점이어야 합니다 — 이 문서의 페이지: ${referencePageStarts(doc.markdown).join(", ")}. 처음은 offset 생략, 다음은 응답의 nextOffset.`);
+        const pages = referencePageStarts(doc.markdown);
+        return { summary: `${group.name} / ${doc.name} (${offset}–${page.end}, ${pages.indexOf(offset) + 1}/${pages.length}쪽)`, data: { ...base, document: { id: doc.id, name: doc.name, markdown: page.text, offset, nextOffset: page.nextOffset, page: pages.indexOf(offset) + 1, pages: pages.length, totalCharacters: doc.markdown.length } } };
       }
       if (args.offset !== undefined) throw new ToolError("이미지에는 offset을 사용하지 않습니다.");
       const img = group.images.find(i => i.id === args.imageId);
-      if (!img) throw new ToolError("첨부 이미지를 찾을 수 없습니다.");
+      if (!img) throw new ToolError(`첨부 이미지를 찾을 수 없습니다 — ${unknownIdMessage("imageId", args.imageId, group.images.map(i => i.id))}`);
       return { summary: `${group.name} / ${img.name} — 실제 이미지를 확인하세요.`, data: { ...base, image: { id: img.id, name: img.name, caption: img.caption } } };
     },
   },

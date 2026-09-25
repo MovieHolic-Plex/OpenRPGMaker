@@ -1,6 +1,6 @@
 import { assertNever, checkedDocument, own } from "@/project/spatial/domain";
 import { choice, list, text } from "@/project/spatial/guardValues";
-import { CONCEPT_FLOOR_MATERIALS, CONCEPT_WALL_MATERIALS, type ConceptBundleRecord, type ConceptPlaceRecord } from "@/project/types/conceptBundle";
+import { CONCEPT_WALL_MATERIALS, conceptFloorMaterialOrWood, type ConceptBundleRecord, type ConceptPlaceRecord } from "@/project/types/conceptBundle";
 import type { Project } from "@/project/types";
 import type { SpaceDesign, SpatialAuthoringDocument, SpatialDesignReference } from "@/project/spatial/types";
 import { CONCEPT_FLOOR_TILES, type ConceptRoomLayout } from "../conceptBundleResolve";
@@ -69,7 +69,7 @@ export function canonicalConceptBundles(project: Project, tilesetId: string): re
     if (rooms.some(room => room.space.tilesetId !== tilesetId || room.space.environment !== "interior")) return [];
     const places: ConceptPlaceRecord[] = rooms.map(room => ({ id: room.id, label: room.space.name,
       role: room.space.environment === "interior" ? room.space.role : "room", shape: room.space.shape,
-      floor: choice(CONCEPT_FLOOR_MATERIALS)(room.space.floor, `${room.space.id}.floor`), level: room.level,
+      floor: conceptFloorMaterialOrWood(room.space.floor), level: room.level,
     }));
     const bundle: ConceptBundleRecord = { id: alias(document, { kind: "place", id: place.id }), label: place.name,
       facilities: [{ id: alias(document, { kind: "place", id: place.id }), label: place.name, placeIds: places.map(room => room.id),
@@ -110,7 +110,7 @@ export function canonicalConceptLayout(bundle: ConceptBundleRecord, level?: numb
   };
 }
 function floorTile(material: string): number {
-  return CONCEPT_FLOOR_TILES[choice(CONCEPT_FLOOR_MATERIALS)(material, "floor")];
+  return CONCEPT_FLOOR_TILES[conceptFloorMaterialOrWood(material)];
 }
 
 /** Match legacy room aliases using the receipt, without treating opaque IDs as encoded data. */

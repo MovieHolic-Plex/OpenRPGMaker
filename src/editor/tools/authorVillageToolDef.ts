@@ -2,6 +2,8 @@ import { defaultOutdoorTilesetId } from "@/project/defaults/forestHarmony";
 import { RIVER_VILLAGE_STYLE_GUIDANCE } from "@/project/defaults/riverVillageStyle";
 import { prepareVillageDefaultTileset } from "./village/defaultTileset";
 import { applyVillageClimate, borrowForestHarmonyForClimateSheet } from "./village/villageClimate";
+import { placeVillageLandmark } from "./village/villageLandmark";
+import { purgeStaleVillageInteriors } from "./village/interiors";
 import { withVillageMorphologyDefault } from "./village/defaultMorphology";
 import { VILLAGE_MORPHOLOGIES } from "./village/morphologyTypes";
 import { parseAuthorVillageRequest } from "@/editor/construction/parseVillageRequest";
@@ -13,6 +15,7 @@ import type { GameMap, Project } from "@/project/types";
 import { createDraft } from "./changeset";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
+import { cropExtraLayers } from "@/project/mapLayers";
 import { assertVillageMutationScope, restoreExistingTargetStart } from "./authorVillageScope";
 import {
   assertInnerVillageSuccess,
@@ -29,7 +32,7 @@ import {
 } from "./villageBuilder";
 import { RECT_SCHEMA } from "./schemaShapes";
 import { villageTemplateCatalog } from "./village/authoringData";
-import { villageFormTemplates } from "./village/authoringData";
+import { villageFormTemplates, villageGableTemplates } from "./village/authoringData";
 import { HOUSE_TEMPLATES, MIN_BOUNDS_SIZE } from "./village/constants";
 
 import { resolveVillageDesignInput } from "./village/designContract";
@@ -150,7 +153,7 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
               ownerName: { type: "string" },
               templateId: {
                 type: "string",
-                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략: ${[...HOUSE_TEMPLATES, ...villageFormTemplates()].map((template) => template.id).join(", ")}. ref-walled-*/ref-castle-* 는 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 셀 레시피다.`,
+                description: `선택 사항. 알려진 템플릿 id만 사용하고 확실하지 않으면 생략(생략하면 박공 조합 형태가 먼저 골고루 섞인다): ${[...villageGableTemplates(), ...HOUSE_TEMPLATES, ...villageFormTemplates()].map((template) => template.id).join(", ")}. gable-* 는 박공 조합 형태(정면 세모 박공·교차 박공·현관 박공·측면 박공 — 재료는 kitId 를 따른다), ref-walled-*/ref-castle-* 는 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 셀 레시피(재료 고정)다.`,
               },
               fence: { type: "boolean", description: "이 집에만 울타리. 기본 없음. 명시한 manor(부잣집)는 생략 시 true이며 false로 해제 가능. 중요한 집에만 지정하세요." },
               program: { type: "string", enum: ["dwelling", "shop", "inn", "workshop", "study", "manor"] },
@@ -159,7 +162,8 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
           },
         },
         countPolicy: { type: "string", enum: ["exact", "best-effort"], description: "exact=정확히 houseCount, best-effort=85% 하한(4채 이하는 exact와 같음)." },
-        groundTheme: { type: "string", enum: ["grass", "snow"], description: "마을 전체 지면. 기획·세계관이 눈·겨울·눈보라·설원이면 snow — 숲마을 칩셋은 칸 번호가 같은 설원 칩셋(forest_harmony_snow)으로 바뀌고 맵 날씨가 눈이 되어 이 마을 아래 실내·던전의 전투 배경도 설원이 된다. theme 문장은 코드가 읽지 않으니 눈 마을이면 반드시 지정한다." },
+        groundTheme: { type: "string", enum: ["grass", "snow", "desert", "volcano", "autumn"], description: "마을 전체 지면·기후. 숲마을 칩셋 마을을 칸 번호가 같은 기후 칩셋으로 옮긴다. snow: 설원(forest_harmony_snow)·맵 날씨 눈 — 이 마을 아래 실내·던전의 전투 배경도 설원. desert: 사막(forest_harmony_desert) — 잎 달린 숲을 걷고 잎 없는 고목 덩이·선인장, 물가 야자. volcano: 화산(forest_harmony_volcano) — 잎 없는 고목 덩이·바위. autumn: 가을(forest_harmony_autumn). desert·volcano·autumn 은 꽃덤불·화분도 뺀다. 기후 칩셋을 target.tilesetId 로 줘도 같다. theme 문장은 코드가 읽지 않으니 기후 마을이면 반드시 지정한다." },
+        landmark: { type: "string", enum: ["lighthouse"], description: "마을 안 랜드마크. lighthouse=물가(물이 없으면 북쪽) 빈 땅에 둥근 탑 등대(2×5, 꼭대기 등불)를 세우고 입구 앞칸 좌표를 경고로 돌려준다 — 그 좌표로 create_transfer_pair 해 등대 맵과 잇는다. 기획에 등대가 있으면 지정한다(theme 문장은 코드가 읽지 않는다)." },
         settlementLayout: { type: "string", enum: ["plaza-ring", "street-grid", "clusters"] },
         morphology: {
           type: "string",
@@ -238,6 +242,11 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       prepareVillageDefaultTileset(draft, request);
       assertTargetTilesetUsable(draft, request);
       assertTargetCapacity(draft, request);
+      // 재시공 정리는 baseline 스냅샷보다 먼저 — 뒤에 지우면 새로 만든 실내가 baseline 에 이미 있던
+      // id 로 잡혀 "pre-existing map as an interior" 로 거부된다(2026-09-24 연애 romance-r2 replay).
+      if (request.target.kind === "existing" && draft.maps[request.target.mapId]) {
+        purgeStaleVillageInteriors(draft, draft.maps[request.target.mapId]!);
+      }
       const baseline = createDraft(draft);
       switch (request.target.kind) {
         case "existing":
@@ -266,11 +275,14 @@ export function createAuthorVillageTool(dependencies: AuthorVillageDependencies 
       const renameWarnings = request.target.kind === "existing"
         ? renameVillageTargetMap(draft, request.target.mapId, requestedExistingName)
         : [];
+      // 랜드마크는 숲마을 칩셋일 때 세운다 — 기후 칩셋은 칸 번호가 같아 그대로 옮겨 간다.
+      const landmark = request.landmark ? placeVillageLandmark(draft, request.target.mapId, request.landmark) : undefined;
       const climateWarnings = applyVillageClimate(draft, request, borrowed.climate);
-      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...climateWarnings];
+      const warnings = [...data.construction.warnings, ...scopeWarnings, ...renameWarnings, ...(landmark?.warnings ?? []), ...climateWarnings];
       return {
-        summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`,
-        data,
+        summary: `Village authored: ${inspection.actualHouseCount}/${request.houseCount} houses on ${request.target.mapId}.`
+          + (landmark?.placed ? ` Lighthouse at (${landmark.placed.x},${landmark.placed.y}), entrance (${landmark.placed.entrance.x},${landmark.placed.entrance.y}).` : ""),
+        data: landmark?.placed ? { ...data, landmark: landmark.placed } : data,
         ...(warnings.length === 0 ? {} : { warnings }),
       };
     },
@@ -402,6 +414,7 @@ function growExistingVillageMap(map: GameMap, width: number, height: number): vo
   }
   const nextLowerStacks = resizedTileStacks(map.lowerTileStacks, oldW, oldH, width, height);
   const nextUpperStacks = resizedTileStacks(map.upperTileStacks, oldW, oldH, width, height);
+  cropExtraLayers(map, oldW, oldH, 0, 0, width, height);
   map.width = width;
   map.height = height;
   map.lowerTiles = nextLower;

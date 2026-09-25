@@ -1,4 +1,5 @@
 /* runtime 표면 진입 시트 — 리프 시트를 @layer runtime 에 넣는다. 규칙을 여기 쓰지 말 것. 순서는 2026-09-11 유효 순서 그대로(세대 접기 전). */
+@import "./fonts.css" layer(runtime);
 @import "./system.css" layer(runtime);
 @import "./playSurface.css" layer(runtime);
 @import "./from-editor-core-part-2.css" layer(runtime);
@@ -24,19 +25,12 @@
 @import "./battle-skins/_pokemon.css" layer(runtime);
 @import "./battle-skins/_rm2000.css" layer(runtime);
 @import "./battle-skins/_rm2003.css" layer(runtime);
-@import "./battle-skins/_octopath.css" layer(runtime);
-@import "./battle-skins/_chrono.css" layer(runtime);
-@import "./battle-skins/_bravely.css" layer(runtime);
-@import "./battle-skins/_dragonquest.css" layer(runtime);
-@import "./battle-skins/_ff.css" layer(runtime);
-@import "./battle-skins/_mother.css" layer(runtime);
-@import "./battle-skins/_goldensun.css" layer(runtime);
-@import "./battle-skins/_mv.css" layer(runtime);
-@import "./battle-skins/_hud-templates.css" layer(runtime);
+@import "./battle-skins/_glass-variants.css" layer(runtime);
 @import "./battle-skins/_transitions.css" layer(runtime);
 @import "./battle-skins/_battlers.css" layer(runtime);
-@import "./battle-skins/_vxace.css" layer(runtime);
 @import "./battle-skins/_windowskin.css" layer(runtime);
+@import "./battle/22-hit-feel.css" layer(runtime);
+@import "./battle/23-entry-exit.css" layer(runtime);
 @import "./commerce.css" layer(runtime);
 @import "./shop.css" layer(runtime);
 @import "./title.css" layer(runtime);
@@ -57,6 +51,7 @@
 @import "./gameOver.css" layer(runtime);
 @import "./juice.css" layer(runtime);
 @import "../dialogue.css" layer(runtime);
+@import "../dialogueStyles.css" layer(runtime);
 @import "./zoneFeedback.css" layer(runtime);
 @import "./handSlot.css" layer(runtime);
 @import "./minimap.css" layer(runtime);

@@ -1,5 +1,5 @@
 import type { Command, GameMap, Project } from "@/project/types";
-import { canMove, tileAt, tilePassability } from "@/project/collision";
+import { canMove, cellPassability, inBounds } from "@/project/collision";
 import { roleCapabilities } from "@/project/tileRoles";
 import { startStateOf } from "@/project/session";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
@@ -36,7 +36,7 @@ export const ADVENTURE_AUTHORING_GUIDE = `요청한 모험의 완료 조건은 �
 첫 쓰기 순서는 세계관(set_world_canon 또는 read_project_wiki로 확인한 설정) → 핵심 인물(upsert_character_profile) → 주인공 액터(upsert_actor: appearanceId, faceResourceId, characterResourceId/characterIndex, battleCharacterResourceId, initialEquipment) → set_party로 시작 파티 → set_session_start로 시작 소지금·아이템 → 나머지 DB·맵·이벤트다. 리소스 ID는 list_resources로 실제 목록을 조회해 고르고, 장비는 upsert_equipment로 만든 뒤 주인공 initialEquipment.weapon에 연결한다. 외형·인물·장비를 생략한 채 맵만 먼저 만드는 것은 완성된 RPG가 아니다.
 마을은 author_village/author_house 등으로 건물과 길을 실제 시공한다. 잔디+흙길+사람은 마을 완성이 아니다.
 던전 탐험을 요청했다면 list_dungeon_room_themes 조회 후 run_dungeon_room_pipeline({mapId,name,theme:"stone",hazard:true})로 별도 동굴을 먼저 시공한다. 잔디 맵에 주택 벽 한 줄을 두는 것은 동굴이 아니다. 기존 맵의 무단 교체는 금지한다. 생성 결과의 통행 칸을 조회한 뒤 보물·적을 배치하고 create_transfer_pair로 왕복 연결하고 입구의 동굴/문/계단 외형을 조회해 사용한다. 사람 그림을 관문으로 쓰지 않는다.
-기본 전투 적은 조회한 트룹을 set_encounter_table 또는 battleProcessing으로 도달 가능한 탐험 맵에 연결한다.
+기본 전투 적은 조회한 트룹을 set_encounter_table 또는 battleProcessing으로 도달 가능한 탐험 맵에 연결한다. 보스 적은 upsert_enemy에 role:"boss"를 주어 시작 파티 기준 위협 하한을 맞춘다. 기획에 등대가 있으면 author_village에 landmark:"lighthouse"를 주어 외관을 세우고 돌려준 입구 좌표로 등대 맵과 잇는다. 등대 꼭대기 방은 run_dungeon_room_pipeline landmark:"beacon".
 파티 모험은 조회한 actors를 set_party({scope:"start",actorIds})로 시작 파티에 넣거나 changeParty 합류 이벤트를 만든다. add_companion의 시각 추종과 전투 파티는 다르다.
 선택지는 분기 안에 결과가 있어야 한다: place_npc는 choices:[{text,commands:[...]}], 네이티브 choices 명령은 options:[{text,branch:[...]}]. 합류(changeParty)·보스전(battleProcessing, 승리 분기에 setSwitch)·엔딩을 분기에 넣고 run_scene_test의 {kind:"choose",index}로 결과(partyIncludes·switchOn·endingReached)를 확인한다.
 기획에 엔딩이 있으면 define_ending으로 정의하고 마지막 사건(보스 승리 후 대화 등)의 commands 끝에 {kind:"triggerEnding",endingId}를 넣는다. 페이지 조건으로 쓴 스위치는 어떤 분기의 setSwitch가 반드시 켜야 한다.
@@ -140,8 +140,7 @@ export function adventureCompletionProblems(project: Project, required: Adventur
       const hasInteraction = commands(map).some(entry => entry.event === event && ["text", "changeItem", "changeGold", "changeParty", "battleProcessing"].includes(entry.command.kind));
       if (!hasInteraction) continue;
       const tileset = project.tilesets[map.tilesetId];
-      const tile = tileAt(map, event.x, event.y);
-      const pass = tileset && tilePassability(tileset, tile.lower, tile.upper);
+      const pass = tileset && inBounds(map, event.x, event.y) ? cellPassability(tileset, map, event.y * map.width + event.x) : null;
       const occupiesFloor = event.pages?.some(page => page.graphic.sprite && !page.graphic.transparent);
       if (!accessible(cells, event) || (occupiesFloor && (!pass || !Object.values(pass).some(Boolean)))) {
         const issue = `맵 ${map.id} 이벤트 ${event.id}가 막힌 타일 위이거나 접근 불가입니다. 건물/벽 겹침을 확인하고 통행 가능한 자리로 옮기세요.`;

@@ -12,7 +12,10 @@ import { canonicalConceptBundles, canonicalConceptLayout } from "./spatial/legac
 // 이 모듈은 interiorRoomPipeline 을 import 하지 않는다(순환). 실내 칩셋 id 는 문자열로 둔다.
 import { layoutConceptFacilityDoubleRow } from "@/editor/conceptLayoutDoubleRow";
 import { layoutConceptFacilityWing } from "@/editor/conceptLayoutWing";
-import { CONCEPT_FACILITY_TEMPLATES, cloneConceptFacilityTemplates } from "@/project/defaults/conceptFacilityTemplates";
+import {
+  CONCEPT_FACILITY_TEMPLATES, SCRATCH_HOUSE_BUNDLE, cloneConceptFacilityTemplates,
+} from "@/project/defaults/conceptFacilityTemplates";
+import { SCRATCH_INN_BUNDLE } from "@/project/defaults/scratchInnBundle";
 import {
   CONCEPT_PLACE_COUNT_MAX,
   type ConceptBundleRecord,
@@ -29,6 +32,22 @@ import {
 import type { Project } from "@/project/types";
 
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
+/**
+ * 실내 파이프라인 타일 번호로 시공할 수 있는 칩셋. Tibo 확장 시트의 0~479칸은 EasyRPG 실내 칩셋과
+ * 픽셀이 같고(2026-09-25 PNG 대조 480칸 전부 일치) 통행·지형 메타도 같다 — 벽·천장·바닥·가구 번호를 그대로 쓴다.
+ * 480칸부터의 Tibo 킷(structureKits)은 파이프라인이 고르지 않는다 — stamp_object 로 찍는다.
+ */
+export const INTERIOR_CONSTRUCTION_TILESET_IDS: readonly string[] = [INTERIOR_TILESET_ID, "tibo_interior_expanded"];
+
+export function isInteriorConstructionTileset(tilesetId: string | undefined): boolean {
+  return tilesetId !== undefined && INTERIOR_CONSTRUCTION_TILESET_IDS.includes(tilesetId);
+}
+
+/**
+ * 꾸러미가 비었을 때 시공이 기댈 번들 기본값 — 여관·민가만. 초안 시드는 폐기됐으므로(CONCEPT_FACILITY_TEMPLATES = [])
+ * 프로젝트에 얹지 않고 시공 해석에서만 읽는다(DB 탭·시드는 그대로 비어 있다).
+ */
+export const FALLBACK_INTERIOR_BUNDLES: readonly ConceptBundleRecord[] = [SCRATCH_INN_BUNDLE, SCRATCH_HOUSE_BUNDLE];
 
 export type ResolvedConceptFacility = {
   readonly tilesetId: string;
@@ -119,6 +138,33 @@ export function liveBundlesForTileset(project: Project, tilesetId: string): read
   if (tileset.scratchConceptBundles !== undefined) return tileset.scratchConceptBundles;
   if (tilesetId === INTERIOR_TILESET_ID) return CONCEPT_FACILITY_TEMPLATES;
   return [];
+}
+
+/**
+ * 시공이 읽는 꾸러미. 실내 시공 칩셋이면: 그 칩셋의 꾸러미 → (Tibo 시트는) 실내 칩셋의 꾸러미 →
+ * 그래도 비면 번들 기본값(여관·민가). 다른 칩셋은 liveBundlesForTileset 과 같다.
+ */
+export function constructionBundlesForTileset(project: Project, tilesetId: string): readonly ConceptBundleRecord[] {
+  const own = liveBundlesForTileset(project, tilesetId);
+  if (own.length || project.spatialAuthoring !== undefined || !isInteriorConstructionTileset(tilesetId)) return own;
+  const shared = tilesetId === INTERIOR_TILESET_ID ? [] : liveBundlesForTileset(project, INTERIOR_TILESET_ID);
+  return shared.length ? shared : FALLBACK_INTERIOR_BUNDLES;
+}
+
+/** 시공용 시설 해석 — constructionBundlesForTileset 에서 찾고, 결과 tilesetId 는 요청한 칩셋이다. */
+export function resolveConstructionFacility(
+  project: Project,
+  query: string,
+  tilesetId: string,
+): ResolvedConceptFacility | undefined {
+  const normalized = foldQuery(query);
+  if (!normalized || !project.tilesets[tilesetId]) return undefined;
+  for (const bundle of constructionBundlesForTileset(project, tilesetId)) {
+    const facility = bundle.facilities.find((entry) => matchesQuery(entry.id, entry.label, normalized))
+      ?? (matchesQuery(bundle.id, bundle.label, normalized) ? bundle.facilities[0] : undefined);
+    if (facility) return { tilesetId, bundle, facility };
+  }
+  return undefined;
 }
 
 /** 지금 프로젝트에서 부를 수 있는 시설명 — 툴 오류 문구·프롬프트용. */

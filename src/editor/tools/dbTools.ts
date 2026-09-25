@@ -14,10 +14,11 @@ import { normalizeActorRecord } from "@/project/actorModel";
 import { normalizeEnemyRecord, normalizeTroopRecord } from "@/project/databaseEnemyTroopRecordModel";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeClassRecord, normalizeEquipmentRecord, normalizeItemRecord, normalizeSkillRecord, normalizeStateRecord, normalizeTypeChart } from "@/project/databaseRecordModel";
 import { normalizeCropRecord } from "@/project/farmModel";
-import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
+import { monsterBattleStatsForSpecies, monsterSkillIdsAtLevel, monsterSpeciesById, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { countLimitedRuntimeSupportCommands } from "@/project/lint/projectLint";
 import { ensureMonsterGraphic } from "./monsterGraphicAssignment";
+import { CHARACTER_SCALE_MIN, CHARACTER_SCALE_MAX } from "@/project/footprint";
 import type {
   ActorRecord,
   BattleAnimationRecord,
@@ -43,6 +44,8 @@ import { assertPartyActorReferences } from "./partyActorReferences";
 import { resolveEventPlacement } from "./eventTools";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
 import { troopBalanceWarnings } from "./troopBalanceCheck";
+import { expandShortParameterCurves } from "./parameterCurveInput";
+import { isBossEnemy, scaleBossToStartParty } from "./bossThreatScaling";
 import { COMMAND_SCHEMA } from "./schemaShapes";
 
 const DATABASE_RECORD_COLLECTIONS = [
@@ -348,7 +351,7 @@ const parameterCurvesSchema = objectSchema({
   defense: { type: "array", items: integerSchema() },
   mind: { type: "array", items: integerSchema() },
   agility: { type: "array", items: integerSchema() },
-});
+}, "레벨 1~99 능력치 곡선. 99칸 배열 대신 [Lv1값] 또는 [Lv1값, Lv99값] 으로 줘도 곡선을 채운다. 배우의 곡선이 전투 능력치의 정본이다(직업 곡선은 직업 변경 뒤에만).");
 const expCurveSchema = objectSchema({ base: integerSchema(), extra: integerSchema(), acceleration: integerSchema() });
 const actorInitialEquipmentSchema: JsonSchema = {
   type: "object", description: "{ equipment slot id: equipment id }; includes project-authored slots",
@@ -502,6 +505,19 @@ const troopRecordSchema = objectSchema({
 const monsterSpeciesGraphicSchema = objectSchema({
   monsterResourceId: stringSchema(),
   backResourceId: stringSchema("후면 전투용 몬스터 리소스. 생략하면 정면 그림을 사용합니다."),
+  fieldCharsetId: stringSchema("동행 캐릭터셋 리소스. fieldGraphic이 있으면 그 설정을 우선합니다."),
+  fieldGraphic: objectSchema({
+    appearanceId: stringSchema(),
+    sprite: objectSchema({
+      type: { type: "string", enum: ["bundled", "uploaded"] },
+      id: stringSchema("등록된 필드 그림 리소스 ID"),
+    }),
+    direction: { type: "string", enum: ["down", "left", "right", "up"] },
+    pattern: integerSchema(),
+    transparent: booleanSchema(),
+    scale: { type: "number", minimum: CHARACTER_SCALE_MIN, maximum: CHARACTER_SCALE_MAX },
+    scaleMode: { type: "string", enum: ["auto", "manual"] },
+  }, "동행용 EventPageGraphic. 기존 종은 {scale:0.5}처럼 부분 수정해도 sprite와 나머지 설정을 보존합니다. 전투 그림에는 영향을 주지 않습니다."),
   graphicHue: integerSchema(),
   transparent: booleanSchema(),
   flying: booleanSchema(),
@@ -707,6 +723,129 @@ function mergeRecord<T extends { id: string; name: string }>(
   return mergeRecordPatch(existing, patch as Record<string, unknown>) as Partial<T> & Pick<T, "id" | "name">;
 }
 
+/** items 의 레거시 장비 종류 → 실제 착용 장비 슬롯. */
+const LEGACY_ITEM_EQUIPMENT_SLOT: Readonly<Record<string, string>> = {
+  weapon: "weapon", shield: "shield", body: "armor", head: "helmet", accessory: "accessory",
+};
+
+function upsertLegacyEquipmentItemAsEquipment(draft: Project, itemPatch: Record<string, unknown>): ToolExecResult {
+  const profile = itemPatch.equipmentProfile && typeof itemPatch.equipmentProfile === "object" && !Array.isArray(itemPatch.equipmentProfile)
+    ? itemPatch.equipmentProfile as Record<string, unknown>
+    : {};
+  const equipment: Record<string, unknown> = {};
+  for (const key of Object.keys(equipmentRecordSchema.properties ?? {})) {
+    if (profile[key] !== undefined) equipment[key] = profile[key];
+    if (itemPatch[key] !== undefined) equipment[key] = itemPatch[key];
+  }
+  equipment.slot = LEGACY_ITEM_EQUIPMENT_SLOT[String(itemPatch.type)];
+  const result = upsertEquipment.run(draft, { equipment }) as ToolExecResult;
+  return {
+    ...result,
+    warnings: [
+      ...(result.warnings ?? []),
+      `upsert_item 의 type:"${String(itemPatch.type)}" 는 착용 장비라 upsert_equipment(slot:"${String(equipment.slot)}") 로 옮겨 database.equipment 에 저장했습니다 — 이 id 는 상점 재고(itemIds/stock)·changeItem·initialEquipment 에 그대로 쓰세요.`,
+    ],
+  };
+}
+
+/**
+ * 아직 없는 배우·직업 id 때문에 장비 커밋 전체가 거부되지 않게 한다.
+ *
+ * 2026-09-24 JRPG 도그푸딩: 사제 지팡이·실크 로브가 equippableActorIds 에 곧 만들 actor_toma·actor_mira 를
+ * 넣어 「actor does not exist」로 거부됐다. 스탯·가격·직업 제한은 저장하고, 없는 id 만 뺀 뒤 경고한다.
+ */
+function dropUnknownEquipmentRestrictions(
+  project: Project,
+  record: { id: string; equippableActorIds: string[]; equippableClassIds: string[] },
+  warnings: string[],
+): void {
+  const actorIds = new Set(project.database.actors.map((actor) => actor.id));
+  const classIds = new Set(project.database.classes.map((entry) => entry.id));
+  const droppedActors = record.equippableActorIds.filter((id) => !actorIds.has(id));
+  const droppedClasses = record.equippableClassIds.filter((id) => !classIds.has(id));
+  if (droppedActors.length === 0 && droppedClasses.length === 0) return;
+  record.equippableActorIds = record.equippableActorIds.filter((id) => actorIds.has(id));
+  record.equippableClassIds = record.equippableClassIds.filter((id) => classIds.has(id));
+  const dropped = [
+    droppedActors.length ? `equippableActorIds ${droppedActors.join(", ")}` : "",
+    droppedClasses.length ? `equippableClassIds ${droppedClasses.join(", ")}` : "",
+  ].filter(Boolean).join(", ");
+  const kept = [
+    record.equippableActorIds.length ? `배우 ${record.equippableActorIds.join(", ")}` : "",
+    record.equippableClassIds.length ? `직업 ${record.equippableClassIds.join(", ")}` : "",
+  ].filter(Boolean).join(" · ");
+  const actorHint = [...actorIds].slice(0, 6).join(", ") || "(없음)";
+  const classHint = [...classIds].slice(0, 6).join(", ") || "(없음)";
+  warnings.push(
+    `equipment ${record.id}: 아직 없는 착용 제한을 빼고 저장했습니다 (${dropped}). ` +
+      (kept
+        ? `남은 제한: ${kept}.`
+        : "남은 제한이 없어 지금은 아무도 착용할 수 없습니다. 배우·직업을 만든 뒤 equippableActorIds·equippableClassIds 를 다시 지정하세요.") +
+      ` 있는 id 예: 배우 ${actorHint}, 직업 ${classHint}.`,
+  );
+}
+
+/**
+ * 없는 전투 애니메이션 id 를 지우고 가까운 후보와 함께 경고한다. 애니메이션은 연출이라 거부할 이유가 없다 —
+ * 2026-09-24 JRPG 도그푸딩: upsert_skill animationId:"anim_slash" 가 후보 없는 「animationId does not exist.」 로
+ * 커밋 거부되고, 그 스킬을 배우는 upsert_class 까지 연쇄로 거부됐다.
+ */
+function dropUnknownAnimationId(project: Project, record: { animationId?: string }, label: string, warnings: string[]): void {
+  const id = record.animationId;
+  if (!id || project.database.battleAnimations.some((animation) => animation.id === id)) return;
+  delete record.animationId;
+  const word = id.replace(/^anim_(gen_)?/u, "").split(/[_-]/u)[0] ?? "";
+  const close = word ? project.database.battleAnimations.filter((animation) => animation.id.includes(word) || animation.name?.includes(word)).map((animation) => animation.id) : [];
+  const hints = (close.length ? close : project.database.battleAnimations.map((animation) => animation.id)).slice(0, 8);
+  warnings.push(`${label}.animationId "${id}" 는 전투 애니메이션에 없어 비웠습니다(기본 연출). 쓸 수 있는 id: ${hints.join(", ")}`);
+}
+
+/**
+ * 없는 iconResourceId 하나로 아이템·장비 커밋 전체가 거부되지 않게 한다.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 모델이 그림 id 대신 비슷한 기본 아이템 id(item_candle·item_quill·item_bell)를
+ * iconResourceId 로 보내 upsert_item/upsert_equipment 6건이 연속 「참조 검증 실패」로 거부됐다.
+ * 같은 id 의 기존 아이템·장비가 있으면 그 레코드의 그림을 쓰고, 아니면 그림만 비우고 저장한다.
+ */
+/**
+ * switchId 가 있는데 종류가 switch 가 아니면 메뉴에서 스위치가 켜지지 않는다.
+ *
+ * 2026-09-24 꿈 세계 도그푸딩: 볼 꼬집기를 type:"special" + switchId 로 저장했다.
+ * 사용해도 스위치가 안 켜져, 출구 없는 꿈 맵에서 깨어나지 못했다.
+ * 포획·돌봄·스킬이 있는 특수 아이템은 종류를 바꾸지 않고 경고만 남긴다.
+ */
+function coerceSwitchItem(record: { type?: string; switchId?: string; captureProfile?: unknown; careProfile?: unknown; skillId?: string; activateSkillId?: string }, warnings: string[]): void {
+  const switchId = record.switchId?.trim();
+  if (!switchId || record.type === "switch") return;
+  if (record.captureProfile || record.careProfile || record.skillId || record.activateSkillId) {
+    warnings.push(`switchId "${switchId}" 는 종류가 ${record.type} 이라 사용해도 켜지지 않습니다. 스위치만 켜는 아이템은 type:"switch" 로 두세요.`);
+    return;
+  }
+  record.type = "switch";
+  warnings.push(`종류를 switch 로 바꿨습니다 — switchId "${switchId}" 는 type:"switch" 일 때만 메뉴에서 켜집니다.`);
+}
+
+function resolveIconResourceId(project: Project, record: { iconResourceId?: string }, label: string, warnings: string[]): void {
+  const requested = record.iconResourceId;
+  if (!requested) return;
+  const resourceIds = collectResourceIds(project);
+  if (resourceIds.has(requested)) return;
+  const sibling = [...project.database.items, ...project.database.equipment]
+    .find((entry) => entry.id === requested && entry.iconResourceId && resourceIds.has(entry.iconResourceId));
+  if (sibling?.iconResourceId) {
+    record.iconResourceId = sibling.iconResourceId;
+    warnings.push(`${label}.iconResourceId "${requested}" 는 그림 id 가 아니라 레코드 id 라 그 레코드의 그림 "${sibling.iconResourceId}" 로 바꿨습니다.`);
+    return;
+  }
+  delete record.iconResourceId;
+  const word = requested.replace(/^(item|equip|icon)_/u, "").split(/[_-]/u)[0] ?? "";
+  const close = word ? [...resourceIds].filter((id) => id.includes(word)).slice(0, 6) : [];
+  warnings.push(
+    `${label}.iconResourceId "${requested}" 는 없는 그림이라 비우고 저장했습니다. ` +
+      (close.length ? `비슷한 그림 id: ${close.join(", ")}` : "list_resources 로 그림 id 를 찾아 다시 지정하세요."),
+  );
+}
+
 const upsertItem: ToolDefinition = {
   name: "upsert_item",
   description: "아이템 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다.",
@@ -719,8 +858,10 @@ const upsertItem: ToolDefinition = {
     const existing = typeof itemPatch?.id === "string"
       ? draft.database.items.find((item) => item.id === itemPatch.id)
       : undefined;
-    if (!existing && ["weapon", "shield", "body", "head", "accessory"].includes(String(itemPatch?.type))) {
-      throw new ToolError("착용 장비는 upsert_equipment로 등록하세요. items의 레거시 장비 종류는 실제 착용 장비가 아닙니다. 기존 레거시 아이템 수정만 허용합니다.", { code: "legacy-equipment-item" });
+    if (!existing && itemPatch && String(itemPatch.type) in LEGACY_ITEM_EQUIPMENT_SLOT) {
+      // 거부 대신 upsert_equipment 로 옮겨 저장한다 — 2026-09-24 도그푸딩: 무기·방어구 7개를 upsert_item 으로
+      // 넣으려다 7번 연속 같은 거부를 받고 장비 상점이 「돈만 받고 아무것도 안 주는」 선택지로 끝났다.
+      return upsertLegacyEquipmentItemAsEquipment(draft, itemPatch);
     }
     const capturePatch = itemPatch?.captureProfile;
     const nestedPatch = existing?.captureProfile && capturePatch && typeof capturePatch === "object" && !Array.isArray(capturePatch)
@@ -728,8 +869,12 @@ const upsertItem: ToolDefinition = {
       : args.item;
     const merged = mergeRecord(draft.database.items, nestedPatch, "item", itemRecordSchema, { id: "item_potion", name: "회복약" });
     const record = normalizeItemRecord(merged as Partial<ItemRecord> & Pick<ItemRecord, "id" | "name">);
+    const warnings: string[] = [];
+    coerceSwitchItem(record, warnings);
+    dropUnknownAnimationId(draft, record, "item", warnings);
+    resolveIconResourceId(draft, record, "item", warnings);
     const outcome = upsertById(draft.database.items, record);
-    return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `아이템 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 
@@ -853,14 +998,25 @@ function rejectUnknownEnemyReferences(draft: Project, patch: unknown): void {
   }
 }
 
+function skillDamagesFoe(project: Project, skillId: string): boolean {
+  const skill = project.database.skills.find((entry) => entry.id === skillId);
+  return skill?.effect?.kind === "damage" && (skill.scope === "enemy" || skill.scope === "allEnemies");
+}
+
 const upsertEnemy: ToolDefinition = {
   name: "upsert_enemy",
   description:
     "적 레코드를 등록/수정한다. 기존 id는 전달 필드만 병합하고 나머지를 보존한다. " +
     "elementRates의 키는 database.elements의 속성 id다(get_database_records collection:\"elements\"). " +
-    "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다.",
+    "몬스터 타입 상성(set_type_chart)의 types와는 다른 체계이며, speciesId는 monsterSpecies를 가리킨다. " +
+    "보스는 role:\"boss\" 를 준다(id·이름에 boss/보스가 있어도 같다) — 시작 파티를 기준으로 체력·공격·마력·민첩의 하한을 맞추고(주신 값보다 낮추지 않음) 모의전 결과를 경고로 돌려준다. " +
+    "시작 파티는 Lv1 에도 HP 수백·공 50 안팎이다(get_database_records actors 또는 simulate_battle 로 확인). " +
+    "몬스터 파티 게임에서 speciesId 가 있는 적은 stats 대신 종족+level 공식으로 싸운다 — 강도는 level 로 정한다(관장은 도로 야생보다 3~5 레벨 위). " +
+    "피해 행동이 없으면 그 레벨의 종족 습득 기술을 actions 에 넣는다.",
   mode: "write",
-  parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }),
+  parameters: parametersForRecord("enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임", stats: { maxHp: 40, attack: 12 }, rewards: { exp: 3, gold: 2 } }, {
+    role: { type: "string", enum: ["boss", "normal"], description: "boss 면 시작 파티 기준 위협 하한을 맞춘다. 생략 시 id·이름의 boss/보스로 판정." },
+  }),
   run(draft, args): ToolExecResult {
     validateEnemyCombatPatch(args.enemy);
     const merged = mergeRecord(draft.database.enemies, args.enemy, "enemy", enemyRecordSchema, { id: "enemy_slime", name: "슬라임" });
@@ -869,13 +1025,57 @@ const upsertEnemy: ToolDefinition = {
     const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "enemy", warnings);
     dropUnknownSpeciesId(draft, record, "enemy", warnings);
-    ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings);
+    ensureMonsterGraphic(draft, record, record, "enemy.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
+    // 몬스터 파티 게임: 플레이어 몬스터는 종족+레벨 공식으로 싸운다. 종이 있는 적도 같은 공식이어야 레벨이 곧 강함이다.
+    // 2026-09-24 몬스터 수집 gen5: 모델이 적 stats 를 공식의 약 2배(Lv4 박쥐 HP 30·공 12 ↔ 공식 HP 15·공 8)로 적어
+    // Lv5 스타터가 첫 동굴 박쥐에게 졌고, 보스 하한은 액터 파티(HP 514) 기준으로 관장 공격을 18→266 으로 올렸다.
+    const monsterParty = draft.system.battleParty === "monsters" || draft.system.monsterBattleParty === true;
+    const species = monsterParty && record.speciesId ? monsterSpeciesById(draft, record.speciesId) : undefined;
+    if (species) {
+      const level = record.level ?? 1;
+      const formula = monsterBattleStatsForSpecies(species, level, undefined);
+      const keys = ["maxHp", "maxMp", "attack", "defense", "mind", "agility"] as const;
+      const changed = keys.filter((key) => record.stats[key] !== formula[key]);
+      if (changed.length > 0) {
+        record.stats = { ...record.stats, ...formula };
+        warnings.push(`몬스터 파티 게임이라 종 ${species.name} Lv${level} 공식 능력치로 맞췄습니다(${changed.map((key) => `${key} ${formula[key]}`).join(", ")}). 강하게 하려면 stats 대신 level 을 올리세요.`);
+      }
+      if (record.level === undefined) warnings.push(`level 이 없어 Lv1 로 계산했습니다 — 야생·트레이너 몬스터는 level 을 주세요.`);
+      // 행동이 비면 gen1 은 Struggle(반동)만 쓰고, 포획은 skillIds 빈 배열을 복사해 파티 몬스터가 기술을 잃는다.
+      const learned = monsterSkillIdsAtLevel(species, level).filter((skillId) => draft.database.skills.some((skill) => skill.id === skillId));
+      const hasDamage = (record.actions ?? []).some((action) => skillDamagesFoe(draft, action.skillId));
+      if (!hasDamage && learned.length > 0) {
+        const have = new Set((record.actions ?? []).map((action) => action.skillId));
+        const added = learned.filter((skillId) => !have.has(skillId));
+        if (added.length > 0) {
+          const filled = normalizeEnemyRecord({
+            ...record,
+            actions: [
+              ...(record.actions ?? []),
+              ...added.map((skillId) => ({
+                skillId,
+                priority: 5,
+                condition: { kind: "always" as const },
+                switchOnAfterAction: { enabled: false },
+                switchOffAfterAction: { enabled: false },
+              })),
+            ],
+          });
+          record.actions = filled.actions;
+          record.skillIds = filled.skillIds;
+          warnings.push(`피해 행동이 없어 종 ${species.name} Lv${level} 습득 기술을 넣었습니다(${added.join(", ")}). 다른 기술을 쓰려면 actions 에 피해 기술을 지정하세요.`);
+        }
+      }
+    }
     const outcome = upsertById(draft.database.enemies, record);
+    // 보스 하한은 액터 파티 척도라 몬스터 파티 게임에서는 쓰지 않는다 — 관장 강도는 level 로 정한다.
+    const bossNote = isBossEnemy(record, args.role) && !species ? scaleBossToStartParty(draft, record).note : undefined;
+    if (bossNote) warnings.push(bossNote);
     // 이 적이 든 첫 트룹 하나만 본다 — 경고 한 줄이면 고칠 방향이 선다.
     const firstTroop = draft.database.troops.find(troop => troop.enemyIds.includes(record.id));
     if (firstTroop) warnings.push(...troopBalanceWarnings(draft, firstTroop.id));
     return {
-      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
+      summary: `적 '${record.name}' ${outcome === "added" ? "추가" : "수정"}${bossNote ? " — 보스 위협 하한 적용(경고 참고)" : ""}`,
       data: record,
       ...(warnings.length > 0 ? { warnings } : {}),
     };
@@ -914,7 +1114,7 @@ const upsertTroop: ToolDefinition = {
     const outcome = upsertById(draft.database.troops, record);
     const warnings = troopBalanceWarnings(draft, record.id);
     return {
-      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? " — 밸런스 경고: 적이 시작 파티에게 피해를 주지 못함" : ""}`,
+      summary: `트룹 '${record.name}'(${memberCount}마리) ${outcome === "added" ? "추가" : "수정"}${warnings.length ? (warnings.some(w => w.includes("전멸")) ? " — 밸런스 경고: 파티가 레벨을 올려도 전멸함" : " — 밸런스 경고: 적이 시작 파티에게 거의 피해를 주지 못함") : ""}`,
       data: record,
       ...(warnings.length ? { warnings } : {}),
     };
@@ -923,7 +1123,8 @@ const upsertTroop: ToolDefinition = {
 
 const defineMonsterSpecies: ToolDefinition = {
   name: "define_monster_species",
-  description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다.",
+  description: "몬스터 species 레코드를 등록/수정한다. EnemyRecord와 별개이며 enemy.speciesId가 포획 시 이 레코드를 가리킨다."
+    + " 진화(evolutions.toSpeciesId)는 이미 있는 종만 가리킬 수 있다 — 진화 계통은 **최종 진화형부터** 정의하고 그다음 기본형을 evolutions 와 함께 정의한다.",
   mode: "write",
   parameters: parametersForRecord("species", monsterSpeciesRecordSchema, {
     id: "species_wild_slime",
@@ -954,7 +1155,8 @@ const defineMonsterSpecies: ToolDefinition = {
     }
     const missingEvolutionSpecies = (record.evolutions ?? []).filter((evolution) => !speciesIds.has(evolution.toSpeciesId)).map((evolution) => evolution.toSpeciesId);
     if (missingEvolutionSpecies.length > 0) {
-      throw new ToolError(`존재하지 않는 진화 toSpeciesId: ${[...new Set(missingEvolutionSpecies)].join(", ")} — 허용 예시: ${knownIds(draft.database.monsterSpecies)}`, { code: "species-not-found" });
+      const missingIds = [...new Set(missingEvolutionSpecies)].join(", ");
+      throw new ToolError(`존재하지 않는 진화 toSpeciesId: ${missingIds} — 진화형(${missingIds})을 먼저 define_monster_species 로 정의한 뒤 이 종을 다시 저장하세요(같은 응답에서 병렬로 부르면 순서가 보장되지 않습니다). 허용 예시: ${knownIds(draft.database.monsterSpecies)}`, { code: "species-not-found" });
     }
     const itemIds = new Set(draft.database.items.map((item) => item.id));
     const missingItems = (record.evolutions ?? []).flatMap((evolution) => evolution.requires.itemId && !itemIds.has(evolution.requires.itemId) ? [evolution.requires.itemId] : []);
@@ -962,7 +1164,7 @@ const defineMonsterSpecies: ToolDefinition = {
       throw new ToolError(`존재하지 않는 진화 itemId: ${[...new Set(missingItems)].join(", ")} — 허용 예시: ${knownIds(draft.database.items)}`, { code: "item-not-found" });
     }
     const warnings: string[] = [];
-    ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings);
+    ensureMonsterGraphic(draft, record, record.graphic, "species.graphic.monsterResourceId", warnings, args.appearanceTags as unknown[] | undefined);
     const outcome = upsertById(draft.database.monsterSpecies, record);
     return {
       summary: `몬스터 species '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
@@ -1142,6 +1344,8 @@ const upsertActor: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero", maxLevel: 99 }),
   run(draft, args): ToolExecResult {
+    const warnings: string[] = [];
+    expandShortParameterCurves(args.actor, "actor", warnings);
     const merged = mergeRecord(draft.database.actors, args.actor, "actor", actorRecordSchema, { id: "actor_hero", name: "주인공", classId: "class_hero" }, ["name", "classId"]);
     const actorPatch = args.actor as Record<string, unknown>;
     if (typeof actorPatch.appearanceId === "string"
@@ -1149,7 +1353,6 @@ const upsertActor: ToolDefinition = {
       throw new ToolError(`공유 캐릭터 외형을 찾을 수 없습니다: ${actorPatch.appearanceId}`, { code: "appearance-not-found" });
     }
     const record = normalizeActorRecord(merged as Parameters<typeof normalizeActorRecord>[0]);
-    const warnings: string[] = [];
     dropUnknownElementRates(draft, record, "actor", warnings);
     const outcome = upsertById(draft.database.actors, record satisfies ActorRecord);
     return {
@@ -1170,8 +1373,10 @@ const upsertSkill: ToolDefinition = {
     const merged = mergeRecord(draft.database.skills, args.skill, "skill", skillRecordSchema, { id: "skill_fire", name: "화염" });
     finalizeSkillCombatPatch(merged as unknown as Record<string, unknown>, args.skill, args);
     const record = normalizeSkillRecord(merged as Partial<SkillRecord> & Pick<SkillRecord, "id" | "name">);
+    const warnings: string[] = [];
+    dropUnknownAnimationId(draft, record, "skill", warnings);
     const outcome = upsertById(draft.database.skills, record);
-    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `스킬 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 
@@ -1184,8 +1389,11 @@ const upsertEquipment: ToolDefinition = {
     const merged = mergeRecord(draft.database.equipment, args.equipment, "equipment", equipmentRecordSchema, { id: "equip_sword", name: "철검", slot: "weapon" });
     const record = normalizeEquipmentRecord(merged as Partial<EquipmentRecord> & Pick<EquipmentRecord, "id" | "name">);
     if (!hasEquipmentSlot(draft, record.slot)) throw new Error(`Unknown equipment slot: ${record.slot}`);
+    const warnings: string[] = [];
+    resolveIconResourceId(draft, record, "equipment", warnings);
+    dropUnknownEquipmentRestrictions(draft, record, warnings);
     const outcome = upsertById(draft.database.equipment, record);
-    return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record };
+    return { summary: `장비 '${record.name}'(${record.slot}) ${outcome === "added" ? "추가" : "수정"}`, data: record, ...(warnings.length ? { warnings } : {}) };
   },
 };
 
@@ -1195,10 +1403,17 @@ const upsertClass: ToolDefinition = {
   mode: "write",
   parameters: parametersForRecord("class", classRecordSchema, { id: "class_mage", name: "마법사", learnedSkills: [{ level: 1, skillId: "skill_fire" }] }),
   run(draft, args): ToolExecResult {
+    const warnings: string[] = [];
+    expandShortParameterCurves(args.class, "class", warnings);
     const merged = mergeRecord(draft.database.classes, args.class, "class", classRecordSchema, { id: "class_mage", name: "마법사" });
     const record = normalizeClassRecord(merged as Partial<ClassRecord> & Pick<ClassRecord, "id" | "name">);
-    const warnings: string[] = [];
+    const classCurvesPatched = Boolean((args.class as { parameterCurves?: unknown } | undefined)?.parameterCurves);
+    if (classCurvesPatched) {
+      const users = draft.database.actors.filter((actor) => actor.classId === record.id).map((actor) => actor.id);
+      warnings.push(`직업 parameterCurves 는 직업 변경(changeClass·승급) 뒤에만 능력치로 쓰입니다 — 이 직업으로 시작하는 배우${users.length ? `(${users.join(", ")})` : ""}의 전투 능력치는 배우 parameterCurves 가 정합니다. 역할별 능력치는 upsert_actor parameterCurves 에 [Lv1, Lv99] 로 주세요.`);
+    }
     dropUnknownElementRates(draft, record, "class", warnings);
+    dropUnknownAnimationId(draft, record, "class", warnings);
     const outcome = upsertById(draft.database.classes, record);
     return {
       summary: `클래스 '${record.name}' ${outcome === "added" ? "추가" : "수정"}`,
@@ -1444,6 +1659,23 @@ function parseTitleIntro(value: unknown): TitleIntroSettings {
   };
 }
 
+
+/**
+ * 없는 리소스 id 는 호출 시점에 거부하고 비슷한 실제 id 를 준다. 예전에는 저장 뒤 커밋 게이트가
+ * 「참조 검증 실패 … backgroundResourceId 가 존재하지 않습니다」 로 **변경 전체**를 되돌려 제목·음악까지 날아갔다
+ * (추리 도그푸딩 gen: 지어낸 easyrpg-backdrop-room-1).
+ */
+function requireTitleResource(draft: Project, field: string, id: string, kind: "picture" | "bgm"): string {
+  const known = collectResourceIds(draft);
+  if (known.has(id)) return id;
+  const stem = id.split(/[-_]/u).slice(0, 2).join("-");
+  const near = [...known].filter((candidate) => stem && candidate.startsWith(stem)).slice(0, 6);
+  throw new ToolError(
+    `${field} '${id}' 는 없는 리소스입니다.${near.length > 0 ? ` 비슷한 실제 id: ${near.join(", ")}.` : ""} list_resources(kind:"${kind}") 로 실제 id 를 찾아 넣거나 이 필드를 빼세요.`,
+    { code: "invalid-args" },
+  );
+}
+
 const setTitleScreen: ToolDefinition = {
   name: "set_title_screen",
   description: "타이틀 화면 제목/메뉴/표시/오디오와 배경 레이어/파티클/등장 연출을 갱신한다. titleScreen이 없으면 생성한다.",
@@ -1561,13 +1793,13 @@ const setTitleScreen: ToolDefinition = {
 
     if (typeof args.backgroundResourceId === "string") {
       const background = args.backgroundResourceId.trim();
-      if (background) current.backgroundResourceId = background;
+      if (background) current.backgroundResourceId = requireTitleResource(draft, "backgroundResourceId", background, "picture");
       else delete current.backgroundResourceId;
     }
 
     if (typeof args.musicResourceId === "string") {
       const music = args.musicResourceId.trim();
-      if (music) current.musicResourceId = music;
+      if (music) current.musicResourceId = requireTitleResource(draft, "musicResourceId", music, "bgm");
       else delete current.musicResourceId;
     }
 

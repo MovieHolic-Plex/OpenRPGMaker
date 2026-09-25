@@ -5,6 +5,8 @@ import { collectProjectReferenceIssues } from "@/project/io/references";
 import {
   editorState,
   editorStateChangedOnlyCanvasOverlay,
+  editorStateChangedOnlySelectedTile,
+  editorStateChangedOnlySelectedTileAndLayer,
   editorStateNeedsMapTreeRefresh,
   editorStateNeedsPaletteRefresh,
 } from "@/editor/editorState";
@@ -51,6 +53,8 @@ import {
   openTroopBattleTestModal,
 } from "@/editor/panels/testPlayModal";
 // 좌측 패널 본문(팔레트·맵 트리)은 이제 패널 레지스트리가 그린다 — 여기서 직접 import 하지 않는다.
+// 선택 타일만 바뀐 경우는 시트를 다시 그리지 않도록 팔레트가 활성 칸만 옮긴다.
+import { syncMountedPaletteLayerSelection, syncMountedPaletteSelection } from "@/editor/panels/tilePalette";
 import { dockSignature, mountDock, renderDockPanels, type DockMount } from "@/editor/workspace/dockHost";
 import { resolveLeftDockPanels } from "@/editor/workspace/leftDockPanels";
 import { isMapPanelCollapsed, subscribeMapPanel } from "@/editor/workspace/mapPanelSection";
@@ -281,6 +285,11 @@ export function renderEditor(main: HTMLElement): void {
       return;
     }
     if (editorStateNeedsPaletteRefresh(previous, state)) {
+      // 타일만 고른 클릭은 시트 전체를 다시 만들지 않는다. 2,000칸 커스텀 팔레트는
+      // 그 재생성 때문에 지연 배치가 처음부터 다시 돌고, 맵 프레임까지 밀린다.
+      if (editorStateChangedOnlySelectedTile(previous, state) && syncMountedPaletteSelection()) return;
+      // 레이어 단추는 탑바(menu.ts)가 제자리에서 바꾸고, 캔버스 툴바는 배율만 그린다.
+      if (editorStateChangedOnlySelectedTileAndLayer(previous, state) && syncMountedPaletteLayerSelection()) return;
       schedulePaletteOnlyRefresh();
       return;
     }

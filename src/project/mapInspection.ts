@@ -210,6 +210,7 @@ function optionFlags(map: GameMap): readonly MapOptionFlag[] {
   const flags: MapOptionFlag[] = [];
   if (map.disableSave === true) flags.push({ id: "no-save", label: "세이브 금지" });
   if (map.disableTeleport === true) flags.push({ id: "no-teleport", label: "이동 금지" });
+  if (map.loop) flags.push({ id: "loop", label: map.loop === "horizontal" ? "좌우 반복" : map.loop === "vertical" ? "상하 반복" : "사방 반복" });
   if (map.disableEscape === true) flags.push({ id: "no-escape", label: "도주 금지" });
   if (map.actionCombat === true) flags.push({ id: "action-combat", label: "액션 전투" });
   if ((map.safeZones?.length ?? 0) > 0) flags.push({ id: "safe-zone", label: `안전지대 ${map.safeZones?.length}` });
@@ -247,7 +248,7 @@ function diagnose(input: {
 }
 
 /** 페이지가 있으면 모든 페이지, 없으면 event.commands — 분기 안까지 평탄화한다. */
-function collectCommands(events: readonly GameEvent[]): readonly Command[] {
+export function collectCommands(events: readonly GameEvent[]): readonly Command[] {
   const out: Command[] = [];
   for (const event of events) {
     if (event.pages?.length) {

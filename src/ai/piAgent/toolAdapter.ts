@@ -241,7 +241,7 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       if (!result.ok) throw new Error(formatPiToolFailure(result, maxIssues));
       const content: PiToolExecResult["content"] = [{ type: "text", text: formatPiToolSuccess(result, maxDataChars) }];
       if (tool.name === "read_tileset_reference") {
-        for (const image of referenceGate.read(ctx.project, result)) {
+        for (const image of await referenceGate.read(ctx.project, result)) {
           const comma = image.dataUrl.indexOf(",");
           content.push({ type: "image", mimeType: image.dataUrl.slice(5, image.dataUrl.indexOf(";")), data: image.dataUrl.slice(comma + 1) });
         }

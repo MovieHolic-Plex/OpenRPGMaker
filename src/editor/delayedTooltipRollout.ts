@@ -13,10 +13,8 @@ export type DelayedTooltipTarget = {
 };
 
 export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
-  { label: "접기/펴기", name: "왼쪽 패널 접기/펼치기", testid: "sidebar-collapse" },
-  { label: "AI 대화", name: "AI 대화 패널 열기", testid: "sidebar-ai" },
-  { label: "타일", name: "타일 패널 열기", testid: "sidebar-tools" },
-  { label: "맵", name: "맵 목록과 속성 열기", testid: "sidebar-maps" },
+  // 사이드바 탭(맵·그리기·AI)은 글자가 보이므로 넣지 않는다 — 접힌 레일에서만 title 로 이름을 보인다.
+  { label: "사이드바", name: "왼쪽 패널 가리기/보이기", testid: "sidebar-collapse" },
   { label: "걷기 전투", name: "걸을 때 적 만나기 설정", testid: "walk-encounter-list-open" },
   { label: "구역 그리기", name: "구역 그리기 켜기/끄기", testid: "map-location-layer-toggle" },
   { label: "배경 보기", name: "맵 배경 미리보기 켜기/끄기", testid: "map-background-preview-toggle" },
@@ -24,6 +22,14 @@ export const DELAYED_TOOLTIP_ROLLOUT: readonly DelayedTooltipTarget[] = [
   { label: "다듬기", name: "선택 영역 다듬기", testid: "canvas-ai-polish" },
   { label: "검사", name: "맵 통행·참조·이벤트 검사", testid: "canvas-ai-inspect" },
   { label: "AI 요청", name: "선택 영역이나 현재 맵에 AI 요청", testid: "canvas-ai-ask" },
+  { label: "AI 실행", name: "이 영역에 AI 지시 실행 (Enter) — 비어 있으면 AI 작업 창", testid: "selection-chip-ai" },
+  { label: "다듬기", name: "다듬기 — 주변과 어울리게 AI가 다시 짜기", testid: "selection-chip-polish" },
+  { label: "복사", name: "선택 영역 복사 (Ctrl+C)", testid: "selection-chip-copy" },
+  { label: "붙여넣기", name: "클립보드 붙여넣기 (Ctrl+V)", testid: "selection-chip-paste" },
+  { label: "지우기", name: "선택 영역 지우기 (Del)", testid: "selection-chip-clear" },
+  { label: "걷기 전투", name: "이 영역에서 걸을 때 적 만나기", testid: "selection-chip-walk-encounter" },
+  { label: "구조물 저장", name: "선택 영역을 이 맵 타일셋의 구조물 킷으로 저장", testid: "selection-chip-save-structure" },
+  { label: "선택 해제", name: "선택 해제 (Esc)", testid: "selection-chip-dismiss" },
   { label: "맵 저장", name: "현재 맵만 PNG로 저장", testid: "editor-map-screenshot-button" },
   { label: "저장 도구", name: "맵 저장 도구 펼치기/접기", testid: "editor-canvas-toolbar-expand" },
   { label: "저장", name: "프로젝트 저장 (Ctrl+S)", testid: "toolbar-save" },

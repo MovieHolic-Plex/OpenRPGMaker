@@ -41,6 +41,7 @@ import { applyProposedProject, captureApplyAuthority } from "../../src/editor/to
 import { adoptSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import type { Project } from "../../src/project/types.ts";
+import { renderToolRegionPngBase64 } from "./render.mts";
 
 let ARGV: readonly string[] = process.argv.slice(2);
 const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${name}`); return i >= 0 ? ARGV[i + 1] : undefined; };
@@ -117,6 +118,7 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     "조화 검수(reviewMapHarmony)는 돌리지 않는다 — 캔버스 캡처가 필요하고, 기본 적용 모드에서는 결과를 바꾸지 않고 지적만 남긴다(auto 모드의 수리 루프는 미재현).",
     "의도 선언은 브라우저 chatCompletion 대신 같은 몸통을 워커 completeProvider 로 직접 보낸다(제공자 max_tokens 클램프 표는 생략).",
     "실행은 동반 서비스·워커 HTTP 를 거치지 않고 같은 프로세스에서 runPiAgent 를 부른다(체크포인트는 JSON 대신 structuredClone).",
+    "show_map_region 이미지는 캔버스 대신 render 와 같은 pngjs 타일 렌더러로 그린다(이벤트는 스프라이트 대신 색 표식).",
   ];
   const subject = creationSubject(instruction);
   if (subject) differences.push(`지시문이 그래픽 선택(${subject})을 띄우는 문장이다 — 헤드리스는 선택 없이 진행했다.`);
@@ -186,11 +188,16 @@ export async function genMain(argv: readonly string[] = process.argv.slice(2)): 
     const phase = recorder.phase("build");
     const t2 = Date.now();
     const readOnlyRun = readOnly;
+    // 계획 턴(수 분)에서 푼 OAuth 토큰을 그대로 들고 가면 긴 실행 도중 만료된다 — 동반 서비스처럼 실행 요청마다 새로 푼다.
+    keys.clear();
     const done: PiAgentDoneEvent = await runPiAgent(runRequest, {
       ...await agentKeys(runRequest, keys), onToolCall: phase.onToolCall,
       ...(readOnlyRun ? { readOnlyTools: true } : {}),
       ...(runRequest.timeoutMs ? { timeoutMs: runRequest.timeoutMs } : {}),
       onEvent: (event) => { phase.onEvent(event); logLine("[build]", event); },
+      // 브라우저는 캔버스로 show_map_region 이미지를 그린다. 헤드리스는 render 와 같은 타일 렌더러(pngjs)로 대신한다 —
+      // 넘기지 않으면 런타임이 「맵 이미지 전달 경로가 없습니다」로 호출을 실패시킨다.
+      renderToolImage: async (project, _toolName, data) => renderToolRegionPngBase64(project, data),
       ...(plan.villageContract || readOnlyRun || applyMode === "review" ? {} : { onCheckpoint: (checkpoint) => publication.publish(checkpoint) }),
     });
     mark("build", t2);

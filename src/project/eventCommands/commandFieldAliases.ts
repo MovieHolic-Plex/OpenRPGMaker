@@ -19,7 +19,11 @@ const AMOUNT_OP_KINDS = new Set([
   "changeGold", "changeItem", "changeExp", "changeLevel", "changeActorHp", "changeActorMp", "changeLifeSkillExp",
 ]);
 
+const CHOICE_OPTIONS_ALIASES = ["choices", "items", "answers"] as const;
 const CHOICE_BRANCH_ALIASES = ["commands", "then", "actions"] as const;
+const TRANSFER_DIRECTION_ALIASES = ["facing", "dir", "faceDirection"] as const;
+const TRANSFER_DIRECTIONS = new Set(["retain", "up", "down", "left", "right"]);
+const TEXT_BODY_ALIASES = ["text", "message", "content", "line", "dialogue"] as const;
 
 function direction(value: unknown): "add" | "remove" | undefined {
   if (typeof value !== "string") return undefined;
@@ -66,8 +70,66 @@ const BATTLE_TROOP_ALIASES = ["commandId", "troop", "troopRef", "battleId", "enc
 // 기본값(도망 가능·패배=게임 오버, eventCommandFactory)을 채우고 알린다.
 const BATTLE_FLAG_DEFAULTS = { canEscape: true, canLose: false } as const;
 
+// 보스전 결과 분기를 선택지 모양(`options:[{text:"승리",branch:[…]}]`)으로 쓴 사례(2026-09-24 헤드리스 r0735
+// 「등대지기의 겨울」) — 런타임은 battleProcessing.options 를 읽지 않아 승리 분기의 setSwitch·setSelfSwitch 가
+// 한 번도 실행되지 않았고 엔딩 페이지가 영영 열리지 않았다. 결과 분기의 정본은 branchOnResult:true +
+// victoryBranch/defeatBranch/escapeBranch 다. 선택지 문구로 결과를 알아볼 수 있으면 옮긴다.
+type BattleBranchKey = "victoryBranch" | "defeatBranch" | "escapeBranch";
+const BATTLE_OPTION_WORDS: readonly (readonly [BattleBranchKey, RegExp])[] = [
+  ["victoryBranch", /승리|이기|이겼|이김|격파|처치|win|victor|success/i],
+  ["defeatBranch", /패배|졌|지면|짐$|전멸|lose|lost|loss|defeat|fail|game\s*over/i],
+  ["escapeBranch", /도주|도망|탈출|후퇴|escape|flee|fled|run\s*away|retreat/i],
+];
+const BATTLE_BRANCH_LABEL: Record<BattleBranchKey, string> = { victoryBranch: "승리", defeatBranch: "패배", escapeBranch: "도주" };
+
+function battleOptionBranchKey(text: unknown): BattleBranchKey | undefined {
+  if (typeof text !== "string" || !text.trim()) return undefined;
+  const hits = BATTLE_OPTION_WORDS.filter(([, pattern]) => pattern.test(text)).map(([key]) => key);
+  return hits.length === 1 ? hits[0] : undefined;
+}
+
+function optionCommands(option: RecordValue): unknown[] | undefined {
+  for (const key of ["branch", ...CHOICE_BRANCH_ALIASES] as const) {
+    if (Array.isArray(option[key])) return option[key] as unknown[];
+  }
+  return undefined;
+}
+
+function canonicalizeBattleResultOptions(command: RecordValue): string | undefined {
+  if (!Array.isArray(command.options)) return undefined;
+  const options = command.options.filter((option): option is RecordValue => option !== null && typeof option === "object" && !Array.isArray(option));
+  if (options.length === 0) { delete command.options; return "battleProcessing.options 는 쓰이지 않아 지웠습니다(결과 분기는 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch)."; }
+  const plan: { key: BattleBranchKey; commands: unknown[]; text: string; guessed: boolean }[] = [];
+  for (const option of options) {
+    const key = battleOptionBranchKey(option.text) ?? (options.length === 1 ? "victoryBranch" : undefined);
+    const commands = optionCommands(option);
+    if (!key || !commands) {
+      return "battleProcessing 에 options 가 있지만 런타임은 이를 읽지 않습니다 — 선택지 문구로 승리/패배/도주를 알아볼 수 없어 옮기지 않았습니다. "
+        + "전투 결과 분기는 {kind:\"battleProcessing\",troopId,branchOnResult:true,victoryBranch:[…],defeatBranch:[…],escapeBranch:[…]} 로 쓰세요.";
+    }
+    if (plan.some(entry => entry.key === key) || (Array.isArray(command[key]) && (command[key] as unknown[]).length > 0)) {
+      return `battleProcessing 에 options 가 있지만 런타임은 이를 읽지 않습니다 — ${BATTLE_BRANCH_LABEL[key]} 분기가 겹쳐 옮기지 않았습니다. `
+        + "전투 결과 분기는 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch 로 쓰세요.";
+    }
+    plan.push({ key, commands, text: typeof option.text === "string" ? option.text : "", guessed: battleOptionBranchKey(option.text) === undefined });
+  }
+  const notes: string[] = [];
+  for (const entry of plan) {
+    command[entry.key] = entry.commands;
+    notes.push(`options「${entry.text}」→ ${entry.key}${entry.guessed ? "(문구로 결과를 알 수 없어 하나뿐인 분기를 승리로 봤습니다)" : ""}`);
+  }
+  delete command.options;
+  command.branchOnResult = true;
+  if (plan.some(entry => entry.key === "defeatBranch") && command.canLose !== true) { command.canLose = true; notes.push("패배 분기가 있어 canLose:true"); }
+  if (plan.some(entry => entry.key === "escapeBranch") && command.canEscape !== true) { command.canEscape = true; notes.push("도주 분기가 있어 canEscape:true"); }
+  return `battleProcessing 결과 분기를 선택지 모양(options)으로 받아 전투 결과 분기로 옮겼습니다: ${notes.join(", ")}, branchOnResult:true. `
+    + "런타임은 battleProcessing.options 를 읽지 않습니다 — 다음부터 branchOnResult:true + victoryBranch/defeatBranch/escapeBranch 로 쓰세요.";
+}
+
 function canonicalizeBattleCommand(command: RecordValue): string | undefined {
   const fixes: string[] = [];
+  const optionFix = canonicalizeBattleResultOptions(command);
+  if (optionFix) fixes.push(optionFix);
   const hasTroop = typeof command.troopId === "string" && command.troopId.trim();
   if (!hasTroop && command.troopSource !== "variable") {
     const aliases = BATTLE_TROOP_ALIASES.filter(key => typeof command[key] === "string" && (command[key] as string).trim());
@@ -84,10 +146,52 @@ function canonicalizeBattleCommand(command: RecordValue): string | undefined {
   return fixes.length > 0 ? fixes.join(" ") : undefined;
 }
 
+// 조건 분기를 페이지 조건처럼 `conditions:[…]` 로 쓴 사례(2026-09-24 연애 도그푸딩:
+// `{kind:"fork",conditions:[{kind:"variable",variableId:"var_day",op:">=",value:6}],then:[…]}`) —
+// 「condition가 객체가 아닙니다」로 이벤트 전체가 거부됐다. 조건 하나면 그대로, 여럿이면 all 로 묶는다.
+const FORK_THEN_ALIASES = ["thenBranch", "branch", "ifTrue", "commands"] as const;
+const FORK_ELSE_ALIASES = ["elseBranch", "otherwise", "ifFalse"] as const;
+
+function isRecordValue(value: unknown): value is RecordValue {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function moveSingleAlias(command: RecordValue, target: "then" | "else", aliases: readonly string[]): string | undefined {
+  if (Array.isArray(command[target])) return undefined;
+  const present = aliases.filter(key => Array.isArray(command[key]));
+  if (present.length !== 1) return undefined;
+  command[target] = command[present[0]!];
+  delete command[present[0]!];
+  return `fork.${present[0]} 를 ${target} 로 옮겼습니다.`;
+}
+
+function canonicalizeForkCommand(command: RecordValue): string | undefined {
+  const fixes: string[] = [];
+  if (!isRecordValue(command.condition) && Array.isArray(command.conditions)) {
+    const conditions = command.conditions.filter(isRecordValue);
+    if (conditions.length > 0 && conditions.length === command.conditions.length) {
+      command.condition = conditions.length === 1 ? conditions[0] : { kind: "all", conditions };
+      delete command.conditions;
+      fixes.push(`fork.conditions(배열 ${conditions.length}개)를 condition${conditions.length > 1 ? `:{kind:"all"}` : ""} 로 옮겼습니다(조건 분기는 condition 객체 하나).`);
+    }
+  }
+  const thenFix = moveSingleAlias(command, "then", FORK_THEN_ALIASES);
+  if (thenFix) fixes.push(thenFix);
+  const elseFix = moveSingleAlias(command, "else", FORK_ELSE_ALIASES);
+  if (elseFix) fixes.push(elseFix);
+  return fixes.length > 0 ? fixes.join(" ") : undefined;
+}
+
 function joinFixes(...fixes: (string | undefined)[]): string | undefined {
   const present = fixes.filter((fix): fix is string => Boolean(fix));
   return present.length > 0 ? present.join(" ") : undefined;
 }
+
+/** wait 의 시간 별칭과 밀리초 환산 배율. 초·프레임(1/60초) 표기도 받는다. */
+const WAIT_MS_ALIASES: readonly (readonly [string, number])[] = [
+  ["durationMs", 1], ["duration", 1], ["milliseconds", 1], ["time", 1],
+  ["seconds", 1000], ["sec", 1000], ["frames", 1000 / 60],
+];
 
 /** 명령 하나(중첩 분기 제외)를 제자리에서 고친다. 무엇을 고쳤는지 문장으로 돌려준다. */
 export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined {
@@ -106,7 +210,87 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
     command.action = resolved;
     return joinFixes(actorFix, `changeParty ${from} 를 action:"${resolved}"(${resolved === "add" ? "합류" : "이탈"}) 로 고쳤습니다.`);
   }
+  if (command.kind === "transfer" && command.direction === undefined) {
+    // 도착 방향을 `facing`/`dir` 로 쓴 사례(2026-09-24 JRPG ember-4: 보스 처치 뒤 귀환 transfer 에 facing:"down")
+    // — 런타임은 direction 만 읽어 방향이 조용히 버려졌다. 값이 방향 하나일 때만 옮긴다.
+    const aliases = TRANSFER_DIRECTION_ALIASES.filter(key => typeof command[key] === "string" && TRANSFER_DIRECTIONS.has(command[key] as string));
+    if (aliases.length === 1) {
+      const alias = aliases[0]!;
+      command.direction = command[alias];
+      delete command[alias];
+      return `transfer.${alias} 를 direction 으로 옮겼습니다(장소 이동의 도착 방향 칸은 direction).`;
+    }
+    return undefined;
+  }
+  if (command.kind === "wait" && typeof command.ms !== "number") {
+    // 기다리기를 카메라·페이드 비트처럼 durationMs 로 쓴 사례(2026-09-24 꿈 세계 r3). 런타임은 ms 만 읽어
+    // setTimeout(NaN) 으로 즉시 넘어갔다 — 컷신의 뜸이 통째로 사라졌다.
+    const alias = WAIT_MS_ALIASES.find(([key]) => typeof command[key] === "number" && Number.isFinite(command[key]));
+    if (!alias) return undefined;
+    const [key, toMs] = alias;
+    command.ms = Math.max(0, Math.round((command[key] as number) * toMs));
+    delete command[key];
+    return `wait.${key} 를 ms(밀리초 ${command.ms}) 로 옮겼습니다(기다리기의 시간 칸은 ms).`;
+  }
   if (command.kind === "battleProcessing") return canonicalizeBattleCommand(command);
+  if (command.kind === "fork") return canonicalizeForkCommand(command);
+  if (command.kind === "setVariable" && command.value === undefined && typeof command.amount === "number") {
+    // 변수 대입을 수치 명령(changeGold·changeItem)처럼 amount 로 쓴 사례(2026-09-24 갤러리 호러 r3:
+    // `{kind:"setVariable",variableId,op:"=",amount:5}`) — 「value가 객체가 아닙니다」로 공용 이벤트가 통째로 거부됐다.
+    command.value = command.amount;
+    delete command.amount;
+    return "setVariable.amount 를 value 로 옮겼습니다(변수 명령의 값 칸은 value).";
+  }
+  if (command.kind === "inputNumber" && typeof command.digits !== "number") {
+    // 숫자 입력 자릿수를 amount·length 로 쓴 사례(2026-09-24 추격 호러 r5: `{kind:"inputNumber",variableId,amount:4}`)
+    // — 「digits가 숫자가 아닙니다」로 금고 이벤트가 거부됐고, 모델은 정답을 적은 선택지로 물러났다.
+    const alias = (["amount", "length", "maxDigits", "digitCount", "size"] as const).find(key => typeof command[key] === "number");
+    if (alias) {
+      command.digits = Math.max(1, Math.min(6, Math.trunc(command[alias] as number)));
+      delete command[alias];
+      return `inputNumber.${alias} 를 digits(자릿수) 로 옮겼습니다.`;
+    }
+    return undefined;
+  }
+  if (command.kind === "text" && typeof command.body !== "string") {
+    // 대사 본문을 `text` 로 쓴 사례(2026-09-24 갤러리 호러: `{kind:"text",text:"엄마: …"}` 가 한 이벤트에 여섯 줄)
+    // — 「대사는 string body가 필요합니다」로 upsert_event 4건이 통째로 반려됐다. 문장 명령의 본문 칸은 body 하나라
+    // body 가 없고 별칭 하나에만 문자열이 있으면 옮긴다.
+    const aliases = TEXT_BODY_ALIASES.filter(key => typeof command[key] === "string");
+    if (aliases.length !== 1) return undefined;
+    const alias = aliases[0]!;
+    command.body = command[alias];
+    delete command[alias];
+    return `text.${alias} 를 body 로 옮겼습니다(문장 명령의 본문 칸은 body).`;
+  }
+  let optionsFix: string | undefined;
+  let promptFix: string | undefined;
+  if (command.kind === "choices" && command.prompt === undefined && typeof command.text === "string" && command.text.trim()) {
+    // 선택지 질문을 text 로 쓴 사례(2026-09-24 회상 스토리: 기억의 문 `{kind:"choices",text:"다이브하시겠습니까?",options}`).
+    // 질문 칸은 prompt 라 런타임은 text 를 버리고, 검사는 모르는 필드로만 남긴다.
+    command.prompt = command.text.trim();
+    delete command.text;
+    promptFix = "choices.text 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
+  }
+  if (command.kind === "choices" && command.prompt === undefined && typeof command.body === "string" && command.body.trim()) {
+    // 선택지 질문을 text 명령의 본문 칸인 body 로 쓴 사례(2026-09-24 갤러리 호러 r3: 레버·초상화 3점·엔딩 등
+    // 선택지 6건이 `{kind:"choices",body:"당겨보겠습니까?",options}` — upsert_event 는 받았지만 런타임이 body 를
+    // 버려 플레이어는 물음 없는 선택지만 보았다). 질문 칸은 prompt 라 옮긴다.
+    command.prompt = command.body.trim();
+    delete command.body;
+    promptFix = "choices.body 를 prompt 로 옮겼습니다(선택지 질문의 정본 키는 prompt).";
+  }
+  if (command.kind === "choices" && !Array.isArray(command.options)) {
+    // 보기 목록을 `choices` 로 쓴 사례(2026-09-24 JRPG 도그푸딩: 여관 주인 `{kind:"choices",choices:[{text,branch}]}`)
+    // — place_npc 가 「command.options is not iterable」 TypeError 로 죽었다. 보기 목록 칸은 options 하나라 옮긴다.
+    const aliases = CHOICE_OPTIONS_ALIASES.filter(key => Array.isArray(command[key]));
+    if (aliases.length === 1) {
+      const alias = aliases[0]!;
+      command.options = command[alias];
+      delete command[alias];
+      optionsFix = `choices.${alias} 를 options 로 옮겼습니다(선택지 보기 목록의 정본 키는 options).`;
+    }
+  }
   if (command.kind === "choices" && Array.isArray(command.options)) {
     // 네이티브 선택지 분기는 `branch` 다. SimplePage 선택지(`commands`)나 fork(`then`) 표기가 섞이면
     // 분기가 비거나 검증에서 거부됐다. branch 가 비어 있고 별칭 하나에만 명령이 있으면 옮긴다.
@@ -122,8 +306,9 @@ export function canonicalizeCommandFieldAlias(raw: unknown): string | undefined 
       delete option[alias];
       moved.push(`options[${index}].${alias}`);
     }
-    return moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined;
+    return joinFixes(promptFix, optionsFix, moved.length > 0 ? `choices ${moved.join(", ")} 를 branch 로 옮겼습니다(선택지 분기의 정본 키는 branch).` : undefined);
   }
+  if (promptFix) return promptFix;
   if (typeof command.kind === "string" && AMOUNT_OP_KINDS.has(command.kind) && typeof command.op !== "string") {
     const resolved = direction(command.action);
     if (!resolved) return undefined;

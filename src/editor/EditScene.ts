@@ -39,6 +39,16 @@ import { AgentFocusRenderer, AgentGhostPreviewRenderer } from "@/editor/agentPre
 import { subscribeInlineProposalActions } from "@/editor/proposalInlineApproval";
 import { CameraScrollbars } from "@/editor/CameraScrollbars";
 import { CameraPanController, pointerScreenPosition } from "@/editor/CameraPanController";
+import {
+  applyMapEdgeDrag,
+  mapEdgeDragTarget,
+  mapEdgeGrowAxes,
+  mapEdgeGrowCursor,
+  NO_MAP_EDGE_SIDES,
+  type MapEdgeGrowAxes,
+  type MapEdgeSides,
+} from "@/editor/mapEdgeGrow";
+import { mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { store, type ProjectChangeCell, type ProjectChangeDescriptor } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -49,7 +59,7 @@ import {
   mapBackgroundPreviewEnabled,
   subscribeMapBackgroundPreview,
 } from "@/editor/mapBackgroundPreviewState";
-import { editorState, EDITOR_ZOOM_LEVELS, type TileClipboard } from "@/editor/editorState";
+import { editorState, EDITOR_ZOOM_LEVELS, type Layer, type TileClipboard } from "@/editor/editorState";
 import { canEditMap, mapEditLockNotice } from "@/editor/mapEditLocks";
 import {
   renderEventLayerClickFeedback,
@@ -69,6 +79,7 @@ import {
 import { renderHoverTilePreview, shouldShowPaintHoverPreview } from "@/editor/editSceneHoverPreview";
 import { planEditSceneRenderForStoreChange } from "@/editor/editSceneRenderPlan";
 import {
+  editGridTileWindow,
   editSceneTileWindowKey,
   renderEditScene,
   renderEditSceneTileCells,
@@ -82,6 +93,7 @@ import {
   syncSelectionOverlay,
 } from "@/editor/editSceneRender";
 import { applyEditTileLayerPresentation, repaintEditGrid } from "@/editor/editSceneViewChrome";
+import { markEditRenderActive, requestEditRenderFrame } from "@/editor/editRenderGate";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
 import { resetCullableTiles, syncTileCulling } from "@/player/playSceneTileCulling";
 import {
@@ -106,11 +118,11 @@ import { openStructurePlacementContextMenu } from "@/editor/panels/structurePlac
 import {
   isRegionTaskModalOpen,
   isRegionTaskRegionLocked,
-  openRegionTaskModal,
   REGION_TASK_MODAL_EVENT,
   retargetRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
+import { requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -122,7 +134,11 @@ import { repositionMapLocationLayer } from "@/editor/mapLocationLayer";
 import { repositionRegionChunkOverlay } from "@/editor/regionTask/regionChunkOverlayView";
 import { notifyRightDragRegionSelected } from "@/editor/selectionChipHint";
 import { computeMapViewport } from "@/ai/mapViewportContext";
-import { renderSelectionActionChips, shouldShowSelectionActionChips } from "@/editor/selectionActionChips";
+import {
+  focusSelectionActionPrompt,
+  renderSelectionActionChips,
+  shouldShowSelectionActionChips,
+} from "@/editor/selectionActionChips";
 import {
   anchoredBuildPalettePosition,
   anchoredSelectionChipsPosition,
@@ -134,7 +150,7 @@ import { DragOperationHandler } from "@/editor/DragOperationHandler";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { findEventCoveringPoint } from "@/project/eventFootprintQuery";
 import { topTileInStack } from "@/project/mapOverlayTiles";
-import type { MapId } from "@/project/types";
+import type { GameMap, MapId } from "@/project/types";
 import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { prefersReducedMotion } from "@/util/reducedMotion";
 import { toast } from "@/util/toast";
@@ -248,6 +264,12 @@ export class EditScene extends PhaserRuntime.Scene {
   private lastPointerTile: { x: number; y: number } | null = null;
   private lastRenderedMapId: MapId | null = null;
   private lastMaterializedTileWindowKey = "";
+  /** 청크 가시 창 + 청크 수. 같으면 청크 visible 을 다시 훑지 않는다. */
+  private lastChunkVisibilityKey = "";
+  private lastGridWindowKey = "";
+  /** 유휴 렌더 게이트용 — 지난 프레임의 카메라. 바뀌면 렌더를 깨운다. */
+  private lastRenderCamera: { scrollX: number; scrollY: number; zoom: number; width: number; height: number } | null = null;
+  private readonly requestRenderFrame = (): void => requestEditRenderFrame(this.game);
   private lastRenderStateKey = "";
   /** 레이어 색·충돌 오버레이·이벤트 마커·격자. 타일 메시 재생성 키와 분리한다. */
   private lastViewChromeKey = "";
@@ -257,6 +279,25 @@ export class EditScene extends PhaserRuntime.Scene {
   /** large-map lazy 경로의 타일 청크 컨테이너 저장소(비-lazy 맵은 사용하지 않는다). */
   private readonly tileChunks: Map<string, Phaser.GameObjects.Container> = new Map();
   private cameraPanController: CameraPanController | null = null;
+  private mapEdgeBand: Phaser.GameObjects.Graphics | null = null;
+  private pointerOverCanvas = false;
+  /**
+   * 테두리 드래그 한 번. 호버는 안내만 하고 크기는 이 상태가 있을 때만 바뀐다.
+   * `added` 는 이 드래그에서 원래 크기에 더한 칸 수 — 되돌아 끌면 이 값까지만 줄인다.
+   */
+  private mapEdgeDrag: {
+    readonly mapId: MapId;
+    readonly axes: MapEdgeGrowAxes;
+    readonly originWidth: number;
+    readonly originHeight: number;
+    readonly historyKey: string;
+    added: MapEdgeSides;
+    limitNoted: boolean;
+  } | null = null;
+  /** 드래그마다 새 히스토리 키를 만들려는 일련번호. 같은 키면 앞 드래그와 한 단계로 묶인다. */
+  private mapEdgeDragSeq = 0;
+  /** 캔버스에 마지막으로 쓴 커서 — 매 프레임 같은 값을 다시 쓰지 않으려고 둔다. */
+  private mapEdgeCursor = "";
   private cameraScrollbars: CameraScrollbars | null = null;
   private navigationGeometry: { canvas: CanvasRect; unoccluded: CanvasRect; zoom: number } | null = null;
   private navigationResizeObserver: ResizeObserver | null = null;
@@ -329,6 +370,7 @@ export class EditScene extends PhaserRuntime.Scene {
   private overlayGeometryReadAtMs = 0;
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
+  private focusSelectionPromptOnRender = false;
   /** 붙여넣기 고스트를 마지막으로 조립한 클립보드·원점. 같은 클립보드면 칸만 옮긴다. */
   private pasteGhostClipboard: TileClipboard | null = null;
   private pasteGhostAt: { x: number; y: number } | null = null;
@@ -427,6 +469,8 @@ export class EditScene extends PhaserRuntime.Scene {
     const gridGraphics = this.add.graphics();
     gridGraphics.setDepth(10);
     this.gridGraphics = gridGraphics;
+    this.mapEdgeBand = this.add.graphics();
+    this.mapEdgeBand.setDepth(10.1);
     // 청사진은 계획, 고스트는 실물 초안이다 — 계획이 아래로 깔려야 실물이 그 위에 올라간다.
     this.agentBlueprintLayer = this.add.container(0, 0);
     this.agentBlueprintLayer.setDepth(10.2);
@@ -458,14 +502,20 @@ export class EditScene extends PhaserRuntime.Scene {
       if (!shouldDeferCameraFocus(this.pointerGestureState())) this.panCameraBy(x, y);
     });
     this.observeNavigationGeometry();
+    // 유휴 렌더 게이트(editRenderGate): 객체가 생기거나 사라진 프레임은 반드시 그린다. 조수 고스트·
+    // 초점 강조·텍스처 로드 뒤 재렌더처럼 사용자 입력 없이 오는 변경이 대부분 이 경로로 잡힌다.
+    this.sys.events.on(PhaserRuntime.Scenes.Events.ADDED_TO_SCENE, this.requestRenderFrame);
+    this.sys.events.on(PhaserRuntime.Scenes.Events.REMOVED_FROM_SCENE, this.requestRenderFrame);
     this.redraw();
 
     // store/에디터 상태 변경 시 재렌더.
     this.unsubStore = store.subscribe((_project, change) => {
+      markEditRenderActive(this.game);
       this.clearInvalidPendingEventCoordinate();
       this.redrawForStoreChange(change);
     });
     this.unsubEditor = editorState.subscribe((state) => {
+      markEditRenderActive(this.game);
       const pending = state.pendingEventCoordinate;
       if (pending && (this.mapId() !== pending.mapId || state.layer !== "event" || state.tool !== "event")) {
         editorState.set({ pendingEventCoordinate: null });
@@ -553,6 +603,8 @@ export class EditScene extends PhaserRuntime.Scene {
     this.navigationGeometry = null;
     this.lastNavGeometryKey = "";
     this.scale.off("resize", this.handleResize, this);
+    this.sys.events.off(PhaserRuntime.Scenes.Events.ADDED_TO_SCENE, this.requestRenderFrame);
+    this.sys.events.off(PhaserRuntime.Scenes.Events.REMOVED_FROM_SCENE, this.requestRenderFrame);
     this.unbindBrowserContextMenuGuards();
     this.rightRegionGesture = null;
     // 미뤄 둔 초점은 씬과 함께 버린다 — 아래 stopPan 이 재생을 시도하기 전에 비워야 한다.
@@ -560,6 +612,10 @@ export class EditScene extends PhaserRuntime.Scene {
     // 컬링 추적 목록을 풀어 씬이 내려가도 객체를 붙잡지 않게 한다.
     resetCullableTiles(this);
 
+    this.mapEdgeBand?.destroy();
+    this.mapEdgeBand = null;
+    this.mapEdgeDrag = null;
+    this.setMapEdgeCursor("");
     this.stopPan();
     this.unsubStore?.();
     this.unsubEditor?.();
@@ -616,8 +672,16 @@ export class EditScene extends PhaserRuntime.Scene {
     // 다음 기하 읽기를 강제한다 — 캔버스 사각형이 바뀌었으므로 캐시는 낡았다.
     this.overlayGeometryReadAtMs = 0;
     this.lastNavGeometryKey = "";
+    markEditRenderActive(this.game);
     this.syncNavigationGeometry();
-    this.redraw();
+    // 캔버스 크기는 타일 그림이 아니라 카메라 기하다. 전체 redraw 는 타일 객체를 전부 파괴·재생성해
+    // 창 드래그·패널 토글마다 큰 맵이 멈췄다. 새로 보이는 칸·격자는 다음 update() 가 창 변화를 보고 채운다.
+    const mid = this.mapId();
+    if (!mid || this.lastRenderedMapId !== mid) {
+      this.redraw();
+      return;
+    }
+    this.afterCameraMoved();
   }
 
   /**
@@ -627,9 +691,55 @@ export class EditScene extends PhaserRuntime.Scene {
    */
   update(): void {
     if (this.activeCameraFocus && shouldDeferCameraFocus(this.pointerGestureState())) this.cancelCameraFocus();
+    this.syncMapEdgeHint();
     this.syncNavigationGeometry();
     this.syncPublishedViewport();
     this.syncTileCullingFrame();
+    this.syncGridWindow();
+    this.syncRenderActivity();
+  }
+
+  /**
+   * 유휴 렌더 게이트에 이번 프레임의 변화를 알린다. 카메라는 팬·휠·키보드·초점 트윈·리사이즈
+   * 어느 경로로든 바뀌므로 경로마다 깨우지 않고 여기서 값을 비교한다.
+   */
+  private syncRenderActivity(): void {
+    const camera = this.cameras?.main;
+    if (camera) {
+      const last = this.lastRenderCamera;
+      if (
+        !last
+        || last.scrollX !== camera.scrollX
+        || last.scrollY !== camera.scrollY
+        || last.zoom !== camera.zoom
+        || last.width !== camera.width
+        || last.height !== camera.height
+      ) {
+        this.lastRenderCamera = { scrollX: camera.scrollX, scrollY: camera.scrollY, zoom: camera.zoom, width: camera.width, height: camera.height };
+        markEditRenderActive(this.game);
+      }
+    }
+    if ((this.tweens?.tweens?.length ?? 0) > 0) requestEditRenderFrame(this.game);
+  }
+
+  /** 격자는 카메라 근처 청크만 긋는다(repaintEditGrid). 창이 청크 경계를 넘으면 다시 긋는다. */
+  private syncGridWindow(): void {
+    const gridGraphics = this.gridGraphics;
+    if (!gridGraphics) return;
+    const state = editorState.get();
+    if (!state.showGrid) return;
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!map) return;
+    this.repaintGridWindow(gridGraphics, map, state.layer, false);
+  }
+
+  private repaintGridWindow(gridGraphics: Phaser.GameObjects.Graphics, map: GameMap, layer: Layer, force: boolean): void {
+    const bounds = editGridTileWindow(this, map);
+    const key = `${map.id}|${layer}|${bounds.minX},${bounds.minY},${bounds.maxX},${bounds.maxY}`;
+    if (!force && key === this.lastGridWindowKey) return;
+    this.lastGridWindowKey = key;
+    repaintEditGrid(gridGraphics, map, layer, true, bounds);
   }
 
   /**
@@ -668,10 +778,17 @@ export class EditScene extends PhaserRuntime.Scene {
       const lastCx = chunkCoord(Math.floor((view.x + view.width) / tileSize) + 2);
       const firstCy = chunkCoord(Math.floor(view.y / tileSize) - 2);
       const lastCy = chunkCoord(Math.floor((view.y + view.height) / tileSize) + 2);
-      for (const [key, chunk] of this.tileChunks) {
-        const [cx, cy] = key.split(",").map(Number);
-        const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
-        if (chunk.visible !== visible) chunk.setVisible(visible);
+      // 청크는 clear() 로만 사라지고(redraw 가 키를 비운다) 새 청크는 수를 바꾼다 — 창과 수가 같으면 결과도 같다.
+      const chunkKey = `${firstCx},${lastCx},${firstCy},${lastCy},${this.tileChunks.size}`;
+      if (chunkKey !== this.lastChunkVisibilityKey) {
+        this.lastChunkVisibilityKey = chunkKey;
+        for (const [key, chunk] of this.tileChunks) {
+          const comma = key.indexOf(",");
+          const cx = Number(key.slice(0, comma));
+          const cy = Number(key.slice(comma + 1));
+          const visible = cx >= firstCx && cx <= lastCx && cy >= firstCy && cy <= lastCy;
+          if (chunk.visible !== visible) chunk.setVisible(visible);
+        }
       }
     }
     syncTileCulling(this, view, this.activeTileSize());
@@ -813,6 +930,9 @@ export class EditScene extends PhaserRuntime.Scene {
         this.beginRightRegionGesture(ptr);
         return;
       }
+      // 테두리 띠(맵 밖)에서 누른 좌클릭은 크기 드래그다. 팬보다 먼저 봐야 한다 — 선택 도구는
+      // 맵 밖 좌클릭을 팬으로 가져가므로 순서가 바뀌면 띠를 잡아도 카메라만 움직인다.
+      if (this.beginMapEdgeDrag(ptr)) return;
       if (this.shouldPan(ptr)) {
         this.startPan(ptr);
         return;
@@ -830,6 +950,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.applyAtPointer(ptr);
     });
     this.input.on("pointermove", (ptr: Phaser.Input.Pointer) => {
+      this.pointerOverCanvas = true;
       this.updatePointerStatus(ptr);
       // 붙여넣기 미리보기: 커서 추종.
       if (editorState.get().pastePreview) {
@@ -838,6 +959,10 @@ export class EditScene extends PhaserRuntime.Scene {
         this.lastPointerTile = { x, y };
         if (mid) movePastePreview(mid, x, y);
         this.renderPastePreviewGhost();
+        return;
+      }
+      if (this.mapEdgeDrag) {
+        this.updateMapEdgeDrag(ptr);
         return;
       }
       // 우클릭 제스처 중에는 버튼 플래그가 브라우저마다 들쭉날쭉해도 추적을 이어간다.
@@ -871,6 +996,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.replayDeferredCameraFocus();
     });
     this.input.on("pointerout", () => {
+      this.pointerOverCanvas = false;
+      this.clearMapEdgeBand();
       if (!this.getDragOperationHandler().active()) this.clearHoverPreview();
     });
     this.input.on("pointerupoutside", (ptr: Phaser.Input.Pointer) => {
@@ -1112,6 +1239,10 @@ export class EditScene extends PhaserRuntime.Scene {
       // 창이 이미 그 자리에 있고, 칩 바는 창이 열려 있는 동안 물러나 있다.
       if (retargetRegionTaskModal(rect, screen)) return;
       notifyRightDragRegionSelected();
+      // 드래그 중에 이미 같은 사각형이 선택돼 있어 위 selectTileRegion 은 통지 없이 끝난다.
+      // 여기서 직접 그리지 않으면 바는 다음 우연한 redraw(포인터 이동·팬)까지 뜨지 않는다.
+      this.focusSelectionPromptOnRender = true;
+      this.renderBuildPaletteOverlay();
       return;
     }
 
@@ -1125,6 +1256,7 @@ export class EditScene extends PhaserRuntime.Scene {
       isCellInsideSelection(existing, end.x, end.y)
     ) {
       this.lastRightDragScreen = screen;
+      this.focusSelectionPromptOnRender = true;
       this.renderBuildPaletteOverlay();
       return;
     }
@@ -1527,6 +1659,148 @@ export class EditScene extends PhaserRuntime.Scene {
     this.cameraPanController?.panBy(deltaX, deltaY);
   }
 
+  private clearMapEdgeBand(): void {
+    this.mapEdgeBand?.clear();
+    if (!this.mapEdgeDrag) this.setMapEdgeCursor("");
+  }
+
+  private setMapEdgeCursor(cursor: string): void {
+    if (this.mapEdgeCursor === cursor) return;
+    this.mapEdgeCursor = cursor;
+    const canvas = this.game?.canvas;
+    if (canvas) canvas.style.cursor = cursor;
+  }
+
+  /** 포인터 아래 테두리 띠. 맵 안이거나 띠 밖이면 null. */
+  private mapEdgeAxesAt(ptr: Phaser.Input.Pointer): MapEdgeGrowAxes | null {
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const camera = this.cameras?.main;
+    if (!map || !camera) return null;
+    const world = ptr.positionToCamera(camera) as { readonly x: number; readonly y: number };
+    const tileSize = this.activeTileSize();
+    return mapEdgeGrowAxes({
+      worldX: world.x,
+      worldY: world.y,
+      mapWidthPx: map.width * tileSize,
+      mapHeightPx: map.height * tileSize,
+      zoom: camera.zoom > 0 ? camera.zoom : 1,
+    });
+  }
+
+  /**
+   * 호버 안내: 맵 테두리 바깥 띠에 포인터가 있으면 그 변을 주황으로 칠하고 크기 조절 커서를 보인다.
+   * **크기는 바꾸지 않는다** — 바꾸는 것은 띠에서 시작한 좌클릭 드래그(beginMapEdgeDrag)뿐이다.
+   */
+  private syncMapEdgeHint(): void {
+    const drag = this.mapEdgeDrag;
+    if (drag) {
+      const map = store.getCurrent().maps[drag.mapId];
+      const tileSize = this.activeTileSize();
+      if (map) this.paintMapEdgeBand(drag.axes, map.width * tileSize, map.height * tileSize);
+      return;
+    }
+    const gesture = this.pointerGestureState();
+    const busy = gesture.painting || gesture.panning || gesture.dragging || gesture.rightRegionGesture || gesture.pastePreview;
+    const ptr = this.input?.activePointer;
+    if (!this.mapEdgeBand || !this.pointerOverCanvas || busy || !ptr || ptr.isDown) {
+      this.clearMapEdgeBand();
+      return;
+    }
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    const axes = this.mapEdgeAxesAt(ptr);
+    if (!map || !axes) {
+      this.clearMapEdgeBand();
+      return;
+    }
+    const tileSize = this.activeTileSize();
+    this.paintMapEdgeBand(axes, map.width * tileSize, map.height * tileSize);
+    this.setMapEdgeCursor(mapEdgeGrowCursor(axes));
+  }
+
+  /**
+   * 띠 안에서 누른 좌클릭이면 테두리 드래그를 시작하고 true. 띠는 맵 **밖**이므로 그 아래에 칠할 칸이
+   * 없다 — 가로채도 칠하기·선택을 잃지 않는다. 잠긴 맵이면 알리고 누름을 삼킨다(띠를 잡았는데 카메라가
+   * 움직이면 잠금 때문인지 알 수 없다).
+   */
+  private beginMapEdgeDrag(ptr: Phaser.Input.Pointer): boolean {
+    if (ptr.button !== 0) return false;
+    const axes = this.mapEdgeAxesAt(ptr);
+    const mapId = this.mapId();
+    const map = mapId ? store.getCurrent().maps[mapId] : undefined;
+    if (!axes || !mapId || !map) return false;
+    if (!canEditMap(mapId)) {
+      toast(mapEditLockNotice(mapId), "error");
+      return true;
+    }
+    this.mapEdgeDragSeq += 1;
+    this.mapEdgeDrag = {
+      mapId,
+      axes,
+      originWidth: map.width,
+      originHeight: map.height,
+      historyKey: `map-edge-drag:${mapId}:${this.mapEdgeDragSeq}`,
+      added: NO_MAP_EDGE_SIDES,
+      limitNoted: false,
+    };
+    this.clearHoverPreview();
+    this.setMapEdgeCursor(mapEdgeGrowCursor(axes));
+    return true;
+  }
+
+  /**
+   * 포인터가 원래 테두리를 넘은 만큼 맵을 맞춘다. 되돌아 끌면 이 드래그에서 늘린 칸까지만 줄인다 —
+   * 원래 크기 아래로는 내려가지 않으므로 저작 내용은 잘리지 않는다.
+   */
+  private updateMapEdgeDrag(ptr: Phaser.Input.Pointer): void {
+    const drag = this.mapEdgeDrag;
+    const camera = this.cameras?.main;
+    if (!drag || !camera) return;
+    if (this.mapId() !== drag.mapId || !store.getCurrent().maps[drag.mapId]) {
+      this.mapEdgeDrag = null;
+      return;
+    }
+    const tileSize = this.activeTileSize();
+    const world = ptr.positionToCamera(camera) as { readonly x: number; readonly y: number };
+    const target = mapEdgeDragTarget({
+      axes: drag.axes,
+      added: drag.added,
+      originWidth: drag.originWidth,
+      originHeight: drag.originHeight,
+      tileSize,
+      worldX: world.x,
+      worldY: world.y,
+    });
+    if (target.clamped && !drag.limitNoted) {
+      drag.limitNoted = true;
+      toast(mapSizeLimitMessage(), "error");
+    }
+    const next: MapEdgeSides = { left: target.left, right: target.right, up: target.up, down: target.down };
+    const moved = applyMapEdgeDrag(drag.mapId, drag.added, next, drag.historyKey);
+    if (!moved) return;
+    drag.added = next;
+    // 왼쪽·위로 늘면 내용이 밀린다. 카메라도 같은 만큼 옮겨 화면의 칸이 제자리에 있게 한다.
+    if (moved.dx !== 0 || moved.dy !== 0) {
+      camera.setScroll(camera.scrollX + moved.dx * tileSize, camera.scrollY + moved.dy * tileSize);
+      this.afterCameraMoved();
+    }
+  }
+
+  private paintMapEdgeBand(axes: MapEdgeGrowAxes | null, mapWidthPx: number, mapHeightPx: number): void {
+    const band = this.mapEdgeBand;
+    if (!band) return;
+    band.clear();
+    if (!axes) return;
+    const zoom = this.cameras.main.zoom > 0 ? this.cameras.main.zoom : 1;
+    const thickness = 6 / zoom;
+    band.fillStyle(0xe8a04a, 0.45);
+    if (axes.left) band.fillRect(-thickness, 0, thickness, mapHeightPx);
+    if (axes.right) band.fillRect(mapWidthPx, 0, thickness, mapHeightPx);
+    if (axes.up) band.fillRect(0, -thickness, mapWidthPx, thickness);
+    if (axes.down) band.fillRect(0, mapHeightPx, mapWidthPx, thickness);
+  }
+
   private handleShortcut(event: KeyboardEvent): void {
     if (!(event.ctrlKey || event.metaKey)) return;
     const key = event.key.toLowerCase();
@@ -1804,6 +2078,8 @@ export class EditScene extends PhaserRuntime.Scene {
       this.lastMaterializedTileWindowKey = "";
     }
     this.lastRenderedMapId = mid;
+    this.lastChunkVisibilityKey = "";
+    this.lastGridWindowKey = "";
     this.lastRenderStateKey = this.renderStateKey(mid);
     this.lastViewChromeKey = this.viewChromeKey();
     this.lastAppliedZoom = editorState.get().zoom;
@@ -2032,7 +2308,8 @@ export class EditScene extends PhaserRuntime.Scene {
       mapId,
       tileIndex: this.tileIndex,
     });
-    repaintEditGrid(gridGraphics, map, state.layer, state.showGrid);
+    if (state.showGrid) this.repaintGridWindow(gridGraphics, map, state.layer, true);
+    else repaintEditGrid(gridGraphics, map, state.layer, false);
   }
 
   private applyCameraZoomOnly(mid: MapId): void {
@@ -2386,6 +2663,8 @@ export class EditScene extends PhaserRuntime.Scene {
   }
 
   private endPointerGesture(ptr: Phaser.Input.Pointer): "right-region" | "gesture" {
+    // 테두리 드래그는 놓는 순간 끝난다. 크기는 끄는 동안 이미 반영됐으므로 여기서 할 일은 상태를 내리는 것뿐이다.
+    this.mapEdgeDrag = null;
     if (this.rightRegionGesture) {
       this.finishRightRegionGesture(ptr);
       return "right-region";
@@ -2406,7 +2685,8 @@ export class EditScene extends PhaserRuntime.Scene {
     return {
       painting: this.isPainting,
       panning: this.cameraPanController?.active() ?? false,
-      dragging: this.dragOperationHandler?.busy() ?? false,
+      // 테두리 드래그도 드래그다 — 조수 카메라 초점이 끌던 맵을 빼앗아 가지 않게 미룬다.
+      dragging: (this.dragOperationHandler?.busy() ?? false) || this.mapEdgeDrag !== null,
       rightRegionGesture: this.rightRegionGesture !== null,
       pastePreview: editorState.get().pastePreview !== null,
     };
@@ -2537,6 +2817,9 @@ export class EditScene extends PhaserRuntime.Scene {
     if (typeof document === "undefined") return;
     const selection = editorState.get().selection;
     const mapId = this.mapId();
+    // 입력창 포커스는 우클릭 제스처가 요청한 이번 한 번만 — 다른 경로의 redraw 가 채팅 입력 등을 뺏지 않게.
+    const wantPromptFocus = this.focusSelectionPromptOnRender;
+    this.focusSelectionPromptOnRender = false;
     // 크기 배지는 칩 바와 수명이 다르다 — 영역 작업 창이 열려 있는 동안에도 대상 영역을
     // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
     // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
@@ -2576,7 +2859,7 @@ export class EditScene extends PhaserRuntime.Scene {
       this.clearBuildPaletteOverlay();
       const popup = kind === "build"
         ? renderBuildPalettePopup()
-        : renderSelectionActionChips(selection, openRegionTaskModal, () => this.replayDeferredCameraFocus());
+        : renderSelectionActionChips(selection, requestAiRegionHandoff, () => this.replayDeferredCameraFocus());
       if (!popup) {
         this.renderRegionTaskBadge();
         return;
@@ -2590,6 +2873,9 @@ export class EditScene extends PhaserRuntime.Scene {
       this.buildPalettePopupKey = popupKey;
     }
     this.positionBuildPaletteOverlay(selection);
+    if (wantPromptFocus && kind === "chips" && this.buildPalettePopup) {
+      focusSelectionActionPrompt(this.buildPalettePopup);
+    }
     this.renderRegionTaskBadge();
   }
 
@@ -2733,7 +3019,9 @@ export class EditScene extends PhaserRuntime.Scene {
 
 function setTileToolStatus(testId: string, text: string): void {
   const node = document.querySelector(`[data-testid="${testId}"]`);
-  if (!node) return;
+  // Runs per pointermove; an equal write still replaces the text node and wakes every
+  // body-subtree MutationObserver.
+  if (!node || node.textContent === text) return;
   node.textContent = text;
 }
 

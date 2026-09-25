@@ -27,7 +27,7 @@ import {
   type BattleDirectorState,
 } from "@/player/battleDirectorDom";
 import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/registry";
-import { applyActionMotion, battleField, battlePartyStatus, findBattlerNode, playCaptureCinematic, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
+import { applyActionMotion, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { emitBattleJuice as emitContextBattleJuice, flashBattleField, playBattleCue as playContextBattleCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
@@ -137,9 +137,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   let targetReturnSubmenu: BattleCommandSubmenu = null;
   let directorState: BattleDirectorState = commandPromptState(initialSnapshot);
   let resultRevealStage = 0;
+  let finaleCelebrated: BattleSnapshot["result"] | undefined;
   let sequenceBusy = false;
   let eventSurfaceOpen = false;
   let lastDamageFeedback: DamageFeedback | undefined;
+  /** 지금 걸려 있는 히트스톱의 타격. 정지가 풀리는 순간 이 대상을 깜빡인다. */
+  let hitStopFeedback: DamageFeedback | undefined;
   let activeAnimation: BattleAnimationPlayback | undefined;
   // 프레젠테이션 HP 원장 — 시퀀스가 도는 동안 화면은 이 원장을 본다.
   // 런타임 스냅샷(즉시 최종 상태)이 연출을 앞지르는 결함의 단일 수정 지점.
@@ -374,10 +377,24 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
             playBattleCue("faint");
           }, 260);
         }
-        if (!feedback.healing && !feedback.miss) flashBattleField(root, feedback.critical ? "critical" : "hit", intensity);
+        if (!feedback.healing && !feedback.miss) {
+          const hurt = options.runtime.snapshot().actors.some((actor) => actor.id === feedback.targetId || actor.recordId === feedback.targetId);
+          flashBattleField(root, feedback.critical ? "critical" : "hit", intensity, { hurt });
+          // 막타는 격파 조각(spawnDeathShards)이 이미 튄다 — 두 파편이 겹치면 뭉개진다.
+          if (intensity && targetNode && !lethal) spawnHitSparks(targetNode, intensity);
+        }
       }
     },
     onHitFeel(active, feedback) {
+      // 정지(히트스톱)가 풀리는 순간 맞은 쪽이 세 번 깜빡인다. 정지 중에는 22-hit-feel.css 가
+      // 대상을 흰 실루엣으로 붙잡고 있으므로, 점멸은 그 뒤의 "반응" 이다.
+      if (active) hitStopFeedback = feedback;
+      else if (hitStopFeedback) {
+        const struck = hitStopFeedback;
+        hitStopFeedback = undefined;
+        const node = findBattlerNode(field, struck.targetId);
+        if (node && !node.classList.contains("defeated") && !prefersReducedMotion()) blinkBattlerNode(node);
+      }
       root.dataset.battleHitFeel = active ? "true" : "false";
       root.classList.toggle("battle-hit-stop", active);
       if (active && feedback?.critical) root.classList.add("battle-hit-stop-critical");
@@ -396,6 +413,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
         ? findBattlerNode(field, options.runtime.snapshot().activeActorId!)
         : null;
       emitBattleJuice(success ? "escape" : "hit-miss", actorNode ?? undefined);
+    },
+    onResultPending(result) {
+      showFinaleStamp(result);
     },
     onResultStage(stage) {
       // 사용자가 확인키로 전부 공개했으면(revealAllResultRows) 늦게 도착한 낮은 단계가 되감지 않는다.
@@ -875,6 +895,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     }
     const fieldPresentation = {
       ledger: presentation,
+      retainDepartedEnemies: sequenceBusy,
       // 비트 재생 중에도 스냅샷의 잔류 attack/hit pose 는 걷어내고(라운드 마지막 액션
       // 기준이라 엉뚱한 배틀러가 맞은 것처럼 보인다), 지금 impact 대상에게만 hit 를 준다.
       // 시퀀스가 끝난 뒤(결과 화면 포함)에도 걷는다 — 패배 결과에서 살아남은 적이
@@ -893,7 +914,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     messageWindow.style.visibility = eventSurfaceOpen ? "hidden" : "";
     playbackStatus.hidden = eventSurfaceOpen || showingResult;
     syncPlaybackStatus();
-    syncEnemyListPanel(enemyPanel, snapshot.enemies, presentation);
+    syncEnemyListPanel(enemyPanel, snapshot.enemies, presentation, sequenceBusy);
     rebuildCommandPanelIfNeeded(snapshot);
     syncResultHost(snapshot, showingResult);
     applyBattleDirectorState(root, directorState, snapshot);
@@ -1029,6 +1050,28 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return true;
   }
 
+  /** 결과 홀드 동안 필드 한가운데 찍히는 도장. 결과 패널이 뜨면 걷는다(syncResultHost).
+   *  결과 소리·플래시는 도장과 같은 순간에 한 번 울린다 — 패널이 뜰 때까지 기다리면 막타와
+   *  팡파레 사이가 1.5초 비었다(2026-09-25 녹화). 도주는 자기 연출이 있어 도장을 찍지 않는다. */
+  function showFinaleStamp(result: NonNullable<BattleSnapshot["result"]>): void {
+    if (result === "escape" || finaleCelebrated === result) return;
+    root.querySelector(".battle-finale-stamp")?.remove();
+    const stamp = document.createElement("div");
+    stamp.className = "battle-finale-stamp";
+    stamp.dataset.testid = "battle-finale-stamp";
+    stamp.dataset.battleResult = result;
+    stamp.setAttribute("aria-hidden", "true");
+    const text = document.createElement("span");
+    text.className = "battle-finale-stamp-text";
+    text.textContent = result === "victory" ? "승리!" : "전멸…";
+    stamp.append(text);
+    field.append(stamp);
+    root.dataset.battleFinale = result;
+    finaleCelebrated = result;
+    emitBattleJuice(result === "victory" ? "victory" : "defeat", root);
+    flashBattleField(root, result === "victory" ? "victory" : "defeat");
+  }
+
   function syncResultHost(snapshot: BattleSnapshot, showResult: boolean): void {
     if (!showResult) {
       resultHost.replaceChildren();
@@ -1049,8 +1092,13 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       for (const popup of root.querySelectorAll(".battle-damage-popup")) popup.remove();
       // 결과 팡파레도 사건 1개 = 소리 1개. emitBattleJuice 가 큐를 울리므로
       // 여기서 합성 보이스를 겹쳐 부르지 않는다(예전 결함).
-      emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
-      flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
+      // 도장만 걷는다. data-battle-finale 은 전투가 닫힐 때까지 둔다 — 지우면 결과 패널이 뜨는 순간
+      // 승리 줌(1.035)과 전멸 흑백이 한 프레임에 원상으로 튀었다.
+      field.querySelector(".battle-finale-stamp")?.remove();
+      if (finaleCelebrated !== snapshot.result) {
+        emitBattleJuice(snapshot.result === "victory" ? "victory" : snapshot.result === "defeat" ? "defeat" : "escape", root);
+        flashBattleField(root, snapshot.result === "victory" ? "victory" : "defeat");
+      }
     }
     syncBattleResultPanel(panel, snapshot, resultRevealStage);
   }
@@ -1233,4 +1281,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     sequencer.runAfterEnemyAdvance(initialSnapshot, initialSnapshot);
   }
   return controller;
+}
+
+function prefersReducedMotion(): boolean {
+  return typeof window !== "undefined" && typeof window.matchMedia === "function"
+    && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }

@@ -1,8 +1,9 @@
 // editor/tools/village/houses.ts
 // 집 배치·스탬프 — 후보 슬롯 생성, 키트 시공, 보호 마스크(footprint/스탠드오프), 문·용마루 복구.
 
-import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
+import { ALL_HOUSE_KIT_IDS, HOUSE_KITS as HOUSE_KIT_DEFS, houseKitForTileset, mixableHouseKitIds, stampFootprintHouseKit, type HouseKitId, type HouseKitWindowsOption } from "@/editor/houseKit";
 import { stampAuthoredHouseForm } from "@/editor/authoredHouseFormStamp";
+import { gableAccentSeed } from "@/editor/gableHouseCompose";
 import { stampHouseDoorBackground } from "@/editor/houseInteriors";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap } from "@/project/types";
@@ -16,7 +17,6 @@ import {
   DOOR_BOTTOM_TILE,
   DOOR_TOP_TILE,
   expandRect,
-  HOUSE_KITS,
   HOUSE_MARGIN,
   pointInMap,
   rectsOverlap,
@@ -29,6 +29,8 @@ import {
   type Rect,
   type SettlementLayout,
   type VillageIntent,
+  templateFormFor,
+  templateHasFixedKit,
 } from "./constants";
 
 export function houseBlockedCells(houses: readonly BuiltHouse[], map?: GameMap): Set<string> {
@@ -187,6 +189,39 @@ export interface HouseBoulevardHint {
   readonly axis?: "both" | "ew" | "ns";
 }
 
+/** 박공 조합 형태 후보를 먼저 뽑는 확률 — morphologyPlan 의 GABLE_SHARE 와 같은 기본 분배. */
+const GABLE_CANDIDATE_SHARE = 0.6;
+
+/**
+ * 섞인 후보 목록을 박공/그 밖으로 나눠 가중 병합한다(각 목록 안의 순서는 유지). 박공 형태가 템플릿 수에
+ * 비례한 몫보다 자주 앞에 서게 해 기본 분배에서 골고루 나오게 한다(2026-09-25).
+ */
+function gableFirst(list: readonly HouseCandidate[], rng: Rng): HouseCandidate[] {
+  // 가중치가 1 보다 작은 형태(mixWeight)는 그 확률로만 제자리에 서고, 나머지는 목록 끝으로 밀린다.
+  const demoted: HouseCandidate[] = [];
+  const kept = list.filter((candidate) => {
+    const weight = candidate.template.mixWeight;
+    if (weight === undefined || weight >= 1 || rng() < weight) return true;
+    demoted.push(candidate);
+    return false;
+  });
+  return [...mergeGables(kept, rng), ...demoted];
+}
+
+function mergeGables(list: readonly HouseCandidate[], rng: Rng): HouseCandidate[] {
+  const gables = list.filter((candidate) => candidate.template.compose !== undefined);
+  const others = list.filter((candidate) => candidate.template.compose === undefined);
+  if (gables.length === 0 || others.length === 0) return [...list];
+  const out: HouseCandidate[] = [];
+  let g = 0;
+  let o = 0;
+  while (g < gables.length || o < others.length) {
+    const takeGable = o >= others.length || (g < gables.length && rng() < GABLE_CANDIDATE_SHARE);
+    out.push(takeGable ? gables[g++]! : others[o++]!);
+  }
+  return out;
+}
+
 export function buildHouses(
   map: GameMap,
   area: Rect,
@@ -205,15 +240,21 @@ export function buildHouses(
    */
   paintDoorTiles = false,
   sketchSites?: readonly VillageSketchSite[],
+  /** 이 맵 타일셋에 집 부품 칸(3060~)이 있으면 박공 형태에 굴뚝·지붕창·차양·꼭대기 장식을 0~2개 붙인다. */
+  houseParts = false,
 ): BuiltHouse[] {
   const existing = new Set(protectedHouseCells(map).map(({ x, y }) => y * map.width + x));
   const available = houseCandidates(area, plaza, target, intent.templateCatalog, intent.settlementLayout, boulevard, sketchSites);
   const candidates = [
-    ...shuffled(available.filter((candidate) => candidate.sketch === true), rng),
-    ...shuffled(available.filter((candidate) => candidate.organic && candidate.sketch !== true), rng),
-    ...shuffled(available.filter((candidate) => !candidate.organic), rng),
+    ...gableFirst(shuffled(available.filter((candidate) => candidate.sketch === true), rng), rng),
+    ...gableFirst(shuffled(available.filter((candidate) => candidate.organic && candidate.sketch !== true), rng), rng),
+    ...gableFirst(shuffled(available.filter((candidate) => !candidate.organic), rng), rng),
   ];
   const houses: BuiltHouse[] = [];
+  // 부품 씨앗 소금 — 같은 자리라도 마을 씨앗이 다르면 다른 부품이 붙게 rng 에서 한 번 뽑는다.
+  const rngSeedSalt = houseParts ? Math.floor(rng() * 0x7fffffff) : 0;
+  // 킷 믹스 후보 — 부품 칸이 있는 타일셋이면 재료 킷(초가·슬레이트·벽돌·반목조 …)까지.
+  const kitPool = mixableHouseKitIds(houseParts);
   const usedTemplateIds = new Set<string>();
   const usedKitIds = new Set<HouseKitId>();
   const candidateTemplateIds = new Set(candidates.map((candidate) => candidate.template.id));
@@ -233,21 +274,27 @@ export function buildHouses(
       const forcedTemplateId = relaxForcedTemplates ? undefined : intent.houseTemplates[houses.length];
       if (forced && candidate.template.kitId && candidate.template.kitId !== forced) continue;
       // 셀 레시피는 재료가 셀에 박혀 있다 — 재료를 하나로 고정한 마을(테마 원형·설계서)에는 그 재료의 레시피만 섞는다.
-      const form = candidate.template.form;
-      if (form && !forced && !forcedTemplateId && intent.kitMix !== "mixed" && form.kitId !== intent.kitMix) continue;
+      const fixedForm = templateHasFixedKit(candidate.template) ? candidate.template.form : undefined;
+      if (fixedForm && !forced && !forcedTemplateId && intent.kitMix !== "mixed" && fixedForm.kitId !== intent.kitMix) continue;
       if (!forcedTemplateId && target >= 4 && houses.length === 0 && hasMultiStoryCandidate && (candidate.template.stories ?? 1) === 1) continue;
       if (!forcedTemplateId && usedTemplateIds.size < requiredTemplateKinds && usedTemplateIds.has(candidate.template.id)) continue;
-      const unusedKits = HOUSE_KITS.filter((id) => !usedKitIds.has(id));
-      const mixedKitPool = usedKitIds.size < Math.min(3, target) && unusedKits.length > 0 ? unusedKits : HOUSE_KITS;
+      const unusedKits = kitPool.filter((id) => !usedKitIds.has(id));
+      const mixedKitPool = usedKitIds.size < Math.min(3, target) && unusedKits.length > 0 ? unusedKits : kitPool;
       // 템플릿 강제 킷(옥상 데크 등)이 최우선 — 지오메트리가 킷에 종속이라 다른 킷이면 시공이 깨진다.
-      const kitId = candidate.template.kitId
+      // 재료 킷은 부품 칸이 있는 타일셋에서만 — 없으면 같은 계열 기본 킷.
+      const kitId = houseKitForTileset(candidate.template.kitId
         ?? forced
         ?? (intent.kitMix === "mixed"
           ? (mixedKitPool[Math.floor(rng() * mixedKitPool.length)] as HouseKitId)
-          : intent.kitMix);
+          : intent.kitMix), houseParts);
       // housePlans[].templateId 가 있으면 그 템플릿만 허용(촌장 ㄱ자 등).
       if (forcedTemplateId && candidate.template.id !== forcedTemplateId) continue;
+      // 자동 추첨 제외 형태는 명시했을 때만.
+      if (!forcedTemplateId && candidate.template.excludeFromDefaultMix) continue;
       const stories: 1 | 2 | 3 = candidate.template.stories === 3 ? 3 : candidate.template.stories === 2 ? 2 : 1;
+      // 박공 조합 형태는 고른 킷으로 합성한다 — 고정 레시피는 그대로.
+      const form = templateFormFor(candidate.template, kitId,
+        houseParts ? gableAccentSeed(candidate.template.id, candidate.bbox.x, candidate.bbox.y, rngSeedSalt) : undefined);
       const result = form
         ? stampAuthoredHouseForm(map, form, { x: candidate.bbox.x, y: candidate.bbox.y })
         : stampFootprintHouseKit(map, {
@@ -329,6 +376,10 @@ export function buildHouses(
 
 /** 다리 판자와 동일 — 상위 O가 하위 X를 덮는 통행 오버라이드. houseVariety 가 옥상 데크 판정에 쓴다. */
 export const ROOF_DECK_PLANK = 199;
+/** 데크 뒷줄 왼쪽 모서리·앞줄 난간(기둥/살) — manor-balcony 발코니와 같은 타일. */
+const ROOF_DECK_CORNER = 198;
+const ROOF_DECK_RAIL_POST = 167;
+const ROOF_DECK_RAIL = 163;
 
 /**
  * 옥상 데크(파랑 평지붕 전용) — 지붕 몸통 안쪽에 판자(199)를 얹어 보행면으로 만들고,
@@ -340,14 +391,22 @@ export function applyRoofDeck(map: GameMap, bbox: Rect, doorAt: { readonly x: nu
   const left = bbox.x;
   const right = bbox.x + bbox.w - 1;
   const eaveY = bbox.y + bbox.h - 3 - 1; // 벽 밴드 3행(1층) 바로 위가 처마
+  const { x: ladderX } = roofDeckLadderAttachment(bbox, doorAt);
+  // 데크 = 지붕 좌우 한 칸씩 남긴 가운데(좌우 대칭). 예전에는 오른쪽만 두 칸 남기고 가장자리 없이 판자만 깔아
+  // 지붕 위에 판자가 떠 있는 것처럼 보였다(2026-09-25). 이제 발코니 문법(manor-balcony, 사용자 원작)을 따른다:
+  // 뒷줄 첫 칸 198(데크 모서리) · 판자 199 · 앞줄은 난간 167/163(통행 막힘) — 사다리 열만 판자로 비워 오르내린다.
   for (let y = bbox.y + 1; y < eaveY; y += 1) {
-    for (let x = left + 1; x <= right - 2; x += 1) {
+    const front = y === eaveY - 1 && eaveY - 1 > bbox.y + 1;
+    for (let x = left + 1; x <= right - 1; x += 1) {
       const index = y * map.width + x;
-      if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = ROOF_DECK_PLANK;
+      if (map.upperTiles[index] !== TILE.EMPTY) continue;
+      let tile = ROOF_DECK_PLANK;
+      if (front && x !== ladderX) tile = x === left + 1 || x === right - 1 || (x - left) % 2 === 1 ? ROOF_DECK_RAIL_POST : ROOF_DECK_RAIL;
+      else if (y === bbox.y + 1 && x === left + 1) tile = ROOF_DECK_CORNER;
+      map.upperTiles[index] = tile;
     }
   }
   // 사다리 기둥: 문에서 먼 쪽 벽 열, 처마→벽→지면 1칸까지 강제 설치(창문은 사다리로 대체).
-  const { x: ladderX } = roofDeckLadderAttachment(bbox, doorAt);
   for (let y = eaveY; y <= bbox.y + bbox.h; y += 1) {
     if (!pointInMap(map, { x: ladderX, y })) break;
     map.upperTiles[y * map.width + ladderX] = HOUSE_WALL_LADDER;

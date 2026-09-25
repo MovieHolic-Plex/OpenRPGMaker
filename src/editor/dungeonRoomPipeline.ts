@@ -10,7 +10,7 @@
  * 레이어: ceiling(천장 프레임) → wall(천장 하단 직선 벽) → floor(바닥 오토타일) → hazard(용암/구덩이/급류 + 판자 다리).
  */
 import { applyConnectedDungeonLayer, evaluateConnectedDungeon } from "./dungeonGeneration/connected";
-import { applyDungeonExpedition, type DungeonLandmark, type DungeonPressure } from "./dungeonGeneration/expedition";
+import { applyDungeonExpedition, applySingleRoomLandmark, type DungeonLandmark, type DungeonPressure } from "./dungeonGeneration/expedition";
 import type { DungeonDesign } from "./dungeonGeneration/topology";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { DEFAULT_TILE_SIZE, TILE } from "@/project/defaults/constants";
@@ -203,6 +203,12 @@ export function runDungeonRoomPipeline(plan: DungeonRoomPlan, project?: Project)
     warnings.push(...r.warnings);
   }
   if (project && plan.layout === "connected") warnings.push(...applyDungeonExpedition(project, map, plan));
+  else if (plan.layout !== "connected") {
+    const floorBody = THEME[plan.theme].floorBody;
+    const open = (x: number, y: number): boolean => x >= 2 && y >= 4 && x <= map.width - 3 && y <= map.height - 3
+      && map.lowerTiles[y * map.width + x] === floorBody && (map.upperTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.EMPTY;
+    warnings.push(...applySingleRoomLandmark(map, plan, open));
+  }
   return { map, log, warnings, ok: warnings.length === 0 };
 }
 

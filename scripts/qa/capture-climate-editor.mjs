@@ -10,7 +10,7 @@ Object.assign(c.maps, fields.maps);
 // Each map must show its climate's signature colour: snow white, lava, desert sand, autumn gold grass.
 const pick = [["climate-snow-frozen-mistpond", "white", 0.2], ["climate-volcano-twin-falls", "lava", 0.02], ["climate-desert-terrace-canyon", "sand", 0.2],
   ["climate-autumn-chapel-hill", "gold", 0.2], ["field-volcano-ford-cliff-road", "lava", 0.02], ["field-desert-crossroads", "sand", 0.2]];
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, args: ["--disable-background-networking", "--disable-features=NetworkChangeNotifier"] });
 try {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1050 } });
   const errors = [];

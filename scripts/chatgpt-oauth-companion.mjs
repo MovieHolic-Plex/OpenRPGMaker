@@ -36,7 +36,7 @@ const server = createServer(async (request, response) => {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": cors,
         "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, X-Oprn-Provider",
+        "Access-Control-Allow-Headers": "Content-Type, Content-Encoding, X-Oprn-Provider",
         Vary: "Origin",
       });
       return response.end();

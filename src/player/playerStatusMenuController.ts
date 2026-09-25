@@ -42,6 +42,8 @@ import {
   unequipStatusMenuItem,
   useStatusMenuItem,
 } from "@/player/playerStatusMenuMutations";
+import { fireAutoTriggers } from "@/player/playSceneMapRuntime";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
 
 export function createPlayerStatusMenuController(options: PlayerStatusMenuControllerOptions): PlayerStatusMenuController {
   let selectedCommand: StatusMenuRailId = "items";
@@ -408,6 +410,13 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (monsterInstanceId) rememberDetailCursorFromTestId(`status-menu-monster-${monsterInstanceId}`);
     const beforeVitals = readStatusMenuVitals(currentMenu());
     const result = useStatusMenuItem(scene, itemId, actorId, monsterInstanceId);
+    const usedItem = store.getCurrent().database.items.find((entry) => entry.id === itemId);
+    if (result.kind === "used" && usedItem?.type === "switch" && usedItem.switchId && scene.getSession().switches[usedItem.switchId] === true) {
+      // 메뉴가 열린 채 자동 공통 이벤트(꿈에서 깨기)가 돌면 대사가 메뉴 아래에 묻힌다.
+      options.layout.querySelector("[data-testid='main-menu']")?.remove();
+      void fireAutoTriggers(scene as unknown as PlaySceneContext);
+      return;
+    }
     if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;
     const panel = renderMenu(result.message, "items");
     if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
@@ -673,7 +682,14 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   function moveSelectedDetailAction(delta: -1 | 1): boolean {
     const actions = detailActionButtons();
-    if (mode !== "function" || actions.length === 0) return false;
+    if (mode !== "function") return false;
+    if (actions.length === 0) {
+      if (selectedCommand !== "quests") return false;
+      const list = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
+      if (!list) return false;
+      list.scrollTop += delta * Math.max(24, list.clientHeight * 0.6);
+      return true;
+    }
     setDetailCursor(wrapStatusMenuIndex(selectedDetailActionIndex + delta, actions.length));
     syncRenderedDetailCursor();
     const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");

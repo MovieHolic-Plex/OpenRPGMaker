@@ -431,6 +431,14 @@ prop-programs.json에 집별 role/activity/reason과 부품별 purpose/anchor/co
 - 창문 규칙: 집마다 한 종류(`houses[i][3]` = 85·86·87). 84 스테인드글라스는 교회, 88 깨진 창은 폐가 전용. 검사 `mixed-windows`, 랜드마크 막힘 `landmark-sealed`(22종).
 - 칩셋 라벨: 84·86·88과 성 조각(윗면21·보행로412·테두리18~20/78/80/108~110·벽면51/81·탑138~143/24/25/54/55·궁 지붕49·정문448/478·안뜰248/276~338·화살 구멍28), 깃발179/209, 덩굴265/295가 원래 라벨·설명이 비어 있었다(이슬여울 집이 쓰던 85/87만 「창문」).
   `tile-labels.json` → 번들 `forestHarmonyTileset.json`과 저작 칩셋. 기존 프로젝트는 `ensureForestHarmonyReferences`가 비어 있는 라벨(또는 설명 없는 「창문」)만 채운다.
-- 분류는 둘: `diverse-villages-trunks-v12`(52 MD·30 이미지) + `concept-villages-v3`(27 MD·3 이미지, 나무 몸통 개정). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
+- 분류는 둘: `diverse-villages-canopy-v13`(52 MD·30 이미지) + `concept-villages-v4`(27 MD·3 이미지, 수관 잎 채움 개정). 한 분류당 문서 64개 한도(`REFERENCE_LIMITS`) 때문에 나눴다.
 - 장소 카드는 `DIVERSE_VILLAGE_PLACES`(id `…-place-W×H`, `regionReferenceId`로 같은 스냅숏을 읽는다).
 - 지역 revision10, 정본 revision20 재오픈 일치. 근거 `verify-shots/village-concept/`.
+
+### 마을 채우기 개정14 · 항구 · 큰 항구 마을 (2026-09-24)
+- `fill-diverse-villages.mjs <개정13 catalog> <out> --add=<author-harbor-town.mjs 출력>`: 빈 띠 걷기(이음매 압축) → 생활 마당·현관 꽃·우물 광장 →
+  잔디 마감 제거·소 비대칭화(`lib/village-pools.mjs`)·주인 없는 소품 제거(`lib/village-ownership.mjs`)·부두 끝 나룻배/말뚝/짐(`lib/village-harbor.mjs`) →
+  외톨이 덤불 제거 → 덩이 장면(`fillNaturalGaps`: 나무·덤불숲·바위와 덤불·키큰 풀 E/F/G 덩이)으로 빈칸 게이트(5칸 정사각형 없음, 17×13 ≤40%) 통과. 규칙 `tiledata/forest-villages/diverse/fullness-rules.md`.
+- 항구 조각 `tex_harbor_kit`(LPC 나룻배 CC-BY-SA + EasyRPG 말뚝·짐 CC0, 크레딧 `public/assets/harbor-kit/CREDITS.txt`, 내보내기에 동봉). 다른 숲마을 맵은 `ensureHarborGrafts(tileset)` + `placeHarbor({map, dock, …})`.
+- 큰 항구 마을 「너울목」(`author-harbor-town.mjs`, 80×64 → 76×60): 신전·농가·장터·항구 네 구역, 강·폭포·두 다리·두 계단으로 한 바퀴. 장소·지역 모두 등록.
+- 분류 `diverse-villages-fullness-v14`(53 MD·27 이미지) + `concept-villages-v5`(36 MD·4 이미지), 지역 revision14, 정본 revision26. 기후 마을은 `climate-*-villages-v5`.

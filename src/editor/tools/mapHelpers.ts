@@ -3,6 +3,7 @@
 
 import { canMove, isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
+import { setLayerTileAt, setShadowAt, layerTileAt, type TileLayerNo } from "@/project/mapLayers";
 import type { GameMap, Project } from "@/project/types";
 import { ToolError } from "./types";
 
@@ -47,18 +48,56 @@ export function assertMapIdAvailable(project: Project, mapId: string): void {
   if (project.maps[mapId]) throw new ToolError(mapIdTakenMessage(mapId), { code: "map-exists", mapId });
 }
 
-// lower 타일 지정 + 같은 칸 upper 비움(emberQuest setLower 관례: 지면 교체 시 상단 장식 제거).
+// lower 타일 지정 + 같은 칸 위의 층을 모두 비움(emberQuest setLower 관례: 지면 교체 시 상단 장식 제거).
+// MZ 4층: 2층 바닥 장식·4층·그림자도 같은 칸에서 지운다. 옛 맵(선택 칸 없음)에는 no-op — 새 키를 만들지 않는다.
+// 선택 칸이 모두 비면 키 정리는 toolRunner 가 쓰기 도구 끝에서 compactMapLayers 로 한다.
 export function setLower(map: GameMap, x: number, y: number, tile: number): void {
   if (!inMapBounds(map, x, y)) return;
   const i = y * map.width + x;
   map.lowerTiles[i] = tile;
   map.upperTiles[i] = TILE.EMPTY;
+  setLayerTileAt(map, 2, i, TILE.EMPTY);
+  setLayerTileAt(map, 4, i, TILE.EMPTY);
+  setShadowAt(map, i, 0);
 }
 
 // upper 타일만 지정(지면 보존).
 export function setUpper(map: GameMap, x: number, y: number, tile: number): void {
   if (!inMapBounds(map, x, y)) return;
   map.upperTiles[y * map.width + x] = tile;
+}
+
+// ── MZ 4층 인자 ──
+// 모델이 보내는 층 인자는 문자열 enum 이다(Gemini 함수 선언은 정수 enum 이 불안정). lower=1층, upper=3층 별칭.
+// 층 번호와 맵 칸 이름의 대응은 @/project/mapLayers 가 정본이다.
+export const TOOL_LAYER_ENUM = ["lower", "upper", "1", "2", "3", "4"] as const;
+export type ToolLayerArg = (typeof TOOL_LAYER_ENUM)[number];
+
+/** 네 층 뜻 — 층을 받는 도구 설명이 모두 이 한 문장을 쓴다(같은 낱말로 가르친다). */
+export const FOUR_LAYER_GUIDANCE =
+  "층: 1층 바닥(물·흙·벽 자동타일), 2층 바닥 장식(1층 위에 겹치는 풀·흙 자동타일, 캐릭터 아래), "
+  + "3층 물체(나무·바위·건물, ★ 은 캐릭터 위), 4층 물체 위 물체(3층 위에 겹쳐 쌓기), 그림자(벽 아래 사분면). "
+  + "lower=1층, upper=3층. 1층을 칠하면 그 칸 2층이 지워진다(paint_tiles 1층은 기존처럼 3·4층·그림자까지 비운다).";
+
+/**
+ * 짧은 층 안내 — 층을 고르기만 하거나 층 설명이 곁가지인 도구(tile_erase·paint_shadow·fill_region·show_map_region)용.
+ * 뜻은 FOUR_LAYER_GUIDANCE 와 같다. 설명은 모든 프로젝트에 실리므로 긴 안내는 칠하기 본 도구(paint_tiles·stamp_layer_block)에만 둔다.
+ */
+export const FOUR_LAYER_GUIDANCE_SHORT =
+  "층: 1 바닥·2 바닥 장식·3 물체·4 물체 위 물체·그림자(벽 아래 사분면). lower=1층, upper=3층.";
+
+/** 층 인자 → 층 번호. 모르는 값이면 null. */
+export function parseToolLayer(value: unknown): TileLayerNo | null {
+  if (value === "lower" || value === "1") return 1;
+  if (value === "upper" || value === "3") return 3;
+  if (value === "2") return 2;
+  if (value === "4") return 4;
+  return null;
+}
+
+/** 결과 data 에 싣는 층 이름("1".."4"). */
+export function toolLayerLabel(layer: TileLayerNo): "1" | "2" | "3" | "4" {
+  return String(layer) as "1" | "2" | "3" | "4";
 }
 
 // (from~to) 직사각형을 lower 타일로 채운다.
@@ -105,9 +144,16 @@ export function floodFill(map: GameMap, start: Point, tile: number): Point[] {
   return filled;
 }
 
-export function floodFillCells(map: GameMap, start: Point, tile: number): Point[] {
+/**
+ * 시작 칸과 같은 타일로 이어진 칸(4방향). layer 기본 1층.
+ * 2층 채우기는 (1층, 2층) 쌍이 시작 칸과 같은 칸으로만 번진다 — 2층이 비어 있으면 모든 칸이 -1 이라
+ * 2층만 보면 물·벽·길까지 맵 전체가 이어진다(「이 풀밭에 풀 장식」이 맵 전체가 된다).
+ */
+export function floodFillCells(map: GameMap, start: Point, tile: number, layer: TileLayerNo = 1): Point[] {
   if (!inMapBounds(map, start.x, start.y)) return [];
-  const source = map.lowerTiles[start.y * map.width + start.x];
+  const startIndex = start.y * map.width + start.x;
+  const source = layerTileAt(map, layer, startIndex);
+  const ground = layer === 2 ? layerTileAt(map, 1, startIndex) : null;
   if (source === tile) return [];
   const filled: Point[] = [];
   const stack: Point[] = [start];
@@ -118,7 +164,9 @@ export function floodFillCells(map: GameMap, start: Point, tile: number): Point[
     if (seen.has(key)) continue;
     seen.add(key);
     if (!inMapBounds(map, point.x, point.y)) continue;
-    if (map.lowerTiles[point.y * map.width + point.x] !== source) continue;
+    const index = point.y * map.width + point.x;
+    if (layerTileAt(map, layer, index) !== source) continue;
+    if (ground !== null && layerTileAt(map, 1, index) !== ground) continue;
     filled.push(point);
     stack.push({ x: point.x + 1, y: point.y }, { x: point.x - 1, y: point.y }, { x: point.x, y: point.y + 1 }, { x: point.x, y: point.y - 1 });
   }

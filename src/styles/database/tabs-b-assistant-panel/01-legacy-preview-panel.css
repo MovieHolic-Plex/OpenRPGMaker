@@ -15,8 +15,8 @@ body:has(.right-panel) .ai-assistant-panel {
 .ai-assistant-panel.is-dragging {
   box-shadow: var(--shadow-modal);
 }
-body:has(.database-modal-backdrop) .ai-assistant-panel,
-body:has(.database-modal-backdrop) .right-panel {
+body:has(.database-modal-backdrop:not(.is-parked)) .ai-assistant-panel,
+body:has(.database-modal-backdrop:not(.is-parked)) .right-panel {
   display: none;
 }
 .ai-assistant-header {

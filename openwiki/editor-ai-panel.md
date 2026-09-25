@@ -1,6 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
 # Editor AI Panel & Tools
+
+## 도구 사용량 (2026-09-25)
+
+AI 설정의 「사용량」 탭은 이 브라우저의 실행 영수증, 대화 기록, 활동 로그에서 조수가 부른 도구를 센다.
+같은 호출이 여러 기록에 있으면 한 번만 센다. `pi:시공` 같은 역할 이름은 도구가 아니라서 빼며, 개별 도구
+(예: `web_search`)는 영수증과 대화 항목에 있을 때만 보인다. 「JSON으로 보내기」는 그 표를
+`ai-tool-usage-YYYY-MM-DD.json` 으로 내려받는다. 집계는 `src/ai/toolUsageReport.ts`, 화면은
+`src/editor/panels/aiToolUsagePanel.ts`.
 ## 새 프로젝트 게임 기획 전달 (2026-09-22)
 
 프리셋별 최대 5문항 인터뷰의 확정 기획은 `Project.gameDesignBrief`에 저장한다.
@@ -382,7 +390,7 @@ base↔초안 diff 로 굴러가던 고스트가 턴 내내 먹을 재료가 없
 
 | 조각 | 자리 | 계약 |
 | --- | --- | --- |
-| 증분 | `src/ai/piAgent/mapDelta.ts` | `diffMapsForDelta(before, after)` / `applyMapDeltas(maps, deltas)`. 순수 함수 한 쌍이라 워커·브라우저가 같은 코드를 쓴다. 손대지 않은 맵은 **같은 객체 그대로** 돌려준다(43맵 프로젝트에서 이 동일성이 곧 비용이다). |
+| 증분 | `src/ai/piAgent/mapDelta.ts` | `diffMapsForDelta(before, after)` / `applyMapDeltas(maps, deltas)`. 순수 함수 한 쌍이라 워커·브라우저가 같은 코드를 쓴다. 손대지 않은 맵은 **같은 객체 그대로** 돌려준다(43맵 프로젝트에서 이 동일성이 곧 비용이다). 층은 `lower`·`upper` + 선택 층 `layer2`·`layer4`·`shadow`(두 맵 모두 없으면 항목 없음, 사라지면 `absent:true` — [editor-ai-tools.md](editor-ai-tools.md) 「조수가 보는 네 층」). |
 | 발행 | `scripts/lib/piAgentRuntime.ts` | `tool_execution_end` 마다 섀도우와 `ctx.project.maps` 를 견줘 `map_delta` 를 낸다. 섀도우는 **한 번만** 복제하고 증분으로 따라간다 — 툴마다 다시 복제하면 호출 하나가 수십 MB 다. 순서 계약: `tool_end` → `map_delta`. 마지막 한 방울을 `done` 직전에 한 번 더 낸다. |
 | 수신 | `src/editor/panels/aiPiGhostBridge.ts` | 초안 맵을 증분 복원하고 **기존 고스트 기계를 그대로** 돌린다(`replaceAgentGhostPreviewFromProjectDiff`). 스로틀·flush·cancel 은 세션 경로와 같은 `createThrottledAgentGhostPreviewUpdater` 다. `setAgentGhostDraftMapProvider` 로 초안 맵을 공급해 렌더러가 컴포지터 경로(오토타일·밑동 합성)를 쓴다 — 없으면 셀이 단색 사각형이 된다. |
 | 배선 | `src/editor/panels/aiPiAgentCommand.ts` | 다리는 실행당 **하나**이고 이벤트 래퍼가 전부 그곳을 지난다 — 단일·병렬·팀이 같은 길이다(팀은 `agent_event` 한 겹만 벗긴다). 병렬·팀에서 에이전트마다 소유한 맵이 달라 증분은 그대로 겹쳐 쌓인다. |
@@ -586,6 +594,22 @@ import 하므로 베어 경로는 **다른 인스턴스**가 된다(실측: 게�
   팀 토글, 적용·되돌리기·버리기, 초보/전문가 모드의 1024×768·1280×800·1440×900 비교·버튼 가시성을 검증한다.
   증거 `output/evidence/ai-routine-edit/compact-<width>-<mode>.png`. 모델 전송은 모킹한다.
   단위 회귀는 `test/piAgentTeamBoardRender.test.ts`와 기존 Pi 실행/컴포저 테스트.
+
+## 바로 깔기 (2026-09-25)
+
+컴포저 왼쪽 `바로 깔기` 토글(`ai-stamp-place`, `aria-pressed`, `localStorage` `oprn:ai-stamp-place`). 켜면 계획 턴·승인·Pi 세션 없이 곧바로 깐다.
+**의도 읽기와 일꾼은 모델이 주도한다**(사용자 판단, 2026-09-25 — 정규식만으로는 「땅으로」가 재료 이름이 되어 실패했고,
+「땅을 동그랗게, 물을 동그랗게 옆에 나무」처럼 나눠 말하면 알아듣지 못했다).
+
+- `src/editor/stampPlaceRunner.ts` `runStampPlace({text, mapId, selection, signal, onPhase})` — 가벼운 모델(`configForLiteModel`, 추론 끔, JSON) 한 번으로
+  문장을 **여러 단계**(`fill_region`·`place_props`·`paint_road`·`tile_erase`·`build_wall`·`place_door`·`author_house`)로 나눈다. 대상 사각형(선택 또는 맵 전체)을
+  부분 사각형으로 쪼개고, 재료는 **현재 타일셋의 실제 라벨**(`fillableMaterialSuggestions`·`formatMaterialLabelHint`·벽/문 후보) 중에서 고른다. 원은 정사각 상자.
+- 단계는 `applyToolSequenceToStore(..., {continueOnError:true})` 로 한 undo 체크포인트에 적용한다 — 한 단계가 실패해도 나머지는 깔린다.
+  실패한 단계만 도구 오류(가까운 라벨 제안 포함)와 함께 **한 번** 되물어 대체 단계를 받는다(최대 모델 호출 2회).
+- 순수 계획·검증은 `src/ai/stampPlanner.ts`: 허용 도구만, 좌표는 대상 안으로 자르고, 키는 허용 목록만 옮긴다. 단계 상한 8.
+- 빈 문장(=숲), AI 미연결, 모델 실패·시간 초과(20s)면 옛 낱말 규칙 `planStampPlace`(`src/ai/stampPlace.ts`)로 떨어지고 그 사실을 한 줄로 말한다.
+- 실측(워크트리 dev, Google 연결): 「왼쪽에 땅을 동그랗게, 가운데 물을 동그랗게, 오른쪽 옆에 나무」 12s·3단계 성공, 「땅으로 깔아줘」 → 흙길 오토타일 채움.
+  증거 `verify-shots/stamp-llm/`.
 
 ## 단순 생성·수정은 계획 필요 여부로 실행한다 (2026-09-18 갱신)
 
@@ -2089,7 +2113,7 @@ AI chat panel, proposals, region tasks, tool exposure, soft-confirm vocabulary, 
 ## 패널 셸 · 도크 · 접기 · 컴포저
 
 - **데크 위치 이동 — 레일 드래그로 아무 데나 놓는다 (2026-09-12):** 데크 상단 레일(`.ai-deck-rail`)의 비상호작용 표면(who·state·spacer·레일 자체)을 잡아 끌면 데크가 포인터를 따라오고, 놓으면 `oprn:ai-deck-pos`(`aiPanelLayout.ts` 의 `loadDeckPosition`/`saveDeckPosition`/`clearDeckPosition`)에 `{ right, bottom }`(호스트 우·하 변 → 데크 우·하 변, px)으로 저장된다. 소유자는 `aiDeckMoveChrome.ts` — `aiChatResizeChrome` 과 같은 이유로 대화·런 상태를 읽지 않고 표면 셋(패널·데크·레일)과 "지금 움직여도 되는가" 게터 하나만 받는다. 계약:
-  - **right/bottom 앵커**다 — 데크 기본이 우하단(`--ai-deck-inset`)이라 사용자 위치도 같은 축으로 저장한다. left/top 이면 내용이 자랄 때 아래로 잘린다. 변수 `--ai-deck-right`/`--ai-deck-bottom` 은 **패널**에 심고, 데크(`18-assistant-deck.css`)와 접힘 알약(`02-chat-dock.css` 의 `is-collapsed` inset)이 같이 읽는다 — 접으면 알약이 데크의 우하 모서리 자리에 선다.
+  - **right/bottom 앵커**다 — 저장한 사용자 위치만 이 축이다. 저장값이 없으면 데크와 접힘 알약은 왼쪽 아래(`left` + `bottom` = `--ai-deck-inset`)다. 끌어 두면 패널에 `has-custom-deck-pos` 와 `--ai-deck-right`/`--ai-deck-bottom` 을 심고, 더블클릭은 그 클래스를 지워 왼쪽 아래로 되돌린다. left/top 이면 내용이 자랄 때 아래로 잘리므로 세로 축은 항상 bottom 이다.
   - **클램프 기준은 호스트(`.ai-chat-float-host`, 항상 `inset:0`)다 — 패널이 아니다.** 접히면 패널 자신이 알약 상자(약 72×44)로 줄어, 그 사각형으로 자르면 저장 위치가 가장자리 여백(4px)으로 뭉개져 알약이 우하단으로 도망간다(2026-09-12 실측 회귀, `test/aiDeckMove.test.ts` 「접혀서 패널이 알약 크기로 줄어도」). 접힌 동안 호스트가 줄어도 패널(알약) 크기는 그대로라 ResizeObserver 가 안 울린다 — 창 `resize` 를 따로 듣는다. 선호값(`position`)은 자르지 않고 심는 값만 자른다 — 창이 다시 커지면 원래 자리로 돌아간다(리사이즈의 barSize 와 같은 계약).
   - **클릭과 드래그를 가른다 (2026-09-14 보강)** — 시작점이 `button a input select textarea summary [contenteditable]`·`.ai-deck-rail-actions`·`.ai-composer-popover` 안이면 시작하지 않고, 축별 최대 이동이 `DRAG_START_THRESHOLD_PX`(3px)를 넘어야 드래그다. 실측 결함: 1px 만 흔든 클릭이 `{"right":15,"bottom":15}` 를 저장해 데크를 그 자리에 굳혔다(`is-dragging`·grabbing 커서도 그때 번쩍였다). 더블클릭은 저장 위치를 지워 기본 우하단으로 되돌린다 — 되돌리는 유일한 출구다. `title` 힌트는 who/state/spacer 표면에만 달고 **지금 끌 수 있을 때만** 문구를 넣는다(빈 title = 툴팁 없음) — 레일 자체에 달면 아래 붙은 팝오버 항목 위에서도 떠서 열린 메뉴를 훼방한다. 상태는 hover(`pointerenter`) 시점에 다시 읽는다.
   - **릴리스 하나로 끝난다 (2026-09-14 보강)** — `pointerup`·`pointercancel`·`blur`·버튼이 풀린(`buttons === 0`) `pointermove` 가 같은 몸(`onUp`)을 쓴다. 창 밖에서 버튼을 놓으면(Alt-Tab·창 밖 릴리스) `pointerup` 이 오지 않아 `is-dragging`(폭 transition 해제·텍스트 선택 차단)과 grabbing 커서가 남고 **눈에 보이던 이동이 저장되지 않아** 새로고침에서 되돌아갔다(2026-09-14 실측: blur 뒤 `is-dragging true`·`body cursor grabbing`·저장값은 이전 그대로). 같은 부류의 선례가 캔버스 `pointerupoutside`(`EditScene.endPointerGesture`, 2026-08-30)다.
@@ -2976,10 +3000,71 @@ validateVillageContract → applyProposedProject`로 처리한다. 의도 선언
 
 작업 표시 수준(생략/간단히/자세히/매우 자세히)은 실행 기록 문구만 바꾼다. 맵 위의 실시간 시공(고스트 타일, 청사진, 카메라 따라가기, 공개가 끝날 때까지의 대기)은 그와 별개로 끌 수 있다.
 
-- 스위치는 작업 표시 버튼 옆의 맵 아이콘이다(`data-testid=ai-live-canvas`). 켜짐이 기본이고 `localStorage["oprn:ai-live-canvas"]` 가 `off` 이면 헤드리스다.
+- 스위치는 작업 표시 안의 「맵에 시공 보이기」다(`data-testid=ai-live-canvas`). 꺼짐이 기본이다. `localStorage["oprn:ai-live-canvas"]` 가 `on` 일 때만 맵 위 실시간 시공을 그린다.
+- 화면 무게는 AI 설정 「표시」의 `ai-render-weight`다. 기본 `light`는 조수 창·접힘 알약·작업 띠·맵 칩의 `backdrop-filter`를 끈다. `heavy`만 20px 유리 블러를 쓴다. `off`는 블러를 끄고 판을 불투명하게 한다. 저장 키는 `oprn:ai-render-weight`, 적용은 `documentElement.dataset.aiRender`.
+- 입력줄 모델명 옆에 이 대화의 사용량이 `N턴 · N토큰`으로 붙는다(`ai-composer-spend`). Pi 실행의 `done.stats`(계획 턴 포함)를 대화가 바뀔 때까지 더한다. 토큰은 `usage.totalTokens`(입력·출력·캐시)다. 0이면 숨긴다.
 - 헤드리스에서도 도구 실행, 증분으로 복원한 초안, 검토, 적용은 그대로다. `replaceAgentGhostPreviewFromProjectDiff` 를 쓰는 경로(Pi, 레인, 세션, 영역 작업)는 꺼져 있는 동안 맵 비교를 하지 않고, 켜기 직전에 쌓인 프리뷰는 비운다. Pi 는 다시 켜는 순간 현재 초안을 한 번 그린다. 그 외 경로는 다음 변경에서 그린다. 공개 애니메이션만큼 체크포인트를 기다리지 않는다.
 - 켜 둔 상태의 렉: 손대지 않은 맵은 객체 동일성으로 비교를 건너뛴다. 라이브 프리뷰 id 에 셀 전체를 문자열로 넣지 않는다. 스프라이트는 카메라 주변만 만들고, 이미 내려앉은 칸은 프레임마다 다시 움직이지 않는다. 상태 칩은 문구가 바뀔 때만 배치를 다시 잰다.
 
 ## 조수 적용은 바뀐 칸만 다시 그린다 (2026-09-22)
 
 실시간 적용(DEFAULT/AUTO/YOLO)은 쓰기 도구마다 `store.replace`를 한다. 알림에 칸 목록이 있으면 `redrawCells`가 그 칸과 이벤트 마커만 고친다. 맵 크기·타일셋·맵 추가/삭제·맵 밖 참조가 바뀌거나 칸이 2048개를 넘으면 예전처럼 전체를 다시 그린다. 공개 애니메이션은 체크포인트를 기다리지 않는다. 체크포인트 줄은 타일셋·데이터베이스 참조가 그대로면 그 둘을 빼고, 브라우저와 ACK가 직전 객체를 다시 붙인다. 맵 비교는 타일 배열을 문자열로 만들지 않고 칸 값으로 한다.
+
+## 큰 프로젝트의 Pi 요청 전송 (2026-09-24)
+
+`src/ai/piAgent/requestBody.ts`는 1Mi 문자 이상인 요청을 gzip으로 전송한다. `/v1/agent/run`뿐 아니라 적용 ACK `/v1/agent/checkpoint`도 같은 경로를 사용한다. 프로젝트/공용 타일 참고 이미지/이벤트를 제거하지 않는다. 작은 요청과 CompressionStream 미지원 환경은 기존 JSON을 사용하며, 후자는 큰 문서에서 기존 한도 오류를 받을 수 있다.
+
+수신 `scripts/lib/companionHttpUtil.mjs`는 wire64MiB 제한을 유지하고 gzip 복원은 별도256MiB 상한으로 제한한다. 기존 identity JSON은 계속64MiB다. 손상 gzip/미지원 encoding은 거절한다. 동반 서비스 두 진입점의 CORS는 Content-Encoding을 허용한다. 서버 gzip 수신 지원을 먼저 배포한 뒤 renderer를 갱신한다. 새 renderer만 배포하면 기존 서버는 gzip을 JSON으로 읽을 수 없다.
+
+실측: 새솔 정본507을 포함한 요청83,468,214bytes →34,820,901bytes, 복원 객체 전체 일치. 저장 브리지의128MiB 제한과는 별개다. 루트 필드별 용량에서 tilesets 약73MB가 대부분이었다. 압축 지원은 제작 완료나 LLM 자체 컨텍스트 제한 해결을 의미하지 않는다.
+
+## 대형 프로젝트의 AI 적용 기준선 메모리 (2026-09-24)
+
+약119MB 프로젝트를 /pi로 편집할 때 렌더러가 V8 OOM으로 종료됐다.
+`AuthoredProjectBaseline`의 authored/complete와 `ProposalBase`의 content/world는
+전체 정렬 JSON 대신 SHA-256만 장기 보관한다. 비교할 때 같은 canonical JSON을
+다시 계산하고 해시하므로 객체 제자리 수정도 검사하며, world/wiki 예외와
+세대·lineage 검사는 기존대로 유지한다. 세대 기반으로 stale 검사를 생략하지 않는다.
+이 변경은 보관 메모리를 줄인다. 직렬화·해시의 동기 실행 비용은 아래 2026-09-25 절에서 줄였다.
+회귀 사례: `test/authoredProjectBaseline.test.ts`의 큰 Unicode 문서 끝부분 변경과
+기준선 크기 제한. 이번 세션에서는 사용자 규칙에 따라 테스트/게이트를 실행하지 않았다.
+
+## 체크포인트 적용 권위는 노드 요약으로 비교한다 (2026-09-25)
+
+증상: 팀 호스트(`http://mdc-server:9888`)에서 조수를 쓰면 편집기가 심하게 버벅였다. 26MB 프로젝트(타일셋 25MB, 그중 참고문서 약 19MB)에서
+쓰기 체크포인트 하나마다 메인 스레드가 약 10초 멈췄다(VM의 headless Chromium, `/tmp` 대본 워커로 체크포인트 3회 CPU 프로파일).
+원인은 에이전트가 타일셋을 건드리지 않아도 적용 권위(`captureApplyAuthority`·`isProposalBaseCurrent`·`AuthoredProjectBaseline.matches`)가
+프로젝트 전체를 정렬 직렬화 2회, SHA-256 5회 돌린 것이다. HTTP 서빙은 secure context 가 아니라 `crypto.subtle` 도 쓸 수 없다.
+
+- `src/project/persistence/core/contentDigest.ts` 의 `jsonContentDigest` 는 `canonicalJsonOf` 와 같은 동일성(키 순서 무시)을 노드 요약(머클 방식)으로 낸다.
+  객체·배열마다 (키, 원시값, 자식 토큰) → 토큰 기록을 `WeakMap` 에 두고, **부를 때마다 모든 노드를 현재 값과 대조**한 뒤에만 재사용한다.
+  세대에 묶지 않으므로 사람의 제자리 수정도 잡는다. 256자 이하 노드는 해시하지 않고 글을 그대로 토큰으로 쓴다. 기억은 자식 객체를 붙잡지 않는다.
+- `projectIdentityDigest(project, "proposal" | "authored" | "complete")` 가 적용 권위·초안 기준선의 비교값이다. 이 요약은 정렬 JSON 문자열의 해시와 **다른 값**이다 — 섞어 비교하지 않는다.
+  `composeProjectIdentity`·`contentIdentity`·`authoredIdentity`(문자열)는 다른 호출부를 위해 남아 있다.
+- 스토어의 적용 복제(`eventDraftVault` 의 `projectWithLiveDrafts`·`applyEventDraftVault`)는 `cloneProjectSharingReferenceDocuments` 로 참고문서를 공유하고,
+  `shareContentDigests(원본, 복제)` 로 기억을 넘긴다. 기억은 스스로를 설명하는 기록이라 틀린 짝이나 낡은 원본에 붙어도 대조에서 떨어져 다시 계산될 뿐이다.
+- `sha256HexTextSync` 폴백은 Int32Array 로 블록을 누적하고 64Ki 문자 창 단위로 `encodeInto` 한다(26MB 문자열 전체 인코딩 없음, 서로게이트 쌍은 창 경계에서 쪼개지 않는다).
+- 커밋 기록은 직렬화 문자열을 미리 만들지 않는다(electron 저장소는 쓰지 않고, 메모리 저장소는 없으면 스스로 만든다). 수동 커밋 dedup 은 `lastManualDigest`(저장 형식 보기의 요약)로 비교한다.
+
+실측(같은 VM·같은 대본, 체크포인트 3회): 체크포인트당 긴 작업 10.8/10.1/10.3초 → 2.7/1.8/2.4초, 실행 중 긴 작업 합계 40.5초 → 10.8초.
+실행 시작 때 첫 기준선 요약(캐시 없음)은 약 1.1초다. 남은 체크포인트 비용은 `projectLint.checkRoundtrip`(serialize+deserialize), 되돌리기 스냅샷 서명,
+스토어 복제, 타일 팔레트 다시 그리기에 흩어져 있다. 테스트: `test/contentDigest.test.ts`, `test/sha256.test.ts`(창 경계) — 이번 세션에서는 사용자 규칙에 따라 실행하지 않았고,
+동등성·제자리 수정·기억 넘기기는 실제 26MB 프로젝트로 임시 스크립트에서 확인했다.
+
+## 우클릭 드래그 바 → 채팅 한 경로 («영역 작업» 창 폐기, 2026-09-25)
+
+우클릭 드래그로 뜨는 선택 바(`selectionActionChips.ts`)에 문장을 치고 Enter 를 누르면 **그 문장이 곧바로 조수 채팅 턴**이 된다.
+예전에는 같은 문장이 든 「영역 작업」 창(`regionTaskModal`)이 한 번 더 떠서 실행을 다시 눌러야 했고, 그 창은 채팅과 다른 파이프라인
+(하드 클립·고스트 미리보기·승인)이라 진행·중단·기록이 둘로 갈렸다. 사용자 판단으로 그 창을 제품 입구에서 뺐다.
+
+- 입구는 전부 `src/editor/aiRegionHandoff.ts` 를 지난다: 드래그 바, 선택 영역 우클릭 메뉴(`✦ 이 영역에 AI 지시…`), 검사 패널의 「AI로 고치기」,
+  캔버스 AI 버튼(만들기·다듬기·묻기), 건축 팔레트 AI. 옛 `openRegionTaskModal(options)` 모양은 `openRegionInAssistant` 가 그대로 받아
+  `oprn:ai-region-handoff` 이벤트로 바꾼다(`autoRun:false` 면 입력줄에 담기만 한다).
+- 채팅(`aiChatPanel.ts` `handleRegionHandoff`)은 선택을 그 영역으로 맞추고 선택 칩을 켠 뒤 `send()` 를 부른다. 선택 영역도 이제
+  **Pi 턴**이다 — 범위는 `resolveTurnScope` 가 붙인다. `send()` 의 `sendSelectionRegionTask` 분기와 `aiRegionTaskRunner` 배선은 뺐다.
+- 바의 번개 버튼(`selection-chip-stamp`)이 바로 깔기 토글이다. 값은 `src/editor/stampPlaceMode.ts` 하나를 조수 입력줄 토글과 **공유**한다
+  (`oprn:ai-stamp-place`) — 어느 쪽에서 켜도 양쪽이 같이 선다. 켜진 채 Enter 면 `stamp:true` 로 넘어가 채팅의 바로 깔기가 돈다(빈 입력 = 숲).
+- 다듬기 칩은 `POLISH_INSTRUCTION` 을 일반 채팅 턴으로 보낸다(바로 깔기와 무관).
+- 남은 것: `regionTaskModal.ts` 와 `regionTask/*` UI 조각은 e2e 브리지(`editorToolHook` `openModal`)만 쓴다 — 삭제는 후속.
+  `test/aiActivityLiveRow` 는 옛 영역 경로로 라이브 행을 몰았으므로 격리했다(Pi 경로로 다시 써야 한다).
+- 증거: `verify-shots/drag-toolbar-handoff/` (02: Enter 뒤 창 0개·채팅 말풍선, 06: 바로 깔기로 숲이 바로 깔림).

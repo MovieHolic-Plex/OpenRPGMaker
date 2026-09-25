@@ -37,6 +37,10 @@ const ACTIONS = {
   paint: forms("타일을 칠하는 중", "타일을 칠했어요", "타일 칠하기를 실패했어요"),
   fill: forms("영역을 채우는 중", "영역을 채웠어요", "영역 채우기를 실패했어요"),
   erase: forms("영역을 지우는 중", "영역을 지웠어요", "영역 지우기를 실패했어요"),
+  // 파괴 규모가 큰 툴은 「영역」「정리」「조정」 같은 부드러운 말로 숨기지 않는다.
+  wipeMap: forms("맵 전체를 지우는 중", "맵 전체를 지웠어요", "맵 전체 지우기를 실패했어요"),
+  resetProject: forms("프로젝트를 초기화하는 중", "프로젝트를 초기화했어요", "프로젝트 초기화를 실패했어요"),
+  deleteResource: forms("리소스를 지우는 중", "리소스를 지웠어요", "리소스 지우기를 실패했어요"),
   scatter: forms("오브젝트를 흩어 놓는 중", "오브젝트를 흩어 놓았어요", "오브젝트 배치를 실패했어요"),
   structure: forms("구조물을 만드는 중", "구조물을 만들었어요", "구조물 만들기를 실패했어요"),
   house: forms("집을 만드는 중", "집을 만들었어요", "집 만들기를 실패했어요"),
@@ -64,6 +68,7 @@ const ACTIONS = {
   export: forms("내보내기 준비를 점검하는 중", "내보낼 준비를 점검했어요", "내보내기 점검을 마치지 못했어요"),
   play: forms("게임을 시험하는 중", "게임을 시험했어요", "게임 시험을 실패했어요"),
   history: forms("편집 내용을 되돌리는 중", "편집 내용을 되돌렸어요", "편집 내용 되돌리기를 실패했어요"),
+  askTileset: forms("타일 느낌을 바꿔도 될지 묻는 중", "타일 느낌을 바꿔도 될지 물었어요", "타일 느낌 변경을 묻지 못했어요"),
   focusView: forms("화면을 옮기는 중", "화면을 옮겼어요", "화면을 옮기지 못했어요"),
   opening: forms("오프닝을 만드는 중", "오프닝을 만들었어요", "오프닝 만들기를 실패했어요"),
   removeOpening: forms("오프닝을 지우는 중", "오프닝을 지웠어요", "오프닝 지우기를 실패했어요"),
@@ -102,10 +107,12 @@ function addFamily(action: ActionForms, names: string): void {
 
 addFamily(ACTIONS.road, "paint_road lay_path");
 addFamily(ACTIONS.paint, "paint_tiles set_tile_grafts set_tile_metadata set_tile_rules set_group_overlay set_group_junction set_animation_strips");
-addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region");
-addFamily(ACTIONS.erase, "tile_erase clear_region clear_map");
+addFamily(ACTIONS.fill, "fill_region arrange_rows mirror_region copy_map_region import_region_reference");
+addFamily(ACTIONS.erase, "tile_erase clear_region");
+addFamily(ACTIONS.wipeMap, "clear_map");
+addFamily(ACTIONS.resetProject, "reset_project");
 addFamily(ACTIONS.scatter, "scatter_object plant_tree_clusters place_props");
-addFamily(ACTIONS.structure, "stamp_structure build_wall build_roof place_door place_window build_castle register_structure_kit");
+addFamily(ACTIONS.structure, "stamp_structure stamp_object build_wall build_roof place_door place_window build_castle register_structure_kit");
 addFamily(ACTIONS.house, "author_house build_house preview_house furnish_interior_space make_gallery_room place_concept apply_spatial_build upsert_spatial_design edit_spatial_occurrence");
 addFamily(ACTIONS.village, "author_village build_village plan_village materialize_village_spec revise_village_plan run_village_pipeline start_village_session advance_village_build run_village_session");
 addFamily(ACTIONS.person, "place_npc make_villager author_npc_cast upsert_actor upsert_character_profile add_companion set_npc_schedule configure_companion_rules");
@@ -116,20 +123,22 @@ addFamily(ACTIONS.deleteDatabase, "delete_database_record delete_craft_recipe de
 addFamily(ACTIONS.createMap, "create_map duplicate_map generate_map");
 addFamily(ACTIONS.resizeMap, "resize_map");
 addFamily(ACTIONS.deleteMap, "remove_map");
-addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps adopt_layout_regions create_map_location delete_map_location update_map_location resolve_map_location");
+addFamily(ACTIONS.editMap, "manage_map_tree set_map_properties shift_map set_start_position set_tile_passability set_encounter_table author_wild_route arrange_tall_grass create_farm_plot make_hunting_ground remove_field_spawn configure_roguelike_room upsert_map_connection delete_map_connection link_maps adopt_layout_regions create_map_location delete_map_location update_map_location resolve_map_location");
 addFamily(ACTIONS.validate, "lint_world lint_quest run_lint verify_quest evaluate_game_quality evaluate_dungeon_room evaluate_interior_room evaluate_village_layer evaluate_village_look critique_village");
 addFamily(ACTIONS.document, "present_doc upsert_village_document delete_village_document generate_walkthrough");
 addFamily(ACTIONS.plan, "plan_world propose_tile_vocabulary");
 addFamily(ACTIONS.quest, "create_quest create_quest_flags define_quest declare_story_flag define_ending");
-addFamily(ACTIONS.story, "author_story_arc make_horror_loop script_cutscene script_cutscene_preset");
+addFamily(ACTIONS.story, "author_story_arc make_horror_loop set_life_flower script_cutscene script_cutscene_preset");
 addFamily(ACTIONS.battle, "set_action_combat make_action_enemy set_factions simulate_battle tune_enemy author_boss_phases");
 addFamily(ACTIONS.world, "build_world link_maps author_world_bridge author_world_mountain");
-addFamily(ACTIONS.resource, "upsert_resource delete_resource upsert_resource_profile delete_resource_profile create_tileset set_tileset_properties upsert_autotile_group delete_autotile_group upsert_palette_preset upsert_tile_group delete_tile_group set_audio_description");
+addFamily(ACTIONS.deleteResource, "delete_resource delete_resource_profile delete_autotile_group delete_tile_group");
+addFamily(ACTIONS.resource, "upsert_resource upsert_resource_profile create_tileset set_tileset_properties upsert_autotile_group upsert_palette_preset upsert_tile_group set_audio_description");
 addFamily(ACTIONS.appearance, "generate_character_appearance");
 addFamily(ACTIONS.export, "export_game check_export_readiness");
 addFamily(ACTIONS.play, "play_walkthrough run_scene_test run_action_combat_test");
 addFamily(ACTIONS.history, "revert_last_edit");
 addFamily(ACTIONS.focusView, "focus_editor_view");
+addFamily(ACTIONS.askTileset, "ask_tileset_change");
 addFamily(ACTIONS.opening, "set_opening edit_opening");
 addFamily(ACTIONS.openingImage, "generate_opening_image");
 addFamily(ACTIONS.removeOpening, "remove_opening");

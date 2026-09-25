@@ -189,3 +189,19 @@
   overflow: hidden;
   width: auto;
 }
+
+/* 대화창 그릇 견본(말풍선·흘림) — 머리 위에 붙을 인물 자리표시. 16×24 논리 픽셀, 화면 아래 띠 안. */
+.ecp-runtime-viewport .ecp-container-actor {
+  background: linear-gradient(180deg, rgb(244 206 160) 0 38%, rgb(84 120 196) 38% 100%);
+  border: 1px solid rgb(20 24 36);
+  border-radius: 6px 6px 2px 2px;
+  height: 24px;
+  left: 142px;
+  position: absolute;
+  top: 206px;
+  width: 16px;
+}
+
+.ecp-runtime-viewport .dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon {
+  min-height: 0;
+}

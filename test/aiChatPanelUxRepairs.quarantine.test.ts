@@ -467,13 +467,13 @@ describe("키 온보딩과 설정 접근성", () => {
 });
 
 describe("현재 맵 칩", () => {
-  it("스토어에서 현재 맵 이름이 바뀌면 컨텍스트 칩도 즉시 갱신된다", () => {
+  it("입력줄에 현재 맵 이름 배지를 두지 않는다", () => {
     const panel = renderPanel();
     const mapId = store.getCurrent().startMapId;
     store.update((draft) => {
       draft.maps[mapId].name = "숲 속 작은 마을";
     });
 
-    expect(findByTestId(panel, "ai-context-chips")?.textContent).toContain("숲 속 작은 마을");
+    expect(findByTestId(panel, "ai-context-chips")?.textContent ?? "").not.toContain("숲 속 작은 마을");
   });
 });

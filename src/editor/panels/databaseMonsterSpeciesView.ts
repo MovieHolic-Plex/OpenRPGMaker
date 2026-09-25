@@ -1094,13 +1094,13 @@ function evolutionsCard(record: MonsterSpeciesRecord, rerender: () => void): HTM
         el("p", {
           class: "db-field-hint db-monster-species-evolution-cycle-warn",
           dataset: { testid: "db-monster-species-evolution-cycle-warn" },
-          text: `진화 그래프에 사이클이 있습니다: ${cycleIds.join(" → ")} — 레벨업마다 종족이 왕복합니다.`,
+          text: `진화 그래프에 사이클이 있습니다(관련 종: ${cycleIds.join(", ")}) — 이대로면 프로젝트를 다시 열 때 거절됩니다. 사이클을 끊어 주세요.`,
         }),
       ]
     : [];
   return sectionCard({
     title: "진화",
-    hint: "입력한 조건은 모두 충족해야 합니다. 여러 진화가 가능하면 위의 규칙부터 적용됩니다. 0/없음은 조건을 사용하지 않습니다.",
+    hint: "입력한 조건은 모두 충족해야 합니다. 여러 진화가 가능하면 대상 종 ID 순서(저장 순서)로 먼저 맞는 규칙이 적용됩니다. 0/없음은 조건을 사용하지 않습니다 — 조건이 하나도 없으면 다음 레벨업에 바로 진화합니다.",
     children: [
       el("div", {
         class: "db-monster-species-evo-list",

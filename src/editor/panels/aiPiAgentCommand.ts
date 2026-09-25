@@ -25,8 +25,10 @@ import { deriveRunOutcome } from "@/ai/runOutcome";
 import type { RunOutcome, RunOutcomeFacts } from "@/ai/runOutcome";
 import { startPiRunLog, type PiRunContext, type PiRunFacts } from "@/ai/piAgent/activityLog";
 import type { AuditEntry } from "@/ai/session/types";
+import type { TilesetChangeQuestion } from "@/editor/tools/tilesetChangeTools";
+import { tilesetQuestionFromEvent } from "./aiTilesetChangeCard";
 import { mergeMapBundles } from "@/ai/piAgent/mapBundle";
-import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
+import { changedProjectKeys, type PiAgentDoneEvent, type PiAgentEvent, type PiAgentMode, type PiAgentStats, type PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import {
   createTeamBoardState,
   markTeamBoardAborted,
@@ -50,12 +52,26 @@ import { adoptSpatialToolProof, authorMergedSpatialProposal, exportSpatialToolPr
 import { summarizeChanges } from "@/editor/tools/changeset";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
+import { reachableMapIdsFromStart } from "@/project/mapInspection";
 import { changedAreaLabels } from "@/project/changeAreas";
 import { computeChangeSites } from "@/project/changeSites";
 import { buildChangeLedger, type ChangeLedger } from "@/project/changeLedger";
 import { createTeamBoard } from "./aiTeamBoard";
 import { currentTeamActivity, publishTeamActivity, setTeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { loadTeamSpec } from "@/ai/piAgent/teamSpecStore";
+
+/**
+ * 이번 실행이 만들거나 고친 맵 가운데 시작 맵에서 문으로 닿지 않는 것 — 만든 것이 플레이에 안 나온다.
+ * 2026-09-24 연애 4회차: 집 12채·주민 14명 마을(과 실내 14장)이 시작 맵 이동 뒤 고아로 남았는데 보고는 「완료」였다.
+ */
+function unreachableWorkIssues(base: Project, after: Project): string[] {
+  const reachable = reachableMapIdsFromStart(after);
+  const orphans = Object.values(after.maps).filter((map) => !reachable.has(map.id) && (map.events?.length ?? 0) > 0
+    && base.maps[map.id] !== map);
+  if (orphans.length === 0) return [];
+  const names = orphans.slice(0, 3).map((map) => `'${map.name}'`).join(", ");
+  return [`시작 맵에서 문으로 갈 수 없는 맵 ${orphans.length}개: ${names}${orphans.length > 3 ? " 외" : ""} — 이어 주지 않으면 거기 만든 것이 플레이에 나오지 않아요.`];
+}
 
 export const PI_COMMAND_PREFIX = "/pi";
 export const TEAM_COMMAND_PREFIX = "/team";
@@ -183,6 +199,10 @@ export interface PiCommandSurface {
   readonly onReviewResolved?: (applied: boolean) => void;
   readonly setStatus: (text: string) => void;
   readonly getCurrentMapId: () => string | null;
+  /** 사용자가 이 대화에서 승인한 칩셋 계열(질문 카드 「이 타일로 바꿔도 좋아요」). 요청의 approvedTilesetFamilies 로 간다. */
+  readonly getApprovedTilesetFamilies?: () => readonly string[];
+  /** 조수가 ask_tileset_change 로 칩셋 계열 변경을 물었다. 패널은 턴이 끝난 뒤 질문 카드를 띄운다. */
+  readonly onTilesetChangeQuestion?: (question: TilesetChangeQuestion) => void;
   /** 중단 시 미승인 변경을 폐기한다. 실시간·단계별 모드에서 이미 적용한 작업은 남는다. */
   readonly signal?: AbortSignal;
   /**
@@ -200,6 +220,8 @@ export interface PiCommandSurface {
    * QA 스펙들이 툴 호출을 0으로 봤다(2026-09-16 실측). 행을 만드는 자리는 활동 로그 하나다.
    */
   readonly onRunAudit?: (rows: readonly AuditEntry[]) => void;
+  /** 이번 실행이 쓴 턴·토큰. 패널이 대화 합계로 쌓아 입력줄에 짧게 보여 준다. */
+  readonly onSpend?: (spend: { readonly turns: number; readonly tokens: number }) => void;
 }
 
 export async function runPiCommand(
@@ -235,7 +257,11 @@ export async function runPiCommand(
   const mergedFromBundles = mergesMapBundles({ team, mapIds: command.mapIds, scopedByUser: command.scopedByUser === true, groupCount: groups.length });
   // 사용자가 보고 있는 맵 — 팀장의 「여기」. 명령이 못 실었으면(옛 호출자) 패널의 현재 맵으로 채운다.
   const currentMapId = command.currentMapId ?? surface.getCurrentMapId();
-  const here = currentMapId && base.maps[currentMapId] ? { currentMapId } : {};
+  const approvedTilesetFamilies = surface.getApprovedTilesetFamilies?.() ?? [];
+  const here = {
+    ...(currentMapId && base.maps[currentMapId] ? { currentMapId } : {}),
+    ...(approvedTilesetFamilies.length ? { approvedTilesetFamilies: [...approvedTilesetFamilies] } : {}),
+  };
 
   // 실행 결과 4축 — 세션 경로(assistantSession.getRunOutcome)와 같은 deriveRunOutcome 을 쓴다.
   // 실행부는 사실만 정하고 판정(목표)은 수용 검사가 소유하므로 Pi 경로에선 unassessed 가 정직한 값이다.
@@ -355,6 +381,8 @@ export async function runPiCommand(
       if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw) };
       return;
     }
+    const question = tilesetQuestionFromEvent(raw);
+    if (question) surface.onTilesetChangeQuestion?.(question);
     // 오류 문구는 갈라지기 **전에** 한 번만 고친다(explainTurnCap 주석 참고).
     const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
     showConstructionEvent(event);
@@ -386,6 +414,16 @@ export async function runPiCommand(
   };
 
   let results: PiAgentDoneEvent[];
+  const spendStats: PiAgentStats[] = [];
+  const reportSpend = (): void => {
+    let turns = 0;
+    let tokens = 0;
+    for (const stats of spendStats) {
+      turns += stats.turns;
+      tokens += stats.usage?.totalTokens ?? 0;
+    }
+    if (turns > 0 || tokens > 0) surface.onSpend?.({ turns, tokens });
+  };
   try {
     // 모델이 읽는 지시문 = 사용자 문장 + 의도 노트. 계획 턴도 같은 것을 읽어야 계획에 author_village 같은
     // 이름이 남고, 실행 턴이 그 이름을 따라간다(노트 없이는 산문 계획 → paint_road 손작업으로 흘렀다).
@@ -406,6 +444,8 @@ export async function runPiCommand(
           if (boardState.trace) boardState = { ...boardState, trace: recordActivityEvent(boardState.trace, raw, "ultrabrain-plan") };
           return;
         }
+        const question = tilesetQuestionFromEvent(raw);
+        if (question) surface.onTilesetChangeQuestion?.(question);
         const event: PiAgentEvent = raw.type === "error" ? { ...raw, message: explainTurnCap(raw.message) } : raw;
         showConstructionEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
@@ -418,6 +458,7 @@ export async function runPiCommand(
       } });
       surface.signal?.throwIfAborted();
       if (planError || !plan.trim() || planned.changedKeys.length) throw new Error(planError || "Ultrabrain 계획을 완료하지 못했습니다.");
+      spendStats.push(planned.stats);
       push({ type: "agent_done", agentId: "ultrabrain-plan", ok: true, summary: plan,
         stats: planned.stats, changedKeys: [], spills: [], conflicts: [] });
       (surface.appendProcess ?? ((text: string) => surface.appendBubble("assistant", text)))(`계획\n${plan}`);
@@ -445,7 +486,10 @@ export async function runPiCommand(
         },
       },
     )));
+    spendStats.push(...results.map((done) => done.stats));
+    reportSpend();
   } catch (error) {
+    reportSpend();
     if (surface.signal?.aborted) {
       // fetch 는 abort 에서 AbortError 를 던진다 — 실패가 아니라 중단이므로 중단 경로로 돌린다(실측 2026-09-11).
       ghost.dispose();
@@ -799,6 +843,7 @@ export async function runPiCommand(
       ...villageCompletion.issues,
       ...(stoppedByLimit && streamErrors[0] ? [streamErrors[0]] : []),
       ...(harmonyIssue ? [harmonyIssue] : []),
+      ...unreachableWorkIssues(base, merged.project),
       ...unresolvedFindings,
     ];
     // 첫 줄은 «무엇을 만들었나» 다(2026-09-23 실측: 「반영했지만 확인할 것이 남았어요」 + 검토 문장
@@ -807,7 +852,8 @@ export async function runPiCommand(
     // 「만들었어요」 는 적용이 끝난 뒤에만 말한다 — 삭제 확인을 거절하거나 적용이 실패하면 apply() 가 따로 말한다.
     const appliedOk = await apply();
     if (!appliedOk) return false;
-    const bubble = surface.appendBubble("system", completionHeadline(plainMadeSummary(base, merged.project), { unverified: issues.length === 0 }));
+    const stoppedEarly = results.find((done) => done.stoppedEarly)?.stoppedEarly;
+    const bubble = surface.appendBubble("system", completionHeadline(plainMadeSummary(base, merged.project), { unverified: issues.length === 0, ...(stoppedEarly ? { stoppedEarly } : {}) }));
     if (issues.length) {
       if (bubble && typeof (bubble as HTMLElement).append === "function") (bubble as HTMLElement).append(createRefineFindings(issues));
       else surface.appendBubble("system", refineFindingsText(issues));

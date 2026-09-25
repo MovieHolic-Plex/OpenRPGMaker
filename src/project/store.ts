@@ -1,4 +1,5 @@
 import { ensureSharedTileReferences } from "./sharedTileReferences";
+import { externalizeBundledReferenceImages } from "./bundledReferenceImages";
 import { canWriteTeamProject } from './teamAccess';
 import { mergeTeamProject } from "./persistence/core/teamMerge";
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
@@ -41,6 +42,7 @@ import { isLocalTarget, isRemoteTarget, sameProjectTarget, type ProjectTarget } 
 import type { ProjectRepository } from "./persistence/types";
 import { recordManualProjectCommitAfterSave, resetManualProjectCommitBaseline } from "./projectCommitLog";
 import { repairMapTreeOrphans } from "@/project/mapTree";
+import { cloneExtraLayers } from "@/project/mapLayers";
 import { sha256HexText } from "@/util/sha256";
 import { normalizationFingerprint } from "@/util/structuralJson";
 import { randomUuid } from "@/util/id";
@@ -86,6 +88,11 @@ export type ProjectChangeDescriptor =
   | ({ readonly scope: "map"; readonly mapId: MapId; readonly cells?: readonly ProjectChangeCell[] } & ProjectChangeAnnotation)
   | ({ readonly scope: "database"; readonly collection?: string } & ProjectChangeAnnotation)
   | ({ readonly scope: "system" | "assets" | "project" } & ProjectChangeAnnotation);
+
+/** Tile-grid-only edit (paint, fill, erase): emitted per pointer sample, never touches events or metadata. */
+export function isTileCellChange(change: ProjectChangeDescriptor | undefined): change is Extract<ProjectChangeDescriptor, { scope: "map" }> {
+  return change?.scope === "map" && !!change.cells?.length;
+}
 
 /** Identity of the project that is actually loaded in this editor session. */
 export type ProjectIdentity =
@@ -135,7 +142,8 @@ export type ProjectFlushResult =
   | { readonly kind: "conflict"; readonly conflicts: readonly { readonly mapId: string; readonly name: string }[] }
   // A clean flush after load may have no accepted-save receipt. Never invent proof from it.
   | { readonly kind: "saved"; readonly sha256?: string; readonly receipt?: ProjectPersistenceReceipt }
-  | { readonly kind: "saved-local" };
+  /** written:false = 이 세션(fresh/blank 등)은 기록을 건너뛰었다. 성공 토스트를 띄우면 안 된다. */
+  | { readonly kind: "saved-local"; readonly written?: boolean };
 
 export type ProjectDbReconnectResult =
   | { readonly kind: "connected"; readonly source: "remote" }
@@ -232,6 +240,8 @@ class ProjectStore {
   private writeAuthority: ProjectWriteAuthority | null = null;
   private persistenceRecovery: ProjectPersistenceRecovery = { kind: "ready" };
   private lastPersistenceReceipt: ProjectPersistenceReceipt | null = null;
+  /** Host revision written by this editor's last accepted save; its content is already in memory. */
+  private lastSavedHostRevision: number | null = null;
   /** Load/adoption lineage is separate from the local-edit counter used by catch-up saves. */
   private contentLineage = 0;
   private readonly persistenceTargets = new WeakMap<ProjectPersistenceReceipt, {
@@ -554,6 +564,7 @@ class ProjectStore {
         this.writeAuthority = saved.authority;
         this.persistedBaseline = structuredClone(projectWithoutEventDrafts(saved.project));
         this.lastPersistenceReceipt = null;
+        this.lastSavedHostRevision = null;
         this.persistenceRecovery = { kind: "ready", mirror: saved.mirror };
         this.current = preserveEventDraftsOnProject(saved.project, this.current);
         syncEventDraftVaultFromProject(this.current);
@@ -603,6 +614,7 @@ class ProjectStore {
         const sharedDemo = isSharedDemoProjectId(status.projectId);
         this.contentLineage += 1;
         this.lastPersistenceReceipt = null;
+        this.lastSavedHostRevision = null;
         this.current = preserveEventDraftsOnProject(project, this.current);
         clearCopiedEventPage();
         syncEventDraftVaultFromProject(this.current);
@@ -644,6 +656,11 @@ class ProjectStore {
       return { kind: "failed", message: error instanceof Error ? error.message : "온라인 저장 연결 실패" };
     }
   }
+  /** True when `revision` is the host row this editor just wrote, so re-downloading it is pointless. */
+  isOwnSavedHostRevision(revision: number): boolean {
+    return this.lastSavedHostRevision !== null && this.lastSavedHostRevision === revision;
+  }
+
   /** A host notification may refresh only a clean, unchanged editor. Never overwrite edits made during I/O. */
   async refreshFromHost(): Promise<boolean> {
     if (!this.loaded || !this.remotePersistenceEnabled || this.dirtySinceLastPersist || this.persistInFlight) return false;
@@ -658,6 +675,7 @@ class ProjectStore {
     this.persistedBaseline = structuredClone(projectWithoutEventDrafts(snapshot.project));
     this.writeAuthority = snapshot.authority;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
     resetManualProjectCommitBaseline(this.current);
     // External changes invalidate local undo snapshots; do not let Ctrl+Z undo a teammate's work.
     this.emit({ scope: 'project', origin: 'system', projectSwitch: true });
@@ -687,6 +705,7 @@ class ProjectStore {
       }
       this.contentLineage += 1;
       this.lastPersistenceReceipt = null;
+      this.lastSavedHostRevision = null;
       this.current = preserveEventDraftsOnProject(project, this.current);
       syncEventDraftVaultFromProject(this.current);
       this.remotePersistenceEnabled = true;
@@ -746,6 +765,7 @@ class ProjectStore {
     if (options.preserveEventDrafts === false || options.change?.projectSwitch === true) {
       this.contentLineage += 1;
       this.lastPersistenceReceipt = null;
+      this.lastSavedHostRevision = null;
       this.persistedBaseline = null;
     }
     if (options.change?.projectSwitch === true) clearCopiedEventPage();
@@ -836,8 +856,9 @@ class ProjectStore {
   }
 
   /**
-   * Fast path for tile painting. Tile edits only mutate the two dense tile
-   * arrays (and the legacy stack maps), so cloning the whole GameMap on every
+   * Fast path for tile painting. Tile edits only mutate the tile layers — the
+   * dense 1층/3층 arrays, the optional 2층/4층/shadow arrays (copied with
+   * cloneExtraLayers) and the legacy stack maps — so cloning the whole GameMap on every
    * pointer sample needlessly copies events and every optional map setting.
    * Keep the general updateMap contract for arbitrary map edits and use this
    * path for the hot paint/erase/fill loop.
@@ -854,6 +875,7 @@ class ProjectStore {
       ...currentMap,
       lowerTiles: currentMap.lowerTiles.slice(),
       upperTiles: currentMap.upperTiles.slice(),
+      ...cloneExtraLayers(currentMap),
       ...(currentMap.lowerTileStacks ? { lowerTileStacks: cloneTileStacks(currentMap.lowerTileStacks) } : {}),
       ...(currentMap.upperTileStacks ? { upperTileStacks: cloneTileStacks(currentMap.upperTileStacks) } : {}),
     };
@@ -890,6 +912,7 @@ class ProjectStore {
   _setCleanPersistStateForTest(): void {
     this.dirtySinceLastPersist = false;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
   }
 
   /** Historical acceptance belongs to its actual submitted owner, not the latest live revision. */
@@ -975,6 +998,7 @@ class ProjectStore {
     persistEventDraftVaultNow();
     this.contentLineage += 1;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
     this.persistedBaseline = null;
     this.current = createBlankProject();
     if (this.loadedRemoteProjectId === null) this.beginLocalProjectSession();
@@ -1286,8 +1310,9 @@ class ProjectStore {
         if (saveDevProjectOverride(projectWithoutEventDrafts(this.current))) {
           this.dirtySinceLastPersist = false;
           if (diagnosticObserved("authoring")) publishDiagnostic({ category: "authoring", phase: "saved", generation: this.mutationGeneration, storage: "local" });
+          return { kind: "saved-local", written: true };
         }
-        return { kind: "saved-local" };
+        return { kind: "saved-local", written: false };
       }
       return this.remotePersistenceDisabledReason === null ? { kind: "not-configured" } : { kind: "disabled" };
     }
@@ -1345,7 +1370,10 @@ class ProjectStore {
     let reconciledTeamProject = false;
     this.persistedBaseline = acceptedBaseline;
     if (this.repository.kind === 'local') {
-      receivedTeamChanges = serializeForComparison(savedProject) !== serializeForComparison(submittedProject);
+      // No returned document means the host wrote exactly what was submitted; skip two
+      // whole-project canonical stringifies on every save.
+      receivedTeamChanges = savedProject !== submittedProject
+        && serializeForComparison(savedProject) !== serializeForComparison(submittedProject);
       if (receivedTeamChanges) {
         const merged = mergeTeamProject(submittedProject, projectWithoutEventDrafts(this.current), savedProject);
         if (merged.kind === 'merged') {
@@ -1359,6 +1387,7 @@ class ProjectStore {
       }
     }
     this.lastPersistenceReceipt = receipt ?? null;
+    this.lastSavedHostRevision = result.revision ?? null;
     if (receipt && diagnosticOwner && diagnosticOwner === diagnosticToken() && diagnosticObserved("authoring")) {
       publishDiagnostic({ category: "authoring", phase: "saved", generation: generationAtSubmit, storage: "remote" });
     }
@@ -1406,6 +1435,7 @@ class ProjectStore {
   private adoptProject(project: Project, options: { readonly restoreVault: boolean }): void {
     this.contentLineage += 1;
     this.lastPersistenceReceipt = null;
+    this.lastSavedHostRevision = null;
     this.writeAuthority = null;
     this.persistenceRecovery = { kind: "ready" };
     clearEventDraftVault();
@@ -1463,6 +1493,7 @@ class ProjectStore {
       ["switchVariableSlots", ensureSwitchVariableSlots(this.current)],
       ["bundledTilesets", ensureBundledTilesets(this.current)],
       ["sharedTileReferences", ensureSharedTileReferences(this.current)],
+      ["bundledReferenceImages", externalizeBundledReferenceImages(this.current)],
       ["interiorPropLayers", repairInteriorTransparentPropLayers(this.current)],
       ["legacyRmTileset", removeLegacyRmTileset(this.current)],
       ["legacySpriteRefs", removeLegacySpriteReferences(this.current)],

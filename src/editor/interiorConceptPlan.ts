@@ -3,8 +3,8 @@
  * use the facility's authored layout as well. The tile pipeline itself stays reusable.
  */
 import {
-  conceptOverlayFor, conceptPlaceFloorTile, conceptPlaceRole,
-  layoutConceptFacility, liveBundlesForTileset, resolveConceptFacility, thingsForPlace,
+  conceptOverlayFor, conceptPlaceFloorTile, conceptPlaceRole, constructionBundlesForTileset,
+  isInteriorConstructionTileset, layoutConceptFacility, resolveConceptFacility, thingsForPlace,
   type ConceptOverlayRoom, type ResolvedConceptFacility,
 } from "./conceptBundleResolve";
 import { plansStructurallyEqual } from "./conceptFacilityScore";
@@ -16,7 +16,7 @@ import type { HouseInteriorProgram } from "./houseInteriors";
 import type { Project } from "@/project/types";
 import { ToolError } from "./tools/types";
 import { bindCanonicalInteriorPlan } from "./spatial/legacyInteriorPlan";
-import { PLACE_ALIASES } from "./interiorPlaceAliases";
+import { FALLBACK_PLACE_ALIASES, PLACE_ALIASES } from "./interiorPlaceAliases";
 
 const TILESET = "easyrpg_chipset_interior";
 const PROGRAM_FACILITIES: Readonly<Record<HouseInteriorProgram, string>> = {
@@ -113,8 +113,8 @@ export function conceptHouseFloorPlan(
 /** Called before the engine records the plan, so reload/evaluation sees the same contents. */
 export function bindInteriorConceptPlan(plan: InteriorRoomPlan, project: Project): InteriorRoomPlan {
   const tilesetId = plan.tilesetId ?? TILESET;
-  if (tilesetId !== TILESET) throw new ToolError(
-    "개념 실내 시공은 실내 칩셋에서만 지원합니다. get_concept_facility로 지원되는 구성을 확인하세요.",
+  if (!isInteriorConstructionTileset(tilesetId)) throw new ToolError(
+    `개념 실내 시공은 실내 칩셋(${TILESET} 또는 tibo_interior_expanded)에서만 지원합니다 — "${tilesetId}"에는 벽·바닥·가구 번호가 없습니다.`,
     { code: "invalid-tileset" },
   );
   if (project.spatialAuthoring !== undefined && !plan.concept) return bindCanonicalInteriorPlan(plan, project);
@@ -127,7 +127,8 @@ export function bindInteriorConceptPlan(plan: InteriorRoomPlan, project: Project
     }
     return plan;
   }
-  const bundles = liveBundlesForTileset(project, tilesetId);
+  // 꾸러미가 비면 번들 기본값(여관·민가)으로 푼다 — 빈 새 프로젝트에서도 방 테마(bedroom·kitchen·dining·inn…)로 시공된다.
+  const bundles = constructionBundlesForTileset(project, tilesetId);
   if (!bundles.length) throw new ToolError(
     "이 프로젝트의 개념 꾸러미가 비어 있어 방 테마만으로는 실내를 시공할 수 없습니다. get_concept_facility(query)로 물건 어휘를 읽고 장소·물건을 직접 설계해 place_concept(plan)에 넘기세요.",
     { code: "concept-bundle-empty", mapId: plan.mapId },
@@ -142,10 +143,13 @@ export function bindInteriorConceptPlan(plan: InteriorRoomPlan, project: Project
   const rooms = sourceRooms.map(room => {
     const query = room.theme ?? plan.theme;
     const alias = PLACE_ALIASES[query];
+    const fallbackAlias = FALLBACK_PLACE_ALIASES[query];
     const match = (alias && candidates.find(c => c.bundle.id === alias[0] && c.place.id === alias[1]))
-      || candidates.find(c => `${c.bundle.id}/${c.place.id}` === query || c.place.id === query || c.place.label === query);
+      || candidates.find(c => `${c.bundle.id}/${c.place.id}` === query || c.place.id === query || c.place.label === query)
+      || (fallbackAlias && candidates.find(c => c.bundle.id === fallbackAlias[0] && c.place.id === fallbackAlias[1]));
     if (!match) throw new ToolError(
-      `개념 꾸러미에서 장소 "${query}"를 찾지 못했습니다. get_concept_facility로 장소·물건을 읽고 새 구성을 place_concept(plan)에 넘기세요.`,
+      `개념 꾸러미에서 장소 "${query}"를 찾지 못했습니다. 지금 부를 수 있는 장소: ${[...new Set(candidates.map(c => `${c.bundle.id}/${c.place.id}`))].join(" · ")}. `
+      + "없는 장소는 get_concept_facility로 물건 어휘를 읽고 place_concept(plan)에 넘기세요.",
       { code: bundles.length ? "concept-place-not-found" : "concept-bundle-empty", mapId: plan.mapId },
     );
     const { bundle, place } = match;

@@ -180,6 +180,21 @@ export function monsterSpeciesForEnemy(project: Project, enemy: EnemyRecord | un
   return species.find((record) => record.id === enemy.id);
 }
 
+/**
+ * 몬스터 파티 전투 설정과 지금 파티 몬스터 — 실제 전투(playSceneBattle)·헤드리스 러너·랜덤 조우가 같은 판정을 쓴다.
+ * requested 인데 party 가 비면(스타터를 아직 안 받음) 전투를 열 수 없다.
+ */
+export function monsterBattlePartyOf(project: Project, session: Pick<PlaySession, "monsterParty" | "monsterInstances">): { requested: boolean; party: MonsterInstance[] } {
+  const requested = project.system.battleParty === "monsters" || project.system.monsterBattleParty === true;
+  const party = requested
+    ? (session.monsterParty ?? []).flatMap((instanceId) => {
+        const instance = session.monsterInstances?.[instanceId];
+        return instance ? [instance] : [];
+      })
+    : [];
+  return { requested, party };
+}
+
 export function monsterSpeciesById(project: Project, speciesId: MonsterSpeciesId): MonsterSpeciesRecord | undefined {
   return (project.database.monsterSpecies ?? []).find((record) => record.id === speciesId);
 }
@@ -189,12 +204,15 @@ export function giveMonster(project: Project, session: PlaySession, input: GiveM
   const species = monsterSpeciesById(project, input.speciesId);
   if (!species) return { ok: false, reason: "missingSpecies" };
   const instanceId = nextMonsterInstanceId(session);
+  const level = clampInteger(input.level, 1, 99);
   const instance: MonsterInstance = {
     instanceId,
     speciesId: species.id,
     nickname: cleanOptionalText(input.nickname),
-    level: clampInteger(input.level, 1, 99),
-    exp: Math.max(0, Math.trunc(input.exp ?? 0)),
+    level,
+    // Experience is cumulative. Captures/gifts without an explicit value start
+    // at their level's floor; explicit values (including zero) remain authored.
+    exp: Math.max(0, Math.trunc(input.exp ?? totalExpForLevel(species.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, level))),
     ivs: input.ivs ?? deterministicMonsterIvs(`${session.rng?.seed ?? 1}:${instanceId}:${species.id}`),
     friendship: clampInteger(input.friendship ?? 70, 0, 255),
     caughtAt: input.caughtAt ?? { mapId: session.currentMapId, x: session.x, y: session.y },
@@ -689,8 +707,13 @@ function monsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number)
     .map((entry) => entry.skillId);
 }
 
-function latestMonsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {
+/** 이 레벨까지 배운 기술 중 슬롯에 남는 최근 것. 플레이어 몬스터와 빈 적 행동이 같은 목록을 쓴다. */
+export function monsterSkillIdsAtLevel(species: MonsterSpeciesRecord, level: number): SkillId[] {
   return uniqueSkillIds(monsterSkillIdsForSpecies(species, level)).slice(-MONSTER_SKILL_MAX);
+}
+
+function latestMonsterSkillIdsForSpecies(species: MonsterSpeciesRecord, level: number): SkillId[] {
+  return monsterSkillIdsAtLevel(species, level);
 }
 
 function newSkillsForLevelRange(

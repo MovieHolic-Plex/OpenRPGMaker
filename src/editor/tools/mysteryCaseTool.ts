@@ -12,10 +12,10 @@
 // 갈아 끼울 지점은 compileEvidencePresentation / compileAccusationChoice 두 함수뿐이다.
 
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
-import { isPassable } from "@/project/collision";
+import { canMove, isPassable } from "@/project/collision";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { computeReachableCells, isAdjacentOrOn } from "@/project/lint/reachability";
-import { reachableMapIdsFromStart } from "@/project/mapInspection";
+import { collectCommands, reachableMapIdsFromStart } from "@/project/mapInspection";
 import type { Command, EventPage, EventPageCondition, GameEvent, GameMap, Project } from "@/project/types";
 import type { SceneStep, SceneTestInput } from "@/testing/sceneTestRunner";
 import { withJosa } from "@/util/josa";
@@ -415,21 +415,92 @@ function placements(spec: MysteryCase): Placement[] {
   ];
 }
 
+/** 첫 조건 없는 페이지(없으면 첫 페이지)가 플레이어를 막는가 — 런타임 runtimeEventView 의 기본값(priority same·overlapForbidden)과 같다. */
+function eventBlocksPlayer(event: GameEvent): boolean {
+  const page = event.pages?.find((entry) => !entry.conditions || Object.keys(entry.conditions).length === 0) ?? event.pages?.[0];
+  if (!page) return true;
+  return (page.priority ?? "same") === "same" && (page.overlapForbidden ?? true);
+}
+
+/** seeds 에서 걸어서 닿는 칸. blocked 칸(인물·막는 이벤트)은 지나갈 수 없다. */
+function walkableCells(project: Project, map: GameMap, seeds: readonly { x: number; y: number }[], blocked: ReadonlySet<string>): Set<string> {
+  const seen = new Set<string>();
+  const queue: Array<[number, number]> = [];
+  for (const seed of seeds) {
+    const key = `${seed.x},${seed.y}`;
+    if (!seen.has(key)) { seen.add(key); queue.push([seed.x, seed.y]); }
+  }
+  for (let head = 0; head < queue.length; head++) {
+    const [x, y] = queue[head];
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const nx = x + dx;
+      const ny = y + dy;
+      const key = `${nx},${ny}`;
+      if (seen.has(key) || blocked.has(key) || !canMove(project, map, x, y, nx, ny)) continue;
+      seen.add(key);
+      queue.push([nx, ny]);
+    }
+  }
+  return seen;
+}
+
+/** 플레이어가 이 맵에 들어서는 칸: 시작 맵이면 시작 위치, 아니면 도달 가능한 맵에서 이 맵으로 오는 문의 도착 칸. 모르면 빈 배열. */
+function entryCells(project: Project, map: GameMap, reachableMaps: ReadonlySet<string>): { x: number; y: number }[] {
+  const out: { x: number; y: number }[] = [];
+  if (map.id === project.startMapId) out.push({ x: project.startPos.x, y: project.startPos.y });
+  for (const source of Object.values(project.maps)) {
+    if (!reachableMaps.has(source.id)) continue;
+    for (const command of collectCommands(source.events)) {
+      if (command.kind === "transfer" && command.mapId === map.id) out.push({ x: command.x, y: command.y });
+    }
+  }
+  return out;
+}
+
 function checkReachable(project: Project, spec: MysteryCase, problems: MysteryProblem[]): void {
   const push = (message: string) => problems.push({ code: "mystery-unreachable", message });
   const prefix = eventPrefix(spec.caseId);
   const seen = new Map<string, string>();
-  const reachableByMap = new Map<string, Set<string>>();
-  const startReachable = (map: GameMap): Set<string> | null => {
-    if (map.id !== project.startMapId) return null;
-    const cached = reachableByMap.get(map.id);
-    if (cached) return cached;
-    const cells = computeReachableCells(project, map, project.startPos.x, project.startPos.y);
+  const all = placements(spec);
+  const reachableMaps = reachableMapIdsFromStart(project);
+  const reused = new Set(all.flatMap((placement) => placement.reuseEventId ?? []));
+  // 인물(용의자·지목 NPC)과 사건 밖의 막는 이벤트는 플레이어가 지나갈 수 없다 — 한 칸 통로에 서면 그 너머 방이 통째로 막힌다
+  // (manor-mystery 실측: 지목 테이블이 서재 문간, 집사가 주방 복도에 서서 독약병·조카에게 못 갔는데 검사를 통과했다).
+  const blockersOn = (map: GameMap, without?: Placement): Map<string, string> => new Map([
+    ...map.events
+      .filter((event) => !event.id.startsWith(prefix) && !reused.has(event.id) && eventBlocksPlayer(event))
+      .map((event) => [`${event.x},${event.y}`, `이벤트 '${event.name ?? event.id}'`] as const),
+    ...all
+      .filter((other) => other.kind === "character" && other !== without && other.at.mapId === map.id)
+      .map((other) => [`${other.at.x},${other.at.y}`, other.label] as const),
+  ]);
+  const reachableByMap = new Map<string, Set<string> | null>();
+  const reachableOn = (map: GameMap): Set<string> | null => {
+    if (reachableByMap.has(map.id)) return reachableByMap.get(map.id)!;
+    const seeds = reachableMaps.has(map.id) ? entryCells(project, map, reachableMaps) : [];
+    const cells = seeds.length > 0 ? walkableCells(project, map, seeds, new Set(blockersOn(map).keys())) : null;
     reachableByMap.set(map.id, cells);
     return cells;
   };
-  const all = placements(spec);
-  const reachableMaps = reachableMapIdsFromStart(project);
+  /** 막힌 배치를 여는 인물: 그 인물 하나를 치우면 닿는다. */
+  const culpritBlocker = (map: GameMap, at: CaseAt): Placement | undefined => {
+    const seeds = entryCells(project, map, reachableMaps);
+    return all.find((other) => {
+      if (other.kind !== "character" || other.at.mapId !== map.id) return false;
+      if (other.at.x === at.x && other.at.y === at.y) return false;
+      const cells = walkableCells(project, map, seeds, new Set(blockersOn(map, other).keys()));
+      return isAdjacentOrOn(cells, at.x, at.y);
+    });
+  };
+  /** 인물을 (x,y) 에 세웠을 때 다른 배치 중 하나라도 걸어서 못 닿게 되면 참 — 후보 칸 고를 때 통로를 피한다. */
+  const chokepointTest = (map: GameMap, self: Placement) => (x: number, y: number): boolean => {
+    const seeds = entryCells(project, map, reachableMaps);
+    if (seeds.length === 0) return false;
+    const blocked = new Set(blockersOn(map, self).keys());
+    blocked.add(`${x},${y}`);
+    const cells = walkableCells(project, map, seeds, blocked);
+    return all.some((other) => other !== self && other.at.mapId === map.id && !isAdjacentOrOn(cells, other.at.x, other.at.y));
+  };
   const reportedMaps = new Set<string>();
   // 이 배치 말고 그 맵에 서 있을 것들: 사건 밖 이벤트 + 다른 사건 배치.
   const othersAt = (map: GameMap, self: Placement): Set<string> => new Set([
@@ -469,9 +540,9 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
     const blocker = map.events.find((event) =>
       event.x === at.x && event.y === at.y && !event.id.startsWith(prefix) && event.id !== placement.reuseEventId);
     if (blocker) push(`${label}: (${at.x}, ${at.y}) 에 다른 이벤트 '${blocker.name ?? blocker.id}' 가 이미 있습니다.`);
-    const reachable = startReachable(map);
+    const reachable = reachableOn(map);
     const hint = () => {
-      const near = nearestUsableCell(project, map, at, placement.kind, reachable);
+      const near = nearestUsableCell(project, map, at, placement.kind, reachable, placement.kind === "character" ? chokepointTest(map, placement) : undefined);
       return near ? ` 가까운 후보: (${near.x}, ${near.y}).` : "";
     };
     // 플레이어가 이 칸에 스폰된다 — 인물이 서면 겹쳐 나오고, 조사 지점은 밟고 선 채 시작한다(run5 실측).
@@ -493,7 +564,14 @@ function checkReachable(project: Project, spec: MysteryCase, problems: MysteryPr
       continue;
     }
     if (reachable && !isAdjacentOrOn(reachable, at.x, at.y)) {
-      push(`${label}: 시작 위치 (${project.startPos.x}, ${project.startPos.y}) 에서 걸어서 닿을 수 없습니다 (${at.x}, ${at.y}).${hint()}`);
+      const blocker = culpritBlocker(map, at);
+      if (blocker) {
+        const near = nearestUsableCell(project, map, blocker.at, blocker.kind, reachable, chokepointTest(map, blocker));
+        push(`${blocker.label}: (${blocker.at.x}, ${blocker.at.y}) 에 서면 통로를 막아 ${label} (${at.x}, ${at.y}) 에 걸어서 닿을 수 없습니다. 인물은 문간·한 칸 복도가 아닌 방 안에 세우세요.${near ? ` 가까운 후보: (${near.x}, ${near.y}).` : ""}`);
+      } else {
+        const from = map.id === project.startMapId ? `시작 위치 (${project.startPos.x}, ${project.startPos.y})` : "이 맵의 입구";
+        push(`${label}: ${from} 에서 걸어서 닿을 수 없습니다 (${at.x}, ${at.y}) — 벽·물 또는 다른 인물·이벤트가 길을 막습니다.${hint()}`);
+      }
     }
   }
 }
@@ -532,6 +610,7 @@ function nearestUsableCell(
   at: CaseAt,
   kind: Placement["kind"],
   reachable: ReadonlySet<string> | null,
+  blocksOthers?: (x: number, y: number) => boolean,
 ): { x: number; y: number } | null {
   const occupied = new Set(map.events.map((event) => `${event.x},${event.y}`));
   for (let radius = 1; radius <= 4; radius += 1) {
@@ -544,6 +623,7 @@ function nearestUsableCell(
         const usable = kind === "character" ? isPassable(project, map, x, y) : interactionStandCell(project, map, x, y, occupied) !== null;
         if (!usable) continue;
         if (reachable && !isAdjacentOrOn(reachable, x, y)) continue;
+        if (blocksOthers?.(x, y)) continue;
         return { x, y };
       }
     }
@@ -720,8 +800,72 @@ export function compileAccusationChoice(input: AccusationInput): Extract<Command
   };
 }
 
+/**
+ * 「탐정: '…'」「모로 박사: …」 처럼 대사 앞에 화자를 붙인 줄. 6회차: 지목 지점 「추리 집결 회합」 의 intro·ready·엔딩 대사를
+ * 전부 이렇게 써서 이름표는 「추리 집결 회합」, 얼굴은 신사, 본문은 「모로 박사: …」 로 셋이 어긋났다.
+ */
+const SPEAKER_PREFIX = /^\s*([^\s\d:：'"‘’“”「『(（\[][^\d:：'"‘’“”「『(（\[\]]{0,15}?)\s*[:：](?:\s+|(?=['"‘“「『(（]))(\S[\s\S]*)$/u;
+
+export function splitSpeakerPrefix(line: string): { readonly speaker?: string; readonly body: string } {
+  const match = SPEAKER_PREFIX.exec(line);
+  if (!match || match[1].trim().split(/\s+/u).length > 4) return { body: line };
+  const quoted = /^(['"‘“「『])([\s\S]*)(['"’”」』])$/u.exec(match[2].trim());
+  return { speaker: match[1].trim(), body: quoted ? quoted[2] : match[2].trim() };
+}
+
+/** speaker 가 빈 문자열이면 이름표 없는 서술이다(물건인 지목 지점). 줄 앞 「이름:」 은 그 줄의 화자로 옮긴다. */
 function say(speaker: string, body: readonly string[]): Command[] {
-  return body.map((line) => ({ kind: "text", speaker, body: line }));
+  return body.map((line) => {
+    const split = splitSpeakerPrefix(line);
+    const who = split.speaker ?? speaker;
+    return who ? { kind: "text", speaker: who, body: split.body } : { kind: "text", body: split.body };
+  });
+}
+
+const CLEAR_FACE: Command = { kind: "changeFace", resourceId: "", position: "left", flipHorizontally: false };
+
+/** 남이 말하는 줄에서는 이 인물의 얼굴을 내리고, 다시 이 인물이 말할 때 올린다(분기 안까지). */
+function faceFollowsSpeaker(commands: readonly Command[], ownName: string, face: Command, shown: boolean): { commands: Command[]; shown: boolean } {
+  const out: Command[] = [];
+  let visible = shown;
+  const branch = (list: readonly Command[] | undefined): Command[] | undefined => {
+    if (!list) return list;
+    const inner = faceFollowsSpeaker(list, ownName, face, visible);
+    return inner.shown === visible ? inner.commands : [...inner.commands, ...(visible ? [structuredClone(face)] : [structuredClone(CLEAR_FACE)])];
+  };
+  for (const command of commands) {
+    if (command.kind === "changeFace") { visible = Boolean(command.resourceId); out.push(command); continue; }
+    if (command.kind === "text" && command.speaker) {
+      const own = command.speaker === ownName || ownName.includes(command.speaker) || command.speaker.includes(ownName);
+      if (own && !visible) { out.push(structuredClone(face)); visible = true; }
+      if (!own && visible) { out.push(structuredClone(CLEAR_FACE)); visible = false; }
+      out.push(command);
+      continue;
+    }
+    if (command.kind === "choices") {
+      out.push({ ...command, options: command.options.map((option) => ({ ...option, branch: branch(option.branch) ?? [] })), ...(command.cancelBranch ? { cancelBranch: branch(command.cancelBranch) } : {}) });
+      continue;
+    }
+    if (command.kind === "presentItem") {
+      out.push({
+        ...command,
+        options: command.options.map((option) => ({ ...option, branch: branch(option.branch) ?? [] })),
+        ...(command.otherwiseBranch ? { otherwiseBranch: branch(command.otherwiseBranch) } : {}),
+        ...(command.cancelBranch ? { cancelBranch: branch(command.cancelBranch) } : {}),
+      });
+      continue;
+    }
+    out.push(command);
+  }
+  return { commands: out, shown: visible };
+}
+
+// 지목 NPC 를 물건으로 지은 경우(manor-mystery 실측 두 번: 「추리 정리 테이블」「사건 정리 수첩」). 기본 주민 외형·얼굴로 그리면
+// 수첩이 콧수염 사내 얼굴로 말하고, 한 번은 주인공과 같은 탐정 스프라이트로 서 있었다.
+const OBJECT_ACCUSER = /수첩|노트|메모|테이블|탁자|책상|게시판|칠판|보드|일지|장부|서류|기록부|추리판|단서판|table|desk|board|notebook|journal/iu;
+
+export function isObjectAccuser(accuser: Pick<AccuserSpec, "name" | "graphic" | "eventId">): boolean {
+  return !accuser.graphic && !accuser.eventId && OBJECT_ACCUSER.test(accuser.name);
 }
 
 function evidenceReactions(spec: MysteryCase, suspect: SuspectSpec): EvidenceReaction[] {
@@ -956,6 +1100,10 @@ function placeCharacter(
   } else if (input.activity) {
     event.schedule = [{ when: {}, at: { mapId: map.id, x: input.at.x, y: input.at.y }, activity: input.activity }];
   }
+  for (const page of event.pages ?? []) {
+    const face = page.commands.find((command) => command.kind === "changeFace" && command.resourceId);
+    if (face) page.commands = faceFollowsSpeaker(page.commands, input.name, face, false).commands;
+  }
   if (event.x !== input.at.x || event.y !== input.at.y) {
     warnings.push(`'${input.name}' 위치 자동 조정: (${input.at.x}, ${input.at.y}) → (${event.x}, ${event.y})`);
   }
@@ -991,6 +1139,9 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
     itemId: mysteryClueItemId(spec.caseId, clueId),
     present: true,
   }));
+  const object = isObjectAccuser(accuser);
+  const voice = object ? "" : accuser.name;
+  const warningsBefore = warnings.length;
   placeCharacter(draft, {
     id,
     name: accuser.name,
@@ -999,13 +1150,13 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
     reuse: accuser.eventId !== undefined,
     pages: [
       // 1페이지: 필수 증거 미확보 — 힌트만. 엔딩 명령을 두지 않는다.
-      { name: "증거 부족", commands: say(accuser.name, [...accuser.intro, ...accuser.hint]) },
+      { name: "증거 부족", commands: say(voice, [...accuser.intro, ...accuser.hint]) },
       // 2페이지(뒤 페이지 우선): 필수 증거를 모두 가졌을 때만 지목.
       {
         name: "범인 지목",
         conditions: requiredConditions,
         commands: [
-          ...say(accuser.name, accuser.ready),
+          ...say(voice, accuser.ready),
           compileAccusationChoice({
             prompt: accuser.prompt,
             suspects: spec.suspects,
@@ -1014,13 +1165,24 @@ function placeAccuser(draft: Project, spec: MysteryCase, warnings: string[]): st
             wrongEndingId: spec.endings.wrong.id,
             solvedLines: spec.endings.solved.lines,
             wrongLines: spec.endings.wrong.lines,
-            notYetLines: ["확신이 서면 다시 오게."],
-            speaker: accuser.name,
+            notYetLines: [object ? "아직 확신이 서지 않는다." : "확신이 서면 다시 오게."],
+            speaker: voice,
           }),
         ],
       },
     ],
   }, warnings);
+  if (object) {
+    const own = warnings.splice(warningsBefore);
+    warnings.push(...own.filter((warning) => !warning.includes("graphic 생략")));
+    // 물건: 보이지 않는 조사 지점처럼 두고(통행은 막아 가구처럼), 얼굴·이름표 없이 서술로 말한다.
+    const event = draft.maps[accuser.at.mapId]?.events.find((entry) => entry.id === id);
+    for (const page of event?.pages ?? []) {
+      page.graphic = { transparent: true };
+      page.commands = page.commands.filter((command) => command.kind !== "changeFace");
+    }
+    warnings.push(`지목 NPC '${accuser.name}' 는 물건이라 사람 외형 없이 보이지 않는 조사 지점(얼굴·이름표 없는 서술)으로 두었다 — 탁자·책상 같은 가구 타일 위(${accuser.at.x}, ${accuser.at.y})에 있어야 플레이어가 찾는다. 사람이 추리를 듣게 하려면 accuser.name 을 인물(경감·집사 등)로 하거나 graphic 을 주어라.`);
+  }
   return id;
 }
 
@@ -1147,6 +1309,31 @@ function buildVerificationScene(
   return { mapId: draft.startMapId, start: { x: draft.startPos.x, y: draft.startPos.y }, steps };
 }
 
+/** 벽·가구(통행 불가 칸)가 이 비율보다 적으면 「무대 없음」 으로 본다. 지은 실내는 30~65%, 맨땅 판은 0~1% 였다. */
+const BARREN_STAGE_BLOCKED_RATIO = 0.05;
+
+/**
+ * 사건 무대가 맨땅인가. manor-mystery 에서 두 판(헤드리스·브라우저)이 「저택 1층(서재·거실·주방)」 을
+ * 빈 시작 맵 위 나무 바닥 사각형·흙길로 흉내 내고 인물을 세웠다 — 벽도 가구도 없고 실내에 비가 내렸다.
+ * 게이트가 아니라 경고다: 저작은 그대로 두고 무대를 지을 도구를 짚는다.
+ */
+function barrenStageWarnings(draft: Project, spec: MysteryCase): string[] {
+  const mapIds = new Set(placements(spec).map((placement) => placement.at.mapId));
+  const out: string[] = [];
+  for (const mapId of mapIds) {
+    const map = draft.maps[mapId];
+    if (!map) continue;
+    let blocked = 0;
+    for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) if (!isPassable(draft, map, x, y)) blocked += 1;
+    const ratio = blocked / Math.max(1, map.width * map.height);
+    if (ratio >= BARREN_STAGE_BLOCKED_RATIO) continue;
+    out.push(`사건 무대 '${map.name ?? map.id}'(${map.id}) 에 벽·가구가 거의 없습니다(통행 불가 ${(ratio * 100).toFixed(1)}%) — 방·건물 없이 맨땅 위에 인물과 조사 지점만 서 있습니다. `
+      + `저택·여관 같은 실내 장면이면 place_concept(plan, 새 mapId) 로 방을 나눈 실내를, 외장과 함께면 author_house(interior:"linked-interior") 로 짓고, `
+      + `그 맵 좌표로 author_mystery_case 를 다시 불러 사건을 옮기세요(같은 caseId 면 이벤트를 갈아 끼웁니다). 바닥 타일 fill_region 으로 방을 흉내 내지 마세요.`);
+  }
+  return out;
+}
+
 function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const warnings: string[] = [];
   const removed = removePreviousCaseEvents(draft, spec);
@@ -1156,19 +1343,35 @@ function compileMysteryCase(draft: Project, spec: MysteryCase): ToolExecResult {
   const suspectEvents = placeSuspects(draft, spec, warnings);
   const accuserEvent = placeAccuser(draft, spec, warnings);
   assertEndingsGated(draft, spec, [...clueEvents, ...suspectEvents, accuserEvent]);
+  const barren = barrenStageWarnings(draft, spec);
+  warnings.push(...barren);
+  const stageMapCount = new Set(placements(spec).map((placement) => placement.at.mapId)).size;
+  // 7회차(안개 저택): 요약이 place_concept 를 먼저 말해도 뒤에 「verificationScene 을 run_scene_test 에 넣어라」가
+  // 있으면 모델은 그것만 하고 풀밭으로 끝냈다. 무대가 전부 맨땅이면 붙여 넣을 시나리오를 주지 않는다.
+  const allBarren = stageMapCount > 0 && barren.length === stageMapCount;
   const culprit = spec.suspects.find((suspect) => suspect.id === spec.culprit)!;
   // 시나리오는 검증 보조물이다 — 못 만들어도 저작은 성공시키고 사유를 경고로 남긴다(run6: 여기서 던져 저작 전체가 실패했다).
   let verificationScene: SceneTestInput | null = null;
-  try {
-    verificationScene = buildVerificationScene(draft, spec, { clueEvents, suspectEvents, accuserEvent });
-  } catch (error) {
-    if (!(error instanceof ToolError)) throw error;
-    warnings.push(`${error.message} — data.verificationScene 없이 저작했습니다. run_scene_test 입력을 직접 짜라.`);
+  if (!allBarren) {
+    try {
+      verificationScene = buildVerificationScene(draft, spec, { clueEvents, suspectEvents, accuserEvent });
+    } catch (error) {
+      if (!(error instanceof ToolError)) throw error;
+      warnings.push(`${error.message} — data.verificationScene 없이 저작했습니다. run_scene_test 입력을 직접 짜라.`);
+    }
   }
+  const next = allBarren
+    ? `다음 할 일 1순위: 사건 무대 ${barren.length}곳이 전부 맨땅(벽·가구 없음)이다. 지금은 run_scene_test 를 호출하지 마라. 먼저 place_concept(plan, 새 mapId) 나 author_house(interior:"linked-interior") 로 벽·가구가 있는 방을 짓고, 그 좌표로 author_mystery_case 를 같은 caseId 로 다시 불러라. 바닥 fill_region 으로 방을 흉내 내지 마라. data.verificationScene 은 방이 생긴 뒤에만 준다. `
+    : barren.length > 0
+      ? `다음 할 일: 맨땅 무대 ${barren.length}곳은 place_concept 로 방을 보강한 뒤 같은 caseId 로 다시 저작하라. `
+      : "";
+  const verify = verificationScene
+    ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
+    : allBarren
+      ? ""
+      : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라.";
   return {
-    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${verificationScene
-      ? `data.verificationScene 을 고치지 말고 그대로 run_scene_test 에 넣어 증거 수집 → 증거 대면 → 지목을 플레이 검증하라(스텝 ${verificationScene.steps.length}개, 기대 엔딩 ${spec.endings.solved.id}). 저작 뒤 시간표·배치로 사건 인물을 옮겼다면 다시 author_mystery_case 로 시나리오를 새로 받아라.`
-      : "run_scene_test 로 증거 수집 → 지목을 플레이 검증하라."}`,
+    summary: `추리 사건 '${spec.title}' 저작 — 용의자 ${spec.suspects.length}명, 증거 ${itemIds.length}개(필수 ${spec.requiredClues.length}), 조사 지점 ${clueEvents.length}곳, 지목 NPC '${spec.accuser.name}', 엔딩 2개${removed > 0 ? ` (이전 사건 이벤트 ${removed}개 교체)` : ""}. ${next}${verify}`,
     data: {
       caseId: spec.caseId,
       culprit: culprit.id,
@@ -1326,9 +1529,12 @@ const authorMysteryCase: ToolDefinition = {
   name: "author_mystery_case",
   description:
     "추리/살인사건/탐정 게임은 author_mystery_case 로 만든다(place_examine_hotspots·place_npc·define_ending 을 따로 조립하지 말 것). " +
+    "사건 무대(저택·여관 실내 등)가 아직 없으면 먼저 place_concept·author_house 로 방이 있는 맵을 짓고 그 좌표로 명세를 쓴다. " +
     "사건 명세 하나로 증거 아이템(스위치 없음)·한 번만 주는 조사 지점·용의자 탐문(알리바이/동기/증언/증거 대면)·" +
     "지목 NPC(증거 부족=힌트, 필수 증거 전부=이름 목록→solved/wrong 엔딩)를 컴파일한다. 기존 주민은 suspects[].eventId 로 재사용(시간표 정리). " +
-    "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. 저작 결과 data.verificationScene(끝까지 도는 run_scene_test 입력)을 그대로 run_scene_test 에 넣어 플레이 검증.",
+    "쓰기 전 check_mystery_case 규칙으로 검사해 범인 특정 불가·누설·도달 불가·증거 없는 엔딩을 사유와 함께 거부한다. " +
+    "요약이 data.verificationScene 을 run_scene_test 에 넣으라고 할 때만 그 입력을 그대로 검증한다. " +
+    "요약이 맨땅이라 지금은 run_scene_test 를 호출하지 말라고 하면 방을 짓고 같은 caseId 로 다시 부른다.",
   mode: "write",
   parameters: CASE_PARAMETERS,
   invalidArgsExample: CASE_EXAMPLE,

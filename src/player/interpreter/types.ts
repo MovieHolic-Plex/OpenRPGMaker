@@ -24,7 +24,7 @@ import type { RuntimeCameraTarget } from "@/project/sessionRuntimeTypes"
 
 export type StepResult =
   | { kind: "done" }
-  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string }
+  | { kind: "text"; speaker?: string; body: string; face?: FaceGraphic; settings?: MessageWindowSettings; autoAdvance?: boolean; emotion?: string; style?: string; context?: string; container?: string }
   | {
       kind: "choices";
       prompt?: string;

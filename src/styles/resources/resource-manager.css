@@ -121,6 +121,13 @@
   position: relative;
   width: 100%;
 }
+/* 모달 창 안에서는 창 높이를 채운다. 셸이 600px 로 고정돼 창(820px) 아래 120px 이 빈 띠로 남고
+   카드 목록은 그 위에서 잘렸다(2026-09-24 visual QA). */
+.resource-modal-window .rm-classic-shell {
+  align-self: stretch;
+  height: auto;
+}
+
 .rm-category-list,
 .rm-entry-list,
 .rm-preview-well {
@@ -406,12 +413,14 @@
   min-height: 24px;
 }
 
+/* 가로 여백이 0 이라 왼쪽 안내문과 오른쪽 「도움말」 버튼이 창 테두리에 붙어 있었다(2026-09-24 visual QA).
+   본문과 같은 여백을 쓴다. */
 .resource-modal-footer {
   align-items: center;
   display: flex;
   gap: 10px;
   justify-content: flex-end;
-  padding: 10px 0 0;
+  padding: 10px var(--rm-resource-body-pad) var(--rm-resource-body-pad);
 }
 
 .resource-footer-status {
@@ -588,3 +597,85 @@
   min-width: 0;
   width: 100%;
 }
+
+.asset-source-backdrop {
+  background: rgba(24, 22, 18, 0.28);
+  display: grid;
+  inset: 0;
+  padding: 16px;
+  position: fixed;
+  z-index: 1200;
+}
+
+.asset-source-window {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-l);
+  box-shadow: var(--shadow-modal);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.asset-source-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px;
+}
+
+.asset-source-header h2 {
+  font: 600 16px/22px var(--font-ui);
+  margin: 0;
+}
+
+.asset-source-url {
+  flex: 1 1 240px;
+  min-width: 0;
+}
+
+.asset-source-status {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.asset-source-body {
+  display: grid;
+  flex: 1;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  min-height: 0;
+}
+
+.asset-source-viewport {
+  background: #1c1a17;
+  min-height: 420px;
+  position: relative;
+}
+
+.asset-source-desktop-note,
+.asset-source-picker {
+  padding: 12px;
+}
+
+.asset-source-picker {
+  border-left: 1px solid var(--border-strong);
+  overflow: auto;
+}
+
+.asset-source-sheet {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: auto 72px minmax(0, 1fr);
+  margin-bottom: 8px;
+}
+
+.asset-source-sheet img {
+  height: 72px;
+  object-fit: contain;
+  width: 72px;
+}
+

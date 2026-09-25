@@ -143,8 +143,7 @@
 }
 
 /* 데이터베이스·리소스 모달이 열리면 조수는 물러난다(02 규칙 유지 — 여기선 데크만 재확인). */
-body:has(.database-modal-backdrop) .ai-chat-panel .ai-deck,
-body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
+body:has(.database-modal-backdrop:not(.is-parked)) .ai-chat-panel .ai-deck {
   display: none;
 }
 
@@ -375,3 +374,8 @@ body:has([data-testid='resource-modal']) .ai-chat-panel .ai-deck {
   text-align: left;
 }
 .ai-chat-setting-row:has(> button[hidden]) { display: none; }
+
+/* 스튜디오는 캔버스 영역을 덮는 자기 셸을 그린다. 버튼은 가려진 캔버스 영역에 붙어 있어 z-index 로만
+   떠 보였고, 그 자리가 스튜디오 채팅 컴포저의 전송 버튼 위였다(2026-09-24 visual QA — 전송 가운데를
+   누르면 느낌표가 잡혔다). 스튜디오에선 숨긴다 — 스튜디오 오른쪽 열이 「내 요청」 을 따로 보여 준다. */
+body.ai-studio-open .ai-suggestion-peek { display: none; }

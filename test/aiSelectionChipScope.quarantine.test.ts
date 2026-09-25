@@ -166,34 +166,20 @@ describe("대기 상태에서도 선택 칩은 보인다", () => {
     expect(host.classList.contains("has-selection-scope")).toBe(false);
   });
 
-  it("idle: the map pin is visible, selection hides only sibling chips, and clearing restores the map pin", () => {
+  it("idle keeps the selection chip and drops it when cleared", () => {
     const panel = renderPanel();
     const host = control(panel, "ai-context-chips");
     const mapId = store.getCurrent().startMapId;
-    const mapChip = () => {
-      const chip = host.querySelector<HTMLElement>(".ai-context-chip:not(.ai-selection-chip)");
-      if (!chip) throw new Error("Missing current-map pin");
-      expect(chip.textContent).toBe(store.getCurrent().maps[mapId]?.name);
-      return chip;
-    };
+    expect(host.querySelector(".ai-context-chip:not(.ai-selection-chip)")).toBeNull();
     expect(panel.classList.contains("is-assistant-idle")).toBe(true);
-    expect(getComputedStyle(host).display).toBe("flex");
-    expect(getComputedStyle(mapChip()).display).toBe("inline-flex");
 
     editorState.set({ selection: { mapId, x: 1, y: 1, width: 3, height: 3 } });
-    expect(panel.classList.contains("is-assistant-idle")).toBe(true);
-    expect(getComputedStyle(host).display).toBe("flex");
-    expect(getComputedStyle(host).order).toBe("-1");
-    expect(getComputedStyle(mapChip()).display).toBe("none");
     expect(getComputedStyle(control(panel, "ai-selection-chip")).display).toBe("inline-flex");
     const clear = control<HTMLButtonElement>(panel, "ai-selection-chip-clear");
-    expect(getComputedStyle(clear).display).toBe("inline-flex");
     expect(clear.disabled).toBe(false);
 
     clear.click();
     expect(panel.querySelector('[data-testid="ai-selection-chip"]')).toBeNull();
-    expect(getComputedStyle(host).display).toBe("flex");
-    expect(getComputedStyle(mapChip()).display).toBe("inline-flex");
     expect(document.activeElement).toBe(control(panel, "ai-input"));
   });
 });

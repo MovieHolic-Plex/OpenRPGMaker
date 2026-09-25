@@ -108,6 +108,8 @@ export const SPATIAL_BUILD_TOOLS: ReadonlySet<string> = new Set([
 // 아무 검사 없이 바닥으로 바꿨고, 구조물 보호는 deprecated 된 clear_region 에만 걸려 있었다.
 export const TILE_WRITE_TOOLS: ReadonlySet<string> = new Set([
   "tile_erase", "place_props", "build_wall", "lay_path", "place_door", "place_window", "build_roof",
+  // MZ 4층 블록 찍기 — 1·3층 칸도 덮으므로 기존 내용 보호를 받는다(그림자만 쓰는 paint_shadow 는 덮지 않는다).
+  "stamp_layer_block",
 ]);
 
 // 밑그림 툴 중 타일을 덮어쓰지 않는 점 배치 — 기존 내용 보호 대상이 아니다.
@@ -387,6 +389,12 @@ export function affectedRegions(toolName: string, args: Record<string, unknown>)
   }
 
   if (mapId === null) return [];
+
+  // stamp_layer_block: {x,y} + 층별 2차원 배열 — 실제로 쓰는 칸(값 ≠ -1)만. -1 칸은 건드리지 않으므로 보호 판정에서 뺀다.
+  if (toolName === "stamp_layer_block") {
+    const block = layerBlockRegions(mapId, args);
+    if (block !== null) return block;
+  }
 
   const cellRegions = pointRegions(mapId, args.cells);
   if (cellRegions !== null) return cellRegions;
@@ -721,6 +729,42 @@ function rectFromObject(mapId: string, value: unknown): AffectedRegion | null {
   if (!isRecord(value)) return null;
   if (!isFiniteNumber(value.x) || !isFiniteNumber(value.y) || !isFiniteNumber(value.w) || !isFiniteNumber(value.h)) return null;
   return { mapId, x: value.x, y: value.y, w: value.w, h: value.h };
+}
+
+/**
+ * 층 블록이 실제로 쓰는 칸(1~4층 어느 층이든 값 ≠ -1)을 행마다 이어진 가로 줄로 묶는다. 인자 모양이 틀리면 null.
+ * 그림자(shadow) 격자는 세지 않는다 — 그림자는 칸 내용을 덮지 않으므로 paint_shadow 처럼 보호 판정 밖이다.
+ * 그림자만 찍는 블록은 빈 배열(보호할 칸 없음)이다.
+ */
+function layerBlockRegions(mapId: string, args: Record<string, unknown>): AffectedRegion[] | null {
+  const x0 = args.x, y0 = args.y;
+  if (!isFiniteNumber(x0) || !isFiniteNumber(y0) || typeof args.layers !== "object" || args.layers === null) return null;
+  const rows = new Map<number, Set<number>>();
+  for (const [key, grid] of Object.entries(args.layers as Record<string, unknown>)) {
+    if (key === "shadow" || !Array.isArray(grid)) continue;
+    grid.forEach((row, dy) => {
+      if (!Array.isArray(row)) return;
+      row.forEach((value, dx) => {
+        if (value === -1) return;
+        const cols = rows.get(dy) ?? new Set<number>();
+        cols.add(dx);
+        rows.set(dy, cols);
+      });
+    });
+  }
+  const regions: AffectedRegion[] = [];
+  for (const [dy, cols] of [...rows].sort((a, b) => a[0] - b[0])) {
+    const sorted = [...cols].sort((a, b) => a - b);
+    let start = sorted[0]!;
+    let prev = start;
+    for (const dx of [...sorted.slice(1), Number.NaN]) {
+      if (dx === prev + 1) { prev = dx; continue; }
+      regions.push({ mapId, x: x0 + start, y: y0 + dy, w: prev - start + 1, h: 1 });
+      start = dx;
+      prev = dx;
+    }
+  }
+  return regions;
 }
 
 function rectFromXY(mapId: string, args: Record<string, unknown>): AffectedRegion | null {

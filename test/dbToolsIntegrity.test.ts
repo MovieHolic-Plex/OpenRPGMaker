@@ -4,6 +4,27 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 
 describe("DB write tools", () => {
+  it("patches follower scale without replacing its sprite or battle species data", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const species = ctx.project.database.monsterSpecies[0];
+    species.graphic.fieldGraphic = {
+      sprite: { type: "bundled", id: "easyrpg-charset-actor1" },
+      direction: "left", pattern: 4,
+    };
+    const before = structuredClone(species);
+    const result = runTool(ctx, "define_monster_species", {
+      species: { id: species.id, graphic: { fieldGraphic: { scale: 0.5 } } },
+    }, { dryRun: false });
+    expect(result.ok, JSON.stringify(result.issues)).toBe(true);
+    const after = ctx.project.database.monsterSpecies.find((entry) => entry.id === species.id)!;
+    expect(after.graphic.fieldGraphic).toEqual({ ...before.graphic.fieldGraphic, scale: 0.5 });
+    expect(after.graphic.monsterResourceId).toBe(before.graphic.monsterResourceId);
+    expect(after.graphic.backResourceId).toBe(before.graphic.backResourceId);
+    expect(after.baseStats).toEqual(before.baseStats);
+    expect(after.skillsByLevel).toEqual(before.skillsByLevel);
+    expect(after.captureRate).toBe(before.captureRate);
+  });
+
   it("replaces inherited members on an enemyIds-only troop patch and preserves unrelated fields", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const troop = ctx.project.database.troops[0];
@@ -151,6 +172,18 @@ describe("DB write tools", () => {
     const result = runTool(ctx, "upsert_state", { state: { id: "state_x", name: "X", rawInjected: true } }, { dryRun: false });
     expect(result.ok).toBe(false);
     expect(ctx.project.database.states.some((state) => state.id === "state_x")).toBe(false);
+  });
+
+  // 추리 도그푸딩 gen: 지어낸 배경 id 가 커밋 게이트에서 변경 전체(제목·음악 포함)를 되돌렸다 — 호출 시점에 짚는다.
+  it("set_title_screen rejects an unknown background id at call time with real candidates", () => {
+    const ctx: ToolContext = { project: createBlankProject() };
+    const bad = runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "easyrpg-title-nope-1" }, { dryRun: false });
+    expect(bad.ok).toBe(false);
+    const message = JSON.stringify(bad.issues);
+    expect(message).toContain("없는 리소스");
+    expect(message).toContain("list_resources");
+    expect(message).toMatch(/easyrpg-title-title\d/u);
+    expect(runTool(ctx, "set_title_screen", { title: "안개 저택", backgroundResourceId: "easyrpg-title-title2" }, { dryRun: false }).ok).toBe(true);
   });
 
   it("set_title_screen creates titleScreen when missing and nested-merges sounds/titleGraphic", () => {
