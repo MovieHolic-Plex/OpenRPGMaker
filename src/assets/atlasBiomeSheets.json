@@ -1,13 +1,13 @@
 {
- "tex_atlas_biome_jungle": 3540,
- "tex_atlas_biome_swamp": 3420,
- "tex_atlas_biome_mushroom": 3450,
+ "tex_atlas_biome_jungle": 3600,
+ "tex_atlas_biome_swamp": 3480,
+ "tex_atlas_biome_mushroom": 3510,
  "tex_atlas_biome_crystal": 3210,
  "tex_atlas_biome_badlands": 3210,
- "tex_atlas_biome_savanna": 3450,
- "tex_atlas_biome_taiga": 3450,
- "tex_atlas_biome_tundra": 3450,
+ "tex_atlas_biome_savanna": 3510,
+ "tex_atlas_biome_taiga": 3510,
+ "tex_atlas_biome_tundra": 3510,
  "tex_atlas_biome_blight": 3480,
  "tex_atlas_biome_skyisle": 3150,
- "tex_atlas_biome_tropical": 3420
+ "tex_atlas_biome_tropical": 3480
 }

@@ -95,6 +95,13 @@ def build(k):
     npieces = neighbour_pieces(nb) if nb else []
     pos, next_row = pack(pieces + npieces, ART0 // COLS)
     ground_defs = G.grounds(k, lawn, cell(biome_sheet(nb), 240) if nb else None)
+    # the neighbour's own first ground, drawn on the neighbour lawn: patches of it inside the border zone
+    nb_lawn = cell(biome_sheet(nb), 240) if nb else None
+    if nb and nb in BIOMES:
+        own = [(gid, d) for gid, d in G.grounds(nb, nb_lawn).items() if d[0] == "ground" and gid != "neighbour"]
+        if own:
+            gid0, (kind0, name0, kw0) = own[0]
+            ground_defs["nb-ground"] = (kind0, name0, kw0)
     blob_rows = {}
     row = next_row
     for gid in ground_defs:
@@ -155,7 +162,7 @@ def build(k):
     blobs = {}
     for gid, (kind, name, kw) in ground_defs.items():
         r0 = blob_rows[gid]; tiles = {}
-        glawn = lawn
+        glawn = nb_lawn if gid == "nb-ground" else lawn
         for n, (m, arr) in enumerate(G.blob_set(glawn, **kw)):
             t = r0 * COLS + n; paste(out, t, arr); tiles[m] = t
         vm = {str(m): tiles[G.canon(m)] for m in range(256)}

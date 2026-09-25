@@ -45,6 +45,7 @@ await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-en
     for (let attempt = 0; !done && attempt < 40; attempt++) {
       const b = new BiomeMap(kit, { ...plan, tileset: biome.tileset, tilesetId: biome.tileset.id }, plan.seed + attempt, biome);
       try {
+        b.noForest = !!th.noForestEdge;
         const lay = arch(plan.o ?? {});
         const entry = lay.build(b);
         plan.extra?.(b);
@@ -69,7 +70,9 @@ await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-en
           b.clumps(th.hero.ids, rnd(b, th.hero.count), { per: th.hero.per, gapCheck: 6, near: dist ? (x, y) => (dist.get(b.at(x, y)) ?? 99) <= th.hero.nearWater : null });
         }
         if (th.landmark) b.clumps([th.landmark.id], 1, { per: [1, 1], gapCheck: 8 });
-        const fillOpts = { maxSq: AIM.maxSq, screen: AIM.screen, treeCount: [2, 3], ...th.fill, ...(plan.fill ?? {}) };
+        // a few large ground patches first, in the open (organic ellipses), before the fill cuts the plain into gaps
+        if (th.grounds?.length) b.groundFill(th.grounds, { maxSq: 0, screen: 0, cap: rnd(b, th.bigPatches ?? [2, 4]), size: [26, 48] });
+        const fillOpts ={ maxSq: AIM.maxSq, screen: AIM.screen, treeCount: [2, 3], ...th.fill, ...(plan.fill ?? {}) };
         if (fillOpts.fillGate) Object.assign(fillOpts, fillOpts.fillGate);
         b.fill(fillOpts);
         if (th.bare) b.bareGroves({ seed: b.seed, rockChance: 0.3 });
@@ -89,7 +92,7 @@ await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-en
         if (!(e instanceof assert.AssertionError)) throw e;
         lastError = e;
         if (process.env.ATLAS_DEBUG) console.log(plan.id, attempt, e.message.split("\n")[0].slice(0, 240));
-        if (process.env.ATLAS_ASCII === plan.id) console.log(b.ascii());
+        if (process.env.ATLAS_ASCII === plan.id) { console.log(b.ascii()); const t = {}; for (const [, g] of b.paved) t[g] = (t[g] ?? 0) + 1; console.log(t); }
       }
     }
     if (!done) { failures.push(plan.id + ": " + lastError.message.split("\n")[0]); keepOld(plan); continue; }

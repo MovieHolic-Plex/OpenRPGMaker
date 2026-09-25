@@ -376,15 +376,16 @@ export const marsh = (o = {}) => ({
     const ry = Math.round(H * 0.5) + R(b, -3, 3);
     const road = (x) => ry + 3 * Math.sin(x / 9 + b.seed);
     let made = 0;
+    const nx = Math.round(W * 0.5) + R(b, -6, 6);
     for (let k = 0; k < n * 6 && made < n; k++) {
       const cx = R(b, 4, W - 5), cy = R(b, 4, H - 5), rx = R(b, 4, 8), ry2 = R(b, 3, 5);
       if (Math.abs(cy - road(cx)) < ry2 + 3) continue;
       b.pond(cx, cy, rx, ry2, 0.26); made++;
     }
-    b.unwater((x, y) => Math.abs(y - road(x)) < 3 + 1.2 * (1 + Math.sin(x / 3.3 + y / 5)) || x < 5 || x > W - 6);
+    b.unwater((x, y) => Math.abs(y - road(x)) < 3 + 1.2 * (1 + Math.sin(x / 3.3 + y / 5)) || x < 5 || x > W - 6 || (o.north !== false && y < road(x) && Math.abs(x - nx) < 4));
     b.smoothWater(); b.paintWater();
     const ex = [{ side: "west", at: Math.round(road(0)), meets: o.meets?.west ?? "서쪽 늪" }, { side: "east", at: Math.round(road(W - 1)), meets: o.meets?.east ?? "동쪽 늪" }];
-    if (o.north !== false) ex.push({ side: "north", at: Math.round(W * 0.5) + R(b, -6, 6), meets: o.meets?.north ?? "북쪽 필드" });
+    if (o.north !== false) ex.push({ side: "north", at: nx, meets: o.meets?.north ?? "북쪽 필드" });
     b.exits(ex);
     const pts = [0.2, 0.4, 0.6, 0.8].map((f) => [Math.round(W * f), Math.round(road(W * f))]);
     const lines = [["exit:0", ...pts, "exit:1"]];
@@ -399,7 +400,7 @@ export const marsh = (o = {}) => ({
 export const meadowRoad = (o = {}) => ({
   build(b) {
     const W = b.W, H = b.H;
-    if (o.pond !== false) { b.pond(W * (b.random() < 0.5 ? 0.3 : 0.7), H * (b.random() < 0.5 ? 0.3 : 0.7), R(b, 4, 6), R(b, 3, 4), 0.2); b.smoothWater(); b.paintWater(); }
+    if (o.pond !== false) { b.pond(W * (b.random() < 0.5 ? 0.3 : 0.7), H * (b.random() < 0.5 ? 0.3 : 0.7), R(b, 5, 8), R(b, 4, 5), 0.24); b.smoothWater(); b.paintWater(); }
     const ex = [{ side: "west", at: Math.round(H * 0.45) + R(b, -5, 5), meets: o.meets?.west ?? "서쪽 필드" }, { side: "east", at: Math.round(H * 0.55) + R(b, -5, 5), meets: o.meets?.east ?? "동쪽 필드" }];
     if (o.south !== false) ex.push({ side: "south", at: Math.round(W * 0.35) + R(b, -5, 5), meets: o.meets?.south ?? "남쪽 필드" });
     b.exits(ex);
@@ -412,5 +413,27 @@ export const meadowRoad = (o = {}) => ({
   },
 });
 
-export const ARCHETYPES = { riverFord, cliffTerrace, twoTier, lakeShore, coast, waterfallValley, crossroads, caveRoad, islands, marsh, meadowRoad };
+// Glade: deep woods on every side, the road winding through one big clearing (a spring pond in it, optional), exits
+// west and east (and north). The woods are the map; the clearing is where the biome's own pieces stand.
+export const glade = (o = {}) => ({
+  build(b) {
+    const W = b.W, H = b.H, cx = Math.round(W * 0.5) + R(b, -4, 4), cy = Math.round(H * 0.5) + R(b, -2, 2);
+    if (o.pond !== false) { b.pond(cx + (b.random() < 0.5 ? -1 : 1) * R(b, 5, 8), cy + R(b, -6, -4), R(b, 3, 5), R(b, 2, 3), 0.2); b.smoothWater(); b.paintWater(); }
+    const ex = [{ side: "west", at: Math.round(H * 0.5) + R(b, -6, 6), meets: o.meets?.west ?? "서쪽 숲길" }, { side: "east", at: Math.round(H * 0.5) + R(b, -6, 6), meets: o.meets?.east ?? "동쪽 숲길" }];
+    if (o.north) ex.push({ side: "north", at: cx + R(b, -8, 8), meets: o.meets?.north ?? "북쪽 숲길" });
+    if (o.south) ex.push({ side: "south", at: cx + R(b, -8, 8), meets: o.meets?.south ?? "남쪽 숲길" });
+    b.exits(ex);
+    const mid = [cx, cy + 2];
+    const lines = [["exit:0", [Math.round(W * 0.25), ex[0].at + R(b, -3, 3)], mid, [Math.round(W * 0.75), ex[1].at + R(b, -3, 3)], "exit:1"]];
+    for (let k = 2; k < ex.length; k++) lines.push([`exit:${k}`, mid]);
+    b.spine(lines); b.connect(); b.paintRoads();
+    b.props([["나무 이정표", cx + 2, cy - 1, "숲속 빈터 표지"]]);
+    const rx = W * (o.clearing ?? 0.3), ry = H * (o.clearing ?? 0.3);
+    b.forest({ bands: { north: [o.band ?? 5, 2], south: [o.band ?? 5, 2], west: [o.band ?? 5, 2], east: [o.band ?? 5, 2] },
+      blobs: [[W * 0.15, H * 0.2, 7, 5, 16], [W * 0.85, H * 0.2, 7, 5, 16], [W * 0.15, H * 0.8, 7, 5, 16], [W * 0.85, H * 0.8, 7, 5, 16]],
+      clear: [[cx, cy, rx, ry, 30]], noise: 0.8, coverage: o.coverage ?? 0.9 });
+  },
+});
+
+export const ARCHETYPES = { riverFord, cliffTerrace, twoTier, lakeShore, coast, waterfallValley, crossroads, caveRoad, islands, marsh, meadowRoad, glade };
 export { SIDE_KO };

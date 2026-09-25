@@ -11,7 +11,7 @@ export function theme(b) {
   const k = b.kind;
   switch (k) {
     case "jungle": return {
-      canopy: { count: [3, 5], r: [4, 7] },
+      canopy: { count: [3, 5], r: [4, 7] }, bigPatches: [0, 1],
       hero: { ids: ["giant-tree-1", "giant-tree-2"], count: [3, 5], per: [1, 3] },
       fill: { palette: { trees: 3.4, grass: 2.2, bushes: 1.6, flowers: 0.35 }, trees: P(k, "giant-tree-2", "jungle-tree", "jungle-tree", "broadleaf"), treeCount: [3, 5], bushes: T(b, "fern-1", "fern-2"), flowers: T(b, "orchid"), flowerCap: 6, bushSize: [4, 7], groves: 8, groveSq: 6, smallBushShare: 0 },
       vines: { ids: ["vine-1", "vine-2"], count: [3, 6] }, grounds: ["leaf-litter"], water: null,
@@ -37,11 +37,11 @@ export function theme(b) {
       hero: { ids: ["red-rock"], count: [3, 5], per: [1, 3] },
       fill: { palette: { stands: 2.2, bushes: 1.2, rocks: 1 }, bushes: T(b, "sagebrush-1", "sagebrush-2"), rocks: T(b, "red-boulder-1", "red-boulder-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [2, 4], spotCap: 26,
         fillGate: { maxSq: 8, screen: 0.66 }, smallBushShare: 0 },
-      bare: true, grounds: ["cracked-red", "red-gravel"], noForest: true, water: null,
+      bare: true, grounds: ["cracked-red", "red-gravel"], noForest: true, noForestEdge: true, water: null,
     };
     case "savanna": return {
-      hero: { ids: ["acacia-1", "baobab", "acacia-2"], count: [3, 5], per: [1, 1] },
-      fill: { palette: { trees: 1.3, grass: 3.4, bushes: 0.9 }, trees: P(k, "acacia-2", "acacia-1", "acacia-2", "acacia-1", "kopje"), bushes: T(b, "dry-bush-1", "dry-bush-2"), groves: 0, smallBushShare: 0, growCap: 90 },
+      hero: { ids: ["acacia-1", "baobab", "acacia-2", "kopje"], count: [3, 5], per: [1, 2] },
+      fill: { palette: { trees: 0.7, grass: 3.8, bushes: 0.8 }, trees: P(k, "acacia-2", "acacia-1", "acacia-2"), treeCount: [1, 2], bushes: T(b, "dry-bush-1", "dry-bush-2"), groves: 0, smallBushShare: 0, growCap: 90 },
       grounds: ["dry-dust"], landmark: { id: "termite" }, noForest: true, water: null,
     };
     case "taiga": return {
@@ -82,7 +82,7 @@ export function theme(b) {
 // Border zone dressing: which neighbour pieces fill the zone (ids on this sheet, prefixed nb-).
 export function zoneTheme(b) {
   const nb = Object.values(b.pieces).filter((p) => p.neighbour);
-  const trees = nb.filter((p) => p.h > 1).map((p) => p.id);
+  const trees = nb.filter((p) => p.h > 1 && p.w > 1).map((p) => p.id);
   const smalls = nb.filter((p) => p.h === 1 && p.w === 1 && p.tiles[0] >= 0 && p.roles[0] === "S").map((p) => p.tiles[0]);
   const decals = nb.filter((p) => p.h === 1 && p.w === 1 && p.tiles[0] >= 0 && p.roles[0] === "W").map((p) => p.tiles[0]);
   return { trees, smalls, decals };

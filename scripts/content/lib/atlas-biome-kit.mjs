@@ -40,6 +40,8 @@ export const tileOf = (biome, id) => { const p = biome.pieces[id]; assert(p, "Un
 
 export class BiomeMap extends OutdoorMap {
   constructor(kit, spec, seed, biome) { super(kit, spec, seed); this.biome = biome; this.zone = null; }
+  // biomes without leafy woods (badlands): the layout's edge woods are left out, the fill and groves close the gaps
+  forest(opts) { if (this.noForest) return; return super.forest(opts); }
   // Cave mouth (the sheet's own 2×2 arch drawn on its cliff texture) at the foot of the cliff face at columns x, x+1:
   // it covers the two bottom face rows, so the opening meets the ground; the cell below is the approach.
   shaft(x) {
@@ -146,8 +148,11 @@ export class BiomeMap extends OutdoorMap {
     return made;
   }
   // ── blob grounds: patches grown from 2×2 blocks on plain ground (walkable unless the group is a pool) ──
-  plainForGround(i) {
-    return this.lower[i] === this.ground && this.upper[i] === -1 && !this.roads.has(i) && !this.paved.has(i) && !this.keep.has(i) && !this.occupied.has(i) && !this.nearAccessSet().has(i) && !(this.zone?.has(i));
+  plainForGround(i, gid = null) {
+    if (!(this.lower[i] === this.ground && this.upper[i] === -1 && !this.roads.has(i) && !this.paved.has(i) && !this.keep.has(i) && !this.occupied.has(i) && !this.nearAccessSet().has(i))) return false;
+    // the neighbour's ground only deep in the zone (its rim is drawn on the neighbour lawn), the biome's own never in it
+    if (gid === "nb-ground") { const [x, y] = this.xy(i); return !!this.zone && N8.every(([dx, dy]) => !this.inside(x + dx, y + dy) || this.zone.has(this.at(x + dx, y + dy))); }
+    return !(this.zone?.has(i));
   }
   nearAccessSet() {
     if (this._nearAccess && this._nearAccessN === this.access.length) return this._nearAccess;
@@ -157,7 +162,7 @@ export class BiomeMap extends OutdoorMap {
   }
   groundPatch(gid, x, y, size, { pool = false } = {}) {
     const blocks = [[x, y]], cells = new Set();
-    const ok2 = (X, Y) => [0, 1].every((dy) => [0, 1].every((dx) => { const i = this.at(X + dx, Y + dy); return this.inside(X + dx, Y + dy) && (cells.has(i) || this.plainForGround(i)) && (!pool || !this.nearSolid(X + dx, Y + dy, 1)); }));
+    const ok2 = (X, Y) => [0, 1].every((dy) => [0, 1].every((dx) => { const i = this.at(X + dx, Y + dy); return this.inside(X + dx, Y + dy) && (cells.has(i) || this.plainForGround(i, gid)) && (!pool || !this.nearSolid(X + dx, Y + dy, 1)); }));
     if (!ok2(x, y)) return 0;
     const add = (X, Y) => { for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) cells.add(this.at(X + dx, Y + dy)); };
     add(x, y);
@@ -204,7 +209,7 @@ export class BiomeMap extends OutdoorMap {
     }
   }
   // Close the emptiness gate with ground patches of the given grounds (after the fill): in the emptiest screen first.
-  groundFill(gids, { maxSq = 5, screen = 0.47, size = [10, 26], cap = 60, pool = null } = {}) {
+  groundFill(gids, { maxSq = 5, screen = 0.47, size = [16, 34], cap = 60, pool = null } = {}) {
     let n = 0, fails = 0;
     for (; n < cap && fails < 80;) {
       const e = this.emptiness();
@@ -230,29 +235,34 @@ export class BiomeMap extends OutdoorMap {
   zoneFill({ trees = [], smalls = [], decals = [], maxSq = 5, screen = 0.45 } = {}) {
     for (const i of this.zoneKeep ?? []) this.keep.delete(i);
     // tall grass the fill grew into the zone is this biome's grass: the zone gets the neighbour's own pieces instead
-    for (const i of this.zone) if (this.grassCells.has(i)) { this.grassCells.delete(i); this.dress.delete(i); this.occupied.delete(i); this.clusterOf.delete(i); if (this.upper[i] === -1) this.lower[i] = this.ground; }
+    for (const i of this.zone) if (this.grassCells.has(i)) { this.grassCells.delete(i); this.dress.delete(i); this.occupied.delete(i); this.clusterOf.delete(i); if (this.paved.get(i) !== "sand" && this.paved.get(i) !== "dirt") this.paved.delete(i); if (this.upper[i] === -1) this.lower[i] = this.ground; }
     for (const c of this.clusters ?? []) if (c.cells) for (const i of [...c.cells]) if (this.zone.has(i)) c.cells.delete(i);
+    for (const i of this.zone) if (this.paved.get(i) === "tallGrass") { this.paved.delete(i); this.dress.delete(i); this.occupied.delete(i); this.clusterOf.delete(i); this.grassCells.delete(i); if (this.upper[i] === -1) this.lower[i] = this.ground; }
     const inZone = (i) => this.zone.has(i);
     const zoneEmpty = () => { const P = new Uint8Array(this.W * this.H); for (const i of this.zone) if (this.lower[i] === this.ground && this.upper[i] === -1 && !this.roads.has(i)) P[i] = 1; return this.emptiness(P); };
     let fails = 0, placed = 0;
-    for (let step = 0; step < 600 && fails < 90; step++) {
+    for (let step = 0; step < 1500 && fails < 260; step++) {
       const e = zoneEmpty();
       if (e.maxSq <= maxSq && e.screen <= screen) break;
       const [x0, y0, w, h] = e.maxSq > maxSq ? [e.at[0], e.at[1], e.maxSq, e.maxSq] : [e.screenAt[0], e.screenAt[1], 17, 13];
-      const x = x0 + Math.floor(this.random() * w), y = y0 + Math.floor(this.random() * h);
-      if (!inZone(this.at(x, y))) { fails++; continue; }
+      // a plain zone cell of the emptiest window (not any cell of the window: the window straddles the zone edge)
+      const cand = [];
+      for (let yy = y0; yy < y0 + h; yy++) for (let xx = x0; xx < x0 + w; xx++) { const j = this.at(xx, yy); if (this.inside(xx, yy) && inZone(j) && this.lower[j] === this.ground && this.upper[j] === -1 && !this.roads.has(j)) cand.push([xx, yy]); }
+      if (!cand.length) { fails++; continue; }
+      const [x, y] = cand[Math.floor(this.random() * cand.length)];
       const r = this.random();
       let ok = false;
-      if (trees.length && r < 0.5) ok = !!this.clumps(trees, 1, { region: [x - 1, y - 1, 3, 3], per: [1, 3], gapCheck: 2, near: (X, Y) => inZone(this.at(X, Y)) });
-      else if (smalls.length && r < 0.85) ok = this.clusterTiles(smalls, x, y, 3 + Math.floor(this.random() * 3), inZone, false);
-      else if (decals.length) ok = this.clusterTiles(decals, x, y, 4 + Math.floor(this.random() * 3), inZone, true);
+      if (this.biome.blobs["nb-ground"] && r > 0.72) ok = !!this.groundPatch("nb-ground", x, y, 14 + Math.floor(this.random() * 20));
+      else if (trees.length && r < 0.6) ok = !!this.clumps(trees, 1, { region: [x - 2, y - 2, 4, 4], per: [2, 3], gapCheck: 1, near: (X, Y) => inZone(this.at(X, Y)) });
+      else if (smalls.length && r < 0.9) ok = this.clusterTiles(smalls, x, y, (trees.length > 2 ? 4 : 6) + Math.floor(this.random() * 4), inZone, false, false);
+      else if (decals.length) ok = this.clusterTiles(decals, x, y, 5 + Math.floor(this.random() * 3), inZone, true, false);
       if (ok) { placed++; fails = 0; } else fails++;
     }
     this.zoneReport = { placed, ...zoneEmpty() };
     return this.zoneReport;
   }
   // L-shaped cluster of 1×1 upper tiles (never a straight line of three), one bare ring from other dressing.
-  clusterTiles(tiles, x, y, size, within = () => true, walk = false) {
+  clusterTiles(tiles, x, y, size, within = () => true, walk = false, ring = true) {
     const ok = (X, Y) => { const i = this.at(X, Y); if (!this.inside(X, Y) || !within(i) || !this.bare(i) || this.occupied.has(i) || this.keep.has(i) || this.roads.has(i) || this.nearAccessSet().has(i)) return false;
       if (!walk) for (const [dx, dy] of N8) { const j = this.at(X + dx, Y + dy); if (this.inside(X + dx, Y + dy) && (this.roads.has(j) || this.water.has(j) || this.bridgeCells.has(j))) return false; }
       return true; };
@@ -271,7 +281,7 @@ export class BiomeMap extends OutdoorMap {
     const xs = new Set([...set].map((i) => i % this.W)), ys = new Set([...set].map((i) => Math.floor(i / this.W)));
     if (set.size >= 3 && (xs.size === 1 || ys.size === 1)) return false;
     // keep a ring from other dressing
-    for (const i of set) { const [X, Y] = this.xy(i); for (const [dx, dy] of N8) { const j = this.at(X + dx, Y + dy); if (this.inside(X + dx, Y + dy) && !set.has(j) && this.dress.has(j) && !this.treeCells.has(j)) return false; } }
+    if (ring) for (const i of set) { const [X, Y] = this.xy(i); for (const [dx, dy] of N8) { const j = this.at(X + dx, Y + dy); if (this.inside(X + dx, Y + dy) && !set.has(j) && this.dress.has(j) && !this.treeCells.has(j)) return false; } }
     for (const i of set) { this.upper[i] = tiles[Math.floor(this.random() * tiles.length)]; this.occupied.add(i); this.dress.add(i); if (!walk) { this.solid.add(i); this.keep.add(i); } }
     const [x0, y0] = this.xy([...set][0]);
     this.placements.push({ name: walk ? "바닥 장식 무리" : "작은 조각 무리", kind: "dressing", cluster: walk ? "decal" : "small", cells: set.size, x: x0, y: y0 });
