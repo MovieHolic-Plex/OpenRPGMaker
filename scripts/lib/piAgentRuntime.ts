@@ -7,6 +7,8 @@ import { growthGuidanceLine } from "../../src/ai/session/buildSpecGate.ts";
 import { assertVillageContractArgs, validateVillageContract, villageDraftReceipt, type VillageDraftReceipt } from "../../src/ai/piAgent/villageContract.ts";
 import type { ActivityVisual } from "../../src/ai/activityVisual";
 import { authoredVillageMapId, inspectPiVillageCompletion, piVillageRepairPrompt } from "../../src/ai/piAgent/villageCompletion.ts";
+import { inspectPiLayoutQuality, piLayoutRepairPrompt } from "../../src/ai/piAgent/layoutQuality.ts";
+import { PiRepeatBreaker } from "../../src/ai/piAgent/repeatBreaker.ts";
 import { inspectPromptPayload } from "../../src/ai/authoring/promptInspection.ts";
 import { activityPayload } from "../../src/ai/activityTrace.ts";
 import { finishSpatialToolAcceptance, authorMergedSpatialProposal } from "../../src/editor/tools/spatialToolState.ts";
@@ -442,12 +444,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 섀도우를 한 번만 복제하고 증분으로 따라가는 이유: 툴마다 전체를 다시 복제하면 43맵 프로젝트에서
   // 툴 호출 하나가 수십 MB 복제가 된다. 여기서는 diff 가 어차피 훑는 것만 훑고, 적용은 바뀐 칸뿐이다.
   let ghostShadow = structuredClone(base.maps ?? {}) as Record<string, GameMap>;
-  const emitMapDelta = (): void => {
+  const emitMapDelta = (): number => {
     const changes = diffMapsForDelta(ghostShadow, ctx.project.maps ?? {});
-    if (changes.length === 0) return;
+    if (changes.length === 0) return 0;
     ghostShadow = applyMapDeltas(ghostShadow, changes);
     emit({ type: "map_delta", maps: changes });
+    return changes.length;
   };
+  const repeats = new PiRepeatBreaker();
+  const toolArgs = new Map<string, unknown>();
   const unsubscribe = agent.subscribe((event: { type: string; [key: string]: unknown }) => {
     if (event.type === "message_update") {
       const part = event.assistantMessageEvent as { type?: string; delta?: unknown } | undefined;
@@ -473,6 +478,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       toolCalls += 1;
       toolStartedAt.set(String(event.toolCallId ?? ""), Date.now());
       emit({ type: "tool_start", id: String(event.toolCallId ?? ""), name: String(event.toolName ?? ""), args: event.args });
+      toolArgs.set(String(event.toolCallId ?? ""), event.args);
       return;
     }
     if (event.type === "tool_execution_end") {
@@ -503,7 +509,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       });
       // 순서 계약: 무엇을 했나(tool_end) 다음에 무엇이 바뀌었나(map_delta). 브라우저 다리가
       // 실행 중 도구 이름을 먼저 세우고 그 아래 칸을 그린다.
-      emitMapDelta();
+      const changed = emitMapDelta() > 0;
+      const args = toolArgs.get(callId);
+      toolArgs.delete(callId);
+      const repeat = repeats.observe(name, args, changed);
+      if (repeat?.action === "steer") {
+        emit({ type: "execution_status", name: "repeat_guard", ok: false, summary: repeat.message });
+        agent.steer({ role: "user", content: [{ type: "text", text: repeat.message }], timestamp: Date.now() });
+      } else if (repeat?.action === "stop") {
+        fatal = fatal ?? repeat.message;
+        agent.abort(fatal);
+      }
       return;
     }
     if (event.type === "message_end") {
@@ -574,6 +590,17 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (shape) declare(shape);
       }
       await promptResuming(piVillageRepairPrompt(ctx.project, base, completion, receipt?.data.village.residentEventIds));
+    }
+    // 배치 품질은 권고 한 번뿐이다 — 거부하지 않고, 두 번째 결과는 숫자만 알린다(layoutQuality.ts).
+    if (!fatal && !rejected && !contract && !request.readOnly && turns < maxTurns && !options.signal?.aborted) {
+      const layout = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+      if (layout.length) {
+        emit({ type: "execution_status", name: "layout_quality", ok: false, summary: `배치 품질 기준 미달 — 한 번 더 채웁니다: ${layout.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}`, data: layout });
+        await promptResuming(piLayoutRepairPrompt(layout));
+        const after = inspectPiLayoutQuality(ctx.project, base, request.mapIds, villageMapIds);
+        emit({ type: "execution_status", name: "layout_quality", ok: after.length === 0,
+          summary: after.length ? `배치 품질 수리 뒤에도 기준 미달: ${after.map(i => `${i.mapId} ${i.problems.join(", ")}`).join(" / ")}` : "배치 품질 기준 통과", data: after });
+      }
     }
   } finally {
     unsubscribeTeamMessages?.();

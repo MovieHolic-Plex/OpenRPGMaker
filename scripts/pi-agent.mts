@@ -66,6 +66,7 @@ function logEvent(label: string, event: PiAgentEvent) {
   else if (event.type === "tool_start" && flag("log-args")) console.log(`${prefix}  ARGS ${event.name} ${JSON.stringify(event.args).slice(0, 4000)}`);
   else if (event.type === "tool_end") console.log(`${prefix}  ${event.ok ? "OK  " : "FAIL"} ${event.name} — ${event.summary}`);
   else if (event.type === "assistant") console.log(`${prefix}assistant: ${event.text.replace(/\n/g, " ").slice(0, 300)}`);
+  else if (event.type === "execution_status") console.log(`${prefix}STATUS ${event.name} ${event.summary.slice(0, 600)}`);
   else if (event.type === "error") console.log(`${prefix}ERROR ${event.message.slice(0, 400)}`);
 }
 
