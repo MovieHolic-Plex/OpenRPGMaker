@@ -12,7 +12,14 @@ Row 66 (tiles 1980..2009), 30 columns:
   1998 basalt floor (grey cobble 42)   1999 sandstone floor (grey cobble 42)
   2000..2008 white fur rug nine-slice (straw mat 108 109 110 / 138 139 140 / 168 169 170)
   2009 unused
-Idempotent: the sheet is cut back to its first 66 rows before the row is appended.
+Row 67 (tiles 2010..2039), the barn: drawn here (straw, stall boards, hay heap) or cut from the EasyRPG animal charset.
+  2010 2011 2012 straw litter on dirt 192, dense   2013 2014 2015 straw litter, sparse (stall edges, spill)
+  2016 2017 2018 stall board partition north end | middle | south end post (upper layer, runs north-south)
+  2019 2020 / 2021 2022 hay heap 2x2 (top row / bottom row)
+  2023 2024 / 2025 2026 horse facing right 2x2   2027 2028 / 2029 2030 horse facing left 2x2
+  2031 2032 / 2033 2034 cow facing right 2x2 (EasyRPG CharSet/Animal.png, standing frame, CC0)
+  2035..2039 unused
+Idempotent: the sheet is cut back to its first 66 rows before the rows are appended.
 Usage: python3 scripts/content/bake-climate-interior-tiles.py
 """
 from PIL import Image
@@ -94,8 +101,108 @@ lo, hi = span(MAT)
 tiles += [recolour(cell(n), FUR, lo, hi) for n in MAT]
 for i, t in enumerate(tiles):
     row.paste(t, (i * 16, 0))
-out = Image.new("RGBA", (480, (BASE_ROWS + 1) * 16), (0, 0, 0, 0))
+
+# ── row 67: the barn ──
+import random
+
+DIRT = cell(192)
+STRAW = [(150, 108, 40), (196, 150, 62), (226, 186, 92), (246, 216, 132)]
+WOOD = [(46, 24, 12), (110, 66, 34), (158, 102, 54), (196, 140, 82)]
+
+
+def strands(tile, n, seed, box=(0, 0, 16, 16), lengths=(3, 5)):
+    """Short straw strands, mostly lying east-west: a lit run with a shaded pixel under it."""
+    r = random.Random(seed)
+    for _ in range(n):
+        x, y = r.randrange(box[0], box[2]), r.randrange(box[1], box[3] - 1)
+        dy = r.choice([0, 0, 0, 1, -1])
+        ln, col = r.randint(*lengths), r.choice(STRAW[2:])
+        for k in range(ln):
+            px, py = x + k, y + (dy if k >= ln // 2 else 0)
+            if box[0] <= px < box[2] and box[1] <= py < box[3] - 1:
+                tile.putpixel((px, py), (*col, 255))
+                if tile.getpixel((px, py + 1))[3] and tile.getpixel((px, py + 1))[:3] not in STRAW[2:]:
+                    tile.putpixel((px, py + 1), (*STRAW[0], 255))
+
+
+def litter(dense, seed):
+    """Dense: a straw bed (mottled straw over most of the cell, dirt showing in specks). Sparse: a few loose strands."""
+    r = random.Random(seed * 31)
+    t = DIRT.copy()
+    if dense:
+        for y in range(16):
+            for x in range(16):
+                v = r.random()
+                if v < 0.9:
+                    t.putpixel((x, y), (*(STRAW[1] if v < 0.45 else STRAW[2] if v < 0.8 else STRAW[0]), 255))
+        strands(t, 16, seed)
+    else:
+        strands(t, 6, seed, lengths=(3, 4))
+    return t
+
+
+def board(kind):
+    """A stall partition: a 6 px plank board standing north-south in the middle of the cell, seen from the south-east.
+    Top edge lit, west edge dark, a soft floor shadow on the east; the south end shows the post's face."""
+    t = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    top_end = 16 if kind != "S" else 5
+    for y in range(16):
+        for x in range(5, 11):
+            if y < top_end:
+                c = WOOD[1] if x == 5 else WOOD[0] if x == 10 else WOOD[3] if x == 6 else WOOD[2]
+                if kind == "M" and y in (7, 8) and 6 <= x <= 9: c = WOOD[1]      # plank joint
+                if kind == "N" and y < 2: c = WOOD[0]                              # tucked under the wall trim
+            else:
+                c = WOOD[0] if x in (5, 10) or y == 15 else WOOD[1] if y in (5, 6) else WOOD[2] if x in (6, 7) else WOOD[1]
+                if x in (8,) and 7 <= y <= 13: c = WOOD[0]                         # the post's plank seam
+            t.putpixel((x, y), (*c, 255))
+        if y < 15:
+            for x in (11, 12):
+                t.putpixel((x, y), (20, 12, 6, 90 if x == 11 else 45))
+    return t
+
+
+def hay_heap():
+    t = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    cx, cy, rx, ry = 16, 18, 14.5, 11.5
+    for y in range(32):
+        for x in range(32):
+            d = ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2
+            if d <= 1:
+                v = 0.85 - (y - (cy - ry)) / (2 * ry) * 0.6 + (0.1 if d < 0.5 else 0)
+                c = STRAW[3] if v > 0.8 else STRAW[2] if v > 0.55 else STRAW[1] if v > 0.35 else STRAW[0]
+                if d > 0.86: c = (112, 78, 28)
+                t.putpixel((x, y), (*c, 255))
+            elif ((x - cx) / (rx + 1)) ** 2 + ((y - cy - 3) / (ry - 3)) ** 2 <= 1 and y > cy:
+                t.putpixel((x, y), (20, 12, 6, 80))                                   # floor shadow
+    strands(t, 40, 7, (4, 9, 28, 28))
+    return t
+
+
+def animal(char, direction):
+    """EasyRPG CharSet/Animal.png: 4x2 characters, 3 frames x 4 directions of 24x32; standing frame, colour key off."""
+    src = Image.open("public/assets/easyrpg/charset/Animal.png").convert("RGBA")
+    x0, y0 = (char % 4) * 72 + 24, (char // 4) * 128 + direction * 32
+    fr = src.crop((x0, y0, x0 + 24, y0 + 32))
+    key = src.getpixel((0, 0))
+    fr.putdata([(0, 0, 0, 0) if p[:3] == key[:3] else p for p in fr.getdata()])
+    t = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    t.paste(fr, (4, 0), fr)
+    return t
+
+
+def quarters(img):
+    return [img.crop((x, y, x + 16, y + 16)) for y in (0, 16) for x in (0, 16)]
+
+
+barn = [litter(True, s) for s in (1, 2, 3)] + [litter(False, s) for s in (4, 5, 6)] + [board(k) for k in "NMS"]
+barn += quarters(hay_heap()) + quarters(animal(5, 1)) + quarters(animal(5, 3)) + quarters(animal(4, 1))
+row2 = Image.new("RGBA", (480, 16), (0, 0, 0, 0))
+for i, t in enumerate(barn):
+    row2.paste(t, (i * 16, 0))
+out = Image.new("RGBA", (480, (BASE_ROWS + 2) * 16), (0, 0, 0, 0))
 out.paste(im, (0, 0))
 out.paste(row, (0, BASE_ROWS * 16))
+out.paste(row2, (0, (BASE_ROWS + 1) * 16))
 out.save(SHEET, optimize=True)
-print({"tiles": len(tiles), "first": BASE_ROWS * 30, "size": out.size})
+print({"tiles": len(tiles), "barn": len(barn), "first": BASE_ROWS * 30, "size": out.size})

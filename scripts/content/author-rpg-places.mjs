@@ -229,11 +229,11 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-places-entry.
   stamp(m, "tibo-fantasy-alchemy-desk", 11, 5); stamp(m, "tibo-library-166", 15, 9); stamp(m, "tibo-fantasy-crystal-stand", 11, 11); stamp(m, "tibo-library-164", 8, 4); stamp(m, "tibo-v11-1-3", 14, 12);
   stamp(m, "tibo-v12-1-2", 2, 8); stamp(m, "tibo-library-168", 9, 12); stamp(m, "tibo-library-159", 16, 7); stamp(m, "tibo-library-158", 4, 11);
   for (const [y, xs] of [[14, [2, 3, 4, 15, 16, 17]], [13, [2, 3, 16, 17]], [12, [2, 17]]]) for (const x of xs) { put(m, x, y, 430, "lowerTiles"); put(m, x, y, -1); }
-  block(m, 4, 13, [[474, 475]], "lowerTiles");   // down: the 2×1 framed flight, one row
+  block(m, 4, 13, [[474]]);   // down: 474 alone (1×1, transparent — it sits on the floor in the upper layer)
   reshapeCeiling(m);
   add("fantasy-wizard-tower-floor", "마법사 탑 · 한 층", "tibo_interior_expanded", m, {
     series: "demon", entry: [16, 6], targets: [[5, 12], [10, 11], [13, 7]],
-    note: "문 없이 계단으로 오가는 탑 한 층. 오른쪽 위 동벽을 타고 오르는 3칸 폭 계단 141|111|171(세 줄), 왼쪽 아래 내려가는 계단 474|475(한 줄), 가운데 마법진 381~443, 책장 18~80, 연금술 작업대·가마솥·수정구·별자리 판·망원경. 아래 두 모서리를 깎아 둥근 탑 느낌",
+    note: "문 없이 계단으로 오가는 탑 한 층. 오른쪽 위 동벽을 타고 오르는 3칸 폭 계단 141|111|171(세 줄), 왼쪽 아래 내려가는 1×1 계단 474 하나, 가운데 마법진 381~443, 책장 18~80, 연금술 작업대·가마솥·수정구·별자리 판·망원경. 아래 두 모서리를 깎아 둥근 탑 느낌",
   });
 
   // ① 상점가 외관 — 여울성 나루 아랫단의 세 집
