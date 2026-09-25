@@ -1,0 +1,1994 @@
+{
+  "maps": [
+    {
+      "id": "paw-sento-neighborhood",
+      "name": "동네 센토 · 접수·탈의·두 욕탕",
+      "width": 21,
+      "height": 32,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "sento-dry",
+      "wall": "sento",
+      "exitX": 10,
+      "lines": [
+        {
+          "axis": "v",
+          "pos": 10,
+          "start": 0,
+          "end": 20,
+          "doors": []
+        },
+        {
+          "axis": "h",
+          "pos": 11,
+          "start": 0,
+          "end": 20,
+          "doors": [
+            9,
+            14
+          ]
+        },
+        {
+          "axis": "h",
+          "pos": 20,
+          "start": 0,
+          "end": 20,
+          "doors": [
+            5,
+            16
+          ]
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [
+        {
+          "material": "sento-wet",
+          "x": 1,
+          "y": 4,
+          "width": 9,
+          "height": 7
+        },
+        {
+          "material": "sento-wet",
+          "x": 11,
+          "y": 4,
+          "width": 9,
+          "height": 7
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "sento-mural",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "recipeId": "sento-pool-large",
+          "x": 2,
+          "y": 5
+        },
+        {
+          "recipeId": "sento-mural",
+          "x": 14,
+          "y": 1
+        },
+        {
+          "recipeId": "sento-pool-large",
+          "x": 14,
+          "y": 5
+        },
+        {
+          "recipeId": "sento-wash-station",
+          "x": 7,
+          "y": 3
+        },
+        {
+          "recipeId": "sento-wash-station",
+          "x": 11,
+          "y": 3
+        },
+        {
+          "recipeId": "sento-wash-kit",
+          "x": 8,
+          "y": 6
+        },
+        {
+          "recipeId": "sento-wash-kit",
+          "x": 12,
+          "y": 6
+        },
+        {
+          "recipeId": "sento-lockers",
+          "x": 1,
+          "y": 14
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 1,
+          "y": 18
+        },
+        {
+          "recipeId": "sento-lockers",
+          "x": 15,
+          "y": 14
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 15,
+          "y": 18
+        },
+        {
+          "recipeId": "sento-shoe-rack",
+          "x": 1,
+          "y": 23
+        },
+        {
+          "recipeId": "sento-shoe-rack",
+          "x": 17,
+          "y": 23
+        },
+        {
+          "recipeId": "izakaya-counter",
+          "x": 8,
+          "y": 25
+        },
+        {
+          "recipeId": "sento-milk-machine",
+          "x": 13,
+          "y": 23
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 14,
+          "y": 27
+        },
+        {
+          "recipeId": "sento-lockers",
+          "x": 6,
+          "y": 14
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 6,
+          "y": 18
+        },
+        {
+          "recipeId": "sento-lockers",
+          "x": 11,
+          "y": 14
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 11,
+          "y": 18
+        }
+      ],
+      "rooms": [
+        {
+          "id": "욕탕 A",
+          "name": "욕탕 A",
+          "x": 1,
+          "y": 4,
+          "width": 9,
+          "height": 7
+        },
+        {
+          "id": "욕탕 B",
+          "name": "욕탕 B",
+          "x": 11,
+          "y": 4,
+          "width": 9,
+          "height": 7
+        },
+        {
+          "id": "탈의실 A",
+          "name": "탈의실 A",
+          "x": 1,
+          "y": 15,
+          "width": 9,
+          "height": 5
+        },
+        {
+          "id": "탈의실 B",
+          "name": "탈의실 B",
+          "x": 11,
+          "y": 15,
+          "width": 9,
+          "height": 5
+        },
+        {
+          "id": "접수·신발장",
+          "name": "접수·신발장",
+          "x": 1,
+          "y": 24,
+          "width": 19,
+          "height": 4
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 9,
+          "y": 24
+        },
+        {
+          "x": 9,
+          "y": 27
+        },
+        {
+          "x": 9,
+          "y": 10
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 5,
+          "y": 20
+        },
+        {
+          "x": 16,
+          "y": 20
+        },
+        {
+          "x": 5,
+          "y": 24
+        },
+        {
+          "x": 16,
+          "y": 24
+        },
+        {
+          "x": 2,
+          "y": 25
+        },
+        {
+          "x": 18,
+          "y": 25
+        },
+        {
+          "x": 8,
+          "y": 8
+        },
+        {
+          "x": 12,
+          "y": 8
+        }
+      ],
+      "notes": "두 욕탕과 탈의실은 중앙 벽으로 분리하고 접수에서 각 탈의실을 거쳐 들어간다. 젖는 바닥은 욕탕 안쪽만, 탈의·접수는 마른 바닥이다. 욕조는 가장자리까지 solid이며 실제 입욕 이벤트는 별도다. 후지산 벽화는3행 벽 위에, 수전 밑동은 욕실 바닥에 둔다. 접수대 뒤y24와 손님 앞y27을 비운다. 탈의실마다 수납장2묶음과 벤치2개를 두고 폭과 깊이를 줄였다.",
+      "isolationRooms": [
+        "욕탕 A",
+        "욕탕 B",
+        "탈의실 A",
+        "탈의실 B"
+      ]
+    },
+    {
+      "id": "paw-ramen-counter",
+      "name": "골목 라멘집 · 바6·테이블3",
+      "width": 15,
+      "height": 19,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "wood",
+      "wall": "wood",
+      "exitX": 7,
+      "lines": [
+        {
+          "axis": "h",
+          "pos": 5,
+          "start": 8,
+          "end": 14,
+          "doors": []
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [
+        {
+          "material": "kitchen",
+          "x": 1,
+          "y": 3,
+          "width": 13,
+          "height": 3
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "izakaya-kitchen",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "recipeId": "izakaya-stove",
+          "x": 4,
+          "y": 2
+        },
+        {
+          "recipeId": "izakaya-fridge",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "recipeId": "izakaya-tea",
+          "x": 11,
+          "y": 2
+        },
+        {
+          "recipeId": "izakaya-counter",
+          "x": 1,
+          "y": 6
+        },
+        {
+          "recipeId": "izakaya-counter",
+          "x": 4,
+          "y": 6
+        },
+        {
+          "recipeId": "izakaya-chair-back",
+          "x": 1,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-chair-back",
+          "x": 2,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-chair-back",
+          "x": 3,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-chair-back",
+          "x": 4,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-chair-back",
+          "x": 5,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-chair-back",
+          "x": 6,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-table",
+          "x": 2,
+          "y": 10
+        },
+        {
+          "recipeId": "izakaya-chair-east",
+          "x": 1,
+          "y": 11
+        },
+        {
+          "recipeId": "izakaya-chair-west",
+          "x": 5,
+          "y": 11
+        },
+        {
+          "recipeId": "izakaya-table",
+          "x": 9,
+          "y": 8
+        },
+        {
+          "recipeId": "izakaya-chair-east",
+          "x": 8,
+          "y": 9
+        },
+        {
+          "recipeId": "izakaya-chair-west",
+          "x": 12,
+          "y": 9
+        },
+        {
+          "recipeId": "izakaya-table",
+          "x": 9,
+          "y": 12
+        },
+        {
+          "recipeId": "izakaya-chair-east",
+          "x": 8,
+          "y": 13
+        },
+        {
+          "recipeId": "izakaya-chair-west",
+          "x": 12,
+          "y": 13
+        }
+      ],
+      "rooms": [
+        {
+          "id": "조리실",
+          "name": "조리실",
+          "x": 1,
+          "y": 3,
+          "width": 13,
+          "height": 3
+        },
+        {
+          "id": "바·테이블 홀",
+          "name": "바·테이블 홀",
+          "x": 1,
+          "y": 8,
+          "width": 13,
+          "height": 8
+        }
+      ],
+      "doorways": [
+        {
+          "x": 7,
+          "y": 6,
+          "width": 1,
+          "height": 2
+        }
+      ],
+      "approachCells": [
+        {
+          "x": 7,
+          "y": 4
+        },
+        {
+          "x": 7,
+          "y": 5
+        },
+        {
+          "x": 7,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 7
+        },
+        {
+          "x": 7,
+          "y": 8
+        },
+        {
+          "x": 7,
+          "y": 13
+        },
+        {
+          "x": 2,
+          "y": 4
+        },
+        {
+          "x": 5,
+          "y": 4
+        },
+        {
+          "x": 11,
+          "y": 4
+        },
+        {
+          "x": 1,
+          "y": 9
+        },
+        {
+          "x": 2,
+          "y": 9
+        },
+        {
+          "x": 3,
+          "y": 9
+        },
+        {
+          "x": 4,
+          "y": 9
+        },
+        {
+          "x": 5,
+          "y": 9
+        },
+        {
+          "x": 6,
+          "y": 9
+        },
+        {
+          "x": 1,
+          "y": 10
+        },
+        {
+          "x": 5,
+          "y": 10
+        },
+        {
+          "x": 8,
+          "y": 10
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 8,
+          "y": 15
+        },
+        {
+          "x": 12,
+          "y": 15
+        }
+      ],
+      "notes": "조리대→작업행y4/5→카운터→북향 바6석→의자 뒤y9. 직원 출입은x7,y6/7 한 줄이며 북동은 천장·벽으로 막는다. 3인용처럼 보이는 큰 벤치를 잘라 쓰지 않고 원본 테이블3개와 양옆 의자2개씩 배치한다. 음식·결제 상호작용은 별도다.",
+      "isolationRooms": [
+        "조리실"
+      ]
+    },
+    {
+      "id": "paw-apartment-1k",
+      "name": "아파트 A · 1K 독립 주방",
+      "width": 11,
+      "height": 21,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "wood",
+      "wall": "wood",
+      "exitX": 3,
+      "lines": [
+        {
+          "axis": "h",
+          "pos": 9,
+          "start": 0,
+          "end": 10,
+          "doors": [
+            3
+          ]
+        },
+        {
+          "axis": "v",
+          "pos": 4,
+          "start": 9,
+          "end": 14,
+          "doors": []
+        },
+        {
+          "axis": "v",
+          "pos": 7,
+          "start": 9,
+          "end": 14,
+          "doors": []
+        },
+        {
+          "axis": "h",
+          "pos": 14,
+          "start": 4,
+          "end": 10,
+          "doors": [
+            5,
+            8
+          ]
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [
+        {
+          "material": "bath",
+          "x": 5,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "material": "bath",
+          "x": 8,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "material": "entry",
+          "x": 3,
+          "y": 17,
+          "width": 2,
+          "height": 1
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "personal-m-window",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-m-bed",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "recipeId": "personal-m-wardrobe",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-m-desk",
+          "x": 5,
+          "y": 2
+        },
+        {
+          "recipeId": "personal-m-chair-back",
+          "x": 6,
+          "y": 4
+        },
+        {
+          "recipeId": "personal-m-table-rug",
+          "x": 5,
+          "y": 6
+        },
+        {
+          "recipeId": "personal-m-kitchen",
+          "x": 1,
+          "y": 11
+        },
+        {
+          "recipeId": "personal-m-fridge",
+          "x": 1,
+          "y": 14
+        },
+        {
+          "recipeId": "bath-tub-horizontal",
+          "x": 5,
+          "y": 11
+        },
+        {
+          "recipeId": "bath-toilet-closed",
+          "x": 8,
+          "y": 11
+        },
+        {
+          "recipeId": "bath-washer-front",
+          "x": 9,
+          "y": 11
+        }
+      ],
+      "rooms": [
+        {
+          "id": "생활방",
+          "name": "생활방",
+          "x": 1,
+          "y": 3,
+          "width": 9,
+          "height": 6
+        },
+        {
+          "id": "독립 주방",
+          "name": "독립 주방",
+          "x": 1,
+          "y": 12,
+          "width": 3,
+          "height": 6
+        },
+        {
+          "id": "욕실",
+          "name": "욕실",
+          "x": 5,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "id": "화장실·세탁",
+          "name": "화장실·세탁",
+          "x": 8,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "id": "현관",
+          "name": "현관",
+          "x": 4,
+          "y": 17,
+          "width": 6,
+          "height": 1
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 3,
+          "y": 8
+        },
+        {
+          "x": 3,
+          "y": 12
+        },
+        {
+          "x": 3,
+          "y": 17
+        },
+        {
+          "x": 5,
+          "y": 13
+        },
+        {
+          "x": 8,
+          "y": 13
+        },
+        {
+          "x": 5,
+          "y": 17
+        },
+        {
+          "x": 8,
+          "y": 17
+        },
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 6,
+          "y": 5
+        },
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 2,
+          "y": 16
+        }
+      ],
+      "notes": "1K: 주방과 생활방 사이에 천장·벽·문턱을 둔다. 욕실과 화장실은 각각 남쪽 현관 통로로 출입하며 다른 방을 통과하지 않는다. 화장실에 세탁기를 두는 배치다. 가구를 늘리려고 출입 칸을 막지 않는다. 현관 출입 앞 두 칸은 마루와 다른 돌바닥으로 구분한다.",
+      "isolationRooms": [
+        "생활방",
+        "욕실",
+        "화장실·세탁"
+      ]
+    },
+    {
+      "id": "paw-apartment-1dk",
+      "name": "아파트 B · 1DK 침실·식사실",
+      "width": 13,
+      "height": 21,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "wood",
+      "wall": "wood",
+      "exitX": 7,
+      "lines": [
+        {
+          "axis": "h",
+          "pos": 9,
+          "start": 0,
+          "end": 12,
+          "doors": [
+            7
+          ]
+        },
+        {
+          "axis": "v",
+          "pos": 6,
+          "start": 0,
+          "end": 18,
+          "doors": [
+            {
+              "y": 6,
+              "height": 2
+            },
+            {
+              "y": 17,
+              "height": 1
+            }
+          ]
+        },
+        {
+          "axis": "v",
+          "pos": 3,
+          "start": 9,
+          "end": 14,
+          "doors": []
+        },
+        {
+          "axis": "h",
+          "pos": 14,
+          "start": 0,
+          "end": 6,
+          "doors": [
+            1,
+            4
+          ]
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [
+        {
+          "material": "bath",
+          "x": 1,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "material": "bath",
+          "x": 4,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "material": "entry",
+          "x": 7,
+          "y": 17,
+          "width": 2,
+          "height": 1
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "personal-f-window",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-f-bed",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "recipeId": "personal-f-wardrobe",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-f-bookcase",
+          "x": 3,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-f-kitchen",
+          "x": 7,
+          "y": 2
+        },
+        {
+          "recipeId": "personal-f-fridge",
+          "x": 9,
+          "y": 2
+        },
+        {
+          "recipeId": "personal-f-drawers",
+          "x": 10,
+          "y": 6
+        },
+        {
+          "recipeId": "personal-f-table",
+          "x": 8,
+          "y": 13
+        },
+        {
+          "recipeId": "washitu-cushion-blue",
+          "x": 9,
+          "y": 12
+        },
+        {
+          "recipeId": "washitu-cushion-pattern",
+          "x": 9,
+          "y": 16
+        },
+        {
+          "recipeId": "bath-tub-horizontal",
+          "x": 1,
+          "y": 11
+        },
+        {
+          "recipeId": "bath-toilet-closed",
+          "x": 4,
+          "y": 11
+        },
+        {
+          "recipeId": "bath-washer-front",
+          "x": 5,
+          "y": 11
+        }
+      ],
+      "rooms": [
+        {
+          "id": "독립 침실",
+          "name": "독립 침실",
+          "x": 1,
+          "y": 3,
+          "width": 5,
+          "height": 6
+        },
+        {
+          "id": "주방",
+          "name": "주방",
+          "x": 7,
+          "y": 3,
+          "width": 5,
+          "height": 6
+        },
+        {
+          "id": "다이닝",
+          "name": "다이닝",
+          "x": 7,
+          "y": 12,
+          "width": 5,
+          "height": 6
+        },
+        {
+          "id": "욕실",
+          "name": "욕실",
+          "x": 1,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "id": "화장실·세탁",
+          "name": "화장실·세탁",
+          "x": 4,
+          "y": 12,
+          "width": 2,
+          "height": 2
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 5,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 6
+        },
+        {
+          "x": 7,
+          "y": 8
+        },
+        {
+          "x": 7,
+          "y": 12
+        },
+        {
+          "x": 7,
+          "y": 17
+        },
+        {
+          "x": 1,
+          "y": 13
+        },
+        {
+          "x": 4,
+          "y": 13
+        },
+        {
+          "x": 1,
+          "y": 17
+        },
+        {
+          "x": 4,
+          "y": 17
+        },
+        {
+          "x": 8,
+          "y": 4
+        },
+        {
+          "x": 9,
+          "y": 4
+        },
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 10,
+          "y": 17
+        }
+      ],
+      "notes": "1DK: 침실을 서쪽으로 분리하고 동쪽에는 주방과 독립 식사 구역을 둔다. 침실 문x6,y6/7과 주방→식사실 문x7,y9..11을 보존한다. 욕실·화장실 문은 남쪽 현관 통로를 각각 향한다. A안과 방 구성·주방·욕실 위치가 다르다. 현관 출입 앞 두 칸은 마루와 다른 돌바닥으로 구분한다. 식사 구역은 낮은 식탁과 방석2개이며 사무용 회전의자를 낮은 탁자에 붙이지 않는다.",
+      "isolationRooms": [
+        "독립 침실",
+        "욕실",
+        "화장실·세탁"
+      ]
+    },
+    {
+      "id": "paw-apartment-work",
+      "name": "아파트 C · 재택형 1K",
+      "width": 14,
+      "height": 18,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "wood",
+      "wall": "wood",
+      "exitX": 7,
+      "lines": [
+        {
+          "axis": "v",
+          "pos": 6,
+          "start": 0,
+          "end": 15,
+          "doors": [
+            {
+              "y": 11,
+              "height": 2
+            }
+          ]
+        },
+        {
+          "axis": "v",
+          "pos": 3,
+          "start": 0,
+          "end": 5,
+          "doors": []
+        },
+        {
+          "axis": "h",
+          "pos": 5,
+          "start": 0,
+          "end": 6,
+          "doors": [
+            1,
+            4
+          ]
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [
+        {
+          "material": "bath",
+          "x": 1,
+          "y": 3,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "material": "bath",
+          "x": 4,
+          "y": 3,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "material": "entry",
+          "x": 7,
+          "y": 14,
+          "width": 2,
+          "height": 1
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "bath-tub-horizontal",
+          "x": 1,
+          "y": 2
+        },
+        {
+          "recipeId": "bath-toilet-closed",
+          "x": 4,
+          "y": 2
+        },
+        {
+          "recipeId": "personal-m-kitchen",
+          "x": 1,
+          "y": 9
+        },
+        {
+          "recipeId": "personal-m-fridge",
+          "x": 3,
+          "y": 12
+        },
+        {
+          "recipeId": "bath-washer-front",
+          "x": 5,
+          "y": 8
+        },
+        {
+          "recipeId": "personal-m-drawers",
+          "x": 1,
+          "y": 12
+        },
+        {
+          "recipeId": "personal-m-window",
+          "x": 8,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-m-wardrobe",
+          "x": 7,
+          "y": 1
+        },
+        {
+          "recipeId": "personal-m-desk",
+          "x": 9,
+          "y": 3
+        },
+        {
+          "recipeId": "personal-m-chair-back",
+          "x": 10,
+          "y": 5
+        },
+        {
+          "recipeId": "personal-m-bed-alt",
+          "x": 11,
+          "y": 7
+        },
+        {
+          "recipeId": "personal-m-table",
+          "x": 8,
+          "y": 7
+        },
+        {
+          "recipeId": "personal-m-bookcase",
+          "x": 8,
+          "y": 11
+        }
+      ],
+      "rooms": [
+        {
+          "id": "욕실",
+          "name": "욕실",
+          "x": 1,
+          "y": 3,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "id": "화장실",
+          "name": "화장실",
+          "x": 4,
+          "y": 3,
+          "width": 2,
+          "height": 2
+        },
+        {
+          "id": "주방·세탁",
+          "name": "주방·세탁",
+          "x": 1,
+          "y": 8,
+          "width": 5,
+          "height": 7
+        },
+        {
+          "id": "서재·생활방",
+          "name": "서재·생활방",
+          "x": 7,
+          "y": 3,
+          "width": 6,
+          "height": 12
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 1,
+          "y": 4
+        },
+        {
+          "x": 4,
+          "y": 4
+        },
+        {
+          "x": 1,
+          "y": 8
+        },
+        {
+          "x": 4,
+          "y": 8
+        },
+        {
+          "x": 4,
+          "y": 10
+        },
+        {
+          "x": 5,
+          "y": 11
+        },
+        {
+          "x": 7,
+          "y": 11
+        },
+        {
+          "x": 7,
+          "y": 14
+        },
+        {
+          "x": 10,
+          "y": 6
+        },
+        {
+          "x": 12,
+          "y": 10
+        },
+        {
+          "x": 8,
+          "y": 10
+        },
+        {
+          "x": 2,
+          "y": 14
+        }
+      ],
+      "notes": "북서 욕실·화장실을 각각 주방 쪽으로 연결하고 동쪽 서재·생활방과는 세로벽으로 분리한다. 생활방 문은(6,11)/(6,12). 현관은 동쪽 방의 남쪽이다. A/B와 서비스 코어·주출입·생활방 형태가 다르다. 현관 출입 앞 두 칸은 마루와 다른 돌바닥으로 구분한다.",
+      "isolationRooms": [
+        "욕실",
+        "화장실",
+        "서재·생활방"
+      ]
+    },
+    {
+      "id": "paw-ryokan-three-rooms",
+      "name": "작은 여관 · 객실3·접수",
+      "width": 22,
+      "height": 19,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "wood",
+      "wall": "wood",
+      "exitX": 5,
+      "lines": [
+        {
+          "axis": "v",
+          "pos": 7,
+          "start": 0,
+          "end": 9,
+          "doors": []
+        },
+        {
+          "axis": "v",
+          "pos": 14,
+          "start": 0,
+          "end": 9,
+          "doors": []
+        },
+        {
+          "axis": "h",
+          "pos": 9,
+          "start": 0,
+          "end": 21,
+          "doors": [
+            4,
+            11,
+            16
+          ]
+        }
+      ],
+      "ceilingRects": [
+        {
+          "x": 8,
+          "y": 14,
+          "width": 14,
+          "height": 3
+        }
+      ],
+      "floorRects": [
+        {
+          "material": "tatami",
+          "x": 1,
+          "y": 3,
+          "width": 6,
+          "height": 6
+        },
+        {
+          "material": "tatami",
+          "x": 8,
+          "y": 3,
+          "width": 6,
+          "height": 6
+        },
+        {
+          "material": "tatami",
+          "x": 15,
+          "y": 3,
+          "width": 6,
+          "height": 6
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "washitu-shoji-front",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "recipeId": "washitu-chest",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "recipeId": "washitu-shoji-front",
+          "x": 8,
+          "y": 1
+        },
+        {
+          "recipeId": "washitu-chest",
+          "x": 12,
+          "y": 1
+        },
+        {
+          "recipeId": "washitu-shoji-front",
+          "x": 17,
+          "y": 1
+        },
+        {
+          "recipeId": "washitu-chest",
+          "x": 15,
+          "y": 1
+        },
+        {
+          "recipeId": "washitu-futon-red",
+          "x": 1,
+          "y": 4
+        },
+        {
+          "recipeId": "washitu-futon-blue",
+          "x": 3,
+          "y": 4
+        },
+        {
+          "recipeId": "washitu-round-table",
+          "x": 5,
+          "y": 5
+        },
+        {
+          "recipeId": "washitu-cushion-blue",
+          "x": 4,
+          "y": 5
+        },
+        {
+          "recipeId": "washitu-cushion-pattern",
+          "x": 5,
+          "y": 7
+        },
+        {
+          "recipeId": "washitu-futon-red",
+          "x": 8,
+          "y": 4
+        },
+        {
+          "recipeId": "washitu-futon-blue",
+          "x": 10,
+          "y": 4
+        },
+        {
+          "recipeId": "washitu-round-table",
+          "x": 12,
+          "y": 5
+        },
+        {
+          "recipeId": "washitu-cushion-blue",
+          "x": 11,
+          "y": 5
+        },
+        {
+          "recipeId": "washitu-cushion-pattern",
+          "x": 12,
+          "y": 7
+        },
+        {
+          "recipeId": "washitu-kotatsu",
+          "x": 17,
+          "y": 5
+        },
+        {
+          "recipeId": "washitu-futon-red",
+          "x": 15,
+          "y": 5
+        },
+        {
+          "recipeId": "izakaya-counter",
+          "x": 1,
+          "y": 13
+        },
+        {
+          "recipeId": "sento-shoe-rack",
+          "x": 13,
+          "y": 11
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 8,
+          "y": 12
+        },
+        {
+          "recipeId": "sento-milk-machine",
+          "x": 18,
+          "y": 10
+        }
+      ],
+      "rooms": [
+        {
+          "id": "객실1",
+          "name": "다다미 객실",
+          "x": 1,
+          "y": 3,
+          "width": 6,
+          "height": 6
+        },
+        {
+          "id": "객실8",
+          "name": "다다미 객실",
+          "x": 8,
+          "y": 3,
+          "width": 6,
+          "height": 6
+        },
+        {
+          "id": "객실15",
+          "name": "다다미 객실",
+          "x": 15,
+          "y": 3,
+          "width": 6,
+          "height": 6
+        },
+        {
+          "id": "복도",
+          "name": "두 칸 복도",
+          "x": 1,
+          "y": 12,
+          "width": 20,
+          "height": 2
+        },
+        {
+          "id": "접수",
+          "name": "접수",
+          "x": 1,
+          "y": 14,
+          "width": 7,
+          "height": 2
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 4,
+          "y": 8
+        },
+        {
+          "x": 11,
+          "y": 8
+        },
+        {
+          "x": 16,
+          "y": 8
+        },
+        {
+          "x": 4,
+          "y": 12
+        },
+        {
+          "x": 11,
+          "y": 12
+        },
+        {
+          "x": 16,
+          "y": 12
+        },
+        {
+          "x": 2,
+          "y": 12
+        },
+        {
+          "x": 2,
+          "y": 15
+        },
+        {
+          "x": 5,
+          "y": 15
+        },
+        {
+          "x": 12,
+          "y": 13
+        },
+        {
+          "x": 17,
+          "y": 13
+        },
+        {
+          "x": 20,
+          "y": 13
+        }
+      ],
+      "notes": "다다미 객실3개는 서로 연결되지 않고 남쪽 두 칸 복도로 각각 출입한다. 객실1/2는 이불과 낮은 탁자, 객실3은 코타츠와 이불을 둔다. 쇼지는 북쪽 벽 부착, 장롱 밑동은 바닥이다. 접수대 뒤y12/앞y15를 확보한다. 남동쪽 불필요한 빈 홀은 천장 덩어리로 닫고 복도만 남긴다. 문 개폐·숙박 결제는 별도다. 객실은각6×6이며2×3 다다미를3×2 반복한다. 객실1/2는 이불2개, 객실3은 이불1개와 코타츠이며 코타츠 서쪽x16은 접근 통로다.",
+      "isolationRooms": [
+        "객실1",
+        "객실8",
+        "객실15"
+      ]
+    },
+    {
+      "id": "paw-clinic-separated",
+      "name": "동네 의원 · 진찰·처치·대기",
+      "width": 17,
+      "height": 21,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "clinic",
+      "wall": "clinic",
+      "exitX": 9,
+      "lines": [
+        {
+          "axis": "v",
+          "pos": 6,
+          "start": 0,
+          "end": 8,
+          "doors": []
+        },
+        {
+          "axis": "v",
+          "pos": 12,
+          "start": 0,
+          "end": 8,
+          "doors": []
+        },
+        {
+          "axis": "h",
+          "pos": 8,
+          "start": 0,
+          "end": 16,
+          "doors": [
+            4,
+            9,
+            15
+          ]
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [
+        {
+          "material": "bath",
+          "x": 13,
+          "y": 3,
+          "width": 3,
+          "height": 5
+        }
+      ],
+      "placements": [
+        {
+          "recipeId": "clinic-window",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "recipeId": "clinic-exam-couch",
+          "x": 1,
+          "y": 3
+        },
+        {
+          "recipeId": "clinic-monitor",
+          "x": 3,
+          "y": 3
+        },
+        {
+          "recipeId": "clinic-medicine",
+          "x": 5,
+          "y": 1
+        },
+        {
+          "recipeId": "clinic-stool",
+          "x": 3,
+          "y": 5
+        },
+        {
+          "recipeId": "clinic-waiting-bench",
+          "x": 1,
+          "y": 6
+        },
+        {
+          "recipeId": "clinic-exam-couch",
+          "x": 7,
+          "y": 3
+        },
+        {
+          "recipeId": "clinic-exam-couch",
+          "x": 10,
+          "y": 3
+        },
+        {
+          "recipeId": "clinic-medicine",
+          "x": 9,
+          "y": 1
+        },
+        {
+          "recipeId": "clinic-stool",
+          "x": 9,
+          "y": 6
+        },
+        {
+          "recipeId": "bath-toilet-closed",
+          "x": 13,
+          "y": 2
+        },
+        {
+          "recipeId": "bath-linen-basket",
+          "x": 14,
+          "y": 5
+        },
+        {
+          "recipeId": "clinic-tv",
+          "x": 12,
+          "y": 9
+        },
+        {
+          "recipeId": "clinic-reception",
+          "x": 1,
+          "y": 13
+        },
+        {
+          "recipeId": "clinic-plant",
+          "x": 5,
+          "y": 14
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 8,
+          "y": 14
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 10,
+          "y": 14
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 12,
+          "y": 14
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 14,
+          "y": 14
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 8,
+          "y": 16
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 10,
+          "y": 16
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 12,
+          "y": 16
+        },
+        {
+          "recipeId": "clinic-waiting-chair-back",
+          "x": 14,
+          "y": 16
+        },
+        {
+          "recipeId": "sento-double-sink",
+          "x": 14,
+          "y": 2
+        }
+      ],
+      "rooms": [
+        {
+          "id": "진찰실",
+          "name": "진찰실",
+          "x": 1,
+          "y": 3,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "id": "처치실",
+          "name": "처치실",
+          "x": 7,
+          "y": 3,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "id": "화장실·세면",
+          "name": "화장실·세면",
+          "x": 13,
+          "y": 3,
+          "width": 3,
+          "height": 5
+        },
+        {
+          "id": "접수·대기",
+          "name": "접수·대기",
+          "x": 1,
+          "y": 11,
+          "width": 15,
+          "height": 7
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 4,
+          "y": 7
+        },
+        {
+          "x": 9,
+          "y": 7
+        },
+        {
+          "x": 15,
+          "y": 7
+        },
+        {
+          "x": 4,
+          "y": 11
+        },
+        {
+          "x": 9,
+          "y": 11
+        },
+        {
+          "x": 15,
+          "y": 11
+        },
+        {
+          "x": 2,
+          "y": 12
+        },
+        {
+          "x": 2,
+          "y": 15
+        },
+        {
+          "x": 9,
+          "y": 16
+        },
+        {
+          "x": 2,
+          "y": 5
+        },
+        {
+          "x": 10,
+          "y": 5
+        },
+        {
+          "x": 13,
+          "y": 4
+        },
+        {
+          "x": 15,
+          "y": 4
+        },
+        {
+          "x": 8,
+          "y": 15
+        },
+        {
+          "x": 10,
+          "y": 15
+        },
+        {
+          "x": 12,
+          "y": 15
+        },
+        {
+          "x": 14,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 15
+        },
+        {
+          "x": 15,
+          "y": 16
+        }
+      ],
+      "notes": "진찰실·처치실·화장실은 독립 벽과 남쪽 문을 갖는다. 접수대 뒤y12는 직원 접근, 앞y15는 환자 접근이다. 대기석8개는 북쪽TV 방향으로 두며 y15과 x7/9의 통로를 비운다. 의료 상호작용·진료 이벤트는 별도다. 대기 의자 뒤y15와y17을 비운다.",
+      "isolationRooms": [
+        "진찰실",
+        "처치실",
+        "화장실·세면"
+      ]
+    },
+    {
+      "id": "paw-table-tennis-club",
+      "name": "동네 탁구장 · 코트2·탈의·창고",
+      "width": 20,
+      "height": 25,
+      "tilesetId": "paw-modern-interiors",
+      "floor": "gym",
+      "wall": "gym",
+      "exitX": 4,
+      "lines": [
+        {
+          "axis": "h",
+          "pos": 12,
+          "start": 0,
+          "end": 19,
+          "doors": [
+            4,
+            11
+          ]
+        },
+        {
+          "axis": "v",
+          "pos": 7,
+          "start": 12,
+          "end": 21,
+          "doors": [
+            {
+              "y": 19,
+              "height": 2
+            }
+          ]
+        },
+        {
+          "axis": "v",
+          "pos": 13,
+          "start": 12,
+          "end": 21,
+          "doors": [
+            {
+              "y": 19,
+              "height": 2
+            }
+          ]
+        }
+      ],
+      "ceilingRects": [],
+      "floorRects": [],
+      "placements": [
+        {
+          "recipeId": "gym-window",
+          "x": 2,
+          "y": 1
+        },
+        {
+          "recipeId": "gym-window",
+          "x": 14,
+          "y": 1
+        },
+        {
+          "recipeId": "gym-table-tennis",
+          "x": 4,
+          "y": 6
+        },
+        {
+          "recipeId": "gym-table-tennis",
+          "x": 12,
+          "y": 6
+        },
+        {
+          "recipeId": "izakaya-counter",
+          "x": 1,
+          "y": 18
+        },
+        {
+          "recipeId": "sento-lockers",
+          "x": 8,
+          "y": 15
+        },
+        {
+          "recipeId": "sento-bench",
+          "x": 9,
+          "y": 18
+        },
+        {
+          "recipeId": "gym-ball-cage",
+          "x": 14,
+          "y": 15
+        },
+        {
+          "recipeId": "gym-folded-mat",
+          "x": 17,
+          "y": 14
+        },
+        {
+          "recipeId": "gym-volleyball-cage",
+          "x": 16,
+          "y": 18
+        }
+      ],
+      "rooms": [
+        {
+          "id": "경기장",
+          "name": "경기장",
+          "x": 1,
+          "y": 4,
+          "width": 18,
+          "height": 8
+        },
+        {
+          "id": "접수",
+          "name": "접수",
+          "x": 1,
+          "y": 16,
+          "width": 6,
+          "height": 5
+        },
+        {
+          "id": "탈의실",
+          "name": "탈의실",
+          "x": 8,
+          "y": 16,
+          "width": 5,
+          "height": 5
+        },
+        {
+          "id": "장비 창고",
+          "name": "장비 창고",
+          "x": 14,
+          "y": 16,
+          "width": 5,
+          "height": 5
+        }
+      ],
+      "doorways": [],
+      "approachCells": [
+        {
+          "x": 2,
+          "y": 17
+        },
+        {
+          "x": 2,
+          "y": 20
+        },
+        {
+          "x": 4,
+          "y": 20
+        },
+        {
+          "x": 8,
+          "y": 19
+        },
+        {
+          "x": 12,
+          "y": 20
+        },
+        {
+          "x": 14,
+          "y": 20
+        },
+        {
+          "x": 14,
+          "y": 17
+        },
+        {
+          "x": 18,
+          "y": 17
+        },
+        {
+          "x": 11,
+          "y": 16
+        },
+        {
+          "x": 4,
+          "y": 16
+        },
+        {
+          "x": 4,
+          "y": 11
+        },
+        {
+          "x": 11,
+          "y": 11
+        }
+      ],
+      "notes": "탁구대 네트가 남북 방향으로 서 있어 경기는 동서 방향이다. 원본4×3 전체를 회전하지 않는다. 각 대 동서 끝에3칸 깊이 경기 공간을 확보하고 중앙 공간은 공유한다. 남북은 이동용 여유를 둔다. 남쪽 접수·탈의실·창고는 벽으로 나누고 직원/손님 접근과 수납장 앞을 비운다. 표기 칸 수는 실제 규격 미터가 아니며 탁구 플레이 이벤트는 별도다.",
+      "clearanceRects": [
+        {
+          "x": 1,
+          "y": 6,
+          "width": 3,
+          "height": 3
+        },
+        {
+          "x": 8,
+          "y": 6,
+          "width": 3,
+          "height": 3
+        },
+        {
+          "x": 9,
+          "y": 6,
+          "width": 3,
+          "height": 3
+        },
+        {
+          "x": 16,
+          "y": 6,
+          "width": 3,
+          "height": 3
+        }
+      ],
+      "isolationRooms": [
+        "탈의실",
+        "장비 창고"
+      ]
+    }
+  ]
+}

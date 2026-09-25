@@ -21,6 +21,7 @@ const extras = await read('tiledata/pixel-art-world/school-building-parts.json')
 const homePlans = (await read('tiledata/pixel-art-world/compact-homes.json')).maps;
 const densePlans = (await read('tiledata/pixel-art-world/dense-interiors-compiled.json')).maps;
 const retailPlans = (await read('tiledata/pixel-art-world/retail-interiors-compiled.json')).maps;
+const modernPlans = (await read('tiledata/pixel-art-world/modern-interiors-compiled.json')).maps;
 const civicPlans = (await read('tiledata/pixel-art-world/compact-civic.json')).maps;
 const tabletopRecipes = await read('tiledata/pixel-art-world/tabletop-composites.json');
 const nativeLayouts = (await Promise.all(['JapaneseInteriors','MansionInteriors','MansionExteriors','RetrotownExteriors'].map(kind => read(`src/assets/pixelArtWorld${kind}Layout.json`)))).flat();
@@ -40,7 +41,9 @@ await fs.mkdir(out, {recursive:true});
 for (const source of Object.values(project.tilesets).filter(t => t.id.startsWith('paw-'))) {
   const tile = structuredClone(source), asset = structuredClone(project.assets.uploaded[tile.image.id]);
   if (!asset?.dataUrl?.startsWith('data:image/png;base64,')) throw Error('Resolve source asset through host first: '+source.id);
-  tile.id = key(source.id); asset.id = tile.id+'_image'; tile.image = {type:'uploaded',id:asset.id}; tile.structureKits = [];
+  tile.id = key(source.id); asset.id = tile.id+'_image'; tile.image = {type:'uploaded',id:asset.id};
+  // The composite owns reviewed, remapped objects absent from the original-sheet catalogs.
+  if(source.id!=='paw-modern-interiors')tile.structureKits=[];
   // Source document contents keep their original atlas IDs; explicit mapping is attached below.
   tile.referenceDocuments ??= [];
   tile.referenceDocuments.unshift({id:'shared-identity',name:'공용 원본과 번호',description:'다운로드한 원본의 사용자 로컬 공용 사본. 타일 번호는 바뀌지 않았다.',documents:[{id:'identity',name:'원본 대응.md',markdown:`원본 tilesetId: ${source.id}\n공용 tilesetId: \`${tile.id}\`\n칸 크기: ${tile.tileSize}px, 열 수: ${tile.tilesPerRow}, count: ${tile.count}.\n원본 참조 문서의 ${source.id}는 여기서는 \`${tile.id}\`다. 타일 번호와 레이어/통행 배열은 그대로 보존한다.\n파일 SHA256: ${hash(Buffer.from(asset.dataUrl.split(',')[1],'base64'))}\n사용자 다운로드 원본은 로컬 공용 SQLite에서만 재사용하며 Git/public/배포 번들에 넣지 않는다.`}],images:[]});
@@ -188,12 +191,18 @@ for(const source of Object.values(project.maps)){
   const image=render(tileId,map.width,map.height,map.lowerTiles,map.upperTiles);lib.previews[id]=image;
   await fs.writeFile(`${out}/${id}.png`,Buffer.from(image.split(',')[1],'base64'));
   const floor=school.floors.find(f=>f.id===source.id), schoolGuide=floor?school.guide:'';
-  const candidate=homePlans[source.id]??densePlans[source.id]??retailPlans[source.id];
+  const candidate=homePlans[source.id]??densePlans[source.id]??retailPlans[source.id]??modernPlans[source.id];
   const home=candidate&&candidate.width===map.width&&candidate.height===map.height&&JSON.stringify(candidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(candidate.upperTiles)===JSON.stringify(map.upperTiles)?candidate:null;
   const civicCandidate=civicPlans[source.id];
   const civic=civicCandidate&&civicCandidate.width===map.width&&civicCandidate.height===map.height&&JSON.stringify(civicCandidate.lowerTiles)===JSON.stringify(map.lowerTiles)&&JSON.stringify(civicCandidate.upperTiles)===JSON.stringify(map.upperTiles)?civicCandidate:null;
   const guide=`# ${map.name}\n\n정본 ${proof.projectId}, revision ${proof.revision}, 원본 mapId ${source.id}.\n공용 mapId \`${id}\`, tilesetId \`${tileId}\`.\n${schoolGuide}\n\n원본 사건을 보관한 전체 맵은 library.maps에 있다. 장소 그림 킷 자체에는 이벤트가 없다. 계단/출입구는 ports/connections와 원본 events를 함께 읽고 목적 mapId를 다시 연결한다.\n이 사례 하나는 소재 전체 또는 미검토 타일의 지원 완료를 뜻하지 않는다.\n\n\`\`\`json\n${JSON.stringify({width:map.width,height:map.height,lowerTiles:map.lowerTiles,upperTiles:map.upperTiles,events:map.events,...(floor?{rooms:floor.rooms,stairs:floor.stairs,spawn:floor.spawn}:{}),...(home?{rooms:home.rooms,doorways:home.doorways,placements:home.placements,approachCells:home.approachCells,spawn:home.spawn,exitTrigger:home.exitTrigger,designNotes:home.designNotes,ceilingCells:home.ceilingCells,wallFaceCells:home.wallFaceCells,wallTiles:home.wallTiles}:{})})}\n\`\`\``;
   const docs=[category('place-layout',map.name,guide,image)];
+  if(modernPlans[source.id]){
+    if(!home)throw Error('Modern compiled map differs: '+source.id);
+    const authored=project.tilesets[source.tilesetId].referenceDocuments.find(c=>c.id==='assembled-'+source.id);
+    if(!authored?.documents.some(d=>d.markdown.includes(JSON.stringify(home,null,2))))throw Error('Modern scene reference differs: '+source.id);
+    docs.push(JSON.parse(JSON.stringify(authored).replaceAll(source.tilesetId,tileId)));
+  }
   if(civic)docs.push(category('civic-placement',map.name+' · 가구와 동선',`${civic.designNotes.join('\n\n')}\n\n상위 소품을 같은 칸에 겹쳐 지우지 않고 완전 조립 타일을 사용한다. 각 가구 방향·밑동과 직원/손님 접근칸, 문턱을 유지한다. 결제·앉기·진료 이벤트는 별도다.\n\n\`\`\`json\n${JSON.stringify({placements:civic.placements,approachCells:civic.approachCells,spawn:civic.spawn,exitTrigger:civic.exitTrigger,ceilingCells:civic.ceilingCells})}\n\`\`\``,image));
   if(pendingReview[source.id]&&!home&&!civic) docs.unshift({id:'review-pending',name:'수정 전 사례 · 그대로 재사용 금지',description:pendingReview[source.id],documents:[{id:'findings',name:'적대적 시각 검토.md',markdown:`# 수정 대기\n\n${pendingReview[source.id]}\n\n좌표는 이 실제 저장 맵의 0기준 타일 좌표다. 아래 전체 배열/그림은 수정할 원본을 식별하는 자료이며 정상 배치의 정답이 아니다. 공용 장소의 검토 완료 목록에서는 제외한다.`}],images:[]});
   const kitId=id+'_raster';

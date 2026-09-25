@@ -1,5 +1,35 @@
 # Pixel Art World 이자카야·일본식 방
 
+## 현대 실내 추가 8맵 (2026-09-25)
+
+센토21×32, 라멘집15×19, 아파트 A11×21/B13×21/C14×18,
+여관22×19, 의원17×21, 탁구장20×25를 실제 독립 맵으로 추가했다.
+[현대 실내 조립 계약](../tiledata/pixel-art-world/MODERN-INTERIORS.md)과
+`modern-interiors-layout.json`/`modern-interiors-compiled.json`을 사용한다.
+준비기는 `scripts/content/prepare-pixel-art-world-modern-interiors.mjs`다.
+
+설치된 원본8종/객체65종과 기존 천장47변형을 사용자 로컬 합성 타일셋
+`paw-modern-interiors`에 재매핑한다. 유효 칸385/패딩 포함392이며 복사 RGBA를 대조한다.
+타일셋 소유 참고문서17용도/74MD/82이미지에 원본→현재 사전, 전체 객체/맵 배열,
+접근 좌표와 정상/오류 그림을 남긴다. 그림/원본 추가 다운로드나 Git 재배포는 없다.
+공용 게시기의 일반 native 객체 재구성에서 이 타일셋의65개 객체 kits는 보존한다.
+새 맵의 전체 배열을 compiled와 비교하고 `assembled-*` 문서를 공용 장소로도 복사한다.
+
+천장 남쪽 끝 아래 벽2행(목재/의원) 또는3행(센토/체육관)을 유지한다.
+엔진 통행으로 접근120점, 독립방22개 폐쇄, 모든 빈 바닥 도달, 가구 조작면,
+탁구대 동서 끝3칸 여유를 확인한다. 여관은 완전한6×6 다다미 개인실3개다.
+합성/충돌 모듈을 esbuild 메모리 번들로 브라우저에 올리므로 개발 서버에 의존하지 않는다.
+정본 revision83 저장 후 동일 SQLite에서8맵/1타일셋/1이미지 일치를 확인했다.
+프로젝트 `6ae74f7a-23a2-449b-8171-5afb5dff532b`,
+폴더 `/home/main/.local/share/oprn/paw-city-20260924`, 증거 `output/paw-modern-interiors/`.
+로컬 공용 게시/재로드가 일치했고 PAW9개 라이브러리는86장소/24저장맵/289타일셋이다.
+장소/타일셋/객체의 문서 누락0. 실제 신규 프로젝트 factory와 기존 프로젝트 투영에서
+최신 문서를 확인했다. inspect/build 장면 구현의8맵 복사 배열/벽이 일치하며,
+기존 맵·native 타일셋 보존과 두 번째 공용 투영 불변도 확인했다. 새 LLM 생성 실험은 아니다.
+도시 왕복/문 개폐/영업 이벤트는 아직 없으며, 열린 문턱을 개폐문으로 설명하지 않는다.
+
+## 이자카야
+
 현재 이자카야는 **14×24, 분리 조리실·다다미 개인실·부스2·바6**이다.
 `tiledata/pixel-art-world/izakaya-kitchen-layout.json`이 청사진이며
 `izakaya-ceiling-compiled.json`이 전체 배열이다. 생성기는
