@@ -333,12 +333,139 @@ function upperIfEmpty(map: GameMap, x: number, y: number, tile: number): void {
   if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
 }
 
-/** 연속 빈 벽 구간 [a,b] 안의 창 자리 — 칸 3개마다 하나꼴, 서로 붙지 않게, 가운데 정렬. 박공 합성기와 같은 규칙. */
-export function spreadWindowsInSegment(a: number, b: number): number[] {
+/**
+ * 창 규칙(2026-09-25 사용자 3차 「창문이 기둥쪽에 달리거나 벽끝쪽에 달리거나 어색함 · 벽이 3칸은 되어야 창문을 달만함」).
+ *  · 창 칸은 **민벽 칸**(벽 가운데 칸)이어야 한다 — 끝 모서리 칸·기둥 칸·문 칸에는 달지 않는다.
+ *  · 창 좌우 이웃은 벽(끝 모서리 포함)이어야 하고 문이면 안 된다. 그래서 「끝 | 창 | 끝」 3칸 벽 면이 창 하나를 받는
+ *    가장 좁은 면이다. 문을 뺀 벽 구간이 3칸 미만인 면에는 창을 억지로 넣지 않는다.
+ *  · 구간 3~6칸이면 가운데 하나, 7~12칸이면 둘(1/3·2/3 지점), 13칸 이상이면 셋.
+ *  · 기둥(postColumn) 칸은 민벽 후보로 친다 — 창 좌우 한 칸 안에 걸린 기둥은 stripPost 로 그 자리만 뺀다(기둥이 창을 가르지 않게).
+ *  · prefer(아래층 창·문 열)가 주어지면 그 열 가운데 규칙을 지키는 곳을 먼저 쓴다 — 2층 창이 1층 창·문 위에 맞춰 선다.
+ */
+export interface WindowRowAccess {
+  lower(x: number): number;
+  upperEmpty(x: number): boolean;
+  setWindow(x: number): void;
+  /** 이 열의 기둥을 민벽으로 바꾼다(그 벽의 모든 줄). */
+  stripPost(x: number): void;
+}
+
+/** 어느 킷이든 벽 윗줄·중단의 가운데(민벽) 칸 — 고정 레시피는 킷 id 와 다른 벽 재료를 쓰기도 한다(저택 = 회벽). */
+function allPlainWallTiles(): ReadonlySet<number> {
+  return new Set(Object.values(HOUSE_KITS).flatMap((kit) => [kit.wall.top[1], kit.wall.mid[1]]));
+}
+
+/** 어느 킷이든 벽 윗줄·중단의 모든 칸(끝 모서리·기둥 포함) — 창 이웃 판정용. */
+function allWallFaceTiles(): ReadonlySet<number> {
+  return new Set(Object.values(HOUSE_KITS).flatMap((kit) => [...kit.wall.top, ...kit.wall.mid, ...(kit.postColumn ? [kit.postColumn.tiles[0], kit.postColumn.tiles[1]] : [])]));
+}
+
+/** 창 자리 계산에서 민벽으로 치는 칸 — 민벽 + 이 킷의 기둥(창 옆이면 뺀다). */
+export function windowPlainTiles(kit: HouseKit): ReadonlySet<number> {
+  return new Set([...allPlainWallTiles(), ...(kit.postColumn ? [kit.postColumn.tiles[0], kit.postColumn.tiles[1]] : [])]);
+}
+
+/** 어느 킷이든 벽 아랫줄 칸(끝 포함) — 레시피 문 줄 찾기용. */
+export function allBottomWallTiles(): ReadonlySet<number> {
+  return new Set(Object.values(HOUSE_KITS).flatMap((kit) => [...kit.wall.bottom, ...(kit.postColumn ? [kit.postColumn.tiles[2]] : [])]));
+}
+
+/**
+ * 이미 놓인 창 한 칸이 창 규칙을 어기는가 — 검사용. 어기면 이유, 지키면 undefined.
+ * 창 칸은 민벽(끝 모서리·기둥·문 칸 금지), 좌우 이웃은 벽 칸(끝 모서리 가능), 문 좌우 한 칸 안이면 안 된다.
+ */
+export function windowPlacementProblem(
+  kit: HouseKit,
+  lowerAt: (x: number, y: number) => number,
+  x: number,
+  y: number,
+  doorAt: { readonly x: number; readonly y: number } | undefined,
+): string | undefined {
+  void kit;
+  const wall = allWallFaceTiles();
+  if (doorAt && y >= doorAt.y - 2 && y <= doorAt.y && Math.abs(x - doorAt.x) <= 1) return "문 옆 창";
+  if (!allPlainWallTiles().has(lowerAt(x, y))) return "민벽이 아닌 칸의 창(끝·기둥)";
+  if (!wall.has(lowerAt(x - 1, y)) || !wall.has(lowerAt(x + 1, y))) return "창 옆이 벽이 아니다(문·빈칸)";
+  return undefined;
+}
+
+/** 벽 구간 [a,b](끝 모서리 포함, 문 제외) 안 창 자리 — 끝 칸은 쓰지 않는다. */
+export function windowSlotsInRun(a: number, b: number): number[] {
   const length = b - a + 1;
-  const count = Math.max(1, Math.floor((length + 2) / 3));
-  if (count === 1) return [a + Math.floor((length - 1) / 2)];
-  return Array.from({ length: count }, (_, i) => a + Math.round((i * (length - 1)) / (count - 1)));
+  if (length < 3) return [];
+  const count = length >= 13 ? 3 : length >= 7 ? 2 : 1;
+  return Array.from({ length: count }, (_, i) => a + Math.floor(((length - 1) * (i + 1)) / (count + 1) + 0.5));
+}
+
+/** 한 줄 [x0,x1] 에 창을 낸다. doorX 는 이 줄에 문이 있을 때만. 낸 열을 돌려준다. */
+export function placeWindowsInRow(
+  kit: HouseKit,
+  x0: number,
+  x1: number,
+  doorX: number | undefined,
+  access: WindowRowAccess,
+  prefer: readonly number[] = [],
+): number[] {
+  const plainTiles = windowPlainTiles(kit);
+  const wallTiles = allWallFaceTiles();
+  const inRow = (x: number): boolean => x >= x0 && x <= x1 && x !== doorX;
+  const wall = (x: number): boolean => inRow(x) && wallTiles.has(access.lower(x));
+  const plain = (x: number): boolean => inRow(x) && plainTiles.has(access.lower(x)) && access.upperEmpty(x);
+  const nearDoor = (x: number): boolean => doorX !== undefined && Math.abs(x - doorX) <= 1;
+  const valid = (x: number): boolean => plain(x) && wall(x - 1) && wall(x + 1) && !nearDoor(x);
+  let slots: number[] = [];
+  for (const x of [...new Set(prefer)].sort((a, b) => a - b)) {
+    if (valid(x) && !slots.some((other) => Math.abs(other - x) < 2)) slots.push(x);
+  }
+  if (slots.length === 0) {
+    let start = -1;
+    for (let x = x0; x <= x1 + 1; x += 1) {
+      const ok = x <= x1 && wall(x);
+      if (ok && start < 0) start = x;
+      if (!ok && start >= 0) {
+        for (const slot of windowSlotsInRun(start, x - 1)) {
+          // 가운데가 창 규칙에 걸리면(문 옆·끝) 한 칸 옆을 본다.
+          const pick = [slot, slot - 1, slot + 1].find((c) => c > start && c < x - 1 && valid(c) && !slots.some((o) => Math.abs(o - c) < 2));
+          if (pick !== undefined) slots.push(pick);
+        }
+        start = -1;
+      }
+    }
+  }
+  const posts = new Set<number>(kit.postColumn ? kit.postColumn.tiles : []);
+  for (const x of slots) {
+    for (const nx of [x - 1, x, x + 1]) if (posts.has(access.lower(nx))) access.stripPost(nx);
+    access.setWindow(x);
+  }
+  return slots;
+}
+
+/**
+ * 문 오프셋(폭 width 벽, 0·width-1 은 끝 칸) — 문 한쪽에 끝 모서리 포함 벽 3칸(「끝 | 창 | 끝」, 창이 문에 붙지 않게)이 남는
+ * 자리 중 preferred 에 가장 가까운 곳. 폭 7 은 가운데(양쪽 3칸), 폭 5~6 은 한쪽으로 비킨다. 그런 자리가 없으면(폭 ≤4) preferred.
+ * blocked 칸(기둥 등)은 피한다.
+ */
+export function doorOffsetForWindows(width: number, preferred: number, blocked: (offset: number) => boolean = () => false): number {
+  const candidates = Array.from({ length: Math.max(0, width - 2) }, (_, i) => i + 1)
+    .filter((offset) => !blocked(offset))
+    .sort((a, b) => Math.abs(a - preferred) - Math.abs(b - preferred) || a - b);
+  return candidates.find((offset) => Math.max(offset, width - 1 - offset) >= 3) ?? candidates[0] ?? preferred;
+}
+
+/** 지도 위 기둥 열 한 칸을 민벽으로 — 위아래로 이어진 기둥 칸까지. */
+function stripPostColumn(map: GameMap, kit: HouseKit, x: number, y: number): void {
+  if (!kit.postColumn) return;
+  const [top, mid, bottom] = kit.postColumn.tiles;
+  const plainFor = (tile: number): number | undefined =>
+    tile === top ? kit.wall.top[1] : tile === mid ? kit.wall.mid[1] : tile === bottom ? kit.wall.bottom[1] : undefined;
+  for (const dir of [-1, 1]) {
+    for (let ny = dir < 0 ? y : y + 1; ny >= 0 && ny < map.height; ny += dir) {
+      const index = ny * map.width + x;
+      const plainTile = plainFor(map.lowerTiles[index] ?? TILE.EMPTY);
+      if (plainTile === undefined) break;
+      map.lowerTiles[index] = plainTile;
+    }
+  }
 }
 
 function placeWindowsOnWallRuns(
@@ -350,41 +477,29 @@ function placeWindowsOnWallRuns(
 ): void {
   const spacing = windowSpacing(windows);
   if (spacing === null) return;
-  const step = spacing + 1;
-  const isPostTile = (x: number, y: number): boolean =>
-    kit.postColumn !== undefined && (kit.postColumn.tiles as readonly number[]).includes(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
-  const nearDoor = (x: number, y: number): boolean => doorAt !== undefined && Math.abs(x - doorAt.x) <= 1 && y >= doorAt.y - 2;
-  const spread = windows === undefined || windows === false || windows.spacing === undefined;
-  for (const run of runs) {
-    if (run.x1 - run.x0 + 1 < 3) continue;
-    let placed = false;
-    if (spread) {
-      // 기본 간격(2026-09-25 「넓은 면은 빈 벽 2~3칸마다, 좌우 맞게」): 문·기둥으로 끊긴 빈 구간마다 고르게.
-      let start = -1;
-      for (let x = run.x0 + 1; x <= run.x1; x += 1) {
-        const ok = x <= run.x1 - 1 && !nearDoor(x, run.y) && !isPostTile(x, run.y);
-        if (ok && start < 0) start = x;
-        if (!ok && start >= 0) {
-          for (const wx of spreadWindowsInSegment(start, x - 1)) upperIfEmpty(map, wx, run.y, kit.windowTile);
-          placed = true;
-          start = -1;
-        }
-      }
+  const access = (y: number): WindowRowAccess => ({
+    lower: (x) => (x < 0 || x >= map.width ? TILE.EMPTY : map.lowerTiles[y * map.width + x] ?? TILE.EMPTY),
+    upperEmpty: (x) => x >= 0 && x < map.width && (map.upperTiles[y * map.width + x] ?? TILE.EMPTY) === TILE.EMPTY,
+    setWindow: (x) => upperIfEmpty(map, x, y, kit.windowTile),
+    stripPost: (x) => stripPostColumn(map, kit, x, y),
+  });
+  const doorRow = (y: number): boolean => doorAt !== undefined && y >= doorAt.y - 2;
+  // 1층(문 줄) 먼저 — 위층은 1층 창·문 열에 맞춘다.
+  const ordered = [...runs].sort((a, b) => b.y - a.y);
+  const below: number[] = [];
+  for (const run of ordered) {
+    const doorX = doorRow(run.y) ? doorAt?.x : undefined;
+    if (windows !== undefined && windows !== false && windows.spacing !== undefined) {
+      // 간격을 명시하면 그 간격으로 — 단, 창 규칙(민벽·좌우 민벽)을 못 지키는 자리는 건너뛴다.
+      const step = spacing + 1;
+      const prefer: number[] = [];
+      for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) prefer.push(x);
+      placeWindowsInRow(kit, run.x0, run.x1, doorX, access(run.y), prefer);
+      continue;
     }
-    for (let x = run.x0 + 1; !spread && x <= run.x1 - 1; x += step) {
-      if (nearDoor(x, run.y)) continue;
-      // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
-      if (isPostTile(x, run.y)) continue;
-      upperIfEmpty(map, x, run.y, kit.windowTile);
-      placed = true;
-    }
-    if (placed || spacing === 0) continue;
-    // 2026-09-25 사용자 규칙 「3칸 이상 벽 면이면 창 하나는」: 간격이 문·기둥에 다 걸리면 안쪽 빈 칸 → 문에서 먼 벽 끝 칸.
-    const inner = Array.from({ length: run.x1 - run.x0 - 1 }, (_, i) => run.x0 + 1 + i).filter((x) => !nearDoor(x, run.y) && !isPostTile(x, run.y));
-    const ends = [run.x0, run.x1].filter((x) => !nearDoor(x, run.y));
-    const far = (a: number, b: number): number => (doorAt ? Math.abs(b - doorAt.x) - Math.abs(a - doorAt.x) : 0);
-    const pick = inner.length > 0 ? inner[Math.floor((inner.length - 1) / 2)] : ends.sort(far)[0];
-    if (pick !== undefined) upperIfEmpty(map, pick, run.y, kit.windowTile);
+    const prefer = doorX === undefined ? [...below, ...(doorAt ? [doorAt.x] : [])] : [];
+    const placed = placeWindowsInRow(kit, run.x0, run.x1, doorX, access(run.y), prefer);
+    if (doorX !== undefined) below.push(...placed);
   }
 }
 
@@ -728,7 +843,8 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     while (wallRole.get(key(x1 + 1, y)) === 2 && !inMass(x1 + 1, y + 1)) x1 += 1;
     if (!best || x1 - x > best.x1 - best.x0 || (x1 - x === best.x1 - best.x0 && y > best.y)) best = { x0: x, x1, y };
   }
-  const doorAt = best ? { x: best.x0 + Math.floor((best.x1 - best.x0) / 2), y: best.y } : undefined;
+  // 문은 한쪽에 민벽 3칸(창 자리)이 남는 곳 — doorOffsetForWindows.
+  const doorAt = best ? { x: best.x0 + doorOffsetForWindows(best.x1 - best.x0 + 1, Math.floor((best.x1 - best.x0) / 2)), y: best.y } : undefined;
   placeWindowsOnWallRuns(map, kit, wallWindowRunsFromRoles(wallRole, map.width), plan.windows, doorAt);
   if (doorAt && plan.doorEvent) {
     stampHouseDoorBackground(map, doorAt);
@@ -842,7 +958,7 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   for (let row = 0; row < midRows; row += 1, y += 1) nineSliceRow(y, kit.wall.mid, kit.postColumn?.tiles[1]);
   nineSliceRow(y, kit.wall.bottom, kit.postColumn?.tiles[2]);
 
-  const doorAt = { x: left + Math.floor(plan.width / 2), y };
+  const doorAt = { x: left + doorOffsetForWindows(plan.width, Math.floor(plan.width / 2), (offset) => isWallPostAt(kit, offset, plan.width)), y };
   placeWindowsOnWallRuns(map, kit, plan.lowWall
     ? [{ x0: left, x1: right, y: wallTopY }]
     : rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);

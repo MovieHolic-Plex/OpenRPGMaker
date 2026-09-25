@@ -58,7 +58,7 @@ export const HOUSE_TEMPLATE_DEFS: readonly HouseTemplateDef[] = [
   { id: "rect-3f", name: "직사각 3층", w: 8, h: 11, stories: 3, wings: [{ x: 0, y: 0, w: 8, h: 11 }] },
   // ── 낮은 벽(상단+하단 2행) — 헛간·창고·오두막 ──
   { id: "cottage-low", name: "낮은 오두막", w: 5, h: 4, stories: 1, lowWall: true, wings: [{ x: 0, y: 0, w: 5, h: 4 }] },
-  { id: "hut-low", name: "외양간", w: 4, h: 4, stories: 1, lowWall: true, wings: [{ x: 0, y: 0, w: 4, h: 4 }] },
+  { id: "hut-low", name: "외양간(창 없음)", w: 4, h: 4, stories: 1, lowWall: true, wings: [{ x: 0, y: 0, w: 4, h: 4 }] },
   { id: "barn-low", name: "낮은 헛간", w: 6, h: 5, stories: 1, lowWall: true, wings: [{ x: 0, y: 0, w: 6, h: 5 }] },
   // ── ㄱ자 계열(4방향·크기) ──
   { id: "l", name: "ㄱ자", w: 6, h: 8, stories: 1, wings: [{ x: 0, y: 0, w: 3, h: 8 }, { x: 3, y: 0, w: 3, h: 6 }] },

@@ -60,6 +60,8 @@ export interface GableHouseFormSpec {
    * 2026-09-25 사용자 검토: 곁채 둘은 어색해서 0, 달개는 애매해서 낮춘다.
    */
   readonly mix?: number;
+  /** 창고·헛간 — 창 없이 자동 추첨에 나와도 된다(2026-09-25 3차: 창 없는 창고는 괜찮다, 이름에 밝힌다). */
+  readonly shed?: boolean;
 }
 
 const front = (x: number, w: number, bottom: number, extra: Partial<Omit<GableFrontPart, "kind" | "x" | "w" | "bottom">> = {}): GableFrontPart =>
@@ -74,16 +76,18 @@ const block = (x: number, w: number, bottom: number, roofRows: number, extra: Pa
  * 2026-09-25 사용자 검토 규칙(합성기 auditGableHouseForm 이 형태마다 검사한다):
  *  · 정면 박공이 측면 본채에 붙으면 본채 지붕은 날개 바깥 끝까지 뒤로 이어진다 — 사선 칸 뒤가 비면 안 된다.
  *    그래서 교차 박공의 본채(block)는 박공 날개를 끝까지 품는다(날개가 본채 폭 안에 있다).
+ *  · (3차) 창은 민벽 칸에만, 좌우는 벽(끝 모서리 가능)·문 아님 — 문이 달린 폭 4 박공(문 옆에 「끝 | 창 | 끝」 3칸이 안 남는다)은 창을 낼 자리가 없어
+ *    자동 추첨에서 뺐다(mix 0: 오두막·뾰족 오두막). 창 없는 창고는 shed 로 둔다.
  *  · 보이는 벽 면은 어디든 3칸 이상. 폭 8 본채 가운데에 폭 4 박공을 두면 양옆이 2칸이 되므로, 폭 8 이하에서는
  *    박공을 한쪽 끝에 붙이고(ㄱ·ㄴ자·현관) 가운데 박공(T자·합각)은 폭 10(author_house 전용)으로 짓는다.
  */
 export const GABLE_HOUSE_FORM_SPECS: readonly GableHouseFormSpec[] = [
   // ── 박공 하나 ──
-  { id: "gable-cottage", name: "박공 오두막", parts: [front(0, 4, 0)] },
+  { id: "gable-cottage", name: "박공 오두막", parts: [front(0, 4, 0)], mix: 0 },
   { id: "gable-house", name: "박공집", parts: [front(0, 6, 0)] },
   { id: "gable-steep", name: "뾰족 박공집", parts: [front(0, 6, 0, { steep: 1 })] },
-  { id: "gable-tall-cottage", name: "뾰족 박공 오두막", parts: [front(0, 4, 0, { steep: 1 })] },
-  { id: "gable-shed", name: "박공 창고", parts: [front(0, 4, 0, { wall: "low" })] },
+  { id: "gable-tall-cottage", name: "뾰족 박공 오두막", parts: [front(0, 4, 0, { steep: 1 })], mix: 0 },
+  { id: "gable-shed", name: "박공 창고(창 없음)", parts: [front(0, 4, 0, { wall: "low" })], shed: true },
   { id: "gable-barn", name: "낮은 헛간 박공", parts: [front(0, 6, 0, { wall: "low" })] },
   // ── 박공 둘 ──
   { id: "gable-twin", name: "쌍박공", parts: [front(0, 4, 0, { door: true }), front(4, 4, 0)] },
@@ -101,11 +105,11 @@ export const GABLE_HOUSE_FORM_SPECS: readonly GableHouseFormSpec[] = [
   { id: "gable-annex", name: "박공 + 곁채", parts: [front(0, 4, 0, { door: true }), block(4, 4, -1, 3, { wall: "low" })], mix: 0 },
   { id: "gable-annex-l", name: "곁채 + 박공", parts: [block(0, 3, -1, 3, { wall: "low" }), front(3, 4, 0, { door: true })], mix: 0 },
   // 박공 + 한쪽 달개: 달개 지붕이 박공 뒤로 이어지고 벽은 3칸. 애매해서 가중치를 낮춘다.
-  { id: "gable-lean", name: "박공 + 달개", parts: [block(0, 7, 0, 2, { wall: "low" }), front(0, 4, 0, { door: true })], mix: 0.35 },
+  { id: "gable-lean", name: "박공 + 달개", parts: [block(0, 8, 0, 2, { wall: "low" }), front(0, 4, 0, { door: true })], mix: 0.35 },
   // ── 측면 박공 덩어리(용마루가 좌우로) ──
   { id: "gable-long", name: "측면 박공 장옥", parts: [block(0, 8, 0, 3, { ends: "verge" })] },
   { id: "gable-long-low", name: "측면 박공 헛간", parts: [block(0, 7, 0, 3, { ends: "verge", wall: "low" })] },
-  { id: "gable-long-step", name: "측면 박공 두 채", parts: [block(0, 5, 0, 3, { ends: "verge", door: true }), block(5, 3, -1, 3, { ends: "verge", wall: "low" })] },
+  { id: "gable-long-step", name: "측면 박공 두 채", parts: [block(0, 5, -1, 3, { ends: "verge" }), block(5, 3, 0, 3, { ends: "verge", door: true })] },
   { id: "gable-hall", name: "측면 박공 + 정면 박공 두 개", parts: [block(0, 8, -1, 3, { ends: "verge" }), front(0, 4, 0, { door: true }), front(4, 4, 0)] },
   // ── 2층(2026-09-25) — 벽 5줄: 윗 띠 · 2층 창 줄 · 층 띠(벽 윗줄 칸 재사용) · 1층 창·문 줄 · 아랫줄. 문은 1층에만. ──
   { id: "gable-2f", name: "2층 박공집", parts: [front(0, 6, 0, { stories: 2 })] },
