@@ -1,4 +1,5 @@
 import { canonicalJsonString } from "./canonicalJson";
+import { jsonContentDigest } from "./contentDigest";
 
 /**
  * 맵 패치 전송 본문.
@@ -40,7 +41,39 @@ function sameValue(left: unknown, right: unknown): boolean {
   return canonicalJsonString(left) === canonicalJsonString(right);
 }
 
-function diffDict(base: Record<string, unknown>, local: Record<string, unknown>): DictPatch {
+/**
+ * 타일셋 한 칸의 변경 여부. 타일셋 만 이 바깥 문단을 쓴다.
+ *
+ * 왜 (2026-09-25 실측): `referenceDocuments`(AI 학습 문서)가 타일셋 한 칸에 수백 KB · 프로젝트 합계 42MB다.
+ * `sameValue` 는 문서 본모까지 포함해 양쪽을 `JSON.stringify` 하므로 자동저장 한 번에 322칸 × 2 번의
+ * 직렬화가 돈다(상위 diff 자체 1,535ms). 문서는 «통째로 교잴만 하고 원소를 고쳤지 않는다»는 계약을
+ * 가지므로(`projectClone.cloneProjectSharingReferenceDocuments`), 문서 부분은 배열 실체가 같으면 그리면
+ * 끝이고, 달라도 노드당 기억을 가진 요약(`jsonContentDigest`)으로 한 번만 본다.
+ * 문서 밖 필드는 지금도 `sameValue` 가 보므로 변경 판정은 그대로다 — 요약의 동일성은
+ * `canonicalJsonOf` 와 같다(`contentDigest.ts` 머리말).
+ *
+ * 어느 편이든 확실하지 않으면 «바눴다»로 기울인다: 거짓 «그대로»는 문서 소십이고, 거짓 «바눴다»는
+ * 전송량만 늨다.
+ */
+function sameTilesetValue(base: unknown, local: unknown): boolean {
+  if (base === local) return true;
+  if (!isRecord(base) || !isRecord(local)) return sameValue(base, local);
+  const baseDocuments = base.referenceDocuments;
+  const localDocuments = local.referenceDocuments;
+  if (baseDocuments !== localDocuments
+    && jsonContentDigest(baseDocuments, "referenceDocuments") !== jsonContentDigest(localDocuments, "referenceDocuments")) {
+    return false;
+  }
+  const { referenceDocuments: _baseDocuments, ...baseRest } = base;
+  const { referenceDocuments: _localDocuments, ...localRest } = local;
+  return sameValue(baseRest, localRest);
+}
+
+function diffDict(
+  base: Record<string, unknown>,
+  local: Record<string, unknown>,
+  same: (base: unknown, local: unknown) => boolean = sameValue,
+): DictPatch {
   const set: Record<string, unknown> = {};
   const del: string[] = [];
   for (const key of new Set([...Object.keys(base), ...Object.keys(local)])) {
@@ -49,7 +82,7 @@ function diffDict(base: Record<string, unknown>, local: Record<string, unknown>)
       del.push(key);
       continue;
     }
-    if (Object.prototype.hasOwnProperty.call(base, key) && sameValue(base[key], local[key])) continue;
+    if (Object.prototype.hasOwnProperty.call(base, key) && same(base[key], local[key])) continue;
     set[key] = local[key];
   }
   return {
@@ -74,9 +107,10 @@ export function diffProjectDocuments(base: unknown, local: unknown): ProjectDocu
     const localValue = localRecord[key];
     const hasBase = Object.prototype.hasOwnProperty.call(baseRecord, key);
     const baseValue = hasBase ? baseRecord[key] : undefined;
-    if (hasBase && sameValue(baseValue, localValue)) continue;
+    const sameForKey = key === "tilesets" ? sameTilesetValue : sameValue;
+    if (hasBase && sameForKey(baseValue, localValue)) continue;
     if ((NESTED_KEYS as readonly string[]).includes(key) && isRecord(baseValue) && isRecord(localValue)) {
-      const child = diffDict(baseValue, localValue);
+      const child = diffDict(baseValue, localValue, key === "tilesets" ? sameTilesetValue : sameValue);
       if (child.set || child.del) nested[key as NestedKey] = child;
       continue;
     }
@@ -87,6 +121,38 @@ export function diffProjectDocuments(base: unknown, local: unknown): ProjectDocu
     ...(del.length > 0 ? { del } : {}),
     ...nested,
   };
+}
+
+/**
+ * 패치 값만 와이어 JSON 으로 맞춘다. 푸로젝트 전체가 아니라 **지금 실려 보내는 항목만** 왕부한다.
+ *
+ * 왜: diff 는 이제 생산 메모리 보기를 읽으므로, `undefined` 값을 가진 키나 `toJSON` 을 가진 값이
+ * 패치에 그대로 실릴 수 있다. 호스트는 이 패치를 기준 문서 위에 얹어 저장문을 만들므로
+ * (`applyProjectDocumentPatch`), 값은 `serialize` 가 쓴 바이트와 동듈해야 한다. 왕부 범위가
+ * 변경량(칠하기 한 번 = 바뀜 맵 하나, 수십 KB)에 밀척 붙는다.
+ */
+export function withWirePatchValues(patch: ProjectDocumentPatch): ProjectDocumentPatch {
+  const wireDict = (dict: DictPatch | undefined): DictPatch | undefined => {
+    if (!dict?.set) return dict;
+    const set: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(dict.set)) set[key] = toWireValue(value);
+    return { ...dict, set };
+  };
+  const next: ProjectDocumentPatch = {
+    ...patch,
+    ...(patch.set ? { set: Object.fromEntries(Object.entries(patch.set).map(([key, value]) => [key, toWireValue(value)])) } : {}),
+  };
+  const withNested: Record<string, unknown> = { ...next };
+  for (const key of NESTED_KEYS) {
+    const child = wireDict(patch[key]);
+    if (child) withNested[key] = child;
+  }
+  return withNested as ProjectDocumentPatch;
+}
+
+function toWireValue(value: unknown): unknown {
+  if (value === null || typeof value !== "object") return value;
+  return JSON.parse(JSON.stringify(value)) as unknown;
 }
 
 function applyDict(base: Record<string, unknown>, patch: DictPatch | undefined): Record<string, unknown> {

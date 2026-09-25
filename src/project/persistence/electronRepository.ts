@@ -1,5 +1,6 @@
 import { deserialize, serialize } from "../io";
-import { diffProjectDocuments, type ProjectDocumentPatch } from "./core/projectPatch";
+import { projectWireView } from "../io/serialize";
+import { diffProjectDocuments, withWirePatchValues, type ProjectDocumentPatch } from "./core/projectPatch";
 import { projectWithoutEventDrafts } from "../eventDrafts";
 import { setUploadedAssetResolver } from "./assetAccessors";
 import type { ProjectWriteAuthority } from "../spatial/saveRouting";
@@ -212,9 +213,14 @@ export function createElectronRepository(): ElectronRepository {
     },
     async saveMapPatch(input: MapPatchInput, target) {
       const resolved = requireOpened(target);
-      const baseProject = projectWithoutEventDrafts(input.baseProject);
-      const persisted = projectWithoutEventDrafts(input.project);
-      const patch = diffProjectDocuments(JSON.parse(serialize(baseProject)) as unknown, JSON.parse(serialize(persisted)) as unknown);
+      // `MapPatchInput` 은 이밌트 초안을 이미 떼낸 문서를 들고 온다(types.ts `MapPatchInput` 머리말).
+      // 여기서 다시 `projectWithoutEventDrafts` 를 부르면 생산 프로젝트 한 번에 전역 딥클로이 두 번 더 도는다
+      // (2026-09-25 실측: 42MB 문서 토한 프로젝트에서 한 번에 563ms).
+      const baseProject = input.baseProject;
+      const persisted = input.project;
+      // 버려진 `terrainTemplates` 만 떼는 얕은 보기로 비교한다 — 이것이 예전의
+      // `JSON.parse(serialize(x))` 왕부가 «보기» 로 샀던 유일한 것이다. 복사 없이 같은 판정을 늨는다.
+      const patch = withWirePatchValues(diffProjectDocuments(projectWireView(baseProject), projectWireView(persisted)));
       const send = (includeBase: boolean) => electronBridge().project.saveMapPatch({
         projectDir: resolved.projectDir,
         baseSha: loadedSha,
