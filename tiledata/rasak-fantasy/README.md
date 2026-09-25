@@ -71,15 +71,24 @@ node /tmp/mzai/apply.mjs export --project ~/third-party-assets/rasak/study-proje
 - 묶음 `rasak_town`(A1 도시 물 · A2 도시 땅 · A3 City1 지붕 16종+벽 16종 · A4 도시 벽 · A5 도시 · B 마을 · C 건물 · D 구조물 · E 시장 · 추가 울타리·정원·농장·작물·여름 나무)과
   `rasak_interior`(A2 실내 바닥·양탄자·탁자형 · A4 집 천장+벽 · A5 집 · B 집 · C 거실 · D 주점 · E 창고 · 추가 대장간·재봉·왕실).
   이름표: town kind 139 · 물체 796, interior kind 104 · 물체 1003, 이름 없는 조각 0. 층은 명세 플래그(`L1` 바닥재 · `L2` 깔개 · `L4` 탁상 소품·굴뚝)로 정한다.
-- 이 두 묶음은 **제작자 타일 프리뷰가 없다**(p24 는 손그림 세계 지도, p21·p22 실내는 조명 덧칠). 그래서 `compose_examples.py` 가
+- 이 두 묶음은 **제작자 타일 프리뷰가 없다**(p24 는 손그림 세계 지도). p21·p22·p26 실내는 있지만 조명 덧칠 + 이 묶음에 없는
+  시트(성 돌벽·특수 건물)를 써서 `reconstruct_preview.py` 로 되살리면 칸이 엉뚱하게 채워진다(2026-09-25 시도: p21 완전 일치 35%, p26 0.1%).
+  그래서 구성(방 수·가구 세트·벽 리듬)만 본보기로 삼는다. 그래서 `compose_examples.py` 가
   MZ 기본 규칙(같은 kind 끼리 잇기, 맵 가장자리 = 이어짐)으로 조립한 예제 맵 4장(`ex_village`·`ex_city`·`ex_house_room`·`ex_tavern`)을
   `maps/rasak_preview_ex_*.layers.map.json` 으로 써서 프리뷰 자리에 넣는다. 예제 명세는 `compose_examples_specs.py`(kind 번호·물체 id).
   실제 엔진으로 예제의 자동타일을 다시 잡으면 100% 같다(`apply-assistant-pack verify`).
 - 참고문서 용도 4개 추가: `town_village`·`town_city`(A3 지붕+벽 집 짓기 조리법, 도시 큰길·좌판 조립) · `interior_house`·`interior_tavern`
   (A4 천장 테두리 → 벽면 두 줄 → A2 바닥, 벽걸이·키 큰 가구·탁상 소품 4층 규칙, 실내는 네모 방이 정상, 오류 그림 ⑤벽면 빠뜨림 ⑥벽걸이를 바닥 줄에).
+- **예제 품질 기준(적대적 시각 QA 2026-09-25)**: 첫 예제는 빈 바닥 46~60%·도시 좌우 대칭 4.8배·방 하나 상자였고 조수가 그대로 따라 했다.
+  다시 조립한 예제는 `check_examples.py` 를 넘는다 — 빈 바닥 %(3×3 이웃에 2·3층 없는 바닥)·가장 큰 빈 정사각형·좌우 대칭 배수(우연 = 1)·실내 허공 %,
+  기준은 제작자 재구성 맵(p01·p02·p28·p27a)에서 잰 값. 숫자는 속일 수 있다(1칸 덤불 무더기로 통과한 숲이 죽은 숲처럼 보였다) — 그림을 반드시 본다.
+  조립기(`Canvas.obj`)는 같은 층 덮어쓰기·지붕/벽 위 바닥 물체·벽면 밖 벽걸이·밑 없는 4층·바닥 아닌 2층 장식·맵 밖 잘림을 막는다.
+- MZ 자동타일은 **맵 밖 = 이어짐**이다. 팩의 autotileGroups 는 `edgeConnects: true` 를 싣고 엔진(`autotileNeighborMask`)이 이를 따른다 —
+  없으면 조수가 깐 벽·천장·풀밭이 맵 둘레마다 가는 테두리 선을 그린다.
 - 모든 Rasak 묶음 타일셋은 `family: "rasak-fantasy"` 로 발행한다 — 조수의 칩셋 계열 규칙(같은 계열끼리는 말없이 오간다)이 이걸 본다.
 - 순서: `bake_atlas.py --bundle rasak_town|rasak_interior` → 이름 명세(`knowledge/work/new/spec_*.py`, 로컬) → `knowledge/work/build.py` →
-  `compose_examples.py` → `publish-study-project.mjs --layers`(새 폴더) → `apply dump` → `build_assistant_pack.py` → `apply verify|apply|export`.
+  `compose_examples.py` → `check_examples.py` → `publish-study-project.mjs --layers`(새 폴더) → `apply dump` → `build_assistant_pack.py` →
+  `apply verify|apply [--example-maps <maps>]|export`.
   새 묶음은 합성 칸이 없으므로 `manifest.layers.json`·`atlas.layers.png` 는 `manifest.json`·`atlas.png` 사본이다.
 
 ## 프리뷰 재현 결과 (2026-09-24, 두 층 렌더 기준)

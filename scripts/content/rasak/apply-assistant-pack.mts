@@ -6,14 +6,14 @@
 //   node /tmp/mzai/apply.mjs dump   --project ~/third-party-assets/rasak/study-project-layers --out /tmp/mzai/pack/original-tilesets.json
 //   python3 scripts/content/rasak/build_assistant_pack.py ...                       (pack.json 생성)
 //   node /tmp/mzai/apply.mjs verify --project <dir> --pack /tmp/mzai/pack/pack.json   (실제 엔진으로 프리뷰 모양 재현율)
-//   node /tmp/mzai/apply.mjs apply  --project <dir> --pack /tmp/mzai/pack/pack.json   (저장 → 다시 열어 왕복 확인)
+//   node /tmp/mzai/apply.mjs apply  --project <dir> --pack /tmp/mzai/pack/pack.json [--example-maps ~/third-party-assets/rasak/maps]   (저장 → 다시 열어 왕복 확인; 예제 맵 칸도 갈아 끼움)
 //   node /tmp/mzai/apply.mjs export --project <dir> --original /tmp/mzai/pack/original-tilesets.json --out-dir /tmp/mzai
 // 앞서 프로젝트 폴더를 통째로 백업한다(cp -a). apply 는 저장 직전에 fuser 로 그 DB 를 연 다른 프로세스(호스트·편집기)를
 // 찾아 있으면 거부한다 — 실행 중인 호스트의 DB 를 별도 프로세스에서 고치지 않는다(AGENTS.md 프로젝트 정본 규칙).
 // apply 는 팩이 소유한 것만 바꾼다: 참고문서는 팩의 용도 id 만 갈아 끼우고, tileGroups·autotileGroups 는 팩 접두어(rasak_)
 // id 만 갈아 끼운다. 저자가 직접 쓴 용도·그룹은 그대로 둔다.
 import { spawnSync } from "node:child_process";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { PROJECT_STORE_FILE } from "../../../electron/local-store/schema";
 import { openLocalProjectStore } from "../../../electron/local-store/store";
@@ -195,6 +195,20 @@ async function main() {
       ts.autotileGroups = mergeOwned(ts.autotileGroups, p.autotileGroups, ownsGroup);
       ts.referenceDocuments = mergeOwned(ts.referenceDocuments, p.referenceDocuments, (c) => packPurposes.has(c.id));
     }
+    // --example-maps <dir>: 조립 예제(compose_examples.py 출력 rasak_preview_ex_*.layers.map.json)로 프로젝트의 같은 id 맵 칸을 갈아 끼운다.
+    // 이미 있는 맵만(맵 트리·이벤트·BGM 은 그대로), 크기·네 층·그림자만 바꾼다. 없으면 건너뛰고 알린다.
+    const exampleDir = arg("example-maps");
+    const examplesReplaced: string[] = [], examplesMissing: string[] = [];
+    if (exampleDir) {
+      for (const file of readdirSync(exampleDir).filter((f) => /^rasak_preview_ex_.*\.layers\.map\.json$/.test(f))) {
+        const m = JSON.parse(readFileSync(join(exampleDir, file), "utf8")) as GameMap;
+        const cur = project.maps[m.id];
+        if (!cur) { examplesMissing.push(m.id); continue; }
+        project.maps[m.id] = { ...cur, width: m.width, height: m.height, tilesetId: m.tilesetId, lowerTiles: m.lowerTiles, upperTiles: m.upperTiles,
+          lowerOverlayTiles: m.lowerOverlayTiles, upperOverlayTiles: m.upperOverlayTiles, shadowBits: m.shadowBits };
+        examplesReplaced.push(m.id);
+      }
+    }
     assertNoOtherHolder(dir);
     const saved = await store.saveProject(project);
     store.close();
@@ -215,7 +229,7 @@ async function main() {
     const mapsEqual = Object.keys(project.maps).every((m) => JSON.stringify(project.maps[m]) === JSON.stringify(reload.project.maps[m]));
     console.log(JSON.stringify({
       projectId: reopened.projectId, saved: saved.kind, sha256Saved: saved.kind === "saved" ? saved.sha256 : null,
-      sha256Reloaded: reload.sha256, revisionBefore: snap.revision, revisionAfter: reload.revision, roundTrip, mapsEqual, counts,
+      sha256Reloaded: reload.sha256, revisionBefore: snap.revision, revisionAfter: reload.revision, roundTrip, mapsEqual, examplesReplaced, examplesMissing, counts,
     }, null, 1));
     reopened.close();
     return;

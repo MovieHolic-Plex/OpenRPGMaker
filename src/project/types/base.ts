@@ -557,6 +557,9 @@ export interface AutotileGroup {
   // [0] 2칸 안에 이어지지 않은 칸이 있는 속, [1] 그보다 깊은 속. 칠하는 도구가 칸 위치 해시로 고른다
   // (autotileEngine.shadeAutotileInterior). 굽이숲 수관의 잎 채움(forestGrove.ts)이 쓴다.
   interiorVariants?: number[][];
+  // 맵 가장자리 바깥을 이어진 이웃으로 본다(RPG Maker MZ 편집기 규칙). 생략 시 이어지지 않음(RM2k 계열 기존 동작).
+  // 켜지 않으면 MZ 팩 벽·천장·풀밭이 맵 둘레마다 테두리 선을 그린다. Rasak 팩 그룹이 켠다(build_assistant_pack.py).
+  edgeConnects?: boolean;
 }
 
 export interface SpriteDef {
