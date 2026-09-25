@@ -16,7 +16,7 @@
 
 ## 기후 편집 (숲 필드 위에 한 것)
 ```json
-[{"kind":"volcanic-peaks","x":68,"y":19,"w":4,"h":2,"upper":[[858,859,918,919],[888,889,948,949]]},{"kind":"ground","clearedCells":127,"pieces":{"pool":2,"fumarole":2,"sulfur":2,"crack":16,"plate":39,"ash-heap":2,"obsidian":2},"cells":{"plate":869,"crack":145,"pool":30,"fumarole":4,"sulfur":2,"obsidian":2,"ash-heap":2},"emptiness":{"maxSq":5,"screen":0.448},"rule":"흩은 바위·꽃 관목과 잎 달린 덤불을 걷고, 빈칸 게이트(필드 ≤5·≤50%)를 땅으로 넘긴다: 식은 용암 판·용암 균열·작은 용암 웅덩이(분기공·유황)·현무암 기둥 한 무리"},{"kind":"sheet","lavaCells":325,"basaltBridgeCells":8,"rule":"물 칸은 시트에서 용암으로 칠해져 있다(번호·통행 그대로)"}]
+[{"kind":"volcanic-peaks","x":68,"y":19,"w":4,"h":2,"upper":[[858,859,918,919],[888,889,948,949]]},{"kind":"ground","clearedCells":127,"pieces":{"pool":2,"fumarole":2,"sulfur":2,"crack":15,"plate":42,"ash-heap":2,"obsidian":2},"cells":{"plate":903,"crack":153,"pool":28,"fumarole":4,"sulfur":2,"ash-heap":2,"obsidian":2},"emptiness":{"maxSq":4,"screen":0.457},"rule":"흩은 바위·꽃 관목과 잎 달린 덤불을 걷고, 빈칸 게이트(필드 ≤5·≤50%)를 땅으로 넘긴다: 식은 용암 판·용암 균열·작은 용암 웅덩이(분기공·유황)·현무암 기둥 한 무리"},{"kind":"sheet","lavaCells":325,"basaltBridgeCells":8,"rule":"물 칸은 시트에서 용암으로 칠해져 있다(번호·통행 그대로)"}]
 ```
 ## 소품과 장식
 ```json

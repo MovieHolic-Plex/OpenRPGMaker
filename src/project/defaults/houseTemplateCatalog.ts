@@ -68,7 +68,8 @@ export const HOUSE_TEMPLATE_DEFS: readonly HouseTemplateDef[] = [
   // ── T자(현관 돌출)·본채+별채 ──
   { id: "t-porch", name: "T자 현관", w: 8, h: 9, stories: 1, wings: [{ x: 0, y: 0, w: 8, h: 6 }, { x: 2, y: 6, w: 3, h: 3 }] },
   { id: "t-hall", name: "T자 홀", w: 8, h: 10, stories: 1, wings: [{ x: 0, y: 0, w: 8, h: 6 }, { x: 3, y: 6, w: 3, h: 4 }] },
-  { id: "porch-cottage", name: "현관 오두막", w: 6, h: 8, stories: 1, wings: [{ x: 0, y: 0, w: 6, h: 5 }, { x: 1, y: 5, w: 3, h: 3 }] },
+  // 2026-09-25 벽 면 ≥3칸 규칙: 현관을 가운데(x=1)에 두면 양옆 본채 벽이 1·2칸이라 오른쪽 끝에 붙였다(본채 벽 3칸).
+  { id: "porch-cottage", name: "현관 오두막", w: 6, h: 8, stories: 1, wings: [{ x: 0, y: 0, w: 6, h: 5 }, { x: 3, y: 5, w: 3, h: 3 }] },
   { id: "annex", name: "본채+곁채", w: 8, h: 7, stories: 1, wings: [{ x: 0, y: 0, w: 5, h: 7 }, { x: 5, y: 2, w: 3, h: 5 }] },
   // ── ㄷ자·중정 ──
   {
@@ -80,11 +81,13 @@ export const HOUSE_TEMPLATE_DEFS: readonly HouseTemplateDef[] = [
     ],
   },
   {
+    // 2026-09-25 사용자 검토 「너무 튀어나온다」: 팔(날개)을 4칸 → 3칸으로 줄이고 그만큼 본채를 깊게 했다.
+    // 안뜰 안쪽 벽이 2칸(8 = 3+2+3)이라 벽 면 ≥3칸 규칙에 걸려 자동 추첨에서는 빠진다(DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS).
     id: "u-deep", name: "ㄷ자 깊은", w: 8, h: 9, stories: 1,
     wings: [
-      { x: 0, y: 0, w: 8, h: 5 },
-      { x: 0, y: 5, w: 3, h: 4 },
-      { x: 5, y: 5, w: 3, h: 4 },
+      { x: 0, y: 0, w: 8, h: 6 },
+      { x: 0, y: 6, w: 3, h: 3 },
+      { x: 5, y: 6, w: 3, h: 3 },
     ],
   },
   {

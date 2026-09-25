@@ -10,6 +10,7 @@ import { ensureForestGroveInterior } from "./forestGrove";
 import { ensureForestTallGrass } from "./forestTallGrass";
 import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMONY_ID, FOREST_HARMONY_TEXTURE } from "./forestHarmony";
 import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
+import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -140,6 +141,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyReferences(project.tilesets[id]) || changed;
       // Older saves stop at 2550/2610: append the shared tail slots (only past the end or into blank slots).
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyVillageSlots(project.tilesets[id]) || changed;
+      // House parts (chimneys, dormers, awnings, gable finials) from 3060 — gable house forms use them when present.
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyHouseParts(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
@@ -267,7 +270,12 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
   if (asset.textureKey === CASTLE_TILESET_TEXTURE_KEY) return createCastleTileset();
   if (asset.textureKey === SHARED_VILLAGE_OBJECT_TEXTURE) return createSharedVillageObjectsTileset();
   // New projects start with the shared tail slots the place documents use (2550~2759).
-  if (asset.textureKey === FOREST_HARMONY_TEXTURE) { const tileset = createForestHarmonyTileset(); ensureForestHarmonyVillageSlots(tileset); return tileset; }
+  if (asset.textureKey === FOREST_HARMONY_TEXTURE) {
+    const tileset = createForestHarmonyTileset();
+    ensureForestHarmonyVillageSlots(tileset);
+    ensureForestHarmonyHouseParts(tileset);
+    return tileset;
+  }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
   if (asset.textureKey === TIBO_INTERIOR_TEXTURE) return createTiboInteriorTileset();
   if (asset.textureKey === SLATES_32_TEXTURE_KEY) return createSlates32Tileset();

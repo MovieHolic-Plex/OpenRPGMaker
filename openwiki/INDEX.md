@@ -1,7 +1,7 @@
 <!-- 생성 파일 — 직접 고치지 말고 `npm run openwiki:index` 를 돌려라. -->
 # OpenWiki 항해 색인
 
-이 저장소의 위키는 **86쪽 / 3464KB / 약 989,304 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
+이 저장소의 위키는 **86쪽 / 3467KB / 약 990,145 토큰** 이다. 통째로 읽을 수 있는 크기가 아니므로, 필요한 절만 좌표로 잘라 읽어라.
 
 ```
 read("openwiki/editor-database.md", offset=<절 시작줄>, limit=120)
@@ -23,7 +23,7 @@ grep -n "찾는말" openwiki/*.md          # 어느 페이지 몇 줄인지부�
 | `openwiki/editor-interior-room-harness.md` | 93KB | 6KB | 451 | ~27,117 |
 | `openwiki/editor-pre-edit-routing.md` | 147KB | 70KB ⚠상한 초과 — 절을 더 쪼개라 | 873 | ~42,805 |
 | `openwiki/editor-workflows-misc.md` | 68KB | 30KB | 486 | ~18,651 |
-| `openwiki/runtime-battle.md` | 171KB | 31KB | 840 | ~49,029 |
+| `openwiki/runtime-battle.md` | 172KB | 31KB | 848 | ~49,346 |
 | `openwiki/runtime-pre-edit-routing.md` | 54KB | 34KB | 366 | ~15,889 |
 | `openwiki/runtime-project-schema.md` | 170KB | 66KB ⚠상한 초과 — 절을 더 쪼개라 | 1253 | ~46,894 |
 | `openwiki/runtime-sessions.md` | 104KB | 48KB | 486 | ~27,757 |
@@ -80,7 +80,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/project-wiki.md` | 2 | `projectWikiSession.test.ts`, `projectWikiTimeout.test.ts` |
 | `openwiki/quickstart.md` | 1 | `.oprn-local.json` |
 | `openwiki/runtime-action-combat.md` | 1 | `export-player/player.html` |
-| `openwiki/runtime-battle.md` | 7 | `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
+| `openwiki/runtime-battle.md` | 10 | `_dragonquest.css`, `_mv.css`, `_octopath/_chrono/_bravely/_dragonquest/_ff/_mother/_goldensun/_mv/_vxace/_hud-templates.css`, `battle.css`, `hero-03-battle-idle.png`, `output/evidence/event-command-completion/battle/VERIFICATION.md`, `raw.png`, `scripts/legacy-db-resource-root/catalog.mjs`, `src/styles/runtime/battle/18-pokemon-layout-redesign.css`, `starter/hires/hero-0N-battle.png` |
 | `openwiki/runtime-m2-flow-controls.md` | 3 | `test/runtimePictureStacking.test.ts`, `verify-shots/runtime-qa/cloud-shadows/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md` |
 | `openwiki/runtime-pre-edit-routing.md` | 4 | `editor/core.part-1.css`, `test/playerInputCss.test.ts`, `test/runtimeQaInstrumentationBoundary.test.ts`, `verify-shots/runtime-qa/emote/SUMMARY.md` |
 | `openwiki/runtime-project-schema.md` | 26 | `.json`, `.png`, `20260827000000_ai_log_anon_delete_revoke.sql`, `DRAFT_20260706_auth_rls.sql`, `devMediaPromotion.test.ts`, `interiorLoadConsistency.test.ts`, `mediaImportDurability.test.ts`, `output/evidence/event-command-completion/legacy-persistence/ledger.json`, `scripts/lib/legacyDb-database-ops.mjs`, `scripts/publish-first-visit-demo.mts`, `scripts/qa/issue693-media.mjs`, `src/project/legacyDbProjectSync.ts`, `storeLifecycleReentrancy.test.ts`, `storePersistenceLineage.test.ts`, `test/aiBlockedEventRelocation.test.ts`, `test/audioDescriptionConcurrentPersistence.test.ts`, `test/io.test.ts`, `test/legacyDbCanonicalRoundtrip.live.test.ts`, `test/legacyDbDatabaseOps.node.test.mjs`, `test/legacyDbMapPatchRecovery.test.ts`, `test/legacyDbProjectSync.test.ts`, `test/legacyDbRlsCoverage.node.test.mjs`, `test/mapPlanningReuse.test.ts`, `test/sharedDemoStore.test.ts`, `test/transactionalNewRemoteProject.test.ts`, `transactionalRemoteSourceLineage.test.ts` |
@@ -97,6 +97,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 | `openwiki/spatial-place-compiler.md` | 2 | `interior-catalog-editor.mjs`, `scripts/register-house-spatial-catalog.mts` |
 | `openwiki/stardew-core-elements-research.md` | 1 | `scripts/save-stardew-demo.mts` |
 | `openwiki/storage-retirement.md` | 1 | `.oprn-local.json` |
+| `openwiki/teaching-assistant-tilesets.md` | 1 | `_specs.py` |
 | `openwiki/testing.md` | 37 | `../dialogue.css`, `.omo/gates-vitest-report.json`, `X.quarantine.test.ts`, `X.test.ts`, `acceptance-live-check.mjs`, `aiChatObservability.test.ts`, `aiChatPanelTransportError.test.ts`, `aiSelectionChipScope.test.ts`, `browser-play-start.png`, `browser-title.png`, `event-editor.command-preview/07-identifiable-previews.css`, `legacyDb-proof-first-save.json`, `output/evidence/acceptance-live/README.md`, `output/evidence/concept-expansion/README.md`, `output/evidence/concept-v2/validation.json`, `output/evidence/functional-acceptance/public-smoke.json`, `output/evidence/horror-mystery-prototype/browser-qa.json`, `scripts/author-natural-village-harness.mts`, `scripts/author-natural-village-reference.mts`, `scripts/build-horror-mystery-prototype.mts`, `scripts/qa/acceptance-live.mjs`, `test/actionRpgAuthoringAcceptance.test.ts`, `test/aiEventPlacementSurfaceGate.test.ts`, `test/autosaveStatus.test.ts`, `test/databaseKoreanRtpDefaults.test.ts`, `test/dialoguePreviewPresentationCss.test.ts`, `test/e2e/chat-dock-switch.spec.ts`, `test/e2e/dialogue-nameplate-clears-body.spec.ts`, `test/interiorConceptAssemblies.test.ts`, `test/loadNewRemoteProject.test.ts`, `test/regionTaskRun.test.ts`, `test/storePersistenceProof.test.ts`, `test/tilesetAiClient.test.ts`, `verify-shots/runtime-qa/action-rpg/SUMMARY.md`, `verify-shots/runtime-qa/coordinate-move/SUMMARY.md`, `verify-shots/runtime-qa/esc-menu/SUMMARY.md`, `verify-shots/runtime-qa/status-menu-adversarial/SUMMARY.md` |
 | `openwiki/tile-geometry.md` | 2 | `output/slates-reference/source-row.json`, `scripts/content/save-slates-reference.mjs` |
 | `openwiki/tile-layer-policy.md` | 2 | `Castle2_5.png`, `clean_furniture.png` |
@@ -109,7 +110,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 
 ## 페이지별 절 좌표
 
-### `openwiki/PROJECT_WIKI.md` — 14KB · 158줄 · ~3,612 토큰
+### `openwiki/PROJECT_WIKI.md` — 14KB · 158줄 · ~3,616 토큰
 
 - `L5` Purpose
 - `L16` Required pre-edit read order
@@ -1031,7 +1032,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L15` Quick routing
 - `L24` For AI agents
 
-### `openwiki/runtime-battle.md` — 171KB · 840줄 · ~49,029 토큰 · 통째읽기 잘림
+### `openwiki/runtime-battle.md` — 172KB · 848줄 · ~49,346 토큰 · 통째읽기 잘림
 
 - `L3` 포켓몬 참고 스킨과 실제 뒷모습 (2026-09-20)
 - `L13` 타격감 층 (2026-09-25)
@@ -1051,26 +1052,26 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L425` 전투 명령 custom CSS (2026-09-05)
 - `L429` 빈 페이지와 실행 빈도 계약 (2026-09-05)
   - `L446` 체공 배율 채널과 착지 눌림 (2026-08-30, PR #297)
-- `L464` 지원 전투 시스템은 둘뿐이다 (2026-08-28)
-- `L477` Roguelike run boundary (2026-08-24)
-- `L482` Battle rules & runtime
-  - `L497` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
-  - `L522` 커맨드/대상 메뉴 기하와 글자 가시성 계약
-  - `L538` 스킨 CSS 캐스케이드와 저작 가능 스킨
-  - `L542` Gen 1(포켓몬식) 규칙 모델
-  - `L550` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
-  - `L569` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
-- `L608` Starter hero battle sheets (2026-08-29)
-- `L629` Per-actor back battlers (2026-08-29)
-- `L647` Battle input and visibility P0 contract (2026-07-30)
-- `L658` 배틀러 idle 애니메이션 (2026-08-30)
-- `L784` 필드 아이템 상태 부여 복구 (2026-09-05)
-- `L788` Authored combat rules (feature16, 2026-09-21)
-- `L802` Battle reports and physical formation (2026-09-21)
-- `L806` Combat correctness hardening (2026-09-21)
-- `L814` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
-- `L824` 트레이너 전투의 도입 문구 (2026-09-24)
-- `L831` 포획 불가 전투의 가방 목록 (2026-09-25)
+- `L464` 지원 전투 시스템은 둘뿐이다 (2026-08-28, 스킨 부분은 2026-09-25 개정)
+- `L485` Roguelike run boundary (2026-08-24)
+- `L490` Battle rules & runtime
+  - `L505` 전투 화면 표현 · 전환 · 타임라인 · 연출 타이밍
+  - `L530` 커맨드/대상 메뉴 기하와 글자 가시성 계약
+  - `L546` 스킨 CSS 캐스케이드와 저작 가능 스킨
+  - `L550` Gen 1(포켓몬식) 규칙 모델
+  - `L558` 플레이 모드 런타임 (이 절에 섞여 있는 비전투 항목)
+  - `L577` 전투 흐름 · 몬스터 수집 · 트룹 이벤트 · 보상
+- `L616` Starter hero battle sheets (2026-08-29)
+- `L637` Per-actor back battlers (2026-08-29)
+- `L655` Battle input and visibility P0 contract (2026-07-30)
+- `L666` 배틀러 idle 애니메이션 (2026-08-30)
+- `L792` 필드 아이템 상태 부여 복구 (2026-09-05)
+- `L796` Authored combat rules (feature16, 2026-09-21)
+- `L810` Battle reports and physical formation (2026-09-21)
+- `L814` Combat correctness hardening (2026-09-21)
+- `L822` Gen1 교체 후 이전 적 HUD 잔류 (2026-09-24)
+- `L832` 트레이너 전투의 도입 문구 (2026-09-24)
+- `L839` 포획 불가 전투의 가방 목록 (2026-09-25)
 
 ### `openwiki/runtime-m2-flow-controls.md` — 38KB · 285줄 · ~10,597 토큰
 
@@ -1372,7 +1373,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L82` 마을 생활 공간 장식 (2026-09-13)
 - `L126` 겹치는 숲과 외곽 풀밭 (2026-09-13)
 
-### `openwiki/spatial-ai-tools.md` — 21KB · 266줄 · ~5,809 토큰
+### `openwiki/spatial-ai-tools.md` — 22KB · 275줄 · ~6,058 토큰
 
 - `L3` 장소 단일 계약 (2026-09-14)
 - `L19` Ownership
@@ -1383,7 +1384,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L184` Evidence and integration boundary
 - `L201` Completed region references (2026-09-13)
   - `L217` Shared places and objects without activation (2026-09-25)
-  - `L245` Importing a reference (`import_region_reference`, 2026-09-25)
+  - `L254` Importing a reference (`import_region_reference`, 2026-09-25)
 
 ### `openwiki/spatial-authoring-controller.md` — 18KB · 294줄 · ~4,590 토큰
 
@@ -1526,7 +1527,7 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
 - `L30` 실제 데이터 보존
 - `L43` 역사 자료와 검증
 
-### `openwiki/teaching-assistant-tilesets.md` — 25KB · 235줄 · ~7,562 토큰
+### `openwiki/teaching-assistant-tilesets.md` — 26KB · 242줄 · ~7,833 토큰
 
 - `L8` 한 줄 요약
 - `L14` 조수가 실제로 받는 것
@@ -1539,10 +1540,10 @@ EUC-KR→UTF-8 모지바케가 남은 줄이다. **그 줄의 한국어는 믿�
   - `L116` 조수가 지금 받는 것
   - `L130` 네 층 팩을 가르치는 순서
   - `L150` Rasak Fantasy 파이프라인 (저장소 밖 그림)
-- `L160` 알려진 함정
-- `L170` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
-- `L184` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
-- `L219` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
+- `L167` 알려진 함정
+- `L177` 강제 장치 (이 문서를 안 읽어도 걸리는 것)
+- `L191` 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+- `L226` 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
 ### `openwiki/team-project-host.md` — 19KB · 227줄 · ~5,793 토큰
 

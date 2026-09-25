@@ -13,12 +13,26 @@
 
 import { TILE } from "@/project/defaults/constants";
 import { createHouseDoorEvent, createHouseDoorStepEvent, stampHouseDoorBackground } from "@/editor/houseInteriors";
+import { housePartTile } from "@/project/defaults/forestHarmonyHouseParts";
 import type { GameEvent, GameMap, MapId } from "@/project/types";
 
-export type HouseKitId = "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall";
+export type HouseKitId =
+  | "blue-stone" | "bright-plaster" | "amber-wood" | "slate-wood" | "timber-hall"
+  | "moss-plaster" | "thatch-plaster" | "thatch-log" | "amber-brick" | "slate-brick" | "charcoal-timber";
+
+/**
+ * 재료 킷(2026-09-25) — 새 지붕색(이끼 초록·초가·회청 슬레이트·검은 기와)과 새 벽(붉은 벽돌·반목조).
+ * 칸은 숲마을 집 부품 시트(forest_harmony 3071~, project/defaults/forestHarmonyHouseParts)에 있다.
+ * 그 칸이 없는 타일셋(기후 시트 등)에서는 fallbackKitId 로 바꿔 짓는다 — 랜덤 믹스에도 그런 타일셋에선 안 넣는다.
+ */
+export const MATERIAL_HOUSE_KIT_IDS = [
+  "moss-plaster", "thatch-plaster", "thatch-log", "amber-brick", "slate-brick", "charcoal-timber",
+] as const satisfies readonly HouseKitId[];
 
 /** 모든 집 키트 id (툴 enum/검증 공용). */
-export const ALL_HOUSE_KIT_IDS = ["blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall"] as const satisfies readonly HouseKitId[];
+export const ALL_HOUSE_KIT_IDS = [
+  "blue-stone", "bright-plaster", "amber-wood", "slate-wood", "timber-hall", ...MATERIAL_HOUSE_KIT_IDS,
+] as const satisfies readonly HouseKitId[];
 
 /**
  * 랜덤 킷 믹스에 넣어도 되는 킷.
@@ -74,6 +88,76 @@ export interface HouseKit {
    */
   readonly postColumn?: { readonly tiles: readonly [number, number, number]; readonly every: number };
   readonly roof: BlueRoofKit | BrightRoofKit;
+  /** 집 부품 시트 칸을 쓰는 재료 킷이면, 그 칸이 없는 타일셋에서 대신 쓸 기본 킷. */
+  readonly fallbackKitId?: HouseKitId;
+}
+
+/** 재료 킷의 지붕 — 집 부품 시트의 재칠 칸(roof-<재료>-<원본 번호>). */
+function brightRoofFrom(material: string): BrightRoofKit {
+  const t = (tile: number): number => housePartTile(`roof-${material}-${tile}`);
+  return {
+    kind: "bright",
+    body: t(404),
+    eave: t(405),
+    upper: { ridge: t(374), ridgeCapL: t(354), ridgeCapR: t(355), trimL: t(376), trimR: t(377), trimCapL: t(384), trimCapR: t(385) },
+  };
+}
+
+function blueRoofFrom(material: string): BlueRoofKit {
+  const t = (tile: number): number => housePartTile(`roof-${material}-${tile}`);
+  return { kind: "blue", body: t(406), rightEdge: t(407), eave: t(467), upper: { nw: t(356), ne: t(357), sw: t(386), se: t(387) } };
+}
+
+const BRIGHT_ORANGE_ROOF: BrightRoofKit = {
+  kind: "bright",
+  body: 404,
+  eave: 405,
+  upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
+};
+const brick = (tile: number): number => housePartTile(`wall-brick-${tile}`);
+const PLASTER_WALL: WallNineSlice = { top: [15, 16, 17], mid: [45, 46, 47], bottom: [75, 76, 77] };
+const LOG_WALL: WallNineSlice = { top: [102, 103, 104], mid: [132, 133, 134], bottom: [162, 163, 164] };
+const BRICK_WALL: WallNineSlice = {
+  top: [brick(12), brick(13), brick(14)], mid: [brick(42), brick(43), brick(44)], bottom: [brick(72), brick(73), brick(74)],
+};
+
+/** 이 킷이 집 부품 시트 칸을 쓰는가 — 쓰면 tilesetHasHouseParts 가 참인 타일셋에서만 그대로 짓는다. */
+export function houseKitNeedsHouseParts(kitId: HouseKitId): boolean {
+  return HOUSE_KITS[kitId].fallbackKitId !== undefined;
+}
+
+/** 이 타일셋에서 실제로 쓸 킷 — 재료 킷인데 부품 칸이 없으면 기본 킷으로. */
+export function houseKitForTileset(kitId: HouseKitId, hasHouseParts: boolean): HouseKitId {
+  return hasHouseParts ? kitId : HOUSE_KITS[kitId].fallbackKitId ?? kitId;
+}
+
+/** 랜덤 믹스 후보 — 부품 칸이 있는 타일셋이면 재료 킷까지. */
+export function mixableHouseKitIds(hasHouseParts: boolean): readonly HouseKitId[] {
+  return hasHouseParts ? [...MIXABLE_HOUSE_KIT_IDS, ...MATERIAL_HOUSE_KIT_IDS] : MIXABLE_HOUSE_KIT_IDS;
+}
+
+/**
+ * 기둥 열(postColumn)이 설 벽 안쪽 오프셋 — 폭 width 인 벽 런에서.
+ *
+ * 2026-09-25 사용자 규약: 기둥 칸(양쪽 버팀대)은 벽 **가운데**에만 선다. 바깥 끝(0·width-1)은 물론 끝 바로 옆
+ * (1·width-2)에도 세우지 않는다 — 끝 칸의 반기둥과 붙어 기둥 두 개가 겹쳐 보인다. 간격은 every 안팎으로 고르게,
+ * 가능하면 좌우 대칭(폭 7 → {3}, 폭 10 → {3,6}, 폭 8 → {3}). 폭 5 이하는 기둥 없음.
+ */
+export function wallPostOffsets(width: number, every: number): ReadonlySet<number> {
+  const out = new Set<number>();
+  if (width < 6 || every < 2) return out;
+  const count = Math.max(0, Math.round((width - 1) / every) - 1);
+  for (let k = 1; k <= count; k += 1) {
+    // .5 는 내림 — 폭 8 은 3(문 칸 floor(w/2)=4 와 겹치지 않게), 폭 6 은 2.
+    const offset = Math.ceil((k * (width - 1)) / (count + 1) - 0.5);
+    if (offset >= 2 && offset <= width - 3) out.add(offset);
+  }
+  return out;
+}
+
+/** 이 킷에서 폭 width 벽 런의 offset 열이 기둥인가. */
+export function isWallPostAt(kit: HouseKit, offset: number, width: number): boolean {
+  return kit.postColumn !== undefined && wallPostOffsets(width, kit.postColumn.every).has(offset);
 }
 
 export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
@@ -116,12 +200,13 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
     roof: { kind: "blue", body: 406, rightEdge: 407, eave: 467, upper: { nw: 356, ne: 357, sw: 386, se: 387 } },
   },
   // 2026-07-17 사용자 규약 2차: 기둥 세로 3단(196/226/256)과 회벽 열(16/46/76)의 교대 반복.
-  // 조립 검증: scratchpad todo-evidence/timber-hall-C.png — 좌우 가장자리 기둥 + 내부 3칸 간격 기둥.
+  // 2026-09-25 사용자 교정: 기둥 196/226/256 은 양쪽 버팀대가 달린 **가운데 전용** 칸이다 — 벽 바깥 끝에 서면
+  // 버팀대가 허공을 받친다. 끝은 반기둥+안쪽 버팀대 모서리 칸(15/45/75 · 17/47/77), 기둥은 wallPostOffsets 의 안쪽 열만.
   "timber-hall": {
     id: "timber-hall",
     name: "빨간 널지붕 + 목조 기둥 홀",
     windowTile: 85,
-    wall: { top: [196, 16, 196], mid: [226, 46, 226], bottom: [256, 76, 256] },
+    wall: PLASTER_WALL,
     postColumn: { tiles: [196, 226, 256], every: 3 },
     roof: {
       kind: "bright",
@@ -129,6 +214,57 @@ export const HOUSE_KITS: Record<HouseKitId, HouseKit> = {
       eave: 405,
       upper: { ridge: 374, ridgeCapL: 354, ridgeCapR: 355, trimL: 376, trimR: 377, trimCapL: 384, trimCapR: 385 },
     },
+  },
+  // ── 재료 킷(2026-09-25) — 지붕·벽 칸은 집 부품 시트의 재칠 사본 ──
+  "moss-plaster": {
+    id: "moss-plaster",
+    name: "이끼 초록 기와 + 흰 회벽",
+    windowTile: 85,
+    wall: PLASTER_WALL,
+    roof: brightRoofFrom("moss"),
+    fallbackKitId: "timber-hall",
+  },
+  "thatch-plaster": {
+    id: "thatch-plaster",
+    name: "초가 + 흰 회벽",
+    windowTile: 85,
+    wall: PLASTER_WALL,
+    roof: brightRoofFrom("thatch"),
+    fallbackKitId: "timber-hall",
+  },
+  "thatch-log": {
+    id: "thatch-log",
+    name: "초가 + 통나무 벽",
+    windowTile: 85,
+    wall: LOG_WALL,
+    roof: brightRoofFrom("thatch"),
+    fallbackKitId: "amber-wood",
+  },
+  "amber-brick": {
+    id: "amber-brick",
+    name: "주황 기와 + 붉은 벽돌",
+    windowTile: 85,
+    wall: BRICK_WALL,
+    roof: BRIGHT_ORANGE_ROOF,
+    fallbackKitId: "bright-plaster",
+  },
+  "slate-brick": {
+    id: "slate-brick",
+    name: "회청 슬레이트 + 붉은 벽돌",
+    windowTile: 87,
+    wall: BRICK_WALL,
+    roof: blueRoofFrom("slate"),
+    fallbackKitId: "blue-stone",
+  },
+  // 반목조: 세 칸마다 X 버팀 기둥 열(위 196 · 가운데 X 회벽 · 아래 256), 사이는 민 회벽 — 창은 민 회벽에만 난다.
+  "charcoal-timber": {
+    id: "charcoal-timber",
+    name: "검은 기와 + 반목조",
+    windowTile: 85,
+    wall: PLASTER_WALL,
+    postColumn: { tiles: [196, housePartTile("wall-half-timber-46"), 256], every: 3 },
+    roof: blueRoofFrom("charcoal"),
+    fallbackKitId: "blue-stone",
   },
 };
 
@@ -151,7 +287,7 @@ export interface RectHousePlan {
   /** 지붕 몸통 행 수(≥1). 높은 지붕이 필요하면 늘린다. */
   readonly roofBodyRows: number;
   readonly kitId: HouseKitId;
-  /** 낮은 벽(창고/헛간): 벽을 상단+하단 2행만 — 중단 없음, 창 없음. stories 무시. */
+  /** 낮은 벽(창고/헛간): 벽을 상단+하단 2행만 — 중단 없음, 창은 윗줄(처마 밑). stories 무시. */
   readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
@@ -197,6 +333,14 @@ function upperIfEmpty(map: GameMap, x: number, y: number, tile: number): void {
   if (map.upperTiles[index] === TILE.EMPTY) map.upperTiles[index] = tile;
 }
 
+/** 연속 빈 벽 구간 [a,b] 안의 창 자리 — 칸 3개마다 하나꼴, 서로 붙지 않게, 가운데 정렬. 박공 합성기와 같은 규칙. */
+export function spreadWindowsInSegment(a: number, b: number): number[] {
+  const length = b - a + 1;
+  const count = Math.max(1, Math.floor((length + 2) / 3));
+  if (count === 1) return [a + Math.floor((length - 1) / 2)];
+  return Array.from({ length: count }, (_, i) => a + Math.round((i * (length - 1)) / (count - 1)));
+}
+
 function placeWindowsOnWallRuns(
   map: GameMap,
   kit: HouseKit,
@@ -207,15 +351,40 @@ function placeWindowsOnWallRuns(
   const spacing = windowSpacing(windows);
   if (spacing === null) return;
   const step = spacing + 1;
+  const isPostTile = (x: number, y: number): boolean =>
+    kit.postColumn !== undefined && (kit.postColumn.tiles as readonly number[]).includes(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY);
+  const nearDoor = (x: number, y: number): boolean => doorAt !== undefined && Math.abs(x - doorAt.x) <= 1 && y >= doorAt.y - 2;
+  const spread = windows === undefined || windows === false || windows.spacing === undefined;
   for (const run of runs) {
     if (run.x1 - run.x0 + 1 < 3) continue;
-    for (let x = run.x0 + 1; x <= run.x1 - 1; x += step) {
-      if (doorAt && Math.abs(x - doorAt.x) <= 1) continue;
-      // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
-      const lowerTile = map.lowerTiles[run.y * map.width + x] ?? TILE.EMPTY;
-      if (kit.postColumn && (kit.postColumn.tiles as readonly number[]).includes(lowerTile)) continue;
-      upperIfEmpty(map, x, run.y, kit.windowTile);
+    let placed = false;
+    if (spread) {
+      // 기본 간격(2026-09-25 「넓은 면은 빈 벽 2~3칸마다, 좌우 맞게」): 문·기둥으로 끊긴 빈 구간마다 고르게.
+      let start = -1;
+      for (let x = run.x0 + 1; x <= run.x1; x += 1) {
+        const ok = x <= run.x1 - 1 && !nearDoor(x, run.y) && !isPostTile(x, run.y);
+        if (ok && start < 0) start = x;
+        if (!ok && start >= 0) {
+          for (const wx of spreadWindowsInSegment(start, x - 1)) upperIfEmpty(map, wx, run.y, kit.windowTile);
+          placed = true;
+          start = -1;
+        }
+      }
     }
+    for (let x = run.x0 + 1; !spread && x <= run.x1 - 1; x += step) {
+      if (nearDoor(x, run.y)) continue;
+      // 하프팀버 기둥 열에는 창을 내지 않는다 — 회벽 열에만.
+      if (isPostTile(x, run.y)) continue;
+      upperIfEmpty(map, x, run.y, kit.windowTile);
+      placed = true;
+    }
+    if (placed || spacing === 0) continue;
+    // 2026-09-25 사용자 규칙 「3칸 이상 벽 면이면 창 하나는」: 간격이 문·기둥에 다 걸리면 안쪽 빈 칸 → 문에서 먼 벽 끝 칸.
+    const inner = Array.from({ length: run.x1 - run.x0 - 1 }, (_, i) => run.x0 + 1 + i).filter((x) => !nearDoor(x, run.y) && !isPostTile(x, run.y));
+    const ends = [run.x0, run.x1].filter((x) => !nearDoor(x, run.y));
+    const far = (a: number, b: number): number => (doorAt ? Math.abs(b - doorAt.x) - Math.abs(a - doorAt.x) : 0);
+    const pick = inner.length > 0 ? inner[Math.floor((inner.length - 1) / 2)] : ends.sort(far)[0];
+    if (pick !== undefined) upperIfEmpty(map, pick, run.y, kit.windowTile);
   }
 }
 
@@ -230,6 +399,10 @@ function wallWindowRunsFromRoles(wallRole: ReadonlyMap<number, 0 | 1 | 2>, width
     let midRowsAbove = 0;
     while (wallRole.get(cellKey(x, y - midRowsAbove - 1)) === 1) midRowsAbove += 1;
     if (midRowsAbove % 2 === 0) eligible.add(cell);
+  }
+  // 낮은 벽(상·하 2줄, 중단 없음)은 윗줄에 처마 밑 창 — 2026-09-25 「창 없는 집이 너무 많다」.
+  if (eligible.size === 0) {
+    for (const [cell, role] of wallRole.entries()) if (role === 0) eligible.add(cell);
   }
   for (const cell of eligible) {
     const x = cell % width;
@@ -277,7 +450,7 @@ export interface FootprintHousePlan {
    * 1층=벽3행(상·중·하), 2층=벽5행(상·중×3·하). 기본 1.
    */
   readonly stories?: 1 | 2 | 3;
-  /** 낮은 벽(창고/헛간): 벽 밴드를 상단+하단 2행만 — 중단 없음, 창 없음. stories 무시. */
+  /** 낮은 벽(창고/헛간): 벽 밴드를 상단+하단 2행만 — 중단 없음, 창은 윗줄(처마 밑). stories 무시. */
   readonly lowWall?: boolean;
   /** 창문 자동 배치. 기본 활성, spacing=2. */
   readonly windows?: HouseKitWindowsOption;
@@ -464,7 +637,9 @@ export function stampFootprintHouseKit(map: GameMap, plan: FootprintHousePlan): 
     if (!runStart && !runEnd && kit.postColumn) {
       let runX0 = x;
       while (sameRun(runX0 - 1)) runX0 -= 1;
-      if ((x - runX0) % kit.postColumn.every === 0) tile = kit.postColumn.tiles[role as 0 | 1 | 2];
+      let runX1 = x;
+      while (sameRun(runX1 + 1)) runX1 += 1;
+      if (isWallPostAt(kit, x - runX0, runX1 - runX0 + 1)) tile = kit.postColumn.tiles[role as 0 | 1 | 2];
     }
     lower(x, y, tile);
   }
@@ -613,7 +788,7 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   const nineSliceRow = (y: number, [l, c, r]: readonly [number, number, number], postTile?: number): void => {
     lower(left, y, l);
     for (let x = left + 1; x < right; x += 1) {
-      const isPost = postTile !== undefined && kit.postColumn !== undefined && (x - left) % kit.postColumn.every === 0;
+      const isPost = postTile !== undefined && isWallPostAt(kit, x - left, right - left + 1);
       lower(x, y, isPost ? postTile : c);
     }
     lower(right, y, r);
@@ -668,9 +843,9 @@ export function stampRectHouseKit(map: GameMap, plan: RectHousePlan): RectHouseS
   nineSliceRow(y, kit.wall.bottom, kit.postColumn?.tiles[2]);
 
   const doorAt = { x: left + Math.floor(plan.width / 2), y };
-  if (!plan.lowWall) {
-    placeWindowsOnWallRuns(map, kit, rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
-  }
+  placeWindowsOnWallRuns(map, kit, plan.lowWall
+    ? [{ x0: left, x1: right, y: wallTopY }]
+    : rectWallWindowRuns(left, right, wallTopY, plan.stories), plan.windows, doorAt);
 
   return { ok: true, doorAt, height };
 }

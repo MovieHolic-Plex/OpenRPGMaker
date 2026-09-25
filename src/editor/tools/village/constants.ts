@@ -243,12 +243,19 @@ export interface HouseTemplate {
    * 킷을 받아 셀 레시피를 합성하는 형태(박공 조합 gable-*). 있으면 재료는 고정이 아니다 —
    * 시공기는 킷을 고른 뒤 compose(kitId) 로 레시피를 얻어 찍는다. form 은 미리보기용 기본 재료 합성본이다.
    */
-  readonly compose?: (kitId: HouseKitId) => AuthoredHouseFormDef;
+  readonly compose?: (kitId: HouseKitId, accentSeed?: number) => AuthoredHouseFormDef;
+  /**
+   * 기본 분배(자동 추첨)에서 빼는 형태 — 명시 templateId·프리셋 화이트리스트로만 나온다.
+   * 2026-09-25: ㄷ자 깊은·ㅁ자 중정은 날개 지붕이 안 이어져 구멍처럼 보이고, estate-* 는 두 채를 따로 놓은 것처럼 보였다.
+   */
+  readonly excludeFromDefaultMix?: boolean;
+  /** 자동 추첨 가중치(기본 1). 1 보다 작으면 덜 자주 나온다 — 박공 + 달개(2026-09-25 「애매하다」). */
+  readonly mixWeight?: number;
 }
 
 /** 이 템플릿이 이 킷으로 찍을 셀 레시피 — 합성 형태면 합성, 고정 레시피면 그대로, 날개 문법이면 undefined. */
-export function templateFormFor(template: HouseTemplate, kitId: HouseKitId): AuthoredHouseFormDef | undefined {
-  return template.compose ? template.compose(kitId) : template.form;
+export function templateFormFor(template: HouseTemplate, kitId: HouseKitId, accentSeed?: number): AuthoredHouseFormDef | undefined {
+  return template.compose ? template.compose(kitId, accentSeed) : template.form;
 }
 
 /** 재료가 레시피에 박힌 템플릿인가 — 합성 형태(compose)는 킷을 따르므로 아니다. */

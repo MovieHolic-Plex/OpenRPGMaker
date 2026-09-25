@@ -41,6 +41,7 @@ export function buildPiAgentSystemPrompt(project: Project, mapIds: readonly stri
     ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
     ...scope,
     `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 author_village의 새 target.tilesetId에 전달한다. 기존 맵의 칩셋은 유지한다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·눈보라·설원이면 마을은 author_village groundTheme:"snow"(설원 칩셋·눈 날씨), 사막이면 groundTheme:"desert", 화산이면 "volcano", 가을이면 "autumn"(기후 칩셋·잎 없는 고목 덩이), 다른 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`,
+    "이미 만들어 둔 장소·오브젝트를 먼저 쓴다: list_spatial_designs 의 data.shared 에서 찾아 장소는 import_region_reference({id}) 한 번으로 맵째 가져오고, 오브젝트(고목·봉우리·기후 지형·항구 부품·성문루·집 외형·마을 소품)는 stamp_object({objectId,mapId,x,y}) 로 찍는다. 행마다 owner(어디 곁에 두나)를 따르고, 칸 번호를 하나씩 칠해 다시 그리지 않는다.",
     ...genreMechanicLines(project),
     "절차: 먼저 읽기 도구(get_map_region 등)로 현재 상태를 확인하고, 쓰기 도구를 호출한다. 도구가 ok:false 를 돌려주면 issues 를 읽고 인자를 고쳐 재시도한다. 같은 실패를 세 번 반복하지 않는다.",
     "독립 작업은 팀 모드와 무관하게 병렬로 실행한다. 서로의 결과가 필요 없는 조회·웹 검색·Writer 초안 요청은 한 응답에 여러 도구 호출로 묶어 바로 보낸다. 앞선 호출의 결과나 생성 ID가 필요한 작업은 결과를 받은 다음 응답에서 호출한다. 쓰기·적용·단계 승인은 실행기가 호출 순서대로 처리한다. 같은 맵이나 공유 DB를 바꾸는 작업을 독립 작업으로 간주하지 마라.",

@@ -226,13 +226,22 @@ filled — read-only rows every project sees, with or without `spatialAuthoring`
   same as the 장소 tab), plus every `REGION_REFERENCES`/`PLACE_REFERENCES` id. Put one in with
   `import_region_reference` (reviewed places bring every floor/room map as new maps; the 11MB
   `reviewedPlaces/catalog.json` is imported only then).
-- kind `object`: `kit:<tileset>/<kit>` (project tileset section kits = 오브젝트 tab), `group:<tileset>/<group>`
-  (tile groups with a `previewMap` — `bare-trees:*` on the climate sheets, forest trees), `refkit:<place>/<kit>`
-  (kits living only inside a registered place: generated building exteriors `fft-*` incl. the gatehouse
-  `fft-bp4-gatehouse-c16`, castle-courtyard harbor boats/pier; index `src/assets/sharedObjectIndex.json`,
-  regenerate with `node scripts/content/build-shared-object-index.mjs`), `part:*` (curated crops of
-  너울목: rowboat, pier with two boats, cargo), `pattern:volcano-peak-*` (forest_harmony_volcano 858/859/888/889,
-  918/919/948/949, upper layer), `house:<formId>` (authored house forms; `author_house` adds doors/interiors).
+- kind `object`: the **shared object catalog** `src/assets/sharedObjectCatalog.json` (195 objects, `obj:<category>/…`)
+  plus this project's other section kits (`kit:<tileset>/<kit>`) and preview tile groups (`group:<tileset>/<group>`).
+  Catalog categories: `tree` (bare-trees per snow/volcano/desert sheet, 42), `volcano` (peaks: dormant, erupting,
+  pair), `terrain` (climate-terrain pieces 3030~ — sulfur, obsidian, ash heap, fumarole, basalt, cactus, bones,
+  buried column, dunes, mesas, ripple — plus a lava pool and a cooled plate built from the volcano autotiles),
+  `harbor` (forest rowboat, mooring post, rope+anchor, cargo, castle-courtyard boats/dock/sacks/firewood), `gate`
+  (gatehouse `fft-bp4-gatehouse-c16`, town gate), `house` (authored house forms incl. ref-walled/ref-castle gables,
+  generated `fft-*` buildings), `prop` (19 forest village props, 20 combined-town outdoor objects, fft props).
+  Every entry has name, tags, tilesetId, `passage` (computed from the source cells), `owner` (where it belongs — next
+  to what) and a preview `/assets/shared-objects/<id>.png`. Generator: `node scripts/content/build-shared-object-catalog.mjs`
+  (sources in `scripts/content/lib/shared-object-catalog-entry.ts`; place kits are indexed by
+  `build-shared-object-index.mjs`). The ids `refkit:`/`part:`/`pattern:`/`house:` from #1499 still resolve (aliases).
+- The editor 오브젝트 tab lists the same catalog as 공용 오브젝트 cards (`sharedObjectId`), with owner/passage in the
+  inspector and a 「현재 맵 가운데에 찍기」 button that runs `stamp_object`.
+- Assistant rule (Pi system prompt, capability policy): places → `import_region_reference`, objects →
+  `stamp_object`; follow `owner`; never re-paint cells one by one.
 - `stamp_object {objectId, mapId, x, y, layers?}` keeps authored cells. When the map's tileset shows another
   picture at a number, `translateTiles` grafts the source picture (sheet cell or graft source) onto the map's
   tileset and renumbers, reusing an existing graft of the same picture; the tileset stays a whole number of rows.

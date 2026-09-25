@@ -1,5 +1,5 @@
 import { gableHouseFormSize, GABLE_HOUSE_FORM_SPECS } from "@/editor/gableHouseCompose";
-import { ALL_HOUSE_KIT_IDS } from "@/editor/houseKit";
+import { ALL_HOUSE_KIT_IDS, HOUSE_KITS } from "@/editor/houseKit";
 import { AUTHORED_HOUSE_FORM_DEFS } from "@/project/defaults/authoredHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS } from "@/project/defaults/houseTemplateCatalog";
 import { executeAuthorHouse } from "./authorHouseExecution";
@@ -7,6 +7,8 @@ import { CONCEPT_PLAN_SCHEMA } from "./schemaShapes";
 import type { ToolDefinition } from "./types";
 
 const KIT_IDS = [...ALL_HOUSE_KIT_IDS];
+/** 킷 설명 — 재료 킷(초록 기와·초가·슬레이트·검은 기와·붉은 벽돌·반목조)은 숲마을 타일셋에서만, 다른 타일셋이면 같은 계열 기본 킷으로 지어진다. */
+const KIT_CATALOG = ALL_HOUSE_KIT_IDS.map((id) => `${id}(${HOUSE_KITS[id].name})`).join(", ");
 // 박공 조합 형태(킷을 따르는 셀 합성) + 날개 템플릿 + 저작 형태(고정 셀 레시피) — 같은 templateId 축을 공유한다.
 const TEMPLATE_IDS = [
   ...GABLE_HOUSE_FORM_SPECS.map((spec) => spec.id),
@@ -56,7 +58,7 @@ const SHAPE_PROPERTIES = {
       `외장 형태 카탈로그(${TEMPLATE_IDS.length}종). **집마다 서로 다른 값을 써서 실루엣을 갈라라** — `
       + `gable-* 는 박공 조합(정면 세모 박공·쌍박공·교차 박공 ㄱ/T자·현관 박공·측면 박공 장옥 — 재료는 kitId 를 따른다)으로 위에서 봐도 실루엣이 갈린다. `
       + `ㄱ자·ㄷ자·중정·현관 돌출·계단식 2층·옥상 데크는 이 값으로만 나온다. `
-      + `생략하면 사각형 한 장·단층 집에는 날개 사각형 안에 드는 박공 형태가 골고루 배정된다(층수·낮은 벽·옥상 데크·여러 날개를 주면 사각형 그대로). 목록: ${TEMPLATE_CATALOG}`,
+      + `생략하면 사각형 한 장 집에는 날개 사각형 안에 드는 박공 형태가 골고루 배정된다(stories:2 면 2층 박공 gable-2f*, 3층·낮은 벽·옥상 데크·여러 날개를 주면 사각형 그대로). 목록: ${TEMPLATE_CATALOG}`,
   },
   stories: {
     type: "integer",
@@ -80,7 +82,7 @@ const HOUSE_PLAN_SCHEMA = {
     "개별 집 계획. **각 집에 서로 다른 templateId 와 kitId 를 배정하라** — templateId 가 실루엣(모양), "
     + "kitId 가 색이다. 같은 templateId 를 반복하면 결과 경고에 monotonous 로 잡힌다.",
   properties: {
-    kitId: { type: "string", enum: KIT_IDS, description: "집 외관 키트(색). 집마다 다르게 선택." },
+    kitId: { type: "string", enum: KIT_IDS, description: `집 외관 키트(지붕색+벽 재료). 집마다 다르게 선택. ${KIT_CATALOG}` },
     wings: { type: "array", items: WING_SCHEMA, description: "집 몸통. templateId 를 쓰면 wings[0]은 앵커(좌상단)." },
     interior: { type: "string", enum: ["exterior-only", "linked-interior"], description: "생략하면 linked-interior(실내맵+양방향 전이 자동). 겉모습만이면 exterior-only." },
     door: { type: "boolean", description: "linked-interior면 door:true 필수 — 문 이벤트와 실내 출구가 생긴다." },

@@ -1,0 +1,210 @@
+/* _glass-variants.css — 유리 뼈대(family glass) 위의 **색 + HUD 변형** (2026-09-25).
+
+   왜: 지원 종료였던 스킨 9종(먹빛·청람·세피아·검은·코발트·암전·금갈색·밝은·심야)은 각자 CSS 파일(3,500줄 중
+   약 1,400줄)을 들고 있었다. 전투 화면이 바뀔 때마다 활성 3종만 고쳐져서, 2026-09-25 실측으로 9종 대부분이
+   이름표·HP 바가 겹치고 명령창이 깨진 채였다. 파일을 지우고 스킨을 **조합**으로 바꿨다:
+     구도  data-battle-layout  frontview → `_rm2000.css` · sideview → `_rm2003.css` (배치: battlerPlacements)
+     HUD   data-battle-hud     rows(기본 줄) · boxes(얼굴 카드) · ring(링 게이지 카드) · minimal(얇은 줄)
+     색    themeVars           registry.ts 의 스킨별 --battle-* 변수 → 아래에서 --rm-* 별칭으로 흘려 넣는다
+   이제 뼈대에 들어가는 개선(타격감 층 22-hit-feel.css 등)이 12종 모두에 자동으로 들어간다.
+
+   규약: `_rm2000.css` 와 같다 — px 짝수, font-size 26/20/16/12, hex 리터럴 없음(색은 변수·rgb 만),
+   강제 플래그 없음(특정도는 클래스를 겹쳐 올린다: `.battle-party.battle-party`). 이 파일은 `_rm2003.css` 뒤에 로드된다. */
+
+/* ---- 색: 스킨 테마 변수 → 유리 뼈대 별칭 ------------------------------------------------
+   rm2000·rm2003 은 런타임 공용 유리 토큰(메뉴·대화와 같은 표면)을 그대로 쓴다. 나머지는 자기 창 색을 쓴다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2000"]):not([data-battle-skin="rm2003"]) {
+  --rm-floor: var(--battle-window-bg);
+  --rm-hud-surface: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 92%, transparent);
+  --rm-card: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 84%, transparent);
+  --rm-card-raised: color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 72%, var(--battle-window-edge));
+  --rm-hairline: color-mix(in srgb, var(--battle-window-edge) 42%, transparent);
+  --rm-hairline-strong: color-mix(in srgb, var(--battle-window-edge) 78%, transparent);
+  --rm-inset: color-mix(in srgb, var(--battle-window-bg) 70%, transparent);
+  --rm-glass: color-mix(in srgb, var(--battle-window-bg) 90%, transparent);
+  --rm-scrim: color-mix(in srgb, var(--battle-window-bg) 60%, transparent);
+  --rm-track: color-mix(in srgb, var(--battle-text) 16%, transparent);
+  --rm-shadow-lift: var(--battle-shadow, 0 8px 24px rgba(0, 0, 0, 0.45));
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2000"]):not([data-battle-skin="rm2003"])::before {
+  background-image: linear-gradient(180deg, color-mix(in srgb, var(--rm-floor) 42%, transparent), color-mix(in srgb, var(--rm-floor) 70%, transparent)), var(--battle-backdrop-url, none);
+}
+/* 필드 바닥 페이드도 창 색으로 — 뼈대는 남색 바닥으로 녹여 내린다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2000"]):not([data-battle-skin="rm2003"]) .battle-field::before {
+  background: linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--rm-floor) 50%, transparent) 84%, color-mix(in srgb, var(--rm-floor) 92%, transparent) 100%);
+}
+/* 배경 그림 보정(스킨 테마의 --battle-backdrop-filter: 검은 창은 어둡게, 암전 창은 채도를 올린다). */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:not([data-battle-skin="rm2000"]):not([data-battle-skin="rm2003"]) .battle-backdrop {
+  filter: var(--battle-backdrop-filter, none);
+}
+
+/* 흰 테두리 창(검은 창 · 코발트 창): 옛 창처럼 모서리가 덜 둥글고 테두리가 또렷하다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:is([data-battle-skin="dragonquest"], [data-battle-skin="ff"]) {
+  --rm-frame: 0 0 0 2px var(--battle-window-edge), inset 0 0 0 2px color-mix(in srgb, var(--battle-window-edge) 18%, transparent);
+  --rm-frame-strong: 0 0 0 2px var(--battle-window-edge), inset 0 0 0 2px color-mix(in srgb, var(--battle-window-edge) 30%, transparent);
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"]:is([data-battle-skin="dragonquest"], [data-battle-skin="ff"]) :is(.battle-command-panel, .battle-party, .battle-message-window, .battle-result-panel) {
+  border-radius: 4px;
+}
+
+/* ---- HUD: 얼굴 카드(boxes) · 링 게이지(ring) ----------------------------------------------
+   파티 카드 하나에 줄을 쌓는 대신 액터마다 카드 한 장을 가로로 늘어놓는다. 카드 머리에 얼굴과 이름, 아래에
+   HP 수치와 게이지. 카드 폭은 파티 칸(명령 국면 약 440px)을 인원수로 나눈 값이다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party {
+  background: none;
+  box-shadow: none;
+  column-gap: 8px;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  grid-auto-rows: auto;
+  grid-template-columns: none;
+  grid-template-rows: minmax(0, 1fr);
+  padding: 0;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status {
+  align-content: start;
+  align-self: stretch;
+  background: var(--rm-card);
+  border-radius: 10px;
+  box-shadow: var(--rm-frame), var(--rm-shadow-lift);
+  /* 뼈대가 content-box 라 옆 여백이 칸 폭(104px) 위에 얹혀 네 장째가 화면 밖으로 밀렸다. */
+  box-sizing: border-box;
+  column-gap: 6px;
+  grid-template-areas:
+    "face name"
+    "face mpnum"
+    "hpnum hpnum"
+    "hpbar hpbar"
+    "mpbar mpbar"
+    "tp    tp";
+  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-rows: 18px 18px 20px 6px 4px auto;
+  height: auto;
+  justify-self: stretch;
+  max-height: none;
+  max-width: none;
+  min-width: 0;
+  padding: 6px;
+  row-gap: 2px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-face,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-face {
+  border-radius: 8px;
+  height: 32px;
+  width: 32px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-name,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-name {
+  font-size: 16px;
+  line-height: 18px;
+}
+/* 직업 칩: 4인 카드 속폭은 약 92px 라 이름·MP 와 한 줄에 못 들어간다. 얼굴이 대신 알린다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-role,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-role {
+  display: none;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-hp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-mp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-mp {
+  font-size: 16px;
+  line-height: 20px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-mp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-mp {
+  font-size: 12px;
+  justify-self: end;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-vital-max,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-vital-max {
+  display: none;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status > .battle-stat-bar-mp,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status > .battle-stat-bar-mp {
+  height: 4px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-gauge,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-gauge {
+  grid-area: tp;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-atb-bar,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-atb-bar {
+  height: 4px;
+}
+/* 상태 배지(정면 구도는 행에 직접 단다)는 얼굴 오른쪽 아래 모서리에 얹는다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status > .battle-status-icons,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status > .battle-status-icons {
+  align-self: end;
+  grid-area: face;
+  justify-self: end;
+}
+/* 차례인 액터의 카드는 강조색 링으로 떠오른다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status.is-active-actor,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status.is-active-actor {
+  box-shadow: 0 0 0 2px var(--battle-accent), var(--rm-shadow-lift);
+  transform: translateY(-4px);
+}
+
+/* 링 게이지: 얼굴이 원이 되고, 둘레를 HP 가 시계 방향으로 채운다(--battle-hp-pct, battleFieldDom.syncBattleParty).
+   명령은 알약 모양. 게이지형 진행(battleFlow gauge)과 짝지으면 링 옆 ATB 줄이 차는 대로 행동한다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status {
+  border-radius: 20px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-face {
+  border-radius: 50%;
+  box-shadow: none;
+  overflow: visible;
+  position: relative;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status .battle-actor-face::after {
+  background: conic-gradient(var(--battle-hp-high) calc(var(--battle-hp-pct, 100) * 1%), var(--rm-track) 0);
+  border-radius: 50%;
+  content: "";
+  inset: -4px;
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), rgb(0, 0, 0) calc(100% - 4px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), rgb(0, 0, 0) calc(100% - 4px));
+  position: absolute;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status[data-hp-state="mid"] .battle-actor-face::after {
+  background: conic-gradient(var(--battle-hp-mid) calc(var(--battle-hp-pct, 100) * 1%), var(--rm-track) 0);
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status[data-hp-state="low"] .battle-actor-face::after {
+  background: conic-gradient(var(--battle-hp-low) calc(var(--battle-hp-pct, 100) * 1%), var(--rm-track) 0);
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status > .battle-stat-bar-hp {
+  display: none;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-command-panel .battle-command {
+  border-radius: 12px;
+}
+
+/* ---- HUD: 얇은 줄(minimal) -------------------------------------------------------------
+   카드 표면을 걷고 글자와 가는 게이지만 전장 위에 띄운다. 명령 카드는 반투명 한 장으로 남긴다. */
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="minimal"] .battle-party {
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--rm-floor) 72%, transparent) 18%, color-mix(in srgb, var(--rm-floor) 72%, transparent));
+  border-radius: 0;
+  box-shadow: none;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="minimal"] .battle-command-panel {
+  background: color-mix(in srgb, var(--rm-floor) 72%, transparent);
+  box-shadow: 0 0 0 2px var(--rm-hairline);
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="minimal"] :is(.battle-actor-name, .battle-actor-hp, .battle-actor-mp) {
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7);
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="minimal"] :is(.battle-stat-bar, .battle-atb-bar) {
+  height: 4px;
+}
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="minimal"] .battle-actor-status.is-active-actor {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--battle-accent) 22%, transparent), transparent);
+  box-shadow: inset 2px 0 0 var(--battle-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="boxes"] .battle-party.battle-party > .battle-actor-status.battle-actor-status.is-active-actor,
+.battle-scene[data-battle-ui-style="classic"][data-battle-skin-family="glass"][data-battle-hud="ring"] .battle-party.battle-party > .battle-actor-status.battle-actor-status.is-active-actor {
+    transform: none;
+  }
+}

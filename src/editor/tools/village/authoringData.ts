@@ -8,7 +8,7 @@
 import { isHouseKitId, type HouseKitId } from "@/editor/houseKit";
 import { composeGableHouseForm } from "@/editor/gableHouseCompose";
 import { AUTHORED_HOUSE_FORM_DEFS, type AuthoredHouseFormDef } from "@/project/defaults/authoredHouseFormCatalog";
-import { GABLE_HOUSE_FORM_SPECS, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
+import { GABLE_HOUSE_FORM_SPECS, gableFormMixWeight, type GableHouseFormSpec } from "@/project/defaults/gableHouseFormCatalog";
 import { HOUSE_TEMPLATE_DEFS, houseTemplateWingsAt, type HouseTemplateDef } from "@/project/defaults/houseTemplateCatalog";
 import type { Project } from "@/project/types";
 import type { VillageHouseTemplateRecord, VillageLayoutPresetRecord, VillageTemplateWing } from "@/project/types/village";
@@ -192,11 +192,14 @@ export function gableSpecToTemplate(spec: GableHouseFormSpec): HouseTemplate {
     name: spec.name,
     w: preview.w,
     h: preview.h,
-    stories: 1,
+    stories: preview.stories === 2 ? 2 : 1,
     wings: [{ x: 0, y: 0, w: preview.w, h: preview.h }],
     wingsAt: (x: number, y: number) => [{ x, y, w: preview.w, h: preview.h }],
     form: preview,
-    compose: (kitId) => composeGableHouseForm(spec, kitId),
+    compose: (kitId, accentSeed) => composeGableHouseForm(spec, kitId, accentSeed === undefined ? {} : { accentSeed }),
+    // 가중치 0 = 자동 추첨 제외(곁채 …), 0<w<1 = 덜 자주(달개).
+    ...(gableFormMixWeight(spec) === 0 ? { excludeFromDefaultMix: true } : {}),
+    ...(gableFormMixWeight(spec) > 0 && gableFormMixWeight(spec) !== 1 ? { mixWeight: gableFormMixWeight(spec) } : {}),
   };
 }
 
@@ -308,6 +311,25 @@ function shapeReason(record: {
   return undefined;
 }
 
+/**
+ * 자동 추첨에서 빼는 내장 형태(2026-09-25 사용자 「집 모양」 검토). 지워지지는 않는다 — housePlans[].templateId 나
+ * 프리셋 templateIds 로 명시하면 그대로 짓는다. 박공 조합 형태의 제외·가중치는 카탈로그 spec.mix 가 정한다.
+ *  · courtyard: 안뜰 쪽 날개 지붕이 이어지지 않아 지붕에 구멍이 난 것처럼 읽힌다.
+ *  · estate-*: 본채와 헛간이 떨어진 필지형이라 울타리 없이 서면 집 두 채로 읽힌다.
+ *  · 「보이는 벽 면은 3칸 이상」 규칙(2차 검토)에 폭 8 안에서 맞출 수 없는 형태 — u·u-deep 은 안뜰 안쪽 벽이 2칸
+ *    (3+2+3), t-porch·t-hall 은 가운데 현관 옆 본채 벽이 2칸(2+3+3 / 3+3+2). test/houseTemplateFaces.test.ts 가 잰다.
+ */
+export const DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS: ReadonlySet<string> = new Set([
+  "courtyard",
+  "estate-shed-r",
+  "estate-shed-l",
+  "estate-barn",
+  "u",
+  "u-deep",
+  "t-porch",
+  "t-hall",
+]);
+
 export interface TemplateCatalogResult {
   readonly templates: readonly HouseTemplate[];
   readonly warnings: readonly string[];
@@ -337,7 +359,12 @@ export function villageTemplateCatalog(
   }
   const all = [...byId.values()];
   const wanted = allowIds?.filter((id) => id.trim()) ?? [];
-  if (wanted.length === 0) return { templates: all, warnings };
+  if (wanted.length === 0) {
+    // 기본 카탈로그: 어색한 형태는 자동 추첨에서만 뺀다(명시 templateId 는 계속 받는다).
+    const templates = all.map((template) =>
+      DEFAULT_MIX_EXCLUDED_TEMPLATE_IDS.has(template.id) ? { ...template, excludeFromDefaultMix: true } : template);
+    return { templates, warnings };
+  }
   const missing = wanted.filter((id) => !byId.has(id));
   if (missing.length > 0) warnings.push(`프리셋이 가리키는 형태 id를 찾을 수 없습니다: ${missing.join(", ")}`);
   const filtered = all.filter((template) => wanted.includes(template.id));

@@ -411,8 +411,11 @@ function addRoad(ctx: PlanCtx, centerline: readonly Point[], width: 1 | 2 | 3, r
 // ───────────────────────── 집·필지 ─────────────────────────
 
 function pickTemplate(ctx: PlanCtx, maxW: number, maxH: number): HouseTemplate | undefined {
-  const fits = ctx.templates.filter((template) => template.w <= maxW && template.h <= maxH);
-  if (fits.length === 0) return undefined;
+  const sized = ctx.templates.filter((template) => template.w <= maxW && template.h <= maxH);
+  if (sized.length === 0) return undefined;
+  // 자동 추첨 제외 형태(ㄷ자 깊은·ㅁ자 중정 …)는 다른 후보가 없을 때만.
+  const preferred = sized.filter((template) => !template.excludeFromDefaultMix);
+  const fits = preferred.length > 0 ? preferred : sized;
   // 다층 빚: 다섯 채마다 한 채는 2층 이상을 우선한다(마을의 실루엣).
   const preferTall = ctx.storeyDebt >= 4 && fits.some((template) => (template.stories ?? 1) > 1);
   const pool = preferTall ? fits.filter((template) => (template.stories ?? 1) > 1) : fits;
@@ -422,7 +425,16 @@ function pickTemplate(ctx: PlanCtx, maxW: number, maxH: number): HouseTemplate |
   // 위에서 네모 덩어리로 읽힌다. 박공 풀이 있으면 GABLE_SHARE 확률로 그 안에서 고르게 뽑는다.
   const gables = base.filter((template) => template.compose !== undefined);
   const source = gables.length > 0 && gables.length < base.length && ctx.rng() < GABLE_SHARE ? gables : base;
-  const chosen = source[Math.floor(ctx.rng() * source.length)]!;
+  // 가중치(mixWeight, 기본 1)로 뽑는다 — 모두 1이면 예전의 균등 추첨과 같은 난수 소비·같은 결과다.
+  const weights = source.map((template) => template.mixWeight ?? 1);
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  let ticket = ctx.rng() * total;
+  let pick = 0;
+  while (pick < source.length - 1 && ticket >= weights[pick]!) {
+    ticket -= weights[pick]!;
+    pick += 1;
+  }
+  const chosen = source[pick]!;
   ctx.lastTemplateId = chosen.id;
   ctx.storeyDebt = (chosen.stories ?? 1) > 1 ? 0 : ctx.storeyDebt + 1;
   return chosen;

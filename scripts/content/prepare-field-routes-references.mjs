@@ -17,8 +17,9 @@ const CATEGORY = {
   easyrpg_chipset_world: { id: "rpg-outdoors-world-v1", name: "야외 월드맵 · 은빛 왕국 대륙 전도", description: "EasyRPG 월드 칩셋으로 그린 대륙 월드맵. 바다 해안·지형 오토타일, 장소 아이콘과 흙길, 분홍 키(#ff678b) 주의, 전체 배열" },
   ...Object.fromEntries(Object.entries(CLIMATE).map(([ts, name]) => [ts, {
     ...(ts === "forest_harmony_snow" ? { id: "field-routes-snow-v6", name: `${name} 마을 사이 필드·야외 장소 (개정6: 눈 쌓인 성벽)` }
-      : ts === "forest_harmony_volcano" || ts === "forest_harmony_desert"
-        ? { id: `field-routes-${ts.replace("forest_harmony_", "")}-v6`, name: `${name} 마을 사이 필드·야외 장소 (개정6: ${ts === "forest_harmony_volcano" ? "균열·용암 판으로" : "사구·모래 물결로"} 채우기)` }
+      : ts === "forest_harmony_desert" ? { id: "field-routes-desert-v8", name: `${name} 마을 사이 필드·야외 장소 (개정8: 숲 벽 대신 트인 모래밭·고목 드문드문, 능선 사구)` }
+      : ts === "forest_harmony_volcano"
+        ? { id: "field-routes-volcano-v7", name: `${name} 마을 사이 필드·야외 장소 (개정7: 가는 균열·굳은 용암 흐름, 차분한 땅)` }
         : { id: `field-routes-${ts.replace("forest_harmony_", "")}-v5`, name: `${name} 마을 사이 필드·야외 장소 (개정5: 야외 장소 추가)` }),
     description: `숲마을 필드를 ${name} 시트로 옮긴 필드와 ${name} 시트의 야외 장소. 칸 번호는 숲마을과 같고 기후 편집만 더했다. 출구가 맞닿는 곳, 채우기 규칙, 전체 배열과 통행 검사`,
   }])),

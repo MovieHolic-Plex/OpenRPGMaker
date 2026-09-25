@@ -133,7 +133,7 @@ export function auditBattleText(options) {
 
     // `font-size: 0` 은 사고로 나오는 값이 아니다 — 글자를 화면에서만 지우고 textContent·
     // 접긌성 트리는 남기는 새록이다. vxace 는 참조 HUD 가 이름 대심 얼굴로 인물을
-    // 알려준다고 보고 이름을 이 방식으로 숨긴다(_vxace.css:423 의 주석). 그 상자 안에
+    // 알려준다고 보고 이름을 이 방식으로 숨긴다(옛 _vxace.css, 2026-09-25 삭제). 그 상자 안에
     // 중첩된 레뱨은 자기 font-size 로 그려지므로 부모를 토리는 sr-only 로는 바꿀 수 없다.
     // 의도를 재판하지 않고 건너맜다. 단, 조용히 버리지 않고 숫자로 남긴다.
     if (Number.parseFloat(getComputedStyle(el).fontSize || "0") === 0) {

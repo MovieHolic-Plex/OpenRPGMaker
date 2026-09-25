@@ -49,7 +49,7 @@
 
 ## 검사
 ```json
-{"reachable":1592,"emptiness":{"maxSq":4,"screen":0.462,"at":[20,21],"screenAt":[39,27]}}
+{"reachable":1606,"emptiness":{"maxSq":4,"screen":0.462,"at":[33,0],"screenAt":[20,27]}}
 ```
 
 전체 두 레이어는 「금빛 모래언덕 · 0행부터 전체 배열」 문서가 정답이다.

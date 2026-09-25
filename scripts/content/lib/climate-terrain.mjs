@@ -43,7 +43,7 @@ export function terrainKit(tileset) {
       if (upperTiles[k] >= 0) cells.push({ dx: k % w, dy: Math.floor(k / w), tile: upperTiles[k], layer: "upper" });
       else if (lowerTiles[k] >= 0 && lowerTiles[k] !== 240) cells.push({ dx: k % w, dy: Math.floor(k / w), tile: lowerTiles[k], layer: "lower" });
     }
-    stamps.set(g.id.slice("climate-terrain:".length), { id: g.id.slice("climate-terrain:".length), w, h, cells, tileIds: g.tileIds });
+    { const id = g.id.slice("climate-terrain:".length); stamps.set(id, { id, w, h, cells, tileIds: g.tileIds, hot: /^(fumarole|sulfur|basalt|obsidian|ash-heap|cactus|bones|buried)/.test(id) }); }
   }
   const blob = (id) => auto[id] && { variantMap: auto[id].variantMap, members: new Set(auto[id].memberTileIds), bodies: auto[id].interiorVariants?.[0] ?? [auto[id].variantMap["255"]] };
   const crack = auto.volcano_lava_crack && { variantMap: auto.volcano_lava_crack.variantMap, members: new Set(auto.volcano_lava_crack.memberTileIds) };
@@ -73,7 +73,10 @@ function context(map, options) {
   const ring = (x, y) => { for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const X = x + dx, Y = y + dy; if (inside(X, Y) && !plain(X, Y) && !mine[at(X, Y)]) return false; } return true; };
   const free = (x, y, solid = false) => plain(x, y) && !mine[at(x, y)] && take(x, y, solid) && (!solid || ring(x, y));
   const edge = (x, y) => Math.min(x, y, W - 1 - x, H - 1 - y);
-  return { W, H, at, inside, random, mine, free, plain, edge };
+  // Hot or standing things (cracks, pools, vents, sulfur, basalt) keep two cells off roads, houses, props and water —
+  // user 2026-09-25: a fire in the middle of the road looked wrong. Only plain ground or our own pieces may be near.
+  const clear = (x, y, r = 2) => { for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) { const X = x + dx, Y = y + dy; if (inside(X, Y) && !plain(X, Y) && !mine[at(X, Y)]) return false; } return true; };
+  return { W, H, at, inside, random, mine, free, plain, edge, clear };
 }
 
 function paintBlob(map, ctx, group, cells) {
@@ -131,7 +134,7 @@ function growCells(ctx, sx, sy, size, ok) {
 }
 
 function stampFits(ctx, st, x0, y0, solid) {
-  for (let dy = 0; dy < st.h; dy++) for (let dx = 0; dx < st.w; dx++) if (!ctx.free(x0 + dx, y0 + dy, solid)) return false;
+  for (let dy = 0; dy < st.h; dy++) for (let dx = 0; dx < st.w; dx++) if (!ctx.free(x0 + dx, y0 + dy, solid) || (st.hot && !ctx.clear(x0 + dx, y0 + dy))) return false;
   return true;
 }
 
@@ -178,7 +181,7 @@ function growCrack(map, ctx, kit, sx, sy, length) {
   const D4 = [[0, -1], [1, 0], [0, 1], [-1, 0]];
   for (let step = 0; step < length * 6 && cells.size < length && tips.length; step++) {
     const k = Math.floor(random() * tips.length); const [x, y, head, lean] = tips[k];
-    const r = random(), nd = r < 0.58 ? head : r < 0.9 ? (head + lean) % 4 : (head + 4 - lean) % 4;
+    const r = random(), nd = r < 0.45 ? head : r < 0.85 ? (head + lean) % 4 : (head + 4 - lean) % 4;
     const [dx, dy] = D4[nd];
     if (okCell(x + dx, y + dy, x, y)) {
       cells.add(at(x + dx, y + dy)); tips[k] = [x + dx, y + dy, head, lean];
@@ -260,7 +263,7 @@ export function dressVolcanoGround(map, options) {
     const pools = options.pools ?? 1 + Math.floor(R() * 2);
     for (let k = 0, tries = 0; k < pools && tries < 200; tries++) {
       const x = 3 + Math.floor(R() * (ctx.W - 6)), y = 3 + Math.floor(R() * (ctx.H - 6));
-      const cells = growBlocks(ctx, x, y, 12 + Math.floor(R() * 5), (xx, yy) => ctx.free(xx, yy, true) && ctx.free(xx - 1, yy, true) && ctx.free(xx + 1, yy, true));
+      const cells = growBlocks(ctx, x, y, 12 + Math.floor(R() * 5), (xx, yy) => ctx.free(xx, yy, true) && ctx.free(xx - 1, yy, true) && ctx.free(xx + 1, yy, true) && ctx.clear(xx, yy, 3));
       // no sausage: a pool spans at least 4 cells both ways (an L or a round of 2×2 blocks)
       const xs = [...cells].map((i) => i % ctx.W), ys = [...cells].map((i) => Math.floor(i / ctx.W));
       if (cells.size < 12 || Math.max(...xs) - Math.min(...xs) < 3 || Math.max(...ys) - Math.min(...ys) < 3) continue;
@@ -301,10 +304,10 @@ export function dressVolcanoGround(map, options) {
   let plates = 0;
   const res = fillLoop(map, ctx, options, pieces, (sx, sy, bs) => {
     if (bs >= 3 && (R() < 0.7 || plates < 2)) {
-      const p = plate(sx, sy, 12 + Math.floor(R() * 20));
+      const p = plate(sx, sy, 14 + Math.floor(R() * 18));
       if (p) {
         plates++;
-        if (R() < 0.6) { // a crack out of the plate
+        if (R() < 0.35) { // a crack out of the plate
           for (let j = 0; j < 8; j++) {
             const [dx, dy] = [[1, 0], [-1, 0], [0, 1], [0, -1]][Math.floor(R() * 4)];
             let x = sx, y = sy;
@@ -316,7 +319,7 @@ export function dressVolcanoGround(map, options) {
         return p;
       }
     }
-    return crack(sx, sy, 10 + Math.floor(R() * 12));
+    return crack(sx, sy, 7 + Math.floor(R() * 8));
   });
   // A few shards and ash heaps on the cracks only (one per ~25 crack cells, at most 4).
   const extra = Math.min(4, Math.floor(cracks.length / 25));
@@ -373,7 +376,7 @@ export function dressDesertGround(map, options) {
   if (options.setPieces !== false) {
     // Sandstone mesas: at most two, away from the middle (edge band first).
     const band = options.edgeBand ?? 5;
-    for (let k = 0, tries = 0; k < (options.mesas ?? 1 + Math.floor(R() * 2)) && tries < 400; tries++) {
+    for (let k = 0, tries = 0; k < (options.mesas ?? 0) && tries < 400; tries++) {
       const st = S(["mesa-3x3", "mesa-4x3", "mesa-5x4"][Math.floor(R() * 3)]);
       const x = 1 + Math.floor(R() * (ctx.W - st.w - 2)), y = 1 + Math.floor(R() * (ctx.H - st.h - 2));
       if (ctx.edge(x + (st.w >> 1), y + (st.h >> 1)) > band + 3) continue;
@@ -381,7 +384,7 @@ export function dressDesertGround(map, options) {
       if (got) { pieces.push({ kind: "mesa", id: st.id, x, y, cells: got.length }); k++; }
     }
     // Bones and a half-buried column: one remote spot (farthest from anything that is not plain), both together.
-    for (let tries = 0; tries < 300; tries++) {
+    for (let tries = 0; options.bones && tries < 300; tries++) {
       const x = 2 + Math.floor(R() * (ctx.W - 5)), y = 2 + Math.floor(R() * (ctx.H - 5));
       let remote = true;
       for (let dy = -4; dy <= 4 && remote; dy++) for (let dx = -4; dx <= 4; dx++) if (ctx.inside(x + dx, y + dy) && !ctx.plain(x + dx, y + dy)) { remote = false; break; }
@@ -419,7 +422,7 @@ export function dressDesertGround(map, options) {
       pieces.push({ kind: "ripple", x: cx, y: cy, cells: floor });
     }
     // Cactus clumps: a saguaro with one or two small cacti, three or four clumps per map.
-    for (let k = 0, tries = 0; k < (options.cactusClumps ?? 2 + Math.floor(R() * 2)) && tries < 300; tries++) {
+    for (let k = 0, tries = 0; k < (options.cactusClumps ?? 1 + Math.floor(R() * 2)) && tries < 300; tries++) {
       const x = 2 + Math.floor(R() * (ctx.W - 4)), y = 2 + Math.floor(R() * (ctx.H - 5));
       if (nearWater(x, y, 3)) continue;
       const lead = tryStamp(map, ctx, S(R() < 0.5 ? "cactus-saguaro" : "cactus-saguaro-2"), x, y, { solid: true, accept: options.accept });
@@ -436,7 +439,7 @@ export function dressDesertGround(map, options) {
   const res = fillLoop(map, ctx, options, pieces, (sx, sy, bs) => {
     const r = R();
     if (r < (options.duneShare ?? 0.45) && bs >= 2) { const d = dune(sx, sy, bs); if (d) return d; }
-    if (r > 0.9 && bs >= 3) { const c = cracked(sx, sy, 10 + Math.floor(R() * 10)); if (c) return c; }
+    if (options.cracked && r > 0.9 && bs >= 3) { const c = cracked(sx, sy, 10 + Math.floor(R() * 10)); if (c) return c; }
     return ripple(sx, sy, 10 + Math.floor(R() * 14));
   });
   return { pieces, counts: count(map, kit), ...res };

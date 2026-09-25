@@ -164,7 +164,9 @@ export function evaluateConnectedDungeon(map: GameMap, plan: ConnectedDungeonPla
   const W = map.width, H = map.height, material = dungeonMaterial(plan.theme, plan.character), mask = dungeonFloorMask(W, H, graph, plan);
   const open = connectedDungeonOpen(map, plan), landings = connectedDungeonLandings(map, plan), start = landings[Math.max(0, graph.rooms.findIndex(r => r.role === "entrance"))]!;
   if (!start) issues.push("entrance missing");
-  else for (const [i, goal] of landings.entries()) if (!dungeonPath(W, H, start, goal, open)) issues.push(`room unreachable: ${graph.rooms[i]!.id}`);
+  // With a project the runtime passability check below is the authority; the tile-list mask misses floor
+  // variants the pipeline paints (lava shore crust), which flagged visibly connected rooms as unreachable.
+  else if (!project) for (const [i, goal] of landings.entries()) if (!dungeonPath(W, H, start, goal, open)) issues.push(`room unreachable: ${graph.rooms[i]!.id}`);
   if (start && project) {
     const reachable = computeReachableCells(project, map, start.x, start.y);
     for (const [i, goal] of landings.entries()) if (!isPassable(project, map, goal.x, goal.y) || !reachable.has(`${goal.x},${goal.y}`)) issues.push(`runtime room unreachable: ${graph.rooms[i]!.id}`);

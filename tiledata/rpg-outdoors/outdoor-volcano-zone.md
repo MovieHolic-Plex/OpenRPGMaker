@@ -49,7 +49,7 @@
 
 ## 검사
 ```json
-{"reachable":1344,"emptiness":{"maxSq":4,"screen":0.462,"at":[8,10],"screenAt":[0,4]}}
+{"reachable":1344,"emptiness":{"maxSq":5,"screen":0.466,"at":[49,22],"screenAt":[0,4]}}
 ```
 
 전체 두 레이어는 「불꽃산 화산 지대 · 0행부터 전체 배열」 문서가 정답이다.

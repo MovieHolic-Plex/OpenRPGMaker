@@ -29,7 +29,8 @@ export function ensureForestHarmonyVillageSlots(tileset: TilesetDef): boolean {
   if (tileset.id !== "forest_harmony" || tileset.image.type !== "bundled" || tileset.image.id !== "tex_forest_harmony"
     || tileset.tileSize !== 16 || tileset.tilesPerRow !== 30) return false;
   const wanted = new Map(EXT.grafts.map(graft => [graft.targetTile, graft]));
-  const own = new Map((tileset.tileGrafts ?? []).filter(graft => graft.targetTile >= EXT.start).map(graft => [graft.targetTile, graft]));
+  // Only this tail's own range decides a conflict — later tails (house parts from 3060) are not ours to judge.
+  const own = new Map((tileset.tileGrafts ?? []).filter(graft => graft.targetTile >= EXT.start && graft.targetTile < EXT.count).map(graft => [graft.targetTile, graft]));
   for (const [tile, graft] of own) {
     const expected = wanted.get(tile);
     if (!expected || !sameGraft(expected, graft)) return false;

@@ -25,8 +25,8 @@ node scripts/content/author-field-routes.mjs   # 숲 필드 + 기후 필드, 통
 ```
 
 ```json
-[{"id":"field-desert-crossroads","entry":[4,40],"targets":[[0,40],[40,0],[95,24]],"reachable":2370,"blocked":[]}]
+[{"id":"field-desert-crossroads","entry":[4,40],"targets":[[0,40],[40,0],[95,24]],"reachable":5966,"blocked":[]}]
 ```
 
 ## 실제 구분
-- 오아시스 세 갈래길 (field-desert-crossroads, 96×64, 원본 숲마을 필드 field-forest-crossroads): 마른 덤불숲 사이 모래밭에서 길이 세 갈래로 갈린다. 남동쪽 오아시스 못가에 야자수가 둘러서고, 모래밭은 크고 작은 사구와 모래 물결·갈라진 땅으로 덮였다. 선인장은 몇 무리로만 서 있다. 출구0 west (0,40) → 모래 물굽이 포구 서쪽 입구(0,33); 출구1 north (40,0) → 사암 층바위 협곡마을 남쪽 입구(42,71); 출구2 east (95,24) → 다음 필드.
+- 오아시스 세 갈래길 (field-desert-crossroads, 96×64, 원본 숲마을 필드 field-forest-crossroads): 트인 모래밭에서 길이 세 갈래로 갈린다. 남동쪽 오아시스 못가에 야자수가 둘러서고, 모래밭은 사구 능선과 모래 물결로 덮였다. 잎 없는 고목은 드문드문 덩이로만 서 있고 선인장은 한 무리뿐이다. 출구0 west (0,40) → 모래 물굽이 포구 서쪽 입구(0,33); 출구1 north (40,0) → 사암 층바위 협곡마을 남쪽 입구(42,71); 출구2 east (95,24) → 다음 필드.
