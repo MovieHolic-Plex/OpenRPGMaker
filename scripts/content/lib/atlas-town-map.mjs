@@ -232,12 +232,24 @@ export class TownMap extends OutdoorMap {
       const [form, kit, role, yard, side] = choices[k % choices.length];
       const f = this.kit.api.composeGableHouseForm(this.kit.gables.get(form), kit, {});
       const y = roadY - 2 - f.doorAt.y;
-      if (x + f.w <= x1 && y >= 1 && this.freeRect(x, y, f.w, f.h, { keep: false }) && this.freeRect(x - 1, y - 1, f.w + 2, f.h + 2, { keep: false, road: false })
+      if (x + f.w <= x1 && y >= 1 && this.freeRect(x, y, f.w, f.h, { keep: false }) && this.freeRect(x - 1, y - 1, f.w + 2, f.h + 1, { keep: false, road: false })
         && !this.houses.some((o) => x < o.x + o.w + gap && x + f.w + gap > o.x && y < o.y + o.h + 1 && y + f.h > o.y - 1)) {
         out.push(this.gable(form, kit, x, y, { role, yard, side })); x += f.w + gap; k++;
       } else x++;
     }
     return out;
+  }
+  // Plaza pieces only on named plazas (pave(..., { name })) — never on a quay or a lane paved with the same group.
+  plazaFill(groupName, items, maxSq = 3) {
+    const hidden = [...this.paved.entries()].filter(([i, g]) => g === groupName && !this.plazaCells.has(i));
+    for (const [i] of hidden) this.paved.delete(i);
+    try { return super.plazaFill(groupName, items, maxSq); } finally { for (const [i, g] of hidden) this.paved.set(i, g); }
+  }
+  // A lone round wall tower (2×8, the castle-town wall end): watchtower, lighthouse, corner tower.
+  tower(x, y, name = "원탑") {
+    const TOWER = [[[21, 24], [412, 25]], [[138, -1], [139, -1]], [[140, -1], [141, -1]], [[140, -1], [141, -1]], [[140, -1], [141, -1]], [[142, -1], [143, -1]], [[140, -1], [141, -1]], [[81, 54], [81, 55]]];
+    this.stampPiece(name, x, y, 2, 8, TOWER.flat().map((c) => c[0]), TOWER.flat().map((c) => c[1]));
+    return { x, y, w: 2, h: 8 };
   }
   // A plank bridge across a north-south channel near row y: the first row pair (y, y±1, …) whose water runs match.
   bridgeNear(x, y, reach = 4) {

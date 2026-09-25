@@ -573,5 +573,180 @@
     0
    ]
   }
+ },
+ {
+  "id": "town-port-small",
+  "seed": 14101,
+  "entry": [
+   4,
+   14
+  ],
+  "reachable": 1146,
+  "targets": 13,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    37,
+    0
+   ],
+   "screenAt": [
+    28,
+    12
+   ]
+  }
+ },
+ {
+  "id": "city-port-overview",
+  "seed": 14201,
+  "entry": [
+   54,
+   4
+  ],
+  "reachable": 4528,
+  "targets": 37,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    53,
+    1
+   ],
+   "screenAt": [
+    28,
+    12
+   ]
+  }
+ },
+ {
+  "id": "city-port-harbor",
+  "seed": 14301,
+  "entry": [
+   20,
+   4
+  ],
+  "reachable": 1297,
+  "targets": 19,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    63,
+    16
+   ],
+   "screenAt": [
+    49,
+    0
+   ]
+  }
+ },
+ {
+  "id": "city-port-harbor-festival",
+  "seed": 14301,
+  "entry": [
+   20,
+   4
+  ],
+  "reachable": 1296,
+  "targets": 19,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.339,
+   "at": [
+    44,
+    3
+   ],
+   "screenAt": [
+    4,
+    0
+   ]
+  }
+ },
+ {
+  "id": "city-port-market",
+  "seed": 14401,
+  "entry": [
+   20,
+   39
+  ],
+  "reachable": 1697,
+  "targets": 10,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.326,
+   "at": [
+    0,
+    35
+   ],
+   "screenAt": [
+    0,
+    8
+   ]
+  }
+ },
+ {
+  "id": "town-fishing-cove",
+  "seed": 14501,
+  "entry": [
+   26,
+   4
+  ],
+  "reachable": 803,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.344,
+   "at": [
+    28,
+    5
+   ],
+   "screenAt": [
+    28,
+    4
+   ]
+  }
+ },
+ {
+  "id": "town-palm-beach",
+  "seed": 14601,
+  "entry": [
+   4,
+   20
+  ],
+  "reachable": 1347,
+  "targets": 11,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 4,
+   "screen": 0.353,
+   "at": [
+    22,
+    10
+   ],
+   "screenAt": [
+    35,
+    20
+   ]
+  }
  }
 ]
