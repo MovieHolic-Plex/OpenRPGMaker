@@ -1,0 +1,19 @@
+{
+  "objects": [
+    { "id": "scenes/deck-cannon-left", "name": "갑판 대포(왼쪽 포구)", "category": "prop", "tags": ["배", "갑판", "대포", "군함", "해적선"],
+      "tilesetId": "easyrpg_chipset_ship", "width": 2, "height": 1, "lower": [-1, -1], "upper": [324, 325],
+      "owner": "갑판 왼쪽 난간 바로 안쪽, 포구가 바다 쪽을 향하게 3~4칸 간격으로 줄지어 — 갑판 한가운데·계단 앞 금지.", "sourceMap": "atlas-scenes:seed" },
+    { "id": "scenes/deck-cannon-right", "name": "갑판 대포(오른쪽 포구)", "category": "prop", "tags": ["배", "갑판", "대포", "군함", "해적선"],
+      "tilesetId": "easyrpg_chipset_ship", "width": 2, "height": 1, "lower": [-1, -1], "upper": [354, 355],
+      "owner": "갑판 오른쪽 난간 바로 안쪽, 포구가 바다 쪽을 향하게 줄지어 — 갑판 한가운데·계단 앞 금지.", "sourceMap": "atlas-scenes:seed" },
+    { "id": "scenes/deck-cannon-down", "name": "갑판 대포(포구 아래쪽)", "category": "prop", "tags": ["배", "갑판", "대포"],
+      "tilesetId": "easyrpg_chipset_ship", "width": 1, "height": 2, "lower": [-1, -1], "upper": [326, 356],
+      "owner": "갑판 아래쪽 뱃전 난간 곁, 포구가 뱃전 밖을 향하게.", "sourceMap": "atlas-scenes:seed" },
+    { "id": "scenes/cabin-bunk", "name": "선실 침상", "category": "furniture", "tags": ["배", "선실", "침대"],
+      "tilesetId": "easyrpg_chipset_ship", "width": 1, "height": 2, "lower": [-1, -1], "upper": [416, 446],
+      "owner": "선실 벽에 머리를 붙여 — 문·통로 앞을 막지 않게, 곁에 작은 궤나 탁자.", "sourceMap": "atlas-scenes:seed" },
+    { "id": "scenes/cabin-bookshelf", "name": "선실 책장", "category": "furniture", "tags": ["배", "선실", "책장", "선장실"],
+      "tilesetId": "easyrpg_chipset_ship", "width": 1, "height": 2, "lower": [-1, -1], "upper": [384, 414],
+      "owner": "선장실·선실 윗벽에 등을 붙여 — 책상 곁.", "sourceMap": "atlas-scenes:seed" }
+  ]
+}
