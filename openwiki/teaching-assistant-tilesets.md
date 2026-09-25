@@ -181,6 +181,41 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 (Claude Code 는 `CLAUDE.md` 만 자동 로드한다. Codex 는 `AGENTS.md` 를 직접 읽는다).
 `tilesetReferenceTools.ts` 머리 주석도 이 문서를 가리킨다.
 
+## 칩셋 계열 규칙 (2026-09-25 사용자 결정)
+
+사용자 말: 「지금 보고 있는 칩에서 파생된 걸 쓰던가(easyrpg 계열이면 easyrpg), 타일이 달라지는 경우에는 사용자에게 말해야 한다 —
+견본까지 보여 줘야 한다.」 그래서 조수는 **사용자가 보고 있는 맵과 같은 계열**로만 맵을 만들고 칩셋을 바꾼다.
+
+- **계열 판정** `src/project/tilesetFamily.ts` `tilesetFamily(project, tilesetId)` — 순서: (1) `TilesetDef.family`(선택 문자열, 예
+  `"rasak-fantasy"`) (2) `referenceSourceTilesetId` 를 따라 뿌리로 가서 다시 판정 (3) 업로드 칩셋이고 family 가 없으면 `uploaded:<뿌리 id>`
+  (4) 번들은 `tilesetArtStyle()` 값(`easyrpg`·`castle`·`slates`·`lpc`·`modern`·`oga`·`scarloxy`·`other`; forest_harmony·기후 시트·tibo 는
+  easyrpg). 없는 id 는 `unknown:<id>`. 사람용 이름은 `tilesetFamilyLabel`, 같은 계열 목록은 `sameFamilyTilesets`.
+  업로드 팩 여러 장을 한 계열로 묶으려면 각 타일셋에 같은 `family` 를 적는다(Rasak 묶음은 `rasak-fantasy`).
+- **실행기 검사** `toolRunner.rejectTilesetFamilyChange` — 기준 = `ctx.currentMapId` 맵의 계열, 대상 = 이번 호출로 새로 생긴 맵 +
+  `tilesetId` 가 바뀐 맵. 계열이 다르고 `ctx.approvedTilesetFamilies` 에도 없으면 `tileset-family-change` 로 거부(draft 버림).
+  메시지는 같은 계열 후보(최대 8개)를 주고 「후보를 tilesetId 로 다시 불러라(못 받는 도구면 create_map(tilesetId=후보) 후 칠하기 도구) ·
+  없으면 ask_tileset_change 로 묻고 턴을 끝내라」고 지시한다. `currentMapId` 가 없으면(옛 호출자·MCP·헤드리스 `--current` 없음) 검사하지 않는다.
+  `allowsTilesetChange` 도구(`revert_last_edit`·`reset_project`)와 읽기 도구는 빠지고, dryRun 은 같은 검사를 탄다.
+  업로드 바꿔치기 검사(`uploaded-tileset-replaced`)는 currentMapId 없이도 도는 안전망으로 그대로 있다.
+- **create_map 기본 칩셋**: `tilesetId` 없이 불리면 도구 기본값(숲마을 `defaultOutdoorTilesetId`)이 지금 보는 맵과 **다른 계열일 때만**
+  실행기가 지금 보는 맵의 `tilesetId` 를 넣는다(`ToolDefinition.defaultTilesetId`, create_map 만 켬). 같은 계열이면 도구 기본값을 둔다 —
+  EasyRPG 실내를 보며 만든 새 야외 맵이 실내 칩셋이 되지 않게(결정 기록: 규칙 1 을 「같은 계열」로 읽었다). 업로드 칩셋은
+  `isCombinedTownCompatibleTileset` 이 아니라 빈 칸으로 채워진다(없는 번호를 깔지 않는다). generate_map·던전/실내 파이프라인·성 시공기처럼
+  EasyRPG 번호를 가정하는 도구에는 주입하지 않는다 — 계열 검사가 막는다.
+- **묻기** `ask_tileset_change{toTilesetId, reason, purpose?, mapId?}`(읽기, core 로 늘 노출) — 실행기가 비어 있는 `mapId` 를 지금 보는 맵으로
+  채운다(`ToolDefinition.fillsCurrentMapId`; `run(draft,args)` 가 ctx 를 못 받아서 고른 가장 작은 길). 같은 계열이면 `tileset-same-family` 로
+  거부한다. 결과 `data.kind:"tileset-change-question"`, 요약은 「답을 기다리며 이 턴을 끝내라」.
+- **질문 카드** `src/editor/panels/aiTilesetChangeCard.ts` — Pi 턴 이벤트에서 성공한 `ask_tileset_change` 를 잡아(`tilesetQuestionFromEvent`,
+  팀 `agent_event` 포장도 푼다) 턴이 끝난 뒤 대화 끝에 붙인다. 왼쪽 「지금」 = 지금 맵 가운데 최대 16×10칸을 `drawMapTileLayers` 로 그린 것,
+  오른쪽 「바뀐 뒤」 = 대상 칩셋 참고문서 그림(purpose 가 맞는 용도, 없으면 그림 있는 첫 용도의 첫 그림), 없으면 아틀라스 앞 12×8칸.
+  「이 타일로 바꿔도 좋아요」 → 패널 대화 상태 `approvedTilesetFamilies` 에 toFamily 추가 + `[사용자 승인] 칩셋 계열 변경 허용: … 원래 요청을 이어서 하라.`
+  전송, 「아니요, 지금 타일로」 → `[사용자 거절] … 계열 안에서만 만들어라 …` 전송. 승인 목록은 새 대화에서 비운다.
+- **ctx 가 받는 곳**: Pi 요청 `currentMapId`·`approvedTilesetFamilies`(`protocol.ts`) → 워커 `runPiAgent` 가 도구 ctx 에 싣는다(팀 레인은 요청을 펼쳐 그대로 받는다).
+  채팅 세션은 `AssistantSession.toolContext` 의 게터가 `contextOptions.getCurrentMapId`·`getApprovedTilesetFamilies` 를 매 호출 읽는다.
+- **헤드리스**: `bun scripts/pi-agent.mts --current <mapId> --approve-tileset-family <계열>`(반복 가능). `--current` 가 없으면 계열 검사가 꺼진다.
+- 프롬프트: `promptPolicies.TILESET_FAMILY_POLICY_LINE`(채팅·Pi 공통 한 줄). 회귀: `test/tilesetFamily.test.ts`·`test/tilesetFamilyGuard.test.ts`·
+  `test/aiTilesetChangeCard.test.ts`.
+
 ## 문서의 번호가 새 프로젝트에 있어야 한다 (2026-09-25)
 
 조수 시험에서 문서대로 칠한 번호가 새 프로젝트에 없었다 — 숲마을 시트는 2550칸인데 장소 문서는 2550~2759(굽이숲 수관·절벽·계단·

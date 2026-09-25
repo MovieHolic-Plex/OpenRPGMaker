@@ -46,6 +46,9 @@ Read this before editing editor-facing behavior. Identifies which workflow owns 
   으로 말없이 바꾼 일. 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구만 `ToolDefinition.allowsTilesetChange: true` 로 빠진다
   (`revert_last_edit`·`reset_project`). 새 쓰기 도구가 업로드 타일셋 맵의 칩셋을 바꿔야 하면 플래그가 아니라 `tilesetId` 인자를 받게 하라.
   계약·회귀는 [editor-ai-tools.md](editor-ai-tools.md) 「실행기 계약 — 업로드 타일셋 칩셋 바꿔치기 거부」.
+- **toolRunner 의 칩셋 계열 검사(2026-09-25):** `ctx.currentMapId` 가 있으면 새 맵·칩셋이 바뀐 맵이 지금 보는 맵과 다른 계열
+  (`src/project/tilesetFamily.ts`)일 때 `tileset-family-change` 로 거부한다(사용자 승인 계열 `ctx.approvedTilesetFamilies` 는 통과).
+  새 시공 도구가 칩셋을 스스로 고르면 이 검사에 걸린다 — tilesetId 인자를 받게 하라. 흐름은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「칩셋 계열 규칙」.
 
 ## 맵 목록 클릭은 즉시 선택한다 (2026-09-18 후속)
 
