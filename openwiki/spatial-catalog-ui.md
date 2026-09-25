@@ -186,3 +186,12 @@ The same 31 shared root IDs and their 33 floor rasters are also included in `rev
 ## 호스트 전용 장소의 목록 썸네일 (2026-09-24)
 
 `spatialGallery.ts`의 경량 목록 경로도 `sharedPlacePreview(id)`를 먼저 조회한다. 상세 패널만 공용 그림을 지원하면 호스트 SQLite에 추가한 장소가 목록에는 잡혀도 그림은 404가 된다. 파일 경로 fallback은 기본 카탈로그에만 사용한다. 프로젝트에 복사된 장소(`authored-map_*`)는 같은 이름의 `shared_` 공용 미리보기를 붙인다. 직접 칠한 장소는 `public/assets/reviewed-places/<id>.png`를 쓴다. 신규 생활 실내5종을 기본 카탈로그에도 포함하고 사용자 프로젝트 및 별도 신규 프로젝트에서 목록·이미지를 재조회한다.
+
+## RPG 판타지 장소 70곳 공용 DB 등록 (2026-09-25)
+
+`scripts/content/publish-rpg-places-shared-library.mjs` 가 RPG 실내 34·RPG 던전 25·판타지 장소 11을 호스트 공용 SQLite 라이브러리
+`oprn-rpg-fantasy-places-20260925` 한 개로 올린다. 원본은 각 파이프라인의 정본 저장 재오픈본(`output/evidence/<pipeline>/reloaded.json`).
+번들 타일셋은 `shared_rpg_*` 사본으로 싣는다 — 그림은 이식(tileGrafts)·색 키를 구운 업로드 아틀라스, 맵마다 `raster_rpg_<id>` 구획 키트,
+AI 참고문서는 파이프라인 분류만(던전 재칠 넷은 `referenceSourceTilesetId` 로 돌 사본의 문서를 공유). 올리기 전에 70장 모두를 원래 타일셋과
+공용 사본으로 그려 픽셀이 같아야만 게시한다. 증명은 `tiledata/rpg-places/shared-library-proof.json`. 같은 장소가 번들 「완성 장소 사례」 카드로도
+보이는 것은 검수 실내 31종과 같은 이중 경로다. 맵을 다시 고치면 파이프라인 저장 → 이 스크립트를 다시 돌린다(같은 id 에 비교 교환으로 덮는다).
