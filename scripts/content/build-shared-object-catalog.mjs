@@ -75,11 +75,41 @@ function passage(object) {
   return blocked && open ? `일부 통행(막힘 ${blocked}칸·통행 ${open}칸)` : blocked ? "통행 불가" : "위를 걸을 수 있음";
 }
 
+// A lower-layer tile with see-through pixels replaces the ground under it and shows black in the
+// editor and the game (dune edges, cactus bases). Such cells go to the upper layer so the map's own
+// ground stays underneath.
+const seeThrough = new Map();
+function hasSeeThrough(ts, grafts, tile, assets) {
+  const key = `${ts.id}:${tile}`;
+  if (seeThrough.has(key)) return seeThrough.get(key);
+  const size = ts.tileSize ?? 16, p = picture(ts, grafts, tile), src = sheet(p.key, assets);
+  let clear = false;
+  if (src) {
+    const cols = Math.floor(src.width / size), sx = (p.tile % cols) * size, sy = Math.floor(p.tile / cols) * size;
+    for (let y = 0; y < size && !clear; y++) for (let x = 0; x < size; x++) {
+      if (src.data[((sy + y) * src.width + sx + x) * 4 + 3] < 255) { clear = true; break; }
+    }
+  }
+  seeThrough.set(key, clear);
+  return clear;
+}
+let liftedCells = 0;
+function liftSeeThroughLower(object) {
+  if (object.source.kind !== "tileset") return;
+  const ts = object.sourceTileset, grafts = new Map((ts.tileGrafts ?? []).map((g) => [g.targetTile, g]));
+  object.lower.forEach((tile, i) => {
+    if (tile < 0 || object.upper[i] >= 0 || !hasSeeThrough(ts, grafts, tile, object.assets)) return;
+    object.upper[i] = tile; object.lower[i] = -1; liftedCells += 1;
+    if (object.defaultLayers === "lower") object.defaultLayers = "both";
+  });
+}
+
 // ── write ─────────────────────────────────────────────────────────────────
 rmSync(OUT_DIR, { recursive: true, force: true });
 mkdirSync(OUT_DIR, { recursive: true });
 const manifest = [];
 for (const object of objects) {
+  liftSeeThroughLower(object);
   const file = `${object.id.replace(/^obj:/, "").replace(/[^a-z0-9가-힣_-]+/gi, "_")}.png`;
   writeFileSync(resolve(OUT_DIR, file), PNG.sync.write(render(object)));
   const { sourceTileset: _t, assets: _a, lower, upper, ...rest } = object;
@@ -89,4 +119,4 @@ for (const object of objects) {
 writeFileSync(resolve(ROOT, "src/assets/sharedObjectCatalog.json"), `${JSON.stringify({ objects: manifest })}\n`);
 const byCategory = {};
 for (const entry of manifest) byCategory[entry.category] = (byCategory[entry.category] ?? 0) + 1;
-console.log(`${manifest.length} objects`, JSON.stringify(byCategory), missingPictures ? `(${missingPictures} cells without a picture)` : "");
+console.log(`${manifest.length} objects`, JSON.stringify(byCategory), missingPictures ? `(${missingPictures} cells without a picture)` : "", `lifted ${liftedCells} see-through lower cells`);
