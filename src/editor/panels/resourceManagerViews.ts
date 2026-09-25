@@ -503,10 +503,16 @@ function startCharsetRowTicker(card: HTMLElement, advance: readonly (() => void)
   if (advance.length === 0) return;
   if (typeof window === "undefined" || typeof window.setInterval !== "function") return;
   let mounted = false;
+  // 붙기를 기다리는 동안은 상한을 둔다. 붙지 못한 카드(목록이 그 사이 다시 그려져 버려진 경우)를
+  // 밑업 없이 기다리면 그 시계가 영원히 돈다 — 실측(2026-09-25): 모달을 닫아 카드가 0장인데도 21개가 돌았다.
+  let waitedTicks = 0;
   const timer = window.setInterval(() => {
-    // 아직 붙지 않은 프레임은 기다린다(el() 로 만든 카드는 다음 렌더에서 append 된다).
     if (!card.isConnected) {
-      if (!mounted) return;
+      // 아직 붙지 않은 프레임은 기다린다(el() 로 만든 카드는 다음 렌더에서 append 된다).
+      if (!mounted && waitedTicks < CHARSET_ROW_ATTACH_TICKS) {
+        waitedTicks += 1;
+        return;
+      }
       window.clearInterval(timer);
       return;
     }
@@ -514,6 +520,9 @@ function startCharsetRowTicker(card: HTMLElement, advance: readonly (() => void)
     for (const step of advance) step();
   }, CHARSET_ROW_TICK_MS);
 }
+
+/** 붙기를 기다리는 최대 톱 수. 이 안에 붙지 않으면 버려진 카드로 보고 시계를 거둔다. */
+const CHARSET_ROW_ATTACH_TICKS = 4;
 
 /** 8칸을 한 시계로 돌린다. 예전의 칸별 220~325ms 대신 한 박자로 맞춘다. */
 const CHARSET_ROW_TICK_MS = 260;
