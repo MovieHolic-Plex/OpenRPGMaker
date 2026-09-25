@@ -24,6 +24,8 @@ class Canvas:
         self.ctx, self.b, self.w, self.h, self.id, self.name = ctx, bundle, w, h, mid, name
         self.L = {n: [None] * (w * h) for n in (1, 2, 3, 4)}
         self.SH = [0] * (w * h)
+        self.owner = {}          # (layer, i) → 물체 id — 같은 층 겹침 검사
+        self.errors = []         # 조립 규칙 위반(main 이 하나라도 있으면 실패)
 
     def ok(self, x, y):
         return 0 <= x < self.w and 0 <= y < self.h
@@ -45,15 +47,60 @@ class Canvas:
             if self.ok(x, y):
                 self.L[layer][y * self.w + x] = None
 
-    def obj(self, oid, x, y, layer=None):
-        """names.json 물체를 왼위 (x,y) 에 찍는다. 물체의 층을 기본으로 쓴다."""
+    def obj(self, oid, x, y, layer=None, over=False):
+        """names.json 물체를 왼위 (x,y) 에 찍는다. 물체의 층을 기본으로 쓴다.
+        검사(적대적 시각 QA 2026-09-25): 맵 밖으로 잘림 · 같은 층 다른 물체 덮어쓰기(over=True 로만 허용) ·
+        바닥 물체가 지붕·벽(A3)이나 벽면(A4 벽)을 딛음 · 벽걸이가 벽면 밖 · 4층 소품 밑에 3층 물체 없음."""
         o = self.ctx.object(self.b, oid)
         ly = layer or o['layer']
-        for r, row in enumerate(o['cells']):
-            for c, t in enumerate(row):
-                if t >= 0:
-                    self.tile(ly, t, x + c, y + r)
+        cells = [(x + c, y + r, t) for r, row in enumerate(o['cells']) for c, t in enumerate(row) if t >= 0]
+        where = f'{oid}@({x},{y})'
+        for cx, cy, _ in cells:
+            if not self.ok(cx, cy):
+                self.errors.append(f'{where}: 맵 밖으로 잘림 ({cx},{cy})')
+                continue
+            prev = self.owner.get((ly, cy * self.w + cx))
+            if prev and not over:
+                self.errors.append(f'{where}: {ly}층 ({cx},{cy}) 에서 {prev} 를 덮어씀')
+            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_')) and self.ground(cx, cy) != 'table':
+                self.errors.append(f'{where}: 4층 소품 밑 ({cx},{cy}) 에 3층 물체가 없음')
+        if ly == 2:
+            for cx, cy, _ in cells:
+                if self.ok(cx, cy) and self.ground(cx, cy) not in ('floor', 'table'):
+                    self.errors.append(f'{where}: 2층 바닥 장식이 ({cx},{cy}) {self.ground(cx, cy)} 위')
+        if ly == 3 and cells:
+            wall_mount = '벽걸이' in o['name']
+            bottom = max(cy for _, cy, _ in cells)
+            for cx, cy, _ in cells:
+                if not self.ok(cx, cy):
+                    continue
+                g = self.ground(cx, cy)
+                if oid.startswith('building_'):
+                    continue
+                if wall_mount and g != 'wall':
+                    self.errors.append(f'{where}: 벽걸이인데 ({cx},{cy}) 가 벽면이 아님({g})')
+                if not wall_mount and cy == bottom and g in ('wall', 'roof', 'ceiling'):
+                    self.errors.append(f'{where}: 바닥 물체의 밑줄 ({cx},{cy}) 이 {g} 위')
+        for cx, cy, t in cells:
+            if self.ok(cx, cy):
+                self.tile(ly, t, cx, cy)
+                self.owner[(ly, cy * self.w + cx)] = oid
         return o
+
+    def ground(self, x, y):
+        """1층 칸 성격: 'wall'(A4 벽면·A3 벽) · 'roof'(A3 지붕) · 'ceiling'(A4 윗면) · 'water'(A1) · 'floor'."""
+        v = self.L[1][y * self.w + x]
+        if isinstance(v, tuple):
+            _, slot, kind = v
+            if slot == 'A3':
+                return 'wall' if (kind % 16) >= 8 else 'roof'
+            if slot == 'A4':
+                return 'wall' if self.ctx.ttype(self.b, slot, kind) == 'wall' else 'ceiling'
+            if slot == 'A1':
+                return 'water'
+            if slot == 'A2' and '탁자' in self.ctx.kind_name(self.b, f'{slot}:{kind}'):
+                return 'table'
+        return 'floor' 
 
     def shadow(self, x, y, bits=5):
         if self.ok(x, y):
@@ -156,6 +203,12 @@ class Ctx:
         slot, kind = key.split(':')
         return ('k', slot, int(kind))
 
+    def kind_name(self, b, key):
+        for k in self.names['bundles'][b]['kinds']:
+            if f"{k['slot']}:{k['kind']}" == key:
+                return k.get('name', '')
+        return ''
+
     def ttype(self, b, slot, kind):
         if slot == 'A1':
             return 'waterfall' if (kind >= 4 and kind % 2 == 1) else 'floor'
@@ -224,6 +277,11 @@ def main():
         if a.only and name not in a.only:
             continue
         c = fn(ctx)
+        if c.errors:
+            print(f'{name}: 조립 규칙 위반 {len(c.errors)}건', file=sys.stderr)
+            for e in c.errors:
+                print('  -', e, file=sys.stderr)
+            sys.exit(1)
         m = c.to_map()
         out = root / 'maps' / f"{m['id']}.layers.map.json"
         out.write_text(json.dumps(m, ensure_ascii=False))
