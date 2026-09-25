@@ -1,4 +1,4 @@
-# RPG 실내 — 여관·민가·교회·길드·마법 상점·공방·도서관·교실·성(1층 대형 포함)·배·투기장·카지노·경매장·기후 집
+# RPG 실내 — 여관·민가·교회·대성당·수도원·길드·마법 상점·공방·도서관·교실·성(1층 대형 포함)·배·투기장·카지노·경매장·기후 집·사막 궁전·설원 요새·여관 지하·곡물 창고
 
 지형·배치 참고 사례(문 이동·NPC·상점·대사 이벤트 없음). 「장소」 카드와 공용 AI 문서 분류로 배포된다.
 
@@ -9,8 +9,9 @@
 | `rpg-interiors-castle-v3` | tibo_interior_expanded | 성 1층(50×40: 알현실·대연회장·복도 고리·계단실·주방·경비 초소), 식당·침실·병영·보물고 |
 | `rpg-interiors-leisure-v3` | tibo_interior_expanded | 투기장 대기실, 카지노, 경매장 |
 | `rpg-interiors-ship-v1` | easyrpg_chipset_ship | 배 선실, 배 화물칸 |
-| `rpg-interiors-climate-v3` | tibo_interior_expanded | 사막 흙벽돌 민가·오아시스 여관 주점, 설원 사냥꾼 오두막·촌장집, 화산 대장장이 집·잿빛 마을 여관 |
-| `rpg-interiors-staples-v3` | tibo_interior_expanded | 등대 1층 등대지기 방·꼭대기 등불 방, 목장 마구간 헛간, 치료소 |
+| `rpg-interiors-climate-v4` | tibo_interior_expanded | 사막 흙벽돌 민가·오아시스 여관 주점·궁전 왕좌의 방, 설원 사냥꾼 오두막·촌장집·요새 대전, 화산 대장장이 집·잿빛 마을 여관 |
+| `rpg-interiors-staples-v4` | tibo_interior_expanded | 등대 1층 등대지기 방·꼭대기 등불 방, 목장 마구간 헛간, 치료소, 여관 지하 술창고, 곡물 창고 |
+| `rpg-interiors-sacred-v1` | tibo_interior_expanded | 대성당 신랑과 제단, 수도원 회랑과 안뜰 |
 | `rpg-interiors-sewer-prison-v1` | easyrpg_chipset_dungeon (맵은 oprn_dungeon_stone) | 지하 하수 감옥 |
 
 | 파일 | 내용 |
@@ -25,7 +26,7 @@
 재생성 순서(dev 서버 `npm run dev:worktree`가 떠 있어야 렌더된다):
 
 ```bash
-python3 scripts/content/bake-climate-interior-tiles.py      # Tibo 1980~2009 기후 벽면·바닥·모피 깔개 + 2010~2039 헛간(짚·칸막이·건초·말·젖소)(시트를 66행으로 자르고 두 줄 덧붙임)
+python3 scripts/content/bake-climate-interior-tiles.py      # Tibo 1980~2009 기후 벽면·바닥·모피 깔개 + 2010~2039 헛간(짚·칸막이·건초·말·젖소) + 2040~2069 우물·분수·쥐구멍·파이프 오르간·긴 스테인드글라스(시트를 66행으로 자르고 세 줄 덧붙임)
 node scripts/content/register-climate-interior-tiles.mjs    # tiboRecoveredTileset.json 칸 수·통행·라벨·그룹
 node scripts/content/author-rpg-interiors.mjs
 DEV_URL=http://127.0.0.1:<port> node scripts/content/render-rpg-interiors.mjs
@@ -46,3 +47,5 @@ BASE=http://127.0.0.1:<port> node scripts/qa/capture-rpg-interiors.mjs
 JRPG 단골 실내(2026-09-25): 등대(1층 동쪽 3칸 폭 벽 계단 x=13~15 ↔ 등불 방 계단 가운데 x=14 의 1×1 내리막 474 한 칸), 마구간 헛간(통나무 벽·흙바닥), 치료소(진료실·병실), 지하 하수 감옥. 감옥은 던전 시트에 `scripts/content/rpg-dungeons/kit.mjs`(RPG 던전과 같은 조립, theme "stone")로 짓는다 — 타일셋은 RPG 던전의 `oprn_dungeon_stone` 복제(이식 480~488)이고 공용 문서는 번들 `easyrpg_chipset_dungeon`에 붙는다. 창살 뒤 감방은 일부러 닫은 곳이라 계획의 `sealed` 사각형으로 통행 검사에서 뺀다.
 
 헛간 개정(2026-09-25): 마구간 칸이 어두운 짚 돗자리 네모 판뿐이고 칸막이·가축이 없어 헛간으로 읽히지 않았다. Tibo 시트 67행(2010~2039)을 덧붙였다 — 짚 깔린 흙바닥 2010~2012(짙음)·2013~2015(흩어짐), 판자 칸막이 2016/2017/2018(북쪽 끝·가운데·남쪽 끝 기둥), 건초 더미 2×2 2019~2022, 말·젖소 2×2 2023~2034(EasyRPG `CharSet/Animal.png` 서 있는 칸, CC0). 칸마다 가축 하나를 먹이통 앞에 두고 뒤 한 줄은 비운다. 안장 받침대는 동쪽 마구 걸이 아래, 빗자루도 그 구석. 분류는 여섯 개 모두 개정3(`-v3`) — 1×1 계단 474 한 칸 규칙이 공통 문법이라 모두 바뀌었다. 옛 v2 판은 `previous-reference.json` 으로 걷는다.
+
+개정 2차 실내 6곳(2026-09-25): 대성당 신랑 29×26·수도원 회랑 30×24(새 분류 `rpg-interiors-sacred-v1`), 사막 궁전 왕좌의 방 25×20·설원 요새 대전 25×21(기후 분류 개정4), 여관 지하 술창고 16×12·곡물 창고 18×13(단골 분류 개정4). 시트에 없던 것은 Tibo 68행(2040~2069)에 물통과 같은 3/4 시점으로 구웠다: 돌우물 2×2 2040~2043, 돌 분수 3×2 2044~2049, 쥐구멍 2050(벽면 아랫줄 벽걸이), 파이프 오르간 3×3 2051~2059(벽난로처럼 윗 두 줄이 벽면), 긴 스테인드글라스 창 1×2 2060/2061(144 자체 행을 이어 붙임). 0~67행은 픽셀 그대로다. 손풍금(tibo-library-176, 2×2)은 작은 손 악기라 성당 오르간으로 쓰지 않고, 3×3 석조 화로 402~464는 가마처럼 보여 대전 한가운데 불자리로 쓰지 않았다. 여관 지하는 동벽 3칸 폭 벽 계단 141|111|171(x=11~13)로 오른다. 옛 개정3 두 분류는 `previous-reference.json` 으로 걷는다.

@@ -46,5 +46,13 @@
   {
     "id": "rpg-interiors-staples-v2",
     "revision": "76718-23a2b7ee-bdf54522"
+  },
+  {
+    "id": "rpg-interiors-climate-v3",
+    "revision": "117606-77decf83-997f61b1"
+  },
+  {
+    "id": "rpg-interiors-staples-v3",
+    "revision": "83005-6f6d52c7-3768d60d"
   }
 ]

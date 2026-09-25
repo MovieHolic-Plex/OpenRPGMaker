@@ -19,9 +19,19 @@ Row 67 (tiles 2010..2039), the barn: drawn here (straw, stall boards, hay heap) 
   2023 2024 / 2025 2026 horse facing right 2x2   2027 2028 / 2029 2030 horse facing left 2x2
   2031 2032 / 2033 2034 cow facing right 2x2 (EasyRPG CharSet/Animal.png, standing frame, CC0)
   2035..2039 unused
+Row 68 (tiles 2040..2069), drawn here in the tub's three-quarter view (rim top face, front face, dark outline):
+  2040 2041 / 2042 2043 stone well 2x2 with a wooden frame, rope and bucket (monastery garden)
+  2044 2045 2046 / 2047 2048 2049 stone fountain 3x2, round basin with a tiered centre bowl (palace hall, holy-water font)
+  2050 rat hole at the foot of a wall face (transparent around the hole, sits on any lower wall-face tile)
+  2051 2052 2053 / 2054 2055 2056 / 2057 2058 2059 pipe organ 3x3 (gold pipes in a dark case over the two wall-face
+    rows, the keyboard console on the floor row)
+  2060 / 2061 tall lancet stained-glass window 1x2 (144's own rows: arch head, red and blue panels, sill)
+  2062..2069 unused
 Idempotent: the sheet is cut back to its first 66 rows before the rows are appended.
 Usage: python3 scripts/content/bake-climate-interior-tiles.py
 """
+import math
+
 from PIL import Image
 
 SHEET = "public/assets/tibo-interior/interior-expanded.png"
@@ -200,9 +210,249 @@ barn += quarters(hay_heap()) + quarters(animal(5, 1)) + quarters(animal(5, 3)) +
 row2 = Image.new("RGBA", (480, 16), (0, 0, 0, 0))
 for i, t in enumerate(barn):
     row2.paste(t, (i * 16, 0))
-out = Image.new("RGBA", (480, (BASE_ROWS + 2) * 16), (0, 0, 0, 0))
+# ── row 68: well, stone fountain, rat hole ──
+# Palette from the sheet: pillar greys, the water tub (1824..1856) water, the barn wood, a near-black outline.
+OUT = (29, 28, 34)
+STONE = [(53, 58, 66), (86, 94, 104), (117, 128, 136), (150, 162, 166), (186, 196, 196), (216, 222, 218)]
+tub = Image.new("RGBA", (48, 32))
+for i, n in enumerate([1824, 1825, 1826, 1854, 1855, 1856]):
+    tub.paste(cell(n), ((i % 3) * 16, (i // 3) * 16))
+WATER = [tub.getpixel((x, 12)) [:3] for x in (10, 18, 24)]
+WATER = sorted(set(WATER), key=sum)
+
+
+def ell(x, y, cx, cy, rx, ry):
+    return ((x - cx) / rx) ** 2 + ((y - cy) / ry) ** 2
+
+
+def stone_ring(img, cx, top, rx, ry, depth, inner, water, rng):
+    """A round stone ring seen from the south-east-ish top-down: top face (rim ellipse minus the opening), front face
+    below it (depth px) with brick courses, dark outline, water/dark inside the opening."""
+    W, H = img.size
+    irx, iry = inner
+    cy = top + ry
+    for y in range(H):
+        for x in range(W):
+            # front face: under the rim ellipse's lower half, down by depth
+            d_top = ell(x + 0.5, y + 0.5, cx, cy, rx, ry)
+            d_bot = ell(x + 0.5, y + 0.5 - depth, cx, cy, rx, ry)
+            inside_x = abs(x + 0.5 - cx) <= rx
+            front = inside_x and y + 0.5 >= cy and d_bot <= 1.0 and d_top > 1.0
+            front = front or (inside_x and cy <= y + 0.5 <= cy + depth and d_top > 1.0 and abs(x + 0.5 - cx) <= rx)
+            if d_top <= 1.0:
+                di = ell(x + 0.5, y + 0.5, cx, cy + 0.5, irx, iry)
+                if di <= 1.0:
+                    # opening: water, darker at the back (north) edge where the rim shadows it
+                    t = (y + 0.5 - (cy - iry)) / (2 * iry)
+                    c = water[0] if t < 0.3 else water[1] if t < 0.75 else water[-1]
+                    if di > 0.72 and y + 0.5 < cy + 0.5: c = OUT
+                    img.putpixel((x, y), (*c, 255))
+                else:
+                    # rim top: lit, stones separated by radial joints
+                    ang = math.atan2((y + 0.5 - cy) / ry, (x + 0.5 - cx) / rx)
+                    seg = int((ang + math.pi) / (2 * math.pi) * 14)
+                    joint = abs(((ang + math.pi) / (2 * math.pi) * 14) - round((ang + math.pi) / (2 * math.pi) * 14)) < 0.09
+                    c = STONE[4] if (y + 0.5) < cy else STONE[3]
+                    if seg % 2: c = STONE[5] if c == STONE[4] else STONE[4]
+                    if joint: c = STONE[2]
+                    if d_top > 0.8: c = STONE[2] if (y + 0.5) < cy else STONE[3]
+                    img.putpixel((x, y), (*c, 255))
+            elif front:
+                rel = y + 0.5 - cy - math.sqrt(max(0, 1 - ((x + 0.5 - cx) / rx) ** 2)) * ry
+                course = int(rel // 4)
+                off = 3 if course % 2 else 0
+                mortar = (int(rel) % 4 == 3) or ((int(x + off) % 7) == 0)
+                shade = (x + 0.5 - (cx - rx)) / (2 * rx)
+                c = STONE[3] if shade < 0.35 else STONE[2] if shade < 0.75 else STONE[1]
+                if mortar: c = STONE[0] if shade > 0.5 else STONE[1]
+                img.putpixel((x, y), (*c, 255))
+    # outline: any opaque pixel with a transparent 4-neighbour becomes the outline colour
+    px = img.load()
+    edge = []
+    for y in range(H):
+        for x in range(W):
+            if px[x, y][3] and any(not (0 <= x + dx < W and 0 <= y + dy < H) or not px[x + dx, y + dy][3] for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                edge.append((x, y))
+    for x, y in edge:
+        px[x, y] = (*OUT, 255)
+
+
+def shadow(img, cx, cy, rx, ry):
+    W, H = img.size
+    for y in range(H):
+        for x in range(W):
+            if not img.getpixel((x, y))[3] and ell(x + 0.5, y + 0.5, cx, cy, rx, ry) <= 1:
+                img.putpixel((x, y), (20, 12, 6, 80))
+
+
+def well():
+    img = Image.new("RGBA", (32, 32), (0, 0, 0, 0))
+    rng = random.Random(3)
+    stone_ring(img, 16, 12, 13.5, 6.5, 9, (9.5, 3.8), [(10, 20, 34), (24, 48, 76), (40, 78, 112)], rng)
+    shadow(img, 18.5, 28.5, 13, 3.2)
+    # wooden frame: two posts standing on the rim sides, a crossbar with a roller, rope and bucket
+    px = img.load()
+    for x0 in (3, 26):
+        for y in range(1, 20):
+            for x in range(x0, x0 + 3):
+                c = WOOD[0] if x in (x0, x0 + 2) else WOOD[2]
+                if x == x0 + 1 and y < 3: c = WOOD[3]
+                px[x, y] = (*c, 255)
+    for x in range(3, 29):
+        for y in range(2, 6):
+            c = WOOD[0] if y in (2, 5) else WOOD[3] if y == 3 else WOOD[2]
+            if x in (3, 28): c = WOOD[0]
+            px[x, y] = (*c, 255)
+    # rope coil on the roller
+    for x in range(13, 20):
+        for y in (3, 4):
+            px[x, y] = (*((214, 186, 128) if (x + y) % 2 else (150, 118, 70)), 255)
+    for y in range(6, 11):
+        px[16, y] = (*((214, 186, 128) if y % 2 else (150, 118, 70)), 255)
+    # bucket hanging over the opening
+    for y in range(10, 15):
+        for x in range(13, 20):
+            c = WOOD[0] if x in (13, 19) or y == 14 else WOOD[2] if y > 11 else WOOD[3]
+            if y == 10: c = (70, 70, 74) if 13 < x < 19 else WOOD[0]
+            px[x, y] = (*c, 255)
+    return img
+
+
+def fountain():
+    img = Image.new("RGBA", (48, 32), (0, 0, 0, 0))
+    rng = random.Random(5)
+    stone_ring(img, 24, 7, 22.5, 8.5, 10, (18.5, 5.8), WATER, rng)
+    shadow(img, 26.5, 29.5, 21, 2.8)
+    px = img.load()
+    # centre pedestal: a column (lit west, shaded east) under a small upper bowl, water falling from the bowl's lip
+    for y in range(6, 17):
+        for x in range(22, 27):
+            c = OUT if x in (22, 26) else STONE[4] if x == 23 else STONE[3] if x == 24 else STONE[2]
+            if y == 16: c = OUT
+            px[x, y] = (*c, 255)
+    for y in range(2, 8):
+        for x in range(17, 32):
+            d = ell(x + 0.5, y + 0.5, 24.5, 4.5, 7.5, 3.2)
+            if d <= 1:
+                c = STONE[5] if y <= 3 else STONE[3] if y <= 5 else STONE[2]
+                if d > 0.7: c = OUT
+                if ell(x + 0.5, y + 0.5, 24.5, 4.0, 5.0, 1.6) <= 1: c = WATER[-1] if y <= 3 else WATER[1]
+                px[x, y] = (*c, 255)
+    for (x, y) in [(17, 7), (32, 7), (16, 9), (33, 9), (16, 11), (33, 11), (15, 13), (34, 13)]:
+        px[x, y] = (230, 246, 255, 255)
+    for (x, y) in [(17, 8), (32, 8), (16, 10), (33, 10)]:
+        px[x, y] = (150, 205, 240, 255)
+    for (x, y) in [(14, 15), (15, 15), (34, 15), (35, 15), (23, 19), (24, 19), (25, 19)]:
+        px[x, y] = (200, 232, 250, 255)
+    return img
+
+
+def rat_hole():
+    """A gnawed hole at the foot of a wall face: dark arch, a crumbled lip, two crumbs on the floor edge.
+    Transparent elsewhere so it sits on any wall face (cream, stone brick, log)."""
+    img = Image.new("RGBA", (16, 16), (0, 0, 0, 0))
+    px = img.load()
+    for y in range(16):
+        for x in range(16):
+            d = ((x + 0.5 - 8) / 4.5) ** 2 + ((y + 0.5 - 16) / 7.0) ** 2
+            if d <= 1:
+                c = (8, 6, 8) if d < 0.55 else (26, 18, 16) if d < 0.8 else (58, 44, 36)
+                px[x, y] = (*c, 255)
+            elif d <= 1.25 and y > 8:
+                px[x, y] = (96, 80, 66, 255) if (x + y) % 3 else (70, 58, 48, 255)
+    for (x, y) in [(2, 15), (13, 14), (14, 15), (3, 14)]:
+        px[x, y] = (110, 96, 80, 255)
+    # two tiny eyes in the dark
+    px[7, 12] = (220, 200, 90, 255)
+    px[9, 12] = (220, 200, 90, 255)
+    return img
+
+
+GOLD = [(96, 62, 22), (164, 116, 44), (224, 178, 78), (250, 226, 150)]
+DARKWOOD = [(34, 18, 10), (78, 44, 22), (120, 72, 36), (164, 108, 58)]
+
+
+def pipe_organ():
+    """3x3 pipe organ against the back wall: a dark wooden case with gold pipes (tall in the middle) over the two
+    wall-face rows, and on the floor row the wooden console with its keyboard seen from above."""
+    img = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+    px = img.load()
+    # case back panel
+    for y in range(4, 34):
+        for x in range(3, 45):
+            c = DARKWOOD[1] if (x + y) % 7 else DARKWOOD[0]
+            if x in (3, 44) or y == 4: c = OUT
+            elif x in (4, 43) or y == 5: c = DARKWOOD[2]
+            px[x, y] = (*c, 255)
+    # crest on top of the middle tower
+    for y in range(0, 5):
+        for x in range(17, 31):
+            if abs(x - 23.5) <= 6.5 - y * 0.9 or y >= 3:
+                c = DARKWOOD[2] if y < 4 else DARKWOOD[1]
+                if abs(x - 23.5) > 5.8 - y * 0.9 and y < 3: c = OUT
+                px[x, y] = (*c, 255)
+    # pipes: 4 px wide, lit west, a dark mouth two thirds down; heights rise to the middle
+    tops = [14, 11, 9, 7, 5, 3, 3, 5, 7, 9, 11, 14]
+    for i, top in enumerate(tops):
+        x0 = 5 + i * 3 + (1 if i >= 6 else 0) + (i // 3)
+        for y in range(top + 2, 31):
+            for dx in range(3):
+                x = x0 + dx
+                c = GOLD[3] if dx == 0 else GOLD[2] if dx == 1 else GOLD[1]
+                if y == top + 2: c = GOLD[1] if dx else GOLD[2]
+                px[x, y] = (*c, 255)
+            if x0 + 3 < 45: px[x0 + 3, y] = (*DARKWOOD[0], 255)
+        mouth = top + 2 + int((31 - top - 2) * 0.62)
+        px[x0, mouth] = (*GOLD[0], 255); px[x0 + 1, mouth] = (*OUT, 255); px[x0 + 2, mouth] = (*GOLD[0], 255)
+        px[x0 + 1, mouth + 1] = (*GOLD[1], 255)
+    # case base rail under the pipes
+    for y in range(30, 34):
+        for x in range(3, 45):
+            c = DARKWOOD[3] if y == 30 else DARKWOOD[2] if y == 31 else DARKWOOD[1]
+            if x in (3, 44) or y == 33: c = OUT
+            px[x, y] = (*c, 255)
+    # console on the floor row: wooden desk top with keys (white/black) then the front panel
+    for y in range(33, 46):
+        for x in range(9, 39):
+            if y < 38:
+                c = DARKWOOD[3] if y == 33 else DARKWOOD[2]
+                if 34 <= y <= 36 and 11 <= x <= 36:
+                    c = (236, 232, 220) if y > 34 else (200, 196, 186)
+                    if x % 3 == 0: c = (60, 56, 60)
+                if x in (9, 38): c = OUT
+            else:
+                c = DARKWOOD[1] if y < 44 else DARKWOOD[0]
+                if y == 38: c = DARKWOOD[2]
+                if x in (9, 38) or y == 45: c = OUT
+                if x in (14, 33) and 39 <= y <= 43: c = DARKWOOD[0]
+            px[x, y] = (*c, 255)
+    for y in range(46, 48):
+        for x in range(11, 40):
+            px[x, y] = (20, 12, 6, 80)
+    return img
+
+
+def tall_stained_glass():
+    """1x2 lancet window from 144's own rows: the arch head, then red/purple and blue panels in turn, the sill."""
+    src = cell(144)
+    seq = list(range(0, 9)) + list(range(9, 14)) + list(range(5, 9)) + list(range(9, 14)) + list(range(5, 9)) + [14]
+    img = Image.new("RGBA", (16, 32), (0, 0, 0, 0))
+    for y, sy in enumerate(seq):
+        for x in range(16):
+            img.putpixel((x, y + 1), src.getpixel((x, sy)))
+    return img
+
+
+row3 = Image.new("RGBA", (480, 16), (0, 0, 0, 0))
+extra = quarters(well()) + [fountain().crop((x, y, x + 16, y + 16)) for y in (0, 16) for x in (0, 16, 32)] + [rat_hole()]
+extra += [pipe_organ().crop((x, y, x + 16, y + 16)) for y in (0, 16, 32) for x in (0, 16, 32)]
+extra += [tall_stained_glass().crop((0, y, 16, y + 16)) for y in (0, 16)]
+for i, t in enumerate(extra):
+    row3.paste(t, (i * 16, 0))
+out = Image.new("RGBA", (480, (BASE_ROWS + 3) * 16), (0, 0, 0, 0))
 out.paste(im, (0, 0))
 out.paste(row, (0, BASE_ROWS * 16))
 out.paste(row2, (0, (BASE_ROWS + 1) * 16))
+out.paste(row3, (0, (BASE_ROWS + 2) * 16))
 out.save(SHEET, optimize=True)
-print({"tiles": len(tiles), "barn": len(barn), "first": BASE_ROWS * 30, "size": out.size})
+print({"tiles": len(tiles), "barn": len(barn), "row68": len(extra), "first": BASE_ROWS * 30, "size": out.size})
