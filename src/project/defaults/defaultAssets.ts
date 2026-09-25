@@ -13,6 +13,7 @@ import { createForestHarmonyTileset, ensureForestHarmonyReferences, FOREST_HARMO
 import { ensureForestHarmonyVillageSlots } from "./forestHarmonyExtension";
 import { ensureForestHarmonyHouseParts } from "./forestHarmonyHouseParts";
 import { ensureForestHarmonyTreetopParts } from "./forestHarmonyTreetopParts";
+import { ensureForestHarmonyAtlasTownParts } from "./forestHarmonyAtlasTownParts";
 import { createForestGrassJoinsTileset, extendForestGrassJoinsTileset, FOREST_GRASS_JOINS_TEXTURE } from "./forestGrassJoins";
 import { createLpcWoodenFurniture16Tileset, createLpcWoodenFurnitureTileset, seedLpcWoodenFurniture16Kits, seedLpcWoodenFurnitureKits } from "./lpcWoodenFurniture";
 import { createTiboInteriorTileset, extendTiboInteriorDefaults, TIBO_INTERIOR_ID, TIBO_INTERIOR_TEXTURE } from "./tiboInterior";
@@ -147,6 +148,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyHouseParts(project.tilesets[id]) || changed;
       // Elf treetop village parts from 3131 (after the house parts) — decks, rope bridges, trunk houses.
       if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyTreetopParts(project.tilesets[id]) || changed;
+      // Atlas town parts from 3311 (after the treetop parts) — ship, fountain, stalls, fire, scaffolds, festival lanterns.
+      if (id === FOREST_HARMONY_ID) changed = ensureForestHarmonyAtlasTownParts(project.tilesets[id]) || changed;
       changed = ensureSharedCastleReferences(project.tilesets[id]) || changed;
       changed = ensureRpgPlaceReferences(project.tilesets[id]) || changed;
       changed = ensureRpgInteriorReferences(project.tilesets[id]) || changed;
@@ -281,6 +284,7 @@ function bundledEasyRpgTilesetBase(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS
     ensureForestHarmonyVillageSlots(tileset);
     ensureForestHarmonyHouseParts(tileset);
     ensureForestHarmonyTreetopParts(tileset);
+    ensureForestHarmonyAtlasTownParts(tileset);
     return tileset;
   }
   if (asset.textureKey === FOREST_GRASS_JOINS_TEXTURE) return createForestGrassJoinsTileset();
