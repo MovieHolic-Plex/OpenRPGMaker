@@ -86,7 +86,7 @@ export function guilds(K) {
     r.rug("red", 6, 7, 17, 10).stamp(T("medieval-banquet-table"), 7, 8).stamp(T("medieval-banquet-table"), 13, 8);
     for (const x of [7, 8, 9, 10, 13, 14, 15, 16]) r.chair("n", x, 7).chair("s", x, 10);
     r.stamp(T("fantasy-weapon-rack"), 2, 9).stamp(T("fantasy-weapon-rack"), 22, 9).armour(5, 11).armour(19, 11).stamp(T("library-045"), 2, 12).stamp(T("library-045"), 20, 12);
-    r.rug("teal", 4, 5, 8, 6).rug("teal", 15, 5, 21, 6).rug("red", 7, 11, 17, 12);
+    r.rug("teal", 4, 5, 8, 6).rug("teal", 15, 5, 21, 6).rug("red", 7, 11, 17, 12).rug("teal", 18, 8, 20, 10).rug("teal", 4, 8, 5, 10);
     r.done({
       entry: [12, 13], keeper: [12, 6], targets: [[12, 6], [11, 9], [4, 8], [21, 12]],
       use: "왕국 기사단의 회관. 뒷벽 커튼 사이 붉은 의자가 단장의 자리이고, 붉은 카펫 위 연회 식탁 둘에 기사들이 둘러앉아 원정을 의논한다. 양쪽 벽의 깃발·방패·무기 거치대·갑옷 거치대에서 무장한다",

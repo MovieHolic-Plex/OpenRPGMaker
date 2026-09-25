@@ -1090,23 +1090,10 @@
         6
       ]
     ],
-    "reachable": 88,
-    "walkable": 86,
+    "reachable": 92,
+    "walkable": 88,
     "blocked": [],
-    "pockets": [
-      [
-        21,
-        10
-      ],
-      [
-        20,
-        11
-      ],
-      [
-        21,
-        11
-      ]
-    ]
+    "pockets": []
   },
   {
     "id": "atlas-interior-thieves-den",
@@ -1290,8 +1277,8 @@
     ],
     "targets": [
       [
-        23,
-        13
+        20,
+        14
       ],
       [
         2,
@@ -1312,12 +1299,7 @@
     ],
     "reachable": 175,
     "walkable": 166,
-    "blocked": [
-      [
-        23,
-        13
-      ]
-    ],
+    "blocked": [],
     "pockets": []
   },
   {
