@@ -850,26 +850,51 @@
   }
  },
  {
+  "id": "town-dwarf-snow",
+  "seed": 15501,
+  "entry": [
+   30,
+   41
+  ],
+  "reachable": 890,
+  "targets": 12,
+  "blocked": 0,
+  "terraceLeaks": 0,
+  "seals": [],
+  "emptiness": {
+   "maxSq": 3,
+   "screen": 0.394,
+   "at": [
+    20,
+    27
+   ],
+   "screenAt": [
+    16,
+    28
+   ]
+  }
+ },
+ {
   "id": "town-cliffside",
   "seed": 15601,
   "entry": [
    4,
    40
   ],
-  "reachable": 1086,
-  "targets": 10,
+  "reachable": 1009,
+  "targets": 15,
   "blocked": 0,
   "terraceLeaks": 0,
   "seals": [],
   "emptiness": {
    "maxSq": 4,
-   "screen": 0.339,
+   "screen": 0.335,
    "at": [
-    40,
-    17
+    0,
+    15
    ],
    "screenAt": [
-    12,
+    8,
     0
    ]
   }
