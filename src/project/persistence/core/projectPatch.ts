@@ -66,7 +66,12 @@ function sameTilesetValue(base: unknown, local: unknown): boolean {
   }
   const { referenceDocuments: _baseDocuments, ...baseRest } = base;
   const { referenceDocuments: _localDocuments, ...localRest } = local;
-  return sameValue(baseRest, localRest);
+  // 문서 밖 필드도 요약으로 본다. `projectWireView` 가 타일셋마다 버려진 키를 떼며 **새 객체**를
+  // 만들어 `base === local` 단축이 언제나 깨지므로(실측: 공유 기준본이어도 diff 1,571ms),
+  // 여기서 `sameValue` 를 쓰면 매번 두 번의 전체 `JSON.stringify` 가 돈다 — 타일셋 한 칸은
+  // passability/priority/terrain 배열만으로도 수백 칸이다. 요약은 같은 객체를 만나면 노드 기억을
+  // 재사용하므로(WeakMap) 공유 기준본에서는 두 번째 저장부터 거의 공짜다.
+  return jsonContentDigest(baseRest) === jsonContentDigest(localRest);
 }
 
 function diffDict(
