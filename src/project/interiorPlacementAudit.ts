@@ -8,7 +8,7 @@ type Part = { id: string; tiles: number[][]; supportCells: Point[]; placementKin
 type Material = { kind: string; mapped: number[][] };
 type Dictionary = { materials: Record<string, Material>; objects: Part[]; ceiling: { variantMap: Record<string, number> } };
 export type InteriorRequirement = { ids: string[]; min: number; max?: number; roomId?: string; side?: 'east' | 'west' };
-export type InteriorRequirements = { objects?: InteriorRequirement[]; roomIds?: string[]; maxArea?: number; maxEmptySquare?: number; southExit?: boolean };
+export type InteriorRequirements = { objects?: InteriorRequirement[]; roomIds?: string[]; maxArea?: number; maxEmptySquare?: number; maxEmptyStrip?: { width: number; length: number }; southExit?: boolean };
 export type InteriorFinding = { code: string; x: number; y: number; objectId?: string; expected?: number; actual?: number };
 
 /** Read only. The installed part dictionary supplies semantics, never a target floor plan. */
@@ -54,6 +54,10 @@ export function inspectInteriorPlacement(project: Project, mapId: string, wallMa
     }));
     if (r.placementKind === 'standing') for (const c of r.supportCells) if (!floors.has(map.lowerTiles[at(x + c.x, y + c.y)])) findings.push({ code: 'FURNITURE_FOOT', x: x + c.x, y: y + c.y, objectId: r.id });
   }
+  // Ceiling autotiles draw one-cell wall tops. A 2×2 ceiling block is a dark dead mass, usually
+  // filler hiding unused floor; shrink or reshape the map instead.
+  for (let y = 0; y + 1 < map.height; y++) for (let x = 0; x + 1 < map.width; x++)
+    if ([at(x, y), at(x + 1, y), at(x, y + 1), at(x + 1, y + 1)].every(i => ceilings.has(map.lowerTiles[i]))) findings.push({ code: 'CEILING_MASS', x, y });
   map.upperTiles.forEach((n, i) => { if (n >= 0 && !covered.has(i)) findings.push({ code: 'INCOMPLETE_OBJECT', x: i % map.width, y: Math.floor(i / map.width) }); });
   const queue: Point[] = [], seen = new Set<number>();
   if (!floors.has(map.lowerTiles[at(entry.x, entry.y)]) || map.upperTiles[at(entry.x, entry.y)] >= 0) findings.push({ code: 'ENTRY_BLOCKED', ...entry });
@@ -113,6 +117,17 @@ export function inspectInteriorPlacement(project: Project, mapId: string, wallMa
         }
       }
       if (cluster.length > 2) findings.push({ code: 'ROOM_DOOR_TOO_WIDE', x: start % map.width, y: Math.floor(start / map.width), objectId: room.id });
+      // A doorway covering the room's whole side leaves no jamb: the room reads as an open alcove.
+      if (region !== undefined) {
+        const xs = cluster.map(n => n % map.width), ys = cluster.map(n => Math.floor(n / map.width));
+        const vertical = new Set(xs).size === 1, lo = Math.min(...(vertical ? ys : xs)), hi = Math.max(...(vertical ? ys : xs));
+        for (const side of [-1, 1]) {
+          const line = vertical ? xs[0] + side : ys[0] + side;
+          const span: number[] = [];
+          for (let k = 0; k < (vertical ? map.height : map.width); k++) { const cx = vertical ? line : k, cy = vertical ? k : line; if (inside(cx, cy) && regions.get(at(cx, cy)) === region) span.push(k); }
+          if (span.length && Math.min(...span) >= lo && Math.max(...span) <= hi) findings.push({ code: 'ROOM_SIDE_FULLY_OPEN', x: start % map.width, y: Math.floor(start / map.width), objectId: room.id });
+        }
+      }
       if (region === undefined || hall === undefined || !adjacent.has(region) || !adjacent.has(hall)) findings.push({ code: 'ROOM_NO_DIRECT_HALL_ACCESS', x: start % map.width, y: Math.floor(start / map.width), objectId: room.id });
     }
   }
@@ -121,7 +136,8 @@ export function inspectInteriorPlacement(project: Project, mapId: string, wallMa
   if (!requirements || typeof requirements !== 'object' ||
       (requirements.objects !== undefined && (!Array.isArray(requirements.objects) || requirements.objects.length > 128 || requirements.objects.some(r => !r || !Array.isArray(r.ids) || !r.ids.length || r.ids.some(id => !known.has(id)) || !Number.isInteger(r.min) || r.min < 0 || (r.max !== undefined && (!Number.isInteger(r.max) || r.max < r.min)) || (r.roomId !== undefined && typeof r.roomId !== 'string') || (r.side !== undefined && !['east', 'west'].includes(r.side))))) ||
       (requirements.roomIds !== undefined && (!Array.isArray(requirements.roomIds) || requirements.roomIds.length > 16 || requirements.roomIds.some(id => typeof id !== 'string' || !id))) ||
-      [requirements.maxArea, requirements.maxEmptySquare].some(n => n !== undefined && (!Number.isInteger(n) || n < 1))) throw new Error('요구조건의 가구 ID/수량/방/면적 형식을 확인하세요.');
+      [requirements.maxArea, requirements.maxEmptySquare].some(n => n !== undefined && (!Number.isInteger(n) || n < 1)) ||
+      (requirements.maxEmptyStrip !== undefined && (!requirements.maxEmptyStrip || typeof requirements.maxEmptyStrip !== 'object' || !Number.isInteger(requirements.maxEmptyStrip.width) || !Number.isInteger(requirements.maxEmptyStrip.length) || requirements.maxEmptyStrip.width < 1 || requirements.maxEmptyStrip.length < requirements.maxEmptyStrip.width))) throw new Error('요구조건의 가구 ID/수량/방/면적 형식을 확인하세요.');
   for (const id of requirements.roomIds ?? []) if (!rooms.some(r => r.id === id)) findings.push({ code: 'REQUIRED_ROOM_MISSING', ...entry, objectId: id });
   for (const req of requirements.objects ?? []) {
     const room = req.roomId === undefined ? undefined : roomReports.find(r => r.id === req.roomId);
@@ -139,6 +155,23 @@ export function inspectInteriorPlacement(project: Project, mapId: string, wallMa
     if (square[i] > largest.size) largest = { x: x - square[i] + 1, y: y - square[i] + 1, size: square[i] };
   }
   if (requirements.maxEmptySquare !== undefined && largest.size > requirements.maxEmptySquare) findings.push({ code: 'EXCESS_EMPTY_SQUARE', x: largest.x, y: largest.y, expected: requirements.maxEmptySquare, actual: largest.size });
+  // A square cap misses long wide corridors (4×9 passes maxEmptySquare:4). Find the longest empty
+  // rectangle whose short side reaches the strip width; its long side is the wasted run length.
+  let strip: { x: number; y: number; width: number; height: number } | undefined;
+  if (requirements.maxEmptyStrip) {
+    const minSide = requirements.maxEmptyStrip.width, up = new Uint16Array(map.width);
+    for (let y = 0; y < map.height; y++) {
+      for (let x = 0; x < map.width; x++) { const i = at(x, y); up[x] = floors.has(map.lowerTiles[i]) && map.upperTiles[i] < 0 ? up[x] + 1 : 0; }
+      for (let x0 = 0; x0 < map.width; x0++) {
+        let h = up[x0];
+        for (let x1 = x0; x1 < map.width && h > 0; x1++) {
+          h = Math.min(h, up[x1]); const w = x1 - x0 + 1;
+          if (Math.min(w, h) >= minSide && (!strip || Math.max(w, h) > Math.max(strip.width, strip.height))) strip = { x: x0, y: y - h + 1, width: w, height: h };
+        }
+      }
+    }
+    if (strip && Math.max(strip.width, strip.height) > requirements.maxEmptyStrip.length) findings.push({ code: 'EXCESS_EMPTY_STRIP', x: strip.x, y: strip.y, expected: requirements.maxEmptyStrip.length, actual: Math.max(strip.width, strip.height), objectId: `${strip.width}x${strip.height}` });
+  }
   if (requirements.southExit && !Array.from({ length: map.width }, (_, x) => reachable(x, map.height - 1)).some(Boolean)) findings.push({ code: 'SOUTH_EXIT_MISSING', x: entry.x, y: map.height - 1 });
-  return { valid: findings.length === 0, totalIssues: findings.length, issues: findings.slice(0, 80), omittedIssues: Math.max(0, findings.length - 80), largestEmptySquare: largest, checkedRequirements: requirements, objectCounts: counts, objects: objects.slice(0, 200), rooms: roomReports, reachableFloorCells: seen.size, boundaryExits: { south: Array.from({ length: map.width }, (_, x) => x).filter(x => reachable(x, map.height - 1)) }, limitations: '배열/사전 기반 구조 검사. 독립방은 rooms에 선언한 방만 검사한다. 요구조건은 requirements에 선언한 것만 검사한다. 미적 품질·게임 이벤트는 별도 확인. 혼합 벽 재료/다중 타일 스택은 지원하지 않는다. 수정하지 않는다.' };
+  return { valid: findings.length === 0, totalIssues: findings.length, issues: findings.slice(0, 80), omittedIssues: Math.max(0, findings.length - 80), largestEmptySquare: largest, widestEmptyStrip: strip, checkedRequirements: requirements, objectCounts: counts, objects: objects.slice(0, 200), rooms: roomReports, reachableFloorCells: seen.size, boundaryExits: { south: Array.from({ length: map.width }, (_, x) => x).filter(x => reachable(x, map.height - 1)) }, limitations: '배열/사전 기반 구조 검사. 독립방은 rooms에 선언한 방만 검사한다. 요구조건은 requirements에 선언한 것만 검사한다. 미적 품질·게임 이벤트는 별도 확인. 혼합 벽 재료/다중 타일 스택은 지원하지 않는다. 수정하지 않는다.' };
 }

@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import {PNG} from 'pngjs';
 import {canMove} from '../../src/project/collision.ts';
 import {inspectInteriorPlacement} from '../../src/project/interiorPlacementAudit.ts';
+import {homeRequirements} from './pixel-art-world-home-requirements.ts';
 const root=process.argv[2],maxArea=process.argv[3]===undefined?Infinity:Number(process.argv[3]);if(!root||!(maxArea>0))throw Error('Usage: <direct live output> [maximum area]');
 const p=JSON.parse(fs.readFileSync(root+'/result-project.json','utf8')),m:any=Object.values(p.maps)[0],t=p.tilesets[m.tilesetId];
 const d=JSON.parse(fs.readFileSync('tiledata/pixel-art-world/modern-interiors-compiled.json','utf8'));
@@ -53,7 +54,7 @@ if(caseId==='home'||caseId==='clinic'){
  const calls=JSON.parse(fs.readFileSync(root+'/tool-calls.json','utf8'));
  const last=calls.filter((c:any)=>c.name==='inspect_interior_layout'&&c.args.rooms?.length).at(-1);
  const rooms=last?.args.rooms??[];
- roomAudit=inspectInteriorPlacement(p,m.id,wallMaterial,p.startPos,rooms);issues.push(...roomAudit.issues);
+ roomAudit=inspectInteriorPlacement(p,m.id,wallMaterial,p.startPos,rooms,caseId==='home'?homeRequirements:{});issues.push(...roomAudit.issues);
  if(rooms.length!==(caseId==='home'?3:2))issues.push({code:'REQUIRED_ROOM_DECLARATIONS',actual:rooms.length});
  // Derive each room's component from actual floor cells after closing the declared cut line.
  const shut=new Set<number>(rooms.flatMap((r:any)=>r.doorways.map((v:any)=>at(v.x,v.y))));
