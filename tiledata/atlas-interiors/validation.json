@@ -1838,5 +1838,323 @@
     "walkable": 80,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "atlas-interior-blacksmith",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        8,
+        7
+      ],
+      [
+        14,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        17,
+        10
+      ],
+      [
+        12,
+        6
+      ]
+    ],
+    "reachable": 74,
+    "walkable": 65,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-carpenter",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        7,
+        7
+      ],
+      [
+        11,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        3,
+        8
+      ]
+    ],
+    "reachable": 53,
+    "walkable": 46,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-glassblower",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        11,
+        6
+      ]
+    ],
+    "reachable": 54,
+    "walkable": 49,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-leatherworks",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        12,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        7,
+        7
+      ]
+    ],
+    "reachable": 52,
+    "walkable": 50,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-weaver",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        7,
+        10
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        19,
+        10
+      ],
+      [
+        11,
+        7
+      ]
+    ],
+    "reachable": 78,
+    "walkable": 67,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-watermill",
+    "entry": [
+      10,
+      11
+    ],
+    "targets": [
+      [
+        12,
+        9
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        13,
+        6
+      ],
+      [
+        18,
+        7
+      ]
+    ],
+    "reachable": 86,
+    "walkable": 74,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-windmill-1f",
+    "entry": [
+      8,
+      11
+    ],
+    "targets": [
+      [
+        11,
+        9
+      ],
+      [
+        14,
+        6
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        10,
+        7
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 74,
+    "walkable": 70,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-windmill-2f",
+    "entry": [
+      14,
+      6
+    ],
+    "targets": [
+      [
+        5,
+        8
+      ],
+      [
+        13,
+        9
+      ],
+      [
+        9,
+        7
+      ],
+      [
+        14,
+        5
+      ]
+    ],
+    "reachable": 68,
+    "walkable": 62,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-brewery",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        10
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        18,
+        7
+      ],
+      [
+        21,
+        10
+      ],
+      [
+        12,
+        7
+      ]
+    ],
+    "reachable": 106,
+    "walkable": 89,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-bakery-workshop",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        8,
+        8
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        16,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        11,
+        6
+      ]
+    ],
+    "reachable": 50,
+    "walkable": 45,
+    "blocked": [],
+    "pockets": []
   }
 ]
