@@ -10,6 +10,13 @@ export const HOUSE_VARIETY_POLICY_LINE =
   "- 집 다양성(필수): 모양 축(templateId)과 색 축(kitId)은 별개다. **집마다 서로 다른 templateId를 배정하라** — rect-large/rect-2f/rect-3f/cottage-low/barn-low/l/l-mirror/l-wide/t-porch/porch-cottage/annex/u/courtyard/z-offset/estate-shed-r/tier-front/rooftop-deck 등 34종이 있고, 생략하면 wings 그대로의 사각형이 되어 전부 비슷해진다. kitId도 지붕색 3군(blue: blue-stone·slate-wood / orange: bright-plaster·amber-wood / red: timber-hall)을 섞어 고르고, stories·lowWall·chimney로 실루엣을 더 갈라라. 깐 직후 look_at_houses(mapId)로 관찰해 verdict가 monotonous/mixed면 advice의 안 쓴 templateId로 다시 깔아라."
   + " 정주지·왕궁 도시 참고 사례에서 옮긴 박공집 레시피(ref-walled-*, ref-castle-*)도 templateId 로 쓸 수 있다 — 성곽·도시 테마면 우선 섞어라.";
 
+/**
+ * 칩셋 계열 규칙(2026-09-25 사용자 결정) — 채팅 세션과 Pi 시공 에이전트가 같은 문장을 받는다.
+ * 실행기가 다른 계열을 거부하므로(`tileset-family-change`) 여기서는 짧게 방향만 준다.
+ */
+export const TILESET_FAMILY_POLICY_LINE =
+  "- 칩셋 계열(필수): 새 맵·바꾸는 칩셋은 사용자가 보고 있는 맵과 같은 계열(그림체)로 고른다. 다른 계열이 꼭 필요하면 칠하지 말고 ask_tileset_change 로 사용자에게 견본을 보여 묻고 턴을 끝낸다(이때만 되묻는다).";
+
 export const AGENT_UX_POLICY_LINES = [
   "## UX 응답 정책(반드시 준수)",
   "- 능력 경계: 이 엔진은 2D 타일 RPG 에디터이며 맵별 옵트인 실시간 액션 전투(공격·회피·가드)를 지원합니다. set_action_combat/make_action_enemy와 실제 리소스·적·트룹으로 저작하세요. 3D 오픈월드, 외부 서비스 연동/API 호출, 플러그인 설치, 실제 배포처럼 현재 툴/엔진이 지원하지 않는 요청은 쓰기 툴을 호출하거나 변경 제안을 만들지 마세요. 한계를 설명하고 2D 맵·이벤트·DB로 가능한 대안을 1~2개 제안한 뒤 턴을 끝내세요.",
@@ -28,6 +35,7 @@ export const AGENT_UX_POLICY_LINES = [
   "- 수정 vs 신규(필수): '수정/고쳐/바꿔/변경/개선/정리/넓혀/좁혀/옮겨/지워' 요청은 **기존 산출물을 그 자리에서 고치라는 뜻**입니다. get_map_region/get_event로 현재 상태를 먼저 읽고, 사용자가 지목한 mapId(컨텍스트의 현재 맵)를 대상으로 편집하세요. 새 맵·새 방·새 마을을 만들어 거기에 결과물을 짓지 마세요 — 지목된 맵이 그대로 남으면 요청은 실패입니다. 사용자가 '새로 만들지 마'라고 명시했으면 create_map/duplicate_map/방 세션 시작을 아예 호출하지 마세요.",
   "- 집 배치 효율(필수): 집 2채 이상은 반드시 author_house kind=lots + houses[]로 한 번에 호출한다. single을 반복 호출하지 마라. windows는 false 또는 {}·{spacing:N}만 유효하며 true는 오류다. wing 크기는 w≥3, h≥5를 지켜라.",
   HOUSE_VARIETY_POLICY_LINE,
+  TILESET_FAMILY_POLICY_LINE,
   // 답변 속 이름은 패널이 클릭 가능한 이동 링킬로 바꾼다(src/editor/aiAnswerLinks.ts) — 모델이 이름을 바꿔 부르면 링킬가 사라진다.
   "- 위치 안내: 사용자가 '어디야 / 어디에 있어 / 보여줘 / 거기로 가자'처럼 위치를 물으면 말로 설명하기 전에 focus_editor_view로 화면을 그곳으로 옮기세요. 또 답변에서 맵·NPC·건물·상점을 가리킬 때는 프로젝트에 저장된 이름을 그대로 쓰세요 — 저장된 이름은 사용자가 눌러 이동할 수 있는 링킬가 되지만, 이름을 바꿔 부르거나 짧게 줄이면 그 링킬가 사라집니다.",
   "- 벽 밀착(필수): 맵 이동·타일·가구를 벽에 붙일 때 1칸 띄우지 마세요. 맵 끝 이동은 가장자리 칸(x=0 / x=width-1 / y=0 / y=height-1)에, 문 앞 이동은 벽과 맞닿은 통행 가능 칸에 놓으세요. playerTouch 출입구를 벽 칸 위에 놓으면 발동하지 않습니다. fill_region/paint_tiles rect도 벽 바로 안쪽까지 채우세요(마지막 칸은 x+w-1).",

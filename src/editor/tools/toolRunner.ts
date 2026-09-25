@@ -88,6 +88,9 @@ function rejectTilesetFamilyChange(ctx: ToolContext, before: Project, draft: Pro
  * 도구 기본값이 지금 보는 맵과 같은 계열이면 그대로 둔다.
  */
 function argsWithCurrentMapTileset(ctx: ToolContext, tool: ToolDefinition, args: Record<string, unknown>): Record<string, unknown> {
+  if (tool.fillsCurrentMapId && ctx.currentMapId && !(typeof args.mapId === "string" && args.mapId.trim().length > 0)) {
+    args = { ...args, mapId: ctx.currentMapId };
+  }
   if (!tool.defaultTilesetId || !ctx.currentMapId) return args;
   if (typeof args.tilesetId === "string" && args.tilesetId.trim().length > 0) return args;
   const currentMap = ctx.project.maps[ctx.currentMapId];

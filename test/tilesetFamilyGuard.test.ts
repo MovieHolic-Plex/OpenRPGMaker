@@ -145,3 +145,35 @@ describe("칩셋 계열 검사", () => {
     expect(result.ok, result.summary).toBe(true);
   });
 });
+
+describe("ask_tileset_change", () => {
+  it("지금 보는 맵을 from 으로 질문 자료를 돌려주고 프로젝트는 그대로 둔다", () => {
+    const project = createBlankProject();
+    const snapshot = JSON.stringify(project);
+    const ctx: ToolContext = { project, currentMapId: MAP_ID };
+    const result = runTool(ctx, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "성 안을 만들려면 성채 타일이 필요해요.", purpose: "castle_interior" });
+    expect(result.ok, result.summary).toBe(true);
+    expect(result.summary).toContain("이 턴을 끝내라");
+    expect(result.data).toEqual({
+      kind: "tileset-change-question", mapId: MAP_ID,
+      fromTilesetId: project.maps[MAP_ID]!.tilesetId, toTilesetId: "opengameart_castle",
+      fromFamily: "easyrpg", toFamily: "castle", fromLabel: "EasyRPG", toLabel: "성채",
+      reason: "성 안을 만들려면 성채 타일이 필요해요.", purpose: "castle_interior",
+    });
+    expect(JSON.stringify(ctx.project)).toBe(snapshot);
+  });
+
+  it("없는 타일셋·같은 계열·지금 맵 모름은 거부", () => {
+    const ctx: ToolContext = { project: createBlankProject(), currentMapId: MAP_ID };
+    expect(runTool(ctx, "ask_tileset_change", { toTilesetId: "nope", reason: "x" }).issues?.[0]?.code).toBe("tileset-not-found");
+    expect(runTool(ctx, "ask_tileset_change", { toTilesetId: "easyrpg_chipset_dungeon", reason: "x" }).issues?.[0]?.code).toBe("tileset-same-family");
+    expect(runTool({ project: createBlankProject() }, "ask_tileset_change", { toTilesetId: "opengameart_castle", reason: "x" }).issues?.[0]?.code).toBe("map-not-found");
+  });
+
+  it("core 도메인으로 늘 노출되는 읽기 도구", async () => {
+    const { getTool } = await import("@/editor/tools/toolRegistry");
+    const tool = getTool("ask_tileset_change");
+    expect(tool?.mode).toBe("read");
+    expect(tool?.domains).toEqual(["core"]);
+  });
+});

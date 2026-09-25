@@ -101,6 +101,11 @@ export interface ToolDefinition {
    * EasyRPG 타일 번호를 가정하는 도구(generate_map·방 파이프라인)는 켜지 마라 — 계열 검사가 막는다.
    */
   readonly defaultTilesetId?: (project: Project) => string;
+  /**
+   * true 면 실행기가 비어 있는 `mapId` 인자를 사용자가 보는 맵(ctx.currentMapId)으로 채운다.
+   * run(draft,args) 는 ctx 를 받지 못하므로, 「지금 보는 맵」이 필요한 도구(ask_tileset_change)는 이 경로로 받는다.
+   */
+  readonly fillsCurrentMapId?: boolean;
   // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
   readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.
