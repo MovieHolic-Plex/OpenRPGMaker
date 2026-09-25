@@ -546,7 +546,8 @@ function finalizeArea(area: MutableArea, toolName: string, args: Record<string, 
 
 function paintTilesArea(project: Project, args: Record<string, unknown>): MutableArea | null {
   const mapId = stringValue(args.mapId);
-  const layer = args.layer === "upper" ? "upper" : "lower";
+  // 층 인자는 문자열 enum "lower"|"upper"|"1".."4" — 3·4층은 위 묶음, 1·2층은 아래 묶음 고스트 칸이다.
+  const layer = args.layer === "upper" || args.layer === "3" || args.layer === "4" ? "upper" : "lower";
   const mode = stringValue(args.mode);
   if (!mapId || !mode) return null;
   if (mode === "rect") return rectArea(project, mapId, rectFromEndpoints(args), "paint_tiles", "페인트 영역", layer);

@@ -1,4 +1,5 @@
 import type { GameMap } from "../types";
+import { setLayerTileAt } from "../mapLayers";
 import { SAND_TILE } from "./chipsetMapping";
 import { TILE } from "./constants";
 import type { RoadRect } from "./roadAutotile";
@@ -118,9 +119,12 @@ function isTownPath(map: GameMap, x: number, y: number): boolean {
   return tile !== undefined && TOWN_PATH_TILE_SET.has(tile);
 }
 
+// 1층을 칠하면 그 칸의 2층 장식을 지운다(MZ 4층 공통 규칙). 옛 맵(2층 없음)에는 no-op.
 function setLower(map: GameMap, x: number, y: number, tile: number): void {
   if (!isInside(map, x, y)) return;
-  map.lowerTiles[y * map.width + x] = tile;
+  const index = y * map.width + x;
+  map.lowerTiles[index] = tile;
+  setLayerTileAt(map, 2, index, -1);
 }
 
 function isInside(map: GameMap, x: number, y: number): boolean {

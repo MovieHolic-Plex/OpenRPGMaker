@@ -10,6 +10,7 @@
 import type { GameMap, Project } from "@/project/types";
 import { isPassable } from "@/project/collision";
 import { TILE } from "@/project/defaults/constants";
+import { layerTileAt, shadowAt } from "@/project/mapLayers";
 
 /** 화면에 실제로 보이는 월드 사각형(줌 보정 + 조수 도크 가림 제외). Phaser camera.worldView 에서 만든다. */
 export type MapCameraViewInput = {
@@ -171,7 +172,10 @@ function formatPassabilityGrid(
   return rows;
 }
 
-/** show_map_region 과 동일한 lower/upper 2D 배열 페이로드(비전 렌더용). */
+/**
+ * show_map_region 과 동일한 lower/upper 2D 배열 페이로드(비전 렌더용).
+ * 맵에 2층·4층·그림자가 있으면 layer2·layer4·shadow 도 싣는다(show_map_region 과 같은 규칙 — 옛 맵은 키 없음).
+ */
 export function mapRegionImagePayload(
   project: Project,
   mapId: string,
@@ -184,6 +188,9 @@ export function mapRegionImagePayload(
   readonly h: number;
   readonly lower: number[][];
   readonly upper: number[][];
+  readonly layer2?: number[][];
+  readonly layer4?: number[][];
+  readonly shadow?: number[][];
   readonly tilesetId: string;
 } | null {
   const map = project.maps[mapId];
@@ -205,7 +212,15 @@ export function mapRegionImagePayload(
     lower.push(lowerRow);
     upper.push(upperRow);
   }
-  return { mapId, x, y, w, h, lower, upper, tilesetId: map.tilesetId };
+  const regionGrid = (read: (index: number) => number): number[][] => Array.from({ length: h }, (_, row) =>
+    Array.from({ length: w }, (_, col) => read((y + row) * map.width + (x + col))));
+  return {
+    mapId, x, y, w, h, lower, upper,
+    ...(map.lowerOverlayTiles ? { layer2: regionGrid((index) => layerTileAt(map, 2, index)) } : {}),
+    ...(map.upperOverlayTiles ? { layer4: regionGrid((index) => layerTileAt(map, 4, index)) } : {}),
+    ...(map.shadowBits ? { shadow: regionGrid((index) => shadowAt(map, index)) } : {}),
+    tilesetId: map.tilesetId,
+  };
 }
 
 function clamp(value: number, min: number, max: number): number {

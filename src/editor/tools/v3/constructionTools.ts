@@ -33,7 +33,20 @@ import {
 } from "../forestDensity";
 import { paintForestGroves } from "../village/forestGroves";
 import { prepareVillageTreeKit } from "../village/treeKit";
-import { inMapBounds, reachableCellCount, requireMap, setLower, setUpper, type Point } from "../mapHelpers";
+import {
+  FOUR_LAYER_GUIDANCE_SHORT,
+  TOOL_LAYER_ENUM,
+  inMapBounds,
+  parseToolLayer,
+  reachableCellCount,
+  requireMap,
+  setLower,
+  setUpper,
+  toolLayerLabel,
+  type Point,
+} from "../mapHelpers";
+import { autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { cellLayerTiles, compactMapLayers, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
 import { expandCellsAgainstWalls } from "../wallFlush";
 import { wobblePath } from "../naturalScatter";
 import {
@@ -276,16 +289,51 @@ function filterPassageProtectedCells(
       continue;
     }
     const index = cell.y * map.width + cell.x;
-    const lower = map.lowerTiles[index];
-    const upper = map.upperTiles[index];
+    const layers = cellLayerTiles(map, index);
+    const shadow = shadowAt(map, index);
     preview(cell);
     const passable = isPassable(project, map, cell.x, cell.y);
-    map.lowerTiles[index] = lower;
-    map.upperTiles[index] = upper;
+    restoreCellLayers(map, index, layers, shadow);
     if (passable) kept.push(cell);
     else skipped.push({ ...cell, reason });
   }
   return { cells: kept, skipped };
+}
+
+/** 칸 하나의 1~4층·그림자를 되돌린다(미리보기 뒤 복원). 없던 선택 칸은 만들지 않는다. */
+function restoreCellLayers(map: GameMap, index: number, layers: readonly [number, number, number, number], shadow: number): void {
+  map.lowerTiles[index] = layers[0];
+  map.upperTiles[index] = layers[2];
+  setLayerTileAt(map, 2, index, layers[1]);
+  setLayerTileAt(map, 4, index, layers[3]);
+  setShadowAt(map, index, shadow);
+}
+
+interface LayerSnapshot {
+  readonly lower: readonly number[];
+  readonly upper: readonly number[];
+  readonly lowerOverlay?: readonly number[];
+  readonly upperOverlay?: readonly number[];
+  readonly shadow?: readonly number[];
+}
+
+function snapshotLayers(map: GameMap): LayerSnapshot {
+  return {
+    lower: map.lowerTiles.slice(), upper: map.upperTiles.slice(),
+    lowerOverlay: map.lowerOverlayTiles?.slice(), upperOverlay: map.upperOverlayTiles?.slice(), shadow: map.shadowBits?.slice(),
+  };
+}
+
+/** 스냅샷과 비교해 1~4층·그림자 중 하나라도 바뀐 칸 수. */
+function changedLayerCells(map: GameMap, before: LayerSnapshot): number {
+  let count = 0;
+  for (let index = 0; index < before.lower.length; index += 1) {
+    const now = cellLayerTiles(map, index);
+    if (now[0] !== before.lower[index] || now[2] !== before.upper[index]
+      || now[1] !== (before.lowerOverlay?.[index] ?? -1) || now[3] !== (before.upperOverlay?.[index] ?? -1)
+      || shadowAt(map, index) !== (before.shadow?.[index] ?? 0)) count += 1;
+  }
+  return count;
 }
 
 function protectedSkipWarnings(skipped: readonly ProtectedCell[]): string[] | undefined {
@@ -948,7 +996,7 @@ function assertFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata, au
 const fillRegion: ToolDefinition = {
   name: "fill_region",
   description:
-    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road.",
+    "material(타일 라벨/설명, 예: \"물\"/\"잔디\")로 영역을 채운다(v3). 그룹 id 금지. shape: rect(기본·사각형 전체)|ellipse(rect 안 타원)|circle(rect 안 내접 원). 원형/둥근 호수는 반드시 shape=circle(또는 ellipse). rect만 쓰면 네모 호수가 된다. 호수·강·바닥·지면 면 작업용(실내 나무 바닥·돌바닥·카펫처럼 오토타일이 아닌 통행 바닥도 채운다 — 3×3 테두리 카펫은 가장자리에 테두리). 나무/바위/꽃은 place_props. lower 기본. 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다(맵 가장자리 1칸은 그대로). transfer/시작 위치 보호 칸은 제외+warning. 미합의 재료도 맵에 그려지고 사용자 목업 확인으로 합의. 타원=ellipse. 물·잔디·바닥 면은 이 툴, 벽은 build_wall, 길은 paint_road. " + FOUR_LAYER_GUIDANCE_SHORT + " 1층을 칠하면 그 칸의 2층 장식을 비운다.",
   mode: "write",
   version: 3,
   invalidArgsExample: FILL_CIRCLE_EXAMPLE,
@@ -963,7 +1011,7 @@ const fillRegion: ToolDefinition = {
         required: ["x", "y", "w", "h"],
       },
       material: { type: "string", description: "지형 재료: 타일 라벨/설명(예: \"물\", \"잔디\"). 그룹 id 금지" },
-      layer: { type: "string", enum: ["lower", "upper"], description: "기본 lower. 수역/바닥은 lower를 사용한다" },
+      layer: { type: "string", enum: [...TOOL_LAYER_ENUM], description: "기본 1(lower). 수역/바닥은 1층, 1층 위에 겹치는 풀·흙 장식은 2층. lower=1, upper=3" },
       shape: {
         type: "string",
         enum: ["rect", "ellipse", "circle"],
@@ -983,7 +1031,8 @@ const fillRegion: ToolDefinition = {
     requireRectInMap(map, rect, "rect", shapeExample);
     const shape = coerceFillShape(args.shape, FILL_CIRCLE_EXAMPLE);
     const layer = args.layer === undefined ? "lower" : args.layer;
-    if (layer !== "lower" && layer !== "upper") failWithExample("layer는 lower/upper 중 하나여야 합니다", shapeExample);
+    const layerNo = parseToolLayer(layer);
+    if (layerNo === null) failWithExample(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층)`, shapeExample);
     const { group, softConfirm } = requireMaterialGroup(tileset, args.material, shapeExample, { preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     const autotile = autotileGroupForVocab(tileset, group);
     assertFillRegionGroup(tileset, group, autotile);
@@ -1012,30 +1061,39 @@ const fillRegion: ToolDefinition = {
       return structure === null ? null : `구조물(${structure})`;
     };
     const structure = splitProtectedFillCells(allCells, protectedReason);
-    const blocksPassage = layer === "lower" && tileBlocksPassage(tileset, body);
+    const blocksPassage = layerNo === 1 && tileBlocksPassage(tileset, body);
     // 상위 소품 처리 기본값은 재료가 정한다 — 물 위 소품은 배치 검증이 error 로 잡으니 비우고,
     // 모래·잔디 위 나무는 남긴다(「나무는 그대로 두고」). 인자가 있으면 그것을 따른다.
     const clearUpper = typeof args.clearUpper === "boolean" ? args.clearUpper : blocksPassage;
     const events = blocksPassage ? splitEventCells(map, structure.cells) : { cells: structure.cells, skipped: [] as ProtectedCell[] };
+    // 1층을 칠하면 그 칸의 2층 장식을 지운다(바닥을 바꾸면 그 위 장식도 바뀐다). clearUpper 는 3·4층을 함께 비운다.
     const paintCell = (cell: Point): void => {
       const index = cell.y * map.width + cell.x;
-      if (layer === "upper") map.upperTiles[index] = body;
-      else {
+      if (layerNo === 1) {
         map.lowerTiles[index] = body;
-        if (clearUpper) map.upperTiles[index] = TILE.EMPTY;
-      }
+        setLayerTileAt(map, 2, index, TILE.EMPTY);
+        if (clearUpper) {
+          map.upperTiles[index] = TILE.EMPTY;
+          setLayerTileAt(map, 4, index, TILE.EMPTY);
+        }
+      } else setLayerTileAt(map, layerNo, index, body);
     };
     const filtered = filterPassageProtectedCells(draft, map, events.cells, paintCell);
     const exit = blocksPassage ? reserveStartExit(draft, map, filtered.cells) : { cells: filtered.cells, corridor: [] as Point[] };
-    const lowerBefore = map.lowerTiles.slice();
-    const upperBefore = map.upperTiles.slice();
+    const before = snapshotLayers(map);
     let upperCleared = 0;
     for (const cell of exit.cells) {
-      if (clearUpper && layer === "lower" && map.upperTiles[cell.y * map.width + cell.x] !== TILE.EMPTY) upperCleared += 1;
+      if (clearUpper && layerNo === 1 && map.upperTiles[cell.y * map.width + cell.x] !== TILE.EMPTY) upperCleared += 1;
       paintCell(cell);
     }
-    const reshaped = layer === "lower" && autotile
-      ? resolveAutotile(autotile, exit.cells, map, (x, y) => protectedReason({ x, y }) === null) : 0;
+    // 오토타일은 칠한 층 배열에서 모양을 잡는다(2층 풀 장식은 2층 이웃 기준). 3·4층 물체는 그대로 둔다.
+    const reshaped = (layerNo === 1 || layerNo === 2) && autotile
+      ? resolveAutotile(autotile, exit.cells, autotileLayerView(map, layerNo), (x, y) => protectedReason({ x, y }) === null) : 0;
+    // 1층을 채운 칸은 2층 장식도 비웠으므로 둘레 2층 장식의 가장자리를 다시 잡는다(2층이 있는 맵만).
+    if (layerNo === 1 && map.lowerOverlayTiles) {
+      const overlay = autotileLayerView(map, 2);
+      for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(overlay, group, exit.cells);
+    }
     // 3×3 테두리 바닥은 채운 면의 가장자리에 테두리를, 안쪽에 몸통을 둔다(1칸 폭 줄은 몸통 그대로).
     const nine = !autotile ? flatNineSlice(group) : undefined;
     if (nine) {
@@ -1046,13 +1104,11 @@ const fillRegion: ToolDefinition = {
         const row = up === down ? 1 : up ? 2 : 0;
         const col = west === east ? 1 : west ? 2 : 0;
         const tile = nine[row]![col]!;
-        if (layer === "upper") map.upperTiles[cell.y * map.width + cell.x] = tile;
-        else map.lowerTiles[cell.y * map.width + cell.x] = tile;
+        setLayerTileAt(map, layerNo, cell.y * map.width + cell.x, tile);
       }
     }
-    const mutatedCells = lowerBefore.reduce((count, lower, index) => count + Number(
-      lower !== map.lowerTiles[index] || upperBefore[index] !== map.upperTiles[index],
-    ), 0);
+    const mutatedCells = changedLayerCells(map, before);
+    compactMapLayers(map);
     const skippedAll = [...structure.skipped, ...events.skipped, ...filtered.skipped];
     const shapeNote = shape === "rect" ? "" : ` shape=${shape}`;
     const gapNote = gapCells > 0 ? ` (벽 틈 메움 ${gapCells}칸)` : "";
@@ -1061,7 +1117,7 @@ const fillRegion: ToolDefinition = {
     const exitNote = exit.corridor.length > 0 ? `, 시작 위치 통로 ${exit.corridor.length}칸 비움` : "";
     const warnings = [
       ...(protectedSkipWarnings(skippedAll) ?? []),
-      ...bareBoardWarnings(map, exit.cells.length, layer),
+      ...bareBoardWarnings(map, exit.cells.length, layerNo === 1 ? "lower" : String(layer)),
       ...(exit.corridor.length > 0
         ? [`시작 위치 (${draft.startPos.x},${draft.startPos.y})가 사방으로 막혀 밖으로 나가는 통로 ${exit.corridor.length}칸((${exit.corridor[0].x},${exit.corridor[0].y})~(${exit.corridor[exit.corridor.length - 1].x},${exit.corridor[exit.corridor.length - 1].y}))을 비워 두었습니다`]
         : []),
@@ -1080,6 +1136,7 @@ const fillRegion: ToolDefinition = {
         reshaped,
         groupId: group.id,
         layer,
+        effectiveLayer: toolLayerLabel(layerNo),
         upperCleared,
         skipped: { structure: structure.skipped.length, events: events.skipped.length, passage: filtered.skipped.length },
         exitCorridor: exit.corridor,
@@ -1206,12 +1263,39 @@ function mostFrequentTile(counts: ReadonlyMap<number, number>, tileset: TilesetD
   return best;
 }
 
+type EraseLayer = "both" | "all" | "lower" | "upper" | "2" | "4" | "shadow";
+const ERASE_LAYER_ENUM = ["both", "all", "lower", "upper", "1", "2", "3", "4", "shadow"] as const;
+
+/** 지우기 층 인자 → 범위 이름. "1"/"3" 은 paint_tiles 와 같은 별칭(lower/upper). 모르면 null. */
+function coerceEraseLayer(value: unknown): EraseLayer | null {
+  if (value === "1") return "lower";
+  if (value === "3") return "upper";
+  return value === "both" || value === "all" || value === "lower" || value === "upper" || value === "2" || value === "4" || value === "shadow"
+    ? value : null;
+}
+
+/**
+ * 지우기 범위. both/all = 칸 전체(1층은 바닥 복원). lower = 1층 바닥 복원 + 그 위 2층 장식(1층을 바꾸면 2층도 비운다).
+ * upper = 3·4층(3층 물체가 빠지면 그 위 4층도 뜬다). 2/4/shadow = 그 층만.
+ */
+function eraseScope(layer: EraseLayer): { readonly ground: boolean; readonly layers: readonly TileLayerNo[]; readonly shadow: boolean } {
+  switch (layer) {
+    case "both":
+    case "all": return { ground: true, layers: [2, 3, 4], shadow: true };
+    case "lower": return { ground: true, layers: [2], shadow: false };
+    case "upper": return { ground: false, layers: [3, 4], shadow: false };
+    case "2": return { ground: false, layers: [2], shadow: false };
+    case "4": return { ground: false, layers: [4], shadow: false };
+    case "shadow": return { ground: false, layers: [], shadow: true };
+  }
+}
+
 // tile_erase — 승인 어휘를 소비하지 않는 유일한 배치 툴(지우기는 어휘 결정이 없다).
 // v2 tile_paint의 erase 경로를 대체 — v3 시공 프리미티브에 없던 "되돌리기/청소" 수단.
 const tileErase: ToolDefinition = {
   name: "tile_erase",
   description:
-    "지정 사각형을 정리한다(v3). layer: both(기본, 상·하위 모두)/lower/upper. 상위는 빈 칸이 되고, 하위는 맵에서 관측된 통행 가능한 하위 지면(rect 밖 우선, 없으면 안쪽의 최빈 지면)으로 복원한다. 벽·지붕·소품·막힌 타일은 바닥 후보가 아니다. 유효한 지면이 없으면 erase-ground-unresolved로 변경 없이 실패한다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
+    "지정 사각형을 정리한다(v3). layer: both(기본, 칸 전체 — 1·2·3·4층·그림자)/all(both 와 같다)/lower=1(1층 바닥 복원 + 2층 비움)/upper=3(3·4층)/2/4/shadow(그 층만). " + FOUR_LAYER_GUIDANCE_SHORT + " 상위는 빈 칸이 되고, 하위는 맵에서 관측된 통행 가능한 하위 지면(rect 밖 우선, 없으면 안쪽의 최빈 지면)으로 복원한다. 벽·지붕·소품·막힌 타일은 바닥 후보가 아니다. 유효한 지면이 없으면 erase-ground-unresolved로 변경 없이 실패한다. 바닥 자리가 진짜 빈 칸이어야 하는 경우(하늘 맵·허공)만 clear_region 의 fill=\"empty\" 를 쓴다. 승인 어휘가 필요 없는 유일한 배치 툴 — 실수 정리·재시공 전 청소에 쓴다.  상점·가게 철거는 find_layout_regions({mapId, query})로 영역을 먼저 찾은 뒤 tile_erase({mapId, rect, kind:\"market\"})(kind market 은 상점 타일만 지워 이웃 집·흙길 보존) → show_map_region 으로 결과 확인. 영역 상자는 find_layout_regions 가 준 rect 를 쓰고 비전으로 추측하지 말 것. 기존 것을 고칠 때는 get_map_region/find_layout_regions 로 현재 상태를 먼저 확인하고 이 툴로 정리한 뒤 다시 깐다." +
     "kind: all(기본, rect 전체를 통째로 비움)/market(시장·상점 데크 철거 전용 — 나무 마루·좌판 난간·진열대·과일·나무 상자·돌 단만 지우고, " +
     "겹친 집(벽·창문·지붕)·흙길(360)·잔디처럼 시장 타일이 아닌 것은 그대로 보존한다. 시장 lower를 지운 칸은 잔디로 되돌린다). " +
     "집과 시장이 한 bbox에 섞여 있으면 kind=market 을 쓸 것 — kind 생략(all)은 집까지 다 지운다.",
@@ -1226,7 +1310,7 @@ const tileErase: ToolDefinition = {
         properties: { x: { type: "integer" }, y: { type: "integer" }, w: { type: "integer" }, h: { type: "integer" } },
         required: ["x", "y", "w", "h"],
       },
-      layer: { type: "string", enum: ["both", "lower", "upper"], description: "기본 both" },
+      layer: { type: "string", enum: [...ERASE_LAYER_ENUM], description: "기본 both(칸 전체). 1=lower, 3=upper, 2/4/shadow 는 그 층만" },
       kind: {
         type: "string",
         enum: ["all", "market"],
@@ -1238,14 +1322,18 @@ const tileErase: ToolDefinition = {
   run(draft: Project, args: Record<string, unknown>): ToolExecResult {
     const { map, tileset } = requireMapContext(draft, args, ERASE_EXAMPLE);
     const rect = coerceRect(args.rect, "rect", ERASE_EXAMPLE);
-    const layer = args.layer === undefined ? "both" : args.layer;
-    if (layer !== "both" && layer !== "lower" && layer !== "upper") {
-      failWithExample("layer는 both/lower/upper 중 하나여야 합니다", ERASE_EXAMPLE);
+    const layer = coerceEraseLayer(args.layer === undefined ? "both" : args.layer);
+    if (layer === null) {
+      failWithExample(`layer는 ${ERASE_LAYER_ENUM.join("/")} 중 하나여야 합니다(1=lower, 3=upper)`, ERASE_EXAMPLE);
     }
     const kind = coerceEraseKind(args.kind);
     const allCells = cellsInRect(map, rect);
     if (kind === "market") {
-      const plans = planMarketErase(map, allCells, layer);
+      const marketLayer = layer === "all" ? "both" : layer;
+      if (marketLayer !== "both" && marketLayer !== "lower" && marketLayer !== "upper") {
+        failWithExample("kind=market 은 layer both/lower/upper 만 받습니다", ERASE_MARKET_EXAMPLE);
+      }
+      const plans = planMarketErase(map, allCells, marketLayer);
       const planByKey = new Map(plans.map((plan) => [pointKey(plan.cell), plan] as const));
       const filtered = filterPassageProtectedCells(draft, map, plans.map((plan) => plan.cell), (cell) => {
         const plan = planByKey.get(pointKey(cell));
@@ -1267,21 +1355,23 @@ const tileErase: ToolDefinition = {
         },
       };
     }
-    const groundTile = layer === "upper" ? null : baseGroundTile(map, rect, tileset);
-    const filtered = filterPassageProtectedCells(draft, map, allCells, (cell) => {
+    const scope = eraseScope(layer);
+    const groundTile = scope.ground ? baseGroundTile(map, rect, tileset) : null;
+    const eraseCell = (cell: Point): void => {
       const index = cell.y * map.width + cell.x;
       if (groundTile !== null) map.lowerTiles[index] = groundTile;
-      if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
-    });
+      for (const no of scope.layers) setLayerTileAt(map, no, index, TILE.EMPTY);
+      if (scope.shadow) setShadowAt(map, index, 0);
+    };
+    const filtered = filterPassageProtectedCells(draft, map, allCells, eraseCell);
     let cleared = 0;
     for (const cell of filtered.cells) {
-      const index = cell.y * map.width + cell.x;
-      if (groundTile !== null) map.lowerTiles[index] = groundTile;
-      if (layer === "both" || layer === "upper") map.upperTiles[index] = TILE.EMPTY;
+      eraseCell(cell);
       cleared += 1;
     }
+    compactMapLayers(map);
     return {
-      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 정리(${layer}) — ${cleared}/${allCells.length}칸${layer === "upper" ? "" : `, 하위는 기본 바닥 ${groundTile} 복원`}${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 정리(${layer}) — ${cleared}/${allCells.length}칸${groundTile === null ? "" : `, 하위는 기본 바닥 ${groundTile} 복원`}${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
       warnings: protectedSkipWarnings(filtered.skipped),
       data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer, kind, groundTile },
     };

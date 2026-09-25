@@ -28,6 +28,8 @@ const revertLastEdit: ToolDefinition = {
   description:
     "최근 편집 히스토리의 이전 상태로 되돌린다. 사용자가 '되돌려/취소/이전으로/undo'라고 하면 이 툴을 호출하라. 절대 clear_region 등으로 직접 지우지 말 것.",
   mode: "write",
+  // 이전 스냅샷을 그대로 복원한다 — 칩셋이 업로드 타일셋에서 돌아가는 것도 되돌리기의 일부다.
+  allowsTilesetChange: true,
   parameters: {
     type: "object",
     properties: {

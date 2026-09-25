@@ -20,7 +20,8 @@ import { getTool } from "@/editor/tools";
 import { showConfirm } from "@/editor/ui/modal";
 export { showConfirm };
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import { hasExtraLayers, layerTileAt, shadowAt } from "@/project/mapLayers";
+import type { GameMap, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import {
   mapIdCreatedByCall,
@@ -37,6 +38,7 @@ export const MAP_TILE_TOOLS = new Set([
   "tile_paint", "tile_road", "tile_scatter", "tile_structure",
   "build_wall", "build_roof", "place_door", "place_window", "lay_path", "place_props", "fill_region", "tile_erase",
   "author_house", "author_village",
+  "stamp_layer_block", "paint_shadow",
 ]);
 
 export function isWriteTool(name: string): boolean {
@@ -94,6 +96,16 @@ export function proposalHasMapTileChanges(calls: readonly ProposedCall[]): boole
   return calls.some((call) => MAP_TILE_TOOLS.has(call.name) && positive(call.result.diff?.tilesChanged) > 0);
 }
 
+/** 2층·4층·그림자 칸 비교. 없는 칸 = 빈칸(layerTileAt·shadowAt 이 그렇게 읽는다). */
+function sameExtraLayers(base: GameMap, next: GameMap, cells: number): boolean {
+  if (!hasExtraLayers(base) && !hasExtraLayers(next)) return true;
+  for (let i = 0; i < cells; i += 1) {
+    if (layerTileAt(base, 2, i) !== layerTileAt(next, 2, i) || layerTileAt(base, 4, i) !== layerTileAt(next, 4, i)) return false;
+    if (shadowAt(base, i) !== shadowAt(next, i)) return false;
+  }
+  return true;
+}
+
 export function firstMapWithTileDiff(before: Project, after: Project): string | null {
   const ids = new Set([...Object.keys(before.maps), ...Object.keys(after.maps)]);
   for (const mapId of ids) {
@@ -105,6 +117,8 @@ export function firstMapWithTileDiff(before: Project, after: Project): string | 
     for (let i = 0; i < cells; i += 1) {
       if (base.lowerTiles[i] !== next.lowerTiles[i] || base.upperTiles[i] !== next.upperTiles[i]) return mapId;
     }
+    // 2층·4층·그림자만 바뀐 제안도 미리보기 맵을 갖는다(옛 맵은 셋 다 없어 바로 넘어간다).
+    if (!sameExtraLayers(base, next, cells)) return mapId;
   }
   return null;
 }

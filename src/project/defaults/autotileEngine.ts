@@ -1,4 +1,5 @@
-import type { AutotileGroup, AutotileNeighborhood } from "../types";
+import type { AutotileGroup, AutotileNeighborhood, GameMap } from "../types";
+import type { TileLayerNo } from "../mapLayers";
 
 // 범용 오토타일(지형 자동 연결) 엔진 — 순수 로직.
 // 이웃 연결 상태를 비트마스크로 계산하고 variantMap 조회로 배치 타일을 결정한다.
@@ -21,6 +22,21 @@ export interface AutotileMapView {
   readonly width: number;
   readonly height: number;
   readonly lowerTiles: number[];
+}
+
+/**
+ * 한 층(1~4)의 배열을 엔진 뷰로 빌려준다 — 엔진은 `lowerTiles` 이름으로 읽고 쓰지만 실제로는 고른 층이다.
+ * 1층 = lowerTiles, 3층 = upperTiles, 2·4층 = 선택 칸(lowerOverlayTiles/upperOverlayTiles).
+ * 2·4층 칸이 없는 맵에는 맵에 붙지 않은 빈 배열(-1)을 준다 — 빈칸엔 그룹 멤버가 없어 엔진이 쓰지 않으므로
+ * 옛 맵에 새 키가 생기지 않는다. 2·4층에 멤버를 칠하면(setLayerTileAt) 그때 배열이 생기고 이 뷰가 그 배열을 쓴다.
+ * 층 번호와 칸 이름의 대응은 mapLayers.ts 가 정본이다.
+ */
+export function autotileLayerView(map: GameMap, layer: TileLayerNo): AutotileMapView {
+  const { width, height } = map;
+  if (layer === 1) return { width, height, lowerTiles: map.lowerTiles };
+  if (layer === 3) return { width, height, lowerTiles: map.upperTiles };
+  const tiles = layer === 2 ? map.lowerOverlayTiles : map.upperOverlayTiles;
+  return { width, height, lowerTiles: tiles ?? new Array<number>(width * height).fill(-1) };
 }
 
 export interface AutotilePoint {

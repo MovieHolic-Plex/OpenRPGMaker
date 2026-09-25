@@ -9,11 +9,13 @@ import { normalizePlaceToolArgs } from "./spatialPlaceContract";
 //   dryRun이면 통과해도 ctx.project를 갱신하지 않는다.
 
 import type { LintIssue } from "@/project/lint/projectLint";
+import type { Project } from "@/project/types";
 import { beginSpatialToolProposal, sealSpatialToolProposal } from "./spatialToolState";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
+import { compactMapLayers, EXTRA_LAYER_KEYS, hasExtraLayers } from "@/project/mapLayers";
 import { formatTreePairRepairSummary, repairTreePairsOnProject } from "@/project/lint/repairTreePairs";
 import { resolveForestCanopyReplacementExemptTileIds } from "./forestComposition";
-import { commitChangeset, createDraft, summarizeChanges, tileChangedMapIds } from "./changeset";
+import { commitChangeset, createDraft, summarizeChanges, tileBuffersDiffer, tileChangedMapIds } from "./changeset";
 import { normalizeArgsForSchema, validateArgs } from "./jsonSchema";
 import { getTool } from "./toolRegistry";
 import { ToolError, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
@@ -21,6 +23,45 @@ import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots
 
 export interface RunToolOptions {
   readonly dryRun?: boolean;
+}
+
+/**
+ * 사용자가 올린 타일셋을 쓰던 기존 맵의 칩셋을 도구가 말없이 바꾸면 거부한다.
+ * 실측(2026-09-25): Rasak 얼음 동굴 요청에 조수가 run_dungeon_room_pipeline 을 불러 맵이
+ * easyrpg_chipset_dungeon 으로 바뀌었고, 사용자 타일셋과 그 참고문서는 한 번도 쓰이지 않았다.
+ * 칩셋을 일부러 바꾸는 호출은 인자에 새 tilesetId 를 적으므로 통과한다.
+ * 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구는 ToolDefinition.allowsTilesetChange 로 빠진다(호출부에서 거른다).
+ */
+function rejectUploadedTilesetSwap(before: Project, draft: Project, name: string, args: Record<string, unknown>): void {
+  for (const [id, previous] of Object.entries(before.maps)) {
+    const next = draft.maps[id];
+    if (!next || next.tilesetId === previous.tilesetId) continue;
+    const tileset = before.tilesets[previous.tilesetId];
+    if (tileset?.image.type !== "uploaded" || args.tilesetId === next.tilesetId) continue;
+    throw new ToolError(
+      `맵 ${id} 은 업로드 타일셋 「${tileset.name}」(${tileset.id}) 을 쓴다 — ${name} 이 칩셋을 ${next.tilesetId} 로 바꾸므로 거부했다. `
+      + `이 타일셋의 참고문서(list_tileset_references)를 읽고 paint_tiles·stamp_layer_block 으로 직접 깔아라. 칩셋을 정말 바꾸려면 tilesetId 를 명시하라.`,
+      { code: "uploaded-tileset-replaced", mapId: id },
+    );
+  }
+}
+
+/**
+ * 2·4층·그림자가 모두 비면 키를 뺀다(옛 맵 모양으로). setLower 처럼 여러 도구가 공유하는 헬퍼가 칸을 비우므로
+ * 도구마다가 아니라 실행기에서 한 번 정리한다. 선택 칸이 있는 맵만 훑는다 — 옛 맵은 비용 없음.
+ * 이 도구가 건드린 맵만 정리한다: 새 맵, 칸이 바뀐 맵, 이번에 선택 칸 키가 새로 생긴 맵(썼다가 다 비운 경우 —
+ * tileBuffersDiffer 는 없는 칸 = 빈칸으로 봐서 같다고 한다). 손대지 않은 맵의 빈 배열은 그대로 둔다 —
+ * 지우면 event_command_assist 의 "명령 외의 변경" 비교와 맵 단위 되돌리기 스냅샷이 어긋난다.
+ */
+function compactTouchedMapLayers(before: Project, draft: Project): void {
+  for (const [id, map] of Object.entries(draft.maps)) {
+    if (!hasExtraLayers(map)) continue;
+    const previous = before.maps[id];
+    const touched = !previous
+      || EXTRA_LAYER_KEYS.some((key) => map[key] !== undefined && previous[key] === undefined)
+      || tileBuffersDiffer(previous, map);
+    if (touched) compactMapLayers(map);
+  }
 }
 
 /**
@@ -146,6 +187,8 @@ export function runToolDefinition(
     protectedHouses = captureHouseProtection(before);
     beginSpatialToolProposal(draft, before);
     exec = tool.run(draft, normalizedArgs);
+    compactTouchedMapLayers(before, draft);
+    if (!tool.allowsTilesetChange) rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);
   } catch (cause) {
     const error = cause instanceof Error ? cause : new ToolError(String(cause), { code: "tool-exception" });
     return { ok: false, summary: failureSummary(name, error), issues: [issueFromToolError(tool, normalizedArgs, error)] };

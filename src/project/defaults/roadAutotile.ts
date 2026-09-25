@@ -1,4 +1,5 @@
 import type { GameMap } from "../types";
+import { setLayerTileAt } from "../mapLayers";
 import { autotileNeighborMask, autotileVariantForMask, shapeAutotileGroupAround } from "./autotileEngine";
 import { DEFAULT_ROAD_AUTOTILE_GROUP } from "./autotileGroups";
 import { DIRT_ROAD_TILE } from "./chipsetMapping";
@@ -69,9 +70,12 @@ function lowerAt(map: GameMap, point: Point): number | undefined {
   return map.lowerTiles[point.y * map.width + point.x];
 }
 
+// 1층을 칠하면 그 칸의 2층 장식을 지운다(MZ 4층 공통 규칙). 옛 맵(2층 없음)에는 no-op.
 function setLower(map: GameMap, point: Point, tile: number): void {
   if (!inBounds(map, point)) return;
-  map.lowerTiles[point.y * map.width + point.x] = tile;
+  const index = point.y * map.width + point.x;
+  map.lowerTiles[index] = tile;
+  setLayerTileAt(map, 2, index, -1);
 }
 
 function inBounds(map: GameMap, point: Point): boolean {

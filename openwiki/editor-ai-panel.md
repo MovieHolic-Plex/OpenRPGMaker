@@ -390,7 +390,7 @@ base↔초안 diff 로 굴러가던 고스트가 턴 내내 먹을 재료가 없
 
 | 조각 | 자리 | 계약 |
 | --- | --- | --- |
-| 증분 | `src/ai/piAgent/mapDelta.ts` | `diffMapsForDelta(before, after)` / `applyMapDeltas(maps, deltas)`. 순수 함수 한 쌍이라 워커·브라우저가 같은 코드를 쓴다. 손대지 않은 맵은 **같은 객체 그대로** 돌려준다(43맵 프로젝트에서 이 동일성이 곧 비용이다). |
+| 증분 | `src/ai/piAgent/mapDelta.ts` | `diffMapsForDelta(before, after)` / `applyMapDeltas(maps, deltas)`. 순수 함수 한 쌍이라 워커·브라우저가 같은 코드를 쓴다. 손대지 않은 맵은 **같은 객체 그대로** 돌려준다(43맵 프로젝트에서 이 동일성이 곧 비용이다). 층은 `lower`·`upper` + 선택 층 `layer2`·`layer4`·`shadow`(두 맵 모두 없으면 항목 없음, 사라지면 `absent:true` — [editor-ai-tools.md](editor-ai-tools.md) 「조수가 보는 네 층」). |
 | 발행 | `scripts/lib/piAgentRuntime.ts` | `tool_execution_end` 마다 섀도우와 `ctx.project.maps` 를 견줘 `map_delta` 를 낸다. 섀도우는 **한 번만** 복제하고 증분으로 따라간다 — 툴마다 다시 복제하면 호출 하나가 수십 MB 다. 순서 계약: `tool_end` → `map_delta`. 마지막 한 방울을 `done` 직전에 한 번 더 낸다. |
 | 수신 | `src/editor/panels/aiPiGhostBridge.ts` | 초안 맵을 증분 복원하고 **기존 고스트 기계를 그대로** 돌린다(`replaceAgentGhostPreviewFromProjectDiff`). 스로틀·flush·cancel 은 세션 경로와 같은 `createThrottledAgentGhostPreviewUpdater` 다. `setAgentGhostDraftMapProvider` 로 초안 맵을 공급해 렌더러가 컴포지터 경로(오토타일·밑동 합성)를 쓴다 — 없으면 셀이 단색 사각형이 된다. |
 | 배선 | `src/editor/panels/aiPiAgentCommand.ts` | 다리는 실행당 **하나**이고 이벤트 래퍼가 전부 그곳을 지난다 — 단일·병렬·팀이 같은 길이다(팀은 `agent_event` 한 겹만 벗긴다). 병렬·팀에서 에이전트마다 소유한 맵이 달라 증분은 그대로 겹쳐 쌓인다. |

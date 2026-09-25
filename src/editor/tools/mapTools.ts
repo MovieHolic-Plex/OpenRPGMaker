@@ -14,7 +14,7 @@ import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
-import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { reachableMapIdsFromStart } from "@/project/mapInspection";
@@ -34,7 +34,7 @@ import { markUserTileRuntimeMetadata } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { stampRectHouseKit } from "@/editor/houseKit";
 import { resizedTileStacks } from "@/project/mapOverlayTiles";
-import { cropExtraLayers } from "@/project/mapLayers";
+import { EXTRA_LAYER_KEYS, compactMapLayers, cropExtraLayers, layerTileAt, setLayerTileAt, setShadowAt, shadowAt, type TileLayerNo } from "@/project/mapLayers";
 import { stampTownCityPlot, type TownCityPlotStyle } from "@/project/defaults/townHousePatterns";
 import { kitIdForSmallHouseMaterial, type SmallHouseMaterial } from "@/editor/content/dbExtractedHouseTemplate";
 import { recommendMapBgm } from "@/assets/bgmThemeRecommendation";
@@ -47,14 +47,18 @@ import { mapLocations, resolveLocation } from "@/project/mapNamedLocations";
 import { applyMapShift } from "@/editor/mapShiftActions";
 import { visitProjectCommands } from "./commandTraversal";
 import {
+  FOUR_LAYER_GUIDANCE,
   MAP_ID_TAKEN_GUIDANCE,
+  TOOL_LAYER_ENUM,
   assertMapIdAvailable,
   floodFillCells,
   inMapBounds,
   lineCells,
+  parseToolLayer,
   passabilityWarning,
   requireMap,
   setLower,
+  toolLayerLabel,
   type Point,
 } from "./mapHelpers";
 import { expandHardClusterPlacement, type HardClusterTileEdit } from "./clusterRulePlacement";
@@ -371,13 +375,13 @@ const manageMapTree: ToolDefinition = {
 
 const paintTiles: ToolDefinition = {
   name: "paint_tiles",
-  description: "타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기)/cells(개별 셀). rect는 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다. 통행성이 바뀌면 경고를 반환한다. 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅된다. 지형 오토타일 멤버(흙길/모래 등)는 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함).",
+  description: `타일을 칠한다. mode: rect(사각형)/line(선)/fill(채우기, 1·2층만)/cells(개별 셀). rect는 벽과 1칸 틈이 있으면 그 틈을 메워 벽에 붙인다. 통행성이 바뀌면 경고를 반환한다. ${FOUR_LAYER_GUIDANCE} 1층을 칠하면 그 칸의 2·3·4층·그림자를 비운다. 1/3층 요청에서 투명 배경 칩(벤치·나무·사선 지붕 등)은 상위 레이어 전용이라 자동 라우팅되고, 2·4층은 요청한 층에 그대로 놓는다. 1·2층의 지형 오토타일 멤버(흙길/모래/풀 장식 등)는 그 층 이웃에 맞춰 자동 재성형된다(외딴 점·오목 코너 포함). 여러 칸·여러 층 물체는 stamp_layer_block.`,
   mode: "write",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      layer: { type: "string", enum: ["lower", "upper"] },
+      layer: { type: "string", enum: [...TOOL_LAYER_ENUM], description: "1|2|3|4 (lower=1, upper=3)" },
       mode: { type: "string", enum: ["rect", "line", "fill", "cells"] },
       tile: { type: "integer", description: "타일 인덱스(-1=비움)" },
       from: COORD_SCHEMA,
@@ -388,7 +392,11 @@ const paintTiles: ToolDefinition = {
   },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
-    let layer = args.layer as "lower" | "upper";
+    const requestedLayer = parseToolLayer(args.layer);
+    if (requestedLayer === null) {
+      throw new ToolError(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층).`, { code: "invalid-args", mapId: map.id });
+    }
+    let layerNo: TileLayerNo = requestedLayer;
     const tile = args.tile as number;
     const mode = args.mode as "rect" | "line" | "fill" | "cells";
     const from = args.from as Point | undefined;
@@ -397,6 +405,7 @@ const paintTiles: ToolDefinition = {
 
     // 에디터 수동 페인트(effectiveLayer)와 같은 규칙으로 레이어를 라우팅한다 —
     // 홈 레이어가 단일 판정되는 타일(투명 배경 칩 = 상위 전용 등)은 요청과 무관하게 홈에 놓는다.
+    // 라우팅은 1/3층(lower/upper) 요청에만 한다 — 2·4층은 겹쳐 쌓으라는 명시 선택이라 그대로 존중한다.
     let routedNote: string | null = null;
     const tileset = draft.tilesets[map.tilesetId];
     // 합법 정의역은 -1(비움) 과 0~count-1 뿐이다.
@@ -413,15 +422,16 @@ const paintTiles: ToolDefinition = {
         { code: "tile-out-of-range", mapId: map.id },
       );
     }
-    if (tile >= 0 && tileset) {
+    if (tile >= 0 && tileset && (layerNo === 1 || layerNo === 3)) {
       const home = tileLayerHome(tileset, tile);
-      if (home !== "both" && home !== layer) {
+      const requestedGroup = layerNo === 1 ? "lower" : "upper";
+      if (home !== "both" && home !== requestedGroup) {
         if (mode === "fill") {
           throw new ToolError(
-            `타일 ${tile}은(는) ${home === "upper" ? "상위(투명 배경 칩)" : "하위"} 레이어 전용입니다 — fill 모드는 lower만 지원하므로 rect/cells 모드로 칠하세요.`
+            `타일 ${tile}은(는) ${home === "upper" ? "상위(투명 배경 칩)" : "하위"} 레이어 전용입니다 — fill 모드는 1·2층만 지원하므로 rect/cells 모드로 칠하세요.`
           );
         }
-        layer = home;
+        layerNo = home === "upper" ? 3 : 1;
         routedNote = `타일 ${tile}은(는) ${home === "upper" ? "상위 레이어 전용(투명 배경 칩)" : "하위 레이어 전용"}이라 ${home}에 배치했습니다.`;
       }
     }
@@ -437,34 +447,79 @@ const paintTiles: ToolDefinition = {
       targetCells = lineCells(from, to);
     } else if (mode === "fill") {
       if (!from) throw new ToolError("fill 모드는 from(시작점)이 필요합니다.");
-      if (layer !== "lower") throw new ToolError("fill 모드는 lower 레이어만 지원합니다.");
-      targetCells = floodFillCells(map, from, tile);
+      if (layerNo !== 1 && layerNo !== 2) throw new ToolError("fill 모드는 1층(lower)·2층만 지원합니다.");
+      targetCells = floodFillCells(map, from, tile, layerNo);
     } else {
       if (!cells || cells.length === 0) throw new ToolError("cells 모드는 cells 배열이 필요합니다.");
       targetCells = cells;
     }
 
-    const paintResult = applyClusterAwarePaint(map, tileset, layer, tile, targetCells);
+    const paintResult = layerNo === 2 || layerNo === 4
+      ? applyOverlayPaint(map, layerNo, tile, targetCells)
+      : applyClusterAwarePaint(map, tileset, layerNo === 1 ? "lower" : "upper", tile, targetCells);
     // 에디터 수동 페인트와 동일하게 지형 오토타일(흙길/모래 등)을 재성형한다 —
     // 편집 주변의 그룹 멤버 셀만 바뀌므로 비멤버 페인트에는 사실상 no-op.
-    if (paintResult.lowerTouched.size > 0) {
-      const lowerPoints = paintResult.touched.filter((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)));
-      for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(map, group, lowerPoints);
+    // 재성형은 칠한 층 배열에서 한다(2층 풀 장식은 2층 이웃 기준). 자동타일은 바닥 층(1·2층)의 것이다 —
+    // 3·4층 물체는 적은 번호 그대로 둔다(옛 upper 칠하기와 같다: 수관 같은 상위 그룹을 모델이 고른 칸째 보존).
+    const groundPoints = paintResult.touched.filter((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)));
+    if (groundPoints.length > 0) {
+      // 1층을 칠한 칸은 2층도 비웠으므로(setLower) 둘레 2층 장식의 가장자리도 다시 잡는다.
+      const layers: (1 | 2)[] = layerNo === 2 ? [2] : map.lowerOverlayTiles ? [1, 2] : [1];
+      for (const layer of layers) {
+        const view = autotileLayerView(map, layer);
+        for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(view, group, groundPoints);
+      }
     }
-    const warning = paintResult.touched.some((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)))
-      ? passabilityWarning(draft, map, paintResult.touched)
+    compactMapLayers(map);
+    // 통행은 네 층이 함께 정한다 — 어느 층을 칠해도 막힌 칸을 알린다(3층 물체가 가장 흔히 막는다).
+    const warning = paintResult.touched.length > 0 ? passabilityWarning(draft, map, paintResult.touched) : null;
+    const skippedNote = paintResult.skipped > 0
+      ? layerNo === 2 || layerNo === 4 ? `맵 밖 ${paintResult.skipped}칸은 건너뛰었습니다.` : `hard 규칙 동반 배치가 불가능한 ${paintResult.skipped}칸은 거부했습니다.`
       : null;
-    const skippedNote = paintResult.skipped > 0 ? `hard 규칙 동반 배치가 불가능한 ${paintResult.skipped}칸은 거부했습니다.` : null;
     const autoNote = paintResult.autoTiles > 0 ? `클러스터 동반 ${paintResult.autoTiles}타일 자동 포함` : null;
     const warnings = [...(routedNote ? [routedNote] : []), ...(skippedNote ? [skippedNote] : []), ...(warning ? [warning] : [])];
     return {
-      summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${layer}, ${paintResult.touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
+      summary: `${map.name}에 타일 ${tile} 페인트(${mode}, ${paintLayerName(layerNo)}, ${paintResult.touched.length}칸)${routedNote ? " — 상위 전용 칩 자동 라우팅" : ""}${autoNote ? ` — ${autoNote}` : ""}${skippedNote ? ` — ${skippedNote}` : ""}`,
       warnings: warnings.length > 0 ? warnings : undefined,
       // Snapshot the executed layer: later tile-rule edits must not reinterpret this receipt.
-      data: Object.freeze({ effectiveLayer: layer, autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length }),
+      data: Object.freeze({ effectiveLayer: toolLayerLabel(layerNo), autoClusterTiles: paintResult.autoTiles, skippedClusterCells: paintResult.skipped, tilesTouched: paintResult.touched.length }),
     };
   },
 };
+
+/** 요약 문구의 층 이름 — 1/3층은 옛 이름(lower/upper)을 함께 쓴다. */
+function paintLayerName(layer: TileLayerNo): string {
+  return layer === 1 ? "1층 lower" : layer === 3 ? "3층 upper" : `${layer}층`;
+}
+
+/**
+ * 2·4층(겹침 층) 칠하기. 클러스터 동반 규칙은 1/3층(lower/upper) 어휘라 여기선 적용하지 않고 칸을 그대로 쓴다.
+ * 2층 칸은 lowerTouched 에 담아 호출자가 2층 배열에서 오토타일을 재성형하게 한다.
+ */
+function applyOverlayPaint(
+  map: GameMap,
+  layer: 2 | 4,
+  tile: number,
+  cells: readonly Point[],
+): { readonly autoTiles: number; readonly lowerTouched: ReadonlySet<string>; readonly skipped: number; readonly touched: readonly Point[] } {
+  const touched: Point[] = [];
+  const lowerTouched = new Set<string>();
+  const seen = new Set<string>();
+  let skipped = 0;
+  for (const cell of cells) {
+    if (!inMapBounds(map, cell.x, cell.y)) {
+      skipped += 1;
+      continue;
+    }
+    const key = coordKey(cell.x, cell.y);
+    if (seen.has(key)) continue;
+    seen.add(key);
+    setLayerTileAt(map, layer, cell.y * map.width + cell.x, tile);
+    if (layer === 2) lowerTouched.add(key);
+    touched.push({ x: cell.x, y: cell.y });
+  }
+  return { autoTiles: 0, lowerTouched, skipped, touched };
+}
 
 function applyClusterAwarePaint(
   map: GameMap,
@@ -499,7 +554,10 @@ function applyClusterAwarePaint(
       setLower(map, edit.x, edit.y, edit.tile);
       lowerTouched.add(coordKey(edit.x, edit.y));
     } else {
-      map.upperTiles[edit.y * map.width + edit.x] = edit.tile;
+      const index = edit.y * map.width + edit.x;
+      map.upperTiles[index] = edit.tile;
+      // 3층을 비우면 그 위에 얹힌 4층도 비운다(뜬 물체를 남기지 않는다 — tile_erase upper 와 같다).
+      if (edit.tile < 0) setLayerTileAt(map, 4, index, TILE.EMPTY);
     }
     touched.push({ x: edit.x, y: edit.y });
   }
@@ -934,7 +992,7 @@ const buildHouse: ToolDefinition = {
 const clearRegion: ToolDefinition = {
   name: "clear_region",
   description:
-    "맵의 사각 영역을 정리한다: 상위 레이어는 비우고, 하위 레이어는 잔디(fill=grass, 기본) 또는 빈 칸(fill=empty)으로 되돌린다. 잘못 배치한 구조물을 지울 때 사용. 이벤트는 지우지 않고 경고로 알린다.",
+    "맵의 사각 영역을 정리한다: 상위 레이어(3·4층)는 비우고, 하위 레이어(1층)는 잔디(fill=grass, 기본) 또는 빈 칸(fill=empty)으로 되돌린다. layer=lower 는 1층과 그 위 2층 장식·그림자, upper 는 3·4층, both 는 칸 전체. 잘못 배치한 구조물을 지울 때 사용. 이벤트는 지우지 않고 경고로 알린다.",
   mode: "write",
   invalidArgsExample: { mapId: "map_1", x: 0, y: 0, w: 10, h: 8, layer: "both" },
   parameters: {
@@ -963,11 +1021,19 @@ const clearRegion: ToolDefinition = {
     for (let y = y0; y < y1; y += 1) {
       for (let x = x0; x < x1; x += 1) {
         const index = y * map.width + x;
-        if (layer !== "upper") map.lowerTiles[index] = lowerFill;
-        if (layer !== "lower") map.upperTiles[index] = TILE.EMPTY;
+        if (layer !== "upper") {
+          map.lowerTiles[index] = lowerFill;
+          setLayerTileAt(map, 2, index, TILE.EMPTY);
+          setShadowAt(map, index, 0);
+        }
+        if (layer !== "lower") {
+          map.upperTiles[index] = TILE.EMPTY;
+          setLayerTileAt(map, 4, index, TILE.EMPTY);
+        }
         cells += 1;
       }
     }
+    compactMapLayers(map);
     const events = map.events.filter((event) => event.x >= x0 && event.x < x1 && event.y >= y0 && event.y < y1);
     return {
       summary: `${map.name} 영역 (${x0},${y0})~(${x1 - 1},${y1 - 1}) 정리 — ${cells}칸 (${layer}, 하위=${lowerFill === TILE.EMPTY ? "빈 칸" : "잔디"})`,
@@ -995,7 +1061,7 @@ const clearRegion: ToolDefinition = {
 const clearMap: ToolDefinition = {
   name: "clear_map",
   description:
-    "맵 전체의 타일을 한 번에 비운다(파괴적). 상위 레이어는 항상 빈 칸이 되고 하위 레이어는 fill로 정한다" +
+    "맵 전체의 타일을 한 번에 비운다(파괴적). 상위 레이어(3·4층)·2층 장식·그림자는 항상 빈 칸이 되고 하위 레이어(1층)는 fill로 정한다" +
     "(기본 grass=잔디, empty=진짜 허공). confirmDestroy:true 없이는 실행되지 않는다. " +
     "events 기본값 keep 은 이벤트를 남기고 경고로 id를 알린다 — remove 면 이벤트까지 지운다. " +
     "필드 스폰·명명 로케이션·시공 기록·맵 속성은 건드리지 않는다(맵 자체를 없애는 것은 remove_map). " +
@@ -1044,9 +1110,13 @@ const clearMap: ToolDefinition = {
         }
         map.lowerTiles[index] = lowerFill;
         map.upperTiles[index] = TILE.EMPTY;
+        setLayerTileAt(map, 2, index, TILE.EMPTY);
+        setLayerTileAt(map, 4, index, TILE.EMPTY);
+        setShadowAt(map, index, 0);
         cleared += 1;
       }
     }
+    compactMapLayers(map);
     if (Object.keys(keptLowerStacks).length > 0) map.lowerTileStacks = keptLowerStacks;
     else delete map.lowerTileStacks;
     if (Object.keys(keptUpperStacks).length > 0) map.upperTileStacks = keptUpperStacks;
@@ -1088,7 +1158,7 @@ const clearMap: ToolDefinition = {
 const mirrorRegion: ToolDefinition = {
   name: "mirror_region",
   description:
-    "사각 영역의 타일(하위/상위/스택)과 영역 안 이벤트 좌표를 좌우(horizontal) 또는 상하(vertical)로 대칭 변환한다. 결정적 변환 — 오토타일 경계는 보정하지 않으므로 필요하면 이후 다듬기 지시를 권한다. 인자 {mapId,x,y,w,h,axis:\"horizontal\"|\"vertical\"}. 대칭·반복·복제 요청의 정본.",
+    "사각 영역의 타일(1~4층/그림자/스택)과 영역 안 이벤트 좌표를 좌우(horizontal) 또는 상하(vertical)로 대칭 변환한다. 결정적 변환 — 오토타일 경계는 보정하지 않으므로 필요하면 이후 다듬기 지시를 권한다. 인자 {mapId,x,y,w,h,axis:\"horizontal\"|\"vertical\"}. 대칭·반복·복제 요청의 정본.",
   mode: "write",
   invalidArgsExample: { mapId: "map_1", x: 2, y: 2, w: 8, h: 6, axis: "horizontal" },
   parameters: {
@@ -1117,6 +1187,12 @@ const mirrorRegion: ToolDefinition = {
 
     const srcLower = map.lowerTiles.slice();
     const srcUpper = map.upperTiles.slice();
+    // 2·4층·그림자는 있을 때만 옮긴다 — 옛 맵은 키가 없고 그대로다. 그림자 비트는 칸 안 사분면이라
+    // 대칭 축에 맞춰 좌우(tl↔tr, bl↔br)·상하(tl↔bl, tr↔br)도 뒤집는다.
+    const srcExtras = EXTRA_LAYER_KEYS.flatMap((key) => {
+      const values = map[key];
+      return values ? [{ key, values: values.slice() }] : [];
+    });
     const srcLowerStacks = structuredClone(map.lowerTileStacks ?? {});
     const srcUpperStacks = structuredClone(map.upperTileStacks ?? {});
     const nextLowerStacks: Record<number, number[]> = structuredClone(map.lowerTileStacks ?? {});
@@ -1135,6 +1211,10 @@ const mirrorRegion: ToolDefinition = {
         const upperStack = srcUpperStacks[si];
         if (upperStack) nextUpperStacks[di] = upperStack.slice();
         else delete nextUpperStacks[di];
+        for (const extra of srcExtras) {
+          const value = extra.values[si]!;
+          map[extra.key]![di] = extra.key === "shadowBits" ? mirrorShadowBits(value, axis) : value;
+        }
         cells += 1;
       }
     }
@@ -1160,6 +1240,12 @@ const mirrorRegion: ToolDefinition = {
     };
   },
 };
+
+/** 그림자 사분면 비트(bit0 좌상·bit1 우상·bit2 좌하·bit3 우하)를 대칭 축에 맞춰 뒤집는다. */
+function mirrorShadowBits(bits: number, axis: "horizontal" | "vertical"): number {
+  const tl = bits & 1, tr = (bits >> 1) & 1, bl = (bits >> 2) & 1, br = (bits >> 3) & 1;
+  return axis === "horizontal" ? tr | (tl << 1) | (br << 2) | (bl << 3) : bl | (br << 1) | (tl << 2) | (tr << 3);
+}
 
 const setStartPosition: ToolDefinition = {
   name: "set_start_position",
@@ -2135,6 +2221,10 @@ interface CopySourceCell {
   readonly dy: number;
   readonly lower: number;
   readonly upper: number;
+  /** 2층·4층·그림자(MZ 4층). 원본에 선택 칸이 없으면 빈칸(-1/0) — 목적지에 새 키를 만들지 않는다. */
+  readonly lowerOverlay: number;
+  readonly upperOverlay: number;
+  readonly shadow: number;
 }
 
 interface CopyProtectedSkip {
@@ -2229,8 +2319,8 @@ const copyMapRegion: ToolDefinition = {
   name: "copy_map_region",
   description:
     "맵의 사각 영역을 다른 위치/다른 맵으로 복사한다(맵 편집기의 영역 선택→복사→붙여넣기와 같다). "
-    + "쓰는 저작 데이터: 목적지 맵의 하위·상위 타일, withEvents면 목적지 맵의 이벤트(새 id로 복제). 원본은 그대로 남는다. "
-    + "layers: all(기본)|lower|upper. overExisting: clear(기본, 목적지 내용을 덮어씀)|keep(목적지에 이미 타일이 있는 칸은 건드리지 않음). "
+    + "쓰는 저작 데이터: 목적지 맵의 하위·상위 타일(1~4층·그림자), withEvents면 목적지 맵의 이벤트(새 id로 복제). 원본은 그대로 남는다. "
+    + "layers: all(기본, 1~4층·그림자)|lower(1·2층)|upper(3·4층). overExisting: clear(기본, 목적지 내용을 덮어씀)|keep(목적지에 이미 타일이 있는 칸은 건드리지 않음). "
     + "같은 맵 안에서 겹치는 영역으로도 안전하게 복사된다. 시작 위치·transfer 목적지를 통행 불가로 덮는 칸은 건너뛰고 경고한다. "
     + "오토타일 경계는 보정하지 않는다 — 제자리 대칭은 mirror_region, 맵 전체 밀기는 shift_map.",
   mode: "write",
@@ -2289,7 +2379,10 @@ const copyMapRegion: ToolDefinition = {
     for (let dy = 0; dy < from.h; dy += 1) {
       for (let dx = 0; dx < from.w; dx += 1) {
         const index = (from.y + dy) * source.width + from.x + dx;
-        buffer.push({ dx, dy, lower: source.lowerTiles[index], upper: source.upperTiles[index] });
+        buffer.push({
+          dx, dy, lower: source.lowerTiles[index], upper: source.upperTiles[index],
+          lowerOverlay: layerTileAt(source, 2, index), upperOverlay: layerTileAt(source, 4, index), shadow: shadowAt(source, index),
+        });
       }
     }
 
@@ -2303,6 +2396,9 @@ const copyMapRegion: ToolDefinition = {
       const index = y * target.width + x;
       const beforeLower = target.lowerTiles[index];
       const beforeUpper = target.upperTiles[index];
+      const beforeLowerOverlay = layerTileAt(target, 2, index);
+      const beforeUpperOverlay = layerTileAt(target, 4, index);
+      const beforeShadow = shadowAt(target, index);
       // overExisting=keep 은 "이미 뭔가 있는 칸은 건드리지 않는다" — 레이어별로 판단한다.
       const putLower = writeLower && (overExisting === "clear" || beforeLower === TILE.EMPTY);
       const putUpper = writeUpper && (overExisting === "clear" || beforeUpper === TILE.EMPTY);
@@ -2310,18 +2406,31 @@ const copyMapRegion: ToolDefinition = {
         kept += 1;
         continue;
       }
-      if (putLower) target.lowerTiles[index] = cell.lower;
-      if (putUpper) target.upperTiles[index] = cell.upper;
+      // 2층은 1층과, 4층은 3층과 함께 간다. 그림자는 칸 전체(all)를 옮길 때 바닥과 함께 간다.
+      if (putLower) {
+        target.lowerTiles[index] = cell.lower;
+        setLayerTileAt(target, 2, index, cell.lowerOverlay);
+        if (layers === "all") setShadowAt(target, index, cell.shadow);
+      }
+      if (putUpper) {
+        target.upperTiles[index] = cell.upper;
+        setLayerTileAt(target, 4, index, cell.upperOverlay);
+      }
       const reason = protectedCells.get(`${x},${y}`);
       // 보호 칸은 쓴 결과가 통행 가능한지 실측하고, 막히면 원래 타일로 되돌린다(부분 스킵 정책).
       if (reason !== undefined && !isPassable(draft, target, x, y)) {
         target.lowerTiles[index] = beforeLower;
         target.upperTiles[index] = beforeUpper;
+        setLayerTileAt(target, 2, index, beforeLowerOverlay);
+        setLayerTileAt(target, 4, index, beforeUpperOverlay);
+        setShadowAt(target, index, beforeShadow);
         skipped.push({ x, y, reason });
         continue;
       }
       copied += 1;
     }
+
+    compactMapLayers(target);
 
     const copiedEventIds: string[] = [];
     const skippedEvents: CopyEventSkip[] = [];

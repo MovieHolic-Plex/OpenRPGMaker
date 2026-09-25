@@ -82,6 +82,11 @@ export interface ToolDefinition {
   readonly domains?: readonly ToolDomain[];
   // run 앞에서 기다릴 지연 데이터(청크를 따로 받는 참고 자료 등). 비동기 실행 경로(prepareTool)만 부른다.
   readonly prepare?: (args: Record<string, unknown>) => Promise<void>;
+  // true 면 실행기의 업로드 타일셋 바꿔치기 검사(toolRunner.rejectUploadedTilesetSwap)를 건너뛴다.
+  // 프로젝트를 통째로 되돌리거나 갈아 끼우는 도구(revert_last_edit·reset_project)만 켠다 — 그 도구의 계약이
+  // "이전/새 프로젝트 그대로"라 칩셋이 달라지는 것이 정상이고, tilesetId 인자를 받을 수도 없다.
+  // 맵 하나를 시공하는 도구는 켜지 말고 인자에 새 tilesetId 를 명시하게 하라.
+  readonly allowsTilesetChange?: boolean;
   // true 면 러너의 나무 짝 자동 수리를 건너뛴다 — 검토 끝난 원본 배열을 그대로 옮기는 툴(import_region_reference)용.
   readonly preservesAuthoredRaster?: boolean;
   // write 툴은 draft(구조적 복제본)를 직접 변형한다. read 툴은 project를 읽기만 한다.

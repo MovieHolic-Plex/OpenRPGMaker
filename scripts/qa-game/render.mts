@@ -11,6 +11,7 @@ import path from "node:path";
 import { PNG } from "pngjs";
 import { drawMapTileLayer } from "../../src/editor/mapTileDraw.ts";
 import { tilesetBaseImageUrl } from "../../src/editor/tilesetImage.ts";
+import { uploadedAssetUrl } from "../../src/project/persistence/assetAccessors.ts";
 import { isColorKeyedChipsetTextureKey, resolveTransparentColorKeys } from "../../src/assets/chipsetTransparency.ts";
 import { applyTransparentColorKey, applyTransparentColorKeys } from "../../src/assets/transparentColorKey.ts";
 import { activeTileGrafts, tileCountWithGrafts } from "../../src/assets/tileGrafts.ts";
@@ -26,9 +27,29 @@ const arg = (name: string): string | undefined => { const i = ARGV.indexOf(`--${
 
 type Raster = { width: number; height: number; data: Uint8Array };
 
-/** CanvasRenderingContext2D 중 mapTileDraw 가 쓰는 drawImage(9인자)만 — 최근접 표본 + 알파 합성. */
+/** CanvasRenderingContext2D 중 mapTileDraw 가 쓰는 것만 — drawImage(9인자, 최근접 표본 + 알파 합성)와
+ * 그림자 사분면(drawShadowQuarters)의 save/restore/fillStyle/fillRect(rgba 반투명 채움). */
 class PngContext {
+  fillStyle = "rgba(0,0,0,1)";
+  private saved: string[] = [];
   constructor(readonly target: Raster) {}
+  save(): void { this.saved.push(this.fillStyle); }
+  restore(): void { this.fillStyle = this.saved.pop() ?? this.fillStyle; }
+  fillRect(x: number, y: number, w: number, h: number): void {
+    const match = /^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)$/u.exec(this.fillStyle);
+    if (!match) return;
+    const rgb = [Number(match[1]), Number(match[2]), Number(match[3])];
+    const a = match[4] === undefined ? 1 : Number(match[4]);
+    const { target } = this;
+    const x1 = Math.min(target.width, Math.ceil(x + w)), y1 = Math.min(target.height, Math.ceil(y + h));
+    for (let py = Math.max(0, Math.floor(y)); py < y1; py += 1) {
+      for (let px = Math.max(0, Math.floor(x)); px < x1; px += 1) {
+        const di = (py * target.width + px) * 4;
+        for (let c = 0; c < 3; c += 1) target.data[di + c] = Math.round(rgb[c]! * a + target.data[di + c]! * (1 - a));
+        target.data[di + 3] = Math.max(target.data[di + 3]!, Math.round(a * 255));
+      }
+    }
+  }
   drawImage(image: Raster, sx: number, sy: number, sw: number, sh: number, dx: number, dy: number, dw: number, dh: number): void {
     const { target } = this;
     const x0 = Math.max(0, Math.floor(dx));
@@ -56,8 +77,8 @@ const imageCache = new Map<string, Raster | null>();
 
 /** 에디터 createGraftedTilesetCanvas 와 같은 합성 — 이식 타일(숲마을 수관·절벽 등)을 아틀라스에 붙인다.
  * 빠뜨리면 숲이 줄기만 남은 그림이 되어 「나무가 잘렸다」는 거짓 결함을 낳는다. */
-function loadTilesetRaster(tileset: TilesetDef): Raster | null {
-  const base = loadBaseTilesetRaster(tileset);
+function loadTilesetRaster(project: Project, tileset: TilesetDef): Raster | null {
+  const base = loadBaseTilesetRaster(project, tileset);
   const grafts = activeTileGrafts(tileset);
   if (!base || grafts.length === 0) return base;
   const key = `grafts|${tileset.id}|${grafts.map(g => `${g.targetTile}:${g.sourceChipset}:${g.sourceTile}`).join(",")}`;
@@ -68,7 +89,7 @@ function loadTilesetRaster(tileset: TilesetDef): Raster | null {
   const out: Raster = { width, height, data: new Uint8Array(width * height * 4) };
   for (let y = 0; y < base.height; y += 1) out.data.set(base.data.subarray(y * base.width * 4, (y + 1) * base.width * 4), y * width * 4);
   for (const graft of grafts) {
-    const source = loadBaseTilesetRaster({ id: graft.sourceChipset, image: { type: "bundled", id: graft.sourceChipset } } as TilesetDef);
+    const source = loadBaseTilesetRaster(project, { id: graft.sourceChipset, image: { type: "bundled", id: graft.sourceChipset } } as TilesetDef);
     if (!source) continue;
     const ss = bundledChipsetTileSize(graft.sourceChipset), sc = bundledChipsetTilesPerRow(graft.sourceChipset);
     const sx = (graft.sourceTile % sc) * ss, sy = Math.floor(graft.sourceTile / sc) * ss;
@@ -85,12 +106,25 @@ function loadTilesetRaster(tileset: TilesetDef): Raster | null {
   return out;
 }
 
-function loadBaseTilesetRaster(tileset: TilesetDef): Raster | null {
-  const url = tilesetBaseImageUrl(tileset);
+/**
+ * 업로드 타일셋은 **그리는 프로젝트의** 자산에서 그림을 찾는다. `tilesetBaseImageUrl(tileset)` 은 프로젝트를 안 받으면
+ * 전역 store 를 보고, 거기에 그 자산이 없으면 기본 칩셋 경로로 떨어진다 — 헤드리스 조수(pi-agent·gen)는 store 에
+ * 다른 프로젝트가 있어 업로드 그림판(Rasak 48px 등)이 엉뚱한 기본 칩셋 조각으로 그려졌다(2026-09-25 실측).
+ * 자산이 없거나 ref 만 있고 해석기가 없으면 null — 호출자가 「그림을 못 읽었다」로 보고한다(기본 칩셋 대체 금지).
+ */
+function tilesetSourceUrl(project: Project, tileset: TilesetDef): string | null {
+  if (tileset.image.type !== "uploaded") return tilesetBaseImageUrl(tileset, project);
+  const asset = project.assets.uploaded[tileset.image.id];
+  return (asset ? uploadedAssetUrl(asset) : "") || null;
+}
+
+function loadBaseTilesetRaster(project: Project, tileset: TilesetDef): Raster | null {
+  const url = tilesetSourceUrl(project, tileset);
+  if (!url) return null;
   const key = `${url}|${tileset.transparentColor ?? ""}`;
   if (imageCache.has(key)) return imageCache.get(key)!;
   let bytes: Buffer | null = null;
-  if (url.startsWith("data:")) bytes = Buffer.from(url.slice(url.indexOf(",") + 1), "base64");
+  if (url.startsWith("data:image/png;base64,")) bytes = Buffer.from(url.slice(url.indexOf(",") + 1), "base64");
   else if (/^\.?\/?assets\//u.test(url)) {
     const file = path.join("public", url.replace(/^\.?\//u, ""));
     if (fs.existsSync(file)) bytes = fs.readFileSync(file);
@@ -155,7 +189,7 @@ export function renderMapPng(project: Project, map: GameMap, scale = 1): { png: 
     target.data[i] = dark ? 42 : 51; target.data[i + 1] = dark ? 42 : 51; target.data[i + 2] = dark ? 46 : 58; target.data[i + 3] = 255;
   }
   let note: string | undefined;
-  const image = tileset ? loadTilesetRaster(tileset) : null;
+  const image = tileset ? loadTilesetRaster(project, tileset) : null;
   if (!tileset || !image) note = `타일셋 이미지를 읽지 못했습니다(${map.tilesetId})`;
   else {
     const context = new PngContext(target) as unknown as CanvasRenderingContext2D;
@@ -184,7 +218,9 @@ export function renderToolRegionPngBase64(project: Project, data: unknown, maxSi
   const region = (data && typeof data === "object" ? data : {}) as { mapId?: unknown; x?: unknown; y?: unknown; w?: unknown; h?: unknown };
   const map = typeof region.mapId === "string" ? project.maps[region.mapId] : undefined;
   if (!map) throw new Error(`show_map_region 이미지: 맵을 찾을 수 없습니다(${String(region.mapId)})`);
-  const { png } = renderMapPng(project, map);
+  const { png, note } = renderMapPng(project, map);
+  // 그림판을 못 읽은 바둑판 그림을 「맵 이미지」로 주면 모델이 빈 맵으로 오해한다 — 도구 실패로 돌려준다.
+  if (note) throw new Error(`map-rendering-unavailable: ${note}`);
   const full = PNG.sync.read(png);
   const tile = Math.round(full.width / Math.max(1, map.width));
   const num = (value: unknown, fallback: number): number => (typeof value === "number" && Number.isFinite(value) ? value : fallback);

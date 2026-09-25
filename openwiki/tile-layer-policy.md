@@ -23,6 +23,25 @@ DB 타일셋 편집기(`src/editor/panels/tilesetMetadataEditor.ts`), 테스트�
 `tileLayerPolicy(tileset, tile)` 는 부류·홈 레이어·받침 타일·짝 조각·근거 문장을 함께 준다.
 근거 문장은 편집기 규칙 탭과 검토 목록에 그대로 표시된다.
 
+## 층 번호 ↔ 맵 칸 ↔ 도구 인자 (MZ 네 층, 2026-09-25)
+
+위 「홈 레이어」의 하위/상위는 1층/3층이다. MZ 식 네 층 + 그림자(PR ① #1447, 설계 `docs/superpowers/specs/2026-09-24-mz-four-layer-design.md`)에서는
+2층·4층·그림자가 **선택 칸**으로 더해진다. 대응은 `src/project/mapLayers.ts` 한 곳에만 둔다.
+
+| 층 | 맵 칸(`GameMap`) | 빈칸 값 | 도구 `layer` 값 | 무엇을 싣나 | 고스트 표시 묶음 | Pi 증분 `layer` |
+|---|---|---|---|---|---|---|
+| 1층 | `lowerTiles` (늘 있음) | -1 | `"1"` = `"lower"` | 바닥(물·흙·벽 자동타일) | lower | `lower` |
+| 2층 | `lowerOverlayTiles` (선택) | -1 | `"2"` | 바닥 장식(풀·흙 자동타일, 캐릭터 아래) | lower (칸 테두리만) | `layer2` |
+| 3층 | `upperTiles` (늘 있음) | -1 | `"3"` = `"upper"` | 물체(나무·바위·건물, ★ 은 캐릭터 위) | upper | `upper` |
+| 4층 | `upperOverlayTiles` (선택) | -1 | `"4"` | 물체 위 물체(3층과 겹쳐 쌓기) | upper (칸 테두리만) | `layer4` |
+| 그림자 | `shadowBits` (선택) | 0 | `tile_erase` `"shadow"`, 쓰기는 `paint_shadow`·`stamp_layer_block` `shadow` | 사분면 비트 tl=1 tr=2 bl=4 br=8 | lower (칸 테두리만) | `shadow` |
+
+- 층 인자는 **문자열 enum**이다(`TOOL_LAYER_ENUM`, `src/editor/tools/mapHelpers.ts`). 정수 enum 은 Gemini 함수 선언에서 불안정하다.
+- 홈 레이어 라우팅(이 문서의 부류 판정)은 1·3층 요청에만 적용한다. `"2"`·`"4"` 는 준 그대로 쓴다.
+- 선택 칸은 비면 키를 지운다(`compactMapLayers`) — 옛 맵은 JSON 이 그대로다. 증분에서는 키가 사라지면 `absent: true`.
+- 1층을 칠하면 그 칸 2층이 지워진다(설계 기본값). 도구별 세부 계약은 [editor-ai-tools.md](editor-ai-tools.md) 「조수 쓰기 도구의 네 층」,
+  조수에게 가르치는 법은 [teaching-assistant-tilesets.md](teaching-assistant-tilesets.md) 「네 층 타일셋 가르치기」.
+
 ## 받침(backing) 메타
 
 - 스키마: `TileAiMetadata.layerBacking?: "none" | number` (`src/project/types/base.ts`).
