@@ -375,6 +375,16 @@ export async function runPiCommand(
     const dial = label ? `자율성 「${label}」의 작업 한도` : "작업 한도";
     return `${dial}(${hit[1]}턴)에 도달해 중단했습니다 — ${publication.count ? "이미 반영한 변경은 남아 있습니다." : "아직 적용하지 않은 결과는 초안으로 남습니다."} 자율성 다이얼을 올려 다시 보내세요.`;
   };
+  // 검색은 실제로 길다(실측 2026-09-21: 31초). 그동안 화면이 "작업 중…"만 보여 주면 멈춘 것처럼 보인다 —
+  // 무엇을 기다리는지 말해 주면 사용자가 기다릴 지 알 수 있다. 다만 **걸리는 시간은 약속하지 않는다**:
+  // 예전 문구는 "십 초 정도"라고 적어 위 실측과 어긋났다. 그리고 `tool_end` 에서 반드시 이 상태를
+  // 떠난다 — 듣지 않으면 검색이 끝난 뒤에도 다음 모델 턴까지 「찾는 중」이 화면에 남는다(UX-005).
+  const WEB_SEARCH_STATUS = "웹에서 참고 작품을 찾는 중… (시간이 걸릴 수 있어요)";
+  const trackWebSearchStatus = (event: PiAgentEvent, idleStatus: string): void => {
+    if (event.type !== "tool_start" && event.type !== "tool_end") return;
+    if (event.name !== "web_search") return;
+    surface.setStatus(event.type === "tool_start" ? WEB_SEARCH_STATUS : idleStatus);
+  };
   const wrap = (mapIds: readonly string[], index: number) => (raw: PiAgentEvent): void => {
     // heartbeat 는 연결 생존 신호다 — 클라이언트 워치독이 이미 소뱄했고, 보드에는 그릴 것이 없다.
     if (raw.type === "heartbeat") {
@@ -405,12 +415,9 @@ export async function runPiCommand(
     if (event.type === "error") { push({ type: "agent_event", agentId, event }); push(event); return; }
     if (event.type === "done") { push({ type: "agent_event", agentId, event }); return; }
     push({ type: "agent_event", agentId, event });
-    if (event.type === "turn") surface.setStatus(groups.length > 1 ? `작업 중… (${index + 1}/${groups.length})` : "작업 중…");
-    // 검색은 실제로 길다(실측 2026-09-21: 31초). 그동안 화면이 "작업 중…"만 보여 주면 멈춘 것처럼 보인다 —
-    // 무엇을 기다리는지 말해 주면 사용자가 기다릴 지 알 수 있다.
-    if (event.type === "tool_start" && event.name === "web_search") {
-      surface.setStatus("웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)");
-    }
+    const workingStatus = groups.length > 1 ? `작업 중… (${index + 1}/${groups.length})` : "작업 중…";
+    if (event.type === "turn") surface.setStatus(workingStatus);
+    trackWebSearchStatus(event, workingStatus);
   };
 
   let results: PiAgentDoneEvent[];
@@ -450,9 +457,7 @@ export async function runPiCommand(
         showConstructionEvent(event);
         push({ type: "agent_event", agentId: "ultrabrain-plan", event });
         // 계획 턴이 참고 작품을 검색하는 자리다 — 사용자는 아직 화면에 "어떻게 바꿀지 정리하고 있어요"만 보고 있다.
-        if (event.type === "tool_start" && event.name === "web_search") {
-          surface.setStatus("웹에서 참고 작품을 찾는 중… (십 초 정도 걸릴 수 있어요)");
-        }
+        trackWebSearchStatus(event, "어떻게 바꿀지 정리하고 있어요.");
         if (event.type === "assistant") plan = event.text;
         if (event.type === "error") planError = event.message;
       } });
@@ -698,7 +703,11 @@ export async function runPiCommand(
       const message = error instanceof Error ? error.message : String(error);
       harmonyIssue = `검수를 하지 못했어요 — ${friendlyExecutionError(message)}`;
       surface.appendProcess?.(message);
-      surface.appendBubble("system", publication.count ? "변경 내용을 끝까지 검수하지 못했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경 내용을 끝까지 확인하지 못했어요. 아직 적용하지 않았으니 직접 확인하고 적용해 주세요.");
+      // 검수를 «하지 못한» 원인만 말한다 — 적용 여부는 적용 시점의 표면(상태 줄·영수증·검토 카드)이
+      // 말한다. 여기서 「아직 적용하지 않았으니」 를 함께 적으면 사용자가 검토 카드에서 적용한 뒤에도
+      // 그 줄이 채팅에 남아 「적용 완료」·「적용됨」 과 동시에 보인다.
+      // (2026-09-25 실측: 사용자 QA 원장 「AI 검수 실패와 적용 후 안내가 모순됨」, 회귀 test/piAgentRunOutcome.test.ts)
+      surface.appendBubble("system", publication.count ? "변경 내용을 끝까지 검수하지 못했어요. 이미 반영한 변경은 남아 있으며 되돌릴 수 있어요." : "변경 내용을 끝까지 확인하지 못했어요.");
       push({ type: "agent_spawn", agentId: "ultrabrain", role: "reviewer", mapId: null, mapName: null, task: "전체 맵 조화 검수", label: "Ultrabrain" });
       // 검수를 «하지 못한 것» 은 «지적»이 아니다. 예전에는 findings=[오류문구] 로 발행되어
       // 보드에 「지적 1건」 이 생겼다 — 프로바이더 빈응답이 작품 결함처럼 보였다.
