@@ -79,7 +79,7 @@ const coveredGroup = (groupId: string) => groupId.startsWith("bare-trees:") || g
 function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
   return (tileset.structureKits ?? []).filter(kit => kit.kind === "section" && !coveredKit(kit.id)).map(kit => ({
     id: `kit:${tileset.id}/${kit.id}`, kind: "object" as const, name: kit.name || kit.id, category: "project-kit" as const, tilesetId: tileset.id,
-    width: kit.width, height: kit.height, tags: [tileset.name, "타일셋 킷"], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
+    width: kit.width, height: kit.height, tags: [tileset.name, "타일셋 킷", ...(kit.ai?.tags ?? [])], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
   }));
 }
 

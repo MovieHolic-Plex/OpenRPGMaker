@@ -62,7 +62,7 @@ class Canvas:
             prev = self.owner.get((ly, cy * self.w + cx))
             if prev and not over:
                 self.errors.append(f'{where}: {ly}층 ({cx},{cy}) 에서 {prev} 를 덮어씀')
-            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_')) and self.ground(cx, cy) != 'table':
+            if ly == 4 and self.L[3][cy * self.w + cx] is None and not oid.startswith(('building_', 'trees_', 'sb_')) and self.ground(cx, cy) != 'table':
                 self.errors.append(f'{where}: 4층 소품 밑 ({cx},{cy}) 에 3층 물체가 없음')
         if ly == 2:
             for cx, cy, _ in cells:
@@ -75,7 +75,7 @@ class Canvas:
                 if not self.ok(cx, cy):
                     continue
                 g = self.ground(cx, cy)
-                if oid.startswith('building_'):
+                if oid.startswith(('building_', 'sb_')):
                     continue
                 if wall_mount and g != 'wall':
                     self.errors.append(f'{where}: 벽걸이인데 ({cx},{cy}) 가 벽면이 아님({g})')

@@ -154,7 +154,15 @@ class Bundle:
         self.atlas = Image.open(root / 'baked' / bid / 'atlas.layers.png').convert('RGBA')
         self.names = names['bundles'][bid]
         self.orig = original[bid]
-        assert len(self.orig['priority']) == self.count, (bid, len(self.orig['priority']), self.count)
+        # 굽기 뒤에 시트를 붙였으면(특수 건물 S 구역) 프로젝트 덤프가 짧다 — 앞 칸은 그대로이고 새 칸만 기본값으로 채운다.
+        # apply --atlas-dir 가 같은 순서로 아틀라스·칸 수를 갈아 끼운다.
+        grow = self.count - len(self.orig['priority'])
+        assert grow >= 0, (bid, len(self.orig['priority']), self.count)
+        if grow:
+            self.orig = {**self.orig,
+                         'priority': self.orig['priority'] + ['upper'] * grow,
+                         'passability': self.orig['passability'] + [{'up': False, 'down': False, 'left': False, 'right': False}] * grow,
+                         'tileMeta': self.orig['tileMeta'] + [{'passage': 'solid', 'defaultLayer': 'upper'}] * grow}
         self.cache = {}
         # kind 찾기: (slot, kind) → kind 기록. A5 는 그룹 이름(kind="A5:<id>")으로.
         self.kinds = {}
@@ -551,6 +559,209 @@ def build_tile_groups(b):
             'source': 'imported', 'confidence': 'medium',
         })
     return groups
+
+
+# ───────────────────────── 특수 건물(Special_Buildings) ─────────────────────────
+# 건물 그림 한 장 = 물체 하나 = structureKit 하나(sb_<건물>). 조수는 칸 배열을 옮겨 적지 않고
+# stamp_object({objectId:"kit:<타일셋>/sb_<건물>"}) 한 번으로 찍는다(src/editor/tools/sharedObjectTools.ts).
+
+ENTRY_KO = {'door': '문', 'front': '정면 벽 아래(문 그림 없음)', 'deck': '데크·툇마루', 'stairs': '계단', 'ladder': '사다리 밑',
+            'counter': '판매대 앞', 'workshop': '트인 작업장'}
+SETTING_KO = {'beach': '해변 초가', 'common': '보통 마을', 'noble': '부자 동네', 'port': '항구', 'wild': '숲가·변두리',
+              'viking': '바이킹(북쪽 바닷가)', 'hunter': '숲 속 사냥 야영', 'church': '교회'}
+ROLE_TAG = {'inn': '여관', 'smith': '대장간', 'store': '상점', 'storage': '창고', 'church': '교회', 'house': '집', 'workshop': '작업장',
+            'camp': '야영지', 'longhouse': '긴 집', 'mortuary': '장의사', 'mystic': '점술가'}
+
+
+def building_objects(b):
+    return [o for o in b.names['objects'] if o.get('building')]
+
+
+def build_structure_kits(b):
+    kits = []
+    for o in building_objects(b):
+        w, h = o['size']
+        bd = o['building']
+        entries = bd['entry']
+        parts = [{'id': f"entry{i + 1}", 'kind': 'entrance', 'dx': e['x'], 'dy': e['y'], 'w': 1, 'h': 1,
+                  'note': f"{ENTRY_KO.get(e['kind'], e['kind'])} — {e['note']}"} for i, e in enumerate(entries)]
+        ent = ', '.join(f"{ENTRY_KO.get(e['kind'], e['kind'])}({e['x']},{e['y']})" for e in entries) or '없음(배경 건물)'
+        kits.append({
+            'id': o['id'], 'kind': 'section', 'name': o['name'], 'width': w, 'height': h, 'tileSize': T,
+            'rows': [{'tiles': [-1] * w, 'upperTiles': list(row)} for row in o['cells']],
+            **({'parts': parts} if parts else {}),
+            'ai': {'description': f"Rasak 특수 건물 · {SETTING_KO.get(bd['setting'], bd['setting'])} · {ROLE_TAG.get(bd['role'], bd['role'])} · {w}×{h}칸 · 입구 {ent}"
+                                  + (' · 마당 소품 포함' if bd['yard'] else ''),
+                   'placementRules': (f"stamp_object 로 한 번에 찍는다(칸 배열을 옮겨 적지 않는다). 먼저 1층 땅을 {w}×{h} 전체에 깐다(투명 칸은 땅이 비친다). "
+                                      + ('입구 칸(킷 원점 + entry)에 이동·상점 이벤트, 그 아래 칸까지 길을 잇는다. ' if entries else '들어갈 수 없는 배경 건물 — 뒷줄·담장 뒤에. ')
+                                      + (bd['notes'] or '')),
+                   'tags': ['rasak', '특수 건물', ROLE_TAG.get(bd['role'], bd['role']), SETTING_KO.get(bd['setting'], bd['setting'])],
+                   'repeatability': 'fixed', 'layerHome': 'upper', 'themes': [bd['setting']], 'origin': 'ai', 'confidence': 'medium'},
+            'learnedFrom': 'db-authored',
+        })
+    return kits
+
+
+def building_picture(b, o, scale=0.5):
+    w, h = o['size']
+    img = Image.new('RGBA', (w * T, h * T), (0, 0, 0, 0))
+    for y, row in enumerate(o['cells']):
+        for x, t in enumerate(row):
+            if t >= 0:
+                img.alpha_composite(b.tile(t), (x * T, y * T))
+    d = ImageDraw.Draw(img)
+    for e in o['building']['entry']:
+        d.rectangle([e['x'] * T + 2, e['y'] * T + 2, e['x'] * T + T - 3, e['y'] * T + T - 3], outline=(255, 230, 0, 255), width=5)
+    return img.resize((int(w * T * scale), int(h * T * scale)), Image.LANCZOS)
+
+
+def buildings_catalog_images(b, objs, max_w=1500):
+    """설정별로 묶어 한 장에 여러 채. 노란 네모 = 입구 칸, 이름 아래 id·크기·입구 좌표."""
+    groups = collections.OrderedDict()
+    for o in objs:
+        st = o['building']['setting']
+        groups.setdefault({'church': 'common', 'hunter': 'wild'}.get(st, st), []).append(o)
+    sheets = []
+    for setting, items in groups.items():
+        pics = [(o, building_picture(b, o)) for o in items]
+        colw = {o['id']: max(im.width, 9 * len(f"{o['id']} {o['size'][0]}×{o['size'][1]}") + 8) + 16 for o, im in pics}
+        rows, row, rw = [], [], 0
+        for o, im in pics:
+            cw = colw[o['id']]
+            if row and rw + cw > max_w:
+                rows.append(row); row, rw = [], 0
+            row.append((o, im)); rw += cw
+        if row:
+            rows.append(row)
+        H = sum(max(im.height for _, im in r) + 58 for r in rows) + 40
+        W = max(sum(colw[o['id']] for o, _ in r) for r in rows)
+        sheet = Image.new('RGBA', (W, H), (40, 44, 40, 255))
+        d = ImageDraw.Draw(sheet)
+        d.text((8, 6), f"Rasak 특수 건물 · {SETTING_KO.get(setting, setting)} — 노란 네모 = 입구 칸(킷 원점 기준 좌표)", font=font(18), fill=(240, 240, 240))
+        y = 40
+        for r in rows:
+            x = 8
+            rh = max(im.height for _, im in r)
+            for o, im in r:
+                sheet.alpha_composite(im, (x, y + rh - im.height))
+                bd = o['building']
+                ent = ' '.join(f"{e['kind']}({e['x']},{e['y']})" for e in bd['entry']) or '배경(입구 없음)'
+                d.text((x, y + rh + 4), f"{o['id']} {o['size'][0]}×{o['size'][1]}", font=font(15, mono=True), fill=(255, 255, 255))
+                d.text((x, y + rh + 24), ent, font=font(14), fill=(255, 230, 120))
+                x += colw[o['id']]
+            y += rh + 58
+        sheets.append((f"buildings_{setting}", f"특수 건물 · {SETTING_KO.get(setting, setting)}", sheet))
+    return sheets
+
+
+BUILDINGS_EXAMPLE = 'ex_town_buildings'
+
+
+def building_placements(m, objs):
+    """예제 맵 3층에서 특수 건물이 찍힌 왼위 좌표를 찾는다(건물 칸 번호는 건물마다 고유)."""
+    w, L3 = m['width'], m['upperTiles']
+    pos = {t: i for i, t in enumerate(L3) if t >= 0}
+    out = []
+    for o in objs:
+        cells = [(x, y, t) for y, row in enumerate(o['cells']) for x, t in enumerate(row) if t >= 0]
+        x, y, t = cells[0]
+        if t not in pos:
+            continue
+        ox, oy = pos[t] % w - x, pos[t] // w - y
+        if all(0 <= ox + cx < w and L3[(oy + cy) * w + ox + cx] == ct for cx, cy, ct in cells):
+            out.append((o, ox, oy))
+    return out
+
+
+def build_buildings_purpose(b, root):
+    objs = building_objects(b)
+    tsid = b.id
+    rows = []
+    for o in objs:
+        bd = o['building']
+        ent = ', '.join(f"{ENTRY_KO.get(e['kind'], e['kind'])} ({e['x']},{e['y']})" for e in bd['entry']) or '— 배경'
+        rows.append(f"| `{o['id']}` | {o['name']} | {o['size'][0]}×{o['size'][1]} | {ent} | {SETTING_KO.get(bd['setting'], bd['setting'])} · {ROLE_TAG.get(bd['role'], bd['role'])} |")
+    guide = f"""layer-model: mz4
+# Rasak 특수 건물 — 통째로 찍는 완성 건물 {len(objs)}채
+
+`referencePurpose: "town_buildings"` · 타일셋 `{tsid}`
+
+여관·대장간·상점·교회·해변 오두막·항구 여관·바이킹 긴 집 같은 **완성된 건물 그림**이다. 지붕·벽·문·창·굴뚝이 이미 한 그림에 들어 있어,
+A3 지붕+벽으로 조립하는 집보다 훨씬 제작자 맵에 가깝다. 마을·도시를 만들 때 **먼저 이것을 고르고**, 모자라는 자리만 조립 집으로 채운다.
+
+## 찍는 법 (칸 배열을 옮겨 적지 않는다)
+
+1. **땅부터**: 건물이 차지할 사각형(킷 크기 전체)에 1층 땅을 먼저 깐다. 건물 그림 둘레·마당은 투명이라 그 아래 땅이 비친다.
+2. **한 번에 찍기**: `stamp_object({{"objectId": "kit:{tsid}/sb_<건물>", "mapId": "…", "x": 왼위x, "y": 왼위y}})` — 3층에 건물이 통째로 들어간다.
+   `list_spatial_designs({{"kind": "object", "query": "특수 건물"}})` 로 목록을, `get_spatial_design({{"id": "kit:{tsid}/sb_<건물>"}})` 으로 칸 배열·입구를 볼 수 있다.
+   `stamp_layer_block` 으로 수백 칸 배열을 손으로 옮기지 않는다 — 한 칸만 어긋나도 건물이 찢어진다.
+3. **입구**: 킷의 입구(entry) 칸 = 맵 (x + 입구x, y + 입구y). 거기에 이동 이벤트(집 안으로)나 상점 이벤트(판매대 앞)를 둔다.
+   **길은 입구 칸 바로 아래 칸에서 끝나게** 잇는다. 입구 종류: 문 · 정면 벽 아래(문 그림 없음) · 데크·툇마루 · 계단 · 사다리 밑 · 판매대 앞 · 트인 작업장.
+4. **배경 건물**(입구 없음 — 뒷면·옆면·문 없는 집)은 들어가는 집으로 쓰지 않는다. 뒷줄·담장 뒤·마을 가장자리를 채운다.
+5. 찍은 뒤 `show_map_region` 으로 건물 둘레를 보고, 입구 앞이 막히지 않았는지 `check_reachability` 로 확인한다.
+
+## 어디에 놓는가
+
+- **보통 마을(common_*)**: 여관 1 · 대장간 1 · 상점 1~2 + 조립 집. 광장이나 큰길에 입구를 향하게.
+- **부자 동네(noble_*)**: 돌 포장 광장 둘레. 오크판(`_orc`)은 약탈당한 마을.
+- **항구(port_*)**: 물가 — 데크 기둥이 물 쪽으로 오게. 사다리·데크가 입구다.
+- **해변(beach_*)**: 물가 풀밭·흙바닥. 둥근 초가 오두막이 모여 있는 어촌. 마당 소품(그물·배·장작)이 이미 그려져 있다.
+- **숲가(wild_*)·사냥 야영(huntercamp_*)**: 숲 공터. 둘레를 나무로 감싼다.
+- **바이킹(viking_*)**: 북쪽 바닷가·눈 마을. 긴 집은 세로로 길다.
+- **교회**: 정문 없는 옆면 — 담장 입구를 따로 만든다.
+
+## 지켜야 할 것
+
+- 건물끼리 칸을 겹치지 않는다(나중에 찍은 건물이 앞 건물 칸을 덮는다). 두 건물 사이 1칸 이상 띄우거나, 마당 투명 칸끼리만 맞댄다.
+- 건물 위(지붕·벽 칸)에 소품을 올리지 않는다. 건물 칸에 나무·가로등을 겹치지 않는다.
+- 통행: 본체는 막힘, 지붕 맨 윗줄은 ★(캐릭터 뒤로 지나감), 입구·데크 칸은 통과. 마당의 낮은 울타리는 휴리스틱이라 통과로 잡힌 칸이 있다 — 막아야 하면 이벤트나 다른 물체로 막는다.
+- 한 맵에 같은 건물을 여러 번 쓰지 않는다(같은 그림이 되풀이되면 복사한 티가 난다). 비슷한 판(`_2`·`_3`)은 서로 다른 그림이다.
+"""
+    ex_path = root / 'maps' / f'rasak_preview_{BUILDINGS_EXAMPLE}.layers.map.json'
+    ex_doc, ex_img = None, None
+    if ex_path.exists():
+        m = json.loads(ex_path.read_text())
+        W, H = m['width'], m['height']
+        m['L'] = {1: m['lowerTiles'], 2: m.get('lowerOverlayTiles') or [-1] * (W * H), 3: m['upperTiles'], 4: m.get('upperOverlayTiles') or [-1] * (W * H)}
+        m['SH'] = m.get('shadowBits') or [0] * (W * H)
+        placed = building_placements(m, objs)
+        img = render(b, cut_window(m, 0, 0, W, H))
+        d = ImageDraw.Draw(img)
+        steps = []
+        for o, ox, oy in placed:
+            w, h = o['size']
+            d.rectangle([ox * T, oy * T, (ox + w) * T - 1, (oy + h) * T - 1], outline=(80, 200, 255, 255), width=4)
+            ents = [(ox + e['x'], oy + e['y'], e['kind']) for e in o['building']['entry']]
+            for ex, ey, _ in ents:
+                d.rectangle([ex * T + 3, ey * T + 3, ex * T + T - 4, ey * T + T - 4], outline=(255, 230, 0, 255), width=5)
+            steps.append(f"- `stamp_object({{\"objectId\":\"kit:{tsid}/{o['id']}\",\"mapId\":\"…\",\"x\":{ox},\"y\":{oy}}})` — {o['name'].split('(')[0]} {w}×{h}"
+                         + (' · 입구 ' + ', '.join(f"{ENTRY_KO.get(k, k)} ({ex},{ey}) → 이벤트, 길은 ({ex},{ey + 1}) 에서 끝" for ex, ey, k in ents) if ents else ''))
+        ex_img = (framed(img.resize((W * T // 2, H * T // 2), Image.LANCZOS), W, H, title=f'예제 {BUILDINGS_EXAMPLE} {W}×{H} — 파란 테 = 건물 킷, 노란 네모 = 입구', grid=False, ticks=False))
+        ex_doc = (f"# 완성 예제 — 특수 건물 마을 {W}×{H}(실행 순서)\n\n"
+                  "그림 `buildings_example` 이 이 순서의 결과다. 좌표·건물을 그대로 베끼지 말고 **순서와 간격**을 따른다 — 맵마다 건물 고르기·자리는 달라야 한다.\n\n"
+                  "1. 1층 풀밭(A2:0 대표 3072)을 맵 전체에. 숲 벽(왼쪽·아래 모서리)은 큰 나무를 빈틈없이, 반 칸 어긋나게 한 겹 더.\n"
+                  "2. 큰길(흙길 A2:1 대표 3120, 2칸 폭)을 먼저 긋는다 — 건물은 큰길 양쪽에 **입구가 길을 보게** 놓는다.\n"
+                  "3. 건물 찍기:\n" + "\n".join(steps) + "\n"
+                  "4. 입구 아래 칸부터 큰길까지 흙길 1칸을 잇는다(길이 입구에서 끝난다). 건물 사이는 1칸 이상 띄운다.\n"
+                  "5. 건물 곁에 **그 건물의 생활 소품 덩이**: 여관 = 술통 더미·짐수레·장작, 상점 = 상자·화분·꽃, 대장간 = 물통·톱밥·상자, 창고 = 자루·상자.\n"
+                  "6. 남은 자리에 우물 광장(한쪽으로 치우침)·밭(울타리 세 면 + 허수아비)·들쭉날쭉 연못, 빈 풀밭에 덤불·꽃·어린나무 덩이.\n"
+                  "7. `show_map_region` 으로 전체를 보고, 3×3 넘게 빈 풀밭·같은 건물 두 번·입구 앞 막힘이 없는지 확인한다.\n")
+    table = "# 특수 건물 목록\n\n| 킷 id | 이름 | 크기 | 입구(킷 안 좌표) | 쓰임 |\n|---|---|---|---|---|\n" + "\n".join(rows) + "\n"
+    images = buildings_catalog_images(b, objs)
+    category = {'id': 'town_buildings', 'name': 'Rasak · 특수 건물(통째로 찍는 완성 건물)',
+                'description': f'완성 건물 {len(objs)}채 — stamp_object kit:{tsid}/sb_* 로 찍고 입구 칸에 이벤트',
+                'documents': [{'id': 'town_buildings_guide', 'name': '특수 건물 쓰는 법', 'markdown': guide},
+                              *([{'id': 'town_buildings_example', 'name': '완성 예제 — 특수 건물 마을(실행 순서)', 'markdown': ex_doc}] if ex_doc else []),
+                              {'id': 'town_buildings_catalog', 'name': '특수 건물 목록(입구 좌표)', 'markdown': table}],
+                'images': []}
+    if ex_img is not None:
+        images = [('buildings_example', '완성 예제 — 특수 건물 마을', ex_img)] + images
+    for iid, name, im in images:
+        category['images'].append({'id': iid, 'name': name, 'caption': name + ' — 노란 네모가 입구 칸', 'dataUrl': to_data_url(im)})
+        im.convert('RGB').save(PREVIEW_DIR / f'town_buildings_{iid}.jpg', quality=85)
+    info = {'bundle': b.id, 'documents': [{'id': d['id'], 'chars': len(d['markdown'])} for d in category['documents']],
+            'images': [{'id': i['id'], 'bytes': len(base64.b64decode(i['dataUrl'].split(',')[1]))} for i in category['images']]}
+    return category, info
 
 
 # ───────────────────────── 그리기 ─────────────────────────
@@ -1048,6 +1259,11 @@ def recipe_md(P, b, cat):
 6. **그림자**: 집 오른쪽 바로 옆 칸 세로줄(지붕+벽 줄 전부)에 `paint_shadow` 비트 5(좌상+좌하).
 7. 집과 집 사이·집 둘레는 1칸 이상 띄우고, **집마다 살림 덩이 3~6개**(장작 칸+도끼 그루터기, 술통+상자+자루, 빨래 건조대, 창 아래 꽃상자)를 문 옆·벽 발치에 붙인다.
 8. 집 넷이면 넷 모두 폭·지붕 색·높이(지붕 2~4줄, 벽 2~3줄)를 다르게 한다. 박공(`building_gable_*_window` 1×3)은 지붕 한가운데 3층에 — 뒤는 계속 지붕이어야 한다.
+
+## 완성 건물이 먼저다(특수 건물 43채)
+- 여관·상점·대장간·창고·교회처럼 **들어가는 건물은 조립하지 말고 `town_buildings` 참고문서의 완성 건물**을 `stamp_object({{"objectId":"kit:{b.id}/sb_…"}})` 한 번으로 찍는다.
+  그림 한 장에 지붕·벽·문·창이 제작자 솜씨 그대로 들어 있다. 입구 칸·길 끝 규칙은 `town_buildings` 의 쓰는 법을 따른다.
+- 아래 A3 조립 집은 **모자라는 자리**(민가 몇 채·뒷줄)에만 쓴다. 한 마을 = 완성 건물 2~4채 + 조립 집 1~3채.
 
 ## 마을 배치 — 제작자 맵과 우리 옛 예제의 차이(적대적 시각 QA 2026-09-25)
 - **숲 벽**: 맵 가장자리 두세 면을 깊이 4~5칸 숲으로 막는다. 큰 수관(4×4 활엽수·3×4 겹친 전나무)을 먼저 빈틈없이 3층에, 그 사이를 반 칸 어긋난 나무로 **4층**에 한 번 더(겹쳐 그림). 외톨이 나무를 2~5칸 간격으로 흩뿌리지 않는다.
@@ -1781,8 +1997,13 @@ def main():
             cats.append(cat)
             pack['purposes'][pid] = info
         clean = [{k: v for k, v in g.items() if not k.startswith('_')} for g in groups]
+        kits = build_structure_kits(b)
+        if kits:
+            cat, info = build_buildings_purpose(b, root)
+            cats.append(cat)
+            pack['purposes'][cat['id']] = info
         pack['tilesets'][bid] = {'tileMeta': meta, 'priority': prio, 'passability': passab, 'tileGroups': tgroups,
-                                 'autotileGroups': clean, 'referenceDocuments': cats}
+                                 'autotileGroups': clean, 'referenceDocuments': cats, **({'structureKits': kits} if kits else {})}
         pack['verification'][bid] = {'autotile': verify, 'metaChanges': changes,
                                      'rules': {g['id']: g['_rule'] for g in groups if g['_rule'] != 'own'}}
         print(bid, 'groups', len(groups), 'tileGroups', len(tgroups), 'changes', changes)
