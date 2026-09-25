@@ -129,12 +129,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 14,
     "y": 8,
     "w": 2,
-    "h": 2,
+    "h": 1,
     "rows": [
-      [
-        474,
-        475
-      ],
       [
         474,
         475

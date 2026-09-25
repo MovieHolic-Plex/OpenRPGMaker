@@ -192,16 +192,22 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     for (let yy = y - 1; yy < m.height; yy++) for (let xx = x - 2; xx <= x + 2; xx++) if (CEIL_TILES.includes(get(m, xx, yy))) put(m, xx, yy, 430, "lowerTiles");
     reshapeCeiling(m);
   };
-  // Stairs stand on the floor, never in the wall-face rows: up = the sheet's railed flight 111/141/171 (one column,
-  // rail on the open left side, so it goes against an east wall); down = the stone flight 474|475 two rows deep.
+  // Stairs. Up = the sheet's horizontal stone flight 141 (left end) | 111 (body) | 171 (right end), three rows deep:
+  // the first floor row plus the two wall-face rows above it, so it climbs the back wall (the shape the user
+  // confirmed). The pieces are horizontal — never stack 111/141/171 in one column. Down = 474|475, one row: the pair is
+  // a single 2×1 framed descending flight, so a second row repeats the frame. Nothing stands on a stair cell.
   const walkable = (m, x, y) => { const q = TIBO.passability[get(m, x, y)]; return !!q && (q.up || q.down || q.left || q.right) && !FACE.has(get(m, x, y)); };
+  const stairCells = [];
+  // x = the flight's east column (it stands against an east wall), y = its first floor row.
   const stairsUp = (m, x, y) => {
-    for (let d = 0; d < 3; d++) assert(walkable(m, x, y + d), `stairs up on floor ${x},${y + d}`);
-    block(m, x, y, [[111], [141], [171]], "lowerTiles", "stairs");
+    for (let d = 0; d < 3; d++) assert(walkable(m, x - d, y) && FACE.has(get(m, x - d, y - 1)) && FACE.has(get(m, x - d, y - 2)), `wall stairs ${x - d},${y}`);
+    block(m, x - 2, y - 2, [[141, 111, 171], [141, 111, 171], [141, 111, 171]], "lowerTiles", "stairs");
+    for (let dy = -2; dy <= 0; dy++) for (let dx = -2; dx <= 0; dx++) stairCells.push([m, x + dx, y + dy]);
   };
   const stairsDown = (m, x, y) => {
-    for (let d = 0; d < 2; d++) for (let e = 0; e < 2; e++) assert(walkable(m, x + e, y + d), `stairs down on floor ${x + e},${y + d}`);
-    block(m, x, y, [[474, 475], [474, 475]], "upperTiles", "stairs");
+    for (let e = 0; e < 2; e++) assert(walkable(m, x + e, y), `stairs down on floor ${x + e},${y}`);
+    block(m, x, y, [[474, 475]], "upperTiles", "stairs");
+    for (let e = 0; e < 2; e++) stairCells.push([m, x + e, y, true]);
   };
 
   // ── ship sheet: same shell, re-pointed faces; Tibo cargo grafted after 480 ──
@@ -240,8 +246,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-fantasy-bar-counter", 8, 7); stamp(m, "tibo-library-029", 9, 9); stamp(m, "tibo-library-029", 11, 9);
   stamp(m, "tibo-medieval-stone-fireplace", 13, 3); redRug(m, 13, 6, 15, 6); one(m, 12, 3, 24); one(m, 16, 3, 24);
   stamp(m, "tibo-fantasy-dining-set", 13, 8);
-  table(m, 17, 6, 18, 6); stamp(m, "tibo-library-079", 17, 6); stamp(m, "tibo-library-122", 18, 6); stamp(m, "tibo-v8-1-0", 17, 3); one(m, 19, 3, 57);
-  stairsUp(m, 19, 5);
+  stairsUp(m, 19, 5);   // the foot row stays clear so the flight reads as a way up
   stamp(m, "tibo-library-025", 9, 10); stamp(m, "tibo-library-030", 8, 11); stamp(m, "tibo-library-030", 10, 11);
   stamp(m, "tibo-library-025", 17, 8); stamp(m, "tibo-library-030", 16, 9); stamp(m, "tibo-library-030", 18, 9);
   redRug(m, 12, 11, 14, 12); stamp(m, "tibo-library-209", 18, 11);
@@ -308,7 +313,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   stamp(m, "tibo-fantasy-prep-table", 2, 8); stamp(m, "tibo-library-018", 5, 8); stamp(m, "tibo-library-013", 5, 9);
   redRug(m, 8, 6, 10, 8); stamp(m, "tibo-library-026", 9, 6); stamp(m, "tibo-v7-1-2", 8, 7); one(m, 10, 7, 298); block(m, 7, 4, [[389], [419]]);
   stamp(m, "tibo-medieval-stone-fireplace", 11, 3); tealRug(m, 10, 7, 13, 8); stamp(m, "tibo-warm-bench", 11, 7);
-  stamp(m, "tibo-fantasy-bookcase", 14, 4); stairsUp(m, 16, 5);
+  stamp(m, "tibo-fantasy-bookcase", 8, 4); stairsUp(m, 16, 5);
   stamp(m, "tibo-coat-rack", 15, 8); stamp(m, "tibo-boot-rack", 7, 9);
   add("interior-home-two-story-1f", "민가 · 2층 집 1층", T, m, {
     group: "inn-homes", entry: [9, 10], targets: [[8, 8], [16, 8], [3, 7], [13, 9]],
@@ -483,8 +488,8 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   m = shell(16, 13, { wings: [{ x: 2, y: 5, w: 12, h: 5 }], door: { x: 8, y: 9 }, wall: "gold-brick" });
   floorTo(m, 42); closeDoor(m, 8, 10);
   redRug(m, 6, 6, 10, 9);
-  stamp(m, "tibo-fantasy-crystal-stand", 8, 4); stamp(m, "tibo-library-221", 5, 3); stamp(m, "tibo-library-221", 11, 3);
-  block(m, 3, 4, [[263], [293]]); block(m, 11, 4, [[263], [293]]); one(m, 2, 4, 290);
+  stamp(m, "tibo-fantasy-crystal-stand", 8, 4); stamp(m, "tibo-library-221", 5, 3); stamp(m, "tibo-library-221", 10, 3);
+  block(m, 3, 4, [[263], [293]]); block(m, 10, 4, [[263], [293]]); one(m, 2, 4, 290);
   stamp(m, "tibo-library-045", 2, 7); stamp(m, "tibo-library-045", 2, 9); stamp(m, "tibo-v10-1-0", 3, 9); stamp(m, "tibo-library-100", 4, 9);
   stamp(m, "tibo-library-045", 12, 9); stamp(m, "tibo-library-100", 10, 9);
   block(m, 6, 7, [[87], [117]]); block(m, 10, 7, [[87], [117]]);
@@ -526,8 +531,8 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     tealRug(m, 30, 10, 33, 13); clothTable(m, 31, 10, 32, 12); stamp(m, "tibo-library-160", 31, 10); stamp(m, "tibo-library-076", 31, 11); stamp(m, "tibo-library-168", 31, 12); one(m, 30, 11, 297); one(m, 33, 11, 298);
     stamp(m, "tibo-library-209", 16, 13); stamp(m, "tibo-library-209", 32, 13); for (const [x, y] of [[21, 12], [28, 12], [22, 9], [27, 9]]) one(m, x, y, 204);
     // 계단실 x2~11 y4~11: 동벽(칸막이) 앞 오르막 계단 → 성 침실, 서벽 앞 내리막 계단 → 성 보물고. 기다리는 손님용 원탁·괘종시계·초상화.
-    stairsUp(m, 11, 4); stairsDown(m, 2, 4); stamp(m, "tibo-library-218", 5, 2); stamp(m, "tibo-library-218", 8, 2); one(m, 4, 2, 24); one(m, 9, 2, 24);
-    block(m, 10, 4, [[389], [419]]); stamp(m, "tibo-medieval-armor-stand", 6, 3);
+    stairsUp(m, 11, 4); stairsDown(m, 2, 4); stamp(m, "tibo-library-218", 5, 2); stamp(m, "tibo-library-218", 7, 2); one(m, 4, 2, 24);
+    block(m, 8, 4, [[389], [419]]); stamp(m, "tibo-medieval-armor-stand", 6, 3);
     tealRug(m, 4, 7, 9, 10); stamp(m, "tibo-library-025", 6, 7); stamp(m, "tibo-library-030", 5, 8); stamp(m, "tibo-library-030", 7, 8);
     block(m, 2, 7, [[87], [117]]); stamp(m, "tibo-library-209", 2, 10); stamp(m, "tibo-library-215", 10, 11);
     // 주방 x2~11 y15~20: 뒷벽 석조 빵 화덕·솥 걸이·약초·소시지 걸이·식기장, 서벽 조리대 둘, 가운데 큰 작업 탁자(나무 상판 위 식재료)와 걸상.
@@ -584,8 +589,8 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
   // ═════════ 투기장 · 카지노 · 경매장 ═════════
   m = shell(20, 14, { wings: [{ x: 2, y: 5, w: 16, h: 6 }], door: { x: 10, y: 10 }, wall: "stone-brick" });
   floorTo(m, 42);
-  stamp(m, "tibo-fantasy-weapon-rack", 2, 4); stamp(m, "tibo-fantasy-weapon-rack", 4, 4); stamp(m, "tibo-medieval-armor-stand", 12, 4); stamp(m, "tibo-medieval-armor-stand", 14, 4);
-  stairsUp(m, 17, 5); one(m, 16, 3, 24); stamp(m, "tibo-library-221", 10, 3); stamp(m, "tibo-v6-1-0", 7, 3); one(m, 6, 3, 24);
+  stamp(m, "tibo-fantasy-weapon-rack", 2, 4); stamp(m, "tibo-fantasy-weapon-rack", 4, 4); stamp(m, "tibo-medieval-armor-stand", 12, 4);
+  stairsUp(m, 17, 5); stamp(m, "tibo-library-221", 10, 3); stamp(m, "tibo-v6-1-0", 7, 3); one(m, 6, 3, 24);
   table(m, 7, 5, 9, 5); stamp(m, "tibo-library-148", 7, 5); stamp(m, "tibo-library-155", 9, 5); stamp(m, "tibo-library-149", 10, 5); stamp(m, "tibo-v9-1-1", 11, 5);
   for (const x of [3, 11]) { stamp(m, "tibo-v4-4-0", x, 8); stamp(m, "tibo-library-028", x, 7); stamp(m, "tibo-library-028", x, 9); }
   redRug(m, 7, 7, 9, 9); stamp(m, "tibo-library-229", 16, 9); stamp(m, "tibo-v6-1-1", 17, 10);
@@ -668,10 +673,7 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
     }
   };
   const mat = nine([108, 109, 110, 138, 139, 140, 168, 169, 170]), fur = nine([2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008]);
-  const stairsWall = (m, x, y) => {
-    for (let d = 0; d < 3; d++) assert(walkable(m, x + d, y) && FACE.has(get(m, x + d, y - 1)) && FACE.has(get(m, x + d, y - 2)), `wall stairs ${x + d},${y}`);
-    block(m, x, y - 2, [[141, 111, 171], [141, 111, 171], [141, 111, 171]], "lowerTiles", "stairs");
-  };
+  const stairsWall = (m, x, y) => stairsUp(m, x + 2, y);   // x = the flight's west column
 
   // 사막 · 흙벽돌 민가 — 사암 벽·사암 바닥, 짚 돗자리 위 식탁, 물 항아리·옹기, 베틀, 선인장 화분.
   m = shell(17, 13, { wings: [{ x: 2, y: 5, w: 13, h: 5 }], door: { x: 8, y: 9 }, wall: "sandstone" });
@@ -909,6 +911,11 @@ await withTsModule("scripts/content/lib/rpg-places-entry.ts", "rpg-interiors-ent
         if (bottom.some(([x, y]) => face(x, y) || isCeil(lo(x, y)))) bad("floor furniture floating on the wall");
       }
     }
+  }
+  // Nothing may stand on a stair: an up flight keeps its upper layer empty, a down flight keeps its own 474|475.
+  for (const [m, x, y, down] of stairCells) {
+    const u = m.upperTiles[y * m.width + x], p = places.find((q) => q.map === m);
+    if (down ? u !== 474 && u !== 475 : u !== -1) rules.push(`${p?.id}: @${x},${y} — something stands on the stairs (upper ${u})`);
   }
   if (rules.length) console.error("placement rules:\n  " + rules.join("\n  "));
 

@@ -4,19 +4,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
 ```json
 [
   {
-    "tile": 1864,
-    "label": "무기 거치대",
-    "passability": {
-      "up": false,
-      "down": false,
-      "left": false,
-      "right": false
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1894,
-    "label": "필경사 책상",
+    "tile": 1903,
+    "label": "쿠션 긴 의자",
     "passability": {
       "up": true,
       "down": true,
@@ -26,19 +15,8 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1895,
-    "label": "필경사 책상",
-    "passability": {
-      "up": true,
-      "down": true,
-      "left": true,
-      "right": true
-    },
-    "priority": "upper"
-  },
-  {
-    "tile": 1924,
-    "label": "필경사 책상",
+    "tile": 1928,
+    "label": "따뜻한 목재 식기장",
     "passability": {
       "up": false,
       "down": false,
@@ -48,8 +26,30 @@ tibo_interior_expanded에서 이 분류의 맵이 쓰는 번호·라벨·통행.
     "priority": "upper"
   },
   {
-    "tile": 1925,
-    "label": "필경사 책상",
+    "tile": 1929,
+    "label": "따뜻한 목재 식기장",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1932,
+    "label": "쿠션 긴 의자",
+    "passability": {
+      "up": false,
+      "down": false,
+      "left": false,
+      "right": false
+    },
+    "priority": "upper"
+  },
+  {
+    "tile": 1933,
+    "label": "쿠션 긴 의자",
     "passability": {
       "up": false,
       "down": false,

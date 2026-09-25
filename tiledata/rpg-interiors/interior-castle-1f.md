@@ -552,18 +552,24 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   {
     "kind": "tiles",
     "layer": "lower",
-    "x": 11,
-    "y": 4,
-    "w": 1,
+    "x": 9,
+    "y": 2,
+    "w": 3,
     "h": 3,
     "rows": [
       [
-        111
+        141,
+        111,
+        171
       ],
       [
-        141
+        141,
+        111,
+        171
       ],
       [
+        141,
+        111,
         171
       ]
     ],
@@ -575,12 +581,8 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "x": 2,
     "y": 4,
     "w": 2,
-    "h": 2,
+    "h": 1,
     "rows": [
-      [
-        474,
-        475
-      ],
       [
         474,
         475
@@ -602,7 +604,7 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
     "kind": "tibo-kit",
     "kitId": "tibo-library-218",
     "name": "초상화",
-    "x": 8,
+    "x": 7,
     "y": 2,
     "w": 1,
     "h": 2,
@@ -625,21 +627,7 @@ tibo-kit은 tibo_interior_expanded의 structureKits id, tiles는 직접 놓은 �
   {
     "kind": "tiles",
     "layer": "upper",
-    "x": 9,
-    "y": 2,
-    "w": 1,
-    "h": 1,
-    "rows": [
-      [
-        24
-      ]
-    ],
-    "role": "hang"
-  },
-  {
-    "kind": "tiles",
-    "layer": "upper",
-    "x": 10,
+    "x": 8,
     "y": 4,
     "w": 1,
     "h": 2,
