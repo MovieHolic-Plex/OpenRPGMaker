@@ -103,6 +103,58 @@ identity별로 재사용한다. 따라서 목록을 다시 그릴 때 맵 수가
 쿼터 이미지는 프레임 변경 때 건너뛴다. 자식 이미지의 `visible`만 보지 말고 부모 체인까지
 확인해야 화면 밖 호수 쿼터 갱신이 다시 살아나지 않는다.
 
+## 자동저장이 프로젝트 문서를 여섯 번 지나가지 않는다 (2026-09-25)
+
+실제 프로젝트에서 편집기 렉의 지배 요인은 맵 크기가 아니라 **프로젝트 문서 크기**였다.
+실측(rasak town-host 사본: 맵 8개·최대 68×44·타일셋 322개): `tilesets` 91.6MB 중
+`referenceDocuments`(AI 학습 MD·그림) 42MB, `maps` 는 0.1MB. 타일 1칸 칠하기는 2.8ms 로 이미 싸다.
+그런데 자동저장 한 번(`saveMapPatch` 본문)이 메인 스레드를 **5,135ms** 잡았고, 저장 영수증이
+추가로 2,943ms 를 썼다. 즉 편집을 멈춘 4초 뒤마다 약 8초가 얼었다.
+
+원인은 한 번의 저장이 프로젝트 전체를 여섯 번 지나간 것이다: `projectWithoutEventDrafts` ×2(딥클론,
+각 590ms) + `serialize` ×2(각 723ms) + `JSON.parse` ×2(각 356ms), 그리고 그 위에
+`diffProjectDocuments` 가 타일셋 322칸을 **문서 본문까지** `JSON.stringify` 로 비교(1,535ms).
+
+### 계약
+
+- **`MapPatchInput` 은 이미 투영된 문서를 들고 온다.** 어댑터(`electronRepository.saveMapPatch`)는
+  `projectWithoutEventDrafts` 를 다시 부르지 않는다. 한 번 더 부르면 저장 한 번에 전역 딥클로이가 두 번 더 돈다.
+- **비교는 `projectWireView` 로 한다.** 예전의 `JSON.parse(serialize(x))` 왕복이 「보기」로 사 주던 것은
+  버려진 `terrainTemplates` 제거뿐이고, 그건 얕은 보기로 공짜로 얻는다. 복사가 사라져 배열 실체가 살아남는다.
+- **참고문서는 비교에서만 건너뛴다.** `projectPatch.sameTilesetValue` 는 문서 부분을 배열 실체(`===`)로 보고,
+  다르면 노드별 기억을 가진 요약(`jsonContentDigest`)으로 한 번만 본다. 문서 밖 필드는 기존 `sameValue` 그대로다.
+  요약의 동일성은 `canonicalJsonOf` 와 같으므로(`contentDigest.ts` 머리말) 변경 판정이 달라지지 않는다.
+  **문서가 실제로 바뀌면 패치는 문서 전체를 싣는다** — 거짓 「그대로」는 데이터 손실이고 거짓 「바뀠다」는 전송량만 늘린다.
+- **기준본은 참고문서 배열을 공유한다.** `persistedBaseline`·`acceptedBaseline` 에서 바깥 `structuredClone` 을 없앴다
+  (복제는 `projectWithoutEventDrafts` → `cloneProjectSharingReferenceDocuments` 가 한다).
+  이게 없으면 기준본의 문서가 언제나 「다른 배열」이라 위 요약이 저장마다 cold(실측 2,434ms)로 떨어져 이득이 사라진다.
+- **패치 값만 와이어 JSON 으로 맞춘다.** `withWirePatchValues` 가 실제로 실려 나가는 항목만 왕복시킨다.
+  호스트는 패치를 기준 문서에 얹어 저장문을 만들므로(`applyProjectDocumentPatch`) 값이 `serialize` 바이트와 동등해야 한다.
+  비용은 프로젝트가 아니라 변경량(칠하기 한 번 = 맵 하나)에 붙는다.
+- **3초 팀 폴링의 동일성 비교는 `jsonEqual` 이다.** `store.refreshFromHost` 가 쓰던
+  `serializeForComparison` ×2(각 2,486ms)를 값 비교로 바꿨다. 같은 객체를 만나면 지나가고 첫 차이에서 멈춘다.
+- **저장 영수증(`receipt.contentIdentity`)과 `verifyPersistedRevision` 은 건드리지 않았다.** 그 둘은 반드시
+  같은 정규화를 써야 하고, `serializeForComparison` 은 `deserialize` 로 기본값을 채운다 —
+  한쪽만 요약으로 바꾸면 호스트에서 읽어 온 값과 비교가 어긋나 통과하던 증명이 깨진다.
+
+회귀: `test/persistence/projectPatchReferenceDocuments.test.ts`(문서 공유 시 무변경 · 변경 시 payload 포함 ·
+삭제 방향 · 문서 밖 필드 보존 · 패치를 얹으면 `serialize` 와 동등)와 기존 `test/persistence/` 저장 계약.
+
+## DB 레코드 편집은 컬렉션만 복제한다 (2026-09-25)
+
+`updateDatabaseRecord` 는 텍스트·숫자 필드에서 **키스트로크마다** 불리는데 `store.update` 를 타서
+프로젝트 전체를 `structuredClone` 했다 — 실측 이름 한 글자당 778ms(최대 1,392ms).
+`store.updateDatabase(collection, mutator, change)` 는 `database[collection]` 만 복제한다.
+
+- 레코드 **객체까지** 복제한다. 호출부가 레코드에 필드를 직접 대입하므로, 배열만 슬라이스하면
+  이전 리비전과 지속화 기준본이 들고 있는 객체를 같이 바꿔 버린다.
+- `ensureSwitchVariableSlots` 는 돌린다 — 아이템 스위치 바인딩(`items[].switchId`)이 이 경로로 쓰이고
+  `ensureItemSwitchDefs` 가 그 값을 읽는다.
+- `removeLegacySpriteReferences` 는 돌리되 **`draft.database` 로 스코프**한다. DB 레코드 편집은 database 안에만
+  참조를 만들 수 있고(배우 `characterResourceId`·적 `monsterResourceId` 등), 프로젝트 전역 재귀는
+  42MB 참고문서 문자열까지 훑는다(실측 99ms).
+- `ensureProjectMapConnections`·`ensureMapTreeCoversAllMaps` 는 O(맵)이라 사실상 공짜다 — 검증 안 된 skip 을 늘리지 않는다.
+
 ## 참고문서가 많은 프로젝트의 DB 되돌리기 스냅샷 (2026-09-25)
 
 `databaseModalDirtySession`은 모달을 열거나 clean 상태를 갱신할 때와 되돌릴 때
