@@ -12,6 +12,8 @@
 #   A4  per present kind: floor 48 shapes, wall 16 shapes
 #   A5  n (MZ order)                 B..E n (MZ order: left 8 columns first)
 #   X1.. extra object sheets beyond MZ's four (same order as B..E); OPRN has no 4-sheet cap
+#   S1.. whole-building pictures (Special_Buildings): padded on the right/top to 48px, row-major, fully
+#        transparent cells are not stored; the section's `grid` maps [y][x] to the atlas index (-1 = blank)
 #   Autotile kinds whose source block is fully transparent are skipped; the manifest lists kinds.
 #   shadow  15 synthetic MZ auto-shadow quarter masks (bits 1..15)
 # manifest.json maps every atlas index back to its MZ tileId.
@@ -117,6 +119,21 @@ def bake_slot(atlas, slot, sheet, fps):
             atlas.add(plain(sheet, n, slot).copy(), entry)
 
 
+def bake_building(atlas, sheet, rel):
+    h, w = sheet.shape[:2]
+    cols, rows = -(-w // T), -(-h // T)
+    padded = np.zeros((rows * T, cols * T, 4), np.uint8)
+    padded[rows * T - h:, :w] = sheet  # 밑변을 칸 경계에 붙인다(위·오른쪽에 투명 덧대기)
+    grid = []
+    for y in range(rows):
+        row = []
+        for x in range(cols):
+            tile = padded[y * T:(y + 1) * T, x * T:(x + 1) * T]
+            row.append(-1 if blank(tile) else atlas.add(tile.copy(), {'slot': 'S', 'file': rel, 'x': x, 'y': y}))
+        grid.append(row)
+    return grid
+
+
 def bake_shadows(atlas):
     atlas.pad_row()
     for bits in range(1, 16):
@@ -156,6 +173,15 @@ def main():
         start = (len(atlas.tiles) + COLS - 1) // COLS * COLS
         bake_slot(atlas, slot, load(path), bundle.get('waterFps', 4))
         used.append({'slot': slot, 'file': rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles)})
+    for i, rel in enumerate(bundle.get('buildingSheets', [])):
+        path = src / rel
+        digest = sha256(path)
+        if known.get(rel) and known[rel] != digest:
+            raise SystemExit(f'{rel}: sha256 differs from the pack this bundle was written for ({digest})')
+        start = len(atlas.tiles)
+        grid = bake_building(atlas, load(path), rel)
+        used.append({'slot': f'S{i + 1}', 'file': rel, 'sha256': digest, 'start': start, 'end': len(atlas.tiles),
+                     'size': [len(grid[0]), len(grid)], 'grid': grid})
     shadow_start = (len(atlas.tiles) + COLS - 1) // COLS * COLS
     bake_shadows(atlas)
     atlas.pad_row()

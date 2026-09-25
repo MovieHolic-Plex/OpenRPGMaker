@@ -177,6 +177,91 @@ def ex_village(ctx):
     return c
 
 
+def building(c, oid, x, y):
+    """특수 건물(sb_*) 한 채를 왼위 (x,y) 에 찍고 맵 좌표 입구 목록을 돌려준다. 조수는 stamp_object(kit:rasak_town/sb_*) 로 같은 일을 한다."""
+    o = c.obj(oid, x, y)
+    return [(x + e['x'], y + e['y']) for e in o['building']['entry']]
+
+
+@example
+def ex_town_buildings(ctx):
+    """특수 건물 마을 40×28 — 완성 건물 넷(여관·상점·대장간·창고)을 큰길 북쪽·남쪽에 놓고, 길은 입구 바로 아래 칸에서 끝난다.
+    건물 둘레 마당 투명 칸에는 땅이 먼저 깔려 있다. 숲 벽(왼쪽·아래 모서리) · 우물 광장 · 밭 · 연못 · 생활 소품 덩이."""
+    c = Canvas(ctx, 'rasak_town', 40, 28, 'ex_town_buildings', 'Rasak 예제 · 특수 건물 마을')
+    c.kind(1, 'A2:0', rect(0, 0, 40, 28))
+    # 숲 벽: 왼쪽 띠(들쭉날쭉) · 왼아래 모서리 · 오른위 틈
+    left = [(x, y) for y in range(0, 28) for x in range(0, 3 + (y % 6 == 2) + (y > 22))]
+    bottom = [(x, y) for y in range(26, 28) for x in range(3, 12 + (y == 27) * 3)]
+    forest(c, left + bottom, seed=11)
+    # 큰길(가로 2칸) + 남쪽으로 빠지는 길
+    c.kind(1, 'A2:1', path([(4, 14), (39, 14)], 2))
+    c.kind(1, 'A2:1', path([(20, 16), (20, 27)], 2))
+    # 북쪽 건물 셋 — 입구 바로 아래에서 큰길까지
+    inn = building(c, 'sb_common_inn_small', 4, 1)
+    store = building(c, 'sb_common_store_small_3', 16, 4)
+    smith = building(c, 'sb_common_smith_small', 29, 5)
+    for ex, ey in inn[:1] + store[:1] + smith[:1]:
+        c.kind(1, 'A2:1', line_v(ex, ey + 1, 14 - (ey + 1)))
+    # 남쪽 창고(데크 입구) — 큰길에서 내려와 입구 밑에서 끝
+    storage = building(c, 'sb_common_storage_small_rasak', 30, 17)
+    sx, sy = storage[0]
+    c.kind(1, 'A2:1', path([(27, 16), (27, sy + 1), (sx, sy + 1)]))
+    # 우물 광장(흙 마당 덩이) — 남쪽 길 옆, 가운데가 아닌 한쪽
+    c.kind(1, 'A2:1', blob(22, 17, [(1, 4), (0, 5), (0, 5), (1, 3)]))
+    c.obj('town_well_roofed', 23, 17)
+    c.obj('town_log_bench', 22, 20)
+    c.obj('town_barrel_water', 26, 19)
+    c.obj('town_notice_board', 17, 16)
+    c.obj('town_street_lamp', 15, 12)
+    c.obj('town_street_lamp', 28, 12)
+    c.obj('town_signpost', 38, 16)
+    # 여관 마당: 술통 더미 · 짐수레 · 꽃 · 장작
+    c.obj('town_barrels_stack', 3, 12)
+    c.obj('town_handcart', 16, 13)
+    c.obj('garden_flowerbox_red', 6, 13)
+    c.obj('town_bin_firewood', 14, 9)
+    # 상점 앞: 상자 · 과일 상자 · 화분
+    c.obj('town_crate_x', 25, 12)
+    c.obj('garden_potted_roses', 15, 6)
+    c.obj('garden_flowers_mixed_row', 21, 13)
+    # 대장간 둘레: 물통 · 상자 · 톱밥
+    c.obj('town_tub_water', 36, 13)
+    c.obj('garden_wood_chips', 30, 13)
+    c.obj('town_crate_low', 38, 3)
+    # 밭: 갈색 흙 + 작물 줄 + 울타리 세 면(오른쪽이 입구) + 허수아비
+    c.kind(1, 'A2:16', rect(5, 18, 9, 6))
+    for i in range(9):
+        c.obj(['crops_carrot_grown', 'crops_pumpkin_grown', 'crops_blade_crop_grown'][i % 3], 5 + i, 18)
+        c.obj(['crops_blade_crop_grown_b', 'crops_carrot_grown', 'crops_pumpkin_flower'][i % 3], 5 + i, 20)
+        if i not in (4, 5):
+            c.obj('crops_seed_mounds_six', 5 + i, 22)
+    c.obj('town_scarecrow', 9, 19)
+    c.obj('town_wattle_fence_h4', 4, 17)
+    c.obj('town_wattle_fence_h4', 8, 17)
+    c.obj('town_wattle_fence_h2', 12, 17)
+    c.obj('town_wattle_fence_v4', 4, 18)
+    c.obj('town_wattle_fence_h4', 4, 24)
+    c.obj('town_wattle_fence_h4', 8, 24)
+    c.obj('town_wattle_fence_h2', 12, 24)
+    # 연못(들쭉날쭉) + 물가 덤불
+    c.kind(1, 'A1:0', blob(23, 23, [(1, 3), (0, 5), (1, 4)]))
+    c.obj('garden_bush_green', 22, 23)
+    c.obj('garden_bush_roses', 28, 24)
+    c.obj('garden_stepping_stones_94', 27, 22)
+    # 풀밭 곳곳: 덤불·꽃·어린나무(빈 풀밭이 넓게 남지 않게, 좌우 대칭 없이)
+    for oid, x, y in [('garden_bush_green', 15, 17), ('trees_summer_round_small', 16, 20), ('garden_flowers_yellow_row', 14, 25),
+                      ('garden_bush_roses', 18, 24), ('trees_summer_small_leafy_b', 16, 23), ('crops_fallen_berries_small_red', 23, 26),
+                      ('garden_bush_green', 39, 20), ('trees_summer_sapling_leafy', 38, 23), ('garden_bush_roses', 39, 26),
+                      ('garden_bush_green', 27, 3), ('trees_summer_round_small', 26, 0), ('garden_bush_green', 15, 1),
+                      ('garden_flowerpot_red', 28, 9), ('garden_bush_green', 39, 12),
+                      ('trees_summer_fir_pair_a', 30, 0), ('trees_summer_round_small', 20, 0), ('garden_bush_green', 23, 2),
+                      ('garden_flowers_red_row', 17, 2), ('trees_summer_tall_leafy', 33, 13), ('garden_bush_green', 38, 21),
+                      ('garden_flowers_mixed_row', 11, 26), 
+                      ('garden_bush_green', 13, 16), ('garden_flowers_yellow_row', 25, 16), ('garden_bush_green', 36, 1)]:
+        c.obj(oid, x, y)
+    return c
+
+
 def stall(c, x, y, body, awning='market_awning_striped'):
     """시장 좌판: 차양(3×2)을 위에, 몸체(3×2)를 아래에 — 차양 아랫줄과 몸체 윗줄이 붙는다."""
     c.obj(awning, x, y)
