@@ -155,6 +155,8 @@ export const BUNDLED_EASYRPG_CHIPSET_ASSETS = [
   {textureKey:"tex_atlas_biome_blight",path:"assets/atlas-biomes/blight-chipset.png",name:"오염된 땅 · 어둠의 숲 (바이옴)"},
   {textureKey:"tex_atlas_biome_skyisle",path:"assets/atlas-biomes/skyisle-chipset.png",name:"하늘섬 · 구름 위 떠 있는 섬 (바이옴)"},
   {textureKey:"tex_atlas_biome_tropical",path:"assets/atlas-biomes/tropical-chipset.png",name:"열대 섬 · 산호 해안 (바이옴)"},
+  // 바이옴 월드맵 시트 — EasyRPG 월드 시트(0~479 그대로) + 새 바이옴 지형 블록 10개·아이콘. build-atlas-biome-world.py, defaults/atlasBiomeWorld.ts.
+  {textureKey:"tex_atlas_biome_world",path:"assets/atlas-biomes/world-chipset.png",name:"월드맵 · 바이옴 확장 (OPRN)"},
   {textureKey:"tex_tibo_interior_expanded",path:"assets/tibo-interior/interior-expanded.png",name:"실내 확장 · Tibo"},
   { textureKey: CASTLE_TILESET_TEXTURE_KEY, path: "assets/opengameart-castle-tiles.png", name: CASTLE_TILESET_NAME },
   { textureKey: "tex_easyrpg_chipset_dungeon", path: "assets/easyrpg-chipset-dungeon-transparent.png", name: "던전 · EasyRPG (CC0)" },

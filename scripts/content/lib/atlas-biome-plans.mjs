@@ -135,7 +135,110 @@ const BORDERS = [
   B("border-tundra-crystal-plain", "tundra", "meadowRoad", { meets: { south: "수정 벌판 길", west: "이끼 벌판 길" } }, 64, 44, 8311, "수정 서리 들판", "들판 남쪽에 수정이 솟아난다", (x, y, b) => y > b.H * 0.62 + 2 * Math.sin(x / 4.5)),
 ];
 
-// World maps (lib/atlas-biome-world.mjs): continent, archipelago and regional maps on the world sheet.
-const WORLDS = [];
+// World maps (lib/atlas-biome-world.mjs): continent, archipelago and regional maps on the world sheet. Places are the
+// fields above (placeId = field plan id); an icon marks a biome's gateway field, the others are road ends.
+const ICON_OF = { jungle: "giant-tree", swamp: "mangrove", mushroom: "giant-mushroom", crystal: "crystal-spire", badlands: "dead-tree", savanna: "acacia",
+  taiga: "spruce", tundra: "cave", blight: "blight-tree", skyisle: "sky-island", tropical: "palm" };
+const REGION = {
+  jungle: { biome: "jungle", name: "우림", forest: "jungle", woods: 0.46 },
+  swamp: { biome: "swamp", name: "맹그로브 늪", forest: "swamp", woods: 0.6 },
+  mushroom: { biome: "mushroom", name: "버섯 숲", forest: "mushroom-forest", woods: 0.48 },
+  crystal: { biome: "crystal", name: "수정 평원", ground: "crystal-plain", forest: "crystal-hills", woods: 0.66 },
+  badlands: { biome: "badlands", name: "붉은 황무지", ground: "red-earth", forest: "red-canyon", woods: 0.62 },
+  savanna: { biome: "savanna", name: "사바나", ground: "savanna", forest: "forest", woods: 0.78 },
+  taiga: { biome: "taiga", name: "타이가", ground: "snow", forest: "taiga", woods: 0.5 },
+  tundra: { biome: "tundra", name: "툰드라", ground: "tundra", forest: "snowforest", woods: 0.74 },
+  blight: { biome: "blight", name: "오염된 땅", forest: "blight-forest", woods: 0.48 },
+  tropical: { biome: "tropical", name: "열대 해안", ground: "sand", forest: "jungle", woods: 0.7 },
+  skyisle: { biome: "skyisle", name: "하늘섬 초원", forest: "forest", woods: 0.7 },
+};
+const DECOR = { jungle: "giant-tree", swamp: "mangrove", mushroom: "giant-mushroom", crystal: "crystal-spire", badlands: "dead-tree", savanna: "acacia",
+  taiga: "spruce", tundra: "spruce", blight: "blight-tree", tropical: "palm", skyisle: "sky-island" };
+const reg = (k, at, r, extra = {}) => ({ ...REGION[k], at, r, ...extra });
+// n fields of a biome chain spread around (fx, fy): the first with the biome icon.
+const fields = (k, n, [fx, fy], spread = 0.08, from = 0) => CHAINS[k].slice(from, from + n).map((f, j) => {
+  const a = j * 2.4 + fx * 7;
+  return { id: f.id, placeId: f.id, name: f.name, kind: "field", ...(j === 0 && ICON_OF[k] ? { icon: ICON_OF[k] } : {}),
+    at: [Math.min(0.9, Math.max(0.1, fx + (j ? spread * Math.cos(a) : 0))), Math.min(0.88, Math.max(0.12, fy + (j ? spread * 0.8 * Math.sin(a) : 0)))],
+    ...(f.layout === "coast" ? { coast: true } : {}) };
+});
+const decor = (k, count, near, within = 0.16, extra = {}) => ({ icon: DECOR[k], count, near, within, ...extra });
+const Wd = (id, name, width, height, seed, purpose, note, o) => ({ id, world: true, category: "world", name, width, height, seed, purpose, note, gate: { maxSq: 7, screen: 0.66 }, ...o });
+
+const WORLDS = [
+  Wd("atlas-world-continent", "열한 바이옴 대륙 전도", 100, 72, 9101, "열한 바이옴이 한 대륙에 모인 월드맵",
+    "바다에 둘러싸인 대륙 하나. 북서에 눈 덮인 타이가, 북동에 툰드라, 동쪽에 수정 평원, 가운데 동쪽에 버섯 숲, 서쪽에 오염된 땅, 남서에 늪, 남쪽 가운데에 우림, 남동에 사바나와 붉은 황무지, 남쪽 바닷가에 열대 해안, 북동 바다 위에 하늘섬이 떠 있다. 바이옴마다 대표 필드 두 곳을 흙길로 잇는다",
+    { landAt: 0.5,
+      regions: [reg("taiga", [0.24, 0.16], [0.2, 0.14]), reg("tundra", [0.66, 0.13], [0.24, 0.12]), reg("crystal", [0.84, 0.36], [0.12, 0.13]), reg("mushroom", [0.6, 0.38], [0.1, 0.1]),
+        reg("blight", [0.13, 0.44], [0.1, 0.12]), reg("swamp", [0.2, 0.66], [0.11, 0.09]), reg("jungle", [0.4, 0.66], [0.13, 0.12]), reg("savanna", [0.62, 0.64], [0.12, 0.1]),
+        reg("badlands", [0.83, 0.66], [0.11, 0.12]), reg("tropical", [0.5, 0.86], [0.24, 0.07])],
+      ranges: [{ points: [[0.36, 0.26], [0.48, 0.3], [0.52, 0.22]], width: 1.8 }, { points: [[0.74, 0.5], [0.78, 0.58]], width: 1.5, kind: "red-canyon" }],
+      places: [...fields("taiga", 2, [0.24, 0.18]), ...fields("tundra", 2, [0.66, 0.14]), ...fields("crystal", 2, [0.84, 0.36]), ...fields("mushroom", 2, [0.6, 0.4]),
+        ...fields("blight", 2, [0.14, 0.44]), ...fields("swamp", 2, [0.2, 0.64]), ...fields("jungle", 2, [0.4, 0.64]), ...fields("savanna", 2, [0.62, 0.64]),
+        ...fields("badlands", 2, [0.83, 0.66]), { ...fields("tropical", 1, [0.5, 0.84])[0], coast: true }],
+      decor: [decor("savanna", 3, [0.62, 0.64]), decor("mushroom", 2, [0.6, 0.38], 0.1), decor("crystal", 2, [0.84, 0.36], 0.12), decor("tropical", 3, [0.5, 0.86], 0.2),
+        decor("skyisle", 4, [0.9, 0.12], 0.14, { onSea: true }), decor("badlands", 2, [0.83, 0.66], 0.12), decor("taiga", 3, [0.24, 0.16], 0.16)] }),
+  Wd("atlas-world-archipelago", "산호와 구름의 군도", 90, 60, 9111, "열대 섬과 하늘섬이 흩어진 군도 월드맵",
+    "바다에 섬 다섯. 가운데 큰 섬은 우림, 남쪽 섬들은 흰 모래와 야자 해안, 서쪽 섬은 늪, 북동 섬은 수정 평원이다. 섬마다 항구가 있고 뱃길로 잇는다. 북쪽 바다 위로 하늘섬이 떠 있다",
+    { islands: [[0.5, 0.48, 0.18, 0.2], [0.18, 0.4, 0.1, 0.14], [0.82, 0.3, 0.11, 0.12], [0.3, 0.8, 0.12, 0.1], [0.74, 0.78, 0.12, 0.11]],
+      regions: [reg("jungle", [0.5, 0.46], [0.16, 0.18]), reg("swamp", [0.18, 0.4], [0.1, 0.14]), reg("crystal", [0.82, 0.3], [0.12, 0.12]),
+        reg("tropical", [0.3, 0.8], [0.13, 0.11]), reg("tropical", [0.74, 0.78], [0.13, 0.12])],
+      places: [{ ...fields("jungle", 1, [0.5, 0.44])[0], port: true }, ...fields("jungle", 2, [0.5, 0.5], 0.06, 3),
+        { ...fields("swamp", 1, [0.18, 0.4])[0], port: true }, { ...fields("crystal", 1, [0.82, 0.3])[0], port: true },
+        { ...fields("tropical", 1, [0.3, 0.8])[0], port: true }, { ...fields("tropical", 2, [0.74, 0.78], 0.05, 1)[0], port: true }, fields("tropical", 3, [0.74, 0.78], 0.05, 1)[2]],
+      lanes: [["jungle-vine-ford", "swamp-mist-causeway"], ["jungle-vine-ford", "crystal-steps"], ["jungle-vine-ford", "tropical-palm-beach"], ["tropical-palm-beach", "tropical-coral-bay"]],
+      decor: [decor("skyisle", 5, [0.5, 0.1], 0.2, { onSea: true }), decor("tropical", 4, [0.3, 0.8], 0.14), decor("tropical", 3, [0.74, 0.78], 0.14)] }),
+];
+const REGIONAL = [
+  ["atlas-region-rainforest", "우림과 늪의 지역도", 9121, ["jungle", "swamp", "tropical"], "우림·늪·열대 해안이 이어지는 남쪽 지역도",
+    "가운데 우림, 서쪽 늪, 남쪽 바닷가 열대 해안. 우림의 필드 일곱 곳과 늪·해안 필드를 흙길로 잇는다",
+    { regions: [reg("jungle", [0.5, 0.42], [0.26, 0.26]), reg("swamp", [0.16, 0.5], [0.14, 0.2]), reg("tropical", [0.55, 0.86], [0.34, 0.1])],
+      places: [...fields("jungle", 5, [0.5, 0.4], 0.16), ...fields("swamp", 2, [0.16, 0.5], 0.1), ...fields("tropical", 1, [0.55, 0.82])] }],
+  ["atlas-region-frozen-north", "얼어붙은 북방 지역도", 9131, ["taiga", "tundra", "crystal"], "타이가·툰드라·수정 평원이 만나는 북방 지역도",
+    "남쪽 가문비 타이가에서 북쪽 툰드라로 나무가 끝나고, 동쪽 끝에 수정 평원이 빛난다",
+    { regions: [reg("taiga", [0.4, 0.66], [0.34, 0.24]), reg("tundra", [0.45, 0.24], [0.38, 0.2]), reg("crystal", [0.86, 0.45], [0.12, 0.2])],
+      places: [...fields("taiga", 4, [0.4, 0.66], 0.18), ...fields("tundra", 4, [0.45, 0.24], 0.18), ...fields("crystal", 1, [0.86, 0.45])] }],
+  ["atlas-region-red-plains", "금빛 초원과 붉은 땅 지역도", 9141, ["savanna", "badlands"], "사바나와 붉은 황무지가 맞닿은 지역도",
+    "서쪽 금빛 사바나 초원에 아카시아가 드문드문 서고, 동쪽으로 갈수록 붉은 흙벌과 협곡 언덕이 된다",
+    { regions: [reg("savanna", [0.32, 0.5], [0.3, 0.36]), reg("badlands", [0.76, 0.5], [0.24, 0.36])],
+      places: [...fields("savanna", 5, [0.3, 0.5], 0.18), ...fields("badlands", 5, [0.76, 0.5], 0.16)],
+      decor: [decor("savanna", 5, [0.3, 0.5], 0.25), decor("badlands", 4, [0.76, 0.5], 0.2)] }],
+  ["atlas-region-glowing-vale", "빛나는 골짜기 지역도", 9151, ["mushroom", "crystal"], "버섯 숲과 수정 평원의 골짜기 지역도",
+    "산맥에 둘러싸인 골짜기. 서쪽은 거대 버섯 숲, 동쪽은 수정 평원과 수정 언덕",
+    { regions: [reg("mushroom", [0.3, 0.5], [0.26, 0.34]), reg("crystal", [0.72, 0.5], [0.26, 0.34])],
+      ranges: [{ points: [[0.1, 0.12], [0.5, 0.08], [0.9, 0.12]], width: 1.6 }],
+      places: [...fields("mushroom", 5, [0.3, 0.52], 0.17), ...fields("crystal", 5, [0.72, 0.52], 0.17)],
+      decor: [decor("mushroom", 4, [0.3, 0.5], 0.22), decor("crystal", 4, [0.72, 0.5], 0.22)] }],
+  ["atlas-region-blighted-march", "오염된 변경 지역도", 9161, ["blight", "swamp"], "오염이 번지는 변경 지역도",
+    "동쪽의 오염된 땅과 어둠의 숲이 서쪽 푸른 숲과 남쪽 늪을 잠식해 간다",
+    { regions: [reg("blight", [0.66, 0.44], [0.28, 0.32]), reg("swamp", [0.3, 0.8], [0.22, 0.12])],
+      places: [...fields("blight", 6, [0.66, 0.44], 0.18), ...fields("swamp", 2, [0.3, 0.78], 0.1), { id: "border-blight-forest-glade", placeId: "border-blight-forest-glade", name: "오염이 번지는 숲 가장자리", kind: "field", at: [0.3, 0.4] }],
+      decor: [decor("blight", 4, [0.66, 0.44], 0.22)] }],
+  ["atlas-region-sky-reach", "구름 위 하늘섬 해역", 9171, ["skyisle"], "하늘섬이 떠 있는 바다 위 하늘 지역도",
+    "바다 위 큰 섬의 초원에서 하늘섬 길이 시작되고, 바다 위 하늘에 떠 있는 섬들이 흩어져 있다",
+    { landAt: 0.72, regions: [reg("skyisle", [0.5, 0.5], [0.4, 0.4])],
+      places: [...fields("skyisle", 7, [0.5, 0.5], 0.2)], decor: [decor("skyisle", 10, [0.5, 0.5], 0.6, { onSea: true })] }],
+  ["atlas-region-coral-isles", "산호섬 지역도", 9181, ["tropical"], "산호 바다에 흩어진 열대 섬 지역도",
+    "야자 해안 섬 넷. 섬마다 항구, 뱃길로 잇는다",
+    { islands: [[0.3, 0.35, 0.16, 0.2], [0.72, 0.3, 0.14, 0.18], [0.35, 0.78, 0.14, 0.14], [0.76, 0.76, 0.13, 0.14]],
+      regions: [reg("tropical", [0.5, 0.5], [0.6, 0.6])],
+      places: [{ ...fields("tropical", 1, [0.3, 0.35])[0], port: true }, { ...fields("tropical", 1, [0.26, 0.42], 0, 3)[0] }, { ...fields("tropical", 1, [0.72, 0.3], 0.1, 1)[0], port: true },
+        { ...fields("tropical", 1, [0.35, 0.78], 0.1, 2)[0], port: true }, { ...fields("tropical", 1, [0.76, 0.76], 0.1, 5)[0], port: true }, { ...fields("tropical", 1, [0.8, 0.7], 0, 6)[0] }],
+      lanes: [["tropical-palm-beach", "tropical-coral-bay"], ["tropical-palm-beach", "tropical-coral-isles"], ["tropical-coral-bay", "tropical-falls"]],
+      decor: [decor("tropical", 6, [0.5, 0.5], 0.6)] }],
+  ["atlas-region-crossroads", "네 바이옴 갈림길 지역도", 9191, ["jungle", "savanna", "mushroom", "taiga"], "네 바이옴이 한 점에서 만나는 지역도",
+    "가운데 흙길 네거리를 두고 북서 타이가, 북동 버섯 숲, 남서 우림, 남동 사바나가 맞닿는다. 경계 필드가 그 사이에 있다",
+    { regions: [reg("taiga", [0.25, 0.25], [0.24, 0.24]), reg("mushroom", [0.75, 0.25], [0.24, 0.24]), reg("jungle", [0.25, 0.75], [0.24, 0.24]), reg("savanna", [0.75, 0.75], [0.24, 0.24])],
+      places: [...fields("taiga", 2, [0.24, 0.24], 0.1), ...fields("mushroom", 2, [0.76, 0.24], 0.1), ...fields("jungle", 2, [0.24, 0.76], 0.1), ...fields("savanna", 2, [0.76, 0.76], 0.1),
+        { id: "border-jungle-swamp-ford", placeId: "border-jungle-swamp-ford", name: "우림과 늪의 경계 나루", kind: "field", at: [0.1, 0.55] },
+        { id: "border-savanna-badlands-plain", placeId: "border-savanna-badlands-plain", name: "초원 끝 붉은 땅", kind: "field", at: [0.88, 0.55] }],
+      decor: [decor("savanna", 3, [0.76, 0.76], 0.16), decor("mushroom", 2, [0.76, 0.24], 0.14)] }],
+  ["atlas-region-west-coast", "서쪽 해안 지역도", 9201, ["tundra", "swamp", "tropical"], "북에서 남으로 기후가 바뀌는 긴 서쪽 해안 지역도",
+    "서쪽이 바다인 긴 해안. 북쪽 툰드라 해안에서 가운데 맹그로브 늪 해안을 지나 남쪽 야자 해변까지 해안길이 이어진다",
+    { landAt: 0.5, patches: [[0, 0.5, 13, 34, "lake"]], regions: [reg("tundra", [0.55, 0.14], [0.4, 0.14]), reg("swamp", [0.5, 0.5], [0.4, 0.16]), reg("tropical", [0.5, 0.86], [0.4, 0.12])],
+      places: [{ ...fields("tundra", 1, [0.4, 0.16], 0.1, 4)[0], coast: true }, ...fields("tundra", 2, [0.6, 0.18], 0.1), { ...fields("swamp", 1, [0.4, 0.5], 0.1, 6)[0], coast: true }, ...fields("swamp", 2, [0.6, 0.5], 0.1),
+        { ...fields("tropical", 1, [0.45, 0.84])[0], coast: true }, ...fields("tropical", 2, [0.62, 0.8], 0.1, 4)] }],
+];
+for (const [id, name, seed, biomes, purpose, note, o] of REGIONAL) WORLDS.push(Wd(id, name, 72, 52, seed, purpose, note, { landAt: 0.52, biomes, ...o }));
 
 export const PLANS = [...PLANS_FIELDS, ...BORDERS, ...WORLDS];

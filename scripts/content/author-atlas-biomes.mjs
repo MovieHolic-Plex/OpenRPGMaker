@@ -29,11 +29,21 @@ const keepOld = (plan) => { const p = old.plans.find((q) => q.id === plan.id); i
 await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-entry.mjs", async (api) => {
   const kit = loadKit(api), biomes = loadBiomes(api, kit);
   const rnd = (b, [a, c]) => a + Math.floor(b.random() * (c - a + 1));
+  let worldTs = null;
   for (const plan of PLANS) {
     if ((only && !only.includes(plan.id)) || (onlyBiome && plan.biome !== onlyBiome)) { keepOld(plan); continue; }
     if (plan.world) {
-      const { map, meta, check } = buildBiomeWorld(api, plan);
-      maps[plan.id] = map; plans.push({ ...strip(plan), ...meta }); report.push({ id: plan.id, seed: plan.seed, ...check });
+      worldTs ??= api.createBlankProject().tilesets.atlas_biome_world;
+      assert(worldTs, "atlas_biome_world missing from the blank project (bundled.ts / defaultAssets.ts)");
+      let got = null, err;
+      for (let attempt = 0; !got && attempt < 30; attempt++) {
+        try { got = { ...buildBiomeWorld(api, { tilesetId: worldTs.id, ...plan, seed: plan.seed + attempt }, worldTs), seed: plan.seed + attempt }; }
+        catch (e) { if (!(e instanceof assert.AssertionError)) throw e; err = e; if (process.env.ATLAS_DEBUG) console.log(plan.id, attempt, e.message.split("\n")[0]); }
+      }
+      if (!got) { failures.push(plan.id + ": " + err.message.split("\n")[0]); keepOld(plan); continue; }
+      const { map, meta, check } = got;
+      assert(check.emptiness.maxSq <= 7 && check.emptiness.screen <= 0.7, `World gate ${plan.id} ${JSON.stringify(check.emptiness)}`);
+      maps[plan.id] = map; plans.push({ ...strip(plan), tilesetId: worldTs.id, seedUsed: got.seed, ...meta }); report.push({ id: plan.id, seed: got.seed, ...check });
       console.log(plan.id, `${plan.width}x${plan.height}`, check.emptiness);
       continue;
     }

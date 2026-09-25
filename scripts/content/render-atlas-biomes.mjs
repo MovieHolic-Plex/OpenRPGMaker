@@ -20,13 +20,13 @@ try {
       const { drawMapTileLayers, loadTilesetImage } = await import("/src/editor/mapTileDraw.ts");
       const { tilesetBaseImageUrl } = await import("/src/editor/tilesetImage.ts");
       const { createAtlasBiomeTileset } = await import("/src/project/defaults/atlasBiomes.ts");
-      const { createAtlasWorldTileset } = await import("/src/project/defaults/atlasBiomeWorld.ts").catch(() => ({}));
+      const worldDef = () => window.__atlasWorld ??= import("/src/project/defaults/blankProject.ts").then((d) => d.createBlankProject().tilesets.atlas_biome_world);
       const cache = (window.__atlasSheets ??= {}), defs = (window.__atlasDefs ??= {});
       const out = {};
       for (const m of Object.values(maps)) {
         let t = defs[m.tilesetId];
         if (!t) {
-          t = m.tilesetId === "atlas_biome_world" ? createAtlasWorldTileset() : createAtlasBiomeTileset(m.tilesetId.replace("atlas_biome_", ""));
+          t = m.tilesetId === "atlas_biome_world" ? await worldDef() : createAtlasBiomeTileset(m.tilesetId.replace("atlas_biome_", ""));
           defs[m.tilesetId] = t;
         }
         if (!cache[t.id]) { if (t.transparentColor) cache[t.id] = await loadTilesetImage(t); else { const im = new Image(); im.src = tilesetBaseImageUrl(t); await im.decode(); cache[t.id] = im; } }

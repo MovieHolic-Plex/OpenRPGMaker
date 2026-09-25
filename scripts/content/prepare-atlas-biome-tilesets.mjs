@@ -163,5 +163,7 @@ const out = { biomes: Object.fromEntries(Object.keys(sheets.biomes).map((k) => [
 for (const [k, c] of Object.entries(out.biomes)) assert.equal(N + c.append.terrain.length, c.count, k);
 fs.writeFileSync("src/assets/atlasBiomeTilesets.json", JSON.stringify(out) + "\n");
 // Frame counts for src/assets/bundled.ts (kept tiny so the asset list does not pull the tileset data).
-fs.writeFileSync("src/assets/atlasBiomeSheets.json", JSON.stringify(Object.fromEntries(Object.values(out.biomes).map((c) => [c.textureKey, c.count])), null, 1) + "\n");
+// frame counts of every atlas sheet (bundled.ts): the eleven biome sheets and the world sheet (build-atlas-biome-world.py)
+const world = JSON.parse(fs.readFileSync("src/assets/atlasBiomeWorldSheet.json"));
+fs.writeFileSync("src/assets/atlasBiomeSheets.json", JSON.stringify({ ...Object.fromEntries(Object.values(out.biomes).map((c) => [c.textureKey, c.count])), [world.texture]: world.count }, null, 1) + "\n");
 console.log({ bytes: fs.statSync("src/assets/atlasBiomeTilesets.json").size, biomes: Object.fromEntries(Object.entries(out.biomes).map(([k, c]) => [k, { count: c.count, relabels: Object.keys(c.relabels).length, groups: c.extraTileGroups.length, autos: c.extraAutotileGroups.length }])) });

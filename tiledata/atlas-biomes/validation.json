@@ -2223,5 +2223,203 @@
         24
       ]
     }
+  },
+  {
+    "id": "atlas-world-continent",
+    "seed": 9101,
+    "reachable": 2448,
+    "places": 19,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.652,
+      "at": [
+        26,
+        37
+      ],
+      "screenAt": [
+        30,
+        22
+      ]
+    }
+  },
+  {
+    "id": "atlas-world-archipelago",
+    "seed": 9111,
+    "reachable": 742,
+    "places": 8,
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.593,
+      "at": [
+        13,
+        17
+      ],
+      "screenAt": [
+        8,
+        18
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-rainforest",
+    "seed": 9121,
+    "reachable": 1012,
+    "places": 8,
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.643,
+      "at": [
+        23,
+        13
+      ],
+      "screenAt": [
+        12,
+        14
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-frozen-north",
+    "seed": 9131,
+    "reachable": 1403,
+    "places": 9,
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.276,
+      "at": [
+        43,
+        22
+      ],
+      "screenAt": [
+        42,
+        22
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-red-plains",
+    "seed": 9141,
+    "reachable": 1587,
+    "places": 10,
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.281,
+      "at": [
+        41,
+        6
+      ],
+      "screenAt": [
+        34,
+        2
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-glowing-vale",
+    "seed": 9151,
+    "reachable": 909,
+    "places": 10,
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.38,
+      "at": [
+        24,
+        17
+      ],
+      "screenAt": [
+        18,
+        16
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-blighted-march",
+    "seed": 9161,
+    "reachable": 929,
+    "places": 9,
+    "emptiness": {
+      "maxSq": 7,
+      "screen": 0.647,
+      "at": [
+        30,
+        6
+      ],
+      "screenAt": [
+        14,
+        16
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-sky-reach",
+    "seed": 9171,
+    "reachable": 975,
+    "places": 7,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.647,
+      "at": [
+        25,
+        13
+      ],
+      "screenAt": [
+        26,
+        30
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-coral-isles",
+    "seed": 9181,
+    "reachable": 943,
+    "places": 6,
+    "emptiness": {
+      "maxSq": 0,
+      "screen": 0,
+      "at": [
+        0,
+        0
+      ],
+      "screenAt": [
+        0,
+        0
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-crossroads",
+    "seed": 9191,
+    "reachable": 1086,
+    "places": 10,
+    "emptiness": {
+      "maxSq": 5,
+      "screen": 0.62,
+      "at": [
+        32,
+        19
+      ],
+      "screenAt": [
+        24,
+        22
+      ]
+    }
+  },
+  {
+    "id": "atlas-region-west-coast",
+    "seed": 9202,
+    "reachable": 1280,
+    "places": 9,
+    "emptiness": {
+      "maxSq": 6,
+      "screen": 0.638,
+      "at": [
+        34,
+        21
+      ],
+      "screenAt": [
+        34,
+        16
+      ]
+    }
   }
 ]
