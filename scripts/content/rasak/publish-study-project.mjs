@@ -48,6 +48,8 @@ function tilesetFor(manifest, atlasBytes, coverage) {
   const isUpper = (e) => !!e && (e.slot === 'composite' ? e.layer === 'upper' : /^[B-E]$|^X\d+$/.test(e.slot));
   const tileset = {
     id: manifest.bundle, name: manifest.name, image: { type: 'uploaded', id: assetId }, kind: 'custom',
+    // 칩셋 계열(tilesetFamily): Rasak 묶음끼리는 같은 그림체라 조수가 말없이 오가도 된다.
+    family: 'rasak-fantasy',
     tileSize: manifest.tileSize, tilesPerRow: manifest.tilesPerRow, count: manifest.count,
     passability: cells.map(({ passage }) => { const p = passage === 'passable'; return { up: p, down: p, left: p, right: p }; }),
     priority: cells.map(({ e }) => (isUpper(e) ? 'upper' : 'lower')),
