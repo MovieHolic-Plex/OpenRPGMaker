@@ -261,7 +261,7 @@ def build_parts():
         ("bed-v", [[324], [354]], "세로 침대"), ("bed-h", [[355, 356]], "가로 침대"),
         ("table-long", [[325, 326, 327]], "긴 탁자"), ("table-square", [[328]], "사각 탁자"), ("table-round", [[236]], "원형 탁자"),
         ("table-tall", [[234], [264], [294]], "세로 긴 탁자"),
-        ("chair-r", [[267]], "등받이 의자(오른쪽 보기)"), ("chair-l", [[268]], "등받이 의자(왼쪽 보기)"),
+        ("chair-s", [[267]], "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)"), ("chair-s2", [[268]], "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)"),
         ("seat-r", [[297]], "의자(오른쪽 보기)"), ("seat-l", [[298]], "의자(왼쪽 보기)"), ("stool", [[266]], "원형 걸상"), ("chair-fallen", [[384]], "쓰러진 의자"),
         ("candle", [[204]], "촛대"), ("lantern", [[206]], "랜턴"), ("clock", [[389], [419]], "괘종시계"), ("mirror", [[269], [299]], "대형 거울"),
         ("armor", [[87], [117]], "갑옷 전시대"), ("bust", [[88], [118]], "여자 흉상"), ("pillar", [[89], [119]], "돌기둥"), ("armor-stand", [[290]], "갑옷(전시)"),
@@ -283,7 +283,7 @@ def build_parts():
     ]
     copy_parts(P, interior, irules, "int", I, "EasyRPG 실내")
     # manor-tinted copies of the pieces the haunted manor uses (cold, faded)
-    MANOR = ["bookcase", "shelf-books", "cupboard", "wardrobe", "bed-v", "bed-h", "table-long", "table-square", "table-round", "chair-r", "chair-l", "seat-r", "seat-l", "stool", "chair-fallen",
+    MANOR = ["bookcase", "shelf-books", "cupboard", "wardrobe", "bed-v", "bed-h", "table-long", "table-square", "table-round", "chair-s", "chair-s2", "seat-r", "seat-l", "stool", "chair-fallen",
              "candle", "clock", "mirror", "armor", "bust", "curtain", "drape", "piano", "painting-land", "painting-fire", "painting-big", "window-dark", "window-curtain", "cloth-table", "crack", "glass",
              "plank-stand", "plank-pile", "crate", "barrel", "sack", "box", "letters", "book-open", "dishes", "bottles", "skeleton", "stove", "oven", "counter", "pot", "jars", "banner", "throne-red"]
     copy_parts(P, interior, irules, "manor", [e for e in I if e[0] in MANOR], "EasyRPG 실내(저택 재칠)", tint=manor_tint)

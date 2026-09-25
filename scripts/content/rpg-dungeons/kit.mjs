@@ -60,6 +60,7 @@ export const TERRAIN = {
   "y": { fill: 82 }, // packed arena sand
   "k": { fill: 111 }, // dark damp stone (wet cellar / swamp floor)
   "!": { group: "pit-pale", upper: 141 }, // plank boardwalk laid over a bog pit: one body under it
+  "$": { group: "pit-gold", upper: 141 }, // plank bridge laid over a bottomless shaft (gold-rimmed pit)
   "a": { fill: 172 }, "v": { fill: 173 }, "<": { fill: 202 }, ">": { fill: 203 }, // arrow floor panels
 };
 export const VOID = new Set([" ", "#"]);
@@ -293,8 +294,10 @@ export function partProps(parts) {
   return out;
 }
 
-export function createKit(DUN, { parts } = {}) {
+export function createKit(DUN, { parts, strictFloor = false } = {}) {
   const PROPS_ALL = { ...PROPS, ...partProps(parts) };
+  // strictFloor: a standing piece is never set in water, lava, ice or a pit (bridges over them are floor).
+  const LIQUID = new Set(["~", "W", "L", "i", "c", "p", "o", "b"]);
   const isWallProp = (c) => WALL_PROPS.has(c) || PART_WALL.test(c);
   const isAnyProp = (c) => ANY_PROPS.has(c) || PART_ANY.test(c);
   const group = (id) => { const g = DUN.autotileGroups.find((x) => x.id.endsWith("-" + id)); assert(g, id); return g; };
@@ -409,13 +412,28 @@ export function createKit(DUN, { parts } = {}) {
     }
     const faceAt = (x, y) => !isVoid(x, y) && wallRow(x, y) >= 0 && !spec.noWallChars?.includes(ch(x, y));
     const warnings = [];
-    for (const [c, x, y] of spec.props ?? []) {
+    // strictFloor (atlas): pieces never overlap each other, never stand in water/lava/pits, and a piece a cell or two
+    // off its spot (a blob edge the plan could not see) is nudged to the nearest valid cell instead of being dropped.
+    const taken = new Set();
+    for (const [c, x0, y0] of spec.props ?? []) {
       const p = PROPS_ALL[c]; assert(p, `${spec.id}: unknown prop ${JSON.stringify(c)}`);
+      const wet = (a, b) => strictFloor && !isWallProp(c) && !/^(lift|sparkle-blue|web-big)$/.test(c) && LIQUID.has(ch(a, b));
+      const cellsAt = (x, y) => p.rows.flatMap((row, dy) => row.map((t, dx) => [x + dx, y + dy, t])).filter(([, , t]) => t !== -1);
       // wall pieces hang on the face; everything else stands on open floor (not void, not a wall face)
-      const cells = p.rows.flatMap((row, dy) => row.map((t, dx) => [x + dx, y + dy, t])).filter(([, , t]) => t !== -1);
-      const bad = cells.filter(([a, b]) => (isWallProp(c) ? !faceAt(a, b) : isAnyProp(c) ? isVoid(a, b) : isVoid(a, b) || faceAt(a, b)));
+      const badAt = (x, y) => cellsAt(x, y).filter(([a, b]) => (strictFloor && (a < 0 || b < 0 || a >= W || b >= H)) || wet(a, b) || (strictFloor && p.layer !== "lower" && taken.has(b * W + a))
+        || (isWallProp(c) ? !faceAt(a, b) : isAnyProp(c) ? isVoid(a, b) : isVoid(a, b) || faceAt(a, b)));
+      let x = x0, y = y0, bad = badAt(x, y);
+      if (bad.length && strictFloor) {
+        const near = [];
+        for (let r = 1; r <= 3; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (Math.max(Math.abs(dx), Math.abs(dy)) === r) near.push([dx, dy]);
+        near.sort((a, b) => Math.hypot(...a) - Math.hypot(...b));
+        const hit = near.find(([dx, dy]) => !badAt(x0 + dx, y0 + dy).length);
+        if (hit) { x = x0 + hit[0]; y = y0 + hit[1]; bad = []; warnings.push(`${c}@${x0},${y0} (${p.name}) nudged to ${x},${y}`); }
+      }
       // a piece that would stand in the rock or hang off a wall it is not on is left out, not drawn wrong
       if (bad.length) { warnings.push(`${c}@${x},${y} (${p.name}) ${isWallProp(c) ? "not on a wall face" : "off the floor"} — dropped: ${JSON.stringify(bad.map(([a, b]) => [a, b]))}`); continue; }
+      const cells = cellsAt(x, y);
+      if (p.layer !== "lower") for (const [a, b] of cells) taken.add(b * W + a);
       const layer = p.layer === "lower" ? "lowerTiles" : "upperTiles";
       const rows = p.rows.map((row) => row.map((t) => (typeof t === "string" ? GRAFTS[t].target : t)));
       rows.forEach((row, dy) => row.forEach((t, dx) => { if (t !== -1) put(x + dx, y + dy, t, layer); }));

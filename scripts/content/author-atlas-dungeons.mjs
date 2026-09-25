@@ -17,7 +17,9 @@ import { carveOutcrops } from "./rpg-dungeons/outcrops.mjs";
 import { atlasPlans } from "./atlas-dungeons/plans.mjs";
 
 const OUT = "tiledata/atlas-dungeons";
-const ONLY = process.env.ATLAS_ONLY?.split(",");
+const SERIES = process.env.ATLAS_SERIES?.split(",");
+const ONLY_IDS = process.env.ATLAS_ONLY?.split(",");
+const ONLY = ONLY_IDS || SERIES ? true : null;
 const WALL_FACE_TOPS = new Set([103, 102, 104]);
 
 await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-entry.mjs", async (api) => {
@@ -33,7 +35,7 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-
     oprn_dungeon_cave: family("oprn_dungeon_cave", "던전 · 동굴 물웅덩이 (재칠)", "tex_oprn_dungeon_cave"),
   };
   for (const s of Object.values(sheets)) tilesets[s.id] = family(s.id, s.name, s.texture);
-  const kit = createKit(tilesets.oprn_dungeon_stone, { parts });
+  const kit = createKit(tilesets.oprn_dungeon_stone, { parts, strictFloor: true });
 
   const walk = (m, id, tilesetId, entry, parentMap) => {
     const map = { ...m, id, tilesetId }, project = { maps: { [id]: map }, tilesets };
@@ -59,7 +61,8 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-
 
   const places = [];
   for (const plan of atlasPlans()) {
-    if (ONLY && !ONLY.includes(plan.id)) continue;
+    if (ONLY_IDS && !ONLY_IDS.includes(plan.id)) continue;
+    if (SERIES && !SERIES.includes(plan.series)) continue;
     const tilesetId = plan.tileset ?? "oprn_dungeon_stone", ts = tilesets[tilesetId];
     assert(ts, `${plan.id}: no tileset ${tilesetId}`);
     const passable = (t) => { const f = api.tilePassability(ts, 187, t); return f.up && f.down && f.left && f.right; };
@@ -113,7 +116,7 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-
     }
     const s = bareStats(map);
     report.push({ id: spec.id, entry: spec.entry, targets: spec.targets, exits: spec.exits ?? [], reachable: seen.size, walkable, stranded, blocked,
-      emptiness: { maxSq: s.sq, screen: +s.screen.toFixed(3) }, warnings: p.warnings, ...(spec.sealed ? { sealed: spec.sealed } : {}) });
+      emptiness: { maxSq: s.sq, screen: +s.screen.toFixed(3), win: s.win, at: s.at }, warnings: p.warnings, ...(spec.sealed ? { sealed: spec.sealed } : {}) });
   }
   const bad = report.filter((r) => r.blocked.length);
   if (bad.length) console.error("unreachable:", JSON.stringify(bad.map((r) => [r.id, r.blocked])));
@@ -127,7 +130,7 @@ await withTsModule("scripts/content/lib/rpg-dungeons-entry.ts", "atlas-dungeons-
   const usedTilesets = Object.fromEntries(Object.entries(tilesets).filter(([id]) => used.has(id)));
   const file = ONLY ? `${OUT}/catalog.partial.json` : `${OUT}/catalog.json`;
   fs.writeFileSync(file, JSON.stringify({ plans, maps, tilesets: usedTilesets }) + "\n");
-  if (!ONLY) fs.writeFileSync(`${OUT}/validation.json`, JSON.stringify(report, null, 1) + "\n");
+  fs.writeFileSync(ONLY ? `${OUT}/validation.partial.json` : `${OUT}/validation.json`, JSON.stringify(report, null, 1) + "\n");
   const flag = (r) => (r.emptiness.maxSq > 4 || r.emptiness.screen > 0.4 ? " EMPTY" : "") + (r.stranded.length ? ` stranded ${r.stranded.length}` : "") + (r.blocked.length ? " BLOCKED" : "") + (r.warnings.length ? ` warn ${r.warnings.length}` : "");
   console.log(report.map((r) => `${r.id} ${maps[r.id].width}x${maps[r.id].height} ${maps[r.id].tilesetId.replace("oprn_dungeon_", "")} sq ${r.emptiness.maxSq} scr ${r.emptiness.screen}${flag(r)}`).join("\n"));
   console.log(`${report.length} maps → ${file}`);

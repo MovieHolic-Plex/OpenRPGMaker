@@ -949,16 +949,16 @@
 },
 {
 "tile": 628,
-"key": "int:chair-r",
-"label": "등받이 의자(오른쪽 보기)",
+"key": "int:chair-s",
+"label": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
 "pass": "",
 "layer": "upper",
 "source": "EasyRPG 실내 267"
 },
 {
 "tile": 629,
-"key": "int:chair-l",
-"label": "등받이 의자(왼쪽 보기)",
+"key": "int:chair-s2",
+"label": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
 "pass": "",
 "layer": "upper",
 "source": "EasyRPG 실내 268"
@@ -1997,16 +1997,16 @@
 },
 {
 "tile": 759,
-"key": "manor:chair-r",
-"label": "등받이 의자(오른쪽 보기)",
+"key": "manor:chair-s",
+"label": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
 "pass": "",
 "layer": "upper",
 "source": "EasyRPG 실내(저택 재칠) 267"
 },
 {
 "tile": 760,
-"key": "manor:chair-l",
-"label": "등받이 의자(왼쪽 보기)",
+"key": "manor:chair-s2",
+"label": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
 "pass": "",
 "layer": "upper",
 "source": "EasyRPG 실내(저택 재칠) 268"
@@ -5157,8 +5157,8 @@
 "int:table-tall:0,0": 625,
 "int:table-tall:0,1": 626,
 "int:table-tall:0,2": 627,
-"int:chair-r": 628,
-"int:chair-l": 629,
+"int:chair-s": 628,
+"int:chair-s2": 629,
 "int:seat-r": 630,
 "int:seat-l": 631,
 "int:stool": 632,
@@ -5288,8 +5288,8 @@
 "manor:table-long:2,0": 756,
 "manor:table-square": 757,
 "manor:table-round": 758,
-"manor:chair-r": 759,
-"manor:chair-l": 760,
+"manor:chair-s": 759,
+"manor:chair-s2": 760,
 "manor:seat-r": 761,
 "manor:seat-l": 762,
 "manor:stool": 763,
@@ -6576,8 +6576,8 @@ null
 ]
 ]
 },
-"int:chair-r": {
-"name": "등받이 의자(오른쪽 보기)",
+"int:chair-s": {
+"name": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
 "w": 1,
 "h": 1,
 "lower": [
@@ -6591,8 +6591,8 @@ null
 ]
 ]
 },
-"int:chair-l": {
-"name": "등받이 의자(왼쪽 보기)",
+"int:chair-s2": {
+"name": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
 "w": 1,
 "h": 1,
 "lower": [
@@ -7992,8 +7992,8 @@ null
 ]
 ]
 },
-"manor:chair-r": {
-"name": "등받이 의자(오른쪽 보기)",
+"manor:chair-s": {
+"name": "등받이 의자(남쪽 보기 — 탁자 북쪽에 둔다)",
 "w": 1,
 "h": 1,
 "lower": [
@@ -8007,8 +8007,8 @@ null
 ]
 ]
 },
-"manor:chair-l": {
-"name": "등받이 의자(왼쪽 보기)",
+"manor:chair-s2": {
+"name": "등받이 의자 2(남쪽 보기 — 탁자 북쪽에 둔다)",
 "w": 1,
 "h": 1,
 "lower": [
