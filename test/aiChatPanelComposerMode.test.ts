@@ -39,6 +39,48 @@ vi.mock("@/ai/intentDeclarationClient", async (importOriginal) => ({
 }));
 
 let restoreDom: (() => void) | null = null;
+let restoreWindow: (() => void) | null = null;
+
+/**
+ * 패널 렌더 경로는 window 를 요구한다 — createAiLockScrim(aiLockScrim.ts:97) 이 설정 모달 닫힘
+ * 이벤트를 bare `window.addEventListener` 로 구독한다. node 환경에서 이 스텁이 없으면
+ * renderAiChatPanel 자체가 ReferenceError 로 죽는다(선례: aiAutonomyRunSurface·aiClusterAssist).
+ * 브리지는 aiBridge=0 으로 끈다 — 이 파일은 패널이 Pi 에 넘기는 값만 본다.
+ */
+function installFakeWindow(): () => void {
+  const previous = globalThis.window;
+  const listeners = new Map<string, Set<EventListener>>();
+  Object.defineProperty(globalThis, "window", {
+    configurable: true,
+    writable: true,
+    value: {
+      location: { search: "aiBridge=0" },
+      addEventListener: (type: string, listener: EventListener) => {
+        const bucket = listeners.get(type) ?? new Set<EventListener>();
+        bucket.add(listener);
+        listeners.set(type, bucket);
+      },
+      removeEventListener: (type: string, listener: EventListener) => {
+        listeners.get(type)?.delete(listener);
+      },
+      dispatchEvent: (event: Event): boolean => {
+        for (const listener of listeners.get(event.type) ?? []) listener(event);
+        return true;
+      },
+      setTimeout: (...args: Parameters<typeof setTimeout>) => globalThis.setTimeout(...args),
+      clearTimeout: (...args: Parameters<typeof clearTimeout>) => globalThis.clearTimeout(...args),
+      setInterval: (...args: Parameters<typeof setInterval>) => globalThis.setInterval(...args),
+      clearInterval: (...args: Parameters<typeof clearInterval>) => globalThis.clearInterval(...args),
+    },
+  });
+  return () => {
+    if (previous === undefined) {
+      Reflect.deleteProperty(globalThis, "window");
+      return;
+    }
+    Object.defineProperty(globalThis, "window", { configurable: true, writable: true, value: previous });
+  };
+}
 
 function installFakeLocalStorage(): void {
   const storage = new Map<string, string>();
@@ -87,6 +129,10 @@ beforeEach(() => {
   store.replace(createBlankProject());
   editorState.set({ currentMapId: null, selection: null });
   restoreDom = installFakeDom();
+  // applyAiRenderWeight(aiPanelLayout.ts:220) 가 documentElement.dataset 에 쓴다 — 없으면
+  // renderAiChatPanel 이 중단되고 정리 등록까지 못 해 제얰 타이머가 누다(선례: aiTilesetChangeCard).
+  Object.defineProperty(document, "documentElement", { configurable: true, value: document.createElement("html") });
+  restoreWindow = installFakeWindow();
   installFakeLocalStorage();
   localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify(defaultAiConfig()));
 });
@@ -96,6 +142,8 @@ afterEach(async () => {
   await clearConversations();
   restoreDom?.();
   restoreDom = null;
+  restoreWindow?.();
+  restoreWindow = null;
   Reflect.deleteProperty(globalThis, "localStorage");
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
@@ -319,5 +367,39 @@ describe("의도 분류 구간의 턴 상태와 입력 보존", () => {
     sendButton.click();
 
     await vi.waitFor(() => expect(sendButton.disabled).toBe(false), { timeout: 2_000, interval: 5 });
+  });
+});
+
+// UI-022 회귀: Pi 경로의 종료 4축은 게시한 턴의 것이다. finally 의 `piRunOutcome = null` 은
+// 다시 렌더하지 않아 지난 턴의 「진행 막힘 · 적용됨」 DOM 이 다음 턴 내내 살아 있었다
+// (docs/qa/saesol-three-hour-ai-authoring.md UI-022). 세션 경로 beginWorkPlanTurn 과 같은 수명이어야 한다.
+describe("Pi 턴의 종료 4축 수명", () => {
+  it("다음 턴이 시작되면 지난 턴의 종료 4축은 사라진다", async () => {
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
+      surface.setRunOutcome?.({ execution: "blocked", goal: "unassessed", delivery: "applied", imageAttached: false });
+      return true;
+    });
+    // 문구는 생성 제목(creationSubject)을 피해 그리프 선택 게이트로 샘지 않게 한다 — 여기서 보는 것은 종료 4축의 수명만이다.
+    await send(panel, "맵 이름을 숨길로 바꿔줘");
+    // 끝난 턴의 결과는 남아 있어야 한다 — 이 턴의 보고를 지우는 것이 목적이 아니다.
+    expect(findByTestId(panel, "ai-run-outcome")).not.toBeNull();
+
+    // 두 번째 턴은 실행 중에 붙잡아 둔다 — 그 구간이 관측 대상이다.
+    let release!: () => void;
+    vi.mocked(runPiCommand).mockImplementationOnce(async () => {
+      await new Promise<void>((resolve) => { release = resolve; });
+      return true;
+    });
+    const input = findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement;
+    input.value = "묘사도 다듬어 줘";
+    findByTestId(panel, "ai-send")?.click();
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(2), { timeout: 2_000, interval: 5 });
+
+    // Break: 여기서 노드가 남으면 사용자는 새 턴이 도는 내내 지난 턴의 «적용됨» 을 현재 상태로 읽는다.
+    expect(findByTestId(panel, "ai-run-outcome")).toBeNull();
+
+    release();
+    await vi.waitFor(() => expect((findByTestId(panel, "ai-abort") as unknown as { hidden?: boolean } | null)?.hidden).toBe(true), { timeout: 2_000, interval: 5 });
   });
 });
