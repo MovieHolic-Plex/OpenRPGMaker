@@ -2982,7 +2982,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         toast("진행 중인 응답이 끝난 뒤 다시 시도하세요", "info");
         return;
       }
-      stampPlaceNow(text);
+      void stampPlaceNow(text);
       return;
     }
     restoreComposer(text);
