@@ -48,6 +48,11 @@ export interface PiAgentRequest {
    * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
    */
   readonly currentMapId?: string;
+  /**
+   * 사용자가 이 대화에서 승인한 칩셋 계열(`src/project/tilesetFamily.ts`). 도구 ctx 에 그대로 실려
+   * 실행기 계열 검사(`tileset-family-change`)가 이 계열로의 변경을 통과시킨다. 비우면 승인 없음.
+   */
+  readonly approvedTilesetFamilies?: readonly string[];
   readonly project: Project;
   /** 기본 시스템 프롬프트를 대체한다(테스트·CLI 용). */
   readonly systemPrompt?: readonly string[];

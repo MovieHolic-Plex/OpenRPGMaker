@@ -689,6 +689,22 @@ export class AssistantSession {
   private lastTurnPlanOnly = false;
   // 누적 draft를 담는 툴 컨텍스트(연쇄 툴콜이 이전 변경을 본다).
   private ctx: ToolContext;
+
+  /**
+   * 세션 도구 ctx. 지금 보는 맵·승인 칩셋 계열은 도구를 부를 때마다 최신 값을 읽는다(칩셋 계열 검사·create_map 기본 칩셋).
+   * 실행기는 ctx.project 만 갈아 끼우므로 게터가 살아 있다.
+   */
+  private toolContext(project: Project): ToolContext {
+    const options = (): ContextOptions => this.contextOptions ?? {};
+    return {
+      project,
+      get currentMapId() {
+        const id = resolveContextMapId(options());
+        return id && this.project.maps[id] ? id : undefined;
+      },
+      get approvedTilesetFamilies() { return options().getApprovedTilesetFamilies?.(); },
+    };
+  }
   private readonly messages: ChatMessage[] = [];
   private readonly audit: AuditEntry[] = [];
   // 세션 시작 시점 스냅샷(수락 시 store와 대조/리플레이용). rebaseProject로 갱신될 수 있다.
@@ -986,7 +1002,7 @@ export class AssistantSession {
     this.draftBaseline = new AuthoredProjectBaseline(project);
     this.observedLiveWorld = structuredClone(project.world);
     this.baselineProject = structuredClone(project);
-    this.ctx = { project: cloneDetachedDraft(project) };
+    this.ctx = this.toolContext(cloneDetachedDraft(project));
     this.proposalBase = captureProposalBase(project);
     this.acceptanceRequestBaseline = structuredClone(project);
     this.reviewBaseline = structuredClone(project);
@@ -1154,7 +1170,7 @@ export class AssistantSession {
     this.draftBaselineCurrent = true;
     this.pruneRemovedMapSpecs(this.ctx.project, project);
     this.baselineProject = structuredClone(project);
-    this.ctx = { project: cloneDetachedDraft(project) };
+    this.ctx = this.toolContext(cloneDetachedDraft(project));
     this.proposalBase = captureProposalBase(project);
     // rebase = 적용 성공 후 세션이 store와 재동기화됐다는 신호다. 현재 턴의 적용 실패 상태를 버린다.
     this.milestoneApplyFailed = false;
@@ -2239,7 +2255,7 @@ export class AssistantSession {
     if (!continuesGoal) {
       // Retain an unchanged previously reviewed draft as content, not apply authority.
       // The entry already retired that authority; unreviewed unrelated drafts still drop.
-      if (this.turnProposals.size > 0 && reviewedDraftAtEntry !== JSON.stringify(this.ctx.project)) this.ctx = { project: cloneDetachedDraft(this.baselineProject) };
+      if (this.turnProposals.size > 0 && reviewedDraftAtEntry !== JSON.stringify(this.ctx.project)) this.ctx = this.toolContext(cloneDetachedDraft(this.baselineProject));
       this.reviewBaseline = structuredClone(this.ctx.project);
       this.reviewToolResults = [];
       this.resultReview = null;

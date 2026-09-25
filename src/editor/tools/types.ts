@@ -41,6 +41,13 @@ export interface ToolResult {
 // 순수 실행 컨텍스트. 브라우저/스토어 접근 금지.
 export interface ToolContext {
   project: Project;
+  /**
+   * 사용자가 지금 보고 있는 맵(2026-09-25). 실행기가 칩셋 계열 검사의 기준으로 쓰고, create_map 이 tilesetId 없이
+   * 불리면 이 맵의 칩셋을 넣는다. 없으면 두 동작 모두 꺼진다(옛 호출자·헤드리스 스크립트 동작 그대로).
+   */
+  readonly currentMapId?: string;
+  /** 사용자가 이 대화에서 승인한 목표 칩셋 계열(`tilesetFamily`). 이 계열로의 변경은 계열 검사가 통과시킨다. */
+  readonly approvedTilesetFamilies?: readonly string[];
 }
 
 // 툴 내부 실행이 돌려주는 값. runner가 diff/lint/커밋을 처리한다.
