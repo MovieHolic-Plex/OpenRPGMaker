@@ -210,3 +210,10 @@ AI 참고문서는 파이프라인 분류만(던전 재칠 넷은 `referenceSour
 보이는 것은 검수 실내 31종과 같은 이중 경로다. 맵을 다시 고치면 파이프라인 저장 → 이 스크립트를 다시 돌린다(같은 id 에 비교 교환으로 덮는다).
 
 - 2차(2026-09-25): 88곳으로 다시 게시(revision 1ac6d264…). 실내 6·던전 5에 더해 야외 7곳(field-routes 저장본, `OUTDOOR_IDS`)을 넣었다. 야외 숲 시트는 실내 쪽 forest_harmony 와 이식 수가 달라 `shared_rpg_outdoor_forest` 로 따로 구웠고, 설원·화산·월드(분홍 키) 사본 `shared_rpg_outdoor_snow`·`_volcano`·`shared_rpg_world` 가 생겼다. 게시 전에 이 체크아웃의 `save-rpg-interiors`·`save-rpg-dungeons` 를 다시 돌려야 한다 — 정본 `.oprn-projects/` 는 체크아웃마다 따로라 다른 워크트리에서 만든 맵은 여기 reloaded.json 에 없다.
+
+## 공용 DB 게시 도우미 `scripts/content/lib/shared-library.mjs` (2026-09-25)
+
+파이프라인마다 공용 DB 라이브러리 하나(`oprn-atlas-<분야>-<날짜>`)로 올린다. `publishLibrary({id, sourceProjectId, devUrl, tilesets, entries, proof, dry})`:
+항목마다 `as: "place"`(건물·방·던전 층 → 장소 탭, 루트→층 장소→raster 킷) 또는 `as: "region"`(마을·필드·월드 → 지역 탭, `regionKind` settlement|terrain,
+`regions[shared_…]` + `maps[같은 id]`). 번들 타일셋은 이식·색 키를 구운 `shared_` 사본으로만 들어가고, 원본과 공용 사본 렌더가 픽셀 동일해야 게시한다.
+라이브러리 60MB 초과면 나눈다(호스트 64MiB 요청 한도). 오브젝트는 여기가 아니라 번들 카탈로그(`sharedObjectCatalog.json`)로 간다.
