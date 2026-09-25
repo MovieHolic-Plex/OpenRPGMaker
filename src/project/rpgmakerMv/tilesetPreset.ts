@@ -12,7 +12,8 @@ import type {
   AutotileGroup, PassFlag, SectionStructureKitDef, TileAiMetadata, TileGroupMetadata, TileGroupRole, TilesetDef,
 } from "../types";
 import type { TilesetReferenceCategory, TilesetReferenceImage } from "../tilesetReferences";
-import { autotileNeighborMask, shapeAllAutotileGroupsAround } from "../defaults/autotileEngine";
+import { autotileNeighborMask } from "../defaults/autotileEngine";
+import { paintAuto, stampKit } from "./packPaint";
 import { autotileVariantMap, quarterTable } from "./autotile";
 import { bakeMvAtlas, tileOpacity, type RgbaImage } from "./bake";
 import { drawNumber } from "./digitFont";
@@ -270,36 +271,6 @@ function plainWallMap(preset: MvPackPreset, index: ReturnType<typeof mvTileIndex
 }
 
 // ───────────────────────── 예시 블록 ─────────────────────────
-
-/** 이름으로 오토타일 그룹을 찾아 사각형을 칠하고 모양을 맞춘다(fill_region 과 같은 결과). */
-function paintAuto(tileset: TilesetDef, map: MvPackExampleMap, name: string, x: number, y: number, w: number, h: number): void {
-  const group = tileset.autotileGroups?.find((entry) => entry.name === name);
-  if (!group) throw new Error(`예시 재료 없음: ${name}`);
-  const layer = group.layer === "upper" ? map.upperTiles : map.lowerTiles;
-  const body = group.memberTileIds[0]!;
-  for (let yy = y; yy < y + h; yy += 1) for (let xx = x; xx < x + w; xx += 1) layer[yy * map.width + xx] = body;
-  // fill_region 과 같게 둘레의 다른 재료도 맞춘다(보도 끝 연석·흙 가장자리가 여기서 생긴다).
-  const points: { x: number; y: number }[] = [];
-  for (let yy = y; yy < y + h; yy += 1) for (let xx = x; xx < x + w; xx += 1) points.push({ x: xx, y: yy });
-  shapeAllAutotileGroupsAround(map, tileset.autotileGroups ?? [], points);
-}
-
-function stampKit(tileset: TilesetDef, map: MvPackExampleMap, id: string, x: number, y: number, options: { keepDoors?: boolean } = {}): void {
-  const kit = tileset.structureKits?.find((entry) => entry.id === id);
-  if (!kit) return;
-  const lastRow = kit.rows.length - 1;
-  const onWall = kit.ai?.tags?.some((tag) => tag === "door" || tag === "wallmount" || tag === "overhead") === true;
-  kit.rows.forEach((row, dy) => row.upperTiles?.forEach((tile, dx) => {
-    if (tile < 0 || x + dx >= map.width || y + dy >= map.height) return;
-    const index = (y + dy) * map.width + x + dx;
-    // stamp_tileset_object 와 같게: 차양 그늘 줄은 이미 있는 문을 덮지 않는다.
-    if (options.keepDoors && dy === lastRow && map.upperTiles[index]! >= 0) return;
-    // stamp_tileset_object 와 같게: 벽 물체 밑의 창 난 벽돌은 창 없는 짝으로.
-    const plain = onWall ? tileset.mvPack?.plainWalls?.[String(map.lowerTiles[index])] : undefined;
-    if (plain !== undefined) map.lowerTiles[index] = plain;
-    map.upperTiles[index] = tile;
-  }));
-}
 
 /** 참고문서 예시: 가로 차도 + 보도 + 붉은 벽돌 가게 + 회색 사무실 + 공원 한 귀퉁이. 22×15. */
 function buildExampleBlock(tileset: TilesetDef, preset: MvPackPreset): MvPackExampleMap {

@@ -2,7 +2,7 @@
 // 팩: https://rasak.itch.io/rasak-modern · 이름·좌표는 2026-09-24 판본(시트 sha256)을 보고 붙였다.
 // 이름은 조수가 재료 이름으로 그대로 부른다 — 바꾸면 참고문서 예시도 함께 바꾼다.
 
-import type { MvPackAutotile, MvPackObject, MvPackPreset } from "../packPreset";
+import type { MvPackAutotile, MvPackObject, MvPackPreset, MvTownRecipe } from "../packPreset";
 
 const A1 = "A1_Modern_Outside_Rasak.png";
 const A2 = "A2_Modern_City_Rasak.png";
@@ -192,11 +192,72 @@ const OBJECTS: MvPackObject[] = ([
   ["shopfront_glass_lit", A5, 5, 12, 1, 2, "wallmount", "1층 불 켜진 통유리(1칸)", { growth: "horizontal", description: "밤·가게 안 불빛이 비치는 쇼윈도" }],
 ] as readonly O[]).map(([id, sheet, x, y, w, h, kind, name, extra]) => ({ id, sheet, x, y, w, h, kind, name, ...(extra ?? {}) }));
 
+// 마을 짜임 도구 재료 — 작가 참고 맵의 건물 짝(옥상·창 난 위층·창 없는 1층)과 사용자 맵의 거리 짜임에서 골랐다.
+const TOWN: MvTownRecipe = {
+  road: "아스팔트 차도",
+  intersection: "횡단보도 테두리 차도",
+  sidewalk: "회색 콘크리트 보도",
+  lawn: "잔디",
+  alley: "짙은 아스팔트",
+  driveway: "밝은 콘크리트 바닥",
+  path: "회색 판석 산책로",
+  fence: "철망 울타리",
+  parkingLine: "흰 주차선",
+  garden: "갈아 놓은 밭",
+  shops: [
+    { roof: "짙은 옥상(붉은 벽돌 테두리)", upper: "붉은 벽돌 외벽 창문", ground: "붉은 벽돌 외벽", door: "glass_door_bright", awning: "awning_red", shopfront: "shopfront_glass" },
+    { roof: "짙은 옥상(주황 벽돌 테두리)", upper: "주황 벽돌 외벽 창문", ground: "주황 벽돌 외벽", door: "glass_door_bright", awning: "awning_red", shopfront: "shopfront_glass" },
+    { roof: "짙은 옥상(회색 벽돌 테두리)", upper: "회색 벽돌 외벽 창문", ground: "회색 벽돌 외벽", door: "glass_door_dark", awning: "awning_red", shopfront: "shopfront_glass_lit" },
+    { roof: "검은 벽돌 옥상", upper: "검은 벽돌 외벽 창문", ground: "검은 벽돌 외벽", door: "glass_door_dark", awning: "awning_red", shopfront: "shopfront_glass" },
+    { roof: "사각 옥상 회색", upper: "사각 외벽 회색 세로창", ground: "사각 외벽 회색 유리 상가", door: "glass_door_bright", awning: "awning_red" },
+  ],
+  offices: [
+    { roof: "사각 옥상 검은 벽돌(짙은 갈색)", upper: "사각 외벽 짙은 갈색 유리창 줄", ground: "사각 외벽 회색 유리 상가", door: "glass_door_dark" },
+    { roof: "밝은 회색 평지붕", upper: "밝은 회색 외벽 유리창 줄", ground: "회색 콘크리트 외벽", door: "metal_door" },
+    { roof: "갈색 평지붕", upper: "갈색 외벽 유리창 줄", ground: "갈색 타일 외벽", door: "glass_door_dark" },
+  ],
+  houses: [
+    { roof: "붉은 기와 지붕", wall: "흰 벽" }, { roof: "검은 기와 지붕", wall: "노란 벽" },
+    { roof: "갈색 기와 지붕", wall: "회갈색 벽" }, { roof: "검은 슁글 지붕", wall: "초록 벽" },
+    { roof: "붉은 슁글 지붕", wall: "흰 벽" }, { roof: "갈색 슁글 지붕", wall: "짙은 회색 벽" },
+  ],
+  objects: {
+    lamp: "street_lamp_left", lampAlt: "street_lamp_right", planterTree: "cone_tree_pot", streetTree: "cone_tree",
+    yardTrees: ["cone_tree"], hydrant: "fire_hydrant", trash: "trash_can", bench: "park_bench", benchLong: "park_bench_long",
+    fountain: "fountain_large", bushes: ["bush_small", "bush_large"],
+    flowerBeds: ["flower_bed_red", "flower_bed_yellow", "flower_bed_blue", "flower_bed_pink"],
+    vending: ["vending_soda", "vending_coffee", "vending_snacks", "atm"],
+    backProps: ["recycle_bin_green", "recycle_bin_yellow", "recycle_bin_red", "power_box", "cardboard_box", "trash_can_full"],
+    houseDoor: "metal_door", houseWindows: ["window_tall", "window_tall_small"], roofProps: ["satellite_dish"],
+    laneHorizontal: "lane_line_horizontal", crosswalkVertical: "crosswalk_for_vertical_road", arrowLeft: "arrow_left", arrowRight: "arrow_right",
+  },
+};
+
 const GUIDE = `# Rasak Modern 도시 — 까는 순서
 
 이 타일셋은 RPG Maker MV 팩을 펼친 것이다. 오토타일은 **몸통 칸 하나로 칠하면 가장자리가 저절로 맞는다.**
 재료 이름을 \`fill_region\`·\`paint_tiles\` 에 그대로 쓰고, 물체는 \`stamp_tileset_object\` 로 id 를 찍는다.
 키 큰 물체(가로등 1×3·자판기 1×2)는 \`base:{x,y}\` = **땅에 닿는 맨 아래 칸**으로 주면 헷갈리지 않는다(\`at\` 은 왼쪽 위 칸).
+
+## 0. 마을·동네 한 장은 \`build_pack_town\` 부터
+빈 맵(40×30 이상, 50×40 권장)에 **먼저 \`build_pack_town\`** 을 부른다 — 뒷골목·뒷주차, 벽을 맞댄 가게 줄, 큰길·교차로,
+잔디 띠, 앞마당·진입로가 있는 주택, 분수 공원, 가로등·가로수를 자연스러운 치수로 한 번에 깐다.
+손으로 칸마다 깔면 같은 간격 네모 건물이 빈 보도 바다에 뜬다. 뼈대를 깐 뒤에 할 일:
+- 결과 \`lots[].door\` 에 이동 이벤트·NPC. 가게마다 노점·자판기·화분·벤치를 1~3개씩 **모아서** 더한다(고르게 흩뿌리지 않는다).
+- 마음에 안 들면 \`seed\` 를 바꿔 \`replace:true\` 로 다시. 부분만 고칠 땐 아래 규칙대로 손으로.
+- 끝나면 \`check_town_map\` — issues 가 빌 때까지 고친다.
+
+### 손으로 깔거나 고칠 때 — 자연스러운 마을 규칙 (미국 소도시 실측 → 칸)
+- 길은 위계가 있다: 큰길 7칸(중앙선) · 골목길 5칸 · 뒷골목 2~3칸. **교차로가 하나 이상** — 곧은 길 하나만 긋지 않는다. 길은 맵 밖으로 이어진다.
+- 횡단보도는 **교차로에만**(\`"횡단보도 테두리 차도"\`). 교차로 아닌 곳에 긋지 않는다.
+- 가게 줄: 건물끼리 **벽을 맞댄다(틈 0)**, 보도에 바로 붙는다. 폭 4~6칸(가끔 7~10), 이웃과 폭·층·재료가 겹치지 않게, 모퉁이가 가장 높게.
+  차양은 가게의 절반~2/3 에만. 통로(2~3칸)는 한 줄에 한 곳만.
+- 가게 뒤는 뒷골목과 **뒷주차**(주차 칸 선). 주차장을 가게와 큰길 사이에 두지 않는다.
+- 주택: 필지 8~12칸, 집 5~8칸, 앞마당 3~5칸, 이웃과 틈 1~4칸(쌍마다 다르게). 문 → 보도 현관길 1칸, 집 옆 진입로 2칸.
+  앞마당엔 화단·덤불·나무 중 2가지 이상, 뒷마당엔 울타리·나무·텃밭. 빈 잔디 네모로 두지 않는다.
+- 차도 옆은 **연석 → 잔디 띠 1칸 → 보도**(주택가). 가로수는 잔디 띠에 4~6칸 간격, 가로등 6~10칸 간격(길 건너와 엇갈리게).
+- 같은 바닥이 물체 없이 **6×6(36칸)을 넘지 않게**. 보도는 맵의 25% 이하. **맵 끝 2줄 이상을 빈 띠로 두지 않는다**(맨 윗줄도).
+- 좌우 대칭·같은 간격 격자를 피한다. 랜드마크(분수 공원 등) 하나를 큰길에서 보이게, 한가운데를 조금 비켜.
 
 ## 1. 바닥 (아래층)
 - 차도 = \`fill_region material:"아스팔트 차도"\`. **폭은 홀수(5·7칸)** — 중앙선 물체는 칸 한가운데에 선이 있어서 짝수 폭이면 반 칸 치우친다.
@@ -304,5 +365,6 @@ export const RASAK_MODERN_CITY: MvPackPreset = {
     ...[A4, A4D].flatMap((sheet) => [40, 42, 44, 46].map((kind) => ({ sheet, kind, plainKind: kind + 1 }))),
     { sheet: A3B, kind: 26, plainKind: 27 },
   ],
+  town: TOWN,
   guide: GUIDE,
 };
