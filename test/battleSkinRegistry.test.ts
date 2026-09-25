@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { BATTLE_SKINS, DEFAULT_BATTLE_SKIN_ID, battleSkinFamily, getBattleSkin, listActiveBattleSkinIds, listBattleSkinIds, resolveSkinId } from "@/battle/skins/registry";
 import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
+import { BATTLER_PLACEMENTS } from "@/battle/battlerPlacements";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 
 describe("battle skin registry", () => {
@@ -10,15 +11,37 @@ describe("battle skin registry", () => {
     expect(new Set(listBattleSkinIds()).size).toBe(12);
   });
 
-  it("활성 스킨은 셋 — 몬스터 대치(pokemon) · 정면(rm2000) · 측면(rm2003)", () => {
-    expect(listActiveBattleSkinIds()).toEqual(["pokemon", "rm2000", "rm2003"]);
+  it("12종 전부 활성 — 몬스터 대치를 뺀 11종은 유리 뼈대(정면·측면)의 변형이다(2026-09-25)", () => {
+    expect(listActiveBattleSkinIds()).toHaveLength(12);
+    expect(listActiveBattleSkinIds().slice(0, 3)).toEqual(["rm2000", "rm2003", "pokemon"]);
     expect(getBattleSkin("rm2000").layout).toBe("frontview");
     expect(getBattleSkin("rm2003").layout).toBe("sideview");
     expect(getBattleSkin("rm2003").showAllySprites).toBe(true);
-    // 두 턴제 스킨은 유리 HUD 한 파일(_rm2000.css)을 나눠 쓴다 — 루트 data-battle-skin-family 로 스코프.
-    expect(battleSkinFamily("rm2000")).toBe("glass");
-    expect(battleSkinFamily("rm2003")).toBe("glass");
-    expect(battleSkinFamily("pokemon")).toBe("pokemon");
+    for (const id of listBattleSkinIds()) {
+      if (id === "pokemon") {
+        expect(battleSkinFamily(id)).toBe("pokemon");
+        continue;
+      }
+      const skin = getBattleSkin(id);
+      expect(battleSkinFamily(id), id).toBe("glass");
+      // 구도는 뼈대가 가진 둘뿐이고, 아군 스프라이트 노출은 구도가 정한다.
+      expect(["frontview", "sideview"], id).toContain(skin.layout);
+      expect(skin.showAllySprites, id).toBe(skin.layout === "sideview");
+      expect(["rows", "boxes", "ring", "minimal"], id).toContain(skin.hudTemplate);
+    }
+  });
+
+  it("구도가 같은 스킨은 배치도 같다(battlerPlacements 가 구도에서 파생)", () => {
+    for (const id of listBattleSkinIds()) {
+      if (id === "pokemon") continue;
+      const base = getBattleSkin(id).layout === "sideview" ? "rm2003" : "rm2000";
+      expect(BATTLER_PLACEMENTS[id], id).toBe(BATTLER_PLACEMENTS[base]);
+    }
+  });
+
+  it("얼굴 카드·링·얇은 HUD 변형이 한 번씩은 쓰인다", () => {
+    const huds = new Set(listBattleSkinIds().filter((id) => id !== "pokemon").map((id) => getBattleSkin(id).hudTemplate));
+    expect([...huds].sort()).toEqual(["boxes", "minimal", "ring", "rows"]);
   });
 
   it("mv 스킨이 등록되어 있고 기존 9종은 그대로 유지된다", () => {
