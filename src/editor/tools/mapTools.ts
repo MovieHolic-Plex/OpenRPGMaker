@@ -14,7 +14,7 @@ import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { exceedsMapDimensionLimit, MAX_TOOL_MAP_DIMENSION, mapSizeLimitMessage } from "@/project/mapSizeLimits";
 import { DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { autotileGroupsForTileset, DEFAULT_ROAD_AUTOTILE_GROUP, DEFAULT_SAND_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
-import { autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
+import { autotileGroupLayer, autotileGroupLayerView, autotileLayerView, shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { applyMapDeletion, planMapDeletion } from "@/project/mapDeletion";
 import { collectMapLinkStats } from "@/project/mapLinkStats";
 import { reachableMapIdsFromStart } from "@/project/mapInspection";
@@ -476,13 +476,21 @@ const paintTiles: ToolDefinition = {
     // 편집 주변의 그룹 멤버 셀만 바뀌므로 비멤버 페인트에는 사실상 no-op.
     // 재성형은 칠한 층 배열에서 한다(2층 풀 장식은 2층 이웃 기준). 자동타일은 바닥 층(1·2층)의 것이다 —
     // 3·4층 물체는 적은 번호 그대로 둔다(옛 upper 칠하기와 같다: 수관 같은 상위 그룹을 모델이 고른 칸째 보존).
+    const autotileGroups = autotileGroupsForTileset(tileset);
     const groundPoints = paintResult.touched.filter((cell) => paintResult.lowerTouched.has(coordKey(cell.x, cell.y)));
     if (groundPoints.length > 0) {
       // 1층을 칠한 칸은 2층도 비웠으므로(setLower) 둘레 2층 장식의 가장자리도 다시 잡는다.
       const layers: (1 | 2)[] = layerNo === 2 ? [2] : map.lowerOverlayTiles ? [1, 2] : [1];
       for (const layer of layers) {
         const view = autotileLayerView(map, layer);
-        for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(view, group, groundPoints);
+        for (const group of autotileGroups) if (autotileGroupLayer(group) === "lower") shapeAutotileGroupAround(view, group, groundPoints);
+      }
+    }
+    // 바닥 위에 겹치는 투명 오토타일(울타리·주차선, MV 팩)은 3층에서 이웃을 센다.
+    const upperPoints = layerNo === 3 ? paintResult.touched.filter((cell) => !paintResult.lowerTouched.has(coordKey(cell.x, cell.y))) : [];
+    if (upperPoints.length > 0) {
+      for (const group of autotileGroups) {
+        if (autotileGroupLayer(group) === "upper") shapeAutotileGroupAround(autotileGroupLayerView(map, group), group, upperPoints);
       }
     }
     compactMapLayers(map);

@@ -352,7 +352,7 @@ export function resolveAutotile(
         if (canWrite && !canWrite(cx, cy)) continue;
         const current = map.lowerTiles[cy * map.width + cx];
         if (!members.has(current)) continue;
-        const mask = autotileNeighborMask(map, cx, cy, isConnected, 8);
+        const mask = autotileNeighborMask(map, cx, cy, isConnected, 8, group.outsideConnects === true);
         const variant = autotileVariantForMask(group, mask) ?? autotileVariantForMask(group, mask & 15);
         if (typeof variant === "number" && variant !== current) {
           map.lowerTiles[cy * map.width + cx] = variant;

@@ -9,6 +9,7 @@ import { genId } from "@/util/id";
 import { toast } from "@/util/toast";
 import { projectRepository } from "@/project/persistence/repository";
 import { uploadedAssetForImport } from "@/editor/uploadedAssetStorage";
+import { importMvPackFiles, isKnownMvPackSheetName } from "@/editor/mvPackImport";
 import {
   getResourceProfileSpec,
   RESOURCE_PROFILE_SPECS,
@@ -141,24 +142,38 @@ export function renderResourceManager(
   fileInput.accept = mediaRule?.accept ?? IMAGE_IMPORT_ACCEPT;
   fileInput.style.display = "none";
   fileInput.dataset.testid = "resource-file-input";
-  fileInput.addEventListener("change", () => {
-    const file = fileInput.files?.[0];
-    if (!file) return;
-    if (mediaRule !== null) {
-      editor.request(() => importMediaResource(file, mediaRule, asset => editor.imported(asset)));
-    } else {
-      importImageResource(file, selectedResourceKind, container);
-    }
-    fileInput.value = "";
-  });
-  const onImport = (): void => editor.request(() => fileInput.click());
-  const onDropFile = (file: File): void => {
+  // 칩셋은 여러 장을 한꺼번에 받는다 — RPG Maker MV/MZ 팩 시트 묶음이면 프리셋 타일셋 하나로 굽는다(mvPackImport).
+  if (mediaRule === null && selectedResourceKind === "chipset") fileInput.multiple = true;
+  const importOne = (file: File): void => {
     if (mediaRule !== null) {
       editor.request(() => importMediaResource(file, mediaRule, asset => editor.imported(asset)));
     } else {
       importImageResource(file, selectedResourceKind, container);
     }
   };
+  // 한 번에 들어온 파일(선택·끌어놓기)을 모아 팩 시트와 나머지로 가른다.
+  let pendingFiles: File[] = [];
+  const onDropFile = (file: File): void => {
+    pendingFiles.push(file);
+    if (pendingFiles.length > 1) return;
+    queueMicrotask(() => {
+      const batch = pendingFiles;
+      pendingFiles = [];
+      const packSheets = mediaRule === null ? batch.filter((entry) => isKnownMvPackSheetName(entry.name)) : [];
+      const rest = packSheets.length >= 3 ? batch.filter((entry) => !packSheets.includes(entry)) : batch;
+      if (packSheets.length >= 3) {
+        void importMvPackFiles(packSheets)
+          .then(() => renderResourceManager(container))
+          .catch((error: unknown) => toast(error instanceof Error ? error.message : "팩 가져오기 실패", "error"));
+      }
+      for (const entry of rest) importOne(entry);
+    });
+  };
+  fileInput.addEventListener("change", () => {
+    for (const file of Array.from(fileInput.files ?? [])) onDropFile(file);
+    fileInput.value = "";
+  });
+  const onImport = (): void => editor.request(() => fileInput.click());
 
   const onImportUrl = async (url: string): Promise<void> => {
     try {

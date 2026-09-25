@@ -35,6 +35,7 @@
 | 재료 이름 도구 `build_wall`·`build_roof`·`fill_region`·`lay_path`·`place_props` 등 | 「흰 집 벽」 같은 **이름표 문자열**로 묶음을 찾아 전개 | `resolveMaterialByLabel`(`src/project/tileVocabulary.ts:361`) — 이름표가 없으면 재료를 못 찾는다 |
 | `paint_tiles`, `paint_road`, `stamp_structure` | **번호 직접 입력** | 뜻을 모르면 추측 번호가 된다 |
 | `stamp_tile_recipe`, `inspect_tile_recipe` | 조립법(두 레이어 배열·접근칸) 원형 배치 | **forest_harmony 전용** — `publicRecipe` 가 `compileForestRecipe` 로 숲마을 아틀라스를 강제(`publicTileRecipes.ts:11`) |
+| `list_tileset_objects`, `stamp_tileset_object` | 팩 프리셋 물체(가로등·자판기·문·차선) 이름·크기·종류, 원형 배치 | `learnedFrom:"pack-preset"` 킷만. 아래 「MV/MZ 팩 프리셋」 |
 | `show_map_region` | 이미 칠한 **맵** 그림 (+ 맵에 있으면 2층·4층·그림자 배열) | Pi 에서 모델이 보는 유일한 렌더 그림. 타일셋 자체 그림은 아니다 |
 | `stamp_layer_block`, `paint_shadow` | 네 층 배열 찍기·그림자 | 칠하기 게이트 안(`TILESET_REFERENCE_TILE_CHOOSERS`) |
 | `show_tiles`, `show_tile_grid` | 모델에겐 **JSON 텍스트만** | 그림은 채팅 창의 사람에게만 그려진다 |
@@ -157,6 +158,65 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 팩이 소유한 것만 갈아 끼운다 — 참고문서는 팩의 용도 id, `tileGroups`·`autotileGroups` 는 `rasak_` 접두어 id. 저자가 쓴 용도·그룹은 남는다. 판본은 `tiledata/rasak-fantasy/bundles.json` sha256,
 이름·번호 같은 텍스트만 `tiledata/rasak-fantasy/` 에 둔다. 작업물은 `~/third-party-assets/rasak/`.
 
+### MV/MZ 팩 프리셋 — 구현 (2026-09-24, Rasak Modern 도시 야외)
+
+사용자가 팩 시트 여러 장을 자원 관리자(칩셋)에 **한꺼번에** 올리면 알려진 프리셋과 해시로 맞춰 타일셋 하나로 굽는다.
+그림은 사용자 원본에서만 만든다. 저장소에는 이름·좌표·해시뿐이다.
+
+| 파일 | 하는 일 |
+|---|---|
+| `src/project/rpgmakerMv/autotile.ts` | rpg_core 쿼터 표(FLOOR 48·WALL 16·WATERFALL 4), 이웃 마스크 → MV 모양 번호, `autotileVariantMap` |
+| `src/project/rpgmakerMv/layout.ts` | 시트 목록 → 64칸 폭 아틀라스 칸 번호(결정적). **배치 규칙을 바꾸면 모든 프리셋 번호가 어긋난다** |
+| `src/project/rpgmakerMv/bake.ts` | RGBA 시트 → 아틀라스 RGBA(브라우저·Node 공용). Python 판과 칸 8,696개 픽셀 동일 |
+| `src/project/rpgmakerMv/packPreset.ts` · `packs/*.ts` | 프리셋 형식과 팩별 지식(시트 sha256, 오토타일 종류 이름·쓰임새, A5 평타일, 물체 좌표·종류, 까는 순서 MD) |
+| `src/project/rpgmakerMv/tilesetPreset.ts` | 프리셋+원본 → `TilesetDef`: 통행·★·잠근 홈 레이어, `autotileGroups`+이름 붙은 `tileGroups`(fill_region 재료), 물체 구조물 킷(`learnedFrom:"pack-preset"`), 참고문서 1용도(MD 5쪽 + 재료·물체 견본·예시 블록 그림) |
+| `src/editor/mvPackImport.ts` | 브라우저 가져오기(sha256·디코드·굽기·자산 등록). `resourceManager.ts` 가 여러 장을 모아 팩 시트 3장 이상이면 이쪽으로 보낸다 |
+| `src/editor/tools/tilesetObjectTools.ts` | `list_tileset_objects` · `stamp_tileset_object`(게이트 대상). `base` = 땅에 닿는 칸, 막힌 밑칸이 옥상·외벽·물·차도 위면 거부 |
+| `scripts/content/mv-pack/build-project.mts` | 헤드리스: 팩 폴더 → 프로젝트 JSON(시험용). 결과물은 저장소 밖에 둔다 |
+
+규칙 몇 가지:
+- **홈 레이어는 잠근 `tileMeta.defaultLayer`, ★ 는 `priority`.** 커스텀 타일셋은 잠긴 메타가 없으면 priority 를 홈으로 읽는다
+  (`tileLayerClassification.ts`). 바닥 표시(차선)는 위층이면서 캐릭터 아래(priority lower·통행)여야 해서 둘을 갈랐다.
+- **위층 오토타일**(`AutotileGroup.layer:"upper"`): MV A2 오른쪽 절반(울타리·주차선·균열)은 바닥 위 겹침이다. `paint_tiles`·`fill_region`·편집기 붓이
+  위층에서 이웃을 센다(`autotileLayerView`). `fill_region` 은 재료가 upper 면 layer 를 안 줘도 위층에 깐다.
+- **`fill_region` 은 칠한 재료 칸의 모양을 구조물 보호보다 먼저 맞춘다** — 벽·지붕 재료는 칠한 순간 「구조물」이라 전엔 가장자리를 영영 못 맞췄다.
+- `TilesetDef.mvPack` 이 있으면 16px 하네스(`applyCustomChipsetMinimalHarness`)에서 빠진다.
+- **MV 팩에서만 켜는 동작 (2026-09-25 적대적 화면 검수 후).** 내장 타일셋 결과는 그대로 두려고 `tileset.mvPack` 으로 갈랐다.
+  - `fill_region`·`tile_erase` 는 칠하거나 지운 칸 둘레의 **다른 재료까지** 다시 맞춘다(`shapeAllAutotileGroupsAround`).
+    MV 는 맞닿은 두 재료가 저마다 가장자리를 그린다. 보도 끝의 **연석**도 보도 재료가 차도 쪽 가장자리에 그리는 것이라,
+    보도를 먼저 깔고 차도를 나중에 깔면 전엔 연석이 없었고, 흙 공터 안 잔디는 경계가 칼로 자른 직선이었다.
+  - `fill_region` 의 「벽과 1칸 틈 메우기」(`expandCellsAgainstWalls`)를 끈다 — 울타리·물체도 막힌 칸이라 7×3 옥상이 울타리 쪽으로 혹처럼 자라 30칸이 됐다.
+  - `AutotileGroup.outsideConnects:true` — 맵 밖을 같은 재료로 센다(RPG Maker 규칙). 맵 끝까지 깐 보도·물에 테두리가 그려지지 않는다.
+  - `mvPack.plainWalls` — 창 난 벽돌 외벽 → 같은 모양의 민짜 벽돌. `stamp_tileset_object` 가 문·창·간판·차양 밑 벽을 바꾼다
+    (물체 그림의 투명한 틈으로 밑 창이 비쳐 두 겹으로 보였다). 문은 차양 그늘 칸을 덮어써도 된다.
+  - `stamp_tileset_object` 경고: 차선 화살표가 반대 차로(우측통행)면, 중앙선이 짝수 폭 차도·가운데가 아닌 줄이면(중앙선은 칸 한가운데에 선이 있다).
+- **물체 좌표는 시트에서 이웃과 붙은 것을 조심.** 차양은 1칸짜리(1,0)와 3칸짜리(2,0)가 붙어 있어 4칸으로 묶으면 가운데 이음매가 보였다.
+  칸 좌표를 새로 붙이면 한 칸 여백을 두고 잘라 본 그림으로 확인한다.
+- 헤드리스 `scripts/pi-agent.mts` 는 이제 `show_map_region` 그림을 `scripts/qa-game/render.mts` 로 그려 모델에게 준다(전엔 「맵 이미지 전달 경로가 없습니다」로 실패).
+
+헤드리스 실측(gemini-3.7-flash, 40×30, 한 번에 3~5분·도구 80~90회): 교차로 블록·강변 상점가를 요청대로 깔았다.
+처음 시험에서 나온 실수 두 가지(가로등 at 을 밑칸으로 줘 옥상 위에 세움, 정지 표지판을 차도 한가운데 세움)는 도구가 거부하게 막았다.
+남은 한계: 한 칸 세 겹(예: 바닥+얼룩+물체)은 두 레이어라 못 그린다(MZ 4층 작업이 풀 예정), 애니 물은 첫 프레임만, 이름 붙인 물체는 City 폴더 80개뿐.
+
+### 건물 문법과 마을 짜임 (2026-09-25)
+
+- **건물은 층 띠로 쌓는다**(작가 예시에서 뽑음): 옥상 1~3줄 → 창 난 외벽 한 줄 = 한 층 → 창 없는 다른 벽 1층 띠 1~2줄.
+  문은 1층 맨 아래 줄, 차양은 그 윗줄(차양 줄무늬가 문 윗칸을 덮고 문 아랫칸은 차양 그늘 위). 창 난 벽 위 문·차양·창은
+  `mvPack.plainWalls` 짝으로 창 없는 벽으로 바뀐다. 화풍은 일본이 아니라 서양 혼합(영어 간판·미국식 표지 + 독일식 광고 기둥) — 우측통행.
+- **마을 한 장은 `build_pack_town`**(`src/editor/tools/packTownTools.ts`, 본체 `src/project/rpgmakerMv/townLayout.ts`).
+  조수가 칸마다 좌표를 고르면 같은 간격 네모 건물이 빈 보도 바다에 떴고(65툴콜, 부하에서 턴마다 끊김), 도시 생성 문헌
+  (Parish&Müller 2001 → SimWorld 2025, CityCraft 2024, CityGenAgent 2026)도 「LLM 은 땅 쓰임, 배치는 절차」로 수렴한다.
+  순서: 길(큰길 7·골목길 5·뒷골목, 둘째 골목길은 큰길 T) → 블록 → 필지 → 건물 → 거리 물체.
+  치수(1칸 ≈ 1.5m): 가게 4~6칸(가끔 7~9)·벽 맞댐·모퉁이 3~4층·이웃과 폭/층/재료 다르게·차양 65%, 가게 뒤 뒷주차 칸 선(짝수 열만 — 이웃 선이 붙으면 오토타일이 「8」로 이어진다),
+  주택 필지 8~11·집 5~7·앞마당 3~5·현관길 1·진입로 2·뒷마당 울타리·텃밭, 줄집 한 블록, 연석→잔디 띠 1→보도,
+  가로수 4~6·가로등 6~10, 횡단보도는 교차로 재료로만, 맨 윗줄은 뒷마당 울타리(맵 끝 빈 띠 금지), 분수 공원 14~20칸.
+  재료 이름·물체 id 는 프리셋의 `town`(`MvTownRecipe`) — 다른 팩은 recipe 를 채우면 같은 도구를 쓴다.
+- **`check_town_map`**(읽기): 물체 없이 36칸 넘게 이어진 같은 바닥, 맵 끝 2줄 이상 빈 띠, 보도 25% 초과를 issues 로.
+- 참고문서 「까는 순서」 0절이 「마을은 build_pack_town 부터 + 손으로 고칠 때 규칙」. 참고문서는 올릴 때 구워지므로
+  `refreshMvPackGuide`(ensureBundledTilesets 에서 호출)가 이미 올린 프로젝트의 지침 글만 지금 프리셋으로 바꾼다.
+- 헤드리스 실측(t1, 50×40 한 문장 요청): 조수가 첫 호출로 build_pack_town → 참고문서 읽기 → check_town_map 과 화단·나무를
+  번갈아 issues 0 까지. 연구 정리 원본: 세션 산출 `/tmp/town-layout-research.md`(요지는 이 절).
+
 **마을·실내 묶음(2026-09-25).** `rasak_town`(A1~A5 City + Town·Building·Structure·Market + 울타리·정원·밭·작물·여름 나무)과
 `rasak_interior`(A2_Inside·A4/A5_House + HouseInterieur·LivingRoom·Tavern·Storage + 대장간·재봉·왕실). 제작자 프리뷰가 없으므로
 기준 맵은 `scripts/content/rasak/compose_examples.py`(+`_specs.py`)가 MZ 자동타일 규칙으로 조립한다(마을·광장·민가 방·주점 4장).
@@ -193,7 +253,7 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
 ## 알려진 함정
 
 - **16px 표가 48px 업로드를 건드린다.** `ensureTilesetHarnesses` → `applyCustomChipsetMinimalHarness`
-  (`src/project/tilesetHarness/combinedTown.ts:55`, `:63`)가 합본 마을이 아닌 모든 타일셋(번들 성·LPC 가구만 예외)에
+  (`src/project/tilesetHarness/combinedTown.ts`)가 합본 마을이 아닌 모든 타일셋(번들 성·LPC 가구·`mvPack` 프리셋만 예외)에
   RM2k3 투명 칩 번호표 `isTransparentChipsetTile` 로 `priority="upper"` 를 강제한다. 다른 규격의 업로드에선 엉뚱한 칸이 상위로 간다.
 - **참고문서가 없으면 시스템 프롬프트의 「참고문서 읽어라」가 빈 목록만 돌려준다** — 조수는 그대로 번호를 칠한다.
 - **`show_tiles` 그림은 조수가 못 본다.** 조수에게 칸 모양을 보여 주려면 참고문서 그림으로 넣는다.
@@ -205,7 +265,7 @@ Pi 런타임(`scripts/lib/piAgentRuntime.ts`)은 모델이 끝났다고 할 때 
 위키는 LLM 이 반드시 읽는다는 보장이 없다. 그래서 핵심 두 가지는 테스트가 막는다 — `test/tilesetTeachingGuards.test.ts`:
 
 - **칠하기 도구가 게이트 밖에 있으면 실패.** `mapId` 와 칸 선택 인자(tile·tiles·tileId(s)·material(s)·recipeId·presetId·paletteRole·template)를
-  함께 받는 쓰기 도구는 `TILESET_REFERENCE_TILE_CHOOSERS` 에 있거나, 코드가 칸을 고르는 도구 목록 `CODE_PICKS_TILES`
+  함께 받는 쓰기 도구(objectId·kitId 포함)는 `TILESET_REFERENCE_TILE_CHOOSERS` 에 있거나, 코드가 칸을 고르는 도구 목록 `CODE_PICKS_TILES`
   (지금 author_village·place_concept·place_storage_chest)에 있어야 한다. 게이트 목록의 이름 오타·삭제도 잡는다.
 - **새 번들 타일셋에 참고문서가 없으면 실패.** 2026-09-24 기준 참고문서 없는 번들 16개는 `BUNDLED_WITHOUT_REFERENCES` 에
   적어 두었고, 이 목록은 **줄어들기만** 한다(참고문서가 생기면 목록에서 빼라고 실패한다).

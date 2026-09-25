@@ -179,6 +179,22 @@ export function autotileNeighborMask(
   return mask;
 }
 
+/** 그룹이 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. */
+export function autotileGroupLayer(group: AutotileGroup): "lower" | "upper" {
+  return group.layer === "upper" ? "upper" : "lower";
+}
+
+/**
+ * 그룹의 레이어를 엔진이 읽는 `lowerTiles` 자리에 둔 뷰. 같은 배열을 가리키므로 엔진이 쓰면 맵이 제자리에서 바뀐다.
+ * upper 그룹(바닥 위에 겹치는 투명 오토타일)도 엔진을 그대로 쓰게 하는 한 줄짜리 어댑터다.
+ */
+export function autotileGroupLayerView(
+  map: { readonly width: number; readonly height: number; readonly lowerTiles: number[]; readonly upperTiles: number[] },
+  group: AutotileGroup,
+): AutotileMapView {
+  return autotileGroupLayer(group) === "upper" ? { width: map.width, height: map.height, lowerTiles: map.upperTiles } : map;
+}
+
 // 비트마스크에 매핑된 변형 타일. 없으면 undefined.
 export function autotileVariantForMask(group: AutotileGroup, mask: number): number | undefined {
   const value = group.variantMap[String(mask)];
@@ -200,7 +216,7 @@ export function autotileVariantForCell(map: AutotileMapView, group: AutotileGrou
   const members = new Set<number>(group.memberTileIds);
   if (!members.has(current)) return undefined;
   const connect = connectSet(group);
-  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.edgeConnects === true);
+  const mask = autotileNeighborMask(map, x, y, (tile) => connect.has(tile), group.neighborhood ?? 4, group.edgeConnects === true || group.outsideConnects === true);
   return autotileVariantForMask(group, mask);
 }
 
@@ -223,7 +239,7 @@ export function shapeAutotileGroupAround(
   const connect = connectSet(group);
   const isConnected = (tile: number): boolean => connect.has(tile);
   const neighborhood = group.neighborhood ?? 4;
-  const edgeConnects = group.edgeConnects === true;
+  const edgeConnects = group.edgeConnects === true || group.outsideConnects === true;
   const offsets = neighborhood === 8 ? RECHECK_OFFSETS_8 : RECHECK_OFFSETS;
   // A depth variant of the full cell is already right for a full mask; only shadeAutotileInterior re-picks it.
   const interior = new Set((group.interiorVariants ?? []).flat());
@@ -245,6 +261,27 @@ export function shapeAutotileGroupAround(
       if (typeof variant === "number") map.lowerTiles[cy * map.width + cx] = variant;
     }
   }
+}
+
+/**
+ * 편집 칸 둘레의 **모든** 오토타일 그룹을 제 레이어에서 다시 맞춘다. 흙 공터 안에 잔디를 채우면
+ * 잔디만이 아니라 둘레 흙 칸도 가장자리 모양으로 바뀌어야 한다 — 칠한 재료만 맞추면 경계가 칼로 자른 직선이 된다
+ * (2026-09-25 MV 팩 헤드리스 실측). 바뀐 칸 수를 돌려준다.
+ */
+export function shapeAllAutotileGroupsAround(
+  map: { readonly width: number; readonly height: number; readonly lowerTiles: number[]; readonly upperTiles: number[] },
+  groups: readonly AutotileGroup[],
+  points: readonly AutotilePoint[],
+): number {
+  if (points.length === 0) return 0;
+  const lowerBefore = map.lowerTiles.slice();
+  const upperBefore = map.upperTiles.slice();
+  for (const group of groups) shapeAutotileGroupAround(autotileGroupLayerView(map, group), group, points);
+  let changed = 0;
+  for (let index = 0; index < lowerBefore.length; index += 1) {
+    if (lowerBefore[index] !== map.lowerTiles[index] || upperBefore[index] !== map.upperTiles[index]) changed += 1;
+  }
+  return changed;
 }
 
 export interface AutotileArea {

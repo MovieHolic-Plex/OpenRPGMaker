@@ -6,6 +6,7 @@
 // 공정 순서: build_wall → place_door/place_window → build_roof → lay_path → place_props.
 
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
+import { autotileGroupLayer, shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { isPassable, tilePassability } from "@/project/collision";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { roleCapabilities } from "@/project/tileRoles";
@@ -1041,15 +1042,17 @@ const fillRegion: ToolDefinition = {
     const rect = coerceRect(args.rect, "rect", shapeExample);
     requireRectInMap(map, rect, "rect", shapeExample);
     const shape = coerceFillShape(args.shape, FILL_CIRCLE_EXAMPLE);
-    const layer = args.layer === undefined ? "lower" : args.layer;
-    const layerNo = parseToolLayer(layer);
-    if (layerNo === null) failWithExample(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층)`, shapeExample);
+    const requestedLayer = args.layer === undefined ? "lower" : args.layer;
+    const parsedLayer = parseToolLayer(requestedLayer);
+    if (parsedLayer === null) failWithExample(`layer는 ${TOOL_LAYER_ENUM.join("/")} 중 하나여야 합니다(lower=1층, upper=3층)`, shapeExample);
     // 숲마을 계열 시트의 물은 시트 자신의 호수 오토타일(forest_harmony_lake_47, 1517~1563)이다. 어휘에 남은 합본 마을
     // 「애니메이션 물」(0~/120)을 고르면 물가 없는 남색 판이 됐다(2026-09-25 조수 시험).
     const ownLake = ownLakeAutotile(tileset, args.material);
     const { group, softConfirm } = ownLake ? { group: ownLake.group, softConfirm: undefined }
       : requireMaterialGroup(tileset, args.material, shapeExample, { preferRoles: ["water", "terrain"], requireAutotileGroup: true });
     const autotile = ownLake ? ownLake.autotile : autotileGroupForVocab(tileset, group);
+    // 겹침 오토타일(울타리·주차선)은 3층이 집이다 — layer 를 안 주면 거기에 깐다(바닥을 지우지 않는다).
+    const layerNo: TileLayerNo = args.layer === undefined && autotile && autotileGroupLayer(autotile) === "upper" ? 3 : parsedLayer;
     assertFillRegionGroup(tileset, group, autotile);
     const body = fillBodyTile(group, autotile);
     if (body === null) {
@@ -1058,7 +1061,9 @@ const fillRegion: ToolDefinition = {
 
     const bboxCells = cellsInRect(map, rect);
     const maskCells = cellsInFillShape(map, rect, shape);
-    const allCells = expandCellsAgainstWalls(draft, map, maskCells);
+    // 벽과의 1칸 틈 메우기는 MV 팩에서 끈다 — 건물·울타리·물체가 모두 「벽」이라 옥상이 울타리 쪽으로 혹처럼 자라고
+    // 이웃 건물과 붙어 버린다(2026-09-25 헤드리스 실측: 7×3 옥상이 30칸). 조수가 준 사각형 그대로 칠한다.
+    const allCells = tileset.mvPack ? maskCells : expandCellsAgainstWalls(draft, map, maskCells);
     const gapCells = allCells.length - maskCells.length;
     if (allCells.length === 0) {
       throw new ToolError(
@@ -1101,14 +1106,26 @@ const fillRegion: ToolDefinition = {
       if (clearUpper && layerNo === 1 && map.upperTiles[cell.y * map.width + cell.x] !== TILE.EMPTY) upperCleared += 1;
       paintCell(cell);
     }
-    // 오토타일은 칠한 층 배열에서 모양을 잡는다(2층 풀 장식은 2층 이웃 기준). 3·4층 물체는 그대로 둔다.
-    const reshaped = (layerNo === 1 || layerNo === 2) && autotile
-      ? resolveAutotile(autotile, exit.cells, autotileLayerView(map, layerNo), (x, y) => protectedReason({ x, y }) === null) : 0;
+    // 오토타일은 칠한 층 배열에서 모양을 잡는다(2층 풀 장식은 2층 이웃 기준). 겹침 오토타일은 3층, 나머지 3·4층 물체는 그대로 둔다.
+    // 모양 재계산은 이 재료 칸만 바꾼다 — 벽·지붕 재료는 칠한 순간 「구조물」이라 보호 판정만 쓰면
+    // 방금 칠한 외벽·옥상의 가장자리를 영영 못 맞춘다(2026-09-24 MV 팩 실측: 재계산 0칸).
+    const autotileMembers = new Set(autotile?.memberTileIds ?? []);
+    const reshapes = autotile !== undefined && autotile !== null
+      && (autotileGroupLayer(autotile) === "upper" ? layerNo === 3 : layerNo === 1 || layerNo === 2);
+    const reshapeView = reshapes ? autotileLayerView(map, layerNo) : null;
+    const reshaped = autotile && reshapeView
+      ? resolveAutotile(autotile, exit.cells, reshapeView, (x, y) => autotileMembers.has(reshapeView.lowerTiles[y * map.width + x]!)
+        || protectedReason({ x, y }) === null) : 0;
     // 1층을 채운 칸은 2층 장식도 비웠으므로 둘레 2층 장식의 가장자리를 다시 잡는다(2층이 있는 맵만).
     if (layerNo === 1 && map.lowerOverlayTiles) {
       const overlay = autotileLayerView(map, 2);
       for (const group of autotileGroupsForTileset(tileset)) shapeAutotileGroupAround(overlay, group, exit.cells);
     }
+    // MV 팩 재료는 서로 다른 오토타일끼리 맞닿으면 양쪽이 가장자리를 그린다 — 흙 속 잔디·보도 속 화단의
+    // 둘레 흙·보도 칸도 다시 맞춘다. 내장 타일셋은 기존 결과(재료 자신만 재계산)를 그대로 둔다.
+    const neighborsReshaped = tileset.mvPack
+      ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset).filter((candidate) => candidate.id !== autotile?.id), exit.cells)
+      : 0;
     // 3×3 테두리 바닥은 채운 면의 가장자리에 테두리를, 안쪽에 몸통을 둔다(1칸 폭 줄은 몸통 그대로).
     const nine = !autotile ? flatNineSlice(group) : undefined;
     if (nine) {
@@ -1132,13 +1149,13 @@ const fillRegion: ToolDefinition = {
     const exitNote = exit.corridor.length > 0 ? `, 시작 위치 통로 ${exit.corridor.length}칸 비움` : "";
     const warnings = [
       ...(protectedSkipWarnings(skippedAll) ?? []),
-      ...bareBoardWarnings(map, exit.cells.length, layerNo === 1 ? "lower" : String(layer)),
+      ...bareBoardWarnings(map, exit.cells.length, layerNo === 1 ? "lower" : String(requestedLayer)),
       ...(exit.corridor.length > 0
         ? [`시작 위치 (${draft.startPos.x},${draft.startPos.y})가 사방으로 막혀 밖으로 나가는 통로 ${exit.corridor.length}칸((${exit.corridor[0].x},${exit.corridor[0].y})~(${exit.corridor[exit.corridor.length - 1].x},${exit.corridor[exit.corridor.length - 1].y}))을 비워 두었습니다`]
         : []),
     ];
     return withSoftConfirm({
-      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}${shapeNote}을 '${group.name}'로 ${mutatedCells > 0 ? "채움" : "변경 없음"} — ${exit.cells.length}/${maskCells.length}칸${gapNote}, 실제 변경 ${mutatedCells}칸, 오토타일 재계산 ${reshaped}칸${skipNote}${upperNote}${exitNote}.`,
+      summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h}${shapeNote}을 '${group.name}'로 ${mutatedCells > 0 ? "채움" : "변경 없음"} — ${exit.cells.length}/${maskCells.length}칸${gapNote}, 실제 변경 ${mutatedCells}칸, 오토타일 재계산 ${reshaped + neighborsReshaped}칸${skipNote}${upperNote}${exitNote}.`,
       ...(warnings.length > 0 ? { warnings } : {}),
       data: {
         filled: exit.cells.length,
@@ -1148,7 +1165,7 @@ const fillRegion: ToolDefinition = {
         maskCells: maskCells.length,
         gapCells,
         shape,
-        reshaped,
+        reshaped: reshaped + neighborsReshaped,
         groupId: group.id,
         layer,
         effectiveLayer: toolLayerLabel(layerNo),
@@ -1384,11 +1401,13 @@ const tileErase: ToolDefinition = {
       eraseCell(cell);
       cleared += 1;
     }
+    // MV 팩: 지운 자리 둘레의 울타리·차선·흙 가장자리를 다시 맞춘다(지운 끝이 끊긴 모양으로 남지 않게).
+    const reshaped = tileset?.mvPack ? shapeAllAutotileGroupsAround(map, autotileGroupsForTileset(tileset), filtered.cells) : 0;
     compactMapLayers(map);
     return {
       summary: `${map.name} (${rect.x},${rect.y}) ${rect.w}×${rect.h} 정리(${layer}) — ${cleared}/${allCells.length}칸${groundTile === null ? "" : `, 하위는 기본 바닥 ${groundTile} 복원`}${filtered.skipped.length > 0 ? `, 보호 ${filtered.skipped.length}칸 제외` : ""}.`,
       warnings: protectedSkipWarnings(filtered.skipped),
-      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer, kind, groundTile },
+      data: { cleared, requested: allCells.length, skipped: filtered.skipped.length, layer, kind, groundTile, ...(reshaped ? { reshaped } : {}) },
     };
   },
 };

@@ -9,8 +9,8 @@ import { TILESET_REFERENCE_TILE_CHOOSERS } from "@/editor/tools/tilesetReference
 import { referenceOwner } from "@/project/tilesetReferences";
 import type { JsonSchema } from "@/editor/tools/types";
 
-// 모델이 칸을 직접 고르는 인자 — 타일 번호, 재료 이름, 조립법·팔레트·템플릿 이름.
-const TILE_CHOICE_ARG = /^(tile|tiles|tileId|tileIds|material|materials|recipeId|presetId|paletteRole|template)$/;
+// 모델이 칸을 직접 고르는 인자 — 타일 번호, 재료 이름, 조립법·팔레트·템플릿·물체 이름.
+const TILE_CHOICE_ARG = /^(tile|tiles|tileId|tileIds|material|materials|recipeId|presetId|paletteRole|template|objectId|kitId)$/;
 
 // 위 인자를 받지만 실제 칸은 코드가 고르는 도구. 이름은 프리셋·템플릿 선택일 뿐이라 게이트 대상이 아니다.
 const CODE_PICKS_TILES = new Set(["author_village", "place_concept", "place_storage_chest"]);

@@ -315,7 +315,8 @@ export interface StructureKitRow {
 
 // 스탬프 출처 유니언: 붓질 학습·DB 작성·실내 카탈로그.
 // 이 값은 계보 표시 전용이다 — 편집 잠금은 앨범 엔트리의 source 로 판정한다(structureKitDbTab).
-export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog";
+// pack-preset: 사용자가 올린 서드파티 팩을 프리셋으로 구울 때 심은 물체(rpgmakerMv/tilesetPreset.ts).
+export type StructureKitLearnedFrom = "user-paint" | "db-authored" | "interior-catalog" | "pack-preset";
 
 // 구조물 부위(2026-08, kit-parts 제안 §06·§07) — 타일을 바꾸지 않는 인스턴스 힌트.
 // 좌표는 킷 원점 기준 상대(dx,dy) — 시공 시점에 origin을 더해 절대좌표가 된다.
@@ -478,6 +479,16 @@ export interface TilesetDef {
   /** 파생 아틀라스가 원본 칩셋의 문서를 공유할 때. 한 단계 참조만 허용. */
   referenceSourceTilesetId?: string;
   /**
+   * 사용자가 올린 RPG Maker MV/MZ 팩 원본을 프리셋(src/project/rpgmakerMv/packs)대로 구운 타일셋(2026-09-24).
+   * 통행·레이어·이름표를 프리셋이 정하므로 16px RM2k3 자동 보정(ensureTilesetHarnesses)에서 뺀다.
+   */
+  mvPack?: {
+    presetId: string;
+    version: number;
+    /** 창 난 외벽 칸 → 같은 모양의 창 없는 외벽 칸. 문·간판·차양을 찍을 때 밑 창이 비쳐 보이지 않게 바꾼다. */
+    plainWalls?: Record<string, number>;
+  };
+  /**
    * 칩셋 계열(그림체 묶음, 2026-09-25). 같은 계열끼리는 조수가 말없이 바꿔도 되고, 다른 계열로 가려면
    * 사용자 승인이 필요하다(`src/project/tilesetFamily.ts`). 없으면 원본·번들 이름에서 추정한다.
    */
@@ -559,9 +570,12 @@ export interface AutotileGroup {
   // [0] 2칸 안에 이어지지 않은 칸이 있는 속, [1] 그보다 깊은 속. 칠하는 도구가 칸 위치 해시로 고른다
   // (autotileEngine.shadeAutotileInterior). 굽이숲 수관의 잎 채움(forestGrove.ts)이 쓴다.
   interiorVariants?: number[][];
-  // 맵 가장자리 바깥을 이어진 이웃으로 본다(RPG Maker MZ 편집기 규칙). 생략 시 이어지지 않음(RM2k 계열 기존 동작).
-  // 켜지 않으면 MZ 팩 벽·천장·풀밭이 맵 둘레마다 테두리 선을 그린다. Rasak 팩 그룹이 켠다(build_assistant_pack.py).
+  // 이웃을 세고 모양을 바꾸는 레이어. 생략 = lower. "upper" 는 바닥 위에 겹치는 투명 오토타일
+  // (RPG Maker MV A2 오른쪽 절반의 울타리·주차선·균열처럼)이다 — 아래층 지면을 지우지 않는다.
+  layer?: "lower" | "upper";
+  // 맵 가장자리 바깥을 이어진 이웃으로 본다. 둘 다 같은 뜻이다. edgeConnects 는 MZ 팩, outsideConnects 는 MV 팩 프리셋.
   edgeConnects?: boolean;
+  outsideConnects?: boolean;
 }
 
 export interface SpriteDef {
