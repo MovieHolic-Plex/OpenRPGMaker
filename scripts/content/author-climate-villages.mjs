@@ -327,7 +327,8 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
       // them (lib/bare-trees.mjs growMeadows) — never by more trees.
       const meadows = (members) => growMeadows(map, { isPlain, take: (x, y) => !yardFree.has(at(x, y)), members, seed: plan.seed,
         arrange: (mm) => { mm.lowerTiles = arrangeTallGrass(mm, { tileset, houses: plan.houses, seed: plan.seed }).lowerTiles; }, limits: { maxSq: 4, screen: 0.39 } });
-      const passes = (g) => g.maxSq <= 4 && g.screen <= 0.4;
+      // bare ash and sand may stay a little emptier than a green village (user 2026-09-25: too many plates, rocks, grass)
+      const passes = (g) => spec.bare ? g.maxSq <= 5 && g.screen <= 0.48 : g.maxSq <= 4 && g.screen <= 0.4;
       if (spec.bare) {
         // Sand and ash (user 2026-09-25: 「돌·선인장·풀이 너무 많다」, 「화산은 균열·용암, 모래는 사구」): the gate is met by
         // the ground itself — lava plates and crack networks, dunes and ripple sand (lib/climate-terrain.mjs) — with a
@@ -342,12 +343,15 @@ await withTsModule("scripts/content/lib/climate-villages-entry.ts", "climate-vil
         const isLandmark = (o) => (plan.landmarks ?? []).some((l) => l.x === o.x && l.y === o.y && l.w === o.w && l.h === o.h);
         for (const o of [...plan.houses, ...plan.placements.filter((p) => p.kind !== "vegetation" && !isLandmark(p)), ...(plan.yards ?? [])])
           for (let y = o.y; y < o.y + (o.h ?? 1); y++) for (let x = o.x; x < o.x + (o.w ?? 1); x++) groundFree.add(at(x, y));
-        const opts = { kit, isPlain, seed: plan.seed, accept: reachOk, limits: { maxSq: 4, screen: 0.39 }, water: wetCells,
+        const opts = { kit, isPlain, seed: plan.seed, accept: reachOk, limits: { maxSq: 5, screen: 0.46 }, water: wetCells,
           // (ground keeps one cell off house walls, so a plate or dune never reads as rubble heaped against a house)
           take: (x, y, solid) => (solid ? !taken.has(at(x, y)) && bare(x, y) : !groundFree.has(at(x, y)) && !ring.has(at(x, y)) && !near(x, y, 0, (i) => ROAD.has(map.lowerTiles[i]))
             && !plan.houses.some((h) => x >= h.x - 1 && x <= h.x + h.w && y >= h.y - 1 && y <= h.y + h.h)),
           ...(spec.bare.ground ?? {}) };
         const gaps = spec.climate === "volcano" ? dressVolcanoGround(map, opts) : dressDesertGround(map, opts);
+        // The forest village's lone campfire (381) stood in the open by a road with no camp round it (user 2026-09-25:
+        // 「길 한복판에 불」): on sand and ash it goes.
+        map.upperTiles.forEach((t, i) => { if (t === 381) map.upperTiles[i] = -1; });
         (process.env.CLIMATE_SOFT ? (ok, msg) => ok || console.error("GATE", msg, JSON.stringify(gaps.screenAt)) : assert)(passes(gaps), `ground gate ${spec.id} maxSq=${gaps.maxSq} screen=${gaps.screen.toFixed(3)}`);
         const kinds = {}; for (const p of gaps.pieces) kinds[p.kind] = (kinds[p.kind] ?? 0) + 1;
         edits.push({ kind: "ground", pieces: kinds, cells: gaps.counts,
