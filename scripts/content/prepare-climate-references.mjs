@@ -4,13 +4,14 @@ import fs from "node:fs";
 import { execFileSync } from "node:child_process";
 const dir = "tiledata/climate-villages", target = "src/assets/sharedClimateVillageReferences.json", preview = "public/assets/climate-village-references";
 const c = JSON.parse(fs.readFileSync(dir + "/catalog.json")), validation = JSON.parse(fs.readFileSync(dir + "/validation.json"));
+const tallGrass = JSON.parse(fs.readFileSync("src/assets/forestTallGrass.json"));
 const sheets = JSON.parse(fs.readFileSync(dir + "/sheets.json")), data = JSON.parse(fs.readFileSync("src/assets/climateVillageTilesets.json"));
 const block = (o) => "```json\n" + JSON.stringify(o) + "\n```\n";
 const rows = (a, w) => "```text\n" + Array.from({ length: a.length / w }, (_, y) => a.slice(y * w, (y + 1) * w).join(" ")).join("\n") + "\n```\n";
 const CATEGORY = {
   forest_harmony_snow: { id: "climate-snow-villages-v8", name: "설원 마을 · 눈 덮인 숲마을과 얼어붙은 못, 눈 쌓인 성벽 (눈 성벽 개정8)", description: "숲마을을 눈으로 다시 칠한 시트의 규칙. 칸 번호는 숲마을과 같고, 물 칸의 얼음 사본(걸을 수 있음)으로 못을 얼린다. 눈 얹힌 고목(2880~)과 성벽·성탑 윗면의 눈 쌓인 사본(3630~) 번호, 설원 마을 세 곳의 전체 배열과 통행 검사" },
-  forest_harmony_volcano: { id: "climate-volcano-villages-v8", name: "화산 마을 · 재와 용암, 균열과 식은 용암 판 (화산 지형 개정8)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 빈 재밭은 용암 균열·식은 용암 판·용암 웅덩이(3030~)로 채우는 법, 그을린 고목 덩이(2880~), 화산 봉우리와 화산 마을 세 곳의 전체 배열" },
-  forest_harmony_desert: { id: "climate-desert-villages-v8", name: "사막 마을 · 모래와 사암, 사구와 모래 물결 (사막 지형 개정8)", description: "숲마을을 모래·사암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 빈 모래밭은 사구·모래 물결·갈라진 땅(3300~)으로 채우는 법, 메사·선인장 무리, 바랜 고목 덩이(2880~), 물가 야자와 사막 마을 두 곳의 전체 배열" },
+  forest_harmony_volcano: { id: "climate-volcano-villages-v9", name: "화산 마을 · 재와 용암, 균열과 식은 용암 판 (타일 사전 보강 개정9)", description: "숲마을을 재·용암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물 칸이 모두 용암, 나무다리는 현무암 다리다. 빈 재밭은 용암 균열·식은 용암 판·용암 웅덩이(3030~)로 채우는 법, 그을린 고목 덩이(2880~), 화산 봉우리와 화산 마을 세 곳의 전체 배열" },
+  forest_harmony_desert: { id: "climate-desert-villages-v9", name: "사막 마을 · 모래와 사암, 사구와 모래 물결 (타일 사전 보강 개정9)", description: "숲마을을 모래·사암으로 다시 칠한 시트의 규칙. 칸 번호·통행은 숲마을과 같고 물은 오아시스 물 그대로다. 빈 모래밭은 사구·모래 물결·갈라진 땅(3300~)으로 채우는 법, 메사·선인장 무리, 바랜 고목 덩이(2880~), 물가 야자와 사막 마을 두 곳의 전체 배열" },
   forest_harmony_autumn: { id: "climate-autumn-villages-v5", name: "가을 마을 · 단풍 든 숲마을 (마을 채우기 개정5)", description: "숲마을을 금빛 풀밭과 단풍으로 다시 칠한 시트의 규칙. 칸 번호·통행·물은 숲마을과 같다. 가을 마을 두 곳의 전체 배열" },
 };
 const docs = Object.fromEntries(Object.keys(CATEGORY).map((k) => [k, []]));
@@ -273,8 +274,18 @@ for (const [ts, k] of Object.entries(CATEGORY)) {
   const climate = Object.values(data.climates).find((x) => x.id === ts);
   const meta = (t) => climate.metaPatch[t] ?? data.base.tileMeta[t] ?? climate.append.tileMeta[t - data.base.tileMeta.length];
   const pass = (t) => data.base.passability[t] ?? climate.append.passability[t - data.base.passability.length];
-  const used = [...new Set(plansOn(ts).flatMap((p) => [...c.maps[p.id].lowerTiles, ...c.maps[p.id].upperTiles]).filter((n) => n >= 0))].sort((a, b) => a - b);
-  const entries = used.map((tile) => ({ tile, label: meta(tile)?.label ?? "", passability: pass(tile) }));
+  // Desert and ash (v9): the dictionary also lists the tiles the guides name even when no map uses them any more
+  // (the assistant looked up 769/770/537 and the F·G grass and found nothing): the plants and rocks, the sheet's
+  // climate ground (3030~) and, on sand, the F·G tall grass (by water only). These entries carry the layer too.
+  const barren = ts === "forest_harmony_desert" || ts === "forest_harmony_volcano", kind = ts.replace("forest_harmony_", "");
+  const named = barren ? [537, 29, ...(kind === "desert" ? [769, 770, ...["F", "G"].flatMap((g) => Object.values(tallGrass.tiles[g]))] : []),
+    ...sheets.terrain.stamps.filter((st) => st.climate === kind).flatMap((st) => st.tiles),
+    ...Object.entries(sheets.terrain.autotiles).filter(([k]) => (kind === "desert") === (k === "cracked")).flatMap(([, g]) => [...Object.values(g.variantMap), ...(g.members ?? [])])] : [];
+  const used = [...new Set([...plansOn(ts).flatMap((p) => [...c.maps[p.id].lowerTiles, ...c.maps[p.id].upperTiles]), ...named].filter((n) => n >= 0))].sort((a, b) => a - b);
+  // (the desert palm 770 stands on the upper layer at runtime: climateVillages.ts withPriorityFixes)
+  const LAYER_FIX = { forest_harmony_desert: { 770: "upper" } };
+  const prio = (t) => LAYER_FIX[ts]?.[t] ?? data.base.priority[t] ?? climate.append.priority[t - data.base.priority.length];
+  const entries = used.map((tile) => ({ tile, label: meta(tile)?.label ?? "", ...(barren ? { layer: prio(tile) === "upper" ? "위층" : "아래층" } : {}), passability: pass(tile) }));
   for (let i = 0; i < entries.length; i += 150) doc(ts, `${k.id}-dictionary-${i / 150 + 1}`, `사용 타일 사전 ${i / 150 + 1}`, `# 사용 타일 사전\n\n${ts}에서 이 분류의 맵이 쓰는 번호·라벨·통행.\n` + block(entries.slice(i, i + 150)));
 }
 
