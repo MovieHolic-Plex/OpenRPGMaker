@@ -2505,10 +2505,14 @@
       [
         7,
         10
+      ],
+      [
+        15,
+        5
       ]
     ],
     "reachable": 69,
-    "walkable": 66,
+    "walkable": 65,
     "blocked": [],
     "pockets": []
   },
