@@ -88,7 +88,7 @@ export const riverFord = (o = {}) => ({
     b.river({ width: o.width ?? 3, points: riverPath(b, rx, { bends: 3, amp: 3, straight: [by, ...(by2 ? [by2] : [])] }),
       pools: o.pool ? [[rx + (b.random() < 0.5 ? -3 : 3), by < H / 2 ? by + Math.round(H * 0.28) : by - Math.round(H * 0.28), 6 + R(b, 0, 2), 4 + R(b, 0, 1)]] : [] });
     b.smoothWater(); b.paintWater();
-    b.bridges([[rx, by], ...(by2 ? [[rx, by2]] : [])]);
+    b.bridges([[b.findWaterX(by, rx), by], ...(by2 ? [[b.findWaterX(by2, rx), by2]] : [])]);
     const ex = [{ side: "west", at: by + R(b, -4, 4), meets: o.meets?.west ?? "서쪽 필드" }, { side: "east", at: by + R(b, -4, 4), meets: o.meets?.east ?? "동쪽 필드" }];
     if (o.north) ex.push({ side: "north", at: Math.round(W * (rx > W / 2 ? 0.25 : 0.75)), meets: o.meets?.north ?? "북쪽 필드" });
     if (o.south) ex.push({ side: "south", at: Math.round(W * (rx > W / 2 ? 0.2 : 0.8)), meets: o.meets?.south ?? "남쪽 필드" });
@@ -332,8 +332,10 @@ export const islands = (o = {}) => ({
       isl.push({ cx, cy, rx: W / n * 0.34 + R(b, 0, 2), ry: H * 0.3 + R(b, -2, 2) });
     }
     isl[0].cx = Math.max(isl[0].cx, Math.ceil(isl[0].rx) - 2); isl[n - 1].cx = Math.min(isl[n - 1].cx, W - Math.ceil(isl[n - 1].rx) + 1);
-    const ph = b.random() * 6.28;
-    const land = (x, y) => isl.some((q) => { const a = Math.atan2(y - q.cy, x - q.cx), r = 1 + 0.16 * Math.sin(a * 3 + ph + q.cx) + 0.08 * Math.sin(a * 5 + q.cy); return ((x - q.cx) / q.rx) ** 2 + ((y - q.cy) / q.ry) ** 2 < r * r; });
+    const ph = b.random() * 6.28, eyW = isl[0].cy + R(b, -2, 2), eyE = isl[n - 1].cy + R(b, -2, 2);
+    // land tongues from the first / last island out to the map edge where the exits are
+    const tongue = (x, y) => (x <= isl[0].cx && Math.abs(y - eyW) <= 2 + (x % 3 === 0 ? 1 : 0)) || (x >= isl[n - 1].cx && Math.abs(y - eyE) <= 2 + (x % 3 === 1 ? 1 : 0));
+    const land = (x, y) => tongue(x, y) || isl.some((q) => { const a = Math.atan2(y - q.cy, x - q.cx), r = 1 + 0.16 * Math.sin(a * 3 + ph + q.cx) + 0.08 * Math.sin(a * 5 + q.cy); return ((x - q.cx) / q.rx) ** 2 + ((y - q.cy) / q.ry) ** 2 < r * r; });
     // bridge corridors between neighbouring islands: two rows of water exactly from one island's rim to the next
     const spans = [];
     for (let k = 0; k + 1 < n; k++) {
@@ -354,7 +356,7 @@ export const islands = (o = {}) => ({
     for (const s of spans) for (const y of [s.y, s.y + 1]) { for (const x of [s.xa, s.xa - 1, s.xb, s.xb + 1]) { b.water.delete(b.at(x, y)); b.edgeWet.delete(b.at(x, y)); } for (let x = s.xa + 1; x < s.xb; x++) b.water.add(b.at(x, y)); }
     b.paintWater();
     b.bridges(spans.map((s) => [Math.round((s.xa + s.xb) / 2), s.y]));
-    const ex = [{ side: "west", at: isl[0].cy + R(b, -2, 2), meets: o.meets?.west ?? "서쪽 섬" }, { side: "east", at: isl[n - 1].cy + R(b, -2, 2), meets: o.meets?.east ?? "동쪽 섬" }];
+    const ex = [{ side: "west", at: eyW, meets: o.meets?.west ?? "서쪽 섬" }, { side: "east", at: eyE, meets: o.meets?.east ?? "동쪽 섬" }];
     b.exits(ex);
     const lines = [["exit:0", [isl[0].cx, isl[0].cy], "bridge-west:0"]];
     for (let k = 1; k + 1 < n; k++) lines.push([`bridge-east:${k - 1}`, [isl[k].cx, isl[k].cy], `bridge-west:${k}`]);
@@ -370,16 +372,16 @@ export const islands = (o = {}) => ({
 // Marsh: many small ponds across the map, the road threading between them on a causeway, a boardwalk pier.
 export const marsh = (o = {}) => ({
   build(b) {
-    const W = b.W, H = b.H, n = o.ponds ?? Math.round(W * H / 260);
+    const W = b.W, H = b.H, n = o.ponds ?? Math.round(W * H / 420);
     const ry = Math.round(H * 0.5) + R(b, -3, 3);
     const road = (x) => ry + 3 * Math.sin(x / 9 + b.seed);
     let made = 0;
     for (let k = 0; k < n * 6 && made < n; k++) {
-      const cx = R(b, 4, W - 5), cy = R(b, 4, H - 5), rx = R(b, 3, 6), ry2 = R(b, 2, 4);
+      const cx = R(b, 4, W - 5), cy = R(b, 4, H - 5), rx = R(b, 4, 8), ry2 = R(b, 3, 5);
       if (Math.abs(cy - road(cx)) < ry2 + 3) continue;
-      b.pond(cx, cy, rx, ry2, 0.2); made++;
+      b.pond(cx, cy, rx, ry2, 0.26); made++;
     }
-    b.unwater((x, y) => Math.abs(y - road(x)) < 3 || x < 5 || x > W - 6);
+    b.unwater((x, y) => Math.abs(y - road(x)) < 3 + 1.2 * (1 + Math.sin(x / 3.3 + y / 5)) || x < 5 || x > W - 6);
     b.smoothWater(); b.paintWater();
     const ex = [{ side: "west", at: Math.round(road(0)), meets: o.meets?.west ?? "서쪽 늪" }, { side: "east", at: Math.round(road(W - 1)), meets: o.meets?.east ?? "동쪽 늪" }];
     if (o.north !== false) ex.push({ side: "north", at: Math.round(W * 0.5) + R(b, -6, 6), meets: o.meets?.north ?? "북쪽 필드" });

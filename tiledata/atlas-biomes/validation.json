@@ -76,26 +76,26 @@
   },
   {
     "id": "swamp-test",
-    "seed": 7201,
+    "seed": 7203,
     "entry": [
       4,
-      20
+      24
     ],
-    "reachable": 1577,
+    "reachable": 1537,
     "targets": 3,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.448,
+      "maxSq": 5,
+      "screen": 0.443,
       "at": [
         0,
-        11
+        6
       ],
       "screenAt": [
-        4,
-        12
+        0,
+        4
       ]
     }
   },
@@ -162,15 +162,15 @@
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 4,
-      "screen": 0.452,
+      "maxSq": 3,
+      "screen": 0.443,
       "at": [
-        32,
-        40
+        38,
+        7
       ],
       "screenAt": [
-        20,
-        4
+        8,
+        24
       ]
     }
   },
@@ -181,7 +181,7 @@
       4,
       24
     ],
-    "reachable": 1899,
+    "reachable": 1966,
     "targets": 3,
     "blocked": 0,
     "terraceLeaks": 0,
@@ -190,12 +190,12 @@
       "maxSq": 4,
       "screen": 0.448,
       "at": [
-        60,
-        7
+        4,
+        19
       ],
       "screenAt": [
-        0,
-        4
+        24,
+        8
       ]
     }
   },
@@ -231,21 +231,21 @@
       4,
       23
     ],
-    "reachable": 1888,
+    "reachable": 1802,
     "targets": 4,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
       "maxSq": 4,
-      "screen": 0.439,
+      "screen": 0.448,
       "at": [
-        0,
-        5
+        21,
+        4
       ],
       "screenAt": [
         0,
-        4
+        24
       ]
     }
   },
@@ -263,39 +263,39 @@
     "seals": [],
     "emptiness": {
       "maxSq": 4,
-      "screen": 0.448,
+      "screen": 0.457,
       "at": [
-        30,
+        10,
         0
       ],
       "screenAt": [
-        28,
-        0
+        20,
+        28
       ]
     }
   },
   {
     "id": "skyisle-test",
-    "seed": 8005,
+    "seed": 8001,
     "entry": [
       4,
-      14
+      20
     ],
-    "reachable": 1086,
+    "reachable": 972,
     "targets": 8,
     "blocked": 0,
     "terraceLeaks": 0,
     "seals": [],
     "emptiness": {
-      "maxSq": 5,
+      "maxSq": 4,
       "screen": 0.448,
       "at": [
-        42,
-        4
+        45,
+        2
       ],
       "screenAt": [
-        55,
-        20
+        0,
+        8
       ]
     }
   },

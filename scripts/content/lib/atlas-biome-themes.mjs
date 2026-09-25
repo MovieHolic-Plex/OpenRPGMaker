@@ -19,7 +19,7 @@ export function theme(b) {
     case "swamp": return {
       canopy: { count: [1, 3], r: [4, 6] },
       hero: { ids: ["mangrove-2", "mangrove-1"], count: [3, 5], per: [2, 3], nearWater: 3 },
-      fill: { palette: { trees: 2.4, grass: 2.6, bushes: 1.6, flowers: 0.7 }, trees: P(k, "mangrove-1", "mangrove-2", "snag"), bushes: T(b, "swamp-bush", "reeds-2"), shoreBushes: T(b, "reeds-1", "reeds-2"), shoreR: 2, flowers: T(b, "marsh-flower"), groves: 4, smallBushShare: 0 },
+      fill: { palette: { trees: 2.4, grass: 2.6, bushes: 1.6, flowers: 0.7 }, trees: P(k, "mangrove-1", "mangrove-2", "mangrove-1"), bushes: T(b, "swamp-bush", "reeds-2"), shoreBushes: T(b, "reeds-1", "reeds-2"), shoreR: 2, flowers: T(b, "marsh-flower"), groves: 4, smallBushShare: 0 },
       water: { ids: ["lily-1", "lily-2"], count: [5, 9], reach: [1, 3] }, grounds: ["mud"],
     };
     case "mushroom": return {
@@ -41,8 +41,8 @@ export function theme(b) {
     };
     case "savanna": return {
       hero: { ids: ["acacia-1", "baobab", "acacia-2"], count: [3, 5], per: [1, 1] },
-      fill: { palette: { trees: 1.6, grass: 3.2, bushes: 1.2 }, trees: P(k, "acacia-2", "acacia-1", "kopje", "termite"), bushes: T(b, "dry-bush-1", "dry-bush-2"), groves: 0, smallBushShare: 0, growCap: 90 },
-      grounds: ["dry-dust"], noForest: true, water: null,
+      fill: { palette: { trees: 1.3, grass: 3.4, bushes: 0.9 }, trees: P(k, "acacia-2", "acacia-1", "acacia-2", "acacia-1", "kopje"), bushes: T(b, "dry-bush-1", "dry-bush-2"), groves: 0, smallBushShare: 0, growCap: 90 },
+      grounds: ["dry-dust"], landmark: { id: "termite" }, noForest: true, water: null,
     };
     case "taiga": return {
       canopy: { count: [3, 5], r: [4, 7] },
@@ -52,9 +52,9 @@ export function theme(b) {
     };
     case "tundra": return {
       hero: { ids: ["frost-rock"], count: [2, 3], per: [1, 2] },
-      fill: { palette: { stands: 1.3, bushes: 1.4, rocks: 1, grass: 1.2 }, bushes: T(b, "dwarf-shrub-1", "dwarf-shrub-2"), rocks: T(b, "lichen-rock-1", "lichen-rock-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [2, 3], spotCap: 16,
+      fill: { palette: { stands: 1.3, bushes: 1.4, rocks: 0.45, grass: 1.4 }, bushes: T(b, "dwarf-shrub-1", "dwarf-shrub-2"), rocks: T(b, "lichen-rock-1", "lichen-rock-2"), rocksAnywhere: true, groves: 0, standsAsSpots: true, stands: ["마른나무"], standCount: [2, 3], spotCap: 16,
         fillGate: { maxSq: 7, screen: 0.6 }, smallBushShare: 0 },
-      bare: true, grounds: ["permafrost", "snow-patch"], noForest: true, water: null, freeze: 1,
+      bare: true, grounds: ["permafrost", "snow-patch"], noForest: true, water: null, freeze: 0.95,
     };
     case "blight": return {
       canopy: { count: [2, 3], r: [4, 6] },

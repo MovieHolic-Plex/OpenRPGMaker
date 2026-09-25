@@ -154,7 +154,7 @@ def grounds(biome, lawn, neighbour_lawn=None):
         G["snowdrift"] = ("ground", "눈 더미", dict(tex=tex_snow(C("e8f0f6"), C("c4d4e2"), C("ffffff")), rim=C("aabccc")))
     if biome == "tundra":
         G["permafrost"] = ("ground", "얼어 갈라진 동토", dict(tex=tex_seams(C("8a8e84"), C("a4a89c"), C("5e625a"), None, 4, 33, 0.75)))
-        G["snow-patch"] = ("ground", "잔설", dict(tex=tex_snow(C("eef4f8"), C("ccd8e2"), C("ffffff")), rim=C("b4c2ce")))
+        G["snow-patch"] = ("ground", "잔설", dict(tex=tex_snow(C("dce4ea"), C("b8c6d2"), C("f0f4f8")), rim=C("98a8b6")))
     if biome == "blight":
         G["blight-veins"] = ("ground", "오염 맥이 번진 땅", dict(tex=tex_seams(C("3a2e44"), C("4a3c56"), C("22182a"), C("c060ff"), 5, 41, 0.8)))
         G["poison-pool"] = ("pool", "독 웅덩이", dict(tex=tex_liquid(C("3a0e52"), C("6a1e8a"), C("9a3ec0"), C("f0b0ff")), rim=C("1e0e26"), rim2=C("2a1834"), raised=True, r_open=6.0, inset=2.6))

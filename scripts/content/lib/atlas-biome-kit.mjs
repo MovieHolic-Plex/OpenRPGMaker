@@ -161,10 +161,20 @@ export class BiomeMap extends OutdoorMap {
     if (!ok2(x, y)) return 0;
     const add = (X, Y) => { for (let dy = 0; dy < 2; dy++) for (let dx = 0; dx < 2; dx++) cells.add(this.at(X + dx, Y + dy)); };
     add(x, y);
-    for (let k = 0; k < size * 4 && cells.size < size; k++) {
-      const [bx, by] = blocks[Math.floor(this.random() * blocks.length)], [dx, dy] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, -1]][Math.floor(this.random() * 6)];
-      const X = bx + dx, Y = by + dy;
-      if (ok2(X, Y)) { add(X, Y); blocks.push([X, Y]); }
+    // an organic ellipse (noisy rim, random tilt) grown breadth-first from the seed block: no stair-stepped rectangles
+    const r = Math.sqrt(size / Math.PI) + 0.4, ax = r * (0.8 + this.random() * 0.6), ay = (r * r) / ax, rot = this.random() * Math.PI;
+    const ph = [this.random() * 6.3, this.random() * 6.3], cx = x + 0.5, cy = y + 0.5;
+    const inside = (X, Y) => { const u = X + 0.5 - cx, v = Y + 0.5 - cy, a = Math.atan2(v, u);
+      const p = (u * Math.cos(rot) + v * Math.sin(rot)) / ax, q = (-u * Math.sin(rot) + v * Math.cos(rot)) / ay;
+      return p * p + q * q <= 1 + 0.28 * Math.sin(3 * a + ph[0]) + 0.18 * Math.sin(5 * a + ph[1]); };
+    const seenB = new Set([x + "," + y]);
+    for (let k = 0; k < blocks.length && cells.size < size * 1.3; k++) {
+      const [bx, by] = blocks[k];
+      for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+        const X = bx + dx, Y = by + dy, key = X + "," + Y;
+        if (seenB.has(key)) continue; seenB.add(key);
+        if (inside(X, Y) && ok2(X, Y)) { add(X, Y); blocks.push([X, Y]); }
+      }
     }
     if (cells.size < 4) return 0;
     const before = { lower: this.lower.slice() };
@@ -219,6 +229,9 @@ export class BiomeMap extends OutdoorMap {
   // Neighbour pieces in the zone, until the zone's own emptiness passes the gate (lawn in the zone counted as plain).
   zoneFill({ trees = [], smalls = [], decals = [], maxSq = 5, screen = 0.45 } = {}) {
     for (const i of this.zoneKeep ?? []) this.keep.delete(i);
+    // tall grass the fill grew into the zone is this biome's grass: the zone gets the neighbour's own pieces instead
+    for (const i of this.zone) if (this.grassCells.has(i)) { this.grassCells.delete(i); this.dress.delete(i); this.occupied.delete(i); this.clusterOf.delete(i); if (this.upper[i] === -1) this.lower[i] = this.ground; }
+    for (const c of this.clusters ?? []) if (c.cells) for (const i of [...c.cells]) if (this.zone.has(i)) c.cells.delete(i);
     const inZone = (i) => this.zone.has(i);
     const zoneEmpty = () => { const P = new Uint8Array(this.W * this.H); for (const i of this.zone) if (this.lower[i] === this.ground && this.upper[i] === -1 && !this.roads.has(i)) P[i] = 1; return this.emptiness(P); };
     let fails = 0, placed = 0;

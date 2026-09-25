@@ -81,7 +81,7 @@ await withTsModule("scripts/content/lib/atlas-biomes-entry.ts", "atlas-biomes-en
         const g = b.groundFill(th.grounds, { maxSq: AIM.maxSq, screen: AIM.screen });
         b.pruneUnowned();
         const emptiness = b.emptiness();
-        assert(emptiness.maxSq <= GATE.maxSq && emptiness.screen <= GATE.screen, `Field gate ${plan.id} maxSq=${emptiness.maxSq} screen=${emptiness.screen.toFixed(3)}`);
+        assert(emptiness.maxSq <= GATE.maxSq && emptiness.screen <= GATE.screen, `Field gate ${plan.id} maxSq=${emptiness.maxSq} screen=${emptiness.screen.toFixed(3)} at=${emptiness.screenAt} zone=${JSON.stringify(b.zoneReport ?? null)}`);
         if (plan.zone) b.paintZone();
         const check = b.check({ entry: entry ?? b.exitList[0].inner, extra: plan.extraTargets ?? [], leak: true });
         done = { b, check, seed: plan.seed + attempt, entry: entry ?? b.exitList[0].inner, emptiness };
