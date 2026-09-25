@@ -151,5 +151,192 @@
     ],
     "reachable": 100,
     "targets": 3
+  },
+  {
+    "id": "harbor-forest-trade-port",
+    "seed": 7101,
+    "entry": [
+      29,
+      39
+    ],
+    "reachable": 998,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.335
+    }
+  },
+  {
+    "id": "harbor-forest-naval-base",
+    "seed": 7111,
+    "entry": [
+      32,
+      41
+    ],
+    "reachable": 1109,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.339
+    }
+  },
+  {
+    "id": "harbor-forest-pirate-den",
+    "seed": 7121,
+    "entry": [
+      38,
+      37
+    ],
+    "reachable": 973,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.335
+    }
+  },
+  {
+    "id": "harbor-forest-fishing-cove",
+    "seed": 7131,
+    "entry": [
+      24,
+      35
+    ],
+    "reachable": 794,
+    "targets": 8,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.339
+    }
+  },
+  {
+    "id": "harbor-forest-royal-welcome",
+    "seed": 7141,
+    "entry": [
+      25,
+      43
+    ],
+    "reachable": 1177,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.339
+    }
+  },
+  {
+    "id": "harbor-forest-emigrant-dock",
+    "seed": 7151,
+    "entry": [
+      29,
+      41
+    ],
+    "reachable": 1048,
+    "targets": 5,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 4,
+      "screen": 0.339
+    }
+  },
+  {
+    "id": "harbor-snow-whaler-port",
+    "seed": 7161,
+    "entry": [
+      30,
+      37
+    ],
+    "reachable": 689,
+    "targets": 7,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 2,
+      "screen": 0.348
+    }
+  },
+  {
+    "id": "harbor-autumn-cider-port",
+    "seed": 7171,
+    "entry": [
+      28,
+      37
+    ],
+    "reachable": 728,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.339
+    }
+  },
+  {
+    "id": "harbor-desert-spice-port",
+    "seed": 7181,
+    "entry": [
+      28,
+      37
+    ],
+    "reachable": 1270,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.357
+    }
+  },
+  {
+    "id": "harbor-forest-river-barges",
+    "seed": 7191,
+    "entry": [
+      4,
+      28
+    ],
+    "reachable": 1156,
+    "targets": 10,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.344
+    }
+  },
+  {
+    "id": "harbor-forest-lighthouse-cape",
+    "seed": 7201,
+    "entry": [
+      38,
+      39
+    ],
+    "reachable": 744,
+    "targets": 6,
+    "blocked": 0,
+    "terraceLeaks": 0,
+    "seals": [],
+    "emptiness": {
+      "maxSq": 3,
+      "screen": 0.439
+    }
   }
 ]

@@ -179,3 +179,37 @@ export class GridMap {
     return { reachable: seen.size, targets: targets.length };
   }
 }
+
+// ── ship decks on an OutdoorMap (harbors on forest_harmony / climate sheets) ─────────────────────────────────────
+// The ship-sheet prop kinds of lib/atlas-scenes-ships.mjs (P) as the grafted `shipprop:*` pieces of the vehicle sheet.
+const SHIPPROP_OF = { barrel: "barrel", tallBarrel: "tall-barrel", crate: "crate", chest: "chest", jar: "jar", table: "table", stool: "stool", bucket: "bucket",
+  anchor: "anchor", rope: "rope", swords: "swords", helm: "helm", lantern: "lantern", potions: "potions", grate: "grate",
+  cannonL: "cannon-left", cannonR: "cannon-right", cannonDown: "cannon-down", cannonUp: "cannon-up", flag: "flag-red", banner: "banner-gold", ladder: "ladder" };
+export function vehicleProps(base) {
+  const out = {};
+  for (const [k, n] of Object.entries(SHIPPROP_OF)) {
+    const p = piece("shipprop:" + n);
+    out[k] = Array.from({ length: p.h }, (_, y) => Array.from({ length: p.w }, (_, x) => { const t = p.upper[y * p.w + x]; return t < 0 ? -1 : base + t; }));
+  }
+  return out;
+}
+/** A GridMap-shaped view of an OutdoorMap so dressShip (lib/atlas-scenes-ships.mjs) can dress a ship stamped on it. */
+export class OutdoorDeck {
+  constructor(b, base, owner = "배") {
+    Object.assign(this, { b, base, owner, W: b.W, H: b.H, lower: b.lower, upper: b.upper, ts: b.spec.tileset, placements: b.placements, map: b.map, P: vehicleProps(base) });
+  }
+  at(x, y) { return this.b.at(x, y); }
+  inside(x, y) { return this.b.inside(x, y); }
+  prop(tiles, x, y, w, purpose) {
+    const rows = Array.isArray(tiles[0]) ? tiles : [tiles];
+    rows.forEach((row, dy) => row.forEach((t, dx) => {
+      if (t < 0) return;
+      const i = this.at(x + dx, y + dy);
+      assert(this.upper[i] === -1, `${this.map.id}: deck prop ${purpose} over ${x + dx},${y + dy}`);
+      this.upper[i] = t;
+      this.b.occupied.add(i); this.b.keep.add(i);
+      if (!this.ts.passability[t]?.up) { this.b.solid.add(i); this.b.bridgeCells.delete(i); }
+    }));
+    this.placements.push({ name: purpose, kind: "prop", x, y, w: rows[0].length, h: rows.length, owner: this.owner, purpose });
+  }
+}

@@ -19,7 +19,7 @@ export function deckOf(g, v) {
     const lo = p.lower[k];
     if (lo < 0) continue;
     const x = v.x + (k % p.w), y = v.y + Math.floor(k / p.w);
-    if (!g.ts.passability[SHIP_BASE + lo]?.up) continue;
+    if (!g.ts.passability[(g.base ?? SHIP_BASE) + lo]?.up) continue;
     cells.push([x, y]);
   }
   const has = new Set(cells.map(([x, y]) => g.at(x, y)));
@@ -75,14 +75,14 @@ function railCannons(g, deck, v, every, { north = false, south = true } = {}, la
   const n = [];
   const ok = (x, y) => deck.free(x, y) && !lane.has(g.at(x, y));
   for (let x = deck.left + 4; x <= deck.right - 3; x += every) {
-    if (north && ok(x, deck.top) && ok(x, deck.top + 1)) { g.prop(P.cannonUp, x, deck.top, 1, "뱃전 대포(북쪽)"); n.push([x, deck.top]); }
-    if (south && ok(x, deck.bottom - 1) && ok(x, deck.bottom)) { g.prop(P.cannonDown, x, deck.bottom - 1, 1, "뱃전 대포(남쪽)"); n.push([x, deck.bottom]); }
+    if (north && ok(x, deck.top) && ok(x, deck.top + 1)) { g.prop((g.P ?? P).cannonUp, x, deck.top, 1, "뱃전 대포(북쪽)"); n.push([x, deck.top]); }
+    if (south && ok(x, deck.bottom - 1) && ok(x, deck.bottom)) { g.prop((g.P ?? P).cannonDown, x, deck.bottom - 1, 1, "뱃전 대포(남쪽)"); n.push([x, deck.bottom]); }
   }
   return n;
 }
 
 function cargoPile(g, deck, x, y, kinds, purpose, keep) {
-  for (const [dx, dy, k] of kinds) tryProp(g, deck, P[k], x + dx, y + dy, purpose, keep, 2);
+  for (const [dx, dy, k] of kinds) tryProp(g, deck, (g.P ?? P)[k], x + dx, y + dy, purpose, keep, 2);
 }
 
 /** propNear that records a skip instead of failing (a crowded deck just gets one prop fewer). */
@@ -135,7 +135,7 @@ export function clutterDeck(g, deck, lane, pool, from, { maxArea = 5, seed = 1 }
     const snapshot = [...g.upper], nPlaced = g.placements.length;
     let cells = 0, first = null;
     for (const kind of kinds) {
-      const tiles = P[kind] ?? kind;
+      const tiles = (g.P ?? P)[kind] ?? kind;
       const at = tryProp(g, deck, tiles, first ? first[0] : target[0], first ? first[1] : target[1], purpose, lane, first ? 1 : 1);
       if (!at) continue;
       first ??= at;
@@ -170,8 +170,8 @@ export function dressShip(g, v, spec) {
   if (v.gangway) for (let y = deck.top; y <= v.gangway.y; y++) lane.add(g.at(v.gangway.x, y));
   if (spec.cannons) railCannons(g, deck, v, spec.cannons, spec.cannonSides ?? {}, lane);
   for (const [x, y, kinds, purpose] of spec.cargo ?? []) cargoPile(g, deck, v.x + x, v.y + y, kinds, purpose, lane);
-  if (spec.helm !== false) tryProp(g, deck, P.helm, deck.right - 2, mid, "조타륜", lane);
-  for (const [kind, x, y, purpose] of spec.extras ?? []) tryProp(g, deck, P[kind] ?? kind, v.x + x, v.y + y, purpose, lane);
+  if (spec.helm !== false) tryProp(g, deck, (g.P ?? P).helm, deck.right - 2, mid, "조타륜", lane);
+  for (const [kind, x, y, purpose] of spec.extras ?? []) tryProp(g, deck, (g.P ?? P)[kind] ?? kind, v.x + x, v.y + y, purpose, lane);
   const entry = [...lane].map((i) => [i % g.W, Math.floor(i / g.W)]).filter(([x, y]) => deck.free(x, y))
     .sort((a, b) => Math.abs(a[0] - (deck.left + deck.right) / 2) - Math.abs(b[0] - (deck.left + deck.right) / 2))[0];
   if (process.env.ATLAS_DEBUG) console.log("clutter", g.map.id, deckEmptySquare(g, deck, lane), deck.cells.length, entry);

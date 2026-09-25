@@ -12,7 +12,7 @@ import assert from "node:assert/strict";
 import { withTsModule } from "./../ontology-ts-loader.mjs";
 import { loadKit, OutdoorMap } from "./lib/outdoor-kit.mjs";
 import { GATES, THEME_FILL } from "./lib/rpg-outdoor-fill.mjs";
-import { withVehicleGrafts, compactVehicleGrafts, FOREST_BASE, FOREST_LIMIT, SHIP_BASE } from "./lib/atlas-scenes-kit.mjs";
+import { withVehicleGrafts, compactVehicleGrafts, FOREST_BASE, SHIP_BASE } from "./lib/atlas-scenes-kit.mjs";
 import { shipPlans, lockWater } from "./lib/atlas-scenes-ships.mjs";
 import { skyPlans } from "./lib/atlas-scenes-sky.mjs";
 import { cabinPlans } from "./lib/atlas-scenes-cabins.mjs";
@@ -23,9 +23,13 @@ const only = process.env.ATLAS_ONLY ? process.env.ATLAS_ONLY.split(",") : null;
 const old = fs.existsSync(`${OUT}/catalog.json`) ? JSON.parse(fs.readFileSync(`${OUT}/catalog.json`)) : { plans: [], maps: {} };
 const oldReport = fs.existsSync(`${OUT}/validation.json`) ? JSON.parse(fs.readFileSync(`${OUT}/validation.json`)) : [];
 const strip = ({ build, ...rest }) => rest;
+// The saved tilesets are this pipeline's own (vehicle grafts from the base with no upper limit), so they get their own ids.
+const OUT_ID = { easyrpg_chipset_ship: "atlas_scenes_ship", forest_harmony: "atlas_scenes_forest", forest_harmony_snow: "atlas_scenes_snow",
+  forest_harmony_volcano: "atlas_scenes_volcano", forest_harmony_desert: "atlas_scenes_desert", forest_harmony_autumn: "atlas_scenes_autumn" };
+const IN_ID = Object.fromEntries(Object.entries(OUT_ID).map(([a, b]) => [b, a]));
 
 await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-entry.mjs", async (api) => {
-  console.time("blank"); const blank = api.createBlankProject(); console.timeEnd("blank");
+  const blank = api.createBlankProject();
   const veh = blank.tilesets.oprn_atlas_vehicles;
   assert(veh, "new projects lack oprn_atlas_vehicles");
   // Working tilesets: every vehicle slot grafted at base + slot.
@@ -35,12 +39,22 @@ await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-en
   const forestBase = (t) => Math.max(FOREST_BASE, Math.ceil(t.count / 30) * 30);
   const climate = {};
   for (const k of ["snow", "volcano", "desert", "autumn"]) { const t = api.createClimateVillageTileset(k); climate[t.id] = withVehicleGrafts(t, veh, forestBase(t)); }
-  console.time("forest"); const forest = withVehicleGrafts(blank.tilesets.forest_harmony, veh, FOREST_BASE); console.timeEnd("forest");
+  const forest = withVehicleGrafts(blank.tilesets.forest_harmony, veh, FOREST_BASE);
   const tilesets = { easyrpg_chipset_ship: ship, forest_harmony: forest, ...climate };
   const baseOf = { easyrpg_chipset_ship: SHIP_BASE, forest_harmony: FOREST_BASE, ...Object.fromEntries(Object.entries(climate).map(([id, t]) => [id, forestBase(api.createClimateVillageTileset(id.replace("forest_harmony_", "")))])) };
-  console.time("kit"); const kit = loadKit(api); console.timeEnd("kit");
+  const kit = loadKit(api);
   const ctx = { api, ship, forest, climate, tilesets, baseOf, blank, kit };
 
+  // A kept map from the previous catalog: compacted vehicle tiles back to the working numbering (base + slot), working id.
+  function restore(m) {
+    const oldTs = old.tilesets?.[m.tilesetId], id = IN_ID[m.tilesetId] ?? m.tilesetId, base = baseOf[id];
+    const r = structuredClone(m);
+    r.tilesetId = id;
+    if (!oldTs) return r;
+    const src = new Map(oldTs.tileGrafts.filter((g) => g.targetTile >= base).map((g) => [g.targetTile, g.sourceTile]));
+    for (const k of ["lowerTiles", "upperTiles", "lowerOverlayTiles", "upperOverlayTiles"]) if (Array.isArray(r[k])) r[k] = r[k].map((t) => (t >= base ? base + src.get(t) : t));
+    return r;
+  }
   const PLANS = [...shipPlans(), ...skyPlans(), ...cabinPlans(), ...outdoorPlans()];
   const ids = new Set();
   for (const p of PLANS) { assert(!ids.has(p.id), "duplicate plan " + p.id); ids.add(p.id); }
@@ -48,7 +62,7 @@ await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-en
   for (const plan of PLANS) {
     if (only && !only.includes(plan.id)) {
       const p = old.plans.find((q) => q.id === plan.id);
-      if (p) { plans.push(p); maps[plan.id] = old.maps[plan.id]; report.push(oldReport.find((r) => r.id === plan.id)); }
+      if (p) { plans.push(p); maps[plan.id] = restore(old.maps[plan.id]); report.push(oldReport.find((r) => r.id === plan.id)); }
       continue;
     }
     try {
@@ -68,7 +82,7 @@ await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-en
       if (!(e instanceof assert.AssertionError)) throw e;
       failures.push(`${plan.id}: ${e.message.split("\n")[0]}`);
       const p = old.plans.find((q) => q.id === plan.id);
-      if (p) { plans.push(p); maps[plan.id] = old.maps[plan.id]; report.push(oldReport.find((r) => r.id === plan.id)); }
+      if (p) { plans.push(p); maps[plan.id] = restore(old.maps[plan.id]); report.push(oldReport.find((r) => r.id === plan.id)); }
     }
   }
   // Renumber the vehicle grafts each tileset's maps use and trim the working tilesets.
@@ -77,10 +91,14 @@ await withTsModule("scripts/content/lib/atlas-scenes-entry.ts", "atlas-scenes-en
     const own = Object.values(maps).filter((m) => m.tilesetId === id);
     if (!own.length) continue;
     const base = baseOf[id];
-    const { tileset, used } = compactVehicleGrafts(t, own, base, id === "easyrpg_chipset_ship" ? Infinity : base + 300);
-    out[id] = tileset;
+    const { tileset, used } = compactVehicleGrafts(t, own, base);
+    tileset.id = OUT_ID[id];
+    tileset.name = `${t.name} · 탈것·장면 (atlas-scenes)`;
+    for (const m of own) m.tilesetId = OUT_ID[id];
+    out[OUT_ID[id]] = tileset;
     console.log(`tileset ${id}: ${own.length} maps, ${used} vehicle tiles from ${base}`);
   }
+  for (const p of plans) p.tilesetId = maps[p.id].tilesetId;
   fs.mkdirSync(OUT, { recursive: true });
   fs.writeFileSync(`${OUT}/catalog.json`, JSON.stringify({ source: "scripts/content/author-atlas-scenes.mjs", plans, maps, tilesets: out }) + "\n");
   fs.writeFileSync(`${OUT}/validation.json`, JSON.stringify(report, null, 2) + "\n");
