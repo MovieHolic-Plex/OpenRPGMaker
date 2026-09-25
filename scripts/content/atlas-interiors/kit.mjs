@@ -29,7 +29,7 @@ export function createKit(api, base) {
   const HANG_KITS = new Set(K(`hanging-herbs library-009 library-011 library-012 library-021 library-075 library-088 library-089
     library-099 library-108 library-138 library-144 library-163 library-164 library-217
     library-218 library-219 library-220 library-221 library-222 library-223 library-224 library-225 library-226 library-227
-    library-228 v6-1-0 v6-2-0 v8-1-0 v9-1-0 library-159`));
+    library-228 v6-1-0 v6-2-0 v8-1-0 v9-1-0 library-159 library-208 atlas-vault-door atlas-blackboard`));
   const SEAT_KITS = new Set(K(`library-027 library-028 library-029 library-030 library-202 v3-3-1 v7-1-2 v7-2-2 v7-3-2`));
   const TABLE_KITS = new Set(K(`library-025 library-026 library-140 library-161 v4-4-0 v4-4-2 v4-5-2 v7-1-3 v7-2-3 v7-3-3
     fantasy-dining-set medieval-banquet-table medieval-scribe-desk warm-scribe-desk fantasy-alchemy-desk fantasy-prep-table
