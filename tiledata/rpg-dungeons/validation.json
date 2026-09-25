@@ -1068,8 +1068,12 @@
           15,
           0
         ],
-        "to": "deeper",
-        "note": "북쪽 → 더 깊은 해저 동굴"
+        "to": "dungeon-sunken-gate",
+        "arrive": [
+          17,
+          27
+        ],
+        "note": "북쪽 → 해저 신전 입구 회랑"
       }
     ],
     "reachable": 194,
@@ -1564,5 +1568,165 @@
     "blocked": [],
     "onWallTop": [],
     "sealed": "보물고(북동쪽 창살 문 안)는 열쇠로만 열린다. 수로 → 전실 창살과 지름길 바위 문도 레버·이벤트 몫이라 처음엔 닫혀 있다"
+  },
+  {
+    "id": "dungeon-sunken-gate",
+    "entry": [
+      17,
+      27
+    ],
+    "targets": [
+      [
+        17,
+        1
+      ],
+      [
+        18,
+        12
+      ],
+      [
+        9,
+        14
+      ],
+      [
+        27,
+        14
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          17,
+          27
+        ],
+        "to": "dungeon-sea-cave",
+        "arrive": [
+          15,
+          1
+        ],
+        "note": "남쪽 굴길 → 해저 동굴 북쪽"
+      },
+      {
+        "at": [
+          17,
+          0
+        ],
+        "to": "dungeon-sunken-hall",
+        "arrive": [
+          19,
+          30
+        ],
+        "note": "북쪽 → 산호 기둥 대전"
+      }
+    ],
+    "reachable": 312,
+    "walkable": 312,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-sunken-hall",
+    "entry": [
+      19,
+      31
+    ],
+    "targets": [
+      [
+        19,
+        1
+      ],
+      [
+        4,
+        16
+      ],
+      [
+        35,
+        16
+      ],
+      [
+        8,
+        16
+      ],
+      [
+        31,
+        16
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          19,
+          31
+        ],
+        "to": "dungeon-sunken-gate",
+        "arrive": [
+          17,
+          1
+        ],
+        "note": "남쪽 → 입구 회랑"
+      },
+      {
+        "at": [
+          19,
+          0
+        ],
+        "to": "dungeon-sunken-altar",
+        "arrive": [
+          16,
+          27
+        ],
+        "note": "북쪽 → 바다 여신 제단"
+      }
+    ],
+    "reachable": 543,
+    "walkable": 543,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
+  },
+  {
+    "id": "dungeon-sunken-altar",
+    "entry": [
+      16,
+      27
+    ],
+    "targets": [
+      [
+        16,
+        15
+      ],
+      [
+        16,
+        11
+      ],
+      [
+        5,
+        20
+      ],
+      [
+        28,
+        20
+      ]
+    ],
+    "exits": [
+      {
+        "at": [
+          16,
+          27
+        ],
+        "to": "dungeon-sunken-hall",
+        "arrive": [
+          19,
+          1
+        ],
+        "note": "남쪽 → 산호 기둥 대전"
+      }
+    ],
+    "reachable": 379,
+    "walkable": 379,
+    "stranded": [],
+    "blocked": [],
+    "onWallTop": []
   }
 ]
