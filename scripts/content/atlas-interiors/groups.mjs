@@ -6,5 +6,6 @@ import { guilds, schools } from "./guilds.mjs";
 import civic from "./civic.mjs";
 import civic2 from "./civic2.mjs";
 import crafts from "./crafts.mjs";
+import castle from "./castle.mjs";
 
-export const GROUPS = { homes, shops, taverns, guilds, schools, civic, civic2, crafts };
+export const GROUPS = { homes, shops, taverns, guilds, schools, civic, civic2, crafts, castle };

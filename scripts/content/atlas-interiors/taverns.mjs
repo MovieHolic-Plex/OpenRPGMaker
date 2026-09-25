@@ -13,9 +13,9 @@ export default function taverns(K) {
     r.stamp(T("fantasy-bar-counter"), 2, 7).stool(2, 9, true).stool(4, 9, true);
     r.rug("red", 8, 6, 12, 6);
     r.stamp(T("fantasy-dining-set"), 8, 8).stamp(T("library-025"), 13, 8).stool(12, 9).stool(14, 9);
-    r.stamp(T("library-026"), 4, 11).stool(3, 12).stool(5, 12).stamp(T("fantasy-dining-set"), 11, 10).stamp(T("library-209"), 14, 11 - 0);
+    r.stamp(T("library-026"), 4, 11).stool(3, 12).stool(5, 12).stamp(T("fantasy-dining-set"), 11, 10).stamp(T("library-209"), 14, 11);
     r.stamp(T("medieval-bread-oven"), 17, 3).stamp(T("fantasy-hanging-pot"), 20, 4).stamp(T("fantasy-prep-table"), 17, 7).stamp(T("fantasy-water-tub"), 19, 11);
-    r.stamp(T("library-013"), 17, 11).stamp(T("library-014"), 18, 11).stamp(T("library-018"), 17, 12).stamp(T("library-019"), 18, 12).stamp(T("library-012"), 20, 3 - 0);
+    r.stamp(T("library-013"), 17, 11).stamp(T("library-014"), 18, 11).stamp(T("library-018"), 17, 12).stamp(T("library-019"), 18, 12).stamp(T("library-012"), 20, 3);
     r.object("tavern-bar-corner", "주점 술통 선반과 바", "furniture", 2, 4, 6, 6, ["주점", "바", "술통", "여관"], "여관·주점 1층 뒷벽 한쪽 구석");
     r.done({
       entry: [8, 13], keeper: [3, 6], targets: [[3, 6], [6, 9], [13, 6], [20, 8], [10, 11], [20, 10]],
@@ -47,7 +47,7 @@ export default function taverns(K) {
     r.stamp(T("library-224"), 2, 3).stamp(T("fantasy-ale-rack"), 4, 4).stamp(T("library-133"), 7, 4).one(8, 3, 24).stamp(T("v6-2-0"), 10, 3).one(13, 3, 24).stamp(T("library-138"), 14, 3).stamp(T("library-022"), 17, 4);
     r.stamp(T("fantasy-bar-counter"), 4, 7).stool(4, 9, true).stool(6, 9, true).stool(8, 8, true);
     r.stamp(T("library-025"), 11, 6).stool(10, 7).stool(12, 7).stamp(T("library-025"), 15, 7).stool(14, 8).stool(16, 8);
-    r.stamp(T("fantasy-dining-set"), 12, 9).stamp(T("library-026"), 17, 9 + 0).stool(18, 10).stool(16, 10);
+    r.stamp(T("fantasy-dining-set"), 12, 9).stamp(T("library-026"), 17, 9).stool(18, 10).stool(16, 10);
     r.stamp(T("library-229"), 2, 6).stamp(T("library-229"), 2, 8).one(3, 10, 385).stamp(T("library-196"), 2, 10).stamp(T("library-230"), 2, 11);
     r.stamp(T("library-137"), 9, 11).stamp(T("library-197"), 19, 7).rug("red", 9, 5, 13, 8).rug("teal", 14, 7, 17, 9);
     r.done({
@@ -82,7 +82,7 @@ export default function taverns(K) {
     r.stamp(T("library-134"), 13, 4).stamp(T("library-133"), 15, 4).stamp(T("library-133"), 16, 4).one(12, 3, 24);
     r.stamp(T("fantasy-bar-counter"), 13, 7).stool(13, 9, true).stool(15, 9, true);
     r.stamp(T("library-026"), 3, 8).stool(2, 9).stool(4, 9).stamp(T("library-025"), 7, 8).stool(6, 9).stool(8, 9).stamp(T("brazier"), 11, 9);
-    r.stamp(T("library-105"), 17, 9).stamp(T("library-232"), 17, 7 + 0);
+    r.stamp(T("library-105"), 17, 9).stamp(T("library-232"), 17, 7);
     r.done({
       entry: [9, 11], keeper: [14, 6], targets: [[14, 6], [5, 7], [10, 7], [16, 10]],
       use: "광산 마을 광부들의 주점. 검은 돌벽에 공구 벽판·횃불이 걸리고, 일 끝난 광부가 곡괭이 대신 맥주잔을 들고 화로 곁 탁자에 앉는다. 동쪽 바에서 주인이 술통 꼭지로 맥주를 따른다. 주괴·석탄 통은 뒷벽에 쌓아 둔다",

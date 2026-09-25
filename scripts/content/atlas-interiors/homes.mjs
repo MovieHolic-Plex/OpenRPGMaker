@@ -94,7 +94,7 @@ export default function homes(K) {
     r.rug("red", 17, 7, 22, 11).stamp(T("medieval-banquet-table"), 18, 8).redChair(17, 8).redChair(22, 8);
     for (const x of [18, 19, 20, 21]) r.chair("n", x, 7).chair("s", x, 10);
     r.stamp(T("warm-crockery"), 16, 4).stamp(T("library-134"), 22, 4).one(19, 3, 56).one(20, 3, 56);
-    r.stamp(T("library-031"), 22, 11 + 0).stamp(T("library-209"), 16, 11);
+    r.stamp(T("library-031"), 22, 11).stamp(T("library-209"), 16, 11);
     r.object("banquet-set-eight", "여덟 자리 연회 식탁 세트", "furniture", 17, 7, 6, 4, ["식탁", "연회", "의자", "부잣집"], "부잣집·귀족 저택 식당 한가운데");
     r.done({
       entry: [8, 13], keeper: [20, 11], targets: [[12, 6], [3, 8], [19, 11], [16, 9]],
@@ -250,7 +250,7 @@ export default function homes(K) {
   {
     const r = K.room("atlas-interior-cellar-house-b1", "민가 · 지하 창고", 19, 13, { wings: [{ x: 2, y: 5, w: 15, h: 5 }], door: { x: 7, y: 9 }, wall: "stone-brick" });
     r.floor(42).closeDoor(7, 10);
-    r.stairsUp(16, 8 - 3);
+    r.stairsUp(16, 5);
     r.stamp(T("fantasy-ale-rack"), 2, 4).stamp(T("library-134"), 5, 4).stamp(T("library-133"), 7, 4).one(9, 3, 24).one(13, 4, 2050);
     r.stamp(T("fantasy-grain-sacks"), 9, 7).stamp(T("library-232"), 2, 8).stamp(T("library-230"), 3, 9).stamp(T("library-229"), 4, 8);
     r.stamp(T("library-022"), 12, 8).stamp(T("library-016"), 10, 4).stamp(T("library-017"), 11, 4).stamp(T("library-234"), 9, 5);

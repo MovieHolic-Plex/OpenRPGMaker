@@ -2156,5 +2156,331 @@
     "walkable": 45,
     "blocked": [],
     "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-throne",
+    "entry": [
+      13,
+      15
+    ],
+    "targets": [
+      [
+        13,
+        7
+      ],
+      [
+        5,
+        9
+      ],
+      [
+        20,
+        9
+      ],
+      [
+        2,
+        13
+      ],
+      [
+        23,
+        13
+      ]
+    ],
+    "reachable": 181,
+    "walkable": 173,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-council",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        4,
+        7
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        10,
+        10
+      ],
+      [
+        18,
+        11
+      ]
+    ],
+    "reachable": 81,
+    "walkable": 75,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-royal-bedroom",
+    "entry": [
+      10,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        8
+      ],
+      [
+        6,
+        9
+      ],
+      [
+        16,
+        8
+      ],
+      [
+        2,
+        11
+      ],
+      [
+        18,
+        11
+      ]
+    ],
+    "reachable": 101,
+    "walkable": 92,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-library",
+    "entry": [
+      13,
+      13
+    ],
+    "targets": [
+      [
+        12,
+        7
+      ],
+      [
+        4,
+        9
+      ],
+      [
+        21,
+        9
+      ],
+      [
+        14,
+        10
+      ],
+      [
+        11,
+        12
+      ]
+    ],
+    "reachable": 108,
+    "walkable": 102,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-chapel",
+    "entry": [
+      10,
+      13
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        3,
+        9
+      ],
+      [
+        18,
+        9
+      ],
+      [
+        12,
+        10
+      ]
+    ],
+    "reachable": 100,
+    "walkable": 94,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-kitchen",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        10,
+        9
+      ],
+      [
+        7,
+        6
+      ],
+      [
+        15,
+        7
+      ],
+      [
+        21,
+        11
+      ],
+      [
+        4,
+        8
+      ],
+      [
+        14,
+        5
+      ]
+    ],
+    "reachable": 97,
+    "walkable": 87,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-cellar",
+    "entry": [
+      14,
+      6
+    ],
+    "targets": [
+      [
+        14,
+        6
+      ],
+      [
+        5,
+        8
+      ],
+      [
+        17,
+        10
+      ],
+      [
+        11,
+        10
+      ],
+      [
+        13,
+        5
+      ],
+      [
+        14,
+        5
+      ],
+      [
+        15,
+        5
+      ]
+    ],
+    "reachable": 82,
+    "walkable": 69,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-tower-room",
+    "entry": [
+      8,
+      10
+    ],
+    "targets": [
+      [
+        9,
+        7
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        5,
+        9
+      ]
+    ],
+    "reachable": 56,
+    "walkable": 50,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-prince-room",
+    "entry": [
+      9,
+      10
+    ],
+    "targets": [
+      [
+        10,
+        7
+      ],
+      [
+        5,
+        7
+      ],
+      [
+        14,
+        7
+      ],
+      [
+        2,
+        9
+      ]
+    ],
+    "reachable": 59,
+    "walkable": 50,
+    "blocked": [],
+    "pockets": []
+  },
+  {
+    "id": "atlas-interior-castle-guard-hall",
+    "entry": [
+      12,
+      12
+    ],
+    "targets": [
+      [
+        12,
+        10
+      ],
+      [
+        6,
+        8
+      ],
+      [
+        18,
+        8
+      ],
+      [
+        3,
+        7
+      ],
+      [
+        20,
+        7
+      ]
+    ],
+    "reachable": 104,
+    "walkable": 88,
+    "blocked": [],
+    "pockets": []
   }
 ]
