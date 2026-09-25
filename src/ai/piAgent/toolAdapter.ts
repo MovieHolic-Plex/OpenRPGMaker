@@ -18,6 +18,7 @@ import { prepareTool, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import type { Project } from "@/project/types";
 import { mapBundleMapSpill } from "./mapBundle";
+import { modernTilesetViolation, type ModernTilesetPolicy } from '../modernTilesetPolicy';
 
 export interface PiToolTextContent {
   readonly type: "text";
@@ -48,6 +49,7 @@ export interface PiToolCallRecord {
 }
 
 export interface CreatePiToolsetOptions {
+  readonly modernTilesetPolicy?: ModernTilesetPolicy;
   readonly referenceGate?: PiTilesetReferenceGate;
   /** 노출 도메인. 비우면 살아 있는 레지스트리 전부. 도메인 없는(범용) 툴은 항상 포함. */
   readonly domains?: readonly string[];
@@ -219,6 +221,10 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       let result = gate ?? (tool.name === EVENT_COMMAND_ASSIST_TOOL
         ? await runToolAsync(ctx, tool.name, args, { signal })
         : runTool(ctx, tool.name, args));
+      if (tool.mode === 'write' && result.ok && options.modernTilesetPolicy) {
+        const violation = modernTilesetViolation(beforeProject, ctx.project, options.modernTilesetPolicy);
+        if (violation) { ctx.project = beforeProject; result = { ok: false, summary: violation }; }
+      }
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
       if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
         const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name, options.scopeAllowsSystem === true);

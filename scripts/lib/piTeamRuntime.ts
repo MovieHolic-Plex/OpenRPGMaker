@@ -20,6 +20,7 @@ import { PiTeamMessaging, teamCommunicationPrompt } from "./piTeamMessaging.ts";
 import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, slimDoneEvent, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
+import { createModernTilesetPolicy, modernTilesetViolation, requestsModernMap } from '../../src/ai/modernTilesetPolicy.ts';
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import {
   claimAssignment,
@@ -91,6 +92,12 @@ const TEAM_WAIT_SAFETY_MS = 5 * 60_000;
 const REVIEW_READ_TOOLS = ["get_map_region", "run_lint", "get_project_summary", "find_tools"] as const;
 
 export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptions = {}): Promise<PiAgentDoneEvent> {
+  if (request.modernTilesetOnly || requestsModernMap(request.project, request.task, [...request.mapIds, ...(request.currentMapId ? [request.currentMapId] : [])])) request = { ...request, modernTilesetOnly: true, villageContract: undefined };
+  const modernPolicy = request.modernTilesetOnly ? createModernTilesetPolicy(request.project) : undefined;
+  const assertModernProposal = (before: Project, after: Project) => {
+    const violation = modernPolicy && modernTilesetViolation(before, after, modernPolicy);
+    if (violation) throw new Error(violation);
+  };
   const runAgent: RunPiAgentFn = options.runAgent ?? (await import("./piAgentRuntime.ts")).runPiAgent;
   const emit = (event: PiAgentEvent) => options.onEvent?.(event);
   const base = request.project;
@@ -206,6 +213,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     // 감사 기준은 병합 시점의 working 이 아니라 이 에이전트가 출발한 사본이다. 그 사이 남이
     // 병합한 맵을 이 에이전트의 범위 밖 변경으로 잘못 잡지 않기 위함.
     const merged = mergeMapBundles(working, [{ mapIds: [mapId], project: done.project, base: snapshot }]);
+    assertModernProposal(working, merged.project);
     working = merged.project;
     return { spills: merged.spills.flatMap((spill) => [...spill.keys]), conflicts };
   }
@@ -218,6 +226,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       const proposed = mapId
         ? mergeMapBundles(working, [{ mapIds: [mapId], project: checkpoint.project, base: snapshot }]).project
         : checkpoint.project;
+      assertModernProposal(working, proposed);
       authorMergedSpatialProposal(proposed, working);
       const accepted = await options.onCheckpoint?.({ ...checkpoint, project: proposed, spatialProof: exportSpatialToolProof(proposed) }, signal);
       working = structuredClone(accepted ?? proposed);
@@ -329,7 +338,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const changes = changedProjectKeys(snapshot, done.project);
         // Enforce read-only at the merge boundary too, even if an injected runner returns mutations.
         if (mode === "read" && changes.length) throw new Error("읽기 작업이 프로젝트 변경을 반환했습니다. 변경을 적용하지 않았습니다.");
-        if (mode === "project") working = structuredClone(done.project) as Project;
+        if (mode === "project") { assertModernProposal(working, done.project); working = structuredClone(done.project) as Project; }
         for (const id of done.villageCompletion?.mapIds ?? []) villageMapIds.add(id);
         const complete = !done.villageCompletion?.issues.length;
         if (!complete) report += `\n마을 미완료: ${done.villageCompletion!.issues.join("; ")}`;
