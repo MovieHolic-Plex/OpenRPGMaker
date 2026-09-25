@@ -164,6 +164,12 @@ itch.io 의 [Rasak Modern](https://rasak.itch.io/rasak-modern)처럼 「사용·
 (방 하나를 stamp_layer_block 한 번으로 붙였다) 창을 지붕 줄에 단다. 그래서 문서에 집·방 **뼈대 배열**(작은 집·2층 집·방)과
 「통째로 붙이지 않는다」, 오류 ⑦「창·문을 지붕 줄에」를 넣었다. 지원 시트 45/176 — 남은 큰 것은 Special_Buildings·Forestfolk·Dungeon.
 
+**예제가 허접하면 조수도 허접하다(적대적 시각 QA 2026-09-25).** 첫 예제 네 장은 빈 바닥 46~60%·도시 좌우 대칭·방 하나 상자·의자 없는 식탁이었고,
+조수 결과는 그보다 더 비었다(빈 바닥 50~88%, 대칭 배수 7~18). 예제를 제작자 수준으로 다시 조립하고 `scripts/content/rasak/check_examples.py`
+(빈 바닥·빈 정사각형·대칭·허공, 제작자 맵으로 잰 기준)를 넘게 했다. 두 검수(구성 / 타일 칸 단위)를 따로 돌리면 서로 다른 결함을 잡는다 —
+타일 검수가 엔진 결함(맵 가장자리 자동타일 = 끊김 → `AutotileGroup.edgeConnects`)과 조립기 버그(3줄 벽에서 뜨는 문)를 찾았다.
+숫자만 보고 끝내지 않는다: 밀도 기준을 1칸 덤불로 채운 숲은 통과했지만 죽은 숲처럼 보였다.
+
 ## 알려진 함정
 
 - **16px 표가 48px 업로드를 건드린다.** `ensureTilesetHarnesses` → `applyCustomChipsetMinimalHarness`
